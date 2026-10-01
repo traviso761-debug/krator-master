@@ -89,3 +89,9 @@ saying what fixed it.
 - [ ] `verify.py --views` splits on commas, so a preset whose name holds a comma
       (the set's row presets 'Town types — row, stacked house, well, tower' and
       friends) cannot be shot by name; the eye-level presets cover the types.
+
+## The vendored biome (Oct 2026)
+- [ ] The swlowlands biome is vendored as `src/86-bio-*`. Its core moved to `core/biome/` (one copy
+      for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
+      hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
+      Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.

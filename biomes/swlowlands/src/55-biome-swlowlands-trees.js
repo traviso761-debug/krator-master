@@ -18,7 +18,7 @@ SWLOW.TREES=[];
 // the 'semiarid' species read med (summer-dry ground), the 'humid' ones rain,
 // swamp or sub, never med's dry slopes.
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const wet=BIO.field('wet',x,z),tropic=BIO.field('tropic',x,z),dry=BIO.field('dry',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),up=BIO.field('upland',x,z),h=Y(x,z);
+function zones(x,z){const wet=BIO.field('wet',x,z),tropic=BIO.field('tropic',x,z),dry=BIO.field('dry',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),up=BIO.field('upland',x,z),h=Y(x,z)-BIO.waterH(x,z);   // h: the ground against the local water (0 in this host)
  const trop=smooth(.68,.86,tropic),fresh=1-smooth(.45,.8,salt);
  // patch fields: pine flatwoods in the subtropical plain; chaparral vs woodland in the hills
  const pineK=smooth(.54,.64,fbm(x*.0016+14,z*.0016-9,4401,2)),chapK=smooth(.46,.58,fbm(x*.0021-3,z*.0021+6,4402,2)+(.5-wet)*.6);
@@ -245,7 +245,7 @@ B[1]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
  const cy=T.y0+H*.85,ex=T.crownR,ey=H*.15,sz0=rr(5,7);
  crownOn('feather',spots,sz0,.42,()=>crownCol(S),T,cy,ex,ey,lv===2?1.5:.7,st);
  if(lv>=1)beards.forEach(p=>{if(lv===1&&rng()<.5)return;mossAt(p,1.6,Math.max(T.wet,.9),st,10);});
- if(lv===2){for(let k=0,m=ri(5,12);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.8,5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y<-1.8||!BIO.clearOf(x,z,.5))continue;
+ if(lv===2){for(let k=0,m=ri(5,12);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.8,5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y-BIO.waterH(x,z)<-1.8||!BIO.clearOf(x,z,.5))continue;
    const h=rr(.5,1.6)+Math.max(0,-y);BIO.put('cone',[x,y-.25,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[h*.45,h+.25,h*.45],rodCol(pick(S.bark)));st.knees++;}}
  T.spread=spread(T,all);reg(T,S);};
 // 0 the LANTERN MANGROVE: a short lacquer-red trunk on a cage of arching prop roots
@@ -507,7 +507,7 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;const pad=opt.pad==null?4:opt.pad;
   BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
     return a*(opt.lodK?lerp(1,BIO.lod(x,z),opt.lodK):1)*q*(opt.dens==null?DENS:opt.dens);},
-   (x,y,z,d)=>{if(!opt.inWater&&y<.3)return;if(opt.inWater&&(y<opt.inWater[0]||y>opt.inWater[1]))return;
+   (x,y,z,d)=>{const dy=y-BIO.waterH(x,z);if(!opt.inWater&&dy<.3)return;if(opt.inWater&&(dy<opt.inWater[0]||dy>opt.inWater[1]))return;   // heights against the local water
     if(blocked(x,z,pad))return;if(!BIO.clearOf(x,z,pad+2))return;
     const T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);
     if(T.lv===0&&!opt.far)return;
@@ -519,7 +519,7 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  (opt.avenues||[]).forEach(av=>{const P=av.path,sp=SP.findIndex(S=>S.key===(av.species||'sprawloak')),gap=av.spacing||22,off=av.offset||13;let carry=gap*.5;
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;let d=carry;
    for(;d<L;d+=gap*rr(.9,1.1))[-1,1].forEach(side=>{const o=off+rr(-.8,1.8),dj=d+rr(-2,2),x=a[0]+ux*dj-uz*side*o,z=a[1]+uz*dj+ux*side*o,y=Y(x,z);
-    if(y<.3||!BIO.clearOf(x,z,6)||blocked(x,z,3))return;const T=mk(x,y,z,sp);T.bias=Math.atan2(-side*ux,side*uz);
+    if(y-BIO.waterH(x,z)<.3||!BIO.clearOf(x,z,6)||blocked(x,z,3))return;const T=mk(x,y,z,sp);T.bias=Math.atan2(-side*ux,side*uz);
     const ld=BIO.lodD(x,z);T.lv=ld<1100?2:ld<1700?1:0;TREES.push(T);hadd({x,z,r:T.crownR*.4,rt:T.rb*1.6+.8});st.avenue=(st.avenue||0)+1;});
    carry=d-L;}});
  // GROVES: a planted, harvested stand. {center:[x,z], r, spacing, species, stripped}.
@@ -527,7 +527,7 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  // cork oaks as harvested -- the only stripped cork in the biome.
  (opt.groves||[]).forEach(gv=>{const sp=SP.findIndex(S=>S.key===(gv.species||'corkoak')),g=gv.spacing||16,r=gv.r||60,c=gv.center,ang=gv.angle||0,ca=Math.cos(ang),sa=Math.sin(ang);
   for(let i=-Math.ceil(r/g);i<=Math.ceil(r/g);i++)for(let j=-Math.ceil(r/g);j<=Math.ceil(r/g);j++){const u=i*g+rr(-1.5,1.5),v=j*g+rr(-1.5,1.5);if(Math.hypot(u,v)>r)continue;
-   const x=c[0]+u*ca-v*sa,z=c[1]+u*sa+v*ca,y=Y(x,z);if(y<.3||BIO.mask(x,z)<=0||!BIO.clearOf(x,z,4)||blocked(x,z,2))continue;
+   const x=c[0]+u*ca-v*sa,z=c[1]+u*sa+v*ca,y=Y(x,z);if(y-BIO.waterH(x,z)<.3||BIO.mask(x,z)<=0||!BIO.clearOf(x,z,4)||blocked(x,z,2))continue;
    const T=mk(x,y,z,sp);T.stripped=!!gv.stripped;T.crownR*=.8;const ld=BIO.lodD(x,z);T.lv=ld<1100?2:ld<1700?1:0;TREES.push(T);hadd({x,z,r:g*.45,rt:T.rb*1.6+.8});st.grove=(st.grove||0)+1;}});
  // the giants first: they claim their ground (own: a share of the crown radius is kept clear of other giants)
  pass(2,170,Z=>Z.rain*.55,{hero:1100,mid:1800,far:true,pad:14,own:.55,patch:.2});                          // parasol kapok

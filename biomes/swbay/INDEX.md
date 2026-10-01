@@ -9,17 +9,15 @@ Built output (never open it; edit `src/` and rebuild): `dist/swbay.html`
 Build: `cd biomes/swbay && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (85) |
-| `20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
-| `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 23 | the bay, the river, the rise (49); terrain (76); the host binding (96); the ground (107); the water (152); the far country (210) |
-| `50-biome-swbay-species.js` | 34 **big** | THE CANOPY CEILING (19); THE BAY COLOUR (25); the tree species (76); leaf textures (123); bark textures (222); geometries local to this biome (282); an iridescent foliage (334); materials (338); instanced items (378) |
+| `50-biome-swbay-species.js` | 34 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); leaf textures (124); bark textures (223); geometries local to this biome (283); an iridescent foliage (335); materials (339); instanced items (379) |
 | `55-biome-swbay-trees.js` | 46 **big** | zones from the fields (14); colour (26); polyline helpers (Girder's) (48); keep-clear between trees (57); epiphytes (64); foliage helpers (79); the builders (91); impostors (the far canopy) (358); the pass (392) |
 | `60-biome-swbay-floor.js` | 14 | fields local to the floor (26); small plants (31); the zone planters (96); the pass (125) |
 | `65-biome-swbay-dress.js` | 7 |  |

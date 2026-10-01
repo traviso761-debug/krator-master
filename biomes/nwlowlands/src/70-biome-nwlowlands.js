@@ -8,3 +8,4 @@ NWLOW.build=function(opt){opt=opt||{};const R=opt.R||2850,q=opt.quality==null?1:
  BIO.cur=null;return out;};
 NWLOW.dress=function(geos,opt){if(NWLOW.dressGeos){BIO.cur='nwlow/dress';NWLOW.dressGeos(geos,opt||{});BIO.cur=null;}};
 NWLOW.canopyH=function(x,z){return NWLOW._canopyH?NWLOW._canopyH(x,z):10;};
+BIO.kitEnd(NWLOW);   // its exports run in its registry; the default kit is current again

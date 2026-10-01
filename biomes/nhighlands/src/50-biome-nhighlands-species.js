@@ -15,6 +15,7 @@
 // Tags follow the project rule: climate / aridity / abyssal / riparian, and this
 // kit adds HARVEST, the pattern later kits copy:
 //   harvest:{wood:'timber'|'fuel'|'none', edible:[parts], medicinal:bool, notes:''}
+BIO.kit('nhighlands');   // this kit's own registry of items and buckets (core/biome: kits)
 var NHL={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -380,7 +381,7 @@ BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
- m.customProgramCacheKey=function(){return'bioiridbark|'+(key||'x');};BIO._tickWind();return m;};
+ const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 // ---------------------------------------------------------------- materials
 // the bark buckets: one per texture kind; the trumpets' bucket shimmers (the Rift's iridescent bark)
@@ -427,7 +428,7 @@ M.halo.visible=M.haloV.visible=false;
 // the bulbs sway on their threads like the pods of the core
 [M.bulb,M.pod].forEach((m,i)=>{m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+=-position.y*.05*sin(uWindT*1.1+ph);transformed.z+=-position.y*.05*cos(uWindT*.8+ph*1.3);}\n#endif');};
- m.customProgramCacheKey=()=>'nh-glow'+i;});
+ const ck=BIO.kitKey('nh-glow'+i);m.customProgramCacheKey=()=>ck;});
 NHL._glowMaterials=[M.bulb,M.pod];
 NHL._night=0;
 NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;

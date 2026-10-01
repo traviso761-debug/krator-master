@@ -10,7 +10,26 @@
 //                     family at bake. Boles, limbs, logs, boulders go here.
 // Both are charged to BIO.cur by the accounting in 10-core-head.js.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm}=BIO.fn;
-BIO.defs={};BIO.order=[];BIO.items={};
+// ---------------------------------------------------------------- kits (namespaces)
+// Several kits can share one page (biomes/WORLD.md), and two kits may both call an item
+// 'trunk' or a bucket 'bark0'. Each kit has its own REGISTRY of item definitions, their
+// instances and its buckets: BIO.kit(name) makes `name` current, so BIO.defs, BIO.items,
+// BIO.order and BIO.buckets point at its registry and BIO.kitName names it (material
+// cache keys carry it). It returns the kit that was current. A kit calls it at the top of
+// its first fragment and BIO.kitEnd(api) at the end of its last (after 75, if it has fauna): that wraps every function on its
+// export object (build, dress...) to run in its registry, and restores the default kit.
+// A page that never calls it works in the default kit '' exactly as before.
+BIO.kits={};BIO.kitName=null;
+BIO.kit=function(name){name=name||'';const prev=BIO.kitName;if(name===prev)return prev;let R=BIO.kits[name];
+ if(!R)R=BIO.kits[name]={defs:{},items:{},order:[],buckets:{}};
+ BIO.defs=R.defs;BIO.items=R.items;BIO.order=R.order;BIO.buckets=R.buckets;BIO.kitName=name;return prev;};
+BIO.kitWrap=function(name,api){for(const k of Object.keys(api)){const f=api[k];if(typeof f!=='function'||f._kit!=null)continue;
+  const w=function(){const prev=BIO.kit(name);try{return f.apply(this,arguments);}finally{BIO.kit(prev);}};w._kit=name;api[k]=w;}
+ return api;};
+BIO.kitEnd=function(api){const name=BIO.kitName;if(api)BIO.kitWrap(name,api);BIO.kit('');return api;};
+// a material cache key in the current kit's name ('' adds nothing)
+BIO.kitKey=function(k){return BIO.kitName?BIO.kitName+'|'+k:k;};
+BIO.kit('');
 // GROWABLE FLOAT32 STORES (nhighlands-1, internal): the items' matrices and colours and the buckets' vertices
 // were plain arrays of doubles, eight bytes a float and a page crash at ~16M triangles on a 43 km^2 map. These
 // keep four bytes a float and the same push() the builders already call; bake reads .a.
@@ -59,7 +78,6 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
 
 // ---------------------------------------------------------------- merged buckets
-BIO.buckets={};
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
  if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
  return BIO.buckets[fam];};
@@ -142,13 +160,16 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 // chunk (and past BIO.minRange, for the impostors that stand in beyond it) and
 // the chunk is in the view. With BIO.range left null nothing changes: one mesh
 // per item or bucket, always drawn, as before.
-BIO.LOD={chunk:1200,scale:1};BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
+// BIO.LOD holds the runtime LOD's settings (chunk, scale) and, CALLED, returns the detail radii
+// (sedesert-1's BIO.LOD(), the same as BIO.radii()): its fragments, and the worlds that vendored
+// them (Shade), run unchanged.
+BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
 BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.LOD.chunk;
  return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0);};
 function _lodEntry(mesh,key,y0,y1){const p=key.split('|'),c=p[0].split(','),C=BIO.LOD.chunk,cx=+c[0],cz=+c[1];
  const T=BIO.host.THREE,e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2]};
  e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(y0+y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(y1-y0)/2+60));
- BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];return e;}
+ BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];mesh.userData.lod={chunk:p[0],range:e.range,minRange:e.minRange};return e;}
 let _frus=null,_pm=null;
 BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frustum();_pm=new T.Matrix4();}
  _pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_frus.setFromProjectionMatrix(_pm);
@@ -185,7 +206,8 @@ BIO.indexedGeo=indexedGeo;
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
- for(const name of BIO.order){const it=BIO.items[name];if(!it.count)continue;const def=BIO.defs[name];
+ for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
+ for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
   // group the instances by lod key (null: the always-drawn mesh)
   const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
   for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
@@ -197,20 +219,20 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    const im=new T.InstancedMesh(geo,def.mat,n);
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
    im.instanceColor=new T.InstancedBufferAttribute(cA,3);
-   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;
+   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;im.userData.kit=kn;
    if(key)_lodEntry(im,key,y0,y1);
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
-  BIO.items[name]=newItem(def.attrs);}
- for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
+  R.items[name]=newItem(def.attrs);}
+ for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
   const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
   for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
    const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
    const g=indexedGeo(T,P,N,U,Cc);
    g.computeBoundingSphere();
-   const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;
+   const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
    if(key)_lodEntry(m,key,y0,y1);
    scene.add(m);BIO.baked.push(m);calls++;}
-  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}
+  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}}
  BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
 
 // ---------------------------------------------------------------- dynamic instances (sedesert-1)

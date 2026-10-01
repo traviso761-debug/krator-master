@@ -9,21 +9,19 @@ Built output (never open it; edit `src/` and rebuild): `dist/eastabyss.html`
 Build: `cd biomes/eastabyss && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
-| `20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
-| `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 16 | the lake, the rivers, the zones (39); terrain (64); the host binding (86); the ground (95); the water (145) |
-| `50-biome-eastabyss-species.js` | 43 **big** | THE LAKE COLOUR (19); the tree species (63); leaf textures (140); an iridescent bark (283); bark textures (297); geometries local to this biome (346); materials (404); instanced items (451) |
-| `55-biome-eastabyss-trees.js` | 54 **big** | zones from the fields (14); colour (27); polyline helpers (Girder's) (48); keep-clear between trees (56); cauliflory (63); beard moss (72); foliage helpers (77); the builders (98); the coal-swamp set (289); impostors (the far canopy) (411) |
+| `50-biome-eastabyss-species.js` | 43 **big** | THE LAKE COLOUR (20); the tree species (64); leaf textures (141); an iridescent bark (284); bark textures (298); geometries local to this biome (347); materials (405); instanced items (452) |
+| `55-biome-eastabyss-trees.js` | 55 **big** | zones from the fields (14); colour (27); polyline helpers (Girder's) (48); keep-clear between trees (56); cauliflory (63); beard moss (72); foliage helpers (77); the builders (98); the coal-swamp set (289); impostors (the far canopy) (411) |
 | `60-biome-eastabyss-floor.js` | 16 | fields local to the floor (31); small plants (39); the zone planters (108); the pass (146) |
 | `65-biome-eastabyss-dress.js` | 7 |  |
-| `70-biome-eastabyss.js` | <1 |  |
+| `70-biome-eastabyss.js` | 1 |  |
 | `82-host-sky.js` | 14 | the shelf painter (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |

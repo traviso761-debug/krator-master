@@ -12,3 +12,4 @@ NHL.canopyH=function(x,z){return NHL._canopyH?NHL._canopyH(x,z):BIO.terrainH(x,z
 // the tags of whatever an inspector hit: a tree species by name or key, an understorey plant by its item label
 NHL.tagsOf=function(nameOrLabel){const S=NHL.SPECIES.find(s=>s.name===nameOrLabel||s.key===nameOrLabel);if(S)return{name:S.name,cls:'flora (tree)',tags:S.tags};
  const P=NHL.PLANTS.find(p=>p.label===nameOrLabel||p.name===nameOrLabel);return P?{name:P.name,cls:'flora (understorey)',tags:P.tags}:null;};
+BIO.kitEnd(NHL);   // its exports run in its registry; the default kit is current again

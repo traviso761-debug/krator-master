@@ -9,6 +9,7 @@
 // climate / aridity / abyssal / riparian. Every aridity tag is honoured by the
 // placement passes: an 'arid' plant never roots on wet ground, a 'humid' one
 // never away from water.
+BIO.kit('sedesert');   // this kit's own registry of items and buckets (core/biome: kits)
 var SEDESERT={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);SEDESERT.C=C;

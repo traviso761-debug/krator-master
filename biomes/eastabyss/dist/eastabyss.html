@@ -164,7 +164,26 @@ BIO.fn={TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm};
 //                     family at bake. Boles, limbs, logs, boulders go here.
 // Both are charged to BIO.cur by the accounting in 10-core-head.js.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm}=BIO.fn;
-BIO.defs={};BIO.order=[];BIO.items={};
+// ---------------------------------------------------------------- kits (namespaces)
+// Several kits can share one page (biomes/WORLD.md), and two kits may both call an item
+// 'trunk' or a bucket 'bark0'. Each kit has its own REGISTRY of item definitions, their
+// instances and its buckets: BIO.kit(name) makes `name` current, so BIO.defs, BIO.items,
+// BIO.order and BIO.buckets point at its registry and BIO.kitName names it (material
+// cache keys carry it). It returns the kit that was current. A kit calls it at the top of
+// its first fragment and BIO.kitEnd(api) at the end of its last (after 75, if it has fauna): that wraps every function on its
+// export object (build, dress...) to run in its registry, and restores the default kit.
+// A page that never calls it works in the default kit '' exactly as before.
+BIO.kits={};BIO.kitName=null;
+BIO.kit=function(name){name=name||'';const prev=BIO.kitName;if(name===prev)return prev;let R=BIO.kits[name];
+ if(!R)R=BIO.kits[name]={defs:{},items:{},order:[],buckets:{}};
+ BIO.defs=R.defs;BIO.items=R.items;BIO.order=R.order;BIO.buckets=R.buckets;BIO.kitName=name;return prev;};
+BIO.kitWrap=function(name,api){for(const k of Object.keys(api)){const f=api[k];if(typeof f!=='function'||f._kit!=null)continue;
+  const w=function(){const prev=BIO.kit(name);try{return f.apply(this,arguments);}finally{BIO.kit(prev);}};w._kit=name;api[k]=w;}
+ return api;};
+BIO.kitEnd=function(api){const name=BIO.kitName;if(api)BIO.kitWrap(name,api);BIO.kit('');return api;};
+// a material cache key in the current kit's name ('' adds nothing)
+BIO.kitKey=function(k){return BIO.kitName?BIO.kitName+'|'+k:k;};
+BIO.kit('');
 // GROWABLE FLOAT32 STORES (nhighlands-1, internal): the items' matrices and colours and the buckets' vertices
 // were plain arrays of doubles, eight bytes a float and a page crash at ~16M triangles on a 43 km^2 map. These
 // keep four bytes a float and the same push() the builders already call; bake reads .a.
@@ -213,7 +232,6 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
 
 // ---------------------------------------------------------------- merged buckets
-BIO.buckets={};
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
  if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
  return BIO.buckets[fam];};
@@ -296,13 +314,16 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 // chunk (and past BIO.minRange, for the impostors that stand in beyond it) and
 // the chunk is in the view. With BIO.range left null nothing changes: one mesh
 // per item or bucket, always drawn, as before.
-BIO.LOD={chunk:1200,scale:1};BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
+// BIO.LOD holds the runtime LOD's settings (chunk, scale) and, CALLED, returns the detail radii
+// (sedesert-1's BIO.LOD(), the same as BIO.radii()): its fragments, and the worlds that vendored
+// them (Shade), run unchanged.
+BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
 BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.LOD.chunk;
  return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0);};
 function _lodEntry(mesh,key,y0,y1){const p=key.split('|'),c=p[0].split(','),C=BIO.LOD.chunk,cx=+c[0],cz=+c[1];
  const T=BIO.host.THREE,e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2]};
  e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(y0+y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(y1-y0)/2+60));
- BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];return e;}
+ BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];mesh.userData.lod={chunk:p[0],range:e.range,minRange:e.minRange};return e;}
 let _frus=null,_pm=null;
 BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frustum();_pm=new T.Matrix4();}
  _pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_frus.setFromProjectionMatrix(_pm);
@@ -339,7 +360,8 @@ BIO.indexedGeo=indexedGeo;
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
- for(const name of BIO.order){const it=BIO.items[name];if(!it.count)continue;const def=BIO.defs[name];
+ for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
+ for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
   // group the instances by lod key (null: the always-drawn mesh)
   const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
   for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
@@ -351,20 +373,20 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    const im=new T.InstancedMesh(geo,def.mat,n);
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
    im.instanceColor=new T.InstancedBufferAttribute(cA,3);
-   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;
+   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;im.userData.kit=kn;
    if(key)_lodEntry(im,key,y0,y1);
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
-  BIO.items[name]=newItem(def.attrs);}
- for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
+  R.items[name]=newItem(def.attrs);}
+ for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
   const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
   for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
    const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
    const g=indexedGeo(T,P,N,U,Cc);
    g.computeBoundingSphere();
-   const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;
+   const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
    if(key)_lodEntry(m,key,y0,y1);
    scene.add(m);BIO.baked.push(m);calls++;}
-  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}
+  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}}
  BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
 
 // ---------------------------------------------------------------- dynamic instances (sedesert-1)
@@ -548,10 +570,11 @@ BIO.foliageHook=function(o){o=o||{};
 // different cache keys or three silently shares one).
 BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
  const m=new T.MeshLambertMaterial({color:0xffffff,map:tex||null,alphaTest:o.alphaTest==null?.42:o.alphaTest,side:T.DoubleSide,vertexColors:!!o.vertexColors});
- m.onBeforeCompile=BIO.foliageHook(o);m.customProgramCacheKey=function(){return'biofol|'+key;};
+ m.onBeforeCompile=BIO.foliageHook(o);const ck='biofol|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'leaf',key:BIO.kitKey(key),opts:o};   // what it is, as data (42-core-export)
  BIO._tickWind();return m;};
 // a BARK / WOOD material for merged buckets: Lambert, vertex-coloured, textured
-BIO.barkMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});};
+BIO.barkMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});m.userData.bio={kind:'bark'};return m;};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
 
@@ -673,6 +696,85 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
   if(!H[key(s.p[0]+ox*gap,s.p[1],s.p[2]+oz*gap)])out.push({p:s.p,n:[ox,0,oz]});}
  return out;};
 
+})();
+
+// ==================== 42-core-export.js
+// ================================================================= BIOME CORE — export (Godot scaffolding)
+// What a page placed, as DATA a game engine can load (biomes/GODOT.md is the contract;
+// the conventions are settlements/yuni/GAME_EXPORT.md's and core/atmos/GODOT.md's:
+// metres, +Y up, x east, z south, right-handed, the same as glTF and Godot).
+//
+//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true}) -> one JSON-able object
+//   BIO.download(name, opt)                                     -> saves it as <name>.biome.json
+//
+// It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
+// here is called by a build: a page with it loaded draws exactly what it drew without it.
+//  - items:     one record per InstancedMesh: the unit geometry once, then per instance
+//               the 4x4 matrix (column-major, three's and glTF's order), the colour (linear),
+//               and the foliage extras (aN normal, aC2 second colour) and any other per-
+//               instance vec4 (aP0, aP1: fauna paths). GODOT.md says how they pack into a
+//               MultiMesh's COLOR and INSTANCE_CUSTOM.
+//  - buckets:   one record per merged Mesh: indexed positions, normals, uvs, vertex colours.
+//  - materials: one record per material: its kind (leaf, bark, anim, or plain), colour,
+//               alpha test, side, the hook's options, and its texture by id.
+//  - textures:  the procedural canvases, as PNG data URLs (opt.textures:false leaves them out).
+//  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
+//               which a Godot importer turns into visibility_range_begin / _end.
+// opt.box keeps only instances whose origin, and triangles whose centroid, lie in the box
+// (a tile); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
+// ({b64, type, n}) so a whole build is not a list of numbers in text.
+(function(){
+const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength);let s='';const K=0x8000;
+ for(let i=0;i<u.length;i+=K)s+=String.fromCharCode.apply(null,u.subarray(i,i+K));return btoa(s);};
+const pack=(arr)=>({type:arr.constructor.name,n:arr.length,b64:B64(arr)});
+// plain data only: numbers, strings, booleans, arrays and objects of them (a hook's functions
+// and three objects are dropped; a texture becomes its id)
+function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;const t=typeof v;
+ if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
+ if(v.isTexture)return texId(v);if(v.isColor)return '#'+v.getHexString();
+ if(Array.isArray(v))return v.map(x=>plain(x,texId,depth+1));
+ if(t==='object'&&Object.getPrototypeOf(v)===Object.prototype){const o={};for(const k in v){const x=plain(v[k],texId,depth+1);if(x!==undefined)o[k]=x;}return o;}
+ return undefined;}
+BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
+ const out={format:'krator-biome',version:1,
+  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear'},
+  core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
+ const mats=new Map(),texs=new Map();
+ const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y]};
+  if(opt.textures!==false&&t.image&&t.image.toDataURL){try{r.png=t.image.toDataURL('image/png');r.size=[t.image.width,t.image.height];}catch(e){r.error=String(e.message||e);}}
+  texs.set(t,r);return id;};
+ const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
+  const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
+   map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
+   options:b&&b.opts?plain(b.opts,texId):null,hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
+  mats.set(m,r);return id;};
+ const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
+  if(g.index)r.index=pack(g.index.array);return r;};
+ for(const m of BIO.baked){const kit=m.userData.kit||'';if(opt.kit!=null&&kit!==opt.kit)continue;
+  const base={name:m.name.replace(/^biome:/,''),kit,label:m.userData.inspectLabel||'',material:matId(m.material),lod:m.userData.lod||null};
+  if(m.isInstancedMesh){const n=m.count,M=m.instanceMatrix.array,C=m.instanceColor?m.instanceColor.array:null,g=m.geometry;
+   const extra={};for(const k in g.attributes){const a=g.attributes[k];if(a.isInstancedBufferAttribute)extra[k]={size:a.itemSize,a:a.array};}
+   const keep=[];for(let i=0;i<n;i++)if(inBox(M[i*16+12],M[i*16+14]))keep.push(i);if(!keep.length)continue;
+   const mA=new Float32Array(keep.length*16),cA=C?new Float32Array(keep.length*3):null,xA={};
+   for(const k in extra)xA[k]=new Float32Array(keep.length*extra[k].size);
+   keep.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=M[i*16+q];if(cA)for(let q=0;q<3;q++)cA[j*3+q]=C[i*3+q];
+    for(const k in extra){const s=extra[k].size;for(let q=0;q<s;q++)xA[k][j*s+q]=extra[k].a[i*s+q];}});
+   const rec=Object.assign(base,{count:keep.length,dynamic:m.instanceMatrix.usage===BIO.host.THREE.DynamicDrawUsage,
+    geometry:geoRec(g),matrices:pack(mA),colours:cA?pack(cA):null,extras:{}});
+   for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
+   out.items.push(rec);}
+  else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
+   if(box){const k=[];for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
+     if(inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3))k.push(I[t],I[t+1],I[t+2]);}
+    if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
+   const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
+   out.buckets.push(Object.assign(base,{triangles:idx.length/3,geometry:geo}));}}
+ out.materials=[...mats.values()];out.textures=[...texs.values()];
+ out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
+ return out;};
+BIO.download=function(name,opt){const o=BIO.export(opt),blob=new Blob([JSON.stringify(o)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(name||'biome')+'.biome.json';document.body.appendChild(a);a.click();
+ setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);return o.stats;};
 })();
 
 // ==================== 45-host-stage.js
@@ -874,6 +976,7 @@ function waterColorAt(x,z,out){const h=terrainH(x,z),d=Math.max(0,-h),lk=lakeIn(
 // aridity / abyssal / riparian. Every aridity tag is honoured by the placement
 // passes: an 'arid' plant is never put on wet ground and a 'humid' one never
 // on the flats.
+BIO.kit('eastabyss');   // this kit's own registry of items and buckets (core/biome: kits)
 var EASTABYSS={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -1154,7 +1257,7 @@ BIO.iridBarkMat=function(tex){const m=BIO.barkMat(tex);
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3(0.78,1.18,0.92),vec3(1.45,0.82,0.74),k);}');};
- m.customProgramCacheKey=function(){return'bioiridbark';};BIO._tickWind();return m;};
+ const ck='bioiridbark|'+BIO.kitKey('x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 
 // ---------------------------------------------------------------- bark textures
@@ -1374,7 +1477,7 @@ EASTABYSS.TREES=[];
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
 // 'arid' species read flatK (dry ground only), 'humid' ones marshK/jungK.
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z);
+function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z)-BIO.waterH(x,z);   // h: the ground against the local water (0 in this host)
  return{up,wet,salt,flow,h,
   jung:smooth(.05,.20,up)*smooth(.86,.66,up)*smooth(.45,.7,wet),
   sav:smooth(.62,.86,up),
@@ -1568,7 +1671,7 @@ B[6]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3;
  spots.forEach(s=>{if(lv<2&&rng()<.4)return;for(let c=0,m=lv===2?(rng()<.5?2:1):1;c<m;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.2,.5)*s.s;
   if(!clear3(x,y,z,sz0*.5,sz0*.3))continue;clumpAt('feather',x,y,z,sz0*rr(.85,1.2),.45,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}});
  if(lv>=1){beards.forEach(p=>{if(lv===1&&rng()<.5)return;const L=rr(4,12);BIO.put('beard',[p.x+rr(-.5,.5),p.y-p.r*.5,p.z+rr(-.5,.5)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.4),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;});}
- if(lv===2){for(let k=0,m=ri(4,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.6,4.5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y<-.9||!BIO.clearOf(x,z,.5))continue;
+ if(lv===2){for(let k=0,m=ri(4,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.6,4.5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y-BIO.waterH(x,z)<-.9||!BIO.clearOf(x,z,.5))continue;
    const h=rr(.5,1.6);BIO.put('cone',[x,y-.25,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[h*.7,h+.25,h*.7],rodCol(S,k));st.knees++;}}
  if(typeof REGISTER==='function')REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:T.crownR,h:T.H});};
 // 7 the stilt-wood: a small pale tree standing on arching prop roots in the shallows
@@ -1804,9 +1907,9 @@ EASTABYSS.buildTrees=function(R,q){
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;
   BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
-   (x,y,z,d)=>{const S=SP[sp];if(!opt.inWater&&y<.3)return;if(opt.inWater&&(y<-1.6||y>1.2))return;
+   (x,y,z,d)=>{const S=SP[sp],w=BIO.waterH(x,z),dy=y-w;if(!opt.inWater&&dy<.3)return;if(opt.inWater&&(dy<-1.6||dy>1.2))return;   // heights against the local water (BIO.waterH; 0 in this host)
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
-    const T=mk(x,y,z,sp);if(opt.inWater)T.y0=Math.max(y,-.2)-.5;
+    const T=mk(x,y,z,sp);if(opt.inWater)T.y0=Math.max(y,w-.2)-.5;
     const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);
     if(T.lv===0&&!opt.far)return;
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!opt.inWater,pad:1});
@@ -1815,7 +1918,7 @@ EASTABYSS.buildTrees=function(R,q){
  pass(0,118,(Z)=>Z.jung*.85,{hero:1100,mid:1900,far:true,pad:8,patch:.3});
  // the rope araucarias take the upper slope before the canopy stands claim it (the savannah proper is a sliver inside the disc)
  pass(17,34,(Z)=>Z.sav*.7+Z.jung*smooth(.2,.55,Z.up)*.6,{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.007});
- (function(){let n=0;BIO.grid(44,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.78*q;},(x,y,z)=>{if(y<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
+ (function(){let n=0;BIO.grid(44,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.78*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
    const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;})();
  pass(3,30,(Z)=>Z.jung*.55+Z.marsh*.08*smooth(.02,.08,Z.up)+Z.jung*Z.flow*.3,{hero:900,mid:1600,far:false,pad:2.5,lodK:.5});
  pass(4,36,(Z)=>Z.jung*.45+Z.sav*.22*(1-Z.up)+Z.marsh*.04,{hero:800,mid:1400,far:false,pad:2,lodK:.6});
@@ -1859,9 +1962,9 @@ EASTABYSS.buildReedBeds=function(R,q){reseed(570011);q=q==null?1:q;R=R||3000;
    const nH=rr(S.H[0],S.H[1]),bedCol=vary(pick(hc),.02,.06,.04);let n=0,dsum=0;
    const N=Math.ceil(Rb*2/sp);
    for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){const x=cx-Rb+(ix+rng())*sp,z=cz-Rb+(iz+rng())*sp,d=Math.hypot(x-cx,z-cz);if(d>Rb*(.85+.15*fbm(x*.3,z*.3,88,1)))continue;
-    const y=Y(x,z);if(y<-1.4||y>1.1)continue;if(!BIO.clearOf(x,z,.6)||blocked(x,z,.8))continue;
+    const y=Y(x,z),wl=BIO.waterH(x,z),dy=y-wl;if(dy<-1.4||dy>1.1)continue;if(!BIO.clearOf(x,z,.6)||blocked(x,z,.8))continue;
     const h=nH*rr(.9,1.08)*(lv===0?1.35:1),w=h*(lv===2?.42:.6);
-    BIO.put('matreed',[x,Math.max(y,-.05)-.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[w,h,w],bright(vary(bedCol,.015,.05,.04),1.3));n++;dsum+=Math.max(0,-y);}
+    BIO.put('matreed',[x,Math.max(y,wl-.05)-.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[w,h,w],bright(vary(bedCol,.015,.05,.04),1.3));n++;dsum+=Math.max(0,-dy);}
    if(!n)return;stems+=n;const bed={x:cx,z:cz,r:Rb,n:n,depth:dsum/n,h:nH};BEDS.push(bed);
    if(lv===2&&typeof REGISTER==='function')REGISTER({name:'Mat-reed bed',kind:'stand',label:S.name,x:cx,z:cz,y:-1,r:Rb,h:nH+1});},
   {patch:.6,patchScale:.012,noMask:true,pad:.5});
@@ -1928,7 +2031,7 @@ function shrub(x,y,z,lv,set){const hc=vary(pick(set||PAL.shrub),.07,.14,.07),Rs=
 function clubmoss(x,y,z,lv){const t=rng(),set=t<.5?PAL.marshGreen:t<.8?PAL.comp:PAL.accentDull,h=rr(.35,.7)*(lv===0?1.8:1);
  tuft('clubmoss',x,y,z,h,h*2.2,leafCol(set,1.35,.03));}
 function reed(x,y,z,lv,red){const set=red?(rng()<.55?PAL.accentDull:PAL.accent):PAL.reedGreen,h=rr(1.6,3.2)*(lv===0?1.6:1),n=lv===2?ri(3,5):lv===1?2:1;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.8,2.6):0,hx=x+Math.cos(a)*d,hz=z+Math.sin(a)*d;if(k&&Y(hx,hz)<-.4)continue;
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.8,2.6):0,hx=x+Math.cos(a)*d,hz=z+Math.sin(a)*d;if(k&&Y(hx,hz)-BIO.waterH(hx,hz)<-.4)continue;
   tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(set,1.35,.025));}}
 function cordgrass(x,y,z,lv){const h=rr(1.2,2.2)*(lv===0?1.5:1),n=lv===2?ri(3,5):lv===1?2:1;for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.7,2.2):0;tuft('grass',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*1.2,leafCol(PAL.cordgrass,1.3,.03));}}
 function sedge(x,y,z,lv){const h=rr(.6,1.3)*(lv===0?1.5:1);tuft('grass',x,y,z,h,h*1.3,leafCol(rng()<.7?PAL.marshGreen:PAL.reedGreen,1.35,.03));}
@@ -1956,16 +2059,16 @@ function youngReed(x,y,z,lv){const n=ri(3,5),h=rr(2,5),hc=vary(pick(PAL.reedGree
  BIO.beam('rod',[x,y-.2,z],[x,y+h,z],.06+h*.012,.03,rc);
  for(let k=1;k<=n;k++){const R=rr(.7,1.4)*mix(1.1,.6,k/n);BIO.put('whorl',[x,y+h*k/n,z],qEuler(0,rr(0,TAU),0),[R,R,R],bright(hc,1.2));}}
 // a RAFT of floating leaves: a dozen pointed leaves lying every which way on the water, a few tips lifted
-function raft(x,y,z,lv,st){const set=PAL.floatleaf,n=lv===2?ri(6,10):ri(3,5),R=rr(1.5,3.2),c=vary(pick(set),.03,.1,.06);
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=R*Math.sqrt(rng()),L=rr(.7,1.3);BIO.put('floatleaf',[x+Math.cos(a)*d,.06,z+Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.25,.05)),[L,1,L],bright(vary(c,.02,.06,.05),1.05));}
+function raft(x,y,z,lv,st){const w=BIO.waterH(x,z),set=PAL.floatleaf,n=lv===2?ri(6,10):ri(3,5),R=rr(1.5,3.2),c=vary(pick(set),.03,.1,.06);
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=R*Math.sqrt(rng()),L=rr(.7,1.3);BIO.put('floatleaf',[x+Math.cos(a)*d,w+.06,z+Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.25,.05)),[L,1,L],bright(vary(c,.02,.06,.05),1.05));}
  st.rafts++;
  if(lv===2&&rng()<.3){const c2=bright(vary(pick(PAL.hyacinth),.03,.08,.05),1.15),a=rr(0,TAU),hx=x+Math.cos(a)*R*.6,hz=z+Math.sin(a)*R*.6,r=rr(.5,.9);   // a water hyacinth: a fat pale rosette with a lavender spike
-  BIO.put('rosette',[hx,.08,hz],qEuler(0,rr(0,TAU),0),[r,r*1.1,r],c2);
-  if(rng()<.6){BIO.beam('rod',[hx,.1,hz],[hx,.1+r*1.6,hz],.04,.03,rodCol(0x6a7a4a));blooms(hx,.1+r*1.6,hz,.2,ri(3,6),PAL.vain,[.1,.18]);}}}
-function lily(x,y,z,lv,st){const t=rng(),set=t<.55?PAL.pad:t<.8?[0x3a6a3a,0x4a7a40,0x2e5a30]:PAL.accent,R=rr(.45,1.4);
- BIO.put('pad',[x,.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[R,1,R],bright(vary(pick(set),.03,.1,.06),1.05));st.lilies++;
- if(lv===2&&rng()<.22)BIO.put('bloom',[x+rr(-.3,.3)*R,.22,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.25,.5),bright(rng()<.5?C(0xf4ecd8):C(pick(PAL.accent)).lerp(C(0xffffff),.35),1.1));
- if(lv===2&&rng()<.3){const R2=R*rr(.5,.8),a=rr(0,TAU);BIO.put('pad',[x+Math.cos(a)*R*1.4,.04,z+Math.sin(a)*R*1.4],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(set),.03,.1,.06),1.05));st.lilies++;}}
+  BIO.put('rosette',[hx,w+.08,hz],qEuler(0,rr(0,TAU),0),[r,r*1.1,r],c2);
+  if(rng()<.6){BIO.beam('rod',[hx,w+.1,hz],[hx,w+.1+r*1.6,hz],.04,.03,rodCol(0x6a7a4a));blooms(hx,w+.1+r*1.6,hz,.2,ri(3,6),PAL.vain,[.1,.18]);}}}
+function lily(x,y,z,lv,st){const w=BIO.waterH(x,z),t=rng(),set=t<.55?PAL.pad:t<.8?[0x3a6a3a,0x4a7a40,0x2e5a30]:PAL.accent,R=rr(.45,1.4);
+ BIO.put('pad',[x,w+.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[R,1,R],bright(vary(pick(set),.03,.1,.06),1.05));st.lilies++;
+ if(lv===2&&rng()<.22)BIO.put('bloom',[x+rr(-.3,.3)*R,w+.22,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.25,.5),bright(rng()<.5?C(0xf4ecd8):C(pick(PAL.accent)).lerp(C(0xffffff),.35),1.1));
+ if(lv===2&&rng()<.3){const R2=R*rr(.5,.8),a=rr(0,TAU);BIO.put('pad',[x+Math.cos(a)*R*1.4,w+.04,z+Math.sin(a)*R*1.4],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(set),.03,.1,.06),1.05));st.lilies++;}}
 // a fallen scale-tree: a mossed tube with ferns and club-moss along its back
 function log(x,y,z,st){const a=rr(0,TAU),L=rr(22,60),r0=rr(1,2),hx=Math.cos(a),hz=Math.sin(a),n=Math.ceil(L/8)+1,pts=[];
  for(let i=0;i<n;i++){const t=i/(n-1),px=x+hx*(t-.5)*L,pz=z+hz*(t-.5)*L;if(BIO.mask(px,pz)<=0||!okGround(px,pz,2))return false;
@@ -2032,9 +2135,9 @@ EASTABYSS.buildFloor=function(R,q){
  // the water: lily pads on still water, reeds standing in the shallows
  const wbands=[[7,600,0,[-R,-640,R,640]],[14,1500,600,[-R,-1540,R,1540]]];
  wbands.forEach((b,bi)=>{const lv=2-bi;
-  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z);if(h>.35||h<-2.6)return 0;
+  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z)-BIO.waterH(x,z);if(h>.35||h<-2.6)return 0;   // h: the ground against the local water
     const Z=zones(x,z);const still=1-Z.flow;return .7*q*still*Z.wet*smooth(.02,-.15,h)*smooth(-2.6,-1.0,h)+.3*q*smooth(-.9,-.1,h)*smooth(.6,.85,Z.wet);},
-   (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;if(y<-.9||rng()<.72){if(rng()<raftK(x,z))raft(x,y,z,lv,st);else lily(x,y,z,lv,st);}else{const Z=zones(x,z);reed(x,Math.max(y,-.6),z,lv,rng()<.5);st.reeds++;}},{patch:.8,patchScale:.02,noMask:true,pad:.5,box:b[3]});});
+   (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;const w=BIO.waterH(x,z);if(y-w<-.9||rng()<.72){if(rng()<raftK(x,z))raft(x,y,z,lv,st);else lily(x,y,z,lv,st);}else{const Z=zones(x,z);reed(x,Math.max(y,w-.6),z,lv,rng()<.5);st.reeds++;}},{patch:.8,patchScale:.02,noMask:true,pad:.5,box:b[3]});});
  // fallen scale-trees in the jungle
  BIO.grid(170,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1500)return 0;return zones(x,z).jung*.8*q;},(x,y,z,d)=>{for(let t=0;t<4;t++)if(log(x+rr(-30,30),y,z+rr(-30,30),st))break;},{patch:0,pad:3});
  return{under:st};};
@@ -2138,6 +2241,7 @@ EASTABYSS.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==nul
  BIO.cur=null;return out;};
 EASTABYSS.dress=function(geos,opt){if(EASTABYSS.dressGeos){BIO.cur='abyss/dress';EASTABYSS.dressGeos(geos,opt||{});BIO.cur=null;}};
 EASTABYSS.canopyH=function(x,z){return EASTABYSS._canopyH?EASTABYSS._canopyH(x,z):12;};
+BIO.kitEnd(EASTABYSS);   // its exports run in its registry; the default kit is current again
 
 // ==================== 82-host-sky.js
 // ================================================================= HOST — Krator sky (from the Hexahedron)

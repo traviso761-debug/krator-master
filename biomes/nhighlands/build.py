@@ -20,7 +20,7 @@ FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','T
 # src/ copy with the same name wins; a kit that lists nothing builds as before.
 CORE_TERRAIN=[]
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
-CORE_BIOME=[]
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
 for f in CORE_TERRAIN:

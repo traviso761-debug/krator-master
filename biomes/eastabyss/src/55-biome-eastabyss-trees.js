@@ -15,7 +15,7 @@ EASTABYSS.TREES=[];
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
 // 'arid' species read flatK (dry ground only), 'humid' ones marshK/jungK.
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z);
+function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z)-BIO.waterH(x,z);   // h: the ground against the local water (0 in this host)
  return{up,wet,salt,flow,h,
   jung:smooth(.05,.20,up)*smooth(.86,.66,up)*smooth(.45,.7,wet),
   sav:smooth(.62,.86,up),
@@ -209,7 +209,7 @@ B[6]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3;
  spots.forEach(s=>{if(lv<2&&rng()<.4)return;for(let c=0,m=lv===2?(rng()<.5?2:1):1;c<m;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.2,.5)*s.s;
   if(!clear3(x,y,z,sz0*.5,sz0*.3))continue;clumpAt('feather',x,y,z,sz0*rr(.85,1.2),.45,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}});
  if(lv>=1){beards.forEach(p=>{if(lv===1&&rng()<.5)return;const L=rr(4,12);BIO.put('beard',[p.x+rr(-.5,.5),p.y-p.r*.5,p.z+rr(-.5,.5)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.4),L,1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));st.moss++;});}
- if(lv===2){for(let k=0,m=ri(4,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.6,4.5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y<-.9||!BIO.clearOf(x,z,.5))continue;
+ if(lv===2){for(let k=0,m=ri(4,9);k<m;k++){const a=rr(0,TAU),d=rb*rr(1.6,4.5),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,y=Y(x,z);if(y-BIO.waterH(x,z)<-.9||!BIO.clearOf(x,z,.5))continue;
    const h=rr(.5,1.6);BIO.put('cone',[x,y-.25,z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[h*.7,h+.25,h*.7],rodCol(S,k));st.knees++;}}
  if(typeof REGISTER==='function')REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:T.crownR,h:T.H});};
 // 7 the stilt-wood: a small pale tree standing on arching prop roots in the shallows
@@ -445,9 +445,9 @@ EASTABYSS.buildTrees=function(R,q){
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;
   BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
-   (x,y,z,d)=>{const S=SP[sp];if(!opt.inWater&&y<.3)return;if(opt.inWater&&(y<-1.6||y>1.2))return;
+   (x,y,z,d)=>{const S=SP[sp],w=BIO.waterH(x,z),dy=y-w;if(!opt.inWater&&dy<.3)return;if(opt.inWater&&(dy<-1.6||dy>1.2))return;   // heights against the local water (BIO.waterH; 0 in this host)
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
-    const T=mk(x,y,z,sp);if(opt.inWater)T.y0=Math.max(y,-.2)-.5;
+    const T=mk(x,y,z,sp);if(opt.inWater)T.y0=Math.max(y,w-.2)-.5;
     const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);
     if(T.lv===0&&!opt.far)return;
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!opt.inWater,pad:1});
@@ -456,7 +456,7 @@ EASTABYSS.buildTrees=function(R,q){
  pass(0,118,(Z)=>Z.jung*.85,{hero:1100,mid:1900,far:true,pad:8,patch:.3});
  // the rope araucarias take the upper slope before the canopy stands claim it (the savannah proper is a sliver inside the disc)
  pass(17,34,(Z)=>Z.sav*.7+Z.jung*smooth(.2,.55,Z.up)*.6,{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.007});
- (function(){let n=0;BIO.grid(44,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.78*q;},(x,y,z)=>{if(y<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
+ (function(){let n=0;BIO.grid(44,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.78*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
    const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;})();
  pass(3,30,(Z)=>Z.jung*.55+Z.marsh*.08*smooth(.02,.08,Z.up)+Z.jung*Z.flow*.3,{hero:900,mid:1600,far:false,pad:2.5,lodK:.5});
  pass(4,36,(Z)=>Z.jung*.45+Z.sav*.22*(1-Z.up)+Z.marsh*.04,{hero:800,mid:1400,far:false,pad:2,lodK:.6});
@@ -500,9 +500,9 @@ EASTABYSS.buildReedBeds=function(R,q){reseed(570011);q=q==null?1:q;R=R||3000;
    const nH=rr(S.H[0],S.H[1]),bedCol=vary(pick(hc),.02,.06,.04);let n=0,dsum=0;
    const N=Math.ceil(Rb*2/sp);
    for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){const x=cx-Rb+(ix+rng())*sp,z=cz-Rb+(iz+rng())*sp,d=Math.hypot(x-cx,z-cz);if(d>Rb*(.85+.15*fbm(x*.3,z*.3,88,1)))continue;
-    const y=Y(x,z);if(y<-1.4||y>1.1)continue;if(!BIO.clearOf(x,z,.6)||blocked(x,z,.8))continue;
+    const y=Y(x,z),wl=BIO.waterH(x,z),dy=y-wl;if(dy<-1.4||dy>1.1)continue;if(!BIO.clearOf(x,z,.6)||blocked(x,z,.8))continue;
     const h=nH*rr(.9,1.08)*(lv===0?1.35:1),w=h*(lv===2?.42:.6);
-    BIO.put('matreed',[x,Math.max(y,-.05)-.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[w,h,w],bright(vary(bedCol,.015,.05,.04),1.3));n++;dsum+=Math.max(0,-y);}
+    BIO.put('matreed',[x,Math.max(y,wl-.05)-.05,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[w,h,w],bright(vary(bedCol,.015,.05,.04),1.3));n++;dsum+=Math.max(0,-dy);}
    if(!n)return;stems+=n;const bed={x:cx,z:cz,r:Rb,n:n,depth:dsum/n,h:nH};BEDS.push(bed);
    if(lv===2&&typeof REGISTER==='function')REGISTER({name:'Mat-reed bed',kind:'stand',label:S.name,x:cx,z:cz,y:-1,r:Rb,h:nH+1});},
   {patch:.6,patchScale:.012,noMask:true,pad:.5});

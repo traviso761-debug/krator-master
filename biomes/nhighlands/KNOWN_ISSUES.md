@@ -29,12 +29,12 @@
       `rng` to the host; the mist (`84-host-ground.js:128`) reseeds it and `buildTestTower` (`85-host-tower.js:20-38`)
       draws without its own reseed, so changing the mist changes the tower's missing panels and rubble. Reseed at the
       top of `buildTestTower` (this moves the current panels and rubble once).
-- [ ] **Core drift from upstream (xanadu) is not recorded.** Deliberate and additive: `waterH`/`register`/`depth` (from
-      sedesert), `cold`/`rock` field defaults, Float32 stores, `opt.depth` in `BIO.grid`. Not deliberate: the vertex
-      merge hashes all 11 words (`20-core-kit.js:162`; upstream 99e5acf hashes 6, same output, slower). The noise cache
-      was re-vendored in d4f8cd0.
 
 ## Done
+
+- [x] Core drift from upstream: the kit reads the one shared core (`core/biome/`, Oct 2026), which carries
+      every addition this kit made (waterH/depth/register, cold/rock, Float32 stores, `opt.depth`) and hashes 6
+      words in the vertex merge again (same output). Geometry proven unchanged by mesh fingerprints.
 
 - [x] The kit on the xanadu core + sedesert's `waterH` + `cold`/`rock` fields + harvest tags.
 - [x] The flank, the stream (monotone, two falls, pools), the tarn, the six fields.

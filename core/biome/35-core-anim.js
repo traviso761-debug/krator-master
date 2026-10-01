@@ -89,7 +89,7 @@ BIO.animHook=function(o){o=o||{};
 BIO.animMat=function(key,o){const T=BIO.host.THREE;o=o||{};let m;
  if(o.basic)m=new T.MeshBasicMaterial({color:0xffffff,map:o.tex||null,vertexColors:!!o.vertexColors,transparent:!!o.additive,blending:o.additive?T.AdditiveBlending:T.NormalBlending,depthWrite:!o.additive,side:T.DoubleSide,fog:true});
  else m=new T.MeshLambertMaterial({color:0xffffff,map:o.tex||null,alphaTest:o.alphaTest||0,side:T.DoubleSide,vertexColors:!!o.vertexColors});
- m.onBeforeCompile=BIO.animHook(o);m.customProgramCacheKey=function(){return'bioanim|'+key;};
+ m.onBeforeCompile=BIO.animHook(o);const ck='bioanim|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'anim',key:BIO.kitKey(key),opts:o};
  BIO._tickWind();return m;};
 // assemble a body from parts [[geometry, colour hex], ...] into one
 // vertex-coloured, non-indexed geometry (colours sRGB in, linear out)

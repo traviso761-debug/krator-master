@@ -15,7 +15,7 @@ RIFT.TREES=[];
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
 // 'arid' species read slope/peak (dry ground), 'humid' ones jung/cloud.
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z),h=Y(x,z);
+function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z),h=Y(x,z)-BIO.waterH(x,z);   // h: the ground against the local water (0 in this host)
  const floor=smooth(.26,.10,up);
  return{up,wet,salt,flow,mist,h,
   jung:floor*smooth(.45,.70,wet)*(1-smooth(.3,.7,salt)),          // the valley floor, the wet side
@@ -483,7 +483,7 @@ RIFT.buildTrees=function(R,q){
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;
   BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z);if(a<=0)return 0;
     const lod=BIO.lod(x,z);return a*(opt.lodK?lerp(1,lod,opt.lodK):1)*q;},
-   (x,y,z,d)=>{if(y<.3)return;
+   (x,y,z,d)=>{if(y-BIO.waterH(x,z)<.3)return;
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);
     if(opt.scale){const f=rr(opt.scale[0],opt.scale[1]);T.H*=f;T.rb*=Math.pow(f,.8);T.crownR*=f;T.young=true;}   // a sapling pass: the adult builder at a fraction of its size
@@ -493,7 +493,7 @@ RIFT.buildTrees=function(R,q){
   return n;}
  // the jungle: frill trees over everything, bell palms and lobe trees in stands, pagoda trees, trumpet trees
  pass(0,120,(Z)=>Z.jung*.7,{hero:950,mid:1700,far:true,pad:10,patch:.3});
- (function(){let n=0;BIO.grid(52,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.72*q;},(x,y,z)=>{if(y<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
+ (function(){let n=0;BIO.grid(52,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.72*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
    const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<900?2:(ld<1600?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;})();
  pass(4,60,(Z)=>Z.jung*.28+Z.cloud*.8,{hero:1000,mid:1800,far:true,pad:5,patch:.5});
  pass(3,40,(Z)=>Z.jung*.30+Z.cloud*.10+Z.shore*.12,{hero:900,mid:1500,far:true,pad:2.5,lodK:.5});
