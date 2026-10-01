@@ -1255,7 +1255,7 @@ var _skEclRim = new THREE.Color(SKYC_ECL_RIM), _skGlare = new THREE.Color(SKYC_S
 /* a totalised eclipse keeps this fraction of daylight in the mood (fog,
    hemisphere, water, night-light gate) and this much key light from the
    giant's refracted rim — deep twilight, never black. */
-var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34;
+var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34, SKY_SHINE_KEY = 0.18;
 /* strength of the giant's own atmospheric extinction at 2.0 atm; scaled by
    pk*pk so a plateau city (0.8 atm) gets none at all and a lowland city gets
    a visible but gentle wash on the lower limb. */
@@ -1453,7 +1453,10 @@ function updateSky(){
      the phase, warm (refracted, not reflected), and still coming from the
      giant's direction, so the shadows stay northern. */
   var sunI   = S.sunK;
-  var shineI = 0.44*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
+  /* (2026-10-01) planetshine 0.44 -> 0.18 of full sun-key units: a full giant 60 moons
+     across is a strong night light, but still night light — under a fifth of the
+     day key, cool, after the thick air has had its share. */
+  var shineI = SKY_SHINE_KEY*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
   var w = shineI/(sunI + shineI + 1e-6);
   _skKey.copy(S.sunDir);
   S.keyDir.copy(_skKey);
@@ -2110,8 +2113,11 @@ PLATS.forEach(function(P){
     var r = Lv.Rout - 1.2, step = Lv.kind==='hangar' ? 15 : 10.5;
     var n = Math.max(1, Math.floor(TAU*r*(P.sx+P.sz)/2/step));
     if(!P.main) n = Math.min(n, 2);
+    /* the gallery posts (50-structure / 56-levels lvlPostCount): each roost sits in the MIDDLE of a gap between
+       two of them, so a landing lip, and a beast walking in off it, never straddles a post */
+    var np = P.main ? Math.round(TAU*Lv.Rout/5.2) : Math.max(6, Math.round(TAU*Lv.Rout/3.4)), stepA = TAU/np;
     for(var i=0;i<n;i++){
-      var a = (i+0.5)/n*TAU, skip=false;
+      var a = Math.round((i+0.5)/n*TAU/stepA)*stepA, skip=false;
       P.bays.forEach(function(b){ if(angDist(b.ang,a) < (LANE_W+2)/r) skip=true; });
       if(skip) continue;
       var p = platXZ(P, r, a), o = platOutDir(P, a);
@@ -4605,7 +4611,9 @@ function ep0(F){ return [F.x,F.y,F.z]; }
 function lvlRoost(Ro, idx){
   var P=Ro.plat, Lv=P.levels[Ro.lvl], y=Ro.y, H=Ro.H, big=Ro.big, main=P.main;
   var F=lvlFrame(P,Lv.Rout,Ro.ang,y);                          /* u=0 at the rim, +u outward */
-  var lipL = big ? rr(3.0,3.6) : main ? rr(2.1,3.0) : 1.6, lipW = big ? 5.0 : main ? 3.0 : 2.0;
+  /* the lip reaches well beyond the post line: flyers touch down on it with their wings still open, fold, then walk in */
+  var lipL = big ? rr(3.6,4.2) : main ? rr(3.0,3.6) : 2.2, lipW = big ? 5.0 : main ? 3.0 : 2.0;
+  Ro.lipL = lipL;
   /* landing lip + perch log */
   lvlFBox('plank',F,lipL/2+0.2,0,-0.30,lipL,0.30,lipW,shade(pick(PLANKC),-0.1),'tbflr');
   [-1,1].forEach(function(s){ lvlFBeam('timber',F,-1.4,s*lipW*0.36,-0.42,lipL+0.35,s*lipW*0.36,-0.42,0.32,0.30,TIMBERC[0],false);
@@ -5235,6 +5243,19 @@ function treeClear(C, x,y,z, rad, vr){
   return true;
 }
 
+/* ---- the Prism gum's rainbow bark was too loud: pull the planner's colour texture (and the palette tints
+        used on the far trunks) ~30 % toward its own luminance ---- */
+var TREE_DESAT = 0.30;
+function treeDesat(hex, k){ var c=new THREE.Color(hex), l=0.30*c.r+0.59*c.g+0.11*c.b; c.r=mix(c.r,l,k); c.g=mix(c.g,l,k); c.b=mix(c.b,l,k); return c.getHex(); }
+(function(){
+  var tx=FAMMAT.bark2 && FAMMAT.bark2.tex, cv=tx && tx.image;
+  if(!cv || !cv.getContext) return;
+  var g=cv.getContext('2d'), im=g.getImageData(0,0,cv.width,cv.height), d=im.data;
+  for(var o=0;o<d.length;o+=4){ var l=0.30*d[o]+0.59*d[o+1]+0.11*d[o+2];
+    d[o]=mix(d[o],l,TREE_DESAT); d[o+1]=mix(d[o+1],l,TREE_DESAT); d[o+2]=mix(d[o+2],l,TREE_DESAT); }
+  g.putImageData(im,0,0); tx.needsUpdate=true;
+})();
+
 /* ------------------------------------------------------------ textures */
 function treeAlphaTex(S, draw, fillRGB){
   var c=texCanvas(S), g=c.getContext('2d'); g.clearRect(0,0,S,S); draw(g,S);
@@ -5687,7 +5708,7 @@ var podTris=treeEmit(treePod, treePodGeo(),
       vtx(x+dx*rx*m, y+dy*ry*m-(dy<0?ry*0.25*dy*dy:0), z+dz*rx*m, dx/nl,ny/nl,dz/nl, mix(cb.r,ca.r,t)*sh, mix(cb.g,ca.g,t)*sh, mix(cb.b,ca.b,t)*sh); }
   }
   FARTREES.forEach(function(T, fi){
-    var sp=T.sp, Hend=T.H*(sp===3?0.92:0.95), us=[0,0.015,0.05,0.14,0.45,0.75,1], seg=7, bc=new THREE.Color(sp===2?PAL.bark[2][(fi%3)*2]:PAL.bark[sp][fi%3]).convertSRGBToLinear(), rings=[];
+    var sp=T.sp, Hend=T.H*(sp===3?0.92:0.95), us=[0,0.015,0.05,0.14,0.45,0.75,1], seg=7, bc=new THREE.Color(sp===2?treeDesat(PAL.bark[2][(fi%3)*2],TREE_DESAT+0.15):PAL.bark[sp][fi%3]).convertSRGBToLinear(), rings=[];
     us.forEach(function(u){ var y=T.y0+Hend*u, r=Math.max(1.2,trunkR(T,y))*(u<0.02?1.25:1), ring=[];
       for(var s=0;s<=seg;s++){ var a=s/seg*TAU; ring.push([T.x+Math.cos(a)*r, y, T.z+Math.sin(a)*r, Math.cos(a), Math.sin(a)]); } rings.push(ring); });
     for(var r2=0;r2<rings.length-1;r2++) for(var s2=0;s2<seg;s2++){
@@ -8773,13 +8794,22 @@ function dnBodyDir(hour, az0, elevMax, out){
 }
 
 var DN_SUN_I = PAL.sunIntensity, DN_HEMI_I = PAL.hemiIntensity, DN_AMB_I = PAL.ambientIntensity;
-/* night floors: a Krator night is READABLE. Under the canopy there is a lot
-   of occlusion already, so these sit a little above Voth's. */
-var DN_HEMI_NIGHT_I = 0.30, DN_AMB_NIGHT_I = 0.22;
-/* extra fill under a well-lit giant (planetshine), also the eclipse floor */
-var DN_SHINE_HEMI = 0.15, DN_SHINE_AMB = 0.08;
-/* how much a full giant softens the city's own night lighting */
-var DN_SHINE_NL_CUT = 0.28;
+/* night floors. (2026-10-01) These were 0.30 / 0.22 with a daytime-coloured
+   sky fill: with the planetshine on top and the 1.9 atm multiplier, the night
+   ambient came out ABOVE the day's, and 21:00 under a full giant read as an
+   overcast afternoon. A night is now dark: a little cool fill so silhouettes
+   survive, the giant's directional key (21-sky) for shape and shadows, and the
+   lamps, fires and lanterns as the lights you actually see by. */
+var DN_HEMI_NIGHT_I = 0.07, DN_AMB_NIGHT_I = 0.035;
+/* extra fill under a well-lit giant (planetshine scattered by the thick air) */
+var DN_SHINE_HEMI = 0.07, DN_SHINE_AMB = 0.03;
+/* an eclipse is deep twilight, not night: the refracted rim and the sky beyond
+   the giant keep a fill of their own (this used to ride on the night floors) */
+var DN_ECL_HEMI = 0.16, DN_ECL_AMB = 0.10;
+/* how much a full giant softens the city's own night lighting (lamps stay the main light) */
+var DN_SHINE_NL_CUT = 0.08;
+/* the night fill's colour: moonlit blue-grey above, a dark warm soil below */
+var DN_HEMI_SKY_NIGHT = new THREE.Color(0x5d7194), DN_HEMI_GND_NIGHT = new THREE.Color(0x2a2220);
 var DN_SKY_SAMPLE = 0.45, DN_SOIL_SAMPLE = 0.40;
 
 var DN_HAZE_DAY = new THREE.Color(PAL.haze), DN_HAZE_NIGHT = new THREE.Color(PAL.hazeNight);
@@ -8802,8 +8832,9 @@ function updateDayNight(){
   /* one key light: sun by day, the giant by night and through an eclipse */
   sun.color.copy(S.keyCol);
   sun.intensity = DN_SUN_I * S.keyI;
-  hemiLight.intensity = DN_HEMI_NIGHT_I + DN_SHINE_HEMI*shine + (DN_HEMI_I-DN_HEMI_NIGHT_I)*daylight;
-  ambLight.intensity  = DN_AMB_NIGHT_I  + DN_SHINE_AMB*shine  + (DN_AMB_I-DN_AMB_NIGHT_I)*daylight + 0.02*moonUp;
+  var eclK = S.ecl*S.sunUp;
+  hemiLight.intensity = DN_HEMI_NIGHT_I + DN_SHINE_HEMI*shine + DN_ECL_HEMI*eclK + (DN_HEMI_I-DN_HEMI_NIGHT_I)*daylight;
+  ambLight.intensity  = DN_AMB_NIGHT_I  + DN_SHINE_AMB*shine  + DN_ECL_AMB*eclK  + (DN_AMB_I-DN_AMB_NIGHT_I)*daylight + 0.01*moonUp;
   /* thick air scatters: a milky low-contrast key at ~2 atm, a hard one at 0.8 */
   sun.intensity       *= 1.16 - 0.30*S.shadowSoft;
   hemiLight.intensity *= 0.80 + 0.42*S.shadowSoft;
@@ -8813,6 +8844,9 @@ function updateDayNight(){
   /* (sampled less at night: the night zenith is near-black and would cancel the floors) */
   hemiLight.color.setHex(PAL.hemiSky).lerp(S.hemiSky, DN_SKY_SAMPLE*(0.25 + 0.75*daylight));
   hemiLight.groundColor.setHex(PAL.hemiGround).lerp(S.hemiGround, DN_SOIL_SAMPLE);
+  /* ...and at night the fill goes cool and dark, not a dimmed copy of the day's green-white */
+  hemiLight.color.lerp(DN_HEMI_SKY_NIGHT, 1 - daylight);
+  hemiLight.groundColor.lerp(DN_HEMI_GND_NIGHT, 1 - daylight);
 
   /* fog: jungle haze by day, a warm cast while the sun is low, blue-black at night */
   _dnFog.copy(DN_HAZE_NIGHT).lerp(DN_HAZE_DAY, daylight);
@@ -8856,6 +8890,11 @@ window._dn = {
    that the CPU writes every frame (flap cycle, glide, flare, fold, idle).
    Traffic: background transients on straight lines, roost arrivals/departures
    with validated approach paths, Rookery training circuits, city patrols.
+   Ported from Girder (2026-10-01): beasts touch down on the landing lip OUTSIDE
+   the gallery posts, fold, then walk in (and walk back out to the lip end to
+   launch); circuit flyers peel off after a few laps and land, perched beasts
+   launch to refill a circuit; bats hunt all night on sim-time timers and come
+   home staggered through it, not in a crowd at dawn.
    Exports window._flyers (stats + test hooks) and window._legs (for --sweep). */
 reseed(840001);
 (function(){
@@ -9131,7 +9170,7 @@ var flyWingGeom, flyWingTris;
   var O = [0,0,0], HIP = [0.17,0.10,-0.05], KNEE = [0.19,-0.32,-0.05], SH = [0.25,0.64,-0.05], HDp = [0,0.76,-0.04], LB = [-0.46,-0.35,0.12], LT = [-0.46,3.0,-0.25];
   flyBones[FLY_R] = [
     { p:[0,0.10,-0.05], a:X, par:8 }, { p:HDp, a:Y, par:0 }, { p:SH, a:X, par:0 }, { p:HIP, a:X, par:8 }, { p:KNEE, a:X, par:3 },
-    { p:LB, a:[0,0,0], par:-1, k:1 }, { p:LT, a:Y, par:5 },
+    { p:LB, a:[0,0,0], par:8, k:1 }, { p:LT, a:Y, par:5 },     /* lance: carried by the rider (parent = his translate), so it leaves the saddle with him */
     { p:O, a:X, par:10, k:2 }, { p:O, a:Y, par:7, k:2 }, { p:O, a:[0,0,0], par:-1, k:1 }, { p:O, a:X, par:9 } ];
   var g = new FlyGeo({0:1,1:1,5:1,6:1,7:1,8:1,9:1,10:1});
   /* saddle, blanket, bedroll, reins (no bone: stay on the beast) */
@@ -9267,7 +9306,8 @@ var FLY_EDGE = 3100;
 function flyEdge(x, z, dx, dz){         /* distance along (dx,dz) from (x,z) to the spawn circle */
   var b = x*dx+z*dz, c = x*x+z*z-FLY_EDGE*FLY_EDGE; return -b+Math.sqrt(Math.max(0, b*b-c));
 }
-var flyPathStats = { accepted:0, rejected:0, reason:{ trunk:0, platform:0, bridge:0, bough:0, ground:0 }, blockedBays:0, usableBays:0 };
+var flyPathStats = { accepted:0, rejected:0, reason:{ trunk:0, platform:0, bridge:0, bough:0, ground:0 }, blockedBays:0, usableBays:0, joinOk:0, joinFail:0, why:{ pend:0, phit:0, plong:0 } };
+var flyWhy = flyPathStats.why;
 var FLY_REASON = ['', 'trunk', 'platform', 'bridge', 'bough', 'ground'];
 function flyReject(code){ flyPathStats.rejected++; flyPathStats.reason[FLY_REASON[code]]++; return null; }
 function flyCurveHit(curve, R, ownNear){
@@ -9289,13 +9329,12 @@ var flyBays = [];
 (function(){
   var satSeen = {};
   ROOSTS.forEach(function(R0){
-    var P = R0.plat, Lv = P.levels[R0.lvl], ang = R0.ang;
-    /* keep the centre-line >= 1.7 m from the nearest gallery post */
-    var np = P.main ? Math.round(TAU*Lv.Rout/5.2) : Math.max(6, Math.round(TAU*Lv.Rout/3.4)), stepA = TAU/np;
-    var postA = (Math.round(ang/stepA-0.5)+0.5)*stepA, off = wrapPi(ang-postA), need = (P.main ? 1.7 : 1.1)/Lv.Rout;
-    if(Math.abs(off) < need) ang = postA + (off >= 0 ? need : -need);
+    var P = R0.plat, Lv = P.levels[R0.lvl], ang = R0.ang;      /* 30-layout centres every roost between two gallery posts */
     var p = platXZ(P, Lv.Rout-1.2, ang), o = platOutDir(P, ang);
+    /* e = metres outward from (px,pz); the posts stand at e ~ +0.85, the lip runs from e = 1.2 to 1.2+lipL (56-levels) */
+    var lip = R0.lipL || 2.2;
     var B = { id:R0.id, roost:R0, plat:P, px:p[0], y:Lv.y, pz:p[1], ox:o[0], oz:o[1], H:Lv.H, big:R0.big, rout:Lv.Rout,
+              eT:1.2+lip-0.65, eL:1.2+lip-1.0,
               inward:Math.min(3.0, Lv.Rout*0.3), ok:true, occ:null, reserved:false, rook:P === P_RK };
     if(!P.main){ if(satSeen[P.id]) B.ok = false; satSeen[P.id] = 1; }
     flyBays.push(B);
@@ -9306,14 +9345,15 @@ var flyBays = [];
 function flyArrCurve(B, sp, theta, yOff, gDist){
   var S = FLY_SPEC[sp], ox = B.ox, oz = B.oz, c = Math.cos(theta), s = Math.sin(theta), dx = ox*c-oz*s, dz = ox*s+oz*c;
   var qx = -oz, qz = ox, lat = clamp(theta, -1, 1)*70, yIn = B.y + B.H*0.55, yG = yIn + yOff;
-  var end = sp === FLY_B ? [B.px-ox*2.0, B.y+B.H-S.stand, B.pz-oz*2.0] : [B.px-ox*1.0, B.y+S.stand, B.pz-oz*1.0];
+  /* bats fly in and hang from the ceiling; everything else touches down on the lip, outside the post line */
+  var end = sp === FLY_B ? [B.px-ox*2.0, B.y+B.H-S.stand, B.pz-oz*2.0] : [B.px+ox*B.eT, B.y+S.stand, B.pz+oz*B.eT];
   var pts = [
     new THREE.Vector3(B.px+dx*(gDist+150), yG, B.pz+dz*(gDist+150)),
     new THREE.Vector3(B.px+dx*gDist, yG, B.pz+dz*gDist),
     new THREE.Vector3(B.px+ox*200+qx*lat, yIn+Math.min(16, yOff*0.3), B.pz+oz*200+qz*lat),
     new THREE.Vector3(B.px+ox*104, yIn+3, B.pz+oz*104),
     new THREE.Vector3(B.px+ox*64, yIn+1, B.pz+oz*64),
-    new THREE.Vector3(B.px+ox*15, yIn, B.pz+oz*15),
+    new THREE.Vector3(B.px+ox*(sp === FLY_B ? 15 : 17+B.eT), yIn, B.pz+oz*(sp === FLY_B ? 15 : 17+B.eT)),
     new THREE.Vector3(end[0], end[1], end[2]) ];
   return { curve:new THREE.CatmullRomCurve3(pts, false, 'centripetal'), dx:dx, dz:dz, yG:yG, g0:pts[0] };
 }
@@ -9325,15 +9365,16 @@ function flyDepCurve(B, sp, theta, yOff, gDist){
             new THREE.Vector3(B.px+ox*13, B.y+2.2, B.pz+oz*13), new THREE.Vector3(B.px+ox*38, B.y+2.5, B.pz+oz*38) ];
   } else {
     var dip = Math.min(2.4, (S.stand-0.65)*2);      /* drop off the lip, but never below the floor line inside the mouth */
-    pts = [ new THREE.Vector3(B.px+ox*0.9, y0, B.pz+oz*0.9), new THREE.Vector3(B.px+ox*11, y0-dip, B.pz+oz*11),
+    pts = [ new THREE.Vector3(B.px+ox*B.eL, y0, B.pz+oz*B.eL), new THREE.Vector3(B.px+ox*(10+B.eL), y0-dip, B.pz+oz*(10+B.eL)),
             new THREE.Vector3(B.px+ox*32, y0-dip-1.4, B.pz+oz*32) ];
   }
   pts.push(new THREE.Vector3(B.px+ox*75, B.y+B.H*0.55+2, B.pz+oz*75),
            new THREE.Vector3(B.px+ox*185+qx*lat, B.y+B.H*0.55+Math.min(26, yOff*0.4), B.pz+oz*185+qz*lat),
            new THREE.Vector3(B.px+dx*gDist, yG, B.pz+dz*gDist),
            new THREE.Vector3(B.px+dx*(gDist+150), yG, B.pz+dz*(gDist+150)));
-  return { curve:new THREE.CatmullRomCurve3(pts, false, 'centripetal'), dx:dx, dz:dz, yG:yG, g0:pts[pts.length-1] };
+  return { curve:new THREE.CatmullRomCurve3(pts, false, 'centripetal'), pts:pts, dx:dx, dz:dz, yG:yG, g0:pts[pts.length-1] };
 }
+function flyStub(C){ var o = []; for(var m=10;m<=400;m+=10) o.push([C.g0.x+C.dx*m, C.yG, C.g0.z+C.dz*m]); return o; }
 /* try a handful of azimuth/altitude variants; returns {path, curve, far:[x,y,z]} or null */
 function flyRoute(B, sp, arriving, tries, nearOnly){
   for(var t=0; t<tries; t++){
@@ -9344,10 +9385,11 @@ function flyRoute(B, sp, arriving, tries, nearOnly){
     var dist = flyEdge(C.g0.x, C.g0.z, C.dx, C.dz), fx = C.g0.x+C.dx*dist, fz = C.g0.z+C.dz*dist;
     if(!nearOnly){ h = flyLineHit(C.g0.x, C.yG, C.g0.z, fx, C.yG, fz, 15, 25, 0); if(h){ flyReject(h); continue; } }
     flyPathStats.accepted++;
-    var pts = [];
-    if(arriving){ pts.push([fx, C.yG, fz]); flyCurvePts(C.curve, 2.5, pts); }
-    else { flyCurvePts(C.curve, 2.5, pts); pts.push([fx, C.yG, fz]); }
-    var path = flyPathFromPts(pts, false); path.curve = C.curve; path.straight = dist;
+    /* near-only: a 400 m stub beyond the gate, sampled every 10 m like the rest, so a peel-off can steer onto it */
+    var far = nearOnly ? flyStub(C) : [[fx, C.yG, fz]], pts = [], i;
+    if(arriving){ for(i=far.length-1;i>=0;i--) pts.push(far[i]); flyCurvePts(C.curve, 2.5, pts); }
+    else { flyCurvePts(C.curve, 2.5, pts); for(i=0;i<far.length;i++) pts.push(far[i]); }
+    var path = flyPathFromPts(pts, false); path.curve = C.curve; path.straight = nearOnly ? path.len - C.curve.getLength() : dist;
     return path;
   }
   return null;
@@ -9406,15 +9448,17 @@ flyGlGeo.setDrawRange(0, 1); scene.add(flyGlints);
 var flyLampC = new THREE.Color(PAL.glowWarm).convertSRGBToLinear(), flyEyeC = new THREE.Color(PAL.beast.quetz[2]).convertSRGBToLinear();
 
 /* ------------------------------------------------------------------ animals */
-var flyList = [], flyNextId = 1, flySimT = 0, flyEvents = { arr:[], dep:[] }, flyTotals = { arrivals:0, departures:0, transientsSpawned:0 };
-var flyCircuits = [], flyTintC = new THREE.Color();
+var flyList = [], flyNextId = 1, flySimT = 0, flyEvents = { arr:[], dep:[] };
+var flyTotals = { arrivals:0, departures:0, transientsSpawned:0, peels:0, joins:0, batHunts:0, batReturns:0 };
+var flyCircuits = [], flyTintC = new THREE.Color(), flyBatDue = [], flyBatHours = [];
 function flyNew(sp, ridden){
   var S = FLY_SPEC[sp], a = { id:flyNextId++, sp:sp, ridden:!!ridden, lance:ridden && Math.random() < 0.4, slot:-1, rslot:-1,
     state:'fly', pop:'', path:null, s:0, seg:0, vc:S.v[0]+Math.random()*(S.v[1]-S.v[0]), v:0,
     x:0, y:0, z:0, yaw:0, pitch:0, roll:0, yawRate:0, ph:Math.random()*TAU, amp:1, flapOn:true, flapT:2+Math.random()*4,
     fold:0, flare:0, launchT:99, t:0, bay:null, offL:0, offY:0, offS:0, size:0.92+Math.random()*0.16,
     hover:false, hoverT:2+Math.random()*5, yawOff:0, hy:0, hyT:0, hyTarget:0, shuf:0, riderMode:0, riderT:0, dest:'', perchSince:0,
-    fx:0, fy:0, fz:0, tx:0, ty:0, tz:0, yaw0:0, p0:0, depPath:null, prepT:0, idleSeed:Math.random()*100, crouch:0, patrol:false };
+    fx:0, fy:0, fz:0, tx:0, ty:0, tz:0, yaw0:0, p0:0, depPath:null, prepT:0, idleSeed:Math.random()*100, crouch:0, patrol:false,
+    circuit:null, join:null, lapT:0, lapMax:0, peelT:0, note:'' };
   a.v = a.vc; a.riderMode = ridden ? 1 : 0;
   a.slot = flySlotGet(sp, a);
   if(a.slot < 0) return null;
@@ -9439,9 +9483,11 @@ function flyPlaceOnPath(a){
 }
 function flySnapHeading(a){ a.yaw = Math.atan2(a.tx, a.tz); a.pitch = clamp(Math.atan2(a.ty, Math.hypot(a.tx, a.tz)), -0.6, 0.6); a.roll = 0; a.yawRate = 0; }
 
+function flyIsNight(hour){ return hour >= 18.5 || hour < 5.2; }
 function flyHourW(sp, hour, arriving){
   var dusk = hour >= 17.5 && hour < 23, night = hour >= 23 || hour < 4.5, dawn = hour >= 4.5 && hour < 7;
-  if(sp === FLY_B) return dusk ? (arriving ? 1.2 : 3.2) : night ? 2.2 : dawn ? (arriving ? 3.2 : 0.6) : 0.08;
+  /* bats: out at dusk and all night; their RETURNS are driven by the hunt timers (flyBatDue), not by the hour */
+  if(sp === FLY_B) return dusk ? (arriving ? 0.25 : 3.2) : night ? (arriving ? 0.35 : 1.6) : dawn ? (arriving ? 0.8 : 0.04) : 0.03;
   var w = sp === FLY_D ? 0.8 : 1;
   return dusk ? w*0.5 : night ? w*0.14 : w;
 }
@@ -9491,34 +9537,110 @@ function flySpawnTransient(prefill, hour){
 }
 
 /* --- roost traffic --- */
-function flyFreeBays(plat){ var out = []; for(var i=0;i<flyBays.length;i++){ var B = flyBays[i]; if(B.ok && !B.occ && !B.reserved && (!plat || B.plat === plat)) out.push(B); } return out; }
-function flySpawnArrival(plat, spForce, near, hour){
-  var free = flyFreeBays(plat); if(!free.length) return null;
+function flyBayFits(B, sp){ return !(B.big && (sp === FLY_B || sp === FLY_D)); }      /* hangar bays take quetzals and archaeopteryx */
+function flyFreeBays(plat, sp){ var out = []; for(var i=0;i<flyBays.length;i++){ var B = flyBays[i];
+  if(B.ok && !B.occ && !B.reserved && (!plat || B.plat === plat) && (sp === undefined || sp === null || flyBayFits(B, sp))) out.push(B); } return out; }
+/* startBack: null = from the world edge; a number = start that many metres before the gate */
+function flySpawnArrival(plat, spForce, startBack, hour){
+  var forced = !(spForce === undefined || spForce === null), free = flyFreeBays(plat, forced ? spForce : null); if(!free.length) return null;
+  var near = typeof startBack === 'number';
   for(var tr=0; tr<(near ? 12 : 4); tr++){
     var B = free[Math.floor(Math.random()*free.length)];
-    if(!plat && !B.rook && Math.random() < 0.35) continue;            /* the Rookery is the busiest */
-    var sp = (spForce === undefined || spForce === null) ? flyPickSp(hour, true, B.big) : spForce;
-    var path = flyRoute(B, sp, true, 4, !!near); if(!path) continue;
-    var a = flyNew(sp, Math.random() < (B.rook ? 0.9 : 0.72)); if(!a) return null;
+    if(!plat && !forced && !B.rook && Math.random() < 0.35) continue;            /* the Rookery is the busiest */
+    var sp = forced ? spForce : flyPickSp(hour, true, B.big);
+    var path = flyRoute(B, sp, true, 4, near && startBack < 200); if(!path) continue;
+    var a = flyNew(sp, sp === FLY_B ? Math.random() < 0.3 : Math.random() < (B.rook ? 0.9 : 0.72)); if(!a) return null;
     a.pop = 'arr'; a.bay = B; B.reserved = true; a.path = path; a.dest = B.plat.name;
-    a.s = near ? Math.max(0, path.straight-60) : 0; flyPlaceOnPath(a); flySnapHeading(a);
+    a.s = near ? Math.max(0, path.straight-startBack) : 0; flyPlaceOnPath(a); flySnapHeading(a);
     return a;
   }
   return null;
 }
-function flyStartDeparture(plat, spForce, quick, hour){
+function flyCircuitCount(C){ var n = 0; for(var i=0;i<flyList.length;i++){ var a = flyList[i]; if(a.circuit === C || (a.join && a.join.path === C)) n++; } return n; }
+function flyCircuitWant(C, hour){ return flyIsNight(hour) ? Math.min(C.want, 1) : C.want; }
+/* (from Girder) steer from (x,y,z,heading) onto a target polyline T (a circuit, or an arrival route), path-tracking a
+   carrot that runs ahead along T: turn radius >= R, climb/sink <= 0.18, every step tested. Joins when on the line,
+   aligned and level. Returns { pts:[[x,y,z]..], idx: index on T where it joined } or null. */
+function flyPursue(x, y, z, hd, T, i0, i1, R, maxIt){
+  var P = T.p, n = T.n, closed = T.closed, sp = T.len/(n-1), look = Math.max(8, Math.round(Math.max(70, R*1.5)/sp)), step = 8, pts = [], near = -1, it = 0, i, k;
+  var first = true, dn = 0;
+  while(it++ < maxIt){
+    var best = 1e18, lo, hi, st;
+    if(near < 0){ lo = i0; hi = closed ? i1 : i0+Math.round((i1-i0)*0.6); st = Math.max(1, Math.round(20/sp)); } else { lo = near-Math.round(60/sp); hi = near+Math.round(120/sp); st = Math.max(1, Math.round(6/sp)); }
+    if(first || closed || dn < 150) for(i=lo;i<=hi;i+=st){ k = closed ? ((i%(n-1))+(n-1))%(n-1) : i; if(k < i0 || k > i1) continue;
+      var ex = P[k*3]-x, ey = P[k*3+1]-y, ez = P[k*3+2]-z, d2 = ex*ex+ez*ez+ey*ey*0.25; if(d2 < best){ best = d2; near = k; } }
+    if(first && !closed){      /* coming at an inbound route from inside: aim further up it so there is room to turn round onto it */
+      var fx = P[(near+1)*3]-P[near*3], fz = P[(near+1)*3+2]-P[near*3+2], fl = Math.hypot(fx, fz) || 1;
+      if((fx*Math.sin(hd)+fz*Math.cos(hd))/fl < 0.3) near = Math.max(i0, near-Math.round(320/sp)); }
+    first = false;
+    var c = near+look; if(closed) c = c%(n-1); else if(c > i1){ if(near >= i1-2){ flyWhy.pend++; return null; } c = i1; }
+    var nx = (closed ? (near+1)%(n-1) : Math.min(n-1, near+1)), tH = Math.atan2(P[nx*3]-P[near*3], P[nx*3+2]-P[near*3+2]);
+    dn = Math.hypot(P[near*3]-x, P[near*3+2]-z);
+    if(dn < 9 && Math.abs(wrapPi(tH-hd)) < 0.2 && Math.abs(P[near*3+1]-y) < 3 && pts.length > 3){      /* on it: bleed the last few metres of offset away along the line */
+      var K = Math.max(4, Math.round(40/sp)), ox0 = x-P[near*3], oy0 = y-P[near*3+1], oz0 = z-P[near*3+2], j = near;
+      for(i=1;i<=K;i++){ j = closed ? (near+i)%(n-1) : Math.min(n-1, near+i); var w = 1-smooth(0, 1, i/K); pts.push([P[j*3]+ox0*w, P[j*3+1]+oy0*w, P[j*3+2]+oz0*w]); }
+      return { pts:pts, idx:j }; }
+    var dh = wrapPi(Math.atan2(P[c*3]-x, P[c*3+2]-z)-hd); hd += clamp(dh, -step/R, step/R);
+    y += clamp((P[c*3+1]-y)*0.25, -step*0.18, step*0.18); x += Math.sin(hd)*step; z += Math.cos(hd)*step;
+    var h = flyHit(x, y, z, 6, 6, 6, null); if(!h && y < terrainH(x, z)+20) h = 5;
+    if(h){ flyReject(h); flyWhy.phit++; flyWhy.last = [h, it, Math.round(x), Math.round(y), Math.round(z), T.label || 'arr']; return null; }
+    pts.push([x, y, z]);
+  }
+  flyWhy.plong++; return null;
+}
+/* a launch that ends ON a circuit: off the lip, drop away, then steer onto the loop */
+function flyJoinRoute(B, sp, C){
+  for(var t=0; t<3; t++){
+    var D = flyDepCurve(B, sp, 0, 60, 400), cp = D.pts.slice(0, D.pts.length-3), curve = new THREE.CatmullRomCurve3(cp, false, 'centripetal');
+    var h = flyCurveHit(curve, B, 50); if(h){ flyReject(h); return null; }
+    var out = []; flyCurvePts(curve, 2.5, out);
+    var e = out[out.length-1], e0 = out[out.length-3], J = flyPursue(e[0], e[1], e[2], Math.atan2(e[0]-e0[0], e[2]-e0[2]), C, 0, C.n-2, 50+t*25, 700);
+    if(!J) continue;
+    flyPathStats.accepted++;
+    var path = flyPathFromPts(out.concat(J.pts), false); path.curve = curve; path.straight = 0; path.joinS = C.cum[J.idx];
+    return path;
+  }
+  return null;
+}
+/* mode: 'far' = out to the world edge; 'circuit' = onto a circuit that is short-handed; null = either */
+function flyStartDeparture(plat, spForce, quick, hour, mode){
+  var forced = !(spForce === undefined || spForce === null), i, a, C = null;
+  if(!forced && !plat && mode !== 'far' && (mode === 'circuit' || Math.random() < 0.6)) for(i=0;i<flyCircuits.length;i++){ var cc = flyCircuits[(i+flyNextId)%flyCircuits.length]; if(flyCircuitCount(cc) < flyCircuitWant(cc, hour)){ C = cc; break; } }
   var best = null, bw = 0;
-  for(var i=0;i<flyList.length;i++){ var a = flyList[i];
-    if(a.state !== 'perch' || (plat && a.bay.plat !== plat) || (spForce !== undefined && spForce !== null && a.sp !== spForce)) continue;
+  for(i=0;i<flyList.length;i++){ a = flyList[i];
+    if(a.state !== 'perch' || (plat && a.bay.plat !== plat) || (forced && a.sp !== spForce)) continue;
+    if(C && C.spList.indexOf(a.sp) < 0) continue;
     if(!quick && flySimT-a.perchSince < 45) continue;
-    var w = (quick ? 1 : flyHourW(a.sp, hour, false))*(a.bay.rook ? 1.6 : 1)*Math.random(); if(w > bw){ bw = w; best = a; } }
-  if(!best) return null;
-  var path = flyRoute(best.bay, best.sp, false, 8, false); if(!path) return null;
-  best.depPath = path; best.state = 'prep'; best.t = 0;
-  best.ridden = Math.random() < (best.bay.rook ? 0.9 : 0.72); best.lance = best.ridden && Math.random() < 0.4;
+    var w = (quick || C ? 1 : flyHourW(a.sp, hour, false))*(a.bay.rook ? 1.6 : 1)*(C && C.home && a.bay.plat === C.home ? 3 : 1)*Math.random(); if(w > bw){ bw = w; best = a; } }
+  if(!best) return C ? flyStartDeparture(plat, spForce, quick, hour, 'far') : null;
+  var path = null;
+  if(C){ path = flyJoinRoute(best.bay, best.sp, C); flyPathStats[path ? 'joinOk' : 'joinFail']++; if(!path) return flyStartDeparture(plat, spForce, quick, hour, 'far'); }
+  if(!path) path = flyRoute(best.bay, best.sp, false, 8, false);
+  if(!path) return null;
+  best.depPath = path; best.state = 'prep'; best.t = 0; best.join = C ? { path:C, s:path.joinS } : null;
+  best.ridden = C ? true : best.sp === FLY_B ? Math.random() < 0.3 : Math.random() < (best.bay.rook ? 0.9 : 0.72); best.lance = best.ridden && Math.random() < (C && C.wing ? 0.9 : 0.4);
   best.prepT = quick ? (best.ridden ? 2.5 : 0.5) : (best.ridden ? 8+Math.random()*10 : 1+Math.random()*3);
   best.riderMode = best.ridden ? 2 : 0; best.dest = best.bay.plat.name;
+  best.note = C ? 'to join the ' + C.label : '';
   return best;
+}
+/* (from Girder) a circuit flyer peels off its loop and comes home: steer from where it is onto a fresh arrival route,
+   short of its line-up. Rookery circuit flyers go home to the Rookery when it has room. */
+function flyTryPeel(a){
+  var C = a.circuit, free = C.home ? flyFreeBays(C.home, a.sp) : []; if(!free.length) free = flyFreeBays(null, a.sp); if(!free.length) return false;
+  for(var t=0; t<3; t++){
+    var B = free[Math.floor(Math.random()*free.length)];
+    var R = flyRoute(B, a.sp, true, 2, true); if(!R) continue;
+    var iMax = 0; while(iMax < R.n-2 && R.len-R.cum[iMax] > 250) iMax++;
+    var J = flyPursue(a.x, a.y, a.z, a.yaw, R, 0, iMax, a.sp === FLY_Q ? 70 : 55, 260); if(!J) continue;
+    var pts = J.pts; for(var i=J.idx+1;i<R.n;i++) pts.push([R.p[i*3], R.p[i*3+1], R.p[i*3+2]]);
+    var path = flyPathFromPts(pts, false); path.curve = R.curve; path.straight = 0;
+    a.path = path; a.s = 0; a.seg = 0; a.offL = 0; a.offY = 0; a.offS = 0; a.pop = 'arr'; a.bay = B; B.reserved = true; a.dest = B.plat.name;
+    a.note = 'in off the ' + C.label; a.circuit = null; a.patrol = false; a.hover = false; a.yawOff = 0;
+    flyTotals.peels++;
+    return true;
+  }
+  return false;
 }
 function flyPerchPoint(a, out){
   var B = a.bay, S = FLY_SPEC[a.sp];
@@ -9533,7 +9655,8 @@ function flyPerchNow(a, B){          /* put an animal straight onto a perch (loa
 }
 
 /* --- one simulation step for one animal --- */
-function flyStep(a, h){
+var FLY_T_FOLD = 1.3, FLY_T_WALK = 3.6, FLY_T_LIP = 4.0;
+function flyStep(a, h, hour){
   var S = FLY_SPEC[a.sp], B = a.bay, k;
   if(a.state === 'fly'){
     var path = a.path, rem = path.len - a.s, vT = a.vc;
@@ -9542,6 +9665,10 @@ function flyStep(a, h){
       if(rem < 20) vT = mix(a.sp === FLY_B ? 5 : 2.6, a.vc*0.55, rem/20);
       a.flare = a.sp === FLY_B ? 0 : smooth(0, 1, 1-rem/19);
     } else if(a.launchT < 3) vT = mix(7, a.vc, a.launchT/3);
+    if(a.pop === 'circuit'){              /* a few laps, then peel off and come home (retry every 3-5 s until a route is found) */
+      a.lapT += h;
+      if(a.lapT > a.lapMax){ a.peelT -= h; if(a.peelT <= 0){ a.peelT = 3+Math.random()*2; if(flyTryPeel(a)){ path = a.path; rem = path.len; } } }
+    }
     if(a.sp === FLY_D && (a.pop === 'transient' || a.pop === 'circuit') ){
       a.hoverT -= h;
       if(a.hoverT <= 0){ a.hover = !a.hover; a.hoverT = a.hover ? 0.8+Math.random()*1.6 : 3+Math.random()*6; a.yawOff = a.hover ? (Math.random()-0.5)*1.6 : 0; }
@@ -9556,6 +9683,11 @@ function flyStep(a, h){
         a.fx = a.x; a.fy = a.y; a.fz = a.z; a.t = 0; a.p0 = a.pitch; a.yaw0 = Math.atan2(-B.ox, -B.oz); a.yaw = a.yaw0; a.roll = 0; a.v = 0;
         a.state = a.sp === FLY_B ? 'flip' : 'walk'; B.occ = a; B.reserved = false; a.pop = 'roost';
         flyEvents.arr.push(flySimT); flyTotals.arrivals++;
+        if(a.sp === FLY_B && a.note === 'home from the hunt'){ flyTotals.batReturns++; flyBatHours.push(Math.round(hour*10)/10); if(flyBatHours.length > 80) flyBatHours.shift(); }
+      } else if(a.join){                                    /* onto the loop */
+        a.circuit = a.join.path; a.path = a.circuit; a.s = a.join.s; a.seg = 0; a.join = null; a.pop = 'circuit'; a.dest = a.circuit.label; a.note = '';
+        a.lapT = 0; a.lapMax = a.circuit.lap[0]+Math.random()*(a.circuit.lap[1]-a.circuit.lap[0]); a.patrol = !!a.circuit.wing; a.bay = null;
+        flyTotals.joins++; flyPlaceOnPath(a);
       } else flyRemove(a);
       return;
     }
@@ -9573,22 +9705,23 @@ function flyStep(a, h){
     if(a.launchT < 1) a.fold = 1-smooth(0, 0.55, a.launchT); else a.fold = 0;
     a.crouch = 0;
   }
-  else if(a.state === 'walk'){
-    a.t += h; k = clamp(a.t/3.2, 0, 1); flyPerchPoint(a, flyP3);
-    a.x = mix(a.fx, flyP3[0], k); a.z = mix(a.fz, flyP3[2], k); a.y = mix(a.fy, flyP3[1], smooth(0, 0.5, k)) + Math.abs(Math.sin(a.t*5))*0.07;
-    a.fold = smooth(0.2, 2.2, a.t); a.flare = 1-smooth(0, 0.8, a.t); a.pitch = mix(a.p0, S.perchPitch, smooth(0, 1.2, a.t)); a.yaw = a.yaw0; a.roll = Math.sin(a.t*5)*0.04;
-    if(a.t >= 3.2){ a.state = 'turn'; a.t = 0; }
+  else if(a.state === 'walk'){                    /* touched down on the lip outside the posts: fold FIRST, then walk in */
+    a.t += h; k = clamp((a.t-FLY_T_FOLD)/FLY_T_WALK, 0, 1); flyPerchPoint(a, flyP3);
+    var bob = (k > 0 && k < 1) ? Math.abs(Math.sin(a.t*5))*0.07 : 0;
+    a.x = mix(a.fx, flyP3[0], k); a.z = mix(a.fz, flyP3[2], k); a.y = mix(a.fy, flyP3[1], smooth(0, 0.6, a.t)) + bob;
+    a.fold = smooth(0.1, FLY_T_FOLD, a.t); a.flare = 1-smooth(0, 0.8, a.t); a.pitch = mix(a.p0, S.perchPitch, smooth(0, 1.2, a.t)); a.yaw = a.yaw0; a.roll = bob ? Math.sin(a.t*5)*0.04 : 0;
+    if(a.t >= FLY_T_FOLD+FLY_T_WALK){ a.state = 'turn'; a.t = 0; }
   }
   else if(a.state === 'turn'){
     a.t += h; a.yaw = wrapPi(a.yaw0 + Math.PI*smooth(0, 1, a.t/2.6)); a.roll = Math.sin(a.t*5)*0.04*(a.t < 2.6 ? 1 : 0);
     flyPerchPoint(a, flyP3); a.y = flyP3[1] + Math.abs(Math.sin(a.t*5))*0.06;
-    if(a.t >= 2.8){ a.state = 'perch'; a.roll = 0; a.y = flyP3[1]; a.perchSince = flySimT; if(a.ridden){ a.riderMode = 2; a.riderT = 25+Math.random()*40; } a.ridden = false; }
+    if(a.t >= 2.8){ a.state = 'perch'; a.roll = 0; a.y = flyP3[1]; a.perchSince = flySimT; if(a.ridden){ a.riderMode = 2; a.riderT = 25+Math.random()*40; } a.ridden = false; a.note = ''; }
   }
   else if(a.state === 'flip'){
     a.t += h; k = smooth(0, 1, a.t/0.85); flyPerchPoint(a, flyP3);
     a.x = mix(a.fx, flyP3[0], k); a.y = mix(a.fy, flyP3[1], k); a.z = mix(a.fz, flyP3[2], k);
     a.pitch = mix(a.p0, Math.PI*1.5, k); a.fold = smooth(0.4, 1, k); a.yaw = a.yaw0; a.roll = 0;
-    if(a.t >= 0.85){ a.state = 'perch'; a.pitch = -Math.PI/2; a.fold = 1; a.perchSince = flySimT; if(a.ridden){ a.riderMode = 2; a.riderT = 25+Math.random()*40; } a.ridden = false; }
+    if(a.t >= 0.85){ a.state = 'perch'; a.pitch = -Math.PI/2; a.fold = 1; a.perchSince = flySimT; if(a.ridden){ a.riderMode = 2; a.riderT = 25+Math.random()*40; } a.ridden = false; a.note = ''; }
   }
   else if(a.state === 'perch'){
     if(a.riderMode === 2){ a.riderT -= h; if(a.riderT <= 0) a.riderMode = 0; }
@@ -9597,22 +9730,24 @@ function flyStep(a, h){
     a.t += h;
     if(a.ridden) a.riderMode = a.t < a.prepT*0.7 ? 2 : 1;
     if(a.t >= a.prepT){ a.t = 0; a.riderMode = a.ridden ? 1 : 0;
-      if(a.sp === FLY_B) flyLaunch(a); else { a.state = 'tolip'; a.fx = a.x; a.fy = a.y; a.fz = a.z; } }
+      if(a.sp === FLY_B) flyLaunch(a, hour); else { a.state = 'tolip'; a.fx = a.x; a.fy = a.y; a.fz = a.z; } }
   }
-  else if(a.state === 'tolip'){
-    a.t += h; k = clamp(a.t/3.0, 0, 1);
-    a.x = mix(a.fx, B.px+B.ox*0.9, k); a.z = mix(a.fz, B.pz+B.oz*0.9, k); a.y = a.fy + Math.abs(Math.sin(a.t*5))*0.07; a.roll = Math.sin(a.t*5)*0.04;
-    if(a.t >= 3.0){ a.state = 'crouch'; a.t = 0; a.roll = 0; a.y = a.fy; }
+  else if(a.state === 'tolip'){                   /* out onto the lip, wings still folded, to beyond the posts */
+    a.t += h; k = clamp(a.t/FLY_T_LIP, 0, 1);
+    a.x = mix(a.fx, B.px+B.ox*B.eL, k); a.z = mix(a.fz, B.pz+B.oz*B.eL, k); a.y = a.fy + Math.abs(Math.sin(a.t*5))*0.07; a.roll = Math.sin(a.t*5)*0.04;
+    if(a.t >= FLY_T_LIP){ a.state = 'crouch'; a.t = 0; a.roll = 0; a.y = a.fy; }
   }
   else if(a.state === 'crouch'){
     a.t += h; a.crouch = Math.sin(clamp(a.t/0.6, 0, 1)*Math.PI*0.5); a.fold = 1-0.25*a.crouch;
-    if(a.t >= 0.6) flyLaunch(a);
+    if(a.t >= 0.6) flyLaunch(a, hour);
   }
 }
-function flyLaunch(a){
+function flyLaunch(a, hour){
   var B = a.bay; a.state = 'fly'; a.pop = 'dep'; a.path = a.depPath; a.depPath = null; a.s = 0; a.seg = 0; a.launchT = 0; a.v = a.sp === FLY_B ? 4 : 8;
   a.flapOn = true; a.flapT = 9; a.flare = 0;
   if(B){ B.occ = null; } flyEvents.dep.push(flySimT); flyTotals.departures++;
+  if(a.sp === FLY_B && !a.join && (flyIsNight(hour) || hour >= 17.5)){      /* a hunt: this bat is owed a return in 1.5-9 sim minutes, whatever the clock does */
+    flyTotals.batHunts++; flyBatDue.push(flySimT + 90 + Math.random()*450); flyBatDue.sort(function(p, q){ return p-q; }); }
 }
 
 /* ------------------------------------------------------------------ pose + instance matrices */
@@ -9694,18 +9829,22 @@ function flyMakeCircuit(cx, cz, r0, r1, y0, y1, n){
   }
   return null;
 }
-function flyAddCircuit(path, n, spList, label, wing){
-  if(!path) return;
-  path.label = label; flyCircuits.push(path);
+/* opt: { wing: fly in formation, home: platform its flyers go home to, lap: [min,max] sim seconds aloft before peeling off } */
+function flyAddCircuit(path, n, spList, label, opt){
+  if(!path) return null;
+  opt = opt || {}; var wing = !!opt.wing;
+  path.label = label; path.spList = spList; path.want = n; path.wing = wing; path.home = opt.home || null; path.lap = opt.lap || [150, 420];
+  flyCircuits.push(path);
   var s0 = flyRand()*path.len, lead = null;
   for(var k=0;k<n;k++){
-    var a = flyNew(spList[k%spList.length], true); if(!a) return;
-    a.pop = 'circuit'; a.path = path; a.dest = label; a.patrol = !!wing;
+    var a = flyNew(spList[k%spList.length], true); if(!a) return path;
+    a.pop = 'circuit'; a.path = path; a.circuit = path; a.dest = label; a.patrol = wing; a.lapMax = 40+flyRand()*path.lap[1];
     if(wing){ if(k){ var rank = Math.ceil(k/2); a.offL = ((k%2) ? 1 : -1)*rank*9; a.offS = -rank*10; a.vc = lead.vc; } else lead = a;
       a.s = (s0 + a.offS + path.len) % path.len; a.lance = true; }
     else a.s = (s0 + k*path.len/n) % path.len;
     a.v = a.vc; a.seg = 0; flyPlaceOnPath(a); flySnapHeading(a);
   }
+  return path;
 }
 
 /* ------------------------------------------------------------------ initial population */
@@ -9740,40 +9879,47 @@ var flyLegs = [], flyUsable = 0;
     a.hyT = 5+flyRand()*60;
   });
   /* Rookery training circuits + city patrol wings */
-  for(var c=0;c<3;c++) flyAddCircuit(flyMakeCircuit(P_RK.x, P_RK.z, 170+c*40, 260+c*60, P_RK.y-62, P_RK.y+12, 8), 3, [c === 1 ? FLY_A : FLY_Q, FLY_A, c === 2 ? FLY_D : FLY_Q], 'Rookery training circuit', false);
-  flyAddCircuit(flyMakeCircuit(P_C.x, P_C.z, 480, 640, 95, 135, 10), 3, [FLY_Q], 'City patrol', true);
-  flyAddCircuit(flyMakeCircuit(P_C.x, P_C.z, 680, 900, 490, 540, 10), 3, [FLY_A], 'City patrol', true);
+  for(var c=0;c<3;c++) flyAddCircuit(flyMakeCircuit(P_RK.x, P_RK.z, 170+c*40, 260+c*60, P_RK.y-62, P_RK.y+12, 8), 3, [c === 1 ? FLY_A : FLY_Q, FLY_A, c === 2 ? FLY_D : FLY_Q], 'Rookery training circuit', { home:P_RK, lap:[150, 420] });
+  flyAddCircuit(flyMakeCircuit(P_C.x, P_C.z, 480, 640, 95, 135, 10), 3, [FLY_Q], 'City patrol', { wing:true, lap:[260, 600] });
+  flyAddCircuit(flyMakeCircuit(P_C.x, P_C.z, 680, 900, 490, 540, 10), 3, [FLY_A], 'City patrol', { wing:true, lap:[300, 700] });
 })();
 flyRand = Math.random;
 (function(){
   var h0 = 12; try{ h0 = skyHour(); }catch(err){}
   for(var i=0;i<FLY_TRANSIENTS;i++) flySpawnTransient(true, h0);
-  for(i=0;i<7;i++){ var a = flySpawnArrival(i < 3 ? P_RK : null, null, false, h0); if(a){ a.s = Math.random()*Math.max(0, a.path.len-450); a.seg = 0; flyPlaceOnPath(a); flySnapHeading(a); } }
-  for(i=0;i<3;i++) flyStartDeparture(i === 0 ? P_RK : null, null, true, h0);
+  for(i=0;i<7;i++){ var a = flySpawnArrival(i < 3 ? P_RK : null, null, null, h0); if(a){ a.s = Math.random()*Math.max(0, a.path.len-450); a.seg = 0; flyPlaceOnPath(a); flySnapHeading(a); } }
+  for(i=0;i<3;i++) flyStartDeparture(i === 0 ? P_RK : null, null, true, h0, 'far');
 })();
 
 /* ------------------------------------------------------------------ scheduler + per-frame update */
-var flyTimeScale = 1, flyNextArr = 3, flyNextDep = 5, flyFrame = 0, flyFollow = null, flyFollowD = 30, flyCpu = 0;
-var flyCnt = { aloft:0, perched:0, ground:0, reserved:0, transient:0, bySp:[0,0,0,0], aloftSp:[0,0,0,0] };
+var flyTimeScale = 1, flyNextArr = 3, flyNextDep = 5, flyFrame = 0, flyFollow = null, flyFollowD = 30, flyCpu = 0, flyWasNight = false;
+var flyCnt = { aloft:0, perched:0, ground:0, reserved:0, transient:0, circuit:0, bySp:[0,0,0,0], aloftSp:[0,0,0,0] };
 function flyCount(){
-  var C = flyCnt; C.aloft = C.perched = C.ground = C.transient = 0; C.bySp[0] = C.bySp[1] = C.bySp[2] = C.bySp[3] = 0; C.aloftSp[0] = C.aloftSp[1] = C.aloftSp[2] = C.aloftSp[3] = 0;
+  var C = flyCnt; C.aloft = C.perched = C.ground = C.transient = C.circuit = 0; C.bySp[0] = C.bySp[1] = C.bySp[2] = C.bySp[3] = 0; C.aloftSp[0] = C.aloftSp[1] = C.aloftSp[2] = C.aloftSp[3] = 0;
   for(var i=0;i<flyList.length;i++){ var a = flyList[i]; C.bySp[a.sp]++;
-    if(a.state === 'fly'){ C.aloft++; C.aloftSp[a.sp]++; if(a.pop === 'transient') C.transient++; } else { C.perched++; if(a.state !== 'perch') C.ground++; } }
+    if(a.state === 'fly'){ C.aloft++; C.aloftSp[a.sp]++; if(a.pop === 'transient') C.transient++; else if(a.pop === 'circuit') C.circuit++; } else { C.perched++; if(a.state !== 'perch') C.ground++; } }
 }
 function flyOcc(){ var n = 0, r = 0; for(var i=0;i<flyBays.length;i++){ var B = flyBays[i]; if(!B.ok) continue; if(B.occ) n++; else if(B.reserved) r++; } flyCnt.reserved = r; return n/Math.max(1, flyUsable); }
 function flySchedule(h, hour){
-  var night = hour >= 23 || hour < 4.5, act = night ? 0.5 : 1;
+  var nightNow = flyIsNight(hour), night = hour >= 23 || hour < 4.5, act = night ? 0.5 : 1, i;
   flyNextArr -= h; flyNextDep -= h;
   if(flyNextArr <= 0 || flyNextDep <= 0){
     var occ = flyOcc(), occA = occ + flyCnt.reserved/Math.max(1, flyUsable);
     if(flyNextArr <= 0){
       flyNextArr = (8+Math.random()*7)/act*(occA > 0.60 ? 1.7 : occA < 0.50 ? 0.65 : 1);
-      if(occA < 0.69){ if(!flySpawnArrival(null, null, false, hour)) flyNextArr = 1.5; }
+      if(occA < 0.69){ if(!flySpawnArrival(null, null, null, hour)) flyNextArr = 1.5; }
     }
     if(flyNextDep <= 0){
       flyNextDep = (8+Math.random()*7)/act*(occ < 0.50 ? 1.7 : occ > 0.60 ? 0.65 : 1);
-      if(occ > 0.41){ if(!flyStartDeparture(null, null, false, hour)) flyNextDep = 1.5; }
+      if(occ > 0.41){ if(!flyStartDeparture(null, null, false, hour, null)) flyNextDep = 1.5; }
     }
+  }
+  /* (from Girder) the bats come home one by one all through the night; whatever is still out when day breaks follows within ~2 minutes */
+  if(flyWasNight && !nightNow) for(i=0;i<flyBatDue.length;i++) flyBatDue[i] = Math.min(flyBatDue[i], flySimT + 5 + Math.random()*120);
+  if(flyWasNight !== nightNow){ flyBatDue.sort(function(p, q){ return p-q; }); flyWasNight = nightNow; }
+  if(flyBatDue.length && flySimT >= flyBatDue[0]){
+    var b = flySpawnArrival(null, FLY_B, 520, hour);
+    if(b){ b.note = 'home from the hunt'; flyBatDue.shift(); } else flyBatDue[0] = flySimT + 6;
   }
   if(flyCnt.transient < FLY_TRANSIENTS && Math.random() < h*0.5){ flySpawnTransient(false, hour); flyCnt.transient += 1; }
   while(flyEvents.arr.length && flyEvents.arr[0] < flySimT-600) flyEvents.arr.shift();
@@ -9785,7 +9931,9 @@ function flyAnimate(a, h){
     var rem = a.path.closed ? 1e9 : a.path.len-a.s, tl = Math.hypot(a.tx, a.ty, a.tz) || 1;
     if((a.pop === 'arr' && rem < 160) || a.launchT < 6 || S.on[0] >= 99 || a.ty/tl > 0.07) a.flapOn = true;
     else { a.flapT -= h; if(a.flapT <= 0){ a.flapOn = !a.flapOn; var R = a.flapOn ? S.on : S.off; a.flapT = R[0]+Math.random()*(R[1]-R[0]); } }
-    a.amp += ((a.flapOn ? 1 : 0)-a.amp)*Math.min(1, h*2.5);
+    var ampT = a.flapOn ? 1 : 0;
+    if(a.sp === FLY_B && a.pop === 'arr' && a.path.len-a.s < 16) ampT = 0.45;      /* shallow beats going in between the posts */
+    a.amp += (ampT-a.amp)*Math.min(1, h*2.5);
     a.ph += TAU*S.hz*h*(0.55+0.45*a.amp)*((a.launchT < 2.5 || a.flare > 0.3) ? 1.35 : 1);
   } else {
     a.amp += (0-a.amp)*Math.min(1, h*2); a.ph += TAU*S.hz*h*0.6;
@@ -9801,7 +9949,7 @@ function flySim(simDt, hour){
   var n = Math.min(60, Math.max(1, Math.ceil(simDt/0.1))), h = simDt/n;
   for(var st=0; st<n; st++){
     flySimT += h;
-    for(var i=flyList.length-1;i>=0;i--){ var a = flyList[i]; if(!a) continue; flyStep(a, h); if(a.state !== 'gone') flyAnimate(a, h); }
+    for(var i=flyList.length-1;i>=0;i--){ var a = flyList[i]; if(!a) continue; flyStep(a, h, hour); if(a.state !== 'gone') flyAnimate(a, h); }
     flyCount(); flySchedule(h, hour);
   }
 }
@@ -9845,13 +9993,14 @@ var flyNGl = 0, flyFollowA = 0.9, flyFollowUp = 0.22;
 TICKS.push(flyUpdate);
 
 /* ------------------------------------------------------------------ inspector, path viz, hooks */
-var FLY_STATE_LABEL = { perch:'perched', walk:'just landed', turn:'just landed', flip:'just landed', prep:'being readied', tolip:'walking to the lip', crouch:'about to launch' };
+var FLY_STATE_LABEL = { perch:'perched', walk:'just landed on the lip', turn:'just landed', flip:'just landed', prep:'being readied', tolip:'walking out onto the lip', crouch:'about to launch' };
 function flyDescribe(a){
   if(!a) return 'Flying beast';
   var s = FLY_LABEL[a.sp];
   if(a.state === 'fly'){
     s += a.ridden ? ' and rider' : ' (wild)';
     s += a.pop === 'arr' ? ' - inbound to ' + a.dest : a.pop === 'dep' ? ' - outbound from ' + a.dest : a.pop === 'circuit' ? ' - ' + a.dest : ' - passing over';
+    if(a.note) s += ', ' + a.note;
   } else s += ' - ' + (FLY_STATE_LABEL[a.state] || a.state) + ', ' + a.dest;
   return s;
 }
@@ -9867,8 +10016,8 @@ function flyPolyOf(path, stride){
 }
 function flyPathsOf(test, stride){ var seen = [], out = []; flyList.forEach(function(a){ if(a.state === 'fly' && a.path && test(a) && seen.indexOf(a.path) < 0){ seen.push(a.path); out.push(flyPolyOf(a.path, stride)); } }); return out; }
 PATHVIZ.push({ key:'flyTransients', label:'Flyers: passing over (straight lines)', color:PAL.pathviz[0], paths:function(){ return flyPathsOf(function(a){ return a.pop === 'transient'; }, 1); } });
-PATHVIZ.push({ key:'flyArrivals', label:'Flyers: live roost arrivals', color:PAL.pathviz[1], paths:function(){ return flyPathsOf(function(a){ return a.pop === 'arr'; }, 6); } });
-PATHVIZ.push({ key:'flyDepartures', label:'Flyers: live roost departures', color:PAL.pathviz[2], paths:function(){
+PATHVIZ.push({ key:'flyArrivals', label:'Flyers: live roost arrivals (incl. peel-offs from circuits)', color:PAL.pathviz[1], paths:function(){ return flyPathsOf(function(a){ return a.pop === 'arr'; }, 6); } });
+PATHVIZ.push({ key:'flyDepartures', label:'Flyers: live roost departures + circuit joins', color:PAL.pathviz[2], paths:function(){
   var out = flyPathsOf(function(a){ return a.pop === 'dep'; }, 6); flyList.forEach(function(a){ if(a.depPath) out.push(flyPolyOf(a.depPath, 6)); }); return out; } });
 PATHVIZ.push({ key:'flyCircuits', label:'Flyers: Rookery circuits + city patrols', color:PAL.pathviz[4], paths:function(){ return flyCircuits.map(function(p){ return flyPolyOf(p, 4); }); } });
 
@@ -9883,17 +10032,22 @@ var flyHooks = {
   find:function(state, sp, pop){ var out = []; flyList.forEach(function(a){ if((!state || a.state === state) && (sp === undefined || sp === null || FLY_KEY[a.sp] === sp || a.sp === sp) && (!pop || a.pop === pop)) out.push(a.id); }); return out; },
   info:function(id){ var a = flyById(id); if(!a) return null; return { id:a.id, sp:FLY_KEY[a.sp], state:a.state, pop:a.pop, ridden:a.ridden, riderMode:a.riderMode, x:a.x, y:a.y, z:a.z, yaw:a.yaw, pitch:a.pitch, roll:a.roll, yawRate:a.yawRate, v:a.v,
     fold:a.fold, flare:a.flare, amp:a.amp, rem:a.path && a.state === 'fly' ? a.path.len-a.s : null, bayY:a.bay ? a.bay.y : null, bayH:a.bay ? a.bay.H : null, dest:a.dest, label:flyDescribe(a) }; },
-  forceArrival:function(platName, sp){ var a = flySpawnArrival(flyPlatOf(platName), sp === undefined ? null : (typeof sp === 'string' ? FLY_KEY.indexOf(sp) : sp), true, skyHour()); return a ? a.id : null; },
-  forceDeparture:function(platName, sp){ var a = flyStartDeparture(flyPlatOf(platName), sp === undefined ? null : (typeof sp === 'string' ? FLY_KEY.indexOf(sp) : sp), true, skyHour()); return a ? a.id : null; },
+  forceArrival:function(platName, sp, back){ var a = flySpawnArrival(flyPlatOf(platName), sp === undefined ? null : (typeof sp === 'string' ? FLY_KEY.indexOf(sp) : sp), back === undefined ? 60 : back, skyHour()); return a ? a.id : null; },
+  forceDeparture:function(platName, sp, mode){ var a = flyStartDeparture(flyPlatOf(platName), sp === undefined ? null : (typeof sp === 'string' ? FLY_KEY.indexOf(sp) : sp), true, skyHour(), mode || 'far'); return a ? a.id : null; },
+  forcePeel:function(){ var n = 0; flyList.forEach(function(a){ if(a.pop === 'circuit'){ a.lapMax = 0; n++; } }); return n; },
+  circuitList:function(){ return flyCircuits.map(function(C){ return { label:C.label, len:Math.round(C.len), want:C.want, now:flyCircuitCount(C) }; }); },
   focus:function(id, dist, ang, up){ var a = typeof id === 'number' ? (flyById(id) || flyList[id]) : null; flyFollow = a || null; flyFollowD = dist || 30; flyFollowA = ang === undefined ? 0.9 : ang; flyFollowUp = up === undefined ? 0.22 : up; return a ? flyDescribe(a) : null; },
-  skip:function(sec){ var h = skyHour(), n = Math.ceil(sec/2); for(var i=0;i<n;i++) flySim(sec/n, h); return flySimT; },
+  /* advance the simulation (no rendering). hour: clock to pretend (default: the sky's) */
+  skip:function(sec, hour){ var h = hour === undefined || hour === null ? skyHour() : hour, n = Math.ceil(sec/2); for(var i=0;i<n;i++) flySim(sec/n, h); return flySimT; },
   routeTest:function(n, arr){ var out = []; for(var i=0;i<flyBays.length && out.length<n;i+=7){ var B = flyBays[i]; if(!B.ok) continue; flyLastHit = null; var p = flyRoute(B, FLY_A, !!arr, 1, true); out.push(p ? 'ok' : flyLastHit); } return out; },
-  foliageObstacles:flyPathStatsFol, pathStats:flyPathStats, totals:flyTotals, bays:flyBays.length, modelTris:flyTris.concat([flyWingTris]), drawCalls:7, circuits:flyCircuits.length
+  foliageObstacles:flyPathStatsFol, pathStats:flyPathStats, totals:flyTotals, batReturnHours:flyBatHours, bays:flyBays.length, modelTris:flyTris.concat([flyWingTris]), drawCalls:7, circuits:flyCircuits.length
 };
 Object.defineProperties(flyHooks, {
   timeScale:{ get:function(){ return flyTimeScale; }, set:function(v){ flyTimeScale = Math.max(0, +v || 0); }, enumerable:true },
   aloft:{ get:function(){ flyCount(); return flyCnt.aloft; }, enumerable:true },
   perched:{ get:function(){ flyCount(); return flyCnt.perched; }, enumerable:true },
+  onCircuits:{ get:function(){ flyCount(); return flyCnt.circuit; }, enumerable:true },
+  batsOut:{ get:function(){ return flyBatDue.length; }, enumerable:true },
   occupancy:{ get:function(){ return Math.round(flyOcc()*1000)/1000; }, enumerable:true },
   usableBays:{ get:function(){ return flyUsable; }, enumerable:true },
   arrivalsPerMin:{ get:function(){ return flyRate(flyEvents.arr); }, enumerable:true },
