@@ -112,4 +112,5 @@ carries a ball.
 Sixth note: the ball moved to the flare's lip, centred on it at the lip's diameter, so the rib enters through a
 knuckle and the flare-to-rib step is gone. Seventh: a second ball at the flare's rim, the rim's diameter, half in
 the face: the root. (A concave fillet always lies inside the sphere on its rim, so the bell is now the hidden
-transition between the two balls; the look is rib, knuckle, root.)
+transition between the two balls; the look is rib, knuckle, root.) Eighth: the flare slid half its length up the rib,
+the root ball fixed by q and n alone, so the bell's lip end stands out of the root; rib, knuckle, bell, root.
