@@ -198,7 +198,11 @@ nothing already placed moved except where a stance was changed on purpose.
   pay nothing; the first switch to night compiles one extra program variant
   per material and later switches reuse it. 9 lights in the kit. In the
   Project night shots the fabric round the burning floors and the podium is
-  lit orange now, not hemisphere-grey.
+  lit orange now, not hemisphere-grey. Project A barely shows it: its skin is
+  `MAT.rust`, metalness 1 (no diffuse term), so a point light only gives it a
+  rough specular. D and H (concrete) read clearly. Lights sit on each
+  cluster's mean bearing at its mean radius + 16 m (a centroid of windows
+  wrapping a round tower lies inside it).
 - FIXED **"The Project's plinth can only come in to 110"** and **"A, B and C
   are limited by their own legs"** (stance changes, now asked for): A's strut
   feet 98 -> 80, podium 110 -> 92 (also the Project's); B's legs 70 -> 56,
