@@ -138,9 +138,12 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
     for(let i=0;i<=14;i++){const t=i/14,u=1-t;const w0=u*u*u,w1=3*u*u*t,w2=3*u*t*t,w3=t*t*t;pts.push([w0*a[0]+w1*c1[0]+w2*c2[0]+w3*h[0],w0*a[1]+w1*c1[1]+w2*c2[1]+w3*h[1],w0*a[2]+w1*c1[2]+w2*c2[2]+w3*h[2]]);}
     pts.push([q[0]+n[0]*.3,q[1]+n[1]*.3,q[2]+n[2]*.3],[q[0]-n[0]*.5,q[1]-n[1]*.5,q[2]-n[2]*.5]);
     const kn=Math.max(2,Math.round(dl/2.2));hykPut('hkBone',hykTube(pts,t=>(.26-.09*t)*(1+.2*Math.max(0,Math.cos(t*kn*TAU))),{seg:10,col}));
-    hykPut('hkBone',hykFlare([q[0]-n[0]*.3,q[1]-n[1]*.3,q[2]-n[2]*.3],n,.3,.7,{col}));   // set .3 m into the face: the rim is buried, the rib roots
-    kput('hkBall',[q[0]+n[0]*.4,q[1]+n[1]*.4,q[2]+n[2]*.4],null,[.3,.3,.3],col);   // a knuckle centred on the flare's lip, the lip's diameter: the rib enters through it
-    kput('hkBall',[q[0]-n[0]*.3,q[1]-n[1]*.3,q[2]-n[2]*.3],null,[1.0,1.0,1.0],col);   // and the root: a ball centred on the flare's rim, the rim's diameter, half in the face
+    // the root: a ball of the flare's rim diameter, centred .3 m into the face. Fixed by q and n alone; nothing else
+    // moves it. The flare sits half its length up the rib from the root's centre, so its lip end stands out of the
+    // ball; the knuckle is centred on the lip, the lip's diameter, and the rib enters through it.
+    kput('hkBall',[q[0]-n[0]*.3,q[1]-n[1]*.3,q[2]-n[2]*.3],null,[1.0,1.0,1.0],col);
+    hykPut('hkBone',hykFlare([q[0]+n[0]*.05,q[1]+n[1]*.05,q[2]+n[2]*.05],n,.3,.7,{col}));
+    kput('hkBall',[q[0]+n[0]*.75,q[1]+n[1]*.75,q[2]+n[2]*.75],null,[.3,.3,.3],col);
     kput('hkBall',[a[0],a[1],a[2]],null,[.46,.4,.46],col);}}}
  return {pts,runners:nr,branches:nb};}
 // the nearest point on a member's surface and the surface normal there. A member is a capsule {a,b,r} (a strut, a
