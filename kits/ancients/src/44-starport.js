@@ -47,5 +47,5 @@ function buildStarport(scene,gx,gz,d){reseed(d>0?9601:9600);KOFF=[gx,0,gz];REGIS
  for(let yy=14;yy<NH-16;yy+=14){if(ncut&&yy>ncut-3)break;kput(d>0?'ringR':'ringW',[0,HD-2+yy,0],qEuler(Math.PI/2,0,0),[5.2,5.2,5],null);}
  apron(G,0,0,RD*1.16,RD*1.7,d,1.6);
  if(d>0){scatterMoss(0,0,0,80,330,260,3);rubbleRing(0,3,0,60,120,80,2.5);trees(0,0,120,330,26);}
- figures(0,120,8,10);KOFF=[0,0,0];return G;}
+ figures(0,120,8,10);civFlatten(G);KOFF=[0,0,0];return G;}
 

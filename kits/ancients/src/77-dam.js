@@ -28,22 +28,54 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
  // has to be punched where they break through it. Generating them afterwards
  // left every shaft behind an unbroken elevation — all that showed was the 2 m
  // of collar that protruded, so they read as blind bosses rather than openings.
+ // THE RUIN'S CREST HAS GONE. Everything else about the ruin read close up --
+ // the fallen fins, the drawn-down reservoir, moss and stains -- but at the
+ // hero distance it was the intact dam with a dark stripe: the QA brief's
+ // "intact with patches". A dam this old fails at the crest first, where it
+ // is thinnest and the overtopping works: a ragged notch 120-28 m wide taken
+ // 128 m down, off the fin cruciform so it does not fight it. Every surface,
+ // tunnel and crest block on that line asks notch().
+ const NX=-221,NB=H-128;   // its top edge stops short of the -138 fin (x -153)
+ const notchW=y=>14+46*clamp((y-NB)/(H-NB),0,1)+6*(fbm(y*.05,.3,2360,2)*2-1);
+ const notch=(x,y)=>d>0&&y>NB+4*(fbm(x*.07,.2,2361,2)*2-1)&&Math.abs(x-NX)<notchW(y);
  const TUNS=[];
  for(let k=-5;k<=5;k++){const tx=k*52;
   for(let j=0;j<3;j++){
    if(rng()<.18)continue;                                  // not a perfect grid
-   TUNS.push({x:tx,y:96+j*82+rr(-9,9),R:rr(7.5,10.5),blocked:d>0&&rng()<.30});}}
+   const ty=96+j*82+rr(-9,9),tR=rr(7.5,10.5),blk=d>0&&rng()<.30;
+   if(notch(tx,ty)||notch(tx-tR,ty)||notch(tx+tR,ty))continue;
+   TUNS.push({x:tx,y:ty,R:tR,blocked:blk});}}
  const tunHole=(x,y)=>{for(const t of TUNS){const dx=x-t.x,dy=y-t.y;
   if(dx*dx+dy*dy<t.R*t.R*.86)return true;}return false;};
  const fh=holeFn(d*.5,2300,null,1.6);
  const FACE=[gridSurface(dsFace,160,80,{uS:32,vS:20,hole:(u,v)=>
-   tunHole((u-.5)*SPAN,v*H)||(fh?fh(u,v):false)}),
-  gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)-2];},96,10,{uS:32,vS:20}),
-  gridSurface((u,v)=>{const x=(u-.5)*SPAN;return[x,H,zc(x)+v*th_(H)];},96,4,{uS:32,vS:4})];
+   notch((u-.5)*SPAN,v*H)||tunHole((u-.5)*SPAN,v*H)||(fh?fh(u,v):false)}),
+  gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)-2];},96,10,{uS:32,vS:20,
+   hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),
+  gridSurface((u,v)=>{const x=(u-.5)*SPAN;return[x,H,zc(x)+v*th_(H)];},96,4,{uS:32,vS:4,
+   hole:(u,v)=>notch((u-.5)*SPAN,H)})];
+ // The notch's own walls: its two cheeks and its floor, through the full
+ // thickness of the dam, in the same concrete, with the arcology's floor
+ // plates standing out of the cheeks every 8 m so the break reads as a
+ // section through a city and not as a gap in a wall.
+ if(d>0){const nzA=x=>zc(x)-2,nzB=(x,y)=>zc(x)+th_(y);
+  for(const sg of [-1,1])FACE.push(gridSurface((u,v)=>{const y=lerp(NB,H,v),x=NX+sg*notchW(y);
+    return[x,y,lerp(nzA(x),nzB(x,y),u)];},8,26,{uS:4,vS:12}));
+  FACE.push(gridSurface((u,v)=>{const x=NX+(v*2-1)*notchW(NB);
+    return[x,NB,lerp(nzA(x),nzB(x,NB),u)];},8,4,{uS:4,vS:2}));
+  for(let y=NB+6;y<H-4;y+=8)for(const sg of [-1,1]){const x=NX+sg*notchW(y);
+   const L=rr(3,11),zm=(nzA(x)+nzB(x,y))*.5,dep=th_(y);
+   kput(BOXC(d),[x-sg*(L*.5-1),y,zm],qEuler(0,0,sg*rr(-.12,.05)),[L,1.2,dep*rr(.55,.9)],null);}
+  // what came out of it, down the face and at the toe
+  for(let i=0;i<46;i++){const t=Math.pow(rng(),1.4);
+   const x=NX+rr(-50,50)*(.4+t),sc=rr(6,22)*(1-t*.3);
+   kput(BOXC(d),[x,sc*.3,zc(x)+th_(0)+4+rr(0,90)*t],
+    qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.8),sc*rr(.4,.8),sc*rr(.7,1.5)],null);}}
  meshMerged(FACE,CONC(d),G);
- if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,{}),MAT.guts,G);
+ if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*SPAN,y=v*H;return[x,y,zc(x)+th_(y)-6];},48,20,
+  {hole:(u,v)=>notch((u-.5)*SPAN,v*H)}),MAT.guts,G);
  // crest: light wells (arc of slots), residential arc, public centre dome, cultural domes
- for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
+ for(let k=-13;k<=13;k++){const x=k*22;const z=zc(x);const gone=d>0&&rng()<.15;if(notch(x,H-1)||notch(x+9,H-1)||notch(x-9,H-1))continue;kput(BOXC(d),[x,H+9,z+8],null,[15,18,28],null);kput('boxD',[x,H+18.2,z+8],null,[9,.4,20],null);kput(BOXC(d),[x,H+8,z+50],null,[18,16,22],null);for(let r=0;r<2;r++)for(let c=-1;c<=1;c++)kput(d>0?'winSmD':'winSmI',[x+c*5,H+5+r*6,z+61.2],qFacing([0,0,1]),[2,2.4,1],null);
   if(!gone){const lit=d>0?rng()<.12:true;kput('strip',[x,H+12.6,z+10],qEuler(0,Math.PI/2,0),[16,1,1],lit?CYAN:DEAD);}}
  mesh(lathe({rFn:y=>44*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,flutes:24,amp:.06,sharp:2,nu:96,nv:14,hole:(u,y)=>Math.cos(u*TAU*24)<.3&&y>3&&y<22||(d>0&&fbm(u*4,y*.1,2310,2)<.3)}),skin,G,0,H+12,zc(0)+20);
  if(d===0)mesh(lathe({rFn:y=>42*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.glass,G,0,H+12,zc(0)+20);else mesh(lathe({rFn:y=>40*Math.pow(clamp(1-Math.pow(y/26,2),0,1),.55),H:26,nu:48,nv:10}),MAT.dark,G,0,H+12,zc(0)+20);
@@ -106,7 +138,10 @@ function buildDam(scene,gx,gz,d){reseed(9260+d);KOFF=[gx,0,gz];const G=new THREE
   if(d===0)mesh(gridSurface((u,v)=>{const y=lerp(26,2,v);return[x+(u-.5)*14*(1+v*.8),y,zf(26)+6+v*20+v*v*20];},8,12,{}),MAT.spray,G);}
  mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-40),z=zf(0)+60+v*500;return[x,1.5+3*fbm(u*6,v*6,2400,2)+(z>zf(0)+120?0:-1.5),z];},40,30,{}),d>0?MAT.mud:MAT.lawn,G);
  mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN-60),z=zf(0)+56+v*520;return[x,-1+0*u,z];},4,4,{}),MAT.water,G).position.y=0;
- for(let i=0;i<60;i++){const x=rr(-280,280),z=zf(0)+rr(90,540);const h=rr(6,14);kput('trunk',[x,1,z],null,[2,h,2],null);kput('moss',[x,h,z],null,[6,3,6],new THREE.Color().setHSL(.3,.5,.2));}
+ // the park's trees go through the shared VEG.tree (leaf cards) -- they were a
+ // trunk box with a 'moss' blob on top, which from every preset read as 60
+ // green lollipops standing on the lawn
+ for(let i=0;i<60;i++){const x=rr(-280,280),z=zf(0)+rr(90,540);VEG.tree(x,1,z,i%3,rr(6,14));}
  // reservoir behind (full when intact; drawn down and silted when ruined)
  const WL=d>0?250:378;mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+80),z=-700+v*(700+zc(x)-6);return[x,WL,z];},32,16,{}),MAT.water,G);
  if(d>0)mesh(gridSurface((u,v)=>{const x=(u-.5)*(SPAN+40),z=-700+v*(700+zc(x)-2);return[x,WL-6+30*fbm(u*5,v*5,2500,2)*v*v,z];},32,16,{uS:20,vS:20}),MAT.mud,G);

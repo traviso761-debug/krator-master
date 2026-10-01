@@ -31,7 +31,13 @@ function civWin(name,p,q,s,frac){kput(name,p,q,s,null);const W=CIV_WIN[name];if(
 // One cluster of shards, w x h, `out` metres proud along q's +z; h in 0..1 picks it.
 // One kit mesh for all shards: a kit InstancedMesh is never culled, so each is
 // a draw call in every view. Variety comes from mirroring and the height scale.
+// BIG OPENINGS GET NONE (shared-code round). The cluster is drawn at the size
+// of the opening, so in a shopfront or a base bay (Skyscraper K's ruined base)
+// its three teeth became 10-20 m triangles that read as "V" marks from the row
+// shot. A pane that big fails as a whole; above ~9 m a side or 40 m2 there are
+// no teeth. Position-hashed as before, so nothing else moves.
 function civShardAt(p,q,w,ht,out,h){civDef('civShard',()=>civTriGeo(CIV_SHARD_XY[0].concat(CIV_SHARD_XY[1].slice(0,6),CIV_SHARD_XY[2].slice(12,18))),MAT.glass);
+ if(Math.max(Math.abs(w),ht)>9||Math.abs(w)*ht>40)return;
  const off=new THREE.Vector3(0,0,out).applyQuaternion(q);const i=(h*6|0)%3;
  kput('civShard',[p[0]+off.x,p[1]+off.y,p[2]+off.z],q,[w*((h*97|0)%2?1:-1),ht*(i===1?.8:i===2?.9:1),1],null);}
 // INTERIORS. What a hole in a round shell shows: floor plates out to the
@@ -57,6 +63,35 @@ function civRooms(o){const rIn=o.rIn||.72,cx=o.cx||0,cy=o.cy||0,cz=o.cz||0,step=
     kput('boxD',[cx+c*rb,cy+y+.25+hgt/2,cz+s*rb],qEuler(0,-th,0),[1+hh*1.4,hgt,w],null);}
    if(hh>.8){const on=!(d>0&&hh<.93);kput(on?'cell':'cellD',[cx+c*R*(rIn+.02),cy+y+1.5,cz+s*R*(rIn+.02)],qFacing([c,0,s]),[.5,.7,1],on?CYAN:null);}
    if(k%5===2)for(let j=-1;j<=1;j++){const t2=th+j*.012;kput('tube',[cx+Math.cos(t2)*R*(rIn+.03),cy+y+step/2,cz+Math.sin(t2)*R*(rIn+.03)],null,[.22,step,.22],null);}}}}
+// Drop kit instances put since `mark` ({name: KIT.items[name].length}) whose
+// builder-local position fn(x,y,z) says lie in a collapse. For helpers that draw
+// rng per item (stripRing, mossOnRing): calling them whole and culling after
+// keeps every later rng draw where it was. Takes the per-type stats back out.
+function civCull(mark,fn){for(const nm in mark){const it=KIT.items[nm];const keep=it.slice(0,mark[nm]);
+ for(let i=mark[nm];i<it.length;i++){const o=it[i];if(fn(o.p[0]-KOFF[0],o.p[1]-KOFF[1],o.p[2]-KOFF[2])){const t=tcur();if(t){t.inst--;t.tris-=ktri(nm);}}else keep.push(o);}
+ KIT.items[nm]=keep;}}
+// DRAW CALLS (round 2). Every opaque Mesh under G (groups included) that shares
+// a material is merged into one, in G's frame, at the end of each civic builder.
+// Triangle-neutral, and pixel-neutral bar float rounding (positions and normals
+// are transformed, not recomputed). Transparent meshes keep their own sort.
+// What moves: repairPass/wornPass sample G's faces in mesh order, so the
+// salvage dressing at decay 3 (and the worn pass) lands on other faces.
+function civFlatten(G){G.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(G.matrixWorld).invert();const by=new Map();
+ G.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||!o.geometry||Array.isArray(o.material)||o.material.transparent)return;
+  if(!by.has(o.material))by.set(o.material,[]);by.get(o.material).push(o);});
+ const t=tcur();
+ for(const [mat,list] of by){if(list.length<2)continue;const geos=[];
+  for(const o of list){const m=inv.clone().multiply(o.matrixWorld);const g=o.geometry.index?o.geometry.clone():o.geometry.clone();g.applyMatrix4(m);geos.push(g);o.parent.remove(o);}
+  const t0=t?t.tris:0;meshMerged(geos,mat,G);if(t){t.tris=t0;t.meshes-=list.length;}}}
+// MOULDING for an arcWindowGeo(w,h) window: a half-round hood following the arch
+// and a sill under it, both proud of the window's face (+z). One kit mesh.
+// Both are the shared moulding() now (was a 3-sided torus and a box): a label
+// mould with a flat top, a chamfered nose and a stopped end, and a weathered
+// sill with a drip, ~84 tris a window.
+function civHoodGeo(w,h){const R=w/2+.06,cy=h/2-w/2,L=(w+.7)/2;
+ const hood=moulding(MOULD.hood(.3,.3),t=>{const a=Math.PI*(1-t);return[R*Math.cos(a),cy+R*Math.sin(a),.3];},{wn:[0,0,1],nu:7,caps:true});
+ const sill=moulding(MOULD.sill(.55,.26),t=>[-L+2*L*t,-h/2-.24,0],{wn:[0,0,1],nu:1,caps:true});
+ return civMergeGeo([hood,sill]);}
 // Angular distance, for sector tests.
 function civDA(a,b){const x=((a-b)%TAU+TAU)%TAU;return Math.min(x,TAU-x);}
 
@@ -99,7 +134,11 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
     rubbleRing(F.position.x,0,F.position.z,3,16,26,2.4);}
    for(let k=0;k<14;k++){const a=SEC+rr(-.5,.5),r=rr(46,78);kput('plateR',[Math.cos(a)*r,rr(.4,1.2),Math.sin(a)*r],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[rr(3,7),.5,rr(2,5)],null);}}}
  // B — lobed tower (Marina / Hilliard scallops)
- {const bx=190;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
+ // B and C used to stand at x=190 and x=330, so one site spanned 430 m on a
+ // 265 m row pitch: the rehabilitated Office C stood in the ruined Office A, and
+ // the intact C against the rehabilitated A. Round 2: B moves in to x=105 and C
+ // stands behind them at (95,-75); the site is now 195 m wide.
+ {const bx=105;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
   const lobe=th=>R*(1+.32*(.5+.5*Math.cos(8*th)));
   mesh(lathe({rFn:()=>6,H:12,nu:24,nv:2}),skin,B);for(let k=0;k<16;k++){const th=k/16*TAU;if(d>0&&(k===4||k===11))continue;kput(d>0?'colR':'colW',[bx+Math.cos(th)*13.5,0,Math.sin(th)*13.5],null,[1.3,12,1.3],null);}
   const hole=holeFn(d,210,cut,1.8);
@@ -117,5 +156,6 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
   if(!cut){kput('slab',[bx,H+.2,0],null,[R*1.1,.6,R*1.1],new THREE.Color(0xd8d4cc));mesh(lathe({rFn:y=>7*Math.sqrt(clamp(1-Math.pow(y/6,2),0,1)),H:6,nu:24,nv:6}),skin,B,0,H+.5,0);}
   else{rubbleRing(bx,0,0,15,26,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
   if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,28,40,2);}}
- officeC(G,d);figures(60,50,5,5);figures(190,22,3,3);KOFF=[0,0,0];return G;}
+ {const OCX=95,OCZ=-75,CG=new THREE.Group();CG.position.set(OCX-330,0,OCZ);G.add(CG);KOFF=[gx+OCX-330,0,gz+OCZ];officeC(CG,d);KOFF=[gx,0,gz];}
+ figures(60,50,5,5);figures(105,22,3,3);civFlatten(G);KOFF=[0,0,0];return G;}
 

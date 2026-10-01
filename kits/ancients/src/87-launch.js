@@ -96,6 +96,32 @@ MAT.lxScorchR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.
 // multiplies puts the diffuse back and the soffits read as steel again.
 MAT.lxBell=new THREE.MeshStandardMaterial({map:TEX.panel,roughnessMap:TEX.panelRM,metalnessMap:TEX.panelRM,color:0x9a9288,roughness:1,metalness:.5,side:DS});
 MAT.lxBellR=new THREE.MeshStandardMaterial({map:TEX.rust,roughnessMap:TEX.rustRM,metalnessMap:TEX.rustRM,color:0x9a836a,roughness:1,metalness:.42,side:DS});
+// BOUNCE LIGHT, PAINTED. Everything on this vehicle that faces DOWN — the
+// collar soffits, the plug ceiling, the terrace undersides, the skirt's
+// inside — sees only the hemisphere light's ground colour (0x6a3a2a) and no
+// shadows, so it came back warm brown whatever its albedo: halving lxBell's
+// metalness was mitigation, not a fix. This adds, to any surface whose world
+// normal points down, a NEUTRAL bounce equal to the LUMINANCE of that same
+// ground term times 1.7 — the light a pale apron throws back up. Keying it to
+// the hemisphere uniform rather than a constant means it follows setNight()
+// with nothing to keep in sync: the ground term dims, and so does the bounce.
+// Injected after emissivemap_fragment, where `normal` is final and already
+// flipped for back faces, so DoubleSide soffits get it on the side you see.
+// (No pow/sqrt here: nothing for SwiftShader to swallow a NaN from.)
+// The strength is a UNIFORM, not a literal: three.js keys compiled programs on
+// onBeforeCompile's source text, so a literal would make every caller share the
+// first caller's value. onBeforeCompile still runs once per material, so each
+// material carries its own lxK.
+function lxBounce(m,k){const K=k||1.7;m.onBeforeCompile=sh=>{sh.uniforms.lxK={value:K};
+ sh.fragmentShader='uniform float lxK;\n'+sh.fragmentShader.replace('#include <emissivemap_fragment>',
+ '#include <emissivemap_fragment>\n#if NUM_HEMI_LIGHTS > 0\n{vec3 lxN=inverseTransformDirection(normal,viewMatrix);'+
+ 'float lxL=dot(hemisphereLights[0].groundColor,vec3(.2126,.7152,.0722));'+
+ 'totalEmissiveRadiance+=diffuseColor.rgb*vec3(.94,1.,1.05)*(lxL*lxK*clamp(-lxN.y,0.,1.));}\n#endif');};return m;}
+lxBounce(MAT.lxBell);lxBounce(MAT.lxBellR);
+// the vehicle's own copies of the white skin and its plate, so the bounce is
+// this type's alone and every other SHELL() in the kit renders as before
+MAT.lxSkin=lxBounce(MAT.white.clone());MAT.lxSkinR=lxBounce(MAT.rust.clone());
+kdef('lxPlate',new THREE.BoxGeometry(1,1,1),MAT.lxSkin); kdef('lxPlateR',new THREE.BoxGeometry(1,1,1),MAT.lxSkinR);
 kdef('lxGrate',new THREE.BoxGeometry(1,1,1),MAT.lxBell); kdef('lxGrateR',new THREE.BoxGeometry(1,1,1),MAT.lxBellR);
 kdef('lxPad',new THREE.CylinderGeometry(1,1,1,28),MAT.lxDeck); kdef('lxPadR',new THREE.CylinderGeometry(1,1,1,28),MAT.lxDeckR);
 // The key dimensions of each decay level, written by the builder and read by
@@ -111,9 +137,9 @@ const LXSITE={};
 function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0;
- const skin=SHELL(dd),deckM=dd?MAT.lxDeckR:MAT.lxDeck,scorchM=dd?MAT.lxScorchR:MAT.lxScorch,
+ const skin=dd?MAT.lxSkinR:MAT.lxSkin,deckM=dd?MAT.lxDeckR:MAT.lxDeck,scorchM=dd?MAT.lxScorchR:MAT.lxScorch,
        bellM=dd?MAT.lxBellR:MAT.lxBell;
- const BX=BOXC(d),PL=PLATE(dd),GRT=dd?'lxGrateR':'lxGrate',PAD=dd?'lxPadR':'lxPad',
+ const BX=BOXC(d),PL=dd?'lxPlateR':'lxPlate',GRT=dd?'lxGrateR':'lxGrate',PAD=dd?'lxPadR':'lxPad',
        PN=dd?'paneD':'pane',PIPE=dd?'pipeR':'pipe',COLN=dd?'colR':'colW';
  const SH=[],DKG=[],FLR=[],BEL=[],GRD=[],SCO=[],MND=[],STL=[];
  // qEuler(0,-th,0) points a kit item's local +X straight out along the radius.
@@ -137,8 +163,13 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
  // and biased warm. 13-30% was the first correction and still came back pale:
  // full sun plus a .75 hemisphere plus ACES lifts a mid tone a long way, and
  // the only reliable way to set these numbers is off a render.
+ // One debris field in one hue band read as one material: concrete, steel and
+ // slag indistinguishable. About one piece in five is now torn PLATE — a flat
+ // shard in the grating steel, rust in the ruin — so the metal reads as metal.
  const lxRubble=(cx,cy,cz,rMin,rMax,n,sMax)=>{for(let i=0;i<n;i++){const a=rng()*TAU;
   const q=Math.pow(rng(),2.4),r=rMin+(rMax-rMin)*q,sz=rr(.6,sMax)*(1.25-.55*q);
+  if(rng()<.2){kput(GRT,[cx+Math.cos(a)*r,cy+(1-q)*(1-q)*sMax*.55+sz*.15,cz+Math.sin(a)*r],
+    qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),[sz*rr(1.4,2.8),sz*.22,sz*rr(.8,1.6)],null);continue;}
   kput('rubble',[cx+Math.cos(a)*r,cy+(1-q)*(1-q)*sMax*.55+sz*.4,cz+Math.sin(a)*r],
    qEuler(rng()*3,rng()*3,rng()*3),[sz*rr(.7,1.5),sz*rr(.5,1),sz*rr(.7,1.5)],
    new THREE.Color().setHSL(rr(.045,.095),rr(.10,.32),rr(.055,.155)));}};
@@ -222,7 +253,7 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
  // an apron grown 430 -> 520 and a berm 566 -> 668. The trench run follows so
  // the scoops still crest ON the berm rather than hanging over it.
  const CY0=316,CY1=404,CRI=268,CRO=330,MSTR=364,MSTY=428;
- const SVR=450,SVY=186;                             // the service-tower ring
+ const SVR=450,SVY0=186,SVY=SVY0;                             // the service-tower ring
  const TERR=[152,228,304,380,456,532];
  // hoisted out of the terrace loop: LXSITE publishes it to the camera presets,
  // which resolve outside the vehicle block and so cannot see a const declared
@@ -388,8 +419,19 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   SCO.push(gridSurface((u,v)=>{const q=u*2-1,t=v,s=TS1+SCL*Math.sin(t*Math.PI/2),
     yb=PITY+58*(1-Math.cos(t*Math.PI/2)),p=XZ(s,q);
     return[p[0],yb+(wallY(q)-PITY)*(1-.5*t),p[1]];},28,12,{uS:18,vS:14}));
-  SCO.push(gridSurface((u,v)=>{const q=u*2-1,s=lerp(TS1+SCL,TS1+SCL+70,v),p=XZ(s,q);
+  // The back of the scoop is its OUTSIDE, so it is apron concrete, not scorch:
+  // in scorch the whole deflector read from overhead as a thin dark sail.
+  GRD.push(gridSurface((u,v)=>{const q=u*2-1,s=lerp(TS1+SCL,TS1+SCL+70,v),p=XZ(s,q);
     return[p[0],lerp(PITY+58+(wallY(q)-PITY)*.5,bermY(TS1+SCL+70),Math.pow(v,.8)),p[1]];},26,6,{uS:18,vS:7}));
+  // and its two cheeks, from its side edge down to the ground, so the scoop is
+  // a MASS with a thickness and not a curved sheet standing on its lip
+  for(let e=-1;e<=1;e+=2)GRD.push(gridSurface((u,v)=>{let s2,yt;
+    if(u<.5){const t=u*2;s2=TS1+SCL*Math.sin(t*Math.PI/2);
+     yt=PITY+58*(1-Math.cos(t*Math.PI/2))+(wallY(e)-PITY)*(1-.5*t);}
+    else{const w=(u-.5)*2;s2=lerp(TS1+SCL,TS1+SCL+70,w);
+     yt=lerp(PITY+58+(wallY(e)-PITY)*.5,bermY(TS1+SCL+70),Math.pow(w,.8));}
+    const p=XZ(s2,e),yb=Math.min(yt,bermY(Math.hypot(p[0],p[1]))-.5);
+    return[p[0],lerp(yb,yt,v),p[1]];},28,3,{uS:18,vS:5}));
   // the coping along both lips, and the scoop's own crest
   for(let e=-1;e<=1;e+=2)for(let i=0;i<22;i++){const t=(i+.5)/22,s=lerp(TS0-6,TS1,t),p=XZ(s,e*1.0);
    if(dd&&rng()<.26)continue;
@@ -456,6 +498,23 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
     beam(PL,[A[0],yb,A[1]],[B[0],yb,B[1]],1.8,1.8);
     beam(PL,[A[0],ya,A[1]],[B[0],yb,B[1]],1.3,1.3);}}
   return cor;};
+ // A LATTICE LYING DOWN. The fallen mast head and the two downed service towers
+ // were a chain of single jittered beams: wreckage at distance, a scribble up
+ // close. They are now the same box lattice as the standing ones, on its side,
+ // its axis kinking where it hit, its section crushed toward the torn end and
+ // members missing. J holds the draws the old chain made, in the order it made
+ // them (dy0, dx, dy1, dz per segment), so the stream after it is unchanged.
+ const lyingLattice=(fa,r0,L,w,J,ylo,yhi)=>{const n=J.length,ux=Math.cos(fa),uz=Math.sin(fa),px=-uz,pz=ux;
+  const ax=[];let off=0;
+  for(let i=0;i<=n;i++){const j=J[Math.min(i,n-1)];off+=(i?j[1]+j[3]:0)*.18;
+   const r=r0+i/n*L,cr=lerp(1,.55,Math.pow(i/n,1.6))*(1-.08*(j[0]-ylo)/(yhi-ylo));
+   ax.push([ux*r+px*off,uz*r+pz*off,cr,j[2]]);}
+  const C=(i,c)=>{const A=ax[i],k=[[-1,-1],[1,-1],[1,1],[-1,1]][c],ww=w*A[2];
+   return[A[0]+px*k[0]*ww,APY+ww*(1+k[1])+.6,A[1]+pz*k[0]*ww];};
+  for(let i=0;i<n;i++)for(let c=0;c<4;c++){const gone=h3(i,c,9532+Math.round(fa*100))<.18;
+   if(!gone)beam(PL,C(i,c),C(i+1,c),2.6,2.6);
+   if(i%2===0&&h3(c,i,9533)>.25)beam(PL,C(i,c),C(i,(c+1)%4),1.8,1.8);
+   if(h3(i+7,c,9534)>.4)beam(PL,C(i,c),C(i+1,(c+1)%4),1.3,1.3);}};
 
  // ---- six gantry masts and the collar ---------------------------------------
  const mastBroke=k=>dd&&Math.abs(wrapA(SBEAR(k)-LA))<.2;
@@ -469,10 +528,9 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
     kput(GRT,[ca*MSTR+Math.cos(th)*19,y+2.4,sa*MSTR+Math.sin(th)*19],TAN(th),[38,3.2,1.4],null);}
    if(!dd||rng()<.25)kput('strip',[ca*MSTR,y+3.4,sa*MSTR],TAN(a),[26,1.6,1.6],litC(true,.4,.9));}
   if(mastBroke(k)){                          // the head, down on the pad
-   const fa=a+rr(-.3,.3),fr=rr(140,230);
-   for(let i=0;i<16;i++){const t=i/16;
-    beam(PL,[Math.cos(fa)*(fr+t*110),APY+rr(1,9),Math.sin(fa)*(fr+t*110)],
-             [Math.cos(fa)*(fr+(t+1/16)*110)+rr(-9,9),APY+rr(1,9),Math.sin(fa)*(fr+(t+1/16)*110)+rr(-9,9)],3,3);}
+   const fa=a+rr(-.3,.3),fr=rr(140,230),J=[];
+   for(let i=0;i<16;i++){const y0=rr(1,9),dx=rr(-9,9),y1=rr(1,9),dz=rr(-9,9);J.push([y0,dx,y1,dz]);}
+   lyingLattice(fa,fr,110,15,J,1,9);
    lxRubble(Math.cos(fa)*(fr+55),APY,Math.sin(fa)*(fr+55),8,70,70,4.2);
    continue;}
   // the arm that carries the collar ring in from the mast
@@ -530,11 +588,16 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   // so the ring is not obviously symmetrical from any single view
   const down=dd&&(k===0||k===3);
   if(down){const fa=a+rr(-.25,.25);
-   for(let i=0;i<14;i++){const t=i/14;
-    beam(PL,[Math.cos(fa)*(SVR-20+t*150),APY+rr(1,7),Math.sin(fa)*(SVR-20+t*150)],
-             [Math.cos(fa)*(SVR-20+(t+1/14)*150)+rr(-8,8),APY+rr(1,7),Math.sin(fa)*(SVR-20+(t+1/14)*150)+rr(-8,8)],2.6,2.6);}
+   const J=[];
+   for(let i=0;i<14;i++){const y0=rr(1,7),dx=rr(-8,8),y1=rr(1,7),dz=rr(-8,8);J.push([y0,dx,y1,dz]);}
+   lyingLattice(fa,SVR-20,150,11,J,1,7);
    lxRubble(ca*SVR,APY,sa*SVR,6,46,44,3.6);
    continue;}
+  // SIX-FOLD SYMMETRY WAS EXACT: from overhead the ground works were a perfect
+  // rosette. The service towers are plant, not structure, and were built to
+  // different briefs — each stands its own height (160-216 m), and two carry a
+  // second jib. The masts that carry the collar stay identical; these need not.
+  const SVY=SVY0+[0,-26,14,-10,30,-18][k],jib2=k===2||k===5;
   lattice(ca*SVR,sa*SVR,APY,SVY,11,14,-a);
   kput(BX,[ca*SVR,APY+3,sa*SVR],qEuler(0,-a,0),[32,6,32],null);
   for(let y=APY+40;y<SVY-6;y+=34){
@@ -546,6 +609,9 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   beam(PL,[ca*SVR,SVY-4,sa*SVR],[ca*(SVR-62),SVY-16,sa*(SVR-62)],3.4,3.4);
   beam(PL,[ca*SVR,SVY+16,sa*SVR],[ca*(SVR-58),SVY-14,sa*(SVR-58)],2.2,2.2);
   lattice(ca*SVR,sa*SVR,SVY,SVY+18,4,9,-a);
+  if(jib2){const b2=a+(k===2?.9:-.9);
+   beam(PL,[ca*SVR,SVY-30,sa*SVR],[ca*SVR+Math.cos(b2)*54,SVY-44,sa*SVR+Math.sin(b2)*54],3,3);
+   beam(PL,[ca*SVR,SVY-6,sa*SVR],[ca*SVR+Math.cos(b2)*50,SVY-42,sa*SVR+Math.sin(b2)*50],1.8,1.8);}
   // the bridge in to the gantry mast, on the same spine
   if(!mastBroke(k)){
    beam(GRT,[ca*(SVR-11),SVY-40,sa*(SVR-11)],[ca*(MSTR+15),SVY-40,sa*(MSTR+15)],1.6,8);
@@ -889,8 +955,18 @@ function buildLaunch(scene,gx,gz,d,pad){reseed(9520+d);KOFF=[gx,0,gz];
   for(let i=0;i<8;i++){const y=SY0+10+i*17;
    DKG.push(gridSurface((u,v)=>{const a=u*TAU,r=rS(y)*.78*(1-v*.14);
      return[Math.cos(a)*r,y,Math.sin(a)*r];},40,2,{uS:14,vS:2}));}
+  // The payload stack was one smooth lathe — a grey bottle inside the frames.
+  // Its skin now comes in panels with whole bays missing (a hash per 3 x 2.5
+  // cells, so nothing here draws from the stream), and a spine with six
+  // spokes at every frame holds it to the ring frames, so the opened shroud
+  // shows a structure with an inside rather than a second, darker shroud.
   DKG.push(gridSurface((u,v)=>{const a=u*TAU,y=lerp(SY0,SY1-24,v);
-    return[Math.cos(a)*rS(y)*.62,y,Math.sin(a)*rS(y)*.62];},48,20,{uS:18,vS:12}));
+    return[Math.cos(a)*rS(y)*.62,y,Math.sin(a)*rS(y)*.62];},48,20,{uS:18,vS:12,
+    hole:(u,v)=>h3(Math.floor(u*16),Math.floor(v*8),9531)<.38}));
+  beam(PL,[0,SY0+4,0],[0,SY1-30,0],7,7);
+  for(let i=0;i<8;i++){const y=SY0+10+i*17;
+   for(let k=0;k<6;k++){const a=(k+.5*(i%2))/6*TAU;
+    beam(PL,[0,y,0],[Math.cos(a)*rS(y)*.78,y,Math.sin(a)*rS(y)*.78],1.6,2.2);}}
   for(let k=0;k<12;k++){const a=k/12*TAU;
    for(let i=0;i<7;i++){const y0=SY0+10+i*17,y1=y0+17;
     beam(PL,[Math.cos(a)*rS(y0)*.78,y0,Math.sin(a)*rS(y0)*.78],

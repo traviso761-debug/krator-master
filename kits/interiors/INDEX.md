@@ -6,7 +6,7 @@ Interiors: ROOM() registration and an engine-neutral furniture placer (ported fr
 
 Docs: `API.md`, `KNOWN_ISSUES.md`, `README.md`, `SPEC.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/interiors-sets.beast-rider.html`, `dist/interiors-sets.highlands.html`, `dist/interiors-sets.html`, `dist/interiors-sets.locus+abyss.html`, `dist/interiors-sets.post-apoc.html`, `dist/interiors-walk.html`, `dist/interiors.html`
+Built output (never open it; edit `src/` and rebuild): `dist/interiors-sets.html`, `dist/interiors-walk.html`, `dist/interiors.html`
 
 Build: `cd kits/interiors && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -15,16 +15,16 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 5 |  |
+| `00-head.html` | 6 |  |
 | `10-core.js` | 10 | Interiors core: namespace, rng, geometry (1) |
 | `20-rooms.js` | 6 | ROOM(): room registration (1) |
-| `30-programs.js` | 14 | Room programs: what each room kind needs (1) |
+| `30-programs.js` | 15 | Room programs: what each room kind needs (1) |
 | `40-grid.js` | 12 | Occupancy grid and walk search (1) |
 | `45-placer.js` | 28 | The placer: furnishRoom() (1) |
 | `46-planner.js` | 32 **big** | The planner: planBuilding() (1) |
 | `47-life.js` | 16 | Life layer: walkers through doors (1) |
 | `48-audit.js` | 12 | Plan audit (declared geometry) (1) |
-| `48b-sets.js` | 10 | Interior sets: a building kit's interiors as dat (1) |
+| `48b-sets.js` | 11 | Interior sets: a building kit's interiors as dat (1) |
 | `49-exports.js` | 2 | Build, export and the global names (1) |
 | `50-shell.js` | 7 | View: procedural room shells (THREE) (1) |
 | `51-building.js` | 12 | View: planned building shells (THREE) (1) |

@@ -14,6 +14,7 @@ FURN_CULTURE('nomad', { name: 'Eastern Nomads', pack: null, influences: 'pueblo;
   } });
 /* END PALETTE */
 const NOMAD_COMMON = {
+  emblem: { field: 'clothMadder', edge: 'timberSepia', band: 'clothSaffron', ink: 'clothCream', ink2: 'copper' },
   wood: 'timberUmber', woodDark: 'timberSepia', woodLight: 'timberPoplar', woodFam: 'wood',
   cloth: ['clothMadder', 'clothIndigo', 'clothSaffron', 'clothMud'], clothFam: 'cloth',
   accent: 'copper', accentFam: 'bronze', metal: 'blackIron', metalFam: 'metal',

@@ -20,6 +20,11 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  else{// the dark mass keeps clear of the bite; three server floors inside it
   const xi=X0-6,zi=Z0-6,xe=W*.47,ze=Dp*.47;
   kput('boxD',[(-xe+xi)/2,8+H/2,0],null,[xe+xi,H,Dp*.94],null);kput('boxD',[(xi+xe)/2,8+H/2,(-ze+zi)/2],null,[xe-xi,H,ze+zi],null);
+  // the dark mass's two cut faces read as flat grey walls; give them a building
+  // section: floor edges at every server level and a column at every bay (round 2)
+  for(let j=1;j<4;j++){const fy=8+j*15.5;kput(BOXC(d),[xi+.7,fy+.4,(zi+ze)/2],null,[1.4,.9,ze-zi],null);kput(BOXC(d),[(xi+xe)/2,fy+.4,zi+.7],null,[xe-xi,.9,1.4],null);
+   for(let z=zi+4;z<ze;z+=8.5)if(h3(z,j,1707)<.5)kput('strip',[xi+.3,fy+3.4,z],qEuler(0,Math.PI/2,0),[4,1,1],h3(j,z,1708)<.2?new THREE.Color(0x8fd0ff):DEAD);}
+  for(let z=zi+8.5;z<ze;z+=8.5)kput(BOXC(d),[xi+.6,8+H/2,z],null,[1.2,H,1.2],null);for(let x=xi+6;x<xe;x+=6)kput(BOXC(d),[x,8+H/2,zi+.6],null,[1.2,H,1.2],null);
   for(let j=0;j<4;j++){const fy=8+j*15.5;const lim=j===0?1:.93-.18*j;
    kput(BOXC(d),[xi+(W/2*.97-xi)*lim/2,fy+.4,zi+(Dp/2*.97-zi)*lim/2],null,[(W/2*.97-xi)*lim,.8,(Dp/2*.97-zi)*lim],null);
    if(j===3)break;
@@ -57,5 +62,5 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  for(let k=0;k<4;k++)kput(d>0?'colR':'colW',[W/2+10+k*22,0,60],null,[1,12,1],null);kput(d>0?'pipeR':'pipe',[W/2+43,11,60],qEuler(0,0,Math.PI/2),[.8,70,.8],null);
  for(let k=-10;k<=10;k++)for(const sz of [-1,1]){const lit=d>0?rng()<.1:true;if(bite(k*12,H,sz*Dp*.42))continue;kput('strip',[k*12,8+H+.6,sz*Dp*.42],null,[8,1,1],lit?new THREE.Color(0x8fd0ff):DEAD);}
  if(d>0){scatterMoss(0,8,0,0,180,120,3);mossOnRing(0,8+H+.3,0,50,30,3);for(let i=0;i<30;i++){const a=rng()*TAU,L=rr(4,30),q=qEuler(rr(-.12,.12),0,rr(-.12,.12)),sx=rr(.8,1.6),sz=rr(.8,1.6);const x=Dp/2*.9*Math.cos(a),z=Dp/2*.9*Math.sin(a);if(!bite(x,H,z))kput('vine',[x,8+H,z],q,[sx,L,sz],null);}rubbleRing(0,8,0,100,200,70,3);trees(0,0,200,290,20);}
- figures(0,120,4,8);KOFF=[0,0,0];return G;}
+ figures(0,120,4,8);civFlatten(G);KOFF=[0,0,0];return G;}
 

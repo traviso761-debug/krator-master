@@ -16,6 +16,7 @@ FURN_CULTURE('reedlake', { name: 'Reed Lake', pack: null, influences: 'floating 
   } });
 /* END PALETTE */
 const RL_COMMON = {
+  emblem: { field: 'clothLakeBlue', edge: 'reedDark', band: 'clothRush', ink: 'clothWhite', ink2: 'reedGold' },
   wood: 'reedGold', woodDark: 'reedDark', woodLight: 'reedPale', woodFam: 'reed',
   cloth: ['clothLakeBlue', 'clothRush', 'clothMadder', 'clothWhite'], clothFam: 'cloth',
   accent: 'fishSilver', accentFam: 'metal', metal: 'fishSilver', metalFam: 'metal',
