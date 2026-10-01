@@ -84,7 +84,7 @@ function hykPad(x,y,z,R,o){o=o||{};const col=o.col||hC(hPick(HPAL.shell));const 
  if(o.rail){const rr=R*.9,a0=o.rail.a0||0,gap=o.rail.gap||0;const n=Math.max(12,Math.round((TAU-gap)*rr/1.2));const bc=o.rail.col||hC(hPick(HPAL.bone));const pts=[];
   for(let i=0;i<=n;i++){const a=a0+gap/2+(TAU-gap)*i/n;pts.push([x+rr*Math.cos(a),y+1.15,z+rr*Math.sin(a)]);}
   hykPut('hkBone',hykTube(pts,()=>.07,{seg:6,col:bc}));for(let i=0;i<=n;i+=2){const p=pts[i];kput('hkPost',[p[0],y+.58,p[2]],null,[.06,1.15,.06],bc);}}
- ysDeck({x0:w[0]-R,z0:w[2]-R,x1:w[0]+R,z1:w[2]+R,w:R*2,y:w[1],kind:'pad',own:o.own||null});return {x,y,z,r:R};}
+ ysDeck({x0:w[0]-R,z0:w[2]-R,x1:w[0]+R,z1:w[2]+R,w:R*2,y:w[1],kind:'pad',own:o.own||null,world:true});return {x,y,z,r:R};}
 // a spiral stair hugging a round host from y0 down to y1: treads on the face, a rail tube on the outer edge
 function hykStairSpiral(cx,cz,rAt,y0,y1,o){o=o||{};const w=o.w||1.1,rise=.19,run=.64,dir=o.dir||1;const col=o.col||hC(hPick(HPAL.bone));const rail=[];
  let a=o.a0||0,y=y0;const nst=Math.max(1,Math.round((y0-y1)/rise));
@@ -121,7 +121,8 @@ function hykBridge(A,B,o){o=o||{};const w=o.w||2.6;const col=o.col||hC(hPick(HPA
    while(gi<gaps.length){seg.push(lerpPoly(rail,gaps[gi].s0/L));flush();seg.push(lerpPoly(rail,gaps[gi].s1/L));gi++;}flush();
    for(const g of gaps)for(const sg of [g.s0,g.s1]){const q=lerpPoly(rail,sg/L);kput('hkBall',q,null,[.2,.18,.2],col);}
    for(let i=0;i<=n;i+=2){if(inGap(i/n*L))continue;const p=edge[i];kput('hkPost',[p[0],p[1]+.62,p[2]],null,[.06,1.25,.06],col);}}
-  ysDeck({x0:Math.min(P0.x,P1.x)-w,z0:Math.min(P0.z,P1.z)-w,x1:Math.max(P0.x,P1.x)+w,z1:Math.max(P0.z,P1.z)+w,w,y:Math.max(P0.y,P1.y)+rise,kind:kind||'bridge',own:own||null,a:[P0.x,P0.y,P0.z],b:[P1.x,P1.y,P1.z]});
+  {const a=hykW(P0.x,P0.y,P0.z),b=hykW(P1.x,P1.y,P1.z);   // the record is world, whatever frame the deck was drawn in
+   ysDeck({x0:Math.min(a[0],b[0])-w,z0:Math.min(a[2],b[2])-w,x1:Math.max(a[0],b[0])+w,z1:Math.max(a[2],b[2])+w,w,y:Math.max(a[1],b[1])+rise,kind:kind||'bridge',own:own||null,a,b,world:true});}
   return {pts,L,rx,rz,rails};};
  const rise=o.rise!=null?o.rise:Math.min(9,Math.hypot(B.x-A.x,B.z-A.z)*.07);
  const pre=mkPts(A,B,rise);const pts=pre.pts,L=pre.L;const at=t=>lerpPoly(pts,t);
