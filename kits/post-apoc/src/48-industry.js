@@ -50,7 +50,7 @@ function inSmithy(o){
  for(let k=0;k<8;k++)box('iron',kx-2.5,3.9-k*.2,kz-.05+(k%2)*.03,.06,.14,.1,jc(0x5a5a56,.05),0,(k%2)*1.5);cone('iron',kx-2.5,2.35,kz,.09,.3,jc(0x3a3430,.05),5);
   rngSkip(6);FURNISH('pa_hand_cart',kx-2.5,0,kz,0,{v:1,ax:.1,az:-.175});   // the trolley with an engine block under the hoist
  // yard clutter: charcoal sacks, coal heap, barrels, lamp
- rngSkip(10);FURNISH('pa_sacks',-4.15,0,4.95,0,{v:2});   // charcoal sacksbarrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
+ rngSkip(10);FURNISH('pa_sacks',-4.15,0,4.95,0,{v:2});/* charcoal sacks */barrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
  // SOCKETS
  beam('wood',[-1.4,EY-.08,ZF+.1],[1.4,EY-.08,ZF+.1],.12,jc(inW,.06));sock('awning',0,EY-.1,ZF+.15,0,{w:4.6,d:1.9,drop:.5,h:2.8});
  beam('wood',[-6.5,0,5.2],[-6.5,5.6,5.2],.09,jc(inW,.06),true,6);sock('banner',-6.5,5.6,5.25,0,{w:.9,h:2.2});

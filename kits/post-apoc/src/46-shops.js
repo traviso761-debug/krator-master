@@ -152,7 +152,7 @@ function shGeneral(o){
  door(-.9,.3,fz,1.1,2.0,{step:false});win(1.6,1.0,fz,2.2,1.0,{lit:o.v===1});box('plank',1.6,.3,fz+.3,2.5,.08,.5,jc(0x8a6a44,.06));
  win(-4.9,1.0,fz,1.7,.9,{shutters:true});win(4.9,1.0,fz,1.7,.9,{bars:true});
  // goods: hanging on the porch beam, barrels, sacks, a bench, crates, a hitching post
- shHangSkip(12,'pots');for(const x of [-1.75,1.75])FURNISH('pa_goods_rail',x,.75,fz+3.25,0,{v:2});   // pots on the porch beambeam('plain',[-1.2,2.3,fz+3.25],[3.0,2.3,fz+3.25],.01,jc(0x6a5a44,.05));
+ shHangSkip(12,'pots');for(const x of [-1.75,1.75])FURNISH('pa_goods_rail',x,.75,fz+3.25,0,{v:2});/* pots on the porch beam */beam('plain',[-1.2,2.3,fz+3.25],[3.0,2.3,fz+3.25],.01,jc(0x6a5a44,.05));
  bottleString([px0+.3,2.25,fz+3.2],[px1-.3,2.25,fz+3.2],8);
  for(let k=0;k<3;k++){barrel(2.6+k*.02,.3,fz+2.4+k*.55,pick([0x8a3a2c,0x2f62b8,0x4d6f3c]));}sacks(-3.0,.3,fz+2.5,6,.1);shCrateProduce(2.9,.3,fz+.7,.6,.2);
  rngSkip(4);FURNISH('pa_porch_bench',.4,.3,fz+.6,0,{az:.065});

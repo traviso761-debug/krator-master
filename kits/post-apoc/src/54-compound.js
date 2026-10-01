@@ -229,7 +229,7 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  // pads under the placed buildings
  for(const p of placed){W(p.slot.x,0,p.slot.z,p.yaw,()=>{box('conc',0,.05,0,p.def.w+1.4,.04,p.def.d+1.4,jc(0x7a7264,.05));});}
  // yard furniture: fire pit with tyre seats, well, flagpole, lamps
- rngSkip(41+10);FURNISH('pa_camp_fire',0,.05,yzc,0,{v:2});smokeAt(0,.05+.6*1.6,yzc,{r:.54,kind:'fire'});   // the fire pit with its five tyre seats
+ rngSkip(41+30);FURNISH('pa_camp_fire',0,.05,yzc,0,{v:2});smokeAt(0,.05+.6*1.6,yzc,{r:.54,kind:'fire'});   // the fire pit with its five tyre seats
  const wx=v?-3.2:-6.2,wz=yz1-1.6;rngSkip(3*Math.max(3,Math.round(TAU*.95/(TYR.R*2*.98)))+2+8);FURNISH('pa_well',wx,0,wz,0,{v:2});   // the open well
  const fpz=G.L?7:v?2.2:-8.5,fpx=G.L?7.5:v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
  for(const [lx,lz] of G.L?[[-9.2,4.2],[9.2,4.2],[-9.2,17.4],[9.2,17.4],[-3.8,27],[3.8,27],[-3.8,21.5],[3.8,21.5]]:v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
