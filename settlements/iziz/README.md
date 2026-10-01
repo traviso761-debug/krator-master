@@ -19,6 +19,9 @@ python verify.py dist/iziz.html --assert --views "Overview,Palace hill,Arena hil
 * **`KNOWN_ISSUES.md`** — what is broken or unfinished. `build.py` prints the open ones.
 * **`NOTES.md`** — round by round.
 
+Round 4 (Oct 1 2026): the wall moved out (20% more area) and the ring it gained is a farm belt with its own street
+grid; the toppled F breaks in two; a second tripod market; the palace's grand entrance; the issue sweep. See
+NOTES.md round 4.
 Phase 2 (Sep 23 2026): the city, `targets/city/` — see NOTES.md round 3 and
 `API.md` "The city target". Phase 1 (Sep 23 2026): the Vernacular set showcase — 8 dwellings across three
 wealth tiers, shops, tavern, two workshops, scrap smithy, market canopy,

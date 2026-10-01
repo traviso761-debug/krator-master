@@ -39,10 +39,10 @@ function agCellCentre(i,j){return agWorld((i+.5)*AG.pitch,(j+.5)*AG.pitch);}
 const AG_CELLS={};                                                          // 'i,j' -> cluster index
 function agCellOK(i,j){const c=agCellCentre(i,j);const h=AG.pitch/2;
  const pts=[c,agWorld((i)*AG.pitch,(j)*AG.pitch),agWorld((i+1)*AG.pitch,(j)*AG.pitch),agWorld((i)*AG.pitch,(j+1)*AG.pitch),agWorld((i+1)*AG.pitch,(j+1)*AG.pitch)];
- for(const p of pts){if(!insideWall(p[0],p[1],36))return false;if(!canBuild(p[0],p[1]))return false;if(klass(p[0],p[1])!==0)return false;if(inPrecinct(p[0],p[1],4))return false;}
+ for(const p of pts){if(!insideCore(p[0],p[1],36))return false;if(!canBuild(p[0],p[1]))return false;if(klass(p[0],p[1])!==0)return false;if(inPrecinct(p[0],p[1],4))return false;}
  return !AG_CELLS[i+','+j];}
 // buildable plateau area, for the quotas (sampled)
-function plotArea(){let n=0,N=0;for(let x=-560;x<=560;x+=6)for(let z=-560;z<=560;z+=6){if(!insideWall(x,z,22))continue;N++;if(canBuild(x,z)&&!inPrecinct(x,z,0))n++;}return{area:n*36,plateau:N*36};}
+function plotArea(){let n=0,N=0;for(let x=-560;x<=560;x+=6)for(let z=-560;z<=560;z+=6){if(!insideCore(x,z,22))continue;N++;if(canBuild(x,z)&&!inPrecinct(x,z,0))n++;}return{area:n*36,plateau:N*36};}
 const CITY_AREA=plotArea();
 const ANC_TARGET_CELLS=Math.round(.5*CITY_AREA.area/(AG.pitch*AG.pitch));
 const CLUSTERS=[];   // {i0,j0,nx,nz,cx,cz,hill,d,state:'ruin'|'rehab',slots:[]}
@@ -63,6 +63,27 @@ const CLUSTERS=[];   // {i0,j0,nx,nz,cx,cz,hill,d,state:'ruin'|'rehab',slots:[]}
  for(const C of byD){C.state=acc<half?'rehab':'ruin';acc+=C.nx*C.nz;}
  window._ancientCells=cells;window._ancientTarget=ANC_TARGET_CELLS;window._clusters=CLUSTERS.length;
 })();
+// SECOND PASS (Round 3 issue: ~84 of the ~125 cells the half-area rule asks for). The primary network, the precincts and
+// the parks cut the plateau into polygons the lattice's alignment wastes. The same 40 m lattice shifted by half a pitch
+// takes what is left: a cell here must clear every first-pass cluster (and its streets) as well as the usual tests. The
+// first pass is untouched, so no first-pass cluster moved; these clusters are marked `extra` and assigned after.
+(function pickClustersOffset(){reseed(SEED_CITY+43);let cells=window._ancientCells;const O=.5,K={};
+ const inOld=(x,z)=>CLUSTERS.some(C=>{if(C.extra)return false;const u=x*AG.c+z*AG.s,v=-x*AG.s+z*AG.c;return u>C.i0*AG.pitch-AG.street&&u<(C.i0+C.nx)*AG.pitch+AG.street&&v>C.j0*AG.pitch-AG.street&&v<(C.j0+C.nz)*AG.pitch+AG.street;});
+ const ok=(i,j)=>{if(K[i+','+j])return false;const pts=[];for(const a of[0,.5,1])for(const b of[0,.5,1])pts.push(agWorld((i+O+a)*AG.pitch,(j+O+b)*AG.pitch));
+  for(const p of pts){if(!insideCore(p[0],p[1],36)||!canBuild(p[0],p[1])||klass(p[0],p[1])!==0||inPrecinct(p[0],p[1],4)||inOld(p[0],p[1]))return false;}return true;};
+ const N=Math.ceil(CITY.R*1.15/AG.pitch);const order=[];for(let i=-N;i<=N;i++)for(let j=-N;j<=N;j++)order.push([i,j]);
+ for(let k=order.length-1;k>0;k--){const r=Math.floor(rng()*(k+1));const t=order[k];order[k]=order[r];order[r]=t;}
+ const SIZES=[[4,4],[4,3],[3,4],[3,3],[4,2],[2,4],[3,2],[2,3],[2,2]];let added=0;
+ for(const [i0,j0] of order){if(cells>=ANC_TARGET_CELLS)break;if(!ok(i0,j0))continue;let got=null;
+  for(const sz of SIZES){let good=true;for(let i=i0;i<i0+sz[0]&&good;i++)for(let j=j0;j<j0+sz[1]&&good;j++)if(!ok(i,j))good=false;if(good){got=sz;break;}}
+  if(!got)continue;const [nx,nz]=got;const cc=agWorld((i0+O+nx/2)*AG.pitch,(j0+O+nz/2)*AG.pitch);const nh=nearestHill(cc[0],cc[1]);
+  const C={i0:i0+O,j0:j0+O,nx,nz,cx:cc[0],cz:cc[1],hill:nh.key,d:nh.d,slots:[],idx:CLUSTERS.length,extra:true};
+  for(let i=i0;i<i0+nx;i++)for(let j=j0;j<j0+nz;j++)K[i+','+j]=1;CLUSTERS.push(C);cells+=nx*nz;added+=nx*nz;}
+ // reclaimed or ruined by the same rule: nearer a ring than the first pass's median goes reclaimed
+ const dMed=(()=>{const a=CLUSTERS.filter(c=>!c.extra).map(c=>c.d).sort((p,q)=>p-q);return a[Math.floor(a.length/2)]||0;})();
+ for(const C of CLUSTERS)if(C.extra)C.state=C.d<dMed?'rehab':'ruin';
+ window._ancientCells=cells;window._ancientExtra=added;window._clusters=CLUSTERS.length;
+})();
 // streets: every cell edge of every cluster (the ancient grid survives only where ancient buildings stand), then two
 // connectors per cluster to the network as it was before the cluster's own streets went in
 (function paintAncientStreets(){
@@ -78,8 +99,9 @@ function slotOBB(C,i,j,w,h){const c=agWorld((C.i0+i+w/2)*AG.pitch,(C.j0+j+h/2)*A
 function fitSlot(grid,nx,nz,w,h){for(let j=0;j+h<=nz;j++)for(let i=0;i+w<=nx;i++){let ok=true;for(let a=0;a<w&&ok;a++)for(let b=0;b<h&&ok;b++)if(grid[j+b][i+a])ok=false;if(ok)return[i,j];}return null;}
 const QUOTA={};for(const k of HILLKEYS)QUOTA[k]={sky:5,mid:15};
 (function assignSlots(){reseed(SEED_CITY+4);let campus=0,factory=0,gov=0;
- // biggest clusters first so the 4x4 campus and 3x3s find room
- for(const C of CLUSTERS.slice().sort((a,b)=>b.nx*b.nz-a.nx*a.nz)){const grid=[];for(let j=0;j<C.nz;j++){grid.push([]);for(let i=0;i<C.nx;i++)grid[j].push(0);}
+ // biggest clusters first so the 4x4 campus and 3x3s find room; the first pass's clusters, then (reseeded) the extras
+ const firstPass=CLUSTERS.filter(C=>!C.extra).sort((a,b)=>b.nx*b.nz-a.nx*a.nz),extras=CLUSTERS.filter(C=>C.extra).sort((a,b)=>b.nx*b.nz-a.nx*a.nz);
+ for(const C of firstPass.concat(extras)){if(C===extras[0])reseed(SEED_CITY+44);const grid=[];for(let j=0;j<C.nz;j++){grid.push([]);for(let i=0;i<C.nx;i++)grid[j].push(0);}
   const Q=QUOTA[C.hill],wish=[];const cells=C.nx*C.nz,big=cells>=12;
   // towers are 1x1 lots (four to a 2x2 block); the Tripod stands on a 2x2 (its legs splay 60 m) with its market under it.
   // Offices, apartments and houses come as ONE type per group (Travis): a row of parallel slabs, or a quad of 1-4 towers.
@@ -116,7 +138,10 @@ const QUOTA={};for(const k of HILLKEYS)QUOTA[k]={sky:5,mid:15};
  window._quota=JSON.stringify(QUOTA);
 })();
 (function toppledF(){const T=[-11,-432];let best=null,bd=1e9;for(const C of CLUSTERS)for(const o of C.slots){const d=Math.hypot(o.x-T[0],o.z-T[1]);if(d<bd){bd=d;best=o;}}
- if(best&&bd<40){best.kit='skyF';best.kind='sky';best.trans=null;best.group=null;best.cells=null;best.toppled=true;best.fallToward=[-12.6,-398.5];}})();   // Travis: it falls toward (-12.6,-398.5)
+ if(best&&bd<40){best.kit='skyF';best.kind='sky';best.trans=null;best.group=null;best.cells=null;best.toppled=true;best.fallToward=[-12.6,-398.5];best.breakAt=[-6.8,-375.7];}})();   // Travis: it falls toward (-12.6,-398.5) and breaks in two near (-6.8,-375.7)
+// Travis (round 4): the Skyscraper C near (-23.4,288.4) is repaired (decay 3, in a ruined quarter) and carries a tripod market
+(function tripodHere(){const T=[-23.4,288.4];let best=null,bd=1e9;for(const C of CLUSTERS)for(const o of C.slots){if(o.kit!=='skyC')continue;const d=Math.hypot(o.x-T[0],o.z-T[1]);if(d<bd){bd=d;best=o;}}
+ if(best&&bd<40){best.forceD=3;best.market=true;}})();
 // the ruined clusters, for the biome mask (undergrowth creeps back into the ruins)
 for(const C of CLUSTERS)if(C.state==='ruin')RUIN_RECTS.push({x:C.cx,z:C.cz,hx:C.nx*AG.pitch/2,hz:C.nz*AG.pitch/2,ry:-AG.rot});
 cityBakeMasks();

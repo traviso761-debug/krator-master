@@ -28,7 +28,7 @@ function buildVernSchool(G,o){reseed(7501+(o.v|0));const st=vC(vPick(VPAL.stone)
   vB('vWood',tx,TH+2.9,tz,.1,.4,.1,0,wood);kput('vBall',[tx,TH+2.0,tz],null,[.5,.6,.5],vC(0x7a6a2a));}
  // classroom wings: single storey stone with timber verandas facing the yard, copper shed roofs
  for(const s of[-1,1]){const wx=s*10.5,WW=7,WD=13,wz=1.5;vB('vStone',wx,Y0,wz,WW,3.6,WD,0,st);const t=vnCornice('vStone',wx,Y0+3.6,wz,WW,WD,0,st,1);
-  vnShedRoof(wx,t,wz,WD,WW,1.4,s*Math.PI/2,'vCopperB',cu,.9,.16);
+  vnShedRoof(wx,t,wz,WD,WW,1.4,-s*Math.PI/2,'vCopperB',cu,.9,.16);   // high on the outer wall: the roof drains toward the yard, onto the veranda roof below it
   const fx=wx-s*WW/2;for(const z of[-4.2,-1.4,1.4,4.2])vnWin(fx,Y0+1.2,wz+z,-s*Math.PI/2,1.3,1.7,'lit','vStone',st);vnDoor(fx,Y0,wz-5.6,-s*Math.PI/2,1.2,2.4,'vStone',st,vC(0x4a2e1c),false);
   vnVeranda(fx-s*1.3,Y0,wz,WD,2.6,-s*Math.PI/2,.04,3.0,wood);vnShedRoof(fx-s*1.3,Y0+3.0,wz,WD,2.6,.6,-s*Math.PI/2,'vCopperB',cu,.4,.12);
   for(const z of[-3,0,3])vnWin(wx+s*WW/2,Y0+1.4,wz+z,s*Math.PI/2,1.1,1.3,'glass','vStone',st);}
