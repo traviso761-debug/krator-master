@@ -65,6 +65,29 @@ What that asks of the kits and the core:
 - **The weight is one function the core multiplies in,** so whether it comes from a hand
   border, a height band or a blurred painted raster does not matter to a kit.
 
+## The air: `core/atmos`
+
+The atmosphere belongs to the world, not to a kit, and `core/atmos/` (`ATMOS`) is where it
+lives: one clock (`ATMOS.clock`: scaled, pausable, pinned for repeatable shots), one wind
+(a veering base vector times the weather's scale, gust fronts travelling downwind:
+`atmGust`/`atmWind` in GLSL, `ATMOS.windAt` in JS), the weather (rain, fog, storm, easing
+in and out; the host applies fog density and sun in `apply(W)`), haze and night.
+
+The biome core keeps a second clock today: `BIO.WIND.t` (30-core-foliage), advanced by the
+host's ticks, swaying every leaf with no direction and no gusts. Iziz already loads both, so
+its trees sway on their own clock while the banners and the smoke beside them ride ATMOS's
+wind. For one world:
+
+- **One clock and one wind.** When ATMOS is present the foliage hook takes its time from
+  `ATMOS.clock` (a pinned shot freezes the leaves too) and its sway from `atm_wind` and the
+  gust (a storm's 2.4x bends the trees, and a front crosses a forest visibly). Without ATMOS
+  it keeps `BIO.WIND`. This changes the motion, not the geometry.
+- **Altitude in the air.** A steep border is also a pressure drop: haze and fog density
+  should follow height (thicker below the scarp), which is the weather's business.
+- **Export.** `ATMOS.export()` is the contract for a Godot port (`core/atmos/GODOT.md`:
+  instanced sets as MultiMeshes). If the open world goes the same way, the biome core needs
+  the same: each item's instances (full matrices, colours, extras) and each bucket's mesh.
+
 ## What blocks it today (checked in the code, Oct 2026)
 
 1. **One global `BIO`, five versions of its core.** Whichever kit loads last replaces the
