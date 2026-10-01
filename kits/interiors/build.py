@@ -57,7 +57,7 @@ SRC_SETS = os.path.join(HERE, 'src-sets')
 SRC_WALK = os.path.join(HERE, 'src-walk')
 SETS_SHARED = ['72-hover.js', '78-polytool.js', '80-sky-hash.js', '81-sky.js']   # src/ fragments both pages use
 # the catalog files the page loads by path (00-head.html): our names must not clash with theirs
-CATALOG_LOADED = ['krator-asset-engine.js', 'krator-furniture-kit.js', 'krator-master-furniture.js', 'inspector.js'] + sorted(
+CATALOG_LOADED = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-furniture-kit.js', 'krator-master-furniture.js', 'inspector.js'] + sorted(
     f for f in os.listdir(CATALOG) if f.startswith('krator-master-furniture-') and f.endswith('.js'))
 VENDORED = {
     '80-sky-hash.js': os.path.join(ROOT, 'kits', 'catalog', 'src', '80-sky-hash.js'),

@@ -51,6 +51,19 @@
     stable: ['yard', 'store', 'roost']
   };
   IX.roomKinds = function (kind) { return [kind].concat(IX.KIND_ALIAS[kind] || []); };
+  /* a catalog piece's role, for the FOOD and ITEM container slots: its own `role` (FK.set() pieces and
+     harvested pieces that declare one), else guessed from its key and name (harvested pieces without one) */
+  IX.ROLE_GUESS = [
+    [/chest|trunk|locker|coffer|strongbox|cabinet|wardrobe|press/, 'chest'],
+    [/sack|grain|pot|jar|crate|barrel|bin|basket|larder|pantry|goods|stack|churn|crock/, 'store'],
+    [/forge|anvil/, 'forge']
+  ];
+  IX.guessRole = function (A) {
+    if (A.role) return A.role;
+    const k = (A.key + ' ' + (A.name || '')).toLowerCase();
+    for (const g of IX.ROLE_GUESS) if (g[0].test(k)) return g[1];
+    return undefined;
+  };
 
   IX.PROGRAMS = {
     hall:     { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
