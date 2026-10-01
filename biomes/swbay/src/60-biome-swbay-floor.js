@@ -12,7 +12,9 @@
 //                    termite mounds, boulders of lava
 //   the SHORE        reeds in the bay's own blue-green, grass, splay-lets,
 //                    driftwood
-// Three LOD bands along the spine (near / mid / far) at 7 / 14 / 30 m cells.
+// Three LOD bands along the spine (near / mid / far) at 8 / 15 / 32 m cells. Runtime LOD
+// (SWBAY.LOD): each band, the reeds and the logs are also drawn only within their range of
+// the camera, by chunk.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const PAL=SWBAY.PAL,zones=SWBAY.zones,blocked=SWBAY.blocked;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -131,14 +133,17 @@ SWBAY.buildFloor=function(R,q){
   const w=[Z.hyper*1.3,Z.rain*1.2,Z.sav*1.15,Z.shore*.9],tot=w[0]+w[1]+w[2]+w[3];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<3;k++){if(r<w[k])break;r-=w[k];}if(k>=3&&r>w[3])return;
   if(k===0)plantJungle(x,y,z,Z,lv,st,false);else if(k===1)plantJungle(x,y,z,Z,lv,st,true);else if(k===2)plantSav(x,y,z,Z,lv,st);else plantShore(x,y,z,Z,lv,st);}
- // three bands along the LOD spine
- const bands=[[8,450,0],[15,1200,450],[32,1e9,1200]];
- bands.forEach((b,bi)=>{const lv=2-bi;
+ // three bands along the LOD spine; each also drawn only within its range of the camera (runtime LOD)
+ const L=SWBAY.LOD,bands=[[8,450,0],[15,1200,450],[32,1e9,1200]],bandR=[L.floor,L.floorMid,L.farFloor];
+ bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .64*q*(lv===0?.6:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.75,patchScale:.014,pad:.6});});
  // reeds standing in the shallows
+ BIO.range=L.reeds;
  BIO.grid(10,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=1200)return 0;const h=Y(x,z);if(h>.35||h<-1.2)return 0;const Z=zones(x,z);return .5*q*smooth(-1.2,-.3,h)*smooth(.6,.85,Z.wet)*(1-Z.flow*.5);},
   (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;reed(x,Math.max(y,-.6),z,BIO.lodD(x,z)<600?2:1);st.reeds++;},{patch:.8,patchScale:.02,noMask:true,pad:.5});
  // fallen trees in the jungle and the rainforest, driftwood on the shore, dead wood on the savannah
+ BIO.range=L.logs;
  BIO.grid(150,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1500)return 0;const Z=zones(x,z);return (Z.hyper*.8+Z.rain*.6+Z.shore*.4+Z.sav*.15)*q;},(x,y,z,d)=>{const Z=zones(x,z),dry=Z.sav>.5;for(let t=0;t<4;t++)if(log(x+rr(-30,30),y,z+rr(-30,30),st,dry))break;},{patch:0,pad:3});
+ BIO.range=null;
  return{under:st};};
 })();

@@ -97,7 +97,34 @@ and leg-swings are done in the vertex shader from a per-instance phase; the mesh
 the biome's own (added to the host's scene, ticked through BIO.host.ticks), not baked.
 `SWBAY.build({fauna:false})` leaves them out. Species carry the same tags plus `diet`.
 
+## Second pass (runtime LOD, the jetty's shells)
+- The core's runtime LOD, ported from xanadu by way of swlowlands. Every pass builds under
+  `BIO.range`, so bake splits each item and bucket into one mesh per 1200 m chunk and range, and
+  the host calls `BIO.lodTick(camera)` every frame. A hero tree (its foot keys all of it) is drawn
+  within `SWBAY.LOD.tree` (1200 m) of its chunk and as a lite stand-in impostor past that; the far
+  trees beyond the spine's mid ring stay impostors only, always drawn. The floor's bands, the
+  reeds, the logs and the dressing have their own ranges, kept to two values (800 and 1200 m)
+  because equal ranges share a mesh: each distinct one costs a draw call per item per chunk.
+- The stand-ins draw no random numbers (a cap's colour is the hero's `T.capCol`, set before it),
+  so every hero is built exactly as before: the held scene grew by the stand-ins only (0.29M
+  triangles over 9.3k heroes). The first cut kept the 80-triangle blob for wide crowns and cost
+  0.67M; 20-triangle blobs on a one-band bole read the same from the highlands at 0.29M.
+- The prism gum's impostor shades from green on top to its purple leaf2 underneath. From a low
+  camera the sides show, so the jungle ring turned purple when its heroes became stand-ins; the
+  stand-in's underside is mixed 60% back to the green (the far impostors are unchanged).
+- Measured at five presets (1280x800): drawn 10.50M in 57-97 calls at every view -> 4.7-7.0M in
+  169-273 calls; 614 chunk meshes; build ~13 s either way (9-16 s on a shared CPU).
+- The jetty hands `dress()` three shells (deck, piers above the water, kiosk and rubble) without
+  their buried feet, the pier tops under the deck and the piers below the water. A shell with
+  no face a pass grows on sits that pass out, so the piers take no ledge samples and the rubble
+  no soffit samples.
+
 ## Lessons this build cost
+- Chunking is also frustum culling: the instanced items are not frustum-culled and every
+  bucket's bounding sphere spans the map, so before the LOD even a camera on the ground under
+  the prism gums drew all ~10.5M.
+- A raw writer into a bucket (`buildFar`) must push the LOD key per triangle itself, or bake's
+  grouping shifts every later triangle of that bucket into the wrong chunk.
 - A river that only slopes is a ribbon; step the BED (treads and risers) and the same
   ribbon becomes a staircase of pools and falls without any new geometry.
 - A line comment appended to a minified line eats the code after it; use block comments
