@@ -54,14 +54,6 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
 - [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
       the gorge and butte faces may show vertical grain. Not checked here.
-- [ ] THE RIVER IS NOT DRAWN FROM ABOVE. The ribbon's triangles (45, `idx.push(a,cc,dd,a,dd,b)`)
-      wind clockwise seen from above, so they face down, and `MAT_WATER` is single-sided: every
-      camera above the river culls it and sees the bed (the silt and the mud cracks), the reeds
-      and candles standing on it. The pond's fan faces up and shows. Found while checking the
-      candles' impostor (with the material made double-sided for one shot the teal river and the
-      gorge's rapids appear). The fix is one line (wind it `a,dd,cc,a,b,dd`, or `side:DoubleSide`),
-      not made here: it changes every river view and wants its own look at the ribbon's colours
-      and at where the drawn ground's chords (below) rise through the water.
 - [ ] The ground's 17.8 m triangles cut chords across the river's 2.6 m channel: up to ~1.5 m
       off terrainH on the banks. 55 of the 1665 hero candle columns float over the drawn ground
       (up to 0.43 m) and 164 end under it (none over 2 m tall: the mint feet and short side
@@ -69,6 +61,11 @@ Read before changing anything here. `build.py` prints the open count.
       river would fix both (the lip's window shows the cost of doing it by refining the grid).
 
 ## Done
+
+- [x] THE RIVER IS DRAWN FROM ABOVE (Oct 2026). The ribbon's triangles faced down (`a,cc,dd / a,dd,b` in 45)
+      and the water material is single-sided, so every camera above the river culled it and saw the bed; the
+      pond's fan faced up and showed. Wound `a,dd,cc / a,b,dd`: 'The linear oasis' shows the teal river in
+      its channel where it showed a dry bed (before/after shots compared).
 
 - [x] The twist-candles have a far impostor (`far:{spires:3}` on the species record;
       `spiresOf` / `farSpires` in 55), where past the mid radius they used to stop: three
