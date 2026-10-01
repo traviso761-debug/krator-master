@@ -271,3 +271,10 @@ Draw calls at verify's opening view: 113 with LOD, within the budget.
       common_tavern_table, order_reading_table, order_master_chair, salvage_strut_bed, salvage_lamp_stand.
       The interiors planner (64-interiors tryAt) places LAYOUT furniture by w and d, so raising those values
       moves furniture in the world. Re-check every room after such a change.
+
+## Open after merging main (2026-10-01): not addressed
+- [ ] The catalog has not collected the furniture added by the interiors pass. Main retired `yuni-furniture.html`
+      (Yuni's pieces live in kits/catalog), but `kits/catalog/krator-master-furniture.js` was harvested before
+      2026-10-01, so it lacks `poor_lidded_basket`, `poor_food_pot`, `poor_sleeping_mat`, `common_grain_bin`,
+      `poor_reed_mat` and `common_kilim` (64-interiors), and its Yuni pieces still carry the retired `storage` type
+      instead of `container-item` / `container-food` with `capacity`. Re-harvest Yuni into the catalog.

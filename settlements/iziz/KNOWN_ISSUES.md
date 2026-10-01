@@ -223,3 +223,13 @@ match. Iziz has no FURN or PLANT registry, so there is no declaration to correct
 pole with a crossarm, is a rewrite and has no counterpart here. The closest are `vnBannerPole()` and
 `vpBannerPole()`, which are called 19 times in world coordinates with the pole as the origin. Recentring them would
 mean offsetting every call to keep the city where it is, and would gain nothing. The catalog copy is the centred one.
+
+## Open after merging main (2026-10-01): not addressed
+- [ ] Ancients vendor drift from main. Main's Ancients work (towers restand, Hanging City, shared-code pass, Hexahedron
+      polish) changed `kits/ancients/src`, so `--vendor-check` here reports 28 drifted fragments: 10-core, 32-surfaces,
+      34-kitdefs, 36-decor, 38-helpers2, 50-registry, 69-mat-salvage, 77z-iziz-style and the kit-type fragments
+      (40-factory-extras through 89-lab). The same shared fragments drift in Highlands (10-core, 32-surfaces,
+      34-kitdefs, 36-decor, 38-helpers2, 50-registry, 69-mat-salvage) and Jimjam (10-core through 50-registry);
+      Xanadu and Reed Lake vendor from Highlands and will follow. Re-vendor the chain together
+      (Ancients -> Iziz -> Highlands -> Xanadu / Reed Lake, and Jimjam), rebuild, `--assert` and look: the changes
+      alter geometry and looks. Its own session.
