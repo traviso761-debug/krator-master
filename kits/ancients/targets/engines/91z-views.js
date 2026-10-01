@@ -12,7 +12,7 @@ const VIEWS={
  'The western plain':      [-900,1.8,-300, -1866,150,-560],
  // east: the Carapace close on the right, the Press, the Needle, the Gyre, the Strider
  'The eastern plain':      [2000,1.8,1100, 1300,200,-1300],
- // all ten from 1.9 km up
+ // the middle of the plain from 1.9 km up; the Bellows and the Grasp are off the edges
  'The plain from above':   [-200,1900,2700, -100,0,-1100],
  'The Harrow':             ENW('harrow',-260,95,440).concat(ENW('harrow',60,135,0)),
  // the fallen wheel at eye height, the snapped boom hanging behind it
@@ -39,5 +39,18 @@ const VIEWS={
  'The broken top':         ENW('needle',420,5,-260).concat(ENW('needle',0,200,0)),
  'The Ram':                ENW('ram',-280,90,440).concat(ENW('ram',40,50,0)),
  'The torn tail':          ENW('ram',-250,4,70).concat(ENW('ram',-150,50,0)),
+ 'The Loom':               ENW('loom',-330,110,520).concat(ENW('loom',0,130,0)),
+ // at the trough wall, along the warp to where the girder came down
+ 'Under the warp':         ENW('loom',-330,1.8,150).concat(ENW('loom',60,100,0)),
+ 'The Coil':               ENW('coil',-320,110,480).concat(ENW('coil',30,40,0)),
+ 'The sprung end':         ENW('coil',420,6,520).concat(ENW('coil',200,40,120)),
+ 'The Bell':               ENW('bell',-420,130,560).concat(ENW('bell',0,150,40)),
+ // into the mouth of the fallen bell
+ 'The cracked bell':       ENW('bell',-260,3,470).concat(ENW('bell',-40,40,230)),
+ 'The Bellows':            ENW('bellows',-260,90,460).concat(ENW('bellows',40,60,0)),
+ 'The torn pleats':        ENW('bellows',-20,150,240).concat(ENW('bellows',0,60,0)),
+ 'The Grasp':              ENW('grasp',-210,60,360).concat(ENW('grasp',130,90,-20)),
+ // past the dropped stone to the row already set
+ 'The set stones':         ENW('grasp',420,2,160).concat(ENW('grasp',120,40,-150)),
  'Night on the plain':     [-250,1.8,1000, 60,230,-700, 1],
 };

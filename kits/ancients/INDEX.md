@@ -105,6 +105,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ag-blades.js` | 56 **big** |  |
 | `8ah-engines.js` | 33 **big** | THE HARROW (131); THE STRIDER (230); THE BREECH (314); THE GYRE (382); THE PRESS (435) |
 | `8ai-engines2.js` | 19 | THE SLEEPER (32); THE CARAPACE (101); THE RETORTS (148); THE NEEDLE (202); THE RAM (248) |
+| `8aj-engines3.js` | 24 | THE LOOM (52); THE COIL (118); THE BELL (181); THE BELLOWS (240); THE GRASP (302) |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |

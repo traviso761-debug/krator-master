@@ -98,7 +98,7 @@ TARGET_OUT = {
     'arcbeam': 'arcbeam.html',                 # the canyon-spanning beam arcology
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
-    'engines': 'engines.html',                 # five cyclopean machines of unclear purpose
+    'engines': 'engines.html',                 # fifteen cyclopean machines of unclear purpose
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.

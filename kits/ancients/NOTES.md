@@ -1056,3 +1056,52 @@ views, including three eye-level plains and one from 1.9 km up.
 Measured: 326 k scene triangles. The heaviest machine is the Harrow at 69 k of
 250 k. There are 20 registered volumes, all occupied, and the error panel is
 clean. Every view was shot and looked at.
+
+## The Engines: five more (2026-10-01)
+
+Five more in `src/8aj-engines3.js`, all ruined like the other ten:
+* **the Loom**: a 470 m girder on two A-frame trestles, with two rows of
+  cables hanging from a slung bar into a long trough that holds a woven
+  sheet. The east trestle has folded and the girder has broken at x 110. Its
+  east length hangs from the break, and the cables under it lie slack across
+  the plain. The shuttle carriage has fallen nose-down beside the trough.
+* **the Coil**: a verdigris winding of seventeen turns round a 350 m core,
+  sunk to just below its axis inside a ring of spoil banks. It has flanges at
+  both ends, and insulators on the east flange cable it to a line of four
+  pylons running north. The last fifth of the winding has sprung: it arcs off
+  the core, over the bank and onto the plain, ending in loose loops. The bare
+  core shows rings where the turns lay. The east flange has lost a sector, and
+  two pylons are down.
+* **the Bell**: a verdigris bell 145 m across under a 300 m lattice tripod,
+  over a plinth with a well. The chain has parted and the south-east leg has
+  buckled. The bell lies on its side with its mouth to the south-west. It is
+  cracked, a shard of its lip lies beside it, the clapper has been thrown
+  clear, and the chain lies on the plain.
+* **the Bellows**: square pleats stepping between 42 and 54 m every 5 m,
+  290 m long, on cradles. A fixed bulkhead vents through a duct that turns
+  down into the ground, and a bulkhead on rails is pushed by a ram from a
+  buttress. In the ruin the middle sags 34 m (the top drops and the bottom
+  stays on the cradles), the pleats are torn, the rail end has derailed and
+  slewed, one rail is torn up, and the ram has snapped.
+* **the Grasp**: a jointed arm on a slewing turret. Its four-fingered hand
+  closes round a standing stone, and a row of set stones and empty sockets
+  lies to the north. In the ruin the arm has slumped and the open hand rests
+  on the ground. The stone lies broken in two, a finger is off, the
+  counterweight has fallen, and a boom cylinder has burst.
+
+New helpers: `enSweep` (a tube along any path, with parallel-transported
+frames), `enSeg` (a box from a to b) and `enBez` (a cubic path). `EN_STONE`
+is a dark stone material for the Grasp's blocks. r128 geometries have no
+`applyQuaternion`, so `enSeg` rotates through a matrix.
+
+Sites: loom (500,-2350), coil (2750,-1350), bell (-1600,-2050),
+bellows (-2250,850), grasp (1200,1050). The Grasp started at x 1500, where
+its dropped stone filled the left edge of 'The eastern plain'. Seeds
+10200-10244, with 10 new views.
+
+Measured: 473 k scene triangles. The heaviest new machine is the Coil at
+45 k of 250 k. There are 27 registered volumes, all occupied, and the error
+panel is clean. The new views and the four plain views were shot and looked at.
+'The plain from above' does not show the Bellows or the Grasp. A 3 km camera
+that did was lost in the haze.
+

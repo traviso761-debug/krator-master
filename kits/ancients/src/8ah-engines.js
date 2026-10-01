@@ -4,7 +4,7 @@
 // bores, ring machines and piston towers in the engines reference set: heavy
 // plated masses, lattice booms, cable stays, rods and rings, all of it stopped
 // and all of it coming apart. This fragment holds the shared helpers and the
-// first five; 8ai-engines2.js holds the other five.
+// first five; 8ai-engines2.js and 8aj-engines3.js hold the other ten.
 //
 //   THE HARROW   a crawler on four track units, 320 m long. Its boom snapped
 //                and the bucket wheel lies on the plain; one track is thrown,
