@@ -122,9 +122,9 @@
   add({ key: 'hl_rep_shops', name: 'Shop row', culture: 'republican', wealth: MID, types: ['market/shop'], lot: [17, 14],
     bodies: [-4.8, 0, 4.8].map(function (x, i) {
       return { id: 'shop' + (i + 1), poly: rect(4.76, 9, x, 0), y: 0, levels: [{ h: 3.2 }, { h: 2.8 }], wall: 0.3, roof: 'gable', pitch: pt(1.45),
-        doors: [{ at: [r3(x + 1.6), 4.5], w: 0.9 }], program: [['shop', 'store'], ['living', 'bedroom']] };
+        doors: [{ at: [r3(x + 1.6), 4.5], w: 0.9 }], program: [['shop'], ['cottage']] };
     }),
-    note: 'three narrow fronts, each a shop with its family above; the shutter counter is the shop window; lofts left out' });
+    note: 'three narrow fronts (4.2 m inside, the stair along one side leaves no room for a second room per floor): each a shop with its family\'s one room above; the shutter counter is the shop window; lofts left out' });
   add({ key: 'hl_rep_market_hall', name: 'Market hall', culture: 'republican', wealth: RICH, types: ['market/shop', 'civic'], lot: [24, 16],
     bodies: [{ id: 'council', poly: rect(18, 12.2), y: 4.4, levels: [{ h: 3.4 }], wall: 0.25, roof: 'gable', pitch: pt(1.2),
       doors: [{ at: [-9, -4.4], w: 1.1 }], program: ['hall', 'antechamber', 'study'] }],
@@ -246,13 +246,13 @@
     note: 'the buttressed hall; the open forge shed on the +x side is left out' });
   add({ key: 'hl_rep_guild_mech', name: "Mechanics' Guild", culture: 'republican', wealth: CIVIC, types: ['civic', 'industry'], lot: [40, 22],
     bodies: [{ id: 'guildhall', poly: rect(18, 10, -1, -2), y: 0.6, levels: [{ h: 4.4 }, { h: 3.4 }], wall: 0.4, roof: 'gable', pitch: pt(1.2),
-      doors: [{ at: [-1, 3], w: 1.8 }], program: [['hall', 'workshop', 'store'], ['study', 'library', 'workshop']] },
+      doors: [{ at: [-1, 3], w: 1.8 }], program: [['hall', 'store'], ['workshop', 'library']] },
       { id: 'annex', poly: rect(6.4, 10, -13.2, -2), y: 0, levels: [{ h: 4 }], wall: 0.3, roof: 'flat',
         doors: [{ at: [-10, -2], w: 1.2 }], program: ['workshop', 'store'] }],
     note: 'the glazed workshop annex (no door drawn: one assumed in the wall it shares with the hall); the clocktower (open base, timber belfry) is left out' });
   add({ key: 'hl_rep_guild_astro', name: "Astronomers' Guild", culture: 'republican', wealth: CIVIC, types: ['civic'], lot: [42, 22],
     bodies: [{ id: 'guildhall', poly: rect(16, 10, -4, -1), y: 0.6, levels: [{ h: 4 }, { h: 3.2 }], wall: 0.4, roof: 'gable', pitch: pt(1.2),
-      doors: [{ at: [-4, 4], w: 1.7 }], program: [['hall', 'library', 'store'], ['study', 'study', 'library']] }],
+      doors: [{ at: [-4, 4], w: 1.7 }], program: [['hall', 'store'], ['library', 'study']] }],
     rooms: [{ id: 'observatory', kind: 'study', poly: circle(3.85, 8, -15.6, -1), y: 0, h: 6.5, doors: [{ at: [-15.6, 2.55], w: 1.1 }] },
       { id: 'tower', kind: 'study', poly: circle(2.9, 8, 10, -1), y: 0, h: 4.2, doors: [{ at: [10, 1.68], w: 1.2 }] }],
     note: 'the octagonal observatory drum and the octagonal tower\'s ground room as explicit rooms; the tower\'s upper floors and the telescope pavilion on top are left out' });
@@ -382,9 +382,9 @@
     rooms: [{ id: 'silo', kind: 'cottage', poly: circle(2.85, 16), y: 0.4, h: 2.8, doors: [{ at: [-2.795, 0.483], w: 1 }] }],
     note: 'the silo\'s ground floor as a round cottage (its upper ring of windows: an upper floor with no stair drawn, left out), the upper storey of the frame annex up its outside stair (the annex ground floor has no door drawn)' });
   add({ key: 'hl_rep_tank_row', name: 'Tank-cluster row', culture: 'republican', wealth: POOR, types: MF, units: 3, lot: [22, 8],
-    rooms: [{ id: 'tank1', kind: 'cottage', poly: circle(2.4, 16, -6.5, 0), y: 0.35, h: 2.6, doors: [{ at: [-6.5, 2.4], w: 0.9 }] },
-      { id: 'tank2', kind: 'cottage', poly: circle(2.0, 16, 0, 0), y: 0.35, h: 2.6, doors: [{ at: [0, 2.0], w: 0.9 }] },
-      { id: 'tank3', kind: 'cottage', poly: circle(2.7, 16, 6.5, 0), y: 0.35, h: 2.6, doors: [{ at: [6.5, 2.7], w: 0.9 }] }],
+    rooms: [{ id: 'tank1', kind: 'cottage', poly: circle(2.5, 8, -6.5, 0), y: 0.35, h: 2.6, doors: [{ at: [-6.5, 2.31], w: 0.9 }] },
+      { id: 'tank2', kind: 'cottage', poly: circle(2.1, 8, 0, 0), y: 0.35, h: 2.6, doors: [{ at: [0, 1.94], w: 0.9 }] },
+      { id: 'tank3', kind: 'cottage', poly: circle(2.8, 8, 6.5, 0), y: 0.35, h: 2.6, doors: [{ at: [6.5, 2.59], w: 0.9 }] }],
     note: 'one household in the ground room of each standing tank; their upper floors (bridged rings of windows, no stair drawn) and the frame house wedged between them (no door) are left out' });
   add({ key: 'hl_rep_crawler', name: 'Crawler house', culture: 'republican', wealth: POOR, types: SF, lot: [16, 7],
     bodies: [{ id: 'container', poly: rect(6, 2.44, -2.8, -0.6), y: 2.94, levels: [{ h: 2.45 }], wall: 0.06, roof: 'flat',
@@ -437,17 +437,17 @@
       { id: 'office', poly: rect(4.2, 5, 14.6, -2), y: 0, levels: [{ h: 2.8 }], wall: 0.2, roof: 'gable', pitch: pt(1.5),
         doors: [{ at: [14.6, 0.5], w: 0.9 }], program: ['study'] }],
     note: 'the sawtooth shed (roof drawn flat) and the frame office (no door drawn: one assumed on its front)' });
-  add({ key: 'hl_rep_gasholder', name: 'Gasholder tenement', culture: 'republican', wealth: POOR, types: MF, units: 9, lot: [26, 26],
+  add({ key: 'hl_rep_gasholder', name: 'Gasholder tenement', culture: 'republican', wealth: POOR, types: MF, units: 5, lot: [26, 26],
     bodies: [0, 1, 2, 3, 4].map(function (k) {
       const a = -1.1 + k * 0.55, px = Math.sin(a) * 11.6, pz = Math.cos(a) * 11.6;
-      return { id: 'ring' + (k + 1), poly: rrect(3.6, 3.2, px, pz, a), y: 0, levels: [{ h: 2.6 }], wall: 0.15, roof: 'gable', pitch: pt(1.6),
-        doors: [{ at: turn([0, 1.6], a, px, pz), w: 0.85 }], program: ['cottage'] };
+      return { id: 'ring' + (k + 1), poly: rrect(3.6, 3.2, px, pz, a), y: 0, levels: [{ h: 2.6 }], wall: 0.1, roof: 'gable', pitch: pt(1.6),
+        doors: [{ at: turn([1.1, 1.6], a, px, pz), w: 0.8 }], program: ['cottage'] };
     }).concat([0, 1, 2, 3].map(function (k) {
       const a = k * Math.PI / 2 + 0.4, px = Math.sin(a) * 4.95, pz = Math.cos(a) * 4.95;
-      return { id: 'crown' + (k + 1), poly: rrect(3.4, 3, px, pz, a), y: 10.5, levels: [{ h: 2.4 }], wall: 0.15, roof: 'gable', pitch: pt(1.6),
-        doors: [{ at: turn([0, 1.5], a, px, pz), w: 0.85 }], program: ['cottage'] };
+      return { id: 'crown' + (k + 1), poly: rrect(3.4, 3, px, pz, a), y: 10.5, levels: [{ h: 2.4 }], wall: 0.06, roof: 'gable', pitch: pt(1.6),
+        doors: [{ at: turn([1.15, 1.5], a, px, pz), w: 0.75 }], program: ['bedroom'] };
     })),
-    note: 'nine one-room frame houses: five ringing the drum\'s foot, four on its crown (up the stair); none draws a door, each is given one on its outer face. The drum itself is the gasholder\'s void' });
+    note: 'nine one-room frame houses, none with a door drawn (each is given one on its outer face): the five ringing the drum\'s foot are the households (one-room homes); the four on its crown (up the stair, 3.3 x 2.9 m inside) do not hold a hearth beside a bed and a chest, so they are planned as sleeping huts. The drum itself is the gasholder\'s void' });
   add(Object.assign({ key: 'hl_rep_arco_quarter', name: 'The Fallen Arcology', culture: 'republican', wealth: POOR, types: ['multi-family dwelling', 'ruin'], units: 2, lot: [118, 70],
     note: 'the houses at the cleft\'s mouth (the izba, the two-room house, the lantern stall, as their own items placed by the builder); the frame towers in the cleft (random sizes), the terrace huts and crown houses (no doors) and the wreck itself are left out' },
     merge([place('hl_rep_house_poor_a', -12, 24, 0, 'izba.'), place('hl_rep_house_poor_b', -23, 26, 0.1, 'house.'), place('hl_rep_lantern_stall', 12, 24.5, 0, 'stall.')])));
@@ -564,8 +564,8 @@
       doors: [{ at: [0, 2.5], w: 0.9 }], program: ['cottage'] }],
     note: 'on stilts (floor 1.6 m); hung on a cliff the floor is at the placement height' });
   add({ key: 'hl_tri_small_b', name: 'Round bamboo hut', culture: 'painted', wealth: POOR, types: SF, lot: [9, 11],
-    rooms: [{ id: 'hut', kind: 'cottage', poly: circle(2.6, 16), y: 0.9, h: 2.3, doors: [{ at: [0, 2.6], w: 0.9, swing: 'none' }] }],
-    note: 'the mat drum (R 2.7) on its disc, floor 0.9 m' });
+    rooms: [{ id: 'hut', kind: 'cottage', poly: circle(2.7, 8), y: 0.9, h: 2.3, doors: [{ at: [0, 2.49], w: 0.9, swing: 'none' }] }],
+    note: 'the mat drum (R 2.7, its 16 culms read as an octagon) on its disc, floor 0.9 m' });
   add({ key: 'hl_tri_small_c', name: 'Painted earth-lodge', culture: 'painted', wealth: POOR, types: SF, lot: [11, 11],
     bodies: [{ id: 'lodge', poly: rect(5.6, 5.2), y: 0.35, levels: [{ h: 2.15 }], wall: 0.3, roof: 'gable', pitch: pt(0.9),
       doors: [{ at: [0, 2.6], w: 0.9 }], program: ['cottage'] }] });
@@ -621,7 +621,7 @@
 
   /* ================================================================ TRIBAL — salvage (85b-tri-salvage.js) */
   add({ key: 'hl_tri_tank_round', name: 'Tank roundhouse', culture: 'painted', wealth: POOR, types: SF, lot: [11, 16],
-    rooms: [{ id: 'tank', kind: 'cottage', poly: circle(1.95, 16), y: 1.5, h: 3.4, doors: [{ at: [0, 1.95], w: 0.9 }] }],
+    rooms: [{ id: 'tank', kind: 'cottage', poly: circle(2.05, 8), y: 1.5, h: 3.4, doors: [{ at: [0, 1.89], w: 0.9 }] }],
     note: 'a tank stood on end (4 m across) on the stilted deck, one round room' });
   add({ key: 'hl_tri_cont_long', name: 'Container longhouse', culture: 'painted', wealth: MID, types: MF, units: 2, lot: [18, 16],
     bodies: [-1, 1].map(function (s, i) {
