@@ -478,10 +478,10 @@ function buildHill(scene,gx,gz,d){reseed(9660+d);KOFF=[gx,0,gz];
   // 260 m annulus 0.2-0.35 m off the plane, which at 2-3 km (depth step ~0.5 m
   // with near=1) z-fought it in a stair-stepped fringe — invisible on the
   // intact hill, whose slope is the plain's colour, glaring on the green ruin.
-  // It now dives under the plane within ~45 m of the toe and ends 3 m down, so
+  // It now dives under the plane within ~27 m of the toe and ends 3 m down, so
   // the seam is a crisp intersection, not a fight.
   GR.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(C.RTOE,C.RTOE+260,v);
-    return pol(r,th,hillNat(C.RTOE,th)-3.3*Math.pow(v,1.3));},NU,6,{uS:490,vS:11}));
+    return pol(r,th,hillNat(C.RTOE,th)-3.3*v);},NU,6,{uS:490,vS:11}));
   // the flattened summit, with a 3 m crown on it so it is not dead level
   PV.push(gridSurface((u,v)=>{const th=u*TAU,r=C.RSUM*(1-Math.pow(v,.8));
     return pol(r,th,C.SUMY+3*(1-v)*(1-v));},112,12,{uS:260,vS:80}));}
