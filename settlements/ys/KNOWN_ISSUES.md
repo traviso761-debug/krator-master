@@ -50,3 +50,10 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       wall from the pod's `inner` surface rather than the nominal radius.
 - [ ] The view select does not follow a preset chosen by the harness or by `_api.setView` (cosmetic; the port
       behaves the same).
+- [ ] The furniture set's bowls, basins and the hearth have no inner skin (drawn before `F.lathe` took `flip`): a
+      `dark` fill a finger under the rim stands in for the hollow. Re-draw each as two lathes, the inner one flipped.
+- [ ] The kit sheet draws variant 0 of every furniture piece, so the shell stool's barnacle variant is never seen.
+- [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
+      let `F.pick('coral')` read true on cushions and slings.
+- [ ] The karst stacks are a heightfield: no overhangs or undercut bases, and the "knobbed top" is a noisy plateau.
+

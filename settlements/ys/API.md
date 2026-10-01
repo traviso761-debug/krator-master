@@ -165,10 +165,15 @@ placeFurn(key,x,z,ry,{y,seed,variant,wealth,room})       // one piece in WORLD s
 F: rnd rr chance pick(paletteKey|hexes) p P dir y wealth variant seed
    box(lx,ly,lz,w,h,d,rot,col,m) cyl(lx,ly,lz,r,h,col,m,rot) cone(lx,ly,lz,r,h,col,m) ball(lx,ly,lz,r,col,m)
    blob(lx,ly,lz,rx,ry,rz,col,m,rot) dome(lx,ly,lz,r,h,col,m)      // instanced; ly = the centre's height
-   lathe(lx,lz,[[r,y],...],col,m,{nu,nv,lobes,flute,inside}) tube([[x,y,z],...],r|fn,col,m,{seg})   // merged shells
-   light(lx,ly,lz,{cool,r,bare,bracket})
+   lathe(lx,lz,[[r,y],...],col,m,{nu,nv,lobes,flute,rings,noise,twist,tilt,ops,flip,inside,scale:[sx,sz]})
+   tube([[x,y,z],...],r|fn,col,m,{seg,flip,inside})                 // merged shells; both return the geometry
+   light(lx,ly,lz,{cool,r,bare,bracket:[lx,ly,lz]})                 // the bracket is in the piece's frame too
 ```
-`m` is a material family: `shell` (matte) `nacre` `bone` `weed` (cloth) `lens` (glass) `dark`. Colours come
+`rot` is a yaw or `[rx,ry,rz]`. `m` is a material family: `shell` (matte) `nacre` `bone` `weed` (cloth) `lens`
+(glass) `barn` (barnacle grey) `dark`; `weed` carries the weed map's green cast, so cloth reads teal, sea-green or
+pale, not coral. A bowl's hollow is two lathes, the inner one `flip:true`. A piece placed from inside a building
+builder still lands in world space: placeFurn stands the builder's frame down round the build and tags the
+lamp marks with the building. Colours come
 from `F.pick('shell'|'nacre'|'coral'|'teal'|'bone'|'weed'|'floor'|...)` (HPAL keys) or an array of hexes; never a
 literal colour on a piece. A piece is drawn in the local frame (origin at the footprint centre on the anchor
 plane, +z the front) and lands in world space; a building builder placing its own furniture converts the spot
@@ -203,6 +208,17 @@ life layer). `_api.city.nav()` and `_api.city.navPath(...)`.
 The lattice (12 m cells over the city core) is classified once after the build from the real terrain and the real
 `NAV_EXTRA` records; before that, `landDist` falls back to the design shoreline. `_api.city.surf()` counts the classes;
 `_api.city.surfAt(x,z)` and `_api.city.landDist(x,z)` read them.
+
+**The natural ground** (`84-city-geo.js`): `YS_NAT(x,z)` is `ysNatBase` (shore, beach, hinterland, seabed) blended
+to the sink plane under the drowned grid (`ysSinkMix`/`ysSinkY`, 87), then the karst stacks (`CITY.STACKS`
+`{x,z,r,h,n}`, `ysKarstH`: a near-vertical wall over 8 m on a plan that wanders ±20 %, a knobbed top `h` above the
+water or the ground, `ysKarst(x,z)` the 0..1 field for the painter), then the river (`CITY.RIVER {pts,w0,w1,depth,rise}`,
+`ysRiverY`: the bed follows `ysRiverProfile()`, the centre-line ground smoothed over ±100 m, taken as the running
+minimum from upstream, `depth` under it and quantised to `rise` m terraces, each pool with a rimstone lip at its
+downstream edge; the valley is 2.2 widths wide). Every stack and the Amphitriton island are shore loops.
+**Paint** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`),
+`LAYOUT.highways` (three), and `CITY_STAMPS` of `kind:'paint'` (the adapted terrain: colour only, no reshaping, no
+`y`) for the dry streets, the highways and the paved or soiled precincts. The placer never puts a footprint on a street.
 
 ## Animation
 

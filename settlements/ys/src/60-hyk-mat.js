@@ -110,3 +110,4 @@ kdef('hkBarnB',new THREE.SphereGeometry(1,8,6),MAT.hkBarnI);             // barn
 kdef('hkTread',new THREE.BoxGeometry(1,1,1),MAT.hkBoneI);                // stair treads, sills, thresholds
 kdef('hkPost',new THREE.CylinderGeometry(1,1,1,8),MAT.hkBoneI);          // stalks, rails, posts (base at the centre: y-centred)
 kdef('hkWeedCard',new THREE.PlaneGeometry(1,1),MAT.hkWeedI);             // a hanging weed ribbon (top edge at the anchor after a shift)
+hykFurnKitDefs();                                                        // the furniture frame's primitives (35-furn-frame.js), now that the materials exist
