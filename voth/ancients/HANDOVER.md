@@ -2,7 +2,9 @@
 
 ## PAUSED 2026-09-29 (user stopped to save usage) — resume here
 - Merged and published: QA domestic, towers, civic, this month's arcologies (arcC). Kit artifact https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf.
-- Unmerged WIP from seven stopped agents: `voth/wip/` (README there lists each patch and its base).
+- PORT round 3 DONE 2026-10-01: land blocks (lb*, ch*), sea platform spYard, infra (inspector, bounds toggle `b`, grid placement, every vessel, `harbour` target) merged; showcase 9.06M tris / 883 calls.
+- Branch history was rewritten upstream (shots purged); `shots/` is now gitignored. Old history kept locally as `backup-pre-rewrite` only.
+- Unmerged WIP from three stopped agents (QA arcA, QA arcB, lighthouse): `voth/wip/` (README lists each patch and its base; apply as diffs, never merge old-history branches).
 - Queue after those land: (3) arco1/arco2 alternates of every building type; (4) six ancient machines; (5) port arcology;
   low priority: regroup kit rows by category, skyscraper stumps beside each tower, Iziz variants (Sky C tripod market,
   small podiums), dish floating wreckage, bunker launchers pointing forward/down like intact, shrink podiums for density,
