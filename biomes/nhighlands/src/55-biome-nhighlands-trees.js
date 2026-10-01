@@ -84,7 +84,7 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 // a drooping SPRAY (frond card pinned at the branch, hanging out along a)
-function sprayAt(x,y,z,a,L,pitch,col){BIO.put('spray',[x,y,z],qEuler(rr(-.25,.25),-a,pitch),[L,L*rr(.8,1),L*rr(.9,1.3)],col);}
+function sprayAt(x,y,z,a,L,pitch,col){BIO.put('spray',[x,y,z],qEuler(rr(-.25,.25),-a,pitch),[L,L*rr(.8,1),L*rr(1.5,2)],col);}   // broad: a narrow spray reads as a fishbone at range
 // HANGING MOSS (temperate) or BEARD LICHEN (boreal) off a point
 function drape(x,y,z,len,lichen){const it=lichen?'beard':'drape',set=lichen?PAL.lichen:PAL.drape;
  BIO.put(it,[x,y,z],qEuler(0,rr(0,TAU),0),[rr(.7,1.4)*(lichen?.7:1),len,1],bright(vary(pick(set),.02,.06,.05),lichen?1.2:1.25));}
@@ -136,16 +136,20 @@ B.conifer=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb,R=T.crownR,s
  if(lv===2&&clear>.15){const nd=Math.round(H*clear/3.5);for(let k=0;k<nd;k++){const u=rr(.12,clear),a=rr(0,TAU),y=T.y0+H*u,L=rr(.8,2.6)*Math.min(1.5,rb);
   const e=[T.x+Math.cos(a)*(rAt(u)+L),y-L*rr(.1,.4),T.z+Math.sin(a)*(rAt(u)+L)];BIO.beam('rod',[T.x,y,T.z],e,.07,.04,shade(rc,-.1));
   if(moss>.3&&rng()<moss)drape(e[0],e[1],e[2],rr(1.2,3.6),false);else if(lichen>.2&&rng()<lichen)drape(e[0],e[1],e[2],rr(.6,1.6),true);}}
- const step=f.step*(lv===2?1:3)*Math.max(.8,Math.min(1.25,H/40)),y0c=H*clear,top=H*.96;let spread=0;
- const flat=f.top==='flat'&&H>S.H[0]*1.1;
- for(let y=y0c,t=0;y<top;y+=step*rr(.85,1.15),t++){const v=(y-y0c)/(top-y0c),Rt=Math.max(.5,R*(flat&&v>.8?Math.max(prof(v),.42):prof(v))*rr(.85,1.12)),nB=lv===2?(Rt>3?ri(4,5):ri(3,4)):3,a0=t*GOLD+rr(-.3,.3);
+ // BUSHY, NOT TWIGGY: close tiers (mid range too), every arm clothed to the bole in large needle masses that
+ // overlap, a mass round the bole at each tier so the crown never reads as a pole, and the arm (a rod) only
+ // as far as the masses hide it
+ const step=f.step*(lv===2?1:2.2)*Math.max(.8,Math.min(1.25,H/40)),y0c=H*clear,top=H*.96;let spread=0;
+ const flat=f.top==='flat'&&H>S.H[0]*1.1,inner=S.item==='spray'?'needle':S.item,hi=S.item==='spray'?shade(hc,-.06):hc;
+ for(let y=y0c,t=0;y<top;y+=step*rr(.85,1.15),t++){const v=(y-y0c)/(top-y0c),Rt=Math.max(.5,R*(flat&&v>.8?Math.max(prof(v),.42):prof(v))*rr(.85,1.12)),nB=lv===2?(Rt>3?ri(5,6):ri(4,5)):(Rt>2.4?4:3),a0=t*GOLD+rr(-.3,.3);
+  if(Rt>.9&&!f.sparse){const si=Math.max(1.3,Rt*(lv===2?.8:1.05));clumpAt(inner,T.x,T.y0+y+si*.1,T.z,si,.85,bright(hi,.95),T.x,T.y0+y,T.z,Rt+1,Math.max(2,step));st.clumps++;}
   for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.2,.2),el=lerp(.18,-.4,f.droop)*(1-v)+v*.45,L=Rt*rr(.85,1.08);
    const sx=T.x,sz=T.z,sy=T.y0+y,d=dirOf(a,el),ex=sx+d[0]*L,ey=sy+d[1]*L-f.droop*L*.18,ez=sz+d[2]*L;
-   if(lv===2&&L>1.6)BIO.beam('rod',[sx,sy,sz],[ex,ey,ez],Math.min(.22,rb*.07+.03),.03,rc);
-   if(lv<2&&S.item!=='spray'){const sz2=Math.max(1.4,Rt*1.45);clumpAt(S.item,sx+d[0]*Rt*.35,sy+sz2*.1,sz+d[2]*Rt*.35,sz2,.75,hc,T.x,T.y0+y,T.z,Rt+1,Math.max(2,step));st.clumps++;spread=Math.max(spread,L);if(snow>0&&rng()<snow*.8)BIO.put('needle',[sx+d[0]*Rt*.35,sy+sz2*.4,sz+d[2]*Rt*.35],qEuler(0,rr(0,TAU),0),[sz2*.8,sz2*.25,sz2*.8],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});continue;}
-   if(S.item==='spray'){const n=lv===2?(L>3?4:3):2;for(let c=0;c<n;c++){const fr=.2+.7*(c+1)/n;sprayAt(sx+d[0]*L*fr*.6,sy+d[1]*L*fr*.6-f.droop*L*.06,sz+d[2]*L*fr*.6,a+rr(-.5,.5),L*rr(.6,.85),-f.droop*rr(.4,.9)+.1,bright(hc,rr(.85,1.12)));st.sprays++;}}
-   else{const n=lv===2?(L>3.4?4:L>1.8?3:2):1;for(let c=0;c<n;c++){const fr=n===1?.65:.25+.72*c/(n-1),sz2=Math.max(1.3,L*rr(.62,.8))*(f.sparse?.8:1);
-     clumpAt(S.item,sx+(ex-sx)*fr,sy+(ey-sy)*fr+sz2*.05,sz+(ez-sz)*fr,sz2,f.sparse?.45:.62,hc,T.x,T.y0+y,T.z,Rt+1,Math.max(2,step),null);st.clumps++;}
+   if(lv===2&&L>2.6)BIO.beam('rod',[sx,sy,sz],[sx+(ex-sx)*.62,sy+(ey-sy)*.62,sz+(ez-sz)*.62],Math.min(.16,rb*.05+.025),.03,rc);
+   if(lv<2&&S.item!=='spray'){const sz2=Math.max(1.6,Rt*1.5)*(f.sparse?.85:1),px=sx+d[0]*Rt*.45,pz=sz+d[2]*Rt*.45;clumpAt(S.item,px,sy+sz2*.08,pz,sz2,f.sparse?.6:.8,hc,T.x,T.y0+y,T.z,Rt+1,Math.max(2,step));st.clumps++;spread=Math.max(spread,L);if(snow>0&&rng()<snow*.8)BIO.put('needle',[px,sy+sz2*.4,pz],qEuler(0,rr(0,TAU),0),[sz2*.8,sz2*.25,sz2*.8],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});continue;}
+   if(S.item==='spray'){const n=lv===2?(L>3?4:3):2;for(let c=0;c<n;c++){const fr=.2+.7*(c+1)/n;sprayAt(sx+d[0]*L*fr*.6,sy+d[1]*L*fr*.6-f.droop*L*.06,sz+d[2]*L*fr*.6,a+rr(-.5,.5),L*rr(.7,.95),-f.droop*rr(.4,.9)+.1,bright(hc,rr(.85,1.12)));st.sprays++;}}
+   else{const n=lv===2?(L>4?4:L>2.2?3:2):1;for(let c=0;c<n;c++){const fr=n===1?.65:.3+.7*c/(n-1),sz2=Math.max(1.6,L*rr(.74,.94))*(f.sparse?.8:1);
+     clumpAt(S.item,sx+(ex-sx)*fr,sy+(ey-sy)*fr+sz2*.05,sz+(ez-sz)*fr,sz2,f.sparse?.5:.72,hc,T.x,T.y0+y,T.z,Rt+1,Math.max(2,step),null);st.clumps++;}
     if(f.curtain&&lv===2&&L>2)for(let c=0;c<2;c++){const fr=rr(.4,.9);sprayAt(sx+(ex-sx)*fr,sy+(ey-sy)*fr,sz+(ez-sz)*fr,a+rr(-.6,.6),rr(1,1.8),-1.25,bright(hc,.9));st.sprays++;}}
    // SNOW on the upper side of the high boreal crowns
    if(snow>0&&rng()<snow*.9){const fr=rr(.35,.8);BIO.put('needle',[sx+(ex-sx)*fr,sy+(ey-sy)*fr+.25,sz+(ez-sz)*fr],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[L*.6,L*.18,L*.6],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});st.snow++;}
@@ -240,15 +244,18 @@ B.birch=function(T,st,lv){const S=SP[T.sp],H=T.H,ns=lv===2?ri(2,5):2,hc=vary(pic
 B.pine=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=T.lean!=null?T.lean:rr(0,TAU),bend=rr(.04,.14)*H,n=7,pts=[];
  for(let i=0;i<=n;i++){const t=i/n,s=Math.sin(t*Math.PI*.8)*bend;pts.push({x:T.x+Math.cos(la)*s,y:T.y0-.3+H*.82*t,z:T.z+Math.sin(la)*s,r:rb*(1-.65*t)*(1+.4*Math.exp(-t*8))});}
  for(let i=0;i<n;i++){const a=pts[i],b=pts[i+1],col=(i/n<.35)?barkCol(S,2).lerp(C(0x6a625a),.6):barkCol(S,i%2);st.limb+=BIO.tube(fam(S),[a,b],col,{seg:lv===2?8:6,cap:i===n-1});}
- const hc=vary(pick(S.leaf),.02,.06,.05),top=pts[n],nL=lv===2?ri(3,6):3,a0=rr(0,TAU);let spread=T.crownR*.5;
- const pad=(x,y,z,R)=>{const m=lv===2?ri(3,6):2;for(let c=0;c<m;c++){const a=rr(0,TAU),d=R*.5*Math.sqrt(rng());clumpAt('needle',x+Math.cos(a)*d,y+rr(-.1,.3)*R*.3,z+Math.sin(a)*d,R*rr(.8,1.05),.42,hc,x,y-R*.4,z,R,R*.5);st.clumps++;}
+ const hc=vary(pick(S.leaf),.02,.06,.05),top=pts[n],nL=lv===2?ri(4,7):4,a0=rr(0,TAU);let spread=T.crownR*.5;
+ // a PAD: a thick cloud of needle masses (the pines of ref 08), a darker layer under it so it has depth
+ const pad=(x,y,z,R)=>{const m=lv===2?ri(5,8):3;for(let c=0;c<m;c++){const a=rr(0,TAU),d=R*.55*Math.sqrt(rng());clumpAt('needle',x+Math.cos(a)*d,y+rr(-.1,.35)*R*.3,z+Math.sin(a)*d,R*rr(.95,1.2),.52,hc,x,y-R*.4,z,R,R*.5);st.clumps++;}
+  clumpAt('needle',x,y-R*.2,z,R*1.25,.42,bright(hc,.7),x,y,z,R,R*.5);st.clumps++;
   if(T.cold>.86&&rng()<.7)BIO.put('needle',[x,y+R*.25,z],qEuler(0,rr(0,TAU),0),[R*.9,R*.2,R*.9],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});};
+ const pR=()=>rr(2,3.2)*Math.min(1.3,H/18);
  for(let k=0;k<nL;k++){const i=n-ri(1,3),p=pts[i],a=a0+k/nL*TAU+rr(-.4,.4),L=T.crownR*rr(.5,1),e=[p.x+Math.cos(a)*L,p.y+rr(.5,2.5),p.z+Math.sin(a)*L];
   if(!clear3(e[0],e[1],e[2],1.5,1))continue;
   const lp=arc([p.x,p.y,p.z],[(p.x+e[0])/2,p.y+rr(.5,1.5),(p.z+e[2])/2],e,p.r*.55,.08,3);
   if(lv===2)st.limb+=BIO.tube(fam(S),lp,barkCol(S,0),{seg:5,cap:true});else BIO.beam('rod',[p.x,p.y,p.z],e,p.r*.5,.08,barkCol(S,0));
-  pad(e[0],e[1]+.2,e[2],rr(1.6,2.8)*Math.min(1.3,H/18));spread=Math.max(spread,L+2);}
- pad(top.x,top.y+.3,top.z,rr(1.8,2.8)*Math.min(1.3,H/18));
+  pad(e[0],e[1]+.2,e[2],pR());if(lv===2&&L>3&&rng()<.6)pad(lp[2].x,lp[2].y+.2,lp[2].z,pR()*.7);spread=Math.max(spread,L+2);}
+ pad(top.x,top.y+.3,top.z,rr(2.2,3.2)*Math.min(1.3,H/18));
  T.spread=spread;reg(S,T,spread);};
 
 // SNAG: a standing dead bole from the old burn -- black and checked low, silver-grey where weathered,
