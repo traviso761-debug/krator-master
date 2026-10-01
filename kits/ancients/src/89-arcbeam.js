@@ -209,7 +209,7 @@ function buildArcbeam(scene,gx,gz,d){reseed(9560+d);KOFF=[gx,0,gz];
               +6*Math.round(Math.sin(y*.058+fbm(z*.006,0,9583,2)*4)*2)/2
               +9*fbm(z*.034,y*.030,9584,3);
      x=lerp(x,WX+dp+13*fbm(z*.022,y*.022,9581,2)-6+bed,k);}}
-   return[x,y,z];},240,68,{uS:LEN/30,vS:CANY/30,
+   return[x,y,z];},420,80,{uS:LEN/30,vS:CANY/30,      // 240x68 was 11 m columns against 50 m gullies (now 6 m): soft at close range (QA arcA)
    hole:(u,v)=>{const z=-LEN*.5+u*LEN;return inPortal(z,v*rimY(z));}}));
   // the portal linings: a sill and two reveals, so the mouth is a cutting driven
   // into the rock and not a rectangle of missing wall with daylight behind it

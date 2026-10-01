@@ -79,12 +79,21 @@ MAT.hillSlope =new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0xa39a76
 MAT.hillSlopeR=new THREE.MeshStandardMaterial({map:TEX.hillGround,color:0x74905a,roughness:1,metalness:0,side:DS});
 // Belt and braces for the dark band at the lip. The hill is a DoubleSide
 // surface, so wherever any sliver of it is seen from BELOW its back face takes
-// only the hemisphere's ground colour and renders maroon. lxBounce (defined in
-// 87-launch.js, which loads first) gives a downward-facing fragment a neutral
-// bounce from the same hemisphere term, so a stray underside reads as shaded
-// ground rather than as a dark stripe. Terrain never faces down on purpose, so
-// nothing else about the hill changes.
-lxBounce(MAT.hillSlope,3.2);lxBounce(MAT.hillSlopeR,3.2);   // stronger than the vehicle's: this should read as ground, not shade
+// only the hemisphere's ground colour and renders maroon. The first cut gave it
+// lxBounce (87-launch.js), a neutral bounce on downward-facing fragments.
+// SECOND CUT (QA arcA): the bounce lifted the band from maroon to a dull
+// red-brown, still a stripe against the sunlit shoulder below it in 'The cut
+// wall'. A terrain surface has an up side and nothing else, so the slope now
+// shades EVERY fragment with its upward normal: wherever the shading normal
+// points down (a back face seen from below, or a grid whose winding runs the
+// other way) it is flipped before the lights run. An underside then takes the
+// same sun and sky as the ground beside it and the band is gone, not dimmed.
+// The rock faces of the cut are another material and keep their own normals.
+function hillUpLit(m){m.onBeforeCompile=sh=>{
+  sh.fragmentShader=sh.fragmentShader.replace('#include <normal_fragment_begin>',
+   '#include <normal_fragment_begin>\n{vec3 hlN=inverseTransformDirection(normal,viewMatrix);if(hlN.y<0.)normal=-normal;}');};
+ m.customProgramCacheKey=()=>'hillUpLit';return m;}
+hillUpLit(MAT.hillSlope);hillUpLit(MAT.hillSlopeR);
 // The cut walls are rock, not mud: Arcoindian II's cliff read as smeared brown
 // at close range and this one stands right beside every terrace preset. Kept a
 // good deal darker than the city so 990 m of contact between the two reads as a
@@ -465,8 +474,14 @@ function buildHill(scene,gx,gz,d){reseed(9660+d);KOFF=[gx,0,gz];
       if(c<1.3&&hillNat(r,th)>hillFloorR(r)+1.5)inside=true;}
      return inside;}}));
   // the toe skirt, out to the plain, so the 40 km ground plane never shows a seam
+  // It used to run out FLAT, 0.3 -> 0.15 m over a ground plane at -0.05: a
+  // 260 m annulus 0.2-0.35 m off the plane, which at 2-3 km (depth step ~0.5 m
+  // with near=1) z-fought it in a stair-stepped fringe — invisible on the
+  // intact hill, whose slope is the plain's colour, glaring on the green ruin.
+  // It now dives under the plane within ~45 m of the toe and ends 3 m down, so
+  // the seam is a crisp intersection, not a fight.
   GR.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(C.RTOE,C.RTOE+260,v);
-    return pol(r,th,lerp(hillNat(C.RTOE,th),.15,Math.pow(v,.7)));},NU,4,{uS:490,vS:11}));
+    return pol(r,th,hillNat(C.RTOE,th)-3.3*Math.pow(v,1.3));},NU,6,{uS:490,vS:11}));
   // the flattened summit, with a 3 m crown on it so it is not dead level
   PV.push(gridSurface((u,v)=>{const th=u*TAU,r=C.RSUM*(1-Math.pow(v,.8));
     return pol(r,th,C.SUMY+3*(1-v)*(1-v));},112,12,{uS:260,vS:80}));}
