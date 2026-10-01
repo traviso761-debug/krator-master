@@ -20,9 +20,11 @@ What follows is what the checks do not cover, or what the kit does not do yet.
   front (shop-row units are one room a storey); a straight flight needs about 6 m of wall. The set files work
   round these (two-kind ground floors, one body per storey with its own door) and say so in each `note`.
 - [ ] **The walk mockup is a mockup.** `dist/interiors-walk.html` shows 14 buildings in their real geometry,
-  cut out of each kit's page as flat-coloured triangles (`tools/export_shells.py`: textures dropped). The real
-  buildings draw no partitions or stairs, so the planner's are overlaid; their door leaves are drawn shut and the
-  walker passes through them; a raised doorway (a stilt house, a deck) lifts the walker to its floor from the
+  cut out of each kit's page as flat-coloured triangles (`tools/export_shells.py`: textures dropped; exact float
+  positions and each material's own sidedness, so nothing fights in depth). The real buildings draw no
+  partitions or stairs, so the planner's are overlaid; a cut box per planned door and per flight opens the real
+  shell there (its shader discards what lies inside: the kit's door panel and solid wall, the floor over a
+  stair), so the opening shows the room but its jambs are hollow; a raised doorway (a stilt house, a deck) lifts the walker to its floor from the
   ground in front of it; collision is the rooms' walk grids, the door passages and the footprints, not the real
   geometry (porches, posts and outside stairs are walked through). Re-export after a kit changes a building.
 

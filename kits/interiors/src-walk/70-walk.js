@@ -13,6 +13,7 @@
   'use strict';
   const IX = KratorInteriors, G = IX.geom;
   const catalog = IX.catalogAdapter({ lights: 'strip' });
+  camera.near = 0.2; camera.far = 4500; camera.updateProjectionMatrix();   /* depth precision: the engine's 0.1 near plane halves it */
   const GAP = 8, EYE = 1.62, STEP = 0.45, ENTER = 3.6;
   const SHELLS = window.KRATOR_SHELLS || {};
   /* the street: [set, item key, kit key for a catalog-built shell (Beast Rider), variant] */
@@ -29,18 +30,21 @@
   const SHELL_MATS = [];
   function shellMesh(data) {
     const g = new THREE.Group();
-    ['solid', 'glass', 'glow'].forEach(function (k) {
+    ['solid', 'double', 'glass', 'glow'].forEach(function (k) {
       const B = data[k]; if (!B) return;
-      const P = decode(B.p, Int16Array), C = decode(B.c, Uint8Array);
-      const pos = new Float32Array(P.length), col = new Float32Array(C.length);
-      for (let i = 0; i < P.length; i++) pos[i] = P[i] / 100;
+      const C = decode(B.c, Uint8Array), col = new Float32Array(C.length);
+      let pos;
+      if (B.f === 'f32') pos = decode(B.p, Float32Array);
+      else { const P = decode(B.p, Int16Array); pos = new Float32Array(P.length); for (let i = 0; i < P.length; i++) pos[i] = P[i] / 100; }
       for (let i = 0; i < C.length; i++) col[i] = C[i] / 255;
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
       geo.computeVertexNormals();
-      const mat = k === 'glow' ? new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })
-        : new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide, transparent: k === 'glass', opacity: k === 'glass' ? 0.4 : 1, depthWrite: k !== 'glass' });
+      /* the kits draw solids single-sided: two-sided here would let the hidden back faces of touching boxes fight */
+      const side = k === 'solid' ? THREE.FrontSide : THREE.DoubleSide;
+      const mat = k === 'glow' ? new THREE.MeshBasicMaterial({ vertexColors: true, side: side })
+        : new THREE.MeshLambertMaterial({ vertexColors: true, side: side, transparent: k === 'glass', opacity: k === 'glass' ? 0.4 : 1, depthWrite: k !== 'glass' });
       SHELL_MATS.push(mat);
       const m = new THREE.Mesh(geo, mat); m.userData.shellPart = k; g.add(m);
     });
@@ -65,7 +69,7 @@
       if (g) {
         scene.remove(g); const ii = INSTANCES.indexOf(g); if (ii >= 0) INSTANCES.splice(ii, 1);
         /* the engine caches materials by colour and family (shared with furniture): clone them, so the cut-away clips this shell only */
-        g.traverse(function (o) { if (o.material) { o.material = Array.isArray(o.material) ? o.material.map(function (m) { return m.clone(); }) : o.material.clone(); (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) { m.side = THREE.DoubleSide; SHELL_MATS.push(m); }); } });
+        g.traverse(function (o) { if (o.material) { o.material = Array.isArray(o.material) ? o.material.map(function (m) { return m.clone(); }) : o.material.clone(); (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) { SHELL_MATS.push(m); }); } });
         g.position.set(0, 0, 0); g.rotation.set(0, 0, 0); E.shell = g; E.real = true;
       }
     }
@@ -77,7 +81,55 @@
     }
     items.push(E);
   });
+  /* ---------- openings: the kits draw doors as panels on solid walls (a dark void) and floors over the
+     planner's stairs, so each real shell gets CUT BOXES, one per planned door (the doorway through the wall)
+     and one per flight (the well through the floor above), and its shader discards what lies inside them */
+  const HOLES_MAX = 24;
+  function boxInverse(c, ax, ay, az, hx, hy, hz) {        /* world -> unit cube of a box at c with axes ax ay az, half sizes */
+    const m = new THREE.Matrix4().makeBasis(new THREE.Vector3(ax[0] * hx, ax[1] * hx, ax[2] * hx), new THREE.Vector3(ay[0] * hy, ay[1] * hy, ay[2] * hy), new THREE.Vector3(az[0] * hz, az[1] * hz, az[2] * hz));
+    m.setPosition(c[0], c[1], c[2]);
+    return m.invert();
+  }
+  function holesOf(E) {
+    const out = [];
+    E.inst.rooms.forEach(function (R) {
+      R.doors.forEach(function (d) {
+        if (d.to !== 'street' && !R.explicit) return;      /* interior doors are the planner's own partitions */
+        const W = R.walls[d.wall], h = Math.min(d.h || 2.1, R.h - 0.05);
+        out.push(boxInverse([d.at[0], R.y + 0.03 + h / 2, d.at[1]], [W.t[0], 0, W.t[1]], [0, 1, 0], [W.n[0], 0, W.n[1]], d.w / 2, h / 2, 0.6));
+      });
+    });
+    E.inst.buildings.forEach(function (B) {
+      B.stairs.forEach(function (S) {
+        const c = [(S.foot[0] + S.top[0]) / 2, (S.y0 + 1.9 + S.y1 + 0.05) / 2, (S.foot[1] + S.top[1]) / 2];
+        out.push(boxInverse(c, [S.dir[0], 0, S.dir[1]], [0, 1, 0], [-S.dir[1], 0, S.dir[0]], S.run / 2 + 0.25, (S.y1 + 0.05 - S.y0 - 1.9) / 2, S.w / 2 - 0.04));   /* narrower than the flight: the wall it runs along keeps its face */
+      });
+    });
+    return out.slice(0, HOLES_MAX);
+  }
+  function cutHoles(E) {
+    if (!E.shell) return;
+    const H = holesOf(E); if (!H.length) return;
+    const mats = new THREE.Matrix4(), arr = [];
+    for (let i = 0; i < HOLES_MAX; i++) arr.push(H[i] || mats);
+    /* the shell group is placed at (ox, 0, oz) unturned: holes are in world metres, the shader works in world space */
+    E.shell.traverse(function (o) {
+      if (!o.material) return;
+      (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) {
+        m.onBeforeCompile = function (sh) {
+          sh.uniforms.holeM = { value: arr }; sh.uniforms.holeN = { value: H.length };
+          sh.vertexShader = 'varying vec3 vHoleW;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n  vHoleW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+          sh.fragmentShader = 'varying vec3 vHoleW;\nuniform mat4 holeM[' + HOLES_MAX + '];\nuniform int holeN;\n' +
+            sh.fragmentShader.replace('void main() {', 'void main() {\n  for (int i = 0; i < ' + HOLES_MAX + '; i++) { if (i >= holeN) break; vec3 q = (holeM[i] * vec4(vHoleW, 1.0)).xyz; if (abs(q.x) < 1.0 && abs(q.y) < 1.0 && abs(q.z) < 1.0) discard; }');
+        };
+        m.customProgramCacheKey = function () { return 'walkholes'; };
+        m.needsUpdate = true;
+      });
+    });
+    E.holes = H.length;
+  }
   const rooms = [], buildings = [], stairs = [], roomItem = {};
+  items.forEach(cutHoles);
   items.forEach(function (E) {
     E.inst.buildings.forEach(function (B) { buildings.push(B); B.stairs.forEach(function (S) { stairs.push(S); }); });
     E.inst.rooms.forEach(function (R) { rooms.push(R); roomItem[R.id] = E; });
@@ -98,7 +150,8 @@
       const o = IX.view.building(B), sh = o.userData.shell;
       sh.roof.visible = false;
       sh.walls.forEach(function (w) { if (!w.partition) { w.full.visible = false; w.stub.visible = false; } else w.stub.visible = false; });
-      o.traverse(function (m) { if (m.isMesh && m.userData.part === 'floor' && !m.userData.level) m.visible = false; });
+      /* upper floors sink 4 cm under the real building's own slab where it has one, so the two never share a plane */
+      o.traverse(function (m) { if (m.isMesh && m.userData.part === 'floor') { if (!m.userData.level) m.visible = false; else m.position.y -= 0.04; } });
       cloneMats(o, E.overlayMats);
       o.userData.overlay = true; scene.add(o); overlays.push(o);
     });
@@ -116,9 +169,10 @@
 
   /* ---------- the ground: a street */
   const W = x + 20;
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(W + 80, 140), new THREE.MeshLambertMaterial({ color: 0x9a9478 }));
-  ground.rotation.x = -Math.PI / 2; ground.position.set(W / 2 - 20, -0.02, 10); ground.userData.label = true; scene.add(ground);
-  const road = new THREE.Mesh(new THREE.PlaneGeometry(W + 20, 6), new THREE.MeshLambertMaterial({ color: 0x7c7564 }));
+  /* the street and the road are pushed back in depth: the buildings' own yards and paving lie on y = 0 */
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(W + 80, 140), new THREE.MeshLambertMaterial({ color: 0x9a9478, polygonOffset: true, polygonOffsetFactor: 4, polygonOffsetUnits: 8 }));
+  ground.rotation.x = -Math.PI / 2; ground.position.set(W / 2 - 20, -0.03, 10); ground.userData.label = true; scene.add(ground);
+  const road = new THREE.Mesh(new THREE.PlaneGeometry(W + 20, 6), new THREE.MeshLambertMaterial({ color: 0x7c7564, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 4 }));
   road.rotation.x = -Math.PI / 2; road.position.set(W / 2 - 10, -0.01, Math.max.apply(null, items.map(function (E) { return E.lot[1] / 2; })) + 6); road.userData.label = true; scene.add(road);
   const ROAD_Z = road.position.z;
 

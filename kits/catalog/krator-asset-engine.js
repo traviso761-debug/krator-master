@@ -101,9 +101,10 @@ const ctl = {
   keys: Object.create(null)
 };
 function _headingVecs() {
-  /* fwd = the way the camera faces, flattened to the ground; right = fwd rotated -90deg */
+  /* fwd = the way the camera faces, flattened to the ground; right = the camera's right hand
+     (fwd turned clockwise seen from above: facing -z, right is +x) */
   const fwd = new THREE.Vector3(-Math.sin(ctl.az), 0, -Math.cos(ctl.az));
-  const right = new THREE.Vector3(-Math.cos(ctl.az), 0, Math.sin(ctl.az));
+  const right = new THREE.Vector3(Math.cos(ctl.az), 0, -Math.sin(ctl.az));
   return { fwd, right };
 }
 function updateCamera() {
@@ -132,12 +133,12 @@ window.addEventListener('mousemove', (e) => {
   ctl.lastX = e.clientX; ctl.lastY = e.clientY;
   if (ctl.dragging) {
     ctl.az -= dx * 0.006;
-    ctl.el += (ctl.walk ? -dy * 0.005 : dy * 0.006);
+    ctl.el += (ctl.walk ? dy * 0.005 : dy * 0.006);     /* walk: drag down to look down, as drag right looks right */
     updateCamera();
   } else if (ctl.panning) {
     const { fwd, right } = _headingVecs();
     const k = ctl.walk ? 0.05 : ctl.dist * 0.0015;
-    ctl.target.addScaledVector(right, dx * k);
+    ctl.target.addScaledVector(right, -dx * k);          /* right-drag pans: the ground follows the pointer */
     ctl.target.addScaledVector(fwd, -dy * k);
     updateCamera();
   }
