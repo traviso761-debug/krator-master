@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Locus</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#1a1720;
+    font:12px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#e8e2d6}
+  canvas{display:block}
+  #ui{position:fixed;left:10px;top:10px;z-index:10;max-width:250px;max-height:96vh;overflow-y:auto}
+  #ui h1{font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 8px;
+    font-weight:600;color:#d8c89a;text-shadow:0 1px 3px #000}
+  #ui button{display:inline-block;margin:0 4px 4px 0;padding:5px 9px;cursor:pointer;
+    background:rgba(22,20,26,.78);color:#e8e2d6;border:1px solid rgba(216,200,154,.32);
+    border-radius:3px;font:11px/1 inherit;letter-spacing:.03em}
+  #ui button:hover{background:rgba(216,200,154,.22);border-color:rgba(216,200,154,.7)}
+  #ui button.on{background:rgba(200,60,50,.55);border-color:#e08070}
+  #hint{margin-top:8px;color:#a89e8c;font-size:10.5px;text-shadow:0 1px 2px #000;line-height:1.5}
+  #polyBox{margin-top:8px;display:none}
+  #polyOut{width:100%;box-sizing:border-box;height:64px;resize:vertical;margin-top:4px;
+    background:rgba(10,9,12,.78);color:#c9c0ac;border:1px solid rgba(216,200,154,.28);
+    border-radius:3px;font:10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;padding:4px}
+  #dnControls{margin-top:8px}
+  #dnControls input[type=range]{width:100%;accent-color:#d8c89a;display:block;margin:2px 0 6px}
+  #dnLabel{display:flex;justify-content:space-between}
+  #weatherToggle,#dnPause{width:100%;box-sizing:border-box;margin-bottom:4px}
+  #hud{position:fixed;right:10px;top:10px;z-index:10;padding:6px 9px;border-radius:3px;
+    background:rgba(22,20,26,.7);border:1px solid rgba(216,200,154,.2);
+    font:10.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#c9c0ac;white-space:pre;text-align:right}
+  #errs{position:fixed;left:10px;bottom:10px;right:10px;z-index:20;max-height:32%;overflow:auto;
+    padding:0;color:#ffb4a2;font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap}
+  #errs:not(:empty){padding:8px 10px;background:rgba(48,12,12,.9);border:1px solid #a33;border-radius:3px}
+  #inspectToggle{width:100%;box-sizing:border-box;margin-bottom:4px}
+  #pathvizToggle{width:100%;box-sizing:border-box;margin-bottom:4px}
+  #pathvizSel{width:100%;box-sizing:border-box;margin-bottom:4px;display:none;
+    background:rgba(22,20,26,.78);color:#e8e2d6;border:1px solid rgba(216,200,154,.32);
+    border-radius:3px;font:11px/1.4 inherit;padding:4px}
+  #inspectTip{position:fixed;z-index:25;display:none;pointer-events:none;padding:4px 8px;
+    background:rgba(16,14,18,.88);border:1px solid rgba(216,200,154,.5);border-radius:3px;
+    font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:#f0e6cc;white-space:nowrap}
+  #inspectTip b{color:#d8c89a}
+  #load{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    background:#0f1a14;color:#d8c89a;letter-spacing:.2em;text-transform:uppercase;font-size:11px}
+</style>
+</head>
+<body>
+<div id="load">Raising Locus…</div>
+<div id="ui">
+  <h1 id="ttl">Locus</h1>
+  <div id="views"></div>
+  <div id="hint">Drag&nbsp;= orbit · Wheel&nbsp;= zoom · WASD/QE&nbsp;= pan · Shift&nbsp;= fast<br>Click anything to print its coordinates (x, z and height).</div>
+  <div id="dnControls">
+    <div id="dnLabel"><span>Time of day</span><span id="dnHourOut">10:00</span></div>
+    <input type="range" id="dnSlider" min="0" max="24" step="0.1" value="10">
+    <button id="dnPause">Pause</button>
+  </div>
+  <button id="inspectToggle">Inspector: Off</button>
+  <button id="pathvizToggle">Paths: Off</button>
+  <select id="pathvizSel"></select>
+  <div>
+    <button id="polyToggle">Mark polygon</button>
+    <button id="polyUndo">Undo point</button>
+    <button id="polyClear">Clear</button>
+  </div>
+  <div id="polyBox">
+    <div id="hint">Click any surface to drop a corner, in order. The box below is a ready-to-paste [[x,y,z],...] array; click it to select all.</div>
+    <textarea id="polyOut" readonly onclick="this.select()"></textarea>
+  </div>
+</div>
+<div id="hud"></div>
+<div id="inspectTip"></div>
+<div id="errs"></div>
+<script>
+(function(){
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  if(location.protocol!=='file:') s.crossOrigin='anonymous';
+  /* three.js loads async and can arrive (from cache, instantly) before the parser has reached the big BUILD
+     script below: calling BUILD() then threw 'BUILD is not defined' and the loading screen never cleared.
+     Wait until the whole document is parsed. */
+  function go(){ try{ BUILD(); }catch(e){ ERR('build: '+(e&&e.stack||e)); } }
+  s.onload=function(){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', go); else go(); };
+  s.onerror=function(){ ERR('Could not load three.js from the CDN.'); };
+  document.head.appendChild(s);
+})();
+var _errBox=document.getElementById('errs'), _errN=0;
+function ERR(m){ if(_errN++>14) return; _errBox.textContent += (_errBox.textContent?'\n':'')+m; }
+window.onerror=function(m,u,l,c,e){ ERR('error: '+m+' @'+l+':'+c+(e&&e.stack?'\n'+e.stack:'')); };
+window.addEventListener('unhandledrejection',function(e){ ERR('promise: '+(e.reason&&e.reason.stack||e.reason)); });
+</script>
+<script>
+function BUILD(){
+'use strict';
+

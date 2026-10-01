@@ -1,0 +1,9 @@
+# Build and verify outputs. Not committed: six agents build in parallel and
+# every one of these would conflict on merge. `python3 build.py` remakes them.
+dist/
+shots/
+.syntax-*.js
+build-manifest-*.json
+log_*.txt
+*.done
+__pycache__/

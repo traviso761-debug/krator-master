@@ -1,0 +1,7 @@
+/* ============================== 29. PROBE ==============================
+   Read-only surface for the verifier and for debugging from the console. */
+window._api = { TARGET:TARGET, terrainH:terrainH, riverDist:riverDist, lakeDist:lakeDist, canalDist:canalDist, districtAt:districtAt, maskAt:maskAt,
+  nearestStreet:nearestStreet, onStreet:onStreet, CANAL:CANAL, RIVER:RIVER, DISTRIB:DISTRIB, FARM_PLOTS:FARM_PLOTS,
+  MARKET:MARKET, PARK:PARK, CARAVANSERAI:CARAVANSERAI, REFINERY:REFINERY, TANKS:TANKS, BRIDGES:BRIDGES, HIGHWAYS:HIGHWAYS, PUMPJACKS:PUMPJACKS, DOCKS:DOCKS, STILT_SITES:STILT_SITES, FARMS:FARMS, SITES_L:SITES_L,
+  ST:ST, NAV:NAV, SITES:SITES, ASSETS:ASSETS, PLACED:PLACED, SHEET_ITEMS:SHEET_ITEMS, FURNS:FURNS, PLANTS:PLANTS, FURN_CULTURES:FURN_CULTURES, PLANT_CLIMATES:PLANT_CLIMATES, PLANT_ARIDITY:PLANT_ARIDITY, TREE_SITES:TREE_SITES,
+  NL_LAMPS:NL_LAMPS, NL_WINDOWS:NL_WINDOWS, BUDGET:BUDGET, skyHour:skyHour, skySetHour:skySetHour, platXZ:platXZ, RG:RG };

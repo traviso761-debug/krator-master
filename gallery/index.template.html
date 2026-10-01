@@ -1,0 +1,143 @@
+<title>Krator Worlds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: a field-survey register. A banded gas-giant plate heads the page; below it, three
+   ruled registers (worlds, building kits, biomes) of entry cards, one column on phones. */
+:root{
+  --ground:#eceee9;      /* volcanic ash paper */
+  --ink:#1d2226;         /* basalt */
+  --muted:#5b646a;
+  --rule:#c9cec8;
+  --card:#f6f7f3;
+  --accent:#a8611f;      /* banded ochre of the gas giant */
+  --band2:#c99a5b;
+  --band3:#6d4a2c;
+  --display:"Marcellus", "Trajan Pro", Georgia, serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#14171a; --ink:#e4e2dc; --muted:#99a0a4; --rule:#2c3237; --card:#1b1f23;
+  --accent:#e3a25c; --band2:#b98450; --band3:#7d5634; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ground:#14171a; --ink:#e4e2dc; --muted:#99a0a4; --rule:#2c3237; --card:#1b1f23;
+  --accent:#e3a25c; --band2:#b98450; --band3:#7d5634; color-scheme:dark}
+
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;
+  border-bottom:1px solid var(--rule);padding-bottom:24px}
+header canvas{width:132px;height:132px;display:block}
+h1{font:400 clamp(40px,7vw,68px)/1 var(--display);letter-spacing:.02em;margin:0 0 12px;text-wrap:balance}
+.lede{max-width:62ch;margin:0;color:var(--muted)}
+.lede strong{color:var(--ink);font-weight:500}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+nav a{font:12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink);
+  text-decoration:none;border:1px solid var(--rule);border-radius:3px;padding:5px 10px}
+nav a:hover,nav a:focus-visible{border-color:var(--accent);color:var(--accent);outline:none}
+section{margin-top:40px}
+.reg{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h2{font:400 26px/1.2 var(--display);margin:0;letter-spacing:.02em}
+.reg p{margin:0;color:var(--muted);font-size:13.5px}
+.count{font:12px var(--mono);color:var(--accent);letter-spacing:.06em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:12px}
+a.card{display:grid;grid-template-rows:auto 1fr auto;gap:6px;min-width:0;background:var(--card);
+  border:1px solid var(--rule);border-radius:4px;padding:14px 16px;color:inherit;text-decoration:none;
+  transition:border-color .15s}
+a.card:hover,a.card:focus-visible{border-color:var(--accent);outline:none}
+a.card:hover .go,a.card:focus-visible .go{color:var(--accent)}
+.card h3{font:500 16.5px/1.3 var(--body);margin:0}
+.tag{display:inline-block;vertical-align:2px;margin-left:4px;font:10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--rule);border-radius:3px;padding:1px 5px}
+.tag.new{color:var(--accent);border-color:var(--accent)}
+.card p{margin:0;font-size:13.5px;color:var(--muted)}
+.meta{display:flex;justify-content:space-between;gap:8px;font:11.5px var(--mono);color:var(--muted);
+  font-variant-numeric:tabular-nums;border-top:1px dashed var(--rule);padding-top:8px;margin-top:4px}
+.go{color:var(--ink);white-space:nowrap}
+.src{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+footer{margin-top:48px;border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--muted)}
+footer code{font:12px var(--mono)}
+@media (max-width:560px){header{grid-template-columns:minmax(0,1fr)}header canvas{display:none}}
+@media (prefers-reduced-motion:reduce){a.card{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Krator Worlds</h1>
+      <p class="lede">Every settlement, building kit and biome built so far. Each page generates its
+      world in your browser with Three.js, so the large ones take a few seconds to raise.
+      <strong>Drag to orbit, scroll to zoom;</strong> most worlds have preset views and an inspector.
+      A desktop browser is recommended.</p>
+      <nav id="jump" aria-label="Sections"></nav>
+    </div>
+    <canvas id="giant" width="264" height="264" aria-hidden="true"></canvas>
+  </header>
+  <main id="registers"></main>
+  <footer>Built from the <code>krator-master</code> repository. Each card names the file it was built from.</footer>
+</div>
+
+<script>
+const ENTRIES = /*ENTRIES*/[];
+const SECTIONS = [
+  {key:'world', id:'worlds', title:'Settlements', note:'Whole worlds: terrain, buildings, flora and, in several, people moving through them.'},
+  {key:'biome', id:'biomes', title:'Biomes', note:'Flora and fauna of each region, independent of any settlement.'},
+  {key:'kit', id:'kits', title:'Building kits', note:'Sheets that lay out every building of a culture side by side.'},
+  {key:'objects', id:'objects', title:'Objects', note:'Things placed into a world rather than built in it: furniture, plants and watercraft, each tagged by culture.'},
+  {key:'arcology', id:'arcologies', title:'Arcologies', note:'Whole cities in one structure, each intact beside its ruin. Earlier ones first, then this month\'s group.'},
+  {key:'port', id:'port', title:'Ancient Port', note:'Modular port segments and vessels that tile along a coast, each intact, ruined and reclaimed.'},
+];
+const main = document.getElementById('registers'), jump = document.getElementById('jump');
+for (const s of SECTIONS) {
+  const items = ENTRIES.filter(e => e.section === s.key);
+  if (!items.length) continue;
+  const a = document.createElement('a'); a.href = '#' + s.id; a.textContent = s.title; jump.append(a);
+  const sec = document.createElement('section'); sec.id = s.id;
+  sec.innerHTML = `<div class="reg"><h2></h2><span class="count"></span><p></p></div><div class="grid"></div>`;
+  sec.querySelector('h2').textContent = s.title;
+  sec.querySelector('.count').textContent = items.length + (items.length === 1 ? ' page' : ' pages');
+  sec.querySelector('p').textContent = s.note;
+  const grid = sec.querySelector('.grid');
+  for (const e of items) {
+    const c = document.createElement('a'); c.className = 'card'; c.href = 'worlds/' + e.slug + '.html';
+    c.innerHTML = `<h3></h3><p></p><div class="meta"><span class="src"></span><span class="go">Open · <span class="mb"></span> MB</span></div>`;
+    c.querySelector('h3').textContent = e.name;
+    if (e.tag) { const t = document.createElement('span'); t.className = 'tag' + (e.tag === 'new' ? ' new' : ''); t.textContent = e.tag === 'new' ? 'New this month' : 'Earlier'; c.querySelector('h3').append(' ', t); }
+    c.querySelector('p').textContent = e.blurb;
+    c.querySelector('.src').textContent = e.source.split('/').slice(0, 2).join('/');
+    c.querySelector('.src').title = e.source;
+    c.querySelector('.mb').textContent = e.mb.toFixed(1);
+    grid.append(c);
+  }
+  main.append(sec);
+}
+
+// The gas giant that hangs in every Krator sky: a banded disc, lit from one side.
+(function(){
+  const cv = document.getElementById('giant'); if (!cv.getContext) return;
+  const g = cv.getContext('2d'), W = cv.width, R = W * 0.46, cx = W / 2, cy = W / 2;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function draw(){
+    g.clearRect(0, 0, W, W);
+    g.save(); g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.clip();
+    const bands = [css('--band2'), css('--accent'), css('--band3'), css('--band2'), css('--accent'), css('--band2'), css('--band3')];
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let y = cy - R, i = 0; y < cy + R; i++) {
+      const h = 6 + rnd() * 22; g.fillStyle = bands[i % bands.length];
+      g.beginPath(); g.moveTo(cx - R, y);
+      for (let x = cx - R; x <= cx + R; x += 8) g.lineTo(x, y + Math.sin(x / 19 + i) * 2.2);
+      g.lineTo(cx + R, y + h + 2); g.lineTo(cx - R, y + h + 2); g.closePath(); g.fill();
+      y += h;
+    }
+    const shade = g.createRadialGradient(cx - R * .45, cy - R * .35, R * .15, cx, cy, R * 1.05);
+    shade.addColorStop(0, 'rgba(255,255,255,.18)'); shade.addColorStop(.55, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,.55)');
+    g.fillStyle = shade; g.fillRect(0, 0, W, W); g.restore();
+  }
+  draw();
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener && mq.addEventListener('change', draw);
+  new MutationObserver(draw).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+})();
+</script>
