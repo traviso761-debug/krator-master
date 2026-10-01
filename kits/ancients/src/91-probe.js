@@ -17,8 +17,18 @@ const BUDGET={
        skyA:'sky',skyB:'sky',skyC:'sky',skyD:'sky',skyE:'sky',skyF:'sky',skyG:'sky',skyH:'sky',skyI:'sky',skyJ:'sky',skyK:'sky',lighthouse:'sky',
        mega:'mega',arc:'mega',dam:'mega',campus:'mega',spire:'mega',dalab:'mega',canyon:'mega',veladiga:'mega',hex:'mega',hexlush:'mega',biome:'mega',forest:'mega',darco:'mega',ring:'mega',launch:'mega',launchpad:'mega',plymouth:'mega',arcbeam:'mega',arcoindian:'mega',arcoindian2:'mega',hill:'mega',arcube:'mega',wing:'mega',drum:'mega',blades:'mega',trigon:'mega',monolith:'mega',crescent:'mega',ledge:'mega',wheel:'mega',
        fac:'medium',port:'medium',gov:'medium',lib:'medium',bunk:'medium',off:'medium',
-       apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium'},
+       apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium',
+       altBole:'sky',altStack:'sky',altFlat:'sky',altHotel:'medium',altCult:'medium',altPerch:'mega',
+       altGate:'mega',altCampus:'mega',altPolice:'small'},
 };
+// alternate domestic types (src/8ak-alt-*, target alt-domestic)
+Object.assign(BUDGET.type,{adWave:'small',adBridge:'small',adFuel:'small',adRadar:'small',adDish:'small',adFins:'medium',adAmph:'medium',adFac:'medium',adLab:'medium',adMega:'mega'});
+// the Yuni fork's variants (src/8am-yv-*, target yuni-variants)
+Object.assign(BUDGET.type,{yvQuad:'medium',yvComb:'medium',yvTerr:'medium',yvDish:'small',yvHosp:'medium'});
+// tower stumps (src/8an-iz-stumps.js, target iziz-variants)
+Object.assign(BUDGET.type,{stumpA:'sky',stumpB:'sky',stumpC:'sky',stumpD:'sky',stumpE:'sky',stumpF:'sky',stumpG:'sky',stumpH:'sky',stumpI:'sky',stumpJ:'sky',stumpK:'sky'});
+// the Iziz spaceport (src/8ao-iz-spaceport.js, target spaceport)
+Object.assign(BUDGET.type,{izPort:'medium'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world

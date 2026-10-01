@@ -12,9 +12,10 @@
   several minutes each. Partial runs are cheap: `?cultures=xanadu,voth` (verify.py `--query cultures=...`)
   lays out only those cultures, and `--rows xanadu,court` screenshots only the rows named. The full page
   on a real GPU is fine; a gallery visitor on a weak machine should open a `?cultures=` page.
-- [ ] **Kit tapestries draw a culture's device in blocks**, not the canvas `SYMBOLS` of
-  `core/sockets/80-cultures.js` (those need the Post-Apoc engine's canvas helpers). The hyperboloid
-  (Yuni) and triskele (Republic, approximated by `'spiral'`) have no block device yet.
+- [ ] **Painted hangings are one texture per key.** `F.decal` paints a canvas once per key (culture,
+  symbol, variant, size, colours) and caches the material, so a thousand tapestries cost a few dozen
+  canvases; a host that replaces `FPAL` colours after a piece was built keeps the old painting until
+  the page reloads. The paint functions draw from their own seeded stream, never the piece's.
 - [ ] **Under-size warnings** (a piece built more than 30 % smaller than declared on an axis) are expected for
   wall art, tapestries and racks: their declared depth leaves room for a skull or a hanging cloak to be swapped
   in by the second variant, so the first often builds shallower. The sheet has about 145 such WARN lines, none
@@ -23,6 +24,22 @@
   SPEC source rules; pieces `FK.set()` registers are checked in the page instead (build, size, anchor, palette:
   an unknown key throws) and the kit and culture files are scanned whole for literal colours
   (`style-colour-kit`).
+
+- **The sheet is split into pages by setting** (indoor, outdoor, both; 2026-10). With the kit harvests the catalog
+  has about 2200 instances and the one-page sheet no longer loaded in 20 minutes under SwiftShader (each third
+  loads in 1.5–5 minutes). `verify.py --assert` loads each page in turn; `?page=all` still exists for a partial run.
+- **Gaps the kit harvests worked around** (no engine change made): no torus (tyres, hoops, wheels are rings of
+  rods or beams), no tilted cone or box (`F.box` turns about y only: tilted slabs are `F.beam`), `F.rod` has 8
+  sides (horizontal rounds read as octagons), no disc facing z, no gable roof (two `F.beam` slabs). No FURN type
+  for carts and vehicles (`tool`, `stall` or `stack`), platforms and daises (`seating`), a rostrum (`desk`), a
+  perch (`rack`), a training dummy (`workstation` or `tool`), punishment furniture (`pen`). No water family
+  (water is `glass` with a `water` key). The `gold` family renders very dark, so gilt reads darker than the kits'.
+- **Near-duplicates across harvests:** `hl_rus_cloth_stall` and `hl_rep_market_stall` (both Highlands `hnStall`),
+  `hl_rep_lamp_standard` and `iziz_vern_lamp_post` (both `vnLampPost`, different heights). Kept; merge if wanted.
+- **Harvested pieces are heavier than the kits' own** (a Mav's lamppost was 50–200 triangles, `br_lamppost` is
+  about 400): builds that now place catalog furniture budget it on its own line. A low-detail variant for
+  box-heavy pieces (`KF.setDetail` only thins round primitives) is the follow-up.
+- **`F.furn` takes the height from the caller**: it does not apply the piece's anchor (`furnAnchorY`).
 
 ## Decisions in the interiors furniture pass (2026-10)
 
@@ -34,6 +51,9 @@
 - **The engine's `F.cyl` is vertical only.** A disc that faces a wall (a plate, a shield, a medallion) is a
   short `F.rod` along z: `FK.disc()`. Early kit drafts turned cylinders with `ry` and got vertical discs
   poking through the wall; the anchor audit caught all of them.
+- **Emblems are the socket packs' own.** The first hangings drew each culture's device in blocks and the
+  Republic's triskele came out as a spiral; the packs' canvas `SYMBOLS` moved to `core/sockets/38-symbols.js`
+  (out of the Post-Apoc building-fragment number range 4x-7x) and the catalog vendors and paints them.
 - **`kits/interiors` gained a wealth band and the `art` type**; its walker smoothing now runs on the rounded
   route points (a layout from the new sets exposed a sub-millimetre mismatch between smoothing and the audit).
 

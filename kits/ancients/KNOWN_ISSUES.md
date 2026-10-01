@@ -5,13 +5,16 @@ and ticking it, not by deleting it.
 
 ## Found by the split (pre-existing in the single-file kit)
 
-- [ ] **Seed collision: Library and Campus.** `buildLibrary` calls
+- [x] **Seed collision: Library and Campus.** FIXED (civic QA, 2026-09-29): `buildCampus` is `reseed(9810+d)`; the build.py exception is gone.
+      Was: `buildLibrary` calls
       `reseed(d>0?9801:9800)` and `buildCampus` calls `reseed(9800+d)`, so the
       two share a PRNG stream: the campus's decay pattern is a copy of the
       library's. Fix by moving the campus to a free block (9810). Whitelisted in
       `build.py: SEED_COLLISION_EXCEPTIONS` so the build stays green; remove the
       entry with the fix. Not fixed in the split round because it changes output.
-- [ ] **Seed collision: Megastructure and Gate.** `buildMega` uses `9995+d` and
+- [x] ~~**Seed collision: Megastructure and Gate.**~~ Fixed in the civic QA pass:
+      `buildArc` is `reseed(9820+d)`, and `SEED_COLLISION_EXCEPTIONS` is empty.
+      (Ticked in domestic QA round 2.) `buildMega` uses `9995+d` and
       `buildArc` uses `9996+d`; they overlap at 9996. Same treatment — move the
       Gate to 9990 or push Mega down. Also whitelisted.
 - [x] ~~Materials built inline instead of in `MAT`.~~ The bunker berm, House F's
@@ -33,7 +36,8 @@ and ticking it, not by deleting it.
       taper each side, which is what lets it sit exactly on an acute corner
       instead of overhanging both edges of it. Designed for the Screamers'
       Hexahedron and brought back here intact as a type in its own right.
-- [ ] Decay 2 shortens it but does not topple it, unlike the other towers.
+- [x] ~~Decay 2 shortens it but does not topple it, unlike the other towers.~~
+      Towers QA round 1: broken at the 8th setback, the upper storeys lie on the plain (`Toppled Flatiron`).
 
 ## The Hotel — what was overhanging what
 
@@ -61,16 +65,16 @@ and ticking it, not by deleting it.
 - [x] ~~**The court elevation was thirteen storeys of blank brick.**~~ The
       convex face has a full curtain wall and the concave one had not one
       opening. 24 windows a storey.
-- [ ] **The lens is now too small for the idea.** A sky lobby on a 165 m
+- [x] ~~**The lens is now too small for the idea.**~~ Towers QA round 1: a 105 m glazed barrel vault on the top slab. A sky lobby on a 165 m
       crescent wants a long pavilion following the arc, not a 14 m cupola; the
       top slab is only 12 m deep, which is all a 1.9 m setback per storey can
       ever leave, so a dome is the wrong form for the space available.
-- [ ] The porte-cochère canopy is 40 x 24 m on four converging legs at r=14 —
+- [x] ~~The porte-cochère canopy is 40 x 24 m~~ (towers QA round 1: laps onto the curtain wall, four front columns) on four converging legs at r=14 —
       a 20 m cantilever. Deliberate-looking, but it is the next thing on this
       type that will not stand up.
-- [ ] The two lift towers at the horns are blank cones with no openings and no
+- [x] ~~The two lift towers at the horns are blank cones~~ (towers QA round 1: fluted shafts, lift slots, windows, machine-room heads) with no openings and no
       top, and they read as cooling towers.
-- [ ] The pool deck is a bare 130 m disc and the crescent sits at the back of
+- [x] ~~The pool deck is a bare 130 m disc~~ (towers QA round 1: lagoon, loungers, lap pool, fountain, parterre) and the crescent sits at the back of
       it. It is the largest single surface in the type and carries one pool.
 
 ## Non-ground placement
@@ -106,22 +110,27 @@ and ticking it, not by deleting it.
       (bay, storey), frayed at their edges by an fbm. Counted rather than
       asserted — `window._projectFire` reports **1 111 of 2 284 cells, 49%**,
       which `verify.py` prints in its counters line.
-- [ ] **The fire does not light anything.** It is emissive cards and additive
+- [x] ~~**The fire does not light anything.**~~ Towers QA round 2: three PointLights per Project at
+      k-means centroids of its own fires (`fireLights`, 69-mat-salvage.js), visible only at night, flickering. It is emissive cards and additive
       spill; there is no point light, so the fabric around a window is lit by
       the night hemisphere and not by the fire in it. One `PointLight` per
       territory would fix it and would cost a shader recompile for the whole
       scene, which is why it was not done. Same root cause as the kit-wide
       "lit windows cannot out-shine a sunlit wall" complaint, from the other end.
-- [ ] **The fires do not flicker and never will without an animation hook.**
-      Nothing in this kit animates.
+- [x] ~~**The fires do not flicker and never will without an animation hook.**~~
+      Towers QA round 2: `TICKS`/`tick()` (10-core.js, same hunk as the lighthouse patch) drives one
+      uniform; `MAT.flame`/`MAT.ember` pulse per instance, phase from position.
 - [x] ~~Projects D and H had builder code but no rows or presets.~~ Rows at
       `j=-1150` with `ds:[0,1,2,3,4]`; presets `Project D`/`Project H`, each with
       `at night` and `close`. Fire coverage (`window._projectFire`): A 1 111 of
       2 284 cells (49%), D 430 of 727 (59%), H 376 of 560 (67%). D and H burn
       hotter than the 50% the brief asked for.
-- [ ] The Project's plinth can only come in to 110 because the 24 splayed
+- [x] ~~The Project's plinth can only come in to 110~~ Towers QA round 2: struts' feet 98 -> 80, podium 92. The Project's plinth can only come in to 110 because the 24 splayed
       struts land at r=98 (see below). It is still the loosest podium of the
       eight.
+      Restand (A-H): feet 60, podium 70 — the struts stand nearly plumb under
+      the shaft's rim (52.8), and the crown (strut ring ~95) is now wider than
+      the podium.
 
 ## Plinths — the skyscraper podium pass
 
@@ -133,29 +142,46 @@ exactly one instance (see the Skyscraper G item).
 
 | | was | now | what sets the floor |
 |---|---|---|---|
-| A | 120 | 110 | 24 splayed struts land at r=98 |
-| B | 110 | 82 | twelve legs at r=70, columns 4.5 wide |
-| C | 115 | 96 | three hyperboloid legs at r=62, ~24 wide at the foot |
-| D | 110 | 48 | nothing but the shell: 34 at the superellipse corners |
-| E | 105 | 48 | the lens is 68 across, its edge fins add 3 |
-| F | 105 | 48 | widest tray 38.4 (registered volume 120 → 56) |
-| G | 130 | 130 | genuinely full — see below |
-| H | 110 | 56 | keep 43.5 at the corners, lowest setback ledge 45 |
+| A | 120 | 110 -> 92 (round 2) -> **70** (restand) | 24 struts land at r=98 -> 80 -> 60, 6 degrees off plumb under the rim |
+| B | 110 | 82 -> 66 -> **54** | twelve legs at r=70 -> 56 -> 42, now raked fluted columns straight to the lobe tips |
+| C | 115 | 96 -> 80 -> **66** | three hyperboloid legs at r=62 -> 50 -> 38 (7 degrees), feet sunk |
+| D | 110 | 48 -> **44** | nothing but the shell: 34 at the superellipse corners |
+| E | 105 | 48 -> **44** | the lens is 68 across, its edge fins add 3 |
+| F | 105 | 48 -> **44** | lowest tray 34.8; widest tray 38.4 is mid-height (registered 56 -> 50) |
+| G | 130 | 130 -> 116 -> **90** | stack and drum recentred, bridges 14 m, stilts under the quarter points; the drum's rim (80) |
+| H | 110 | 56 -> **52** | keep 43.5 at the corners; the lowest ledge is 66 m up |
+
+Restand (A-H, 2026-10-01; numbers and shots in `qa/towers.md`): registered radii
+A 110 -> 100, B 100 -> 80, C 130 -> 90, D 120 -> 60, E 120 -> 60, F 56 -> 50,
+G 150 -> 115, H 120 -> 65.
+
+- [x] ~~**Skyscraper G's top tier floated.**~~ Restand: the upper blocks sat
+      10 m (`gap`) over the lower ones with nothing between, intact or ruined;
+      the ruin's one surviving upper block hung in the air (found by the stumps
+      agent). Each upper block stands on four stilts on the block below; the
+      upper glass core goes with the ruin's fallen blocks; the ruin keeps the
+      bridge that lands on its surviving block (it kept the other one).
+- [x] ~~**Toppled A's crown struts stood 30 m into the ground.**~~ Restand: the
+      5 degree tilt is right (the body lies on its base, r 45, and its crown,
+      r 70, bridging its 40 m waist), but the crown's strut ring stuck 25 m out
+      all round. The struts on the underside are sheared to stubs.
 
 - [x] ~~**Skyscraper G's podium bar floated.**~~ 240 m long at z=90, so its ends
       were at r=150 — 20 m outside a 130 m podium — with its underside at y=5,
       the podium's top. Both ends hung five metres clear of the apron. This is
       exactly the hardcoded per-builder podium decor that does NOT follow `R`.
       It starts at the ground now and rises through the podium.
-- [ ] **Skyscraper G cannot shrink.** Its block stack's outer stilts stand at
+- [x] ~~**Skyscraper G cannot shrink.**~~ Towers QA round 2: stack (x 70 -> 50) and drum (-70 -> -52) moved
+      toward each other, bridges 67 -> 29 m, podium 130 -> 116. Its block stack's outer stilts stand at
       (115, 30) and the block corners reach r=127.6, so `skyPlinth`'s column
       ring at `R*.93` is already grazing them at R=130. Coming in means moving
       the stack, which is the building.
-- [ ] **A, B and C are limited by their own legs, not by their podiums.** If
+- [x] ~~**A, B and C are limited by their own legs, not by their podiums.**~~ Towers QA round 2:
+      A struts 98 -> 80 (podium 110 -> 92), B legs 70 -> 56 (82 -> 66), C legs 62 -> 50 (96 -> 80). If
       the splay were allowed to come in — A's struts from 98, B's legs from 70,
       C's from 62 — those three podiums could halve like the other five did.
       That is a change to the buildings' stance and was not taken unasked.
-- [ ] `figures()` at the foot of each tower is now placed at `-PR, PR*1.28`
+- [x] `figures()` at the foot of each tower is now placed at `-PR, PR*1.28`
       rather than at a hardcoded `-100, 130`, so the crowd follows the podium.
       Nothing else in the eight builders referenced a plinth radius.
 
@@ -214,12 +240,14 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       now keeps only a ragged, drooping stub off each edge, sized in metres
       (2.5-16 m) rather than as a fraction of the tear width, with whole levels
       missing where the plate went clean.
-- [ ] The breach tear is driven by `fbm` on a fixed axis, so the rip widens with
-      height but does not undercut -- a real failure would scallop back under
-      the crest on both sides of the notch.
-- [ ] The scour plume downstream is a Gaussian widening with distance. It reads,
-      but it does not braid or deposit a bar, and it ignores the terrace steps
-      it cuts through.
+- [x] ~~The breach tear is driven by `fbm` on a fixed axis, so the rip widens with
+      height but does not undercut.~~ `scal(y)` adds two lobes of width below
+      the crest and none at it, so the crest overhangs the notch; the plate
+      stubs follow it (qa/arcB.md).
+- [x] ~~The scour plume downstream is a Gaussian widening with distance.~~
+      Braided channels with bars, a distal fan, terrace steps planed off in the
+      channel, scour scaled into the park's height (qa/arcB.md). Water threads lie in
+      the braid troughs, because without them the braids read as flat sand.
 
 ## Hexahedron (`--target hexahedron`)
 
@@ -236,37 +264,49 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [x] ~~Both pyramids were open shells.~~ Great soffit under the upper city,
       deck over the lower city, floor to the lower truncation, and the summit
       closes to a point. Both new faces are dressed rather than left blank.
-- [ ] `RUINS` greens the ground under `+r.s` in every target except hexahedron,
-      while the intact site is built at `-r.s`. The greening lands on the empty
-      mirror position. Fixed only in `targets/hexahedron/89z-rows.js`.
+- [x] ~~`RUINS` greens the ground under `+r.s` in every target except hexahedron.~~
+      Mostly a misdiagnosis: `+s` IS the ruin wherever DECAYS has 1. Wrong only
+      where DECAYS omits 1: hexahedron and veladiga, both fixed (qa/arcB.md).
 - [x] ~~Windows were inserted into the balconies.~~ They sit on the terrace wall
       below each tread now, three storeys to a 20 m riser.
-- [ ] The terrace cells are still boxes on a ring, clustered by one fbm with
-      streets cut through, sky bridges out to pods, and gardens on the
-      promenade levels. The sheets' bridges span BETWEEN faces across open air;
-      these only cantilever outward.
-- [ ] No interiors behind the promenade bands, and the cultural centre at the
-      summit is a single block rather than the hall the sections draw.
-- [ ] The imported hypertree is one species (Ironbark) and one specimen. Mav's
-      Refuge has four, and its lower crown hangs off structural branches that
-      were not imported, so this one's crown is grown rather than ported.
+- [x] ~~The terrace cells are still boxes on a ring.~~ Round 3 (qa/arcB.md):
+      the front row of every upper tier and the outer row of every hung lower
+      tier are built storey by storey from five instanced modules -- loggia
+      (fins, soffit, recessed glazing, planter lip), punched window with
+      reveals and hood, Soleri apse vault, oversailing eave, planter -- in four
+      hashed types (loggias, terraced setbacks, apse-topped, closed). The rows
+      behind are roof-garden blocks with a glazed band. Lit glazing at night.
+      Depth reads through vertex colour (nothing casts shadows). Still open:
+      the lower city's inner row is plain boxes; cells are sparse along a tread
+      (one front cell per ~26 m), which is the old layout's spacing.
+- [x] ~~No interiors behind the promenade bands, and the cultural centre at the
+      summit is a single block.~~ The riser behind each promenade is an arcade;
+      the summit is a ribbed parabolic vault hall (qa/arcB.md).
+- [x] ~~The imported hypertree is one species (Ironbark) and one specimen.~~
+      Round 3: a grove of all four (Ironbark, Ghostwood, Prism gum, Gate
+      baobab) at Mav's Refuge's sizes, habits from biomes/hyperjungle's
+      SPECIES/LOWER data, the biome's bark textures and leaf cards on kit
+      instancing, ghostwood racemes and baobab pods. Charged to mav/0, not
+      biome/0. The Ironbark's draws are unchanged. Crowns are still grown,
+      not ported (no structural branches).
 - [x] ~~Shafts did not reach the soffit.~~ They run to the waist inside the
       closed lower shell, so the connection cannot depend on a continuous
       inverse agreeing with a stepped surface. Capitals and footings added.
-- [ ] The collapsed flank tears the soffit above it, but the mass does not sag
-      or tilt toward the hole -- the survivors are drawn as though nothing
-      moved. In-world the nanomaterial spine holds, so this may be correct.
-- [ ] Camera presets hard-code targets, so any preset aimed at a computed
-      feature (the shaft bundle, the shear face, the crater) goes stale when the
-      computation changes. Three have needed re-aiming so far.
+- [x] ~~The collapsed flank does not sag.~~ Round 3: at d=2 everything held up
+      (merged shells, and kit items placed before the shafts) droops on the
+      failed side, zero over the surviving shafts, rising with distance from
+      the centre of mass to 34 m at the rim. The spine still holds: a droop,
+      not a fall. Subtle at hero range; reads as the lower point dipping.
+- [x] ~~Camera presets hard-code targets.~~ The builder exports `HEX_SITE[d]`
+      and the views read it (qa/arcB.md).
 
 ## The Span (`--target canyon`)
 
-- [ ] The three fallen payloads are small against the canyon floor and could use
-      heavier debris fields and more broken-open interiors.
-- [ ] Payload sway in the rusted variant is a fixed tilt, not a hang angle
-      derived from the cable — fine at these angles, wrong if a cable ever
-      snaps on one side only.
+- [x] ~~The three fallen payloads ... could use heavier debris fields.~~ Each
+      throws a debris field downrange (skin plates, fittings, 150 rubble).
+      Interiors unchanged: more holes dissolve the shells (qa/arcB.md).
+- [x] ~~Payload sway in the rusted variant is a fixed tilt.~~ Derived from the
+      cables now; on the rusted prison one cable has parted (qa/arcB.md).
 
 ## Rehabilitated (decay 3, folded into `--target kit`)
 
@@ -282,32 +322,42 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       `bodyGroup` and in Skyscrapers A, B, C and G, so only a toppled tower is
       cut. A rehabilitated tower now stands at full height, dressed by the same
       `repairPass`.
-- [ ] **The row presets had to be pulled in.** With a building at x=0 in every
+- [x] ~~**The row presets had to be pulled in.**~~ FIXED (shared-code round, 2026-10-01): the kit rows are laid out from measured footprints (`ROW_FP`) and preset depths (`ROW_V`) in `targets/kit/89z-rows.js`; `s` widened where three sites did not fit (the Gate 800 -> 920, the factory 330 -> 640, ...), and every row's z gap clears its own presets, so the `ROWV` cap no longer binds. Widened rows are framed by scaling the preset by s/s0. The kit runs to z ~58 500 (was ~45 000). With a building at x=0 in every
       row, a row shot deeper than the row spacing stood inside the next row's
       rehabilitated building. `ROWV` now caps the distance 90 m short of the
       next row, so nine row shots (skyscrapers A, B, D, E, G, H, Megastructure,
       Starport, Lab) are tighter than they were designed. They frame the
       intact, rehabilitated and ruined sites; the toppled one sits off frame.
-- [ ] The repaired pass dresses **every** type identically. A police station and
+- [ ] The repaired pass dresses **every** type identically. (Partly: the Starport has tents, and the
+      towers A, B, C, D, G, H get a hoist gantry, cable, load, winch house and scaffold cages, `skyHoist`.) A police station and
       a cathedral-scale laboratory get the same vocabulary of lean-tos and water
       butts; some types would read better with their own accretion (a factory
       wants scrap yards, a starport wants tents on the aprons).
+      *Partly done:* the Foundry builds its own scrap yard at d=3 (domestic QA
+      round 1) and the Starport its tents (civic QA). The shared pass is unchanged.
 - [ ] Patches sample the wall faces, not the actual holes, so a patch can land
       on intact fabric. Reads fine — people board over cracks too — but a true
       hole-aware patch would need `holeFn` to record where it punched.
 
-## Vashtir, the recursive spire (`--target spire`)
+## The Hanging City, the lattice pyramid (`--target spire`; was Vashtir)
 
-- [x] ~~Open child bases.~~ Capped, swept from the same `rOf()` as the shell
-      because the rim is a star, not a circle.
-- [x] ~~Proportion is broader than the reference.~~ **This was my misreading**,
-      not a defect: the reference is itself about as wide as it is tall. What it
-      actually needed was translucency, now supplied by the parasol fans.
-- [ ] Radial symmetry is visible if you orbit directly overhead (44 kerb blocks,
-      6 causeways and 6 stairs make a regular rosette). Not visible from any
-      preset.
-- [ ] Intact contrast is low — white on white at distance, and nothing in this
-      kit casts shadows, so all form comes from facet normals.
+Round 3: Vashtir, the recursive spire, was REPLACED by a Shimizu Mega-City
+Pyramid type arcology (same file, builder, type key and target; git keeps the
+old code). Its four entries are closed by the replacement:
+
+- [x] ~~Vashtir: open child bases; proportion; radial symmetry overhead; torn
+      parasol fans floating~~ — the form they described is gone.
+- [x] ~~Vashtir: intact contrast low, white on white~~ — the new frame is white
+      tubes on darker steel nodes, sleeves and bands, read against the sky
+      through the lattice; the hung towers are blue glass.
+
+Open on the new build (see `targets/spire/NOTES.md`):
+
+- [ ] Debris does not rest on anything but water: a fallen member or tower that
+      would land on a podium block is moved, not laid across it.
+- [ ] No interiors in the decks and podium blocks: a ruined tower shows a dark
+      core and floor plates through its holes, nothing more.
+- [ ] Not in the `kit` target (it never was); it has only its own target.
 
 ## From the brief (the detail pass, not yet started)
 
@@ -318,28 +368,46 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       common bond, and a fresnel rim on the glass. See NOTES.md for the three
       traps (sRGB on data maps, metalness with no envMap, clone() dropping
       onBeforeCompile).
-- [ ] No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
+- [x] ~~*Civic, round 2: hood-and-sill mouldings on the Government's arched windows (`civHoodGeo`) and a flared cornice on each tier. No general `moulding()` helper yet.*~~ The helper exists (shared-code round): `moulding(profile, path, opt)` and the stock sections `MOULD.round/band/sill/hood/cornice` in `38-helpers2.js`. The Government's hoods, sills and cornices, `domMould` (now a wrapper, bit-identical), the Hotel's court sills and hoods (now curved, merged) and the Cultural centre's bands all use it. Still open below: the Gaudí bone-work vocabulary itself (finials, bulb tops, buttresses).
+      No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
       buttresses, and the `moulding(profile, path)` sweep helper they need.
-- [ ] Interiors are floor slabs only — no corridor light strips, touchpad
+      *Started (domestic QA round 2):* `domMould(pathFn, wallNormal, r, knots)`
+      in `64-houses-def.js` sweeps a knuckled bone roll along a path and returns
+      a geometry to merge (no draw call). Used on the Foundry's end-wall arches,
+      the Amphitheater's vomitoria and House D's apse edge.
+- [ ] Interiors are floor slabs only — DONE for civic (`civRooms`; round 2 added the Hospital podium's ward bays) and towers (`skyRooms`, in the
+      bays that are actually open). Interiors are floor slabs only — no corridor light strips, touchpad
       panels, conduit bundles or machinery silhouettes behind the openings.
+      *Done for the civic builders (`civRooms`) and for the domestic ones whose
+      shells are eaten through (`domRoom`): Laboratory storeys, Apartments A
+      trays, Houses A and C.*
 - [x] ~~Decay is uniform rings.~~ Round 5: `rubbleRing` now banks rubble against
       the wall it fell from (same signature, so all 33 types improved at once);
       `upFaces`/`ledgePoints` sample a structure's own flat surfaces so moss
       lands only where something faces the sky and vines and water-staining come
       off real ledges. Applied to the Laboratory, Hotel and Apartments A.
-- [ ] **Glass shards in ruined window openings** — the one decay sub-item still
+- [ ] **Glass shards in ruined window openings** — DONE for the civic group (`civWin`) and the towers
+      group (`skyShardMark`/`skyShards` in 52-sky-abc.js: A-D, G, H, Hotel, Cultural, Flatiron, K).
+      Still open for the other groups. The one decay sub-item still
       outstanding. Unlike the rest it cannot be done in a shared helper: the
       windows are `kput` directly at ~15 call sites, so it needs either a
       `deadWindow()` wrapper threaded through them or shards baked into the
       `winD`/`winBigD`/`winSmD` geometry itself.
+      *Done for the civic group (`civWin`) and the domestic group: every dead
+      kit window there goes through `civWin`, and the curtain walls and arched
+      glazing that are meshes (Houses D, E, F, the Foundry's end walls) get
+      `domShards`. Other groups' builders still `kput` bare.*
 - [x] ~~No ground contact.~~ `terrainH(x,z)` exists (returns 0) and everything
       meeting the ground asks it. `apron()` lays a graded skirt; it is inside
       `skyPlinth`, so all eight skyscrapers have one, plus the Laboratory and
       Starport. **Remaining types still meet the ground on a hard line** — the
-      call is one line each where it is wanted.
-- [ ] Campus wings should bend (UFM); the data-centre fin row needs hatches and
+      call is one line each where it is wanted. *Civic types done (qa/civic.md):
+      aprons on Offices A, Library, Government and the Gate's feet; the rest stand
+      on berms, a hill, discs or plinths.*
+- [ ] *Civic parts DONE (qa/civic.md): data-centre hatches and ducts, the Gate crest lattice, legged robot chassis (round 1); Campus wings bend (round 2). Open: Mega warts, Skyscraper B's crown (other groups).*
+      Campus wings should bend (UFM); the data-centre fin row needs hatches and
       ducts; the Gate deck needs an organic lattice; Megastructure "Unnamed"
-      wants irregular Beksiński warts; the robot chassis are placeholders;
+      wants irregular Beksiński warts (DONE, domestic QA round 1); the robot chassis are placeholders;
       Skyscraper B's crown is undersized.
 - [x] ~~Theodiga wants light tunnels, an irregular fin mosaic and a rougher
       canyon.~~ All three done. The canyon now carries bedding planes, vertical
@@ -374,14 +442,14 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       Icosahedron is non-indexed, so coincident vertices displace together and
       the shell stays closed) and the forest stopped reading as a bag of
       marbles.
-- [ ] **The Forest Tower is within 7 000 triangles of its 700 000 ceiling**
+- [x] ~~**The Forest Tower is within 7 000 triangles of its 700 000 ceiling**~~ obsolete (leaf card): 76% after QA arcA.
       (693 652 ruined / 691 542 intact). The tower took ~95 000 and the budget
       for it came off the bole geometry (24 triangles to 10, open-ended: both
       caps were buried) and the plinth groves, which are 90% under the building
       where nobody can see them. There is no easy headroom left: the next
       addition to this type has to be paid for by a matching cut, and the
       obvious remaining candidate is `figH`, a 48-triangle sphere for a head.
-- [ ] **The Forest Tower's shear reveals a flat back wall.** The dark
+- [x] ~~**The Forest Tower's shear reveals a flat back wall.**~~ FIXED (QA arcA): pale floors with dark soffits, stubs, cross walls, dead windows, hanging slabs. The dark
       `MAT.guts` lining and its floor plates give the bite depth and a proper
       cross-section read, but the lining is one smooth surface — no cell walls,
       no partitions, no fallen slabs hanging. Compare the Veladiga breach,
@@ -414,36 +482,36 @@ and did not touch shared `arcShape` / `arcWindowGeo`.
       I re-aimed `'The section'` myself: it looked 38 degrees DOWN into the
       wedge, which shows the slot's floor and rubble and none of its side faces.
       It now runs nearly level along the slot at mid-stack height.
-- [ ] **Nothing connects.** The four bridges land on the rim but there is no
+- [x] ~~**Nothing connects.**~~ FIXED (QA arcA, `qa/arcA.md`): gates through the barrel at every bridge, gate squares, real stair flights with landings and rails. The four bridges land on the rim but there is no
       stair, ramp or gate down into the town's street, and the barrel-end
       landing is a balcony on a blank wall. The eight radial stairs in the crown
       have no landings or handrails. 236 houses on the rim are still effectively
       unreachable — the bridges made this better-looking, not solved.
-- [ ] **The under-truss is decorative** — a sagging line of boxes with
+- [x] ~~**The under-truss is decorative**~~ FIXED (QA arcA): roll-fixed `rbeam`, diagonals and lateral ties. — a sagging line of boxes with
       verticals; the deck would not stand on it. Spokes are single straight
       boxes whose roll `beam` leaves to `setFromUnitVectors`, so a
       near-horizontal strut's cross-section is arbitrarily oriented.
-- [ ] **The half-torus has no interior**, and the ruin's cut face is a plain
+- [x] ~~**The half-torus has no interior**~~ FIXED (QA arcA): the ruin's cut face is a section of floors, soffits, lining and cross walls., and the ruin's cut face is a plain
       half-disc — the cutaway treatment given to the crown and shoulder stops at
       the wheel.
-- [ ] **The wheel's wood is open woodland, not forest** — 450 m² a plant against
+- [x] ~~**The wheel's wood is open woodland, not forest**~~ FIXED (QA arcA): 240 m2 a plant, lanes and four gate squares in the town. — 450 m² a plant against
       the crown's 170, because the annulus at crown density would be 200k
       triangles alone. The town is one building type in two even rows on one
       circular street: no squares, side lanes, or corner treatment.
 - [ ] **A stepped crown cannot be seen into below 36 degrees of depression**, so
       the three-torus idea reads properly only from the air. The two inner
       toruses carry 24 m of planting against torus 0's 36.
-- [ ] **The arches and doors are visibly faceted from directly underneath** — 8
+- [x] ~~**The arches and doors are visibly faceted from directly underneath**~~ FIXED (QA arcA): 14 and 9 segments. — 8
       and 5 curve segments instead of 24 and 12. This bought 81k triangles to
       pay for the wheel (445 arches, ~680 doorways). Worth knowing the lever
       exists; worth knowing it shows.
-- [ ] **ring/1 is at 96% of budget** — ~27k of headroom. Anything further wants
+- [x] ~~**ring/1 is at 96% of budget**~~ obsolete (leaf card): 76% after QA arcA. — ~27k of headroom. Anything further wants
       something taken out first.
-- [ ] The ruined shell thins toward the foot: `holeFn` has no height term
+- [x] ~~The ruined shell thins toward the foot~~ FIXED (shared-code round): `holeFn(d,seed,cut,scale,foot)` takes `{y,h,k}`; the Ring's ruined shell eats up to +.2 more below its waist (`rotF`, windows tested after their rng draws so nothing downstream moved). Was: `holeFn` has no height term
       without a `cut`. A `holeFn` limitation that will recur in any type eroding
       a tall shell. The breach is a single wedge that widens inward but never
       undercuts — as logged against Veladiga. Decay 2 unsupported.
-- [ ] **Canopy coarse at eye level on BOTH forest types.** `frCrown` and
+- [x] ~~**Canopy coarse at eye level on BOTH forest types.**~~ Solved by the shared leaf card. `frCrown` and
       `foCrown` are each a displaced 80-triangle icosahedron. Raising the
       displacement frequency fixed the "green boulder" read, but at 10 m they
       are still faceted lumps. **This wants a different tree, not a different
@@ -480,7 +548,7 @@ which satisfies "thinner than it is tall".
       Ring's crown wedge, now this). The pattern is clear: a section needs deep
       solid fabric, and none of these forms has any. Stop attempting cutaways on
       thin-skinned types; model a real interior or leave the opening dark.
-- [ ] **The dropped span reads as a fairly intact white box** on the gorge
+- [x] ~~**The dropped span reads as a fairly intact white box**~~ FIXED (QA arcA): two torn pieces, lining, stubs, cross walls, debris in the break. on the gorge
       floor. `holeFn` at d=1 eats the faces less than intended at that grid
       resolution, so its new interior plates are barely visible. It needs the
       shell broken open at one end, not merely perforated.
@@ -489,22 +557,22 @@ which satisfies "thinner than it is tall".
       `FogExp2` at 0.00022 leaves transmittance 0.55. Legible but washed out,
       with both outer ends cropped. This is a general problem with the
       two-site showcase convention at this scale, not an Arcbeam bug.
-- [ ] **The rockfall scar is the weakest ruin feature** — smoother than the
+- [x] ~~**The rockfall scar is the weakest ruin feature**~~ FIXED (QA arcA): bedded fresh face, portal linings holed where the scar took the rock, fallen portal frame. — smoother than the
       bedded wall around it, and the buried section it was meant to lay open is
       mostly hidden behind the portal frame. It is a rockfall beside the
       landing, not a cutaway of the buried city.
-- [ ] Canyon walls are soft at close range (13 m grid columns; gullies are the
+- [x] ~~Canyon walls are soft at close range~~ FIXED (QA arcA): wall grid 240x68 -> 420x80 (6 m columns); rooflights, benches and lamps on the decks; four different yard layouts. (13 m grid columns; gullies are the
       finest feature that survives). Roof decks are under-furnished — 1 200 x
       82 m of pale paving per beam. The industrial yards are the same layout
       four times, mirrored, which is obvious from the plan view.
-- [ ] **Vegetation is the kit default** and reads as toys close up; hedges are
+- [x] ~~**Vegetation is the kit default**~~ FIXED (QA arcA): leaf-card trees, hedges laid as rows of leaf cards. and reads as toys close up; hedges are
       flat green boxes. The agent deliberately stayed off `foCrown`/`foBole`
       because they belong to another builder. **That restraint is correct per
       fragment but wrong for the kit** — see the shared-tree item below.
-- [ ] **Both decays sit at 92% of ceiling.** The biggest single line item is
+- [x] ~~**Both decays sit at 92% of ceiling.**~~ obsolete: 81% / 79% after QA arcA. The biggest single line item is
       moss: `MAT.moss` on `IcosahedronGeometry(1,1)` is 80 triangles a blob, and
       the ruin's moss and tree counts were already cut by a third to fit.
-- [ ] `figures()` places people at y=0 on a gorge floor at y=14–26, so the two
+- [x] ~~`figures()` places people at y=0 on a gorge floor~~ FIXED (QA arcA): crowds on the banks at the floor's own height. at y=14–26, so the two
       ground-level crowds are knee-deep in it. Never visible from a preset.
 
 ## Plymouth (`--target plymouth`)
@@ -533,12 +601,12 @@ balconies, 4 391 washing lines, 693 arcade arches, 188 stair runs.
       windows cannot out-shine a sunlit wall, so this type's intended warm glow
       only works in the covered street and the court. Same root cause as the
       kit-wide "intact contrast is low" item.
-- [ ] **The assembly hall is thin** — a drum, a dome, a colonnade and a portal,
+- [x] ~~**The assembly hall is thin**~~ FIXED (QA arcA): two stoas and a 112 m campanile. — a drum, a dome, a colonnade and a portal,
       and it is the only civic object in a settlement of 17 000 homes.
-- [ ] **The ruin is "intact with patches" above the slump.** Below level 6
+- [x] ~~**The ruin is "intact with patches" above the slump.**~~ FIXED (QA arcA): eleven secondary failures, risers and maisonettes down onto the terrace below. Below level 6
       nothing has gone but fabric; a mountain abandoned for millennia would have
       lost far more terraces, parapets and maisonettes.
-- [ ] Crown's near end is sparse and the mast has no guys; terrace clutter is
+- [ ] (QA arcA: the mast has four guys; the terrace clutter has hash-picked variants, benches and pergolas. Still open: the crown's near end, chamfer correspondence.) Crown's near end is sparse and the mast has no guys; terrace clutter is
       seven item types on a weighted roll, so at 16 000 bays the eye starts
       seeing the same water butt; chamfer correspondence between levels is
       approximate (decks lerp between two octagons at equal arc length, which
@@ -580,21 +648,21 @@ pivot at the throat, so the shroud tip swings 62 m off axis, the skirt rim goes
 20 m down and 10 m THROUGH its own apron, and the collar, clamps, mast and gash
 all follow from that single rotation rather than being modelled separately.
 
-- [ ] **Everything facing down is brown.** The hemisphere light's ground colour
+- [x] ~~**Everything facing down is brown.**~~ FIXED for Launch (QA arcA): `lxBounce` on its bell and local skin/plate clones. FIXED KIT-WIDE (shared-code round): `soffitChunk` in `90-scene.js` patches the hemisphere term in `lights_pars_begin`, so every lit material's downward faces take the ground colour's luminance x1.3, neutral and slightly cool, instead of 0x6a3a2a; walls keep the warm term. (Chosen over applying `lxBounce` to BOXC/SLABC/PLATE: one patch reaches every material, and composes with the per-material hooks.) The hemisphere light's ground colour
       is 0x6a3a2a and nothing casts shadows, so collar soffits and the plug
       ceiling read warm brown. Dropping `lxBell`'s metalness from 1 to 0.5 put
       the diffuse back and helped — a fully metallic soffit with no envMap is
       flat brown — but this is mitigation, not a fix, and it affects **every
       type with a large soffit**, not just this one.
-- [ ] **Six-fold symmetry is exact** — six trenches, masts, towers and umbilical
+- [x] ~~**Six-fold symmetry is exact**~~ FIXED (QA arcA): six tower heights, two with a second jib. — six trenches, masts, towers and umbilical
       bearings. From directly overhead it is a perfect rosette; only the three
       spheres and two ramps break it.
-- [ ] Scoop back walls are single surfaces with no thickness — blast walls from
+- [x] (QA arcA, all four parts FIXED: scoops closed with cheeks, payload stack in panels with bays out and a spine, the fallen mast head and towers are lattices lying on their side, a fifth of debris is torn plate.) ~~Scoop back walls are single surfaces with no thickness — blast walls from
       the ground, thin dark sails from overhead. The payload frame inside the
       broken shroud is a smooth lathe. The fallen mast head and downed service
       tower are chains of jittered beams: wreckage at distance, a scribble up
       close. Trench slag, apron debris and crater rubble share one hue band with
-      no concrete/metal distinction.
+      no concrete/metal distinction.~~
 - [ ] **The six flame-trench volumes are the thinnest in the registry** (27
       probe samples each) because the trench geometry is inside one merged mesh
       and only its `kput` coping contributes points. They pass, but they are the
@@ -631,16 +699,22 @@ reaching the cut plane were made to land on it.
 - [ ] **The massif reads as a rectangular loaf from the hero view** — flat
       plateau, straight vertical cut, no spur or re-entrant along 1 900 m of
       escarpment. The single biggest remaining weakness.
+      *Improved (qa/arcB.md):* four amphitheatre bays west of the cavern, the
+      west taper in three benches, and a bedded-sandstone rock texture.
 - [ ] **The vault light-well collars read as objects stuck to the ceiling.**
       Four attempts (flared bell, small flare, flush rim with a bright bore).
       Root cause is not fixable in this type: an unshadowed sun plus the
       hemisphere's warm ground colour lights anything hanging under a roof. The
       POOLS on the deck carry the idea instead and do work — a radial-falloff
       additive disc. Flat pale discs read as paper dropped on the deck.
+      *Improved (qa/arcB.md):* no rim, bore seated at the lowest roof point,
+      lined near-black in the ceiling's hue. Still reads as a shape.
 - [ ] Plateau is thin (a haul road, spoil, scrub over 1 700 x 1 300 m); the roof
       fall is angular now but still too uniform; pod stacks are acceptable, not
       good; trees are the kit default.
-- [ ] **A `roofY()`/shell disagreement nearly shipped**: `roofY()` returned the
+      *Partly fixed (qa/arcB.md):* caprock plateau material and 16 tors; the roof
+      fall is a fan with power-law sizes. Pods and trees unchanged.
+- [x] **A `roofY()`/shell disagreement nearly shipped** (fixed): `roofY()` returned the
       smooth Bezier while the built vault adds up to 23 m of noise, so three
       light shafts hung ~15 m below the ceiling with `--assert` green. Now both
       call one `roofN()`. Another entry for the placement-error list.
@@ -674,17 +748,23 @@ find the hard way, applied from the start.
       the deck, capping it near 25. Five camera positions were tried. The
       sheet's fourth drawing is approximated, not built — this is inherent to
       an overhang, not a fixable preset.
-- [ ] **The cliff face reads as smeared mud at close range** — six noise terms,
+- [x] ~~**The cliff face reads as smeared mud at close range**~~ (fixed by
+      `TEX.aiRockTx`, bedded sandstone, qa/arcB.md) — six noise terms,
       brown blotches at 100 m. The worst material read in the type.
 - [ ] The lens's flanks are blank over ~150 m; the access shaft is a blank pale
       column except where the joint lays it open; the gardens are a hedge row
       rather than the fan the source comment claims; the sun court floor and the
       roof-fall scar are coarse (the scar is a stepped quarry terrace, not a
       rockfall); the rim plateau is still thin over 1 900 x 1 100 m.
-- [ ] **The ruin is "intact with an overgrowth pass" at distance.** The vault
+      *Mostly fixed (qa/arcB.md):* flank window rows, slot windows on the access
+      shaft where it stands free, the garden beds laid along the fan's rays,
+      caprock and tors on the plateau. Still open: sun court floor and scar.
+- [x] ~~**The ruin is "intact with an overgrowth pass" at distance.**~~ Fixed:
+      the lens's west flank has sheared off (qa/arcB.md). The vault
       bite, deck block field, dropped bridge span and snapped water shaft all
       read close up, but the hero ruin is not obviously 5 000 years older.
-- [ ] `RIVZ`, `inLens` and `NLU/NLV` are dead locals in the source.
+- [x] ~~`RIVZ`, `inLens` and `NLU/NLV` are dead locals in the source.~~ `inLens`
+      removed, `RIVZ` already gone, `NLU/NLV` are in use.
 - [ ] **360 000 triangles of headroom per decay.** Spend them on the flanks, the
       cliff-face relief and the plateau, in that order.
 
@@ -701,6 +781,44 @@ looking at**: the lining is a mid-brown and the hemisphere lights it happily
 through 90 m of rock; void-black for the first 55 m of bore fixed it.
 
 
+## Lighthouse island (`--target lighthouse`)
+
+Skyscraper J's Whorl re-proportioned as a 234 m lighthouse on a cliffed island
+in its own sea (`src/89n-lighthouse.js`, seed 9790+d, kit row z=28800). The
+first moving thing in the kit: the beacon is swept by the `tick()` frame hook
+(`10-core.js`, called from `92-camera.js`). Verified 2026-10-01: 117 568 /
+90 460 / 118 678 / 118 560 per decay 0/1/2/3 of 400 000, worst 104 draw calls
+over 16 presets, all six invariants PASS, error panel clean, 29 registered
+volumes; the beam's `rotation.y` advances frame to frame. Details in
+`targets/lighthouse/NOTES.md`.
+
+- [x] ~~The berm's outer slope was culled with the seabed~~ (anything under
+      WL-.7 counted as "under the sea"), so the sand rim stopped at its 1.8 m
+      contour in a 4 m staircase. Culled only inside the basin now. **Any
+      builder that culls hidden ground by height must also ask which side of
+      the waterline's rim it is on.**
+- [x] ~~The ravine path was flagstones draped on a 50 degree slope.~~ It is a
+      three-flight cliff stair on a carved terrace now, down to the jetty deck.
+- [x] ~~Floating: ruined gallery rail posts and shards over roof holes,
+      ruined lodge chimneys on holed roofs, the toppled tower's rubble 30 m
+      out over the sea, the mole lamp off its rounded cap.~~ None of these
+      tripped `--assert`; a downward-ray probe over every instanced item found
+      them (it is in the target's NOTES; it is not yet an invariant).
+- [ ] The stair's terrace is cut with the 4 m ground grid: between flights
+      the ground is a steep stretched face, not a built retaining wall, and
+      the flights have posts but no parapet.
+- [ ] Cliffs are a smooth 4 m heightfield: no overhangs, no sea stacks.
+- [ ] The sea is Lambert (GGX blazed white with the fill light): no sun glint;
+      only the beams move.
+- [ ] The ruined lantern's astragals stand as loose bronze helices.
+- [ ] Beams re-aim on any camera jump over 250 m in a frame (fast WASD at a
+      large orbit counts). Screenshots are taken ~900 ms after a preset, so the
+      beam is up to ~.4 rad past its re-aim angle (less under software GL,
+      where each frame's dt is clamped), not exactly at it.
+- [ ] Kit target: the toppled site's ruin greening (RUINS radius r*1.4 = 420,
+      from the shared `targets/kit/89z-rows.js`) extends past its 308 m berm
+      as a yellow-green smear. The `lighthouse` target uses 300.
+
 ## Cutaways — the sixth attempt, and this one reads
 
 - [x] ~~Skyscraper A's ruined and toppled variants showed a dark hollow, not a
@@ -716,7 +834,7 @@ through 90 m of rock; void-black for the first 55 m of bore fixed it.
 - [ ] This works here because a 420 m cone has 80 m of diameter to cut through.
       It does not contradict the standing rule from Arcbeam — a thin-skinned
       form still has nothing to section.
-- [ ] Only Skyscraper A was done. The other seven towers all still have an
+- [x] ~~Only Skyscraper A was done.~~ Towers QA round 1: B, C and G punched too; D and H already were. The other seven towers all still have an
       unpunched `MAT.guts` inner lathe and dark floor plates, and will all read
       the same way. It is the same two-line change in each.
 
@@ -789,3 +907,15 @@ through 90 m of rock; void-black for the first 55 m of bore fixed it.
       of green on three bearings; a crater with no floor. `--assert` was green
       through every one. **Reading the shots is not optional and never has
       been.**
+
+## Shared-code round (2026-10-01)
+
+- [x] **Kit rubble read as pale eggs** (QA arcB). `rubble` is Arcoindian's knocked-corner block (`stoneBlockGeo()`, 12 tris, was a 36-tri dodecahedron) on a mottled stone map (`MAT.rubbleK`) under the same instance tints.
+- [x] **Openings read mid-grey.** `MAT.dark` is near-black in the kit (0x0a0b0d, set in `34-kitdefs.js`; core/materials untouched). True dark SURFACES that used it (conduit `tube`, bunker `finW`, radar wings and mast, dish backs) moved to `MAT.darkSurf`, the old value. The engines' dark cores stay on `MAT.dark` (they are voids under plates).
+- [x] **`meshMerged()` dropped vertex colours** (QA arcB). It keeps `color` when every input has one, or when the material draws vertex colours. Vashtir's private `spMerge` is NOT retired: Vashtir was being rebuilt by another agent this round; it can now be replaced by `meshMerged` with its `*V` materials.
+- [x] **`apron()` had no material override** (QA arcB). `apron(...,hIn,mat)`.
+- [x] **The roll-fixed beam was private to the Ring** (QA arcA). `rbeam(name,a,b,w,dp,c)` in `38-helpers2.js`; `beam()` unchanged.
+- [x] **Glass shards read as "V" marks in very large openings** (coordinator; Skyscraper K's ruined base). `civShardAt` draws no teeth in an opening over 9 m a side or 40 m2 (a pane that big fails whole). Position-hashed, so nothing else moves.
+- [x] **Proof the pure refactors changed nothing:** dist hashes necessarily change (the source is in the page), so the proof is a geometry hash per scene group (positions, normals, uvs, indices, world matrices; instance matrices and colours): on a scratch target of House D-F, Amphitheater, Foundry (domMould, holeFn without `foot`, meshMerged, apron) every group is bit-identical before/after; on the Ring every intact group is (rbeam), only the ruin differs (the foot term, by design).
+- [ ] The soffit fix is a global shader patch: a builder that painted its own shade in (Arcube, Arcoindian II, Ledge, Wing, Hill) now gets neutral light on top of its painted grey and may read a step lighter underneath than it was tuned to. Not re-tuned this round.
+

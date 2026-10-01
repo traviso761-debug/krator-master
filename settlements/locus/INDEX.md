@@ -4,7 +4,7 @@
 
 Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.
 
-Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`
+Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`
 
 Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus.html`
 
@@ -42,16 +42,16 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `64-locus-petroleum.js` | 22 | 16P. LOCUS — the petroleum works (1) |
 | `64-locus-plants.js` | 3 | 16N. LOCUS — crops and marsh-edge plants (1) |
 | `64-locus-power.js` | 18 | 16W. LOCUS — power and fuel (1) |
-| `65-abyss-00-core.js` | 40 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (211); ABYSS 7. overhead clutter (228); ABYSS 8. the stepped square altar (256) |
-| `65-abyss-10-furniture.js` | 17 | 16X-F. ABYSS — abyssal-desert furniture, indoor  (1) |
+| `65-abyss-00-core.js` | 41 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (211); ABYSS 7. overhead clutter (228); ABYSS 8. the stepped square altar (256) |
 | `65-abyss-20-plants.js` | 3 | 16X-P. ABYSS — plants the abyssal kit needs that (1) |
 | `65-abyss-30-housing.js` | 19 | 16X-H. ABYSS — housing: poor, middle, rich (1) |
-| `65-abyss-40-shops.js` | 20 | 16X-S. ABYSS — shops (1) |
-| `65-abyss-50-civic.js` | 20 | 16X-C. ABYSS — hospitality and civic (1) |
+| `65-abyss-40-shops.js` | 21 | 16X-S. ABYSS — shops (1) |
+| `65-abyss-50-civic.js` | 21 | 16X-C. ABYSS — hospitality and civic (1) |
 | `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
 | `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
 | `65-abyss-80-military.js` | 12 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 12 | 16X-G. ABYSS — farming and storage (1) |
+| `66-locus-furnish.js` | 6 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `69a1-bio-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
 | `69a2-bio-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |

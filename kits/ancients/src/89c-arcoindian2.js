@@ -101,7 +101,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  const lensM=dd?MAT.a2LensR:MAT.a2Lens, underM=dd?MAT.a2UnderR:MAT.a2Under;
  const deckM=dd?MAT.aiDeckR:MAT.aiDeck, wallM=dd?MAT.aiWallR:MAT.aiWall;
  const BX='aiBox', BXD='aiBoxD';
- const ROCK=[],SHADE=[],CUT=[],RM=[],LNS=[],UND=[],SH=[],DK=[],GRD=[];
+ const BORE=[],ROCK=[],TOP=[],SHADE=[],CUT=[],RM=[],LNS=[],UND=[],SH=[],DK=[],GRD=[];
 
  // ---- the numbers ----------------------------------------------------------
  const XW=-1500,XS=150;             // the west taper; the master joint
@@ -138,7 +138,10 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  const DECK=LYC+LTH;                // the top deck, 507
 
  // ---- the rock -------------------------------------------------------------
- const ctop=x=>CT0*clamp(1-Math.pow(clamp((-x-560)/760,0,1),1.5),.06,1);
+ // The taper comes down in BENCHES rather than one ramp (see Arcoindian I, which
+ // shares the fix): a smooth staircase t - k sin(2 pi n t)/(2 pi n).
+ const ctop=x=>{const t=clamp((-x-560)/760,0,1),ts=t-.78*Math.sin(t*TAU*3)/(TAU*3);
+  return CT0*clamp(1-Math.pow(ts,1.5),.06,1);};
  // The overhang, as one function: the face leans out 400 m between the valley
  // floor and the crown and then pulls back into a caprock.
  const brow=y=>-262+400*Math.pow(clamp(y/CROWN,0,1),1.55)-46*Math.pow(clamp((y-CROWN)/80,0,1),1.2);
@@ -153,7 +156,15 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    +28*Math.pow(Math.abs(fbm(x*.020,y*.0042,7124,3)-.5)*2,2.1)
    +12*Math.pow(Math.abs(fbm(x*.036,y*.011,7125,2)-.5)*2,1.5)
    +26*fbm(x*.0092,y*.0125,7126,4)+12*fbm(x*.030,y*.020,7127,3);
- const faceZ=(x,y)=>brow(y)-rel(x,y)
+ // RE-ENTRANTS west of the hollow, faded to nothing by x = -640 so the hollow,
+ // the shelf, the lens and the bridge are measured off the face they always
+ // were. Same treatment as Arcoindian I: amphitheatre bays eaten back into the
+ // scarp, deepening toward the rim, fixed constants and no PRNG.
+ const BAYS=[[-760,70,84],[-960,88,132],[-1170,66,112],[-1370,84,80]];
+ const bay=(x,y)=>{if(x>-640)return 0;
+  let s=0;for(const b of BAYS)s+=b[2]*Math.exp(-Math.pow((x-b[0])/b[1],2));
+  return s*clamp((-640-x)/110,0,1)*(.62+.38*clamp(y/(ctop(x)+1),0,1));};
+ const faceZ=(x,y)=>brow(y)-rel(x,y)-bay(x,y)
    +54*Math.pow(clamp(1-y/210,0,1),1.7)                          // talus banking out at the foot
    +10*Math.pow(clamp((y-ctop(x)*.90)/(ctop(x)*.10+1),0,1),1.2); // the caprock lip
  // THE PLATEAU as a function, not as a surface: every collar, basin, kerb and
@@ -216,7 +227,17 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
   if(!(s>t+.5)||!(b>a+2))return null;
   const u=.5*(1+Math.sqrt(clamp(1-Math.pow(t/s,1/.55),0,1)));
   return a+u*(b-a);};
- const inLens=(x,y,z)=>Math.abs(y-LYC)<lth(x,z)&&x<XS;
+ // THE WEST FLANK LET GO (ruin only). KNOWN_ISSUES: at distance the ruin read
+ // as "intact with an overgrowth pass" -- the roof bite, the block field and
+ // the dropped span all read close up, but the SILHOUETTE was the intact one.
+ // A lens keyed into rock at the back and hung on one stalk has one obvious
+ // way to fail: the cantilevered flank furthest from the stalk shears off.
+ // Everything west of a ragged line near x = -96 is gone, and lies on the
+ // shelf and in the gorge under where it hung. One predicate, used by every
+ // surface and placement on the lens, so nothing is left floating.
+ const LFX=LCX-106;
+ const lfx=z=>LFX+30*(fbm(z*.018,.7,7171,3)*2-1)+14*(fbm(z*.061,1.9,7172,2)*2-1);
+ const lG=(x,z)=>dd>0&&x<lfx(z);
  // THE SUN COURT. The mouth is open to the south, so the lens gets a court cut
  // into its top that faces the same way: 160 m wide, open over the nose, and
  // 46 m deep, which is as much as a 104 m lens can give up without cutting
@@ -300,7 +321,11 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    wz=rr(ZB(wx)+50,lz1(wx)-70);
    ok=lth(wx,wz)>14&&!inNotch(wx,wz)&&Math.abs(wx-A2ST.x)>40
       &&!WELL.some(w=>Math.hypot(wx-w.x,wz-w.z)<w.r+wr+50);}
-  if(ok)WELL.push({x:wx,z:wz,r:wr,y0:roofY(wx,wz)+1});}
+  // seated at the LOWEST roof point round its rim, so no rim of shell hangs
+  // proud below the bore and no gap opens above a dipping edge
+  if(ok){let ry=roofY(wx,wz);for(let k=0;k<8;k++){const a=k/8*TAU,q=roofY(wx+Math.cos(a)*wr,wz+Math.sin(a)*wr);
+    if(q>0)ry=Math.min(ry,q);}
+   WELL.push({x:wx,z:wz,r:wr,y0:ry-.5});}}
  // Two shafts on the joint plane, so the section shows them in long section
  // running 200 m up to daylight rather than as holes in a ceiling.
  WELL.push({x:XS,z:-372,r:15,y0:GAL[2].y1-2,half:true,gal:true});
@@ -363,7 +388,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  ROCK.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u),y=v*ctop(x);
    return[x,y,faceZ(x,y)];},224,76,{uS:(XS-XW)/74,vS:CT0/66,
    hole:(u,v)=>mouthHole(lerp(XW,XS,u),v*ctop(lerp(XW,XS,u)))}));
- ROCK.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
+ TOP.push(gridSurface((u,v)=>{const x=lerp(XW,XS,u);
    const z0=faceZ(x,ctop(x))+3,z=lerp(z0,ZBK,Math.pow(v,.82));
    return[x,platY(x,z),z];},148,44,{uS:(XS-XW)/30,vS:40,
    hole:(u,v)=>{const x=lerp(XW,XS,u),z0=faceZ(x,ctop(x))+3,z=lerp(z0,ZBK,Math.pow(v,.82));
@@ -377,7 +402,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  // talus banked against the foot of the cliff, largest at the wall
  for(let i=0;i<230;i++){const x=rr(XW+60,XS+120),t=Math.pow(rng(),1.9);
   const bx=faceZ(x,8)+t*170,sc=rr(4,26)*(1-t*.45);
-  kput('rubble',[x,sc*.4+(1-t)*(1-t)*22,bx],qEuler(rng()*3,rng()*3,rng()*3),
+  kput('aiBlock',[x,sc*.4+(1-t)*(1-t)*22,bx],qEuler(rng()*3,rng()*3,rng()*3),
    [sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.32),rr(.11,.24)));}
 
  // ---- the shell of the hollow ----------------------------------------------
@@ -435,10 +460,27 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  // invariants were all green. Only a close camera on the face found it.
  const cutX=(y,z)=>XS+3+Math.abs((fbm(z*.0062,y*.0062,7137,3)*2-1)*11)
    +Math.abs((fbm(z*.021,y*.021,7138,2)*2-1)*5);
+ // THE HOLLOW'S EDGE ON THE CUT. Whole quads are what a hole drops, so the top
+ // of the hollow came back as a flight of 8 m stairs across every view of the
+ // joint. The main face leaves a band CB m above the roof edge open too, and a
+ // conformal strip whose lower edge IS the roof curve laps 0.9 m proud over the
+ // stepped quads above it, with UVs recomputed from the main face's own (u,v)
+ // so the bedding carries across. Arcoindian I has the same fix.
+ const CB=15,cZa=ZB(XS)+10,cZb=lipZ(XS)-4;
+ const cutU=(y,z)=>Math.pow(clamp((cutZ(y)-z)/(cutZ(y)+880),0,1),1/.85);
+ const cutSX=(y,z)=>{const b=Math.min(1,cutU(y,z)*6);return cutX(y,z)*b+XS*(1-b);};
+ const inCavBand=(y,z)=>{if(z<=cZa||z>=cZb)return false;
+  const ry=roofY(XS,z);return ry>0&&y>=ry-10&&y<ry-10+CB;};
+ {const g=gridSurface((u,v)=>{const z=lerp(cZa,cZb,u),y=roofY(XS,z)-10+v*(CB+10);
+    return[cutSX(y,z)+.9*Math.min(1,v*3),y,z];},90,5,{uS:1,vS:1});
+  const P=g.attributes.position,UV=g.attributes.uv;
+  for(let i=0;i<P.count;i++){const y=P.getY(i),z=P.getZ(i);
+   UV.setXY(i,cutU(y,z)*38,y/ctop(XS)*CT0/24);}
+  CUT.push(g);}
  CUT.push(gridSurface((u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y),-880,Math.pow(u,.85));
    return[cutX(y,z)*Math.min(1,u*6)+XS*(1-Math.min(1,u*6)),y,z];},124,78,{uS:38,vS:CT0/24,
    hole:(u,v)=>{const y=v*ctop(XS),z=lerp(cutZ(y),-880,Math.pow(u,.85));
-    return inCavCut(y,z)||inLensCut(y,z)||inCutO(z,y)
+    return inCavCut(y,z)||inCavBand(y,z)||inLensCut(y,z)||inCutO(z,y)
       ||(Math.abs(z-A2ST.z)<A2ST.w*.5&&y>A2ST.y0&&y<A2ST.y1);}}));
  // REVEALS. Every opening returns 15 m into the rock — a sill, a head and two
  // cheeks. Without them a plane with rectangles cut in it is a sheet of card,
@@ -453,14 +495,14 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  reveal(A2ST.z-A2ST.w*.5,A2ST.z+A2ST.w*.5,A2ST.y0,A2ST.y1,RVD);
  // blocks along the crest and the spoil of the joint's own failure
  for(let i=0;i<64;i++){const z=rr(-860,cutZ(CT0*.9)),sc=rr(6,22);
-  kput('rubble',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
+  kput('aiBlock',[XS+rr(-14,16),ctop(XS)-rr(0,10)+sc*.3,z],qEuler(rng()*3,rng()*3,rng()*3),
    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.16,.32)));}
  for(let b=0;b<3;b++){const by=52+b*52,bd=16+b*9;
   CUT.push(gridSurface((u,v)=>[XS+lerp(0,bd,v),by,lerp(cutZ(by),-840,Math.pow(u,.85))],36,3,{uS:24,vS:4}));
   CUT.push(gridSurface((u,v)=>[XS+bd,lerp(by,by-52,v),lerp(cutZ(by),-840,Math.pow(u,.85))],36,4,{uS:24,vS:5}));}
  for(let i=0;i<140;i++){const t=Math.pow(rng(),1.7),z=rr(-860,cutZ(20));
   const sc=rr(4,26)*(1-t*.5);
-  kput('rubble',[XS+8+t*200,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
+  kput('aiBlock',[XS+8+t*200,sc*.4+(1-t)*(1-t)*30,z],qEuler(rng()*3,rng()*3,rng()*3),
    [sc*rr(.7,1.6),sc*rr(.5,1),sc*rr(.7,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.14,.34),rr(.14,.30)));}
 
  // ---- the excavated galleries ----------------------------------------------
@@ -533,13 +575,13 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  LNS.push(gridSurface((u,v)=>{const x=lerp(LCX-LWX,XS,u),a=lz0(x),b=lz1(x);
    const z=lerp(a,b,v);return[x,LYC+lth(x,z),z];},NLU,NLV,{uS:(XS-LCX+LWX)/9,vS:DZ/9,
    hole:(u,v)=>{const x=lerp(LCX-LWX,XS,u),z=lerp(lz0(x),lz1(x),v);
-    return lensHole(x,z)||inNotch(x,z)||!!inWell(x,z,-2)
+    return lensHole(x,z)||lG(x,z)||inNotch(x,z)||!!inWell(x,z,-2)
       ||(Math.abs(x-A2ST.x)<A2ST.w*.5&&Math.abs(z-A2ST.z)<A2ST.w*.5)
       ||(dd&&SCAR.o&&Math.hypot(x-SCAR.o.x,z-SCAR.o.z)<SCAR.o.r*.42);}}));
  UND.push(gridSurface((u,v)=>{const x=lerp(LCX-LWX,XS,u),a=lz0(x),b=lz1(x);
    const z=lerp(a,b,v);return[x,LYC-lth(x,z),z];},NLU,NLV,{uS:(XS-LCX+LWX)/9,vS:DZ/9,
    hole:(u,v)=>{const x=lerp(LCX-LWX,XS,u),z=lerp(lz0(x),lz1(x),v);
-    return lensHole(x,z);}}));
+    return lensHole(x,z)||lG(x,z);}}));
  // RIBS ON THE BELLY. The underside is the single largest surface anyone sees
  // from the gorge — 500 x 250 m of it, hanging over a 430 m drop — and as one
  // smooth dark shell it read as a painted ellipse. Fore-and-aft ribs give it a
@@ -548,13 +590,13 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  for(let i=0;i<30;i++){const x=lerp(LCX-LWX+16,XS-6,(i+.5)/30);
   const a=lz0(x),b=lz1(x);if(!(b>a+40))continue;
   for(let j=0;j<32;j++){const z=lerp(a+10,b-6,(j+.5)/32),t=lth(x,z);
-   if(t<7)continue;
+   if(t<7||lG(x,z))continue;
    kput(BXD,[x,LYC-t+1.1,z],null,[4.2,3.0,(b-a-16)/32*1.06],null);}}
  for(let j=0;j<9;j++){const z0f=(j+.5)/9;
   for(let i=0;i<86;i++){const x=lerp(LCX-LWX+16,XS-6,(i+.5)/86);
    const a=lz0(x),b=lz1(x);if(!(b>a+40))continue;
    const z=lerp(a+14,b-10,z0f),t=lth(x,z);
-   if(t<9)continue;
+   if(t<9||lG(x,z))continue;
    kput(BXD,[x,LYC-t+1.4,z],null,[(LWX+XS-LCX-22)/86*1.06,2.6,5.2],null);}}
  // THE BANDS. Horizontal planes through the lens, so each one lands exactly on
  // the joint plane whatever the PRNG does. Each plate is punched wherever the
@@ -564,7 +606,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  for(let k=0;k<=NBD;k++){const py=k===NBD?DECK:bandY(k);
   const need=Math.abs(py-LYC);
   const hl=(u,v)=>{const x=lerp(LCX-LWX,XS,u),z=lerp(lz0(x),lz1(x),v);
-   if(lth(x,z)<need+1.2)return true;
+   if(lth(x,z)<need+1.2||lG(x,z))return true;
    if(inWell(x,z,-2))return true;
    if(Math.abs(x-A2ST.x)<A2ST.w*.5&&Math.abs(z-A2ST.z)<A2ST.w*.5)return true;
    if(py>=NY-1&&inNotch(x,z))return true;
@@ -589,7 +631,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  for(let k=0;k<NBD;k++){const y0=bandY(k),need=Math.abs(y0+BTH*.5-LYC);
   for(let i=0;i<34;i++){const x=rr(LCX-LWX+30,XS-8);
    const z=rr(lz0(x)+18,lz1(x)-14);
-   if(lth(x,z)<need+6||inNotch(x,z)||inWell(x,z,6))continue;
+   if(lth(x,z)<need+6||lG(x,z)||inNotch(x,z)||inWell(x,z,6))continue;
    if(Math.abs(x-A2ST.x)<A2ST.w&&Math.abs(z-A2ST.z)<A2ST.w)continue;
    kput(BXD,[x,y0+BTH*.5,z],qEuler(0,rr(-.3,.3),0),[rr(14,44),BTH-3,1.1],null);
    if(rng()<.5)kput(BXD,[x,y0+BTH*.5,z],qEuler(0,Math.PI/2+rr(-.3,.3),0),[rr(12,38),BTH-3,1.1],null);}
@@ -612,8 +654,8 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  for(let k=0;k<NBD;k++){const ym=bandY(k)+BTH*.5,need=Math.max(9,Math.abs(ym-LYC));
   const up=ym<LYC?1:-1;                       // which way is INTO the lens here
   for(let i=0;i<NSN;i++){const x=lerp(LCX-LWX,XS,(i+.5)/NSN);
-   const zf=lensFZ(x,need);if(zf==null)continue;
-   if(inNotch(x,zf))continue;
+   const zf=lensFZ(x,need);if(zf==null||lG(x,zf))continue;
+   if(inNotch(x,zf)||inNotch(x-4,zf)||inNotch(x+4,zf))continue;   // and clear of the court's cheeks, which it poked through
    const nrm=[0,0,1],bw=(LWX+XS-LCX)/NSN*1.08;
    // the walkway ledge along the outline, and a dark reveal band behind it
    kput(BX,[x,ym,zf-1.2],null,[bw,1.3,7],stoneC());
@@ -625,6 +667,28 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    if(rng()<(dd?.05:.13))kput('aiBalc',[x,ym+.4,zf+.6],qFacing(nrm),[5.2,2.2,4.0],stoneC());
    if(i%11===4&&!(dd&&rng()<.4))kput('aiPost',[x,ym+.9,zf+1.6],null,[1.7,up>0?7:2.6,1.7],stoneC());
    if(!dd&&i%17===6)kput('strip',[x,ym+1.9,zf+1.9],qFacing(nrm),[24,1.3,1.3],ZLIT[BAND[k].k]||CYAN);}}
+ // THE FLANKS. KNOWN_ISSUES: "the lens's flanks are blank over ~150 m". Out
+ // there the lens is too thin for the upper bands, so the nose galleries run
+ // out and what is left is 150 m of smooth white shell either side of the sun
+ // court. The upper shell is inhabited too: rows of windows set into it
+ // parallel to the outline, each on a dark reveal strip, facing along the
+ // shell's own normal (solved from lth()'s gradient), thinning out toward the
+ // tips where the shell turns into the deck. Hashed, not rng(), so nothing
+ // after them moves.
+ {const yT=(x,z)=>LYC+lth(x,z);
+  const OFF=[5,11,18,26,35,45];
+  for(let r=0;r<OFF.length;r++)for(let i=0;i<150;i++){const x=lerp(LCX-LWX+8,XS-6,(i+.5)/150);
+   if(x>NX0-8&&x<NX1+8)continue;                           // the sun court has its own face
+   const z=lz1(x)-OFF[r]*(.55+.45*sx(x));
+   const t=lth(x,z);if(t<5||lG(x,z)||inWell(x,z,4))continue;
+   if(h3(i,r,3.7)<.18)continue;                            // a blank bay here and there
+   const e=1.5,nx=-(yT(x+e,z)-yT(x-e,z))/(2*e),nz=-(yT(x,z+e)-yT(x,z-e))/(2*e);
+   const L=Math.hypot(nx,1,nz),n=[nx/L,1/L,nz/L];
+   if(n[1]>.93)continue;                                   // too flat: that is roof, not wall
+   const q=qFacing(n),bw=(LWX+XS-LCX)/150*1.02,y=yT(x,z);
+   kput(BXD,[x-n[0]*.8,y-n[1]*.8,z-n[2]*.8],q,[bw,3.6,1.6],null);
+   kput('aiPane',[x+n[0]*.35,y+n[1]*.35,z+n[2]*.35],q,[bw*.72,2.6,1],
+    h3(i,r,5.1)<(dd?.05:.34)?(ZLIT[BAND[Math.min(4,2+(r>>1))].k]||WARM).clone().multiplyScalar((dd?.1:.32)+.5*h3(i,r,6.2)):ROOMC);}}
  // THE SUN COURT: floor, back wall, cheeks, and a flight of steps down the
  // middle of it. Open over the nose, facing due south, catching the winter sun
  // the mouth is oriented for.
@@ -679,6 +743,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  // building is half of one.
  const ROS=[{x:LCX-168,r:80,k:'res',n:'Residential'},{x:LCX+104,r:68,k:'lw',n:'Living'}];
  ROS.forEach((P,pi)=>{const cz=ZB(P.x)+18;
+  if(lG(P.x,cz+P.r*.4))return;                 // went down with the flank
   REGISTER({name:'Arcoindian II — '+P.n.toLowerCase()+' rosette',x:P.x,z:cz+P.r*.4,r:P.r+10,y:DECK-4,h:46});
   for(let ring=0;ring<3;ring++){const rr2=P.r*(.42+ring*.29);
    const nb=Math.max(8,Math.round(Math.PI*rr2/13));
@@ -771,6 +836,22 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    if(i%2===0)kput(BX,[S2.x-S2.w*.5,fy-.7,S2.z],null,[S2.w*.86,1.4,S2.w*.9],
     new THREE.Color(dd?0x6b6459:0xb7b0a2));
    if(!dd&&i%4===0)kput('strip',[S2.x-2,fy+3.8,S2.z],qEuler(0,Math.PI/2,0),[S2.w*.8,1.2,1.2],CYAN);}
+  // KNOWN_ISSUES: "the access shaft is a blank pale column except where the
+  // joint lays it open". Where it stands free in the hollow (under the lens,
+  // and between the lens and the vault) it gets a slot window at every other
+  // landing on its two open faces, on a dark reveal: the stair inside shows as
+  // a rising stagger. Hashed, not rng(), so nothing after it moves.
+  {const lyc=LYC-lth(S2.x-S2.w*.5,S2.z),lyt=LYC+lth(S2.x-S2.w*.5,S2.z),
+    rf=roofY(S2.x-S2.w*.5,S2.z);
+   const FCS=[[[0,0,1],u=>[S2.x-S2.w*(.25+.5*u),S2.z+S2.w*.5]],
+              [[-1,0,0],u=>[S2.x-S2.w,S2.z+S2.w*(.25-.5*u)]]];
+   for(let i=1;i*4.8<H2-8;i+=2){const fy=S2.y0+i*4.8+1.2;
+    if(fy<SILL+6||(fy>lyc-4&&fy<lyt+4)||(rf>0&&fy>rf-6))continue;
+    FCS.forEach(([n,P],f)=>{for(let k=0;k<2;k++){if(h3(i,f*2+k,8.3)<.12)continue;
+     const [px,pz]=P(k),q=qFacing(n);
+     kput(BXD,[px-n[0]*.2,fy,pz-n[2]*.2],q,[S2.w*.36,3.4,1],null);
+     kput('aiPane',[px+n[0]*.5,fy,pz+n[2]*.5],q,[S2.w*.28,2.6,1],
+      h3(i,f*2+k,9.7)<(dd?.04:.3)?WARM.clone().multiplyScalar(dd?.15:.5):ROOMC);}});}}
   REGISTER({name:'Arcoindian II — the access shaft',x:S2.x-S2.w*.5,z:S2.z,r:S2.w,y:S2.y0-2,h:H2+4});}
 
  // ---- the light wells ------------------------------------------------------
@@ -786,7 +867,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    // stuck to the ceiling, which is the exact failure Arcoindian I logged four
    // attempts against. Removing the rim did not fix it because the rim was never
    // what you were looking at. A void-black lining is.
-   DK.push(lathe({rFn:()=>W.r,H:Math.min(55,H),nu:16,nv:5}).translate(W.x,W.y0,W.z));
+   BORE.push(lathe({rFn:()=>W.r,H:Math.min(55,H),nu:16,nv:5}).translate(W.x,W.y0,W.z));
    if(H>55)RM.push(lathe({rFn:()=>W.r,H:H-55,nu:16,nv:12}).translate(W.x,W.y0+55,W.z));
    ROCK.push(lathe({rFn:y2=>W.r*(1.30-.10*y2/9),H:9,nu:18,nv:3}).translate(W.x,y1-2,W.z));
    RM.push(lathe({rFn:()=>W.r*1.02,H:11,nu:16,nv:2}).translate(W.x,y1-2,W.z));
@@ -807,6 +888,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
      new THREE.Color(dd?0x8e887a:0xcfc8b6));}
   // the pool of daylight where the shaft lands
   const py2=W.gal?GAL[2].y0+.5:DECK+.6;
+  if(!W.gal&&lG(W.x,W.z))return;              // no deck under it any more
   kput('aiPool',[W.x,py2,W.z],null,[W.r*4.4,1,W.r*4.4],
    new THREE.Color(dd?0x5f5b50:0x9c9686));
   if(!dd)for(let i=0;i<8;i++){const th=i/8*TAU;
@@ -881,7 +963,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
      rng()<(dd?.04:.4)?litOf('lrn'):ROOMC);}
    if(!down)lc.push([bx,bz,br]);
    else for(let i=0;i<26;i++){const sc=rr(4,15);
-    kput('rubble',[bx+rr(-70,70),sc*.4+WSY,bz+rr(-70,70)],qEuler(rng()*3,rng()*3,rng()*3),
+    kput('aiBlock',[bx+rr(-70,70),sc*.4+WSY,bz+rr(-70,70)],qEuler(rng()*3,rng()*3,rng()*3),
      [sc*rr(.8,1.6),sc*rr(.5,1),sc*rr(.8,1.6)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.3),rr(.08,.18)));}
    // collars where the shafts leave the foot of LEARNING
    kput(BX,[bx,STY0+3,bz],null,[br*2.6,6,br*2.6],stoneC());});
@@ -942,14 +1024,18 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  {const GX0=XA+40,GX1=LCX-LWX+30,GAX=(GX0+GX1)*.5;
   const onShelf=(x,z)=>x>GX0&&x<GX1&&z>ZB(x)+10&&z<shelfE(x)-14;
   let ng=0;
+  // the fan's focus, declared before the beds so they can be laid ON its rays:
+  // the first cut turned each hedge to a random bearing (one rng() draw, still
+  // taken so nothing downstream moves) and the fan read as a hedge row
+  const FX=GX1+40,FZ=ZB(FX)+8;
   for(let i=0;i<(dd?230:190);i++){const px=rr(GX0,GX1),pz=rr(ZB(px)+10,shelfE(px)-14);
    if(!onShelf(px,pz))continue;
    ng++;
    if(rng()<.58)VEG.tree(px,SILL,pz,i%3,rr(6,dd?18:12));
-   else kput('hedge',[px,SILL+.9,pz],qEuler(0,rng()*TAU,0),[rr(6,20),1.9,rr(2,5)],
-    new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}
+   else{const _y=rng(),ray=Math.atan2(-(pz-FZ),px-FX);   // yaw that lays local +x along the ray
+    kput('hedge',[px,SILL+.9,pz],qEuler(0,dd?_y*TAU:ray+(_y-.5)*.12,0),[rr(6,20),1.9,rr(2,5)],
+    new THREE.Color().setHSL(rr(.22,.34),rr(.3,.5),dd?rr(.08,.16):rr(.13,.24)));}}
   // the walks: a fan of paths radiating from one point on the back wall
-  const FX=GX1+40,FZ=ZB(FX)+8;
   for(let i=0;i<13;i++){const th=Math.PI*(.56+i*.072);
    GRD.push(gridSurface((u,v)=>{const r2=lerp(30,430,u);
      return[FX+Math.cos(th)*r2,SILL+.3,FZ+Math.sin(th)*r2*.22+v*4];},20,1,{uS:20,vS:1,
@@ -1020,7 +1106,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
   // 1 100 m of empty tabletop with five manholes in it.
   WELL.filter(w=>!w.half).forEach(W=>{
    for(let i=0;i<26;i++){const a3=rng()*TAU,r4=W.r*rr(1.6,4.2),sc=rr(4,15);
-    kput('rubble',[W.x+Math.cos(a3)*r4,platY(W.x,W.z)-1+sc*.36,W.z+Math.sin(a3)*r4],
+    kput('aiBlock',[W.x+Math.cos(a3)*r4,platY(W.x,W.z)-1+sc*.36,W.z+Math.sin(a3)*r4],
      qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.8,1.7),sc*rr(.4,.9),sc*rr(.8,1.7)],
      new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.10,.22)));}
    for(let i=0;i<9;i++){const a3=(i+.5)/9*TAU,r4=W.r*2.4;
@@ -1047,7 +1133,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
     88,30,{uS:(XS+980-XW)/40,vS:760/40}));
   for(let i=0;i<120;i++){const x=rr(XW+60,XS+940),t=Math.pow(rng(),1.8);
    const sc=rr(5,24)*(1-t*.4);
-   kput('rubble',[x,flr(x,GFZ-60-t*180)+sc*.35,GFZ-60-t*180],qEuler(rng()*3,rng()*3,rng()*3),
+   kput('aiBlock',[x,flr(x,GFZ-60-t*180)+sc*.35,GFZ-60-t*180],qEuler(rng()*3,rng()*3,rng()*3),
     [sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],new THREE.Color().setHSL(rr(.05,.10),rr(.12,.3),rr(.12,.26)));}
   // parks on the banks: what the shafts drop down to
   for(let i=0;i<(dd?120:100);i++){const x=rr(STX-330,STX+330),z=rr(GFZ-330,GFZ-120);
@@ -1102,7 +1188,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    const r=I.r*(.16+t*1.35),sc=rr(4,17)*(1-t*.42);
    const bx=I.x+Math.cos(a)*r,bz=I.z+Math.sin(a)*r;
    if(bx>XS)continue;
-   kput('rubble',[bx,restY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
+   kput('aiBlock',[bx,restY(bx,bz)+sc*.42+(1-t)*(1-t)*14,bz],qEuler(rng()*3,rng()*3,rng()*3),
     [sc*rr(.7,1.6),sc*rr(.4,.8),sc*rr(.7,1.6)],dkC());}
   for(let i=0;i<20;i++){const t=Math.pow(rng(),1.3),a=rng()*TAU;
    const r=I.r*(.1+t*1.2),bx=I.x+Math.cos(a)*r,bz=I.z+Math.sin(a)*r;
@@ -1111,12 +1197,56 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
    kput(BX,[bx,restY(bx,bz)+rr(2,12)*(1-t),bz],
     qEuler(rr(-.9,.9),rng()*TAU,rr(-.9,.9)),[L2,rr(4,11),L2*rr(.5,1.1)],dkC());}
   for(let i=0;i<80;i++){const t=Math.pow(rng(),1.6),sc=rr(4,20)*(1-t*.5);
-   kput('rubble',[I.x+rr(-220,180),sc*.4+(1-t)*14+WSY,rr(-60,180)],
+   kput('aiBlock',[I.x+rr(-220,180),sc*.4+(1-t)*14+WSY,rr(-60,180)],
     qEuler(rng()*3,rng()*3,rng()*3),[sc*rr(.7,1.5),sc*rr(.5,1),sc*rr(.7,1.5)],
     new THREE.Color().setHSL(rr(.05,.10),rr(.14,.32),rr(.06,.15)));}}
 
+ // ---- the fallen flank ------------------------------------------------------
+ if(dd){
+  // THE FRACTURE. The lens is closed along the break by a face that is open
+  // BETWEEN its plates and solid where the plates cross it, so the storeys
+  // show in the tear the way the joint plane shows them at the other end; a
+  // dark face 14 m in stops the eye running the length of the lens.
+  const fa=lz0(LFX)-24,fb=lz1(LFX)+24;
+  LNS.push(gridSurface((u,v)=>{const z=lerp(fa,fb,u),x=lfx(z),t=lth(x,z);
+    return[x,LYC+(v*2-1)*t,z];},96,26,{uS:22,vS:6,
+    hole:(u,v)=>{const z=lerp(fa,fb,u),x=lfx(z),t=lth(x,z);if(t<1.5)return true;
+     const y=LYC+(v*2-1)*t;
+     for(let k=0;k<=NBD;k++){const py=k===NBD?DECK:bandY(k);if(Math.abs(y-py)<2.4)return false;}
+     return fbm(u*9,v*4,7173,3)<.64;}}));
+  DK.push(gridSurface((u,v)=>{const z=lerp(fa,fb,u),x=lfx(z)+14,t=lth(x,z)*.93;
+    return[x,LYC+(v*2-1)*t,z];},64,8,{uS:12,vS:4,
+    hole:(u,v)=>{const z=lerp(fa,fb,u);return lth(lfx(z)+14,z)<3;}}));
+  // WHAT CAME DOWN. Pieces of the flank's own shell -- curved plates cut from
+  // the same top and belly functions, so they read as bits of THAT lens -- on
+  // the shelf under where it hung, and two that went over the sill lying on
+  // the talus 340 m below. Then the smaller wreckage round them.
+  const LCOL=()=>new THREE.Color(dd?0x7a7162:0xb9af9b).multiplyScalar(rr(.62,.9));
+  const piece=(x0,x1,top,k,px,pz,gy)=>{
+   const g=gridSurface((u,v)=>{const x=lerp(x0,x1,u),a=lz0(x),b=lz1(x);
+     const zs=.12+.12*(k%4),z=lerp(a+(b-a)*zs,a+(b-a)*(zs+.38),v);return[x,(top?1:-1)*lth(x,z),z];},
+    14,14,{uS:6,vS:6,hole:(u,v)=>fbm(u*5+k*3.1,v*5,7174+k,2)<.22+.5*Math.pow(Math.abs(u-.5)*2,3)});
+   g.center();
+   const F=new THREE.Group();F.position.set(px,0,pz);
+   F.rotation.set(rr(-.5,.5)+(top?0:Math.PI),rng()*TAU,rr(.35,1.15)*(rng()<.5?-1:1));G.add(F);
+   mesh(g,top?lensM:underM,F);dropFragment(F,gy,rr(2,6));};
+  const SX0=LCX-LWX+6;
+  for(let k=0;k<5;k++){const x0=lerp(SX0,LFX-30,k/5),x1=x0+rr(48,74);
+   const px=lerp(-236,-120,(k+.5)/5)+rr(-12,12),pz=lerp(ZB(px)+40,shelfE(px)-30,rr(.15,.85));
+   piece(x0,x1,k%2===0,k,px,pz,SILL);}
+  for(let k=0;k<2;k++){const x0=lerp(SX0,LFX-40,k/2),x1=x0+rr(56,80);
+   const px=-200+k*70+rr(-20,20),pz=rr(-150,-60);
+   piece(x0,x1,k===1,k+5,px,pz,flr(px,pz));}
+  for(let i=0;i<70;i++){const t=Math.pow(rng(),1.3),px=rr(-250,-96),pz=lerp(ZB(px)+20,shelfE(px)-6,rng());
+   const L2=rr(8,30)*(1-t*.4);
+   kput(BX,[px,SILL+L2*.2,pz],qEuler(rr(-.8,.8),rng()*TAU,rr(-.8,.8)),[L2,L2*rr(.15,.4),L2*rr(.5,1)],LCOL());}
+  for(let i=0;i<60;i++){const px=rr(-270,-80),pz=rr(-190,40),sc=rr(4,18);
+   kput(i%3?'aiBlock':BX,[px,flr(px,pz)+sc*.3,pz],qEuler(rng()*3,rng()*3,rng()*3),
+    [sc*rr(.8,1.8),sc*rr(.3,.7),sc*rr(.8,1.6)],LCOL());}
+  REGISTER({name:'Arcoindian II — the fallen flank',x:-170,z:-140,r:150,y:0,h:SILL+60});}
+
  // ---- merge and dress ------------------------------------------------------
- meshMerged(ROCK,MAT.aiRock,G);
+ meshMerged(ROCK,MAT.aiRock,G);meshMerged(TOP,MAT.aiTop,G);
  meshMerged(SHADE,MAT.aiShade,G);
  meshMerged(CUT,MAT.aiCut,G);
  meshMerged(RM,MAT.aiRoom,G);
@@ -1125,6 +1255,7 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
  meshMerged(SH,wallM,G);
  meshMerged(GRD,deckM,G);
  if(DK.length)meshMerged(DK,MAT.aiVoid,G);
+ meshMerged(BORE,MAT.aiBore,G);
  if(dd){
   // stainsFromLedge() aims each streak radially about the BUILDER's origin,
   // which is nowhere near this city's centre, and this plan is not circular
@@ -1134,14 +1265,14 @@ function buildArcoindian2(scene,gx,gz,d){reseed(9590+d);KOFF=[gx,0,gz];
     kput('stain',[f.p[0]+Math.cos(a)*.7,f.p[1]-L*.5,f.p[2]+Math.sin(a)*.7],
      qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.2),L,1],null);}};
   mossOnSurface(GRD,0,0,0,130,3.6);mossOnSurface(SH,0,0,0,80,3.2);
-  mossOnSurface(ROCK,0,0,0,110,4.2);
+  mossOnSurface(ROCK,0,0,0,110,4.2);mossOnSurface(TOP,0,0,0,60,4.2);
   vinesFromLedge(GRD,0,0,0,120,26);a2Stain(SH,130,22);
   for(let i=0;i<140;i++){const x=rr(LCX-LWX+20,XS-6),z=lz1(x)-rr(6,26);
-   if(lth(x,z)<6)continue;
+   if(lth(x,z)<6||lG(x,z))continue;
    kput('vine',[x,LYC+lth(x,z)-1.2,z],qEuler(rr(-.12,.12),rng()*TAU,rr(-.12,.12)),
     [rr(.9,2),rr(8,38),rr(.9,2)],null);}
   for(let i=0;i<50;i++){const x=rr(LCX-LWX+40,XS-10),z=rr(lz0(x)+30,lz1(x)-30);
-   if(lth(x,z)<LTH*.5)continue;
+   if(lth(x,z)<LTH*.5||lG(x,z))continue;
    VEG.tree(x,DECK,z,i%3,rr(6,17));}}
 
  // ---- the covered surface, measured ----------------------------------------

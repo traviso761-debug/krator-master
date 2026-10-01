@@ -79,7 +79,7 @@ local sill height.
 | `walls[]` | `{ id, kind: shell or partition, module, a, b, out?, lvl, y, h, thick, openings[] }`. An opening is `{ u, w, y0, y1, depth?, door?, window? }`, where `u` runs along the wall from `a` |
 | `doors[]` | `{ id, kind: exterior or interior, fixture?, style, at, y, w, h, rooms: [a, b or 'outside'] }` |
 | `stairs[]` | `{ id, module, kind: stair or ladder, lvl0, lvl1, w, rise, run, foot, top }` |
-| `furniture[]` | `{ id, furn, variant, seed, room, at, y, yaw, culture, type, setting }`. `furn` is a key in the furniture catalogue (`yuni-furniture.html`) |
+| `furniture[]` | `{ id, furn, variant, seed, room, at, y, yaw, culture, type, setting }`. `furn` is a key in the `FURN` registry (`src/63-furniture.js` and friends), mirrored in `kits/catalog/` as `yuni_<key>` |
 | `lights[]` | `{ id, kind, at, y, amp, radius }`: the hearths and braziers the furniture carries |
 | `nav` | `{ nodes[{ id, x, y, z, lvl, tag, room?, door? }], edges[{ a, b, kind, len }] }` |
 

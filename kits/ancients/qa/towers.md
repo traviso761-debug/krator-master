@@ -163,3 +163,321 @@ was bought with flat-shaded quads, not triangles.
   "soffit" option or a bluer ground colour would fix it kit-wide.
 - `KNOWN_ISSUES.md`: the "figures()" plinth item and the Cutaways item can be
   ticked; the Rehabilitated row-preset item wants a z-spacing decision.
+
+---
+
+# Round 2 (2026-10-01)
+
+Rendered on two scratch targets holding only this group's kit rows at their
+kit positions (A-D, G, H; then E, F, Hotel, Cultural, Perch, Flatiron, I, J,
+K); shots read for every changed type/decay. Every invariant PASS, error
+panel clean, `jscheck` PARSES OK on each. Seeds unchanged and no new rng()
+draws anywhere (everything added is placed by position hash or derived), so
+nothing already placed moved except where a stance was changed on purpose.
+
+## Shared-file edits (please merge)
+
+- `src/10-core.js` + `src/92-camera.js`: **the frame hook `TICKS`/`tick(fn)`**.
+  It did not exist on this branch; I applied the lighthouse patch's hunks
+  (commit 3897037 on `ancients-resume`) **byte for byte**, so merging with
+  that branch should leave one copy. Nothing else in either file.
+- `src/69-mat-salvage.js`, FIRELIGHT section only (appended after `firePit`):
+  flicker shader, `fireLightMark`/`fireLights`, one `tick`. `repairPass` untouched.
+- `KNOWN_ISSUES.md`: ticked the round-1 and round-2 fixes listed here.
+
+## OPEN items from round 1
+
+- FIXED **"The fires do not flicker"**: `MAT.flame` and `MAT.ember` get an
+  `onBeforeCompile` (kbake re-attaches it to its clones) reading one shared
+  time uniform; each instance takes its phase from its own position, so no
+  two windows pulse together. Driven by `tick`.
+- FIXED **"The fire does not light anything"**: each Project gets 3
+  PointLights at k-means centroids of its own burning windows and pits
+  (`fireLightMark()` at the builder's start, `fireLights(mark,3)` at its end),
+  16 m off the facade, warm, flickering. `visible=false` by day, so day views
+  pay nothing; the first switch to night compiles one extra program variant
+  per material and later switches reuse it. 9 lights in the kit. In the
+  Project night shots the fabric round the burning floors and the podium is
+  lit orange now, not hemisphere-grey. Project A barely shows it: its skin is
+  `MAT.rust`, metalness 1 (no diffuse term), so a point light only gives it a
+  rough specular. D and H (concrete) read clearly. Lights sit on each
+  cluster's mean bearing at its mean radius + 16 m (a centroid of windows
+  wrapping a round tower lies inside it).
+- FIXED **"The Project's plinth can only come in to 110"** and **"A, B and C
+  are limited by their own legs"** (stance changes, now asked for): A's strut
+  feet 98 -> 80, podium 110 -> 92 (also the Project's); B's legs 70 -> 56,
+  podium 82 -> 66; C's legs 62 -> 50 (their heads still meet the shaft at
+  r=20, so they stand steeper; the sky bridges follow), podium 96 -> 80.
+  Registered radii A 130 -> 110, B 120 -> 100.
+- FIXED **"Skyscraper G cannot shrink"**: the stack and the drum moved toward
+  each other (stack centre x 70 -> 50, drum -70 -> -52; bridges 67 -> 29 m),
+  outer stilts at r=99.6, block corners at 104.2; podium 130 -> 116. The
+  podium bar at z=90 still runs past the podium at both ends, on the ground,
+  as before.
+- PARTLY **"The repaired pass dresses every type identically"**: the towers
+  carry their own accretion at decay 3, in their own builders (`skyHoist`,
+  52-sky-abc.js): a gantry off the top, a cable with a load on it, a winch
+  house at the foot, and two scaffold cages (poles and plank decks) up the
+  face; on A, B, C, D, G (about the drum's own axis) and H. `repairPass`
+  itself is untouched; the Hotel, Cultural centre, Perch and Flatiron are
+  still dressed only by it.
+- STILL OPEN: "Patches sample the wall faces" (shared `repairPass`); "The row
+  presets had to be pulled in" (kit row spacing in z, shared layout); "Only
+  these two builders take the parameters" (no caller, would be dead code).
+
+## Kit-wide detail items, for these types
+
+- **Glass shards in ruined window openings** — DONE. `skyShardMark()` at a
+  builder's start, `skyShards(mark, frac)` at its end put the civic group's
+  `civShardAt` teeth in every dead opening placed in between (`winSmD`,
+  `winD`, `winBigD`, `ovalD`, `paneD`, `cellD`, K's `skWinD`), including those
+  the shared `windowsOnLathe` places, without touching it. Half the openings
+  at decay 1/2, a quarter at 3, none on the Projects. A, B, C, D, G, H,
+  Hotel, Cultural, Flatiron, K. (E and F have no instanced dead openings; I
+  and J bake their windows into merged meshes.)
+- **Dead cells were pale grey at night**: A's and G's dead window cells were
+  `cell` in the `DEAD` colour (MeshBasic, ~60/255 whatever the light); they
+  are `cellD` now, dark at night as by day.
+- **Interiors visible behind openings** — DONE for A, B, C, D, G, H
+  (`skyRooms`): per storey, ONLY in bays where the shell is open or next to
+  an open bay, a ceiling fitting under the soffit (5% lit warm in a ruin, 22%
+  rehabilitated), cabinets and machine silhouettes, a radial partition every
+  third bay, conduit risers, the odd dead touch panel. The scars now read as
+  rooms rather than a bare stack of plates.
+- **Mouldings**: the Hotel's court windows have a projecting sill and a hood
+  (a shadow line per opening on the brick court elevation); the Cultural
+  centre's halls have a cornice band under the cap and a string course
+  between window tiers (a lathed 18-sided band, 108 triangles: the first cut
+  used the kit's torus ring and nearly doubled the type).
+- skyJ **night glow** (NOTES weakness): the terrace-lip emissive was
+  `0xff9440` at .6, which tone-maps to cream; `0xff5212` at .85 reads amber.
+
+## Not changed, and why
+
+- skyK "rib section swept with a z-up frame twists": the frame is orthonormal
+  (N = z x T, B = T x N) and keeps the rib's broad axis in the xy plane by
+  construction, which is the intended read. Left.
+- skyI/skyJ/Hotel soffits brown: the hemisphere ground colour (shared lighting).
+- Toppled A's fallen body is tilted 5 degrees by `toppledUpper` (shared by
+  the eight towers), so its crown end bears only on its strut ring. Left.
+- skyJ rib junctions, small spire fragment; skyK belly / regular grid: design
+  passes, not QA fixes.
+
+## Triangles per type/decay (scratch targets, round 1 -> round 2)
+
+| | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| cult | 62 436 -> 74 532 | 64 808 -> 71 270 |  | 73 190 -> 81 062 |  |
+| flat | 33 148 | 29 630 -> 31 466 | 37 476 -> 39 474 | 42 224 -> 42 938 |  |
+| hotel | 87 412 -> 95 476 | 79 744 -> 86 836 |  | 91 546 -> 99 658 |  |
+| perch | 89 184 | 77 032 |  | 94 976 |  |
+| skyA | 101 460 | 107 212 -> 122 790 | 156 130 -> 173 414 | 144 742 -> 150 230 | 140 918 -> 142 458 |
+| skyB | 241 492 | 182 038 -> 195 764 | 261 528 -> 273 006 | 275 330 -> 277 454 |  |
+| skyC | 189 384 -> 186 264 | 179 796 -> 187 572 | 212 454 -> 217 372 | 223 326 -> 221 338 |  |
+| skyD | 65 184 | 74 716 -> 83 136 | 96 092 -> 104 138 | 107 206 -> 107 802 | 104 276 -> 104 444 |
+| skyE | 66 108 | 63 558 | 75 714 | 79 002 |  |
+| skyF | 74 052 | 65 854 | 81 308 | 80 302 |  |
+| skyG | 80 676 -> 80 292 | 97 356 -> 102 970 | 109 276 -> 115 122 | 115 062 -> 115 070 |  |
+| skyH | 98 184 | 90 594 -> 98 540 | 128 774 -> 134 602 | 142 304 -> 143 170 | 171 408 |
+| skyI | 40 716 | 67 044 | 71 166 | 73 174 |  |
+| skyJ | 175 520 | 114 292 | 116 976 | 173 834 |  |
+| skyK | 162 787 | 175 894 -> 179 218 | 230 244 -> 233 634 | 199 892 -> 201 860 |  |
+
+Group total 6 947 161 -> 7 127 847 (+180 686, +2.6%); about +1.8% of the kit
+showcase. The biggest single line is Toppled A (+17k: interiors in both the
+stump and the fallen body). Draw calls: +2 never-culled kit meshes (civShard
+was already there; cultBandW/R are new). The 9 PointLights cost nothing by day;
+at night they add per-fragment lighting cost, not draw calls.
+
+---
+
+# Design pass (I, J, K) (2026-10-01)
+
+Design work the QA rounds left open: J's rib junctions and crown, K's belly
+and window grid, and a scrutiny of I at hero, close and ruin range. Fragments
+`89k-sky-i.js`, `89l-sky-j.js`, `89m-sky-k.js` only; no shared file touched.
+Seeds unchanged. Nothing new draws from rng: J's junctions and crown and I's
+crown are derived from the existing geometry, and K's new facade is placed by
+position hash after the OLD window grid's rng draws are replayed draw for draw,
+so every later draw (the rose's ruin, campanile, houses, the toppled pieces)
+lands where it did (K's podium and houses are identical in the before/after
+ruin shots). Every target: `build.py`, `jscheck.py` PARSES OK, `verify.py
+--assert` error panel clean, all six invariants PASS.
+
+## J, the Whorl
+- **Junctions.** A lens-shaped clasp with a boss wherever two neighbouring
+  ribs kiss (the old crease where two tubes ran through each other); a collar
+  where a rib passes each terrace plate, the base roof's lip and each spire
+  hoop; a flared shoe where a rib roots. All derived from the ribs' paths, so
+  the ruin keeps only those on the pieces it keeps.
+- **Crown.** Coronet at the roof plate; four hoops, each clasping every rib;
+  a 57 m glazed lantern banded every two storeys (lit at night); a stone
+  spindle to the knot; an ovoid boss on the knot; a banded needle to 457 m
+  (was a thin 2.4 m cone to 436). The toppled spire fragment is now the whole
+  crown, broken, instead of bare ribs and one hoop.
+- Lighthouse: it keeps its own copy of the Whorl's body code and calls only
+  `sjGrid/sjSweep/sjPlate/SJ_PT/SJ_PM`, none of which changed; rebuilt and
+  verified (PASS, panel clean), shots unchanged in character.
+
+## K, the Sail
+- **Facade** with a rhythm that changes with height: two-storey openings under
+  hoods at the base; bays of three under sunshades with piers, a loggia band
+  every third storey, bays shifting half a bay every six storeys, through the
+  belly; nearly blank round the rose; staggered slits above; blank prow. The
+  flat back has banded vertical strips. Margins widen with height; nothing
+  sits on a batten.
+- **Belly**: a keel blade (to 7 m deep) along the draft line from the porch
+  apex to the prow, broken by the rose collar; bolt ropes along luff and
+  leech. Square-on from the south the belly's crest is now drawn by the keel
+  and its shadow.
+
+## I, the Braid
+Looked at the hero, row, braid, crown, foot, ruined, rehabilitated, toppled
+and along-the-fallen-body views. The weakest part was the top third: a bare
+needle with two pale fins and a lit box on the apex. Now a corbelled collar
+gathers both strand fins at 386-398 m on two-step brackets from the shaft,
+with a cornice, three stepped tiers under the knife, pinnacles, lit slots and
+a slim crystal finial. It stands on the intact and rehabilitated towers and
+lies at the end of the toppled body; the ruin (snapped at 336 m) has none.
+
+## Stumps
+`stumpI/J/K` rebuilt through a scratch copy of `iziz-variants` holding only
+I, J and K (not committed): all read, J's stump carries the collars and
+clasps on its ribs, K's the new facade. stumpI 56 898 / 54 036, stumpJ
+101 843 / 123 112, stumpK 127 596 / 134 915 (decay 0 / 3).
+
+## Triangles per type/decay (target scene, before -> after)
+
+| | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| skyI | 40 716 -> 41 700 | 67 044 -> 67 044 | 71 166 -> 72 078 | 73 174 -> 74 086 |
+| skyJ | 175 520 -> 202 456 | 114 292 -> 124 140 | 116 976 -> 139 520 | 173 834 -> 197 852 |
+| skyK | 162 787 -> 164 851 | 179 326 -> 181 764 | 233 682 -> 235 974 | 202 022 -> 204 860 |
+| lighthouse (after only: its code path did not change) | 117 568 | 90 460 | 118 678 | 118 560 |
+
+All far under the 400 k 'sky' class. (K's "before" for 1-3 is the current
+branch measured from a HEAD build, a few hundred off round 2's table.)
+
+## Shots looked at
+Before (HEAD build): J The Whorl, Ruined, Toppled; K Skyscraper K, Ruined K,
+Toppled K, The rose, The fallen sail, Rehabilitated K; I Skyscraper I, Ruined,
+Toppled, The braid, The crown. After: J The Whorl, Ruined, Toppled, The
+lattice, The crown, The fallen body; K Skyscraper K (twice), Ruined K,
+Toppled K, The rose, a square-on south view and a low SW view of the belly;
+I Skyscraper I, The crown (twice), Toppled, Along the fallen body,
+Rehabilitated; stumps I/J/K and the J row; lighthouse The lighthouse,
+Toppled, The lantern.
+
+## Still open
+- J: the fallen spire lies near the body's own line, so 'Toppled' sees it
+  end-on (its yaw is rng-drawn; left).
+- K: the dead-window glass teeth (`skyShards`, shared) read as V marks in the
+  big base openings of the ruin at row range.
+- I/J soffits still brown from the hemisphere ground colour (shared lighting).
+
+# Restand (A-H) (2026-10-01)
+
+The stance changes rounds 1 and 2 would not take unasked, now asked for. Rendered on
+a scratch copy of the kit target holding only the skyA-skyH rows and their stump rows
+at their kit positions; `iziz-variants` and `iziz-style` rebuilt for the knock-on checks.
+Error panel clean and every invariant PASS on each; `jscheck` PARSES OK. Seeds unchanged
+and no rng() draw added or removed (Project A's and D/H's podium fire pits keep their
+draws, only the ranges follow the new podiums), so nothing moved except on purpose.
+
+## Stance, before -> after
+
+| | legs / struts / stack | podium R (column ring) | registered r |
+|---|---|---|---|
+| A | 24 struts, feet r=80 (heads at 52.8, 70 m up: 21 degrees of splay) -> **60** (6 degrees, nearly plumb under the rim) | 92 -> **70** (65.1) | 110 -> 100 (the crown's strut ring, ~95) |
+| B | 12 vertical columns at r=56 + a HORIZONTAL strut 26 m in to the shaft (carried nothing down) -> **12 raked fluted columns** from r=42 straight to the lobe tips (r=30.4, 32 m up), 23 degrees off plumb, both ends sunk | 66 -> **54** (50.2) | 100 -> 80 |
+| C | hyperboloid legs, feet r=50 -> **38** (heads still at r=20, 150 m up; 11 -> 7 degrees); each lathe now starts below its group origin so the tilted foot is buried all round (its inner rim stood 2-4 m clear of the podium) | 80 -> **66** (61.4) | 130 -> 90 |
+| D | shell only (corners 34) | 48 -> **44** (40.9) | 120 -> 60 |
+| E | lens 68 x 26, fins to ~37 | 48 -> **44** (40.9) | 120 -> 60 |
+| F | lowest tray 34.8 (widest, 38.4, is mid-height) | 48 -> **44** x slim (40.9) | 56 -> 50 |
+| G | drum x -52 / stack x 50 (span -78..+97), bridges 29 m, stilts at x +/-15,45, z +/-30 -> drum **-54** / stack **33** (span -80..+80), bridges **14 m**, stilts at **+/-13,39, z +/-26** (under the blocks' quarter points); bar z 90, 240 long -> **z 55, 170 long** | 116 -> **90** (83.7; set by the drum's rim at 80; upper blocks overhang to ~89 from 32 m up) | 150 -> 115 |
+| H | keep corners 43.5 at the foot (the lowest ledge is 66 m up) | 56 -> **52** (48.4) | 120 -> 65 |
+
+Ground footprint (podium area) A -42%, B -33%, C -32%, D/E/F -16%, G -40%, H -14%.
+
+## Structural fixes found on the way
+
+- **G's top tier floated** (coordinator, from the stumps agent): the upper blocks sat
+  10 m (`gap`) over the lower ones with nothing between them, intact or ruined, and the
+  ruin's one surviving upper block hung in the air. Each upper block now stands on four
+  stilts on the slab of the block under it; the intact glass core continues through the
+  gap; in a ruin the upper core goes with the three fallen blocks (it touched none of the
+  survivor and hung over the lower core); and the ruin keeps the bridge that lands on
+  its surviving block (bz=+8) instead of the one landing on a fallen block (bz=-8).
+- **Toppled A**: the 5 degree tilt from `toppledUpper` is right for A (the body lies on
+  its base, r 45, and its crown, r 70, bridging the 40 m waist 4 m clear). What was wrong
+  was the crown's strut ring, 25 m out all round: the underside struts stood ~30 m into
+  the ground. The struts whose direction points down (local +x is down in the fallen
+  frame) are sheared to 5 m stubs. The shared helper is untouched.
+- Checked the other ruins for unsupported pieces: A (lying struts on the ground), B (two
+  legs gone, the shaft still on the core and ten legs), C (one bridge gone, both ends
+  were on legs), D/H (spine and ledges attached to the shell), F (fallen trays rest on the
+  tray below). Nothing else hangs.
+
+## Knock-on checks
+
+- **Tripod market** (`tripodMarket`, `77z-iziz-style.js`): it reads the leg radius off
+  the tower and its layout (awnings, masts at rb*1.5 = 51, canopy ring reach
+  rb*1.5+14 = 65) scales from it, so it stays on the 66 m podium. But its stall lattice
+  kept only 6 m off each leg AXIS, and the legs are 22 m in radius at the foot: at feet
+  38 six of its 30 stalls stood inside a leg (none did at 50). Stalls and the ring
+  canopies now keep `LF = 15*sqrt(2.2)+1.5` (times the market's scale) off each foot.
+  Edit to a file this group does not own: three lines in `tripodMarket`, listed for the merge.
+- **Stumps** (`8an-iz-stumps.js`) rebuild from the towers and needed nothing: stump C
+  stands on its three tighter legs, stump G keeps its stack with the new tier stilts.
+- **iziz-style** small-podium towers measure each tower (`measureKit`) and trim the kit
+  podium, so they follow the new legs.
+
+## Triangles per type/decay (scratch, before -> after)
+
+| | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| skyA | 101 460 | 122 790 | 173 414 | 150 230 -> 148 700 | 142 458 -> 141 468 |
+| skyB | 241 492 -> 241 348 | 195 764 -> 195 644 | 273 006 -> 272 886 | 277 454 -> 276 536 | |
+| skyC | 186 264 | 187 572 -> 187 548 | 217 372 -> 217 474 | 221 338 -> 220 860 | |
+| skyD | 65 184 | 83 136 | 104 138 | 107 802 -> 107 612 | 104 444 -> 104 224 |
+| skyE | 66 108 | 63 558 | 75 714 | 79 002 -> 79 016 | |
+| skyF | 74 052 | 65 854 | 81 308 | 80 302 -> 80 124 | |
+| skyG | 80 292 -> 80 304 | 102 970 -> 102 934 | 115 122 -> 115 020 | 115 070 -> 113 516 | |
+| skyH | 98 184 | 98 540 | 134 602 | 143 170 -> 142 978 | 171 408 -> 171 224 |
+
+Stumps (decay 1): A 72 689 -> 72 648, B 121 381 -> 121 263, C 149 529 -> 149 767,
+D 69 075 -> 69 066, E 55 937 -> 55 875, F 56 359 -> 56 343, G 93 311 -> 93 222,
+H 73 234 -> 73 016. Scratch showcase 5 292 089 -> 5 284 922. The changes are stance,
+not detail; decay 3 moves with `repairPass`, which samples the geometry.
+
+## Shots looked at
+
+Before (scratch): Feet A, Feet B, Feet C, Feet G, Toppled A, Project A. After: Feet A,
+B, C, D, G, H; Ruin feet G; Toppled A; Project A; Plan G (top-down); iziz-variants
+Tripod market, C stump, G stump, A stump, and a top-down of the market.
+- A reads as a tight colonnade of near-plumb struts under the rim; the Project's
+  podium camp sits round the strut ring.
+- B: twelve raked fluted legs under the lobe tips, a splayed stance instead of stubby
+  columns with flat beams on top.
+- C: the tripod stands steeper and closer; feet sit in the podium all round.
+- G: drum and stack read as one compact composition; the upper tier visibly on stilts,
+  intact and ruined.
+
+## Still open
+
+- E and F were only pulled in 4 m: their podiums are already about the building.
+- A's crown (strut ring ~95) is now wider than its podium (70): a denser city must space
+  A by its crown, not its podium. The registered r (100) says so.
+
+## Re-check after merging ancients-resume (I/J/K design pass, stumps support check)
+
+Rebuilt `tow` (scratch), `iziz-variants`, `iziz-style`: PARSES OK, error panel clean.
+- Scratch kit rows and `iziz-variants`: every invariant PASS. The stumps' new support
+  check (`window._stumpFell`) drops nothing in either target, so G's top tier now
+  stands on its own stilts in every stump. Shots: Ruin feet G, Stump G, Stump C,
+  Feet B, Tripod market (all read; nothing hangs, market under the legs).
+- `iziz-style`: the two OVERs are pre-existing (built from the pre-restand source for
+  comparison): `izpod_skyC/3` 668 314 -> 533 086 and `izpod_skyB/3` 277 502 -> 276 584
+  against 250 000; draw calls at the overview 1 813 -> 1 566. The tripod market is
+  smaller because its reach follows the legs (fewer ring canopies), and none stand
+  inside a leg. Shots: A, B and C on a small plinth.

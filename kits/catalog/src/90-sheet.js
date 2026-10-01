@@ -4,7 +4,10 @@
    labelled rows on the engine's own scene. The catalog registers furniture only, so
    the page is the furniture sheet; ?sheet=plants|buildings lay out those registries
    for a page that loads them. Furniture rows are one per culture and tier; ?cultures=a,b
-   shows only those cultures' furniture. Each instance is built at ry = 0, so local axes are world
+   shows only those cultures' furniture. The furniture sheet is split into PAGES by setting
+   (indoor, outdoor, both: "indoor & outdoor"), one page at a time, chosen by ?page= or the
+   location hash (#indoor, #outdoor, #both, #all; a hosted page sees only the hash); the
+   default is indoor. All of it on one page is too heavy to build: ~2200 instances. Each instance is built at ry = 0, so local axes are world
    axes and verify.py can audit it against its declared box directly.
    Exposes window._catalog (rows, sections, audit()) and sets window._ready.
    ====================================================================== */
@@ -21,6 +24,11 @@
   /* ?cultures=xanadu,voth lays out only those cultures' furniture: a light page for one set */
   const onlyCultures = (qs.get('cultures') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
   const cultureShown = function (c) { return !onlyCultures.length || onlyCultures.indexOf(c) >= 0; };
+  /* the page: one setting's furniture (indoor | outdoor | both), or all of it (?page=all, for a partial run) */
+  const PAGES = [['indoor', 'Indoor'], ['outdoor', 'Outdoor'], ['both', 'Indoor & outdoor']];
+  let page = (qs.get('page') || location.hash.replace(/^#/, '') || (qs.get('cultures') || qs.get('keys') ? 'all' : 'indoor')).toLowerCase();
+  if (page !== 'all' && !PAGES.some(function (p) { return p[0] === page; })) page = 'indoor';
+  const settingShown = function (A) { return sheet !== 'furniture' || page === 'all' || (A.setting || 'both') === page; };
   /* ?keys=_trade_,forge lays out only the pieces whose key holds one of these strings */
   const onlyKeys = (qs.get('keys') || '').split(',').map(function (c) { return c.trim().toLowerCase(); }).filter(Boolean);
   const keyShown = function (k) { return !onlyKeys.length || onlyKeys.some(function (s) { return k.toLowerCase().indexOf(s) >= 0; }); };
@@ -66,7 +74,7 @@
          (FK.ROLES.trade, A.roleSet 'trade') get a row of their own after its tiers */
       for (const c of FURN_CULTURES) for (const tier of ['poor', 'common', 'court', 'trade']) {
         if (!cultureShown(c)) continue;
-        const list = FURNS.filter(A => A.culture === c && keyShown(A.key) && (tier === 'trade' ? A.roleSet === 'trade' : A.tier === tier && A.roleSet !== 'trade'))
+        const list = FURNS.filter(A => A.culture === c && keyShown(A.key) && settingShown(A) && (tier === 'trade' ? A.roleSet === 'trade' : A.tier === tier && A.roleSet !== 'trade'))
           .sort((a, b) => (a.type || '').localeCompare(b.type || '') || a.key.localeCompare(b.key));
         const tiers = new Set(FURNS.filter(A => A.culture === c).map(A => A.roleSet === 'trade' ? 'trade' : A.tier));
         if (list.length) out.push({ title: 'Furniture · ' + c + (tiers.size > 1 ? ' · ' + tier : ''), items: list });
@@ -152,6 +160,17 @@
   }
   if (ss.options.length < 2) ss.style.display = 'none';
   ss.onchange = function () { location.search = ss.value === 'furniture' ? '' : '?sheet=' + ss.value; };
+  /* the page switcher: a hash change rebuilds the page (the sheet is built once, at load) */
+  if (sheet === 'furniture') {
+    const pb = document.getElementById('pageBtns');
+    for (const p of PAGES.concat(page === 'all' ? [['all', 'All']] : [])) {
+      const n = FURNS.filter(function (A) { return p[0] === 'all' || (A.setting || 'both') === p[0]; }).length;
+      const b = document.createElement('button'); b.textContent = p[1] + ' ' + n; b.className = p[0] === page ? 'on' : '';
+      b.onclick = function () { if (p[0] === page) return; location.hash = p[0]; location.reload(); };
+      pb.appendChild(b);
+    }
+    window.addEventListener('hashchange', function () { if (location.hash.replace(/^#/, '') !== page) location.reload(); });
+  }
   const rs = document.getElementById('rowSel');
   rows.forEach(function (r, i) {
     const o = document.createElement('option'); o.value = String(i); o.textContent = r.title; rs.appendChild(o);
@@ -172,6 +191,6 @@
   /* --- start on the first row */
   if (rows.length) gotoRow(0);
 
-  window._catalog = { sheet: sheet, rows: rows, sections: sections, width: maxW, perKind: per, gotoRow: gotoRow };
+  window._catalog = { sheet: sheet, page: page, rows: rows, sections: sections, width: maxW, perKind: per, gotoRow: gotoRow };
   window._ready = true;
 })();

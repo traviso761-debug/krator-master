@@ -64,8 +64,11 @@ function dalabDome(C,R,H,d,sd,broken){
 // interior you can only see through one bite out of one quadrant. The rooms are
 // now laid only across the arc the break actually exposes (widened 1.6x, so the
 // section does not visibly stop at the tear), which is a fifth of the ring.
-function sectionInterior(C,R,H,d,sd,broken){
- const {SH,DK,G}=C;const FH=4.6;
+// hallR/hallY: an optional clear hall on the axis. The great dome's sunken
+// chamber (6.4 m cabinets, pipes at 8.6 m) stood under a floor plate at 4.6 m
+// that cut straight through it, and no camera could see it at all.
+function sectionInterior(C,R,H,d,sd,broken,hallR,hallY){
+ const {SH,DK,G}=C;const FH=4.6;hallR=hallR||0;hallY=hallY||0;
  const seen=(u,v)=>{if(!broken)return true;
   const du=Math.abs(((u-broken.u+1.5)%1)-.5);
   return du<broken.w*(.35+.65*v)*1.6;};
@@ -77,8 +80,10 @@ function sectionInterior(C,R,H,d,sd,broken){
   // pencil line. Pale concrete over a dark shadow band is what makes a stack of
   // floors legible in section; the Forest Tower's shear and Plymouth's slumped
   // flank both needed exactly this and neither worked without it.
-  SH.push(gridSurface((u,v)=>{const th=u*TAU,r=rr0*v;return[C.x+r*Math.cos(th),y,C.z+r*Math.sin(th)];},40,5,{uS:R/6,vS:3}));
-  DK.push(gridSurface((u,v)=>{const th=u*TAU,r=rr0*v;return[C.x+r*Math.cos(th),y-1.4,C.z+r*Math.sin(th)];},40,3,{uS:R/6,vS:3}));
+  // inside the hall the plate is an annulus: its inner edge is a grid line
+  const r0=y<hallY?Math.min(hallR,rr0*.9):0;
+  SH.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(r0,rr0,v);return[C.x+r*Math.cos(th),y,C.z+r*Math.sin(th)];},40,5,{uS:R/6,vS:3}));
+  DK.push(gridSurface((u,v)=>{const th=u*TAU,r=lerp(r0,rr0,v);return[C.x+r*Math.cos(th),y-1.4,C.z+r*Math.sin(th)];},40,3,{uS:R/6,vS:3}));
   // a double-loaded corridor: rooms, gangway, rooms
   for(const ring of [.42,.80]){
    DK.push(lathe({rFn:()=>rr0*ring,H:FH*.82,nu:36,nv:2,
@@ -98,6 +103,7 @@ function sectionInterior(C,R,H,d,sd,broken){
    kput('strip',[px,y+FH-.7,pz],q,[rr0*.18,1,1],lit?CYAN:DEAD);}
   // conduit bundles dropping through every floor
   for(let k=0;k<5;k++){const th=rng()*TAU,r=rr0*rr(.2,.9);
+   if(r<r0+3)continue;
    kput(d>0?'pipeR':'pipe',[C.x+r*Math.cos(th),y+FH*.5,C.z+r*Math.sin(th)],null,[.28,FH,.28],null);}}
  // service cores: lift shafts and stairs, full height, the spine of the section
  for(let k=0;k<3;k++){const th=k/3*TAU+.7,r=R*.30;
@@ -125,7 +131,7 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
  // behind it. .20 opens 72 degrees at the crown and 29 at the springing.
  const BITE={u:.16,w:.20,y0:.04};
  dalabDome(C,DR,DH,d,9331,BITE);
- sectionInterior(C,DR,DH,d,9332,BITE);
+ sectionInterior(C,DR,DH,d,9332,BITE,DR*.34,17);   // a 3-storey hall over the chamber
  // the sunken chamber on the axis: cabinet banks and cable trunking converging
  // on a circle of floor. A plant room to a stranger, a shrine to a priest.
  kput(SLABC(d),[0,1.2,0],null,[DR*.30,2.4,DR*.30],null);
@@ -159,7 +165,10 @@ function buildDalab(scene,gx,gz,d){reseed(9330+d);KOFF=[gx,0,gz];
   if(fbm(k*.09,1.1,9371,2)<.30)continue;                     // breaches
   kput(BOXC(d),[Math.cos(th)*r,rr(1.4,3.4)*K,Math.sin(th)*r],qEuler(0,-th,0),[rr(6,13)*K,rr(2.8,6.8)*K,rr(2.6,4.4)*K],null);}
  apron(G,0,0,300*K,352*K,d,1.6*K);
- scatterMoss(0,0,0,0,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
+ // moss from the great dome's foot outward: from r=0 it carpeted the chamber
+ // hall floor inside the dome with 13 m green blobs ('The chamber'). Same draw
+ // count, so nothing after it moves; only the moss itself is re-placed.
+ scatterMoss(0,0,0,DR*1.02,330*K,220,3.2*K);trees(0,0,150*K,420*K,150);
  rubbleRing(0,0,0,150*K,330*K,170,2.8*K);
  figures(0,260*K,14,60*K);figures(-210*K,-80*K,8,40*K);
  meshMerged(C.SH,skin,G);meshMerged(C.DK,MAT.guts,G);

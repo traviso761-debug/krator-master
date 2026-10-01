@@ -9,7 +9,8 @@
    A BATCH builds pieces through the catalog's own frame (makeFrame: the same build code,
    the same palettes) and MERGES them: every mesh's triangles go, in world space with its
    colour as a vertex colour, into one bucket per render family, so a whole settlement's
-   furniture is about 20 draw calls. Lights the pieces add (F.lamp) are kept as DATA.
+   furniture is about 20 draw calls. Painted panels (F.decal: a canvas map) are kept as their
+   own meshes, sharing the cached material per painted key. Lights the pieces add (F.lamp) are kept as DATA.
 
      const B = KF.batch();
      const rec = B.place(key, x, y, z, ry, { variant, seed, wealth, building, room, setting });
@@ -65,6 +66,7 @@ const KF_API = (function () {
     this.opt = opt || {};
     this.buckets = {};
     this.placements = [];
+    this.textured = [];      /* painted panels (F.decal): kept as their own meshes, their canvas map shared */
     this.tris = 0;
   }
   /* a growable typed buffer: positions and normals as float32, colours as uint8 (a settlement holds millions
@@ -85,6 +87,13 @@ const KF_API = (function () {
       if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
       const geo = o.geometry, pos = geo.attributes.position, nor = geo.attributes.normal, idx = geo.index;
       const mt = o.material, c = mt.color || new THREE.Color(1, 1, 1);
+      if (mt.map) {
+        const m = new THREE.Mesh(geo.clone(), mt);
+        o.matrixWorld.decompose(m.position, m.quaternion, m.scale);
+        m.name = 'furniture:decal'; m.userData.furniture = true;
+        self.textured.push(m); self.tris += (idx ? idx.count : pos.count) / 3;
+        return;
+      }
       const b = self.bucket(mt.userData.family || '');
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
       const n = idx ? idx.count : pos.count;
@@ -131,7 +140,8 @@ const KF_API = (function () {
       m.userData.furniture = true;
       grp.add(m);
     }
-    this.buckets = {};
+    for (const m of this.textured) grp.add(m);
+    this.buckets = {}; this.textured = [];
     if (parent) parent.add(grp);
     return grp;
   };

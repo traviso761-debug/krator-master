@@ -17,6 +17,7 @@ FURN_CULTURE('screamer', { name: 'Screamers', pack: 'generic', influences: 'prim
   } });
 /* END PALETTE */
 const SCR_COMMON = {
+  emblem: { field: 'featherRed', edge: 'clothBlack', band: 'featherYellow', ink: 'boneIvory', ink2: 'clothBlack' },
   wood: 'timberBark', woodDark: 'timberBarkDark', woodLight: 'timberPale', woodFam: 'bark',
   cloth: ['featherRed', 'featherYellow', 'featherBlue', 'hideTan'], clothFam: 'hide',
   accent: 'boneIvory', accentFam: 'bone', metal: 'rustRed', metalFam: 'rust',

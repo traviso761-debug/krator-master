@@ -4,11 +4,12 @@
 Usage:
   python3 verify.py dist/catalog.html [--assert] [--seeds 4] [--sheet all|furniture|buildings]
                                       [--query cultures=xanadu,voth] [--out ./shots] [--rows [words]]
-                                      [--dump r.json] [--eval "()=>..."]
+                                      [--dump r.json] [--eval "()=>..."] [--page indoor|outdoor|both|all]
 
 What it does:
   1. Serves this folder over HTTP and routes three.min.js to the local r128 copy.
-  2. Loads the sheet in headless Chromium with software WebGL (SwiftShader).
+  2. Loads the sheet in headless Chromium with software WebGL (SwiftShader). The furniture sheet is
+     split into pages by setting (indoor, outdoor, both); a full run loads each page in turn.
   3. Prints the error panel (#errs) and page errors; either fails the run.
   4. --assert, measured inside the page for EVERY instance (every entry, every variant):
        builds            no build exception, at least one mesh
@@ -280,7 +281,8 @@ out.counts={furniture:FURNS.length,plants:PLANTS.length,buildings:ASSETS.length,
 return out;}"""
 
 
-async def run(a):
+async def run_one(a, page, first):
+    """one load of the sheet (one furniture page); returns the failures"""
     from playwright.async_api import async_playwright
     path = os.path.abspath(a.html)
     rel = os.path.relpath(path, HERE).replace(os.sep, '/')
@@ -304,8 +306,12 @@ async def run(a):
             await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
                 route.fulfill(path=three, content_type='application/javascript')))
             q = ('' if a.sheet in ('all', 'furniture') else 'sheet=' + a.sheet) + (('&' if a.sheet not in ('all', 'furniture') else '') + a.query if a.query else '')
+            if page:
+                q = (q + '&' if q else '') + 'page=' + page
             q = '?' + q if q else ''
-            await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, q), timeout=300000)
+            if page:
+                print('\n========== page: %s ==========' % page)
+            await pg.goto('http://127.0.0.1:%d/%s%s' % (port, rel, q), timeout=900000)   # the sheet builds during load
             try:
                 await pg.wait_for_function("window._ready===true || document.getElementById('errs').textContent.length>0",
                                            timeout=580000)
@@ -324,6 +330,8 @@ async def run(a):
 
             if a.assert_:
                 sres, palkeys = static_checks()
+                if not first:
+                    sres = []                                   # the static checks read the source files: once per run
                 res = await pg.evaluate(ASSERT_JS, {'tolM': TOL_M, 'tolF': TOL_FRAC, 'under': UNDER_FRAC, 'rootFrac': ROOT_FRAC,
                                                     'seeds': a.seeds, 'palKeys': palkeys, 'anchor': ANCHOR_AUDIT})
                 c = res['counts']
@@ -368,6 +376,7 @@ async def run(a):
                 if a.dump:
                     json.dump(res, open(a.dump, 'w'), indent=1)
                     print('dumped', a.dump)
+                    a.dump = ''                                 # the first page's (use --page for another)
 
             for ev in (a.eval or []):
                 try:
@@ -376,13 +385,14 @@ async def run(a):
                     print('eval failed:', str(e)[:400])
 
             if a.out:
-                fn = os.path.join(a.out, 'initial.png'); await pg.screenshot(path=fn); print('shot:', fn)
+                pre = page + '_' if page else ''
+                fn = os.path.join(a.out, pre + 'initial.png'); await pg.screenshot(path=fn); print('shot:', fn)
                 secs = await pg.evaluate("()=>window._catalog.sections.map(s=>({kind:s.kind,z0:s.z0,z1:s.z1,w:Math.max(...s.rows.map(r=>r.width))}))")
                 for s in secs:
                     await pg.evaluate("(s)=>{ctl.walk=false;ctl.target.set(s.w/2,0,(s.z0+s.z1)/2);"
                                       "ctl.dist=Math.max(s.w,s.z0-s.z1)*0.75;ctl.az=0.35;ctl.el=0.9;updateCamera();}", s)
                     await pg.wait_for_timeout(600)
-                    fn = os.path.join(a.out, 'section_%s.png' % s['kind']); await pg.screenshot(path=fn); print('shot:', fn)
+                    fn = os.path.join(a.out, pre + 'section_%s.png' % s['kind']); await pg.screenshot(path=fn); print('shot:', fn)
                 if a.rows:
                     titles = await pg.evaluate('()=>window._catalog.rows.map(r=>r.title)')
                     want = [w.strip().lower() for w in a.rows.split(',') if w.strip()] if a.rows != 'all' else []
@@ -391,11 +401,30 @@ async def run(a):
                             continue
                         t = await pg.evaluate("(i)=>{window._catalog.gotoRow(i);return window._catalog.rows[i].title;}", i)
                         await pg.wait_for_timeout(600)
-                        fn = os.path.join(a.out, 'row_%02d_%s.png' % (i, re.sub(r'[^a-z0-9]+', '-', t.lower()).strip('-')))
+                        fn = os.path.join(a.out, pre + 'row_%02d_%s.png' % (i, re.sub(r'[^a-z0-9]+', '-', t.lower()).strip('-')))
                         await pg.screenshot(path=fn); print('shot:', fn)
             await b.close()
     finally:
         httpd.shutdown()
+    return [(page + ': ' if page else '') + f for f in fails]
+
+
+FURN_PAGES = ['indoor', 'outdoor', 'both']
+
+
+async def run(a):
+    """The furniture sheet is split into pages by setting (indoor, outdoor, both): all ~2200 instances on
+    one page do not build in reasonable time. A full run loads each page in turn; --query (a partial run)
+    loads one page with all of its pieces unless --page names one."""
+    if a.page:
+        pages = [] if a.page == 'all' and a.sheet not in ('all', 'furniture') else [a.page]
+    elif a.sheet in ('all', 'furniture') and not a.query:
+        pages = FURN_PAGES
+    else:
+        pages = ['all'] if a.sheet in ('all', 'furniture') else ['']
+    fails = []
+    for i, page in enumerate(pages or ['']):
+        fails += await run_one(a, page, i == 0)
     if fails:
         print('\nFAILED: ' + '; '.join(fails))
         return 1
@@ -415,5 +444,7 @@ if __name__ == '__main__':
     ap.add_argument('--seeds', type=int, default=4, help='with --assert: audit seeds 1..N of every instance (default 4)')
     ap.add_argument('--eval', action='append')
     ap.add_argument('--query', default='', help="extra page query, e.g. cultures=xanadu,voth (only those cultures' furniture: a quick partial run)")
+    ap.add_argument('--page', default='', choices=['', 'indoor', 'outdoor', 'both', 'all'],
+                    help='furniture page by setting (default: every page in turn; with --query: all of it on one page)')
     ap.add_argument('--size', default='1280x800')
     sys.exit(asyncio.run(run(ap.parse_args())))

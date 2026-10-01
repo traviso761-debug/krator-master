@@ -26,6 +26,7 @@ FURN_CULTURE('painted', { name: 'Painted Men', pack: null, influences: 'Tlingit'
   } });
 /* END PALETTE */
 const PNT_COMMON = {
+  emblem: { field: 'clothWoolWhite', edge: 'paintBlack', band: 'paintRed', ink: 'paintBlack', ink2: 'paintTeal' },
   wood: 'timberCedarRed', woodDark: 'timberCedarDark', woodLight: 'timberCedarPale', woodFam: 'wood',
   cloth: ['paintRed', 'paintBlack', 'paintTeal', 'clothWoolWhite'], clothFam: 'cloth',
   accent: 'copper', accentFam: 'bronze', metal: 'copper', metalFam: 'bronze',

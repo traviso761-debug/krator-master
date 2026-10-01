@@ -14,7 +14,7 @@
 // storeys lie on the plain on one broad side face, tipped by their own taper so
 // the break end and the crown both bear on the ground. Levels 0, 1 and 3 draw
 // the PRNG in exactly the order they always did.
-function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];
+function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];const SM=skyShardMark();
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
  const dd=d>0?1:0,skin=SHELL(d);
  const L=168,W=L*.536,H=250,NF=18,RF=H/NF,TOPS=.34,ch=.10,KC=d===2?8:NF;
@@ -121,4 +121,5 @@ function buildFlatiron(scene,gx,gz,d){reseed(9465+d);KOFF=[gx,0,gz];
   stainsFromLedge(SH,0,0,0,90,18);rubbleRing(0,0,0,big*.58,big*1.0,90,3.4);
   trees(0,0,big*.7,big*1.3,16);}
  else figures(0,big*.72,10,44);
+ if(d>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead openings (52-sky-abc.js)
  KOFF=[0,0,0];return G;}

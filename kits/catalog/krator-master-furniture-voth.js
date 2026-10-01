@@ -15,6 +15,7 @@ FURN_CULTURE('voth', { name: 'Voth', pack: 'voth', influences: 'Morrowind Dunmer
   } });
 /* END PALETTE */
 const VOTH_COMMON = {
+  emblem: { field: 'clothVothBlue', edge: 'clothVothSteel', band: 'clothVothSteel', ink: 'clothAsh' },
   wood: 'timberWalnut', woodDark: 'stoneEbony', woodLight: 'timberTeak', woodFam: 'wood',
   cloth: ['clothPlum', 'clothIndigo', 'clothTeal', 'clothMud'], clothFam: 'cloth',
   accent: 'brass', accentFam: 'metal', metal: 'iron', metalFam: 'metal',

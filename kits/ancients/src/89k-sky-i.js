@@ -216,7 +216,7 @@ function siCore(C,yLo,yHi,jLo,jHi){const S=C.S,dx=C.dx;
    const ax=2.2,az=-1.4;
    for(let k=0;k<8;k++){const a=ring(7,sLo,k),b=ring(7,sLo,k+1),f=(k*5.3);
     siTri(S.core,a,b,[ax,SI_H,az],[f/16,sLo/16],[(f+6)/16,sLo/16],[(f+3)/16,SI_H/16]);}
-   if(C.kit&&dx===0){C.kp('siLit',[ax,SI_H-1,az],null,[1.4,3,1.4],null);
+   if(C.kit&&dx===0){C.kp('siLit',[ax,SI_H+2.6,az],null,[.75,7.5,.75],null);C.kp('siLit',[ax,SI_H-.4,az],qEuler(0,.785,0),[1.5,1.2,1.5],null);
     C.kp('siBeam',[ax,SI_H+450,az],null,[3.2,900,3.2],null);C.kp('siBeam',[ax,SI_H+450,az],null,[1.2,900,1.2],null);}
    continue;}
   const nr=Math.max(1,Math.ceil((sHi-sLo)/8));
@@ -252,6 +252,49 @@ function siCore(C,yLo,yHi,jLo,jHi){const S=C.S,dx=C.dx;
  const cap=(y)=>{const r=siCR(y);for(let k=0;k<8;k++){const a0=SI_CA[k],a1=SI_CA[(k+1)%8];
   siTri(S.sect,[0,y,0],[r*Math.cos(a0),y,r*Math.sin(a0)],[r*Math.cos(a1),y,r*Math.sin(a1)],[0,0],[1,0],[0,1]);}};
  if(jHi)cap(yHi-7);if(jLo)cap(yLo+7);}
+
+// ---------------------------------------------------------------- the crown
+// (Design pass, 2026-10.) Above ~300 m the Braid thinned to a bare 11 m needle
+// with two pale blade-fins hugging it and a lit box stuck on the apex: from the
+// hero shot the top third was the weakest part of the tower. Now the strands'
+// fins are gathered at the top by a COLLAR, a corbelled band of rooms on the
+// chamfered plan wrapped round both of them (the knot of the braid), and the
+// knife rises out of three stepped tiers of the foot's blocky vocabulary, with
+// pinnacles at the broad faces' corners and a slim lit crystal for a finial.
+// Built only where the shaft reaches the tip (intact, rehabilitated, and the
+// toppled upper body); no rng, so nothing else moves.
+function siCrown(C){const S=C.S,dx=C.dx,bx=dx?'siBoxR':'siBox';
+ const cor=(R,k,y)=>{const a=SI_CA[k%8];return[R*Math.cos(a),y,R*Math.sin(a)];};
+ // an 8-sided prism on the chamfered plan, ya..yb, with a deck ring on top
+ // (out to the inner radius Ri) and a painted-shade soffit under it
+ const prism=(R,Ri,ya,yb,wall)=>{let u=0;
+  for(let k=0;k<8;k++){const a=cor(R,k,ya),b=cor(R,k+1,ya),L=Math.hypot(b[0]-a[0],b[2]-a[2]);
+   if(!(C.hole&&C.hole(k/8+.06,(ya+yb)/2)))siQuad(S[wall],a,b,cor(R,k+1,yb),cor(R,k,yb),[u/16,ya/16],[(u+L)/16,ya/16],[(u+L)/16,yb/16],[u/16,yb/16]);u+=L;
+   const t0=cor(R,k,yb),t1=cor(R,k+1,yb),i1=cor(Ri,k+1,yb),i0=cor(Ri,k,yb);
+   siQuad(S.deck,t0,t1,i1,i0,[t0[0]/16,t0[2]/16],[t1[0]/16,t1[2]/16],[i1[0]/16,i1[2]/16],[i0[0]/16,i0[2]/16]);
+   siQuad(S.shade,cor(Ri,k,ya),cor(Ri,k+1,ya),cor(R,k+1,ya),cor(R,k,ya),[0,0],[1,0],[1,1],[0,1]);}};
+ // THE COLLAR round both fins, sized from the body's own envelope
+ let Rc=0;for(let y=384;y<=398;y+=2)Rc=Math.max(Rc,siEnv(y));Rc+=1.6;
+ prism(Rc,siCR(392)-.5,386,397,'wall');
+ prism(Rc+.9,Rc-2,397,398.4,'ash');                                     // its cornice
+ // the corbel table under it, one corbel per half facet
+ for(let k=0;k<16;k++){const a=SI_CA[k>>1]+((k&1)?.62:.38)*(((k>>1)<7?SI_CA[(k>>1)+1]:SI_CA[0]+TAU)-SI_CA[k>>1]),f=siFacet(a),R=siPolyR(Rc,a)-.2;
+  const n=[Math.cos(f.mid),Math.sin(f.mid)],t=[-n[1],n[0]],p=[R*Math.cos(a),R*Math.sin(a)],P=(o,l)=>[p[0]+n[0]*o+t[0]*l,p[1]+n[1]*o+t[1]*l];
+  // a stepped bracket from the shaft out to the collar's edge: a tall inner
+  // step and a short outer one, so the collar is carried, not perched
+  const ri=siPolyR(siCR(372),a)-.6-R,rm=ri*.45;
+  for(const st of [[ri,rm,366],[rm,0,377]]){const c=[P(st[0],-1.4),P(st[0],1.4),P(st[1],1.4),P(st[1],-1.4)];
+   siBlk(S.wall,S.deck,c,st[2],[386,386,386,386]);
+   siQuad(S.shade,[c[0][0],st[2],c[0][1]],[c[3][0],st[2],c[3][1]],[c[2][0],st[2],c[2][1]],[c[1][0],st[2],c[1][1]],[0,0],[1,0],[1,1],[0,1]);}}
+ // THE STEPPED TIERS the knife rises from
+ const T=[[398.4,409,Rc*.7],[409,417.5,Rc*.53],[417.5,423,Rc*.4]];
+ for(const q of T)prism(q[2],siCR(q[1])-.3,q[0],q[1],'wall');
+ // pinnacles on the broad faces' corners of each tier, and on the collar
+ if(C.kit)for(const q of [[398.4,Rc-.2,6.5,1.7],[409,T[0][2]-.6,4.5,1.3],[417.5,T[1][2]-.6,3.2,1]])for(const k of [0,2,4,6]){const p=cor(q[1],k,0);
+  C.kp(bx,[p[0],q[0]+q[2]/2,p[2]],qEuler(0,-SI_CA[k],0),[q[3],q[2],q[3]],null);C.kp(bx,[p[0],q[0]+q[2]+.5,p[2]],qEuler(0,-SI_CA[k]+.785,0),[q[3]*.6,1,q[3]*.6],null);}
+ // lit slots in the collar and the first tier: the topmost rooms
+ if(C.kit&&dx===0)for(let k=0;k<8;k++){const a0=SI_CA[k],a1=k<7?SI_CA[k+1]:SI_CA[0]+TAU,mid=(a0+a1)/2,n=[Math.cos(mid),0,Math.sin(mid)];
+  for(const y of [391.5,403.5]){const r=(y<398?Rc:T[0][2])*Math.cos((a1-a0)/2)+.05;if(h3(k,y,9.9)<.5)C.kp('siLit',[r*n[0],y,r*n[2]],qFacing(n),[.9,3.2,.1],null);}}}
 
 // ---------------------------------------------------------------- a strand
 // Builds strand s between street heights yA and yB. o.capA/o.capB: 'sect' for a
@@ -406,6 +449,7 @@ function buildSkyI(scene,gx,gz,d){reseed(9760+d);KOFF=[gx,0,gz];
    kp:(n,p,q,s,c)=>kput(n,[p[0],p[1]-y0,p[2]],q,s,c)};
   const yLo=upper?y0:SI_Y0,cut=y1!=null?y1:(d===1&&!upper?SI_SNAP:null),yHi=cut!=null?cut:SI_H;
   siCore(C,yLo,yHi,!!upper,cut!=null);
+  if(yHi>=SI_H-.01)siCrown(C);
   // lit slots scattered on the shaft's faces: rooms awake at night
   if(dx===0&&C.kit)for(let i=0;i<260;i++){const y=rr(yLo+6,Math.min(yHi,SI_K[7])-4),k=Math.floor(rng()*8),f=rr(.15,.85),i7=siSeg(y);
    const a0=SI_CA[k],a1=k<7?SI_CA[k+1]:SI_CA[0]+TAU,r=siRseg(i7,y),mid=(a0+a1)/2,n=[Math.cos(mid),0,Math.sin(mid)];
