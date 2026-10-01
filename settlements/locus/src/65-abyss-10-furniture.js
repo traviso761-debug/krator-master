@@ -45,14 +45,17 @@ reseed(651001);
   FURN({ key:'abyss_umbrella_canopy', name:'Umbrella canopy on wires', culture:AB, room:'street', place:'outdoor', w:10, d:10, h:6.2, variants:2, variantNames:['umbrellas','umbrellas and lit lanterns'],
     build:function(F){ var tc=wood(F), H=6.0, S=4.8, C=[[-S,-S],[S,-S],[S,S],[-S,S]];
       C.forEach(function(c){ LOCUS.pole(F, c[0],c[1], H, 0.1, tc, true); });
-      var wires=[]; for(var i=0;i<4;i++){ var z=mix(-S,S,(i+0.5)/4); wires.push(z); F.rod(-S,H-0.3,z, S,H-0.3,z, 0.012, PAL.paintBlack[0], 'rust'); }
+      /* the wires sag between the side wires (umbrellas.jpg: rows of open umbrellas hung close along sagging wires) */
+      var SAG=0.45; function wy(x){ var t=(x+S)/(2*S); return H-0.3-SAG*4*t*(1-t); }
+      var wires=[]; for(var i=0;i<4;i++){ var z=mix(-S,S,(i+0.5)/4); wires.push(z); for(var q=0;q<4;q++){ var xa=mix(-S,S,q/4), xb=mix(-S,S,(q+1)/4); F.rod(xa,wy(xa),z, xb,wy(xb),z, 0.012, PAL.paintBlack[0], 'rust'); } }
       F.rod(-S,H-0.3,-S, -S,H-0.3,S, 0.012, PAL.paintBlack[0], 'rust'); F.rod(S,H-0.3,-S, S,H-0.3,S, 0.012, PAL.paintBlack[0], 'rust');
-      var cols=[PAL.abBrightYellow, PAL.abBrightTeal, PAL.abBrightPink, PAL.abSailOrange, PAL.abTarpBlue, PAL.abSailRed];
-      wires.forEach(function(z,wi){ for(var k=0;k<5;k++){ var x=mix(-S,S,(k+0.5)/5)+F.rr(-0.3,0.3), y=H-0.85+F.rr(-0.25,0.25), c=F.pick(cols), r=F.rr(0.7,0.85);
+      /* mostly the picture's pastels (pink, lilac, sky, mint, lemon), a few of the kit's brights among them */
+      var cols=PAL.abUmbrella.concat(PAL.abUmbrella, [PAL.abBrightTeal, PAL.abSailOrange]);
+      wires.forEach(function(z,wi){ for(var k=0;k<6;k++){ var x=mix(-S,S,(k+0.5)/6)+F.rr(-0.15,0.15), y=wy(x)-0.55+F.rr(-0.12,0.12), c=F.pick(cols), r=F.rr(0.66,0.78);
           var tx=F.rr(-0.25,0.25), tz=F.rr(-0.25,0.25);
           F.edome(x,y,z, r, r*0.42, r, [tx, F.rr(0,TAU), tz], c, 'canvas');                                /* the open umbrella, tilted a little on its wire */
           F.cyl(x,y-0.02,z, r*0.96, 0.02, [tx,0,tz], shade(c,-0.3), 'canvas');                              /* its underside, seen from the street */
-          F.rod(x,y-0.75,z, x,y+r*0.42+0.12,z, 0.015, PAL.paintBlack[0], 'rust'); F.rod(x,y+r*0.42,z, x,H-0.3,z, 0.01, PAL.paintBlack[0], 'rust');
+          F.rod(x,y-0.75,z, x,y+r*0.42+0.12,z, 0.015, PAL.paintBlack[0], 'rust'); F.rod(x,y+r*0.42,z, x,wy(x),z, 0.01, PAL.paintBlack[0], 'rust');
           if(F.variant===1 && (k+wi)%2===0){ F.ball(x+0.6,y-0.4,z, 0.16, PAL.glowWarm, 'glowmat'); if((k+wi)%4===0) F.lamp(x+0.6,y-0.4,z, 0.4, 8); } } }); } });
 
   /* ---------- shop and work furniture ---------- */

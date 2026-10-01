@@ -49,7 +49,7 @@ reseed(654001);
         LOCUS.stair(F, 0, 3.5+H*1.15, 0,-1, H, 2.4); ABYSS.sign(F, 3.2,H+2.9,0.12, 0,1, 1.2,0.8, 'shield'); }
       else { var H1=1.0; ABYSS.platform(F, -5.5,5.5, -5.5,2.5, H1);
         F.box(0,H1,-2.4, 8,3.0,5, 0, ABYSS.rust(F), 'corrugate'); ABYSS.tinClad(F, { box:[0,H1,-2.4,8,3.0,5], faces:'flr' });
-        F.box(0,H1+0.1,0.13, 3.4,2.6,0.1, 0, VOIDC[1], 'dark'); ABYSS.trim(F, 0,H1+1.4,0.15, 0,1, 3.4,2.6);
+        F.box(0,H1+0.1,0.13, 3.4,2.6,0.1, 0, VOIDC[1], 'dark'); ABYSS.trim(F, 0,H1+0.1,0.15, 0,1, 3.4,2.6);
         ABYSS.corrRoof(F, 0,H1+3.0,-2.4, 8.6,5.8, 0.6, ABYSS.rust(F));
         ABYSS.furn(F, 'abyss_armor_stand', -2.8,1.4, 0, { ly:H1, variant:1 }); ABYSS.furn(F, 'abyss_armor_stand', 2.8,1.4, 0, { ly:H1 }); ABYSS.furn(F, 'abyss_armor_stand', -1.6,1.6, 0, { ly:H1 });
         ABYSS.furn(F, 'abyss_shield_wall', 4.4,0, -PI/2, { ly:H1 });
@@ -107,7 +107,9 @@ reseed(654001);
       ABYSS.platform(F, -5.5,5.5, -5.5,3.5, H);
       var glass=F.pick([PAL.abCrystal, 0x7ad07a, 0xd07ab8]);
       ABYSS.vessel(F, 'tank', -1.0,H,-1.8, { r:3.0, h:5.0, col:ABYSS.rust(F), win:[[PI/2+0.6,2.6]], port:true, glass:glass, door:PI/2, balcony:v?null:5.0, ladder:v?null:PI*1.1 });
-      F.cyl(-2.4,H+5.6,-2.8, 0.22,3.6, 0, STEELDC[0], 'rust'); F.cone(-2.4,H+9.2,-2.8, 0.45,0.4, 0, STEELDC[1], 'rust');          /* the flue */
+      F.cyl(-2.4,H+5.3,-2.8, 0.22,3.9, 0, STEELDC[0], 'rust'); F.cone(-2.4,H+9.2,-2.8, 0.45,0.4, 0, STEELDC[1], 'rust');          /* the flue */
+      if(v===0){ var pc2=STEELDC[0]; F.tube('rust', [{x:0.6,y:H+5.3,z:-1.0,r:0.16},{x:0.9,y:H+6.1,z:-0.4,r:0.16},{x:1.9,y:H+6.2,z:0.3,r:0.16},{x:2.9,y:H+5.4,z:0.6,r:0.16},{x:3.1,y:H+3.6,z:0.6,r:0.16},{x:3.1,y:H+0.2,z:0.6,r:0.16}], pc2, { seg:8, cap:true });
+        F.cyl(3.1,H,0.6, 0.26,0.3, 0, STEELDC[1], 'rust'); }                                                 /* an elbowed pipe off the tank roof down to a sump */
       ABYSS.furn(F, 'abyss_shelf_jars', -1.0,-3.6, 0, { ly:H, variant:1 }); ABYSS.furn(F, 'abyss_counter', -1.0,2.0, 0, { ly:H });
       F.cone(-2.3,H+1.1,2.0, 0.12,0.4, 0, PAL.abCrystal, 'glass');                                       /* the small crystal on the counter */
       if(v===1){ ABYSS.vessel(F, 'tank', 3.6,H,-2.6, { r:1.6, h:7.0, col:ABYSS.rust(F), win:[[PI/2,3.5],[PI/2,5.6]], port:true, glass:glass });
