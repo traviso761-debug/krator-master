@@ -20,6 +20,11 @@ function buildDataCenter(scene,gx,gz,d){reseed(9220+d);KOFF=[gx,0,gz];const G=ne
  else{// the dark mass keeps clear of the bite; three server floors inside it
   const xi=X0-6,zi=Z0-6,xe=W*.47,ze=Dp*.47;
   kput('boxD',[(-xe+xi)/2,8+H/2,0],null,[xe+xi,H,Dp*.94],null);kput('boxD',[(xi+xe)/2,8+H/2,(-ze+zi)/2],null,[xe-xi,H,ze+zi],null);
+  // the dark mass's two cut faces read as flat grey walls; give them a building
+  // section: floor edges at every server level and a column at every bay (round 2)
+  for(let j=1;j<4;j++){const fy=8+j*15.5;kput(BOXC(d),[xi+.7,fy+.4,(zi+ze)/2],null,[1.4,.9,ze-zi],null);kput(BOXC(d),[(xi+xe)/2,fy+.4,zi+.7],null,[xe-xi,.9,1.4],null);
+   for(let z=zi+4;z<ze;z+=8.5)if(h3(z,j,1707)<.5)kput('strip',[xi+.3,fy+3.4,z],qEuler(0,Math.PI/2,0),[4,1,1],h3(j,z,1708)<.2?new THREE.Color(0x8fd0ff):DEAD);}
+  for(let z=zi+8.5;z<ze;z+=8.5)kput(BOXC(d),[xi+.6,8+H/2,z],null,[1.2,H,1.2],null);for(let x=xi+6;x<xe;x+=6)kput(BOXC(d),[x,8+H/2,zi+.6],null,[1.2,H,1.2],null);
   for(let j=0;j<4;j++){const fy=8+j*15.5;const lim=j===0?1:.93-.18*j;
    kput(BOXC(d),[xi+(W/2*.97-xi)*lim/2,fy+.4,zi+(Dp/2*.97-zi)*lim/2],null,[(W/2*.97-xi)*lim,.8,(Dp/2*.97-zi)*lim],null);
    if(j===3)break;
