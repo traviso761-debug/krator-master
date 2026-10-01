@@ -16,4 +16,4 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   2026-10-01: ported: the bark2 colour texture is pulled 30 % toward its luminance at load, and the far Prism gum trunks' palette tints 45 %.
 - [x] Night at 21:00 is too bright under the gas giant (21-sky / 82-daynight)
   2026-10-01: night floors cut (hemi 0.30 -> 0.07, ambient 0.22 -> 0.035, planetshine fill 0.15/0.08 -> 0.07/0.03) and the night fill turned cool blue-grey instead of a dimmed day colour (82-daynight); the giant's key 0.44 -> 0.18 x phase (21-sky); a full giant now cuts the lamps by 8 % instead of 28 %, so lamps, windows and fires are the main light. An eclipse keeps its own fill (DN_ECL_*) so it still reads as twilight. 21:00 lights: hemi 0.53 -> ~0.17, ambient 0.38 -> ~0.09, key 0.45 -> ~0.19. Same code in both builds.
-- [ ] verify.py --sweep is meaningless (merged meshes have city-wide bounding boxes)
+- [x] verify.py --sweep is meaningless (merged meshes have city-wide bounding boxes) — fixed Oct 2026: it samples the flyers' legs against the REGISTER volumes, trunkR trunks, bridge segments and the ground, with two control legs that must hit (61 legs clear)
