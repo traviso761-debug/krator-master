@@ -128,6 +128,9 @@ and ticking it, not by deleting it.
 - [x] ~~The Project's plinth can only come in to 110~~ Towers QA round 2: struts' feet 98 -> 80, podium 92. The Project's plinth can only come in to 110 because the 24 splayed
       struts land at r=98 (see below). It is still the loosest podium of the
       eight.
+      Restand (A-H): feet 60, podium 70 — the struts stand nearly plumb under
+      the shaft's rim (52.8), and the crown (strut ring ~95) is now wider than
+      the podium.
 
 ## Plinths — the skyscraper podium pass
 
@@ -139,14 +142,29 @@ exactly one instance (see the Skyscraper G item).
 
 | | was | now | what sets the floor |
 |---|---|---|---|
-| A | 120 | 110 -> 92 (round 2) | 24 splayed struts land at r=98 -> 80 |
-| B | 110 | 82 -> 66 | twelve legs at r=70 -> 56, columns 4.5 wide |
-| C | 115 | 96 -> 80 | three hyperboloid legs at r=62 -> 50 |
-| D | 110 | 48 | nothing but the shell: 34 at the superellipse corners |
-| E | 105 | 48 | the lens is 68 across, its edge fins add 3 |
-| F | 105 | 48 | widest tray 38.4 (registered volume 120 → 56) |
-| G | 130 | 130 -> 116 | stack and drum moved together (round 2) |
-| H | 110 | 56 | keep 43.5 at the corners, lowest setback ledge 45 |
+| A | 120 | 110 -> 92 (round 2) -> **70** (restand) | 24 struts land at r=98 -> 80 -> 60, 6 degrees off plumb under the rim |
+| B | 110 | 82 -> 66 -> **54** | twelve legs at r=70 -> 56 -> 42, now raked fluted columns straight to the lobe tips |
+| C | 115 | 96 -> 80 -> **66** | three hyperboloid legs at r=62 -> 50 -> 38 (7 degrees), feet sunk |
+| D | 110 | 48 -> **44** | nothing but the shell: 34 at the superellipse corners |
+| E | 105 | 48 -> **44** | the lens is 68 across, its edge fins add 3 |
+| F | 105 | 48 -> **44** | lowest tray 34.8; widest tray 38.4 is mid-height (registered 56 -> 50) |
+| G | 130 | 130 -> 116 -> **90** | stack and drum recentred, bridges 14 m, stilts under the quarter points; the drum's rim (80) |
+| H | 110 | 56 -> **52** | keep 43.5 at the corners; the lowest ledge is 66 m up |
+
+Restand (A-H, 2026-10-01; numbers and shots in `qa/towers.md`): registered radii
+A 110 -> 100, B 100 -> 80, C 130 -> 90, D 120 -> 60, E 120 -> 60, F 56 -> 50,
+G 150 -> 115, H 120 -> 65.
+
+- [x] ~~**Skyscraper G's top tier floated.**~~ Restand: the upper blocks sat
+      10 m (`gap`) over the lower ones with nothing between, intact or ruined;
+      the ruin's one surviving upper block hung in the air (found by the stumps
+      agent). Each upper block stands on four stilts on the block below; the
+      upper glass core goes with the ruin's fallen blocks; the ruin keeps the
+      bridge that lands on its surviving block (it kept the other one).
+- [x] ~~**Toppled A's crown struts stood 30 m into the ground.**~~ Restand: the
+      5 degree tilt is right (the body lies on its base, r 45, and its crown,
+      r 70, bridging its 40 m waist), but the crown's strut ring stuck 25 m out
+      all round. The struts on the underside are sheared to stubs.
 
 - [x] ~~**Skyscraper G's podium bar floated.**~~ 240 m long at z=90, so its ends
       were at r=150 — 20 m outside a 130 m podium — with its underside at y=5,

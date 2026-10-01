@@ -288,3 +288,99 @@ showcase. The biggest single line is Toppled A (+17k: interiors in both the
 stump and the fallen body). Draw calls: +2 never-culled kit meshes (civShard
 was already there; cultBandW/R are new). The 9 PointLights cost nothing by day;
 at night they add per-fragment lighting cost, not draw calls.
+
+---
+
+# Restand (A-H) (2026-10-01)
+
+The stance changes rounds 1 and 2 would not take unasked, now asked for. Rendered on
+a scratch copy of the kit target holding only the skyA-skyH rows and their stump rows
+at their kit positions; `iziz-variants` and `iziz-style` rebuilt for the knock-on checks.
+Error panel clean and every invariant PASS on each; `jscheck` PARSES OK. Seeds unchanged
+and no rng() draw added or removed (Project A's and D/H's podium fire pits keep their
+draws, only the ranges follow the new podiums), so nothing moved except on purpose.
+
+## Stance, before -> after
+
+| | legs / struts / stack | podium R (column ring) | registered r |
+|---|---|---|---|
+| A | 24 struts, feet r=80 (heads at 52.8, 70 m up: 21 degrees of splay) -> **60** (6 degrees, nearly plumb under the rim) | 92 -> **70** (65.1) | 110 -> 100 (the crown's strut ring, ~95) |
+| B | 12 vertical columns at r=56 + a HORIZONTAL strut 26 m in to the shaft (carried nothing down) -> **12 raked fluted columns** from r=42 straight to the lobe tips (r=30.4, 32 m up), 23 degrees off plumb, both ends sunk | 66 -> **54** (50.2) | 100 -> 80 |
+| C | hyperboloid legs, feet r=50 -> **38** (heads still at r=20, 150 m up; 11 -> 7 degrees); each lathe now starts below its group origin so the tilted foot is buried all round (its inner rim stood 2-4 m clear of the podium) | 80 -> **66** (61.4) | 130 -> 90 |
+| D | shell only (corners 34) | 48 -> **44** (40.9) | 120 -> 60 |
+| E | lens 68 x 26, fins to ~37 | 48 -> **44** (40.9) | 120 -> 60 |
+| F | lowest tray 34.8 (widest, 38.4, is mid-height) | 48 -> **44** x slim (40.9) | 56 -> 50 |
+| G | drum x -52 / stack x 50 (span -78..+97), bridges 29 m, stilts at x +/-15,45, z +/-30 -> drum **-54** / stack **33** (span -80..+80), bridges **14 m**, stilts at **+/-13,39, z +/-26** (under the blocks' quarter points); bar z 90, 240 long -> **z 55, 170 long** | 116 -> **90** (83.7; set by the drum's rim at 80; upper blocks overhang to ~89 from 32 m up) | 150 -> 115 |
+| H | keep corners 43.5 at the foot (the lowest ledge is 66 m up) | 56 -> **52** (48.4) | 120 -> 65 |
+
+Ground footprint (podium area) A -42%, B -33%, C -32%, D/E/F -16%, G -40%, H -14%.
+
+## Structural fixes found on the way
+
+- **G's top tier floated** (coordinator, from the stumps agent): the upper blocks sat
+  10 m (`gap`) over the lower ones with nothing between them, intact or ruined, and the
+  ruin's one surviving upper block hung in the air. Each upper block now stands on four
+  stilts on the slab of the block under it; the intact glass core continues through the
+  gap; in a ruin the upper core goes with the three fallen blocks (it touched none of the
+  survivor and hung over the lower core); and the ruin keeps the bridge that lands on
+  its surviving block (bz=+8) instead of the one landing on a fallen block (bz=-8).
+- **Toppled A**: the 5 degree tilt from `toppledUpper` is right for A (the body lies on
+  its base, r 45, and its crown, r 70, bridging the 40 m waist 4 m clear). What was wrong
+  was the crown's strut ring, 25 m out all round: the underside struts stood ~30 m into
+  the ground. The struts whose direction points down (local +x is down in the fallen
+  frame) are sheared to 5 m stubs. The shared helper is untouched.
+- Checked the other ruins for unsupported pieces: A (lying struts on the ground), B (two
+  legs gone, the shaft still on the core and ten legs), C (one bridge gone, both ends
+  were on legs), D/H (spine and ledges attached to the shell), F (fallen trays rest on the
+  tray below). Nothing else hangs.
+
+## Knock-on checks
+
+- **Tripod market** (`tripodMarket`, `77z-iziz-style.js`): it reads the leg radius off
+  the tower and its layout (awnings, masts at rb*1.5 = 51, canopy ring reach
+  rb*1.5+14 = 65) scales from it, so it stays on the 66 m podium. But its stall lattice
+  kept only 6 m off each leg AXIS, and the legs are 22 m in radius at the foot: at feet
+  38 six of its 30 stalls stood inside a leg (none did at 50). Stalls and the ring
+  canopies now keep `LF = 15*sqrt(2.2)+1.5` (times the market's scale) off each foot.
+  Edit to a file this group does not own: three lines in `tripodMarket`, listed for the merge.
+- **Stumps** (`8an-iz-stumps.js`) rebuild from the towers and needed nothing: stump C
+  stands on its three tighter legs, stump G keeps its stack with the new tier stilts.
+- **iziz-style** small-podium towers measure each tower (`measureKit`) and trim the kit
+  podium, so they follow the new legs.
+
+## Triangles per type/decay (scratch, before -> after)
+
+| | 0 | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|---|
+| skyA | 101 460 | 122 790 | 173 414 | 150 230 -> 148 700 | 142 458 -> 141 468 |
+| skyB | 241 492 -> 241 348 | 195 764 -> 195 644 | 273 006 -> 272 886 | 277 454 -> 276 536 | |
+| skyC | 186 264 | 187 572 -> 187 548 | 217 372 -> 217 474 | 221 338 -> 220 860 | |
+| skyD | 65 184 | 83 136 | 104 138 | 107 802 -> 107 612 | 104 444 -> 104 224 |
+| skyE | 66 108 | 63 558 | 75 714 | 79 002 -> 79 016 | |
+| skyF | 74 052 | 65 854 | 81 308 | 80 302 -> 80 124 | |
+| skyG | 80 292 -> 80 304 | 102 970 -> 102 934 | 115 122 -> 115 020 | 115 070 -> 113 516 | |
+| skyH | 98 184 | 98 540 | 134 602 | 143 170 -> 142 978 | 171 408 -> 171 224 |
+
+Stumps (decay 1): A 72 689 -> 72 648, B 121 381 -> 121 263, C 149 529 -> 149 767,
+D 69 075 -> 69 066, E 55 937 -> 55 875, F 56 359 -> 56 343, G 93 311 -> 93 222,
+H 73 234 -> 73 016. Scratch showcase 5 292 089 -> 5 284 922. The changes are stance,
+not detail; decay 3 moves with `repairPass`, which samples the geometry.
+
+## Shots looked at
+
+Before (scratch): Feet A, Feet B, Feet C, Feet G, Toppled A, Project A. After: Feet A,
+B, C, D, G, H; Ruin feet G; Toppled A; Project A; Plan G (top-down); iziz-variants
+Tripod market, C stump, G stump, A stump, and a top-down of the market.
+- A reads as a tight colonnade of near-plumb struts under the rim; the Project's
+  podium camp sits round the strut ring.
+- B: twelve raked fluted legs under the lobe tips, a splayed stance instead of stubby
+  columns with flat beams on top.
+- C: the tripod stands steeper and closer; feet sit in the podium all round.
+- G: drum and stack read as one compact composition; the upper tier visibly on stilts,
+  intact and ruined.
+
+## Still open
+
+- E and F were only pulled in 4 m: their podiums are already about the building.
+- A's crown (strut ring ~95) is now wider than its podium (70): a denser city must space
+  A by its crown, not its podium. The registered r (100) says so.
