@@ -105,6 +105,14 @@ reseed(651001);
       for(var k=0;k<3;k++) F.lathe('thatch', -0.6+k*0.6,0.6, [[0.15,0],[0.35,0.02],[0.36,0.22],[0.15,0.24]], 0xa89060, { seg:10 });
       F.rod(-0.9,0.66,-0.4, 0.9,0.66,-0.4, 0.21, CANVASC[1], 'canvas'); } });
 
+  FURN({ key:'abyss_bookshelf', name:'Bookshelf of codices and scroll tins', culture:AB, room:'library', place:'indoor', w:2.4, d:0.5, h:2.4, variants:1,
+    build:function(F){ var tc=wood(F); [-1.15,1.15].forEach(function(x){ F.box(x,0,0, 0.08,2.35,0.45, 0, tc, 'timber'); });
+      [0.05,0.62,1.19,1.76,2.33].forEach(function(y){ F.box(0,y,0, 2.3,0.04,0.45, 0, tc, 'plank');
+        if(y<2.2){ var x=-1.0; while(x<1.0){ var w=F.rr(0.06,0.14), h=F.rr(0.32,0.5); if(F.chance(0.25)) F.rod(x,y+0.1,-0.1, x,y+0.1,0.15, 0.06, PAL.abTin, 'metal');
+            else F.box(x,y+0.04,0, w,h,0.32, F.rr(-0.06,0.06), F.pick([PAL.abSailRed, PAL.abBrightTeal, 0x6a4a2a, PAL.abGild, 0x3a4a6a]), 'cloth'); x+=w+0.02; } } }); } });
+  FURN({ key:'abyss_reading_table', name:'Reading table with stools', culture:AB, room:'library', place:'indoor', w:2.4, d:1.6, h:1.0, variants:1,
+    build:function(F){ var pk=F.pick(PLANKC); F.box(0,0.72,0, 2.0,0.07,0.8, 0, pk, 'plank'); [[-0.9,-0.3],[0.9,-0.3],[-0.9,0.3],[0.9,0.3]].forEach(function(p){ F.box(p[0],0,p[1], 0.07,0.72,0.07, 0, pk, 'timber'); });
+      [-0.6,0.6].forEach(function(x){ [-0.7,0.7].forEach(function(z){ F.cyl(x,0,z, 0.18,0.45, 0, F.pick(PLANKC), 'plank'); }); }); F.box(0.3,0.79,0, 0.4,0.05,0.3, 0.2, PAL.abSailRed, 'cloth'); } });
   /* ---------- yard and water ---------- */
   FURN({ key:'abyss_water_butt', name:'Water butt', culture:AB, room:'yard', place:'outdoor', w:1.0, d:1.0, h:1.3, variants:1,
     build:function(F){ var c=ABYSS.rust(F); F.cyl(0,0,0, 0.45,1.15, 0, c, 'rust'); F.cyl(0,1.15,0, 0.48,0.05, 0, F.pick(PLANKC), 'plank'); F.rod(0.45,0.3,0, 0.6,0.3,0, 0.03, BRASSC[1], 'metal'); } });
