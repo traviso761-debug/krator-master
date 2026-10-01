@@ -1,5 +1,5 @@
 // TARGET: kit — the Hykkousoi kit sheet: every HYK.def laid out by row with its presets. TITLE is read by build.py.
-// Free-standing rows run east–west on the land, fronts (+z) toward the camera, marching north from z = -40; the Harbour
+// Free-standing rows run east–west on the land, fronts (+z) toward the camera, marching north from z = -75; the Harbour
 // and Spans rows stand at the shore with their fronts to the water; grown-on rows hang on Scallop Stack hosts sunk in
 // the sea to the east, one host per eleven pieces, pods on the plate at +37.25 in the lobe troughs, each host with its
 // own way-in pod. Presets per piece: '<name> — front', '<name> — eye level', and '<name> inside' for anything lived in.
@@ -16,7 +16,7 @@ const SHEET={rows:[],hosts:[],views:{}};
  // a grown def in any row goes to a host under '<row> (grown)'; the two Grown-on rows are grown by name
  const byRow={};for(const k of HYK.order){const D=HYK.defs[k];let r=D.row||'Civic';if(D.grown&&!/^Grown-on/.test(r))r+=' (grown)';(byRow[r]||(byRow[r]=[])).push(D);}
  const rows=KIT_ROWS.concat(Object.keys(byRow).filter(r=>KIT_ROWS.indexOf(r)<0));
- const shoreZ={'Harbour':8,'Spans':-18};let z=-40;
+ const shoreZ={'Harbour':8,'Spans':-18};let z=-75;   // the first free row stands clear of the Spans row's L2 pylons
  for(const r of rows){const items=byRow[r]||[];if(!items.length)continue;
   if(/^Grown-on|\(grown\)$/.test(r)){SHEET.rows.push({row:r,grown:true,items,hosts:[]});continue;}
   const depth=Math.max(16,...items.map(D=>D.d))+14,gap=10;const W=items.reduce((s,D)=>s+D.w+gap,0);
@@ -34,13 +34,14 @@ const SHEET={rows:[],hosts:[],views:{}};
    SHEET.hosts.push(H);rec.hosts.push(H);hz-=220;}}
  // presets
  const V=SHEET.views;V['Kit — overview']=[0,260,320,0,0,-220];V['Kit — the hosts']=[hx+260,120,-60+260,hx,30,-170];
- for(const rec of SHEET.rows){if(rec.grown)continue;const cx=(rec.x0+rec.x1)/2;V[rec.row+' — row']=[cx,rec.furn?12:34,rec.z+(rec.furn?30:95),cx,3,rec.z];
+ for(const rec of SHEET.rows){if(rec.grown)continue;const cx=(rec.x0+rec.x1)/2;{const W=rec.x1-rec.x0;V[rec.row+' — row']=rec.furn?[cx,12,rec.z+30,cx,3,rec.z]:[cx,30+W*.2,rec.z+40+W*.38,cx,3,rec.z];}   // back and up with the row's width, steep enough to look over the row in front
   if(rec.furn){for(const it of rec.items){const F=it.F,y0=3.2;const s=Math.max(F.w,F.d,F.h);V[F.name+' — front']=[it.x,y0+F.h*.6+.6,it.z+F.d/2+s*2+1.5,it.x,y0+F.h*.45,it.z];V[F.name+' — eye level']=[it.x+s*1.4+1,y0+1.6,it.z+s*1.4+1,it.x,y0+F.h*.5,it.z];}continue;}
   for(const it of rec.items){const D=it.D,y0=3.2;const dist=Math.max(D.w,D.h)*1.5+8;
    V[D.name+' — front']=[it.x,y0+D.h*.45+2,it.z+D.d/2+dist,it.x,y0+D.h*.35,it.z];
    V[D.name+' — eye level']=[it.x+D.w*.9+6,y0+1.7,it.z+D.d*.9+6,it.x,y0+1.6,it.z];
    if(kitHasInside(D))V[D.name+' inside']=[it.x+D.w*.8+4,y0+D.h+8,it.z+D.d*.8+5,it.x,y0+1.2,it.z,null,null,true];}}
- for(const H of SHEET.hosts){V[H.n+' — the host']=[H.x+170,70,H.z+170,H.x,30,H.z];
+ for(const H of SHEET.hosts){V[H.n+' — the host']=[H.x+170,70,H.z+170,H.x,30,H.z];   // and its pods from either side, close enough to judge
+  V[H.n+' — the pods']=[H.x+62,52,H.z+62,H.x,KIT_POD_Y,H.z];V[H.n+' — the far pods']=[H.x-62,52,H.z-62,H.x,KIT_POD_Y,H.z];
   for(const it of H.items){const D=it.D;const rs=kitHostR(it.y,it.a);const nx=Math.cos(it.a),nz=Math.sin(it.a);const px=H.x+rs*nx,pz=H.z+rs*nz;const R=Math.max(D.w,D.h)/2;
    V[D.name+' — front']=[px+nx*(R*3+8),it.y+R*.6+2,pz+nz*(R*3+8),px+nx*R*.5,it.y+R*.5,pz+nz*R*.5];
    V[D.name+' — eye level']=[px+nx*(R*2.2+3)-nz*(R+3),it.y+1.7,pz+nz*(R*2.2+3)+nx*(R+3),px+nx*R*.6,it.y+1.4,pz+nz*R*.6];
