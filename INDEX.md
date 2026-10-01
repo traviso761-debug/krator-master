@@ -10,10 +10,10 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/girder`](settlements/girder/INDEX.md) | 26 | 504 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 45 | 745 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 487 | 47 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
-| [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
+| [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 411 | 56 |  |
 | [`settlements/locus`](settlements/locus/INDEX.md) | 55 | 822 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 615 | 69 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
-| [`settlements/port`](settlements/port/INDEX.md) | 41 | 525 | 39 |  |
+| [`settlements/port`](settlements/port/INDEX.md) | 48 | 717 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 310 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 538 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1786 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |

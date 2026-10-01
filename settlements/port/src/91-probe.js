@@ -76,7 +76,7 @@ function portChecks(){const R=[],bad=[],near=[];
   if(s.x0<it.gx-G.W/2-e||s.x1>it.gx+G.W/2+e||s.z0<it.gz-G.LAND-e||s.z1>it.gz+G.SEA+e)
    bad.push(s.owner+' '+s.kind+' ['+(s.x0-it.gx).toFixed(1)+','+(s.z0-it.gz).toFixed(1)+' .. '+(s.x1-it.gx).toFixed(1)+','+(s.z1-it.gz).toFixed(1)+']');}
  R.push({name:'port-stamps-inside-footprint',ok:!bad.length,detail:bad.length?bad.length+' stamps: '+bad.slice(0,4).join(' | '):PORT_ST.list.length+' stamps, all inside their footprints'});
- for(const it of PORT_LAYOUT.items){if(it.vessel)continue;const G=portRegOf(it.key);if(!G)continue;const C=PORT.CLEAR-.5;
+ for(const it of PORT_LAYOUT.items){if(it.vessel===true)continue;const G=portRegOf(it.key);if(!G)continue;const C=PORT.CLEAR-.5;
   for(const r of REG){if(r.type!==it.key)continue;if(Math.abs(r.x-it.gx)>G.W/2+1||r.z<it.gz-G.LAND-1||r.z>it.gz+G.SEA+1)continue;
    if(r.x-r.r<it.gx-G.W/2+C||r.x+r.r>it.gx+G.W/2-C||r.z-r.r<it.gz-G.LAND+C||r.z+r.r>it.gz+G.SEA-C)near.push(it.key+'/'+it.d+' '+r.name);}}
  R.push({name:'port-clearance',ok:!near.length,budget:true,detail:near.length?near.length+' volumes inside the 8 m clearance: '+[...new Set(near)].slice(0,5).join(' | '):'all registered volumes clear of the footprint edges'});
@@ -87,7 +87,7 @@ window._api={
  get totals(){let tris=0,inst=0,meshes=0;for(const k in TSTAT.by){tris+=TSTAT.by[k].tris;inst+=TSTAT.by[k].inst;meshes+=TSTAT.by[k].meshes;}
   return {tris,inst,meshes,registered:REG.length,types:Object.keys(TSTAT.by).length};},
  typeStats,regOccupancy,nanSweep,extra:portChecks,
- layout:()=>PORT_LAYOUT.items.map(it=>({key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb,stat:it.stat,vessel:!!it.vessel})),
+ layout:()=>PORT_LAYOUT.items.map(it=>({key:it.key,d:it.d,gx:it.gx,gz:it.gz,nb:it.nb,stat:it.stat,vessel:it.vessel===true})),
  terrainH:(x,z)=>terrainH(x,z),
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
