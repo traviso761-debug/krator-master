@@ -27,7 +27,7 @@ Read before changing anything here. `build.py` prints the open count.
       range, the coral fungus too; none of them is more than a blob.
 - [ ] The cataracts' risers are the ribbon's 10 m samples, so a five-metre fall is a 26-degree
       chute rather than a drop; the pools between them do not spill.
-- [ ] `dress()` samples by triangle area (inherited); the jetty's deck gets most of its moss.
+- [ ] `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's test structure still passes one list: the jetty's deck still gets most of its moss.
 - [ ] The fauna's LOD is all-or-nothing at 1.6 km from the eye (frozen beyond, no thinning),
       the stalker never catches anything, and the glint swarms are Points, so the probe
       skips them.
