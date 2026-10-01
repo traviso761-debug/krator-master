@@ -212,7 +212,7 @@ function cpTowerBox(){const L=CT.L20;
  ladder(2.6,0,CT.W/2+.02,CT.H+.9,0);ladder(-CT.W/2-.04,CT.H,-.7,CT.H+.9,PI/2);ladder(.5,CT.H*2,CT.W/2+.02,CT.H+.9,0);
  cpPole(-2.8,ty+.14,ty+3.7,-.8,.05,jc(0x4a4038,.05));sock('flag',-2.8,ty+3.8,-.8,0,{w:1.4,h:.65});
  sock('banner',-.7,ty+1.15,CT.W/2+.75+.06,0,{w:1.0,h:1.9});sock('emblem',-2.2,1.3,CT.W/2+.02,0,{w:.85,h:.85});
- waterButt(-3.3,ty+.14+.45,.5,.5,.8);barrel(3.0,0,CT.W/2+.5);tireStack(-3.9,1.4,4);crate(3.5,0,1.7,.6,.2);}
+ waterButt(-3.3,ty+.14+.45,.5,.5,.8,{base:ty+.14});barrel(3.0,0,CT.W/2+.5);tireStack(-3.9,1.4,4);crate(3.5,0,1.7,.6,.2);}
 // ---------------------------------------------------------------- the ground plan
 function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  box('earth',0,.02,zm,xr*2,.04,zf-zb,jc(0x9c8768,.03));
@@ -229,14 +229,12 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  // pads under the placed buildings
  for(const p of placed){W(p.slot.x,0,p.slot.z,p.yaw,()=>{box('conc',0,.05,0,p.def.w+1.4,.04,p.def.d+1.4,jc(0x7a7264,.05));});}
  // yard furniture: fire pit with tyre seats, well, flagpole, lamps
- fire(0,.05,yzc,.6);for(let k=0;k<5;k++){const a=k/5*TAU+.3;cpTire(Math.cos(a)*1.9,.14,yzc+Math.sin(a)*1.9,.36,undefined,rng()*TAU);cpTire(Math.cos(a)*1.9,.32,yzc+Math.sin(a)*1.9,.36,undefined,rng()*TAU);}
- const wx=v?-3.2:-6.2,wz=yz1-1.6;tireRing(wx,wz,.95,3,0,TAU);cyl('water',wx,.5,wz,.7,.02,jc(0x2a3a3a,.03),10);beam('wood',[wx-.9,0,wz],[wx-.9,2.2,wz],.06,jc(0x5c4630,.06),true,6);beam('wood',[wx+.9,0,wz],[wx+.9,2.2,wz],.06,jc(0x5c4630,.06),true,6);beam('wood',[wx-.9,2.2,wz],[wx+.9,2.2,wz],.06,jc(0x5c4630,.06));
+ rngSkip(41+10);FURNISH('pa_camp_fire',0,.05,yzc,0,{v:2});smokeAt(0,.05+.6*1.6,yzc,{r:.54,kind:'fire'});   // the fire pit with its five tyre seats
+ const wx=v?-3.2:-6.2,wz=yz1-1.6;rngSkip(3*Math.max(3,Math.round(TAU*.95/(TYR.R*2*.98)))+2+8);FURNISH('pa_well',wx,0,wz,0,{v:2});   // the open well
  const fpz=G.L?7:v?2.2:-8.5,fpx=G.L?7.5:v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
  for(const [lx,lz] of G.L?[[-9.2,4.2],[9.2,4.2],[-9.2,17.4],[9.2,17.4],[-3.8,27],[3.8,27],[-3.8,21.5],[3.8,21.5]]:v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
  // gate-side toll stall and notice board (a fixture, outside every slot)
- const sx0=v?-7:-8.0,sz0=zf-2.6;box('plank',sx0,0,sz0,3.0,.1,2.2,jc(0x6a5a44,.06));
- for(const px of [-1.4,1.4])for(const pz of [-1.0,1.0])beam('wood',[sx0+px,0,sz0+pz],[sx0+px,2.3,sz0+pz],.07,jc(0x5c4630,.06),true,6);
- roofP('corr',sx0-1.7,sx0+1.7,sz0+1.3,2.15,sz0-1.2,2.6,.07,pick([P('galv'),P('paint')]));box('plank',sx0,.1,sz0-1.0,3.0,.9,.1,jc(0x8a6a3a,.05));box('plank',sx0,1.0,sz0+.9,3.0,.08,.5,jc(0x6a5a44,.06));
+ const sx0=v?-7:-8.0,sz0=zf-2.6;rngSkip(21);FURNISH('pa_lean_to_stall',sx0,0,sz0,0,{v:0,az:-.05});   // the toll booth
  sock('awning',sx0,2.5,sz0+1.35,0,{w:3.0,d:.9,drop:.35,h:2.2});
  barrel(sx0+2.0,0,sz0+.6);crate(sx0-2.0,0,sz0+.9,.6,.2);
  // scattered yard junk against the walls where no slot claims them

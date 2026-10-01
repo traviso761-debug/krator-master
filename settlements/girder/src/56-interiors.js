@@ -27,7 +27,7 @@ GIX.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GIX.batch);
 (function(){
   var lights0 = GIX.adapter.lights;   /* a piece's lights do not depend on its seed: one build per key and variant, not per placement */
   GIX.adapter.lights = function(key, v){ return lights0(key, v, { seed:1, wealth:0.5 }); };
-  if(!GF.on) GIX.adapter.build = GF.adapter.build;
+  if(!GFURN.on) GIX.adapter.build = GFURN.adapter.build;
 })();
 
 /* FRM-local (55-arch: x = right, z = front) -> the set's frame (the catalog's: x is the mirror) */
@@ -76,7 +76,7 @@ function gixPartition(w, wcol){
 }
 
 /* ---------------------------------------------------------------- the buildings */
-if(GF.interiors){
+if(GFURN.interiors){
   /* tower slots */
   SLOTS.forEach(function(S){
     var sh=S.shell; if(!sh) return;
@@ -217,7 +217,7 @@ function gixTick(){
   gixReport();
 }
 function gixReport(){
-  window._interiors = { on:GF.interiors, furniture:GF.on, total:GIX.total, done:GIX.done, rooms:GIX.rooms, pieces:GIX.pieces, partitions:GIX.partitions,
+  window._interiors = { on:GFURN.interiors, furniture:GFURN.on, total:GIX.total, done:GIX.done, rooms:GIX.rooms, pieces:GIX.pieces, partitions:GIX.partitions,
     fallbacks:GIX.fallbacks, dropped:GIX.dropped.length, droppedList:GIX.dropped.slice(0,12), retries:GIX.retries,
     residenceFails:GIX.residenceFails.length, residenceFailList:GIX.residenceFails.slice(0,12), missingItems:GIX.missingItems,
     tris:GIX.mergedTris|0, meshes:GIX.group?GIX.group.children.length:0, msPlan:Math.round(GIX.msPlan), msFurnish:Math.round(GIX.ms), seconds:GIX.wall||null };

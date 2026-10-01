@@ -9,47 +9,47 @@
                                           f: a 55-arch FRM frame {x,z,fx,fz} (local x = right, z = front) or
                                           null for world-aligned offsets from (owner.x, owner.z); y: its floor
      FURNISH(key, lx, ly, lz, lry, {v, seed, setting, noLight})
-                                          -> the placement record, also pushed on owner.furniture and GF.placed
+                                          -> the placement record, also pushed on owner.furniture and GFURN.placed
      FURNISHW(key, x, y, z, ry, o)        the same at a WORLD point and heading (helpers that work in world space)
    Headings are the catalog's: ry turns the piece's front (+z) to (sin ry, cos ry); in an FRM frame lry 0 faces
    the frame's front and lry +PI/2 its LEFT (the catalog's x is the mirror of FRM's "right").
    A record: { key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting }. A key the bundle lacks is
-   COUNTED in GF.missing, never thrown. ?furniture=0 builds nothing (the records are still kept).
+   COUNTED in GFURN.missing, never thrown. ?furniture=0 builds nothing (the records are still kept).
    The batch becomes meshes ONCE, when the kit emits its buckets (75-terrain.js calls emitBuckets()).
    The interiors (56-interiors.js) furnish the rooms through the same batch: ?interiors=0 turns them off.
    A catalog piece's lights stay data: the glue hands them to the night light volume (nlLampAdd); pieces that
    replace one of Girder's own lamps keep Girder's lamp (noLight: true) so the night is lit as before.     */
 KratorFurniture.setDetail(.5);   /* settlement scale: half the segments on round furniture parts */
-var GF = { on: !/[?&]furniture=0\b/.test(location.search), interiors: !/[?&]interiors=0\b/.test(location.search),
+var GFURN = { on: !/[?&]furniture=0\b/.test(location.search), interiors: !/[?&]interiors=0\b/.test(location.search),
            batch: KratorFurniture.batch(), placed: [], missing: {}, cur: null, group: null, lights: 0,
            buildings: [], ixPlaced: [], residenceFails: [], ms: 0 };
-GF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GF.batch);
-if(!GF.on) GF.adapter.build = function(p, room){   /* ?furniture=0: plan the rooms, keep the data, build nothing */
+GFURN.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GFURN.batch);
+if(!GFURN.on) GFURN.adapter.build = function(p, room){   /* ?furniture=0: plan the rooms, keep the data, build nothing */
   return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; };
-function gfAt(owner, id, f, y, wealth){ GF.cur = { owner:owner, id:id, f:f||null, y:y||0, wealth:wealth==null?0.45:wealth }; return GF.cur; }
+function gfAt(owner, id, f, y, wealth){ GFURN.cur = { owner:owner, id:id, f:f||null, y:y||0, wealth:wealth==null?0.45:wealth }; return GFURN.cur; }
 function gfLights(rec, k){            /* a built piece's lights into the night light volume */
-  (rec.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, (l.intensity||1)*(k||0.7), Math.min(18, l.distance||12), false); GF.lights++; });
+  (rec.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, (l.intensity||1)*(k||0.7), Math.min(18, l.distance||12), false); GFURN.lights++; });
 }
 function gfPlace(key, x, y, z, ry, o, loc){
-  var c=GF.cur; o=o||{};
+  var c=GFURN.cur; o=o||{};
   if(!c){ ERR('FURNISH '+key+' outside a building (call gfAt first)'); return null; }
-  if(!KratorFurniture.has(key)){ GF.missing[key]=(GF.missing[key]||0)+1; return null; }
-  var rec={ key:key, variant:o.v|0, seed:o.seed||(GF.placed.length+1), lx:loc[0], ly:loc[1], lz:loc[2], lry:loc[3],
+  if(!KratorFurniture.has(key)){ GFURN.missing[key]=(GFURN.missing[key]||0)+1; return null; }
+  var rec={ key:key, variant:o.v|0, seed:o.seed||(GFURN.placed.length+1), lx:loc[0], ly:loc[1], lz:loc[2], lry:loc[3],
             x:+x.toFixed(3), y:+y.toFixed(3), z:+z.toFixed(3), ry:+wrapPi(ry).toFixed(4), building:c.id, setting:o.setting||'outdoor' };
-  (c.owner.furniture||(c.owner.furniture=[])).push(rec); GF.placed.push(rec);
-  if(GF.on){ var b=GF.batch.place(key, rec.x, rec.y, rec.z, rec.ry, { variant:rec.variant, seed:rec.seed, wealth:c.wealth, building:c.id, setting:rec.setting });
+  (c.owner.furniture||(c.owner.furniture=[])).push(rec); GFURN.placed.push(rec);
+  if(GFURN.on){ var b=GFURN.batch.place(key, rec.x, rec.y, rec.z, rec.ry, { variant:rec.variant, seed:rec.seed, wealth:c.wealth, building:c.id, setting:rec.setting });
     if(b.error) ERR('furniture '+key+': '+b.error);
     if(!o.noLight) gfLights(b, 0.7); }
   return rec;
 }
 function FURNISH(key, lx, ly, lz, lry, o){
-  var c=GF.cur, f=c&&c.f, x, z, ry;
+  var c=GFURN.cur, f=c&&c.f, x, z, ry;
   if(!c) return gfPlace(key,0,0,0,0,o,[lx,ly,lz,lry||0]);
   if(f){ x=f.x - f.fz*lx + f.fx*lz; z=f.z + f.fx*lx + f.fz*lz; ry=Math.atan2(f.fx,f.fz)+(lry||0); }
   else { x=c.owner.x + lx; z=c.owner.z + lz; ry=lry||0; }
   return gfPlace(key, x, c.y+ly, z, ry, o, [lx,ly,lz,lry||0]);
 }
-function FURNISHW(key, x, y, z, ry, o){ var c=GF.cur; return gfPlace(key, x, y, z, ry||0, o, [x-(c?c.owner.x||0:0), y-(c?c.y:0), z-(c?c.owner.z||0:0), ry||0]); }
+function FURNISHW(key, x, y, z, ry, o){ var c=GFURN.cur; return gfPlace(key, x, y, z, ry||0, o, [x-(c?c.owner.x||0:0), y-(c?c.y:0), z-(c?c.owner.z||0:0), ry||0]); }
 
 /* the batch becomes meshes once, when the kit emits its instanced buckets (75-terrain.js) */
 var gfEmitKit = emitBuckets;
@@ -61,17 +61,25 @@ function gfSRGBHook(sh){
     '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
 }
 function gfFlush(){
-  if(GF.group) return GF.group;
-  GF.tris = GF.batch.tris|0;
-  var g = GF.batch.flush(scene); GF.group = g; g.userData.inspectLabel = 'Furniture (catalog)';
+  if(GFURN.group) return GFURN.group;
+  GFURN.tris = GFURN.batch.tris|0;
+  var g = GFURN.batch.flush(scene); GFURN.group = g; g.userData.inspectLabel = 'Furniture (catalog)';
   g.children.forEach(function(m){
     m.geometry.computeBoundingSphere();
     if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
     else nlMaterial(m.material, 'furn|'+m.material.userData.family, gfSRGBHook);   /* + the lamp pools at night */
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
   });
-  GF.meshes = g.children.length;
+  GFURN.meshes = g.children.length;
+  gfReport();
   return g;
+}
+/* a small summary for the verifier (window._* is printed whole), the full state for the console */
+function gfReport(){
+  var keys={}; GFURN.placed.forEach(function(r){ keys[r.key]=(keys[r.key]||0)+1; });
+  window._furniture = { on:GFURN.on, placed:GFURN.placed.length, keys:Object.keys(keys).length, missing:GFURN.missing,
+    tris:GFURN.tris||0, meshes:GFURN.meshes||0, lights:GFURN.lights };
+  window.girderFurniture = { GFURN:GFURN, byKey:keys, GWALK:GWALK };
 }
 
 /* ---------------------------------------------------------------- walk-mode solids (83-walk.js)
