@@ -19,6 +19,8 @@ const BUDGET={
        fac:'medium',port:'medium',gov:'medium',lib:'medium',bunk:'medium',off:'medium',
        apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium'},
 };
+// tower stumps (src/8an-iz-stumps.js, target iziz-variants)
+Object.assign(BUDGET.type,{stumpA:'sky',stumpB:'sky',stumpC:'sky',stumpD:'sky',stumpE:'sky',stumpF:'sky',stumpG:'sky',stumpH:'sky',stumpI:'sky',stumpJ:'sky',stumpK:'sky'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world

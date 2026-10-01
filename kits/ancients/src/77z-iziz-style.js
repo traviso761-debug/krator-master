@@ -284,8 +284,12 @@ function izsRustSkin(G){G.traverse(m=>{if(m.isMesh&&(m.material===MAT.concreteR|
 // THE TRIPOD MARKET (Travis): a reclaimed Skyscraper C hangs a great awning from each side of its leg triangle, sloping out to
 // a mast at the opposite point, so from above the legs' triangle and the three awnings make a six-pointed star; market
 // stalls stand in the shade under each awning and in the open triangle between the legs.
-function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=62-42*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
- const hb=38,rb=62-42*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];
+// The legs' foot radius is read off the built tower: Skyscraper C's three leg groups stand at y=5 on its podium, 62 m out
+// until the towers QA round 2 and 50 m since (their heads still meet the shaft at r=20, 150 m up). Hardcoding 62 hung
+// every awning, mast and stall 12 m off the legs once they moved.
+function tripodLegR(G){let r=0;G.traverse(c=>{if(r||!c.isGroup||c===G||c.position.y!==5||!c.children.length)return;const h=Math.hypot(c.position.x,c.position.z);if(h>20&&h<120)r=h;});return r||62;}
+function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const LR=tripodLegR(G),legAt=(k,ly)=>{const th=k/3*TAU+Math.PI/6,r=LR-(LR-20)*(ly-5)/150;return loc2(gx,gz,Math.cos(th)*r*scale,Math.sin(th)*r*scale,ry);};
+ const hb=38,rb=LR-(LR-20)*(hb-5)/150;const Y=ly=>y0+ly*scale;const cols=[0xe07a2a,0xc9442a,0xe0a030];
  for(let k=0;k<3;k++){const a=legAt(k,hb),b=legAt((k+1)%3,hb);const tm=(k+.5)/3*TAU+Math.PI/6;const ap=loc2(gx,gz,Math.cos(tm)*rb*scale*1.05,Math.sin(tm)*rb*scale*1.05,ry);
   const ya=Y(hb),yp=y+6.5;
   // the awning: a sagging cloth triangle, 6 x 6 subdivided so the fall line reads
@@ -300,6 +304,12 @@ function tripodMarket(G,o,y,scale,ry,gx,gz,y0,T){const legAt=(k,ly)=>{const th=k
   for(let t=0;t<3;t++){const f=.25+t*.22;const m=[(a[0]+b[0])/2*(1-f)+ap[0]*f,(a[1]+b[1])/2*(1-f)+ap[1]*f];const Gs=new THREE.Group();Gs.position.set(m[0],y+1.55,m[1]);Gs.rotation.y=Math.atan2(ap[0]-gx,ap[1]-gz)+Math.PI/2;scene.add(Gs);useGroupXF(Gs);try{T.stall(T.col(cols[(k+t)%3]),Gs);}finally{endGroupXF();}}}
  // and the open triangle between the legs
  for(let t=0;t<3;t++){const th=t/3*TAU+Math.PI/2,r=rb*scale*.3;const Gs=new THREE.Group();Gs.position.set(o.x+Math.cos(th)*r,y+1.55,o.z+Math.sin(th)*r);Gs.rotation.y=-th;scene.add(Gs);useGroupXF(Gs);try{T.stall(undefined,Gs);}finally{endGroupXF();}}
+ // the crowd: the kit's figure items (as figures() lays them), on the plinth top, through the shade and the open triangle,
+ // clear of the leg feet. Placed by position hash, not rng(), so nothing built after the market moves.
+ const Hs=(i,k)=>h3(i*1.37+o.x*.013,k*2.11,o.z*.017+7.3),feet=[0,1,2].map(k=>legAt(k,5));
+ for(let i=0;i<90;i++){const a=Hs(i,1)*TAU,r=Math.sqrt(Hs(i,2))*rb*scale*1.3;const px=o.x+Math.cos(a)*r,pz=o.z+Math.sin(a)*r;
+  if(feet.some(f=>Math.hypot(px-f[0],pz-f[1])<24*scale))continue;
+  kput('figB',[px,y+1.55,pz],qEuler(0,Hs(i,6)*TAU,0),1,new THREE.Color().setHSL(Hs(i,3)*.1,.2+Hs(i,4)*.3,.25+Hs(i,5)*.25));kput('figH',[px,y+1.55,pz],null,1,new THREE.Color(0xc9a17e));}
  REG.push({name:'Tripod market',x:o.x,y:y,z:o.z,r:rb*scale*1.1,h:12,cls:'building',key:'city_tripod_market',tags:{culture:T.culture,type:['market/shop'],wealth:'middle',lit:true,note:'awnings hung from a reclaimed Skyscraper C'}});}
 // an instanced item's world-space box: the def geometry's own bounds through the item's scale and rotation (a torus or
 // cylinder is radius 1, a box half-size .5 — measuring by the scale alone got every ring half its real size)
