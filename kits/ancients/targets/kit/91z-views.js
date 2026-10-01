@@ -7,10 +7,10 @@
 // so that cap never binds: each row's z gap is derived from these distances.
 // A row whose `s` was widened is framed as before: the distance and height
 // scale by s/s0 (s0 = the row's s before the re-spacing).
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k],f=Math.max(1,R.s/(R.s0||R.s));
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];const rowF=Math.max(1,R.s/(R.s0||R.s));
  const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
- const d=Math.min(dist*f,nz-R.z-90);
- return[dx||0,h*f,R.z+d,dx||0,ty,R.z];};
+ const d=Math.min(dist*rowF,nz-R.z-90);
+ return[dx||0,h*rowF,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
  'Overview':[0,1400,ROWS.lab.z+2600,0,150,(ROWS.fac.z+ROWS.port.z)/2+300],
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
