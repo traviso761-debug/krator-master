@@ -109,3 +109,5 @@ Fifth note (the perch inside the wall, a runner's open end showing): "outer half
 head, at the same radius, so the pad stood mostly inside the skin; the perch now cantilevers out along the
 strut's radial axis on a rib from the head's outer face, 2.5 m clear of the wall, and every runner's buried end
 carries a ball.
+Sixth note: the ball moved to the flare's lip, centred on it at the lip's diameter, so the rib enters through a
+knuckle and the flare-to-rib step is gone.
