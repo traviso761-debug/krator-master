@@ -19,6 +19,8 @@ const BUDGET={
        fac:'medium',port:'medium',gov:'medium',lib:'medium',bunk:'medium',off:'medium',
        apt:'medium',amph:'medium',lab:'medium',robo:'medium',dc:'medium',hosp:'medium',hotel:'medium'},
 };
+// alternate domestic types (src/8ak-alt-*, target alt-domestic)
+Object.assign(BUDGET.type,{adWave:'small',adBridge:'small',adFuel:'small',adRadar:'small',adDish:'small',adFins:'medium',adAmph:'medium',adFac:'medium',adLab:'medium',adMega:'mega'});
 
 // --- sample points, one pass over the scene ---------------------------------
 // An instanced item contributes its translation; a mesh contributes its world
