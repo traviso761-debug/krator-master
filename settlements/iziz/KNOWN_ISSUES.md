@@ -158,7 +158,7 @@ saying what fixed it.
       **Round 4:** a declutter pass every 6th frame hides a label whose screen box overlaps a higher-priority one (landmarks first, then nearest first).
 
 ## Harness
-- [ ] `verify.py` is the Ancients copy; its `--assert` budgets come from this
+- [x] **Fixed: on the city (`window.CITY`) `verify.py` names them `city-triangle-budget` / `city-draw-calls`.** `verify.py` is the Ancients copy; its `--assert` budgets come from this
       repo's `91-probe.js` (3 M tris / 400 calls; the city raises them to 16 M /
       900 in `93-city-ui.js`) but the wording still says "showcase". Fine for now.
 - [ ] `build.py` has a SCOPED exemption (`86-bio-*`) for the IIFE-scoped biome
