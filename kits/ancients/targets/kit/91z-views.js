@@ -81,6 +81,8 @@ const VIEWS={
  'Wheel core':[-ROWS.cult.s+130,90,ROWS.cult.z+230,-ROWS.cult.s,50,ROWS.cult.z],
  'Skyscraper I':ROWV('skyI',900,300,210),'Skyscraper J':ROWV('skyJ',900,300,200),'Skyscraper K':ROWV('skyK',900,300,200),
  'Toppled I':[ROWS.skyI.t-200,120,ROWS.skyI.z+420,ROWS.skyI.t+120,40,ROWS.skyI.z],'Toppled J':[ROWS.skyJ.t-200,120,ROWS.skyJ.z+420,ROWS.skyJ.t+120,40,ROWS.skyJ.z],'Toppled K':[ROWS.skyK.t-200,120,ROWS.skyK.z+420,ROWS.skyK.t+120,40,ROWS.skyK.z],
+ 'Lighthouse':ROWV('lighthouse',1000,300,70),
+ 'Lighthouse at night':[-ROWS.lighthouse.s-560,150,ROWS.lighthouse.z+760,-ROWS.lighthouse.s,120,ROWS.lighthouse.z,1],
  // Theodiga's views moved to targets/theodiga/91z-views.js with the site.
  'Office C':[-ROWS.off.s+330,20,ROWS.off.z+120,-ROWS.off.s+330,10,ROWS.off.z-20],
 };

@@ -27,7 +27,10 @@ const ROWS={skyA:{z:0,s:300,r:280,t:1200,j:-1150,ds:[0,1,2,3,4]},skyB:{z:800,s:3
  flat:{z:25400,s:380,r:200,t:1200},   // t: the Flatiron topples too (2026-09-29)
  // Skyscrapers I, J and K (added 2026-09-29): each built in its own dev target
  // (skyi/skyj/skyk) first, then given a row here like A-H.
- skyI:{z:26400,s:300,r:280,t:1200},skyJ:{z:27200,s:300,r:280,t:1200},skyK:{z:28000,s:300,r:280,t:1200}};
+ skyI:{z:26400,s:300,r:280,t:1200},skyJ:{z:27200,s:300,r:280,t:1200},skyK:{z:28000,s:300,r:280,t:1200},
+ // The Lighthouse island (a modified Skyscraper J, 2026-09-29): its own sea,
+ // shared by the three sites at -320/0/+320; built in targets/lighthouse first.
+ lighthouse:{z:28800,s:320,r:300,t:1250}};
 const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]]:[[r.s,r.z,r.r]])
  .concat((r.ds||DECAYS).indexOf(3)<0?[]:[[0,r.z,r.r]])
  .concat(r.j==null?[]:[[r.j,r.z,r.r]]));
@@ -37,4 +40,4 @@ const RUINS=Object.values(ROWS).flatMap(r=>(r.t?[[r.s,r.z,r.r],[r.t,r.z,r.r*1.4]
 // third of the intact one. cult 400->640, perch 430->520, flat 300->380 and
 // hotel 260->300 each give the three sites their own ground; the presets of
 // those rows are written off ROWS.<k>.s, so they follow.
-const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK};
+const EXTRA_BUILDERS={cult:buildCultural,perch:buildPerch,flat:buildFlatiron,skyI:buildSkyI,skyJ:buildSkyJ,skyK:buildSkyK,lighthouse:buildLighthouse};
