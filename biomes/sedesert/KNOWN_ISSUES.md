@@ -43,6 +43,11 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
+- [x] Rocks scattered round a grid point (stones, boulders and their lichen, hoodoos and
+      their apron stones) now test the host's mask at their own position (`putRooted` in 60):
+      the grid tested only the centre, so a cluster spilled into the water here and onto
+      the cliffs in Shade. The random draws are made either way, so nothing else moves.
+      Found by Shade's `no-flora-on-cliffs` check (settlements/shade).
 - [x] Fauna: kites, swifts, striders and lizards on the contract (75), driven by BIO.tick.
 - [x] The quality pass (NOTES.md): typed stores, memoised terrain, BIO.col, data-driven
       impostors, a pass table, shared helpers, host hooks for register / lod / windows.
