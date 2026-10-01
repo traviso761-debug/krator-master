@@ -197,6 +197,8 @@ Life layer on NAV (Voth's model), the animated tide, interiors behind the marks,
 - every drowned host has a HOST record whose cap contains every vertex of its built footprint at the
   waterline (measured by a probe, Voth's pier lesson made an invariant) and a floors table whose storeys
   are all ≥ 3.0 m clear.
+- every drowned host has a way in: a grown pod on a floor plate whose back door opens onto the plate
+  (`every-host-has-a-way-in`, from phase 1), and that plate is a `hostfloor` deck in the walk plan.
 - deterministic: two builds hash-identical.
 
 ## 5. Budgets (to agree with Travis)

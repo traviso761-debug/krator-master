@@ -130,8 +130,18 @@ positions and a walk GRAPH with heights replaces the walkable mask. Ys has five 
 `65e-docks-ferry-fishing.js`). A layout record, geometry-free, exists before anything is drawn:
 ```
 HOST = { n, key, x, z, ry, cap:{hw | poly} (the builder's REAL footprint, measured, not a radius),
-         cutY, floors[], landings[], heads[], piers[], ring (wealth), lit }
+         cutY, podium, floors[], landings[], heads[], piers[], ways[], members[], ring (wealth), lit }
 ```
+**Every drowned host has a way in.** At least one grown pod (a "barnacle") sits on a floor plate with its back
+door through the host's wall onto the plate, so the tower is entered from the walk grid: landing → pod → plate.
+The plate is a `hostfloor` deck in `NAV_EXTRA` and the floor is `inhabited`. The kit's towers have no stairs
+between their plates (logged in `kits/ancients/KNOWN_ISSUES.md`); until a version with stairs is re-vendored,
+the storeys above and below the entry plate are reached only by further pods or by Hykkousoi stairs grown
+inside (phase 3). Hosts stand on **small podiums** (the plinth shrunk to the body, the apron dropped) so the
+drowned grid packs at its pitch; a host's cap is its footprint at the waterline, struts and legs included.
+A **span can branch and send runners**: a bridge forks a narrower run to a perch or a landing, and tendrils
+from its edge reach for the host's members (struts, legs, strut heads) within reach, so a bridge reads as
+grown onto what it passes, not laid across it.
 and the tests Voth paid for come with it: `hostEdge(h, dirX, dirZ)` is the exact distance to the cap's
 edge along a bearing (a square's corner lies at `hw / max(|cos|,|sin|)`, not at `hw`: three Voth piers
 stood in open water before that was learned); the nav grid classifies a cell blocked from the exact cap

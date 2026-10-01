@@ -27,8 +27,11 @@ The quality bar: recognisably its type at a glance, a silhouette distinct from i
   'Sacred' 'Markets' 'Civic' 'Harbour' 'Industry' 'Military' 'Agriculture' 'Spans'`; the sheet lays the rows out
   and makes `'<name> — front'`, `'<name> — eye level'` and `'<name> inside'` presets for you.
 - Local frame: origin at the plot centre on the ground, **+z the front**, y up, metres. Never world coordinates.
-- A **grown-on (G) builder** takes a host: `build(G,o)` with `o.host = {x,z,rAt(y),n}` resolved by the placer, and
-  roots itself with `hykFlare`; `hykAccrete` in 64 is the pattern.
+- A **grown-on (G) builder** takes a host: `build(G,o)` with `o.host = {x,z,rAt(y,a),n}` resolved by the placer, and
+  roots itself with `hykFlare`; `hykAccrete` in 64 is the pattern. A pod on a host's floor plate may be the host's
+  **way in** (`into:true`, declared on the host as a way: API.md "Ways in"); every host needs one.
+- A **span** is `hykBridge`: a backbone deck that can `branch` to a perch or landing and send `runners` to the
+  host's `members` it passes (API.md). Never a plain plank between two points.
 - The helpers are in `API.md`. Every opening through `hykDoor`/`hykWin`, every lamp through `hykLight`, every
   room through `hykRoom` + `hykSpot`, every inspector volume through `hykReg`.
 
