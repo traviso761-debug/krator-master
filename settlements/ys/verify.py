@@ -86,8 +86,8 @@ const R=[];
           detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
 
 // 5. the registry and the instance bake both ran.
-{ R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
-          detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
+{ R.push({name:'registry-and-bake-ran', ok:window._baked===true&&(!window._registered||window._instances>0),
+          detail:(window._baked?'bake ran, ':'BAKE DID NOT RUN, ')+window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 // 6. project-specific checks the page exposes (port: stamps inside their
 //    footprints, 8 m clearance). An entry with budget:true is soft.
 if(typeof A.extra==='function'){try{for(const r of A.extra())R.push(r);}catch(e){R.push({name:'extra-checks',ok:false,detail:String(e)});}}

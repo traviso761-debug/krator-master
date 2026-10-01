@@ -14,7 +14,7 @@ const fill=new THREE.DirectionalLight(0xc0d8ff,.3);fill.position.set(800,400,-90
 const FRAME_HOOKS=[];
 let groundM=null,LABELS=null;const SITE_GROUPS=[];
 // ---------------------------------------------------------------- the sky and the clock
-const YSCLOCK={hour:15.5,day:200,dens:1.4};
+const YSCLOCK={hour:15.5,hour0:15.5,day:200,dens:1.4};
 const ysSkyGroup=KratorSky.attach(scene,6000);ysSkyGroup.traverse(o=>{o.userData.probeSkip=true;});
 let YS_NIGHT=null;
 function ysNightApply(on){on=!!on;if(YS_NIGHT===on)return;YS_NIGHT=on;
