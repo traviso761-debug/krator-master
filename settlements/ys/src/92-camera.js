@@ -5,9 +5,10 @@
 // registered under the cursor; and the COMPASS (project rule for Ys): a rose that turns with the camera and a
 // ground gizmo (N E S W) at the orbit target, so "north-east of the harbour" is never a guess.
 const ctl={target:new THREE.Vector3(0,10,0),theta:0,phi:1.1,radius:120};
-function setView(cx,cy,cz,tx,ty,tz,hour,compass){WALK.on=false;ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));
+function setView(cx,cy,cz,tx,ty,tz,hour,compass,inside){WALK.on=false;ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.sqrt(dx*dx+dy*dy+dz*dz);ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));
  if(typeof setHour==='function')setHour(hour!=null?hour:YSCLOCK.hour0);   // no hour = the default day
- if(compass!=null&&typeof setCompass==='function')setCompass(!!compass);}   // an EIGHTH element: the compass overlay on
+ if(compass!=null&&typeof setCompass==='function')setCompass(!!compass);   // an EIGHTH element: the compass overlay on
+ if(typeof setInside==='function')setInside(!!inside);}   // a NINTH: the Inside view (exteriors hidden; rooms shown)
 function ysFloorY(x,z){return Math.max(terrainH(x,z),0);}   // the ground, or the sea surface over water
 function applyCam(){if(WALK.on){camera.position.set(WALK.x,WALK.y,WALK.z);camera.rotation.set(0,0,0);camera.rotation.order='YXZ';camera.rotation.y=WALK.yaw;camera.rotation.x=WALK.pitch;return;}
  const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));

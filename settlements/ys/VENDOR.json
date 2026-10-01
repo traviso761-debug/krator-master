@@ -39,6 +39,11 @@
   "from": "kits/ancients/src",
   "sha1": "d0f77add9a31"
  },
+ "52-sky-abc.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "bcf4eeba1c16"
+ },
  "54-mat-concrete.js": {
   "adapted": false,
   "from": "kits/ancients/src",
@@ -92,7 +97,7 @@
  "92-camera.js": {
   "adapted": true,
   "from": "settlements/iziz/src",
-  "sha1": "0e11291514c1"
+  "sha1": "0a6c494c7daa"
  },
  "93-labels.js": {
   "adapted": false,
