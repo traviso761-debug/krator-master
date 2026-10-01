@@ -133,14 +133,23 @@ FURNISH(key, lx, ly, lz, lry, {v, seed, setting})   -> the placement record, or 
   4-sided diamond); the interiors' pieces at half. The catalog's colours are sRGB values: the furniture meshes
   linearise them in the vertex shader (`hlfSRGB`), as `hC()` does for the kit's own colours. Being flat colours,
   the pieces still read a little lighter than the kit's textured wood and stone.
+* Outside any builder (a town's own furniture, placed by its layout: Roketstad's open-air market stalls) a call
+  passes `{world: name}`: `(lx, ly, lz, lry)` are then world coordinates, the record (its `building` is `name`) goes
+  on `HLF.placed` only. The probe's volume check (`regOccupancy`, 91) counts each placed piece as a sample.
 * `?furniture=0` places nothing (the records are still kept). `?interiors=1` plans and furnishes the rooms of
   every top-level building that has an item in `kits/interiors/sets/highlands.js` without `skip`
   (`G.userData.interior`, `HLF.buildings`). Indoor furniture is the interiors' job: builders draw none.
 * Helpers that used to draw furniture keep their names and arguments and place the catalog piece nearest the
   size asked for: `hnWoodpile hnFirepit hnMenhir hnTotem` (tribal and rustic; the Republic's still draws its
-  carved column) `hnTotemPole` (a free-standing carved post; `hnTotemPost` stays the structural one)
-  `hnTRBrazier hnTRHorns hnTRGourd hnTRCage hnRUShield hnRUStall hnRUTrough hnRUBench hnRUCart hnRUHesje`, and
-  `hnBarrel hnWaterButt hnCrate hnSacks hnDryingRack` (the vendored `vn*` yard kit, placed). `hnFurn(key, x, y,
+  carved column: the catalog's pillar is 6.8 m, the Republic's totems reach 12.5 m) `hnTotemPole` (a free-standing
+  carved post; `hnTotemPost` stays the structural one)
+  `hnTRBrazier hnTRHorns hnTRGourd hnTRCage hnRUShield hnRUStall hnRUTrough hnRUBench hnRUCart hnRUHesje`, the
+  Republic's `hnRATable hnRABarrelLying hnRABarrelStack hnRAScrap hnRAAnvil hnRATrough hnRAHearth hnRAWagon hnRBRack
+  hnRBLamps hnRCScrap hnRCTub hnRCHearth hnRCCart hnRCTrough hnRCHaystack hnRCSweepWell hnStall hnLantern` (the
+  harvested `hl_rep_*` pieces; `hnRAHearth` keeps drawing its pipe stack on up through the shed roof), and
+  `hnBarrel hnWaterButt hnCrate hnSacks hnDryingRack hnPlanter hnLampPost hnWallLamp` (the vendored `vn*` yard kit,
+  placed: `vnBarrel vnWaterButt vnCrate vnSacks vnDryingRack vnPlanter vnLampPost vnLamp`; a lamp post takes the
+  standard nearest the height asked for, the yard post at 3.2 / 3.8 m or the Republic's at 3.4 / 4.2 m). `hnFurn(key, x, y,
   z, ry, o, dx, dz)` places a piece whose origin is `(dx, dz)` from `(x, z)` in the frame turned by `ry` (a
   totem's pole, a cart's bed).
 * SEEDS: a helper or builder that stops drawing burns the random numbers the drawing drew (`hlRngSkip(n)`), so
