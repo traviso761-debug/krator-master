@@ -65,6 +65,7 @@ for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R)continue;cons
 // 3b. the target's own builders (the mock, the kit sheet, the city's layout pass) run here: static fabric before the bake
 for(const f of (typeof YS_BUILD!=='undefined'?YS_BUILD:[])){try{f(scene);}catch(e){reportErr('build hook '+e.stack);}}
 try{hykFlush(scene);}catch(e){reportErr('hykFlush '+e.stack);}
+for(const f of (typeof YS_AFTER!=='undefined'?YS_AFTER:[])){try{f(scene);}catch(e){reportErr('after hook '+e.stack);}}   // the land–sea lattice, once everything stands
 window._registered=REG.length;
 kbake(scene);window._baked=true;
 for(const n in KIT.meshes){const m=KIT.meshes[n];m.userData.kname=n;m.userData.owns=KIT.items[n];}
