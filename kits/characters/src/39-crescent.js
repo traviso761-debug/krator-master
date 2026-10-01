@@ -31,10 +31,14 @@ function buildCrescentBody(){
   addPiece(ellipsoid(0, 2.03, 0.075, 0.09, 1.0, 1.2, 0.6), CR_GOLD, ['mixamorigHead'], M);                                                      /* the mask */
   [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.035, 2.05, 0.125, 0.018, 1.2, 0.6, 0.5), 0x101008, ['mixamorigHead']); });
   addPiece(box(0, 2.14, 0.11, 0.16, 0.025, 0.02), CR_GOLD, ['mixamorigHead'], M);
+  [1, -1].forEach(function(s){ seam(V3(s * 0.035, 2.02, 0.13), V3(s * 0.045, 1.95, 0.12), 0x6a4a1a, ['mixamorigHead'], 0.004); });   /* tear lines on the mask */
+  for(var hb = 0; hb < 4; hb++) addPiece(ellipsoid(0.16 + hb * 0.005, 1.95 - hb * 0.12, -0.05, 0.016), CR_GOLD, ['mixamorigNeck', 'mixamorigSpine2'], M);   /* hair beads */
   var mcres = new THREE.TorusGeometry(0.05, 0.012, 6, 14, Math.PI * 1.2); mcres.rotateZ(-Math.PI * 0.1); mcres.translate(0, 2.2, 0.08);
   addPiece(mcres, CR_GOLD, ['mixamorigHead'], M);
   addPiece(ellipsoid(0, 2.1, -0.03, 0.125, 1.05, 1.0, 1.0), CR_HAIR, ['mixamorigHead']);
-  [1, -1].forEach(function(s){ addPiece(limbTube(V3(s * 0.11, 2.08, -0.02), V3(s * 0.16, 1.4, -0.05), [{ t: 0, r: 0.06 }, { t: 1, r: 0.04 }], 8), CR_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 }); });
+  [1, -1].forEach(function(s){ addPiece(limbTube(V3(s * 0.11, 2.08, -0.02), V3(s * 0.16, 1.4, -0.05), [{ t: 0, r: 0.06 }, { t: 1, r: 0.04 }], 8), CR_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 });
+    addPiece(limbTube(V3(s * 0.08, 2.1, 0.06), V3(s * 0.2, 1.55, 0.12), [{ t: 0, r: 0.04 }, { t: 1, r: 0.03 }], 7), CR_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 });
+    addPiece(limbTube(V3(s * 0.12, 2.06, -0.08), V3(s * 0.12, 1.6, -0.14), [{ t: 0, r: 0.04 }, { t: 1, r: 0.03 }], 7), CR_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 }); });
   addPiece(limbTube(V3(0, 2.08, -0.1), V3(0, 1.3, -0.16), [{ t: 0, r: 0.1 }, { t: 1, r: 0.06 }], 8), CR_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 });
   /* sleeves: wide green over white */
   [1, -1].forEach(function(s){
@@ -44,13 +48,16 @@ function buildCrescentBody(){
     addPiece(limbTube(a.el.clone().lerp(a.wr, 0.6), a.wr.clone().add(V3(s * 0.02, 0, 0)), [{ t: 0, r: 0.075 }, { t: 1, r: 0.07 }], 10), CR_WHITE, [FA, HAND]);
     fist(s, CR_SKIN, [HAND]);
   });
-  [1, -1].forEach(function(s){ var l = legPts(s); addPiece(box(l.an.x, 0.05, 0.1, 0.13, 0.08, 0.28), 0x3a2a20, [B(s, 'Foot')]); });
+  [1, -1].forEach(function(s){ var l = legPts(s); addPiece(box(l.an.x, 0.035, 0.12, 0.1, 0.05, 0.2), 0x3a2a20, [B(s, 'Foot')]); });
+  hemTrim(0.03, 0.52, 0.39, 0.04, CR_GOLD, legBones.slice(3), true);
+  [1, -1].forEach(function(s){ var sc = new THREE.TorusGeometry(0.06, 0.012, 6, 14, Math.PI * 1.2); sc.rotateZ(-Math.PI * 0.1); sc.translate(s * 0.26, 1.78, 0.06); addPiece(sc, CR_GOLD, ['mixamorigSpine2'], M); });   /* shoulder crescents */
 }
 function crescentStaffHead(g){
   var gold = propMat(CR_GOLD, 0.9, 0.35);
   propMesh(g, new THREE.SphereGeometry(0.035, 8, 6), gold, 0, 1.5, 0);
   var c = new THREE.TorusGeometry(0.14, 0.022, 8, 24, Math.PI * 1.25); c.rotateZ(-Math.PI * 0.125); propMesh(g, c, gold, 0, 1.7, 0);
   propMesh(g, new THREE.TorusGeometry(0.03, 0.008, 6, 12), gold, 0, 1.1, 0);
+  [0.6, 0.9].forEach(function(y, i){ var rib = new THREE.CatmullRomCurve3([V3(0, y + 0.5, 0), V3(0.04, y + 0.3, 0.02), V3(0.02, y, 0.04), V3(0.05, y - 0.3, 0.0)]); propMesh(g, new THREE.TubeGeometry(rib, 12, 0.006, 4, false), propMat(i ? 0xc8dcc0 : CR_GOLD)); });   /* ribbons */
 }
 function crescentRaisePose(u){
   idlePose(u); var ph = u * Math.PI * 2;

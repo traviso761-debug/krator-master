@@ -12,7 +12,9 @@ function nagaTint(){
   var g = C(NG_SCALE), gd = C(NG_SCALE_DARK), b = C(NG_BELLY), bd = C(0xb89850);
   return function(p){ var n = cellNoise(p, 0.05);
     var belly = p.y > 0.3 ? p.z > 0.06 && Math.abs(p.x) < 0.2 : p.y < 0.11;
-    if(belly) return n > 0.7 ? bd : b; return n < 0.3 ? gd : g; };
+    if(belly) return n > 0.7 ? bd : b;
+    var d = Math.abs(((p.z * 3 + p.y * 2) % 1 + 1) % 1 - 0.5) + Math.abs(p.x) * 2.2;            /* dorsal diamonds */
+    return d < 0.22 ? gd : n < 0.3 ? gd : g; };
 }
 function nagaArm(s, pre, a, R){
   var S = s > 0 ? 'Left' : 'Right', ARM = pre + S + 'Arm', FA = pre + S + 'ForeArm', HAND = pre + S + 'Hand', root = pre === 'mixamorig' ? 'mixamorigSpine2' : 'mixamorigSpine1';
@@ -22,6 +24,7 @@ function nagaArm(s, pre, a, R){
   addPiece(limbTube(a.el, a.wr, [{ t: 0, r: 0.068 }, { t: 0.4, r: 0.075 }, { t: 1, r: 0.05 }], 12), NG_SKIN, [FA, HAND]);
   addPiece(limbTube(a.sh.clone().lerp(a.el, 0.3), a.sh.clone().lerp(a.el, 0.42), [{ t: 0, r: 0.1 }, { t: 1, r: 0.1 }], 12, false), NG_GOLD, [ARM], { metal: true }); /* armlet */
   addPiece(ellipsoid(a.wr.x + s * 0.06, a.wr.y, 0.01, 0.055, 1.2, 0.75, 0.95), NG_SKIN_DARK, [HAND]);
+  addPiece(limbTube(a.wr.clone().add(V3(-s * 0.03, 0, 0)), a.wr.clone().add(V3(-s * 0.01, 0, 0)), [{ t: 0, r: 0.06 }, { t: 1, r: 0.06 }], 10, false), NG_GOLD, [FA, HAND], { metal: true });   /* bangle */
 }
 function buildNagaBody(){
   var R = rng(37), tint = nagaTint(), M = { metal: true };
@@ -36,10 +39,14 @@ function buildNagaBody(){
   addPiece(limbTube(V3(0, 1.78, 0), V3(0, 1.94, 0.01), [{ t: 0, r: 0.07 }, { t: 1, r: 0.06 }], 10), NG_SKIN, ['mixamorigSpine2', 'mixamorigNeck', 'mixamorigHead']);
   addPiece(ellipsoid(0, 2.03, 0.01, 0.11, 0.9, 1.1, 1.0), NG_SKIN, ['mixamorigHead']);
   addPiece(ellipsoid(0, 1.96, 0.04, 0.085, 0.95, 0.7, 1.0), NG_SKIN, ['mixamorigHead']);                                                           /* jaw */
-  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.04, 2.04, 0.095, 0.016, 1, 0.7, 0.6), 0xe8f0e0, ['mixamorigHead']); addPiece(ellipsoid(s * 0.04, 2.04, 0.108, 0.008), 0x2a4a2a, ['mixamorigHead']); });
-  addPiece(ellipsoid(0, 1.965, 0.1, 0.03, 1.3, 0.35, 0.5), 0x8a3a3a, ['mixamorigHead']);                                                           /* grin */
+  faceHuman(2.03, NG_SKIN, { r: 0.105, iris: 0x4a9a3a, brow: 0x1a1410, lips: 0x8a2a3a });
+  [1, -1].forEach(function(s){ addPiece(spike(V3(s * 0.025, 1.975, 0.095), V3(0, -1, 0.1), 0.025, 0.006, 4), 0xf4f0e8, ['mixamorigHead']);        /* fangs */
+    addPiece(limbTube(V3(s * 0.105, 1.99, 0), V3(s * 0.11, 1.9, 0), [{ t: 0, r: 0.006 }, { t: 1, r: 0.006 }], 4), NG_GOLD, ['mixamorigHead'], { metal: true }); addPiece(ellipsoid(s * 0.11, 1.89, 0, 0.018), 0xff3a6a, ['mixamorigHead']); });   /* earrings */
+  addPiece(ellipsoid(0, 1.2, 0.165, 0.02), 0xff3a6a, ['mixamorigSpine']);                                                                         /* navel gem */
+  addPiece(box(0.16, 1.0, 0.1, 0.05, 0.3, 0.03, [0, 0, 0.3]), 0x3a2020, ['mixamorigHips']); addPiece(box(0.19, 1.12, 0.12, 0.07, 0.03, 0.04, [0, 0, 0.3]), NG_GOLD, ['mixamorigHips'], { metal: true });   /* sheath */
   addPiece(ellipsoid(0, 2.08, -0.03, 0.125, 1.0, 1.0, 1.05), NG_HAIR, ['mixamorigHead']);                                                           /* hair cap */
-  [1, -1].forEach(function(s){ addPiece(limbTube(V3(s * 0.1, 2.05, -0.06), V3(s * 0.14, 1.5, -0.12), [{ t: 0, r: 0.06 }, { t: 1, r: 0.045 }], 8), NG_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 }); });
+  [1, -1].forEach(function(s){ addPiece(limbTube(V3(s * 0.1, 2.05, -0.06), V3(s * 0.14, 1.5, -0.12), [{ t: 0, r: 0.06 }, { t: 1, r: 0.045 }], 8), NG_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 });
+    for(var hb = 0; hb < 3; hb++) addPiece(ellipsoid(s * (0.11 + hb * 0.01), 1.9 - hb * 0.12, -0.08 - hb * 0.015, 0.02, 1, 0.6, 1), NG_GOLD, ['mixamorigNeck', 'mixamorigSpine2'], { metal: true }); });   /* hair beads */
   addPiece(limbTube(V3(0, 2.05, -0.1), V3(0, 1.45, -0.2), [{ t: 0, r: 0.09 }, { t: 1, r: 0.06 }], 8), NG_HAIR, ['mixamorigHead', 'mixamorigNeck', 'mixamorigSpine2'], { power: 2 });
   /* cobra headdress: a flared hood behind the head, a crown band, a snake over the top */
   addPiece(ellipsoid(0, 2.2, -0.04, 0.2, 1.1, 1.0, 0.45), NG_GOLD, ['mixamorigHead'], M);
@@ -57,6 +64,7 @@ function buildNagaBody(){
   var curve = new THREE.CatmullRomCurve3(pts);
   var bones = ['mixamorigHips']; for(i = 1; i <= 7; i++) bones.push('serpent' + i);
   addPiece(curveTube(curve, 56, 16, function(t){ return 0.2 * (1 - t * 0.85) + 0.02 * Math.sin(t * 40) * (1 - t); }), NG_SCALE, bones, { tint: tint, power: 3 });
+  for(i = 2; i < 30; i++){ var st = i / 30, sp = curve.getPoint(st), sr = 0.2 * (1 - st * 0.85); addPiece(ellipsoid(sp.x, sp.y + (st < 0.25 ? 0 : sr * 0.95), sp.z - (st < 0.25 ? sr * 0.95 : 0), 0.02 * (1 - st * 0.6) + 0.006, 1, 0.6, 1.4), NG_SCALE_DARK, [bones[Math.min(7, Math.max(1, Math.round(st * 7)))]]); }   /* dorsal ridge scales */
   addPiece(bodyTube([{ y: 1.0, rx: 0.2, rz: 0.16 }, { y: 1.06, rx: 0.2, rz: 0.16 }], 20), 0x6a2a2a, ['mixamorigHips']);                           /* the sash at the join */
 }
 function buildDagger(iceBlade){

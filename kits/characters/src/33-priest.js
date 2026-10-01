@@ -27,6 +27,10 @@ function buildPriestBody(){
   /* the mantle over the shoulders, and the hood */
   var mantle = [{ y: 2.12, rx: 0.18, rz: 0.16 }, { y: 2.0, rx: 0.38, rz: 0.3 }, { y: 1.78, rx: 0.5, rz: 0.4 }, { y: 1.55, rx: 0.52, rz: 0.42 }];
   addPiece(bodyTube(mantle, 40, false), PR_BLACK, ['mixamorigSpine2', 'mixamorigNeck', 'mixamorigSpine1'], { tint: priestTint(4, 9) });
+  hemTrim(1.54, 0.525, 0.425, 0.03, 0xffb020, ['mixamorigSpine1'], true);                                                                       /* mantle hem */
+  for(i = 0; i < 24; i++){ var fa = i / 24 * Math.PI * 2; addPiece(limbTube(V3(Math.cos(fa) * 0.52, 1.54, Math.sin(fa) * 0.42), V3(Math.cos(fa) * 0.5, 1.4, Math.sin(fa) * 0.4), [{ t: 0, r: 0.006 }, { t: 1, r: 0.006 }], 4), PR_PAL[i % 6], ['mixamorigSpine1', 'mixamorigSpine'], { power: 2 });
+    addPiece(ellipsoid(Math.cos(fa) * 0.5, 1.39, Math.sin(fa) * 0.4, 0.014), 0xffb020, ['mixamorigSpine1', 'mixamorigSpine'], { metal: true }); }   /* beaded cords */
+  for(i = 0; i < 48; i++){ var ha = i / 48 * Math.PI * 2; addPiece(ellipsoid(Math.cos(ha) * 0.72, 0.05, Math.sin(ha) * 0.56, 0.016), i % 2 ? 0xffb020 : 0xff2a8a, legBones, { power: 2 }); }  /* hem beads */
   addPiece(ellipsoid(0, 2.27, -0.04, 0.22, 1.1, 1.25, 1.1), PR_BLACK, ['mixamorigHead'], { tint: priestTint(2, 12) });
   addPiece(ellipsoid(0, 2.25, 0.09, 0.14, 0.95, 1.1, 0.9), 0x3a3a46, ['mixamorigHead'], { metal: true });                     /* chrome face */
   [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.05, 2.28, 0.2, 0.03, 1, 0.7, 0.6), 0x101014, ['mixamorigHead']); });
@@ -41,6 +45,8 @@ function buildPriestBody(){
   addPiece(disc, 0xffb020, ['mixamorigHead'], { metal: true });
   addPiece(ellipsoid(0, 2.47, 0.2, 0.11, 1, 1, 0.4), 0x6a1040, ['mixamorigHead']);
   addPiece(ellipsoid(0, 2.47, 0.24, 0.055, 1, 1, 0.5), 0xff3aa0, ['mixamorigHead']);
+  var halo = new THREE.TorusGeometry(0.085, 0.008, 6, 24); halo.translate(0, 2.47, 0.235); addPiece(halo, 0xffe02a, ['mixamorigHead'], { metal: true });
+  for(i = 0; i < 8; i++) addPiece(ellipsoid(0, 2.6 + i * 0.04, 0.17 - i * 0.012, 0.012), i % 2 ? 0xffb020 : 0x1ad0b0, ['mixamorigHead'], { metal: true });   /* glyph discs up the mitre */
   for(i = 0; i < 12; i++){ var a2 = i / 12 * Math.PI * 2; addPiece(spike(V3(Math.cos(a2) * 0.18, 2.47 + Math.sin(a2) * 0.18, 0.2), V3(Math.cos(a2), Math.sin(a2), 0), 0.07, 0.012, 4), 0xff8a1a, ['mixamorigHead']); }
   /* shells on the chest */
   [[0, 2.0, 0.34], [0.1, 1.76, 0.42], [-0.1, 1.76, 0.42]].forEach(function(c){ addPiece(ellipsoid(c[0], c[1], c[2], 0.075, 1, 1, 0.6), 0xe8e4dc, ['mixamorigSpine2']); addPiece(ellipsoid(c[0], c[1], c[2] + 0.04, 0.035, 1, 1, 0.6), 0xb8b0a8, ['mixamorigSpine2']); });
@@ -51,12 +57,13 @@ function buildPriestBody(){
     addPiece(limbTube(a.el, a.wr, [{ t: 0, r: 0.14 }, { t: 0.7, r: 0.16 }, { t: 1, r: 0.2 }], 16), PR_BLACK, [FA, HAND], { tint: priestTint(5, 10) });
     /* an open hand with beaded fingers */
     addPiece(box(a.wr.x + s * 0.09, a.wr.y, 0, 0.14, 0.03, 0.1), 0x2a1a30, [HAND]);
+    addPiece(limbTube(a.wr.clone().add(V3(-s * 0.02, 0, 0)), a.wr.clone().add(V3(s * 0.02, 0, 0)), [{ t: 0, r: 0.07 }, { t: 1, r: 0.07 }], 12, false), 0xffb020, [HAND], { metal: true });   /* bracelet */
     for(var f = 0; f < 4; f++){ var z = -0.04 + f * 0.027; addPiece(limbTube(V3(a.wr.x + s * 0.15, a.wr.y, z), V3(a.wr.x + s * 0.26, a.wr.y, z), [{ t: 0, r: 0.012 }, { t: 1, r: 0.01 }], 6), 0x2a1a30, [HAND]);
       addPiece(ellipsoid(a.wr.x + s * 0.21, a.wr.y + 0.012, z, 0.012), PR_PAL[f], [HAND]); }
     addPiece(limbTube(V3(a.wr.x + s * 0.1, a.wr.y, 0.05), V3(a.wr.x + s * 0.17, a.wr.y, 0.1), [{ t: 0, r: 0.013 }, { t: 1, r: 0.01 }], 6), 0x2a1a30, [HAND]);
   });
   /* feet under the hem: the hem does the walking, these only show the stride */
-  [1, -1].forEach(function(s){ var l = legPts(s); addPiece(box(l.an.x, 0.05, 0.1, 0.14, 0.08, 0.3), 0x1a1620, [B(s, 'Foot')]); });
+  [1, -1].forEach(function(s){ var l = legPts(s); addPiece(box(l.an.x, 0.05, 0.1, 0.14, 0.08, 0.3), 0x1a1620, [B(s, 'Foot')]); seam(V3(l.an.x - 0.07, 0.09, 0.18), V3(l.an.x + 0.07, 0.09, 0.18), 0xffb020, [B(s, 'Foot')], 0.008); });
 }
 /* the priest's own pose: idle breathing with the right hand raised, palm forward */
 function raisePose(u){

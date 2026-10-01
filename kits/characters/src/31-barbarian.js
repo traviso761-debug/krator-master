@@ -25,6 +25,10 @@ function buildBarbarianBody(){
     addPiece(ellipsoid(s * 0.30, 1.50, -0.04, 0.12, 0.9, 1.4, 0.9), SKIN, ['mixamorigSpine2']);            /* lats */
   });
   addPiece(ellipsoid(0, 1.83, -0.03, 0.2, 2.1, 0.7, 1.2), SKIN, ['mixamorigSpine2', 'mixamorigNeck']);               /* traps */
+  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.17, 1.57, 0.255, 0.014, 1, 1, 0.5), SKIN_DARK, ['mixamorigSpine2']); });               /* nipples */
+  addPiece(ellipsoid(0, 1.33, 0.185, 0.012, 1, 1.3, 0.5), SKIN_DARK, ['mixamorigSpine1']);                                                       /* navel */
+  seam(V3(-0.08, 1.7, 0.22), V3(0.12, 1.5, 0.23), 0xb87a62, ['mixamorigSpine2'], 0.006);                                                       /* old scar */
+  addPiece(limbTube(V3(0.152, 2.03, 0.0), V3(0.152, 1.99, 0.0), [{ t: 0, r: 0.006 }, { t: 1, r: 0.006 }], 4), STEEL, ['mixamorigHead'], { metal: true }); addPiece(ellipsoid(0.152, 1.985, 0.0, 0.012), STEEL, ['mixamorigHead'], { metal: true });   /* ear ring */
   /* neck and head */
   addPiece(limbTube(V3(0, 1.82, 0), V3(0, 2.00, 0.01), [{ t: 0, r: 0.125 }, { t: 0.5, r: 0.11 }, { t: 1, r: 0.10 }], 14), SKIN, ['mixamorigSpine2', 'mixamorigNeck', 'mixamorigHead']);
   addPiece(ellipsoid(0, 2.065, 0, 0.16, 0.95, 1.0, 1.0), SKIN, ['mixamorigHead']);
@@ -55,6 +59,7 @@ function buildBarbarianBody(){
     addPiece(ellipsoid(s * 0.54, 1.68, -0.04, 0.08, 1.1, 1.0, 0.8), SKIN, [ARM]);                                           /* tricep */
     addPiece(ellipsoid(el.x, el.y, el.z, 0.10), SKIN, [ARM, FA]);
     addPiece(limbTube(el, wr, [{ t: 0, r: 0.10 }, { t: 0.3, r: 0.125 }, { t: 0.7, r: 0.095 }, { t: 1, r: 0.07 }], 14), SKIN, [FA, HAND]);
+    seam(el.clone().add(V3(0, 0.09, 0.03)), wr.clone().add(V3(-s * 0.06, 0.05, 0.04)), 0xc48068, [FA, HAND], 0.007); seam(el.clone().add(V3(s * 0.08, 0.08, -0.04)), wr.clone().add(V3(-s * 0.02, 0.045, -0.02)), 0xc48068, [FA, HAND], 0.006);   /* veins */
     fist(s, SKIN_DARK, [HAND]);
   });
 
@@ -62,11 +67,15 @@ function buildBarbarianBody(){
   [1, -1].forEach(function(s){
     var UP = B(s, 'UpLeg'), LEG = B(s, 'Leg'), FOOT = B(s, 'Foot');
     var l = legPts(s), hp = l.hp, kn = l.kn, an = l.an;
-    addPiece(limbTube(hp, kn, [{ t: 0, r: 0.19, rz: 0.18 }, { t: 0.35, r: 0.185, rz: 0.19 }, { t: 0.8, r: 0.15 }, { t: 1, r: 0.14 }], 14), LEATHER, [UP, LEG]);
+    addPiece(limbTube(hp, kn, [{ t: 0, r: 0.19, rz: 0.18 }, { t: 0.35, r: 0.185, rz: 0.19 }, { t: 0.8, r: 0.15 }, { t: 1, r: 0.14 }], 14), LEATHER, [UP, LEG], { tint: wearTint(LEATHER, 0.2) });
+    seam(V3(hp.x + s * 0.18, hp.y - 0.02, 0), V3(kn.x + s * 0.14, kn.y + 0.05, 0), LEATHER_DARK, [UP, LEG]);                                          /* outer seam */
+    seam(V3(hp.x, hp.y - 0.05, 0.18), V3(kn.x, kn.y + 0.08, 0.14), LEATHER_DARK, [UP, LEG]);                                                         /* front seam */
     addPiece(ellipsoid(kn.x, kn.y, kn.z + 0.02, 0.135, 1, 1.05, 0.95), LEATHER_LIGHT, [UP, LEG]);        /* knee plate */
     addPiece(limbTube(hp, kn, [{ t: 0.5, r: 0.178 }, { t: 0.62, r: 0.168 }], 14, false), LEATHER_DARK, [UP]);      /* thigh strap */
     addPiece(box(s * 0.17, 0.83, 0.17, 0.05, 0.06, 0.02), STEEL, [UP]);
-    addPiece(limbTube(kn, an, [{ t: 0, r: 0.13 }, { t: 0.45, r: 0.125 }, { t: 1, r: 0.115 }], 14), LEATHER_DARK, [LEG, FOOT]);
+    addPiece(limbTube(kn, an, [{ t: 0, r: 0.13 }, { t: 0.45, r: 0.125 }, { t: 1, r: 0.115 }], 14), LEATHER_DARK, [LEG, FOOT], { tint: wearTint(LEATHER_DARK, 0.3) });
+    for(var wrp = 0; wrp < 3; wrp++) addPiece(limbTube(V3(an.x, 0.17 + wrp * 0.08, 0), V3(an.x, 0.2 + wrp * 0.08, 0), [{ t: 0, r: 0.122 }, { t: 1, r: 0.122 }], 14, false), LEATHER, [LEG, FOOT]);  /* boot wraps */
+    studRing(an.x, 0.3, 0, 0.123, 0.123, 8, 0.012, STEEL, [LEG, FOOT]);
     addPiece(box(s * 0.18, 0.07, 0.07, 0.21, 0.14, 0.34), LEATHER_DARK, [FOOT]);
     addPiece(ellipsoid(s * 0.18, 0.075, 0.22, 0.105, 1, 0.7, 0.9), LEATHER_DARK, [FOOT]);                           /* toe */
     addPiece(box(s * 0.18, 0.055, -0.05, 0.22, 0.11, 0.18), LEATHER, [FOOT]);                                       /* heel strap */
@@ -77,7 +86,8 @@ function buildBarbarianBody(){
   addPiece(ellipsoid(0, 1.03, -0.01, 0.2, 1.05, 0.55, 0.78), LEATHER, ['mixamorigHips']);                 /* pelvis, closes the crotch */
   /* belt with buckle, fur above and a fringe below */
   addPiece(bodyTube([{ y: 1.12, rx: 0.235, rz: 0.17 }, { y: 1.20, rx: 0.235, rz: 0.165 }], 20), LEATHER_DARK, ['mixamorigHips']);
-  addPiece(box(0, 1.16, 0.175, 0.09, 0.07, 0.02), STEEL, ['mixamorigHips']);
+  addPiece(box(0, 1.16, 0.175, 0.09, 0.07, 0.02), STEEL, ['mixamorigHips'], { metal: true });
+  studRing(0, 1.16, 0, 0.238, 0.172, 14, 0.012, STEEL, ['mixamorigHips']);
   addPiece(bodyTube([{ y: 1.20, rx: 0.245, rz: 0.18 }, { y: 1.31, rx: 0.25, rz: 0.185 }], 20), PINK, ['mixamorigHips', 'mixamorigSpine']);
   furRing(1.26, 0.245, 0.18, 60, 0.11, 0.5, PINK, ['mixamorigHips', 'mixamorigSpine'], R);
   furRing(1.10, 0.235, 0.17, 54, 0.12, -1.1, PINK, ['mixamorigHips'], R);
@@ -102,6 +112,7 @@ function buildAxe(mirror){
   var blade = new THREE.ExtrudeGeometry(shape, { depth: 0.028, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2 });
   blade.translate(0, 0, -0.014);
   add(blade, metal, 0, -0.50);
+  var edge = new THREE.TorusGeometry(0.24, 0.006, 4, 24, Math.PI * 0.9); edge.rotateZ(-Math.PI * 0.45); edge.translate(m * 0.06, -0.5, 0); add(edge, propMat(0xf4f6ff, 0.9, 0.15));   /* honed edge */
   /* a pink filigree band across the blade root, as in the painting */
   add(new THREE.BoxGeometry(0.06, 0.26, 0.036), pink, m * 0.05, -0.50);
   return g;

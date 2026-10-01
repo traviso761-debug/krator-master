@@ -33,6 +33,7 @@ function lizardArm(s, pre, a, R, tint){
   addPiece(ellipsoid(a.el.x, a.el.y, a.el.z, 0.085), LZ_GREEN, [ARM, FA], { tint: tint });
   lizardLimb(a.el, a.wr, [{ t: 0, r: 0.085 }, { t: 0.4, r: 0.1 }, { t: 1, r: 0.065 }], [FA, HAND], tint, R);
   addPiece(limbTube(a.el.clone().lerp(a.wr, 0.72), a.el.clone().lerp(a.wr, 0.95), [{ t: 0, r: 0.085 }, { t: 1, r: 0.08 }], 14, false), LZ_GOLD, [FA, HAND], { metal: true }); /* bracer */
+  studRing(a.el.clone().lerp(a.wr, 0.83).x, a.el.y, a.el.z, 0.087, 0.087, 8, 0.009, 0x8a6a2a, [FA, HAND]);
   /* a clawed hand: palm and three fingers */
   addPiece(ellipsoid(a.wr.x + s * 0.07, a.wr.y, 0.01, 0.065, 1.2, 0.7, 1.0), LZ_GREEN_DARK, [HAND]);
   for(var f = -1; f <= 1; f++) addPiece(spike(V3(a.wr.x + s * 0.12, a.wr.y - 0.01, f * 0.04), V3(s, -0.3, f * 0.3), 0.09, 0.016, 4), LZ_CLAW, [HAND]);
@@ -55,6 +56,10 @@ function buildLizardBody(){
     addPiece(ellipsoid(s * 0.09, 2.07, 0.13, 0.05, 1.1, 0.4, 0.9), LZ_GREEN_DARK, ['mixamorigHead']);                                       /* brow ridge */
     addPiece(ellipsoid(s * 0.04, 1.98, 0.39, 0.012), 0x203018, ['mixamorigHead']);                                                           /* nostril */
   });
+  /* neck frill, tongue, throat pouch */
+  for(i = 0; i < 10; i++){ var fa = -1.3 + i * 0.29; addPiece(spike(V3(Math.sin(fa) * 0.12, 1.86, -0.02 + Math.cos(fa) * -0.1), V3(Math.sin(fa) * 0.8, 0.5, -0.6), 0.1, 0.02, 4), LZ_RED, ['mixamorigNeck', 'mixamorigHead']); }
+  addPiece(limbTube(V3(0, 1.915, 0.3), V3(0.02, 1.9, 0.46), [{ t: 0, r: 0.012 }, { t: 1, r: 0.006 }], 5), 0xb83a4a, ['mixamorigHead']);
+  addPiece(ellipsoid(0, 1.82, 0.08, 0.08, 1.1, 0.7, 0.9), LZ_BELLY, ['mixamorigNeck'], { tint: tint });
   /* dorsal crest: head to tail base */
   for(i = 0; i < 9; i++){ var y = 2.1 - i * 0.13, zc = -0.05 - (i < 3 ? 0 : (i - 3) * 0.05) - (i > 6 ? 0.12 : 0), bone = i < 2 ? 'mixamorigHead' : i < 4 ? 'mixamorigNeck' : i < 6 ? 'mixamorigSpine2' : i < 8 ? 'mixamorigSpine1' : 'mixamorigSpine';
     addPiece(spike(V3(0, y, zc - 0.1), V3(0, 0.6, -1), 0.1 + (i % 3) * 0.02, 0.02, 4), LZ_RED, [bone]); }
@@ -63,6 +68,8 @@ function buildLizardBody(){
   addPiece(bodyTube([{ y: 1.02, rx: 0.225, rz: 0.19 }, { y: 1.1, rx: 0.23, rz: 0.19 }], 18), LZ_LEATHER, ['mixamorigHips']);
   addPiece(box(0, 0.86, 0.17, 0.2, 0.26, 0.02), LZ_RED, ['mixamorigHips', B(1, 'UpLeg'), B(-1, 'UpLeg')], { power: 2 });
   var quiver = limbTube(V3(0.14, 1.1, -0.26), V3(0.3, 1.75, -0.3), [{ t: 0, r: 0.06 }, { t: 1, r: 0.07 }], 10); addPiece(quiver, LZ_LEATHER, ['mixamorigSpine1', 'mixamorigSpine2']);
+  studRing(0.28, 1.7, -0.3, 0.072, 0.072, 8, 0.01, LZ_GOLD, ['mixamorigSpine2']); studRing(0.17, 1.2, -0.27, 0.062, 0.062, 8, 0.01, LZ_GOLD, ['mixamorigSpine1']);
+  addPiece(box(-0.12, 1.5, 0.22, 0.05, 0.06, 0.02, [0, 0, 0.6]), LZ_GOLD, ['mixamorigSpine2'], { metal: true });                                      /* harness buckle */
   for(i = 0; i < 6; i++){ var ax = 0.27 + (R() - 0.5) * 0.06, az = -0.3 + (R() - 0.5) * 0.06; addPiece(limbTube(V3(ax, 1.7, az), V3(ax + 0.05, 2.02, az - 0.02), [{ t: 0, r: 0.006 }, { t: 1, r: 0.006 }], 4), 0xb89a60, ['mixamorigSpine2']);
     addPiece(box(ax + 0.05, 2.0, az - 0.02, 0.035, 0.07, 0.006, [0, 0.4, 0]), 0xe0e0e0, ['mixamorigSpine2']); }
   /* four arms */
@@ -83,6 +90,9 @@ function buildLizardBody(){
   /* tail: one tapered tube along the four tail bones */
   var tail = [V3(0, 1.0, -0.12)]; for(i = 1; i <= 4; i++) tail.push(BONE_DEFS.find(function(d){ return d.name === 'tail' + i; }).pos.clone()); tail.push(V3(0, 0.35, -1.75));
   var curve = new THREE.CatmullRomCurve3(tail);
+  for(i = 1; i < 10; i++){ var tt = i / 10, tp = curve.getPoint(tt), tg = curve.getTangent(tt), tr = 0.13 * (1 - tt) + 0.02;
+    var ring = new THREE.TorusGeometry(tr * 1.02, 0.012, 5, 14); ring.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(new THREE.Quaternion().setFromUnitVectors(V3(0, 0, 1), tg))); ring.translate(tp.x, tp.y - tr * 0.3, tp.z);
+    addPiece(ring, LZ_BELLY, ['tail' + Math.min(4, Math.max(1, Math.round(tt * 4)))]); }   /* belly plate rings down the tail */
   addPiece(curveTube(curve, 30, 12, function(t){ return 0.13 * (1 - t) + 0.02; }), LZ_GREEN, ['mixamorigHips', 'tail1', 'tail2', 'tail3', 'tail4'], { tint: tint, power: 3 });
   for(i = 0; i < 8; i++){ var pt = curve.getPoint(0.1 + i * 0.1), r = 0.13 * (0.9 - i * 0.1) + 0.02; addPiece(spike(V3(pt.x, pt.y + r * 0.9, pt.z), V3(0, 1, -0.3), 0.07, 0.015, 4), LZ_RED, ['tail' + Math.min(4, Math.floor(i / 2) + 1)]); }
 }
@@ -91,6 +101,7 @@ function buildBow(){
   var limb = new THREE.CatmullRomCurve3([V3(0, 0.7, -0.1), V3(0, 0.45, 0.06), V3(0, 0.15, 0.02), V3(0, 0, 0), V3(0, -0.15, 0.02), V3(0, -0.45, 0.06), V3(0, -0.7, -0.1)]);
   propMesh(g, new THREE.TubeGeometry(limb, 24, 0.018, 6, false), wood);
   propMesh(g, new THREE.CylinderGeometry(0.03, 0.03, 0.16, 8), propMat(0x4a3020), 0, 0);
+  for(var w = 0; w < 6; w++) propMesh(g, new THREE.TorusGeometry(0.031, 0.004, 5, 10), propMat(0xd8c070), 0, -0.06 + w * 0.024, 0);   /* grip wrap */
   [1, -1].forEach(function(m){ propMesh(g, new THREE.SphereGeometry(0.025, 6, 6), horn, 0, m * 0.7, -0.1); });
   propMesh(g, new THREE.CylinderGeometry(0.004, 0.004, 1.4, 4), str, 0, 0, -0.1);
   return g;

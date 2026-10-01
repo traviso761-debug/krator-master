@@ -23,11 +23,14 @@ function buildPilgrimBody(){
   addPiece(bodyTube([{ y: 1.1, rx: 0.225, rz: 0.17 }, { y: 1.2, rx: 0.225, rz: 0.17 }], 18), PG_BLUE, ['mixamorigHips', 'mixamorigSpine']);
   addPiece(ellipsoid(0, 1.15, 0.18, 0.05, 1, 1, 0.3), PG_GOLD, ['mixamorigHips'], M);
   addPiece(box(0.1, 1.0, 0.17, 0.05, 0.2, 0.01), PG_ORANGE, ['mixamorigHips']);
+  addPiece(ellipsoid(0.12, 1.14, 0.15, 0.05, 1.2, 0.7, 0.7), PG_BLUE, ['mixamorigHips']);                                             /* sash knot */
+  addPiece(ellipsoid(0.24, 1.0, -0.06, 0.07, 0.6, 1.1, 1), 0x8a6a4a, ['mixamorigHips']); seam(V3(0.24, 1.1, -0.06), V3(0.1, 1.74, 0.0), 0x5a4a3a, ['mixamorigHips', 'mixamorigSpine', 'mixamorigSpine1', 'mixamorigSpine2'], 0.007);   /* water flask on a strap */
+  for(var nb = 0; nb < 9; nb++){ var na = -0.8 + nb * 0.2; addPiece(ellipsoid(Math.sin(na) * 0.12, 1.79 - Math.cos(na) * 0.04, 0.15 + Math.cos(na) * 0.04, 0.01), nb % 2 ? PG_BLUE : PG_GOLD, ['mixamorigSpine2'], M); }   /* necklace */
+  addPiece(ellipsoid(-0.2, 1.02, 0.08, 0.06, 1, 1.2, 0.7), 0x8a6a4a, ['mixamorigHips']); addPiece(box(-0.2, 1.08, 0.12, 0.08, 0.03, 0.02), PG_GOLD, ['mixamorigHips'], M);   /* pouch */
   /* head: a long face under a tall pale mitre with ear flaps */
   addPiece(limbTube(V3(0, 1.82, 0), V3(0, 1.98, 0), [{ t: 0, r: 0.07 }, { t: 1, r: 0.065 }], 10), PG_SKIN, ['mixamorigSpine2', 'mixamorigNeck', 'mixamorigHead']);
   addPiece(ellipsoid(0, 2.05, 0.01, 0.11, 0.9, 1.15, 1.0), PG_SKIN, ['mixamorigHead']);
-  [1, -1].forEach(function(s){ addPiece(ellipsoid(s * 0.04, 2.06, 0.095, 0.014, 1, 0.6, 0.6), 0x201810, ['mixamorigHead']); addPiece(ellipsoid(s * 0.045, 2.09, 0.09, 0.03, 1.1, 0.3, 0.5), 0x3a2a20, ['mixamorigHead']); });
-  addPiece(ellipsoid(0, 1.98, 0.1, 0.02, 1.5, 0.4, 0.5), 0x9a5a4a, ['mixamorigHead']);
+  faceHuman(2.05, PG_SKIN, { r: 0.11, iris: 0x3a4a5a, brow: 0x3a2a20 });
   addPiece(bodyTube([{ y: 2.1, rx: 0.14, rz: 0.14 }, { y: 2.16, rx: 0.15, rz: 0.15 }, { y: 2.42, rx: 0.12, rz: 0.12 }, { y: 2.56, rx: 0.07, rz: 0.07 }, { y: 2.62, rx: 0.02, rz: 0.02 }], 18), PG_WHITE, ['mixamorigHead']);
   addPiece(box(0, 2.3, 0.13, 0.05, 0.1, 0.02), PG_GOLD, ['mixamorigHead'], M); addPiece(ellipsoid(0, 2.36, 0.14, 0.02), PG_RED, ['mixamorigHead']);
   [1, -1].forEach(function(s){ addPiece(box(s * 0.14, 2.0, 0.0, 0.03, 0.2, 0.12), PG_WHITE, ['mixamorigHead']); addPiece(ellipsoid(s * 0.16, 2.0, 0.0, 0.03, 0.5, 1, 1), PG_BLUE, ['mixamorigHead']); });  /* ear flaps */
@@ -36,6 +39,7 @@ function buildPilgrimBody(){
     var ARM = B(s, 'Arm'), FA = B(s, 'ForeArm'), HAND = B(s, 'Hand'), a = armPts(s);
     addPiece(ellipsoid(a.sh.x, a.sh.y + 0.02, 0, 0.12, 1.0, 0.9, 0.9), PG_TAN, ['mixamorigSpine2', ARM]);
     addPiece(limbTube(a.sh, a.el, [{ t: 0, r: 0.1 }, { t: 1, r: 0.085 }], 12), PG_WHITE, [ARM, FA]);
+    seam(a.sh.clone().add(V3(0, 0.1, 0)), a.wr.clone().add(V3(0, 0.08, 0)), PG_ORANGE, [ARM, FA, HAND], 0.01);   /* sleeve stripe */
     addPiece(ellipsoid(a.el.x, a.el.y, a.el.z, 0.08), PG_WHITE, [ARM, FA]);
     addPiece(limbTube(a.el, a.wr, [{ t: 0, r: 0.085 }, { t: 1, r: 0.075 }], 12), PG_WHITE, [FA, HAND]);
     addPiece(limbTube(a.el.clone().lerp(a.wr, 0.8), a.wr, [{ t: 0, r: 0.08 }, { t: 1, r: 0.075 }], 12, false), PG_ORANGE, [FA, HAND]);
@@ -51,6 +55,7 @@ function buildPilgrimBody(){
     addPiece(limbTube(V3(l.an.x, 0.1, 0), V3(l.an.x, 0.42, 0), [{ t: 0, r: 0.1 }, { t: 1, r: 0.105 }], 12), PG_WHITE, [LEG, FOOT]);
     addPiece(box(l.an.x, 0.06, 0.07, 0.17, 0.12, 0.3), PG_WHITE, [FOOT]);
     addPiece(ellipsoid(l.an.x, 0.06, 0.2, 0.085, 1, 0.7, 0.9), PG_WHITE, [FOOT]);
+    addPiece(limbTube(V3(l.an.x, 0.14, 0), V3(l.an.x, 0.17, 0), [{ t: 0, r: 0.105 }, { t: 1, r: 0.105 }], 12, false), PG_ORANGE, [FOOT]); addPiece(box(l.an.x + s * 0.1, 0.155, 0.02, 0.02, 0.04, 0.03), PG_GOLD, [FOOT], M);   /* boot strap */
   });
 }
 function buildStaff(color, headFn){
