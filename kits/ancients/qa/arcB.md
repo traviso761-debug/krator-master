@@ -291,3 +291,41 @@ grey plates (both fixed below).
   outer ones hung as grey plates in mid-air off the ruin. The threshold now
   rises with v (.30 + .60v), so what survives is a ragged collar still
   attached to its tier.
+- **Veladiga breached park, found by looking** (custom high cam over the
+  washout): the recovered braids/bars/fan ARE in the geometry, but relief of a
+  few metres in one mud material with no shadows read as a flat sand sheet
+  from any height. Shallow water threads now lie in the braid troughs
+  (`brd()` factored out of `scour()`; same fbm, no PRNG), so the braiding
+  shows from above, splitting and rejoining below the notch.
+  veladiga/2 202 220 -> 206 956; /0 unchanged.
+
+Verified after these changes (build, jscheck PARSES OK, `verify --assert`,
+error panel clean, invariants PASS; shots looked at):
+arcoindian2/0 318 904 · /1 284 276 · hex/0 587 448 (hexlush/0 592 616) ·
+hex/2 385 634 · dalab/1 657 078 · spire/0 125 438 · spire/1 85 574 -> 86 410 ·
+veladiga/2 206 956.
+
+### Still open, and why
+- **Arcoindian I**: the massif is improved but still a loaf in plan; the
+  light-well mouths still read as dark shapes (the engine cannot shadow);
+  pods acceptable; the kit's default trees.
+- **Arcoindian II**: plan view impossible (inherent); the sun court floor and
+  the roof-fall scar are coarse (the vault is a 20-step grid, so a rockfall
+  relief needs a finer local patch); ceiling well mouths read as shapes in
+  'Coronal section'/'Head-on'; small pale passage portals on the back wall
+  have no ledge under them ('The gardens' view).
+- **Hexahedron**: cells are still boxes (they now have faces); the hypertree
+  is one species (an import job); the flank sag (may be correct in-world).
+- **Dalab**: the dome size needs the Voth palace's dimensions; room fit-out
+  needs the plates trimmed to the room ring inside the bite (~35-80k tris
+  against ~43k headroom); mounds, streets and so on are scope.
+- **Vashtir**: still white on white at hero distance (nothing casts shadows).
+- **The Span**: fallen-payload interiors (more holes dissolve the shells).
+- **Theodiga**: none open.
+
+### Kit fragments changed this session (for re-vendoring)
+`src/64-dalab.js` (vendored by `settlements/dalab`) and `src/68-hexahedron.js`
+(the hexahedron code vendored by `settlements/screamers`), plus
+`61-spire`, `65-veladiga`, `89c-arcoindian2`. The recovered patch before this
+session also changed `63-canyon`, `70-hypertree`, `77-dam`, `89b-arcoindian`.
+Neither settlement was touched.

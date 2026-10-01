@@ -220,7 +220,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       stubs follow it (qa/arcB.md).
 - [x] ~~The scour plume downstream is a Gaussian widening with distance.~~
       Braided channels with bars, a distal fan, terrace steps planed off in the
-      channel, scour scaled into the park's height (qa/arcB.md).
+      channel, scour scaled into the park's height (qa/arcB.md). Water threads lie in
+      the braid troughs, because without them the braids read as flat sand.
 
 ## Hexahedron (`--target hexahedron`)
 
@@ -313,6 +314,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       kit casts shadows, so all form comes from facet normals.
       *Improved (qa/arcB.md):* a vertex colour picks out every arris and darkens
       the valleys. Still white on white at hero distance.
+- [x] ~~The ruin's torn parasol fans left islands floating as grey plates in
+      mid-air.~~ Torn from the outer edge in now (qa/arcB.md).
 
 ## From the brief (the detail pass, not yet started)
 
