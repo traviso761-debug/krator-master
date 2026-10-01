@@ -22,6 +22,16 @@ build's `KNOWN_ISSUES.md`.
 **After editing a file here,** rebuild all six builds and check each one by eye.
 A material change is visible everywhere at once.
 
+### Textures are painted lazily
+
+`canvasTex` paints a texture the first time something reads its `.image`, which three.js does when it first draws
+with it. A page pays only for the textures it shows: painting all of them at load was about 11 s of every Ancients
+page's start-up. The pixels are the same either way.
+
+**A texture whose painter calls `rng()` must pass `eager=true`** (the fifth argument), or every later draw in the
+seeded stream shifts and the world changes. Screamers' `TEX.thatch`, `TEX.lash`, `flBarkTex` and `skyTex` do.
+Painters that use only `h3`/`vnoise`/`fbm`, or `Math.random`, need nothing.
+
 ### What is not here yet
 
 These material fragments drifted between builds, so they stay vendored:
