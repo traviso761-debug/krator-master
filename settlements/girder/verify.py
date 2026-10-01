@@ -72,9 +72,10 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
 return R;}"""
 
 # The catalog furniture (53-furnish.js, 56-interiors.js: meshes flagged userData.furniture) has its own budget
-# line (BUDGET.furniture); the world budget is measured without it.
+# line (BUDGET.furniture); the world budget is measured without it. Only what the camera draws is counted: core/lod
+# keeps each original on layer 30 (unseen; mask bit 0x40000000) and draws a copy carrying the original's userData.
 BUDGET_JS = """()=>{const B=(typeof BUDGET!=='undefined')?BUDGET:(window._api&&window._api.BUDGET); if(!B) return null;
-let fc=0, ft=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture) return; const g=o.geometry;
+let fc=0, ft=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture||!!(o.layers.mask & 0x40000000)) return; const g=o.geometry;
   const n=g.index?g.index.count:g.attributes.position.count, dr=g.drawRange; fc++; ft+=Math.floor(Math.min(n, dr.count===Infinity?n:dr.count)/3); });
 return {budget:B, calls:renderer.info.render.calls-fc, tris:renderer.info.render.triangles-ft, furnCalls:fc, furnTris:ft,
         instances:(window._stats&&window._stats.instances)||0};}"""
