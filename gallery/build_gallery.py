@@ -6,7 +6,10 @@ to gallery/site/worlds/<slug>.html, and writes gallery/site/index.html from
 index.template.html. Claude then publishes gallery/site/ as the Artifact named
 in gallery/README.md.
 
-Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL]
+Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL] [--lod CONFIG]
+
+--lod CONFIG (a TOML file: host/lod.toml) puts gallery/lod.js first in every page, with that world's level of
+detail and the level definitions; see both files. Without it the pages are exactly as built.
 
 --build-missing rebuilds only the worlds whose built page is absent (a fresh clone lacks the port's, which are
 not committed) and reuses every other built page as it is: what host/sitectl.bat does on Windows, where the
@@ -203,6 +206,15 @@ def bundle(path, three=THREE_CDN):
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
 
 
+def lod_head(cfg, slug):
+    """The <script>s that give a page its level of detail: the config for this world, then gallery/lod.js."""
+    conf = {'slug': slug, 'level': cfg.get('worlds', {}).get(slug, cfg.get('default', 'high')),
+            'levels': cfg.get('levels', {})}
+    js = open(os.path.join(HERE, 'lod.js'), encoding='utf-8').read().replace('</script', '<\\/script')
+    return ('<script>window.KRATOR_LOD=%s;</script>\n<script>\n%s\n</script>\n'
+            % (json.dumps(conf, ensure_ascii=False).replace('</', '<\\/'), js))
+
+
 def arg(name):
     return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
 
@@ -232,11 +244,22 @@ def main():
     os.makedirs(os.path.join(site, 'worlds'))
     if three != THREE_CDN:   # the same r128 build every settlement vendors
         shutil.copy(os.path.join(ROOT, 'settlements/voth/three.min.js'), os.path.join(site, 'worlds', 'three.min.js'))
+    lod = None
+    if arg('--lod'):
+        import tomllib   # Python 3.11+; only the LAN build needs it
+        with open(arg('--lod'), 'rb') as f:
+            lod = tomllib.load(f)
+        unknown = set(lod.get('worlds', {})) - {e[1] for e in ENTRIES}
+        if unknown:
+            print('lod: no gallery page named %s (names are the file names under /worlds/)' % ', '.join(sorted(unknown)))
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
+        page = bundle(src, three)
+        if lod is not None:
+            page = page.replace('<head>', '<head>\n' + lod_head(lod, slug), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
-            fh.write(bundle(src, three))
+            fh.write(page)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})

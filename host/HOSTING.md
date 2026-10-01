@@ -1,7 +1,7 @@
 # Hosting Krator Worlds on your network
 
-**Not technical? Start with [START-HERE-WINDOWS.md](../START-HERE-WINDOWS.md)**: Windows and Chrome, step by step,
-no command line. This guide is for anyone who wants to run the Krator site on their own computer and open it from other devices on
+**Not technical? Start with [START-HERE.md](../START-HERE.md)**: Windows, Mac and Linux with Chrome, step by step,
+no programming. This guide is for anyone who wants to run the Krator site on their own computer and open it from other devices on
 the same network (phones, tablets, other PCs). It covers Windows, Linux and macOS. The short reference for
 maintainers is [README.md](README.md).
 
@@ -28,6 +28,7 @@ krator-master/                     (this repository, branch host-server)
 └── host/
     ├── WorldMenagerie/            the World Menagerie itself, embedded with its history (git subtree)
     ├── krator.toml                the settings you edit: port, Krator's routes, what to drop from the Menagerie
+    ├── lod.toml                   each Krator world's level of detail (see "Level of detail")
     ├── sync.py      ──────────►   menagerie/   the Menagerie pages to serve, minus its Voth   (generated)
     │                ──────────►   site.toml    the full route table the server reads         (generated)
     ├── gallery build ─────────►   site/        the gallery, with three.js served locally     (generated)
@@ -139,6 +140,9 @@ python3 host/sitectl.py serve
 The `python3` that comes with macOS is too old (3.9). Install 3.11 or later from python.org first. macOS asks
 once whether Python may accept incoming connections; allow it.
 
+Or double-click **`Start Krator.command`** at the top of the repository (on Linux, `./start-krator.sh`): it finds a
+Python 3.11 or later and runs `sitectl.py run` (setup the first time, then serve), like `Start Krator.bat` on Windows.
+
 ## Command reference
 
 | Windows (`host\sitectl.bat …`) or any system (`python3 host/sitectl.py …`) | Linux service (`host/sitectl …`) | What it does |
@@ -211,6 +215,30 @@ Everything is set in `host/krator.toml`. After an edit, run `sync`, then restart
   the repository.
 - Seven **development pages** that are not in the gallery: the Ancients kit's `skyi`, `skyj`, `skyk` and `dalab`
   targets, and Iziz's agent sheets `w-a`, `w-b`, `w-c`.
+
+## Level of detail (Krator worlds only)
+
+Every Krator world on this site carries a level of detail (LOD): **high** (the page exactly as built), **medium**
+or **low**. A viewer switches it with the **LOD** button in the world's bottom-left corner (the page reloads, and that
+browser remembers the choice for that world), or for one visit with `?lod=low` at the end of the address. The World
+Menagerie's pages are not touched.
+
+**`host/lod.toml` sets each world's starting level and what each level does.** Edit it, then run `build` (on Linux
+`./sitectl build --no-build`); no restart is needed. A world is named by its file name under `/worlds/`
+(`rift`, `arc-hill`, ...); `build` warns about a name it does not know. A level can set:
+
+| Setting | What it does |
+|---|---|
+| `pixelRatio` | cap on drawing resolution: 1 = one pixel per screen pixel; 0.75 renders smaller and scales up |
+| `antialias` | `false` turns edge smoothing off |
+| `shadows` | `false` turns shadow maps off |
+| `shadowMax` | largest shadow map, in pixels |
+| `cullPx` | skip drawing anything smaller than this many pixels on screen (0: never) |
+| `fps` | most frames drawn per second (0: no cap) |
+
+Levels can be added or renamed freely; the LOD button cycles through them in the file's order. How it works:
+`gallery/build_gallery.py --lod host/lod.toml` puts `gallery/lod.js` first in each world's page. That script adjusts
+three.js's renderer from outside: no world's code or build changes, and at **high** it changes nothing at all.
 
 ## Keep it on your network
 

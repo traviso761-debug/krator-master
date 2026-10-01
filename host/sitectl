@@ -29,9 +29,9 @@ urls() {
   for ip in $(hostname -I); do [[ $ip == *:* ]] || echo "http://$ip:$p/"; done
 }
 
-# The gallery, built for the LAN: three.js from host/site/worlds/ rather than cdnjs. gallery/site/ (the
-# artifact) is not touched.
-build() { python3 "$ROOT/gallery/build_gallery.py" --out "$DIR/site" --local-three /worlds/three.min.js "$@"; }
+# The gallery, built for the LAN: three.js from host/site/worlds/ rather than cdnjs, and each world's level of detail
+# from lod.toml. gallery/site/ (the artifact) is not touched.
+build() { python3 "$ROOT/gallery/build_gallery.py" --out "$DIR/site" --local-three /worlds/three.min.js --lod "$DIR/lod.toml" "$@"; }
 
 install_unit() {
   mkdir -p "$(dirname "$UNIT_FILE")"
