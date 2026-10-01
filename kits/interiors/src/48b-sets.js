@@ -145,7 +145,7 @@
     return out;
   };
 
-  /* the residence check: per unit a bed, a FOOD container and an ITEM container somewhere in the building */
+  /* the residence check: per unit a bed (a bunk counts two), a FOOD container and an ITEM container somewhere in the building */
   S.auditResidence = function (inst, plans) {
     const item = inst.item, out = { residence: item.residence, units: item.units, beds: 0, food: 0, items: 0, fails: [] };
     if (!item.residence || item.skip) return out;
@@ -153,7 +153,7 @@
     inst.rooms.forEach(function (R) {
       const P = plans[R.id]; if (!P) return;
       P.placements.forEach(function (p) {
-        if (p.type === 'bed') out.beds++;
+        if (p.type === 'bed') out.beds += p.catRole === 'bunk' ? 2 : 1;     /* a bunk sleeps two */
         if (p.catRole && FOOD.indexOf(p.catRole) >= 0 && (p.type === 'storage' || p.type === 'vessel' || p.type === 'stack') && p.anchor !== 'surface') out.food++;
         if (p.catRole && ITEM.indexOf(p.catRole) >= 0 && p.type === 'storage') out.items++;
       });

@@ -4,7 +4,8 @@ Everything is on one namespace, `KratorInteriors` (below, `IX`). The only other 
 `ROOM` and `furnishRoom`, the two names `SPEC.md` asks for.
 
 Contents: 1 registering rooms · 2 writing an adapter · 3 calling the placer · 4 reading the grid ·
-5 views · 6 the demo page's handles · 7 planning a building · 8 the life layer · 9 lights.
+5 views · 6 the demo page's handles · 7 planning a building · 8 the life layer · 9 lights ·
+10 building sets and the residence rule.
 
 ## Loading it
 
@@ -295,3 +296,41 @@ frame; `furnishRoom` turns them into world data on each placement and in `plan.l
 and, by default, STRIPS them from every piece it builds; `IX.catalogAdapter({ lights: 'keep' })`
 keeps them. The demo lights rooms with a fixed pool of 6 point lights moved to the rooms nearest
 the camera (the count never changes, so nothing recompiles); `?lights=keep` shows the catalog's.
+
+## 10. Building sets and the residence rule
+
+A building kit's interiors are data in `sets/<set>.js` (format: `sets/README.md`), one item per
+registry key, in the building's own frame (origin at the plot centre on the ground, +z the front).
+
+```js
+const set = IX.sets.byName['highlands'];             // IX.sets.list: every set added; set.items, set.byKey
+const item = set.byKey['hl_rep_house_mid_a'];
+const inst = IX.sets.instantiate(item, x, z, ry, { baseY: groundY, register: true, seed: 0 });
+// inst.buildings: planBuilding() plans (section 7), inst.specs: their inputs, inst.rooms: every room in world metres
+const plans = {};
+inst.rooms.forEach(function (R) { plans[R.id] = furnishRoom(R, catalog); });
+const ra = IX.sets.auditResidence(inst, plans);      // { residence, units, beds, food, items, fails: [] }
+```
+
+`IX.sets.add({ set, title, culture, wealth, items })` registers a set; `IX.sets.shape` has
+`rect circle ell offset` for outlines. An item with `skip` instantiates to nothing (the reason is
+for the kit's author).
+
+**Room kinds added for the sets** (`IX.PROGRAMS`): `cottage` (a one-room home: bed, hearth, food
+container, item container), `living` (hearth, table, seats, food container), `dormitory` (beds, a
+chest), `shop` (a counter and goods), `smithy` (forge, anvil), `stable` (stalls). `bedroom` now
+requires a chest and `kitchen` a food container. `IX.KIND_ALIAS[kind]` lists the older kinds whose
+catalog pieces a new kind also takes (a `cottage` furnishes from pieces listing `hall`, `bedroom`
+or `kitchen`). Building programmes added: `cottage house smithy stable`.
+
+**Roles.** A `require` entry may carry `roles: [...]`: only catalog pieces whose `role` is listed
+fill it. `IX.FOOD_ROLES` (`store larder pantry sacks pots crates bin barrel basket cold`) and
+`IX.ITEM_ROLES` (`chest cabinet trunk locker coffer strongbox wardrobe footlocker`) are the food and
+item containers. The catalog's `FK.set()` pieces carry their role; the adapter guesses one for
+harvested pieces from the key (`ROLE_GUESS` in `adapters/catalog-adapter.js`). A placement carries
+`catRole` (the catalog role) beside `role` (the slot it took).
+
+**The residence rule.** An item whose `types` hold a dwelling type (or `residence: true`) must hold,
+per unit (`units`, default 1), a bed (a bunk counts as two), a food container and an item container
+over all its rooms. `verify.py --sets --assert` fails the sheet when one does not.
+
