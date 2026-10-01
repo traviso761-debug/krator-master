@@ -50,10 +50,14 @@ function buildHotel(scene,gx,gz,d){reseed(9250+d);KOFF=[gx,0,gz];const SM=skySha
    for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;
     kput(d>0?'winSmD':'winSmI',[Math.sin(a)*(WR-.35),y+2.1,Math.cos(a)*(WR-.35)-R*.7],qFacing([-Math.sin(a),0,-Math.cos(a)]),[1.5,1.5,1],null);
     // MOULDINGS (round 2): a projecting sill under each court window and a
-    // hood over it, so the brick elevation has a shadow line per opening
-    const wq=qEuler(0,a,0),ws=WR-.38;
-    kput(BOXC(d),[Math.sin(a)*ws,y+.45,Math.cos(a)*ws-R*.7],wq,[2.4,.22,.75],null);
-    kput(BOXC(d),[Math.sin(a)*ws,y+3.75,Math.cos(a)*ws-R*.7],wq,[2.6,.3,.85],null);}
+    // hood over it, so the brick elevation has a shadow line per opening.
+    // Shared-code round: the shared moulding(), following the wall's curve
+    // (they were straight boxes on a curved wall), a weathered sill with a drip
+    // and a label hood, merged into the concrete mesh (no instances, no calls).
+    const ws=WR-.01,hw=1.3/ws,cw=k=>t=>{const b=a+k*hw*(1-2*t);return[-Math.sin(b),0,-Math.cos(b)];},
+     arcAt=(yy,k)=>t=>{const b=a+k*hw*(1-2*t);return[Math.sin(b)*ws,yy,Math.cos(b)*ws-R*.7];};
+    hConc.push(moulding(MOULD.sill(.75,.24),arcAt(y+.34,.93),{wn:cw(.93),nu:3,up:[0,1,0],caps:true}));
+    hConc.push(moulding(MOULD.hood(.85,.3),arcAt(y+3.6,1),{wn:cw(1),nu:3,up:[0,1,0],caps:true}));}
    // terrace: a parapet on the inner edge of the slab, planters standing on it
    if(f>0){const pr=deckR(f)+.35,pl=pr*(a1-a0)/24*.94;
     for(let k=0;k<24;k++){const a=lerp(a0,a1,(k+.5)/24);if(lost((k+.5)/24))continue;

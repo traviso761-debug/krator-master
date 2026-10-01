@@ -295,7 +295,7 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       `bodyGroup` and in Skyscrapers A, B, C and G, so only a toppled tower is
       cut. A rehabilitated tower now stands at full height, dressed by the same
       `repairPass`.
-- [ ] **The row presets had to be pulled in.** With a building at x=0 in every
+- [x] ~~**The row presets had to be pulled in.**~~ FIXED (shared-code round, 2026-10-01): the kit rows are laid out from measured footprints (`ROW_FP`) and preset depths (`ROW_V`) in `targets/kit/89z-rows.js`; `s` widened where three sites did not fit (the Gate 800 -> 920, the factory 330 -> 640, ...), and every row's z gap clears its own presets, so the `ROWV` cap no longer binds. Widened rows are framed by scaling the preset by s/s0. The kit runs to z ~58 500 (was ~45 000). With a building at x=0 in every
       row, a row shot deeper than the row spacing stood inside the next row's
       rehabilitated building. `ROWV` now caps the distance 90 m short of the
       next row, so nine row shots (skyscrapers A, B, D, E, G, H, Megastructure,
@@ -337,7 +337,7 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       common bond, and a fresnel rim on the glass. See NOTES.md for the three
       traps (sRGB on data maps, metalness with no envMap, clone() dropping
       onBeforeCompile).
-- [ ] *Civic, round 2: hood-and-sill mouldings on the Government's arched windows (`civHoodGeo`) and a flared cornice on each tier. No general `moulding()` helper yet.*
+- [x] ~~*Civic, round 2: hood-and-sill mouldings on the Government's arched windows (`civHoodGeo`) and a flared cornice on each tier. No general `moulding()` helper yet.*~~ The helper exists (shared-code round): `moulding(profile, path, opt)` and the stock sections `MOULD.round/band/sill/hood/cornice` in `38-helpers2.js`. The Government's hoods, sills and cornices, `domMould` (now a wrapper, bit-identical), the Hotel's court sills and hoods (now curved, merged) and the Cultural centre's bands all use it. Still open below: the Gaudí bone-work vocabulary itself (finials, bulb tops, buttresses).
       No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
       buttresses, and the `moulding(profile, path)` sweep helper they need.
       *Started (domestic QA round 2):* `domMould(pathFn, wallNormal, r, knots)`
@@ -476,7 +476,7 @@ and did not touch shared `arcShape` / `arcWindowGeo`.
       exists; worth knowing it shows.
 - [x] ~~**ring/1 is at 96% of budget**~~ obsolete (leaf card): 76% after QA arcA. — ~27k of headroom. Anything further wants
       something taken out first.
-- [ ] The ruined shell thins toward the foot: `holeFn` has no height term
+- [x] ~~The ruined shell thins toward the foot~~ FIXED (shared-code round): `holeFn(d,seed,cut,scale,foot)` takes `{y,h,k}`; the Ring's ruined shell eats up to +.2 more below its waist (`rotF`, windows tested after their rng draws so nothing downstream moved). Was: `holeFn` has no height term
       without a `cut`. A `holeFn` limitation that will recur in any type eroding
       a tall shell. The breach is a single wedge that widens inward but never
       undercuts — as logged against Veladiga. Decay 2 unsupported.
@@ -617,7 +617,7 @@ pivot at the throat, so the shroud tip swings 62 m off axis, the skirt rim goes
 20 m down and 10 m THROUGH its own apron, and the collar, clamps, mast and gash
 all follow from that single rotation rather than being modelled separately.
 
-- [x] ~~**Everything facing down is brown.**~~ FIXED for Launch (QA arcA): `lxBounce` on its bell and local skin/plate clones. Kit-wide it is still open: see `qa/arcA.md` for the request to move it into shared materials. The hemisphere light's ground colour
+- [x] ~~**Everything facing down is brown.**~~ FIXED for Launch (QA arcA): `lxBounce` on its bell and local skin/plate clones. FIXED KIT-WIDE (shared-code round): `soffitChunk` in `90-scene.js` patches the hemisphere term in `lights_pars_begin`, so every lit material's downward faces take the ground colour's luminance x1.3, neutral and slightly cool, instead of 0x6a3a2a; walls keep the warm term. (Chosen over applying `lxBounce` to BOXC/SLABC/PLATE: one patch reaches every material, and composes with the per-material hooks.) The hemisphere light's ground colour
       is 0x6a3a2a and nothing casts shadows, so collar soffits and the plug
       ceiling read warm brown. Dropping `lxBell`'s metalness from 1 to 0.5 put
       the diffuse back and helped — a fully metallic soffit with no envMap is
@@ -876,3 +876,15 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
       of green on three bearings; a crater with no floor. `--assert` was green
       through every one. **Reading the shots is not optional and never has
       been.**
+
+## Shared-code round (2026-10-01)
+
+- [x] **Kit rubble read as pale eggs** (QA arcB). `rubble` is Arcoindian's knocked-corner block (`stoneBlockGeo()`, 12 tris, was a 36-tri dodecahedron) on a mottled stone map (`MAT.rubbleK`) under the same instance tints.
+- [x] **Openings read mid-grey.** `MAT.dark` is near-black in the kit (0x0a0b0d, set in `34-kitdefs.js`; core/materials untouched). True dark SURFACES that used it (conduit `tube`, bunker `finW`, radar wings and mast, dish backs) moved to `MAT.darkSurf`, the old value. The engines' dark cores stay on `MAT.dark` (they are voids under plates).
+- [x] **`meshMerged()` dropped vertex colours** (QA arcB). It keeps `color` when every input has one, or when the material draws vertex colours. Vashtir's private `spMerge` is NOT retired: Vashtir was being rebuilt by another agent this round; it can now be replaced by `meshMerged` with its `*V` materials.
+- [x] **`apron()` had no material override** (QA arcB). `apron(...,hIn,mat)`.
+- [x] **The roll-fixed beam was private to the Ring** (QA arcA). `rbeam(name,a,b,w,dp,c)` in `38-helpers2.js`; `beam()` unchanged.
+- [x] **Glass shards read as "V" marks in very large openings** (coordinator; Skyscraper K's ruined base). `civShardAt` draws no teeth in an opening over 9 m a side or 40 m2 (a pane that big fails whole). Position-hashed, so nothing else moves.
+- [x] **Proof the pure refactors changed nothing:** dist hashes necessarily change (the source is in the page), so the proof is a geometry hash per scene group (positions, normals, uvs, indices, world matrices; instance matrices and colours): on a scratch target of House D-F, Amphitheater, Foundry (domMould, holeFn without `foot`, meshMerged, apron) every group is bit-identical before/after; on the Ring every intact group is (rbeam), only the ruin differs (the foot term, by design).
+- [ ] The soffit fix is a global shader patch: a builder that painted its own shade in (Arcube, Arcoindian II, Ledge, Wing, Hill) now gets neutral light on top of its painted grey and may read a step lighter underneath than it was tuned to. Not re-tuned this round.
+

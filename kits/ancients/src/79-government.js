@@ -15,7 +15,10 @@ function buildGovernment(scene,gx,gz,d){reseed(9900+d);KOFF=[gx,0,gz];const G=ne
   const wallHole=hole||(d>0&&i>0)?(u,yy)=>colG(u*TAU,yy,i)||(hole?hole(u,yy+i*30)&&(u>.15&&u<.42):false):null;
   mesh(lathe({rFn:yy=>a-(a-b)*yy/h,H:h,flutes:24-i*6,amp:.05,sharp:2,nu:120,nv:6,hole:wallHole}),skin,G,0,y,0);
   // MOULDING (round 2): a flared cornice lip crowns every tier (merged into the skin by civFlatten)
-  {const ch=holeFn(d*.6,640+i,null,2);mesh(lathe({rFn:yy=>b+.15+.85*Math.sin(Math.PI*.5*Math.min(1,yy/.9)),H:1.3,nu:120,nv:3,hole:d>0?(u,yy)=>colG(u*TAU,h,i)||(ch?ch(u,yy*20):false):null}),skin,G,0,y+h-.25,0);}
+  // (the shared moulding(): a square crown over an ogee, swept round the tier;
+  // the path runs clockwise so `1-u` is the lathe's u and the same sectors go)
+  {const ch=holeFn(d*.6,640+i,null,2);mesh(moulding(MOULD.cornice(.9,1.3),t=>{const a=-t*TAU;return[(b+.1)*Math.cos(a),0,(b+.1)*Math.sin(a)];},
+   {wn:t=>{const a=-t*TAU;return[Math.cos(a),0,Math.sin(a)];},nu:120,up:[0,1,0],hole:d>0?(u,v)=>colG((1-u)*TAU,h,i)||(ch?ch(1-u,v*26):false):null}),skin,G,0,y+h-.25,0);}
   // behind the holes (they are confined to u .15-.42): two floors of rooms per
   // tier, only in that arc, in front of a liner pushed back to .8
   if(d>0){mesh(lathe({rFn:yy=>(a-(a-b)*yy/h)*.8,H:h,nu:48,nv:6,hole:i>0?(u,yy)=>colG(u*TAU,yy+1.5,i):null}),MAT.guts,G,0,y,0);

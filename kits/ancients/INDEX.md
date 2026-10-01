@@ -21,12 +21,12 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `40-factory-extras.js` | 4 |  |
-| `42-offices.js` | 14 |  |
+| `42-offices.js` | 15 |  |
 | `44-starport.js` | 5 |  |
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
@@ -45,7 +45,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `65-veladiga.js` | 16 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
-| `67-cultural.js` | 6 |  |
+| `67-cultural.js` | 7 |  |
 | `68-hexahedron.js` | 29 |  |
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
@@ -63,7 +63,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `75-biome-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `75-biome-40-core-place.js` | 6 | surface sampling (53) |
 | `75-biome-45-bind.js` | 3 |  |
-| `75-hotel.js` | 14 |  |
+| `75-hotel.js` | 15 |  |
 | `76-50-biome-hyperjungle-species.js` | 14 | leaf textures (38); bark textures (90); materials (126); instanced items (148) |
 | `76-55-biome-hyperjungle-trees.js` | 24 | trunk profile (18); colour (27); polyline helpers (Girder) (62); one hero hypertree (84); an immature hypertree (209); the far forest: impostors (242); the pass (272) |
 | `76-60-biome-hyperjungle-floor.js` | 27 | colour (18); keep-clear (54); bole profiles (68); fields (87); the plants (93); fallen hypertrees (160); lianas (211); the pass (219) |
@@ -73,7 +73,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `77-dam.js` | 13 |  |
 | `77z-iziz-style.js` | 53 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
-| `79-government.js` | 7 |  |
+| `79-government.js` | 8 |  |
 | `80-aa-battery.js` | 1 |  |
 | `81-houses-abc.js` | 6 |  |
 | `82-apartments.js` | 8 |  |
@@ -136,7 +136,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8am-yv-e-hosp.js` | 6 |  |
 | `8an-iz-stumps.js` | 14 |  |
 | `8ao-iz-spaceport.js` | 36 **big** |  |
-| `90-scene.js` | 7 | scene (1) |
+| `90-scene.js` | 9 | scene (1) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
 | `99-tail.html` | <1 |  |
@@ -166,7 +166,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | `hill` | `89z-rows.js`, `91z-views.js` | 13 |
 | `iziz-style` | `89z-rows.js`, `91z-views.js` | 6 |
 | `iziz-variants` | `89z-rows.js`, `91z-views.js` | 3 |
-| `kit` | `89z-rows.js`, `91z-views.js` | 18 |
+| `kit` | `89z-rows.js`, `91z-views.js` | 25 |
 | `launch` | `89z-rows.js`, `91z-views.js` | 13 |
 | `ledge` | `89z-rows.js`, `91z-views.js` | 5 |
 | `lighthouse` | `89z-rows.js`, `91z-views.js` | 3 |

@@ -3,12 +3,16 @@
 // camera deeper than the row spacing stood inside the NEXT row's building: the
 // Skyscraper A shot was a wall of rusted drums 100 m off the lens. The distance
 // is capped to stop 90 m short of the next row, which leaves it behind the camera.
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];
+// Since the shared-code round's re-spacing (89z-rows.js) the rows are laid out
+// so that cap never binds: each row's z gap is derived from these distances.
+// A row whose `s` was widened is framed as before: the distance and height
+// scale by rowFrame(k), its new half-width over its old (89z-rows.js).
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];const rowF=rowFrame(k);
  const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
- const d=Math.min(dist,nz-R.z-90);
- return[dx||0,h,R.z+d,dx||0,ty,R.z];};
+ const d=Math.min(dist*rowF,nz-R.z-90);
+ return[dx||0,h*rowF,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
- 'Overview':[0,1400,ROWS.lab.z+2600,0,150,5000],
+ 'Overview':[0,1500,ROWS.port.z+3000,0,120,ROWS.mega.z],   // the first rows, from ~6.6 km (the re-spaced kit is 58 km long)
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
  // THE PROJECT. A seventh element on a preset means "night" — see setNight in
  // src/92-camera.js. Day first, because you have to see the patched fabric
@@ -93,6 +97,10 @@ for(const k in KIT_ALT_NAME){const R=ROWS[k],n=KIT_ALT_NAME[k],ty=Math.max(25,R.
  if(!R.t)continue;
  VIEWS[n+' reclaimed']=[R.t-R.r*.6,Math.max(40,R.r*.5),R.z+Math.max(260,R.r*2.2),R.t,ty*.8,R.z];
  VIEWS[n+' reclaimed at night']=VIEWS[n+' reclaimed'].concat([1]);}
+// The Iziz spaceport: all six states, then the toppled tower and the reclaimed port at night.
+VIEWS['Iziz spaceport']=[-200,520,ROWS.izPort.z+1100,170,0,ROWS.izPort.z];
+VIEWS['Iziz spaceport toppled']=[ROWS.izPort.t-190,119,ROWS.izPort.z+250,ROWS.izPort.t,8,ROWS.izPort.z];
+VIEWS['Iziz spaceport reclaimed at night']=[ROWS.izPort.j-190,119,ROWS.izPort.z+250,ROWS.izPort.j,8,ROWS.izPort.z,1];
 // The stumps: a three-quarter view of each from its row's front.
 for(const k in KIT_STUMPS){const R=ROWS[k];VIEWS['Stump '+k.slice(5)]=[R.s-260,110,R.z+420,R.s,45,R.z];}
 // One overview per group, from the east and above, so each group's rows fill the frame.

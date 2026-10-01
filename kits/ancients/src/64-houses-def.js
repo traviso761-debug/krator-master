@@ -28,11 +28,11 @@ function domRoom(p,n,deep,ht,d,seed){const th=Math.atan2(n[2],n[0]);const hh=h3(
 // evenly spaced joints, the way Gaudí's bone-work swells at its joints.
 // pathFn(t) -> [x,y,z] for t in 0..1. Returns a geometry for the caller to
 // merge into a mesh it already draws, so a moulding costs no draw call.
-function domMould(pathFn,wn,r,knots,nu){nu=nu||40;const W=new THREE.Vector3(wn[0],wn[1],wn[2]).normalize();
+// Now a round section through the shared moulding() (38-helpers2.js): the
+// vertices are the same to the bit.
+function domMould(pathFn,wn,r,knots,nu){
  const rad=t=>{const e=Math.min(t,1-t);const k=knots?Math.pow(Math.abs(Math.cos(t*Math.PI*knots)),12):0;return r*(1+.55*Math.exp(-e*e*400)+.3*k);};
- return gridSurface((u,v)=>{const p=pathFn(u),q=pathFn(Math.min(1,u+.002)),o=pathFn(Math.max(0,u-.002));
-  const T=new THREE.Vector3(q[0]-o[0],q[1]-o[1],q[2]-o[2]).normalize(),B=new THREE.Vector3().crossVectors(T,W).normalize();
-  const ph=v*TAU,rr2=rad(u);return[p[0]+rr2*(Math.cos(ph)*W.x+Math.sin(ph)*B.x),p[1]+rr2*(Math.cos(ph)*W.y+Math.sin(ph)*B.y),p[2]+rr2*(Math.cos(ph)*W.z+Math.sin(ph)*B.z)];},nu,8,{});}
+ return moulding(MOULD.round(8),pathFn,{wn,nu:nu||40,scale:rad});}
 
 // ================================================================= HOUSES D/E/F
 function buildHouses2(scene,gx,gz,d){reseed(9410+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);
