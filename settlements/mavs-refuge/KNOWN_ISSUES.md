@@ -10,4 +10,4 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] Jungle pass is ~2x its triangle budget (905k) — trim if frame rate suffers (62-jungle)
 - [ ] Rainbow bark is too loud (Girder desaturates bark2 by 30% at runtime in 60-trees — port it)
 - [ ] Night at 21:00 is too bright under the gas giant (21-sky / 82-daynight)
-- [ ] verify.py --sweep is meaningless (merged meshes have city-wide bounding boxes)
+- [x] verify.py --sweep is meaningless (merged meshes have city-wide bounding boxes) — fixed Oct 2026: it samples the flyers' legs against the REGISTER volumes, trunkR trunks, bridge segments and the ground, with two control legs that must hit (61 legs clear)

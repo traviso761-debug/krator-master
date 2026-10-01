@@ -63,5 +63,5 @@ See `API.md` (the contract handed to subagents). Planner keeps 05,10,30,32,45,
   bats return mostly at dawn; rider lance stays on saddle when dismounted.
 - Gate facades stand up to ~1.5 m proud where bark relief dips.
 - Jungle pass is ~2× its triangle budget (905k) — trim if frame rate suffers.
-- `verify.py --sweep` is meaningless here (merged meshes have city-wide boxes).
+- `verify.py --sweep` samples the flyers' `window._legs` against the registered volumes (open-air ones cut to their floor), the `trunkR` trunks, the rope bridges' segments and the ground, not mesh boxes (merged meshes have city-wide boxes). Two control legs through a trunk and a level must hit, or the sweep fails as blind.
 - Headless full-world runs take 3–6 min; run view batches in the background.
