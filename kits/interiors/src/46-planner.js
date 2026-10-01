@@ -356,7 +356,7 @@
         for (const lf of leaves) { const dd = G.edgeDist(lf.poly, f[0], f[1]) + (G.inside(lf.poly, f[0], f[1]) ? 0 : 0.001); if (dd < bd) { bd = dd; best = lf; } }
         const did = id + '.street.' + i;
         doors.push({ id: did, kind: 'street', level: 0, at: [R3(d.at[0]), R3(d.at[1])], w: d.w, rooms: [best.id, 'street'], into: best.id });
-        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left' });
+        best.doors.push({ id: did, at: d.at, w: d.w, to: 'street', swing: d.swing || 'in', hinge: d.hinge || 'left', snap: wallT + 0.6 });
       });
     });
 

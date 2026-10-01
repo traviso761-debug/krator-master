@@ -66,7 +66,7 @@
       types: ['religious'], lot: [10, 10],
       rooms: [{ id: 'shrine', kind: 'shrine', poly: ring(shrineR, 9), y: 0.46, h: 2.8,
         doors: [{ at: shrineGapMid, w: 1.6, swing: 'none' }],
-        fixtures: [{ id: 'offering', kind: 'altar', x: 0, z: 0, ry: 0, w: 1.3, d: 1.3, h: 1.0 }] }],
+        fixtures: [{ id: 'offering', kind: 'altar', x: 0, z: 0, ry: 0, w: 1.3, d: 1.3, h: 1.0, reach: false }] }],
       note: 'nine posts on a 4 m ring with a low rail between them; the rail is left out between the 8th and the 1st post ' +
         '(the entry, on the +x / -z side, not the front). The centre stump altar or potted sapling is a fixture; the four ' +
         'offering bowls round the deck are decoration the plan does not keep clear of' },
@@ -78,7 +78,7 @@
           const f = [];
           for (let i = 0; i < 11; i++) {
             const a = i / 11 * Math.PI * 2 + 0.15;
-            f.push({ id: 'post' + i, kind: 'post', x: R3(8 * Math.cos(a)), z: R3(8 * Math.sin(a)), ry: 0, w: 0.4, d: 0.4, h: 9.0 });
+            f.push({ id: 'post' + i, kind: 'post', x: R3(8 * Math.cos(a)), z: R3(8 * Math.sin(a)), ry: 0, w: 0.4, d: 0.4, h: 9.0, reach: false });
           }
           return f;
         })() }],
@@ -94,10 +94,10 @@
       rooms: [{ id: 'roost', kind: 'stable', poly: rect(17.4, 13.4), y: 0, h: 6.2,
         doors: [{ at: [4.5, 6.7], w: 3.6, swing: 'none' }, { at: [-8.7, 0], w: 4.0, swing: 'none' }, { at: [8.7, 0], w: 4.0, swing: 'none' }],
         fixtures: [
-          { id: 'ladder', kind: 'ladder', x: -1.55, z: 6.25, ry: 0, w: 1.1, d: 0.5, h: 6.6 },
-          { id: 'nest-a', kind: 'nest', x: 8.4, z: -5.4, ry: 0, w: 2.0, d: 2.0, h: 1.2 },
-          { id: 'nest-b', kind: 'nest', x: -8.2, z: 5.2, ry: 0, w: 1.7, d: 1.7, h: 1.0 },
-          { id: 'butt', kind: 'barrel', x: 6.4, z: -5.8, ry: 0, w: 1.0, d: 1.0, h: 0.8 }] }],
+          { id: 'ladder', kind: 'ladder', x: -1.55, z: 6.25, ry: 0, w: 1.1, d: 0.5, h: 6.6, reach: false },
+          { id: 'nest-a', kind: 'nest', x: 8.4, z: -5.4, ry: 0, w: 2.0, d: 2.0, h: 1.2, reach: false },
+          { id: 'nest-b', kind: 'nest', x: -8.2, z: 5.2, ry: 0, w: 1.7, d: 1.7, h: 1.0, reach: false },
+          { id: 'butt', kind: 'barrel', x: 6.4, z: -5.8, ry: 0, w: 1.0, d: 1.0, h: 0.8, reach: false }] }],
       note: 'an open hangar: 2 x 5 posts on 18 x 14 m under a deep thatch roof, half-furled curtains on the front and mat ' +
         'blinds on the back, no walls. Planned as one stable floor (the beasts roost on the perch rails 6.5 m up, so the ' +
         'clear height is taken below them); open front (right of the ladder) and open ends. The ladder, the two nest ' +
@@ -170,17 +170,17 @@
       rooms: [{ id: 'common', kind: 'hall', poly: rect(7.4, 7.4), y: 0.22, h: 3.5,
         doors: [{ at: [0, 3.7], w: 2.4, swing: 'none' }],
         fixtures: [
-          { id: 'bench-l', kind: 'bench', x: -3.45, z: 0, ry: 0, w: 0.5, d: 7.4, h: 0.45 },
-          { id: 'bench-r', kind: 'bench', x: 3.45, z: 0, ry: 0, w: 0.5, d: 7.4, h: 0.45 },
-          { id: 'bench-b', kind: 'bench', x: 0, z: -3.45, ry: 0, w: 7.4, d: 0.5, h: 0.45 },
-          { id: 'stool', kind: 'block', x: 0, z: 0, ry: 0, w: 1.0, d: 1.0, h: 0.35 }] }],
+          { id: 'bench-l', kind: 'bench', x: -3.45, z: 0, ry: 0, w: 0.5, d: 7.4, h: 0.45, reach: false },
+          { id: 'bench-r', kind: 'bench', x: 3.45, z: 0, ry: 0, w: 0.5, d: 7.4, h: 0.45, reach: false },
+          { id: 'bench-b', kind: 'bench', x: 0, z: -3.45, ry: 0, w: 7.4, d: 0.5, h: 0.45, reach: false },
+          { id: 'stool', kind: 'block', x: 0, z: 0, ry: 0, w: 1.0, d: 1.0, h: 0.35, reach: false }] }],
       note: 'variant 3: an open pavilion on an 8.6 m deck, four carved corner posts, rails and built-in benches round three ' +
         'sides (fixtures) under a cloth awning roof; open at the front. A common room, not a home' },
     { key: 'br_bldg_girder_dwelling#4', name: 'Girder dwelling (tower-slot shell) (variant 5: shrine)', culture: 'beast-rider', wealth: 0.3,
       types: ['religious'], lot: [9.8, 9.8], residence: false,
       rooms: [{ id: 'shrine', kind: 'shrine', poly: rect(7.0, 6.8, 0, 0.1), y: 0.58, h: 2.75,
         doors: [{ at: [0, 3.5], w: 2.2, swing: 'none' }],
-        fixtures: [{ id: 'altar', kind: 'altar', x: 0, z: -3.2, ry: 0, w: 2.2, d: 0.8, h: 0.9 }] }],
+        fixtures: [{ id: 'altar', kind: 'altar', x: 0, z: -3.2, ry: 0, w: 2.2, d: 0.8, h: 0.9, reach: false }] }],
       note: 'variant 4: a tajug on a stone plinth (floor 0.58 m): 1.5 m screen walls on the back and sides, open front ' +
         'between the corner posts; the built altar against the back screen is a fixture' },
     { key: 'br_bldg_girder_assembly_hall', name: 'Girder Assembly Hall', culture: 'beast-rider', wealth: 0.6,
@@ -200,7 +200,7 @@
       types: ['dwelling-single'], lot: [14, 12],
       rooms: [{ id: 'pendopo', kind: 'cottage', poly: rect(8.4, 6.7), y: 0.66, h: 3.2,
         doors: [{ at: [3.75, 3.35], w: 0.9, swing: 'none' }],
-        fixtures: [{ id: 'platform', kind: 'platform', x: 0, z: 2.6, ry: 0, w: 6.0, d: 1.6, h: 0.4 }] }],
+        fixtures: [{ id: 'platform', kind: 'platform', x: 0, z: 2.6, ry: 0, w: 6.0, d: 1.6, h: 0.4, reach: false }] }],
       note: 'variant 1: an open pendopo on a stone plinth (floor 0.66 m), six posts on 9 x 7.2 m, screen walls on the back ' +
         'and left, a rail on the right and front; the sitting platform along the front is a fixture, so the way in is the ' +
         'gap between it and the right front post' },
