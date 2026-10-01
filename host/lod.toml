@@ -3,14 +3,20 @@
 # Edit this file, then rebuild the gallery:   ./sitectl build --no-build   (Windows: host\sitectl.bat build)
 # No restart is needed: the next page load uses it.
 #
-# A viewer can still switch a world's level with the "LOD" button in its bottom-left corner (remembered in that
-# browser), or for one visit with ?lod=low (or medium, high) at the end of the address.
-# gallery/lod.js does the work; its header explains each setting.
+# Each world also gets a bar at the top: Scenes (every Krator world), LOD (pick a level; the page reloads and that
+# browser remembers it for that world) and Home. For one visit, ?lod=low (or medium, high) at the end of the address.
+# gallery/krator-bar.js does the work; its header explains each setting.
 
 # The level a world starts at when [worlds] below does not name it.
 default = "high"
 
-# ---- the levels: the LOD button cycles through them in this order ----
+# Links listed under "Elsewhere on this site" at the end of the Scenes panel.
+extra = [
+  { name = "World Menagerie", href = "/menagerie", blurb = "The Menagerie's own worlds" },
+  { name = "Krator Worlds gallery", href = "/", blurb = "Every Krator world, with pictures" },
+]
+
+# ---- the levels: the LOD menu lists them in this order ----
 # Settings (leave one out to keep the page's own choice):
 #   pixelRatio  cap on drawing resolution: 1 = one pixel per screen pixel, 0.75 = three quarters (blurrier, faster)
 #   antialias   false turns edge smoothing off

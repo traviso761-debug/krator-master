@@ -157,8 +157,13 @@ so next time you only need to start Krator and click the bookmark.
 **System**, and make sure **Use graphics acceleration when available** is **on**. If you had to switch it on, click
 **Relaunch**.
 
-**Choose the level of detail.** Every Krator world has a small **LOD** button in its bottom-left corner. Click it to
-switch between:
+**Use the bar at the top of every Krator world** (at the bottom on a phone):
+
+- **Scenes** opens a list of every Krator world; click one to go there. The World Menagerie is at the end of the list.
+- **LOD** sets the level of detail (see below).
+- **Home** goes back to the Krator Worlds gallery.
+
+**Choose the level of detail.** Click **LOD** and pick one:
 
 | Level | What it does |
 |---|---|
@@ -168,7 +173,7 @@ switch between:
 
 The page reloads with the new level, and that browser remembers your choice for that world. The biggest landscapes
 start at **medium**. If a world is slow, jerky, or makes Chrome close the tab, try **low**. (The World Menagerie's
-pages have their own settings and no LOD button.)
+pages have their own buttons and settings, and no Krator bar.)
 
 **While you explore:**
 
@@ -201,7 +206,7 @@ delete the old folder). The first start of a new copy prepares the worlds again.
 | Chrome says **"This site can't be reached"** | Check the Krator window is still open. On another device, check it is on the same Wi-Fi and that you typed the address exactly, including **:8001**. |
 | The window says **"Address already in use"** | Krator is already running in another window. Use that one, or close it and start again. |
 | A world shows only a grey or black screen | Turn on graphics acceleration (see *Make it run smoothly*), then reload the page (**F5**, or **⌘+R** on a Mac). |
-| A world is very slow, or Chrome closes the tab | Click the **LOD** button and choose **low**. Close other tabs and programs. |
+| A world is very slow, or Chrome closes the tab | Click **LOD** at the top of the world and choose **low**. Close other tabs and programs. |
 
 **Windows:**
 

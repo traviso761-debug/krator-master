@@ -39,7 +39,7 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `sitectl.py` | yes | the same commands without systemd, for any system: `setup`, `serve`, `update`, … |
 | `sitectl.bat` | yes | Windows: finds Python 3.11+ and runs `sitectl.py`. Kept CRLF by `.gitattributes` |
 | `HOSTING.md` | yes | the setup guide for every system (`START-HERE.md` at the top is the non-technical one) |
-| `lod.toml` | yes | each Krator world's level of detail, and what each level does; `gallery/lod.js` applies it |
+| `lod.toml` | yes | each Krator world's level of detail, what each level does, and the bar's extra links; `gallery/krator-bar.js` draws the bar (Scenes, LOD, Home) and applies the level |
 | `WorldMenagerie/` | yes | the World Menagerie itself, with its history: a git subtree (see below). Its Voth is in the source but never served |
 | `menagerie.lock` | yes | the Menagerie tree last synced (its git tree hash), and whether it had uncommitted changes |
 | `site.toml` | no | generated: `krator.toml` followed by the Menagerie's routes and mounts |

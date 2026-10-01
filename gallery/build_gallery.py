@@ -8,8 +8,9 @@ in gallery/README.md.
 
 Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL] [--lod CONFIG]
 
---lod CONFIG (a TOML file: host/lod.toml) puts gallery/lod.js first in every page, with that world's level of
-detail and the level definitions; see both files. Without it the pages are exactly as built.
+--lod CONFIG (a TOML file: host/lod.toml) puts gallery/krator-bar.js first in every page: a bar to go to the other
+worlds, set the level of detail, or go home, and that world's level of detail; see both files. Without it the pages
+are exactly as built.
 
 --build-missing rebuilds only the worlds whose built page is absent (a fresh clone lacks the port's, which are
 not committed) and reuses every other built page as it is: what host/sitectl.bat does on Windows, where the
@@ -206,12 +207,17 @@ def bundle(path, three=THREE_CDN):
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
 
 
-def lod_head(cfg, slug):
-    """The <script>s that give a page its level of detail: the config for this world, then gallery/lod.js."""
+def bar_head(cfg, slug):
+    """The <script>s that give a world its bar and level of detail: the config for this page, then krator-bar.js."""
+    tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
+    sections = [{'key': k, 'title': t} for k, t in re.findall(r"\{key:'([^']+)',\s*id:'[^']*',\s*title:'([^']+)'", tpl)]
     conf = {'slug': slug, 'level': cfg.get('worlds', {}).get(slug, cfg.get('default', 'high')),
-            'levels': cfg.get('levels', {})}
-    js = open(os.path.join(HERE, 'lod.js'), encoding='utf-8').read().replace('</script', '<\\/script')
-    return ('<script>window.KRATOR_LOD=%s;</script>\n<script>\n%s\n</script>\n'
+            'levels': cfg.get('levels', {}), 'home': '/', 'sections': sections,
+            'scenes': [{'slug': e[1], 'name': e[3], 'section': e[0], 'blurb': e[4], 'href': '/worlds/%s.html' % e[1]}
+                       for e in ENTRIES],
+            'extra': cfg.get('extra', [])}
+    js = open(os.path.join(HERE, 'krator-bar.js'), encoding='utf-8').read().replace('</script', '<\\/script')
+    return ('<script>window.KRATOR_BAR=%s;</script>\n<script>\n%s\n</script>\n'
             % (json.dumps(conf, ensure_ascii=False).replace('</', '<\\/'), js))
 
 
@@ -257,7 +263,7 @@ def main():
         src = os.path.join(ROOT, path)
         page = bundle(src, three)
         if lod is not None:
-            page = page.replace('<head>', '<head>\n' + lod_head(lod, slug), 1)
+            page = page.replace('<head>', '<head>\n' + bar_head(lod, slug), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
             fh.write(page)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
