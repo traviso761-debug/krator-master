@@ -6,8 +6,13 @@ reseed(642001);
   var PI=Math.PI;
   /* salt-rice: a 2 x 2 m stand of tussocks, planted in flooded paddies. Yellower than upland rice; heads droop when ripe. */
   PLANT({ key:'salt_rice_stand', name:'Salt-rice stand', climate:'hypertropic', aridity:'humid', tags:{ wet:'wet', abyssal:true, riparian:'yes' },
-    w:3.0, d:3.0, h:1.3, variants:2, variantNames:['green, in flower','ripe, heads drooping'],
+    w:3.0, d:3.0, h:1.3, variants:4, variantNames:['green, in flower','ripe, heads drooping','green, planted out in rows (field detail)','ripe, planted out in rows (field detail)'],
     build:function(F){
+      /* variants 2-3: the outlying paddy blocks' planting, four tussocks in a row-set (~80 triangles, a quarter of the full stand) */
+      if(F.variant >= 2){ var rp=F.variant===3;
+        for(var q=0;q<4;q++){ var qx=(q%2?0.6:-0.6)+F.rr(-0.15,0.15), qz=(q<2?0.65:-0.65)+F.rr(-0.15,0.15);
+          F.cone(qx, 0, qz, F.rr(0.42,0.55), F.rr(0.95,1.2)*(rp?1.05:0.9), [F.rr(-0.08,0.08),0,F.rr(-0.08,0.08)], rp ? (q%2?PADDYC[3]:PADDYC[1]) : (q%2?PADDYC[0]:PADDYC[2]), 'leafy'); }
+        return; }
       var v=F.variant, base = v ? PADDYC[3] : PADDYC[0], n=v?11:10;
       for(var i=0;i<n;i++){ var a=i/n*TAU+F.rr(-0.3,0.3), r=F.rr(0.45,1.25), x=Math.cos(a)*r, z=Math.sin(a)*r, h=F.rr(0.9,1.25)*(v?1.05:0.9);
         var c = v ? (i%2 ? PADDYC[3] : PADDYC[1]) : (i%2 ? PADDYC[0] : PADDYC[2]);
