@@ -18,7 +18,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
@@ -58,8 +58,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `72-datacenter.js` | 7 |  |
 | `73-police.js` | 5 |  |
 | `74-hospital.js` | 5 |  |
-| `75-biome-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
-| `75-biome-20-core-kit.js` | 12 | merged buckets (46); bake (121) |
+| `75-biome-10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
+| `75-biome-20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `75-biome-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `75-biome-40-core-place.js` | 6 | surface sampling (53) |
 | `75-biome-45-bind.js` | 3 |  |

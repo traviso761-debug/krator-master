@@ -8,10 +8,11 @@ var SHEET_ITEMS = [], SHEET_ROWS = [];
   if(!SHEET || CATALOG) return;
   var FAM_ORDER=['ancient','civic','rich','park','mid','trade','poor','prop'], FAM_NAME={ ancient:'Ancient (rehabilitated / ruined)', civic:'Civic & neo-African', rich:'Wealthy compounds', park:'Park pieces (Guell)', mid:'Middle-class houses', trade:'Shops, taverns, workshops, caravanserai', poor:'Poor quarters: mud & thatch', prop:'Street furniture' };
   if(KIT){ /* a sub-kit sheet: its own rows, in the order the kit's fragments declared them */
-    FAM_ORDER=[]; FAM_NAME={}; ASSETS.forEach(function(A){ if(A.kit===KIT && FAM_ORDER.indexOf(A.group||'kit')<0){ FAM_ORDER.push(A.group||'kit'); FAM_NAME[A.group||'kit']=A.group||'kit'; } }); }
+    FAM_ORDER=[]; FAM_NAME={}; ASSETS.forEach(function(A){ var g=assetGroup(A,KIT); if(assetInKit(A,KIT) && FAM_ORDER.indexOf(g)<0){ FAM_ORDER.push(g); FAM_NAME[g]=g; } });
+    var RO=KIT_ROWS[KIT]; if(RO){ var F0=FAM_ORDER.slice(); FAM_ORDER.sort(function(a,b){ var ia=RO.indexOf(a), ib=RO.indexOf(b); if(ia<0) ia=1e3+F0.indexOf(a); if(ib<0) ib=1e3+F0.indexOf(b); return ia-ib; }); } }
   var z=-CITY_EXT+(KIT?70:260), LIM=CITY_EXT-(KIT?70:420);
   FAM_ORDER.forEach(function(fam){
-    var list=ASSETS.filter(function(A){ return KIT ? (A.kit===KIT && (A.group||'kit')===fam) : (!A.kit && A.family===fam); }); if(!list.length) return;
+    var list=ASSETS.filter(function(A){ return KIT ? (assetInKit(A,KIT) && assetGroup(A,KIT)===fam) : (!A.kit && A.family===fam); }); if(!list.length) return;
     var x=-LIM, rowD=0, row={ fam:fam, name:FAM_NAME[fam]||fam, z0:z, items:[] }; SHEET_ROWS.push(row);
     list.forEach(function(A){ for(var v=0; v<A.variants; v++){
       var cw=A.w+16, cd=A.d+16; if(x+cw > LIM){ x=-LIM; z+=rowD; rowD=0; }
@@ -26,7 +27,7 @@ var SHEET_ITEMS = [], SHEET_ROWS = [];
   window._sheet = { assets:ASSETS.length, items:SHEET_ITEMS.length, rows:SHEET_ROWS.map(function(r){ return r.fam+':'+r.items.length; }) };
   /* the ground: a 10 m grid, footprints outlined, family bands */
   var g=GROUND_CANVAS.getContext('2d'), S=GC_RES/(2*CITY_EXT); g.save(); g.scale(S,S); g.translate(CITY_EXT,CITY_EXT);
-  g.fillStyle= KIT==='locus' ? '#a9a98a' : '#b9a27a'; g.fillRect(-CITY_EXT,-CITY_EXT,2*CITY_EXT,2*CITY_EXT);   /* Locus: a marsh-edge tone */
+  g.fillStyle= KIT==='locus' ? '#a9a98a' : KIT==='abyss' ? '#c9c2a8' : '#b9a27a'; g.fillRect(-CITY_EXT,-CITY_EXT,2*CITY_EXT,2*CITY_EXT);   /* Locus: a marsh-edge tone; Abyss: pale salt crust */
   g.strokeStyle='rgba(90,70,40,0.35)'; g.lineWidth=0.35; g.beginPath(); for(var k=-CITY_EXT;k<=CITY_EXT;k+=10){ g.moveTo(k,-CITY_EXT); g.lineTo(k,CITY_EXT); g.moveTo(-CITY_EXT,k); g.lineTo(CITY_EXT,k); } g.stroke();
   SHEET_ROWS.forEach(function(r,i){ g.fillStyle=i%2?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.06)'; g.fillRect(-CITY_EXT, r.z0-8, 2*CITY_EXT, r.z1-r.z0-10); });
   SHEET_ITEMS.forEach(function(it){ g.fillStyle='rgba(205,191,159,0.9)'; g.fillRect(it.x-it.w/2-3, it.z-it.d/2-3, it.w+6, it.d+6); g.strokeStyle='rgba(40,60,110,0.8)'; g.lineWidth=0.5; g.strokeRect(it.x-it.w/2, it.z-it.d/2, it.w, it.d);

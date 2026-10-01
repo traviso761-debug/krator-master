@@ -16,13 +16,13 @@ TEX.thatch=canvasTex(256,256,(g,w,h)=>{
   g.strokeStyle='rgba('+(104+rng()*58|0)+','+(88+rng()*48|0)+','+(48+rng()*30|0)+','+(.25+rng()*.5).toFixed(2)+')';
   g.lineWidth=1+rng()*1.8;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.sin(a)*3,y+L);g.stroke();}
  for(let i=0;i<9;i++){const y=i/9*h;g.strokeStyle='rgba(70,56,30,.30)';g.lineWidth=3;
-  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},4);
+  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},4,true);   // eager: draws from rng()
 TEX.lash=canvasTex(128,256,(g,w,h)=>{
  g.fillStyle='#6a5038';g.fillRect(0,0,w,h);
  for(let i=0;i<420;i++){const x=rng()*w;g.strokeStyle='rgba('+(110+rng()*70|0)+','+(82+rng()*50|0)+','+(52+rng()*36|0)+',.5)';
   g.lineWidth=1+rng()*3;g.beginPath();g.moveTo(x,0);g.lineTo(x+(rng()-.5)*8,h);g.stroke();}
  for(let k=0;k<4;k++){const y=(k+.5)/4*h;g.strokeStyle='rgba(188,170,120,.75)';g.lineWidth=5;
-  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},3);
+  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},3,true);   // eager: draws from rng()
 MAT.thatch=new THREE.MeshStandardMaterial({map:TEX.thatch,color:0xa8996f,roughness:1,metalness:0,side:DS});
 MAT.lash  =new THREE.MeshStandardMaterial({map:TEX.lash,color:0xffffff,roughness:.96,metalness:0,side:DS});
 MAT.scrap =new THREE.MeshStandardMaterial({map:TEX.corrugate||null,color:0x8a6a52,roughness:.72,metalness:.34,side:DS});
@@ -60,7 +60,7 @@ function flBarkTex(kind){return canvasTex(256,512,(g,w,h)=>{
    g.lineWidth=1+rng()*2;g.beginPath();g.moveTo(-5,y);g.bezierCurveTo(w*.3,y+rr(-8,8),w*.7,y+rr(-8,8),w+5,y+rr(-4,4));g.stroke();}
   for(let i=0;i<50;i++){const x=rng()*w,y=rng()*h,r=rr(6,20);g.fillStyle='rgba(90,80,70,.25)';
    g.beginPath();g.ellipse(x,y,r,r*.5,0,0,TAU);g.fill();}}
-});}
+},undefined,true);}   // eager: it draws from rng(), so it must paint here, in stream order
 TEX.bark0=flBarkTex(0);TEX.bark1=flBarkTex(1);TEX.bark2=flBarkTex(2);TEX.bark3=flBarkTex(3);TEX.bark4=flBarkTex(4);
 MAT.bark=new THREE.MeshStandardMaterial({map:TEX.bark0,color:0xb09080,roughness:1,metalness:0,side:DS});
 // the other three hypertree boles, after Girder's bark sets: ghostwood

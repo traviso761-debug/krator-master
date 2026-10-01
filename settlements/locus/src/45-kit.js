@@ -131,7 +131,7 @@ function applyClothSway(sh){
 
    Channels: R = warm flames   G = window spill   B = cool (bioluminescent) lamps
    Cost: zero draw calls, two texture fetches per fragment, ~10 MB of texture. */
-var NLV_RES = 256, NLV_EXT = CATALOG ? 320 : KIT ? 540 : SHEET ? 1700 : 1100, NLV_NS = 40, NLV_COLS = 8, NLV_ROWS = 5;
+var NLV_RES = 256, NLV_EXT = CATALOG ? 320 : KIT==='abyss' ? 780 : KIT ? 540 : SHEET ? 1700 : 1100, NLV_NS = 40, NLV_COLS = 8, NLV_ROWS = 5;
 var NLV_Y0 = -40, NLV_DY = 8;
 var NLV_MAX = 3.0;                    /* byte 255 == this much summed intensity: also the blow-out ceiling */
 var NLV_LAMP_GAIN = 0.55, NLV_WIN_GAIN = 0.30, NLV_COOL_GAIN = 0.50;
@@ -230,6 +230,9 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
+/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections) */
+function kitMaterial(fm, o){ if(!fm.phong) return new THREE.MeshLambertMaterial(o);
+  o.shininess = fm.phong.shininess; o.specular = new THREE.Color(fm.phong.specular); return new THREE.MeshPhongMaterial(o); }
 function emitBuckets(){
   var total=0, meshes=0;
   for(var k in BUCKET){
@@ -238,7 +241,7 @@ function emitBuckets(){
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
+            : kitMaterial(fm, { color:0xffffff, map: fm.tex || null,
                   transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
     if(!fm.basic){
@@ -430,7 +433,7 @@ function emitMerged(){
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
+            : kitMaterial(fm, { color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
     if(!fm.basic) nlMaterial(mat, 'mb'+fam);
     var m = new THREE.Mesh(g, mat);
