@@ -213,3 +213,9 @@ them against what it builds. Instead:
 4. **Portable assets check against the registry.** A piece of furniture or a
    building declares the canonical materials it uses, and a host build must
    map every one of them.
+
+## `simulation/`
+
+The World Simulation Layer: documents only for now. `simulation/ROADMAP.md` is the design (factions, activities, schedules,
+routes, events, engine-independent world IR) and `simulation/PLAN.md` is the survey of every current life layer and the
+phased plan to move them onto one shared vocabulary. Read `PLAN.md` before touching any build's life fragment.
