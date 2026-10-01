@@ -1,8 +1,8 @@
 # host/
 
 The LAN site server for Krator. It serves the Krator Worlds gallery and, next to it, the World Menagerie's
-pages (its Iziz fork, the OpenStreetMap cities, the fan works, the Tongue), pulled from a checkout of the
-Menagerie. Nothing needs the internet: three.js is served locally.
+pages (its Iziz fork, the OpenStreetMap cities, the fan works, the Tongue), pulled from the copy of the
+Menagerie embedded at `host/WorldMenagerie/`. Nothing needs the internet: three.js is served locally.
 
 ## The rule
 
@@ -33,7 +33,8 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `sync.py` | yes | copies what the Menagerie's `site.toml` serves into `menagerie/`, then writes `site.toml` |
 | `server.py` | yes | **vendored** from the Menagerie, byte for byte. `./sitectl sync --check` reports drift. Fix it upstream, then copy it again |
 | `sitectl` | yes | adapted from the Menagerie's: the systemd user service `krator` |
-| `menagerie.lock` | yes | the Menagerie commit last synced, and whether it had uncommitted changes |
+| `WorldMenagerie/` | yes | the World Menagerie itself, with its history: a git subtree (see below). Its Voth is in the source but never served |
+| `menagerie.lock` | yes | the Menagerie tree last synced (its git tree hash), and whether it had uncommitted changes |
 | `site.toml` | no | generated: `krator.toml` followed by the Menagerie's routes and mounts |
 | `menagerie/` | no | generated: about 80 MB (the Menagerie's 561 MB raw OSM cache is never copied) |
 | `site/` | no | generated: the gallery built with local three.js, about 80 MB |
@@ -58,3 +59,20 @@ Menagerie page, add its route to `drop_routes` and its files to `drop_paths` in 
 The service listens on port 8001 so it can run beside the Menagerie's own (`menagerie`, port 8000). To replace
 that one: `systemctl --user disable --now menagerie`, set `port = 8000` in `krator.toml`, then `./sitectl sync` and
 `./sitectl restart`. Serve it on the LAN only; never port-forward it.
+
+## The embedded Menagerie
+
+`host/WorldMenagerie/` is the World Menagerie with its full history, added with `git subtree`, so a clone of
+Krator serves everything with no second checkout. `sync.py` copies from it what the Menagerie's `site.toml` serves,
+less the drops above. Its Voth stays in the source tree but is never copied or served.
+
+To bring in later Menagerie work from its own checkout (commit it there first; run from the repo root):
+
+```
+git subtree pull --prefix=host/WorldMenagerie ../WorldMenagerie main
+cd host && ./sitectl update
+```
+
+Changes made here, inside `host/WorldMenagerie/`, go back with
+`git subtree push --prefix=host/WorldMenagerie ../WorldMenagerie <branch>`. Keep such commits to that folder alone.
+`[sync] menagerie` in `krator.toml` can still point at a separate checkout instead.

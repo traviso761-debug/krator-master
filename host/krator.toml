@@ -6,7 +6,7 @@
 # Relative file and dir paths are resolved from host/.
 
 [sync]
-menagerie = "../../WorldMenagerie"   # the World Menagerie checkout to pull from
+menagerie = "WorldMenagerie"   # the World Menagerie: the git subtree embedded here (a separate checkout works too)
 menagerie_index = "/menagerie"       # the Menagerie's front page moves here: / is Krator's
 drop_routes = ["/voth"]              # the Menagerie's Voth is not served: Krator's is (route below)
 drop_paths = ["voth.html", "src/voth", "css/voth.css"]   # and its files are not copied
