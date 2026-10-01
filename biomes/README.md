@@ -34,3 +34,12 @@ of its fragments. Edit the kit here, then copy across; `iziz/build.py --vendor-c
 (`indexedGeo` in `core/biome/20-core-kit.js` and in each kit's own copy). The triangles and their order are unchanged, so the
 picture is identical; tubes and surfaces take about half the GPU memory they did. Builders still write full
 triangles as before.
+
+## To do (future, not started): a fauna kit
+
+The owner's call (2026-10): all fauna goes to ONE fauna kit (create it if none exists; today fauna is drawn
+inside each biome kit and inside some settlements), the way furniture went to `kits/catalog`. It takes each
+biome kit's fauna, and the settlements' own creatures: Mav's Refuge's spiders, spider egg sacs and webs and
+its other flyers (`settlements/mavs-refuge`, `KNOWN_ISSUES.md`), the flyers of Girder and the other worlds.
+Tag every animal by biome (as the root `README.md` asks of flora and fauna) and place it as data, built by the
+kit's own code. Not part of the 2026-10 furniture work.

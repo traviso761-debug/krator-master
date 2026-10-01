@@ -8,6 +8,17 @@
    (roofs overhang the wall line by ~1-1.5 m), lashed joints shown as rope
    collars, shutters and woven blinds on EVERY elevation, drying racks,
    water butts and hanging gourds so each entry reads in the round.
+
+   Furniture (2026-10): everything a builder puts in or around its building
+   that is not structure (walls, floors, roofs, ladders up a shell, porches,
+   rails, built benches and altars, shutters, banners) is a catalog piece
+   placed with F.furn(key, lx, ly, lz, lry, { v }) (krator-furniture-core.js):
+   built into the building's group and recorded on userData.furniture. Loose
+   furniture inside a room kits/interiors/sets/beast-rider.js plans is not
+   drawn: the interiors furnish it. A planned room's fixtures, and the
+   furniture outside or in the open structures the set skips, are F.furn.
+   F.rnd() calls stand where removed drawing code drew random numbers, so the
+   structure's random stream (colours, jitter) is unchanged.
    ====================================================================== */
 
 /* ================= Mav's Refuge ================= */
@@ -101,27 +112,14 @@ ASSET({
       F.box(-hw - 0.05, deckY + 1.1, 1.4, 0.08, 1.6, 1.1, 0, shade(web, -0.05), 'cloth');
     }
 
-    /* service clutter: water butt, drying rack, gourds under the eave, wall ladder */
-    F.cyl(-hw + 0.9, deckY, -hd - 1.05, 0.44, 1.05, 0, 0x6a5238, 'wood');
-    F.cyl(-hw + 0.9, deckY + 0.72, -hd - 1.05, 0.48, 0.1, 0, shade(rope, -0.1), 'cloth');
-    F.rod(hw + 0.25, deckY + 0.4, -hd - 0.4, hw + 0.25, deckY + 2.0, -hd - 0.4, 0.06, postColor, 'wood');
-    F.rod(hw + 0.25, deckY + 0.4, -hd + 1.4, hw + 0.25, deckY + 2.0, -hd + 1.4, 0.06, postColor, 'wood');
-    F.rod(hw + 0.25, deckY + 1.95, -hd - 0.4, hw + 0.25, deckY + 1.95, -hd + 1.4, 0.04, postColor, 'wood');
-    for (let i = 0; i < 2; i++) {
-      F.box(hw + 0.25, deckY + 1.15, -hd + 0.1 + i * 0.8, 0.06, 0.7, 0.4, F.rr(-0.1, 0.1), F.pick([0xc9a24a, 0xb0894a, 0x9a8a52]), 'cloth');
-    }
-    for (let i = 0; i < 2; i++) {
-      const gx = -3.4 + i * 5.1;
-      F.rod(gx, deckY + wallH, hd + 0.35, gx, deckY + wallH - 0.55, hd + 0.35, 0.022, rope, 'cloth');
-      F.ball(gx, deckY + wallH - 0.78, hd + 0.35, 0.24, F.pick([0xc2a05a, 0x8a9a4a, 0xb07a3a]), 'wood');
-    }
-    // wall ladder up the back-left corner
-    F.rod(-hw - 0.45, deckY, -hd + 0.9, -hw - 0.45, deckY + wallH + 0.4, -hd + 0.9, 0.055, postColor, 'wood');
-    F.rod(-hw - 0.45, deckY, -hd + 1.6, -hw - 0.45, deckY + wallH + 0.4, -hd + 1.6, 0.055, postColor, 'wood');
-    for (let i = 0; i < 4; i++) {
-      const ry2 = deckY + 0.7 + i * 1.1;
-      F.rod(-hw - 0.45, ry2, -hd + 0.9, -hw - 0.45, ry2, -hd + 1.6, 0.035, shade(postColor, 0.1), 'wood');
-    }
+    /* service clutter, as catalog furniture (F.furn): the water butt off the back-left corner (on the
+       ground: the deck ends at -hd - 0.7), the drying rack against the right flank, a gourd under the
+       front eave either side of the door, the wall ladder up the back-left corner */
+    F.furn('br_h_water_butt', -hw + 0.9, 0, -hd - 1.05, 0, { v: 0 });
+    F.furn('br_drying_rack', hw + 0.36, deckY, -hd + 0.5, -Math.PI / 2);
+    for (let i = 0; i < 2; i++) F.furn('br_h_hanging_gourds', -3.4 + i * 5.1, deckY + wallH - 1.02, hd + 0.35, 0, { v: 0 });
+    F.furn('br_h_wall_ladder', -hw - 0.45, deckY, -hd + 1.25, -Math.PI / 2, { v: 0 });
+    for (let i = 0; i < 6; i++) F.rnd();   /* the rack's cloths and the gourds drew 6: keep the structure's stream */
 
     const wallTop = deckY + wallH;
     if (F.variant === 1) {
@@ -196,27 +194,15 @@ ASSET({
         F.rod(px, 1.25, pz, Math.cos(b) * ringR, 1.25, Math.sin(b) * ringR, 0.045, shade(timber, 0.08), 'wood');
       }
     }
-    // centre offering: either a carved stump altar or a young sapling in a pot
-    if (F.chance(0.5)) {
-      F.cyl(0, 0.46, 0, 0.5, 0.55, 0, shade(timber, -0.1), 'wood');
-      F.cone(0, 1.01, 0, 0.4, 1.0, 0, shade(timber, 0.05), 'wood');
-      F.cyl(0, 0.46, 0, 0.62, 0.1, 0, rope, 'cloth');
-    } else {
-      F.cyl(0, 0.46, 0, 0.42, 0.4, 0, 0x7a6248, 'wood');
-      F.rod(0, 0.86, 0, 0, 1.9, 0, 0.05, timber, 'wood');
-      F.blob(0, 2.0, 0, 0.42, 0.5, 0, 0x3a7a4c, 'leafy');
-    }
-    // offering bowls round the deck, visible from every side
-    for (let i = 0; i < 4; i++) {
-      const a = i / 4 * TAU + 0.6;
-      F.cyl(Math.cos(a) * 2.5, 0.46, Math.sin(a) * 2.5, 0.28, 0.2, 0, F.pick([0x8a7550, 0x6a5a44]), 'wood');
-    }
-    // hanging lanterns from the lowest eave
+    /* centre offering (the planned shrine room's fixture, so the building places it): a carved stump
+       altar or a young sapling in a pot. The offering bowls round the deck were loose furniture in
+       the planned room: the interiors furnish it (kits/interiors/sets/beast-rider.js) */
+    if (F.chance(0.5)) F.furn('br_shrine_altar', 0, 0.46, 0, 0, { v: 0 });
+    else F.furn('br_h_shrine_sapling', 0, 0.46, 0, 0, { v: 0 });
+    // hanging lanterns from the lowest eave, outside the post ring (the cord meets the eave)
     for (let i = 0; i < 3; i++) {
       const a = i / 3 * TAU + 0.3;
-      const lx = Math.cos(a) * 4.2, lz = Math.sin(a) * 4.2;
-      F.rod(lx, 0.3 + postH, lz, lx, 0.3 + postH - 0.6, lz, 0.022, rope, 'cloth');
-      F.box(lx, 0.3 + postH - 0.95, lz, 0.34, 0.36, 0.34, F.rr(0, 1), 0xffb066, 'glow');
+      F.furn('br_h_hanging_lantern', Math.cos(a) * 4.2, 0.3 + postH - 0.95, Math.sin(a) * 4.2, F.rr(0, 1) - 0.3, { v: 0 });
     }
     let y = 0.3 + postH;
     const t1 = 0x8a7a52, t2 = shade(t1, -0.08), t3 = shade(t1, -0.15);
@@ -351,12 +337,10 @@ ASSET({
       const a = i / beamN * TAU;
       F.beam(Math.cos(a) * 8, 13.4, Math.sin(a) * 8, Math.cos(a) * 34, 9.6, Math.sin(a) * 34, 0.3, 0.3, timber, 'wood');
     }
-    // hanging lantern accents
+    // great lanterns hung from the radial beams (the cord top stays at 9.8)
     for (let i = 0; i < 4; i++) {
       const a = i / 4 * TAU + 0.4;
-      const x = Math.cos(a) * 26, z = Math.sin(a) * 26;
-      F.rod(x, 9.8, z, x, 6.5, z, 0.04, 0x3a352c, 'wood');
-      F.box(x, 6.0, z, 0.5, 0.5, 0.5, F.rr(0, TAU), 0x2a2620, 'wood');
+      F.furn('br_h_hanging_lantern', Math.cos(a) * 26, 9.8 - 2.3, Math.sin(a) * 26, F.rr(0, TAU) - 0.4, { v: 2 });
     }
   }
 });
@@ -433,20 +417,13 @@ ASSET({
         F.box(-6.5 + i * 4.2, 6.62, pz, 0.7, 0.06, 0.34, F.rr(-0.1, 0.1), shade(timber, -0.32), 'wood');
       }
     }
-    // hanging feed baskets
-    for (let i = 0; i < 3; i++) {
-      const bx = -5.5 + i * 5.5;
-      F.rod(bx, postH, -1.5, bx, 5.8, -1.5, 0.025, rope, 'cloth');
-      F.cyl(bx, 5.2, -1.5, 0.45, 0.6, F.rr(0, 1), F.pick([0xb0894a, 0x9a8a52]), 'cloth');
-    }
-    // ladder up to the perch level
-    F.rod(-2.0, 0, hd - 0.7, -2.0, 6.6, hd - 0.7, 0.07, timber, 'wood');
-    F.rod(-1.1, 0, hd - 0.7, -1.1, 6.6, hd - 0.7, 0.07, timber, 'wood');
-    for (let i = 0; i < 5; i++) F.rod(-2.0, 0.9 + i * 1.2, hd - 0.7, -1.1, 0.9 + i * 1.2, hd - 0.7, 0.04, shade(timber, 0.1), 'wood');
-    // conical thatch nest bundles tucked into the corners
-    F.cone(hw - 1.6, 0, -hd + 1.6, 1.0, 1.2, 0.3, 0xc9a24a, 'thatch');
-    F.cone(-hw + 1.8, 0, hd - 1.8, 0.85, 1.0, 0.8, shade(0xc9a24a, -0.1), 'thatch');
-    F.cyl(hw - 3.6, 0, -hd + 1.2, 0.5, 0.8, 0, 0x6a5238, 'wood');
+    /* the planned stable room's fixtures (kits/interiors/sets/beast-rider.js), placed by the building as
+       catalog furniture: the ladder up to the perch level, the thatch nest bundles in two corners, the
+       water butt. The hanging feed baskets were loose furniture in that room: the interiors furnish it */
+    F.furn('br_h_wall_ladder', -1.55, 0, hd - 0.7, 0, { v: 1 });
+    F.furn('br_h_nest', hw - 1.6, 0, -hd + 1.6, 0, { v: 0 });
+    F.furn('br_h_nest', -hw + 1.8, 0, hd - 1.8, 0.5, { v: 0 });
+    F.furn('br_h_water_butt', hw - 3.6, 0, -hd + 1.2, 0, { v: 0 });
   }
 });
 
@@ -501,10 +478,8 @@ ASSET({
       const a = i / 4 * TAU + 0.5, br = rAt(11.3) + 1.25;
       const bx = Math.cos(a) * br, bz = trunkZ + Math.sin(a) * br;
       F.rod(bx * 0.35, 9.2, (bz - trunkZ) * 0.35 + trunkZ, bx, 11.3, bz, 0.34, shade(barkC, -0.1), 'bark');
-      if (i % 2 === 0) {
-        F.rod(bx, 11.1, bz, bx, 10.0, bz, 0.022, rope, 'cloth');
-        F.box(bx, 9.4, bz, 0.42, 0.46, 0.42, F.rr(0, 1), 0xffb066, 'glow');
-      }
+      /* a lantern hung from the stub's end (its cord meets the stub at 11.1) */
+      if (i % 2 === 0) F.furn('br_h_hanging_lantern', bx, 11.1 - 0.95, bz, F.rr(0, 1) - 0.3, { v: 0 });
     }
     // carved totem faces on the flanks
     for (const s of [-1, 1]) {
@@ -528,7 +503,7 @@ ASSET({
       F.rod(0, 4.6, portalFace + 0.7, 0, 1.8, portalFace + 0.7, 0.025, rope, 'cloth');
       F.box(0, 1.25, portalFace + 0.7, 0.55, 0.5, 0.55, 0.15, 0x7a6a4e, 'wood');
       F.pyrRoof(0, 4.75, portalFace - 0.75, 4.6, 1.2, 2.8, 0, shade(barkC, -0.12), 'thatch');
-      F.box(1.5, 0.22, portalFace + 0.2, 0.7, 0.7, 0.7, 0.3, 0x7a6a4e, 'wood');
+      F.furn('br_h_crate_stack', 1.5, 0, portalFace + 0.2, 0.3, { v: 1 });   /* on the ground, before the portal */
     } else if (F.variant === 1) {
       // vault: iron-banded door, lock disc, warning totems
       const dark = 0x4a4038;
@@ -536,10 +511,8 @@ ASSET({
       for (let i = 0; i < 3; i++) F.box(0, 0.8 + i * 0.95, doorZ + 0.1, 2.3, 0.18, 0.05, 0, dark, 'metal');
       F.cyl(0.62, 1.7, doorZ + 0.12, 0.14, 0.08, Math.PI / 2, 0x2a2620, 'metal');
       F.box(0, 3.95, portalFace + 0.05, 1.5, 0.22, 0.28, 0, dark, 'metal');
-      for (const s of [-1, 1]) {
-        F.cyl(s * 2.6, 0, portalFace - 0.9, 0.22, 2.4, 0, shade(barkC, -0.25), 'bark');
-        F.ball(s * 2.6, 2.6, portalFace - 0.9, 0.3, 0x8a2f2a, 'bark');
-      }
+      /* warning totems (skull poles) flanking the door, just clear of the root buttresses */
+      for (const s of [-1, 1]) F.furn('br_court_statue', s * 2.6, 0, portalFace + 0.3, 0);
     } else if (F.variant === 2) {
       // shrine: open unleafed arch, glowing interior, flanking window insets
       F.box(0, 0.22, doorZ - 0.15, 2.0, 3.2, 0.3, 0, 0x1a1712, 'bark');
@@ -550,7 +523,7 @@ ASSET({
         F.rod(s * 2.3, 4.2, portalFace - 0.1, s * 2.3, 1.6, portalFace - 0.1, 0.03, rope, 'cloth');
         F.box(s * 2.3, 1.0, portalFace - 0.1, 0.36, 0.6, 0.06, 0, F.pick([0xc9442a, 0xd8a23a]), 'cloth');
       }
-      F.cyl(0, 0.22, portalFace + 0.35, 0.42, 0.55, 0, shade(barkC, -0.2), 'bark');
+      F.furn('br_h_offering_stone', 0, 0, portalFace + 0.35, 0);   /* the offering stump before the arch, on the ground */
     } else {
       // dorm: plank door, row of shuttered windows, washing line
       F.box(0, 0.22, doorZ, 1.6, 2.95, 0.16, 0, 0x6a5238, 'wood');
@@ -600,14 +573,9 @@ ASSET({
       const jx = -4.6 + i * 2.3;
       F.beam(jx, ceilY - 0.14, -hd + 0.12, jx, ceilY - 0.14, hd - 0.12, 0.2, 0.2, timber, 'wood');
     }
-    // back-wall shelf and stock, visible through the opening
-    F.box(0, 2.5, -hd + wallT + 0.26, 9.2, 0.1, 0.5, 0, timber, 'wood');
-    for (let i = 0; i < 4; i++) {
-      F.box(-3.6 + i * 2.4, 2.6, -hd + wallT + 0.26, 0.5, F.rr(0.4, 0.7), 0.42, F.rr(-0.2, 0.2), F.pick([0x9a8a52, 0xb0894a, 0x7a6a4e]), 'wood');
-    }
-    F.box(-4.6, floorT, -hd + wallT + 0.4, 0.8, 0.8, 0.7, 0.18, 0x7a6a4e, 'wood');
-    F.box(4.5, floorT, -hd + wallT + 0.45, 0.9, 0.6, 0.8, -0.2, 0x877558, 'wood');
-    F.box(0, 3.5, -hd + wallT + 0.14, 0.6, 0.6, 0.12, 0, 0xffb066, 'glow');
+    /* the back-wall shelf and its stock, the two crates and the wall lamp were loose furniture in the
+       planned room: the interiors furnish it (kits/interiors/sets/beast-rider.js) */
+    for (let i = 0; i < 12; i++) F.rnd();   /* the stock drew 12: keep the front's stream */
     // rear door to the deeper level
     F.box(2.2, floorT, -hd + wallT - 0.02, 1.1, 2.4, 0.09, 0, 0x3a2f22, 'wood');
     // corner corbels carrying the ceiling over the shopfront
@@ -646,9 +614,9 @@ ASSET({
         F.box(wx - 0.92, 1.55, frontZ + 0.2, 0.65, 1.45, 0.08, 0.3, winC, 'wood');
         F.box(wx + 0.92, 1.55, frontZ + 0.2, 0.65, 1.45, 0.08, -0.3, winC, 'wood');
       }
-      F.rod(-1.4, 3.3, frontZ + 0.05, -1.4, 3.3, frontZ + 0.6, 0.03, timber, 'wood');
-      F.box(-1.4, 2.9, frontZ + 0.6, 0.32, 0.36, 0.32, 0, 0xffb066, 'glow');
-      F.cyl(5.2, floorT, frontZ + 0.55, 0.38, 0.9, 0, 0x6a5238, 'wood');
+      /* the lamp bracket on the front face, a water butt on the ground before it (the floor ends at hd) */
+      F.furn('br_h_lamp_bracket', -1.4, 0, hd + 0.38, 0, { v: 0 });
+      F.furn('br_h_water_butt', 5.2, 0, frontZ + 0.55, 0, { v: 0 });
     } else if (F.variant === 1) {
       // workshop front: wide double doors, hoist beam, crates on the sill
       const tarC = 0x6e5238;
@@ -662,11 +630,11 @@ ASSET({
       F.beam(-0.9, 3.95, frontZ + 0.55, -0.9, 3.95, frontZ - 1.2, 0.18, 0.18, timber, 'wood');
       F.rod(-0.9, 3.95, frontZ + 0.5, -0.9, 2.6, frontZ + 0.5, 0.025, rope, 'cloth');
       F.box(-0.9, 2.1, frontZ + 0.5, 0.5, 0.5, 0.5, 0.2, 0x7a6a4e, 'wood');
-      F.box(-3.6, floorT, frontZ + 0.55, 0.85, 0.85, 0.7, 0.2, 0x7a6a4e, 'wood');
-      F.box(-2.5, floorT, frontZ + 0.5, 0.8, 0.6, 0.65, -0.15, 0x877558, 'wood');
+      F.furn('br_h_crate_stack', -3.6, 0, frontZ + 0.55, 0, { v: 1 });   /* crates on the ground before the doors */
+      F.furn('br_h_crate_stack', -2.5, 0, frontZ + 0.55, 0, { v: 1 });
       F.box(4.2, 1.7, frontZ + 0.06, 1.4, 1.3, 0.26, 0, 0x241d15, 'wood');
       F.box(4.2, 1.64, frontZ + 0.22, 1.5, 1.42, 0.07, 0, shade(tarC, 0.12), 'cloth');
-      F.cyl(5.4, floorT, frontZ + 0.5, 0.36, 1.0, 0, 0x6a5238, 'wood');
+      F.furn('br_h_water_butt', 5.4, 0, frontZ + 0.5, 0, { v: 0 });
     } else if (F.variant === 2) {
       // market stall front: open counter, awning, goods
       const counterC = 0x7a6a4e, postC = 0x5e4630;
@@ -678,14 +646,13 @@ ASSET({
       F.cyl(-5.6, 3.5, frontZ, 0.21, 0.14, 0, rope, 'cloth');
       F.cyl(5.6, 3.5, frontZ, 0.21, 0.14, 0, rope, 'cloth');
       F.box(0, 4.42, frontZ + 0.45, 12.3, 0.14, 1.2, 0.06, F.pick([0xc9442a, 0x2f8f8a, 0xd8a23a]), 'cloth');
+      /* goods on the counter top (1.7) and gourds hung from the awning (its underside at 4.42) */
       for (let i = 0; i < 5; i++) {
-        F.box(-4.6 + i * 2.3, 1.7, frontZ - 0.1, 0.7, F.rr(0.3, 0.6), 0.55, F.rr(-0.2, 0.2), F.pick([0x9a8a52, 0xb0894a, 0xc9a24a]), 'wood');
+        F.rnd();
+        F.furn('br_h_stall_goods', -4.6 + i * 2.3, 1.7, frontZ + 0.06, F.rr(-0.2, 0.2), { v: i % 2 ? 2 : 1 });
+        F.rnd();
       }
-      for (let i = 0; i < 3; i++) {
-        const gx = -3.5 + i * 3.5;
-        F.rod(gx, 4.3, frontZ + 0.9, gx, 3.85, frontZ + 0.9, 0.02, rope, 'cloth');
-        F.ball(gx, 3.6, frontZ + 0.9, 0.25, F.pick([0xc2a05a, 0x8a9a4a]), 'wood');
-      }
+      for (let i = 0; i < 3; i++) F.furn('br_h_hanging_gourds', -3.5 + i * 3.5, 4.42 - 1.02, frontZ + 0.9, 0, { v: 0 });
     } else {
       // silk/web room: dark boarded front, webbed panels, hooded vent
       const darkC = 0x5e4630, web = 0xe8ecec;
@@ -702,7 +669,7 @@ ASSET({
       }
       F.cone(0, 3.6, frontZ - 0.25, 0.6, 1.1, 0, 0x1a1712, 'bark');
       F.rod(-5.4, 3.6, frontZ + 0.05, 5.4, 3.6, frontZ + 0.05, 0.028, rope, 'cloth');
-      F.cyl(5.2, floorT, frontZ + 0.5, 0.34, 0.85, 0, 0x4a3f2c, 'wood');
+      F.furn('br_h_water_butt', 5.2, 0, frontZ + 0.55, 0, { v: 0 });
     }
   }
 });
@@ -798,7 +765,8 @@ ASSET({
       F.beam(bx, 2.65, bz, fx, 2.05, fz, 1.7, 0.12, shade(0x8a7a52, -0.1), 'thatch');
       // cantilevered launch perch, claw-worn
       F.beam(fx, 1.35, fz, fx + nx * 1.3, 1.25, fz + nz * 1.3, 0.16, 0.16, timber, 'wood');
-      if (i % 2 === 0) F.cyl(bx, 0.35, bz, 0.35, 0.25, 0, F.pick([0xb0894a, 0xc9a24a]), 'cloth');
+      /* fodder at the back of every other stall, along its back (1 draw kept for the stream) */
+      if (i % 2 === 0) { F.rnd(); F.furn('br_h_hay_bales', bx, 0.35, bz, Math.atan2(-tz, tx), { v: 0 }); }
     }
 
     /* upper structure: mooring masts, stay lines, a windbreak and perch frames —
@@ -851,9 +819,8 @@ ASSET({
     F.box(9.2, 0.35, 11.25, 1.2, 1.9, 0.1, 0, 0x40331f, 'wood');
     F.pyrRoof(9.2, 2.55, 9.2, 5.4, 1.3, 5.4, 0, 0x6a5a44, 'thatch');
     F.cyl(9.2, 3.85, 9.2, 0.18, 0.4, 0, 0x3a2f22, 'wood');
-    // water butt + feed barrels
-    F.cyl(-9.6, 0.35, 9.8, 0.55, 1.2, 0, 0x6a5238, 'wood');
-    F.cyl(-8.2, 0.35, 10.4, 0.45, 0.9, 0, 0x7a6248, 'wood');
+    // water butt + feed barrel
+    F.furn('br_h_water_butt', -8.95, 0.35, 10.05, 0, { v: 1 });
   }
 });
 
@@ -904,17 +871,17 @@ ASSET({
       F.beam(0, backH + 0.1, hd - 0.3, 0, frontH - 0.5, hd + 1.7, W - 0.4, 0.14, F.pick([0xc9442a, 0x2f8f8a]), 'cloth');
       F.rod(-4.0, frontH - 0.45, hd + 1.65, -4.0, 0, hd + 1.65, 0.05, timber, 'wood');
       F.rod(4.0, frontH - 0.45, hd + 1.65, 4.0, 0, hd + 1.65, 0.05, timber, 'wood');
-      // tool rack on the back wall inside + forge stack outside
-      F.box(0, 2.1, -hd + wallT + 0.16, 6.0, 0.1, 0.34, 0, timber, 'wood');
-      for (let i = 0; i < 5; i++) F.box(-2.4 + i * 1.2, 1.45, -hd + wallT + 0.16, 0.14, 0.62, 0.1, F.rr(-0.2, 0.2), 0x6a655a, 'metal');
+      /* the tool rack on the back wall was loose furniture in the planned workshop: the interiors furnish
+         it (kits/interiors/sets/beast-rider.js). The forge stack outside is built masonry */
+      for (let i = 0; i < 5; i++) F.rnd();   /* the tools drew 5: keep the stack's stream */
       for (let i = 0; i < 4; i++) F.box(hw + 0.22, i * 0.8, -hd + 1.2, 0.5, 0.76, 0.6, F.rr(-0.04, 0.04), shade(0x8a857a, F.rr(-0.06, 0.06)), 'stone');
       // side openings and shutters
       F.box(-hw - 0.03, 1.6, -1.2, 0.1, 1.1, 1.1, 0, openC, 'wood');
       F.box(-hw - 0.16, 1.5, -0.3, 0.07, 1.3, 0.6, -0.3, shutC, 'wood');
       F.box(0, 1.7, -hd - 0.03, 1.2, 1.0, 0.1, 0, openC, 'wood');
       // stock outside
-      F.box(-hw - 0.6, 0, hd - 1.0, 0.8, 0.8, 0.8, 0.2, 0x7a6a4e, 'wood');
-      F.cyl(hw + 0.5, 0, hd - 0.6, 0.42, 1.0, 0, 0x6a5238, 'wood');
+      F.furn('br_h_crate_stack', -hw - 0.6, 0, hd - 1.0, 0.2, { v: 1 });
+      F.furn('br_h_water_butt', hw + 0.5, 0, hd - 0.6, 0, { v: 0 });
     } else if (F.variant === 3) {
       // common: open pavilion, carved corner posts, cloth awning roof
       F.box(0, 0, 0, 8.6, 0.22, 8.6, 0, 0x8a7550, 'wood');
@@ -938,12 +905,10 @@ ASSET({
       }
       F.beam(-5.2, 0.22 + backH, -5.2, 5.2, 0.22 + backH, -5.2, 0.18, 0.18, shade(0xc9a24a, -0.3), 'wood');
       F.beam(-5.2, 0.22 + backH, 5.2, 5.2, 0.22 + backH, 5.2, 0.18, 0.18, shade(0xc9a24a, -0.3), 'wood');
-      // hanging lanterns at the eave corners
-      for (const s of [[-1, -1], [1, 1]]) {
-        F.rod(s[0] * 4.4, 0.22 + backH, s[1] * 4.4, s[0] * 4.4, 0.22 + backH - 0.6, s[1] * 4.4, 0.022, rope, 'cloth');
-        F.box(s[0] * 4.4, 0.22 + backH - 0.95, s[1] * 4.4, 0.34, 0.36, 0.34, 0.4, 0xffb066, 'glow');
-      }
-      F.cyl(0, 0.22, 0, 0.5, 0.35, 0, 0x7a6a4e, 'wood');
+      // hanging lanterns at the eave corners (outside the planned room)
+      for (const s of [[-1, -1], [1, 1]]) F.furn('br_h_hanging_lantern', s[0] * 4.4, 0.22 + backH - 0.95, s[1] * 4.4, 0.1, { v: 0 });
+      /* the low table at the centre: the planned room's fixture, so the building places it */
+      F.furn('br_common_low_table', 0, 0.22, 0, 0);
     } else if (F.variant === 4) {
       // shrine: tajug on a plinth, red/gilt posts, glow windows, two-tier roof
       F.box(0, 0, 0, 8.1, 0.4, 8.1, 0, 0x9a9484, 'stone');
@@ -960,11 +925,11 @@ ASSET({
       F.box(hw - 0.6, 0.58, 0, 0.16, 1.5, 7.2, 0, shade(0x9a8358, -0.1), 'wood');
       F.box(-1.2, 1.4, hd - 0.62, 0.5, 0.6, 0.12, 0, 0xffb066, 'glow');
       F.box(1.2, 1.4, hd - 0.62, 0.5, 0.6, 0.12, 0, 0xffb066, 'glow');
-      // altar and offerings
+      /* the built altar (the planned room's fixture) and the offerings on it, as catalog furniture:
+         two brass votive bowls and a wooden bowl between them */
       F.box(0, 0.58, -hd + 1.3, 2.2, 0.9, 0.8, 0, 0x7a6a4e, 'wood');
-      F.cyl(-0.6, 1.48, -hd + 1.3, 0.16, 0.3, 0, 0xb08432, 'metal');
-      F.cyl(0.6, 1.48, -hd + 1.3, 0.16, 0.3, 0, 0xb08432, 'metal');
-      F.cone(0, 1.48, -hd + 1.3, 0.3, 0.7, 0, 0x3a7a4c, 'leafy');
+      for (const x of [-0.6, 0.6]) F.furn('br_h_offering_bowl', x, 1.48, -hd + 1.3, 0, { v: 1 });
+      F.furn('br_h_offering_bowl', 0, 1.48, -hd + 1.3, 0, { v: 0 });
       // banners on the front posts
       for (const s of [-1, 1]) {
         F.box(s * (hw - 0.6), 1.9, hd - 0.42, 0.06, 1.3, 0.5, 0, F.pick([0xc9442a, 0xd8a23a]), 'cloth');
@@ -1005,7 +970,7 @@ ASSET({
         F.box(1.6, 1.9, hd - wallT / 2, 0.5, 0.5, 0.1, 0, shade(wallC, -0.28), 'wood');
         F.rod(0, 0.18 + frontH + 0.1, hd - 0.3, 0, 0.18 + frontH - 0.5, hd + 0.7, 0.025, timber, 'wood');
         F.box(0, 0.18 + frontH - 0.7, hd + 0.7, 0.7, 0.4, 0.05, 0, 0x7a6a4e, 'wood');
-        F.box(-3.0, 0.18, hd + 0.55, 0.85, 0.85, 0.7, 0.18, 0x7a6a4e, 'wood');
+        F.furn('br_h_crate_stack', -3.0, 0, hd + 0.55, 0.18, { v: 1 });   /* on the ground: the slab ends at hd + 0.25 */
       } else {
         F.box(-1.4, 1.5, hd - wallT / 2, 0.6, 0.6, 0.1, 0, shade(wallC, -0.28), 'wood');
         // veranda bench and rail
@@ -1031,13 +996,9 @@ ASSET({
       F.beam(-5.0, ry1 + 0.1, zB - 0.05, 5.0, ry1 + 0.1, zB - 0.05, 0.22, 0.22, shade(0x6a5a44, -0.25), 'wood');
       // weight stones along the ridge
       for (let i = 0; i < 3; i++) F.box(-2.6 + i * 2.6, ry0 + 0.3, -hd + 0.3, 0.45, 0.3, 0.45, F.rr(0, 1), 0x8a857a, 'stone');
-      // service clutter
-      F.cyl(-hw - 0.55, 0, -hd + 1.1, 0.42, 1.0, 0, 0x6a5238, 'wood');
-      for (let i = 0; i < 3; i++) {
-        F.rod(hw + 0.4, 0.4 + i * 0.0, -1.2 + i * 1.2, hw + 0.4, 1.8, -1.2 + i * 1.2, 0.045, timber, 'wood');
-      }
-      F.rod(hw + 0.4, 1.75, -1.2, hw + 0.4, 1.75, 1.2, 0.03, rope, 'cloth');
-      for (let i = 0; i < 2; i++) F.box(hw + 0.4, 1.1, -0.6 + i * 1.2, 0.05, 0.6, 0.5, F.rr(-0.1, 0.1), F.pick([0xc9442a, 0xd8d0b8]), 'cloth');
+      // service clutter: a water butt by the back-left corner, a drying rack along the right flank
+      F.furn('br_h_water_butt', -hw - 0.55, 0, -hd + 1.1, 0, { v: 0 });
+      F.furn('br_drying_rack', hw + 0.7, 0, 0, -Math.PI / 2);
     }
   }
 });
@@ -1131,18 +1092,13 @@ ASSET({
       F.cyl(0.95, 0, 3.55, 0.14, 2.35, 0, timber, 'wood');
       // a second low opening on the far side so it reads from behind
       F.box(-2.2, 0, -2.9, 1.0, 1.5, 0.3, -0.9, 0x241d15, 'wood');
-      // drying rack, water butt, gourds
-      F.rod(5.4, 0, 2.6, 5.4, 2.0, 2.6, 0.07, timber, 'wood');
-      F.rod(3.2, 0, 4.6, 3.2, 2.0, 4.6, 0.07, timber, 'wood');
-      F.rod(5.4, 1.95, 2.6, 3.2, 1.95, 4.6, 0.04, rope, 'cloth');
-      for (let i = 0; i < 3; i++) {
-        F.box(5.4 - i * 0.73, 1.1, 2.6 + i * 0.66, 0.5, 0.7, 0.06, -0.72, F.pick([0xc9442a, 0xd8d0b8, 0x9a8a52]), 'cloth');
-      }
-      F.cyl(-3.4, 0, -4.4, 0.5, 1.1, 0, 0x6a5238, 'wood');
+      /* the yard, as catalog furniture: a drying frame between (5.4, 2.6) and (3.2, 4.6), a water butt
+         behind, three gourds hung under the eave (the cone's underside at r 3.9 is ~2.97 up) */
+      F.furn('br_h_cloth_line', 4.3, 0, 3.6, Math.atan2(2.0, 2.2), { v: 0 });
+      F.furn('br_h_water_butt', -3.4, 0, -4.4, 0, { v: 0 });
       for (let i = 0; i < 3; i++) {
         const a = 2.2 + i * 0.5;
-        F.rod(Math.cos(a) * 3.9, 2.9, Math.sin(a) * 3.9, Math.cos(a) * 3.9, 2.45, Math.sin(a) * 3.9, 0.02, rope, 'cloth');
-        F.ball(Math.cos(a) * 3.9, 2.2, Math.sin(a) * 3.9, 0.26, F.pick([0xc2a05a, 0x8a9a4a]), 'wood');
+        F.furn('br_h_hanging_gourds', Math.cos(a) * 3.9, 2.97 - 1.02, Math.sin(a) * 3.9, 0, { v: 0 });
       }
     } else if (F.variant === 1) {
       // joglo: stone plinth, open pendopo, carved posts, two-tier roof
@@ -1170,10 +1126,8 @@ ASSET({
       F.pyrRoof(0, 5.5, 0, 6.8, 1.9, 5.8, 0, shade(0x6a5a44, -0.06), 'thatch');
       F.box(0, 7.35, 0, 5.4, 0.16, 0.16, 0, 0xb08432, 'metal');
       F.cone(0, 7.35, 0, 0.14, 0.55, 0, 0xb08432, 'metal');
-      for (const s of [-1, 1]) {
-        F.rod(s * 5.6, 3.9, 4.4, s * 5.6, 3.35, 4.4, 0.022, rope, 'cloth');
-        F.box(s * 5.6, 3.0, 4.4, 0.34, 0.36, 0.34, 0.3, 0xffb066, 'glow');
-      }
+      // lanterns hung from the eave, outside the pendopo
+      for (const s of [-1, 1]) F.furn('br_h_hanging_lantern', s * 5.6, 3.9 - 0.95, 4.4, 0, { v: 0 });
     } else {
       // longhouse: tarred wall hall on stone plinth, exposed beams, deep eaves
       const stone = 0x9a9484, tarC = 0x6e5238;
@@ -1210,8 +1164,8 @@ ASSET({
         F.rod(g[0] - 0.5, 6.7, g[1], g[0] + 0.5, 7.4, g[1], 0.05, 0x3a2f22, 'wood');
         F.rod(g[0] + 0.5, 6.7, g[1], g[0] - 0.5, 7.4, g[1], 0.05, 0x3a2f22, 'wood');
       }
-      F.cyl(-6.0, 0, 6.0, 0.5, 1.1, 0, 0x6a5238, 'wood');
-      F.box(5.6, 0, 5.9, 0.9, 0.9, 0.8, 0.2, 0x7a6a4e, 'wood');
+      F.furn('br_h_water_butt', -6.0, 0, 6.0, 0, { v: 0 });
+      F.furn('br_h_crate_stack', 5.6, 0, 5.9, 0.2, { v: 1 });
     }
   }
 });
@@ -1243,9 +1197,7 @@ ASSET({
       F.cyl(-6.0 + i * 4.0, 1.72, 0.12, 0.2, 0.5, 0, rope, 'cloth');
     }
     // hides and a painted shield hung on the outer face
-    for (let i = 0; i < 3; i++) {
-      F.box(-4.6 + i * 4.6, 1.1, 0.34, 0.9, 1.1, 0.07, F.rr(-0.1, 0.1), F.pick([0x8a6a48, 0xc9442a, 0x9a8a52]), 'cloth');
-    }
+    for (let i = 0; i < 3; i++) F.furn('br_h_hung_hide', -4.6 + i * 4.6, 0, 0.37, F.rr(-0.1, 0.1), { v: 1 });
 
     /* firing step behind the wall — the declared 4 m depth was never built */
     F.box(-1.0, 1.55, -1.15, 12.0, 0.22, 1.5, 0, 0x8a7550, 'wood');
@@ -1257,12 +1209,7 @@ ASSET({
     F.rod(-6.6, 2.35, -1.85, 4.6, 2.35, -1.85, 0.035, rope, 'cloth');
     for (let i = 0; i < 4; i++) F.cyl(-6.2 + i * 3.6, 1.77, -1.85, 0.075, 0.62, 0, timber, 'wood');
     // ladder up to the step
-    F.rod(-6.9, 0.08, -0.55, -6.9, 1.95, -1.35, 0.07, timber, 'wood');
-    F.rod(-6.1, 0.08, -0.55, -6.1, 1.95, -1.35, 0.07, timber, 'wood');
-    for (let i = 0; i < 3; i++) {
-      const t = (i + 1) / 4;
-      F.rod(-6.9, t * 1.95, -0.55 - t * 0.8, -6.1, t * 1.95, -0.55 - t * 0.8, 0.04, shade(timber, 0.1), 'wood');
-    }
+    F.furn('br_h_wall_ladder', -6.5, 0, -0.95, 0, { v: 2 });
     // watch tower at one end
     const twX = 6.0, half = 0.9, towerH = 9.0;
     const twPosts = [[twX - half, -half], [twX + half, -half], [twX - half, half], [twX + half, half]];
@@ -1285,8 +1232,7 @@ ASSET({
     for (const p of twPosts) F.box(p[0], towerH - 0.15, p[1], 0.36, 0.6, 0.36, 0, shade(timber, -0.18), 'wood');
     // signal horn and a brazier on the platform
     F.cone(twX - 0.5, railY + 0.2, 0.4, 0.22, 0.9, 1.2, 0x3a2f22, 'wood');
-    F.cyl(twX + 0.5, towerH - 0.15, -0.4, 0.3, 0.35, 0, 0x4a4038, 'metal');
-    F.ball(twX + 0.5, towerH + 0.35, -0.4, 0.26, 0xffb066, 'glow');
+    F.furn('br_h_signal_brazier', twX + 0.5, towerH - 0.15, -0.4, 0, { v: 1 });
     F.pyrRoof(twX, towerH + 0.9, 0, 3.4, 1.7, 3.4, 0, 0x6a5a44, 'thatch');
     F.beam(twX - 1.7, towerH + 0.9, -1.7, twX + 1.7, towerH + 0.9, -1.7, 0.16, 0.16, shade(0x6a5a44, -0.25), 'wood');
     F.beam(twX - 1.7, towerH + 0.9, 1.7, twX + 1.7, towerH + 0.9, 1.7, 0.16, 0.16, shade(0x6a5a44, -0.25), 'wood');

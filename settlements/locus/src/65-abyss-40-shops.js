@@ -1,7 +1,9 @@
 /* ============================== 16X-S. ABYSS — shops ==============================
    Eight trades, two designs each. Open fronts (+z) onto the street, a counter, goods, and a board sign with a
    pictograph (ABYSS.sign). Shops are middle-class: lanterns are UNLIT oil lanterns. Everything that stands in a shop
-   (counters, racks, shelves, baskets, crates, the forge, the oven) is FURNITURE placed through ABYSS.furn.       */
+   (counters, racks, shelves, baskets, crates, the forge, the oven, the scrap stock, the stitching frame) is FURNITURE:
+   a catalog piece placed through ABYSS.furn / FURNISH (66-locus-furnish.js). setting:'room' marks a piece standing in
+   an open room the interior set (kits/interiors/sets/abyss.js) plans: it gives way to the interiors with ?interiors=1. */
 reseed(654001);
 (function(){
   var PI=Math.PI, G='Shops';
@@ -19,10 +21,10 @@ reseed(654001);
     build:function(F){ var v=F.variant;
       if(v===0){ var H=0.9; ABYSS.platform(F, -6,6, -5.5,1.5, H);
         stall(F, -1.2,H,-2.2, 8,5.6,3.0, 'plank', F.pick(PLANKC));
-        ABYSS.furn(F, 'abyss_counter', -1.2,0.2, 0, { ly:H }); ABYSS.furn(F, 'abyss_rack_spears', -2.8,-4.4, 0, { ly:H }); ABYSS.furn(F, 'abyss_rack_spears', 0.6,-4.4, 0, { ly:H });
+        ABYSS.furn(F, 'abyss_counter', -1.2,0.2, 0, { ly:H, setting:'room' }); ABYSS.furn(F, 'abyss_rack_spears', -2.8,-4.4, 0, { ly:H, setting:'room' }); ABYSS.furn(F, 'abyss_rack_spears', 0.6,-4.4, 0, { ly:H, setting:'room' });
         /* the forge stands outside on the ground under its own corrugated lean-to (fire away from the planks) */
         [[3.6,1.0],[5.8,1.0]].forEach(function(p){ F.cyl(p[0],0,p[1]+3.0, 0.08,2.8, 0, F.pick(TIMBERC), 'timber'); });
-        ABYSS.corrRoof(F, 4.7,2.8,3.4, 3.2,3.6, 0.5, ABYSS.rust(F)); ABYSS.furn(F, 'abyss_forge', 4.7,3.6, PI/2);
+        ABYSS.corrRoof(F, 4.7,2.8,3.4, 3.2,3.6, 0.5, ABYSS.rust(F)); ABYSS.furn(F, 'abyss_forge', 4.7,3.6, PI/2, { setting:'room' });
         ABYSS.furn(F, 'abyss_crates', 4.8,-3.0, 0, { variant:2 });
         LOCUS.stair(F, -3.6, 1.5+H*1.15, 0,-1, H, 1.2); ABYSS.sign(F, -1.2,H+3.3,0.62, 0,1, 1.6,0.8, 'blade'); ABYSS.lantern(F, 1.6,H+2.6,0.4, false); }
       else { F.box(0,0,-0.5, 12,0.15,10, 0, PAL.abSalt, 'plaster');
@@ -32,7 +34,7 @@ reseed(654001);
         ABYSS.furn(F, 'abyss_counter', -1.5,-0.6, 0, { ly:0.15 }); ABYSS.furn(F, 'abyss_rack_spears', -5.0,1.2, PI/2, { ly:0.15 });
         LOCUS.pole(F, 1.8,1.0, 4.4, 0.09); LOCUS.pole(F, 5.6,1.0, 4.0, 0.09); LOCUS.pole(F, 5.6,4.2, 4.4, 0.09); LOCUS.pole(F, 1.8,4.2, 4.0, 0.09);
         ABYSS.sail(F, [[1.8,4.4,1.0],[5.6,4.0,1.0],[5.6,4.4,4.2],[1.8,4.0,4.2]], PAL.abSailOrange, { swoop:0.5, band:PAL.abSailOrange, bandW:0.5 });
-        ABYSS.furn(F, 'abyss_forge', 3.7,2.6, 0, { ly:0.15 }); ABYSS.furn(F, 'abyss_water_butt', 5.2,-1.5, 0, { ly:0.15 });
+        ABYSS.furn(F, 'abyss_forge', 3.7,2.6, 0, { ly:0.15, setting:'room' });   /* the forge under the sail: the smithy abyss_shop_weapons#1 plans */ ABYSS.furn(F, 'abyss_water_butt', 5.2,-1.5, 0, { ly:0.15 });
         signPost(F, -5.4,4.0, 'blade'); }
     } });
 
@@ -42,7 +44,7 @@ reseed(654001);
     build:function(F){ var v=F.variant;
       if(v===0){ var c=F.pick(PASTELC), H=0.8; F.box(0,0,-1, 11,H,9, 0, PAL.abRubble, 'rubble');
         stall(F, 0,H,-2.6, 9,5.4,3.4, 'plaster', c, ABYSS.rust(F)); F.box(0,H,-2.6+2.6, 9.0,0.45,0.2, 0, shade(c,-0.3), 'plaster');
-        ABYSS.furn(F, 'abyss_shield_wall', 0,-5.0, 0, { ly:H }); ABYSS.furn(F, 'abyss_armor_stand', -3.0,-1.6, 0, { ly:H }); ABYSS.furn(F, 'abyss_armor_stand', 3.0,-1.6, 0, { ly:H, variant:1 });
+        ABYSS.furn(F, 'abyss_shield_wall', 0,-5.0, 0, { ly:H, setting:'room' }); ABYSS.furn(F, 'abyss_armor_stand', -3.0,-1.6, 0, { ly:H, setting:'room' }); ABYSS.furn(F, 'abyss_armor_stand', 3.0,-1.6, 0, { ly:H, variant:1, setting:'room' });
         ABYSS.furn(F, 'abyss_counter', 0,1.2, 0, { ly:H });
         /* a striped canvas awning on two poles over the front */
         [-4.2,4.2].forEach(function(x){ LOCUS.pole(F, x,3.3, 3.2, 0.07); }); LOCUS.stripes(F, [-4.6,H+3.3,0.3],[4.6,H+3.3,0.3],[4.6,3.2,3.3],[-4.6,3.2,3.3], 8, CANVASC[0], PAL.abSailRed, { sag:0.2 });
@@ -73,7 +75,7 @@ reseed(654001);
         F.box(-1,FH*2,-3, W+0.4,0.2,D+0.4, 0, shade(c,-0.3), 'relief');
         F.box(-1,0.05,0.02, 5.2,2.6,0.06, 0, VOIDC[1], 'dark'); [-3.6,1.6].forEach(function(x){ F.window(x,FH+1.6,0.02, 0,1, 1.0,1.4); }); ABYSS.balcony(F, -1,FH+0.02,0, 0,1, 3.0,0.9);
         ABYSS.mural(F, -1-W/2-0.02, FH*1.1, -3, -1,0, 3.4,2.4);
-        ABYSS.furn(F, 'abyss_counter', -1,1.2, 0); ABYSS.furn(F, 'abyss_hanging_goods', -1,-1.5, 0);
+        ABYSS.furn(F, 'abyss_counter', -1,1.2, 0); ABYSS.furn(F, 'abyss_hanging_goods', -1,-1.5, 0, { setting:'room' });
         ABYSS.furn(F, 'abyss_umbrella_canopy', 0.5,1.5, 0, { variant:0 });
         ABYSS.furn(F, 'abyss_crates', 4.8,-3.6, 0, { variant:0 }); ABYSS.furn(F, 'abyss_crates', -5.4,4.2, 0, { variant:1 });
         ABYSS.sign(F, 1.8,2.95,0.06, 0,1, 1.4,0.7, 'sack'); }
@@ -86,8 +88,9 @@ reseed(654001);
       if(v===0){ F.box(0,0,0, 12,0.12,11, 0, PAL.abSalt, 'plaster');
         var C=[[-5.5,4.6,-4.8],[5.5,4.0,-4.8],[5.5,4.6,3.8],[-5.5,4.0,3.8]]; C.forEach(function(c){ LOCUS.pole(F, c[0],c[2], c[1], 0.09, null, true); LOCUS.guy(F, c[0],c[1]-0.2,c[2], c[0]*1.1,c[2]*1.25); });
         ABYSS.sail(F, C, PAL.abSailOrange, { swoop:0.9, band:PAL.abSailOrange });
-        ABYSS.furn(F, 'abyss_clay_oven', -3.8,-3.0, 0); ABYSS.furn(F, 'abyss_smoking_rack', 2.6,-3.6, 0); ABYSS.furn(F, 'abyss_counter', 0,0.6, 0, { ly:0.12 });
-        ABYSS.furn(F, 'abyss_baskets', -3.2,2.4, 0, { ly:0.12 }); ABYSS.furn(F, 'abyss_baskets', 3.0,2.4, 0, { ly:0.12 }); ABYSS.furn(F, 'abyss_water_butt', 5.0,-1.0, 0);
+        var rm={ setting:'room' };   /* the open kitchen and stall under the sail are rooms the interior set plans */
+        ABYSS.furn(F, 'abyss_clay_oven', -3.8,-3.0, 0, rm); ABYSS.furn(F, 'abyss_smoking_rack', 2.6,-3.6, 0, rm); ABYSS.furn(F, 'abyss_counter', 0,0.6, 0, { ly:0.12, setting:'room' });
+        ABYSS.furn(F, 'abyss_baskets', -3.2,2.4, 0, { ly:0.12, setting:'room' }); ABYSS.furn(F, 'abyss_baskets', 3.0,2.4, 0, { ly:0.12, setting:'room' }); ABYSS.furn(F, 'abyss_water_butt', 5.0,-1.0, 0, rm);
         signPost(F, -5.6,5.2, 'fish', 3.0); }
       else { var H=0.8; ABYSS.platform(F, -6,6, -5.5,5.0, H);
         var D=ABYSS.vessel(F, 'drum', -2.2,H,-3.6, { r:1.5, len:6.0, col:ABYSS.rust(F), win:[[-1.4,0],[1.4,0]], awning:PAL.abBrightTeal });
@@ -110,8 +113,9 @@ reseed(654001);
       F.cyl(-2.4,H+5.3,-2.8, 0.22,3.9, 0, STEELDC[0], 'rust'); F.cone(-2.4,H+9.2,-2.8, 0.45,0.4, 0, STEELDC[1], 'rust');          /* the flue */
       if(v===0){ var pc2=STEELDC[0]; F.tube('rust', [{x:0.6,y:H+5.3,z:-1.0,r:0.16},{x:0.9,y:H+6.1,z:-0.4,r:0.16},{x:1.9,y:H+6.2,z:0.3,r:0.16},{x:2.9,y:H+5.4,z:0.6,r:0.16},{x:3.1,y:H+3.6,z:0.6,r:0.16},{x:3.1,y:H+0.2,z:0.6,r:0.16}], pc2, { seg:8, cap:true });
         F.cyl(3.1,H,0.6, 0.26,0.3, 0, STEELDC[1], 'rust'); }                                                 /* an elbowed pipe off the tank roof down to a sump */
-      ABYSS.furn(F, 'abyss_shelf_jars', -1.0,-3.6, 0, { ly:H, variant:1 }); ABYSS.furn(F, 'abyss_counter', -1.0,2.0, 0, { ly:H });
-      F.cone(-2.3,H+1.1,2.0, 0.12,0.4, 0, PAL.abCrystal, 'glass');                                       /* the small crystal on the counter */
+      /* (the shelf of jars that stood inside the tank is gone: the tank is a room the interior set plans and furnishes) */
+      ABYSS.furn(F, 'abyss_counter', -1.0,2.0, 0, { ly:H });
+      FURNISH('abyss_counter_crystal', -2.3,H+1.1,2.0, 0);                                                  /* the small crystal on the counter */
       if(v===1){ ABYSS.vessel(F, 'tank', 3.6,H,-2.6, { r:1.6, h:7.0, col:ABYSS.rust(F), win:[[PI/2,3.5],[PI/2,5.6]], port:true, glass:glass });
         F.box(1.8,H+4.0,-2.2, 1.8,0.12,1.0, 0, STEELDC[0], 'rust'); LOCUS.rail(F, 1.6,-1.8, 2.8,-1.8, H+4.1, STEELDC[0], 0.9);
         LOCUS.ladder(F, 3.6+1.9,H,-2.6, 1,0, 7.0, STEELDC[0]); F.edome(3.6,H+7.0,-2.6, 1.6,1.0,1.6, 0, PAL.abTin, 'tinmirror');
@@ -130,11 +134,12 @@ reseed(654001);
         for(var i=0;i<n;i++){ var t0=i/n, t1=(i+1)/n, x0=mix(s[0],s[2],t0), z0=mix(s[1],s[3],t0), x1=mix(s[0],s[2],t1), z1=mix(s[1],s[3],t1);
           F.box((x0+x1)/2,0,(z0+z1)/2, L/n+0.05,F.rr(1.6,2.1),0.06, Math.atan2(x1-x0,z1-z0)+PI/2, ABYSS.rust(F), 'corrugate'); } });
       /* sorted scrap: drums, sheet stacks, pipe bundles, a heap of cans */
-      for(var i=0;i<4;i++) LOCUS.drum(F, -6.0+i*0.75, 0, -5.4, null, false);
-      for(var k=0;k<3;k++) LOCUS.drum(F, -5.5, 0.6*k, -3.6+k*0.1, null, true, PI/2);
-      for(var s=0;s<6;s++) F.box(-1.5,0.08+s*0.12,-5.2, 3.2,0.1,1.6, F.rr(-0.06,0.06), ABYSS.rust(F), 'corrugate');
-      for(var p=0;p<7;p++){ var pz=-3.0+(p%3)*0.3, py=0.2+Math.floor(p/3)*0.3; F.rod(-3.2,py,pz, 2.2,py,pz+0.2, 0.13, F.pick(PIPEC), 'rust'); }
-      F.blob(5.2,0,-4.6, 1.6,1.1, 0, PAL.abTin, 'tinmirror');
+      /* FURNITURE: the catalog's abyss_scrap_stock, harvested from here (drums standing with a lying stack behind them, the
+         sheet stack, the pipe bundle, the heap of cans). The inline drawing took 26 colours from F.rnd(): burnt, so the
+         yard's container, antennas and derrick keep their colours. */
+      ABYSS.burn(F, 26);
+      FURNISH('abyss_scrap_stock', -5.35,0,-5.8, PI, { v:2 }); FURNISH('abyss_scrap_stock', -1.5,0.08,-5.2, 0, { v:0 });
+      FURNISH('abyss_scrap_stock', -0.5,0.08,-2.6, 0, { v:1 }); FURNISH('abyss_scrap_stock', 5.2,0,-4.6, 0, { v:3 });
       if(v===0){ ABYSS.vessel(F, 'container', 3.4,0.08,-0.2, { len:6.1, yaw:PI/2, col:ABYSS.cont(F), win:[[1.2,1.5,-1]], door:'side', doorAt:-1.4 });
         ABYSS.antenna(F, 3.4,2.8,0.8, 'dish', { r:0.7 }); ABYSS.antenna(F, 3.4,2.8,-2.2, 'dish', { r:0.5, face:PI }); ABYSS.antenna(F, 3.0,2.8,-0.6, 'mast', { h:3.2 });
         ABYSS.cables(F, [3.0,5.8,-0.6], [-7.3,3.0,6.3], 0.9, 3); F.cyl(-7.3,0,6.3, 0.08,3.2, 0, F.pick(TIMBERC), 'timber');
@@ -154,13 +159,14 @@ reseed(654001);
       if(v===0){ F.box(0,0,0, 13,0.1,11, 0, PAL.abSalt, 'plaster');
         var C=[[-6,4.8,-5],[0,5.4,-5.2],[6,4.8,-5],[6,4.2,4.4],[-6,4.2,4.4]]; C.forEach(function(c){ LOCUS.pole(F, c[0],c[2], c[1], 0.09, null, true); });
         ABYSS.sail(F, C, CANVASC[2], { swoop:0.8, band:PAL.abSailRed, bandW:0.6 });
-        [[-3.6,-2.6],[-1.2,-3.0],[1.4,-2.7],[3.8,-2.4],[-2.4,-0.4],[0.2,-0.6]].forEach(function(p,i){ ABYSS.furn(F, 'abyss_salt_cone', p[0],p[1], 0, { ly:0.1, variant:i%3===2?1:0 }); });
-        ABYSS.furn(F, 'abyss_smoking_rack', 3.6,0.4, 0, { ly:0.1 }); ABYSS.furn(F, 'abyss_baskets', -1.0,2.6, 0, { ly:0.1 }); ABYSS.furn(F, 'abyss_counter', 2.6,3.0, 0, { ly:0.1 });
+        /* the open shop under the sail is a room the interior set plans: its pieces are placeholders until ?interiors=1 */
+        [[-3.6,-2.6],[-1.2,-3.0],[1.4,-2.7],[3.8,-2.4],[-2.4,-0.4],[0.2,-0.6]].forEach(function(p,i){ ABYSS.furn(F, 'abyss_salt_cone', p[0],p[1], 0, { ly:0.1, variant:i%3===2?1:0, setting:'room' }); });
+        ABYSS.furn(F, 'abyss_smoking_rack', 3.6,0.4, 0, { ly:0.1, setting:'room' }); ABYSS.furn(F, 'abyss_baskets', -1.0,2.6, 0, { ly:0.1, setting:'room' }); ABYSS.furn(F, 'abyss_counter', 2.6,3.0, 0, { ly:0.1, setting:'room' });
         signPost(F, -6.4,5.4, 'salt', 3.0); }
       else { var H=1.1; ABYSS.platform(F, -6.5,6.5, -5.5,2.5, H);
         LOCUS.matWall(F, 0, H, -5.0, 10, 3.0, 0,-1); LOCUS.matWall(F, -5.0, H, -2.6, 4.8, 3.0, -1,0); LOCUS.matWall(F, 5.0, H, -2.6, 4.8, 3.0, 1,0);
         F.pyr(0, H+3.0, -2.6, 12, 2.4, 6.8, 0, F.pick(THATCHC), 'thatch');
-        [-1,1].forEach(function(s){ ABYSS.furn(F, 'abyss_salt_cone', s*2.6,-2.6, 0, { ly:H, variant:s>0?1:0 }); }); ABYSS.furn(F, 'abyss_salt_cone', 0,-3.2, 0, { ly:H });
+        [-1,1].forEach(function(s){ ABYSS.furn(F, 'abyss_salt_cone', s*2.6,-2.6, 0, { ly:H, variant:s>0?1:0, setting:'room' }); }); ABYSS.furn(F, 'abyss_salt_cone', 0,-3.2, 0, { ly:H, setting:'room' });
         ABYSS.furn(F, 'abyss_counter', 0,0.8, 0, { ly:H }); ABYSS.furn(F, 'abyss_baskets', 3.8,1.4, 0, { ly:H });
         ABYSS.furn(F, 'abyss_smoking_rack', -4.0,4.4, 0, { variant:1 }); ABYSS.furn(F, 'abyss_smoking_rack', 0,4.6, 0); ABYSS.furn(F, 'abyss_smoking_rack', 4.0,4.4, 0, { variant:1 });
         LOCUS.stair(F, -3.6, 2.5+H*1.15, 0,-1, H, 1.2); ABYSS.sign(F, 0,H+3.0+0.2,-2.6+3.45, 0,1, 1.6,0.8, 'salt'); }
@@ -175,10 +181,11 @@ reseed(654001);
         LOCUS.pole(F, 0,0, 6.4, 0.13, null, PAL.abGild);
         ABYSS.sail(F, C, PAL.abSailOrange, { swoop:1.2, peak:1.8, band:PAL.abSailOrange, bandW:0.8 });
         /* a sail stretched on a frame for stitching, and the bolts and rope */
-        F.box(-3.5,0,-2.6, 0.1,2.6,0.1, 0, F.pick(TIMBERC), 'timber'); F.box(-0.5,0,-2.6, 0.1,2.6,0.1, 0, F.pick(TIMBERC), 'timber');
-        F.tri('pattern', [-3.4,0.6,-2.6],[-0.6,0.6,-2.6],[-3.4,2.5,-2.6], PAL.abSailOrange, [0,0,1]); F.tri('pattern', [-3.4,0.6,-2.62],[-0.6,0.6,-2.62],[-3.4,2.5,-2.62], PAL.abSailOrange, [0,0,-1]);
-        ABYSS.furn(F, 'abyss_canvas_bolts', 2.6,-2.0, 0, { ly:0.1 }); ABYSS.furn(F, 'abyss_canvas_bolts', 4.6,0.6, PI/2, { ly:0.1 }); ABYSS.furn(F, 'abyss_counter', -1.0,2.4, 0, { ly:0.1 });
-        ABYSS.furn(F, 'abyss_bench', -5.0,0.8, PI/2, { ly:0.1 }); signPost(F, 5.6,5.4, 'sail', 3.2); }
+        /* (the catalog's abyss_sail_frame, harvested from here; the two posts took two colours from F.rnd(): burnt). The loft
+           and the counter under the sail are rooms the interior set plans: placeholders until ?interiors=1 */
+        ABYSS.burn(F, 2); FURNISH('abyss_sail_frame', -2.0,0,-2.6, 0, { setting:'room' });
+        ABYSS.furn(F, 'abyss_canvas_bolts', 2.6,-2.0, 0, { ly:0.1, setting:'room' }); ABYSS.furn(F, 'abyss_canvas_bolts', 4.6,0.6, PI/2, { ly:0.1, setting:'room' }); ABYSS.furn(F, 'abyss_counter', -1.0,2.4, 0, { ly:0.1, setting:'room' });
+        ABYSS.furn(F, 'abyss_bench', -5.0,0.8, PI/2, { ly:0.1, setting:'room' }); signPost(F, 5.6,5.4, 'sail', 3.2); }
       else { var H=0.8, c=F.pick(PASTELC); ABYSS.platform(F, -7.5,7.5, -5.5,2.0, H);
         F.box(-2.5,H,-3.2, 8,5.8,4.4, 0, F.pick(PLANKC), 'plank'); F.box(-2.5,H+5.8,-3.2, 8.6,0.2,5.0, 0, ABYSS.rust(F), 'corrugate');
         F.box(-2.5,H+0.05,-0.98, 3.6,2.5,0.05, 0, VOIDC[1], 'dark'); F.box(-2.5,H+3.3,-0.98, 2.4,1.8,0.05, 0, VOIDC[1], 'dark');   /* the shop front and the loft door */

@@ -17,6 +17,10 @@ Also enforces the rules that make subagent work safe:
      planner can see which fragments a subagent actually touched and confirm
      it stayed inside its contract.
 
+  4. FURNITURE. Inserts one GENERATED fragment, 52-furniture-bundle.js (never in src/): the master catalog's
+     furniture (KratorFurniture) and the interiors core with the beast-rider set (KratorInteriors), placed by
+     the glue 53-furnish.js. The fragment rules above do not apply to it (API.md, Furniture).
+
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
@@ -57,6 +61,25 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
 PALETTE_FILE = '05-palette.js'
+DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, the interiors hook): no generation of its own
+
+# GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing
+# KratorFurniture, harvested registry included for the older br_* pieces) and the interiors core with the
+# beast-rider interior set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). Inserted at
+# build time after 50-structure.js and before the glue 53-furnish.js; never written to src/ and exempt from
+# the fragment rules (its names live in its own closures). The cultures are beast-rider and its fallback
+# chain (kits/interiors IX.CULTURE_FAMILY['beast-rider'] = lizardmen, generic).
+FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic']
+INTERIOR_SETS = ['beast-rider']
+VIRTUAL = {'52-furniture-bundle.js'}
+
+
+def virtual_bodies():
+    root = os.path.dirname(os.path.dirname(HERE))
+    sys.path.insert(0, os.path.join(root, 'kits', 'catalog'))
+    sys.path.insert(0, os.path.join(root, 'kits', 'interiors'))
+    import furniture_bundle, kit_bundle
+    return {'52-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, harvested=True) + kit_bundle.bundle(INTERIOR_SETS)}
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -84,7 +107,7 @@ def strip_head_comments(text):
 def check(order, bodies):
     errs, seeds = [], {}
     for f in order:
-        if not f.endswith('.js'):
+        if not f.endswith('.js') or f in VIRTUAL:
             continue
         body = bodies[f]
 
@@ -105,7 +128,7 @@ def check(order, bodies):
     # column-0 `var x` / `function x` declared in two fragments silently clobbers.
     decl = {}
     for f in order:
-        if not f.endswith('.js'):
+        if not f.endswith('.js') or f in VIRTUAL:
             continue
         head = RE_HEAD_SEED.sub('', strip_head_comments(bodies[f]), 1)
         if strip_head_comments(head).startswith('(function'):
@@ -129,14 +152,17 @@ def check(order, bodies):
 
 def main():
     do_checks = '--no-checks' not in sys.argv
+    vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     for f in os.listdir(LOD_DIR):          # a src/ copy with the same name overrides
         if f[0].isdigit() and f not in paths:
             paths[f] = os.path.join(LOD_DIR, f)
-    order = sorted(paths)
-    bodies = {}
+    order = sorted(list(paths) + list(vb))
+    bodies = dict(vb)
     for f in order:
-        with open(paths[f]) as fh:
+        if f in vb:
+            continue
+        with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
 
     if do_checks:
@@ -148,7 +174,7 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w') as fh:
+    with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
     with open(MANIFEST, 'w') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
@@ -157,7 +183,7 @@ def main():
     body = html.split("function BUILD(){", 1)[1].rsplit("</script>", 1)[0]
     body = body.rsplit('}', 1)[0]
     chk = os.path.join(HERE, '.syntax.js')
-    with open(chk, 'w') as fh:
+    with open(chk, 'w', encoding='utf-8') as fh:
         fh.write("function BUILD(){'use strict';\n" + body + "\n}\n")
     try:
         r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)

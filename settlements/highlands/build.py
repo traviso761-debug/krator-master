@@ -137,6 +137,7 @@ DETERMINISTIC = {
     '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '73b-hl-frame.js',   # the Highlands vocabulary
     '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-hl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook
     '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js', '93b-rk-lod.js', '82e-anc-aa.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
 
@@ -150,8 +151,21 @@ SEED_COLLISION_EXCEPTIONS = set()
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
 SCOPED_PREFIXES = ('86-bio-',)
+# GENERATED fragments: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing
+# KratorFurniture) and the interiors core with this kit's interior set (kits/interiors/kit_bundle.py:
+# KratorInteriors, ROOM, furnishRoom). Inserted at build time between the vernacular helpers and the
+# Highlands vocabulary; never written to src/. 89y-hl-furnish.js is the glue (after 73-hl-carve's own VERN.place, before the scene) (FURNISH, the interiors hook).
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+VIRTUAL = {'69d-furniture-bundle.js'}
+
+
+def virtual_bodies():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import furniture_bundle, kit_bundle
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['highlands'])}
 def scoped(f):
-    return f.startswith(SCOPED_PREFIXES)
+    return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL
 
 
 RE_BUILDER = re.compile(r'^function\s+(build[A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{(.{0,80})', re.M)
@@ -253,10 +267,13 @@ def build_one(target, do_checks, assert_origin):
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
-    order = sorted(paths)
+    vb = virtual_bodies()
+    order = sorted(list(paths) + list(vb))
 
-    bodies = {}
+    bodies = dict(vb)
     for f in order:
+        if f in vb:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
 

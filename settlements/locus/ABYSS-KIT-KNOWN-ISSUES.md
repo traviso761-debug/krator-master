@@ -103,6 +103,35 @@ Geometry checked against the source; file:line as of 36e1afb (the lines have sin
 - [x] Minor: the alchemist's flue starts ~0.18 m above the tank roof (`40-shops.js:110`).
       2026-10-01: it starts at H+5.3, 0.12 m into the roof cone (top unchanged).
 
+## Furniture from the catalog (Oct 2026; `API.md` "Furniture")
+
+- [x] **Interior-set variants** (fixed Oct 2026). Every multi-variant abyss building now has its own `#n` item in
+      `kits/interiors/sets/abyss.js` (`abyss_shop_weapons#1` the smithy under the sail, `_armor#1` the tin shed,
+      `_general#1` the two-storey cabin, `_alchemy#1` like variant 0, `_salvage#1` the tank store, `_salt#1` the reed shed,
+      `_sailmaker#1` the plank loft, `abyss_inn#1` 27 rooms in the pastel wings and the court, `abyss_tavern#1` the main and
+      the raised deck, `abyss_warehouse#1` the five ground containers) or a `skip` (`abyss_shop_food#1`,
+      `abyss_farmhouse#1`: drums with no floor; `kits/interiors/sets/GEOMETRY.md`), and the glue no longer falls back to
+      the base item for a variant > 0 (`API.md` "Furniture": a variant with no item is not furnished, `LOCF.unfurnished`).
+      Builder pieces that stand in the newly planned open rooms became `setting:'room'` (the variant-1 forge, the tavern's
+      raised-deck tables); the variant-1 tavern bar under the raised deck is `'indoor'` (not planned).
+- [x] **Lying drums** (fixed Oct 2026): the warehouse (variant 1) yard's two are the catalog's `job_oil_drum_lying` (the
+      Jobs category, `kits/catalog/krator-master-furniture-jobs.js`; eastabyss, the kit's rust tones), each drawn drum's colour
+      pick burnt (`ABYSS.burn(F, 1)`). The standing ones, the tavern bar's three and the yard's six, are the catalog's
+      `pa_drum` (scrap culture, 'Oil drum', sealed; its painted colours, not the kit's rust; each colour pick burnt).
+- [ ] `abyss_tavern` variant 1: a pile of the raised back deck stands in the bar's counter (x -4.1, z -6.0), the space under
+      the raised deck is about 1.9 m clear, and the kitchen drum rises 0.15 m through the raised deck.
+- [ ] The catalog's `abyss_hanging_lantern` carries its own 0.3 m hanger and ceiling plate: on a mast arm
+      (`ABYSS.mast { lantern }`) the stub shows above the arm.
+- [ ] The propeller-lanterns on sail masts are the catalog's free-standing `abyss_propeller_mast` set 6 m down the mast,
+      so its own pole hides inside the mast (a few hidden triangles each).
+- [ ] The salvage yard's drums: the catalog's `abyss_scrap_stock` variant 2 groups four standing drums with a lying stack
+      at the row's END (the kit drew the stack in front of the row); placed turned so the standing row stays where it
+      stood, the stack now sits in the yard's back corner.
+- [ ] The catalog's `source` fields still name `settlements/locus/src/65-abyss-10-furniture.js`, now deleted (it is in
+      git history); the catalog's owner may point them at the commit.
+- [ ] Lit catalog pieces carry their own lamps: the abyss sheet has 244 night lamps, 5 more than before (strings and
+      canopies the kit drew without one).
+
 ## Against the reference images (2026-10-01), not fixed
 
 - [ ] **Tin-mirror reads as smooth grey sheet at sheet distance.** `recycled_house_closeup.jpg` is a patchwork of

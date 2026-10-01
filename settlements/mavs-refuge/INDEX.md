@@ -25,8 +25,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-kit.js` | 25 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 8 | 11. TEXTURES (1) |
 | `50-structure.js` | 18 | 12. STRUCTURE (1) |
-| `55-arch.js` | 65 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (128); 2. FURNITURE + MIDDLE ZONES (347); 3. MAV'S CROWN (524); 4. THE COUNCIL CHAMBER (677); 5. SATELLITES (782) |
-| `56-levels.js` | 69 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (155); GOAL B: THE GATE TREES (579) |
+| `53-furnish.js` | 8 | 13a. FURNITURE: PLACED from the catalog, not dra (1) |
+| `55-arch.js` | 60 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (130); 2. FURNITURE + MIDDLE ZONES (355); 3. MAV'S CROWN (508); 4. THE COUNCIL CHAMBER (643); 5. SATELLITES (748) |
+| `56-levels.js` | 67 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (146); GOAL B: THE GATE TREES (555) |
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
 | `62-jungle.js` | 45 **big** | 15. JUNGLE (1) |
 | `63-trails.js` | 3 | 16b. GROUND TRAILS (1) |

@@ -22,7 +22,7 @@ function dwBox(o){
  // roof furniture on the container: solar panel, stovepipe, a water butt
  dwSolar(cx+1.0,CT.H+.02,cz,3.0,1.6,0,.5);stovepipe(cx-2.4,CT.H,cz-.3,1.4);waterButt(cx+CT.L20/2+.9,.9,cz-.6,.55,.9);
  // yard: barrels and tyre seats kept clear of both doors
- barrel(cx+3.9,0,cz+.8);barrel(cx+4.3,0,cz+.3);crate(cx+3.9,0,cz+1.6,.6,.3);tireStack(rx0-.9,cz+1.4,3);tire(rx0-.9,.12,cz-.4,TYR.R,TYR.t);
+ barrel(cx+3.9,0,cz+.8);barrel(cx+4.3,0,cz+.3);crate(cx+3.9,0,cz+1.6,.6,.3);tireStack(rx0-.9,cz+1.4,3);FURNISH('pa_tyre_stool',rx0-.9,0,cz-.4,0);   // the loose tyre seat
  lamp(cx+3.0,0,fz+1.6,2.9);junkPile(rx0-1.5,cz-2.4,1.2,7);
  // SOCKETS: a canopy over the door, a banner on a pole at the corner, an emblem on the front, a livery panel on the end
  sock('awning',cx-1.3,2.3,fz,0,{w:1.8,d:1.2,drop:.5,h:2.3});
@@ -41,7 +41,7 @@ function dwSilo(o){
  for(const sx of [-1,1])for(const sz of [.6,2.9]){beam('wood',[sx*3.0,.45,r+sz],[sx*3.0,3.0,r+sz],.11,jc(0x5c4630,.06));}
  roofP('corr',-3.4,3.4,r+3.2,2.9,r-.2,3.5,.07,P('galv'));
  // a tyre-and-earth raised bed, water butt and yard
- tireRing(-4.6,r+1.6,.72,2,0,TAU);cyl('plain',-4.6,.05,r+1.6,.6,.36,jc(0x4a3626,.06),10);plant('groundcover',-4.6,.5,r+1.6,{r:.55,moisture:'mild'});
+ dwPlanter(-4.6,r+1.6);plant('groundcover',-4.6,.5,r+1.6,{r:.55,moisture:'mild'});
  waterButt(-3.0,1.2,-r-.8,.6,1.0);ladder(r*.95*Math.sin(.9),0,-r*.95*Math.cos(.9)-.1,h,PI+.9);
  barrel(3.8,0,r+.4);barrel(4.2,0,r+.9);lamp(-3.6,0,r+.9,3.0);
  sock('awning',0,2.75,r+.02,0,{w:2.0,d:1.3,drop:.55,h:2.5});
@@ -58,6 +58,8 @@ function dwRail(x0,z0,x1,z1,y,h){h=h||1;const c=jc(dwWood,.06);const L=Math.hypo
 // a ladder leaning in the current frame: foot at z=za on the ground, top at (zb,yb); w wide, centred on x
 function dwLean(x,w,za,zb,yb){const c=jc(0x5a5048,.05);const L=Math.hypot(za-zb,yb);for(const sx of [-1,1])beam('iron',[x+sx*w/2,0,za],[x+sx*w/2,yb,zb],.05,c);
  for(let k=1;k*.32<L;k++){const t=k*.32/L;beam('iron',[x-w/2,yb*t,za+(zb-za)*t],[x+w/2,yb*t,za+(zb-za)*t],.035,c,true,5);}}
+// a tyre-ring planter (the catalog's; its old tyre ring and soil drew 16 random numbers): what grows in it stays plant() flora
+function dwPlanter(x,z){rngSkip(16);return FURNISH('pa_planter',x,0,z,0,{v:0});}
 // solar panel on a small frame: tilted toward +z, base at y, w x d (plan depth)
 function dwSolar(x,y,z,w,d,ry,tilt){W(x,y,z,ry||0,()=>{const t=tilt===undefined?.5:tilt,c=Math.cos(t)*d/2,h=Math.sin(t)*d,fc=jc(0x8a8a86,.05);
  plane4('glass',[-w/2,h+.2,-c],[w/2,h+.2,-c],[-w/2,.2,c],[w/2,.2,c],.05,jc(0x1c2c50,.05));
@@ -134,7 +136,7 @@ function dwTire(o){
  for(let a=PI+.35;a<TAU-.25;a+=.5)plant('groundcover',Math.cos(a)*(R+.8),1.6,Math.sin(a)*(R+.8),{r:.6,moisture:'arid',cultivated:false});
  // ladder to the roof (side), tyre planters, water butt, junk
  {const al=fa+s*1.0;W(Math.cos(al)*(R+.3),0,Math.sin(al)*(R+.3),PI/2-al,()=>dwLean(0,.5,1.6,.55,3.0));}
- for(const [cx,cz] of [[Math.cos(wa)*(R+1.15),Math.sin(wa)*(R+1.15)],[-s*1.9,R+1.5]]){tireRing(cx,cz,.72,2,0,TAU);cyl('plain',cx,.05,cz,.6,.36,jc(0x4a3626,.06),10);plant('groundcover',cx,.45,cz,{r:.62});plant('flower',cx+.15,.5,cz,{r:.25});}
+ for(const [cx,cz] of [[Math.cos(wa)*(R+1.15),Math.sin(wa)*(R+1.15)],[-s*1.9,R+1.5]]){dwPlanter(cx,cz);plant('groundcover',cx,.45,cz,{r:.62});plant('flower',cx+.15,.5,cz,{r:.25});}
  {const al=fa+s*2.5;waterButt(Math.cos(al)*(R+.9),1.0,Math.sin(al)*(R+.9),.55,.9);}
  tireStack(s*2.6,R+1.7,3);barrel(-s*3.2,0,R+1.6);crate(-s*3.5,0,R+2.1,.6,.3);junkPile(-s*4.3,R-.6,.9,6);lamp(s*1.0,0,R+1.6,2.6);
  // SOCKETS: awning over the door, banner on a pole by the door, emblem on the plaster between door and window
@@ -159,8 +161,8 @@ function dwBus(o){
  box('plank',cx-1.3,2.45,zf-.02,3.6,.4,.08,jc(0x5c4630,.06));                       // fascia lashed along the bus roof edge
  leanRoof(cx-1.3,zf,3.6,dd+.3,2.85,2.65,{col:jc(o.v===1?0xc45a30:0x3f7a72,.05)});
  // deck furniture: a table, tyre seats, a hanging bottle string
- box('plank',cx-.4,.8,zf+1.0,.9,.06,.6,P('woodD'));for(const sx of [-.35,.35])box('wood',cx-.4+sx,.86,zf+1.0,.06,.6,.06,jc(dwWood,.05));
- tire(cx-2.2,.92,zf+1.0,TYR.R*.8,TYR.t*.8);tire(cx+.5,.92,zf+.6,TYR.R*.8,TYR.t*.8);
+ rngSkip(7);FURNISH('scrap_poor_table',cx-.4,.8,zf+1.0,0);
+ FURNISH('pa_tyre_stool',cx-2.2,.8,zf+1.0,0);FURNISH('pa_tyre_stool',cx+.5,.8,zf+.6,0);
  bottleString([cx-3.0,2.62,zf+dd+.35],[cx+.4,2.62,zf+dd+.35],7);
  // rear lean-to kitchen of planks and sheet against the back of the bus
  const kx1=bx0,kx0=bx0-3.4,kz0=cz-1.5,kz1=cz+1.5,hN=2.75,hF=2.15,kc=(kx0+kx1)/2;
@@ -182,7 +184,7 @@ function dwBus(o){
   for(let k=0;k<4;k++)plant(k%2?'crop':'shrub',px+rr(-pw/2+.25,pw/2-.25),ry+.42,cz+rr(-.4,.4),{r:rr(.22,.32),h:.5});}
  dwSolar(cx+1.1,ry,cz,2.8,1.5,0,.5);stovepipe(cx-.3,ry,cz-.5,1.3);stovepipe(kc-.6,hN-.3,cz+.3,1.7);
  // yard: a water butt on stilts at the kitchen, barrels, crate, tyre seat, junk
- waterButt(kx0+1.0,1.5,kz0-1.2,.6,.9);barrel(kx0+.2,0,kz1+.7);barrel(kx0+.7,0,kz1+1.1);crate(kc-1.6,0,kz1+1.2,.6,.3);tireStack(cx+4.9,zf+1.2,2);tire(cx+5.0,.12,zf+2.6,TYR.R,TYR.t);
+ waterButt(kx0+1.0,1.5,kz0-1.2,.6,.9);barrel(kx0+.2,0,kz1+.7);barrel(kx0+.7,0,kz1+1.1);crate(kc-1.6,0,kz1+1.2,.6,.3);tireStack(cx+4.9,zf+1.2,2);FURNISH('pa_tyre_stool',cx+5.0,0,zf+2.6,0);
  junkPile(kx0+.2,kz0-1.6,1.0,6);lamp(cx+3.0,0,zf+2.4,2.9);
  // poles: banner in the yard, flag at the kitchen's rear corner
  dwPole(cx+4.4,0,zf+3.0,4.3,.1);dwPole(kx0-.3,0,kz0,4.7,.1);
@@ -208,8 +210,8 @@ function dwTank(o){
  const r=1.7,L=8.4,cy=r+.35;
  tankH({r:r,L:L,col:col});
  // tyre cradle: earth-filled stacks chocked against the belly
- for(const sx of [-1,1])for(const sz of [-1,1])tireStack(sx*L*.28,sz*(r+.05),2);
- for(const sx of [-1,1])tireStack(sx*(L/2+.3),0,2);
+ for(const sx of [-1,1])for(const sz of [-1,1])tireStack(sx*L*.28,sz*(r+.05),2,{fixed:true});
+ for(const sx of [-1,1])tireStack(sx*(L/2+.3),0,2,{fixed:true});
  // skin cut: a real door in a welded vestibule under the awning, round ports, and roof openings
  dwPodDoor(-1.4,1.3,1.86,.46,3.15,0xe0b030);
  for(const px of [.9,2.0])porthole(px,cy,1.62,.32);
@@ -229,7 +231,7 @@ function dwTank(o){
   dwTrapZ('corr',-4.2,1.6,4.0,.16,2.55,1.95,jc(pick([0xc99a2e,0x7a2e28]),.05));dwTrapZ('corr',-.4,1.6,4.0,.16,2.55,1.95,jc(pick([0x3b7f6e,0x2f5f8f]),.05));
   dwSkin(-2.3,.16,4.0,3.8,1.79,0,'batten',pick([0x9a7a52,0x3b7f6e]));box('plank',-2.3,0,2.8,3.8,.16,2.4,jc(0x6a5a44,.08));
   for(const px of [-4.2,-.4])beam('wood',[px,0,4.0],[px,1.95,4.0],.1,jc(0x5c4630,.06));});
- waterButt(4.4,1.9,-1.9,.6,.9);pipe('iron',[[3.5,2.0,-3.6],[4.4,2.0,-3.6],[4.4,2.8,-1.9]],.03,jc(0x6a6a66,.05));
+ waterButt(4.4,1.9,-1.9,.6,.9);pipe('iron',[[3.5,2.0,-3.6],[4.4,2.0,-3.6],[4.4,2.4,-1.9]],.03,jc(0x6a6a66,.05));
  barrel(5.2,0,1.8);barrel(5.7,0,1.3);crate(4.9,0,2.6,.6,.2);junkPile(5.0,-3.2,1.1,7);lamp(1.3,0,3.4,3.0);
  dwPole(.55,0,3.35,3.8,.1);dwPole(1.2,3.72,-.4,5.4,.06);
  // SOCKETS
@@ -299,7 +301,7 @@ function dwBottle(o){
  bottleString([.2,2.5,zf+1.95],[3.8,2.5,zf+1.95],9);
  tire(-1.1,.12,zf+2.5,TYR.R,TYR.t,undefined,rng()*TAU);box('plank',-1.1,.26,zf+2.05,1.3,.06,.5,P('woodD'));
  box('plank',-2.9,y0+.05,zf+.32,1.4,.26,.3,jc(0x6a5238,.06));box('plain',-2.9,y0+.3,zf+.32,1.3,.03,.2,jc(0x4a3626,.06));for(let k=0;k<5;k++)plant(k%2?'flower':'crop',-2.9-.5+k*.25,y0+.3,zf+.32,{r:.14,h:.3});
- tireRing(-4.6,zf+1.1,.72,2);cyl('plain',-4.6,.05,zf+1.1,.6,.36,jc(0x4a3626,.06),10);plant('groundcover',-4.6,.45,zf+1.1,{r:.62});plant('flower',-4.45,.5,zf+1.1,{r:.25});
+ dwPlanter(-4.6,zf+1.1);plant('groundcover',-4.6,.45,zf+1.1,{r:.62});plant('flower',-4.45,.5,zf+1.1,{r:.25});
  barrel(x0-.6,0,-.3);barrel(x0-.6,0,.3);
  fenceRun(-4.8,zf+3.4,-1.6,zf+3.4,1.0,{type:'pickets'});fenceRun(1.4,zf+3.4,4.8,zf+3.4,1.0,{type:'pickets'});lamp(-1.1,0,zf+3.0,2.8);
  // SOCKETS
@@ -345,7 +347,7 @@ function dwStilt(o){
  stairs(3.4,0,-4.0,3.4,2.3,-.5,1.0,{steel:true});
  ladder(3.4,2.3,1.85,3.35,0);for(const sx of [-1,1]){beam('wood',[3.4+sx*.22,FY+.6,1.85],[3.4+sx*.22,FY+.6,2.05],.06,jc(dwWood,.06));beam('wood',[3.4+sx*.22,FY-.35,1.85],[3.4+sx*.22,FY-.35,2.05],.06,jc(dwWood,.06));}
  // water butt on stilts and gutter pipe, hoist beam with pulley and hanging crate, tarp shelter, junk
- waterButt(-3.8,2.6,-1.4,.65,1.0);pipe('iron',[[-hx-.25,RY,-1.4],[-3.3,RY,-1.4],[-3.8,RY-2.4,-1.4],[-3.8,3.7,-1.4]],.035,jc(0x6a6a66,.05));
+ waterButt(-3.8,2.6,-1.4,.65,1.0);pipe('iron',[[-hx-.25,RY,-1.4],[-3.3,RY,-1.4],[-3.8,RY-2.4,-1.4],[-3.8,2.45,-1.4]],.035,jc(0x6a6a66,.05));
  {const hx_=-1.65,hy=cy0+1.5;beam('wood',[hx_,hy,zc+cd],[hx_,hy+.05,4.6],.14,jc(dwWood,.06));beam('wood',[hx_,hy-.9,zc+cd],[hx_,hy,3.2],.09,jc(dwWood,.06));
   cyl('iron',hx_,hy-.3,4.6,.14,.16,jc(0x4a4038,.05),8);beam('plain',[hx_,hy,4.6],[hx_,FY+1.5,4.6],.015,jc(0x8a7a5a,.05),true,3);crate(hx_,FY+.9,4.6,.6,.3);}
  W(0,0,0,PI,()=>{tarp(0,FY-.4,hz,3.6,1.6,2.9,pick([0x3a6a8a,0x8a4a3a,0xb09a4a]),{poles:false});for(const sx of [-1,1])beam('wood',[sx*1.8,0,hz+1.6],[sx*1.8,FY-.4-2.9+.08,hz+1.6],.08,jc(dwWood,.06),true,6);});

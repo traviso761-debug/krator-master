@@ -3,6 +3,16 @@
 
 Usage:
   python3 verify.py dist/interiors.html [--assert] [--seeds 3] [--out ./shots] [--rooms] [--eval "()=>..."] [--query lights=keep]
+  python3 verify.py dist/interiors-sets.html --sets [--assert] [--seeds 2] [--query set=highlands&only=key] [--out ./shots] [--rooms] [--verbose]
+
+--sets: the building-sets sheet (src-sets/, sets/*.js). The same per-room checks (inside, height, overlap,
+  door, clearance, reach, required, determinism, builds, measured-*), the planned-building checks and
+  plan determinism, the light budget, plus:
+       residence        every residence (a dwelling item, or residence: true) holds per unit a bed, a
+                        FOOD container and an ITEM container (IX.sets.auditResidence)
+       coverage         every set has items, every item has rooms or a skip reason (the skipped list is
+                        printed: geometry that precludes rooms, for the kit's author)
+  and no walkers. Screenshots: an overview per set, and (--rooms) every building.
 
 What it does:
   1. Serves kits/ over HTTP (the page loads ../../catalog/*.js by path) and routes
@@ -115,7 +125,7 @@ async def run(a):
             for ev in (a.eval or []):
                 print('eval:', json.dumps(await pg.evaluate(ev))[:4000])
 
-            if a.assert_:
+            if a.assert_ and not a.sets:
                 import subprocess
                 core = os.path.join(os.path.dirname(path), 'interiors-core.js')
                 r = subprocess.run(['node', os.path.join(HERE, 'tests', 'core_test.js'), core], capture_output=True, text=True)
@@ -124,7 +134,9 @@ async def run(a):
                 print('  ' + (r.stdout + r.stderr).strip()[:1500])
                 if r.returncode:
                     fails.append('core test')
-            if a.assert_ and info['ready']:
+            if a.sets and info['ready']:
+                await run_sets(pg, a, fails)
+            if a.assert_ and info['ready'] and not a.sets:
                 snap0 = await pg.evaluate(SNAP_JS)
                 h0 = hashlib.sha1(snap0.encode()).hexdigest()[:12]
                 cov = await pg.evaluate("""()=>{const R=window._interiors.rooms;return {n:R.length,
@@ -194,7 +206,23 @@ async def run(a):
                 if panel:
                     print('ERROR PANEL after audit:', repr(panel[:1500])); fails.append('error panel not clean after audit')
 
-            if a.out and info['ready']:
+            if a.out and info['ready'] and a.sets:
+                async def sshot(name):
+                    await pg.wait_for_timeout(400)
+                    fn = os.path.join(a.out, name + '.png'); await pg.screenshot(path=fn); print('shot:', fn)
+                await pg.evaluate("()=>{window._interiors.cutaway('cut');window._interiors.setOutline(false,false);window._interiors.overview();}")
+                await sshot('sets_overview')
+                nb = await pg.evaluate("()=>window._interiors.bands.length")
+                for i in range(nb):
+                    nm = await pg.evaluate("(i)=>{window._interiors.gotoSet(i);return window._interiors.bands[i].set.set;}", i)
+                    await sshot('set_%s' % nm)
+                if a.rooms:
+                    n = await pg.evaluate("()=>window._interiors.items.length")
+                    for i in range(n):
+                        key = await pg.evaluate("(i)=>{const I=window._interiors;I.gotoItem(i,0);return I.items[i].set.set+'_'+I.items[i].item.key;}", i)
+                        await sshot('item_%03d_%s' % (i, key))
+                await pg.evaluate("()=>window._interiors.overview()")
+            if a.out and info['ready'] and not a.sets:
                 async def shot(name):
                     await pg.wait_for_timeout(400)
                     fn = os.path.join(a.out, name + '.png'); await pg.screenshot(path=fn); print('shot:', fn)
@@ -239,10 +267,93 @@ async def run(a):
     return 0
 
 
+SETS_SNAP_JS = ("()=>{const I=window._interiors;return JSON.stringify({plans:I.plans.map(p=>KratorInteriors.exportPlan(p)),"
+                "buildings:I.buildings.map(b=>KratorInteriors.exportBuilding(b))})}")
+
+
+async def run_sets(pg, a, fails):
+    """--sets: coverage, the audit at every seed, the residence table, determinism."""
+    cov = await pg.evaluate("""()=>{const I=window._interiors;return {sets:I.sets.map(S=>({set:S.set,n:I.items.filter(E=>E.set===S).length})),
+        items:I.items.length, rooms:I.rooms.length, buildings:I.buildings.length, skipped:I.skipped(),
+        kinds:[...new Set(I.rooms.map(r=>r.kind))], cultures:[...new Set(I.rooms.map(r=>r.culture))]}}""")
+    print('\ncoverage: %d sets (%s), %d buildings, %d planned bodies, %d rooms; kinds %s; cultures %s' % (
+        len(cov['sets']), ', '.join('%s %d' % (s['set'], s['n']) for s in cov['sets']), cov['items'], cov['buildings'], cov['rooms'],
+        ' '.join(cov['kinds']), ' '.join(cov['cultures'])))
+    if not cov['sets']:
+        fails.append('coverage: no set on the sheet')
+    for s_ in cov['sets']:
+        if not s_['n']:
+            fails.append('coverage: set %s has no buildings' % s_['set'])
+    if cov['skipped']:
+        print('no interior (%d), for the kit authors:' % len(cov['skipped']))
+        for k in cov['skipped']:
+            print('  %-12s %-28s %s: %s' % (k['set'], k['key'], k['name'], k['skip']))
+    if not a.assert_:
+        return
+    snap0 = await pg.evaluate(SETS_SNAP_JS)
+    h0 = hashlib.sha1(snap0.encode()).hexdigest()[:12]
+    tot_fail = 0
+    for s_ in range(a.seeds):
+        if s_:
+            await pg.evaluate("(s)=>window._interiors.reseed(s)", s_)
+        res = await pg.evaluate("()=>window._interiors.audit()")
+        print('\n--- seed %d: %d rooms, %d pieces placed, %d usable, %d reached from every door, %d fallbacks, %d thin rooms; placement %.0f ms over %d runs ---'
+              % (s_, res['rooms'], res['pieces'], res['usable'], res['reached'], res['fallbacks'], res['thin'], res['ms'], res['runs']))
+        print('  %-14s %-6s %-5s %-6s %-6s %-7s %-10s %s' % ('set', 'items', 'skip', 'bodies', 'rooms', 'pieces', 'residences', 'fails'))
+        for S in res['sets']:
+            print('  %-14s %-6d %-5d %-6d %-6d %-7d %-10s %s' % (S['set'], S['items'], S['skipped'], S['bodies'], S['rooms'], S['pieces'],
+                                                               '%d/%d' % (S['residences'] - S['residenceFails'], S['residences']), S['residenceFails'] or 'ok'))
+        if s_ == 0 or a.verbose:
+            bad = [r for r in res['perRoom'] if r['fails'] or r['missing']]
+            if bad:
+                print('  rooms with failures or missing pieces:')
+                print('  %-44s %-6s %-6s %-30s %s' % ('room', 'pieces', 'reach', 'required', 'fallbacks / missing'))
+                for r in bad[:80]:
+                    extra = '; '.join(x for x in (r['fallbacks'], r['missing'], 'thin culture' if r['thin'] else '') if x)
+                    print('  %-44s %-6d %-6s %-30s %s%s' % (r['id'][-44:], r['pieces'], '%d/%d' % (r['reached'], r['usable']), r['required'], extra, '  FAIL x%d' % r['fails'] if r['fails'] else ''))
+            badb = [b for b in res['buildings'] if b['fails'] or b['dropped'] or b['warnings']]
+            if badb:
+                print('  buildings with failures, dropped rooms or warnings:')
+                for b in badb[:60]:
+                    print('  %-44s storeys %d rooms %d stairs %d routes %d/%d dropped %d warnings %d fails %d' % (b['id'][-44:], b['levels'], b['rooms'], b['stairs'], b['routes'], b['rooms'], b['dropped'], b['warnings'], b['fails']))
+            badr = [r for r in res['residences'] if r['fails']]
+            if badr:
+                print('  residences failing the rule (bed, food container, item container per unit):')
+                for r in badr[:60]:
+                    print('  %-12s %-28s units %d: %d bed, %d food, %d item' % (r['set'], r['key'], r['units'], r['beds'], r['food'], r['items']))
+        L = res['lights']
+        print('  lights: %d point lights in the scene (budget %s%s), %d lamp lights as data%s; %d surface pieces'
+              % (L['pointLights'], L['budget'], ', kept' if L['kept'] else '', L['data'],
+                 ('; backtracked: ' + ', '.join(res['backtracked'])) if res['backtracked'] else '', res['surface']))
+        by = {}
+        for f in res['fails']:
+            by.setdefault(f['check'], []).append(f['msg'])
+        for c in ['inside', 'measured-inside', 'height', 'measured-height', 'overlap', 'door', 'clearance', 'reach',
+                  'required', 'determinism', 'builds', 'building', 'plan-determinism', 'residence', 'lights']:
+            n = len(by.get(c, []))
+            print('  %-16s %s' % (c, 'ok' if not n else 'FAIL x%d' % n))
+            for m in by.get(c, [])[:12 if a.verbose else 6]:
+                print('      ' + m)
+        tot_fail += len(res['fails'])
+    if tot_fail:
+        fails.append('%d assertion failures' % tot_fail)
+    if a.seeds > 1:
+        await pg.evaluate("()=>window._interiors.reseed(0)")
+    snap1 = await pg.evaluate(SETS_SNAP_JS)
+    h1 = hashlib.sha1(snap1.encode()).hexdigest()[:12]
+    print('\nsheet determinism: seed 0 placements %s, again after reseeding %s -> %s' % (h0, h1, 'same' if h0 == h1 else 'DIFFERENT'))
+    if h0 != h1:
+        fails.append('sheet not deterministic')
+    panel = await pg.evaluate("document.getElementById('errs').textContent")
+    if panel:
+        print('ERROR PANEL after audit:', repr(panel[:1500])); fails.append('error panel not clean after audit')
+
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('html')
     ap.add_argument('--assert', dest='assert_', action='store_true')
+    ap.add_argument('--sets', action='store_true', help='the building-sets sheet (dist/interiors-sets.html)')
     ap.add_argument('--seeds', type=int, default=3, help='with --assert: audit seeds 0..N-1 (default 3)')
     ap.add_argument('--verbose', action='store_true', help='with --assert: print the per-room table for every seed')
     ap.add_argument('--out', default='')

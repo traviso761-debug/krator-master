@@ -4,7 +4,14 @@
    stall dressing, the ground houses (round hut, joglo, longhouse), farm plots, the round
    assembly hall and the market.  Wood, thatch and cloth against rust and concrete.
    New draw calls used here: box|cloth, merged thatch, merged shingle, merged wall,
-   merged leafy (shared with 58-overgrowth.js).                                        */
+   merged leafy (shared with 58-overgrowth.js).
+   FURNITURE is not drawn here: every piece that is not the structure or an outbuilding (lamps, barrels,
+   crates, sacks, troughs, tack, straw, braziers, benches, counters, goods, planters, washing lines...)
+   is a kits/catalog piece placed as data with FURNISH (53-furnish.js), and the rooms are furnished by
+   the interiors kit (56-interiors.js). Each builder names its building with gfAt() and records its
+   shell for the interiors (S.shell, Hs.shell, HALL.shell, T.deck.keeper). Converted spots still draw
+   the random numbers they drew as geometry, so the stream every later builder reads is unchanged.
+   The walk mode (83-walk.js) reads the solids the builders register here (gw* in 53-furnish.js).   */
 reseed(550001);
 (function(){
 var ARCH = { dwellings:0, byKind:{}, windows:0, lamps:0, rails:0, washing:0, banners:0, roosts:0, houses:0, plots:0, stalls:0, hall:0, openSky:0 };
@@ -46,10 +53,17 @@ function pod(x,y,z,r,col){
   for(var i=0;i<4;i++){ var p0=q[i], p1=q[(i+1)%4], mx=(p0[0]+p1[0])/2-x, mz=(p0[2]+p1[2])/2-z;
     oTri('leafy',p0,p1,t,col,mx,0.5,mz); oTri('leafy',p0,p1,b,shade(col,-0.2),mx,-0.5,mz); }
 }
-function lamp(x,y,z,amp,rad,cool,hang){ LANTERN(x,y,z,amp,rad,cool,hang); ARCH.lamps++; }
+/* a lamp keeps Girder's own light (the night volume and its halo); its body is a catalog piece:
+   a lantern on a cord when it hangs, else a lantern on a wall bracket facing ry (flame at y either way) */
+function lamp(x,y,z,amp,rad,cool,hang,ry){
+  nlLampAdd(x,y,z,amp==null?1:amp,rad==null?15:rad,cool); ARCH.lamps++;
+  if(hang>0) FURNISHW('br_h_hanging_lantern', x, y-0.28, z, 0, { v:1, noLight:true });
+  else FURNISHW('br_h_lamp_bracket', x, y-2.35, z, ry||0, { v:1, noLight:true });
+}
 function pane(x,y,z,nx,nz,w,h,cool){ WINPANE(x,y,z,nx,nz,w,h,cool); ARCH.windows++; }
-function barrel(x,y,z,s){ s=s||1; CYL(x,y,z,0.42*s,1.0*s,0,TIMBERC[ri(0,3)],'timber'); }
-function crate(x,y,z,s,ry){ BOX(x,y,z,s,s*0.8,s,ry||0,pick(CRATEC),'plank'); }
+function barrel(x,y,z,s){ var t=ri(0,3); FURNISHW('br_h_water_butt', x, y, z, t*1.3, { v:0, seed:t+1 }); }
+/* a crate: the catalog's pair of crates; one stacked on another (onTop) is already in the pair */
+function crate(x,y,z,s,ry,onTop){ var c=CRATEC.indexOf(pick(CRATEC)); if(onTop) return; FURNISHW('br_h_crate_stack', x, y, z, (ry||0)+Math.PI, { v:1, seed:c+2 }); }
 
 /* a rectangular local frame: local x = right, local z = front (the way the thing faces) */
 function FRM(x,z,fx,fz){ return { x:x, z:z, fx:fx, fz:fz, rx:-fz, rz:fx, ry:yawOf(-fz,fx), rz2:Math.atan2(fx,fz) }; }
@@ -60,6 +74,7 @@ function fCYL(f,lx,lz,y,r,h,col,fam){ var p=LP(f,lx,lz); CYL(p[0],y,p[1],r,h,0,c
 function fBEAM(f,ax,ay,az,bx,by,bz,w,d,col,fam){ var a=LP(f,ax,az), b=LP(f,bx,bz); BEAM(a[0],ay,a[1],b[0],by,b[1],w,d,col,fam); }
 function fROD(f,ax,ay,az,bx,by,bz,r,col,fam){ var a=LP(f,ax,az), b=LP(f,bx,bz); ROD(a[0],ay,a[1],b[0],by,b[1],r,col,fam); }
 function fmBox(fam,f,lx,lz,y,w,h,d,col,nb){ var p=LP(f,lx,lz); mBox(fam,p[0],y,p[1],w,h,d,f.ry,col,nb); }
+function gwF(f,lx,lz,y,w,h,d,tag){ var p=LP(f,lx,lz); gwBox(p[0],y,p[1],w,h,d,f.ry,tag); }    /* a walk-mode solid (53-furnish.js) */
 /* a wall panel on the local rectangle's side: side 'f' front, 'b' back, 'l' left, 'r' right */
 function sideN(f,side){ return side==='f'?[f.fx,f.fz]:side==='b'?[-f.fx,-f.fz]:side==='r'?[f.rx,f.rz]:[-f.rx,-f.rz]; }
 /* window on a wall face. (lx,lz) = point ON the outer wall face */
@@ -69,10 +84,17 @@ function winAt(f,lx,lz,y,side,w,h,cool,frameCol){
   BOX(p[0]+n[0]*0.04,y-h/2-0.16,p[1]+n[1]*0.04, along?w+0.34:0.16, 0.08, along?0.16:w+0.34, f.ry, frameCol||TIMBERC[2], 'timber');
   pane(p[0],y,p[1],n[0],n[1],w,h,cool);
 }
+/* a doorway in a front wall: two jambs and a lintel, the leaf standing OPEN, swung in against the jamb on the
+   left as one looks out (the side the interiors keep its swing clear on), so rooms can be seen and walked into */
 function doorAt(f,lx,lz,y,side,w,h,col){
   var p=LP(f,lx,lz), n=sideN(f,side), along=(side==='f'||side==='b');
-  BOX(p[0],y,p[1], along?w+0.3:0.12, h+0.16, along?0.12:w+0.3, f.ry, TIMBERC[0], 'timber');
-  BOX(p[0]+n[0]*0.05,y,p[1]+n[1]*0.05, along?w:0.08, h, along?0.08:w, f.ry, col, 'plank');
+  if(side!=='f'){
+    BOX(p[0],y,p[1], along?w+0.3:0.12, h+0.16, along?0.12:w+0.3, f.ry, TIMBERC[0], 'timber');
+    BOX(p[0]+n[0]*0.05,y,p[1]+n[1]*0.05, along?w:0.08, h, along?0.08:w, f.ry, col, 'plank'); return;
+  }
+  [-1,1].forEach(function(s){ fBOX(f,lx+s*(w/2+0.075),lz,y,0.15,h+0.16,0.12,TIMBERC[0],'timber'); });
+  fBOX(f,lx,lz,y+h,w+0.3,0.16,0.12,TIMBERC[0],'timber');
+  fBOX(f,lx-w/2+0.05,lz-0.12-w/2,y,0.08,h,w,col,'plank');
 }
 /* hipped / frustum roof on a local rectangle: bottom x0..x1,z0..z1 at yb, top inset (ix,iz) at yt */
 function hipRoof(fam,f,x0,x1,z0,z1,yb,ix,iz,yt,col,soffit){
@@ -91,7 +113,7 @@ function finial(p,dx,dz,s,col){
 }
 /* carved post: shaft, collar bands and a cap */
 function carvedPost(x,y,z,h,s,col,trim){
-  BOX(x,y,z,s,h,s,0,col,'timber'); BOX(x,y+h*0.3,z,s*1.35,0.14,s*1.35,0.78,trim,'timber'); BOX(x,y+h*0.62,z,s*1.35,0.14,s*1.35,0.78,trim,'timber');
+  BOX(x,y,z,s,h,s,0,col,'timber'); gwBox(x,y,z,s,h,s,0,'post'); BOX(x,y+h*0.3,z,s*1.35,0.14,s*1.35,0.78,trim,'timber'); BOX(x,y+h*0.62,z,s*1.35,0.14,s*1.35,0.78,trim,'timber');
   BOX(x,y+h-0.2,z,s*1.7,0.2,s*1.7,0,trim,'timber');
 }
 function fence(x0,z0,x1,z1,y,h,col,skip){
@@ -99,7 +121,8 @@ function fence(x0,z0,x1,z1,y,h,col,skip){
   for(var i=0;i<=n;i++){ var px=mix(x0,x1,i/n), pz=mix(z0,z1,i/n); if(skip && skip(px,pz)) continue; BOX(px,y-0.2,pz,0.14,h+0.3,0.14,0,col,'timber'); }
   for(var j=0;j<n;j++){ var ax=mix(x0,x1,j/n), az=mix(z0,z1,j/n), bx=mix(x0,x1,(j+1)/n), bz=mix(z0,z1,(j+1)/n);
     if(skip && (skip(ax,az)||skip(bx,bz)||skip((ax+bx)/2,(az+bz)/2))) continue;
-    BEAM(ax,y+h*0.9,az,bx,y+h*0.9,bz,0.07,0.09,shade(col,0.08),'timber'); BEAM(ax,y+h*0.5,az,bx,y+h*0.5,bz,0.06,0.08,shade(col,-0.05),'timber'); }
+    BEAM(ax,y+h*0.9,az,bx,y+h*0.9,bz,0.07,0.09,shade(col,0.08),'timber'); BEAM(ax,y+h*0.5,az,bx,y+h*0.5,bz,0.06,0.08,shade(col,-0.05),'timber');
+    gwSeg(ax,az,bx,bz,0.14,y-0.2,y+h,'fence'); }
 }
 
 var N_FAM = ['Arrun','Tessk','Mavri','Oluwen','Kharr','Dessa','Pell','Yorrin','Sabek','Hale','Vunn','Irsa','Tolme','Quill','Brakk','Essen','Dovak','Ulmi','Serrat','Nyx'];
@@ -111,8 +134,8 @@ var KIND_LABEL = { home:'Home', store:'Storehouse', workshop:'Workshop', common:
 function shell(f,x0,x1,z0,z1,y,H,wcol,tcol,o){
   o=o||{}; var th=0.16, dw=o.doorW||1.1, dh=Math.min(o.doorH||2.15,H-0.3), dx=o.doorX||0;
   function seg(side,a,b,yy,hh,col){ if(b-a<0.05||hh<0.05) return;
-    if(side==='f'||side==='b') fBOX(f,(a+b)/2,side==='f'?z1-th/2:z0+th/2,yy,b-a,hh,th,col,'wall');
-    else fBOX(f,side==='r'?x1-th/2:x0+th/2,(a+b)/2,yy,th,hh,b-a,col,'wall'); }
+    if(side==='f'||side==='b'){ fBOX(f,(a+b)/2,side==='f'?z1-th/2:z0+th/2,yy,b-a,hh,th,col,'wall'); gwF(f,(a+b)/2,side==='f'?z1-th/2:z0+th/2,yy,b-a,hh,th,'wall'); }
+    else { fBOX(f,side==='r'?x1-th/2:x0+th/2,(a+b)/2,yy,th,hh,b-a,col,'wall'); gwF(f,side==='r'?x1-th/2:x0+th/2,(a+b)/2,yy,th,hh,b-a,'wall'); } }
   var c2=shade(wcol,-0.07);
   if(!o.openFront){
     if(o.noDoor) seg('f',x0,x1,y,H,wcol);
@@ -122,7 +145,7 @@ function shell(f,x0,x1,z0,z1,y,H,wcol,tcol,o){
   if(!o.noBack) seg('b',x0,x1,y,o.backH||H,c2);
   seg('l',z0,z1,y,o.sideH||H,c2); seg('r',z0,z1,y,o.sideH||H,wcol);
   /* frame: corner posts, a mid rail and a top plate on the front */
-  [[x0,z0],[x1,z0],[x0,z1],[x1,z1]].forEach(function(c){ fBOX(f,c[0],c[1],y,0.24,H,0.24,tcol,'timber'); });
+  [[x0,z0],[x1,z0],[x0,z1],[x1,z1]].forEach(function(c){ fBOX(f,c[0],c[1],y,0.24,H,0.24,tcol,'timber'); gwF(f,c[0],c[1],y,0.24,H,0.24,'post'); });
   if(!o.openFront && !o.plain){ fBOX(f,(x0+x1)/2,z1+0.02,y+H-0.24,x1-x0,0.2,0.2,tcol,'timber');
     var nm=Math.max(1,Math.round((x1-x0)/2.6)); for(var i=1;i<nm;i++){ var px=x0+(x1-x0)*i/nm; if(Math.abs(px-dx)<dw/2+0.25) continue; fBOX(f,px,z1+0.02,y,0.14,H-0.2,0.14,tcol,'timber'); } }
 }
@@ -150,10 +173,14 @@ function buildDwelling(S){
   var dark=chance(S.kind==='store'?0.7:0.28), wcol=shade(dark?pick(WALLDARKC):pick(WALLC), -shab*0.22+rr(-0.05,0.05)), tcol=shade(pick(TIMBERC),-shab*0.15);
   var cool = S.kind==='shrine', kind=S.kind, name;
   ARCH.dwellings++; ARCH.byKind[kind]=(ARCH.byKind[kind]||0)+1;
+  gfAt(S, 'girder.slot.'+S.id, f, y, 0.25+0.2*use);
+  /* the shell as the interiors read it (56-interiors.js): FRM-local metres, floor y, wall height H */
+  S.shell = { kind:kind, f:{ x:f.x, z:f.z, fx:f.fx, fz:f.fz }, x0:x0, x1:x1, zb:zb, zf:zf, y:y, H:H, lid:lid, openSky:openSky, wcol:wcol };
 
   if(kind==='home' || kind==='store'){
     var veranda = kind==='home' && !lid && depth>7.5 && chance(0.35), zw = veranda ? zf-1.7 : (kind==='store' ? zf-1.1 : zf);
     shell(f,x0,x1,zb,zw,y,H,wcol,tcol,{ doorW:kind==='store'?2.0:1.05, doorCol:kind==='store'?shade(WALLDARKC[1],-0.1):pick(PLANKC) });
+    S.shell.z1 = zw; S.shell.doorW = kind==='store'?2.0:1.05; S.shell.veranda = veranda;
     if(kind==='home'){
       var nW = bw>7 ? 2 : 1;
       [-1,1].slice(0, (shab>0.5&&chance(0.5))?1:2).forEach(function(sg){ winAt(f,sg*(bw/4+0.35),zw,y+1.75,'f',0.95,0.95,false,tcol); });
@@ -163,22 +190,23 @@ function buildDwelling(S){
       if(chance(0.7)) winAt(f,x0,(zb+zw)/2+rr(-1,1),y+1.8,'l',0.9,0.85,false,tcol);
       if(chance(0.5)) winAt(f,rr(-bw/4,bw/4),zb,y+1.8,'b',0.9,0.8,false,tcol);
       if(veranda){
-        fmBox('plank',f,0,zf-0.85,y,bw,0.16,1.7,PLANKC[ri(0,3)],true);
-        [x0+0.12,-0.9,0.9,x1-0.12].forEach(function(px){ fBOX(f,px,zf-0.08,y,0.18,H,0.18,tcol,'timber'); });
+        fmBox('plank',f,0,zf-0.85,y,bw,0.16,1.7,PLANKC[ri(0,3)],true); gwF(f,0,zf-0.85,y,bw,0.16,1.7,'floor');
+        [x0+0.12,-0.9,0.9,x1-0.12].forEach(function(px){ fBOX(f,px,zf-0.08,y,0.18,H,0.18,tcol,'timber'); gwF(f,px,zf-0.08,y,0.18,H,0.18,'post'); });
         fBOX(f,0,zf-0.08,y+H-0.22,bw,0.2,0.2,tcol,'timber');
-        [[x0+0.1,-0.95],[0.95,x1-0.1]].forEach(function(iv){ fBOX(f,(iv[0]+iv[1])/2,zf-0.08,y+0.85,iv[1]-iv[0],0.08,0.08,tcol,'timber'); fBOX(f,(iv[0]+iv[1])/2,zf-0.08,y+0.45,iv[1]-iv[0],0.06,0.06,tcol,'timber'); });
-        if(chance(0.6)) fBOX(f,x0+1.1,zf-1.0,y+0.16,1.5,0.4,0.45,PLANKC[2],'plank');       /* bench */
+        [[x0+0.1,-0.95],[0.95,x1-0.1]].forEach(function(iv){ fBOX(f,(iv[0]+iv[1])/2,zf-0.08,y+0.85,iv[1]-iv[0],0.08,0.08,tcol,'timber'); fBOX(f,(iv[0]+iv[1])/2,zf-0.08,y+0.45,iv[1]-iv[0],0.06,0.06,tcol,'timber');
+          gwF(f,(iv[0]+iv[1])/2,zf-0.08,y,iv[1]-iv[0],0.93,0.08,'rail'); });
+        if(chance(0.6)) FURNISH('br_common_bench', x0+1.1, 0.16, zf-1.0, 0, { v:0 });       /* bench on the veranda */
       } else if(!lid && chance(0.75-shab*0.5)) pentEave(f,x0+0.2,x1-0.2,zw+0.1,y+3.15,1.05,0.55,shade(pick(THATCHC),-shab*0.2));
       if(chance(0.45)){ var bp=LP(f,x1-0.6,zw+0.45); barrel(bp[0],y,bp[1],0.85); }
-      if(chance(0.3)){ var pp=LP(f,x0+0.7,zw+0.45); BOX(pp[0],y,pp[1],0.9,0.35,0.45,f.ry,PLANKC[3],'plank'); bush(pp[0],y+0.3,pp[1],0.4,0.7,pick(CROPC)); }
+      if(chance(0.3)){ var pc=CROPC.indexOf(pick(CROPC)); FURNISH('br_h_planter_box', x0+0.7, 0, zw+0.45, 0, { v:2, seed:pc+1 }); }   /* a planter by the door */
       name = 'House of '+N_FAM[(S.id*7+S.k)%N_FAM.length];
     } else {
       winAt(f,x0+1.0,zw,y+2.7,'f',0.8,0.45,false,tcol); winAt(f,x1-1.0,zw,y+2.7,'f',0.8,0.45,false,tcol);
       /* goods stacked in the recess */
-      for(var g=0; g<ri(3,6); g++){ var sgx=(g%2?1:-1), gp=LP(f,sgx*rr(1.6,bw/2-0.5),zw+rr(0.35,0.75)), gs=rr(0.55,0.85);
-        if(g%3===0) barrel(gp[0],y,gp[1],rr(0.8,1.05)); else { crate(gp[0],y,gp[1],gs,f.ry+rr(-0.2,0.2)); if(chance(0.4)) crate(gp[0],y+gs*0.8,gp[1],gs*0.75,f.ry+rr(-0.4,0.4)); } }
+      for(var g=0; g<ri(3,6); g++){ var sgx=(g%2?1:-1), glx=sgx*rr(1.6,bw/2-0.5), glz=Math.max(zw+0.5,zw+rr(0.35,0.75)), gp=LP(f,glx,glz), gs=rr(0.55,0.85);
+        if(g%3===0) barrel(gp[0],y,gp[1],rr(0.8,1.05)); else { crate(gp[0],y,gp[1],gs,f.ry+rr(-0.2,0.2)); if(chance(0.4)) crate(gp[0],y+gs*0.8,gp[1],gs*0.75,f.ry+rr(-0.4,0.4),true); } }
       /* sacks */
-      if(chance(0.6)){ var sp=LP(f,rr(-1,1)*0.0+x0+0.9,zw+0.5); BOX(sp[0],y,sp[1],0.8,0.4,0.55,f.ry,CLOTHC[1],'plank'); BOX(sp[0],y+0.4,sp[1],0.7,0.35,0.5,f.ry+0.3,shade(CLOTHC[1],0.12),'plank'); }
+      if(chance(0.6)){ rr(-1,1); FURNISH('br_h_sack_pile', x0+0.9, 0, zw+0.5, 0, { v:0 }); }
       fBOX(f,0,zw+0.12,y+2.35,1.4,0.5,0.06,PLANKC[0],'plank');                                /* sign board */
       name = 'Storehouse';
     }
@@ -186,14 +214,14 @@ function buildDwelling(S){
   else if(kind==='workshop'){
     shell(f,x0,x1,zb,zf-0.2,y,H,wcol,tcol,{ openFront:true });
     /* half-height counter left of the way in, posts, cloth awning */
-    fBOX(f,x0+(bw/2-0.7)/2+0.1,zf-0.35,y,bw/2-0.9,1.0,0.5,pick(CRATEC),'plank'); fBOX(f,x0+(bw/2-0.7)/2+0.1,zf-0.35,y+1.0,bw/2-0.7,0.08,0.7,PLANKC[0],'plank');
-    fBOX(f,0.0-0.55+0.0,zf-0.2,y,0.2,H,0.2,tcol,'timber'); fBOX(f,0,zf-0.2,y+H-0.25,bw,0.22,0.22,tcol,'timber');
+    /* the counter between the left wall and the post: a catalog trade counter (a smaller one in the narrow lots) */
+    var ccx=(x0+0.16-0.65)/2, ccw=(-0.65)-(x0+0.16), cck=CRATEC.indexOf(pick(CRATEC));
+    FURNISH(ccw>=2.4?'br_common_counter':'generic_poor_counter', ccx, 0, zf-0.35, 0, { v:0, seed:cck+1 });
+    fBOX(f,0.0-0.55+0.0,zf-0.2,y,0.2,H,0.2,tcol,'timber'); fBOX(f,0,zf-0.2,y+H-0.25,bw,0.22,0.22,tcol,'timber'); gwF(f,-0.55,zf-0.2,y,0.2,H,0.2,'post');
     if(!lid && chance(0.8-shab*0.4)) clothAwning(f,x0+0.1,x1-0.1,zf-0.1,y+3.2,1.15,0.6,pick(AWNINGC),shade(pick(AWNINGC),0.15));
-    /* bench, block, racks along the back, a forge in some */
-    fBOX(f,x1-1.0,(zb+zf)/2,y,0.9,0.85,Math.min(3.2,depth-2),PLANKC[2],'plank');
-    fBOX(f,x0+1.2,zb+1.0,y,1.6,1.9,0.5,TIMBERC[1],'timber'); fBOX(f,x0+1.2,zb+1.05,y+0.7,1.7,0.06,0.6,PLANKC[1],'plank'); fBOX(f,x0+1.2,zb+1.05,y+1.3,1.7,0.06,0.6,PLANKC[1],'plank');
-    if(chance(0.45)){ var fp=LP(f,0.6,zb+1.3); BOX(fp[0],y,fp[1],1.3,0.9,1.3,f.ry,shade(ROCKC[3],-0.2),'rock'); BOX(fp[0],y+0.9,fp[1],0.8,0.12,0.8,f.ry,PAL.glowWarm,'glowmat');
-      nlLampAdd(fp[0],y+1.5,fp[1],0.9,11,false); ARCH.lamps++; BOX(fp[0],y+2.2,fp[1],1.5,H-2.2,1.5,f.ry,shade(ROCKC[3],-0.35),'rock'); }
+    /* the bench, the racks and the forge stood INSIDE the room the interiors now furnish (56-interiors.js):
+       a lot that drew a forge becomes a smithy (forge and anvil), the others a workshop */
+    S.shell.forge = chance(0.45); S.shell.counterX = ccx; S.shell.counterW = ccw;
     /* hides / saddle blankets hung to dry from the top plate */
     for(var hq=0; hq<ri(1,3); hq++){ var hp=LP(f,x1-0.9-hq*1.2,zf-0.22), hl=rr(0.9,1.5); BOX(hp[0],y+H-0.3-hl,hp[1],0.85,hl,0.04,f.ry,pick(CLOTHC),'cloth'); }
     name = N_CRAFT[(S.id*5+S.k*3)%N_CRAFT.length];
@@ -203,27 +231,28 @@ function buildDwelling(S){
     var trim=ORNATEC[(S.id)%3], pcol=TIMBERC[S.id%4];
     [[x0,zb],[x1,zb],[x0,zf-0.2],[x1,zf-0.2],[x0,(zb+zf)/2],[x1,(zb+zf)/2]].forEach(function(c){ var p=LP(f,c[0],c[1]); carvedPost(p[0],y,p[1],H,0.28,pcol,trim); });
     fBOX(f,0,zb+0.08,y,bw,1.0,0.14,wcol,'wall'); fBOX(f,x0+0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,wcol,'wall'); fBOX(f,x1-0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,wcol,'wall');
+    gwF(f,0,zb+0.08,y,bw,1.0,0.14,'rail'); gwF(f,x0+0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,'rail'); gwF(f,x1-0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,'rail');
     fBOX(f,0,zb+0.08,y+H-0.3,bw,0.26,0.2,pcol,'timber'); fBOX(f,0,zf-0.2,y+H-0.3,bw,0.26,0.2,pcol,'timber');
-    fmBox('plank',f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,PLANKC[S.id%4],true);
-    var tl=Math.min(4.2,depth-3); fBOX(f,-1.2,(zb+zf)/2,y+0.78,1.0,0.08,tl,PLANKC[0],'plank'); fBOX(f,-1.2,(zb+zf)/2-tl/2+0.3,y+0.12,0.8,0.66,0.12,TIMBERC[1],'timber'); fBOX(f,-1.2,(zb+zf)/2+tl/2-0.3,y+0.12,0.8,0.66,0.12,TIMBERC[1],'timber');
-    [-2.0,-0.4].forEach(function(bx){ fBOX(f,bx,(zb+zf)/2,y+0.12,0.35,0.42,tl*0.9,PLANKC[2],'plank'); });
-    var hp2=LP(f,1.6,(zb+zf)/2); CYL(hp2[0],y+0.12,hp2[1],0.75,0.35,0,ROCKC[1],'timber'); BOX(hp2[0],y+0.47,hp2[1],0.7,0.14,0.7,0.6,PAL.glowWarm,'glowmat'); nlLampAdd(hp2[0],y+1.2,hp2[1],1.0,12,false); ARCH.lamps++;
+    fmBox('plank',f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,PLANKC[S.id%4],true); gwF(f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,'floor');
+    /* the long table, its benches and the hearth stood inside the pavilion the interiors now furnish */
     if(chance(0.7)) clothAwning(f,x0+0.1,x1-0.1,zf-0.1,y+3.25,1.0,0.5,pick(AWNINGC),pick(AWNINGC));
     for(var bn=0; bn<2; bn++){ var bq=LP(f,(bn?1:-1)*(bw/2-0.25),zf-0.22); BOX(bq[0],y+1.3,bq[1],0.7,2.3,0.04,f.ry,pick(CLOTHC),'cloth'); }
     name = 'Common room';
   }
   else { /* shrine: a small tajug on a plinth, cool light */
     var sw=Math.min(bw,5.2), sz0=zf-0.4-sw, sc=(zf-0.4+sz0)/2, red=ORNATEC[0], gilt=ORNATEC[1];
-    fmBox('plank',f,0,sc,y,sw,0.3,sw,PLANKC[1],true);
+    fmBox('plank',f,0,sc,y,sw,0.3,sw,PLANKC[1],true); gwF(f,0,sc,y,sw,0.3,sw,'floor');
+    S.shell.sw = sw; S.shell.sc = sc;
     [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(c){ var p=LP(f,c[0]*(sw/2-0.35),sc+c[1]*(sw/2-0.35)); carvedPost(p[0],y+0.3,p[1],openSky?2.2:2.0,0.24,red,gilt); });
-    var cp=LP(f,0,sc-0.3); BOX(cp[0],y+0.3,cp[1],2.0,1.9,2.0,f.ry,shade(WALLDARKC[0],-0.1),'wall');
+    var cp=LP(f,0,sc-0.3); BOX(cp[0],y+0.3,cp[1],2.0,1.9,2.0,f.ry,shade(WALLDARKC[0],-0.1),'wall'); gwBox(cp[0],y+0.3,cp[1],2.0,1.9,2.0,f.ry,'wall');
     winAt(f,0,sc-0.3+1.0,y+1.5,'f',0.8,1.0,true,gilt); winAt(f,-1.0,sc-0.3,y+1.5,'l',0.6,0.8,true,gilt); winAt(f,1.0,sc-0.3,y+1.5,'r',0.6,0.8,true,gilt);
     var rc=LP(f,0,sc), sh1=pick(SHINGLEC);
     PYR(rc[0],y+2.3,rc[1],sw+0.9,0.85,sw+0.9,f.ry,sh1,'shingle'); BOX(rc[0],y+2.75,rc[1],sw*0.5,0.3,sw*0.5,f.ry,red,'timber');
     PYR(rc[0],y+3.0,rc[1],sw*0.62,openSky?1.6:0.9,sw*0.62,f.ry,shade(sh1,-0.1),'shingle');
     if(openSky) BOX(rc[0],y+4.5,rc[1],0.1,1.0,0.1,0,gilt,'timber');
-    var lp=LP(f,1.4,zf-0.5); lamp(lp[0],y+1.5,lp[1],0.8,11,true,0); BOX(lp[0],y,lp[1],0.16,1.2,0.16,0,TIMBERC[0],'timber');
-    var op=LP(f,-1.3,zf-0.7); CYL(op[0],y,op[1],0.35,0.5,0,ROCKC[0],'timber'); pod(op[0],y+0.55,op[1],0.16,FRUITC[S.id%3]);
+    /* the cool lamp on its post and the offering stone flank the way in: catalog pieces, kept clear by the interiors */
+    var lp=LP(f,1.4,zf-0.5); nlLampAdd(lp[0],y+1.5,lp[1],0.8,11,true); ARCH.lamps++; FURNISH('br_common_lamp', 1.4, 0.3, zf-0.5, 0, { noLight:true });
+    FURNISH('br_h_offering_stone', -1.3, 0.3, zf-0.7, 0, { seed:S.id%3+1 });
     /* prayer flags from the roof to the lot's front corners */
     [-1,1].forEach(function(sg){ var a=L3(f,0,y+3.4,sc+sw*0.3), b=L3(f,sg*(bw/2),y+2.4,zf); ROD(a[0],a[1],a[2],b[0],b[1],b[2],0.012,ROPEC[0],'rope');
       for(var q=1;q<5;q++){ var t=q/5; BOX(mix(a[0],b[0],t),mix(a[1],b[1],t)-0.34,mix(a[2],b[2],t),0.3,0.32,0.02,yawOf(b[0]-a[0],b[2]-a[2]),CLOTHC[(q+S.id)%CLOTHC.length],'cloth'); } });
@@ -239,7 +268,7 @@ function buildDwelling(S){
     var r0=L3(f,0,y+H+3.95,(zb+zf)/2-depth*0.2), r1=L3(f,0,y+H+3.95,(zb+zf)/2+depth*0.2);
     finial(r1,f.fx,f.fz,0.7,TIMBERC[2]); finial(r0,-f.fx,-f.fz,0.7,TIMBERC[2]); }
   /* a lantern by the door on the livelier floors */
-  if(kind!=='shrine' && chance(0.55*use)){ var lq=LP(f,(kind==='store'?1.5:0.95),zf+0.18); lamp(lq[0],y+2.35,lq[1],0.7,10,false,0); fBOX(f,(kind==='store'?1.5:0.95),zf+0.02,y+2.62,0.06,0.06,0.4,TIMBERC[0],'timber'); }
+  if(kind!=='shrine' && chance(0.55*use)){ var lq=LP(f,(kind==='store'?1.5:0.95),zf+0.18); lamp(lq[0],y+2.35,lq[1],0.7,10,false,0,f.rz2); }
   if(S.id%4===0 || kind==='shrine' || kind==='common')
     REGISTER({ name:name, kind:kind, label:KIND_LABEL[kind]+' — '+T.name+', floor '+(S.k+1), x:S.x, z:S.z, y:y, h:S.H, r:Math.max(bw,depth)*0.62, plat:T.deck.id, lvl:S.k });
 }
@@ -265,11 +294,12 @@ TOWERS.forEach(function(T){
           fBOX(f,(sg[0]+e1)/2,-1.0,y+1.0,e1-sg[0],0.09,0.11,shade(rcol,0.08),'timber'); fBOX(f,(sg[0]+e1)/2,-1.0,y+0.52,e1-sg[0],0.07,0.07,rcol,'timber');
           ARCH.rails++;
         }
-        if(si!==1 && chance(0.62*use)){                                        /* washing between the columns */
-          var yl=y+3.0, a0=sg[0], a1=sg[0]+Math.min(sg[1]-sg[0],rr(6,11)), nC=ri(3,6);
-          fROD(f,a0,yl,-0.5,a1,yl,-0.5,0.015,ROPEC[0],'rope');
-          for(var j=0;j<nC;j++){ var t=(j+0.6+rr(-0.15,0.15))/(nC+0.3), dr=rr(0.6,1.15), p=LP(f,mix(a0,a1,t),-0.5);
-            BOX(p[0],yl-dr,p[1],rr(0.5,0.9),dr,0.03,f.ry,chance(0.35)?WEBC[1]:pick(CLOTHC),'cloth'); }
+        if(si!==1 && chance(0.62*use)){                                        /* washing between the columns: catalog washing lines */
+          var a0=sg[0], a1=sg[0]+Math.min(sg[1]-sg[0],rr(6,11)), nC=ri(3,6);
+          for(var j=0;j<nC;j++){ rr(-0.15,0.15); rr(0.6,1.15); rr(0.5,0.9); if(!chance(0.35)) pick(CLOTHC); }   /* the cloths' draws, kept */
+          gfAt(F, 'girder.gallery.'+T.id+'.'+F.k, f, y, 0.3);
+          var nL=Math.max(1,Math.round((a1-a0)/5.6));
+          for(var q=0;q<nL;q++) FURNISH('br_h_cloth_line', mix(a0,a1,(q+0.5)/nL), 0, -0.5, 0, { v:1, seed:nC+q });
           ARCH.washing++;
         }
         if(!top && chance(F.k>=25 ? 0.5*use+0.1 : 0.22*use)){                   /* a banner / drying hide over the girder */
@@ -286,21 +316,18 @@ TOWERS.forEach(function(T){
 /* ------------------------------------------------------------------ ROOST STALLS: straw, tack, troughs, perch wrapping. Bays stay open. */
 ROOSTS.forEach(function(R){
   var f=FRM(R.x,R.z,R.ox,R.oz), y=R.y, hw=R.w/2, sd=(R.id%2)?1:-1;
-  /* straw: thin mats over the back two-thirds + a heap in a back corner */
-  for(var i=0;i<5;i++){ var lx=rr(-hw+1.0,hw-1.0), lz=rr(-7.2,-1.2), p=LP(f,lx,lz);
-    mBox('thatch',p[0],y+0.01,p[1],rr(1.6,3.2),rr(0.05,0.13),rr(1.4,2.6),rr(0,3),shade(THATCHC[(R.id+i)%THATCHC.length],rr(-0.1,0.12)),true); }
-  var hp=LP(f,-sd*(hw-1.1),-6.8); mCone('thatch',hp[0],y,hp[1],1.0,0.15,0.75,THATCHC[2],7,R.id);
-  if(R.id%3===0){ var bp=LP(f,-sd*(hw-0.9),-5.2); mBox('thatch',bp[0],y,bp[1],1.1,0.6,0.7,f.ry,THATCHC[0]); mBox('thatch',bp[0],y+0.6,bp[1],1.0,0.55,0.7,f.ry+0.2,THATCHC[3]); }
+  gfAt(R, 'girder.roost.'+R.id, f, y, 0.45);
+  /* straw: mats over the back and a heap in a back corner (one catalog piece); the mats' draws are kept */
+  for(var i=0;i<5;i++){ rr(-hw+1.0,hw-1.0); rr(-7.2,-1.2); rr(1.6,3.2); rr(0.05,0.13); rr(1.4,2.6); rr(0,3); rr(-0.1,0.12); }
+  FURNISH('br_h_straw_bedding', -sd*1.2, 0, -5.0, sd>0?0:Math.PI, { seed:R.id+1 });
+  if(R.id%3===0) FURNISH('br_h_hay_bales', -sd*(hw-0.9), 0, -5.2, 0, { v:1 });
   /* tack rack on the other back corner: rail, saddles, blankets, hanging harness */
   var tx=sd*(hw-2.0);
-  [-0.9,0.9].forEach(function(o){ fBOX(f,tx+o,-7.35,y,0.14,1.55,0.14,TIMBERC[1],'timber'); });
-  fBOX(f,tx,-7.35,y+1.45,2.2,0.12,0.16,TIMBERC[0],'timber');
-  [-0.5,0.5].forEach(function(o,j){ if(j && R.id%4===1) return; fBOX(f,tx+o,-7.35,y+1.57,0.5,0.26,0.75,shade(PAL.uniform.brown,j?0.1:-0.05),'plank');
-    var q=LP(f,tx+o,-7.35); BOX(q[0],y+0.95,q[1],0.62,0.6,0.8,f.ry,CLOTHC[(R.id+j)%CLOTHC.length],'cloth'); });
-  for(var h=0;h<3;h++) fROD(f,tx-0.8+h*0.8,y+1.45,-7.2,tx-0.8+h*0.8+rr(-0.1,0.1),y+0.45+rr(0,0.3),-7.15,0.02,ROPEC[h%2],'rope');
-  /* trough along a partition */
-  fBOX(f,sd*(hw-0.6),-3.4,y,0.7,0.5,2.6,PLANKC[3],'plank'); fBOX(f,sd*(hw-0.6),-3.4,y+0.44,0.5,0.05,2.4,PAL.riverShallow,'rock');
-  if(R.id%2===0){ var wq=LP(f,sd*(hw-0.7),-1.2); CYL(wq[0],y,wq[1],0.38,0.7,0,TIMBERC[3],'timber'); }
+  for(var h=0;h<3;h++){ rr(-0.1,0.1); rr(0,0.3); }                         /* the harness ropes' draws, kept */
+  FURNISH('br_h_tack_rack', tx, 0, -7.35, 0, { v:1, seed:R.id+1 });
+  /* trough along a partition, a water butt by the open front */
+  FURNISH('br_h_trough', sd*(hw-0.6), 0, -3.4, sd*Math.PI/2, { v:1 });
+  if(R.id%2===0) FURNISH('br_h_water_butt', sd*(hw-0.7), 0, -1.2, 0, { v:0 });
   /* perch wrapping: rope lashings along the launch beam, a rider's pennant at its tip */
   for(var w=0;w<6;w++) fBOX(f,0,-0.9+w*0.78,y-0.005,0.64,0.5,0.22,ROPEC[w%2],'plank');
   var pq=LP(f,0.34,3.2); BOX(pq[0],y-1.15,pq[1],0.05,1.3,0.55,f.ry,CLOTHC[(R.plat.id*2+R.id)%CLOTHC.length],'cloth');
@@ -312,18 +339,32 @@ ROOSTS.forEach(function(R){
   REGISTER({ name:'Roost stall '+(R.id+1), kind:'roost', label:'Roost stall — perch, tack and trough', x:R.x-R.ox*3.2, z:R.z-R.oz*3.2, y:y, h:6, r:4.8, plat:R.plat.id });
 });
 
+/* ------------------------------------------------------------------ KEEPER'S SHELTERS: a plank shed on each deck's outer corner apron
+   (the interior set's roost deck item plans the keeper's feed and tack store in it). No random numbers. */
+TOWERS.forEach(function(T){
+  var P=T.deck, cx=T.x+T.sx*33.0, cz=T.z+T.sz*33.0, f=FRM(cx,cz,-T.sx,0), y=P.y, s=2.1;
+  shell(f,-s,s,-s,s,y,2.2,WALLDARKC[T.id%WALLDARKC.length],TIMBERC[T.id%4],{ doorW:1.0, doorH:1.9, plain:true });
+  hipRoof('thatch',f,-s-0.35,s+0.35,-s-0.35,s+0.45,y+2.2,1.1,1.1,y+3.0,THATCHC[T.id%THATCHC.length],true);
+  winAt(f,s,0,y+1.6,'r',0.7,0.6,false,TIMBERC[2]);
+  P.keeper = { f:{ x:f.x, z:f.z, fx:f.fx, fz:f.fz }, x0:-s, x1:s, zb:-s, zf:s, y:y, H:2.2 };
+  REGISTER({ name:'Keeper\'s shelter', kind:'keeper', label:'Roost keeper\'s shelter — feed and tack', x:cx, z:cz, y:y, h:3.2, r:3.0, plat:P.id });
+});
+
 /* ------------------------------------------------------------------ GROUND HOUSES */
 /* Kashyyyk-style round hut: woven wall ring, ring of posts, tall two-tier thatch cone with a smoke gap */
 function roundHut(x,z,y,r,doorA,o){
   o=o||{}; var P=platFrame(x,z,0), wh=o.wh||2.5, gap=0.62/r, wc=o.wcol||pick(WALLC), tc=o.tcol||pick(TIMBERC), th=o.thatch||pick(THATCHC);
-  SECTOR('rock',P,0,r+0.5,0,TAU,y-0.1,y+0.22,shade(ROCKC[1],-0.1),{faces:'to',step:3});
+  SECTOR('rock',P,0,r+0.5,0,TAU,y-0.1,y+0.22,shade(ROCKC[1],-0.1),{faces:'to',step:3}); gwDisc(x,z,r+0.5,y+0.22,y-0.1,'floor');
   SECTOR('wall',P,r-0.18,r,doorA+gap,doorA+TAU-gap,y+0.2,y+0.2+wh,wc,{faces:'tios',step:1.6,colInner:shade(wc,-0.3)});
+  (function(){ var ns=Math.max(6,Math.ceil((TAU-2*gap)*r/1.0)); for(var q=0;q<ns;q++){ var a0=doorA+gap+(TAU-2*gap)*q/ns, a1=doorA+gap+(TAU-2*gap)*(q+1)/ns, rm=r-0.09;
+    gwSeg(x+Math.cos(a0)*rm,z+Math.sin(a0)*rm,x+Math.cos(a1)*rm,z+Math.sin(a1)*rm,0.3,y+0.2,y+0.2+wh,'wall'); } })();
   var np=Math.max(6,Math.round(TAU*r/2.2));
   for(var i=0;i<np;i++){ var a=doorA+gap+0.0+(TAU-2*gap)*i/(np-1); BOX(x+Math.cos(a)*(r+0.02),y,z+Math.sin(a)*(r+0.02),0.2,wh+0.35,0.2,-a,tc,'timber'); }
   /* door: lintel + leaf standing ajar */
   var dx=Math.cos(doorA), dz=Math.sin(doorA);
   BOX(x+dx*(r-0.02),y+0.2+2.0,z+dz*(r-0.02),0.24,0.22,1.6,-doorA,tc,'timber');
-  BOX(x+dx*(r-0.1),y+0.2,z+dz*(r-0.1),0.07,2.0,1.1,-doorA,shade(pick(PLANKC),-0.1),'plank');
+  var ha=doorA-gap*0.85, hr=r-0.2-0.55;                                              /* the leaf open, swung in */
+  BOX(x+Math.cos(ha)*hr,y+0.2,z+Math.sin(ha)*hr,1.1,2.0,0.07,-ha,shade(pick(PLANKC),-0.1),'plank');
   /* windows */
   (o.wins||[1.15,-1.15,2.6]).forEach(function(da){ var a=doorA+da, nx=Math.cos(a), nz=Math.sin(a), px=x+nx*r, pz=z+nz*r;
     BOX(px,y+1.25,pz,0.12,0.95,0.95,-a,tc,'timber'); pane(px+nx*0.02,y+1.72,pz+nz*0.02,nx,nz,0.7,0.7,false); });
@@ -333,30 +374,36 @@ function roundHut(x,z,y,r,doorA,o){
   MCONE('thatch',x,yb+h1+0.25,z,r*0.52,0.05,r*0.62,shade(th,-0.1),10,{under:true});
   for(var k=0;k<4;k++){ var ka=doorA+0.78+k*TAU/4; BOX(x+Math.cos(ka)*r*0.3,yb+h1-0.1,z+Math.sin(ka)*r*0.3,0.12,0.5,0.12,0,tc,'timber'); }
   BOX(x,yb+h1+0.25+r*0.62-0.15,z,0.1,0.9,0.1,0,tc,'timber');
-  if(o.lamp){ lamp(x+dx*(r+0.25)-dz*1.1,y+2.2,z+dz*(r+0.25)+dx*1.1,0.8,12,false,0); }
+  if(o.lamp){ lamp(x+dx*(r+0.25)-dz*1.1,y+2.2,z+dz*(r+0.25)+dx*1.1,0.8,12,false,0,Math.atan2(dx,dz)); }
   return yb+h1+r*0.62+1;
 }
-function woodpile(x,z,y,ry){ for(var i=0;i<3;i++) for(var j=0;j<3-i;j++){ var o=(j-(2-i)/2)*0.42; BOX(x+Math.cos(ry)*o,y+i*0.36,z-Math.sin(ry)*o,0.38,0.36,1.5,ry,DEADWOODC[(i+j)%3],'timber'); } }
+/* a woodpile: the catalog's stave stack (the culture file has no log pile), its long side along the logs */
+function woodpile(x,z,y,ry){ FURNISHW('br_h_plank_stack', x, y, z, ry+Math.PI/2, { v:1 }); }
+/* a washing line between two posts: the catalog's washing line (its own posts), turned along x0,z0 -> x1,z1 */
 function yardLine(x0,z0,x1,z1,y){
-  BOX(x0,y,z0,0.12,2.5,0.12,0,TIMBERC[1],'timber'); BOX(x1,y,z1,0.12,2.5,0.12,0,TIMBERC[1],'timber'); ROD(x0,y+2.4,z0,x1,y+2.4,z1,0.015,ROPEC[0],'rope');
-  var n=ri(3,5), ry=yawOf(x1-x0,z1-z0); for(var j=0;j<n;j++){ var t=(j+0.7)/(n+0.4), dr=rr(0.6,1.1); BOX(mix(x0,x1,t),y+2.4-dr,mix(z0,z1,t),rr(0.5,0.9),dr,0.03,ry,chance(0.3)?WEBC[1]:pick(CLOTHC),'cloth'); }
+  var n=ri(3,5), ry=yawOf(x1-x0,z1-z0); for(var j=0;j<n;j++){ rr(0.6,1.1); rr(0.5,0.9); if(!chance(0.3)) pick(CLOTHC); }   /* the cloths' draws, kept */
+  FURNISHW('br_h_cloth_line', (x0+x1)/2, y, (z0+z1)/2, ry, { v:1, seed:n });
 }
 HOUSES.forEach(function(Hs){
   var f=FRM(Hs.x,Hs.z,Hs.ox,Hs.oz), y=Hs.y, D=Hs.ox?Hs.w:Hs.d, Wd=Hs.ox?Hs.d:Hs.w, zF=D/2-3.9, zB=-D/2+1.6, top=8, name, label;
   var tcol=pick(TIMBERC); var HK=Hs.kind;
+  gfAt(Hs, 'girder.house.'+Hs.id, f, y, 0.45);
+  Hs.shell = { kind:HK, f:{ x:f.x, z:f.z, fx:f.fx, fz:f.fz }, y:y, zF:zF, zB:zB, D:D, Wd:Wd };
   if(HK==='roundhut'){
     var r=Math.min(4.6,(zF-zB)/2-0.5), c=LP(f,0,zF-r), dA=Math.atan2(f.fz,f.fx);
     top=roundHut(c[0],c[1],y,r,dA,{lamp:true})-y;
-    var r2=3.0, c2=LP(f,-(Wd/2-r2-2.0),zF-r-2.5), c3=LP(f,(Wd/2-r2-2.2),zF-r-1.0);
-    roundHut(c2[0],c2[1],y,r2,Math.atan2(c[1]-c2[1],c[0]-c2[0])+0.5,{wh:2.2,wins:[1.4,-1.6]});
-    roundHut(c3[0],c3[1],y,r2*0.9,Math.atan2(c[1]-c3[1],c[0]-c3[0])-0.6,{wh:2.1,wins:[1.5]});
-    var fp=LP(f,Wd/2-4.5,zF-1.0); CYL(fp[0],y,fp[1],0.7,0.25,0,ROCKC[2],'timber'); BOX(fp[0],y+0.25,fp[1],0.5,0.12,0.5,0.5,PAL.glowWarm,'glowmat'); nlLampAdd(fp[0],y+1,fp[1],0.9,12,false); ARCH.lamps++;
+    var r2=3.0, c2=LP(f,-(Wd/2-r2-2.0),zF-r-2.5), c3=LP(f,(Wd/2-r2-2.2),zF-r-1.0), a2=Math.atan2(c[1]-c2[1],c[0]-c2[0])+0.5, a3=Math.atan2(c[1]-c3[1],c[0]-c3[0])-0.6;
+    roundHut(c2[0],c2[1],y,r2,a2,{wh:2.2,wins:[1.4,-1.6]});
+    roundHut(c3[0],c3[1],y,r2*0.9,a3,{wh:2.1,wins:[1.5]});
+    Hs.shell.huts = [{ x:c[0], z:c[1], r:r, door:dA, wh:2.5, kind:'cottage' }, { x:c2[0], z:c2[1], r:r2, door:a2, wh:2.2, kind:'store' }, { x:c3[0], z:c3[1], r:r2*0.9, door:a3, wh:2.1, kind:'store' }];
+    var fp=LP(f,Wd/2-4.5,zF-1.0); nlLampAdd(fp[0],y+1,fp[1],0.9,12,false); ARCH.lamps++; FURNISH('br_h_fire_pit', Wd/2-4.5, 0, zF-1.0, 0, { v:0, noLight:true });
     name='Round-hut compound'; label='Round huts — a rider family\'s compound';
   } else if(HK==='joglo'){
     var hw=Math.min(Wd/2-2.2,8.2), zb=Math.max(zB+0.6,zF-13), zm=zF-3.6, red=ORNATEC[0], gilt=ORNATEC[1], wc=pick(WALLC);
-    fmBox('rock',f,0,(zF+zb)/2,y-0.1,hw*2+1.6,0.6,zF-zb+1.6,shade(ROCKC[0],0.05));
-    fmBox('rock',f,0,zF+1.1,y-0.1,2.6,0.32,0.9,shade(ROCKC[0],-0.05));
+    fmBox('rock',f,0,(zF+zb)/2,y-0.1,hw*2+1.6,0.6,zF-zb+1.6,shade(ROCKC[0],0.05)); gwF(f,0,(zF+zb)/2,y-0.1,hw*2+1.6,0.6,zF-zb+1.6,'floor');
+    fmBox('rock',f,0,zF+1.1,y-0.1,2.6,0.32,0.9,shade(ROCKC[0],-0.05)); gwF(f,0,zF+1.1,y-0.1,2.6,0.32,0.9,'floor');
     shell(f,-hw+0.6,hw-0.6,zb+0.5,zm,y+0.5,3.0,wc,tcol,{ doorW:1.5, doorCol:red });
+    Hs.shell.hw = hw; Hs.shell.zb = zb; Hs.shell.zm = zm; Hs.shell.wcol = wc;
     [-1,1].forEach(function(sg){ winAt(f,sg*(hw*0.55),zm,y+0.5+1.75,'f',1.0,1.0,false,red); winAt(f,sg*(hw-0.6),(zb+zm)/2,y+0.5+1.75,sg>0?'r':'l',1.0,0.9,false,red); });
     winAt(f,0,zb+0.5,y+2.2,'b',1.0,0.9,false,red);
     /* pendopo: open front hall on carved columns */
@@ -369,13 +416,15 @@ HOUSES.forEach(function(Hs){
     var ra=L3(f,-W*0.09,y+9.4,(Z0+Z1)/2), rb=L3(f,W*0.09,y+9.4,(Z0+Z1)/2);
     BEAM(ra[0],ra[1],ra[2],rb[0],rb[1],rb[2],0.22,0.26,gilt,'timber'); finial(rb,f.rx,f.rz,0.9,gilt); finial(ra,-f.rx,-f.rz,0.9,gilt);
     var lq=LP(f,1.6,zF-0.5); lamp(lq[0],y+2.9,lq[1],0.9,13,false,0.4); lq=LP(f,-1.6,zF-0.5); lamp(lq[0],y+2.9,lq[1],0.9,13,false,0.4);
+    Hs.shell.posts = []; for(var pi2=0;pi2<4;pi2++){ var ppx=mix(-hw+0.5,hw-0.5,pi2/3); Hs.shell.posts.push([ppx,zF-0.4]); if(pi2===0||pi2===3) Hs.shell.posts.push([ppx,zF-2.0]); }
     top=11; name='Joglo house'; label='Joglo — a headman\'s house with an open front hall';
   } else {
     /* stave longhouse: low tarred walls, a great steep shingle roof, crossed beast-head gables */
     var alongX = !!Hs.oz, LH = alongX ? Math.min(Wd-3.5,22)/2 : (zF-zB)/2, SH = 3.7, cz = alongX ? zF-SH : (zF+zB)/2;
     var x0=alongX?-LH:-SH, x1=alongX?LH:SH, z0=alongX?cz-SH:zB, z1=zF, wd=pick(WALLDARKC), sh=pick(SHINGLEC);
-    fmBox('rock',f,0,(z0+z1)/2,y-0.1,x1-x0+0.8,0.35,z1-z0+0.8,shade(ROCKC[3],0.05));
+    fmBox('rock',f,0,(z0+z1)/2,y-0.1,x1-x0+0.8,0.35,z1-z0+0.8,shade(ROCKC[3],0.05)); gwF(f,0,(z0+z1)/2,y-0.1,x1-x0+0.8,0.35,z1-z0+0.8,'floor');
     shell(f,x0,x1,z0,z1,y+0.25,2.3,wd,tcol,{ doorW:1.4, doorH:2.0, doorCol:ORNATEC[3], plain:true });
+    Hs.shell.x0 = x0; Hs.shell.x1 = x1; Hs.shell.z0 = z0; Hs.shell.z1 = z1; Hs.shell.wcol = wd;
     var n=Math.round((alongX?(x1-x0):(z1-z0))/2.8);
     for(var b=0;b<=n;b++){ var t=b/n; [-1,1].forEach(function(sg){
       if(alongX){ var px=mix(x0,x1,t); if(sg>0 && Math.abs(px)<1.3) return; fBEAM(f,px,y,sg>0?z1+1.0:z0-1.0,px,y+2.6,sg>0?z1+0.05:z0-0.05,0.22,0.22,tcol,'timber'); }
@@ -389,7 +438,7 @@ HOUSES.forEach(function(Hs){
     BEAM(e0[0],e0[1]+0.05,e0[2],e1[0],e1[1]+0.05,e1[2],0.26,0.3,tcol,'timber');
     finial(e1,ux,uz,1.5,ORNATEC[3]); finial(e0,-ux,-uz,1.5,ORNATEC[3]);
     var sm=[(e0[0]+e1[0])/2,e0[1],(e0[2]+e1[2])/2]; BOX(sm[0],sm[1]-0.2,sm[2],alongX?2.2:1.0,0.7,alongX?1.0:2.2,f.ry,shade(wd,-0.2),'wall'); PYR(sm[0],sm[1]+0.5,sm[2],alongX?2.8:1.6,0.7,alongX?1.6:2.8,f.ry,shade(sh,-0.15),'shingle');
-    var lq2=LP(f,1.3,z1+0.3); lamp(lq2[0],y+2.3,lq2[1],0.9,13,false,0);
+    var lq2=LP(f,1.3,z1+0.3); lamp(lq2[0],y+2.3,lq2[1],0.9,13,false,0,f.rz2);
     top=10.5; name='Longhouse'; label='Stave longhouse — hearth-hall of a rider clan';
   }
   /* the yard: fence with a gap at the door side, a path, a wood pile, washing */
@@ -412,6 +461,7 @@ PLOTS.forEach(function(p){
   var Lz=(Math.abs(f.fx)>0.5?p.w:p.d)/2, Lx=(Math.abs(f.fx)>0.5?p.d:p.w)/2, gp=LP(f,0,Lz), v=p.id%4;
   function gapFn(px,pz){ return Math.hypot(px-gp[0],pz-gp[1]) < 2.2; }
   var hx=p.w/2, hz=p.d/2, fcol=TIMBERC[p.id%4], fh = p.kind==='pen' ? 1.5 : 0.95;
+  gfAt(p, 'girder.plot.'+p.id, f, y, 0.4);
   if(p.kind==='pen' || p.kind==='garden' || p.kind==='orchard' || p.id%3!==0){
     fence(p.x-hx,p.z-hz,p.x+hx,p.z-hz,y,fh,fcol,gapFn); fence(p.x+hx,p.z-hz,p.x+hx,p.z+hz,y,fh,fcol,gapFn);
     fence(p.x+hx,p.z+hz,p.x-hx,p.z+hz,y,fh,fcol,gapFn); fence(p.x-hx,p.z+hz,p.x-hx,p.z-hz,y,fh,fcol,gapFn);
@@ -428,7 +478,7 @@ PLOTS.forEach(function(p){
       else { fmBox('leafy',f,X,0,y+0.12,0.95,0.2,len-0.3,CROPC[3],true); for(var t3=-len/2+0.8; t3<len/2; t3+=1.7){ var q3=LP(f,X+rr(-0.3,0.3),t3); pod(q3[0],y+0.3,q3[1],rr(0.2,0.32),FRUITC[Math.round(t3+lx)&1?0:2]); } }
     });
     /* a tool lean-to / scarecrow at the back */
-    var sc=LP(f,rr(-Lx+2,Lx-2),-Lz+1.2); BOX(sc[0],y,sc[1],0.1,2.0,0.1,0,TIMBERC[1],'timber'); BOX(sc[0],y+1.35,sc[1],1.3,0.08,0.08,f.ry,TIMBERC[1],'timber'); BOX(sc[0],y+0.8,sc[1],0.7,0.75,0.05,f.ry,pick(CLOTHC),'cloth'); PYR(sc[0],y+1.95,sc[1],0.7,0.35,0.7,0,THATCHC[0],'thatch');
+    var scx=rr(-Lx+2,Lx-2), scc=CLOTHC.indexOf(pick(CLOTHC)); FURNISH('br_h_scarecrow', scx, 0, -Lz+1.2, 0, { seed:scc+1 });
   } else if(p.kind==='paddy'){
     var bw=0.7; [[0,-Lz+bw/2,2*Lx,bw],[0,Lz-bw/2,2*Lx,bw],[-Lx+bw/2,0,bw,2*Lz],[Lx-bw/2,0,bw,2*Lz]].forEach(function(b){ fBOX(f,b[0],b[1],y-0.1,b[2],0.45,b[3],soilC(p.id),'rock'); });
     fBOX(f,0,0,y-0.1,2*Lx-bw,0.24,2*Lz-bw,shade(PAL.riverShallow,-0.12),'rock');
@@ -441,8 +491,8 @@ PLOTS.forEach(function(p){
       ROD(q5[0],y-0.1,q5[1],q5[0]+rr(-0.2,0.2),y+th+0.6,q5[1]+rr(-0.2,0.2),0.17,PAL.bark[3][1],'timber');
       bush(q5[0],y+th,q5[1],cr,cr*1.35,lc); bush(q5[0]+rr(-0.8,0.8),y+th+cr*0.5,q5[1]+rr(-0.8,0.8),cr*0.6,cr*0.9,shade(lc,0.1));
       for(var pd=0;pd<5;pd++){ var pa=pd*1.3+ox; pod(q5[0]+Math.cos(pa)*cr*0.8,y+th+0.2+rr(0,0.5),q5[1]+Math.sin(pa)*cr*0.8,0.2,(v===2?FLOWERC:FRUITC)[pd%3]); } }
-    var bk=LP(f,1.8,Lz-2.5); CYL(bk[0],y,bk[1],0.45,0.5,0,CRATEC[0],'timber'); pod(bk[0],y+0.5,bk[1],0.22,FRUITC[0]);
-    var ld=LP(f,-Lx+3,0.8); BEAM(ld[0],y,ld[1],ld[0]+0.5,y+3.0,ld[1]+0.4,0.5,0.06,TIMBERC[3],'timber');
+    FURNISH('br_common_store', 1.8, 0, Lz-2.5, 0);                    /* the pickers' gourds and baskets */
+    FURNISH('br_h_wall_ladder', -Lx+3, 0, 0.8, 0, { v:2 });           /* a picking ladder */
   } else if(p.kind==='garden'){
     for(var bx=-1; bx<=1; bx+=2) for(var bz=-1.5; bz<=1.5; bz+=1){ var cx2=bx*(Lx*0.5+0.6), cz2=bz*(Lz-2.2)/1.5, bwid=Lx-3.6;
       fBOX(f,cx2,cz2,y,bwid,0.42,2.0,PLANKC[(p.id+Math.round(bz+2))%4],'plank'); fmBox('leafy',f,cx2,cz2,y+0.4,bwid-0.25,0.08,1.75,soilC(p.id+1),true);
@@ -462,10 +512,10 @@ PLOTS.forEach(function(p){
     dQuad('thatch',L3(f,-sw/2-0.6,y+1.6,-Lz+0.6),L3(f,sw/2+0.6,y+1.6,-Lz+0.6),L3(f,sw/2+0.6,y+2.7,-Lz+5.0),L3(f,-sw/2-0.6,y+2.7,-Lz+5.0),pick(THATCHC));
     fmBox('thatch',f,0,-Lz+2.6,y+0.05,sw-1,0.12,3.0,shade(THATCHC[3],-0.1),true);
     /* feed trough, leaf-litter heaps, a wallow, a post rubbed smooth */
-    fBOX(f,Lx-2.0,1.0,y,0.8,0.55,4.2,PLANKC[3],'plank'); fmBox('leafy',f,Lx-2.0,1.0,y+0.5,0.6,0.12,4.0,UNDERC[p.id%5],true);
+    FURNISH('br_h_trough', Lx-2.0, 0, 1.0, Math.PI/2, { v:2 });        /* the feed trough, its front to the pen */
     for(var lh=0; lh<4; lh++){ var q7=LP(f,rr(-Lx+2.5,Lx-4),rr(-Lz+6,Lz-2.5)); if(Math.abs(q7[0]-p.x)<1.5&&Math.abs(q7[1]-p.z)<1.5) continue; mCone('leafy',q7[0],y,q7[1],rr(0.9,1.5),0.2,rr(0.4,0.8),shade(PAL.litter[lh%3],0.05),7,lh); }
     fBOX(f,-Lx+4,Lz-4,y-0.08,4.2,0.2,3.2,shade(PAL.riverDeep,0.1),'rock');
-    var rp=LP(f,-3.2,2.4); CYL(rp[0],y,rp[1],0.28,1.9,0,TIMBERC[3],'timber');
+    FURNISH('br_h_hitching_rail', -3.2, 0, 2.4, 0, { v:1 });           /* the tether post */
   }
   ARCH.plots++;
   REGISTER({ name:PLOT_LABEL[p.kind]+' '+(p.id+1), kind:'plot', label:PLOT_LABEL[p.kind]+' — farm plot', x:p.x, z:p.z, y:y-0.2, h:p.kind==='orchard'?6:3, r:Math.max(p.w,p.d)*0.52 });
@@ -474,6 +524,7 @@ PLOTS.forEach(function(p){
 /* ------------------------------------------------------------------ THE ASSEMBLY HALL: round, colonnaded, a steep three-tier tajug roof */
 (function(){
   var P=platFrame(HALL.x,HALL.z,0), y=SETTLE_Y, R=HALL.R, red=ORNATEC[0], gilt=ORNATEC[1], verd=ORNATEC[2], deep=ORNATEC[3];
+  gfAt(HALL, 'girder.hall', null, y, 0.65);
   var doors=HALL.doors.map(function(d){ return Math.atan2(d.z-HALL.z,d.x-HALL.x); }), rw=12.4, fy=y+0.5, wh=5.4, SEG=32;
   function pt(r,a,yy){ return [HALL.x+Math.cos(a)*r, yy, HALL.z+Math.sin(a)*r]; }
   function nearDoor(a,m){ for(var i=0;i<doors.length;i++) if(angDist(a,doors[i])<m) return true; return false; }
@@ -481,11 +532,15 @@ PLOTS.forEach(function(p){
   SECTOR('rock',P,0,R+0.55,0,TAU,y-0.1,y+0.25,shade(ROCKC[1],-0.05),{faces:'to',step:3});
   SECTOR('rock',P,0,R,0,TAU,y+0.25,fy,ROCKC[2],{faces:'to',step:3});
   SECTOR('plank',P,0,rw-0.1,0,TAU,fy,fy+0.06,PLANKC[1],{faces:'t',step:4});
+  gwDisc(HALL.x,HALL.z,R+0.55,y+0.25,y-0.1,'floor'); gwDisc(HALL.x,HALL.z,R,fy,y+0.25,'floor'); gwDisc(HALL.x,HALL.z,rw-0.1,fy+0.06,fy,'floor');
+  HALL.shell = { y:y, fy:fy+0.06, rw:rw, wh:wh, doors:doors.slice(), fixtures:[] };
   /* wall ring between the four doors, lintel panels over them */
   var dg=1.45/rw, wc=WALLC[2];
   var ds=doors.slice().sort(function(a,b){ return wrapPi(a)-wrapPi(b); }).map(wrapPi);
   ds.forEach(function(a,i){ var b=i<ds.length-1?ds[i+1]:ds[0]+TAU;
     SECTOR('wall',P,rw-0.3,rw,a+dg,b-dg,fy,fy+wh,wc,{faces:'ios',step:2.2,colInner:shade(wc,-0.25)});
+    for(var ws=0, wn=Math.ceil((b-a-2*dg)*rw/1.2); ws<wn; ws++){ var wa0=mix(a+dg,b-dg,ws/wn), wa1=mix(a+dg,b-dg,(ws+1)/wn), wp0=pt(rw-0.15,wa0,0), wp1=pt(rw-0.15,wa1,0);
+      gwSeg(wp0[0],wp0[2],wp1[0],wp1[2],0.34,fy,fy+wh,'wall'); }
     SECTOR('timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy,fy+0.55,deep,{faces:'tio',step:2.2});
     SECTOR('timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy+3.3,fy+3.55,red,{faces:'tbio',step:2.2});
     SECTOR('wall',P,rw-0.3,rw,a-dg,a+dg,fy+3.3,fy+wh,shade(wc,-0.1),{faces:'bio',step:2.2});
@@ -496,11 +551,10 @@ PLOTS.forEach(function(p){
     /* door posts, leaves standing open, banners, braziers */
     [-1,1].forEach(function(sd){
       var pp=pt(rw+0.05,a+sd*dg,fy); carvedPost(pp[0],fy,pp[2],3.3,0.36,red,gilt);
-      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,'plank');
-      var bn=pt(R-0.55,a+sd*3.0/R,fy); BOX(bn[0],fy,bn[2],0.16,6.2,0.16,0,red,'timber'); BOX(bn[0],fy+6.0,bn[2],0.12,0.12,1.3,-a,gilt,'timber');
-      var bc=pt(R-0.5,a+sd*3.0/R,0); BOX(bc[0],fy+1.6,bc[2],0.05,4.3,1.0,-a,(i%2)?deep:CLOTHC[3],'cloth');
-      var bz=pt(R+2.0,a+sd*2.7/R,y); CYL(bz[0],y,bz[2],0.16,1.2,0,TIMBERC[0],'timber'); CYL(bz[0],y+1.2,bz[2],0.6,0.38,0,shade(ROCKC[3],-0.3),'timber');
-      BOX(bz[0],y+1.5,bz[2],0.72,0.36,0.72,0.6,PAL.glowWarm,'glowmat'); nlLampAdd(bz[0],y+2.0,bz[2],1.3,20,false); ARCH.lamps++;
+      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,'plank'); gwBox(lf[0],fy,lf[2],1.4,3.0,0.1,-a,'door');
+      /* a banner pole either side of the door and a brazier on a post below the plinth: catalog pieces */
+      var bn=pt(R-0.55,a+sd*3.0/R,fy), ba=a+sd*3.0/R; FURNISHW('br_h_banner_pole', bn[0], fy, bn[2], Math.atan2(Math.cos(ba),Math.sin(ba)), { v:0, seed:(i%2)+1 });
+      var bz=pt(R+2.0,a+sd*2.7/R,y); nlLampAdd(bz[0],y+2.0,bz[2],1.3,20,false); ARCH.lamps++; FURNISHW('br_h_post_brazier', bz[0], y, bz[2], 0, { noLight:true });
     });
   });
   /* colonnade: carved posts under the great eave, a ring beam, a low rail between them */
@@ -529,9 +583,12 @@ PLOTS.forEach(function(p){
   BOX(HALL.x,yy+2.0,HALL.z,1.3,0.12,0.12,0,gilt,'timber'); BOX(HALL.x,yy+2.0,HALL.z,0.12,0.12,1.3,0,gilt,'timber'); BOX(HALL.x,yy+2.9,HALL.z,0.7,0.1,0.1,0.78,gilt,'timber');
   /* beast-head finials thrust out from the great eave over each door */
   doors.forEach(function(a){ var p=pt(t1b-0.2,a,fy+4.9); finial(p,Math.cos(a),Math.sin(a),1.9,gilt); });
-  /* inside: a ring of benches, the speaker's hearth */
-  SECTOR('plank',P,8.6,9.4,0,TAU,fy+0.06,fy+0.5,PLANKC[2],{faces:'tio',step:3}); SECTOR('plank',P,10.2,11.0,0,TAU,fy+0.06,fy+0.85,PLANKC[3],{faces:'tio',step:3});
-  CYL(HALL.x,fy,HALL.z,1.5,0.4,0,ROCKC[3],'timber'); BOX(HALL.x,fy+0.4,HALL.z,1.3,0.2,1.3,0.5,PAL.glowWarm,'glowmat'); nlLampAdd(HALL.x,fy+2,HALL.z,1.4,22,false); ARCH.lamps+=2;
+  /* inside: the two-tier ring of benches (twelve catalog arcs, an aisle at each door) and the speaker's hearth.
+     They are the hall's own seating: the interiors keep clear of them (fixtures) and furnish the rest */
+  for(var rq=0; rq<4; rq++) for(var rk=-1; rk<=1; rk++){ var ra=Math.PI/4+rq*Math.PI/2+rk*0.449, rx=9.7*Math.cos(ra), rz=9.7*Math.sin(ra), rry=Math.atan2(-Math.cos(ra),-Math.sin(ra));
+    FURNISH('br_h_ring_bench', rx, fy+0.06-y, rz, rry); HALL.shell.fixtures.push({ id:'bench'+rq+'_'+(rk+1), kind:'bench', x:rx, z:rz, ry:rry, w:4.8, d:2.62, h:0.85, reach:false }); }
+  nlLampAdd(HALL.x,fy+2,HALL.z,1.4,22,false); ARCH.lamps+=2; FURNISH('br_h_speakers_hearth', 0, fy+0.06-y, 0, 0, { noLight:true });
+  HALL.shell.fixtures.push({ id:'hearth', kind:'hearth', x:0, z:0, ry:0, w:3.0, d:3.0, h:0.6, reach:false });
   ARCH.hall=+(yy+3.8-y).toFixed(1);
   REGISTER({ name:'The Assembly Hall', kind:'hall', label:'Assembly hall — where the riders meet', x:HALL.x, z:HALL.z, y:y, h:yy+4-y, r:t1b+0.5 });
 })();
@@ -540,15 +597,17 @@ PLOTS.forEach(function(p){
 var STALL_GOODS = ['Fruit-seller','Tack & harness','Potter','Weaver','Herbalist','Fletcher','Dried meats','Rope & cord'];
 STALLS.forEach(function(s,i){
   var L=Math.hypot(s.x-HALL.x,s.z-HALL.z)||1, f=FRM(s.x,s.z,-(s.x-HALL.x)/L,-(s.z-HALL.z)/L), y=s.y, tc=TIMBERC[i%4];
-  [[-1.6,-1.1,2.9],[1.6,-1.1,2.9],[-1.6,1.1,2.35],[1.6,1.1,2.35]].forEach(function(c){ fBOX(f,c[0],c[1],y,0.14,c[2],0.14,tc,'timber'); });
+  gfAt(s, 'girder.stall.'+i, f, y, 0.5);
+  [[-1.6,-1.1,2.9],[1.6,-1.1,2.9],[-1.6,1.1,2.35],[1.6,1.1,2.35]].forEach(function(c){ fBOX(f,c[0],c[1],y,0.14,c[2],0.14,tc,'timber'); gwF(f,c[0],c[1],y,0.14,c[2],0.14,'post'); });
   clothAwning(f,-1.9,1.9,-1.3,y+2.95,2.9,0.62,AWNINGC[i%5],shade(AWNINGC[(i+2)%5],0.18));
-  fBOX(f,0,0.85,y,3.0,0.85,0.7,CRATEC[i%3],'plank'); fBOX(f,0,0.85,y+0.85,3.3,0.07,0.9,PLANKC[0],'plank');
-  fBOX(f,-1.35,-0.2,y,0.6,0.8,1.4,CRATEC[(i+1)%3],'plank'); fBOX(f,0.3,-0.95,y,2.2,1.5,0.35,PLANKC[3],'plank');
-  for(var g=0; g<5; g++){ var q=LP(f,-1.3+g*0.65,0.85+rr(-0.15,0.15)), k=(g+i)%4;
-    if(k===0){ for(var pz=0;pz<3;pz++) pod(q[0]+rr(-0.15,0.15),y+0.95+pz*0.12,q[1]+rr(-0.12,0.12),0.15,FRUITC[(pz+i)%3]); }
-    else if(k===1) BOX(q[0],y+0.92,q[1],0.5,0.22,0.4,f.ry+rr(-0.3,0.3),CLOTHC[(g+i)%6],'plank');
-    else if(k===2) CYL(q[0],y+0.92,q[1],0.2,0.36,0,CRATEC[g%3],'timber');
-    else pod(q[0],y+0.98,q[1],0.2,(i%2?FLOWERC:CROPC)[g%3]); }
+  /* the counter, a crate pair at its side, a shelf block at the back, goods on the counter top: catalog pieces */
+  FURNISH('br_h_work_counter', 0, 0, 0.85, 0, { v:0, seed:i+1 });
+  FURNISH('br_h_crate_stack', -1.35, 0, -0.2, Math.PI/2, { v:1, seed:i+2 });
+  FURNISH('br_h_workshop_shelves', 0.3, 0, -1.0, 0, { seed:i+1 });
+  for(var g=0; g<5; g++){ var gz=0.85+rr(-0.15,0.15), k=(g+i)%4;
+    if(k===0){ for(var pz=0;pz<3;pz++){ rr(-0.15,0.15); rr(-0.12,0.12); } }          /* the pods' draws, kept */
+    else if(k===1) rr(-0.3,0.3);
+    FURNISH('br_h_stall_goods', -1.0+g*0.5, 1.08, Math.max(0.75,Math.min(0.95,gz)), 0, { v:[0,1,2,2][k], seed:g+i+1, setting:'outdoor' }); }
   var bq=LP(f,1.35,-0.3); barrel(bq[0],y,bq[1],0.9); if(i%2){ var cq=LP(f,2.2,0.5); crate(cq[0],y,cq[1],0.7,f.ry+0.3); }
   if(i%3!==2){ var lq=LP(f,0.9,1.35); lamp(lq[0],y+2.0,lq[1],0.7,10,false,0.3); }
   ARCH.stalls++;

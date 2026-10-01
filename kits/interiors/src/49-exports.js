@@ -20,7 +20,7 @@
       room: plan.room, kind: plan.kind, culture: plan.culture, seed: plan.seed, opts: plan.opts,
       placements: plan.placements.map(function (p) {
         return { id: p.id, key: p.key, variant: p.variant, seed: p.seed, x: p.x, z: p.z, ry: p.ry, y: p.y, anchor: p.anchor,
-          type: p.type, culture: p.culture, need: p.need, host: p.host, lights: p.lights };
+          type: p.type, catRole: p.catRole, culture: p.culture, need: p.need, host: p.host, lights: p.lights };
       }),
       lights: plan.lights || [],
       doorZones: plan.zones.doors.map(function (zs) { return zs.map(polyJSON); }),

@@ -22,9 +22,8 @@ reseed(659001);
         ABYSS.vessel(F, 'drum', -6.2,H,-6.0, { r:1.4, len:6.0, col:ABYSS.rust(F), win:[[-1.2,0],[1.2,0]], awning:PAL.abTarpBlue, door:'end' });
         LOCUS.matWall(F, -6,H, -2.6, 6, 2.2, 0,1); F.box(-6,H+2.2,-3.0, 7,0.08,2.0, [0.2,0,0], ABYSS.rust(F), 'corrugate');
         ABYSS.railRect(F, -11,-1,-9,-1, H, [['f',-4,-2.6]]); LOCUS.stair(F, -3.3, -1+H*1.15, 0,-1, H, 1.2);
-        /* a reed granary basket on legs */
-        [[2.2,-7],[4.2,-7],[2.2,-5],[4.2,-5]].forEach(function(p){ F.cyl(p[0],0,p[1], 0.1,1.4, 0, tc, 'timber'); });
-        F.lathe('thatch', 3.2,-6, [[1.0,1.4],[1.4,2.4],[1.3,3.4]], F.pick(REEDMATC), { seg:12 }); F.cone(3.2,3.4,-6, 1.7,1.6, 0, F.pick(THATCHC), 'thatch'); }
+        /* a reed granary basket on legs: FURNITURE, the catalog's abyss_granary_basket (its two colour picks burnt) */
+        ABYSS.burn(F, 2); FURNISH('abyss_granary_basket', 3.2,0,-6, 0); }
       /* the animal pen: a post-and-rail fence round a beaten yard, a trough and a shade */
       F.box(6,0,-5, 9,0.06,8, 0, 0x9a8460, 'adobe');
       [[1.5,-9,10.5,-9],[10.5,-9,10.5,-1],[10.5,-1,1.5,-1],[1.5,-1,1.5,-9]].forEach(function(s,i){ var n=Math.round(Math.hypot(s[2]-s[0],s[3]-s[1])/1.6);
@@ -88,7 +87,7 @@ reseed(659001);
       F.box(sx,SH-0.2,sz, 4.0,0.25,4.0, 0, F.pick(PLANKC), 'plank');
       ABYSS.vessel(F, 'tank', sx,SH+0.05,sz, { r:1.8, h:2.6, col:ABYSS.rust(F), ladder:0 });
       LOCUS.pipe(F, [[sx-1.9,SH+0.6,sz],[sx-2.4,SH+0.6,sz],[sx-2.4,0.6,sz+2.4],[sx-2.4,0.6,sz+4.6]], 0.08, PIPEC[1], 'rust');
-      F.box(sx-2.4,0,sz+5.6, 3.4,0.55,1.4, 0, ABYSS.rust(F), 'rust'); F.box(sx-2.4,0.42,sz+5.6, 3.2,0.08,1.2, 0, SALTWATERC[1], 'plaster');   /* the trough */
+      ABYSS.burn(F, 1); FURNISH('abyss_trough', sx-2.4,0,sz+5.6, 0);                                     /* the trough: FURNITURE (catalog), its colour pick burnt */
       LOCUS.ladder(F, tx+1.6,0.4,tz, 1,0, TH-0.4, STEELDC[0]);
     } });
 
@@ -116,8 +115,8 @@ reseed(659001);
         var C=[[-16.4,9.4,-9.2],[0,10.4,-9.2],[16.4,9.4,-9.2],[16.4,7.0,2.6],[0,8.0,2.6],[-16.4,7.0,2.6]]; C.forEach(function(q){ ABYSS.mast(F, q[0],q[2], q[1], { r:0.16 }); });
         ABYSS.sail(F, [C[0],C[1],C[4],C[5]], F.pick(CANVASC), { swoop:1.0, band:PAL.abSailRed, bandW:0.6 }); ABYSS.sail(F, [C[1],C[2],C[3],C[4]], F.pick(CANVASC), { swoop:1.0, band:PAL.abSailRed, bandW:0.6 });
         /* the yard: crates and drums */
-        for(var d=0;d<6;d++) LOCUS.drum(F, -14+d*0.75, 0.1, 5.5, null, false);
-        LOCUS.drum(F, -9,0.1,6.6, null, true, 0.3); LOCUS.drum(F, -8.2,0.1,7.4, null, true, 0.5);
+        for(var d=0;d<6;d++){ ABYSS.burn(F, 1); FURNISH('pa_drum', -14+d*0.75,0.1,5.5, 0); }   /* FURNITURE (catalog pa_drum; the drawn drum's colour pick burnt) */
+        ABYSS.burn(F, 1); FURNISH('job_oil_drum_lying', -9,0.1,6.6, 0.3); ABYSS.burn(F, 1); FURNISH('job_oil_drum_lying', -8.2,0.1,7.4, 0.5);   /* the two lying drums (Jobs; colour picks burnt) */
         ABYSS.furn(F, 'abyss_crates', -3,6, 0, { variant:0 }); ABYSS.furn(F, 'abyss_crates', 1,6.4, 0.4, { variant:1 }); ABYSS.furn(F, 'abyss_crates', 6,5.8, -0.3, { variant:2 }); ABYSS.furn(F, 'abyss_crates', 11,6.6, 0, { variant:0 });
         ABYSS.furn(F, 'abyss_lantern_post', 15.6,8.4, PI, { variant:0 }); }
     } });

@@ -55,3 +55,8 @@ FURN({
     F.cyl(0, 0.42, 0, 0.09, 0.005, 0, F.col('timberPine'), 'wood');
   }
 });
+
+/* trades and households (FK.ROLES.trade, the 2026-10 interiors-sets pass): forge, anvil, stall, vat, still,
+   bins, larder, bunk, locker ... in this culture's style sheet, keyed generic_trade_<role> */
+FK.set({ culture: 'generic', tier: 'poor', roles: 'trade', prefix: 'generic_trade_', S: GENERIC_STYLE, names: {
+  forge: 'Fieldstone forge', anvil: 'Anvil on a stump', trough: 'Plank trough', stall: 'Plank stall', hayrack: 'Hay rack and manger', display: 'Plank display steps', armour_stand: 'Armour post', weapon_rack: 'Weapon rack', vat: 'Staved vat', still: 'Pot still', bin: 'Grain bins', larder: 'Larder cupboard', bunk: 'Plank bunk', locker: 'Plank locker', lathe: 'Pole lathe', press: 'Screw press', kiln: 'Clay kiln', grindstone: 'Grindstone', barrel: 'Barrel cradle', altar: 'Household altar' } });

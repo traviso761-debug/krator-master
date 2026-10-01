@@ -9,6 +9,8 @@ Checks (they exist because fragments share one JS scope and several agents write
   2. no column-0 const/let/var/function name is declared in two fragments, and none is one of the generic short names;
   3. every building fragment (4x-7x) declares only names carrying its own prefix (given in the fragment's first line: `// prefix: xx`);
   4. `node --check` on the concatenated script (node is present on this box; if it is not, the script says so and verify.py is the only syntax check).
+The catalog's furniture and the interiors core with this kit's interior set are one GENERATED fragment, 38-furniture-bundle.js (virtual_bodies(),
+never written to src/; the name checks skip it but its four globals must not meet a kit name). 91f-furnish.js is the glue (FURNISH, API.md).
 """
 import hashlib, json, os, re, subprocess, sys
 
@@ -42,6 +44,21 @@ except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')   # shared: the socket + culture system (core/sockets/README.md)
 OUT = os.path.join(DIST, 'post-apoc.html')
+ROOT = os.path.dirname(os.path.dirname(HERE))
+# GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and
+# the interiors core with this kit's interior set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom).
+# Inserted at build time after the registry (36-def, 37-sockets); never written to src/. 91f-furnish.js is the glue
+# (FURNISH, the interiors hook, the batch flushed once per buildWorld). The cultures are the interior set's (scrap,
+# post-apoc) and their fallback chain (kits/interiors IX.CULTURE_FAMILY: post-apoc -> scrap, ancients-salvage, generic;
+# the catalog has no ancients-salvage file).
+FURN_CULTURES = ['scrap', 'post-apoc', 'generic']
+INTERIOR_SETS = ['post-apoc']
+VIRTUAL = {'38-furniture-bundle.js'}
+def virtual_bodies():
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import furniture_bundle, kit_bundle
+    return {'38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS)}
 RE_DECL = re.compile(r'^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_SEED = re.compile(r'defBuilding\(\{[^}]*?\bseed\s*:\s*(\d+)', re.S)
 RE_KEY = re.compile(r'defBuilding\(\{\s*key\s*:\s*[\'"]([^\'"]+)[\'"]')
@@ -51,18 +68,24 @@ ALLOW_GENERIC = {'P', 'W', 'PI', 'TAU'}   # engine names on purpose
 def main():
     paths = {f: os.path.join(CORE_SOCK, f) for f in os.listdir(CORE_SOCK) if f[0].isdigit()}
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a local copy with the same name overrides the shared one
-    files = sorted(paths)
-    bodies = {f: open(paths[f], encoding='utf-8', newline='').read() for f in files}
+    vb = virtual_bodies()
+    files = sorted(list(paths) + list(vb))
+    bodies = dict(vb)
+    bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
     errs = []
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js'): continue
+            if not f.endswith('.js') or f in VIRTUAL: continue   # the generated bundle keeps its names in closures (but its globals: below)
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
+        for f in VIRTUAL:   # the bundle's own globals must not meet a kit name
+            for n in ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom'):
+                if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))
         for n, fs in sorted(decl.items()):
             if len(fs) > 1: errs.append('top-level name `%s` declared in more than one fragment: %s' % (n, ', '.join(sorted(fs))))
         seeds = {}
         for f in files:
+            if f in VIRTUAL: continue
             for m in RE_SEED.finditer(bodies[f]): seeds.setdefault(int(m.group(1)), []).append(f)
             keys = RE_KEY.findall(bodies[f]); nseed = len(RE_SEED.findall(bodies[f]))
             if len(keys) != nseed: errs.append('%s: %d defBuilding keys but %d seeds' % (f, len(keys), nseed))

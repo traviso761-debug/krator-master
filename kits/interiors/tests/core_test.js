@@ -25,8 +25,10 @@ const P = [
   ['y_shelf', 'shelf', ['store', 'kitchen', 'workshop', 'study'], 'wall', { front: 0.6 }, [1.2, 0.4, 2.0]],
   ['y_bench', 'workstation', ['workshop'], 'floor', { front: 0.7 }, [1.8, 0.8, 0.9]],
   ['y_desk', 'desk', ['study'], 'floor', { front: 0.7 }, [1.2, 0.6, 0.75]],
-  ['y_pot', 'vessel', ['hall', 'kitchen', 'tavern'], 'surface', {}, [0.25, 0.25, 0.2]]
-].forEach(function (a) { P.push({ key: a[0], culture: 'y', type: a[1], setting: 'indoor', rooms: a[2], anchor: a[3], clearance: a[4], variants: 1, dims: [a[5]] }); });
+  ['y_pot', 'vessel', ['hall', 'kitchen', 'tavern'], 'surface', {}, [0.25, 0.25, 0.2]],
+  ['y_chest', 'storage', ['bedroom', 'store', 'hall'], 'floor', { front: 0.6 }, [1.0, 0.5, 0.55], 'chest'],
+  ['y_jars', 'storage', ['kitchen', 'store', 'hall'], 'floor', { front: 0.5 }, [1.0, 0.5, 0.8], 'store']
+].forEach(function (a) { P.push({ key: a[0], culture: 'y', type: a[1], setting: 'indoor', rooms: a[2], anchor: a[3], clearance: a[4], variants: 1, dims: [a[5]], role: a[6] }); });
 /* culture z: a tight room's requirements (backtracking) */
 [['z_bed', 'bed', 'floor', { front: 0.6 }, [1.4, 2.0, 0.6]], ['z_stove', 'stove', 'floor', { front: 0.7 }, [1.0, 0.7, 1.2]],
   ['z_shelf', 'shelf', 'wall', { front: 0.6 }, [1.4, 0.4, 2.0]], ['z_desk', 'desk', 'floor', { front: 0.7 }, [1.2, 0.6, 0.75]]
@@ -149,5 +151,69 @@ SHELLS.forEach(function (S) {
   }
 });
 ok(climbed > 0, 'some walker climbs a stair (' + climbed + ' of ' + walkersAll + ')');
+
+/* ---- roles and kind aliases: a bedroom needs a chest-role storage, a kitchen a store-role one; a
+   `cottage` (no catalog piece lists it) draws on pieces listing hall, bedroom or kitchen */
+(function () {
+  const hp = SHELLS[0];
+  const Bh = IX.planBuilding(hp[0], hp[1], {});
+  const bed = Bh.rooms.filter(function (R) { return R.kind === 'bedroom'; })[0], kit = Bh.rooms.filter(function (R) { return R.kind === 'kitchen'; })[0];
+  const pbed = IX.furnishRoom(bed, cat), pkit = IX.furnishRoom(kit, cat);
+  ok(pbed.placements.some(function (p) { return p.key === 'y_chest' && p.need === 'chest' && p.catRole === 'chest'; }), 'the bedroom takes the chest-role storage for its chest slot');
+  ok(pkit.placements.some(function (p) { return p.key === 'y_jars' && p.need === 'food' && p.catRole === 'store'; }), 'the kitchen takes the store-role storage for its food slot');
+  ok(!pkit.placements.some(function (p) { return p.key === 'y_chest' && p.need === 'food'; }), 'a chest never fills the food slot');
+  const C = IX.ROOM({ id: 'cot.1', kind: 'cottage', culture: 'y', poly: [[40, 0], [46, 0], [46, 5.5], [40, 5.5]], h: 2.8, doors: [{ at: [43, 5.5], w: 1.0 }] });
+  const pc = IX.furnishRoom(C, cat);
+  ok(IX.roomKinds('cottage').length === 4, 'cottage aliases hall, bedroom and kitchen');
+  ok(!pc.report.missing.length, 'the cottage finds a bed, a hearth, food and a chest through its aliases: ' + JSON.stringify(pc.report.missing));
+  ok(IX.audit(C, pc, cat).ok, 'the cottage audits clean');
+})();
+
+/* ---- a thick wall (0.9 m banco): the street door on the outer face still snaps into its room */
+(function () {
+  const Bt = IX.planBuilding({ id: 'thick', poly: [[60, 0], [70, 0], [70, 8], [60, 8]], wall: 0.9, doors: [{ at: [65, 8], w: 1.2 }], culture: 'y' }, ['hall', 'kitchen'], {});
+  ok(Bt.rooms.length === 2 && Bt.rooms.some(function (R) { return R.doors.some(function (d) { return d.to === 'street' && Math.abs(d.at[1] - 7.1) < 0.01; }); }),
+    'a street door in a 0.9 m wall lands on its room\'s inner face');
+})();
+
+/* ---- interior sets: a kit's buildings as data in their own frame, instantiated anywhere, and the residence rule */
+(function () {
+  const SHP = IX.sets.shape;
+  ok(SHP.circle(3, 8).length === 8 && SHP.ell(8, 6, 3, 2).length === 6, 'shape helpers');
+  const set = IX.sets.add({ set: 'test', title: 'test set', culture: 'y', items: [
+    { key: 'hut', name: 'Hut', wealth: 0.3, types: ['single-family dwelling'], lot: [10, 10],
+      bodies: [{ id: 'main', poly: SHP.rect(6.5, 5.5), y: 0.3, levels: [{ h: 2.8 }], doors: [{ at: [0, 2.75], w: 1.0 }], program: ['cottage'] }] },
+    { key: 'hut_b', name: 'Hut (variant)', like: 'hut', wealth: 0.6 },
+    { key: 'round', name: 'Round hut', types: ['single-family dwelling'], units: 1,
+      rooms: [{ id: 'r', kind: 'cottage', poly: SHP.circle(3.4, 10), y: 0.1, h: 2.6, doors: [{ at: [0, 3.4], w: 1.0, swing: 'none' }] }] },
+    { key: 'shed', name: 'Shed', types: ['industry'], rooms: [{ kind: 'workshop', poly: SHP.rect(5, 4), h: 2.5, doors: [{ at: [0, 2], w: 1.2 }] }] },
+    { key: 'field', name: 'Field', types: ['farm'], skip: 'open field, nothing to furnish' }
+  ] });
+  ok(set.items.length === 5 && set.byKey.hut_b.bodies === set.byKey.hut.bodies && set.byKey.hut_b.residence && set.byKey.hut_b.culture === 'y', 'like: copies bodies, culture inherited from the set');
+  ok(set.byKey.round.residence && !set.byKey.shed.residence, 'a dwelling type makes a residence; an industry does not');
+  let threw = false;
+  try { IX.sets.add({ set: 'bad', items: [{ key: 'x', name: 'x' }] }); } catch (e) { threw = true; }
+  ok(threw, 'an item with no bodies, rooms or skip reason is refused');
+  const I1 = IX.sets.instantiate(set.byKey.hut, 100, 50, 0.7, { baseY: 1.0 });
+  ok(I1.buildings.length === 1 && I1.rooms.length === 1 && I1.rooms[0].kind === 'cottage' && I1.rooms[0].level === 0, 'a body plans into its rooms');
+  const ctr = I1.rooms[0].centroid;
+  ok(Math.hypot(ctr[0] - 100, ctr[1] - 50) < 0.6 && Math.abs(I1.rooms[0].y - 1.3) < 1e-6, 'instantiated at the given origin, turned, lifted by baseY + body y');
+  const D = I1.buildings[0].doors.filter(function (d) { return d.kind === 'street'; })[0];
+  const fx = 100 + Math.sin(0.7) * 2.75, fz = 50 + Math.cos(0.7) * 2.75;      /* local (0, 2.75) turned by ry */
+  ok(D && Math.hypot(D.at[0] - fx, D.at[1] - fz) < 0.05, 'the street door turns with the building (' + (D ? D.at : 'no door') + ' vs ' + [fx.toFixed(2), fz.toFixed(2)] + ')');
+  const I3 = IX.sets.instantiate(set.byKey.round, 0, 80, 0, {});
+  ok(I3.rooms.length === 1 && I3.rooms[0].explicit && I3.rooms[0].poly.length === 10 && I3.rooms[0].doors.length === 1, 'explicit rooms register with their doors');
+  const I5 = IX.sets.instantiate(set.byKey.field, 0, 0, 0, {});
+  ok(!I5.rooms.length && !I5.buildings.length, 'a skipped item instantiates to nothing');
+  const plans = {};
+  I1.rooms.concat(I3.rooms).forEach(function (R) { plans[R.id] = IX.furnishRoom(R, cat); });
+  const a1 = IX.sets.auditResidence(I1, plans), a3 = IX.sets.auditResidence(I3, plans);
+  ok(a1.residence && !a1.fails.length && a1.beds >= 1 && a1.food >= 1 && a1.items >= 1, 'the hut holds a bed, a food container and an item container: ' + JSON.stringify(a1));
+  ok(a3.residence && !a3.fails.length, 'so does the round hut: ' + JSON.stringify(a3));
+  const empty = IX.sets.auditResidence(I1, {});
+  ok(empty.fails.length === 3, 'an unfurnished residence fails all three counts');
+  const I4 = IX.sets.instantiate(set.byKey.shed, 0, 0, 0, {});
+  ok(!IX.sets.auditResidence(I4, {}).fails.length, 'a non-residence is not checked');
+})();
 console.log(JSON.stringify({ placed: p1.placements.map(function (p) { return p.key + '@' + p.role; }), fails: fails }));
 process.exit(fails.length ? 1 : 0);

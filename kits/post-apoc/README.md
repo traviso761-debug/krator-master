@@ -6,7 +6,7 @@ a Voth river shanty, a Republic frontier stop) and then dressed in that culture'
 
 `dist/post-apoc.html` shows every building in rows by family. Toolbar: **Time** (Day / Dusk / Night), **Clock** (lets the sim clock run: the sky and the lit windows follow it), **Doors** (shows each building's front-door marker), view select, Inspector (hover: name, class, tags), Shadows, **Culture** (Generic /
 Iziz / Voth / Republic: rebuilds the whole set with that culture's marks), Polygon (click-to-coordinates), Walk (F).
-URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`, `?night=0..1`, `?clock=N` (run the clock at N sim minutes a second), `?t=12.5` (pin the animation time, for screenshots), `?anim=0` (t = 0).
+URL parameters: `?culture=iziz`, `?only=shop-food,dw-silo`, `?night=0..1`, `?clock=N` (run the clock at N sim minutes a second), `?t=12.5` (pin the animation time, for screenshots), `?anim=0` (t = 0), `?interiors=1` (plan and furnish the rooms, below), `?furniture=0` (no furniture pieces).
 
 ## Animation and night
 
@@ -19,12 +19,19 @@ At night windows light by an evening schedule (most at dusk, fewer as the night 
 1. **Cores** (`src/32-cores.js`): the large reclaimed objects at real scale. Shipping containers (20 ft / 40 ft), grain silos, storage tanks (vertical, lying),
    school buses, semi trucks, and arcology **bulkheads** (the Ancients' white ceramic slab with a round hatch or a doorway).
 2. **Additions** (`src/34-adds.js`): what is lashed onto a core out of scrap. Sheet-metal lean-tos and gable roofs, earth-filled **tyre walls and rings** (real tori
-   packed with earth), **bottle-glass walls**, patchwork plank-and-sheet walls, decks, stairs, steel stairs / landings / pipe rails, ladders, stovepipes, solar panels, water butts, barrels, tarps, fences, junk piles.
+   packed with earth), **bottle-glass walls**, patchwork plank-and-sheet walls, decks, stairs, steel stairs / landings / pipe rails, ladders, stovepipes, solar panels, tarps, fences.
 3. **Sockets** (`src/36-def.js`, `sock()`): every building declares where a culture's marks go (`awning`, `banner`, `flag`, `emblem`, `sign`, `paint`) with a
    local frame and size. Buildings never mention a culture.
 4. **Culture packs** (`core/sockets/80-cultures.js` with the symbols in `38-symbols.js`, shared, see `core/sockets/README.md`): fill the sockets. Shipped: `generic` (faded tarps and rags), `iziz` (orange, teal, striped awnings, a sun),
    `republic` (Voth's deep red with the triskelion), `voth` (deep blue with an ash-white glyph, ragged cloth), `yuni` (yellow, the hyperboloid), `beast-rider` (green, the claw).
    A pack may also supply a `paint` list that the containers' livery (`PAINT()`) draws from. To add a culture: one `mkCulture({...})`, no building changes. `place(key,x,z,ry,{culture:'yuni'})` dresses one building in a pack.
+
+## Furniture comes from the catalog
+
+Barrels, crates, sacks, lamps, fires, tyre seats and tables, junk piles, water butts, planters, counters, racks, carts, cages, stalls and the rest are **furniture**: master-catalog
+pieces (`kits/catalog`, the `pa_*` pieces harvested from this kit) placed as data with `FURNISH(key, lx, ly, lz, lry, {v})` and built by the catalog's own code (one generated bundle,
+`38-furniture-bundle.js`; the glue is `src/91f-furnish.js`). Each building's pieces are on its record (`rec.furniture`). Indoors the rooms are the interiors kit's
+(`kits/interiors/sets/post-apoc.js`): the builders draw nothing inside a planned room, and `?interiors=1` plans and furnishes them. Details: `API.md`, *Furniture*.
 
 ## The buildings (33 defs, tags per README: culture, type)
 

@@ -4,7 +4,8 @@
    loaded first) onto the four calls the placer needs (45-placer.js header):
 
      list()                    FURNS -> descriptors { key, name, culture, type, setting, rooms, anchor, clearance, variants,
-                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js)
+                               tier, wealth: [lo, hi], role }   (tier and wealth: the catalog's wealth bands, 45-placer.js;
+                               role: the catalog's, else guessed from the key: IX.guessRole)
      dims(key, v)              entryDims(A, v)
      anchorY(key, v, at)       furnAnchorY(A, v, at)
      build(placement, room)    buildFurn(key, x, z, ry, { variant, seed, y, wealth }) -> THREE.Group in the engine's scene
@@ -38,6 +39,9 @@
     for (const q of QUIRKS) if (q.key === A.key && q.when(A)) n = Math.min(n, q.variants);
     return n;
   }
+  /* a piece's role (its own, else guessed: IX.guessRole, 30-programs.js) is what the FOOD and ITEM slots read */
+  const roleOf = IX.guessRole;
+  IX.catalogRoleOf = roleOf;
   function stripLights(g) {
     const out = [];
     g.traverse(function (o) { if (o.isPointLight) out.push(o); });
@@ -68,7 +72,7 @@
         cache = FURNS.map(function (A) {
           return { key: A.key, name: A.name, culture: A.culture, type: A.type, setting: A.setting, rooms: A.rooms.slice(),
             anchor: A.anchor || 'floor', clearance: A.clearance || {},
-            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: A.role,
+            tier: A.tier, wealth: A.wealth ? A.wealth.slice() : undefined, role: roleOf(A),
             variants: variantsOf(A) };
         });
         return cache;
