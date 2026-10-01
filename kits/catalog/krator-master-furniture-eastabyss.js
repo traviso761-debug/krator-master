@@ -107,7 +107,7 @@ FK.set({ culture: 'eastabyss', tier: 'common', roles: 'trade', prefix: 'eastabys
 
 /* ======== Harvested from settlements/locus/src/65-abyss-*.js (35 pieces) ======== */
 /* The Eastern Abyssal kit of the Locus build: the 27 FURN pieces of 65-abyss-10-furniture.js (culture
-   'abyssal-desert' there) and 8 pieces its buildings draw inline (65-abyss-00-core.js ABYSS.lantern / ABYSS.mast,
+   'abyssal-desert' there; that fragment was removed in 2026-10, once the kit placed these pieces from here) and 8 pieces its buildings draw inline (65-abyss-00-core.js ABYSS.lantern / ABYSS.mast,
    65-abyss-40-shops.js, 65-abyss-70-palace.js, 65-abyss-90-farm.js). Salvage and sail-cloth on the salt marsh:
    rusted drums and sheet, Ancient white plate, timber and reed, lacquer and gilt for the sacred and the Headman's.
    The kit's helpers (LOCUS.drum/pole/flame/canopy, ABYSS.rust/lantern, F.lathe/edome/disc/sector) are drawn here
@@ -124,7 +124,7 @@ const EAB = {
   reed: ['reedMat', 'reedMatDark', 'reedMatLight', 'reedMatOld'],
   canvas: ['canvasRaw', 'canvasFaded', 'canvasPale', 'canvasTan'],
   cloth: ['clothBlue', 'clothRed', 'clothSaffron', 'clothCream', 'clothGreen', 'clothPurple', 'clothOrange'],
-  src: 'settlements/locus/src/65-abyss-10-furniture.js '
+  src: 'settlements/locus/src/65-abyss-10-furniture.js (removed; see git history) '
 };
 
 /* ---------- seating and tables ---------- */
