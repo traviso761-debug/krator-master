@@ -82,7 +82,7 @@ Helpers and materials (all taken): `10-core` (from `rng + noise` on; the error p
 | 78-factory-silo | trivial (db658e6) | great silo |
 | 82-apartments | rooms behind the tray holes, floor+ceiling slab per tray, Apartments C pad 50->44 m, window-hole fix, shards (9ef8ed0, db658e6) | terrace stack, comb wall, cobs |
 | 84-fuel | forecourt 52->48 m, shards (db658e6) | fuel station |
-| 85-radar | small (ac071db) | Listener |
+| 85-radar | a graded apron off the pad (ac071db) | Listener (the apron overhangs the plot; KNOWN_ISSUES) |
 | 86-dish | ruin tears from the rim inward (no floating rings), rim goes with it, smaller fallen panel, d=3 keeps the intact tilt (9ef8ed0, db658e6) | the Ear; Yuni's dish-intact variant re-merged (below) |
 | 88-factory | furnace shells, transoms, shards on great arched end walls, bone archivolts (9ef8ed0, db658e6) | Foundry, clover silo |
 | 89-lab | rooms on every storey, 105 big windows through `civWin`, porch canopy and hut merged into `lX` (9ef8ed0) | Reliquary; LABTIGHT re-merged (below) |
@@ -124,6 +124,45 @@ The kit's `69w-worn.js` (decay 5) is the kit's re-implementation of Yuni's worn 
 Worn variant"); Yuni keeps its own. They are the same algorithm under different names (`wornRustPass` /
 `rustPass`...), so it is not taken (the names `TEX.panelWorn` and `MAT.whiteWorn` would collide).
 
-## Results, still unsynced
+## Results (2026-10-01)
 
-Filled in after the sync: see the end of this file.
+Every patch applied; the generator was then extended with two Yuni-only patches found by reading the shots:
+`civFlatten` and the Foundry's `facSink` must not merge in Yuni (the clover silo, cut out of `buildFactory` by
+plot, lost its whole skin to the hall's merged mesh). Yuni's `buildGreatSilo` now passes the kit's sink to
+`factorySilo`, whose signature gained it. `verify.py --assert`: error panel clean, every invariant PASS on the
+sheet and the world.
+
+| | draw calls | triangles | ancients (meshes / tris) |
+|---|---|---|---|
+| sheet (`yuni-assets.html`) before | 109 | 1 556 941 | 10 / 1 167 125 |
+| sheet after | 109 | 1 733 189 | 10 / 1 343 703 (+15%) |
+| world (`yuni.html`) before | 127 | 4 399 383 | 10 / 290 010 |
+| world after | 127 | 4 407 843 | 10 / 298 544 (+2.9%) |
+
+Per type (sheet, worn / patched / ruin, kit tris): lab 20.4k/24.7k/23.5k -> 20.5k/25.7k/24.8k; Foundry
+58.2k/48.7k/45.4k -> 58.5k/50.8k/47.4k; data vault 7.5k/15.2k/13.5k -> 13.9k/29.4k/27.5k (ruin section);
+robotics 10.1k/13.1k/12.8k -> 10.1k/15.3k/15.0k; hospital 13.3k/14.9k/14.4k -> 16.5k/28.2k/27.7k (ward bays);
+library 13.2k/14.9k/14.2k -> 13.6k/18.9k/18.3k; Conocylinder 26.7k/28.6k/25.9k -> 26.8k/52.2k/54.0k; Scallop
+41.8k/35.9k/32.8k -> 41.7k/42.3k/45.7k; Monolith 14.5k/17.0k/15.3k -> 14.3k/23.5k/26.6k; Warden 27.4k/25.7k/23.0k ->
+27.5k/30.7k/32.6k; dish 8.8k/8.1k/10.4k/9.6k -> 4.4k/3.6k/5.5k/4.8k (torn bowl, smaller fallen panel); radar,
+fuel, apartments, silos and the Sail within +-10%. The Cloisters and the comb block (Yuni-only) are unchanged.
+
+Read in the before/after shots (sheet, every type; world, every placed ancient): towers stand on their smaller
+plinths and show cut sections with pale floor plates and rooms; the comb wall's ruin and patched states have the
+bite; the fuel canopy slips in the ruin and is a closed lobed disc when worn; the dish tears from the rim (Yuni's
+dish-intact variant keeps the whole bowl, rim and tilt); the hospital keeps four wards and gains ward bays; the
+data vault's ruin reads as a section; the compact lab and the roofed terrace stack are as before.
+
+## Still unsynced, and why
+
+- **Decay 3 / 4 / 5 of the kit** (rehabilitated, the Projects, worn): Yuni has its own states (patched = decay 1 +
+  `repairPassY` + `ancDress`; worn = decay 0 + its own worn pass). The kit's tower hoists (decay 3), fires and
+  firelight (decay 4) and `69w-worn.js` therefore never run. The frame hook is wired, so taking decay 4 later is
+  a table change plus a fire bucket in ANC_finish (KNOWN_ISSUES).
+- **`repairPass` (kit)**: unchanged upstream; Yuni keeps its scaled `repairPassY`.
+- **The kit's own mesh merging** (`civFlatten`, `facSink`): deliberately disabled, ANC_finish merges instead.
+- **Builders Yuni does not place** (towers C/F/G, gate, spire, police, hotel, campus, dam, government, houses,
+  amphitheatre, megastructure, bunker, every arcology, the alternates): not in the slice. Add the fragment to
+  `FRAGS` and the builder to `B`.
+- **Tower scale**: the kit shrank the tower plinths; Yuni's scales were not raised (KNOWN_ISSUES).
+- **New aprons overhang three plots** (radar, dish, Sail; KNOWN_ISSUES): left, they are ground skirts.

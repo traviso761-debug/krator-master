@@ -44,7 +44,7 @@
 - [ ] The inner-city fill is wealthy fabric only (rich + civic). It reads right for the core, but the density is
       about 6 buildings per hectare — honest for compounds with courtyards, thin if you want 10,000 people in there.
 - [ ] Triangle costs: houses 570-980, wealthy compounds 1.7-2.1k, Emir's Palace 11.6k, caravanserai 12.3k (54% over
-      its 8k landmark budget), Ancient factory 45-61k. ~3000 buildings at these costs is a lot — thin or add an LOD
+      its 8k landmark budget), Ancient factory 47-58k (after the kit sync). ~3000 buildings at these costs is a lot — thin or add an LOD
       before placing the whole city.
 - [ ] The gas giant still hangs in the NORTH-EAST while the valley now opens NORTH-WEST. That is deliberate: the
       giant's position is fixed by Yuni's longitude on a tidally locked moon and must agree with Mav's Refuge and
@@ -58,6 +58,29 @@
 - [x] Ancient weathering: a rust-tinted stain pass now runs from every ledge, seam and fastener, moss and vines
       are gone from the worn state except a trace on the four tall towers, and the worn skin is its own texture.
 - [x] Ancient robotics dressing: the wall sampler now bins by face normal, so long rectangular buildings take it.
+- [x] THE ANCIENTS PORT IS SYNCED TO THE LIVE KIT (2026-10-01; map in `ANCIENTS-SYNC.md`). `tools/gen_ancients.py`
+      now cuts the slice from `kits/ancients/src` + `core/materials` instead of an uncommitted 2026-09-26 file, so
+      the kit's QA rounds 1-2 are in: ruin silhouettes (comb wall bite, fuel canopy slip, dish torn from the rim,
+      data-vault section), glass shards, rooms behind openings, mouldings, the shrunk tower plinths, the new
+      aprons. Yuni's variants (worn, dish intact, compact lab, four-ward hospital, roofed terrace stack, the
+      Cloisters, the comb block) are re-merged. Sheet 109 calls / 1.557 M -> 109 / 1.733 M tris (ancients 1.167 M ->
+      1.344 M); world 127 calls / 4.399 M -> 127 / 4.408 M (ancients 290 k -> 299 k).
+- [ ] Towers cost more after the sync (sheet only; none is placed in the city): Conocylinder ruin 28.6k -> 52.2k,
+      patched 26k -> 54k; Monolith 17k -> 23-27k; Warden 26k -> 31-33k (cut sections, rooms, shards). Thin them
+      before placing a tower inside the wall.
+- [ ] The kit's cut sections end in pale floor plates (0xbdb7ad). From Yuni's aerial views the top plate of a
+      patched or ruined tower reads as a white lid. The kit's design; tint it in Yuni if it bothers.
+- [ ] The kit's new graded aprons poke out of three Yuni footprints: radar 4.5 m, dish 2.4 m, toppled Sail 5.1 m
+      (`window._anc.over`). The radar's pad already overhung its plot by ~2.7 m before the sync. They are ground
+      skirts and the plots sit in 104 m superblocks, so nothing collides; re-centre `cx/cz` if one is ever packed
+      tight.
+- [ ] The kit's tower plinths shrank (Conocylinder 110 -> 92, Scallop 82 -> 66, Monolith -> 48, Warden -> 56 kit
+      units). Yuni's tower scales (0.34-0.37) were chosen to fit the OLD plinths in a 100 m plot; they could rise
+      ~15% now, or the plots shrink.
+- [ ] Fire flicker / firelight: the kit's `tick` hook and NIGHT flag are driven from Yuni's frame loop, but the kit
+      only places fires at decay 4 (the Projects), which no Yuni variant uses, so nothing flickers. If a variant
+      ever places fire, ANC_finish merges it into a Lambert bucket: it would need its own MeshBasic bucket, and
+      the merged mesh has no per-instance phase.
 - [ ] The Library of Yuni is over its triangle budget (~18k est.), most of it shelving. The interior only reads
       from on or near the entrance axis; from an oblique angle you see the facade, not the books.
 - [ ] The watch tower's bell reads to about 55 m and goes to a dark hole beyond that.
