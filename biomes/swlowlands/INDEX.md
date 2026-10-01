@@ -9,18 +9,16 @@ Built output (never open it; edit `src/` and rebuild): `dist/swlowlands.html`
 Build: `cd biomes/swlowlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
-| `20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
-| `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 19 | the axis, the sea, the river (40); terrain (72); the climate fields (96); the host binding (112); the ground (121); the water (167); the road (208) |
-| `50-biome-swlowlands-species.js` | 50 **big** | the climate this biome reads (23); palettes (33); the tree species (102); leaf textures (165); TWO-TONE BARK (279); geometries local to this biome (403); materials (443); instanced items (502) |
-| `55-biome-swlowlands-trees.js` | 57 **big** | zones from the fields (16); colour (35); keep-clear between trees (56); the LIMB (67); foliage and epiphytes (84); the crown, ON its branches (105); the builders (142); impostors (the far canopy) (456); the pass (495) |
+| `50-biome-swlowlands-species.js` | 52 **big** | the climate this biome reads (24); palettes (34); the tree species (103); leaf textures (166); TWO-TONE BARK (280); geometries local to this biome (417); materials (457); instanced items (518) |
+| `55-biome-swlowlands-trees.js` | 60 **big** | zones from the fields (26); colour (45); keep-clear between trees (66); the LIMB (77); foliage and epiphytes (94); the crown, ON its branches (115); the builders (152); impostors (the far canopy) (466); the pass (515) |
 | `60-biome-swlowlands-floor.js` | 24 | small plants (31); the understorey (under the crowns) (108); the zone planters (130); the pass (198) |
 | `65-biome-swlowlands-dress.js` | 8 |  |
 | `70-biome-swlowlands.js` | <1 |  |
@@ -28,5 +26,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
 | `90-host-camera.js` | 8 |  |
-| `91-host-probe.js` | 2 |  |
+| `91-host-probe.js` | 3 |  |
 | `99-tail.html` | <1 |  |

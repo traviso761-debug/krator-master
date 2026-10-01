@@ -130,6 +130,9 @@ saying what fixed it.
       against the TREE mask (the jungle outside the wall; nothing spawns in the streets); `CITY.FAUNA:false`
       leaves it out. verify --assert passes: Overview 858 calls / 6.52 M tris, Palace hill 700 / 6.23 M
       (budget 900 / 16 M; it was 684 calls before, so the calls budget is now nearly spent).
+      2026-10-01 (merging main): the biome core moved to `core/biome/` and now carries the closure wrap
+      itself, so `bio_wrap()` copies the core verbatim from there and still wraps the kit fragments;
+      re-vendored, `--vendor-check` matches all 11.
 - [x] World-UV materials all drew at one K: `vWorldUV` (69b) and its copy `izsWorldUV` (77z) were closures whose
       source, three.js's program key, is the same for every K. 2026-10-01: one shared `vWorldUV` in
       core/materials/opt/69a-world-uv.js (per-K program, survives kbake's clone), opted in through `CORE_OPT_FILES`;
@@ -206,4 +209,17 @@ saying what fixed it.
       more lights to cones and glow.
 - [ ] The weather's `apply` multiplies the sun after the sky tick has set it, so the order of FRAME_HOOKS matters. The
       atmosphere fragment must stay after 90a.
+- [ ] Sprite sizes now count the pixel ratio (`pixelRatio` in `ATMOS.init`). Before, on a screen with a ratio of 1.5 or
+      more, every glow, smoke puff, firefly and fog sprite drew at 2/3 of its size. The harness runs at ratio 1, so its
+      shots are unchanged, but on a HiDPI screen the sprites are now 1.5x what they were. Check by eye there.
+- [ ] Moths circle only the `ATMOS.lamp` heads (the gate-road and thoroughfare lamps, 70). The kit's own lamps (the
+      224 `cityGlows`) have no moths.
 
+
+## Catalog verify pass (2026-10): nothing synced back
+kits/catalog recentred `iziz_banner` (the pole was the origin, so the banner reached 0.92 m to one side) and raised
+the declared sizes of `iziz_palm`, `iziz_broadleaf`, `iziz_lily_pad` and `iziz_reed`. Nothing here was changed to
+match. Iziz has no FURN or PLANT registry, so there is no declaration to correct. The catalog banner, an 11.5 m
+pole with a crossarm, is a rewrite and has no counterpart here. The closest are `vnBannerPole()` and
+`vpBannerPole()`, which are called 19 times in world coordinates with the pole as the origin. Recentring them would
+mean offsetting every call to keep the city where it is, and would gain nothing. The catalog copy is the centred one.

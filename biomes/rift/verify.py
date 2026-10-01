@@ -149,7 +149,10 @@ const R=[];
   R.push({name:'showcase-triangle-budget', ok:T.tris<=B.tris, budget:true,
           detail:T.tris+' / '+B.tris+' scene triangles'});
   R.push({name:'showcase-draw-calls', ok:renderer.info.render.calls<=B.calls, budget:true,
-          detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
+          detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'});
+  // the runtime LOD: held (above) is everything in memory; this is what the camera draws
+  if(B.rendered) R.push({name:'showcase-rendered-triangles', ok:renderer.info.render.triangles<=B.rendered, budget:true,
+          detail:renderer.info.render.triangles+' / '+B.rendered+' triangles drawn at this camera'+(T.lodMeshes?' ('+(T.rendered||0)+' of them in '+T.lodMeshes+' lod chunk meshes)':'')}); }
 
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
@@ -172,7 +175,9 @@ async def run(a):
             b = await launch_chromium(p)
             W, H = [int(t) for t in a.size.split("x")]
             pg = await b.new_page(viewport={"width": W, "height": H})
-            pg.set_default_timeout(600000)
+            # VERIFY_TIMEOUT (seconds): the build's own wait; a box shared with other runs needs more
+            TMO = int(float(os.environ.get("VERIFY_TIMEOUT", "580")) * 1000)
+            pg.set_default_timeout(max(600000, TMO + 20000))
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)))
             # serve three.js from the repo instead of the CDN: offline, pinned to r128
@@ -180,11 +185,13 @@ async def run(a):
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
+            # the page builds inside its script, so "load" fires only after the build: wait for the
+            # document to commit, then for _ready below (one timeout for the whole build)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS, wait_until="commit")
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"
-                    "document.getElementById('errs').textContent.length>0)", timeout=580000)
+                    "document.getElementById('errs').textContent.length>0)", timeout=TMO)
             except Exception:
                 print("timed out waiting for the kit to build")
                 fails.append("build timeout")
@@ -277,11 +284,12 @@ async def run(a):
                     fails.append("view " + v)
             if per_view:
                 lim = await pg.evaluate("()=>window._api?window._api.BUDGET.showcase.calls:0")
+                limT = await pg.evaluate("()=>window._api&&window._api.BUDGET.showcase.rendered||0")
                 worst = max(per_view, key=lambda r: r[1])
                 print("\n--- worst draw calls over %d views ---" % len(per_view))
                 for v, c, t in sorted(per_view, key=lambda r: -r[1])[:6]:
                     print("  %-28s calls %5d  tris %.2fM%s"
-                          % (v, c, t / 1e6, "   OVER" if lim and c > lim else ""))
+                          % (v, c, t / 1e6, "   OVER" if (lim and c > lim) or (limT and t > limT) else ""))
                 if lim and worst[1] > lim:
                     print("  OVER budget: %s at %d / %d draw calls" % (worst[0], worst[1], lim))
                     if a.assert_ and a.strict_budget:

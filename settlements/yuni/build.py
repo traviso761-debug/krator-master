@@ -55,7 +55,6 @@ SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 OUT = os.path.join(HERE, 'yuni.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
-OUT_FURN = os.path.join(HERE, 'yuni-furniture.html')
 OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
@@ -189,18 +188,15 @@ def main():
         return t.replace('<h1 id="ttl">Yuni</h1>', '<h1 id="ttl">%s</h1>' % h1, 1).replace('Raising Yuni…', loading, 1)
 
     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
-    furn  = flavour('furn',  'Yuni Furniture',    'Yuni — furniture',    'Laying out the furniture…')
     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
     with open(OUT_SHEET, 'w') as fh:
         fh.write(sheet)
-    with open(OUT_FURN, 'w') as fh:
-        fh.write(furn)
     with open(OUT_FLORA, 'w') as fh:
         fh.write(flora)
     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
     import re as _re
     os.makedirs(os.path.join(HERE,'publish'), exist_ok=True)
-    for src_html, name in ((html,'yuni.html'),(sheet,'yuni-building-kit.html'),(furn,'yuni-furniture.html'),(flora,'yuni-plants.html')):
+    for src_html, name in ((html,'yuni.html'),(sheet,'yuni-building-kit.html'),(flora,'yuni-plants.html')):
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')

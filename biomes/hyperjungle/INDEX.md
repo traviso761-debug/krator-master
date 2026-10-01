@@ -9,21 +9,19 @@ Built output (never open it; edit `src/` and rebuild): `dist/hyperjungle.html`
 Build: `cd biomes/hyperjungle && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `35-core-anim.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 4 | PRNG (10); noise (20); host binding (37); accounting (62) |
-| `20-core-kit.js` | 14 | merged buckets (49); indexed buckets (124); bake (147) |
-| `30-core-foliage.js` | 13 | alpha textures (17); card geometries (47); the foliage hook (109) |
-| `35-core-anim.js` | 7 |  |
-| `40-core-place.js` | 6 | surface sampling (48) |
+| `41-hyperjungle-globals.js` | <1 |  |
 | `45-host-stage.js` | 5 | terrain (23); the host binding (33) |
-| `50-biome-hyperjungle-species.js` | 19 | leaf textures (54); bark textures (125); materials (181); instanced items (205) |
+| `50-biome-hyperjungle-species.js` | 20 | leaf textures (55); bark textures (126); materials (182); instanced items (206) |
 | `55-biome-hyperjungle-trees.js` | 27 | trunk profile (20); colour (29); polyline helpers (Girder) (64); one hero hypertree (93); an immature hypertree (231); the far forest: impostors (264); the pass (298) |
 | `58-biome-hyperjungle-fauna.js` | 14 | bodies (25); textures, materials, items (67); placement helpers (89); the herds (CPU) (98); the pass (123) |
-| `60-biome-hyperjungle-floor.js` | 33 **big** | colour (22); keep-clear (58); bole profiles (72); fields (91); the plants (97); the belt's own understorey (164); fallen hypertrees (209); lianas (260); the pass (268) |
+| `60-biome-hyperjungle-floor.js` | 33 **big** | colour (22); keep-clear (58); bole profiles (72); fields (92); the plants (98); the belt's own understorey (165); fallen hypertrees (210); lianas (261); the pass (269) |
 | `65-biome-hyperjungle-dress.js` | 7 |  |
 | `70-biome-hyperjungle.js` | 1 |  |
 | `82-host-sky.js` | 12 |  |

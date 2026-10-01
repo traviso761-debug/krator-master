@@ -84,7 +84,7 @@ const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
 // trees. Order along the field = which stands border which.
 const SHARE=[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok
 let QUANT=null;
-function standQuantiles(R){const v=[],o=BIO.host.origin,n=64;
+function standQuantiles(R){const v=[],o=BIO.center(),n=64;   // the grids' centre, [x,z] (the core keeps host.origin as a list)
  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=o[0]+(ix/(n-1)-.5)*2*R,z=o[1]+(iz/(n-1)-.5)*2*R;if(Math.hypot(x-o[0],z-o[1])>R)continue;v.push(BIO.standAt(x,z,4000)/4000);}
  v.sort((a,b)=>a-b);QUANT=[];let acc=0;for(let k=0;k<NSP-1;k++){acc+=SHARE[k]||(1/NSP);QUANT.push(v[Math.min(v.length-1,Math.floor(acc*v.length))]);}return QUANT;}
 function standSp(x,z,off){if(rng()<(off==null?.26:off))return ri(0,NSP-1);const v=BIO.standAt(x,z,4000)/4000;let k=0;while(k<QUANT.length&&v>=QUANT[k])k++;return k;}

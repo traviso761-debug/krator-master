@@ -14,7 +14,7 @@
 
 ASSET({
   key: 'br_bldg_deck_lot', name: 'Platform building (deck lot)', culture: 'beast-rider',
-  family: 'housing', districts: ['mavs-refuge'], wealth: [0, 1],
+  family: 'housing', types: ['dwelling-single'], districts: ['mavs-refuge'], wealth: [0, 1],
   w: 17, d: 13, h: 9.5, variants: 5,
   build: function (F) {
     const w = 14, d = 10, hw = 7, hd = 5, wallT = 0.22;
@@ -178,8 +178,8 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_nature_shrine', name: 'Nature shrine (open pavilion)', culture: 'beast-rider',
-  family: 'religious', districts: ['mavs-refuge'], wealth: [0, 1],
-  w: 10, d: 10, h: 9, variants: 1,
+  family: 'religious', types: ['religious'], districts: ['mavs-refuge'], wealth: [0, 1],
+  w: 10, d: 10, h: 9.9, variants: 1,
   build: function (F) {
     const timber = 0x5e4630, red = 0x8a2f2a, rope = 0x9a8a62;
     const postH = 3.0, ringR = 4.0, n = 9;
@@ -241,7 +241,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_council_chamber', name: 'Council Chamber', culture: 'beast-rider',
-  family: 'civic', districts: ['mavs-refuge'], wealth: [0, 1],
+  family: 'civic', types: ['civic'], districts: ['mavs-refuge'], wealth: [0, 1],
   w: 31, d: 31, h: 30, variants: 1,
   build: function (F) {
     const wallC = 0xb89a6c, red = 0x7a2028, gilt = 0xb08432, timber = 0x5e4630, rope = 0x9a8a62;
@@ -314,7 +314,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_rain_canopy', name: 'Rain canopy (market/plaza roof)', culture: 'beast-rider',
-  family: 'civic', districts: ['mavs-refuge'], wealth: [0, 1],
+  family: 'civic', types: ['market', 'infrastructure'], districts: ['mavs-refuge'], wealth: [0, 1],
   w: 70, d: 70, h: 14, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48, rope = 0x9a8a62;
@@ -363,7 +363,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_roost_gallery', name: 'Open roost/hangar gallery', culture: 'beast-rider',
-  family: 'industrial', districts: ['mavs-refuge'], wealth: [0, 1],
+  family: 'industrial', types: ['industry', 'infrastructure'], districts: ['mavs-refuge'], wealth: [0, 1],
   w: 26, d: 18, h: 11, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48, rope = 0x9a8a62;
@@ -452,7 +452,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_gateway_tree_facade', name: 'Gateway-tree carved facade', culture: 'beast-rider',
-  family: 'defensive', districts: ['mavs-refuge', 'gate-tree'], wealth: [0, 1],
+  family: 'defensive', types: ['infrastructure', 'civic'], districts: ['mavs-refuge', 'gate-tree'], wealth: [0, 1],
   w: 13.8, d: 13.9, h: 12, variants: 4,
   build: function (F) {
     const barkC = F.pick([0x8c6a48, 0x7c5c3e]);
@@ -571,15 +571,16 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_room_front', name: 'Lower-level room front', culture: 'beast-rider',
-  family: 'trade', districts: ['mavs-refuge'], wealth: [0, 1],
-  w: 12.5, d: 4.6, h: 5, variants: 4,
+  family: 'trade', types: ['shop', 'dwelling-single'], districts: ['mavs-refuge'], wealth: [0, 1],
+  w: 12.5, d: 4.6, h: 5.3, variants: 4,
   variantDims: [
     { w: 12.5, d: 4.3, h: 5 },
     { w: 12.5, d: 3.9, h: 5 },
     { w: 12.5, d: 4.6, h: 5 },
-    { w: 12.5, d: 4.3, h: 5 }
+    { w: 12.5, d: 4.3, h: 5.3 }
   ],
   build: function (F) {
+    F.shift(0, -[0.38, 0.30, 0.52, 0.36][F.variant % 4]); /* centre the footprint on the origin (verify.py declared-size) */
     /* A room cut into the deck level below a platform: real shell — floor,
        ceiling, back and side walls — with the shopfront on the +z face. */
     const hw = 6, hd = 1.5, wallT = 0.2;
@@ -710,7 +711,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_girder_tower', name: "Girder tower shell (open cross-section)", culture: 'beast-rider',
-  family: 'defensive', districts: ['girder'], wealth: [0, 1],
+  family: 'defensive', types: ['infrastructure', 'dwelling-multi'], districts: ['girder'], wealth: [0, 1],
   w: 26, d: 26, h: 55, variants: 1,
   build: function (F) {
     const rust = [0x7a3b22, 0x8a4526, 0x6a311e];
@@ -766,7 +767,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_girder_roost_deck', name: 'Girder roost deck (atop a tower)', culture: 'beast-rider',
-  family: 'industrial', districts: ['girder'], wealth: [0, 1],
+  family: 'industrial', types: ['infrastructure', 'industry'], districts: ['girder'], wealth: [0, 1],
   w: 30, d: 30, h: 9, variants: 1,
   build: function (F) {
     const timber = 0x6a5c48, deckC = 0x7a6a52, rope = 0x9a8a62;
@@ -858,7 +859,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_girder_dwelling', name: 'Girder dwelling (tower-slot shell)', culture: 'beast-rider',
-  family: 'housing', districts: ['girder'], wealth: [0, 1],
+  family: 'housing', types: ['dwelling-multi'], districts: ['girder'], wealth: [0, 1],
   w: 11, d: 11.6, h: 6.4, variants: 5,
   variantDims: [
     { w: 10.7, d: 11.4, h: 4.7 },
@@ -1043,7 +1044,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_girder_assembly_hall', name: 'Girder Assembly Hall', culture: 'beast-rider',
-  family: 'civic', districts: ['girder'], wealth: [0, 1],
+  family: 'civic', types: ['civic'], districts: ['girder'], wealth: [0, 1],
   w: 30, d: 30, h: 26, variants: 1,
   build: function (F) {
     const wallC = 0xb89a6c, red = 0x7a2028, gilt = 0xb08432, timber = 0x5e4630, rope = 0x9a8a62;
@@ -1100,7 +1101,7 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_girder_house', name: 'Girder ground house', culture: 'beast-rider',
-  family: 'housing', districts: ['girder'], wealth: [0, 1],
+  family: 'housing', types: ['dwelling-single'], districts: ['girder'], wealth: [0, 1],
   w: 15.5, d: 13, h: 8, variants: 3,
   variantDims: [
     { w: 14, d: 12, h: 8 },
@@ -1217,9 +1218,10 @@ ASSET({
 
 ASSET({
   key: 'br_bldg_girder_palisade', name: 'Girder palisade + watch tower', culture: 'beast-rider',
-  family: 'defensive', districts: ['girder'], wealth: [0, 1],
+  family: 'defensive', types: ['infrastructure'], districts: ['girder'], wealth: [0, 1],
   w: 16, d: 4.5, h: 12, variants: 1,
   build: function (F) {
+    F.shift(0, 0.40); /* centre the footprint on the origin (verify.py declared-size) */
     const timber = 0x5e4630, rope = 0x9a8a62;
     const nStake = 16;
     for (let i = 0; i < nStake; i++) {

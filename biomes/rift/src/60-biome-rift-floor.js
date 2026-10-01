@@ -27,7 +27,7 @@ const leafCol=(set,k,dh)=>bright(vary(pick(set),dh==null?.05:dh,.14,.07),k==null
 const rockTint=(set,k)=>tint(vary(pick(set||PAL.rock),.02,.06,.06),means().rock,k==null?rr(.35,.6):k);
 const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
 const irid=(set,k)=>bright(vary(pick(set),.02,.08,.05),k==null?1.2:k);
-const softC2=RIFT.softC2;
+const softC2=RIFT.softC2,leanN=RIFT.leanN;
 
 // ---------------------------------------------------------------- fields local to the floor
 const purpleK=(x,z)=>smooth(.46,.62,fbm(x*.0052-5,z*.0052+2,3131,2));      // the purple fan shrub patches
@@ -55,11 +55,11 @@ function shrub(x,y,z,lv,set){const hc=vary(pick(set||PAL.shrub),.07,.14,.07),Rs=
 function scalemoss(x,y,z,lv){const t=rng(),set=t<.6?PAL.yellowGreen:t<.85?PAL.jungleGreen:PAL.comp,h=rr(.35,.7)*(lv===0?1.8:1);
  const col=leafCol(set,1.35,.03);tuft('clubmoss',x,y,z,h,h*2.2,col,rng()<.6?softC2(irid(PAL.irid.GP,1.1),col,.5):null);}
 // the iridescent rosette (a fan bromeliad): magenta, green and blue at once
-function irosette(x,y,z,lv,set,c2set,k){const R=rr(.5,1.3)*(k||1),c=vary(pick(set||PAL.jungleGreen),.04,.1,.06);
- BIO.put('irosette',[x,y-.02,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[R,R*rr(.7,1.0),R],bright(c,1.1),{c2:softC2(irid(c2set||PAL.irid.GP,1.15),c,.3)});
+function irosette(x,y,z,lv,set,c2set,k){const R=rr(.5,1.3)*(k||1),c=vary(pick(set||PAL.jungleGreen),.04,.1,.06),rx=rr(-.08,.08),ry=rr(0,TAU),rz=rr(-.08,.08);
+ BIO.put('irosette',[x,y-.02,z],qEuler(rx,ry,rz),[R,R*rr(.7,1.0),R],bright(c,1.1),{c2:softC2(irid(c2set||PAL.irid.GP,1.15),c,.3),n:leanN(ry,.5)});
  if(lv===2&&rng()<.2){BIO.beam('rod',[x,y,z],[x+rr(-.2,.2),y+R*2,z+rr(-.2,.2)],.03,.02,rodCol(0x5a4a6a));BIO.put('urchin',[x,y+R*2,z],qEuler(rr(-.3,.3),rr(0,TAU),0),rr(.3,.5),bright(C(pick(PAL.comp)),1.15));}}
 function curls(x,y,z,lv){const n=lv===2?ri(1,2):1,hc=vary(pick(PAL.tealGreen),.03,.08,.05);
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.2,.7):0,h=rr(.9,2.2),w=h*rr(.9,1.3);BIO.put('curl',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(irid(PAL.irid.GB,1.15),hc,.35)});}}
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.2,.7):0,h=rr(.9,2.2),w=h*rr(.9,1.3);BIO.put('curl',[x+Math.cos(a)*d,y-.1,z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(irid(PAL.irid.GB,1.15),hc,.35),n:leanN(a,.3+.6*d)});}}
 function barrels(x,y,z,lv,st){const n=lv===2?ri(1,3):lv===1?2:1,hc=vary(pick(PAL.pore),.02,.08,.05);
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,1.6):0,r=rr(.35,.8),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d;
   BIO.put('barrel',[bx,Y(bx,bz)-.1,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r,r*rr(.8,1.2),r],bright(vary(hc,.02,.06,.05),1.05));st.barrels++;}}
@@ -67,7 +67,7 @@ function ballvine(x,y,z,lv,st){const n=lv===2?ri(4,7):lv===1?3:3,a=rr(0,TAU),hc=
  for(let k=0;k<n;k++){const r=rr(.25,.55),aa=a+rr(-.7,.7),nx=px+Math.cos(aa)*rr(.5,1.1),nz=pz+Math.sin(aa)*rr(.5,1.1),ny=Y(nx,nz)+r*.7;
   if(lv>=1)BIO.beam('rod',[px,py,pz],[nx,ny,nz],.035,.03,rc);BIO.put('ball',[nx,ny,nz],qEuler(0,rr(0,TAU),0),r,bright(vary(hc,.02,.05,.05),rr(1.0,1.2)));px=nx;pz=nz;py=ny;st.balls++;}}
 function reed(x,y,z,lv,set){const h=rr(1.6,3.2)*(lv===0?1.6:1),n=lv===2?ri(3,5):lv===1?2:1;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.8,2.6):0,hx=x+Math.cos(a)*d,hz=z+Math.sin(a)*d;if(k&&Y(hx,hz)<-.4)continue;
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.8,2.6):0,hx=x+Math.cos(a)*d,hz=z+Math.sin(a)*d;if(k&&Y(hx,hz)-BIO.waterH(hx,hz)<-.4)continue;
   tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(set||PAL.tealGreen,1.3,.025));}}
 function glasswort(x,y,z,lv,k){const t=rng(),set=t<.7?PAL.accent:PAL.alga,h=rr(.5,1.1)*(k||1)*(lv===0?1.5:1);
  tuft('samphire',x,y,z,h,h*1.25,leafCol(set,1.3,.03));if(lv===2&&rng()<.4)tuft('samphire',x+rr(-.7,.7),y,z+rr(-.7,.7),h*.7,h*.9,leafCol(set,1.3,.03));}
@@ -95,9 +95,9 @@ function boulder(x,y,z,lv,set,st,mossy){const n=lv===2?ri(1,2):1,Rb=rr(1,3);
   BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set));st.boulders++;
   if(mossy&&lv>=1){BIO.put('mossmat',[bx+rr(-.15,.15)*r,by+h*1.05,bz+rr(-.15,.15)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),r*rr(.6,.9),leafCol(PAL.moss,.95));st.moss++;}
   if(mossy&&lv===2&&rng()<.35)irosette(bx+rr(-.3,.3)*r,by+h*1.0,bz+rr(-.3,.3)*r,1,PAL.jungleGreen,PAL.irid.GP,.7);}}
-function scum(x,z,lv,st){const R=rr(.6,1.8);
- BIO.put('pad',[x,.04,z],qEuler(rr(-.02,.02),rr(0,TAU),rr(-.02,.02)),[R,1,R],bright(vary(pick(PAL.scum),.02,.1,.06),1.0));st.scum++;
- if(lv===2&&rng()<.4){const R2=R*rr(.5,.9),a=rr(0,TAU);BIO.put('pad',[x+Math.cos(a)*R*1.3,.035,z+Math.sin(a)*R*1.3],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(PAL.scum),.02,.1,.06),1.0));st.scum++;}}
+function scum(x,z,lv,st){const R=rr(.6,1.8),w=BIO.waterH(x,z);
+ BIO.put('pad',[x,w+.04,z],qEuler(rr(-.02,.02),rr(0,TAU),rr(-.02,.02)),[R,1,R],bright(vary(pick(PAL.scum),.02,.1,.06),1.0));st.scum++;
+ if(lv===2&&rng()<.4){const R2=R*rr(.5,.9),a=rr(0,TAU);BIO.put('pad',[x+Math.cos(a)*R*1.3,w+.035,z+Math.sin(a)*R*1.3],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(PAL.scum),.02,.1,.06),1.0));st.scum++;}}
 // a fallen frill tree: a ribbed tube gone dark, mossed, rosettes and scale-moss along its back
 function log(x,y,z,st,cloud){const a=rr(0,TAU),L=rr(22,60),r0=rr(1,2.2),hx=Math.cos(a),hz=Math.sin(a),n=Math.ceil(L/8)+1,pts=[],ph=rr(0,TAU);
  for(let i=0;i<n;i++){const t=i/(n-1),px=x+hx*(t-.5)*L,pz=z+hz*(t-.5)*L;if(BIO.mask(px,pz)<=0||!okGround(px,pz,2))return false;
@@ -211,17 +211,25 @@ RIFT.buildFloor=function(R,q){
   const w=[Z.jung*1.5,Z.shore*.9,Z.sav*1.2,Z.cloud*1.5,Z.peak*1.1,Z.slope*.9],tot=w[0]+w[1]+w[2]+w[3]+w[4]+w[5];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<5;k++){if(r<w[k])break;r-=w[k];}if(k>=5&&r>w[5])return;
   [plantJungle,plantShore,plantSav,plantCloud,plantPeak,plantSlope][Math.min(k,5)](x,y,z,Z,lv,st);}
- // three bands along the LOD spine (which runs north-south here)
- const bands=[[7,600,0,[-640,-R,640,R]],[14,1500,600,[-1540,-R,1540,R]],[30,1e9,1500,null]];
- bands.forEach((b,bi)=>{const lv=2-bi;
+ // three bands along the LOD spine (which runs north-south here); the runtime LOD draws each only within its
+ // range of the camera (RIFT.LOD: the near band's plants are under a pixel past it, the ground's paint carries on)
+ const bands=[[7,600,0,[-640,-R,640,R]],[14,1500,600,[-1540,-R,1540,R]],[30,1e9,1500,null]],LOD=RIFT.LOD,rng3=[LOD.floor,LOD.midFloor,LOD.farFloor];
+ bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=rng3[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .82*q*(lv===0?.7:lv===1?.85:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.75,patchScale:.014,pad:.6,box:b[3]});});
  // the water: scum mats on the still shallows, reeds standing at the shore
  const wbands=[[7,600,0,[-640,-R,640,R]],[14,1500,600,[-1540,-R,1540,R]]];
- wbands.forEach((b,bi)=>{const lv=2-bi;
-  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z);if(h>.35||h<-2.4)return 0;
+ wbands.forEach((b,bi)=>{const lv=2-bi;BIO.range=rng3[bi];
+  BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z)-BIO.waterH(x,z);if(h>.35||h<-2.4)return 0;   // h: the ground against the local water
     const Z=zones(x,z);const still=1-Z.flow;return .6*q*still*smooth(.02,-.15,h)*smooth(-2.4,-.9,h)*(.5+.5*smooth(.45,.65,fbm(x*.004+1,z*.004-2,808,2)))+.25*q*smooth(-.9,-.1,h)*Z.shore;},
-   (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;if(y<-.9||rng()<.78){scum(x,z,lv,st);}else{reed(x,Math.max(y,-.6),z,lv,rng()<.5?PAL.tealGreen:PAL.accentDull);st.reeds++;}},{patch:.8,patchScale:.02,noMask:true,pad:.5,box:b[3]});});
+   (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;const w=BIO.waterH(x,z);if(y-w<-.9||rng()<.78){scum(x,z,lv,st);}else{reed(x,Math.max(y,w-.6),z,lv,rng()<.5?PAL.tealGreen:PAL.accentDull);st.reeds++;}},{patch:.8,patchScale:.02,noMask:true,pad:.5,box:b[3]});});
  // fallen frill trees in the jungle, mossy logs in the cloud forest
+ BIO.range=LOD.logs;
  BIO.grid(170,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1500)return 0;const Z=zones(x,z);return (Z.jung*.8+Z.cloud*.5)*q;},(x,y,z,d)=>{const cloud=zones(x,z).cloud>.5;for(let t=0;t<4;t++)if(log(x+rr(-30,30),y,z+rr(-30,30),st,cloud))break;},{patch:0,pad:3});
+ // the spine's far band: the far band's 30 m planting over the near and mid bands too, drawn only where they are not
+ // (past their range from the camera, BIO.minRange), so the floor thins with distance instead of stopping at a chunk's
+ // edge. Planted last, so every draw from the PRNG before it is as it was.
+ BIO.range=LOD.farFloor;
+ BIO.grid(30,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=1500)return 0;return .82*q*.7;},(x,y,z,d)=>{BIO.minRange=BIO.lodD(x,z)<600?LOD.floor:LOD.midFloor;plant(x,y,z,0);},{patch:.75,patchScale:.014,pad:.6,box:[-1540,-R,1540,R]});
+ BIO.range=null;BIO.minRange=0;
  return{under:st};};
 })();

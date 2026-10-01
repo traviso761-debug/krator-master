@@ -6,7 +6,6 @@ Four build targets come out of one source tree (`build.py`, fragments in `src/`)
 |---|---|---|
 | `yuni.html` | `world` | the valley, the butte, the Grand Vault, the wall and gates, the canal, the street network, the underground antechamber |
 | `yuni-assets.html` | `sheet` | every registered ASSET, each variant, laid out in family rows on flat ground |
-| `yuni-furniture.html` | `furn` | every registered FURN piece, grouped by the culture that made it |
 | `yuni-plants.html` | `flora` | every registered PLANT species, grouped by climate band |
 
 `SHEET` is true for all three catalogue targets (flat ground, no town); `CATALOG` names which
@@ -309,3 +308,8 @@ shader gives those a `uFloorLift` term. Patterns come from `FINISH.floor.pattern
 
 **The kit**: `window._kitAudit` (in verify.py's counters line) must read 0 for every `...Missing...`
 count. A kit slot that no room can hold stays as data, `virtual:true`.
+
+Declared sizes (2026-10): PLANT and FURN `w d h` should cover the built extent centred on the origin, as
+kits/catalog's `verify.py` requires. Seven plants, the socket rack and the mat rack were raised to their
+measured extents (KNOWN_ISSUES.md "Catalog verify-pass sync"). For furniture placed by an interior LAYOUT,
+`w` and `d` also drive placement.

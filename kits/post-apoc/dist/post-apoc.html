@@ -62,8 +62,20 @@ function terrainH(x,z){return 0;}
 // ---------------------------------------------------------------- procedural textures
 // Grayscale by design: vertex colours tint them (paint, rust, culture livery). Every texture tiles in WORLD units:
 // TILE[matKey] is the metres one repeat covers, used by the geometry engine to write UVs.
+let TEXANISO=4;   /* 90-scene.js raises it to the renderer's maximum (capped at 8) once the renderer exists, and re-applies it to every map made before */
 function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=TEXANISO;return t;}
+/* DISTANT MIPS. Ribbed and patched sheet shimmered at long range: box-filtered mips keep the full rib contrast right down to the level where the ribs alias.
+   softMips(t,keep) builds the chain itself (2x2 averages of the RAW level above) and pulls each level from 2 down toward the texture's mean colour by keep^(level-1),
+   so a far wall reads as its average tone instead of crawling. Levels 0 and 1 (near and middle distance) are untouched. Bump maps share the map, so they calm down too. */
+function softMips(t,keep){keep=keep||.65;const src=t.image,W0=src.width,H0=src.height;const d0=src.getContext('2d').getImageData(0,0,W0,H0).data;let mr=0,mg=0,mb=0;
+ for(let i=0;i<d0.length;i+=4){mr+=d0[i];mg+=d0[i+1];mb+=d0[i+2];}const n=W0*H0;mr/=n;mg/=n;mb/=n;
+ const mips=[src];let raw=src,w=W0,h=H0,lv=0;
+ while(w>1||h>1){w=Math.max(1,w>>1);h=Math.max(1,h>>1);lv++;const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.imageSmoothingEnabled=true;g.drawImage(raw,0,0,w,h);raw=c;
+  const k=lv<=1?1:Math.pow(keep,lv-1);if(k>.999){mips.push(c);continue;}
+  const o=document.createElement('canvas');o.width=w;o.height=h;const og=o.getContext('2d');const id=g.getImageData(0,0,w,h),d=id.data;
+  for(let i=0;i<d.length;i+=4){d[i]=mr+(d[i]-mr)*k;d[i+1]=mg+(d[i+1]-mg)*k;d[i+2]=mb+(d[i+2]-mb)*k;}og.putImageData(id,0,0);mips.push(o);}
+ t.mipmaps=mips;t.generateMipmaps=false;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;t.needsUpdate=true;return t;}
 function gray(v,a){v=clamp(v|0,0,255);return a===undefined?`rgb(${v},${v},${v})`:`rgba(${v},${v},${v},${a})`;}
 function speckle(g,w,h,n,amin,amax,dark){for(let i=0;i<n;i++){const x=rng()*w,y=rng()*h,s=rng()*2+.6;g.fillStyle=dark?`rgba(0,0,0,${rr(amin,amax)})`:`rgba(255,255,255,${rr(amin,amax)})`;g.fillRect(x,y,s,s);}}
 // rust is COLOUR, not just darkness: orange-brown scale over the grey, dark pitting at its edges (vertex tints multiply into it)
@@ -126,6 +138,8 @@ reseed(9019);TEX.steel=canvasTex(128,128,(g,w,h)=>{g.fillStyle=gray(176);g.fillR
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=184+fbm(x/24,y/3,4.4,2)*18-4+fbm(x/3,y/3,8,1)*5;const i=(y*w+x)*4;d[i]=d[i+1]=d[i+2]=v;}g.putImageData(id,0,0);
  for(let i=0;i<40;i++){g.fillStyle=`rgba(255,255,255,${rr(.04,.12)})`;g.fillRect(rng()*w,rng()*h,rr(8,40),1);}
  for(let i=0;i<14;i++){const x=rng()*w,y=rng()*h,r=rr(1.5,4);const gr=g.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,'rgba(130,64,26,.75)');gr.addColorStop(1,'rgba(130,64,26,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,r*2,r*2);}});TILE.steel=1.2;
+// the tiling material maps get the soft distant mips (chain-link keeps its own: its alpha diamonds must stay crisp for the alpha test)
+for(const k of ['corr','corrH','cont','sheet','plank','earth','conc','iron','wood','bottle','weave','steel'])softMips(TEX[k],.65);softMips(TEX.dirt,.8);
 // ---------------------------------------------------------------- materials
 // One material per key; the geometry engine merges every piece of a key into one mesh, so the whole set is ~16 draw calls.
 // Vertex colours tint the grayscale maps. Colours are sRGB hex; hc() converts to the linear working space.
@@ -181,6 +195,24 @@ const PAL={
  black:[0x2a2826,0x33302c],
 };
 function P(k){return jc(pick(PAL[k]),.07);}
+// ---------------------------------------------------------------- animated materials (shader-side only: geometry and bboxes never move)
+// ANIMU are shared uniforms: 93-anim.js sets uTime (seconds, a pure function of the clock, or pinned by ?t=), 91n-night.js sets uNightK and uWinFrac.
+// animPatch(mk, material) is called by flushBuckets() for every bucket; it patches each material once:
+//   cloth ('cloth', 'awn:*', 'ban:*'): vertices move by aFlut x a two-sine wave whose phase runs across world space (pinned edges have aFlut = 0)
+//   glow: colour x flicker (aFlk: flames 1, bulbs .45, coals .2), phase per 1.5 m cell so one fire flickers as one
+//   winlit / glass windows: lit when the pane's aWin < uWinFrac (the evening schedule), scaled by uNightK; a dark pane otherwise
+const ANIMU={uTime:{value:0},uWind:{value:1},uWinFrac:{value:0},uNightK:{value:0}};
+const GLSL_FLICK='float flick(vec3 p,float t){vec3 c=floor(p/1.5);float ph=fract(sin(dot(c,vec3(12.9898,78.233,37.719)))*43758.5453)*6.2832;return .5*sin(t*9.1+ph)+.3*sin(t*15.3+ph*2.1)+.2*sin(t*23.7+ph*3.7);}\n';
+function animPatch(mk,m){if(!m||m.userData.anim)return;let kind=null;
+ if(clothKey(mk))kind='cloth';else if(mk==='glow')kind='glow';else if(mk==='winlit')kind='winlit';else if(mk==='glass')kind='glass';if(!kind)return;m.userData.anim=kind;
+ m.onBeforeCompile=sh=>{for(const u in ANIMU)sh.uniforms[u]=ANIMU[u];const U='uniform float uTime;uniform float uWind;uniform float uWinFrac;uniform float uNightK;\n';
+  if(kind==='cloth'){sh.vertexShader=U+'attribute vec3 aFlut;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n{float ph=dot(position,vec3(.9,.7,1.3));float s=.62*sin(uTime*3.1+ph*1.7)+.38*sin(uTime*5.3+ph*3.1+1.7);transformed+=aFlut*s*uWind;}');}
+  else if(kind==='glow'){sh.vertexShader=U+GLSL_FLICK+'attribute float aFlk;varying float vFlk;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvFlk=1.+aFlk*.28*flick(position,uTime);');
+   sh.fragmentShader='varying float vFlk;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=vFlk;');}
+  else{sh.vertexShader=U+'attribute float aWin;varying float vLit;varying float vBr;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvLit=step(aWin,uWinFrac)*uNightK;vBr=.75+.5*fract(aWin*13.7);');
+   if(kind==='winlit')sh.fragmentShader='uniform float uNightK;varying float vLit;varying float vBr;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb=mix(diffuseColor.rgb,vec3(.018,.022,.03),uNightK-vLit)*mix(1.,vBr,vLit);');
+   else sh.fragmentShader='varying float vLit;varying float vBr;\n'+sh.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vec3(1.,.58,.24)*1.15*vLit*vBr;');}};
+ m.customProgramCacheKey=()=>'anim-'+kind;m.needsUpdate=true;}   /* the key: winlit and glow are both MeshBasic and share one onBeforeCompile source */
 // ---------------------------------------------------------------- geometry engine
 // Every primitive is merged into a bucket per material key, in WORLD space, with vertex colours and world-unit UVs.
 // Local frame of a building: origin at the plot centre on the ground, +z the front, x right, y up. CM is the running
@@ -199,6 +231,30 @@ const SBS=[];let SB=null;
 function sbBegin(){const b={mn:[1e9,1e9,1e9],mx:[-1e9,-1e9,-1e9]};SBS.push(b);SB=b;return b;}
 function sbEnd(){const b=SBS.pop();SB=SBS.length?SBS[SBS.length-1]:null;if(SB){for(let k=0;k<3;k++){SB.mn[k]=Math.min(SB.mn[k],b.mn[k]);SB.mx[k]=Math.max(SB.mx[k],b.mx[k]);}}return b;}
 const _v=new THREE.Vector3(),_n=new THREE.Vector3(),_nm=new THREE.Matrix3(),_mm=new THREE.Matrix4(),_WC=new THREE.Color(1,1,1);
+/* ANIMATION hooks (build-time data only; nothing here moves a vertex, so bboxes and footprints are untouched). Shaders in 22-mat.js read them.
+   aFlut (cloth buckets: 'cloth', 'awn:*', 'ban:*'): a world-space flutter vector per vertex, 0 where the cloth is pinned. Whoever draws cloth sets CLOTHW,
+   a rule (p, out): p = the vertex in CM's frame, out = the flutter vector in that frame; CM's rotation takes it to world. Unset = still (sacks, hides).
+   aWin ('glass', 'winlit'): a window pane's place in the evening schedule, 0..1 (2 = not a window). aFlk ('glow'): how much a glow piece flickers.
+   SMOKES: smoke sources, recorded by smokeAt() (stovepipe(), fire(), the big stacks) for the instanced puffs in 93-anim.js. */
+const _lp=new THREE.Vector3(),_fl=new THREE.Vector3(),_cm3=new THREE.Matrix3();
+const ATTR1={glass:'aWin',winlit:'aWin',glow:'aFlk'};
+function clothKey(mk){return mk==='cloth'||mk.startsWith('awn:')||mk.startsWith('ban:');}
+let CLOTHW=null;
+function withCloth(rule,fn){const keep=CLOTHW;CLOTHW=rule;try{fn();}finally{CLOTHW=keep;}}
+/* the rules. Socket frame: +z out of the wall, x along it, y up, anchor at the origin. Weights rise from the pinned edge; a sine across the width pins the corners. */
+const _side=(x,w)=>Math.sqrt(Math.max(0,Math.sin(PI*clamp(x/w+.5,0,1))));
+function clothRule(type,o){o=o||{};
+ if(type==='awning'){const w=o.w||2.4,d=o.d||1.4,a=.09;return (p,out)=>{const t=Math.pow(clamp(p.z/d,0,1.2),1.3)*_side(p.x,w)*a;out.set(0,t,t*.3);};}
+ if(type==='banner'){const h=o.h||2,a=.14*Math.min(1.6,Math.max(.7,h/2));return (p,out)=>{const t=Math.pow(clamp(-p.y/h,0,1.2),1.4)*a;out.set(t*.3,0,t);};}
+ if(type==='flag'){const w=(o.w||1)*1.2,a=.2;return (p,out)=>{const t=Math.pow(clamp(p.x/w,0,1.3),1.2)*a;out.set(0,t*.15,t);};}
+ return null;}
+/* a tarp drawn by tarp(): pinned along its high edge (z0) and at its poles, the free middle lifts */
+function clothTarp(x0,z0,w,d){const a=.06;return (p,out)=>{const t=Math.pow(clamp((p.z-z0)/Math.max(.3,d),0,1),1.2)*_side(p.x-x0,w)*a;out.set(0,t,0);};}
+/* culture packs fill sockets through CULT.packs[k].fill[type]: wrap the cloth ones once so their geometry carries the rule (core/sockets stays untouched) */
+function clothWrapPacks(){for(const k in CULT.packs){const F=CULT.packs[k].fill;if(!F||F._flut)continue;Object.defineProperty(F,'_flut',{value:true});
+ for(const t of ['awning','banner','flag']){const f=F[t];if(f)F[t]=(o,s)=>withCloth(clothRule(t,o),()=>f(o,s));}}}
+let SMOKES=[];
+function smokeAt(x,y,z,o){if(GTARGET!==GB)return;o=o||{};const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);SMOKES.push({x:p.x,y:p.y,z:p.z,r:o.r||.25,kind:o.kind||'stove'});}   /* GB only: a throwaway build (frontOf) or a spinner leaves no smoke */
 let GSTAT={tris:0};
 // emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs scaled
 /* NIGHT support, decided at build time and deterministic (position hash, no rng): about half the glass panes are LIT windows (bucket 'winlit', warm colour),
@@ -206,16 +262,22 @@ let GSTAT={tris:0};
 /* only light-tinted glass is a window that can be lit; dark blue-black glass (solar panels, skylight wells) stays glass */
 function glassIsWindow(col){const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);return .2126*c.r+.7152*c.g+.0722*c.b>.1;}
 let HALOS=[],HALOKEY=new Set();function halosReset(){HALOS=[];HALOKEY=new Set();}
-function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
- if(mk==='glass'&&glassIsWindow(col)){const hh=h3(Math.round(_mm.elements[12]*2)/2,Math.round(_mm.elements[13]*2)/2,Math.round(_mm.elements[14]*2)/2);if(hh<.5){mk='winlit';const f=.75+.6*hh;col=new THREE.Color().setRGB(.86*f,.55*f,.22*f);}}
- else if(mk==='glow'&&col!==undefined&&col!==null){const px=_mm.elements[12],py=_mm.elements[13],pz=_mm.elements[14];const k=Math.round(px/.6)+','+Math.round(py/.6)+','+Math.round(pz/.6);
-  if(!HALOKEY.has(k)){HALOKEY.add(k);const cc=typeof col==='number'?hc(col):col;HALOS.push({x:px,y:py,z:pz,r:cc.r,g:cc.g,b:cc.b,big:geo.type==='ConeGeometry'});}}
- const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
+function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);let a1=0;
+ if(mk==='glass'){a1=2;if(glassIsWindow(col)){const hx=Math.round(_mm.elements[12]*2)/2,hy=Math.round(_mm.elements[13]*2)/2,hz=Math.round(_mm.elements[14]*2)/2,hh=h3(hx,hy,hz);a1=h3(hx*.37+11.1,hy*.53+3.3,hz*.41+7.7);   /* a1: the pane's place in the evening schedule (ANIM hooks below) */
+  if(hh<.5){mk='winlit';const f=.75+.6*hh;col=new THREE.Color().setRGB(.86*f,.55*f,.22*f);}}}
+ else if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.2;   /* flicker share: flames 1, lamp bulbs .45, coals and tail lights .2 */
+ if(mk==='glow'&&col!==undefined&&col!==null){const px=_mm.elements[12],py=_mm.elements[13],pz=_mm.elements[14];const k=Math.round(px/.6)+','+Math.round(py/.6)+','+Math.round(pz/.6);
+  if(!HALOKEY.has(k)){HALOKEY.add(k);const cc=typeof col==='number'?hc(col):col;HALOS.push({x:px,y:py,z:pz,r:cc.r,g:cc.g,b:cc.b,big:geo.type==='ConeGeometry',kind:geo.type});}}
+ if(CLOTHW&&lm&&clothKey(mk)&&(geo===_G.pl||geo===_G.box)){const e=lm.elements,sx=Math.hypot(e[0],e[1],e[2]),sy=Math.hypot(e[4],e[5],e[6]),sz=Math.hypot(e[8],e[9],e[10]);
+  if(geo===_G.pl?(sx>.6&&sy>.6):([sx,sy,sz].sort((a,b)=>b-a)[1]>.6))geo=geo===_G.pl?gplaneSub():gboxSub();}   /* a big fluttering sheet gets inner vertices to ripple (same extents: same bbox); valance strips stay plain */
+ const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});if(!b.f&&clothKey(mk))b.f=[];if(!b.w&&ATTR1[mk])b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
  let c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
  if(WEATHER[mk]&&c!==_WC)c=weather(c,WEATHER[mk]);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
   b.p.push(_v.x,_v.y,_v.z);b.n.push(_n.x,_n.y,_n.z);b.c.push(c.r,c.g,c.b);
+  if(b.f){if(CLOTHW){_lp.fromBufferAttribute(Pa,i);if(lm)_lp.applyMatrix4(lm);CLOTHW(_lp,_fl);_fl.applyMatrix3(_cm3);b.f.push(_fl.x,_fl.y,_fl.z);}else b.f.push(0,0,0);}
+  if(b.w)b.w.push(a1);
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
   else{const ax=Math.abs(_n.x),ay=Math.abs(_n.y),az=Math.abs(_n.z);if(ay>=ax&&ay>=az)b.u.push(_v.x*ts,_v.z*ts);else if(ax>az)b.u.push(_v.z*ts,_v.y*ts);else b.u.push(_v.x*ts,_v.y*ts);}
   if(SB){if(_v.x<SB.mn[0])SB.mn[0]=_v.x;if(_v.y<SB.mn[1])SB.mn[1]=_v.y;if(_v.z<SB.mn[2])SB.mn[2]=_v.z;if(_v.x>SB.mx[0])SB.mx[0]=_v.x;if(_v.y>SB.mx[1])SB.mx[1]=_v.y;if(_v.z>SB.mx[2])SB.mx[2]=_v.z;}}
@@ -230,6 +292,8 @@ function gfrus(seg,rt){const k='fr'+seg+'_'+rt.toFixed(3);return _G[k]||(_G[k]=(
 function gsph(){return _G.sph||(_G.sph=new THREE.SphereGeometry(1,12,8));}
 function gtor(R,t,rs,ts){const k='tor'+R.toFixed(2)+'_'+t.toFixed(2);return _G[k]||(_G[k]=(()=>{const g=new THREE.TorusGeometry(R,t,rs||6,ts||12);g.rotateX(PI/2);return g;})());}
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
+function gplaneSub(){return _G.plS||(_G.plS=new THREE.PlaneGeometry(1,1,4,4));}
+function gboxSub(){return _G.boxS||(_G.boxS=new THREE.BoxGeometry(1,1,1,4,1,3));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
 // box(mat, x,y,z, w,h,d, colour, ry, rx, rz)   rotations are about the box's own centre, ry first
 function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
@@ -295,6 +359,7 @@ function pipe(mk,pts,r,col,seg){for(let i=0;i<pts.length-1;i++)beam(mk,pts[i],pt
 // ---- flush: turn buckets into meshes
 function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in buckets){const b=buckets[mk];if(!b.i.length)continue;const m=MAT[mk];if(!m){reportErr('no material for bucket '+mk);continue;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.u,2));g.setAttribute('color',new THREE.Float32BufferAttribute(b.c,3));
+ if(b.f)g.setAttribute('aFlut',new THREE.Float32BufferAttribute(b.f,3));if(b.w)g.setAttribute(ATTR1[mk]||'aK',new THREE.Float32BufferAttribute(b.w,1));if(typeof animPatch==='function')animPatch(mk,m);
  g.setIndex(b.p.length/3>65535?new THREE.Uint32BufferAttribute(b.i,1):new THREE.Uint16BufferAttribute(b.i,1));g.computeBoundingSphere();
  const mesh=new THREE.Mesh(g,m);mesh.userData.mk=mk;if(mk==='glass')mesh.renderOrder=2;
  if(shadow){if(mk!=='glass'&&mk!=='chain'&&mk!=='glow'){mesh.castShadow=true;mesh.receiveShadow=mk!=='cloth';}}
@@ -416,6 +481,9 @@ function bulkhead(o){const w=o.w||9,h=o.h||7,th=o.th||.9;const c=jc(pick(PAL.con
 /* every door() call leaves an invisible record (world position, outward direction, size): place() picks the building's FRONT DOOR from them */
 let DOORS_CUR=[];
 function doorNote(x,y,z,w,h){const p=new THREE.Vector3(x,y,z+.03).applyMatrix4(CM);const dv=new THREE.Vector3(0,0,1).transformDirection(CM);DOORS_CUR.push({wx:p.x,wy:p.y,wz:p.z,dx:dv.x,dz:dv.z,w:w,h:h});}
+/* an entrance with no leaf (an open container front or service counter, a gate gap in a fence, a roll-up door opening, a doorway with a curtain):
+   draws nothing, leaves the same record as door(), so place() can pick it as the building's FRONT DOOR. Same frame: on a surface facing +z, y = threshold */
+function entry(x,y,z,w,h){doorNote(x,y,z,w,h||2.0);}
 function door(x,y,z,w,h,o){o=o||{};doorNote(x,y,z,w,h);const c=o.col===undefined?jc(pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0x8a5a30,0xc99a2e,0x4d6f3c]),.06):jc(o.col,.05);const fr=jc(o.frame||0x4a3a2c,.05);
  const dk=c.clone().multiplyScalar(.7);   /* leaf in unweathered paint (plank would be rusted toward the wall colour), with inset panels and a dark surround so it reads as a door, not as more wall */
  box('plain',x,y,z+.03,w-.1,h-.05,.06,c);
@@ -461,7 +529,7 @@ function leanRoof(x,zw,w,out,yHigh,yLow,o){o=o||{};const c=o.col===undefined?pic
   beam('wood',[x-w/2,yLow-.02,zw+out],[x+w/2,yLow-.02,zw+out],.1,jc(0x5c4630,.06));}}
 // a tarp or sheet stretched over poles at a slope: centre (x,y,z), w across x, d deep toward +z, drop toward the front
 function tarp(x,y,z,w,d,drop,col,o){o=o||{};const c=col===undefined?P('tarp'):(typeof col==='number'?jc(col,.05):col);
- plane4('cloth',[x-w/2,y,z],[x+w/2,y,z],[x-w/2,y-drop,z+d],[x+w/2,y-drop,z+d],.02,c);
+ withCloth(clothTarp(x,z,w,d),()=>plane4('cloth',[x-w/2,y,z],[x+w/2,y,z],[x-w/2,y-drop,z+d],[x+w/2,y-drop,z+d],.02,c));   /* flutters: 93-anim.js */
  if(o.poles!==false){for(const sx of [-1,1])beam('wood',[x+sx*w/2,y-drop-.4,z+d],[x+sx*w/2,y-drop+.05,z+d],.07,jc(0x5c4630,.06),true,6);}}
 // ---- platforms, stairs, ladders, rails
 function deck(x,y,z,w,d,o){o=o||{};const th=.12;box('plank',x,y-th,z,w,th,d,o.col===undefined?P('wood'):jc(o.col,.05));
@@ -471,20 +539,52 @@ function deck(x,y,z,w,d,o){o=o||{};const th=.12;box('plank',x,y-th,z,w,th,d,o.co
   const cs=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]];const names=['b','r','f','l'];
   for(let i=0;i<4;i++)if(sides.indexOf(names[i])>=0)seg(cs[i],cs[(i+1)%4]);}}
 // stair from a foot point to a top point (x,y,z each), width w: treads on two stringers
-function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
+function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};if(o.steel)return stStairs(ax,ay,az,bx,by,bz,w,o);   // steel: stStairs() below (o.steel keeps old call sites working)
+ const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
  const wc=jc(0x5c4630,.06),ic=jc(0x4a4038,.05);
  W(ax,ay,az,ang,()=>{const nx=[-w/2,w/2];
-  if(o.steel){ // steel: channel stringers, grating treads with a nosing, pipe handrails on posts (o.steel=true)
-   for(const sx of nx){beam('iron',[sx,0,0],[sx,dy,run],.09,ic);}
-   for(let k=1;k<=n;k++){const y=dy*k/n-.04,z=run*(k-.5)/n;box('iron',0,y,z,w,.04,run/n+.03,jc(0x6a5a4c,.06));box('iron',0,y+.04,z+run/n*.5-.03,w,.03,.04,jc(0x3a3430,.04));}
-   if(o.rail!==false)for(const sx of nx){const xs=sx*1.02;beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.035,ic,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.025,ic,true,5);
-    const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.04,ic,true,5);}}
-  }else{for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
+  {for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
    for(let k=1;k<=n;k++){box('plank',0,dy*k/n-.05,run*(k-.5)/n,w,.05,run/n+.04,jc(pick(PAL.wood),.07));}
    if(o.rail!==false)for(const sx of nx){beam('wood',[sx,1.0,0],[sx,dy+1.0,run],.05,wc);beam('wood',[sx,0,0],[sx,1.0,0],.05,wc,true,5);beam('wood',[sx,dy,run],[sx,dy+1.0,run],.05,wc,true,5);}}});}
+// ---- STEEL access: stairs, landings and pipe railings for container and steel builds (stacks, tank towers, catwalks). Same frames and heights as
+//      stairs()/deck(): a flight from a foot point to a top point ends with its top tread level with, and against the edge of, a landing whose top is y.
+//      Materials: 'iron' (heavy rust weathering) for the frame, stringers, grating and rails; 'steel' (light weathering) for checker-plate treads.
+const STC={frame:0x4a4038,grate:0x5a5550,rail:0x5a524a,plate:0x8a8680};
+// floor panel, TOP at y, centred (x,z), w along x, d along z. o.floor: 'grate' (default: bearing bars along the long side, cross rods, edge frame) or 'plate' (checker plate)
+function stFloor(x,y,z,w,d,o){o=o||{};const fc=jc(STC.frame,.05);
+ if(o.floor==='plate'){box('steel',x,y-.04,z,w,.04,d,jc(STC.plate,.06));return;}
+ const gc=jc(STC.grate,.06),alongX=w>=d,L=alongX?w:d,S=alongX?d:w,nb=Math.max(2,Math.round(S/.12)),nr=Math.max(1,Math.round(L/.6));
+ for(let k=0;k<=nb;k++){const t=-S/2+.03+k*(S-.06)/nb;if(alongX)box('iron',x,y-.045,z+t,L-.04,.045,.022,gc);else box('iron',x+t,y-.045,z,.022,.045,L-.04,gc);}
+ for(let k=1;k<nr;k++){const t=-L/2+k*L/nr;if(alongX)box('iron',x+t,y-.03,z,.014,.014,S-.04,gc);else box('iron',x,y-.03,z+t,S-.04,.014,.014,gc);}
+ for(const s of [-1,1]){box('iron',x,y-.06,z+s*(d/2-.025),w,.06,.05,fc);box('iron',x+s*(w/2-.025),y-.06,z,.05,.06,d-.1,fc);}}
+// pipe handrail along a->b ([x,z] pairs) standing on a floor at y: round posts every ~1.4 m, top rail at h (1.0), knee rail, toe plate
+function stRail(a,b,y,o){o=o||{};const h=o.h||1.0,c=o.col===undefined?jc(STC.rail,.05):jc(o.col,.05);const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.1)return;const n=Math.max(1,Math.round(L/1.4));
+ for(let k=0;k<=n;k++){const t=k/n;beam('iron',[a[0]+dx*t,y,a[1]+dz*t],[a[0]+dx*t,y+h,a[1]+dz*t],.045,c,true,6);}
+ beam('iron',[a[0],y+h,a[1]],[b[0],y+h,b[1]],.05,c,true,6);beam('iron',[a[0],y+h*.5,a[1]],[b[0],y+h*.5,b[1]],.032,c,true,5);
+ if(o.toe!==false)W((a[0]+b[0])/2,y,(a[1]+b[1])/2,Math.atan2(-dz,dx),()=>box('iron',0,0,0,L,.1,.012,c));}
+// landing / balcony: deck() with a steel floor (o.floor), a channel frame under the edge, square-tube posts to the ground when y>.5 (o.posts:false for
+// wall-bracketed ones), pipe rails on the named sides (o.rail: 'b','r','f','l' = -z, +x, +z, -x)
+function stLanding(x,y,z,w,d,o){o=o||{};const fc=jc(STC.frame,.05);stFloor(x,y,z,w,d,o);
+ for(const s of [-1,1]){box('iron',x,y-.2,z+s*(d/2-.05),w,.14,.1,fc);box('iron',x+s*(w/2-.05),y-.2,z,.1,.14,d-.2,fc);}
+ if(y>.5&&o.posts!==false){for(const sx of [-1,1])for(const sz of [-1,1]){const px=x+sx*(w/2-.1),pz=z+sz*(d/2-.1);beam('iron',[px,0,pz],[px,y-.2,pz],.11,fc);box('iron',px,0,pz,.26,.03,.26,fc);}}
+ if(o.rail){const cs=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]],names=['b','r','f','l'];
+  for(let i=0;i<4;i++)if(o.rail.indexOf(names[i])>=0)stRail(cs[i],cs[(i+1)%4],y,{h:o.h});}}
+// steel stair, foot (ax,ay,az) -> top (bx,by,bz), width w: channel stringers (web + flanges), checker-plate treads with a nosing angle (o.tread:'grate' for
+// open grating), pipe handrails with posts (o.rail:false drops them). The top tread's top is at by and its back edge at the top point.
+function stStairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
+ const fc=jc(STC.frame,.05),rc=jc(STC.rail,.05),tc=jc(o.tread==='grate'?STC.grate:STC.plate,.06),td=run/n;
+ W(ax,ay,az,ang,()=>{
+  for(const sx of [-w/2-.035,w/2+.035]){plane4('iron',[sx,-.16,0],[sx,dy-.16,run],[sx,.08,0],[sx,dy+.08,run],.025,fc);
+   for(const sy of [-.16,.08])beam('iron',[sx,sy,0],[sx,dy+sy,run],.05,fc);}
+  for(let k=1;k<=n;k++){const y=dy*k/n,z=td*(k-.5);
+   if(o.tread==='grate'){for(let q=0;q<5;q++)box('iron',0,y-.04,z-td/2+.02+q*(td-.04)/4,w,.04,.018,tc);for(const sx of [-1,1])box('iron',sx*(w/2-.02),y-.05,z,.04,.05,td,fc);}
+   else box('steel',0,y-.035,z,w,.035,td+.02,tc);
+   box('iron',0,y-.07,z-td/2+.02,w,.07,.04,fc);}
+  if(o.rail!==false)for(const s of [-1,1]){const xs=s*(w/2+.09);beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.045,rc,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.03,rc,true,5);
+   const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.045,rc,true,6);}}});}
 function ladder(x,y,z,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const c=jc(0x5a5048,.05);beam('iron',[-.22,0,0],[-.22,h,0],.05,c);beam('iron',[.22,0,0],[.22,h,0],.05,c);for(let k=1;k*.32<h;k++)beam('iron',[-.22,k*.32,0],[.22,k*.32,0],.035,c,true,5);});}
 // ---- roof and yard furniture
-function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038,0x5a4a3c,0x6a5a4c]),.05);cyl('iron',x,y,z,r,h,c,8);cyl('iron',x,y+h,z,r*1.5,.06,c,8);cone('iron',x,y+h+.06,z,r*2.2,.16,jc(0x3a3430,.05),8);
+function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038,0x5a4a3c,0x6a5a4c]),.05);cyl('iron',x,y,z,r,h,c,8);cyl('iron',x,y+h,z,r*1.5,.06,c,8);cone('iron',x,y+h+.06,z,r*2.2,.16,jc(0x3a3430,.05),8);smokeAt(x,y+h+.3,z,{r:r*2.4,kind:'stove'});
 }
 function solar(x,y,z,w,d,ry,tilt,o){o=o||{};W(x,y,z,ry||0,()=>{const t=tilt===undefined?.5:tilt;plane4('glass',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],[-w/2,d*Math.sin(t),d/2*Math.cos(t)],[w/2,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x1a2a4a,.05));
   beam('iron',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],.05,jc(0x8a8a86,.05));const n=Math.round(w/1.6);for(let k=0;k<=n;k++){const px=-w/2+k*w/n;beam('iron',[px,-.05,-d/2*Math.cos(t)],[px,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x8a8a86,.04));}
@@ -496,7 +596,7 @@ function sacks(x,y,z,n,ry){W(x,y,z,ry||0,()=>{for(let k=0;k<n;k++){const r=k<3?k
 function pallet(x,y,z,w,d,ry){box('plank',x,y,z,w,.12,d,P('woodD'),ry);}
 function lamp(x,y,z,h,o){o=o||{};h=h||3.2;beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
 function fire(x,y,z,r){r=r||.5;for(let k=0;k<7;k++){const a=k/7*TAU;box('plank',x+Math.cos(a)*r*.5,y+.05,z+Math.sin(a)*r*.5,.07,.07,r*.9,jc(0x3a2a1c,.06),a,0,rr(-.3,.3));}
- for(let k=0;k<8;k++){const a=k/8*TAU;box('conc',x+Math.cos(a)*r*1.05,y,z+Math.sin(a)*r*1.05,.16,.14,.16,jc(0x8a8478,.08),a);}cone('glow',x,y+.06,z,r*.42,r*1.1,jc(0xff9a3a,.08),7);cone('glow',x,y+.06,z,r*.22,r*1.5,jc(0xffe28a,.05),6);}
+ for(let k=0;k<8;k++){const a=k/8*TAU;box('conc',x+Math.cos(a)*r*1.05,y,z+Math.sin(a)*r*1.05,.16,.14,.16,jc(0x8a8478,.08),a);}cone('glow',x,y+.06,z,r*.42,r*1.1,jc(0xff9a3a,.08),7);cone('glow',x,y+.06,z,r*.22,r*1.5,jc(0xffe28a,.05),6);smokeAt(x,y+r*1.6,z,{r:r*.9,kind:'fire'});}
 function tireStack(x,z,n,o){o=o||{};for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);}
 function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){const a=rng()*TAU,d=Math.sqrt(rng())*r;const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=(1-d/r)*r*.35;const t=rng();
  if(t<.3)box('sheet',px,py,pz,rr(.4,1.1),rr(.03,.06),rr(.4,1.0),pick([P('rust'),P('galv')]),rng()*TAU,rr(-.5,.5),rr(-.5,.5));
@@ -581,24 +681,27 @@ const REG=[];function regClear(){REG.length=0;}
 /* FRONT DOOR. Every building has an invisible front: the local yaw its main door faces (0 = +z, the frame's front), the door's local position, and where that
    came from. A def may state it: front:{x,z,yaw}. Otherwise place() picks it from the door() calls the builder made: the widest door facing within 50 degrees of +z,
    else the widest door anywhere, else the default (centre of the +z edge). Nothing is drawn; the record is data for later placement:
-   rec.front = {source, local:{x,z,yaw}, world:{x,y,z,yaw}}; frontOf(key); placeFacing(key,x,z,towardX,towardZ,o) turns a building so its door faces a point (a road, a plaza). */
-function pickFront(d,doors,M0inv){const L=doors.map(q=>{const p=new THREE.Vector3(q.wx,q.wy,q.wz).applyMatrix4(M0inv);const dv=new THREE.Vector3(q.dx,0,q.dz).transformDirection(M0inv);return {x:p.x,z:p.z,yaw:Math.atan2(dv.x,dv.z),dz:dv.z,w:q.w};});
- if(d.front)return {source:'declared',local:{x:d.front.x||0,z:d.front.z===undefined?d.d/2:d.front.z,yaw:d.front.yaw||0}};
+   rec.front = {source, local:{x,z,yaw,y}, world:{x,y,z,yaw}} (local.y: the door's threshold above the plot; world.y: the plot's ground); frontOf(key); placeFacing(key,x,z,towardX,towardZ,o) turns a building so its door faces a point (a road, a plaza). */
+function pickFront(d,doors,M0inv){const L=doors.map(q=>{const p=new THREE.Vector3(q.wx,q.wy,q.wz).applyMatrix4(M0inv);const dv=new THREE.Vector3(q.dx,0,q.dz).transformDirection(M0inv);return {x:p.x,y:p.y,z:p.z,yaw:Math.atan2(dv.x,dv.z),dz:dv.z,w:q.w};});
+ if(d.front)return {source:'declared',local:{x:d.front.x||0,z:d.front.z===undefined?d.d/2:d.front.z,yaw:d.front.yaw||0,y:d.front.y||0}};
  const fr=L.filter(q=>q.dz>Math.cos(50*PI/180)&&q.w>=.7).sort((a,b)=>b.w-a.w||Math.abs(a.x)-Math.abs(b.x))[0];
- if(fr)return {source:'door() facing +z',local:{x:fr.x,z:fr.z,yaw:fr.yaw}};
+ if(fr)return {source:'door() facing +z',local:{x:fr.x,z:fr.z,yaw:fr.yaw,y:+fr.y.toFixed(3)}};
  const any=L.filter(q=>q.w>=.7).sort((a,b)=>b.w-a.w)[0];
- if(any)return {source:'door() on another face',local:{x:any.x,z:any.z,yaw:any.yaw}};
- return {source:'default',local:{x:0,z:d.d/2,yaw:0}};}
+ if(any)return {source:'door() on another face',local:{x:any.x,z:any.z,yaw:any.yaw,y:+any.y.toFixed(3)}};
+ return {source:'default',local:{x:0,z:d.d/2,yaw:0,y:0}};}
+/* SIZES: a def may declare alternative declared boxes, picked per placement by o.size: sizes:{large:{w,d,h,budget,front}} (the compound's large yard).
+   declOf(key,o) is the def as declared for that placement; place() records it as rec.decl, and the footprint check measures against it. */
+function declOf(key,o){const d=DEFS[key];const s=o&&o.size&&d&&d.sizes&&d.sizes[o.size];return s?Object.assign({},d,s):d;}
 function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
- const y=o.y!==undefined?o.y:terrainH(x,z);const keepKey=CURKEY,keepSocks=SOCKS,keepCult=CULT.cur,keepDoors=DOORS_CUR;CURKEY=key;SOCKS=[];DOORS_CUR=[];
+ const y=o.y!==undefined?o.y:terrainH(x,z);const keepKey=CURKEY,keepSocks=SOCKS,keepCult=CULT.cur,keepDoors=DOORS_CUR,keepColl=COLL.cur,keepOff=COLL.off;CURKEY=key;SOCKS=[];DOORS_CUR=[];const coll=COLL.cur=collNew();COLL.off=0;
  if(o.culture&&CULT.packs[o.culture])CULT.cur=CULT.packs[o.culture];   /* o.culture dresses THIS building (and any it places) in another culture's marks */
  pushM(TF(x,y,z,ry||0));const M0inv=CM.clone().invert();const org=new THREE.Vector3().applyMatrix4(CM);const bb=sbBegin();const t0=GSTAT.tris;
  reseed(d.seed+(o.v|0)*7);
  try{d.build(o);fillSockets();}catch(e){reportErr('build '+key+': '+(e.stack||e));}
- sbEnd();popM();const doors=DOORS_CUR;DOORS_CUR=keepDoors;CURKEY=keepKey;SOCKS=keepSocks;CULT.cur=keepCult;
- const fr=pickFront(d,doors,M0inv);const wy=(ry||0)+fr.local.yaw;const cs=Math.cos(ry||0),sn=Math.sin(ry||0);
+ sbEnd();popM();const doors=DOORS_CUR;DOORS_CUR=keepDoors;COLL.cur=keepColl;COLL.off=keepOff;CURKEY=keepKey;SOCKS=keepSocks;CULT.cur=keepCult;
+ const dd=declOf(key,o);const fr=pickFront(dd,doors,M0inv);const wy=(ry||0)+fr.local.yaw;const cs=Math.cos(ry||0),sn=Math.sin(ry||0);
  fr.world={x:org.x+fr.local.x*cs+fr.local.z*sn,y:org.y,z:org.z-fr.local.x*sn+fr.local.z*cs,yaw:wy};
- const rec={key,name:d.name,cls:d.cls,tags:d.tags,x:org.x,y:org.y,z:org.z,ry:ry||0,r:Math.hypot(d.w,d.d)/2,h:d.h,tris:GSTAT.tris-t0,bbox:bb,v:o.v|0,front:fr,doorCount:doors.length};REG.push(rec);return rec;}
+ const rec={key,name:d.name,cls:d.cls,tags:d.tags,x:org.x,y:org.y,z:org.z,ry:ry||0,r:Math.hypot(dd.w,dd.d)/2,h:dd.h,decl:{w:dd.w,d:dd.d,h:dd.h,budget:dd.budget},size:o.size,tris:GSTAT.tris-t0,bbox:bb,v:o.v|0,front:fr,doorCount:doors.length,coll:collFinish(coll)};REG.push(rec);return rec;}
 const _FRONT={};
 /* the front (local yaw + door position) of a def, found by one throwaway build: cached */
 function frontOf(key){if(_FRONT[key])return _FRONT[key];const keepG=GTARGET,keepReg=REG.length,keepSock=SOCK_ALL.length,keepP=PLANTS.list.length,keepT=GSTAT.tris,keepH=HALOS.length,keepS=SPINNERS.length,keepCMS=CMS.slice();
@@ -606,6 +709,135 @@ function frontOf(key){if(_FRONT[key])return _FRONT[key];const keepG=GTARGET,keep
  return _FRONT[key]=r?r.front.local:{x:0,z:DEFS[key].d/2,yaw:0};}
 /* place a building so its front door faces the point (tx,tz), e.g. the nearest road */
 function placeFacing(key,x,z,tx,tz,o){const f=frontOf(key);return place(key,x,z,Math.atan2(tx-x,tz-z)-f.yaw,o);}
+/* ==== COLLISION: per-building colliders, walkable surfaces, ramps and ladders (rec.coll) ====
+   Collected while place() builds, in WORLD space, without touching the geometry or the rng: the engine primitives box, cyl, cylH, sph, tire, sector,
+   prism, poly and plane4 are wrapped below, so every builder publishes colliders with no change. A part counts as SOLID when its material is a hard one
+   (cloth, chain, glow, water and winlit never are; spinners and plant() flora are skipped) and as a FLOOR when it is a level slab of a floor material at
+   least 0.4 x 0.4 m (steps, slabs, decks, container roofs). The access helpers record themselves instead of their parts: deck / stLanding / stFloor -> floor, stairs / stStairs -> ramp,
+   ladder -> link, fenceRun -> one thin solid. rec.coll = {solids:[{x,z,hx,hz,yaw,y0,y1,m}], floors:[{x,z,hx,hz,yaw,y}], ramps:[{a:[x,y,z],b:[x,y,z],w}],
+   links:[{a,b}], water:[[[x,z]..]]}: an oriented box is a centre, half sizes along its own axes, the yaw of its +x (local +x -> (cos yaw,0,-sin yaw)) and a y span. */
+const COLL={cur:null,off:0,
+ SOLID:{corr:1,corrH:1,cont:1,sheet:1,plank:1,wood:1,earth:1,conc:1,iron:1,steel:1,bottle:1,rubber:1,glass:1,plain:1},
+ FLOOR:{plank:1,conc:1,steel:1,iron:1,wood:1,earth:1,cont:1,sheet:1,corr:1,corrH:1}};
+function collNew(){return {solids:[],floors:[],ramps:[],links:[],water:[]};}
+function collOn(){return COLL.cur&&!COLL.off&&SB;}
+const _cv=new THREE.Vector3(),_cm=new THREE.Matrix4();
+const collR2=v=>Math.round(v*100)/100;
+/* the world oriented box of the local AABB (x0..x1, y0..y1, z0..z1) seen through lm (relative to CM); flat: the box's up axis is world up */
+function collOBB(lm,x0,y0,z0,x1,y1,z1){_cm.copy(CM);if(lm)_cm.multiply(lm);const e=_cm.elements;
+ let yaw=Math.hypot(e[0],e[2])>1e-4*Math.hypot(e[0],e[1],e[2])+1e-9?Math.atan2(-e[2],e[0]):Math.atan2(e[8],e[10]);
+ const c=Math.cos(yaw),s=Math.sin(yaw);let u0=1e9,u1=-1e9,v0=1e9,v1=-1e9,ya=1e9,yb=-1e9;
+ for(let i=0;i<8;i++){_cv.set(i&1?x1:x0,i&2?y1:y0,i&4?z1:z0).applyMatrix4(_cm);const pu=_cv.x*c-_cv.z*s,pv=_cv.x*s+_cv.z*c;
+  if(pu<u0)u0=pu;if(pu>u1)u1=pu;if(pv<v0)v0=pv;if(pv>v1)v1=pv;if(_cv.y<ya)ya=_cv.y;if(_cv.y>yb)yb=_cv.y;}
+ const pu=(u0+u1)/2,pv=(v0+v1)/2;const ly=Math.hypot(e[4],e[5],e[6]);
+ return {x:pu*c+pv*s,z:-pu*s+pv*c,hx:(u1-u0)/2,hz:(v1-v0)/2,yaw:yaw,y0:ya,y1:yb,flat:ly>0&&e[5]/ly>.995};}
+function collAdd(mk,lm,x0,y0,z0,x1,y1,z1,noFloor){if(!collOn())return;const so=COLL.SOLID[mk],fl=COLL.FLOOR[mk]&&!noFloor;if(!so&&!fl)return;
+ const b=collOBB(lm,x0,y0,z0,x1,y1,z1);if(Math.max(b.hx,b.hz)<.1)return;
+ if(fl&&b.flat&&b.hx>=.2&&b.hz>=.2&&b.y1>.04)COLL.cur.floors.push({x:b.x,z:b.z,hx:b.hx,hz:b.hz,yaw:b.yaw,y:b.y1});
+ if(so&&b.y1-b.y0>=.04)COLL.cur.solids.push({x:b.x,z:b.z,hx:b.hx,hz:b.hz,yaw:b.yaw,y0:b.y0,y1:b.y1,m:mk});}
+/* records in the current frame, for the access helpers and for builders that want to state a surface outright */
+function collFloor(x,y,z,w,d,ry,th){if(!collOn())return;const b=collOBB(TF(x,0,z,ry||0),-w/2,y-(th||.12),-d/2,w/2,y,d/2);
+ COLL.cur.floors.push({x:b.x,z:b.z,hx:b.hx,hz:b.hz,yaw:b.yaw,y:b.y1});COLL.cur.solids.push({x:b.x,z:b.z,hx:b.hx,hz:b.hz,yaw:b.yaw,y0:b.y0,y1:b.y1,m:'floor'});}
+function collRamp(ax,ay,az,bx,by,bz,w){if(!collOn())return;const a=new THREE.Vector3(ax,ay,az).applyMatrix4(CM),b=new THREE.Vector3(bx,by,bz).applyMatrix4(CM);
+ COLL.cur.ramps.push({a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w:w});}
+function collLink(ax,ay,az,bx,by,bz){if(!collOn())return;const a=new THREE.Vector3(ax,ay,az).applyMatrix4(CM),b=new THREE.Vector3(bx,by,bz).applyMatrix4(CM);
+ COLL.cur.links.push({a:[a.x,a.y,a.z],b:[b.x,b.y,b.z]});}
+function collSolid(x,y,z,w,h,d,ry,mk){if(!collOn())return;const b=collOBB(TF(x,0,z,ry||0),-w/2,y,-d/2,w/2,y+h,d/2);COLL.cur.solids.push({x:b.x,z:b.z,hx:b.hx,hz:b.hz,yaw:b.yaw,y0:b.y0,y1:b.y1,m:mk||'solid'});}
+/* merge per building: drop solids that sit wholly inside a bigger one (trim, patches, frames on a wall), round to the centimetre */
+function collFinish(c){const S=c.solids.slice().sort((a,b)=>b.hx*b.hz*(b.y1-b.y0)-a.hx*a.hz*(a.y1-a.y0));const keep=[],H=new Map(),B=2;
+ const inside=(s,t)=>{if(s.y0<t.y0-.05||s.y1>t.y1+.05)return false;const c0=Math.cos(s.yaw),s0=Math.sin(s.yaw),c1=Math.cos(t.yaw),s1=Math.sin(t.yaw);
+  for(const [u,v] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const px=s.x+u*s.hx*c0+v*s.hz*s0,pz=s.z-u*s.hx*s0+v*s.hz*c0;const dx=px-t.x,dz=pz-t.z;
+   if(Math.abs(dx*c1-dz*s1)>t.hx+.05||Math.abs(dx*s1+dz*c1)>t.hz+.05)return false;}return true;};
+ for(const s of S){const k=Math.floor(s.x/B)+','+Math.floor(s.z/B);const cand=H.get(k);if(cand&&cand.some(t=>inside(s,t)))continue;keep.push(s);
+  const R=Math.hypot(s.hx,s.hz);for(let i=Math.floor((s.x-R)/B);i<=Math.floor((s.x+R)/B);i++)for(let j=Math.floor((s.z-R)/B);j<=Math.floor((s.z+R)/B);j++){const kk=i+','+j;(H.get(kk)||H.set(kk,[]).get(kk)).push(s);}}
+ const ob=o=>{const r={};for(const k in o)r[k]=typeof o[k]==='number'?(k==='yaw'?Math.round(o[k]*1e4)/1e4:collR2(o[k])):o[k];return r;};
+ return {solids:keep.map(ob),floors:c.floors.map(ob),ramps:c.ramps.map(r=>({a:r.a.map(collR2),b:r.b.map(collR2),w:collR2(r.w)})),links:c.links.map(l=>({a:l.a.map(collR2),b:l.b.map(collR2)})),water:c.water.map(p=>p.map(q=>q.map(collR2)))};}
+// ---- the wrappers (the drawing is unchanged: each calls the original after recording)
+const _CR={box,cyl,cylH,sph,tire,sector,prism,poly,plane4,deck,stairs,stStairs,stLanding,stFloor,ladder,fenceRun,plant};
+box=function(mk,x,y,z,w,h,d,col,ry,rx,rz){if(collOn()){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));collAdd(mk,m,-.5,-.5,-.5,.5,.5,.5);}return _CR.box.apply(null,arguments);};
+cyl=function(mk,x,y,z,r,h){if(collOn()&&r>=.12){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));collAdd(mk,m,-.89,0,-.89,.89,1,.89,r<.6);}return _CR.cyl.apply(null,arguments);};
+cylH=function(mk,x,y,z,r,L,col,axis){if(collOn()&&r>=.12){const m=TF(x,y,z,0,axis==='z'?PI/2:0,axis==='x'?PI/2:0);m.scale(new THREE.Vector3(r,L,r));collAdd(mk,m,-.89,-.5,-.89,.89,.5,.89,true);}return _CR.cylH.apply(null,arguments);};
+sph=function(mk,x,y,z,r,col,sy){if(collOn()&&r>=.25){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,r*(sy||1),r));collAdd(mk,m,-.8,-1,-.8,.8,1,.8,true);}return _CR.sph.apply(null,arguments);};
+tire=function(x,y,z,R,t,col,ry,rx,rz){if(collOn()){R=R||.36;t=t||.13;collAdd('rubber',TF(x,y,z,ry,rx,rz),-R*.9,-t,-R*.9,R*.9,t,R*.9,true);}return _CR.tire.apply(null,arguments);};
+sector=function(mk,cx,cz,r0,r1,a0,a1,y0,y1){if(collOn()&&(COLL.SOLID[mk]||COLL.FLOOR[mk])){const n=Math.max(1,Math.ceil(Math.abs(a1-a0)*r1/1.0)),da=(a1-a0)/n,rm=(r0+r1)/2,hc=r1*Math.abs(Math.sin(da/2))+.02,hr=(r1-r0)/2;
+  for(let i=0;i<n;i++){const a=a0+(i+.5)*da;collAdd(mk,TF(cx+Math.cos(a)*rm,y0,cz+Math.sin(a)*rm,Math.atan2(-Math.cos(a),-Math.sin(a))),-hc,0,-hr,hc,y1-y0,hr);}}
+ return _CR.sector.apply(null,arguments);};
+prism=function(mk,pts,y0,y1){if(collOn()){let a=1e9,b=-1e9,c=1e9,d=-1e9;for(const p of pts){a=Math.min(a,p[0]);b=Math.max(b,p[0]);c=Math.min(c,p[1]);d=Math.max(d,p[1]);}collAdd(mk,null,a,y0,c,b,y1,d);}return _CR.prism.apply(null,arguments);};
+poly=function(mk,pts){if(collOn()&&mk==='water'&&pts.length>2)COLL.cur.water.push(pts.map(p=>{const v=new THREE.Vector3(p[0],p[1],p[2]).applyMatrix4(CM);return [v.x,v.z];}));return _CR.poly.apply(null,arguments);};
+/* a sheet of a floor material that starts at the ground and climbs gently is a RAMP (a dock ramp, a plank gangway); a level one is a floor */
+plane4=function(mk,p0,p1,p2,p3,th){if(collOn()&&COLL.FLOOR[mk]){const e1=[p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]],e2=[p2[0]-p0[0],p2[1]-p0[1],p2[2]-p0[2]];
+  const n=[e1[1]*e2[2]-e1[2]*e2[1],e1[2]*e2[0]-e1[0]*e2[2],e1[0]*e2[1]-e1[1]*e2[0]];const nl=Math.hypot(...n)||1,ny=Math.abs(n[1])/nl;
+  if(ny>.8){const mid=(p,e)=>[p[0]+e[0]/2,p[1]+e[1]/2,p[2]+e[2]/2];const L1=Math.hypot(...e1),L2=Math.hypot(...e2);
+   if(Math.abs(e2[1])>=Math.abs(e1[1])&&Math.abs(e2[1])>.05){const lo=e2[1]>0?mid(p0,e1):mid(p2,e1),hi=e2[1]>0?mid(p2,e1):mid(p0,e1);if(lo[1]<.45)collRamp(...lo,...hi,L1);}
+   else if(Math.abs(e1[1])>.05){const lo=e1[1]>0?mid(p0,e2):mid(p1,e2),hi=e1[1]>0?mid(p1,e2):mid(p0,e2);if(lo[1]<.45)collRamp(...lo,...hi,L2);}}}
+ return _CR.plane4.apply(null,arguments);};
+// access helpers: record the surface, skip their parts
+function collQuiet(fn,args){COLL.off++;try{return fn.apply(null,args);}finally{COLL.off--;}}
+deck=function(x,y,z,w,d){collFloor(x,y,z,w,d,0);return collQuiet(_CR.deck,arguments);};
+stLanding=function(x,y,z,w,d){collFloor(x,y,z,w,d,0,.2);return collQuiet(_CR.stLanding,arguments);};
+stFloor=function(x,y,z,w,d){collFloor(x,y,z,w,d,0,.06);return collQuiet(_CR.stFloor,arguments);};
+stairs=function(ax,ay,az,bx,by,bz,w){collRamp(ax,ay,az,bx,by,bz,w);return collQuiet(_CR.stairs,arguments);};
+stStairs=function(ax,ay,az,bx,by,bz,w){collRamp(ax,ay,az,bx,by,bz,w);return collQuiet(_CR.stStairs,arguments);};
+ladder=function(x,y,z,h,ry){if(collOn())W(x,y,z,ry||0,()=>collLink(0,0,0,0,h,0));return collQuiet(_CR.ladder,arguments);};
+fenceRun=function(x0,z0,x1,z1,h){const L=Math.hypot(x1-x0,z1-z0);if(L>=.2)collSolid((x0+x1)/2,0,(z0+z1)/2,L,(h||1.6)+.1,.08,Math.atan2(-(z1-z0),x1-x0),'fence');return collQuiet(_CR.fenceRun,arguments);};
+plant=function(){return collQuiet(_CR.plant,arguments);};
+/* ==== NAV GRID: a coarse 2.5-D walk grid for the whole scene, built from every placed building's rec.coll ====
+   navBuild(opt) -> NAV. Cells of opt.cell (0.5 m) over the placed buildings plus a margin. Each cell holds up to 4 LEVELS (walkable heights): the ground
+   (unless water covers it), floor tops and ramp heights, merged when within 0.35 m. A level is BLOCKED when a solid crosses the body band (h+0.45 .. h+1.55:
+   anything lower is a step, thin lintels and bars above it are ignored) or another level lies less than 1.5 m above it (no headroom; not checked on stairs). Neighbouring levels connect when their heights differ by <= 0.6 m (0.8 m on a ramp);
+   ladders connect their foot to the floor at their top (the stiles run up to 1.3 m past it). reach = flood fill from the open ground at the grid border. Each building's front door gets an APPROACH: the first
+   open level straight out from the door (0.6 .. 2.4 m, up to 0.8 m to either side) within 0.75 m of the threshold height. Door and approach cells are
+   flagged (NAV.flag: 1 door, 2 approach). */
+const NAV_OPT={cell:.5,step:.6,rampStep:.8,knee:.45,head:1.55,merge:.35,clear:1.5,margin:6,maxLv:4};
+let NAV_CACHE=null;
+function navBuild(opt){const O=Object.assign({},NAV_OPT,opt||{});const C=O.cell;let mnx=1e9,mnz=1e9,mxx=-1e9,mxz=-1e9;
+ for(const r of REG){mnx=Math.min(mnx,r.bbox.mn[0]);mnz=Math.min(mnz,r.bbox.mn[2]);mxx=Math.max(mxx,r.bbox.mx[0]);mxz=Math.max(mxz,r.bbox.mx[2]);}
+ if(!REG.length){mnx=mnz=-10;mxx=mxz=10;}
+ const x0=Math.floor((mnx-O.margin)/C)*C,z0=Math.floor((mnz-O.margin)/C)*C,nx=Math.ceil((mxx+O.margin-x0)/C),nz=Math.ceil((mxz+O.margin-z0)/C),N=nx*nz;
+ const WAT=new Uint8Array(N),FLAG=new Uint8Array(N),CAND=new Map(),LV=new Array(N);
+ const cellOf=(x,z)=>{const i=Math.floor((x-x0)/C),j=Math.floor((z-z0)/C);return i<0||j<0||i>=nx||j>=nz?-1:j*nx+i;};
+ // visit the cells whose centres fall in an oriented rectangle grown by ex/ez
+ function rect(o,ex,ez,fn){const c=Math.cos(o.yaw),s=Math.sin(o.yaw),ax=o.hx+ex,az=o.hz+ez,R=Math.abs(ax*c)+Math.abs(az*s),Rz=Math.abs(ax*s)+Math.abs(az*c);
+  const i0=Math.max(0,Math.floor((o.x-R-x0)/C)),i1=Math.min(nx-1,Math.floor((o.x+R-x0)/C)),j0=Math.max(0,Math.floor((o.z-Rz-z0)/C)),j1=Math.min(nz-1,Math.floor((o.z+Rz-z0)/C));
+  for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const cx=x0+(i+.5)*C,cz=z0+(j+.5)*C,dx=cx-o.x,dz=cz-o.z;if(Math.abs(dx*c-dz*s)<=ax&&Math.abs(dx*s+dz*c)<=az)fn(j*nx+i,cx,cz);}}
+ const cand=(k,h,r)=>{(CAND.get(k)||CAND.set(k,[]).get(k)).push([h,r]);};
+ const recs=REG.filter(r=>r.coll);
+ for(const r of recs)for(const P of r.coll.water){let a=1e9,b=-1e9,c=1e9,d=-1e9;for(const p of P){a=Math.min(a,p[0]);b=Math.max(b,p[0]);c=Math.min(c,p[1]);d=Math.max(d,p[1]);}
+  for(let j=Math.max(0,Math.floor((c-z0)/C));j<=Math.min(nz-1,Math.floor((d-z0)/C));j++)for(let i=Math.max(0,Math.floor((a-x0)/C));i<=Math.min(nx-1,Math.floor((b-x0)/C));i++){
+   const px=x0+(i+.5)*C,pz=z0+(j+.5)*C;let ins=false;for(let q=0,w=P.length-1;q<P.length;w=q++){const A=P[q],B=P[w];if((A[1]>pz)!==(B[1]>pz)&&px<(B[0]-A[0])*(pz-A[1])/(B[1]-A[1])+A[0])ins=!ins;}if(ins)WAT[j*nx+i]=1;}}
+ for(const r of recs){for(const f of r.coll.floors)rect(f,Math.max(0,.26-f.hx),Math.max(0,.26-f.hz),k=>cand(k,f.y,0));
+  for(const q of r.coll.ramps){const dx=q.b[0]-q.a[0],dz=q.b[2]-q.a[2],run=Math.hypot(dx,dz)||1e-6,ux=dx/run,uz=dz/run;
+   rect({x:(q.a[0]+q.b[0])/2,z:(q.a[2]+q.b[2])/2,hx:q.w/2,hz:run/2+.25,yaw:Math.atan2(ux,uz)},Math.max(0,.26-q.w/2),0,(k,cx,cz)=>{const t=Math.min(1,Math.max(0,((cx-q.a[0])*ux+(cz-q.a[2])*uz)/run));cand(k,q.a[1]+t*(q.b[1]-q.a[1]),1);});}}
+ // levels: ground + candidates, merged
+ const groundY=0;
+ for(const [k,L] of CAND){if(!WAT[k])L.push([groundY,0]);L.sort((a,b)=>a[0]-b[0]);const out=[];for(const [h,r] of L){const last=out[out.length-1];if(last&&h-last.h<=O.merge){if(h>last.h)last.h=h;last.r|=r;}else out.push({h:h,r:r,b:0});}
+  LV[k]=out.slice(0,O.maxLv);}
+ const lv=k=>LV[k]||(LV[k]=WAT[k]?[]:[{h:groundY,r:0,b:0}]);
+ for(let k=0;k<N;k++)if(WAT[k]&&!LV[k])LV[k]=[];
+ for(const r of recs)for(const s of r.coll.solids)rect(s,Math.max(.05,.26-s.hx),Math.max(.05,.26-s.hz),k=>{for(const l of lv(k))if(s.y1>l.h+O.knee&&s.y0<l.h+O.head)l.b|=1;});
+ for(let k=0;k<N;k++){const L=LV[k];if(!L)continue;for(let q=0;q<L.length-1;q++)if(L[q+1].h-L[q].h<O.clear&&!L[q].r&&!L[q+1].r)L[q].b|=2;}
+ // flood fill from the border; node = cell*4 + level
+ const ML=O.maxLv,REACH=new Uint8Array(N*ML),stack=[];const LV0=[{h:groundY,r:0,b:0}];const L_=k=>LV[k]||LV0;
+ const LINK=new Map();for(const r of recs)for(const l of r.coll.links){const ends=[[l.a,-.6,.6],[l.b,-1.3,.3]].map(([p,lo,hi])=>{const out=[];for(const dz of [-C,0,C])for(const dx of [-C,0,C]){const k=cellOf(p[0]+dx,p[2]+dz);if(k<0)continue;L_(k).forEach((v,li)=>{if(!v.b&&v.h-p[1]>=lo&&v.h-p[1]<=hi)out.push(k*ML+li);});}return out;});
+  for(const a of ends[0])for(const b of ends[1]){(LINK.get(a)||LINK.set(a,[]).get(a)).push(b);(LINK.get(b)||LINK.set(b,[]).get(b)).push(a);}}
+ const seed=k=>{const L=L_(k);L.forEach((v,li)=>{if(!v.b&&Math.abs(v.h-groundY)<.05&&!REACH[k*ML+li]){REACH[k*ML+li]=1;stack.push(k*ML+li);}});};
+ for(let i=0;i<nx;i++){seed(i);seed((nz-1)*nx+i);}for(let j=0;j<nz;j++){seed(j*nx);seed(j*nx+nx-1);}
+ while(stack.length){const n=stack.pop(),k=(n/ML)|0,li=n%ML,a=L_(k)[li],i=k%nx,j=(k/nx)|0;
+  for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1]]){const ii=i+di,jj=j+dj;if(ii<0||jj<0||ii>=nx||jj>=nz)continue;const kk=jj*nx+ii;const L=L_(kk);
+   for(let q=0;q<L.length;q++){const b=L[q];if(b.b||REACH[kk*ML+q])continue;if(Math.abs(b.h-a.h)<=((a.r||b.r)?O.rampStep:O.step)){REACH[kk*ML+q]=1;stack.push(kk*ML+q);}}}
+  const ex=LINK.get(n);if(ex)for(const m of ex)if(!REACH[m]){REACH[m]=1;stack.push(m);}}
+ // front doors and their approach
+ const doors=REG.map((r,i)=>{const f=r.front;if(!f)return null;const dy=r.y+(f.local.y||0),sx=Math.sin(f.world.yaw),sz=Math.cos(f.world.yaw);const dk=cellOf(f.world.x,f.world.z);if(dk>=0)FLAG[dk]|=1;
+  let ap=null;search:for(const d of [.6,.9,1.2,1.5,1.8,2.1,2.4])for(const lat of [0,-.4,.4,-.8,.8]){const px=f.world.x+sx*d+sz*lat,pz=f.world.z+sz*d-sx*lat,k=cellOf(px,pz);if(k<0)continue;
+   let best=-1,bd=.75;L_(k).forEach((v,li)=>{const dd=Math.abs(v.h-dy);if(!v.b&&dd<=bd){bd=dd;best=li;}});if(best>=0){ap={x:collR2(px),y:collR2(L_(k)[best].h),z:collR2(pz),cell:k,node:k*ML+best};break search;}}
+  if(ap)FLAG[ap.cell]|=2;return {i:i,key:r.key,source:f.source,door:[collR2(f.world.x),collR2(dy),collR2(f.world.z)],yaw:+f.world.yaw.toFixed(4),approach:ap?[ap.x,ap.y,ap.z]:null,reachable:!!(ap&&REACH[ap.node])};}).filter(Boolean);
+ const NAV={opt:O,cell:C,x0:x0,z0:z0,nx:nx,nz:nz,levels:LV,water:WAT,flag:FLAG,reach:REACH,doors:doors,cellOf:cellOf,
+  at(x,z){const k=cellOf(x,z);if(k<0)return null;return L_(k).map((v,li)=>({h:collR2(v.h),ramp:!!v.r,blocked:v.b?(v.b&1?'solid':'headroom'):false,reach:!!REACH[k*ML+li],door:!!(FLAG[k]&1),approach:!!(FLAG[k]&2)}));},
+  summary(){let touched=0,blocked=0,reach=0;for(let k=0;k<N;k++){const L=LV[k];if(!L)continue;touched++;L.forEach((v,li)=>{if(v.b)blocked++;else if(REACH[k*ML+li])reach++;});}
+   return {cell:C,x0:x0,z0:z0,nx:nx,nz:nz,touchedCells:touched,blockedLevels:blocked,reachableTouchedLevels:reach,doors:doors.length,unreachable:doors.filter(d=>!d.reachable).map(d=>d.key+(d.approach?' (approach '+d.approach.join(',')+' cut off)':' (no open approach)'))};}};
+ return NAV;}
+/* the scene's nav grid, rebuilt when the world was rebuilt */
+function navGet(opt){if(!NAV_CACHE||NAV_CACHE.b!==window._build||opt)NAV_CACHE={b:window._build,nav:navBuild(opt)};return NAV_CACHE.nav;}
 // ---------------------------------------------------------------- SOCKETS: where a culture's marks go (shared: core/sockets/)
 // A building declares sockets; the ACTIVE culture pack draws into them. The building never names a culture. See core/sockets/README.md.
 // Needs from the host build: CM (running matrix) + TF(x,y,z,ry) + CMS (matrix stack), rng/pick/jc/P (colour), reportErr, and the primitives the packs draw with.
@@ -630,6 +862,69 @@ const CULT={packs:{},cur:null,generic:null};
 function cultDef(p){CULT.packs[p.key]=p;if(p.key==='generic'){CULT.generic=p;if(!CULT.cur)CULT.cur=p;}return p;}
 // livery colour from the active culture's paint list (a share of the time), else the neutral faded palette
 function PAINT(){const c=CULT.cur;if(c&&c.paint&&rng()<(c.paintShare===undefined?.55:c.paintShare))return jc(pick(c.paint),.06);return P('paint');}
+// ---------------------------------------------------------------- CULTURE SYMBOLS (shared: core/sockets/38-symbols.js)
+// The emblem of every culture as a 2D canvas drawing: (g, cx, cy, R, ink, ink2) draws inside a box of half-size R. Pure canvas, no engine:
+// core/sockets/80-cultures.js draws them on banners, flags and plates; kits/catalog's furniture kit draws the same ones on tapestries,
+// banners, friezes and scrolls (vendored there as kits/catalog/krator-symbols.js, build.py --vendor-check), so a dressed building and the
+// furniture in it carry one emblem. A new culture adds one function here. SYMBOL_OF names each pack's symbol for anyone without a pack.
+const SYM_TAU = Math.PI * 2, SYM_PI = Math.PI;
+function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*SYM_TAU/3-SYM_PI/2;
+ for(let i=0;i<=24;i++){const t=i/24;const a=a0+t*2.5;const r=R*(.12+.86*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  const ae=a0+2.5;g.fillStyle=cols[k%cols.length];g.beginPath();g.arc(cx+Math.cos(ae)*R*.98,cy+Math.sin(ae)*R*.98,lw*.75,0,SYM_TAU);g.fill();}}
+// ------------------------------------------------------------------ symbols: each draws in the box (cx,cy,R) with two ink colours
+const SYMBOLS={
+ sun:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,SYM_TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,SYM_TAU);g.fill();
+  for(let k=0;k<12;k++){const a=k*SYM_TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}},
+ triskele:(g,cx,cy,R,c1,c2)=>{drawTriskele(g,cx,cy,R*.82,[c1,c2,'#c9963a'],Math.max(3,R*.27));},
+ diamond:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,SYM_TAU);g.fill();},
+ // hyperboloid of one sheet: the cooling-tower profile with its ruling lines (Yuni)
+ hyperboloid:(g,cx,cy,R,c1,c2)=>{const a=R*.4,hh=R*.92,b=hh*.55;const xw=t=>a*Math.sqrt(1+(t*hh/b)*(t*hh/b));const rx=xw(1),ry=R*.13;
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.05);
+  for(let k=0;k<7;k++){const th=k*SYM_TAU/7;g.beginPath();g.moveTo(cx+Math.cos(th)*rx,cy-hh+Math.sin(th)*ry);g.lineTo(cx+Math.cos(th+1.05)*rx,cy+hh+Math.sin(th+1.05)*ry);g.stroke();}
+  g.lineWidth=Math.max(2.5,R*.1);for(const sx of [-1,1]){g.beginPath();for(let i=0;i<=28;i++){const t=-1+2*i/28;const x=cx+sx*xw(t),y=cy+t*hh;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,SYM_TAU);g.stroke();}},
+ // three parallel talon slashes (Beast Riders)
+ claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
+ // a half sun rising over three waves (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the sun, c2 the waves
+ wavesun:(g,cx,cy,R,c1,c2)=>{const y0=cy-R*.1;g.fillStyle=c1;g.beginPath();g.arc(cx,y0,R*.5,Math.PI,0);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.62,y0+Math.sin(a)*R*.62);g.lineTo(cx+Math.cos(a)*R*.9,y0+Math.sin(a)*R*.9);g.stroke();}
+  g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.1);for(let k=0;k<3;k++){g.beginPath();for(let i=0;i<=24;i++){const x=-R+2*R*i/24,y=y0+R*.12+k*R*.24+Math.sin(x/R*SYM_TAU)*R*.07;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}},
+ // the eight-spoked wheel (Xanadu; the carrack's sails): c1 rim and spokes, c2 the hub
+ wheel:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.12);g.beginPath();g.arc(cx,cy,R*.78,0,SYM_TAU);g.stroke();g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<8;i++){const a=i/8*SYM_TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.18,cy+Math.sin(a)*R*.18);g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
+ // the white moon of the islands (the oruwa's sail): a full disc, a thin ring round it
+ moon:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.62,0,SYM_TAU);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(1.5,R*.04);g.beginPath();g.arc(cx,cy,R*.86,0,SYM_TAU);g.stroke();},
+};
+// ---- symbols added for the furniture sets (cultures without a socket pack yet; a pack that arrives later picks its symbol from here)
+Object.assign(SYMBOLS, {
+ // a coiled serpent, head out (Lizardmen)
+ serpent:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.16);g.beginPath();for(let i=0;i<=60;i++){const t=i/60,a=t*SYM_TAU*1.75,r=R*(.15+.72*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  const ae=SYM_TAU*1.75,hx=cx+Math.cos(ae)*R*.87,hy=cy+Math.sin(ae)*R*.87;g.fillStyle=c1;g.beginPath();g.ellipse(hx,hy,R*.2,R*.13,ae,0,SYM_TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(hx+Math.cos(ae+1.3)*R*.07,hy+Math.sin(ae+1.3)*R*.07,R*.035,0,SYM_TAU);g.fill();},
+ // an eight-pointed star of two squares, a disc at the heart (East Abyss)
+ star:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(const rot of [0,SYM_PI/4]){g.beginPath();for(let k=0;k<4;k++){const a=rot+k*SYM_PI/2;g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);}g.closePath();g.fill();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.3,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.12,0,SYM_TAU);g.fill();},
+ // a pair of curling ram's horns over a disc (Eastern Nomads)
+ horns:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.17);for(const s of [-1,1]){g.beginPath();for(let i=0;i<=30;i++){const t=i/30,a=-SYM_PI/2+s*t*SYM_PI*1.15,r=R*(.9-.55*t);const x=cx+s*R*.1+Math.cos(a)*r,y=cy+R*.1+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy+R*.15,R*.24,0,SYM_TAU);g.fill();},
+ // a fir tree on a mountain line (Rustic Highlanders)
+ fir:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=0;k<3;k++){const y=cy-R*.9+k*R*.42,w=R*(.35+k*.25);g.beginPath();g.moveTo(cx,y);g.lineTo(cx+w,y+R*.55);g.lineTo(cx-w,y+R*.55);g.closePath();g.fill();}
+  g.fillRect(cx-R*.08,cy+R*.4,R*.16,R*.35);g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.08);g.beginPath();g.moveTo(cx-R,cy+R*.95);g.lineTo(cx-R*.5,cy+R*.6);g.lineTo(cx-R*.25,cy+R*.85);g.moveTo(cx+R*.25,cy+R*.85);g.lineTo(cx+R*.5,cy+R*.6);g.lineTo(cx+R,cy+R*.95);g.stroke();},
+ // a formline raven's head: the ovoid eye in a beaked outline (Painted Men)
+ raven:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.9,cy);g.quadraticCurveTo(cx-R*.9,cy-R*.85,cx,cy-R*.8);g.quadraticCurveTo(cx+R*.7,cy-R*.75,cx+R*.98,cy-R*.1);g.lineTo(cx+R*.3,cy+R*.2);g.quadraticCurveTo(cx+R*.5,cy+R*.75,cx-R*.1,cy+R*.8);g.quadraticCurveTo(cx-R*.9,cy+R*.8,cx-R*.9,cy);g.closePath();g.fill();
+  g.fillStyle=c2;g.beginPath();g.ellipse(cx-R*.25,cy-R*.1,R*.36,R*.26,0,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.ellipse(cx-R*.25,cy-R*.1,R*.14,R*.12,0,0,SYM_TAU);g.fill();g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.06);g.beginPath();g.moveTo(cx+R*.2,cy-R*.05);g.lineTo(cx+R*.85,cy-R*.1);g.stroke();},
+ // a fish in a ring of reeds (Reed Lake)
+ fish:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.06);for(let k=0;k<12;k++){const a=k*SYM_TAU/12;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.78,cy+Math.sin(a)*R*.78);g.lineTo(cx+Math.cos(a)*R*.98,cy+Math.sin(a)*R*.98);g.stroke();}
+  g.fillStyle=c1;g.beginPath();g.ellipse(cx-R*.08,cy,R*.5,R*.24,0,0,SYM_TAU);g.fill();g.beginPath();g.moveTo(cx+R*.35,cy);g.lineTo(cx+R*.68,cy-R*.3);g.lineTo(cx+R*.68,cy+R*.3);g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx-R*.38,cy-R*.05,R*.06,0,SYM_TAU);g.fill();},
+ // a skull, teeth and all (Screamers)
+ skull:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy-R*.15,R*.62,0,SYM_TAU);g.fill();g.fillRect(cx-R*.4,cy+R*.2,R*.8,R*.5);g.fillStyle=c2;for(const s of [-1,1]){g.beginPath();g.ellipse(cx+s*R*.26,cy-R*.15,R*.17,R*.2,0,0,SYM_TAU);g.fill();}
+  g.beginPath();g.moveTo(cx,cy+R*.05);g.lineTo(cx-R*.1,cy+R*.28);g.lineTo(cx+R*.1,cy+R*.28);g.closePath();g.fill();for(let k=0;k<5;k++)g.fillRect(cx-R*.36+k*R*.16,cy+R*.42,R*.06,R*.26);},
+ // a toothed gear (post-apoc salvage and scrap)
+ gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
+});
+// the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
+const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'wavesun', xanadu:'wheel',
+ 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear' };
 // prefix: dw
 // ---------------------------------------------------------------- small dwellings: 7 types (4x fragments: 40 dw-small)
 // EXEMPLAR FRAGMENT. A dwelling = one reclaimed CORE (container / silo / bus / tank ...) + lashed-on ADDITIONS (plank room, lean-to, deck,
@@ -1037,7 +1332,7 @@ function lgAwn(x,y,z,ry,w,d,drop,o){o=o||{};W(x,y,z,ry||0,()=>{sock('awning',0,0
 defBuilding({key:'lg-stack',name:'Container stack',seed:4210,tags:{type:['multi-family dwelling'],size:'large',core:'shipping container',materials:['container','steel stairs','sheet metal','plank']},w:22,d:18,h:14,build:lgStack});
 function lgStack(o){
  let C=[0xd8a020,0xa83a2c,0x2f7f8e,0x4d6f3c,0xd8d4c8,0x2f5f8f,0xc45a30];if(o.v===1)C=C.slice().reverse();
- const y2=CT.H,y3=CT.H*2,y4=CT.H*3,T={steel:true};
+ const y2=CT.H,y3=CT.H*2,y4=CT.H*3;
  // level 1: a 40 ft workshop box, and a 20 ft open-fronted shop bay
  lgBox(-3,0,-2,0,CT.L40,C[0],()=>{door(-4.5,.16,1.22,1.0,2.0,{step:true});win(-2.3,1.05,1.22,1.1,.9,{lit:o.v===1});porthole(0,1.5,1.22,.3);porthole(1.3,1.5,1.22,.3);win(3.4,1.05,1.22,.9,.9,{bars:true});lgPatch(-3.5,.3,1.23,3.2,.6,C[3]);});
  lgBox(6.5,0,-2,0,CT.L20,C[5],null);
@@ -1052,17 +1347,17 @@ function lgStack(o){
  lgBox(7,y3,-2.5,PI/2,CT.L20,C[6],()=>{win(0,1.1,1.22,1.4,.9,{lit:o.v!==1});porthole(-1.7,1.4,1.22,.3);lgPatch(1.6,1.6,1.23,1.4,.7,C[3]);});
  // level 4: penthouse; door opens on its perch
  lgBox(-4,y4,-2,0,CT.L20,C[2],()=>{door(-.5,.16,1.22,.95,1.95,{step:false});win(1.8,1.1,1.22,1.1,1.0,{lit:true});porthole(-2.0,1.5,1.22,.3);});
- // ---- balconies, steel stairs and landings: every flight ends on a deck edge at the floor height of a door
- deck(-6,y2,.1,5,1.7,{rail:['l','f']});                                          // level 2 balcony, posts to the ground
- stairs(-.4,0,.1,-3.5,y2,.1,1.1,T);                                              // ground -> level 2 (top tread ends at the deck edge x=-3.5)
- deck(-3,y3,.1,5,1.7,{rail:['r','f'],posts:false});                              // level 3 balcony, carried by wall brackets and two posts
+ // ---- balconies, steel stairs and landings (stLanding/stStairs: grating, checker-plate treads, pipe rails): every flight ends on a landing edge at a door's floor height
+ stLanding(-6,y2,.1,5,1.7,{rail:['l','f']});                                        // level 2 balcony, posts to the ground
+ stStairs(-.4,0,.1,-3.5,y2,.1,1.1);                                           // ground -> level 2 (top tread ends at the deck edge x=-3.5)
+ stLanding(-3,y3,.1,5,1.7,{rail:['r','f'],posts:false});                            // level 3 balcony, carried by wall brackets and two posts
  for(const bx of [-5.2,-.8])beam('iron',[bx,y3-.95,-.76],[bx,y3-.12,.85],.07,jc(0x4a4038,.05));
  lgPost(-.65,.85,y3-.12,0,.12);lgPost(-5.35,.85,y3-.12,y2,.12);
- stairs(-8.4,y2,.1,-5.5,y3,.1,1.1,T);                                            // level 2 -> level 3 (top tread ends at the deck edge x=-5.5)
- ladder(-3.2,y3,-.72,y4-y3,0);deck(-4.5,y4,-.4,2.4,1.1,{rail:['f','l'],posts:false});   // ladder to the penthouse perch
+ stStairs(-8.4,y2,.1,-5.5,y3,.1,1.1);                                         // level 2 -> level 3 (top tread ends at the deck edge x=-5.5)
+ ladder(-3.2,y3,-.72,y4-y3,0);stLanding(-4.5,y4,-.4,2.4,1.1,{rail:['f','l'],posts:false});   // ladder to the penthouse perch
  for(const bx of [-5.5,-3.5])beam('iron',[bx,y4-.95,-.8],[bx,y4-.12,.1],.06,jc(0x4a4038,.05),true,5);
  // east side: balcony on the turned box, steel stair down to the yard, brackets and posts
- deck(9.0,y2,3.0,1.6,5.0,{rail:['r','b'],posts:false});stairs(9.0,0,8.3,9.0,y2,5.5,1.1,T);
+ stLanding(9.0,y2,3.0,1.6,5.0,{rail:['r','b'],posts:false});stStairs(9.0,0,8.3,9.0,y2,5.5,1.1);
  for(const pz of [.6,5.4])lgPost(9.7,pz,y2-.12,0,.1);for(const bz of [1.0,3.0,5.0])beam('iron',[8.22,y2-.95,bz],[9.7,y2-.12,bz],.06,jc(0x4a4038,.05),true,5);
  lgPost(5.95,6.7,y2,0,.16);lgPost(8.05,6.7,y2,0,.16);beam('iron',[5.95,1.6,6.7],[6.6,y2,5.6],.07,jc(0x4a4038,.05));beam('iron',[8.05,1.6,6.7],[7.4,y2,5.6],.07,jc(0x4a4038,.05));
  // ---- rooftop: water tank, dish, solar, stovepipes, antenna, a tarp on four posts (all on roofs)
@@ -1164,7 +1459,7 @@ function lgBulkhead(o){
   if(s===2)W(0,0,rz,PI,()=>win(0,sill,0,1.2,1.2,{lit:true}));}
  W(0,0,rz,PI,()=>lgDoor(0,F[0],0,1.1,2.2,{step:true,col:0x7a2e28}));W(0,0,rz,PI,()=>lgDoor(0,F[1],0,1.1,2.1,{step:false,col:0x2f5f8f}));                 // ground door and the door onto the rear balcony
  for(const sd of [-1,1]){const xo=sd*7.9,xr=sd*8.7,ry=sd>0?PI/2:-PI/2,rl=sd>0?['r','b']:['l','b'];
-  deck(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});deck(xo,F[2],-10.5,1.7,3.4,{rail:sd>0?['r','b']:['l','b'],posts:false});
+  stLanding(xo,F[1],-10.5,1.7,3.8,{rail:rl,posts:false});stLanding(xo,F[2],-10.5,1.7,3.4,{rail:sd>0?['r','b']:['l','b'],posts:false});
   for(const z of [-12.1,-10.5,-8.9])beam('iron',[sd*7.05,F[1]-1.0,z],[xr-sd*.02,F[1]-.12,z],.06,jc(0x4a4038,.05),true,5);
   for(const z of [-11.8,-9.2])beam('iron',[sd*7.05,F[2]-1.0,z],[xr-sd*.02,F[2]-.12,z],.06,jc(0x4a4038,.05),true,5);
   lgPost(xr,-12.3,F[1]-.12,0,.12);lgPost(xr,-9.3,F[1]-.12,0,.12);lgPost(xr,-12.1,F[2]-.12,F[1],.1);lgPost(xr,-8.95,F[2]-.12,F[1],.1);
@@ -1251,7 +1546,7 @@ function lgTankTower(o){
  }
  // ---- stair: a steel switchback on the right side. Landings sit at the floor height of each door; every flight ends exactly on a landing edge
  //      odd floors have the landing at the north end (z -1.8..-.4), even floors at the south end (z 3.2..4.6)
- for(let s=1;s<=4;s++){const north=s%2===1,xc=X1(s)+.9,zc=north?-1.1:3.9;deck(xc,U(s),zc,1.6,1.4,{posts:false,rail:north?['r','b']:['r','f'],col:0x8a8a86});
+ for(let s=1;s<=4;s++){const north=s%2===1,xc=X1(s)+.9,zc=north?-1.1:3.9;stLanding(xc,U(s),zc,1.6,1.4,{posts:false,rail:north?['r','b']:['r','f']});
   for(const dz of [-.65,.65])lgPost(xc+.7,zc+dz,U(s)-.12,0,.1);beam('iron',[X1(s)+.02,U(s)-.9,zc],[xc-.1,U(s)-.12,zc],.06,jc(0x4a4038,.05),true,5);}
  stairs(X1(0)+.9,0,3.2,X1(1)+.9,U(1),-.4,1.0,{steel:true});
  stairs(X1(1)+.9,U(1),-.4,X1(2)+.9,U(2),3.2,1.0,{steel:true});
@@ -1516,7 +1811,7 @@ function cvShaman(o){
  for(let c=0;c<9;c++){const y=c*.24+.12,Rc=(R0+.12)*Math.sqrt(Math.max(.02,1-Math.pow(y/(Hh+.1),2)));const n=Math.max(3,Math.round(TAU*Rc/.7));
   for(let k=0;k<n;k++){const a=(k+(c%2)*.5)/n*TAU;if(c<5&&Math.abs(Math.atan2(Math.sin(a-PI/2),Math.cos(a-PI/2)))<.34)continue;tire(Math.cos(a)*Rc,y,Math.sin(a)*Rc,TYR.R,TYR.t,undefined,rng()*TAU,rr(-.25,.25),rr(-.25,.25));}}
  // doorway: plank frame, dark hollow, hide curtain
- box('iron',0,0,R0*.98,1.2,1.4,.1,jc(0x14100c,.02));for(const sx of [-1,1])beam('wood',[sx*.62,0,R0+.15],[sx*.62,1.5,R0+.15],.12,jc(0x5c4630,.06));beam('wood',[-.7,1.5,R0+.15],[.7,1.5,R0+.15],.14,jc(0x5c4630,.06));
+ box('iron',0,0,R0*.98,1.2,1.4,.1,jc(0x14100c,.02));entry(0,0,R0+.15,1.2,1.5);/* front door: the curtained doorway */for(const sx of [-1,1])beam('wood',[sx*.62,0,R0+.15],[sx*.62,1.5,R0+.15],.12,jc(0x5c4630,.06));beam('wood',[-.7,1.5,R0+.15],[.7,1.5,R0+.15],.14,jc(0x5c4630,.06));
  plane4('cloth',[-.5,1.45,R0+.2],[.5,1.45,R0+.2],[-.5,.3,R0+.35],[-.5,.3,R0+.35],.03,jc(0x8a3a2c,.06));
  // bottle-glass windows set into the dome
  for(const a of [.2,PI-.2,PI+.7,-.7+TAU*.0]){const Rw=(R0+.06)*Math.sqrt(1-Math.pow(1.05/(Hh+.1),2));W(Math.cos(a)*Rw,1.05,Math.sin(a)*Rw,PI/2-a,()=>{box('bottle',0,-.4,0,.9,.8,.34,null);for(const sx of [-1,1])beam('wood',[sx*.5,-.45,.2],[sx*.5,.45,.2],.08,jc(0x5c4630,.06));box('glow',0,-.1,-.1,.5,.4,.05,jc(0xf2c26a,.05));});}
@@ -1598,7 +1893,7 @@ function shFood(o){
  shHang(cx-2.7,cx+.2,2.2,cz-.2,9,'fish');shHang(cx+.4,cx+2.7,2.2,cz-.2,5,'meat');
  shShelf(cx-.4,.55,cz-.95,4.6,3,.55);for(let k=0;k<2;k++)barrel(cx+2.4,.1,cz+.3+k*.6);
  // counter with produce, scales, a stack of loaves, a tray of eggs
- shCounter(cx-1.0,fz-.15,4.6,.7,1.05);shGoods(cx-2.2,1.05,fz-.15,1.2,.55);shGoods(cx-.6,1.05,fz-.15,1.0,.55,[0xd8a02a,0xe0b060,0xc88a3a]);
+ shCounter(cx-1.0,fz-.15,4.6,.7,1.05);entry(cx-1.0,0,fz+.2,4.6,2.4);/* front door: the service counter across the open container front */shGoods(cx-2.2,1.05,fz-.15,1.2,.55);shGoods(cx-.6,1.05,fz-.15,1.0,.55,[0xd8a02a,0xe0b060,0xc88a3a]);
  for(let k=0;k<4;k++)sph('plain',cx+.7+k*.18,1.17,fz-.15,.13,jc(0xc8843a,.06),.7);
  box('iron',cx+1.35,1.11,fz-.1,.3,.05,.3,jc(0x8a8a86,.06));cyl('iron',cx+1.35,1.16,fz-.1,.03,.3,jc(0x6a6a66,.06),6);
  // sacks of grain and crates of produce out front, barrels, a fish box
@@ -1639,7 +1934,7 @@ function shArmor(o){
  box('iron',cx-2.4,1.02,cz-.7,.22,.3,.16,jc(0x3a3430,.05));box('iron',cx-2.4,1.3,cz-.7,.1,.06,.1,jc(0x8a8a86,.05));
  for(let k=0;k<4;k++)box('iron',cx-1.6+k*.2,1.02,cz-.7,.12,.06,.5,jc(0x8a8a86,.06),.3*k);
  // display counter and front rack, grindstone, plate stack, tyre stock
- shCounter(cx+3.1,fz-.1,5.4,.6,1.0);for(let k=0;k<4;k++)box('sheet',cx+1.3+k*.9,1.0,fz-.1,.7,.04,.4,jc(pick([0x8a8a86,0xa8a49a,0x7a4a3a]),.06),0,0,rr(-.1,.1));
+ shCounter(cx+3.1,fz-.1,5.4,.6,1.0);entry(cx+3.1,0,fz+.2,5.4,2.4);for(let k=0;k<4;k++)box('sheet',cx+1.3+k*.9,1.0,fz-.1,.7,.04,.4,jc(pick([0x8a8a86,0xa8a49a,0x7a4a3a]),.06),0,0,rr(-.1,.1));
  for(let k=0;k<3;k++)shMannequin(cx-4.4+k*2.0,fz+.95,0,{kind:k===1?1:0,crest:k!==1,helm:pick([0x9a9a92,0xb87a4a]),cape:[0xc23a2a,0x2a8a86,0xd8a02a][k],band:[0xd8a02a,0xc23a2a,0x2a8a86][k]});
  // forge lean-to at the right end: sheet wind wall, a brick hearth with hood, anvil, bellows, quench barrel
  const fx=cx+L/2+2.2,fzc=-3.0;sheetWall(fx,0,fzc-.1,3.6,2.9,0,{col:0x8a8478});for(const q of [-1,1])shPost(fx+q*1.75,fzc+2.1,2.4);
@@ -1679,7 +1974,7 @@ function shWeapon(o){
  roofP('corr',gx-1.4,gx+1.4,gz+1.3,4.4,gz-1.3,4.9,.07,P('rust'));sacks(gx-.4,2.46,gz+1.0,6,0);box('plank',gx,2.46,gz-1.0,2.2,.5,.1,jc(0x7a6448,.07));
  ladder(gx-1.2,0,gz+1.25,2.4,0);
  // fence wall across the front with a gate gap; racks of spears, blades and pipe clubs on the outside
- const fzn=2.7;fenceRun(-6.6,fzn,wx-1.8,fzn,1.3,{type:'sheet'});fenceRun(wx+1.8,fzn,6.6,fzn,1.3,{type:'sheet'});
+ const fzn=2.7;fenceRun(-6.6,fzn,wx-1.8,fzn,1.3,{type:'sheet'});fenceRun(wx+1.8,fzn,6.6,fzn,1.3,{type:'sheet'});entry(wx,0,fzn,3.4,2.0);/* front door: the gate gap */
  for(let k=0;k<20;k++){const x=-6.5+k*.68;if(x>wx-2&&x<wx+2)continue;cone('iron',x,1.3,fzn,.06,.28,jc(0x8a8a86,.05),5);}
  for(const q of [-5.2,-3.7]){box('wood',q+.7,.9,fzn+.55,1.4,.06,.08,jc(shWood,.06));}
  for(let k=0;k<7;k++)shSpear(-5.9+k*.22,fzn+.5,rr(2.1,2.5),.0,.05);
@@ -1708,7 +2003,7 @@ function shTinker(o){
  shHang(cx-2.7,cx-.1,2.15,cz+.1,6,'tools');shHang(cx+.2,cx+2.7,2.15,cz+.1,5,'wire');
  for(let k=0;k<3;k++){box('iron',cx+1.6+k*.5,1.62,cz-.85,.4,.3,.3,jc(0x3a3430,.05));cylH('iron',cx+1.6+k*.5,1.85,cz-.7,.05,.12,jc(0xb0b0a8,.05),'x',6);}
  // front: a long counter of junk, a hanging bike wheel and tyres on the end wall, the cart
- shCounter(cx,fz-.1,5.6,.6,.95,0x5a5a56);for(let k=0;k<9;k++){const px=cx-2.4+k*.6;box('plain',px,.95,fz-.1,rr(.14,.3),rr(.12,.34),rr(.14,.3),jc(pick([0xb8683a,0x2f62b8,0xc9a03a,0x6a6a66,0xc23a2a]),.08),rng()*TAU);}
+ shCounter(cx,fz-.1,5.6,.6,.95,0x5a5a56);entry(cx,0,fz+.2,5.6,2.4);for(let k=0;k<9;k++){const px=cx-2.4+k*.6;box('plain',px,.95,fz-.1,rr(.14,.3),rr(.12,.34),rr(.14,.3),jc(pick([0xb8683a,0x2f62b8,0xc9a03a,0x6a6a66,0xc23a2a]),.08),rng()*TAU);}
  tire(cx+L/2+.15,.78,cz-.6,.5,.09,undefined,0,0,PI/2);tire(cx+L/2+.15,.68,cz+.62,.4,.09,undefined,0,0,PI/2);
  // radio mast on the roof with a dish and cable: lattice legs, cross rungs, a dish, a whip antenna
  const mx=cx-1.6,mz=cz;for(const [a,b] of [[-.3,-.3],[.3,-.3],[.3,.3],[-.3,.3]])beam('iron',[mx+a,CT.H,mz+b],[mx+a*.35,CT.H+6.2,mz+b*.35],.05,jc(0x6a5a4c,.05),true,5);
@@ -1794,7 +2089,7 @@ function inSmithy(o){
  bays.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.7,EY-.1,ZR,RY,.07,jc(cols[i],.06));roofP('corr',b[0],b[1],ZB-.6,EY+.1,ZR,RY,.07,jc(cols[(i+2)%4],.06));});
  box('iron',0,RY-.04,ZR,12.2,.12,.18,jc(0x4a4038,.05));
  for(const x of [X0,-1.7,1.7,X1]){beam('wood',[x,EY,ZF],[x,RY,ZR],.1,jc(inW,.06));beam('wood',[x,EY+.05,ZB],[x,RY,ZR],.1,jc(inW,.06));}
- beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));
+ beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));entry(0,0,ZF,3.4,EY);/* front door: the open bay between the middle posts */
  // the forge: an earth-and-tyre hearth against the back wall, a sheet hood, a tall stovepipe with cap and stays
  const hx=-2.2,hz=-3.5;tireWall(hx-1.4,hz+.95,hx+1.4,hz+.95,4,{cap:false});box('earth',hx,.05,hz-.1,3.0,1.0,1.9,jc(0xa08a70,.05));box('earth',hx,1.0,hz-.05,3.1,.14,2.0,jc(0x8a7a64,.05));
  box('glow',hx,.35,hz+.98,1.2,.6,.06,jc(0xff7a2a,.05));sph('glow',hx,1.5,hz+.4,.5,jc(0xff8a30,.05),.5);box('glow',hx,1.14,hz+.1,1.5,.06,.9,jc(0xff8a2a,.08));cone('glow',hx,1.16,hz+.1,.5,.9,jc(0xffb040,.06),7);cone('glow',hx,1.16,hz+.1,.25,1.3,jc(0xffe28a,.04),6);
@@ -1929,7 +2224,7 @@ function inWarehouse(o){
  wallOpen('corr',(X0+X1)/2,DK,ZF,X1-X0,WH-DK,.1,ops,jc(0xd0ccc0,.04),0);
  for(const x of dxs){const raise=[.8,.4,1.6][dxs.indexOf(x)];box('corr',x,DK,ZF+.02,dw-.1,3.5-raise,.05,jc(pick([0xc4502e,0x2f8f8a,0xb0aca0]),.05));cylH('iron',x,DK+3.5-.05,ZF+.14,.2,dw,jc(0x4a4038,.05),'x',10);
   for(const s of [-1,1])box('iron',x+s*(dw/2+.06),DK,ZF+.05,.14,3.7,.14,jc(0x3a3430,.05));box('iron',x,DK+3.55,ZF+.08,dw+.3,.14,.14,jc(0x3a3430,.05));}
- for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));
+ for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));entry(dxs[1],DK,ZF+.1,dw,3.5);/* front door: the middle roll-up opening, on the dock */
  // gable roof of mixed sheet on trusses; gable end walls with truss and a vent
  const segs=[[X0-.5,X0+5.5],[X0+5.5,X0+10.5],[X0+10.5,X0+16.5],[X0+16.5,X1+.5]];
  segs.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+1)%6],.06));roofP('corr',b[0],b[1],ZB-.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+4)%6],.06));});
@@ -2204,15 +2499,15 @@ function fmGranary(o){
  box('conc',0,0,0,24,.14,18,jc(0x9a9688,.04));
  for(let k=0;k<5;k++)box('conc',-9.6+k*4.8,.14,-.2,.06,.02,17.6,jc(0x6a6660,.05));   // expansion joints
  for(const [x,z,r,h,c,rc] of sil){W(x,.14,z,0,()=>silo({r:r,h:h,col:c,roofCol:rc}));}
- // catwalk in front of the three tall silos at y 7.4, on steel legs, with rails and stubs to each silo door
+ // catwalk in front of the three tall silos at y 7.4: steel grating (stFloor) on steel legs, with rails and grating stubs to each silo door
  const cy=7.4,cz=-.4;
- box('plank',-.3,cy-.1,cz,19.6,.1,1.0,jc(0x6a5a44,.06));beam('iron',[-10,cy-.15,cz-.5],[9.5,cy-.15,cz-.5],.08,jc(0x4a4038,.05));beam('iron',[-10,cy-.15,cz+.5],[9.5,cy-.15,cz+.5],.08,jc(0x4a4038,.05));
+ stFloor(-.3,cy,cz,19.6,1.0);beam('iron',[-10,cy-.15,cz-.5],[9.5,cy-.15,cz-.5],.08,jc(0x4a4038,.05));beam('iron',[-10,cy-.15,cz+.5],[9.5,cy-.15,cz+.5],.08,jc(0x4a4038,.05));
  for(const x of [-9.4,-4.8,-.2,4.4,9.0]){for(const s of [-1,1])beam('iron',[x+s*.3,0,cz+.5],[x,cy-.15,cz+.5],.08,jc(0x5a5a56,.05));beam('iron',[x-.3,2.5,cz+.5],[x+.3,4.6,cz+.5],.04,jc(0x5a5a56,.05),true,4);beam('iron',[x+.3,2.5,cz+.5],[x-.3,4.6,cz+.5],.04,jc(0x5a5a56,.05),true,4);}
  for(const [a,b] of [[-10,9.6]]){beam('iron',[a,cy+1.0,cz+.5],[b,cy+1.0,cz+.5],.05,jc(0x8a8a86,.05));beam('iron',[a,cy+1.0,cz-.5],[b,cy+1.0,cz-.5],.05,jc(0x8a8a86,.05));beam('iron',[a,cy+.5,cz+.5],[b,cy+.5,cz+.5],.03,jc(0x8a8a86,.05));
   for(let x=a;x<=b+.01;x+=1.6){beam('iron',[x,cy,cz+.5],[x,cy+1.0,cz+.5],.04,jc(0x8a8a86,.05),true,4);beam('iron',[x,cy,cz-.5],[x,cy+1.0,cz-.5],.04,jc(0x8a8a86,.05),true,4);}}
- for(const [x,z,r] of sil.slice(0,3)){const zf=z+Math.sqrt(Math.max(0,r*r-.0))-.1;box('plank',x,cy-.1,(cz-.5+zf)/2,1.0,.1,zf-(cz-.5)+.0,jc(0x6a5a44,.06));
+ for(const [x,z,r] of sil.slice(0,3)){const zf=z+Math.sqrt(Math.max(0,r*r-.0))-.1;stFloor(x,cy,(cz-.5+zf)/2,1.0,Math.abs(zf-(cz-.5)));
   W(x,0,z+r+.1,0,()=>{door(0,cy-.05,-.05,.9,1.8,{step:false,col:pick([0x8a3a2c,0x2f5f8f,0x4d6f3c])});});}
- // stub from catwalk to silo doors: made as boards reaching the wall face
+ // stub from catwalk to silo doors: grating reaching the wall face
  // ladders: catwalk end, silo C east side to its roof, silo D
  ladder(-10.2,0,cz+.1,cy+1.0,0);ladder(8.85,0,-5.5,8.9,PI/2);ladder(-8.5,.14,3.4+2.5+.02,6.6,0);
  for(const [x,z,r,h] of [[6.2,-5.5,2.6,8.6]])W(x+r*.0,0,z,0,()=>{});
@@ -2492,10 +2787,33 @@ defBuilding({key:'cages',name:'Prisoner cages',seed:5220,tags:{type:['civic'],si
 // Walls of MIXED reclaimed segments (stacked containers, earth-filled tyre wall with timber cap + sheet fence, corrugated sheet on posts, container bastions),
 // an inner wall-walk gantry, a bulkhead-style container gate tower with two hinged leaves, four corner towers (silo, water tank on stilts, scaffold lookout,
 // container tower). The interior takes buildings modularly: cpSlots(w,d) -> slot rectangles, cpFit(def,slot) -> yaw or null; o.slots = list of def keys.
-defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,build:cpBuild});
-function cpGeom(v){const Wc=v===1?44:64,Dc=v===1?38:54;return {v:v,w:Wc,d:Dc,xr:Wc/2-3.4,zb:-(Dc/2-3.4),zf:Dc/2-4.9};}
+defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,sizes:{large:{w:82,d:76,front:{x:0,z:38,yaw:0}},xl:{w:106,d:76,budget:400000,front:{x:0,z:38,yaw:0}}},build:cpBuild});
+function cpGeom(v,size){if(size==='xl')return {v:0,L:1,XL:1,w:106,d:76,xr:106/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'xl': a 106 x 76 yard with two great slots (the large plan, wider)
+ if(size==='large')return {v:0,L:1,w:82,d:76,xr:82/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'large': an 82 x 76 yard (variant ignored)
+ const Wc=v===1?44:64,Dc=v===1?38:54;return {v:v,w:Wc,d:Dc,xr:Wc/2-3.4,zb:-(Dc/2-3.4),zf:Dc/2-4.9};}
 // ---- slots: rectangles inside the walls (world x,z of the centre; w along x, d along z; facing = yaw that turns a building's +z front toward the yard)
 function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
+ if(w>=100){  // xl (106 x 76): interior clear x +-47, z -32..30.5; yard x +-10, z 5..18. TWO great slots (41 x 35) so two of the longhouse / chief class share a yard
+  S.push({x:-26.5,z:-14.5,w:41,d:35,facing:0,name:'great-left'});
+  S.push({x:26.5,z:-14.5,w:41,d:35,facing:0,name:'great-right'});
+  S.push({x:0,z:-24.5,w:11,d:15,facing:0,name:'back-mid'});
+  S.push({x:-22,z:12,w:20,d:13,facing:PIH,name:'left-mid'});
+  S.push({x:22,z:12,w:20,d:13,facing:-PIH,name:'right-mid'});
+  S.push({x:-40,z:12,w:14,d:14,facing:PIH,name:'west'});
+  S.push({x:40,z:12,w:14,d:14,facing:-PIH,name:'east'});
+  S.push({x:-29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-left'});
+  S.push({x:29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-right'});
+  return S;}
+ if(w>=80){   // large (82 x 76): interior clear x +-35, z -32..30.5; yard x +-10, z 5..18. 'great' takes any building def in the kit (longhouse 40 x 18, chief 25 x 34,
+              // bulkhead 26 x 28, farm 28 x 22); 'back-right' the 26 x 18 class (warehouse, lg-stack, granary, cages, mess); mid and front slots as in the standard yard
+  S.push({x:-14.5,z:-14.5,w:41,d:35,facing:0,name:'great'});
+  S.push({x:21.5,z:-22.5,w:27,d:19,facing:0,name:'back-right'});
+  S.push({x:21.5,z:-4,w:27,d:14,facing:0,name:'right-mid'});
+  S.push({x:-28,z:12,w:14,d:14,facing:PIH,name:'west'});
+  S.push({x:28,z:12,w:14,d:14,facing:-PIH,name:'east'});
+  S.push({x:-22.75,z:25,w:24.5,d:10,facing:Math.PI,name:'front-left'});
+  S.push({x:21,z:25,w:28,d:10,facing:Math.PI,name:'front-right'});
+  return S;}
  if(v===0){   // interior clear x +-26, z -21..19.5; yard x +-10, z -3.5..7.5; road x +-3.5 from the gate
   S.push({x:-15.25,z:-13,w:21.5,d:16,facing:0,name:'back-left'});
   S.push({x:15.25,z:-13,w:21.5,d:16,facing:0,name:'back-right'});
@@ -2513,6 +2831,12 @@ function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
 // the yaw at which the def's declared footprint (w x d) fits the slot: try the slot's facing, then the other three quarter turns
 function cpFit(def,slot){const f=slot.facing||0;const tries=[0,PI/2,-PI/2,PI];
  for(const t of tries){const swap=Math.abs(t)===PI/2;const bw=swap?def.d:def.w,bd=swap?def.w:def.d;if(bw<=slot.w+1e-6&&bd<=slot.d+1e-6)return f+t;}return null;}
+// why a key was turned away, and which size of yard would take it (std 64 x 54 takes up to ~21.5 x 16; large one building of any size; xl two)
+function cpSizeName(G){return G.XL?'xl':G.L?'large':G.v?'small':'std';}
+function cpWhy(def,G,slots){const fits=(w,d)=>cpSlots(w,d).filter(s=>cpFit(def,s)!==null).length;const here=slots.filter(s=>cpFit(def,s)!==null).length;
+ let sug=null;for(const [n,w,d] of [['large',82,76],['xl',106,76]])if(w>G.w&&fits(w,d)>here){sug=n;break;}
+ return 'no free slot fits '+def.w+' x '+def.d+' in the '+cpSizeName(G)+' yard ('+G.w+' x '+G.d+')'+(here?': the '+here+' slot'+(here>1?'s':'')+' that fit it '+(here>1?'are':'is')+' taken':'')+
+  (sug?"; size:'"+sug+"' would take it"+(sug==='xl'?' (two great slots)':''):'');}
 // ---- small helpers
 function cpTire(x,y,z,R,col,ry,rx,rz){if(!_G.cpTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.cpTor=g;}
  const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.cpTor,m,col===undefined?jc(0x252220,.05):col);}
@@ -2677,7 +3001,7 @@ function cpTowerBox(){const L=CT.L20;
 function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  box('earth',0,.02,zm,xr*2,.04,zf-zb,jc(0x9c8768,.03));
  // the yard: paved with reclaimed slabs; the road runs from the gate to it
- const yx=v?5:10,yz0=v?1:-3.5,yz1=v?6:7.5,yzc=(yz0+yz1)/2;
+ const yx=v?5:10,yz0=G.L?5:v?1:-3.5,yz1=G.L?18:v?6:7.5,yzc=(yz0+yz1)/2;
  box('earth',0,.04,(yz0+yz1)/2,yx*2,.03,yz1-yz0,jc(0x7a6448,.04));
  for(let i=0;i<Math.round(yx*2/2.2);i++)for(let j=0;j<Math.round((yz1-yz0)/2.2);j++){if(rng()<.7)box('conc',-yx+1.1+i*2.2,.05,yz0+1.1+j*2.2,rr(1.6,2.1),.03,rr(1.6,2.1),jc(pick([0x8a7a66,0x7a7264,0x94826a,0x6f6a5e]),.05));}
  box('earth',0,.04,(yz1+zf+.4)/2,6.8,.03,zf+.4-yz1,jc(0x8a7458,.04));
@@ -2691,8 +3015,8 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  // yard furniture: fire pit with tyre seats, well, flagpole, lamps
  fire(0,.05,yzc,.6);for(let k=0;k<5;k++){const a=k/5*TAU+.3;cpTire(Math.cos(a)*1.9,.14,yzc+Math.sin(a)*1.9,.36,undefined,rng()*TAU);cpTire(Math.cos(a)*1.9,.32,yzc+Math.sin(a)*1.9,.36,undefined,rng()*TAU);}
  const wx=v?-3.2:-6.2,wz=yz1-1.6;tireRing(wx,wz,.95,3,0,TAU);cyl('water',wx,.5,wz,.7,.02,jc(0x2a3a3a,.03),10);beam('wood',[wx-.9,0,wz],[wx-.9,2.2,wz],.06,jc(0x5c4630,.06),true,6);beam('wood',[wx+.9,0,wz],[wx+.9,2.2,wz],.06,jc(0x5c4630,.06),true,6);beam('wood',[wx-.9,2.2,wz],[wx+.9,2.2,wz],.06,jc(0x5c4630,.06));
- const fpz=v?2.2:-8.5,fpx=v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
- for(const [lx,lz] of v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
+ const fpz=G.L?7:v?2.2:-8.5,fpx=G.L?7.5:v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
+ for(const [lx,lz] of G.L?[[-9.2,4.2],[9.2,4.2],[-9.2,17.4],[9.2,17.4],[-3.8,27],[3.8,27],[-3.8,21.5],[3.8,21.5]]:v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
  // gate-side toll stall and notice board (a fixture, outside every slot)
  const sx0=v?-7:-8.0,sz0=zf-2.6;box('plank',sx0,0,sz0,3.0,.1,2.2,jc(0x6a5a44,.06));
  for(const px of [-1.4,1.4])for(const pz of [-1.0,1.0])beam('wood',[sx0+px,0,sz0+pz],[sx0+px,2.3,sz0+pz],.07,jc(0x5c4630,.06),true,6);
@@ -2700,21 +3024,29 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  sock('awning',sx0,2.5,sz0+1.35,0,{w:3.0,d:.9,drop:.35,h:2.2});
  barrel(sx0+2.0,0,sz0+.6);crate(sx0-2.0,0,sz0+.9,.6,.2);
  // scattered yard junk against the walls where no slot claims them
- junkPile(-xr+1.5,zf-1.5,1.4,6);junkPile(xr-1.8,zb+3.2,1.4,6);}
+ junkPile(-xr+1.5,zf-1.5,1.4,6);if(G.L)junkPile(xr-1.6,4.0,1.0,6);else junkPile(xr-1.8,zb+3.2,1.4,6);}
 // vacant plots get a claim-stake ring of tyres and a few crates so an empty slot is not a blank
 function cpVacant(s){W(s.x,0,s.z,s.facing||0,()=>{const w=Math.min(s.w,10),d=Math.min(s.d,8);for(const [x,z] of [[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]]){tireStack(x,z,2);}
  crate(-w*.2,0,-d*.2,.7,.3);crate(-w*.2+.8,0,-d*.2+.2,.6,.6);pallet(w*.2,0,d*.1,1.2,.8,.4);barrel(w*.3,0,-d*.2);sacks(0,0,d*.3,4,.2);});}
 // ---------------------------------------------------------------- the builder
-function cpBuild(o){const v=o.v===1?1:0;const G=cpGeom(v);const xr=G.xr,zb=G.zb,zf=G.zf;
+function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr,zb=G.zb,zf=G.zf;
  // 1. assignment (no rng): each requested def goes into the first free slot it fits
- const slots=cpSlots(G.w,G.d);const want=(o.slots&&o.slots.length)?o.slots.slice():['smithy','shop-general','dw-silo','gen-fuel','dw-box','mess','shop-food','lg-stack'].filter(k=>DEFS[k]).slice(0,v?3:4);
+ const slots=cpSlots(G.w,G.d);const want=(o.slots&&o.slots.length)?o.slots.slice():G.L?['warehouse','lg-stack','smithy','dw-silo'].filter(k=>DEFS[k]):['smithy','shop-general','dw-silo','gen-fuel','dw-box','mess','shop-food','lg-stack'].filter(k=>DEFS[k]).slice(0,v?3:4);
+ // the large yard picks the SMALLEST free slot a key fits (best fit), so a mid-size building leaves the great slot to one that needs it; the standard yards keep first fit
+ const order=G.L?slots.map((s,i)=>i).sort((a,b)=>slots[a].w*slots[a].d-slots[b].w*slots[b].d||a-b):slots.map((s,i)=>i);
  const placed=[],rejected=[],used=new Set();
  for(const key of want){const def=DEFS[key];if(!def||key==='compound'){rejected.push({key,reason:'no such def'});continue;}
-  let done=false;for(let i=0;i<slots.length;i++){if(used.has(i))continue;const yaw=cpFit(def,slots[i]);if(yaw!==null){used.add(i);placed.push({key,slot:slots[i],slotIndex:i,yaw:yaw,def:def});done=true;break;}}
-  if(!done)rejected.push({key,reason:'no free slot fits '+def.w+'x'+def.d});}
+  let done=false;for(const i of order){if(used.has(i))continue;const yaw=cpFit(def,slots[i]);if(yaw!==null){used.add(i);placed.push({key,slot:slots[i],slotIndex:i,yaw:yaw,def:def});done=true;break;}}
+  if(!done)rejected.push({key,reason:cpWhy(def,G,slots)});}
  // 2. ground plan, walls, gantry, towers, gate
  cpGround(G,placed);
- if(v===0){
+ if(G.L){
+  cpRun(-xr,zb,xr,zb,[{t:'cont',pcs:[CT.L40,CT.L40]},{t:'car'},{t:'sheet'},{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'}]);
+  cpRun(xr,zb,xr,zf,[{t:'sheet'},{t:'cont',pcs:[CT.L40,CT.L20]},{t:'tyre'},{t:'car'},{t:'sheet'}]);
+  cpRun(-xr,zf,-xr,zb,[{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'},{t:'car'},{t:'tyre'}]);
+  cpRun(xr,zf,5.74,zf,[{t:'car'},{t:'cont',pcs:[CT.L40]},{t:'tyre'}]);
+  cpRun(-5.74,zf,-xr,zf,[{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'}]);
+ }else if(v===0){
   cpRun(-xr,zb,xr,zb,[{t:'cont',pcs:[CT.L40,CT.L40]},{t:'car'},{t:'sheet'},{t:'tyre'}]);
   cpRun(xr,zb,xr,zf,[{t:'sheet'},{t:'cont',pcs:[CT.L40,CT.L20]},{t:'tyre'},{t:'car'}]);
   cpRun(-xr,zf,-xr,zb,[{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'},{t:'car'}]);
@@ -2742,7 +3074,7 @@ function cpBuild(o){const v=o.v===1?1:0;const G=cpGeom(v);const xr=G.xr,zb=G.zb,
  // 3. the buildings (last, so the wall drawing never depends on their random use), then vacant plots
  const res=[];for(const p of placed){const r=place(p.key,p.slot.x,p.slot.z,p.yaw,{});res.push({key:p.key,slot:p.slot.name});}
  reseed(5499);for(let i=0;i<slots.length;i++)if(!used.has(i))cpVacant(slots[i]);
- window._compound={placed:res,rejected:rejected,slots:slots.length};}
+ const rep={placed:res,rejected:rejected,slots:slots.length,size:cpSizeName(G)};window._compound=rep;(window._compounds||(window._compounds=[])).push(rep);}
 // prefix: ar
 // ---------------------------------------------------------------- THUNDERDOME ARENA (civic). Half scrap colosseum, half caged cauldron. Entry (tunnel + ticket booth) faces +z.
 // Sand pit r 11 with a tyre-and-sheet wall and three gates, two tiers of scaffold stands (planks, benches, tyre seats), a VIP loge (bus + canopy) on the north side,
@@ -2751,7 +3083,25 @@ function cpBuild(o){const v=o.v===1?1:0;const G=cpGeom(v);const xr=G.xr,zb=G.zb,
 defBuilding({key:'arena',name:'Thunderdome arena',seed:5610,tags:{type:['civic'],size:'large',core:'scaffold + shipping containers + bus',materials:['scaffold','planks','earth-filled tyres','chain-link','corrugated sheet','bus']},w:56,d:56,h:20,budget:240000,build:arBuild});
 const arQ=[[.2,PI/2-.34],[PI/2+.34,PI-.2],[PI+.2,1.5*PI-.42],[1.5*PI+.42,TAU-.2]];      // stand quadrants (gaps: E/W gates, S tunnel, N loge)
 function arRad(r,a,y,fn){W(Math.cos(a)*r,y,Math.sin(a)*r,PI/2-a,fn);}     // frame with local +z pointing radially outward
-function arTire(x,y,z,R,col,ry){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
+function arTire(x,y,z,R,col,ry,rx){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,rx||0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
+/* LOW-POLY TYRE FURNITURE for the stands (~250 seats): the same seat, chair and table as tireStool / tireChair / tireTable (34-adds.js) and the same
+   random draws in the same order (so every colour in the arena is unchanged), drawn cheaper: 72-tri tyres (arTire) instead of 144, a 3 x 3 cord lattice
+   instead of 9 x 9, square timber instead of round. Stool 240 tris (was 544), chair ~460 (1072), table ~150 (296). */
+const arTYRE=0x232120;
+function arWeave(cx,cy,cz,r,cord,plane){const c=jc(cord,.05);for(let i=-1;i<=1;i++){const off=i*r/2,h=Math.sqrt(Math.max(0,r*r-off*off));
+ if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
+ else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
+function arStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)arTire(x,y+.12+k*.235,z,R,arTYRE,rng()*TAU);
+ cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),6);arWeave(x,y+n*.235-.01,z,R-t,cord,'h');}
+function arChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
+  arStool(0,0,0,{n:n,cord:cord});
+  const bz=-.36,by=sy+.42;arTire(0,by,bz,R*1.12,arTYRE,0,PI/2);arWeave(0,by,bz,(R*1.12-t)*.98,cord,'v');
+  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.1,wc);beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.09,wc);beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.09,wc);}
+  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.06,wc);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.06,wc);});}
+function arTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,top=n*.24+.25;
+ for(const k of [0,1].slice(0,n))arTire(x,y+.13+k*.24,z,R,arTYRE,rng()*TAU);
+ for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.08,wc);
+ cyl('wood',x,y+top,z,R+.1,.05,wc,10);}
 function arBright(){return pick([0xc45a30,0xd8a020,0x3b7f8e,0x4d6f3c,0x9a3a2c,0xd8d0c0,0x2f5f8f,0x8a6a3a,0xc98a2a]);}
 function arWood(){return jc(pick([0x6a5238,0x7a6244,0x5c4630,0x8a7050]),.08);}
 function arSearch(x,y,z,ry,rx){W(x,y,z,ry,()=>{cylH('iron',0,0,0,.24,.6,jc(0x3a3430,.05),'z',10);sph('glow',0,0,.3,.17,jc(0xfff2c0,.03));box('iron',-.18,-.32,-.1,.36,.32,.2,jc(0x4a4038,.05));});}
@@ -2769,7 +3119,7 @@ function arRow(r0,w,top,a0,a1,k,tier,mode){const mid=(r0+r0+w)/2;const dk=jc(0x4
   sector('plank',0,0,r0+.5,r0+.56,a0,a1,top+.3,top+.72,jc(0x5c4630,.06));}
  else{const sp=(mode==='chair'?arCHSP:arSTSP)/rc;const cnt=Math.max(1,Math.floor((a1-a0)/sp));const off=((a1-a0)-(cnt-1)*sp)/2;
   for(let i=0;i<cnt;i++){const a=a0+off+i*sp;const x=Math.cos(a)*rc,z=Math.sin(a)*rc;
-   if(mode==='chair'){if(i%4===2)tireTable(x,top,z,{});else tireChair(x,top,z,arFace(a),{});}else tireStool(x,top,z,{});}}
+   if(mode==='chair'){if(i%4===2)arTable(x,top,z,{});else arChair(x,top,z,arFace(a),{});}else arStool(x,top,z,{});}}
  if(tier===2&&k===4){const rr_=r0+w+.05;for(let i=0;i<=n;i++){const a=a0+i*st;beam('wood',[Math.cos(a)*rr_,top,Math.sin(a)*rr_],[Math.cos(a)*rr_,top+1.1,Math.sin(a)*rr_],.05,jc(0x5c4630,.06),true,5);}sector('wood',0,0,rr_-.03,rr_+.03,a0,a1,top+1.05,top+1.11,jc(0x5c4630,.06));}}
 function arStands(){for(const [q0,q1] of arQ){
   const m1=['chair','bench','chair'];for(let k=0;k<3;k++)arRow(13.3+k*1.25,1.25,.9+k*.65,q0,q1,k,1,m1[k]);
@@ -2815,7 +3165,7 @@ function arEntry(){
  for(let k=0;k<6;k++)box('iron',0,CT.H+.12,12.9+k*2.1,7.4,.1,.14,jc(0x3a3430,.05));
  box('conc',0,0,18.4,2.44,.04,12.19,jc(0x8a7a66,.05));
  // outer arch: posts, a solid header beam, a hung plate with its own clear emblem field; banners hang from the posts, well away from the plate
- for(const sx of [-1,1]){box('iron',sx*4.3,0,24.6,.3,6.3,.3,jc(0x3a3532,.04));}
+ for(const sx of [-1,1]){box('iron',sx*4.3,0,24.6,.3,6.3,.3,jc(0x3a3532,.04));}entry(0,0,24.6,2.4,2.6);/* front door: the tunnel mouth */
  box('iron',0,6.0,24.6,9.0,.34,.3,jc(0x3a3532,.04));
  for(const sx of [-1,1])box('iron',sx*1.55,4.15,24.6,.1,1.85,.1,jc(0x3a3532,.04));            // hangers
  box('sheet',0,4.15,24.66,3.2,1.85,.1,jc(0xc99a2e,.06));                                       // plate 3.2 x 1.85, front face at z 24.71
@@ -2832,7 +3182,7 @@ function arEntry(){
  const bx=9.6,bz=25.4;W(bx,0,bz,0,()=>container({len:CT.L20,doorEnd:false,col:jc(0x3b7f8e,.05)}));
  win(bx-.8,1.1,bz+CT.W/2,1.6,.9,{});door(bx+1.8,.16,bz+CT.W/2,.9,2.0,{step:true});
  sock('awning',bx-.8,2.05,bz+CT.W/2,0,{w:2.4,d:1.2,drop:.35,h:1.55});sock('sign',bx+.2,2.4,bz+CT.W/2+.05,0,{w:2.2,h:.4,trade:'TICKETS'});
- stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);tireStool(bx-2.6,0,bz+2.0,{});
+ stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);arStool(bx-2.6,0,bz+2.0,{});
  // two stalls: lean-to counters with awnings
  for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{box('plank',0,0,0,4.0,.1,2.4,jc(0x6a5a44,.06));wallOpen('plank',0,.1,-1.1,4.0,2.4,.1,[],jc(c,.06));
    for(const px of [-1.9,1.9])beam('wood',[px,0,1.1],[px,2.5,1.1],.07,jc(0x5c4630,.06),true,6);box('plank',0,.1,.95,4.0,.9,.1,jc(0x8a6a3a,.06));box('plank',0,1.0,.95,4.2,.07,.5,jc(0x6a5a44,.06));
@@ -2857,7 +3207,7 @@ function arLoge(){const dy=3.6;box('plank',0,dy-.14,-18.7,13.6,.14,7.6,jc(0x6a5a
  sock('emblem',0,dy+6.6,-22.4+.16,0,{w:2.4,h:2.4});
  sock('banner',-6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});sock('banner',6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});
  sock('awning',0,dy+2.2,-14.6,0,{w:4.0,d:1.0,drop:.4,h:1.8});
- for(const x of [-4.2,-3.0,3.0,4.2])tireChair(x,dy,-16.5,0,{});tireTable(0,dy,-16.3,{n:2});tireChair(-.9,dy,-17.3,0,{});tireChair(.9,dy,-17.3,0,{});
+ for(const x of [-4.2,-3.0,3.0,4.2])arChair(x,dy,-16.5,0,{});arTable(0,dy,-16.3,{n:2});arChair(-.9,dy,-17.3,0,{});arChair(.9,dy,-17.3,0,{});
  // stair to the loge from behind
  arRail(-6.8,-22.45,6.8,-22.45,dy);arRail(-6.8,-22.45,-6.8,-15.05,dy);arRail(6.8,-22.45,6.8,-15.05,dy);
 }
@@ -2890,10 +3240,10 @@ function arCage(){const rc=11.3,WT=2.65,CTP=WT+6.0;const st=jc(0x4a4038,.05),st2
  // winch on the roof over the hatch: frame, drum that turns, chain down through the hatch
  for(const sz of [-1,1])beam('iron',[0,CTP+.42,sz*.75],[0,CTP+1.9,sz*.75],.09,st,true,6);beam('iron',[0,CTP+1.9,-.75],[0,CTP+1.9,.75],.08,st);
  spin(0,CTP+1.35,0,0,'z',.4,()=>{cylH('iron',0,0,0,.34,1.2,jc(0x8a8a86,.05),'z',10);for(const sz of [-1,1])cylH('iron',0,0,sz*.62,.5,.05,jc(0x3a3430,.05),'z',10);});
- beam('iron',[0,CTP+1.0,0],[0,4.2,0],.03,jc(0x6a6a66,.05),true,3);for(let q=0;q<10;q++)sph('iron',0,CTP+.8-q*.55,0,.06,jc(0x7a7a76,.05),1.6);box('iron',-.12,3.9,-.05,.24,.35,.1,jc(0x3a3430,.05));
+ beam('iron',[0,CTP+1.0,0],[0,4.2,0],.03,jc(0x6a6a66,.05),true,3);for(let q=0;q<10;q++)box('iron',0,CTP+.8-q*.55-.1,0,.07,.2,.1,jc(0x7a7a76,.05),q*1.57);box('iron',-.12,3.9,-.05,.24,.35,.1,jc(0x3a3430,.05));
  // hanging from the roof hoops: chains with hooks and weapons, and four light rigs (cans point down)
  for(let i=0;i<10;i++){const a=i/10*TAU+.2,r=4.5,x=Math.cos(a)*r,z=Math.sin(a)*r,len=rr(1.6,3.4);beam('iron',[x,CTP+.2,z],[x,CTP-len,z],.022,jc(0x6a6a66,.05),true,3);
-  for(let q=0;q<len/.55;q++)sph('iron',x,CTP-.3-q*.55,z,.05,jc(0x7a7a76,.05),1.6);
+  for(let q=0;q<len/.55;q++)box('iron',x,CTP-.3-q*.55-.08,z,.06,.16,.09,jc(0x7a7a76,.05),q*1.57);
   if(i%3===0){box('iron',x-.03,CTP-len-1.0,z-.03,.06,1.0,.06,jc(0x4a4038,.05));box('iron',x-.09,CTP-len-.5,z-.09,.18,.5,.18,jc(0x5a5048,.05));}      // spiked club
   else if(i%3===1){box('iron',x-.02,CTP-len-1.3,z-.09,.04,1.3,.18,jc(0x9a9a96,.05));}                                                             // blade
   else sph('iron',x,CTP-len-.12,z,.14,jc(0x3a3430,.05));}
@@ -3073,10 +3423,12 @@ function dkBuild(o){
  dkQuay();W(0,dkQ,0,0,()=>dkLand());
  dkPier();
  W(12.6,0,7.5,.06,()=>dkTug());W(-14.5,0,1.7,-.04,()=>dkRaft());W(1.2,0,10.2,0,()=>dkBarge());
- // gangplank to the raft-house, mooring lines
- box('plank',-14.5-.5,.75,-4.8,1.0,.08,3.4,jc(0x6a5a44,.06),0,-.05);
+ // gangplank to the raft-house (quay edge at z -5.2 to the raft deck at z -1.5, sloping down to it), mooring lines
+ box('plank',-14.5-.5,.77,-3.45,1.0,.08,4.3,jc(0x6a5a44,.06),0,.05);
  dkRope([-14,1.2,-1.4],[-14,dkQ+.4,-5.4],.5);dkRope([-12.3,1.2,.5],[-10.6,dkQ+.4,-5.5],.5);
  dkRope([9.0,1.6,2.5],[8.3,1.3,1.5],.2);dkRope([4.2,1.3,2.0],[5.2,1.2,1.4],.2);
+ // land-side steps: a timber flight up the back wall of the quay from the street (drawn last: the rest of the dock keeps its random draws)
+ stairs(17,0,-24.55,17,dkQ+.03,-23.05,1.4,{rail:false});
 }
 // ---------------------------------------------------------------- CULTURE PACKS (shared: core/sockets/)
 // A building never names a culture. It declares sockets (36-def.js); the ACTIVE pack draws into them. To add a culture, add one cultDef() here
@@ -3088,9 +3440,6 @@ function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn);t.wrapS=t.wrapT=o
 function stripeTex(key,cols,n,tile){cvMat(key,128,64,(g,w,h)=>{const sw=w/n;for(let i=0;i<n;i++){g.fillStyle=cols[i%cols.length];g.fillRect(i*sw,0,sw+1,h);}
  reseed(9700+key.length);for(let i=0;i<140;i++){g.fillStyle=`rgba(${rng()<.5?0:255},${rng()<.5?0:255},${rng()<.5?0:255},${rr(.03,.1)})`;g.fillRect(rng()*w,rng()*h,rr(1,4),rr(1,6));}
  for(let i=0;i<5;i++){const x=rng()*w;g.fillStyle='rgba(50,30,20,.14)';g.fillRect(x,0,rr(1,3),h);}},{repeat:true,tile:tile||1.2});}
-function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*TAU/3-PI/2;
- for(let i=0;i<=24;i++){const t=i/24;const a=a0+t*2.5;const r=R*(.12+.86*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
-  const ae=a0+2.5;g.fillStyle=cols[k%cols.length];g.beginPath();g.arc(cx+Math.cos(ae)*R*.98,cy+Math.sin(ae)*R*.98,lw*.75,0,TAU);g.fill();}}
 // banners and flags are drawn at THEIR OWN aspect ratio (canvas px map 1:1 to world metres), so an emblem stays round on a tall banner and a wide flag alike
 function banDecal(base,draw,x,y,z,w,h,ry){const k=base+':'+w.toFixed(2)+'x'+h.toFixed(2);if(!MAT[k]){const pw=128,ph=Math.max(24,Math.round(128*h/w));cvMat(k,pw,ph,(g)=>draw(g,pw,ph));}decal(k,x,y,z,w,h,ry||0);}
 function banDisc(W,H){return {R:Math.min(W*.4,H*.32),cx:W/2,cy:H>W*1.25?H*.38:H*.5};}
@@ -3122,21 +3471,7 @@ function signBoard(o,bg,fg,frame){const w=o.w||2,h=o.h||.7,t=(o.trade||'').toUpp
  box('plank',0,-h/2-.06,-.02,w+.12,h+.12,.06,jc(frame||0x4a3a2c,.05));decal(key,0,0,.02,w,h,0);}
 cultDef({key:'generic',name:'Generic (unmarked)',paint:null,signBg:'#9a7a52',signFg:'#2a1c10',
  fill:{awning:awnGeneric,banner:bannerGeneric,flag:flagGeneric,emblem:emblemGeneric,sign:o=>signBoard(o,'#8a6c48','#e8dcc0','#4a3a2c'),paint:o=>{}}});
-// ------------------------------------------------------------------ symbols: each draws in the box (cx,cy,R) with two ink colours
-const SYMBOLS={
- sun:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
-  for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}},
- triskele:(g,cx,cy,R,c1,c2)=>{drawTriskele(g,cx,cy,R*.82,[c1,c2,'#c9963a'],Math.max(3,R*.27));},
- diamond:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();},
- // hyperboloid of one sheet: the cooling-tower profile with its ruling lines (Yuni)
- hyperboloid:(g,cx,cy,R,c1,c2)=>{const a=R*.4,hh=R*.92,b=hh*.55;const xw=t=>a*Math.sqrt(1+(t*hh/b)*(t*hh/b));const rx=xw(1),ry=R*.13;
-  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.05);
-  for(let k=0;k<7;k++){const th=k*TAU/7;g.beginPath();g.moveTo(cx+Math.cos(th)*rx,cy-hh+Math.sin(th)*ry);g.lineTo(cx+Math.cos(th+1.05)*rx,cy+hh+Math.sin(th+1.05)*ry);g.stroke();}
-  g.lineWidth=Math.max(2.5,R*.1);for(const sx of [-1,1]){g.beginPath();for(let i=0;i<=28;i++){const t=-1+2*i/28;const x=cx+sx*xw(t),y=cy+t*hh;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
-  for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,TAU);g.stroke();}},
- // three parallel talon slashes (Beast Riders)
- claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
-};
+// symbols: core/sockets/38-symbols.js (SYMBOLS, drawTriskele, SYMBOL_OF), shared with the furniture kit
 // ------------------------------------------------------------------ the factory: a culture is a palette, a symbol and two cloth styles
 // mkCulture({key,name,field,edge,band,disc,ink,ink2,sym,awn:{mode:'stripes'|'cloth',cols,n},paint,pole,signBg,signFg,signFrame,flagStyle:'rect'|'pennant'})
 //   field/edge/band: banner cloth, its side edges and its end bands; disc: a round ground behind the symbol (optional); ink/ink2: symbol colours
@@ -3174,9 +3509,23 @@ mkCulture({key:'yuni',name:'Yuni',field:'#dcb42c',edge:'#5a4410',band:'#f4ecc8',
  awn:{mode:'stripes',cols:['#e0b52a','#f4ecc8','#c99a1e','#f4ecc8'],n:8},
  paint:[0xd9b12a,0xe8c84a,0x8a6a1a,0xf4ecc8,0x4a3a12],signBg:'#dcb42c',signFg:'#3a2c08',signFrame:0x5a4410});
 // Beast Riders: green, the claw
-mkCulture({key:'beastriders',name:'Beast Riders',field:'#3f7a3a',edge:'#2e5a2c',band:'#6a9a4a',disc:null,ink:'#e6dcc2',sym:'claw',pole:0x4a3a22,flagStyle:'pennant',
+mkCulture({key:'beast-rider',name:'Beast Riders',field:'#3f7a3a',edge:'#2e5a2c',band:'#6a9a4a',disc:null,ink:'#e6dcc2',sym:'claw',pole:0x4a3a22,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0x58924a,0x4a8240,0x6aa050,0x7f8a48]},
  paint:[0x3f7a3a,0x2e5a2c,0x5a8a3e,0xe0d6c0,0x4a3a22],signBg:'#2e5a2c',signFg:'#e6dcc2',signFrame:0x4a3a22});
+// the old key, kept for worlds and URLs that still say ?culture=beastriders; not enumerable, so loops over CULT.packs see one Beast Rider pack
+Object.defineProperty(CULT.packs,'beastriders',{value:CULT.packs['beast-rider'],enumerable:false});
+// Hykkousoi: pale sea-linen, slate-blue edge, the gold wave-sun (the colours of their sails in kits/ringsea)
+mkCulture({key:'hykkousoi',name:'Hykkousoi',field:'#e4eff0',edge:'#3f6a82',band:'#2c5a74',disc:null,ink:'#d8a640',ink2:'#2c5a74',sym:'wavesun',pole:0x6a4a2c,
+ awn:{mode:'stripes',cols:['#3f6a82','#e4eff0','#aec8d0','#e4eff0'],n:8},
+ paint:[0x3f6a82,0x2c5a74,0xaec8d0,0xe4eff0,0xd8a640],signBg:'#3f6a82',signFg:'#e4eff0',signFrame:0x2c5a74});
+// Xanadu: saffron bordered in maroon, the gold-hubbed eight-spoked wheel, turquoise in the livery
+mkCulture({key:'xanadu',name:'Xanadu',field:'#e89a2a',edge:'#7a1a24',band:'#d8a838',disc:null,ink:'#7a1a24',ink2:'#d8a838',sym:'wheel',pole:0x7a1a24,
+ awn:{mode:'stripes',cols:['#e89a2a','#7a1a24','#e89a2a','#d8a838'],n:8},
+ paint:[0x7a1a24,0xe89a2a,0xd8a838,0x1f9aa8,0xe8dcc0],signBg:'#7a1a24',signFg:'#e8c060',signFrame:0xd8a838});
+// Ring Sea Islanders: bark-dyed cloth and pandanus, the white moon, feather-streamer pennants
+mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge:'#4a2a14',band:'#c49a5a',disc:null,ink:'#f0e8d4',sym:'moon',pole:0x5a3a22,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x8a5a32,0xb08850,0x7a4a2a,0xc4a468]},
+ paint:[0x8a5a32,0x4a2a14,0xc49a5a,0xf0e8d4,0x2a7a7a],signBg:'#4a2a14',signFg:'#f0e8d4',signFrame:0x7a4a2a});
 // ---------------------------------------------------------------- the showcase table: rows of the kit, by family. Keys are the contract with the builders.
 const TITLE='Post-Apoc Set';
 const FAMILIES=[
@@ -3187,14 +3536,18 @@ const FAMILIES=[
  {name:'Industry and power',keys:['smithy','gen-wind','gen-fuel','warehouse']},
  {name:'Farm',keys:['farm','farmhouse','granary']},
  {name:'Defence and justice',keys:['watchtower','cages']},
- {name:'Walled compound',keys:['compound']},
+ {name:'Walled compound',keys:['compound',{key:'compound',o:{size:'large',slots:['lg-stack','warehouse','dw-silo']}}]},
  {name:'Arena',keys:['arena']},
  {name:'Dock',keys:['dock']},
+ // last row, so every other site keeps its place: the xl compound (106 x 76) takes the longhouse AND the big man's house (two great slots)
+ {name:'Compound xl: two great halls',keys:[{key:'compound',o:{size:'xl',slots:['longhouse','chief','smithy','shop-general','dw-silo','gen-fuel']}}]},
 ];
 // ---------------------------------------------------------------- scene: renderer, sky, ground, lights, the showcase layout, (re)building the world
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.appendChild(renderer.domElement);
+/* texture filtering: full anisotropy (capped at 8) on every canvas map made so far; canvasTex() uses TEXANISO for the ones made later (culture banners) */
+TEXANISO=Math.max(1,Math.min(8,renderer.capabilities.getMaxAnisotropy()||1));for(const k in TEX)TEX[k].anisotropy=TEXANISO;for(const k in MAT){const m=MAT[k];if(m.map)m.map.anisotropy=TEXANISO;}
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xd2b894,.00075);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.3,9000);
 const hemi=new THREE.HemisphereLight(0xffe6c8,0x6a4a34,.85);scene.add(hemi);
@@ -3224,23 +3577,29 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(3200,3200),groundMat);groun
 // ---------------------------------------------------------------- layout: rows by family, front (+z) toward the camera
 const SITES=[],ROWS=[];
 const ONLY=(new URLSearchParams(location.search)).get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   // ?only=key,key builds just those defs
-(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.filter(k=>DEFS[k.split('@')[0]]&&(!ONLYSET||ONLYSET.has(k.split('@')[0])));
- // 'key@culture' dresses that site in a culture's marks
+// a row entry is 'key', 'key@culture' (dresses that site in a culture's marks) or {key, o} (place() options, e.g. the large compound: o.size, o.slots)
+const SITEKEY=k=>{if(typeof k!=='string')return {key:k.key,o:Object.assign({v:0},k.o||{})};const kk=k.split('@');return {key:kk[0],o:kk[1]?{v:0,culture:kk[1]}:{v:0}};};
+(function layout(){let z=0;const GAP=9;for(const F of FAMILIES){const keys=F.keys.map(SITEKEY).filter(k=>DEFS[k.key]&&(!ONLYSET||ONLYSET.has(k.key)));
  if(!keys.length)continue;
- const DK=k=>DEFS[k.split('@')[0]];const ws=keys.map(k=>DK(k).w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DK(k).d)),hmax=Math.max(...keys.map(k=>DK(k).h));
- z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{const kk=k.split('@');SITES.push({key:kk[0],x:x+ws[i]/2,z,ry:0,o:kk[1]?{v:0,culture:kk[1]}:{v:0}});x+=ws[i];});
- ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
+ const DK=k=>declOf(k.key,k.o);const ws=keys.map(k=>DK(k).w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DK(k).d)),hmax=Math.max(...keys.map(k=>DK(k).h));
+ z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{SITES.push({key:k.key,x:x+ws[i]/2,z,ry:0,o:k.o});x+=ws[i];});
+ ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys:keys.map(k=>k.key)});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
 const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GROUND_C);
+/* smoke from the two big stacks built without stovepipe() (which marks its own): the smithy's forge flue and the fuel generator's exhaust, by their tops in
+   the def's local frame. Wrapping the builder keeps the building fragments untouched; smokeAt() reads CM, so the puffs follow any placement (compounds too). */
+const SMOKE_STACKS={smithy:[[-2.2,9.5,-3.55,.6]],'gen-fuel':[[-4.8,CT.H+5.85,-2.6,.55]]};
+for(const k in SMOKE_STACKS){const d=DEFS[k];if(!d||d._smoke)continue;const b=d.build;d._smoke=true;d.build=o=>{const r=b(o);for(const q of SMOKE_STACKS[k])smokeAt(q[0],q[1],q[2],{r:q[3],kind:'stack'});return r;};}
 // ---------------------------------------------------------------- (re)build the world for a culture
 let WORLD=null;
 function buildWorld(cultureKey){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
- WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();halosReset();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
+ WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;SPINNERS.length=0;regClear();plantsReset();halosReset();SMOKES=[];clothWrapPacks();SOCK_ALL.length=0;GSTAT.tris=0;SBS.length=0;SB=null;resetCM();
  CULT.cur=CULT.packs[cultureKey]||CULT.generic;const t0=performance.now();
- for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
+ window._compounds=[];for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
  for(const sp of SPINNERS){const grp=new THREE.Group();grp.matrixAutoUpdate=false;grp.matrix.copy(sp.world);const inner=new THREE.Group();grp.add(inner);flushBuckets(sp.buckets,inner,true);sp.node=inner;WORLD.add(grp);}
  if(typeof nightRebuild==='function')nightRebuild();
  if(typeof doorsRebuild==='function')doorsRebuild();
+ if(typeof animRebuild==='function')animRebuild();   /* smoke puffs and light volumes (93-anim.js; it is not ready on the very first build and runs it itself) */
  window._build={ms:performance.now()-t0,tris:GSTAT.tris,culture:CULT.cur.key,sites:SITES.length,spinners:SPINNERS.length};return WORLD;}
 FRAME_HOOKS.push(dt=>{for(const sp of SPINNERS)if(sp.node)sp.node.rotation[sp.axis]+=sp.rate*dt;});
 // views: an opening, an overview, a row shot per family and an eye-level shot per building
@@ -3248,19 +3607,31 @@ function autoViews(){const V={};const R=ROWS;const mid=R[Math.floor(R.length/2)]
  V['Opening']=[R[0].w*.28,Math.max(20,R[0].d*.8),R[0].z+R[0].d*.5+38,0,4,R[0].z];
  V['Overview']=[-R[0].w*.9,R[R.length-1].z*.7,R[R.length-1].z*.5+150,0,2,mid.z];
  for(const r of R){const dist=Math.max(44,Math.min(r.w*.55,200),(r.h||0)*1.7);V[r.family]=[r.w*.12,Math.max(16,dist*.42),r.z+r.d/2+dist,0,Math.min(3+(r.h||0)*.3,14),r.z];}
- for(const S of SITES){const D=DEFS[S.key];const dist=Math.max(11,Math.max(D.w,D.h)*.85+D.d*.4);V[D.name+(S.o.culture?' ('+S.o.culture+')':'')+' — eye level']=[S.x+D.w*.15,1.7,S.z+D.d/2+dist*.55,S.x,Math.min(D.h,12)*.35,S.z];}
+ for(const S of SITES){const D=declOf(S.key,S.o);const dist=Math.max(11,Math.max(D.w,D.h)*.85+D.d*.4);V[D.name+(S.o.size?' ('+S.o.size+')':'')+(S.o.culture?' ('+S.o.culture+')':'')+' — eye level']=[S.x+D.w*.15,1.7,S.z+D.d/2+dist*.55,S.x,Math.min(D.h,12)*.35,S.z];}
  return V;}
 // ---------------------------------------------------------------- probe (window._api): everything a headless check needs
 window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
- // footprint: measured world-space bbox of each placed site against its declared w x d (sites with ry 0; sub-buildings excluded by key check)
- footprints(){return REG.map(r=>{const D=DEFS[r.key];const bw=r.bbox.mx[0]-r.bbox.mn[0],bd=r.bbox.mx[2]-r.bbox.mn[2],bh=r.bbox.mx[1]-r.bbox.mn[1];
+ // footprint: measured world-space bbox of each placed site against its declared w x d (rec.decl: the def, or its o.size variant; a site turned a quarter swaps w and d)
+ footprints(){return REG.map(r=>{const D0=r.decl||DEFS[r.key];const q=Math.abs(Math.sin(r.ry||0))>.7;const D=q?Object.assign({},D0,{w:D0.d,d:D0.w}):D0;   /* a quarter-turned site (a compound slot) swaps w and d */const bw=r.bbox.mx[0]-r.bbox.mn[0],bd=r.bbox.mx[2]-r.bbox.mn[2],bh=r.bbox.mx[1]-r.bbox.mn[1];
   const cx=(r.bbox.mx[0]+r.bbox.mn[0])/2-r.x,cz=(r.bbox.mx[2]+r.bbox.mn[2])/2-r.z;
-  const ex=Math.max(0,bw-D.w),ez=Math.max(0,bd-D.d),eh=Math.max(0,bh-D.h);return {key:r.key,name:r.name,w:D.w,d:D.d,h:D.h,bw:+bw.toFixed(2),bd:+bd.toFixed(2),bh:+bh.toFixed(2),ex:+ex.toFixed(2),ez:+ez.toFixed(2),eh:+eh.toFixed(2),cx:+cx.toFixed(2),cz:+cz.toFixed(2),tris:r.tris};});},
+  const ex=Math.max(0,bw-D.w),ez=Math.max(0,bd-D.d),eh=Math.max(0,bh-D.h);return {key:r.key,name:r.name,w:D.w,d:D.d,h:D.h,bw:+bw.toFixed(2),bd:+bd.toFixed(2),bh:+bh.toFixed(2),ex:+ex.toFixed(2),ez:+ez.toFixed(2),eh:+eh.toFixed(2),cx:+cx.toFixed(2),cz:+cz.toFixed(2),tris:r.tris,size:r.size,budget:D.budget};});},
  socketCounts(){const o={};for(const s of SOCK_ALL){(o[s.key]||(o[s.key]={}))[s.type]=((o[s.key]||{})[s.type]||0)+1;}return o;},
  nanSweep(){let bad=0;WORLD.traverse(m=>{if(m.geometry&&m.geometry.attributes.position){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad++;break;}}});return bad;},
  setCulture(k){buildWorld(k);},
  setNight(v){nightSet(v);},
  doors(){return REG.map(r=>({key:r.key,front:r.front,doorCount:r.doorCount}));},
+ // collision and path data (36-def.js): colliders(i) = REG[i].coll; colliders() = per-building counts. nav() = the scene's nav grid summary + doors;
+ // navGrid() = the live grid object (at(x,z), levels, flags); showNav(on) draws it (green reachable, orange cut off, red blocked, cyan door / approach)
+ colliders(i){if(i!==undefined)return REG[i]&&REG[i].coll;return REG.map((r,i)=>({i,key:r.key,solids:r.coll.solids.length,floors:r.coll.floors.length,ramps:r.coll.ramps.length,links:r.coll.links.length,water:r.coll.water.length}));},
+ nav(opt){const N=navGet(opt);return Object.assign(N.summary(),{doorList:N.doors});},
+ navGrid(opt){return navGet(opt);},
+ navAt(x,z){return navGet().at(x,z);},
+ showNav(on){const old=scene.getObjectByName('navViz');if(old){scene.remove(old);old.geometry.dispose();}if(on===false)return 0;const N=navGet();const P=[],Cc=[],h=N.cell*.46;
+  const col=(v,k,li)=>(N.flag[k]?[0,.9,1]:v.b?[.85,.15,.1]:N.reach[k*N.opt.maxLv+li]?[.2,.75,.3]:[1,.55,.1]);
+  for(let k=0;k<N.levels.length;k++){const L=N.levels[k];if(!L)continue;const cx=N.x0+(k%N.nx+.5)*N.cell,cz=N.z0+(((k/N.nx)|0)+.5)*N.cell;
+   L.forEach((v,li)=>{const y=v.h+.06,c=col(v,k,li);for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,-1],[1,1],[-1,1]]){P.push(cx+a*h,y,cz+b*h);Cc.push(...c);}});}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('color',new THREE.Float32BufferAttribute(Cc,3));
+  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide,transparent:true,opacity:.55,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2}));m.name='navViz';m.renderOrder=8;m.userData.probeSkip=true;scene.add(m);return P.length/18;},
  frontOf,placeFacing,
  plants(){const by={};for(const p of PLANTS.list){const k=(p.key||'?')+' '+p.kind;by[k]=(by[k]||0)+1;}return {total:PLANTS.list.length,by};},
  tags(){return REG.map(r=>({key:r.key,cls:r.cls,tags:r.tags}));},
@@ -3269,7 +3640,17 @@ window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
 // nightSet(v): v = 0 day, 0.5 dusk, 1 night (any value between). Drives the sky (stars, dusk glow), the sun/moon light, hemisphere and fog, the lit windows,
 // lamp and fire glow, and a small POOL of real point lights that follows the camera to the nearest lamps and fires.
 // The lights are found automatically: emit() records every 'glow' piece as a HALO (lamp bulbs, fire), so no building had to change.
-const NIGHT={v:0,pool:[],halos:null,halosBig:null,lastPool:-1,active:false};
+const NIGHT={v:0,pool:[],halos:null,halosBig:null,lastPool:-1,active:false,clock:13,run:0};
+/* the evening SCHEDULE. A sim clock (hours) sets the share of windows lit: most at dusk, fewer as the night deepens, a few early risers before dawn.
+   Every pane has its own place in the order (aWin, a position hash written by emit()), so windows go dark one by one, not by a fixed pattern.
+   The Time select sets the clock (Day 13:00, Dusk 19:30, Night 23:30; ?night=v maps in between); the Clock button or ?clock=N (sim minutes per real
+   second) lets it run, and then the sky follows the clock. _api.setNight(v) / nightSet(v) set it too; nightClock(h) sets the hour directly. */
+const WIN_SCHED=[[12,0],[16.5,0],[19,.85],[21.5,.82],[26,.22],[28.5,.08],[29.6,.3],[30.6,0],[36,0]];
+function winFrac(h){h=((h%24)+24)%24;if(h<12)h+=24;for(let i=1;i<WIN_SCHED.length;i++){const a=WIN_SCHED[i-1],b=WIN_SCHED[i];if(h<=b[0])return lerp(a[1],b[1],(h-a[0])/(b[0]-a[0]));}return 0;}
+function clockOfV(v){return v<=.5?13+v*13:19.5+(v-.5)*8;}
+function vOfClock(h){h=((h%24)+24)%24;if(h<12)h+=24;const K=[[12,0],[13,0],[19.5,.5],[23.5,1],[28.5,1],[30,.5],[32,0],[36,0]];
+ for(let i=1;i<K.length;i++)if(h<=K[i][0])return lerp(K[i-1][1],K[i][1],(h-K[i-1][0])/(K[i][0]-K[i-1][0]));return 0;}
+function nightClock(h){NIGHT.clock=((h%24)+24)%24;nightSet(vOfClock(NIGHT.clock),true,NIGHT.clock);}
 const NCOL={day:{hemiS:new THREE.Color(0xffe6c8),hemiG:new THREE.Color(0x6a4a34),fog:new THREE.Color(0xd2b894),sun:new THREE.Color(0xfff0dc)},
  dusk:{hemiS:new THREE.Color(0xffb890),hemiG:new THREE.Color(0x4a3038),fog:new THREE.Color(0xb88a6a),sun:new THREE.Color(0xff9a58)},
  night:{hemiS:new THREE.Color(0x4a5e96),hemiG:new THREE.Color(0x24202e),fog:new THREE.Color(0x141c30),sun:new THREE.Color(0x8ea0d8)}};
@@ -3290,7 +3671,8 @@ function nightRebuild(){for(const k of ['halos','halosBig']){if(NIGHT[k]){scene.
   const m=new THREE.PointsMaterial({map:haloTex,size:size,sizeAttenuation:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,vertexColors:true,opacity:0,fog:false});
   const P_=new THREE.Points(g,m);P_.userData.probeSkip=true;P_.frustumCulled=false;scene.add(P_);NIGHT[key]=P_;}
  nightSet(NIGHT.v,true);}
-function nightSet(v,force){v=clamp(v,0,1);const changed=v!==NIGHT.v||force;NIGHT.v=v;if(!changed)return;
+function nightSet(v,force,clk){v=clamp(v,0,1);NIGHT.clock=clk===undefined?clockOfV(v):clk;ANIMU.uWinFrac.value=winFrac(NIGHT.clock);
+ const changed=v!==NIGHT.v||force;NIGHT.v=v;if(!changed)return;
  const nt=NSTEP(.3,.9,v),lightK=NSTEP(.25,.85,v);   // nt: how night it is (windows, glow); lightK: sun to moon hand-over
  skyMat.uniforms.u_n.value=NSTEP(.35,1,v);skyMat.uniforms.u_d.value=Math.sin(clamp(v,0,1)*PI)*.9;
  hemi.color.copy(nmix('hemiS',v));hemi.groundColor.copy(nmix('hemiG',v));hemi.intensity=lerp(.85,.62,NSTEP(0,1,v));
@@ -3302,15 +3684,22 @@ function nightSet(v,force){v=clamp(v,0,1);const changed=v!==NIGHT.v||force;NIGHT
  MAT.glow.color.setScalar(lerp(.55,1.5,nt));MAT.winlit.color.setRGB(lerp(.16,1.35,nt),lerp(.6,1.15,nt),lerp(1.1,.85,nt));   /* by day a lit window reads as ordinary teal glass */
  for(const k of ['halos','halosBig'])if(NIGHT[k]){NIGHT[k].material.opacity=nt*.9;NIGHT[k].visible=nt>.02;}
  const on=nt>.02;if(on!==NIGHT.active){NIGHT.active=on;for(const L of NIGHT.pool)L.visible=on;for(const k in MAT)MAT[k].needsUpdate=true;}   // light count changed: recompile once
- NIGHT.k=nt;NIGHT.lastPool=-1;}
+ NIGHT.k=nt;ANIMU.uNightK.value=nt;NIGHT.lastPool=-1;}
 FRAME_HOOKS.push(()=>{moonDisc.position.copy(camera.position).addScaledVector(MOONDIR,4700);});   /* the moon rides the sky sphere like the sun disc */
 /* each frame (every few): give the six pool lights to the halos nearest the camera focus */
 FRAME_HOOKS.push((dt,now)=>{if(!NIGHT.active||!HALOS.length)return;if(now-NIGHT.lastPool<120)return;NIGHT.lastPool=now;
  const fx=WALK.on?WALK.x:ctl.target.x,fz=WALK.on?WALK.z:ctl.target.z;const c=HALOS.map((q,i)=>({i,d:(q.x-fx)*(q.x-fx)+(q.z-fz)*(q.z-fz)})).sort((a,b)=>a.d-b.d);
- NIGHT.pool.forEach((L,k)=>{const q=c[k]&&HALOS[c[k].i];if(!q){L.intensity=0;return;}L.position.set(q.x,q.y+.4,q.z);L.color.setRGB(Math.min(1,q.r*1.2),Math.min(1,q.g*1.05),Math.min(1,q.b*.9));L.distance=q.big?26:18;L.intensity=(q.big?3.4:2.2)*NIGHT.k;});});
+ NIGHT.pool.forEach((L,k)=>{const q=c[k]&&HALOS[c[k].i];if(!q){L.intensity=L.userData.base=0;return;}L.position.set(q.x,q.y+.4,q.z);L.color.setRGB(Math.min(1,q.r*1.2),Math.min(1,q.g*1.05),Math.min(1,q.b*.9));L.distance=q.big?26:18;L.userData.base=(q.big?3.4:2.2)*NIGHT.k;L.userData.fk=q.big?.3:.1;L.userData.ph=h3(q.x,q.y,q.z)*TAU;L.intensity=L.userData.base;});});
+/* flicker: fires strongly, lamps a little; the same three-sine noise as the glow shader (GLSL_FLICK), a pure function of the animation clock */
+FRAME_HOOKS.push(()=>{if(!NIGHT.active)return;const t=ANIMU.uTime.value;for(const L of NIGHT.pool){const u=L.userData;if(!u.base)continue;
+ L.intensity=u.base*(1+u.fk*(.5*Math.sin(t*9.1+u.ph)+.3*Math.sin(t*15.3+u.ph*2.1)+.2*Math.sin(t*23.7+u.ph*3.7)));}});
+FRAME_HOOKS.push(dt=>{if(NIGHT.run)nightClock(NIGHT.clock+dt*NIGHT.run/60);});
 // ---- the time-of-day control, and ?night=0..1
 {const ui_=document.getElementById('ui');const ts=document.createElement('select');ts.id='timesel';ts.title='time of day';for(const [l,v] of [['Time: Day',0],['Time: Dusk',.5],['Time: Night',1]]){const o=document.createElement('option');o.value=v;o.textContent=l;ts.appendChild(o);}
- ts.onchange=()=>nightSet(parseFloat(ts.value));ui_.appendChild(ts);const db=document.createElement('button');db.textContent='Doors';db.title='show each building\'s front door direction (data marker, off by default)';db.onclick=()=>{DOORVIZ.visible=!DOORVIZ.visible;db.classList.toggle('on',DOORVIZ.visible);};ui_.appendChild(db);const q=parseFloat((new URLSearchParams(location.search)).get('night'));if(isFinite(q)){nightSet(q);ts.value=q>=.75?1:q>=.25?.5:0;}}
+ ts.onchange=()=>nightSet(parseFloat(ts.value),true);ui_.appendChild(ts);
+ const ck=parseFloat((new URLSearchParams(location.search)).get('clock'));if(isFinite(ck)&&ck>0)NIGHT.run=ck;
+ const cb=document.createElement('button');cb.textContent='Clock';cb.title='let the clock run (4 sim minutes a second): the sky, and which windows are lit, follow it';if(NIGHT.run)cb.classList.add('on');
+ cb.onclick=()=>{NIGHT.run=NIGHT.run?0:4;cb.classList.toggle('on',!!NIGHT.run);};ui_.appendChild(cb);const db=document.createElement('button');db.textContent='Doors';db.title='show each building\'s front door direction (data marker, off by default)';db.onclick=()=>{DOORVIZ.visible=!DOORVIZ.visible;db.classList.toggle('on',DOORVIZ.visible);};ui_.appendChild(db);const q=parseFloat((new URLSearchParams(location.search)).get('night'));if(isFinite(q)){nightSet(q);ts.value=q>=.75?1:q>=.25?.5:0;}}
 // ---- FRONT DOORS: invisible data (rec.front), with an optional debug overlay: the 'Doors' button draws an arrow at each building's front door, facing out
 const DOORVIZ=new THREE.Group();DOORVIZ.visible=false;DOORVIZ.userData.probeSkip=true;scene.add(DOORVIZ);
 function doorsRebuild(){while(DOORVIZ.children.length){const o=DOORVIZ.children.pop();o.geometry&&o.geometry.dispose();}
@@ -3400,6 +3789,74 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}${WALK.on?'  WALK':''}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  reg ${REG.length}`;
  requestAnimationFrame(frame);}
 frame();window._ready=true;
+// ---------------------------------------------------------------- ANIMATION: the clock, smoke, light volumes
+// Everything that moves is a pure function of the animation time t (seconds): t = seconds since load, or pinned by ?t=12.5 (screenshots) or ?anim=0 (t = 0).
+// window._anim = {time(), pin(t), play(), stats()}. Cloth flutter and glow flicker live in the shaders (22-mat.js animPatch), the pool lights flicker in
+// 91n-night.js, spinners turn in 90-scene.js. Nothing here moves a building vertex, so bboxes and footprints stay what the builders drew.
+// SMOKE: one instanced billboard mesh (one draw call): puffs rise, drift downwind, grow and fade above every SMOKES source (stovepipe(), fire(), the two
+//   big stacks). It hangs off the scene, not WORLD, and is not in any bbox or the registry.
+// LIGHT VOLUMES (night): additive, depth-tested, unshadowed shells, one instanced mesh each: a cone of light under every lamp bulb, and a spill wedge out of
+//   every front door (rec.front) that the evening schedule has lit (the same uWinFrac as the windows).
+// This fragment runs after the first buildWorld() (92-camera.js builds it), so it builds its own pieces once at the end; later builds call animRebuild().
+var ANIM_READY=false;
+const ANIM={t0:performance.now(),pin:null,smoke:null,cones:null,spills:null};
+{const q=new URLSearchParams(location.search);const t=parseFloat(q.get('t'));if(isFinite(t))ANIM.pin=t;if(q.get('anim')==='0')ANIM.pin=0;}
+function animTime(now){return ANIM.pin!==null?ANIM.pin:(now-ANIM.t0)/1000;}
+ANIMU.uTime.value=animTime(performance.now());
+// ---- smoke
+const SMOKE_N={stove:10,fire:10,stack:16},SMOKE_KIND={stove:0,fire:1,stack:2};
+const smokeMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,fog:false,
+ uniforms:{uTime:ANIMU.uTime,uCol:{value:new THREE.Color(.7,.68,.64)},uWind:{value:new THREE.Vector2(.5,-.22)}},
+ vertexShader:`attribute vec4 aSrc;attribute vec3 aPuff;uniform float uTime;uniform vec2 uWind;varying vec2 vUv;varying float vA;varying float vSeed;varying float vShade;
+void main(){float kind=aPuff.z;float period=(5.5+2.5*fract(sin(dot(aSrc.xyz,vec3(12.9898,78.233,37.719)))*43758.5453))*(kind>1.5?1.5:1.);float life=fract(uTime/period+aPuff.x);
+ float H=kind>1.5?11.:kind>.5?5.5:4.5;float rise=life*H;float s=aPuff.y*20.;
+ vec3 c=aSrc.xyz-vec3(0.,.15,0.)+vec3(uWind.x,0.,uWind.y)*rise*.6+vec3(sin(uTime*.7+s)*.3*life,rise,cos(uTime*.6+s*.65)*.3*life);
+ float size=aSrc.w*2.6*(1.+life*(kind>1.5?2.8:2.2));vShade=kind>1.5?.62:kind>.5?.8:.88;vec4 mv=modelViewMatrix*vec4(c,1.);
+ float a=aPuff.y*6.2832+uTime*.25*(fract(aPuff.y*3.7)-.5);mv.xy+=mat2(cos(a),sin(a),-sin(a),cos(a))*position.xy*size;
+ vUv=uv;vSeed=aPuff.y;vA=smoothstep(0.,.03,life)*pow(1.-life,1.3)*(1.4-.7*life)*(kind>1.5?.6:kind>.5?.5:.45)*exp(-length(mv.xyz)*.002);gl_Position=projectionMatrix*mv;}`,
+ fragmentShader:`uniform vec3 uCol;varying vec2 vUv;varying float vA;varying float vSeed;varying float vShade;
+void main(){vec2 p=vUv*2.-1.;float r=dot(p,p);float n=.72+.28*sin(p.x*4.3+vSeed*41.)*sin(p.y*3.7+vSeed*17.);float a=smoothstep(1.,.1,r)*n*vA;if(a<.004)discard;gl_FragColor=vec4(uCol*vShade*(.9+.1*p.y),a);}`});
+function smokeBuild(){const list=SMOKES;let n=0;for(const s of list)n+=SMOKE_N[s.kind]||6;if(!n)return null;
+ const base=new THREE.PlaneGeometry(1,1);const g=new THREE.InstancedBufferGeometry();g.index=base.index;g.setAttribute('position',base.attributes.position);g.setAttribute('uv',base.attributes.uv);
+ const src=new Float32Array(n*4),puff=new Float32Array(n*3);let i=0;
+ for(const s of list){const m=SMOKE_N[s.kind]||6,ph=h3(s.x*.71,s.y*.37,s.z*.53);for(let k=0;k<m;k++){src.set([s.x,s.y,s.z,Math.max(.18,s.r)],i*4);puff.set([(k+ph)/m,h3(s.x+k*1.7,s.y,s.z-k*.9),SMOKE_KIND[s.kind]||0],i*3);i++;}}
+ g.setAttribute('aSrc',new THREE.InstancedBufferAttribute(src,4));g.setAttribute('aPuff',new THREE.InstancedBufferAttribute(puff,3));g.instanceCount=n;
+ const mesh=new THREE.Mesh(g,smokeMat);mesh.frustumCulled=false;mesh.renderOrder=4;mesh.userData.probeSkip=true;return mesh;}
+// ---- light volumes
+const volMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
+ uniforms:{uNightK:ANIMU.uNightK,uWinFrac:ANIMU.uWinFrac,uTime:ANIMU.uTime},
+ vertexShader:`attribute float aK;attribute vec3 aC;uniform float uWinFrac;varying float vT;varying float vF;varying float vD;varying vec3 vC;varying float vLit;
+void main(){vec4 wp=modelMatrix*instanceMatrix*vec4(position,1.);vec3 n=normalize(mat3(modelMatrix*instanceMatrix)*normal);vec3 vd=cameraPosition-wp.xyz;vD=length(vd);
+ vF=abs(dot(n,vd/vD));vT=uv.y;vC=aC;vLit=aK<0.?1.:step(aK,uWinFrac);gl_Position=projectionMatrix*viewMatrix*wp;}`,
+ fragmentShader:`uniform float uNightK;uniform float uTime;varying float vT;varying float vF;varying float vD;varying vec3 vC;varying float vLit;
+void main(){float a=pow(vF,1.2)*pow(1.-vT,1.3)*.3*uNightK*vLit*exp(-vD*.006);if(a<.002)discard;gl_FragColor=vec4(vC,a);}`});
+// a cone under a lamp: apex at the bulb (y=0), open base on the ground (y=-1); uv.y runs 0 at the bulb to 1 at the ground
+function volConeGeo(){const g=new THREE.CylinderGeometry(.08,1,1,18,1,true);g.translate(0,-.5,0);const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setY(i,1-uv.getY(i));return g;}
+// a spill wedge out of a doorway: the door opening at z=0 (1.1 x 2.05 m), flaring to 2.6 m wide at z=3, sloping to the ground; uv.y 0 at the door, 1 at the far end
+function volSpillGeo(){const P=[],U=[],I=[];const nr=[[-.55,0,0],[.55,0,0],[.55,2.05,0],[-.55,2.05,0]],fr=[[-1.3,0,3],[1.3,0,3],[1.3,.2,3],[-1.3,.2,3]];
+ const quad=(a,b,c,d,ta,tb,tc,td)=>{const s=P.length/3;P.push(...a,...b,...c,...d);U.push(0,ta,1,tb,1,tc,0,td);I.push(s,s+1,s+2,s,s+2,s+3);};
+ quad(nr[3],nr[2],fr[2],fr[3],0,0,1,1);quad(nr[1],fr[1],fr[2],nr[2],0,1,1,0);quad(fr[0],nr[0],nr[3],fr[3],1,0,0,1);quad(nr[0],nr[1],fr[1],fr[0],0,0,1,1);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(I);g.computeVertexNormals();return g;}
+function volMesh(geo,items){if(!items.length)return null;const m=new THREE.InstancedMesh(geo,volMat,items.length);const k=new Float32Array(items.length),c=new Float32Array(items.length*3);
+ items.forEach((it,i)=>{m.setMatrixAt(i,it.m);k[i]=it.k;c.set(it.c,i*3);});geo.setAttribute('aK',new THREE.InstancedBufferAttribute(k,1));geo.setAttribute('aC',new THREE.InstancedBufferAttribute(c,3));
+ m.instanceMatrix.needsUpdate=true;m.frustumCulled=false;m.renderOrder=3;m.userData.probeSkip=true;return m;}
+function volBuild(){const cones=[],spills=[];const _q=new THREE.Quaternion(),_y=new THREE.Vector3(0,1,0);
+ for(const q of HALOS){if(q.kind!=='SphereGeometry'||q.big||q.g<q.r*.5)continue;const h=q.y-terrainH(q.x,q.z);if(h<1.4)continue;const R=clamp(h*.42,.8,2.2);   /* lamp bulbs: warm-white spheres up off the ground */
+  cones.push({m:new THREE.Matrix4().compose(new THREE.Vector3(q.x,q.y-.05,q.z),_q.identity(),new THREE.Vector3(R,h-.05,R)),k:-1,c:[1,.72,.4]});}
+ for(const r of REG){const f=r.front;if(!f||!f.world||f.source==='default'||!r.doorCount)continue;const w=f.world;
+  spills.push({m:new THREE.Matrix4().compose(new THREE.Vector3(w.x+Math.sin(w.yaw)*.12,w.y,w.z+Math.cos(w.yaw)*.12),_q.setFromAxisAngle(_y,w.yaw),new THREE.Vector3(1,1,1)),k:h3(w.x*.29+5.1,w.y,w.z*.31-2.7)*.9,c:[1,.6,.26]});}
+ return {cones:volMesh(volConeGeo(),cones),spills:volMesh(volSpillGeo(),spills)};}
+// ---- (re)build with the world
+function animRebuild(){if(!ANIM_READY)return;for(const k of ['smoke','cones','spills']){const o=ANIM[k];if(o){scene.remove(o);o.geometry.dispose();if(o.dispose)o.dispose();ANIM[k]=null;}}
+ ANIM.smoke=smokeBuild();const v=volBuild();ANIM.cones=v.cones;ANIM.spills=v.spills;for(const k of ['smoke','cones','spills'])if(ANIM[k])scene.add(ANIM[k]);}
+const _smD=new THREE.Color(.7,.68,.64),_smN=new THREE.Color(.075,.08,.1),_smK=new THREE.Color(.62,.42,.3);
+FRAME_HOOKS.push((dt,now)=>{ANIMU.uTime.value=animTime(now);const k=ANIMU.uNightK.value,v=NIGHT.v;
+ smokeMat.uniforms.uCol.value.copy(_smD).lerp(_smK,Math.sin(clamp(v,0,1)*PI)*.35).lerp(_smN,k);   /* pale by day, dusk-tinted, dark against the night sky */
+ for(const o of [ANIM.cones,ANIM.spills])if(o)o.visible=k>.02;});
+window._anim={time:()=>ANIMU.uTime.value,pin(t){ANIM.pin=t;ANIMU.uTime.value=t;},play(){ANIM.t0=performance.now()-ANIMU.uTime.value*1000;ANIM.pin=null;},
+ stats:()=>({t:ANIMU.uTime.value,smokeSources:SMOKES.length,puffs:ANIM.smoke?ANIM.smoke.geometry.instanceCount:0,lampCones:ANIM.cones?ANIM.cones.count:0,doorSpills:ANIM.spills?ANIM.spills.count:0,
+  winFrac:ANIMU.uWinFrac.value,clock:NIGHT.clock,cloth:Object.keys(MAT).filter(k=>MAT[k].userData.anim==='cloth').length})};
+ANIM_READY=true;animRebuild();
 </script>
 
 </body></html>

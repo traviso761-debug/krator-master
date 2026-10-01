@@ -10,3 +10,4 @@ HYPERJUNGLE.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==n
  BIO.cur=null;return out;};
 HYPERJUNGLE.dress=function(geos,opt){if(HYPERJUNGLE.dressGeos){BIO.cur='jungle/dress';HYPERJUNGLE.dressGeos(geos,opt||{});BIO.cur=null;}};
 HYPERJUNGLE.canopyH=function(x,z){return HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):60;};
+BIO.kitEnd(HYPERJUNGLE);   // its exports run in its registry; the default kit is current again

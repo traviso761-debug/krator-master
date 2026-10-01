@@ -37,12 +37,12 @@ function buildRsHykGalley(){reseed(71500);
  // the fore sail is stepped just abaft the tarp and cut short so its clew and yard end a metre
  // forward of the aft mast: the two sails must not pass through each other (sails-clear-sails)
  [[1.2,15,.42],[-7.6,12,.5]].forEach(([mx,mh,span],i)=>{const base=dY(H.uAt(mx));rsBamboo(B,[mx,base-.3,0],[mx,base+mh*.62+2,0],.16,0x9a7a44,1.2);rsSolid(B,[mx-.2,base,-.2],[mx+.2,base+mh*.62+2,.2]);
-  const S=rsSail(B,{key:'hyk-scroll',O:[mx+.3,base+3.3,.35],U:[-1,0,0],V:[0,1,0],belly:-.8,nu:22,nv:12,
+  rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-scroll',O:[mx+.3,base+3.3,.35],U:[-1,0,0],V:[0,1,0],belly:-.8,nu:22,nv:12,
    A:t=>[t*.9,t*mh],Bf:t=>[lerp(mh*span,.9,t)+Math.sin(Math.PI*t)*mh*.1,lerp(.1,mh,Math.pow(t,1.1))],draw:rsHykScroll});
   // the curved yard runs past the head and the clew; the boom along the foot
   const yd=[];for(let k=0;k<=18;k++)yd.push(S.at(k/18,1));const e0=yd[0],e1=yd[yd.length-1];yd.unshift([e0[0]+1.2,e0[1]-.6,e0[2]]);yd.push([e1[0]+.4,e1[1]+1.6,e1[2]]);
   rsTube(B,'wood',yd,t=>.17*(1-.5*t),0x9a7a44,60,8);for(let k=1;k<yd.length-1;k+=2)rsSphere(B,'rope',.19,yd[k],[1,.5,1],0x5a4128,8,4);
-  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x9a7a44,6);rsRope(B,e1,[H.xAt(1,1),H.ys(1)+.4,0]);rsRope(B,S.at(1,0),[mx+.3,base,0]);});
+  rsLink(B,'wood',S.at(0,0),S.at(0,1),.1,0x9a7a44,6);rsRope(B,e1,[H.xAt(1,1),H.ys(1)+.4,0]);rsRope(B,S.at(1,0),[mx+.3,base,0]);});rsRigEnd(B);
  // the paddle-rudder and the stern sweep; cargo; crew
  {const p=H.pt(.92,1,1);rsLink(B,'wood',[p[0],p[1]+1.6,p[2]+.2],[p[0]+.6,-2.2,p[2]+.5],.12,0x6a4a2c,6);rsBox(B,'wood',[1,2.2,.12],[p[0]+.5,-1.5,p[2]+.5],null,0x6a4a2c);}
  for(let i=0;i<8;i++){const x=rr(-6,-3),z=rr(-1.8,1.8);rsCyl(B,'wood',.35,.35,.9,[x,dY(H.uAt(x))+.45,z],null,0x7a5a36,10);}

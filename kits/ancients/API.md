@@ -85,7 +85,7 @@ a top-level statement across a fragment boundary.
 | file | what |
 |---|---|
 | `00-head.html` | page shell, styles, `#ui` `#cap` `#insp` `#hud` `#errs`, the three.js loader |
-| `10-core.js` | error panel, PRNG (`reseed rng rr`), noise (`h3 vnoise fbm`), `clamp lerp TAU` |
+| `10-core.js` | error panel, PRNG (`reseed rng rr`), noise (`h3 vnoise fbm`), `clamp lerp TAU`, the frame hook `TICKS tick` |
 | `12-stats.js` | per-type accounting (`TSTAT`, `tcur triOf ktri finite3`) — no geometry, no PRNG draws |
 | `20-textures.js` | `canvasTex`, `TEX.panel/.rust/.ground` |
 | `22-materials.js` | `MAT.*`, `SHELL(d)`, `WIN(d)`, `CYAN WARM DEAD` |
@@ -180,7 +180,9 @@ Pass the result as `opt.hole` to `gridSurface`/`lathe`.
 `ROWS` in the target's `89z-rows.js`: one row per type, `{z, s, r, t?, j?, ds?}`.
 Intact stands at `x = -s`, ruined at `x = +s`, toppled at `x = t`, rehabilitated
 at `x = 0`, and The Project at `x = j`. `r` is the row's ground-paint radius.
-Rows run from `z = 0` (Skyscraper A) to `z = 25400` (the Flatiron).
+In the kit target the rows' `z` (and any `s`, `t`, `j` too small for three sites)
+are laid out from measured footprints and preset depths (`ROW_FP`, `ROW_V` in
+`targets/kit/89z-rows.js`); the literal values only fix the order.
 
 A target picks its decay levels with `DECAYS`; **one row may override that with
 its own `ds`**, which is how a single type gets a variant no other type has
@@ -251,10 +253,19 @@ builder; it is called once, at the bottom of `90-scene.js`.
 gridSurface(fn, nu, nv, opt)   // fn(u,v)->[x,y,z]; opt.hole(u,v)->bool drops a quad
                                // opt.uS/vS scale the UVs into world-ish units
 lathe({rFn, H, cut, jag, flutes, amp, sharp, twist, nu, nv, hole, seed})
-holeFn(d, seed, cut, scale)    // the standard decay predicate
+holeFn(d, seed, cut, scale, foot)  // the standard decay predicate; foot {y,h,k}
+                               // (optional) eats k*d more below y+h, ramping in:
+                               // a shell that thins toward its foot
 mesh(geo, mat, parent, x,y,z)  // the ONLY way to add a non-instanced mesh
-meshMerged(geos, mat, parent)  // many geometries -> one mesh, one draw call
+meshMerged(geos, mat, parent)  // many geometries -> one mesh, one draw call; keeps
+                               // `color` when every input has one or mat.vertexColors
 beam(name, a, b, w, dp, c)     // a kit box stretched and aimed from a to b
+rbeam(name, a, b, w, dp, c)    // the same with its ROLL fixed: w in the vertical
+                               // plane through the beam, dp horizontal (struts, spokes)
+moulding(profile, path, opt)   // a section swept along a path in a wall -> geometry
+                               // to merge or kdef. MOULD.round/band/sill/hood/cornice;
+                               // opt {wn, nu, scale, hole, caps, up, uS, vS} (38-helpers2.js)
+apron(parent,cx,cz,rIn,rOut,d,hIn,mat)  // graded skirt; mat overrides rock/mud
 ```
 
 **`meshMerged` is how a tall building stays cheap.** A tower that emits one
@@ -313,7 +324,8 @@ anything.
 | `MAT.concrete` / `MAT.concreteR` | `CONC(d)` — board-formed, with form-tie holes |
 | `MAT.brick` | common bond, header course every sixth |
 | `MAT.glass` | blue-transparent, with a fresnel rim (below) |
-| `MAT.dark` / `MAT.guts` | what you see through a hole in a ruin |
+| `MAT.dark` / `MAT.guts` | what you see through a hole in a ruin, and every opening and recess. Near-black in the kit (34-kitdefs.js) |
+| `MAT.darkSurf` | a painted dark-grey SURFACE (conduit tubes, fins, radar wings, dish backs): the old `MAT.dark` value |
 
 **Roughness and metalness come from a packed map**, built by `rmTex`: r128 reads
 `roughnessMap` from the green channel and `metalnessMap` from the blue, so one
@@ -419,6 +431,38 @@ ceilings are exceeded — see `KNOWN_ISSUES.md`.
 | `_api.nanSweep()` | meshes with a non-finite vertex, instances placed at NaN |
 | `_api.setView(cx,cy,cz,tx,ty,tz)`, `_api.views()` | camera, preset names |
 | `_api.BUDGET`, `_api.REG` | the budget table and the raw registry |
+
+## Animation
+
+One frame hook, and nothing else animates. `10-core.js` holds
+
+```js
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}      // fn(dt, t)
+```
+
+and the frame loop in `92-camera.js` calls every registered function once per
+frame, **after** the camera has moved and **before** the render, as
+`fn(dt, t)`: `dt` in seconds, clamped to 0.1 (so a multi-second SwiftShader
+frame cannot fling anything round), `t` wall-clock seconds. The argument order
+is Screamers' (its `10-core.js` has the same hook), which is also what the
+biome binding already passes its wind through, so the biome's wind now moves in
+this kit too. A tick that throws is reported once to the error panel and the
+frame still renders.
+
+Rules: **move or show what the builder already built; never build in a
+tick.** Register once per fragment, not once per builder call (a builder runs
+once per decay level), and keep the per-frame work to a handful of transform or
+`.visible` writes. `NIGHT` is readable inside a tick, so night-only effects can
+switch themselves.
+
+**Screenshots are single frames**, taken ~900 ms after a preset is applied at an
+unknown wall-clock time, so anything that moves must still read in a still.
+The worked example is the lighthouse beacon (`89n-lighthouse.js`): its sweep
+advances by the clamped `dt`, and when the camera JUMPS (a preset, not an
+orbit) it re-aims the beam at a fixed bearing off the line to the camera, so
+every preset shows the beam at a known angle and the sweep carries on from
+there.
 
 ## Ground contact
 

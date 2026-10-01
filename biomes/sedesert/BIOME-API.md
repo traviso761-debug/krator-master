@@ -29,6 +29,26 @@ biome needed (an abyss or a hyperjungle fragment runs unchanged on it):
   carries its own (`SPECIES[i].depth`), the default keeps everything .3 m above it.
 - The default `mask` is depth-based (nothing roots under the local water).
 - `BIO.col = {shade, bright, vary, texMean, tint}`: the sRGB-aware colour maths.
+- `BIO.strata(opt)` (35-core-strata): the bedded-rock shader every host and kit shares. A
+  seeded column of beds (sandstone, shale, mudstone, bleached bands) of irregular thickness
+  that dip and warp, with laminae, cross-bedding and varnish streaks. `S.inject(shader)` in
+  an `onBeforeCompile`, then `strataColor(vSWP, vSWN)` in the fragment. The ideal host's
+  ground uses it; a settlement can hand the same object to its building kit. Each bed's
+  colour drifts along it (iron staining), varnish hangs from the bed tops, sand lies on
+  ledges; `cap:[y0,y1]` bleaches the top of the column and `foot:y` banks dust at a floor.
+- `BIO.carve` (`core/terrain/36-core-carve.js`, shared, not vendored: listed in
+  `CORE_TERRAIN` in build.py): overhangs on a heightfield. `add({id, kind:'alcove'|'niche'|
+  'undercut', c, n, hw, depth, h, floorY, base})` declares a patch, `kind(name,{plan,ceil})`
+  registers a new shape; the host folds `recessD(x,z)` into its wall function (the floor
+  runs in under the hood) and meshes the rock back above the void with
+  `mesh(material, {sun})` (surface nets, `aOcc`/`aSun` per vertex). Queries: `covered` (the
+  ceiling over a point), `topAt` (the rock's top over a patch), `rockAt(x,y,z)`, `floorOcc`,
+  `floorSun`. With no patches every query is a no-op, so the ideal host loads it and
+  declares none (the ideal host declares one: the undercut under the cataract's lip,
+  `LIP` and `UNDERCUT` in 45, the worked example on a coarse world). Any other biome adds
+  it by listing it in its own `CORE_TERRAIN` (`core/README.md` has the four steps).
+- A host may give `window._api` `hostChecks()` and `hostNegatives()`; `verify.py --assert`
+  runs them (each negative must fail) after the kit's invariants.
 - `BIO.dynamic(name, geo, mat, count, {label})` and `BIO.tick(fn)`: the moving things
   (fauna) are InstancedMeshes the biome updates itself every frame.
 - The merged buckets and the instance stores are growable Float32 stores (`BIO.Store`)
@@ -105,6 +125,8 @@ SEDESERT.zones(x,z)                 // the zone weights a world can reuse for it
 SEDESERT.PASSES                     // the species passes as data: {sp, cell, accept(Z,x,z), opt}
 SEDESERT.standOf(x,z)               // which big succulent's stand this is (0 candelabra, 1 cardon, 2 Joshua tree)
 SEDESERT.nearestTree(sp,x,z,minH)   // the nearest built hero of a species (a camera preset wants one)
+SEDESERT.spiresOf(T)                // a twist-candle clump's far impostor as data: [{x,z,foot,top,...}] per spire
+                                    //   (any clump, hero or not: a host checks the footing against its drawn water)
 SEDESERT.FAUNA                      // the four fauna kinds (tagged); SEDESERT.ROCKS the basking places the floor left
 SEDESERT.blooms / leafCol / small   // the shared plant helpers the floor and the dressing use
 ```
@@ -131,6 +153,8 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 
 ```
 10-core-head.js     BIO object, PRNG, noise, host binding (+ origin list, fields, waterH/depth), stats
+35-core-strata.js   the bedded-rock shader (BIO.strata), shared by the host's ground and any kit
+36-core-carve.js    (read from core/terrain) carve patches: overhangs on a heightfield (BIO.carve)
 20-core-kit.js      instanced items (def/put), merged vertex-coloured buckets
 30-core-foliage.js  leaf cards, alpha textures, Lambert foliage hook, wind
 40-core-place.js    stands, jittered grids (+ box, noMask), keep-clear, face sampling

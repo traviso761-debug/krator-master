@@ -15,6 +15,7 @@
 // Tags follow the project rule: climate / aridity / abyssal / riparian, and this
 // kit adds HARVEST, the pattern later kits copy:
 //   harvest:{wood:'timber'|'fuel'|'none', edible:[parts], medicinal:bool, notes:''}
+BIO.kit('nhighlands');   // this kit's own registry of items and buckets (core/biome: kits)
 var NHL={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -135,6 +136,10 @@ NHL.SPECIES=[
  /*23*/{key:'rowan',name:'Rowan',habit:'broad',H:[6,12],rb:[.15,.3],crownR:[3,5],bk:2,bark:[0x8a8478,0x7e786c,0x969084],leaf:[0x5a8a34,0x6a9a3a,0x4e7a2e],item:'pinnate',
   form:{hB:.4,boughs:[4,6],el:[.75,1.1],L:[.7,1],wig:.1,curve:-.05,moss:.3,drape:0,bulbs:0,clump:[1.8,2.6],berries:true,stems:[1,3]},
   tags:TG('temperate','subhumid','no',HV('fuel',['berries (cooked)'],true,'Bitter raw; jelly and wine when cooked.'))},
+ // the low band's broadleaf canopy (Bialowieza's lime): a tall clean bole into a high dome, a skirt of suckers at the foot
+ /*24*/{key:'forestlime',name:'Forest lime',habit:'broad',H:[34,50],rb:[1.1,1.8],crownR:[10,14],bk:4,bark:[0x6a665a,0x5e5a50,0x76726a],leaf:[0x5a8e34,0x689c3a,0x4e8030,0x74a640],item:'broad',
+  form:{hB:.5,boughs:[6,8],el:[.6,1.0],L:[.75,1.0],wig:.14,curve:-.07,moss:.5,drape:.15,bulbs:.08,clump:[5,7.2],roots:true,suckers:true},
+  tags:TG('temperate','humid','no',HV('timber',['young leaves','flowers (tea)'],true,'Lime-blossom tea for fevers; bast for rope and shoes; soft wood for carving; the bees\' best tree.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)
@@ -172,15 +177,19 @@ NHL.PLANTS=[
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
 reseed(500031);
 const TX={},G2=BIO.tex.grey;
-/* NEEDLES: dense short strokes in tufts -- spruce, fir, yew, pine */
-TX.needle=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,10,.66);
- for(let i=0;i<620;i++){const p=BIO.tex.clPt(S,.10,.72),a=rr(0,TAU),L=rr(14,28),lum=lerp(90,225,rng());
-  g.strokeStyle=G2(lum);g.lineWidth=1.8;g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}},[120,120,120]);
+/* NEEDLES: dense needle masses -- spruce, fir, yew, pine. Each tuft is a shaded core (the inside of the mass)
+   under needles splayed past its edge. The core is what keeps a card a MASS at range: thin strokes alone
+   average below the alpha test two mips down, and the crowns thinned to bare poles with a few twigs. */
+TX.needle=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,13,.56);const CL=BIO.tex.cl;
+ CL.forEach(c=>{const R=S*rr(.075,.105);g.fillStyle=G2(lerp(104,128,rng()));g.beginPath();
+  for(let k=0;k<=16;k++){const a=k/16*TAU,r=R*rr(.72,1.06);g.lineTo(c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r);}g.fill();});
+ for(let i=0;i<1700;i++){const c=pick(CL),a=rr(0,TAU),d=S*.1*Math.sqrt(rng()),x=c[0]+Math.cos(a)*d,y=c[1]+Math.sin(a)*d,b=a+rr(-.8,.8),L=rr(14,28),lum=lerp(118,240,rng());
+  g.strokeStyle=G2(lum);g.lineWidth=rr(2.2,3);g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*L,y+Math.sin(b)*L);g.stroke();}},[104,104,104]);
 /* SPRAYS: flat scale-leaf sprays that droop -- the cedar's and the hemlock's (a frond card, pinned at x=0) */
 TX.spray=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const y0=S/2;
  for(let k=0;k<3;k++){const off=(k-1)*S*.18;g.strokeStyle=G2(120);g.lineWidth=2.4;g.beginPath();g.moveTo(0,y0);g.quadraticCurveTo(S*.5,y0+off,S*.97,y0+off*1.6);g.stroke();
-  for(let x=6;x<S*.95;x+=5){const t=x/S,yy=y0+off*(t<.5?t*2*.5:.5+(t-.5)*2*1.1),L=lerp(26,8,t)*rr(.8,1.1),lum=lerp(130,235,rng());
-   g.strokeStyle=G2(lum);g.lineWidth=3;for(let sd=-1;sd<=1;sd+=2){g.beginPath();g.moveTo(x,yy);g.lineTo(x+L*.45,yy+sd*L);g.stroke();}}}},[130,130,130]);
+  for(let x=6;x<S*.95;x+=3.5){const t=x/S,yy=y0+off*(t<.5?t*2*.5:.5+(t-.5)*2*1.1),L=lerp(32,12,t)*rr(.8,1.1),lum=lerp(125,235,rng());   // close-set and broad: a spray, not a fishbone
+   g.strokeStyle=G2(lum);g.lineWidth=4;for(let sd=-1;sd<=1;sd+=2){g.beginPath();g.moveTo(x,yy);g.lineTo(x+L*.45,yy+sd*L);g.stroke();}}}},[130,130,130]);
 /* MAPLE: palmate five-lobed leaves in sprays */
 TX.maple=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,8,.64);
  for(let i=0;i<70;i++){const c=BIO.tex.clPt(S,.10,.74),lum=lerp(105,236,i/70)+rr(-14,12),r=rr(16,26),a0=rr(0,TAU);
@@ -323,12 +332,14 @@ G.flat=function(){const pos=[],uv=[],nor=[];const P=[[-.5,-.5],[.5,-.5],[.5,.5],
 const vc=(g,cfn)=>{g=g.index?g.toNonIndexed():g;const p=g.attributes.position,col=[];for(let i=0;i<p.count;i++){const c=cfn(p.getX(i),p.getY(i),p.getZ(i));col.push(c[0],c[1],c[2]);}g.setAttribute('color',new T3.Float32BufferAttribute(col,3));return g;};
 // a BELL-BULB: a thread and a pale teardrop bulb, hung from y=0 down to y=-1 (vertex-coloured: the thread dark)
 G.bulb=function(){const thread=new T3.CylinderGeometry(.01,.01,.55,3,1,true).translate(0,-.275,0).toNonIndexed();
- const bulb=new T3.SphereGeometry(.17,6,4);const p=bulb.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i),k=y<0?1+(-y/.17)*.15:1-.35*(y/.17);p.setXYZ(i,p.getX(i)*k,y*1.5,p.getZ(i)*k);}
+ const bulb=new T3.SphereGeometry(.17,6,3);   // 24 triangles, not 36: a bulb is a hand across, and there are ~19k
+ const p=bulb.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i),k=y<0?1+(-y/.17)*.15:1-.35*(y/.17);p.setXYZ(i,p.getX(i)*k,y*1.5,p.getZ(i)*k);}
  bulb.translate(0,-.76,0);const b2=bulb.toNonIndexed();
  const pos=[],nor=[],uv=[],col=[];[[thread,.25],[b2,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);const sh=e[1]===1?lerp(.82,1.08,clamp((-a[i+1]-.6)/.3,0,1)):e[1];col.push(sh,sh,sh);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // a LANTERN POD: a papery five-ribbed calyx hung from y=0 to y=-1 (the physalis reference)
-G.lantern=function(){const pts=[];for(let i=0;i<=5;i++){const t=i/5;pts.push(new T3.Vector2(Math.max(.01,Math.sin(t*Math.PI)*.34*(1-.25*t)),-.12-t*.86));}
+G.lantern=function(){const pts=[];for(let i=0;i<=4;i++){const t=i/4;   // four bands: 80 triangles, not 100
+ pts.push(new T3.Vector2(Math.max(.01,Math.sin(t*Math.PI)*.34*(1-.25*t)),-.12-t*.86));}
  const g=new T3.LatheGeometry(pts,10).toNonIndexed(),p=g.attributes.position;   // ten segments: two to each of the five ribs
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),k=1+.22*Math.cos(5*a);p.setXYZ(i,x*k,p.getY(i),z*k);}
  g.computeVertexNormals();const thread=new T3.CylinderGeometry(.012,.012,.14,3,1,true).translate(0,-.07,0).toNonIndexed();
@@ -336,7 +347,7 @@ G.lantern=function(){const pts=[];for(let i=0;i<=5;i++){const t=i/5;pts.push(new
   const x=a[i],z=a[i+2],rib=e[1]===1?.82+.18*Math.cos(5*Math.atan2(z,x)):e[1];col.push(rib,rib,rib);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // a DISC: the disc stalk's head -- a shallow ribbed dish with a boss, unit radius, face up, vertex-coloured (the rim paler, the ribs dark)
-G.disc=function(){const pos=[],nor=[],uv=[],col=[];const n=18;
+G.disc=function(){const pos=[],nor=[],uv=[],col=[];const n=12;   // twelve ribs: 36 triangles, not 54
  for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,rib=k%2;
   const P=(a,r,y)=>[Math.cos(a)*r,y,Math.sin(a)*r];
   const A=P(0,0,.06),B=P(a0,1,.16+(rib?.03:0)),Cc=P(a1,1,.16+(rib?0:.03)),M0=P(a0,.5,.08),M1=P(a1,.5,.08);
@@ -345,14 +356,15 @@ G.disc=function(){const pos=[],nor=[],uv=[],col=[];const n=18;
   push(A,cb);push(M1,cc);push(M0,cc);push(M0,cc);push(M1,cc);push(Cc,cr);push(M0,cc);push(Cc,cr);push(B,cr);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a PLEAT FAN: a round pleated fan (the red-stem fan's leaf), unit radius in the xz plane, the pleats radial, red at the heart
-G.pleat=function(){const pos=[],nor=[],uv=[],col=[];const n=22;
+G.pleat=function(){const pos=[],nor=[],uv=[],col=[];const n=16;   // sixteen pleats: 32 triangles, not 44
  for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,up=k%2?.07:-.04,dn=k%2?-.04:.07;
   const P=(a,r,y)=>[Math.cos(a)*r,y+r*r*.12,Math.sin(a)*r];const O=[0,0,0],B=P(a0,1,up),Cc=P(a1,1,dn),M=P((a0+a1)/2,.55,(up+dn)/2);
   const push=(p,c)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(c[0],c[1],c[2]);};
   const red=[1.35,.42,.48],g1=[1,1,1],g2=[.84,.9,.84];push(O,red);push(M,k%2?g1:g2);push(B,k%2?g1:g2);push(O,red);push(Cc,k%2?g2:g1);push(M,k%2?g1:g2);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a CUSHION: a lumpy dome, origin at the centre (moss mounds, smoke bush, yew domes)
-G.cushion=function(){const g=new T3.SphereGeometry(1,8,5,0,TAU,0,Math.PI*.62).toNonIndexed(),p=g.attributes.position,col=[];
+G.cushion=function(){   // 49 triangles, not 72: there are 14k of them, and the lumps hide the facets
+ const g=new T3.SphereGeometry(1,7,4,0,TAU,0,Math.PI*.62).toNonIndexed(),p=g.attributes.position,col=[];
  const lump=(x,y,z)=>1+.08*Math.sin(x*5.1+z*3.3)*Math.cos(y*4.7+x*1.9)+.05*Math.sin(z*7.3-y*5.2);
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=lump(x,y,z);p.setXYZ(i,x*k,y*k,z*k);const ao=lerp(.45,1.1,smooth(-.8,.7,y));col.push(ao,ao,ao);}
  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));g.computeVertexNormals();return g;};
@@ -380,7 +392,7 @@ BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
- m.customProgramCacheKey=function(){return'bioiridbark|'+(key||'x');};BIO._tickWind();return m;};
+ const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 // ---------------------------------------------------------------- materials
 // the bark buckets: one per texture kind; the trumpets' bucket shimmers (the Rift's iridescent bark)
@@ -427,7 +439,7 @@ M.halo.visible=M.haloV.visible=false;
 // the bulbs sway on their threads like the pods of the core
 [M.bulb,M.pod].forEach((m,i)=>{m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+=-position.y*.05*sin(uWindT*1.1+ph);transformed.z+=-position.y*.05*cos(uWindT*.8+ph*1.3);}\n#endif');};
- m.customProgramCacheKey=()=>'nh-glow'+i;});
+ const ck=BIO.kitKey('nh-glow'+i);m.customProgramCacheKey=()=>ck;});
 NHL._glowMaterials=[M.bulb,M.pod];
 NHL._night=0;
 NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;

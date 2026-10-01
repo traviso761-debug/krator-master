@@ -7,10 +7,13 @@
    krator-master-buildings-*.js.
 
    Provides: scene/camera/renderer, orbit + WASD/walk camera control, a
-   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof), a
+   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof, and
+   decal: a painted canvas panel for emblems and hangings), a
    procedural F.tree() helper, the three registries with per-variant
    variantDims support, buildAsset/buildFurn/buildPlant (each returning a
-   selectable THREE.Group), rebuildInstance() and measureInstance().
+   selectable THREE.Group), rebuildInstance() and measureInstance(), the
+   per-culture furniture palette FPAL (F.col / F.cols / key-aware F.pick and
+   F.shade) and the building type vocabulary BUILDING_TYPES.
 
    Conventions that matter:
      - box/cyl/cone/dome sit with their BOTTOM at y; blob/ball are CENTRED at y.
@@ -72,8 +75,10 @@ const fill = new THREE.DirectionalLight(0x8ea6cc, 0.28);
 fill.position.set(-140, 90, -120);
 scene.add(fill);
 
+/* subdivided: one 8 km quad interpolates depth badly in software GL (SwiftShader), and
+   hid anything within ~3 cm of the ground (labels, rugs, mats) a few metres off the origin */
 const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(8000, 8000),
+  new THREE.PlaneGeometry(8000, 8000, 100, 100),
   new THREE.MeshLambertMaterial({ color: 0x9b9472 })
 );
 ground.rotation.x = -Math.PI / 2;
@@ -224,16 +229,26 @@ window._gotoRow = function (z, width) {
 
 /* ------------------------------------------------------------ material */
 const _matCache = new Map();
+/* per-family [roughness, metalness]; anything not listed is matte (0.85, 0).
+   The furniture kit's cultural materials (nacre, gold, lacquer, glazed ceramic, obsidian, jade)
+   read as what they are only through these: CATALOG_MATERIALS below names each. */
+const MAT_FAMILY_LOOK = {
+  metal: [0.4, 0.7], gold: [0.22, 0.9], bronze: [0.42, 0.75], rust: [0.85, 0.35],
+  nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
+  plastic: [0.5, 0.0], bone: [0.6, 0.0]
+};
 function mat(color, family) {
   const key = color + '|' + (family || '');
   if (_matCache.has(key)) return _matCache.get(key);
   let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
-  if (family === 'metal') { roughness = 0.4; metalness = 0.7; }
+  const fam = MAT_FAMILY_LOOK[family];
+  if (fam) { roughness = fam[0]; metalness = fam[1]; }
   else if (family === 'glass') { roughness = 0.05; metalness = 0.1; transparent = true; opacity = 0.55; }
   else if (family === 'glow') { roughness = 1; }
   const m = family === 'glow'
     ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
     : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
+  m.userData.family = family || '';
   _matCache.set(key, m);
   return m;
 }
@@ -316,6 +331,31 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
    The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
    then scaled, which makes the covered footprint exactly w by d rather than w+d over
    root two — and keeps a non-square roof square to its building. */
+/* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
+   canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
+   (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+const _texCache = new Map();
+function mkDecal(x, y, z, w, h, ry, key, paint, family) {
+  let m = _texCache.get(key);
+  if (!m) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(32, Math.min(512, Math.round(w * 128)));
+    c.height = Math.max(32, Math.min(512, Math.round(h * 128)));
+    paint(c.getContext('2d'), c.width, c.height);
+    const t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
+    m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
+    m.userData.family = family || '';
+    _texCache.set(key, m);
+  }
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  mesh.position.set(x, y + h / 2, z); mesh.rotation.y = ry || 0;
+  return _add(mesh);
+}
+/* a colour number as a CSS colour, for canvas painting */
+function cssCol(c) { return '#' + ('000000' + (c >>> 0 & 0xffffff).toString(16)).slice(-6); }
 function mkPyrRoof(x, y, z, w, h, d, ry, color, family) {
   const geo = new THREE.ConeGeometry(0.5, Math.max(h, 0.02), 4);
   geo.rotateY(Math.PI / 4);
@@ -360,18 +400,140 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
 }
 
 /* ------------------------------------------------------------ registry */
-const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider'];
+/* furniture cultures, in sheet order. The first eleven are the harvested ones; the rest are the
+   interiors-phase sets (kits/catalog/krator-master-furniture-<culture>.js), each registered by its
+   own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
+   'scrap' are the poor-tier sets any culture's poor buildings pull from. */
+const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+/* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
+   culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
+   tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
+const FURN_CULTURE_INFO = {
+  'ancient': { name: 'Ancients', pack: null }, 'ancients-salvage': { name: 'Ancients salvage', pack: null },
+  'yuni-court': { name: 'Yuni court', pack: 'yuni' }, 'yuni-common': { name: 'Yuni', pack: 'yuni' }, 'yuni-poor': { name: 'Yuni poor', pack: 'yuni' },
+  'sahelian': { name: 'Sahelian', pack: 'yuni' }, 'order': { name: 'The Order', pack: 'yuni' }, 'nomad': { name: 'Eastern Nomads', pack: null },
+  'voth': { name: 'Voth', pack: 'voth' }, 'iziz': { name: 'Iziz', pack: 'iziz' }, 'beast-rider': { name: 'Beast Riders', pack: 'beast-rider' }
+};
+/* wealth tiers (kits/furniture/SPEC.md): a piece's wealth band, the ROOM wealth (0-1) it suits.
+   poor sets are the generic ones; common uses a culture's regional materials; court is bespoke. */
+const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+/* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
+function FURN_CULTURE(key, info) {
+  if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
+  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
+  return FURN_CULTURE_INFO[key];
+}
 const PLANT_CLIMATES = ['hypertropic', 'tropic', 'temperate', 'cold'];
 const PLANT_ARIDITY = ['arid', 'semiarid', 'subhumid', 'humid'];
 const ASSET_CULTURES = ['voth', 'beast-rider'];
+/* building types (repo README): civic, market/shop, tavern/inn, industry, farm,
+   single-family dwelling, multi-family dwelling, infrastructure, religious, funerary.
+   Same slugs as Yuni's BUILDING_TAGS. A building carries several in types: [...];
+   `family` stays as its one-word grouping (housing civic religious industrial defensive trade guild). */
+const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single',
+  'dwelling-multi', 'infrastructure', 'religious', 'funerary'];
 
+/* The furniture entry (kits/furniture/SPEC.md "The entry"):
+     FURN({ key, name, culture, type, setting, rooms: [...], w, d, h, variants, variantNames,
+            variantDims, anchor, clearance: {front, back, left, right}, materials: [...], build(F) })
+   setting: indoor | outdoor | both.  anchor: floor | wall | ceiling | surface.
+   Every piece is authored in the FLOOR frame (origin = footprint centre at the
+   bottom of the piece, +z front); anchor tells a placer where it mounts:
+     floor   — stands on the floor at y = floorY
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall
+     ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
+     surface — stands on a table, shelf or counter top at y = surfaceY
+   materials are canonical names from CATALOG_MATERIALS below.
+   Back-compat: an old entry with room: 'x' is normalised to rooms: ['x'], and
+   room always holds rooms[0] for code that still reads it. */
+const FURN_SETTINGS = ['indoor', 'outdoor', 'both'];
+const FURN_ANCHORS = ['floor', 'wall', 'ceiling', 'surface'];
+const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'shelf', 'desk', 'lamp', 'stove',
+  'altar', 'shrine', 'fountain', 'statue', 'monument', 'planter', 'rug', 'screen', 'banner', 'counter',
+  'stall', 'rack', 'workstation', 'loom', 'well', 'pen', 'tomb', 'vessel', 'shelter', 'weapon', 'debris',
+  'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
+/* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
+   no walk-up access. Tapestries and hangings are 'banner'. */
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
   if (!o.culture || FURN_CULTURES.indexOf(o.culture) < 0) { console.error('furniture ' + o.key + ': bad culture ' + o.culture); return; }
-  o.variants = o.variants || 1; o.room = o.room || 'hall';
+  o.variants = o.variants || 1;
+  if (!o.rooms) o.rooms = o.room ? [o.room] : ['hall'];
+  else if (typeof o.rooms === 'string') o.rooms = [o.rooms];
+  o.room = o.rooms[0];
+  /* tier and wealth band: given, or read off the culture name (yuni-court, yuni-poor), else common */
+  if (!o.tier) o.tier = /-court$/.test(o.culture) ? 'court' : /-poor$/.test(o.culture) || o.culture === 'generic' || o.culture === 'scrap' ? 'poor' : 'common';
+  if (!o.wealth) o.wealth = (FURN_TIERS[o.tier] || [0, 1]).slice();
   FURNS.push(o); FURN_BY_KEY[o.key] = o;
 }
+/* the y at which to build a furniture piece so it sits on its anchor:
+   at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+function furnAnchorY(A, variant, at) {
+  at = at || {};
+  const floorY = at.floorY || 0;
+  if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
+  return floorY;
+}
+
+/* Canonical material names (the seed of the planned registry in core/README.md
+   "Planned: a material registry"). Each catalog family string maps onto one
+   canonical name; a piece's `materials` lists the canonical names it uses. */
+const CATALOG_MATERIALS = {
+  timber:    { tags: ['wood'], families: ['wood', 'plank'] },
+  bark:      { tags: ['wood', 'organic'], families: ['bark'] },
+  stone:     { tags: ['stone'], families: ['stone'] },
+  plaster:   { tags: ['stone'], families: ['plaster'] },
+  concrete:  { tags: ['stone'], families: ['concrete'] },
+  roofTile:  { tags: ['stone'], families: ['roof', 'dome'] },
+  metal:     { tags: ['metal'], families: ['metal'] },
+  rustSteel: { tags: ['metal', 'weathered'], families: ['rust'] },
+  glass:     { tags: ['glass'], families: ['glass'] },
+  cloth:     { tags: ['fabric'], families: ['cloth'] },
+  rope:      { tags: ['fabric', 'organic'], families: ['rope'] },
+  thatch:    { tags: ['organic'], families: ['thatch'] },
+  foliage:   { tags: ['organic'], families: ['leafy', 'plant'] },
+  skin:      { tags: ['organic'], families: ['skin'] },
+  emissive:  { tags: ['glow'], families: ['glow'] },
+  food:      { tags: ['organic'], families: ['food'] },
+  /* the interiors-phase regional materials (kits/furniture/README.md "Materials by culture") */
+  bamboo:    { tags: ['wood', 'organic'], families: ['bamboo'] },
+  reed:      { tags: ['organic', 'fabric'], families: ['reed'] },
+  hyperMahogany: { tags: ['wood'], families: ['mahogany'] },
+  nacre:     { tags: ['organic', 'glossy'], families: ['nacre'] },
+  gold:      { tags: ['metal', 'precious'], families: ['gold'] },
+  bronze:    { tags: ['metal'], families: ['bronze'] },
+  lacquer:   { tags: ['wood', 'glossy'], families: ['lacquer'] },
+  ceramic:   { tags: ['stone', 'glossy'], families: ['ceramic', 'tile'] },
+  obsidian:  { tags: ['stone', 'glossy'], families: ['obsidian'] },
+  jade:      { tags: ['stone'], families: ['jade'] },
+  bone:      { tags: ['organic'], families: ['bone', 'antler', 'shell'] },
+  hide:      { tags: ['organic', 'fabric'], families: ['hide', 'fur', 'leather'] },
+  wicker:    { tags: ['organic', 'wood'], families: ['wicker'] },
+  plastic:   { tags: ['weathered'], families: ['plastic'] },
+  unassigned:{ tags: [], families: [''] }
+};
+/* How the canonical names land in the two other material systems (core/README.md "Planned: a
+   material registry" step 2). Ancients-lineage builds have MAT.* (core/materials/22-materials.js,
+   68-mat-v5.js); Voth/Yuni-lineage builds have FAMMAT families. A host exporting a catalog piece
+   maps each name here; a name with no entry on a side falls back to that side's generic surface. */
+const CORE_MATERIAL_MAP = {
+  timber: { ancients: 'MAT.slab', fammat: 'wood' }, bark: { ancients: 'MAT.slab', fammat: 'trunk' },
+  stone: { ancients: 'MAT.rock', fammat: 'stone' }, plaster: { ancients: 'MAT.white', fammat: 'plaster' },
+  concrete: { ancients: 'MAT.rock', fammat: 'stone' }, roofTile: { ancients: 'MAT.slab', fammat: 'roof' },
+  metal: { ancients: 'MAT.pipe', fammat: 'metal' }, rustSteel: { ancients: 'MAT.rust', fammat: 'metal' },
+  glass: { ancients: 'MAT.glass', fammat: 'glass' }, cloth: { ancients: null, fammat: 'cloth' },
+  foliage: { ancients: 'MAT.vine', fammat: 'leaf' }, emissive: { ancients: 'MAT.strip', fammat: null },
+  bronze: { ancients: 'MAT.pipe', fammat: 'metal' }, gold: { ancients: 'MAT.pipe', fammat: 'metal' },
+  obsidian: { ancients: 'MAT.darkGlass', fammat: 'stone' }, plastic: { ancients: 'MAT.white', fammat: null },
+  ceramic: { ancients: 'MAT.slab', fammat: 'stone' }, hyperMahogany: { ancients: 'MAT.slab', fammat: 'wood' },
+  bamboo: { ancients: null, fammat: 'wood' }, reed: { ancients: null, fammat: 'trunk' }
+};
+const FAMILY_TO_MATERIAL = {};
+for (const k in CATALOG_MATERIALS) for (const f of CATALOG_MATERIALS[k].families) FAMILY_TO_MATERIAL[f] = k;
 const PLANTS = [], PLANT_BY_KEY = {};
 function PLANT(o) {
   if (PLANT_BY_KEY[o.key]) { console.error('duplicate plant key', o.key); return; }
@@ -389,6 +551,7 @@ function ASSET(o) {
   if (ASSET_BY_KEY[o.key]) { console.error('duplicate asset key', o.key); return; }
   if (!o.culture || ASSET_CULTURES.indexOf(o.culture) < 0) { console.error('asset ' + o.key + ': bad culture ' + o.culture); return; }
   o.variants = o.variants || 1; o.family = o.family || 'other'; o.districts = o.districts || []; o.wealth = o.wealth || [0, 1];
+  o.types = o.types || [];
   ASSETS.push(o); ASSET_BY_KEY[o.key] = o;
 }
 /* declared size of one variant: its own entry if given, else the entry's overall box.
@@ -399,6 +562,214 @@ function entryDims(A, v) {
 }
 const assetDims = entryDims;
 
+/* ------------------------------------------------- furniture palette
+   kits/furniture/SPEC.md "Colour": a piece names its colours, the host owns them.
+   FPAL[culture] maps a named key to a colour; a piece asks for F.col('timber') and
+   gets its own culture's timber. F.cols([...keys]) resolves a list, and F.pick() of
+   an array of palette keys returns the picked key's colour (one draw from the seed,
+   like any pick). F.shade(keyOrColour, amt) takes either. A host that wants another
+   look for a culture replaces FPAL[culture] (or single keys) before building.
+   Keys are role + hue + tone: timber, timberDark, ironDeep, clothRed, flameLight ...
+   Tone bands by lightness: Black < Deep < Dark < (none) < Light < Pale < White.
+   Generated from the harvested pieces' literals (nearest-colour clustering per
+   culture, so a key may stand for a few near-identical originals); edit freely. */
+const FPAL = {
+  'ancient': {
+    alloy: 0xe6e4dc,
+    amber: 0xffb755,
+    blackIron: 0x1c1c1c, blackIronLight: 0x2a2a2a,
+    clothMadder: 0xb5432f, clothTurquoise: 0x4a7a9c, clothOchre: 0xc9a24a, clothBirch: 0xc9a878,
+    clothBone: 0xe8dcc0,
+    electric: 0x6fd0ff,
+    glassBlack: 0x14161a, glassSky: 0x5a9ec9,
+    ice: 0xbfe8ff,
+    pewter: 0x8a8f92,
+    redCopper: 0xa0522d,
+    silver: 0xb4b0a2,
+    steel: 0x5a5f62, steelLight: 0x6e7376,
+    stoneGraphite: 0x3a3f3e, stoneGranite: 0x6e6a5e, stoneClay: 0xb56a42, stoneTaupe: 0x8a8478,
+    timberOak: 0x8a6a4e,
+    unlit: 0x2a2f2e,
+    verdigris: 0x6fe8e0,
+    whiteHot: 0xfff2c9
+  },
+  'ancients-salvage': {
+    blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
+    clothTan: 0xb08a5a, clothOchre: 0xc9a24a, clothBone: 0xe8dcc0,
+    fire: 0xff6a2e,
+    gilt: 0xc9a227,
+    pewter: 0x8a8f92,
+    plasterTan: 0xb08250, plasterTanLight: 0xbc8e58, plasterTanLight2: 0xc89a62, plasterBirch: 0xd4a66e,
+    redCopper: 0x8a3a2a,
+    rustRusset: 0x7a3b22,
+    silver: 0xb4b0a2, silverLight: 0xc0bcae,
+    steel: 0x6e7376,
+    stoneClay: 0xb56a42, stoneBirch: 0xc9a878, stoneGrey: 0xb0aaa0,
+    timberOak: 0x8a6a4e,
+    whiteHot: 0xfff2c9
+  },
+  'yuni-court': {
+    amber: 0xffb755,
+    blackIron: 0x1c1c1c,
+    brass: 0xc29a44,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothCrimson: 0x9c3024,
+    clothMadder: 0xb5432f, clothSaffron: 0xd8a030, clothIvory: 0xf0ece0,
+    copper: 0xc8642a,
+    ember: 0xd9762c,
+    fire: 0xff8a3a,
+    gilt: 0xc9a227,
+    iron: 0x4a4038,
+    plasterIvory: 0xf2eee2,
+    stoneBlack: 0x14161a, stoneMoss: 0x3a6a3a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0,
+    stoneCobalt: 0x2a6ab0, stoneTurquoiseLight: 0x4a7a9c, stoneAzure: 0x3a86c8, stoneOchre: 0xc9a24a,
+    stoneSky: 0x58a8d8, stoneBone: 0xe8dcc0,
+    timberWalnut: 0x5c432c, timberTeak: 0x9a7a4e,
+    whiteHot: 0xfff2c9
+  },
+  'yuni-common': {
+    amber: 0xffb755,
+    brass: 0xb08432,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothMustard: 0x94824a,
+    clothMadder: 0xb83a2e, clothTurquoise: 0x4a7a9c, clothOrange: 0xc8642a, clothFlax: 0xa89256,
+    clothSaffron: 0xd8a030, clothTan: 0xb08a5a, clothOchre: 0xc9a24a, clothStraw: 0xc8b272,
+    clothIvory: 0xf2eee2,
+    ember: 0xd9762c,
+    gilt: 0xc9a227,
+    plasterMadder: 0xb5432f, plasterTan: 0xbc8e58, plasterTanLight: 0xc89a62, plasterBirch: 0xd4a66e,
+    plasterBone: 0xe8dcc0,
+    produceLeaf: 0x7a9a3e,
+    ropeMustard: 0x85743e, ropeFlax: 0xb8a262,
+    silver: 0xb4b0a2,
+    stoneBlack: 0x14161a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0, stoneLaterite: 0xa85832,
+    stoneCobalt: 0x2a6ab0, stoneClay: 0xb8633a, stoneAzure: 0x3a86c8, stoneClayLight: 0xc47044,
+    stoneSky: 0x58a8d8, stoneIvory: 0xf0ece0,
+    timberWalnut: 0x5c432c, timberChestnutDark: 0x6a4e34, timberChestnut: 0x7a5a3c, timberOak: 0x8a6a4e,
+    timberTeak: 0x9a7a4e, timberPine: 0xa8865c
+  },
+  'yuni-poor': {
+    clothIndigo: 0x2e5a8a, clothMadder: 0xb83a2e, clothOrange: 0xc8642a, clothSaffron: 0xd8a030,
+    clothIvory: 0xf0ece0,
+    ember: 0xd9762c,
+    plasterTan: 0xb08250,
+    stoneBlack: 0x14161a, stoneLaterite: 0xa85832, stoneGranite: 0x7e7a72, stoneClay: 0xb4683e,
+    stoneClayLight: 0xc07448,
+    thatchFlax: 0xb8a262, thatchStraw: 0xc8b272,
+    timberWalnut: 0x5c432c
+  },
+  'sahelian': {
+    clothIndigo: 0x2e5a8a, clothBone: 0xe8dcc0, clothIvory: 0xf0ece0,
+    ember: 0xd9762c,
+    plasterSoot: 0x1c1c1c, plasterLaterite: 0xa85c36, plasterMadder: 0xb5432f, plasterClayDark: 0xb4683e,
+    plasterClay: 0xc07448,
+    stoneBlack: 0x14161a, stoneTaupe: 0x8a8172,
+    thatchStraw: 0xc8b272,
+    timberSepia: 0x4a3624, timberOak: 0x8a6a4e, timberTeak: 0x9a7a4e
+  },
+  'order': {
+    blackIron: 0x2a2622,
+    brass: 0xb08432,
+    clothGraphite: 0x3c362c, clothForest: 0x2e4a3a, clothWine: 0x5a2a2a, clothDusk: 0x3a3a5a,
+    clothWalnut: 0x6a3a2a, clothMoss: 0x3a6a3a, clothTeak: 0x7a5a2a, clothRusset: 0x8a3a2a,
+    clothGranite: 0x7a7466, clothMadder: 0xb5432f, clothTurquoise: 0x4a7a9c, clothBone: 0xe8dcc0,
+    clothIvory: 0xe8e4d6,
+    ember: 0xd9762c,
+    gilt: 0xc9a227,
+    stoneSoot: 0x1c1c1c, stoneOchre: 0xc9a24a, stoneGrey: 0x9a9080, stoneChalk: 0xe8e8e8,
+    timberWalnut: 0x5c432c, timberOak: 0x8a6a4e, timberTeak: 0x9a7a4e, timberStraw: 0xd8c48a,
+    whiteHot: 0xfff2c9
+  },
+  'nomad': {
+    amber: 0xffb755,
+    blackIron: 0x2a2622,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothMud: 0x8a7a54,
+    clothMadder: 0xb83a2e, clothOrange: 0xc8642a, clothSaffron: 0xd8a030,
+    ember: 0xd9762c,
+    hideWalnut: 0x4e3222, hideChestnut: 0x6a4630, hideOak: 0x8a5c3c,
+    ropeMustard: 0x85743e,
+    stoneBlack: 0x14161a, stoneGranite: 0x7a7264,
+    timberSepia: 0x4e3a28, timberUmber: 0x5e5236
+  },
+  'voth': {
+    amber: 0xe89a3c, amberLight: 0xffb04a,
+    blackIron: 0x2a2a2a,
+    brass: 0xa88a3c,
+    candle: 0xffe0a0,
+    clothPlum: 0x8a2d6a, clothIndigo: 0x2d6a8a, clothTeal: 0x2f8f8a, clothJade: 0x2f8f6a,
+    clothCrimson: 0x9c2d2d, clothMud: 0x8a7a5c, clothGold: 0xc9a227, clothTaupe: 0x8a8a78,
+    clothKhaki: 0x9a8a6c, clothOrange: 0xe07a2a, clothPine: 0xa88868, clothGreyDark: 0x9a8a78,
+    clothGrey: 0x9a9a88, clothBirch: 0xc0a878, clothSand: 0xc9b58a, clothLinenDark: 0xd8c9a0,
+    clothLinen: 0xd8cdb0, clothLinenLight: 0xdad0b8, clothBone: 0xe8e0c8,
+    coal: 0xb8461f,
+    copper: 0xb5723a,
+    ember: 0xd9762c,
+    fireDark: 0xff6a2e, fire: 0xff8a3c,
+    flameDark: 0xffd23c, flame: 0xffc861,
+    gilt: 0xd8b34a,
+    glassCharcoal: 0x1a2028, glassSlate: 0x3a5a68, glassCrimson: 0x8a2020, glassGranite: 0x6a6a52,
+    glassMud: 0x7a6a4a, glassMist: 0x8fb8c4, glassChalk: 0xcfe3e8,
+    ironDark: 0x3a3630, iron: 0x4a443c,
+    leafMoss: 0x54632f, leafMossLight: 0x5e6b3a, leafOlive: 0x6a7a3a, leafOliveLight: 0x7a8a42,
+    leaf: 0x7a9a3a, leafMustard: 0x8a7a4a, leafMadder: 0xb23a2a, leafOchreDark: 0xc9a24a,
+    leafOchre: 0xd8c060,
+    pewter: 0x8a8a8a,
+    plasterBone: 0xe6dcc0,
+    steel: 0x6b6258, steelLight: 0x7a6f5c,
+    stoneSoot: 0x1a1512, stoneEbony: 0x2a2620, stoneGraphite: 0x3c362c, stoneUmber: 0x4a443a,
+    stoneWine: 0x6b1f1f, stoneUmberLight: 0x6a5248, stoneMud: 0x8a7454, stoneGranite: 0x7a7466,
+    stoneJade: 0x5a8a7a, stoneTaupe: 0x8a8474, stoneKhaki: 0x9a8464, stoneKhakiLight: 0x9d9278,
+    stoneGrey: 0x9a9484, stoneMist: 0x6ecbe0, stoneLinen: 0xc8bfa6, stoneLinenLight: 0xd8d0be,
+    timberWalnut: 0x5a4028, timberUmber: 0x5a4a38, timberUmberLight: 0x6a5c48, timberChestnut: 0x7a5a3a,
+    timberTeak: 0x8a6a3a, timberMud: 0x7a6a52, timberMudLight: 0x877558, timberTeakLight: 0x9a7a4a,
+    timberTaupe: 0x8b8069, timberKhaki: 0x9a8a68, timberTaupeLight: 0x8c8579, timberGrey: 0x958e80,
+    timberBirch: 0xc8a878, timberSand: 0xd8cca0
+  },
+  'iziz': {
+    amber: 0xffb04a,
+    blackIron: 0x2a2018,
+    bronzeDark: 0x6e5428, bronze: 0x8a6a3a, bronzeLight: 0x9a7a3c,
+    candleDark: 0xffd28a, candle: 0xffe9a8,
+    clothTeal: 0x2f8f8a, clothCrimson: 0x9c2d2d, clothCobalt: 0x3a6fb0, clothViolet: 0x7a4fa0,
+    clothOrange: 0xe07a2a, clothGold: 0xd4af37, clothBone: 0xe8dcc4,
+    electricDark: 0x5cc4ff, electric: 0x8fd4ff,
+    flame: 0xffd34a,
+    gilt: 0xd9b23c, giltLight: 0xe8c14a,
+    glassChalk: 0xd8ecf0,
+    iceDark: 0x9fdfff, ice: 0xbfe8ff,
+    leaf: 0x3a8a46, leafOlive: 0x4a8a50, leafVermilion: 0xc9442a,
+    stoneGranite: 0x6a6052, stoneMud: 0x8c8068, stoneKhaki: 0x9a8e74, stoneLinen: 0xc8bfa6,
+    timberSepia: 0x4a3a2a, timberChestnut: 0x6a4a2a, timberFlax: 0xc2a165,
+    whiteHot: 0xfff0c0
+  },
+  'beast-rider': {
+    amber: 0xffb066,
+    barkUmber: 0x5a4a38,
+    brass: 0xa88a3c,
+    candle: 0xffd28a,
+    clothTeal: 0x2f8f8a, clothVermilion: 0xc9442a, clothSaffron: 0xd8a23a, clothTaupe: 0x9a8878,
+    clothGrey: 0xa89a86, clothSand: 0xc9b58a, clothIvory: 0xe8ded0,
+    glassLeaf: 0x6a8a3a,
+    hideOak: 0x8a6a48,
+    ice: 0x4ac8b0,
+    iron: 0x3a362e,
+    leafMoss: 0x3a6a2c, leafOlive: 0x4a7a32, leaf: 0x8a9a46, leafMadder: 0xb8342a,
+    leafMadderLight: 0xb84a2a, leafVermilion: 0xd2542a, leafOchre: 0xc9a24a,
+    pewter: 0x8a8f92,
+    plasterSlate: 0x3a5a68,
+    redCopper: 0x9c2d2d,
+    steel: 0x5a5a5a,
+    stoneCharcoal: 0x2a2f38, stoneTaupe: 0x8a8478,
+    timberEbony: 0x2a2620, timberSepia: 0x4a3f30, timberWalnut: 0x6a3a2a, timberUmber: 0x6a5c48,
+    timberMudDark: 0x7a6a4e, timberMud: 0x8a7558, timberStraw: 0xc9a86a
+  }
+};
+/* the colour a palette key names for a culture; throws on an unknown key so a typo fails the build */
+function furnCol(culture, key) {
+  if (typeof key === 'number') return key;
+  const p = FPAL[culture];
+  if (p && p[key] != null) return p[key];
+  throw new Error('no palette key "' + key + '" for culture ' + culture);
+}
+
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
@@ -406,12 +777,22 @@ function makeFrame(x, z, ry, opt) {
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
-  F.pick = (arr) => arr[Math.floor(F.rnd() * arr.length) % arr.length];
+  F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
+  F.cols = (keys) => keys.map(F.col);
+  F.pick = (arr) => {
+    const v = arr[Math.floor(F.rnd() * arr.length) % arr.length];
+    return (typeof v === 'string' && F.asset && FPAL[F.asset.culture] && FPAL[F.asset.culture][v] != null) ? F.col(v) : v;
+  };
   F.chance = (p) => F.rnd() < p;
+  /* engine helpers on the frame, so a piece need not reach for host globals */
+  F.shade = (c, amt) => shade(typeof c === 'string' ? F.col(c) : c, amt); F.TAU = TAU;
   const toWorld = (lx, lz) => {
     const c = Math.cos(F.ry), s = Math.sin(F.ry);
     return [F.x + lx * c + lz * s, F.z - lx * s + lz * c];
   };
+  /* move the frame origin to local (lx, lz). A piece authored off-centre calls
+     F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
+  F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
   F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
   F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
   F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
@@ -437,6 +818,8 @@ function makeFrame(x, z, ry, opt) {
     }
   };
   F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
+  F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
   F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
   return F;
@@ -689,6 +1072,7 @@ function animate(now) {
   requestAnimationFrame(animate);
   _moveStep(now || performance.now());
   if (window._inspectorTick) window._inspectorTick();
+  if (window._frameHooks) for (const fh of window._frameHooks) fh(now || performance.now());
   renderer.render(scene, camera);
 }
 animate();

@@ -7,7 +7,7 @@ core/sockets/ (the socket + culture system) and one tiny demo building. The outp
     python3 build.py                      # -> sockets-example.html next to this file
     python3 ../../../kits/post-apoc/verify.py sockets-example.html --views "Cultures"
 
-To start your own build on the socket system: copy the fragment list below, replace 40-demo.js with your buildings, keep 37-sockets.js and 80-cultures.js from core/sockets/.
+To start your own build on the socket system: copy the fragment list below, replace 40-demo.js with your buildings, keep 37-sockets.js, 38-symbols.js and 80-cultures.js from core/sockets/.
 """
 import os, re, subprocess, sys
 
@@ -38,8 +38,10 @@ def find_node():
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 KIT = os.path.join(ROOT, 'kits', 'post-apoc', 'src'); CORE = os.path.join(HERE, '..')
-FRAGS = [(KIT, f) for f in ('00-head.html', '10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '36-def.js', '90-scene.js', '91-probe.js', '92-camera.js', '99-tail.html')]
-FRAGS += [(CORE, '37-sockets.js'), (CORE, '80-cultures.js'), (HERE, '40-demo.js'), (HERE, '89-rows.js')]
+# every post-apoc engine fragment, none of its buildings (4x-5x) or its showcase table (89): a hand-kept list
+# broke twice as the scene grew new dependencies
+FRAGS = [(KIT, f) for f in sorted(os.listdir(KIT)) if f[0].isdigit() and not re.match(r'(4\d|5\d|89)-', f)]
+FRAGS += [(CORE, '37-sockets.js'), (CORE, '38-symbols.js'), (CORE, '80-cultures.js'), (HERE, '40-demo.js'), (HERE, '89-rows.js')]
 FRAGS.sort(key=lambda t: t[1])
 html = ''.join(open(os.path.join(d, f), encoding='utf-8', newline='').read() for d, f in FRAGS)
 html = re.sub(r'<title>.*?</title>', '<title>Culture Socket Sheet</title>', html, count=1)

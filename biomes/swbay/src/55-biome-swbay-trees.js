@@ -6,10 +6,19 @@
 // Beyond the LOD spine the canopy species become blob impostors in the 'far'
 // bucket (the hyperjungle's technique); the small species thin out with
 // distance and stop. Every count scales with q; the core charges BIO.cur.
+// RUNTIME LOD (the core's, as xanadu and swlowlands use it): a hero tree is drawn in full
+// while the camera is within SWBAY.LOD.tree of its chunk (BIO.LOD.chunk, 1200 m) and as a
+// lite stand-in impostor past that; a far tree is only ever its impostor.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=SWBAY.SPECIES,PAL=SWBAY.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 SWBAY.TREES=[];
+// the runtime LOD ranges (metres from the camera to a chunk's box; BIO.LOD.scale multiplies them):
+// hero trees in full, the floor's near / mid / far bands, the reeds in the shallows, fallen logs,
+// the dressing on a world's structures. Equal ranges share a mesh per item per chunk (the passes
+// use many of the same items), so they are kept to two values: each distinct one is a draw call
+// per item per chunk in view.
+SWBAY.LOD={tree:1200,floor:800,floorMid:1200,farFloor:1200,reeds:800,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
@@ -356,9 +365,16 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hc=C(
  if(!spots.length){clumpAt('leaflet',T.x,top,T.z,sz0,.3,hc,T.x,cy,T.z,R,4);st.clumps++;}
  if(typeof REGISTER==='function'&&lv===2)REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:R,h:T.H});};
 // ---------------------------------------------------------------- impostors (the far canopy)
-let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2000,tiny=(T.sp>=5&&T.sp<=8)||T.sp>=10;let tris=0;
+// lite: the stand-in behind a hero tree (seen only past SWBAY.LOD.tree, 1.2-2.9 km): the cheap
+// blob count in 20-triangle blobs (a prism gum's 15 m blob is ~25 px across at 1.2 km) on a
+// one-band bole (no flare). The prism gum's underside is greener than its far
+// impostor's: from a low camera the sides show, and the hero's crown reads green with purple in
+// it, not purple. It draws no random numbers (a cap's colour is the hero's T.capCol), so every
+// hero built after it is unchanged.
+let ICO=null,ICO0=null;
+function buildFar(T,fi,st,lite){const K=BIO.bucket('far');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}
+ const ip=lite?ICO0:ICO;
+ const S=SP[T.sp],cheap=lite||BIO.lodD(T.x,T.z)>2000,tiny=(T.sp>=5&&T.sp<=8)||T.sp>=10;let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd,under){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
@@ -368,11 +384,11 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
    vtx(x+dx*rx*m,y+dy*ry*m*(under&&dy<0?under:1),z+dz*rx*m,dx/nl,ny/nl,dz/nl,mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
   tris+=ip.length/9;}
  const bc=(T.sp===2?tint(PAL.stipe[fi%4],[1,1,1],.8):C(S.bark[fi%S.bark.length])).convertSRGBToLinear(),seg=tiny?3:cheap?4:6,top=T.y0+T.H*[.88,.9,.8,.62,.95,.5,.9,.9,.4,.92,.9,.3,.5][T.sp],rings=[];
- [0,.06,.5,1].forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(T.sp===6?.15:.5,T.rb*(1-.5*u)*(u<.08?1.6:1)*(T.sp===1&&u<.6?1.3:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
+ (lite?[0,1]:[0,.06,.5,1]).forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(T.sp===6?.15:.5,T.rb*(1-.5*u)*(u<.08?1.6:1)*(T.sp===1&&u<.6?1.3:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.7+.3*(r2/rings.length);
   [A,D,E,A,E,Bq].forEach(p=>vtx(p[0],p[1],p[2],p[3],.05,p[4],bc.r*sh,bc.g*sh,bc.b*sh));tris+=2;}
  const L=S.leaf.map(h=>bright(h,.85)),R=T.crownR,a0=(T.seed%628)/100;
- if(T.sp===0){const L2=S.leaf2.map(h=>bright(h,.85));blob(T.x,T.y0+T.H*.88,T.z,R*.6,T.H*.1,L[fi%2],L2[fi%2],fi);
+ if(T.sp===0){const L2=S.leaf2.map(h=>bright(lite?C(h).lerp(C(S.leaf[0]),.6):h,.85));blob(T.x,T.y0+T.H*.88,T.z,R*.6,T.H*.1,L[fi%2],L2[fi%2],fi);
   for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.55,T.y0+T.H*.78+((k*7)%5),T.z+Math.sin(a)*R*.55,R*.45,T.H*.07,L[(k+fi)%2],L2[(k+1)%2],fi+k);}}
  else if(T.sp===1){for(let k=0;k<3;k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.42,T.y0+T.H*.93+((k*11)%7),T.z+Math.sin(a)*R*.42,R*.52,T.H*.09,L[k%3],L[2],fi+k);}}
  else if(T.sp===2){const cc=T.capCol||(T.capCol=vary(pick(PAL.cap),.02,.08,.05));blob(T.x,T.y0+T.H*.84,T.z,R*.98,T.H*.14,cc,shade(cc,-.35),fi,.35);}
@@ -385,14 +401,15 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
  else if(T.sp===7){blob(T.x,T.y0+T.H*.95,T.z,R*.95,T.H*.1,L[fi%4],L[2],fi,.5);}
  else if(T.sp===8){blob(T.x,T.y0+T.H*.7,T.z,R*.8,T.H*.5,L[fi%4],L[2],fi);}
  else if(T.sp===11){blob(T.x,T.y0+T.H*.55,T.z,R*.9,T.H*.5,L[fi%4],shade(L[(fi+1)%4],.3),fi);}
- else if(T.sp===10){for(let k=0;k<2;k++)blob(T.x,T.y0+T.H*(.45+k*.35),T.z,R*.8,T.H*.04,L[(fi+k)%4],shade(L[2],-.3),fi+k,.3);}
+ else if(T.sp===10){for(let k=0;k<(lite?1:2);k++)blob(T.x,T.y0+T.H*(.45+k*.35),T.z,R*.8,T.H*.04,L[(fi+k)%4],shade(L[2],-.3),fi+k,.3);}
  else{blob(T.x,T.y0+T.H*.9,T.z,R*.9,T.H*.1,L[fi%4],L[2],fi);}
- K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+ {const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);}   // written raw, so the impostor's triangles carry the tree's lod key here
+ K.tris+=tris;BIO.tally(tris,0,0);if(lite)st.lite+=tris;else st.far+=tris;}
 
 // ---------------------------------------------------------------- the pass
 SWBAY.buildTrees=function(R,q){
  reseed(550021);q=q==null?1:q;R=R||2400;means();
- const st={trunk:0,limb:0,cap:0,far:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,shrooms:0,parasols:0,tiers:0,roots:0,shelves:0,corals:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ const st={trunk:0,limb:0,cap:0,far:0,lite:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,shrooms:0,parasols:0,tiers:0,roots:0,shelves:0,corals:0,heroes:0,fars:0,byS:SP.map(()=>0)};
  const TREES=SWBAY.TREES;TREES.length=0;for(const k in HASH)delete HASH[k];
  const mk=(x,y,z,sp,Z)=>{const S=SP[sp];return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:Z.wet,sav:Z.sav};};
  // one species pass: a jittered grid over the whole disc, the zone weight
@@ -426,8 +443,16 @@ SWBAY.buildTrees=function(R,q){
  pass(10,58,(Z)=>Z.hyper*.4+Z.rain*.5+Z.flow*.2*(Z.rain+Z.hyper),{hero:580,mid:1000,far:true,pad:3,lodK:.6,patch:.5});
  pass(11,40,(Z)=>Z.hyper*.45+Z.rain*.3+Z.shore*.2,{hero:520,mid:900,far:true,pad:1,lodK:.8,patch:.6,patchScale:.012,space:.4});
  // build
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // runtime LOD: a hero is drawn in full while the camera is within SWBAY.LOD.tree of its chunk (its
+ // foot keys all of it) and as its lite stand-in past that; a far tree (beyond the spine's mid ring)
+ // is only ever its impostor, always drawn. The stand-ins are tris.lite.
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st);st.fars++;}
+  else{BIO.range=SWBAY.LOD.tree;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
+   BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;buildFar(T,i,st,true);}
+  st.byS[T.sp]++;});
+ BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,fans:st.fans,epiphytes:st.epi,tiers:st.tiers,roots:st.roots,shelves:st.shelves,corals:st.corals,
-  tris:{trunk:st.trunk,limbs:st.limb,caps:st.cap,far:st.far,small:st.sapTris}};};
+  tris:{trunk:st.trunk,limbs:st.limb,caps:st.cap,far:st.far,lite:st.lite,small:st.sapTris}};};
 SWBAY._canopyH=function(x,z){let h=0;for(const T of SWBAY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 })();

@@ -77,6 +77,49 @@ blooms / leaf colours / registration / ring scatter are one helper each, the hos
 Abyss and tower maths are defined once, the camera's five map sweeps are one, and the
 world's register / lod / windows are host hooks instead of numbers in the biome.
 
+## The undercut lip (Oct 2026)
+
+The cataract used to leave the river ribbon 30 m out over the Abyss: the face below the
+plateau's edge is ~8:1, and a curtain falling from the edge itself runs 2-3 m inside the rock
+for most of its 700 m. A carve patch only takes rock away, so the lip first had to come out:
+the canyon floor runs on as a sheer promontory (`lipD`, a rounded box, its front 1-3 m behind
+the fall's start), then the cave is carved under its cap. Lessons:
+- **The ground's cell sets the patch's pad.** The ground here is 17.8 m; the window round the
+  lip is split 12 ways (1.5 m), or the 3 m sheer faces and the recess are not resolved.
+- **A wide margin duplicates whatever face is beside the patch.** At 21 m the patch's rock
+  covered the Abyss face beside the promontory, where 1.5 m ground cells cannot match its
+  exact surface: cross-hatching. The recess now climbs at 12:1, so the margin is 10 m.
+- **Take the ground's own rock weight.** Forcing a patch's steep faces to the strata showed a
+  seam against the painted Abyss wall below it.
+
+## The candles' impostor (Oct 2026)
+
+The twist-candles were the one species with no far form: past the mid radius (1.3 km for the
+small species) a clump was simply not placed. This host's spine runs the river, so no candle
+gets that far here (176 clumps, all heroes, none 500 m from it); a world whose spine sits
+elsewhere lost its candles at range. A blob on a pole reads neither the habit nor the water,
+so `far:{spires:n}` is a second impostor kind (`spiresOf` / `farSpires` in 55):
+- **The habit.** n spires set out as the hero sets its columns (the main one at the clump's
+  foot, the rest round it, the same height and width draws), each three-sided with its corners
+  on the lobes, turning 1.2 rad over the height as the hero's lobes do: 9 triangles, ~25 a clump.
+- **The water.** A spire stands where the hero's column does: rooted in the bed, its top at the
+  bed + h, so what shows above `BIO.waterH` (the local level: the river descends, the pond has
+  its own) is the hero's. The water decides what is built: a spire it drowns, or that shows
+  less than 0.8 m over the water and the ground, is not. A first version footed the spires
+  half a metre under the water to save the hidden part; that saves no triangles (a spire is
+  9 whatever its length) and floats them wherever a host draws its water clear, or (here, see
+  KNOWN_ISSUES) not at all. The foot has a 1.5 m skirt, because a host draws its ground coarser
+  than terrainH (the 17.8 m triangles here dip up to ~1.5 m under it on the channel's banks).
+- **Its own hash.** The draws come from the tree's seed, not the biome's stream, so a far clump
+  moves nothing else, and `SEDESERT.spiresOf(T)` is the layout as data: the probe lays it out
+  for every clump, heroes included, and checks it against the ground as drawn.
+
+Tested on a copy of the page with the spine cut to the pond: 72 of 139 clumps are impostors
+(182 spires, +1,638 triangles), no foot over the drawn ground, every top at least 0.88 m
+clear of the water and the ground. From the floor at x = -1244 the old page shows no candles
+down the river, the new one a clump of spires 26 m off and more beyond it; from the north
+rim across the mid radius (x = -905) the candles run on past it.
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto

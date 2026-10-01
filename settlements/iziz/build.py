@@ -332,26 +332,8 @@ def _open_after_header(s, fn, tail=''):
 
 
 def bio_wrap(f, s):
-    if f == '10-core-head':
-        s = _sub(s, "const BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};\n",
-                 "var BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};\n"
-                 "// EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,\n"
-                 "// TAU...): a world that already has those would be clobbered. Biome fragments\n"
-                 "// pull what they need from BIO.fn at the top of their own closure.\n(function(){\n")
-        s = _sub(s, " if(!h||!h.THREE||!h.scene)throw new Error('BIO.init: host needs THREE and scene');\n",
-                 " if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');\n"
-                 " // scene may arrive later (a world that creates its scene after its kit loads\n"
-                 " // calls BIO.setScene before build); it is only needed at bake\n")
-        s = _sub(s, '  THREE:h.THREE,scene:h.scene,\n', '  THREE:h.THREE,scene:h.scene||null,\n')
-        s = _sub(s, ' return BIO;};\n', ' return BIO;};\nBIO.setScene=function(s){BIO.host.scene=s;};\n')
-        return s.rstrip('\n') + '\n\nBIO.fn={%s};\n})();\n' % BIO_FN
-    if f == '20-core-kit':
-        s = _sub(s, 'BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;let calls=0,inst=0;',
-                 "BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error("
-                 "'BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;")
-        return _open_after_header(s, BIO_FN, '\nObject.assign(BIO.fn,{qEuler,qFacing,qUp});')
-    if f in ('30-core-foliage', '35-core-anim', '40-core-place'):
-        return _open_after_header(s, BIO_FNQ)
+    if '-core-' in f:   # core/biome now carries the closure wrap itself (var BIO, BIO.fn, BIO.setScene)
+        return s
     if f == '50-biome-hyperjungle-species':
         s = _sub(s, '\nconst HYPERJUNGLE={};\n', '\nvar HYPERJUNGLE={};\n(function(){const {%s}=BIO.fn;\n' % BIO_FNQ)
         return s.rstrip('\n') + '\n\n})();\n'
@@ -361,7 +343,8 @@ def bio_wrap(f, s):
 
 
 def bio_paths(f):
-    return (os.path.join(ROOT, 'biomes', 'hyperjungle', 'src', f + '.js'),
+    up = os.path.join(ROOT, 'core', 'biome') if '-core-' in f else os.path.join(ROOT, 'biomes', 'hyperjungle', 'src')
+    return (os.path.join(up, f + '.js'),   # the biome core lives in core/biome since Oct 2026
             os.path.join(TARGETS, 'city', '86-bio-%s.js' % f))
 
 

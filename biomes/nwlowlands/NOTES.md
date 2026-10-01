@@ -63,7 +63,33 @@ the wet rims. Far off, a grove is a blob canopy. The floor:
 - The water carries lotus.
 - An understorey pass under the crowns.
 
+## Second pass (runtime LOD)
+- The core's runtime LOD, ported from swlowlands (this kit is its clone). Every pass builds
+  under `BIO.range`, so bake splits each item and bucket into one mesh per 1200 m chunk and
+  range, and the host calls `BIO.lodTick(camera)` every frame. A hero tree (its foot keys all of
+  it) is drawn within `NWLOW.LOD.tree` (1200 m) of its chunk and as a lite stand-in impostor past
+  that; the ghost-gum avenue's row keeps its full trees to 2000 m. The far trees beyond the
+  spine's mid ring stay impostors only, always drawn. The floor's bands, the understorey, the
+  logs and the dressing have their own ranges (BIOME-API.md), kept to a few values because
+  equal ranges share a mesh.
+- The groves are this kit's own case. Their near and mid culms and leaf are drawn within
+  `NWLOW.LOD.grove` (1200 m) by their own chunk; behind them stands one lite blob per 22 m cell
+  (the far band's spacing) where a sky-bamboo clump stood, recorded while the grove was built,
+  so the stand-ins draw no random numbers. A leaf-green floating canopy (the far band's look)
+  read wrong from the foothills where the culms had read pale, so the stand-in runs from the
+  ground to the culm tops in the culm colour with a little leaf in it.
+- The stand-ins draw no random numbers (a small species' colour from its seed, a grove's from
+  its cell), so every hero is built exactly as before: the held scene grew by the stand-ins
+  only (0.17M). 20-triangle blobs (the 80-triangle one for crowns over 16 m) on a one-band bole.
+- Measured at four presets (1280x800): drawn 9.94M in 62-64 calls at every view -> 1.2-6.4M in
+  89-284 calls; 960 chunk meshes; build ~20 s either way.
+
 ## Lessons this build cost
+- A pass that writes a bucket raw (`buildFar`, `buildFarSmall`, `farGrove`) must push the LOD
+  key per triangle itself, or bake's grouping shifts every later triangle of that bucket.
+- A stand-in must look like the thing at the distance it stands in, not like the far impostor
+  of the same thing: the far band's grove blob is a canopy, but a near grove seen from 1.5 km
+  is its culms.
 - Stocking is set by counts, not by the budget knob. The first full build (q=.3) was
   already 10M. Bamboo at 33k culms and birch stands at 1.2k multi-stem trees were the
   weight. Groves were made rarer and their culms clumped, sharing the foliage (which is
