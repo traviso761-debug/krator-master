@@ -15,7 +15,7 @@ const ALT_CIVIC=[
  ['altPort',  'buildAltStarport',         330, 260, 680, 'Starport alt — the Saucer Deck'],
  ['altBunk',  'buildAltBunker',           170, 110, 400, 'Bunker alt — the Bastion Drum'],
  ['altLib',   'buildAltLibrary',          170, 110, 420, 'Library alt — the Reading Star'],
- ['altGate',  'buildAltGate',             300, 220, 600, 'Gate alt — the Horns'],
+ ['altGate',  'buildAltGate',             380, 220, 640, 'Gate alt — the Horns'],
  ['altRobo',  'buildAltRobotics',         230, 160, 500, 'Robotics alt — the Rig'],
  ['altDc',    'buildAltDataCenter',       200, 140, 460, 'Data center alt — the Perforated Stacks'],
  ['altPolice','buildAltPolice',           130,  80, 340, 'Police alt — the Watch Cup'],
