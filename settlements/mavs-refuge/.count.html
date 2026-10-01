@@ -3373,17 +3373,17 @@ function mCone(fam,x,yb,z,rb,rt,h,col,seg,rot,under){
     if(under) MTRI(fam,a,b,[x,yb,z],shade(col,-0.4));
   }
 }
-function bush(x,y,z,r,h,col){ mCone('leafy',x,y,z,r*0.75,r,h*0.4,col,6,x); mCone('leafy',x,y+h*0.4,z,r,0,h*0.6,shade(col,0.08),6,x); }
-function pod(x,y,z,r,col){
+function bush(x,y,z,r,h,col){(window._C=window._C||{})['bush']=(window._C['bush']||0)+1; mCone('leafy',x,y,z,r*0.75,r,h*0.4,col,6,x); mCone('leafy',x,y+h*0.4,z,r,0,h*0.6,shade(col,0.08),6,x); }
+function pod(x,y,z,r,col){(window._C=window._C||{})['pod']=(window._C['pod']||0)+1;
   var t=[x,y+r*1.3,z], b=[x,y-r*0.2,z], q=[[x+r,y+r*0.5,z],[x,y+r*0.5,z+r],[x-r,y+r*0.5,z],[x,y+r*0.5,z-r]];
   for(var i=0;i<4;i++){ var p0=q[i], p1=q[(i+1)%4], mx=(p0[0]+p1[0])/2-x, mz=(p0[2]+p1[2])/2-z;
     oTri('leafy',p0,p1,t,col,mx,0.5,mz); oTri('leafy',p0,p1,b,shade(col,-0.2),mx,-0.5,mz); }
 }
-function podPile(x,y,z,n){ for(var i=0;i<n;i++){ var a=i*2.4, r=i<5?0.42:0.18; pod(x+Math.cos(a)*r*(i%5?1:0), y+(i<5?0:0.42), z+Math.sin(a)*r*(i%5?1:0), 0.24, FRUITC[i%3]); } }
+function podPile(x,y,z,n){(window._C=window._C||{})['podPile']=(window._C['podPile']||0)+1; for(var i=0;i<n;i++){ var a=i*2.4, r=i<5?0.42:0.18; pod(x+Math.cos(a)*r*(i%5?1:0), y+(i<5?0:0.42), z+Math.sin(a)*r*(i%5?1:0), 0.24, FRUITC[i%3]); } }
 function lamp(x,y,z,amp,rad,cool,hang){ LANTERN(x,y,z,amp,rad,cool,hang); ARCH.lamps++; }
 function pane(x,y,z,nx,nz,w,h,cool){ WINPANE(x,y,z,nx,nz,w,h,cool); ARCH.windows++; }
-function barrel(x,y,z,s){ s=s||1; CYL(x,y,z,0.42*s,1.0*s,0,TIMBERC[ri(0,3)],'timber'); }
-function crate(x,y,z,s,ry){ BOX(x,y,z,s,s*0.8,s,ry||0,pick(CRATEC),'plank'); }
+function barrel(x,y,z,s){(window._C=window._C||{})['barrel']=(window._C['barrel']||0)+1; s=s||1; CYL(x,y,z,0.42*s,1.0*s,0,TIMBERC[ri(0,3)],'timber'); }
+function crate(x,y,z,s,ry){(window._C=window._C||{})['crate']=(window._C['crate']||0)+1; BOX(x,y,z,s,s*0.8,s,ry||0,pick(CRATEC),'plank'); }
 
 /* general hipped frustum roof on a polar rectangle. Bottom R0..R1 x A0..A1 at yb,
    top r0t..r1t x a0t..a1t at yt (degenerate top = ridge / point). Auto-wound. */
@@ -3673,7 +3673,7 @@ function FRM(x,z,fx,fz){ return { x:x, z:z, fx:fx, fz:fz, rx:-fz, rz:fx, ry:yawO
 function LP(f,lx,lz){ return [f.x+f.rx*lx+f.fx*lz, f.z+f.rz*lx+f.fz*lz]; }
 function fBOX(f,lx,lz,y,w,h,d,col,fam){ var p=LP(f,lx,lz); BOX(p[0],y,p[1],w,h,d,f.ry,col,fam); }
 
-function stall(f,y,lit){
+function stall(f,y,lit){(window._C=window._C||{})['stall']=(window._C['stall']||0)+1;
   var ac=pick(AWNINGC), ac2=chance(0.5)?shade(ac,0.35):pick(AWNINGC), tc=pick(TIMBERC);
   [[-1.4,-1.0,2.85],[1.4,-1.0,2.85],[-1.4,1.0,2.2],[1.4,1.0,2.2]].forEach(function(p){ fBOX(f,p[0],p[1],y,0.12,p[2],0.12,tc,'timber'); });
   fBOX(f,0,0.85,y,3.0,0.9,0.6,pick(CRATEC),'plank');
@@ -3686,10 +3686,10 @@ function stall(f,y,lit){
   if(lit){ var lp=LP(f,0,1.35); lamp(lp[0],y+1.85,lp[1],0.7,10,false,0.25); }
   ARCH.stalls++;
 }
-function bench(f,y){ fBOX(f,0,0,y+0.42,1.9,0.1,0.5,PLANKC[2],'plank'); fBOX(f,0,0,y,1.5,0.42,0.14,TIMBERC[1],'timber'); }
-function planter(f,y){ fBOX(f,0,0,y,2.6,0.5,1.1,PLANKC[3],'plank');
+function bench(f,y){(window._C=window._C||{})['bench']=(window._C['bench']||0)+1; fBOX(f,0,0,y+0.42,1.9,0.1,0.5,PLANKC[2],'plank'); fBOX(f,0,0,y,1.5,0.42,0.14,TIMBERC[1],'timber'); }
+function planter(f,y){(window._C=window._C||{})['planter']=(window._C['planter']||0)+1; fBOX(f,0,0,y,2.6,0.5,1.1,PLANKC[3],'plank');
   for(var i=0;i<3;i++){ var p=LP(f,-0.85+i*0.85,rr(-0.1,0.1)); bush(p[0],y+0.45,p[1],rr(0.4,0.6),rr(0.6,1.3),chance(0.5)?pick(CROPC):pick(FERNC)); } }
-function well(f,y){
+function well(f,y){(window._C=window._C||{})['well']=(window._C['well']||0)+1;
   CYL(f.x,y,f.z,1.05,0.85,0,TIMBERC[2],'timber'); CYL(f.x,y+0.8,f.z,0.85,0.08,0,shade(PAL.riverDeep,-0.2),'timber');
   fBOX(f,-1.2,0,y,0.16,2.6,0.16,TIMBERC[0],'timber'); fBOX(f,1.2,0,y,0.16,2.6,0.16,TIMBERC[0],'timber'); fBOX(f,0,0,y+2.2,2.6,0.14,0.14,TIMBERC[1],'timber');
   var a=LP(f,-1.5,-0.9),b=LP(f,1.5,-0.9),c=LP(f,1.5,0),d=LP(f,-1.5,0),e=LP(f,1.5,0.9),g=LP(f,-1.5,0.9), tc=pick(THATCHC);
@@ -3697,18 +3697,18 @@ function well(f,y){
   dQuad('thatch',[g[0],y+2.5,g[1]],[e[0],y+2.5,e[1]],[c[0],y+3.1,c[1]],[d[0],y+3.1,d[1]],shade(tc,-0.08));
   ROD(f.x,y+1.2,f.z,f.x,y+2.2,f.z,0.02,ROPEC[0],'rope');
 }
-function barrels(f,y){ barrel(f.x,y,f.z,1.15); var p=LP(f,0.95,0.2); barrel(p[0],y,p[1],1.0); if(chance(0.5)){ p=LP(f,0.4,-0.85); barrel(p[0],y,p[1],0.9); } }
-function dryRack(f,y,cols){
+function barrels(f,y){(window._C=window._C||{})['barrels']=(window._C['barrels']||0)+1; barrel(f.x,y,f.z,1.15); var p=LP(f,0.95,0.2); barrel(p[0],y,p[1],1.0); if(chance(0.5)){ p=LP(f,0.4,-0.85); barrel(p[0],y,p[1],0.9); } }
+function dryRack(f,y,cols){(window._C=window._C||{})['dryRack']=(window._C['dryRack']||0)+1;
   fBOX(f,-1.6,0,y,0.12,2.3,0.12,TIMBERC[0],'timber'); fBOX(f,1.6,0,y,0.12,2.3,0.12,TIMBERC[0],'timber'); fBOX(f,0,0,y+2.2,3.4,0.08,0.08,TIMBERC[1],'timber');
   for(var i=0;i<3;i++){ var p=LP(f,-1.0+i,0); BOX(p[0],y+2.2-rr(1.2,1.7),p[1],0.8,1.7,0.04,f.ry,pick(cols||[CLOTHC[1],CLOTHC[5],AWNINGC[2]]),'cloth'); } }
-function fruitStack(f,y){
+function fruitStack(f,y){(window._C=window._C||{})['fruitStack']=(window._C['fruitStack']||0)+1;
   for(var i=0;i<3;i++){ var p=LP(f,(i-1)*1.05,(i%2)*0.5); CYL(p[0],y,p[1],0.48,0.5,0,WALLC[i%5],'timber'); podPile(p[0],y+0.5,p[1],7); }
   var q=LP(f,0.3,-0.9); podPile(q[0],y+0.05,q[1],6); crate(q[0]+0.9*f.rx,y,q[1]+0.9*f.rz,0.8,f.ry);
 }
-function banner(f,y,h,col){ h=h||5.5;
+function banner(f,y,h,col){(window._C=window._C||{})['banner']=(window._C['banner']||0)+1; h=h||5.5;
   BOX(f.x,y,f.z,0.14,h,0.14,f.ry,TIMBERC[0],'timber'); fBOX(f,0.5,0,y+h-0.35,1.2,0.08,0.08,TIMBERC[0],'timber');
   var p=LP(f,0.62,0); BOX(p[0],y+h-0.4-h*0.5,p[1],0.85,h*0.5,0.04,f.ry,col||pick(CLOTHC),'cloth'); }
-function weaponRack(f,y){
+function weaponRack(f,y){(window._C=window._C||{})['weaponRack']=(window._C['weaponRack']||0)+1;
   fBOX(f,-1.2,0,y,0.12,1.5,0.12,TIMBERC[2],'timber'); fBOX(f,1.2,0,y,0.12,1.5,0.12,TIMBERC[2],'timber'); fBOX(f,0,0,y+1.35,2.5,0.1,0.1,TIMBERC[2],'timber');
   for(var s=0;s<5;s++){ var a=LP(f,(s-2)*0.45,-0.4), b=LP(f,(s-2)*0.45,0); ROD(a[0],y,a[1],b[0],y+2.5,b[1],0.03,TIMBERC[3],'timber'); } }
 
@@ -3732,7 +3732,7 @@ function frameOf(pl,mode){ /* mode: 'in' faces the trunk, 'out' faces the rim, '
   if(mode==='in') return FRM(pl.x,pl.z,-pl.ox,-pl.oz); if(mode==='out') return FRM(pl.x,pl.z,pl.ox,pl.oz);
   return FRM(pl.x,pl.z,-pl.oz,pl.ox); }
 
-function towerFrame(f,y,h,half,col){
+function towerFrame(f,y,h,half,col){(window._C=window._C||{})['towerFrame']=(window._C['towerFrame']||0)+1;
   [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(c,i,arr){ var p=LP(f,c[0]*half,c[1]*half), q=LP(f,c[0]*half*0.8,c[1]*half*0.8), n=arr[(i+1)%4], p2=LP(f,n[0]*half*0.8,n[1]*half*0.8);
     BEAM(p[0],y,p[1],q[0],y+h,q[1],0.26,0.26,col,'timber');
     BEAM(p[0],y+0.3,p[1],p2[0],y+h*0.5,p2[1],0.12,0.12,col,'timber'); BEAM(q[0],y+h,q[1],p2[0],y+h,p2[1],0.18,0.18,col,'timber'); });
@@ -4353,24 +4353,24 @@ function lvlPostCount(P,Lv){ var open=(Lv.kind==='roost'||Lv.kind==='hangar');
   return P.main ? Math.round(TAU*Lv.Rout/(open?5.2:3.9)) : Math.max(6, Math.round(TAU*Lv.Rout/3.4)); }
 
 /* small furniture */
-function lvlCrate(fr,u,v,dy,s,col){ lvlFBox('plank',fr,u,v,dy,s,s*rr(0.7,1.0),s,col||pick(CRATEC),'tfklr'); }
-function lvlBarrel(fr,u,v,dy,r,h,col){ var p=lvlAt(fr,u,v,dy); lvlDrum('plank',p[0],p[1],p[2],r,h,col||pick(TIMBERC),6,r*0.88); }
-function lvlBench(fr,u,v,len,along){
+function lvlCrate(fr,u,v,dy,s,col){(window._C=window._C||{})['lvlCrate']=(window._C['lvlCrate']||0)+1; lvlFBox('plank',fr,u,v,dy,s,s*rr(0.7,1.0),s,col||pick(CRATEC),'tfklr'); }
+function lvlBarrel(fr,u,v,dy,r,h,col){(window._C=window._C||{})['lvlBarrel']=(window._C['lvlBarrel']||0)+1; var p=lvlAt(fr,u,v,dy); lvlDrum('plank',p[0],p[1],p[2],r,h,col||pick(TIMBERC),6,r*0.88); }
+function lvlBench(fr,u,v,len,along){(window._C=window._C||{})['lvlBench']=(window._C['lvlBench']||0)+1;
   var wu = along?0.42:len, wv = along?len:0.42;
   lvlFBox('plank',fr,u,v,0.40,wu,0.08,wv,pick(PLANKC),'tfklr');
   if(along){ lvlFBox('timber',fr,u,v-len*0.38,0,0.34,0.40,0.10,TIMBERC[2],'fklr'); lvlFBox('timber',fr,u,v+len*0.38,0,0.34,0.40,0.10,TIMBERC[2],'fklr'); }
   else     { lvlFBox('timber',fr,u-len*0.38,v,0,0.10,0.40,0.34,TIMBERC[2],'fklr'); lvlFBox('timber',fr,u+len*0.38,v,0,0.10,0.40,0.34,TIMBERC[2],'fklr'); }
 }
-function lvlTable(fr,u,v,wu,wv,h){
+function lvlTable(fr,u,v,wu,wv,h){(window._C=window._C||{})['lvlTable']=(window._C['lvlTable']||0)+1;
   lvlFBox('plank',fr,u,v,h-0.1,wu,0.1,wv,pick(PLANKC),'tbfklr');
   lvlFBox('timber',fr,u-wu*0.38,v,0,0.12,h-0.1,wv*0.8,TIMBERC[0],'fklr'); lvlFBox('timber',fr,u+wu*0.38,v,0,0.12,h-0.1,wv*0.8,TIMBERC[0],'fklr');
 }
-function lvlSpearRack(fr,u,v,n){      /* rack along the tangent with n leaning spears */
+function lvlSpearRack(fr,u,v,n){(window._C=window._C||{})['lvlSpearRack']=(window._C['lvlSpearRack']||0)+1;      /* rack along the tangent with n leaning spears */
   lvlFBox('timber',fr,u,v-n*0.16-0.1,0,0.12,1.5,0.12,TIMBERC[1],'fklr'); lvlFBox('timber',fr,u,v+n*0.16+0.1,0,0.12,1.5,0.12,TIMBERC[1],'fklr');
   lvlFBox('timber',fr,u,v,1.35,0.10,0.10,n*0.32+0.3,TIMBERC[0],'tfkb');
   for(var i=0;i<n;i++){ var vv=v+(i-(n-1)/2)*0.32; lvlFRod(fr,u+0.35,vv,0,u-0.02,vv,2.5,0.025,TIMBERC[3],'timber'); }
 }
-function lvlShield(fr,u,v,y,r,col){ var p=lvlAt(fr,u,v,y); lvlDiscV('plank',p[0],p[1],p[2],fr.ox,fr.oz,r,col,8);
+function lvlShield(fr,u,v,y,r,col){(window._C=window._C||{})['lvlShield']=(window._C['lvlShield']||0)+1; var p=lvlAt(fr,u,v,y); lvlDiscV('plank',p[0],p[1],p[2],fr.ox,fr.oz,r,col,8);
   var q=lvlAt(fr,u+0.06,v,y); lvlDiscV('timber',q[0],q[1],q[2],fr.ox,fr.oz,r*0.28,shade(TIMBERC[2],-0.4),6); }
 
 /* ====================================================================== GOAL A: LEVELS */
@@ -6536,7 +6536,7 @@ reseed(630001);
    a registered light for the glow volume and the halo layer.               */
 reseed(720001);
 
-function LANTERN(x,y,z, amp, rad, cool, hang){
+function LANTERN(x,y,z, amp, rad, cool, hang){(window._C=window._C||{})['LANTERN']=(window._C['LANTERN']||0)+1;
   /* y is the flame height. hang>0 draws a cord up to the thing it hangs from */
   BOX(x, y-0.28, z, 0.34, 0.50, 0.34, 0, TIMBERC[2], 'timber');
   BOX(x, y-0.20, z, 0.26, 0.34, 0.26, 0.78, cool ? PAL.glowCool : PAL.glowWarm, 'glowmat');
@@ -6544,7 +6544,7 @@ function LANTERN(x,y,z, amp, rad, cool, hang){
   if(hang) ROD(x, y+0.4, z, x, y+0.4+hang, z, 0.02, ROPEC[1], 'rope');
   nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool);
 }
-function LAMPPOST(x,y,z, h, amp, rad, cool){
+function LAMPPOST(x,y,z, h, amp, rad, cool){(window._C=window._C||{})['LAMPPOST']=(window._C['LAMPPOST']||0)+1;
   BOX(x, y, z, 0.20, h, 0.20, 0, TIMBERC[0], 'timber');
   BOX(x, y+h-0.12, z+0.35, 0.10, 0.10, 0.8, 0, TIMBERC[0], 'timber');
   LANTERN(x, y+h-0.55, z+0.7, amp, rad, cool, 0.3);
