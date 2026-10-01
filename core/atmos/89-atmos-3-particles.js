@@ -65,8 +65,8 @@
   return A.sprites('moths',{ipos:[3,pos],pp:[4,pp],lt:[2,lt]},pmat(`float t=time*pp.y+pp.x;
    vec3 o=vec3(sin(t*2.3)+0.5*sin(t*5.1+pp.x),0.6*sin(t*1.7+pp.w*6.0)+0.3*sin(t*7.3),cos(t*2.0)+0.5*cos(t*4.3+pp.x*2.0))*pp.z
     +0.07*vec3(sin(time*29.0+pp.x*9.0),sin(time*23.0+pp.w*7.0),cos(time*31.0+pp.x*5.0));
-   vec4 mv=modelViewMatrix*vec4(ipos+o,1.0);float dd=max(-mv.z,0.5);float flap=0.55+0.45*sin(time*38.0+pp.x*20.0);
+   vec4 mv=modelViewMatrix*vec4(ipos+o,1.0);float dd=max(-mv.z,0.5);float flap=0.7+0.3*sin(time*38.0+pp.x*20.0);
    float ps=clamp(${F(P.size)}*px/dd,1.0,${F(P.pxMax)});vA=atmLit(hour,lt)*night*(1.0-rain)*(1.0-0.6*fog)*(1.0-smoothstep(${F(P.windHide[0])},${F(P.windHide[1])},length(wind)))*(1.0-smoothstep(${F(P.fadeNear)},${F(P.fadeFar)},dd))*flap*${F(P.alpha)};
    vC=col;gl_Position=atmQuad(mv,ps);`,
-   `float a=(1.0-smoothstep(0.15,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC*a,a);`,P.blend,{hour:A.U.hour,col:{value:v3(P.color)}},'uniform float hour;uniform vec3 col;attribute vec2 lt;'+A.GLSL_LIT),5);};
+   `float a=(1.0-smoothstep(0.15,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`,P.blend,{hour:A.U.hour,col:{value:v3(P.color)}},'uniform float hour;uniform vec3 col;attribute vec2 lt;'+A.GLSL_LIT),5);};
 })();
