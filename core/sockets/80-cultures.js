@@ -56,6 +56,16 @@ const SYMBOLS={
   for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,TAU);g.stroke();}},
  // three parallel talon slashes (Beast Riders)
  claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
+ // a half sun rising over three waves (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the sun, c2 the waves
+ wavesun:(g,cx,cy,R,c1,c2)=>{const y0=cy-R*.1;g.fillStyle=c1;g.beginPath();g.arc(cx,y0,R*.5,Math.PI,0);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.62,y0+Math.sin(a)*R*.62);g.lineTo(cx+Math.cos(a)*R*.9,y0+Math.sin(a)*R*.9);g.stroke();}
+  g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.1);for(let k=0;k<3;k++){g.beginPath();for(let i=0;i<=24;i++){const x=-R+2*R*i/24,y=y0+R*.12+k*R*.24+Math.sin(x/R*TAU)*R*.07;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}},
+ // the eight-spoked wheel (Xanadu; the carrack's sails): c1 rim and spokes, c2 the hub
+ wheel:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.12);g.beginPath();g.arc(cx,cy,R*.78,0,TAU);g.stroke();g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<8;i++){const a=i/8*TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.18,cy+Math.sin(a)*R*.18);g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.2,0,TAU);g.fill();},
+ // the white moon of the islands (the oruwa's sail): a full disc, a thin ring round it
+ moon:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.62,0,TAU);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(1.5,R*.04);g.beginPath();g.arc(cx,cy,R*.86,0,TAU);g.stroke();},
 };
 // ------------------------------------------------------------------ the factory: a culture is a palette, a symbol and two cloth styles
 // mkCulture({key,name,field,edge,band,disc,ink,ink2,sym,awn:{mode:'stripes'|'cloth',cols,n},paint,pole,signBg,signFg,signFrame,flagStyle:'rect'|'pennant'})
@@ -94,6 +104,20 @@ mkCulture({key:'yuni',name:'Yuni',field:'#dcb42c',edge:'#5a4410',band:'#f4ecc8',
  awn:{mode:'stripes',cols:['#e0b52a','#f4ecc8','#c99a1e','#f4ecc8'],n:8},
  paint:[0xd9b12a,0xe8c84a,0x8a6a1a,0xf4ecc8,0x4a3a12],signBg:'#dcb42c',signFg:'#3a2c08',signFrame:0x5a4410});
 // Beast Riders: green, the claw
-mkCulture({key:'beastriders',name:'Beast Riders',field:'#3f7a3a',edge:'#2e5a2c',band:'#6a9a4a',disc:null,ink:'#e6dcc2',sym:'claw',pole:0x4a3a22,flagStyle:'pennant',
+mkCulture({key:'beast-rider',name:'Beast Riders',field:'#3f7a3a',edge:'#2e5a2c',band:'#6a9a4a',disc:null,ink:'#e6dcc2',sym:'claw',pole:0x4a3a22,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0x58924a,0x4a8240,0x6aa050,0x7f8a48]},
  paint:[0x3f7a3a,0x2e5a2c,0x5a8a3e,0xe0d6c0,0x4a3a22],signBg:'#2e5a2c',signFg:'#e6dcc2',signFrame:0x4a3a22});
+// the old key, kept for worlds and URLs that still say ?culture=beastriders; not enumerable, so loops over CULT.packs see one Beast Rider pack
+Object.defineProperty(CULT.packs,'beastriders',{value:CULT.packs['beast-rider'],enumerable:false});
+// Hykkousoi: pale sea-linen, slate-blue edge, the gold wave-sun (the colours of their sails in kits/ringsea)
+mkCulture({key:'hykkousoi',name:'Hykkousoi',field:'#e4eff0',edge:'#3f6a82',band:'#2c5a74',disc:null,ink:'#d8a640',ink2:'#2c5a74',sym:'wavesun',pole:0x6a4a2c,
+ awn:{mode:'stripes',cols:['#3f6a82','#e4eff0','#aec8d0','#e4eff0'],n:8},
+ paint:[0x3f6a82,0x2c5a74,0xaec8d0,0xe4eff0,0xd8a640],signBg:'#3f6a82',signFg:'#e4eff0',signFrame:0x2c5a74});
+// Xanadu: saffron bordered in maroon, the gold-hubbed eight-spoked wheel, turquoise in the livery
+mkCulture({key:'xanadu',name:'Xanadu',field:'#e89a2a',edge:'#7a1a24',band:'#d8a838',disc:null,ink:'#7a1a24',ink2:'#d8a838',sym:'wheel',pole:0x7a1a24,
+ awn:{mode:'stripes',cols:['#e89a2a','#7a1a24','#e89a2a','#d8a838'],n:8},
+ paint:[0x7a1a24,0xe89a2a,0xd8a838,0x1f9aa8,0xe8dcc0],signBg:'#7a1a24',signFg:'#e8c060',signFrame:0xd8a838});
+// Ring Sea Islanders: bark-dyed cloth and pandanus, the white moon, feather-streamer pennants
+mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge:'#4a2a14',band:'#c49a5a',disc:null,ink:'#f0e8d4',sym:'moon',pole:0x5a3a22,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x8a5a32,0xb08850,0x7a4a2a,0xc4a468]},
+ paint:[0x8a5a32,0x4a2a14,0xc49a5a,0xf0e8d4,0x2a7a7a],signBg:'#4a2a14',signFg:'#f0e8d4',signFrame:0x7a4a2a});

@@ -12,7 +12,7 @@ To start your own build on the socket system: copy the fragment list below, repl
 import os, re, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
 KIT = os.path.join(ROOT, 'kits', 'post-apoc', 'src'); CORE = os.path.join(HERE, '..')
-FRAGS = [(KIT, f) for f in ('00-head.html', '10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '36-def.js', '90-scene.js', '91-probe.js', '92-camera.js', '99-tail.html')]
+FRAGS = [(KIT, f) for f in ('00-head.html', '10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '34-adds.js', '36-def.js', '90-scene.js', '91-probe.js', '91n-night.js', '92-camera.js', '99-tail.html')]
 FRAGS += [(CORE, '37-sockets.js'), (CORE, '80-cultures.js'), (HERE, '40-demo.js'), (HERE, '89-rows.js')]
 FRAGS.sort(key=lambda t: t[1])
 html = ''.join(open(os.path.join(d, f), encoding='utf-8', newline='').read() for d, f in FRAGS)
