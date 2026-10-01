@@ -32,3 +32,29 @@ What the shots said: the bay bites north-west as drawn; the sea's glitter and fr
 the rose and the ground gizmo agree with the geometry (looking NW puts N at upper right). Fixed from them:
 a preset without an hour had inherited the previous preset's night (now: no hour means the default day); the
 bake invariant failed on a world with nothing to bake; the first opening camera stood too low to see the bay.
+
+## Phase 1 (Oct 2026): the Hykkousoi mockup
+Three fragments carry the vocabulary (PLAN.md §1): `60-hyk-mat` (the shell/barnacle/bone/mosaic/crust/weed
+textures, the vertex-coloured material pairs, the nacre hook, the small kdefs: lips, reveals, discs, lenses,
+pearls, drips, treads, posts, weed cards), `61-hyk-shell` (merged buckets per material per side, the parametric
+surfaces: lathe with lobes/flutes/twist/growth rings/noise/tilt, pod, conch, tube, rib, flare, disc, deck, and
+holes cut by a boolean-free op list), `62-hyk-helpers` (`HYK.place`, openings that MARK themselves, rooms and
+spots, floors, pads, the spiral stair, the span). `64-hyk-accrete` cuts an Ancients host at `YS_CUT.cutY` through
+the builders' own `y1` path (`52-sky-abc` adapted, three lines), raises its tideline and grows pod colonies on it.
+
+`targets/mock`: a sandbar at (−330 … −160, z) with three houses (barnacle hut, pod house, conch house), two
+Scallop Stack hosts cut at 110 and 94 m (seven floors kept on A), an L1 colony with a landing and a stair to a
+wet pad and a skiff, an L2 colony on each tower and the span between them; 14 presets, inside presets use the
+ninth element.
+
+Rounds (what the shots said → what changed): the barnacle texture read as planks → plates of uneven width
+with growth lines, a lighter grey-white; open cone tops → domed lids with a vent; the conch coiled flat and its
+mouth read as a cave → `apexLift`, shoulder knobs, a septum wall with a real door; drips floated → placed on
+the pod underside; one pod per host → a colony of a main pod and two satellites with a pad and a rib; three
+bedroom spots overlapped → the sleeping pod grew to r 2.3 and the spots spread; the nacre banded orange at
+grazing angles → the sheen halved and the rainbow slowed.
+
+### Verified (Oct 1 2026)
+`verify.py dist/mock.html --assert`: error panel clean, 0.55 M triangles, 47–87 draw calls across six views,
+all ten invariants pass (5 registered volumes, 55 marks, 7 residence rooms, 30 spots inside their polygons and
+clear of doors and of each other). The gate sheet is the fourteen presets of `targets/mock/91z-views.js`.

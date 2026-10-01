@@ -6,7 +6,7 @@ const VIEWS={
  'Mock — the drowned towers':[_mA.x+330,170,_mA.z+330,_mA.x,40,_mA.z-70],
  'Mock — from the water':[_mA.x-90,3,_mA.z+140,_mA.x,26,_mA.z],
  'Mock — the L1 pod and its landing':[_mA.x-62,16,_mA.z+26,_mA.x-24,13,_mA.z+2],
- 'Mock — on the bridge at L2':[_mA.x+1.5,30.8,_mA.z-62,_mB.x,31,_mB.z+30],
+ 'Mock — on the bridge at L2':[_mA.x+1.3,36.4,_mA.z-74,_mB.x,30,_mB.z+28],
  'Mock — the stair to the water':[_mA.x-70,7,_mA.z+50,_mA.x-20,5,_mA.z+18],
  'Mock — poor house':_front(-200,-10,20),
  'Mock — middle house':_front(-152,-8,24,3.2),
