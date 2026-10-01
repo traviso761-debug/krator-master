@@ -74,7 +74,7 @@ reseed(657001);
       /* benches facing the centre, braziers on the diagonals, a gap at the back for the palace stair */
       for(var b=0;b<5;b++){ var bx=-24+b*12; ABYSS.furn(F, 'abyss_bench', bx,D/2-5, PI, { variant:1 }); if(Math.abs(bx)>9) ABYSS.furn(F, 'abyss_bench', bx,-D/2+5, 0, { variant:1 }); }
       [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(c){ ABYSS.furn(F, 'abyss_brazier', c[0]*30,c[1]*22, 0, { variant:1 }); });
-      /* two lacquered standards with gilded discs at the front corners */
-      [-1,1].forEach(function(s){ F.cyl(s*(W/2-2),0,D/2-2, 0.35,8.5, 0, lac, 'plaster'); F.disc(s*(W/2-2),8.0,D/2-2, 0,1, 0.9, 0.12, gild, 'metal'); });
+      /* two lacquered standards with gilded discs at the front corners: FURNITURE, the catalog's abyss_lacquer_standard */
+      [-1,1].forEach(function(s){ FURNISH('abyss_lacquer_standard', s*(W/2-2),0,D/2-2, 0); });
     } });
 })();
