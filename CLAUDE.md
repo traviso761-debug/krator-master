@@ -19,6 +19,7 @@ says which build holds what.
 | `kits/furniture/`, `kits/interiors/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
+| `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
@@ -60,6 +61,8 @@ the Krator Worlds gallery (see the end of `README.md` and `gallery/README.md`).
 - `core/materials/` holds one copy of the material fragments the Ancients-lineage
   builds share. Those builds' `build.py` read them from there. Edit them there,
   and rebuild every build that lists them.
+- `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
+  Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and
   `python3 build.py --vendor-check` reports drift from the upstream. Some drift is
   deliberate and recorded in that build's `KNOWN_ISSUES.md`. Fix upstream, then

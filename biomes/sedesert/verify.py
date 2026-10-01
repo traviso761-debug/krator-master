@@ -15,6 +15,8 @@ What it does:
   3. Prints the on-screen error panel (#errs), renderer stats, window counters.
   4. --assert : the geometric invariants, measured from inside the page against
      window._api (see src/91-probe.js). Screenshots do not catch any of these.
+     Then the host's own checks (hostChecks) and their NEGATIVE CONTROLS
+     (hostNegatives): each is fed a broken input and must fail.
   5. Screenshots each named preset view.
 
 Exit code is non-zero if the error panel is dirty, an assertion fails, or a
@@ -85,7 +87,12 @@ const R=[];
   R.push({name:'showcase-draw-calls', ok:renderer.info.render.calls<=B.calls, budget:true,
           detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
 
-// 5. the registry and the instance bake both ran.
+// 5. the host's own checks, when it has any, and their negatives (each must FAIL)
+if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
+  for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
+    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
+
+// 6. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 return R;}"""
