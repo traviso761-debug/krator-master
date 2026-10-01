@@ -17,6 +17,9 @@ function pickFront(d,doors,M0inv){const L=doors.map(q=>{const p=new THREE.Vector
  const any=L.filter(q=>q.w>=.7).sort((a,b)=>b.w-a.w)[0];
  if(any)return {source:'door() on another face',local:{x:any.x,z:any.z,yaw:any.yaw}};
  return {source:'default',local:{x:0,z:d.d/2,yaw:0}};}
+/* SIZES: a def may declare alternative declared boxes, picked per placement by o.size: sizes:{large:{w,d,h,budget,front}} (the compound's large yard).
+   declOf(key,o) is the def as declared for that placement; place() records it as rec.decl, and the footprint check measures against it. */
+function declOf(key,o){const d=DEFS[key];const s=o&&o.size&&d&&d.sizes&&d.sizes[o.size];return s?Object.assign({},d,s):d;}
 function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
  const y=o.y!==undefined?o.y:terrainH(x,z);const keepKey=CURKEY,keepSocks=SOCKS,keepCult=CULT.cur,keepDoors=DOORS_CUR;CURKEY=key;SOCKS=[];DOORS_CUR=[];
  if(o.culture&&CULT.packs[o.culture])CULT.cur=CULT.packs[o.culture];   /* o.culture dresses THIS building (and any it places) in another culture's marks */
@@ -24,9 +27,9 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  reseed(d.seed+(o.v|0)*7);
  try{d.build(o);fillSockets();}catch(e){reportErr('build '+key+': '+(e.stack||e));}
  sbEnd();popM();const doors=DOORS_CUR;DOORS_CUR=keepDoors;CURKEY=keepKey;SOCKS=keepSocks;CULT.cur=keepCult;
- const fr=pickFront(d,doors,M0inv);const wy=(ry||0)+fr.local.yaw;const cs=Math.cos(ry||0),sn=Math.sin(ry||0);
+ const dd=declOf(key,o);const fr=pickFront(dd,doors,M0inv);const wy=(ry||0)+fr.local.yaw;const cs=Math.cos(ry||0),sn=Math.sin(ry||0);
  fr.world={x:org.x+fr.local.x*cs+fr.local.z*sn,y:org.y,z:org.z-fr.local.x*sn+fr.local.z*cs,yaw:wy};
- const rec={key,name:d.name,cls:d.cls,tags:d.tags,x:org.x,y:org.y,z:org.z,ry:ry||0,r:Math.hypot(d.w,d.d)/2,h:d.h,tris:GSTAT.tris-t0,bbox:bb,v:o.v|0,front:fr,doorCount:doors.length};REG.push(rec);return rec;}
+ const rec={key,name:d.name,cls:d.cls,tags:d.tags,x:org.x,y:org.y,z:org.z,ry:ry||0,r:Math.hypot(dd.w,dd.d)/2,h:dd.h,decl:{w:dd.w,d:dd.d,h:dd.h,budget:dd.budget},size:o.size,tris:GSTAT.tris-t0,bbox:bb,v:o.v|0,front:fr,doorCount:doors.length};REG.push(rec);return rec;}
 const _FRONT={};
 /* the front (local yaw + door position) of a def, found by one throwaway build: cached */
 function frontOf(key){if(_FRONT[key])return _FRONT[key];const keepG=GTARGET,keepReg=REG.length,keepSock=SOCK_ALL.length,keepP=PLANTS.list.length,keepT=GSTAT.tris,keepH=HALOS.length,keepS=SPINNERS.length,keepCMS=CMS.slice();

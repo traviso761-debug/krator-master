@@ -26,6 +26,9 @@ defBuilding({key:'shop-food',name:'Food shop',seed:4610,tags:{type:['market/shop
 function xxFoodShop(o){ ... }      // o.v = variant number (0..); place() already reseeded (seed + v*7). Use only rng()/rr()/pick(); NEVER Math.random.
 ```
 * Keep the order `key, name, seed, tags, w, d, h, build` (build.py reads the seed after the key). `seed`: unique four-digit block from your range in the brief. All randomness through `rng()` `rr(a,b)` `pick(list)`. Seeds are per building.
+* A def that builds at more than one size declares the others as `sizes:{large:{w,d,h,budget,front}}` (before `build`); `place(key,x,z,ry,{size:'large'})` picks one,
+  `declOf(key,o)` returns the def as declared for that placement and `rec.decl` records it (the footprint check uses it). Only `compound` has one (`large`, 82 x 76).
+  A showcase row entry (`src/89-rows.js`) is `'key'`, `'key@culture'` or `{key, o}` (place() options, e.g. `{key:'compound', o:{size:'large', slots:[...]}}`).
 * `tags.type` (README rule): one or more of `civic, market/shop, tavern/inn, industry, farm, single-family dwelling, multi-family dwelling, infrastructure, religious, funerary`.
   Also give `size`, `core` (the reclaimed object), `materials`. `culture` and `sockets` are added for you. `budget:N` raises the triangle limit (default 120000).
 * A builder never names a culture. Declare sockets; keep every awning/banner/flag/emblem/sign out of the geometry itself.
@@ -68,7 +71,13 @@ Never use a different colour space: pass hex numbers to `jc`, never `new THREE.C
 Cores: `container({len:6.06|12.19,hi,col,open:'front'|'end'})` (long axis x, +z front; sizes in `CT`), `silo({r,h,col,roofCol,rise})`, `tankV({r,h})`, `tankH({r,L})`, `bus({len,col})`,
 `semi({trailer,col,tcol})`, `bulkhead({w,h,th,hatch:'round'|'door'})` (Ancient white ceramic slab, hatch or doorway). Each draws in the current frame centred on the origin, base at y=0: `W(x,0,z,ry,()=>container(...))`.
 Additions: `door win porthole patchWall plankWall sheetWall bottleWall tireWall tireRing gableRoof leanRoof tarp deck stairs ladder stovepipe solar barrel crate sacks pallet lamp fire
-tireStack junkPile antenna fenceRun bottleString waterButt`. Appliqué doors/windows (`door`, `win`) sit ON a wall facing +z at (x, y=sill, z=wall face); use `W(...)` with ry to put them on other faces.
+tireStack junkPile antenna fenceRun bottleString waterButt`, and the steel access set for container and steel builds (timber `deck`/`stairs` read as wood):
+```
+stStairs(ax,ay,az, bx,by,bz, w, {tread:'plate'|'grate', rail})   channel stringers, checker-plate (or grating) treads with a nosing, pipe handrails on posts.
+                                                                 Same contract as stairs(): the top tread's top is at by, its back edge at the top point. stairs(...,{steel:true}) calls it.
+stLanding(x,y,z, w,d, {rail:['b','r','f','l'], posts, floor:'grate'|'plate'})   deck() in steel: top at y, grating floor, channel frame, square-tube posts to the ground when y>.5
+stFloor(x,y,z, w,d, {floor})     a grating (default) or checker-plate panel, top at y (catwalks)      stRail([x,z],[x,z], y, {h, toe})   pipe rail on posts with knee rail and toe plate
+``` Appliqué doors/windows (`door`, `win`) sit ON a wall facing +z at (x, y=sill, z=wall face); use `W(...)` with ry to put them on other faces.
 Real openings (an open-fronted shop, a walk-in porch) need `wallOpen` or a core with `open:'front'`.
 If you need a helper twice, add it at the top of YOUR fragment with your prefix. If you think the ENGINE (files 10-36, 80, 9x) needs a change, do not edit it: describe it in your report.
 
