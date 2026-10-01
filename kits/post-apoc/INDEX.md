@@ -30,12 +30,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `48-industry.js` | 24 | industry and power: smithy, wind generator, fuel (2); 4810 scrap smithy (19); 4820 wind generator (70); 4830 fuel generator (113); 4840 warehouse (154) |
 | `50-farm.js` | 29 | farm: 3 buildings (50 farm) : farm plot, farmhou (2); farmhouse: silo stair-core fused to a long plank (143); granary: four silos on a shared apron, catwalk,  (222) |
 | `52-defence.js` | 24 | defence and justice: watchtower, prisoner cages (2); watchtower (7); prisoner cages (100) |
-| `54-compound.js` | 29 | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (54); the gate tower (container piers, hinged leaves,  (97); corner towers. Each returns nothing; all sockets (133); the ground plan (198); the builder (229) |
-| `56-arena.js` | 18 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
+| `54-compound.js` | 30 **big** | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (72); the gate tower (container piers, hinged leaves,  (115); corner towers. Each returns nothing; all sockets (151); the ground plan (216); the builder (247) |
+| `56-arena.js` | 20 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
 | `58-dock.js` | 19 | DOCK (infrastructure). Land at the back (-z), ha (2) |
-| `89-rows.js` | <1 | the showcase table: rows of the kit, by family.  (1) |
+| `89-rows.js` | 1 | the showcase table: rows of the kit, by family.  (1) |
 | `90-scene.js` | 9 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (33); (re)build the world for a culture (48) |
-| `91-probe.js` | 3 | probe (window._api): everything a headless check (1) |
+| `91-probe.js` | 4 | probe (window._api): everything a headless check (1) |
 | `91n-night.js` | 10 | NIGHT and dusk, and the invisible front-door mar (1) |
 | `92-camera.js` | 11 | camera, inspector, polygon tool, walk mode (1) |
 | `93-anim.js` | 9 | ANIMATION: the clock, smoke, light volumes (1) |

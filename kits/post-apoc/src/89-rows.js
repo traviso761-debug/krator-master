@@ -12,5 +12,5 @@ const FAMILIES=[
  {name:'Arena',keys:['arena']},
  {name:'Dock',keys:['dock']},
  // last row, so every other site keeps its place: the xl compound (106 x 76) takes the longhouse AND the big man's house (two great slots)
- {name:'Compound, two great halls',keys:[{key:'compound',o:{size:'xl',slots:['longhouse','chief','smithy','shop-general','dw-silo','gen-fuel']}}]},
+ {name:'Compound xl: two great halls',keys:[{key:'compound',o:{size:'xl',slots:['longhouse','chief','smithy','shop-general','dw-silo','gen-fuel']}}]},
 ];

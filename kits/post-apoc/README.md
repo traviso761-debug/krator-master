@@ -54,6 +54,9 @@ Each key goes into the first free slot its declared footprint fits (rotated as n
 The standard yard (64 x 54) takes buildings up to ~21.5 x 16 m. For the big ones pass `size:'large'`: an 82 x 76 yard (declared through the def's `sizes`, so the footprint check follows)
 whose `great` slot (41 x 35) takes any building in the kit (longhouse, chief, bulkhead, farm) and whose `back-right` slot (27 x 19) takes the warehouse / `lg-stack` class; it fills the
 smallest free slot that fits. The showcase row places one: `place('compound', x, z, 0, {size:'large', slots:['lg-stack','warehouse','dw-silo']})`. The default output is unchanged.
+Two of the longhouse / chief class need `size:'xl'`: a 106 x 76 yard with two great slots (41 x 35 each, `great-left`, `great-right`), plus back-mid, left-mid, right-mid, west, east and two front slots;
+the last showcase row places `{size:'xl', slots:['longhouse','chief','smithy','shop-general','dw-silo','gen-fuel']}`. A rejected key's `reason` says which slots fit it and which size would take it
+(e.g. `size:'xl' would take it (two great slots)`); `verify --assert` fails `compound-slots-filled` on any rejection in the showcase.
 
 ## Build and verify
 
@@ -62,4 +65,4 @@ python3 build.py                                                 # rules + node 
 python3 verify.py dist/post-apoc.html --assert --all-views --out shots
 python3 verify.py dist/post-apoc.html --only shop-food --culture voth --cam=-12,6,20,0,3,0
 ```
-`--assert`: footprint and height inside the declared box, no NaN geometry, every building declares sockets and type tags, every def placed, triangle budget. Contract: `API.md`.
+`--assert`: footprint and height inside the declared box, no NaN geometry, every building declares sockets and type tags, every def placed, triangle budget, a front door from `door()`/`entry()` on every building (none on the default), colliders published, every front door's approach reachable on the nav grid, every compound slot key placed. Collision and nav data: `API.md`. Contract: `API.md`.
