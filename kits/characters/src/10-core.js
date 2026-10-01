@@ -59,11 +59,13 @@ function weightsFor(p, bones, segs, power){
   return ws;
 }
 
-/* Fold every piece into one skinned BufferGeometry (non-indexed, vertex colours). */
-function mergePieces(boneList){
+/* Fold every piece into one skinned BufferGeometry (non-indexed, vertex colours).
+   filterMetal: true merges only the pieces flagged opts.metal, false only the rest. */
+function mergePieces(boneList, filterMetal){
   var index = {}; boneList.forEach(function(b, i){ index[b.name] = i; });
   var pos = [], nor = [], col = [], si = [], sw = [], tris = 0;
   PIECES.forEach(function(pc){
+    if(filterMetal !== undefined && !!pc.opts.metal !== filterMetal) return;
     var g = pc.geo.index ? pc.geo.toNonIndexed() : pc.geo;
     var P = g.attributes.position, N = g.attributes.normal, n = P.count;
     var segs = pc.bones.map(boneSeg), ids = pc.bones.map(function(b){ return index[b]; });
@@ -86,6 +88,10 @@ function mergePieces(boneList){
   geo.userData.tris = tris;
   return geo;
 }
+
+/* deterministic hash noise in [0,1): the same value for the same cell */
+function hash3(x, y, z){ var h = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453; return h - Math.floor(h); }
+function cellNoise(p, size){ return hash3(Math.floor(p.x / size), Math.floor(p.y / size), Math.floor(p.z / size)); }
 
 /* ---- geometry helpers (world space) ---- */
 /* A tube through a list of rings. Each ring: {c, u, v, rx, rz}. Winding is
@@ -144,6 +150,12 @@ function box(cx, cy, cz, w, h, d, rot){
 /* one fur tuft: a 4-sided cone from base along dir */
 function tuft(base, dir, len, rBase){
   var g = new THREE.CylinderGeometry(0, rBase, len, 4, 1, false);
+  var q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), dir.clone().normalize());
+  g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q)); g.translate(base.x + dir.x * len / 2, base.y + dir.y * len / 2, base.z + dir.z * len / 2); return g;
+}
+/* a spike: a cone from base along dir, with a few sides so it reads as bone or steel */
+function spike(base, dir, len, rBase, sides){
+  var g = new THREE.CylinderGeometry(0, rBase, len, sides || 6, 1, false);
   var q = new THREE.Quaternion().setFromUnitVectors(V3(0, 1, 0), dir.clone().normalize());
   g.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(q)); g.translate(base.x + dir.x * len / 2, base.y + dir.y * len / 2, base.z + dir.z * len / 2); return g;
 }

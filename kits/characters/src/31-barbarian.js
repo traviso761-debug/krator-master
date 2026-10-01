@@ -6,31 +6,7 @@
 */
 var SKIN = 0xd4927a, SKIN_DARK = 0xc4826a, PINK = 0xd84aa0, LEATHER = 0x7a5838, LEATHER_LIGHT = 0x957046,
     LEATHER_DARK = 0x4b3621, STEEL = 0xb9bec6, WOOD = 0x6a4a2b, EYE_WHITE = 0xf6f1e8, EYE_DARK = 0x2a1a14;
-
-/* Bones carry Mixamo's names (without the colon, as three's FBXLoader writes them), in
-   Mixamo's rest convention: every bone has identity rotation, legs point -Y, spine +Y,
-   arms along +/-X (a T-pose), +X is the character's LEFT. A Mixamo clip's local
-   quaternions then apply with no retargeting at all. */
-function defineBarbarianBones(){
-  defBone('mixamorigHips',   null,             0, 1.12, 0);
-  defBone('mixamorigSpine',  'mixamorigHips',  0, 1.26, 0);
-  defBone('mixamorigSpine1', 'mixamorigSpine', 0, 1.38, 0);
-  defBone('mixamorigSpine2', 'mixamorigSpine1',0, 1.50, 0);
-  defBone('mixamorigNeck',   'mixamorigSpine2',0, 1.86, 0);
-  defBone('mixamorigHead',   'mixamorigNeck',  0, 1.98, 0, [0, 2.22, 0]);
-  [1, -1].forEach(function(s){
-    var S = s > 0 ? 'Left' : 'Right';
-    defBone('mixamorig' + S + 'Shoulder', 'mixamorigSpine2',          s * 0.16, 1.80, 0);
-    defBone('mixamorig' + S + 'Arm',      'mixamorig' + S + 'Shoulder', s * 0.40, 1.74, 0);
-    defBone('mixamorig' + S + 'ForeArm',  'mixamorig' + S + 'Arm',      s * 0.74, 1.74, 0);
-    defBone('mixamorig' + S + 'Hand',     'mixamorig' + S + 'ForeArm',  s * 1.06, 1.74, 0, [s * 1.20, 1.74, 0]);
-    defBone('mixamorig' + S + 'UpLeg',    'mixamorigHips',            s * 0.17, 1.08, 0);
-    defBone('mixamorig' + S + 'Leg',      'mixamorig' + S + 'UpLeg',    s * 0.18, 0.62, 0.02);
-    defBone('mixamorig' + S + 'Foot',     'mixamorig' + S + 'Leg',      s * 0.18, 0.12, 0, [s * 0.18, 0.02, 0.24]);
-  });
-}
-/* short aliases used by the body builder and the poses */
-function B(side, part){ return 'mixamorig' + (side > 0 ? 'Left' : 'Right') + part; }
+/* 31: the barbarian. Uses the default proportions. */
 
 function buildBarbarianBody(){
   var R = rng(7);
@@ -73,20 +49,19 @@ function buildBarbarianBody(){
   /* arms, authored in the T-pose: shoulder (0.40) -> elbow (0.74) -> wrist (1.06), all at y 1.74 */
   [1, -1].forEach(function(s){
     var ARM = B(s, 'Arm'), FA = B(s, 'ForeArm'), HAND = B(s, 'Hand');
-    var sh = V3(s * 0.40, 1.74, 0), el = V3(s * 0.74, 1.74, 0.0), wr = V3(s * 1.06, 1.74, 0);
+    var a = armPts(s), sh = a.sh, el = a.el, wr = a.wr;
     addPiece(ellipsoid(s * 0.40, 1.745, 0, 0.165, 1.05, 1.0, 0.95), SKIN, ['mixamorigSpine2', ARM]);                      /* deltoid */
     addPiece(limbTube(sh, el, [{ t: 0, r: 0.14 }, { t: 0.4, r: 0.15, rz: 0.145 }, { t: 0.75, r: 0.12 }, { t: 1, r: 0.10 }], 14), SKIN, [ARM, FA]);
     addPiece(ellipsoid(s * 0.54, 1.68, -0.04, 0.08, 1.1, 1.0, 0.8), SKIN, [ARM]);                                           /* tricep */
     addPiece(ellipsoid(el.x, el.y, el.z, 0.10), SKIN, [ARM, FA]);
     addPiece(limbTube(el, wr, [{ t: 0, r: 0.10 }, { t: 0.3, r: 0.125 }, { t: 0.7, r: 0.095 }, { t: 1, r: 0.07 }], 14), SKIN, [FA, HAND]);
-    addPiece(ellipsoid(s * 1.13, 1.74, 0.01, 0.085, 1.15, 0.95, 0.95), SKIN_DARK, [HAND]);                                  /* fist */
-    addPiece(ellipsoid(s * 1.12, 1.78, 0.05, 0.04, 1.1, 0.9, 1.0), SKIN_DARK, [HAND]);                                     /* thumb */
+    fist(s, SKIN_DARK, [HAND]);
   });
 
   /* trousers, belt, fur, boots */
   [1, -1].forEach(function(s){
     var UP = B(s, 'UpLeg'), LEG = B(s, 'Leg'), FOOT = B(s, 'Foot');
-    var hp = V3(s * 0.17, 1.08, 0), kn = V3(s * 0.18, 0.62, 0.02), an = V3(s * 0.18, 0.12, 0);
+    var l = legPts(s), hp = l.hp, kn = l.kn, an = l.an;
     addPiece(limbTube(hp, kn, [{ t: 0, r: 0.19, rz: 0.18 }, { t: 0.35, r: 0.185, rz: 0.19 }, { t: 0.8, r: 0.15 }, { t: 1, r: 0.14 }], 14), LEATHER, [UP, LEG]);
     addPiece(ellipsoid(kn.x, kn.y, kn.z + 0.02, 0.135, 1, 1.05, 0.95), LEATHER_LIGHT, [UP, LEG]);        /* knee plate */
     addPiece(limbTube(hp, kn, [{ t: 0.5, r: 0.178 }, { t: 0.62, r: 0.168 }], 14, false), LEATHER_DARK, [UP]);      /* thigh strap */
@@ -131,3 +106,10 @@ function buildAxe(mirror){
   add(new THREE.BoxGeometry(0.06, 0.26, 0.036), pink, m * 0.05, -0.50);
   return g;
 }
+
+registerCharacter({ key: 'barbarian', name: 'Barbarian (pink mustache)', proportions: {}, clips: ['walk', 'mixamo', 'run', 'idle'], defaultClip: 'mixamo',
+  build: function(){
+    buildBarbarianBody();
+    /* grip 8 cm below the wrist, shaft tilted in and forward */
+    [1, -1].forEach(function(s){ attachProp(s, buildAxe(s < 0), V3(0, -0.08, 0.01), [-0.35, 0, s * -0.65]); });
+  } });
