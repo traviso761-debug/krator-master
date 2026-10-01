@@ -3286,7 +3286,8 @@ function hxNightDim(o,m){if(o)o.onBeforeRender=()=>{m.emissiveIntensity=NIGHT?.0
 // Unit module: x width, y one storey, z depth, +z is the outward face (qFacing
 // points local +z along the outward normal). Centred on the origin.
 MAT.hxCell=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xd2cec6,roughness:1,metalness:0,side:DS,vertexColors:true});
-const hxGeo=build=>{const P=[],N=[],C=[],U=[];
+const hxGeo=build=>{
+ const P=[],N=[],C=[],U=[];
  // a quad a,b,c,d (in order round its edge) facing n, in colour col
  const q=(a,b,c,d,n,col)=>{const e1=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],e2=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
   const cr=[e1[1]*e2[2]-e1[2]*e2[1],e1[2]*e2[0]-e1[0]*e2[2],e1[0]*e2[1]-e1[1]*e2[0]];
