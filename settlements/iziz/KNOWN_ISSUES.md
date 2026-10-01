@@ -145,3 +145,11 @@ saying what fixed it.
       900 in `93-city-ui.js`) but the wording still says "showcase". Fine for now.
 - [ ] `build.py` has a SCOPED exemption (`86-bio-*`) for the IIFE-scoped biome
       fragments; their column-0 names are not checked for collisions.
+
+## Catalog verify pass (2026-10): nothing synced back
+kits/catalog recentred `iziz_banner` (the pole was the origin, so the banner reached 0.92 m to one side) and raised
+the declared sizes of `iziz_palm`, `iziz_broadleaf`, `iziz_lily_pad` and `iziz_reed`. Nothing here was changed to
+match. Iziz has no FURN or PLANT registry, so there is no declaration to correct. The catalog banner, an 11.5 m
+pole with a crossarm, is a rewrite and has no counterpart here. The closest are `vnBannerPole()` and
+`vpBannerPole()`, which are called 19 times in world coordinates with the pole as the origin. Recentring them would
+mean offsetting every call to keep the city where it is, and would gain nothing. The catalog copy is the centred one.

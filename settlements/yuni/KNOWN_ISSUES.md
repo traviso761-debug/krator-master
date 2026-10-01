@@ -138,3 +138,25 @@
       `destFn`, a synchronous vehicle route, an off-map road-end state machine, and finally unifying them onto
       the cart path — none produced a corridor. Left as decorated carts; needs a fresh look.
 - [ ] No LOD: everything is drawn at full detail at every distance.
+
+## Catalog verify-pass sync (2026-10)
+- [x] kits/catalog's verify pass found the plants and furniture it harvested from Yuni built bigger than they
+      were declared. Yuni's own entries were measured on yuni-plants.html and yuni-furniture.html over four sheet
+      seeds (every vertex, centred on the origin) and raised to what they build: cypress_yuni, pine_maritime,
+      olive_valley, scrub_thorn, date_palm, canal_poplar and oleander_hedge (62-plants), ancient_socket_rack d
+      (61e, and tools/anc_furniture.js which 61e is a copy of), and order_mat_rack w and h (59-civic). These
+      sizes only set the sheet cells and the inspector records. No world placement reads them, so yuni.html and
+      yuni-assets.html build identical geometry: the scene digest matched before and after. The plant and
+      furniture sheets reflow. fig_courtyard and salvage_hearth_hood already fitted, so they were not changed.
+      Nothing was recentred. The catalog's F.shift offsets come from its rewritten geometry, and Yuni's own
+      pieces sit within 0.07 m of centre, except the mat rack (next item).
+- [ ] order_mat_rack: each mat roll is an F.cyl turned [0,0,PI/2], which grows from its base along -x, so every
+      roll hangs 0.29 m out of the rack's left end (it builds x -1.20..+0.87). The fix is to move the rolls +0.29
+      in x. That moves geometry in the School, so the catalog sync left it alone.
+- [ ] More furniture builds bigger than it declares (same measurement; h can include a lamp's glow ball):
+      common_floor_seating w (4.0 vs 2.4), common_shop_counter w h, common_wall_shelves d h, nomad_rug_pile w d,
+      order_bookcase w, order_reading_desk w h, order_shelf_run w h, ancient_cell_wall d h, court_mosaic_divan d h,
+      salvage_locker_press d h; h only: ancient_glass_console, ancient_refectory_run, court_brass_brazier,
+      common_tavern_table, order_reading_table, order_master_chair, salvage_strut_bed, salvage_lamp_stand.
+      The interiors planner (64-interiors tryAt) places LAYOUT furniture by w and d, so raising those values
+      moves furniture in the world. Re-check every room after such a change.
