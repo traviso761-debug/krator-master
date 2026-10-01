@@ -173,15 +173,19 @@ NHL.PLANTS=[
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
 reseed(500031);
 const TX={},G2=BIO.tex.grey;
-/* NEEDLES: dense short strokes in tufts -- spruce, fir, yew, pine */
-TX.needle=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,10,.66);
- for(let i=0;i<620;i++){const p=BIO.tex.clPt(S,.10,.72),a=rr(0,TAU),L=rr(14,28),lum=lerp(90,225,rng());
-  g.strokeStyle=G2(lum);g.lineWidth=1.8;g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(p[0]+Math.cos(a)*L,p[1]+Math.sin(a)*L);g.stroke();}},[120,120,120]);
+/* NEEDLES: dense needle masses -- spruce, fir, yew, pine. Each tuft is a shaded core (the inside of the mass)
+   under needles splayed past its edge. The core is what keeps a card a MASS at range: thin strokes alone
+   average below the alpha test two mips down, and the crowns thinned to bare poles with a few twigs. */
+TX.needle=BIO.alphaTex(512,(g,S)=>{g.lineCap='round';BIO.tex.clusters(S,13,.56);const CL=BIO.tex.cl;
+ CL.forEach(c=>{const R=S*rr(.075,.105);g.fillStyle=G2(lerp(104,128,rng()));g.beginPath();
+  for(let k=0;k<=16;k++){const a=k/16*TAU,r=R*rr(.72,1.06);g.lineTo(c[0]+Math.cos(a)*r,c[1]+Math.sin(a)*r);}g.fill();});
+ for(let i=0;i<1700;i++){const c=pick(CL),a=rr(0,TAU),d=S*.1*Math.sqrt(rng()),x=c[0]+Math.cos(a)*d,y=c[1]+Math.sin(a)*d,b=a+rr(-.8,.8),L=rr(14,28),lum=lerp(118,240,rng());
+  g.strokeStyle=G2(lum);g.lineWidth=rr(2.2,3);g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*L,y+Math.sin(b)*L);g.stroke();}},[104,104,104]);
 /* SPRAYS: flat scale-leaf sprays that droop -- the cedar's and the hemlock's (a frond card, pinned at x=0) */
 TX.spray=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const y0=S/2;
  for(let k=0;k<3;k++){const off=(k-1)*S*.18;g.strokeStyle=G2(120);g.lineWidth=2.4;g.beginPath();g.moveTo(0,y0);g.quadraticCurveTo(S*.5,y0+off,S*.97,y0+off*1.6);g.stroke();
-  for(let x=6;x<S*.95;x+=5){const t=x/S,yy=y0+off*(t<.5?t*2*.5:.5+(t-.5)*2*1.1),L=lerp(26,8,t)*rr(.8,1.1),lum=lerp(130,235,rng());
-   g.strokeStyle=G2(lum);g.lineWidth=3;for(let sd=-1;sd<=1;sd+=2){g.beginPath();g.moveTo(x,yy);g.lineTo(x+L*.45,yy+sd*L);g.stroke();}}}},[130,130,130]);
+  for(let x=6;x<S*.95;x+=3.5){const t=x/S,yy=y0+off*(t<.5?t*2*.5:.5+(t-.5)*2*1.1),L=lerp(32,12,t)*rr(.8,1.1),lum=lerp(125,235,rng());   // close-set and broad: a spray, not a fishbone
+   g.strokeStyle=G2(lum);g.lineWidth=4;for(let sd=-1;sd<=1;sd+=2){g.beginPath();g.moveTo(x,yy);g.lineTo(x+L*.45,yy+sd*L);g.stroke();}}}},[130,130,130]);
 /* MAPLE: palmate five-lobed leaves in sprays */
 TX.maple=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,8,.64);
  for(let i=0;i<70;i++){const c=BIO.tex.clPt(S,.10,.74),lum=lerp(105,236,i/70)+rr(-14,12),r=rr(16,26),a0=rr(0,TAU);
