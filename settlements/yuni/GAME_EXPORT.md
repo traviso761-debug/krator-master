@@ -79,7 +79,7 @@ local sill height.
 | `walls[]` | `{ id, kind: shell or partition, module, a, b, out?, lvl, y, h, thick, openings[] }`. An opening is `{ u, w, y0, y1, depth?, door?, window? }`, where `u` runs along the wall from `a` |
 | `doors[]` | `{ id, kind: exterior or interior, fixture?, style, at, y, w, h, rooms: [a, b or 'outside'] }` |
 | `stairs[]` | `{ id, module, kind: stair or ladder, lvl0, lvl1, w, rise, run, foot, top }` |
-| `furniture[]` | `{ id, furn, variant, seed, room, at, y, yaw, culture, type, setting, capacity?, cover?, virtual? }`. `furn` is a key in the furniture catalogue (`yuni-furniture.html`). Containers carry `capacity` (inventory slots). `cover` marks the floor rug of the main room. `virtual` marks a kit slot that no room had space to draw: keep it as data (a bed, a stash), place no mesh |
+| `furniture[]` | `{ id, furn, variant, seed, room, at, y, yaw, culture, type, setting, capacity?, cover?, virtual? }`. `furn` is a key in the `FURN` registry (`src/63-furniture.js` and friends), mirrored in `kits/catalog/` as `yuni_<key>`. Containers carry `capacity` (inventory slots). `cover` marks the floor rug of the main room. `virtual` marks a kit slot that no room had space to draw: keep it as data (a bed, a stash), place no mesh |
 | `lights[]` | `{ id, kind, at, y, amp, radius }`: the hearths and braziers the furniture carries |
 | `nav` | `{ nodes[{ id, x, y, z, lvl, tag, room?, door? }], edges[{ a, b, kind, len }] }` |
 

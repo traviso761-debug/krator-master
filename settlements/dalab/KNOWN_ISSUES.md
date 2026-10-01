@@ -100,3 +100,9 @@ saying what fixed it.
       friends) cannot be shot by name; the eye-level presets cover the types.
       **Fixed:** `parse_views` takes `|` or `;` as exact separators, and with
       commas rejoins pieces that spell a preset's name (every verify.py).
+
+## The vendored biome (Oct 2026)
+- [ ] The swlowlands biome is vendored as `src/86-bio-*`. Its core moved to `core/biome/` (one copy
+      for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
+      hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
+      Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.

@@ -1,10 +1,22 @@
 // ---------------------------------------------------------------- kit definitions (shared geometry)
+// DARK OPENINGS (shared-code round). MAT.dark is what every opening, recess,
+// liner and void behind a hole is made of, and at 0x1a1d22 it read MID-GREY:
+// three.js r128 takes the hex as linear, so the albedo is ~.11, and a sunlit
+// reveal under the full sun plus the hemisphere came back at ~115/255. Openings
+// now take a near-black albedo (~.03 linear): ~50/255 facing the sun, ~20 away
+// from it, and with nothing emissive they follow setNight() to black.
+// The kit's few true SURFACES that were drawn in MAT.dark (conduit tubes, the
+// bunker fins, radar wings, dish backs) keep the old value as MAT.darkSurf, so
+// they stay a painted dark grey rather than going black. Kit-local: the
+// core/materials copy is untouched, other builds keep their MAT.dark.
+MAT.darkSurf=MAT.dark.clone();
+MAT.dark.color.setHex(0x0a0b0d);
 kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
 kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
 kdef('ovalI',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winIntact); kdef('ovalD',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winDead);
 kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.dark);
 kdef('mullW',new THREE.BoxGeometry(.5,1,.5),MAT.white); kdef('mullR',new THREE.BoxGeometry(.5,1,.5),MAT.rust);
-kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.dark);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.darkSurf);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('dot',new THREE.BoxGeometry(1.4,.7,.4),MAT.dot);
 kdef('strip',new THREE.BoxGeometry(1,.18,.18),MAT.strip);
 kdef('colW',hyperGeo(1,1,1.6),MAT.white); kdef('colR',hyperGeo(1,1,1.6),MAT.rust);
@@ -93,7 +105,26 @@ function leafCardGeo(){
  return g;}
 kdef('leafCard',leafCardGeo(),MAT.leafCard);
 kdef('vine',new THREE.CylinderGeometry(.05,.16,1,5).translate(0,-.5,0),MAT.vine);
-kdef('rubble',new THREE.DodecahedronGeometry(1,0),MAT.rubble);
+// RUBBLE (shared-code round, QA arcB). Was a regular dodecahedron on untextured
+// white: twelve identical pentagons have no edge to read, and at any size over
+// ~10 m every talus in the kit was a heap of pale eggs. Now Arcoindian's block
+// (89b `aiBlock`): a hexahedron with its eight corners knocked about, hashed on
+// the corner so the faces stay welded, flat shaded, 12 triangles to the
+// dodecahedron's 36 and the same volume at scale 1. It takes a mottled stone
+// map (fine, non-directional: a bedded or boarded map made crates of it) under
+// the same per-instance tints, which now multiply stone rather than white.
+TEX.rubbleStone=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const v=168+(fbm(x/22,y/22,6.3,3)-.5)*70+(fbm(x/3,y/3,2.9,1)-.5)*34;
+  d[i]=v;d[i+1]=v-4;d[i+2]=v-11;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.rubbleK=new THREE.MeshStandardMaterial({map:TEX.rubbleStone,color:0xd6ccbe,roughness:1,metalness:0});
+function stoneBlockGeo(){const g=new THREE.BoxGeometry(1.45,1.45,1.45),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),
+   k=h3(Math.sign(x)*3.1,Math.sign(y)*5.3,Math.sign(z)*7.7);
+  p.setXYZ(i,x*(1+(k-.5)*.5),y*(1+(h3(k,2.2,1)-.5)*.45),z*(1+(h3(k,4.4,3)-.5)*.5));}
+ const n=g.toNonIndexed();n.computeVertexNormals();return n;}
+kdef('rubble',stoneBlockGeo(),MAT.rubbleK);
 kdef('trunk',new THREE.CylinderGeometry(.18,.4,1,6).translate(0,.5,0),MAT.vine);
 kdef('figB',new THREE.CylinderGeometry(.24,.2,1.5,6).translate(0,.75,0),MAT.fig);
 kdef('figH',new THREE.SphereGeometry(.13,6,5).translate(0,1.62,0),MAT.fig);

@@ -9,24 +9,22 @@ Built output (never open it; edit `src/` and rebuild): `dist/nwlowlands.html`
 Build: `cd biomes/nwlowlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
-| `20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
-| `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 19 | the axis, the sea, the river (34); terrain (64); the climate fields (88); the host binding (104); the ground (113); the water (159); the road (200) |
-| `50-biome-nwlowlands-species.js` | 56 **big** | palettes (27); the species (81); leaf textures (134); TWO-TONE BARK (272); geometries local to this biome (431); materials (483); instanced items (543) |
-| `55-biome-nwlowlands-trees.js` | 38 **big** | zones from the fields (16); colour (31); keep-clear between trees (52); the LIMB (63); foliage and epiphytes (80); the crown, ON its branches (101); the builders (139); impostors (the far canopy) (258); the BAMBOO GROVES (291); the pass (336) |
-| `60-biome-nwlowlands-floor.js` | 16 | small plants (25); the zone planters (85); the understorey (under the crowns) (124); the pass (136) |
+| `50-biome-nwlowlands-species.js` | 56 **big** | palettes (28); the species (82); leaf textures (135); TWO-TONE BARK (273); geometries local to this biome (432); materials (484); instanced items (544) |
+| `55-biome-nwlowlands-trees.js` | 42 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
+| `60-biome-nwlowlands-floor.js` | 16 | small plants (26); the zone planters (86); the understorey (under the crowns) (125); the pass (137) |
 | `65-biome-nwlowlands-dress.js` | 8 |  |
 | `70-biome-nwlowlands.js` | <1 |  |
 | `82-host-sky.js` | 13 | the walls (6) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
 | `90-host-camera.js` | 8 |  |
-| `91-host-probe.js` | 2 |  |
+| `91-host-probe.js` | 3 |  |
 | `99-tail.html` | <1 |  |

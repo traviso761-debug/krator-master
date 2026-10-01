@@ -9,3 +9,4 @@ XANADU.build=function(opt){opt=opt||{};const R=opt.R||3400,q=opt.quality==null?1
  BIO.cur=null;BIO.range=null;BIO.owner=null;BIO.minRange=0;return out;};
 XANADU.dress=function(geos,opt){if(XANADU.dressGeos){BIO.cur='xanadu/dress';XANADU.dressGeos(geos,opt||{});BIO.cur=null;}};
 XANADU.canopyH=function(x,z){return XANADU._canopyH?XANADU._canopyH(x,z):10;};
+BIO.kitEnd(XANADU);   // its exports run in its registry; the default kit is current again

@@ -65,6 +65,18 @@ reed beds / sedge / marsh shrub in the marsh, lily pads on still water, a three-
 club-moss carpet + giant ferns + fallen scale-trees in the jungle, dry grass + Vain fronds
 + frond shrubs on the savannah. Fauna deferred, as for the hyperjungle.
 
+## The far ring (55)
+Past each species' mid radius from the LOD spine everything is one merged bucket, `far`:
+the canopy species as the hyperjungle's blobs (a lathe bole and one to three lumpy
+icosahedra); the small species (crown ferns, cycads, pipe reeds, stilt-woods, palmettos,
+jade, tide lycopsids, Calamophyton, Sanfordacaulis, seed ferns, water palms) as a
+20-triangle hull -- a foot, two staggered rings of five, a crown point -- whose rings are
+set per habit (`FARHAB`: a parasol on a pole, a spindle, a vase, a mound, a ball on a
+pole); and a mat-reed bed as one low drum. The sky scale-tree's impostor bole goes to its
+own bucket, `fari`, in the hero's iridescent material without a texture, so the shimmer
+carries past the hero bands. None of it draws from rng() or takes a keep-clear entry, so
+the near field builds exactly as it did without it.
+
 ## Lessons this build cost
 - Near-grey bark canvases tinted from SPECIES.bark work (the hyperjungle's open issue);
   but a designer's bark colour renders ~2x brighter under the sun+hemisphere rig, so the
@@ -86,6 +98,10 @@ club-moss carpet + giant ferns + fallen scale-trees in the jungle, dry grass + V
   tier's pitch is the only thing that varies. Cheap enough to give every tree 40.
 - A bough on a low tree must be clamped above the ground along its whole length
   (the beard oak's sag), or half of it lies in the mud.
+- A far stand-in added to a pass must not move the near field: no rng() (size and colour
+  from the tree's seed or a hash of its position) and no keep-clear entry, or every hero
+  built after it changes. Proved by hashing every baked mesh before and after: only
+  `far` (and the new `fari`) differed.
 - verify.py needs a local three.min.js (not committed) beside it and, on a machine
   with a preinstalled Chromium, `CHROME_PATH` pointing at the binary.
 

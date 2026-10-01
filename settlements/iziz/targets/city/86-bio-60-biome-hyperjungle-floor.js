@@ -75,7 +75,8 @@ function okGround(x,z,pad){return !blockedAt(x,z,pad)&&!logNear(x,z,pad+.4);}
 // trunkR (a buttress lobe exceeds it by half again). The bucket's vertices in
 // the lower 34 m are binned by ring height and 24 angular bins. `ground` is
 // the bole's footprint radius at ground level over all angles (the fins).
-function boleProfile(T){const K=BIO.buckets['bark'+T.sp],P=K?K.pos:[],NB=24,rows={},rmax=trunkR(T,T.y0+3)*3;
+function boleProfile(T){const K=BIO.buckets['bark'+T.sp],P=K?K.pos.a.subarray(0,K.pos.length):[],NB=24,   // the bucket's Float32 store (core/biome)
+ rows={},rmax=trunkR(T,T.y0+3)*3;
  for(let i=0;i<P.length;i+=3){const yy=P[i+1]-T.y0;if(yy<-1||yy>34)continue;const dx=P[i]-T.x,dz=P[i+2]-T.z,d=Math.hypot(dx,dz);if(d>rmax)continue;
   const key=Math.round(yy*4);let row=rows[key];if(!row)row=rows[key]={yy:yy,r:new Float32Array(NB)};
   const b=Math.floor((((Math.atan2(dz,dx)%TAU)+TAU)%TAU)/TAU*NB)%NB;if(d>row.r[b])row.r[b]=d;}

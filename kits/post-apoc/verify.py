@@ -87,8 +87,14 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
  const sc=A.socketCounts();const nos=Object.keys(A.DEFS).filter(k=>!sc[k]&&!A.DEFS[k].noSockets);R.push({name:'every-building-declares-sockets',ok:!nos.length,detail:nos.length?nos.join(', '):'all declare'});
  const miss=Object.keys(A.DEFS).filter(k=>!A.DEFS[k].tags||!A.DEFS[k].tags.type||!A.DEFS[k].tags.type.length);R.push({name:'tagged',ok:!miss.length,detail:miss.length?miss.join(', '):'all have type tags'});
  R.push({name:'kit-coverage',ok:A.kitCoverage().length===0,detail:A.kitCoverage().join(', ')||'every def placed'});
- const heavy=F.filter(f=>f.tris>(A.DEFS[f.key].budget||120000));R.push({name:'triangle-budget',ok:!heavy.length,detail:heavy.length?heavy.map(f=>f.key+' '+f.tris).join(' | '):'heaviest '+Math.max(...F.map(f=>f.tris))});
+ const heavy=F.filter(f=>f.tris>(f.budget||A.DEFS[f.key].budget||120000));   /* f.budget: the declared budget for that placement (a size may raise it) */R.push({name:'triangle-budget',ok:!heavy.length,detail:heavy.length?heavy.map(f=>f.key+' '+f.tris).join(' | '):'heaviest '+Math.max(...F.map(f=>f.tris))});
  const nf=A.doors().filter(d=>!d.front||![d.front.local.x,d.front.local.z,d.front.local.yaw].every(isFinite));R.push({name:'front-door-designated',ok:!nf.length,detail:nf.length?nf.map(d=>d.key).join(', '):A.doors().length+' buildings carry a front door marker ('+A.doors().filter(d=>d.front.source==='default').length+' on the default)'});
+ const dflt=A.doors().filter(d=>d.front&&d.front.source==='default');R.push({name:'front-door-not-default',ok:!dflt.length,detail:dflt.length?'on the default (+z edge centre): '+dflt.map(d=>d.key).join(', '):'every front comes from door()/entry() or a declared front'});
+ // collision + nav (36-def.js): every building publishes solids; every front door's approach is reachable on the nav grid from the open ground at the border
+ const cl=A.colliders().filter(c=>!c.solids);R.push({name:'colliders-published',ok:!cl.length,detail:cl.length?'no solids: '+cl.map(c=>c.key).join(', '):A.colliders().length+' buildings, '+A.colliders().reduce((a,c)=>a+c.solids,0)+' solids, '+A.colliders().reduce((a,c)=>a+c.floors,0)+' floors, '+A.colliders().reduce((a,c)=>a+c.ramps,0)+' ramps, '+A.colliders().reduce((a,c)=>a+c.links,0)+' ladders'});
+ const nv=A.nav();R.push({name:'door-approach-reachable',ok:!nv.unreachable.length,detail:nv.unreachable.length?nv.unreachable.join(' | '):nv.doors+' front doors reachable from open ground ('+nv.nx+' x '+nv.nz+' cells of '+nv.cell+' m)'});
+ // compounds: every requested slot key placed
+ const cps=(window._compounds||[]).filter(c=>c.rejected.length);R.push({name:'compound-slots-filled',ok:!cps.length,detail:cps.length?cps.map(c=>c.size+': '+c.rejected.map(r=>r.key+' ('+r.reason+')').join(', ')).join(' | '):(window._compounds||[]).map(c=>c.size+' '+c.placed.length).join(', ')+' placed, none rejected'});
  return R;}"""
 async def run(a):
     from playwright.async_api import async_playwright

@@ -42,10 +42,24 @@ def find_node():
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
 OUT=sys.argv[1] if len(sys.argv)>1 else "nhighlands.html"
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
-frags=sorted(f for f in os.listdir(SRC) if not f.startswith('.'))
+# shared fragments from core/terrain and core/biome, opt-in by name (core/README.md). A local
+# src/ copy with the same name wins; a kit that lists nothing builds as before.
+CORE_TERRAIN=[]
+CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js']
+CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+for f in CORE_TERRAIN:
+    if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+for f in CORE_BIOME:
+    if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+# the syntax check cannot see a core fragment that is simply absent
+miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
+if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
+frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
-    s=open(os.path.join(SRC,f),encoding='utf8').read()
+    s=open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
     if 10<=n<80 and '-host-' not in f:
         for w in FORBID:

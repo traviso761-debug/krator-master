@@ -15,30 +15,32 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 28 | 629 | 79 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 326 | 33 | Reed Lake: a floating reed-lake village and its kit. |
-| [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 542 | 45 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
+| [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 565 | 63 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |
+| [`settlements/shade`](settlements/shade/INDEX.md) | 28 | 319 | 32 | Shade: the Eastern Nomads' sunken basin in the eastern high desert (falls, pool, carved face, switchback, slot canyon) on the sedesert biome kit: rock-cut and pueblo buildings, cliff dwellings round the rim, alcoves and an undercut behind the falls, the life layer's data and walkable grid. |
 | [`settlements/voth`](settlements/voth/INDEX.md) | 62 | 1789 | 70 | Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system. |
 | [`settlements/xanadu`](settlements/xanadu/INDEX.md) | 51 | 613 | 66 | Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon. |
-| [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 1009 | 195 | Yuni: the city, plus its building-kit, furniture and plant sheets. |
-| [`kits/ancients`](kits/ancients/INDEX.md) | 92 | 1732 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
-| [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 24 | 356 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
-| [`kits/ringsea`](kits/ringsea/INDEX.md) | 36 | 186 | 10 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
-| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 17 | 208 | 54 | Biome kit: see `biomes/README.md`. |
-| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 19 | 179 | 33 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 20 | 259 | 49 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 17 | 208 | 56 | Biome kit: see `biomes/README.md`. |
-| [`biomes/rift`](biomes/rift/INDEX.md) | 17 | 230 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 18 | 194 | 32 | Biome kit: see `biomes/README.md`. |
-| [`biomes/swbay`](biomes/swbay/INDEX.md) | 19 | 214 | 46 | Biome kit: see `biomes/README.md`. |
-| [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 17 | 228 | 57 | Biome kit: see `biomes/README.md`. |
-| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 19 | 248 | 66 | Biome kit: see `biomes/README.md`. |
+| [`settlements/yuni`](settlements/yuni/INDEX.md) | 47 | 1022 | 207 | Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog). |
+| [`kits/ancients`](kits/ancients/INDEX.md) | 123 | 2245 | 89 | The Ancients kit: ruined megastructures of the ancient civilisation, 33 structure types, one target per site. |
+| [`kits/catalog`](kits/catalog/INDEX.md) | 34 | 915 | 238 | The master catalog: asset engine, the parametric furniture kit and 1051 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court) over 24 cultures, one file per culture, with generic goods (containers, food, drink, supplies) and biome fruit; a verified contact sheet. |
+| [`kits/interiors`](kits/interiors/INDEX.md) | 22 | 213 | 32 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; a verified demo of planned buildings and furnished rooms with outline view and storey cut-away. |
+| [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 25 | 408 | 34 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
+| [`kits/ringsea`](kits/ringsea/INDEX.md) | 37 | 230 | 18 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
+| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 13 | 175 | 59 | Biome kit: see `biomes/README.md`. |
+| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 135 | 33 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 16 | 222 | 50 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 174 | 56 | Biome kit: see `biomes/README.md`. |
+| [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 204 | 68 | Biome kit: see `biomes/README.md`. |
+| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 173 | 35 | Biome kit: see `biomes/README.md`. |
+| [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 181 | 48 | Biome kit: see `biomes/README.md`. |
+| [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 196 | 60 | Biome kit: see `biomes/README.md`. |
+| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 206 | 66 | Biome kit: see `biomes/README.md`. |
 
 ## Not builds
 
 | Path | What |
 |---|---|
-| `core/` | shared code: `core/materials/` (see `core/README.md`) and `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
-| `kits/catalog/` | harvested master catalog of furniture, plants and buildings (unverified) |
-| `kits/furniture/`, `kits/interiors/` | specs only |
+| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
+| `kits/furniture/` | spec only |
 | `gallery/` | the shareable gallery of every built world |
 | `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |
 | `tools/` | repo-wide scripts: this index |

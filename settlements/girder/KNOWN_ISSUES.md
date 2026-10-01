@@ -43,3 +43,8 @@ calls and triangles as three.js counts them; sky passes not included):
 | Forest floor | 54 / 2.69 M | 60 / 2.33 M |
 
 LOD adds up to 8 draw calls; verify's opening view reads 64 of a budget of 110.
+
+Catalog verify pass (2026-10), not synced back here: kits/catalog recentred `br_bldg_girder_palisade` by 0.40 m and
+raised the sizes of the beast-rider hypertree plants. Girder's palisade is a ring of radius `PALISADE.R` built
+in world coordinates (30-layout), not a 16 m section with an origin, and Girder declares no plant sizes. Nothing
+here maps onto the catalog's correction. The catalog copy is the centred one.

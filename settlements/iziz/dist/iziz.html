@@ -5098,7 +5098,7 @@ function walkable(x,z){const k=klass(x,z);return k===1||k===2||(k>=3&&k<=6)||k==
 // The engine-independent kit every Krator biome fragment is written against.
 // Nothing below names a world's kit. The host hands in what a biome needs
 // through BIO.init(...) (see BIOME-API.md) and everything else lives here.
-var BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};
+var BIO={host:null,stats:{},cur:null,version:'core-1'};
 // EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,
 // TAU...): a world that already has those would be clobbered. Biome fragments
 // pull what they need from BIO.fn at the top of their own closure.
@@ -5136,7 +5136,8 @@ function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,
 
 // ---------------------------------------------------------------- host binding
 // host = { THREE, scene, terrainH(x,z), mask(x,z), obstacles[], ticks(fn), seed,
-//          origin[x,z], err(msg), stat(key,tris,inst) }
+//          origin[x,z] | [[x,z]...], center, fields{}, waterH(x,z), register(o),
+//          lod{}, windows{}, eye(), err(msg), stat(key,tris,inst) }   (BIOME-API.md)
 BIO.init=function(h){
  if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');
  // scene may arrive later (a world that creates its scene after its kit loads
@@ -5144,11 +5145,45 @@ BIO.init=function(h){
  BIO.host={
   THREE:h.THREE,scene:h.scene||null,
   terrainH:h.terrainH||((x,z)=>0),
-  mask:h.mask||((x,z)=>1),
+  // the default mask: everything may root, or, when the host hands in its water
+  // (sedesert-1), nothing roots under the local water surface. A world with
+  // footprints or its own rule passes its own.
+  mask:h.mask||(h.waterH?((x,z)=>{const d=BIO.terrainH(x,z)-BIO.waterH(x,z);return d<.15?0:d<.7?(d-.15)/.55:1;}):((x,z)=>1)),
   obstacles:h.obstacles||[],
   ticks:h.ticks||(fn=>{}),
   seed:h.seed==null?1:h.seed,
-  origin:h.origin||[0,0],
+  // origin: [x,z] or a LIST of [x,z] -- the LOD curve is measured from the
+  // nearest one, so a long showcase (a lake shore, a river) can keep detail
+  // along a spine instead of round one point. center: the disc the grids
+  // cover (default: the first origin).
+  origin:(h.origin&&typeof h.origin[0]==='number')?[h.origin]:(h.origin||[[0,0]]),
+  center:h.center||null,
+  // fields: optional climate fields a multi-zone biome asks for, each
+  // (x,z)->0..1. Missing ones fall back to BIO.fieldDefault. wet: 0 arid ..
+  // 1 saturated; salt: 0 .. 1 crust; upland: 0 basin floor .. 1 the high edge;
+  // flow: 0 still .. 1 a bank; mist: 0 .. 1 the cloud-forest band.
+  fields:h.fields||{},
+  // waterH(x,z) (sedesert-1, additive): the LOCAL water surface. The earlier kits keep
+  // their water at y=0 (the default); a stream that descends, or a tarn in a hollow,
+  // hands its own level in, and a biome reads depth as BIO.depth = waterH - terrainH.
+  // Where there is no water at all the host returns -1e9.
+  waterH:h.waterH||((x,z)=>0),
+  // register(o) (sedesert-1, additive): a volume the world's inspector and probe can name
+  // ({name,key,x,z,y,r,h}); a world without an inspector leaves it out
+  register:h.register||(o=>{}),
+  // lod (sedesert-1): the detail radii from the spine, a property of the world's spine, not of
+  // a species pass: hero (full detail), mid, far (impostors stop), floor bands. BIO.radii().
+  lod:Object.assign({hero:800,mid:1500,far:2200,floor:[500,1250]},h.lod||{}),
+  // windows (sedesert-1): named rectangles [x0,z0,x1,z1] a biome may ask for (BIO.window('water')):
+  // where the world's water is, so a water-bound pass looks nowhere else
+  windows:h.windows||{},
+  // eye (swbay-1): optional ()->[x,y,z], where the viewer is right now. Only a pass that
+  // animates (fauna) reads it, to leave what is far alone; null means no LOD.
+  eye:h.eye||null,
+  // clock / wind (one world, one wind: biomes/WORLD.md): clock()->seconds drives the foliage's sway
+  // instead of the core's own clock; wind()->[x,z] (1 = the calm breeze) bends it downwind. A world
+  // with core/atmos binds clock:()=>ATMOS.clock.t and wind:()=>the base wind over its calm length.
+  clock:h.clock||null,wind:h.wind||null,
   err:h.err||(m=>console.error(m)),
   stat:h.stat||null};
  reseed(BIO.host.seed*7919+11);
@@ -5157,8 +5192,28 @@ BIO.setScene=function(s){BIO.host.scene=s;};
 BIO.err=function(m){if(BIO.host)BIO.host.err(m);else console.error(m);};
 BIO.terrainH=function(x,z){return BIO.host?BIO.host.terrainH(x,z):0;};
 BIO.mask=function(x,z){return BIO.host?BIO.host.mask(x,z):1;};
+BIO.waterH=function(x,z){return BIO.host?BIO.host.waterH(x,z):0;};
+// depth of the ground under the local water surface (negative: above it)
+BIO.depth=function(x,z){return BIO.waterH(x,z)-BIO.terrainH(x,z);};
+BIO.register=function(o){if(BIO.host)BIO.host.register(o);};
+// the detail radii (sedesert-1, where it was BIO.LOD(); BIO.LOD is the runtime LOD's settings)
+BIO.radii=function(){return BIO.host?BIO.host.lod:{hero:800,mid:1500,far:2200,floor:[500,1250]};};
+BIO.window=function(n){return (BIO.host&&BIO.host.windows[n])||null;};
+BIO.eye=function(){return BIO.host&&BIO.host.eye?BIO.host.eye():null;};
+// the bounding box of the LOD spine, padded: every point within `pad` of an origin lies inside it
+BIO.originBox=function(pad){const O=BIO.host?BIO.host.origin:[[0,0]];let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const o of O){x0=Math.min(x0,o[0]);z0=Math.min(z0,o[1]);x1=Math.max(x1,o[0]);z1=Math.max(z1,o[1]);}return[x0-pad,z0-pad,x1+pad,z1+pad];};
 // distance from the LOD origin, for the detail curve
-BIO.lodD=function(x,z){const o=BIO.host?BIO.host.origin:[0,0];return Math.hypot(x-o[0],z-o[1]);};
+BIO.lodD=function(x,z){const O=BIO.host?BIO.host.origin:[[0,0]];let m=1e9;for(let i=0;i<O.length;i++){const d=Math.hypot(x-O[i][0],z-O[i][1]);if(d<m)m=d;}return m;};
+BIO.center=function(){const h=BIO.host;return h?(h.center||h.origin[0]):[0,0];};
+// flow and mist are additive (rift-1): a river bank, and the cloud-forest band a ridge wears on its wet face.
+// cold and rock are additive (nhighlands-1): 0 temperate .. 1 boreal (altitude and aspect: the boreal band
+// comes down lower on the north-facing slopes), and 0 soil .. 1 boulder ground and crag. An older biome
+// never reads them; a host that never heard of them gets 0 for both.
+BIO.fieldDefault={wet:(x,z)=>BIO.terrainH(x,z)<2?1:.6,salt:(x,z)=>0,upland:(x,z)=>0,flow:(x,z)=>0,mist:(x,z)=>0,cold:(x,z)=>0,rock:(x,z)=>0};
+// a field a world does not bind is 0, except the ones with a meaningful default (sedesert-1)
+const ZEROF=(x,z)=>0;
+BIO.field=function(n,x,z){const f=BIO.host&&BIO.host.fields[n];return f?f(x,z):(BIO.fieldDefault[n]||ZEROF)(x,z);};
+BIO.hasField=function(n){return !!(BIO.host&&BIO.host.fields[n]);};
 // LOD is a CURVE, not two steps: full detail under ~700 m, a quarter by 3 km.
 BIO.lod=function(x,z){return clamp(1.18-BIO.lodD(x,z)/2600,.22,1);};
 
@@ -5185,14 +5240,44 @@ BIO.fn={TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm};
 //                     family at bake. Boles, limbs, logs, boulders go here.
 // Both are charged to BIO.cur by the accounting in 10-core-head.js.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm}=BIO.fn;
-BIO.defs={};BIO.order=[];BIO.items={};
+// ---------------------------------------------------------------- kits (namespaces)
+// Several kits can share one page (biomes/WORLD.md), and two kits may both call an item
+// 'trunk' or a bucket 'bark0'. Each kit has its own REGISTRY of item definitions, their
+// instances and its buckets: BIO.kit(name) makes `name` current, so BIO.defs, BIO.items,
+// BIO.order and BIO.buckets point at its registry and BIO.kitName names it (material
+// cache keys carry it). It returns the kit that was current. A kit calls it at the top of
+// its first fragment and BIO.kitEnd(api) at the end of its last (after 75, if it has fauna): that wraps every function on its
+// export object (build, dress...) to run in its registry, and restores the default kit.
+// A page that never calls it works in the default kit '' exactly as before.
+BIO.kits={};BIO.kitName=null;
+BIO.kit=function(name){name=name||'';const prev=BIO.kitName;if(name===prev)return prev;let R=BIO.kits[name];
+ if(!R)R=BIO.kits[name]={defs:{},items:{},order:[],buckets:{}};
+ BIO.defs=R.defs;BIO.items=R.items;BIO.order=R.order;BIO.buckets=R.buckets;BIO.kitName=name;return prev;};
+BIO.kitWrap=function(name,api){for(const k of Object.keys(api)){const f=api[k];if(typeof f!=='function'||f._kit!=null)continue;
+  const w=function(){const prev=BIO.kit(name);try{return f.apply(this,arguments);}finally{BIO.kit(prev);}};w._kit=name;api[k]=w;}
+ return api;};
+BIO.kitEnd=function(api){const name=BIO.kitName;if(api)BIO.kitWrap(name,api);BIO.kit('');return api;};
+// a material cache key in the current kit's name ('' adds nothing)
+BIO.kitKey=function(k){return BIO.kitName?BIO.kitName+'|'+k:k;};
+BIO.kit('');
+// GROWABLE FLOAT32 STORES (nhighlands-1, internal): the items' matrices and colours and the buckets' vertices
+// were plain arrays of doubles, eight bytes a float and a page crash at ~16M triangles on a 43 km^2 map. These
+// keep four bytes a float and the same push() the builders already call; bake reads .a.
+function F32(){this.a=new Float32Array(4096);this.length=0;}
+F32.prototype.push=function(){const n=arguments.length;let a=this.a;if(this.length+n>a.length){const b=new Float32Array(Math.max(a.length*2,this.length+n));b.set(a);this.a=a=b;}
+ for(let i=0;i<n;i++)a[this.length++]=arguments[i];return this.length;};
+// sedesert's Store, merged (sedesert-1): the same store under its name, with its n and data()
+Object.defineProperty(F32.prototype,'n',{get:function(){return this.length;}});
+F32.prototype.data=function(){return this.a.slice(0,this.length);};   // a copy: the store can be dropped after bake
+BIO.F32=F32;BIO.Store=F32;
+// x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
+const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],count:0};
+ if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
  const g=geo.index?geo.toNonIndexed():geo;
  BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name};
- BIO.items[name]={m:[],c:[],n:[],c2:[],x:{},count:0};
- if(opt.attrs)opt.attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')BIO.items[name].x[a]=[];});
- BIO.order.push(name);};
+ BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
 // rotation helpers: qEuler(rx,ry,rz) or qFacing([nx,ny,nz]) (local +z toward n)
@@ -5215,7 +5300,7 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
   if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
   for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
- it.count++;BIO.tally(def.tris,1,0);};
+ it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);};
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
 BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
@@ -5223,9 +5308,8 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
  BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
 
 // ---------------------------------------------------------------- merged buckets
-BIO.buckets={};
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:[],nor:[],uv:[],col:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
  return BIO.buckets[fam];};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
@@ -5240,7 +5324,7 @@ BIO.tri=function(fam,a,b,c,col,n){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.t
   nx=uy*vz-uz*vy;ny=uz*vx-ux*vz;nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;}
  const cc=_col3(col);
  [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);});
- K.tris++;BIO.tally(1,0,0);};
+ K.k.push(BIO._lodKey(a[0],a[2]));K.tris++;BIO.tally(1,0,0);};
 BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col);};
 // TUBE along pts [{x,y,z,r,col?}], parallel-transport frames, constant texture
 // repeat along the length (so a bole shows no shear bands where the radius
@@ -5267,7 +5351,7 @@ BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buck
    pv(a0,c0);pv(b1,c1);pv(b0,c1);pv(a0,c0);pv(a1,c0);pv(b1,c1);tris+=2;}}
  if(opt.cap){[[0,-1],[n-1,1]].forEach(e=>{const ri2=rings[e[0]],ctr=[pts[e[0]].x,pts[e[0]].y,pts[e[0]].z];
   for(let s3=0;s3<seg;s3++){if(e[1]>0)BIO.tri(fam,ctr,ri2[s3].p,ri2[s3+1].p,opt.capCol!=null?opt.capCol:col);else BIO.tri(fam,ctr,ri2[s3+1].p,ri2[s3].p,opt.capCol!=null?opt.capCol:col);}});}
- K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+ {const kk=BIO._lodKey(pts[0].x,pts[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 // LATHE from rings [{x,y,z,yy,col}], radius rad(ring,ang), ambient-occlusion aof(ring,ang);
 // true surface normals so fluting and buttress fins shade
 BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.lathe: no bucket '+fam);return 0;}
@@ -5283,7 +5367,7 @@ BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K)
  const pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);};
  let tris=0;
  for(let i=0;i<n-1;i++)for(let s=0;s<seg;s++){const a0=V[i][s],a1=V[i][s+1],b0=V[i+1][s],b1=V[i+1][s+1];pv(a0);pv(b1);pv(a1);pv(a0);pv(b0);pv(b1);tris+=2;}
- K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+ {const kk=BIO._lodKey(rings[0].x,rings[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 // a parametric SURFACE fn(u,v)->[x,y,z] over nu x nv cells, smooth normals, uv scaled
 BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(!K){BIO.err('BIO.surf: no bucket '+fam);return 0;}
  const P=[];for(let i=0;i<=nu;i++){const row=[];for(let j=0;j<=nv;j++)row.push(fn(i/nu,j/nv));P.push(row);}
@@ -5295,7 +5379,34 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
   K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);};
  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){if(opt.hole&&opt.hole((i+.5)/nu,(j+.5)/nv))continue;
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
- K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+ {const kk=BIO._lodKey(P[0][0][0],P[0][0][2]);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
+
+// ---------------------------------------------------------------- runtime LOD (xanadu-1, additive)
+// A pass may set BIO.range (metres) while it builds: everything it puts is then
+// keyed by the CHUNK of its owner (BIO.owner=[x,z], a tree's foot, or the
+// instance's own position) and by that range, and bake() splits the item or the
+// bucket into one mesh per key. BIO.lodTick(camera), called every frame by the
+// host, shows a chunk's mesh only while the camera is within its range of the
+// chunk (and past BIO.minRange, for the impostors that stand in beyond it) and
+// the chunk is in the view. With BIO.range left null nothing changes: one mesh
+// per item or bucket, always drawn, as before.
+// BIO.LOD holds the runtime LOD's settings (chunk, scale) and, CALLED, returns the detail radii
+// (sedesert-1's BIO.LOD(), the same as BIO.radii()): its fragments, and the worlds that vendored
+// them (Shade), run unchanged.
+BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
+BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.LOD.chunk;
+ return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0);};
+function _lodEntry(mesh,key,y0,y1){const p=key.split('|'),c=p[0].split(','),C=BIO.LOD.chunk,cx=+c[0],cz=+c[1];
+ const T=BIO.host.THREE,e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2]};
+ e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(y0+y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(y1-y0)/2+60));
+ BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];mesh.userData.lod={chunk:p[0],range:e.range,minRange:e.minRange};return e;}
+let _frus=null,_pm=null;
+BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frustum();_pm=new T.Matrix4();}
+ _pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_frus.setFromProjectionMatrix(_pm);
+ const P=camera.position,s=BIO.LOD.scale;let shown=0,tris=0;
+ for(const e of BIO.lodMeshes){const dx=Math.max(e.x0-P.x,0,P.x-e.x1),dz=Math.max(e.z0-P.z,0,P.z-e.z1),dy=Math.max(e.y0-P.y,0,P.y-e.y1),d=Math.hypot(dx,dy,dz);
+  const v=d<e.range*s&&d>=e.minRange*s&&_frus.intersectsSphere(e.sphere);e.mesh.visible=v;if(v){shown++;tris+=e.mesh.userData.tris||0;}}
+ BIO.lodShown={meshes:shown,of:BIO.lodMeshes.length,tris};return BIO.lodShown;};
 
 // ---------------------------------------------------------------- indexed buckets
 // The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
@@ -5325,24 +5436,44 @@ BIO.indexedGeo=indexedGeo;
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
 BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;
- for(const name of BIO.order){const it=BIO.items[name];if(!it.count)continue;const def=BIO.defs[name];
-  const geo=def.geo.clone();
-  if(def.attrs&&it.n.length)geo.setAttribute('aN',new T.InstancedBufferAttribute(new Float32Array(it.n),3));
-  if(def.attrs&&it.c2.length)geo.setAttribute('aC2',new T.InstancedBufferAttribute(new Float32Array(it.c2),3));
-  for(const a in it.x)geo.setAttribute(a,new T.InstancedBufferAttribute(new Float32Array(it.x[a]),4));
-  const im=new T.InstancedMesh(geo,def.mat,it.count);
-  im.instanceMatrix.array.set(it.m);im.instanceMatrix.needsUpdate=true;
-  im.instanceColor=new T.InstancedBufferAttribute(new Float32Array(it.c),3);
-  im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.name='biome:'+name;
-  scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
-  const nx={};for(const a in it.x)nx[a]=[];BIO.items[name]={m:[],c:[],n:[],c2:[],x:nx,count:0};}
- for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
-  const g=indexedGeo(T,K.pos,K.nor,K.uv,K.col);
-  g.computeBoundingSphere();
-  const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
-  scene.add(m);BIO.baked.push(m);calls++;
-  K.pos=[];K.nor=[];K.uv=[];K.col=[];}
- BIO.lastBake={calls,inst};return BIO.lastBake;};
+ for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
+ for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
+  // group the instances by lod key (null: the always-drawn mesh)
+  const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
+  for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
+   const mA=new Float32Array(n*16),cA=new Float32Array(n*3),nA=it.n.length?new Float32Array(n*3):null,c2A=it.c2.length?new Float32Array(n*3):null;let y0=1e9,y1=-1e9;
+   const IM=it.m.a,IC=it.c.a,INN=it.n.a,IC2=it.c2.a;idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=IM[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=IC[i*3+q];if(nA)nA[j*3+q]=INN[i*3+q];if(c2A)c2A[j*3+q]=IC2[i*3+q];}const y=IM[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
+   if(def.attrs&&nA)geo.setAttribute('aN',new T.InstancedBufferAttribute(nA,3));
+   if(def.attrs&&c2A)geo.setAttribute('aC2',new T.InstancedBufferAttribute(c2A,3));
+   for(const a in it.x){const X=it.x[a].a,xA=new Float32Array(n*4);idx.forEach((i,j)=>{for(let q=0;q<4;q++)xA[j*4+q]=X[i*4+q];});geo.setAttribute(a,new T.InstancedBufferAttribute(xA,4));}
+   const im=new T.InstancedMesh(geo,def.mat,n);
+   im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
+   im.instanceColor=new T.InstancedBufferAttribute(cA,3);
+   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;im.userData.kit=kn;
+   if(key)_lodEntry(im,key,y0,y1);
+   scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
+  R.items[name]=newItem(def.attrs);}
+ for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
+  const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
+  for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
+   const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
+   const g=indexedGeo(T,P,N,U,Cc);
+   g.computeBoundingSphere();
+   const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
+   if(key)_lodEntry(m,key,y0,y1);
+   scene.add(m);BIO.baked.push(m);calls++;}
+  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}}
+ BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
+
+// ---------------------------------------------------------------- dynamic instances (sedesert-1)
+// A biome's moving things (fauna) are InstancedMeshes it updates itself every
+// frame through BIO.tick; the core makes the mesh, charges it, and adds it to
+// the scene at once (it is not a store, so it needs no bake).
+BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
+ const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
+ im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);
+ scene.add(im);BIO.baked.push(im);BIO.tally(g.attributes.position.count/3*count,count,1);return im;};
+BIO.tick=function(fn){BIO.host.ticks(fn);};
 
 Object.assign(BIO.fn,{qEuler,qFacing,qUp});
 })();
@@ -5357,11 +5488,19 @@ Object.assign(BIO.fn,{qEuler,qFacing,qUp});
 //     black fringe round every leaf at distance; and alpha is boosted with
 //     distance, or the far canopy thins to lace.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
-BIO.WIND={t:{value:0}};
+// THE WIND: one clock and, if the host has one, one wind (biomes/WORLD.md, 'The air'). With no host
+// clock the core keeps its own (seconds since load, from the host's ticks); with BIO.init({clock}) it
+// reads the world's (core/atmos: ATMOS.clock.t), so a paused or pinned clock stills the leaves too.
+// With BIO.init({wind}) -> [x,z] (1 = the calm breeze) the sway grows with the wind's strength and
+// the foliage leans downwind, pulsing; with none, on=0 and the sway is exactly what it always was.
+BIO.WIND={t:{value:0},v:{value:null},on:{value:0}};
 BIO.SUN={value:null};                 // set by BIO.setSun([x,y,z]); defaults at first use
 BIO.setSun=function(v){const T=BIO.host.THREE;if(!BIO.SUN.value)BIO.SUN.value=new T.Vector3();BIO.SUN.value.set(v[0],v[1],v[2]).normalize();};
 BIO._windTicked=false;
-BIO._tickWind=function(){if(BIO._windTicked)return;BIO._windTicked=true;BIO.host.ticks(dt=>{BIO.WIND.t.value+=dt;});};
+BIO._tickWind=function(){if(BIO._windTicked)return;BIO._windTicked=true;const W=BIO.WIND;
+ if(!W.v.value)W.v.value=new BIO.host.THREE.Vector2(0,0);
+ BIO.host.ticks(dt=>{const h=BIO.host;W.t.value=h.clock?h.clock():W.t.value+dt;
+  if(h.wind){const w=h.wind();W.v.value.set(w[0],w[1]);W.on.value=1;}});};
 
 // ---------------------------------------------------------------- alpha textures
 // draw(g,S) paints GREYSCALE leaves on a transparent canvas; the material's
@@ -5462,11 +5601,11 @@ BIO.geo.trunk=function(n){const T=BIO.host.THREE;return new T.CylinderGeometry(.
 //   axis   which instanceMatrix column sets the amplitude (1 for a long thin hang)
 BIO.foliageHook=function(o){o=o||{};
  return function(sh){
-  sh.uniforms.uWindT=BIO.WIND.t;
+  sh.uniforms.uWindT=BIO.WIND.t;sh.uniforms.uWindV=BIO.WIND.v;sh.uniforms.uWindOn=BIO.WIND.on;
   if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);
   sh.uniforms.uSunDir=BIO.SUN;
   sh.vertexShader=sh.vertexShader
-   .replace('#include <common>','#include <common>\nuniform float uWindT;\nvarying vec3 vFlWP;\nvarying float vFlD;\n'+
+   .replace('#include <common>','#include <common>\nuniform float uWindT;\nuniform vec2 uWindV;\nuniform float uWindOn;\nvarying vec3 vFlWP;\nvarying float vFlD;\n'+
     (o.aN?'attribute vec3 aN;\nvarying vec3 vFlN;\n':'')+(o.irid?'attribute vec3 aC2;\nvarying vec3 vFlC2;\n':''))
    .replace('#include <project_vertex>',[
     'vec4 mvPosition = vec4( transformed, 1.0 );',
@@ -5477,10 +5616,14 @@ BIO.foliageHook=function(o){o=o||{};
     '  _sc = length(instanceMatrix['+(o.axis||0)+'].xyz);',
     '#endif',
     'float _wg = '+(o.swayW||'1.0')+';',
-    'mvPosition.xyz += _wg * _sc * vec3(',
+    // the world's wind (uWindOn=1): the sway scales with its strength and the foliage leans downwind,
+    // pulsing per instance; with no wind bound both terms are exactly x1 and +0
+    'float _wk = mix(1.0, max(0.3, length(uWindV)), uWindOn);',
+    'vec3 _lean = uWindOn * vec3(uWindV.x, 0.0, uWindV.y) * (0.9 + 0.6*sin(uWindT*0.45+_ph*2.1));',
+    'mvPosition.xyz += _wg * _sc * (vec3(',
     '   sin(uWindT*0.9+_ph) + 0.45*sin(uWindT*2.3+_ph*1.7+position.x*5.0),',
     '   0.40*sin(uWindT*1.6+_ph*0.6+position.z*5.0),',
-    '   cos(uWindT*0.7+_ph*1.3) + 0.45*sin(uWindT*2.9+_ph+position.y*5.0) ) * '+(o.swayA==null?.06:o.swayA).toFixed(3)+';',
+    '   cos(uWindT*0.7+_ph*1.3) + 0.45*sin(uWindT*2.9+_ph+position.y*5.0) ) * _wk + _lean) * '+(o.swayA==null?.06:o.swayA).toFixed(3)+';',
     'vFlWP = (modelMatrix * mvPosition).xyz;',
     o.aN?'vFlN = aN;':'',o.irid?'vFlC2 = aC2;':'',
     'mvPosition = modelViewMatrix * mvPosition;',
@@ -5513,12 +5656,35 @@ BIO.foliageHook=function(o){o=o||{};
 // different cache keys or three silently shares one).
 BIO.leafMat=function(tex,key,o){const T=BIO.host.THREE;o=o||{};
  const m=new T.MeshLambertMaterial({color:0xffffff,map:tex||null,alphaTest:o.alphaTest==null?.42:o.alphaTest,side:T.DoubleSide,vertexColors:!!o.vertexColors});
- m.onBeforeCompile=BIO.foliageHook(o);m.customProgramCacheKey=function(){return'biofol|'+key;};
+ m.onBeforeCompile=BIO.foliageHook(o);const ck='biofol|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'leaf',key:BIO.kitKey(key),opts:o};   // what it is, as data (42-core-export)
  BIO._tickWind();return m;};
 // a BARK / WOOD material for merged buckets: Lambert, vertex-coloured, textured
-BIO.barkMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});};
+BIO.barkMat=function(tex,col){const T=BIO.host.THREE,m=new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,vertexColors:true,side:T.DoubleSide});m.userData.bio={kind:'bark'};return m;};
 // a plain material for instanced solids (rods, lobes, boulders)
 BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMaterial({color:col==null?0xffffff:col,map:tex||null,side:T.DoubleSide});};
+
+// ---------------------------------------------------------------- colour (sedesert-1)
+// The sRGB-aware colour maths every biome ends up needing (the abyss kit's
+// lesson): a designer's hex renders about twice as bright under the
+// sun+hemisphere rig, and a tinted near-grey texture needs its mean divided out.
+BIO.col=(function(){const T=()=>BIO.host.THREE,C=h=>new (T().Color)(h);let WHITE=null,DARK=null;
+ // toward white (f>0) or toward a warm black (f<0)
+ function shade(hex,f){const c=hex.isColor?hex.clone():C(hex);if(!WHITE){WHITE=C(0xffffff);DARK=C(0x120f0a);}if(f>=0)c.lerp(WHITE,f);else c.lerp(DARK,-f);return c;}
+ // multiply in linear light, back to sRGB
+ function bright(col,k){const c=col.isColor?col.clone():C(col);c.convertSRGBToLinear();c.r=Math.min(1,c.r*k);c.g=Math.min(1,c.g*k);c.b=Math.min(1,c.b*k);return c.convertLinearToSRGB();}
+ const _hsl={h:0,s:0,l:0};
+ // jitter hue / saturation / lightness by +-dh, +-ds, +-dl (three rng draws)
+ function vary(hex,dh,ds,dl){const c=hex.isColor?hex.clone():C(hex);c.getHSL(_hsl);c.setHSL(((_hsl.h+rr(-dh,dh))%1+1)%1,clamp(_hsl.s+rr(-ds,ds),0,1),clamp(_hsl.l+rr(-dl,dl),.03,.97));return c;}
+ // the linear mean of a canvas texture (sampled)
+ function texMean(tex){const im=tex&&tex.image;if(!im||!im.getContext)return[.25,.25,.25];
+  const d=im.getContext('2d').getImageData(0,0,im.width,im.height).data;let r=0,g=0,b=0,n=0;
+  for(let i=0;i<d.length;i+=4*13){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
+  const c=C(0).setRGB(r/n/255,g/n/255,b/n/255).convertSRGBToLinear();return[c.r,c.g,c.b];}
+ // the sRGB tint that renders `hex` on a texture of linear mean m
+ function tint(hex,m,k){const c=hex.isColor?hex.clone():C(hex);c.convertSRGBToLinear();k=k==null?1:k;
+  c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
+ return{shade,bright,vary,texMean,tint};})();
 
 })();
 // ================================================================= BIOME CORE — animation
@@ -5537,7 +5703,6 @@ BIO.solidMat=function(tex,col){const T=BIO.host.THREE;return new T.MeshLambertMa
 //   flap          vertices beyond |z| > root hinge up and down (wings)
 //   legs          vertices below y < legTop swing fore and aft, diagonal pairs
 // Also charged to BIO.cur, baked with everything else.
-(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 BIO.animHook=function(o){o=o||{};
  const mode=o.mode||'orbit',flap=o.flap||null,legs=o.legs||null;
  const state=[
@@ -5613,7 +5778,7 @@ BIO.animHook=function(o){o=o||{};
 BIO.animMat=function(key,o){const T=BIO.host.THREE;o=o||{};let m;
  if(o.basic)m=new T.MeshBasicMaterial({color:0xffffff,map:o.tex||null,vertexColors:!!o.vertexColors,transparent:!!o.additive,blending:o.additive?T.AdditiveBlending:T.NormalBlending,depthWrite:!o.additive,side:T.DoubleSide,fog:true});
  else m=new T.MeshLambertMaterial({color:0xffffff,map:o.tex||null,alphaTest:o.alphaTest||0,side:T.DoubleSide,vertexColors:!!o.vertexColors});
- m.onBeforeCompile=BIO.animHook(o);m.customProgramCacheKey=function(){return'bioanim|'+key;};
+ m.onBeforeCompile=BIO.animHook(o);const ck='bioanim|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'anim',key:BIO.kitKey(key),opts:o};
  BIO._tickWind();return m;};
 // assemble a body from parts [[geometry, colour hex], ...] into one
 // vertex-coloured, non-indexed geometry (colours sRGB in, linear out)
@@ -5630,8 +5795,6 @@ BIO.geo.wing=function(side,rf,ra,tx,span,tc,dihedral){const T=BIO.host.THREE,pos
  const tri=(i,j,k)=>{[i,j,k].forEach(q=>{pos.push(P[q][0],P[q][1],P[q][2]);nor.push(0,1,0);uv.push(U[q][0],U[q][1]);});};
  if(side>0){tri(0,3,2);tri(0,2,1);}else{tri(0,2,3);tri(0,1,2);}
  return BIO.geo._make(pos,nor,uv);};
-
-})();
 // ================================================================= BIOME CORE — placement
 // Where things go. Ported from the Hexahedron's forest rebuild (the forest is
 // PLACEMENT, not plants) and Girder's keep-clear tests.
@@ -5651,21 +5814,31 @@ BIO.stand=function(x,z,n,off,scale,seed){return rng()<(off==null?.26:off)?Math.f
 // cell, jittered, tested against the host mask, an fbm patch mask (the floor
 // is patchy) and `accept(x,z,d)->0..1`. Even coverage with no clumps of
 // rejection-sampling luck, and the count is predictable from the cell size.
-BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=BIO.host.origin,N=Math.ceil(rOut*2/cell);let n=0;
+// opt.depth: [lo,hi] of BIO.depth (ground under the local water) a cell must lie in
+// (sedesert-1, additive): a pass that plants IN the water asks for its window.
+BIO.grid=function(cell,rIn,rOut,accept,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),N=Math.ceil(rOut*2/cell);let n=0;const D=opt.depth;
  const pk=opt.patch==null?.85:opt.patch,ps=opt.patchScale||.016;
- for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
+ const B=opt.box;   // optional [x0,z0,x1,z1] window (a zone strip); cells outside it cost nothing
+ let ix0=0,ix1=N-1,iz0=0,iz1=N-1;
+ if(B){ix0=Math.max(0,Math.floor((B[0]-(o[0]-rOut))/cell));ix1=Math.min(N-1,Math.ceil((B[2]-(o[0]-rOut))/cell));iz0=Math.max(0,Math.floor((B[1]-(o[1]-rOut))/cell));iz1=Math.min(N-1,Math.ceil((B[3]-(o[1]-rOut))/cell));}
+ for(let iz=iz0;iz<=iz1;iz++)for(let ix=ix0;ix<=ix1;ix++){
   const x=o[0]-rOut+(ix+rng())*cell,z=o[1]-rOut+(iz+rng())*cell,u=rng();
+  if(B&&(x<B[0]||z<B[1]||x>B[2]||z>B[3]))continue;
   const d=Math.hypot(x-o[0],z-o[1]);if(d<rIn||d>rOut)continue;
-  const m=BIO.mask(x,z);if(m<=0)continue;
+  // accept first (sedesert-1): a zero there (out of the zone, out of the LOD band) costs
+  // nothing more, and the host mask (terrain calls) is only paid for the rest.
+  // Same result as testing it last: a zero never passed the u test anyway.
+  const a=accept?accept(x,z,d):1;if(a<=0)continue;
+  if(D){const dep=BIO.depth(x,z);if(dep<D[0]||dep>D[1])continue;}
+  const m=opt.noMask?1:BIO.mask(x,z);if(m<=0)continue;
   const patch=pk>0?(1-pk*.5)+pk*fbm(x*ps+7,z*ps-3,9484,2):1;
-  const a=accept?accept(x,z,d):1;
   if(u>a*m*clamp(patch,0,1.15))continue;
   if(!BIO.clearOf(x,z,opt.pad||0))continue;
   fn(x,BIO.terrainH(x,z),z,d);n++;}
  return n;};
 // POISSON-ish scatter of n points with a minimum spacing, area-uniform in the
 // annulus, biased outward by `pow` (>1 pushes the crowd out)
-BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=BIO.host.origin,P=[];let tries=0;
+BIO.scatter=function(n,rIn,rOut,minD,fn,opt){opt=opt||{};const o=opt.center||BIO.center(),P=[];let tries=0;
  while(P.length<n&&tries++<n*40){const a=rng()*TAU,u=Math.pow(rng(),opt.pow||1);
   const r=Math.sqrt(lerp(rIn*rIn,rOut*rOut,u)),x=o[0]+Math.cos(a)*r,z=o[1]+Math.sin(a)*r;
   if(rng()>BIO.mask(x,z))continue;if(!BIO.clearOf(x,z,opt.pad||0))continue;
@@ -5687,7 +5860,14 @@ BIO.clearOf3=function(x,y,z,rad,vr){const O=BIO.host.obstacles;
 //   downFaces  normal.y < -minDown (soffits, ceilings)          -> mats, curtains
 //   sideFaces  |normal.y| < .35                                 -> vines, brackets
 // Each sample: {p:[x,y,z], n:[nx,ny,nz], a:area}
-BIO.faceSamples=function(geos,n,filt){const out=[];const F=[];let tot=0;
+// SHELLS: geos may hold {geos:[...], share} groups (a roof, the walls, the ledges) instead of
+// plain geometries. Area decides where samples go WITHIN a shell, so one huge roof plate no
+// longer takes a structure's moss from its small ledges: the n samples are split across the
+// shells by share (default: equal), then each shell is sampled by area. A shell with no face
+// the filter accepts (piers asked for ledges) takes no share: its part goes to the others.
+// A list of plain geometries is one shell and draws exactly as before.
+// the faces of geos the filter accepts, with their running area (no random draws)
+function faceList(geos,filt){const F=[];let tot=0;
  for(const g of geos){const p=g.attributes.position;if(!p)continue;const idx=g.index?g.index.array:null;const cnt=idx?idx.length:p.count;
   for(let i=0;i<cnt;i+=3){const a=idx?idx[i]:i,b=idx?idx[i+1]:i+1,c=idx?idx[i+2]:i+2;
    const ax=p.getX(a),ay=p.getY(a),az=p.getZ(a),bx=p.getX(b),by=p.getY(b),bz=p.getZ(b),cx=p.getX(c),cy=p.getY(c),cz=p.getZ(c);
@@ -5695,11 +5875,20 @@ BIO.faceSamples=function(geos,n,filt){const out=[];const F=[];let tot=0;
    let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz);if(l<1e-9)continue;nx/=l;ny/=l;nz/=l;
    if(filt&&!filt(nx,ny,nz))continue;
    const ar=l*.5;tot+=ar;F.push([ax,ay,az,bx,by,bz,cx,cy,cz,nx,ny,nz,ar,tot]);}}
- if(!F.length)return out;
+ return {F,tot};}
+// n samples by area from a face list, appended to out (three random draws each)
+function sampleFaces(L,n,out){const F=L.F,tot=L.tot;if(!F.length)return out;
  for(let k=0;k<n;k++){const r=rng()*tot;let lo=0,hi=F.length-1;while(lo<hi){const m=(lo+hi)>>1;if(F[m][13]<r)lo=m+1;else hi=m;}
   const f=F[lo];let u=rng(),v=rng();if(u+v>1){u=1-u;v=1-v;}const w=1-u-v;
   out.push({p:[f[0]*w+f[3]*u+f[6]*v,f[1]*w+f[4]*u+f[7]*v,f[2]*w+f[5]*u+f[8]*v],n:[f[9],f[10],f[11]],a:f[12]});}
- return out;};
+ return out;}
+BIO.faceSamples=function(geos,n,filt){
+ if(geos.some(g=>g&&g.geos)){
+  const S=geos.map(g=>g&&g.geos?g:{geos:[g],share:1}).map(x=>({L:faceList(x.geos,filt),share:x.share==null?1:x.share})).filter(x=>x.L.F.length&&x.share>0);
+  const tot=S.reduce((s,x)=>s+x.share,0)||1,out=[];let given=0;
+  S.forEach((x,i)=>{const k=i===S.length-1?n-given:Math.round(n*x.share/tot);given+=k;if(k>0)sampleFaces(x.L,k,out);});
+  return out;}
+ return sampleFaces(faceList(geos,filt),n,[]);};
 BIO.upFaces=function(geos,n,minUp){return BIO.faceSamples(geos,n,(nx,ny,nz)=>ny>(minUp==null?.62:minUp));};
 BIO.downFaces=function(geos,n,minDown){return BIO.faceSamples(geos,n,(nx,ny,nz)=>ny<-(minDown==null?.62:minDown));};
 BIO.sideFaces=function(geos,n){return BIO.faceSamples(geos,n,(nx,ny,nz)=>Math.abs(ny)<.35);};
@@ -5746,6 +5935,7 @@ BIO.init({THREE:THREE,scene:null,terrainH:(x,z)=>terrainH(x,z),mask:bioMaskFn,ob
 // flowers) -- and the understorey palette. Everything here is DATA and kit
 // definitions; no placement.
 // Tags follow the project rule: climate / aridity / abyssal / riparian.
+BIO.kit('hyperjungle');   // this kit's own registry of items and buckets (core/biome: kits)
 var HYPERJUNGLE={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 HYPERJUNGLE.TAGS={climate:'hypertropic',aridity:'humid',abyssal:false,riparian:'both'};
@@ -6051,7 +6241,7 @@ const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
 // trees. Order along the field = which stands border which.
 const SHARE=[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok
 let QUANT=null;
-function standQuantiles(R){const v=[],o=BIO.host.origin,n=64;
+function standQuantiles(R){const v=[],o=BIO.center(),n=64;   // the grids' centre, [x,z] (the core keeps host.origin as a list)
  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=o[0]+(ix/(n-1)-.5)*2*R,z=o[1]+(iz/(n-1)-.5)*2*R;if(Math.hypot(x-o[0],z-o[1])>R)continue;v.push(BIO.standAt(x,z,4000)/4000);}
  v.sort((a,b)=>a-b);QUANT=[];let acc=0;for(let k=0;k<NSP-1;k++){acc+=SHARE[k]||(1/NSP);QUANT.push(v[Math.min(v.length-1,Math.floor(acc*v.length))]);}return QUANT;}
 function standSp(x,z,off){if(rng()<(off==null?.26:off))return ri(0,NSP-1);const v=BIO.standAt(x,z,4000)/4000;let k=0;while(k<QUANT.length&&v>=QUANT[k])k++;return k;}
@@ -6423,7 +6613,7 @@ function pickTarget(H,A){for(let t=0;t<12;t++){const a=rr(0,TAU),d=H.r*Math.sqrt
 HYPERJUNGLE.buildFauna=function(R,heroR,q){
  reseed(580101);q=q==null?1:q;R=R||3000;heroR=heroR||1500;
  const st={rays:0,flocks:0,darts:0,dartGroups:0,flies:0,motes:0,swarms:0,striders:0,herds:0,sloths:0};
- const o=BIO.host.origin,canopy=(x,z)=>HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):120;
+ const o=BIO.center(),canopy=(x,z)=>HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):120;
  // 1. SKY RAYS: flocks wheeling above the canopy of the hero disc
  const nFlock=Math.round(8*q);
  BIO.scatter(nFlock,150,heroR-150,420,(x,y,z)=>{const rad=rr(90,220);if(!BIO.clearOf(x,z,rad+40))return;
@@ -6543,7 +6733,8 @@ function okGround(x,z,pad){return !blockedAt(x,z,pad)&&!logNear(x,z,pad+.4);}
 // trunkR (a buttress lobe exceeds it by half again). The bucket's vertices in
 // the lower 34 m are binned by ring height and 24 angular bins. `ground` is
 // the bole's footprint radius at ground level over all angles (the fins).
-function boleProfile(T){const K=BIO.buckets['bark'+T.sp],P=K?K.pos:[],NB=24,rows={},rmax=trunkR(T,T.y0+3)*3;
+function boleProfile(T){const K=BIO.buckets['bark'+T.sp],P=K?K.pos.a.subarray(0,K.pos.length):[],NB=24,   // the bucket's Float32 store (core/biome)
+ rows={},rmax=trunkR(T,T.y0+3)*3;
  for(let i=0;i<P.length;i+=3){const yy=P[i+1]-T.y0;if(yy<-1||yy>34)continue;const dx=P[i]-T.x,dz=P[i+2]-T.z,d=Math.hypot(dx,dz);if(d>rmax)continue;
   const key=Math.round(yy*4);let row=rows[key];if(!row)row=rows[key]={yy:yy,r:new Float32Array(NB)};
   const b=Math.floor((((Math.atan2(dz,dx)%TAU)+TAU)%TAU)/TAU*NB)%NB;if(d>row.r[b])row.r[b]=d;}
@@ -6929,6 +7120,7 @@ HYPERJUNGLE.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==n
  BIO.cur=null;return out;};
 HYPERJUNGLE.dress=function(geos,opt){if(HYPERJUNGLE.dressGeos){BIO.cur='jungle/dress';HYPERJUNGLE.dressGeos(geos,opt||{});BIO.cur=null;}};
 HYPERJUNGLE.canopyH=function(x,z){return HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):60;};
+BIO.kitEnd(HYPERJUNGLE);   // its exports run in its registry; the default kit is current again
 // ================================================================= IZIZ CITY — the layout: rings, thoroughfares, gate roads, hill tops, parks
 // Paints the primary network and the precincts into the canvases (85) and records the ROADS the placer will front
 // buildings on. Order matters: everything painted here is "existing network" for the ancient grid (88) and the
@@ -7277,27 +7469,57 @@ function buildFactory(scene,gx,gz,d){reseed(d>0?9201:9200);KOFF=[gx,0,gz];REGIST
 // Its own PRNG (ATMOS.seed / rnd / rr / pick): it never touches the host's stream.
 const ATMOS={};
 (function(){const A=ATMOS;
- A.init=function(h){A.h=h;const T=A.T=h.THREE;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
-  A.sets={};A.glow=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
-  A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(.8,.35)},light:{value:1},px:{value:600}};
-  h.onFrame(()=>{const t=performance.now()/1000,hr=h.hour();const U=A.U;U.hour.value=hr;U.night.value=A.night(hr);U.time.value=t;U.light.value=1-.82*U.night.value;
-   U.px.value=innerHeight/(2*Math.tan(h.camera.fov*Math.PI/360));for(const f of A.hooks){try{f(t,hr);}catch(e){A.err('frame: '+e.message);}}});};
+ A.init=function(h){A.h=h;const T=A.T=h.THREE,P=A.PRESETS,PW=P.wind,PC=P.clock;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
+  A.sets={};A.glow=[];A.lamps=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
+  A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
+   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
+  A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let tl=-1;
+  // the shared GLSL, written from the presets so JS and shaders agree
+  const f=A.glf;
+  A.GLSL_WIND=`float atmGust(float t,vec2 xz,vec2 w){float s=t-dot(xz,w)/max(length(w),1e-3)/${f(PW.frontSpeed)};return ${PW.gust.map(g=>`${f(g[0])}*sin(s*${f(g[1])}+${f(g[2])})`).join('+')};}
+  vec2 atmWind(float t,vec2 xz,vec2 w,float amp){return w*(1.0+amp*atmGust(t,xz,w));}`;
+  A.GLSL_LIT=`float atmLit(float h,vec2 t){float hh=h<12.0?h+24.0:h;return smoothstep(t.x,t.x+${f(PC.ramp)},hh)*(1.0-smoothstep(t.y-${f(PC.ramp)},t.y,hh));}`;
+  // THE CLOCK: the module's own simulation time in seconds, from 0 at init. clock.scale speeds it up or stops it (0);
+  // clock.fixed pins it (deterministic shots: every shader and hook sees that time, and nothing eases). Every effect reads
+  // A.clock.t / A.U.time, never the wall clock, so a game engine drives it with its own delta.
+  A.clock={t:0,dt:0,scale:1,fixed:null};
+  // the pixel ratio: on-screen sizes are framebuffer pixels, so px must include it (h.pixelRatio: a number or a function)
+  const pr=()=>{const r=typeof h.pixelRatio==='function'?h.pixelRatio():h.pixelRatio;return r>0?r:1;};
+  h.onFrame(()=>{const now=performance.now()/1000,C=A.clock,real=tl<0?0:Math.min(.1,now-tl);tl=now;C.dt=C.fixed!=null?0:real*C.scale;C.t=C.fixed!=null?C.fixed:C.t+C.dt;
+   const t=C.t,dt=C.dt,hr=h.hour(),U=A.U;U.hour.value=hr;U.night.value=A.night(hr);U.time.value=t;U.light.value=1-PC.nightDim*U.night.value;
+   // the wind: a base vector (A.windBase, slowly veering) times A.windScale (the weather raises it); gusts are added per
+   // place and time by atmGust() in the shaders. windOff is the base wind integrated over time, for things that ride it (rain)
+   const v=PW.veer,veer=v[0]*Math.sin(t*v[1])+v[2]*Math.sin(t*v[3]+1.7),c=Math.cos(veer),s=Math.sin(veer),b=A.windBase;U.wind.value.set((b.x*c-b.y*s)*A.windScale,(b.x*s+b.y*c)*A.windScale);
+   U.windOff.value.addScaledVector(U.wind.value,dt);
+   U.px.value=innerHeight*pr()/(2*Math.tan(h.camera.fov*Math.PI/360));for(const fn of A.hooks){try{fn(t,hr,dt);}catch(e){A.err('frame: '+e.message);}}});};
+ A.glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};   // a number as a GLSL float literal
  A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
- A.hook=fn=>A.hooks.push(fn);
+ A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds
  A.ground=(x,z)=>A.h.ground?A.h.ground(x,z):0;
+ // EFFECT RECORDS: every placing call also records what it placed, as plain data (ATMOS.export() writes them out)
+ A.rec=(type,o)=>{const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
  // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
  A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
- A.night=h=>Math.min(1,Math.max(0,1-A.ss(5.5,7.2,h)+A.ss(17.2,18.8,h)));
- A.litAt=(h,on,off)=>{const hh=h<12?h+24:h;return A.ss(on,on+.3,hh)*(1-A.ss(off-.3,off,hh));};
- A.GLSL_LIT='float atmLit(float h,vec2 t){float hh=h<12.0?h+24.0:h;return smoothstep(t.x,t.x+0.3,hh)*(1.0-smoothstep(t.y-0.3,t.y,hh));}';
+ A.night=h=>{const C=A.PRESETS.clock;return Math.min(1,Math.max(0,1-A.ss(C.dawn[0],C.dawn[1],h)+A.ss(C.dusk[0],C.dusk[1],h)));};
+ A.litAt=(h,on,off)=>{const hh=h<12?h+24:h,r=A.PRESETS.clock.ramp;return A.ss(on,on+r,hh)*(1-A.ss(off-r,off,hh));};
+ // GUSTS: a gust factor in -1..1 at time t and place (x,z). Gust fronts travel downwind (wind.frontSpeed m/s), so
+ // neighbours differ and a plume shows the wave going up it. The same sum in JS (A.gust, A.windAt) and GLSL (atmGust, atmWind).
+ A.gust=(t,x,z)=>{const P=A.PRESETS.wind,w=A.U.wind.value,l=Math.hypot(w.x,w.y)||1,s=t-(x*w.x+z*w.y)/l/P.frontSpeed;let g=0;for(const q of P.gust)g+=q[0]*Math.sin(s*q[1]+q[2]);return g;};
+ A.windAt=(t,x,z)=>{const w=A.U.wind.value,f=1+A.U.gustAmp.value*A.gust(t,x,z);return[w.x*f,w.y*f];};
+ // HAZE: how much fog and rain thicken the air for a light (beams and halos read stronger in it)
+ A.haze=()=>1+1.6*A.U.fog.value+.9*A.U.rain.value;
  // PRNG (mulberry32)
  let s=1;A.seed=n=>{s=(n>>>0)||1;};A.rnd=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+ // a separate stream (same generator) for things added late, so they never shift the placement stream
+ A.stream=n=>{let s=(n>>>0)||1;return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};};
  A.rr=(a,b)=>a+(b-a)*A.rnd();A.pick=a=>a[Math.floor(A.rnd()*a.length)];
  A.col=hex=>new A.T.Color(hex).convertSRGBToLinear();
  // shared geometry (unit sizes; posts and cones stand on y=0) and cached materials
  const G={};A.geo=k=>{if(G[k])return G[k];const T=A.T;
   G[k]=k==='box'?new T.BoxGeometry(1,1,1):k==='post'?new T.CylinderGeometry(1,1,1,8).translate(0,.5,0):k==='post16'?new T.CylinderGeometry(1,1,1,16).translate(0,.5,0):
    k==='ball'?new T.SphereGeometry(1,8,6):k==='cone'?new T.ConeGeometry(1,1,7).translate(0,.5,0):k==='plane'?new T.PlaneGeometry(1,1):null;return G[k];};
+ A.geoPut=(k,g)=>(G[k]=g);A.geoKinds=()=>G;
  const M={};A.mat=(k,make)=>M[k]||(M[k]=make());
  A.lam=(hex,rough)=>A.mat('std'+hex+'_'+(rough||.85),()=>new A.T.MeshStandardMaterial({color:hex,roughness:rough||.85,metalness:0}));
  // INSTANCED SETS: put() collects, finish() bakes one InstancedMesh per set. Item: [x,y,z, sx,sy,sz, ry|Quaternion, color]
@@ -7312,8 +7534,45 @@ const ATMOS={};
  A.glowAdd=(x,y,z,col,size,on,off)=>{A.glow.push([x,y,z,col[0],col[1],col[2],size||6,on==null?-1:on,off==null?30:off]);};
  A.noRay=o=>{o.raycast=()=>{};o.userData.probeSkip=true;return o;};
  A.add=o=>{A.root.add(o);return o;};
+ // SPRITE CLOUDS: camera-facing quads, one instance per particle (not GL points: points clip at the screen edge as soon as
+ // their centre leaves it, are capped in size by the driver, and have no equivalent in a game engine; a quad maps 1:1 onto a
+ // Godot MultiMesh or particle quad). attrs: {name:[itemSize, array]}, one item per particle; the particle's position
+ // goes in `ipos`. The vertex shader works out mv (view-space centre) and ps (on-screen size in pixels, as gl_PointSize
+ // did) and ends with gl_Position=atmQuad(mv,ps); the fragment shader reads vUv (0..1 across the sprite, as gl_PointCoord).
+ A.GLSL_QUAD='attribute vec3 ipos;uniform float px;varying vec2 vUv;\n vec4 atmQuad(vec4 mv,float ps){vUv=position.xy+0.5;return projectionMatrix*vec4(mv.xy+position.xy*ps*max(-mv.z,1e-3)/px,mv.z,1.0);}';
+ A.sprites=(name,attrs,m,order)=>{const T=A.T,g=new T.InstancedBufferGeometry(),n=attrs.ipos[1].length/3;
+  g.setAttribute('position',new T.Float32BufferAttribute([-.5,-.5,0,.5,-.5,0,.5,.5,0,-.5,.5,0],3));g.setIndex([0,1,2,0,2,3]);
+  for(const k in attrs)g.setAttribute(k,new T.InstancedBufferAttribute(new Float32Array(attrs[k][1]),attrs[k][0]));g.instanceCount=n;
+  const mesh=new T.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=order||3;mesh.name='atmos:'+name;A.add(mesh);A.noRay(mesh);A.stats[name]=n;return mesh;};
  A.finish=()=>{A.bakeSets();if(A.buildGlow)A.buildGlow();return A.stats;};
 })();
+// ================================================================= ATMOS — presets: every effect's tunable numbers, as plain data
+// The particle shaders read these (as uniforms) instead of carrying literals, and ATMOS.export() writes them out, so a
+// game engine builds the same effects from the same numbers (core/atmos/GODOT.md). A host may change a value before it
+// places the effect. Plain data only: numbers, arrays, strings.
+// Colours are [r,g,b] 0..1 in DISPLAY (sRGB) space: the three.js shaders write them straight out; an engine that lights in
+// linear space converts them (Godot: a `source_color` uniform, or Color.srgb_to_linear()).
+// Sizes are metres (a particle's diameter); px clamps are on-screen pixels; rates are 1/lifetime in seconds.
+ATMOS.PRESETS={
+ // smoke kinds share one cloud; an emitter names its kind ([x,y,z,'chimney'] or the index 0/1/2)
+ smoke:{
+  chimney:{index:0,n:12,rate:.11,rise:16,drift:9,wobble:1.2,size:[1.2,5.5],alpha:.35,rainDamp:.5,color:[.46,.44,.42]},
+  steam:  {index:1,n:14,rate:.3, rise:9, drift:4,wobble:1.2,size:[.8,3.2], alpha:.32,rainDamp:0, color:[.92,.94,.96]},
+  spray:  {index:2,n:16,rate:.45,rise:3.5,drift:1.5,wobble:1.2,size:[.8,3.2],alpha:.32,rainDamp:0,color:[.92,.94,.96]},
+  pxMax:256,fadeIn:.12,distFade:.0018,blend:'normal'},
+ fireflies:{n:6,spread:5,size:.35,pxMax:24,distFade:.004,color:[.75,1,.35],blend:'add'},
+ moths:{n:8,p:.6,max:800,size:.2,pxMax:10,alpha:1,fadeNear:25,fadeFar:70,windHide:[1.6,3.2],color:[1,.87,.6],blend:'add'},
+ mist:{n:420,size:[26,60],alpha:.12,distFade:.0012,nearFade:[4,30],night:[.1,.11,.19],day:[.86,.88,.92],pxMax:220,blend:'normal'},
+ fogbank:{size:[30,70],alpha:.16,distFade:.0009,nearFade:[3,25],sway:14,night:[.14,.15,.2],day:[.86,.87,.9],pxMax:220,blend:'normal'},
+ glow:{pxMin:2,pxMax:240,distFade:.0022,fogFade:.004,fogSwell:.7,rainSwell:.4,gain:1.7,dayFloor:.15,blend:'add'},
+ rain:{drops:7000,box:240,fall:60,streak:2.4,slant:.25,windRide:6,fade:[50,120],alpha:.42,color:[.72,.77,.86]},
+ // the wind every effect shares: a base vector that veers slowly, scaled by the weather, with gust fronts travelling
+ // downwind (atmGust in the shaders, ATMOS.gust in JS)
+ wind:{base:[.8,.35],gustAmp:.55,frontSpeed:12,veer:[.22,.021,.1,.057],gust:[[.5,.31,0],[.3,.73,1.3],[.2,1.9,4.1]],
+  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5}},
+ // the evening: night(h) ramps over these hours; a light's own on/off ramps take `ramp` hours
+ clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82}
+};
 // ================================================================= ATMOS — street furniture: lamp posts, lamp rows, banners, planters, fountains
 // All positions are world metres; y defaults to the host's ground. Returns what a host may want to register.
 (function(){const A=ATMOS;
@@ -7323,7 +7582,8 @@ const ATMOS={};
  // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
  A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
   A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
-  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,o.on!=null?o.on:17.6,o.off!=null?o.off:29.6);return[ax,y+h-.45,az];};
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
+  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them)
  // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
  // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
  A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}
@@ -7333,8 +7593,21 @@ const ATMOS={};
  // a planter: timber box and a mound of leaves
  A.planter=(x,z,ry,o)=>{o=o||{};const y=A.ground(x,z)-.1;A.set('planter','box',A.lam(0x8a6a3a,.9));A.set('planterLeaf','ball',A.lam(0x4f8a3e,.9));
   A.put('planter',[x,y+.6,z,o.w||2.2,1.2,o.d||1.2,ry]);A.put('planterLeaf',[x,y+1.25,z,(o.w||2.2)*.48,.5,(o.d||1.2)*.48,ry]);};
+ // the FLAG cloth: a box subdivided down and across, its lower part pushed downwind (the wind across the flag's face, with
+ // the gust at its pole) and rippling; the top stays on its crossbar. One material for every banner.
+ const flagGeo=()=>A.geo('flag')||(A.geoPut('flag',new A.T.BoxGeometry(1,1,1,1,12,6)));
+ const flagMat=()=>A.mat('flag',()=>{const m=new A.T.MeshStandardMaterial({color:0xffffff,roughness:.95,metalness:0});
+  m.onBeforeCompile=sh=>{sh.uniforms.time=A.U.time;sh.uniforms.wind=A.U.wind;sh.uniforms.gustAmp=A.U.gustAmp;
+   sh.vertexShader='uniform float time;uniform vec2 wind;uniform float gustAmp;\n'+A.GLSL_WIND+'\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+   #ifdef USE_INSTANCING
+   vec3 fN=normalize((instanceMatrix*vec4(1.0,0.0,0.0,0.0)).xyz);vec3 fP=(instanceMatrix*vec4(0.0,0.0,0.0,1.0)).xyz;float fS=max(length(instanceMatrix[0].xyz),1e-3);
+   vec2 fw=atmWind(time,fP.xz,wind,gustAmp);float hf=clamp(0.5-position.y,0.0,1.0);float sway=clamp(dot(fw,fN.xz)*0.55,-1.7,1.7);
+   float rip=sin(time*(2.2+0.5*length(fw))+position.z*4.5+position.y*6.0+fP.x*0.37)*(0.12+0.1*length(fw));
+   transformed.x+=hf*sqrt(hf)*(sway+rip)/fS;
+   #endif`);};m.customProgramCacheKey=()=>'atmos-flag';return m;});
  // a banner: an 11 m pole, a cloth flag hung square across the bearing `ry` (radians, x toward z: the flag faces along it), a cap
- A.banner=(x,z,ry,hex,o)=>{o=o||{};const y=A.ground(x,z)-.2,h=o.h||11;A.set('bannerPole','post',wood());A.set('bannerFlag','box',A.lam(0xffffff,.95));A.set('bannerCap','box',A.lam(0xc8a868,.8));
+ A.banner=(x,z,ry,hex,o)=>{o=o||{};const y=A.ground(x,z)-.2,h=o.h||11;A.set('bannerPole','post',wood());A.set('bannerFlag',flagGeo(),flagMat());A.set('bannerCap','box',A.lam(0xc8a868,.8));
+  A.rec('banner',{at:[x,y,z],bearing:ry,h,color:typeof hex==='number'?'#'+new A.T.Color(hex).getHexString():hex,cloth:[2.2,h*.6],note:'cloth hangs from a crossbar; it swings downwind and ripples (flag shader)'});
   A.put('bannerPole',[x,y,z,.22,h,.22,0]);A.put('bannerFlag',[x,y+h*.32+3.2,z,.2,h*.6,2.2,-ry,hex]);A.put('bannerCap',[x,y+h-.35,z,.45,.45,2.8,-ry]);};
  // a fountain: stone basin, rippling water, a fluted column, a top bowl, a lit spout
  A.fountain=(x,z,o)=>{o=o||{};const r=o.r||4,y=(o.y!=null?o.y:A.ground(x,z))-.15;A.set('fountainStone','post16',stone());
@@ -7343,7 +7616,7 @@ const ATMOS={};
   A.put('fountainStone',[x,y,z,r,1.1,r,0]);A.put('fountainStone',[x,y+1.05,z,r+.25,.2,r+.25,0]);A.put('fountainWater',[x,y+1.0,z,r-.4,.14,r-.4,0]);
   A.put('fountainStone',[x,y+1,z,r*.14,3.2,r*.14,0]);A.put('fountainStone',[x,y+4.1,z,r*.34,.35,r*.34,0]);A.put('fountainWater',[x,y+4.35,z,r*.3,.08,r*.3,0]);
   A.set('fountainJet','cone',A.mat('fountainJet',()=>new A.T.MeshBasicMaterial({color:0xcfeeff,transparent:true,opacity:.55,depthWrite:false})));A.put('fountainJet',[x,y+4.3,z,.25,1.4,.25,0]);
-  A.glowAdd(x,y+4.9,z,[.6,.85,1],4,-1,30);return{x,y,z,r:r+.4,h:5.8};};
+  A.glowAdd(x,y+4.9,z,[.6,.85,1],4,-1,30);A.rec('fountain',{at:[x,y,z],r,spout:[x,y+4.3,z],basinY:y+1.07});return{x,y,z,r:r+.4,h:5.8};};
 })();
 // ================================================================= ATMOS — the evening: searchlight beams, spot cones, beacons, braziers, floodlights
 // Beams and cones are additive cones whose brightness fades along their length (no real lights: they cost nothing per
@@ -7361,114 +7634,155 @@ const ATMOS={};
   const m=beamMat(o.color);const cone=new T.Mesh(fadeCone(o.len||220,o.rad||9),m);
   const tilt=new T.Group();piv.add(tilt);tilt.add(cone);if(o.sky){cone.rotation.x=Math.PI;}else tilt.rotation.x=-(Math.PI/2-(o.tilt||.12));
   const on=o.on!=null?o.on:17.9,off=o.off!=null?o.off:29.7,ph=A.rr(0,6.28),rate=A.rr(.2,.35),base=Math.PI/2-(o.heading||0),sw=o.sweep==null?.7:o.sweep;
+  A.rec('searchlight',{at:[x,y,z],heading:o.heading||0,sweep:sw,tilt:o.tilt||.12,sky:!!o.sky,len:o.len||220,rad:o.rad||9,color:'#'+new A.T.Color(o.color||0xfff2d0).getHexString(),opacity:o.opacity||.2,hours:[on,off]});
   A.glowAdd(x,y+.6,z,[1,.95,.8],o.glow||9,on,off);
-  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=(o.opacity||.2)*l;cone.visible=l>.01;
+  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=Math.min(.55,(o.opacity||.2)*l*A.haze());cone.visible=l>.01;
    if(o.sky){piv.rotation.z=.5*Math.sin(t*rate+ph);piv.rotation.y=t*.25+ph;}else piv.rotation.y=base+sw*Math.sin(t*rate+ph);});return piv;};
  // a fixed SPOT CONE from (x,y,z) along dir (world vector): a gate lamp throwing light down on a bridge
  A.spotCone=(x,y,z,dir,o)=>{o=o||{};const T=A.T,m=beamMat(o.color);const c=new T.Mesh(fadeCone(o.len||120,o.rad||14),m);c.position.set(x,y,z);
   c.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),new T.Vector3(dir[0],dir[1],dir[2]).normalize());A.add(c);A.noRay(c);
   const on=o.on!=null?o.on:17.75,off=o.off!=null?o.off:29.8;A.glowAdd(x,y,z,[1,.95,.8],o.glow||10,on,off);
-  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=(o.opacity||.13)*l;c.visible=l>.01;});return c;};
+  A.rec('spotcone',{at:[x,y,z],dir:[dir[0],dir[1],dir[2]],len:o.len||120,rad:o.rad||14,color:'#'+new A.T.Color(o.color||0xfff2d0).getHexString(),opacity:o.opacity||.13,hours:[on,off]});
+  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=Math.min(.4,(o.opacity||.13)*l*A.haze());c.visible=l>.01;});return c;};
  // a rotating BEACON: two thin cones back to back, red by default, faint by day
  A.beacon=(x,y,z,o)=>{o=o||{};const T=A.T,g=new T.Group();g.position.set(x,y,z);A.add(g);A.noRay(g);const m=beamMat(o.color||0xff6040);const geo=fadeCone(o.len||90,o.rad||4,10);
   for(const a of[0,Math.PI]){const w=new T.Group();w.rotation.y=a;const c=new T.Mesh(geo,m);c.rotation.x=-(Math.PI/2-.05);w.add(c);g.add(w);}
-  A.glowAdd(x,y,z,[1,.3,.2],o.glow||10,0,30);A.hook(t=>{m.opacity=.35*A.U.night.value+.05;g.rotation.y=t*1.5;});return g;};
+  A.rec('beacon',{at:[x,y,z],len:o.len||90,rad:o.rad||4,color:'#'+new A.T.Color(o.color||0xff6040).getHexString(),spin:1.5,hours:[0,30]});
+  A.glowAdd(x,y,z,[1,.3,.2],o.glow||10,0,30);A.hook(t=>{m.opacity=Math.min(.7,(.35*A.U.night.value+.05)*A.haze());g.rotation.y=t*1.5;});return g;};
  // a BRAZIER: an iron bowl on a post, a flickering flame (scaled to nothing when out)
  A.brazier=(x,y,z,o)=>{o=o||{};A.set('brazier','post',A.lam(0x5c4a3a,.7));A.put('brazier',[x,y,z,.4,2.2,.4,0]);A.put('brazier',[x,y+2.2,z,1.05,.7,1.05,0]);
   const T=A.T,fm=A.mat('flame',()=>new T.MeshBasicMaterial({color:0xffa040,transparent:true,opacity:.92,depthWrite:false}));const f=new T.Mesh(A.geo('cone'),fm);f.position.set(x,y+2.85,z);A.add(f);A.noRay(f);
   const on=o.on!=null?o.on:17.5,off=o.off!=null?o.off:29.9;A.glowAdd(x,y+3.6,z,[1,.6,.2],o.glow||7,on,off);
-  A.hook((t,h)=>{const l=A.litAt(h,on,off),k=(.85+.2*Math.sin(t*7+x))*l;f.visible=l>.01;f.scale.set(.75*k+.001,1.7*k+.001,.75*k+.001);});return f;};
+  A.rec('brazier',{at:[x,y,z],flame:[x,y+2.85,z],hours:[on,off],note:'flame leans downwind; a game engine may give it an OmniLight3D and an embers emitter'});
+  A.hook((t,h)=>{const l=A.litAt(h,on,off),k=(.85+.2*Math.sin(t*7+x))*l;f.visible=l>.01;f.scale.set(.75*k+.001,1.7*k+.001,.75*k+.001);
+   const w=A.windAt(t,x,z);f.rotation.set(Math.max(-.6,Math.min(.6,w[1]*.35)),0,-Math.max(-.6,Math.min(.6,w[0]*.35)));});return f;};   // the flame leans downwind
  // a scheduled FLOODLIGHT (a real PointLight), warming up from dim orange as it comes on
  A.floodLight=(x,y,z,o)=>{o=o||{};const L=new A.T.PointLight(0xffd9a0,0,o.dist||140,o.decay||1.6);L.position.set(x,y,z);A.add(L);const on=o.on!=null?o.on:17.1,off=o.off!=null?o.off:22.3;
+  A.rec('floodlight',{at:[x,y,z],range:o.dist||140,decay:o.decay||1.6,intensity:o.intensity||1.1,color:'#ffd9a0',hours:[on,off],warmup:.45});
   A.glowAdd(x,y,z,[1,.85,.6],o.glow||12,on,off);
   A.hook((t,h)=>{const hh=h<12?h+24:h,w=Math.min(1,Math.max(0,(hh-on)/.45));L.intensity=(o.intensity||1.1)*A.litAt(h,on,off)*(.3+.7*w);L.color.setRGB(1,.54+.31*w,.23+.4*w);});return L;};
- // THE GLOW LAYER: one Points cloud over every registered light; a light's sprite follows its hours, a night light the night
- A.buildGlow=()=>{const n=A.glow.length;if(!n)return null;const T=A.T;const pos=new Float32Array(n*3),col=new Float32Array(n*3),sz=new Float32Array(n),lt=new Float32Array(n*2);
+ // THE GLOW LAYER: one sprite cloud over every registered light; a light's sprite follows its hours, a night light the night
+ A.buildGlow=()=>{const n=A.glow.length;if(!n)return null;const T=A.T,P=A.PRESETS.glow,F=A.glf;const pos=new Float32Array(n*3),col=new Float32Array(n*3),sz=new Float32Array(n),lt=new Float32Array(n*2);
   A.glow.forEach((g,i)=>{pos.set([g[0],g[1],g[2]],i*3);col.set([g[3],g[4],g[5]],i*3);sz[i]=g[6];lt[i*2]=g[7];lt[i*2+1]=g[8];});
-  const gg=new T.BufferGeometry();gg.setAttribute('position',new T.BufferAttribute(pos,3));gg.setAttribute('color',new T.BufferAttribute(col,3));gg.setAttribute('psize',new T.BufferAttribute(sz,1));gg.setAttribute('lt',new T.BufferAttribute(lt,2));
   const cv=document.createElement('canvas');cv.width=cv.height=64;const c2=cv.getContext('2d');const gr=c2.createRadialGradient(32,32,0,32,32,32);
   gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.18,'rgba(255,255,255,.75)');gr.addColorStop(.5,'rgba(255,255,255,.18)');gr.addColorStop(1,'rgba(255,255,255,0)');c2.fillStyle=gr;c2.fillRect(0,0,64,64);
-  const gm=new T.ShaderMaterial({uniforms:{map:{value:new T.CanvasTexture(cv)},hour:A.U.hour,night:A.U.night,px:A.U.px,rain:A.U.rain},transparent:true,depthWrite:false,blending:T.AdditiveBlending,fog:false,
-   vertexShader:`attribute float psize;attribute vec3 color;attribute vec2 lt;uniform float hour;uniform float night;uniform float px;uniform float rain;varying vec3 vC;varying float vA;${A.GLSL_LIT}
-    void main(){float f=lt.x<0.0?0.25+0.75*night:(lt.x==0.0?1.0:atmLit(hour,lt));vec4 mv=modelViewMatrix*vec4(position,1.0);float d=max(-mv.z,1.0);
-     gl_PointSize=clamp(psize*px/d*(0.6+0.4*f)*(1.0+0.4*rain),2.0,160.0);vA=exp(-d*0.0022)*f*(0.15+0.85*night);vC=color;gl_Position=projectionMatrix*mv;}`,
-   fragmentShader:`uniform sampler2D map;varying vec3 vC;varying float vA;void main(){float a=texture2D(map,gl_PointCoord).a*vA;if(a<0.004)discard;gl_FragColor=vec4(vC*a*1.7,a);}`});
-  const pts=new T.Points(gg,gm);pts.frustumCulled=false;pts.renderOrder=6;pts.name='atmos:glow';A.add(pts);A.noRay(pts);A.stats.glow=n;return pts;};
+  const gm=new T.ShaderMaterial({uniforms:{map:{value:new T.CanvasTexture(cv)},hour:A.U.hour,night:A.U.night,px:A.U.px,rain:A.U.rain,fog:A.U.fog},transparent:true,depthWrite:false,blending:T.AdditiveBlending,fog:false,
+   vertexShader:`attribute float psize;attribute vec3 color;attribute vec2 lt;uniform float hour;uniform float night;uniform float rain;uniform float fog;varying vec3 vC;varying float vA;${A.GLSL_LIT}
+    ${A.GLSL_QUAD}
+    void main(){float f=lt.x<0.0?0.25+0.75*night:(lt.x==0.0?1.0:atmLit(hour,lt));vec4 mv=modelViewMatrix*vec4(ipos,1.0);float d=max(-mv.z,1.0);
+     float ps=clamp(psize*px/d*(0.6+0.4*f)*(1.0+${F(P.rainSwell)}*rain+${F(P.fogSwell)}*fog),${F(P.pxMin)},${F(P.pxMax)});vA=exp(-d*(${F(P.distFade)}+${F(P.fogFade)}*fog))*f*(${F(P.dayFloor)}+${F(1-P.dayFloor)}*night)*(1.0+0.35*fog);vC=color;gl_Position=atmQuad(mv,ps);}`,
+   fragmentShader:`uniform sampler2D map;varying vec3 vC;varying float vA;varying vec2 vUv;void main(){float a=texture2D(map,vUv).a*vA;if(a<0.004)discard;gl_FragColor=vec4(vC*a*${F(P.gain)},a);}`});
+  const pts=A.sprites('glow',{ipos:[3,pos],color:[3,col],psize:[1,sz],lt:[2,lt]},gm,6);return pts;};
 })();
-// ================================================================= ATMOS — particles: chimney smoke and vent steam, fireflies, a mist ring, fog banks
-// Each is one Points cloud animated in its vertex shader (no per-frame CPU work). Sizes are in world metres.
+// ================================================================= ATMOS — particles: chimney smoke and vent steam, fireflies, a mist ring, fog banks, moths
+// Each is one sprite cloud (A.sprites: camera-facing quads) animated in its vertex shader: a particle's position is a pure
+// function of its seeds and the clock, with no per-frame CPU work and no state. Its numbers come from ATMOS.PRESETS
+// (sizes in world metres), and each call records what it placed (A.rec) for ATMOS.export().
 (function(){const A=ATMOS;
- const pmat=(vs,fs,additive,extra)=>new A.T.ShaderMaterial({uniforms:Object.assign({time:A.U.time,px:A.U.px,wind:A.U.wind,light:A.U.light,rain:A.U.rain,night:A.U.night,fog:A.U.fog,k:{value:0}},extra||{}),
-  vertexShader:`uniform float time;uniform float px;uniform vec2 wind;uniform float light;uniform float rain;uniform float night;uniform float fog;uniform float k;attribute vec4 pp;varying float vA;varying vec3 vC;
-   void main(){${vs}}`,fragmentShader:`varying float vA;varying vec3 vC;void main(){float d=length(gl_PointCoord-0.5);${fs}}`,
-  transparent:true,depthWrite:false,fog:false,blending:additive?A.T.AdditiveBlending:A.T.NormalBlending});
- const cloud=(name,pos,pp,m,order)=>{const T=A.T,g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('pp',new T.Float32BufferAttribute(pp,4));
-  const p=new T.Points(g,m);p.frustumCulled=false;p.renderOrder=order||3;p.name='atmos:'+name;A.add(p);A.noRay(p);A.stats[name]=pos.length/3;return p;};
- // SMOKE: emitters [x,y,z,kind] (0 chimney smoke, 1 steam, 2 spray); each particle loops its age, rising and drifting downwind
- A.smoke=(list,o)=>{o=o||{};if(!list.length)return null;const pos=[],pp=[];for(const e of list){const n=e[3]===0?(o.n||12):e[3]===1?14:16;for(let k=0;k<n;k++){pos.push(e[0],e[1],e[2]);pp.push(k/n+A.rr(-.02,.02),e[3],A.rnd(),A.rnd());}}
-  return cloud('smoke',pos,pp,pmat(`float kind=pp.y;float rate=kind<0.5?0.11:(kind<1.5?0.3:0.45);float age=fract(time*rate+pp.x);
-   float rise=kind<0.5?16.0:(kind<1.5?9.0:3.5);float drift=kind<0.5?9.0:(kind<1.5?4.0:1.5);
-   vec3 p=position+vec3(wind.x,0.0,wind.y)*age*drift+vec3(0.0,age*rise,0.0)+vec3(sin(pp.z*6.28+age*3.0),0.0,cos(pp.w*6.28+age*2.5))*age*1.2;
-   float s0=kind<0.5?1.2:0.8;float s1=kind<0.5?5.5:3.2;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
-   gl_PointSize=clamp(mix(s0,s1,age)*px/dd,1.0,256.0);vA=smoothstep(0.0,0.12,age)*(1.0-age)*(kind<0.5?0.35*(1.0-0.5*rain):0.32)*exp(-dd*0.0018);
-   vC=(kind<0.5?vec3(0.46,0.44,0.42):vec3(0.92,0.94,0.96))*(0.3+0.7*light);gl_Position=projectionMatrix*mv;`,
-   `float a=(1.0-smoothstep(0.1,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`));};
+ const v3=c=>new A.T.Vector3(c[0],c[1],c[2]),F=v=>A.glf(v);
+ // a particle material: vs/fs are the bodies of main(); head goes above main (extra uniforms and attributes)
+ const pmat=(vs,fs,blend,extra,head)=>new A.T.ShaderMaterial({uniforms:Object.assign({time:A.U.time,px:A.U.px,wind:A.U.wind,gustAmp:A.U.gustAmp,light:A.U.light,rain:A.U.rain,night:A.U.night,fog:A.U.fog,k:{value:0}},extra||{}),
+  vertexShader:`uniform float time;uniform vec2 wind;uniform float gustAmp;uniform float light;uniform float rain;uniform float night;uniform float fog;uniform float k;attribute vec4 pp;varying float vA;varying vec3 vC;
+   ${A.GLSL_QUAD}
+   ${A.GLSL_WIND}
+   ${head||''}
+   void main(){${vs}}`,fragmentShader:`varying float vA;varying vec3 vC;varying vec2 vUv;void main(){float d=length(vUv-0.5);${fs}}`,
+  transparent:true,depthWrite:false,fog:false,blending:blend==='add'?A.T.AdditiveBlending:A.T.NormalBlending});
+ // SMOKE: emitters [x,y,z,kind] (kind: a PRESETS.smoke name, or its index: 0 chimney, 1 steam, 2 spray); each particle
+ // loops its age, rising and drifting downwind on the gust it met halfway up. o.n: particles per emitter (else the kind's n)
+ A.smoke=(list,o)=>{o=o||{};if(!list.length)return null;const P=A.PRESETS.smoke,kinds=Object.keys(P).filter(k=>P[k]&&P[k].index!=null).sort((a,b)=>P[a].index-P[b].index);
+  const kindOf=e=>typeof e[3]==='string'?P[e[3]].index:e[3];const pos=[],pp=[];
+  for(const e of list){const ki=kindOf(e),n=o.n||P[kinds[ki]].n;for(let k=0;k<n;k++){pos.push(e[0],e[1],e[2]);pp.push(k/n+A.rr(-.02,.02),ki,A.rnd(),A.rnd());}}
+  A.rec('smoke',{preset:'smoke',emitters:list.map(e=>[e[0],e[1],e[2],kinds[kindOf(e)]])});
+  const SA=kinds.map(k=>new A.T.Vector4(P[k].rate,P[k].rise,P[k].drift,P[k].alpha)),SB=kinds.map(k=>new A.T.Vector4(P[k].size[0],P[k].size[1],P[k].rainDamp,P[k].wobble)),SC=kinds.map(k=>v3(P[k].color)),N=kinds.length;
+  return A.sprites('smoke',{ipos:[3,pos],pp:[4,pp]},pmat(`int ki=int(pp.y+0.5);vec4 a=SA[0];vec4 b=SB[0];vec3 col=SC[0];
+   for(int i=1;i<${N};i++){if(i==ki){a=SA[i];b=SB[i];col=SC[i];}}
+   float rate=a.x;float age=fract(time*rate+pp.x);
+   vec2 wv=atmWind(time-age/rate*0.5,ipos.xz,wind,gustAmp);vec3 p=ipos+vec3(wv.x,0.0,wv.y)*age*a.z+vec3(0.0,age*a.y,0.0)+vec3(sin(pp.z*6.28+age*3.0),0.0,cos(pp.w*6.28+age*2.5))*age*b.w;
+   vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(mix(b.x,b.y,age)*px/dd,1.0,${F(P.pxMax)});vA=smoothstep(0.0,${F(P.fadeIn)},age)*(1.0-age)*a.w*(1.0-b.z*rain)*exp(-dd*${F(P.distFade)});
+   vC=col*(0.3+0.7*light);gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.1,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`,P.blend,{SA:{value:SA},SB:{value:SB},SC:{value:SC}},
+   `uniform vec4 SA[${N}];uniform vec4 SB[${N}];uniform vec3 SC[${N}];`));};
  // FIREFLIES round centres [x,y,z]: n per centre, wandering within `spread` m, blinking, only at night and not in rain
- A.fireflies=(centres,o)=>{o=o||{};const n=o.n||6,sp=o.spread||5,pos=[],pp=[];for(const c of centres)for(let i=0;i<n;i++){pos.push(c[0]+A.rr(-sp,sp),c[1]+A.rr(.5,3.5),c[2]+A.rr(-sp,sp));pp.push(A.rnd()*6.28,A.rr(.5,1.1),A.rnd()*2,A.rr(.5,.9));}
-  if(!pos.length)return null;return cloud('fireflies',pos,pp,pmat(`float t=time*pp.y+pp.x;vec3 p=position+vec3(sin(t*0.7)*1.8,sin(t*1.3+pp.z)*0.8+0.4,cos(t*0.6+pp.z*2.0)*1.8);
+ A.fireflies=(centres,o)=>{o=o||{};const P=A.PRESETS.fireflies,n=o.n||P.n,sp=o.spread||P.spread,pos=[],pp=[];
+  for(const c of centres)for(let i=0;i<n;i++){pos.push(c[0]+A.rr(-sp,sp),c[1]+A.rr(.5,3.5),c[2]+A.rr(-sp,sp));pp.push(A.rnd()*6.28,A.rr(.5,1.1),A.rnd()*2,A.rr(.5,.9));}
+  if(!pos.length)return null;A.rec('fireflies',{preset:'fireflies',centres:centres.map(c=>[c[0],c[1],c[2]]),n,spread:sp});
+  return A.sprites('fireflies',{ipos:[3,pos],pp:[4,pp]},pmat(`float t=time*pp.y+pp.x;vec3 p=ipos+vec3(sin(t*0.7)*1.8,sin(t*1.3+pp.z)*0.8+0.4,cos(t*0.6+pp.z*2.0)*1.8);
    float blink=pow(max(sin(time*(1.2+pp.z)+pp.x*6.0),0.0),5.0);vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
-   gl_PointSize=clamp(pp.w*(0.5+blink)*px/dd*0.35,1.0,24.0);vA=blink*night*exp(-dd*0.004)*(1.0-rain);vC=vec3(0.75,1.0,0.35);gl_Position=projectionMatrix*mv;`,
-   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC*a,a);`,true));};
+   float ps=clamp(pp.w*(0.5+blink)*px/dd*${F(P.size)},1.0,${F(P.pxMax)});vA=blink*night*exp(-dd*${F(P.distFade)})*(1.0-rain);vC=col;gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC*a,a);`,P.blend,{col:{value:v3(P.color)}},'uniform vec3 col;'));};
  // a MIST RING drifting round a closed curve r(t) (a moat): `inner`..`outer` m out from it at heights y0..y1; thick at dawn
  // and in rain (k is set each frame from the hour and the rain)
- A.mistRing=(rFn,o)=>{o=o||{};const N=o.n||420,samples=256,R=[];for(let i=0;i<samples;i++)R.push(rFn(i/samples*Math.PI*2));
-  const pos=[],pp=[];for(let i=0;i<N;i++){pos.push(A.rnd()*Math.PI*2,A.rr(o.inner||8,o.outer||38),A.rr(o.y0||-9,o.y1||-3));pp.push(A.rr(26,60),A.rr(-.004,.004),A.rnd()*6.28,A.rnd());}
+ A.mistRing=(rFn,o)=>{o=o||{};const P=A.PRESETS.mist,N=o.n||P.n,samples=256,R=[];for(let i=0;i<samples;i++)R.push(rFn(i/samples*Math.PI*2));
+  const pos=[],pp=[];for(let i=0;i<N;i++){pos.push(A.rnd()*Math.PI*2,A.rr(o.inner||8,o.outer||38),A.rr(o.y0||-9,o.y1||-3));pp.push(A.rr(P.size[0],P.size[1]),A.rr(-.004,.004),A.rnd()*6.28,A.rnd());}
   // each particle carries its own radius (the curve at its bearing plus its offset); it drifts slowly round in bearing
   for(let i=0;i<N;i++){const t=pos[i*3];pos[i*3+1]+=R[Math.floor(((t/(Math.PI*2))%1)*samples)];}
-  const m=pmat(`float t=position.x+time*pp.y;float r=position.y;vec3 p=vec3(r*cos(t),position.z+sin(time*0.2+pp.z)*0.8,r*sin(t));vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
-   gl_PointSize=clamp(pp.x*px/dd,1.0,220.0);vA=k*0.12*exp(-dd*0.0012)*smoothstep(4.0,30.0,dd);vC=mix(vec3(0.1,0.11,0.19),vec3(0.86,0.88,0.92),smoothstep(0.3,1.0,light));gl_Position=projectionMatrix*mv;`,
-   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`);
-  const p=cloud('mist',pos,pp,m);A.hook((t,h)=>{const v=Math.min(1,A.ss(4.3,5.5,h)*(1-A.ss(7.8,9.4,h))+.25*A.U.rain.value+.4*A.U.fog.value);m.uniforms.k.value=v;p.visible=v>.07;});return p;};
+  A.rec('mist',{preset:'mist',curve:R.filter((r,i)=>i%4===0),inner:o.inner||8,outer:o.outer||38,y:[o.y0||-9,o.y1||-3],n:N,
+   note:'curve: radius from the origin at 64 even bearings (bearing = angle from +x toward +z)'});
+  const m=pmat(`float t=ipos.x+time*pp.y;float r=ipos.y;vec3 p=vec3(r*cos(t),ipos.z+sin(time*0.2+pp.z)*0.8,r*sin(t));vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(pp.x*px/dd,1.0,${F(P.pxMax)});vA=k*${F(P.alpha)}*exp(-dd*${F(P.distFade)})*smoothstep(${F(P.nearFade[0])},${F(P.nearFade[1])},dd);vC=mix(cN,cD,smoothstep(0.3,1.0,light));gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`,P.blend,{cN:{value:v3(P.night)},cD:{value:v3(P.day)}},'uniform vec3 cN;uniform vec3 cD;');
+  const p=A.sprites('mist',{ipos:[3,pos],pp:[4,pp]},m);A.hook((t,h)=>{const v=Math.min(1,A.ss(4.3,5.5,h)*(1-A.ss(7.8,9.4,h))+.25*A.U.rain.value+.4*A.U.fog.value);m.uniforms.k.value=v;p.visible=v>.07;});return p;};
  // FOG BANKS: low soft sprites at the given points [x,y,z], seen only when the weather's fog is up
- A.fogBank=(points,o)=>{o=o||{};const pos=[],pp=[];for(const q of points){pos.push(q[0],q[1]+A.rr(1,8),q[2]);pp.push(A.rr(30,70),A.rnd()*6.28,A.rnd(),A.rnd());}
-  const m=pmat(`vec3 p=position+vec3(wind.x,0.0,wind.y)*sin(time*0.05+pp.y)*14.0;p.y+=sin(time*0.13+pp.y)*0.8;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
-   gl_PointSize=clamp(pp.x*px/dd,1.0,220.0);vA=fog*0.16*smoothstep(3.0,25.0,dd)*exp(-dd*0.0009);vC=mix(vec3(0.14,0.15,0.2),vec3(0.86,0.87,0.9),smoothstep(0.3,1.0,light));gl_Position=projectionMatrix*mv;`,
-   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`);
-  const p=cloud('fogbank',pos,pp,m);A.hook(()=>{p.visible=A.U.fog.value>.01;});return p;};
+ A.fogBank=(points,o)=>{o=o||{};const P=A.PRESETS.fogbank,pos=[],pp=[];for(const q of points){pos.push(q[0],q[1]+A.rr(1,8),q[2]);pp.push(A.rr(P.size[0],P.size[1]),A.rnd()*6.28,A.rnd(),A.rnd());}
+  A.rec('fogbank',{preset:'fogbank',points:points.map(q=>[q[0],q[1],q[2]])});
+  const m=pmat(`vec2 wv=atmWind(time,ipos.xz,wind,gustAmp);vec3 p=ipos+vec3(wv.x,0.0,wv.y)*sin(time*0.05+pp.y)*${F(P.sway)};p.y+=sin(time*0.13+pp.y)*0.8;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(pp.x*px/dd,1.0,${F(P.pxMax)});vA=fog*${F(P.alpha)}*smoothstep(${F(P.nearFade[0])},${F(P.nearFade[1])},dd)*exp(-dd*${F(P.distFade)});vC=mix(cN,cD,smoothstep(0.3,1.0,light));gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`,P.blend,{cN:{value:v3(P.night)},cD:{value:v3(P.day)}},'uniform vec3 cN;uniform vec3 cD;');
+  const p=A.sprites('fogbank',{ipos:[3,pos],pp:[4,pp]},m);A.hook(()=>{p.visible=A.U.fog.value>.01;});return p;};
+ // MOTHS round lamp heads (A.lamps, or o.at: [[x,y,z,on,off]]): n per lamp on a share p of them (at most o.max lamps),
+ // looping and jinking about the light while it is lit, at night, out of the rain, and not in a strong wind.
+ // Seeded on a stream of their own, so adding them moves nothing else.
+ A.moths=o=>{o=o||{};const P=A.PRESETS.moths,src=o.at||A.lamps,n=o.n||P.n,p=o.p==null?P.p:o.p,max=o.max||P.max,R=A.stream((o.seed||A.h.seed||1)*7+911);
+  const pick=src.filter(()=>R()<p),step=Math.max(1,pick.length/max),pos=[],pp=[],lt=[],at=[];
+  for(let i=0;i<pick.length;i+=step){const L=pick[Math.floor(i)];at.push(L.slice(0,5));for(let k=0;k<n;k++){pos.push(L[0],L[1]-.1,L[2]);pp.push(R()*6.28,.7+R()*.8,.35+R()*.9,R());lt.push(L[3],L[4]);}}
+  if(!pos.length)return null;A.rec('moths',{preset:'moths',lamps:at,n,note:'lamps: [x,y,z,on,off] lamp heads; moths circle 0.35-1.25 m round each while it is lit'});
+  return A.sprites('moths',{ipos:[3,pos],pp:[4,pp],lt:[2,lt]},pmat(`float t=time*pp.y+pp.x;
+   vec3 o=vec3(sin(t*2.3)+0.5*sin(t*5.1+pp.x),0.6*sin(t*1.7+pp.w*6.0)+0.3*sin(t*7.3),cos(t*2.0)+0.5*cos(t*4.3+pp.x*2.0))*pp.z
+    +0.07*vec3(sin(time*29.0+pp.x*9.0),sin(time*23.0+pp.w*7.0),cos(time*31.0+pp.x*5.0));
+   vec4 mv=modelViewMatrix*vec4(ipos+o,1.0);float dd=max(-mv.z,0.5);float flap=0.7+0.3*sin(time*38.0+pp.x*20.0);
+   float ps=clamp(${F(P.size)}*px/dd,1.0,${F(P.pxMax)});vA=atmLit(hour,lt)*night*(1.0-rain)*(1.0-0.6*fog)*(1.0-smoothstep(${F(P.windHide[0])},${F(P.windHide[1])},length(wind)))*(1.0-smoothstep(${F(P.fadeNear)},${F(P.fadeFar)},dd))*flap*${F(P.alpha)};
+   vC=col;gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.15,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`,P.blend,{hour:A.U.hour,col:{value:v3(P.color)}},'uniform float hour;uniform vec3 col;attribute vec2 lt;'+A.GLSL_LIT),5);};
 })();
 // ================================================================= ATMOS — weather: modes, rain streaks, lightning, fog, wet ground
 // ATMOS.weather(o) starts it. Modes: auto (dawn fog, an evening shower 19:30-22:00, from the hour), clear, rain, storm
 // (rain with lightning), fog. The state eases toward the mode's target each frame: W.rain, W.fog, W.wet (rises in rain,
 // dries after), W.flash (lightning). The module draws the rain and the bolt; what the weather does to the HOST's scene
-// (fog density, sun, ground roughness) is the host's: o.apply(W) is called every frame after the state is updated.
+// (fog density, sun, ground roughness) is the host's. W.wind (1 calm .. 2.4 storm) scales the module's wind.
+// o.apply(W) is called every frame after the state is updated.
 // o.ui: an element to put a Weather selector in. Never flashes when the viewer asks for reduced motion.
 (function(){const A=ATMOS;
- A.weather=o=>{o=o||{};const T=A.T,W=A.W={mode:o.mode||'auto',rain:0,fog:0,wet:0,flash:0,MODES:['auto','clear','rain','storm','fog']};let last=performance.now();
+ A.weather=o=>{o=o||{};const T=A.T,W=A.W={mode:o.mode||'auto',rain:0,fog:0,wet:0,flash:0,wind:1,MODES:['auto','clear','rain','storm','fog']};
   const auto=h=>({rain:A.ss(19.5,19.9,h)*(1-A.ss(21.6,22,h)),fog:.7*A.ss(4.3,5.5,h)*(1-A.ss(8.4,9.6,h))});
-  // rain: streaks in a 240 m box that travels with the camera
-  const N=o.drops||7000,pos=new Float32Array(N*6),end=new Float32Array(N*2);for(let i=0;i<N;i++){const x=A.rr(-120,120),y=A.rr(-120,120),z=A.rr(-120,120);pos.set([x,y,z,x,y,z],i*6);end[i*2+1]=1;}
+  // rain: streaks in a box (240 m) that travels with the camera
+  const P=A.PRESETS.rain,F=A.glf,B=P.box/2,N=o.drops||P.drops,pos=new Float32Array(N*6),end=new Float32Array(N*2);for(let i=0;i<N;i++){const x=A.rr(-B,B),y=A.rr(-B,B),z=A.rr(-B,B);pos.set([x,y,z,x,y,z],i*6);end[i*2+1]=1;}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('tip',new T.BufferAttribute(end,1));
-  const rm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,light:A.U.light,rain:A.U.rain},transparent:true,depthWrite:false,fog:false,
-   vertexShader:`uniform float time;uniform vec2 wind;uniform float rain;attribute float tip;varying float vA;
-    void main(){vec3 p=position;p.y=mod(p.y-time*60.0,240.0)-120.0+cameraPosition.y;p.xz=mod(p.xz-cameraPosition.xz+120.0+wind*time*6.0,240.0)-120.0+cameraPosition.xz;
-     p+=normalize(vec3(wind.x*0.25,-1.0,wind.y*0.25))*tip*2.4;vec4 mv=viewMatrix*vec4(p,1.0);vA=rain*(1.0-smoothstep(50.0,120.0,length(mv.xyz)))*(0.35+0.65*tip);gl_Position=projectionMatrix*mv;}`,
-   fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(0.72,0.77,0.86)*(0.35+0.65*light),vA*0.42);}`});
+  const rm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,rain:A.U.rain},transparent:true,depthWrite:false,fog:false,
+   vertexShader:`uniform float time;uniform vec2 wind;uniform vec2 windOff;uniform float rain;attribute float tip;varying float vA;
+    void main(){vec3 p=position;p.y=mod(p.y-time*${F(P.fall)},${F(P.box)})-${F(B)}+cameraPosition.y;p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+windOff*${F(P.windRide)},${F(P.box)})-${F(B)}+cameraPosition.xz;
+     p+=normalize(vec3(wind.x*${F(P.slant)},-1.0,wind.y*${F(P.slant)}))*tip*${F(P.streak)};vec4 mv=viewMatrix*vec4(p,1.0);vA=rain*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},length(mv.xyz)))*(0.35+0.65*tip);gl_Position=projectionMatrix*mv;}`,
+   fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.35+0.65*light),vA*${F(P.alpha)});}`});
   const rain=new T.LineSegments(g,rm);rain.frustumCulled=false;rain.renderOrder=4;rain.name='atmos:rain';A.add(rain);A.noRay(rain);
   // lightning: a jagged ribbon far off, a double flash
   const K=14,bp=new Float32Array((K+1)*6),idx=[];for(let k=0;k<K;k++){const q=k*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}
   const bg=new T.BufferGeometry();bg.setAttribute('position',new T.BufferAttribute(bp,3));bg.setIndex(idx);
   const bm=new T.MeshBasicMaterial({color:0xe8ecff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide});
   const bolt=new T.Mesh(bg,bm);bolt.frustumCulled=false;bolt.visible=false;A.add(bolt);A.noRay(bolt);
-  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;let next=performance.now()+6000,t0=-1e9;
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;let next=A.clock.t*1000+6000,t0=-1e9;
   const strike=()=>{const cam=A.h.camera.position,a=A.rnd()*Math.PI*2,dist=700+A.rnd()*500,cx=cam.x+Math.cos(a)*dist,cz=cam.z+Math.sin(a)*dist,top=380+A.rnd()*120,base=A.ground(cx,cz);
    const sx=-Math.sin(a),sz=Math.cos(a);let x=cx,z=cz;for(let k=0;k<=K;k++){const y=top+(base-top)*k/K;if(k){x+=(A.rnd()-.5)*40;z+=(A.rnd()-.5)*40;}const w=3.2-2.4*k/K;bp.set([x-sx*w,y,z-sz*w,x+sx*w,y,z+sz*w],k*6);}
-   bg.attributes.position.needsUpdate=true;bg.computeBoundingSphere();t0=performance.now();next=t0+5000+A.rnd()*9000;};
-  A.hook((t,h)=>{const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;const M=W.mode,au=auto(h);
+   bg.attributes.position.needsUpdate=true;bg.computeBoundingSphere();t0=A.clock.t*1000;next=t0+5000+A.rnd()*9000;};
+  A.hook((t,h,dt)=>{const now=t*1000,M=W.mode,au=auto(h);
    const tr=M==='rain'?.75:M==='storm'?1:M==='auto'?au.rain:0,tf=M==='fog'?1:M==='auto'?au.fog:M==='storm'?.3:0;
    W.rain+=(tr-W.rain)*Math.min(1,dt*1.5);W.fog+=(tf-W.fog)*Math.min(1,dt*.8);W.wet=Math.min(1,Math.max(0,W.wet+dt*(W.rain>.15?.12*W.rain:-.02)));
    if(M==='storm'&&!reduce&&W.rain>.6&&now>next&&!document.hidden)strike();const e=now-t0;W.flash=e<80?1:e<150?.25:e<230?.8:e<600?.8*(1-(e-230)/370):0;
+   const PW=A.PRESETS.wind.weather,tw=M==='storm'?PW.storm:M==='rain'?PW.rain:M==='auto'?1+PW.autoRain*au.rain:PW.clear;W.wind+=(tw-W.wind)*Math.min(1,dt*.4);A.windScale=W.wind;A.U.gustAmp.value=.55+.25*Math.min(1,W.wind-1);
    A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;rain.visible=W.rain>.01;bolt.visible=W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
    if(o.apply)o.apply(W);});
+  A.rec('weather',{preset:'rain',modes:W.MODES,mode:W.mode,drops:N,auto:{rain:[19.5,19.9,21.6,22],fog:[.7,4.3,5.5,8.4,9.6]},storm:{fog:.3,strikeEvery:[5,14],strikeDist:[700,1200]},
+   note:'auto: rain ramps up over the first pair of hours and down over the second; fog = scale * ramps. W.rain/fog/wet/flash/wind are the state a host reads'});
   if(o.ui)A.weatherUI(o.ui);A.strike=strike;return W;};
  // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
  A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
@@ -7557,9 +7871,9 @@ const ATMOS={};
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
   const m=A.mat('trickle',()=>new T.MeshStandardMaterial({color:0x8fb4c8,map:flowTex(),transparent:true,opacity:.8,roughness:.15,depthWrite:false,side:T.DoubleSide}));
   const mesh=new T.Mesh(g,m);mesh.name='atmos:trickle';mesh.renderOrder=2;A.add(mesh);A.stats.outfalls=(A.stats.outfalls||0)+1;
-  const mouth=P(x,z,ry,0,1.5);return{x:mouth[0],y:y+2,z:mouth[1],r:4,h:7.5};};
+  const mouth=P(x,z,ry,0,1.5);A.rec('outfall',{at:[x,y,z],ry,lean,waterY:o.waterY,trickle:pos.length/6});return{x:mouth[0],y:y+2,z:mouth[1],r:4,h:7.5};};
  // a grated channel along pts ([[x,z],...]) at the ground: a dark slot, stone kerbs, iron bars across every 0.55 m
- A.drain=(pts,o)=>{o=o||{};const w=o.w||1.3;let n=0;for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<.05)continue;
+ A.drain=(pts,o)=>{o=o||{};const w=o.w||1.3;let n=0;A.rec('drain',{pts:pts.map(p=>[p[0],p[1]]),w});for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<.05)continue;
    const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),ry=-ang,mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,y=A.ground(mx,mz)+.02;
    A.set('sewerDark','box',dark());A.put('sewerDark',[mx,y,mz,len+.05,.06,w,ry]);A.set('sewerStone','box',stone());
    for(const sd of[-1,1])A.put('sewerStone',[mx-Math.sin(ang)*sd*(w/2+.15),y+.02,mz+Math.cos(ang)*sd*(w/2+.15),len+.05,.12,.3,ry]);
@@ -7599,6 +7913,30 @@ const ATMOS={};
     cs[i*4]=v.x;cs[i*4+1]=v.y;cs[i*4+2]=v.z;cs[i*4+3]=r0*s;c.add(v);}c.multiplyScalar(1/n);let rad=0;for(let i=0;i<n;i++)rad=Math.max(rad,Math.hypot(cs[i*4]-c.x,cs[i*4+1]-c.y,cs[i*4+2]-c.z)+cs[i*4+3]);
    g.boundingSphere=new T.Sphere(c.clone(),rad*1.02+(o.pad||0));m.frustumCulled=true;fixRay(m);bound++;});
   A.stats.cull={split,bound};return A.stats.cull;};
+})();
+// ================================================================= ATMOS — export: everything the module placed, as plain JSON for a game engine
+// ATMOS.export() returns one object (core/atmos/GODOT.md is its contract): the coordinate convention, the shared
+// uniforms, the presets, the clock and wind, every effect record (A.fx), every light's glow, every lamp, and every
+// instanced prop set (geometry kind, material, instances). ATMOS.download(name) saves it as a file.
+// Numbers are rounded to 3 decimals. Nothing here changes the scene.
+(function(){const A=ATMOS;
+ const r3=v=>typeof v==='number'?Math.round(v*1000)/1000:Array.isArray(v)?v.map(r3):v&&typeof v==='object'&&!v.isColor?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,r3(x)])):v;
+ const hex=c=>c&&c.isColor?'#'+c.getHexString():null;
+ A.export=()=>{const T=A.T,q=new T.Quaternion(),e=new T.Euler(),props={};
+  for(const name in A.sets){const S=A.sets[name];if(!S.items.length)continue;const m=S.mat||{},g=S.geo,kind=Object.keys(A.geoKinds()).find(k=>A.geoKinds()[k]===g)||(g.parameters?g.type:'custom');
+   props[name]={geometry:kind,size:g.parameters||null,material:{color:hex(m.color),roughness:m.roughness,metalness:m.metalness,transparent:!!m.transparent,opacity:m.opacity,emissive:m.isMeshBasicMaterial?'unlit':undefined,shader:name==='bannerFlag'?'flag':undefined},
+    instances:S.items.map(o=>{let ry=o[6];if(ry&&ry.isQuaternion){e.setFromQuaternion(q.copy(ry),'YXZ');ry=[e.x,e.y,e.z];}
+     const c=o[7]==null?null:o[7].isColor?'#'+o[7].getHexString():'#'+new T.Color(o[7]).getHexString();return[o[0],o[1],o[2],o[3],o[4],o[5],ry==null?0:ry,c];})};}
+  return r3({format:'krator-atmos',version:1,
+   convention:{units:'metres',up:'+y',x:'east',z:'south',handed:'right (glTF)',ry:'radians about +y; local +z turns to (sin ry, cos ry)',bearing:'angle from +x toward +z',
+    hours:'0..24; a light [on,off] is lit from on in the evening to off next morning (off may be past 24; on<0 follows the night; on=0 always)',
+    colors:'hex or [r,g,b] in display (sRGB) space',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
+   uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)'},
+   presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
+   fx:A.fx,lamps:A.lamps.map(l=>({at:[l[0],l[1],l[2]],hours:[l[3],l[4]]})),
+   glow:A.glow.map(g=>({at:[g[0],g[1],g[2]],color:[g[3],g[4],g[5]],size:g[6],hours:[g[7],g[8]]})),
+   props,stats:A.stats});};
+ A.download=name=>{const b=new Blob([JSON.stringify(A.export())],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(name||'atmos')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 })();
 // ================================================================= 3. LABORATORY — "the Reliquary"
 function buildLab(scene,gx,gz,d){reseed(d>0?9301:9300);KOFF=[gx,0,gz];REGISTER({name:'Laboratory — the Reliquary ('+STATE(d)+')',x:0,z:0,r:40,h:125});REGISTER({name:'Laboratory — reactor hut',x:104,z:0,r:12,h:17});const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
@@ -8193,7 +8531,7 @@ LABELS=new THREE.Group();LABELS.userData.probeSkip=true;scene.add(LABELS);
 // baked) and before the views. Order: street furniture, the evening lights, the glow over the city's own lamps,
 // particles, weather, the dressing on buildings, the sewer, then finish (bake + glow) and the culling pass.
 reseed(SEED_CITY+50);
-ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr});
+ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr,pixelRatio:()=>renderer.getPixelRatio()});
 const CITY_ATM={t0:performance.now()};
 // the top of whatever stands at (x,z): a ray down through the scene, ignoring the ground, the jungle and the module's own
 function cityTopAt(x,z,from){const rc=new THREE.Raycaster(new THREE.Vector3(x,from||400,z),new THREE.Vector3(0,-1,0),0,1000);
@@ -8231,6 +8569,7 @@ const cityClear=(x,z,r)=>insideWall(x,z,18)&&!isRoad(x,z)&&!inPrecinct(x,z,0)&&o
 {const c=[];for(const p of PARKS)for(let k=0;k<6;k++){const a=k/6*TAU,r=p.r*.6;c.push([p.x+r*Math.cos(a),terrainH(p.x+r*Math.cos(a),p.z+r*Math.sin(a)),p.z+r*Math.sin(a)]);}
  for(const R of RUIN_RECTS)c.push([R.x,terrainH(R.x,R.z),R.z]);for(let k=0;k<70;k++){const t=k/70*TAU,r=wallR(t)+rr(70,130),x=r*Math.cos(t),z=r*Math.sin(t);c.push([x,terrainH(x,z),z]);}
  ATMOS.fireflies(c,{n:6,spread:6});}
+CITY_ATM.moths=(ATMOS.moths({p:.6,max:700})||{geometry:{instanceCount:0}}).geometry.instanceCount;   // moths round the street lamps at night
 ATMOS.mistRing(t=>wallR(t),{inner:8,outer:40,y0:CITY.CHASM+7.5,y1:CITY.CHASM+13});
 {const pts=[];for(let i=0;i<700;i++){const t=rng()*TAU,r=Math.sqrt(rng())*(wallR(t)+30),x=r*Math.cos(t),z=r*Math.sin(t);pts.push([x,Math.max(terrainH(x,z),CITY.CHASM+7),z]);}ATMOS.fogBank(pts);}
 // ---------------------------------------------------------------- 4. weather: what it does to the city's own scene (fog, sun, the wet ground, a lightning flash)

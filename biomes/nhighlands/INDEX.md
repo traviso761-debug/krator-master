@@ -9,26 +9,24 @@ Built output (never open it; edit `src/` and rebuild): `dist/nhighlands.html`
 Build: `cd biomes/nhighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core-head.js` | 7 | PRNG (14); noise (24); host binding (41); accounting (98) |
-| `20-core-kit.js` | 18 | merged buckets (54); runtime LOD (xanadu-1, additive) (129); indexed buckets (153); bake (176) |
-| `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `40-core-place.js` | 7 | surface sampling (56) |
 | `45-host-stage.js` | 14 | the map (47); the stream (87); terrain (121); the climate fields (139); the host binding (170) |
-| `50-biome-nhighlands-species.js` | 49 **big** | palettes (23); the tree species (68); leaf and frond textures (171); bark textures (276); geometries local to this biome (312); an iridescent bark (shared hook; the Rift kit's) (373); materials (385); instanced items (449) |
-| `55-biome-nhighlands-trees.js` | 42 **big** | zones from the fields (26); colour (42); polyline helpers (63); keep-clear between trees (74); foliage and epiphyte helpers (80); the builders (120); impostors (the far canopy) (330); the pass (361) |
-| `60-biome-nhighlands-floor.js` | 17 | small plants (27); the zone planters (90); the pass (158) |
+| `50-biome-nhighlands-species.js` | 50 **big** | palettes (24); the tree species (69); leaf and frond textures (176); bark textures (285); geometries local to this biome (321); an iridescent bark (shared hook; the Rift kit's) (385); materials (397); instanced items (461) |
+| `55-biome-nhighlands-trees.js` | 44 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (126); impostors (the far canopy) (345); the pass (376) |
+| `60-biome-nhighlands-floor.js` | 19 | small plants (27); the zone planters (91); the pass (171) |
 | `65-biome-nhighlands-dress.js` | 7 |  |
-| `70-biome-nhighlands.js` | 1 |  |
+| `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 34 **big** | the fog (16); the dome (26); the gas giant (187); the far country (273); light modes (371) |
-| `84-host-ground.js` | 16 | the water (86); the mist (120) |
+| `84-host-ground.js` | 17 | the water (95); the mist (129) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 3 |  |
-| `88-host-build.js` | 1 |  |
+| `88-host-build.js` | 2 |  |
 | `90-host-camera.js` | 12 |  |
 | `91-host-probe.js` | 6 |  |
 | `93-host-polytool.js` | 6 |  |

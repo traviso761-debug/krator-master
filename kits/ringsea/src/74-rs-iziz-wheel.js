@@ -35,8 +35,8 @@ function buildRsIzizWheel(){reseed(72400);
  rsCabin(B,{x:-12.5,y:dY(.1),w:3.4,d:4.4,h:2,wall:WHITE,win:2,roof:'gable',roofMk:'wood',roofCol:OCHRE,rh:.9,over:.25});
  // the small lateen forward, its foot above the deckhouse roof
  const mx=11.5,base=dY(H.uAt(mx)),mh=13;rsLink(B,'wood',[mx,base-.2,0],[mx+1,base+mh,0],.16,0x6a4a2c,8,.1);
- const S=rsSail(B,{key:'iziz-sun-lateen',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:-.8,nu:18,nv:10,A:t=>[lerp(16.5,1,t),lerp(1.6,14.5,t)],Bf:t=>[lerp(6,1,t),lerp(4.4,14.5,t)],draw:rsIzizWheelSail});
- const yd2=[];for(let k=0;k<=12;k++)yd2.push(S.at(k/12,0));rsTube(B,'wood',yd2,.1,0x7a5634,30,6);rsRope(B,[mx+1,base+mh,0],S.at(.5,0));
+ rsRig(B,[[mx,base-.2,0],[mx+1,base+mh,0]]);const S=rsSail(B,{key:'iziz-sun-lateen',O:[0,base,.3],U:[1,0,0],V:[0,1,0],belly:-.8,nu:18,nv:10,A:t=>[lerp(16.5,1,t),lerp(1.6,14.5,t)],Bf:t=>[lerp(6,1,t),lerp(4.4,14.5,t)],draw:rsIzizWheelSail});
+ const yd2=[];for(let k=0;k<=12;k++)yd2.push(S.at(k/12,0));rsTube(B,'wood',yd2,.1,0x7a5634,30,6);rsRope(B,[mx+1,base+mh,0],S.at(.5,0));rsRigEnd(B);
  rsLink(B,'wood',[-14,dY(.04)+.9,0],[-17,-.8,0],.08,DK,5);rsBox(B,'wood',[1.3,1.5,.12],[-16.8,-.9,0],null,DK);
  for(const [x,z] of[[-13,1.8],[12,-1.5],[14,1.2]])rsFigure(B,[x,dY(H.uAt(x)),z],rr(0,TAU),[WHITE,TEAL,OCHRE][Math.floor(rng()*3)]);
  rsBake(B,V.group,'izizWheel');V.deckY=yd;return V;}

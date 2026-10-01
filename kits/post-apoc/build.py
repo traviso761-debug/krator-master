@@ -2,6 +2,7 @@
 """Concatenate src/* into dist/post-apoc.html (the Post-Apoc building set).
 
 Usage: python3 build.py [--no-checks]
+       python3 build.py --vendor-check   (shared-file drift; exit 1 if a local file shadows core/sockets)
 
 Checks (they exist because fragments share one JS scope and several agents write buildings):
   1. every defBuilding({...}) has a unique numeric `seed:` and its builder opens with reseed by place() (seed is passed in the def);
@@ -93,4 +94,31 @@ def main():
         op = [l.rstrip() for l in open(ki, encoding='utf-8') if l.startswith('- [ ]')]
         if op:
             print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md:' % len(op)); [print('  ' + l[6:]) for l in op]
-if __name__ == '__main__': main()
+# ---------------------------------------------------------------- vendor check
+# core/sockets/ is read live, so the only way to drift from it is a local src/ file of the same name, which
+# silently wins in main(). That is an error. The shell (head, core, camera, tail) is a FORK of the Ancients-lineage
+# shell, not a copy: its distance from kits/ancients/src is printed for information only.
+ANCIENTS = os.path.join(os.path.dirname(HERE), 'ancients', 'src')
+SHELL = ['00-head.html', '10-core.js', '92-camera.js', '99-tail.html']
+def vendor_check():
+    bad = []
+    for f in sorted(x for x in os.listdir(CORE_SOCK) if x[0].isdigit()):
+        local = os.path.join(SRC, f)
+        if os.path.exists(local):
+            same = open(local, 'rb').read() == open(os.path.join(CORE_SOCK, f), 'rb').read()
+            print('  !  src/%-14s shadows core/sockets/%s (%s)' % (f, f, 'identical: delete it' if same else 'DRIFTS'))
+            bad.append(f)
+        else:
+            print('  =  %-18s read from core/sockets' % f)
+    import difflib
+    for f in SHELL:
+        up, local = os.path.join(ANCIENTS, f), os.path.join(SRC, f)
+        if not os.path.exists(up): print('  ?  %-18s no upstream in kits/ancients/src' % f); continue
+        a = open(local, encoding='utf-8').read().splitlines(); b = open(up, encoding='utf-8').read().splitlines()
+        n = sum(1 for l in difflib.unified_diff(a, b, lineterm='', n=0) if l[:1] in '+-' and l[:3] not in ('+++', '---'))
+        print('  ~  %-18s %s' % (f, 'matches kits/ancients/src (line endings aside)' if n == 0 else 'forked from kits/ancients/src (%d lines differ; informational)' % n))
+    print('vendor-check: ' + ('OK' if not bad else 'DRIFT: ' + ', '.join(bad)))
+    return not bad
+if __name__ == '__main__':
+    if '--vendor-check' in sys.argv: sys.exit(0 if vendor_check() else 1)
+    main()

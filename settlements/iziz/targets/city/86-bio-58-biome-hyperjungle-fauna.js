@@ -124,7 +124,7 @@ function pickTarget(H,A){for(let t=0;t<12;t++){const a=rr(0,TAU),d=H.r*Math.sqrt
 HYPERJUNGLE.buildFauna=function(R,heroR,q){
  reseed(580101);q=q==null?1:q;R=R||3000;heroR=heroR||1500;
  const st={rays:0,flocks:0,darts:0,dartGroups:0,flies:0,motes:0,swarms:0,striders:0,herds:0,sloths:0};
- const o=BIO.host.origin,canopy=(x,z)=>HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):120;
+ const o=BIO.center(),canopy=(x,z)=>HYPERJUNGLE._canopyH?HYPERJUNGLE._canopyH(x,z):120;
  // 1. SKY RAYS: flocks wheeling above the canopy of the hero disc
  const nFlock=Math.round(8*q);
  BIO.scatter(nFlock,150,heroR-150,420,(x,y,z)=>{const rad=rr(90,220);if(!BIO.clearOf(x,z,rad+40))return;

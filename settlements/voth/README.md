@@ -27,6 +27,15 @@ new building types (housing, manors, shops, taverns, warehouses, civic,
 military). It has automatic LOD. See `catalog/README.md` and
 `catalog/CITY_INVENTORY.md`.
 
+The first-generation registry and the `voth_*` furniture and plants live in `kits/catalog/`. Its verify pass
+(2026-10) recentred `voth_bldg_customs_house`, `_guild_hall` (v1), `_townhouse` (v4), `_monastery_hall`, and
+eight furniture pieces (strider station, guild banners, loom display, fisher, miner, sacrifice altar, lantern
+fixture v2). It also raised the declared sizes of `voth_craft_tanner`, `voth_lantern_fixture` and 14 Voth plants.
+None of this was synced into `src/`. The city declares no sizes, and the catalog pieces are rewrites, not copies:
+`siltStriderStation()` (65b) is a 16 x 22 m deck with a ramp, while the catalog station is 10 x 16 m. City
+builders such as `customsHouse()` take their size as arguments and draw in world coordinates. The catalog
+page loads the registry from `kits/catalog/` by path, so it already shows the corrected copies.
+
 ## The documents
 
 - `API.md` — the generator's interface. Read before editing any fragment.
