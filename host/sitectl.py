@@ -52,8 +52,8 @@ def lan_ips():
     return sorted(ip for ip in ips if not ip.startswith('127.'))
 
 
-def urls():
-    p = port()
+def urls(p=None):
+    p = p or port()
     print('http://127.0.0.1:%d/' % p)
     for ip in lan_ips():
         print('http://%s:%d/' % (ip, p))
@@ -87,7 +87,7 @@ def serve(args):
     if check(quiet=True):
         return 1
     print('Krator site: Ctrl+C stops it.')
-    urls()
+    urls(int(args[args.index('--port') + 1]) if '--port' in args[:-1] else None)
     try:
         return run(os.path.join(DIR, 'server.py'), '--config', CONFIG, *args)
     except KeyboardInterrupt:
@@ -128,7 +128,7 @@ def main():
     if cmd == 'update':
         return sync([]) or build(args)
     simple = {'sync': lambda: sync(args), 'build': lambda: build(args), 'serve': lambda: serve(args),
-              'check': check, 'url': urls, 'urls': urls, 'health': health, 'firewall': firewall}
+              'check': check, 'url': lambda: urls(), 'urls': lambda: urls(), 'health': health, 'firewall': firewall}
     if cmd in simple:
         return simple[cmd]()
     if cmd in ('help', '-h', '--help'):
