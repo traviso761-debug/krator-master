@@ -8,6 +8,29 @@ const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,12000);
 // uniform is the only shader change: 0 is the dust-and-haze day this kit has
 // always had, 1 is the night it needs for firelight to mean anything.
 const hemi=new THREE.HemisphereLight(0xffe2c4,0x6a3a2a,.75);scene.add(hemi);
+// SOFFITS (shared-code round; QA arcA, towers). Nothing in this kit casts a
+// shadow, so a surface facing DOWN is lit by the hemisphere's ground colour and
+// nothing else, and 0x6a3a2a painted every underside in the kit red-brown:
+// balconies, galleries, deck soffits, the Hotel's eaves, Skyscrapers I and J.
+// Builders had been painting the shade in one by one (Arcube, Arcoindian II,
+// the Ledge, the Wing, the Hill) or adding a bounce (lxBounce, the Launch).
+// This fixes it once, for every lit material: the ground term is DESATURATED in
+// proportion to how far the normal points down, to its own luminance with a
+// slight cool cast (the shade under a slab is lit by bounce off pale paving and
+// the sky beyond, not by red soil). A wall (normal level) keeps the full warm
+// ground term, so the facades are unchanged; a soffit gets that brightness x1.3
+// in neutral grey (at x1 it read charcoal by the sunlit brick). Keyed to the
+// uniform, so setNight() needs nothing new. It is
+// a patch to the shared chunk, so it reaches Standard, Lambert and Phong alike,
+// and any per-material onBeforeCompile hook (glass, flicker, lxBounce) composes
+// with it instead of fighting for the slot.
+(function soffitChunk(){const C=THREE.ShaderChunk,k='lights_pars_begin',
+  a='vec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );';
+ if(C[k].indexOf(a)<0){reportErr('soffitChunk: hemisphere anchor not found in '+k);return;}
+ C[k]=C[k].replace(a,'vec3 sfG = hemiLight.groundColor;\n'+
+  'float sfL = dot( sfG, vec3( 0.2126, 0.7152, 0.0722 ) );\n'+
+  'sfG = mix( sfG, vec3( 0.92, 1.0, 1.08 ) * ( sfL * 1.3 ), clamp( -dotNL * 1.6, 0.0, 1.0 ) );\n'+
+  'vec3 irradiance = mix( sfG, hemiLight.skyColor, hemiDiffuseWeight );');})();
 const sun=new THREE.DirectionalLight(0xfff0dc,1.7);sun.position.set(-1200,900,600);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xc0d0ff,.35);fill.position.set(800,400,-900);scene.add(fill);
 // sky dome

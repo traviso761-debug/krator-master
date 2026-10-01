@@ -79,8 +79,13 @@ function civFlatten(G){G.updateMatrixWorld(true);const inv=new THREE.Matrix4().c
   const t0=t?t.tris:0;meshMerged(geos,mat,G);if(t){t.tris=t0;t.meshes-=list.length;}}}
 // MOULDING for an arcWindowGeo(w,h) window: a half-round hood following the arch
 // and a sill under it, both proud of the window's face (+z). One kit mesh.
-function civHoodGeo(w,h){const t=new THREE.TorusGeometry(w/2+.2,.15,3,9,Math.PI);t.translate(0,h/2-w/2,.3);   // ~70 tris a window
- return civMergeGeo([t,new THREE.BoxGeometry(w+.7,.24,.5).translate(0,-h/2-.12,.25)]);}
+// Both are the shared moulding() now (was a 3-sided torus and a box): a label
+// mould with a flat top, a chamfered nose and a stopped end, and a weathered
+// sill with a drip, ~84 tris a window.
+function civHoodGeo(w,h){const R=w/2+.06,cy=h/2-w/2,L=(w+.7)/2;
+ const hood=moulding(MOULD.hood(.3,.3),t=>{const a=Math.PI*(1-t);return[R*Math.cos(a),cy+R*Math.sin(a),.3];},{wn:[0,0,1],nu:7,caps:true});
+ const sill=moulding(MOULD.sill(.55,.26),t=>[-L+2*L*t,-h/2-.24,0],{wn:[0,0,1],nu:1,caps:true});
+ return civMergeGeo([hood,sill]);}
 // Angular distance, for sector tests.
 function civDA(a,b){const x=((a-b)%TAU+TAU)%TAU;return Math.min(x,TAU-x);}
 

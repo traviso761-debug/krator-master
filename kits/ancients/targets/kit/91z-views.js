@@ -3,12 +3,16 @@
 // camera deeper than the row spacing stood inside the NEXT row's building: the
 // Skyscraper A shot was a wall of rusted drums 100 m off the lens. The distance
 // is capped to stop 90 m short of the next row, which leaves it behind the camera.
-const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k];
+// Since the shared-code round's re-spacing (89z-rows.js) the rows are laid out
+// so that cap never binds: each row's z gap is derived from these distances.
+// A row whose `s` was widened is framed as before: the distance and height
+// scale by s/s0 (s0 = the row's s before the re-spacing).
+const ROWV=(k,dist,h,ty,dx)=>{const R=ROWS[k],f=Math.max(1,R.s/(R.s0||R.s));
  const nz=Math.min(...Object.values(ROWS).map(o=>o.z).filter(z=>z>R.z),Infinity);
- const d=Math.min(dist,nz-R.z-90);
- return[dx||0,h,R.z+d,dx||0,ty,R.z];};
+ const d=Math.min(dist*f,nz-R.z-90);
+ return[dx||0,h*f,R.z+d,dx||0,ty,R.z];};
 const VIEWS={
- 'Overview':[0,1400,ROWS.lab.z+2600,0,150,5000],
+ 'Overview':[0,1400,ROWS.lab.z+2600,0,150,(ROWS.fac.z+ROWS.port.z)/2+300],
  'Skyscraper A':ROWV('skyA',900,300,210),'Skyscraper B':ROWV('skyB',800,260,160),'Skyscraper C':ROWV('skyC',900,300,200),
  // THE PROJECT. A seventh element on a preset means "night" — see setNight in
  // src/92-camera.js. Day first, because you have to see the patched fabric
