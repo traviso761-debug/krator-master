@@ -20,6 +20,31 @@
 >    is the neighbour in the segment/edges dev targets. Read "W = 220 m for
 >    every segment" below as "W = the segment's own width"; the footprint is
 >    x in [-W/2, W/2]. SEA <= 420, LAND <= 120 and the 8 m clearance are unchanged.
+6. **Placement kinds (wave 3).** A registration may give `place`:
+   `'coast'` (the default - everything below), `'land'` or `'sea'`.
+   * `place:'land'` - a block **wholly on land**, at most 110 x 110: `SEA:0`,
+     `LAND <= 110`, local z in [-LAND, 0]. It stands BEHIND a coastal segment
+     (its z=0 edge on that segment's -LAND edge) or behind another land
+     block; any of its four sides may meet another block, a coastal segment
+     or natural land. Its stamps flatten its whole footprint to deck level
+     (`portBlockStamps`).
+   * `place:'sea'` - a platform **wholly in the water**, at most 110 x 110:
+     `LAND:0`, `SEA <= 110`, local z in [0, SEA]. It attaches to the seaward
+     end of a pier (the pier's z = SEA edge, at its registered `seaEnd.x`)
+     or to any side of another platform, so piers can be extended and
+     branched (the Port of Long Beach, refs/long-beach.png). Its stamps build
+     a mole (or leave water for piles) and dredge round every open side.
+   * **Four-sided neighbours.** `opt.nb` has **N** (land side, -z), **S**
+     (sea side, +z), **W** (-x) and **E** (+x), each `{kind:'seg'|'land'|'sea',
+     dz, dx, key, place, span, list}`, computed by the scene from the placed
+     footprints. Every side must look finished: blocks and platforms call
+     `portBlockClose(G,opt,d)` (a quay wall on open water, a retaining wall on
+     open land or where a neighbour is stepped back, nothing where a
+     neighbour continues the deck), coastal segments keep `portSideClose`.
+   * Layouts place them with `portBehind(host,key)` / `portOff(host,key,side)`
+     (API.md "Grid placement"); the showcase puts every land key in a row
+     behind each run and the sea keys in a chain off the great pier's end,
+     and `targets/harbour` composes a small Long-Beach-like harbour.
 
 
 A spin-off of the Krator Ancients kit (`kits/ancients/`): a set of modular
@@ -54,8 +79,9 @@ The kit is y-up, so in code:
 - **Edges.** -z faces land (or the arcology). +z faces open sea. The +/-x
   sides must look finished whether the neighbour is land, sea, or another
   segment (flush, or offset back/forward). Every builder receives
-  `opt.nb = {W:{kind:'seg'|'land'|'sea', dz}, E:{...}}` (dz = the neighbour's z
-  offset minus this one's) and should close its sides accordingly: a finished
+  `opt.nb = {W:{kind:'seg'|'land'|'sea', dz}, E:{...}, N:{...}, S:{...}}` (dz =
+  the neighbour's z offset minus this one's; N/S are the land/sea sides, see
+  item 6 above) and should close its sides accordingly: a finished
   quay wall with fenders/coping where it faces water, a revetment or
   retaining wall where it faces land, nothing extra where a flush neighbour
   continues the deck, and a finished step where offsets differ.
