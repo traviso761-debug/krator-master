@@ -14,8 +14,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
-| `20-core-kit.js` | 12 | merged buckets (46); bake (121) |
+| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
+| `20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 19 | the axis, the sea, the river (40); terrain (72); the climate fields (96); the host binding (112); the ground (121); the water (167); the road (208) |

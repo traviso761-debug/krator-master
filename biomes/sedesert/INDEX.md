@@ -14,8 +14,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 7 | PRNG (14); noise (24); host binding (32); accounting (98) |
-| `20-core-kit.js` | 14 | merged buckets (58); bake (133); dynamic instances (158) |
+| `10-core-head.js` | 8 | PRNG (14); noise (24); host binding (41); accounting (107) |
+| `20-core-kit.js` | 15 | merged buckets (58); indexed buckets (133); bake (156); dynamic instances (179) |
 | `30-core-foliage.js` | 15 | alpha textures (18); card geometries (48); the foliage hook (110); colour (175) |
 | `40-core-place.js` | 7 | surface sampling (59) |
 | `45-host-stage.js` | 26 | the river, the canyon, the butte, the mesas (43); terrain (75); the host binding (120); the ground (129); the water (182) |
