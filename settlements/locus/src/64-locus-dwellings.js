@@ -144,10 +144,10 @@ reseed(641001);
         LOCUS.hang(F, -W/2, -D/2, W/2, -D/2, EH-0.05, EH-0.1, c2);
         if(v===0){ LOCUS.roll(F, -W/2, EH-0.25, D/2+0.2, W/2, EH-0.25, D/2+0.2, 0.24, c2); }
         else { LOCUS.hang(F, -W/2, D/2, -W/2+4.5, D/2, EH-0.05, EH-0.1, c2); LOCUS.roll(F, -W/2+4.5, EH-0.25, D/2+0.2, W/2, EH-0.25, D/2+0.2, 0.24, c2); }
-        /* inside: a polychrome rug (the floor covering), and FURNITURE from the catalog: floor cushions round a low table and a
-           brass brazier (its glow stays this kit's lamp). The open tent is a hall the interior set plans: they give way to
-           the interiors with ?interiors=1 (setting 'room'). */
-        F.box(0, 0.02, 0.6, 7.5, 0.05, 4.6, 0, 0xf0e6d0, 'paintcol');
+        /* inside, FURNITURE from the catalog: the polychrome rug (eastabyss_tent_rug, the floor covering: it stays under the
+           interiors' pieces, setting 'indoor'), floor cushions round a low table and a brass brazier (its glow stays this kit's
+           lamp). The open tent is a hall the interior set plans: those give way to the interiors with ?interiors=1 ('room'). */
+        FURNISH('eastabyss_tent_rug', 0,0.02,0.6, 0, { v:0, setting:'indoor' });
         FURNISH('yuni_common_floor_seating', 0,0.07,0.6-1.8, 0, { setting:'room' }); FURNISH('yuni_common_floor_seating', 0,0.07,0.6+1.8, PI, { v:1, setting:'room' });
         FURNISH('yuni_common_low_table', 0,0.07,0.6, 0, { setting:'room' }); FURNISH('yuni_court_brass_brazier', 3.8,0,-2.6, 0, { setting:'room' }); F.lamp(3.8, 0.7, -2.6, 0.9, 10);
         LOCUS.lantern(F, -3.6, RH-1.2, 0, 0.9, 14); LOCUS.lantern(F, 3.6, RH-1.2, 0, 0.9, 14); }
@@ -158,7 +158,7 @@ reseed(641001);
         F.lathe('cloth', 0,0, [[R,0.0],[R,WH]], c2, { seg:18 });
         F.box(0, 0, R-0.05, 1.6, WH, 0.4, 0, VOIDC[1], 'dark');
         for(var g=0;g<12;g++){ var ga=g/12*TAU; LOCUS.guy(F, Math.cos(ga)*R, WH, Math.sin(ga)*R, Math.cos(ga)*(R+1.6), Math.sin(ga)*(R+1.6)); F.cyl(Math.cos(ga)*R, 0, Math.sin(ga)*R, 0.05, WH, 0, tc, 'timber'); }
-        F.box(0, 0.02, 0, 5.5, 0.05, 5.5, PI/4, 0xf0e6d0, 'paintcol'); FURNISH('yuni_court_brass_brazier', 0,0,-2.6, 0, { setting:'room' }); F.lamp(0, 0.7, -2.6, 0.9, 10); }
+        FURNISH('eastabyss_tent_rug', 0,0.02,0, PI/4, { v:1, setting:'indoor' }); FURNISH('yuni_court_brass_brazier', 0,0,-2.6, 0, { setting:'room' }); F.lamp(0, 0.7, -2.6, 0.9, 10); }
     } });
 
   /* =============================================================== 4. SUN SHADES */
