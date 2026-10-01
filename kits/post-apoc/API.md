@@ -27,7 +27,7 @@ function xxFoodShop(o){ ... }      // o.v = variant number (0..); place() alread
 ```
 * Keep the order `key, name, seed, tags, w, d, h, build` (build.py reads the seed after the key). `seed`: unique four-digit block from your range in the brief. All randomness through `rng()` `rr(a,b)` `pick(list)`. Seeds are per building.
 * A def that builds at more than one size declares the others as `sizes:{large:{w,d,h,budget,front}}` (before `build`); `place(key,x,z,ry,{size:'large'})` picks one,
-  `declOf(key,o)` returns the def as declared for that placement and `rec.decl` records it (the footprint check uses it). Only `compound` has one (`large`, 82 x 76).
+  `declOf(key,o)` returns the def as declared for that placement and `rec.decl` records it (the footprint check uses it). Only `compound` has them (`large`, 82 x 76; `xl`, 106 x 76 with two great slots).
   A showcase row entry (`src/89-rows.js`) is `'key'`, `'key@culture'` or `{key, o}` (place() options, e.g. `{key:'compound', o:{size:'large', slots:[...]}}`).
 * `tags.type` (README rule): one or more of `civic, market/shop, tavern/inn, industry, farm, single-family dwelling, multi-family dwelling, infrastructure, religious, funerary`.
   Also give `size`, `core` (the reclaimed object), `materials`. `culture` and `sockets` are added for you. `budget:N` raises the triangle limit (default 120000).
@@ -84,9 +84,26 @@ If you need a helper twice, add it at the top of YOUR fragment with your prefix.
 ## Night, and the invisible front door
 **Night:** the `Time` select (Day / Dusk / Night) or `?night=0..1` or `window._api.setNight(v)` drives sky (stars, dusk glow, moon), sun/moon light, hemisphere, fog, lit windows, lamp and fire glow, and a pool of six real point lights that follows the camera to the nearest lamps and fires.
 Nothing to author: every light `glass` pane is a window the evening schedule can light (below), and every `glow` piece (lamp bulbs, fires, `lit` windows) becomes a halo and a candidate light. To make something glow at night, draw it in `glow`.
-**Front door:** every placed building carries `rec.front = {source, local:{x,z,yaw}, world:{x,y,z,yaw}}`, invisible data (the `Doors` button draws a debug arrow at each). It is picked from the builder's `door()` calls (the widest door facing within 50 degrees of +z),
+**Front door:** every placed building carries `rec.front = {source, local:{x,z,yaw,y}, world:{x,y,z,yaw}}` (`local.y`: the threshold above the plot; `world.y`: the plot's ground), invisible data (the `Doors` button draws a debug arrow at each). It is picked from the builder's `door()` calls (the widest door facing within 50 degrees of +z),
 else a def may declare `front:{x,z,yaw}`, else the default (centre of the +z edge). `frontOf(key)` returns a def's local front; `placeFacing(key,x,z,tx,tz,o)` places a building so its front door faces a point (a road, a plaza). `_api.doors()` lists them all.
-Keep a building's main entrance a `door()` call, or declare `front`.
+Keep a building's main entrance a `door()` call, an `entry(x,y,z,w,h)` (same frame as `door()`, draws nothing: an open container front or service counter, a gate gap, a roll-up opening, a curtained doorway), or declare `front`. `verify --assert` fails if any building falls back to the default.
+
+## Collision and path data (36-def.js)
+**Colliders, per building, automatic:** while `place()` builds, the engine primitives (`box cyl cylH sph tire sector prism poly plane4`) are wrapped (the drawing and the rng are untouched) and record, in world space,
+`rec.coll = {solids, floors, ramps, links, water}`. A **solid** `{x,z,hx,hz,yaw,y0,y1,m}` is an oriented box (centre, half sizes along its own axes, the yaw of its +x, a y span) of a hard material: not `cloth chain glow water`,
+not `plant()` flora, not spinners; cylinders, tyres and domes are boxed, `beam()`/`pipe()` (poles, rails, posts) are not recorded. Solids inside a bigger one are merged away. A **floor** `{x,z,hx,hz,yaw,y}` is the top of a level slab
+of a floor material at least 0.4 x 0.4 m. `deck stLanding stFloor` record a floor, `stairs stStairs` a **ramp** `{a:[x,y,z],b:[x,y,z],w}`, `ladder` a **link** `{a,b}` (foot, top), `fenceRun` one thin solid, a gently sloping `plane4` of a floor
+material that starts at the ground a ramp, a `poly('water',...)` a **water** polygon. To state a surface a builder draws some other way: `collFloor(x,y,z,w,d,ry)`, `collRamp(ax,ay,az,bx,by,bz,w)`, `collLink(...)`, `collSolid(x,y,z,w,h,d,ry)` (current frame).
+**Nav grid, per scene:** `navBuild(opt)` / `navGet()` (cached per world build). Cells of 0.5 m over every placed building plus 6 m; up to 4 walkable **levels** a cell (ground unless water, floor tops, ramp heights, merged within 0.35 m).
+A level is blocked by a solid crossing h+0.45 .. h+1.55 m, or by a level less than 1.5 m above it (not on stairs). Levels connect to the 4 neighbours within 0.6 m (0.8 m on a ramp) and through ladders. Reach = flood fill from the open
+ground at the grid border. Each building's front door gets an **approach**: the first open level 0.6..2.4 m straight out from the door (up to 0.8 m to the side) within 0.75 m of the threshold. Door cells are flagged 1, approach cells 2.
+```
+_api.colliders()          per-building counts          _api.colliders(i)   REG[i].coll
+_api.nav()                {cell,x0,z0,nx,nz,touchedCells,blockedLevels,doors,unreachable:[..],doorList:[{key,door,yaw,approach,reachable}]}
+_api.navGrid()            the live grid: at(x,z) -> [{h,ramp,blocked,reach,door,approach}], levels, flag, reach, cellOf(x,z)
+_api.navAt(x,z)           levels of one cell             _api.showNav(on)   overlay: green reached, orange cut off, red blocked, cyan door/approach
+```
+`verify --assert` checks `colliders-published` and `door-approach-reachable`.
 
 ## Night and animation (nothing to author for the defaults)
 **Window schedule:** every window pane (light `glass`, and the `winlit` half) carries a per-pane order (`aWin`, a position hash). A sim clock sets the share lit (`winFrac(h)`: ~85% at dusk,

@@ -783,12 +783,12 @@ fenceRun=function(x0,z0,x1,z1,h){const L=Math.hypot(x1-x0,z1-z0);if(L>=.2)collSo
 plant=function(){return collQuiet(_CR.plant,arguments);};
 /* ==== NAV GRID: a coarse 2.5-D walk grid for the whole scene, built from every placed building's rec.coll ====
    navBuild(opt) -> NAV. Cells of opt.cell (0.5 m) over the placed buildings plus a margin. Each cell holds up to 4 LEVELS (walkable heights): the ground
-   (unless water covers it), floor tops and ramp heights, merged when within 0.35 m. A level is BLOCKED when a solid crosses the body band (h+0.45 .. h+1.7:
-   anything lower is a step) or another level lies less than 1.5 m above it (no headroom; not checked on stairs). Neighbouring levels connect when their heights differ by <= 0.6 m (0.8 m on a ramp);
+   (unless water covers it), floor tops and ramp heights, merged when within 0.35 m. A level is BLOCKED when a solid crosses the body band (h+0.45 .. h+1.55:
+   anything lower is a step, thin lintels and bars above it are ignored) or another level lies less than 1.5 m above it (no headroom; not checked on stairs). Neighbouring levels connect when their heights differ by <= 0.6 m (0.8 m on a ramp);
    ladders connect their foot to the floor at their top (the stiles run up to 1.3 m past it). reach = flood fill from the open ground at the grid border. Each building's front door gets an APPROACH: the first
    open level straight out from the door (0.6 .. 2.4 m, up to 0.8 m to either side) within 0.75 m of the threshold height. Door and approach cells are
    flagged (NAV.flag: 1 door, 2 approach). */
-const NAV_OPT={cell:.5,step:.6,rampStep:.8,knee:.45,head:1.7,merge:.35,clear:1.5,margin:6,maxLv:4};
+const NAV_OPT={cell:.5,step:.6,rampStep:.8,knee:.45,head:1.55,merge:.35,clear:1.5,margin:6,maxLv:4};
 let NAV_CACHE=null;
 function navBuild(opt){const O=Object.assign({},NAV_OPT,opt||{});const C=O.cell;let mnx=1e9,mnz=1e9,mxx=-1e9,mxz=-1e9;
  for(const r of REG){mnx=Math.min(mnx,r.bbox.mn[0]);mnz=Math.min(mnz,r.bbox.mn[2]);mxx=Math.max(mxx,r.bbox.mx[0]);mxz=Math.max(mxz,r.bbox.mx[2]);}
@@ -2724,11 +2724,23 @@ defBuilding({key:'cages',name:'Prisoner cages',seed:5220,tags:{type:['civic'],si
 // Walls of MIXED reclaimed segments (stacked containers, earth-filled tyre wall with timber cap + sheet fence, corrugated sheet on posts, container bastions),
 // an inner wall-walk gantry, a bulkhead-style container gate tower with two hinged leaves, four corner towers (silo, water tank on stilts, scaffold lookout,
 // container tower). The interior takes buildings modularly: cpSlots(w,d) -> slot rectangles, cpFit(def,slot) -> yaw or null; o.slots = list of def keys.
-defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,sizes:{large:{w:82,d:76,front:{x:0,z:38,yaw:0}}},build:cpBuild});
-function cpGeom(v,size){if(size==='large')return {v:0,L:1,w:82,d:76,xr:82/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'large': an 82 x 76 yard (variant ignored)
+defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,sizes:{large:{w:82,d:76,front:{x:0,z:38,yaw:0}},xl:{w:106,d:76,budget:400000,front:{x:0,z:38,yaw:0}}},build:cpBuild});
+function cpGeom(v,size){if(size==='xl')return {v:0,L:1,XL:1,w:106,d:76,xr:106/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'xl': a 106 x 76 yard with two great slots (the large plan, wider)
+ if(size==='large')return {v:0,L:1,w:82,d:76,xr:82/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'large': an 82 x 76 yard (variant ignored)
  const Wc=v===1?44:64,Dc=v===1?38:54;return {v:v,w:Wc,d:Dc,xr:Wc/2-3.4,zb:-(Dc/2-3.4),zf:Dc/2-4.9};}
 // ---- slots: rectangles inside the walls (world x,z of the centre; w along x, d along z; facing = yaw that turns a building's +z front toward the yard)
 function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
+ if(w>=100){  // xl (106 x 76): interior clear x +-47, z -32..30.5; yard x +-10, z 5..18. TWO great slots (41 x 35) so two of the longhouse / chief class share a yard
+  S.push({x:-26.5,z:-14.5,w:41,d:35,facing:0,name:'great-left'});
+  S.push({x:26.5,z:-14.5,w:41,d:35,facing:0,name:'great-right'});
+  S.push({x:0,z:-24.5,w:11,d:15,facing:0,name:'back-mid'});
+  S.push({x:-22,z:12,w:20,d:13,facing:PIH,name:'left-mid'});
+  S.push({x:22,z:12,w:20,d:13,facing:-PIH,name:'right-mid'});
+  S.push({x:-40,z:12,w:14,d:14,facing:PIH,name:'west'});
+  S.push({x:40,z:12,w:14,d:14,facing:-PIH,name:'east'});
+  S.push({x:-29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-left'});
+  S.push({x:29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-right'});
+  return S;}
  if(w>=80){   // large (82 x 76): interior clear x +-35, z -32..30.5; yard x +-10, z 5..18. 'great' takes any building def in the kit (longhouse 40 x 18, chief 25 x 34,
               // bulkhead 26 x 28, farm 28 x 22); 'back-right' the 26 x 18 class (warehouse, lg-stack, granary, cages, mess); mid and front slots as in the standard yard
   S.push({x:-14.5,z:-14.5,w:41,d:35,facing:0,name:'great'});
@@ -2756,6 +2768,12 @@ function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
 // the yaw at which the def's declared footprint (w x d) fits the slot: try the slot's facing, then the other three quarter turns
 function cpFit(def,slot){const f=slot.facing||0;const tries=[0,PI/2,-PI/2,PI];
  for(const t of tries){const swap=Math.abs(t)===PI/2;const bw=swap?def.d:def.w,bd=swap?def.w:def.d;if(bw<=slot.w+1e-6&&bd<=slot.d+1e-6)return f+t;}return null;}
+// why a key was turned away, and which size of yard would take it (std 64 x 54 takes up to ~21.5 x 16; large one building of any size; xl two)
+function cpSizeName(G){return G.XL?'xl':G.L?'large':G.v?'small':'std';}
+function cpWhy(def,G,slots){const fits=(w,d)=>cpSlots(w,d).filter(s=>cpFit(def,s)!==null).length;const here=slots.filter(s=>cpFit(def,s)!==null).length;
+ let sug=null;for(const [n,w,d] of [['large',82,76],['xl',106,76]])if(w>G.w&&fits(w,d)>here){sug=n;break;}
+ return 'no free slot fits '+def.w+' x '+def.d+' in the '+cpSizeName(G)+' yard ('+G.w+' x '+G.d+')'+(here?': the '+here+' slot'+(here>1?'s':'')+' that fit it '+(here>1?'are':'is')+' taken':'')+
+  (sug?"; size:'"+sug+"' would take it"+(sug==='xl'?' (two great slots)':''):'');}
 // ---- small helpers
 function cpTire(x,y,z,R,col,ry,rx,rz){if(!_G.cpTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.cpTor=g;}
  const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.cpTor,m,col===undefined?jc(0x252220,.05):col);}
@@ -2956,7 +2974,7 @@ function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr
  const placed=[],rejected=[],used=new Set();
  for(const key of want){const def=DEFS[key];if(!def||key==='compound'){rejected.push({key,reason:'no such def'});continue;}
   let done=false;for(const i of order){if(used.has(i))continue;const yaw=cpFit(def,slots[i]);if(yaw!==null){used.add(i);placed.push({key,slot:slots[i],slotIndex:i,yaw:yaw,def:def});done=true;break;}}
-  if(!done)rejected.push({key,reason:'no free slot fits '+def.w+'x'+def.d});}
+  if(!done)rejected.push({key,reason:cpWhy(def,G,slots)});}
  // 2. ground plan, walls, gantry, towers, gate
  cpGround(G,placed);
  if(G.L){
@@ -2993,7 +3011,7 @@ function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr
  // 3. the buildings (last, so the wall drawing never depends on their random use), then vacant plots
  const res=[];for(const p of placed){const r=place(p.key,p.slot.x,p.slot.z,p.yaw,{});res.push({key:p.key,slot:p.slot.name});}
  reseed(5499);for(let i=0;i<slots.length;i++)if(!used.has(i))cpVacant(slots[i]);
- const rep={placed:res,rejected:rejected,slots:slots.length,size:G.L?'large':'std'};window._compound=rep;(window._compounds||(window._compounds=[])).push(rep);}
+ const rep={placed:res,rejected:rejected,slots:slots.length,size:cpSizeName(G)};window._compound=rep;(window._compounds||(window._compounds=[])).push(rep);}
 // prefix: ar
 // ---------------------------------------------------------------- THUNDERDOME ARENA (civic). Half scrap colosseum, half caged cauldron. Entry (tunnel + ticket booth) faces +z.
 // Sand pit r 11 with a tyre-and-sheet wall and three gates, two tiers of scaffold stands (planks, benches, tyre seats), a VIP loge (bus + canopy) on the north side,
@@ -3002,7 +3020,25 @@ function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr
 defBuilding({key:'arena',name:'Thunderdome arena',seed:5610,tags:{type:['civic'],size:'large',core:'scaffold + shipping containers + bus',materials:['scaffold','planks','earth-filled tyres','chain-link','corrugated sheet','bus']},w:56,d:56,h:20,budget:240000,build:arBuild});
 const arQ=[[.2,PI/2-.34],[PI/2+.34,PI-.2],[PI+.2,1.5*PI-.42],[1.5*PI+.42,TAU-.2]];      // stand quadrants (gaps: E/W gates, S tunnel, N loge)
 function arRad(r,a,y,fn){W(Math.cos(a)*r,y,Math.sin(a)*r,PI/2-a,fn);}     // frame with local +z pointing radially outward
-function arTire(x,y,z,R,col,ry){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
+function arTire(x,y,z,R,col,ry,rx){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,rx||0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
+/* LOW-POLY TYRE FURNITURE for the stands (~250 seats): the same seat, chair and table as tireStool / tireChair / tireTable (34-adds.js) and the same
+   random draws in the same order (so every colour in the arena is unchanged), drawn cheaper: 72-tri tyres (arTire) instead of 144, a 3 x 3 cord lattice
+   instead of 9 x 9, square timber instead of round. Stool 240 tris (was 544), chair ~460 (1072), table ~150 (296). */
+const arTYRE=0x232120;
+function arWeave(cx,cy,cz,r,cord,plane){const c=jc(cord,.05);for(let i=-1;i<=1;i++){const off=i*r/2,h=Math.sqrt(Math.max(0,r*r-off*off));
+ if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
+ else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
+function arStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)arTire(x,y+.12+k*.235,z,R,arTYRE,rng()*TAU);
+ cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),6);arWeave(x,y+n*.235-.01,z,R-t,cord,'h');}
+function arChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
+  arStool(0,0,0,{n:n,cord:cord});
+  const bz=-.36,by=sy+.42;arTire(0,by,bz,R*1.12,arTYRE,0,PI/2);arWeave(0,by,bz,(R*1.12-t)*.98,cord,'v');
+  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.1,wc);beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.09,wc);beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.09,wc);}
+  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.06,wc);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.06,wc);});}
+function arTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,top=n*.24+.25;
+ for(const k of [0,1].slice(0,n))arTire(x,y+.13+k*.24,z,R,arTYRE,rng()*TAU);
+ for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.08,wc);
+ cyl('wood',x,y+top,z,R+.1,.05,wc,10);}
 function arBright(){return pick([0xc45a30,0xd8a020,0x3b7f8e,0x4d6f3c,0x9a3a2c,0xd8d0c0,0x2f5f8f,0x8a6a3a,0xc98a2a]);}
 function arWood(){return jc(pick([0x6a5238,0x7a6244,0x5c4630,0x8a7050]),.08);}
 function arSearch(x,y,z,ry,rx){W(x,y,z,ry,()=>{cylH('iron',0,0,0,.24,.6,jc(0x3a3430,.05),'z',10);sph('glow',0,0,.3,.17,jc(0xfff2c0,.03));box('iron',-.18,-.32,-.1,.36,.32,.2,jc(0x4a4038,.05));});}
@@ -3020,7 +3056,7 @@ function arRow(r0,w,top,a0,a1,k,tier,mode){const mid=(r0+r0+w)/2;const dk=jc(0x4
   sector('plank',0,0,r0+.5,r0+.56,a0,a1,top+.3,top+.72,jc(0x5c4630,.06));}
  else{const sp=(mode==='chair'?arCHSP:arSTSP)/rc;const cnt=Math.max(1,Math.floor((a1-a0)/sp));const off=((a1-a0)-(cnt-1)*sp)/2;
   for(let i=0;i<cnt;i++){const a=a0+off+i*sp;const x=Math.cos(a)*rc,z=Math.sin(a)*rc;
-   if(mode==='chair'){if(i%4===2)tireTable(x,top,z,{});else tireChair(x,top,z,arFace(a),{});}else tireStool(x,top,z,{});}}
+   if(mode==='chair'){if(i%4===2)arTable(x,top,z,{});else arChair(x,top,z,arFace(a),{});}else arStool(x,top,z,{});}}
  if(tier===2&&k===4){const rr_=r0+w+.05;for(let i=0;i<=n;i++){const a=a0+i*st;beam('wood',[Math.cos(a)*rr_,top,Math.sin(a)*rr_],[Math.cos(a)*rr_,top+1.1,Math.sin(a)*rr_],.05,jc(0x5c4630,.06),true,5);}sector('wood',0,0,rr_-.03,rr_+.03,a0,a1,top+1.05,top+1.11,jc(0x5c4630,.06));}}
 function arStands(){for(const [q0,q1] of arQ){
   const m1=['chair','bench','chair'];for(let k=0;k<3;k++)arRow(13.3+k*1.25,1.25,.9+k*.65,q0,q1,k,1,m1[k]);
@@ -3083,7 +3119,7 @@ function arEntry(){
  const bx=9.6,bz=25.4;W(bx,0,bz,0,()=>container({len:CT.L20,doorEnd:false,col:jc(0x3b7f8e,.05)}));
  win(bx-.8,1.1,bz+CT.W/2,1.6,.9,{});door(bx+1.8,.16,bz+CT.W/2,.9,2.0,{step:true});
  sock('awning',bx-.8,2.05,bz+CT.W/2,0,{w:2.4,d:1.2,drop:.35,h:1.55});sock('sign',bx+.2,2.4,bz+CT.W/2+.05,0,{w:2.2,h:.4,trade:'TICKETS'});
- stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);tireStool(bx-2.6,0,bz+2.0,{});
+ stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);arStool(bx-2.6,0,bz+2.0,{});
  // two stalls: lean-to counters with awnings
  for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{box('plank',0,0,0,4.0,.1,2.4,jc(0x6a5a44,.06));wallOpen('plank',0,.1,-1.1,4.0,2.4,.1,[],jc(c,.06));
    for(const px of [-1.9,1.9])beam('wood',[px,0,1.1],[px,2.5,1.1],.07,jc(0x5c4630,.06),true,6);box('plank',0,.1,.95,4.0,.9,.1,jc(0x8a6a3a,.06));box('plank',0,1.0,.95,4.2,.07,.5,jc(0x6a5a44,.06));
@@ -3108,7 +3144,7 @@ function arLoge(){const dy=3.6;box('plank',0,dy-.14,-18.7,13.6,.14,7.6,jc(0x6a5a
  sock('emblem',0,dy+6.6,-22.4+.16,0,{w:2.4,h:2.4});
  sock('banner',-6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});sock('banner',6.2,dy+3.5,-14.95,0,{w:1.2,h:2.6});
  sock('awning',0,dy+2.2,-14.6,0,{w:4.0,d:1.0,drop:.4,h:1.8});
- for(const x of [-4.2,-3.0,3.0,4.2])tireChair(x,dy,-16.5,0,{});tireTable(0,dy,-16.3,{n:2});tireChair(-.9,dy,-17.3,0,{});tireChair(.9,dy,-17.3,0,{});
+ for(const x of [-4.2,-3.0,3.0,4.2])arChair(x,dy,-16.5,0,{});arTable(0,dy,-16.3,{n:2});arChair(-.9,dy,-17.3,0,{});arChair(.9,dy,-17.3,0,{});
  // stair to the loge from behind
  arRail(-6.8,-22.45,6.8,-22.45,dy);arRail(-6.8,-22.45,-6.8,-15.05,dy);arRail(6.8,-22.45,6.8,-15.05,dy);
 }
@@ -3141,10 +3177,10 @@ function arCage(){const rc=11.3,WT=2.65,CTP=WT+6.0;const st=jc(0x4a4038,.05),st2
  // winch on the roof over the hatch: frame, drum that turns, chain down through the hatch
  for(const sz of [-1,1])beam('iron',[0,CTP+.42,sz*.75],[0,CTP+1.9,sz*.75],.09,st,true,6);beam('iron',[0,CTP+1.9,-.75],[0,CTP+1.9,.75],.08,st);
  spin(0,CTP+1.35,0,0,'z',.4,()=>{cylH('iron',0,0,0,.34,1.2,jc(0x8a8a86,.05),'z',10);for(const sz of [-1,1])cylH('iron',0,0,sz*.62,.5,.05,jc(0x3a3430,.05),'z',10);});
- beam('iron',[0,CTP+1.0,0],[0,4.2,0],.03,jc(0x6a6a66,.05),true,3);for(let q=0;q<10;q++)sph('iron',0,CTP+.8-q*.55,0,.06,jc(0x7a7a76,.05),1.6);box('iron',-.12,3.9,-.05,.24,.35,.1,jc(0x3a3430,.05));
+ beam('iron',[0,CTP+1.0,0],[0,4.2,0],.03,jc(0x6a6a66,.05),true,3);for(let q=0;q<10;q++)box('iron',0,CTP+.8-q*.55-.1,0,.07,.2,.1,jc(0x7a7a76,.05),q*1.57);box('iron',-.12,3.9,-.05,.24,.35,.1,jc(0x3a3430,.05));
  // hanging from the roof hoops: chains with hooks and weapons, and four light rigs (cans point down)
  for(let i=0;i<10;i++){const a=i/10*TAU+.2,r=4.5,x=Math.cos(a)*r,z=Math.sin(a)*r,len=rr(1.6,3.4);beam('iron',[x,CTP+.2,z],[x,CTP-len,z],.022,jc(0x6a6a66,.05),true,3);
-  for(let q=0;q<len/.55;q++)sph('iron',x,CTP-.3-q*.55,z,.05,jc(0x7a7a76,.05),1.6);
+  for(let q=0;q<len/.55;q++)box('iron',x,CTP-.3-q*.55-.08,z,.06,.16,.09,jc(0x7a7a76,.05),q*1.57);
   if(i%3===0){box('iron',x-.03,CTP-len-1.0,z-.03,.06,1.0,.06,jc(0x4a4038,.05));box('iron',x-.09,CTP-len-.5,z-.09,.18,.5,.18,jc(0x5a5048,.05));}      // spiked club
   else if(i%3===1){box('iron',x-.02,CTP-len-1.3,z-.09,.04,1.3,.18,jc(0x9a9a96,.05));}                                                             // blade
   else sph('iron',x,CTP-len-.12,z,.14,jc(0x3a3430,.05));}
@@ -3467,6 +3503,8 @@ const FAMILIES=[
  {name:'Walled compound',keys:['compound',{key:'compound',o:{size:'large',slots:['lg-stack','warehouse','dw-silo']}}]},
  {name:'Arena',keys:['arena']},
  {name:'Dock',keys:['dock']},
+ // last row, so every other site keeps its place: the xl compound (106 x 76) takes the longhouse AND the big man's house (two great slots)
+ {name:'Compound xl: two great halls',keys:[{key:'compound',o:{size:'xl',slots:['longhouse','chief','smithy','shop-general','dw-silo','gen-fuel']}}]},
 ];
 // ---------------------------------------------------------------- scene: renderer, sky, ground, lights, the showcase layout, (re)building the world
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
@@ -3537,8 +3575,8 @@ function autoViews(){const V={};const R=ROWS;const mid=R[Math.floor(R.length/2)]
  return V;}
 // ---------------------------------------------------------------- probe (window._api): everything a headless check needs
 window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
- // footprint: measured world-space bbox of each placed site against its declared w x d (rec.decl: the def, or its o.size variant; sites with ry 0)
- footprints(){return REG.map(r=>{const D=r.decl||DEFS[r.key];const bw=r.bbox.mx[0]-r.bbox.mn[0],bd=r.bbox.mx[2]-r.bbox.mn[2],bh=r.bbox.mx[1]-r.bbox.mn[1];
+ // footprint: measured world-space bbox of each placed site against its declared w x d (rec.decl: the def, or its o.size variant; a site turned a quarter swaps w and d)
+ footprints(){return REG.map(r=>{const D0=r.decl||DEFS[r.key];const q=Math.abs(Math.sin(r.ry||0))>.7;const D=q?Object.assign({},D0,{w:D0.d,d:D0.w}):D0;   /* a quarter-turned site (a compound slot) swaps w and d */const bw=r.bbox.mx[0]-r.bbox.mn[0],bd=r.bbox.mx[2]-r.bbox.mn[2],bh=r.bbox.mx[1]-r.bbox.mn[1];
   const cx=(r.bbox.mx[0]+r.bbox.mn[0])/2-r.x,cz=(r.bbox.mx[2]+r.bbox.mn[2])/2-r.z;
   const ex=Math.max(0,bw-D.w),ez=Math.max(0,bd-D.d),eh=Math.max(0,bh-D.h);return {key:r.key,name:r.name,w:D.w,d:D.d,h:D.h,bw:+bw.toFixed(2),bd:+bd.toFixed(2),bh:+bh.toFixed(2),ex:+ex.toFixed(2),ez:+ez.toFixed(2),eh:+eh.toFixed(2),cx:+cx.toFixed(2),cz:+cz.toFixed(2),tris:r.tris,size:r.size,budget:D.budget};});},
  socketCounts(){const o={};for(const s of SOCK_ALL){(o[s.key]||(o[s.key]={}))[s.type]=((o[s.key]||{})[s.type]||0)+1;}return o;},
