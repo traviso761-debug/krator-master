@@ -3,7 +3,8 @@
  * gallery/build_gallery.py --lod CONFIG puts this script first in each world's <head>, after a line that sets
  * window.KRATOR_BAR = {slug, level, levels, scenes, sections, home, extra}. It never changes how a world is built.
  *
- * THE BAR, top centre (the one place no Krator world uses; at the bottom on a phone-width screen):
+ * THE BAR, top centre, or the first of bottom centre, top right, bottom left, bottom right that none of the world's
+ * own controls covers (checked again after a resize, and as a world adds controls late):
  *   Scenes   a panel of every Krator world, grouped as on the gallery, the current one marked (Escape closes it)
  *   LOD      the level of detail: pick one and the page reloads with it
  *   Home     back to the gallery
@@ -15,7 +16,8 @@
  *   antialias    false turns the renderer's multisampling off
  *   shadows      false turns shadow maps off
  *   shadowMax    cap on any light's shadow map size (px)
- *   cullPx       hide a mesh while it would cover fewer than this many pixels on screen (0: never)
+ *   cullPx       hide a mesh while it would cover fewer than this many pixels on screen (0: never). Off in the
+ *                shipped levels: most worlds build a structure from many small meshes, so it takes buildings apart.
  *   fps          cap on frames drawn per second (0: no cap)
  * A level with no settings ("high") leaves the page exactly as built: nothing below the bar is hooked.
  * The level comes from, first to last: ?lod=NAME in the address, the viewer's last choice for this world (kept in
@@ -51,9 +53,40 @@
     'padding:7px 10px;border-radius:2px}' +
     '.krator-pop a:hover{border-color:#c99a55}' +
     '.krator-pop a[aria-current="true"]{background:#c99a55;color:#1a1040}' +
-    '.krator-pop a small{display:block;font-size:11px;opacity:.75;margin-top:2px;letter-spacing:0}' +
-    // a phone: the worlds' own pickers fill the top left, so the bar sits at the bottom and its panels open upward
-    '@media (max-width:720px){#krator-bar{top:auto;bottom:10px}.krator-pop{top:auto;bottom:48px}}';
+    '.krator-pop a small{display:block;font-size:11px;opacity:.75;margin-top:2px;letter-spacing:0}';
+
+  // Where the bar may sit, best first. Each world puts its own controls somewhere different (Iziz fills the top
+  // with buttons, Voth the left and right), so the bar takes the first spot none of them covers.
+  var SPOTS = [
+    {bar: {top: '10px', left: '50%', transform: 'translateX(-50%)'}, pop: {top: '48px', left: '50%', transform: 'translateX(-50%)'}},
+    {bar: {bottom: '10px', left: '50%', transform: 'translateX(-50%)'}, pop: {bottom: '48px', left: '50%', transform: 'translateX(-50%)'}},
+    {bar: {top: '10px', right: '10px'}, pop: {top: '48px', right: '10px'}},
+    {bar: {bottom: '10px', left: '10px'}, pop: {bottom: '48px', left: '10px'}},
+    {bar: {bottom: '10px', right: '10px'}, pop: {bottom: '48px', right: '10px'}},
+  ];
+  function put(e, spot) {
+    ['top', 'bottom', 'left', 'right'].forEach(function (k) { e.style[k] = spot[k] || 'auto'; });
+    e.style.transform = spot.transform || 'none';
+  }
+  // Is anything of the world's own under this box? Hit-testing skips what a world draws with pointer-events:none
+  // (floating labels) and what is hidden; a layer covering most of the screen (the canvas, an overlay) is not a
+  // control, so it does not count either.
+  function covered(r, mine) {   // how many of 21 points over the box land on something of the world's
+    var W = innerWidth, H = innerHeight, n = 0;
+    for (var i = 0; i <= 6; i++) for (var j = 0; j <= 2; j++) {
+      var x = r.left - 4 + (r.width + 8) * i / 6, y = r.top - 4 + (r.height + 8) * j / 2;
+      if (x < 0 || y < 0 || x >= W || y >= H) continue;
+      var hits = document.elementsFromPoint(x, y);
+      for (var k = 0; k < hits.length; k++) {
+        var h = hits[k];
+        if (h === document.documentElement || h === document.body || h.tagName === 'CANVAS' || mine(h)) continue;
+        var b = h.getBoundingClientRect();
+        if (b.width * b.height > W * H * 0.6) continue;
+        n++; break;
+      }
+    }
+    return n;
+  }
 
   function el(tag, attrs, text) {
     var e = document.createElement(tag);
@@ -139,6 +172,26 @@
 
     [b, scenesP, lodP].forEach(shield);
     document.body.appendChild(b); document.body.appendChild(scenesP); document.body.appendChild(lodP);
+    function mine(h) { return b.contains(h) || scenesP.contains(h) || lodP.contains(h); }
+    function place() {
+      if (scenesP.classList.contains('open') || lodP.classList.contains('open')) return;   // never move under a hand
+      // the first free spot; on a small screen where none is free, the least covered one
+      var chosen = SPOTS[0], least = 1e9;
+      for (var i = 0; i < SPOTS.length; i++) {
+        put(b, SPOTS[i].bar);
+        b.style.visibility = 'hidden';   // not hit-tested itself while it looks
+        var clash = covered(b.getBoundingClientRect(), mine);
+        b.style.visibility = '';
+        if (clash < least) { least = clash; chosen = SPOTS[i]; }
+        if (!clash) break;
+      }
+      put(b, chosen.bar); put(scenesP, chosen.pop); put(lodP, chosen.pop);
+      b.setAttribute('data-spot', String(SPOTS.indexOf(chosen)));
+    }
+    place();
+    [600, 2000, 5000].forEach(function (t) { setTimeout(place, t); });   // worlds that add their controls late
+    var rs = null;
+    addEventListener('resize', function () { clearTimeout(rs); rs = setTimeout(place, 200); });
     addEventListener('keydown', function (e) {
       if (e.key === 'Escape') pops.forEach(function (p) { p[1].classList.remove('open'); p[0].setAttribute('aria-expanded', 'false'); });
     });
@@ -246,8 +299,10 @@
         if (skipFrame) {
           // a page that draws only on demand must still get its last frame: draw it when the cap allows
           if (pending) clearTimeout(pending);
-          pending = setTimeout(function () { pending = null; lastDecision = -1e9; r.render(scene, camera); },   // a fresh decision: due now
-            Math.max(0, interval - (now - lastDrawn)));
+          // (drawn inside an animation frame, like every other frame, so it is presented in step with the screen)
+          pending = setTimeout(function () {
+            requestAnimationFrame(function () { pending = null; lastDecision = -1e9; r.render(scene, camera); });   // a fresh decision: due now
+          }, Math.max(0, interval - (now - lastDrawn)));
           return;
         }
         if (pending) { clearTimeout(pending); pending = null; }
