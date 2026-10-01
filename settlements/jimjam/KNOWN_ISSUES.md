@@ -20,5 +20,5 @@
 
 ## Level of detail (core/lod)
 
-- [x] No LOD: `core/lod` now takes over the kit sheet (README, "Level of detail"): 1.78 M to 0.39 M triangles at the
-      overview, 0.61 M at eye level, with fewer draw calls.
+- [x] No LOD: `core/lod` now takes over the kit sheet (README, "Level of detail"): 1.78 M to 0.56 M triangles at the
+      overview, 0.86 M at eye level, with fewer draw calls.

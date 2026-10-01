@@ -38,8 +38,8 @@ draw calls as three.js counts them. Frame times were too noisy under the shared 
 
 | View | LOD off: calls / triangles | LOD on: calls / triangles |
 |---|---|---|
-| village: Opening | 148 / 223k | 148 / 200k |
-| village: Overview | 148 / 223k | 127 / 72k |
-| village: Floating village | 148 / 223k | 149 / 196k |
+| village: Opening | 148 / 223k | 148 / 214k |
+| village: Overview | 148 / 223k | 129 / 78k |
+| village: Floating village | 148 / 223k | 148 / 213k |
 
 The village is small, so close views barely change; the overview drops to a third.

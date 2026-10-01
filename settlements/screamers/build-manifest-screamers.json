@@ -1,6 +1,6 @@
 {
  "00-head.html": "d167a84a665c",
- "09-lod.js": "40a82401e0bf",
+ "09-lod.js": "e1f7db612b83",
  "10-core.js": "54bdb5a92e85",
  "12-stats.js": "36c73fdcde3d",
  "20-textures.js": "bf2447777724",
@@ -76,6 +76,6 @@
  "93-polytool.js": "0e67bcb3a90e",
  "94-life.js": "159752fa09ca",
  "95-pathviz.js": "920d0e5de5c7",
- "97-lod-auto.js": "d62af391e06d",
+ "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "d3aaf402992e"
 }

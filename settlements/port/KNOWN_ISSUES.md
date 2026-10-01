@@ -18,8 +18,8 @@ Open items start with `- [ ]` (build.py prints them after every build).
 
 - [x] No LOD: every triangle was drawn at every distance. `core/lod` now takes over the scene (README, "Level of
       detail"): 9.06 M to 1.08 M triangles at the showcase overview, 8.98 M to 1.97 M at eye level on the quay.
-- [ ] LOD cuts the terrain's 29 strips into chunks so they can be culled and simplified one by one, which costs up to
-      110 more draw calls (693 to 803 at eye level; the overview stays near 900, the showcase's soft ceiling). Building
-      the terrain as fewer, squarer tiles (instead of 23 km strips) would take that back.
+- [x] LOD cut the terrain's 29 strips into chunks, each its own draw: up to 110 more draw calls at eye level. Fixed in
+      core/lod: a split mesh draws its chunks combined, one draw per level in view. Eye level on the quay is now 659
+      calls with LOD (693 without), the overview 777 (879).
 - [ ] The first zoom-out builds the terrain's proxies, one strip per frame (tens of ms each on a normal machine, about
       10 s in all on the shared SwiftShader box). A verify count should call `LOD.flush()` first.

@@ -1,7 +1,7 @@
 {
  "00-head.html": "06bca6ab1bf7",
  "05-palette.js": "f13151ad8073",
- "09-lod.js": "40a82401e0bf",
+ "09-lod.js": "e1f7db612b83",
  "10-core.js": "c45960f2a560",
  "15-shore.js": "ec72a5e4ead1",
  "20-stage.js": "58b2fc19a557",
@@ -61,6 +61,6 @@
  "85-probe.js": "48ca6bdf3925",
  "86-inspect.js": "769650ca3316",
  "87-pathviz.js": "b0e571c56ade",
- "97-lod-auto.js": "d62af391e06d",
+ "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "7501a65f821c"
 }

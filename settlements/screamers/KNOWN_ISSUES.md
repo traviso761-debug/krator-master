@@ -364,5 +364,7 @@
 
 - [x] No LOD at the page level: `core/lod` now takes over the scene (README, "Level of detail"). The jungle flora keeps
       every instance (the biome core has its own density curve) but is now frustum-culled.
-- [ ] The gain is modest (3.27 M to 2.7-2.8 M triangles) and the chunked biome far meshes cost about 45 more draw calls
-      (82 to ~130). A screen-size curve the biome core reports for its far cards, which LOD could read, would do more.
+- [x] The chunked biome far meshes cost about 45 more draw calls (82 to ~130). Fixed in core/lod: a split mesh draws
+      its chunks combined, one draw per level in view; the three views now read 79-87 calls with LOD (82-84 without).
+- [ ] The gain is modest (3.27 M to 2.9-3.1 M triangles). A screen-size curve the biome core reports for its far cards,
+      which LOD could read, would do more.

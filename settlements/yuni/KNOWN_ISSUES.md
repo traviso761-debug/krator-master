@@ -186,7 +186,8 @@
       stand, sometimes the market circle, then out to a road end, off the map for a while, and back.
       `window._life.caravans()` shows it; after 10 simulated minutes all nine are under way, 0 vehicle route
       failures (`vehicleRouteFailures()`). Carts no longer drive in at doors.
-- [ ] No LOD: everything is drawn at full detail at every distance.
+- [x] No LOD: everything was drawn at full detail at every distance. `core/lod` now takes over the
+      scene (see "Level of detail (core/lod)" below).
 - [ ] Tiny round huts (`poor_compound`, `poor_cone_cluster`, R 1.2-1.5 m) cannot hold a whole kit: about 75
       kit slots there are `virtual` (data, no mesh) — mostly a compound's second bed and second basket. A
       compound furnishes only the hut behind its door; furnishing its other huts would place them.
@@ -199,3 +200,28 @@
       (0x2e2519) instead of a dimmed day colour; the giant's key 0.44 -> 0.18 x phase (SKY_SHINE_KEY); a full
       giant cuts the lamps by 8 % instead of 28 % (DN_SHINE_NL_CUT 0.28 -> 0.08). 21:00 under a full giant:
       hemi ~0.44 -> 0.136, ambient ~0.31 -> 0.073, key ~0.58 -> 0.238, nightK 0.72 -> 0.92. Noon unchanged.
+
+## Level of detail (core/lod)
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into chunks
+that switch to clustered proxies with distance and are drawn combined (one draw per level in view); instanced sets keep
+one draw call, drop their smallest instances by screen size and switch detailed shapes to a simplified version far off.
+The originals stay the raycast targets, so the inspector and `_api` see full detail (checked: the inspector names the
+same thing at nine screen points per view with LOD on and off). The panel (`l`, `measure`) reads draw calls and
+triangles; `LOD.enabled=false` or `?lod=0` puts back the exact scene. `verify.py --assert` passes with LOD on.
+
+Left out by default: the life layer's bodies (their instance matrices are `DynamicDrawUsage`), door leaves and overlays
+(`noPick`). The cutaway (`_doors.cutaway`) sets clipping planes on the originals' materials, which the copies share, and
+the underground view hides scene children, LOD's group among them, so both work unchanged (checked by screenshot);
+interiors are built after LOD applies and are not managed; walking collides with data, not meshes.
+
+Measured 2026-10-01, 1000x640, SwiftShader (`LOD.flush()` then `LOD.measure()`: one render of the main scene, so
+calls and triangles as three.js counts them; sky passes not included):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| Yuni from the north (opening) | 120 / 4.40 M | 118 / 2.94 M |
+| Street life: market | 122 / 4.43 M | 130 / 3.46 M |
+
+Draw calls at verify's opening view: 113 with LOD, within the budget.

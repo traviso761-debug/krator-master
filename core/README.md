@@ -96,9 +96,10 @@ draw call and drop their smallest instances first, and the originals stay the ra
 probes see full detail. `LOD.enabled=false` restores the exact scene graph; `LOD.stats()` and `LOD.measure()` report
 draw calls and triangles with it off and on. Read `lod/README.md`.
 
-**Used by** `settlements/port`, `jimjam`, `reedlake`, `screamers` and `voth`. Each `build.py` adds the `core/lod/`
-files to its fragment list (a `src/` copy with the same name overrides) and lists both in `DETERMINISTIC` where it has
-one. A build passes options through `window.LOD_OPTIONS` (the port does). The other builds take it the same way.
+**Used by** every settlement and `kits/ancients`: `port`, `jimjam`, `reedlake`, `screamers`, `voth`, `yuni`, `locus`,
+`iziz`, `highlands`, `xanadu`, `dalab`, `mavs-refuge`, `girder`. Each `build.py` adds the `core/lod/` files to its
+fragment list next to its `CORE_FILES`/`CORE_OPT_FILES` (a `src/` copy with the same name overrides) and lists both in
+`DETERMINISTIC`. A build passes options through `window.LOD_OPTIONS` (port, screamers, voth, highlands, dalab).
 
 ## `sockets/`
 

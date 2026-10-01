@@ -19,20 +19,20 @@
 //    (a second copy, one more draw call). Small detail (figures, clutter, trim, vines) therefore drops first.
 //  * The copies follow the originals' `visible` and `material` (night toggles keep working). An original whose matrix,
 //    geometry, instance matrices or count change after apply() is animated: it is handed back and drawn as before.
-//  * Bands have hysteresis (`hyst`) and the update is throttled (`throttle` ms, `moveEps` m): a still camera costs a
-//    matrix compare and two version reads per managed object a frame, plus a visibility sync every 250 ms.
+//  * Bands have hysteresis (`hyst`) and the update is throttled (`throttle` ms, `moveEps` m): a still camera costs, per
+//    managed object a frame, a matrix compare, two version reads and a walk up its parents for visibility.
 // It draws nothing from any PRNG and changes no build output. LOD.enabled=false (or the panel's button, the `l` key,
 // or ?lod=0 in the URL) takes the copies out of the scene and puts the originals back: the scene graph is then exactly
 // the one the build made, for verify asserts that count full-detail triangles.
 (function(){
  'use strict';
  const LAYER=30,HIDE=1<<LAYER;
- const DEF={cell:64,maxTris:60000,maxExtent:800,minChunkTris:20000,errPx:3,minPx:1,levels:[1,4,16,64],simplifyMinTris:64,
- instFarMinTris:48,instFarDiv:6,throttle:200,moveEps:.5,hyst:1.12,buildMs:10,ui:true,key:'l',
+ const DEF={cell:64,maxTris:40000,maxExtent:400,minChunkTris:10000,errPx:3,minPx:1,levels:[1,4,16,64],simplifyMinTris:64,
+ instFarMinTris:48,instFarMinTotal:20000,instFarDiv:6,throttle:200,moveEps:.5,hyst:1.12,buildMs:10,ui:true,key:'l',
  skip:null,classify:null,classes:{},enabled:true,render:null,pad:1,auto:true,panelStyle:''};
  const L={root:null,managed:0,_on:false,lastMeasure:null};
  let T=null,S=null,CAM=null,R=null,O=null;
- const recs=[],queue=[];
+ const recs=[],queue=[];let skipRoots=new Set();
  let dirty=true,lastBand=-1e9,lastSync=-1e9,panel=null,txt=null,btn=null,live={calls:0,tris:0};
  let _cam=null,_camL=null,_inv=null,_lastCam=null;
 
@@ -132,7 +132,11 @@
  return out;}
 
  // ---------------------------------------------------------------- what is managed
- function clsOf(o){const name=O.classify?O.classify(o):null,c=(name&&O.classes[name])||{};
+ // the shared biome core (userData.biome) thins its instanced flora with distance on its own curve, so by default its
+ // sets keep every instance (class 'biome', minPx 0) and are only culled and simplified
+ const BIOME={minPx:0};
+ function clsOf(o){let name=O.classify?O.classify(o):null;if(!name&&o.userData.biome&&o.isInstancedMesh)name='biome';
+ const c=(name&&(O.classes[name]||(name==='biome'?BIOME:null)))||{};
  return {name:name||null,minPx:c.minPx!=null?c.minPx:O.minPx,maxDist:c.maxDist!=null?c.maxDist:Infinity,simplify:c.simplify!==false};}
  function wanted(o){if(!o.isMesh||o.isSkinnedMesh||o.userData.lodCopy||o.userData.lodSkip)return false;
  const g=o.geometry,m=o.material;if(!g||!g.isBufferGeometry||!g.attributes.position||Array.isArray(m)||!m)return false;
@@ -140,7 +144,15 @@
  if(g.drawRange.start!==0||g.drawRange.count!==Infinity)return false;
  if(m.transparent||m.depthWrite===false||m.side===T.BackSide)return false;
  if(!(o.layers.mask&1))return false;if(o.isInstancedMesh&&!o.count)return false;
- if(O.skip&&O.skip(o))return false;return true;}
+ // things the build animates: buffers it declared dynamic, interleaved instance data, and the Krator flags for
+ // life layers, flyers and pick-less helpers (door leaves, overlays)
+ const u=o.userData;if(u.life||u.lifeLabel||u.flyers||u.noPick||u.lodSkip)return false;
+ const DYN=T.DynamicDrawUsage;if(g.attributes.position.usage===DYN)return false;
+ if(o.isInstancedMesh){if(o.instanceMatrix.usage===DYN||o.instanceMatrix.isInterleavedBufferAttribute)return false;
+  for(const k in g.attributes){const A=g.attributes[k];if((A.isInstancedBufferAttribute||A.isInstancedInterleavedBuffer||(A.data&&A.data.isInstancedInterleavedBuffer))&&(A.usage===DYN||A.isInterleavedBufferAttribute))return false;}}
+ if(O.skip&&O.skip(o))return false;
+ if(skipRoots.size)for(let p=o;p;p=p.parent)if(skipRoots.has(p))return false;
+ return true;}
  function addMesh(o){const g=o.geometry,P=g.attributes.position,I=g.index,nt=triCount(g);if(!nt)return null;const cl=clsOf(o);
  const rec={kind:'mesh',o,g,cl,nt,ver:P.version,iver:I?I.version:0,mw:o.matrixWorld.clone(),mask0:o.layers.mask,chunks:[],levels:[],copies:[]};
  if(!g.boundingSphere)g.computeBoundingSphere();
@@ -156,11 +168,17 @@
   rec.chunks.push({tris:tr,full:sg,sph,lv:0,on:true,nt:tr.length});});}
  // chunks are culled even where the original was not (the kits and biomes turn culling off on whole-world meshes,
  // whose one sphere would never leave the view); `pad` covers a little vertex-shader sway. userData.lodNoCull opts out.
- for(const ch of rec.chunks){const c=new T.Mesh(ch.full,o.material);copyProps(c,o);if(leaves&&!o.userData.lodNoCull)c.frustumCulled=true;
+ // A split mesh draws COMBINED: one copy per level in use, whose index is the concatenation of the chunks at that
+ // level, so chunking costs at most one draw call per level in use, not one per chunk. An unsplit mesh has one copy.
+ if(leaves){rec.comb=true;rec.lvM=[];for(const ch of rec.chunks){ch.key=-2;}}
+ else for(const ch of rec.chunks){const c=new T.Mesh(ch.full,o.material);copyProps(c,o);
   ch.m=c;rec.copies.push(c);c._lodOn=true;}
  rec.simp=cl.simplify&&nt>=O.simplifyMinTris;return rec;}
- function addInst(o){const g=o.geometry,n=o.count,cl=clsOf(o);if(!g.boundingSphere)g.computeBoundingSphere();
- const r0=g.boundingSphere.radius,c0=g.boundingSphere.center,M=o.instanceMatrix.array;
+ function addInst(o){const g=o.geometry,n=o.count,cl=clsOf(o);
+ // the BASE shape's own sphere, from its vertices: a build may have set geometry.boundingSphere round the whole set
+ // (core/atmos cull does, keeping the base one in userData.baseSphere), which would make every instance "huge"
+ const bs=g.userData.baseSphere||new T.Box3().setFromBufferAttribute(g.attributes.position).getBoundingSphere(new T.Sphere());
+ const r0=bs.radius,c0=bs.center,M=o.instanceMatrix.array;
  const px=new Float32Array(n),py=new Float32Array(n),pz=new Float32Array(n),ri=new Float32Array(n),sm=new Float32Array(n);
  const cells=new Map(),CS=O.cell;
  for(let i=0;i<n;i++){const b=i*16;const sx=Math.hypot(M[b],M[b+1],M[b+2]),sy=Math.hypot(M[b+4],M[b+5],M[b+6]),sz=Math.hypot(M[b+8],M[b+9],M[b+10]);
@@ -184,7 +202,8 @@
   mw:o.matrixWorld.clone(),mask0:o.layers.mask,copies:[],lvls:[],farS:0,far:null};
  permute(rec);
  rec.lvls.push(mkInstCopy(rec,g));rec.copies.push(rec.lvls[0].im);
- if(cl.simplify&&triCount(g)>=O.instFarMinTris)rec.farS=r0/O.instFarDiv;
+ // a far version costs a draw call: only for sets with enough triangles in all to be worth one
+ if(cl.simplify&&triCount(g)>=O.instFarMinTris&&n*triCount(g)>=O.instFarMinTotal)rec.farS=r0/O.instFarDiv;
  return rec;}
  function permute(rec){for(const s of rec.srcs){const A=s.get(),it=s.it,a=A.array;if(!s.src||s.src.length!==rec.n*it)s.src=new Float32Array(rec.n*it);
   for(let q=0;q<rec.n;q++){const i=rec.order[q];for(let k=0;k<it;k++)s.src[q*it+k]=a[i*it+k];}}}
@@ -203,12 +222,13 @@
  function buildLevel(rec,lv){const s=O.levels[lv-1],g=rec.g;
  if(!rec.pin)rec.pin=pins(g,rec.leafOf);
  const res=cluster(g,s,null,rec.pin),prev=lv>1?rec.levels[lv-1]:null,prevN=prev?prev.nt:rec.nt;
- if(res.index.length/3>prevN*.85){rec.levels[lv]=prev||{geos:rec.chunks.map(ch=>ch.full),nt:rec.nt};return;}   // no real saving: reuse the level below
+ // no real saving: reuse the level below (`same` names the level whose copy draws it)
+ if(res.index.length/3>prevN*.85){rec.levels[lv]=prev?{geos:prev.geos,nt:prev.nt,src:prev.src,same:prev.same!==undefined?prev.same:lv-1}:{geos:rec.chunks.map(ch=>ch.full),nt:rec.nt,src:rec.g,same:0};return;}
  const per=rec.chunks.map(()=>[]);
  for(let q=0;q<res.from.length;q++){const ci=rec.leafOf?rec.leafOf[res.from[q]]:0;per[ci].push(res.index[q*3],res.index[q*3+1],res.index[q*3+2]);}
  const geos=per.map((ix,ci)=>{if(!ix.length)return null;const G=new T.BufferGeometry();for(const k in res.geo.attributes)G.setAttribute(k,res.geo.attributes[k]);
   G.setIndex(mkIndex(ix,res.nc));G.boundingSphere=rec.chunks[ci].sph.clone();return G;});
- rec.levels[lv]={geos,nt:res.index.length/3};}
+ rec.levels[lv]={geos,nt:res.index.length/3,src:res.geo};}
  function pump(ms){const t0=performance.now();let n=0;
  while(queue.length&&(n===0||performance.now()-t0<ms)){const [rec,lv]=queue.shift();if(!rec.dead){
    for(let k=1;k<=lv;k++)if(rec.levels[k]===undefined)buildLevel(rec,k);dirty=true;}n++;}}
@@ -217,7 +237,34 @@
  return rec.far;}
 
  // ---------------------------------------------------------------- the bands
+ // the copy that draws level l of a combined mesh, made on first use; its index buffer grows when it must
+ function lvMesh(rec,l){let L0=rec.lvM[l];if(L0)return L0;const o=rec.o,src=l?rec.levels[l].src:rec.g,g=new T.BufferGeometry();
+  for(const k in src.attributes)g.setAttribute(k,src.attributes[k]);
+  const m=new T.Mesh(g,o.material);copyProps(m,o);m.frustumCulled=!o.userData.lodNoCull;m._lodOn=false;m.visible=false;
+  L0=rec.lvM[l]={m,g,idx:null};rec.copies.push(m);if(L.root)L.root.add(m);return L0;}
+ function packMesh(rec){
+  for(let l=0;l<=O.levels.length;l++){let cnt=0;const parts=[];let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+   rec.chunks.forEach((ch,ci)=>{if(ch.key!==l)return;const gg=l?rec.levels[l].geos[ci]:ch.full;if(!gg)return;const a=gg.index.array;parts.push(a);cnt+=a.length;
+    const c=ch.sph.center,r=ch.sph.radius;x0=Math.min(x0,c.x-r);y0=Math.min(y0,c.y-r);z0=Math.min(z0,c.z-r);x1=Math.max(x1,c.x+r);y1=Math.max(y1,c.y+r);z1=Math.max(z1,c.z+r);});
+   if(!cnt){if(rec.lvM[l])rec.lvM[l].m._lodOn=false;continue;}
+   const L0=lvMesh(rec,l);if(!L0.idx||L0.idx.array.length<cnt){L0.idx=new T.BufferAttribute(new Uint32Array(Math.ceil(cnt*1.25)),1);L0.idx.setUsage(T.DynamicDrawUsage);L0.g.setIndex(L0.idx);}
+   let off=0;for(const a of parts){L0.idx.array.set(a,off);off+=a.length;}
+   L0.idx.updateRange.offset=0;L0.idx.updateRange.count=cnt;L0.idx.needsUpdate=true;L0.g.setDrawRange(0,cnt);
+   const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+   rec.chunks.forEach(ch=>{if(ch.key===l)r=Math.max(r,c.distanceTo(ch.sph.center)+ch.sph.radius);});
+   L0.g.boundingSphere=new T.Sphere(c,r);L0.m._lodOn=true;}}
  function bandMesh(rec,P,cam,h){const cl=rec.cl;let full=0,drawn=0;
+ if(rec.comb){let changed=!rec.packed;
+  for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+   const px=d>0?ch.sph.radius*P/d:1e9;
+   ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+   let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+   let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+   if(use&&rec.levels[use].same!==undefined)use=rec.levels[use].same;
+   ch.lv=lv;const key=ch.on?use:-1;if(key!==ch.key){ch.key=key;changed=true;}
+   full+=ch.nt;if(key>=0){const gg=key?rec.levels[key].geos[ci]:ch.full;if(gg)drawn+=gg.index.count/3;}}
+  if(changed){rec.packed=true;packMesh(rec);}
+  rec.full=full;rec.drawn=drawn;return;}
  for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
   const px=d>0?ch.sph.radius*P/d:1e9;
   ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
@@ -274,6 +321,7 @@
  if(O.auto!==false){const prev=S.onBeforeRender;S.onBeforeRender=function(r,sc,cam){if(prev)prev.apply(this,arguments);if(cam===CAM)L.update();};}
  return L;};
  L.apply=function(root){const t0=performance.now();root=root||S;S.updateMatrixWorld(true);const list=[];
+ skipRoots=new Set((typeof O.skipUnder==='function'?O.skipUnder():O.skipUnder)||[]);
  root.traverse(o=>{if(wanted(o))list.push(o);});
  for(const o of list){let rec=null;try{rec=o.isInstancedMesh?addInst(o):addMesh(o);}catch(e){console.warn('LOD: skipped '+(o.name||o.type)+': '+e.message);}
   if(!rec)continue;rec.ident=matEq(o.matrixWorld,new T.Matrix4());recs.push(rec);for(const c of rec.copies)L.root.add(c);L.managed++;}
@@ -286,14 +334,15 @@
  if(queue.length)pump(O.buildMs);
  CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);const moved=_cam.distanceTo(_lastCam)>O.moveEps;
  stale();
- if(force||((moved||dirty)&&now-lastBand>=O.throttle)){band();lastBand=now;lastSync=now;_lastCam.copy(_cam);dirty=false;}
- else if(now-lastSync>250){sync();lastSync=now;}};
+ if(force||((moved||dirty)&&now-lastBand>=O.throttle)){band();lastBand=now;_lastCam.copy(_cam);dirty=false;}
+ else sync();};
  // build every pending proxy now and update (verify, screenshots)
  L.flush=function(){band();while(queue.length)pump(1e9);band();lastBand=performance.now();paint();return L.stats();};
+ L._recs=recs;   // for diagnostics only
  L.release=function(o){for(const rec of recs)if(rec.o===o&&!rec.dead)release(rec);};
  L.stats=function(){let full=0,drawn=0,chunks=0,off=0,far=0,inst=0,kept=0,copies=0;
  for(const rec of recs){if(rec.dead)continue;full+=rec.full||0;drawn+=rec.drawn||0;
-  if(rec.kind==='mesh'){chunks+=rec.chunks.length;for(const ch of rec.chunks){if(!ch.m._lodOn)off++;else if(ch.lv)far++;}}
+  if(rec.kind==='mesh'){chunks+=rec.chunks.length;for(const ch of rec.chunks){const on=rec.comb?ch.key>=0:ch.m._lodOn;if(!on)off++;else if(ch.lv)far++;}}
   else{inst+=rec.n;for(const l of rec.lvls)kept+=l.im.count;}
   for(const c of rec.copies)if(c.visible)copies++;}
  return {enabled:L._on,managed:L.managed,applyMs:L.applyMs,chunks,chunksFar:far,chunksOff:off,instances:inst,instancesDrawn:kept,

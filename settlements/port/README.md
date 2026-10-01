@@ -112,12 +112,13 @@ draw calls as three.js counts them. Frame times were too noisy under the shared 
 
 | View | LOD off: calls / triangles | LOD on: calls / triangles |
 |---|---|---|
-| `showcase` Overview | 879 / 9.06 M | 906 / 1.08 M |
-| `showcase` Eye level on the quay | 693 / 8.98 M | 803 / 1.97 M |
-| `showcase` From the sea | 369 / 8.78 M | 406 / 1.68 M |
+| `showcase` Overview | 879 / 9.06 M | 777 / 1.09 M |
+| `showcase` Eye level on the quay | 693 / 8.98 M | 659 / 2.42 M |
+| `showcase` From the sea | 369 / 8.78 M | 348 / 2.14 M |
 
 Most of the saving is the terrain: 29 strips of 216k triangles across the 23 km grid, whose refined lines run out to
-the horizon. It is cut into chunks and simplified with distance, so it also costs a few more draw calls (see
-`KNOWN_ISSUES.md`). The views look the same with LOD on and off at eye level; from the overview the far terrain is
+the horizon. It is cut into chunks and simplified with distance; the chunks of a strip at one level are drawn
+as one (one draw per level in view), so LOD now saves draw calls too (it cost up to 110 more when each chunk was its
+own draw). The views look the same with LOD on and off at eye level; from the overview the far terrain is
 simplified and the smallest clutter is gone; from the sea, thin far lattices (the west
 end's cranes) lose some members. Picking (`_api.inspectRay`) and `regOccupancy` give the same answers.

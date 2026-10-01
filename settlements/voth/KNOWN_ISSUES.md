@@ -58,3 +58,11 @@ source in brackets. Pitfalls that are lessons rather than defects stay in
 - [x] Loader race ("BUILD is not defined", where the loading screen never cleared): fixed in 3e30d95 and 079529b.
 - [x] Cloth sway made banners invisible, and swayed only on x: fixed in 45-kit.js `applyClothSway`.
 - [x] Ordinator, caravan, taxi, boat and strider-car night lanterns are tracked (82-daynight.js:288-305). The comment at 82-daynight.js:150 that calls them out of scope is stale.
+
+## Level of detail (core/lod)
+
+- [x] Phase A of the shared LOD drew every terrain chunk on its own and gave each big instanced set a far version:
+      `verify.py --assert` read 86 draw calls against the budget of 84. core/lod now draws a split mesh's chunks
+      combined (one draw per level in view) and gives a far version only to sets with 20k triangles or more in all:
+      verify's opening view reads 74 calls (73 before LOD) and 2.48 M triangles (4.27 M). `baseline.json` was re-saved
+      with LOD on, so `--baseline baseline.json` shows only run-to-run noise (`_highpriest.stateT`).

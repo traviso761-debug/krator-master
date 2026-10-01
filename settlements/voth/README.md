@@ -75,11 +75,11 @@ draw calls as three.js counts them. Frame times were too noisy under the shared 
 
 | View | LOD off: calls / triangles | LOD on: calls / triangles |
 |---|---|---|
-| Down the bay | 67 / 4.25 M | 80 / 1.96 M |
-| Harbour quay | 67 / 4.25 M | 75 / 2.14 M |
-| Far shore | 67 / 4.25 M | 71 / 2.12 M |
+| Down the bay | 67 / 4.25 M | 68 / 1.98 M |
+| Harbour quay | 67 / 4.25 M | 68 / 2.21 M |
+| Far shore | 67 / 4.25 M | 67 / 2.23 M |
 
 Voth draws every instanced set with frustum culling off, so with LOD off every view costs the same 4.25 M. With LOD
 on each set is culled by a real bounding sphere, small instances (props, figures, lanterns) drop by screen size, and
-the 72-triangle dome and blob shapes switch to a clustered version far off. Draw calls rise by up to 13 (the far
-versions and the terrain chunks). The views look the same with LOD on and off.
+the 72-triangle dome and blob shapes switch to a clustered version far off. Draw calls rise by at most 1 (a far
+version; the terrain's chunks are drawn combined, one draw per level in view). The views look the same with LOD on and off.
