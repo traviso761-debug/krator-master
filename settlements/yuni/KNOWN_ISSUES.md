@@ -68,7 +68,8 @@
 - [ ] The Grand Vault was rebuilt (second design): Sagrada Familia — six leaning star-section pillars carrying a
       stepped canopy, tilted buttresses, one stone throughout, ornament from arch and geometry, colour only in the
       electric light. The screen's string courses still read as thin rails from 200 m out.
-- [ ] Furniture is in its own catalogue target (yuni-furniture.html) and every piece is tagged with a culture;
+- [ ] Furniture is folded into the master catalog (`kits/catalog/`, as `yuni_*`); the `furn` sheet is retired, though
+      `YUNI_TARGET='furn'` still works if set by hand. Every piece is tagged with a culture;
       plants likewise (yuni-plants.html) with a climate band and a preferred aridity. Only the Order's furniture is
       wired back into a building so far (the library and the school build from the registry); everything else in
       the city still draws its own.
