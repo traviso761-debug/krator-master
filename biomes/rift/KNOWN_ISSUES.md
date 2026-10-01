@@ -31,6 +31,8 @@ Read before changing anything here. `build.py` prints the open count.
       fan, curl and rosette items (only the clump items carry a real aN).
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
 - [ ] No fauna yet.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): ballmelon, frillpods, lantern fruit, bell dates. Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'rift'`). All are drawn. Add harvest tags. The ballmelon should show its yellow flesh where one has split (a few cut halves on the vine). The stone pine's nuts and the acacia pods are not drawn.
 
 ## Done
 

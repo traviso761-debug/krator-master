@@ -11,7 +11,8 @@ any future build (a Voth catalog, a Yuni district, a Beast Rider village, a High
 | File | What |
 |---|---|
 | `37-sockets.js` | `sock(type,x,y,z,ry,opts)`, `fillSockets()`, the `CULT` registry, `cultDef(pack)`, `PAINT()` (livery colour from the active culture) |
-| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SYMBOLS`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
+| `38-symbols.js` | **the culture symbols**, pure 2D canvas: `SYMBOLS[name](g, cx, cy, R, ink, ink2)`, `drawTriskele`, and `SYMBOL_OF` (pack or culture key -> symbol). Shared with the furniture kit (vendored as `kits/catalog/krator-symbols.js`, `build.py --vendor-check` there), so a dressed building and the tapestries inside it carry one emblem |
+| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
 | `example/` | a runnable sheet: the same demo wall in every pack. `python3 example/build.py` writes `example/sockets-example.html` |
 
 ## The five-minute version
@@ -52,8 +53,8 @@ mkCulture({key:'yuni', name:'Yuni',
   paint:[0xd9b12a,0xe8c84a,0x8a6a1a,0xf4ecc8,0x4a3a12],  // livery colours for painted containers/walls (PAINT())
   signBg:'#dcb42c', signFg:'#3a2c08', signFrame:0x5a4410, pole:0x5a4410, flagStyle:'rect'});
 ```
-A new symbol is one function in `SYMBOLS`: `(g, cx, cy, R, ink, ink2)` on a 2D canvas context, drawn inside a box of half-size R. Shipped: `sun` (Iziz),
-`triskele` (Republic), `diamond` (Voth), `hyperboloid` (Yuni: a cooling-tower waist with its ruling lines), `claw` (Beast Riders: three talon slashes), `wavesun` (Hykkousoi: a half sun over three waves), `wheel` (Xanadu: the eight-spoked wheel), `moon` (Ring Sea Islanders: the white moon).
+A new symbol is one function in `SYMBOLS` (`38-symbols.js`): `(g, cx, cy, R, ink, ink2)` on a 2D canvas context, drawn inside a box of half-size R; re-copy the file to `kits/catalog/krator-symbols.js` afterwards. Shipped: `sun` (Iziz),
+`triskele` (Republic), `diamond` (Voth), `hyperboloid` (Yuni: a cooling-tower waist with its ruling lines), `claw` (Beast Riders: three talon slashes), `wavesun` (Hykkousoi: a half sun over three waves), `wheel` (Xanadu: the eight-spoked wheel), `moon` (Ring Sea Islanders: the white moon); and, added by the furniture sets for cultures that have no pack yet (a pack that arrives later takes its symbol from `SYMBOL_OF`): `serpent` (Lizardmen), `star` (East Abyss), `horns` (Eastern Nomads), `fir` (Rustic Highlanders), `raven` (Painted Men: a formline raven's head), `fish` (Reed Lake), `skull` (Screamers), `gear` (Post-Apoc salvage and scrap).
 For a fully custom pack skip the factory and call `cultDef({key,name,paint,fill:{awning,banner,flag,emblem,sign,paint}})` with your own drawing functions; any `fill`
 you omit falls back to the generic pack.
 
@@ -68,7 +69,7 @@ Pack keys are the repo's culture tags (`beast-rider`, not `beastriders`), so a b
 
 The packs are written against the Post-Apoc geometry engine (`kits/post-apoc/src/30-geo.js`): `box beam poly plane4 decal quad W`, the matrix stack (`CM`, `CMS`, `TF`),
 `jc(hex,jitter)` and `P(name)` colours, the seeded `rng/rr/pick/reseed`, `canvasTex`, the `MAT`/`TILE` registries, `reportErr`, and materials `cloth wood plank`.
-The runnable example (`example/build.py`) shows the minimum set of fragments. In a build with another engine, port those eight calls and keep `37-sockets.js` and `80-cultures.js` as they are.
+The runnable example (`example/build.py`) shows the minimum set of fragments. In a build with another engine, port those eight calls and keep `37-sockets.js`, `38-symbols.js` and `80-cultures.js` as they are.
 
 ## Rules that kept it clean
 

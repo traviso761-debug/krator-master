@@ -41,7 +41,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `61c-ancients-glue.js` | 12 |  |
 | `61d-ancients-assets.js` | 12 |  |
 | `61e-ancients-furniture.js` | 20 |  |
-| `62-plants.js` | 4 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
+| `62-plants.js` | 5 | 15b. THE PLANT CATALOGUE — SPECIES (1) |
 | `63-furniture.js` | 10 | 15c. THE FURNITURE CATALOGUE — SEED SET (1) |
 | `64-interiors.js` | 51 **big** | 15d. INTERIORS (1); THE PLANNER (173); GEOMETRY (474) |
 | `65-summit.js` | 2 | 17. THE SUMMIT (1) |
