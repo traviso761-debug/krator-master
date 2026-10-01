@@ -1,5 +1,20 @@
 # Krator Ancients — handover
 
+## RESUMED 2026-10-01 on branch `ancients-resume` — read first
+- Recovered from `wip/` (applied to `kits/ancients/` paths, all targets build and parse): QA arcologies
+  set A, QA arcologies set B, lighthouse island. The four Port patches in `wip/` are still unapplied.
+- User's queue changes: items 4 (machines — the Engines target stands as is) and 5 (port arcology) are
+  SCRATCHED. Priority: the quality pass on the original kit types (towers, civic, domestic), then arcology
+  QA sets A/B, the lighthouse, and item 3 (arco1/arco2 alternates).
+- In flight, one agent each, in worktrees: QA round 2 for towers, civic, domestic (`qa/<group>.md`);
+  QA arcA, arcB (verify recovered work, complete `qa/arcA.md`, `qa/arcB.md`); lighthouse finish;
+  item 3 alternates in three groups with fixed allocations — towers `src/8aj-alt-*`, seeds 9800-9849,
+  target `alt-towers`; domestic `src/8ak-alt-*`, 9850-9899, `alt-domestic`; civic `src/8al-alt-*`,
+  9900-9949, `alt-civic`. Kit rows for the alternates are added by the coordinator after merge.
+- Full-resolution arco1/arco2 references were uploaded by the user (not committed: ~48 MB).
+- After all that: reconcile the Ancient buildings in the Yuni kit and the Yuni settlement
+  (`settlements/yuni`, its `61-ancients.js`) to the new builds.
+
 ## PAUSED 2026-09-29 (user stopped to save usage) — resume here
 - Merged and published: QA domestic, towers, civic, this month's arcologies (arcC). Kit artifact https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf.
 - Unmerged WIP from seven stopped agents: `voth/wip/` (README there lists each patch and its base).
