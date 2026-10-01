@@ -9,6 +9,8 @@ const VIEWS={
  'Mock — on the bridge at L2':[_mA.x+.8,41,_mA.z-66,_mA.x+7,38,_mA.z-128],
  'Mock — the runners and the perch':[_mA.x-22,46,_mA.z-92,_mA.x,36,_mA.z-60],
  'Mock — the way in':[_mA.x,38.4,_mA.z-21,_mA.x,37.6,_mA.z-36],
+ 'Mock — the branch junction':[_mA.x-18,42,_mA.z-74,_mA.x-6,36.5,_mA.z-58],
+ 'Mock — the way-in pod from above':[154,52,-57,145,40,-39],
  'Mock — the stair to the water':[_mA.x-70,7,_mA.z+50,_mA.x-20,5,_mA.z+18],
  'Mock — poor house':_front(-200,-10,20),
  'Mock — middle house':_front(-152,-8,24,3.2),

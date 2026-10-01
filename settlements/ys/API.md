@@ -114,7 +114,8 @@ hykBridge(A,B,{w,rise,col,own,                          // a backbone deck betwe
   branches:[{t,to:{x,y,z},w,rise,own}],                 //   a narrower run forking off at t toward a point (a perch, a landing)
   runners:{members,reach,every}})                       //   tendrils from the deck to the nearest member within reach, rooted
   -> {pts,runners,branches}
-hykSegNearest(member,p)                                 // the nearest point on a {a,b,r} capsule's surface
+hykSegNearest(member,p) -> {q,n}                        // the nearest surface point on a capsule or box member, and its normal
+hykPad(x,y,z,R,{...,rail:{a0,gap,col}})                 // a rail on posts round the rim, open `gap` radians about bearing a0
 ```
 - `podium` shrinks the kit's plinth to that radius (the apron and the plinth's moss, rubble and trees are dropped);
   the podium decides nothing above the sea, so the `cap` is the footprint at the waterline (struts, legs), given
@@ -127,8 +128,11 @@ hykSegNearest(member,p)                                 // the nearest point on 
   matching `hykAccrete` pod (`into:true`, same `a` and `R`, `y` optional) is bedded a fifth into the face with a
   back door onto the plate; the plate registers as a `hostfloor` deck in `NAV_EXTRA`, the floor's `kind` becomes
   `inhabited` and `way` is set. The probe's `every-host-has-a-way-in` fails a host without one.
-- `host.members` are the host's struts and legs as world capsules `{n,a,b,r,head?}`, mirrored from the kit's
-  constants per key (`ysHostMembers`: skyA, skyB so far). Runners reach for them; a perch can sit on a `head`.
+- `host.members` are the host's struts and legs as world capsules `{n,a,b,r}` and its strut heads as boxes
+  `{n,c,u,v,w,he,head:true}` (centre, unit axes, half-extents), mirrored from the kit's constants per key
+  (`ysHostMembers`: skyA, skyB so far). Runners reach for them (`hykSegNearest` gives the surface point and its
+  normal, the rib ends inside the member and the flare lies on its face); a perch sits on a head's top
+  (`c[1]+he[1]`).
 
 A host's HOST record (DESIGN §3) carries its real cap, its floors table (`kind: drowned|tide|inhabited|wild`,
 `way` on the entry floor), its landings, its ways and its members; every deck over water registers itself in
