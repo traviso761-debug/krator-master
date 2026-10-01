@@ -75,7 +75,7 @@
   function subLine(kind, A) {
     if (kind === 'furniture') return [A.type, A.setting].filter(Boolean).join(' · ');
     if (kind === 'plants') return A.climate + ' / ' + A.aridity;
-    return (A.family || '');
+    return (A.types && A.types.length ? A.types.join(' + ') : (A.family || ''));
   }
 
   /* --- lay out: rows run along +x from x = 0; sections stack toward -z */

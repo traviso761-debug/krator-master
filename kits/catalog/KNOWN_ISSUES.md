@@ -1,29 +1,12 @@
 # kits/catalog — known issues
 
-`verify.py --assert` passes with nothing deferred: its `ALLOW` list is empty.
-What follows is reported as WARN lines, or is a limit of what the checks cover.
+`verify.py --assert` passes with nothing deferred: its `ALLOW` list is empty. The style rules (no host globals,
+`F.shade`/`F.TAU`, no literal colours) are assertions now, not warnings.
 
 ## Open
 
-- [ ] **Literal colours (SPEC "Colour").** All 84 furniture pieces use literal hex colours (668 literals), and 28 build
-  literal colour arrays for `F.pick`: voth_bench, voth_street_brazier, voth_ferry, voth_market_stall,
-  voth_forge_station, voth_still_cluster, voth_loom_display, voth_craft_tanner, iziz_banner, iziz_market_stall,
-  br_market_stall, br_shopfront_display, br_tavern_bar, br_storehouse_goods, br_loom_frame, br_shrine_altar,
-  br_roost_fittings, br_drying_rack, br_fruit_stack, yuni_common_floor_seating, yuni_court_mosaic_divan,
-  yuni_order_shelf_run, yuni_order_pupil_desk, yuni_order_writing_board, yuni_order_mat_rack, yuni_order_bookcase,
-  yuni_order_reading_table, ancients_rubble_pile. Fixing it needs a shared furniture palette with named keys
-  (per culture), which does not exist yet. Do it when the pieces move into `kits/furniture/src/`, one culture at a time.
-- [ ] **Bare engine helpers.** 82 of 84 pieces call `shade(...)` and `TAU` as globals. Neither is a host global the
-  SPEC forbids (`kput`, `BOX`, `FAMMAT`, `MAT`: zero uses), but a host that does not define them breaks the piece.
-  The frame now carries `F.shade` and `F.TAU`; switch to them when porting.
-- [ ] **`voth_lantern_fixture` variant 2 is a wall bracket** (lantern on an arm, 1.35–2.05 m up) under a piece whose
-  `anchor` is `floor`. `anchor` is per entry, so split it into its own key with `anchor: 'wall'`.
-- [ ] **Building type tags.** Buildings use `family` as their type (`housing civic religious industrial defensive
-  trade guild`). The repo README's building vocabulary (civic, market/shop, tavern/inn, industry, farm,
-  single-family dwelling, multi-family dwelling, infrastructure, religious, funerary) allows several tags per
-  building; `family` is one string. Add a `types: [...]` array when the buildings move to a building kit.
-- [ ] **No polygon tool.** The README DEV TOOLS ask for one in every build; the sheet has the click inspector and the
-  hover inspector, not the polygon tool.
+Nothing open. Under-size (a piece built more than 30 % smaller than declared on an axis) is still a WARN; at the
+time of writing it lists two plants (iziz_reed, voth_succulent_paddle: their spread depends on the seed).
 
 ## Limits of the checks
 
@@ -32,16 +15,45 @@ What follows is reported as WARN lines, or is a limit of what the checks cover.
   to 0.05 m for furniture, 0.1 m for plants and buildings), so a seed past 16 can still poke a few centimetres out.
 - **Plants sink.** A plant may go up to 10 % of its height below ground (root flare, bole blob); everything else
   gets the normal tolerance, max(0.05 m, 4 %).
-- **Wall and ceiling anchors** are checked for presence, not geometry: the audit does not prove that a `wall` piece's
-  back is its flat side, or that a `ceiling` piece reads right hung from its top.
+- **Anchor geometry** (`ANCHOR_AUDIT` in `verify.py`) is a bounding test, not a fit test. A `wall` piece must have
+  nothing more than 2 cm behind `z = -d/2`, and the vertices within max(6 cm, 8 % of d) of that plane must span
+  30 % of w and 25 % of h (or touch the plane at the top: a leaning ladder). A `ceiling` piece must reach within
+  3 cm of `y = h`; a `surface` piece's lowest point must be within 2 cm of `y = 0`. It does not prove that the back
+  is a flat face or that the piece looks right hung. `floor` pieces are not audited beyond the declared box.
+- **Palette keys** are checked against the piece's culture's `FPAL` from the source text (`F.col('k')`,
+  `F.shade('k', ..)`, `F.cols([...])`, `F.pick([...])`) and by building (an unknown key in `F.col` throws). A key
+  held in a variable and passed to `F.pick` is only caught by building it.
 - **`materials` is checked against what the piece builds with** (every material family it uses must map to a
   declared canonical name), over the audited seeds. `CATALOG_MATERIALS` is local to the catalog until the
   registry planned in `core/README.md` exists.
+- **Building `types`** are checked for presence and vocabulary (`BUILDING_TYPES`), not for being right.
+
+## Fixed in the interiors pass (2026-10)
+
+- **Literal colours.** Every furniture piece names its colours as palette keys: `FPAL[culture]` in the engine,
+  `F.col` / `F.cols` / `F.pick([...keys])` / `F.shade(key, amt)`. The palettes were generated from the 897
+  literals by nearest-colour clustering per culture (RGB distance <= 16, <= 20 for greys), named role + colour
+  (`timberOak`, `clothMadder`, `stoneClay`, `brass`, `ember`); before/after renders of all 130 original instances
+  differ by 0.02/255 on average (worst 0.4/255). `verify.py` asserts 0 literals.
+- **Bare helpers.** Every piece uses `F.shade` / `F.TAU`; asserted.
+- **`voth_lantern_fixture` variant 2** is now `voth_lantern_bracket` (`anchor: 'wall'`). The fixture declares one
+  variant; `variant: 1` and `variantDims[1]` still build and size the bracket for old callers.
+- **Building type tags.** Every `ASSET` carries `types: [...]` from `BUILDING_TYPES` (README vocabulary, Yuni's
+  slugs); `family` stays. Asserted.
+- **Polygon tool** on the sheet (`src/93-polygon.js`, P).
+- **Anchor geometry audit** added; it failed and these were fixed: ancients_light_strip_ring (drop rods and
+  ceiling roses up to y = h), yuni_ancient_cell_wall (back 4 cm behind the plane), yuni_ancient_glass_console
+  (back panel), yuni_order_mat_rack (moved back onto the plane), br_weapon_rack (plank back board). Re-anchored
+  to `floor`, being free-standing: yuni_salvage_hearth_hood (tripod hood), yuni_order_writing_board (A-frame
+  easel), voth_guild_banners (posts on plinths).
+- **Ground plane subdivided** (engine): one 8 km quad interpolated depth badly in SwiftShader and hid anything
+  within ~3 cm of the ground (labels, rugs, mats) a few metres from the origin.
 
 ## Fixed in the verify pass (2026-10)
 
-These were corrected here and NOT synced back to the builds they were harvested from (Voth, Iziz, Yuni, Mav's
-Refuge, Girder). The catalog copy is now the more accurate one.
+These were corrected here. The size corrections were synced back to Yuni only (7 plants,
+yuni_ancient_socket_rack and yuni_order_mat_rack, measured on Yuni's own geometry); Voth, Iziz, Mav's Refuge and
+Girder carry no size declarations, so there is nothing there to sync. The catalog copy is the more accurate one.
 
 - **Off-centre pieces** now call `F.shift(-cx, -cz)` so the footprint centre is the origin:
   ancients_aa_battery, yuni_ancient_socket_rack (both variants, different offsets), yuni_salvage_hearth_hood,

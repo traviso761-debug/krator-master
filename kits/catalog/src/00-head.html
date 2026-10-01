@@ -20,6 +20,13 @@
   #hover b{font-size:13px}
   #hover .cls{color:#9fe8ff;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
   #hover .tag{display:inline-block;background:rgba(184,232,160,.16);color:#b8e8a0;border-radius:3px;padding:0 5px;margin:2px 3px 0 0;font-size:11px}
+  #poly{position:fixed;right:14px;bottom:112px;z-index:35;display:none;background:rgba(24,21,15,0.9);color:#f3ecd8;
+       border-radius:8px;padding:8px 10px;font:12px/1.45 Georgia,serif;width:min(420px,calc(100vw - 28px))}
+  #poly textarea{width:100%;box-sizing:border-box;height:64px;margin:5px 0;background:rgba(255,255,255,0.08);color:#f3ecd8;
+       border:none;border-radius:4px;font:11px ui-monospace,monospace}
+  #poly button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;padding:3px 8px;
+       font:inherit;font-size:11.5px;margin:0 3px 3px 0;cursor:pointer}
+  #poly .n{opacity:.7;font-size:11px}
   #errs{position:fixed;right:10px;top:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.88);color:#fff;
        padding:6px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre-wrap;display:none;z-index:50}
 </style>
@@ -31,7 +38,11 @@
   <select id="sheetSel"></select>
   <select id="rowSel"><option value="">go to row…</option></select>
   <button id="hoverBtn" title="T: hover inspector (name, class, tags)">Hover tags (T)</button>
+  <button id="polyBtn" title="P: polygon tool (click the ground for world x,z coordinates)">Polygon (P)</button>
 </div>
+<div id="poly"><b>Polygon tool</b> <span class="n">click the ground to add a vertex · right-click removes the last ·
+world x,z in metres</span><textarea id="polyout" readonly></textarea><div class="n" id="polynear"></div>
+<button id="polycopy">Copy</button><button id="polyclose">Close loop</button><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polyfmt">Format: [x,z]</button></div>
 <div id="hover"></div>
 <pre id="errs"></pre>
 <script>
