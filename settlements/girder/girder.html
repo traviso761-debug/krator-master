@@ -237,9 +237,10 @@ var FAMMAT = {
 
 var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000,
   /* the catalog furniture's OWN budget (53-furnish.js outdoor pieces + 56-interiors.js rooms), counted apart from
-     the world's (verify.py subtracts the userData.furniture meshes): measured 2026-10 at 29 draw calls and
-     1.47 M triangles with every interior furnished, + ~15 % headroom. The heavy pieces: KNOWN_ISSUES.md */
-  furniture: { drawCalls: 34, triangles: 1690000 } };
+     the world's (verify.py subtracts the userData.furniture meshes): measured 2026-10 at 39 draw calls (29 render
+     families + 10 painted-panel materials) and 1.47 M triangles with every interior furnished, + ~15 % headroom.
+     The heavy pieces: KNOWN_ISSUES.md */
+  furniture: { drawCalls: 45, triangles: 1690000 } };
 
 /* aliases */
 var PLANKC = PAL.plank, TIMBERC = PAL.timber, WALLC = PAL.wall, WALLDARKC = PAL.wallDark,
@@ -3224,6 +3225,12 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
   'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
 /* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
    no walk-up access. Tapestries and hangings are 'banner'. */
+/* the trade or occupation a work item serves (2026-10): every entry of krator-master-furniture-jobs.js
+   carries `job: '<one of these>'` next to its type, and the sheet's Jobs page has a row per job. The trade
+   roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
+   by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
+const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
@@ -5686,6 +5693,11 @@ const FK = (function () {
   /* FK.set({ culture, tier, S, names?, dims?, override?, skip?, rooms?, prefix?, roles? }):
      registers every role of the tier as FURN entries keyed <culture>_<tier>_<role>; with
      roles: 'trade' it registers FK.ROLES.trade instead (keyed <culture>_trade_<role>) at the tier given. */
+  /* the job (FURN_JOBS) of each trade role: the catalog's Jobs page groups work pieces by job. Roles left out
+     (bunk, locker, altar) are a trade set's household and shrine pieces: they keep a `Jobs · trade · <culture>` row. */
+  K.TRADE_JOB = { forge: 'smithing', anvil: 'smithing', grindstone: 'smithing', armour_stand: 'smithing', weapon_rack: 'smithing',
+    trough: 'herding', hayrack: 'herding', stall: 'trading', display: 'trading', vat: 'weaving', still: 'brewing', barrel: 'brewing',
+    bin: 'warehousing', larder: 'warehousing', lathe: 'carpentry', press: 'milling', kiln: 'pottery' };
   K.set = function (spec) {
     const culture = spec.culture, tier = spec.tier || 'common', S = spec.S;
     const prefix = spec.prefix || (culture + '_' + (spec.roles || tier) + '_');
@@ -5711,6 +5723,8 @@ const FK = (function () {
         build: function (F) { const vd = entry.variantDims && entry.variantDims[F.variant] || d; build(F, S, Object.assign({ w: vd.w, d: vd.d, h: vd.h, variant: F.variant, court: tier === 'court', culture: culture }, opts)); }
       };
       if (entry.variantNames && entry.variantNames.length !== entry.variants) entry.variantNames = undefined;
+      const job = o.job || R.job || (spec.roles === 'trade' ? K.TRADE_JOB[R.role] : null);
+      if (job) entry.job = job;
       FURN(entry);
       made.push(entry.key);
     }
@@ -7132,7 +7146,7 @@ FURN({
    ====================================================================== */
 const KF_API = (function () {
   const API = {};
-  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES;
+  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS;
   API.entryDims = entryDims; API.furnAnchorY = furnAnchorY; API.CATALOG_MATERIALS = CATALOG_MATERIALS;
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
@@ -10911,15 +10925,7 @@ function gixFurnish(J){
   J.owner.interior.residence = { residence:res.residence, beds:res.beds, food:res.food, items:res.items, fails:res.fails.length };
   J.plans = plans; GIX.pieces += n; GIX.done++;
 }
-/* the merged meshes: one per render family, grown as the frames' batches arrive */
-function gixMaterial(m){
-  var fam = m.material.userData.family;
-  if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
-  else nlMaterial(m.material, 'ix|'+fam, gfSRGBHook);
-  m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.furniture = true; m.userData.interiors = true;
-  return m.material;
-}
-/* one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
+/* the merged meshes, grown as the frames' batches arrive: one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
 var GIX_SPEC = { col:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['color',3,Uint8Array,true]],
                  uv:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['uv',2,Float32Array,false]] };
 function gixAccum(key, kind, material, geo){

@@ -178,10 +178,12 @@ Own meshes: set `mesh.userData.inspectLabel = 'Giant bat'` (or
 **Path viz.** `PATHVIZ.push({ key, label, color, paths:function(){ return [ [[x,y,z],…], … ]; } })`
 (`var PATHVIZ` is declared in 10-core.js) — every moving population registers its routes.
 
-## Budget (whole build: 110 draw calls, 4.2 M triangles, 260k instances; furniture apart: 34 calls, 1.69 M triangles)
+## Budget (whole build: 110 draw calls, 4.2 M triangles, 260k instances; furniture apart: 45 calls, 1.69 M triangles)
 
 The catalog furniture (outdoor pieces and the furnished interiors) has its own line, `BUDGET.furniture`:
 `verify.py` counts the meshes flagged `userData.furniture` against it and the rest against the world budget.
+Measured: 39 calls (the outdoor batch's 12 meshes, the interiors' 17 families and 10 painted-panel materials:
+the catalog's `F.decal` panels are merged per material, `gfDecal`) and 1.47 M triangles.
 
 | pass | triangles | instances | draw calls |
 |---|---|---|---|

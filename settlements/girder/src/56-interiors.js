@@ -167,15 +167,7 @@ function gixFurnish(J){
   J.owner.interior.residence = { residence:res.residence, beds:res.beds, food:res.food, items:res.items, fails:res.fails.length };
   J.plans = plans; GIX.pieces += n; GIX.done++;
 }
-/* the merged meshes: one per render family, grown as the frames' batches arrive */
-function gixMaterial(m){
-  var fam = m.material.userData.family;
-  if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
-  else nlMaterial(m.material, 'ix|'+fam, gfSRGBHook);
-  m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.furniture = true; m.userData.interiors = true;
-  return m.material;
-}
-/* one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
+/* the merged meshes, grown as the frames' batches arrive: one accumulator per render family (vertex colours) and per painted material (decals: uv + map) */
 var GIX_SPEC = { col:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['color',3,Uint8Array,true]],
                  uv:[['position',3,Float32Array,false],['normal',3,Float32Array,false],['uv',2,Float32Array,false]] };
 function gixAccum(key, kind, material, geo){
