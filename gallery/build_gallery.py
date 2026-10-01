@@ -70,6 +70,8 @@ ENTRIES = [
      'Ten new houses, apartments and works: the Undulant and Bridge houses, Fin apartments, a garden amphitheater, trestle fuel station, rotor radar, flower dish, the Rampart, Pilotis works and the Star laboratory.', 'new'),
     ('kit', 'ancient-alt-civic', 'kits/ancients/dist/alt-civic.html', 'Ancients alternates: civic',
      'Thirteen new civic buildings: three offices, a saucer starport, bastion bunker, reading-star library, the Horns gate, robotics rig, data center, watch-cup police, linked hospital, garden-bowl campus and the Citadel.', 'new'),
+    ('kit', 'ancient-spaceport', 'kits/ancients/dist/spaceport.html', 'The Iziz spaceport',
+     'The Iziz spaceport rebuilt as an Ancients type in all six states: intact, ruined, toppled tower, rehabilitated, reclaimed (fires, gardens, a market) and worn.', 'new'),
     ('kit', 'ancient-lighthouse', 'kits/ancients/dist/lighthouse.html', 'The Lighthouse',
      'A modified Skyscraper J on its own island with a turning beacon, a cliff stair and a jetty, at every level of decay; the beams sweep at night.', 'new'),
     # objects: things you place in a world rather than build in it (furniture, plants, watercraft)
