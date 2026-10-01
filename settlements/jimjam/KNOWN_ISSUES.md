@@ -16,3 +16,8 @@
 - [ ] Biome: none was specified, so the two plants are placeholders (`biome:'placeholder'`).
 - [ ] Life layer: none yet. Defs carry no activity/capacity data; add it with the city phase (README project rule).
 - [ ] The coplanar-face resolver (`63-jj-zfix.js`) scans instanced boxes and flat cylinders only; a plain mesh laid flush on another surface can still z-fight. Builders should still offset details by 1–2 cm themselves; the resolver is a net, not a licence.
+
+## Level of detail (core/lod)
+
+- [x] No LOD: `core/lod` now takes over the kit sheet (README, "Level of detail"): 1.78 M to 0.39 M triangles at the
+      overview, 0.61 M at eye level, with fewer draw calls.
