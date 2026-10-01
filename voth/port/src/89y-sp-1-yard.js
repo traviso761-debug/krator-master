@@ -57,7 +57,7 @@ function spSides(opt){const h=opt.W/2,S=opt.SEA,me={x0:opt.gx-h,x1:opt.gx+h,z0:o
  const out={N:{j:false},S:{j:false},E:{j:false},W:{j:false}};
  const L=(typeof PORT_LAYOUT!=='undefined'&&PORT_LAYOUT&&PORT_LAYOUT.items)||[];
  const ov=(a0,a1,b0,b1)=>Math.min(a1,b1)-Math.max(a0,b0);
- for(const it of L){if(it.vessel)continue;const R=portRegOf(it.key);if(!R)continue;
+ for(const it of L){if(it.vessel===true)continue;const R=portRegOf(it.key);if(!R)continue;
   if(it.key===opt.key&&it.d===opt.d&&Math.abs(it.gx-opt.gx)<.01&&Math.abs(it.gz-opt.gz)<.01)continue;
   const F={x0:it.gx-R.W/2,x1:it.gx+R.W/2,z0:it.gz-R.LAND,z1:it.gz+R.SEA};
   if(R.place==='sea'){const oz=ov(me.z0,me.z1,F.z0,F.z1),ox=ov(me.x0,me.x1,F.x0,F.x1);
