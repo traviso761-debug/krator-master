@@ -19,6 +19,7 @@ const CITY={
  SPACEPORT_A:315*Math.PI/180,SPACEPORT_R:800,   // out with the wall (round 4): the causeway ends at R+240
 SPACEPORT_H:4,SPACEPORT_RAD:94,
  QUALITY:1,                  // scales counts (biome, folk); 1 = the artifact
+ FAUNA:true,                 // the hyperjungle animals (biome fragment 58) in the jungle outside the wall
 };
 const GATES=CITY.GATES;
 const FRAME_HOOKS_PRE=[];   // per-frame fns registered before 90-scene defines FRAME_HOOKS (the biome's wind tick); 90b moves them over

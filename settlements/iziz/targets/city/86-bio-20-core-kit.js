@@ -3,7 +3,8 @@
 //   INSTANCED ITEMS   BIO.def(name,geo,mat) once, BIO.put(name,...) thousands of
 //                     times, one InstancedMesh per item at bake. Per-instance
 //                     colour, and optional per-instance extras (aN normal, aC2
-//                     second colour) for the foliage shaders.
+//                     second colour) for the foliage shaders, or any other
+//                     named vec4 (aP0, aP1...) for the animation shaders.
 //   MERGED BUCKET     BIO.tri/quad/tube/lathe/surf write vertex-coloured
 //                     triangles into a bucket per material family; one Mesh per
 //                     family at bake. Boles, limbs, logs, boulders go here.
@@ -14,7 +15,9 @@ BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
  const g=geo.index?geo.toNonIndexed():geo;
  BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name};
- BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};BIO.order.push(name);};
+ BIO.items[name]={m:[],c:[],n:[],c2:[],x:{},count:0};
+ if(opt.attrs)opt.attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')BIO.items[name].x[a]=[];});
+ BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
 // rotation helpers: qEuler(rx,ry,rz) or qFacing([nx,ny,nz]) (local +z toward n)
@@ -35,7 +38,8 @@ BIO.put=function(name,pos,q,sc,col,extra){
  const def=BIO.defs[name];
  if(def.attrs){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
-  if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}}
+  if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
+  for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
  it.count++;BIO.tally(def.tris,1,0);};
 // a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
 BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
@@ -150,12 +154,13 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
   const geo=def.geo.clone();
   if(def.attrs&&it.n.length)geo.setAttribute('aN',new T.InstancedBufferAttribute(new Float32Array(it.n),3));
   if(def.attrs&&it.c2.length)geo.setAttribute('aC2',new T.InstancedBufferAttribute(new Float32Array(it.c2),3));
+  for(const a in it.x)geo.setAttribute(a,new T.InstancedBufferAttribute(new Float32Array(it.x[a]),4));
   const im=new T.InstancedMesh(geo,def.mat,it.count);
   im.instanceMatrix.array.set(it.m);im.instanceMatrix.needsUpdate=true;
   im.instanceColor=new T.InstancedBufferAttribute(new Float32Array(it.c),3);
   im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.name='biome:'+name;
   scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
-  BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};}
+  const nx={};for(const a in it.x)nx[a]=[];BIO.items[name]={m:[],c:[],n:[],c2:[],x:nx,count:0};}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
   const g=indexedGeo(T,K.pos,K.nor,K.uv,K.col);
   g.computeBoundingSphere();
