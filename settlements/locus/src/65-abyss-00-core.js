@@ -272,6 +272,15 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
   ABYSS.furn = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var q=F.p(lx,lz); return buildFurn(key, q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), variant:opt.variant||0, seed:opt.seed||((F.seed*37+Math.round(lx*11+lz*17)+997)&0xffff) }); };
   ABYSS.plant = function(F, key, lx,lz, yaw, opt){ opt=opt||{}; var q=F.p(lx,lz); return buildPlant(key, q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), variant:opt.variant||0, seed:opt.seed||((F.seed*31+Math.round(lx*7+lz*13))&0xffff) }); };
 
+  /* ABYSS.sub(F, key, lx,lz, yaw, opt): build ANOTHER registered asset inside this one, in a sub-frame at (lx, opt.ly, lz)
+     turned by yaw — its code is called, not copied (the wall system, the fortress). Not registered separately. */
+  ABYSS.sub = function(F, key, lx,lz, yaw, opt){ var A=ASSET_BY_KEY[key]; if(!A){ ERR('ABYSS.sub: no asset '+key); return null; } opt=opt||{};
+    var q=F.p(lx,lz), G=assetFrame(q[0],q[1], F.ry+(yaw||0), { y:F.y+(opt.ly||0), seed:opt.seed||(F.seed*7+Math.round(lx*3+lz*5)+13), variant:opt.variant||0, wealth:F.wealth });
+    G.asset=A; try{ A.build(G); }catch(e){ ERR('sub-asset '+key+': '+(e&&e.stack||e)); } if(G.doors) (F.doors||(F.doors=[])).push.apply(F.doors, G.doors); return G; };
+  /* ABYSS.part(F, name, lx,ly,lz, r,h, label): register a named PART of a building with the inspector (the temple's altar) —
+     a vertical cylinder of radius r and height h from (lx,ly,lz); the smallest volume under the cursor wins, so it names itself. */
+  ABYSS.part = function(F, name, lx,ly,lz, r,h, label){ var q=F.p(lx,lz); return REGISTER({ name:name, kind:'part', label:label||'part', x:q[0], y:F.y+ly, z:q[1], r:r, h:h }); };
+
   /* ---------- 10. small building parts used across the kit ---------- */
   /* ABYSS.platform(F, x0,x1,z0,z1, H, opt): piles + bearers + plank deck + edge beam from LOCUS, with piles every ~opt.span m (2.6) */
   ABYSS.platform = function(F, x0,x1,z0,z1, H, opt){ opt=opt||{}; var sp=opt.span||2.6, nx=Math.max(2,Math.round((x1-x0)/sp)+1), nz=Math.max(2,Math.round((z1-z0)/sp)+1), pk=opt.plank!=null?opt.plank:F.pick(PLANKC);
