@@ -32,11 +32,37 @@ targets/<yours>/ and change PORT_ONLY in its 89z-rows.js.
 
 Usage:  python3 build.py [--target X] [--no-checks]
 
-node is not installed here, so this script cannot check syntax. It writes
-.syntax-<target>.js; run `python3 jscheck.py .syntax-<target>.js` after every
-build (5 s, headless Chromium's parser).
+The syntax check runs `node --check` on .syntax-<target>.js with the node
+find_node() finds ($NODE, PATH, /opt/node*/bin, ~/.nvm). Without node it says
+so; then run `python3 jscheck.py .syntax-<target>.js` (headless Chromium's parser).
 """
 import hashlib, json, os, re, subprocess, sys
+
+
+def find_node():
+    """node for the syntax check: $NODE, then PATH, then the usual install places
+    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
+    there is none: the build then says plainly that the syntax was NOT checked.
+    Every build.py carries this same function; a fix belongs in all of them."""
+    import glob as _g, shutil as _sh
+    env = os.environ.get('NODE')
+    if env:
+        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
+        if hit:
+            return hit
+        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
+    hit = _sh.which('node')
+    if hit:
+        return hit
+    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
+    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
+                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
+                os.path.expanduser('~/.volta/bin/node')):
+        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
+        if hits:
+            return hits[0]
+    return None
+
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -50,16 +76,18 @@ TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
+LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell,
 # the port core, the per-target tables. Anything else must contain a builder.
 DETERMINISTIC = {
-    '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
+    '00-head.html', '09-lod.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js',
     '74-port-dress.js',
-    '90-scene.js', '91-probe.js', '92-camera.js', '99-tail.html',
+    '90-scene.js', '91-probe.js', '92-camera.js', '97-lod-auto.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
 }
 
@@ -168,6 +196,7 @@ def build_one(target, do_checks):
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})   # a src/ copy overrides
+    src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
@@ -221,7 +250,7 @@ def main():
         with open(chk, 'w', encoding='utf-8') as fh:
             fh.write(body)
         try:
-            r = subprocess.run(['node', '--check', chk], capture_output=True, text=True)
+            r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)
             if r.returncode:
                 print(r.stdout + r.stderr)
                 sys.exit(1)

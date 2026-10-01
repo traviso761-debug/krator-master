@@ -37,7 +37,12 @@ settlements/locus/sheet-items*.json
 settlements/locus/three.min.js
 host/address.json
 host/address.json.tmp
+
+# Agent worktrees (Claude Code): never committed.
 .claude/worktrees/
+
+# A kit's local three.js copy for verify.py (the CDN may be blocked); sedesert keeps a tracked one.
+biomes/*/three.min.js
 
 # a local three.js copy for verify.py when the CDN is blocked (not committed)
 settlements/girder/three.min.js

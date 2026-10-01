@@ -72,6 +72,38 @@ the cloud forest and the Mediterranean peak have a handful of species each and n
 species of their own beyond the groundsel and the pine. It is meant to become its own
 kit (the highlands) on the same fields.
 
+## The runtime LOD and the far canopy (Oct 2026)
+The core's runtime LOD (xanadu's; `BIO.range`, `BIO.lodTick`) on this kit. Build time still
+decides the detail by distance from the spine (`lv`), and now the camera decides what is drawn:
+- **Trees** (55, the build loop): a hero tree is built with `BIO.owner` at its foot and
+  `BIO.range=RIFT.LOD.tree`, so it is drawn while the camera is within 1.2 km of its chunk; then
+  its stand-in impostor (`buildFar(...,lite)`: 20-triangle blobs, a four-sided bole of two rings, fewer fins)
+  with `BIO.minRange=RIFT.LOD.tree`, drawn only past that. A far tree is only ever its impostor
+  (range 1e9: always in range, culled per chunk against the view). The impostors are charged to
+  their own pass, `rift/far`.
+- **Small species** get a 20-triangle blob shaped by habit (`buildFarSmall`, the lowlands'
+  technique: a mound, a squat barrel, a pale spire, a head on a stem, a crown, a finned column for
+  the frill saplings), both as their far form past the mid radius and as their heroes' stand-in.
+  The far ones keep nothing clear and their colours come from the tree's seed, so the passes after
+  them and every hero build exactly as before. The curls, pinecone succulents and silver scrub
+  (under 4.5 m) have none: under a pixel at that range.
+- **The floor** (60): the near (7 m) band within `floor`, the mid (14 m) band within `midFloor`,
+  the far band within `farFloor`; and a far band over the spine too, planted last, drawn only
+  past the near and mid bands' ranges (`minRange`), so the floor thins with distance instead of
+  stopping at a chunk's edge. Logs and the dressing within 1.2 km.
+- **The far canopy keeps the iridescence.** The 'far' bucket's material (`RIFT.farMat`) shifts a
+  vertex toward a second colour with the view; the uv carries it (8 bits a channel packed into
+  one float, decoded in the vertex shader so it interpolates) and the rule (the leaves' or the
+  iridescent bark's). The frill tree's impostor column goes teal to violet as its hero's does
+  (`RIFT.IRIDBARK`, shared with the bark materials), the irid species' blobs turn to their second
+  colour away from the sun and at grazing angles, but only part way (`IRID_FAR`, 40%: a blob is a
+  solid crown facing every way at once, and turned fully it reads as paint), and the frill and
+  carrot frill carry a few fin triangles (13 and 8; 6 and 3 in a stand-in). The stand-ins are a
+  little darker than the far trees (×.8): they replace heroes whose crowns are cards, gaps and shade.
+- **Curls and rosettes** carry a per-instance normal (`aN`, `RIFT.leanN`: the plant's up axis
+  leaning out toward the side a clump would light) that steers only their iridescence;
+  `RIFT.iridOnlyN` keeps their lighting on the geometry's own normals.
+
 ## Lessons this build cost
 - A helix as an instanced item is cheap (34 segments × 5 sides = 340 tris) and reads as a
   plant from any distance; a helix as a merged tube per plant would not have been.
@@ -92,6 +124,15 @@ kit (the highlands) on the same fields.
 - Iridescent items with no normal of their own (curls, rosettes, tufts) show the second
   colour at every horizontal view angle: pull it part way back toward the base (softC2),
   and give the fins and fans a real per-instance normal instead.
+- The runtime LOD's chunks are 1.2 km on a side, so it saves little within a kilometre of the
+  camera (the jungle views still draw ~14M of the 24.7M the scene drew everywhere before): its
+  savings are the far half of the map. A shorter range for the small species culled nothing more
+  there and cost 60 draw calls.
+- A packed second colour in the uv must be decoded in the vertex shader: the GPU interpolates
+  varyings, and a packed float interpolated between two vertices is noise.
+- The page builds inside its own script, so "load" fires only after the build; on a shared box
+  that was over five minutes. verify.py waits for the document to commit, then for `_ready`
+  (VERIFY_TIMEOUT seconds).
 - verify.py takes PW_CHROMIUM: a cloud box pins one Chromium build for every Playwright
   version, and the one pip installs will not find it on its own.
 - (inherited) Every bole lathe ends in a dome ring; bark colours are written a stop dark;

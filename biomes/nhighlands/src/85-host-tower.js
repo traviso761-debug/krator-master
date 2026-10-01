@@ -7,6 +7,7 @@
 // and hands the geometries over; the biome samples their faces itself.
 // Host-only. No plant is placed in this file.
 function buildTestTower(){
+ reseed(85031);   // its own stream: the mist (84) reseeds the one it would otherwise inherit
  // on its levelled bench above the stream (45-host-stage.js: TOWER, PADS)
  const TX=TOWER.x,TZ=TOWER.z,HALF=24,N=30,FH=5,SLAB=1,COLS=[-HALF+1.6,-8,8,HALF-1.6];
  const y0=terrainH(TX,TZ);

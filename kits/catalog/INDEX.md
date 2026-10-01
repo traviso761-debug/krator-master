@@ -25,7 +25,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 75 **big** |  |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
-| `krator-master-furniture-eastabyss.js` | 51 **big** | Harvested from settlements/locus/src/65-abyss-*. (111); Harvested from settlements/locus/src/64-locus-dw (760) |
+| `krator-master-furniture-eastabyss.js` | 52 **big** | Harvested from settlements/locus/src/65-abyss-*. (112); Harvested from settlements/locus/src/64-locus-dw (767) |
 | `krator-master-furniture-generic-fruit.js` | 41 **big** | Eastern Abyss (4 pieces) (56); Hyperjungle (3 pieces, and the pandan keys it sh (136); Northern Highlands (5 pieces) (219); North-western Lowlands (1 piece; pandan keys abo (314); Rift (4 pieces; lantern fruit is shared with Xan (341); South-eastern Desert (3 pieces) (422); South-west Bay (1 piece; gatepod above) (490); South-western Lowlands (4 pieces) (520); Xanadu (7 pieces; tunas and lantern fruit are sh (598) |
 | `krator-master-furniture-generic-goods.js` | 90 **big** | Storage containers (17 pieces) (176); Food (21 pieces) (574); Drink (6 pieces) (1116); Supplies (11 pieces) (1282) |
 | `krator-master-furniture-generic.js` | 4 |  |

@@ -75,13 +75,28 @@ local sill height.
 | Field | Shape |
 |---|---|
 | `levels[]` | `{ k, y, H }`: `y` is the floor top and `H` the clear height |
-| `rooms[]` | `{ id, lvl, kind, poly[[x,z]…], y, h, finish, layout }`. kind: `hall living hut bedroom kitchen store shop tavern workshop study` |
+| `rooms[]` | `{ id, lvl, kind, poly[[x,z]…], y, h, finish, floor, layout }`. kind: `hall living hut bedroom kitchen store shop tavern workshop study`. `floor` is the floor pattern: `earth plank tile mosaic flag` |
 | `walls[]` | `{ id, kind: shell or partition, module, a, b, out?, lvl, y, h, thick, openings[] }`. An opening is `{ u, w, y0, y1, depth?, door?, window? }`, where `u` runs along the wall from `a` |
 | `doors[]` | `{ id, kind: exterior or interior, fixture?, style, at, y, w, h, rooms: [a, b or 'outside'] }` |
 | `stairs[]` | `{ id, module, kind: stair or ladder, lvl0, lvl1, w, rise, run, foot, top }` |
-| `furniture[]` | `{ id, furn, variant, seed, room, at, y, yaw, culture, type, setting }`. `furn` is a key in the `FURN` registry (`src/63-furniture.js` and friends), mirrored in `kits/catalog/` as `yuni_<key>` |
+| `furniture[]` | `{ id, furn, variant, seed, room, at, y, yaw, culture, type, setting, capacity?, cover?, virtual? }`. `furn` is a key in the `FURN` registry (`src/63-furniture.js` and friends), mirrored in `kits/catalog/` as `yuni_<key>`. Containers carry `capacity` (inventory slots). `cover` marks the floor rug of the main room. `virtual` marks a kit slot that no room had space to draw: keep it as data (a bed, a stash), place no mesh |
 | `lights[]` | `{ id, kind, at, y, amp, radius }`: the hearths and braziers the furniture carries |
 | `nav` | `{ nodes[{ id, x, y, z, lvl, tag, room?, door? }], edges[{ a, b, kind, len }] }` |
+
+**Kit** (`KRATOR_EXPORT.building(id).kit`, also `window._interiors.kit(id)`): every building's beds
+and containers, whether or not it has a planned interior, for loot, inventory and sleeping.
+
+| Field | Shape |
+|---|---|
+| `needs` | `{ bed, food, item }`: how many the rules below require |
+| `slots[]` | `{ id, kind: bed or food or item, type, furn, capacity, room, at, y, virtual }`. With a planned interior, `id` is the furniture id. Without one (`minimal: true`), the slots are data only, at the footprint centre, `room: null` |
+
+The rules: a dwelling (`dwelling-single`, `dwelling-multi`) has a bed per bedroom and at least
+one (two in a multi-family building), a food container (two in a compound, a multi-family
+building or a wealthy house) and an item container (two in a compound or multi-family
+building). Every building has at least one item container. Every kitchen, store, shop and
+tavern room has a food container, and so does every building typed `shop`, `tavern`, `inn` or
+`farm`. `window._kitAudit` counts the breaches; every count but the totals reads 0.
 
 The walk graph's tags are `door doorway room stairfoot stairtop`, and its edge kinds are
 `door room stair ladder`. Each `door` node carries `links: 'street'`: it is where the

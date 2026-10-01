@@ -11,7 +11,10 @@ Read before changing anything here. `build.py` prints the open count.
       pass and the coal-swamp pass was given a ceiling of 11M (probe: 8.2M per pass,
       11M scene); see baseline.json for where it landed. The hyperjungle ran at 2.5M.
       `EASTABYSS.build({quality:.6})` is the knob. The heaviest items: knee-tree and
-      beard-oak boughs, reed beds, pipe-reed whorls, the araucaria ropes.
+      beard-oak boughs, reed beds, pipe-reed whorls, the araucaria ropes. With the far
+      hulls (Oct 2026) the trees pass holds 8.195M of its 8.2M (5k left) and the scene
+      10.78M of 11M: the next thing added to the trees pass must pay for itself (thin a
+      species, or the hulls: `buildFarSmall`'s n, 5 a side, 3 past 2.2 km).
 - [ ] The savannah is a sketch: umbrella trees, grass, Vain fronds, rosettes, but the
       slope's top is a smooth ramp and the transition into the highlands is not designed.
       It is meant to be its own kit (the abyssal savannah).
@@ -20,16 +23,18 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] Bark canvases are near-grey and tinted (the hyperjungle's open issue is closed
       here), but texMean is still measured at run time; the species' bark colours are
       written a stop darker than they read because the sun+hemisphere rig doubles them.
-- [ ] The lily pads sit at y=.05 on a plane at y=0 whose ripples are shader-only, so
-      they never bob. Fine at any distance; wrong if a world animates its water mesh.
-- [ ] Stilt-woods root on terrain under the water (prop roots to the bed); with a world
-      whose water is not at y=0 the `inWater` band in 55-trees (-1.6 .. 1.2) must move.
-- [ ] The far impostors are the hyperjungle's blob technique; the small species (tree
-      ferns, cycads, pipe reeds, palmettos, jade) stop at ~1.5 km from the LOD spine
-      instead of becoming impostors. Visible as a thinning from the "From afar" view.
+- [ ] The water's ripples are shader-only, so the lily pads and rafts (at the local water level
+      +.04 to +.08) never bob. Fine at any distance; wrong if a world animates its water mesh.
+- [ ] The far ring is fixed by distance from the LOD spine, not from the camera: a camera
+      standing in it (the south marsh past z ~1.9 km, the north shore) sees the canopy
+      blobs and the small species' hulls up close, crude. A world with a free camera
+      wants the runtime LOD (`BIO.range`, core) instead.
+- [ ] The far hulls take no keep-clear entry (so the near field places exactly as before
+      them): a hull can stand inside a canopy impostor or another species' hull. Invisible
+      at range; seen only from a camera inside the far ring.
 - [ ] The east river's climb up the slope is a ribbon in the water material with no
       cataracts; the west river has no slope reach at all (it stays in the basin).
-- [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
+- [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
 - [ ] No fauna yet.
 - [ ] The mat-reed beds are registered per bed (a few hundred volumes); a world that
       registers its own structures densely may want only `EASTABYSS.REEDBEDS`.
@@ -43,13 +48,27 @@ Read before changing anything here. `build.py` prints the open count.
 
 - [ ] The shelf overlay dome (82-host-sky) is a second 4096x2048 canvas: ~16 MB of texture
       for the wall alone. A world that already draws its horizon as geometry does not need it.
-- [ ] The iridescent bark is a view-angle hue shift on the sky scale-tree's bucket only;
-      it does not reach the impostor ring (flat colour beyond ~1.1 km).
+- [ ] The sky scale-tree's impostor shimmers on its bole only (the hero's forks shimmer
+      too and have no impostor), and seen from outside the ring the far canopy's blobs
+      hide most of that bole. Only six sky scale-trees stand in the ring at q=1 (the jungle
+      barely reaches 1.9 km from the spine); the preset "The far ring" frames them.
 - [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): scalefruit, fern-egg, tideheart, salt-cone kernels. Each has a catalog piece in
       `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'eastabyss'`). Scalefruit pods already hang on skyscale, forktree and bellbark, and the fern-eggs, the waterpalm fruit head and the cycad cone are drawn too. What is missing is harvest tags (nhighlands' `HV()`) linking each species to its catalog piece.
 
 ## Done
 
+- [x] Water-bound heights read the local water (`BIO.waterH`, Oct 2026): the zones' shore height, the stilt-woods'
+      `inWater` band and their prop-root base, the keep-outs, the reed beds, the lily pads, rafts and hyacinths, the
+      shallows' reeds and the water band of the floor. With this host's level of 0 the geometry is the same bit for
+      bit (mesh fingerprints).
+
+- [x] Every species carries to the horizon: past its mid radius a small species is a far
+      hull (`buildFarSmall`: 20 triangles, 12 past 2.2 km, shaped per habit in `FARHAB`,
+      coloured from the seed), and a reed bed past 1.9 km one low hull. +89k triangles in
+      abyss/trees (5185 hulls), +2k in abyss/reeds; every other mesh hashes as before.
+      (Jade and Calamophyton grow only inside their mid radius in this host: no hulls.)
+- [x] The sky scale-tree's impostor bole shimmers like its hero bark: it is built into its
+      own bucket, `fari`, drawn in the iridescent material without a texture (one call more).
 - [x] Every bole lathe ends in a dome ring; the crowns of the knee-tree and the bell-bark
       read correctly from above (they were open pipes).
 - [x] The abyssal shelf stands in front of the gas giant (painted on an overlay dome drawn

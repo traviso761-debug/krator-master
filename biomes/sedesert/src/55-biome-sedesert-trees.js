@@ -4,9 +4,10 @@
 // upland / canyon / rim / rock / dune / oasis / slope) and terrainH. The zone
 // weights are computed HERE from those fields, never from the host's map: a
 // world that binds the same fields gets the same zoning. Beyond the LOD spine
-// the big species become blob impostors in the 'far' bucket; the small ones
-// thin out with distance and stop. Every count scales with q; the core
-// charges BIO.cur.
+// a tree (not a mesquite shrub) becomes an impostor in the 'far' bucket: blobs
+// on a pole, or for the twist-candles spires standing in the local water. The
+// small ones thin out with distance as well. Every count scales with q; the
+// core charges BIO.cur.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=SEDESERT.SPECIES,PAL=SEDESERT.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=SEDESERT.C;
@@ -258,9 +259,37 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,n=lv===2?ri(3,8):ri(2,4),a0=rr(0,
  };
 
 // ---------------------------------------------------------------- impostors (the far canopy)
+// far:{spires:n} (the twist-candles): the clump as n twisted three-sided spires, 9 triangles each, set out as
+// the hero sets its columns (the main one at the clump's foot, the rest round it). Each stands where the hero's
+// column does: rooted in the bed under the LOCAL water (BIO.waterH: the river descends, the pond has its own
+// level), its top at the bed + h, so what shows above the water is the hero's. The foot has a 1.5 m skirt: a
+// host may draw its ground coarser than terrainH (the ideal host's 17.8 m triangles dip up to ~1.5 m under it on
+// a bank), or its water clear, or not at all. A spire the water drowns, or that shows less than 0.8 m over the
+// water and the ground, is not built. spiresOf(T) is the layout as data ({x,z,yb,h,foot,top,w,c,q}); it hashes
+// the tree's own seed, not the biome's stream, so building one moves nothing else, and a host can lay it out
+// for any clump to check it.
+function spiresOf(T){const S=SP[T.sp],H=T.H,base=T.y0+.5,o=[];
+ const hr=(k,a,b)=>a+(b-a)*h3(T.seed%9973,k,4.7),a0=hr(.5,0,TAU);
+ for(let k=0,n=S.far&&S.far.spires||0;k<n;k++){const a=a0+k*GOLD,d=k?T.crownR*hr(k+.1,.2,.9):0,x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;
+  const g=BIO.terrainH(x,z),h=H*(k?hr(k+.2,.4,.9):1),yb=Math.min(g,base)-.2,top=yb+h*1.03;
+  if(top-Math.max(BIO.waterH(x,z),g)<.8)continue;
+  o.push({x,z,yb,h,foot:yb-1.5,top,w:T.rb*hr(k+.3,.7,1.3)*(.5+.5*h/H),c:(T.seed+k*3)%S.leaf.length,q:hr(k+.4,0,TAU)});}
+ return o;}
+SEDESERT.spiresOf=spiresOf;
+function farSpires(T,st){const K=BIO.bucket('far'),S=SP[T.sp],kk=BIO._lodKey(T.x,T.z);let tris=0;
+ const vtx=v=>{K.pos.push(v[0],v[1],v[2]);K.nor.push(v[3],v[4],v[5]);K.uv.push(0,0);K.col.push(v[6],v[7],v[8]);};
+ const tri=(a,b,c)=>{vtx(a);vtx(b);vtx(c);K.k.push(kk);tris++;};   // a, b, c counter-clockwise from outside
+ for(const P of spiresOf(T)){const c=bright(S.leaf[P.c],1.15).convertSRGBToLinear();
+  // a ring at y: three corners on the lobes (the hero's radius x 1.28), turning 1.2 rad over the height as its lobes do
+  const ring=y=>{const t=Math.max(0,(y-P.yb)/P.h),r=1.28*P.w*Math.pow(1-.72*t,.7),s=lerp(.66,1,t),o=[];
+   for(let j=0;j<3;j++){const an=P.q-1.2*t+j*TAU/3,cx=Math.cos(an),cz=Math.sin(an);o.push([P.x+cx*r,y,P.z+cz*r,cx*.75,.66,cz*.75,c.r*s,c.g*s,c.b*s]);}return o;};
+  const A=ring(P.foot),B=ring(P.yb+P.h*.55),tip=[P.x,P.top,P.z,0,1,0,c.r,c.g,c.b];   // the foot, the waist, the tip
+  for(let j=0;j<3;j++){const j1=(j+1)%3;tri(A[j],B[j],A[j1]);tri(A[j1],B[j],B[j1]);tri(B[j],tip,B[j1]);}}
+ K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>BIO.LOD().far;let tris=0;
+function buildFar(T,fi,st){const S=SP[T.sp];if(S.far&&S.far.spires)return farSpires(T,st);
+ const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
+ const cheap=BIO.lodD(T.x,T.z)>BIO.LOD().far;let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];

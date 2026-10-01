@@ -126,10 +126,11 @@
       sheet's buildings get a planned interior: rooms, partitions with doors, a stair or ladder to a second level,
       furniture by layout, and a walk graph. Walk mode goes in through the door and up the stairs. Townspeople open
       doors and go inside. Everything is tagged for Blender and Godot (`GAME_EXPORT.md`).
-- [ ] Interiors are only planned for the Yuni vernacular (poor, mid, trade, rich, civic). The Ancients
-      megastructures, the parks, the props, the Library and the School (which draw their own interiors), the
-      Emir's palace and the caravanserai get none. Open-sided sheds (smithy, craft shed, market hall) and the
-      salvage shacks have no body to fit a room in.
+- [ ] Interiors are only planned for the Yuni vernacular (poor, mid, trade, rich, civic), the lean-tos built
+      against the Ancients and the caravanserai. The Ancients megastructures themselves, the parks, the props,
+      the Library and the School (which draw their own interiors) and the Emir's palace get none. Open-sided
+      sheds (smithy, craft shed, market hall) have no body to fit a room in. (2026-10-01: every one of them
+      still has its beds and containers as a data-only minimal kit, `buildingKit()`.)
 - [ ] Only the body behind each door is furnished. A compound's other wings, and upper floors reached only from
       a roof terrace, are solid. Two levels at most, and only in rectangular bodies.
 - [ ] Rooms are fitted inside the captured body with a flat ceiling. Domes and cones read as a plain drum with a
@@ -140,28 +141,114 @@
       and braziers are exported as lights but do not light the room individually.
 - [ ] The egg hut's registered opening is its forecourt gap, so it has no interior. Its mouth needs an F.opening.
 - [ ] Walk-mode collision outside uses the captured bodies only. Compound walls and fences can be walked through.
-- [ ] DARK FLOORS. Many interiors read as a black floor: the floor slab's colour and texture are lost
+- [x] DARK FLOORS. Many interiors read as a black floor: the floor slab's colour and texture are lost
       under the dimmed indoor light, and on dark plinths ("black podiums") the floor and the plinth merge.
       Every floor needs a finish that reads: floor tile, beaten-earth pattern or planks, and a rug or mat in
       the main room. Check it from inside, through the doorway and in cutaway.
-- [ ] SHACKS NEED A DETAIL PASS, especially the lean-tos and salvage shacks built against reclaimed Ancient
+      2026-10-01: two causes. (1) In the cutaway the "black floor" was not the floor at all: the tarred
+      base band most houses draw (a 0.9 m box over the whole footprint) has its top face above the room's
+      floor. buildAsset now records such low full-footprint boxes as PLINTHS (`b._plinths`, 53-assets.js)
+      and 76-doors.js hides them while the cutaway shows that interior. (2) Each FINISH now has a floor
+      `pattern` by culture and class — `earth` (swept patches, or rings in a round hut) for the poor, the
+      Sahelian banco and the salvage lean-tos, `plank` boards for the plain common house, `tile` with grout
+      for the washed townhouse, a cream `mosaic` with a blue border and medallion for the court, `flag`stones
+      for the Order and the Ancients — on the light end of each palette, with a border band and a darker
+      threshold. Floors draw in interior-only `fl-` families that the indoor shader lifts (`uFloorLift`,
+      0.30 by day, 0.14 at night), so they read at a quarter of the sun. The entered room of every group
+      gets a rug or mat (`poor_reed_mat`, `common_kilim`, `court_carpet`). Rooms export `floor`.
+      Checked inside, through the doorway and in cutaway (shots/2026-10-01-floors-*.png).
+- [x] SHACKS NEED A DETAIL PASS, especially the lean-tos and salvage shacks built against reclaimed Ancient
       buildings. They have no captured body, so no interior. Their join to the host building is not modelled,
       and they read thin up close.
-- [ ] EVERY DWELLING NEEDS A MINIMUM KIT. Each residential building (types `dwelling-single` / `dwelling-multi`)
+      2026-10-01: `poor_shack` (57-poor.js) was rebuilt tall enough to stand in, on a timber frame (corner
+      posts, top plate, sill rail, mud kerb) with walls of real thickness, a roof on purlins with seam cover
+      strips, lashings and stones, and a mud fillet sealing the roof to its back wall; it declares its room
+      with `F.mass`, so it gets a planned, furnished interior. The lean-tos against the Ancients (61d,
+      `ancDress`) now have mud fillets in both angles with the host wall, a mud roll sealing the roof to it,
+      a render patch where the wall was made good above, a stone footing course and a drip stain. Their
+      captured bodies are planned as salvage dwellings (`planView(b,'ancients-salvage')`, finish
+      `salvage_mud`, layouts `living_salvage` / `hut_salvage`): 2-10 furnished rooms per Ancient building.
+- [x] EVERY DWELLING NEEDS A MINIMUM KIT. Each residential building (types `dwelling-single` / `dwelling-multi`)
       must have at least one slot each for a BED, a FOOD CONTAINER and an ITEM CONTAINER, and more where it
       makes sense: one bed per bedroom, more in multi-family buildings, a larger store in compounds. Today a
       layout may drop optional pieces when a room is tight, and a dwelling with no planned interior has
       no slots at all.
-- [ ] CONTAINER TAGS. Furniture `type` has no `container-item` / `container-food` distinction yet. Add those
+      2026-10-01: `kitNeeds` / `ensureKit` / `buildingKit` in 64-interiors.js. A required bed or container that
+      misses its layout anchor goes wherever it fits in its room (`fitAnywhere`); after every room is
+      furnished `ensureKit` tops up a bed per bedroom (min 1, 2 multi-family), food (2 in a compound or a
+      wealthy house, from a `common_grain_bin` down to a `poor_food_pot`) and items (2 in a compound), from
+      the culture's `KIT_PIECES`, largest first. A slot no room can hold is kept as data, `virtual:true`.
+      A dwelling with no planned interior gets a minimal data-only kit. `window._kitAudit` reads 0
+      `dwellingsMissingKit` over 1,144 dwellings. Still drawn nowhere: about 75 virtual slots in 39 planned
+      dwellings, almost all in the tiny round huts of `poor_compound` and `poor_cone_cluster` (a 1.2-1.5 m
+      hut holds a bed or a pot, not both) — see the open item below.
+- [x] CONTAINER TAGS. Furniture `type` has no `container-item` / `container-food` distinction yet. Add those
       tags. Then every building, residential or not, gets at least one item container, and more where it makes
       sense. Food containers go where food is kept or served: kitchens, stores, shops, taverns, granaries,
       farmsteads, and the caravanserai (which has no interior plan yet). The slot must exist in the plan data,
       so it exports for the game (loot and inventory), even where the building has no furnished room to draw it in.
-- [ ] CARAVANS DO NOT MOVE. Nine are spawned and drawn as four-beast carts with a caravanserai bias, but they
+      2026-10-01: the `storage` type is gone: chests, baskets, presses, cell walls and the mat rack are
+      `container-item`, sacks, pots, jars and the grain bin `container-food`, each with a `capacity` (API.md).
+      Every building has an item container and every kitchen / store / shop / tavern room and every shop,
+      tavern, inn or farm building a food container (audit: 0 missing of 1,770). Granaries, pens and other
+      unplanned buildings carry them in their minimal kit. The caravanserai has a hand-written plan
+      (`INTERIOR_CUSTOM.trade_caravanserai`): 14 cells behind the gallery doorways — stores, a kitchen, a
+      common room, guest rooms — with 8 beds, 25 food and 12 item containers. Exported as
+      `KRATOR_EXPORT.building(id).kit` and in each interior's furniture (GAME_EXPORT.md).
+- [x] CARAVANS DO NOT MOVE. Nine are spawned and drawn as four-beast carts with a caravanserai bias, but they
       register zero corridors and `want` reads null even on the cart code path they now share. Tried: their own
       `destFn`, a synchronous vehicle route, an off-map road-end state machine, and finally unifying them onto
       the cart path — none produced a corridor. Left as decorated carts; needs a fresh look.
-- [ ] No LOD: everything is drawn at full detail at every distance.
+      2026-10-01: found by stepping one caravan in the page. Two faults, neither in the state machine:
+      (1) vehicles had no `off` field, which `step()` multiplies into the position to keep a walker off the
+      centre line, so the first metre of any route turned x and z into NaN and the vehicle vanished for good
+      (carts too: every cart stopped after its first set-out); (2) `LIFE.sim`, the headless fast-forward
+      every test used, never stepped vehicles at all, and their initial waits of up to 30 s outlast a
+      headless run at 0.04 sim-s per real second, so `want` was still null. Vehicles now carry `off`/`step`,
+      `LIFE.sim` steps them, a NaN position raises an ERR, and a caravan runs a loop held as data (`next`):
+      in from a highway road end 1.3-2.1 km out, through the caravanserai's gate into its court, a long
+      stand, sometimes the market circle, then out to a road end, off the map for a while, and back.
+      `window._life.caravans()` shows it; after 10 simulated minutes all nine are under way, 0 vehicle route
+      failures (`vehicleRouteFailures()`). Carts no longer drive in at doors.
+- [x] No LOD: everything was drawn at full detail at every distance. `core/lod` now takes over the
+      scene (see "Level of detail (core/lod)" below).
+- [ ] Tiny round huts (`poor_compound`, `poor_cone_cluster`, R 1.2-1.5 m) cannot hold a whole kit: about 75
+      kit slots there are `virtual` (data, no mesh) — mostly a compound's second bed and second basket. A
+      compound furnishes only the hut behind its door; furnishing its other huts would place them.
+- [ ] Over a long headless fast-forward (`_life.sim(1200)`) pedestrian route failures climb into the
+      hundreds (939 in 20 simulated minutes); `life-layer-alive` only checks them at load. Not looked into.
+- [x] Night at 21:00 is too bright under the gas giant (21-sky / 82-daynight)
+      2026-10-01: the Mav's Refuge / Girder fix, ported. Night floors hemi 0.30 -> 0.07, ambient 0.22 -> 0.035,
+      planetshine fill 0.15/0.08 -> 0.07/0.03; a separate eclipse fill (DN_ECL_HEMI/AMB 0.16/0.10) so an
+      eclipse still reads as twilight; the night fill lerps to a cool blue-grey sky (0x5f7193) over dark sand
+      (0x2e2519) instead of a dimmed day colour; the giant's key 0.44 -> 0.18 x phase (SKY_SHINE_KEY); a full
+      giant cuts the lamps by 8 % instead of 28 % (DN_SHINE_NL_CUT 0.28 -> 0.08). 21:00 under a full giant:
+      hemi ~0.44 -> 0.136, ambient ~0.31 -> 0.073, key ~0.58 -> 0.238, nightK 0.72 -> 0.92. Noon unchanged.
+
+## Level of detail (core/lod)
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into chunks
+that switch to clustered proxies with distance and are drawn combined (one draw per level in view); instanced sets keep
+one draw call, drop their smallest instances by screen size and switch detailed shapes to a simplified version far off.
+The originals stay the raycast targets, so the inspector and `_api` see full detail (checked: the inspector names the
+same thing at nine screen points per view with LOD on and off). The panel (`l`, `measure`) reads draw calls and
+triangles; `LOD.enabled=false` or `?lod=0` puts back the exact scene. `verify.py --assert` passes with LOD on.
+
+Left out by default: the life layer's bodies (their instance matrices are `DynamicDrawUsage`), door leaves and overlays
+(`noPick`). The cutaway (`_doors.cutaway`) sets clipping planes on the originals' materials, which the copies share, and
+the underground view hides scene children, LOD's group among them, so both work unchanged (checked by screenshot);
+interiors are built after LOD applies and are not managed; walking collides with data, not meshes.
+
+Measured 2026-10-01, 1000x640, SwiftShader (`LOD.flush()` then `LOD.measure()`: one render of the main scene, so
+calls and triangles as three.js counts them; sky passes not included):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| Yuni from the north (opening) | 120 / 4.40 M | 118 / 2.94 M |
+| Street life: market | 122 / 4.43 M | 130 / 3.46 M |
+
+Draw calls at verify's opening view: 113 with LOD, within the budget.
 
 ## Catalog verify-pass sync (2026-10)
 - [x] kits/catalog's verify pass found the plants and furniture it harvested from Yuni built bigger than they
@@ -184,3 +271,10 @@
       common_tavern_table, order_reading_table, order_master_chair, salvage_strut_bed, salvage_lamp_stand.
       The interiors planner (64-interiors tryAt) places LAYOUT furniture by w and d, so raising those values
       moves furniture in the world. Re-check every room after such a change.
+
+## Open after merging main (2026-10-01): not addressed
+- [ ] The catalog has not collected the furniture added by the interiors pass. Main retired `yuni-furniture.html`
+      (Yuni's pieces live in kits/catalog), but `kits/catalog/krator-master-furniture.js` was harvested before
+      2026-10-01, so it lacks `poor_lidded_basket`, `poor_food_pot`, `poor_sleeping_mat`, `common_grain_bin`,
+      `poor_reed_mat` and `common_kilim` (64-interiors), and its Yuni pieces still carry the retired `storage` type
+      instead of `container-item` / `container-food` with `capacity`. Re-harvest Yuni into the catalog.

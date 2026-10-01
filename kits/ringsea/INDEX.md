@@ -50,7 +50,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `90-rs-scene.js` | 9 | scene (the Ring Sea roadstead) (1) |
 | `91-rs-probe.js` | 13 | probe (window._api): the Ancients-kit contract,  (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `94-rs-anim.js` | 10 | animation: the swell, the wind, the oars, under  (1) |
 | `95-rs-deck.js` | 10 | decks: walkable surfaces, collision, the life-la (1) |
 | `99-tail.html` | <1 |  |

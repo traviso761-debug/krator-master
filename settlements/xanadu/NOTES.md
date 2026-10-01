@@ -171,7 +171,8 @@ picture; the baths' channels as modules that tile and cap off with pools or foun
   bath tile at the frieze's (which is why its circles came out as ellipses and no K change moved them). `xUVKey`
   in 71-xa-mat.js now builds each hook with `Function()` so its K is in the source, and re-hooks every vernacular
   material after load. Stone, rubble and rock read at their intended (coarser) scales from this round on. The same
-  bug is live in highlands and iziz.
+  bug is live in highlands and iziz. (2026-10-01: fixed upstream. `vWorldUV` is now one shared copy in
+  `core/materials/opt/69a-world-uv.js` with a per-K program, taking an optional Kv; `xUVKey` and `xWorldUV` are gone.)
 
 ### Round 6c — slope modules, a waterfall, the buried pools
 Travis: slanted versions of the water modules, with a waterfall, for uneven ground; the pool in the bend and

@@ -181,7 +181,9 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
      eave line sits at opt.y0. The ridge saddles (rises toward both ends) and sweeps on past the gables into HORNS
      (opt.horn = horn length [h*0.6]) with gilded tips (opt.tip colour; false = none). opt.over eave overhang [1.2];
      opt.eaveLift corners of the eave curl up [h*0.12]; opt.yaw turns the whole roof; opt.fam ['thatch']; opt.col;
-     opt.gable colour of the gable infill (false = open). The roof is a smooth grid: concave from ridge to eave.        */
+     opt.gable colour of the gable infill (false = open). The roof is a smooth grid: concave from ridge to eave.
+     opt.fins = n: a row of n carved spines along the ridge, leaning out toward the horns (the Leopard hall picture);
+     opt.finCol their colour (lacquer), tips gilded with the horns' tip colour.                                         */
   ABYSS.swoopRoof = function(F, x,z, w,d, h, opt){ opt=opt||{}; var fam=opt.fam||'thatch', col=opt.col!=null?opt.col:F.pick(THATCHC), y0=opt.y0||0, ov=opt.over==null?1.2:opt.over;
     var yaw=opt.yaw||0, ca=Math.cos(yaw), sa=Math.sin(yaw), hornL=opt.horn==null?h*0.6:opt.horn, lift=opt.eaveLift==null?h*0.12:opt.eaveLift, sad=opt.saddle==null?h*0.18:opt.saddle;
     function T(u,y,v){ return [x+ca*u+sa*v, y, z-sa*u+ca*v]; }                 /* u along the ridge, v across */
@@ -206,13 +208,19 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
     [-1,1].forEach(function(e){ var pts=[], n3=7; for(var k=0;k<=n3;k++){ var t=k/n3, u=e*(HW+hornL*0.55*t), yy=ridgeY(e)+0.12+hornL*Math.pow(t,1.7), q2=T(u,yy,0); pts.push({ x:q2[0], y:q2[1], z:q2[2], r:0.30*(1-t*0.82) }); }
       F.tube(fam, pts, rc, { seg:8, cap:true });
       if(tip!=null){ var L=pts[n3]; var tp=[{x:L.x,y:L.y-0.1,z:L.z,r:0.11},{x:L.x+ca*e*0.25,y:L.y+0.7,z:L.z-sa*e*0.25,r:0.0}]; F.tube('metal', tp, tip, { seg:6 }); F.ball(L.x, L.y, L.z, 0.16, tip, 'metal'); } });
+    if(opt.fins){ var nf=opt.fins, fcol=opt.finCol!=null?opt.finCol:PAL.abLacquer, fh=Math.min(1.6, 0.12*h+0.4);
+      for(var f=0;f<nf;f++){ var sf=-0.8+1.6*(f+0.5)/nf, lean=sf*fh*0.9, fp=[];
+        for(var m=0;m<=3;m++){ var t3=m/3, q3=T(sf*HW+lean*Math.pow(t3,1.5), ridgeY(sf)+0.2+fh*t3, 0); fp.push({ x:q3[0], y:q3[1], z:q3[2], r:0.16*(1-t3*0.85) }); }
+        F.tube(fam==='thatch'?'plaster':fam, fp, fcol, { seg:6, cap:true }); if(tip!=null) F.ball(fp[3].x, fp[3].y, fp[3].z, 0.07, tip, 'metal'); } }
     return { ridge:y0+h }; };
 
 /* ==================== ABYSS 6. tin-mirror cladding and salvaged trim ==================== */
   /* ---------- 6. tin-mirror cladding and salvaged trim ----------
      ABYSS.tinClad(F, spec, col): spec.box = [cx,y0,cz,w,h,d] with spec.faces 'fblr' (front/back/left/right, default all)
        -> plates 0.03 m outside each face; spec.lathe = [x,z,prof] (prof as F.lathe, [[r,y],...]) -> a shell 0.03 m outside.
-     ABYSS.trim(F, x,y,z, nx,nz, w,h): a frame of salvaged, mismatched strips round a window (centre x,y,z on the wall). */
+     ABYSS.trim(F, x,y,z, nx,nz, w,h, door): a frame of salvaged, mismatched strips round a w x h opening. (x,z) = the
+       opening's centre on the wall, y = its BOTTOM (the sill: F.window's centre minus h/2; a door's ly), as with F.door.
+       door = true: no sill strip (the opening reaches the floor). */
   ABYSS.tinClad = function(F, spec, col){ col=col!=null?col:PAL.abTin;
     if(spec.box){ var b=spec.box, cx=b[0], y0=b[1], cz=b[2], w=b[3], h=b[4], d=b[5], f=spec.faces||'fblr', t=0.04, o=0.03;
       if(f.indexOf('f')>=0) F.box(cx, y0, cz+d/2+o, w+0.02, h, t, 0, col, 'tinmirror');
@@ -220,10 +228,10 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
       if(f.indexOf('l')>=0) F.box(cx-w/2-o, y0, cz, t, h, d+0.02, 0, col, 'tinmirror');
       if(f.indexOf('r')>=0) F.box(cx+w/2+o, y0, cz, t, h, d+0.02, 0, col, 'tinmirror'); }
     if(spec.lathe){ var L=spec.lathe; F.lathe('tinmirror', L[0],L[1], L[2].map(function(p){ return [p[0]+0.03, p[1]]; }), col, { seg:spec.seg||20 }); } };
-  ABYSS.trim = function(F, x,y,z, nx,nz, w,h){ var px=-nz, pz=nx, yaw=Math.atan2(nx,nz), cs=[PAL.abGild, PAL.abBrightTeal, PAL.abSailRed, PAL.abTin, BRASSC[1]];
-    F.box(x+nx*0.06, y+h/2, z+nz*0.06, w+0.5, 0.16, 0.08, yaw, F.pick(cs), 'metal'); F.box(x+nx*0.06, y-h/2-0.16, z+nz*0.06, w+0.5, 0.16, 0.08, yaw, F.pick(cs), 'metal');
-    [-1,1].forEach(function(s){ F.box(x+px*s*(w/2+0.15)+nx*0.06, y-h/2, z+pz*s*(w/2+0.15)+nz*0.06, 0.16, h, 0.08, yaw, F.pick(cs), 'metal'); });
-    for(var i=0;i<5;i++){ var t=(i/4-0.5)*(w+0.4); F.ball(x+px*t+nx*0.1, y+h/2+0.08, z+pz*t+nz*0.1, 0.07, F.pick(cs), 'tinmirror'); } };
+  ABYSS.trim = function(F, x,y,z, nx,nz, w,h, door){ var px=-nz, pz=nx, yaw=Math.atan2(nx,nz), cs=[PAL.abGild, PAL.abBrightTeal, PAL.abSailRed, PAL.abTin, BRASSC[1]];
+    F.box(x+nx*0.06, y+h, z+nz*0.06, w+0.5, 0.16, 0.08, yaw, F.pick(cs), 'metal'); if(!door) F.box(x+nx*0.06, y-0.16, z+nz*0.06, w+0.5, 0.16, 0.08, yaw, F.pick(cs), 'metal');
+    [-1,1].forEach(function(s){ F.box(x+px*s*(w/2+0.15)+nx*0.06, y, z+pz*s*(w/2+0.15)+nz*0.06, 0.16, h, 0.08, yaw, F.pick(cs), 'metal'); });
+    for(var i=0;i<5;i++){ var t=(i/4-0.5)*(w+0.4); F.ball(x+px*t+nx*0.1, y+h+0.08, z+pz*t+nz*0.1, 0.07, F.pick(cs), 'tinmirror'); } };
 
 /* ==================== ABYSS 7. overhead clutter ==================== */
   /* ---------- 7. overhead clutter ---------- */

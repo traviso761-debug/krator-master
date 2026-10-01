@@ -20,19 +20,23 @@ function stripRing(gx,gy,gz,r,d,n){
  n=n||28;const L=TAU*r/n*.92;for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;const lit=d>0?(rng()<.10):true;
   kput('strip',[gx+r*Math.cos(th),gy,gz+r*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[L,1,1],lit?(d>0&&rng()<.5?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}}
 function mullions(gx,gy,gz,r,h,n,d){for(let k=0;k<n;k++){const th=k/n*TAU;kput(d>0?'mullR':'mullW',[gx+r*Math.cos(th),gy+h/2,gz+r*Math.sin(th)],qEuler(0,-th,0),[1,h,1],null);}}
-function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
+// `noStrip` suppresses the light-strip ring. The strips are an UNLIT material,
+// so a dead segment renders at a fixed pale grey rather than going dark with
+// the scene; on a building meant to have no power at all (The Project) that
+// shows up at night as a row of glowing dashes. Every existing caller omits it.
+function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n,noStrip){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
  const o={rFn:y=>rFn(y0+y)*(1.09+.05*Math.sin(Math.PI*y/h)),H:h,nu:48,nv:6};
  if(d===0){mesh(lathe(o),MAT.glass,parent,0,y0,0);}
  mesh(lathe({rFn:y=>rFn(y0+y)*.97,H:h,nu:32,nv:2}),MAT.dark,parent,0,y0,0);
  mullions(gx,gy+y0,gz,rFn(y0+h/2)*1.1,h,n||36,d);
- stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
+ if(!noStrip)stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
  // ledge slab under the band
  kput('slab',[gx,gy+y0-.4,gz],null,[rFn(y0)*1.16,.8,rFn(y0)*1.16],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));}
 function floorSlabs(gx,gy,gz,rFn,y0,y1,step,d,cut){for(let y=y0;y<y1;y+=step){if(cut!=null&&y>cut+3)break;kput('slab',[gx,gy+y,gz],null,[rFn(y)*.93,.5,rFn(y)*.93],new THREE.Color(0x2a2c30));}}
-function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
+function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
  kput('moss',[gx+r*Math.cos(a),gy+s*.25,gz+r*Math.sin(a)],qEuler(0,rng()*TAU,0),[s*rr(.8,1.4),s*.38,s*rr(.8,1.4)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
-function mossOnRing(gx,gy,gz,r,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
-function vinesOnRing(gx,gy,gz,r,n,lMax){for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
+function mossOnRing(gx,gy,gz,r,n,sMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
+function vinesOnRing(gx,gy,gz,r,n,lMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
 // Rubble piles AGAINST the wall it fell from. The radius is biased hard toward
 // rMin, blocks are largest there, and they bank up into a talus slope that
 // thins to a scatter at the outer edge. A uniform annulus reads as a decorative
@@ -89,22 +93,55 @@ function upFaces(src,count,minNY){return faceSamples(src,count,minNY,1.01);}
 function sideFaces(src,count){return faceSamples(src,count,0,.34);}
 // The outer band of the flat surfaces is where a ledge is: water leaves the
 // building there, so that is where vines root and where stains start.
-function ledgePoints(geos,n,frac){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+// `cx,cz` is the centre the radius is measured from, and it is NOT always the
+// builder's origin. A crescent is drawn about a centre of curvature well off
+// that origin (the Hotel's is 63 m away), so measuring from 0,0 ranks the two
+// HORNS of the crescent as its outermost points and hangs every vine and every
+// water stain off the two ends of the building instead of off its long face.
+function ledgePoints(geos,n,frac,cx,cz){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+ if(cx!==undefined)for(const f of s)f.r=Math.hypot(f.p[0]-cx,f.p[2]-cz);
  s.sort((a,b)=>b.r-a.r);return s.slice(0,Math.max(1,Math.round(s.length*(frac||.3))));}
-function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,n,.55)){const s=rr(.5,sMax);
+function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,biomeN(n),.55)){const s=rr(.5,sMax);
  kput('moss',[gx+f.p[0],gy+f.p[1]+s*.15,gz+f.p[2]],qEuler(0,rng()*TAU,0),[s*rr(.8,1.5),s*rr(.22,.42),s*rr(.8,1.5)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
-function vinesFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.3)){const L=rr(4,lMax);
+function vinesFromLedge(geos,gx,gy,gz,n,lMax,cx,cz){for(const f of ledgePoints(geos,biomeN(n),.3,cx,cz)){const L=rr(4,lMax);
  kput('vine',[gx+f.p[0],gy+f.p[1],gz+f.p[2]],qEuler(rr(-.14,.14),rng()*TAU,rr(-.14,.14)),[rr(.8,1.7),L,rr(.8,1.7)],null);}}
 // Water-staining below each ledge: a multiply-blended streak, so it darkens
 // whatever wall it lands on instead of painting a grey rectangle over it.
-function stainsFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.45)){
- const L=rr(5,lMax),a=Math.atan2(f.p[2],f.p[0]),o=1.004;
- kput('stain',[gx+f.p[0]*o,gy+f.p[1]-L*.5,gz+f.p[2]*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
+//
+// Still radial, which is the standing complaint against it on a rectilinear
+// plan — but it is now radial about `cx,cz` rather than always about the
+// builder's origin. On the Hotel, whose crescent is struck from a centre 63 m
+// behind the origin, the two are 43 degrees apart at the horns, so every
+// streak at the ends of the building was laid across the facade instead of
+// down it. Callers on a circular plan centred on their own origin pass nothing
+// and are unchanged.
+function stainsFromLedge(geos,gx,gy,gz,n,lMax,cx,cz){const ox=cx||0,oz=cz||0;
+ for(const f of ledgePoints(geos,n,.45,cx,cz)){
+ const L=rr(5,lMax),a=Math.atan2(f.p[2]-oz,f.p[0]-ox),o=1.004;
+ kput('stain',[gx+ox+(f.p[0]-ox)*o,gy+f.p[1]-L*.5,gz+oz+(f.p[2]-oz)*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
 
 // VEGETATION HAND-OFF. The Krator flora pass is a separate project and will
 // replace VEG.tree wholesale; everything in this kit that plants anything goes
 // through it, so that swap is one assignment and touches no builder.
 // y is the ground height at (x,z) — ask terrainH, do not assume 0.
+// ---------------------------------------------------------------- THE BIOME
+// One dial the whole kit's planting hangs off, so "overgrown" is a setting
+// rather than 33 separate edits. `lush` multiplies every scattered population:
+// 1 is the kit as designed, 3 is a site the plain has taken back.
+//
+// A builder is CROSS-COMPATIBLE with this when its own planting loops route
+// their counts through BIOME.lush too — the shared helpers below already do,
+// so a type that plants only via trees()/scatterMoss()/VEG.tree gets it free,
+// and a type with a bespoke scatter (both forest types, Arcbeam, Arcoindian)
+// has to opt in. That difference is exactly what the biome pass is testing.
+//
+// It is a GLOBAL and the builders run in sequence, so anything that sets it
+// must put it back — see `withBiome`, which is the only sanctioned way in.
+const BIOME={lush:1};
+function withBiome(lush,fn){const was=BIOME.lush;BIOME.lush=lush;
+ try{fn();}finally{BIOME.lush=was;}}
+const biomeN=n=>Math.round(n*BIOME.lush);
+
 // The hand-off point for flora. Every planting call in the kit goes through
 // this, so changing it changes the forest everywhere at once — which is the
 // point: see the LEAF CARD note in 34-kitdefs.js for why the four-icosahedra
@@ -128,7 +165,7 @@ const VEG={
    // no texture at all — came back as near-black shrubs.
    new THREE.Color().setHSL(rr(.22,.34),rr(.30,.52),rr(.40,.68)));}},
 };
-function trees(gx,gz,rMin,rMax,n){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
+function trees(gx,gz,rMin,rMax,n){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
  const x=gx+r*Math.cos(a),z=gz+r*Math.sin(a);VEG.tree(x,terrainH(x,z),z,i%3,h);}}
 // APRON. Every structure meets the ground on a hard line without one. This lays
 // a graded skirt from the foot of the mass out to the ground, so the two blend.

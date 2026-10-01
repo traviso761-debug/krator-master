@@ -125,6 +125,8 @@ var KRATOR_EXPORT = {
       windows:(b.windows||[]).map(function(i){ return fixOut('window', FIX.byId[i]); }),
       lights:(b.lights||[]).map(function(i){ return fixOut('light', FIX.byId[i]); }) };
     if(typeof interiorPlan==='function'){ var P = interiorPlan(id); if(P) out.interior = interiorExport(P); }
+    /* beds and containers (loot, inventory), planned or not: 64-interiors.js buildingKit() */
+    if(typeof buildingKit==='function') out.kit = buildingKit(id);
     return out;
   },
   fixtures: function(){

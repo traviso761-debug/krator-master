@@ -14,6 +14,15 @@ reseed(655001);
     wealth:[0.3,0.7], w:24, d:23, h:15, variants:2, variantNames:['stacked containers round a deck court','galleried pastel wings'], sim:{ activity:'REST', capacity:40 },
     build:function(F){ var v=F.variant, H=1.0, L=2.7;
       ABYSS.platform(F, -11.5,11.5, -10.5,10, H, { span:3.0 });
+      /* the court stairs. Ground -> first gallery: a flight across the court onto the LEFT gallery's inner edge xi at z zs
+         (the rail is broken for it). First -> second gallery: a dog-leg off the RIGHT gallery's open front end (x xi..xo,
+         z ze) — half a storey out over the deck, a landing, half a storey back onto the second gallery. */
+      function innStairs(xi, xo, zs, ze){ var run=L*1.15;
+        ABYSS.flight(F, -xi+run,zs, -1,0, H,H+L, 1.0);
+        var wm=(xo-xi)/2, y1=H+L, ym=H+1.5*L, y2=H+2*L, zl=ze+run/2, pk=F.pick(PLANKC);
+        ABYSS.flight(F, xi+wm/2,ze, 0,1, y1,ym, wm-0.05); ABYSS.flight(F, xo-wm/2,zl, 0,-1, ym,y2, wm-0.05);
+        F.box((xi+xo)/2,ym-0.12,zl+0.45, xo-xi,0.12,0.9, 0, pk, 'plank'); LOCUS.rail(F, xi,zl+0.9, xo,zl+0.9, ym, null, 1.0);
+        [xi+0.1, xo-0.1].forEach(function(x){ F.cyl(x,H,zl+0.8, 0.08,ym-H, 0, F.pick(TIMBERC), 'timber'); }); }
       if(v===0){ /* three wings of containers, three storeys, galleries on the court side */
         for(var l=0;l<3;l++){ var y=H+l*L, sh=l===2?1.4:0;
           ABYSS.vessel(F, 'container', -8.6,y,-1.2+sh, { len:12.2, yaw:PI/2, col:ABYSS.cont(F), win:[[-3.5,1.5],[3.5,1.5]], door:'side', doorAt:0 });
@@ -21,9 +30,9 @@ reseed(655001);
           ABYSS.vessel(F, 'container', 0,y,-8.6, { len:12.2, col:ABYSS.cont(F), win:[[-3.5,1.5],[3.5,1.5]], door:'side', doorAt:0 });
           if(l>0){ var pk=F.pick(PLANKC);   /* galleries */
             F.box(-6.65,y-0.12,-1.2, 1.5,0.12,12.2, 0, pk, 'plank'); F.box(6.65,y-0.12,-1.2, 1.5,0.12,12.2, 0, pk, 'plank'); F.box(0,y-0.12,-6.65, 11.8,0.12,1.5, 0, pk, 'plank');
-            LOCUS.rail(F, -5.9,-7.3, -5.9,4.9, y, null, 1.0); LOCUS.rail(F, 5.9,-7.3, 5.9,4.9, y, null, 1.0); LOCUS.rail(F, -5.9,-5.9, 5.9,-5.9, y, null, 1.0);
+            LOCUS.rail(F, -5.9,-7.3, -5.9,l===1?3.0:4.9, y, null, 1.0); LOCUS.rail(F, 5.9,-7.3, 5.9,4.9, y, null, 1.0); LOCUS.rail(F, -5.9,-5.9, 5.9,-5.9, y, null, 1.0);
             [-7.3,-1.2,4.9].forEach(function(z){ F.cyl(-5.95,H,z, 0.09,y-H, 0, F.pick(TIMBERC), 'timber'); F.cyl(5.95,H,z, 0.09,y-H, 0, F.pick(TIMBERC), 'timber'); }); } }
-        ABYSS.flight(F, -5.2,4.6, 0,-1, H,H+L, 1.0); ABYSS.flight(F, 5.2,-3.0, 0,1, H+L,H+2*L, 1.0);
+        innStairs(5.9, 7.4, 3.6, 4.9);
         ABYSS.antenna(F, -8.6,H+3*L,-5.0, 'dish', { r:0.8 }); ABYSS.antenna(F, 8.6,H+3*L,2.0, 'mast', { h:3 }); ABYSS.billboard(F, 0,H+3*L-0.2,-9.9, 0,-1, 5,2); }
       else { /* galleried pastel wings on a rubble plinth course, flat roofs, timber galleries */
         var c=F.pick(PASTELC), band=shade(c,-0.3), D=4.2;
@@ -33,15 +42,15 @@ reseed(655001);
           for(var l2=0;l2<3;l2++) for(var k=-1;k<=1;k++){ var y2=H+l2*L, o=k*4.0; F.door(fx+px*o-px*0.8, fz+pz*o-pz*0.8, nx,nz, 0.9, 2.1, PAL.abBrightTeal, y2); LOCUS.lattice(F, fx+px*o+px*0.8, y2+1.7, fz+pz*o+pz*0.8, nx,nz, 1.0,1.0); } });
         for(var l3=1;l3<3;l3++){ var y3=H+l3*L, pk2=F.pick(PLANKC);
           F.box(-6.3,y3-0.12,-1.0, 1.6,0.12,14, 0, pk2, 'plank'); F.box(6.3,y3-0.12,-1.0, 1.6,0.12,14, 0, pk2, 'plank'); F.box(0,y3-0.12,-5.4, 11,0.12,1.6, 0, pk2, 'plank');
-          LOCUS.rail(F, -5.5,-4.6, -5.5,6.0, y3, null, 1.0); LOCUS.rail(F, 5.5,-4.6, 5.5,6.0, y3, null, 1.0); LOCUS.rail(F, -5.5,-4.6, 5.5,-4.6, y3, null, 1.0); }
+          LOCUS.rail(F, -5.5,-4.6, -5.5,l3===1?4.1:6.0, y3, null, 1.0); LOCUS.rail(F, 5.5,-4.6, 5.5,6.0, y3, null, 1.0); LOCUS.rail(F, -5.5,-4.6, 5.5,-4.6, y3, null, 1.0); }
         [-4.6,0.7,6.0].forEach(function(z){ [-5.55,5.55].forEach(function(x){ F.cyl(x,H,z, 0.11,2*L+1.0, 0, F.pick(TIMBERC), 'timber'); }); });
-        ABYSS.flight(F, -4.8,6.5, 0,-1, H,H+L, 1.0); ABYSS.flight(F, 4.8,-2.0, 0,1, H+L,H+2*L, 1.0);
+        innStairs(5.5, 7.1, 4.7, 6.0);
         ABYSS.furn(F, 'abyss_well', 0,2.6, 0, { ly:H }); ABYSS.plant(F, 'abyss_creeper', -5.0,-4.4, 0, { ly:H }); ABYSS.plant(F, 'abyss_creeper', 5.0,-4.4, 0, { ly:H }); }
       /* the court: tables, a sail over it on four masts, strung lanterns */
-      var top=H+3*L+3.0, C=[[-5.6,top+0.8,-5.6],[5.6,top,-5.6],[5.6,top+0.8,7.6],[-5.6,top,7.6]];
+      var top=H+3*L+3.0, C=[[-5.6,top+0.8,-5.6],[5.6,top,-5.6],[5.6,top+0.8,8.9],[-5.6,top,8.9]];
       C.forEach(function(q){ ABYSS.mast(F, q[0],q[2], q[1], { finial:PAL.abGild, r:0.14 }); });
       ABYSS.sail(F, C, v?PAL.abSailOrange:CANVASC[0], { swoop:1.2, band:v?PAL.abSailOrange:PAL.abSailRed, bandW:0.7 });
-      ABYSS.furn(F, 'abyss_lantern_string', 0,0.0, 0, { ly:H+L-0.3, variant:1 }); ABYSS.furn(F, 'abyss_lantern_string', 0,6.0, 0, { ly:H+L-0.3, variant:1 });
+      ABYSS.furn(F, 'abyss_lantern_string', 0,0.0, 0, { ly:H+L-0.3, variant:1 }); ABYSS.furn(F, 'abyss_lantern_string', 0,2.2, 0, { ly:H+L-0.3, variant:1 });
       ABYSS.furn(F, 'abyss_table_stools', -2.4,v?-1.5:1.5, 0, { ly:H, variant:1, setting:'room' });   /* in the court the interior set plans as the tavern */ ABYSS.furn(F, 'abyss_table_stools', 2.4,3.8, 0, { ly:H }); ABYSS.furn(F, 'abyss_table_stools', -2.0,6.8, 0, { ly:H });
       LOCUS.stair(F, 0, 10+H*1.15, 0,-1, H, 3.0); ABYSS.railRect(F, -11.5,11.5,-10.5,10, H, [['f',-1.6,1.6],['b',-12,12]]);
       ABYSS.sign(F, 3.6,H+3.0,10.05, 0,1, 1.6,0.9, 'bed'); F.cyl(3.6,0,10.05, 0.08,H+3.0, 0, F.pick(TIMBERC), 'timber');
@@ -62,7 +71,7 @@ reseed(655001);
       ABYSS.furn(F, 'abyss_counter', -4.0,-6.0, 0, { ly:H, variant:1, setting:v?'indoor':'room' }); ABYSS.furn(F, 'abyss_shelf_jars', -4.0,-8.0, 0, { ly:H, setting:v?'indoor':'room' });
       ABYSS.vessel(F, 'drum', 5.5,H,-6.6, { r:1.0, len:4.0, col:ABYSS.rust(F), win:[[0,0]], awning:PAL.abSailRed });
       for(var b=0;b<3;b++){ ABYSS.burn(F, 1); FURNISH('pa_drum', -8.4+b*0.7,H,-7.8, 0, { setting:v?'indoor':'room' }); }   /* the bar's drums: FURNITURE (catalog pa_drum; the colour pick the drawn drum took, burnt) */
-      [[-5.5,-1.8],[-1.5,-2.4],[2.5,-1.8],[6.5,-2.2],[-6.0,2.4],[-2.0,3.0],[2.0,2.6],[6.2,2.8]].forEach(function(p,i){ ABYSS.furn(F, 'abyss_table_stools', p[0],p[1], i*0.7, { ly:H, variant:i%2, setting:'room' }); });
+      [[-5.5,-1.8],[-1.5,-2.4],[2.5,-1.8],v?[4.6,0.6]:[6.5,-2.2],[-6.0,2.4],[-2.0,3.0],[2.0,2.6],[6.2,2.8]].forEach(function(p,i){ ABYSS.furn(F, 'abyss_table_stools', p[0],p[1], i*0.7, { ly:H, variant:i%2, setting:'room' }); });
       ABYSS.furn(F, 'abyss_bench', -8.6,0, PI/2, { ly:H, variant:1, setting:'room' }); ABYSS.furn(F, 'abyss_bench', 8.6,0, -PI/2, { ly:H, variant:1, setting:'room' });
       if(v===0){ /* twin swooping sails, orange with red bands, on six masts; propeller-lanterns at the ends */
         var M=[[-9.6,9.8,-8.2],[0,8.6,-8.2],[9.6,9.8,-8.2],[9.6,8.6,6.2],[0,9.4,6.2],[-9.6,8.6,6.2]];
@@ -72,7 +81,7 @@ reseed(655001);
         [-6,-2,2,6].forEach(function(x){ ABYSS.lantern(F, x, H+4.4, -1.0, true); ABYSS.lantern(F, x, H+4.2, 3.2, x%4===0); }); }
       else { /* a raised upper deck at the back and one great sail peaked over a central mast */
         var H2=H+2.2; ABYSS.platform(F, -10,10, -8.5,-3.5, H2, { span:2.8, brace:false }); ABYSS.railRect(F, -10,10,-8.5,-3.5, H2, [['f',5.4,7.4],['b',-11,11]]);
-        ABYSS.flight(F, 6.4,-0.4, 0,-1, H,H2, 1.4);
+        ABYSS.flight(F, 6.4,-3.5+(H2-H)*1.15, 0,-1, H,H2, 1.4);                         /* lands on the upper deck's edge, z -3.5 */
         ABYSS.mast(F, 0,-1.0, 13.0, { r:0.22, guys:0, finial:PAL.abGild, prop:true, lit:true });
         var C=[[-10,7.6,-8.4],[10,7.6,-8.4],[10,6.4,6.4],[-10,6.4,6.4]]; C.forEach(function(q){ LOCUS.pole(F, q[0],q[2], q[1], 0.14, null, PAL.abGild); });
         ABYSS.sail(F, C, PAL.abSailOrange, { swoop:1.6, peak:4.6, band:PAL.abSailOrange, bandW:0.9 });
@@ -136,13 +145,14 @@ reseed(655001);
           if(i<3 && k%2===0) ABYSS.furn(F, 'abyss_reading_table', Math.cos(a)*(rr), cz+Math.sin(a)*(rr), -a-PI/2, { ly:y+1.4, setting:'indoor' }); } }   /* the crescents: no room planned on them */
       F.sector('plank', 0,cz, 0, 4.5, 0, TAU, P, P+0.2, F.pick(PLANKC), { faces:'to', step:1.0 });
       [[-2.4,0],[2.4,0],[0,2.6]].forEach(function(p){ ABYSS.furn(F, 'abyss_reading_table', p[0],cz+p[1], 0, { ly:P+0.2, setting:'room' }); });   /* the hall the interior set plans (seen through the arch) */
-      ABYSS.coneShell(F, 0,cz, R, 26, { y0:P, fam:'thatch', col:THATCHC[1], arch:{ w:11, h:11.5 }, archCol:PAL.abLacquer, ring:PAL.abLacquer, k:1.35, seg:36, thick:0.5 });
+      ABYSS.coneShell(F, 0,cz, R, 26, { y0:P, fam:'thatch', col:0xC9C1AC,                 /* wq.jpg: pale silvery-grey thatch */
+         arch:{ w:11, h:11.5 }, archCol:PAL.abLacquer, ring:PAL.abLacquer, k:1.35, seg:36, thick:0.5 });
       F.lamp(0,P+10,cz, 1.8, 26);
       /* the lesser cones beside it: a scroll store in shingle and a reading lantern in tin-mirror */
-      ABYSS.coneShell(F, -16,-12, 3.6, 11, { y0:0, fam:'tile', col:0x8a7a68, arch:{ w:2.0, h:2.8 }, ring:PAL.abLacquer });
-      ABYSS.coneShell(F, 16,-12, 3.4, 13, { y0:0, fam:'tinmirror', col:PAL.abTin, k:1.0, arch:{ w:2.0, h:2.8 }, ring:PAL.abLacquer });
+      ABYSS.coneShell(F, -13.2,-16.2, 2.6, 11, { y0:P, fam:'tile', col:0x8a7a68, arch:{ w:2.0, h:2.8 }, ring:PAL.abLacquer });
+      ABYSS.coneShell(F, 13.2,-16.2, 2.6, 13, { y0:P, fam:'tinmirror', col:PAL.abTin, k:1.0, arch:{ w:2.0, h:2.8 }, ring:PAL.abLacquer });
       [-6,6].forEach(function(x){ ABYSS.furn(F, 'abyss_lantern_post', x,cz+R+5, PI, { variant:1 }); ABYSS.furn(F, 'abyss_bench', x*1.6,cz+R+7, 0, { variant:1 }); });
-      ABYSS.plant(F, 'abyss_creeper', -15.5,-7.6, 0); ABYSS.plant(F, 'abyss_creeper', 15.5,-7.6, 0);
+      ABYSS.plant(F, 'abyss_creeper', -16.7,-7.6, 0); ABYSS.plant(F, 'abyss_creeper', 16.7,-7.6, 0);
     } });
 
   /* =============================================================== SCHOOL */

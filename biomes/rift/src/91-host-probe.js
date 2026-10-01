@@ -2,9 +2,9 @@
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:25000000,calls:150},   // the agreed ceiling for this 6.4 km scene (KNOWN_ISSUES); q=1 measures under it
+ showcase:{tris:27000000,calls:700,rendered:17000000},   // held in memory (the hero trees' stand-ins included) / calls and triangles drawn at any one camera, with the runtime LOD (KNOWN_ISSUES BUDGET)
  cls:{pass:19000000,host:900000},
- type:{'rift/trees':'pass','rift/floor':'pass','rift/dress':'pass','host':'host'},
+ type:{'rift/trees':'pass','rift/far':'pass','rift/floor':'pass','rift/dress':'pass','host':'host'},   // rift/far: the impostors and the hero trees' stand-ins
 };
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
@@ -23,7 +23,7 @@ function nanSweep(){const bad=[];let badInst=0;
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 window._api={BUDGET,REG,
- get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ get totals(){const t=BIO.totals();return {rendered:BIO.lodShown?BIO.lodShown.tris:null,lodMeshes:BIO.lodMeshes.length,tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome};

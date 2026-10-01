@@ -73,19 +73,30 @@ slowly with the wind. This kit is the first to use it as the rule: `frill`, `ple
 `lobeleaf`, `spray`, `rope`, `curl`, `irosette` and `clubmoss` all carry `aC2`, and every
 builder passes a second colour from the species' `irid` set (or none, for the terrestrial
 species). Two boles shimmer too (`BIO.iridBarkMat`): the frill tree's column teal to
-violet, the bell palm's trunk only a little.
+violet, the bell palm's trunk only a little. `curl` and `irosette` also carry `aN`, a
+per-instance normal that steers only their iridescence (`RIFT.iridOnlyN` keeps the lighting
+on the geometry). The impostors keep it: the 'far' bucket's material (`RIFT.farMat`) reads a
+second colour packed into each vertex's uv (see NOTES, the far canopy).
 
 ## What the biome exports
 
 ```js
-RIFT.build({R:3050, quality:1, lakeHue:.15}) -> {trees, heroes, far, bySpecies, ..., under, tris}
+RIFT.build({R:3050, quality:1, lakeHue:.15}) -> {trees, heroes, far, standins, bySpecies, ..., under, tris}
 RIFT.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette)
 RIFT.canopyH(x,z)               // approximate canopy top
 RIFT.SPECIES                    // the 34 tree species (tagged), RIFT.PAL the palettes
 RIFT.zones(x,z)                 // the zone weights a world can reuse for its own placement
+RIFT.LOD                        // the runtime ranges: {tree:1200, floor:650, midFloor:1300, farFloor:3000, logs:1200, dress:1200}
 ```
 
-Then `BIO.bake()` once. Draw calls: one per instanced item + one per merged family (~50).
+How the biome uses the runtime LOD (the core's `BIO.range`): every hero tree is drawn in full
+within `RIFT.LOD.tree` of its chunk and as a cheap stand-in impostor past it (a small species as a
+20-triangle blob, or nothing); trees built as impostors from the start (far from the spine) are
+always in range; the floor's bands show within their ranges, and a coarse far band stands in for
+the near and mid bands past theirs.
+
+Then `BIO.bake()` once, and `BIO.lodTick(camera)` every frame (after `camera.updateMatrixWorld()`).
+Draw calls: one per instanced item or merged family per 1.2 km chunk in range (340-580 at the presets).
 
 ## Tags (project rule)
 
@@ -112,4 +123,5 @@ A plant is never part of a building: `dress()` places plants ON geometry the hos
 ```
 
 To port: copy 10–70 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields})`,
-set `RIFT_LAKE`, call `RIFT.build`, then `BIO.bake()`. Read KNOWN_ISSUES.md first.
+set `RIFT_LAKE`, call `RIFT.build`, then `BIO.bake()`, and call `BIO.lodTick(camera)` in the frame
+loop. Read KNOWN_ISSUES.md first.

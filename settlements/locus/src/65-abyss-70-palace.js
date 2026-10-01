@@ -27,10 +27,10 @@ reseed(657001);
       var np=10; for(var i=0;i<=np;i++){ var x=-hw/2+hw*i/np; [hz-hd/2-0.1, hz+hd/2+0.1].forEach(function(z){ F.cyl(x,P,z, 0.42,WH, 0, lac, 'plaster'); F.cyl(x,P+WH-0.4,z, 0.55,0.4, 0, gild, 'metal'); }); }
       for(var j=0;j<np;j++){ var xm=-hw/2+hw*(j+0.5)/np; if(Math.abs(xm)<3) continue; LOCUS.lattice(F, xm,P+4.6,hz+hd/2+0.04, 0,1, 2.4,3.0); ABYSS.trim(F, xm,P+3.1,hz+hd/2+0.04, 0,1, 2.4,3.0); }
       [-1,1].forEach(function(s){ for(var k=-2;k<=2;k++) LOCUS.lattice(F, s*(hw/2+0.04),P+4.6,hz+k*4, s,0, 2.4,3.0); });
-      F.door(0, hz+hd/2+0.05, 0,1, 3.2, 5.2, gild, P); ABYSS.trim(F, 0,P,hz+hd/2+0.08, 0,1, 3.4,5.4);
+      F.door(0, hz+hd/2+0.05, 0,1, 3.2, 5.2, gild, P); ABYSS.trim(F, 0,P,hz+hd/2+0.08, 0,1, 3.4,5.4, true);
       F.box(0,P+WH,hz, hw+0.8,0.5,hd+0.8, 0, lac, 'relief');
       /* the grandest roof */
-      ABYSS.swoopRoof(F, 0,hz, hw, hd, 12.5, { y0:P+WH+0.5, horn:7.5, over:2.4, col:THATCHC[0], eaveLift:2.0, saddle:3.0 });
+      ABYSS.swoopRoof(F, 0,hz, hw, hd, 12.5, { y0:P+WH+0.5, horn:7.5, over:2.4, col:THATCHC[0], eaveLift:2.0, saddle:3.0, fins:11 });
       /* the front stair: broad, from the plaza ground up to the deck, then to the hall's plinth */
       LOCUS.stair(F, 0, Z1+H*1.15, 0,-1, H, 16);
       ABYSS.flight(F, 0,hz+hd/2+1.5+1.4*1.15, 0,-1, H,P, 8);
@@ -40,14 +40,15 @@ reseed(657001);
         ABYSS.coneShell(F, x,z, 5.2, fr?22:18, { y0:H+3.6, fam:'tinmirror', col:PAL.abTin, k:1.2, arch:fr?{ w:3.2, h:4.6 }:null, archCol:gild, ring:gild, thick:0.3, face:Math.atan2(-z,-x) });
         F.lamp(x, H+8, z, 1.0, 16); });
       /* sail-roofed loggias either side of the front stair */
-      [-1,1].forEach(function(s){ var cx=s*22, cz=17, w=20, d=11, M=[[cx-w/2,H+8.0,cz-d/2],[cx+w/2,H+7.0,cz-d/2],[cx+w/2,H+8.0,cz+d/2],[cx-w/2,H+7.0,cz+d/2]];
+      [-1,1].forEach(function(s){ var cx=s*20.5, cz=17, w=18, d=11,          /* outer masts at x +-29.5, clear of the front towers (r 5.4 at x +-36) */ M=[[cx-w/2,H+8.0,cz-d/2],[cx+w/2,H+7.0,cz-d/2],[cx+w/2,H+8.0,cz+d/2],[cx-w/2,H+7.0,cz+d/2]];
         M.forEach(function(m){ ABYSS.mast(F, m[0],m[2], m[1], { r:0.2, finial:gild, prop:true, lit:true }); });
         ABYSS.sail(F, M, PAL.abSailOrange, { swoop:1.6, band:PAL.abSailOrange, bandW:0.9 });
         ABYSS.furn(F, 'abyss_bench', cx-4,cz, PI/2, { ly:H, variant:1 }); ABYSS.furn(F, 'abyss_bench', cx+4,cz, -PI/2, { ly:H, variant:1 }); ABYSS.furn(F, 'abyss_table_stools', cx,cz, 0, { ly:H, variant:1 });
         ABYSS.furn(F, 'abyss_brazier', cx+s*7,cz+3, 0, { ly:H, variant:1 }); [-6,0,6].forEach(function(o){ ABYSS.lantern(F, cx+o, H+5.6, cz, true); }); });
       /* behind the hall: the women's court and stores (pastel pavilions), the Headman's crystal shrine */
-      [-1,1].forEach(function(s){ var c=s<0?PASTELC[0]:PASTELC[3]; F.box(s*26,H,-19, 14,4.2,8, 0, c, 'plaster'); F.box(s*26,H,-19, 14.1,0.5,8.1, 0, shade(c,-0.3), 'plaster');
-        LOCUS.parapet(F, s*26,H+4.2,-19, 14,8, 0.2,0.6, c, shade(c,-0.3)); [-4,0,4].forEach(function(o){ LOCUS.lattice(F, s*26+o,H+2.8,-15+0.02, 0,1, 1.4,1.6); }); });
+      [-1,1].forEach(function(s){ var c=s<0?PASTELC[0]:PASTELC[3], px=s*26;   /* x 22..30: clear of the hall's plinth (x +-21.5) and the back towers (r 5.4 at x +-36, z -21) */
+        F.box(px,H,-19, 8,4.2,8, 0, c, 'plaster'); F.box(px,H,-19, 8.1,0.5,8.1, 0, shade(c,-0.3), 'plaster');
+        LOCUS.parapet(F, px,H+4.2,-19, 8,8, 0.2,0.6, c, shade(c,-0.3)); [-2.5,0,2.5].forEach(function(o){ LOCUS.lattice(F, px+o,H+2.8,-15+0.02, 0,1, 1.4,1.6); }); });
       ABYSS.furn(F, 'abyss_crystal_ring', 0,-21, 0, { ly:H, variant:1 }); ABYSS.furn(F, 'abyss_fire_bowl', 0,-21, 0, { ly:H, variant:1 });
       /* the private dock out of the back gap, over the water, and the Headman's barge */
       ABYSS.platform(F, -4,4, -35,-26, H-0.6, { span:3.0 }); [-3.6,3.6].forEach(function(x){ ABYSS.mast(F, x,-34.6, H+3.4, { lantern:'lit', finial:gild }); });

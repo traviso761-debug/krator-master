@@ -50,7 +50,7 @@ TEX.xPalStar=canvasTex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);const c=w/2;g.line
  xpLozenge(g,c,c,w*.34,w*.34,XPALOPO.sky,XPALOPO.yellow,7);xpLozenge(g,c,c,w*.12,w*.12,XPALOPO.pink,null);
  g.fillStyle=XPALOPO.yellow;for(const [sx,sy] of[[1,0],[-1,0],[0,1],[0,-1]]){g.beginPath();g.arc(c+sx*w*.4,c+sy*w*.4,w*.035,0,TAU);g.fill();}});
 MAT.xPalBand=xStd({map:TEX.xPalBand,alphaTest:.5,roughness:.85});MAT.xPalZig=xStd({map:TEX.xPalZig,alphaTest:.5,roughness:.85});
-xWorldUV(MAT.xPalBand,1,2);xWorldUV(MAT.xPalZig,1,2);
+vWorldUV(MAT.xPalBand,1,2);vWorldUV(MAT.xPalZig,1,2);
 MAT.xPalBird=xStd({map:TEX.xPalBird,alphaTest:.5,roughness:.85});MAT.xPalBird2=xStd({map:TEX.xPalBird2,alphaTest:.5,roughness:.85});
 MAT.xPalDeer=xStd({map:TEX.xPalDeer,alphaTest:.5,roughness:.85});MAT.xPalStar=xStd({map:TEX.xPalStar,alphaTest:.5,roughness:.85});
 kdef('xPalBand',VPLANE,MAT.xPalBand);kdef('xPalZig',VPLANE,MAT.xPalZig);kdef('xPalBird',VPLANE,MAT.xPalBird);kdef('xPalBird2',VPLANE,MAT.xPalBird2);kdef('xPalDeer',VPLANE,MAT.xPalDeer);kdef('xPalStar',VPLANE,MAT.xPalStar);

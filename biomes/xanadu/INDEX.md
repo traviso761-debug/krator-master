@@ -9,18 +9,16 @@ Built output (never open it; edit `src/` and rebuild): `dist/xanadu.html`
 Build: `cd biomes/xanadu && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`
+
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (83) |
-| `20-core-kit.js` | 17 | merged buckets (46); runtime LOD (xanadu-1, additive) (121); indexed buckets (145); bake (168) |
-| `30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `40-core-place.js` | 6 | surface sampling (53) |
 | `45-host-stage.js` | 18 | the map (46); the sacred river (100); terrain (133); the climate fields (151); the field cache (18 m lattice; terrainH stays ex (174); the host binding (182) |
 | `46-host-ground.js` | 11 | the lake (67); the river (93) |
-| `50-biome-xanadu-species.js` | 52 **big** | THE LAKE COLOUR (20); the tree species (73); leaf and flower textures (182); an iridescent bark (shared hook; the Rift kit's) (330); bark textures (342); geometries local to this biome (391); materials (466); instanced items (523) |
+| `50-biome-xanadu-species.js` | 52 **big** | THE LAKE COLOUR (21); the tree species (74); leaf and flower textures (183); an iridescent bark (shared hook; the Rift kit's) (331); bark textures (343); geometries local to this biome (392); materials (467); instanced items (524) |
 | `55-biome-xanadu-trees.js` | 66 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (502); the pass (534); one tree at a point (additive, for a world's gar (622) |
 | `60-biome-xanadu-floor.js` | 19 | small plants (34); the zone planters (99); the pass (166) |
 | `65-biome-xanadu-dress.js` | 5 |  |

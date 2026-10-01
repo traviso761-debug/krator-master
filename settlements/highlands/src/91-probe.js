@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- probe (window._api) — same contract as the Ancients kit's, so verify.py runs unchanged
 const BUDGET={
- showcase:{tris:4500000,calls:450},   // round 7c: the kit showcase grew (the frame, four salvage buildings)
+ showcase:{tris:3000000,calls:400},
  cls:{small:60000,medium:250000,sky:400000,mega:700000},
  type:{},   // every vernacular key defaults to 'medium'
 };

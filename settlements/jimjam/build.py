@@ -7,6 +7,32 @@ import re
 import subprocess
 import sys
 
+
+def find_node():
+    """node for the syntax check: $NODE, then PATH, then the usual install places
+    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
+    there is none: the build then says plainly that the syntax was NOT checked.
+    Every build.py carries this same function; a fix belongs in all of them."""
+    import glob as _g, shutil as _sh
+    env = os.environ.get('NODE')
+    if env:
+        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
+        if hit:
+            return hit
+        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
+    hit = _sh.which('node')
+    if hit:
+        return hit
+    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
+    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
+                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
+                os.path.expanduser('~/.volta/bin/node')):
+        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
+        if hits:
+            return hits[0]
+    return None
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, 'src')
@@ -15,6 +41,8 @@ DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')
 SHARED_MATERIALS = ['20-textures.js', '22-materials.js', '68-mat-v5.js']
 SOCKETS = os.path.join(ROOT, 'core', 'sockets')
+LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
+LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[:1].isdigit())
 MANIFEST_FILES = [
     '10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
     '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js',
@@ -31,6 +59,9 @@ def source_paths():
     for f in SHARED_MATERIALS:
         if f not in files:
             files[f] = os.path.join(CORE, f)
+    for f in LOD_FILES:
+        if f not in files:
+            files[f] = os.path.join(LOD_DIR, f)
     target_files = {f: os.path.join(TARGET, f) for f in os.listdir(TARGET) if f[:1].isdigit()}
     overlap = set(files) & set(target_files)
     if overlap:
@@ -96,7 +127,7 @@ def build():
         json.dump({f: hashlib.sha1(body.encode()).hexdigest()[:12] for f, body in bodies.items()}, dst, indent=2, sort_keys=True)
         dst.write('\n')
     write_vendor_manifest()
-    node = os.environ.get('NODE', 'node')
+    node = find_node() or 'node'
     script = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
     scratch = os.path.join(HERE, '.syntax-jimjam.js')
     with open(scratch, 'w', encoding='utf-8') as dst:

@@ -62,8 +62,9 @@ function vBeam(a,b,w,c,item){beam(item||'vWood',a,b,w,w,c||null);}
 function vnFrame(x,y,z,w,h,d,ry,c,pr){pr=pr||.14;const nx=Math.max(1,Math.round(w/2.4)),nz=Math.max(1,Math.round(d/2.4));
  for(let i=0;i<=nx;i++){const lx=-w/2+w*i/nx;for(const s of[-1,1]){const p=loc(x,z,lx,s*d/2,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
  for(let j=1;j<nz;j++){const lz=-d/2+d*j/nz;for(const s of[-1,1]){const p=loc(x,z,s*w/2,lz,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
- for(const yy of[y+.12,y+h-.12]){   // sill and head rails on all four faces
-  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,d+pr*2,ry,c);}}}
+ for(const yy of y>=.15?[y+h-.12]:[y+.12,y+h-.12]){   // head rails on all four faces; a sill rail too, unless the frame stands on a plinth (the plinth's top is the sill)
+  // the long-face rails run through; the end-face rails butt into them (they used to cross at every corner)
+  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,Math.max(.2,d-pr*2.2),ry,c);}}}
 // Stilts under a raised floor: posts at the corners and along the long sides, with a diagonal brace on each face.
 function vnStilts(x,y,z,w,d,h,ry,c,pr){pr=pr||.18;const nx=Math.max(1,Math.round(w/2.6)),nz=Math.max(1,Math.round(d/2.6));const pts=[];
  for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){if(i>0&&i<nx&&j>0&&j<nz&&rng()<.5)continue;const p=loc(x,z,-w/2+w*i/nx,-d/2+d*j/nz,ry);vPst('vPostB',p[0],y-.3,p[1],pr,h+.3,c);pts.push(p);}
@@ -92,15 +93,34 @@ function vnGableRoof(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){o
  for(const s of[-1,1]){const zc=s*ext/2,yc=y+(rise-over*rise/(d/2))/2;const p=loc(x,z,0,zc,ry);
   const q=vQ(ry,s*a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
   kput(slabItem,[p[0]+n.x,yc+n.y,p[1]+n.z],q,[w+2*over,thick,S],slabC||null);}
+ // the ridge fill: the slabs are pushed out along their normals, so on a steep pitch their tops part in a V that the
+ // cap hides from the side but not from above. A slab-material bar, rotated to a diamond, closes it
+ {const p=loc(x,z,0,0,ry);kput(slabItem,[p[0],y+rise+thick*.15,p[1]],vQ(ry,Math.PI/4,0),[w+2*over,thick*1.5,thick*1.5],slabC||null);}
  vB('vWood',x,y+rise+thick*.35,z,w+2*over+.1,.22,.5,ry,slabC?slabC.clone().multiplyScalar(.8):vC(0x6a4a30));     // ridge cap
- for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}}   // fascia
+ for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}   // fascia
+ if(slabItem==='vThatchB')vnThatchDress(x,y,z,w,d,rise,ry,slabC,over,thick,S,a,ext);}
+// THATCH (Round 1 issue: a stripe field at eye level): a second frond layer laid over the first, a touch shorter and
+// darker so its lower edge reads as a course, and a ragged eave — a fringe of short tilted bundles of uneven length
+function vnThatchDress(x,y,z,w,d,rise,ry,c,over,thick,S,a,ext){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);const ye=y-over*rise/(d/2);
+ for(const s of[-1,1]){const zc=s*ext/2*.92,yc=y+(rise-over*rise/(d/2))/2+.05;const p=loc(x,z,0,zc,ry);const q=vQ(ry,s*a,0);
+  const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*1.15);kput('vThatchB',[p[0]+n.x,yc+n.y+rise*.04,p[1]+n.z],q,[w+2*over-.3,thick*.7,S*.84],c2);
+  const L=w+2*over,nb=Math.max(4,Math.round(L/.55));for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.35,.8);const e=loc(x,z,lx,s*(ext-.05),ry);
+   kput('vThatchB',[e[0],ye-len*.35,e[1]],vQ(ry,s*(a+rr(-.15,.25)),rr(-.12,.12)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 // Shed: one slab, high at the back (-z), low at the front (+z).
 function vnShedRoof(x,y,z,w,d,rise,ry,item,c,over,thick){over=over===undefined?.7:over;thick=thick||.2;const a=Math.atan2(rise,d);const ext=d+2*over,S=ext/Math.cos(a);
  const p=loc(x,z,0,0,ry);const q=vQ(ry,a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
  kput(item,[p[0]+n.x,y+rise/2+n.y,p[1]+n.z],q,[w+2*over,thick,S],c||null);}
 // Solid hipped / pyramidal roofs (the wedge items). `over` widens the base; the base drops a little so the wall top is buried.
 function vnHipRoof(item,x,y,z,w,d,rise,ry,c,over){over=over===undefined?.8:over;kput(item,[x,y-.35,z],ry?qEuler(0,ry,0):null,[w+2*over,rise+.35,d+2*over],c||null);
- vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));}   // eaves board
+ vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));   // eaves board
+ // a thatched hip: a second, steeper frond layer and a ragged fringe round all four eaves
+ if(item==='vHipT'||item==='vPyrT'){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);kput(item,[x,y+rise*.18,z],ry?qEuler(0,ry,0):null,[(w+2*over)*.8,rise*.85,(d+2*over)*.8],c2);
+  vnThatchFringe(x,y-.5,z,w+2*over,d+2*over,ry,c);}}
+// a ragged fringe of short tilted thatch bundles round the four eaves of a W x D roof whose eave line is at y
+function vnThatchFringe(x,y,z,W,D,ry,c){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);
+ for(const [L,lz,rot] of[[W,D/2,0],[W,-D/2,Math.PI],[D,W/2,Math.PI/2],[D,-W/2,-Math.PI/2]]){const nb=Math.max(4,Math.round(L/.55));
+  for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.3,.7);const e=loc(x,z,...(rot===0?[lx,lz]:rot===Math.PI?[-lx,lz]:rot>0?[lz,-lx]:[lz,lx]),ry);
+   kput('vThatchB',[e[0],y-len*.3,e[1]],vQ(ry+rot,.5+rr(-.15,.2),rr(-.1,.1)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 function vnPyrRoof(item,x,y,z,w,d,rise,ry,c,over){vnHipRoof(item,x,y,z,w,d,rise,ry,c,over);}
 // A thatch cone on a round building; ragged eave by a second slightly larger, shorter cone.
 function vnThatchCone(x,y,z,r,rise,c){kput('vConeT',[x,y-.3,z],null,[r*1.18,rise+.3,r*1.18],c||null);kput('vConeT',[x,y-.55,z],null,[r*1.28,.9,r*1.28],c?c.clone().multiplyScalar(.85):null);}
@@ -157,7 +177,9 @@ function vnAwning(x,y,z,ry,w,out,c){const q=vQ(ry,.42,0);const p=loc(x,z,0,out/2
  for(const s of[-1,1]){const pp=loc(x,z,s*(w/2-.1),out-.1,ry);vPst('vPost',pp[0],y-3,pp[1],.05,y-Math.tan(.42)*out+.3-(y-3),vC(0x6a5a48));}}
 function vnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.08,h,vC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,vC(0x5a4632));
  kput('vCloth',[p[0],y+h-1.6,p[1]],vQ(ry+Math.PI/2,0,0),[.7,2.7,1],c||vC(vPick(VPAL.orange)));}
-function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));}
+function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));
+ // a world that keeps a CHIMNEYS list (the city: smoke) gets every chimney top, in world space, like DOORS
+ if(window.CHIMNEYS&&VERN.cur){const c=VERN.cur,sc=c.o.scale||1;const wp=loc(c.x,c.z,x*sc,z*sc,c.ry);CHIMNEYS.push([wp[0],(c.o.y||0)+(y+h+.2)*sc,wp[1],0]);}}
 // Fence of posts and two rails around a rectangle (gap at the front centre of width `gate`).
 function vnFence(x,y,z,w,d,ry,c,gate,h){h=h||1.3;const segs=[[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]];
  if(gate){segs.push([[-w/2,d/2],[-gate/2,d/2]],[[gate/2,d/2],[w/2,d/2]]);}else segs.push([[w/2,d/2],[-w/2,d/2]]);

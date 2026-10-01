@@ -59,7 +59,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89y-sp-1-yard.js` | 34 **big** | sides (47); stamps (89); small geometry (106); edges (116); containers (203); the warehouse (226); the yard office (273); the gantry (297); the reach stacker (328); floating things (d=3) (350) |
 | `90-scene.js` | 7 | scene (1); THE PORT (27) |
 | `91-probe.js` | 6 | probe (window._api) (1) |
-| `92-camera.js` | 13 | camera control (1); DAY / NIGHT (2); SEGMENT BOUNDARIES (29); INSPECTOR (68) |
+| `92-camera.js` | 14 | camera control (1); DAY / NIGHT (2); SEGMENT BOUNDARIES (29); INSPECTOR (68) |
 | `99-tail.html` | <1 |  |
 
 ## targets/

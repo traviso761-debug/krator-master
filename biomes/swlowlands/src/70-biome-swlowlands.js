@@ -8,3 +8,4 @@ SWLOW.build=function(opt){opt=opt||{};const R=opt.R||2850,q=opt.quality==null?1:
  BIO.cur=null;return out;};
 SWLOW.dress=function(geos,opt){if(SWLOW.dressGeos){BIO.cur='lowlands/dress';SWLOW.dressGeos(geos,opt||{});BIO.cur=null;}};
 SWLOW.canopyH=function(x,z){return SWLOW._canopyH?SWLOW._canopyH(x,z):10;};
+BIO.kitEnd(SWLOW);   // its exports run in its registry; the default kit is current again

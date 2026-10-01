@@ -33,3 +33,27 @@ culled by range and view each frame (the runtime LOD), the biome's own chunk LOD
 python3 tools/erewhon-map.py <map.png> [--preview out.png]     # regenerate targets/erewhon/83-er-data.js
 python3 verify.py dist/erewhon.html --assert --views "Overview,The palace precinct" --out shots/er   # ~2 min a shot in SwiftShader
 ```
+
+## Level of detail (core/lod)
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into chunks
+that switch to clustered proxies with distance and are drawn combined (one draw per level in view); instanced sets keep
+one draw call, drop their smallest instances by screen size and switch detailed shapes to a simplified version far off.
+The originals stay the raycast targets, so the inspector and `_api` see full detail (checked: the inspector names the
+same thing at nine screen points per view with LOD on and off). The panel (`l`, `measure`) reads draw calls and
+triangles; `LOD.enabled=false` or `?lod=0` puts back the exact scene. `verify.py --assert` passes with LOD on.
+
+The Erewhon target takes it as the kit sheet does; nothing in the Erewhon placement code changed.
+
+Measured 2026-10-01, 1000x640, SwiftShader (`LOD.flush()` then `LOD.measure()`: one render of the main scene, so
+calls and triangles as three.js counts them; sky passes not included):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| xanadu: first preset (opening) | 173 / 5.30 M | 86 / 787k |
+| xanadu: second preset | 180 / 5.41 M | 140 / 1.12 M |
+| xanadu: third preset | 175 / 5.40 M | 113 / 1.22 M |
+| erewhon: opening | 1186 / 11.18 M | 880 / 4.95 M |
+| erewhon: Overview | 1089 / 10.86 M | 646 / 2.47 M |
+| erewhon: Main market, the square | 1100 / 10.57 M | 744 / 5.01 M |

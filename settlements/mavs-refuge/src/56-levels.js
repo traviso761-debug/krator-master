@@ -364,7 +364,9 @@ function ep0(F){ return [F.x,F.y,F.z]; }
 function lvlRoost(Ro, idx){
   var P=Ro.plat, Lv=P.levels[Ro.lvl], y=Ro.y, H=Ro.H, big=Ro.big, main=P.main;
   var F=lvlFrame(P,Lv.Rout,Ro.ang,y);                          /* u=0 at the rim, +u outward */
-  var lipL = big ? rr(3.0,3.6) : main ? rr(2.1,3.0) : 1.6, lipW = big ? 5.0 : main ? 3.0 : 2.0;
+  /* the lip reaches well beyond the post line: flyers touch down on it with their wings still open, fold, then walk in */
+  var lipL = big ? rr(3.6,4.2) : main ? rr(3.0,3.6) : 2.2, lipW = big ? 5.0 : main ? 3.0 : 2.0;
+  Ro.lipL = lipL;
   /* landing lip + perch log */
   lvlFBox('plank',F,lipL/2+0.2,0,-0.30,lipL,0.30,lipW,shade(pick(PLANKC),-0.1),'tbflr');
   [-1,1].forEach(function(s){ lvlFBeam('timber',F,-1.4,s*lipW*0.36,-0.42,lipL+0.35,s*lipW*0.36,-0.42,0.32,0.30,TIMBERC[0],false); });

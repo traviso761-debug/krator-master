@@ -95,7 +95,7 @@ TEX.xMosB=canvasTex(256,256,(g,w,h)=>{g.fillStyle=XMOS.turq;g.fillRect(0,0,w,h);
   g.beginPath();g.arc(cx,cy,c*.3,0,TAU);g.strokeStyle=XMOS.gold;g.lineWidth=3;g.stroke();}
  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const cx=(i+.5)*c,cy=(j+.5)*c;xmStar(g,cx,cy,c*.2,c*.09,4,XMOS.cream);g.beginPath();g.arc(cx,cy,c*.05,0,TAU);g.fillStyle=XMOS.gold;g.fill();}
  g.strokeStyle='rgba(0,0,0,.14)';g.lineWidth=1;for(let k=0;k<=w;k+=16){g.beginPath();g.moveTo(k,0);g.lineTo(k,h);g.stroke();g.beginPath();g.moveTo(0,k);g.lineTo(w,k);g.stroke();}});
-// the frieze band: gold lozenge chain with cream borders on maroon; 2 m x 0.6 m tile (xWorldUV .5 x 1.667)
+// the frieze band: gold lozenge chain with cream borders on maroon; 2 m x 0.6 m tile (vWorldUV .5 x 1.667)
 TEX.xBand=canvasTex(256,80,(g,w,h)=>{g.fillStyle=XMOS.maroon;g.fillRect(0,0,w,h);g.fillStyle=XMOS.cream;g.fillRect(0,0,w,4);g.fillRect(0,h-4,w,4);
  g.fillStyle=XMOS.gold;g.fillRect(0,7,w,2);g.fillRect(0,h-9,w,2);const n=8,c=w/n;
  for(let k=0;k<n;k++){const cx=(k+.5)*c,cy=h/2;xmStar(g,cx,cy,h*.34,h*.14,4,XMOS.gold);g.beginPath();g.arc(cx,cy,h*.07,0,TAU);g.fillStyle=XMOS.turq;g.fill();

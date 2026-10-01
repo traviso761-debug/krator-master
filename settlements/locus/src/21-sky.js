@@ -245,6 +245,24 @@ skyMesh.material.onBeforeCompile = function(sh){
 skyMesh.material.customProgramCacheKey = function(){ return 'kratorDomeMav'; };
 skyMesh.material.needsUpdate = true;
 
+/* ---- LOCUS: the cliff in front (KNOWN_ISSUES 2026-10-01) ----------------
+   The abyss shelf is painted INTO layer 0, so everything drawn after it (the
+   giant, its ring, the stars, the sun disc and glare) landed on top of the
+   cliff. skyFront draws the same dome a second time, through the shelf's
+   silhouette mask from 20-stage.js (alphaMap), as the LAST thing in the sky
+   pass: same texture, same tint, same shader (it shares SKY_DOME_U), so it is
+   invisible except that the cliff now occludes whatever is behind it. One
+   extra draw call; the geometry is shared. Its map and colour are re-synced
+   in skyRender() (the eruption swap and 82-daynight.js's tint). */
+var skyFrontMat = new THREE.MeshBasicMaterial({ map:skyMesh.material.map, alphaMap:volcTex.idle.silMask,
+  side:THREE.BackSide, fog:false, depthWrite:false, depthTest:false, transparent:true });
+skyFrontMat.onBeforeCompile = skyMesh.material.onBeforeCompile;
+skyFrontMat.customProgramCacheKey = function(){ return 'kratorDomeFront'; };
+var skyFront = new THREE.Mesh(skyMesh.geometry, skyFrontMat);
+skyFront.renderOrder = 50;
+skyFront.frustumCulled = false;
+skyScene.add(skyFront);
+
 /* ---- layer 1: the stars ------------------------------------------------
    Positions from a PRIVATE LCG (skyRnd), never the shared rnd() stream —
    SUBAGENT.md section 6: any rr()/chance()/pick() call here would advance
@@ -544,7 +562,7 @@ var _skEclRim = new THREE.Color(SKYC_ECL_RIM), _skGlare = new THREE.Color(SKYC_S
 /* a totalised eclipse keeps this fraction of daylight in the mood (fog,
    hemisphere, water, night-light gate) and this much key light from the
    giant's refracted rim — deep twilight, never black. */
-var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34;
+var SKY_ECL_FLOOR = 0.15, SKY_ECL_KEY = 0.34, SKY_SHINE_KEY = 0.18;
 /* strength of the giant's own atmospheric extinction at 2.0 atm; scaled by
    pk*pk so a plateau city (0.8 atm) gets none at all and a lowland city gets
    a visible but gentle wash on the lower limb. */
@@ -743,7 +761,9 @@ function updateSky(){
      the phase, warm (refracted, not reflected), and still coming from the
      giant's direction, so the shadows stay northern. */
   var sunI   = S.sunK;
-  var shineI = 0.44*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
+  /* (2026-10-01) planetshine 0.44 -> 0.18 of full sun-key units: a full giant is a
+     strong night light, but still night light — under a fifth of the day key. */
+  var shineI = SKY_SHINE_KEY*S.lit*(1 - S.sunUp) + SKY_ECL_KEY*ecl;
   var w = shineI/(sunI + shineI + 1e-6);
   _skKey.copy(S.sunDir);
   S.keyDir.copy(_skKey);
@@ -784,6 +804,8 @@ function skyRender(){
   if(skyCam.fov !== camera.fov || skyCam.aspect !== camera.aspect){
     skyCam.fov = camera.fov; skyCam.aspect = camera.aspect; skyCam.updateProjectionMatrix();
   }
+  skyFrontMat.color.copy(skyMesh.material.color);
+  if(skyFrontMat.map !== skyMesh.material.map){ skyFrontMat.map = skyMesh.material.map; skyFrontMat.needsUpdate = true; }
   renderer.render(skyScene, skyCam);
 }
 

@@ -180,8 +180,13 @@ function assetFrame(x,z,ry,opt){
      shrinks by the top (0.16 for fr8). Free outside the capture; never draws anything. */
   F.mass=function(o){ if(opt.capture) opt.capture.push(o); };
   if(opt.capture){ var CAP=opt.capture, WALLF={adobe:1,plaster:1,mosaic:1,paintbw:1,paintcol:1,relief:1,metal:1,rust:1,concrete:1,rock:1};
+    /* PLINTHS: a low box laid over most of the footprint (a tarred base band, a podium). Its top
+       face covers the floor of any room fitted inside, so 76-doors.js hides it in the cutaway. */
+    var PL=opt.plinths;
     ['box','fr8','fr5'].forEach(function(k){ var f0=F[k]; F[k]=function(lx,ly,lz,w,h,d,r,c,f){
       if(WALLF[f] && h>=2.2 && Math.min(w,d)>=2.4 && (r==null||typeof r==='number')) CAP.push({ k:'box', x:lx, y:ly, z:lz, w:w, h:h, d:d, r:r||0, tk:k==='fr8'?0.16:k==='fr5'?0.5:0 });
+      if(PL && F.asset && ly<=0.3 && h>=0.25 && h<=1.6 && (r==null||typeof r==='number') && (w*d >= 0.35*F.asset.w*F.asset.d ||
+         CAP.some(function(Bc){ return Bc.k==='box' && Math.hypot(Bc.x-lx, Bc.z-lz) < 0.5*Math.min(Bc.w,Bc.d) && w*d >= 0.6*Bc.w*Bc.d; }))) PL.push(kitIndex(k, f||'timber'));
       f0(lx,ly,lz,w,h,d,r,c,f); }; });
     var cy0=F.cyl; F.cyl=function(lx,ly,lz,r0,h,r,c,f){ if(WALLF[f] && h>=1.7 && r0>=1.4 && (r==null||typeof r==='number')) CAP.push({ k:'cyl', x:lx, y:ly, z:lz, r:r0, h:h }); cy0(lx,ly,lz,r0,h,r,c,f); };
     var dm0=F.dome; F.dome=function(lx,ly,lz,r0,h,r,c,f){ if(WALLF[f] && h>=2.2 && r0>=1.6) CAP.push({ k:'dome', x:lx, y:ly, z:lz, r:r0, h:h }); dm0(lx,ly,lz,r0,h,r,c,f); };
@@ -195,9 +200,9 @@ function assetFrame(x,z,ry,opt){
 /* build one instance; returns its record (name, footprint, door points) and registers it with the inspector */
 function buildAsset(key, x,z,ry, opt){
   var A=ASSET_BY_KEY[key]; if(!A){ ERR('no such asset: '+key); return null; }
-  opt=opt||{}; var cap=[], o2={}; for(var k in opt) o2[k]=opt[k]; o2.capture=cap;
+  opt=opt||{}; var cap=[], pl=[], o2={}; for(var k in opt) o2[k]=opt[k]; o2.capture=cap; o2.plinths=pl;
   var F=assetFrame(x,z,ry,o2); F.asset=A;
-  var B=FIX_BUILDING_BEGIN(A, F); B.bodies=cap;
+  var B=FIX_BUILDING_BEGIN(A, F); B.bodies=cap; B._plinths=pl;
   var len0={}; for(var bk in BUCKET) len0[bk]=BUCKET[bk].list.length;
   try{ A.build(F); }catch(e){ ERR('asset '+key+': '+(e&&e.stack||e)); }
   FIX_BUILDING_END();

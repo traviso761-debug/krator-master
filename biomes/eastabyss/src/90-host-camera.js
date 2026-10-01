@@ -36,6 +36,9 @@ const VIEWS={
  'The savannah':[3040,108,420,3260,150,160],
  'From the shelf foot':[3350,210,-60,0,20,0],
  'From afar':[-3000,260,-2300,0,40,0],
+ // standing in the far ring (2 km south of the spine): the impostors up close -- the canopy
+ // blobs, the small species' hulls, the sky scale-trees' iridescent boles
+ 'The far ring':[2060,150,1990,2400,110,2000],
  'Krator rising':[-600,30,600,1900,900,-2100],
 };
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...viewArgs(sel.value));ui.appendChild(sel);
