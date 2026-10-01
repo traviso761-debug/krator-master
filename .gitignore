@@ -37,3 +37,6 @@ settlements/locus/sheet-items*.json
 settlements/locus/three.min.js
 host/address.json
 host/address.json.tmp
+
+# Agent worktrees (Claude Code): never committed.
+.claude/worktrees/
