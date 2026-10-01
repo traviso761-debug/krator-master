@@ -184,6 +184,12 @@ the plate at +37.25 in the lobe troughs, each host with its own way-in pod. Pres
 `inside:true` on the def), `'<row> — row'`, `'<host> — the host'`, `'Kit — overview'`. The three mock houses sit
 in the housing rows as worked examples until the merge.
 
+## Animation
+
+A builder that moves something (the Pharos beam, a windmill's sails) pushes `fn(dt,t)` onto `window.YS_TICKS`
+(created before any builder runs); the scene's frame loop calls it every frame with the seconds since the last
+frame and the clock. Keep the moving part its own small mesh (not in a merged bucket) so it can turn.
+
 ## Presets
 
 `[cx,cy,cz, tx,ty,tz, hour?, compass?, inside?]`: hour sets the clock (absent = the default day), compass
