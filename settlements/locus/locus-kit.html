@@ -220,6 +220,14 @@ var PAL = {
   paddy    : [0x8aac52, 0x9cbc5e, 0x78a048, 0xb0c46c],                       /* salt-rice: yellower than upland rice */
   geoBrown : [0x6a4a2c, 0x5e4226, 0x7a5834],                                 /* Geomancer uniform brown (life layer) */
   flare    : 0xffb040,
+  /* --- ABYSS: the Eastern Abyssal kit (65-abyss-*.js): sails, salvage, lacquer, gild, crystal, salt --- */
+  abSailOrange : 0xe07b39, abSailRed : 0xb8402e,                               /* sail roofs; their patterned bands */
+  abBrightYellow:0xf2c230, abBrightTeal:0x2fa59a, abBrightPink:0xe26d8e,       /* painted facades (the umbrella street) */
+  abRustA : 0x8a4a2b, abRustB : 0xa5602f,                                      /* salvaged sheet */
+  abContainer : [0x3f6e8c, 0xa23a2a, 0xc9a33a, 0x5d7d4a, 0x7c7f80],            /* shipping-container colours (pick) */
+  abTarpBlue : 0x2e6fb7, abTin : 0xc9cdd2,                                     /* tarps; the tin-mirror base */
+  abLacquer : 0x9a2c26, abGild : 0xd4a537, abCrystal : 0x5bc8e6,              /* lacquered plinths; horn tips; blue crystals (sacred, glowing) */
+  abSalt : 0xe9e4d6, abRubble : 0x9c8e7c,                                      /* salt crust and plaza paving; rubble-stone bases */
   /* --- LOCUS world ground: the delta's own tones (from the eastern-abyss host, a stop darker) --- */
   ground : { mud:0x3d3526, alga:0x4c5c36, litter:0x3a3022, litterRed:0x4a3628, crust:0xf1ede6, silt:0x9a8c74, delta:0x574836, bed:0x8a6a5a,
              hill:0x8a6444, hillDry:0x9c7c52, hillGrass:0x6e7a42, laterite:0xa05a36 },
@@ -250,6 +258,10 @@ var FAMMAT = {
   tile   : { tex:null, scale:[2.0,2.0] },
   cloth  : { tex:null, scale:[2.0,2.0] },
   canvas : { tex:null, scale:[2.5,2.5] },     /* LOCUS: taut canvas (sun shades, tents, awnings) — no sway */
+  corrugate:{ tex:null, scale:[1.6,2.0] },    /* ABYSS: ribbed sheet metal, ribs run along v (tint it: rust, container paint) */
+  tinmirror:{ tex:null, scale:[1.4,1.4], phong:{ shininess:70, specular:0x8a9096 } },   /* ABYSS: flattened cans, foil, bottle bottoms, mirror shards. Phong, NOT a mirror: no env map, no render target */
+  rubble : { tex:null, scale:[3.0,3.0] },     /* ABYSS: rough rubble stone in mortar */
+  pattern: { tex:null, scale:[2.0,1.0] },     /* ABYSS: sail band — zigzags and triangles; the motif is a darker shade of the tint (COLOUR-weighted grey) */
   leafy  : { tex:null, scale:[3.0,3.0] },
   bark   : { tex:null, scale:[1.5,3.0] },
   dark   : { tex:null, scale:[1,1] },         /* openings */
@@ -261,6 +273,7 @@ var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
 var PASTELC=PAL.pastel, PASTELDC=PAL.pastelDeep, CANVASC=PAL.canvas, CANVASDYEC=PAL.canvasDye, REEDMATC=PAL.reedMat, PILEC=PAL.pile,
     MUDBROWNC=PAL.mudBrown, UMBERC=PAL.umber, SIENNAC=PAL.sienna, STEELDC=PAL.steelDark, PIPEC=PAL.pipeC, OILC=PAL.oil,
     SALTWATERC=PAL.saltWater, SALTCRUSTC=PAL.saltCrust, PADDYC=PAL.paddy, GEOBROWNC=PAL.geoBrown;
+var ABCONTC=PAL.abContainer;
 var GILDC=PAL.gild, BLUEGREYC=PAL.blueGrey, STONEC=PAL.stoneWarm, THORNC=PAL.thorn;
 var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.bluewashL, BLUEDC=PAL.bluewashD,
     MOSBLUEC=PAL.mosaicBlue, MOSWARMC=PAL.mosaicWarm, MOSGREENC=PAL.mosaicGreen, METALC=PAL.metal, TARNC=PAL.metalTarn,
@@ -281,7 +294,7 @@ var CATALOG = (TARGET==='furn' || TARGET==='flora') ? TARGET : null;
 /* KIT names a SUB-KIT laid out on its own building sheet ('locus': the Locus abyssal-desert +
    petroleum kit). On the plain 'sheet' target only assets with no kit are laid out; on a kit
    target only that kit's assets are, grouped by their own `group` field. */
-var KIT = TARGET==='locus' ? 'locus' : null;
+var KIT = TARGET==='locus' ? 'locus' : TARGET==='abyss' ? 'abyss' : null;   /* 'abyss': the Eastern Abyssal kit (65-abyss-*.js) */
 
 var SEED = 20260921;
 var seed = SEED;
@@ -380,7 +393,7 @@ function platXZ(P,r,a){ var t=a+(P.ry||0); return [P.x + r*Math.cos(t), P.z + r*
      the SE levees       a chain of hummocks the SE highway keeps to
      the east            marsh, then the slope up toward the shelf (jungle at the edge)      */
 var WORLD = 9000, HW = WORLD/2;
-var CITY_EXT = CATALOG ? 300 : KIT ? 520 : SHEET ? 1700 : 1500;              /* the detailed box: painted ground canvas + placement mask (metres, +-) */
+var CITY_EXT = CATALOG ? 300 : KIT==='abyss' ? 760 : KIT ? 520 : SHEET ? 1700 : 1500;              /* the detailed box: painted ground canvas + placement mask (metres, +-) */
 var MAP_R = 2600;                  /* the playable map: roads run to this edge, life enters and leaves here */
 var GROUND0 = 0;                   /* the water plane */
 var LOCUS_HILL = { x:0, z:0, R:480, H:19.0, sq:1.12 };   /* sq: the hill is longer N-S than E-W */
@@ -2467,7 +2480,7 @@ function applyClothSway(sh){
 
    Channels: R = warm flames   G = window spill   B = cool (bioluminescent) lamps
    Cost: zero draw calls, two texture fetches per fragment, ~10 MB of texture. */
-var NLV_RES = 256, NLV_EXT = CATALOG ? 320 : KIT ? 540 : SHEET ? 1700 : 1100, NLV_NS = 40, NLV_COLS = 8, NLV_ROWS = 5;
+var NLV_RES = 256, NLV_EXT = CATALOG ? 320 : KIT==='abyss' ? 780 : KIT ? 540 : SHEET ? 1700 : 1100, NLV_NS = 40, NLV_COLS = 8, NLV_ROWS = 5;
 var NLV_Y0 = -40, NLV_DY = 8;
 var NLV_MAX = 3.0;                    /* byte 255 == this much summed intensity: also the blow-out ceiling */
 var NLV_LAMP_GAIN = 0.55, NLV_WIN_GAIN = 0.30, NLV_COOL_GAIN = 0.50;
@@ -2566,6 +2579,9 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
+/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections) */
+function kitMaterial(fm, o){ if(!fm.phong) return new THREE.MeshLambertMaterial(o);
+  o.shininess = fm.phong.shininess; o.specular = new THREE.Color(fm.phong.specular); return new THREE.MeshPhongMaterial(o); }
 function emitBuckets(){
   var total=0, meshes=0;
   for(var k in BUCKET){
@@ -2574,7 +2590,7 @@ function emitBuckets(){
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null,
+            : kitMaterial(fm, { color:0xffffff, map: fm.tex || null,
                   transparent:false, alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
     if(!fm.basic){
@@ -2766,7 +2782,7 @@ function emitMerged(){
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
-            : new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, map:fm.tex||null,
+            : kitMaterial(fm, { color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
     if(!fm.basic) nlMaterial(mat, 'mb'+fam);
     var m = new THREE.Mesh(g, mat);
@@ -2950,6 +2966,45 @@ function texFill(S, fn){
     FAMMAT.tile.tex = texFinish(texFill(S,function(x,y){
       var r=Math.floor(y/rh), lx=(x%sw)/sw, ly=(y%rh)/rh, tone=h2(Math.floor(x/sw)%8, r+40);
       return (0.62 + 0.24*tone + 0.22*Math.sin(lx*Math.PI) + 0.10*(n(x,y)-0.5)) * (ly<0.10?0.55:1); })); })();
+  /* corrugate (ABYSS): ribbed sheet — a rib every ~8 cm along u, sheet laps every ~0.9 m, patchy weathering */
+  (function(){ var a=texNoise(S,6,311), b=texNoise(S,30,312);
+    FAMMAT.corrugate.tex = texFinish(texFill(S,function(x,y){
+      var rib = 0.5+0.5*Math.cos(x*TAU/S*20), lap = (x%128)<3 ? 0.62 : 1;
+      return (0.66 + 0.26*rib + 0.16*(a(x,y)-0.5) + 0.10*(b(x,y*0.2)-0.5)) * lap; })); })();
+  /* tinmirror (ABYSS): a patchwork of flattened cans and foil — jittered tiles of differing brightness, dark seams,
+     round bottle bottoms with a bright rim, and a few hard specks of mirror. Grey, tinted abTin; Phong adds the glint. */
+  (function(){ var n=texNoise(S,40,321), cell=S/10;
+    FAMMAT.tinmirror.tex = texFinish(texFill(S,function(x,y){
+      var r=Math.floor(y/cell), off=(r%2)*cell*0.5, xx=(x+off)%S, c=Math.floor(xx/cell), lx=(xx%cell)/cell, ly=(y%cell)/cell;
+      var id=(c%10)*31+r*7, tone=h2(id,3), v=0.62+0.40*tone;
+      if(lx<0.05||ly<0.06) v=0.30;                                                  /* seams between the pieces */
+      else if(h2(id,5)>0.80){ var d=Math.hypot(lx-0.5,ly-0.5); v = d<0.26 ? 0.40+0.5*d : d<0.34 ? 1.0 : v; }   /* a bottle bottom */
+      else if(h2(id,9)>0.86 && Math.abs(lx-ly)<0.08) v=1.0;                          /* a mirror shard's edge */
+      else v += 0.10*Math.sin(ly*TAU*6)*(h2(id,7)>0.5?1:0);                         /* ribbed can wall */
+      return v*(0.93+0.14*(n(x,y)-0.5)); })); })();
+  /* rubble (ABYSS): rough fieldstone in pale mortar — Voronoi stones, each with its own tone and a rounded face */
+  (function(){ var cells=7, pts=[], n=texNoise(S,48,331);
+    for(var j=0;j<cells;j++) for(var i=0;i<cells;i++) pts.push([(i+0.15+0.7*h2(i*3+11,j*5+12))/cells*S, (j+0.15+0.7*h2(i*7+13,j*11+14))/cells*S, h2(i*13+15,j*17+16)]);
+    FAMMAT.rubble.tex = texFinish(texFill(S,function(x,y){
+      var ci=Math.floor(x/S*cells), cj=Math.floor(y/S*cells), d1=1e9, d2=1e9, tone=0;
+      for(var dj=-1;dj<=1;dj++) for(var di=-1;di<=1;di++){
+        var ii=((ci+di)%cells+cells)%cells, jj=((cj+dj)%cells+cells)%cells, P=pts[jj*cells+ii];
+        var px=P[0]+(ci+di-ii)/cells*S, py=P[1]+(cj+dj-jj)/cells*S, d=Math.hypot(x-px,(y-py)*1.4);
+        if(d<d1){ d2=d1; d1=d; tone=P[2]; } else if(d<d2) d2=d; }
+      var e=d2-d1; if(e<2.5) return 0.88+0.08*(n(x,y)-0.5);                          /* mortar */
+      return (0.50 + 0.34*tone + 0.12*smooth(2.5,14,e) + 0.16*(n(x,y)-0.5)); })); })();
+  /* pattern (ABYSS): the sail band — a strip of red-on-orange triangles between two zigzags. COLOUR texture whose ground
+     is white and whose motif is abSailRed/abSailOrange per channel, so a band tinted abSailOrange shows red on orange
+     and any other tint shows its own colour with a darker motif. */
+  (function(){ var n=texNoise(S,24,341), cr=new THREE.Color(PAL.abSailRed), co=new THREE.Color(PAL.abSailOrange);
+    var M=[cr.r/co.r, cr.g/co.g, cr.b/co.b].map(function(v){ return Math.min(1,v); }), W=[1,1,1], K=[M[0]*0.55,M[1]*0.55,M[2]*0.55];
+    FAMMAT.pattern.tex = texFinish(texFill(S,function(x,y){
+      var u=(x%64)/64, v=y/S, c=W;
+      var zz=Math.abs(((x%32)/32)-0.5)*2;                                           /* 0..1 zigzag profile */
+      if(Math.abs(v-(0.08+0.08*zz))<0.03 || Math.abs(v-(0.84+0.08*zz))<0.03) c=K;    /* the two zigzag lines */
+      else if(v>0.24 && v<0.76){ var t=(v-0.24)/0.52; c = (Math.abs(u-0.5)*2 < 1-t) ? M : W; if(Math.abs(Math.abs(u-0.5)*2-(1-t))<0.05) c=K; }   /* triangles */
+      else if(v<0.04 || v>0.96) c=M;
+      var w=0.94+0.10*(n(x,y)-0.5); return [c[0]*w,c[1]*w,c[2]*w]; })); })();
   /* bark */
   (function(){ var n1=texNoise(S,48,291), n2=texNoise(S,6,292);
     FAMMAT.bark.tex = texFinish(texFill(S,function(x,y){ var g=0.5+0.5*Math.sin(x*TAU/S*14 + n1(x,y*0.2)*6);
@@ -3094,9 +3149,17 @@ var ASSETS = [], ASSET_BY_KEY = {};
 /* PROJECT TAGS (every kit asset carries them; the inspector shows them):
      culture  who builds it: 'yuni' | 'abyssal-desert' | 'geomancer' | 'ancient' | 'sahelian' | 'order' | 'nomad'
      types    building types, one or more of BUILDING_TYPES
-     kit      which sub-kit sheet it belongs to ('locus'); absent = the Yuni base kit
-     group    the row it is laid out in on its kit sheet (free text) */
-var BUILDING_TYPES = ['civic','market/shop','tavern/inn','industry','farm','single-family dwelling','multi-family dwelling','infrastructure','religious','funerary','prop'];
+     kit      which sub-kit sheet(s) it belongs to: a string ('locus') or an array (['locus','abyss']);
+              absent = the Yuni base kit. Test it with assetInKit(A,k), never A.kit===k.
+     group    the row it is laid out in on its kit sheet (free text)
+     kitGroup optional per-kit override of `group`, for an asset on two sheets: { abyss:'Housing — poor' }.
+              Read it with assetGroup(A,k).
+     sim      optional life-layer scaffolding (data only; nothing reads it yet): { activity, capacity, focus:[x,y,z] } */
+var BUILDING_TYPES = ['civic','market/shop','tavern/inn','industry','farm','single-family dwelling','multi-family dwelling','infrastructure','religious','funerary','military','prop'];
+function assetInKit(A,k){ return Array.isArray(A.kit) ? A.kit.indexOf(k)>=0 : A.kit===k; }
+function assetGroup(A,k){ return (A.kitGroup && A.kitGroup[k]) || A.group || 'kit'; }
+/* KIT_ROWS[kit] = the row order on that kit's sheet; a kit without an entry keeps fragment (declaration) order */
+var KIT_ROWS = {};
 function ASSET(o){ if(ASSET_BY_KEY[o.key]) ERR('asset key declared twice: '+o.key); o.variants=o.variants||1;
   if(o.kit){ if(!o.culture) ERR('asset '+o.key+' (kit '+o.kit+') has no culture tag');
     if(!o.types || !o.types.length) ERR('asset '+o.key+' (kit '+o.kit+') has no building-type tags');
@@ -3118,7 +3181,7 @@ function assetTags(A){ return (A.culture ? 'culture: '+A.culture : '') + (A.type
      w,d,h    footprint (x, z) and height in METRES; build() must stay inside w x d
    The build frame is the same F as an ASSET: origin at the footprint centre on the floor,
    +z is the FRONT (the side you face it from / its open side).                              */
-var FURN_CULTURES = ['ancient','yuni-court','yuni-common','yuni-poor','sahelian','order','nomad','ancients-salvage'];
+var FURN_CULTURES = ['ancient','yuni-court','yuni-common','yuni-poor','sahelian','order','nomad','ancients-salvage','abyssal-desert'];
 var FURNS = [], FURN_BY_KEY = {};
 function FURN(o){
   if(FURN_BY_KEY[o.key]) ERR('furniture key declared twice: '+o.key);
@@ -6037,7 +6100,7 @@ reseed(641001);
     F.rod(cx-w/2-over-0.1, y+h, cz, cx+w/2+over+0.1, y+h, cz, 0.06, F.pick(TIMBERC), 'timber'); }
 
   /* =============================================================== 1. POOR STILT HOUSE */
-  ASSET({ key:'stilt_poor', name:'Marsh stilt house', family:'poor', kit:'locus', group:GROUP_H, culture:'abyssal-desert', types:['single-family dwelling'],
+  ASSET({ key:'stilt_poor', name:'Marsh stilt house', family:'poor', kit:['locus','abyss'], group:GROUP_H, kitGroup:{ abyss:'Housing — poor' }, culture:'abyssal-desert', types:['single-family dwelling'],
     districts:['poor'], wealth:[0,0.35], w:11, d:10, h:8, variants:3, variantNames:['reed mats, thatch hip','washed mud, canvas gable','two rooms, flat roof and sail'],
     build:function(F){
       var v=F.variant, H=[2.1,2.4,2.0][v]+F.rr(-0.15,0.15), pc=F.pick(PILEC), pk=F.pick(PLANKC);
@@ -6081,7 +6144,7 @@ reseed(641001);
     } });
 
   /* =============================================================== 2. MIDDLE-CLASS STILT HOUSE */
-  ASSET({ key:'stilt_mid', name:'Pastel stilt house', family:'mid', kit:'locus', group:GROUP_H, culture:'abyssal-desert', types:['single-family dwelling'],
+  ASSET({ key:'stilt_mid', name:'Pastel stilt house', family:'mid', kit:['locus','abyss'], group:GROUP_H, kitGroup:{ abyss:'Housing — middle' }, culture:'abyssal-desert', types:['single-family dwelling'],
     districts:['prosper','market','poor'], wealth:[0.3,0.75], w:16, d:16, h:12, variants:3, variantNames:['wind-catcher and loggia','two storeys under a sail','L-plan with wrapping verandah'],
     build:function(F){
       var v=F.variant, H=2.8+F.rr(-0.1,0.2), pc=PILEC[3], pk=F.pick(PLANKC), tc=F.pick(TIMBERC);
@@ -6138,7 +6201,7 @@ reseed(641001);
     } });
 
   /* =============================================================== 3. THE GREAT PAVILION TENT */
-  ASSET({ key:'tent_pavilion', name:'Great pavilion tent', family:'prop', kit:'locus', group:GROUP_T, culture:'abyssal-desert', types:['prop','tavern/inn'],
+  ASSET({ key:'tent_pavilion', name:'Great pavilion tent', family:'prop', kit:['locus','abyss'], group:GROUP_T, kitGroup:{ abyss:'Hospitality' }, culture:'abyssal-desert', types:['prop','tavern/inn'],
     districts:['market','poor'], wealth:[0.1,0.7], w:18, d:14, h:7, variants:3, variantNames:['striped ridge tent','sand-and-rose with rolled walls','round bell tent'],
     build:function(F){
       var v=F.variant, tc=F.pick(TIMBERC), c1=[CANVASDYEC[0],PASTELC[5],CANVASC[0]][v], c2=[CANVASC[2],PASTELC[0],CANVASDYEC[3]][v];
@@ -6172,7 +6235,7 @@ reseed(641001);
     } });
 
   /* =============================================================== 4. SUN SHADES */
-  ASSET({ key:'sunshade_poles', name:'Four-pole sun shade', family:'prop', kit:'locus', group:GROUP_T, culture:'abyssal-desert', types:['prop'],
+  ASSET({ key:'sunshade_poles', name:'Four-pole sun shade', family:'prop', kit:['locus','abyss'], group:GROUP_T, kitGroup:{ abyss:'Street furniture and docks' }, culture:'abyssal-desert', types:['prop'],
     districts:['core','prosper','market','poor'], wealth:[0,1], w:9, d:9, h:4.5, variants:3, variantNames:['square canvas','twin sails','striped with a bench'],
     build:function(F){
       var v=F.variant, tc=F.pick(TIMBERC), h=3.4, c1=past(F, v*2), c2=v===2 ? CANVASC[0] : past(F, v*2+5);
@@ -6197,7 +6260,7 @@ reseed(643001);
 (function(){
   var PI=Math.PI, GROUP='Salt-rice farm';
   function sheaf(F,x,z,y){ F.cone(x,y,z, 0.32,0.9, [F.rr(-0.1,0.1),0,F.rr(-0.1,0.1)], PADDYC[3], 'leafy'); F.cyl(x,y+0.45,z, 0.14,0.08, 0, TIMBERC[2], 'timber'); }
-  ASSET({ key:'farm_saltrice', name:'Salt-rice farm', family:'trade', kit:'locus', group:GROUP, culture:'abyssal-desert', types:['farm','single-family dwelling'],
+  ASSET({ key:'farm_saltrice', name:'Salt-rice farm', family:'trade', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Farming and storage' }, culture:'abyssal-desert', types:['farm','single-family dwelling'],
     districts:['poor'], wealth:[0.1,0.5], w:48, d:38, h:9, variants:2, variantNames:['six paddies, house to the right','six paddies, house to the left'],
     build:function(F){
       var v=F.variant, mud=F.pick(MUDBROWNC), mud2=shade(mud,-0.12), water=SALTWATERC[v], sx = v ? -1 : 1;   /* sx mirrors the plan */
@@ -6287,7 +6350,7 @@ reseed(646001);
     } });
 
   /* =============================================================== 2. FISHING DOCK */
-  ASSET({ key:'infra_fishing_dock', name:'Fishing dock', family:'prop', kit:'locus', group:'Town: warehouse and fishing dock', culture:'abyssal-desert', types:['infrastructure'],
+  ASSET({ key:'infra_fishing_dock', name:'Fishing dock', family:'prop', kit:['locus','abyss'], group:'Town: warehouse and fishing dock', kitGroup:{ abyss:'Street furniture and docks' }, culture:'abyssal-desert', types:['infrastructure'],
     districts:['poor'], wealth:[0,0.6], w:12, d:34, h:5, variants:2, variantNames:['straight jetty','T-head jetty'],
     build:function(F){
       var v=F.variant, pk=F.pick(PLANKC), pc=F.pick(PILEC), Y=1.25, W=3.2, z0=15.5, z1=-16.5;
@@ -6340,7 +6403,7 @@ reseed(644001);
   var PI=Math.PI, GROUP='Petroleum: pumpjack, tanks, pipe rack, refinery';
 
   /* =============================================================== 1. PUMPJACK */
-  ASSET({ key:'ind_pumpjack', name:'Pumpjack', family:'trade', kit:'locus', group:GROUP, culture:'geomancer', types:['industry','infrastructure'],
+  ASSET({ key:'ind_pumpjack', name:'Pumpjack', family:'trade', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['industry','infrastructure'],
     districts:['poor'], wealth:[0.2,0.8], w:8, d:15, h:8, variants:2, variantNames:['rusted skid','tarnished white-metal gear'],
     build:function(F){
       var v=F.variant, rust=F.pick(RUSTC), rust2=shade(rust,-0.15), dk=STEELDC[0], gearCol = v ? TARNC[1] : rust2, gearFam = v ? 'metal' : 'rust', mud=F.pick(MUDBROWNC);
@@ -6370,7 +6433,7 @@ reseed(644001);
     } });
 
   /* =============================================================== 2. OIL STORAGE TANK */
-  ASSET({ key:'ind_oil_tank', name:'Oil storage tank', family:'trade', kit:'locus', group:GROUP, culture:'geomancer', types:['industry','infrastructure'],
+  ASSET({ key:'ind_oil_tank', name:'Oil storage tank', family:'trade', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['industry','infrastructure'],
     districts:['market','poor'], wealth:[0.2,0.9], w:24, d:27, h:13, variants:3, variantNames:['riveted, cone roof, in a mud bund','squat floating-roof tank with a spiral stair','banco-clad tank in the Yuni manner'],
     build:function(F){
       var v=F.variant, rust=F.pick(RUSTC), mud=F.pick(MUDBROWNC), dk=STEELDC[0], R=[7.6,9.0,7.4][v], H=[9.0,6.8,8.6][v];
@@ -6404,7 +6467,7 @@ reseed(644001);
     } });
 
   /* =============================================================== 3. PIPE RACK SEGMENT */
-  ASSET({ key:'prop_pipe_rack', name:'Pipe rack segment', family:'prop', kit:'locus', group:GROUP, culture:'geomancer', types:['infrastructure','prop'],
+  ASSET({ key:'prop_pipe_rack', name:'Pipe rack segment', family:'prop', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['infrastructure','prop'],
     districts:['market','poor'], wealth:[0,1], w:12, d:3, h:3.4, variants:2, variantNames:['straight, two lines','with a valve and a riser stub'],
     build:function(F){
       var v=F.variant, mud=F.pick(MUDBROWNC), dk=STEELDC[0];
@@ -6415,7 +6478,7 @@ reseed(644001);
     } });
 
   /* =============================================================== 3b. DRUM STACK (yard clutter) */
-  ASSET({ key:'prop_drum_stack', name:'Drum stack', family:'prop', kit:'locus', group:GROUP, culture:'geomancer', types:['industry','prop'],
+  ASSET({ key:'prop_drum_stack', name:'Drum stack', family:'prop', kit:['locus','abyss'], group:GROUP, kitGroup:{ abyss:'Industry (Geomancer)' }, culture:'geomancer', types:['industry','prop'],
     districts:['market','poor'], wealth:[0,1], w:5, d:4, h:2.4, variants:3, variantNames:['pyramid of drums','drums on a pallet with a tarp','crates and drums'],
     build:function(F){
       var v=F.variant;
@@ -6719,6 +6782,14 @@ reseed(647001);
       door(F, 0, 9.4); door(F, -7.3, -2.6);
     } });
 })();
+/* ============================== 16X. ABYSS — the Eastern Abyssal kit: shared helpers ==============================
+   The buildings of the abyssal-desert culture on the salt marshes and deltas at the edge of the eastern abyss,
+   laid out on their own sheet (TARGET 'abyss', abyss-kit.html). Every helper here takes an asset frame F and
+   draws in its LOCAL frame; nothing is placed here. See ABYSS-KIT-NOTES.md for every signature.            */
+reseed(650001);
+var ABYSS = {};
+KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Temple','Palace and plaza',
+                  'Military','Walls','Farming and storage','Industry (Geomancer)','Street furniture and docks'];
 /* ============================== 18b. THE PLACEMENT PASS — LOCUS ==============================
    PLANNER-OWNED. Turns 30-layout.js's SITES_L into buildings, furnishes the market and the
    park, lays the bridges, and then FILLS the town: every street's two frontages, packed with
@@ -8498,10 +8569,11 @@ var SHEET_ITEMS = [], SHEET_ROWS = [];
   if(!SHEET || CATALOG) return;
   var FAM_ORDER=['ancient','civic','rich','park','mid','trade','poor','prop'], FAM_NAME={ ancient:'Ancient (rehabilitated / ruined)', civic:'Civic & neo-African', rich:'Wealthy compounds', park:'Park pieces (Guell)', mid:'Middle-class houses', trade:'Shops, taverns, workshops, caravanserai', poor:'Poor quarters: mud & thatch', prop:'Street furniture' };
   if(KIT){ /* a sub-kit sheet: its own rows, in the order the kit's fragments declared them */
-    FAM_ORDER=[]; FAM_NAME={}; ASSETS.forEach(function(A){ if(A.kit===KIT && FAM_ORDER.indexOf(A.group||'kit')<0){ FAM_ORDER.push(A.group||'kit'); FAM_NAME[A.group||'kit']=A.group||'kit'; } }); }
+    FAM_ORDER=[]; FAM_NAME={}; ASSETS.forEach(function(A){ var g=assetGroup(A,KIT); if(assetInKit(A,KIT) && FAM_ORDER.indexOf(g)<0){ FAM_ORDER.push(g); FAM_NAME[g]=g; } });
+    var RO=KIT_ROWS[KIT]; if(RO){ var F0=FAM_ORDER.slice(); FAM_ORDER.sort(function(a,b){ var ia=RO.indexOf(a), ib=RO.indexOf(b); if(ia<0) ia=1e3+F0.indexOf(a); if(ib<0) ib=1e3+F0.indexOf(b); return ia-ib; }); } }
   var z=-CITY_EXT+(KIT?70:260), LIM=CITY_EXT-(KIT?70:420);
   FAM_ORDER.forEach(function(fam){
-    var list=ASSETS.filter(function(A){ return KIT ? (A.kit===KIT && (A.group||'kit')===fam) : (!A.kit && A.family===fam); }); if(!list.length) return;
+    var list=ASSETS.filter(function(A){ return KIT ? (assetInKit(A,KIT) && assetGroup(A,KIT)===fam) : (!A.kit && A.family===fam); }); if(!list.length) return;
     var x=-LIM, rowD=0, row={ fam:fam, name:FAM_NAME[fam]||fam, z0:z, items:[] }; SHEET_ROWS.push(row);
     list.forEach(function(A){ for(var v=0; v<A.variants; v++){
       var cw=A.w+16, cd=A.d+16; if(x+cw > LIM){ x=-LIM; z+=rowD; rowD=0; }
@@ -8516,7 +8588,7 @@ var SHEET_ITEMS = [], SHEET_ROWS = [];
   window._sheet = { assets:ASSETS.length, items:SHEET_ITEMS.length, rows:SHEET_ROWS.map(function(r){ return r.fam+':'+r.items.length; }) };
   /* the ground: a 10 m grid, footprints outlined, family bands */
   var g=GROUND_CANVAS.getContext('2d'), S=GC_RES/(2*CITY_EXT); g.save(); g.scale(S,S); g.translate(CITY_EXT,CITY_EXT);
-  g.fillStyle= KIT==='locus' ? '#a9a98a' : '#b9a27a'; g.fillRect(-CITY_EXT,-CITY_EXT,2*CITY_EXT,2*CITY_EXT);   /* Locus: a marsh-edge tone */
+  g.fillStyle= KIT==='locus' ? '#a9a98a' : KIT==='abyss' ? '#c9c2a8' : '#b9a27a'; g.fillRect(-CITY_EXT,-CITY_EXT,2*CITY_EXT,2*CITY_EXT);   /* Locus: a marsh-edge tone; Abyss: pale salt crust */
   g.strokeStyle='rgba(90,70,40,0.35)'; g.lineWidth=0.35; g.beginPath(); for(var k=-CITY_EXT;k<=CITY_EXT;k+=10){ g.moveTo(k,-CITY_EXT); g.lineTo(k,CITY_EXT); g.moveTo(-CITY_EXT,k); g.lineTo(CITY_EXT,k); } g.stroke();
   SHEET_ROWS.forEach(function(r,i){ g.fillStyle=i%2?'rgba(255,255,255,0.10)':'rgba(0,0,0,0.06)'; g.fillRect(-CITY_EXT, r.z0-8, 2*CITY_EXT, r.z1-r.z0-10); });
   SHEET_ITEMS.forEach(function(it){ g.fillStyle='rgba(205,191,159,0.9)'; g.fillRect(it.x-it.w/2-3, it.z-it.d/2-3, it.w+6, it.d+6); g.strokeStyle='rgba(40,60,110,0.8)'; g.lineWidth=0.5; g.strokeRect(it.x-it.w/2, it.z-it.d/2, it.w, it.d);

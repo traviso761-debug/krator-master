@@ -30,3 +30,8 @@ shots-*/
 host/site/
 host/site.toml
 host/menagerie/
+
+# kitshots.py item dumps (one per sheet)
+settlements/locus/sheet-items*.json
+# a local copy for headless verification only (Locus loads three.js from the CDN)
+settlements/locus/three.min.js
