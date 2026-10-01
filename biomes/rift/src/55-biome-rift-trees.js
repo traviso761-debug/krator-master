@@ -4,12 +4,18 @@
 // terrainH. The zone weights are computed HERE from those fields, never from
 // the host's map: a world that binds the same fields gets the same zoning.
 // Beyond the LOD spine the canopy species become blob impostors in the 'far'
-// bucket (the hyperjungle's technique); the small species thin out with
-// distance and stop. Every count scales with q; the core charges BIO.cur.
+// bucket (the hyperjungle's technique), the small species 20-triangle blobs
+// (the lowlands'). The runtime LOD (the core's BIO.range, xanadu's use of it)
+// draws a hero tree in full only near the camera and its stand-in impostor past
+// that. Every count scales with q; the core charges BIO.cur.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=RIFT.SPECIES,PAL=RIFT.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 RIFT.TREES=[];
+// the runtime LOD ranges (metres from the camera to a chunk, BIO.LOD.chunk on a side): hero trees in full (their
+// stand-ins past it), the floor's near (7 m) and mid (14 m) bands, its far band, the fallen logs, the dressing.
+// A chunk is 1.2 km on a side, so a range much under that hides little more near the spine and costs draw calls.
+RIFT.LOD={tree:1200,floor:650,midFloor:1300,farFloor:3000,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
@@ -51,6 +57,10 @@ const iridCol=(S,k)=>S.irid?bright(vary(pick(PAL.irid[S.irid]),.02,.08,.05),k==n
 // so theirs is pulled part way back toward the base colour
 const softC2=(c2,base,k)=>{const c=(c2.isColor?c2.clone():C(c2));return c.lerp(base.isColor?base:C(base),k==null?.45:k);};
 RIFT.softC2=softC2;
+// a per-instance normal for the iridescence of a curl or a rosette (aN, 50-species): its up axis leaning out toward
+// azimuth a by l (the side of the plant a clump would light), so plants differ instead of all turning at one view angle
+const leanN=(a,l)=>{const n=Math.hypot(l,1);return[Math.cos(a)*l/n,1/n,Math.sin(a)*l/n];};
+RIFT.leanN=leanN;
 
 // ---------------------------------------------------------------- polyline helpers (Girder's)
 function treeGrow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;
@@ -187,7 +197,7 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3;
 // 5 the curl succulent: a bunch of spiralling teal tendrils
 B[5]=function(T,st,lv){const S=SP[T.sp],n=lv===2?ri(2,4):lv===1?2:1,c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05);
  for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.15,.6):0,h=T.H*rr(.7,1.15),w=h*rr(.9,1.3);
-  BIO.put('curl',[T.x+Math.cos(a)*d,T.y0+.4,T.z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(bright(pick(c2s),1.15),hc,.35)});st.curls++;}
+  BIO.put('curl',[T.x+Math.cos(a)*d,T.y0+.4,T.z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[w,h,w],bright(vary(hc,.02,.06,.05),1.25),{c2:softC2(bright(pick(c2s),1.15),hc,.35),n:leanN(a,.3+.6*d)});st.curls++;}
  if(lv===2&&rng()<.3){BIO.put('urchin',[T.x,T.y0+T.H*.5,T.z],qEuler(rr(-.3,.3),rr(0,TAU),0),rr(.5,.9),bright(C(pick(PAL.comp)),1.15));st.blooms++;}};
 // 6 the prism bush: a dark lobe under a crown of pinnate sprays that go green to orange and magenta with the light
 B[6]=function(T,st,lv){const S=SP[T.sp],H=T.H,Rs=T.crownR,c2s=PAL.irid[S.irid],hc=vary(pick(S.leaf),.03,.08,.05);
@@ -262,7 +272,8 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hT=H*
  const heads=[[T.x,T.y0+hT,T.z]],n=lv===2?ri(0,2):0,a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k*2.3,l=H*rr(.15,.25),e=[T.x+Math.cos(a)*l*.7,T.y0+hT+l*.6,T.z+Math.sin(a)*l*.7];BIO.beam('rod',[T.x,T.y0+hT-.2,T.z],e,rb*.7,rb*.5,rc);heads.push(e);}
  const hc=vary(pick(S.leaf),.02,.06,.05),R=T.crownR;
- heads.forEach(p=>{BIO.put('irosette',[p[0],p[1]-.1,p[2]],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[R,R*1.5,R],bright(vary(hc,.02,.06,.05),1.15),{c2:softC2(bright(pick(c2s),1.1),hc,.6)});st.rosettes++;
+ heads.forEach(p=>{const rx=rr(-.08,.08),ry=rr(0,TAU),rz=rr(-.08,.08),ox=p[0]-T.x,oz=p[2]-T.z,fork=Math.hypot(ox,oz)>.01;   // a fork's head leans out from the stem
+  BIO.put('irosette',[p[0],p[1]-.1,p[2]],qEuler(rx,ry,rz),[R,R*1.5,R],bright(vary(hc,.02,.06,.05),1.15),{c2:softC2(bright(pick(c2s),1.1),hc,.6),n:leanN(fork?Math.atan2(oz,ox):ry,fork?.7:.5)});st.rosettes++;
   if(lv>=1&&rng()<.7){const m=lv===2?ri(2,4):1,col=bright(C(0xd03a2a).lerp(C(pick(PAL.accent)),.35),1.2);for(let k=0;k<m;k++){const a=rr(0,TAU),d=R*rr(.1,.4),h=R*rr(1.2,1.9);
    BIO.beam('rod',[p[0]+Math.cos(a)*d,p[1]+R*.6,p[2]+Math.sin(a)*d],[p[0]+Math.cos(a)*d*1.4,p[1]+R*.6+h*.55,p[2]+Math.sin(a)*d*1.4],.04,.03,rc);
    BIO.put('candle',[p[0]+Math.cos(a)*d*1.4,p[1]+R*.6+h*.5,p[2]+Math.sin(a)*d*1.4],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R*.3,h*.5,R*.3],col);st.blooms++;}}
@@ -443,39 +454,88 @@ B[33]=function(T,st,lv){const S=SP[T.sp],H=T.H,Rs=T.crownR,hc=vary(pick(S.leaf),
 // the cloud forest's forms of the jungle trees: the same builders, the species record does the rest
 B[23]=B[0];B[24]=B[1];B[25]=B[2];B[26]=B[17];
 // ---------------------------------------------------------------- impostors (the far canopy)
-let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2200;let tris=0;
- function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
- function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
-  for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
-   const m=1+.20*Math.sin(dx*4.1+k1)*Math.cos(dz*3.7+k2)+.14*Math.sin(dy*6.3+k2+dx*2);
-   const sh=(.50+.50*smooth(-.7,.8,dy))*(.9+.2*Math.sin(dx*9+dz*7+k1)),t=smooth(-.2,.7,dy+.3*Math.sin(dx*5+k2));
-   const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
-   vtx(x+dx*rx*m,y+dy*ry*m,z+dz*rx*m,dx/nl,ny/nl,dz/nl,mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
-  tris+=ip.length/9;}
- const bc=C(S.bark[fi%S.bark.length]).convertSRGBToLinear(),seg=cheap?4:6,top=T.y0+T.H*(T.sp===0||T.sp===23?.9:T.sp===21?.9:T.sp===8?.68:T.sp===17||T.sp===22||T.sp===26?.72:.78),rings=[];
- [0,.06,.5,1].forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(.5,T.rb*(T.sp===8?(1.1-.5*u):(1-.5*u))*(u<.08?1.6:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
+// Blobs in the 'far' bucket, whose material (RIFT.farMat, 50-species) shifts a vertex toward a second colour with the
+// view: its uv carries that colour (pack2) and the rule (1 the leaves', 2 the iridescent bark's; 0 none), so the
+// impostors keep the iridescence of the trees they stand for. lite: the stand-in behind a hero tree, drawn only past
+// RIFT.LOD.tree from the camera: coarser blobs, fewer of them, fewer fins.
+let ICO=null,ICO0=null;
+const icos=()=>{if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}};
+const pack2=c=>{const q=v=>Math.round(Math.sqrt(clamp(v,0,1))*255);return q(c[0])*65536+q(c[1])*256+q(c[2]);};
+const lin=h=>{const c=(h.isColor?h.clone():C(h)).convertSRGBToLinear();return[c.r,c.g,c.b];};
+const IRB={0:'frill',23:'frill',21:'carrot',3:'trumpet',1:'bell',24:'bell'};   // the builders' iridescent barks (RIFT.IRIDBARK)
+// an impostor's triangles carry its tree's lod key, like everything its hero puts
+function keyed(K,T,tris,st){const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+// a blob: ca on top, cb below (linear), c2 the colour it turns (linear) or null. A blob is a whole crown facing every
+// way at once, solid where the hero's leaves are cards and gaps, so it turns only part way (IRID_FAR) or it reads as paint
+const IRID_FAR=.4;
+const turn=(r,g,b,c2,s,k)=>pack2([r+(c2[0]*s-r)*k,g+(c2[1]*s-g)*k,b+(c2[2]*s-b)*k]);
+function farBlob(K,ip,x,y,z,rx,ry,ca,cb,c2,sd){const k1=sd*7.3,k2=sd*3.1;
+ if(c2)cb=[mix(cb[0],ca[0],.5),mix(cb[1],ca[1],.5),mix(cb[2],ca[2],.5)];   // the shift now carries the second colour: the underside only leans to it
+ for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
+  const m=1+.20*Math.sin(dx*4.1+k1)*Math.cos(dz*3.7+k2)+.14*Math.sin(dy*6.3+k2+dx*2);
+  const sh=(.50+.50*smooth(-.7,.8,dy))*(.9+.2*Math.sin(dx*9+dz*7+k1)),t=smooth(-.2,.7,dy+.3*Math.sin(dx*5+k2));
+  const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
+  const r=mix(cb[0],ca[0],t)*sh,g=mix(cb[1],ca[1],t)*sh,b=mix(cb[2],ca[2],t)*sh;
+  K.pos.push(x+dx*rx*m,y+dy*ry*m,z+dz*rx*m);K.nor.push(dx/nl,ny/nl,dz/nl);K.col.push(r,g,b);K.uv.push(c2?turn(r,g,b,c2,sh,IRID_FAR):0,c2?1:0);}
+ return ip.length/9;}
+// a fin: one triangle standing out from the column at azimuth a, rising at elevation e (the frill trees' frill, a hint)
+function farFin(K,T,a,y,r0,L,e,ca,c2){const cx=Math.cos(a),sz=Math.sin(a),nl=Math.hypot(.85,.5),r1=r0+L*Math.cos(e);
+ [[T.x+cx*r0,y-L*.12,T.z+sz*r0,.75],[T.x+cx*r1,y+L*Math.sin(e),T.z+sz*r1,1.1],[T.x+cx*r0,y+L*.3,T.z+sz*r0,.85]].forEach(p=>{const s=p[3];
+  K.pos.push(p[0],p[1],p[2]);K.nor.push(cx*.85/nl,.5/nl,sz*.85/nl);K.col.push(ca[0]*s,ca[1]*s,ca[2]*s);K.uv.push(c2?turn(ca[0]*s,ca[1]*s,ca[2]*s,c2,s,.7):0,c2?1:0);});
+ return 1;}
+function buildFar(T,fi,st,lite){const K=BIO.bucket('far');icos();const ip=lite?ICO0:ICO;
+ const S=SP[T.sp],cheap=lite||BIO.lodD(T.x,T.z)>2200;let tris=0;
+ const bc=lin(S.bark[fi%S.bark.length]),ib=IRB[T.sp]?RIFT.IRIDBARK[IRB[T.sp]]:null,seg=cheap?4:6,top=T.y0+T.H*(T.sp===0||T.sp===23?.9:T.sp===21?.9:T.sp===8?.68:T.sp===17||T.sp===22||T.sp===26?.72:.78),rings=[];
+ (lite?[0,.5,1]:[0,.06,.5,1]).forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(.5,T.rb*(T.sp===8?(1.1-.5*u):(1-.5*u))*(u<.08?1.6:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
+ // the bole: an iridescent bark facing the eye in its first colour and turning to its second at grazing angles, as its hero's does
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.7+.3*(r2/rings.length);
-  [A,D,E,A,E,Bq].forEach(p=>vtx(p[0],p[1],p[2],p[3],.05,p[4],bc.r*sh,bc.g*sh,bc.b*sh));tris+=2;}
- const L=S.leaf.map(h=>bright(h,.85)),R=T.crownR,a0=(T.seed%628)/100,I=S.irid?PAL.irid[S.irid]:null;
- if(T.sp===0||T.sp===23){blob(T.x,T.y0+T.H*.5,T.z,R*.55,T.H*.42,L[fi%4],I?I[0]:L[2],fi);blob(T.x,T.y0+T.H*.93,T.z,R*.8,T.H*.08,L[(fi+1)%4],L[2],fi+1);}
- else if(T.sp===1||T.sp===24){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.55,T.y0+T.H*.88+((k*7)%5),T.z+Math.sin(a)*R*.55,R*.4,T.H*.07,L[(k+fi)%4],I?I[k%I.length]:L[2],fi+k);}}
- else if(T.sp===2||T.sp===25){blob(T.x,T.y0+T.H*.86,T.z,R*.75,T.H*.14,L[fi%4],I?I[0]:L[2],fi);}
- else if(T.sp===3){blob(T.x,T.y0+T.H*.92,T.z,R*.95,T.H*.06,L[fi%4],L[2],fi);}
+  [A,D,E,A,E,Bq].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(p[3],.05,p[4]);
+   if(ib){K.col.push(bc[0]*sh*ib[0][0],bc[1]*sh*ib[0][1],bc[2]*sh*ib[0][2]);K.uv.push(pack2([bc[0]*sh*ib[1][0],bc[1]*sh*ib[1][1],bc[2]*sh*ib[1][2]]),2);}
+   else{K.col.push(bc[0]*sh,bc[1]*sh,bc[2]*sh);K.uv.push(0,0);}});tris+=2;}
+ // a stand-in a little darker: it stands for a hero whose crown is cards, gaps and shade, seen at 1.2 km and more
+ const dk=lite?.8:1,L=S.leaf.map(h=>lin(bright(h,.85*dk))),R=T.crownR,a0=(T.seed%628)/100,I=S.irid?PAL.irid[S.irid].map(h=>lin(h).map(v=>v*dk)):null,c2=k=>I?I[k%I.length]:null;
+ const blob=(x,y,z,rx,ry,ca,cb,sd,k)=>{tris+=farBlob(K,ip,x,y,z,rx,ry,ca,cb,k===false?null:c2(k||0),sd);};
+ if(T.sp===0||T.sp===23){blob(T.x,T.y0+T.H*.5,T.z,R*.55,T.H*.42,L[fi%4],I?I[0]:L[2],fi,fi);blob(T.x,T.y0+T.H*.93,T.z,R*.8,T.H*.08,L[(fi+1)%4],L[2],fi+1,fi+1);
+  // the frill: two rows of fins on the column and the splay at the summit, a triangle each (one row and three in the stand-in)
+  const rAt=u=>T.rb*(1-.55*u)*(1+.5*Math.exp(-u*T.H/7)),fk=Math.min(1,T.H/100)*(SP[T.sp].key==='cloudfrill'?1.6:1),fc=k=>lin(bright(S.leaf[(fi+k)%S.leaf.length],1.1));
+  (lite?[.55]:[.35,.65]).forEach((u,r)=>{const nf=lite?3:4;for(let k=0;k<nf;k++){const a=a0+(k+(r%2)*.5)/nf*TAU;tris+=farFin(K,T,a,T.y0+T.H*u,rAt(u),lerp(3.5,8.5,smooth(.05,.7,u))*fk*1.5,.95,fc(k),c2(k));}});
+  for(let k=0,n=lite?3:5;k<n;k++){const a=a0+.4+k/n*TAU;tris+=farFin(K,T,a,T.y0+T.H*.9,rAt(.9)*.7,T.H*.11*mix(1.6,1,fk),.7,fc(k+2),c2(k+1));}}
+ else if(T.sp===1||T.sp===24){for(let k=0;k<(cheap?2:3);k++){const a=a0+k/3*TAU;blob(T.x+Math.cos(a)*R*.55,T.y0+T.H*.88+((k*7)%5),T.z+Math.sin(a)*R*.55,R*.4,T.H*.07,L[(k+fi)%4],I?I[k%I.length]:L[2],fi+k,k+1);}}
+ else if(T.sp===2||T.sp===25){blob(T.x,T.y0+T.H*.86,T.z,R*.75,T.H*.14,L[fi%4],I?I[0]:L[2],fi,fi+1);}
+ else if(T.sp===3){blob(T.x,T.y0+T.H*.92,T.z,R*.95,T.H*.06,L[fi%4],L[2],fi,fi);}
  else if(T.sp===32){blob(T.x,T.y0+T.H*.9,T.z,R*.85,T.H*.08,L[fi%4],L[2],fi);}
- else if(T.sp===4||T.sp===9){blob(T.x,T.y0+T.H*.78,T.z,R*.8,T.H*.2,L[fi%4],L[2],fi);}
+ else if(T.sp===4||T.sp===9){blob(T.x,T.y0+T.H*.78,T.z,R*.8,T.H*.2,L[fi%4],L[2],fi,fi);}
  else if(T.sp===8){blob(T.x,T.y0+T.H*.85,T.z,R*.8,T.H*.12,L[fi%4],L[2],fi);}
- else if(T.sp===21){blob(T.x,T.y0+T.H*.4,T.z,R*.8,T.H*.36,L[fi%4],I?I[0]:L[2],fi);blob(T.x,T.y0+T.H*.94,T.z,R*.3,T.H*.05,0xff40a0,0xe82a88,fi+2);}
- else if(T.sp===22){blob(T.x,T.y0+T.H*.82,T.z,R*.9,T.H*.16,L[fi%4],I?I[0]:L[2],fi);}
- else if(T.sp===17||T.sp===26){blob(T.x,T.y0+T.H*.8,T.z,R*.95,T.H*.07,L[fi%4],I?I[0]:L[2],fi);if(!cheap)blob(T.x+Math.cos(a0)*R*.4,T.y0+T.H*.78,T.z+Math.sin(a0)*R*.4,R*.55,T.H*.06,L[1],I?I[1]:L[3],fi+3);}
- else{blob(T.x,T.y0+T.H*.9,T.z,R*.9,T.H*.12,L[fi%4],L[2],fi);}
- K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+ else if(T.sp===21){blob(T.x,T.y0+T.H*.4,T.z,R*.8,T.H*.36,L[fi%4],I?I[0]:L[2],fi,fi+1);blob(T.x,T.y0+T.H*.94,T.z,R*.3,T.H*.05,lin(0xff40a0),lin(0xe82a88),fi+2,false);
+  // the carrot frill's fins: longest low, shrinking up the column (a triangle each)
+  const rAt=u=>T.rb*(1.05-.85*Math.pow(u,1.3))*(1+.4*Math.exp(-u*T.H/6)),ck=Math.min(1,T.H/50),fc=k=>lin(bright(S.leaf[(fi+k)%S.leaf.length],1.1));
+  (lite?[.22]:[.16,.38]).forEach((u,r)=>{const nf=lite?3:4;for(let k=0;k<nf;k++){const a=a0+(k+(r%2)*.5)/nf*TAU;tris+=farFin(K,T,a,T.y0+T.H*u,rAt(u),lerp(9,1.2,Math.pow(u,1.15))*ck*1.4,.75,fc(k),c2(k));}});}
+ else if(T.sp===22){blob(T.x,T.y0+T.H*.82,T.z,R*.9,T.H*.16,L[fi%4],I?I[0]:L[2],fi,fi+1);}
+ else if(T.sp===17||T.sp===26){blob(T.x,T.y0+T.H*.8,T.z,R*.95,T.H*.07,L[fi%4],I?I[0]:L[2],fi,fi+1);if(!cheap)blob(T.x+Math.cos(a0)*R*.4,T.y0+T.H*.78,T.z+Math.sin(a0)*R*.4,R*.55,T.H*.06,L[1],I?I[1]:L[3],fi+3,fi+2);}
+ else{blob(T.x,T.y0+T.H*.9,T.z,R*.9,T.H*.12,L[fi%4],L[2],fi,fi);}
+ keyed(K,T,tris,st);}
+// the SMALL species far off, and behind their heroes past RIFT.LOD.tree: one 20-triangle blob shaped by the habit, so
+// the groves and the scrub still read at range instead of stopping at the band edge (the lowlands' buildFarSmall).
+// No draws from the PRNG (the colours come from the tree's seed), so every hero builds exactly as before.
+const SMALLF={6:'bush',7:'spike',10:'bush',12:'head',14:'head',15:'bush',18:'bush',19:'head',27:'crown',28:'crown',29:'crown',30:'tuft',31:'crown'};
+function buildFarSmall(T,st){const K=BIO.bucket('far');icos();const S=SP[T.sp],ip=ICO0,hb=T.young?'spire':(SMALLF[T.sp]||'crown'),H=T.H,R=T.crownR,sd=T.seed;
+ const ca=lin(bright(S.leaf[sd%S.leaf.length],.85)),cb=[ca[0]*.55,ca[1]*.55,ca[2]*.55],I=S.irid?PAL.irid[S.irid]:null,c2=I?lin(bright(I[(sd>>3)%I.length],.85)):null;
+ let cy,rx,ry;
+ if(hb==='bush'){cy=T.y0+H*.42;rx=R*.9;ry=Math.max(R*.45,H*.42);}               // a low mound: prism bush, purple fan, cycad, croton
+ else if(hb==='tuft'){cy=T.y0+H*.45;rx=R*.75;ry=H*.48;}                          // a squat barrel: the barrel frill
+ else if(hb==='spike'){cy=T.y0+H*.6;rx=Math.max(R*.5,.45);ry=H*.42;}             // candle stalks: a pale spire
+ else if(hb==='head'){cy=T.y0+H*.74;rx=R*.85;ry=Math.max(R*.5,H*.22);}           // a head on a stem: tree aloe, groundsel, anemone stalk
+ else if(hb==='spire'){cy=T.y0+H*.5;rx=Math.max(R*.5,T.rb*1.8);ry=H*.48;}        // the frill saplings: a finned column
+ else{cy=T.y0+H*.66;rx=R*.85;ry=Math.max(R*.55,H*.3);}                            // a crown on a short bole: beard tree, tree-fern, lantern, fan tree
+ for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2],t=smooth(-.5,.7,dy),ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1,s=mix(.55,1,t);
+  const r=mix(cb[0],ca[0],t),g=mix(cb[1],ca[1],t),b=mix(cb[2],ca[2],t);
+  K.pos.push(T.x+dx*rx,cy+dy*ry,T.z+dz*rx);K.nor.push(dx/nl,ny/nl,dz/nl);K.col.push(r,g,b);K.uv.push(c2?turn(r,g,b,c2,s,IRID_FAR):0,c2?1:0);}
+ keyed(K,T,ip.length/9,st);}
 
 // ---------------------------------------------------------------- the pass
 RIFT.buildTrees=function(R,q){
  reseed(550011);q=q==null?1:q;R=R||3000;means();
- const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fins:0,fans:0,domes:0,curls:0,candles:0,rosettes:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fins:0,fans:0,domes:0,curls:0,candles:0,rosettes:0,heroes:0,fars:0,standins:0,byS:SP.map(()=>0)};
  const TREES=RIFT.TREES;TREES.length=0;for(const k in HASH)delete HASH[k];
  const mk=(x,y,z,sp)=>{const S=SP[sp];return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
  // one species pass: a jittered grid over the whole disc, the zone weight
@@ -487,9 +547,11 @@ RIFT.buildTrees=function(R,q){
     if(blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);
     if(opt.scale){const f=rr(opt.scale[0],opt.scale[1]);T.H*=f;T.rb*=Math.pow(f,.8);T.crownR*=f;T.young=true;}   // a sapling pass: the adult builder at a fraction of its size
-    const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);
-    if(T.lv===0&&!opt.far)return;
-    TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:1});
+    // farSmall: a small species kept past its mid radius as a far blob, which keeps nothing clear (the passes after it place as before)
+    const ld=BIO.lodD(x,z);T.lv=ld<opt.hero?2:(ld<opt.mid?1:0);T.small=!opt.far;T.farB=!!opt.farSmall;
+    if(T.lv===0&&!opt.far&&!opt.farSmall)return;
+    TREES.push(T);n++;
+    if(T.lv>0||opt.far)hadd({x:x,z:z,r:T.rb*1.4+1});},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:1});
   return n;}
  // the jungle: frill trees over everything, bell palms and lobe trees in stands, pagoda trees, trumpet trees
  pass(0,120,(Z)=>Z.jung*.7,{hero:950,mid:1700,far:true,pad:10,patch:.3});
@@ -498,45 +560,55 @@ RIFT.buildTrees=function(R,q){
  pass(4,60,(Z)=>Z.jung*.28+Z.cloud*.8,{hero:1000,mid:1800,far:true,pad:5,patch:.5});
  pass(3,40,(Z)=>Z.jung*.30+Z.cloud*.10+Z.shore*.12,{hero:900,mid:1500,far:true,pad:2.5,lodK:.5});
  pass(5,28,(Z)=>Z.jung*.24+Z.cloud*.22+Z.shore*.08,{hero:800,mid:1300,far:false,pad:1.2,lodK:.7,patch:.5});
- pass(6,26,(Z)=>Z.jung*.38+Z.cloud*.10,{hero:800,mid:1300,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(6,26,(Z)=>Z.jung*.38+Z.cloud*.10,{hero:800,mid:1300,far:false,farSmall:true,pad:1.5,lodK:.7,patch:.5});
  // the savannah: baobabs, monkey-puzzles (also up the dry slope), acacias, purple fan shrubs, candle stalks, dragon trees and tree aloes (also the crest)
  pass(8,90,(Z)=>Z.sav*.55*smooth(.12,.02,Z.up),{hero:1000,mid:1900,far:true,pad:8,patch:.4});
  pass(9,70,(Z)=>Z.sav*.28+Z.slope*.40,{hero:1000,mid:1900,far:true,pad:5,patch:.5,patchScale:.007});
  pass(13,48,(Z)=>Z.sav*.5,{hero:1000,mid:1800,far:true,pad:3,patch:.5});
  pass(11,38,(Z)=>Z.sav*.22+Z.slope*.6+Z.peak*.2,{hero:950,mid:1700,far:true,pad:2.5,patch:.5});
- pass(12,36,(Z)=>Z.sav*.22+Z.slope*.3+Z.peak*.3,{hero:900,mid:1400,far:false,pad:2,lodK:.6});
- pass(10,26,(Z)=>Z.sav*.30+Z.slope*.10,{hero:900,mid:1300,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(7,24,(Z)=>Z.sav*.35+Z.peak*.2+Z.jung*.06+Z.slope*.15,{hero:900,mid:1300,far:false,pad:1.5,lodK:.6,patch:.5});
+ pass(12,36,(Z)=>Z.sav*.22+Z.slope*.3+Z.peak*.3,{hero:900,mid:1400,far:false,farSmall:true,pad:2,lodK:.6});
+ pass(10,26,(Z)=>Z.sav*.30+Z.slope*.10,{hero:900,mid:1300,far:false,farSmall:true,pad:1.5,lodK:.7,patch:.5});
+ pass(7,24,(Z)=>Z.sav*.35+Z.peak*.2+Z.jung*.06+Z.slope*.15,{hero:900,mid:1300,far:false,farSmall:true,pad:1.5,lodK:.6,patch:.5});
  // the cloud forest: the jungle's forms in light green (frill, bell palm, lobe tree, parasol), the beard tree, the tree-fern, the lantern tree
  pass(23,34,(Z)=>Z.cloud*.7,{hero:900,mid:1500,far:true,pad:3.5,patch:.35});
  pass(24,22,(Z)=>Z.cloud*.65,{hero:950,mid:1500,far:true,pad:2.5,patch:.45});
  pass(25,22,(Z)=>Z.cloud*.6,{hero:950,mid:1500,far:true,pad:2.5,patch:.45});
  pass(26,36,(Z)=>Z.cloud*.8,{hero:900,mid:1500,far:true,pad:4,patch:.45});
- pass(27,22,(Z)=>Z.cloud*.7,{hero:950,mid:1500,far:false,pad:2.5,lodK:.5});
- pass(28,17,(Z)=>Z.cloud*.75+Z.jung*.04,{hero:900,mid:1400,far:false,pad:1.6,lodK:.6});
- pass(29,24,(Z)=>Z.cloud*.75,{hero:950,mid:1500,far:false,pad:2,lodK:.6});
+ pass(27,22,(Z)=>Z.cloud*.7,{hero:950,mid:1500,far:false,farSmall:true,pad:2.5,lodK:.5});
+ pass(28,17,(Z)=>Z.cloud*.75+Z.jung*.04,{hero:900,mid:1400,far:false,farSmall:true,pad:1.6,lodK:.6});
+ pass(29,24,(Z)=>Z.cloud*.75,{hero:950,mid:1500,far:false,farSmall:true,pad:2,lodK:.6});
  // the highland: groundsels in the cloud forest, cycads on the dry flanks and the crest, pines on the peak
- pass(14,20,(Z)=>Z.cloud*.85+Z.peak*.2,{hero:900,mid:1400,far:false,pad:2,lodK:.5});
- pass(15,34,(Z)=>Z.slope*.35+Z.peak*.3+Z.cloud*.15+Z.sav*.10,{hero:850,mid:1300,far:false,pad:2,lodK:.6});
+ pass(14,20,(Z)=>Z.cloud*.85+Z.peak*.2,{hero:900,mid:1400,far:false,farSmall:true,pad:2,lodK:.5});
+ pass(15,34,(Z)=>Z.slope*.35+Z.peak*.3+Z.cloud*.15+Z.sav*.10,{hero:850,mid:1300,far:false,farSmall:true,pad:2,lodK:.6});
  pass(16,44,(Z)=>Z.peak*.45,{hero:1000,mid:1700,far:true,pad:3,patch:.5});
  // the ridgetop: stone pines, fan trees, barrel frills and silver scrub over the crest and the dry flanks
  pass(32,40,(Z)=>Z.peak*.7+Z.slope*.25,{hero:1000,mid:1700,far:true,pad:3,patch:.5});
- pass(31,36,(Z)=>Z.peak*.5+Z.slope*.35,{hero:950,mid:1500,far:false,pad:2,lodK:.6,patch:.5});
- pass(30,26,(Z)=>Z.peak*.65+Z.slope*.4+Z.sav*.05,{hero:900,mid:1400,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(31,36,(Z)=>Z.peak*.5+Z.slope*.35,{hero:950,mid:1500,far:false,farSmall:true,pad:2,lodK:.6,patch:.5});
+ pass(30,26,(Z)=>Z.peak*.65+Z.slope*.4+Z.sav*.05,{hero:900,mid:1400,far:false,farSmall:true,pad:1.5,lodK:.7,patch:.5});
  pass(33,22,(Z)=>Z.peak*.75+Z.slope*.45,{hero:850,mid:1300,far:false,pad:1,lodK:.8,patch:.45});
  // the parasol tree over the jungle in its own stands, anemone stalks in the wet, crotons on both sides, pinecone succulents on the dry side
  pass(17,70,(Z)=>Z.jung*.55,{hero:900,mid:1600,far:true,pad:7,patch:.5,patchScale:.006});
  pass(21,64,(Z)=>Z.jung*.5+Z.cloud*.1,{hero:900,mid:1600,far:true,pad:6,patch:.45,patchScale:.007});
  pass(22,66,(Z)=>Z.jung*.5,{hero:900,mid:1600,far:true,pad:6,patch:.5,patchScale:.0055});
  // the saplings: young frill trees and carrot frills in the understorey, the adult builders at a fraction of their size
- pass(0,30,(Z)=>Z.jung*.32,{hero:850,mid:1400,far:false,pad:2,lodK:.6,patch:.5,scale:[.1,.28]});
- pass(21,26,(Z)=>Z.jung*.36+Z.cloud*.08,{hero:850,mid:1400,far:false,pad:1.5,lodK:.6,patch:.5,scale:[.12,.35]});
- pass(19,26,(Z)=>Z.jung*.32+Z.shore*.15+Z.jung*Z.flow*.3,{hero:850,mid:1300,far:false,pad:1.5,lodK:.7,patch:.5});
- pass(18,24,(Z)=>Z.sav*.42+Z.slope*.2+Z.jung*.22,{hero:900,mid:1300,far:false,pad:1.5,lodK:.7,patch:.5});
+ pass(0,30,(Z)=>Z.jung*.32,{hero:850,mid:1400,far:false,farSmall:true,pad:2,lodK:.6,patch:.5,scale:[.1,.28]});
+ pass(21,26,(Z)=>Z.jung*.36+Z.cloud*.08,{hero:850,mid:1400,far:false,farSmall:true,pad:1.5,lodK:.6,patch:.5,scale:[.12,.35]});
+ pass(19,26,(Z)=>Z.jung*.32+Z.shore*.15+Z.jung*Z.flow*.3,{hero:850,mid:1300,far:false,farSmall:true,pad:1.5,lodK:.7,patch:.5});
+ pass(18,24,(Z)=>Z.sav*.42+Z.slope*.2+Z.jung*.22,{hero:900,mid:1300,far:false,farSmall:true,pad:1.5,lodK:.7,patch:.5});
  pass(20,20,(Z)=>Z.sav*.42+Z.slope*.3+Z.jung*.05,{hero:900,mid:1300,far:false,pad:1,lodK:.7,patch:.5});
- // build
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
- return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,domes:st.domes,curls:st.curls,
+ // build. The runtime LOD (BIO.range, the core's; xanadu's use of it): a hero tree is drawn in full while the camera is
+ // within RIFT.LOD.tree of its chunk and as its stand-in impostor past that; a far tree is only ever its impostor (range
+ // 1e9: always in range, culled by chunk against the view). A small species stands in as a 20-triangle blob, or not at
+ // all (the curls, pinecones and silver scrub: under a pixel at that range).
+ // The impostors are charged to their own pass ('rift/far': held, but never drawn with their heroes).
+ const cur=BIO.cur,farCur=cur==='rift/trees'?'rift/far':cur,LOD=RIFT.LOD;
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const rh=LOD.tree;
+  if(T.lv===0){BIO.cur=farCur;BIO.range=1e9;BIO.minRange=0;if(T.small)buildFarSmall(T,st);else buildFar(T,i,st,false);st.fars++;BIO.cur=cur;}
+  else{BIO.range=rh;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
+   if(!T.small||T.farB){BIO.cur=farCur;BIO.range=1e9;BIO.minRange=rh;if(T.small)buildFarSmall(T,st);else buildFar(T,i,st,true);st.standins++;BIO.cur=cur;}}
+  st.byS[T.sp]++;});
+ BIO.owner=null;BIO.range=null;BIO.minRange=0;
+ return{trees:TREES.length,heroes:st.heroes,far:st.fars,standins:st.standins,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fins:st.fins,fans:st.fans,domes:st.domes,curls:st.curls,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,small:st.sapTris}};};
 RIFT._canopyH=function(x,z){let h=0;for(const T of RIFT.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 })();
