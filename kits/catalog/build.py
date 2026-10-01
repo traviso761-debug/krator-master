@@ -11,6 +11,7 @@ NOT moved into src/. src/ holds only the page around them:
   src/81-sky.js             KratorSky, VENDORED from settlements/iziz/src
   src/90-sheet.js           lays out every entry and variant in labelled rows
   src/92-hover.js           hover inspector (name, class, tags), toggled with T
+  src/93-polygon.js         polygon tool (click the ground for world x,z), toggled with P
   src/99-tail.html
 
 Everything between head and tail goes into ONE <script>, so a top-level name

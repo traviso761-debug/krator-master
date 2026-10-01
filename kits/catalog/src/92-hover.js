@@ -25,7 +25,8 @@
     } else if (u.kind === 'plant') {
       t.push('climate: ' + A.climate, 'aridity: ' + A.aridity);
     } else {
-      t.push('culture: ' + A.culture, 'type: ' + (A.family || '?'));
+      t.push('culture: ' + A.culture, 'family: ' + (A.family || '?'));
+      if (A.types && A.types.length) t.push('types: ' + A.types.join(', '));
       if (A.districts && A.districts.length) t.push('districts: ' + A.districts.join(', '));
     }
     return t;

@@ -16,14 +16,19 @@ What it does:
                          declared box centred on the instance origin: x in [-w/2, w/2],
                          y in [0, h], z in [-d/2, d/2], each side within
                          max(TOL_M, TOL_FRAC * dimension); plants may sink ROOT_FRAC * h
+       anchor-geometry   wall: nothing behind z = -d/2 and geometry on that plane (or touching
+                         it at the top: a leaning ladder); ceiling: reaches y = h; surface:
+                         lowest point at y = 0 (ANCHOR_AUDIT)
+       palette           every palette key a piece names is in its culture's FPAL
        tags              furniture: culture, type, setting, rooms, anchor, clearance,
                          materials (kits/furniture/SPEC.md "The entry"), and the
                          materials it declares cover every material family it builds with;
-                         plants: climate + aridity; buildings: culture + type (family)
+                         plants: climate + aridity; buildings: culture, family, and types
+                         (non-empty, every one in BUILDING_TYPES)
      plus static checks on krator-master-furniture.js:
        spec-source       no entry still declares the old `room:` key
-       WARN lines        SPEC "No host globals" / "No literal colour arrays" counts
-                         (reported, not failed; see KNOWN_ISSUES.md)
+       style-*           SPEC "No host globals", F.shade/F.TAU not bare shade/TAU, and
+                         "Colour": no literal colour (0x...) or literal colour array
      Under-size (built > 30% smaller than declared on an axis) is a WARN.
   5. --out: screenshots (initial view, one per section, and --rows one per row).
 
@@ -193,7 +198,8 @@ for(const g of INSTANCES.slice()){
       if(A.anchor==='wall'){
         if(pr.behind>AC.behind)r.fail.push('anchor: wall piece reaches '+f2(pr.behind)+' m behind its back plane z = -d/2');
         const sx=sp(pr.bx0,pr.bx1),sy=sp(pr.by0,pr.by1);
-        if(sx<AC.backW*d.w||sy<AC.backH*d.h)r.fail.push('anchor: wall piece has too little at its back plane (within '+f2(pr.band)+
+        const leans=pr.by1>=d.h-pr.tband;   /* a ladder: touches the wall only at its top, and leans on it */
+        if(sx<AC.backW*d.w||(sy<AC.backH*d.h&&!leans))r.fail.push('anchor: wall piece has too little at its back plane (within '+f2(pr.band)+
           ' m of z = -d/2: '+f2(sx)+' m of w '+d.w+', '+f2(sy)+' m of h '+d.h+')');
         r.back=[sx,sy].map(t=>Math.round(t*100)/100);
       }else if(A.anchor==='ceiling'){

@@ -10,7 +10,9 @@
    geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof), a
    procedural F.tree() helper, the three registries with per-variant
    variantDims support, buildAsset/buildFurn/buildPlant (each returning a
-   selectable THREE.Group), rebuildInstance() and measureInstance().
+   selectable THREE.Group), rebuildInstance() and measureInstance(), the
+   per-culture furniture palette FPAL (F.col / F.cols / key-aware F.pick and
+   F.shade) and the building type vocabulary BUILDING_TYPES.
 
    Conventions that matter:
      - box/cyl/cone/dome sit with their BOTTOM at y; blob/ball are CENTRED at y.

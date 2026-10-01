@@ -1,9 +1,11 @@
 /* ======================================================================
-   Krator Master Furniture Registry — 84 pieces
+   Krator Master Furniture Registry — 122 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
-   yuni-court, yuni-common, yuni-poor, sahelian, order, voth, iziz, beast-rider.
+   yuni-court, yuni-common, yuni-poor, sahelian, order, nomad, voth, iziz, beast-rider.
+   Colours are palette keys of that culture (F.col / F.cols / F.pick([...keys]) /
+   F.shade(key, amt)), resolved through FPAL in the engine; helpers are F.shade, F.TAU.
    Build any instance with: buildFurn(key, x, z, ry, {variant, seed, y, wealth})
 
    Every entry carries the kits/furniture/SPEC.md fields: type, setting
@@ -13,7 +15,7 @@
    and that the built geometry fits w x d x h centred on the origin.
    ====================================================================== */
 
-/* ================= Voth (25 pieces) ================= */
+/* ================= Voth (35 pieces) ================= */
 
 FURN({
   key: 'voth_bench', name: 'Street Bench', culture: 'voth', type: 'bench', setting: 'outdoor',
@@ -558,7 +560,7 @@ FURN({
 
 FURN({
   key: 'voth_guild_banners', name: "Warrior's Guild Banners & Rack", culture: 'voth', type: 'rack', setting: 'both',
-  rooms: ['street', 'hall', 'barracks'], anchor: 'wall', clearance: { front: 1 },
+  rooms: ['street', 'hall', 'barracks'], anchor: 'floor', clearance: { front: 1, back: 0.4 },
   materials: ['timber', 'stone', 'metal', 'cloth'],
   w: 3, d: 1, h: 2.8, variants: 1,
   build: function (F) {
@@ -1862,7 +1864,7 @@ FURN({
   }
 });
 
-/* ================= Beast-Rider (Mav's Refuge / Girder) (15 pieces) ================= */
+/* ================= Beast-Rider (Mav's Refuge / Girder) (16 pieces) ================= */
 
 FURN({
   key: 'br_market_stall', name: 'Market Stall', culture: 'beast-rider', type: 'stall', setting: 'outdoor',
@@ -2084,6 +2086,8 @@ FURN({
   w: 2.6, d: 0.55, h: 1.6, variants: 1,
   build: function (F) {
     const timber = F.col('timberSepia'), pale = F.shade(timber, 0.2);
+    /* a plank back board on the wall that the rack is pinned to */
+    F.box(-0.3, 0.1, -0.255, 1.9, 1.35, 0.04, 0, F.shade(timber, -0.06), 'wood');
     /* spear rack: sill with sockets, two uprights and a slotted top bar */
     F.box(-0.72, 0, 0.05, 1.1, 0.14, 0.34, 0, F.shade(timber, 0.08), 'wood');
     F.box(-1.1, 0, -0.12, 0.08, 1.5, 0.08, 0, timber, 'wood');
@@ -2605,7 +2609,7 @@ FURN({
   }
 });
 
-/* ================= Yuni (32 pieces) ================= */
+/* ================= Yuni (58 pieces) ================= */
 
 FURN({
   key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', type: 'table', setting: 'indoor',
@@ -3108,7 +3112,7 @@ FURN({
 
 FURN({
   key: 'yuni_order_writing_board', name: 'Slate writing board', culture: 'order', type: 'board', setting: 'indoor',
-  rooms: ['school'], anchor: 'wall', clearance: { front: 1.2 },
+  rooms: ['school'], anchor: 'floor', clearance: { front: 1.2, back: 0.3 },
   materials: ['timber', 'stone'],
   w: 2.3, d: 0.75, h: 1.95, variants: 2,
   build: function (F) {
@@ -3147,7 +3151,8 @@ FURN({
     { w: 2.1, d: 0.70, h: 1.52 }
   ],
   build: function (F) {
-    if (F.variant === 1) F.shift(-0.19, -0.05); /* centre the footprint on the origin (verify.py declared-size) */
+    /* centre the footprint on the origin (verify.py declared-size), back of the rack on z = -d/2 */
+    if (F.variant === 1) F.shift(-0.19, -0.07); else F.shift(0, -0.07);
     const wood = F.col('timberOak');
     F.box(-0.8, 0, 0, 0.1, 1.4, 0.5, 0, wood, 'wood');
     F.box(0.8, 0, 0, 0.1, 1.4, 0.5, 0, wood, 'wood');
@@ -3291,6 +3296,8 @@ FURN({
       F.box(sx, 0.14, 0.26, 0.18, 0.30, 0.02, 0, F.col('blackIron'), 'metal');        /* recessed panel */
     }
     F.box(0, 0.32, -0.20, 1.0, 0.05, 0.05, 0, F.shade(metal, -0.1), 'metal'); /* stretcher */
+    F.box(0, 0.04, -0.335, 1.45, 0.62, 0.03, 0, F.shade(metal, -0.06), 'metal'); /* back panel, against the wall */
+    for (const sx of [-0.6, 0.6]) F.box(sx, 0.1, -0.29, 0.12, 0.4, 0.07, 0, F.shade(metal, -0.1), 'metal');
     F.box(0, 0.60, 0, 1.6, 0.11, 0.60, 0, F.shade(metal, 0.05), 'metal');     /* carcass */
     F.box(0, 0.63, 0.29, 1.42, 0.05, 0.03, 0, F.col('blackIron'), 'metal');           /* dark reveal */
     F.box(0, 0.63, -0.30, 1.50, 0.06, 0.03, 0, F.shade(metal, -0.12), 'metal');
@@ -3315,8 +3322,8 @@ FURN({
   build: function (F) {
     const metal = F.col('pewter');
     /* a carcass with real depth to it — the cells are boxes, not a painted face */
-    F.box(0, 0.05, -0.06, 2.2, 2.0, 0.38, 0, metal, 'metal');
-    F.box(0, 0, -0.06, 2.24, 0.05, 0.40, 0, F.shade(metal, -0.14), 'metal');   /* plinth */
+    F.box(0, 0.05, -0.04, 2.2, 2.0, 0.38, 0, metal, 'metal');
+    F.box(0, 0, -0.03, 2.24, 0.05, 0.40, 0, F.shade(metal, -0.14), 'metal');   /* plinth */
     const xs = [-0.75, -0.25, 0.25, 0.75], ys = [0.18, 0.66, 1.14, 1.60];
     for (const y of ys) for (const x of xs) {
       if (F.chance(0.6)) {
@@ -3329,7 +3336,7 @@ FURN({
     for (let i = 0; i < 3; i++) {
       F.box(F.rr(-0.9, 0.9), 1.9, 0.14, 0.04, 0.15, 0.05, 0, F.col('redCopper'), 'metal');
     }
-    F.box(0, 2.0, -0.06, 2.2, 0.05, 0.42, 0, F.shade(metal, 0.05), 'metal');
+    F.box(0, 2.0, -0.02, 2.2, 0.05, 0.42, 0, F.shade(metal, 0.05), 'metal');
     if (F.variant === 1) {
       F.box(-0.75, 0.4, 0.18, 0.5, 0.9, 0.03, 0, F.col('clothOchre'), 'cloth');
       F.lamp(1.1, 1.8, 0.2, 0.6, 8);
@@ -3575,7 +3582,7 @@ FURN({
 
 FURN({
   key: 'yuni_salvage_hearth_hood', name: 'Hearth hood of ducting', culture: 'ancients-salvage', type: 'stove', setting: 'indoor',
-  rooms: ['kitchen'], anchor: 'wall', clearance: { front: 1 },
+  rooms: ['kitchen'], anchor: 'floor', clearance: { front: 1, back: 0.4, left: 0.4, right: 0.4 },
   materials: ['timber', 'stone', 'metal', 'emissive'],
   w: 1.45, d: 1.15, h: 2.25, variants: 2,
   build: function (F) {
@@ -4330,7 +4337,7 @@ FURN({
   }
 });
 
-/* ================= Ancients kit extras (3 pieces) ================= */
+/* ================= Ancients kit extras (4 pieces) ================= */
 
 FURN({
   key: 'ancients_light_strip_ring', name: 'Corridor light-strip ring', culture: 'ancient', type: 'lamp', setting: 'indoor',
@@ -4362,6 +4369,9 @@ FURN({
       F.box(bx, 0.04, bz, 0.22, 0.16, 0.22, -a, F.shade(CASE, 0.12), 'metal');
       F.rod(bx, 0.1, bz, Math.cos(a) * (r + 0.16), 0.1, Math.sin(a) * (r + 0.16), 0.035, F.shade(CASE, -0.1), 'metal');
       F.ball(Math.cos(a) * (r + 0.18), 0.1, Math.sin(a) * (r + 0.18), 0.05, F.shade(RIM, -0.15), 'metal');
+      /* drop rod up to a ceiling rose: the ring hangs from its top, y = h */
+      F.rod(bx, 0.2, bz, bx, 0.28, bz, 0.02, F.shade(CASE, -0.1), 'metal');
+      F.cyl(bx, 0.28, bz, 0.07, 0.02, 0, F.shade(CASE, 0.12), 'metal');
     }
     /* grime and a shed cover fragment on the plate */
     for (let i = 0; i < 2; i++) {
