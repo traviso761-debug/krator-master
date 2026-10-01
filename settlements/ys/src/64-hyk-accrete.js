@@ -44,8 +44,16 @@ function hykAccrete(host,pods){const out=[];for(const pd of pods){
  let door=null;for(const op of pod.openings){op.p=[op.p[0]+cx,op.p[1],op.p[2]+cz];if(op.kind==='door'){door=op;hykDoor(op,{level:pd.level||'L1',nacre:rich,name:host.n+' pod'});}else hykWin(op,{nacre:rich,lit:rich,name:host.n+' pod'});}
  const contact=[host.x+(rs+.05)*nx,pd.y,host.z+(rs+.05)*nz];
  hykPut(mat,hykFlare(contact,[nx,0,nz],R*.9,R*.45,{col}));
- const nd=Math.round(R*2.4);for(let i=0;i<nd;i++){const a2=pd.a+rr(-.95,.95);const ro=rs+rr(.3,R*.95);const h=rr(.35,1.1)*R*.3,w=h*.3;
-  kput('hkDrip',[host.x+ro*Math.cos(a2),pd.y-R*.86*.74-h/2,host.z+ro*Math.sin(a2)],qEuler(Math.PI,0,0),[w,h,w],col);}
+ const nd=Math.round(R*2.4),aw=R*.62/Math.max(1,rs);for(let i=0;i<nd;i++){const a2=pd.a+rr(-aw,aw);const ro=rs+rr(.25,R*.5);const h=rr(.35,1.1)*R*.3,w=h*.3;
+  const dy0=pd.y-Math.sqrt(Math.max(0,R*R*.74-Math.pow(ro-(rs+R*.3),2)*.9))*.86;   // on the pod's underside at that radius
+  kput('hkDrip',[host.x+ro*Math.cos(a2),dy0-h/2+.15,host.z+ro*Math.sin(a2)],qEuler(Math.PI,0,0),[w,h,w],col);}
+ // satellites: two smaller pods grown beside the main one (a colony, not a lone blob), windows only, rooted alike
+ if(pd.cluster!==false){for(const sp of [{da:R*1.05/Math.max(1,rs),dy:-.6,k:.5},{da:-R*.95/Math.max(1,rs),dy:1.4,k:.36}]){const R2=R*sp.k;const a3=pd.a+sp.da;const n3x=Math.cos(a3),n3z=Math.sin(a3);const rs3=host.rAt(pd.y+sp.dy);
+  const c3x=host.x+(rs3+R2*.35)*n3x,c3z=host.z+(rs3+R2*.35)*n3z;const th3=Math.atan2(n3x,n3z);
+  const p3=hykPod({a:R2,b:R2*.9,c:R2,e1:.92,e2:.95,cy:pd.y+sp.dy,nu:36,nv:20,noise:{amp:.03,su:4,sv:3,seed:(a3*7|0)+1},col,openings:[{th:th3,el:.1,r:R2*.22,kind:'window'},{th:th3+1.1,el:.35,r:R2*.16,kind:'window'}]});
+  p3.geo.translate(c3x,0,c3z);hykPut(mat,p3.geo);for(const op of p3.openings){op.p=[op.p[0]+c3x,op.p[1],op.p[2]+c3z];hykWin(op,{nacre:rich,name:host.n+' pod'});}
+  hykPut(mat,hykFlare([host.x+(rs3+.05)*n3x,pd.y+sp.dy,host.z+(rs3+.05)*n3z],[n3x,0,n3z],R2*.92,R2*.5,{col}));
+  for(let i=0;i<3;i++){const a4=a3+rr(-.2,.2)*R2/Math.max(1,rs3);const ro=rs3+rr(.2,R2*.5);const h=rr(.3,.8)*R2*.3;kput('hkDrip',[host.x+ro*Math.cos(a4),pd.y+sp.dy-R2*.9*.7-h/2,host.z+ro*Math.sin(a4)],qEuler(Math.PI,0,0),[h*.3,h,h*.3],col);}}}
  // the room: the pod's chamber, with the residence's three spots
  const room=ysRoom({building:host.n+' pod',bld:null,key:'accreted_pod',kind:'bedroom',poly:hykCirclePoly(cx,cz,R*.78,14),y:floorY,h:R*.86*1.3,
   doors:door?[{at:[door.p[0],door.p[2]],w:door.r*2,to:'landing'}]:[],windows:[],culture:'hykkousoi',wealth:rich?.9:poor?.15:.5,residence:true});

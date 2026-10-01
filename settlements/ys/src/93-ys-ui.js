@@ -5,10 +5,7 @@ BUDGET.showcase={tris:12000000,calls:220};
  const lab=document.createElement('span');lab.textContent='hour '+YSCLOCK.hour.toFixed(1);const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=24;sl.step=.1;sl.value=YSCLOCK.hour;sl.style.width='120px';
  sl.oninput=()=>{setHour(parseFloat(sl.value));lab.textContent='hour '+YSCLOCK.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ui.appendChild(wrap);
  FRAME_HOOKS.push(()=>{if(Math.abs(parseFloat(sl.value)-YSCLOCK.hour)>.05){sl.value=YSCLOCK.hour;lab.textContent='hour '+YSCLOCK.hour.toFixed(1);}});}
-// ---- Inside: hide every exterior shell so floors, inner skins and the furniture spots can be judged (DESIGN §7)
-const INSIDE={on:false};
-function setInside(on){on=!!on;if(INSIDE.on===on)return on;INSIDE.on=on;for(const m of HYK_MESHES)if(m.userData.hyk==='out')m.visible=!on;
- const bt=[...ui.querySelectorAll('button')].find(b=>b.textContent==='Inside');if(bt)bt.classList.toggle('on',on);if(on)setRooms(true);return on;}
+// ---- Inside (the state and switch are in 92-camera.js, with the presets): the button
 uiButton('Inside',false,()=>setInside(!INSIDE.on));
 // ---- Rooms: every ROOM outline as a ribbon at its floor, every SPOT as a coloured disc (bed blue, food orange, store brown,
 // hearth red, seat green, table yellow, work grey, shrine violet) - the interiors spec's room-outline debug view
