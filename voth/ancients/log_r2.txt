@@ -1,0 +1,99 @@
+127.0.0.1 - - [21/Sep/2026 02:46:59] "GET /ancients-kit.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 770 triangles: 4889814
+counters: {"_instances": 74988, "_ready": true, "_registered": 112}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 112 volumes; thinnest: Campus Wing 6 — link (1), Campus Wing 7 — halls (1), Campus Wing 6 — link (1)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 68 type/decay pairs, heaviest skyB/2 276128/400000
+  PASS  showcase-triangle-budget : 5757024 / 6000000 scene triangles
+  PASS  showcase-draw-calls : 770 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 112 registered volumes, 74988 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  skyB/2          276128 /  400000  sky     inst    2549  meshes    17
+  skyB/0          240724 /  400000  sky     inst    1864  meshes    17
+  skyC/2          232258 /  400000  sky     inst    2618  meshes    14
+  mega/1          226842 /  700000  mega    inst    3501  meshes    15
+  skyB/1          212734 /  400000  sky     inst    2027  meshes     5
+  skyC/1          207204 /  400000  sky     inst    2369  meshes    11
+  fac/1           201964 /  250000  medium  inst    1786  meshes    61
+  mega/0          192806 /  700000  mega    inst    2989  meshes    15
+  skyC/0          188616 /  400000  sky     inst    1933  meshes    11
+  skyA/2          173796 /  400000  sky     inst    3522  meshes     8
+  fac/0           167235 /  250000  medium  inst     863  meshes    48
+  skyH/2          142894 /  400000  sky     inst    1278  meshes     6
+  campus/1        142568 /  700000  mega    inst    3605  meshes     9
+  skyG/2          134724 /  400000  sky     inst    1493  meshes    13
+  skyA/1          134194 /  400000  sky     inst    3074  meshes     6
+  campus/0        130136 /  700000  mega    inst    3287  meshes     9
+  skyG/1          123252 /  400000  sky     inst    1322  meshes    10
+  apt/0           122764 /  250000  medium  inst     751  meshes    77
+  apt/1           117434 /  250000  medium  inst     862  meshes    81
+  skyH/1          112860 /  400000  sky     inst     984  meshes     3
+  skyD/2          110084 /  400000  sky     inst    1170  meshes    31
+  skyF/2          109900 /  400000  sky     inst    1608  meshes    14
+  skyE/2          103778 /  400000  sky     inst    2018  meshes     5
+  skyA/0          100692 /  400000  sky     inst    3067  meshes     9
+  skyH/0           97416 /  400000  sky     inst     461  meshes     3
+  skyD/1           95238 /  400000  sky     inst     969  meshes    23
+  arc/1            95166 /  700000  mega    inst    1258  meshes    22
+  skyF/1           94446 /  400000  sky     inst    1312  meshes     8
+  skyE/1           90614 /  400000  sky     inst    1682  meshes     3
+  port/1           82946 /  250000  medium  inst     966  meshes    14
+  skyG/0           79908 /  400000  sky     inst     620  meshes    11
+  lab/1            78916 /  250000  medium  inst     806  meshes    44
+  arc/0            78840 /  700000  mega    inst     868  meshes    11
+  skyF/0           73284 /  400000  sky     inst     976  meshes    28
+  off/0            66156 /  250000  medium  inst     586  meshes    38
+  skyE/0           65340 /  400000  sky     inst    1380  meshes     4
+  skyD/0           64416 /  400000  sky     inst     338  meshes    30
+  gov/1            63536 /  250000  medium  inst     911  meshes    14
+  lab/0            57058 /  250000  medium  inst     381  meshes    38
+  off/1            54850 /  250000  medium  inst     674  meshes    31
+  robo/1           43938 /  250000  medium  inst     687  meshes    20
+  dc/1             41840 /  250000  medium  inst     570  meshes    17
+  hotel/1          40046 /  250000  medium  inst    1497  meshes    56
+  port/0           38508 /  250000  medium  inst     307  meshes    14
+  hosp/1           35944 /  250000  medium  inst     720  meshes     6
+  lib/1            35642 /  250000  medium  inst     445  meshes     6
+  gov/0            33340 /  250000  medium  inst     438  meshes    14
+  hotel/0          28928 /  250000  medium  inst    1200  meshes    60
+  hosp/0           28660 /  250000  medium  inst     565  meshes     8
+  dish/1           26300 /   60000  small   inst     180  meshes     7
+  amph/1           23650 /  250000  medium  inst     342  meshes    35
+  robo/0           21532 /  250000  medium  inst     296  meshes    22
+  house/1          20394 /   60000  small   inst     132  meshes    24
+  house/0          20021 /   60000  small   inst      85  meshes    25
+  lib/0            19628 /  250000  medium  inst     124  meshes     5
+  dish/0           19324 /   60000  small   inst      51  meshes     6
+  dc/0             18868 /  250000  medium  inst     182  meshes    17
+  bunk/1           18266 /  250000  medium  inst     349  meshes     4
+  fuel/1           17050 /   60000  small   inst     165  meshes     8
+  radar/1          14114 /   60000  small   inst     381  meshes     3
+  police/1         12476 /   60000  small   inst     295  meshes     2
+  police/0         10976 /   60000  small   inst     313  meshes     3
+  fuel/0            9504 /   60000  small   inst      55  meshes     7
+  amph/0            9092 /  250000  medium  inst     122  meshes    35
+  radar/0           8484 /   60000  small   inst     356  meshes     5
+  house2/1          7426 /   60000  small   inst     155  meshes     5
+  bunk/0            4964 /  250000  medium  inst     142  meshes     3
+  house2/0          4392 /   60000  small   inst     106  meshes     6
+shot: ./shots/r2\view_Skyscraper_B.png   calls 96  tris 4.21M
+shot: ./shots/r2\view_Skyscraper_F.png   calls 873  tris 4.97M
+shot: ./shots/r2\view_Lab.png   calls 839  tris 5.22M
+shot: ./shots/r2\view_Robotics_factory.png   calls 920  tris 4.76M
+shot: ./shots/r2\view_Campus.png   calls 836  tris 4.66M
+shot: ./shots/r2\view_Hotel.png   calls 846  tris 4.68M
+
+--- worst draw calls over 6 views ---
+  Robotics factory             calls   920  tris 4.76M   OVER
+  Skyscraper F                 calls   873  tris 4.97M
+  Hotel                        calls   846  tris 4.68M
+  Lab                          calls   839  tris 5.22M
+  Campus                       calls   836  tris 4.66M
+  Skyscraper B                 calls    96  tris 4.21M
+  OVER budget: Robotics factory at 920 / 900 draw calls
+
+OK

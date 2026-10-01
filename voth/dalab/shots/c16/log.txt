@@ -1,0 +1,72 @@
+127.0.0.1 - - [29/Sep/2026 01:50:31] "GET /dalab.html HTTP/1.1" 200 -
+ERROR PANEL: clean
+draw calls: 213 triangles: 10784835
+counters: {"_audit": {"onRoad": 14, "overlap": 0, "placed": 875, "who": ["dalab_mound@0,1440", "dalab_mound@0,-1680", "dalab_market_small@1302,610", "dalab_shrine@1285,627", "dalab_market_small@0,1370", "dalab_shrine@-24,1370", "dalab_market_small@-1302,610", "dalab_shrine@-1319,593", "dalab_market_small@-1282,-891", "dalab_shrine@-1278,-915", "dalab_market_small@0,-1610", "dalab_shrine@24,-1610", "dalab_market_small@1282,-891", "dalab_shrine@1285,-867"]}, "_biome": {"avenue": 1755, "calls": 51, "far": 879, "grove": 0, "heroes": 2721, "inst": 588669, "ms": 31313, "trees": 3600}, "_bridges": 41, "_cityMs": 43013, "_fields": 222, "_hallsApex": 30.386000000000003, "_highwayPts": 13, "_horizon": {"trees": 1914}, "_instances": 99445, "_labWall": {"bays": 359, "gaps": 11, "stubs": 127}, "_labels": 118, "_life": {"agents": 323, "edges": 2040, "nodes": 2048}, "_mounds": 10, "_muralStats": {"dropped": ["hl_rep_house_rich_a"], "placed": 1}, "_oaks": 44, "_projectFire": {}, "_ready": true, "_registered": 1095, "_roadComponents": 1, "_terrainTex": {"_listeners": {"dispose": [null]}, "anisotropy": 4, "center": {"x": 0, "y": 0}, "encoding": 3001, "flipY": true, "format": 1023, "generateMipmaps": true, "image": "ref: <Node>", "internalFormat": null, "magFilter": 1006, "mapping": 300, "matrix": {"elements": [1, -0.0, 0, 0, 1, 0, 0, 0, 1]}, "matrixAutoUpdate": true, "minFilter": 1008, "mipmaps": [], "name": "", "offset": {"x": 0, "y": 0}, "onUpdate": null, "premultiplyAlpha": false, "repeat": {"x": 1, "y": 1}, "rotation": 0, "type": 1009, "unpackAlignment": 4, "uuid": "CB1A0FD8-9BE9-46AE-9CE9-7F98BCA20268", "version": 1, "wrapS": 1001, "wrapT": 1001}}
+
+--- invariants ---
+  PASS  registered-volumes-non-empty : 3349 volumes; thinnest: Copper ringbark (14), Copper ringbark (14), Copper ringbark (15)
+  PASS  no-nan-geometry : clean
+  PASS  per-type-triangle-budget : 50 type/decay pairs, heaviest biome/trees 5828560/20000000
+  PASS  showcase-triangle-budget : 10140227 / 11000000 scene triangles
+  PASS  showcase-draw-calls : 213 / 900 draw calls at this camera
+  PASS  registry-and-bake-ran : 1095 registered volumes, 99445 baked instances
+
+--- per type (scene triangles, instances, meshes) ---
+  biome/trees    5828560 / 20000000  city    inst  516014  meshes     0
+  dalab_hut_b/0    665854 / 20000000  city    inst   11950  meshes     0
+  dalab_compound/0    601860 / 20000000  city    inst   14280  meshes     0
+  dalab_lab/0     569986 / 20000000  city    inst   13393  meshes     3
+  biome/floor     313386 / 20000000  city    inst   42479  meshes     0
+  dalab_hut_a/0    279172 / 20000000  city    inst    7810  meshes     0
+  biome/oaks      249052 / 20000000  city    inst   16978  meshes     0
+  dalab_granaries/0    171192 / 20000000  city    inst    2996  meshes     0
+  dalab_hut_c/0    168080 / 20000000  city    inst    7040  meshes     0
+  biome/garden    114443 / 20000000  city    inst    8593  meshes     0
+  dalab_tenement/0    113876 / 20000000  city    inst    6174  meshes     0
+  dalab_mound/0     80760 / 20000000  city    inst    2736  meshes     6
+  dalab_well/0     75628 / 20000000  city    inst    1887  meshes     0
+  biome/biome      73754 / 20000000  city    inst    4139  meshes     0
+  dalab_rowhouse/0     59830 / 20000000  city    inst    3162  meshes     0
+  dalab_ranch/0     53448 / 20000000  city    inst    1563  meshes     0
+  dalab_high_mound/0     50920 / 20000000  city    inst    1528  meshes     3
+  dalab_market_small/0     46368 / 20000000  city    inst    1539  meshes     0
+  dalab_halls/0     46206 / 20000000  city    inst    2186  meshes     0
+  dalab_barracks/0     42076 / 20000000  city    inst    1348  meshes     0
+  dalab_palace_mound/0     36840 / 20000000  city    inst    1971  meshes     1
+  dalab_chapterhouse/0     32480 / 20000000  city    inst     802  meshes     1
+  dalab_orchard/0     31192 / 20000000  city    inst     952  meshes     0
+  dalab_noble_a/0     28716 / 20000000  city    inst    1782  meshes     0
+  dalab_inn/0      28208 / 20000000  city    inst     884  meshes     0
+  dalab_watchtower/0     27426 / 20000000  city    inst     791  meshes     0
+  dalab_tavern/0     27360 / 20000000  city    inst    1143  meshes     0
+  dalab_embassy_republic/0     26742 / 20000000  city    inst    1431  meshes     0
+  dalab_priest_compound/0     26576 / 20000000  city    inst     920  meshes     0
+  dalab_noble_c/0     25832 / 20000000  city    inst     972  meshes     0
+  dalab_smithy/0     23016 / 20000000  city    inst     852  meshes     0
+  dalab_windmill/0     22440 / 20000000  city    inst     480  meshes    20
+  dalab_noble_b/0     21944 / 20000000  city    inst     832  meshes     0
+  dalab_market_large/0     21376 / 20000000  city    inst     631  meshes     0
+  dalab_shops/0     21042 / 20000000  city    inst     665  meshes     0
+  dalab_warehouse/0     19648 / 20000000  city    inst     536  meshes     0
+  dalab_potter/0     16548 / 20000000  city    inst     469  meshes     0
+  dalab_earthyard/0     13320 / 20000000  city    inst     453  meshes     0
+  dalab_workshop/0     11308 / 20000000  city    inst     484  meshes     0
+  dalab_bathhouse/0     10804 / 20000000  city    inst     380  meshes     0
+  dalab_embassy_yuni/0     10528 / 20000000  city    inst     192  meshes     0
+  dalab_scribes/0     10240 / 20000000  city    inst     522  meshes     0
+  dalab_priest_house/0      9160 / 20000000  city    inst     300  meshes     0
+  dalab_shrine/0      7644 / 20000000  city    inst     168  meshes     0
+  dalab_healers/0      6554 / 20000000  city    inst     226  meshes     0
+  dalab_embassy_voth/0      5614 / 20000000  city    inst     287  meshes     0
+  biome/ranch       5174 / 20000000  city    inst     466  meshes     0
+  dalab_embassy_iziz/0      4364 / 20000000  city    inst     191  meshes     0
+  dalab_weaver/0      2004 / 20000000  city    inst      76  meshes     0
+  dalab_dyer/0      1676 / 20000000  city    inst      92  meshes     0
+shot: shots/c16/view_Main_settlement_—_overview.png   calls 221  tris 10.79M
+shot: shots/c16/view_The_Halls_and_the_ranch.png   calls 217  tris 10.79M
+
+--- worst draw calls over 2 views ---
+  Main settlement — overview   calls   221  tris 10.79M
+  The Halls and the ranch      calls   217  tris 10.79M
+
+OK

@@ -1,0 +1,12 @@
+{
+ "calls": 54,
+ "counters": {
+  "_bakeCalls": 50,
+  "_biome": "(large)",
+  "_buildMs": 18146,
+  "_instances": 863523,
+  "_ready": true,
+  "_registered": 3862
+ },
+ "tris": 11202187
+}
