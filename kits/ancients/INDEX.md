@@ -6,7 +6,7 @@ The Ancients kit: ruined megastructures of the ancient civilisation, 33 structur
 
 Docs: `API.md`, `DESIGN.md`, `HANDOVER.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
+Built output (never open it; edit `src/` and rebuild): `dist/alt-civic.html`, `dist/alt-domestic.html`, `dist/alt-towers.html`, `dist/ancients-kit.html`, `dist/arcbeam.html`, `dist/arcoindian.html`, `dist/arcoindian2.html`, `dist/arcube.html`, `dist/blades.html`, `dist/canyon.html`, `dist/crescent.html`, `dist/dalab.html`, `dist/darco.html`, `dist/drum.html`, `dist/engines.html`, `dist/forest.html`, `dist/hexahedron.html`, `dist/hill.html`, `dist/iziz-style.html`, `dist/launch.html`, `dist/ledge.html`, `dist/lighthouse.html`, `dist/monolith.html`, `dist/plymouth.html`, `dist/ring.html`, `dist/skyi.html`, `dist/skyj.html`, `dist/skyk.html`, `dist/spire.html`, `dist/theodiga.html`, `dist/trigon.html`, `dist/veladiga.html`, `dist/wheel.html`, `dist/wing.html`, `dist/worn.html`
 
 Build: `cd kits/ancients && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -115,6 +115,20 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `8ak-alt-a-houses.js` | 25 | helpers (27) |
 | `8ak-alt-b-civic.js` | 27 | helpers (17) |
 | `8ak-alt-c-works.js` | 20 |  |
+| `8al-alt-00-lib.js` | 10 |  |
+| `8al-alt-01-office-terrace.js` | 6 |  |
+| `8al-alt-02-office-stack.js` | 5 |  |
+| `8al-alt-03-office-fins.js` | 5 |  |
+| `8al-alt-04-starport.js` | 8 |  |
+| `8al-alt-05-bunker.js` | 5 |  |
+| `8al-alt-06-library.js` | 5 |  |
+| `8al-alt-07-gate.js` | 5 |  |
+| `8al-alt-08-robotics.js` | 6 |  |
+| `8al-alt-09-datacenter.js` | 5 |  |
+| `8al-alt-10-police.js` | 5 |  |
+| `8al-alt-11-hospital.js` | 5 |  |
+| `8al-alt-12-campus.js` | 5 |  |
+| `8al-alt-13-government.js` | 5 |  |
 | `90-scene.js` | 7 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 6 | camera control (1); DAY / NIGHT (2) |
@@ -126,6 +140,7 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
+| `alt-civic` | `89z-rows.js`, `91z-views.js` | 4 |
 | `alt-domestic` | `89z-rows.js`, `91z-views.js` | 3 |
 | `alt-towers` | `89z-rows.js`, `91z-views.js` | 3 |
 | `arcbeam` | `89z-rows.js`, `91z-views.js` | 9 |
