@@ -122,23 +122,37 @@ Now [open Krator in Chrome](#open-krator-in-chrome).
 
 ## What the window shows
 
-When Krator is ready, its window shows lines like these:
+When Krator is ready, **Chrome opens the Krator Worlds gallery by itself** (if it does not, see the next section),
+and the window shows lines like these:
 
 ```
 Krator site: Ctrl+C stops it.
 http://127.0.0.1:8001/
-http://192.168.1.20:8001/
+http://192.168.x.x:8001/
+
+On a phone, tablet or another computer on the same Wi-Fi, open Chrome and go to:
+
+    http://192.168.x.x:8001/
 ```
 
-The **second** address is different on every network. Write it down: it is the one your phone, tablet and other
-computers use.
+Where it says `192.168.x.x`, your window shows your own computer's numbers (they may also start `10.` or `172.`).
+They are different on every network, so this guide cannot tell you them: the window, and the **/share** page
+below, always show the right ones.
 
 ## Open Krator in Chrome
 
 **On the computer running Krator:** open Chrome and type **localhost:8001** in the address bar, then press Enter.
 
-**On a phone, tablet or another computer** in your home: connect it to the same Wi-Fi, open Chrome, and type the
-second address the window showed, for example **192.168.1.20:8001**.
+**On a phone, tablet or another computer** in your home, the easy way is a code to scan:
+
+1. On the computer running Krator, click **Open on your phone or tablet** at the top right of the gallery (or type
+   **localhost:8001/share**). The page shows this computer's address in large letters, with a square code.
+2. Connect the phone or tablet to the **same Wi-Fi**.
+3. Point its **camera** at the code and tap the link that appears. Or open Chrome on it and type the address shown
+   under the code.
+
+Inside any world, the **Share** button in the Krator bar does the same for that world, so a phone can open exactly
+what you are looking at.
 
 You will see the **Krator Worlds** gallery. Click any picture to open that world. Other pages:
 
@@ -184,11 +198,22 @@ pages have their own buttons and settings, and no Krator bar.)
 - **If Chrome says "Page Unresponsive",** click **Wait**, not *Exit page*.
 - **Open one world at a time,** and close a world's tab before opening the next. Each one uses a lot of memory.
 
+## Is Krator running?
+
+- **Windows, Mac, or Linux with the start command:** Krator runs as long as its window is open. If the window is
+  open and its last lines show the addresses, it is running. To **restart** it (for example after a newer version,
+  or if a page stops answering), close the window and start Krator again.
+- **Check from Chrome:** **localhost:8001** shows the gallery while Krator runs, and *This site can't be reached*
+  when it does not.
+- **If someone set Krator up to run by itself on a Linux computer** (as a background service), there is no window.
+  In Terminal, `~/krator-master/host/sitectl status` (use the folder you put Krator in) says whether it is running
+  and shows its address; `sitectl restart` restarts it. `host/HOSTING.md` has the rest.
+
 ## Next time
 
 1. Start Krator: double-click **Start Krator** (Windows or Mac), or open Terminal in the Krator folder and type
    `./start-krator.sh` (Linux).
-2. Open your bookmark in Chrome (or type **localhost:8001**).
+2. Chrome opens the gallery by itself. On other devices, open your bookmark (or scan the code on **/share** again).
 3. Close the Krator window when you are done.
 
 ## Getting a newer version
@@ -204,7 +229,7 @@ delete the old folder). The first start of a new copy prepares the worlds again.
 | What you see | What to do |
 |---|---|
 | The window says **"needs Python 3.11 or later"** | Install Python as in step 1 for your computer, then start Krator again. On Windows, make sure "Add python.exe to PATH" was ticked, and restart the computer afterwards. |
-| Chrome says **"This site can't be reached"** | Check the Krator window is still open. On another device, check it is on the same Wi-Fi and that you typed the address exactly, including **:8001**. |
+| Chrome says **"This site can't be reached"** | Check the Krator window is still open. On another device, check it is on the same Wi-Fi and that you typed the address exactly, including **:8001**. If it worked before, the router may have given the computer a new address: open **localhost:8001/share** on it for the current one. |
 | The window says **"Address already in use"** | Krator is already running in another window. Use that one, or close it and start again. |
 | A world shows only a grey or black screen | Turn on graphics acceleration (see *Make it run smoothly*), then reload the page (**F5**, or **⌘+R** on a Mac). |
 | A world is very slow, or Chrome closes the tab | Click **LOD** at the top of the world and choose **low**. Close other tabs and programs. |

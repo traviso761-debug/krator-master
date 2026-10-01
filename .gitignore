@@ -30,3 +30,5 @@ shots-*/
 host/site/
 host/site.toml
 host/menagerie/
+host/address.json
+host/address.json.tmp
