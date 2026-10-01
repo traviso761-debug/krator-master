@@ -11,7 +11,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/erewhon.html`, `dis
 Build: `cd settlements/xanadu && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
+From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
 ## src/
 
@@ -23,15 +23,15 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
 | `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
-| `36-decor.js` | 11 | decoration helpers (1) |
-| `38-helpers2.js` | 2 | v2 helpers (1) |
+| `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
+| `38-helpers2.js` | 3 | v2 helpers (1) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `69-mat-salvage.js` | 5 | salvage (decay level 3) (1) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
-| `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
+| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
+| `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-xa-tex.js` | 10 | the painted palette used inside colour maps (14); rammed earth: 2 m tile, lift lines every ~0.37 m (17); whitewash over rubble: 2 m tile (25); small glazed tiles: 2 m tile, 0.25 m tiles with  (32); the twig band (penbey): 1 m tile, bundled tamari (39); fieldstone (rubble): 4 m tile (46); valley rock (the hillsides): 8 m tile (56); the valley floor: dry grass over pale earth (64); jali (pierced stone screen): 1 m tile, alpha-cut (70); window valance: pleated cloth, scalloped hem (al (77) |
-| `71-xa-mat.js` | 11 | world UV with separate u/v tile sizes (the band  (24); materials (42); geometry (59); kit items (88) |
+| `71-xa-mat.js` | 10 | world UV with separate u/v tile sizes (the band  (24); materials (28); geometry (44); kit items (73) |
 | `72-xa-helpers.js` | 32 **big** | vectors in the local frame (32); walls: the battered mass (53); the Turkish overhang (cumba) and the Indian bay  (120); the Persian note: arches, iwans, arcades, domes (149); the gilded roof (the Tibetan "gyaphib") and pavi (202); pennants, poles, shrines, roundels (224); footings, terraces, gardens, water (251) |
 | `74-xa-dwell.js` | 25 | POOR (9); MIDDLE (68); RICH (145) |
 | `75-xa-trade.js` | 8 | the bazaar row: three shops under arches, rooms  (15); the workshop: dyer and potter round a yard (32); the scrap smithy (51) |
@@ -66,7 +66,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `90-scene.js` | 7 | scene (Xanadu showcase) (1); build every site the target lists (61) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/

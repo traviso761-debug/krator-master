@@ -7,7 +7,7 @@
 //
 // Folded out of settlements/iziz (78-transplant.js and the city build) on 2026-09-30. Iziz VENDORS THIS FILE
 // byte-identical as src/77z-iziz-style.js; edit it here and copy it across. It uses nothing from Iziz: the three
-// Vernacular helpers it needed are carried as izsC, izsWorldUV and TEX.izsWood. Iziz's own original massing
+// Vernacular helpers it needed are carried as izsC and TEX.izsWood (its world UVs use the shared vWorldUV). Iziz's own original massing
 // (izBlock and the Iziz halves of the families) stays in Iziz.
 //
 // A family is izsFamily(key, name, size, tall, fn(P,x,z)): fn builds one instance at x,z into group P.
@@ -27,24 +27,14 @@ TEX.izsWood=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.dat
   const knot=fbm(x/9,y/9,bd*1.3,2);if(knot>.72)v-=(knot-.72)*160;
   d[i]=v;d[i+1]=v*.93;d[i+2]=v*.84;d[i+3]=255;}
  g.putImageData(id,0,0);});
-function izsWorldUV(mat,K){mat.userData.uvK=K;mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
-#ifdef USE_INSTANCING
-mat4 _im=instanceMatrix;
-vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
-vec3 _an=abs(normal);
-vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
-vUv=uv*_sw*${K.toFixed(4)};
-#else
-vUv=uv;
-#endif
-#endif`);};return mat;}
+// izsWorldUV was a copy of vWorldUV with its one-program-for-every-K fault; the kit now takes the shared
+// vWorldUV from core/materials/opt/69a-world-uv.js (kits/ancients/build.py CORE_OPT_FILES).
 
 // ---- palette, materials and the salvage items the rehabilitated state uses
 const TPAL=[0xe9cb8c,0xdcb474,0xcf9d5b,0xe2ab5e,0xbf8a44,0xf1dba6,0xd8893c,0xc8a26a,0xe6bd7e,0xd4a05a];
 const TPAL_BRUT=[0xb9a58a,0xa8957a,0xc7b294,0x9c8b70,0xd2bc9c];
 const _tmc={};function tsand(hex,tex){const k=hex+'_'+(tex||'p');if(_tmc[k])return _tmc[k];const m=new THREE.MeshStandardMaterial({map:tex==='c'?TEX.concrete:TEX.panel,color:hex,metalness:tex==='c'?0:.3,roughness:tex==='c'?.9:.42,side:DS});_tmc[k]=m;return m;}
-MAT.scrap=new THREE.MeshStandardMaterial({map:TEX.rust,color:0xffffff,roughness:.9,metalness:.2,side:DS});MAT.plank=new THREE.MeshStandardMaterial({map:TEX.izsWood,color:0xffffff,roughness:1,side:DS});izsWorldUV(MAT.plank,.5);
+MAT.scrap=new THREE.MeshStandardMaterial({map:TEX.rust,color:0xffffff,roughness:.9,metalness:.2,side:DS});MAT.plank=new THREE.MeshStandardMaterial({map:TEX.izsWood,color:0xffffff,roughness:1,side:DS});vWorldUV(MAT.plank,.5);
 kdef('tscrap',new THREE.BoxGeometry(1,1,1),MAT.scrap);kdef('tplank',new THREE.BoxGeometry(1,1,1),MAT.plank);kdef('tpole',new THREE.CylinderGeometry(.12,.12,1,6),MAT.pipeRust);kdef('tbulb',new THREE.SphereGeometry(.22,6,5),MAT.dot);
 // ---- the ruin / rehab pass
 const TSCRAP=[0x8a3a2a,0x7a7a72,0x9a8a6a,0x5a6a3a,0x6a6a80],TPLANK=[0xb08a5a,0xc8a070,0x9a7a4a],TTARP=[0x2a5a8a,0xe07a2a,0x3a7a5a,0x8a3a3a,0xe0a030];

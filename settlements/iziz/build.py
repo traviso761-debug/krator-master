@@ -25,7 +25,9 @@ Also enforces the rules that make subagent work safe on this kit:
   4. MANIFEST. Writes build-manifest.json: a sha1 per fragment, so the planner
      can see which fragments a subagent actually touched.
 
-Usage:  python build.py [--no-checks] [--assert-origin]
+Usage:  python build.py [--no-checks] [--assert-origin] [--vendor-check] [--vendor-bio]
+
+  --vendor-bio     rewrite targets/city/86-bio-*.js from ../biomes/hyperjungle/src (bio_wrap)
 
   --assert-origin  fail unless the build is byte-identical to .origin.html
                    (the single-file kit this repo was split out of). Use it
@@ -54,15 +56,20 @@ DIST = os.path.join(HERE, 'dist')
 ORIGIN = os.path.join(HERE, '.origin.html')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
 TARGET_CORE = {'city': ['atmos']}
 
 
 def srcpath(f, base=None):
-    """Path of fragment f in base (default src/), falling back to core/materials/.
+    """Path of fragment f in base (default src/), falling back to core/materials/ (and to
+    core/materials/opt/ for the opt-in files in CORE_OPT_FILES).
     A local copy with the same name overrides the shared one."""
     p = os.path.join(base or SRC, f)
-    return p if os.path.exists(p) or f not in CORE_FILES else os.path.join(CORE, f)
+    if os.path.exists(p) or f not in CORE_FILES + CORE_OPT_FILES:
+        return p
+    return os.path.join(CORE if f in CORE_FILES else CORE_OPT, f)
 
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order. Everything
@@ -93,6 +100,7 @@ _OLD_TARGETS = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
@@ -212,6 +220,7 @@ def build_one(target, do_checks, assert_origin):
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
+    src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
@@ -265,9 +274,70 @@ VENDORED = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '3
             '77z-iziz-style.js']
 
 
-BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
-                '50-biome-hyperjungle-species', '55-biome-hyperjungle-trees', '60-biome-hyperjungle-floor',
-                '65-biome-hyperjungle-dress', '70-biome-hyperjungle']   # ../biomes/hyperjungle/src -> targets/city/86-bio-*.js
+BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '35-core-anim', '40-core-place',
+                '50-biome-hyperjungle-species', '55-biome-hyperjungle-trees', '58-biome-hyperjungle-fauna',
+                '60-biome-hyperjungle-floor', '65-biome-hyperjungle-dress',
+                '70-biome-hyperjungle']   # ../biomes/hyperjungle/src -> targets/city/86-bio-*.js, through bio_wrap()
+
+# THE CLOSURE WRAP. The city vendors the hyperjungle biome, but the biome's core declares generic globals (rng, clamp,
+# TAU, a const BIO) that would clobber the city's own. bio_wrap() turns an upstream fragment into the city's copy:
+# the core head keeps its helpers in a closure and exports them as BIO.fn, every other fragment runs in a closure
+# that pulls them from BIO.fn, BIO and HYPERJUNGLE become `var`, and BIO.init takes its scene later (BIO.setScene).
+# `--vendor-check` compares bio_wrap(upstream) with the copy; `--vendor-bio` rewrites the copies from upstream.
+BIO_FN = 'TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm'
+BIO_FNQ = BIO_FN + ',qEuler,qFacing,qUp'
+
+
+def _sub(s, a, b):
+    if s.count(a) != 1:
+        raise ValueError('bio_wrap: expected one %r' % a[:60])
+    return s.replace(a, b)
+
+
+def _open_after_header(s, fn, tail=''):
+    L = s.split('\n')
+    i = next(k for k, l in enumerate(L) if l.strip() and not l.startswith('//'))
+    L.insert(i, '(function(){const {%s}=BIO.fn;' % fn)
+    return '\n'.join(L).rstrip('\n') + '\n' + tail + '\n})();\n'
+
+
+def bio_wrap(f, s):
+    if f == '10-core-head':
+        s = _sub(s, "const BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};\n",
+                 "var BIO={host:null,stats:{},cur:null,version:'hyperjungle-1'};\n"
+                 "// EVERYTHING BELOW IS LOCAL. The core declares no generic global (rng, clamp,\n"
+                 "// TAU...): a world that already has those would be clobbered. Biome fragments\n"
+                 "// pull what they need from BIO.fn at the top of their own closure.\n(function(){\n")
+        s = _sub(s, " if(!h||!h.THREE||!h.scene)throw new Error('BIO.init: host needs THREE and scene');\n",
+                 " if(!h||!h.THREE)throw new Error('BIO.init: host needs THREE');\n"
+                 " // scene may arrive later (a world that creates its scene after its kit loads\n"
+                 " // calls BIO.setScene before build); it is only needed at bake\n")
+        s = _sub(s, '  THREE:h.THREE,scene:h.scene,\n', '  THREE:h.THREE,scene:h.scene||null,\n')
+        s = _sub(s, ' return BIO;};\n', ' return BIO;};\nBIO.setScene=function(s){BIO.host.scene=s;};\n')
+        return s.rstrip('\n') + '\n\nBIO.fn={%s};\n})();\n' % BIO_FN
+    if f == '20-core-kit':
+        s = _sub(s, 'BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;let calls=0,inst=0;',
+                 "BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error("
+                 "'BIO.bake: no scene (BIO.init({scene}) or BIO.setScene first)');let calls=0,inst=0;")
+        return _open_after_header(s, BIO_FN, '\nObject.assign(BIO.fn,{qEuler,qFacing,qUp});')
+    if f in ('30-core-foliage', '35-core-anim', '40-core-place'):
+        return _open_after_header(s, BIO_FNQ)
+    if f == '50-biome-hyperjungle-species':
+        s = _sub(s, '\nconst HYPERJUNGLE={};\n', '\nvar HYPERJUNGLE={};\n(function(){const {%s}=BIO.fn;\n' % BIO_FNQ)
+        return s.rstrip('\n') + '\n\n})();\n'
+    if f == '70-biome-hyperjungle':
+        return s
+    return _sub(s, '\n(function(){\n', '\n(function(){const {%s}=BIO.fn;\n' % BIO_FNQ)   # already one closure
+
+
+def bio_paths(f):
+    return (os.path.join(ROOT, 'biomes', 'hyperjungle', 'src', f + '.js'),
+            os.path.join(TARGETS, 'city', '86-bio-%s.js' % f))
+
+
+def bio_read(p):
+    with open(p, encoding='utf-8', newline='') as fh:
+        return fh.read()
 
 
 def vendor_manifest():
@@ -306,16 +376,28 @@ def vendor_check():
     if not os.path.isdir(bup):
         print('vendor-check: ../biomes/hyperjungle/src not found; biome check skipped')
         return
-    bdrift = [f for f in BIO_VENDORED
-              if open(os.path.join(TARGETS, 'city', '86-bio-%s.js' % f), 'rb').read()
-              != open(os.path.join(bup, f + '.js'), 'rb').read()]
-    print('vendor-check: %s' % ('all %d biome fragments identical to ../biomes/hyperjungle/src' % len(BIO_VENDORED)
-                                 if not bdrift else 'BIOME DRIFT in ' + ', '.join(bdrift)))
+    bdrift = [f for f in BIO_VENDORED if not os.path.exists(bio_paths(f)[1])
+              or bio_read(bio_paths(f)[1]) != bio_wrap(f, bio_read(bio_paths(f)[0]))]
+    print('vendor-check: %s' % ('all %d biome fragments match ../biomes/hyperjungle/src (closure-wrapped by bio_wrap)'
+                                 % len(BIO_VENDORED) if not bdrift else 'BIOME DRIFT in ' + ', '.join(bdrift)
+                                 + ' - run build.py --vendor-bio, or note in KNOWN_ISSUES.md'))
+
+
+def vendor_bio():
+    """Rewrite targets/city/86-bio-*.js from ../biomes/hyperjungle/src through bio_wrap()."""
+    for f in BIO_VENDORED:
+        up, dst = bio_paths(f)
+        with open(dst, 'w', encoding='utf-8', newline='') as fh:
+            fh.write(bio_wrap(f, bio_read(up)))
+    print('vendor-bio: wrote %d biome fragments' % len(BIO_VENDORED))
 
 
 def main():
     if '--vendor-check' in sys.argv:
         vendor_check()
+        return
+    if '--vendor-bio' in sys.argv:
+        vendor_bio()
         return
     vendor_manifest()
     do_checks = '--no-checks' not in sys.argv
