@@ -214,12 +214,13 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       now keeps only a ragged, drooping stub off each edge, sized in metres
       (2.5-16 m) rather than as a fraction of the tear width, with whole levels
       missing where the plate went clean.
-- [ ] The breach tear is driven by `fbm` on a fixed axis, so the rip widens with
-      height but does not undercut -- a real failure would scallop back under
-      the crest on both sides of the notch.
-- [ ] The scour plume downstream is a Gaussian widening with distance. It reads,
-      but it does not braid or deposit a bar, and it ignores the terrace steps
-      it cuts through.
+- [x] ~~The breach tear is driven by `fbm` on a fixed axis, so the rip widens with
+      height but does not undercut.~~ `scal(y)` adds two lobes of width below
+      the crest and none at it, so the crest overhangs the notch; the plate
+      stubs follow it (qa/arcB.md).
+- [x] ~~The scour plume downstream is a Gaussian widening with distance.~~
+      Braided channels with bars, a distal fan, terrace steps planed off in the
+      channel, scour scaled into the park's height (qa/arcB.md).
 
 ## Hexahedron (`--target hexahedron`)
 
@@ -236,17 +237,18 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [x] ~~Both pyramids were open shells.~~ Great soffit under the upper city,
       deck over the lower city, floor to the lower truncation, and the summit
       closes to a point. Both new faces are dressed rather than left blank.
-- [ ] `RUINS` greens the ground under `+r.s` in every target except hexahedron,
-      while the intact site is built at `-r.s`. The greening lands on the empty
-      mirror position. Fixed only in `targets/hexahedron/89z-rows.js`.
+- [x] ~~`RUINS` greens the ground under `+r.s` in every target except hexahedron.~~
+      Mostly a misdiagnosis: `+s` IS the ruin wherever DECAYS has 1. Wrong only
+      where DECAYS omits 1: hexahedron and veladiga, both fixed (qa/arcB.md).
 - [x] ~~Windows were inserted into the balconies.~~ They sit on the terrace wall
       below each tread now, three storeys to a 20 m riser.
 - [ ] The terrace cells are still boxes on a ring, clustered by one fbm with
       streets cut through, sky bridges out to pods, and gardens on the
       promenade levels. The sheets' bridges span BETWEEN faces across open air;
       these only cantilever outward.
-- [ ] No interiors behind the promenade bands, and the cultural centre at the
-      summit is a single block rather than the hall the sections draw.
+- [x] ~~No interiors behind the promenade bands, and the cultural centre at the
+      summit is a single block.~~ The riser behind each promenade is an arcade;
+      the summit is a ribbed parabolic vault hall (qa/arcB.md).
 - [ ] The imported hypertree is one species (Ironbark) and one specimen. Mav's
       Refuge has four, and its lower crown hangs off structural branches that
       were not imported, so this one's crown is grown rather than ported.
@@ -256,17 +258,16 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [ ] The collapsed flank tears the soffit above it, but the mass does not sag
       or tilt toward the hole -- the survivors are drawn as though nothing
       moved. In-world the nanomaterial spine holds, so this may be correct.
-- [ ] Camera presets hard-code targets, so any preset aimed at a computed
-      feature (the shaft bundle, the shear face, the crater) goes stale when the
-      computation changes. Three have needed re-aiming so far.
+- [x] ~~Camera presets hard-code targets.~~ The builder exports `HEX_SITE[d]`
+      and the views read it (qa/arcB.md).
 
 ## The Span (`--target canyon`)
 
-- [ ] The three fallen payloads are small against the canyon floor and could use
-      heavier debris fields and more broken-open interiors.
-- [ ] Payload sway in the rusted variant is a fixed tilt, not a hang angle
-      derived from the cable — fine at these angles, wrong if a cable ever
-      snaps on one side only.
+- [x] ~~The three fallen payloads ... could use heavier debris fields.~~ Each
+      throws a debris field downrange (skin plates, fittings, 150 rubble).
+      Interiors unchanged: more holes dissolve the shells (qa/arcB.md).
+- [x] ~~Payload sway in the rusted variant is a fixed tilt.~~ Derived from the
+      cables now; on the rusted prison one cable has parted (qa/arcB.md).
 
 ## Rehabilitated (decay 3, folded into `--target kit`)
 
@@ -303,9 +304,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
 - [x] ~~Proportion is broader than the reference.~~ **This was my misreading**,
       not a defect: the reference is itself about as wide as it is tall. What it
       actually needed was translucency, now supplied by the parasol fans.
-- [ ] Radial symmetry is visible if you orbit directly overhead (44 kerb blocks,
-      6 causeways and 6 stairs make a regular rosette). Not visible from any
-      preset.
+- [x] ~~Radial symmetry is visible if you orbit directly overhead.~~ Kerb blocks,
+      causeways and stairs jittered by a hash of their index (qa/arcB.md).
 - [ ] Intact contrast is low — white on white at distance, and nothing in this
       kit casts shadows, so all form comes from facet normals.
 
@@ -640,7 +640,7 @@ reaching the cut plane were made to land on it.
 - [ ] Plateau is thin (a haul road, spoil, scrub over 1 700 x 1 300 m); the roof
       fall is angular now but still too uniform; pod stacks are acceptable, not
       good; trees are the kit default.
-- [ ] **A `roofY()`/shell disagreement nearly shipped**: `roofY()` returned the
+- [x] **A `roofY()`/shell disagreement nearly shipped** (fixed): `roofY()` returned the
       smooth Bezier while the built vault adds up to 23 m of noise, so three
       light shafts hung ~15 m below the ceiling with `--assert` green. Now both
       call one `roofN()`. Another entry for the placement-error list.
@@ -674,17 +674,20 @@ find the hard way, applied from the start.
       the deck, capping it near 25. Five camera positions were tried. The
       sheet's fourth drawing is approximated, not built — this is inherent to
       an overhang, not a fixable preset.
-- [ ] **The cliff face reads as smeared mud at close range** — six noise terms,
+- [x] ~~**The cliff face reads as smeared mud at close range**~~ (fixed by
+      `TEX.aiRockTx`, bedded sandstone, qa/arcB.md) — six noise terms,
       brown blotches at 100 m. The worst material read in the type.
 - [ ] The lens's flanks are blank over ~150 m; the access shaft is a blank pale
       column except where the joint lays it open; the gardens are a hedge row
       rather than the fan the source comment claims; the sun court floor and the
       roof-fall scar are coarse (the scar is a stepped quarry terrace, not a
       rockfall); the rim plateau is still thin over 1 900 x 1 100 m.
-- [ ] **The ruin is "intact with an overgrowth pass" at distance.** The vault
+- [x] ~~**The ruin is "intact with an overgrowth pass" at distance.**~~ Fixed:
+      the lens's west flank has sheared off (qa/arcB.md). The vault
       bite, deck block field, dropped bridge span and snapped water shaft all
       read close up, but the hero ruin is not obviously 5 000 years older.
-- [ ] `RIVZ`, `inLens` and `NLU/NLV` are dead locals in the source.
+- [x] ~~`RIVZ`, `inLens` and `NLU/NLV` are dead locals in the source.~~ `inLens`
+      removed, `RIVZ` already gone, `NLU/NLV` are in use.
 - [ ] **360 000 triangles of headroom per decay.** Spend them on the flanks, the
       cliff-face relief and the plateau, in that order.
 
