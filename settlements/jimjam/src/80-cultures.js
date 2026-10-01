@@ -3,7 +3,7 @@
 // (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
 // omits falls back to the generic one. Fills run in the socket frame: origin at the anchor, +z out of the surface, +x along it, y up.
 // canvas-carried materials (own colours, never tinted): emblems, striped cloth, sign boards
-function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn);t.wrapS=t.wrapT=o.repeat?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
+function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn,0,true);   // eager: the painters reseed() and draw from rng()t.wrapS=t.wrapT=o.repeat?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
  const m=new THREE.MeshStandardMaterial({map:t,vertexColors:true,roughness:o.rough||.95,side:THREE.DoubleSide,transparent:!!o.alpha,alphaTest:o.alpha?.5:0});MAT[key]=m;TILE[key]=o.tile||1;return m;}
 function stripeTex(key,cols,n,tile){cvMat(key,128,64,(g,w,h)=>{const sw=w/n;for(let i=0;i<n;i++){g.fillStyle=cols[i%cols.length];g.fillRect(i*sw,0,sw+1,h);}
  reseed(9700+key.length);for(let i=0;i<140;i++){g.fillStyle=`rgba(${rng()<.5?0:255},${rng()<.5?0:255},${rng()<.5?0:255},${rr(.03,.1)})`;g.fillRect(rng()*w,rng()*h,rr(1,4),rr(1,6));}

@@ -17,6 +17,7 @@ fi
 sc() { systemctl --user "$@"; }
 
 check() {
+  python3 "$DIR/sitectl.py" address >/dev/null   # address.json: what /share shows other devices
   [[ -f $CONFIG ]] || { echo "sitectl: no site.toml yet: run ./sitectl sync" >&2; return 1; }
   python3 "$DIR/server.py" --config "$CONFIG" --check
 }
@@ -29,9 +30,9 @@ urls() {
   for ip in $(hostname -I); do [[ $ip == *:* ]] || echo "http://$ip:$p/"; done
 }
 
-# The gallery, built for the LAN: three.js from host/site/worlds/ rather than cdnjs. gallery/site/ (the
-# artifact) is not touched.
-build() { python3 "$ROOT/gallery/build_gallery.py" --out "$DIR/site" --local-three /worlds/three.min.js "$@"; }
+# The gallery, built for the LAN: three.js from host/site/worlds/ rather than cdnjs, and each world's level of detail
+# from lod.toml. gallery/site/ (the artifact) is not touched.
+build() { python3 "$ROOT/gallery/build_gallery.py" --out "$DIR/site" --local-three /worlds/three.min.js --lod "$DIR/lod.toml" "$@"; }
 
 install_unit() {
   mkdir -p "$(dirname "$UNIT_FILE")"
@@ -42,6 +43,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=$DIR
+ExecStartPre=/usr/bin/python3 $DIR/sitectl.py address
 ExecStartPre=/usr/bin/python3 $DIR/server.py --config $CONFIG --check
 ExecStart=/usr/bin/python3 $DIR/server.py --config $CONFIG
 ExecReload=/bin/kill -HUP \$MAINPID
@@ -57,7 +59,8 @@ EOF
 
 cmd="${1:-help}"; shift || true
 case "$cmd" in
-  status)   sc status "$UNIT" --no-pager || true; echo; urls ;;
+  status)   sc status "$UNIT" --no-pager || true; echo; python3 "$DIR/sitectl.py" share ;;
+  share)    python3 "$DIR/sitectl.py" share ;;
   start)    check && sc start "$UNIT" && urls ;;
   stop)     sc stop "$UNIT" ;;
   restart)  check && sc restart "$UNIT" && sc is-active "$UNIT" && urls ;;
@@ -98,6 +101,7 @@ Usage: ./sitectl <command>
   disable    stop now and don't start at login
   install    (re)write the systemd unit for this folder
   url        print the site URLs
+  share      the address other devices on the network use, in plain words (the /share page shows it with a QR code)
   health     ask the running server if it's up
   boot       how to start the site at boot without a login
 
