@@ -56,8 +56,18 @@ function smallTree(p,h){const S=SWBAY.SPECIES[7],rb=h*.04+.25;
  BIO.put('trunk',[p[0],p[1],p[2]],qEuler(rr(-.05,.05),0,rr(-.05,.05)),[rb/.4,h,rb/.4],C(pick(S.bark)));
  const n=8+Math.floor(rng()*5),R=h*.45,a0=rng()*TAU,c=C(pick(S.leaf));
  for(let i=0;i<n;i++){const a=a0+i/n*TAU+rr(-.2,.2),L=R*rr(.85,1.1);BIO.put('bigfrond',[p[0],p[1]+h,p[2]],qEuler(rr(-.1,.1),-a,rr(-.1,.3)),[L,L,L*1.25],c.clone().multiplyScalar(rr(1.2,1.5)));}}
+// SHELLS (the core's {geos, share}: BIO.faceSamples): a host may hand its structure in parts,
+// each with its own share of every pass's samples. A shell with no face a pass grows on (the
+// piers have no ledge, the rubble no soffit) would take its share and place nothing, so it sits
+// that pass out and the others split its share. A plain list is returned as it is.
+function shellsFor(geos,filt){if(!geos.some(g=>g&&g.geos))return geos;
+ return geos.filter(g=>(g&&g.geos?g.geos:[g]).some(q=>{const p=q.attributes.position,ix=q.index?q.index.array:null,n=ix?ix.length:p.count;
+  for(let i=0;i<n;i+=3){const a=ix?ix[i]:i,b=ix?ix[i+1]:i+1,c=ix?ix[i+2]:i+2;
+   const ux=p.getX(b)-p.getX(a),uy=p.getY(b)-p.getY(a),uz=p.getZ(b)-p.getZ(a),vx=p.getX(c)-p.getX(a),vy=p.getY(c)-p.getY(a),vz=p.getZ(c)-p.getZ(a);
+   const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,l=Math.hypot(nx,ny,nz);if(l>1e-9&&filt(nx/l,ny/l,nz/l))return true;}
+  return false;}));}
 // LEDGES: moss on the flat, plants toward the outer edge, lips and curtains off the edge
-SWBAY.dressLedges=function(geos,opt){opt=opt||{};
+SWBAY.dressLedges=function(geos,opt){opt=opt||{};geos=shellsFor(geos,(nx,ny)=>ny>.6);
  const nM=opt.moss||400,nP=opt.plants||300,nE=opt.edges||140;
  BIO.upFaces(geos,nM,.6).forEach(f=>moss(f.p,f.n,rr(1.2,opt.mossR||3.5)));
  BIO.upFaces(geos,nP,.6).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||12));else plant(f.p,rr(1,opt.size||3));});
@@ -67,7 +77,7 @@ SWBAY.dressLedges=function(geos,opt){opt=opt||{};
 // SOFFITS: moss rolled over to face the ground, roots and beards hanging out of
 // it, brackets, curtains where the rim is. Density rises toward the rim: the
 // middle of a big underside is in permanent dark and grows almost nothing.
-SWBAY.dressSoffits=function(geos,opt){opt=opt||{};
+SWBAY.dressSoffits=function(geos,opt){opt=opt||{};geos=shellsFor(geos,(nx,ny)=>ny<-.6);
  const S=BIO.downFaces(geos,opt.n||400,.6);if(!S.length)return;
  let cx=0,cz=0;S.forEach(f=>{cx+=f.p[0];cz+=f.p[2];});cx/=S.length;cz/=S.length;
  let rMax=1e-6;S.forEach(f=>{f.r=Math.hypot(f.p[0]-cx,f.p[2]-cz);if(f.r>rMax)rMax=f.r;});
@@ -78,11 +88,12 @@ SWBAY.dressSoffits=function(geos,opt){opt=opt||{};
   if(rng()<lit*.40)curtain([f.p[0],f.p[1]-.2,f.p[2]],f.p[0]-cx,f.p[2]-cz,rr(5,opt.hang||16),rr(2,6),{flowers:rng()<.5});
   if(rng()<.14)bracket([f.p[0],f.p[1]-rr(.5,2),f.p[2]],[0,0,0],rr(1,2.6));});};
 // WALLS: vines climbing, brackets, moss streaks under the drips
-SWBAY.dressWalls=function(geos,opt){opt=opt||{};
+SWBAY.dressWalls=function(geos,opt){opt=opt||{};geos=shellsFor(geos,(nx,ny)=>Math.abs(ny)<.35);
  BIO.sideFaces(geos,opt.n||160).forEach(f=>{const k=rng();
   if(k<.45)curtain([f.p[0]+f.n[0]*.3,f.p[1],f.p[2]+f.n[2]*.3],f.n[0],f.n[2],rr(3,opt.hang||12),rr(1.5,4),{});
   else if(k<.7)bracket([f.p[0],f.p[1],f.p[2]],f.n,rr(.8,2.2));
   else moss([f.p[0]+f.n[0]*.05,f.p[1],f.p[2]+f.n[2]*.05],f.n,rr(.8,2));});};
-SWBAY.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));
- SWBAY.dressLedges(geos,opt.ledges||{});SWBAY.dressSoffits(geos,opt.soffits||{});SWBAY.dressWalls(geos,opt.walls||{});};
+// the dressing is drawn within SWBAY.LOD.dress of the camera (runtime LOD, by chunk; opt.range overrides it)
+SWBAY.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));const r0=BIO.range;BIO.range=opt.range||SWBAY.LOD.dress;
+ SWBAY.dressLedges(geos,opt.ledges||{});SWBAY.dressSoffits(geos,opt.soffits||{});SWBAY.dressWalls(geos,opt.walls||{});BIO.range=r0;};
 })();
