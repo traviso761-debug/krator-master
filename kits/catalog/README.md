@@ -27,6 +27,6 @@ in here: all 35 of its pieces are in `krator-master-furniture.js` under a
 `yuni_` key prefix (`common_low_table` → `yuni_common_low_table`), rewritten
 in the engine's dialect (literal colours, no Yuni palette, no `F.lathe` or
 `F.edome`). The catalog is the general home for them; new furniture goes here,
-not into Yuni. Yuni keeps its own copy in `src/63-furniture.js`,
+not into Yuni. The Yuni furniture sheet itself is retired. Yuni keeps its own copy in `src/63-furniture.js`,
 `59-civic.js` and `61e-ancients-furniture.js` because its city build places
 them at runtime, so changing a piece there does not change it here.

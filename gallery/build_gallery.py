@@ -61,7 +61,6 @@ ENTRIES = [
     # objects: things you place in a world rather than build in it (furniture, plants, watercraft)
     ('objects', 'ringsea-craft', 'kits/ringsea/dist/ringsea.html', 'Ring Sea watercraft',
      'Twenty-one vessels of the Ring Sea at anchor, warships and cargo ships: Hykkousoi triremes and a siege hexareme, the Voth Ordinator flagship, Iziz turtle and wheel ships, the Xanadu swan barge, canoes, outriggers and rafts.', 'new'),
-    ('objects', 'yuni-furniture', 'settlements/yuni/yuni-furniture.html', 'Yuni furniture', 'The furniture catalogue, tagged by culture.'),
     ('objects', 'yuni-plants', 'settlements/yuni/yuni-plants.html', 'Yuni plants', 'The plants of Yuni\'s gardens and terraces.'),
     ('kit', 'voth-catalog', 'settlements/voth/catalog/index.html', 'Voth buildings',
      'Every Voth building on one walkable sheet: the structures the city builds, housing, manors, shops, taverns, warehouses, civic and military sets, with automatic LOD.'),

@@ -6,7 +6,6 @@ Four build targets come out of one source tree (`build.py`, fragments in `src/`)
 |---|---|---|
 | `yuni.html` | `world` | the valley, the butte, the Grand Vault, the wall and gates, the canal, the street network, the underground antechamber |
 | `yuni-assets.html` | `sheet` | every registered ASSET, each variant, laid out in family rows on flat ground |
-| `yuni-furniture.html` | `furn` | every registered FURN piece, grouped by the culture that made it |
 | `yuni-plants.html` | `flora` | every registered PLANT species, grouped by climate band |
 
 `SHEET` is true for all three catalogue targets (flat ground, no town); `CATALOG` names which

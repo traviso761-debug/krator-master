@@ -14,7 +14,7 @@ BIG = 30 * 1024          # CLAUDE.md: never read a fragment this size whole
 
 ABOUT = {
     'settlements/voth': 'Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system.',
-    'settlements/yuni': 'Yuni: the city, plus its building-kit, furniture and plant sheets.',
+    'settlements/yuni': 'Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog).',
     'settlements/dalab': 'Dalab: the mound settlement of the southwestern lowlands, and its building set.',
     'settlements/highlands': 'Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad.',
     'settlements/iziz': 'Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit.',
