@@ -11,7 +11,9 @@ and ticking it, not by deleting it.
       library's. Fix by moving the campus to a free block (9810). Whitelisted in
       `build.py: SEED_COLLISION_EXCEPTIONS` so the build stays green; remove the
       entry with the fix. Not fixed in the split round because it changes output.
-- [ ] **Seed collision: Megastructure and Gate.** `buildMega` uses `9995+d` and
+- [x] ~~**Seed collision: Megastructure and Gate.**~~ Fixed in the civic QA pass:
+      `buildArc` is `reseed(9820+d)`, and `SEED_COLLISION_EXCEPTIONS` is empty.
+      (Ticked in domestic QA round 2.) `buildMega` uses `9995+d` and
       `buildArc` uses `9996+d`; they overlap at 9996. Same treatment — move the
       Gate to 9990 or push Mega down. Also whitelisted.
 - [x] ~~Materials built inline instead of in `MAT`.~~ The bunker berm, House F's
@@ -292,6 +294,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       a cathedral-scale laboratory get the same vocabulary of lean-tos and water
       butts; some types would read better with their own accretion (a factory
       wants scrap yards, a starport wants tents on the aprons).
+      *Partly done:* the Foundry builds its own scrap yard at d=3 (domestic QA
+      round 1) and the Starport its tents (civic QA). The shared pass is unchanged.
 - [ ] Patches sample the wall faces, not the actual holes, so a patch can land
       on intact fabric. Reads fine — people board over cracks too — but a true
       hole-aware patch would need `holeFn` to record where it punched.
@@ -320,8 +324,15 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       onBeforeCompile).
 - [ ] No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
       buttresses, and the `moulding(profile, path)` sweep helper they need.
+      *Started (domestic QA round 2):* `domMould(pathFn, wallNormal, r, knots)`
+      in `64-houses-def.js` sweeps a knuckled bone roll along a path and returns
+      a geometry to merge (no draw call). Used on the Foundry's end-wall arches,
+      the Amphitheater's vomitoria and House D's apse edge.
 - [ ] Interiors are floor slabs only — no corridor light strips, touchpad
       panels, conduit bundles or machinery silhouettes behind the openings.
+      *Done for the civic builders (`civRooms`) and for the domestic ones whose
+      shells are eaten through (`domRoom`): Laboratory storeys, Apartments A
+      trays, Houses A and C.*
 - [x] ~~Decay is uniform rings.~~ Round 5: `rubbleRing` now banks rubble against
       the wall it fell from (same signature, so all 33 types improved at once);
       `upFaces`/`ledgePoints` sample a structure's own flat surfaces so moss
@@ -332,6 +343,10 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       windows are `kput` directly at ~15 call sites, so it needs either a
       `deadWindow()` wrapper threaded through them or shards baked into the
       `winD`/`winBigD`/`winSmD` geometry itself.
+      *Done for the civic group (`civWin`) and the domestic group: every dead
+      kit window there goes through `civWin`, and the curtain walls and arched
+      glazing that are meshes (Houses D, E, F, the Foundry's end walls) get
+      `domShards`. Other groups' builders still `kput` bare.*
 - [x] ~~No ground contact.~~ `terrainH(x,z)` exists (returns 0) and everything
       meeting the ground asks it. `apron()` lays a graded skirt; it is inside
       `skyPlinth`, so all eight skyscrapers have one, plus the Laboratory and
@@ -339,7 +354,7 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       call is one line each where it is wanted.
 - [ ] Campus wings should bend (UFM); the data-centre fin row needs hatches and
       ducts; the Gate deck needs an organic lattice; Megastructure "Unnamed"
-      wants irregular Beksiński warts; the robot chassis are placeholders;
+      wants irregular Beksiński warts (DONE, domestic QA round 1); the robot chassis are placeholders;
       Skyscraper B's crown is undersized.
 - [x] ~~Theodiga wants light tunnels, an irregular fin mosaic and a rougher
       canyon.~~ All three done. The canyon now carries bedding planes, vertical
