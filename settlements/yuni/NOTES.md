@@ -289,3 +289,8 @@ indoors. It comes back out through the same door. `LIFE.sim(secs)` fast-forwards
 
 `python3 verify_walk.py <html> --asset <key> --variant <n> [--hour h]` walks up to a door, through it,
 up the stair, then takes a cutaway. It shoots each step and writes that building's export JSON.
+
+Declared sizes (2026-10): PLANT and FURN `w d h` should cover the built extent centred on the origin, as
+kits/catalog's `verify.py` requires. Seven plants, the socket rack and the mat rack were raised to their
+measured extents (KNOWN_ISSUES.md "Catalog verify-pass sync"). For furniture placed by an interior LAYOUT,
+`w` and `d` also drive placement.

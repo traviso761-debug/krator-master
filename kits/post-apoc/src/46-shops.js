@@ -46,7 +46,7 @@ function shFood(o){
  shHang(cx-2.7,cx+.2,2.2,cz-.2,9,'fish');shHang(cx+.4,cx+2.7,2.2,cz-.2,5,'meat');
  shShelf(cx-.4,.55,cz-.95,4.6,3,.55);for(let k=0;k<2;k++)barrel(cx+2.4,.1,cz+.3+k*.6);
  // counter with produce, scales, a stack of loaves, a tray of eggs
- shCounter(cx-1.0,fz-.15,4.6,.7,1.05);shGoods(cx-2.2,1.05,fz-.15,1.2,.55);shGoods(cx-.6,1.05,fz-.15,1.0,.55,[0xd8a02a,0xe0b060,0xc88a3a]);
+ shCounter(cx-1.0,fz-.15,4.6,.7,1.05);entry(cx-1.0,0,fz+.2,4.6,2.4);/* front door: the service counter across the open container front */shGoods(cx-2.2,1.05,fz-.15,1.2,.55);shGoods(cx-.6,1.05,fz-.15,1.0,.55,[0xd8a02a,0xe0b060,0xc88a3a]);
  for(let k=0;k<4;k++)sph('plain',cx+.7+k*.18,1.17,fz-.15,.13,jc(0xc8843a,.06),.7);
  box('iron',cx+1.35,1.11,fz-.1,.3,.05,.3,jc(0x8a8a86,.06));cyl('iron',cx+1.35,1.16,fz-.1,.03,.3,jc(0x6a6a66,.06),6);
  // sacks of grain and crates of produce out front, barrels, a fish box
@@ -87,7 +87,7 @@ function shArmor(o){
  box('iron',cx-2.4,1.02,cz-.7,.22,.3,.16,jc(0x3a3430,.05));box('iron',cx-2.4,1.3,cz-.7,.1,.06,.1,jc(0x8a8a86,.05));
  for(let k=0;k<4;k++)box('iron',cx-1.6+k*.2,1.02,cz-.7,.12,.06,.5,jc(0x8a8a86,.06),.3*k);
  // display counter and front rack, grindstone, plate stack, tyre stock
- shCounter(cx+3.1,fz-.1,5.4,.6,1.0);for(let k=0;k<4;k++)box('sheet',cx+1.3+k*.9,1.0,fz-.1,.7,.04,.4,jc(pick([0x8a8a86,0xa8a49a,0x7a4a3a]),.06),0,0,rr(-.1,.1));
+ shCounter(cx+3.1,fz-.1,5.4,.6,1.0);entry(cx+3.1,0,fz+.2,5.4,2.4);for(let k=0;k<4;k++)box('sheet',cx+1.3+k*.9,1.0,fz-.1,.7,.04,.4,jc(pick([0x8a8a86,0xa8a49a,0x7a4a3a]),.06),0,0,rr(-.1,.1));
  for(let k=0;k<3;k++)shMannequin(cx-4.4+k*2.0,fz+.95,0,{kind:k===1?1:0,crest:k!==1,helm:pick([0x9a9a92,0xb87a4a]),cape:[0xc23a2a,0x2a8a86,0xd8a02a][k],band:[0xd8a02a,0xc23a2a,0x2a8a86][k]});
  // forge lean-to at the right end: sheet wind wall, a brick hearth with hood, anvil, bellows, quench barrel
  const fx=cx+L/2+2.2,fzc=-3.0;sheetWall(fx,0,fzc-.1,3.6,2.9,0,{col:0x8a8478});for(const q of [-1,1])shPost(fx+q*1.75,fzc+2.1,2.4);
@@ -127,7 +127,7 @@ function shWeapon(o){
  roofP('corr',gx-1.4,gx+1.4,gz+1.3,4.4,gz-1.3,4.9,.07,P('rust'));sacks(gx-.4,2.46,gz+1.0,6,0);box('plank',gx,2.46,gz-1.0,2.2,.5,.1,jc(0x7a6448,.07));
  ladder(gx-1.2,0,gz+1.25,2.4,0);
  // fence wall across the front with a gate gap; racks of spears, blades and pipe clubs on the outside
- const fzn=2.7;fenceRun(-6.6,fzn,wx-1.8,fzn,1.3,{type:'sheet'});fenceRun(wx+1.8,fzn,6.6,fzn,1.3,{type:'sheet'});
+ const fzn=2.7;fenceRun(-6.6,fzn,wx-1.8,fzn,1.3,{type:'sheet'});fenceRun(wx+1.8,fzn,6.6,fzn,1.3,{type:'sheet'});entry(wx,0,fzn,3.4,2.0);/* front door: the gate gap */
  for(let k=0;k<20;k++){const x=-6.5+k*.68;if(x>wx-2&&x<wx+2)continue;cone('iron',x,1.3,fzn,.06,.28,jc(0x8a8a86,.05),5);}
  for(const q of [-5.2,-3.7]){box('wood',q+.7,.9,fzn+.55,1.4,.06,.08,jc(shWood,.06));}
  for(let k=0;k<7;k++)shSpear(-5.9+k*.22,fzn+.5,rr(2.1,2.5),.0,.05);
@@ -156,7 +156,7 @@ function shTinker(o){
  shHang(cx-2.7,cx-.1,2.15,cz+.1,6,'tools');shHang(cx+.2,cx+2.7,2.15,cz+.1,5,'wire');
  for(let k=0;k<3;k++){box('iron',cx+1.6+k*.5,1.62,cz-.85,.4,.3,.3,jc(0x3a3430,.05));cylH('iron',cx+1.6+k*.5,1.85,cz-.7,.05,.12,jc(0xb0b0a8,.05),'x',6);}
  // front: a long counter of junk, a hanging bike wheel and tyres on the end wall, the cart
- shCounter(cx,fz-.1,5.6,.6,.95,0x5a5a56);for(let k=0;k<9;k++){const px=cx-2.4+k*.6;box('plain',px,.95,fz-.1,rr(.14,.3),rr(.12,.34),rr(.14,.3),jc(pick([0xb8683a,0x2f62b8,0xc9a03a,0x6a6a66,0xc23a2a]),.08),rng()*TAU);}
+ shCounter(cx,fz-.1,5.6,.6,.95,0x5a5a56);entry(cx,0,fz+.2,5.6,2.4);for(let k=0;k<9;k++){const px=cx-2.4+k*.6;box('plain',px,.95,fz-.1,rr(.14,.3),rr(.12,.34),rr(.14,.3),jc(pick([0xb8683a,0x2f62b8,0xc9a03a,0x6a6a66,0xc23a2a]),.08),rng()*TAU);}
  tire(cx+L/2+.15,.78,cz-.6,.5,.09,undefined,0,0,PI/2);tire(cx+L/2+.15,.68,cz+.62,.4,.09,undefined,0,0,PI/2);
  // radio mast on the roof with a dish and cable: lattice legs, cross rungs, a dish, a whip antenna
  const mx=cx-1.6,mz=cz;for(const [a,b] of [[-.3,-.3],[.3,-.3],[.3,.3],[-.3,.3]])beam('iron',[mx+a,CT.H,mz+b],[mx+a*.35,CT.H+6.2,mz+b*.35],.05,jc(0x6a5a4c,.05),true,5);

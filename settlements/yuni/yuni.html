@@ -6259,7 +6259,9 @@ reseed(590001);
       if(F.variant===1){ for(var r=0;r<4;r++){ F.rod(-0.85,1.05+r*0.20,0.14, 0.85,1.05+r*0.20,0.14, 0.02, BRASSC[0], 'metal');
         for(var b=0;b<6;b++) F.ball(-0.75+b*0.28, 1.05+r*0.20, 0.14, 0.055, F.pick([MOSBLUEC[0],MOSWARMC[0],MOSGREENC[0]]), 'mosaic'); } } } });
 
-  FURN({ key:'order_mat_rack', name:'Rack of rolled mats', culture:'order', room:'school', w:1.75, d:0.70, h:1.40, variants:2,
+  /* w covers x -1.20..+0.87 centred (the mat rolls grow from their base along -x and hang 0.29 m out of the
+     left end: KNOWN_ISSUES.md); h covers the basket on variant 1. */
+  FURN({ key:'order_mat_rack', name:'Rack of rolled mats', culture:'order', room:'school', w:2.4, d:0.70, h:1.70, variants:2,
     variantNames:['four mats','six mats and a basket'],
     build:function(F){ [-1,1].forEach(function(sg){ F.box(sg*0.82,0,0, 0.10,1.35,0.62, 0, TIMBERC[0], 'timber'); });
       F.box(0,0.55,0, 1.70,0.08,0.58, 0, PLANKC[2], 'plank'); F.box(0,1.25,0, 1.74,0.09,0.62, 0, PLANKC[0], 'plank');
@@ -9075,7 +9077,7 @@ window.ANC_measure=function(list){ var o={}; list.forEach(function(L){ var r=ANC
         oilLamp(F, 1.18, 0.78, 0.05); } } });
 
   FURN({ key:'ancient_socket_rack', name:'Instrument rack of sockets', culture:'ancient', room:'workshop',
-    w:1.45, d:0.62, h:1.95, variants:2, variantNames:['worn','stripped for parts'],
+    w:1.45, d:0.82, h:1.95, variants:2, variantNames:['worn','stripped for parts'],
     build:function(F){ var c=F.pick(TARN), stripped=(F.variant===1), s, r, k;
       for(s=-1;s<=1;s+=2){ F.box(s*0.66, 0, 0, 0.09, 1.86, 0.50, 0, c, 'metal');                /* the frame uprights */
         F.rod(s*0.66,1.86,0, s*0.66,1.92,0, 0.05, shade(c,0.05), 'metal'); }
@@ -9175,32 +9177,35 @@ window.ANC_measure=function(list){ var o={}; list.forEach(function(L){ var r=ANC
    wants, so a later Krator world can pull the ones that suit its own valley. The valley of
    Yuni is TEMPERATE / SEMIARID, so most of this list is that pair; the two irrigated species
    (fig, date palm) want more water and only appear along the canal and in courtyards.
-   Each build() draws ONE plant through the asset frame, from the frame's own stream.        */
+   Each build() draws ONE plant through the asset frame, from the frame's own stream.
+   w/d/h are the built extent centred on the origin, measured on yuni-plants.html over four sheet seeds
+   (2026-10; kits/catalog's verify pass found the harvested copies under-declared). They only size the
+   sheet cell and the inspector record: no world placement reads them.                       */
 reseed(620001);
 (function(){
   function crown(F, lx,ly,lz, R,H, c, n){ for(var i=0;i<(n||3);i++){ var a=F.rnd()*TAU, d=R*0.34*F.rnd();
     BLOB(F.p(lx,lz)[0]+Math.cos(a)*d, F.y+ly+H*0.12*i, F.p(lx,lz)[1]+Math.sin(a)*d, R*(1-0.16*i), H*(0.62-0.08*i), F.rnd()*TAU, i?shade(c,0.07*i):c, 'leafy'); } }
 
   PLANT({ key:'cypress_yuni', name:'Yuni cypress', climate:'temperate', aridity:'semiarid',
-    w:3.4, d:3.4, h:16, variants:3, variantNames:['young','avenue','old'],
+    w:4.7, d:4.7, h:20, variants:3, variantNames:['young','avenue','old'],
     build:function(F){ var h=[9,15,20][F.variant]; F.tree(0,0,'cypress',h); } });
 
   PLANT({ key:'pine_maritime', name:'Maritime pine', climate:'temperate', aridity:'semiarid',
-    w:11, d:11, h:20, variants:3, variantNames:['sapling','hillside','veteran'],
+    w:13, d:13, h:21.9, variants:3, variantNames:['sapling','hillside','veteran'],
     build:function(F){ var h=[8,16,22][F.variant]; F.tree(0,0,'pine',h); } });
 
   PLANT({ key:'olive_valley', name:'Valley olive', climate:'temperate', aridity:'arid',
-    w:7, d:7, h:7, variants:3, variantNames:['grove tree','orchard tree','ancient trunk'],
+    w:7.8, d:7.8, h:7, variants:3, variantNames:['grove tree','orchard tree','ancient trunk'],
     build:function(F){ var h=[4.4,6.0,7.0][F.variant]; F.tree(0,0,'olive',h);
       if(F.variant===2){ for(var i=0;i<3;i++) F.cyl(F.rr(-0.5,0.5), 0, F.rr(-0.5,0.5), 0.26, 1.5, [F.rr(-0.3,0.3),F.rnd()*TAU,0], PAL.trunk[3], 'bark'); } } });
 
   PLANT({ key:'scrub_thorn', name:'Thorn scrub', climate:'temperate', aridity:'arid',
-    w:5, d:5, h:3, variants:3, variantNames:['low','clump','tall'],
+    w:10.5, d:10.5, h:3, variants:3, variantNames:['low','clump','tall'],
     build:function(F){ var s=[1.2,2.0,2.9][F.variant]; F.tree(0,0,'shrub',s);
       for(var i=0;i<F.variant+1;i++) F.tree(F.rr(-s,s), F.rr(-s,s), 'shrub', s*F.rr(0.5,0.85)); } });
 
   PLANT({ key:'date_palm', name:'Date palm', climate:'temperate', aridity:'arid',
-    w:7, d:7, h:17, variants:3, variantNames:['young','bearing','tall'],
+    w:12.1, d:12.1, h:17.4, variants:3, variantNames:['young','bearing','tall'],
     build:function(F){ var h=[7,13,17][F.variant]; F.tree(0,0,'palm',h);
       if(F.variant===1) for(var i=0;i<4;i++){ var a=i/4*TAU; F.ball(Math.cos(a)*h*0.10, h*0.80, Math.sin(a)*h*0.10, h*0.045, PAL.gild[1], 'leafy'); } } });
 
@@ -9212,13 +9217,13 @@ reseed(620001);
       crown(F, 0, h*0.46, 0, h*0.52, h*0.70, shade(c,-0.06), 3); } });
 
   PLANT({ key:'canal_poplar', name:'Canal poplar', climate:'temperate', aridity:'humid',
-    w:4.5, d:4.5, h:19, variants:2, variantNames:['row tree','tall'],
+    w:5.5, d:5.5, h:19, variants:2, variantNames:['row tree','tall'],
     build:function(F){ var h=[13,19][F.variant], c=F.pick(PAL.pine);
       F.cyl(0,0,0, 0.17+h*0.008, h*0.94, 0, PAL.trunk[1], 'bark');
       for(var i=0;i<4;i++) F.blob(F.rr(-0.4,0.4), h*(0.26+0.17*i), F.rr(-0.4,0.4), h*(0.13-0.012*i), h*(0.24-0.02*i), F.rnd()*TAU, shade(c,0.05*i), 'leafy'); } });
 
   PLANT({ key:'oleander_hedge', name:'Oleander', climate:'temperate', aridity:'semiarid',
-    w:3.2, d:3.2, h:3.2, variants:2, variantNames:['bush','flowering'],
+    w:4.2, d:4.2, h:3.2, variants:2, variantNames:['bush','flowering'],
     build:function(F){ var s=[1.5,2.0][F.variant], c=F.pick(PAL.shrub);
       F.blob(0,0.1,0, s, s*1.25, F.rnd()*TAU, c, 'leafy');
       if(F.variant===1) for(var i=0;i<9;i++){ var a=F.rnd()*TAU, d=s*F.rr(0.4,0.95);

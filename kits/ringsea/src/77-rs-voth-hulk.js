@@ -25,11 +25,11 @@ function buildRsVothHulk(){reseed(72700);
  const boomTip=[5,hy+6.5,3.8];rsLink(B,'wood',[mx,hy+1.4,.3],boomTip,.13,WOOD,6);rsRope(B,[mx,hy+10,0],boomTip,.03);rsRope(B,boomTip,[5,hy+3.2,3.8],.03);
  for(let i=0;i<6;i++)rsSphere(B,'cloth',.32,[5+rr(-.4,.4),hy+2.6+rr(-.3,.3),3.8+rr(-.4,.4)],[1.2,.6,.8],0xc8b890,8,6);rsSphere(B,'rope',.9,[5,hy+2.7,3.8],[1,.9,1],0x3a3026,8,6);
  // the square sail, braced round, its foot above the castle rails
- const w=15,a=.95,foot=Math.max(fT,aT)-hy+1.2;const S=rsSail(B,{key:'voth-hulk',O:[mx+.5,hy+foot,0],U:[Math.sin(a),0,Math.cos(a)],V:[0,1,0],belly:-1.6,
+ rsRig(B,[mx,0]);const w=15,a=.95,foot=Math.max(fT,aT)-hy+1.2;const S=rsSail(B,{key:'voth-hulk',O:[mx+.5,hy+foot,0],U:[Math.sin(a),0,Math.cos(a)],V:[0,1,0],belly:-1.6,
   A:t=>[(t-.5)*w,mh-foot-2.6],Bf:t=>[(t-.5)*w*.94,0],draw:rsVothHulkSail});
  rsSailEdge(B,S,0,.2,WOOD);rsSailEdge(B,S,1,.12,WOOD);const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1),H.ys(0),0]);
  for(const s of[-1,1]){rsRope(B,S.at(s<0?0:1,1),[mx-5,dY(.35)+.4,s*4.6]);rsRope(B,tp,[mx,H.ys(.46),s*4.9]);}
- rsPennant(B,[mx,hy+mh+.2,0],5,.9,[BLUE,ASH]);
+ rsPennant(B,[mx,hy+mh+.2,0],5,.9,[BLUE,ASH]);rsRigEnd(B);
  {const p=H.pt(0,0,.3);rsBox(B,'wood',[2.8,4.8,.4],[p[0]-1.2,p[1]+.8,0],null,TAR2);}
  for(let i=0;i<8;i++){const x=rr(6,9),z=rr(-3,3),y=dY(H.uAt(x))+.5;if(i%2)rsBox(B,'wood',[1,1,1],[x,y,z],[0,rr(0,1),0],WOOD);else rsCyl(B,'wood',.45,.45,1,[x,y,z],null,WOOD,10);}
  for(const [x,z] of[[-11,1.5],[1,3],[4.2,2.6],[8,-2]])rsFigure(B,[x,x<-9?aT:dY(H.uAt(x)),z],rr(0,TAU),[BLUE,rsLin(0x6a5a44),ASH][Math.floor(rng()*3)],false,0x8a8aa0);

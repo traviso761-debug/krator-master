@@ -6,6 +6,7 @@ Usage:
                                           [--assert] [--baseline base.json]
                                           [--save-baseline base.json] [--out ./shots]
                                           [--cam cx,cy,cz,tx,ty,tz] [--eval "()=>..."]
+                                          [--shot "name=()=>..."]
 
 What it does:
   1. Serves the file's folder over HTTP. Not file:// - the kit only sets
@@ -236,6 +237,17 @@ async def run(a):
                 await pg.wait_for_timeout(900)
                 fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i))
                 await pg.screenshot(path=fn); print("shot:", fn)
+            for sh in (a.shot or []):   # NAME=()=>... : run the JS (pose the scene), wait, screenshot as NAME.png
+                nm, js = sh.split("=", 1)
+                try:
+                    r = await pg.evaluate(js)
+                    await pg.wait_for_timeout(1200)
+                    fn = os.path.join(a.out, nm + ".png")
+                    await pg.screenshot(path=fn)
+                    st2 = await pg.evaluate("()=>({calls:renderer.info.render.calls,tris:renderer.info.render.triangles})")
+                    print("shot: %s   calls %d  tris %.2fM  %s" % (fn, st2["calls"], st2["tris"] / 1e6, json.dumps(r)[:200]))
+                except Exception as e:
+                    print("shot failed:", nm, str(e)[:300]); fails.append("shot " + nm)
             for ev in (a.eval or []):
                 try:
                     print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
@@ -270,6 +282,7 @@ if __name__ == "__main__":
     ap.add_argument("--out", default="./shots")
     ap.add_argument("--cam", action="append", help="custom shot: cx,cy,cz,tx,ty,tz (repeatable)")
     ap.add_argument("--cam-name", default="cam")
+    ap.add_argument("--shot", action="append", help="NAME=JS arrow function: run it, then screenshot NAME.png (repeatable)")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
     sys.exit(asyncio.run(run(ap.parse_args())))

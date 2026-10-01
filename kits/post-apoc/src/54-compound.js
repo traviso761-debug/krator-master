@@ -3,10 +3,33 @@
 // Walls of MIXED reclaimed segments (stacked containers, earth-filled tyre wall with timber cap + sheet fence, corrugated sheet on posts, container bastions),
 // an inner wall-walk gantry, a bulkhead-style container gate tower with two hinged leaves, four corner towers (silo, water tank on stilts, scaffold lookout,
 // container tower). The interior takes buildings modularly: cpSlots(w,d) -> slot rectangles, cpFit(def,slot) -> yaw or null; o.slots = list of def keys.
-defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,build:cpBuild});
-function cpGeom(v){const Wc=v===1?44:64,Dc=v===1?38:54;return {v:v,w:Wc,d:Dc,xr:Wc/2-3.4,zb:-(Dc/2-3.4),zf:Dc/2-4.9};}
+defBuilding({key:'compound',name:'Walled compound',seed:5410,front:{x:0,z:27,yaw:0},tags:{type:['infrastructure','civic'],size:'large',core:'shipping container',materials:['containers','earth-filled tyres','corrugated sheet','wrecked cars','timber','scaffold']},w:64,d:54,h:15,budget:240000,sizes:{large:{w:82,d:76,front:{x:0,z:38,yaw:0}},xl:{w:106,d:76,budget:400000,front:{x:0,z:38,yaw:0}}},build:cpBuild});
+function cpGeom(v,size){if(size==='xl')return {v:0,L:1,XL:1,w:106,d:76,xr:106/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'xl': a 106 x 76 yard with two great slots (the large plan, wider)
+ if(size==='large')return {v:0,L:1,w:82,d:76,xr:82/2-3.4,zb:-(76/2-3.4),zf:76/2-4.9};   // o.size 'large': an 82 x 76 yard (variant ignored)
+ const Wc=v===1?44:64,Dc=v===1?38:54;return {v:v,w:Wc,d:Dc,xr:Wc/2-3.4,zb:-(Dc/2-3.4),zf:Dc/2-4.9};}
 // ---- slots: rectangles inside the walls (world x,z of the centre; w along x, d along z; facing = yaw that turns a building's +z front toward the yard)
 function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
+ if(w>=100){  // xl (106 x 76): interior clear x +-47, z -32..30.5; yard x +-10, z 5..18. TWO great slots (41 x 35) so two of the longhouse / chief class share a yard
+  S.push({x:-26.5,z:-14.5,w:41,d:35,facing:0,name:'great-left'});
+  S.push({x:26.5,z:-14.5,w:41,d:35,facing:0,name:'great-right'});
+  S.push({x:0,z:-24.5,w:11,d:15,facing:0,name:'back-mid'});
+  S.push({x:-22,z:12,w:20,d:13,facing:PIH,name:'left-mid'});
+  S.push({x:22,z:12,w:20,d:13,facing:-PIH,name:'right-mid'});
+  S.push({x:-40,z:12,w:14,d:14,facing:PIH,name:'west'});
+  S.push({x:40,z:12,w:14,d:14,facing:-PIH,name:'east'});
+  S.push({x:-29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-left'});
+  S.push({x:29.5,z:25,w:35,d:10,facing:Math.PI,name:'front-right'});
+  return S;}
+ if(w>=80){   // large (82 x 76): interior clear x +-35, z -32..30.5; yard x +-10, z 5..18. 'great' takes any building def in the kit (longhouse 40 x 18, chief 25 x 34,
+              // bulkhead 26 x 28, farm 28 x 22); 'back-right' the 26 x 18 class (warehouse, lg-stack, granary, cages, mess); mid and front slots as in the standard yard
+  S.push({x:-14.5,z:-14.5,w:41,d:35,facing:0,name:'great'});
+  S.push({x:21.5,z:-22.5,w:27,d:19,facing:0,name:'back-right'});
+  S.push({x:21.5,z:-4,w:27,d:14,facing:0,name:'right-mid'});
+  S.push({x:-28,z:12,w:14,d:14,facing:PIH,name:'west'});
+  S.push({x:28,z:12,w:14,d:14,facing:-PIH,name:'east'});
+  S.push({x:-22.75,z:25,w:24.5,d:10,facing:Math.PI,name:'front-left'});
+  S.push({x:21,z:25,w:28,d:10,facing:Math.PI,name:'front-right'});
+  return S;}
  if(v===0){   // interior clear x +-26, z -21..19.5; yard x +-10, z -3.5..7.5; road x +-3.5 from the gate
   S.push({x:-15.25,z:-13,w:21.5,d:16,facing:0,name:'back-left'});
   S.push({x:15.25,z:-13,w:21.5,d:16,facing:0,name:'back-right'});
@@ -24,6 +47,12 @@ function cpSlots(w,d){const v=(w<50)?1:0;const S=[];const PIH=Math.PI/2;
 // the yaw at which the def's declared footprint (w x d) fits the slot: try the slot's facing, then the other three quarter turns
 function cpFit(def,slot){const f=slot.facing||0;const tries=[0,PI/2,-PI/2,PI];
  for(const t of tries){const swap=Math.abs(t)===PI/2;const bw=swap?def.d:def.w,bd=swap?def.w:def.d;if(bw<=slot.w+1e-6&&bd<=slot.d+1e-6)return f+t;}return null;}
+// why a key was turned away, and which size of yard would take it (std 64 x 54 takes up to ~21.5 x 16; large one building of any size; xl two)
+function cpSizeName(G){return G.XL?'xl':G.L?'large':G.v?'small':'std';}
+function cpWhy(def,G,slots){const fits=(w,d)=>cpSlots(w,d).filter(s=>cpFit(def,s)!==null).length;const here=slots.filter(s=>cpFit(def,s)!==null).length;
+ let sug=null;for(const [n,w,d] of [['large',82,76],['xl',106,76]])if(w>G.w&&fits(w,d)>here){sug=n;break;}
+ return 'no free slot fits '+def.w+' x '+def.d+' in the '+cpSizeName(G)+' yard ('+G.w+' x '+G.d+')'+(here?': the '+here+' slot'+(here>1?'s':'')+' that fit it '+(here>1?'are':'is')+' taken':'')+
+  (sug?"; size:'"+sug+"' would take it"+(sug==='xl'?' (two great slots)':''):'');}
 // ---- small helpers
 function cpTire(x,y,z,R,col,ry,rx,rz){if(!_G.cpTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.cpTor=g;}
  const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.cpTor,m,col===undefined?jc(0x252220,.05):col);}
@@ -188,7 +217,7 @@ function cpTowerBox(){const L=CT.L20;
 function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  box('earth',0,.02,zm,xr*2,.04,zf-zb,jc(0x9c8768,.03));
  // the yard: paved with reclaimed slabs; the road runs from the gate to it
- const yx=v?5:10,yz0=v?1:-3.5,yz1=v?6:7.5,yzc=(yz0+yz1)/2;
+ const yx=v?5:10,yz0=G.L?5:v?1:-3.5,yz1=G.L?18:v?6:7.5,yzc=(yz0+yz1)/2;
  box('earth',0,.04,(yz0+yz1)/2,yx*2,.03,yz1-yz0,jc(0x7a6448,.04));
  for(let i=0;i<Math.round(yx*2/2.2);i++)for(let j=0;j<Math.round((yz1-yz0)/2.2);j++){if(rng()<.7)box('conc',-yx+1.1+i*2.2,.05,yz0+1.1+j*2.2,rr(1.6,2.1),.03,rr(1.6,2.1),jc(pick([0x8a7a66,0x7a7264,0x94826a,0x6f6a5e]),.05));}
  box('earth',0,.04,(yz1+zf+.4)/2,6.8,.03,zf+.4-yz1,jc(0x8a7458,.04));
@@ -202,8 +231,8 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  // yard furniture: fire pit with tyre seats, well, flagpole, lamps
  fire(0,.05,yzc,.6);for(let k=0;k<5;k++){const a=k/5*TAU+.3;cpTire(Math.cos(a)*1.9,.14,yzc+Math.sin(a)*1.9,.36,undefined,rng()*TAU);cpTire(Math.cos(a)*1.9,.32,yzc+Math.sin(a)*1.9,.36,undefined,rng()*TAU);}
  const wx=v?-3.2:-6.2,wz=yz1-1.6;tireRing(wx,wz,.95,3,0,TAU);cyl('water',wx,.5,wz,.7,.02,jc(0x2a3a3a,.03),10);beam('wood',[wx-.9,0,wz],[wx-.9,2.2,wz],.06,jc(0x5c4630,.06),true,6);beam('wood',[wx+.9,0,wz],[wx+.9,2.2,wz],.06,jc(0x5c4630,.06),true,6);beam('wood',[wx-.9,2.2,wz],[wx+.9,2.2,wz],.06,jc(0x5c4630,.06));
- const fpz=v?2.2:-8.5,fpx=v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
- for(const [lx,lz] of v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
+ const fpz=G.L?7:v?2.2:-8.5,fpx=G.L?7.5:v?-3.6:0;cpPole(fpx,0,9.6,fpz,.09,jc(0x4a4038,.05));box('conc',fpx-.4,0,fpz-.4,.8,.3,.8,jc(0x8a8880,.05));sock('flag',fpx,9.7,fpz,0,{w:1.8,h:.9});
+ for(const [lx,lz] of G.L?[[-9.2,4.2],[9.2,4.2],[-9.2,17.4],[9.2,17.4],[-3.8,27],[3.8,27],[-3.8,21.5],[3.8,21.5]]:v?[[-4.6,1.2],[4.6,5.8],[-2.6,8.5]]:[[-9.2,-3.2],[9.2,-3.2],[-9.2,7.2],[9.2,7.2],[-3.8,15],[3.8,15],[-3.8,10],[3.8,10]])lamp(lx,0,lz,3.6,{arm:lx>0?-.35:.35});
  // gate-side toll stall and notice board (a fixture, outside every slot)
  const sx0=v?-7:-8.0,sz0=zf-2.6;box('plank',sx0,0,sz0,3.0,.1,2.2,jc(0x6a5a44,.06));
  for(const px of [-1.4,1.4])for(const pz of [-1.0,1.0])beam('wood',[sx0+px,0,sz0+pz],[sx0+px,2.3,sz0+pz],.07,jc(0x5c4630,.06),true,6);
@@ -211,21 +240,29 @@ function cpGround(G,placed){const zf=G.zf,zb=G.zb,xr=G.xr,v=G.v,zm=(zb+zf)/2;
  sock('awning',sx0,2.5,sz0+1.35,0,{w:3.0,d:.9,drop:.35,h:2.2});
  barrel(sx0+2.0,0,sz0+.6);crate(sx0-2.0,0,sz0+.9,.6,.2);
  // scattered yard junk against the walls where no slot claims them
- junkPile(-xr+1.5,zf-1.5,1.4,6);junkPile(xr-1.8,zb+3.2,1.4,6);}
+ junkPile(-xr+1.5,zf-1.5,1.4,6);if(G.L)junkPile(xr-1.6,4.0,1.0,6);else junkPile(xr-1.8,zb+3.2,1.4,6);}
 // vacant plots get a claim-stake ring of tyres and a few crates so an empty slot is not a blank
 function cpVacant(s){W(s.x,0,s.z,s.facing||0,()=>{const w=Math.min(s.w,10),d=Math.min(s.d,8);for(const [x,z] of [[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]]){tireStack(x,z,2);}
  crate(-w*.2,0,-d*.2,.7,.3);crate(-w*.2+.8,0,-d*.2+.2,.6,.6);pallet(w*.2,0,d*.1,1.2,.8,.4);barrel(w*.3,0,-d*.2);sacks(0,0,d*.3,4,.2);});}
 // ---------------------------------------------------------------- the builder
-function cpBuild(o){const v=o.v===1?1:0;const G=cpGeom(v);const xr=G.xr,zb=G.zb,zf=G.zf;
+function cpBuild(o){const G=cpGeom(o.v===1?1:0,o.size);const v=G.v;const xr=G.xr,zb=G.zb,zf=G.zf;
  // 1. assignment (no rng): each requested def goes into the first free slot it fits
- const slots=cpSlots(G.w,G.d);const want=(o.slots&&o.slots.length)?o.slots.slice():['smithy','shop-general','dw-silo','gen-fuel','dw-box','mess','shop-food','lg-stack'].filter(k=>DEFS[k]).slice(0,v?3:4);
+ const slots=cpSlots(G.w,G.d);const want=(o.slots&&o.slots.length)?o.slots.slice():G.L?['warehouse','lg-stack','smithy','dw-silo'].filter(k=>DEFS[k]):['smithy','shop-general','dw-silo','gen-fuel','dw-box','mess','shop-food','lg-stack'].filter(k=>DEFS[k]).slice(0,v?3:4);
+ // the large yard picks the SMALLEST free slot a key fits (best fit), so a mid-size building leaves the great slot to one that needs it; the standard yards keep first fit
+ const order=G.L?slots.map((s,i)=>i).sort((a,b)=>slots[a].w*slots[a].d-slots[b].w*slots[b].d||a-b):slots.map((s,i)=>i);
  const placed=[],rejected=[],used=new Set();
  for(const key of want){const def=DEFS[key];if(!def||key==='compound'){rejected.push({key,reason:'no such def'});continue;}
-  let done=false;for(let i=0;i<slots.length;i++){if(used.has(i))continue;const yaw=cpFit(def,slots[i]);if(yaw!==null){used.add(i);placed.push({key,slot:slots[i],slotIndex:i,yaw:yaw,def:def});done=true;break;}}
-  if(!done)rejected.push({key,reason:'no free slot fits '+def.w+'x'+def.d});}
+  let done=false;for(const i of order){if(used.has(i))continue;const yaw=cpFit(def,slots[i]);if(yaw!==null){used.add(i);placed.push({key,slot:slots[i],slotIndex:i,yaw:yaw,def:def});done=true;break;}}
+  if(!done)rejected.push({key,reason:cpWhy(def,G,slots)});}
  // 2. ground plan, walls, gantry, towers, gate
  cpGround(G,placed);
- if(v===0){
+ if(G.L){
+  cpRun(-xr,zb,xr,zb,[{t:'cont',pcs:[CT.L40,CT.L40]},{t:'car'},{t:'sheet'},{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'}]);
+  cpRun(xr,zb,xr,zf,[{t:'sheet'},{t:'cont',pcs:[CT.L40,CT.L20]},{t:'tyre'},{t:'car'},{t:'sheet'}]);
+  cpRun(-xr,zf,-xr,zb,[{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'},{t:'car'},{t:'tyre'}]);
+  cpRun(xr,zf,5.74,zf,[{t:'car'},{t:'cont',pcs:[CT.L40]},{t:'tyre'}]);
+  cpRun(-5.74,zf,-xr,zf,[{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'}]);
+ }else if(v===0){
   cpRun(-xr,zb,xr,zb,[{t:'cont',pcs:[CT.L40,CT.L40]},{t:'car'},{t:'sheet'},{t:'tyre'}]);
   cpRun(xr,zb,xr,zf,[{t:'sheet'},{t:'cont',pcs:[CT.L40,CT.L20]},{t:'tyre'},{t:'car'}]);
   cpRun(-xr,zf,-xr,zb,[{t:'tyre'},{t:'cont',pcs:[CT.L40]},{t:'sheet'},{t:'car'}]);
@@ -253,4 +290,4 @@ function cpBuild(o){const v=o.v===1?1:0;const G=cpGeom(v);const xr=G.xr,zb=G.zb,
  // 3. the buildings (last, so the wall drawing never depends on their random use), then vacant plots
  const res=[];for(const p of placed){const r=place(p.key,p.slot.x,p.slot.z,p.yaw,{});res.push({key:p.key,slot:p.slot.name});}
  reseed(5499);for(let i=0;i<slots.length;i++)if(!used.has(i))cpVacant(slots[i]);
- window._compound={placed:res,rejected:rejected,slots:slots.length};}
+ const rep={placed:res,rejected:rejected,slots:slots.length,size:cpSizeName(G)};window._compound=rep;(window._compounds||(window._compounds=[])).push(rep);}

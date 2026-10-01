@@ -30,7 +30,7 @@ function inSmithy(o){
  bays.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.7,EY-.1,ZR,RY,.07,jc(cols[i],.06));roofP('corr',b[0],b[1],ZB-.6,EY+.1,ZR,RY,.07,jc(cols[(i+2)%4],.06));});
  box('iron',0,RY-.04,ZR,12.2,.12,.18,jc(0x4a4038,.05));
  for(const x of [X0,-1.7,1.7,X1]){beam('wood',[x,EY,ZF],[x,RY,ZR],.1,jc(inW,.06));beam('wood',[x,EY+.05,ZB],[x,RY,ZR],.1,jc(inW,.06));}
- beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));
+ beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));entry(0,0,ZF,3.4,EY);/* front door: the open bay between the middle posts */
  // the forge: an earth-and-tyre hearth against the back wall, a sheet hood, a tall stovepipe with cap and stays
  const hx=-2.2,hz=-3.5;tireWall(hx-1.4,hz+.95,hx+1.4,hz+.95,4,{cap:false});box('earth',hx,.05,hz-.1,3.0,1.0,1.9,jc(0xa08a70,.05));box('earth',hx,1.0,hz-.05,3.1,.14,2.0,jc(0x8a7a64,.05));
  box('glow',hx,.35,hz+.98,1.2,.6,.06,jc(0xff7a2a,.05));sph('glow',hx,1.5,hz+.4,.5,jc(0xff8a30,.05),.5);box('glow',hx,1.14,hz+.1,1.5,.06,.9,jc(0xff8a2a,.08));cone('glow',hx,1.16,hz+.1,.5,.9,jc(0xffb040,.06),7);cone('glow',hx,1.16,hz+.1,.25,1.3,jc(0xffe28a,.04),6);
@@ -165,7 +165,7 @@ function inWarehouse(o){
  wallOpen('corr',(X0+X1)/2,DK,ZF,X1-X0,WH-DK,.1,ops,jc(0xd0ccc0,.04),0);
  for(const x of dxs){const raise=[.8,.4,1.6][dxs.indexOf(x)];box('corr',x,DK,ZF+.02,dw-.1,3.5-raise,.05,jc(pick([0xc4502e,0x2f8f8a,0xb0aca0]),.05));cylH('iron',x,DK+3.5-.05,ZF+.14,.2,dw,jc(0x4a4038,.05),'x',10);
   for(const s of [-1,1])box('iron',x+s*(dw/2+.06),DK,ZF+.05,.14,3.7,.14,jc(0x3a3430,.05));box('iron',x,DK+3.55,ZF+.08,dw+.3,.14,.14,jc(0x3a3430,.05));}
- for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));
+ for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));entry(dxs[1],DK,ZF+.1,dw,3.5);/* front door: the middle roll-up opening, on the dock */
  // gable roof of mixed sheet on trusses; gable end walls with truss and a vent
  const segs=[[X0-.5,X0+5.5],[X0+5.5,X0+10.5],[X0+10.5,X0+16.5],[X0+16.5,X1+.5]];
  segs.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+1)%6],.06));roofP('corr',b[0],b[1],ZB-.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+4)%6],.06));});

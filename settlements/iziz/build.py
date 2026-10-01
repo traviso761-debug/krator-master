@@ -54,6 +54,8 @@ DIST = os.path.join(HERE, 'dist')
 ORIGIN = os.path.join(HERE, '.origin.html')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+# shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
+TARGET_CORE = {'city': ['atmos']}
 
 
 def srcpath(f, base=None):
@@ -113,7 +115,7 @@ SEED_COLLISION_EXCEPTIONS = {
 # fragments): their column-0 declarations live inside a closure, so the
 # shared-scope name checks do not apply. They keep their own PRNG too, so the
 # reseed rule does not apply either. Matched by filename prefix.
-SCOPED_PREFIXES = ('86-bio-',)
+SCOPED_PREFIXES = ('86-bio-', '89-atmos-')   # the hyperjungle biome; core/atmos (one global, ATMOS, its own PRNG)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES)
 
@@ -211,6 +213,9 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))

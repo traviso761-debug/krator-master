@@ -23,10 +23,9 @@ Read before changing anything here. `build.py` prints the open count.
       whose channel is wider must widen the ribbon (45-host-stage, `HW`).
 - [ ] The cataract's plunge pool is a flat fan at -703 m with the Abyss floor's rocks
       standing out of it; the rapids are foam in the ribbon's vertex colour, not geometry.
-- [ ] The strata are painted by the ground shader from world height (3.4 m bands,
-      weighted by the rock field): exact on mesas and canyon walls, but a rock outcrop
-      on a slope shows the same bands as a mesa, and the cliff and the mountains get
-      only the painter's coarse bands.
+- [ ] The strata (35-core-strata) are colour only: harder beds do not stand out as
+      ledges and soft ones are not recessed (that needs the heightfield's profile to read
+      the column), and the Abyss cliff and the mountains still get the painter's coarse bands.
 - [ ] The far impostors are the blob technique; the twist-candles stop at ~1.3 km from
       the LOD spine instead of becoming impostors (they stand in water, which no impostor
       reads).
@@ -41,8 +40,50 @@ Read before changing anything here. `build.py` prints the open count.
       The bottle tree / desert rose and puya / agave builders could share a caudex and a
       rosette helper the way the fork and column trees do.
 
+- [ ] TODO (the undercut lip): the ground's refinement is separable, so the 1.5 m columns and
+      rows of the lip's window run the width of the whole map (~100k vertices more than the
+      ~15k the window needs). A local patch of fine ground, stitched to the coarse grid's edges, would not.
+- [ ] TODO: the cave's paint comes from the 19.5 m field cache, which reads the recessed
+      heightfield: the cave and the cap's top are painted as Abyss wall (dark brown) rather
+      than as the canyon floor above them, and the cave's interior shows no strata.
+- [ ] TODO: `waterH` still reports the river's surface over the cave (canyonU < 1.1, x < RIM+40),
+      so the cave floor counts as 63 m under water (it keeps plants off it; nothing else reads it).
+- [ ] TODO: the cataract is a flat ribbon dropping off the lip; the water does not arc off the cap,
+      and no spray rises from the cave's floor behind it.
+- [ ] TODO: meshing and baking the undercut takes ~0.9 s at load, on the main thread; the finer
+      ground's own cost is not measured.
+- [ ] TODO: the wadi gorge could take alcoves (Shade's are the model); not started.
+- [ ] The ground's detail texture is still projected on x-z (Shade's is triplanar now), so
+      the gorge and butte faces may show vertical grain. Not checked here.
+
 ## Done
 
+- [x] THE UNDERCUT LIP. The canyon floor runs out as a sheer promontory to where the
+      cataract leaves it (the Abyss face is ~8:1 there, too shallow for the water to clear it
+      from the plateau's own edge: the fall used to start 30 m out over air), and a cave is
+      carved under its 18 m cap behind the curtain (`core/terrain/36-core-carve.js`). The
+      ground is refined to 1.5 m in a window round the lip. Checked, with negatives: the
+      curtain leaves from rock and stays clear of it, the cave is open under rock, nothing
+      grows under the cap, no camera inside rock. Views: 'The undercut lip', 'Behind the cataract'.
+
+- [x] A cluster (`around()` in 60-floor: reeds, grass, stones...) tested the mask at its
+      centre only, so a reed clump at a reserved place's edge put outliers inside it (Shade's
+      canyon watch). Each satellite now tests the mask itself.
+- [x] Carve patches (`BIO.carve`, now shared in `core/terrain/36-core-carve.js`): alcoves,
+      niches and undercuts on the heightfield, meshed by surface nets with baked occlusion
+      and hood shadow. Shade uses six.
+- [x] The strata's colour pass: a warmer palette (buff bleached bands, purple-brown shales,
+      rare grey-green reduced beds), colour drifting along each bed, varnish hanging from the
+      bed tops, sand on ledges, an optional bleached cap and dust at a foot.
+
+- [x] The strata are the core's bedded-rock shader (35-core-strata): beds of irregular
+      thickness that dip and warp, laminae, cross-bedding and varnish streaks, instead of
+      six level 3.4 m bands. Shared with settlements/shade (its ground and its carved stone).
+- [x] Rocks scattered round a grid point (stones, boulders and their lichen, hoodoos and
+      their apron stones) now test the host's mask at their own position (`putRooted` in 60):
+      the grid tested only the centre, so a cluster spilled into the water here and onto
+      the cliffs in Shade. The random draws are made either way, so nothing else moves.
+      Found by Shade's `no-flora-on-cliffs` check (settlements/shade).
 - [x] Fauna: kites, swifts, striders and lizards on the contract (75), driven by BIO.tick.
 - [x] The quality pass (NOTES.md): typed stores, memoised terrain, BIO.col, data-driven
       impostors, a pass table, shared helpers, host hooks for register / lod / windows.
