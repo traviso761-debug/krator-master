@@ -80,20 +80,30 @@ function measureCapsules(geo, bones){
     for(var k = 0; k < 4; k++){ var ds = bins[i][k]; if(ds.length < 8) continue; ds.sort(function(x, y){ return x - y; }); var r = ds[Math.floor(ds.length * 0.9)];   /* 90th percentile: spikes, fur and streamers do not count */
       if(r > 0.02) CAPSULES.push({ bone: n, t0: k / 4, t1: (k + 1) / 4, r: Math.min(r, cap) * 0.9, a: sg[0].clone(), b: sg[1].clone() }); } });
 }
-/* world-space test of one mounted weapon at the current pose: summed penetration depth */
+/* the capsules in world space at the current pose (once per sampled frame; only the weapon moves between candidates) */
 var _wp, _ca, _cb;
-function weaponPenetration(m){
+function worldCapsules(excludeRe){
   if(!_wp){ _wp = new THREE.Vector3(); _ca = new THREE.Vector3(); _cb = new THREE.Vector3(); }
-  var def = m.def, reach = def.reach || [-0.9, 0.3], pts = [], n = 10, armRe = new RegExp((m.bone.replace(/Hand$/, '')) + '(Arm|ForeArm|Hand|Shoulder)$');
+  var out = [];
+  CAPSULES.forEach(function(c){ if(excludeRe && excludeRe.test(c.bone)) return;
+    var bn = BONES[c.bone]; if(!c.child){ c.child = bn.children.find(function(o){ return o.isBone && c.b.distanceTo(BONE_DEFS.find(function(d){ return d.name === o.name; }).pos) < 1e-6; }) || null; }
+    bn.getWorldPosition(_ca);
+    if(c.child) c.child.getWorldPosition(_cb); else _cb.copy(c.b).sub(c.a).applyQuaternion(bn.getWorldQuaternion(new THREE.Quaternion())).add(_ca);
+    out.push({ a: _ca.clone().lerp(_cb, c.t0), b: _ca.clone().lerp(_cb, c.t1), r: c.r }); });
+  return out;
+}
+/* sample points of a weapon in its own frame: along the shaft, plus blade points */
+function weaponPoints(def){
+  var reach = def.reach || [-0.9, 0.3], pts = [], n = 10;
   for(var i = 0; i <= n; i++){ var y = reach[0] + (reach[1] - reach[0]) * i / n; if(Math.abs(y) < 0.1) continue; pts.push(V3(0, y, 0)); }
   if(def.blade) def.blade.forEach(function(q){ pts.push(V3(q[0], q[1], q[2])); });
+  return pts;
+}
+/* summed penetration of one mounted weapon against precomputed world capsules */
+function weaponPenetration(m, caps, pts){
   var pen = 0;
-  CAPSULES.forEach(function(c){ if(armRe.test(c.bone)) return;
-    var bn = BONES[c.bone], child = bn.children.find(function(o){ return o.isBone && c.b.distanceTo(BONE_DEFS.find(function(d){ return d.name === o.name; }).pos) < 1e-6; });
-    bn.getWorldPosition(_ca);
-    if(child) child.getWorldPosition(_cb); else _cb.copy(c.b).sub(c.a).applyQuaternion(bn.getWorldQuaternion(new THREE.Quaternion())).add(_ca);
-    var a = _ca.clone().lerp(_cb, c.t0), b = _ca.clone().lerp(_cb, c.t1);
-    pts.forEach(function(p){ _wp.copy(p); m.group.localToWorld(_wp); var d = distToSeg(_wp, a, b) - c.r; if(d < 0) pen -= d; }); });
+  for(var i = 0; i < pts.length; i++){ _wp.copy(pts[i]); m.group.localToWorld(_wp);
+    for(var k = 0; k < caps.length; k++){ var d = distToSeg(_wp, caps[k].a, caps[k].b) - caps[k].r; if(d < 0) pen -= d; } }
   return pen;
 }
 /* socket rotation that turns the neutral hold into the tilted one */
@@ -105,20 +115,21 @@ var _TILTS = null;
 function solveClearance(mixer, actions, clipKeys, frames){
   frames = frames || 12;
   if(!_TILTS){ _TILTS = []; [0, 0.06, 0.12].forEach(function(off){ for(var o = -30; o <= 90; o += 15) for(var fw = -75; fw <= 75; fw += 15) _TILTS.push([o, fw, off]); }); }
+  if(!_wp){ _wp = new THREE.Vector3(); _ca = new THREE.Vector3(); _cb = new THREE.Vector3(); }
   var report = [];
   MOUNTED.forEach(function(m){
     var socket = BONES[m.socket], rec = { bone: m.bone, key: m.key, maxTilt: 0, maxOffset: 0, penetration: 0, clips: {} }, rest = socket.userData.rest;
-    var quats = _TILTS.map(function(t){ return socketQuat(m, t[0] * Math.PI / 180, t[1] * Math.PI / 180); });
+    var quats = _TILTS.map(function(t){ return socketQuat(m, t[0] * Math.PI / 180, t[1] * Math.PI / 180); }), pts = weaponPoints(m.def), armRe = new RegExp((m.bone.replace(/Hand$/, '')) + '(Arm|ForeArm|Hand|Shoulder)$');
     clipKeys.forEach(function(k){ var a = actions[k]; if(!a) return;
       var clip = a.getClip(), n = frames, choice = [], prev = null;
       for(var key in actions) actions[key].stop();
       a.reset().setEffectiveWeight(1).play();
       for(var pass = 0; pass < 2; pass++) for(var f = 0; f < n; f++){
-        a.time = f / n * clip.duration; mixer.update(0);
-        var best = null;
+        a.time = f / n * clip.duration; mixer.update(0); BONES.mixamorigHips.updateWorldMatrix(true, true);
+        var caps = worldCapsules(armRe), best = null;
         for(var ci = 0; ci < _TILTS.length; ci++){
-          socket.quaternion.copy(quats[ci]); socket.position.set(rest.x, rest.y + _TILTS[ci][2], rest.z); BONES.mixamorigHips.updateWorldMatrix(true, true);
-          var pen = weaponPenetration(m), mag = Math.abs(_TILTS[ci][0]) + Math.abs(_TILTS[ci][1]);
+          socket.quaternion.copy(quats[ci]); socket.position.set(rest.x, rest.y + _TILTS[ci][2], rest.z); socket.updateWorldMatrix(false, true);
+          var pen = weaponPenetration(m, caps, pts), mag = Math.abs(_TILTS[ci][0]) + Math.abs(_TILTS[ci][1]);
           var cost = pen * 8 + mag * 0.0012 + _TILTS[ci][2] * 0.03 + (prev !== null ? (Math.abs(_TILTS[ci][0] - _TILTS[prev][0]) + Math.abs(_TILTS[ci][1] - _TILTS[prev][1])) * 0.002 : 0);
           if(!best || cost < best.cost) best = { cost: cost, ci: ci, pen: pen };
         }
