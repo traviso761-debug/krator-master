@@ -46,7 +46,8 @@ and registered rooms in world metres, ready for `furnishRoom()` (API.md section 
 | `residence`, `units` | override the residence flag; `units` = how many households (a tenement): the rule is checked per unit |
 | `lot` | the set's declared `w x d` (sheet spacing only) |
 | `bodies` | `planBuilding()` shells (API.md section 7) in the LOCAL frame: `poly` is the OUTER face of the walls; `y` the ground-floor top above the plot (a plinth, a deck on piles); `levels` a count or `[{ h, poly? }]`; `doors` on the footprint edge (`at`, `w`, `hinge`, `swing`); `program` as planBuilding takes it (a name in `IX.BUILDING_PROGRAMS`, kinds for every storey, or kinds per storey); `roof` gable/hip/flat, `pitch`, `wall`, `partition`, `front`, `stair`, `minWidth`, and `culture`/`wealth` per body |
-| `rooms` | explicit `ROOM()` outlines in the local frame (a round hut, an open hall, a tent, a bus): `kind`, `poly` (INNER face of the walls), `y`, `h`, `doors`, `windows`, `fixtures`, `level` |
+| `rooms` | explicit `ROOM()` outlines in the local frame (a round hut, an open hall, a tent, a bus): `kind`, `poly` (INNER face of the walls), `y`, `h`, `doors`, `windows`, `fixtures`, `level`. **A fixture (a post, a built-in bench, a sitting platform, the builder's own counter) is a WAY IN unless it says `reach: false`**: the placer keeps its front reachable from every door, as for a stair's landing. Give `reach: false` to everything that is not an entrance |
+| `key` of a variant | a variant whose rooms differ a lot from variant 0 gets its own item, keyed `<key>#<n>` and named `<name> (variant n+1: ...)` |
 | `like` | copy another item's bodies and rooms (a reclaimed or mirrored variant); its own fields override |
 | `skip` | **no interior**, with the reason. Use it for open structures (fields, pens, docks, walls, a windmill's open frame) and for **geometry that precludes logical rooms** (a tank lying on its side, a bus too narrow for a bed and a path, a tower whose only floor is a ladder landing). The sheet lists every skip; the kit's author decides what to do |
 | `note` | caveats worth keeping (what the plan simplifies, a loft left out, a variant that differs) |
@@ -86,6 +87,7 @@ python3 verify.py dist/interiors-sets.html --sets --assert --seeds 2           #
 python3 verify.py dist/interiors-sets.html --sets --assert --query set=highlands              # one set
 python3 verify.py dist/interiors-sets.html --sets --assert --query "set=highlands&only=hl_rep_house_poor_a,hl_rep_tavern_a" --verbose
 python3 verify.py dist/interiors-sets.html --sets --out shots --query set=post-apoc --rooms   # a screenshot of every building
+# a key with a '#' (a variant item, br_bldg_girder_house#1) goes in a query as %23: only=br_bldg_girder_house%231
 python3 verify.py dist/interiors-sets.html --sets --eval "()=>window._interiors.items.map(E=>E.item.key+': '+E.inst.rooms.map(R=>R.kind+' '+R.area.toFixed(0)+'m2').join(', '))"
 ```
 
