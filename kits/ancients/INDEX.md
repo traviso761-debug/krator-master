@@ -31,7 +31,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 18 |  |
+| `52-sky-abc.js` | 25 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 5 |  |
 | `57-sky-e.js` | 3 |  |
@@ -45,9 +45,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `65-veladiga.js` | 15 |  |
 | `66-office-c.js` | 2 |  |
 | `66b-flatiron.js` | 8 |  |
-| `67-cultural.js` | 5 |  |
+| `67-cultural.js` | 6 |  |
 | `68-hexahedron.js` | 28 |  |
-| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hypertree.js` | 7 |  |
 | `70-sky-g.js` | 6 |  |

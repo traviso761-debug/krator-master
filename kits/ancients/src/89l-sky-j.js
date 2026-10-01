@@ -76,7 +76,10 @@ MAT.sjPave=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.con
 MAT.sjCore=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x3c3733,roughness:1,metalness:0,side:DS});
 // the warm line under each terrace lip: stone by day, lit at night (NIGHT is
 // read at render time, so nothing is rebuilt when the view flips)
-MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff9440,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
+// (round 2: the emissive was 0xff9440 at .6, which is linear here, so after
+// ACES and the sRGB encode its green and blue lifted it to a pale cream; a
+// redder emissive with less green lands on amber)
+MAT.sjGlow=new THREE.MeshStandardMaterial({color:0xe9d8b8,emissive:0xff5212,emissiveIntensity:0,roughness:.8,metalness:0,side:DS});
 MAT.sjPaveR=new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x8c7c66,roughness:1,metalness:0,side:DS});
 
 // gridSurface with a UV function, which is also handed the point it maps
@@ -113,7 +116,7 @@ function sjPlate(y,reF,riF,prof,nu,hole,wv){const nv=prof.length-1;
   nu,nv,(u,v,p)=>[u*Math.max(4,Math.round(TAU*reF(0)/10)),(Math.hypot(p[0],p[2])+p[1]-y)/8],hole);}
 // What the presets need: filled per decay by the builder.
 const SJ_SITE={};
-function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.6:0;};}
+function sjGlowOn(m){if(m)m.onBeforeRender=()=>{MAT.sjGlow.emissiveIntensity=NIGHT?.85:0;};}
 
 function buildSkyJ(scene,gx,gz,d){reseed(9770+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const HO=dd*HOLES;                                  // 1 ruined/toppled, .55 rehabilitated

@@ -1,12 +1,17 @@
 // ================================================================= SKYSCRAPER G — "the Ward" (SUNY: concrete block stack + dark glass drum)
-function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const SM=skyShardMark();const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
  const H=210,Y0=6;REGISTER({name:'Skyscraper G — the Ward ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:150,h:H+30});
  // PLINTH. This is the ONE skyscraper whose podium is genuinely full: the block
  // stack's outer stilts stand at (115, 30) and the block corners reach r=127.6,
  // so skyPlinth's column ring at R*.93 is already grazing them at R=130. It
  // cannot come in without moving the stack, which is the building. Left alone,
  // deliberately — see the plinth note in KNOWN_ISSUES.
- const PR=130;
+ // ROUND 2: it can, by moving the stack and the drum toward each other rather
+ // than shrinking either: the stack's centre from x=70 to 50 and the drum's
+ // from -70 to -52 (the bridges between them shorten from 67 to 29 m). The
+ // outer stilts are then at r=99.6 and the block corners at 104.2, so the
+ // podium comes in from 130 to 116 with its column ring at 107.9.
+ const PR=116;
  skyPlinth(G,dd,PR);
  // podium: long low concrete bar with a glass ribbon.
  // IT USED TO FLOAT. The bar is 240 long at z=90, so its ends are at r=150 —
@@ -22,16 +27,17 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
   const drum=lathe({rFn:()=>R,H:L,nu:64,nv:Math.round(L/4),hole:hole,seed:77});mesh(drum,dx>0?MAT.guts:MAT.darkGlass,P);
   // pale plates with a dark soffit under each, so the torn drum reads as a
   // building sliced open and not as one dark field (the Skyscraper A lesson)
-  if(dx>0){for(let y=4;y<L-2;y+=4){kput('slab',[0,y,0],null,[R*.95,.4,R*.95],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1,0],null,[R*.92,.5,R*.92],new THREE.Color(0x191b1f));}mesh(lathe({rFn:()=>R*.6,H:L,nu:24,nv:2}),MAT.guts,P);}
-  for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;kput('cell',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],lit?WARM.clone().multiplyScalar(rr(.4,.9)):DEAD);}
+  if(dx>0){for(let y=4;y<L-2;y+=4){kput('slab',[0,y,0],null,[R*.95,.4,R*.95],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1,0],null,[R*.92,.5,R*.92],new THREE.Color(0x191b1f));}mesh(lathe({rFn:()=>R*.6,H:L,nu:24,nv:2}),MAT.guts,P);
+   skyRooms({rFn:()=>R*.94,y0:4,y1:L-2,step:4,soff:1,hole,d,seed:77,rIn:.66,dens:6});}   // interiors behind the openings (52-sky-abc.js)
+  for(let y=6;y<L-4;y+=8)for(let k=0;k<18;k++){const th=(k+.5)/18*TAU;if(hole&&hole(th/TAU,y))continue;if(rng()<.55)continue;const lit=dx>0?rng()<.04:true;const wc=lit?WARM.clone().multiplyScalar(rr(.4,.9)):null;kput(wc?'cell':'cellD',[R*1.01*Math.cos(th),y,R*1.01*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[3,2.2,.5],wc);}
   for(let y=0;y<L;y+=4)kput(dx>0?'ringR':'ringW',[0,y,0],qEuler(Math.PI/2,0,0),[R+.2,R+.2,1.5],null);
   if(cut==null){mesh(lathe({rFn:()=>R+1.5,H:8,nu:64,nv:1}),CONC(dx),P,0,L,0);kput(SLABC(dx),[0,L+8,0],null,[R+1.6,.8,R+1.6],null);kput(BOXC(dx),[0,L+11,0],null,[10,6,10],null);}};
- const CX=-70;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
+ const CX=-52;const D=new THREE.Group();D.position.set(CX,Y0,0);G.add(D);useGroupXF(D);if(d!==2)build(D,dd,Y0,null,false);else build(D,1,Y0,Y0+60,false);endGroupXF();
  // The drum falls WEST, away from its own block stack. Toppling it east dropped
  // 200 m of tower straight through the stack it is meant to stand beside.
  if(d===2)toppledUpper(G,CX,0,Y0+60,R,(U)=>build(U,1,Y0+60,null,true),d,-1);
  // block stack: 2×2 concrete blocks in two tiers on stilts, porthole strips, service cores between
- const BX=70,BW=42,BH=34,gap=10;const tiers=[[26,0],[26+BH+gap,1]];
+ const BX=50,BW=42,BH=34,gap=10;const tiers=[[26,0],[26+BH+gap,1]];
  // Which blocks have come down. One gone out of eight read as barely touched;
  // the stack now loses most of its top tier, and a lower corner as well once
  // the tower itself has fallen. A lower block never goes without the one above
@@ -56,6 +62,8 @@ function buildSkyG(scene,gx,gz,d){reseed(9160+d);KOFF=[gx,0,gz];const G=new THRE
    for(let x=CX+R+4;x<BX-BW-gap/2;x+=5)kput(dd>0?'mullR':'mullW',[x,y1+1.5,bz+3.2],null,[.4,4,.4],null);}});
  kput('archOpen',[CX+R-1,Y0+5,0],qFacing([1,0,0]),[.7,.7,1],null);
  if(dd>0){vinesOnRing(CX,Y0+40,0,R,20,20);}
+ if(d===3){useGroupXF(D);skyHoist(()=>R,H-Y0-2,5-Y0,9160);endGroupXF();}   // about the drum's own axis
+ if(d>0)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);   // follows the podium, like the other seven (was a hardcoded -100,140)
 KOFF=[0,0,0];return G;}
 
