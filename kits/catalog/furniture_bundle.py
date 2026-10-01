@@ -28,6 +28,13 @@ def read(f):
         return fh.read()
 
 
+def safe(js):
+    """The text goes inline into a page's <script>: no script tag may appear in it, not even in a comment
+    (a '</script' ends the page's script; a '<script' fools tools that find the script by its tag).
+    '\\x73' is 's' inside a string literal and plain text inside a comment, so nothing changes meaning."""
+    return js.replace('</script', '<\\/script').replace('<script', '<\\x73cript')
+
+
 def files(cultures=None, harvested=False):
     out = list(CORE)
     if harvested:
@@ -42,7 +49,7 @@ def files(cultures=None, harvested=False):
 def bundle(cultures=None, harvested=False):
     fs = files(cultures, harvested)
     body = ''.join('/* ---- kits/catalog/%s ---- */\n%s\n' % (f, read(f)) for f in fs)
-    return ('/* kits/catalog furniture bundle (furniture_bundle.py): %s. GENERATED; edit the catalog files. */\n'
+    return safe('/* kits/catalog furniture bundle (furniture_bundle.py): %s. GENERATED; edit the catalog files. */\n'
             'var KratorFurniture = (function () {\n%s\nreturn KF_API;\n})();\n' % (', '.join(fs), body))
 
 

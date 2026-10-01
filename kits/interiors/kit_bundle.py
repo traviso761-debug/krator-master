@@ -20,6 +20,13 @@ def read(p):
         return fh.read()
 
 
+def safe(js):
+    """The text goes inline into a page's <script>: no script tag may appear in it, not even in a comment
+    (a '</script' ends the page's script; a '<script' fools tools that find the script by its tag).
+    '\\x73' is 's' inside a string literal and plain text inside a comment, so nothing changes meaning."""
+    return js.replace('</script', '<\\/script').replace('<script', '<\\x73cript')
+
+
 def files(sets=None):
     core = ['src/' + f for f in sorted(os.listdir(os.path.join(HERE, 'src'))) if f[0].isdigit() and f.endswith('.js') and f < '50']
     ss = ['sets/' + f for f in sorted(os.listdir(os.path.join(HERE, 'sets'))) if f.endswith('.js') and (sets is None or f[:-3] in sets)]
@@ -27,7 +34,7 @@ def files(sets=None):
 
 
 def bundle(sets=None):
-    return ('/* kits/interiors bundle (kit_bundle.py): the core, the runtime adapter, sets %s. GENERATED; edit kits/interiors. */\n'
+    return safe('/* kits/interiors bundle (kit_bundle.py): the core, the runtime adapter, sets %s. GENERATED; edit kits/interiors. */\n'
             % (', '.join(sets) if sets else 'all')) + ''.join('/* ---- kits/interiors/%s ---- */\n%s\n' % (f, read(f)) for f in files(sets))
 
 
