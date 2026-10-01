@@ -101,6 +101,7 @@ TARGET_OUT = {
     'engines': 'engines.html',                 # five cyclopean machines of unclear purpose
     'alt-domestic': 'alt-domestic.html',       # arco1/arco2 alternates of the domestic group (src/8ak-alt-*)
     'alt-towers': 'alt-towers.html',           # queue 3, towers group: arco alternates of six types
+    'alt-civic': 'alt-civic.html',             # civic alternates (arco1/arco2), all decays
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
