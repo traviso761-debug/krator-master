@@ -6,7 +6,11 @@ to gallery/site/worlds/<slug>.html, and writes gallery/site/index.html from
 index.template.html. Claude then publishes gallery/site/ as the Artifact named
 in gallery/README.md.
 
-Usage:  python3 gallery/build_gallery.py [--no-build] [--out DIR --local-three URL]
+Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL]
+
+--build-missing rebuilds only the worlds whose built page is absent (a fresh clone lacks the port's, which are
+not committed) and reuses every other built page as it is: what host/sitectl.bat does on Windows, where the
+biome builds' node syntax check is usually unavailable.
 
 --out DIR writes the site somewhere else (host/sitectl writes host/site/), and --local-three URL points every page
 at that copy of three.js instead of cdnjs and puts the copy in DIR/worlds/, so the LAN server needs no internet.
@@ -207,8 +211,11 @@ def main():
     site = os.path.abspath(arg('--out') or SITE)
     three = arg('--local-three') or THREE_CDN
     if '--no-build' not in sys.argv:
+        missing = '--build-missing' in sys.argv
         dirs = []
         for _, _, path, _, _, *_ in ENTRIES:
+            if missing and os.path.exists(os.path.join(ROOT, path)):
+                continue
             d = os.path.dirname(path)
             while not os.path.exists(os.path.join(ROOT, d, 'build.py')):   # dist/, or a page beside its build (the Voth catalog)
                 d = os.path.dirname(d)
