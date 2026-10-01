@@ -5,8 +5,41 @@
 
 ## Open
 
-Nothing open. Under-size (a piece built more than 30 % smaller than declared on an axis) is still a WARN; at the
-time of writing it lists two plants (iziz_reed, voth_succulent_paddle: their spread depends on the seed).
+- [ ] **Hykkousoi has a palette and no pieces** (`krator-master-furniture-hykkousoi.js`): the culture is in
+  progress and its sets are deliberately not built yet. The file says what to add.
+- [ ] **The sheet is heavy.** 853 furniture pieces, 1129 instances and about 33 000 draw calls on the `all`
+  sheet; `verify.py --assert` takes about 15 minutes under SwiftShader and a screenshot of the whole sheet
+  several minutes each. Partial runs are cheap: `?cultures=xanadu,voth` (verify.py `--query cultures=...`)
+  lays out only those cultures, and `--rows xanadu,court` screenshots only the rows named. The full page
+  on a real GPU is fine; a gallery visitor on a weak machine should open a `?cultures=` page.
+- [ ] **Painted hangings are one texture per key.** `F.decal` paints a canvas once per key (culture,
+  symbol, variant, size, colours) and caches the material, so a thousand tapestries cost a few dozen
+  canvases; a host that replaces `FPAL` colours after a piece was built keeps the old painting until
+  the page reloads. The paint functions draw from their own seeded stream, never the piece's.
+- [ ] **Under-size warnings** (a piece built more than 30 % smaller than declared on an axis) are expected for
+  wall art, tapestries and racks: their declared depth leaves room for a skull or a hanging cloak to be swapped
+  in by the second variant, so the first often builds shallower. The sheet has about 145 such WARN lines, none
+  a failure.
+- [ ] **Kit pieces are not in the static checks' block list.** `verify.py` reads literal `FURN({` blocks for the
+  SPEC source rules; pieces `FK.set()` registers are checked in the page instead (build, size, anchor, palette:
+  an unknown key throws) and the kit and culture files are scanned whole for literal colours
+  (`style-colour-kit`).
+
+## Decisions in the interiors furniture pass (2026-10)
+
+- **Plants, the Voth buildings and the Beast Rider buildings left the sheet** (owner's call). The files stay;
+  `build.py` no longer lists them. The Voth catalog page (`settlements/voth/catalog`) still loads
+  `krator-master-buildings-voth.js` by path and is unaffected. The catalog is the furniture sheet.
+- **One row per culture and tier** on the furniture sheet, so a culture's poor, common and court pieces read
+  side by side.
+- **The engine's `F.cyl` is vertical only.** A disc that faces a wall (a plate, a shield, a medallion) is a
+  short `F.rod` along z: `FK.disc()`. Early kit drafts turned cylinders with `ry` and got vertical discs
+  poking through the wall; the anchor audit caught all of them.
+- **Emblems are the socket packs' own.** The first hangings drew each culture's device in blocks and the
+  Republic's triskele came out as a spiral; the packs' canvas `SYMBOLS` moved to `core/sockets/38-symbols.js`
+  (out of the Post-Apoc building-fragment number range 4x-7x) and the catalog vendors and paints them.
+- **`kits/interiors` gained a wealth band and the `art` type**; its walker smoothing now runs on the rounded
+  route points (a layout from the new sets exposed a sub-millimetre mismatch between smoothing and the audit).
 
 ## Limits of the checks
 

@@ -8,9 +8,6 @@ function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn);t.wrapS=t.wrapT=o
 function stripeTex(key,cols,n,tile){cvMat(key,128,64,(g,w,h)=>{const sw=w/n;for(let i=0;i<n;i++){g.fillStyle=cols[i%cols.length];g.fillRect(i*sw,0,sw+1,h);}
  reseed(9700+key.length);for(let i=0;i<140;i++){g.fillStyle=`rgba(${rng()<.5?0:255},${rng()<.5?0:255},${rng()<.5?0:255},${rr(.03,.1)})`;g.fillRect(rng()*w,rng()*h,rr(1,4),rr(1,6));}
  for(let i=0;i<5;i++){const x=rng()*w;g.fillStyle='rgba(50,30,20,.14)';g.fillRect(x,0,rr(1,3),h);}},{repeat:true,tile:tile||1.2});}
-function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*TAU/3-PI/2;
- for(let i=0;i<=24;i++){const t=i/24;const a=a0+t*2.5;const r=R*(.12+.86*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
-  const ae=a0+2.5;g.fillStyle=cols[k%cols.length];g.beginPath();g.arc(cx+Math.cos(ae)*R*.98,cy+Math.sin(ae)*R*.98,lw*.75,0,TAU);g.fill();}}
 // banners and flags are drawn at THEIR OWN aspect ratio (canvas px map 1:1 to world metres), so an emblem stays round on a tall banner and a wide flag alike
 function banDecal(base,draw,x,y,z,w,h,ry){const k=base+':'+w.toFixed(2)+'x'+h.toFixed(2);if(!MAT[k]){const pw=128,ph=Math.max(24,Math.round(128*h/w));cvMat(k,pw,ph,(g)=>draw(g,pw,ph));}decal(k,x,y,z,w,h,ry||0);}
 function banDisc(W,H){return {R:Math.min(W*.4,H*.32),cx:W/2,cy:H>W*1.25?H*.38:H*.5};}
@@ -42,31 +39,7 @@ function signBoard(o,bg,fg,frame){const w=o.w||2,h=o.h||.7,t=(o.trade||'').toUpp
  box('plank',0,-h/2-.06,-.02,w+.12,h+.12,.06,jc(frame||0x4a3a2c,.05));decal(key,0,0,.02,w,h,0);}
 cultDef({key:'generic',name:'Generic (unmarked)',paint:null,signBg:'#9a7a52',signFg:'#2a1c10',
  fill:{awning:awnGeneric,banner:bannerGeneric,flag:flagGeneric,emblem:emblemGeneric,sign:o=>signBoard(o,'#8a6c48','#e8dcc0','#4a3a2c'),paint:o=>{}}});
-// ------------------------------------------------------------------ symbols: each draws in the box (cx,cy,R) with two ink colours
-const SYMBOLS={
- sun:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
-  for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}},
- triskele:(g,cx,cy,R,c1,c2)=>{drawTriskele(g,cx,cy,R*.82,[c1,c2,'#c9963a'],Math.max(3,R*.27));},
- diamond:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();},
- // hyperboloid of one sheet: the cooling-tower profile with its ruling lines (Yuni)
- hyperboloid:(g,cx,cy,R,c1,c2)=>{const a=R*.4,hh=R*.92,b=hh*.55;const xw=t=>a*Math.sqrt(1+(t*hh/b)*(t*hh/b));const rx=xw(1),ry=R*.13;
-  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.05);
-  for(let k=0;k<7;k++){const th=k*TAU/7;g.beginPath();g.moveTo(cx+Math.cos(th)*rx,cy-hh+Math.sin(th)*ry);g.lineTo(cx+Math.cos(th+1.05)*rx,cy+hh+Math.sin(th+1.05)*ry);g.stroke();}
-  g.lineWidth=Math.max(2.5,R*.1);for(const sx of [-1,1]){g.beginPath();for(let i=0;i<=28;i++){const t=-1+2*i/28;const x=cx+sx*xw(t),y=cy+t*hh;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
-  for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,TAU);g.stroke();}},
- // three parallel talon slashes (Beast Riders)
- claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
- // a half sun rising over three waves (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the sun, c2 the waves
- wavesun:(g,cx,cy,R,c1,c2)=>{const y0=cy-R*.1;g.fillStyle=c1;g.beginPath();g.arc(cx,y0,R*.5,Math.PI,0);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.07);
-  for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.62,y0+Math.sin(a)*R*.62);g.lineTo(cx+Math.cos(a)*R*.9,y0+Math.sin(a)*R*.9);g.stroke();}
-  g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.1);for(let k=0;k<3;k++){g.beginPath();for(let i=0;i<=24;i++){const x=-R+2*R*i/24,y=y0+R*.12+k*R*.24+Math.sin(x/R*TAU)*R*.07;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}},
- // the eight-spoked wheel (Xanadu; the carrack's sails): c1 rim and spokes, c2 the hub
- wheel:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.12);g.beginPath();g.arc(cx,cy,R*.78,0,TAU);g.stroke();g.lineWidth=Math.max(2,R*.07);
-  for(let i=0;i<8;i++){const a=i/8*TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.18,cy+Math.sin(a)*R*.18);g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);g.stroke();}
-  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.2,0,TAU);g.fill();},
- // the white moon of the islands (the oruwa's sail): a full disc, a thin ring round it
- moon:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.62,0,TAU);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(1.5,R*.04);g.beginPath();g.arc(cx,cy,R*.86,0,TAU);g.stroke();},
-};
+// symbols: core/sockets/38-symbols.js (SYMBOLS, drawTriskele, SYMBOL_OF), shared with the furniture kit
 // ------------------------------------------------------------------ the factory: a culture is a palette, a symbol and two cloth styles
 // mkCulture({key,name,field,edge,band,disc,ink,ink2,sym,awn:{mode:'stripes'|'cloth',cols,n},paint,pole,signBg,signFg,signFrame,flagStyle:'rect'|'pennant'})
 //   field/edge/band: banner cloth, its side edges and its end bands; disc: a round ground behind the symbol (optional); ink/ink2: symbol colours

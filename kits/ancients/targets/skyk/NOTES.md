@@ -50,3 +50,23 @@ The shattered rose, The hanging rib, The hoop from the north.
 - Window grid is still regular (paired bays); the concept sketch is blanker.
 - Rib section is swept with a z-up frame, so it twists slightly where the curve leaves the xy-plane.
 - Hall roof is a single-sided shell (no thickness) apart from the lips.
+
+## Design pass (2026-10-01): belly and facade
+* **The facade's rhythm changes with height** (placed by position hash; the
+  old grid's rng draws are replayed first so the rose's ruin, campanile,
+  houses and everything after are where they were). Front, from the foot:
+  two-storey openings under deep hoods (to 124 m); bays of three under one
+  sunshade with piers between, every third storey a band of recessed loggias
+  with balconies, the bays shifting half a bay every six storeys (to 212 m);
+  a nearly blank rose zone with small staggered squares (to 292 m); narrow
+  staggered slits (to 372 m); a blank prow. Back: vertical strips banded
+  every fourth storey, then sparse openings, then slits. Margins along luff
+  and leech widen with height; no window sits on a batten.
+* **The belly has a designed form**: a KEEL, a blade up to 7 m deep standing
+  out of the belly along its draft line (42% back from the luff), springing
+  from the porch's apex and broken by the rose's collar; it and its shadow
+  draw the belly's crest when the sail is seen square-on. BOLT ROPES (1.25 m
+  tubes) on the luff and leech edges of the belly draw the outline.
+* Weaknesses struck: "window grid regular"; "belly reads only in oblique
+  light" partly (square-on it now reads by the keel and the bays' hoods, not
+  by shading). The keel's S-curve off the porch apex is deliberate.

@@ -6,7 +6,8 @@ loads the engine, the Voth buildings and the inspector by path), so they are
 NOT moved into src/. src/ holds only the page around them:
 
   src/00-head.html          page head, toolbar, error panel, three.js r128 loader
-  <registries, in order>    SOURCES below (top-level .js files of this folder)
+  <registries, in order>    SOURCES below (top-level .js files of this folder; a pattern
+                            expands in filename order, so one file per culture just drops in)
   src/80-sky-hash.js        h3(), which KratorSky reads
   src/81-sky.js             KratorSky, VENDORED from settlements/iziz/src
   src/90-sheet.js           lays out every entry and variant in labelled rows
@@ -22,7 +23,7 @@ Every build is deterministic: build-manifest.json holds a sha1 per input.
 
 Usage:  python3 build.py [--no-checks] [--vendor-check]
 """
-import hashlib, json, os, re, subprocess, sys
+import fnmatch, hashlib, json, os, re, subprocess, sys
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -35,15 +36,35 @@ SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 OUT = 'catalog'
 
+# The furniture kit loads after the engine, then the harvested furniture, then every
+# interiors-phase culture file (krator-master-furniture-<culture>.js, in filename order).
+# Not built here any more: krator-master-plants.js (plants live in their biome kits and
+# in each build's own sheet), krator-master-buildings-voth.js (the Voth buildings have
+# their own sheet, settlements/voth/catalog, which loads that file by path) and
+# krator-master-buildings-beast-rider.js (the Beast Rider buildings). The files stay.
+# The catalog is the furniture sheet.
 SOURCES = [
     'krator-asset-engine.js',
+    'krator-symbols.js',
+    'krator-furniture-kit.js',
     'krator-master-furniture.js',
-    'krator-master-plants.js',
-    'krator-master-buildings-voth.js',
-    'krator-master-buildings-beast-rider.js',
+    'krator-master-furniture-*.js',
     'inspector.js',
 ]
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
+
+
+def sources():
+    out = []
+    for s in SOURCES:
+        if '*' in s:
+            out += sorted(f for f in os.listdir(HERE) if fnmatch.fnmatch(f, s) and f not in out)
+        else:
+            out.append(s)
+    return out
+VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js'),
+            # the culture symbols, shared with the socket packs; vendored here because other builds load the
+            # catalog's files by relative path from kits/ and cannot reach core/. Re-copy after editing upstream.
+            'krator-symbols.js': os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')}
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
 RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
@@ -80,7 +101,8 @@ def vendor_check():
         if not os.path.exists(up):
             print('vendor-check: %s: upstream %s missing' % (f, os.path.relpath(up, ROOT)))
             continue
-        same = read(up) == read(os.path.join(SRC, f))
+        local = os.path.join(SRC, f) if os.path.exists(os.path.join(SRC, f)) else os.path.join(HERE, f)
+        same = read(up) == read(local)
         drift += not same
         print('vendor-check: %-12s %s (%s)' % (f, 'identical' if same else 'DRIFTED', os.path.relpath(up, ROOT)))
     return drift
@@ -93,7 +115,7 @@ def main():
     head = [f for f in frags if f.endswith('.html') and f < '50']
     tail = [f for f in frags if f.endswith('.html') and f >= '50']
     js = [f for f in frags if f.endswith('.js')]
-    parts = [(f, read(os.path.join(HERE, f))) for f in SOURCES] + [(f, read(os.path.join(SRC, f))) for f in js]
+    parts = [(f, read(os.path.join(HERE, f))) for f in sources()] + [(f, read(os.path.join(SRC, f))) for f in js]
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:
