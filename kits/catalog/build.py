@@ -38,6 +38,8 @@ OUT = 'catalog'
 SOURCES = [
     'krator-asset-engine.js',
     'krator-master-furniture.js',
+    'krator-master-generic.js',
+    'krator-master-fruit.js',
     'krator-master-plants.js',
     'krator-master-buildings-voth.js',
     'krator-master-buildings-beast-rider.js',

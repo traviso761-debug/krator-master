@@ -87,7 +87,10 @@ defines; the placer, the audit and the outline view all use it (`clearanceZones`
 `IX.ROLES` maps it to where a piece goes, `IX.PROGRAMS` to what a room needs.
 
 - **Master catalog**: `IX.catalogAdapter()` (`adapters/catalog-adapter.js`). It loads after
-  `krator-asset-engine.js` and `krator-master-furniture.js`.
+  `krator-asset-engine.js`, `krator-master-furniture.js`, `krator-master-generic.js` and
+  `krator-master-fruit.js`. The last two are culture `generic` (containers, food, drink, supplies, biome
+  fruit), which ends every `IX.CULTURE_FAMILY` chain: a room reaches them after its own culture and family,
+  so tables and shelves in a thin culture still get something on them.
 - **Yuni lineage** (`settlements/yuni`, `locus`): the same four over the build's `FURN_BY_KEY` and
   `buildFurn` (same frame). Yuni's own `type` strings differ from the catalog's
   (`shelving hearth lighting tool decoration` vs `shelf stove lamp ...`): map them in `list()`.

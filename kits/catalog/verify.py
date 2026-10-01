@@ -25,7 +25,7 @@ What it does:
                          materials it declares cover every material family it builds with;
                          plants: climate + aridity; buildings: culture, family, and types
                          (non-empty, every one in BUILDING_TYPES)
-     plus static checks on krator-master-furniture.js:
+     plus static checks on every FURN file (FURN_FILES):
        spec-source       no entry still declares the old `room:` key
        style-*           SPEC "No host globals", F.shade/F.TAU not bare shade/TAU, and
                          "Colour": no literal colour (0x...) or literal colour array
@@ -69,15 +69,21 @@ def _exe():
     return {}
 
 
+FURN_FILES = ['krator-master-furniture.js', 'krator-master-generic.js', 'krator-master-fruit.js']
+
+
 def furn_blocks():
-    src = open(os.path.join(HERE, 'krator-master-furniture.js'), encoding='utf-8').read()
-    starts = [m.start() for m in re.finditer(r'^FURN\(\{', src, re.M)] + [len(src)]
+    """(key, head, body) of every FURN({...}) entry in FURN_FILES; text before a file's first
+    entry (a file's shared helpers, e.g. KGEN) belongs to no entry."""
     out = []
-    for a, b in zip(starts, starts[1:]):
-        blk = src[a:b]
-        key = re.search(r"key\s*:\s*'([^']+)'", blk).group(1)
-        i = blk.find('build')
-        out.append((key, blk[:i], blk[i:]))
+    for name in FURN_FILES:
+        src = open(os.path.join(HERE, name), encoding='utf-8').read()
+        starts = [m.start() for m in re.finditer(r'^FURN\(\{', src, re.M)] + [len(src)]
+        for a, b in zip(starts, starts[1:]):
+            blk = src[a:b]
+            key = re.search(r"key\s*:\s*'([^']+)'", blk).group(1)
+            i = blk.find('build')
+            out.append((key, blk[:i], blk[i:]))
     return out
 
 
