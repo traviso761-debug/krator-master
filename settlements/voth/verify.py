@@ -247,6 +247,7 @@ async def run(a):
         async with async_playwright() as p:
             b = await launch_chromium(p)
             pg = await b.new_page(viewport={"width": 1000, "height": 640})
+            pg.set_default_timeout(300000)   # a 1.8 MB world: 30 s screenshots time out under software GL
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)))
             three = local_three(folder)
