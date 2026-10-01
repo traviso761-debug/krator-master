@@ -291,6 +291,90 @@ at night they add per-fragment lighting cost, not draw calls.
 
 ---
 
+# Design pass (I, J, K) (2026-10-01)
+
+Design work the QA rounds left open: J's rib junctions and crown, K's belly
+and window grid, and a scrutiny of I at hero, close and ruin range. Fragments
+`89k-sky-i.js`, `89l-sky-j.js`, `89m-sky-k.js` only; no shared file touched.
+Seeds unchanged. Nothing new draws from rng: J's junctions and crown and I's
+crown are derived from the existing geometry, and K's new facade is placed by
+position hash after the OLD window grid's rng draws are replayed draw for draw,
+so every later draw (the rose's ruin, campanile, houses, the toppled pieces)
+lands where it did (K's podium and houses are identical in the before/after
+ruin shots). Every target: `build.py`, `jscheck.py` PARSES OK, `verify.py
+--assert` error panel clean, all six invariants PASS.
+
+## J, the Whorl
+- **Junctions.** A lens-shaped clasp with a boss wherever two neighbouring
+  ribs kiss (the old crease where two tubes ran through each other); a collar
+  where a rib passes each terrace plate, the base roof's lip and each spire
+  hoop; a flared shoe where a rib roots. All derived from the ribs' paths, so
+  the ruin keeps only those on the pieces it keeps.
+- **Crown.** Coronet at the roof plate; four hoops, each clasping every rib;
+  a 57 m glazed lantern banded every two storeys (lit at night); a stone
+  spindle to the knot; an ovoid boss on the knot; a banded needle to 457 m
+  (was a thin 2.4 m cone to 436). The toppled spire fragment is now the whole
+  crown, broken, instead of bare ribs and one hoop.
+- Lighthouse: it keeps its own copy of the Whorl's body code and calls only
+  `sjGrid/sjSweep/sjPlate/SJ_PT/SJ_PM`, none of which changed; rebuilt and
+  verified (PASS, panel clean), shots unchanged in character.
+
+## K, the Sail
+- **Facade** with a rhythm that changes with height: two-storey openings under
+  hoods at the base; bays of three under sunshades with piers, a loggia band
+  every third storey, bays shifting half a bay every six storeys, through the
+  belly; nearly blank round the rose; staggered slits above; blank prow. The
+  flat back has banded vertical strips. Margins widen with height; nothing
+  sits on a batten.
+- **Belly**: a keel blade (to 7 m deep) along the draft line from the porch
+  apex to the prow, broken by the rose collar; bolt ropes along luff and
+  leech. Square-on from the south the belly's crest is now drawn by the keel
+  and its shadow.
+
+## I, the Braid
+Looked at the hero, row, braid, crown, foot, ruined, rehabilitated, toppled
+and along-the-fallen-body views. The weakest part was the top third: a bare
+needle with two pale fins and a lit box on the apex. Now a corbelled collar
+gathers both strand fins at 386-398 m on two-step brackets from the shaft,
+with a cornice, three stepped tiers under the knife, pinnacles, lit slots and
+a slim crystal finial. It stands on the intact and rehabilitated towers and
+lies at the end of the toppled body; the ruin (snapped at 336 m) has none.
+
+## Stumps
+`stumpI/J/K` rebuilt through a scratch copy of `iziz-variants` holding only
+I, J and K (not committed): all read, J's stump carries the collars and
+clasps on its ribs, K's the new facade. stumpI 56 898 / 54 036, stumpJ
+101 843 / 123 112, stumpK 127 596 / 134 915 (decay 0 / 3).
+
+## Triangles per type/decay (target scene, before -> after)
+
+| | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| skyI | 40 716 -> 41 700 | 67 044 -> 67 044 | 71 166 -> 72 078 | 73 174 -> 74 086 |
+| skyJ | 175 520 -> 202 456 | 114 292 -> 124 140 | 116 976 -> 139 520 | 173 834 -> 197 852 |
+| skyK | 162 787 -> 164 851 | 179 326 -> 181 764 | 233 682 -> 235 974 | 202 022 -> 204 860 |
+| lighthouse (after only: its code path did not change) | 117 568 | 90 460 | 118 678 | 118 560 |
+
+All far under the 400 k 'sky' class. (K's "before" for 1-3 is the current
+branch measured from a HEAD build, a few hundred off round 2's table.)
+
+## Shots looked at
+Before (HEAD build): J The Whorl, Ruined, Toppled; K Skyscraper K, Ruined K,
+Toppled K, The rose, The fallen sail, Rehabilitated K; I Skyscraper I, Ruined,
+Toppled, The braid, The crown. After: J The Whorl, Ruined, Toppled, The
+lattice, The crown, The fallen body; K Skyscraper K (twice), Ruined K,
+Toppled K, The rose, a square-on south view and a low SW view of the belly;
+I Skyscraper I, The crown (twice), Toppled, Along the fallen body,
+Rehabilitated; stumps I/J/K and the J row; lighthouse The lighthouse,
+Toppled, The lantern.
+
+## Still open
+- J: the fallen spire lies near the body's own line, so 'Toppled' sees it
+  end-on (its yaw is rng-drawn; left).
+- K: the dead-window glass teeth (`skyShards`, shared) read as V marks in the
+  big base openings of the ruin at row range.
+- I/J soffits still brown from the hemisphere ground colour (shared lighting).
+
 # Restand (A-H) (2026-10-01)
 
 The stance changes rounds 1 and 2 would not take unasked, now asked for. Rendered on
