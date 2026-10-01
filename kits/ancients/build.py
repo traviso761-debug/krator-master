@@ -99,6 +99,7 @@ TARGET_OUT = {
     'ring': 'ring.html',                       # the barrel arcology, circular toruses
     'arcoindian': 'arcoindian.html',           # the cliff-topography arcology
     'engines': 'engines.html',                 # five cyclopean machines of unclear purpose
+    'iziz-variants': 'iziz-variants.html',     # dev: Sky C tripod market, small-podium A-C, tower stumps (8an-iz-*)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
