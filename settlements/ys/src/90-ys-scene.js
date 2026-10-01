@@ -60,6 +60,9 @@ for(const it of PORT_LAYOUT.items){const R=portRegOf(it.key);if(!R)continue;cons
  if(_G&&_G.isObject3D){if(!_G.userData.own)_G.userData.own=key;_G.traverse(o=>{if((o.isMesh||o.isInstancedMesh)&&!o.userData.own)o.userData.own=key;});}
  for(let i=_r0;i<REG.length;i++){if(!REG[i].type)REG[i].type=it.key;if(!REG[i].own)REG[i].own=key;}
  TSTAT.cur=null;}
+// 3b. the target's own builders (the mock, the kit sheet, the city's layout pass) run here: static fabric before the bake
+for(const f of (typeof YS_BUILD!=='undefined'?YS_BUILD:[])){try{f(scene);}catch(e){reportErr('build hook '+e.stack);}}
+try{hykFlush(scene);}catch(e){reportErr('hykFlush '+e.stack);}
 window._registered=REG.length;
 kbake(scene);window._baked=true;
 for(const n in KIT.meshes){const m=KIT.meshes[n];m.userData.kname=n;m.userData.owns=KIT.items[n];}

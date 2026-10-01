@@ -38,7 +38,7 @@ function ysChecks(){const R=[];
    if(s.x0<it.gx-G.W/2-e||s.x1>it.gx+G.W/2+e||s.z0<it.gz-G.LAND-e||s.z1>it.gz+G.SEA+e)bad.push(s.owner+' '+s.kind);}
   R.push({name:'port-stamps-inside-footprint',ok:!bad.length,detail:bad.length?bad.length+' stamps: '+bad.slice(0,4).join(' | '):PORT_ST.list.length+' stamps inside their footprints'});}
  // the sea is where the map says it is: the bay head is on land, the SE corner is under water
- {const h1=terrainH(CITY.HEAD[0],CITY.HEAD[1]),h2=terrainH(1400,1400),h3=terrainH(-1400,-1400);
+ if(typeof CITY!=='undefined'&&CITY.HEAD){const h1=terrainH(CITY.HEAD[0],CITY.HEAD[1]),h2=terrainH(1400,1400),h3=terrainH(-1400,-1400);
   R.push({name:'coast-as-designed',ok:h1>0&&h2<-5&&h3>2,detail:'head of the bay '+h1.toFixed(1)+' m, SE corner '+h2.toFixed(1)+' m, NW corner '+h3.toFixed(1)+' m'});}
  // the tag audit
  {const t=tagAudit();R.push({name:'tags-complete',ok:t.bad===0,detail:t.bad?t.bad+' untagged: '+t.first.join(' | '):REG.length+' volumes tagged'});}
@@ -48,7 +48,15 @@ function ysChecks(){const R=[];
   R.push({name:'every-building-has-a-door',ok:!noDoor.length,detail:noDoor.length?noDoor.length+' of '+blds.length+': '+noDoor.slice(0,5).map(r=>r.name).join(' | '):blds.length+' buildings, '+MARKS.length+' marks'});
   const res=ROOMS.filter(r=>r.kind==='bedroom'||r.residence);const miss=[];
   for(const rm of res){const S=SPOTS.filter(s=>s.room===rm.id);const need=['bed','food','store'].filter(k=>!S.some(s=>s.kind===k));if(need.length)miss.push(rm.building+': '+need.join(','));}
-  R.push({name:'residence-minimum-spots',ok:!miss.length,detail:miss.length?miss.length+' rooms short: '+miss.slice(0,4).join(' | '):res.length+' residence rooms, '+SPOTS.length+' spots'});}
+  R.push({name:'residence-minimum-spots',ok:!miss.length,detail:miss.length?miss.length+' rooms short: '+miss.slice(0,4).join(' | '):res.length+' residence rooms, '+SPOTS.length+' spots'});
+  // every spot fits: its corners inside the room polygon, clear of every door (1 m swing) and of every other spot
+  const inPoly=(P,x,z)=>{let ins=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[j],b=P[i];if(((b[1]>z)!==(a[1]>z))&&(x<(a[0]-b[0])*(z-b[1])/(a[1]-b[1])+b[0]))ins=!ins;}return ins;};
+  const corners=s=>{const c=Math.cos(s.ry),sn=Math.sin(s.ry);return [[-1,-1],[1,-1],[1,1],[-1,1]].map(k=>[s.x+k[0]*s.w/2*c+k[1]*s.d/2*sn,s.z-k[0]*s.w/2*sn+k[1]*s.d/2*c]);};
+  const bad=[];for(const s of SPOTS){const rm=ROOMS[s.room];if(!rm){bad.push('spot without room');continue;}
+   if(!corners(s).every(c=>inPoly(rm.poly,c[0],c[1]))){bad.push(rm.building+' '+s.kind+' outside');continue;}
+   const hd=Math.hypot(s.w,s.d)/2;for(const d of rm.doors)if(Math.hypot(d.at[0]-s.x,d.at[1]-s.z)<hd+1.0){bad.push(rm.building+' '+s.kind+' in the door swing');break;}
+   for(const t of SPOTS){if(t===s||t.room!==s.room)continue;if(Math.hypot(t.x-s.x,t.z-s.z)<(hd+Math.hypot(t.w,t.d)/2)*.85){bad.push(rm.building+' '+s.kind+' overlaps '+t.kind);break;}}}
+  R.push({name:'spots-fit-their-rooms',ok:!bad.length,detail:bad.length?bad.length+': '+bad.slice(0,5).join(' | '):SPOTS.length+' spots inside, clear of doors and each other'});}
  return R;}
 window._api={
  BUDGET,REG,
@@ -58,7 +66,8 @@ window._api={
  defs:()=>HYK.order.map(k=>{const D=HYK.defs[k];return {key:k,name:D.name,family:D.family,tags:D.tags,w:D.w,d:D.d,h:D.h};}),
  terrainH:(x,z)=>terrainH(x,z),
  setHour:h=>{setHour(h);return YSCLOCK.hour;},
- setView:(cx,cy,cz,tx,ty,tz,h,c)=>setView(cx,cy,cz,tx,ty,tz,h,c),
+ setView:(cx,cy,cz,tx,ty,tz,h,c,i)=>setView(cx,cy,cz,tx,ty,tz,h,c,i),
+ setInside:on=>setInside(on),
  setCompass:on=>setCompass(on),
  views:()=>Object.keys(VIEWS),
 };

@@ -58,14 +58,14 @@ def srcpath(f, base=None):
 # fragment -> upstream directory (relative to the repo root)
 VENDORED = {}
 for _f in ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
-           '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html']:
+           '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html']:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
-ADAPTED = {'71-port-terrain.js', '92-camera.js'}
+ADAPTED = {'52-sky-abc.js', '71-port-terrain.js', '92-camera.js'}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
@@ -74,9 +74,10 @@ DETERMINISTIC = {
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',
     '70-port-core.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js',
-    '60-ys-registries.js', '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '99-tail.html',
+    '60-ys-registries.js', '60-hyk-mat.js', '61-hyk-shell.js', '62-hyk-helpers.js', '64-hyk-accrete.js',
+    '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
-    '84-city-geo.js', '90-ys-scene.js', '93-ys-ui.js',
+    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js',
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
