@@ -57,6 +57,30 @@ function civRooms(o){const rIn=o.rIn||.72,cx=o.cx||0,cy=o.cy||0,cz=o.cz||0,step=
     kput('boxD',[cx+c*rb,cy+y+.25+hgt/2,cz+s*rb],qEuler(0,-th,0),[1+hh*1.4,hgt,w],null);}
    if(hh>.8){const on=!(d>0&&hh<.93);kput(on?'cell':'cellD',[cx+c*R*(rIn+.02),cy+y+1.5,cz+s*R*(rIn+.02)],qFacing([c,0,s]),[.5,.7,1],on?CYAN:null);}
    if(k%5===2)for(let j=-1;j<=1;j++){const t2=th+j*.012;kput('tube',[cx+Math.cos(t2)*R*(rIn+.03),cy+y+step/2,cz+Math.sin(t2)*R*(rIn+.03)],null,[.22,step,.22],null);}}}}
+// Drop kit instances put since `mark` ({name: KIT.items[name].length}) whose
+// builder-local position fn(x,y,z) says lie in a collapse. For helpers that draw
+// rng per item (stripRing, mossOnRing): calling them whole and culling after
+// keeps every later rng draw where it was. Takes the per-type stats back out.
+function civCull(mark,fn){for(const nm in mark){const it=KIT.items[nm];const keep=it.slice(0,mark[nm]);
+ for(let i=mark[nm];i<it.length;i++){const o=it[i];if(fn(o.p[0]-KOFF[0],o.p[1]-KOFF[1],o.p[2]-KOFF[2])){const t=tcur();if(t){t.inst--;t.tris-=ktri(nm);}}else keep.push(o);}
+ KIT.items[nm]=keep;}}
+// DRAW CALLS (round 2). Every opaque Mesh under G (groups included) that shares
+// a material is merged into one, in G's frame, at the end of each civic builder.
+// Triangle-neutral, and pixel-neutral bar float rounding (positions and normals
+// are transformed, not recomputed). Transparent meshes keep their own sort.
+// What moves: repairPass/wornPass sample G's faces in mesh order, so the
+// salvage dressing at decay 3 (and the worn pass) lands on other faces.
+function civFlatten(G){G.updateMatrixWorld(true);const inv=new THREE.Matrix4().copy(G.matrixWorld).invert();const by=new Map();
+ G.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||!o.geometry||Array.isArray(o.material)||o.material.transparent)return;
+  if(!by.has(o.material))by.set(o.material,[]);by.get(o.material).push(o);});
+ const t=tcur();
+ for(const [mat,list] of by){if(list.length<2)continue;const geos=[];
+  for(const o of list){const m=inv.clone().multiply(o.matrixWorld);const g=o.geometry.index?o.geometry.clone():o.geometry.clone();g.applyMatrix4(m);geos.push(g);o.parent.remove(o);}
+  const t0=t?t.tris:0;meshMerged(geos,mat,G);if(t){t.tris=t0;t.meshes-=list.length;}}}
+// MOULDING for an arcWindowGeo(w,h) window: a half-round hood following the arch
+// and a sill under it, both proud of the window's face (+z). One kit mesh.
+function civHoodGeo(w,h){const t=new THREE.TorusGeometry(w/2+.2,.15,3,9,Math.PI);t.translate(0,h/2-w/2,.3);   // ~70 tris a window
+ return civMergeGeo([t,new THREE.BoxGeometry(w+.7,.24,.5).translate(0,-h/2-.12,.25)]);}
 // Angular distance, for sector tests.
 function civDA(a,b){const x=((a-b)%TAU+TAU)%TAU;return Math.min(x,TAU-x);}
 
@@ -117,5 +141,5 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
   if(!cut){kput('slab',[bx,H+.2,0],null,[R*1.1,.6,R*1.1],new THREE.Color(0xd8d4cc));mesh(lathe({rFn:y=>7*Math.sqrt(clamp(1-Math.pow(y/6,2),0,1)),H:6,nu:24,nv:6}),skin,B,0,H+.5,0);}
   else{rubbleRing(bx,0,0,15,26,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
   if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,28,40,2);}}
- officeC(G,d);figures(60,50,5,5);figures(190,22,3,3);KOFF=[0,0,0];return G;}
+ officeC(G,d);figures(60,50,5,5);figures(190,22,3,3);civFlatten(G);KOFF=[0,0,0];return G;}
 

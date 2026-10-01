@@ -5,13 +5,15 @@ and ticking it, not by deleting it.
 
 ## Found by the split (pre-existing in the single-file kit)
 
-- [ ] **Seed collision: Library and Campus.** `buildLibrary` calls
+- [x] **Seed collision: Library and Campus.** FIXED (civic QA, 2026-09-29): `buildCampus` is `reseed(9810+d)`; the build.py exception is gone.
+      Was: `buildLibrary` calls
       `reseed(d>0?9801:9800)` and `buildCampus` calls `reseed(9800+d)`, so the
       two share a PRNG stream: the campus's decay pattern is a copy of the
       library's. Fix by moving the campus to a free block (9810). Whitelisted in
       `build.py: SEED_COLLISION_EXCEPTIONS` so the build stays green; remove the
       entry with the fix. Not fixed in the split round because it changes output.
-- [ ] **Seed collision: Megastructure and Gate.** `buildMega` uses `9995+d` and
+- [x] **Seed collision: Megastructure and Gate.** FIXED (civic QA): `buildArc` is `reseed(9820+d)`; exception gone.
+      Was: `buildMega` uses `9995+d` and
       `buildArc` uses `9996+d`; they overlap at 9996. Same treatment — move the
       Gate to 9990 or push Mega down. Also whitelisted.
 - [x] ~~Materials built inline instead of in `MAT`.~~ The bunker berm, House F's
@@ -288,7 +290,8 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       next row, so nine row shots (skyscrapers A, B, D, E, G, H, Megastructure,
       Starport, Lab) are tighter than they were designed. They frame the
       intact, rehabilitated and ruined sites; the toppled one sits off frame.
-- [ ] The repaired pass dresses **every** type identically. A police station and
+- [ ] *Starport part DONE (civic QA: tents and water butts on its pads at decay 3).*
+      The repaired pass dresses **every** type identically. A police station and
       a cathedral-scale laboratory get the same vocabulary of lean-tos and water
       butts; some types would read better with their own accretion (a factory
       wants scrap yards, a starport wants tents on the aprons).
@@ -318,16 +321,19 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       common bond, and a fresnel rim on the glass. See NOTES.md for the three
       traps (sRGB on data maps, metalness with no envMap, clone() dropping
       onBeforeCompile).
-- [ ] No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
+- [ ] *Civic, round 2: hood-and-sill mouldings on the Government's arched windows (`civHoodGeo`) and a flared cornice on each tier. No general `moulding()` helper yet.*
+      No Gaudí bone-work yet: window mouldings, finials, bulb tops, bone-rib
       buttresses, and the `moulding(profile, path)` sweep helper they need.
-- [ ] Interiors are floor slabs only — no corridor light strips, touchpad
+- [ ] *Civic builders DONE (`civRooms()`, qa/civic.md; round 2 added the Hospital podium's ward bays); other groups open.*
+      Interiors are floor slabs only — no corridor light strips, touchpad
       panels, conduit bundles or machinery silhouettes behind the openings.
 - [x] ~~Decay is uniform rings.~~ Round 5: `rubbleRing` now banks rubble against
       the wall it fell from (same signature, so all 33 types improved at once);
       `upFaces`/`ledgePoints` sample a structure's own flat surfaces so moss
       lands only where something faces the sky and vines and water-staining come
       off real ledges. Applied to the Laboratory, Hotel and Apartments A.
-- [ ] **Glass shards in ruined window openings** — the one decay sub-item still
+- [ ] *Civic builders DONE (`civWin()`/`civShardAt()`, qa/civic.md); other groups' `kput` sites open.*
+      **Glass shards in ruined window openings** — the one decay sub-item still
       outstanding. Unlike the rest it cannot be done in a shared helper: the
       windows are `kput` directly at ~15 call sites, so it needs either a
       `deadWindow()` wrapper threaded through them or shards baked into the
@@ -336,8 +342,11 @@ exceeded ceiling as `OVER`; `--strict-budget` makes it fail.
       meeting the ground asks it. `apron()` lays a graded skirt; it is inside
       `skyPlinth`, so all eight skyscrapers have one, plus the Laboratory and
       Starport. **Remaining types still meet the ground on a hard line** — the
-      call is one line each where it is wanted.
-- [ ] Campus wings should bend (UFM); the data-centre fin row needs hatches and
+      call is one line each where it is wanted. *Civic types done (qa/civic.md):
+      aprons on Offices A, Library, Government and the Gate's feet; the rest stand
+      on berms, a hill, discs or plinths.*
+- [ ] *Civic parts DONE (qa/civic.md): data-centre hatches and ducts, the Gate crest lattice, legged robot chassis (round 1); Campus wings bend (round 2). Open: Mega warts, Skyscraper B's crown (other groups).*
+      Campus wings should bend (UFM); the data-centre fin row needs hatches and
       ducts; the Gate deck needs an organic lattice; Megastructure "Unnamed"
       wants irregular Beksiński warts; the robot chassis are placeholders;
       Skyscraper B's crown is undersized.
