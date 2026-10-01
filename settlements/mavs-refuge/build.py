@@ -17,6 +17,10 @@ Also enforces the rules that make subagent work safe:
      planner can see which fragments a subagent actually touched and confirm
      it stayed inside its contract.
 
+  4. FURNITURE. Inserts one GENERATED fragment, 52-furniture-bundle.js (never in src/): the master catalog's
+     furniture (KratorFurniture) and the interiors core with the beast-rider set (KratorInteriors), placed by
+     the glue 53-furnish.js. The fragment rules above do not apply to it (API.md, Furniture).
+
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys

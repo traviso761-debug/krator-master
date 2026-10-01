@@ -9,6 +9,8 @@ Checks (they exist because fragments share one JS scope and several agents write
   2. no column-0 const/let/var/function name is declared in two fragments, and none is one of the generic short names;
   3. every building fragment (4x-7x) declares only names carrying its own prefix (given in the fragment's first line: `// prefix: xx`);
   4. `node --check` on the concatenated script (node is present on this box; if it is not, the script says so and verify.py is the only syntax check).
+The catalog's furniture and the interiors core with this kit's interior set are one GENERATED fragment, 38-furniture-bundle.js (virtual_bodies(),
+never written to src/; the name checks skip it but its four globals must not meet a kit name). 91f-furnish.js is the glue (FURNISH, API.md).
 """
 import hashlib, json, os, re, subprocess, sys
 try: sys.stdout.reconfigure(encoding='utf-8')

@@ -27,7 +27,7 @@ reseed(646001);
       F.cyl(19.2, 1.1, 1.0, 0.18, 7.2, 0, TIMBERC[0], 'timber'); F.rod(19.2, 7.9, 1.0, 19.2, 7.3, 7.8, 0.12, TIMBERC[2], 'timber');
       F.rod(19.2, 7.2, 7.6, 19.2, 3.0, 7.6, 0.02, PAL.people.hair[2], 'timber'); F.box(18.9, 2.3, 7.3, 0.9, 0.7, 0.9, 0.3, CANVASC[3], 'canvas');
       /* the stock on the plinth: drums, salt sacks, bales */
-      for(var d=0;d<6;d++) LOCUS.drum(F, -17.5+d*0.72, 1.1, 6.6, RUSTC[d%5]);
+      for(var d=0;d<6;d++) FURNISH('pa_drum', -17.5+d*0.72,1.1,6.6, 0);                      /* the oil drums: FURNITURE (catalog pa_drum) */
       FURNISH('yuni_common_grain_sacks', 8.7,1.1,6.4, 0.2); FURNISH('yuni_common_grain_sacks', 11.5,1.1,6.4, -0.3);       /* the salt sacks: FURNITURE (catalog) */
       for(var b2=0;b2<3;b2++) F.box(-8+b2*1.2, 1.1, 6.7, 1.0, 0.8, 0.9, 0, THATCHC[b2%4], 'thatch');
       LOCUS.lantern(F, -9, 3.4, bz+D/2*0.98+0.3, 0.8, 12); LOCUS.lantern(F, 9, 3.4, bz+D/2*0.98+0.3, 0.8, 12);

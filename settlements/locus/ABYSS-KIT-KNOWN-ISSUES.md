@@ -70,17 +70,20 @@ Geometry checked against the source; file:line as of 36e1afb.
 
 ## Furniture from the catalog (Oct 2026; `API.md` "Furniture")
 
-- [ ] **Interior-set variants.** `kits/interiors/sets/abyss.js` gives no `#n` item for several variants whose building is
-      different from variant 0, so `?interiors=1` plans variant 0's rooms on them (the interiors kit's rule: no `#n`
-      item = the base item): `abyss_shop_weapons` 1 (container smithy: the shop room floats 0.75 m over the yard),
-      `abyss_shop_general` 1 (cabin), `abyss_shop_food` 1 (drum kitchen on a deck: rooms under the deck),
-      `abyss_shop_salt` 1 and `abyss_shop_sailmaker` 1 (decks at 1.1 / 0.8 m: rooms at ground level), `abyss_inn` 1
-      (pastel wings 4.2 m deep, rooms are 2.3 m container boxes), `abyss_farmhouse` 1 (lives in a drum with no floor),
-      `abyss_warehouse` 1 (containers under a sail). The builders treat these variants by what they draw (their pieces
-      are outdoor FURNISH). The set needs `#1` items or `skip`s for them (the interiors kit's owner).
-- [ ] **Drums are still geometry** (`LOCUS.drum`): the tavern bar's three barrels and the warehouse (variant 1) yard's
-      eight drums. The catalog has no single oil-drum piece (standing / lying); `abyss_scrap_stock` variant 2 is a fixed
-      group. Needed: `abyss_oil_drum` (standing, lying) or similar.
+- [x] **Interior-set variants** (fixed Oct 2026). Every multi-variant abyss building now has its own `#n` item in
+      `kits/interiors/sets/abyss.js` (`abyss_shop_weapons#1` the smithy under the sail, `_armor#1` the tin shed,
+      `_general#1` the two-storey cabin, `_alchemy#1` like variant 0, `_salvage#1` the tank store, `_salt#1` the reed shed,
+      `_sailmaker#1` the plank loft, `abyss_inn#1` 27 rooms in the pastel wings and the court, `abyss_tavern#1` the main and
+      the raised deck, `abyss_warehouse#1` the five ground containers) or a `skip` (`abyss_shop_food#1`,
+      `abyss_farmhouse#1`: drums with no floor; `kits/interiors/sets/GEOMETRY.md`), and the glue no longer falls back to
+      the base item for a variant > 0 (`API.md` "Furniture": a variant with no item is not furnished, `LOCF.unfurnished`).
+      Builder pieces that stand in the newly planned open rooms became `setting:'room'` (the variant-1 forge, the tavern's
+      raised-deck tables); the variant-1 tavern bar under the raised deck is `'indoor'` (not planned).
+- [ ] **Lying drums are still geometry** (`LOCUS.drum(..., true)`): the warehouse (variant 1) yard's two. The standing ones,
+      the tavern bar's three and the yard's six, are the catalog's `pa_drum` now (scrap culture, 'Oil drum', sealed; its
+      painted colours, not the kit's rust; each drawn drum's colour pick burnt). The catalog has no drum lying on its side.
+- [ ] `abyss_tavern` variant 1: a pile of the raised back deck stands in the bar's counter (x -4.1, z -6.0), the space under
+      the raised deck is about 1.9 m clear, and the kitchen drum rises 0.15 m through the raised deck.
 - [ ] The catalog's `abyss_hanging_lantern` carries its own 0.3 m hanger and ceiling plate: on a mast arm
       (`ABYSS.mast { lantern }`) the stub shows above the arm.
 - [ ] The propeller-lanterns on sail masts are the catalog's free-standing `abyss_propeller_mast` set 6 m down the mast,

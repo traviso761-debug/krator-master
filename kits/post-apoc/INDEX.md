@@ -27,12 +27,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `42-lg-dwell.js` | 32 **big** | large dwellings: container stack, twin silo hall (2) |
 | `44-civic.js` | 26 | civic and religious: longhouse, mess hall, big m (2) |
 | `46-shops.js` | 16 | shops: food, armour, weapons, tinker, general st (2); 4610 food shop (22); 4620 armour shop (52); 4630 weapon shop (80); 4640 tinker's shop (110); 4650 general store (140) |
-| `48-industry.js` | 24 | industry and power: smithy, wind generator, fuel (2); 4810 scrap smithy (19); 4820 wind generator (70); 4830 fuel generator (113); 4840 warehouse (154) |
-| `50-farm.js` | 29 | farm: 3 buildings (50 farm) : farm plot, farmhou (2); farmhouse: silo stair-core fused to a long plank (143); granary: four silos on a shared apron, catwalk,  (222) |
-| `52-defence.js` | 24 | defence and justice: watchtower, prisoner cages (2); watchtower (7); prisoner cages (100) |
-| `54-compound.js` | 30 **big** | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (72); the gate tower (container piers, hinged leaves,  (115); corner towers. Each returns nothing; all sockets (151); the ground plan (216); the builder (247) |
-| `56-arena.js` | 20 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
-| `58-dock.js` | 19 | DOCK (infrastructure). Land at the back (-z), ha (2) |
+| `48-industry.js` | 22 | industry and power: smithy, wind generator, fuel (2); 4810 scrap smithy (19); 4820 wind generator (58); 4830 fuel generator (100); 4840 warehouse (141) |
+| `50-farm.js` | 27 | farm: 3 buildings (50 farm) : farm plot, farmhou (2); farmhouse: silo stair-core fused to a long plank (129); granary: four silos on a shared apron, catwalk,  (203) |
+| `52-defence.js` | 22 | defence and justice: watchtower, prisoner cages (2); watchtower (7); prisoner cages (100) |
+| `54-compound.js` | 30 | WALLED COMPOUND (infrastructure + civic). Gate f (2); wall segments. Frame: x along the wall (centred) (72); the gate tower (container piers, hinged leaves,  (115); corner towers. Each returns nothing; all sockets (151); the ground plan (216); the builder (245) |
+| `56-arena.js` | 18 | THUNDERDOME ARENA (civic). Half scrap colosseum, (2) |
+| `58-dock.js` | 18 | DOCK (infrastructure). Land at the back (-z), ha (2) |
 | `89-rows.js` | 1 | the showcase table: rows of the kit, by family.  (1) |
 | `90-scene.js` | 9 | scene: renderer, sky, ground, lights, the showca (1); layout: rows by family, front (+z) toward the ca (33); (re)build the world for a culture (48) |
 | `91-probe.js` | 4 | probe (window._api): everything a headless check (1) |

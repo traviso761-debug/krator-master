@@ -58,9 +58,10 @@ reseed(655001);
       LOCUS.stair(F, 0, 6.5+H*1.15, 0,-1, H, 4.0);
       /* the bar: a cut tank on the back of the deck, a kitchen drum, barrels */
       /* the deck is the open tavern room the interior set plans: its bar, tables and benches give way to the interiors (?interiors=1) */
-      ABYSS.furn(F, 'abyss_counter', -4.0,-6.0, 0, { ly:H, variant:1, setting:'room' }); ABYSS.furn(F, 'abyss_shelf_jars', -4.0,-8.0, 0, { ly:H, setting:'room' });
+      /* (variant 1: the bar stands under the raised back deck, which abyss_tavern#1 does not plan: 'indoor', kept with ?interiors=1) */
+      ABYSS.furn(F, 'abyss_counter', -4.0,-6.0, 0, { ly:H, variant:1, setting:v?'indoor':'room' }); ABYSS.furn(F, 'abyss_shelf_jars', -4.0,-8.0, 0, { ly:H, setting:v?'indoor':'room' });
       ABYSS.vessel(F, 'drum', 5.5,H,-6.6, { r:1.0, len:4.0, col:ABYSS.rust(F), win:[[0,0]], awning:PAL.abSailRed });
-      for(var b=0;b<3;b++) LOCUS.drum(F, -8.4+b*0.7, H, -7.8, null, false);
+      for(var b=0;b<3;b++){ ABYSS.burn(F, 1); FURNISH('pa_drum', -8.4+b*0.7,H,-7.8, 0, { setting:v?'indoor':'room' }); }   /* the bar's drums: FURNITURE (catalog pa_drum; the colour pick the drawn drum took, burnt) */
       [[-5.5,-1.8],[-1.5,-2.4],[2.5,-1.8],[6.5,-2.2],[-6.0,2.4],[-2.0,3.0],[2.0,2.6],[6.2,2.8]].forEach(function(p,i){ ABYSS.furn(F, 'abyss_table_stools', p[0],p[1], i*0.7, { ly:H, variant:i%2, setting:'room' }); });
       ABYSS.furn(F, 'abyss_bench', -8.6,0, PI/2, { ly:H, variant:1, setting:'room' }); ABYSS.furn(F, 'abyss_bench', 8.6,0, -PI/2, { ly:H, variant:1, setting:'room' });
       if(v===0){ /* twin swooping sails, orange with red bands, on six masts; propeller-lanterns at the ends */
@@ -75,7 +76,7 @@ reseed(655001);
         ABYSS.mast(F, 0,-1.0, 13.0, { r:0.22, guys:0, finial:PAL.abGild, prop:true, lit:true });
         var C=[[-10,7.6,-8.4],[10,7.6,-8.4],[10,6.4,6.4],[-10,6.4,6.4]]; C.forEach(function(q){ LOCUS.pole(F, q[0],q[2], q[1], 0.14, null, PAL.abGild); });
         ABYSS.sail(F, C, PAL.abSailOrange, { swoop:1.6, peak:4.6, band:PAL.abSailOrange, bandW:0.9 });
-        ABYSS.furn(F, 'abyss_table_stools', -5,-6, 0, { ly:H2, variant:1 }); ABYSS.furn(F, 'abyss_table_stools', 0,-6.4, 0, { ly:H2 });
+        ABYSS.furn(F, 'abyss_table_stools', -5,-6, 0, { ly:H2, variant:1, setting:'room' }); ABYSS.furn(F, 'abyss_table_stools', 0,-6.4, 0, { ly:H2, setting:'room' });   /* the raised deck: a room of abyss_tavern#1 */
         [-6,0,6].forEach(function(x){ ABYSS.lantern(F, x, H+4.0, 2.0, true); }); ABYSS.lantern(F, -3, H2+3.2, -5.5, true); }
       [-4.6,4.6].forEach(function(x){ ABYSS.furn(F, 'abyss_lantern_post', x,9.2, PI, { variant:1 }); });
       ABYSS.sign(F, -3.4,H+3.4,6.6, 0,1, 1.8,1.0, 'cup'); F.cyl(-3.4,0,6.6, 0.1,H+3.4, 0, F.pick(TIMBERC), 'timber');

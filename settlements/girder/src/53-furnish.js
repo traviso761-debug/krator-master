@@ -37,6 +37,8 @@ function gfPlace(key, x, y, z, ry, o, loc){
   var rec={ key:key, variant:o.v|0, seed:o.seed||(GFURN.placed.length+1), lx:loc[0], ly:loc[1], lz:loc[2], lry:loc[3],
             x:+x.toFixed(3), y:+y.toFixed(3), z:+z.toFixed(3), ry:+wrapPi(ry).toFixed(4), building:c.id, setting:o.setting||'outdoor' };
   (c.owner.furniture||(c.owner.furniture=[])).push(rec); GFURN.placed.push(rec);
+  var A=KratorFurniture.FURN_BY_KEY[key], dm=KratorFurniture.entryDims(A, rec.variant);   /* the walk mode bumps into it */
+  if(A.anchor!=='ceiling' && A.anchor!=='surface' && A.type!=='lamp' && A.type!=='rug' && dm.h>=0.3) gwBox(rec.x, rec.y, rec.z, dm.w, dm.h, dm.d, rec.ry, 'furniture');
   if(GFURN.on){ var b=GFURN.batch.place(key, rec.x, rec.y, rec.z, rec.ry, { variant:rec.variant, seed:rec.seed, wealth:c.wealth, building:c.id, setting:rec.setting });
     if(b.error) ERR('furniture '+key+': '+b.error);
     if(!o.noLight) gfLights(b, 0.7); }

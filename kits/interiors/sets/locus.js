@@ -24,7 +24,13 @@
         doors: [{ at: [-1.2, 0.2], w: 0.95 }], program: ['cottage'] }],
       note: 'variant 0: one reed-mat room 5.4 x 4.2 on the back of a pile deck at H 2.1 (+-0.15), door at x -1.2 on the front; ' +
         'the porch under the canvas canopy and the stair are open deck. Variant 1 is the same room 5.6 wide under a canvas gable ' +
-        '(H 2.4); variant 2 (two rooms, flat roof and sail) is stilt_poor#2' },
+        '(H 2.4) is stilt_poor#1; variant 2 (two rooms, flat roof and sail) is stilt_poor#2' },
+    { key: 'stilt_poor#1', name: 'Marsh stilt house (variant 1: washed mud, canvas gable)', culture: 'eastabyss', wealth: 0.18,
+      types: ['single-family dwelling'], lot: [11, 10],
+      bodies: [{ id: 'hut', poly: rect(5.6, 4.2, 0, -1.9), y: 2.4, levels: [{ h: 2.4 }], wall: 0.2, roof: 'gable', pitch: 0.75,
+        doors: [{ at: [-1.2, 0.2], w: 0.95 }], program: ['cottage'] }],
+      note: 'the washed-mud box 5.6 x 4.2 (walls 2.6) on the pile deck at H 2.4 (+-0.15) under a canvas gable, door at x -1.2 on ' +
+        'the front; the porch and the stair are open deck (the farmstead of farm_saltrice is this house)' },
     { key: 'stilt_poor#2', name: 'Marsh stilt house (variant 2: two rooms, flat roof and sail)', culture: 'eastabyss', wealth: 0.18,
       types: ['single-family dwelling'], lot: [11, 10],
       bodies: [{ id: 'hut', poly: rect(6.6, 4.2, 0, -1.9), y: 2.0, levels: [{ h: 2.5 }], wall: 0.2, roof: 'flat',
@@ -35,13 +41,21 @@
         doors: [{ at: [0, 1.3], w: 1.1 }], program: ['living', 'kitchen', 'bedroom'] }],
       note: 'variant 0: the lime-washed body 8.6 x 6.6 on a pile deck at H 2.8 (+0.2/-0.1), the door in the middle of the front ' +
         'behind the loggia arcade; the loggia, the side verandah and the roof terrace under the sail (and its wind-catcher) are open. ' +
-        'Variant 1 (two storeys under a sail) is stilt_mid#1; variant 2 adds a 3.3 x 4.6 wing on the right (body shifted to x -1.6), ' +
-        'not planned separately' },
+        'Variant 1 (two storeys under a sail) is stilt_mid#1; variant 2 (the L-plan: a 3.3 x 4.6 wing on the right, the body shifted ' +
+        'to x -1.6) is stilt_mid#2' },
     { key: 'stilt_mid#1', name: 'Pastel stilt house (variant 1: two storeys under a sail)', culture: 'eastabyss', wealth: 0.53,
       types: ['single-family dwelling'], lot: [16, 16],
       bodies: [{ id: 'house', poly: rect(8.6, 6.6, 0, -2.0), y: 2.8, levels: [{ h: 3.1 }, { h: 2.8 }], wall: 0.3,
         roof: 'flat', doors: [{ at: [0, 1.3], w: 1.1 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }],
       note: 'the upper storey is the 8.0 x 6.0 box set 0.3 m in on every side, planned on the ground storey\'s outline (the planner fits its stair along an exterior wall of both); the loggia balcony in front of it is open' },
+    { key: 'stilt_mid#2', name: 'Pastel stilt house (variant 3: L-plan with wrapping verandah)', culture: 'eastabyss', wealth: 0.53,
+      types: ['single-family dwelling'], lot: [16, 16],
+      bodies: [{ id: 'house', poly: rect(8.6, 6.6, -1.6, -2.0), y: 2.8, levels: [{ h: 3.1 }], wall: 0.3, roof: 'flat',
+        doors: [{ at: [-1.6, 1.3], w: 1.1 }], program: ['living', 'kitchen', 'bedroom'] }],
+      rooms: [{ id: 'wing', kind: 'bedroom', poly: rect(2.7, 4.0, 4.3, -3.0), y: 2.8, h: 3.1, doors: [{ at: [2.95, -3.0], w: 0.9 }] }],
+      note: 'variant 0\'s body 8.6 x 6.6 shifted to x -1.6 (x -5.9..2.7, z -5.3..1.3) on the pile deck at H 2.8, its door mid-front ' +
+        'behind the loggia; the wing on the right (3.3 x 4.6, x 2.65..5.95, z -5.3..-0.7, windows on its front and right) has no ' +
+        'outside door: a bedroom entered through the house\'s right wall. The verandahs and the roof terrace are open' },
 
     /* ---------- Abyssal-desert canvas */
     { key: 'tent_pavilion', name: 'Great pavilion tent', culture: 'eastabyss', wealth: 0.4, types: ['prop', 'tavern/inn'], lot: [18, 14],
@@ -49,7 +63,17 @@
         doors: [{ at: [0, 4.8], w: 6, swing: 'none' }, { at: [6.8, 3.7], w: 1.6, swing: 'none' }] }],
       note: 'variant 0: the striped ridge tent, 14 x 10 between the eave poles (eaves 2.5, ridge 5.6), back wall hung, the front ' +
         'wall rolled up (one wide opening) and the right end open for 2.2 m at the front. The two ridge poles at x +-3.6 stand in the ' +
-        'hall. Variant 1 hangs the left 4.5 m of the front; variant 2 is a round bell tent r 6.0 with a 1.6 m door on +z' },
+        'hall. Variant 1 (the left 4.5 m of the front hung) is tent_pavilion#1; variant 2 (a round bell tent) tent_pavilion#2' },
+    { key: 'tent_pavilion#1', name: 'Great pavilion tent (variant 2: sand-and-rose with rolled walls)', culture: 'eastabyss', wealth: 0.4, types: ['prop', 'tavern/inn'], lot: [18, 14],
+      rooms: [{ id: 'tent', kind: 'hall', poly: rect(13.6, 9.6), y: 0.02, h: 2.4,
+        doors: [{ at: [2.25, 4.8], w: 6, swing: 'none' }, { at: [6.8, 3.7], w: 1.6, swing: 'none' }] }],
+      note: 'variant 0\'s ridge tent with the left 4.5 m of the front wall hung (x -7..-2.5): the front opening is x -2.5..7' },
+    { key: 'tent_pavilion#2', name: 'Great pavilion tent (variant 3: round bell tent)', culture: 'eastabyss', wealth: 0.4, types: ['prop', 'tavern/inn'], lot: [18, 14],
+      rooms: [{ id: 'tent', kind: 'hall', poly: SH.circle(5.7, 18), y: 0.02, h: 2.2,
+        doors: [{ at: [0, 5.613], w: 1.6, swing: 'none' }],
+        fixtures: [{ id: 'pole', kind: 'post', x: 0, z: 0, ry: 0, w: 0.4, d: 0.4, h: 2.2, reach: false }] }],
+      note: 'the bell tent: a canvas wall r 6.0, 1.9 high, the cone rising to 6.2 at the centre pole (2.3 m at r 5.7), its 1.6 m ' +
+        'door on the front. One round hall inside r 5.7 to 2.2 m; the centre pole is a fixture' },
     { key: 'sunshade_poles', name: 'Four-pole sun shade', types: ['prop'], lot: [9, 9],
       skip: 'open shade: four (or five) poles and a canvas, no walls' },
 
@@ -58,8 +82,13 @@
       bodies: [{ id: 'house', poly: rect(5.6, 4.2, 16, 5.7), y: 2.4, levels: [{ h: 2.4 }], wall: 0.2, roof: 'gable', pitch: 0.75,
         doors: [{ at: [14.8, 7.8], w: 0.95 }], program: ['cottage'] }],
       note: 'the farmstead is stilt_poor variant 1 built at (16, 7.6): its one room 5.6 x 4.2 on the deck at H 2.4. The paddies, the ' +
-        'threshing floor and the shadoof are open ground; the granary on piles is a 2.6 m reed bin (no room). Variant 1 mirrors the ' +
-        'plan (house at x -16)' },
+        'threshing floor and the shadoof are open ground; the granary on piles is a 2.6 m reed bin (no room). Variant 1 (the ' +
+        'mirrored plan, house at x -16) is farm_saltrice#1' },
+    { key: 'farm_saltrice#1', name: 'Salt-rice farm (variant 2: house to the left)', like: 'farm_saltrice',
+      bodies: [{ id: 'house', poly: rect(5.6, 4.2, -16, 5.7), y: 2.4, levels: [{ h: 2.4 }], wall: 0.2, roof: 'gable', pitch: 0.75,
+        doors: [{ at: [-17.2, 7.8], w: 0.95 }], program: ['cottage'] }],
+      note: 'the mirrored plan: the farmstead (stilt_poor variant 1, built unturned) stands at (-16, 7.6), its one room 5.6 x 4.2 on ' +
+        'the deck at H 2.4, door at x -17.2' },
 
     /* ---------- Petroleum (64-locus-petroleum.js) */
     { key: 'ind_pumpjack', name: 'Pumpjack', types: ['industry', 'infrastructure'], lot: [8, 15],

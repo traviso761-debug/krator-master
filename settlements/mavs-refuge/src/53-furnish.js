@@ -20,6 +20,7 @@ KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round
 var BRF = { on: !/[?&]furniture=0\b/.test(location.search), interiors: /[?&]interiors=1\b/.test(location.search),
             batch: KratorFurniture.batch(), placed: [], missing: {}, buildings: [], cur: null, stack: [], frame: null, lights: 0, group: null };
 BRF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, BRF.batch);
+window._brf = BRF;                                                     /* read-only, for probes and the console */
 /* the catalog recentred some harvested pieces on their footprint (F.shift(dx,dz) in the piece's build): the
    placement undoes it, so the piece stands where the builder drew it */
 var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br_h_speaker_rostrum:[0,-0.325],

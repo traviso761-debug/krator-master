@@ -364,7 +364,7 @@ function stall(f,y,lit){
   brfSkip(1); if(!chance(0.5)) brfSkip(1); brfSkip(2);              /* awning colours, timber, counter */
   for(var g=0;g<3;g++){ var k=ri(0,3); if(k===1||k===2) brfSkip(1); }  /* the goods on the counter */
   brfSkip(3); if(chance(0.5)) brfSkip(2);                             /* the crate, a barrel */
-  brfUse(f,y); FURNISH('br_market_stall',0,0,0,0,{lamp:lit?[0.7,10,false]:null});
+  brfUse(f,y); FURNISH('br_market_stall',0,0,0,0,{lamp:lit?[0.7,10,false]:null}); if(lit) ARCH.lamps++;
   ARCH.stalls++;
 }
 function bench(f,y){ brfUse(f,y); FURNISH('br_bench',0,0,0,0); }
