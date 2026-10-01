@@ -40,7 +40,7 @@ fragment only some builds want lives in `materials/opt/` instead, and a build ta
 
 | File | What | Opted in by |
 |---|---|---|
-| `opt/69a-world-uv.js` | `vWorldUV(mat,K[,Kv])`: world-unit UVs for instanced boxes, re-tiled by instance scale per face. One shader program per K | `kits/ancients`, `settlements/iziz`, `highlands`, `xanadu` |
+| `opt/69a-world-uv.js` | `vWorldUV(mat,K[,Kv])`: world-unit UVs for instanced boxes, re-tiled by instance scale per face. One shader program per K | `kits/ancients`, `settlements/iziz`, `highlands`, `xanadu`, `reedlake` |
 
 **The world-UV fix (2026-10-01).** The hook used to be a closure copied into several places (`69b-vern-mat.js` in
 Iziz, Highlands, Xanadu, Reedlake and Dalab; `izsWorldUV` in `77z-iziz-style.js`). three.js keys a compiled program
@@ -49,20 +49,25 @@ material in a page rendered at the K of whichever compiled first. Xanadu worked 
 builds the hook with `Function()`, so K is in the hook's source text (the key differs per K and survives `kbake`'s
 material clone, so `30-kit.js` needs no change), and sets `customProgramCacheKey` as well.
 
-**Still on the old closure:** `settlements/reedlake` and `settlements/dalab` keep their own `69b-vern-mat.js` (left
-out of this pass; Dalab's drift is deliberate). To move one over: delete `vWorldUV` from its `69b`, add
-`CORE_OPT_FILES` and the `srcpath`/`build_one` fallback to its `build.py` (copy them from `settlements/highlands`),
-and rebuild. `settlements/jimjam` has its own `jjWorldUV`, already keyed per K; it also scales plain meshes, so it
-is a different function.
+**Still on the old closure:** only `settlements/dalab` (its own `69b-vern-mat.js` and `71-hl-mat.js`; Dalab is
+left alone, its drift is deliberate). To move it over: delete `vWorldUV` from its `69b`, re-vendor `71-hl-mat.js`
+(whose `hWorldUV` now calls the shared hook), add `CORE_OPT_FILES` and the `srcpath`/`build_one` fallback to its
+`build.py` (copy them from `settlements/reedlake`), and rebuild. Highlands' `hWorldUV` (Ku != Kv, 71-hl-mat) was
+the same kind of closure and now calls `vWorldUV(mat,Ku,Kv)`.
+
+Checked and not affected: `settlements/jimjam` (`jjWorldUV` is already keyed per K; it also scales plain meshes, so
+it is a different function); the Voth-lineage `applyWorldUV` in girder, mavs-refuge and locus (each material sets
+`customProgramCacheKey` with its scale); port, screamers, kits/post-apoc, kits/ringsea and biomes/* have no
+world-UV hook.
 
 ### What is not here yet
 
 These material fragments drifted between builds, so they stay vendored:
-- `54-mat-concrete.js`: four versions (ancients+highlands+iziz+port+xanadu, dalab, reedlake+screamers, jimjam)
-- `69-mat-salvage.js`: three versions (ancients+dalab+highlands+iziz+port+xanadu, reedlake, screamers)
+- `54-mat-concrete.js`: three versions (ancients+highlands+iziz+jimjam+port+reedlake+xanadu, dalab, screamers)
+- `69-mat-salvage.js`: two versions (ancients+dalab+highlands+iziz+port+reedlake+xanadu, screamers)
 - the local layers `69b-vern-mat`, `71-hl-mat`, `74-rl-mat`, `69d-dalab-mat`
 
-The Ancients versions of `54` and `69` are byte-identical in six builds and belong in `materials/opt/`, but Dalab,
+The Ancients versions of `54` and `69` are byte-identical in seven builds and belong in `materials/opt/`, but Dalab,
 Port and Reedlake vendor-check them against `kits/ancients/src` and `settlements/highlands/src`: take the copies out
 of those folders and those checks report the files as missing upstream. Move them in a pass that may also change
 those builds' `build.py`.
