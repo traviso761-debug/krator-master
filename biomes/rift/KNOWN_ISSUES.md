@@ -46,7 +46,7 @@ Read before changing anything here. `build.py` prints the open count.
       bluer and more magenta than the heroes they replace (cyan columns, magenta caps: the far
       impostors' look, which the view already had in its foreground); the lobe trees' and bell
       palms' yellow-green is lost in the blobs.
-- [ ] Only one Girder tower dresses. `dress()` samples by triangle area (inherited).
+- [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
 - [ ] No fauna yet.
 
 ## Done
