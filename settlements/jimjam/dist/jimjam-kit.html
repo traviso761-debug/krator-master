@@ -1493,6 +1493,463 @@ function buildJjShopSpice(jjG,jjO){reseed(9270+(jjO.v|0));
  jjBanner(-(S.ww/2-.35),y2-1.05,fz+.06,0,{w:.5,h:1.5});
  jjReg('Spice stall',0,(S.zp+fz)/2,3.4,y2);jjReg('Spice gallery',0,fz+.5,3.8,y3,{type:['single-family dwelling']});jjReg('Spice domes',0,-1.4,3.2,y3+2);}
 JJ.def({key:'jj_shop_spice',name:'Spice and pottery',family:'shops',row:'Shops',w:8,d:8.2,h:8.6,r:5.6,tags:JJ_SHOP_TAGS('middle'),build:buildJjShopSpice});
+// Jimjam military: the fortress, the barracks and the modular wall system.
+// Seeds 9500-9599. Top-level prefixes: jjMil…, jjWallKit…, buildJjMil…, buildJjWall….
+//
+// ---- WALL SYSTEM: constants and the join rule --------------------------------------------------
+// Every wall piece is drawn by a jjWallKit…(ox,oz,ry) function about an ORIGIN on the wall's centre
+// line at grade. Its length runs along local +x and its OUTER face (the crenellated parapet) is +z.
+//  * jj_wall_seg    spans x in [-JJ_WALL_SEG_LEN/2, +JJ_WALL_SEG_LEN/2] EXACTLY: nothing in it sticks
+//                   out past its two end planes, and its merlons, corbels and pilasters repeat with a
+//                   period that divides the length. So two segments whose origins are JJ_WALL_SEG_LEN
+//                   apart along x meet face to face (no gap, no overlap) and the rhythm runs on
+//                   unbroken. The walkway top is at y = JJ_WALL_H; the core is JJ_WALL_T thick.
+//  * jj_wall_gate   is exactly JJ_WALL_GATE_SEGS segment lengths long (24 m): it takes N slots of a run.
+//                   Its end walls carry a door at walkway height, so the walkway continues through it.
+//  * jj_wall_tower  stands ON a joint (its origin is the joint point) and adds no length. Its drum
+//                   (diameter 2*JJ_WALL_TOWER_R) swallows both segment ends; doors at walkway height
+//                   open onto the walkway on -x and +x.
+//  * jj_wall_corner stands on the joint of a leg arriving along +x and a leg leaving towards -z (that
+//                   second leg is a segment with ry = +PI/2 whose origin is JJ_WALL_SEG_LEN/2 along -z).
+//                   The outer faces stay outside (+z, then +x). Doors face -x and -z.
+// A straight run is: origin_i = start + (i + 1/2) * JJ_WALL_SEG_LEN along the wall line; a gate takes
+// JJ_WALL_GATE_SEGS slots (its origin at the middle of them); towers and corners sit on the joints.
+const JJ_WALL_SEG_LEN=12,JJ_WALL_H=10,JJ_WALL_T=5,JJ_WALL_GATE_SEGS=2,JJ_WALL_TOWER_R=4.6,JJ_WALL_CORNER_R=5.6;
+
+// ---- local materials (prefixed keys on JMAT: jjBox with a material OBJECT would share one kit item
+// 'jj_box_custom' with every other custom material, so a string key is the safe way in)
+JMAT.jjMilRock=new THREE.MeshStandardMaterial({color:jjColor(0x8c7a68),roughness:1,flatShading:true});
+JMAT.jjMilSand=new THREE.MeshStandardMaterial({color:jjColor(0xc8aa80),roughness:1});
+
+// ---- geometry -------------------------------------------------------------------------------------
+const JJ_MIL_GEO={};
+// a frustum (top radius = taper * bottom), u premultiplied by 2PI like the kit's cylinders, so the
+// world-UV brick tiles by arc length
+function jjMilFrustumGeo(jjT){const jjK='fr'+jjT;if(JJ_MIL_GEO[jjK])return JJ_MIL_GEO[jjK];const jjG=new THREE.CylinderGeometry(jjT,1,1,32),jjUv=jjG.attributes.uv,jjNo=jjG.attributes.normal;for(let jjI=0;jjI<jjUv.count;jjI++)if(Math.abs(jjNo.getY(jjI))<.5)jjUv.setX(jjI,jjUv.getX(jjI)*TAU);return JJ_MIL_GEO[jjK]=jjG;}
+function jjMilFrustum(jjX,jjY,jjZ,jjR,jjH,jjTaper,jjMat,jjTint){jjPut('jjMil_fr'+jjTaper+'_'+jjMat,jjMilFrustumGeo(jjTaper),JMAT[jjMat],jjX,jjY+jjH/2,jjZ,jjR,jjH,jjR,jjTint);}
+function jjMilRing(jjX,jjY,jjZ,jjR,jjH,jjMat){jjCylinder(jjX,jjY+jjH/2,jjZ,jjR,jjH,jjMat,undefined,32);}
+// two-centred pointed arch: radius k*w, centres on the springing line. Points run left spring -> apex
+// -> right spring; grow>0 gives the concentric outer line of an archivolt.
+function jjMilArchPts(jjW,jjS,jjN,jjGrow){const jjR=.8*jjW,jjC=jjR-jjW/2,jjRg=jjR+(jjGrow||0),jjTa=Math.acos(-jjC/jjRg),jjOut=[];
+ for(let jjI=0;jjI<=jjN;jjI++){const jjT=Math.PI+(jjTa-Math.PI)*jjI/jjN;jjOut.push([jjC+jjRg*Math.cos(jjT),jjS+jjRg*Math.sin(jjT)]);}
+ for(let jjI=jjN-1;jjI>=0;jjI--)jjOut.push([-jjOut[jjI][0],jjOut[jjI][1]]);return jjOut;}
+function jjMilArchY(jjW,jjS,jjX){const jjR=.8*jjW,jjC=jjR-jjW/2,jjA=Math.abs(jjX)+jjC;return jjA>=jjR?jjS:jjS+Math.sqrt(jjR*jjR-jjA*jjA);}
+function jjMilArchHalfW(jjW,jjS,jjY){if(jjY<=jjS)return jjW/2;const jjR=.8*jjW,jjC=jjR-jjW/2,jjD=jjY-jjS;return jjD>=jjR?0:Math.max(0,Math.sqrt(jjR*jjR-jjD*jjD)-jjC);}
+// a wall slab jjWs wide and jjH tall with a pointed opening jjW wide springing at jjS, jjDepth thick (centred in z)
+function jjMilSlabGeo(jjWs,jjH,jjW,jjS,jjDepth){const jjK=['slab',jjWs,jjH,jjW,jjS,jjDepth].join('_');if(JJ_MIL_GEO[jjK])return JJ_MIL_GEO[jjK];
+ const jjSh=new THREE.Shape();jjSh.moveTo(-jjWs/2,0);jjSh.lineTo(-jjW/2,0);for(const jjP of jjMilArchPts(jjW,jjS,14))jjSh.lineTo(jjP[0],jjP[1]);jjSh.lineTo(jjW/2,0);jjSh.lineTo(jjWs/2,0);jjSh.lineTo(jjWs/2,jjH);jjSh.lineTo(-jjWs/2,jjH);jjSh.closePath();
+ const jjG=new THREE.ExtrudeGeometry(jjSh,{depth:jjDepth,bevelEnabled:false});jjG.translate(0,0,-jjDepth/2);return JJ_MIL_GEO[jjK]=jjG;}
+// a marble archivolt with its jambs: the band between the opening and a line jjF outside it
+function jjMilArchRingGeo(jjW,jjS,jjF,jjDepth){const jjK=['ring',jjW,jjS,jjF,jjDepth].join('_');if(JJ_MIL_GEO[jjK])return JJ_MIL_GEO[jjK];
+ const jjSh=new THREE.Shape();jjSh.moveTo(-jjW/2-jjF,0);for(const jjP of jjMilArchPts(jjW,jjS,14,jjF))jjSh.lineTo(jjP[0],jjP[1]);jjSh.lineTo(jjW/2+jjF,0);jjSh.lineTo(jjW/2,0);for(const jjP of jjMilArchPts(jjW,jjS,14).reverse())jjSh.lineTo(jjP[0],jjP[1]);jjSh.lineTo(-jjW/2,0);jjSh.closePath();
+ const jjG=new THREE.ExtrudeGeometry(jjSh,{depth:jjDepth,bevelEnabled:false});jjG.translate(0,0,-jjDepth/2);return JJ_MIL_GEO[jjK]=jjG;}
+
+// sock() ignores JJ.frame (it reads only CM), so a banner inside jjWithYaw lands unrotated: carry the
+// frame through by hand
+function jjMilSock(jjType,jjX,jjY,jjZ,jjRy,jjO){if(JJ.frame){const jjV=new THREE.Vector3(jjX,jjY,jjZ).applyMatrix4(JJ.frame),jjA=new THREE.Vector3(1,0,0).transformDirection(JJ.frame);return sock(jjType,jjV.x,jjV.y,jjV.z,(jjRy||0)+Math.atan2(-jjA.z,jjA.x),jjO||{});}return sock(jjType,jjX,jjY,jjZ,jjRy||0,jjO||{});}
+
+// ---- vocabulary ---------------------------------------------------------------------------------------
+// merlons along x (period about 2 m, dividing jjL exactly), base at jjY
+function jjMilMerlons(jjX,jjY,jjZ,jjL,jjD,jjH,jjMat){const jjN=Math.max(1,Math.round(jjL/2)),jjP=jjL/jjN;for(let jjK=0;jjK<jjN;jjK++){const jjXX=jjX-jjL/2+jjP*(jjK+.5);jjBox(jjXX,jjY+jjH/2,jjZ,jjP*.55,jjH,jjD,jjMat||'brick');jjBox(jjXX,jjY+jjH+.07,jjZ,jjP*.55+.12,.14,jjD+.12,'marble');}}
+// a ring of merlons on a round parapet (base jjY, radius to the merlon centres)
+function jjMilMerlonRing(jjX,jjY,jjZ,jjR,jjH){const jjN=Math.max(8,Math.round(TAU*jjR/2.1));jjMilRing(jjX,jjY,jjZ,jjR+.3,.9,'brick');jjMilRing(jjX,jjY+.9,jjZ,jjR+.36,.12,'marble');for(let jjI=0;jjI<jjN;jjI++){const jjA=jjI*TAU/jjN;jjBox(jjX+Math.cos(jjA)*jjR,jjY+1.02+jjH/2,jjZ+Math.sin(jjA)*jjR,TAU*jjR/jjN*.5,jjH,.62,'brick',undefined,-jjA-Math.PI/2);}}
+// a thick staged round tower (image 2 massing): tapering brick stages, each headed by a corbel, a
+// yellow course and a flared marble ring; a merlon crown; a cap. Windows: o.wins=[[stage,angle,yFrac],…]
+// (angle 0 = +x, PI/2 = +z). Returns {y,r} of the top platform.
+function jjMilTower(jjX,jjY,jjZ,jjR,jjO){jjO=jjO||{};const jjSt=jjO.stages||[12,6],jjTap=jjO.taper||.93,jjStep=jjO.step||.8,jjMat=jjO.mat||'brick';let jjRR=jjR,jjYY=jjY;
+ jjMilRing(jjX,jjY,jjZ,jjR*1.07,1.4,'brickDeep');jjMilRing(jjX,jjY+1.4,jjZ,jjR*1.04,.24,'brickYellow');
+ for(let jjI=0;jjI<jjSt.length;jjI++){const jjH=jjSt[jjI],jjRT=jjRR*jjTap,jjY0=jjYY;jjMilFrustum(jjX,jjY0,jjZ,jjRR,jjH,jjTap,jjMat);
+  for(const jjF of jjH>9?[.36,.7]:[.5]){const jjRm=jjRR+(jjRT-jjRR)*jjF;jjMilRing(jjX,jjY0+jjH*jjF-.14,jjZ,jjRm*1.012+.02,.28,'brickYellow');}
+  for(const jjW of (jjO.wins||[]))if(jjW[0]===jjI){const jjA=jjW[1],jjYw=jjY0+jjH*(jjW[2]||.5),jjRw=jjRR+(jjRT-jjRR)*(jjYw-jjY0)/jjH,jjC=Math.cos(jjA),jjS=Math.sin(jjA),jjRy=Math.PI/2-jjA;
+   jjBox(jjX+jjC*jjRw,jjYw,jjZ+jjS*jjRw,.95,1.75,.3,'brickYellow',undefined,jjRy);jjBox(jjX+jjC*(jjRw+.12),jjYw-.05,jjZ+jjS*(jjRw+.12),.5,1.35,.12,jjO.lit?'glass':'dark',undefined,jjRy);jjBox(jjX+jjC*(jjRw+.12),jjYw-.85,jjZ+jjS*(jjRw+.12),1.05,.14,.36,'marble',undefined,jjRy);}
+  jjMilFrustum(jjX,jjY0+jjH-.55,jjZ,jjRT,.55,1.1,'brickYellow');jjMilRing(jjX,jjY0+jjH,jjZ,jjRT*1.07+.16,.34,'marble');
+  jjYY=jjY0+jjH+.34;jjRR=jjI<jjSt.length-1?jjRT*jjStep:jjRT;}
+ const jjTop=jjYY;if(jjO.crenel!==false)jjMilMerlonRing(jjX,jjTop,jjZ,jjRR*1.04,1.1);
+ const jjCap=jjO.cap||'gold';
+ if(jjCap==='cone'){jjMilRing(jjX,jjTop,jjZ,jjRR*.72,1.6,'brickYellow');jjMilFrustum(jjX,jjTop+1.6,jjZ,jjRR*.86,jjRR*1.7,0,'slate');jjCylinder(jjX,jjTop+1.6+jjRR*1.7+.5,jjZ,.06,1,'gold');}
+ else if(jjCap!=='none'){const jjDr=jjRR*(jjO.domeR||.7);jjMilRing(jjX,jjTop,jjZ,jjDr*1.02,1.7,'brickYellow');jjMilRing(jjX,jjTop+1.7,jjZ,jjDr*1.1,.22,'marble');jjDome(jjX,jjTop+1.92,jjZ,jjDr,{kind:jjCap,shape:jjO.shape||'onion'});}
+ return{y:jjTop,r:jjRR};}
+// a corbelled bartizan (the small bulbous turrets clustered on image 2's flanks); base of the drum at jjY
+function jjMilBartizan(jjX,jjY,jjZ,jjR,jjKind){jjMilFrustum(jjX,jjY-1.7,jjZ,jjR*.3,1.7,1/.3,'brickYellow');jjMilFrustum(jjX,jjY,jjZ,jjR,2.4,.95,'brick');jjMilRing(jjX,jjY+2.4,jjZ,jjR*1.08,.2,'marble');jjDome(jjX,jjY+2.6,jjZ,jjR*.98,{kind:jjKind||'gold',shape:'onion'});}
+// a battered curtain wall along x, centred on (jjX,jjZ), outer face +z, walkway top at jjY+jjH.
+// Everything stays inside x in [jjX-jjL/2, jjX+jjL/2]; every repeat divides jjL (the wall join rule).
+function jjMilCurtain(jjX,jjY,jjZ,jjL,jjH,jjT){const jjF=jjZ+jjT/2,jjB=jjZ-jjT/2,jjN=Math.max(1,Math.round(jjL/2)),jjP=jjL/jjN,jjM=Math.max(1,Math.round(jjL/6)),jjQ=jjL/jjM;
+ jjBox(jjX,jjY+.9,jjZ,jjL,1.8,jjT+1.4,'brickDeep');jjBox(jjX,jjY+2.3,jjZ,jjL,1,jjT+.7,'brickDeep');jjBox(jjX,jjY+2.86,jjZ,jjL,.12,jjT+.76,'brickYellow');
+ jjBox(jjX,jjY+(jjH-.14)/2,jjZ,jjL,jjH-.14,jjT,'brick');
+ for(const jjYY of [4.2,7.2])if(jjYY<jjH-1.5)jjBox(jjX,jjY+jjYY,jjZ,jjL,.28,jjT+.1,'brickYellow');
+ jjBox(jjX,jjY+jjH-.07,jjZ,jjL,.14,jjT,'brickYellow',jjColor(0xf0e2cc));
+ // machicolation: a marble course on corbels below the parapet, outer face only
+ jjBox(jjX,jjY+jjH-.25,jjF+.3,jjL,.5,.6,'marble');
+ for(let jjK=0;jjK<jjN;jjK++)jjBox(jjX-jjL/2+jjP*(jjK+.5),jjY+jjH-.95,jjF+.22,.5,.9,.44,'brickYellow');
+ // outer parapet with merlons (arrow slit in each)
+ jjBox(jjX,jjY+jjH+.55,jjF-.15,jjL,1.1,.9,'brick');jjBox(jjX,jjY+jjH+1.16,jjF-.15,jjL,.12,1.0,'marble');
+ jjMilMerlons(jjX,jjY+jjH+1.22,jjF-.15,jjL,.9,1.2,'brick');
+ for(let jjK=0;jjK<jjN;jjK++)jjBox(jjX-jjL/2+jjP*(jjK+.5),jjY+jjH+1.85,jjF+.31,.13,.7,.04,'dark');
+ // inner kerb with a marble rail
+ jjBox(jjX,jjY+jjH+.3,jjB+.2,jjL,.6,.4,'brick');jjBox(jjX,jjY+jjH+.65,jjB+.2,jjL,.1,.5,'marble');
+ // inner pilasters and outer arrow slits on the 6 m rhythm
+ for(let jjK=0;jjK<jjM;jjK++){const jjXX=jjX-jjL/2+jjQ*(jjK+.5);jjBox(jjXX,jjY+(jjH-.6)/2,jjB-.3,1.3,jjH-.6,.6,'brick');jjBox(jjXX,jjY+jjH-.48,jjB-.35,1.5,.24,.75,'marble');
+  jjBox(jjXX,jjY+jjH*.56,jjF+.03,.2,1.6,.06,'dark');jjBox(jjXX,jjY+jjH*.56-.88,jjF+.06,.6,.14,.14,'marble');jjBox(jjXX,jjY+jjH*.56+.88,jjF+.06,.6,.14,.14,'marble');}}
+// a gate block jjL long (x), jjT thick (z), jjH tall, with a pointed passage jjOw wide springing at jjS:
+// the pierced slab, the side blocks, footing, courses, marble archivolts on both faces, a paved passage,
+// a half-raised portcullis near the outer face and the two leaves standing open inside.
+function jjMilGateBlock(jjX,jjY,jjZ,jjL,jjT,jjH,jjOw,jjS,jjO){jjO=jjO||{};const jjWs=jjOw+3.6,jjSw=(jjL-jjWs)/2,jjF=jjZ+jjT/2,jjB=jjZ-jjT/2,jjApex=jjMilArchY(jjOw,jjS,0);
+ jjMesh(jjMilSlabGeo(jjWs,jjH,jjOw,jjS,jjT),JMAT.brick,jjX,jjY,jjZ,0);
+ for(const jjSg of [-1,1]){jjBox(jjX+jjSg*(jjWs/2+jjSw/2),jjY+jjH/2,jjZ,jjSw,jjH,jjT,'brick');const jjFw=jjL/2-jjOw/2;jjBox(jjX+jjSg*(jjOw/2+jjFw/2),jjY+.9,jjZ,jjFw,1.8,jjT+1.4,'brickDeep');jjBox(jjX+jjSg*(jjOw/2+jjFw/2),jjY+2.3,jjZ,jjFw,1,jjT+.7,'brickDeep');}
+ // yellow courses, cut round the archivolt where they would cross the opening
+ for(const jjYY of (jjO.courses||[4.2,7.2,10])){if(jjYY>jjH-.5)continue;const jjHw=jjYY<jjApex+.8?jjMilArchHalfW(jjOw,jjS,jjYY)+.75:0;if(jjHw<=0){jjBox(jjX,jjY+jjYY,jjZ,jjL,.28,jjT+.1,'brickYellow');continue;}const jjLw=jjL/2-jjHw;for(const jjSg of [-1,1])jjBox(jjX+jjSg*(jjHw+jjLw/2),jjY+jjYY,jjZ,jjLw,.28,jjT+.1,'brickYellow');}
+ jjMesh(jjMilArchRingGeo(jjOw,jjS,.7,.5),JMAT.marble,jjX,jjY,jjF+.2,0);jjMesh(jjMilArchRingGeo(jjOw,jjS,.7,.5),JMAT.marble,jjX,jjY,jjB-.2,0);
+ jjBox(jjX,jjY+.06,jjZ,jjOw,.12,jjT+1.6,'brickYellow',jjColor(0xe6d6c0));
+ // portcullis, raised to jjPy: iron bars clipped to the arch line, spiked feet
+ const jjZp=jjF-1.1,jjPy=jjY+(jjO.portY||jjS*.55);for(let jjXb=-jjOw/2+.3;jjXb<=jjOw/2-.25;jjXb+=.5){const jjTop=jjY+jjMilArchY(jjOw,jjS,jjXb)-.06;jjBeam([jjX+jjXb,jjPy-.35,jjZp],[jjX+jjXb,jjTop,jjZp],.055,'iron');}
+ for(let jjYb=jjPy+.15;jjYb<jjY+jjApex-.4;jjYb+=.62){const jjHw=jjMilArchHalfW(jjOw,jjS,jjYb-jjY)-.05;jjBeam([jjX-jjHw,jjYb,jjZp],[jjX+jjHw,jjYb,jjZp],.05,'iron');}
+ jjBox(jjX-jjOw/2-.02,jjY+jjS/2,jjZp,.2,jjS,.3,'dark');jjBox(jjX+jjOw/2+.02,jjY+jjS/2,jjZp,.2,jjS,.3,'dark');
+ for(const jjSg of [-1,1]){jjBox(jjX+jjSg*(jjOw/2-.1),jjY+jjS*.48,jjB+.6+jjOw/4,.14,jjS*.96,jjOw/2,'wood');for(const jjYs of [.25,.7])jjBox(jjX+jjSg*(jjOw/2-.19),jjY+jjS*jjYs,jjB+.6+jjOw/4,.05,.14,jjOw/2,'iron');}
+ return jjApex;}
+
+// ---- wall pieces (each takes an origin and a yaw; see the join rule at the top) -----------------------
+function jjWallKitSeg(jjOx,jjOz,jjRy){jjWithYaw(jjOx,0,jjOz,jjRy,()=>{jjMilCurtain(jjOx,0,jjOz,JJ_WALL_SEG_LEN,JJ_WALL_H,JJ_WALL_T);jjReg('Wall segment',jjOx,jjOz,JJ_WALL_SEG_LEN/2,JJ_WALL_H+2.5,{part:'wall segment'});});}
+function jjWallKitTower(jjOx,jjOz,jjRy){jjWithYaw(jjOx,0,jjOz,jjRy,()=>{const jjR=JJ_WALL_TOWER_R,jjS0=JJ_WALL_H+4.6,jjTap=.93;
+ const jjT=jjMilTower(jjOx,0,jjOz,jjR,{stages:[jjS0,5.2],taper:jjTap,cap:'slate',shape:'onion',wins:[[0,Math.PI/2,.36],[0,Math.PI/2,.86],[0,-Math.PI/2,.86],[1,Math.PI/2],[1,Math.PI/6],[1,Math.PI*5/6],[1,-Math.PI/2]]});
+ // doors onto the walkway, both sides, sill at the walkway top
+ const jjRh=jjR*(1-(1-jjTap)*JJ_WALL_H/jjS0);for(const jjSg of [-1,1]){jjDoor(jjOx+jjSg*(jjRh-.06),JJ_WALL_H,jjOz,1.25,2.35,jjSg*Math.PI/2,{mat:'dark'});jjBox(jjOx+jjSg*(jjRh+.05),JJ_WALL_H+2.75,jjOz,.3,.2,1.9,'marble');}
+ jjMilSock('banner',jjOx,jjT.y-1.2,jjOz+jjT.r*1.16+.1,0,{w:1.1,h:3.4});
+ jjReg('Wall tower',jjOx,jjOz,jjR,jjT.y+5,{part:'wall tower'});});}
+function jjWallKitGate(jjOx,jjOz,jjRy){jjWithYaw(jjOx,0,jjOz,jjRy,()=>{const jjL=JJ_WALL_SEG_LEN*JJ_WALL_GATE_SEGS,jjT=8,jjH=14,jjOw=5.2,jjS=4.4,jjF=jjOz+jjT/2,jjB=jjOz-jjT/2,jjX=jjOx;
+ const jjApex=jjMilGateBlock(jjX,0,jjOz,jjL,jjT,jjH,jjOw,jjS,{courses:[4.2,7.2,10]});
+ // crown: parapets and merlons on all four edges
+ for(const jjZz of [jjF-.45,jjB+.45]){jjBox(jjX,jjH+.55,jjZz,jjL,1.1,.9,'brick');jjMilMerlons(jjX,jjH+1.1,jjZz,jjL,.9,1.2,'brick');}
+ for(const jjSg of [-1,1]){jjBox(jjX+jjSg*(jjL/2-.45),jjH+.55,jjOz,.9,1.1,jjT-1.8,'brick');jjWithYaw(jjX+jjSg*(jjL/2-.45),0,jjOz,Math.PI/2,()=>jjMilMerlons(jjX+jjSg*(jjL/2-.45),jjH+1.1,jjOz,jjT-2,.9,1.2,'brick'));}
+ jjBox(jjX,jjH-.4,jjF+.3,jjL,.5,.6,'marble');jjBox(jjX,jjH-.4,jjB-.3,jjL,.5,.6,'marble');
+ // doors from the walkway into the gatehouse, in both end walls (the walkway top is JJ_WALL_H)
+ for(const jjSg of [-1,1])jjDoor(jjX+jjSg*(jjL/2),JJ_WALL_H,jjOz,1.25,2.35,jjSg*Math.PI/2,{mat:'dark'});
+ // a box machicolation over the gateway, between the spires
+ jjBox(jjX,10.9+.8,jjF+.6,5.6,1.6,1.2,'brick');jjBox(jjX,12.62,jjF+.65,5.9,.24,1.4,'marble');for(const jjXc of [-2.2,0,2.2]){jjBox(jjX+jjXc,10.45,jjF+.5,.5,.9,1,'brickYellow');jjBox(jjX+jjXc,11.75,jjF+1.22,.14,.7,.04,'dark');}
+ // gold sun boss over the apex
+ jjPut('jjMil_disc',new THREE.CylinderGeometry(1,1,1,24),JMAT.gold,jjX,jjApex+1.22,jjF+.5,.42,.12,.42,undefined,qEuler(Math.PI/2,0,0));
+ // the two thick flanking spires, standing proud of the outer face
+ for(const jjSg of [-1,1]){const jjSx=jjX+jjSg*6.4,jjSz=jjF-.4;const jjTp=jjMilTower(jjSx,0,jjSz,3.5,{stages:[16.4,6,4.4],taper:.93,step:.8,cap:'gold',shape:'onion',wins:[[0,Math.PI/2,.62],[0,Math.PI/2-jjSg*.7,.93],[1,Math.PI/2],[1,Math.PI/2+jjSg*1.4],[2,Math.PI/2]]});
+  jjMilSock('banner',jjSx,13.9,jjSz+3.5*(1-.07*13.9/16.4)+.06,0,{w:1.4,h:4.6});if(jjSg>0)jjMilBartizan(jjSx+3.0,16.9,jjSz-1.6,1.05,'gold');else jjMilBartizan(jjSx-3.0,16.9,jjSz-1.6,1.05,'gold');}
+ jjReg('Wall gate',jjX,jjOz,jjL/2,jjH+2.5,{part:'wall gate'});jjReg('Gate spire',jjX-6.4,jjF-.4,3.5,31,{part:'gate spire'});jjReg('Gate spire',jjX+6.4,jjF-.4,3.5,31,{part:'gate spire'});});}
+function jjWallKitCorner(jjOx,jjOz,jjRy){jjWithYaw(jjOx,0,jjOz,jjRy,()=>{const jjR=JJ_WALL_CORNER_R,jjS0=JJ_WALL_H+5.4,jjTap=.93,jjQ=Math.PI/4;
+ const jjT=jjMilTower(jjOx,0,jjOz,jjR,{stages:[jjS0,6,4.2],taper:jjTap,cap:'gold',shape:'onion',wins:[[0,jjQ,.4],[0,jjQ,.88],[1,0],[1,Math.PI/2],[1,jjQ],[2,jjQ],[2,-3*jjQ]]});
+ const jjRh=jjR*(1-(1-jjTap)*JJ_WALL_H/jjS0);
+ jjDoor(jjOx-jjRh+.06,JJ_WALL_H,jjOz,1.25,2.35,-Math.PI/2,{mat:'dark'});jjDoor(jjOx,JJ_WALL_H,jjOz-jjRh+.06,1.25,2.35,Math.PI,{mat:'dark'});
+ // a pair of bartizans on the outer flanks
+ for(const jjA of [jjQ*.45,jjQ*1.55]){const jjRr=jjR*(1-(1-jjTap)*13/jjS0)+.55;jjMilBartizan(jjOx+Math.cos(jjA)*jjRr,13,jjOz+Math.sin(jjA)*jjRr,1.15,'gold');}
+ jjMilSock('banner',jjOx+Math.cos(jjQ)*(jjR*.94+.2),jjS0-1.2,jjOz+Math.sin(jjQ)*(jjR*.94+.2),jjQ,{w:1.3,h:4.2});
+ jjReg('Wall corner tower',jjOx,jjOz,jjR,jjT.y+6,{part:'corner tower'});});}
+
+function buildJjWallSeg(jjG,jjO){reseed(9530+(jjO.v|0));jjWallKitSeg(0,0,0);}
+function buildJjWallTower(jjG,jjO){reseed(9540+(jjO.v|0));jjWallKitTower(0,0,0);}
+function buildJjWallGate(jjG,jjO){reseed(9550+(jjO.v|0));jjWallKitGate(0,0,0);}
+function buildJjWallCorner(jjG,jjO){reseed(9560+(jjO.v|0));jjWallKitCorner(0,0,0);}
+// demo run: segment · tower · segment · gate · segment · corner · segment, built ONLY by calling the
+// piece functions at offsets on the join grid (no copied geometry)
+const JJ_WALL_RUN_X0=-33,JJ_WALL_RUN_Z=5.5;
+function buildJjWallRun(jjG,jjO){reseed(9570+(jjO.v|0));const jjL=JJ_WALL_SEG_LEN,jjZ=JJ_WALL_RUN_Z;let jjX=JJ_WALL_RUN_X0;
+ jjWallKitSeg(jjX+jjL/2,jjZ,0);jjX+=jjL;
+ jjWallKitTower(jjX,jjZ,0);
+ jjWallKitSeg(jjX+jjL/2,jjZ,0);jjX+=jjL;
+ jjWallKitGate(jjX+jjL*JJ_WALL_GATE_SEGS/2,jjZ,0);jjX+=jjL*JJ_WALL_GATE_SEGS;
+ jjWallKitSeg(jjX+jjL/2,jjZ,0);jjX+=jjL;
+ jjWallKitCorner(jjX,jjZ,0);
+ jjWallKitSeg(jjX,jjZ-jjL/2,Math.PI/2);}
+
+// ---- fortress -----------------------------------------------------------------------------------------
+function buildJjMilFortress(jjG,jjO){reseed(9500+(jjO.v|0));const jjP=4.1,jjWx=38,jjWz=30,jjH=14,jjT=6;
+ // rocky brick plinth, battered in three steps, a pale paved top
+ jjBox(0,1.2,0,100,2.4,84,'brickDeep');jjBox(0,3,0,98,1.2,82,'brickDeep');jjBox(0,3.75,0,97.2,.3,81.2,'marble');jjBox(0,3.98,0,96,.24,80,'brickYellow',jjColor(0xf2e4cc));
+ for(let jjI=0;jjI<70;jjI++){const jjU=rng(),jjS=rr(1.4,3.6);let jjX,jjZ;if(jjU<.5){jjX=rr(-50,50);jjZ=(jjI%2?1:-1)*(42+jjS*.35);if(jjZ>0&&Math.abs(jjX)<9)jjX+=jjX<0?-10:10;}else{jjZ=rr(-42,42);jjX=(jjI%2?1:-1)*(50+jjS*.35);}
+  jjPut('jjMil_rock',new THREE.IcosahedronGeometry(1,0),JMAT.jjMilRock,jjX,jjS*.32,jjZ,jjS,jjS*rr(.55,.9),jjS*rr(.7,1.1),undefined,qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)));}
+ // marble stairs from grade to the plinth, centred on the gate, with brick cheek walls
+ jjStairs(0,0,46,13,8,jjP,12,0,{mat:'marble'});for(const jjSg of [-1,1]){jjBox(jjSg*7.2,1.6,46.8,1.3,3.2,6.4,'brickDeep');jjBox(jjSg*7.2,jjP-.25,43.2,1.3,1.3,2.4,'brickDeep');jjBox(jjSg*7.2,jjP+.45,43.2,1.5,.14,2.6,'marble');}
+ // curtain walls (outer faces out), the front pair split by the gatehouse
+ jjMilCurtain(-23.5,jjP,jjWz,29,jjH,jjT);jjMilCurtain(23.5,jjP,jjWz,29,jjH,jjT);
+ jjWithYaw(0,jjP,-jjWz,Math.PI,()=>jjMilCurtain(0,jjP,-jjWz,76,jjH,jjT));
+ jjWithYaw(-jjWx,jjP,0,-Math.PI/2,()=>jjMilCurtain(-jjWx,jjP,0,60,jjH,jjT));jjWithYaw(jjWx,jjP,0,Math.PI/2,()=>jjMilCurtain(jjWx,jjP,0,60,jjH,jjT));
+ // gatehouse with a pointed arch and portcullis, crenellated, flanked by two round towers
+ const jjGz=jjWz,jjGT=10,jjGH=17,jjApex=jjMilGateBlock(0,jjP,jjGz,18,jjGT,jjGH,6,5,{courses:[4.2,7.2,11.5,14]});
+ for(const jjZz of [jjGz+jjGT/2-.45,jjGz-jjGT/2+.45]){jjBox(0,jjP+jjGH+.55,jjZz,18,1.1,.9,'brick');jjMilMerlons(0,jjP+jjGH+1.1,jjZz,18,.9,1.3,'brick');}
+ jjBox(0,jjP+jjGH-.4,jjGz+jjGT/2+.3,18,.5,.6,'marble');
+ jjPut('jjMil_disc',new THREE.CylinderGeometry(1,1,1,24),JMAT.gold,0,jjP+jjApex+1.75,jjGz+jjGT/2+.5,.95,.14,.95,undefined,qEuler(Math.PI/2,0,0));
+ jjMilSock('banner',0,jjP+jjGH-1,jjGz+jjGT/2+.62,0,{w:2.2,h:4.2});
+ for(const jjSg of [-1,1])for(const jjYl of [3.4])jjBox(jjSg*4.3,jjP+jjYl,jjGz+jjGT/2+.25,.4,.55,.35,'glow');
+ for(const jjSg of [-1,1]){const jjTx=jjSg*11.6,jjTz=jjGz+2.6;jjMilTower(jjTx,jjP,jjTz,5.4,{stages:[21,7],taper:.93,cap:'gold',shape:'onion',lit:true,wins:[[0,Math.PI/2,.45],[0,Math.PI/2,.8],[0,Math.PI/2+jjSg*.9,.62],[1,Math.PI/2],[1,Math.PI/2+jjSg*1.2]]});jjMilSock('banner',jjTx,jjP+16,jjTz+5.4*(1-.07*16/21)+.06,0,{w:1.6,h:5});}
+ // four massive corner towers: staged, marble rings, gold caps at the front, slate at the back
+ const jjCorners=[[-jjWx,jjWz,'gold',Math.PI*.75],[jjWx,jjWz,'gold',Math.PI*.25],[-jjWx,-jjWz,'slate',-Math.PI*.75],[jjWx,-jjWz,'slate',-Math.PI*.25]];
+ for(const jjC of jjCorners){const jjA=jjC[3];const jjTp=jjMilTower(jjC[0],jjP,jjC[1],7.6,{stages:[22,7.5,5],taper:.92,step:.8,cap:jjC[2],shape:jjC[2]==='gold'?'onion':'ribbed',domeR:.74,lit:true,wins:[[0,jjA,.3],[0,jjA,.62],[0,jjA,.9],[0,jjA+.6,.78],[0,jjA-.6,.78],[1,jjA],[1,jjA+1.2],[1,jjA-1.2],[2,jjA],[2,jjA+Math.PI]]});
+  const jjRr=7.6*(1-.08*15/22)+.6;for(const jjD of [-.75,.75])jjMilBartizan(jjC[0]+Math.cos(jjA+jjD)*jjRr,jjP+15,jjC[1]+Math.sin(jjA+jjD)*jjRr,1.25,jjC[2]==='gold'?'gold':'slate');
+  jjReg('Fortress tower',jjC[0],jjC[1],7.6,jjTp.y-jjP+8,{part:'tower'});}
+ // inner ranges against the side curtains, facing the court
+ for(const jjSg of [-1,1])jjWithYaw(jjSg*29.5,jjP,0,-jjSg*Math.PI/2,()=>{const jjX=jjSg*29.5,jjZ=0;jjBox(jjX,jjP+4.5,jjZ,40,9,7,'brick');jjBox(jjX,jjP+4.6,jjZ+3.55,40.2,.3,.2,'brickYellow');jjBox(jjX,jjP+9.15,jjZ,40.6,.3,7.6,'marble');jjMilMerlons(jjX,jjP+9.3,jjZ+3.45,40,.5,.9,'brick');
+  for(let jjI=0;jjI<8;jjI++){const jjXx=jjX-17.5+jjI*5;if(jjI%3===1)jjDoor(jjXx,jjP,jjZ+3.5,1.6,2.6,0,{mat:'dark'});else jjWindow(jjXx,jjP+2.2,jjZ+3.5,.9,1.4,0,{lit:true});jjWindow(jjXx,jjP+6.6,jjZ+3.5,.9,1.5,0,{lit:true});}});
+ // the keep: a banded brick block on its own platform, cornice and crenels, corner turrets, a gold dome
+ const jjK0=jjP+2.4,jjKz=-11;jjPlinth(0,jjP,-10,36,2.4,28,0,{mat:'brickDeep',band:true});jjStairs(0,jjP,5.8,10,3.6,2.4,6,0,{mat:'marble'});
+ jjBox(0,jjK0+10,jjKz,26,20,20,'bandBrick');for(const jjYy of [6.4,12.8])jjBox(0,jjK0+jjYy,jjKz,26.3,.3,20.3,'marble');
+ jjCornice(0,jjK0+20,jjKz,26,20,0);const jjKt=jjK0+21.37;
+ jjMilMerlons(0,jjKt,jjKz+9.7,26,.6,1.2);jjMilMerlons(0,jjKt,jjKz-9.7,26,.6,1.2);for(const jjSg of [-1,1])jjWithYaw(jjSg*12.7,jjKt,jjKz,Math.PI/2,()=>jjMilMerlons(jjSg*12.7,jjKt,jjKz,19,.6,1.2));
+ for(const jjSx of [-1,1])for(const jjSz of [-1,1])jjTurret(jjSx*11.6,jjKt,jjKz+jjSz*8.6,1.3,3.4,{kind:'gold',pattern:'ogee'});
+ jjMesh(jjMilArchRingGeo(3,3.4,.55,.4),JMAT.marble,0,jjK0,jjKz+10.15,0);jjBox(0,jjK0+2.6,jjKz+10.02,3,5.2,.1,'dark');jjBox(0,jjK0+1.9,jjKz+10.1,2.5,3.8,.12,'wood');
+ for(let jjF=0;jjF<3;jjF++)for(const jjXx of [-9.5,-4.8,4.8,9.5])jjWindow(jjXx,jjK0+3.6+jjF*6.4,jjKz+10.02,1.2,2.4,0,{lit:true,shutter:jjF===0});
+ for(let jjF=1;jjF<3;jjF++)jjWindow(0,jjK0+3.6+jjF*6.4,jjKz+10.02,1.4,2.6,0,{lit:true});
+ for(const jjSg of [-1,1])jjWithYaw(jjSg*13,jjK0,jjKz,jjSg*Math.PI/2,()=>{for(let jjF=0;jjF<3;jjF++)for(const jjZz of [-5.5,0,5.5])jjWindow(jjSg*13+jjZz,jjK0+3.6+jjF*6.4,jjKz+.02,1.1,2.2,0,{lit:true});});
+ jjMilRing(0,jjKt,jjKz,7.3,4.2,'brickYellow');for(let jjI=0;jjI<12;jjI++){const jjA=jjI*TAU/12;jjBox(Math.cos(jjA)*7.33,jjKt+2.2,jjKz+Math.sin(jjA)*7.33,.5,1.5,.12,'dark',undefined,Math.PI/2-jjA);}
+ jjMilRing(0,jjKt+4.2,jjKz,7.8,.3,'marble');jjDome(0,jjKt+4.5,jjKz,7.4,{kind:'gold',shape:'hemi'});jjMilRing(0,jjKt+11.6,jjKz,1.2,1.8,'marble');jjDome(0,jjKt+13.4,jjKz,1.3,{kind:'gold',shape:'onion'});
+ jjMilSock('banner',-6.5,jjK0+19.2,jjKz+10.15,0,{w:1.6,h:5});jjMilSock('banner',6.5,jjK0+19.2,jjKz+10.15,0,{w:1.6,h:5});
+ jjReg('Keep',0,jjKz,14,jjKt+15,{part:'keep'});jjReg('Gatehouse',0,jjGz,9,jjGH+jjP+2,{part:'gate'});jjReg('Curtain wall (front)',0,jjWz,38,jjH+jjP+2,{part:'curtain'});}
+
+// ---- barracks -----------------------------------------------------------------------------------------
+// a long two-storey barrack block about (jjX,jjZ), façade +z: ground-floor gallery on brick piers under
+// a balcony, a door per bay, lit windows above, a crenellated parapet and plain square chimneys
+function jjMilBarrackBlock(jjX,jjZ,jjLen,jjRy){jjWithYaw(jjX,0,jjZ,jjRy,()=>{const jjD=9,jjF=jjZ+jjD/2,jjN=Math.round(jjLen/4),jjBay=jjLen/jjN;
+ jjBox(jjX,.25,jjZ+1.4,jjLen+.6,.5,jjD+3.4,'brickDeep');jjBox(jjX,4.3,jjZ,jjLen,7.6,jjD,'brick');jjBox(jjX,4.25,jjZ,jjLen+.1,.3,jjD+.1,'brickYellow');jjBox(jjX,8.25,jjZ,jjLen+.5,.35,jjD+.5,'marble');
+ jjMilMerlons(jjX,8.42,jjF-.1,jjLen,.5,.9);jjMilMerlons(jjX,8.42,jjZ-jjD/2+.1,jjLen,.5,.9);jjBox(jjX,8.65,jjF-.1,jjLen,.45,.5,'brick');jjBox(jjX,8.65,jjZ-jjD/2+.1,jjLen,.45,.5,'brick');
+ // gallery: piers, a slab with a marble edge, a balcony parapet
+ for(let jjI=0;jjI<=jjN;jjI++){const jjXx=jjX-jjLen/2+jjI*jjBay;jjBox(jjXx,2.25,jjF+2.3,.75,3.5,.75,'brick');jjBox(jjXx,.62,jjF+2.3,.95,.24,.95,'brickYellow');jjBox(jjXx,3.95,jjF+2.3,.95,.2,.95,'brickYellow');}
+ jjBox(jjX,4.25,jjF+1.4,jjLen+.8,.4,2.9,'brick');jjBox(jjX,4.5,jjF+2.85,jjLen+.9,.14,.3,'marble');jjBox(jjX,5.0,jjF+2.72,jjLen+.8,.9,.24,'brick');jjBox(jjX,5.5,jjF+2.72,jjLen+.9,.1,.36,'marble');
+ for(let jjI=0;jjI<jjN;jjI++){const jjXx=jjX-jjLen/2+(jjI+.5)*jjBay;jjDoor(jjXx,.5,jjF,1.2,2.4,0,{mat:'dark'});jjWindow(jjXx,6.4,jjF,1.0,1.5,0,{lit:true,shutter:true});jjWindow(jjXx,6.4,jjZ-jjD/2-.02,.7,1,Math.PI,{});}
+ for(const jjXx of [-jjLen*.3,0,jjLen*.3]){jjBox(jjX+jjXx,9.6,jjZ-1.5,1,2.2,1,'brick');jjBox(jjX+jjXx,10.75,jjZ-1.5,1.25,.2,1.25,'brickYellow');}
+ jjReg('Barrack block',jjX,jjZ,jjLen/2,9,{part:'barrack block'});});}
+function buildJjMilBarracks(jjG,jjO){reseed(9510+(jjO.v|0));const jjWx=31,jjFz=23,jjBz=-26;
+ jjBox(0,.08,-1.5,62,.16,49,'jjMilSand');
+ // two long blocks facing each other across the drill yard
+ jjMilBarrackBlock(-25.5,-1,32,Math.PI/2);jjMilBarrackBlock(25.5,-1,32,-Math.PI/2);
+ // perimeter wall: crenellated, plain brick, a pointed gateway in the front
+ const jjWh=4.5;jjBox(-17.5,jjWh/2,jjFz,27,jjWh,1.2,'brick');jjBox(17.5,jjWh/2,jjFz,27,jjWh,1.2,'brick');jjMilMerlons(-17.5,jjWh,jjFz+.25,27,.7,1);jjMilMerlons(17.5,jjWh,jjFz+.25,27,.7,1);
+ jjBox(0,jjWh/2,jjBz,62,jjWh,1.2,'brick');jjMilMerlons(0,jjWh,jjBz-.25,62,.7,1);
+ for(const jjSg of [-1,1]){jjBox(jjSg*jjWx,jjWh/2,(jjFz+jjBz)/2,1.2,jjWh,jjFz-jjBz,'brick');jjWithYaw(jjSg*(jjWx+.25),jjWh,(jjFz+jjBz)/2,jjSg*Math.PI/2,()=>jjMilMerlons(jjSg*(jjWx+.25),jjWh,(jjFz+jjBz)/2,jjFz-jjBz,.7,1));}
+ jjMesh(jjMilSlabGeo(8,7,4.4,3.2,1.8),JMAT.brick,0,0,jjFz,0);jjMesh(jjMilArchRingGeo(4.4,3.2,.55,.4),JMAT.marble,0,0,jjFz+1.05,0);jjMilMerlons(0,7,jjFz+.3,8,.9,1.1);jjBox(0,6.95,jjFz,8.4,.2,2,'marble');
+ for(const jjSg of [-1,1])jjBox(jjSg*2.7,3,jjFz+1.1,.35,.5,.3,'glow');
+ // armoury: a heavy square block with a slate dome, barred windows and weapon racks
+ const jjAx=-8,jjAz=-19;jjBox(jjAx,.25,jjAz,15,.5,11,'brickDeep');jjBox(jjAx,4,jjAz,14,7,10,'brick');jjBox(jjAx,7.6,jjAz,14.6,.3,10.6,'marble');jjMilMerlons(jjAx,7.75,jjAz+4.8,14,.5,.9);jjMilMerlons(jjAx,7.75,jjAz-4.8,14,.5,.9);
+ for(const jjSg of [-1,1])jjWithYaw(jjAx+jjSg*6.8,7.75,jjAz,Math.PI/2,()=>jjMilMerlons(jjAx+jjSg*6.8,7.75,jjAz,9.4,.5,.9));
+ jjMilRing(jjAx,7.75,jjAz,3.4,1.6,'brickYellow');jjMilRing(jjAx,9.35,jjAz,3.7,.2,'marble');jjDome(jjAx,9.55,jjAz,3.4,{kind:'slate',shape:'ribbed'});
+ jjMesh(jjMilArchRingGeo(2.4,2.4,.45,.35),JMAT.marble,jjAx,.5,jjAz+5.1,0);jjBox(jjAx,1.95,jjAz+5.02,2.4,2.9,.1,'wood');for(const jjYy of [1,2,3])jjBox(jjAx,.5+jjYy,jjAz+5.1,2.4,.12,.06,'iron');
+ for(const jjXx of [-4.6,4.6]){jjBox(jjAx+jjXx,4.4,jjAz+5.02,1.1,1.3,.1,'dark');for(const jjDx of [-.3,0,.3])jjBox(jjAx+jjXx+jjDx,4.4,jjAz+5.08,.06,1.3,.06,'iron');}
+ for(const jjRx of [-3.6,-2.2,2.2,3.6]){const jjXr=jjAx+jjRx;jjBox(jjXr,1.2,jjAz+5.9,1.1,.12,.5,'wood');jjBox(jjXr,.6,jjAz+5.9,1.1,1.2,.08,'wood');for(let jjI=0;jjI<4;jjI++)jjBeam([jjXr-.4+jjI*.27,.1,jjAz+5.75],[jjXr-.4+jjI*.27,2.4,jjAz+5.65],.03,jjI%2?'iron':'wood');}
+ // stable: an open timber-fronted shed with stalls, troughs and a tiled pent roof
+ const jjSx=12,jjSz=-21.5,jjSw=20,jjSd=7;jjBox(jjSx,.2,jjSz,jjSw,.4,jjSd,'brickDeep');jjBox(jjSx,2.3,jjSz-jjSd/2+.3,jjSw,4.6,.6,'brick');for(const jjSg of [-1,1])jjBox(jjSx+jjSg*(jjSw/2-.3),1.9,jjSz,.6,3.8,jjSd,'brick');
+ for(let jjI=0;jjI<=5;jjI++){const jjXx=jjSx-jjSw/2+.5+jjI*(jjSw-1)/5;jjBox(jjXx,1.8,jjSz+jjSd/2-.3,.3,3.6,.3,'wood');if(jjI>0&&jjI<5)jjBox(jjXx,.9,jjSz,.12,1.4,jjSd-1.2,'wood');}
+ for(let jjI=0;jjI<5;jjI++){const jjXx=jjSx-jjSw/2+.5+(jjI+.5)*(jjSw-1)/5;jjBox(jjXx,.7,jjSz-jjSd/2+1,2.4,.5,.6,'wood');jjBox(jjXx,.95,jjSz-jjSd/2+1,2.2,.06,.4,'water');}
+ jjBox(jjSx,4.2,jjSz,jjSw+.8,.25,jjSd+1.4,'tile',undefined,0);jjBox(jjSx,4.05,jjSz+jjSd/2+.55,jjSw+.8,.2,.3,'wood');
+ // drill yard: pells, a weapon rack
+ for(const jjP of [[-6,6],[-2,6],[2,6],[6,6]]){jjCylinder(jjP[0],1.1,jjP[1],.16,2.2,'wood');jjBeam([jjP[0]-.5,1.5,jjP[1]],[jjP[0]+.5,1.5,jjP[1]],.06,'wood');}
+ // watch spire at the front right corner: plain brick stages, a lookout ring, a slate cone
+ const jjWt=jjMilTower(jjWx-1.8,0,jjFz-1.6,2.6,{stages:[9,5.5,4],taper:.93,step:.84,cap:'cone',lit:true,wins:[[0,Math.PI/2,.6],[1,Math.PI/2],[1,Math.PI],[2,Math.PI/2],[2,0],[2,Math.PI]]});
+ jjMilSock('banner',jjWx-1.8,14.5,jjFz-1.6+2.6*.93*.84+.15,0,{w:1,h:2.6});
+ jjReg('Armoury',jjAx,jjAz,7.5,13,{part:'armoury'});jjReg('Stable',jjSx,jjSz,10,5,{part:'stable'});jjReg('Watch spire',jjWx-1.8,jjFz-1.6,3,jjWt.y+5,{part:'watch spire'});jjReg('Drill yard',0,0,14,1,{part:'yard'});}
+
+// ---- registry ---------------------------------------------------------------------------------------
+JJ.def({key:'jj_barracks',name:'Barracks',family:'military',row:'Military',w:64,d:52,h:22,r:34,cls:'building',tags:{type:['military'],wealth:'civic',lit:true},build:buildJjMilBarracks});
+JJ.def({key:'jj_fortress',name:'Fortress — citadel',family:'military',row:'Military',w:104,d:100,h:44,r:56,cls:'building',tags:{type:['military'],wealth:'civic',lit:true},
+ views:{'Fortress — gate approach':{cam:[-16,1.7,64],tgt:[0,9,32]}},build:buildJjMilFortress});
+JJ.def({key:'jj_wall_seg',name:'Wall segment (12 m)',family:'military',row:'Walls',w:JJ_WALL_SEG_LEN,d:6.5,h:JJ_WALL_H+2.6,r:7,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallSeg});
+JJ.def({key:'jj_wall_tower',name:'Wall tower',family:'military',row:'Walls',w:10.4,d:10.4,h:25,r:5.6,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallTower});
+JJ.def({key:'jj_wall_run',name:'Wall run (demo)',family:'military',row:'Walls',w:67,d:26,h:33,r:36,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'demo'},
+ views:{'Wall run — tower joint':{cam:[-12,16,26],tgt:[-21,10,5.5]},'Wall run — gate joint':{cam:[-2,15,28],tgt:[-9,10,5.5]},'Wall run — corner':{cam:[14,22,30],tgt:[27,10,2]}},build:buildJjWallRun});
+JJ.def({key:'jj_wall_gate',name:'Wall gate (2 segments)',family:'military',row:'Walls',w:JJ_WALL_SEG_LEN*JJ_WALL_GATE_SEGS,d:15,h:31,r:13,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallGate});
+JJ.def({key:'jj_wall_corner',name:'Wall corner tower',family:'military',row:'Walls',w:13,d:13,h:33,r:7,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallCorner});
+// Jimjam agriculture and storage: field, two farmhouses, granary, windmill, two warehouses.
+// Seeds 9600-9699. Top-level prefixes: jjAgri…, buildJjAgri…. Farm buildings are plain brick and
+// plaster (no gold, no patterned shafts); the granary and windmill are civic works with a little marble.
+// Uses jjMilTower / jjMilArchRingGeo from 76-jj-military.js (same author, earlier in the build order).
+// Plants are never drawn: the field and farmhouses publish PLANTING SPOTS (local [x,y,z] points) on
+// their def (JJ.defs[key].plantingSpots) and in JJ_AGRI_PLANTING[key].
+
+JMAT.jjAgriSoil=new THREE.MeshStandardMaterial({color:jjColor(0x5f4431),roughness:1});
+JMAT.jjAgriEarth=new THREE.MeshStandardMaterial({color:jjColor(0xb69a78),roughness:1});
+JMAT.jjAgriCrateWood=new THREE.MeshStandardMaterial({color:jjColor(0xa07c56),roughness:.85});
+JMAT.jjAgriStone=new THREE.MeshStandardMaterial({color:jjColor(0xbdb2a2),roughness:.95});
+const JJ_AGRI_MUD=jjColor(0xb8a090),JJ_AGRI_PLANTING={},JJ_AGRI_GEO={};
+
+// ---- props and small pieces -----------------------------------------------------------------------
+function jjAgriCrate(jjX,jjY,jjZ,jjS,jjRy){jjBox(jjX,jjY+jjS/2,jjZ,jjS,jjS,jjS,'jjAgriCrateWood',undefined,jjRy);jjBox(jjX,jjY+jjS/2,jjZ,jjS+.04,jjS*.16,jjS+.04,'wood',undefined,jjRy);}
+function jjAgriSack(jjX,jjY,jjZ,jjS){jjPut('jjAgri_sack',JJGEO.sphere,JMAT.canvas,jjX,jjY+jjS*.32,jjZ,jjS*.42,jjS*.34,jjS*.36,jjColor(0xd8c49a));}
+function jjAgriBarrel(jjX,jjY,jjZ){jjCylinder(jjX,jjY+.45,jjZ,.38,.9,'wood');for(const jjF of [.18,.72])jjCylinder(jjX,jjY+jjF,jjZ,.395,.06,'iron');}
+// a heap of goods: crates, sacks and barrels scattered deterministically round (jjX,jjZ)
+function jjAgriGoods(jjX,jjZ,jjN,jjSpread){for(let jjI=0;jjI<jjN;jjI++){const jjA=rr(0,TAU),jjD=rr(0,jjSpread),jjXx=jjX+Math.cos(jjA)*jjD,jjZz=jjZ+Math.sin(jjA)*jjD,jjK=rng();
+ if(jjK<.4){const jjS=rr(.7,1.1);jjAgriCrate(jjXx,0,jjZz,jjS,rr(-.3,.3));if(rng()<.4)jjAgriCrate(jjXx,jjS,jjZz,jjS*.8,rr(-.3,.3));}else if(jjK<.75)jjAgriSack(jjXx,0,jjZz,rr(.75,1));else jjAgriBarrel(jjXx,0,jjZz);}}
+// a mud-brick wall along x (base y 0), with a rounded plaster cap
+function jjAgriMudWall(jjX,jjZ,jjL,jjH,jjT,jjRy){jjWithYaw(jjX,0,jjZ,jjRy,()=>{jjBox(jjX,jjH/2,jjZ,jjL,jjH,jjT,'brickYellow',JJ_AGRI_MUD);jjBox(jjX,jjH+.06,jjZ,jjL+.08,.14,jjT+.1,'ochre',jjColor(0xe0cdb5));});}
+// a timber fence along x: posts and two rails
+function jjAgriFence(jjX,jjZ,jjL,jjRy){jjWithYaw(jjX,0,jjZ,jjRy,()=>{const jjN=Math.max(1,Math.round(jjL/1.6));for(let jjI=0;jjI<=jjN;jjI++)jjBox(jjX-jjL/2+jjI*jjL/jjN,.65,jjZ,.14,1.3,.14,'wood');for(const jjY of [.55,1.1])jjBox(jjX,jjY,jjZ,jjL,.09,.07,'wood');});}
+function jjAgriSqWindow(jjX,jjY,jjZ,jjW,jjH,jjRy,jjShut){jjWithYaw(jjX,jjY,jjZ,jjRy,()=>{jjBox(jjX,jjY,jjZ,jjW+.2,jjH+.2,.12,'brickDeep');jjBox(jjX,jjY,jjZ+.08,jjW,jjH,.06,'dark');jjBox(jjX,jjY-jjH/2-.08,jjZ+.1,jjW+.3,.1,.2,'brickDeep');if(jjShut)for(const jjS of [-1,1])jjBox(jjX+jjS*(jjW*.75),jjY,jjZ+.12,jjW*.45,jjH,.06,'wood');});}
+function jjAgriDoor(jjX,jjZ,jjW,jjH,jjRy){jjWithYaw(jjX,0,jjZ,jjRy,()=>{jjBox(jjX,jjH/2,jjZ,jjW+.3,jjH+.15,.12,'brickDeep');jjBox(jjX,jjH/2,jjZ+.08,jjW,jjH,.08,'wood');jjBox(jjX,jjH+.14,jjZ+.12,jjW+.6,.16,.3,'wood');});}
+function jjAgriParapet(jjX,jjY,jjZ,jjW,jjD,jjH,jjMat,jjTint){jjBox(jjX,jjY+jjH/2,jjZ+jjD/2-.14,jjW,jjH,.28,jjMat,jjTint);jjBox(jjX,jjY+jjH/2,jjZ-jjD/2+.14,jjW,jjH,.28,jjMat,jjTint);jjBox(jjX-jjW/2+.14,jjY+jjH/2,jjZ,.28,jjH,jjD-.56,jjMat,jjTint);jjBox(jjX+jjW/2-.14,jjY+jjH/2,jjZ,.28,jjH,jjD-.56,jjMat,jjTint);}
+// a pent (lean-to) roof sloping down towards +z: high edge at jjY1 (z0), low edge jjY0 (z1)
+function jjAgriPent(jjX,jjW,jjZ0,jjZ1,jjY1,jjY0){const jjDz=jjZ1-jjZ0,jjDy=jjY1-jjY0,jjL=Math.hypot(jjDz,jjDy);jjPut('jj_box_tile',JJGEO.box,JMAT.tile,jjX,(jjY0+jjY1)/2,(jjZ0+jjZ1)/2,jjW,.2,jjL,undefined,qEuler(Math.atan2(jjDy,jjDz),0,0));}
+function jjAgriSpots(jjKey,jjPts){JJ_AGRI_PLANTING[jjKey]=jjPts;return jjPts;}
+
+// ---- farm field -----------------------------------------------------------------------------------
+// 30 x 24 plot: a mud-brick boundary wall with a gate gap, a cistern feeding a brick-lined main channel
+// down the middle and four lateral channels, ridged beds between them. Planting spots sit on the ridges.
+const JJ_AGRI_FIELD={w:28,d:22,laterals:[-8,-3,2,7],ridge:1.0};
+const JJ_AGRI_FIELD_SPOTS=jjAgriSpots('jj_farm_field',(()=>{const jjF=JJ_AGRI_FIELD,jjOut=[],jjBeds=[[-8,-3],[-3,2],[2,7],[7,10.7]];
+ for(const jjB of jjBeds)for(let jjZ=jjB[0]+.9;jjZ<jjB[1]-.45;jjZ+=jjF.ridge)for(let jjX=1.6;jjX<jjF.w/2-.6;jjX+=1.5)for(const jjS of [-1,1])jjOut.push([+(jjS*jjX).toFixed(2),.47,+jjZ.toFixed(2)]);return jjOut;})());
+function buildJjAgriField(jjG,jjO){reseed(9600+(jjO.v|0));const jjF=JJ_AGRI_FIELD,jjHw=jjF.w/2,jjHd=jjF.d/2;
+ jjBox(0,.15,0,jjF.w+.6,.3,jjF.d+.6,'jjAgriSoil');
+ // boundary wall with a gate gap and two posts at the front
+ jjAgriMudWall(0,-jjHd-.3,jjF.w+1.2,1.0,.55,0);for(const jjS of [-1,1]){jjAgriMudWall(jjS*(jjHw+.3),0,jjF.d+.6,1.0,.55,Math.PI/2);jjAgriMudWall(jjS*(1.9+(jjHw+.65-1.9)/2),jjHd+.3,jjHw+.65-1.9,1.0,.55,0);jjBox(jjS*1.55,.75,jjHd+.3,.7,1.5,.7,'brickYellow',JJ_AGRI_MUD);}
+ // cistern at the back, main channel, laterals with board sluices
+ jjCylinder(0,.75,-jjHd+1.9,1.7,1.5,'brickDeep',undefined,32);jjCylinder(0,1.42,-jjHd+1.9,1.45,.08,'water',undefined,32);jjCylinder(0,1.55,-jjHd+1.9,1.78,.12,'ochre',jjColor(0xe0cdb5),32);
+ const jjZ0=-jjHd+3.6;jjBox(0,.42,(jjZ0+jjHd)/2,.8,.08,jjHd-jjZ0,'water');for(const jjS of [-1,1])jjBox(jjS*.55,.45,(jjZ0+jjHd)/2,.3,.32,jjHd-jjZ0,'brickDeep');
+ for(const jjZl of jjF.laterals){for(const jjS of [-1,1]){const jjXc=jjS*(jjHw+.7)/2;jjBox(jjXc,.38,jjZl,jjHw-.7,.06,.42,'water');for(const jjE of [-1,1])jjBox(jjXc,.4,jjZl+jjE*.29,jjHw-.7,.22,.16,'brickDeep');jjBox(jjS*.86,.55,jjZl,.06,.4,.6,'wood');}}
+ // ridged beds between the laterals
+ const jjBeds=[[-8,-3],[-3,2],[2,7],[7,10.7]];for(const jjB of jjBeds)for(let jjZ=jjB[0]+.9;jjZ<jjB[1]-.45;jjZ+=jjF.ridge)for(const jjS of [-1,1])jjBox(jjS*(jjHw+.7)/2,.38,jjZ,jjHw-.9,.18,.42,'jjAgriSoil',jjColor(0xffffff,1.18));
+ // a field shelter in the back corner: four posts and a reed-mat pent roof
+ const jjSx=jjHw-2.2,jjSz=-jjHd+1.6;for(const jjDx of [-1.3,1.3])for(const jjDz of [-.8,.8])jjBox(jjSx+jjDx,1.2-(jjDz>0?.15:0),jjSz+jjDz,.16,2.4-(jjDz>0?.3:0),.16,'wood');jjAgriPent(jjSx,3.2,jjSz-1.05,jjSz+1.05,2.45,2.08);
+ jjAgriSack(jjSx-.6,.3,jjSz,.8);jjAgriSack(jjSx+.4,.3,jjSz+.2,.8);
+ jjReg('Field plot',0,0,jjHw,1.6,{part:'field'});jjReg('Cistern',0,-jjHd+1.9,1.8,1.7,{part:'cistern'});}
+
+// ---- farmhouse A: walled courtyard, animal pens, threshing floor -----------------------------------
+function buildJjAgriFarmhouseA(jjG,jjO){reseed(9610+(jjO.v|0));const jjW=21,jjD=19,jjHw=jjW/2,jjHd=jjD/2;
+ jjBox(0,.05,0,jjW+.4,.1,jjD+.4,'jjAgriEarth');
+ // house range across the back: one storey in plaster, a two-storey brick end with a flat roof
+ const jjBz=-jjHd+3.2;jjBox(-3,.2,jjBz,14.6,.4,6.6,'brickDeep');jjBox(-3,1.9,jjBz,14,3.4,6.2,'ochre');jjBox(-3,3.66,jjBz,14.3,.14,6.5,'brickDeep');jjAgriParapet(-3,3.73,jjBz,14.3,6.5,.55,'ochre');
+ jjBox(6.6,3.3,jjBz,5.4,6.6,6.6,'brick',jjColor(0xe0b8a8));jjBox(6.6,6.66,jjBz,5.7,.14,6.9,'brickDeep');jjAgriParapet(6.6,6.73,jjBz,5.7,6.9,.6,'brick');
+ jjAgriDoor(-5,jjBz+3.12,1.1,2.15,0);jjAgriDoor(6.6,jjBz+3.32,1.1,2.2,0);for(const jjX of [-8.6,-1.6,2.2])jjAgriSqWindow(jjX,2.2,jjBz+3.12,.7,.8,0,true);jjAgriSqWindow(6.6,4.9,jjBz+3.32,.8,.9,0,true);
+ jjAgriSqWindow(-10.12,2.2,jjBz,.6,.7,-Math.PI/2,false);
+ jjBox(8.4,7.8,jjBz-1.8,.9,2.2,.9,'brickDeep');jjBox(8.4,8.98,jjBz-1.8,1.1,.16,1.1,'brickDeep');jjBox(-7,4.45,jjBz-2,.8,1.3,.8,'brickDeep');
+ // external stair to the high roof, against the court face of the low range
+ jjStairs(1.3,0,jjBz+3.75,1,4.6,3.66,11,Math.PI/2,{mat:'brickDeep'});
+ // courtyard wall with a timber-lintelled gate, a byre down the left side
+ jjAgriMudWall(-jjHw/2-1.1,jjHd-.3,jjHw-2.2,2.4,.5,0);jjAgriMudWall(jjHw/2+1.1,jjHd-.3,jjHw-2.2,2.4,.5,0);for(const jjS of [-1,1])jjBox(jjS*1.9,1.45,jjHd-.3,.8,2.9,.8,'brickDeep');jjBox(0,3.0,jjHd-.3,4.6,.3,.7,'wood');
+ for(const jjS of [-1,1])jjAgriMudWall(jjS*(jjHw-.25),(jjBz+3.3+jjHd)/2,jjHd-jjBz-3.3,2.4,.5,Math.PI/2);
+ const jjBx=-jjHw+2.2;jjBox(jjBx-1.6,1.4,1.7,.4,2.8,10,'brick',jjColor(0xe0b8a8));for(const jjZ of [-2.6,0,2.6,5.2])jjBox(jjBx+1.4,1.25,jjZ+.9,.2,2.5,.2,'wood');jjWithYaw(jjBx,0,1.7,Math.PI/2,()=>jjAgriPent(jjBx,10.4,1.7-2.1,1.7+2.1,2.95,2.45));
+ for(const jjZ of [-1.3,1.3,3.9])jjBox(jjBx-.5,.9,jjZ+.9,1.8,.1,.1,'wood');jjBox(jjBx-.9,.4,1.7,.5,.5,8,'wood');
+ // animal pens (front right) with a trough
+ jjAgriFence(5.8,1.4,8.4,0);jjAgriFence(1.6,4.2,5.6,Math.PI/2);jjAgriFence(5.8,7,8.4,0);jjBox(6,.35,6.2,2.6,.5,.6,'wood');jjBox(6,.58,6.2,2.4,.06,.4,'water');
+ jjBox(5.6,.06,4.3,8,.04,8.6,'jjAgriSoil');
+ // threshing floor: a round stone disc with a centre post and a stone roller
+ jjCylinder(-2.8,.12,3.4,3.1,.24,'jjAgriStone',undefined,32);jjCylinder(-2.8,.07,3.4,3.3,.14,'brickDeep',undefined,32);jjCylinder(-2.8,1.2,3.4,.12,2.2,'wood');
+ jjPut('jjAgri_roller',JJGEO.cyl,JMAT.jjAgriStone,-1.1,.69,3.4,.45,1.1,.45,undefined,qEuler(0,0,Math.PI/2));
+ // a beehive bread oven in the court corner, sacks by the door
+ jjBox(-8.4,.5,-1.8,2,1,2,'brick',jjColor(0xe0b8a8));jjDome(-8.4,1,-1.8,.9,{kind:'terracotta',shape:'hemi'});jjBox(-8.4,1.25,-.92,.5,.45,.1,'dark');
+ jjAgriSack(-4,0,jjBz+4,.9);jjAgriSack(-3.2,0,jjBz+4.2,.85);jjAgriBarrel(-2.3,0,jjBz+3.9);
+ jjReg('Farmhouse',-1,jjBz,7.5,7.5,{part:'house'});jjReg('Animal pens',5.6,2.9,4,1.4,{part:'pens'});jjReg('Threshing floor',-2.8,3.4,3.2,1.2,{part:'threshing floor'});jjReg('Byre',jjBx,1.7,3,3,{part:'byre'});}
+
+// ---- farmhouse B: compact two-storey house, small dome, roof terrace, lean-to --------------------
+function buildJjAgriFarmhouseB(jjG,jjO){reseed(9620+(jjO.v|0));const jjHz=-1;
+ jjBox(0,.05,0,15.6,.1,13.6,'jjAgriEarth');
+ // main block: brick ground floor, ochre plaster upper floor, a roof terrace with a low parapet
+ jjBox(-1.5,.2,jjHz,9.4,.4,8.4,'brickDeep');jjBox(-1.5,1.8,jjHz,9,3.2,8,'brick',jjColor(0xe4c0b0));jjBox(-1.5,3.45,jjHz,9.2,.14,8.2,'brickDeep');jjBox(-1.5,5,jjHz,9,3,8,'ochre',jjColor(0xf2dcc4));jjBox(-1.5,6.55,jjHz,9.3,.14,8.3,'brickDeep');
+ jjAgriParapet(-1.5,6.62,jjHz,9.3,8.3,.8,'ochre',jjColor(0xf2dcc4));
+ for(const jjX of [-4.8,1.8])for(const jjY of [2.3,5.1])jjAgriSqWindow(jjX,jjY,jjHz+4.02,.7,.85,0,true);jjAgriDoor(-1.5,jjHz+4.02,1.1,2.2,0);jjAgriSqWindow(-1.5,5.1,jjHz+4.02,.6,.7,0,false);
+ for(const jjZ of [-2.6,.6])jjAgriSqWindow(-6.02,5.1,jjHz+jjZ,.6,.7,-Math.PI/2,true);
+ // terrace: a timber shade frame, a water jar, a plain chimney
+ for(const jjX of [-5.2,-1.6])for(const jjZ of [jjHz-3,jjHz-.6])jjBox(jjX,7.75,jjZ,.12,2.2,.12,'wood');for(const jjZ of [jjHz-3,jjHz-.6])jjBox(-3.4,8.85,jjZ,3.9,.1,.12,'wood');for(let jjI=0;jjI<6;jjI++)jjBox(-5.2+jjI*.72,8.92,jjHz-1.8,.07,.07,2.9,'wood');
+ jjPut('jjAgri_jar',JJGEO.sphere,JMAT.terracotta,1.4,7.1,jjHz+2.4,.35,.42,.35);jjBox(2.2,7.7,jjHz-2.9,.8,2.2,.8,'brickDeep');jjBox(2.2,8.86,jjHz-2.9,1,.14,1,'brickDeep');
+ // external stair up the right flank to the terrace
+ jjStairs(3.6,0,jjHz-.2,1.1,7.2,6.62,18,Math.PI,{mat:'brickDeep'});jjBeam([4.2,1,jjHz-3.8],[4.2,7.1,jjHz+2.85],.05,'wood');
+ // domed room on the left: a square cell, a squinch drum, a terracotta dome
+ const jjDx=-7.6,jjDz=jjHz-1.5;jjBox(jjDx,1.75,jjDz,3.6,3.5,4.4,'ochre',jjColor(0xf2dcc4));jjBox(jjDx,3.57,jjDz,3.8,.14,4.6,'brickDeep');jjCylinder(jjDx,3.95,jjDz,1.6,.7,'brickDeep',undefined,32);jjDome(jjDx,4.3,jjDz,1.6,{kind:'terracotta',shape:'hemi'});
+ jjAgriSqWindow(jjDx,2.2,jjDz+2.22,.5,.6,0,false);
+ // lean-to at the back: timber posts, a tile pent roof, firewood and a cart
+ for(const jjX of [-5.4,-1.5,2.4])jjBox(jjX,1.2,jjHz-6.4,.18,2.4,.18,'wood');jjAgriPent(-1.5,8.6,jjHz-4,jjHz-6.7,3.1,2.4);
+ for(let jjI=0;jjI<4;jjI++)jjBeam([-4.6,.25+jjI*.24,jjHz-5.2],[-2.4,.25+jjI*.24,jjHz-5.2],.12,'wood');for(let jjI=0;jjI<3;jjI++)jjBeam([-4.5,.37+jjI*.24,jjHz-4.9],[-2.5,.37+jjI*.24,jjHz-4.9],.12,'wood');
+ jjBox(.9,.85,jjHz-5.4,1.6,.12,2.4,'wood');for(const jjS of [-1,1])jjPut('jjAgri_wheel',JJGEO.cyl,JMAT.wood,.9+jjS*.88,.55,jjHz-5.4,.55,.1,.55,undefined,qEuler(0,0,Math.PI/2));jjBeam([.9,.8,jjHz-4.2],[.9,.35,jjHz-2.8],.06,'wood');
+ // front yard: low mud wall with a gap, a well
+ jjAgriMudWall(-4.9,5.9,5.6,1.1,.45,0);jjAgriMudWall(4.4,5.9,6.6,1.1,.45,0);for(const jjS of [-1,1])jjAgriMudWall(jjS*7.55,2.95,5.9,1.1,.45,Math.PI/2);
+ jjCylinder(4.6,.45,3.6,.75,.9,'brickDeep',undefined,32);jjCylinder(4.6,.91,3.6,.6,.04,'water',undefined,32);for(const jjS of [-1,1])jjBox(4.6+jjS*.75,1.3,3.6,.12,1.7,.12,'wood');jjBox(4.6,2.12,3.6,1.7,.12,.12,'wood');
+ jjReg('Farmhouse',-1.5,jjHz,5,9.5,{part:'house'});jjReg('Domed room',jjDx,jjDz,2.2,6,{part:'dome'});jjReg('Lean-to',-1.5,jjHz-5.4,4.5,3.2,{part:'lean-to'});}
+
+// ---- granary: beehive silos on a raised platform ----------------------------------------------------
+// a beehive (lathe) instanced through the kit; u x 2PI and v x 1 so the world-UV brick tiles in metres
+function jjAgriBeehiveGeo(){if(JJ_AGRI_GEO.hive)return JJ_AGRI_GEO.hive;const jjPts=[[0,0],[1,0],[1,.32],[.98,.46],[.93,.58],[.84,.7],[.71,.8],[.54,.89],[.34,.95],[.14,.99],[0,1]].map(jjP=>new THREE.Vector2(jjP[0],jjP[1]));const jjG=new THREE.LatheGeometry(jjPts,32),jjUv=jjG.attributes.uv;for(let jjI=0;jjI<jjUv.count;jjI++)jjUv.setX(jjI,jjUv.getX(jjI)*TAU);return JJ_AGRI_GEO.hive=jjG;}
+function buildJjAgriGranary(jjG,jjO){reseed(9630+(jjO.v|0));const jjPh=2.4,jjPw=22,jjPd=10.5,jjPz=-1.5,jjFront=jjPz+jjPd/2;
+ jjBox(0,jjPh*.45,jjPz,jjPw,jjPh*.9,jjPd,'brickDeep');jjBox(0,jjPh*.93,jjPz,jjPw+.3,jjPh*.14,jjPd+.3,'marble');
+ for(let jjI=0;jjI<6;jjI++){const jjX=-jjPw/2+1.9+jjI*(jjPw-3.8)/5;jjBox(jjX,.9,jjFront+.1,.8,1.3,.2,'dark');jjBox(jjX,1.6,jjFront+.16,1.1,.14,.3,'brickYellow');}
+ // loading stairs (front centre) with cheek walls
+ jjStairs(0,0,jjFront+2,4.4,4,jjPh,9,0,{mat:'marble'});for(const jjS of [-1,1]){jjBox(jjS*2.5,jjPh*.55,jjFront+1.9,.5,jjPh*1.1,3.8,'brickDeep');jjBox(jjS*2.5,jjPh*1.12,jjFront+1.9,.62,.12,3.9,'marble');}
+ // four beehive silos in yellow brick with red courses, hatches and gold finials
+ const jjR=2.35,jjH=7.6,jjXs=[-7.8,-2.6,2.6,7.8];
+ for(const jjX of jjXs){const jjZ=jjPz-.4;jjPut('jjAgri_hive_brickYellow',jjAgriBeehiveGeo(),JMAT.brickYellow,jjX,jjPh,jjZ,jjR,jjH,jjR);
+  for(const jjF of [.12,.3])jjCylinder(jjX,jjPh+jjH*jjF,jjZ,jjR*1.01,.22,'brick',undefined,32);
+  jjCylinder(jjX,jjPh+.2,jjZ,jjR*1.06,.4,'brickDeep',undefined,32);
+  jjCylinder(jjX,jjPh+jjH+.12,jjZ,.42,.5,'brick',undefined,16);jjCylinder(jjX,jjPh+jjH+.42,jjZ,.5,.1,'wood',undefined,16);jjPut('jjAgri_finial',JJGEO.sphere,JMAT.gold,jjX,jjPh+jjH+.62,jjZ,.13,.2,.13);
+  jjBox(jjX,jjPh+1.15,jjZ+jjR-.02,1.1,1.9,.2,'brickDeep');jjBox(jjX,jjPh+1.05,jjZ+jjR+.05,.8,1.6,.1,'wood');jjBox(jjX,jjPh+2.15,jjZ+jjR+.04,1.3,.16,.3,'marble');}
+ // sacks on the platform and at the foot of the stairs
+ jjAgriSack(-1.4,jjPh,jjFront-.8,.9);jjAgriSack(1.5,jjPh,jjFront-.7,.9);jjAgriSack(1,jjPh,jjFront-1.6,.85);jjAgriSack(-3.6,0,jjFront+3.4,.9);jjAgriSack(-4.3,0,jjFront+2.8,.9);jjAgriCrate(4,0,jjFront+3.2,1,0.2);
+ jjReg('Granary platform',0,jjPz,11,jjPh,{part:'platform'});for(const jjX of jjXs)jjReg('Silo',jjX,jjPz-.4,jjR,jjPh+jjH+1,{part:'silo'});}
+
+// ---- windmill: a staged round brick tower, a terracotta cap, sails that turn -----------------------
+// The sails are ONE named THREE.Group ('jj_windmill_sails') under the building's group, built as two
+// merged meshes (timber, canvas) at build time. A FRAME_HOOKS entry turns it about its own axis
+// (local z, the wind shaft) once per frame: no geometry is made after the build.
+const JJ_AGRI_SAIL={len:8.2,inner:1.5,w:1.9,rps:.11};
+function jjAgriSailsGeo(){const jjS=JJ_AGRI_SAIL,jjWood=[],jjCloth=[],jjBoxG=(jjW,jjH,jjD,jjX,jjY,jjZ,jjA)=>{const jjG=new THREE.BoxGeometry(jjW,jjH,jjD);jjG.translate(jjX,jjY,jjZ);jjG.rotateZ(jjA);return jjG;};
+ for(let jjK=0;jjK<4;jjK++){const jjA=jjK*Math.PI/2;jjWood.push(jjBoxG(.26,jjS.len+.6,.26,0,jjS.len/2-.1,0,jjA));
+  const jjN=9;for(let jjI=0;jjI<=jjN;jjI++){const jjY=jjS.inner+(jjS.len-jjS.inner)*jjI/jjN;jjWood.push(jjBoxG(jjS.w+.15,.09,.1,jjS.w/2,jjY,.12,jjA));}
+  jjWood.push(jjBoxG(.1,jjS.len-jjS.inner,.1,jjS.w+.05,(jjS.len+jjS.inner)/2,.12,jjA));
+  jjCloth.push(jjBoxG(jjS.w-.1,jjS.len-jjS.inner-.25,.04,jjS.w/2+.03,(jjS.len+jjS.inner)/2,.06,jjA));}
+ const jjHub=new THREE.CylinderGeometry(.55,.55,.7,16);jjHub.rotateX(Math.PI/2);jjWood.push(jjHub);return{wood:jjWood,cloth:jjCloth};}
+function jjAgriSails(jjX,jjY,jjZ){const jjGrp=new THREE.Group();jjGrp.name='jj_windmill_sails';jjGrp.position.set(jjX,jjY,jjZ);JJ.cur.G.add(jjGrp);const jjGeo=jjAgriSailsGeo();meshMerged(jjGeo.wood,JMAT.wood,jjGrp);meshMerged(jjGeo.cloth,JMAT.canvas,jjGrp);
+ jjGrp.rotation.z=.35;if(typeof FRAME_HOOKS!=='undefined')FRAME_HOOKS.push(jjDt=>{jjGrp.rotation.z-=jjDt*TAU*JJ_AGRI_SAIL.rps;});return jjGrp;}
+function buildJjAgriWindmill(jjG,jjO){reseed(9640+(jjO.v|0));const jjR=4.2,jjB=.45;
+ jjCylinder(0,jjB/2,0,6.6,jjB,'brickDeep',undefined,32);jjCylinder(0,jjB+.04,0,6.3,.08,'jjAgriEarth',undefined,32);
+ const jjT=jjMilTower(0,jjB,0,jjR,{stages:[8.2,5.4],taper:.92,step:.86,crenel:false,cap:'none',wins:[[0,Math.PI/2,.72],[0,Math.PI*1.1,.5],[0,-Math.PI/2,.62],[1,Math.PI/2],[1,0],[1,Math.PI]]});
+ // the cap: a short drum and a terracotta dome with a gold finial, a hood for the wind shaft
+ const jjRc=jjT.r*1.04,jjCy=jjT.y;jjCylinder(0,jjCy+.45,0,jjRc,.9,'brickYellow',undefined,32);jjCylinder(0,jjCy+.95,0,jjRc+.12,.18,'marble',undefined,32);jjDome(0,jjCy+1.04,0,jjRc,{kind:'terracotta',shape:'hemi'});jjPut('jjAgri_finial',JJGEO.sphere,JMAT.gold,0,jjCy+1.1+jjRc,0,.2,.32,.2);
+ const jjHy=jjCy+1.04+jjRc*.42,jjHz=jjRc+2.05;jjBox(0,jjHy,jjRc*.9,1.4,1.5,1.6,'brick');jjBox(0,jjHy+.8,jjRc*.9,1.7,.16,1.9,'marble');jjBeam([0,jjHy,jjRc*.4],[0,jjHy,jjHz],.24,'wood');
+ const jjSails=jjAgriSails(0,jjHy,jjHz);
+ // door, millstones and sacks at the foot
+ jjBox(0,jjB+1.5,jjR+.1,2.4,3,1.2,'brick');jjBox(0,jjB+3.1,jjR+.15,2.7,.2,1.4,'marble');jjAgriDoor(0,jjR+.72,1.3,2.4,0);
+ jjPut('jjAgri_millstone',JJGEO.cyl,JMAT.jjAgriStone,-3.3,jjB+.7,4.4,.7,.25,.7,undefined,qEuler(Math.PI/2,0,.3));jjCylinder(3.1,jjB+.12,4.6,.75,.24,'jjAgriStone');
+ jjAgriSack(2.2,jjB,4.9,.9);jjAgriSack(2.9,jjB,5.4,.85);jjAgriSack(1.6,jjB,5.6,.8);
+ jjReg('Windmill tower',0,0,jjR,jjCy+jjRc+1.5,{part:'tower'});jjReg('Windmill sails',0,jjHz,JJ_AGRI_SAIL.len,jjHy+JJ_AGRI_SAIL.len,{part:'sails',animated:true});
+ return jjSails;}
+
+// ---- warehouses --------------------------------------------------------------------------------------
+// a half cylinder (axis x) for barrel vaults: u x PI so the brick tiles by arc length on the curved face
+function jjAgriVaultGeo(jjOpen){const jjK='vault'+(jjOpen?1:0);if(JJ_AGRI_GEO[jjK])return JJ_AGRI_GEO[jjK];const jjG=new THREE.CylinderGeometry(1,1,1,24,1,jjOpen,0,Math.PI),jjUv=jjG.attributes.uv,jjNo=jjG.attributes.normal;for(let jjI=0;jjI<jjUv.count;jjI++)if(Math.abs(jjNo.getY(jjI))<.5)jjUv.setX(jjI,jjUv.getX(jjI)*Math.PI);return JJ_AGRI_GEO[jjK]=jjG;}
+function jjAgriVault(jjX,jjY,jjZ,jjR,jjL,jjMat,jjOpen){jjPut('jjAgri_vault'+(jjOpen?'o':'c')+'_'+jjMat,jjAgriVaultGeo(jjOpen),JMAT[jjMat],jjX,jjY,jjZ,jjR,jjL,jjR,undefined,qEuler(0,0,Math.PI/2));}
+// long brick hall walls, jjL along x, jjD deep, jjH tall, front +z; buttresses on the 6 m rhythm
+function jjAgriHall(jjX,jjZ,jjL,jjD,jjH,jjBays){jjBox(jjX,.25,jjZ,jjL+.6,.5,jjD+.6,'brickDeep');jjBox(jjX,jjH/2,jjZ,jjL,jjH,jjD,'brick');for(const jjY of [2.2,jjH-.9])jjBox(jjX,jjY,jjZ,jjL+.08,.26,jjD+.08,'brickYellow');jjBox(jjX,jjH-.12,jjZ,jjL+.4,.24,jjD+.4,'marble');
+ for(let jjI=0;jjI<=jjBays;jjI++){const jjXx=jjX-jjL/2+jjI*jjL/jjBays;for(const jjS of [-1,1]){jjBox(jjXx,(jjH-.6)/2,jjZ+jjS*(jjD/2+.35),.9,jjH-.6,.7,'brick');jjBox(jjXx,jjH-.55,jjZ+jjS*(jjD/2+.4),1.1,.2,.85,'brickYellow');}}}
+// a big loading door: a dark recess, two timber leaves standing open, an arch ring (round or pointed)
+function jjAgriLoadingDoor(jjX,jjY,jjZ,jjW,jjH,jjPointed){if(jjPointed){const jjS=jjH-.742*jjW;jjMesh(jjMilArchRingGeo(jjW,jjS,.5,.45),JMAT.marble,jjX,jjY,jjZ+.12,0);jjBox(jjX,jjY+jjS/2,jjZ+.02,jjW,jjS,.1,'dark');jjBox(jjX,jjY+jjS+(jjH-jjS)*.4,jjZ+.02,jjW*.62,(jjH-jjS)*.8,.1,'dark');}
+ else{jjArch(jjX,jjY,jjZ+.12,jjW+1.1,jjH+.55,0,{depth:.45});jjBox(jjX,jjY+jjH*.4,jjZ+.02,jjW,jjH*.8,.1,'dark');jjBox(jjX,jjY+jjH*.86,jjZ+.02,jjW*.6,jjH*.25,.1,'dark');}
+ for(const jjS of [-1,1]){jjBox(jjX+jjS*(jjW/2+.05),jjY+jjH*.36,jjZ+jjW*.24,.12,jjH*.72,jjW*.46,'wood');jjBox(jjX+jjS*(jjW/2+.12),jjY+jjH*.2,jjZ+jjW*.24,.04,.12,jjW*.46,'iron');}}
+function buildJjAgriWarehouseA(jjG,jjO){reseed(9650+(jjO.v|0));const jjL=30,jjD=12,jjH=6.5,jjZ=-4,jjF=jjZ+jjD/2;
+ jjBox(0,.04,0,jjL+4,.08,jjD+10,'jjAgriEarth');
+ jjAgriHall(0,jjZ,jjL,jjD,jjH,5);
+ // barrel vault: a closed brick core (its half-disc ends are the gables) under an open tile shell
+ jjAgriVault(0,jjH,jjZ,jjD/2,jjL,'brick',false);jjAgriVault(0,jjH,jjZ,jjD/2+.22,jjL+.7,'tile',true);
+ for(const jjS of [-1,1]){jjPut('jjAgri_disc_dark',new THREE.CylinderGeometry(1,1,1,24),JMAT.dark,jjS*(jjL/2+.02),jjH+2.4,jjZ,.85,.1,.85,undefined,qEuler(0,0,Math.PI/2));jjPut('jjAgri_disc_marble',new THREE.CylinderGeometry(1,1,1,24),JMAT.marble,jjS*(jjL/2),jjH+2.4,jjZ,1.05,.08,1.05,undefined,qEuler(0,0,Math.PI/2));
+  jjWithYaw(jjS*jjL/2,0,jjZ,jjS*Math.PI/2,()=>jjAgriLoadingDoor(jjS*jjL/2,0,jjZ,2.6,3.6,false));}
+ // three big round-arched loading doors on the front, a raised dock with ramps
+ for(const jjX of [-6,0,6])jjAgriLoadingDoor(jjX,1.05,jjF,3.2,4.2,false);
+ jjBox(0,.5,jjF+1.6,22,1,3.2,'brickDeep');jjBox(0,1.04,jjF+1.6,22.2,.1,3.3,'marble');for(const jjS of [-1,1])jjPut('jj_box_brickDeep',JJGEO.box,JMAT.brickDeep,jjS*12.8,.45,jjF+1.6,3.8,.25,3.2,undefined,qEuler(0,0,-jjS*Math.atan2(1,3.6)));
+ // yard: low wall with gate piers, goods
+ jjBox(-9.5,.7,jjF+7.8,13,1.4,.5,'brick');jjBox(9.5,.7,jjF+7.8,13,1.4,.5,'brick');for(const jjS of [-1,1]){jjBox(jjS*3.2,1.1,jjF+7.8,.9,2.2,.9,'brickYellow');jjBox(jjS*3.2,2.27,jjF+7.8,1.1,.14,1.1,'marble');jjBox(jjS*16,.7,jjF+3.9,.5,1.4,7.8,'brick');}
+ jjAgriGoods(-9,jjF+4.6,9,2.2);jjAgriGoods(8,jjF+4.8,8,2);for(let jjI=0;jjI<3;jjI++)jjAgriCrate(8.2+jjI*1.0,1.09,jjF+2.3,.85,0);jjAgriSack(-8.6,1.09,jjF+2.2,.9);jjAgriSack(-9.6,1.09,jjF+2.4,.9);
+ jjReg('Vaulted storehouse',0,jjZ,jjL/2,jjH+jjD/2+.3,{part:'hall'});jjReg('Loading yard',0,jjF+4.6,8,2,{part:'yard'});}
+function buildJjAgriWarehouseB(jjG,jjO){reseed(9660+(jjO.v|0));const jjL=32,jjD=12,jjH=6.2,jjZ=-4,jjF=jjZ+jjD/2,jjN=4,jjBay=jjL/jjN;
+ jjBox(0,.04,0,jjL+4,.08,jjD+10,'jjAgriEarth');
+ jjAgriHall(0,jjZ,jjL,jjD,jjH,jjN);
+ // a crenellated parapet and a row of small terracotta domes, one per bay, on square-to-round drums
+ jjBox(0,jjH+.45,jjF-.15,jjL,.7,.3,'brick');jjBox(0,jjH+.45,jjZ-jjD/2+.15,jjL,.7,.3,'brick');jjMilMerlons(0,jjH+.8,jjF-.15,jjL,.32,.7,'brick');
+ for(let jjI=0;jjI<jjN;jjI++){const jjX=-jjL/2+(jjI+.5)*jjBay;jjBox(jjX,jjH+.45,jjZ,6.6,.9,6.6,'brickYellow');jjCylinder(jjX,jjH+1.3,jjZ,3.05,.8,'brick',undefined,32);jjCylinder(jjX,jjH+1.75,jjZ,3.2,.14,'marble',undefined,32);jjDome(jjX,jjH+1.82,jjZ,3,{kind:'terracotta',shape:'hemi'});
+  jjCylinder(jjX,jjH+4.95,jjZ,.45,.5,'brick',undefined,16);
+  jjAgriLoadingDoor(jjX,.9,jjF,3,4.2,true);}
+ // a timber hoist beam over the second door, an end door, a loading dock
+ jjBeam([-jjL/2+1.5*jjBay,jjH+.2,jjF-.4],[-jjL/2+1.5*jjBay,jjH+.2,jjF+2.6],.16,'wood');jjBeam([-jjL/2+1.5*jjBay,jjH+.2,jjF+2.4],[-jjL/2+1.5*jjBay,jjH-1.9,jjF+2.4],.03,'iron');jjAgriCrate(-jjL/2+1.5*jjBay-.45,jjH-2.9,jjF+2.4,.9,0);
+ jjWithYaw(jjL/2,0,jjZ,Math.PI/2,()=>jjAgriDoor(jjL/2+.02,jjZ,1.4,2.6,0));
+ jjBox(0,.45,jjF+1.5,jjL,.9,3,'brickDeep');jjBox(0,.94,jjF+1.5,jjL+.2,.1,3.1,'marble');jjStairs(-jjL/2-1.2,0,jjF+1.5,3,2.4,.9,4,-Math.PI/2,{mat:'marble'});
+ // yard: crates, sacks, barrels and a hand cart
+ jjAgriGoods(-8,jjF+5.2,8,2.4);jjAgriGoods(9,jjF+5,9,2.4);
+ jjBox(1,.75,jjF+5.5,1.8,.12,1.1,'wood');for(const jjS of [-1,1])jjPut('jjAgri_wheel',JJGEO.cyl,JMAT.wood,1+jjS*.7,.48,jjF+5.5,.48,.08,.48,undefined,qEuler(0,0,Math.PI/2));jjBeam([1,.75,jjF+6],[1,.4,jjF+7.3],.05,'wood');jjAgriSack(1,.81,jjF+5.5,.7);
+ jjReg('Domed storehouse',0,jjZ,jjL/2,jjH+5,{part:'hall'});jjReg('Loading yard',0,jjF+5,8,2,{part:'yard'});}
+
+// ---- registry ---------------------------------------------------------------------------------------
+JJ.def({key:'jj_farm_field',name:'Farm field',family:'agriculture',row:'Agriculture and storage',w:30,d:24,h:2.6,r:16,cls:'building',plantingSpots:JJ_AGRI_FIELD_SPOTS,tags:{type:['farm'],wealth:'poor',lit:false},build:buildJjAgriField});
+JJ.def({key:'jj_farmhouse_a',name:'Farmhouse A — courtyard and pens',family:'agriculture',row:'Agriculture and storage',w:22,d:20,h:9.2,r:12,cls:'building',plantingSpots:jjAgriSpots('jj_farmhouse_a',[[-9.4,0,7.6],[-7.6,0,7.6],[9.2,0,-3.2]]),tags:{type:['farm','single-family dwelling'],wealth:'poor',lit:false},build:buildJjAgriFarmhouseA});
+JJ.def({key:'jj_farmhouse_b',name:'Farmhouse B — dome and roof terrace',family:'agriculture',row:'Agriculture and storage',w:20,d:16,h:9,r:10,cls:'building',plantingSpots:jjAgriSpots('jj_farmhouse_b',[[-6.4,0,4.6],[-5,0,5.2],[6.4,0,5.2],[-4.4,6.62,-3.2]]),tags:{type:['farm','single-family dwelling'],wealth:'poor',lit:false},build:buildJjAgriFarmhouseB});
+JJ.def({key:'jj_granary',name:'Granary — beehive silos',family:'agriculture',row:'Agriculture and storage',w:24,d:16,h:10.8,r:12,cls:'building',tags:{type:['farm','infrastructure'],wealth:'civic',lit:false},build:buildJjAgriGranary});
+JJ.def({key:'jj_windmill',name:'Windmill',family:'agriculture',row:'Agriculture and storage',w:18,d:18,h:26,r:9,cls:'building',tags:{type:['farm','industry'],wealth:'civic',lit:false},build:buildJjAgriWindmill});
+JJ.def({key:'jj_warehouse_a',name:'Warehouse A — barrel vault',family:'storage',row:'Agriculture and storage',w:36,d:24,h:12.8,r:18,cls:'building',tags:{type:['industry','market/shop'],wealth:'middle',lit:false},build:buildJjAgriWarehouseA});
+JJ.def({key:'jj_warehouse_b',name:'Warehouse B — row of domes',family:'storage',row:'Agriculture and storage',w:38,d:24,h:11.4,r:19,cls:'building',tags:{type:['industry','market/shop'],wealth:'middle',lit:false},build:buildJjAgriWarehouseB});
 // ---------------------------------------------------------------- CULTURE PACKS (shared: core/sockets/)
 // A building never names a culture. It declares sockets (36-def.js); the ACTIVE pack draws into them. To add a culture, add one cultDef() here
 // (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
