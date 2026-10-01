@@ -23,4 +23,4 @@ function setRooms(on){on=!!on;ROOMV.on=on;if(on&&!ROOMV.grp)ROOMV.grp=roomsBuild
  const bt=[...ui.querySelectorAll('button')].find(b=>b.textContent==='Rooms');if(bt)bt.classList.toggle('on',on);return on;}
 uiButton('Rooms',false,()=>setRooms(!ROOMV.on));
 window._api.setRooms=on=>setRooms(on);
-window._api.city={CITY:typeof CITY!=='undefined'?CITY:null,layout:()=>PORT_LAYOUT.items.length,hour:()=>YSCLOCK.hour,placed:()=>HYK_PLACED.map(p=>({key:p.key,x:p.x,z:p.z}))};
+window._api.city={CITY:typeof CITY!=='undefined'?CITY:null,layout:()=>PORT_LAYOUT.items.length,hour:()=>YSCLOCK.hour,placed:()=>HYK_PLACED.map(p=>({key:p.key,x:p.x,z:p.z})),layoutCensus:()=>typeof ysLayoutCensus==='function'?ysLayoutCensus():null};

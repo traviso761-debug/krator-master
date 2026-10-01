@@ -18,6 +18,10 @@ function ysShoreDist(x,z){let best=1e9,sign=1;const P=CITY.SHORE;
 // the natural ground before any stamp: a wandering shore, a beach, a hinterland rising gently toward the Inner Wall,
 // a seabed falling to ~30 m in the bay. Continuous everywhere. Replaced in phase 3 by the full landform.
 function YS_NAT(x,z){
+ // the sink: under the drowned grid the seabed is the old city plane (87-city-layout.js), blended in over the outer streets
+ if(typeof ysSinkMix==='function'){const w=ysSinkMix(x,z);if(w>0){const nat=YS_NAT0(x,z);return nat*(1-w)+ysSinkY(x,z)*w;}}
+ return YS_NAT0(x,z);}
+function YS_NAT0(x,z){
  const wander=22*(fbm(x/900+1.3,z/900+4.1,2.3,3)-.5)+6*(fbm(x/120,z/120,5.7,2)-.5);
  const d=ysShoreDist(x,z)+wander;
  if(d<0){const s=-d;const q=Math.pow(s/420,1.4),f=1-Math.exp(-q);

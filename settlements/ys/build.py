@@ -75,7 +75,7 @@ DETERMINISTIC = {
     '69b-vern-mat.js', '69c-vern-helpers.js',
     '70-port-core.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js',
     '60-ys-registries.js', '60-hyk-mat.js', '61-hyk-shell.js', '62-hyk-helpers.js', '64-hyk-accrete.js',
-    '35-furn-frame.js', '84-kit-geo.js',
+    '35-furn-frame.js', '84-kit-geo.js', '87-city-layout.js',
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js',

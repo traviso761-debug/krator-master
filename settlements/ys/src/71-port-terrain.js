@@ -227,6 +227,7 @@ function portBuildTerrain(scene,layout){
   if(it.vessel!==true){Z0=Math.min(Z0,it.gz-R.LAND);Z1=Math.max(Z1,it.gz+R.SEA);const q=portPlaceOf(it.key)==='land';
    (q?xq:xe).push(it.gx-w/2,it.gx+w/2);(q?zq:ze).push(it.gz,it.gz-R.LAND,it.gz+R.SEA);}}
  if(X0>X1){X0=-500;X1=500;}
+ if(layout.fine){X0=Math.min(X0,layout.fine.x0);X1=Math.max(X1,layout.fine.x1);Z0=Math.min(Z0,layout.fine.z0);Z1=Math.max(Z1,layout.fine.z1);}   // Ys: the city core's 10 m cells
  for(const s of PORT_ST.list){if(s.owner==='layout'||s.outside)continue;
   const it=layout.items[+String(s.owner).split('@')[1]],q=it&&portPlaceOf(it.key)==='land';
   (q?xq:xe).push(s.x0,s.x1);(q?zq:ze).push(s.z0,s.z1);}
