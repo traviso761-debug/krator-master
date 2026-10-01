@@ -1,6 +1,13 @@
 // YS ADAPTATION (recorded in KNOWN_ISSUES.md): a standing tower may be CUT SHORT at decay 1 when the layout names a
 // height - the drowned quarter's stumps keep full-size storeys instead of being scaled down (DESIGN §5). The cut goes
 // through the builders' own y1 path (the one the toppled decay uses), so the ragged strut ring at the break is theirs.
+// The Ys podium: YS_CUT.podium (a radius) shrinks the plinth so drowned hosts pack closer; the apron and the moss,
+// rubble and tree rings are skipped then (they would be under the sea). YS_CUT.ways cuts a way-in pod's hole through
+// the body wall and its lining: [{u (azimuth fraction, the lathe's th/TAU), y (the builder's own y), uw (half-width
+// in u), hh (half-height, m)}]. Both are set by ysPlaceHost (64-hyk-accrete.js) around the builder call.
+function ysPodiumR(R){return (typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.podium!=null)?Math.min(R,YS_CUT.podium):R;}
+function ysWallHole(hole,y0){const W=(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.ways)?YS_CUT.ways:null;if(!W||!W.length)return hole;
+ return (u,y)=>{if(hole&&hole(u,y))return true;const ya=y+y0;for(const w of W){let du=Math.abs(u-w.u);if(du>.5)du=1-du;if(du<w.uw&&Math.abs(ya-w.y)<w.hh)return true;}return false;};}
 function ysCutY(d){return (d===1&&typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.cutY!=null)?YS_CUT.cutY:null;}
 // ================================================================= SKYSCRAPERS — three variants, d: 0 intact, 1 ruined, 2 toppled
 // each variant = plinth(G,d) + body(P,d,y0,y1) in local coords (local y=0 ⇔ absolute y0)
@@ -15,11 +22,11 @@ function ysCutY(d){return (d===1&&typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.cu
 function toppledUpper(G,cx,cz,hc,r0,bodyFn,d,dir,angF){const s=dir===-1?-1:1;const U=new THREE.Group();const a0=rr(-.5,.5),ang=angF!=null?angF+a0*.12:a0;
  U.position.set(cx+s*Math.cos(ang)*(r0*1.6),r0*.82,cz+s*Math.sin(ang)*(r0*1.6));U.rotation.set(0,-ang,-s*Math.PI/2*.94);G.add(U);useGroupXF(U);bodyFn(U,1,hc,null,true);endGroupXF();
  rubbleRing(cx+s*Math.cos(ang)*(r0*2),0,cz+s*Math.sin(ang)*(r0*2),r0*.5,r0*3,140,3.5);}
-function skyPlinth(G,d,R){mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+function skyPlinth(G,d,R){const R0=R;R=ysPodiumR(R);mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
  for(let k=0;k<48;k++){const th=k/48*TAU,r=R*.93;if(d>0&&rng()<.2)continue;kput(d>0?'colR':'colW',[r*Math.cos(th),5,r*Math.sin(th)],null,[1.8,12,1.8],null);}
  kput(d>0?'ringR':'ringW',[0,17.3,0],qEuler(Math.PI/2,0,0),[R*.94,R*.94,8],null);
- apron(G,0,0,R*1.02,R*1.5,d,1.4);   // graded skirt: the plinth met the ground on a hard line
- if(d>0){mossOnRing(0,5.3,0,R*.85,120,3);vinesOnRing(0,17.3,0,R*.94,40,14);scatterMoss(0,0,0,R+2,R+100,220,3.5);rubbleRing(0,0,0,R+2,R+80,120,3);trees(0,0,R+30,R+160,30);}}
+ if(R===R0)apron(G,0,0,R*1.02,R*1.5,d,1.4);   // graded skirt: the plinth met the ground on a hard line
+ if(d>0&&R===R0){mossOnRing(0,5.3,0,R*.85,120,3);vinesOnRing(0,17.3,0,R*.94,40,14);scatterMoss(0,0,0,R+2,R+100,220,3.5);rubbleRing(0,0,0,R+2,R+80,120,3);trees(0,0,R+30,R+160,30);}}
 // THE COLLAPSE SCAR. A level-1 ruin used to be the intact tower cut off
 // short and eaten by fbm holes, which at the row presets' distance read as
 // "intact with patches": the holes are a few metres across on a 300 m tower.
@@ -59,7 +66,7 @@ function buildSkyA(scene,gx,gz,d){reseed(9100+d);KOFF=[gx,0,gz];const G=new THRE
   if(!gone)beam(dd>0?'strutR':'strutW',a,b,5.5,4);else{beam('strutR',[a[0],2.6,a[2]],[(a[0]+b[0])/2+rr(-8,8),3.2,(a[2]+b[2])/2+rr(-8,8)],5.5,4);}
   kput(dd>0?'strutR':'strutW',[b[0],b[1]-3,b[2]],qEuler(0,-th,0),[7,9,6],null);}
  kput('slab',[0,Y0+1,0],null,[rFn(Y0)*.97,3,rFn(Y0)*.97],new THREE.Color(dd>0?0x4a3f38:0xcfcac2));kput(dd>0?'ringR':'ringW',[0,Y0+3,0],qEuler(Math.PI/2,0,0),[rFn(Y0),rFn(Y0),10],null);
- const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.86:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,7+(upper?1:0),cut!=null?L:null,1.1);if(d===1&&!upper)hole=skyScarHole(hole,.3,.1,L*.42,L,7);
+ const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.86:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,7+(upper?1:0),cut!=null?L:null,1.1);if(d===1&&!upper)hole=skyScarHole(hole,.3,.1,L*.42,L,7);hole=ysWallHole(hole,y0);
   const oo={rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut!=null?10:0,flutes:32,amp:.07,sharp:2.5,nu:160,nv:110,hole,seed:7};
   mesh(lathe(oo),SHELL(dx),P,0,0,0);
   if(dx>0){
@@ -137,7 +144,7 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const G=new THRE
  mesh(lathe({rFn:y=>16,H:30,nu:32,nv:2}),skin,G,0,5,0);
  for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const a=[Math.cos(th)*70,5,Math.sin(th)*70],b=[Math.cos(th)*rFn(30)*1.15,32,Math.sin(th)*rFn(30)*1.15];
   if(!gone){kput(dd>0?'colR':'colW',[a[0],5,a[2]],null,[4.5,27,4.5],null);beam(dd>0?'strutR':'strutW',[a[0],31,a[2]],b,5,4);}else rubbleRing(a[0],5,a[2],2,16,30,2.2);}
- const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);
+ const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);hole=ysWallHole(hole,y0);
   mesh(lathe({rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,flutes:NL,amp:.3,sharp:1,nu:144,nv:60,hole,seed:17}),SHELL(dx),P);
   // THE CUT SECTION, as on Skyscraper A: the lining shares the outer skin's
   // hole predicate (it had none, so it stood whole behind every tear and hid
@@ -177,7 +184,7 @@ function buildSkyC(scene,gx,gz,d){reseed(9120+d);KOFF=[gx,0,gz];const G=new THRE
  for(const yb of [60,110]){for(let k=0;k<3;k++){const t1=k/3*TAU+Math.PI/6,t2=(k+1)/3*TAU+Math.PI/6;const r=62-42*yb/YM;const gone=dd>0&&yb===60&&k===1;
   const a=[Math.cos(t1)*r,yb+5,Math.sin(t1)*r],b=[Math.cos(t2)*r,yb+5,Math.sin(t2)*r];if(!gone){beam(dd>0?'strutR':'strutW',a,b,3,4);beam('tube',[a[0],a[1]+2.5,a[2]],[b[0],b[1]+2.5,b[2]],2.6,2.6);}}}
  const rFn=y=>{const t=clamp((y-YM)/(H-YM),0,1);return 34*(1-.35*t)*(1+.12*Math.sin(Math.PI*t));};
- const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.9:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,37+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.4,L,37);
+ const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.9:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,37+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.4,L,37);hole=ysWallHole(hole,y0);
   const o={rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?8:0,flutes:15,amp:.22,sharp:3,nu:120,nv:80,hole,seed:37};mesh(lathe(o),SHELL(dx),P);
   // the cut section, as on A and B: punched lining, pale plates, dark soffits
   if(dx>0){mesh(lathe({rFn:y=>rFn(y+y0)*.88,H:H-y0,cut:o.cut,jag:o.jag,nu:60,nv:40,hole,seed:37}),MAT.guts,P);

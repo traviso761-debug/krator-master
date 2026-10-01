@@ -789,3 +789,13 @@ through 90 m of rock; void-black for the first 55 m of bore fixed it.
       of green on three bearings; a crater with no floor. `--assert` was green
       through every one. **Reading the shots is not optional and never has
       been.**
+
+## Found by Ys (Oct 2026)
+
+- [ ] **Skyscrapers A, B and C have no stairs between their floor plates.** The ruined bodies carry a
+      pale plate every 8, 5 and 7 m (`52-sky-abc.js`, the cut-section blocks) but nothing joins one plate to
+      the next: no stair, no ramp round the core. Ys enters a drowned tower through a grown pod at one
+      plate and can walk only that storey. Add a stair per tower (keep the plate heights and the hole
+      predicate: a stair must not be eaten by the decay holes), then Ys re-vendors `52-sky-abc.js` and
+      re-applies its three helpers at the top of the file (`ysPodiumR`, `ysWallHole`, `ysCutY`; see
+      `settlements/ys/KNOWN_ISSUES.md`). The same holds for D–K wherever they carry plates.

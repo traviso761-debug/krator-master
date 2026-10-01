@@ -58,3 +58,28 @@ grazing angles → the sheen halved and the rainbow slowed.
 `verify.py dist/mock.html --assert`: error panel clean, 0.55 M triangles, 47–87 draw calls across six views,
 all ten invariants pass (5 registered volumes, 55 marks, 7 residence rooms, 30 spots inside their polygons and
 clear of doors and of each other). The gate sheet is the fourteen presets of `targets/mock/91z-views.js`.
+
+### Round 2 (Travis's notes on the first sheet)
+Agreed reads fixed: the barnacle colony crowds unevenly (four cones of four sizes, each leaning its own way); the
+conch's annex moved to the back of the whorl and shrank, the spire rose again (`apexLift` 5.2), the forecourt
+shrank and darkened, and the rich preset looks from the south-east so the spiral owns the frame; the span is a
+backbone now (a spine with a knuckle every 2.6 m, vertebrae every other sample, knuckled edge ribs).
+
+Added: **small podiums** (`YS_CUT.podium` shrinks the kit's plinth; the kit has no small-podium variant of its
+own, its plinths were already "the smallest circle that carries the struts", so Ys cuts below that and lets the
+struts and legs stand in the sea), the two hosts 160 m apart instead of 188. **Branches and runners** on
+`hykBridge`: the A–B span forks to a perch on A's strut head 17 and sends a runner to each of the two strut heads
+it passes (`host.members`, mirrored from the kit's constants). **Ways in**: a pod per host sits on a floor plate
+with a back door onto it; the adapted builders cut its hole through the skin and the lining, the plate is a
+`hostfloor` deck, and `every-host-has-a-way-in` is the eleventh invariant. The hosts were re-sunk for it (A −36,
+so its first plate is the L2 datum and its cornice collar a 110 m walkway at +31; B −25, plates at 12 + 5k).
+
+Found on the way: the port's `REGISTER` already applies the group transform, so `ysPlaceHost` had been moving
+every host volume twice (280 for 140); the kit's full decay eats most of a tower's skin (the inside of A looked
+out to the sea), so a host now builds with `HOLES` .4; `ysHostInhabit` marked the nearest floor however far it
+was. Logged in the kit: the towers have no stairs between their plates (`kits/ancients/KNOWN_ISSUES.md`).
+
+### Verified (Oct 1 2026, round 2)
+`verify.py dist/mock.html --assert`: error panel clean, 0.49 M triangles, 43–85 draw calls across sixteen views,
+all eleven invariants pass (5 volumes at their true positions, 59 marks, 2 hosts each with a way in, 7 residence
+rooms, 30 spots). `_mock`: 4 pods, 4 landings, 2 ways, 2 runners, 1 branch, 42 members on A.

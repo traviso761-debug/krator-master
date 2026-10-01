@@ -8,20 +8,38 @@ let YS_CUT=null;
 // o:{key,builder,x,z,y (sink, usually negative),ry,d,cutY (the builder's own y),cap:{hw},rAt(y)->radius of the face
 //    at world y, name, floors:{y0,pitch} (the builder's storey table, in its own y), ring}
 function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();G.position.set(o.x,o.y||0,o.z);G.rotation.y=o.ry||0;scene.add(G);G.updateMatrix();
- const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;const lush=BIOME.lush;BIOME.lush=0;YS_CUT=o.cutY!=null?{cutY:o.cutY}:null;HOLES=1;
+ const sink=o.y||0,ry=o.ry||0;const rAt=o.rAt||(()=>30);
+ // the ways in: a pod declared here gets its hole cut through the body wall and the lining by the adapted builders
+ // (52-sky-abc ysWallHole); hykAccrete then grows the pod bedded into that hole with a back door onto the plate.
+ const ways=(o.ways||[]).map(w=>{const R=w.R||4;const rs=rAt(w.y,w.a);const u=((((w.a+ry)/TAU)%1)+1)%1;return {a:w.a,y:w.y,R,u,yb:w.y-sink+R*.447,uw:R*.9/(TAU*rs),hh:R*.88,door:null,room:null};});
+ const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;const lush=BIOME.lush;BIOME.lush=0;
+ YS_CUT=(o.cutY!=null||o.podium!=null||ways.length)?{cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;
+ HOLES=o.holes!=null?o.holes:.4;   // the kit's full decay eats 83 % of a tower's skin; a reclaimed host keeps most of its wall
  const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}
- YS_CUT=null;BIOME.lush=lush;endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
+ YS_CUT=null;HOLES=1;BIOME.lush=lush;endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
  for(const n of ['trunk','leafCard'])if(KIT.items[n])KIT.items[n].length=snap[n]||0;    // a plant is never part of a building
- for(let i=r0;i<REG.length;i++){const r=REG[i];const p=loc(o.x,o.z,r.x,r.z,o.ry||0);r.x=p[0];r.z=p[1];r.y=(r.y||0)+(o.y||0);r.cls='host';r.key=o.key;r.id=i;
+ // the port's REGISTER already carries the group transform (KXF), so the volumes are in world space here
+ for(let i=r0;i<REG.length;i++){const r=REG[i];r.cls='host';r.key=o.key;r.id=i;
   r.tags=Object.assign({culture:'ancients',type:['civic'],wealth:'civic',decay:d,host:o.name||o.key},r.tags||{});}
- const sink=o.y||0;const host={n:o.name||o.key,key:o.key,x:o.x,z:o.z,ry:o.ry||0,y:sink,cap:o.cap||{hw:60},cutY:o.cutY!=null?o.cutY+sink:null,
-  rAt:o.rAt||(()=>30),floors:[],landings:[],heads:[],piers:[],ring:o.ring||1,lit:false,G,reg:r0};
- if(o.floors){const top=host.cutY!=null?host.cutY-2:1e9;for(let k=0,y=o.floors.y0+sink;y<top;y+=o.floors.pitch,k++){
-  host.floors.push({k,y,H:o.floors.pitch-.4,kind:y<-.6?'drowned':y<1.4?'tide':'wild',use:0});}}
- ysHost(host);return host;}
+ const host={n:o.name||o.key,key:o.key,x:o.x,z:o.z,ry,y:sink,cap:o.cap||{hw:(o.podium!=null?o.podium:60)+6},podium:o.podium!=null?o.podium:null,cutY:o.cutY!=null?o.cutY+sink:null,
+  rAt,floors:[],landings:[],heads:[],piers:[],ways,members:[],ring:o.ring||1,lit:false,G,reg:r0};
+ // the floors table: plate k's top is at y0 + k*pitch + top (k=0 may differ: `first`), all in the builder's y, plus the sink
+ if(o.floors){const top=host.cutY!=null?host.cutY-2:1e9;const F=o.floors;for(let k=0;k<400&&F.pitch>0;k++){const y=sink+F.y0+(k?k*F.pitch+(F.top||0):(F.first!=null?F.first:(F.top||0)));if(y>=top)break;
+  host.floors.push({k,y,H:F.pitch-.4,kind:y<-.6?'drowned':y<1.4?'tide':'wild',use:0});}}
+ host.members=ysHostMembers(host,d);ysHost(host);return host;}
+// The host's members in world space, {n,a,b,r} capsules: the struts and legs a runner can reach for. They mirror the
+// kit's own constants (52-sky-abc.js: A's 24 struts from r 98 at y 5 to r rFn(64)*.96 at y 70, three gone when ruined;
+// B's 12 legs at r 70 from y 5 to 32 with struts in to r rFn(30)*1.15, two gone) and must be re-read if the kit changes.
+function ysHostMembers(h,d){const M=[];const W=(lx,ly,lz)=>{const p=loc(h.x,h.z,lx,lz,h.ry);return [p[0],ly+h.y,p[1]];};
+ const seg=(n,a,b,r,extra)=>M.push(Object.assign({n,a:W(a[0],a[1],a[2]),b:W(b[0],b[1],b[2]),r},extra||{}));
+ if(h.key==='skyA'){const rT=(40+26*Math.pow(.42/.58,1.7))*.96;for(let k=0;k<24;k++){if(d>0&&(k===5||k===13||k===19))continue;const th=(k+.5)/24*TAU;const c=Math.cos(th),s=Math.sin(th);
+   seg('strut '+k,[c*98,5,s*98],[c*rT,70,s*rT],2.75);seg('strut head '+k,[c*rT,62.5,s*rT],[c*rT,71.5,s*rT],3.5,{head:true});}}
+ else if(h.key==='skyB'){const r30=(26+10*Math.pow(.1,1.4))*1.15;for(let k=0;k<12;k++){if(d>0&&(k===3||k===8))continue;const th=k/12*TAU;const c=Math.cos(th),s=Math.sin(th);
+   seg('leg '+k,[c*70,5,s*70],[c*70,32,s*70],2.25);seg('leg strut '+k,[c*70,31,s*70],[c*r30,32,s*r30],2.5);}}
+ return M;}
 // a host floor is inhabited once something is grown at it
-function ysHostInhabit(host,y,use){let best=null;for(const f of host.floors)if(!best||Math.abs(f.y-y)<Math.abs(best.y-y))best=f;if(best){best.kind='inhabited';best.use=Math.max(best.use,use||.5);}return best;}
+function ysHostInhabit(host,y,use){let best=null;for(const f of host.floors)if(Math.abs(f.y-y)<4.5&&(!best||Math.abs(f.y-y)<Math.abs(best.y-y)))best=f;if(best){best.kind='inhabited';best.use=Math.max(best.use,use||.5);}return best;}
 // ---------------------------------------------------------------- the tideline: crust, weed, barnacle specks, foam
 function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const R=y=>host.rAt(y)+.3;
  hykPut('hkCrust',hykLathe({H:yt-yb,yBase:yb,cx:host.x,cz:host.z,rFn:y=>R(y+yb),nu:84,nv:6,noise:{amp:.05,su:7,sv:.6,seed:11},col:hC(hPick(HPAL.crust))}));
@@ -34,38 +52,53 @@ function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const R=y=>host.rAt(y)
 // ---------------------------------------------------------------- accretion: pods grown onto a host's face
 // pods: [{y, a (azimuth, world: 0 = +x, pi/2 = +z), R, wealth:'poor'|'middle'|'rich', level:'L1'|'L2', pad:true}]
 function hykAccrete(host,pods){const out=[];for(const pd of pods){
- const rs=host.rAt(pd.y);const nx=Math.cos(pd.a),nz=Math.sin(pd.a);const R=pd.R;const cx=host.x+(rs+R*.3)*nx,cz=host.z+(rs+R*.3)*nz;   // 70 % of the pod proud of the face
+ const R=pd.R;let way=null;
+ if(pd.into){way=(host.ways||[]).find(w=>Math.abs(Math.atan2(Math.sin(w.a-pd.a),Math.cos(w.a-pd.a)))<.05&&Math.abs(w.R-R)<.01)||null;
+  if(!way)reportErr('hykAccrete: '+host.n+' has no way declared at a='+pd.a.toFixed(2)+' R='+R+' (ysPlaceHost ways)');}
+ if(way&&pd.y==null)pd.y=way.y+R*.447;   // the pod's floor on the plate
+ const rs=host.rAt(pd.y,pd.a);const nx=Math.cos(pd.a),nz=Math.sin(pd.a);const depth=way?-R*.2:R*.3;const cx=host.x+(rs+depth)*nx,cz=host.z+(rs+depth)*nz;   // 70 % of a pod proud of the face; a way-in pod bedded a fifth into it
  const poor=pd.wealth==='poor',rich=pd.wealth==='rich';const col=hC(hPick(poor?HPAL.barnacle:rich?HPAL.nacre:HPAL.shell));const mat=poor?'hkBarn':rich?'hkNacre':'hkShell';
  const th=Math.atan2(nx,nz);
- const pod=hykPod({a:R,b:R*.86,c:R,e1:.9,e2:.94,cy:pd.y,nu:52,nv:28,noise:{amp:.028,su:4,sv:3,seed:(pd.a*10|0)+3},col,
-  openings:[{th,el:-.06,r:Math.min(1.25,R*.33),ky:1.3,kind:'door'},{th:th+.8,el:.12,r:R*.16,kind:'window'},{th:th-.8,el:.12,r:R*.16,kind:'window'},{th:th+.25,el:.78,r:R*.13,kind:'window'}],hollow:{t:.07,col}});
+ const openings=[{th,el:-.06,r:Math.min(1.25,R*.33),ky:1.3,kind:'door'},{th:th+.8,el:.12,r:R*.16,kind:'window'},{th:th-.8,el:.12,r:R*.16,kind:'window'},{th:th+.25,el:.78,r:R*.13,kind:'window'}];
+ if(way)openings.push({th:th+Math.PI,el:-.06,r:Math.min(1.25,R*.33),ky:1.3,kind:'door',back:true});   // the back door, onto the host's plate
+ const pod=hykPod({a:R,b:R*.86,c:R,e1:.9,e2:.94,cy:pd.y,nu:52,nv:28,noise:{amp:.028,su:4,sv:3,seed:(pd.a*10|0)+3},col,openings,hollow:{t:.07,col}});
  pod.geo.translate(cx,0,cz);hykPut(mat,pod.geo);if(pod.inner){pod.inner.translate(cx,0,cz);hykPut('hkIn',pod.inner,true);}
- const floorY=pd.y-R*.86*.52;hykPut('hkFloor',hykDisc(cx,floorY,cz,R*.82,{col:hC(hPick(HPAL.floor))}),true);
- let door=null;for(const op of pod.openings){op.p=[op.p[0]+cx,op.p[1],op.p[2]+cz];if(op.kind==='door'){door=op;hykDoor(op,{level:pd.level||'L1',nacre:rich,name:host.n+' pod'});}else hykWin(op,{nacre:rich,lit:rich,name:host.n+' pod'});}
+ const floorY=way?way.y+.05:pd.y-R*.86*.52;hykPut('hkFloor',hykDisc(cx,floorY,cz,R*.82,{col:hC(hPick(HPAL.floor))}),true);
+ let door=null,back=null;for(const op of pod.openings){op.p=[op.p[0]+cx,op.p[1],op.p[2]+cz];
+  if(op.kind==='door'&&op.back){back=op;hykDoor(op,{level:pd.level||'L1',nacre:rich,name:host.n+' way in',into:host.n});}
+  else if(op.kind==='door'){door=op;hykDoor(op,{level:pd.level||'L1',nacre:rich,name:host.n+' pod'});}else hykWin(op,{nacre:rich,lit:rich,name:host.n+' pod'});}
  const contact=[host.x+(rs+.05)*nx,pd.y,host.z+(rs+.05)*nz];
- hykPut(mat,hykFlare(contact,[nx,0,nz],R*.9,R*.45,{col}));
+ hykPut(mat,hykFlare(contact,[nx,0,nz],R*.9,R*.45,{col}));   // the fillet also hides the ragged edge of a way-in hole
  const nd=Math.round(R*2.4),aw=R*.62/Math.max(1,rs);for(let i=0;i<nd;i++){const a2=pd.a+rr(-aw,aw);const ro=rs+rr(.25,R*.5);const h=rr(.35,1.1)*R*.3,w=h*.3;
-  const dy0=pd.y-Math.sqrt(Math.max(0,R*R*.74-Math.pow(ro-(rs+R*.3),2)*.9))*.86;   // on the pod's underside at that radius
+  const dy0=pd.y-Math.sqrt(Math.max(0,R*R*.74-Math.pow(ro-(rs+depth),2)*.9))*.86;   // on the pod's underside at that radius
   kput('hkDrip',[host.x+ro*Math.cos(a2),dy0-h/2+.15,host.z+ro*Math.sin(a2)],qEuler(Math.PI,0,0),[w,h,w],col);}
  // satellites: two smaller pods grown beside the main one (a colony, not a lone blob), windows only, rooted alike
- if(pd.cluster!==false){for(const sp of [{da:R*1.05/Math.max(1,rs),dy:-.6,k:.5},{da:-R*.95/Math.max(1,rs),dy:1.4,k:.36}]){const R2=R*sp.k;const a3=pd.a+sp.da;const n3x=Math.cos(a3),n3z=Math.sin(a3);const rs3=host.rAt(pd.y+sp.dy);
+ if(pd.cluster!==false){for(const sp of [{da:R*1.05/Math.max(1,rs),dy:-.6,k:.5},{da:-R*.95/Math.max(1,rs),dy:1.4,k:.36}]){const R2=R*sp.k;const a3=pd.a+sp.da;const n3x=Math.cos(a3),n3z=Math.sin(a3);const rs3=host.rAt(pd.y+sp.dy,a3);
   const c3x=host.x+(rs3+R2*.35)*n3x,c3z=host.z+(rs3+R2*.35)*n3z;const th3=Math.atan2(n3x,n3z);
   const p3=hykPod({a:R2,b:R2*.9,c:R2,e1:.92,e2:.95,cy:pd.y+sp.dy,nu:36,nv:20,noise:{amp:.03,su:4,sv:3,seed:(a3*7|0)+1},col,openings:[{th:th3,el:.1,r:R2*.22,kind:'window'},{th:th3+1.1,el:.35,r:R2*.16,kind:'window'}]});
   p3.geo.translate(c3x,0,c3z);hykPut(mat,p3.geo);for(const op of p3.openings){op.p=[op.p[0]+c3x,op.p[1],op.p[2]+c3z];hykWin(op,{nacre:rich,name:host.n+' pod'});}
   hykPut(mat,hykFlare([host.x+(rs3+.05)*n3x,pd.y+sp.dy,host.z+(rs3+.05)*n3z],[n3x,0,n3z],R2*.92,R2*.5,{col}));
   for(let i=0;i<3;i++){const a4=a3+rr(-.2,.2)*R2/Math.max(1,rs3);const ro=rs3+rr(.2,R2*.5);const h=rr(.3,.8)*R2*.3;kput('hkDrip',[host.x+ro*Math.cos(a4),pd.y+sp.dy-R2*.9*.7-h/2,host.z+ro*Math.sin(a4)],qEuler(Math.PI,0,0),[h*.3,h,h*.3],col);}}}
- // the room: the pod's chamber, with the residence's three spots
+ // the room: the pod's chamber, with the residence's three spots; a way-in pod keeps its axis clear between its doors
+ const doors=[];if(door)doors.push({at:[door.p[0],door.p[2]],w:door.r*2,to:'landing'});if(back)doors.push({at:[back.p[0],back.p[2]],w:back.r*2,to:'host'});
  const room=ysRoom({building:host.n+' pod',bld:null,key:'accreted_pod',kind:'bedroom',poly:hykCirclePoly(cx,cz,R*.78,14),y:floorY,h:R*.86*1.3,
-  doors:door?[{at:[door.p[0],door.p[2]],w:door.r*2,to:'landing'}]:[],windows:[],culture:'hykkousoi',wealth:rich?.9:poor?.15:.5,residence:true});
- const bx=-nx,bz=-nz;ysSpot({room:room.id,bld:null,kind:'bed',x:cx+bx*R*.42,z:cz+bz*R*.42,ry:Math.atan2(nx,nz),w:2.1,d:1.0});
- ysSpot({room:room.id,bld:null,kind:'store',x:cx-nz*R*.5,z:cz+nx*R*.5,ry:Math.atan2(nx,nz)+Math.PI/2,w:1.2,d:.7});
- ysSpot({room:room.id,bld:null,kind:'food',x:cx+nz*R*.5,z:cz-nx*R*.5,ry:Math.atan2(nx,nz)-Math.PI/2,w:.8,d:.8});
+  doors,windows:[],culture:'hykkousoi',wealth:rich?.9:poor?.15:.5,residence:true});
+ const bx=-nx,bz=-nz,sx=-nz,sz=nx;
+ if(way){const ra=Math.atan2(nx,nz)+Math.PI/2;ysSpot({room:room.id,bld:null,kind:'bed',x:cx+sx*R*.45,z:cz+sz*R*.45,ry:ra,w:2.1,d:1.0});
+  ysSpot({room:room.id,bld:null,kind:'store',x:cx-sx*R*.45+nx*R*.3,z:cz-sz*R*.45+nz*R*.3,ry:ra,w:1.2,d:.7});
+  ysSpot({room:room.id,bld:null,kind:'food',x:cx-sx*R*.45-nx*R*.3,z:cz-sz*R*.45-nz*R*.3,ry:ra,w:.8,d:.8});}
+ else{ysSpot({room:room.id,bld:null,kind:'bed',x:cx+bx*R*.42,z:cz+bz*R*.42,ry:Math.atan2(nx,nz),w:2.1,d:1.0});
+  ysSpot({room:room.id,bld:null,kind:'store',x:cx-nz*R*.5,z:cz+nx*R*.5,ry:Math.atan2(nx,nz)+Math.PI/2,w:1.2,d:.7});
+  ysSpot({room:room.id,bld:null,kind:'food',x:cx+nz*R*.5,z:cz-nx*R*.5,ry:Math.atan2(nx,nz)-Math.PI/2,w:.8,d:.8});}
  // the landing in front of the door, grown off the host, on a rib
  let pad=null;if(door&&pd.pad!==false){const dy=door.p[1]-door.r*door.ky+.12;const padR=Math.max(2.6,R*.72);const px=door.p[0]+door.n[0]*(padR*.9),pz=door.p[2]+door.n[2]*(padR*.9);
   pad=hykPad(px,dy,pz,padR,{col,mat:poor?'hkBarn':'hkShell',own:host.n});
   hykPut('hkBone',hykRib([host.x+(rs+.1)*nx,dy-3.6,host.z+(rs+.1)*nz],[px,dy-.45,pz],{rise:-1.4,r0:.36,r1:.26,knuckles:3,col:hC(hPick(HPAL.bone))}));
   if(rich)hykLight(door.p[0]+door.n[0]*.5-nz*1.3,door.p[1]+door.r*door.ky+.25,door.p[2]+door.n[2]*.5+nx*1.3,{r:.2,nacre:true,level:pd.level||'L1'});
   host.landings.push({x:px,y:dy,z:pz,r:padR,level:pd.level||'L1',a:pd.a});}
- ysHostInhabit(host,pd.y,.6);
- out.push({pod,cx,cz,R,door,pad,room});}
+ // a way in: the host's plate at that floor joins the walk plan, and the floor is inhabited
+ if(way){const pr=host.rAt(way.y,pd.a)*.9;ysDeck({kind:'hostfloor',host:host.n,x:host.x,z:host.z,r:pr,x0:host.x-pr,z0:host.z-pr,x1:host.x+pr,z1:host.z+pr,w:pr*2,y:way.y,own:host.n,level:pd.level||'L2'});
+  way.door=[back.p[0],back.p[2]];way.room=room.id;const f=ysHostInhabit(host,way.y,.8);if(f)f.way=true;}
+ else ysHostInhabit(host,pd.y,.6);
+ out.push({pod,cx,cz,R,door,back,pad,room,way});}
  return out;}

@@ -104,15 +104,35 @@ for the openings. Clear height ≥ 2.4 m poor, 2.8 middle, 3.2 rich and civic; a
 ## Hosts and growth (64-hyk-accrete.js)
 
 ```js
-ysPlaceHost(scene,{key,builder,x,z,y (the sink),ry,d,cutY,cap:{hw},rAt(y),name,floors:{y0,pitch},ring})
+ysPlaceHost(scene,{key,builder,x,z,y (the sink),ry,d,cutY,podium,holes,cap:{hw},rAt(y,a),name,
+            floors:{y0,pitch,top,first},ways:[{a,y,R}],ring})
 hykTideline(host,{weed,specks,foam})
-hykAccrete(host,[{y,a,R,wealth,level,pad,cluster}])   // pods rooted into the host's face, landings, drips, rooms
+hykAccrete(host,[{y,a,R,wealth,level,pad,cluster,into}])   // pods rooted into the host's face, landings, drips, rooms
 hykPad(x,y,z,R,{col,mat,stalk,own})                     // a lily-pad landing (world)
 hykStairSpiral(cx,cz,rAt,y0,y1,{a0,dir,w,col})          // treads and a rail down a round face
-hykBridge(A,B,{w,rise,col,own})                         // an arched deck on two ribs between landings
+hykBridge(A,B,{w,rise,col,own,                          // a backbone deck between landings: spine, vertebrae, edge ribs, rail
+  branches:[{t,to:{x,y,z},w,rise,own}],                 //   a narrower run forking off at t toward a point (a perch, a landing)
+  runners:{members,reach,every}})                       //   tendrils from the deck to the nearest member within reach, rooted
+  -> {pts,runners,branches}
+hykSegNearest(member,p)                                 // the nearest point on a {a,b,r} capsule's surface
 ```
-A host's HOST record (DESIGN §3) carries its real cap, its floors table (`kind: drowned|tide|inhabited|wild`),
-its landings; every deck over water registers itself in `NAV_EXTRA` through `ysDeck`.
+- `podium` shrinks the kit's plinth to that radius (the apron and the plinth's moss, rubble and trees are dropped);
+  the podium decides nothing above the sea, so the `cap` is the footprint at the waterline (struts, legs), given
+  explicitly. `holes` scales the kit's decay holes for this host (default .4: the kit's full decay eats most of a
+  skin, a reclaimed host keeps its wall). `rAt(y,a)` may take the bearing: a lobed host is wider at a crest.
+- `floors`: plate k's top is at `y0 + k*pitch + top` in the builder's own y (`first` replaces `k*pitch+top` for
+  k = 0), plus the sink. Pods must sit on plates: a pod's floor is the plate's top.
+- **Ways in.** A host must be declared with at least one way: `{a (bearing), y (the plate's top, world), R}`.
+  The adapted builders cut that pod's hole through the skin and the lining (`52-sky-abc ysWallHole`), and the
+  matching `hykAccrete` pod (`into:true`, same `a` and `R`, `y` optional) is bedded a fifth into the face with a
+  back door onto the plate; the plate registers as a `hostfloor` deck in `NAV_EXTRA`, the floor's `kind` becomes
+  `inhabited` and `way` is set. The probe's `every-host-has-a-way-in` fails a host without one.
+- `host.members` are the host's struts and legs as world capsules `{n,a,b,r,head?}`, mirrored from the kit's
+  constants per key (`ysHostMembers`: skyA, skyB so far). Runners reach for them; a perch can sit on a `head`.
+
+A host's HOST record (DESIGN §3) carries its real cap, its floors table (`kind: drowned|tide|inhabited|wild`,
+`way` on the entry floor), its landings, its ways and its members; every deck over water registers itself in
+`NAV_EXTRA` through `ysDeck` (`kind: bridge | pad | hostfloor`).
 
 ## Presets
 

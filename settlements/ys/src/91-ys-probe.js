@@ -46,6 +46,8 @@ function ysChecks(){const R=[];
  {const blds=REG.filter(r=>r.cls==='building');const doors=new Set(MARKS.filter(m=>m.kind==='door'||m.kind==='wetdoor').map(m=>m.bld));
   const noDoor=blds.filter(r=>!doors.has(r.bld));
   R.push({name:'every-building-has-a-door',ok:!noDoor.length,detail:noDoor.length?noDoor.length+' of '+blds.length+': '+noDoor.slice(0,5).map(r=>r.name).join(' | '):blds.length+' buildings, '+MARKS.length+' marks'});
+  const noWay=HOSTS.filter(h=>!(h.ways&&h.ways.length)||!MARKS.some(m=>m.kind==='door'&&m.into===h.n));
+  R.push({name:'every-host-has-a-way-in',ok:!noWay.length,detail:noWay.length?noWay.length+' of '+HOSTS.length+': '+noWay.map(h=>h.n).join(' | '):HOSTS.length+' hosts, each entered through a grown pod'});
   const res=ROOMS.filter(r=>r.kind==='bedroom'||r.residence);const miss=[];
   for(const rm of res){const S=SPOTS.filter(s=>s.room===rm.id);const need=['bed','food','store'].filter(k=>!S.some(s=>s.kind===k));if(need.length)miss.push(rm.building+': '+need.join(','));}
   R.push({name:'residence-minimum-spots',ok:!miss.length,detail:miss.length?miss.length+' rooms short: '+miss.slice(0,4).join(' | '):res.length+' residence rooms, '+SPOTS.length+' spots'});
