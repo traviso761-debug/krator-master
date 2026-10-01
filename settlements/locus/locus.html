@@ -7128,6 +7128,29 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
  K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 
+// ---------------------------------------------------------------- indexed buckets
+// The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
+// grid points up to six times: bark alone was 550 of SW Lowlands' 685 MB of geometry. Bake keeps one copy of each
+// distinct vertex (all eleven floats equal after the float32 rounding the GPU applies anyway) and draws by index:
+// the same triangles in the same order, so the same pixels, in about a third of the memory.
+function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
+ for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
+  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
+ let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
+ for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<W;k++)h=Math.imul(h^w[o+k],0x01000193);
+  h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
+  while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
+  if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
+  idx[i]=j;}
+ const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3);
+ for(let j=0;j<m;j++){const o=j*W;pos[j*3]=f[o];pos[j*3+1]=f[o+1];pos[j*3+2]=f[o+2];nor[j*3]=f[o+3];nor[j*3+1]=f[o+4];nor[j*3+2]=f[o+5];
+  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];}
+ const g=new T.BufferGeometry();
+ g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));
+ g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
+ g.setIndex(new T.BufferAttribute(m>65535?idx:Uint16Array.from(idx),1));return g;}
+BIO.indexedGeo=indexedGeo;
+
 // ---------------------------------------------------------------- bake
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
@@ -7144,9 +7167,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
   scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
   BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
-  const g=new T.BufferGeometry();
-  g.setAttribute('position',new T.Float32BufferAttribute(K.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(K.nor,3));
-  g.setAttribute('uv',new T.Float32BufferAttribute(K.uv,2));g.setAttribute('color',new T.Float32BufferAttribute(K.col,3));
+  const g=indexedGeo(T,K.pos,K.nor,K.uv,K.col);
   g.computeBoundingSphere();
   const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
   scene.add(m);BIO.baked.push(m);calls++;

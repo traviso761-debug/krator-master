@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Windows batch files need CRLF; the bash sitectl must keep LF.
+*.bat text eol=crlf
+host/sitectl text eol=lf

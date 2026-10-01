@@ -74,8 +74,18 @@ function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
 // At 512 px that is 64 px per metre, which is what the panel and board sizes
 // below are picked against — change the tile size and they stop meaning anything.
-function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+//
+// Painting waits until something first reads the texture's `.image`, which three.js does when it uploads the
+// texture for a draw: a page pays only for the textures it shows. Painting every texture up front was ~11 s of
+// each Ancients page's load, before its first frame. Pass eager=true when fn draws from rng(): deferring it would
+// shift every later draw in the seeded stream (Screamers' flBarkTex). The pixels are the same either way.
+function canvasTex(w,h,fn,rep,eager){const c=document.createElement('canvas');c.width=w;c.height=h;
+ let paint=()=>{paint=null;fn(c.getContext('2d'),w,h);};if(eager)paint();
+ const t=new THREE.CanvasTexture(c);
+ if(paint)Object.defineProperty(t,'image',{configurable:true,enumerable:true,
+  get(){if(paint)paint();return c;},
+  set(v){paint=null;Object.defineProperty(t,'image',{value:v,writable:true,configurable:true,enumerable:true});}});
+ t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
 // A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
 // canvasTex does, correctly, for albedo) bends every value through a gamma curve
 // and the surface comes back wrong.
@@ -3103,13 +3113,13 @@ TEX.thatch=canvasTex(256,256,(g,w,h)=>{
   g.strokeStyle='rgba('+(104+rng()*58|0)+','+(88+rng()*48|0)+','+(48+rng()*30|0)+','+(.25+rng()*.5).toFixed(2)+')';
   g.lineWidth=1+rng()*1.8;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.sin(a)*3,y+L);g.stroke();}
  for(let i=0;i<9;i++){const y=i/9*h;g.strokeStyle='rgba(70,56,30,.30)';g.lineWidth=3;
-  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},4);
+  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},4,true);   // eager: draws from rng()
 TEX.lash=canvasTex(128,256,(g,w,h)=>{
  g.fillStyle='#6a5038';g.fillRect(0,0,w,h);
  for(let i=0;i<420;i++){const x=rng()*w;g.strokeStyle='rgba('+(110+rng()*70|0)+','+(82+rng()*50|0)+','+(52+rng()*36|0)+',.5)';
   g.lineWidth=1+rng()*3;g.beginPath();g.moveTo(x,0);g.lineTo(x+(rng()-.5)*8,h);g.stroke();}
  for(let k=0;k<4;k++){const y=(k+.5)/4*h;g.strokeStyle='rgba(188,170,120,.75)';g.lineWidth=5;
-  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},3);
+  g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}},3,true);   // eager: draws from rng()
 MAT.thatch=new THREE.MeshStandardMaterial({map:TEX.thatch,color:0xa8996f,roughness:1,metalness:0,side:DS});
 MAT.lash  =new THREE.MeshStandardMaterial({map:TEX.lash,color:0xffffff,roughness:.96,metalness:0,side:DS});
 MAT.scrap =new THREE.MeshStandardMaterial({map:TEX.corrugate||null,color:0x8a6a52,roughness:.72,metalness:.34,side:DS});
@@ -3147,7 +3157,7 @@ function flBarkTex(kind){return canvasTex(256,512,(g,w,h)=>{
    g.lineWidth=1+rng()*2;g.beginPath();g.moveTo(-5,y);g.bezierCurveTo(w*.3,y+rr(-8,8),w*.7,y+rr(-8,8),w+5,y+rr(-4,4));g.stroke();}
   for(let i=0;i<50;i++){const x=rng()*w,y=rng()*h,r=rr(6,20);g.fillStyle='rgba(90,80,70,.25)';
    g.beginPath();g.ellipse(x,y,r,r*.5,0,0,TAU);g.fill();}}
-});}
+},undefined,true);}   // eager: it draws from rng(), so it must paint here, in stream order
 TEX.bark0=flBarkTex(0);TEX.bark1=flBarkTex(1);TEX.bark2=flBarkTex(2);TEX.bark3=flBarkTex(3);TEX.bark4=flBarkTex(4);
 MAT.bark=new THREE.MeshStandardMaterial({map:TEX.bark0,color:0xb09080,roughness:1,metalness:0,side:DS});
 // the other three hypertree boles, after Girder's bark sets: ghostwood
@@ -4799,6 +4809,29 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
  K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 
+// ---------------------------------------------------------------- indexed buckets
+// The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
+// grid points up to six times: bark alone was 550 of SW Lowlands' 685 MB of geometry. Bake keeps one copy of each
+// distinct vertex (all eleven floats equal after the float32 rounding the GPU applies anyway) and draws by index:
+// the same triangles in the same order, so the same pixels, in about a third of the memory.
+function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
+ for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
+  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
+ let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
+ for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<W;k++)h=Math.imul(h^w[o+k],0x01000193);
+  h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
+  while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
+  if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
+  idx[i]=j;}
+ const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3);
+ for(let j=0;j<m;j++){const o=j*W;pos[j*3]=f[o];pos[j*3+1]=f[o+1];pos[j*3+2]=f[o+2];nor[j*3]=f[o+3];nor[j*3+1]=f[o+4];nor[j*3+2]=f[o+5];
+  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];}
+ const g=new T.BufferGeometry();
+ g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));
+ g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
+ g.setIndex(new T.BufferAttribute(m>65535?idx:Uint16Array.from(idx),1));return g;}
+BIO.indexedGeo=indexedGeo;
+
 // ---------------------------------------------------------------- bake
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
@@ -4815,9 +4848,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
   scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
   BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
-  const g=new T.BufferGeometry();
-  g.setAttribute('position',new T.Float32BufferAttribute(K.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(K.nor,3));
-  g.setAttribute('uv',new T.Float32BufferAttribute(K.uv,2));g.setAttribute('color',new T.Float32BufferAttribute(K.col,3));
+  const g=indexedGeo(T,K.pos,K.nor,K.uv,K.col);
   g.computeBoundingSphere();
   const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
   scene.add(m);BIO.baked.push(m);calls++;
@@ -6794,7 +6825,7 @@ const skyTex=canvasTex(4096,2048,(g,w,h)=>{
  gm.addColorStop(0,'rgba(196,210,192,0)');gm.addColorStop(.3,'rgba(196,210,192,.32)');
  gm.addColorStop(1,'rgba(196,210,192,.95)');
  g.fillStyle=gm;g.fillRect(0,HZ-DEG*1.4,w,DEG*1.4+24);
-});
+},undefined,true);   // eager: draws from rng()
 skyTex.wrapS=THREE.RepeatWrapping;skyTex.wrapT=THREE.ClampToEdgeWrapping;
 const sky=new THREE.Mesh(new THREE.SphereGeometry(9000,72,44),
  new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,depthWrite:false}));

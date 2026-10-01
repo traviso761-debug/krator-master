@@ -21,3 +21,8 @@ Build: `cd <kit> && python3 build.py`. Verify: `python3 verify.py dist/<kit>.htm
 
 Worlds that use a biome (`settlements/iziz/`, `settlements/screamers/`, `kits/ancients/`) carry their own vendored copies
 of its fragments. Edit the kit here, then copy across; `iziz/build.py --vendor-check` reports drift.
+
+**Merged buckets are baked indexed.** `BIO.bake` keeps one copy of each distinct vertex and draws by index
+(`indexedGeo` in `20-core-kit.js`, in every copy of the core). The triangles and their order are unchanged, so the
+picture is identical; tubes and surfaces take about half the GPU memory they did. Builders still write full
+triangles as before.
