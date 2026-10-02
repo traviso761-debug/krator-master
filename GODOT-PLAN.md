@@ -20,7 +20,8 @@ What already crosses over, or is scaffolded to:
 | `core/atmos/` | presets are data, particles are stateless, time comes from one clock | `ATMOS.export()`: uniforms become global shader parameters, fx records become nodes. `core/atmos/GODOT.md` has the shader translation table |
 | `kits/interiors/` core (`src/10-49`) | no THREE, no DOM, runs in node | the room graph, walls, openings and the furniture grid are plain objects |
 | `settlements/yuni` fixtures | buildings, doors, windows, lights, interiors as tagged records with stable ids | `KRATOR_EXPORT.building()`, `.fixtures()`; glTF extras carry tags, `-col` names carry collision |
-| `kits/catalog/` | 1503 furniture pieces as SPEC entries: family string plus colour, tags, size, anchor | no exporter yet; the entry shape is the data |
+| `kits/catalog/` | 1503 furniture pieces as SPEC entries: family string plus colour, tags, size, anchor, role, `job` (`FURN_JOBS`) | no exporter yet; the entry shape is the data |
+| Catalog furniture placements | six builds place every piece of furniture as a record `{key, variant, seed, local and world transform, building, room, setting}`: Highlands (`89y-hl-furnish.js`), Locus (`66-locus-furnish.js`), Girder and Mav's Refuge (`53-furnish.js`), Post-Apoc (`91f-furnish.js`), the catalog's buildings (`F.furn`) | no exporter; six near-copies of the same glue, each mixing the record pass with the three.js batch (Girder's two are noted "split" in its `PORT.md`) |
 | `core/sockets/` | a building declares sockets, a culture pack fills them | data side is the socket list; the packs draw with 2D canvas |
 | `core/terrain/36-core-carve.js` | floor and blocker lists as the carve builds | node test exists; no exporter |
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
@@ -175,7 +176,7 @@ whole of `src/` in every build. Nothing has been ported yet, but every remaining
 
 ### Phase 2: the engine-neutral substrate
 
-Three small `core/` modules, each with a node test and a GDScript twin checked against the same golden
+Four small `core/` modules, each with a node test (and, where Godot runs the same algorithm, a GDScript twin) checked against the same golden
 vectors:
 
 1. **`core/rand/`**: one PRNG (a 32-bit integer generator, `mulberry32` or `sfc32`, so the arithmetic is
@@ -195,8 +196,19 @@ vectors:
    inspector reads it; the exporter writes it as glTF extras; the minimap draws from it. `BIO.register`,
    Voth's `PLACED`, Yuni's `FIX.*` and the catalog's entries all map onto it.
 
+4. **`core/furnish/`**: one furniture glue in place of the six copies (Oct 2026 review). A **placement pass**
+   with no THREE and no DOM turns `FURNISH(key, lx, ly, lz, lry, {v, seed, setting})` and the interiors hook
+   (`KratorInteriors.sets.furnish`) into records, written as `core/tags` entries of class `furniture` with a
+   deterministic id, the building's id, the room's id and the piece's `job`. A **draw adapter** per build gives
+   the frame (its local-to-world rule) and hands the records to the catalog runtime's batch for the preview. The
+   `?interiors=1` / `?furniture=0` switches, the missing-key count, the sRGB-to-linear colour step (three of the
+   six copies had to add it) and the frame-shift table (Mav's Refuge's `BRF_SHIFT`) live in it once. Each build
+   keeps its `FURNISH` name, so no builder changes; the build's glue fragment shrinks to its adapter. Node test:
+   a fixed list of calls gives the same records.
+
 Done when: each module has `test-*.js` passing in node and a `.gd` twin passing the same vectors in
-Godot's headless test runner; at least one build of each lineage runs on all three.
+Godot's headless test runner; at least one build of each lineage runs on all three. For `core/furnish/`: the six
+builds take it, their hash baseline is unchanged, and `check_port.py` passes its placement pass as `[G data]`.
 
 ### Phase 3: textures and materials as data
 
@@ -216,6 +228,14 @@ Godot's headless test runner; at least one build of each lineage runs on all thr
 - **The shader library.** `core/godot/shaders/`: `atmos.gdshaderinc` (already specified), foliage card, bark,
   animated fauna body, world-unit UV (triplanar or world-space UV: `vWorldUV` is [G native] in Godot), the
   flag, the glass Fresnel, the water. Each three.js hook in `core/` names the shader it corresponds to.
+
+- **Catalog furniture in the pilot.** Girder's furniture is catalog furniture, so the Girder pilot also maps the
+  catalog's family strings (`wood plank bark stone plaster concrete metal rust glass cloth rope thatch ...`, about
+  30, `CATALOG_MATERIALS`) onto library ids. Furniture is tinted by its culture's palette (`FPAL`), so it needs the
+  muted copies of the sets (`--mute`), not the full-colour Beast Rider ones. Furniture is **not** textured in
+  three.js: the preview's merged batches keep no UVs, and Godot applies the library through its triplanar option.
+  The export carries, per piece, the family and its library record, and states that the catalog's colours are
+  sRGB (`convention.colour`).
 
 Done when: a build's export carries a material table a Godot importer can apply without reading JS, and
 no new `canvasTex` painter is added without a `TEX.def` or a bake.
@@ -240,6 +260,14 @@ JSON per build (or per tile with `{box}`), with:
 - `registry` (Phase 2) joined to items and buckets by id, so every mesh carries its tags;
 - `terrain` (Phase 2), `atmos`, `fixtures` (Yuni's records), `interiors` (the room graph), `sockets`;
 - `sim` (Phase 5).
+
+- `furniture` (Oct 2026 review): the catalog's pieces and the placements of `core/furnish/`. Each piece is built
+  once per variant and per **look**: a placement's seed is reduced to one of K looks per variant (K about 4, as the
+  flora's baked variants), so placements share a mesh. A piece record carries its geometry, its entry (tags, anchor,
+  size, role, job, family per material) and its lights as data; the catalog's painted panels (`F.decal`, canvas 2D)
+  are baked to PNG. Placements are transforms by piece and look, which the importer turns into one MultiMesh per
+  piece and look, far cheaper than the preview's merged batches. A catalog-only export (every piece, no
+  placements) gives Godot the furniture library the interiors planner places from.
 
 Then the converter: `tools/godot/krator_import.py` writes `.glb` (meshes, MultiMesh instancing through
 `EXT_mesh_gpu_instancing`, extras) plus a `.tscn` or a Godot `addons/krator/` importer that reads the JSON
@@ -274,6 +302,11 @@ float paths differ).
 
 Girder, Locus, Mav's Refuge and Yuni's layers are brought onto the same data shape, not ported separately.
 
+Furniture feeds the places' slots: `core/simulation/PLAN.md` derives work and sleep slots from placed furniture
+(`SIM.slotsFromFurniture`: a piece's `job` from `FURN_JOBS`, or an interiors walker target type: forge to SMITH,
+bed to SLEEP, counter to SELL). The `core/furnish/` records (Phase 2) carry what that needs: a stable building
+id, room id and job on every placement.
+
 Done when: Voth's `78a-78j` and `79a-79c` fragments read their world from exported data and so can the
 Godot runtime; one agent class (citizens) walks the same routes in both.
 
@@ -284,7 +317,12 @@ Stop investing in, and where it simplifies the host shell, remove:
 - `core/lod/` (keep as the preview's LOD; no port, no further features);
 - per-build day/night light rigs, fog and glow layers once `core/atmos` presets cover the look;
 - `Raycaster`-based picking and walk-mode collision in the life layers (Phase 5 moves them to data);
-- the underground toggle, cut planes, shadow-map tricks (the TODO's [G native] items).
+- the underground toggle, cut planes, shadow-map tricks (the TODO's [G native] items);
+- furniture and interiors preview work (Oct 2026 review): lighter low-detail versions of heavy catalog pieces
+  and other three.js furniture performance work (Godot instances each piece once and has its own LOD); new
+  walk-mode features (ladders, edge rails, head collisions: Girder's `83-walk.js` and the interiors walk-through
+  stay as they are); the after-load furnishing timing in Girder; re-exporting the interiors walk-through's
+  building shells. The furniture budget lines in the builds' `verify.py` stay as guards for the preview.
 
 Nothing in this phase is deleted while a build still needs it to preview. "Retire" means tag [G native],
 freeze, and do not copy into new builds.
@@ -325,6 +363,9 @@ golden tests pass in CI.
 | `kits/interiors/` core | [G data] | already pure; add the export; port the planner later if rooms are to be generated in Godot |
 | `kits/interiors/` demo, views | [web] | host shell |
 | `kits/catalog/` entries | [G data] | export entries; the `mk*` geometry kit is [draw] and exports as meshes |
+| `kits/catalog/` runtime and bundle (`krator-furniture-runtime.js`, `furniture_bundle.py`) | [draw] | the preview's batch; the exporter builds pieces through the same core (Phase 4) |
+| Builds' furniture glue (`89y-hl-furnish`, `66-locus-furnish`, `53-furnish` x2, `91f-furnish`, `F.furn`) | [G data] + [draw] | split into `core/furnish/`'s placement pass and a per-build draw adapter (Phase 2) |
+| Girder `56-interiors.js`, `83-walk.js` | [G data] + [web] | the per-building set items move to the placement pass; walk mode is [G native] (Phase 6) |
 | `kits/catalog/` sheet, hover, polygon | [web] | host shell |
 | `kits/post-apoc`, `kits/ringsea` | [draw] + [G data] | builders export as meshes; their `92-camera.js` goes to the host |
 | `kits/ancients` and lineage | [draw] + [G data] + [G shader] | split builders (section 3.2); `MAT`/`TEX` onto Phase 3; `targets/` are data already |
@@ -382,9 +423,9 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 |---|---|
 | M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0) |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
-| M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins (Phase 2) |
+| M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start) |
-| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4) |
+| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export |
 | M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
 
