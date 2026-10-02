@@ -72,6 +72,42 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 - **[G data] The generator checks that every hall is covered by rock** (`tools/make-moria.py:20`). This could
   be an assert in `verify.py` for carved builds; run on the export, it guards the Godot side too.
 
+## Interiors *(Menagerie: the Backrooms, `src/backrooms/`)*
+
+Krator's interiors planner (`kits/interiors/src/46-planner.js`) already splits a floor plate, cuts openings
+and outputs walls, doors and a room graph, so the layout side is covered. What the Backrooms adds is about
+making many rooms look lived-in cheaply.
+
+- **[G data] Light baked into vertex colours** (`level.js:216-241`). Every surface is cut into a grid of about
+  0.6 m. Each vertex adds up the ceiling panels within 7 m that it can see. Visibility is a 2D walk along the
+  grid lines, so light goes through doorways and walls cast shadow. A direct term and a soft fill term are
+  clamped to 1.7. The cost is nothing per frame and no real lights. Godot's LightmapGI cannot bake rooms
+  generated at runtime, so export the colours as mesh `COLOR`. Use it for furnished rooms, with the catalog's
+  lamps as sources.
+- **[G shader] Per-lamp flicker without lights** (`level.js:176-188`, `:437`). Each vertex stores how much of
+  its light comes from a flickering panel and that panel's phase (attribute `aF`). The shader dims by
+  `share·(1−flick(t,phase))`, so the wall flickers with the lamp. Lamp state is on, dead or flickering.
+- **[G data] Grime from world-space noise, not in the texture** (`textures.js:7-9`, `level.js:243-252`).
+  Textures are one clean repeat at real size (wallpaper 1.2 × 3 m, a ceiling tile 1.2 × 0.6 m). Stains, damp
+  creeping up walls and puddles go in vertex colours from fbm over world position, so no stain repeats.
+  Stains tint brown rather than grey. This fits every Krator interior and ruin.
+- **[G data] Room-variety rules as numbers, one generator per level** (`level.js:28-51`):
+  - the chance two rooms merge, leaving columns where the wall would be;
+  - partial walls that stop short;
+  - one-door versus full-width openings;
+  - weighted ceiling heights, with narrow halls more often low;
+  - a lighting mode per room: full, alternate, dim or dark, with rates for dead and flickering panels;
+  - lamp colour, ambient light and fog.
+  Office, car park and pool hall are one generator with three presets. Worth adding to the interiors
+  programmes as a `variety` block.
+- **[G data] Streaming interior chunks from the seed** (already listed under Worlds): each chunk boundary
+  forces one opening, so neighbours always connect.
+- **[G shader] Pool caustics** (`level.js:199-213`): two crossed sine fields, `pow(|a+b|·0.6, 3)` for the
+  bright lines. Ten lines; useful for baths, cisterns and fountains.
+- **[G data] Procedural ambient sound** (`sound.js`): mains hum as a 120 Hz sawtooth through a band-pass, a
+  60 Hz square, a high whine and hiss, all slowly modulated. Each level swaps the recipe. The parameters
+  port to Godot's `AudioStreamGenerator`; the Web Audio code is [web].
+
 ## Fixes *(Menagerie runtime)*
 
 - **[web]** Recover from a lost WebGL context: `preventDefault` on `webglcontextlost`, show a panel, restore.
@@ -170,8 +206,9 @@ GPUParticles3D, FogVolume and Decal read them directly.
 - **[G data] An `events` export block:** a random-event scheduler with `every:[min,max]` and an `active()`
   gate (`src/core/happenings.js:19,73`).
 - Sky module, not atmos, **[G shader]**:
-  - a planet with night-side city lights and a drifting cloud shell (`src/homeworld/kharak.js:57-83`); the
-    giant's rim already exists;
+  - drifting cloud bands on the gas giant, from the latitude-stretched, drifting fbm cloud shell
+    (`src/homeworld/kharak.js:68-83`); the giant's rim already exists. No night-side city lights: it is a gas
+    giant;
   - a galactic band in the star field (`kharak.js:92+`);
   - a rotating-habitat sky: an axial sun tube that dims rather than sets, with land overhead
     (`src/hab/world.js:40-63,357-368,539-560,622-650`).
