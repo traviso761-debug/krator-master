@@ -29,13 +29,13 @@ Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> 
 | 9 | `68-rs-iziz-dhoni.js` | Iziz Dhoni | iziz-vernacular | coaster, main and mizzen lateen |
 | 10 | `69-rs-islander-oruwa.js` | Islander Oruwa | ringsea-islander | outrigger fishing canoe |
 | 11 | `70-rs-islander-karakoa.js` | Islander Karakoa | ringsea-islander | war outrigger (double outriggers, tanja sail) |
-| 12 | `71-rs-voth-chitin.js` | Voth Chitin Bireme | voth | bireme raider, carapace roof, Voth-blue fan sails, blue eyes |
+| 12 | `71-rs-voth-chitin.js` | Voth Chitin Bireme | voth | bireme raider, carapace roof, Voth-purple fan sails, blue eyes |
 | 13 | `72-rs-hyk-hexareme.js` | Hykkousoi Siege Hexareme | hykkousoi | three banks of great oars, towers, stone-thrower, boarding bridge |
 | 14 | `73-rs-hyk-pearl.js` | Hykkousoi Pearl Baghlah | hykkousoi | pearling mother ship: diving booms, divers, oyster baskets |
 | 15 | `74-rs-iziz-wheel.js` | Iziz Wheel Galley | iziz-vernacular | treadmill paddle-wheel warship (the wheels turn), orange trim, sun lateen |
 | 16 | `75-rs-beast-rookery.js` | Beast-Rider Rookery Raft | beast-rider | trimaran roost tower for flyers (`rsFlyer`) |
 | 17 | `76-rs-islander-lakatoi.js` | Islander Lakatoi | ringsea-islander | four-hull trading raft, twin pandanus crab claws |
-| 18 | `77-rs-voth-hulk.js` | Voth Cargo Hulk | voth | cargo: bluff hulk, castles, hold of sacks, derrick, Voth-blue square sail |
+| 18 | `77-rs-voth-hulk.js` | Voth Cargo Hulk | voth | cargo: bluff hulk, castles, hold of sacks, derrick, Voth-purple square sail |
 | 19 | `78-rs-hyk-corbita.js` | Hykkousoi Amphora Corbita | hykkousoi | cargo: round-ship, swan sternpost, amphorae |
 | 20 | `79-rs-xanadu-carrack.js` | Xanadu Bullion Carrack | xanadu | cargo: tiled castles, saffron wheel sails, bullion chests |
 | 21 | `80-rs-iziz-lighter.js` | Iziz Salvage Lighter | iziz-vernacular | cargo: flat lighter of Ancient panels and pipe, A-frame derrick |

@@ -130,7 +130,7 @@ function makeSkyTexture(volc){
     }
   }
 
-  /* --- the distant volcano, painted due north (u = 0.75) ---
+  /* --- the distant volcano, painted north-north-east (azimuth 22.5, u = 0.6875) ---
      Kept low-contrast and warm on purpose: it is the farthest thing in the
      scene, so it should read as sitting in the same haze as everything
      else rather than as a dark cutout punched through it. Every fill below
@@ -143,7 +143,7 @@ function makeSkyTexture(volc){
     return 'rgba('+r+','+gg+','+b+','+a+')';
   }
   var ROCK=[118,106,90];               /* warm ash-rock, before haze mix    */
-  var vx = W*0.75, base = HZ+4, vh = 44, vw = 112;
+  var vx = W*0.6875, base = HZ+4, vh = 44, vw = 112;   /* u = (270 - az)/360, az 22.5 */
   function ridge(cx, halfw, height, col, jag){
     g.fillStyle=col; g.beginPath(); g.moveTo(cx-halfw, base);
     var n=48;

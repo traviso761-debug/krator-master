@@ -55,7 +55,7 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 - **The highlands:** the rings of the inner and outer Wall mountains form the most temperate and earthlike conditions on Krator. The Iron Republic and its rustic highland relatives live here.
 - **The central crater** holds the hyperjungle where trees grow taller than redwoods and centipedes grow to the size of horses, it also holds the Ring Sea and the volcano. Iziz, Voth, the Hykkousoi, the Beast Riders, and other smaller cultures lie here.
 - **The Ring Sea.** An inland sea. Mav's Refuge sits on its NE lee shore, the Hykkousoi on the NW. Its sailing cultures are listed in §9. Islands here are variously rocky and infertile or lush and valuable, especially for the spice trade. Many geysers.
-- **The great volcano.** Seen from almost everywhere: due northeast from Voth, far south from the Hexahedron, northeast of Iziz. It always smokes; some of the time the plume thickens and the summit glows. Its ash, and great rain shadow, make it fertile, but its nature is treacherous.
+- **The great volcano.** Seen from almost everywhere: north-northeast from Voth, far south from the Hexahedron, northeast of Iziz. It always smokes; some of the time the plume thickens and the summit glows. Its ash, and great rain shadow, make it fertile, but its nature is treacherous.
 - **The Lowlands.** In between the Inner and Outer Wall are basin regions, with higher pressure than Earth, just enough that an unadapted human might have health problems from chronic hyperbaric conditions. Dalab lies in the SW lowlands.
 - **The Eastern Abyss.** East of the high desert, the plateau ends in a 740 m cliff. The high desert's river pours over it as a cataract onto a basin floor, which holds multiple salt lakes. The basin wall, "the shelf", hides the sun and the giant's ring from Locus. Yuni controls Locus and the southern portion of the Abyss.
 - **The Godthrone.** Massive volcano south of the crater, almost Olympus Mons size. Upper reaches are completely airless.
@@ -115,7 +115,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - The Izani Empire's last walking **mechs**: recovered from the ruins of the city and key to their empire. ~9 m bipeds kept going in the Forgemaster's Hall. Not originally war mechs, but anything is a war mech when you are mostly fighting people with swords.
 - **The Ear**: the one Ancient satellite dish the Order of the History Monks can still point at the sky.
 - Salvaged Ancient engines driving generators (Locus, Xanadu).
-- **Ancient’s Valley:** In the far west (name subject to change), there lies a region of dense ruins which is believed to have been the Ancient’s capital. Now it is home only to mutants, killer robots, and the rare bandit desperate enough to seek refuge there.
+- **Ancient’s Valley** (also the Valley of the Ancients): In the far west (name subject to change), there lies a region of dense ruins which is believed to have been the Ancient’s capital. Now it is home only to mutants, killer robots, and the rare bandit desperate enough to seek refuge there.
 - **Hub 01:** the merchants that pass from the crater to Xanadu through the Bowl and the Catch here rumors of robotic stalkers that strike in the night; this ruined arcology, high in the chill and thin-aired mountains, is their home.
 
 ## 5. Themes that run through every culture
@@ -409,7 +409,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - **Hykkousoi:** famed for rib-gills; water breathers
 - **Giants**: engineered at Dalab, some four-armed.
 - **Lizardmen.**
-- **Mutants, aka ghouls (Korona, Valley of the Ancients )**
+- **Mutants, aka ghouls (Korona, Valley of the Ancients)**
 
 ## 8. Ecology highlights (detail in each `biomes/*/NOTES.md` and `biomes/FRUIT.md`)
 

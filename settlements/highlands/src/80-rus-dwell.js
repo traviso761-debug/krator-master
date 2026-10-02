@@ -1,5 +1,5 @@
 // ================================================================= HIGHLANDS / RUSTIC — dwellings
-// The villages south of the Republic: Norse and Alpine. Stone is only a footing or a ground storey; above it
+// The villages north-east of the Republic: Norse and Alpine. Stone is only a footing or a ground storey; above it
 // everything is log and board under wide, low shingle gables weighted with stones (Alpine) or steep turf and
 // shingle gables with crossed horns (Norse). Balconies with cut-out boards and geraniums; the gable carries a
 // painted crest. No electric light anywhere in the branch. Seeds 22000–22199 (this file), 22200–22499 (81).
