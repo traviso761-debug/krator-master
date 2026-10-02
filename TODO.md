@@ -235,6 +235,39 @@ and its plume is a chain of spheres.
 - **[G native]** Sparks and steam: GPUParticles3D, with parameters taken from `src/core/dust.js:13-52` (drag,
   gravity, wind, life, alpha curve). The steam is atmos's existing `smoke` steam preset.
 
+## Geothermal terrain *(Menagerie: Yellowstone, `src/yellowstone/landmarks.js`, `nature.js`)*
+
+Krator has no geysers or hot springs. Combined with the lava field above and the land-cover sinter class
+(Worlds), these would make a geothermal biome.
+
+- **[G data] → [G shader] Hot-spring pools** (`landmarks.js:56-83,172-189`). The pool is painted rather than
+  modelled, because what it is is colour.
+  - The colour is a radial palette ramp from centre to rim. The blue centre is water too hot for life; each
+    ring outward is the bacteria that can stand that temperature. There are five palettes (prismatic, blue,
+    glory, emerald, opal).
+  - Round the pool: a pale sinter apron fading at its edge, a lobed bacterial-mat band, runoff rays streaked
+    outward, and a scalloped sinter lip.
+  - It is laid as a flat disc at the highest ground under it (`topOf`), with polygon offset. A glossy
+    low-opacity Phong skin on top reflects the sky, which is most of what a pool looks like.
+  - Options: an optional crater wall, and steam vents scattered in proportion to the area.
+  - About two thousand small springs are instanced coloured discs with a rim (`nature.js:254-267`).
+  Today it is a canvas texture [web]. As data it is the palette stops, the pool fraction, the ray count and
+  a seed, which make a short Godot shader: a ramp on radius, with the lobes and rays from angular noise.
+  It also makes an atmos `hotspring` fx kind.
+- **[G shader] Geyser eruptions, entirely on the GPU** (`landmarks.js:94-121`). Each drop is a point with a
+  seed. Its height is a parabola solved in the vertex shader from `uTime`, for a column height `H`, so no
+  per-frame work is needed. One `uAmp` strength sets how many drops are airborne and how high they go, so
+  the same points serve pre-play splashing, the full column and the dying away. A `fountain` flag throws
+  bursts at every height. A second point cloud makes the steam cloud that drifts downwind
+  (`cloudPoints`, :122+); it is heavier on cold mornings and at night (:169).
+- **[G data] The eruption schedule** (`landmarks.js:162-167`): `interval`, `duration` and `phase`, as a pure
+  function of time. The strength ramps up over 3 s and holds; there are 50 s of splashing beforehand and
+  40 s of fading cloud afterwards. Godot evaluates it identically.
+- **[G data] Rimstone terraces** (`landmarks.js:186-215`): lobed extruded steps laid along the steepest
+  downhill direction, in flights of three. Active steps are white and orange with blue pools and steam; dry
+  ones are grey.
+- **[G data]** A sinter cone (a lathe, :217) and mud pots (a stippled disc plus bubbling domes, :223).
+
 ## Effects: new core/atmos fx kinds *(Menagerie sci-fi scenes)*
 
 Every Menagerie particle effect is stepped on the processor. Take the parameters, not the code: Godot's
