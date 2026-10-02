@@ -11,6 +11,7 @@ heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cu
 | `20-textures.js` | procedural canvas textures (`TEX.*`) and packed roughness/metal maps |
 | `22-materials.js` | the base `MAT` table: `white rust verdigris glass winIntact winDead dark guts pipe pipeRust strip dot moss vine rubble fig ground slab stain`, plus the glass Fresnel patch |
 | `68-mat-v5.js` | `MAT.rock lawn water mud turf turfR spray darkGlass` |
+| `PLAN.md` | the material library plan: a shared PBR base library for every build, culture pattern sheets, sources and prompts (GODOT-PLAN.md Phase 3) |
 
 **Used by** the six Ancients-lineage builds: `kits/ancients`, and `settlements/`
 `dalab`, `highlands`, `iziz`, `reedlake`, `screamers`. Each `build.py` adds
