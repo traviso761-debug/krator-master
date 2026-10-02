@@ -39,9 +39,4 @@ present lakes are, and a salt lake in each, about the size of the old one. Then 
 `abyss_climate.py <label> <out.html> <assembled.html>` re-derives the climate by the model's own
 rules (pressure from height; temperatures at 5.5 C/km; abyssal classes above 1.85 atm by the
 existing rain field: XW < 400 mm, XS < 800, XV < 1350, XA above; salt lakes WX) and writes
-`abyss_report.json`. Before the climate pass, `rainfit.py` (needs scikit-learn) fits the model's
-own rain to its terrain (height, relief, rise along the NW wind, upwind barriers, upwind and nearby
-water, position; held-out R2 0.95 on log rain, 0.82 on abyssal ground) and writes the change in log
-rain the edit causes; `abyss_climate.py` applies it, re-derives abyssal classes from the new rain,
-and outside the abyssal floor moves cells across the Koppen dryness lines (Peel et al. 2007) only
-in the direction their rain moved. Published as a separate preview page: https://claude.ai/artifact/GDfGZYF4XH75U7rZRmd83L
+`abyss_report.json`. Published as a separate preview page: https://claude.ai/artifact/GDfGZYF4XH75U7rZRmd83L
