@@ -1,17 +1,21 @@
 """Soften the outer flank of the Inner Wall on the Krator scale model.
 
 Works on the half-res height raster (774x696, 4 km a pixel) decoded from the artifact into the
-working folder (h.png, wl.png). Run: python3 inner_wall_smooth.py 5 10 16 (sigma, reach up the
-wall, reach out from it, all in pixels); then inner_wall_reshade.py. The crater-facing half of the wall,
-the crater itself and all water cells are left as they are.
+working folder (h.png, wl.png), with the 'Inner Crater' region exported from the artifact's
+database as inner_crater.json. Run: python3 inner_wall_smooth.py 50 6 (reach in km either side
+of the Inner Crater outline, blur in pixels); then inner_wall_reshade.py. The crater-facing part
+of the wall, the crater itself and all water cells are left as they are.
 """
 import sys, numpy as np
 from PIL import Image
 from scipy import ndimage as nd
 
-SIGMA = float(sys.argv[1]) if len(sys.argv) > 1 else 4.0   # blur, px
-A_IN = float(sys.argv[2]) if len(sys.argv) > 2 else 9.0     # how far up the wall's outer face it reaches
-A_OUT = float(sys.argv[3]) if len(sys.argv) > 3 else 14.0   # how far out the apron reaches
+import json
+KM = 4.0                                                     # km per pixel of this raster
+REACH_KM = float(sys.argv[1]) if len(sys.argv) > 1 else 50.0 # band either side of the Inner Crater line
+SIGMA = float(sys.argv[2]) if len(sys.argv) > 2 else 6.0     # blur, px
+POLY = sys.argv[3] if len(sys.argv) > 3 else 'inner_crater.json'  # the 'Inner Crater' region (full-res px)
+R = REACH_KM / KM
 LO, HI = -2600.0, 17100.0
 
 h = np.array(Image.open('h.png')).astype(np.int64)
@@ -50,6 +54,14 @@ for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1,
     edge |= W & ~nw & (ne < e - 600)
 dO = nd.distance_transform_edt(~edge)
 
+# the 'Inner Crater' region's outline, rasterised at this resolution
+from PIL import ImageDraw
+pts = json.load(open(POLY)); pts = pts.get('data', pts)['points']
+pm = Image.new('L', (e.shape[1], e.shape[0]), 0)
+ImageDraw.Draw(pm).polygon([(x / 2, y / 2) for x, y in pts], fill=1)
+RG = np.array(pm).astype(bool)
+dP = nd.distance_transform_edt(~(RG & ~nd.binary_erosion(RG)))   # distance to the outline
+
 def sstep(a, b, x):
     t = np.clip((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t)
 
@@ -62,12 +74,13 @@ src[K] = e[iy[K], ix[K]]
 blur = nd.gaussian_filter(src, SIGMA, mode='nearest')
 
 w = np.zeros_like(e)
-# on the wall: strongest at the outer edge, gone by A_IN px in, and never on the crater-facing half
-ww = (1 - sstep(0, A_IN, dO)) * sstep(0.45, 0.62, dI / np.maximum(dI + dO, 1e-6)) * sstep(4, 9, dI)
+# full strength out to ~REACH_KM either side of the ledge, fading over the next stretch, and only
+# within that reach of the Inner Crater outline; on the wall never the crater-facing part
+band = (1 - sstep(0.7 * R, 1.3 * R, dO)) * (1 - sstep(R, 1.5 * R, dP))
+ww = band * sstep(0.45, 0.62, dI / np.maximum(dI + dO, 1e-6)) * sstep(4, 9, dI)
 w[W] = ww[W]
 out = ~W & ~I
-wo = 1 - sstep(0, A_OUT, dO)
-w[out] = wo[out]
+w[out] = band[out]
 w[water | whas] = 0
 
 new = e + w * (blur - e)
