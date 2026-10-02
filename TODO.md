@@ -108,6 +108,59 @@ making many rooms look lived-in cheaply.
   60 Hz square, a high whine and hiss, all slowly modulated. Each level swaps the recipe. The parameters
   port to Godot's `AudioStreamGenerator`; the Web Audio code is [web].
 
+## Props to harvest into the catalog *(Menagerie)*
+
+Most Menagerie props are city-scale, one primitive each, so few are worth taking. The ones listed are pure
+geometry merged per material, so they are **[G data]** unless marked otherwise. Convert each to the
+`kits/furniture/SPEC.md` shape (`F.*` and palette keys, a declared size). Iziz's and Voth's props are
+Krator's own already.
+
+**Real gaps:**
+- **Siege engines** (`src/middleearth/hosts.js`):
+  - a counterweight trebuchet (`mkEngine`, :249) whose beam sits on a pivot group, so it can swing; it needs
+    a sling and a windlass added;
+  - a four-storey siege tower (:293) with braces, a hide front, wheels and a drawbridge;
+  - a ram slung on chains under a wheeled gantry (:327, parametric length and radius).
+  Suits Beast Riders, Voth and Republican. They are too big for furniture, so make a small siege kit or a
+  `type:'engine'`. The pivot maps to a Godot AnimationPlayer.
+- **Pressurised outpost modules** (`src/europa/details.js:54`, one recipe with a `kind`):
+  - a hull on legs with domed ends, an airlock door, a window strip and an antenna; the lab version adds a
+    radiator;
+  - a domed tank;
+  - a ribbed Quonset garage;
+  - a steam-pipe run on trestles (:27).
+  For Ancients sites, intact or ruined, and post-apoc. Low effort. (Its dishes duplicate
+  `kits/ancients/src/86-dish.js`.)
+- **Vehicles** (`src/arrakeen/machines.js`):
+  - an ornithopter with hinged wings (:20);
+  - a carryall whose grapples drop and whose suspensor bags fill (:46);
+  - a tracked harvester (:73).
+  Each is a factory returning a Group with `update()`. The silhouettes are recognisably Dune, so reshape them
+  before taking them. For Ancients, post-apoc and the Iziz spaceport.
+- **A shoji and tatami building kit** (`src/infinitycastle/kit.js`):
+  - `room()` in ken modules (:74): tatami, fusuma, shoji, a veranda, a hipped roof and a paper lamp;
+  - galleries, stairs and bridges;
+  - sliding panels.
+  It is already data-shaped (`B.box/quad/beam` by material name). The paper surfaces are canvas textures
+  [web]; bake them to PNGs. For Republican's Korean strand or Xanadu.
+- **Signage** [web for the text] (`src/fleshpit/signs.js:20,51`, `src/nightcity/neon.js:39,107`,
+  `src/kowloon/life.js:132`): boards, backlit signs, blade signs, projecting signs on arms. Kowloon's window
+  cages, AC units and pipe bundles (:105) suit post-apoc facades. Bake a PNG atlas of Krator strings in izani
+  glyphs. Do not port neon.js's `BRAND` table, which holds real trademark names.
+
+**Ideas for existing pieces:**
+- **Guardian statue** (`src/moria/city.js:71`): a robed, bearded figure with an axe, scaled by height. A
+  generic ruin statue.
+- **Forges** (`src/moria/city.js:148`): take the hood and chimney, and the glowing pour channel. In Godot the
+  coal and the pour need emissive materials.
+- **Festival marquee** (`src/shire/party.js:26,35`): three peaks, a valance and trestle tables, plus
+  pavilions. For Rustic.
+- **A lofting toolkit for hull builders** (`src/starship/parts.js`: `lathe`, `tube` with cross-sections,
+  `sweep`, `grille`): could help `kits/ringsea/src/42-rs-hull.js` and the Ancients.
+
+Skip: the street furniture (one primitive each), Moria's headframe, carts, chests and well, the gondolas, and
+the pumpjack. Krator's are better or the same.
+
 ## Fixes *(Menagerie runtime)*
 
 - **[web]** Recover from a lost WebGL context: `preventDefault` on `webglcontextlost`, show a panel, restore.
