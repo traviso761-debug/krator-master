@@ -56,7 +56,10 @@ var VIEWS = [
 var ptrs = {}, lastPinch = 0, dragged = false;
 var camEl = renderer.domElement;
 camEl.style.touchAction = 'none';
-camEl.addEventListener('pointerdown', function(e){ camEl.setPointerCapture(e.pointerId); ptrs[e.pointerId] = { x:e.clientX, y:e.clientY }; dragged = false; });
+/* no capture while the walk mode holds pointer lock (83-walk.js): the browser refuses it there with an
+   InvalidStateError, every click */
+camEl.addEventListener('pointerdown', function(e){ if(!document.pointerLockElement){ try{ camEl.setPointerCapture(e.pointerId); }catch(err){} }
+  ptrs[e.pointerId] = { x:e.clientX, y:e.clientY }; dragged = false; });
 camEl.addEventListener('pointermove', function(e){
   var p = ptrs[e.pointerId]; if(!p) return;
   if(CAM_HOOK){ p.x = e.clientX; p.y = e.clientY; return; }
