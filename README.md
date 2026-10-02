@@ -70,13 +70,13 @@ kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of eve
 built world is published from `gallery/` (see `gallery/README.md`).
 
 **Keep the Krator Worlds gallery current.** Update it automatically only when you
-push a brand new settlement or kit to `main` (or change the location of an old one's
+push a brand new settlement, kit or biome to `main` (or change the location of an old one's
 .html render). Add the new pages to `ENTRIES` in `gallery/build_gallery.py` if they are
 not listed, run `python3 gallery/build_gallery.py`, and republish `gallery/site/` to
 the Krator Worlds artifact at the URL in `gallery/README.md` (same URL, every file
 in `gallery/site/worlds/` attached). Do not publish a new artifact.
 
-- A fix delivered to one settlement: republish only that settlement's files.
+- A fix delivered to one settlement or biome: republish only that build's files.
 - A change wider than that (several builds, shared `core/` code, a refactor): ask
   whether to update the gallery. Do not republish unasked.
 
