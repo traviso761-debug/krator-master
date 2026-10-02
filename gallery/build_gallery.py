@@ -51,6 +51,8 @@ ENTRIES = [
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea.'),
     ('world', 'shade', 'settlements/shade/dist/shade.html', 'Shade',
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
+    ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
+     'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
@@ -96,6 +98,8 @@ ENTRIES = [
     ('kit', 'screamers-furniture', 'settlements/screamers/dist/furniture.html', 'Screamer furniture', 'The Screamers\' furniture set.'),
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
     ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
+    ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
+     'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
 
     # Arcologies: each its own kit target. 'new' marks this month's group (QA group arcC).
     ('arcology', 'arc-theodiga', 'kits/ancients/dist/theodiga.html', 'Theodiga',
@@ -214,6 +218,7 @@ ENTRIES = [
     ('biome', 'nwlowlands', 'biomes/nwlowlands/dist/nwlowlands.html', 'Northwestern lowlands', 'Lake shore, Mediterranean foothills, bamboo groves, glow-willows.'),
     ('biome', 'xanadu', 'biomes/xanadu/dist/xanadu.html', 'Xanadu', 'An enclosed mountain lake and a sacred river; ornamental wildwood.'),
     ('biome', 'nhighlands', 'biomes/nhighlands/dist/nhighlands.html', 'Northern highlands', 'Old-growth temperate to boreal forest, trumpet trees, glowing bell-bulbs, a stream from its tarn.'),
+    ('biome', 'nwbay', 'biomes/nwbay/dist/nwbay.html', 'North-west bay', 'The bay of Ys: karst stacks, an igneous shore, travertine terraces, a semi-aquatic flora zone; a fork of the south-west bay (in progress).'),
 ]
 
 
