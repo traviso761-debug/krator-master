@@ -19,7 +19,7 @@ Prefer items that are straightforward to port. **Godot order:** (1) the carver's
 which becomes collision shapes and the navigation mesh source; (2) the land-cover map, which becomes the
 terrain splat texture and the placement input; (3) the minimap drawn from exported data.
 
-**Counts:** about 15 [G data], 8 [G shader], 9 [G native] and 12 [web].
+**Counts:** tags used: about 46 [G data], 26 [G shader], 16 [G native] and 17 [web] (some items carry two, and the legend above uses one of each).
 
 ## Features
 
