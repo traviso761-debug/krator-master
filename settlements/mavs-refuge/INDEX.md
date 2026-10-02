@@ -4,7 +4,7 @@
 
 Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `mavs-refuge.html`
 
@@ -18,7 +18,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 6 |  |
 | `05-palette.js` | 7 | 0. PALETTE (1) |
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (78); 3. TERRAIN FIELD (149) |
-| `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (285) |
+| `20-stage.js` | 15 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (289) |
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 30 | 5. LAYOUT (1); PLATFORMS (102); SATELLITES + BRIDGES (167); STAIR BAYS (246); DECK LOTS + ROOMS (281); SPIRALS: gate ramps + the council stair (349); ROOSTS (393); NAV GRAPH (415) |
 | `32-branches.js` | 8 | 6. BRANCH SKELETONS (1) |
