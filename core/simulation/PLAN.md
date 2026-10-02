@@ -270,6 +270,37 @@ first candidates to move into `world/*.json` unchanged.
 shapes, so an export can be edited and dropped back into `world/` as the overlay:
 the JSON on disk and the JSON exported are one format.
 
+**Agents will write most of it at first.** The JSON is therefore shaped for a
+Claude session working under `CLAUDE.md`'s token rules, not only for a person
+tweaking a value:
+
+- **Start from a draft, never a blank file.** `tools/sim_scaffold.py <built html>`
+  runs the page headless, takes `SIM.export()` and writes `world/*.json` with every
+  generated record in place. An agent edits capacities, hours, factions and
+  activity lists in a file that already compiles, instead of typing ids it has to
+  look up. Re-running the scaffold on an edited folder only adds records that are
+  new in the geometry; it never overwrites a hand-set field.
+- **One kind per file, one record per line,** sorted by `id`, so `grep -n` finds a
+  place without opening the file and a diff shows one record per changed line.
+  A file over ~30 KB is split by district or kind (`places-cantons.json`,
+  `places-shore.json`); the loader reads every `*.json` in `world/`.
+- **A `_note` field on any record** carries the reasoning (why this tavern has 12
+  slots, which lore line a faction stance comes from). The loader keeps it and the
+  export carries it, so the next session inherits the reasoning with the data.
+- **`SCHEMA.md` is the file an agent reads before writing.** It lists every record
+  kind, its fields, the valid values (the activity list, presence states, nav
+  layers, `FURN_JOBS`), and one worked record of each. A field not in the schema is
+  a build error naming the file, line and record, so a wrong guess is caught at
+  `build.py`, not found later in a screenshot.
+- **`tools/sim_check.py world/`** validates without building: schema, unknown
+  references, duplicate ids, a job whose schedule asks for an activity no place
+  offers, hourly capacity shortfalls (Shade's audits, run on the files). It is
+  what an agent runs after each edit and what `verify.py --assert` runs on the
+  built page.
+- **The build hash still rules.** A JSON-only change rebuilds to a different page,
+  so the census comparison, not the hash, is the check after a data edit; the plan's
+  acceptance steps say which applies.
+
 ### 4.3 The vocabulary (Phase 1 defines it; this is the intended shape)
 
 Field sets are deliberately minimal and each has a known source in an existing
@@ -418,6 +449,9 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
   `FURN_JOBS` and `IX.life.TARGET_TYPES` to activities and counts.
 - `SIM.load(json)` and the `build.py` step that inlines `settlements/<name>/world/*.json` as
   `76-world-json.js` (§4.2): override by `id`, add, `remove`, fail on unknown references.
+- `tools/sim_scaffold.py` (a first `world/` from a built page's export, re-runnable without
+  clobbering hand-set fields) and `tools/sim_check.py` (schema, references, Shade's audits on
+  the files), with `SCHEMA.md` written so an agent can author a record from it alone.
 - `SIM.census()` and `window._sim`.
 - A `tools/check_life.py` lint: literal `[x, z]` pairs in life fragments
   outside a `// anchor:` comment, populations reading `skyHour` directly,
