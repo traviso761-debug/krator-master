@@ -75,7 +75,7 @@ function rsCentroid(P){let x=0,y=0;for(const p of P){x+=p[0];y+=p[1];}return[x/P
 // Copied from core/sockets/80-cultures.js (SYMBOLS and the mkCulture packs, on main): the same marks and
 // colours the buildings carry, so a ship reads as the same faction as its port. Re-copy if the packs change.
 const RS_CULT={iziz:{field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',ink:'#f3e2c0',ink2:'#e07a2a'},
- voth:{field:'#24487a',edge:'#182e4d',band:'#3a5f8f',ink:'#d8cdb4'}};
+ voth:{field:'#4b2a6e',edge:'#2f1a47',band:'#6a4a8f',ink:'#d8cdb4'}};
 function rsSymSun(g,cx,cy,R,c1,c2){g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
  for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}}
 function rsSymDiamond(g,cx,cy,R,c1){g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();}

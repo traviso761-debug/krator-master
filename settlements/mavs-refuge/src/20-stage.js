@@ -3,7 +3,7 @@
    sky, 21-sky.js). Ported from Voth's 20-stage.js; the Voth-specific ashen
    horizon is replaced by the humid jungle one: green-white haze, a band of
    distant canopy all the way round, and the great volcano far off across the
-   Ring Sea to the NORTH-WEST (azimuth 315), blue with distance.
+   Ring Sea to the SOUTH-WEST (azimuth 225), blue with distance.
    Interface kept for the rest of the build:
      scene camera renderer FAST sun hemiLight ambLight                     */
 reseed(200001);
@@ -48,10 +48,14 @@ scene.add(ambLight);
 /* ============================== 5. BAKED HORIZON DOME ==============================
    An equirectangular canvas round a sphere. SphereGeometry puts u at
    phi = 270 - azimuth (deg), so  u = ((270 - az)/360) mod 1 :
-     north u=.75 · east u=.50 · NW (the volcano) u=.875 · the giant (az 67) u=.564.
+     north u=.75 · east u=.50 · SW (the volcano) u=.125 · the giant (az 67) u=.564.
    u=0/1 (the canvas edge) is due WEST; everything drawn wraps across it.
    1 degree of altitude = H/180 px. */
-var STAGE_VOLC_AZ = 315;                 /* deg — across the Ring Sea, north-west */
+var STAGE_VOLC_AZ = 225;                 /* deg — across the Ring Sea, south-west (the city is on its NE shore) */
+/* the westerlies carry the plume north-east; seen from here it drifts sideways by the sine of the
+   angle between that and the line of sight (1 for a volcano in the NW, 0 for one in the SW, where the
+   ash blows toward the viewer and the column just rises and spreads) */
+var STAGE_PLUME_LEAN = Math.sin((45 - STAGE_VOLC_AZ)*Math.PI/180);
 var STAGE_FARBLUE = 0x93a9b8;            /* what hundreds of km of humid air does to rock */
 var STAGE_CANOPY  = 0x24433c;            /* distant canopy, dark blue-green */
 var STAGE_CANOPY2 = 0x3a5c55;            /* the ridge behind it, paler */
@@ -121,7 +125,7 @@ function makeSkyTexture(volc){
     }
   }
 
-  /* ---- the great volcano, NW across the Ring Sea -------------------------
+  /* ---- the great volcano, SW across the Ring Sea -------------------------
      A broad shield with a truncated summit, ~5.5 deg tall. It is the farthest
      thing in the world, seen through hundreds of km of wet air: every fill is
      mixed hard toward the blue distance colour and then toward the haze. */
@@ -173,7 +177,7 @@ function makeSkyTexture(volc){
   }
   g.fillStyle = far(ROCK, 0.50, 0.66);
   g.beginPath(); traceMountain(); g.closePath(); g.fill();
-  /* a paler, sunlit north-east flank (the sun lives in the north here) */
+  /* a paler, sunlit flank on the north side, to the viewer's right (the sun lives in the north here) */
   g.save(); g.beginPath(); traceMountain(); g.closePath(); g.clip();
   var fl = g.createLinearGradient(vx-10, 0, vx+vw, 0);
   fl.addColorStop(0, 'rgba(226,232,236,0)'); fl.addColorStop(0.35, 'rgba(226,232,236,0.20)'); fl.addColorStop(1, 'rgba(226,232,236,0.04)');
@@ -186,11 +190,11 @@ function makeSkyTexture(volc){
   }
   g.restore();
   /* plume: a faint streamer leaning downwind (the westerlies blow it toward
-     the north-east, i.e. to the right of a volcano seen in the NW) */
+     the north-east; STAGE_PLUME_LEAN turns that into a sideways drift) */
   reseed(cfg.plumeSeed);
   for(var pp=0; pp<cfg.plumeN; pp++){
     var t2 = pp/cfg.plumeN;
-    var ppx = floorP[0] + t2*t2*140*cfg.plumeReach + rr(-9,9)*(0.25+t2)*cfg.plumeReach;
+    var ppx = floorP[0] + t2*t2*140*cfg.plumeReach*STAGE_PLUME_LEAN + rr(-9,9)*(0.25+t2)*cfg.plumeReach;
     var ppy = floorP[1] - 3 - t2*44*cfg.plumeReach - rr(0,7);
     var ppr = 4 + t2*24 + rr(0,6);
     g.fillStyle = css(mix3([214,216,214], HZC, 0.3+0.5*t2), (0.030*cfg.plumeAlphaK*(1-t2*0.7)).toFixed(3));

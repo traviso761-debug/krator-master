@@ -3,19 +3,19 @@
    tavern pieces stay in krator-master-furniture.js).
    Influences: Morrowind Dunmer, Aztec, Ottoman. Dark timber and ash-glazed
    stone, stepped-fret bands, pointed finials, lanterns of slate glass, low
-   divans; court pieces in gilt on black with the deep blue of the Voth pack
-   (core/sockets/80-cultures.js: field #24487a, band #3a5f8f, ink #d8cdb4).
+   divans; court pieces in gilt on black with the deep purple of the Voth pack
+   (core/sockets/80-cultures.js: field #4b2a6e, band #6a4a8f, ink #d8cdb4).
    ====================================================================== */
 /* PALETTE */
 FURN_CULTURE('voth', { name: 'Voth', pack: 'voth', influences: 'Morrowind Dunmer; Aztec; Ottoman',
   materials: 'dark walnut, ash-glazed stone, slate glass, brass; court: gilt, obsidian, plum silk',
   palette: {
-    clothVothBlue: 0x24487a, clothVothSteel: 0x3a5f8f, clothAsh: 0xd8cdb4,
+    clothVothPurple: 0x4b2a6e, clothVothMauve: 0x6a4a8f, clothAsh: 0xd8cdb4,
     obsidian: 0x1a1a1e, obsidianLight: 0x2c2c34, lacquerBlack: 0x1e1a1a, ceramicAsh: 0x8a8a7a
   } });
 /* END PALETTE */
 const VOTH_COMMON = {
-  emblem: { field: 'clothVothBlue', edge: 'clothVothSteel', band: 'clothVothSteel', ink: 'clothAsh' },
+  emblem: { field: 'clothVothPurple', edge: 'clothVothMauve', band: 'clothVothMauve', ink: 'clothAsh' },
   wood: 'timberWalnut', woodDark: 'stoneEbony', woodLight: 'timberTeak', woodFam: 'wood',
   cloth: ['clothPlum', 'clothIndigo', 'clothTeal', 'clothMud'], clothFam: 'cloth',
   accent: 'brass', accentFam: 'metal', metal: 'iron', metalFam: 'metal',
@@ -28,7 +28,7 @@ const VOTH_COMMON = {
 };
 const VOTH_COURT = Object.assign({}, VOTH_COMMON, {
   wood: 'lacquerBlack', woodDark: 'obsidian', woodLight: 'stoneGraphite', woodFam: 'lacquer',
-  cloth: ['clothVothBlue', 'clothPlum', 'clothGold', 'clothAsh'],
+  cloth: ['clothVothPurple', 'clothPlum', 'clothGold', 'clothAsh'],
   accent: 'gilt', accentFam: 'gold', stone: 'obsidianLight', stoneFam: 'obsidian',
   motif: 'step', finial: 'point', statue: 'idol', art: 'relief', art2: 'mask', screen: 'carved', rug: 'knotted'
 });
@@ -77,7 +77,7 @@ FURN({
     for (const s of [-1, 1]) F.frustum(s * 0.28, 1.42, 0, 0.1, 0.06, 0.16, 0, F.shade(gilt, -0.15), 'gold', 8);   /* pauldrons */
     F.ball(0, 1.72, 0, 0.14, gilt, 'gold');                                           /* the mask helm */
     F.box(0, 1.6, 0.1, 0.18, 0.2, 0.06, 0, F.shade(gilt, 0.15), 'gold');
-    F.cone(0, 1.86, 0, 0.03, 0.04, 0, F.col('clothVothBlue'), 'cloth');
-    F.box(0, 0.4, -0.08, 0.5, 0.62, 0.04, 0, F.col('clothVothBlue'), 'cloth');       /* the skirt of the robe */
+    F.cone(0, 1.86, 0, 0.03, 0.04, 0, F.col('clothVothPurple'), 'cloth');
+    F.box(0, 0.4, -0.08, 0.5, 0.62, 0.04, 0, F.col('clothVothPurple'), 'cloth');       /* the skirt of the robe */
   }
 });

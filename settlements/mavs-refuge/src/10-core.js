@@ -1,7 +1,7 @@
 /* ============================== 1. CORE ==============================
    Units are METRES. x runs east, z runs south, y up. A person is 1.75 tall.
    The river flows from the east edge to the west edge (downstream = -x),
-   toward the Ring Sea; the volcano stands beyond it to the north-west. */
+   toward the Ring Sea; the volcano stands beyond it to the south-west. */
 
 var SEED = 20260920;
 var seed = SEED;
