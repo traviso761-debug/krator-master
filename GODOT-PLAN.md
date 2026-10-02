@@ -176,8 +176,8 @@ whole of `src/` in every build. Nothing has been ported yet, but every remaining
 
 ### Phase 2: the engine-neutral substrate
 
-Four small `core/` modules, each with a node test (and, where Godot runs the same algorithm, a GDScript twin) checked against the same golden
-vectors:
+Four small `core/` modules, each with a node test (and, where Godot runs the same algorithm, a GDScript
+twin) checked against the same golden vectors:
 
 1. **`core/rand/`**: one PRNG (a 32-bit integer generator, `mulberry32` or `sfc32`, so the arithmetic is
    exact in both engines), one hash (`h3`), value noise and `fbm`, with reseed and the per-cell seeding
