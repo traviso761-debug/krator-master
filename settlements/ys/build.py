@@ -56,6 +56,11 @@ CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 
 TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<name>.html
 
+# shared modules a target opts into (core/<module>/, digit-prefixed fragments). The city takes core/rand: its
+# placement pass (PLAN.md P3) draws from KRAND streams and cell seeds, never from the lineage's rng() or the
+# sin-based h3/fbm, so the city's layout reproduces in Godot (GODOT.md item 4; GODOT-PLAN.md Phase 2).
+TARGET_CORE = {'city': ['rand']}
+
 
 def srcpath(f, base=None):
     """Path of fragment f in base (default src/), falling back to core/materials/."""
@@ -77,7 +82,7 @@ ADAPTED = {'52-sky-abc.js', '71-port-terrain.js', '92-camera.js'}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
+    '00-head.html', '08-core-rand.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',
@@ -179,6 +184,9 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s' % target)
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:

@@ -40,10 +40,9 @@ Hykkousoi fragment the same way; the `PORT.md` Ys gets at the merge needs those 
 
 ## What does not fit, and what to do
 
-1. **Not on main, no audit row, no baseline, no lint.** Merge `main` into the branch first (expected conflicts:
-   root `INDEX.md`, `.gitignore`, `kits/ancients/KNOWN_ISSUES.md`, the gallery), run the audit for a `PORT.md`,
-   correct the tags above, add the three pages to `PORT-BASELINE.json`, and give `build.py` the `check_port.py`
-   call every other build now runs.
+1. ~~**Not on main, no audit row, no baseline, no lint.**~~ *Done 2026-10-02:* Ys is on `main` with a `PORT.md`,
+   its three pages in `PORT-BASELINE.json` and the port lint in `build.py`. Ys is one of the builds the plan's
+   scoped hand pass covers (`GODOT-PLAN.md` 3.3), so the four agent-fragment tags above are corrected there.
 2. **`biomes/nwbay` sits on the biome core as it was at 1672677.** Main's core has moved since (hero trees as an
    opt-in, the export, `BIO.register`). Re-vendor it onto main's core before any more work on it; its `host-*` set is
    one more version in the drift table Phase 1 is about to collapse.
@@ -51,9 +50,14 @@ Hykkousoi fragment the same way; the `PORT.md` Ys gets at the merge needs those 
    Phase 2 bakes these to a heightmap at a fixed step. Ys's port grid (10 m tensor cells) is already a grid; bake
    `YS_NAT` into it once and sample. The river profile is already a sampled array; the karst and the sink are
    analytic and bake with the rest.
-4. **The random stream is the lineage's copy** (`reseed`/`rnd`/`fbm`), one of the 26 the plan replaces with
-   `core/rand`. Ys has no city placed yet, so it is the one build that can switch without moving rubble: do not
-   start the P3 placement pass until `core/rand` exists, or write the placer against an injected generator.
+4. **The random stream is the lineage's copy** (`reseed`/`rng`/`h3`/`fbm` in the vendored `10-core.js`), one of
+   the 26 the plan replaces with `core/rand`. *Done 2026-10-02 for the city:* `core/rand` exists and the city
+   target takes it (`TARGET_CORE` in `build.py`); the page is the old page plus `KRAND`, byte for byte, so nothing
+   moved. **The P3 placement pass draws only from `KRAND`**: a stream per pass (`KRAND.stream(KRAND.child(seed,
+   'blocks'))`), cell seeds for anything placed by area (`KRAND.cell`), and `KRAND.fbm` for any field it reads.
+   It does not call `rng()`, `h3`, `vnoise` or `fbm` from `10-core.js`. The kit and the mock keep the lineage's
+   stream and noise (their look is gated by Travis; moving it is a separate choice), and `10-core.js` stays
+   vendored unchanged.
 5. **Placement inside draw code.** `hykAccrete` decides where satellites, drips and way-in pods go while drawing
    them; `hykBridge` decides where runners land (`hykSegNearest`). Rule 5 of the plan (a builder takes a record and
    draws it) wants a growth pass that writes pod and runner records and a draw pass that reads them. The P3 placer
