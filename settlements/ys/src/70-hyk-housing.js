@@ -301,7 +301,7 @@ function hykHouseRich1(G,o){reseed(30336+(o.v|0));const col=hC(hPick(HPAL.nacre)
  for(let i=9;i>=0;i--){const t=.82+i/9*.165;const n=right(t);const c=cen(t);const k=hw(t)*.88;poly.push([c[0]-n[0]*k,c[2]-n[1]*k]);}
  const hall=hykRoom('hall',poly,floorY,3.6,{doors:[[A.p[0],A.p[2]+dz,2.2],[pw.p[0],pw.p[2],1.9,'bedroom'],[sw.p[0],sw.p[2],1.7,'library']],wealth:.9});
  const bear=t=>{const d=tan(t);return Math.atan2(d[0],d[1]);};const S=(kind,t,side,k,w,d)=>{const p=at(t,right(t),side*k);hykSpot(hall,kind,p[0],p[2],bear(t),w,d);};
- S('shrine',.845,0,0,.7,.5);S('hearth',.87,0,0,.9,.9);S('table',.895,0,0,1.2,1.2);S('food',.92,-1,.6,.8,.8);S('seat',.955,-1,.7,1.0,.9);
+ S('shrine',.84,0,0,.7,.5);S('hearth',.865,0,0,.9,.9);S('table',.9,0,0,1.2,1.2);S('food',.93,-1,.6,.8,.8);S('seat',.96,-1,.7,1.0,.9);
  const rb=hykRoom('bedroom',hykCirclePoly(bc[0],bc[2],2.55,14),.12,Pb.b*1.5,{doors:[[bed.openings[0].p[0],bed.openings[0].p[2],1.9,'hall']],residence:true,wealth:.9});
  hykHouseBedSpots(rb,bc[0],bc[2],pw.p[0]-bc[0],pw.p[2]-bc[2],.77,{seat:true});
  const rs=hykRoom('library',hykCirclePoly(sc[0],sc[2],1.9,12),.12,Ps.b*1.5,{doors:[[stu.openings[0].p[0],stu.openings[0].p[2],1.7,'hall']],wealth:.9});
@@ -373,7 +373,7 @@ function hykHouseRich3(G,o){reseed(30348+(o.v|0));const col=hC(hPick(HPAL.nacre)
  for(const a of [.75,2.4]){const r=Rf*.9;const p=[r*Math.cos(a),r*Math.sin(a),hz-bow*(1-.81)+lean*r*Math.sin(a)+.1];hykHouseLamp(p,[0,-.6,1],{nacre:true,d:.6});}
  hykHouseLamp(stu.at(-1.0,.4),stu.out(-1.0,.4),{nacre:true});
  const rh=hykRoom('hall',hykCirclePoly(hc[0],hc[1],3.1,16),.12,3.3*1.5,{doors:[[hc[0],hc[1]+3.55,2.2],[hall.openings[1].p[0],hall.openings[1].p[2],2.0,'bedroom'],[hall.openings[2].p[0],hall.openings[2].p[2],1.8,'library'],[hall.openings[3].p[0],hall.openings[3].p[2],1.6,'shrine']],wealth:.9});
- hykSpot(rh,'hearth',1.1,-1.9,0,.9,.9);hykSpot(rh,'table',-.9,-.4,0,1.3,1.3);hykSpot(rh,'food',1.9,.2,0,.8,.8);hykSpot(rh,'seat',-2.1,1.4,.5,1.0,.9);
+ {const H=(kind,x,z,ry,w,dd)=>hykSpot(rh,kind,hc[0]+x,hc[1]+z,ry,w,dd);H('hearth',1.6,-1.2,0,.9,.9);H('table',-.9,-.4,0,1.3,1.3);H('food',1.9,.2,0,.8,.8);H('seat',-1.2,1.9,.5,1.0,.9);}   // about the hall pod's centre
  const rb=hykRoom('bedroom',hykCirclePoly(bc[0],bc[1],2.45,14),.12,2.6*1.5,{doors:[[bed.openings[0].p[0],bed.openings[0].p[2],2.0,'hall']],residence:true,wealth:.9});hykHouseBedSpots(rb,bc[0],bc[1],hc[0]-bc[0],hc[1]-bc[1],.74,{seat:true});
  const rs=hykRoom('library',hykCirclePoly(sc[0],sc[1],1.9,12),.12,2.1*1.5,{doors:[[stu.openings[0].p[0],stu.openings[0].p[2],1.8,'hall']],wealth:.9});
  {const ph=thTo(sc,hc);hykSpot(rs,'work',sc[0]-Math.sin(ph)*1.0,sc[1]-Math.cos(ph)*1.0,ph,1.2,.7);hykSpot(rs,'seat',sc[0]+Math.cos(ph)*.9,sc[1]-Math.sin(ph)*.9,ph+Math.PI/2,.8,.8);}

@@ -5,9 +5,9 @@
 const BUDGET={
  showcase:{tris:12000000,calls:220},
  cls:{env:2500000,small:60000,medium:250000,landmark:600000,host:400000,seg:200000,vessel:250000},
- type:{},   // stat-key base -> cls; a port registration's cls wins; everything else defaults to 'medium'
+ type:{},   // stat-key base -> cls; then a HYK.def's cls (cls:'landmark'), a port registration's cls; else 'medium'
 };
-function ysClsOf(statKey){const base=statKey.split('/')[0];if(base==='env')return 'env';if(BUDGET.type[base])return BUDGET.type[base];
+function ysClsOf(statKey){const base=statKey.split('/')[0];if(base==='env')return 'env';if(BUDGET.type[base])return BUDGET.type[base];if(HYK.defs[base]&&HYK.defs[base].cls)return HYK.defs[base].cls;
  const R=portRegOf(base);return R?R.cls:'medium';}
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();const bb=new THREE.Box3();
@@ -27,8 +27,10 @@ function regOccupancy(){const BK=250,by={};REG.forEach((r,i)=>{const z0=Math.flo
 function nanSweep(){const bad=[];scene.traverse(o=>{if(!o.isMesh||(o.userData&&o.userData.probeSkip&&o.name!=='terrain'))return;
   const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(!p)return;const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.geometry.type,name:o.name,at:i,n:a.length});break;}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:TSTAT.bad.length,firstInstances:TSTAT.bad.slice(0,8)};}
-function typeStats(){const out={};for(const k in TSTAT.by){const t=TSTAT.by[k];const cls=ysClsOf(k);const lim=BUDGET.cls[cls]||BUDGET.cls.medium;
- out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:lim,over:t.tris>lim};}return out;}
+// a host type (ysPlaceHost marks it and counts its placements) is budgeted per placement: the sheet and the city
+// stand many copies of one Ancients body, and the 'host' class is what one of them may cost
+function typeStats(){const out={};for(const k in TSTAT.by){const t=TSTAT.by[k];const cls=t.host?'host':ysClsOf(k);const lim=BUDGET.cls[cls]||BUDGET.cls.medium;
+ const n=t.host?(t.n||1):1;out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:lim*n,over:t.tris>lim*n,n};}return out;}
 // tag audit (project rule): every registered volume carries a classification and the project tags
 function tagAudit(){const bad=REG.filter(r=>!r.cls||!r.tags||!r.tags.culture||!r.tags.type||!r.tags.wealth);return {bad:bad.length,first:bad.slice(0,6).map(r=>r.name)};}
 // the port checks (stamps inside footprints, clearance) only mean something once the layout places segments

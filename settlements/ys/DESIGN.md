@@ -194,14 +194,19 @@ picture in front of him, and nothing else in the kit starts until it passes.
 The Ancients kit's structure types are the substrate of the drowned quarter and a quarter of the land one.
 - Decay **1** (ruined, standing, holes) for the drowned quarter; **3** (reclaimed, with the shared
   `repairPass` salvage dressing) for the land quarter's reclaimed Ancients: that dressing IS the
-  "post-apoc style dwellings" of the brief, so it costs nothing new.
+  "post-apoc style dwellings" of the brief, so it costs nothing new. **The land Ancients are hosts too**
+  (Travis, Oct 2026): the smaller reclaimed types (apartments, offices, the low blocks) take Hykkousoi growth
+  as the drowned ones do (pods grown onto their faces and roofs, landings, stairs, a fillet where a pod meets
+  the wall), at ground scale, so the land side shows the same Ancient-plus-organic mix and not only salvage.
 - **Storeys stay human.** These hosts take interiors later, so an Ancient host is never uniform-scaled
   below 0.85 (the Iziz city's `KITCAT smin/smax` shrink to 0.3 is exactly what not to do: its storeys end
   up 1.2 m). Height variety comes from the kit's own cut: `bodyGroup` already builds a body cut at `cutY`
   (today only at the toppled decay); Ys adapts its vendored copy so decay 1 takes a per-site cut, snapped
   to the builder's storey pitch, with the ragged strut ring at the cut and no fallen body, or with the
   fallen upper body laid in the water beside it as a reef. So the drowned quarter is 80–200 m stumps with
-  full-size floors, three to five towers at full height (the Pharos among them), and the mid-rise types
+  full-size floors, **at least three towers at full height** (Travis, Oct 2026: refurbished, not stumps, at scale 1 so
+  their storeys stay human, standing clear above the stumps; one of them is the Pharos, its crown the `hyk_pharos_crown`
+  pod), and the mid-rise types
   (apartments, offices, hotel, hospital, library, government, flatiron; 40–140 m across at scale 1)
   filling the blocks. The grid pitch follows from this (§2).
 - Every drowned host gets the **tideline dressing**: a black crust band at y 0 ± 1.2, weed ribbons under
@@ -214,8 +219,9 @@ The Ancients kit's structure types are the substrate of the drowned quarter and 
   the tide band tide, at L1/L2 inhabited, else wild). Accreted pods, bridge landings and the later
   interiors all address a floor by `k`. This is the data half of "floors stay human": a host whose storeys
   the table cannot describe is a host that cannot be shortened.
-- Then **accretion** (§4.7): a scheduler chooses pods per host by wealth ring and host size, at datums
-  L1 and L2 and at the wet landing, and the biome's `dress()` grows curtains and moss off the ledges.
+- Then **accretion** (§4.7): a scheduler chooses pods per host by wealth ring and host size, on any inhabited
+  plate (the L1 and L2 datums carry the bridges, but pods round one host take different plates, so a host's growth
+  is not a single ring; Travis, Oct 2026) and at the wet landing, and the biome's `dress()` grows curtains and moss off the ledges.
 
 ## 6. Building list
 

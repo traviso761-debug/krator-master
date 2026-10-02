@@ -94,7 +94,7 @@ function hykHospLDir(nx,ny,nz){const c=HYK.cur;if(!c)return [nx,ny,nz];const cs=
 // a host's members (capsules and head boxes, world) in the local frame, for hykBridge runners drawn in a builder's frame
 function hykHospLocalMembers(ms){return (ms||[]).map(m=>m.c?Object.assign({},m,{c:hykHospL(m.c[0],m.c[1],m.c[2]),u:hykHospLDir(m.u[0],m.u[1],m.u[2]),v:hykHospLDir(m.v[0],m.v[1],m.v[2]),w:hykHospLDir(m.w[0],m.w[1],m.w[2])}):Object.assign({},m,{a:hykHospL(m.a[0],m.a[1],m.a[2]),b:hykHospL(m.b[0],m.b[1],m.b[2])}));}
 // deck records pushed while drawing in a builder's frame are local: rewrite the ones from index n0 on in world coordinates
-function hykHospFixDecks(n0){for(let i=n0;i<NAV_EXTRA.length;i++){const d=NAV_EXTRA[i];
+function hykHospFixDecks(n0){for(let i=n0;i<NAV_EXTRA.length;i++){const d=NAV_EXTRA[i];if(d.world)continue;   // hykPad and hykBridge record world themselves
  if(d.a&&d.b){const wa=hykW(d.a[0],d.a[1],d.a[2]),wb=hykW(d.b[0],d.b[1],d.b[2]);d.a=wa;d.b=wb;d.x0=Math.min(wa[0],wb[0])-d.w;d.z0=Math.min(wa[2],wb[2])-d.w;d.x1=Math.max(wa[0],wb[0])+d.w;d.z1=Math.max(wa[2],wb[2])+d.w;d.y=Math.max(wa[1],wb[1]);}
  else{const cx=(d.x0+d.x1)/2,cz=(d.z0+d.z1)/2,r=(d.x1-d.x0)/2;const w=hykW(cx,d.y,cz);d.x0=w[0]-r;d.x1=w[0]+r;d.z0=w[2]-r;d.z1=w[2]+r;d.y=w[1];}}}
 // the landing in front of a grown pod's door, in the LOCAL frame. (62's o.landing converts to world first and hykPut/kput

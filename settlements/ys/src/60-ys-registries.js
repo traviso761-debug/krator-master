@@ -24,7 +24,7 @@ function ysSpot(o){if(!o||!o.kind){reportErr('ysSpot: no kind');return null;}SPO
 function ysHost(o){if(!o||!o.n){reportErr('ysHost: no name');return null;}HOSTS.push(o);return o;}
 function ysDeck(o){NAV_EXTRA.push(o);return o;}
 // ---------------------------------------------------------------- the Hykkousoi kit registry (the kit sheet lays out whatever is here)
-// HYK.def({key,name,family,row,w,d,h,r,tags:{type:[...],wealth,lit},views?,build}). Local frame: origin at the plot
+// HYK.def({key,name,family,row,w,d,h,r,cls?,tags:{type:[...],wealth,lit},views?,build}); cls:'landmark' for the 600 k budget. Local frame: origin at the plot
 // centre on the ground, +z the front, x to the right seen from the front. `build(G,o)` draws one instance. The
 // placement frame (HYK.place) arrives with the kit in phase 1; the registry exists now so the sheet and the
 // audits have a spine to hang on.

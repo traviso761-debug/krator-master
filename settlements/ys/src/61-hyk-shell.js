@@ -7,7 +7,7 @@
 // with no frame the coordinates are world. Nothing here is a box: that is the rule (DESIGN §4).
 const HYK_BK={out:{},in:{}};const HYK_MESHES=[];const HYK_WHITE=new THREE.Color(1,1,1);
 function hykPut(matKey,geo,inside){if(!geo)return null;if(!MAT[matKey]){reportErr('hykPut: no material '+matKey);return null;}
- const F=HYK.cur;if(F&&F.G)geo.applyMatrix4(F.G.matrix);
+ const F=HYK.cur;if(F&&F.G){geo.applyMatrix4(F.G.matrix);(F.geos||(F.geos=[])).push(geo);}   // the building's own, for hykCutDoorways
  const t=tcur();if(t)t.tris+=triOf(geo);
  const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}
 // the same without the current building's frame: for geometry already in world space (the furniture frame builds there)
@@ -107,7 +107,7 @@ function hykRib(a,b,o){o=o||{};const n=o.n||18;const pts=[];for(let i=0;i<=n;i++
 function hykFlare(c,n,R,f,o){o=o||{};const N=new THREE.Vector3(n[0],n[1],n[2]).normalize();let E1=new THREE.Vector3(0,1,0);if(Math.abs(E1.dot(N))>.9)E1.set(1,0,0);E1.sub(N.clone().multiplyScalar(E1.dot(N))).normalize();const E2=new THREE.Vector3().crossVectors(N,E1);
  const fn=(u,v)=>{const th=u*TAU;const s=v*Math.PI/2;const r=(R+f*(1-Math.sin(s)))*(1+(o.wobble!=null?o.wobble:.04)*Math.sin(th*5+v*3)),off=f*(1-Math.cos(s));
   return [c[0]+E1.x*r*Math.cos(th)+E2.x*r*Math.sin(th)+N.x*off,c[1]+E1.y*r*Math.cos(th)+E2.y*r*Math.sin(th)+N.y*off,c[2]+E1.z*r*Math.cos(th)+E2.z*r*Math.sin(th)+N.z*off];};
- return hykSurf(fn,o.nu||40,o.nv||8,{col:o.col,uS:TAU*R/4,vS:f/4,flip:o.flip!==undefined?o.flip:true});}
+ return hykSurf(fn,o.nu||40,o.nv||8,{col:o.col,uS:TAU*R/4,vS:f/4,flip:o.flip!==undefined?o.flip:true,hole:o.hole});}
 // ---------------------------------------------------------------- disc: floors, landings, lily pads (normal up unless o.down)
 function hykDisc(cx,y,cz,R,o){o=o||{};const nu=o.nu||32,lob=o.lobes;
  const fn=(u,v)=>{const th=u*TAU;let r=R*v;if(lob)r*=1+lob.amp*Math.cos(lob.n*th)*v;return [cx+r*Math.cos(th),y+(o.sag||0)*(1-v*v),cz+r*Math.sin(th)];};
