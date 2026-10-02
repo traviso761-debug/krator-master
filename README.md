@@ -62,7 +62,9 @@ Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tri
 ## Where things are
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
-`INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
+`GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
+browser-native code and porting the rest to Godot; read it before adding a core module or
+starting a build. `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
 holds the working rules for agents. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
