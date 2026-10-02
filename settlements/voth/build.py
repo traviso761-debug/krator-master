@@ -68,7 +68,7 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '15-shore.js',
                  '40-ground.js', '75-terrain.js', '80-camera.js', '85-probe.js',
-                 '86-inspect.js', '87-pathviz.js', '88-core-minimap.js', '88b-voth-minimap.js', '99-tail.html'}
+                 '86-inspect.js', '87-pathviz.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-voth-minimap.js', '99-tail.html'}
 PALETTE_FILE = '05-palette.js'
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')

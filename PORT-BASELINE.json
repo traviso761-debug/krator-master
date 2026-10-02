@@ -228,6 +228,10 @@
    "bytes": 770888,
    "sha256": "eb9514119d168291c21156e6943b2ea96868aa91025577e79229cb060979f741"
   },
+  "settlements/girder/girder.html": {
+   "bytes": 1067240,
+   "sha256": "d392764f38a80be28e68d32cff83ecdc7ff8a25e6025d807ffaa13ac289df464"
+  },
   "settlements/highlands/dist/highlands.html": {
    "bytes": 1530277,
    "sha256": "c07e283b8c5dbc612ca4a761d66197c8ea95b10eb07ee66b462dd6fd991499fc"
@@ -259,6 +263,26 @@
   "settlements/jimjam/dist/jimjam-kit.html": {
    "bytes": 473224,
    "sha256": "6c68b3d3227bd7c7c0d172f449de55e982a1470a76da7031bf3022e0b0a0e33a"
+  },
+  "settlements/locus/abyss-kit.html": {
+   "bytes": 1915710,
+   "sha256": "ed41eb77debf458e102f9d9c70639ed816d3555ef3bda6d8cce9a04e437a2b81"
+  },
+  "settlements/locus/locus-kit.html": {
+   "bytes": 1915698,
+   "sha256": "1aaa89cfa09f103e7bc4989d82e031fe958a1ba82a6388af30a2a80f5e3342ea"
+  },
+  "settlements/locus/locus-plants.html": {
+   "bytes": 1915683,
+   "sha256": "825d425fe528f3beb5387083b29ca88ffb783e07b1437422279f1c97ec162198"
+  },
+  "settlements/locus/locus.html": {
+   "bytes": 1915612,
+   "sha256": "8c0164ec305949c0ebb0d78ebebbb9f573cbd240d9f22b00ea7691095d848f58"
+  },
+  "settlements/mavs-refuge/mavs-refuge.html": {
+   "bytes": 1384181,
+   "sha256": "37d7476142eb1cb7000f054c0f849d81ad344f707416c72da52710979d3cf945"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 783155,
@@ -408,6 +432,10 @@
    "bytes": 341438,
    "sha256": "bf410a8b4300101e8e6526ec18642cb9957e2d548dc96a32874eeed4bc10c4e4"
   },
+  "settlements/voth/voth.html": {
+   "bytes": 1883908,
+   "sha256": "4a931a9df695fd8f143759d0c66532289f8206fc8bacf0bb325b6c2869e4d2cd"
+  },
   "settlements/xanadu/dist/erewhon.html": {
    "bytes": 955402,
    "sha256": "4cacb9edcfe3e502aa6c5e705f41a1c8e2bb8ef343eefa060db8e4050a841f86"
@@ -427,6 +455,18 @@
   "settlements/ys/dist/ys.html": {
    "bytes": 877428,
    "sha256": "d38f24d90af9157548e1b56eecf4aabdde313cdda83d4dcc77b9445516609f00"
+  },
+  "settlements/yuni/yuni-assets.html": {
+   "bytes": 1081047,
+   "sha256": "5ea6aeea3a11b76ebcb88fc2e896ad8352bc4a17ace9d6d5d82256f909cc8df6"
+  },
+  "settlements/yuni/yuni-plants.html": {
+   "bytes": 1081038,
+   "sha256": "1f1bd0ba668ea2a4f621561495e880733dfab116a16b2ba9a1031ae225d545b2"
+  },
+  "settlements/yuni/yuni.html": {
+   "bytes": 1080966,
+   "sha256": "1c3d1f018877db660ad9ab8b4ab16fffa4c9b10397eaad0470e10fffddc7bd59"
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"
