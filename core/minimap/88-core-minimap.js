@@ -21,11 +21,17 @@
 //   M.relief(h(x,z), {cell:24, water:0, lo, hi})   a hill-shaded height grid under everything, water below `water`
 //   M.toPx(x,z) / M.toWorld(px,py)
 //   M.pick(x,z)                        the topmost named or tagged record under (x,z), or null
-//   M.paint(g)                         draw the base layer into a 2D context (size x size)
+//   M.paint(g, reliefImage)            draw the base layer into a 2D-context-like g (size x size); reliefImage is
+//                                      anything g.drawImage takes, made by the host from M.reliefPixels(g)
+//   M.reliefPixels(g)                  the relief as an n x n ImageData from g.createImageData, or null
 //   M.overlay(g, viewer, hoverText)    viewer {x,z,dir:[dx,dz]}: the dot and the view wedge
-//   M.mount({parent, title, viewer:()=>viewer, onPick:(x,z,rec)=>{}, hz:4})   browser only: the panel
-//        returns {el, open(on), toggle(), isOpen()}; M is the key that toggles it, except while typing
+//   M.rev()                            a counter that changes whenever a record or the relief is added: the host
+//                                      repaints its cached base layer when it moves
 //   M.export()                         {format:'krator-minimap', version, frame, size, records, relief}
+//
+// This fragment is [G data]: no document, no canvas of its own, no input. The browser panel (M.mount, the M key,
+// hover and click) is core/minimap/88a-core-minimap-host.js, [web], which moves into core/host/ (GODOT-PLAN.md
+// Phase 1). A build that takes this fragment takes that one too.
 (function(root){
   'use strict';
   function create(o){
@@ -33,11 +39,11 @@
     var w=f[1]-f[0],d=f[3]-f[2];if(!(w>0&&d>0))throw new Error('KMAP: frame must have positive width and depth');
     if(w>d){var c=(f[2]+f[3])/2;f[2]=c-w/2;f[3]=c+w/2;}else if(d>w){var c2=(f[0]+f[1])/2;f[0]=c2-d/2;f[1]=c2+d/2;}
     var span=f[1]-f[0],pal=o.palette||{},fallback=o.fallback||'#9a9080',bg=o.bg||'#101418';
-    var recs=[],seq=0,relief=null,base=null;
+    var recs=[],seq=0,relief=null,rv=0;
     function toPx(x,z){return [(x-f[0])/span*size,(z-f[2])/span*size];}
     function toWorld(px,py){return [f[0]+px/size*span,f[2]+py/size*span];}
     function colOf(r){return r.col||pal[r.tag]||fallback;}
-    function add(r,op){op=op||{};r.tag=op.tag||'';r.col=op.col||'';r.y=op.y||0;r.name=op.name||'';r.seq=seq++;recs.push(r);base=null;return r;}
+    function add(r,op){op=op||{};r.tag=op.tag||'';r.col=op.col||'';r.y=op.y||0;r.name=op.name||'';r.seq=seq++;recs.push(r);rv++;return r;}
     function rect(x0,x1,z0,z1,op){return add({kind:'rect',rect:[Math.min(x0,x1),Math.max(x0,x1),Math.min(z0,z1),Math.max(z0,z1)]},op);}
     function obb(x,z,hx,hz,ry,op){return add({kind:'obb',x:x,z:z,hx:hx,hz:hz,ry:ry||0},op);}
     function strip(a,b,wd,op){return add({kind:'strip',a:a.slice(0,2),b:b.slice(0,2),w:wd},op);}
@@ -60,7 +66,7 @@
         var t=Math.max(0,Math.min(1,(m-lo)/(hi-lo))),sx=((b+dd)-(a+c))/(2*step),sz=((c+dd)-(a+b))/(2*step);
         var shade=Math.max(.55,Math.min(1.25,1+(-sx-sz)*.9));                 // lit from the north-west
         rgb[k]=Math.min(255,(70+t*70)*shade);rgb[k+1]=Math.min(255,(74+t*58)*shade);rgb[k+2]=Math.min(255,(60+t*48)*shade);}
-      relief={n:n,cell:step,rgb:rgb};base=null;return relief;
+      relief={n:n,cell:step,rgb:rgb};rv++;return relief;
     }
     function inside(r,x,z){
       if(r.kind==='rect')return x>=r.rect[0]&&x<=r.rect[1]&&z>=r.rect[2]&&z<=r.rect[3];
@@ -73,14 +79,15 @@
     }
     function ordered(){return recs.slice().sort(function(p,q){return p.y-q.y||p.seq-q.seq;});}
     function pick(x,z){var o2=ordered();for(var i=o2.length-1;i>=0;i--){var r=o2[i];if(r.kind!=='label'&&(r.name||r.tag)&&inside(r,x,z))return r;}return null;}
-    function paint(g){
+    function reliefPixels(g){
+      if(!relief||!g||typeof g.createImageData!=='function')return null;
+      var n=relief.n,img=g.createImageData(n,n);
+      for(var p=0;p<n*n;p++){img.data[p*4]=relief.rgb[p*3];img.data[p*4+1]=relief.rgb[p*3+1];img.data[p*4+2]=relief.rgb[p*3+2];img.data[p*4+3]=255;}
+      return img;
+    }
+    function paint(g,reliefImage){
       g.fillStyle=bg;g.fillRect(0,0,size,size);
-      if(relief&&typeof g.createImageData==='function'){
-        var n=relief.n,img=g.createImageData(n,n);
-        for(var p=0;p<n*n;p++){img.data[p*4]=relief.rgb[p*3];img.data[p*4+1]=relief.rgb[p*3+1];img.data[p*4+2]=relief.rgb[p*3+2];img.data[p*4+3]=255;}
-        var tmp=typeof document!=='undefined'?document.createElement('canvas'):null;
-        if(tmp){tmp.width=n;tmp.height=n;tmp.getContext('2d').putImageData(img,0,0);g.imageSmoothingEnabled=true;g.drawImage(tmp,0,0,size,size);}
-      }
+      if(relief&&reliefImage){g.imageSmoothingEnabled=true;g.drawImage(reliefImage,0,0,size,size);}
       ordered().forEach(function(r){
         if(r.kind==='label'){var p=toPx(r.x,r.z);g.font=r.size+'px Helvetica,Arial,sans-serif';g.fillStyle='rgba(0,0,0,.6)';
           var tw=g.measureText?g.measureText(r.text).width:r.text.length*r.size*.5;g.fillText(r.text,p[0]-tw/2+1,p[1]+1);
@@ -102,30 +109,6 @@
         g.fillStyle='#ffe08a';g.beginPath();g.arc(p[0],p[1],3.5,0,Math.PI*2);g.fill();g.strokeStyle='#000';g.lineWidth=1;g.stroke();}
       if(hover){g.font='10px Helvetica,Arial,sans-serif';g.fillStyle='rgba(0,0,0,.65)';g.fillRect(0,size-16,size,16);g.fillStyle='#e8e0d0';g.fillText(hover,4,size-5);}
     }
-    function mount(op){
-      op=op||{};if(typeof document==='undefined')throw new Error('KMAP.mount needs a browser');
-      var hz=op.hz||4,panel=document.createElement('div'),title=document.createElement('div'),cv=document.createElement('canvas');
-      panel.className='kmap';panel.style.cssText='position:fixed;left:10px;bottom:10px;z-index:11;display:none;flex-direction:column;gap:4px;'+
-        'background:rgba(10,10,12,.88);border:1px solid rgba(216,200,154,.45);padding:6px;font:11px Helvetica,Arial,sans-serif;color:#e6e2d8;border-radius:3px';
-      title.textContent=op.title||'Map';title.style.cssText='letter-spacing:.12em;text-transform:uppercase;font-size:10px;color:#d8c89a';
-      cv.width=size;cv.height=size;cv.style.cssText='display:block;cursor:crosshair;width:'+size+'px;height:'+size+'px';
-      panel.appendChild(title);panel.appendChild(cv);(op.parent||document.body).appendChild(panel);
-      var g=cv.getContext('2d'),hoverTxt='',timer=null;
-      function draw(){if(!base){base=document.createElement('canvas');base.width=base.height=size;paint(base.getContext('2d'));}
-        g.drawImage(base,0,0);overlay(g,op.viewer?op.viewer():null,hoverTxt);}
-      function at(e){var r=cv.getBoundingClientRect();return toWorld((e.clientX-r.left)*size/r.width,(e.clientY-r.top)*size/r.height);}
-      cv.addEventListener('mousemove',function(e){var w2=at(e),r=pick(w2[0],w2[1]);hoverTxt=r?(r.name||r.tag):'';draw();});
-      cv.addEventListener('mouseleave',function(){hoverTxt='';draw();});
-      cv.addEventListener('click',function(e){var w2=at(e);if(op.onPick)op.onPick(w2[0],w2[1],pick(w2[0],w2[1]));draw();});
-      function isOpen(){return panel.style.display!=='none';}
-      function open(on){panel.style.display=on?'flex':'none';if(timer){clearInterval(timer);timer=null;}
-        if(on){draw();timer=setInterval(draw,1000/hz);}if(op.onToggle)op.onToggle(on);}
-      function typing(t){if(!t)return false;var n=t.tagName;return t.isContentEditable||n==='TEXTAREA'||n==='SELECT'||
-        (n==='INPUT'&&!/^(range|checkbox|radio|button|submit)$/i.test(t.type||''));}
-      addEventListener('keydown',function(e){if(e.ctrlKey||e.metaKey||e.altKey||typing(e.target))return;
-        if(e.key==='m'||e.key==='M')open(!isOpen());});
-      return {el:panel,open:open,toggle:function(){open(!isOpen());},isOpen:isOpen,redraw:draw};
-    }
     function exp(){
       return {format:'krator-minimap',version:1,convention:{units:'m',x:'east',z:'south',mapUp:'north (-z)'},
         frame:f.slice(),size:size,bg:bg,
@@ -136,7 +119,7 @@
         relief:relief?{n:relief.n,cell:relief.cell,rgb:Array.prototype.slice.call(relief.rgb)}:null};
     }
     return {rect:rect,obb:obb,strip:strip,disc:disc,label:label,fromWalk:fromWalk,relief:reliefOf,toPx:toPx,toWorld:toWorld,
-      pick:pick,paint:paint,overlay:overlay,mount:mount,export:exp,records:recs,frame:f,size:size};
+      pick:pick,paint:paint,reliefPixels:reliefPixels,overlay:overlay,rev:function(){return rv;},export:exp,records:recs,frame:f,size:size};
   }
   root.KMAP={create:create};
 })(typeof window!=='undefined'?window:globalThis);

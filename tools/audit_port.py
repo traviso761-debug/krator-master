@@ -191,18 +191,39 @@ def read_port(path):
 
 
 def build_meta(build):
-    """Exporter, probe, assertions: what the port can already lean on."""
-    meta = {'exporter': False, 'probe': False, 'assert': False}
+    """Exporter, probe, assertions: what the port can already lean on.
+
+    A build's exporter is either its own (a fragment defines KRATOR_EXPORT or an export function)
+    or a shared one it takes from core/ through its build.py: BIO.export (core/biome/42-core-export.js,
+    listed in CORE_BIOME) or ATMOS.export (core/atmos, taken whole by a target). The exporter cell
+    names which ones, so the index says what each build can hand Godot today."""
+    meta = {'exporter': [], 'probe': False, 'assert': False}
     if build == 'core':
-        for mod in ('atmos', 'biome'):
-            meta['exporter'] |= os.path.isdir(os.path.join(ROOT, 'core', mod))
+        meta['exporter'] = [m for m in ('atmos', 'biome') if os.path.isdir(os.path.join(ROOT, 'core', m))]
         return meta
+    own = False
     for name, p in fragments(build):
         t = open(p, encoding='utf-8', errors='replace').read()
-        if re.search(r'KRATOR_EXPORT|\.export\s*=\s*function|\bexport\s*\(\s*\)\s*\{|download\s*\(', t):
-            meta['exporter'] = True
+        if 'KRATOR_EXPORT' in t:
+            if 'fixtures' not in meta['exporter']:
+                meta['exporter'].append('fixtures')
+        elif re.search(r'\.export\s*=\s*function|\bexport\s*\(\s*\)\s*\{', t):
+            if name.endswith('42-core-export.js'):
+                if 'biome' not in meta['exporter']:
+                    meta['exporter'].append('biome')
+            else:
+                own = True
         if 'window._api' in t:
             meta['probe'] = True
+    b = os.path.join(ROOT, build, 'build.py')
+    if os.path.isfile(b):
+        bt = open(b, encoding='utf-8', errors='replace').read()
+        if '42-core-export.js' in bt and 'biome' not in meta['exporter']:
+            meta['exporter'].append('biome')
+        if re.search(r"""['"]atmos['"]""", bt) and 'atmos' not in meta['exporter']:
+            meta['exporter'].append('atmos')
+    if own and not meta['exporter']:
+        meta['exporter'].append('own')
     v = os.path.join(ROOT, build, 'verify.py')
     if os.path.isfile(v) and '--assert' in open(v, encoding='utf-8', errors='replace').read():
         meta['assert'] = True
@@ -277,7 +298,7 @@ def write_index(results):
         mark = lambda b: 'yes' if b else ''
         lines.append('| [`%s`](%s/PORT.md) | %d | %.0f | %s | %d | %s | %s | %s |' % (
             build, build, len(rows), tkb, ' | '.join('%.0f' % kb[t] for t in TAGS), split,
-            mark(meta['exporter']), mark(meta['probe']), mark(meta['assert'])))
+            (', '.join(meta['exporter']) or ''), mark(meta['probe']), mark(meta['assert'])))
     lines.append('| **all** | %d | %.0f | %s | %d | | | |' % (
         nfr, nkb, ' | '.join('%.0f (%d%%)' % (tot[t], round(100 * tot[t] / (nkb or 1))) for t in TAGS), nsplit))
     # Host-shell copies: how many builds carry each family, and how many distinct versions.

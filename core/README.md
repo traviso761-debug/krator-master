@@ -203,7 +203,8 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 |---|---|
 | `walk/20-core-walk.js` | `KWALK`: one list of walkable floors (level rects, sloping strips) and blockers, written by whatever builds the geometry as it builds it (after Moria's carver). Queries `floorsAt`, `floorBelow`, `blocked`, `push` (a walker slides round corners), and `export()` (navigation-mesh source and collision boxes for Godot) |
 | `sched/20-core-sched.js` | `KSCHED`: repeating timetables of eased segments (`timeline`), conflict-free phases (`slots`), a periodic event's strength (`eruption`: geysers), formations in the leader's frame, and a queued approach that slows as it arrives. Pure functions of t, so Godot plays them back identically |
-| `minimap/88-core-minimap.js` | `KMAP`: a map panel drawn from records (rects, turned boxes, strips, discs, labels, a hill-shaded relief grid, or a `KWALK` registry), base painted once, overlay a few times a second, hover names, click goes there, M toggles. `export()` is the plan as data |
+| `minimap/88-core-minimap.js` | `KMAP` ([G data]): a plan as records (rects, turned boxes, strips, discs, labels, a hill-shaded relief grid, or a `KWALK` registry), `pick`, `paint` and `overlay` onto any 2D-context-like object, `export()` the plan as data. No document, no canvas of its own, no input |
+| `minimap/88a-core-minimap-host.js` | the browser panel ([web], moves to `core/host/` in Phase 1): `KMAP.mount(M, op)`, also attached as `M.mount(op)`. Base painted once and repainted when `M.rev()` moves, overlay a few times a second, hover names, click goes there, M toggles. A build takes both files |
 | `walk/test-walk.js`, `sched/test-sched.js`, `minimap/test-minimap.js` | `node core/<dir>/test-*.js` |
 
 **Used by** `settlements/voth` (the minimap: its `build.py` reads `core/minimap/` like `core/lod/`, and
