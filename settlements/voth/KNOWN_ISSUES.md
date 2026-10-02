@@ -37,6 +37,7 @@ source in brackets. Pitfalls that are lessons rather than defects stay in
 - [ ] The inspector names the asset and its type, but not the classification and tags the root README asks for (biome, culture, building vs flora vs furniture vs life). [root README "DEV TOOLS"; 86-inspect.js]
 - [ ] The terrain is a static 400×400 heightfield (~47 units a cell at the quarry belt) and cannot be carved. Pits and cuts must be built up as landform. [SUBAGENT.md §6 "Rendering architecture"]
 - [ ] The volcano was too dark and contrasty and its plume too heavy. The owner flagged this, and 20-stage.js records two or more softening passes, but no sign-off is recorded. [.claude/agents/voth-atmosphere.md; 20-stage.js:336-372]
+- [ ] The volcano moved from due north to north-north-east (azimuth 22.5, Oct 2026). From the temple floor the bay's rim hills in that direction stand higher than the volcano's foot, so the "Under the temple dome" view frames the altar on the right bearing but the volcano sits behind the hills. Raising the camera, or lowering the hills on that bearing, would bring it back. [20-stage.js volcano; 80-camera.js 'Under the temple dome']
 
 ## Tooling and docs
 

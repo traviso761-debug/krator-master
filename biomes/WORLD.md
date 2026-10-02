@@ -29,14 +29,26 @@ scale Krator map for rough placement, not in this repo.
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
 
+**Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
+structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and
+microclimates. Its neighbours above are as first given; with Korona in the NE, its border with
+the NW lowlands needs checking against the scale model.
+
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.
 
 ## The terrain and the fields: the scale model (Travis, Oct 2026)
 
 The world's terrain comes from the **Krator Scale Model** artifact's heightmap
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.9), with a couple of polishing
-passes before it goes to Godot. What the artifact holds, as PNG rasters on one grid
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.14), with a couple of polishing
+passes before it goes to Godot. 4.10 and 4.11 softened the Inner Wall's outer flank (the ledge down to the
+highland shelf and basin floor is now a slope reaching about 50 km either side of the 'Inner
+Crater' region's outline; the crater-facing rim is unchanged); 4.12 weathered the four mesas in regions 37 and 38, carved the Bay of Voth off the
+Ring Sea and raised geyser islands over a fifth of the West Ring isles; 4.13 turned region 42 to shallow sea, lowered region 41's plateaus, eased the
+cliff along Crag Men's northern border and joined Spice isle into one landmass; 4.14 bridged Spice isle to the central volcano and added five
+geysers on the western crater floor. Textures are re-shaded
+and temperatures lapse-corrected to match: the scripts are in `tools/scale-model/`. The regions
+collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
 
 - `h`: elevation, 16 bits (R,G) from -2,600 to +17,100 m, plus a water flag (B); `wl` water level;
@@ -126,26 +138,46 @@ wind. For one world:
 
 ## What blocks it today (checked in the code, Oct 2026)
 
+Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits against `GODOT-PLAN.md`.
+
 1. **One global `BIO`, five versions of its core.** Whichever kit loads last replaces the
    other's core functions; hyperjungle declares `const BIO`, a syntax error beside any other
-   kit's `var BIO`. Every kit must run on one core.
+   kit's `var BIO`. Every kit must run on one core. *Done: all nine kits read `core/biome/`.*
 2. **Item and bucket names collide.** 59 item names are used by more than one kit (`trunk`,
    `rod`, `boulder`, `grass`, `frond`...). `BIO.def` runs at load, reports a repeat as an
    error and keeps the second kit's definition, so the first kit plants with the second's
-   geometry and material. Bucket families (`bark0`...) collide the same way.
+   geometry and material. Bucket families (`bark0`...) collide the same way. *Done: `BIO.kit(name)`
+   gives each kit its own registry.*
 3. **Shader cache keys collide, silently.** `leafMat(tex,'grass')` caches as `biofol|grass`
    in four kits, and the hook bakes each kit's options (sway amplitude and more) into the
    shader source. three.js reuses the first program it compiled for the key, so the second
-   kit's foliage sways and shades with the first kit's settings, with no error.
+   kit's foliage sways and shades with the first kit's settings, with no error. *Done: cache keys carry
+   the kit (`BIO.kitKey`).* Item 11 is the same bug one level up.
 4. **One host binding.** One mask, one set of fields, one LOD spine. Every kit's
    `KNOWN_ISSUES.md` warns that its zone thresholds are tuned to its own fields' scale.
-5. **Whole-map builds, all held.** nhighlands holds ~26M triangles, rift ~24M. Runtime LOD
-   (xanadu, nhighlands) hides far chunks; it does not free them or skip building them.
+5. **Whole-map builds, all held.** rift holds ~25.7M triangles, nhighlands ~24.4M. Runtime LOD
+   (now in xanadu, nhighlands, rift, swlowlands, swbay and nwlowlands) hides far chunks; it does not
+   free them or skip building them.
 6. **Placement depends on build order, not on place.** Each pass reseeds once and walks its
    whole grid, so a chunk built alone gets different plants from the same chunk in a full
    build, and a border changes with which side built first.
 7. **Water at y=0** in eastabyss, rift and swlowlands (their in-water bands and floating
-   pads). An open world has many water levels; `BIO.waterH` exists in the newer kits.
+   pads). An open world has many water levels; `BIO.waterH` exists in the newer kits. *Done: every
+   kit plants against `BIO.waterH`.*
+8. **The LOD level is decided at placement.** A tree's level (hero, stand-in, far impostor:
+   `T.lv`) comes from its distance to the showcase's LOD spine (`BIO.lodD`), so the preview's
+   camera is baked into the data. Godot needs every tree at every level.
+9. **Every field rests on a `Math.sin` hash.** `rng` is mulberry32 and ports bit for bit; `h3`,
+   and the `vnoise` and `fbm` built on it, do not, so a GDScript generator cannot reproduce a
+   zone or a field.
+10. **Hero trees are unique meshes.** Trunks and branches are built per tree and merged into
+    buckets. A tile can be exported as meshes, but the continent's flora is grown at run time, and
+    `GODOT-PLAN.md` ports no builder code. *Decided: variants by default, hero trees opt-in
+    ("Hero trees: an opt-in", below).*
+11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` is written in four kits;
+    eastabyss and rift assign it unguarded with different signatures, so the last kit loaded
+    replaces the others'. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
+    swlowlands) and swbay's fauna material are kit copies too.
 
 ## The contract it needs
 
@@ -163,7 +195,13 @@ wind. For one world:
   adapter where a kit was tuned to a differently scaled field.
 - **Placement seeded by cell.** A grid cell's draws seeded from its coordinates and the
   pass, so any region builds the same whatever was built before it. This moves every
-  plant in every kit once: baselines and gallery shots change with it.
+  plant in every kit once: baselines and gallery shots change with it. Do it in the same
+  event as the integer hash, the level-free records and the heightmap terrain (Order, step 6),
+  so the plants move once, not four times.
+- **Placement records, then drawing.** Placement writes one record per plant (species,
+  position, seed, size, tags, a deterministic id) and no LOD level; the draw pass reads the
+  records and picks the level. This is `GODOT-PLAN.md`'s rule 5, and the records, not the
+  meshes, are what a Godot generator is tested against.
 - **Export by tile, for Godot.** Godot streams, culls and fades; the kits only have to say
   what is where, tile by tile, as data (the conventions of `settlements/yuni/GAME_EXPORT.md`
   and `core/atmos/GODOT.md`: metres, +Y up, x east, z south; stable ids; tags in glTF extras):
@@ -173,10 +211,16 @@ wind. For one world:
   - **buckets** as one glTF mesh per family per tile (indexed, vertex colours);
   - **materials as data**: each leaf, bark and fauna material's texture (the procedural
     canvases, as PNG) and its hook's options (sway, two-tone, iridescence), so the Godot
-    side writes a handful of shaders once (foliage card, bark, iridescent bark, glow, animated
-    fauna) instead of porting every kit's;
+    side writes a handful of shaders once (leaf card, bark, iridescent bark, gloss bark, far
+    impostor, hanging sway, animated fauna) instead of porting every kit's. Each is a material
+    kind in the core first: today four of them live in the kits (blocker 11);
+  - **trees as variants, heroes opt-in** (Travis, Oct 2026): by default each species and habit
+    is K baked variants (12 to 24, say), exported once as meshes and placed as instances by the
+    records' seeds, since Godot grows the flora and ports no builder (blocker 10). Hero trees,
+    built unique, stay as an opt-in for sites and zones that need them (below);
   - **LOD as data**: the hero tree and its stand-in (xanadu's runtime LOD already pairs them)
-    become LOD levels with Godot visibility ranges; a far impostor is one more level;
+    become LOD levels with Godot visibility ranges; a far impostor is one more level. Every
+    record carries all its levels (blocker 8);
   - **tags**: species, class, harvest and Köppen per instance group, for the inspector's
     successor in the game.
 - **A bake pipeline.** A headless run (the `verify.py` harness already loads a kit in
@@ -184,20 +228,86 @@ wind. For one world:
   terrain: the heightfield the kits plant on must be the one Godot draws, so the world's
   terrain and its ground paint need one source both read.
 
+## Against the port plan (`GODOT-PLAN.md`, re-assessed Oct 2026)
+
+`GODOT-PLAN.md` is the repo-wide audit and port plan; this file and `biomes/GODOT.md` stay its
+authority for flora. The biome kits are second in its audit order (after `core/`, which is done)
+and are what its milestone M4, a first tile in Godot, needs. They start ahead of every other
+lineage: one core, one PRNG (the only other copy is in nhighlands' sky), a host reached only
+through `BIO.init`, a placement pass (`TREES`) apart from the draw pass in every kit, an exporter,
+a probe and `--assert` in each, and every page matching `PORT-BASELINE.json`. What the plan changes
+here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
+
+- **Builders do not port; the flora must still grow at run time.** The plan carries a builder
+  over as its meshes. That suits a tile, not a continent of unique trees: hence trees as
+  variants by default (blocker 10), placement as the one thing ported, and records as the
+  golden data. Hero trees stay as an opt-in (next section).
+- **Move the plants once.** The integer hash (`core/rand`, Phase 2), cell seeding, level-free
+  records and the heightmap terrain (`core/terrain`, Phase 2) each reshuffle every kit. Do them
+  as one event with one screenshot set, one baseline rewrite and one gallery update; tune preset
+  views after it.
+- **Shader hooks name a library shader** (the plan's rule 7). The kits' own hooks become core
+  material kinds; that also fixes blocker 11.
+- **The host shell** (Phase 1). The biome hosts (ten `host-*` sets, each its own version) are the
+  easiest builds to put on `core/host`; the stage's terrain and fields go to `core/terrain`.
+- **Tags and ids** on every record, for `core/tags` (Phase 2) and the fauna kit
+  (`biomes/README.md`); the export's materials on the plan's shared vocabulary (Phase 3), then
+  folded into `core/export/` (Phase 4).
+- **Runtime LOD is preview-only.** The plan freezes it: a kit's range per chunk is data (it
+  becomes `visibility_range`) and stays; new preview savings come from `core/lod`, which knows
+  the biome sets and no kit lists yet, rather than more culling in the kits.
+- **The audit.** Each kit's `PORT.md` carries provisional tags that need a person's pass (the
+  stage is data as well as host; the trees are already split; floor and dress place and draw in
+  one pass), and `tools/audit_port.py` does not yet see the core's exporter.
+
+## Hero trees: an opt-in (Travis, Oct 2026)
+
+Variants are the default; the hero tree code is kept, and unique trees stay available where
+they are wanted. Nothing is thrown away: each variant is a hero builder run on one seed, and
+a kit's showcase keeps drawing heroes in the preview.
+
+- **What a hero is.** A tree built unique from its own seed by its species' hero builder and
+  baked as its own mesh (with the kit's stand-in and impostor as its far levels). Godot never
+  regrows it: it streams with its tile, as a settlement's buildings do.
+- **Who opts in.**
+  - **A site whose architecture is fitted to its trees.** Mav's Refuge is a tree city: its decks,
+    levels, gate carvings and bridges are built on `trunkR(T,y)` of five residential and three
+    gateway hypertrees, with 35 near ones round them. Those trees cannot be variants; they cross
+    over with the settlement as meshes (`GODOT-PLAN.md` Phase 4). Girder's hypertrees are the
+    same builder and can opt in the same way.
+  - **A hero zone in a kit.** A region (later a zone of the biome tool) with a hero budget:
+    hyperjungle's hero disc (~100 hypertrees in six species, 2 km across, whose `PERCHES` feed
+    the fauna) is the first; named landmark trees anywhere are the same mechanism.
+- **How.** The opt-in is data on the placement record (`hero:true`, with its seed), set by the
+  site or the zone, never by distance from a camera (blocker 8). Outside an opt-in the same
+  species is placed as variants. The Godot generator grows everything else, and inside a hero
+  zone leaves the trees it owns to the baked set.
+- **Budget.** Heroes cost memory, not generation: a tile's hero triangles get a budget, set
+  when the first tile is measured. The bake pipeline bakes heroes per tile.
+- **Preview.** A switch shows either look: every tree a hero (today's pages, the default for a
+  kit's showcase) or heroes only where opted in (what Godot will draw).
+
 ## Order
 
-1. `core/biome/`, kits switched one at a time and proven unchanged (mesh fingerprints).
-2. Namespaces and the cache-key fix in the core.
-3. `waterH` in every kit; the shared fields contract.
-4. Cell seeding (moves every plant once), then weights and the occupancy index.
-5. The export contract (`biomes/GODOT.md`) and `BIO.export(tile)`, proven on one kit by
-   loading a tile in Godot; then the bake pipeline over a gradual pair and a steep pair.
+1. `core/biome/`, kits switched one at a time and proven unchanged (mesh fingerprints). *Done.*
+2. Namespaces and the cache-key fix in the core. *Done.*
+3. `waterH` in every kit (*done*); the shared fields contract.
+4. The port audit for the nine kits (`PORT.md`), then the kits' shader hooks as core
+   material kinds (proven by fingerprints and screenshots).
+5. Tags, Köppen and ids on records; the biome hosts onto `core/host`.
+6. The reseeding event: `core/rand`'s hash, cell seeding, level-free records and the
+   heightmap terrain together (moves every plant once); then weights and the occupancy index.
+7. Variants and opt-in heroes in the core (decided: the section above), then the export
+   contract (`biomes/GODOT.md`) and `BIO.export(tile)` proven on one kit by loading a tile in
+   Godot (M4); then the bake pipeline over a gradual pair and a steep pair.
 
 The Godot port comes later (Travis, Oct 2026). Until then the three.js previews keep being
 optimised (runtime LOD, far impostors, impostor colour: items 2, 3 and 8 of the Oct 2026
 review), and the Godot side gets SCAFFOLDING only: the contract (`biomes/GODOT.md`) and
 `BIO.export()` in the core, so what a page places can already be written out as data in
-the contract's shape, and nothing built now has to be torn up for the port.
+the contract's shape, and nothing built now has to be torn up for the port. Preview work
+follows the plan's tags: impostors, stand-ins and budgets are content and cross over;
+new culling machinery does not (`core/lod` first).
 
 Prototype pairs, proposed: **nwlowlands and swlowlands** (gradual; one kit was cloned from
 the other, so the core work is tested without species surprises) and **sedesert and

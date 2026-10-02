@@ -4,7 +4,7 @@
 
 Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss: every building's rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `README.md`, `SPEC.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`, `SPEC.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/interiors-sets.html`, `dist/interiors-walk.html`, `dist/interiors.html`
 

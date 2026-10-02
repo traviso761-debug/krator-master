@@ -4,7 +4,7 @@
 
 Yuni: the city, plus its building-kit and plant sheets (its furniture is in kits/catalog).
 
-Docs: `ANCIENTS-SYNC.md`, `API.md`, `GAME_EXPORT.md`, `KNOWN_ISSUES.md`, `NOTES.md`
+Docs: `ANCIENTS-SYNC.md`, `API.md`, `GAME_EXPORT.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `yuni-assets.html`, `yuni-plants.html`, `yuni.html`
 

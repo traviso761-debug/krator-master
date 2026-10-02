@@ -4,7 +4,7 @@
 
 Dalab: the mound settlement of the southwestern lowlands, and its building set.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/dalab-set.html`, `dist/dalab.html`
 

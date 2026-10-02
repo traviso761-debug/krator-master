@@ -1,5 +1,7 @@
 Note for all builds: when creating new flora or fauna, tag by biome (arid/mild/wet, hypertropic/tropic/temperate/cold, abyssal vs non, riparian vs non vs both), and harvestability/edibility. If making new flora to be part of a park or compound, don’t make it part of the building: make it a separate plant, with tags, then place it - if making a new building set without any biome specified, make a placeholder and expect it to be replaced later. When making furniture, tag by culture and type (table, chair etc); include outdoor furniture and decorations (fountains, statues, benches etc) as furniture for this purpose, tagged indoor, outdoor, or both. When making buildings, tag by culture, type (civic, market/shop, tavern/inn, industry, farm, single-family dwelling, multi-family dwelling, infrastructure, religious, funerary; buildings can have more than one tag eg a funerary temple would be funerary+religious). Keep dependencies as segregated as possible; the idea is it should be easy to swap in one culture's buildings or one biome’s flora without affecting anything else.  Modular is better! It should be as easy as possible for an agent to identify what components need to be exported to place an object in a different artifact.
 
+Write code with an eye to an eventual port to Godot. We want new builds to reference core modules as much as possible rather than building bespoke systems for each build.
+
 When placing streets, paths, and highways, make sure they connect to existing network unless otherwise specified. Ask if unclear.
 By default, builds should use the standard Krator skybox with gas giant and sun, +/- relevant local details (distant mountains and volcano position, etc). This will eventually be replaced with a more fully rendered open world.
 
@@ -60,14 +62,22 @@ Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tri
 ## Where things are
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
-`INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
+`GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
+browser-native code and porting the rest to Godot; read it before adding a core module or
+starting a build. `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
 holds the working rules for agents. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
-**Keep the Krator Worlds gallery current.** Whenever you push a new or changed
-settlement, building kit or biome to `main`, update the gallery in the same
-session: add the new page to `ENTRIES` in `gallery/build_gallery.py` if it is not
-listed, run `python3 gallery/build_gallery.py`, and republish `gallery/site/` to
+**Keep the Krator Worlds gallery current.** Update it automatically only when you
+push a brand new settlement, kit or biome to `main` (or change the location of an old one's
+.html render). Add the new pages to `ENTRIES` in `gallery/build_gallery.py` if they are
+not listed, run `python3 gallery/build_gallery.py`, and republish `gallery/site/` to
 the Krator Worlds artifact at the URL in `gallery/README.md` (same URL, every file
 in `gallery/site/worlds/` attached). Do not publish a new artifact.
+
+- A fix delivered to one settlement or biome: republish only that build's files.
+- A change wider than that (several builds, shared `core/` code, a refactor): ask
+  whether to update the gallery. Do not republish unasked.
+
+When making changes to an existing or in-progress build, particurly after change that has wide impact or when trying to revise broken geometry, provide a link to the local version of the .html render or a mock.html.

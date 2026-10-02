@@ -8,7 +8,7 @@ sharing one vocabulary:
 | branch | who | leans toward | stone | light |
 |---|---|---|---|---|
 | **Republican** (`republican`) | the Iron Republic — the most settled, developed highland state | Russian + Transylvanian Saxon, a touch of the Iziz vernacular (salvage metal on the poor and on industry) | socles, rich ground storeys, civic, walls | electric: rich + civic only |
-| **Rustic** (`rustic`) | the relatively civilised villages south of the Republic | Norse + Alpine | footings and chalet ground storeys only | none |
+| **Rustic** (`rustic`) | the relatively civilised villages north-east of the Republic | Norse + Alpine | footings and chalet ground storeys only | none |
 | **Tribal** (`tribal`) | the Painted Men and other raider tribes | raw logs, bamboo, thatch; the heaviest carving and paint; cliff settlements | stone circles, hearths | none |
 
 ## The shared vocabulary (what makes the three one family)

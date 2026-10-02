@@ -1,0 +1,58 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.09,
+    1.438
+   ],
+   "seam_before": [
+    1.008,
+    1.497
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.shingle",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Rustic Wood Shingle Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row roof.shingle (exact wording not recorded)",
+  "sha1": "6f9885b2eb73be139d162c43c394af3e7abdf7e2"
+ }
+}
