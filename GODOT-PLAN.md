@@ -39,6 +39,7 @@ What does not cross over today, by size:
 | The life layer | Voth `78a..79c`, about 500 KB; Girder, Locus, Mav's Refuge, Yuni have their own | agents, nav grids and collision are written against THREE meshes and `Raycaster` (137 uses in Voth) |
 | Materials | three incompatible vocabularies: `MAT` (Ancients lineage), `PAL`/`FAMMAT` (Voth, Yuni, Locus, Girder, Mav's), catalog family strings | no single material table to export |
 | Three.js r128 | pinned in every page head | the API surface the port rewrites is fixed, which helps |
+| Placement masks on canvas | Iziz (`85-city-paint.js`), Dalab (`85-city-paint.js`), Erewhon (`85-er-paint.js`) and Roketstad (`85-rk-paint.js`) paint roads and footprints into 2D canvases and read them back with `getImageData`; `canBuild` is a pixel threshold | where a city's buildings stand depends on how the browser anti-aliases a stroke. Godot cannot reproduce it, and GPU and CPU canvases already disagreed (Dalab placed 875 or 882) |
 
 ## 2. The four tags
 
@@ -106,7 +107,14 @@ Audit in the order the port will consume them, so each audit feeds a phase that 
    findings").
 3. `kits/catalog`, `kits/interiors`, `kits/post-apoc`, `kits/ringsea` (self-contained, data-shaped).
 4. The Ancients lineage (`kits/ancients`, `iziz`, `highlands`, `xanadu`, `reedlake`, `dalab`, `screamers`,
-   `port`, `jimjam`): one material and texture system, shared host shell.
+   `port`, `jimjam`): one material and texture system, shared host shell. **Iziz first** (city kits review,
+   Oct 2026): it is the M5 city, so its split list sets that milestone's scope. Two provisional tags there are
+   wrong and should be corrected first: `targets/city/90b-city-build.js` (43 KB) and Dalab's
+   `targets/city/90b-city-build.js` are tagged [web] but run the city's placement and build passes; they are
+   [G data] + [draw] to split. Before the lineage's audit and its Phase 3 work, re-vendor the chain once
+   (Ancients to Iziz to Highlands to Xanadu and Reed Lake, and Jimjam; open since main's Ancients work on
+   2026-10-01, recorded in `settlements/iziz/KNOWN_ISSUES.md`), with a new hash baseline and a screenshot diff,
+   so the tags and the material adapters are written against matching copies, not done twice.
 5. The Voth lineage (`voth`, `yuni`, `locus`, `girder`, `mavs-refuge`): the life layers and `PAL`/`FAMMAT`.
 6. `shade` (sedesert biome plus a settlement; the two kinds in one page).
 
@@ -176,7 +184,7 @@ whole of `src/` in every build. Nothing has been ported yet, but every remaining
 
 ### Phase 2: the engine-neutral substrate
 
-Four small `core/` modules, each with a node test (and, where Godot runs the same algorithm, a GDScript
+Five small `core/` modules, each with a node test (and, where Godot runs the same algorithm, a GDScript
 twin) checked against the same golden vectors:
 
 1. **`core/rand/`**: one PRNG (a 32-bit integer generator, `mulberry32` or `sfc32`, so the arithmetic is
@@ -206,9 +214,21 @@ twin) checked against the same golden vectors:
    keeps its `FURNISH` name, so no builder changes; the build's glue fragment shrinks to its adapter. Node test:
    a fixed list of calls gives the same records.
 
+5. **`core/mask/`**: the cities' placement raster in place of the canvas masks (city kits review, Oct 2026).
+   A Uint8 grid over the city at a fixed step, with integer stroke and polygon fill (roads at their width,
+   footprints, precincts, water) and `canBuild(x,z)` as a grid read, so placement is [G data] and identical in
+   node, any browser and GDScript. The four painters (`85-city-paint`, `85-er-paint`, `85-rk-paint`) keep
+   their canvases only to draw the ground texture for the preview, from the same strokes. Node test: a fixed
+   set of strokes gives the same grid hash. Expected to move rubble once per build (accept it with a screenshot
+   diff, as for `core/rand`). It replaces the Dalab stopgap (`willReadFrequently` to keep the canvases on the
+   CPU), and it is the likely fix for Erewhon's open plot failures (the plot's front-edge test points fall
+   inside the road's anti-aliased stroke): do it before or with the Erewhon session.
+
 Done when: each module has `test-*.js` passing in node and a `.gd` twin passing the same vectors in
 Godot's headless test runner; at least one build of each lineage runs on all three. For `core/furnish/`: the six
 builds take it, their hash baseline is unchanged, and `check_port.py` passes its placement pass as `[G data]`.
+For `core/mask/`: Iziz, Dalab, Erewhon and Roketstad place from it, no `getImageData` is left in a placement
+path, and a GPU and a CPU load give the same placement hash.
 
 ### Phase 3: textures and materials as data
 
@@ -236,6 +256,22 @@ builds take it, their hash baseline is unchanged, and `check_port.py` passes its
   three.js: the preview's merged batches keep no UVs, and Godot applies the library through its triplanar option.
   The export carries, per piece, the family and its library record, and states that the catalog's colours are
   sRGB (`convention.colour`).
+
+- **The city kits** (city kits review, Oct 2026). Where the painters are, and the order that covers most builds
+  per change:
+  - Ancients lineage: about 300 canvas painters (Highlands 72, Dalab 70, Xanadu 60, Reed Lake 55, Iziz 39).
+    `70-hl-tex.js` is one byte-identical copy in Highlands, Dalab and Reed Lake, so it is the first painter set
+    to move onto `TEX.def` (section 7: promote a painter when several builds share it). Then the two versions
+    of `69b-vern-mat.js` and `71-hl-mat.js` onto the record adapters, with `opt/69a-world-uv.js` as the
+    world-UV hook.
+  - Voth lineage: few painters, but `47-texture.js` exists in five builds as five versions and `40-ground.js`
+    in three as three. Reconcile the copies (or record each difference) before the Girder pilot hooks its own,
+    so the pilot's adapter is written once.
+  - The **second pilot is Iziz** (M5), after Girder. The library sets every city needs are scan sets, CC0:
+    `stone.cut`, `plaster`, `brick`, `paving`, `roof.tile`, `earth.adobe`. Source them with Girder's six.
+  - Re-harvest Yuni's furniture into the catalog after the vocabulary exists, so the six pieces added on
+    2026-10-01 and the new `container-item` / `container-food` types go in once, in their final shape
+    (`settlements/yuni/KNOWN_ISSUES.md`).
 
 Done when: a build's export carries a material table a Godot importer can apply without reading JS, and
 no new `canvasTex` painter is added without a `TEX.def` or a bake.
@@ -268,6 +304,11 @@ JSON per build (or per tile with `{box}`), with:
   are baked to PNG. Placements are transforms by piece and look, which the importer turns into one MultiMesh per
   piece and look, far cheaper than the preview's merged batches. A catalog-only export (every piece, no
   placements) gives Godot the furniture library the interiors planner places from.
+
+- Cities (city kits review, Oct 2026): `KRATOR_EXPORT` is the only city exporter, and its records (buildings,
+  doors, windows, lights, interiors, furniture kit slots, each with a stable id and tags) are already the shape
+  `core/tags` needs. Use it as the city template: give Iziz the same record shape for M5, from its `REGISTER`
+  and its city placement records, rather than starting the city side of `core/export/` from the biome export.
 
 Then the converter: `tools/godot/krator_import.py` writes `.glb` (meshes, MultiMesh instancing through
 `EXT_mesh_gpu_instancing`, extras) plus a `.tscn` or a Godot `addons/krator/` importer that reads the JSON
@@ -323,6 +364,9 @@ Stop investing in, and where it simplifies the host shell, remove:
   walk-mode features (ladders, edge rails, head collisions: Girder's `83-walk.js` and the interiors walk-through
   stay as they are); the after-load furnishing timing in Girder; re-exporting the interiors walk-through's
   building shells. The furniture budget lines in the builds' `verify.py` stay as guards for the preview.
+- city preview work (city kits review, Oct 2026): `core/lod/` was rolled out to every settlement on
+  2026-10-01 and the night lighting retuned in Mav's Refuge, Girder, Yuni, Locus and Voth. Both are [G native]:
+  keep them as they are, with no further LOD tuning, no more night-light passes and no picking work in three.js.
 
 Nothing in this phase is deleted while a build still needs it to preview. "Retire" means tag [G native],
 freeze, and do not copy into new builds.
@@ -369,6 +413,8 @@ golden tests pass in CI.
 | `kits/catalog/` sheet, hover, polygon | [web] | host shell |
 | `kits/post-apoc`, `kits/ringsea` | [draw] + [G data] | builders export as meshes; their `92-camera.js` goes to the host |
 | `kits/ancients` and lineage | [draw] + [G data] + [G shader] | split builders (section 3.2); `MAT`/`TEX` onto Phase 3; `targets/` are data already |
+| City placement painters (`85-city-paint` in Iziz and Dalab, `85-er-paint`, `85-rk-paint`) | [G data] + [web] | placement onto `core/mask/` (Phase 2); the canvas stays only for the preview's ground texture |
+| City build passes (`90b-city-build` in Iziz and Dalab) | [G data] + [draw] | split; provisionally mis-tagged [web] |
 | Voth lineage life layers | [G data] + [web] | Phase 5 |
 | `21-sky.js` (11 copies) | [G native] + one [G shader] | sky preset in `core/atmos` |
 | `gallery/`, `host/`, `host/WorldMenagerie/` | [web] | out of scope; the gallery stays the preview's front door |
@@ -423,9 +469,9 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 |---|---|
 | M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0) |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
-| M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds (Phase 2) |
+| M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start) |
-| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export |
+| M5 first city | Iziz exports and opens: buildings, atmosphere, terrain, interiors (Phase 4); Girder's furnished rooms open from the `furniture` export; Iziz's export uses the `KRATOR_EXPORT` record shape and the library's city sets |
 | M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
 
