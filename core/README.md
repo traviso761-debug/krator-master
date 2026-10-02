@@ -210,6 +210,13 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 `src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons). `walk/` and `sched/` have no
 user yet.
 
+## `clock/`
+
+The world clock, `KCLOCK` (`GODOT-PLAN.md`, Phase 1, "The world clock"): motion time `t` in seconds, and world time
+(`hour`, `day`) that runs at one world day per 72 real minutes when it runs. The preview holds the hour by default; the
+viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the host steps it with its frame's `dt`.
+`node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`).
+
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,

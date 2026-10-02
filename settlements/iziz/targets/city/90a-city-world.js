@@ -30,6 +30,12 @@ function citySkyTick(){KratorSky.update(camera.position,CITYSKY.hour,CITYSKY.day
  const day=clamp(L.dayF,0,1);MAT.warmPane.color.copy(CITY_GLOW.pane).lerp(CITY_GLOW.paneDay,day);MAT.bulb.color.copy(CITY_GLOW.bulb).lerp(CITY_GLOW.bulbDay,day);
  if(MAT.dot)MAT.dot.color.setScalar(1-.45*day);}
 const CITY_GLOW={pane:new THREE.Color(0xffcf8a),paneDay:new THREE.Color(0x5a5244),bulb:new THREE.Color(0xfff3d6),bulbDay:new THREE.Color(0xb8b0a0)};
+// THE WORLD CLOCK (core/clock): held at the hour by default, run by the toolbar's Run time button (a world day is
+// 72 real minutes). Anything may still set CITYSKY.hour directly (the slider, #hour=, _api, a harness): the clock
+// takes that hour up on the next frame. Stepped first, so the sky and the atmosphere see the new hour.
+const CITY_CLOCK=KCLOCK.make({hour:CITYSKY.hour});let cityHourSeen=CITYSKY.hour;
+FRAME_HOOKS.push(dt=>{if(CITYSKY.hour!==cityHourSeen)CITY_CLOCK.set(CITYSKY.hour);const d0=CITY_CLOCK.day;CITY_CLOCK.step(dt);
+ CITYSKY.day+=CITY_CLOCK.day-d0;CITYSKY.hour=cityHourSeen=CITY_CLOCK.hour;});
 FRAME_HOOKS.push(citySkyTick);for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 citySkyTick();
 // ---------------------------------------------------------------- the outer wall, the gates and their bridges

@@ -17,11 +17,15 @@ uiButton('Jungle',true,()=>{const v=!BIO.baked[0].visible;for(const m of BIO.bak
 // hour of day
 {const wrap=document.createElement('span');wrap.style.cssText='display:inline-flex;align-items:center;gap:4px;margin-left:6px;font:12px system-ui;color:#ffe2b0';
  const lab=document.createElement('span');lab.textContent='hour '+CITYSKY.hour.toFixed(1);const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=24;sl.step=.1;sl.value=CITYSKY.hour;sl.style.width='120px';
- sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ATMOS.weatherUI(wrap);ui.appendChild(wrap);ui.style.maxWidth='calc(100vw - 24px)';}
-// the hour and the weather can come in the URL: #hour=20.5&weather=storm (shareable; also how the harness shoots the night)
-{const q=new URLSearchParams((location.hash||'').replace(/^#/,''));const h=parseFloat(q.get('hour'));if(isFinite(h)){CITYSKY.hour=h;const sl=ui.querySelector('input[type=range]');if(sl){sl.value=h;sl.oninput();}}
+ sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);
+ // run or hold world time (held by default); the slider and label follow the clock, however its hour was set
+ const rt=document.createElement('button');rt.id='cityRunTime';rt.title='Run world time: one day is 72 minutes';const rtSync=()=>{rt.textContent=CITY_CLOCK.running?'Hold time':'Run time';};
+ rt.onclick=()=>{CITY_CLOCK.run();rtSync();};rtSync();wrap.appendChild(rt);
+ let rtAcc=0;FRAME_HOOKS.push(dt=>{rtAcc+=dt;if(rtAcc<.5)return;rtAcc=0;if(Math.abs(parseFloat(sl.value)-CITYSKY.hour)<.05)return;sl.value=CITYSKY.hour;lab.textContent='hour '+CITYSKY.hour.toFixed(1);});ATMOS.weatherUI(wrap);ui.appendChild(wrap);ui.style.maxWidth='calc(100vw - 24px)';}
+// the hour, the weather and running time can come in the URL: #hour=20.5&weather=storm&time=run (shareable; also how the harness shoots the night)
+{const q=new URLSearchParams((location.hash||'').replace(/^#/,''));if(q.get('time')==='run'){CITY_CLOCK.run(true);const b=document.getElementById('cityRunTime');if(b)b.textContent='Hold time';}const h=parseFloat(q.get('hour'));if(isFinite(h)){CITYSKY.hour=h;const sl=ui.querySelector('input[type=range]');if(sl){sl.value=h;sl.oninput();}}
  const w=q.get('weather');if(w&&ATMOS.W&&ATMOS.W.MODES.includes(w)){ATMOS.W.mode=w;const sel=document.getElementById('atmosWeather');if(sel)sel.value=w;}}
 window._api.city={CITY,HILL,ROADS:()=>ROADS.length,clusters:()=>CLUSTERS.map(C=>({state:C.state,hill:C.hill,cells:C.nx*C.nz,slots:C.slots.length,built:C.slots.filter(s=>s.built).length})),occ:()=>OCC.list.length,
- setHour:h=>{CITYSKY.hour=h;},quota:QUOTA,vern:()=>{const by={};for(const v of VERN_PLACED)by[v.key]=(by[v.key]||0)+1;return by;},biome:()=>window._biome,
+ setHour:h=>{CITYSKY.hour=h;},clock:()=>CITY_CLOCK.state(),runTime:on=>CITY_CLOCK.run(on).running,quota:QUOTA,vern:()=>{const by={};for(const v of VERN_PLACED)by[v.key]=(by[v.key]||0)+1;return by;},biome:()=>window._biome,
  belt:()=>window._belt,atmos:()=>window._atmos,lifeDests:()=>({market:LIFE_DESTS.market.length,markets:REG.filter(r=>r.tags&&r.tags.destination==='market').map(r=>({name:r.name,x:r.x|0,z:r.z|0,stalls:r.tags.stalls,canopies:r.tags.canopies}))})};
 window.LIFE_DESTS=LIFE_DESTS;

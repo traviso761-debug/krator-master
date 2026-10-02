@@ -177,10 +177,11 @@ Rules the shell enforces: the host owns the DOM, the camera, time, input and pic
 `{scene, terrainH, registry, exporters}` and gets `{hour, clock, camera}` back. A build fragment that
 touches `document` outside `core/host/` fails `check_port.py`.
 
-**The world clock (contract; proposed 2026-10-02, waiting on Travis's approval).** Four time sources are about
+**The world clock (contract; approved by Travis 2026-10-02).** Four time sources are about
 to exist side by side: each life build's `SKY_T`/`skyHour()` with `TICKS.push(fn(dt, hour))`, `ATMOS.clock`,
 `KSCHED` (pure functions of t), and `SIM`'s fixed-rate stepper (`core/simulation/PLAN.md` 4.5). They become one
-clock, owned by `91-host-loop.js`, and everything else reads it:
+clock, owned by `91-host-loop.js`, and everything else reads it. The clock itself is `core/clock/20-core-clock.js`
+(`KCLOCK`, node test `test-clock.js`); Iziz's city is its first user:
 
 | Field | What | Read by |
 |---|---|---|
@@ -197,8 +198,10 @@ clock, owned by `91-host-loop.js`, and everything else reads it:
 - Godot: one autoload, `WorldClock.gd`, advances the same fields in `_process(delta)` and sets the global shader
   parameters `atm_time` and `atm_hour`; `Atmos.gd` and the sim runtime read it. Saved games store `{t, day,
   hour, rate}`.
-- To decide (Travis): the default `rate` once the world runs in Godot (real minutes per world day), and
-  whether the preview pages keep holding the hour by default.
+- **One world day is 72 real minutes** (Travis): `rate` 20, a world hour every 3 real minutes.
+- **The preview pages hold the hour still by default** (Travis), and the viewer can run time and set it: an hour
+  slider and a Run time / Hold time button (Iziz: the toolbar; `#time=run` starts it running). The host shell
+  carries both controls once Phase 1 lands; until then each build that takes `core/clock` adds them.
 
 Done when: every build lists `core/host/` and keeps no `camera`, `probe`, `inspect`, `polytool`, `stats`
 or `sheetui` fragment of its own; each page's screenshots are unchanged; `check_port.py` is on for the
