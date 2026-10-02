@@ -299,6 +299,7 @@ These are the best Godot candidates: generators whose output is data.
   (`src/minastirith/shadow.js`). A seamless open world may not want it, except for ranges beyond the map.
 - **Data side DONE: `KRELIEF.river` (surface and slope per vertex); the foam shader is still to do.** **[G data] + [G shader]** River foam driven by slope (stored per vertex), and a water surface that never
   climbs downstream (`src/rivendell/water.js`, `src/isengard/isen.js`).
+- **DONE in Girder (`settlements/girder/src/83-walk.js`):** the walker is a circle that slides round corners and along walls at any angle (closest-point push-out), and it rides the lift cages (the cage floor is a solid that moves with the cage, and a walker aboard sends the lift off). Girder's stair flights, which sloped the wrong way, are rebuilt with treads.
 - **[G native]** Pull a buried camera back along its line of sight (`src/blame/main.js:115-142`): Godot has
   SpringArm3D. A circle walker with corner push-out (`src/backrooms/level.js:395-419`), and a lift you can
   ride: CharacterBody3D does both, platform motion included.
