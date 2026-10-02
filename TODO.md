@@ -126,6 +126,78 @@ These are the best Godot candidates: generators whose output is data.
   (`src/backrooms/level.js`). This is the same tile-by-tile loading `biomes/WORLD.md` plans.
 - **[G data]** Timed set pieces as pure functions of t, publishing signals on a bus (`src/fleshpit/incident.js`).
 
+## Lava *(Menagerie: the fire on Kharak, `src/homeworld/kharak.js:15-61`)*
+
+Krator has no molten lava. swbay's flows are cold vertex colours (`biomes/swbay/src/45-host-stage.js:231-236`),
+and its plume is a chain of spheres.
+
+- **[G shader] A lava field shader.** Kharak's fire is a single fragment shader, with no particles. Fire fronts
+  are a thin band where a drifting fbm crosses 0.5. A finer front drifts the other way. Embers come from a
+  high-frequency fbm, only on the burnt side. A `burn` 0..1 uniform blends the whole effect in. To make it lava:
+  - sample world xz in metres, using a tiled 3D noise texture rather than `fract(sin())`, which loses
+    precision at world scale;
+  - drive the drift with a downslope flow map, blended in two phases, instead of one constant drift;
+  - put fronts and embers in emission so they glow at night and bloom (Godot: WorldEnvironment glow);
+  - put voronoi plates under the front band, so the cooling crust reads as plates and cracks;
+  - drive it from `atm_time`, and ease `burn` per second, not per frame.
+  A Godot sketch is about ten lines (`EMISSION` from the front band and the embers). It suits lava lakes and
+  fields; channel flows need the flow map.
+- **[G data]** The numbers become an atmos preset: `{kind:'lavafield', scale, flow, frontW, colours, burn}`.
+- **[G native]** Sparks and steam: GPUParticles3D, with parameters taken from `src/core/dust.js:13-52` (drag,
+  gravity, wind, life, alpha curve). The steam is atmos's existing `smoke` steam preset.
+
+## Effects: new core/atmos fx kinds *(Menagerie sci-fi scenes)*
+
+Every Menagerie particle effect is stepped on the processor. Take the parameters, not the code: Godot's
+GPUParticles3D, FogVolume and Decal read them directly.
+
+- **[G data] → [G native] `jet`:** ballistic grains under gravity alone (`src/europa/grains.js:18-45`,
+  `src/europa/ice.js:163-185`). It starts full, because each grain is placed at a random point along its arc
+  (Godot: `preprocess`). Presets `plume` and `vent`, with g as a parameter.
+- **[G data] → [G native] `dustburst` plus a `dust` weather mode:** velocity relaxes toward the wind with drag
+  (`src/core/dust.js:13`). The Coriolis storm front (`src/arrakeen/events.js:81-96`) crosses at 110 m/s; as it
+  passes, fog goes to ×90 and dust brown, the sun to ×0.15, with static flashes. Godot: a moving FogVolume
+  plus Environment fog. `ATMOS.W` has no dust mode today.
+- **[G data] → [G native] `burst`:** explosion and impact: a flash, a flat ring, sparks and a scar left on the
+  ground (`src/homeworld/fleet.js:96-110`, `src/europa/events.js:107-121`). Godot: one-shot particles and a
+  Decal. Krator has no explosions.
+- **[G data] `exhaust`:** an engine glow disc plus a plume cone, with drive-state presets taken from Voyager's
+  warp sequence (`src/voyager/ship.js:246-283`: idle, hot, flare). Trails: GPUParticles3D trails.
+- **[G shader] `portal`:** counter-rotating spiral discs, opening as `sin^0.6` (`src/babylon5/station.js:735-760`).
+- **[G native] `airbox`:** a haze box (`src/blame/city.js:113-124`); in Godot, a box FogVolume.
+- **[G data] `sign`:** text, colour, size and pulse (`src/nightcity/neon.js`); in Godot, a `Label3D` with
+  emission, its halo in `glow`.
+- **[G data] An `events` export block:** a random-event scheduler with `every:[min,max]` and an `active()`
+  gate (`src/core/happenings.js:19,73`).
+- Sky module, not atmos, **[G shader]**:
+  - a planet with night-side city lights and a drifting cloud shell (`src/homeworld/kharak.js:57-83`); the
+    giant's rim already exists;
+  - a galactic band in the star field (`kharak.js:92+`);
+  - a rotating-habitat sky: an axial sun tube that dims rather than sets, with land overhead
+    (`src/hab/world.js:40-63,357-368,539-560,622-650`).
+
+## Life layer: motion as a function of time *(Menagerie ship behaviour)*
+
+Voth's life layer is integrated state. Ships cycle docked, away, arriving and departing, with avoidance nudges
+and departures picked at runtime (`settlements/voth/src/78c-life-ships.js`), so Godot cannot reproduce it from
+the clock. The interiors walkers (`kits/interiors/API.md` §8) and the Ring Sea vessels (`rsWayPose`) are
+already pure functions of t, and are the model.
+
+- **[G data] Schedules as data:** `{route, period, phase, segments:[[dur, ease, from, to]...]}`, as for
+  Homeworld's lifters and collector (`src/homeworld/fleet.js:135`: 14 s up, 6 s docked, 13 s down, offset per
+  craft). Bake Voth's nav routes at build time, resolve slot conflicts offline, and drop the runtime
+  avoidance and the random departures.
+- **[G data] Formations:** offsets in the leader's tangent frame (`fleet.js:130`, Babylon 5's diamond). Use
+  them for coast-guard escorts and strider convoys.
+- **[G data] A queued harbour approach:** closing distance `9000(1-u)^1.6`, so ships slow as they arrive;
+  lateral offsets merge into the lane, then a final alignment (`src/babylon5/station.js:624-700`).
+- **[G data]** A closed-form launch from a rotating frame (Babylon 5), for habitats. Arrivals keyed to the
+  schedule, spawning and despawning on it.
+- **[G shader] Pose on the GPU:** once pose is a function of t, put phase and parameters in
+  `INSTANCE_CUSTOM` and pose each instance in the vertex shader. No per-frame uploads, in three.js or Godot.
+- **[G native]** Engine lights that stay a fixed size on screen: a MultiMesh of billboards with `fixed_size`.
+- Avoid integrated pursuit (Homeworld's defenders) unless it is seeded and stepped at a fixed rate.
+
 ## Testing *(Menagerie)*
 
 - **[G data]** Layout fingerprints compared with saved goldens, which can prove a refactor changed nothing in
