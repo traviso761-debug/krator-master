@@ -4,7 +4,7 @@
 
 The master catalog: asset engine, the parametric furniture kit and 1503 furniture pieces (kits/furniture SPEC shape, palette-keyed, tiered poor/common/court, plus trade and household pieces: forge, anvil, stall, vat, still, bunk, larder ..., and the furniture harvested from the Highlands, Post-Apoc, Beast Rider and Abyss kits) over 24 cultures, one file per culture, with generic goods (containers, food, drink, supplies), biome fruit and a jobs file (work items by trade); a verified contact sheet in five pages (indoor, outdoor, both, rugs, jobs).
 
-Docs: `KNOWN_ISSUES.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/catalog.html`
 
