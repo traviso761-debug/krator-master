@@ -172,7 +172,8 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
    zone or a field.
 10. **Hero trees are unique meshes.** Trunks and branches are built per tree and merged into
     buckets. A tile can be exported as meshes, but the continent's flora is grown at run time, and
-    `GODOT-PLAN.md` ports no builder code.
+    `GODOT-PLAN.md` ports no builder code. *Decided: variants by default, hero trees opt-in
+    ("Hero trees: an opt-in", below).*
 11. **Kit shader hooks on the shared `BIO`.** `BIO.iridBarkMat` is written in four kits;
     eastabyss and rift assign it unguarded with different signatures, so the last kit loaded
     replaces the others'. The gloss bark (nwlowlands, swlowlands), the impostor materials (rift,
@@ -213,9 +214,10 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
     side writes a handful of shaders once (leaf card, bark, iridescent bark, gloss bark, far
     impostor, hanging sway, animated fauna) instead of porting every kit's. Each is a material
     kind in the core first: today four of them live in the kits (blocker 11);
-  - **trees as variants** (Travis's call, pending): each species and habit as K baked variants
-    (12 to 24, say), exported once as meshes and placed as instances by the records' seeds,
-    since Godot grows the flora and ports no builder (blocker 10);
+  - **trees as variants, heroes opt-in** (Travis, Oct 2026): by default each species and habit
+    is K baked variants (12 to 24, say), exported once as meshes and placed as instances by the
+    records' seeds, since Godot grows the flora and ports no builder (blocker 10). Hero trees,
+    built unique, stay as an opt-in for sites and zones that need them (below);
   - **LOD as data**: the hero tree and its stand-in (xanadu's runtime LOD already pairs them)
     become LOD levels with Godot visibility ranges; a far impostor is one more level. Every
     record carries all its levels (blocker 8);
@@ -238,7 +240,8 @@ here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
 
 - **Builders do not port; the flora must still grow at run time.** The plan carries a builder
   over as its meshes. That suits a tile, not a continent of unique trees: hence trees as
-  variants (blocker 10), placement as the one thing ported, and records as the golden data.
+  variants by default (blocker 10), placement as the one thing ported, and records as the
+  golden data. Hero trees stay as an opt-in (next section).
 - **Move the plants once.** The integer hash (`core/rand`, Phase 2), cell seeding, level-free
   records and the heightmap terrain (`core/terrain`, Phase 2) each reshuffle every kit. Do them
   as one event with one screenshot set, one baseline rewrite and one gallery update; tune preset
@@ -257,6 +260,33 @@ here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
   stage is data as well as host; the trees are already split; floor and dress place and draw in
   one pass), and `tools/audit_port.py` does not yet see the core's exporter.
 
+## Hero trees: an opt-in (Travis, Oct 2026)
+
+Variants are the default; the hero tree code is kept, and unique trees stay available where
+they are wanted. Nothing is thrown away: each variant is a hero builder run on one seed, and
+a kit's showcase keeps drawing heroes in the preview.
+
+- **What a hero is.** A tree built unique from its own seed by its species' hero builder and
+  baked as its own mesh (with the kit's stand-in and impostor as its far levels). Godot never
+  regrows it: it streams with its tile, as a settlement's buildings do.
+- **Who opts in.**
+  - **A site whose architecture is fitted to its trees.** Mav's Refuge is a tree city: its decks,
+    levels, gate carvings and bridges are built on `trunkR(T,y)` of five residential and three
+    gateway hypertrees, with 35 near ones round them. Those trees cannot be variants; they cross
+    over with the settlement as meshes (`GODOT-PLAN.md` Phase 4). Girder's hypertrees are the
+    same builder and can opt in the same way.
+  - **A hero zone in a kit.** A region (later a zone of the biome tool) with a hero budget:
+    hyperjungle's hero disc (~100 hypertrees in six species, 2 km across, whose `PERCHES` feed
+    the fauna) is the first; named landmark trees anywhere are the same mechanism.
+- **How.** The opt-in is data on the placement record (`hero:true`, with its seed), set by the
+  site or the zone, never by distance from a camera (blocker 8). Outside an opt-in the same
+  species is placed as variants. The Godot generator grows everything else, and inside a hero
+  zone leaves the trees it owns to the baked set.
+- **Budget.** Heroes cost memory, not generation: a tile's hero triangles get a budget, set
+  when the first tile is measured. The bake pipeline bakes heroes per tile.
+- **Preview.** A switch shows either look: every tree a hero (today's pages, the default for a
+  kit's showcase) or heroes only where opted in (what Godot will draw).
+
 ## Order
 
 1. `core/biome/`, kits switched one at a time and proven unchanged (mesh fingerprints). *Done.*
@@ -267,9 +297,9 @@ here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
 5. Tags, Köppen and ids on records; the biome hosts onto `core/host`.
 6. The reseeding event: `core/rand`'s hash, cell seeding, level-free records and the
    heightmap terrain together (moves every plant once); then weights and the occupancy index.
-7. The variant decision, then the export contract (`biomes/GODOT.md`) and `BIO.export(tile)`
-   proven on one kit by loading a tile in Godot (M4); then the bake pipeline over a gradual
-   pair and a steep pair.
+7. Variants and opt-in heroes in the core (decided: the section above), then the export
+   contract (`biomes/GODOT.md`) and `BIO.export(tile)` proven on one kit by loading a tile in
+   Godot (M4); then the bake pipeline over a gradual pair and a steep pair.
 
 The Godot port comes later (Travis, Oct 2026). Until then the three.js previews keep being
 optimised (runtime LOD, far impostors, impostor colour: items 2, 3 and 8 of the Oct 2026
