@@ -253,11 +253,22 @@ World-level data that spans settlements (the factions themselves, their
 relations, who has an embassy where) lives once, in `core/simulation/world/`,
 generated from `LORE.md` §6, §10 and §11.
 
-`SIM.export()` dumps the same objects to `dist/<name>.sim.json`. JSON is the
-export, not the source: a build's world data depends on its placed geometry and
-must be computed in the same deterministic pass. (Your roadmap sketches JSON
-under each settlement as the source; if hand-edited JSON should be the authority
-instead, Phase 1 adds a loader. This plan assumes generated JS.)
+**Hand-edited JSON is a source too.** Each settlement may keep a `world/` folder of
+JSON (`factions.json`, `places.json`, `population.json`, `routes.json`, `events.json`,
+`relations.json`, the files the roadmap §25 names). `build.py` inlines them as one
+fragment, `76-world-json.js`, that calls `SIM.load({...})`, so the built page stays a
+single file and the build stays deterministic. Load order is fixed: the generated
+fragments register what the geometry implies, then `SIM.load()` applies the JSON on
+top. A JSON record with an existing `id` **overrides** the generated one field by
+field (a hand-set capacity, hours, faction or activity list wins); a record with a
+new `id` is **added**; a record with `"remove": true` deletes the generated one. A
+JSON record that names an unknown place, faction or activity fails the build, the
+same way an unresolved anchor does. Shade's hand-typed `JOBS` and `PLACES` are the
+first candidates to move into `world/*.json` unchanged.
+
+`SIM.export()` writes the merged result to `dist/<name>.sim.json` in the same record
+shapes, so an export can be edited and dropped back into `world/` as the overlay:
+the JSON on disk and the JSON exported are one format.
 
 ### 4.3 The vocabulary (Phase 1 defines it; this is the intended shape)
 
@@ -358,7 +369,8 @@ To be added to `README.md` under "Life/simulation layer" and enforced by a
 8. Deterministic: the simulation's RNG is `SIM`'s own, seeded by the host.
    Rebuild hashes must match across a refactor that changes no behaviour.
 9. Everything the simulation knows is in `SIM.export()`, in the `krator-*`
-   export shape, before it is drawn.
+   export shape, before it is drawn; the export's record shapes are the same as
+   the hand-edited `world/*.json`, so either can be the source of a value.
 
 ---
 
@@ -404,6 +416,8 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
   `interior` layer, joined at street doors.
 - Place slots from furniture: a `SIM.slotsFromFurniture(placements)` that maps
   `FURN_JOBS` and `IX.life.TARGET_TYPES` to activities and counts.
+- `SIM.load(json)` and the `build.py` step that inlines `settlements/<name>/world/*.json` as
+  `76-world-json.js` (§4.2): override by `id`, add, `remove`, fail on unknown references.
 - `SIM.census()` and `window._sim`.
 - A `tools/check_life.py` lint: literal `[x, z]` pairs in life fragments
   outside a `// anchor:` comment, populations reading `skyHour` directly,
@@ -546,7 +560,8 @@ Locus is already closest to the target. Make it the mobility reference:
   slots, roles and schedules, actors (or tier-0 population counts), groups,
   NAV per layer (the `GAME_EXPORT.md` graph shape), transport routes as
   `{period, phase, segments}`, supply routes, stockpiles, events and the log.
-  Written from `verify.py` to `dist/<name>.sim.json` beside the HTML.
+  Written from `verify.py` to `dist/<name>.sim.json` beside the HTML, in the
+  record shapes `world/*.json` uses, so it round-trips as a hand-edited overlay.
 - `core/simulation/GODOT.md`, the contract: places → Godot scenes with an
   `Activities` metadata block, NAV → `NavigationRegion3D` per layer with
   `NavigationLink3D` for stairs, lifts and ferries, transport routes →
