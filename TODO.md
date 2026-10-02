@@ -23,7 +23,7 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Features
 
-- **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
+- **DONE (first batch): `core/minimap/88-core-minimap.js` (`KMAP`), in Voth.** **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
   rather than from the rendered scene. A base layer is painted once into an offscreen canvas: every walkable
   floor, sorted by height so upper levels cover lower, coloured by level, with labels. Each update (at most
   4 Hz, only while the panel is open) copies the base layer and draws the viewer's dot and view wedge.
@@ -38,7 +38,7 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 ## Underground and interiors *(Menagerie: Moria)*
 
-- **[G data] The carver registers walkable floors and blockers as it builds** (`src/moria/carve.js`).
+- **DONE as a registry: `core/walk/20-core-walk.js` (`KWALK`); no build writes to it yet.** **[G data] The carver registers walkable floors and blockers as it builds** (`src/moria/carve.js`).
   `room()` and `passage()` write `{rect,y}` or `{a,b,w}` floors and `[x0,x1,z0,z1,y0,y1]` blocks as they
   build. The walker, the minimap and click-to-go all read that one list, so they can never disagree with the
   geometry. Krator's walk solids (girder `83-walk.js`) and its geometry are kept separately. In Godot the
@@ -291,13 +291,13 @@ These are the best Godot candidates: generators whose output is data.
 - **[G data]** One land-cover map per world, read by both the ground shader and plant placement
   (`tools/make-yellowstone.py:457-575`, `src/yellowstone/nature.js`). In Godot it is a splat texture for the
   terrain shader and the input to placement.
-- **[G data]** A warped-lattice field and hedgerow generator for the highlands and lowlands
+- **DONE: `KRELIEF.fields` in `core/terrain/38-core-relief.js`; no build uses it yet.** **[G data]** A warped-lattice field and hedgerow generator for the highlands and lowlands
   (`tools/make-shire.py:152-178`).
-- **[G data]** Mountain height functions: range walls, junctions that don't double up, volcano cones
+- **DONE: `KRELIEF.range`, `join` and `volcano`.** **[G data]** Mountain height functions: range walls, junctions that don't double up, volcano cones
   (`tools/make-mordor.py:84-181`).
 - **[G shader]** Distant mountain ranges drawn at their true angular size as a backdrop
   (`src/minastirith/shadow.js`). A seamless open world may not want it, except for ranges beyond the map.
-- **[G data] + [G shader]** River foam driven by slope (stored per vertex), and a water surface that never
+- **Data side DONE: `KRELIEF.river` (surface and slope per vertex); the foam shader is still to do.** **[G data] + [G shader]** River foam driven by slope (stored per vertex), and a water surface that never
   climbs downstream (`src/rivendell/water.js`, `src/isengard/isen.js`).
 - **[G native]** Pull a buried camera back along its line of sight (`src/blame/main.js:115-142`): Godot has
   SpringArm3D. A circle walker with corner push-out (`src/backrooms/level.js:395-419`), and a lift you can
@@ -351,7 +351,7 @@ Krator has no geysers or hot springs. Combined with the lava field above and the
   the same points serve pre-play splashing, the full column and the dying away. A `fountain` flag throws
   bursts at every height. A second point cloud makes the steam cloud that drifts downwind
   (`cloudPoints`, :122+); it is heavier on cold mornings and at night (:169).
-- **[G data] The eruption schedule** (`landmarks.js:162-167`): `interval`, `duration` and `phase`, as a pure
+- **DONE: `KSCHED.eruption` in `core/sched/20-core-sched.js`.** **[G data] The eruption schedule** (`landmarks.js:162-167`): `interval`, `duration` and `phase`, as a pure
   function of time. The strength ramps up over 3 s and holds; there are 50 s of splashing beforehand and
   40 s of fading cloud afterwards. Godot evaluates it identically.
 - **[G data] Rimstone terraces** (`landmarks.js:186-215`): lobed extruded steps laid along the steepest
@@ -397,13 +397,13 @@ and departures picked at runtime (`settlements/voth/src/78c-life-ships.js`), so 
 the clock. The interiors walkers (`kits/interiors/API.md` §8) and the Ring Sea vessels (`rsWayPose`) are
 already pure functions of t, and are the model.
 
-- **[G data] Schedules as data:** `{route, period, phase, segments:[[dur, ease, from, to]...]}`, as for
+- **Evaluator DONE: `KSCHED.timeline` and `KSCHED.slots`; moving Voth's ships onto it is still to do.** **[G data] Schedules as data:** `{route, period, phase, segments:[[dur, ease, from, to]...]}`, as for
   Homeworld's lifters and collector (`src/homeworld/fleet.js:135`: 14 s up, 6 s docked, 13 s down, offset per
   craft). Bake Voth's nav routes at build time, resolve slot conflicts offline, and drop the runtime
   avoidance and the random departures.
-- **[G data] Formations:** offsets in the leader's tangent frame (`fleet.js:130`, Babylon 5's diamond). Use
+- **DONE: `KSCHED.formation`.** **[G data] Formations:** offsets in the leader's tangent frame (`fleet.js:130`, Babylon 5's diamond). Use
   them for coast-guard escorts and strider convoys.
-- **[G data] A queued harbour approach:** closing distance `9000(1-u)^1.6`, so ships slow as they arrive;
+- **DONE: `KSCHED.approach`.** **[G data] A queued harbour approach:** closing distance `9000(1-u)^1.6`, so ships slow as they arrive;
   lateral offsets merge into the lane, then a final alignment (`src/babylon5/station.js:624-700`).
 - **[G data]** A closed-form launch from a rotating frame (Babylon 5), for habitats. Arrivals keyed to the
   schedule, spawning and despawning on it.

@@ -76,6 +76,15 @@ The `LOD` panel (bottom right; `l` toggles it, `measure` renders the view both w
 `LOD.enabled=false` (or `?lod=0`) puts back the exact scene the build made; `LOD.stats()` and `LOD.measure()` are
 there for verify.
 
+## Minimap
+
+The Map button (or `m`) opens a plan of the city, bottom left: the shared `KMAP` from `core/minimap/`, which
+`build.py` adds like `core/lod/`. `src/88b-voth-minimap.js` feeds it the terrain (hill-shaded, the bay below `SEA`),
+`ROADS` and `ROADS_X`, every `PLACED` footprint coloured by tag, and the cantons with their names. Hover names what is
+under the pointer; click looks there from the current angle. It draws from data, not from the render, and draws no
+rng, so the world and the budget counters are unchanged. `window._minimap.export()` is the plan as data for the
+Godot port.
+
 `80-camera.js` sets `window.LOD_OPTIONS`: the life layer's vehicles and crews (`userData.life`) stay outside it, since
 they are rewritten every frame, and the panel sits bottom centre, clear of the view list and the sky panel.
 

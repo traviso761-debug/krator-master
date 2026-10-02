@@ -61,6 +61,8 @@
  "85-probe.js": "48ca6bdf3925",
  "86-inspect.js": "769650ca3316",
  "87-pathviz.js": "b0e571c56ade",
+ "88-core-minimap.js": "852bb32803f7",
+ "88b-voth-minimap.js": "1cc602c2259c",
  "97-lod-auto.js": "88ec9e581127",
  "99-tail.html": "7501a65f821c"
 }
