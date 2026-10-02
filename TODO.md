@@ -15,6 +15,12 @@ world. The port works when **what** a thing is (data) is kept apart from **how**
 - **[G native]** Godot has this built in. Worth doing in three.js only for the preview; don't port it.
 - **[web]** browser or three.js only. No Godot value.
 
+Prefer items that are straightforward to port. **Godot order:** (1) the carver's floor and blocker list,
+which becomes collision shapes and the navigation mesh source; (2) the land-cover map, which becomes the
+terrain splat texture and the placement input; (3) the minimap drawn from exported data.
+
+**Counts:** about 15 [G data], 8 [G shader], 9 [G native] and 12 [web].
+
 ## Features
 
 - **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
