@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Open Krator on another device</title>
+<style>
+  :root{--bg:#0d0b2e;--panel:rgba(18,14,58,.9);--gold:#e8c98a;--gold2:#c99a55;--dim:#b89a70;--ink:#1a1040;--line:#6a5a8a}
+  html,body{margin:0;background:var(--bg);color:var(--gold);font:17px/1.5 Georgia,serif}
+  main{max-width:760px;margin:0 auto;padding:28px 16px 48px}
+  h1{font-weight:normal;font-size:28px;letter-spacing:.03em;margin:0 0 6px}
+  .lede{color:var(--dim);margin:0 0 22px}
+  ol{padding-left:22px;margin:0 0 24px}
+  li{margin:4px 0}
+  .card{background:var(--panel);border:1px solid var(--gold2);padding:18px;margin:0 0 16px;display:flex;gap:20px;
+    align-items:center;flex-wrap:wrap}
+  .qr{background:#fff;padding:10px;line-height:0;border-radius:4px}
+  .qr svg,.qr img{width:200px;height:200px;display:block}
+  .addr{flex:1;min-width:220px}
+  .addr .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .addr .u{font:600 24px/1.3 ui-monospace,Menlo,Consolas,monospace;color:#fff;word-break:break-all;margin:4px 0 10px}
+  button{background:var(--panel);color:var(--gold);border:1px solid var(--gold2);padding:7px 12px;font:14px Georgia,serif;
+    border-radius:2px;cursor:pointer}
+  button:hover{background:var(--gold2);color:var(--ink)}
+  .note{color:var(--dim);font-size:15px}
+  .here{border-color:#7fbf7f}
+  a{color:var(--gold)}
+  .small{font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Open Krator on another device</h1>
+  <p class="lede" id="lede">Use these on a phone, tablet or another computer in the same home.</p>
+
+  <ol>
+    <li>Connect the other device to the <b>same Wi-Fi</b> as the computer running Krator.</li>
+    <li>Point its <b>camera</b> at a code below and tap the link that appears, or open <b>Chrome</b> and type the
+      address under the code.</li>
+    <li>Bookmark the page there, so next time is one tap.</li>
+  </ol>
+
+  <div id="cards"></div>
+
+  <p class="note" id="name"></p>
+  <p class="note">These addresses work only on this network, and only while Krator is running on its computer.
+    If one stops working, the router may have given that computer a new address: open this page again on it.</p>
+  <p class="small"><a href="/">Back to the Krator Worlds gallery</a></p>
+</main>
+<script src="/share/qrcode.js"></script>
+<script>
+(function () {
+  'use strict';
+  // ?page=/worlds/rift.html shares that page; otherwise the gallery
+  var page = '/';
+  try { var q = new URLSearchParams(location.search).get('page'); if (q && q.charAt(0) === '/' && q.charAt(1) !== '/') page = q; } catch (e) {}
+  var cards = document.getElementById('cards');
+
+  function card(url, label, here) {
+    var c = document.createElement('div'); c.className = 'card' + (here ? ' here' : '');
+    var qr = document.createElement('div'); qr.className = 'qr';
+    try {
+      var code = qrcode(0, 'M'); code.addData(url); code.make();
+      qr.innerHTML = code.createSvgTag(6, 0);
+    } catch (e) { qr.style.display = 'none'; }
+    var a = document.createElement('div'); a.className = 'addr';
+    var k = document.createElement('div'); k.className = 'k'; k.textContent = label;
+    var u = document.createElement('div'); u.className = 'u'; u.textContent = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = 'Copy address';
+    b.onclick = function () {
+      var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy address'; }, 1500); };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, function () {});
+      else { var t = document.createElement('textarea'); t.value = url; document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); done(); } catch (e) {} t.remove(); }
+    };
+    a.appendChild(k); a.appendChild(u); a.appendChild(b);
+    c.appendChild(qr); c.appendChild(a); cards.appendChild(c);
+  }
+  function join(base, path) { return base.replace(/\/$/, '') + path; }
+  var loopback = /^(localhost|127\.|\[?::1\]?)/.test(location.hostname);
+
+  function show(d) {
+    var urls = (d && d.urls && d.urls.length) ? d.urls : (loopback ? [] : [location.origin + '/']);
+    if (!loopback) document.getElementById('lede').textContent =
+      'This device is already connected. To bring another one in, use the same address.';
+    if (!urls.length) {
+      cards.innerHTML = '<p>This computer is not on a network right now, so only it can open Krator. ' +
+        'Connect it to your Wi-Fi, then open this page again.</p>';
+    }
+    urls.forEach(function (u, i) {
+      card(join(u, page), urls.length > 1 ? 'Address ' + (i + 1) + ' (try this one if the other does not work)' : 'Address', false);
+    });
+    if (d && d.name && urls.length) {
+      var n = document.getElementById('name'), b = document.createElement('b');
+      b.textContent = d.name.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      n.appendChild(document.createTextNode('On iPhones, iPads and Macs, ')); n.appendChild(b);
+      n.appendChild(document.createTextNode(' may also work, and keeps working when the number above changes.'));
+    }
+  }
+  fetch('/address.json', {cache: 'no-store'}).then(function (r) { return r.ok ? r.json() : null; })
+    .then(show, function () { show(null); });
+})();
+</script>
+</body>
+</html>

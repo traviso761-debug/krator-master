@@ -3,7 +3,7 @@
 // (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
 // omits falls back to the generic one. Fills run in the socket frame: origin at the anchor, +z out of the surface, +x along it, y up.
 // canvas-carried materials (own colours, never tinted): emblems, striped cloth, sign boards
-function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn);t.wrapS=t.wrapT=o.repeat?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
+function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn,0,true);   // eager: the painters reseed() and draw from rng()t.wrapS=t.wrapT=o.repeat?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
  const m=new THREE.MeshStandardMaterial({map:t,vertexColors:true,roughness:o.rough||.95,side:THREE.DoubleSide,transparent:!!o.alpha,alphaTest:o.alpha?.5:0});MAT[key]=m;TILE[key]=o.tile||1;return m;}
 function stripeTex(key,cols,n,tile){cvMat(key,128,64,(g,w,h)=>{const sw=w/n;for(let i=0;i<n;i++){g.fillStyle=cols[i%cols.length];g.fillRect(i*sw,0,sw+1,h);}
  reseed(9700+key.length);for(let i=0;i<140;i++){g.fillStyle=`rgba(${rng()<.5?0:255},${rng()<.5?0:255},${rng()<.5?0:255},${rr(.03,.1)})`;g.fillRect(rng()*w,rng()*h,rr(1,4),rr(1,6));}
@@ -85,10 +85,10 @@ mkCulture({key:'iziz',name:'Iziz',field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',
 mkCulture({key:'republic',name:'Republic',field:'#7a2028',edge:'#4a3220',band:'#c9963a',disc:'#f0e6cc',ink:'#7a2028',ink2:'#2a8a86',sym:'triskele',pole:0x7a5a38,
  awn:{mode:'stripes',cols:['#7a2028','#f0e6cc','#c9963a','#f0e6cc'],n:8},
  paint:[0x7a2028,0x8a2f2a,0xc9963a,0xf0e6cc,0x5c4028],signBg:'#7a2028',signFg:'#f0e6cc',signFrame:0x4a3220});
-// Voth: deep blue, ash-white glyph, ragged cloth
-mkCulture({key:'voth',name:'Voth',field:'#24487a',edge:'#182e4d',band:'#3a5f8f',disc:null,ink:'#d8cdb4',sym:'diamond',pole:0x3a2a1c,flagStyle:'pennant',
- awn:{mode:'cloth',cols:[0x24487a,0x1f3a5f,0x3a5f8f,0x2a3a4a]},
- paint:[0x24487a,0x1f3a5f,0x3a5f8f,0x2a3a4a,0xd8cdb4],signBg:'#1f3a5f',signFg:'#d8cdb4',signFrame:0x182e4d});
+// Voth: deep purple, ash-white glyph, ragged cloth
+mkCulture({key:'voth',name:'Voth',field:'#4b2a6e',edge:'#2f1a47',band:'#6a4a8f',disc:null,ink:'#d8cdb4',sym:'diamond',pole:0x3a2a1c,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x4b2a6e,0x3a2259,0x6a4a8f,0x3a2a4a]},
+ paint:[0x4b2a6e,0x3a2259,0x6a4a8f,0x3a2a4a,0xd8cdb4],signBg:'#3a2259',signFg:'#d8cdb4',signFrame:0x2f1a47});
 // Yuni: yellow, the hyperboloid
 mkCulture({key:'yuni',name:'Yuni',field:'#dcb42c',edge:'#5a4410',band:'#f4ecc8',disc:'#f6efd0',ink:'#4a3a12',sym:'hyperboloid',pole:0x5a4410,
  awn:{mode:'stripes',cols:['#e0b52a','#f4ecc8','#c99a1e','#f4ecc8'],n:8},

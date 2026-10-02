@@ -104,7 +104,7 @@ reseed(647001);
       [4.4, 5.6, 6.8].forEach(function(ix){ F.cyl(ix, Y+8.78, -10.8, 0.08, 0.25, 0, 0xf2eee4, 'plaster'); });
       F.rod(11.8, Y+5.6, -6.6, 8.0, Y+7.3, -9.4, 0.035, 0x1e1a18, 'timber');                                                  /* switchboard to gantry */
       /* drums and a lamp-oil jar or two */
-      for(var d=0;d<4;d++) LOCUS.drum(F, 12.4+d*0.7, Y, -9.4, RUSTC[d%5]); LOCUS.drum(F, -13.6, Y, 6.8, RUSTC[2]); LOCUS.drum(F, -12.9, Y, 7.4, RUSTC[0]);
+      for(var d=0;d<4;d++) FURNISH('pa_drum', 12.4+d*0.7,Y,-9.4, 0); FURNISH('pa_drum', -13.6,Y,6.8, 0); FURNISH('pa_drum', -12.9,Y,7.4, 0);   /* the oil drums: FURNITURE (catalog pa_drum) */
       door(F, -2, 11.8); door(F, 11.8, 4.2);
     } });
 
@@ -135,7 +135,7 @@ reseed(647001);
       [[-8.3,-1.9],[8.3,-1.9],[-8.3,6.9],[8.3,6.9]].forEach(function(c){ F.cone(c[0], 5.7, c[1], 0.34, 1.3, 0, wh, 'plaster'); });
       F.fr5(0, 5.7, 7.0, 1.6, 1.3, 0.5, 0, wh, 'plaster'); F.disc(0, 6.2, 7.26, 0,1, 0.42, 0.06, GEOBROWNC[0], 'plaster'); F.disc(0, 6.2, 7.3, 0,1, 0.18, 0.04, BRASSC[1], 'metal');
       [-7.6,-6.0,6.0,7.6].forEach(function(tx){ F.toron(tx, 4.2, 6.95, 0,1, 0.6); F.toron(tx, 4.2, -1.95, 0,-1, 0.6); });
-      [-4.0, 4.0].forEach(function(lx){ F.lantern(lx, 4.9, 2.5, 0.9, 12, 0.3); });
+      [-4.0, 4.0].forEach(function(lx){ LOCUS.lantern(F, lx, 4.9, 2.5, 0.9, 12); });
       /* ---- the attendant's kiosk under a blue dome ---- */
       var KX=-5.5, KZ=-5.8;
       F.box(KX, 0, KZ, 6, 3.6, 5, 0, wh2, 'plaster'); F.box(KX, 2.95, KZ, 6.06, 0.4, 5.06, 0, MOSBLUEC[0], 'mosaic');
@@ -145,7 +145,7 @@ reseed(647001);
       F.door(-7.3, -3.3, 0,1, 1.0, 2.2, BLUEDC[0]);
       F.window(-4.4, 1.85, -3.28, 0,1, 1.9, 1.1); F.box(-4.4, 1.2, -3.1, 2.1, 0.1, 0.45, 0, PLANKC[1], 'plank'); F.box(-4.4, 2.5, -2.85, 2.2, 0.06, 0.9, 0, PLANKC[2], 'plank');
       F.window(-8.52, 2.0, -5.8, -1,0, 0.8, 0.8);
-      F.box(-6.9, 0.42, -2.75, 1.7, 0.08, 0.45, 0, PLANKC[0], 'plank'); [-7.6,-6.2].forEach(function(bx){ F.box(bx, 0, -2.75, 0.12, 0.42, 0.4, 0, TIMBERC[1], 'timber'); });
+      FURNISH('abyss_bench', -6.9,0,-2.75, 0);                                                                                  /* the attendant's bench: FURNITURE (catalog) */
       F.lamp(-4.4, 2.2, -2.6, 0.8, 8);
       /* the price board beside the kiosk */
       [-2.1,-0.9].forEach(function(lx){ F.cyl(lx, 0, -3.8, 0.05, 1.7, 0, TIMBERC[1], 'timber'); });
@@ -153,14 +153,13 @@ reseed(647001);
       /* ---- the buried tanks (fill caps, two vents) and the lamp-oil drum cradle ---- */
       [3.2, 4.6, 6.0].forEach(function(cx){ F.cyl(cx, 0.08, -4.6, 0.34, 0.12, 0, STEELDC[1], 'rust'); F.cyl(cx, 0.2, -4.6, 0.12, 0.1, 0, BRASSC[0], 'metal'); });
       [9.6, 10.4].forEach(function(vx){ F.cyl(vx, 0, -7.8, 0.09, 5.6, 0, STEELDC[0], 'rust'); F.cone(vx, 5.6, -7.8, 0.2, 0.3, 0, STEELDC[2], 'rust'); });
-      [-7.3, -6.1].forEach(function(cz){ F.box(5.6, 0, cz, 3.4, 0.45, 0.25, 0, TIMBERC[0], 'timber'); });
-      for(var dr=0;dr<3;dr++){ LOCUS.drum(F, 4.6+dr*1.0, 0.42, -6.3, RUSTC[(dr+2)%5], true, 0); F.box(4.6+dr*1.0, 0.6, -5.75, 0.12, 0.14, 0.2, 0, BRASSC[0], 'metal'); }
-      [[8.0,-5.8],[8.6,-6.4],[7.8,-6.8]].forEach(function(j,i){ F.ball(j[0], 0.32, j[1], 0.32+i*0.03, TILEC[i%TILEC.length], 'adobe'); F.cyl(j[0], 0.58+i*0.03, j[1], 0.12, 0.14, 0, TILEC[(i+1)%TILEC.length], 'adobe'); });
+      FURNISH('job_oil_drum_rack', 5.6,0,-6.2, 0, { v:1 });                                                             /* the cradle of three, taps out: FURNITURE (catalog, Jobs) */
+      FURNISH('yuni_poor_clay_pots', 8.1,0,-6.3, -0.8);                                                                         /* the lamp-oil jars: FURNITURE (catalog) */
       /* ---- the pole sign at the kerb: a brown disc with a brass rim and a brass flame ---- */
       F.cyl(10.6, 0, 8.2, 0.12, 6.2, 0, STEELDC[0], 'rust');
       [1,-1].forEach(function(sd){ F.disc(10.6, 5.6, 8.2, 0,sd, 0.95, 0.08, BRASSC[1], 'metal'); F.disc(10.6, 5.6, 8.2+sd*0.02, 0,sd, 0.85, 0.08, GEOBROWNC[0], 'plaster');
         F.cone(10.6, 5.25, 8.2+sd*0.1, 0.22, 0.65, 0, BRASSC[0], 'metal'); });
-      F.lantern(10.6, 6.6, 8.2, 0.8, 10, 0);
+      LOCUS.lantern(F, 10.6, 6.6, 8.2, 0.8, 10);
       /* kerb stones along the two sides of the forecourt */
       [-11.6, 11.6].forEach(function(kx){ F.box(kx, 0, 2.5, 0.4, 0.25, 12.6, 0, wh2, 'plaster'); });
       door(F, 0, 9.4); door(F, -7.3, -2.6);

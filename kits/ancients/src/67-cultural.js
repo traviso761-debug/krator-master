@@ -4,7 +4,7 @@
 // it can be what the sheet actually draws: a radial city — three concentric
 // rings of halls on a stepped platform, radial spokes running out from a domed
 // core, and a colonnaded plaza between them.
-function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
+function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];const SM=skyShardMark();
  const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
  REGISTER({name:'Cultural centre — the Wheel ('+STATE(d)+')',x:0,z:0,r:250,h:96});
  REGISTER({name:'Cultural centre — the great hall',x:0,z:0,r:78,h:96});
@@ -61,6 +61,20 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
    for(let row=0,nr=tall?3:2;row<nr;row++)for(let j=0;j<6;j++){const t2=(j+.5)/6*TAU,yw=py+hh*((row+.55)/nr);
     kput(d>0?'paneD':'darkPane',[bxp+bwk*1.015*Math.cos(t2),yw,bzp+bwk*1.015*Math.sin(t2)],
      qFacing([Math.cos(t2),0,Math.sin(t2)]),[bwk*.24,hh/nr*.62,1],null);}
+   // MOULDINGS (round 2): a cornice where the drum meets its cap and a string
+   // course between the window tiers. A broken drum keeps only the courses
+   // under its break. The torus is the kit's ring, flattened into a band.
+   // A flat band (a lathed annulus with an outer face, 18 sides, 108
+   // triangles: the kit's torus ring was 480 and doubled the type). The flute
+   // crests stand at 1.22 of the radius, so the outer face is at 1.26 and the
+   // top annulus runs back inside the crests to close the gap.
+   // Shared-code round: the shared moulding(), a square crown with an ogee under
+   // it on a unit circle (n in radii, u in metres before the instance scale),
+   // 216 triangles; the back still runs in to .92 behind the crests.
+   const ringN=civDef(d>0?'cultBandR':'cultBandW',()=>moulding([[-.08,.5],[.022,.5],[.022,.22],[.012,.02],[0,-.18],[0,-.5],[-.08,-.5]],
+    t=>{const a=-t*TAU;return[Math.cos(a),0,Math.sin(a)];},{wn:t=>{const a=-t*TAU;return[Math.cos(a),0,Math.sin(a)];},nu:18,up:[0,1,0]}),d>0?MAT.rust:MAT.white);
+   if(!brk)kput(ringN,[bxp,py+hh-.5,bzp],null,[bwk*1.27,1,bwk*1.27],null);
+   for(let row=1,nr=tall?3:2;row<nr;row++)kput(ringN,[bxp,py+hh*(row+.05)/nr,bzp],null,[bwk*1.26,.6,bwk*1.26],null);
    if(d===0)kput('strip',[bxp,py+hh-2,bzp+bwk*1.03],qFacing([0,0,1]),[bwk*1.2,1,1],CYAN);
    // the spoke running back to the core
    beam(BOXC(d),[bxp*.42,py+2,bzp*.42],[bxp*.9,py+2,bzp*.9],6,3.4);}});
@@ -74,5 +88,6 @@ function buildCultural(scene,gx,gz,d){reseed(9390+d);KOFF=[gx,0,gz];
  meshMerged(SH,skin,G);meshMerged(DK,MAT.guts,G);
  if(d>0){mossOnSurface(SH,0,0,0,150,2.4);vinesFromLedge(SH,0,0,0,60,16);stainsFromLedge(SH,0,0,0,50,12);
   scatterMoss(0,0,0,60,300,120,2.6);rubbleRing(0,0,0,240,330,80,2.6);trees(0,0,270,380,22);}
+ if(d>0)skyShards(SM,d===3?.25:.5);   // glass teeth in the dead slots (52-sky-abc.js)
  figures(0,170,8,40);figures(120,-120,5,30);
  KOFF=[0,0,0];return G;}

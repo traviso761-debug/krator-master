@@ -43,7 +43,7 @@ function dkRaft(){const W_=8.2,D_=6.2;const y=.32;
  // open deck with rail and a washing line; water butts; a small skiff hull-like crate stack
  const rc=jc(0x5c4630,.06);for(let k=0;k<=8;k++){const x=-W_/2+.1+k*(W_-.2)/8;beam('wood',[x,.67,D_/2-.1],[x,1.6,D_/2-.1],.045,rc,true,5);}beam('wood',[-W_/2+.1,1.6,D_/2-.1],[W_/2-.1,1.6,D_/2-.1],.05,rc);beam('wood',[-W_/2+.1,1.15,D_/2-.1],[W_/2-.1,1.15,D_/2-.1],.035,rc);
  for(const sx of [-1,1]){for(let k=0;k<=4;k++){const z=-D_/2+.1+k*(D_-.2)/4;beam('wood',[sx*(W_/2-.1),.67,z],[sx*(W_/2-.1),1.6,z],.045,rc,true,5);}beam('wood',[sx*(W_/2-.1),1.6,-D_/2],[sx*(W_/2-.1),1.6,D_/2],.05,rc);}
- waterButt(-3.2,.67+.55,-2.3,.45,.7);barrel(3.2,.67,-2.0);barrel(3.7,.67,-1.6);crate(3.2,.67,1.6,.6,.3);
+ waterButt(-3.2,.67+.55,-2.3,.45,.7,{base:.67});barrel(3.2,.67,-2.0);barrel(3.7,.67,-1.6);crate(3.2,.67,1.6,.6,.3);
  dkPost(3.1,.67,3.2,-.4,.05);dkPost(1.0,.67,3.2,-.4,.05);beam('plain',[3.1,3.1,-.4],[1.0,3.1,-.4],.012,jc(0x6a5a44,.05),true,3);for(let k=0;k<4;k++)box('cloth',1.3+k*.5,2.2,-.4,.4,.9,.02,jc(pick([0xd8d0c0,0x3b7f8e,0xc45a30,0xd8a020]),.06));
  sock('banner',hx-hw/2-.06,y0+2.25,hz+.4,-PI/2,{w:.8,h:1.6});}
 function dkBarge(){const L0=-9.4,L1=9.2;const hull=[[-2.5,L0],[2.5,L0],[2.5,L1-1.3],[1.4,L1],[-1.4,L1],[-2.5,L1-1.3]];
@@ -119,19 +119,12 @@ function dkLand(){
  for(const x of [-1.2,1.2])beam('wood',[bx+x-.8,CT.H,fz-.2],[bx+x-.8,CT.H+.9,fz-.2],.05,jc(0x5c4630,.06),true,5);box('plank',bx-.8,CT.H+.8,fz-.35,2.6,.5,.06,jc(0x3a2a1c,.05));sock('sign',bx-.8,CT.H+1.05,fz-.28,0,{w:2.3,h:.42,trade:'HARBOUR'});
  ladder(bx+CT.L20/2-.5,0,-CT.W/2+bz-.02,CT.H,PI);box('plank',bx+.8,CT.H,bz,3.2,.1,CT.W-.2,jc(0x6a5a44,.06));stovepipe(bx+2.4,CT.H,bz-.4,1.3);barrel(bx+3.6,0,fz+.3);barrel(bx+4.05,0,fz+.7);
  // two stalls with awnings
- for(const [sx,c] of [[-8.5,0x3b7f8e],[-14.5,0xc45a30]]){const sz=-9.6;W(sx,0,sz,0,()=>{box('plank',0,0,0,4.0,.1,2.4,jc(0x6a5a44,.06));wallOpen('plank',0,.1,-1.1,4.0,2.4,.1,[],jc(c,.06));
-   for(const px of [-1.9,1.9])beam('wood',[px,0,1.1],[px,2.45,1.1],.07,jc(0x5c4630,.06),true,6);box('plank',0,.1,.95,4.0,.9,.1,jc(0x8a6a3a,.05));box('plank',0,1.0,.95,4.2,.07,.5,jc(0x6a5a44,.06));
-   roofP('corr',-2.2,2.2,1.3,2.45,-1.3,2.85,.07,pick([P('galv'),P('paint')]));crate(1.2,.1,-.4,.6,.2);crate(-1.4,.1,-.5,.6,.5);
-   for(let k=0;k<3;k++)box('plain',-.9+k*.9,1.08,.9,.5,.06,.22,jc(pick([0xb8bcbc,0xd88a5a]),.06));
+ for(const [sx,c] of [[-8.5,0x3b7f8e],[-14.5,0xc45a30]]){const sz=-9.6;W(sx,0,sz,0,()=>{rngSkip(40);FURNISH('pa_lean_to_stall',0,0,0,0,{v:2});   // the fish stall (its stock and the fish on the counter included)
    sock('awning',0,2.5,1.3,0,{w:4.0,d:1.0,drop:.4,h:2.1});});}
  // fish-drying racks with hanging fish and nets
- for(let r=0;r<3;r++){const x0=-25+r*5.4,z=-15.0;
-  for(const dx of [0,4.0])beam('wood',[x0+dx,0,z-.5],[x0+dx+.3,2.6,z],.06,jc(0x5c4630,.06),true,5),beam('wood',[x0+dx,0,z+.5],[x0+dx+.3,2.6,z],.06,jc(0x5c4630,.06),true,5);
-  beam('wood',[x0+.3,2.6,z],[x0+4.3,2.6,z],.05,jc(0x5c4630,.06),true,5);beam('wood',[x0+.15,1.6,z],[x0+4.15,1.6,z],.04,jc(0x5c4630,.06),true,5);
-  for(let k=0;k<11;k++){const fx=x0+.6+k*.34;box('plain',fx,2.15+(k%2)*.02,z+.05,.09,.42,.05,jc(pick([0xb8bcbc,0xd88a5a,0x8a8a7a]),.06));if(k%2)box('plain',fx,1.15,z+.05,.09,.42,.05,jc(0xc8a878,.06));}
-  if(r===1)W(x0+2.15,0,z-.1,0,()=>{quad('chain',0,1.3,0,4.2,1.2,jc(0x8a7a5a,.06));for(let k=0;k<6;k++)sph('plain',-1.8+k*.72,.75,.02,.07,jc(pick([0xd8a020,0xc45a30]),.05));});}
+ for(let r=0;r<3;r++){const x0=-25+r*5.4,z=-15.0;rngSkip(8+4+43+(r===1?20:0));FURNISH('pa_fish_rack',x0,0,z,0,{v:r===1?1:0,ax:-2.15});}   // fish-drying racks (the middle one with a net)
  // net pile and pots
- for(let k=0;k<5;k++)sph('plain',-9.5+rr(-.5,.5),.25,-13.2+rr(-.3,.3),rr(.3,.5),jc(0x7a6a4a,.08),.6);for(let k=0;k<4;k++)cyl('sheet',-4.6+k*.5,0,-12.5,.22,.4,jc(pick([0x8a3a2c,0x4d6f3c,0xc99a2e]),.08),8);
+ rngSkip(25+12);FURNISH('pa_net_pile',-8.3,0,-12.9,0);   // the net pile and its pots
  // warehouse shack: patchwork walls, big sliding door, gable roof, lean-to
  const wx=-4.5,wz=-18.7,ww=14,wd=6.4;const ha=3.4;
  wallOpen('plank',wx,0,wz+wd/2,ww,ha,.14,[{x0:wx-2.2,x1:wx+2.2,y0:0,y1:3.0}],jc(0x8a6a3a,.06));wallOpen('corr',wx,0,wz-wd/2,ww,ha,.1,[],pick([P('galv'),P('paint')]));
@@ -159,8 +152,10 @@ function dkBuild(o){
  dkQuay();W(0,dkQ,0,0,()=>dkLand());
  dkPier();
  W(12.6,0,7.5,.06,()=>dkTug());W(-14.5,0,1.7,-.04,()=>dkRaft());W(1.2,0,10.2,0,()=>dkBarge());
- // gangplank to the raft-house, mooring lines
- box('plank',-14.5-.5,.75,-4.8,1.0,.08,3.4,jc(0x6a5a44,.06),0,-.05);
+ // gangplank to the raft-house (quay edge at z -5.2 to the raft deck at z -1.5, sloping down to it), mooring lines
+ box('plank',-14.5-.5,.77,-3.45,1.0,.08,4.3,jc(0x6a5a44,.06),0,.05);
  dkRope([-14,1.2,-1.4],[-14,dkQ+.4,-5.4],.5);dkRope([-12.3,1.2,.5],[-10.6,dkQ+.4,-5.5],.5);
  dkRope([9.0,1.6,2.5],[8.3,1.3,1.5],.2);dkRope([4.2,1.3,2.0],[5.2,1.2,1.4],.2);
+ // land-side steps: a timber flight up the back wall of the quay from the street (drawn last: the rest of the dock keeps its random draws)
+ stairs(17,0,-24.55,17,dkQ+.03,-23.05,1.4,{rail:false});
 }

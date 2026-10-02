@@ -14,14 +14,12 @@ MAT.rcRock=hStd({map:TEX.rock,roughness:1});vWorldUV(MAT.rcRock,.125);kdef('hRCR
 // Post-and-rail fence from a to b (local [x,z]); split rails, posts every ~2.4 m.
 function hnRCRailFence(a,b,c,h){h=h||1.2;const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);const n=Math.max(1,Math.round(L/2.4));
  for(let i=0;i<=n;i++)vPst('vPost',a[0]+dx*i/n,0,a[1]+dz*i/n,.08,h+.1,c);for(const yy of[h*.45,h*.9])vBeam([a[0],yy,a[1]],[b[0],yy,b[1]],.08,c);}
-// A farm cart: bed, sides, two spoked wheels, shafts on the ground; load 'sacks' | 'hay' | 'stone' | 'logs'.
-function hnRCCart(x,z,ry,c,load){const P=(u,v)=>loc(x,z,u,v,ry);let p=P(0,0);vB('vWood',p[0],.85,p[1],1.5,.14,2.8,ry,c);for(const s of[-1,1]){const q=P(s*.72,0);vB('vWood',q[0],.99,q[1],.08,.4,2.8,ry,c);}
- for(const s of[-1,1]){const q=P(s*.9,-.2);hnRCWheel(q[0],.6,q[1],.6,.1,ry,c,8,0,hC(0x3a3632));}
- for(const s of[-1,1]){const a=P(s*.4,1.4),b=P(s*.35,3.6);vBeam([a[0],.85,a[1]],[b[0],.08,b[1]],.1,c);}
- p=P(0,0);if(load==='sacks')for(let i=0;i<5;i++)kput('vSack',[p[0]+rr(-.4,.4),1.2+(i>2?.35:0),p[1]+rr(-.9,.9)],qEuler(0,rng()*TAU,0),[.4,.3,.36],hC(vPick([0xb8a080,0xa89070,0xc8b898])));
- else if(load==='hay')kput('vThatchB',[p[0],1.5,p[1]],qEuler(0,ry,0),[1.8,1.2,2.6],hC(vPick(VPAL.thatch)));
- else if(load==='stone')vB('vPlaster',p[0],.92,p[1],1.0,.7,1.4,ry,hC(0xd8d0bc));
- else if(load==='logs')for(let i=0;i<5;i++){const q=P(-.45+(i%3)*.45,0);kput('hLogX',[q[0],1.1+Math.floor(i/3)*.3,q[1]],qEuler(0,ry+Math.PI/2,0),[3.2,.15,.15],hC(vPick(HPAL.pine)));}}
+// The farm furniture is PLACED from the master catalog (FURNISH, 89y: the harvested hl_rep_* pieces); the helpers keep
+// their names and arguments and burn the random numbers their drawing drew (hlRngSkip).
+// A farm cart: bed, sides, two spoked wheels, shafts on the ground; load 'sacks' | 'hay' | 'stone' | 'logs' (else empty).
+// Its sacks drew 20 numbers, its hay 1, its logs 5.
+function hnRCCart(x,z,ry,c,load){const v={sacks:0,hay:1,stone:2,logs:3}[load];hlRngSkip(load==='sacks'?20:load==='hay'?1:load==='logs'?5:0);
+ return hnFurn('hl_rep_farm_cart',x,0,z,ry,{v:v==null?4:v},0,1.025);}
 // Livestock from boxes and balls, heading toward +z of ry: 'cow' | 'ox' | 'sheep' | 'pig' | 'hen'.
 function hnRCBeast(x,z,ry,kind){const P=(u,v)=>loc(x,z,u,v,ry);let p;
  if(kind==='cow'||kind==='ox'){const c=hC(vPick(kind==='ox'?[0x6a4a32,0x5a3e2a,0x8a6a4a]:[0x7a5238,0xe8e0d4,0x4a3a30,0x9a6a44,0xd8c8b0]));
@@ -35,16 +33,15 @@ function hnRCBeast(x,z,ry,kind){const P=(u,v)=>loc(x,z,u,v,ry);let p;
  if(kind==='pig'){const c=hC(vPick([0xe0a898,0xd89888,0xc88a7a]));vB('hPaint',x,.28,z,.48,.46,1.0,ry,c);p=P(0,.56);vB('hPaint',p[0],.36,p[1],.22,.18,.14,ry,c.clone().multiplyScalar(.85));
   for(const sx of[-1,1])for(const sz of[-1,1]){const l=P(sx*.15,sz*.34);vPst('vPost',l[0],0,l[1],.05,.3,c);}return;}
  if(kind==='hen'){kput('hPaintBall',[x,.22,z],null,[.13,.12,.16],hC(vPick([0xf0ece0,0xa05a30,0x5a4030])));p=P(0,.12);vBall('hPaintBall',p[0],.36,p[1],.06,hC(HPAL.red));}}
-// Water trough: a hollowed log on two blocks.
-function hnRCTrough(x,z,ry,L,c){vB('vWood',x,.18,z,L,.42,.62,ry,c);vB('hRCWater',x,.5,z,L-.2,.12,.42,ry,hC(0x4a6874));for(const s of[-1,1]){const p=loc(x,z,s*(L/2-.3),0,ry);vB('vStone',p[0],0,p[1],.3,.2,.8,ry,hC(vPick(HPAL.rubble)));}}
+// Water trough: a hollowed log on two blocks (2.4 or 3 m; the blocks drew a colour each).
+function hnRCTrough(x,z,ry,L,c){hlRngSkip(2);return FURNISH('hl_rep_log_trough',x,0,z,ry,{v:L>2.7?1:0});}
 // A fruit tree: trunk and a rounded low-poly crown.
 function hnRCTree(x,z,h){vPst('vPostB',x,0,z,.16,h*.5,hC(0x5a4632));for(let k=0;k<5;k++)kput('hRCLeaf',[x+rr(-.8,.8),h*.62+rr(-.3,.6),z+rr(-.8,.8)],qEuler(rng(),rng(),0),[rr(1,1.5),rr(.9,1.2),rr(1,1.5)],hC(vPick([0x4a7a34,0x5a8a3a,0x3f6a2e])));}
-// Haystack: a thatched cone over a rounded base on a centre pole.
-function hnRCHaystack(x,z,r,h){const c=hC(vPick(VPAL.thatch));kput('hPaintBall',[x,h*.3,z],null,[r,h*.36,r],c);kput('vConeT',[x,h*.3,z],null,[r*1.02,h*.72,r*1.02],c);vPst('vPost',x,h*.9,z,.05,.8,hC(0x5a4632));}
-// Russian crane-well (zhuravl): a stone well, a forked post and a long counterweighted sweep with a bucket.
-function hnRCSweepWell(x,z,ry,c){vPst('vPostS',x,0,z,.8,.8,hC(vPick(HPAL.rubble)));vB('vDarkB',x,.8,z,1.0,.03,1.0,0);const p=loc(x,z,2.4,0,ry);vPst('vPostB',p[0],0,p[1],.16,3.6,c);
- const a=loc(x,z,-.2,0,ry),b=loc(x,z,6.2,0,ry);vBeam([a[0],5.6,a[1]],[b[0],1.6,b[1]],.1,c);vB('vStone',b[0],1.2,b[1],.5,.5,.5,ry,hC(vPick(HPAL.rubble)));
- vBeam([a[0],5.6,a[1]],[x,1.4,z],.03,c,'vRope');vPst('vBarrel',x,1.0,z,.2,.4,c);}
+// Haystack: a thatched cone over a rounded base on a centre pole (the stooked stack; its hay drew a colour).
+function hnRCHaystack(x,z,r,h){rng();return FURNISH('hl_rep_haystack',x,0,z,0,{v:0});}
+// Russian crane-well (zhuravl): a stone well, a forked post and a long counterweighted sweep with a bucket. The piece is
+// centred on its footprint, the drawing on the well (2.8 m toward the post); its stones drew 2 colours.
+function hnRCSweepWell(x,z,ry,c){hlRngSkip(2);return hnFurn('hl_rep_sweep_well',x,0,z,ry,{},2.825,0);}
 
 // ================================================================= FARMS AND MILLS
 // ---------------------------------------------------------------- granary: a log crib raised on staddle stones
@@ -63,7 +60,7 @@ function buildHlRepGranary(G,o){reseed(21501+(o.v|0));const W=7,D=10,F=1.25,H=3.
  // detached steps (a gap before the door) and a loose plank to bridge it
  hnRCFlight(0,0,D/2+3.0,0,1.4,F-.05,'vStone',rub);vB('vWood',0,F-.02,D/2+.35,1.2,.08,.9,0,aged);
  // threshing floor, sacks, a cart
- vPst('vPostS',-6.5,0,4,2.8,.05,hC(0xa08a6a));vnSacks(-6.5,.05,4,5);vnSacks(2.2,0,D/2+1.6,4);hnRCCart(6,2,-.4,aged,'sacks');
+ vPst('vPostS',-6.5,0,4,2.8,.05,hC(0xa08a6a));hnSacks(-6.5,.05,4,5);hnSacks(2.2,0,D/2+1.6,4);hnRCCart(6,2,-.4,aged,'sacks');
  for(let k=0;k<5;k++)hnRCBeast(rr(-3,3),D/2+rr(2.5,4),rng()*TAU,'hen');vnFolk(-3.5,D/2+4.5,2,1);}
 
 // ---------------------------------------------------------------- farmhouse: the Saxon courtyard farmstead
@@ -96,7 +93,7 @@ function buildHlRepFarmhouse(G,o){reseed(21511+(o.v|0));const ZS=15;
   hnGable(0,.5+H,BZ,BW,BD,1.1,0,'vShingleB',sh,.7,'hGableLog',aged);hnBarge(0,.5+H,BZ,BW,BD,5.5,0,.7,aged,'lace');
   for(const s of[-1,1])kput('vWood',[s*2.4,2.3,BZ+BD/2+1.2],qEuler(0,-s*1.1,0),[2.3,3.6,.12],aged);vB('vDarkB',0,.5,BZ+BD/2+.02,4.6,3.6,.06,0);vB('vWood',0,4.15,BZ+BD/2+.06,5.2,.24,.14,0,aged);
   vnWin(-9,2.0,BZ+BD/2,0,.9,.9,'shut','vWood',aged);vnWin(9,2.0,BZ+BD/2,0,.9,.9,'shut','vWood',aged);
-  kput('vThatchB',[0,1.8,BZ+BD/2+2.1],qEuler(0,.1,0),[3,1.3,1.8],hC(vPick(VPAL.thatch)));}
+  rng();FURNISH('hl_tri_haycock',0,0,BZ+BD/2+2.1,.1,{v:1});}   // hay before the barn doors
  // ---- stables and byre down the east side, half-timber over stone, shed roof to the yard
  {const SX=13,SZ=1,SW=5.5,SL=20;hnSocle(SX,0,SZ,SW,.5,SL,0,rub,ash);vB('hRubB',SX,.5,SZ,SW,1.4,SL,0,rub);hnFachBox(SX,1.9,SZ,SW,2.2,SL,0,hC(vPick(HPAL.stucco)),red,'shut');
   vnShedRoof(SX,4.1,SZ,SL+.4,SW,1.4,-Math.PI/2,'hScaleB',tile,.5);
@@ -120,12 +117,12 @@ function buildHlRepFarm(G,o){reseed(21521+(o.v|0));const FW=60,FD=40;
   for(let x=x0+.6;x<x1;x+=1.1,r++){const beet=r%4>=2;vB('hPaint',x,.05,0,.34,.14,FD-1,0,soil.clone().multiplyScalar(1.15));
    for(let z=-FD/2+1.2;z<FD/2-1;z+=beet?1.4:1.9){if(beet)kput('hRCLeaf',[x+rr(-.05,.05),.26,z],qEuler(0,rng()*TAU,0),[.2,.18,.2],hC(vPick([0x4a7a3a,0x6a3040])));
     else kput('hRCLeaf',[x+rr(-.05,.05),.3,z],qEuler(rng(),rng()*TAU,0),[.34,.26,.34],hC(vPick([0x8aa870,0x7a9a64,0x9ab87e])));}}
-  vPst('vPost',2,0,-3,.06,2.2,aged);vB('vWood',2,1.6,-3,1.6,.08,.08,0,aged);kput('vCloth',[2,1.2,-2.95],null,[.9,.9,1],hC(HPAL.red));vBall('hPaintBall',2,2.25,-3,.18,hC(0xd8c8a0));kput('vConeT',[2,2.35,-3],null,[.36,.3,.36],th);}
+  FURNISH('hl_rep_scarecrow',2,0,-3,0);}
  // ---- ploughed strip: furrow ridges, the plough and its ox in mid-furrow
  {const x0=10,x1=30;vB('hPaint',(x0+x1)/2,0,0,x1-x0,.05,FD,0,soil.clone().multiplyScalar(.8));
   for(let x=x0+.35;x<x1;x+=.7){const z0=x>18.8?-8.5:-FD/2+.5,z1=x<19?FD/2-.5:(x<19.7?6.6:z0);if(z1>z0)vB('hPaint',x,.05,(z0+z1)/2,.36,.16,z1-z0,0,soil.clone().multiplyScalar(rr(.95,1.1)));
    else vB('vThatchB',x,.05,(z0+FD/2-.5)/2,.3,.1,FD/2-.5-z0,0,th.clone().multiplyScalar(.75));}
-  hnRCBeast(19.3,9.5,0,'ox');const pz=7.4;vBeam([19.3,.8,pz+.9],[19.3,.3,pz-.6],.1,aged);vB('vIron',19.3,0,pz-.9,.3,.3,.9,0,hC(0x3a3632));for(const s of[-1,1])vBeam([19.3,.3,pz-.6],[19.3+s*.5,1.0,pz-2.0],.06,aged);vnFolk(19.3,pz-2.6,1,.1);}
+  hnRCBeast(19.3,9.5,0,'ox');const pz=7.4;hnFurn('hl_rep_plough',19.3,0,pz,0,{},0,-.54);vnFolk(19.3,pz-2.6,1,.1);}
  // ---- the pole hay barn in the corner
  {const bx=24,bz=-14.5,W=9,D=7;for(const sx of[-1,1])for(const sz of[-1,0,1])vPst('vPostB',bx+sx*W/2,0,bz+sz*D/2,.16,4.2,aged);
   for(const s of[-1,1])vB('vWood',bx,4.0,bz+s*D/2,W+.4,.24,.24,0,aged);hnGable(bx,4.2,bz,W,D,1.1,0,'vShingleB',hC(vPick(HPAL.shingle)),.6,'vGableW',aged);
@@ -148,13 +145,13 @@ function buildHlRepPens(G,o){reseed(21531+(o.v|0));
  for(const s of[-1,1])vPst('vPostB',-4+s*1.2,0,11,.14,1.6,aged);kput('vWood',[-3.18,.8,12.03],qEuler(0,-1.92,0),[2.2,.9,.08],aged);
  // the cattle shelter: open-fronted shed on posts, board back wall, a hay rack
  {const sx=-8.5,sz=-8.4;for(let k=0;k<=4;k++)vPst('vPostB',sx-6.5+k*3.25,0,sz+2.2,.15,2.6,aged);vB('vWood',sx,0,sz-2.2,13,3.4,.14,0,aged);for(const s of[-1,1])vB('vWood',sx+s*6.5,0,sz,.14,3.0,4.4,0,aged);
-  vnShedRoof(sx,2.6,sz,13.4,4.8,1.1,0,'vShingleB',sh,.4);vB('vWood',sx,1.0,sz-1.7,8,.12,.12,0,aged);for(let k=0;k<9;k++)vB('vWood',sx-4+k,1.0,sz-1.9,.05,.9,.05,0,aged);
-  kput('vThatchB',[sx,1.5,sz-1.8],null,[7.8,.8,.5],hC(vPick(VPAL.thatch)));}
+  vnShedRoof(sx,2.6,sz,13.4,4.8,1.1,0,'vShingleB',sh,.4);
+  rng();FURNISH('hl_rep_hay_rack',sx,0,sz-1.85,0,{v:0});}   // the hay rack along the back wall
  // the pigsty: a low rubble hut with a shed roof, a mud wallow
  {const px=12,pz=-8.5;vB('hRubB',px,0,pz,6.5,1.7,3.6,0,rub);vB('vDarkB',px-1.5,0,pz+1.82,.9,1.0,.04,0);vnShedRoof(px,1.7,pz,6.9,3.8,.6,0,'vShingleB',sh,.3);
   vB('hPaint',11.5,0,-2.8,6,.06,4.6,0,mud);}
  // troughs, a water butt, feed sacks
- hnRCTrough(-7,1,0,3,aged);hnRCTrough(3,-4,Math.PI/2,2.4,aged);hnRCTrough(11,-5,0,2.4,aged);vnWaterButt(-2.2,0,-9.5,.45,1);vnSacks(-12,0,9,3);
+ hnRCTrough(-7,1,0,3,aged);hnRCTrough(3,-4,Math.PI/2,2.4,aged);hnRCTrough(11,-5,0,2.4,aged);hnWaterButt(-2.2,0,-9.5,.45,1);hnSacks(-12,0,9,3);
  // the beasts
  for(const [x,z,a] of [[-12,2,.4],[-8,5,2.6],[-5,-1,-1.2],[-11,-3,1.9],[-6.5,7.5,.1]])hnRCBeast(x,z,a,'cow');
  for(let k=0;k<7;k++)hnRCBeast(rr(.5,6.5),rr(-9.5,1.5),rng()*TAU,'sheep');for(let k=0;k<4;k++)hnRCBeast(rr(9,15),rr(-5,1.5),rng()*TAU,'pig');
@@ -187,7 +184,7 @@ function buildHlRepWindmill(G,o){reseed(21541+(o.v|0));const BW=4.4,BD=5.6,BY=5.
    for(const off of[.3,SW]){kput('vWood',[dx*(R+1.8)/2+px*off,hy+dy*(R+1.8)/2+py*off,hz+.18],Q,[R-1.8,.07,.07],aged);}
    for(let r=1.8;r<=R+.01;r+=.8)kput('vWood',[dx*r+px*(SW+.3)/2,hy+dy*r+py*(SW+.3)/2,hz+.18],Q,[.06,SW-.2,.06],aged);
    if(k%2===0)kput('vTarp',[dx*(R+1.8)/2+px*(SW+.3)/2,hy+dy*(R+1.8)/2+py*(SW+.3)/2,hz+.24],Q,[R-1.9,SW-.25,1],cloth);}}
- hnRCCart(5,5,-.6,aged,'sacks');vnSacks(-3,0,-6,4);vnFolk(3,-7,2,2);}
+ hnRCCart(5,5,-.6,aged,'sacks');hnSacks(-3,0,-6,4);vnFolk(3,-7,2,2);}
 
 // ---------------------------------------------------------------- watermill: a log mill on its race
 function buildHlRepWatermill(G,o){reseed(21551+(o.v|0));const W=8,D=11,S=1.2,H=3.6,RX=8.2,RW=3.2;
@@ -210,8 +207,8 @@ function buildHlRepWatermill(G,o){reseed(21551+(o.v|0));const W=8,D=11,S=1.2,H=3
  vnShedRoof(W/2+1,S+H-.5,0,5.6,2,.6,Math.PI/2,'vShingleB',sh,.25);for(const z of[-2.6,2.6])vPst('vPost',W/2+1.7,0,z,.1,S+H-.2,aged);
  // footbridge across the race, millstones, sacks, a cart
  vB('vWood',RX,1.1,-5.4,RW+1.6,.14,1.3,0,aged);for(const s of[-1,1])hnDeckRail([RX-RW/2-.8,1.24,-5.4+s*.6],[RX+RW/2+.8,1.24,-5.4+s*.6],1.24,aged,.9);
- for(let k=0;k<2;k++)kput('vPostS',[-W/2-.5,.75,4-k*.4],qEuler(0,0,Math.PI/2+.12),[.75,.24,.75],hC(0xb0aaa0));
- vnSacks(-3,0,D/2+2,5);hnRCCart(-5.5,-1,.5,aged,'sacks');vnFolk(-4.5,D/2+4,2,1);}
+ FURNISH('hl_rep_millstones',-W/2-.5,0,3.8,Math.PI/2);   // leaning on the wall
+ hnSacks(-3,0,D/2+2,5);hnRCCart(-5.5,-1,.5,aged,'sacks');vnFolk(-4.5,D/2+4,2,1);}
 
 // ================================================================= MINES AND QUARRIES
 // ---------------------------------------------------------------- the mine
@@ -249,7 +246,7 @@ function buildHlRepMine(G,o){reseed(21561+(o.v|0));
   for(let k=0;k<5;k++){const x=sx-2.4+k*1.2,lift=(k%2)*.3;vB('vIron',x,1.0+lift,sz-.4,.14,2.0,.14,0,iron);vB('vIron',x,1.0+lift,sz-.4,.36,.34,.36,0,iron);vB('vIron',x,2.4+lift,sz-.4,.3,.14,.24,0,iron);}
   vB('vWood',sx,1.8,sz-1.6,W-1.4,1.8,.9,0,aged);hnRCHeap(sx+2,1.8+1.8,sz-1.6,.6,.3,ore,0);hnRCHeap(sx-2,0,sz+1.6,1.2,.6,hC(0x9a928a),2);}
  hnWoodpile(16,0,6,0,4,1.4);for(let k=0;k<5;k++)kput('hLogX',[3+k*.1,.2+(k%2)*.25,13+k*.3],qEuler(0,.2,0),[3.4,.14,.14],aged);
- vnBarrel(-4,0,-4,.35,.9);vnCrate(-3,0,-5,.9,.2);vnFolk(-5,0,3,2);vnFolk(8,6,2,2);}
+ hnBarrel(-4,0,-4,.35,.9);hnCrate(-3,0,-5,.9,.2);vnFolk(-5,0,3,2);vnFolk(8,6,2,2);}
 
 // ---------------------------------------------------------------- the quarry
 // A stepped cut face of pale stone, drill lines on every bench, cut blocks on the floor and the benches, a timber
@@ -269,18 +266,18 @@ function buildHlRepQuarry(G,o){reseed(21571+(o.v|0));
  vnLadder(-8,0,-1.2,0,5.2,aged);vnLadder(4,5,-4.6,0,4.8,aged);kput('vWood',[10,2.5,.4],qEuler(Math.atan2(5,5.8),0,0),[1.4,.12,7.7],aged);
  // the floor: gravel, stacked cut blocks, rubble heaps, a stone sledge
  vB('hRCRockB',0,0,8,44,.03,18,0,rock.clone().multiplyScalar(.72));
- for(let i=0;i<3;i++)for(let j=0;j<3-i;j++)for(let k=0;k<2;k++)vB('vPlaster',-12+j*1.7+i*.85,i*.82,5+k*1.1,1.6,.8,1.0,0,stone.clone().multiplyScalar(rr(.95,1.05)));
+ hlRngSkip(12);FURNISH('hl_rep_stone_blocks',-10.3,0,5.55,0,{v:0});   // the stacked cut blocks (12 shades)
  hnRCHeap(-16,0,10,3.2,1.8,stone.clone().multiplyScalar(.9),8);hnRCHeap(16,0,11,2.4,1.3,stone.clone().multiplyScalar(.85),6);
- vB('vWood',-3,0,11,1.4,.3,2.6,.3,aged);vB('vPlaster',-3,.3,11,1.1,.7,1.5,.3,stone);hnRCCart(3,13,-.3,aged,'stone');
+ FURNISH('hl_rep_stone_blocks',-3,0,11,.3,{v:1});hnRCCart(3,13,-.3,aged,'stone');   // a block on its sledge
  // the derrick: mast on a stone foot, a boom, guys to stakes, topping lift, hoist rope and a block on the hook, winch
  {const dx=8,dz=4,MH=12;vB('vStone',dx,0,dz,1.6,.5,1.6,0,rub);vPst('vPostB',dx,.5,dz,.3,MH,aged);
   for(const [gx,gz] of [[-9,-4],[9,-3],[-7,9],[8,9]]){vBeam([dx,MH+.4,dz],[dx+gx,.2,dz+gz],.04,hC(0x6a5a48),'vRope');vPst('vPost',dx+gx,0,dz+gz,.1,.6,aged);}
   const be=[dx-7.2,8.2,dz+3.2];vBeam([dx,1.2,dz],be,.26,aged);vBeam([dx,MH+.2,dz],be,.05,iron,'vRope');vBeam(be,[be[0],3.6,be[2]],.04,iron,'vRope');
   vB('vIron',be[0],3.3,be[2],.3,.34,.3,0,iron);for(const s of[-1,1])vBeam([be[0],3.3,be[2]],[be[0]+s*.6,2.4,be[2]],.03,iron,'vRope');vB('vPlaster',be[0],1.4,be[2],1.8,1.0,1.1,.2,stone);
-  vB('vWood',dx+1.4,0,dz+1.2,1.6,1.0,1.0,0,aged);kput('vPipe',[dx+1.4,1.1,dz+1.2],qEuler(0,0,Math.PI/2),[.3,1.2,.3],iron);for(const s of[-1,1])vB('vIron',dx+1.4+s*.75,.9,dz+1.7,.06,.5,.06,0,iron);}
+  FURNISH('hl_rep_winch',dx+1.4,0,dz+1.2,0,{v:0});}
  // the quarrymen's shed
  {const qx=-15,qz=13,W=6,D=4;vB('vWood',qx,0,qz,W,2.6,D,0,aged);vnShedRoof(qx,2.6,qz,W+.4,D+.2,.8,0,'vShingleB',sh,.45);vnDoor(qx+1.2,0,qz+D/2,0,.9,1.9,'vWood',aged,aged,false);
-  vnWin(qx-1.4,1.1,qz+D/2,0,.7,.7,'shut','vWood',aged);vB('vWood',qx+4.2,0,qz+1,.5,.45,1.8,0,aged);vPst('vPostS',qx+4.2,.7,qz-.6,.5,.14,hC(0xb0a898));}
+  vnWin(qx-1.4,1.1,qz+D/2,0,.7,.7,'shut','vWood',aged);FURNISH('hl_rep_door_bench',qx+4.2,0,qz+1,Math.PI/2,{v:1});FURNISH('hl_rep_grindstone',qx+4.2,0,qz-.6,0);}
  vnFolk(-4,6,3,3);vnFolk(6,9,2,2);}
 
 const HTAG_RC_FARM=(wealth,more)=>({type:['farm'].concat(more||[]),wealth,lit:false});

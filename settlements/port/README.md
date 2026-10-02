@@ -93,3 +93,32 @@ clamp, zoom range), `build.py` (targets discovered, port rules),
 `verify.py` (runs `_api.extra()`), `run.sh` (takes the page as an argument).
 Not copied: the 33 building builders, the biome fragments, `skyPlinth`,
 `toppledUpper`.
+
+## Level of detail
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into
+frustum-culled chunks that switch to clustered proxies with distance; instanced sets keep one draw call and drop their
+smallest instances by screen size. The originals stay the raycast targets, so the inspector and `_api` see full detail.
+The `LOD` panel (bottom right; `l` toggles it, `measure` renders the view both ways) reads draw calls and triangles.
+`LOD.enabled=false` (or `?lod=0`) puts back the exact scene the build made; `LOD.stats()` and `LOD.measure()` are
+there for verify.
+
+The port sets `window.LOD_OPTIONS` in `92-camera.js`: loose clutter (rubble, moss, planks, tyres) drops at 2 px, and
+the leaf cards (the tree canopies, the hinterland's texture from far off) stay down to half a pixel.
+
+Measured 2026-10-01, 1000x640, SwiftShader on a shared 4-core machine (`LOD.flush()` then `LOD.measure()`; triangles and
+draw calls as three.js counts them. Frame times were too noisy under the shared load to quote):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| `showcase` Overview | 879 / 9.06 M | 777 / 1.09 M |
+| `showcase` Eye level on the quay | 693 / 8.98 M | 659 / 2.42 M |
+| `showcase` From the sea | 369 / 8.78 M | 348 / 2.14 M |
+
+Most of the saving is the terrain: 29 strips of 216k triangles across the 23 km grid, whose refined lines run out to
+the horizon. It is cut into chunks and simplified with distance; the chunks of a strip at one level are drawn
+as one (one draw per level in view), so LOD now saves draw calls too (it cost up to 110 more when each chunk was its
+own draw). The views look the same with LOD on and off at eye level; from the overview the far terrain is
+simplified and the smallest clutter is gone; from the sea, thin far lattices (the west
+end's cranes) lose some members. Picking (`_api.inspectRay`) and `regOccupancy` give the same answers.

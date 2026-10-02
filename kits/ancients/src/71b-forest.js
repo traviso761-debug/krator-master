@@ -396,12 +396,43 @@ function buildForest(scene,gx,gz,d){reseed(9470+d);KOFF=[gx,0,gz];
    // was there to reveal: the floors. With 60 m of depth between the torn edge
    // and the back wall, the plates read as shelves in cross section, which is
    // the same read the dam breach wanted.
-   if(d>0&&b>=4){const g0=TGA-1.35,g1=TGA+1.35,NPL=3;
+   // THE BACK WALL WAS ONE SMOOTH SURFACE and the floors were dark plates on a
+   // dark field: depth, but no building. Now it is a section in the sense the
+   // kit uses everywhere else — PALE floor slabs, each with a dark soffit a
+   // metre under it, running out past the torn skin in ragged stubs; pale
+   // cross walls between them every ~24 m of arc, so the storeys are rooms; a
+   // few dead windows on the back wall (it is the tube's inner facade, seen
+   // from behind); and slabs that let go at the torn edge hanging off it.
+   // The slabs and walls exist only where the skin is gone (plus a column of
+   // margin), so the intact tube pays nothing for them.
+   if(d>0&&b>=4){const g0=TGA-1.35,g1=TGA+1.35,NPL=3,NG=52;
+    const open=th=>tgap(th,b)||tgap(th+(g1-g0)/NG,b)||tgap(th-(g1-g0)/NG,b);
     DK.push(gridSurface((u,v)=>{const th=lerp(g0,g1,u),r=(ri0+8)*HXF(th);
-     return[r*Math.cos(th),yb+v*BH,r*Math.sin(th)];},52,5,{uS:18,vS:7}));
+     return[r*Math.cos(th),yb+v*BH,r*Math.sin(th)];},NG,5,{uS:18,vS:7}));
     for(let f=0;f<NPL;f++){const py=yb+1.6+f*(BH/NPL);
-     DK.push(gridSurface((u,v)=>{const th=lerp(g0,g1,u),r=lerp(ro0-2,ri0+8,v)*HXF(th);
-      return[r*Math.cos(th),py,r*Math.sin(th)];},52,4,{uS:18,vS:6}));}}
+     const edge=(u,v)=>!open(lerp(g0,g1,u))||(v<.22&&fbm(u*40,f+b*3,9476,2)<.55-v*2);
+     SH.push(gridSurface((u,v)=>{const th=lerp(g0,g1,u),r=lerp(ro0+3,ri0+8,v)*HXF(th);
+      return[r*Math.cos(th),py,r*Math.sin(th)];},NG,6,{uS:18,vS:6,hole:edge}));
+     DK.push(gridSurface((u,v)=>{const th=lerp(g0,g1,u),r=lerp(ri0+8,ro0-1,v)*HXF(th);
+      return[r*Math.cos(th),py-1.2,r*Math.sin(th)];},NG,4,{uS:18,vS:6,
+      hole:(u,v)=>!open(lerp(g0,g1,u))}));}
+    const nX=Math.round((g1-g0)*ro0/24);
+    for(let q=0;q<=nX;q++){const th=lerp(g0,g1,q/nX);
+     if(!tgap(th,b))continue;
+     for(let f=0;f<NPL;f++){if(rng()<.3)continue;const py=yb+1.6+f*(BH/NPL);
+      SH.push(gridSurface((u,v)=>{const r=lerp(ri0+8,ro0-3,u)*HXF(th);
+       return[r*Math.cos(th),py+v*(BH/NPL-1.4),r*Math.sin(th)];},4,2,{uS:5,vS:2}));}}
+    {const nW=Math.round((g1-g0)*ri0/9);
+     for(let j=0;j<nW;j++){const th=lerp(g0,g1,(j+.5)/nW);
+      if(!open(th))continue;
+      for(let f=0;f<NPL;f++){if(rng()<.4)continue;const r=(ri0+7.6)*HXF(th);
+       kput('cell',[Math.cos(th)*r,yb+1.6+f*(BH/NPL)+7,Math.sin(th)*r],
+        qFacing([Math.cos(th),0,Math.sin(th)]),[5.5,4.4,1],DEAD);}}}
+    for(let q=0;q<5;q++){const th=TGA+rr(-.7,.7);
+     if(!tgap(th,b))continue;
+     const py=yb+1.6+Math.floor(rng()*NPL)*(BH/NPL),r=(ro0-4)*HXF(th),L=rr(10,22);
+     kput(BX,[Math.cos(th)*(r+L*.28),py-L*.42,Math.sin(th)*(r+L*.28)],
+      qEuler(0,-th,0).multiply(qAxis(0,0,1,-rr(.9,1.25))),[L,1.3,rr(8,16)],null);}}
    // the storey band: a lip at every floor, so 276 m of tube is read as six
    // things stacked rather than one extrusion
    {const nP=Math.round(TAU*ro0/15);

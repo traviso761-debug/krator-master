@@ -27,6 +27,15 @@ new building types (housing, manors, shops, taverns, warehouses, civic,
 military). It has automatic LOD. See `catalog/README.md` and
 `catalog/CITY_INVENTORY.md`.
 
+The first-generation registry and the `voth_*` furniture and plants live in `kits/catalog/`. Its verify pass
+(2026-10) recentred `voth_bldg_customs_house`, `_guild_hall` (v1), `_townhouse` (v4), `_monastery_hall`, and
+eight furniture pieces (strider station, guild banners, loom display, fisher, miner, sacrifice altar, lantern
+fixture v2). It also raised the declared sizes of `voth_craft_tanner`, `voth_lantern_fixture` and 14 Voth plants.
+None of this was synced into `src/`. The city declares no sizes, and the catalog pieces are rewrites, not copies:
+`siltStriderStation()` (65b) is a 16 x 22 m deck with a ramp, while the catalog station is 10 x 16 m. City
+builders such as `customsHouse()` take their size as arguments and draw in world coordinates. The catalog
+page loads the registry from `kits/catalog/` by path, so it already shows the corrected copies.
+
 ## The documents
 
 - `API.md` — the generator's interface. Read before editing any fragment.
@@ -56,3 +65,39 @@ treats the group as one unit. The main groups are:
 | `src/78a–78j` | life layer: nav grid, ships, boats, citizens, clergy, trade, arena combat |
 | `src/79a–79c` | silt strider convoys, their nav grid, the strider model |
 | `src/80`–`87` | camera, day/night, weather, fauna, probe, inspector, path visualizer |
+
+## Level of detail
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into
+frustum-culled chunks that switch to clustered proxies with distance; instanced sets keep one draw call and drop their
+smallest instances by screen size. The originals stay the raycast targets, so the inspector and `_api` see full detail.
+The `LOD` panel (bottom right; `l` toggles it, `measure` renders the view both ways) reads draw calls and triangles.
+`LOD.enabled=false` (or `?lod=0`) puts back the exact scene the build made; `LOD.stats()` and `LOD.measure()` are
+there for verify.
+
+## Minimap
+
+The Map button (or `m`) opens a plan of the city, bottom left: the shared `KMAP` from `core/minimap/`, which
+`build.py` adds like `core/lod/`. `src/88b-voth-minimap.js` feeds it the terrain (hill-shaded, the bay below `SEA`),
+`ROADS` and `ROADS_X`, every `PLACED` footprint coloured by tag, and the cantons with their names. Hover names what is
+under the pointer; click looks there from the current angle. It draws from data, not from the render, and draws no
+rng, so the world and the budget counters are unchanged. `window._minimap.export()` is the plan as data for the
+Godot port.
+
+`80-camera.js` sets `window.LOD_OPTIONS`: the life layer's vehicles and crews (`userData.life`) stay outside it, since
+they are rewritten every frame, and the panel sits bottom centre, clear of the view list and the sky panel.
+
+Measured 2026-10-01, 1000x640, SwiftShader on a shared 4-core machine (`LOD.flush()` then `LOD.measure()`; triangles and
+draw calls as three.js counts them. Frame times were too noisy under the shared load to quote):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| Down the bay | 67 / 4.25 M | 68 / 1.98 M |
+| Harbour quay | 67 / 4.25 M | 68 / 2.21 M |
+| Far shore | 67 / 4.25 M | 67 / 2.23 M |
+
+Voth draws every instanced set with frustum culling off, so with LOD off every view costs the same 4.25 M. With LOD
+on each set is culled by a real bounding sphere, small instances (props, figures, lanterns) drop by screen size, and
+the 72-triangle dome and blob shapes switch to a clustered version far off. Draw calls rise by at most 1 (a far
+version; the terrain's chunks are drawn combined, one draw per level in view). The views look the same with LOD on and off.

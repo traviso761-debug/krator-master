@@ -78,7 +78,7 @@ function buildHlRepPoorA(G,o){reseed(20101+(o.v|0));const W=6.4,D=6.8,H=2.7,F=.4
  for(const s of[-1,1])vPst('vPost',W/2+1.45,F,1.3+s*.85,.08,2.2,log);vnShedRoof(W/2+.9,F+2.2,1.3,1.8,2,.35,-Math.PI/2,'vShingleB',sh,.2,.1);
  if(rng()<.6){kput('vSheet',[-1.2,F+H+1.3,-1.1],vQ(Math.PI,-Math.atan(1.25),0),[2.2,1.6,1],null);}   // a salvage sheet over a leak (the Iziz note)
  hnStoneChimney(-1.2,F+H+.6,-.9,2.1,.6);
- hnWoodpile(-W/2-.8,0,-.6,Math.PI/2,2.6,1.4);vnBarrel(W/2+.9,0,-1.9,.35,.9,log);
+ hnWoodpile(-W/2-.8,0,-.6,Math.PI/2,2.6,1.4);hnBarrel(W/2+.9,0,-1.9,.35,.9);
  vnFence(0,0,1.2,W+6,D+6.5,0,hC(vPick(HPAL.aged)),2.2,1.1);vnFolk(1.5,D/2+2.2,1,1);}
 // B — two-room log house with a lean-to workshop and a plank roof held by poles: the poorest urban housing
 function buildHlRepPoorB(G,o){reseed(20111+(o.v|0));const W=8.2,D=5.4,H=2.6,F=.35;
@@ -90,8 +90,8 @@ function buildHlRepPoorB(G,o){reseed(20111+(o.v|0));const W=8.2,D=5.4,H=2.6,F=.3
  vnDoor(-1.2,F,D/2,0,.95,1.9,'vWood',log,hC(0x5a4a3a),false);hnNal(1.4,F+.95,D/2,0,.75,.95,'shut',trim);hnNal(-3.1,F+.95,D/2,0,.7,.9,'open',trim);
  // lean-to workshop: board walls, salvage roof
  vnFrame(W/2+1.4,0,0,2.6,2.3,D-.6,0,log,.1);vB('vWood',W/2+1.4,0,-D/2+.4,2.6,2.2,.1,0,log);vnShedRoof(W/2+1.4,2.3,0,2.8,D-.2,.6,Math.PI/2,'vCorr',null,.3,.1);
- vnPatch(W/2+2.7,0,0,Math.PI/2,D-.8,2.1,2);vnCrate(W/2+1.2,0,1,.8,.2);vnBarrel(W/2+2,0,-.8,.3,.8,log);
- hnStoneChimney(2.6,F+H+.3,-.6,2.2,.55);vnDryingRack(-W/2-1.3,0,1.2,Math.PI/2,2.6);vnFolk(0,D/2+2.4,2,1.5);}
+ vnPatch(W/2+2.7,0,0,Math.PI/2,D-.8,2.1,2);hlRngSkip(1);   // the lean-to is a room (interiors): its crate (one colour) and barrel are gone
+ hnStoneChimney(2.6,F+H+.3,-.6,2.2,.55);hnDryingRack(-W/2-1.3,0,1.2,Math.PI/2,2.6);vnFolk(0,D/2+2.4,2,1.5);}
 
 // ---------------------------------------------------------------- MIDDLE
 // A — Saxon townhouse: gable to the street, painted render below, jettied half-timber above, scale roof
@@ -116,7 +116,7 @@ function buildHlRepMidA(G,o){reseed(20201+(o.v|0));const W=8,D=11,S=.7,H1=3.3,H2
  // a dormer on the long side, a stone chimney through the ridge
  vB('vPlaster',W/2-.9,y3+.6,-1.5,1.6,1.2,1.6,0,hC(vPick(HPAL.stucco)));vnWin(W/2-.1,y3+.8,-1.5,Math.PI/2,.6,.7,'glass','vWood',trim);vnGableRoof(W/2-.9,y3+1.8,-1.5,1.6,1.8,.8,Math.PI/2,'hGableSc',roof,.15);
  hnStoneChimney(-.8,top-1.2,-2.8,1.9,.7);
- vnBarrel(-W/2-.6,0,D/2-1,.35,.9);vnFolk(0,D/2+2.5,2,2);}
+ hnBarrel(-W/2-.6,0,D/2-1,.35,.9);vnFolk(0,D/2+2.5,2,2);}
 // B — merchant's log house: a two-storey log house on a stone ground floor, a carved gallery (gulbishche) along
 // the front and a kryltso porch; the Russian side of the Republic's middle class
 function buildHlRepMidB(G,o){reseed(20211+(o.v|0));const W=10,D=8,S=2.6,H=3;
@@ -160,7 +160,7 @@ function buildHlRepRichA(G,o){reseed(20301+(o.v|0));const W=16,D=11,S=1.2,H1=3.8
  hnStoneChimney(4.5,y3+1.4,-1.8,2.8,.9);hnStoneChimney(-3,y3+1.4,-1.8,2.8,.9);
  // garden wall with gate piers, lamps
  for(const s of[-1,1]){vB('hRubB',s*(W/2+2.5),0,D/2+5.5,.6,1.3,.6,0);vB('hRubB',s*(W/2+2.5)/2+s*2.1,0,D/2+5.5,(W/2+2.5)-2.6,.9,.45,0);}
- if(vLit())for(const s of[-1,1])vnLampPost(s*2.4,0,D/2+5.2,3.2);
+ if(vLit())for(const s of[-1,1])hnLampPost(s*2.4,0,D/2+5.2,3.2);
  vnFolk(1,D/2+7,2,2);}
 
 // C — bamboo row: three one-room cottages under one roof on a log sill, the poorest urban housing of the hill
@@ -184,7 +184,7 @@ function buildHlRepPoorC(G,o){reseed(20121+(o.v|0));const N=3,U=3.8,W=U*N,D=5,F=
   const dx=x-U*.22;vnDoor(dx,F,D/2+.08,0,.85,1.85,'vWood',bam,hC(vPick([0x6a5040,0x5a4a3a,HPAL.teal])),false);
   vB('vWood',dx,0,D/2+.45,1.1,F,.7,0,log);                                                        // plank step
   if(kind===0){vnShedRoof(x,F+1.82,D/2+.85,U-.4,1.7,.28,0,'vCorr',null,.08,.05);for(const s of[-1,1])vPst('hBamboo',x+s*(U/2-.35),0,D/2+1.6,.06,F+1.84,bam);   // a salvaged-sheet awning on culms
-   vB('vWood',x+.5,0,D/2+1.1,1.4,.42,.36,0,log);}
+   FURNISH('hl_rep_door_bench',x+.5,0,D/2+1.1,0,{v:0});}
   else{vnShedRoof(dx,F+2.02,D/2+.3,1.3,.42,.12,0,'hBMatB',mat,.08,.05);for(const s of[-1,1])beam('hBambooC',[dx+s*.55,F+1.45,D/2+.08],[dx+s*.55,F+2.02,D/2+.48],.06,.06,bam);}
   vnWin(x+U*.24,F+.9,D/2+.08,0,.75,.75,rng()<.5?'shut':'open','vWood',bam,rng()<.6);
   vnWin(x,F+.9,-D/2-.08,Math.PI,.6,.6,'shut','vWood',bam);
@@ -192,10 +192,9 @@ function buildHlRepPoorC(G,o){reseed(20121+(o.v|0));const N=3,U=3.8,W=U*N,D=5,F=
   if(kind===2||(i===0&&rng()<.7))hnRARoofPatch('vCorr',0,Y,0,0,sp,P,1,x+rr(-.4,.4),rr(1.2,1.6),rr(1.8,2.6),rr(1.4,1.9));}
  hnRARoofPatch('vRustB',0,Y,0,0,sp,P,-1,rr(-2,2),1.5,2.2,1.6);
  // yard life: a drying line, hand cart, water butt, a bamboo lean-to store at the end
- vnDryingRack(1,0,-D/2-1.6,0,4);vnWaterButt(W/2+.6,0,D/2-.8,.38,.95);
+ hnDryingRack(1,0,-D/2-1.6,0,4);hnWaterButt(W/2+.6,0,D/2-.8,.38,.95);
  {const lx=-W/2-1.1;hnBambooBox(lx,0,0,1.9,2.1,D-1,0,bam,mat);vnShedRoof(lx,2.1,0,2.1,D-.6,.35,-Math.PI/2,'vCorr',null,.25,.08);hnWoodpile(lx-1.3,0,0,Math.PI/2,2.6,1.2);}
- {const cx=W/2+1.4,cz=1.2;vB('vWood',cx,.55,cz,1,.08,1.6,.25,log);for(const s of[-1,1]){const p=loc(cx,cz,s*.58,.2,.25);kput('vHoop',[p[0],.42,p[1]],qEuler(0,.25+Math.PI/2,0),[.42,.42,1.4],hC(0x3a3028));}
-  for(const s of[-1,1]){const a=loc(cx,cz,s*.3,-.8,.25),b=loc(cx,cz,s*.3,-1.9,.25);beam('vWood',[a[0],.6,a[1]],[b[0],.15,b[1]],.05,.05,log);}}
+ hnFurn('hl_rep_hand_cart',W/2+1.4,0,1.2,.25,{},0,-.565);   // the hand cart (the piece is centred on its footprint, the drawing on its bed)
  vnFolk(0,D/2+3.4,3,2.5);}
 
 // C — the Saxon corner tenement: an arcaded ground floor (the Laube) of stone round arches with shops behind, a
@@ -231,7 +230,7 @@ function buildHlRepMidC(G,o){reseed(20221+(o.v|0));const W=14,D=10,H1=3.6,H2=3.2
  // stair tower serving the flats, with a spire, and its street door
  const tx=W/2+1.35,tz=-1.4;hnTower(tx,0,tz,2.8,H1+H2+H3+2.6,0,{shaft:'stucco',roof:'spire',roofC:roof,c:wall2,qC:ash,trimC:trim});
  vnDoor(tx,0,tz+1.4,0,1,2.1,'vStone',ash,hC(vPick(HPAL.tar)),true);
- vnBarrel(-W/2-.7,0,D/2-1.2,.35,.9);vnCrate(-2.1,0,D/2-1.3,.7,.3);vnSacks(3.4,0,D/2-1.4,3);
+ hnBarrel(-W/2-.7,0,D/2-1.2,.35,.9);hnCrate(-2.1,0,D/2-1.3,.7,.3);hnSacks(3.4,0,D/2-1.4,3);
  vnFolk(0,D/2+2.2,4,3);vnFolk(0,D/2-AD/2,2,4);}
 
 // ---------------------------------------------------------------- RICH (cont.)
@@ -281,7 +280,7 @@ function buildHlRepRichB(G,o){reseed(20311+(o.v|0));const S=2.2;
  vnDoor(0,S,A.z+A.d/2,0,1.3,2.2,'hPaint',trim,dark,false);
  const run=hnRAKryltso(0,0,A.z+A.d/2,0,2.4,S,dark,'hKeelSc',roofB,trim,2.7);
  for(const s of[-1,1])hnTotemPost(s*2.1,0,A.z+A.d/2+run+.6,.22,2.8,0,true);
- if(vLit())for(const s of[-1,1])vnLampPost(s*3.6,0,A.z+A.d/2+run+.4,3.2);
+ if(vLit())for(const s of[-1,1])hnLampPost(s*3.6,0,A.z+A.d/2+run+.4,3.2);
  // chimneys, a carved fence with a gate, a tall totem at the corner
  hnStoneChimney(-2.6,ya+2.6,-3.5,3.4,.8);hnStoneChimney(B.x+1,yb+1.8,B.z-2,3,.7);
  vnFence(0,0,1.4,A.w+B.w+C.w+6,A.d+14,0,dark,4.5,1.3);hnTotem(B.x-1.4,0,B.z+B.d/2+3.4,.34,7.5,0,{wings:1.6,painted:true});
@@ -325,11 +324,10 @@ function buildHlRepRichC(G,o){reseed(20321+(o.v|0));const W=16,D=12,H1=3.9,H2=3.
    vB('vPlaster',mx,0,mz,L,wh,.5,ry,wc);vnGableRoof(mx,wh,mz,L+.3,.7,.3,ry,'vShingleB',sh,.12);}
   vB('hRubB',cx+cw/2,0,D/2-2,1.2,wh+.7,1.2,0);vB('vStone',cx+cw/2,wh+.7,D/2-2,1.4,.2,1.4,0,ash);            // gate pier at the street
   vB('vPlaster',(W/2+cx+cw/2)/2,0,D/2-2,cx+cw/2-W/2,wh,.5,0,wc);vnGableRoof((W/2+cx+cw/2)/2,wh,D/2-2,cx+cw/2-W/2,.7,.3,0,'vShingleB',sh,.12);
-  const wx=cx+3,wz=cz;for(let k=0;k<10;k++){const a=k/10*TAU;kput('vStone',[wx+Math.cos(a)*.75,.4,wz+Math.sin(a)*.75],qEuler(0,-a,0),[.3,.8,.5],ash);}
-  for(const s of[-1,1])vPst('vPost',wx+s*.8,0,wz,.07,2.2,tar);vnGableRoof(wx,2.2,wz,1.9,1.2,.5,0,'vShingleB',sh,.2);
+  FURNISH('hl_rep_roofed_well',cx+3,0,cz,0);   // the courtyard well
   vPst('vPost',cx-5,0,cz,.22,3.2,hC(0x5a4632));for(let k=0;k<6;k++)kput('vLeaf',[cx-5+rr(-1.6,1.6),rr(3.6,5.6),cz+rr(-1.6,1.6)],null,[rr(1.2,1.9),rr(1,1.5),rr(1.2,1.9)],hC(vPick([0x3f7a34,0x4f8a3a,0x356a2a])));
   vB('vWood',cx,0,cz-cd/2+1.7,7,2.6,2.8,0,tar);vnShedRoof(cx,2.6,cz-cd/2+1.7,7,2.8,.7,0,'vShingleB',sh,.3);}
- if(vLit()){vnLampPost(gx-3,0,D/2+1.6,3.2);vnLampPost(gx+3.2,0,D/2+1.6,3.2);}
+ if(vLit()){hnLampPost(gx-3,0,D/2+1.6,3.2);hnLampPost(gx+3.2,0,D/2+1.6,3.2);}
  vnFolk(-2,D/2+2.6,3,3);}
 
 const HTAG_SF={type:['single-family dwelling']},HTAG_MF={type:['multi-family dwelling']};

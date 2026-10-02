@@ -4,21 +4,21 @@
 
 Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/iziz-vernacular.html`, `dist/iziz.html`, `dist/w-a.html`, `dist/w-b.html`, `dist/w-c.html`
 
 Build: `cd settlements/iziz && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
+From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
@@ -30,7 +30,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `46-bunker.js` | 5 |  |
 | `48-library.js` | 4 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 18 |  |
+| `52-sky-abc.js` | 20 |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 5 |  |
 | `57-sky-e.js` | 3 |  |
@@ -38,10 +38,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `64-houses-def.js` | 5 |  |
 | `66-office-c.js` | 2 |  |
 | `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
-| `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
-| `70-vern-dwellings.js` | 19 | POOR (9); MIDDLE (61); RICH (126) |
-| `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (153) |
+| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
+| `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
+| `70-vern-dwellings.js` | 20 | POOR (9); MIDDLE (61); RICH (126) |
+| `71-vern-trade.js` | 18 | shop row: three units under one salvaged-sheet r (18); tavern: the deco long hall in timber, cross-gabl (42); workshops (70); scrap smithy: forge under a salvaged roof on pip (103); market canopy: a great two-tier rain roof over r (131); warehouse: long timber shed clad in board and sh (154) |
 | `72-vern-civic.js` | 17 | school: hall with a bell tower, two classroom wi (13); hospital: a long ward block with deep verandas b (45); barracks and drill yard: palisade, two barrack b (72); the alchemist's compound: walled; house with a d (109) |
 | `73-police.js` | 5 |  |
 | `73-vern-infra.js` | 9 | grain silos: four stave silos on stilts under th (5); storage tank: a reclaimed Ancient tank on a ston (24); electric generator: stone engine house, a reclai (47) |
@@ -50,9 +50,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `76-campus.js` | 9 |  |
 | `76-port-chapterhouse.js` | 17 |  |
 | `77-anc-guilds.js` | 20 | THE SALVAGERS' GUILD — the Reliquary (74); THE MERCENARY GUILD — the Watch (121) |
-| `77z-iziz-style.js` | 47 **big** | ANCIENT IZIZ STYLE (1) |
+| `77z-iziz-style.js` | 52 **big** | ANCIENT IZIZ STYLE (1) |
 | `78-factory-silo.js` | 2 |  |
-| `78-transplant.js` | 23 |  |
+| `78-transplant.js` | 25 |  |
 | `79-government.js` | 4 |  |
 | `79-iziz-original.js` | 23 |  |
 | `80-aa-battery.js` | <1 |  |
@@ -66,7 +66,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `99-tail.html` | <1 |  |
 
 ## targets/
@@ -75,7 +75,7 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `91z-views.js`, `93-city-ui.js` | 185 |
+| `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js` | 270 |
 | `vernacular` | `89z-rows.js`, `91z-views.js` | 3 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |

@@ -127,3 +127,102 @@ shards on ~half the dead ones (position hash, no rng draw) ·
   10 146 021 triangles (was 9 967 649).
 - MAT.dark reads mid-grey in daylight, so every "dark opening" in the kit is
   grey rather than black (shared material, not changed).
+
+# Round 2 (2026-10-01)
+
+Worked down "Remaining / requests" above, the KNOWN_ISSUES entries for these
+types, the bunker-launcher request, and a look at every type at decays 0/1/3.
+Rendered on a civic-only scratch copy of the kit page (`--target kit`, the
+builder loop filtered to these 11 rows); draw calls re-measured on the full kit.
+Every step: `build.py --target kit`, `jscheck.py` PARSES OK, `verify.py --assert`
+error panel clean, all invariants PASS.
+
+## Fixed / built
+
+- **Government ruin changes the silhouette.** The upper two tiers have slumped
+  in a sector west of the portico (toward the ruin camera): tier 3 open nearly to
+  its foot, tier 2 above its first floor, both roofs bitten, the liner cut, the
+  floors inside left standing exposed, and a spill of rubble and tilted roof
+  slabs on tier 2's floor, the tier-1 terrace and the ground. Strips, moss and
+  conduit the slump left in mid-air are culled after the fact (`civCull`), so
+  no rng draw before the spill moved; the spill is drawn after `figures()`.
+- **Rehabilitated Government had no petals.** `petalRing` scales its holes by
+  `d` itself, so at decay 3 the threshold was fbm<.9 and every petal was hole.
+  The Government now passes `HOLES` (decay 1 unchanged). *Houses ABC call
+  `petalRing` with `d` too, so their decay-3 petals have the same bug (domestic
+  group).*
+- **Campus wings bend** (the UFM item). `wing()` lays each bar along a bow
+  `f(T)=bow*(1-cos 2πT)/2` pushed downhill, bow = min(10 m, 4.5% of length):
+  the ends keep their position AND tangent, so every joint in the chain is where
+  it was, and 10 m stays inside the forest's 12 m keep-clear. Every loop and rng
+  draw is the straight bar's; long boxes become chord segments. The ruined
+  Library floors (wing 3) are two `sub` stretches of the same bow, and their
+  debris follows it. Courtyard trees and hedges are mapped into the box the
+  wings really leave open (they stood 8-30 m inside terraces).
+- **Bunker launchers** face forward (the cupola's along +z, the two deck pods
+  0.7-0.8 rad either side) at every decay; the ruin keeps the intact facing and
+  sags nose-down (-0.32 rad) instead of lying level pointing anywhere.
+  `aaBattery(...,aim)` keeps its `rr()` draw, unused.
+- **Offices: the three variants stood in each other.** B at x=190 and C at
+  x=330 made one site 430 m wide on a 265 m row pitch: the rehabilitated Office C
+  stood inside the ruined Office A. B is now at x=105 and C stands behind them at
+  (95,-75) (moved with KOFF and a child group, so REGISTER follows). Site 195 m.
+  `Office C` presets (kit and worn targets) re-aimed.
+- **Interiors.** Hospital podium: the dark core is pulled back 7.5 m and the band
+  behind the ribbon is cut into ward bays at the facade posts, a bed in each,
+  cabinets in some; ruined beds tipped. Data centre ruin: the dark mass's two cut
+  faces carry floor edges at every server level, a column per bay and a few rack
+  lights, so the cave-in reads as a building section rather than grey walls.
+- **Mouldings.** Government: a hood following each arched window and a sill
+  under it (`civHoodGeo`, one kit mesh, ~70 tris; a ruin has lost 30%), and a
+  flared cornice lip on every tier (holed with the slump).
+- **The Gate preset** pulled back to z+1000 and aimed higher: the apex tower
+  was cut by the frame top. (No Robotics roofs in it any more.)
+- **Draw calls.** `civFlatten(G)` at the end of every civic builder merges all
+  opaque meshes under G by material, in G's frame (triangle-neutral; pixel-
+  neutral: the Data centre and Robotics yard shots came out identical). Per-type
+  meshes: off 13-16 -> 6-8, port 16 -> 4-8, gov 15 -> 4-5, dc 16-17 -> 2,
+  hosp 7-8 -> 2, robo 8-15 -> 3-11 (its glass roofs stay separate). Civic-only
+  page, worst view: 310 -> 167 (Police ruin); Data center ruin 308 -> 163,
+  Robotics yard 274 -> 160, opening 236 -> 134. Full kit (vs the end of
+  round 1): **Robotics yard 910 -> 619** (no longer over 900), Data center ruin
+  786 -> 608, opening 797 -> 519, Hospital ruin 593, Police ruin 575. Showcase
+  10 297 805 triangles (OVER the 6M target, as before; this branch adds ~70k).
+  **What moved:** repairPass/wornPass sample G's faces in mesh order, so the
+  decay-3 salvage dressing (and the worn pass) lands on different faces of the
+  same shells.
+
+## KNOWN_ISSUES
+
+Ticked: both seed collisions (fixed in round 1). Annotated as civic-done but
+left open because other groups share them: interiors, glass shards, the
+Campus/data-centre/Gate/robots line (Campus bend now done; Mega warts and Sky B
+crown remain), mouldings, the repaired-pass item (Starport tents), ground contact.
+
+## Triangles (sum of decays 0+1+3)
+
+| type | before round 2 | after | per decay after (0/1/3) |
+|---|---|---|---|
+| off | 183 148 | 179 890 | 67 500 / 58 696 / 53 694 (smaller site, fewer salvage patches) |
+| port | 150 850 | 150 850 | |
+| bunk | 37 176 | 37 176 | |
+| lib | 82 822 | 82 822 | |
+| gov | 127 796 | 169 772 | 47 092 / 61 946 / 60 734 (hoods, cornices, spill, decay-3 petals back) |
+| arc | 267 442 | 267 442 | |
+| robo | 91 640 | 91 640 | |
+| campus | 216 568 | 236 776 | 72 260 / 77 132 / 87 384 (chord segments) |
+| dc | 113 448 | 114 408 | |
+| police | 45 772 | 45 532 | (decay-3 salvage resampled) |
+| hosp | 105 384 | 116 148 | 32 260 / 43 528 / 40 360 (ward bays) |
+| **group** | **1 422 046** | **1 492 456** | **+5.0%** |
+
+## Still open
+
+- The Gate's rehabilitated variant (x=0) stands 80 m from the intact one's east
+  foot on the 800 m row pitch; its fallen leg reads as the intact Gate's debris
+  from some angles. A row-spacing question (targets/kit, shared).
+- Office C's roof pergola beams read as loose planks from low angles.
+- Robotics: the intact hall's arched doors and the tower's bays still open onto
+  MAT.dark (mid-grey in daylight; shared material).
+- Mouldings are Government-only; a general `moulding(profile,path)` helper is
+  still the shared item in KNOWN_ISSUES.

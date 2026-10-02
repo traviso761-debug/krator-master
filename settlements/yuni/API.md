@@ -65,7 +65,14 @@ F.archband(fam, lx,ly,lz, face, ow,oh, t, depth, col)                 // just th
 F.arcade(fam, lx,ly,lz, face, n, bayW, H, T, col, {pier, head})       // n parabolic bays in a row: cloisters, loggias, market halls
 F.sector(fam, lx,lz, r0,r1, a0,a1, yb,yt, col, {faces:'tbios'})       // annular-sector prism: round walls, curved benches, ring courts
 F.tower(lx,ly,lz, R,h, {fam,col,band,flutes,windows:[t..],finial})    // the blunt fluted paraboloid tower (Hotel Attraction) used on the city wall
-F.door(lx,lz, nlx,nlz, w,h, col, ly) // nlx,nlz = LOCAL outward normal of the wall it sits in; ly = sill height (doors on a plinth). Registers a door point.
+F.door(lx,lz, nlx,nlz, w,h, col, ly, o) // nlx,nlz = LOCAL outward normal of the wall it sits in; ly = sill height (doors on a plinth).
+        // A WORKING door: hinged leaf (or two when w > 1.75), dark reveal, a tagged FIX_DOOR record and a doorstep point.
+        // o = { style:'plank|double|carved|studded|mat|hatch', hinge:'left|right', swing:'in|out', to:'interior|court|street' }.
+        // Never draw a door out of boxes yourself: a hand-drawn door cannot open, export or be walked through.
+F.opening(lx,lz, nlx,nlz, w,h, ly, o)   // a doorway you drew yourself (hut mouth, gateway): registers it with no leaf. o.style 'open'|'gate', o.to
+F.mass({k:'box', x,z, y, w,d,h, r, tk})  // DECLARE a solid volume built from quads/lathes, so the interior planner can fit rooms in it.
+        // tk = how much the half-width shrinks by the top (fr8 = 0.16). Boxes, fr8/fr5, cylinders, domes and lathes in a
+        // wall family are recorded automatically; only hand-built bodies (rbody in 56-mid.js) need this.
 F.window(lx,ly,lz, nlx,nlz, w,h, {noReveal, cool})   // ly = pane CENTRE. Dark reveal + a pane that lights on the evening schedule and spills light.
         // noReveal drops the flat dark box (use it on curved or battered walls, where the box stands proud at the silhouette).
 F.disc(lx,ly,lz, nlx,nlz, r, thick, col, fam)        // a disc lying IN a wall, standing out by `thick`: oculus, medallion, boss, wheel
@@ -80,6 +87,44 @@ mirrors if y turns back), so a parapet's inner face is built with `F.quad`, not 
 asset's own frame, so lobes and bulges turn with the building. Underlying kit (45-kit.js, 50-structure.js) if you need it directly:
 `BOX CYL CONE DOME BEAM ROD TUBE MCONE SECTOR MQUAD MTRI QF TF ARCHWALL ARCHBAND BLUNT_TOWER` — world coordinates, and
 two yaw conventions exist, so prefer F.
+
+## Doors, windows, lights and interiors (the game-port layer)
+
+Read `GAME_EXPORT.md`. In short: every `F.door`, `F.opening`, `F.window` (and any `WINPANE`) and every lamp
+(`F.lantern`, `F.lamp(…, kind)`, `nlLampAdd(…, kind)`) registers a record in `FIX` with a stable id and tags,
+and every asset instance gets a building record (`bld_00042`) tagged with a culture and types (`BUILDING_TAGS`
+in `51-fixtures.js` — add your new asset there). Interiors are NOT drawn by assets: `64-interiors.js` traces
+each door to the body behind it and fits rooms, partitions, stairs and furniture inside from swappable
+modules. Use `F.door` for real doors so they open, export and can be walked through.
+
+If an asset builds its walls from quads, lathes or thin panels the body capture cannot see, declare
+the room volume with `F.mass({ k:'box', x, z, y, w, d, h, r })` (the salvage shack does). A room
+needs about 2.6 m of body height to be planned. A low box laid over most of the footprint (a tarred
+base band, a podium) is recorded as a PLINTH and hidden in the cutaway, so the floor shows.
+
+### Furniture types (`FURN({ ..., type, setting })`)
+
+`type` is one of: `bed table seating counter shelving hearth lighting rug screen tool decoration`
+and the two CONTAINER types, which the game reads as loot and inventory:
+
+| type | holds | pieces |
+|---|---|---|
+| `container-item` | belongings, tools, cloth, coin | `common_storage_chest`, `poor_lidded_basket`, `salvage_locker_press`, `ancient_cell_wall`, `order_mat_rack` |
+| `container-food` | grain, oil, water, provisions | `common_grain_sacks`, `poor_clay_pots`, `poor_food_pot`, `common_water_jars`, `common_grain_bin` |
+
+Every container carries `capacity` (rough inventory slots; `common_grain_bin` and
+`ancient_cell_wall` 24, a chest 12, a basket 4). There is no plain `storage` type any more: a new
+storage piece must say which of the two it is. Shelving stays `shelving` (not a container).
+
+**The minimum kit** (`64-interiors.js`, `KIT_PIECES`, `ensureKit`, `buildingKit`): every dwelling
+has a bed per bedroom (at least 1, 2 if multi-family), a food container (2 in a compound or a
+wealthy house) and an item container (2 in a compound); every building has an item container;
+every kitchen, store, shop and tavern room, and every shop / tavern / inn / farm building, has a
+food container. Layouts place their own pieces first; `ensureKit` tops up from the culture's
+`KIT_PIECES` (largest piece that fits, down to the smallest); a slot no room can hold is kept as
+data with `virtual:true`. Buildings with no planned interior get a minimal data-only kit.
+`window._kitAudit` (printed in verify.py's counters) must read 0 for `dwellingsMissingKit`,
+`buildingsMissingItem`, `foodPlacesMissingFood` and `bedroomsWithoutBed`.
 
 ## Material families (05-palette.js, FROZEN — ask the planner for additions; a new family is a new draw call)
 

@@ -2,22 +2,21 @@
    PLANNER-OWNED. The lamps the brief asks for by position: at every bridge
    entry, and ringing the cleared path round each central trunk. (Buildings,
    rooms, roosts and the gate carvings register their own lamps where they are
-   built.)  LANTERN() is the shared helper: a little lantern body in the kit +
-   a registered light for the glow volume and the halo layer.               */
+   built.)  LANTERN() and LAMPPOST() are the shared helpers: a catalog lantern
+   (furniture, 53-furnish) + a registered light for the glow volume and the halo layer. */
 reseed(720001);
 
 function LANTERN(x,y,z, amp, rad, cool, hang){
-  /* y is the flame height. hang>0 draws a cord up to the thing it hangs from */
-  BOX(x, y-0.28, z, 0.34, 0.50, 0.34, 0, TIMBERC[2], 'timber');
-  BOX(x, y-0.20, z, 0.26, 0.34, 0.26, 0.78, cool ? PAL.glowCool : PAL.glowWarm, 'glowmat');
-  PYR(x, y+0.22, z, 0.50, 0.26, 0.50, 0, SHINGLEC[1], 'shingle');
-  if(hang) ROD(x, y+0.4, z, x, y+0.4+hang, z, 0.02, ROPEC[1], 'rope');
-  nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool);
+  /* FURNITURE (53-furnish): the catalog's framed lantern, br_h_hanging_lantern v1 (harvested from this helper):
+     its flame 0.28 m above its origin, a 0.5 m cord above. y is the flame height; a longer hang keeps the rest of
+     the cord as rope up to what the lantern hangs from. Its light goes into the night light volume as before. */
+  FURNISH_AT('br_h_hanging_lantern', x, y-0.28, z, 0, { v:1, lamp:[amp==null?1:amp, rad==null?15:rad, cool] });
+  if(hang > 0.5) ROD(x, y+0.9, z, x, y+0.4+hang, z, 0.02, ROPEC[1], 'rope');
 }
 function LAMPPOST(x,y,z, h, amp, rad, cool){
-  BOX(x, y, z, 0.20, h, 0.20, 0, TIMBERC[0], 'timber');
-  BOX(x, y+h-0.12, z+0.35, 0.10, 0.10, 0.8, 0, TIMBERC[0], 'timber');
-  LANTERN(x, y+h-0.55, z+0.7, amp, rad, cool, 0.3);
+  /* FURNITURE: the catalog's lantern post, br_lamppost (harvested from this helper): 2.4 m, flame at 2.14 m,
+     whatever h asked (the old post was h tall with the lantern hung at h-0.55) */
+  FURNISH_AT('br_lamppost', x, y, z, 0, { lamp:[amp, rad, cool] });
 }
 var FIXED_LAMPS = 0;
 BRIDGES.forEach(function(br){

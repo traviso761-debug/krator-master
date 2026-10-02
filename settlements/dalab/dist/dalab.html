@@ -26,6 +26,383 @@ canvas{display:block}
 <pre id="errs"></pre>
 <script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
 <script>
+// ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
+// One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
+// calls and no change to how it makes geometry:
+//   LOD.init({THREE, scene, camera, renderer, ...options});   // after the world is built
+//   LOD.apply();                                               // takes over the static meshes and instanced meshes
+//   LOD.update();                                              // every frame, before renderer.render
+// How it draws less, without touching what the build made:
+//  * Every object it manages is moved to a layer the camera does not draw (layer 30) and a render COPY stands in for
+//    it under `LOD.root`. The original stays where it was, with its userData, visibility and instance order, and stays
+//    the raycast target: Raycaster.intersectObject(s) is patched to see layer 30, and the copies do not raycast. So
+//    inspectors, picking, labels and probes keep seeing full detail.
+//  * A big merged mesh is cut into chunks (a k-d split by triangle centroid: at most `maxTris` triangles and `maxExtent`
+//    metres a chunk). The chunks share the original's vertex buffers, so the cut costs only index memory and three.js
+//    can frustum-cull each chunk. A chunk switches to a simplified proxy (vertex clustering on a grid of `levels[k]`
+//    metres) once that grid is under `errPx` pixels on screen, and drops out when the whole chunk is under `minPx`.
+//  * An InstancedMesh keeps ONE draw call. Its instances are bucketed in `cell`-metre cells and sorted by size inside
+//    each cell; every update copies, cell by cell, the prefix of instances still bigger than `minPx` on screen into
+//    the copy's buffers. Instances with a detailed base geometry switch to a clustered base geometry beyond `errPx`
+//    (a second copy, one more draw call). Small detail (figures, clutter, trim, vines) therefore drops first.
+//  * The copies follow the originals' `visible` and `material` (night toggles keep working). An original whose matrix,
+//    geometry, instance matrices or count change after apply() is animated: it is handed back and drawn as before.
+//  * Bands have hysteresis (`hyst`) and the update is throttled (`throttle` ms, `moveEps` m): a still camera costs, per
+//    managed object a frame, a matrix compare, two version reads and a walk up its parents for visibility.
+// It draws nothing from any PRNG and changes no build output. LOD.enabled=false (or the panel's button, the `l` key,
+// or ?lod=0 in the URL) takes the copies out of the scene and puts the originals back: the scene graph is then exactly
+// the one the build made, for verify asserts that count full-detail triangles.
+(function(){
+ 'use strict';
+ const LAYER=30,HIDE=1<<LAYER;
+ const DEF={cell:64,maxTris:40000,maxExtent:400,minChunkTris:10000,errPx:3,minPx:1,levels:[1,4,16,64],simplifyMinTris:64,
+ instFarMinTris:48,instFarMinTotal:20000,instFarDiv:6,throttle:200,moveEps:.5,hyst:1.12,buildMs:10,ui:true,key:'l',
+ skip:null,classify:null,classes:{},enabled:true,render:null,pad:1,auto:true,panelStyle:''};
+ const L={root:null,managed:0,_on:false,lastMeasure:null};
+ let T=null,S=null,CAM=null,R=null,O=null;
+ const recs=[],queue=[];let skipRoots=new Set();
+ let dirty=true,lastBand=-1e9,lastSync=-1e9,panel=null,txt=null,btn=null,live={calls:0,tris:0};
+ let _cam=null,_camL=null,_inv=null,_lastCam=null;
+
+ // ---------------------------------------------------------------- small helpers
+ const triCount=g=>g.index?(g.index.count/3|0):(g.attributes.position.count/3|0);
+ const noRay=function(){};
+ function effVisible(o){for(let p=o;p;p=p.parent){if(!p.visible)return false;if(p===S)return true;}return false;}
+ function pxPerMetre(){const h=(R&&R.domElement&&R.domElement.clientHeight)||innerHeight||640;
+ return h/2/Math.tan((CAM.fov||50)*Math.PI/360)*(CAM.zoom||1);}
+ function matEq(a,b){const x=a.elements,y=b.elements;for(let i=0;i<16;i++)if(x[i]!==y[i])return false;return true;}
+ function getC(a,i,c){return c===0?a.getX(i):c===1?a.getY(i):c===2?a.getZ(i):a.getW(i);}
+ function copyProps(c,o){c.name=o.name;c.renderOrder=o.renderOrder;c.castShadow=o.castShadow;c.receiveShadow=o.receiveShadow;
+ c.frustumCulled=o.frustumCulled;if(o.customDepthMaterial)c.customDepthMaterial=o.customDepthMaterial;
+ if(o.customDistanceMaterial)c.customDistanceMaterial=o.customDistanceMaterial;
+ c.onBeforeRender=o.onBeforeRender;c.onAfterRender=o.onAfterRender;
+ c.userData=Object.assign({},o.userData,{lodCopy:true,probeSkip:true});c.raycast=noRay;
+ c.matrixAutoUpdate=false;c.matrix.copy(o.matrixWorld);c.matrixWorldNeedsUpdate=true;}
+ // a geometry that shares every vertex buffer of g, with its own index (never dispose it: that frees the shared buffers)
+ function shareGeo(g,index){const s=new T.BufferGeometry();for(const k in g.attributes)s.setAttribute(k,g.attributes[k]);
+ if(index)s.setIndex(index);else if(g.index)s.setIndex(g.index);s.groups=g.groups.slice();return s;}
+ // bounding sphere of the vertices a triangle list uses
+ function sphereOf(pos,idx,tris){let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+ const v=t=>idx?idx.getX(t):t;
+ for(let i=0;i<tris.length;i++){const t=tris[i]*3;for(let k=0;k<3;k++){const j=v(t+k),x=pos.getX(j),y=pos.getY(j),z=pos.getZ(j);
+  if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(z<z0)z0=z;if(z>z1)z1=z;}}
+ const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+ for(let i=0;i<tris.length;i++){const t=tris[i]*3;for(let k=0;k<3;k++){const j=v(t+k);
+  const d=Math.hypot(pos.getX(j)-c.x,pos.getY(j)-c.y,pos.getZ(j)-c.z);if(d>r)r=d;}}
+ return new T.Sphere(c,r);}
+
+ // ---------------------------------------------------------------- an int-keyed hash (4 int32 per key)
+ function IHash(n){let cap=16;while(cap<n*2)cap<<=1;this.mask=cap-1;this.k=new Int32Array(cap*4);this.v=new Int32Array(cap).fill(-1);this.n=0;}
+ IHash.prototype.get=function(a,b,c,d){const k=this.k,v=this.v,m=this.mask;
+ let h=(Math.imul(a,73856093)^Math.imul(b,19349663)^Math.imul(c,83492791)^Math.imul(d,2654435761|0))&m;
+ for(;;){const id=v[h];if(id<0){v[h]=this.n;k[h*4]=a;k[h*4+1]=b;k[h*4+2]=c;k[h*4+3]=d;return -1-(this.n++);}
+  if(k[h*4]===a&&k[h*4+1]===b&&k[h*4+2]===c&&k[h*4+3]===d)return id;h=(h+1)&m;}};
+
+ // ---------------------------------------------------------------- vertex clustering
+ // Snap every vertex to a grid of s (in the geometry's own units), keeping vertices whose normals face different ways
+ // apart (6 buckets), average position / normal / colour per cell, take other attributes from the first vertex, drop
+ // triangles that collapse, and drop duplicates. `tris` (optional) limits it to those triangle ids. Returns
+ // {geo (attributes only), index:Uint32Array, from:Int32Array (source triangle of each output triangle)}.
+ function cluster(g,s,tris,pin){const P=g.attributes.position,N=g.attributes.normal,I=g.index,nv=P.count;
+ const nt=tris?tris.length:triCount(g),H=new IHash(Math.min(nv,nt*3)+8),cid=new Int32Array(nv).fill(-1);
+ const vi=t=>I?I.getX(t):t;
+ const cnt=[],first=[];let sp=new Float64Array(1024*3),sn=new Float64Array(1024*3);
+ const C=g.attributes.color,sc=C?[]:null;
+ const idOf=j=>{let c=cid[j];if(c>=0)return c;const x=P.getX(j),y=P.getY(j),z=P.getZ(j);let nb=0;
+  if(N){const a=N.getX(j),b=N.getY(j),e=N.getZ(j),A=Math.abs(a),B=Math.abs(b),E=Math.abs(e);nb=A>=B&&A>=E?(a<0?1:0):B>=E?(b<0?3:2):(e<0?5:4);}
+  const r=(pin&&pin[j])?H.get(j,-7,-7,-7):H.get(Math.floor(x/s),Math.floor(y/s),Math.floor(z/s),nb);
+  if(r<0){c=-1-r;if(c*3+3>sp.length){const a=new Float64Array(sp.length*2);a.set(sp);sp=a;const b2=new Float64Array(sn.length*2);b2.set(sn);sn=b2;}
+   cnt[c]=0;first[c]=j;if(sc)for(let k=0;k<C.itemSize;k++)sc[c*C.itemSize+k]=0;}else c=r;
+  cnt[c]++;sp[c*3]+=x;sp[c*3+1]+=y;sp[c*3+2]+=z;
+  if(N){sn[c*3]+=N.getX(j);sn[c*3+1]+=N.getY(j);sn[c*3+2]+=N.getZ(j);}
+  if(sc)for(let k=0;k<C.itemSize;k++)sc[c*C.itemSize+k]+=getC(C,j,k);
+  cid[j]=c;return c;};
+ const D=new IHash(nt+8),out=[],from=[];
+ for(let q=0;q<nt;q++){const t=tris?tris[q]:q;const a=idOf(vi(t*3)),b=idOf(vi(t*3+1)),c=idOf(vi(t*3+2));
+  if(a===b||b===c||a===c)continue;
+  let x=a,y=b,z=c,u;if(x>y){u=x;x=y;y=u;}if(y>z){u=y;y=z;z=u;}if(x>y){u=x;x=y;y=u;}
+  if(D.get(x,y,z,0)>=0)continue;out.push(a,b,c);from.push(t);}
+ const nc=cnt.length,geo=new T.BufferGeometry();
+ for(const name in g.attributes){const A=g.attributes[name],it=A.itemSize,arr=new (A.array.constructor)(nc*it);
+  if(name==='position'){for(let c=0;c<nc;c++)for(let k=0;k<3;k++)arr[c*3+k]=sp[c*3+k]/cnt[c];}
+  else if(name==='normal'){for(let c=0;c<nc;c++){const x=sn[c*3],y=sn[c*3+1],z=sn[c*3+2],l=Math.hypot(x,y,z)||1;arr[c*3]=x/l;arr[c*3+1]=y/l;arr[c*3+2]=z/l;}}
+  else if(name==='color'){for(let c=0;c<nc;c++)for(let k=0;k<it;k++)arr[c*it+k]=sc[c*it+k]/cnt[c];}
+  else{for(let c=0;c<nc;c++)for(let k=0;k<it;k++)arr[c*it+k]=getC(A,first[c],k);}
+  const B=new T.BufferAttribute(arr,it,A.normalized);geo.setAttribute(name,B);}
+ return {geo,index:out,from,nc};}
+ const mkIndex=(arr,nv)=>new T.BufferAttribute(nv>65535?new Uint32Array(arr):new Uint16Array(arr),1);
+
+ // Vertices that must not move: those on an open edge of the mesh (welded by position, so flat-shaded boxes count as
+ // closed) and those on an edge between two chunks. Pinning them keeps a proxy's rim exactly where its neighbour's is
+ // (another chunk at another level, or another mesh along a shared seam, like the port's terrain strips): no cracks.
+ function pins(g,leafOf){const P=g.attributes.position,I=g.index,nv=P.count,nt=triCount(g),q=1e4;
+  const W=new IHash(nv+8),pid=new Int32Array(nv);
+  for(let j=0;j<nv;j++){const r=W.get(Math.round(P.getX(j)*q),Math.round(P.getY(j)*q),Math.round(P.getZ(j)*q),0);pid[j]=r<0?-1-r:r;}
+  const E=new IHash(nt*3+8),cnt=[],ch=[],multi=[];const vi=t=>I?I.getX(t):t;
+  for(let t=0;t<nt;t++){const c=leafOf?leafOf[t]:0;for(let k=0;k<3;k++){let a=pid[vi(t*3+k)],b=pid[vi(t*3+(k+1)%3)];if(a===b)continue;if(a>b){const u=a;a=b;b=u;}
+   const r=E.get(a,b,0,0);if(r<0){const e=-1-r;cnt[e]=1;ch[e]=c;multi[e]=0;}else{cnt[r]++;if(ch[r]!==c)multi[r]=1;}}}
+  const pp=new Uint8Array(W.n);const K=E.k;
+  for(let h=0;h<E.v.length;h++){const e=E.v[h];if(e<0)continue;if(cnt[e]===1||multi[e]){pp[K[h*4]]=1;pp[K[h*4+1]]=1;}}
+  const out=new Uint8Array(nv);for(let j=0;j<nv;j++)out[j]=pp[pid[j]];return out;}
+
+ // ---------------------------------------------------------------- k-d split of a mesh into chunks
+ function kdSplit(cen,ids,maxT,maxE,minT,out){const st=[ids];
+ while(st.length){const a=st.pop();let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+  for(let i=0;i<a.length;i++){const t=a[i]*3,x=cen[t],y=cen[t+1],z=cen[t+2];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(z<z0)z0=z;if(z>z1)z1=z;}
+  const ex=x1-x0,ey=y1-y0,ez=z1-z0,e=Math.max(ex,ey,ez);
+  // split while over maxTris, or over maxExtent and still worth a draw call (minChunkTris): sparse far ground stays whole
+  if((a.length<=maxT&&(e<=maxE||a.length<=minT))||a.length<2){out.push(a);continue;}
+  const ax=e===ex?0:e===ez?2:1,keys=new Float32Array(a.length);for(let i=0;i<a.length;i++)keys[i]=cen[a[i]*3+ax];
+  const srt=keys.slice().sort(),med=srt[srt.length>>1];let nl=0;for(let i=0;i<a.length;i++)if(keys[i]<med)nl++;
+  if(nl===0||nl===a.length){const h=a.length>>1;st.push(a.subarray(h),a.subarray(0,h));continue;}
+  const l=new Int32Array(nl),r=new Int32Array(a.length-nl);let p=0,q=0;for(let i=0;i<a.length;i++){if(keys[i]<med)l[p++]=a[i];else r[q++]=a[i];}
+  st.push(r,l);}
+ return out;}
+
+ // ---------------------------------------------------------------- what is managed
+ // the shared biome core (userData.biome) thins its instanced flora with distance on its own curve, so by default its
+ // sets keep every instance (class 'biome', minPx 0) and are only culled and simplified
+ const BIOME={minPx:0};
+ function clsOf(o){let name=O.classify?O.classify(o):null;if(!name&&o.userData.biome&&o.isInstancedMesh)name='biome';
+ const c=(name&&(O.classes[name]||(name==='biome'?BIOME:null)))||{};
+ return {name:name||null,minPx:c.minPx!=null?c.minPx:O.minPx,maxDist:c.maxDist!=null?c.maxDist:Infinity,simplify:c.simplify!==false};}
+ function wanted(o){if(!o.isMesh||o.isSkinnedMesh||o.userData.lodCopy||o.userData.lodSkip)return false;
+ const g=o.geometry,m=o.material;if(!g||!g.isBufferGeometry||!g.attributes.position||Array.isArray(m)||!m)return false;
+ if(g.morphAttributes&&g.morphAttributes.position&&g.morphAttributes.position.length)return false;
+ if(g.drawRange.start!==0||g.drawRange.count!==Infinity)return false;
+ if(m.transparent||m.depthWrite===false||m.side===T.BackSide)return false;
+ if(!(o.layers.mask&1))return false;if(o.isInstancedMesh&&!o.count)return false;
+ // things the build animates: buffers it declared dynamic, interleaved instance data, and the Krator flags for
+ // life layers, flyers and pick-less helpers (door leaves, overlays)
+ const u=o.userData;if(u.life||u.lifeLabel||u.flyers||u.noPick||u.lodSkip)return false;
+ const DYN=T.DynamicDrawUsage;if(g.attributes.position.usage===DYN)return false;
+ if(o.isInstancedMesh){if(o.instanceMatrix.usage===DYN||o.instanceMatrix.isInterleavedBufferAttribute)return false;
+  for(const k in g.attributes){const A=g.attributes[k];if((A.isInstancedBufferAttribute||A.isInstancedInterleavedBuffer||(A.data&&A.data.isInstancedInterleavedBuffer))&&(A.usage===DYN||A.isInterleavedBufferAttribute))return false;}}
+ if(O.skip&&O.skip(o))return false;
+ if(skipRoots.size)for(let p=o;p;p=p.parent)if(skipRoots.has(p))return false;
+ return true;}
+ function addMesh(o){const g=o.geometry,P=g.attributes.position,I=g.index,nt=triCount(g);if(!nt)return null;const cl=clsOf(o);
+ const rec={kind:'mesh',o,g,cl,nt,ver:P.version,iver:I?I.version:0,mw:o.matrixWorld.clone(),mask0:o.layers.mask,chunks:[],levels:[],copies:[]};
+ if(!g.boundingSphere)g.computeBoundingSphere();
+ let leaves;
+ if(nt<=O.maxTris&&g.boundingSphere.radius*2<=O.maxExtent*1.2)leaves=null;
+ else{const cen=new Float32Array(nt*3),v=t=>I?I.getX(t):t;
+  for(let t=0;t<nt;t++)for(let k=0;k<3;k++){const j=v(t*3+k);cen[t*3]+=P.getX(j)/3;cen[t*3+1]+=P.getY(j)/3;cen[t*3+2]+=P.getZ(j)/3;}
+  const ids=new Int32Array(nt);for(let t=0;t<nt;t++)ids[t]=t;leaves=kdSplit(cen,ids,O.maxTris,O.maxExtent,O.minChunkTris,[]);if(leaves.length<2)leaves=null;}
+ if(!leaves){rec.chunks.push({tris:null,full:g,sph:g.boundingSphere.clone(),lv:0,on:true,nt});rec.leafOf=null;}
+ else{rec.leafOf=new Int32Array(nt);leaves.forEach((tr,ci)=>{const ix=[];for(let i=0;i<tr.length;i++){rec.leafOf[tr[i]]=ci;const t=tr[i]*3;
+   ix.push(I?I.getX(t):t,I?I.getX(t+1):t+1,I?I.getX(t+2):t+2);}
+  const sg=shareGeo(g,mkIndex(ix,P.count));const sph=sphereOf(P,I,tr);sph.radius+=O.pad;sg.boundingSphere=sph.clone();
+  rec.chunks.push({tris:tr,full:sg,sph,lv:0,on:true,nt:tr.length});});}
+ // chunks are culled even where the original was not (the kits and biomes turn culling off on whole-world meshes,
+ // whose one sphere would never leave the view); `pad` covers a little vertex-shader sway. userData.lodNoCull opts out.
+ // A split mesh draws COMBINED: one copy per level in use, whose index is the concatenation of the chunks at that
+ // level, so chunking costs at most one draw call per level in use, not one per chunk. An unsplit mesh has one copy.
+ if(leaves){rec.comb=true;rec.lvM=[];for(const ch of rec.chunks){ch.key=-2;}}
+ else for(const ch of rec.chunks){const c=new T.Mesh(ch.full,o.material);copyProps(c,o);
+  ch.m=c;rec.copies.push(c);c._lodOn=true;}
+ rec.simp=cl.simplify&&nt>=O.simplifyMinTris;return rec;}
+ function addInst(o){const g=o.geometry,n=o.count,cl=clsOf(o);
+ // the BASE shape's own sphere, from its vertices: a build may have set geometry.boundingSphere round the whole set
+ // (core/atmos cull does, keeping the base one in userData.baseSphere), which would make every instance "huge"
+ const bs=g.userData.baseSphere||new T.Box3().setFromBufferAttribute(g.attributes.position).getBoundingSphere(new T.Sphere());
+ const r0=bs.radius,c0=bs.center,M=o.instanceMatrix.array;
+ const px=new Float32Array(n),py=new Float32Array(n),pz=new Float32Array(n),ri=new Float32Array(n),sm=new Float32Array(n);
+ const cells=new Map(),CS=O.cell;
+ for(let i=0;i<n;i++){const b=i*16;const sx=Math.hypot(M[b],M[b+1],M[b+2]),sy=Math.hypot(M[b+4],M[b+5],M[b+6]),sz=Math.hypot(M[b+8],M[b+9],M[b+10]);
+  const s=Math.max(sx,sy,sz);sm[i]=s;ri[i]=r0*s;
+  px[i]=M[b]*c0.x+M[b+4]*c0.y+M[b+8]*c0.z+M[b+12];py[i]=M[b+1]*c0.x+M[b+5]*c0.y+M[b+9]*c0.z+M[b+13];pz[i]=M[b+2]*c0.x+M[b+6]*c0.y+M[b+10]*c0.z+M[b+14];
+  const key=Math.floor(px[i]/CS)+','+Math.floor(pz[i]/CS);let L0=cells.get(key);if(!L0)cells.set(key,L0=[]);L0.push(i);}
+ const order=new Int32Array(n),C=[];let p=0,gx=0,gy=0,gz=0;
+ for(const L0 of cells.values()){L0.sort((a,b)=>ri[b]-ri[a]||a-b);let x=0,y=0,z=0,smax=0;
+  for(const i of L0){x+=px[i];y+=py[i];z+=pz[i];if(sm[i]>smax)smax=sm[i];}
+  x/=L0.length;y/=L0.length;z/=L0.length;let r=0;const rs=new Float32Array(L0.length);
+  L0.forEach((i,k)=>{order[p+k]=i;rs[k]=ri[i];const d=Math.hypot(px[i]-x,py[i]-y,pz[i]-z)+ri[i];if(d>r)r=d;});
+  C.push({start:p,len:L0.length,c:new T.Vector3(x,y,z),r,rs,smax,k:L0.length,lv:0});p+=L0.length;}
+ for(let i=0;i<n;i++){gx+=px[i];gy+=py[i];gz+=pz[i];}gx/=n;gy/=n;gz/=n;let gr=0;
+ for(let i=0;i<n;i++){const d=Math.hypot(px[i]-gx,py[i]-gy,pz[i]-gz)+ri[i];if(d>gr)gr=d;}
+ const sph=new T.Sphere(new T.Vector3(gx,gy,gz),gr*1.02+O.pad);
+ // instance data permuted into cell order, so each cell's kept prefix is one contiguous copy
+ const srcs=[{get:()=>o.instanceMatrix,it:16,src:null,name:'#m'}];
+ if(o.instanceColor)srcs.push({get:()=>o.instanceColor,it:o.instanceColor.itemSize,src:null,name:'#c'});
+ for(const k in g.attributes){const A=g.attributes[k];if(A.isInstancedBufferAttribute)srcs.push({get:()=>o.geometry.attributes[k],it:A.itemSize,src:null,name:k});}
+ const rec={kind:'inst',o,g,cl,n,cells:C,order,srcs,sph,r0,mver:o.instanceMatrix.version,cver:o.instanceColor?o.instanceColor.version:0,
+  mw:o.matrixWorld.clone(),mask0:o.layers.mask,copies:[],lvls:[],farS:0,far:null};
+ permute(rec);
+ rec.lvls.push(mkInstCopy(rec,g));rec.copies.push(rec.lvls[0].im);
+ // a far version costs a draw call: only for sets with enough triangles in all to be worth one
+ if(cl.simplify&&triCount(g)>=O.instFarMinTris&&n*triCount(g)>=O.instFarMinTotal)rec.farS=r0/O.instFarDiv;
+ return rec;}
+ function permute(rec){for(const s of rec.srcs){const A=s.get(),it=s.it,a=A.array;if(!s.src||s.src.length!==rec.n*it)s.src=new Float32Array(rec.n*it);
+  for(let q=0;q<rec.n;q++){const i=rec.order[q];for(let k=0;k<it;k++)s.src[q*it+k]=a[i*it+k];}}}
+ function mkInstCopy(rec,base){const o=rec.o,g=new T.BufferGeometry();
+ for(const k in base.attributes){const A=base.attributes[k];if(!A.isInstancedBufferAttribute)g.setAttribute(k,A);}
+ if(base.index)g.setIndex(base.index);g.groups=base.groups.slice();
+ const im=new T.InstancedMesh(g,o.material,rec.n),bufs={};
+ for(const s of rec.srcs){const B=new T.InstancedBufferAttribute(new Float32Array(rec.n*s.it),s.it);B.setUsage(T.DynamicDrawUsage);bufs[s.name]=B;
+  if(s.name==='#m')im.instanceMatrix=B;else if(s.name==='#c')im.instanceColor=B;else g.setAttribute(s.name,B);}
+ copyProps(im,o);im.frustumCulled=true;g.boundingSphere=rec.sph.clone();im.count=0;im._lodOn=false;im.visible=false;
+ return {im,bufs};}
+
+ // ---------------------------------------------------------------- level builds (lazy, time-budgeted)
+ function want(rec,lv){if(rec.levels[lv]!==undefined)return true;if(!rec.queued){rec.queued=new Set();}
+ if(!rec.queued.has(lv)){rec.queued.add(lv);queue.push([rec,lv]);}return false;}
+ function buildLevel(rec,lv){const s=O.levels[lv-1],g=rec.g;
+ if(!rec.pin)rec.pin=pins(g,rec.leafOf);
+ const res=cluster(g,s,null,rec.pin),prev=lv>1?rec.levels[lv-1]:null,prevN=prev?prev.nt:rec.nt;
+ // no real saving: reuse the level below (`same` names the level whose copy draws it)
+ if(res.index.length/3>prevN*.85){rec.levels[lv]=prev?{geos:prev.geos,nt:prev.nt,src:prev.src,same:prev.same!==undefined?prev.same:lv-1}:{geos:rec.chunks.map(ch=>ch.full),nt:rec.nt,src:rec.g,same:0};return;}
+ const per=rec.chunks.map(()=>[]);
+ for(let q=0;q<res.from.length;q++){const ci=rec.leafOf?rec.leafOf[res.from[q]]:0;per[ci].push(res.index[q*3],res.index[q*3+1],res.index[q*3+2]);}
+ const geos=per.map((ix,ci)=>{if(!ix.length)return null;const G=new T.BufferGeometry();for(const k in res.geo.attributes)G.setAttribute(k,res.geo.attributes[k]);
+  G.setIndex(mkIndex(ix,res.nc));G.boundingSphere=rec.chunks[ci].sph.clone();return G;});
+ rec.levels[lv]={geos,nt:res.index.length/3,src:res.geo};}
+ function pump(ms){const t0=performance.now();let n=0;
+ while(queue.length&&(n===0||performance.now()-t0<ms)){const [rec,lv]=queue.shift();if(!rec.dead){
+   for(let k=1;k<=lv;k++)if(rec.levels[k]===undefined)buildLevel(rec,k);dirty=true;}n++;}}
+ function instFar(rec){if(!rec.far){const res=cluster(rec.g,rec.farS,null),G=res.geo;G.setIndex(mkIndex(res.index,res.nc));
+  rec.far=mkInstCopy(rec,G);rec.lvls.push(rec.far);rec.copies.push(rec.far.im);L.root.add(rec.far.im);rec.farTris=res.index.length/3;}
+ return rec.far;}
+
+ // ---------------------------------------------------------------- the bands
+ // the copy that draws level l of a combined mesh, made on first use; its index buffer grows when it must
+ function lvMesh(rec,l){let L0=rec.lvM[l];if(L0)return L0;const o=rec.o,src=l?rec.levels[l].src:rec.g,g=new T.BufferGeometry();
+  for(const k in src.attributes)g.setAttribute(k,src.attributes[k]);
+  const m=new T.Mesh(g,o.material);copyProps(m,o);m.frustumCulled=!o.userData.lodNoCull;m._lodOn=false;m.visible=false;
+  L0=rec.lvM[l]={m,g,idx:null};rec.copies.push(m);if(L.root)L.root.add(m);return L0;}
+ function packMesh(rec){
+  for(let l=0;l<=O.levels.length;l++){let cnt=0;const parts=[];let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+   rec.chunks.forEach((ch,ci)=>{if(ch.key!==l)return;const gg=l?rec.levels[l].geos[ci]:ch.full;if(!gg)return;const a=gg.index.array;parts.push(a);cnt+=a.length;
+    const c=ch.sph.center,r=ch.sph.radius;x0=Math.min(x0,c.x-r);y0=Math.min(y0,c.y-r);z0=Math.min(z0,c.z-r);x1=Math.max(x1,c.x+r);y1=Math.max(y1,c.y+r);z1=Math.max(z1,c.z+r);});
+   if(!cnt){if(rec.lvM[l])rec.lvM[l].m._lodOn=false;continue;}
+   const L0=lvMesh(rec,l);if(!L0.idx||L0.idx.array.length<cnt){L0.idx=new T.BufferAttribute(new Uint32Array(Math.ceil(cnt*1.25)),1);L0.idx.setUsage(T.DynamicDrawUsage);L0.g.setIndex(L0.idx);}
+   let off=0;for(const a of parts){L0.idx.array.set(a,off);off+=a.length;}
+   L0.idx.updateRange.offset=0;L0.idx.updateRange.count=cnt;L0.idx.needsUpdate=true;L0.g.setDrawRange(0,cnt);
+   const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+   rec.chunks.forEach(ch=>{if(ch.key===l)r=Math.max(r,c.distanceTo(ch.sph.center)+ch.sph.radius);});
+   L0.g.boundingSphere=new T.Sphere(c,r);L0.m._lodOn=true;}}
+ function bandMesh(rec,P,cam,h){const cl=rec.cl;let full=0,drawn=0;
+ if(rec.comb){let changed=!rec.packed;
+  for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+   const px=d>0?ch.sph.radius*P/d:1e9;
+   ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+   let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+   let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+   if(use&&rec.levels[use].same!==undefined)use=rec.levels[use].same;
+   ch.lv=lv;const key=ch.on?use:-1;if(key!==ch.key){ch.key=key;changed=true;}
+   full+=ch.nt;if(key>=0){const gg=key?rec.levels[key].geos[ci]:ch.full;if(gg)drawn+=gg.index.count/3;}}
+  if(changed){rec.packed=true;packMesh(rec);}
+  rec.full=full;rec.drawn=drawn;return;}
+ for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+  const px=d>0?ch.sph.radius*P/d:1e9;
+  ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+  let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+  // the deepest level that is built and not past the wanted one
+  let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+  ch.lv=lv;const geo=use?rec.levels[use].geos[ci]:ch.full;
+  if(ch.m.geometry!==geo&&geo)ch.m.geometry=geo;ch.m._lodOn=ch.on&&!!geo;
+  full+=ch.nt;if(ch.m._lodOn)drawn+=triCount(ch.m.geometry);}
+ rec.full=full;rec.drawn=drawn;}
+ function bandInst(rec,P,cam,h){const cl=rec.cl,cells=rec.cells;let changed=false;const far=rec.farS>0;
+ for(const c of cells){const d=Math.max(0,cam.distanceTo(c.c)-c.r);let k;
+  if(d>cl.maxDist*(c.k?h:1/h))k=0;
+  else if(d<=0)k=c.len;
+  else{const rmin=d*cl.minPx/P,cnt=th=>{let lo=0,hi=c.len;while(lo<hi){const m=(lo+hi)>>1;if(c.rs[m]>=th)lo=m+1;else hi=m;}return lo;};
+   const kA=cnt(rmin/h),kB=cnt(rmin*h);k=Math.min(kA,Math.max(kB,c.k));}
+  let lv=0;if(far){const thr=rec.farS*c.smax*P/O.errPx;lv=d>thr*(c.lv?1/h:h)?1:0;}
+  if(k!==c.k||lv!==c.lv){c.k=k;c.lv=lv;changed=true;}}
+ if(changed||rec.recolor||!rec.packed){rec.packed=true;rec.recolor=false;
+  if(far&&cells.some(c=>c.lv&&c.k))instFar(rec);
+  for(let l=0;l<rec.lvls.length;l++){const Lc=rec.lvls[l];let off=0;
+   for(const c of cells){if(c.lv!==l||!c.k)continue;for(const s of rec.srcs)Lc.bufs[s.name].array.set(s.src.subarray(c.start*s.it,(c.start+c.k)*s.it),off*s.it);off+=c.k;}
+   for(const s of rec.srcs){const B=Lc.bufs[s.name];B.updateRange.offset=0;B.updateRange.count=off*s.it;B.needsUpdate=true;}
+   Lc.im.count=off;Lc.im._lodOn=off>0;}}
+ let full=0,drawn=0;const t0=triCount(rec.g);full=rec.n*t0;
+ for(let l=0;l<rec.lvls.length;l++)drawn+=rec.lvls[l].im.count*(l?rec.farTris:t0);rec.full=full;rec.drawn=drawn;}
+ function band(){const P=pxPerMetre(),h=O.hyst;CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);
+ for(const rec of recs){if(rec.dead)continue;_camL.copy(_cam);if(!rec.ident){_inv.copy(rec.mw).invert();_camL.applyMatrix4(_inv);}
+  if(rec.kind==='mesh')bandMesh(rec,P,_camL,h);else bandInst(rec,P,_camL,h);}
+ stale();sync();}
+ // hand back anything that moved or was rebuilt (every frame: a matrix compare and two version reads per object)
+ function stale(){for(const rec of recs){if(rec.dead)continue;const o=rec.o;
+  if(!o.parent||!matEq(o.matrixWorld,rec.mw)){release(rec);continue;}
+  if(rec.kind==='mesh'){const P=o.geometry.attributes.position;if(o.geometry!==rec.g||P.version!==rec.ver||(o.geometry.index&&o.geometry.index.version!==rec.iver))release(rec);}
+  else{if(o.instanceMatrix.version!==rec.mver||o.count!==rec.n||o.geometry!==rec.g){release(rec);continue;}
+   if(o.instanceColor&&o.instanceColor.version!==rec.cver){rec.cver=o.instanceColor.version;permute(rec);rec.recolor=true;dirty=true;}}}}
+ // follow the originals: visibility (with their parents') and material
+ function sync(){for(const rec of recs){if(rec.dead)continue;const o=rec.o,vis=effVisible(o),mat=o.material;
+  for(const c of rec.copies){if(c.material!==mat)c.material=mat;c.visible=vis&&c._lodOn;}}}
+ function release(rec){rec.dead=true;rec.o.layers.mask=rec.mask0;for(const c of rec.copies)if(c.parent)c.parent.remove(c);L.managed--;}
+
+ // ---------------------------------------------------------------- API
+ L.init=function(opt){O=Object.assign({},DEF,opt||{});T=O.THREE||window.THREE;S=O.scene;CAM=O.camera;R=O.renderer;
+ _cam=new T.Vector3();_camL=new T.Vector3();_inv=new T.Matrix4();_lastCam=new T.Vector3(1e9,1e9,1e9);
+ if(!new T.Raycaster().layers)throw new Error('LOD: this three.js has no Raycaster.layers');
+ if(!T.Raycaster.prototype._lodPatched){const RP=T.Raycaster.prototype;
+  for(const k of ['intersectObject','intersectObjects']){const f=RP[k];
+   RP[k]=function(){const m=this.layers.mask;this.layers.mask=m|HIDE;try{return f.apply(this,arguments);}finally{this.layers.mask=m;}};}
+  RP._lodPatched=true;}
+ L.root=new T.Group();L.root.name='LOD';L.root.userData.probeSkip=true;L.root.userData.lodCopy=true;L.root.matrixAutoUpdate=false;
+ const q=/[?&]lod=([01])/.exec(location.search||'');if(q)O.enabled=q[1]==='1';
+ // drive update() from the scene's own render: no edit to the build's frame loop, and it runs after three.js has
+ // updated every matrixWorld for this frame, so a moved original is caught before it is drawn stale
+ if(O.auto!==false){const prev=S.onBeforeRender;S.onBeforeRender=function(r,sc,cam){if(prev)prev.apply(this,arguments);if(cam===CAM)L.update();};}
+ return L;};
+ L.apply=function(root){const t0=performance.now();root=root||S;S.updateMatrixWorld(true);const list=[];
+ skipRoots=new Set((typeof O.skipUnder==='function'?O.skipUnder():O.skipUnder)||[]);
+ root.traverse(o=>{if(wanted(o))list.push(o);});
+ for(const o of list){let rec=null;try{rec=o.isInstancedMesh?addInst(o):addMesh(o);}catch(e){console.warn('LOD: skipped '+(o.name||o.type)+': '+e.message);}
+  if(!rec)continue;rec.ident=matEq(o.matrixWorld,new T.Matrix4());recs.push(rec);for(const c of rec.copies)L.root.add(c);L.managed++;}
+ L.applyMs=Math.round(performance.now()-t0);L._on=false;setEnabled(O.enabled);if(O.ui)mkUI();dirty=true;return L.stats();};
+ function setEnabled(on){on=!!on;if(on===L._on)return;L._on=on;
+ for(const rec of recs)if(!rec.dead)rec.o.layers.mask=on?HIDE:rec.mask0;
+ if(on){S.add(L.root);dirty=true;}else if(L.root.parent)L.root.parent.remove(L.root);paint();}
+ Object.defineProperty(L,'enabled',{get:()=>L._on,set:setEnabled});
+ L.update=function(force){if(!L._on||!CAM)return;const now=performance.now();
+ if(queue.length)pump(O.buildMs);
+ CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);const moved=_cam.distanceTo(_lastCam)>O.moveEps;
+ stale();
+ if(force||((moved||dirty)&&now-lastBand>=O.throttle)){band();lastBand=now;_lastCam.copy(_cam);dirty=false;}
+ else sync();};
+ // build every pending proxy now and update (verify, screenshots)
+ L.flush=function(){band();while(queue.length)pump(1e9);band();lastBand=performance.now();paint();return L.stats();};
+ L._recs=recs;   // for diagnostics only
+ L.release=function(o){for(const rec of recs)if(rec.o===o&&!rec.dead)release(rec);};
+ L.stats=function(){let full=0,drawn=0,chunks=0,off=0,far=0,inst=0,kept=0,copies=0;
+ for(const rec of recs){if(rec.dead)continue;full+=rec.full||0;drawn+=rec.drawn||0;
+  if(rec.kind==='mesh'){chunks+=rec.chunks.length;for(const ch of rec.chunks){const on=rec.comb?ch.key>=0:ch.m._lodOn;if(!on)off++;else if(ch.lv)far++;}}
+  else{inst+=rec.n;for(const l of rec.lvls)kept+=l.im.count;}
+  for(const c of rec.copies)if(c.visible)copies++;}
+ return {enabled:L._on,managed:L.managed,applyMs:L.applyMs,chunks,chunksFar:far,chunksOff:off,instances:inst,instancesDrawn:kept,
+  managedTris:full,managedTrisDrawn:drawn,visibleCopies:copies,pending:queue.length,live:{calls:R.info.render.calls,tris:R.info.render.triangles},
+  measured:L.lastMeasure};};
+ // render the current view with LOD off and on; returns {off:{calls,tris,ms},on:{...}}
+ L.measure=function(frames){frames=frames||2;const was=L._on,draw=O.render||(()=>R.render(S,CAM)),gl=R.getContext();
+ const run=()=>{R.info.reset();draw();const c=R.info.render.calls,t=R.info.render.triangles;gl.finish();const t0=performance.now();
+  for(let i=0;i<frames;i++)draw();gl.finish();return {calls:c,tris:t,ms:+((performance.now()-t0)/frames).toFixed(1)};};
+ setEnabled(false);const off=run();setEnabled(true);L.flush();const on=run();setEnabled(was);
+ L.lastMeasure={off,on};paint();return L.lastMeasure;};
+
+ // ---------------------------------------------------------------- the panel (outside #ui, so view sweeps never click it)
+ function fmt(n){return n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(n|0);}
+ function mkUI(){if(panel||!document.body)return;panel=document.createElement('div');panel.id='lodPanel';
+ panel.style.cssText='position:fixed;right:8px;bottom:64px;z-index:30;font:11px/1.35 ui-monospace,Menlo,monospace;color:#eee;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:4px;max-width:46vw;'+(O.panelStyle||'');
+ btn=document.createElement('button');btn.style.cssText='font:11px system-ui;margin-right:6px';btn.onclick=()=>{setEnabled(!L._on);};
+ const mb=document.createElement('button');mb.textContent='measure';mb.style.cssText='font:11px system-ui';mb.onclick=()=>L.measure();
+ txt=document.createElement('pre');txt.style.cssText='margin:3px 0 0;white-space:pre-wrap;font:inherit';
+ panel.append(btn,mb,txt);document.body.appendChild(panel);
+ addEventListener('keydown',e=>{const tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT'||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key&&e.key.toLowerCase()===O.key)setEnabled(!L._on);});
+ setInterval(paint,600);paint();}
+ function paint(){if(!txt)return;btn.textContent='LOD '+(L._on?'on':'off')+' ('+O.key+')';
+ const s=L.stats(),m=L.lastMeasure;
+ let t='drawn  calls '+s.live.calls+'  tris '+fmt(s.live.tris);
+ if(m)t+='\nmeasured  off '+m.off.calls+' / '+fmt(m.off.tris)+'  on '+m.on.calls+' / '+fmt(m.on.tris);
+ if(L._on)t+='\nmanaged tris '+fmt(s.managedTrisDrawn)+' of '+fmt(s.managedTris)+'  inst '+fmt(s.instancesDrawn)+' of '+fmt(s.instances)+
+  '\nchunks '+s.chunks+' (far '+s.chunksFar+', off '+s.chunksOff+')'+(s.pending?'  building '+s.pending:'');
+ txt.textContent=t;}
+ window.LOD=L;
+})();
 // ---------------------------------------------------------------- error panel
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
@@ -38,10 +415,19 @@ function reseed(s){_seed=s>>>0;}
 function rng(){_seed|=0;_seed=_seed+0x6D2B79F5|0;let t=Math.imul(_seed^_seed>>>15,1|_seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 function rr(a,b){return a+(b-a)*rng();}
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 
@@ -74,8 +460,18 @@ function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
 // At 512 px that is 64 px per metre, which is what the panel and board sizes
 // below are picked against — change the tile size and they stop meaning anything.
-function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+//
+// Painting waits until something first reads the texture's `.image`, which three.js does when it uploads the
+// texture for a draw: a page pays only for the textures it shows. Painting every texture up front was ~11 s of
+// each Ancients page's load, before its first frame. Pass eager=true when fn draws from rng(): deferring it would
+// shift every later draw in the seeded stream (Screamers' flBarkTex). The pixels are the same either way.
+function canvasTex(w,h,fn,rep,eager){const c=document.createElement('canvas');c.width=w;c.height=h;
+ let paint=()=>{paint=null;fn(c.getContext('2d'),w,h);};if(eager)paint();
+ const t=new THREE.CanvasTexture(c);
+ if(paint)Object.defineProperty(t,'image',{configurable:true,enumerable:true,
+  get(){if(paint)paint();return c;},
+  set(v){paint=null;Object.defineProperty(t,'image',{value:v,writable:true,configurable:true,enumerable:true});}});
+ t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
 // A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
 // canvasTex does, correctly, for albedo) bends every value through a gamma curve
 // and the surface comes back wrong.
@@ -4179,7 +4575,7 @@ HL.def({key:'hl_rep_house_rich_c',name:'Patrician house',branch:'republican',fam
 // ================================================================= PORTED — the Voth Embassy (a Voth clan compound in Iziz)
 // Re-description of Voth's `voth_bldg_clan_compound` + the townhouse kinds (hlaalu / velothi / domed) against the
 // Iziz kit. Voth is a Venice/Vivec-like Dunmer city: grey-brown ashlar (cooler than Iziz's orange sandstone), pale
-// plaster upper walls, dark pantile roofs, gilded domes and finials, deep-red and dark-blue clan banners. The
+// plaster upper walls, dark pantile roofs, gilded domes and finials, deep-red and dark-purple clan banners. The
 // compound: a curtain wall with pilaster buttresses, four tapered corner bastions, a gatehouse; inside a Velothi
 // tower (tapering octagonal drums, banded, domed), a hlaalu house (stacked, shrinking, corniced flat blocks), a
 // domed hall, a paved court with a shrine obelisk, a well and an emperor-mushroom sapling in a stone planter.
@@ -4261,7 +4657,7 @@ function vpVDoor(x,y,z,ry,w,h,c,steps){const a=loc(x,z,0,.22,ry);vB('vStone',a[0
 
 // ---------------------------------------------------------------- the embassy
 function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
- const st=vC(vPick([0x8c8579,0x958e80,0x8b8069])),stD=st.clone().multiplyScalar(.78),cop=st.clone().multiplyScalar(.86),pl=vC(0xb8b0a2),tile=vC(vPick([0x5a4a48,0x4e4a52,0x6b5a58])),dome=vC(0xb08d3c),red=vC(0xa8241c),blue=vC(0x2f5a86),timber=vC(0x4a3a28),iron=vC(0x3a2f22);
+ const st=vC(vPick([0x8c8579,0x958e80,0x8b8069])),stD=st.clone().multiplyScalar(.78),cop=st.clone().multiplyScalar(.86),pl=vC(0xb8b0a2),tile=vC(vPick([0x5a4a48,0x4e4a52,0x6b5a58])),dome=vC(0xb08d3c),red=vC(0xa8241c),purple=vC(0x5a3586),timber=vC(0x4a3a28),iron=vC(0x3a2f22);
  const CW=34,CD=30,WT=1.0,WH=4.8,Y0=.35;
  vnReg('Voth Embassy',0,0,25.5,24,{role:'embassy'});
  // raised stone pad the whole compound stands on
@@ -4283,7 +4679,7 @@ function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
   vB('vStone',tx,Y0+BH-.05,tz,4.5,.4,4.5,0,cop);vB('vStone',tx,Y0+BH+.35,tz,3.9,.8,3.9,0,st);
   for(const s of[-1,1]){vB('vDarkB',tx+s*1.98,Y0+5.6,tz,.24,1.3,.5,0);vB('vDarkB',tx,Y0+5.6,tz+s*1.98,.5,1.3,.24,0);vB('vDarkB',tx+s*1.7,Y0+BH+.5,tz+p[1]*1.98,.5,.55,.2,0);}
   vpBannerPole(tx,Y0+BH+1.15,tz,p[0]>0?-Math.PI/2:Math.PI/2,3.6,red);}
- // ---- gatehouse: a block across the wall line, dark arched-lintel passage, iron-studded leaves half open, lamps, banners red + blue
+ // ---- gatehouse: a block across the wall line, dark arched-lintel passage, iron-studded leaves half open, lamps, banners red + purple
  {const gz=hz,GW=9.2,GD=4.2,GH=8.2;for(const s of[-1,1])vB('vStone',s*(GW/4+.9),Y0,gz,GW/2-1.8,4.6,GD,0,st);vB('vStone',0,Y0+4.6,gz,GW,GH-4.6,GD,0,st);   // piers + the storey over the passage: a REAL opening
   vB('vFlag',0,Y0-.02,gz,3.6,.06,GD+.4,0,cop);vB('vStone',0,Y0+GH-.1,gz,GW+.4,.4,GD+.4,0,cop);vB('vStone',0,Y0+GH+.3,gz,GW-1.4,.9,GD-1.2,0,st.clone().multiplyScalar(.95));
   for(let k=-2;k<=2;k++)vB('vStone',k*2.0,Y0+GH+1.2,gz+GD/2-.4,1.0,.7,.6,0,st);   // merlons on the front parapet
@@ -4292,9 +4688,9 @@ function buildVpEmbassy(G,o){reseed(7801+(o.v|0));
    kput('vWood',[s*1.2,Y0+2.2,gz+GD/2-1.1],vQ(0,0,0).multiply(qEuler(0,s*.95,0)),[1.85,4.3,.12],vC(0x2a221a));   // gate leaves, swung inward, seen from the street
    for(const yy of[1.0,2.3,3.6])kput('vIron',[s*1.2,Y0+yy,gz+GD/2-1.1],vQ(0,0,0).multiply(qEuler(0,s*.95,0)),[1.7,.1,.16],iron);
    vpVWin(s*3.0,Y0+5.6,gz+GD/2,0,.8,1.4,st,false);vpVWin(s*3.0,Y0+5.6,gz-GD/2,Math.PI,.8,1.4,st,vLit());
-   vpBannerPole(s*3.6,Y0+GH+1.2,gz-.6,0,4.2,s<0?red:blue);
+   vpBannerPole(s*3.6,Y0+GH+1.2,gz-.6,0,4.2,s<0?red:purple);
    if(vLit()){vnLamp(s*2.9,Y0+4.3,gz+GD/2,0);vnLamp(s*2.9,Y0+4.3,gz-GD/2,Math.PI);}}
-  vpHang(0,Y0+GH-.4,gz+GD/2+.12,0,2.2,3.0,blue);vpHang(0,Y0+GH-.4,gz-GD/2-.12,Math.PI,2.2,3.0,red);          // the embassy's colours on the gate itself
+  vpHang(0,Y0+GH-.4,gz+GD/2+.12,0,2.2,3.0,purple);vpHang(0,Y0+GH-.4,gz-GD/2-.12,Math.PI,2.2,3.0,red);          // the embassy's colours on the gate itself
   vB('vStone',0,0,gz+GD/2+.5,4.6,.175,1.1,0,stD);                                                               // a step down to the street
   for(const s of[-1,1])vnLampPost(s*3.6,0,gz+GD/2+.8,3.6);}
  // ---- Velothi tower, back-left: base, three tapering octagonal drums with bands, a gilt dome; porch, slits, bracketed balcony
@@ -4650,12 +5046,21 @@ const LAB_OBST=(function(){const K=4.105*CITY.LAB.scale;const o=[{x:CITY.LAB.x,z
  for(const q of[[178,-52,46],[126,152,34],[-86,176,40],[-192,26,29],[-138,-148,37],[54,-186,24],[205,88,31]])o.push({x:CITY.LAB.x+q[0]*K,z:CITY.LAB.z+q[1]*K,r:q[2]*K+6});return o;})();
 function segD(x,z,a,b){const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);}
 function channelD(x,z){let best=1e9,w=0;for(const C of CHANNELS){for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
+// terrainH only asks whether a point lies within a channel's width (at most CH_WMAX), so it measures only the
+// channels whose box, grown by CH_WMAX+1, holds the point. The answer is exactly channelD's whenever it can matter:
+// any other channel is farther than CH_WMAX+1, wider than every channel, so it can be neither within its own width
+// nor the nearest one that is. It was ~7 s of Dalab's load: every ground sample measured every channel segment.
+const CH_WMAX=Math.max(0,...CHANNELS.map(C=>C.w)),CH_BOX=CHANNELS.map(C=>{const m=CH_WMAX+1;
+ let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(const p of C.pts){x0=Math.min(x0,p[0]);z0=Math.min(z0,p[1]);x1=Math.max(x1,p[0]);z1=Math.max(z1,p[1]);}
+ return[x0-m,z0-m,x1+m,z1+m];});
+function channelNear(x,z){let best=1e9,w=0;for(let c=0;c<CHANNELS.length;c++){const B=CH_BOX[c];if(x<B[0]||z<B[1]||x>B[2]||z>B[3])continue;
+ const C=CHANNELS[c];for(let i=0;i<C.pts.length-1;i++){const d=segD(x,z,C.pts[i],C.pts[i+1]);if(d<best){best=d;w=C.w;}}}return{d:best,w};}
 function riverD(x,z){return Math.abs(x-riverX(z));}
 // the terrain: flat lowland with a metre of roll, the river cut 3.5 m deep and 70 m wide, the channels 1.4 m deep
 // the ground sits ~2.2 m above the datum: the biome reads anything under 0.3 m as water
 terrainH=function(x,z){let h=2.2+.9*fbm(x*.0016+3,z*.0016-7,17,3)+.35*fbm(x*.009,z*.009,5,2)-.5;
  const rd=riverD(x,z);if(rd<60){const t=1-smoothstep(28,60,rd);h-=3.5*t;}
- const c=channelD(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
+ const c=channelNear(x,z);if(c.d<c.w){const t=1-smoothstep(c.w*.45,c.w,c.d);h-=1.4*t;}
  return h;};
 const WATER_Y=1.25;
 function isWater(x,z){return terrainH(x,z)<WATER_Y+.1;}
@@ -4664,9 +5069,14 @@ function nearestSettle(x,z){let best=null,bd=1e9;for(const S of SETTLE){const d=
 // Everything the layout decides is painted here first (the Iziz city's scheme); placement then READS these canvases
 // and the ROADS list, and the terrain mesh wears the albedo. 2048 px over WORLD m ≈ 0.47 px/m.
 const CS=2048,PXS=CS/CITY.WORLD,px=v=>(v+CITY.WORLD/2)*PXS;
-const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+// DETERMINISM: placement thresholds these canvases' anti-aliased edges (canBuild: >235), so the pixels must not depend
+// on the machine. A GPU-accelerated 2D canvas rasterises paths differently from the CPU one (a real browser and a
+// headless run placed 882 / 875 from the same build). willReadFrequently keeps every one of them on Chromium's CPU
+// rasteriser, which is the same everywhere; it is also the right hint for canvases read back with getImageData.
+const CANVAS_CPU={willReadFrequently:true};
+const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d',CANVAS_CPU);
+const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d',CANVAS_CPU);
+const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d',CANVAS_CPU);
 const KL={none:0,plaza:1,park:2,highway:3,street:4,lane:5,avenue:6,farm:7,water:8,court:9,building:10,rock:11,field:12,mound:13};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';
 const ROADS=[];const PRECINCTS=[];
@@ -4732,10 +5142,19 @@ function pick(arr){return arr[Math.floor(rng()*arr.length)%arr.length];}
 
 // ---------------------------------------------------------------- noise
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 
 // ---------------------------------------------------------------- host binding
@@ -4909,6 +5328,29 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
  K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 
+// ---------------------------------------------------------------- indexed buckets
+// The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
+// grid points up to six times: bark alone was 550 of SW Lowlands' 685 MB of geometry. Bake keeps one copy of each
+// distinct vertex (all eleven floats equal after the float32 rounding the GPU applies anyway) and draws by index:
+// the same triangles in the same order, so the same pixels, in about a third of the memory.
+function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
+ for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
+  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
+ let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
+ for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<6;k++)h=Math.imul(h^w[o+k],0x01000193);   // position and normal: enough to spread them; a match still compares all 11
+  h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
+  while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
+  if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
+  idx[i]=j;}
+ const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3);
+ for(let j=0;j<m;j++){const o=j*W;pos[j*3]=f[o];pos[j*3+1]=f[o+1];pos[j*3+2]=f[o+2];nor[j*3]=f[o+3];nor[j*3+1]=f[o+4];nor[j*3+2]=f[o+5];
+  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];}
+ const g=new T.BufferGeometry();
+ g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));
+ g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
+ g.setIndex(new T.BufferAttribute(m>65535?idx:Uint16Array.from(idx),1));return g;}
+BIO.indexedGeo=indexedGeo;
+
 // ---------------------------------------------------------------- bake
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
@@ -4925,9 +5367,7 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
   scene.add(im);BIO.baked.push(im);calls++;inst+=it.count;
   BIO.items[name]={m:[],c:[],n:[],c2:[],count:0};}
  for(const fam in BIO.buckets){const K=BIO.buckets[fam];if(!K.pos.length)continue;
-  const g=new T.BufferGeometry();
-  g.setAttribute('position',new T.Float32BufferAttribute(K.pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(K.nor,3));
-  g.setAttribute('uv',new T.Float32BufferAttribute(K.uv,2));g.setAttribute('color',new T.Float32BufferAttribute(K.col,3));
+  const g=indexedGeo(T,K.pos,K.nor,K.uv,K.col);
   g.computeBoundingSphere();
   const m=new T.Mesh(g,K.mat);m.frustumCulled=false;m.userData.biome=true;m.userData.inspectLabel=K.label;m.name='biome:'+fam;
   scene.add(m);BIO.baked.push(m);calls++;
@@ -6940,7 +7380,7 @@ for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const
 // An annulus from the terrain's edge out to 9 km painted with fields, hedges and forest blocks, and a merged mesh of
 // far-tree blobs in the forest belt. KratorSky (81, attached in 94) gives the giant, its rings, the sun, stars and moon.
 (function horizon(){reseed(SEED_CITY+7);const R0=CITY.WORLD/2-40,R1=9000;
- const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d');const S=R1*2/1024,pxh=v=>(v+R1)/S;
+ const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d',CANVAS_CPU);const S=R1*2/1024,pxh=v=>(v+R1)/S;
  g.fillStyle='#3a4a26';g.fillRect(0,0,1024,1024);
  // clearings with fields: a few dozen discs of farmland with strip fields, more toward the map
  for(let i=0;i<70;i++){const a=rng()*TAU,r=rr(R0*.9,R1*.85),x=Math.cos(a)*r,z=Math.sin(a)*r,rad=rr(260,900);g.save();g.beginPath();g.arc(pxh(x),pxh(z),rad/S,0,7);g.clip();
@@ -7293,6 +7733,8 @@ window._api.setHour=h=>{DSKY.hour=h;dalabSkyTick();dalabHourUI();};window._api.n
  if(DMOUND_GEOS.length){const m=meshMerged(DMOUND_GEOS,MAT.dTurfMesh,scene,0,0,0);m.name='mounds';window._mounds=DMOUND_GEOS.length;DMOUND_GEOS.length=0;}}
 FRAME_HOOKS.push(dt=>{for(const w of DWIND)w.grp.rotateZ(w.rate*dt);});
 WALK.speed=9;   // a little faster on foot (Travis, round 9); the wheel still scales it
+// LEVEL OF DETAIL (core/lod): the windmill sails turn (DWIND), so 97-lod-auto.js leaves them out
+window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:()=>DWIND.map(w=>w.grp)});
 // ================================================================= DALAB CITY — the life layer
 // Everything that moves, in two draw calls (bodies, heads: one InstancedMesh each, rewritten per frame).
 //   townsfolk     wander the road network: pick a node, walk the shortest path, idle, pick another (green-skinned)
@@ -7367,6 +7809,16 @@ reseed(SEED_CITY+30);
    PP.set(ag.x,y+bob,ag.z);M4.compose(PP,QQ,SS);bIM.setMatrixAt(i,M4);
    PP.set(ag.x,y+bob+1.62*ag.s,ag.z);M4.compose(PP,QQ,SS);hIM.setMatrixAt(i,M4);}
   bIM.instanceMatrix.needsUpdate=true;hIM.instanceMatrix.needsUpdate=true;});
+})();
+// ================================================================= LOD: take over the finished scene (core/lod)
+// Sorts after every build's scene, camera and frame loop, and before 99-tail. It reads the build's `scene`, `camera`
+// and `renderer` (every Krator build names them so) and the build's options from window.LOD_OPTIONS, if it set any.
+// A build that calls LOD.init itself (LOD.root already made) is left alone; so is one that sets LOD_OPTIONS=false.
+(function(){
+ if(typeof LOD==='undefined'||LOD.root)return;
+ const opt=(typeof window.LOD_OPTIONS==='undefined')?{}:window.LOD_OPTIONS;if(opt===false)return;
+ try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));LOD.applied=LOD.apply();}
+ catch(e){const m='LOD: '+(e&&e.stack||e);if(typeof reportErr==='function')reportErr(m);else if(typeof ERR==='function')ERR(m);else console.error(m);}
 })();
 </script>
 

@@ -42,9 +42,9 @@ function buildRsHykHexareme(){reseed(72200);
  // the great square sail on the mainmast, braced; the artemon on its raked foremast
  const base=dY(.5),mx=-1,mh=24;rsLink(B,'wood',[mx,base-1,0],[mx,base+mh,0],.3,0x7a5634,8,.18);
  const w=17,a=.95,U=[Math.sin(a),0,Math.cos(a)];
- const S=rsSail(B,{key:'hyk-wavesun',O:[mx+.4,base+6,0],U,V:[0,1,0],belly:-1.4,A:t=>[(t-.5)*w,mh-6.8+Math.abs(t-.5)*1.2],Bf:t=>[(t-.5)*w*.92,0],draw:rsHykWaveSun});
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-wavesun',O:[mx+.4,base+6,0],U,V:[0,1,0],belly:-1.4,A:t=>[(t-.5)*w,mh-6.8+Math.abs(t-.5)*1.2],Bf:t=>[(t-.5)*w*.92,0],draw:rsHykWaveSun});
  rsSailEdge(B,S,0,.2,0x6a4a2c);rsSailEdge(B,S,1,.1,0x6a4a2c);const tp=[mx,base+mh,0];rsRope(B,tp,S.at(0,0));rsRope(B,tp,S.at(1,0));rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[H.xAt(0,1)+1,H.ys(0),0]);
- rsPennant(B,[mx,base+mh+.2,0],5,.9,[BLUE,0xf0e8d8]);
+ rsPennant(B,[mx,base+mh+.2,0],5,.9,[BLUE,0xf0e8d8]);rsRigEnd(B);
  {const fx=18.5,fy=dY(H.uAt(fx)),ft=[fx+4.5,fy+9,0];rsLink(B,'wood',[fx,fy,0],ft,.14,0x7a5634,8,.1);const w2=5.5;
   const S2=rsSail(B,{key:'hyk-wavesun',O:[ft[0]-2.4,fy+3.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.25,1,0],belly:-.6,A:t=>[(t-.5)*w2,4.6],Bf:t=>[(t-.5)*w2*.9,0],draw:rsHykWaveSun});rsSailEdge(B,S2,0,.09,0x6a4a2c);}
  for(const x of[-8,-4,2,9])rsFigure(B,[x,dY(H.uAt(x)),rr(-2,2)],rr(0,TAU),[0x3a5a78,0xe0d8c8,0x8a3020][Math.floor(rng()*3)]);

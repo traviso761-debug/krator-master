@@ -82,7 +82,9 @@
     const A = g.userData.asset;
     if (g.userData.kind === 'plant') return A.climate + ' / ' + A.aridity;
     if (g.userData.kind === 'building') return (A.culture || '') + ' · ' + (A.family || '');
-    return A.culture + (A.room ? ' · ' + A.room : '');
+    return A.culture + (A.type ? ' · ' + A.type : '') + (A.setting ? ' · ' + A.setting : '') +
+      (A.rooms ? '<br>rooms: ' + A.rooms.join(', ') : (A.room ? ' · ' + A.room : '')) +
+      (A.anchor ? '<br>anchor: ' + A.anchor : '') + (A.materials ? '<br>materials: ' + A.materials.join(', ') : '');
   }
   function pctClass(p) { const a = Math.abs(p); return a < 10 ? 'ok' : (a < 25 ? 'warn' : 'bad'); }
   function fmt(n) { return (Math.round(n * 100) / 100).toFixed(2); }

@@ -133,8 +133,10 @@ function makeSkyTexture(volc){
     var an=az*Math.PI/180, cx=Math.cos(an), sz=Math.sin(an);
     var n = nfb(so + cx*R, so + sz*R), n2 = nfb(so*3 + cx*R*3.1, so*3 + sz*R*3.1), n3 = vn(so*7 + cx*R*11, so*7 + sz*R*11);
     var v = 0.62*n + 0.28*n2 + 0.10*n3*2; return ridged ? 1-Math.abs(2*v-1)*0.9 : v; }
+  var SIL=[]; for(var xs=0;xs<=W;xs+=2) SIL.push(HZ);   /* the cliff's skyline (min y over the ranges): the occluder mask below */
   function drawRange(heightFn, fillTop, fillBase, strata){
     var ys=[]; for(var x=0;x<=W;x+=2) ys.push(HZ - heightFn(azOf(x))*DEG);
+    for(var ks=0;ks<ys.length;ks++) if(ys[ks]<SIL[ks]) SIL[ks]=ys[ks];
     function trace(){ g.beginPath(); g.moveTo(0,HZ+12); for(var k=0;k<ys.length;k++) g.lineTo(k*2, ys[k]); g.lineTo(W,HZ+12); g.closePath(); }
     var top=Math.min.apply(null, ys), gr=g.createLinearGradient(0,top,0,HZ+6); gr.addColorStop(0,fillTop); gr.addColorStop(1,fillBase);
     g.fillStyle=gr; trace(); g.fill();
@@ -171,6 +173,14 @@ function makeSkyTexture(volc){
 
   var tex=new THREE.CanvasTexture(c);
   tex.encoding=THREE.sRGBEncoding;
+  /* LOCUS: the shelf's SILHOUETTE as an alpha mask (white = cliff or below the horizon). 21-sky.js draws
+     the dome a second time through it AFTER the sun, the giant, its ring and the stars, so the painted
+     cliff occludes them instead of their being drawn over it. Half-res is plenty: linear filtering
+     gives a one-texel soft edge. */
+  var mc=document.createElement('canvas'); mc.width=W/2; mc.height=H/2; var mg=mc.getContext('2d');
+  mg.fillStyle='#000'; mg.fillRect(0,0,W/2,H/2); mg.fillStyle='#fff';
+  mg.beginPath(); mg.moveTo(0,H/2); for(var km=0;km<SIL.length;km++) mg.lineTo(km, (SIL[km]-1.0)/2); mg.lineTo(W/2,H/2); mg.closePath(); mg.fill();
+  tex.silMask = new THREE.CanvasTexture(mc);
   return tex;
 }
 

@@ -6,6 +6,7 @@
 // flowers) -- and the understorey palette. Everything here is DATA and kit
 // definitions; no placement.
 // Tags follow the project rule: climate / aridity / abyssal / riparian.
+BIO.kit('hyperjungle');   // this kit's own registry of items and buckets (core/biome: kits)
 const HYPERJUNGLE={};
 HYPERJUNGLE.TAGS={climate:'hypertropic',aridity:'humid',abyssal:false,riparian:'both'};
 HYPERJUNGLE.SPECIES=[

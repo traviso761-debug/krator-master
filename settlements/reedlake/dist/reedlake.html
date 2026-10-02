@@ -26,6 +26,383 @@ canvas{display:block}
 <pre id="errs"></pre>
 <script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
 <script>
+// ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
+// One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
+// calls and no change to how it makes geometry:
+//   LOD.init({THREE, scene, camera, renderer, ...options});   // after the world is built
+//   LOD.apply();                                               // takes over the static meshes and instanced meshes
+//   LOD.update();                                              // every frame, before renderer.render
+// How it draws less, without touching what the build made:
+//  * Every object it manages is moved to a layer the camera does not draw (layer 30) and a render COPY stands in for
+//    it under `LOD.root`. The original stays where it was, with its userData, visibility and instance order, and stays
+//    the raycast target: Raycaster.intersectObject(s) is patched to see layer 30, and the copies do not raycast. So
+//    inspectors, picking, labels and probes keep seeing full detail.
+//  * A big merged mesh is cut into chunks (a k-d split by triangle centroid: at most `maxTris` triangles and `maxExtent`
+//    metres a chunk). The chunks share the original's vertex buffers, so the cut costs only index memory and three.js
+//    can frustum-cull each chunk. A chunk switches to a simplified proxy (vertex clustering on a grid of `levels[k]`
+//    metres) once that grid is under `errPx` pixels on screen, and drops out when the whole chunk is under `minPx`.
+//  * An InstancedMesh keeps ONE draw call. Its instances are bucketed in `cell`-metre cells and sorted by size inside
+//    each cell; every update copies, cell by cell, the prefix of instances still bigger than `minPx` on screen into
+//    the copy's buffers. Instances with a detailed base geometry switch to a clustered base geometry beyond `errPx`
+//    (a second copy, one more draw call). Small detail (figures, clutter, trim, vines) therefore drops first.
+//  * The copies follow the originals' `visible` and `material` (night toggles keep working). An original whose matrix,
+//    geometry, instance matrices or count change after apply() is animated: it is handed back and drawn as before.
+//  * Bands have hysteresis (`hyst`) and the update is throttled (`throttle` ms, `moveEps` m): a still camera costs, per
+//    managed object a frame, a matrix compare, two version reads and a walk up its parents for visibility.
+// It draws nothing from any PRNG and changes no build output. LOD.enabled=false (or the panel's button, the `l` key,
+// or ?lod=0 in the URL) takes the copies out of the scene and puts the originals back: the scene graph is then exactly
+// the one the build made, for verify asserts that count full-detail triangles.
+(function(){
+ 'use strict';
+ const LAYER=30,HIDE=1<<LAYER;
+ const DEF={cell:64,maxTris:40000,maxExtent:400,minChunkTris:10000,errPx:3,minPx:1,levels:[1,4,16,64],simplifyMinTris:64,
+ instFarMinTris:48,instFarMinTotal:20000,instFarDiv:6,throttle:200,moveEps:.5,hyst:1.12,buildMs:10,ui:true,key:'l',
+ skip:null,classify:null,classes:{},enabled:true,render:null,pad:1,auto:true,panelStyle:''};
+ const L={root:null,managed:0,_on:false,lastMeasure:null};
+ let T=null,S=null,CAM=null,R=null,O=null;
+ const recs=[],queue=[];let skipRoots=new Set();
+ let dirty=true,lastBand=-1e9,lastSync=-1e9,panel=null,txt=null,btn=null,live={calls:0,tris:0};
+ let _cam=null,_camL=null,_inv=null,_lastCam=null;
+
+ // ---------------------------------------------------------------- small helpers
+ const triCount=g=>g.index?(g.index.count/3|0):(g.attributes.position.count/3|0);
+ const noRay=function(){};
+ function effVisible(o){for(let p=o;p;p=p.parent){if(!p.visible)return false;if(p===S)return true;}return false;}
+ function pxPerMetre(){const h=(R&&R.domElement&&R.domElement.clientHeight)||innerHeight||640;
+ return h/2/Math.tan((CAM.fov||50)*Math.PI/360)*(CAM.zoom||1);}
+ function matEq(a,b){const x=a.elements,y=b.elements;for(let i=0;i<16;i++)if(x[i]!==y[i])return false;return true;}
+ function getC(a,i,c){return c===0?a.getX(i):c===1?a.getY(i):c===2?a.getZ(i):a.getW(i);}
+ function copyProps(c,o){c.name=o.name;c.renderOrder=o.renderOrder;c.castShadow=o.castShadow;c.receiveShadow=o.receiveShadow;
+ c.frustumCulled=o.frustumCulled;if(o.customDepthMaterial)c.customDepthMaterial=o.customDepthMaterial;
+ if(o.customDistanceMaterial)c.customDistanceMaterial=o.customDistanceMaterial;
+ c.onBeforeRender=o.onBeforeRender;c.onAfterRender=o.onAfterRender;
+ c.userData=Object.assign({},o.userData,{lodCopy:true,probeSkip:true});c.raycast=noRay;
+ c.matrixAutoUpdate=false;c.matrix.copy(o.matrixWorld);c.matrixWorldNeedsUpdate=true;}
+ // a geometry that shares every vertex buffer of g, with its own index (never dispose it: that frees the shared buffers)
+ function shareGeo(g,index){const s=new T.BufferGeometry();for(const k in g.attributes)s.setAttribute(k,g.attributes[k]);
+ if(index)s.setIndex(index);else if(g.index)s.setIndex(g.index);s.groups=g.groups.slice();return s;}
+ // bounding sphere of the vertices a triangle list uses
+ function sphereOf(pos,idx,tris){let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+ const v=t=>idx?idx.getX(t):t;
+ for(let i=0;i<tris.length;i++){const t=tris[i]*3;for(let k=0;k<3;k++){const j=v(t+k),x=pos.getX(j),y=pos.getY(j),z=pos.getZ(j);
+  if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(z<z0)z0=z;if(z>z1)z1=z;}}
+ const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+ for(let i=0;i<tris.length;i++){const t=tris[i]*3;for(let k=0;k<3;k++){const j=v(t+k);
+  const d=Math.hypot(pos.getX(j)-c.x,pos.getY(j)-c.y,pos.getZ(j)-c.z);if(d>r)r=d;}}
+ return new T.Sphere(c,r);}
+
+ // ---------------------------------------------------------------- an int-keyed hash (4 int32 per key)
+ function IHash(n){let cap=16;while(cap<n*2)cap<<=1;this.mask=cap-1;this.k=new Int32Array(cap*4);this.v=new Int32Array(cap).fill(-1);this.n=0;}
+ IHash.prototype.get=function(a,b,c,d){const k=this.k,v=this.v,m=this.mask;
+ let h=(Math.imul(a,73856093)^Math.imul(b,19349663)^Math.imul(c,83492791)^Math.imul(d,2654435761|0))&m;
+ for(;;){const id=v[h];if(id<0){v[h]=this.n;k[h*4]=a;k[h*4+1]=b;k[h*4+2]=c;k[h*4+3]=d;return -1-(this.n++);}
+  if(k[h*4]===a&&k[h*4+1]===b&&k[h*4+2]===c&&k[h*4+3]===d)return id;h=(h+1)&m;}};
+
+ // ---------------------------------------------------------------- vertex clustering
+ // Snap every vertex to a grid of s (in the geometry's own units), keeping vertices whose normals face different ways
+ // apart (6 buckets), average position / normal / colour per cell, take other attributes from the first vertex, drop
+ // triangles that collapse, and drop duplicates. `tris` (optional) limits it to those triangle ids. Returns
+ // {geo (attributes only), index:Uint32Array, from:Int32Array (source triangle of each output triangle)}.
+ function cluster(g,s,tris,pin){const P=g.attributes.position,N=g.attributes.normal,I=g.index,nv=P.count;
+ const nt=tris?tris.length:triCount(g),H=new IHash(Math.min(nv,nt*3)+8),cid=new Int32Array(nv).fill(-1);
+ const vi=t=>I?I.getX(t):t;
+ const cnt=[],first=[];let sp=new Float64Array(1024*3),sn=new Float64Array(1024*3);
+ const C=g.attributes.color,sc=C?[]:null;
+ const idOf=j=>{let c=cid[j];if(c>=0)return c;const x=P.getX(j),y=P.getY(j),z=P.getZ(j);let nb=0;
+  if(N){const a=N.getX(j),b=N.getY(j),e=N.getZ(j),A=Math.abs(a),B=Math.abs(b),E=Math.abs(e);nb=A>=B&&A>=E?(a<0?1:0):B>=E?(b<0?3:2):(e<0?5:4);}
+  const r=(pin&&pin[j])?H.get(j,-7,-7,-7):H.get(Math.floor(x/s),Math.floor(y/s),Math.floor(z/s),nb);
+  if(r<0){c=-1-r;if(c*3+3>sp.length){const a=new Float64Array(sp.length*2);a.set(sp);sp=a;const b2=new Float64Array(sn.length*2);b2.set(sn);sn=b2;}
+   cnt[c]=0;first[c]=j;if(sc)for(let k=0;k<C.itemSize;k++)sc[c*C.itemSize+k]=0;}else c=r;
+  cnt[c]++;sp[c*3]+=x;sp[c*3+1]+=y;sp[c*3+2]+=z;
+  if(N){sn[c*3]+=N.getX(j);sn[c*3+1]+=N.getY(j);sn[c*3+2]+=N.getZ(j);}
+  if(sc)for(let k=0;k<C.itemSize;k++)sc[c*C.itemSize+k]+=getC(C,j,k);
+  cid[j]=c;return c;};
+ const D=new IHash(nt+8),out=[],from=[];
+ for(let q=0;q<nt;q++){const t=tris?tris[q]:q;const a=idOf(vi(t*3)),b=idOf(vi(t*3+1)),c=idOf(vi(t*3+2));
+  if(a===b||b===c||a===c)continue;
+  let x=a,y=b,z=c,u;if(x>y){u=x;x=y;y=u;}if(y>z){u=y;y=z;z=u;}if(x>y){u=x;x=y;y=u;}
+  if(D.get(x,y,z,0)>=0)continue;out.push(a,b,c);from.push(t);}
+ const nc=cnt.length,geo=new T.BufferGeometry();
+ for(const name in g.attributes){const A=g.attributes[name],it=A.itemSize,arr=new (A.array.constructor)(nc*it);
+  if(name==='position'){for(let c=0;c<nc;c++)for(let k=0;k<3;k++)arr[c*3+k]=sp[c*3+k]/cnt[c];}
+  else if(name==='normal'){for(let c=0;c<nc;c++){const x=sn[c*3],y=sn[c*3+1],z=sn[c*3+2],l=Math.hypot(x,y,z)||1;arr[c*3]=x/l;arr[c*3+1]=y/l;arr[c*3+2]=z/l;}}
+  else if(name==='color'){for(let c=0;c<nc;c++)for(let k=0;k<it;k++)arr[c*it+k]=sc[c*it+k]/cnt[c];}
+  else{for(let c=0;c<nc;c++)for(let k=0;k<it;k++)arr[c*it+k]=getC(A,first[c],k);}
+  const B=new T.BufferAttribute(arr,it,A.normalized);geo.setAttribute(name,B);}
+ return {geo,index:out,from,nc};}
+ const mkIndex=(arr,nv)=>new T.BufferAttribute(nv>65535?new Uint32Array(arr):new Uint16Array(arr),1);
+
+ // Vertices that must not move: those on an open edge of the mesh (welded by position, so flat-shaded boxes count as
+ // closed) and those on an edge between two chunks. Pinning them keeps a proxy's rim exactly where its neighbour's is
+ // (another chunk at another level, or another mesh along a shared seam, like the port's terrain strips): no cracks.
+ function pins(g,leafOf){const P=g.attributes.position,I=g.index,nv=P.count,nt=triCount(g),q=1e4;
+  const W=new IHash(nv+8),pid=new Int32Array(nv);
+  for(let j=0;j<nv;j++){const r=W.get(Math.round(P.getX(j)*q),Math.round(P.getY(j)*q),Math.round(P.getZ(j)*q),0);pid[j]=r<0?-1-r:r;}
+  const E=new IHash(nt*3+8),cnt=[],ch=[],multi=[];const vi=t=>I?I.getX(t):t;
+  for(let t=0;t<nt;t++){const c=leafOf?leafOf[t]:0;for(let k=0;k<3;k++){let a=pid[vi(t*3+k)],b=pid[vi(t*3+(k+1)%3)];if(a===b)continue;if(a>b){const u=a;a=b;b=u;}
+   const r=E.get(a,b,0,0);if(r<0){const e=-1-r;cnt[e]=1;ch[e]=c;multi[e]=0;}else{cnt[r]++;if(ch[r]!==c)multi[r]=1;}}}
+  const pp=new Uint8Array(W.n);const K=E.k;
+  for(let h=0;h<E.v.length;h++){const e=E.v[h];if(e<0)continue;if(cnt[e]===1||multi[e]){pp[K[h*4]]=1;pp[K[h*4+1]]=1;}}
+  const out=new Uint8Array(nv);for(let j=0;j<nv;j++)out[j]=pp[pid[j]];return out;}
+
+ // ---------------------------------------------------------------- k-d split of a mesh into chunks
+ function kdSplit(cen,ids,maxT,maxE,minT,out){const st=[ids];
+ while(st.length){const a=st.pop();let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+  for(let i=0;i<a.length;i++){const t=a[i]*3,x=cen[t],y=cen[t+1],z=cen[t+2];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;if(z<z0)z0=z;if(z>z1)z1=z;}
+  const ex=x1-x0,ey=y1-y0,ez=z1-z0,e=Math.max(ex,ey,ez);
+  // split while over maxTris, or over maxExtent and still worth a draw call (minChunkTris): sparse far ground stays whole
+  if((a.length<=maxT&&(e<=maxE||a.length<=minT))||a.length<2){out.push(a);continue;}
+  const ax=e===ex?0:e===ez?2:1,keys=new Float32Array(a.length);for(let i=0;i<a.length;i++)keys[i]=cen[a[i]*3+ax];
+  const srt=keys.slice().sort(),med=srt[srt.length>>1];let nl=0;for(let i=0;i<a.length;i++)if(keys[i]<med)nl++;
+  if(nl===0||nl===a.length){const h=a.length>>1;st.push(a.subarray(h),a.subarray(0,h));continue;}
+  const l=new Int32Array(nl),r=new Int32Array(a.length-nl);let p=0,q=0;for(let i=0;i<a.length;i++){if(keys[i]<med)l[p++]=a[i];else r[q++]=a[i];}
+  st.push(r,l);}
+ return out;}
+
+ // ---------------------------------------------------------------- what is managed
+ // the shared biome core (userData.biome) thins its instanced flora with distance on its own curve, so by default its
+ // sets keep every instance (class 'biome', minPx 0) and are only culled and simplified
+ const BIOME={minPx:0};
+ function clsOf(o){let name=O.classify?O.classify(o):null;if(!name&&o.userData.biome&&o.isInstancedMesh)name='biome';
+ const c=(name&&(O.classes[name]||(name==='biome'?BIOME:null)))||{};
+ return {name:name||null,minPx:c.minPx!=null?c.minPx:O.minPx,maxDist:c.maxDist!=null?c.maxDist:Infinity,simplify:c.simplify!==false};}
+ function wanted(o){if(!o.isMesh||o.isSkinnedMesh||o.userData.lodCopy||o.userData.lodSkip)return false;
+ const g=o.geometry,m=o.material;if(!g||!g.isBufferGeometry||!g.attributes.position||Array.isArray(m)||!m)return false;
+ if(g.morphAttributes&&g.morphAttributes.position&&g.morphAttributes.position.length)return false;
+ if(g.drawRange.start!==0||g.drawRange.count!==Infinity)return false;
+ if(m.transparent||m.depthWrite===false||m.side===T.BackSide)return false;
+ if(!(o.layers.mask&1))return false;if(o.isInstancedMesh&&!o.count)return false;
+ // things the build animates: buffers it declared dynamic, interleaved instance data, and the Krator flags for
+ // life layers, flyers and pick-less helpers (door leaves, overlays)
+ const u=o.userData;if(u.life||u.lifeLabel||u.flyers||u.noPick||u.lodSkip)return false;
+ const DYN=T.DynamicDrawUsage;if(g.attributes.position.usage===DYN)return false;
+ if(o.isInstancedMesh){if(o.instanceMatrix.usage===DYN||o.instanceMatrix.isInterleavedBufferAttribute)return false;
+  for(const k in g.attributes){const A=g.attributes[k];if((A.isInstancedBufferAttribute||A.isInstancedInterleavedBuffer||(A.data&&A.data.isInstancedInterleavedBuffer))&&(A.usage===DYN||A.isInterleavedBufferAttribute))return false;}}
+ if(O.skip&&O.skip(o))return false;
+ if(skipRoots.size)for(let p=o;p;p=p.parent)if(skipRoots.has(p))return false;
+ return true;}
+ function addMesh(o){const g=o.geometry,P=g.attributes.position,I=g.index,nt=triCount(g);if(!nt)return null;const cl=clsOf(o);
+ const rec={kind:'mesh',o,g,cl,nt,ver:P.version,iver:I?I.version:0,mw:o.matrixWorld.clone(),mask0:o.layers.mask,chunks:[],levels:[],copies:[]};
+ if(!g.boundingSphere)g.computeBoundingSphere();
+ let leaves;
+ if(nt<=O.maxTris&&g.boundingSphere.radius*2<=O.maxExtent*1.2)leaves=null;
+ else{const cen=new Float32Array(nt*3),v=t=>I?I.getX(t):t;
+  for(let t=0;t<nt;t++)for(let k=0;k<3;k++){const j=v(t*3+k);cen[t*3]+=P.getX(j)/3;cen[t*3+1]+=P.getY(j)/3;cen[t*3+2]+=P.getZ(j)/3;}
+  const ids=new Int32Array(nt);for(let t=0;t<nt;t++)ids[t]=t;leaves=kdSplit(cen,ids,O.maxTris,O.maxExtent,O.minChunkTris,[]);if(leaves.length<2)leaves=null;}
+ if(!leaves){rec.chunks.push({tris:null,full:g,sph:g.boundingSphere.clone(),lv:0,on:true,nt});rec.leafOf=null;}
+ else{rec.leafOf=new Int32Array(nt);leaves.forEach((tr,ci)=>{const ix=[];for(let i=0;i<tr.length;i++){rec.leafOf[tr[i]]=ci;const t=tr[i]*3;
+   ix.push(I?I.getX(t):t,I?I.getX(t+1):t+1,I?I.getX(t+2):t+2);}
+  const sg=shareGeo(g,mkIndex(ix,P.count));const sph=sphereOf(P,I,tr);sph.radius+=O.pad;sg.boundingSphere=sph.clone();
+  rec.chunks.push({tris:tr,full:sg,sph,lv:0,on:true,nt:tr.length});});}
+ // chunks are culled even where the original was not (the kits and biomes turn culling off on whole-world meshes,
+ // whose one sphere would never leave the view); `pad` covers a little vertex-shader sway. userData.lodNoCull opts out.
+ // A split mesh draws COMBINED: one copy per level in use, whose index is the concatenation of the chunks at that
+ // level, so chunking costs at most one draw call per level in use, not one per chunk. An unsplit mesh has one copy.
+ if(leaves){rec.comb=true;rec.lvM=[];for(const ch of rec.chunks){ch.key=-2;}}
+ else for(const ch of rec.chunks){const c=new T.Mesh(ch.full,o.material);copyProps(c,o);
+  ch.m=c;rec.copies.push(c);c._lodOn=true;}
+ rec.simp=cl.simplify&&nt>=O.simplifyMinTris;return rec;}
+ function addInst(o){const g=o.geometry,n=o.count,cl=clsOf(o);
+ // the BASE shape's own sphere, from its vertices: a build may have set geometry.boundingSphere round the whole set
+ // (core/atmos cull does, keeping the base one in userData.baseSphere), which would make every instance "huge"
+ const bs=g.userData.baseSphere||new T.Box3().setFromBufferAttribute(g.attributes.position).getBoundingSphere(new T.Sphere());
+ const r0=bs.radius,c0=bs.center,M=o.instanceMatrix.array;
+ const px=new Float32Array(n),py=new Float32Array(n),pz=new Float32Array(n),ri=new Float32Array(n),sm=new Float32Array(n);
+ const cells=new Map(),CS=O.cell;
+ for(let i=0;i<n;i++){const b=i*16;const sx=Math.hypot(M[b],M[b+1],M[b+2]),sy=Math.hypot(M[b+4],M[b+5],M[b+6]),sz=Math.hypot(M[b+8],M[b+9],M[b+10]);
+  const s=Math.max(sx,sy,sz);sm[i]=s;ri[i]=r0*s;
+  px[i]=M[b]*c0.x+M[b+4]*c0.y+M[b+8]*c0.z+M[b+12];py[i]=M[b+1]*c0.x+M[b+5]*c0.y+M[b+9]*c0.z+M[b+13];pz[i]=M[b+2]*c0.x+M[b+6]*c0.y+M[b+10]*c0.z+M[b+14];
+  const key=Math.floor(px[i]/CS)+','+Math.floor(pz[i]/CS);let L0=cells.get(key);if(!L0)cells.set(key,L0=[]);L0.push(i);}
+ const order=new Int32Array(n),C=[];let p=0,gx=0,gy=0,gz=0;
+ for(const L0 of cells.values()){L0.sort((a,b)=>ri[b]-ri[a]||a-b);let x=0,y=0,z=0,smax=0;
+  for(const i of L0){x+=px[i];y+=py[i];z+=pz[i];if(sm[i]>smax)smax=sm[i];}
+  x/=L0.length;y/=L0.length;z/=L0.length;let r=0;const rs=new Float32Array(L0.length);
+  L0.forEach((i,k)=>{order[p+k]=i;rs[k]=ri[i];const d=Math.hypot(px[i]-x,py[i]-y,pz[i]-z)+ri[i];if(d>r)r=d;});
+  C.push({start:p,len:L0.length,c:new T.Vector3(x,y,z),r,rs,smax,k:L0.length,lv:0});p+=L0.length;}
+ for(let i=0;i<n;i++){gx+=px[i];gy+=py[i];gz+=pz[i];}gx/=n;gy/=n;gz/=n;let gr=0;
+ for(let i=0;i<n;i++){const d=Math.hypot(px[i]-gx,py[i]-gy,pz[i]-gz)+ri[i];if(d>gr)gr=d;}
+ const sph=new T.Sphere(new T.Vector3(gx,gy,gz),gr*1.02+O.pad);
+ // instance data permuted into cell order, so each cell's kept prefix is one contiguous copy
+ const srcs=[{get:()=>o.instanceMatrix,it:16,src:null,name:'#m'}];
+ if(o.instanceColor)srcs.push({get:()=>o.instanceColor,it:o.instanceColor.itemSize,src:null,name:'#c'});
+ for(const k in g.attributes){const A=g.attributes[k];if(A.isInstancedBufferAttribute)srcs.push({get:()=>o.geometry.attributes[k],it:A.itemSize,src:null,name:k});}
+ const rec={kind:'inst',o,g,cl,n,cells:C,order,srcs,sph,r0,mver:o.instanceMatrix.version,cver:o.instanceColor?o.instanceColor.version:0,
+  mw:o.matrixWorld.clone(),mask0:o.layers.mask,copies:[],lvls:[],farS:0,far:null};
+ permute(rec);
+ rec.lvls.push(mkInstCopy(rec,g));rec.copies.push(rec.lvls[0].im);
+ // a far version costs a draw call: only for sets with enough triangles in all to be worth one
+ if(cl.simplify&&triCount(g)>=O.instFarMinTris&&n*triCount(g)>=O.instFarMinTotal)rec.farS=r0/O.instFarDiv;
+ return rec;}
+ function permute(rec){for(const s of rec.srcs){const A=s.get(),it=s.it,a=A.array;if(!s.src||s.src.length!==rec.n*it)s.src=new Float32Array(rec.n*it);
+  for(let q=0;q<rec.n;q++){const i=rec.order[q];for(let k=0;k<it;k++)s.src[q*it+k]=a[i*it+k];}}}
+ function mkInstCopy(rec,base){const o=rec.o,g=new T.BufferGeometry();
+ for(const k in base.attributes){const A=base.attributes[k];if(!A.isInstancedBufferAttribute)g.setAttribute(k,A);}
+ if(base.index)g.setIndex(base.index);g.groups=base.groups.slice();
+ const im=new T.InstancedMesh(g,o.material,rec.n),bufs={};
+ for(const s of rec.srcs){const B=new T.InstancedBufferAttribute(new Float32Array(rec.n*s.it),s.it);B.setUsage(T.DynamicDrawUsage);bufs[s.name]=B;
+  if(s.name==='#m')im.instanceMatrix=B;else if(s.name==='#c')im.instanceColor=B;else g.setAttribute(s.name,B);}
+ copyProps(im,o);im.frustumCulled=true;g.boundingSphere=rec.sph.clone();im.count=0;im._lodOn=false;im.visible=false;
+ return {im,bufs};}
+
+ // ---------------------------------------------------------------- level builds (lazy, time-budgeted)
+ function want(rec,lv){if(rec.levels[lv]!==undefined)return true;if(!rec.queued){rec.queued=new Set();}
+ if(!rec.queued.has(lv)){rec.queued.add(lv);queue.push([rec,lv]);}return false;}
+ function buildLevel(rec,lv){const s=O.levels[lv-1],g=rec.g;
+ if(!rec.pin)rec.pin=pins(g,rec.leafOf);
+ const res=cluster(g,s,null,rec.pin),prev=lv>1?rec.levels[lv-1]:null,prevN=prev?prev.nt:rec.nt;
+ // no real saving: reuse the level below (`same` names the level whose copy draws it)
+ if(res.index.length/3>prevN*.85){rec.levels[lv]=prev?{geos:prev.geos,nt:prev.nt,src:prev.src,same:prev.same!==undefined?prev.same:lv-1}:{geos:rec.chunks.map(ch=>ch.full),nt:rec.nt,src:rec.g,same:0};return;}
+ const per=rec.chunks.map(()=>[]);
+ for(let q=0;q<res.from.length;q++){const ci=rec.leafOf?rec.leafOf[res.from[q]]:0;per[ci].push(res.index[q*3],res.index[q*3+1],res.index[q*3+2]);}
+ const geos=per.map((ix,ci)=>{if(!ix.length)return null;const G=new T.BufferGeometry();for(const k in res.geo.attributes)G.setAttribute(k,res.geo.attributes[k]);
+  G.setIndex(mkIndex(ix,res.nc));G.boundingSphere=rec.chunks[ci].sph.clone();return G;});
+ rec.levels[lv]={geos,nt:res.index.length/3,src:res.geo};}
+ function pump(ms){const t0=performance.now();let n=0;
+ while(queue.length&&(n===0||performance.now()-t0<ms)){const [rec,lv]=queue.shift();if(!rec.dead){
+   for(let k=1;k<=lv;k++)if(rec.levels[k]===undefined)buildLevel(rec,k);dirty=true;}n++;}}
+ function instFar(rec){if(!rec.far){const res=cluster(rec.g,rec.farS,null),G=res.geo;G.setIndex(mkIndex(res.index,res.nc));
+  rec.far=mkInstCopy(rec,G);rec.lvls.push(rec.far);rec.copies.push(rec.far.im);L.root.add(rec.far.im);rec.farTris=res.index.length/3;}
+ return rec.far;}
+
+ // ---------------------------------------------------------------- the bands
+ // the copy that draws level l of a combined mesh, made on first use; its index buffer grows when it must
+ function lvMesh(rec,l){let L0=rec.lvM[l];if(L0)return L0;const o=rec.o,src=l?rec.levels[l].src:rec.g,g=new T.BufferGeometry();
+  for(const k in src.attributes)g.setAttribute(k,src.attributes[k]);
+  const m=new T.Mesh(g,o.material);copyProps(m,o);m.frustumCulled=!o.userData.lodNoCull;m._lodOn=false;m.visible=false;
+  L0=rec.lvM[l]={m,g,idx:null};rec.copies.push(m);if(L.root)L.root.add(m);return L0;}
+ function packMesh(rec){
+  for(let l=0;l<=O.levels.length;l++){let cnt=0;const parts=[];let x0=1e30,y0=1e30,z0=1e30,x1=-1e30,y1=-1e30,z1=-1e30;
+   rec.chunks.forEach((ch,ci)=>{if(ch.key!==l)return;const gg=l?rec.levels[l].geos[ci]:ch.full;if(!gg)return;const a=gg.index.array;parts.push(a);cnt+=a.length;
+    const c=ch.sph.center,r=ch.sph.radius;x0=Math.min(x0,c.x-r);y0=Math.min(y0,c.y-r);z0=Math.min(z0,c.z-r);x1=Math.max(x1,c.x+r);y1=Math.max(y1,c.y+r);z1=Math.max(z1,c.z+r);});
+   if(!cnt){if(rec.lvM[l])rec.lvM[l].m._lodOn=false;continue;}
+   const L0=lvMesh(rec,l);if(!L0.idx||L0.idx.array.length<cnt){L0.idx=new T.BufferAttribute(new Uint32Array(Math.ceil(cnt*1.25)),1);L0.idx.setUsage(T.DynamicDrawUsage);L0.g.setIndex(L0.idx);}
+   let off=0;for(const a of parts){L0.idx.array.set(a,off);off+=a.length;}
+   L0.idx.updateRange.offset=0;L0.idx.updateRange.count=cnt;L0.idx.needsUpdate=true;L0.g.setDrawRange(0,cnt);
+   const c=new T.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);let r=0;
+   rec.chunks.forEach(ch=>{if(ch.key===l)r=Math.max(r,c.distanceTo(ch.sph.center)+ch.sph.radius);});
+   L0.g.boundingSphere=new T.Sphere(c,r);L0.m._lodOn=true;}}
+ function bandMesh(rec,P,cam,h){const cl=rec.cl;let full=0,drawn=0;
+ if(rec.comb){let changed=!rec.packed;
+  for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+   const px=d>0?ch.sph.radius*P/d:1e9;
+   ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+   let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+   let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+   if(use&&rec.levels[use].same!==undefined)use=rec.levels[use].same;
+   ch.lv=lv;const key=ch.on?use:-1;if(key!==ch.key){ch.key=key;changed=true;}
+   full+=ch.nt;if(key>=0){const gg=key?rec.levels[key].geos[ci]:ch.full;if(gg)drawn+=gg.index.count/3;}}
+  if(changed){rec.packed=true;packMesh(rec);}
+  rec.full=full;rec.drawn=drawn;return;}
+ for(let ci=0;ci<rec.chunks.length;ci++){const ch=rec.chunks[ci],d=Math.max(0,cam.distanceTo(ch.sph.center)-ch.sph.radius);
+  const px=d>0?ch.sph.radius*P/d:1e9;
+  ch.on=ch.on?(px>=cl.minPx/h&&d<=cl.maxDist*h):(px>cl.minPx*h&&d<cl.maxDist/h);
+  let lv=0;if(rec.simp)for(let k=1;k<=O.levels.length;k++){const thr=O.levels[k-1]*P/O.errPx*(k<=ch.lv?1/h:h);if(d>thr)lv=k;else break;}
+  // the deepest level that is built and not past the wanted one
+  let use=lv;if(lv&&!want(rec,lv)){use=0;for(let k=lv-1;k>=1;k--)if(rec.levels[k]!==undefined){use=k;break;}}
+  ch.lv=lv;const geo=use?rec.levels[use].geos[ci]:ch.full;
+  if(ch.m.geometry!==geo&&geo)ch.m.geometry=geo;ch.m._lodOn=ch.on&&!!geo;
+  full+=ch.nt;if(ch.m._lodOn)drawn+=triCount(ch.m.geometry);}
+ rec.full=full;rec.drawn=drawn;}
+ function bandInst(rec,P,cam,h){const cl=rec.cl,cells=rec.cells;let changed=false;const far=rec.farS>0;
+ for(const c of cells){const d=Math.max(0,cam.distanceTo(c.c)-c.r);let k;
+  if(d>cl.maxDist*(c.k?h:1/h))k=0;
+  else if(d<=0)k=c.len;
+  else{const rmin=d*cl.minPx/P,cnt=th=>{let lo=0,hi=c.len;while(lo<hi){const m=(lo+hi)>>1;if(c.rs[m]>=th)lo=m+1;else hi=m;}return lo;};
+   const kA=cnt(rmin/h),kB=cnt(rmin*h);k=Math.min(kA,Math.max(kB,c.k));}
+  let lv=0;if(far){const thr=rec.farS*c.smax*P/O.errPx;lv=d>thr*(c.lv?1/h:h)?1:0;}
+  if(k!==c.k||lv!==c.lv){c.k=k;c.lv=lv;changed=true;}}
+ if(changed||rec.recolor||!rec.packed){rec.packed=true;rec.recolor=false;
+  if(far&&cells.some(c=>c.lv&&c.k))instFar(rec);
+  for(let l=0;l<rec.lvls.length;l++){const Lc=rec.lvls[l];let off=0;
+   for(const c of cells){if(c.lv!==l||!c.k)continue;for(const s of rec.srcs)Lc.bufs[s.name].array.set(s.src.subarray(c.start*s.it,(c.start+c.k)*s.it),off*s.it);off+=c.k;}
+   for(const s of rec.srcs){const B=Lc.bufs[s.name];B.updateRange.offset=0;B.updateRange.count=off*s.it;B.needsUpdate=true;}
+   Lc.im.count=off;Lc.im._lodOn=off>0;}}
+ let full=0,drawn=0;const t0=triCount(rec.g);full=rec.n*t0;
+ for(let l=0;l<rec.lvls.length;l++)drawn+=rec.lvls[l].im.count*(l?rec.farTris:t0);rec.full=full;rec.drawn=drawn;}
+ function band(){const P=pxPerMetre(),h=O.hyst;CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);
+ for(const rec of recs){if(rec.dead)continue;_camL.copy(_cam);if(!rec.ident){_inv.copy(rec.mw).invert();_camL.applyMatrix4(_inv);}
+  if(rec.kind==='mesh')bandMesh(rec,P,_camL,h);else bandInst(rec,P,_camL,h);}
+ stale();sync();}
+ // hand back anything that moved or was rebuilt (every frame: a matrix compare and two version reads per object)
+ function stale(){for(const rec of recs){if(rec.dead)continue;const o=rec.o;
+  if(!o.parent||!matEq(o.matrixWorld,rec.mw)){release(rec);continue;}
+  if(rec.kind==='mesh'){const P=o.geometry.attributes.position;if(o.geometry!==rec.g||P.version!==rec.ver||(o.geometry.index&&o.geometry.index.version!==rec.iver))release(rec);}
+  else{if(o.instanceMatrix.version!==rec.mver||o.count!==rec.n||o.geometry!==rec.g){release(rec);continue;}
+   if(o.instanceColor&&o.instanceColor.version!==rec.cver){rec.cver=o.instanceColor.version;permute(rec);rec.recolor=true;dirty=true;}}}}
+ // follow the originals: visibility (with their parents') and material
+ function sync(){for(const rec of recs){if(rec.dead)continue;const o=rec.o,vis=effVisible(o),mat=o.material;
+  for(const c of rec.copies){if(c.material!==mat)c.material=mat;c.visible=vis&&c._lodOn;}}}
+ function release(rec){rec.dead=true;rec.o.layers.mask=rec.mask0;for(const c of rec.copies)if(c.parent)c.parent.remove(c);L.managed--;}
+
+ // ---------------------------------------------------------------- API
+ L.init=function(opt){O=Object.assign({},DEF,opt||{});T=O.THREE||window.THREE;S=O.scene;CAM=O.camera;R=O.renderer;
+ _cam=new T.Vector3();_camL=new T.Vector3();_inv=new T.Matrix4();_lastCam=new T.Vector3(1e9,1e9,1e9);
+ if(!new T.Raycaster().layers)throw new Error('LOD: this three.js has no Raycaster.layers');
+ if(!T.Raycaster.prototype._lodPatched){const RP=T.Raycaster.prototype;
+  for(const k of ['intersectObject','intersectObjects']){const f=RP[k];
+   RP[k]=function(){const m=this.layers.mask;this.layers.mask=m|HIDE;try{return f.apply(this,arguments);}finally{this.layers.mask=m;}};}
+  RP._lodPatched=true;}
+ L.root=new T.Group();L.root.name='LOD';L.root.userData.probeSkip=true;L.root.userData.lodCopy=true;L.root.matrixAutoUpdate=false;
+ const q=/[?&]lod=([01])/.exec(location.search||'');if(q)O.enabled=q[1]==='1';
+ // drive update() from the scene's own render: no edit to the build's frame loop, and it runs after three.js has
+ // updated every matrixWorld for this frame, so a moved original is caught before it is drawn stale
+ if(O.auto!==false){const prev=S.onBeforeRender;S.onBeforeRender=function(r,sc,cam){if(prev)prev.apply(this,arguments);if(cam===CAM)L.update();};}
+ return L;};
+ L.apply=function(root){const t0=performance.now();root=root||S;S.updateMatrixWorld(true);const list=[];
+ skipRoots=new Set((typeof O.skipUnder==='function'?O.skipUnder():O.skipUnder)||[]);
+ root.traverse(o=>{if(wanted(o))list.push(o);});
+ for(const o of list){let rec=null;try{rec=o.isInstancedMesh?addInst(o):addMesh(o);}catch(e){console.warn('LOD: skipped '+(o.name||o.type)+': '+e.message);}
+  if(!rec)continue;rec.ident=matEq(o.matrixWorld,new T.Matrix4());recs.push(rec);for(const c of rec.copies)L.root.add(c);L.managed++;}
+ L.applyMs=Math.round(performance.now()-t0);L._on=false;setEnabled(O.enabled);if(O.ui)mkUI();dirty=true;return L.stats();};
+ function setEnabled(on){on=!!on;if(on===L._on)return;L._on=on;
+ for(const rec of recs)if(!rec.dead)rec.o.layers.mask=on?HIDE:rec.mask0;
+ if(on){S.add(L.root);dirty=true;}else if(L.root.parent)L.root.parent.remove(L.root);paint();}
+ Object.defineProperty(L,'enabled',{get:()=>L._on,set:setEnabled});
+ L.update=function(force){if(!L._on||!CAM)return;const now=performance.now();
+ if(queue.length)pump(O.buildMs);
+ CAM.updateMatrixWorld();_cam.setFromMatrixPosition(CAM.matrixWorld);const moved=_cam.distanceTo(_lastCam)>O.moveEps;
+ stale();
+ if(force||((moved||dirty)&&now-lastBand>=O.throttle)){band();lastBand=now;_lastCam.copy(_cam);dirty=false;}
+ else sync();};
+ // build every pending proxy now and update (verify, screenshots)
+ L.flush=function(){band();while(queue.length)pump(1e9);band();lastBand=performance.now();paint();return L.stats();};
+ L._recs=recs;   // for diagnostics only
+ L.release=function(o){for(const rec of recs)if(rec.o===o&&!rec.dead)release(rec);};
+ L.stats=function(){let full=0,drawn=0,chunks=0,off=0,far=0,inst=0,kept=0,copies=0;
+ for(const rec of recs){if(rec.dead)continue;full+=rec.full||0;drawn+=rec.drawn||0;
+  if(rec.kind==='mesh'){chunks+=rec.chunks.length;for(const ch of rec.chunks){const on=rec.comb?ch.key>=0:ch.m._lodOn;if(!on)off++;else if(ch.lv)far++;}}
+  else{inst+=rec.n;for(const l of rec.lvls)kept+=l.im.count;}
+  for(const c of rec.copies)if(c.visible)copies++;}
+ return {enabled:L._on,managed:L.managed,applyMs:L.applyMs,chunks,chunksFar:far,chunksOff:off,instances:inst,instancesDrawn:kept,
+  managedTris:full,managedTrisDrawn:drawn,visibleCopies:copies,pending:queue.length,live:{calls:R.info.render.calls,tris:R.info.render.triangles},
+  measured:L.lastMeasure};};
+ // render the current view with LOD off and on; returns {off:{calls,tris,ms},on:{...}}
+ L.measure=function(frames){frames=frames||2;const was=L._on,draw=O.render||(()=>R.render(S,CAM)),gl=R.getContext();
+ const run=()=>{R.info.reset();draw();const c=R.info.render.calls,t=R.info.render.triangles;gl.finish();const t0=performance.now();
+  for(let i=0;i<frames;i++)draw();gl.finish();return {calls:c,tris:t,ms:+((performance.now()-t0)/frames).toFixed(1)};};
+ setEnabled(false);const off=run();setEnabled(true);L.flush();const on=run();setEnabled(was);
+ L.lastMeasure={off,on};paint();return L.lastMeasure;};
+
+ // ---------------------------------------------------------------- the panel (outside #ui, so view sweeps never click it)
+ function fmt(n){return n>=1e6?(n/1e6).toFixed(2)+'M':n>=1e3?(n/1e3).toFixed(1)+'k':String(n|0);}
+ function mkUI(){if(panel||!document.body)return;panel=document.createElement('div');panel.id='lodPanel';
+ panel.style.cssText='position:fixed;right:8px;bottom:64px;z-index:30;font:11px/1.35 ui-monospace,Menlo,monospace;color:#eee;background:rgba(0,0,0,.55);padding:4px 7px;border-radius:4px;max-width:46vw;'+(O.panelStyle||'');
+ btn=document.createElement('button');btn.style.cssText='font:11px system-ui;margin-right:6px';btn.onclick=()=>{setEnabled(!L._on);};
+ const mb=document.createElement('button');mb.textContent='measure';mb.style.cssText='font:11px system-ui';mb.onclick=()=>L.measure();
+ txt=document.createElement('pre');txt.style.cssText='margin:3px 0 0;white-space:pre-wrap;font:inherit';
+ panel.append(btn,mb,txt);document.body.appendChild(panel);
+ addEventListener('keydown',e=>{const tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT'||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key&&e.key.toLowerCase()===O.key)setEnabled(!L._on);});
+ setInterval(paint,600);paint();}
+ function paint(){if(!txt)return;btn.textContent='LOD '+(L._on?'on':'off')+' ('+O.key+')';
+ const s=L.stats(),m=L.lastMeasure;
+ let t='drawn  calls '+s.live.calls+'  tris '+fmt(s.live.tris);
+ if(m)t+='\nmeasured  off '+m.off.calls+' / '+fmt(m.off.tris)+'  on '+m.on.calls+' / '+fmt(m.on.tris);
+ if(L._on)t+='\nmanaged tris '+fmt(s.managedTrisDrawn)+' of '+fmt(s.managedTris)+'  inst '+fmt(s.instancesDrawn)+' of '+fmt(s.instances)+
+  '\nchunks '+s.chunks+' (far '+s.chunksFar+', off '+s.chunksOff+')'+(s.pending?'  building '+s.pending:'');
+ txt.textContent=t;}
+ window.LOD=L;
+})();
 // ---------------------------------------------------------------- error panel
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
@@ -38,10 +415,19 @@ function reseed(s){_seed=s>>>0;}
 function rng(){_seed|=0;_seed=_seed+0x6D2B79F5|0;let t=Math.imul(_seed^_seed>>>15,1|_seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
 function rr(a,b){return a+(b-a)*rng();}
 function h3(x,y,z){const s=Math.sin(x*12.9898+y*78.233+z*37.719)*43758.5453;return s-Math.floor(s);}
+// Each h3 is a Math.sin, and sampling a terrain or a texture asks for the same lattice cells again and again: a
+// cell's eight corners are kept in a small direct-mapped cache (exact: the same h3 values, the same arithmetic in
+// the same order, so the same results bit for bit). It was most of every biome's load.
+var _vnK,_vnV;
 function vnoise(x,y,z){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
- const sm=t=>t*t*(3-2*t);const u=sm(xf),v=sm(yf),w=sm(zf);const l=(a,b,t)=>a+(b-a)*t;
- return l(l(l(h3(xi,yi,zi),h3(xi+1,yi,zi),u),l(h3(xi,yi+1,zi),h3(xi+1,yi+1,zi),u),v),
-          l(l(h3(xi,yi,zi+1),h3(xi+1,yi,zi+1),u),l(h3(xi,yi+1,zi+1),h3(xi+1,yi+1,zi+1),u),v),w);}
+ if(_vnK===undefined){_vnK=new Float64Array(4096*3).fill(NaN);_vnV=new Float64Array(4096*8);}
+ const s=(Math.imul(xi|0,73856093)^Math.imul(yi|0,19349663)^Math.imul(zi|0,83492791))&4095,k=s*3,o=s*8,V=_vnV;
+ if(_vnK[k]!==xi||_vnK[k+1]!==yi||_vnK[k+2]!==zi){_vnK[k]=xi;_vnK[k+1]=yi;_vnK[k+2]=zi;
+  V[o]=h3(xi,yi,zi);V[o+1]=h3(xi+1,yi,zi);V[o+2]=h3(xi,yi+1,zi);V[o+3]=h3(xi+1,yi+1,zi);
+  V[o+4]=h3(xi,yi,zi+1);V[o+5]=h3(xi+1,yi,zi+1);V[o+6]=h3(xi,yi+1,zi+1);V[o+7]=h3(xi+1,yi+1,zi+1);}
+ const u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ const a=V[o]+(V[o+1]-V[o])*u,b=V[o+2]+(V[o+3]-V[o+2])*u,c=V[o+4]+(V[o+5]-V[o+4])*u,d=V[o+6]+(V[o+7]-V[o+6])*u;
+ const e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
 function fbm(x,y,z,o){o=o||3;let a=0,f=1,s=0;for(let i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f)/f;s+=1/f;f*=2.03;}return a/s;}
 const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 
@@ -74,8 +460,18 @@ function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
 // At 512 px that is 64 px per metre, which is what the panel and board sizes
 // below are picked against — change the tile size and they stop meaning anything.
-function canvasTex(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);
- const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
+//
+// Painting waits until something first reads the texture's `.image`, which three.js does when it uploads the
+// texture for a draw: a page pays only for the textures it shows. Painting every texture up front was ~11 s of
+// each Ancients page's load, before its first frame. Pass eager=true when fn draws from rng(): deferring it would
+// shift every later draw in the seeded stream (Screamers' flBarkTex). The pixels are the same either way.
+function canvasTex(w,h,fn,rep,eager){const c=document.createElement('canvas');c.width=w;c.height=h;
+ let paint=()=>{paint=null;fn(c.getContext('2d'),w,h);};if(eager)paint();
+ const t=new THREE.CanvasTexture(c);
+ if(paint)Object.defineProperty(t,'image',{configurable:true,enumerable:true,
+  get(){if(paint)paint();return c;},
+  set(v){paint=null;Object.defineProperty(t,'image',{value:v,writable:true,configurable:true,enumerable:true});}});
+ t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.encoding=THREE.sRGBEncoding;if(rep)t.repeat.set(rep,rep);return t;}
 // A roughness/metalness map is DATA, not colour. Leaving it sRGB-encoded (which
 // canvasTex does, correctly, for albedo) bends every value through a gamma curve
 // and the surface comes back wrong.
@@ -225,7 +621,11 @@ const WIN=d=>d>0?MAT.winDead:MAT.winIntact;
 const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new THREE.Color(0x0a0c0e);
 
 // ---------------------------------------------------------------- instancing kit
-const KIT={defs:{},items:{},order:[]};
+// `meshes` is filled by kbake: name -> the one InstancedMesh that item baked
+// into. One kdef is one InstancedMesh, so anything that wants to switch a whole
+// class of instanced detail on or off at run time (the firelight, at night) can
+// do it with a single .visible, with no per-instance bookkeeping.
+const KIT={defs:{},items:{},order:[],meshes:{}};
 function kdef(name,geo,mat){KIT.defs[name]={geo,mat};KIT.items[name]=[];KIT.order.push(name);}
 let KOFF=[0,0,0],KXF=null; // builder offset; optional {m,q} transform (leaning spire)
 function kput(name,p,q,s,c){let P=p,Q=q;if(KXF){const v=new THREE.Vector3(p[0],p[1],p[2]).applyMatrix4(KXF.m);P=[v.x,v.y,v.z];Q=(q?q.clone():new THREE.Quaternion()).premultiply(KXF.q);}
@@ -247,7 +647,7 @@ function kbake(parent){KIT_BAKED=true;const m=new THREE.Matrix4(),pos=new THREE.
   it.forEach((o,i)=>{pos.set(o.p[0],o.p[1],o.p[2]);const s=typeof o.s==='number'?sc.set(o.s,o.s,o.s):sc.set(o.s[0],o.s[1],o.s[2]);
    m.compose(pos,o.q||q0,s);im.setMatrixAt(i,m);if(o.c)im.setColorAt(i,o.c);});
   if(im.instanceColor){const W=new THREE.Color(0xffffff);it.forEach((o,i)=>{if(!o.c)im.setColorAt(i,W);});}
-  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);tot+=it.length;}
+  if(im.instanceColor)im.instanceColor.needsUpdate=true;im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;parent.add(im);KIT.meshes[name]=im;tot+=it.length;}
  window._instances=tot;}
 // orientation helpers
 const _M=new THREE.Matrix4(),_V0=new THREE.Vector3(),_UP=new THREE.Vector3(0,1,0),_X=new THREE.Vector3(1,0,0);
@@ -474,19 +874,23 @@ function stripRing(gx,gy,gz,r,d,n){
  n=n||28;const L=TAU*r/n*.92;for(let k=0;k<n;k++){const th=(k+.5)/n*TAU;const lit=d>0?(rng()<.10):true;
   kput('strip',[gx+r*Math.cos(th),gy,gz+r*Math.sin(th)],qEuler(0,-th-Math.PI/2,0),[L,1,1],lit?(d>0&&rng()<.5?CYAN.clone().multiplyScalar(.5):CYAN):DEAD);}}
 function mullions(gx,gy,gz,r,h,n,d){for(let k=0;k<n;k++){const th=k/n*TAU;kput(d>0?'mullR':'mullW',[gx+r*Math.cos(th),gy+h/2,gz+r*Math.sin(th)],qEuler(0,-th,0),[1,h,1],null);}}
-function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
+// `noStrip` suppresses the light-strip ring. The strips are an UNLIT material,
+// so a dead segment renders at a fixed pale grey rather than going dark with
+// the scene; on a building meant to have no power at all (The Project) that
+// shows up at night as a row of glowing dashes. Every existing caller omits it.
+function glassBand(parent,rFn,y0,h,d,gx,gy,gz,n,noStrip){ // gallery ring: glass drum (intact) or bare mullions round a dark drum (ruin)
  const o={rFn:y=>rFn(y0+y)*(1.09+.05*Math.sin(Math.PI*y/h)),H:h,nu:48,nv:6};
  if(d===0){mesh(lathe(o),MAT.glass,parent,0,y0,0);}
  mesh(lathe({rFn:y=>rFn(y0+y)*.97,H:h,nu:32,nv:2}),MAT.dark,parent,0,y0,0);
  mullions(gx,gy+y0,gz,rFn(y0+h/2)*1.1,h,n||36,d);
- stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
+ if(!noStrip)stripRing(gx,gy+y0+h*.55,gz,rFn(y0+h/2)*.95,d,n||28);
  // ledge slab under the band
  kput('slab',[gx,gy+y0-.4,gz],null,[rFn(y0)*1.16,.8,rFn(y0)*1.16],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));}
 function floorSlabs(gx,gy,gz,rFn,y0,y1,step,d,cut){for(let y=y0;y<y1;y+=step){if(cut!=null&&y>cut+3)break;kput('slab',[gx,gy+y,gz],null,[rFn(y)*.93,.5,rFn(y)*.93],new THREE.Color(0x2a2c30));}}
-function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
+function scatterMoss(gx,gy,gz,rMin,rMax,n,sMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax);const s=rr(.5,sMax);
  kput('moss',[gx+r*Math.cos(a),gy+s*.25,gz+r*Math.sin(a)],qEuler(0,rng()*TAU,0),[s*rr(.8,1.4),s*.38,s*rr(.8,1.4)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
-function mossOnRing(gx,gy,gz,r,n,sMax){for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
-function vinesOnRing(gx,gy,gz,r,n,lMax){for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
+function mossOnRing(gx,gy,gz,r,n,sMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,s=rr(.6,sMax);kput('moss',[gx+r*Math.cos(a)*rr(.85,1.02),gy+s*.2,gz+r*Math.sin(a)*rr(.85,1.02)],null,[s*1.3,s*.4,s*1.3],new THREE.Color().setHSL(rr(.2,.3),rr(.3,.5),rr(.05,.12)));}}
+function vinesOnRing(gx,gy,gz,r,n,lMax){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,L=rr(4,lMax);kput('vine',[gx+r*Math.cos(a),gy,gz+r*Math.sin(a)],qEuler(rr(-.12,.12),0,rr(-.12,.12)),[rr(.8,1.6),L,rr(.8,1.6)],null);}}
 // Rubble piles AGAINST the wall it fell from. The radius is biased hard toward
 // rMin, blocks are largest there, and they bank up into a talus slope that
 // thins to a scatter at the outer edge. A uniform annulus reads as a decorative
@@ -543,22 +947,55 @@ function upFaces(src,count,minNY){return faceSamples(src,count,minNY,1.01);}
 function sideFaces(src,count){return faceSamples(src,count,0,.34);}
 // The outer band of the flat surfaces is where a ledge is: water leaves the
 // building there, so that is where vines root and where stains start.
-function ledgePoints(geos,n,frac){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+// `cx,cz` is the centre the radius is measured from, and it is NOT always the
+// builder's origin. A crescent is drawn about a centre of curvature well off
+// that origin (the Hotel's is 63 m away), so measuring from 0,0 ranks the two
+// HORNS of the crescent as its outermost points and hangs every vine and every
+// water stain off the two ends of the building instead of off its long face.
+function ledgePoints(geos,n,frac,cx,cz){const s=upFaces(geos,n*4,.5);if(!s.length)return[];
+ if(cx!==undefined)for(const f of s)f.r=Math.hypot(f.p[0]-cx,f.p[2]-cz);
  s.sort((a,b)=>b.r-a.r);return s.slice(0,Math.max(1,Math.round(s.length*(frac||.3))));}
-function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,n,.55)){const s=rr(.5,sMax);
+function mossOnSurface(geos,gx,gy,gz,n,sMax){for(const f of upFaces(geos,biomeN(n),.55)){const s=rr(.5,sMax);
  kput('moss',[gx+f.p[0],gy+f.p[1]+s*.15,gz+f.p[2]],qEuler(0,rng()*TAU,0),[s*rr(.8,1.5),s*rr(.22,.42),s*rr(.8,1.5)],new THREE.Color().setHSL(rr(.22,.32),rr(.3,.5),rr(.05,.12)));}}
-function vinesFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.3)){const L=rr(4,lMax);
+function vinesFromLedge(geos,gx,gy,gz,n,lMax,cx,cz){for(const f of ledgePoints(geos,biomeN(n),.3,cx,cz)){const L=rr(4,lMax);
  kput('vine',[gx+f.p[0],gy+f.p[1],gz+f.p[2]],qEuler(rr(-.14,.14),rng()*TAU,rr(-.14,.14)),[rr(.8,1.7),L,rr(.8,1.7)],null);}}
 // Water-staining below each ledge: a multiply-blended streak, so it darkens
 // whatever wall it lands on instead of painting a grey rectangle over it.
-function stainsFromLedge(geos,gx,gy,gz,n,lMax){for(const f of ledgePoints(geos,n,.45)){
- const L=rr(5,lMax),a=Math.atan2(f.p[2],f.p[0]),o=1.004;
- kput('stain',[gx+f.p[0]*o,gy+f.p[1]-L*.5,gz+f.p[2]*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
+//
+// Still radial, which is the standing complaint against it on a rectilinear
+// plan — but it is now radial about `cx,cz` rather than always about the
+// builder's origin. On the Hotel, whose crescent is struck from a centre 63 m
+// behind the origin, the two are 43 degrees apart at the horns, so every
+// streak at the ends of the building was laid across the facade instead of
+// down it. Callers on a circular plan centred on their own origin pass nothing
+// and are unchanged.
+function stainsFromLedge(geos,gx,gy,gz,n,lMax,cx,cz){const ox=cx||0,oz=cz||0;
+ for(const f of ledgePoints(geos,n,.45,cx,cz)){
+ const L=rr(5,lMax),a=Math.atan2(f.p[2]-oz,f.p[0]-ox),o=1.004;
+ kput('stain',[gx+ox+(f.p[0]-ox)*o,gy+f.p[1]-L*.5,gz+oz+(f.p[2]-oz)*o],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1.4,4.5),L,1],null);}}
 
 // VEGETATION HAND-OFF. The Krator flora pass is a separate project and will
 // replace VEG.tree wholesale; everything in this kit that plants anything goes
 // through it, so that swap is one assignment and touches no builder.
 // y is the ground height at (x,z) — ask terrainH, do not assume 0.
+// ---------------------------------------------------------------- THE BIOME
+// One dial the whole kit's planting hangs off, so "overgrown" is a setting
+// rather than 33 separate edits. `lush` multiplies every scattered population:
+// 1 is the kit as designed, 3 is a site the plain has taken back.
+//
+// A builder is CROSS-COMPATIBLE with this when its own planting loops route
+// their counts through BIOME.lush too — the shared helpers below already do,
+// so a type that plants only via trees()/scatterMoss()/VEG.tree gets it free,
+// and a type with a bespoke scatter (both forest types, Arcbeam, Arcoindian)
+// has to opt in. That difference is exactly what the biome pass is testing.
+//
+// It is a GLOBAL and the builders run in sequence, so anything that sets it
+// must put it back — see `withBiome`, which is the only sanctioned way in.
+const BIOME={lush:1};
+function withBiome(lush,fn){const was=BIOME.lush;BIOME.lush=lush;
+ try{fn();}finally{BIOME.lush=was;}}
+const biomeN=n=>Math.round(n*BIOME.lush);
+
 // The hand-off point for flora. Every planting call in the kit goes through
 // this, so changing it changes the forest everywhere at once — which is the
 // point: see the LEAF CARD note in 34-kitdefs.js for why the four-icosahedra
@@ -582,7 +1019,7 @@ const VEG={
    // no texture at all — came back as near-black shrubs.
    new THREE.Color().setHSL(rr(.22,.34),rr(.30,.52),rr(.40,.68)));}},
 };
-function trees(gx,gz,rMin,rMax,n){for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
+function trees(gx,gz,rMin,rMax,n){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()*TAU,r=rr(rMin,rMax),h=rr(6,14);
  const x=gx+r*Math.cos(a),z=gz+r*Math.sin(a);VEG.tree(x,terrainH(x,z),z,i%3,h);}}
 // APRON. Every structure meets the ground on a hard line without one. This lays
 // a graded skirt from the foot of the mass out to the ground, so the two blend.
@@ -600,6 +1037,14 @@ function stats(){}
 // ---------------------------------------------------------------- v2 helpers
 kdef('strutW',new THREE.BoxGeometry(1,1,1),MAT.white); kdef('strutR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('cell',new THREE.BoxGeometry(1,1,.5),MAT.dot);
+// The same cell on a LIT material. `cell` is MeshBasicMaterial, which is right
+// for a window that is on and wrong for one that is off: a DEAD instance colour
+// is 0x0a0c0e and an unlit material ignores the scene, so it renders at a fixed
+// ~60/255 grey. In daylight that reads as a dark opening and nobody noticed.
+// Put the scene into night for The Project and every dead window on the tower
+// became a pale panel, brighter than the wall around it. This one goes black
+// when the light does.
+kdef('cellD',new THREE.BoxGeometry(1,1,.5),MAT.winDead);
 kdef('winSmI',arcWindowGeo(1.1,2,.4),MAT.winIntact); kdef('winSmD',arcWindowGeo(1.1,2,.4),MAT.winDead);
 function beam(name,a,b,w,dp,color){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.sqrt(dx*dx+dy*dy+dz*dz);
  const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(dx,dy,dz).normalize());kput(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[w,L,dp],color||null);}
@@ -673,8 +1118,13 @@ kdef('pane',new THREE.BoxGeometry(1,1,.12),MAT.glass);kdef('paneD',new THREE.Box
 kdef('slabC',new THREE.CylinderGeometry(1,1,1,48),MAT.concrete);kdef('slabCR',new THREE.CylinderGeometry(1,1,1,48),MAT.concreteR);
 const BOXC=d=>d>0?'boxCR':'boxC', SLABC=d=>d>0?'slabCR':'slabC';
 function se(th,n){return 1/Math.pow(Math.pow(Math.abs(Math.cos(th)),n)+Math.pow(Math.abs(Math.sin(th)),n),1/n);}
-function bodyGroup(G,y0,d,dd,build,cutY,topR){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d<2)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
- if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d);}
+// Only a TOPPLED tower (d===2) is cut at cutY; every other level stands at full
+// height. The test used to be `d<2`, which sent decay 3 down the toppled branch
+// without the fallen upper body that is the only reason to cut it, so every
+// rehabilitated tower was a three-storey stump. `stand` predates the fix (the
+// Projects, decay 4, pass it) and is now redundant but harmless.
+function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.position.set(0,y0,0);G.add(P);useGroupXF(P);if(d!==2||stand)build(P,dd,y0,null,false);else build(P,1,y0,cutY,false);endGroupXF();
+ if(d===2)toppledUpper(G,0,0,cutY,topR,(U)=>build(U,1,cutY,null,true),d,1,null,(U,a,b)=>build(U,1,a,b,b==null));}
 
 // ---------------------------------------------------------------- v5 materials
 MAT.rock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x8a5a42,roughness:1,side:DS});
@@ -733,6 +1183,114 @@ kdef('waterButt',new THREE.CylinderGeometry(1,1,1,10),MAT.corrugate);
 kdef('planter',new THREE.BoxGeometry(1,1,1),MAT.timber);
 kdef('plank',new THREE.BoxGeometry(1,1,1),MAT.timber);
 
+// ---------------------------------------------------------------- FIRELIGHT
+// The kit's lit window is CYAN — `litC`, `stripRing`, `MAT.strip` — because
+// that is the Ancients' own electric light, and every intact structure in the
+// showcase still carries it. Fire is the opposite signal: a later people
+// burning things inside a building that has had no power for five thousand
+// years. So it gets its own materials, its own kit items, and its own
+// InstancedMeshes — which is also what makes the night state a two-line
+// visibility toggle instead of a rebuild (see setNight in 92-camera.js).
+//
+// Everything here is UNLIT (MeshBasicMaterial): a scene light cannot make a
+// window brighter than the sunlit wall around it — that is a standing kit-wide
+// complaint (see Plymouth in KNOWN_ISSUES) — so the fire has to BE the light
+// rather than receive it.
+TEX.ember=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const rad=Math.hypot(x-w/2,y-h/2)/(w/2);
+  const a=Math.pow(clamp(1-rad,0,1),2.2)*(.72+.28*(fbm(x/7,y/7,3.7,2)-.5)*2);
+  d[i]=255;d[i+1]=178;d[i+2]=96;d[i+3]=clamp(a,0,1)*255;}
+ g.putImageData(id,0,0);});
+TEX.ember.wrapS=TEX.ember.wrapT=THREE.ClampToEdgeWrapping;
+// The flame itself, seen through an opening: hot and pale in the middle, going
+// to a deep ember at the edges, mottled so no two windows read the same.
+TEX.flame=canvasTex(64,64,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const fy=1-y/h;                                   // hotter low, where the fuel is
+  let v=clamp(.30+.85*fy*fy+(fbm(x/9,y/6,5.1,3)-.5)*1.1,0,1);
+  d[i]=255*clamp(v*1.25,0,1);d[i+1]=255*clamp(v*v*1.05,0,1);d[i+2]=255*clamp(v*v*v*.8,0,1);d[i+3]=255;}
+ g.putImageData(id,0,0);});
+TEX.flame.wrapS=TEX.flame.wrapT=THREE.ClampToEdgeWrapping;
+MAT.flame=new THREE.MeshBasicMaterial({map:TEX.flame,color:0xffffff,side:DS});
+MAT.ember=new THREE.MeshBasicMaterial({map:TEX.ember,color:0xffffff,transparent:true,
+ blending:THREE.AdditiveBlending,depthWrite:false,fog:false,side:DS});
+// Three quads crossed about the vertical, like the leaf card: a glow has to
+// read from any bearing, and this kit has no billboard. Six triangles.
+function crossGeo(){const P=[],N=[],U=[];
+ for(let q=0;q<3;q++){const a=q*Math.PI/3,c=Math.cos(a),s=Math.sin(a);
+  const V=[[-c,-1,-s],[c,-1,s],[c,1,s],[-c,-1,-s],[c,1,s],[-c,1,-s]];
+  const T=[[0,0],[1,0],[1,1],[0,0],[1,1],[0,1]];
+  for(let i=0;i<6;i++){P.push(V[i][0],V[i][1],V[i][2]);N.push(0,1,0);U.push(T[i][0],T[i][1]);}}
+ const g=new THREE.BufferGeometry();
+ g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));
+ g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));return g;}
+kdef('fireWin',new THREE.PlaneGeometry(1,1),MAT.flame);   // the opening, filled with fire
+kdef('ember',new THREE.PlaneGeometry(1,1),MAT.ember);     // the spill out of it
+kdef('emberB',crossGeo(),MAT.ember);                      // a glow seen from any bearing
+const FIREKIT=['fireWin','ember','emberB'];               // what setNight() toggles
+
+// FIRE TERRITORIES over (bay, storey).
+//
+// A 50% coin flip per cell renders as dither, and dither is exactly what this
+// must not be. What has to read is that PARTICULAR PARTS of the building are
+// occupied: contiguous blocks of bays and floors, with dark floors and dark
+// bays between them, so the elevation says "these four storeys of this side,
+// and that stack over there, and nothing in between" — different gangs, each
+// holding a piece. So the mask is a handful of seeded rectangles, one per
+// gang, frayed at their edges by an fbm so none of them is a clean lit
+// rectangle and so a few rooms inside each are dark.
+//
+// Takes and restores the global PRNG, because it is called once in the middle
+// of a builder and must not shift that builder's stream.
+function fireTerritories(nBay,nSto,seed,n){const T=[],s0=_seed;reseed(seed);
+ for(let i=0;i<n;i++)T.push({b:Math.floor(rng()*nBay),w:Math.round(rr(6,14)),
+  y:Math.round(rr(-8,Math.max(1,nSto-6))),h:Math.round(rr(12,34)),k:rr(0,99)});
+ _seed=s0;return T;}
+function fireBurns(T,nBay,b,s){
+ for(const t of T){const db=((b-t.b)%nBay+nBay)%nBay;if(db>=t.w)continue;
+  const ds=s-t.y;if(ds<0||ds>=t.h)continue;
+  const e=clamp(Math.min(Math.min(db,t.w-1-db)/(t.w*.42),Math.min(ds,t.h-1-ds)/(t.h*.40)),0,1);
+  if(fbm(b*.42+t.k,s*.30,t.k,2)<.30+.52*e)return true;}
+ return false;}
+// THE ONE ENTRY POINT. Three buildings want this (Projects A, D and H) on three
+// completely different window grids — A's 32 bays of cell windows, D's 28 bays
+// of glazed ribbon, H's 20 slits on four flat faces — and the one thing this kit
+// has been bitten by repeatedly is a helper reimplemented privately in two or
+// three fragments (stripRing, the canopy blob). So the grid is the CALLER's and
+// the mask is shared: hand it your bay and storey counts and a seed, get back a
+// predicate. It keeps the tally too, because "roughly 50%" cannot be eyeballed
+// on a clustered mask and has to be counted — window._projectFire, which
+// verify.py prints in its counters line.
+const PROJFIRE={};
+window._projectFire=PROJFIRE;
+function fireMask(key,nBay,nSto,seed,n){
+ const T=fireTerritories(nBay,Math.max(1,nSto),seed,n);
+ const rec=PROJFIRE[key]||(PROJFIRE[key]={lit:0,cells:0,pits:0});
+ const f=(b,s)=>{const on=fireBurns(T,nBay,b,s);rec.cells++;if(on)rec.lit++;return on;};
+ f.raw=(b,s)=>fireBurns(T,nBay,b,s);     // same question, asked off the record
+ return f;}
+// One burning window: the opening filled with flame, proud of the shell, and an
+// additive card of spill over it. `n` is the outward normal, `q` its quaternion.
+function fireWindow(p,n,q,w,h){const b=rr(.55,1);
+ kput('fireWin',[p[0]+n[0]*.45,p[1],p[2]+n[2]*.45],q,[w,h,1],
+  new THREE.Color().setHSL(rr(.035,.075),rr(.85,1),clamp(.30+b*.34,0,.72)));
+ kput('ember',[p[0]+n[0]*.85,p[1]+h*.15,p[2]+n[2]*.85],q,[w*4.2,h*4.8,1],
+  new THREE.Color().setHSL(rr(.035,.08),1,clamp(.14+b*.34,0,.46)));}
+// A fire on a floor: a pool of light on the deck, the flame over it, and a
+// halo over that. All three are the radial ember card — a flat quad of the
+// FLAME texture laid horizontal read as a glowing rectangle of carpet, which
+// is what the first cut of this looked like.
+function firePit(key,x,y,z,s){
+ if(PROJFIRE[key])PROJFIRE[key].pits++;
+ kput('ember',[x,y+.15,z],qEuler(-Math.PI/2,rng()*TAU,0),[s*3.4,s*3.4,1],
+  new THREE.Color().setHSL(rr(.04,.075),1,.32));
+ kput('emberB',[x,y+s*.7,z],qEuler(0,rng()*TAU,0),[s*1.35,s*1.5,s*1.35],
+  new THREE.Color().setHSL(rr(.03,.065),1,.50));
+ kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
+  new THREE.Color().setHSL(rr(.04,.09),1,.19));}
+
 // THE REPAIRED PASS.
 //
 // Runs over a FINISHED structure — the group the builder returned — rather than
@@ -773,6 +1331,28 @@ function repairPass(G,d){
    for(let k=0;k<3;k++)kput('moss',[p[0]+rr(-1.3,1.3),p[1]+.95,p[2]+rr(-.9,.9)],null,[.75,.5,.75],new THREE.Color().setHSL(rr(.26,.34),.55,.28));}
   else if(r<.87)kput('plank',[p[0],p[1]+.12,p[2]],qEuler(0,rng()*TAU,0),[rr(2,6),.22,rr(.5,1.3)],null);
   else if(rng()<.5)kput('dot',[p[0],p[1]+1.7,p[2]],qEuler(0,rng()*TAU,0),[1.2,1.2,1],WARM);}}
+// ---------------------------------------------------------------- world-unit UVs (core/materials/opt: the one shared copy)
+// Instances share one geometry, so a box's 0..1 UVs would stretch one texture
+// tile over a 20 m wall and squash it on a 0.2 m beam. This hook reads the
+// instance scale in the vertex shader and picks, per face normal, the two axes
+// that face spans, so every map tiles in metres whatever the instance size.
+// K = 1 / (metres per texture tile); Kv (optional) gives v its own tile size for
+// maps that are not square (Xanadu's bands and valances).
+// A plain mesh keeps the UVs its geometry carries (the kit's lathes and grids are drawn in 8 m tile units, the
+// vernacular ones in the material's own tile); only INSTANCES are re-tiled by their scale.
+//
+// THE PROGRAM KEY. three.js keys a compiled program on onBeforeCompile.toString() (plus customProgramCacheKey()).
+// The old hook was a closure, which prints the same source whatever K it captured, so every world-UV material
+// shared the program of whichever compiled first and rendered at that K. The hook is now built with Function(), so
+// K is in its SOURCE TEXT: each K gets its own program, and the key survives Material.clone() (kbake clones every
+// kdef material and carries onBeforeCompile across; clone() drops customProgramCacheKey, which is set as well for
+// the uncloned material). Used by: Iziz, Highlands, Xanadu, the Ancients kit (77z-iziz-style). Each build opts in
+// through CORE_OPT_FILES in its build.py.
+function vWorldUV(mat,K,Kv){mat.userData.uvK=K;
+ const k=(Kv===undefined||Kv===K)?K.toFixed(4):'vec2('+K.toFixed(4)+','+Kv.toFixed(4)+')';
+ const glsl='#ifdef USE_UV\n#ifdef USE_INSTANCING\nmat4 _im=instanceMatrix;\nvec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));\nvec3 _an=abs(normal);\nvec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));\nvUv=uv*_sw*'+k+';\n#else\nvUv=uv;\n#endif\n#endif';
+ mat.onBeforeCompile=new Function('sh','sh.vertexShader=sh.vertexShader.replace("#include <uv_vertex>",'+JSON.stringify(glsl)+');');
+ const key='wuv|'+k;mat.customProgramCacheKey=()=>key;return mat;}
 // ================================================================= IZIZ VERNACULAR — materials + kit items
 // What the Izani build today, in timber, reclaimed metal and (for the rich)
 // stone. Every texture here is painted NEAR-GREY and WARM so that the per-
@@ -866,27 +1446,8 @@ TEX.dirt=canvasTex(512,512,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data; 
  g.putImageData(id,0,0);});
 
 // ---------------------------------------------------------------- world-unit UVs
-// Instances share one geometry, so a box's 0..1 UVs would stretch one texture
-// tile over a 20 m wall and squash it on a 0.2 m beam. This hook reads the
-// instance scale in the vertex shader and picks, per face normal, the two axes
-// that face spans, so every map tiles in metres whatever the instance size.
-// K = 1 / (metres per texture tile). kbake() carries onBeforeCompile across
-// its material clone.
-function vWorldUV(mat,K){mat.userData.uvK=K;mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
-#ifdef USE_INSTANCING
-mat4 _im=instanceMatrix;
-vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
-vec3 _an=abs(normal);
-vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
-vUv=uv*_sw*${K.toFixed(4)};
-#else
-vUv=uv;
-#endif
-#endif`);};return mat;}
-// A plain mesh keeps the UVs its geometry carries (the kit's lathes and grids are drawn in 8 m tile units, the
-// vernacular ones in the material's own tile); only INSTANCES are re-tiled by their scale. Before this the hook
-// re-scaled the kit's skyscraper shells by K too, so their panels tiled every 64 m and read as untextured.
+// vWorldUV(mat,K) lives in core/materials/opt/69a-world-uv.js, the one shared copy (each build opts in through
+// CORE_OPT_FILES). It gives every K its own shader program; the copy that used to sit here did not.
 
 // ---------------------------------------------------------------- materials
 MAT.wood=new THREE.MeshStandardMaterial({map:TEX.wood,color:0xffffff,roughness:.92,metalness:0,side:DS});
@@ -916,6 +1477,11 @@ function vnWedgeGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.
 // 1 x 1 x 1 box whose uv is scaled by the caller through the instance? No —
 // instances share one geometry, so the texture tiles per unit of scale; the
 // maps are drawn at 2 m per tile so a 6 m slab shows 3 courses. Good enough.
+// an open SKIRT: the four sloping faces of a hip from a 1 x 1 base (y 0) to a tx x tz opening (y 1), both sides, no
+// top and no soffit — the lower tier of a two-tier roof, so the clerestory between the tiers shows from below
+function vnSkirtGeo(tx,tz){const p=[],uv=[],idx=[];const c=[[-.5,0,-.5],[.5,0,-.5],[.5,0,.5],[-.5,0,.5],[-tx/2,1,-tz/2],[tx/2,1,-tz/2],[tx/2,1,tz/2],[-tx/2,1,tz/2]];
+ for(const f of[[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]])for(const g of[f,f.slice().reverse()]){const b=p.length/3;g.forEach((vi,i)=>{p.push(...c[vi]);uv.push(i===1||i===2?1:0,i>=2?1:0);});idx.push(b,b+1,b+2,b,b+2,b+3);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 const VBOX=new THREE.BoxGeometry(1,1,1);
 const VPOST=new THREE.CylinderGeometry(1,1,1,8).translate(0,.5,0);           // base at y=0
 const VPOSTB=new THREE.CylinderGeometry(.85,1,1,8).translate(0,.5,0);        // tapering
@@ -936,7 +1502,7 @@ kdef('vConeT',VCONE,MAT.thatch);kdef('vConeC',VCONE,MAT.verdigris);kdef('vConeI'
 kdef('vGableS',VGABLE,MAT.shingle);kdef('vGableT',VGABLE,MAT.thatch);kdef('vGableC',VGABLE,MAT.corrugate);kdef('vGableCu',VGABLE,MAT.verdigris);kdef('vGableP',VGABLE,MAT.white);kdef('vGableW',VGABLE,MAT.wood);kdef('vGableSt',VGABLE,MAT.stone);kdef('vGablePl',VGABLE,MAT.plaster);
 kdef('vPyrS',VPYR,MAT.stone);kdef('vPyrCu',VPYR,MAT.verdigris);kdef('vPyrT',VPYR,MAT.thatch);kdef('vPyrSh',VPYR,MAT.shingle);kdef('vPyrC',VPYR,MAT.corrugate);
 kdef('vBatterS',VBATTER,MAT.stone);kdef('vBatterP',VBATTER,MAT.plaster);kdef('vBatterW',VBATTER,MAT.wood);
-kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
+kdef('vSkirtT',vnSkirtGeo(.4,.46),MAT.thatch);kdef('vHipS',VHIP,MAT.shingle);kdef('vHipT',VHIP,MAT.thatch);kdef('vHipCu',VHIP,MAT.verdigris);kdef('vHipC',VHIP,MAT.corrugate);
 MAT.ember=new THREE.MeshBasicMaterial({color:0xff7a2a});               // forge/kiln fire — not electric, so allowed anywhere
 kdef('vEmber',VBALL,MAT.ember);
 kdef('vWinLit',VBOX,MAT.warmPane);kdef('vWinGlass',VBOX,MAT.darkGlass);kdef('vBulb',VBALL,MAT.bulb);kdef('vHoop',new THREE.TorusGeometry(1,.06,5,16),MAT.iron);
@@ -1007,8 +1573,9 @@ function vBeam(a,b,w,c,item){beam(item||'vWood',a,b,w,w,c||null);}
 function vnFrame(x,y,z,w,h,d,ry,c,pr){pr=pr||.14;const nx=Math.max(1,Math.round(w/2.4)),nz=Math.max(1,Math.round(d/2.4));
  for(let i=0;i<=nx;i++){const lx=-w/2+w*i/nx;for(const s of[-1,1]){const p=loc(x,z,lx,s*d/2,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
  for(let j=1;j<nz;j++){const lz=-d/2+d*j/nz;for(const s of[-1,1]){const p=loc(x,z,s*w/2,lz,ry);vPst('vPost',p[0],y,p[1],pr,h,c);}}
- for(const yy of[y+.12,y+h-.12]){   // sill and head rails on all four faces
-  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,d+pr*2,ry,c);}}}
+ for(const yy of y>=.15?[y+h-.12]:[y+.12,y+h-.12]){   // head rails on all four faces; a sill rail too, unless the frame stands on a plinth (the plinth's top is the sill)
+  // the long-face rails run through; the end-face rails butt into them (they used to cross at every corner)
+  for(const s of[-1,1]){const p=loc(x,z,0,s*d/2,ry);vB('vWood',p[0],yy-.1,p[1],w+pr*2,.2,pr*2.2,ry,c);const q=loc(x,z,s*w/2,0,ry);vB('vWood',q[0],yy-.1,q[1],pr*2.2,.2,Math.max(.2,d-pr*2.2),ry,c);}}}
 // Stilts under a raised floor: posts at the corners and along the long sides, with a diagonal brace on each face.
 function vnStilts(x,y,z,w,d,h,ry,c,pr){pr=pr||.18;const nx=Math.max(1,Math.round(w/2.6)),nz=Math.max(1,Math.round(d/2.6));const pts=[];
  for(let i=0;i<=nx;i++)for(let j=0;j<=nz;j++){if(i>0&&i<nx&&j>0&&j<nz&&rng()<.5)continue;const p=loc(x,z,-w/2+w*i/nx,-d/2+d*j/nz,ry);vPst('vPostB',p[0],y-.3,p[1],pr,h+.3,c);pts.push(p);}
@@ -1037,15 +1604,34 @@ function vnGableRoof(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){o
  for(const s of[-1,1]){const zc=s*ext/2,yc=y+(rise-over*rise/(d/2))/2;const p=loc(x,z,0,zc,ry);
   const q=vQ(ry,s*a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
   kput(slabItem,[p[0]+n.x,yc+n.y,p[1]+n.z],q,[w+2*over,thick,S],slabC||null);}
+ // the ridge fill: the slabs are pushed out along their normals, so on a steep pitch their tops part in a V that the
+ // cap hides from the side but not from above. A slab-material bar, rotated to a diamond, closes it
+ {const p=loc(x,z,0,0,ry);kput(slabItem,[p[0],y+rise+thick*.15,p[1]],vQ(ry,Math.PI/4,0),[w+2*over,thick*1.5,thick*1.5],slabC||null);}
  vB('vWood',x,y+rise+thick*.35,z,w+2*over+.1,.22,.5,ry,slabC?slabC.clone().multiplyScalar(.8):vC(0x6a4a30));     // ridge cap
- for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}}   // fascia
+ for(const s of[-1,1]){const p=loc(x,z,0,s*(ext+.02),ry);vB('vWood',p[0],y-over*rise/(d/2)-.32+thick*.2,p[1],w+2*over,.28,.12,ry,vC(0x6a4a30));}   // fascia
+ if(slabItem==='vThatchB')vnThatchDress(x,y,z,w,d,rise,ry,slabC,over,thick,S,a,ext);}
+// THATCH (Round 1 issue: a stripe field at eye level): a second frond layer laid over the first, a touch shorter and
+// darker so its lower edge reads as a course, and a ragged eave — a fringe of short tilted bundles of uneven length
+function vnThatchDress(x,y,z,w,d,rise,ry,c,over,thick,S,a,ext){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);const ye=y-over*rise/(d/2);
+ for(const s of[-1,1]){const zc=s*ext/2*.92,yc=y+(rise-over*rise/(d/2))/2+.05;const p=loc(x,z,0,zc,ry);const q=vQ(ry,s*a,0);
+  const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*1.15);kput('vThatchB',[p[0]+n.x,yc+n.y+rise*.04,p[1]+n.z],q,[w+2*over-.3,thick*.7,S*.84],c2);
+  const L=w+2*over,nb=Math.max(4,Math.round(L/.55));for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.35,.8);const e=loc(x,z,lx,s*(ext-.05),ry);
+   kput('vThatchB',[e[0],ye-len*.35,e[1]],vQ(ry,s*(a+rr(-.15,.25)),rr(-.12,.12)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 // Shed: one slab, high at the back (-z), low at the front (+z).
 function vnShedRoof(x,y,z,w,d,rise,ry,item,c,over,thick){over=over===undefined?.7:over;thick=thick||.2;const a=Math.atan2(rise,d);const ext=d+2*over,S=ext/Math.cos(a);
  const p=loc(x,z,0,0,ry);const q=vQ(ry,a,0);const n=new THREE.Vector3(0,1,0).applyQuaternion(q).multiplyScalar(thick*.5);
  kput(item,[p[0]+n.x,y+rise/2+n.y,p[1]+n.z],q,[w+2*over,thick,S],c||null);}
 // Solid hipped / pyramidal roofs (the wedge items). `over` widens the base; the base drops a little so the wall top is buried.
 function vnHipRoof(item,x,y,z,w,d,rise,ry,c,over){over=over===undefined?.8:over;kput(item,[x,y-.35,z],ry?qEuler(0,ry,0):null,[w+2*over,rise+.35,d+2*over],c||null);
- vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));}   // eaves board
+ vB('vWood',x,y-.62,z,w+2*over+.06,.28,d+2*over+.06,ry,c?c.clone().multiplyScalar(.75):vC(0x5a3e2a));   // eaves board
+ // a thatched hip: a second, steeper frond layer and a ragged fringe round all four eaves
+ if(item==='vHipT'||item==='vPyrT'){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);kput(item,[x,y+rise*.18,z],ry?qEuler(0,ry,0):null,[(w+2*over)*.8,rise*.85,(d+2*over)*.8],c2);
+  vnThatchFringe(x,y-.5,z,w+2*over,d+2*over,ry,c);}}
+// a ragged fringe of short tilted thatch bundles round the four eaves of a W x D roof whose eave line is at y
+function vnThatchFringe(x,y,z,W,D,ry,c){const c2=c?c.clone().multiplyScalar(.86):vC(0x8a7448);
+ for(const [L,lz,rot] of[[W,D/2,0],[W,-D/2,Math.PI],[D,W/2,Math.PI/2],[D,-W/2,-Math.PI/2]]){const nb=Math.max(4,Math.round(L/.55));
+  for(let i=0;i<nb;i++){const lx=-L/2+(i+.5)*L/nb,len=rr(.3,.7);const e=loc(x,z,...(rot===0?[lx,lz]:rot===Math.PI?[-lx,lz]:rot>0?[lz,-lx]:[lz,lx]),ry);
+   kput('vThatchB',[e[0],y-len*.3,e[1]],vQ(ry+rot,.5+rr(-.15,.2),rr(-.1,.1)),[L/nb+.08,.1,len],(i%3?c2:c)||null);}}}
 function vnPyrRoof(item,x,y,z,w,d,rise,ry,c,over){vnHipRoof(item,x,y,z,w,d,rise,ry,c,over);}
 // A thatch cone on a round building; ragged eave by a second slightly larger, shorter cone.
 function vnThatchCone(x,y,z,r,rise,c){kput('vConeT',[x,y-.3,z],null,[r*1.18,rise+.3,r*1.18],c||null);kput('vConeT',[x,y-.55,z],null,[r*1.28,.9,r*1.28],c?c.clone().multiplyScalar(.85):null);}
@@ -1102,7 +1688,9 @@ function vnAwning(x,y,z,ry,w,out,c){const q=vQ(ry,.42,0);const p=loc(x,z,0,out/2
  for(const s of[-1,1]){const pp=loc(x,z,s*(w/2-.1),out-.1,ry);vPst('vPost',pp[0],y-3,pp[1],.05,y-Math.tan(.42)*out+.3-(y-3),vC(0x6a5a48));}}
 function vnBannerPole(x,y,z,ry,h,c){vPst('vPost',x,y,z,.08,h,vC(0x5a4632));const p=loc(x,z,.55,0,ry);vB('vWood',p[0],y+h-.2,p[1],1.1,.08,.08,ry,vC(0x5a4632));
  kput('vCloth',[p[0],y+h-1.6,p[1]],vQ(ry+Math.PI/2,0,0),[.7,2.7,1],c||vC(vPick(VPAL.orange)));}
-function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));}
+function vnChimney(x,y,z,h,r,rusty){vPst(rusty?'vPipeR':'vPipe',x,y,z,r,h,null);vB('vIron',x,y+h+.1,z,r*3,.08,r*3,0,vC(0x2e2a26));for(const s of[-1,1])vB('vIron',x+s*r*1.1,y+h-.05,z,.06,.2,.06,0,vC(0x2e2a26));
+ // a world that keeps a CHIMNEYS list (the city: smoke) gets every chimney top, in world space, like DOORS
+ if(window.CHIMNEYS&&VERN.cur){const c=VERN.cur,sc=c.o.scale||1;const wp=loc(c.x,c.z,x*sc,z*sc,c.ry);CHIMNEYS.push([wp[0],(c.o.y||0)+(y+h+.2)*sc,wp[1],0]);}}
 // Fence of posts and two rails around a rectangle (gap at the front centre of width `gate`).
 function vnFence(x,y,z,w,d,ry,c,gate,h){h=h||1.3;const segs=[[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]];
  if(gate){segs.push([[-w/2,d/2],[-gate/2,d/2]],[[gate/2,d/2],[w/2,d/2]]);}else segs.push([[w/2,d/2],[-w/2,d/2]]);
@@ -1420,19 +2008,10 @@ const HPAL={
 };
 
 // ---------------------------------------------------------------- world UV with separate u/v tile sizes
-// vWorldUV (69b) uses one K for both axes; the lace and frieze maps are not square, so they need Ku != Kv.
-function hWorldUV(mat,Ku,Kv){mat.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace('#include <uv_vertex>',
-`#ifdef USE_UV
-#ifdef USE_INSTANCING
-mat4 _im=instanceMatrix;
-vec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));
-vec3 _an=abs(normal);
-vec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));
-vUv=uv*_sw*vec2(${Ku.toFixed(4)},${Kv.toFixed(4)});
-#else
-vUv=uv;
-#endif
-#endif`);};return mat;}
+// The lace and frieze maps are not square, so they need Ku != Kv: the shared vWorldUV (core/materials/opt/
+// 69a-world-uv.js) takes the second K. This used to be its own closure, and like the old vWorldUV it gave every
+// Ku/Kv the same shader program (three.js keys on the hook's source text), so all of them drew at one scale.
+function hWorldUV(mat,Ku,Kv){return vWorldUV(mat,Ku,Kv);}
 
 // ---------------------------------------------------------------- materials
 const hStd=(o)=>new THREE.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.92,metalness:0,side:DS},o));
@@ -2010,8 +2589,8 @@ function hnNal(x,y,z,ry,w,h,kind,trimC,o){o=o||{};trimC=trimC||hC(HPAL.white);vn
  const v=f(0,.12);kput('hLaceV',[v[0],y-.42,v[1]],qEuler(0,ry,0),[w+.4,.4,1],trimC);
  if(o.accent){const a=f(0,.16);vB('hPaint',a[0],y+h+.2,a[1],.3,.18,.04,ry,o.accent);}}
 // Russian porch (kryltso): a stair to a raised door under a bochka roof on bulbous posts.
-function hnKryltso(x,y,z,ry,w,rise,roofItem,roofC,postC){const run=Math.max(1.6,rise*1.3);const steps=Math.max(3,Math.round(rise/.2));
- const s=loc(x,z,0,run/2,ry);vnStairs(s[0],y,s[1],ry,w,rise,steps,'vWood',postC);
+function hnKryltso(x,y,z,ry,w,rise,roofItem,roofC,postC){const steps=Math.max(3,Math.round(rise/.2)),sr=steps*.32,run=Math.max(1.6,sr);   // round 10: the run is the treads' own (vnStairs lays steps*.32), foot at `run`, top at the wall
+ const s=loc(x,z,0,run-sr/2,ry);vnStairs(s[0],y,s[1],ry,w,rise,steps,'vWood',postC);
  const pl=loc(x,z,0,.5,ry);vB('vWood',pl[0],y+rise-.18,pl[1],w+.6,.18,1.2,ry,postC);
  for(const sx of[-1,1])for(const sz of[0,1]){const p=loc(x,z,sx*(w/2+.15),.1+sz*(run+.6),ry);const base=sz?y:y+rise;const H=(y+rise+2.4)-base;
   vPst('vPostB',p[0],base,p[1],.1,H,postC);kput('hPaintBall',[p[0],base+H*.45,p[1]],null,[.2,.3,.2],postC);}
@@ -3281,6 +3860,10 @@ frame();window._ready=true;
 // One label per registered volume (REG), drawn once into a texture atlas and rendered as ONE mesh of camera-facing
 // quads: a thousand labels cost one draw call. Labels keep a constant size on screen (150 px; landmarks 260 px)
 // and fade out past 300 m, landmarks never. Toggled with the Labels button (they live in the LABELS group).
+// ONE LABEL PER BUILDING: volumes that overlap and share a name before ' — ' (a kit building adopted as several REG
+// entries: the Salvagers' Guild) keep only the landmark or the largest. DECLUTTER: every few frames the labels are
+// projected to the screen and, landmarks first and then nearest first, a label whose box overlaps one already shown
+// is hidden (aHide), so near the camera they no longer pile up.
 // A world that already made LABELS (the city) gets the atlas added to it; one that did not gets the group made here.
 const LABEL_ATLAS={W:4096,H:4096,cw:409,ch:48};
 function labelsBuild(){
@@ -3290,34 +3873,58 @@ function labelsBuild(){
  const count={};for(const r of REG)count[r.name]=(count[r.name]||0)+1;
  let list=REG.filter(r=>r.name&&count[r.name]<8&&(!r.cls||r.cls==='building'||r.cls==='farm'||r.cls==='furniture')&&!(r.tags&&r.tags.part==='wall'));
  const isBig=r=>!!(r.tags&&(r.tags.role||r.tags.landmark));
+ {const head=r=>r.name.split(' — ')[0],better=(a,b)=>(isBig(a)-isBig(b))||(a.r-b.r);const drop=new Set();
+  for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){const a=list[i],b=list[j];if(head(a)!==head(b))continue;if(Math.hypot(a.x-b.x,a.z-b.z)>(a.r+b.r)*.6)continue;drop.add(better(a,b)>=0?b:a);}
+  list=list.filter(r=>!drop.has(r));}
  list.sort((a,b)=>(isBig(b)-isBig(a))||(b.r-a.r));if(list.length>max)list=list.slice(0,max);
  const cv=document.createElement('canvas');cv.width=LABEL_ATLAS.W;cv.height=LABEL_ATLAS.H;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
- const pos=[],apos=[],uv=[],cell=[],big=[],idx=[];
+ const pos=[],apos=[],uv=[],cell=[],big=[],idx=[],hide=[];
  list.forEach((r,i)=>{const cx=(i%cols)*LABEL_ATLAS.cw,cy=Math.floor(i/cols)*LABEL_ATLAS.ch;const B=isBig(r);
   g.fillStyle=B?'rgba(20,12,6,.72)':'rgba(0,0,0,.55)';g.fillRect(cx+1,cy+1,LABEL_ATLAS.cw-2,LABEL_ATLAS.ch-2);
   g.font=(B?'bold 34px':'bold 28px')+' system-ui,sans-serif';g.fillStyle=B?'#ffe2b0':'#f4e8d4';g.textAlign='center';g.textBaseline='middle';
   let t=r.name;while(g.measureText(t).width>LABEL_ATLAS.cw-10&&t.length>4)t=t.slice(0,-2);if(t!==r.name)t=t.slice(0,-1)+'…';g.fillText(t,cx+LABEL_ATLAS.cw/2,cy+LABEL_ATLAS.ch/2+1);
   const y=(r.y||0)+r.h+3,b=i*4;
-  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);}
+  for(const c of[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]]){pos.push(c[0],c[1],0);apos.push(r.x,y,r.z);uv.push((cx+(c[0]+.5)*LABEL_ATLAS.cw)/LABEL_ATLAS.W,1-(cy+(0.5-c[1])*LABEL_ATLAS.ch)/LABEL_ATLAS.H);cell.push(0,0);big.push(B?1:0);hide.push(0);}
   idx.push(b,b+1,b+2,b,b+2,b+3);});
  if(!list.length)return null;
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('aPos',new THREE.Float32BufferAttribute(apos,3));
- geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setIndex(idx);
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('aBig',new THREE.Float32BufferAttribute(big,1));geo.setAttribute('aHide',new THREE.Float32BufferAttribute(hide,1));geo.setIndex(idx);
  // the uv above already addresses the cell, so the shader only flips nothing: cell offsets are baked in
  const tex=new THREE.CanvasTexture(cv);tex.minFilter=THREE.LinearFilter;tex.generateMipmaps=false;
  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:true,fog:false,
   uniforms:{map:{value:tex},uPxToWorld:{value:1}},
-  vertexShader:`attribute vec3 aPos;attribute float aBig;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
+  vertexShader:`attribute vec3 aPos;attribute float aBig;attribute float aHide;uniform float uPxToWorld;varying vec2 vUv;varying float vA;
    void main(){vec4 mv=modelViewMatrix*vec4(aPos,1.0);float dist=-mv.z;float w=aBig>0.5?240.0:170.0;float k=dist*uPxToWorld;
-    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist));vUv=uv;gl_Position=projectionMatrix*mv;}`,
+    mv.xy+=position.xy*vec2(w*k,w*k*48.0/409.0);vA=(aBig>0.5?1.0:(1.0-smoothstep(320.0,560.0,dist)))*(1.0-aHide);vUv=uv;gl_Position=projectionMatrix*mv;}`,
   fragmentShader:`uniform sampler2D map;varying vec2 vUv;varying float vA;void main(){vec4 c=texture2D(map,vUv);c.a*=vA;if(c.a<0.02)discard;gl_FragColor=c;}`});
  const m=new THREE.Mesh(geo,mat);m.frustumCulled=false;m.userData.probeSkip=true;m.name='labels';m.renderOrder=10;LABELS.add(m);
  FRAME_HOOKS.push(()=>{mat.uniforms.uPxToWorld.value=2*Math.tan(camera.fov*Math.PI/360)/innerHeight;});
+ // the declutter pass, every 6th frame: greedy over the labels in priority order against a 64 px screen grid
+ {const H=geo.attributes.aHide,v=new THREE.Vector3(),cellPx=64;let tick=0;const ord=list.map((r,i)=>i);
+  FRAME_HOOKS.push(()=>{if(!m.visible||!LABELS.visible||(tick++%6))return;const W=innerWidth,Hh=innerHeight,grid={},items=[];
+   for(const i of ord){const r=list[i];v.set(r.x,(r.y||0)+r.h+3,r.z).project(camera);const d=camera.position.distanceTo(v.clone().set(r.x,(r.y||0)+r.h+3,r.z));
+    items.push({i,big:isBig(r),d,x:(v.x*.5+.5)*W,y:(.5-v.y*.5)*Hh,on:v.z<1&&v.z>-1&&(isBig(r)||d<560)});}   // a faded label takes no room
+   items.sort((a,b)=>(b.big-a.big)||(a.d-b.d));const ov=(a,b)=>Math.abs(a.x-b.x)<(a.w+b.w)/2&&Math.abs(a.y-b.y)<(a.h+b.h)/2;
+   for(const it of items){let hid=1;if(it.on){it.w=it.big?240:170;it.h=it.w*48/409;const x0=Math.floor((it.x-it.w/2)/cellPx),x1=Math.floor((it.x+it.w/2)/cellPx),y0=Math.floor((it.y-it.h/2)/cellPx),y1=Math.floor((it.y+it.h/2)/cellPx);
+     let clash=false;for(let gx=x0;gx<=x1&&!clash;gx++)for(let gy=y0;gy<=y1&&!clash;gy++){const L=grid[gx+','+gy];if(L)for(const o of L)if(ov(it,o)){clash=true;break;}}
+     if(!clash){hid=0;for(let gx=x0;gx<=x1;gx++)for(let gy=y0;gy<=y1;gy++)(grid[gx+','+gy]||(grid[gx+','+gy]=[])).push(it);}}
+    for(let k=0;k<4;k++)H.array[it.i*4+k]=hid;}
+   H.needsUpdate=true;});}
  window._labels=list.length;return m;}
 labelsBuild();
 // ---------------------------------------------------------------- animation: the lake's ripples drift (the water map scrolls slowly)
 FRAME_HOOKS.push((dt,now)=>{TEX.rlWater.offset.x=(now*.000012)%1;TEX.rlWater.offset.y=(now*.000007)%1;});
 window._water=1;
+// ================================================================= LOD: take over the finished scene (core/lod)
+// Sorts after every build's scene, camera and frame loop, and before 99-tail. It reads the build's `scene`, `camera`
+// and `renderer` (every Krator build names them so) and the build's options from window.LOD_OPTIONS, if it set any.
+// A build that calls LOD.init itself (LOD.root already made) is left alone; so is one that sets LOD_OPTIONS=false.
+(function(){
+ if(typeof LOD==='undefined'||LOD.root)return;
+ const opt=(typeof window.LOD_OPTIONS==='undefined')?{}:window.LOD_OPTIONS;if(opt===false)return;
+ try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));LOD.applied=LOD.apply();}
+ catch(e){const m='LOD: '+(e&&e.stack||e);if(typeof reportErr==='function')reportErr(m);else if(typeof ERR==='function')ERR(m);else console.error(m);}
+})();
 </script>
 
 </body></html>

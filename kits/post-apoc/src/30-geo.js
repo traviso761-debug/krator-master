@@ -16,6 +16,30 @@ const SBS=[];let SB=null;
 function sbBegin(){const b={mn:[1e9,1e9,1e9],mx:[-1e9,-1e9,-1e9]};SBS.push(b);SB=b;return b;}
 function sbEnd(){const b=SBS.pop();SB=SBS.length?SBS[SBS.length-1]:null;if(SB){for(let k=0;k<3;k++){SB.mn[k]=Math.min(SB.mn[k],b.mn[k]);SB.mx[k]=Math.max(SB.mx[k],b.mx[k]);}}return b;}
 const _v=new THREE.Vector3(),_n=new THREE.Vector3(),_nm=new THREE.Matrix3(),_mm=new THREE.Matrix4(),_WC=new THREE.Color(1,1,1);
+/* ANIMATION hooks (build-time data only; nothing here moves a vertex, so bboxes and footprints are untouched). Shaders in 22-mat.js read them.
+   aFlut (cloth buckets: 'cloth', 'awn:*', 'ban:*'): a world-space flutter vector per vertex, 0 where the cloth is pinned. Whoever draws cloth sets CLOTHW,
+   a rule (p, out): p = the vertex in CM's frame, out = the flutter vector in that frame; CM's rotation takes it to world. Unset = still (sacks, hides).
+   aWin ('glass', 'winlit'): a window pane's place in the evening schedule, 0..1 (2 = not a window). aFlk ('glow'): how much a glow piece flickers.
+   SMOKES: smoke sources, recorded by smokeAt() (stovepipe(), fire(), the big stacks) for the instanced puffs in 93-anim.js. */
+const _lp=new THREE.Vector3(),_fl=new THREE.Vector3(),_cm3=new THREE.Matrix3();
+const ATTR1={glass:'aWin',winlit:'aWin',glow:'aFlk'};
+function clothKey(mk){return mk==='cloth'||mk.startsWith('awn:')||mk.startsWith('ban:');}
+let CLOTHW=null;
+function withCloth(rule,fn){const keep=CLOTHW;CLOTHW=rule;try{fn();}finally{CLOTHW=keep;}}
+/* the rules. Socket frame: +z out of the wall, x along it, y up, anchor at the origin. Weights rise from the pinned edge; a sine across the width pins the corners. */
+const _side=(x,w)=>Math.sqrt(Math.max(0,Math.sin(PI*clamp(x/w+.5,0,1))));
+function clothRule(type,o){o=o||{};
+ if(type==='awning'){const w=o.w||2.4,d=o.d||1.4,a=.09;return (p,out)=>{const t=Math.pow(clamp(p.z/d,0,1.2),1.3)*_side(p.x,w)*a;out.set(0,t,t*.3);};}
+ if(type==='banner'){const h=o.h||2,a=.14*Math.min(1.6,Math.max(.7,h/2));return (p,out)=>{const t=Math.pow(clamp(-p.y/h,0,1.2),1.4)*a;out.set(t*.3,0,t);};}
+ if(type==='flag'){const w=(o.w||1)*1.2,a=.2;return (p,out)=>{const t=Math.pow(clamp(p.x/w,0,1.3),1.2)*a;out.set(0,t*.15,t);};}
+ return null;}
+/* a tarp drawn by tarp(): pinned along its high edge (z0) and at its poles, the free middle lifts */
+function clothTarp(x0,z0,w,d){const a=.06;return (p,out)=>{const t=Math.pow(clamp((p.z-z0)/Math.max(.3,d),0,1),1.2)*_side(p.x-x0,w)*a;out.set(0,t,0);};}
+/* culture packs fill sockets through CULT.packs[k].fill[type]: wrap the cloth ones once so their geometry carries the rule (core/sockets stays untouched) */
+function clothWrapPacks(){for(const k in CULT.packs){const F=CULT.packs[k].fill;if(!F||F._flut)continue;Object.defineProperty(F,'_flut',{value:true});
+ for(const t of ['awning','banner','flag']){const f=F[t];if(f)F[t]=(o,s)=>withCloth(clothRule(t,o),()=>f(o,s));}}}
+let SMOKES=[];
+function smokeAt(x,y,z,o){if(GTARGET!==GB)return;o=o||{};const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);SMOKES.push({x:p.x,y:p.y,z:p.z,r:o.r||.25,kind:o.kind||'stove'});}   /* GB only: a throwaway build (frontOf) or a spinner leaves no smoke */
 let GSTAT={tris:0};
 // emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs scaled
 /* NIGHT support, decided at build time and deterministic (position hash, no rng): about half the glass panes are LIT windows (bucket 'winlit', warm colour),
@@ -23,16 +47,22 @@ let GSTAT={tris:0};
 /* only light-tinted glass is a window that can be lit; dark blue-black glass (solar panels, skylight wells) stays glass */
 function glassIsWindow(col){const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);return .2126*c.r+.7152*c.g+.0722*c.b>.1;}
 let HALOS=[],HALOKEY=new Set();function halosReset(){HALOS=[];HALOKEY=new Set();}
-function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
- if(mk==='glass'&&glassIsWindow(col)){const hh=h3(Math.round(_mm.elements[12]*2)/2,Math.round(_mm.elements[13]*2)/2,Math.round(_mm.elements[14]*2)/2);if(hh<.5){mk='winlit';const f=.75+.6*hh;col=new THREE.Color().setRGB(.86*f,.55*f,.22*f);}}
- else if(mk==='glow'&&col!==undefined&&col!==null){const px=_mm.elements[12],py=_mm.elements[13],pz=_mm.elements[14];const k=Math.round(px/.6)+','+Math.round(py/.6)+','+Math.round(pz/.6);
-  if(!HALOKEY.has(k)){HALOKEY.add(k);const cc=typeof col==='number'?hc(col):col;HALOS.push({x:px,y:py,z:pz,r:cc.r,g:cc.g,b:cc.b,big:geo.type==='ConeGeometry'});}}
- const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
+function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);let a1=0;
+ if(mk==='glass'){a1=2;if(glassIsWindow(col)){const hx=Math.round(_mm.elements[12]*2)/2,hy=Math.round(_mm.elements[13]*2)/2,hz=Math.round(_mm.elements[14]*2)/2,hh=h3(hx,hy,hz);a1=h3(hx*.37+11.1,hy*.53+3.3,hz*.41+7.7);   /* a1: the pane's place in the evening schedule (ANIM hooks below) */
+  if(hh<.5){mk='winlit';const f=.75+.6*hh;col=new THREE.Color().setRGB(.86*f,.55*f,.22*f);}}}
+ else if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.2;   /* flicker share: flames 1, lamp bulbs .45, coals and tail lights .2 */
+ if(mk==='glow'&&col!==undefined&&col!==null){const px=_mm.elements[12],py=_mm.elements[13],pz=_mm.elements[14];const k=Math.round(px/.6)+','+Math.round(py/.6)+','+Math.round(pz/.6);
+  if(!HALOKEY.has(k)){HALOKEY.add(k);const cc=typeof col==='number'?hc(col):col;HALOS.push({x:px,y:py,z:pz,r:cc.r,g:cc.g,b:cc.b,big:geo.type==='ConeGeometry',kind:geo.type});}}
+ if(CLOTHW&&lm&&clothKey(mk)&&(geo===_G.pl||geo===_G.box)){const e=lm.elements,sx=Math.hypot(e[0],e[1],e[2]),sy=Math.hypot(e[4],e[5],e[6]),sz=Math.hypot(e[8],e[9],e[10]);
+  if(geo===_G.pl?(sx>.6&&sy>.6):([sx,sy,sz].sort((a,b)=>b-a)[1]>.6))geo=geo===_G.pl?gplaneSub():gboxSub();}   /* a big fluttering sheet gets inner vertices to ripple (same extents: same bbox); valance strips stay plain */
+ const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});if(!b.f&&clothKey(mk))b.f=[];if(!b.w&&ATTR1[mk])b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
  let c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
  if(WEATHER[mk]&&c!==_WC)c=weather(c,WEATHER[mk]);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
   b.p.push(_v.x,_v.y,_v.z);b.n.push(_n.x,_n.y,_n.z);b.c.push(c.r,c.g,c.b);
+  if(b.f){if(CLOTHW){_lp.fromBufferAttribute(Pa,i);if(lm)_lp.applyMatrix4(lm);CLOTHW(_lp,_fl);_fl.applyMatrix3(_cm3);b.f.push(_fl.x,_fl.y,_fl.z);}else b.f.push(0,0,0);}
+  if(b.w)b.w.push(a1);
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
   else{const ax=Math.abs(_n.x),ay=Math.abs(_n.y),az=Math.abs(_n.z);if(ay>=ax&&ay>=az)b.u.push(_v.x*ts,_v.z*ts);else if(ax>az)b.u.push(_v.z*ts,_v.y*ts);else b.u.push(_v.x*ts,_v.y*ts);}
   if(SB){if(_v.x<SB.mn[0])SB.mn[0]=_v.x;if(_v.y<SB.mn[1])SB.mn[1]=_v.y;if(_v.z<SB.mn[2])SB.mn[2]=_v.z;if(_v.x>SB.mx[0])SB.mx[0]=_v.x;if(_v.y>SB.mx[1])SB.mx[1]=_v.y;if(_v.z>SB.mx[2])SB.mx[2]=_v.z;}}
@@ -47,6 +77,8 @@ function gfrus(seg,rt){const k='fr'+seg+'_'+rt.toFixed(3);return _G[k]||(_G[k]=(
 function gsph(){return _G.sph||(_G.sph=new THREE.SphereGeometry(1,12,8));}
 function gtor(R,t,rs,ts){const k='tor'+R.toFixed(2)+'_'+t.toFixed(2);return _G[k]||(_G[k]=(()=>{const g=new THREE.TorusGeometry(R,t,rs||6,ts||12);g.rotateX(PI/2);return g;})());}
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
+function gplaneSub(){return _G.plS||(_G.plS=new THREE.PlaneGeometry(1,1,4,4));}
+function gboxSub(){return _G.boxS||(_G.boxS=new THREE.BoxGeometry(1,1,1,4,1,3));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
 // box(mat, x,y,z, w,h,d, colour, ry, rx, rz)   rotations are about the box's own centre, ry first
 function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
@@ -112,6 +144,7 @@ function pipe(mk,pts,r,col,seg){for(let i=0;i<pts.length-1;i++)beam(mk,pts[i],pt
 // ---- flush: turn buckets into meshes
 function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in buckets){const b=buckets[mk];if(!b.i.length)continue;const m=MAT[mk];if(!m){reportErr('no material for bucket '+mk);continue;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.u,2));g.setAttribute('color',new THREE.Float32BufferAttribute(b.c,3));
+ if(b.f)g.setAttribute('aFlut',new THREE.Float32BufferAttribute(b.f,3));if(b.w)g.setAttribute(ATTR1[mk]||'aK',new THREE.Float32BufferAttribute(b.w,1));if(typeof animPatch==='function')animPatch(mk,m);
  g.setIndex(b.p.length/3>65535?new THREE.Uint32BufferAttribute(b.i,1):new THREE.Uint16BufferAttribute(b.i,1));g.computeBoundingSphere();
  const mesh=new THREE.Mesh(g,m);mesh.userData.mk=mk;if(mk==='glass')mesh.renderOrder=2;
  if(shadow){if(mk!=='glass'&&mk!=='chain'&&mk!=='glow'){mesh.castShadow=true;mesh.receiveShadow=mk!=='cloth';}}

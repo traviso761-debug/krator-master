@@ -28,7 +28,74 @@ TWO THINGS THAT WILL WASTE A ROUND IF YOU FORGET THEM:
 
 Requires: pip install playwright && python -m playwright install chromium
 """
-import argparse, asyncio, http.server, json, os, socketserver, sys, threading
+import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
+
+# --------------------------------------------------------------------------
+# Harness helpers. Every verify.py in the repo carries this same block: a fix
+# here belongs in all of them (grep for "Harness helpers").
+GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+# Every page builds its world in one synchronous script, so "load" fires only when
+# the world is built: minutes under software GL on a shared box (Dalab's city took
+# 285 s with seven other agents running; 180 s timed Locus out mid-build).
+LOAD_MS = 900000
+# KRATOR_CHROME names a Chromium to launch. The other names are the ones single
+# copies of this harness used before they were merged; they still work.
+CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
+
+
+async def launch_chromium(p, args=GL_ARGS):
+    """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
+    build, else a pinned build under /opt/pw-browsers: a cloud container ships
+    one that need not match the pip playwright's pin."""
+    for k in CHROME_ENV:
+        if os.environ.get(k):
+            return await p.chromium.launch(executable_path=os.environ[k], args=args)
+    try:
+        return await p.chromium.launch(args=args)
+    except Exception as e:
+        if "Executable doesn't exist" not in str(e):
+            raise
+        for c in ["/opt/pw-browsers/chromium"] + sorted(
+                glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"), reverse=True):
+            if os.path.exists(c):
+                return await p.chromium.launch(executable_path=c, args=args)
+        raise
+
+
+def local_three(folder):
+    """The pinned three.js r128 to serve in place of the CDN copy: this build's
+    own, the page folder's, else the repo's copy in kits/ancients (a build that
+    keeps none still runs offline). Returns a path that may not exist."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    cands = [os.path.join(here, "three.min.js"), os.path.join(folder, "three.min.js")]
+    d = here
+    for _ in range(4):
+        d = os.path.dirname(d)
+        cands.append(os.path.join(d, "kits", "ancients", "three.min.js"))
+    return next((c for c in cands if os.path.exists(c)), cands[0])
+
+
+def parse_views(spec, names=()):
+    """--views. Names separated by '|' or ';' are taken exactly, so a name may
+    hold commas. Separated by commas, consecutive pieces are joined back up
+    whenever that spells an existing preset's name, longest first: so
+    "Overview,Town types — row, stacked house, well, tower" is two views."""
+    spec = (spec or "").strip()
+    if not spec:
+        return []
+    if "|" in spec or ";" in spec:
+        return [v.strip() for v in re.split(r"[|;]", spec) if v.strip()]
+    names = set(names or ())
+    toks, out, i = spec.split(","), [], 0
+    while i < len(toks):
+        j = next((j for j in range(len(toks), i + 1, -1)
+                  if ",".join(toks[i:j]).strip() in names), i + 1)
+        v = ",".join(toks[i:j]).strip()
+        if v:
+            out.append(v)
+        i = j
+    return out
+
 
 # Structure names contain em dashes; the Windows console default codepage
 # mangles them, which makes a failing assertion hard to read.
@@ -82,7 +149,10 @@ const R=[];
   R.push({name:'showcase-triangle-budget', ok:T.tris<=B.tris, budget:true,
           detail:T.tris+' / '+B.tris+' scene triangles'});
   R.push({name:'showcase-draw-calls', ok:renderer.info.render.calls<=B.calls, budget:true,
-          detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'}); }
+          detail:renderer.info.render.calls+' / '+B.calls+' draw calls at this camera'});
+  // the runtime LOD: held (above) is everything in memory; this is what the camera draws
+  if(B.rendered) R.push({name:'showcase-rendered-triangles', ok:renderer.info.render.triangles<=B.rendered, budget:true,
+          detail:renderer.info.render.triangles+' / '+B.rendered+' triangles drawn at this camera'+(T.lodMeshes?' ('+(T.rendered||0)+' of them in '+T.lodMeshes+' lod chunk meshes)':'')}); }
 
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
@@ -102,26 +172,26 @@ async def run(a):
     fails = []
     try:
         async with async_playwright() as p:
-            # PW_CHROMIUM: a preinstalled Chromium to launch instead of the one this
-            # Playwright would download (a cloud box pins one build for every version)
-            b = await p.chromium.launch(executable_path=os.environ.get("PW_CHROMIUM") or None,
-                                        args=["--use-gl=swiftshader", "--enable-webgl",
-                                              "--ignore-gpu-blocklist"])
+            b = await launch_chromium(p)
             W, H = [int(t) for t in a.size.split("x")]
             pg = await b.new_page(viewport={"width": W, "height": H})
-            pg.set_default_timeout(600000)
+            # VERIFY_TIMEOUT (seconds): the build's own wait; a box shared with other runs needs more
+            TMO = int(float(os.environ.get("VERIFY_TIMEOUT", "580")) * 1000)
+            pg.set_default_timeout(max(600000, TMO + 20000))
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)))
             # serve three.js from the repo instead of the CDN: offline, pinned to r128
-            three = os.path.join(here, "three.min.js")
+            three = local_three(folder)
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=300000)
+            # the page builds inside its script, so "load" fires only after the build: wait for the
+            # document to commit, then for _ready below (one timeout for the whole build)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS, wait_until="commit")
             try:
                 await pg.wait_for_function(
                     "window._ready===true || (document.getElementById('errs')&&"
-                    "document.getElementById('errs').textContent.length>0)", timeout=580000)
+                    "document.getElementById('errs').textContent.length>0)", timeout=TMO)
             except Exception:
                 print("timed out waiting for the kit to build")
                 fails.append("build timeout")
@@ -181,7 +251,9 @@ async def run(a):
                 if not shown:
                     print("  identical")
 
-            views = [v.strip() for v in a.views.split(",") if v.strip()]
+            presets = await pg.evaluate(
+                "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+            views = parse_views(a.views, presets)
             if a.all_views:
                 views = await pg.evaluate(
                     "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
@@ -212,11 +284,12 @@ async def run(a):
                     fails.append("view " + v)
             if per_view:
                 lim = await pg.evaluate("()=>window._api?window._api.BUDGET.showcase.calls:0")
+                limT = await pg.evaluate("()=>window._api&&window._api.BUDGET.showcase.rendered||0")
                 worst = max(per_view, key=lambda r: r[1])
                 print("\n--- worst draw calls over %d views ---" % len(per_view))
                 for v, c, t in sorted(per_view, key=lambda r: -r[1])[:6]:
                     print("  %-28s calls %5d  tris %.2fM%s"
-                          % (v, c, t / 1e6, "   OVER" if lim and c > lim else ""))
+                          % (v, c, t / 1e6, "   OVER" if (lim and c > lim) or (limT and t > limT) else ""))
                 if lim and worst[1] > lim:
                     print("  OVER budget: %s at %d / %d draw calls" % (worst[0], worst[1], lim))
                     if a.assert_ and a.strict_budget:

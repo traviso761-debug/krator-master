@@ -29,10 +29,10 @@ function buildRsHykCorbita(){reseed(72800);
  for(const s of[-1,1])for(let i=0;i<7;i++)rsAmphora(B,[5.5+i*.55,dY(H.uAt(6))+.35,s*2.2],.7,[TERR,0xa85a30][i%2],s*Math.PI/2);
  // the mainmast: square course and a triangular topsail above the yard; the artemon forward
  const mx=0,mh=17;rsLink(B,'wood',[mx,hy-1,0],[mx,hy+mh,0],.3,0x7a5634,8,.18);const w=13,a=.95,U=[Math.sin(a),0,Math.cos(a)];const foot=3.2,yard=mh-4.6;
- const S=rsSail(B,{key:'hyk-corbita',O:[mx+.4,hy+foot,0],U,V:[0,1,0],belly:-1.3,A:t=>[(t-.5)*w,yard-foot],Bf:t=>[(t-.5)*w*.9,0],draw:rsHykCorbitaSail});
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'hyk-corbita',O:[mx+.4,hy+foot,0],U,V:[0,1,0],belly:-1.3,A:t=>[(t-.5)*w,yard-foot],Bf:t=>[(t-.5)*w*.9,0],draw:rsHykCorbitaSail});
  rsSailEdge(B,S,0,.18,0x6a4a2c);rsSailEdge(B,S,1,.1,0x6a4a2c);
  for(const s of[-1,1]){const T=rsSail(B,{key:'hyk-corbita-top',O:[mx+.4,hy+yard+.7,0],U,V:[0,1,0],belly:-.3,nu:6,nv:6,A:t=>[s*lerp(.3,w*.45,t),lerp(3.6,0,t)],Bf:t=>[s*.3,lerp(3.6,0,t)],draw:(g,W,H2,P)=>{rsCloth(g,W,H2,'#ece6d6',3,'v');g.save();rsPolyPath(g,P);g.clip();g.strokeStyle='#3f86a6';g.lineWidth=W*.08;rsPolyPath(g,P);g.stroke();g.restore();}});}
- const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[pS[0]+1,pS[1]+3.3,0]);for(const s of[-1,1])rsRope(B,S.at(s<0?0:1,1),[mx-4,dY(.35)+.4,s*3.6]);
+ const tp=[mx,hy+mh,0];rsRope(B,tp,[H.xAt(1,1),H.ys(1),0]);rsRope(B,tp,[pS[0]+1,pS[1]+3.3,0]);for(const s of[-1,1])rsRope(B,S.at(s<0?0:1,1),[mx-4,dY(.35)+.4,s*3.6]);rsRigEnd(B);
  {const fx=H.xAt(.94,1),fy=H.ys(.94),ft=[fx+4,fy+6.5,0];rsLink(B,'wood',[fx-1,fy-.4,0],ft,.13,0x7a5634,8,.09);
   const S2=rsSail(B,{key:'hyk-corbita',O:[ft[0]-1.6,fy+2.6,0],U:[Math.sin(.9),0,Math.cos(.9)],V:[.3,1,0],belly:-.5,A:t=>[(t-.5)*4,3.4],Bf:t=>[(t-.5)*3.6,0],draw:rsHykCorbitaSail});rsSailEdge(B,S2,0,.08,0x6a4a2c);}
  rsPennant(B,[mx,hy+mh+.2,0],3.4,.7,[BLUE,0xf0e8d8]);

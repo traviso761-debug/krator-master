@@ -7,13 +7,16 @@
 //   Tribal     — totems everywhere, whole painted house-fronts, wings, bamboo, raw logs.
 
 // ---------------------------------------------------------------- totems and painted posts
-// Totem pole: carved column (the crest map faces the building's front when ry is the front direction), an
-// optional pair of spread wings (thunderbird crossarm) and a carved beak at the top figure.
-function hnTotem(x,y,z,r,h,ry,o){o=o||{};if(hlNonTribal())return hnPillar(x,y,z,Math.max(.2,r*1.1),h,ry,{free:true});   // outside the tribes: a carved column
- kput(o.painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
- const f=loc(x,z,0,r*.9,ry);kput('vConeI',[f[0],y+h*.86,f[1]],vQ(ry,Math.PI/2,0),[r*.34,r*1.3,r*.34],hC(HPAL.black));   // the top figure's beak
- if(o.wings){const wy=y+h*(o.wingAt||.8);for(const s of[-1,1]){const p=loc(x,z,s*(r+o.wings*.5),r*.2,ry);kput('hWing',[p[0],wy,p[1]],vQ(ry,0,s*-.12),[s*o.wings,o.wings*.5,1],null);}}
- if(o.hat){for(let k=0;k<3;k++)vPst('hPaint',x,y+h+k*.16,z,r*(1-.12*k),.14,hC(k%2?HPAL.red:HPAL.black));}}
+// Totem pole: a free-standing pole is FURNITURE, placed from the catalog (FURNISH, 89y): the tribes' totem nearest in
+// height and dress (wings, painted ground, potlatch rings), crest to the front when ry is the front direction; the
+// Rustic villages' carved column with its roundel. The Republic's still draws its carved column (hnPillar) until its
+// builders are converted.
+function hnTotem(x,y,z,r,h,ry,o){o=o||{};const br=VERN.cur&&VERN.cur.D.branch;
+ if(br==='republican')return hnPillar(x,y,z,Math.max(.2,r*1.1),h,ry,{free:true});
+ if(br==='rustic'){hlRngSkip(5);return FURNISH('hl_rus_carved_pillar',x,y,z,ry,{v:0});}   // hnPillar drew 5 numbers
+ const [key,v,dz]=h>=8?['hl_tri_great_totem',o.painted?0:1,o.painted?.27:.204]:o.wings?(o.painted?['hl_tri_totem',1,.168]:h>=6?['hl_tri_great_totem',1,.204]:['hl_tri_totem',0,.18])
+  :(o.hat||r>=.3)?['hl_tri_totem',2,.216]:['hl_tri_totem_post',o.painted?1:0,0];   // dz: the catalog piece is centred on its footprint, not on its pole
+ return hnFurn(key,x,y,z,ry,{v},0,dz);}
 // A porch post carved as a short totem (the colonnades of civic fronts, the tribal houses).
 function hnTotemPost(x,y,z,r,h,ry,painted){if(hlNonTribal())return hnPillar(x,y,z,Math.max(.16,r),h,ry,{});
  kput(painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
@@ -216,14 +219,34 @@ function hnCliffFace(G,x0,x1,zc,y0,y1,seed){const W=x1-x0,H=y1-y0;const geo=grid
  const m=mesh(geo,MAT.rock,G);m.material=MAT.rock.clone();m.material.color=hC(0x8a8680);return m;}
 
 // ---------------------------------------------------------------- yard furniture of the highlands
-function hnWoodpile(x,y,z,ry,w,h){const n=Math.round(h/.2);for(let k=0;k<n;k++)for(let i=0;i<Math.round(w/.2);i++){const p=loc(x,z,-w/2+.1+i*.2,0,ry);kput('hLogEnd',[p[0],y+.1+k*.19,p[1]],qEuler(0,ry+Math.PI/2,0),[.9,.09,.09],hC(vPick(HPAL.pine)));}
- vnShedRoof(x,y+h+.1,z,w+.2,1.1,.25,ry,'vShingleB',hC(vPick(HPAL.shingle)),.2,.08);}
+// Furniture is PLACED from the master catalog (FURNISH, 89y-hl-furnish.js), not drawn. These helpers keep their names
+// and arguments and pick the catalog piece and variant nearest the size asked for; each burns the random numbers its
+// drawing used to draw (hlRngSkip), so the builder's later random choices (its structure) do not move.
+function hlRngSkip(n){for(let i=0;i<n;i++)rng();}
+// a catalog piece whose origin sits (dx,dz) from (x,z) in the frame turned by ry (a piece is centred on its footprint;
+// a builder often drew it from another point: the pole of a totem, the bed of a cart)
+function hnFurn(key,x,y,z,ry,o,dx,dz){const p=loc(x,z,dx||0,dz||0,ry);return FURNISH(key,p[0],y,p[1],ry,o);}
+function hnWoodpile(x,y,z,ry,w,h){hlRngSkip(Math.round(h/.2)*Math.round(w/.2)+1);return FURNISH('hl_rus_woodpile',x,y,z,ry,{v:w<2.5?0:w<4.7?1:2});}
 function hnStoneChimney(x,y,z,h,w){vB('hRubB',x,y,z,w,h,w,0,hC(vPick(HPAL.rubble)));vB('vStone',x,y+h,z,w+.16,.14,w+.16,0,hC(vPick(HPAL.ashlar)));vB('vDarkB',x,y+h+.12,z,w*.5,.04,w*.5,0);}
-function hnFirepit(x,y,z,r){for(let k=0;k<9;k++){const a=k/9*TAU;kput('vRock',[x+Math.cos(a)*r,y+.1,z+Math.sin(a)*r],null,[.25,.18,.22],hC(vPick(HPAL.rubble)));}
- for(let k=0;k<4;k++)kput('hLogEnd',[x,y+.12,z],qEuler(0,k*.8,0),[r*1.4,.07,.07],hC(0x3a2a20));vBall('vEmber',x,y+.14,z,r*.3,null,.12);}
+function hnFirepit(x,y,z,r){hlRngSkip(9);return FURNISH('hl_tri_firepit',x,y,z,0,{v:r>=.75?1:0});}
 // A standing stone (circles, boundary marks, the tribal sacred sites); `carved` paints a face on it.
-function hnMenhir(x,y,z,ry,h,c,carved){kput('vRock',[x,y+h*.45,z],qEuler(rr(-.06,.06),ry,rr(-.06,.06)),[h*.24,h*.55,h*.16],c||hC(vPick(HPAL.rubble)));
- if(carved){const p=loc(x,z,0,h*.15,ry);kput('hFormV',[p[0],y+h*.55,p[1]],qEuler(0,ry,0),[h*.26,h*.6,1],null);}}
+function hnMenhir(x,y,z,ry,h,c,carved){hlRngSkip(c?2:3);return FURNISH('hl_tri_menhir',x,y,z,ry,{v:carved?1:h<2?2:0});}
+// A free-standing carved post (by a door, a ladder, a deck corner), not one that carries a roof (hnTotemPost)
+function hnTotemPole(x,y,z,r,h,ry,painted){hlRngSkip(1);return FURNISH('hl_tri_totem_post',x,y,z,ry,{v:h>=4.5?2:painted?1:0});}
+// The Iziz Vernacular yard kit (vendored 69c draws them), placed instead: same arguments as vnBarrel, vnWaterButt,
+// vnCrate, vnSacks, vnDryingRack, vnPlanter, vnLampPost, vnLamp
+function hnBarrel(x,y,z,r,h){return FURNISH('iziz_vern_barrel',x,y,z,0,{v:r>.37?1:0});}
+function hnWaterButt(x,y,z,r,h){return FURNISH('iziz_vern_water_butt',x,y,z,0,{v:r>.42?1:0});}
+function hnCrate(x,y,z,s,ry,c){if(!c)rng();return FURNISH('iziz_vern_crate',x,y,z,ry||0,{v:s<.65?0:s<.9?1:2});}
+function hnSacks(x,y,z,n){hlRngSkip(4*n);return FURNISH('iziz_vern_sacks',x,y,z,0,{v:n>3?1:0});}
+function hnDryingRack(x,y,z,ry,L){hlRngSkip(Math.round(L/.9));return FURNISH('iziz_vern_drying_rack',x,y,z,ry,{v:L>3.3?1:0});}
+// ... and vnPlanter (its plants drew 6 numbers each), vnLampPost and vnLamp (electric: the callers keep their vLit() test).
+// A lamp post takes the catalog standard nearest the height asked for: the yard post (3.2, 3.8 m) or the Republic's
+// own lamp standard (3.4, 4.2 m), the Republic's on a tie. The wall lamp's arm is at y, as vnLamp's.
+function hnPlanter(x,y,z,w,d,ry,c){hlRngSkip(6*Math.max(1,Math.round(w*d/1.2)));return FURNISH('iziz_vern_planter',x,y,z,ry||0,{v:w*d>3?0:1});}
+function hnLampPost(x,y,z,h){const L=[[3.4,'hl_rep_lamp_standard',0],[4.2,'hl_rep_lamp_standard',1],[3.2,'iziz_vern_lamp_post',0],[3.8,'iziz_vern_lamp_post',1]];
+ let b=L[0];for(const l of L)if(Math.abs(l[0]-h)<Math.abs(b[0]-h)-1e-6)b=l;return FURNISH(b[1],x,y,z,0,{v:b[2]});}
+function hnWallLamp(x,y,z,ry){return hnFurn('iziz_vern_wall_lamp',x,y-.3,z,ry,{},0,.36);}
 
 // ---------------------------------------------------------------- round 4: fitting murals and bracket rows (hlFlush)
 // Travis: murals over entrances cut into the architecture (jetties, consoles, lintels — the Saxon buildings worst)

@@ -335,10 +335,10 @@
 
 ## Carried over from ancients
 
-- [ ] `build.py` cannot check syntax -- no node on THIS machine. `verify.py`
-      reading the on-screen error panel is the only syntax check here. (The
-      flora pass was built in a sandbox that does have node, and `node --check`
-      passed on every build there.)
+- [x] `build.py` cannot check syntax -- no node on THIS machine. **Fixed (Oct 2026):**
+      `find_node()` looks in `$NODE`, PATH, `/opt/node*/bin`, `~/.nvm` and `~/.volta`;
+      `node --check` passes on both targets. With no node anywhere the build still
+      says "syntax NOT CHECKED" (every `build.py` shares the lookup).
 - [ ] The crater's inner shell is still bare: the growth pass plants round its
       rim and down the torn strip, but nothing inside the bowl.
 - [ ] `FLORA.dressSoffit` and `FLORA.dressLedge` are the generic area-sampled
@@ -359,3 +359,12 @@
       moss I don't see on the artifact". `00-head.html` carries the claude.ai
       page wrapper, so the file to publish is `dist/screamers.html` with
       everything before `<title>` and the closing `</body></html>` stripped.
+
+## Level of detail (core/lod)
+
+- [x] No LOD at the page level: `core/lod` now takes over the scene (README, "Level of detail"). The jungle flora keeps
+      every instance (the biome core has its own density curve) but is now frustum-culled.
+- [x] The chunked biome far meshes cost about 45 more draw calls (82 to ~130). Fixed in core/lod: a split mesh draws
+      its chunks combined, one draw per level in view; the three views now read 79-87 calls with LOD (82-84 without).
+- [ ] The gain is modest (3.27 M to 2.9-3.1 M triangles). A screen-size curve the biome core reports for its far cards,
+      which LOD could read, would do more.

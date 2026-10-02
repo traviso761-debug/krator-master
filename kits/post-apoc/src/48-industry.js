@@ -30,39 +30,27 @@ function inSmithy(o){
  bays.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.7,EY-.1,ZR,RY,.07,jc(cols[i],.06));roofP('corr',b[0],b[1],ZB-.6,EY+.1,ZR,RY,.07,jc(cols[(i+2)%4],.06));});
  box('iron',0,RY-.04,ZR,12.2,.12,.18,jc(0x4a4038,.05));
  for(const x of [X0,-1.7,1.7,X1]){beam('wood',[x,EY,ZF],[x,RY,ZR],.1,jc(inW,.06));beam('wood',[x,EY+.05,ZB],[x,RY,ZR],.1,jc(inW,.06));}
- beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));
- // the forge: an earth-and-tyre hearth against the back wall, a sheet hood, a tall stovepipe with cap and stays
- const hx=-2.2,hz=-3.5;tireWall(hx-1.4,hz+.95,hx+1.4,hz+.95,4,{cap:false});box('earth',hx,.05,hz-.1,3.0,1.0,1.9,jc(0xa08a70,.05));box('earth',hx,1.0,hz-.05,3.1,.14,2.0,jc(0x8a7a64,.05));
- box('glow',hx,.35,hz+.98,1.2,.6,.06,jc(0xff7a2a,.05));sph('glow',hx,1.5,hz+.4,.5,jc(0xff8a30,.05),.5);box('glow',hx,1.14,hz+.1,1.5,.06,.9,jc(0xff8a2a,.08));cone('glow',hx,1.16,hz+.1,.5,.9,jc(0xffb040,.06),7);cone('glow',hx,1.16,hz+.1,.25,1.3,jc(0xffe28a,.04),6);
- cone('sheet',hx,1.9,hz-.05,1.4,1.3,jc(0x5a4a40,.05),8);cyl('iron',hx,1.85,hz-.05,1.42,.12,jc(0x3a3430,.05),8);
- cyl('iron',hx,3.2,hz-.05,.3,5.7,jc(0x4a4038,.05),10);for(let k=0;k<5;k++)cyl('iron',hx,3.6+k*1.1,hz-.05,.34,.1,jc(0x3a3430,.05),10);
- cyl('iron',hx,8.9,hz-.05,.5,.1,jc(0x3a3430,.05),10);cone('iron',hx,9.0,hz-.05,.55,.4,jc(0x4a4038,.05),10);
- for(const s of [-1,1])inGuy([hx,7.6,hz-.05],[hx+s*3.0,RY-.1,hz+.4],.05);
- // bellows (two boards, a leather gusset, a nozzle into the fire) and a rack of tongs and hammers on the back wall
- const bx=.6,bz=-3.3;beam('wood',[bx-.4,0,bz-.3],[bx-.4,.7,bz-.3],.1,jc(inW,.06),true,5);beam('wood',[bx+.4,0,bz-.3],[bx+.4,.7,bz-.3],.1,jc(inW,.06),true,5);
- box('plank',bx,.7,bz,1.0,.06,1.6,jc(0x8a6a44,.06));box('plank',bx,.86,bz+.1,1.0,.06,1.5,jc(0x7a5a3c,.06),0,-.28);box('cloth',bx,.76,bz+.15,.98,.12,1.3,jc(0x6a4a30,.06));
- beam('wood',[bx,1.15,bz+.7],[bx,2.1,bz+1.1],.05,jc(inW,.06),true,5);pipe('iron',[[bx-.2,.78,bz+.1],[hx+1.0,.85,hz+.4],[hx+.6,.85,hz+.85]],.05,jc(0x3a3430,.05));
- shHang(2.0,4.6,2.6,ZB+.3,8,'tools');box('plank',3.3,1.3,ZB+.05,3.0,.06,.14,jc(inW,.06));for(let k=0;k<6;k++)box('iron',2.1+k*.45,1.3,ZB+.16,.05,.4,.03,jc(0x6a6a66,.05));
- // anvil: an engine block on a stump; a quench trough of planks and water; hot work on the anvil
- const ax=1.8,az=-1.0;cyl('wood',ax,0,az,.4,.72,jc(0x6a4a30,.07),9);box('iron',ax-.45,.72,az-.25,.9,.36,.5,jc(0x4a4a46,.05));
- for(let k=0;k<4;k++)cyl('iron',ax-.34+k*.23,1.08,az,.07,.04,jc(0x1a1816,.03),6);box('iron',ax-.3,1.08,az-.25,.6,.06,.5,jc(0x8a8a86,.05));cone('iron',ax+.8,.88,az,.12,.35,jc(0x4a4a46,.05),6);
- box('glow',ax,1.14,az,.4,.04,.1,jc(0xff6a2a,.06));for(let k=0;k<9;k++)box('glow',ax+rr(-.7,.7),1.3+rr(0,.8),az+rr(-.5,.6),.04,.04,.04,jc(0xffc060,.05));
- const qx=-.3,qz=-1.4;box('plank',qx,0,qz,2.1,.62,.8,jc(0x6a5238,.06));box('plain',qx,.6,qz,1.9,.03,.6,jc(0x2a5a6a,.03));for(const s of [-1,1])box('iron',qx+s*.6,.0,qz,.05,.66,.85,jc(0x3a3430,.05));
+ beam('wood',[X0,EY,ZF],[X1,EY,ZF],.13,jc(inW,.06));entry(0,0,ZF,3.4,EY);/* front door: the open bay between the middle posts */
+ // the shed is a smithy room the interior set plans (kits/interiors/sets/post-apoc.js): its forge with the flue through the roof,
+ // bellows, tool rack, anvil and quench trough are the interiors' (?interiors=1). The skips are what their drawing drew.
+ {const L=2.8,d=TYR.R*2*.98;let n=2;for(let c=0;c<4;c++)for(let x=-L/2+d/2+(c%2)*d/2;x<=L/2-d/2+1e-6;x+=d)n+=3;rngSkip(n);}   // the forge's tyre course
+ rngSkip(42);                                        // the hearth, its glow, hood, flue and stays
+ rngSkip(14);shHangSkip(8,'tools');rngSkip(14);      // bellows, the rack of tongs and hammers
+ rngSkip(63+8);                                      // the anvil with its hot work and sparks, the quench trough
  // sorted scrap: bins at the left outside: sheets, pipes, tyres, gears and wheels, springs
  const bz0=-3.3;const pens=[[bz0,'sheet'],[bz0+2.3,'pipe'],[bz0+4.6,'tyre'],[bz0+6.9,'gear']];
- for(const [z,k] of pens){const x=-6.2;box('plank',x-.7,0,z,.08,.6,1.9,jc(0x6a5238,.06));box('plank',x,0,z-.95,1.4,.6,.08,jc(0x6a5238,.06));box('plank',x,0,z+.95,1.4,.6,.08,jc(0x6a5238,.06));
-  if(k==='sheet')for(let q=0;q<8;q++)box('sheet',x+rr(-.1,.1),.05+q*.08,z+rr(-.1,.1),1.2,.06,1.6,pick([P('rust'),P('galv'),P('paint')]),rr(-.1,.1));
-  if(k==='pipe')for(let q=0;q<7;q++)beam('iron',[x-.5,.2+(q%3)*.2,z-.8+q*.25],[x+.5,.2+(q%3)*.2,z-.8+q*.25],.1+(q%2)*.05,P('rust'),true,7);
+ for(const [z,k] of pens){const x=-6.2;rngSkip(6);   // the catalog's scrap bins (back to the -x, open toward the smithy); the tyres are a tyre stack
+  if(k==='sheet'){rngSkip(8*13);FURNISH('pa_scrap_bin',x,0,z,PI/2,{v:0});}
+  if(k==='pipe'){rngSkip(7*3);FURNISH('pa_scrap_bin',x,0,z,PI/2,{v:1});}
   if(k==='tyre')tireStack(x,z,4);
-  if(k==='gear')for(let q=0;q<6;q++){tire(x+rr(-.4,.4),.16+(q>3?.28:0),z+rr(-.6,.6),rr(.2,.34),.09,jc(pick([0x8a4a3a,0x6a6a66,0x4a4a46]),.06),0,rr(-.3,.3),0);}}
+  if(k==='gear'){rngSkip(6*7);FURNISH('pa_scrap_bin',x,0,z,PI/2,{v:2});}}
  // small crane arm with chain hoist at the front right: pipe mast, jib, brace, chain and hook over a cart with an engine block
  const kx=5.7,kz=5.0;cyl('conc',kx,0,kz,.45,.25,jc(0x8a8478,.06),8);cyl('iron',kx,.25,kz,.14,4.6,jc(0x4a4038,.05),10);beam('iron',[kx,4.6,kz],[kx-3.6,4.5,kz],.18,jc(0x5a4a3c,.05));
  beam('iron',[kx,2.9,kz],[kx-2.3,4.45,kz],.09,jc(0x4a4038,.05));box('iron',kx-2.5,4.15,kz-.12,.5,.35,.24,jc(0xa8642a,.06));
  for(let k=0;k<8;k++)box('iron',kx-2.5,3.9-k*.2,kz-.05+(k%2)*.03,.06,.14,.1,jc(0x5a5a56,.05),0,(k%2)*1.5);cone('iron',kx-2.5,2.35,kz,.09,.3,jc(0x3a3430,.05),5);
- box('plank',kx-2.5,.55,kz,1.3,.1,.9,jc(0x6a5238,.06));for(const s of [-1,1])tire(kx-2.5+s*.5,.3,kz+.5,.3,.09,undefined,0,0,PI/2);
- box('iron',kx-2.9,.65,kz-.2,.9,.4,.5,jc(0x5a5a56,.05));cyl('iron',kx-2.75,1.05,kz-.2,.09,.06,jc(0x1a1816,.03),6);
+  rngSkip(6);FURNISH('pa_hand_cart',kx-2.5,0,kz,0,{v:1,ax:.1,az:-.175});   // the trolley with an engine block under the hoist
  // yard clutter: charcoal sacks, coal heap, barrels, lamp
- for(let k=0;k<5;k++)sph('plain',-4.6+(k%3)*.45,.2+Math.floor(k/3)*.3,4.9+(k%2)*.1,.24,jc(0x2a2624,.04),.75);barrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
+ rngSkip(10);FURNISH('pa_sacks',-4.15,0,4.95,0,{v:2});/* charcoal sacks */barrel(-3.4,0,5.0);barrel(-2.9,0,5.2);lamp(3.6,0,4.6,3.4);
  // SOCKETS
  beam('wood',[-1.4,EY-.08,ZF+.1],[1.4,EY-.08,ZF+.1],.12,jc(inW,.06));sock('awning',0,EY-.1,ZF+.15,0,{w:4.6,d:1.9,drop:.5,h:2.8});
  beam('wood',[-6.5,0,5.2],[-6.5,5.6,5.2],.09,jc(inW,.06),true,6);sock('banner',-6.5,5.6,5.25,0,{w:.9,h:2.2});
@@ -100,8 +88,7 @@ function inWind(o){
  const sx=0,sz=3.9;W(sx,0,sz,0,()=>container({len:CT.L20,col:[0x3b7f8e,0xb8502e,0x4d6f3c][(o.v|0)%3]}));const fz=sz+CT.W/2;
  door(-1.2,.16,fz,1.0,2.0);win(1.1,1.2,fz,.9,.6,{lit:true,bars:true});for(let k=0;k<3;k++)box('iron',.5+k*.3,2.0,fz+.03,.15,.3,.04,jc(0x2a2826,.03));
  solar(1.0,CT.H+.02,sz,2.4,1.4,0,.5);
- for(let r=0;r<2;r++)for(let k=0;k<5;k++){const bx=4.2+k*.02,z=sz-1.0+k*.5;box('plain',3.9,r*.36,z,.7,.34,.42,jc(0x2a2826,.04));box('plain',3.9,r*.36+.34,z-.1,.1,.05,.1,jc(0xc23a2a,.03));box('plain',3.9,r*.36+.34,z+.1,.1,.05,.1,jc(0x1a1816,.03));}
- box('plank',3.9,.0,sz-1.3,.9,.08,3.0,jc(0x5c4630,.06),0,0,0);
+ rngSkip(62);FURNISH('pa_battery_bank',3.9,0,sz,PI/2);   // the battery bank by the shed's end wall
  pipe('iron',[[3.5,.8,sz-.4],[3.0,.7,sz-.3],[CT.L20/2+.02,.6,sz-.2]],.05,jc(0x1a1816,.03));pipe('iron',[[1.3,.05,-1.0-.4+2.6],[1.3,.05,sz-CT.W/2]],.05,jc(0x1a1816,.03));
  // fence: chain-link round the tower foot and shed with a gate gap, barrels, lamp
  fenceRun(-4.6,-4.2,4.6,-4.2,1.8,{barbed:true});fenceRun(4.6,-4.2,4.6,6.0,1.8,{barbed:true});fenceRun(-4.6,-4.2,-4.6,6.0,1.8,{barbed:true});
@@ -142,8 +129,8 @@ function inFuel(o){
  // bund wall round the tank foot
  const bd=jc(0x9a9488,.05);box('conc',tx,0,tz-1.5,4.8,.4,.25,bd);box('conc',tx,0,tz+3.0,4.8,.4,.25,bd);box('conc',tx-2.4,0,tz+.75,.25,.4,4.5,bd);box('conc',tx+2.4,0,tz+.75,.25,.4,4.5,bd);
  // drum store: stacked drums on pallets, three high, left front
- for(let r=0;r<2;r++){const z=2.4+r*1.5;pallet(-5.0,0,z,2.8,1.2);for(let k=0;k<4;k++){barrel(-6.0+k*.62,.12,z-.25+(r%2)*.1);barrel(-6.0+k*.62,.12,z+.3);}
-  for(let k=0;k<3;k++){barrel(-5.7+k*.62,1.0,z-.1,undefined,{open:k===1});}}barrel(-5.4,1.88,3.2);barrel(-4.8,1.88,3.2);
+ for(let r=0;r<2;r++){const z=2.4+r*1.5;rngSkip(102);FURNISH('pa_drum_store',-5.0,0,z,0);}
+ barrel(-5.4,1.88,3.7);barrel(-4.8,1.88,3.7);   // two more on the back store's top row (the kit stood them over the gap)
  // chain-link yard fence with a gate gap, lamp, tarp
  fenceRun(-6.6,-5.2,6.6,-5.2,1.8,{barbed:true});fenceRun(6.6,-5.2,6.6,5.2,1.8,{barbed:true});fenceRun(-6.6,-5.2,-6.6,5.2,1.8,{barbed:true});
  fenceRun(-6.6,5.2,-1.0,5.2,1.8,{barbed:true});fenceRun(1.4,5.2,6.6,5.2,1.8,{barbed:true});lamp(-.2,0,4.4,3.6);
@@ -165,7 +152,7 @@ function inWarehouse(o){
  wallOpen('corr',(X0+X1)/2,DK,ZF,X1-X0,WH-DK,.1,ops,jc(0xd0ccc0,.04),0);
  for(const x of dxs){const raise=[.8,.4,1.6][dxs.indexOf(x)];box('corr',x,DK,ZF+.02,dw-.1,3.5-raise,.05,jc(pick([0xc4502e,0x2f8f8a,0xb0aca0]),.05));cylH('iron',x,DK+3.5-.05,ZF+.14,.2,dw,jc(0x4a4038,.05),'x',10);
   for(const s of [-1,1])box('iron',x+s*(dw/2+.06),DK,ZF+.05,.14,3.7,.14,jc(0x3a3430,.05));box('iron',x,DK+3.55,ZF+.08,dw+.3,.14,.14,jc(0x3a3430,.05));}
- for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));
+ for(let k=0;k<9;k++)box('iron',X0+k*(X1-X0)/8-.07,DK,ZF+.05,.14,WH-DK,.14,jc(0x4a4038,.05));entry(dxs[1],DK,ZF+.1,dw,3.5);/* front door: the middle roll-up opening, on the dock */
  // gable roof of mixed sheet on trusses; gable end walls with truss and a vent
  const segs=[[X0-.5,X0+5.5],[X0+5.5,X0+10.5],[X0+10.5,X0+16.5],[X0+16.5,X1+.5]];
  segs.forEach((b,i)=>{roofP('corr',b[0],b[1],ZF+.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+1)%6],.06));roofP('corr',b[0],b[1],ZB-.8,WH-.1,ZR,RY,.08,jc(cw[(i*2+4)%6],.06));});
@@ -193,13 +180,12 @@ function inWarehouse(o){
  box('plank',gb-.6,1.75,gtz-.5,1.2,1.1,1.0,jc(0xa08258,.06));box('plank',gb-.6,2.8,gtz-.5,1.24,.05,1.04,jc(0x4a3a2c,.05));box('plank',gb-.6,1.75,gtz-.5,1.24,.06,1.04,jc(0x4a3a2c,.05));
  for(let k=0;k<2;k++)box('steel',gb-.4+k*.2,2.85,gtz-.2,.16,.06,.06,jc(0x6a5a3a,.06));
  // dock goods: crate stacks and sacks on the deck
- for(let k=0;k<4;k++){pallet(-9.0+k*.05,DK,jz-.4,1.6,1.2);for(let q=0;q<3;q++)crate(-9.0,DK+.12+q*.8,jz-.4,.8,rr(-.1,.1),pick([0x8a6a44,0x6a5238,0xa08258]));break;}
- sacks(-6.0,DK,jz-.8,6,0.2);sacks(-5.4,DK+.34,jz-.8,3,.1);
+ rngSkip(21);FURNISH('pa_pallet_load',-9.0,DK,jz-.4,0,{v:1});   // crates on a pallet
+ sacks(-6.0,DK,jz-.8,6,0.2);sacks(-5.4,DK+.64,jz-.8,3,.1);
  // yard right of the dock: forklift-height stacks of crates on pallets, tarped, more pallets, a container as a store
  const stacks=[[6.6,4.6],[8.0,4.2],[9.4,4.6],[6.9,6.6],[8.6,6.4]];
- stacks.forEach(([x,z],i)=>{const n=2+((i*3)%3);pallet(x,0,z,1.4,1.2);for(let q=0;q<n;q++)box('plank',x,.12+q*.95,z,1.3,.9,1.1,pick([P('wood'),P('woodD'),jc(0x8a6a44,.07)]),rr(-.05,.05));
-  if(i===1)tarp(x,.12+n*.95+.05,z-.55,1.7,1.3,.5,pick([0x2f62b8,0x3b7f8e,0xc9852a]),{poles:false});});
- tarp(6.6,3.05,4.0,1.7,1.3,.5,0x3b7f8e,{poles:false});
+ stacks.forEach(([x,z],i)=>{rngSkip(23+(i===1?3:0));FURNISH('pa_pallet_load',x,0,z,0,{v:2});});   // tarped loads on pallets
+ rngSkip(2);
  tireStack(11.6,4.2,5);tireStack(11.6,5.0,4);barrel(11.6,0,6.4,0x8a3a2c);barrel(12.1,0,6.7,0x2f62b8);pallet(11.5,0,2.4,1.4,1.2);
  lamp(-10.6,0,ZF+2.2,4.2);lamp(12.0,0,ZF+.8,5.0);
  for(const [i,x] of dxs.entries())inDigit(x,DK+3.8,ZF+.06,i+1,.7,0x2a2826);inDigit(X0-.06,3.6,-1.0,7,1.0,0x2a2826,-PI/2);inDigit(X0-.06,3.6,-1.5,4,1.0,0x2a2826,-PI/2);

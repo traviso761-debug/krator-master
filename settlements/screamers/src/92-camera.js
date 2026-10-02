@@ -36,4 +36,9 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  try{renderer.render(scene,camera);}catch(e){if(!renderErr){renderErr=true;reportErr('render: '+e.stack);}}
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;
  requestAnimationFrame(frame);}
+// LEVEL OF DETAIL (core/lod): 97-lod-auto.js takes over the finished scene. The jungle's flora (the Lambert instanced
+// sets: biome cards, clumps, trunks) has its own distance curve in the biome core, which thins and enlarges far
+// cards, so their screen size is not their geometry's: LOD keeps every one of them (it still culls them by frustum).
+window.LOD_OPTIONS={classify:o=>o.isInstancedMesh&&o.material&&o.material.type==='MeshLambertMaterial'?'flora':null,
+ classes:{flora:{minPx:0}}};
 frame();window._ready=true;

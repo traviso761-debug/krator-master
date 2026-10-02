@@ -190,6 +190,25 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
  // in rectangles. Feed it ARC LENGTH over 216 and the patches come out ~30 m.
  const hf=holeFn(d*.62,9516,null,1.6);
  const rot=(s,y)=>hf?hf(s/216,y):false;
+ // SECONDARY FAILURES. Below the slump the ruin was "intact with patches": every
+ // terrace, parapet and maisonette still in place, with holes eaten in the
+ // wall. A mountain abandoned for millennia loses whole runs of its face — the
+ // riser drops out, the parapet with it, and what stood on the terrace above
+ // goes down onto the terrace below. Eleven of these, one or two levels each,
+ // 36-110 m of frontage, on bearings clear of the slump and the street mouths.
+ // Their own little PRNG, so the rest of the ruin's detail keeps its stream.
+ const BITES=[];
+ if(d>0){let sd=9531;const lr=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
+  for(let i=0;i<40&&BITES.length<11;i++){
+   const k0=1+Math.floor(lr()*10),k1=Math.min(NL-2,k0+(lr()<.4?1:0)),uc=.05+lr()*.9;
+   const hu=(18+lr()*37)/LV[k0].per;
+   let ok=true;
+   for(let k=k0;k<=k1&&ok;k++)for(const du of [-hu,0,hu]){const P=plymPt(LV[k],uc+du);
+    if(goneAt(P[0],P[1],k)||goneAt(P[0],P[1],k+1)||Math.abs(P[1])<SPW+40)ok=false;}
+   for(const B of BITES)if(Math.abs(B.uc-uc)<B.hu+hu+.01&&k0<=B.k1+1&&k1>=B.k0-1)ok=false;
+   if(ok)BITES.push({k0,k1,uc,hu});}}
+ const inBite=(k,u)=>{for(const B of BITES)
+   if(k>=B.k0&&k<=B.k1&&Math.abs(u-B.uc)<B.hu*(1+.30*(k-B.k0)))return true;return false;};
 
  // ---- the public slot --------------------------------------------------------
  // Three rectangles in plan. A 54 m CHANNEL the length of the block, roofed
@@ -302,7 +321,7 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
   SH.push(gridSurface((u,v)=>{const P=plymPt(O,u),N=plymNrm(O,u),o=bandAt(y0+v*LH);
     return[P[0]+N[0]*o,y0+v*LH,P[1]+N[1]*o];},nu,NST*2,
    {uS:O.per/8,vS:LH/8,hole:(u,v)=>{const P=plymPt(O,u),yy=y0+v*LH;
-     return slotWall(P[0],P[1],k)||goneAt(P[0],P[1],k)||rot(u*O.per,yy);}}));
+     return slotWall(P[0],P[1],k)||goneAt(P[0],P[1],k)||inBite(k,u)||rot(u*O.per,yy);}}));
   DK.push(gridSurface((u,v)=>{const A=plymPt(O,u),B=plymPt(O1,u);
     return[lerp(A[0],B[0],v),y1,lerp(A[1],B[1],v)];},nu,3,
    {uS:O.per/8,vS:1.6,hole:(u,v)=>{const A=plymPt(O,u),B=plymPt(O1,u);
@@ -313,7 +332,7 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
   SH.push(gridSurface((u,v)=>{const P=plymPt(O,u),N=plymNrm(O,u),o=v<.5?.45:-1.2;
     return[P[0]+N[0]*o,y1+(v<.5?v*2*3.2:3.2),P[1]+N[1]*o];},nu,2,
    {uS:O.per/8,vS:.5,hole:u=>{const P=plymPt(O,u);
-     return slotDeck(P[0],P[1],k+1)||goneAt(P[0],P[1],k)||(d>0&&rng()<.14);}}));
+     return slotDeck(P[0],P[1],k+1)||goneAt(P[0],P[1],k)||inBite(k,u)||(d>0&&rng()<.14);}}));
   // the ruin's liner: the inside of the shell, so every eaten panel and every
   // missing window opens onto a dark interior instead of onto the far wall
   // Its top stops 1.2 m short of the deck above: run it to y1 and its edge is
@@ -328,7 +347,7 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
   const nb=Math.max(20,Math.round(O.per/BW));
   for(let j=0;j<nb;j++){const u=(j+.5)/nb;
    const P=plymPt(O,u),N=plymNrm(O,u),px=P[0],pz=P[1];
-   if(slotWall(px,pz,k)||goneAt(px,pz,k)||rot(u*O.per,y0+LH*.5)){continue;}
+   if(slotWall(px,pz,k)||goneAt(px,pz,k)||inBite(k,u)||rot(u*O.per,y0+LH*.5)){continue;}
    const tq=qFacing([N[0],0,N[1]]);
    if(j%2===0&&!(d>0&&rng()<.20))
     kput('plyBox',[px+N[0]*.35,y0+LH*.5,pz+N[1]*.35],tq,[.8,LH,1.0],stoneC());
@@ -381,13 +400,32 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
    else{
     const r2=rng(),t2=rr(2.6,Math.max(3.4,dep-2.6));
     const ox=B[0]+BN[0]*t2,oz=B[1]+BN[1]*t2;
-    if(r2<.20)kput('plyTank',[ox,y1+1.8,oz],null,[1.5,3.6,1.5],tinC());
+    // QA arcA: at 16 000 bays seven items on one roll repeat — the same water
+    // butt every few metres. A hash per bay (no draw, so the stream is
+    // untouched) now picks a variant inside each item and puts something in
+    // the bays the roll left empty: a squat butt or a pair for the tank, a
+    // bench, a pergola. tx/tz is the terrace's own tangent.
+    // Colours for the added pieces come off the same hash: stoneC()/tinC()
+    // draw from the stream, so only an item that already drew one may call them.
+    const hv=h3(j,k,9533),tx=-BN[1],tz=BN[0];
+    const hC=(q,h0,h1,s0,s1,l0,l1)=>new THREE.Color().setHSL(lerp(h0,h1,h3(j,q,k)),lerp(s0,s1,h3(k,q,j)),
+      lerp(l0,l1,h3(q,j,k)));
+    const hStone=q=>hC(q,.06,.10,.03,.12,d>0?.14:.44,d>0?.24:.58),hTin=q=>hC(q,.035,.11,.06,.30,d>0?.12:.22,d>0?.24:.44);
+    if(r2<.20){if(hv<.35)kput('plyTank',[ox,y1+.9,oz],null,[2.5,1.8,2.5],tinC());
+     else if(hv<.6){kput('plyTank',[ox+tx*1.2,y1+1.8,oz+tz*1.2],null,[1.5,3.6,1.5],tinC());
+      kput('plyTank',[ox-tx*1.2,y1+1.4,oz-tz*1.2],null,[1.3,2.8,1.3],hTin(1));}
+     else kput('plyTank',[ox,y1+1.8,oz],null,[1.5,3.6,1.5],tinC());}
     else if(r2<.38)kput('planter',[ox,y1+.55,oz],bq,[rr(2,4.4),1.1,rr(1.1,2)],soilC);
     else if(r2<.54)plyScrub(ox,y1,oz,rr(1.4,3.2));
     else if(r2<.66)kput('plyWash',[ox,y1+3.2,oz],bq,[rr(3.5,6),2.4,1],clothC());
     else if(r2<.76)kput('plyTinBox',[ox,y1+1.5,oz],bq,[rr(2.4,4.4),3,rr(2,3.4)],tinC());
     else if(r2<.84)kput('plyBrk',[ox,y1+.35,oz],bq,[rr(3,7),.7,rr(1.4,2.6)],stoneC());
-    else if(d===0&&r2<.95)person(ox,y1,oz);}}
+    else if(d===0&&r2<.95)person(ox,y1,oz);
+    else if(hv<.30)kput('plyBrk',[ox,y1+.45,oz],bq,[3.4,.9,.9],hStone(2));          // a bench
+    else if(hv<.48&&dep>8){const pc=hStone(3);                                  // a pergola
+     for(const a of [-1,1])for(const b of [-1,1])
+      kput('plyBrk',[ox+tx*a*2+BN[0]*b*1.4,y1+1.4,oz+tz*a*2+BN[1]*b*1.4],null,[.3,2.8,.3],pc);
+     if(d===0||hv<.40)kput('plyTinBox',[ox,y1+2.9,oz],bq,[4.6,.25,3.4],hTin(4));}}}
 
   // ---- community buildings on the terrace -----------------------------------
   // A settlement of seventeen thousand homes is not made only of homes, and the
@@ -610,8 +648,42 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
    lring(CVX,SPY0+CVH*.56,0,CVR*.72,22);
    lring(CVX,SPY0+23.2,0,CVR+10.6,30);}
   else rubbleRing(CVX,SPY0,0,CVR+4,CVR+36,70,4.2);
+  // THE CIVIC QUARTER. The hall was the only civic object in a settlement of
+  // 17 000 homes: a drum, a dome and a colonnade standing alone in 34 000 m2 of
+  // plaza. It now has what a town square is made of — two long STOAS standing
+  // down the plaza's north and south sides, shops behind their colonnades, and a
+  // CAMPANILE on the hall's south-west, 112 m of brick that stands up out of
+  // the notch and is the one vertical in the whole west elevation.
+  const CPX=CVX-72,CPZ=-38,CPH=112,civicClear=(x,z)=>
+   Math.hypot(x-CPX,z-CPZ)>14&&!(x>-372&&x<-248&&Math.abs(Math.abs(z)-66)<9);
+  for(const sz of [-1,1]){const zb=sz*72,zc=sz*60,x0=-370,x1=-250,L=x1-x0;
+   kput('plyBox',[(x0+x1)*.5,SPY0+8,zb],null,[L,16,4],stoneC());
+   const nR=8;for(let q=0;q<nR;q++){if(d>0&&rng()<.35)continue;
+    kput('plyBox',[x0+(q+.5)*L/nR,SPY0+16.8,sz*66],null,[L/nR*1.04,1.6,15],stoneC());}
+   const nC=Math.round(L/8);
+   for(let q=0;q<=nC;q++){if(d>0&&rng()<.28)continue;
+    kput('plyBrk',[x0+q*L/nC,SPY0+8,zc],null,[1.7,16,1.7],stoneC());}
+   for(let q=0;q<nC;q++){const x=x0+(q+.5)*L/nC;
+    kput('plyArch',[x,SPY0+4.6,zb-sz*2.2],qFacing([0,0,-sz]),[1.1,1.0,1],null);
+    if(rng()<(d>0?.08:.6))kput('plyPane',[x,SPY0+11,zb-sz*2.1],qFacing([0,0,-sz]),[5,2.6,1],winC(.9));}
+   if(d===0){kput('strip',[(x0+x1)*.5,SPY0+15.6,zc],null,[L*.9,1.2,1.2],CYAN);
+    for(let q=0;q<5;q++)person(rr(x0,x1),SPY0,sz*rr(62,69));}
+   else rubbleRing((x0+x1)*.5,SPY0,sz*64,4,30,40,3.6);}
+  {const H=d>0?CPH*rr(.48,.62):CPH;
+   kput('plyBrk',[CPX,SPY0+H*.5,CPZ],null,[14,H,14],stoneC());
+   for(let q=0;q<Math.floor(H/22);q++)kput('plyBox',[CPX,SPY0+14+q*22,CPZ],null,[15.4,1.2,15.4],stoneC());
+   if(d===0){for(let f=0;f<4;f++){const a=f*Math.PI/2,nx=Math.cos(a),nz=Math.sin(a);
+     for(let q=-1;q<=1;q+=2)kput('plyArch',[CPX+nx*7.2-nz*q*3.2,SPY0+H-12,CPZ+nz*7.2+nx*q*3.2],
+      qFacing([nx,0,nz]),[.75,1.3,1],null);}
+    kput('plyBox',[CPX,SPY0+H+1.2,CPZ],null,[17,2.4,17],stoneC());
+    kput('plyBrk',[CPX,SPY0+H+8,CPZ],null,[9,11,9],stoneC());
+    kput('finial',[CPX,SPY0+H+20,CPZ],null,[3.4,9,3.4],null);
+    lring(CPX,SPY0+H-3,CPZ,10.4,12);}
+   else{rubbleRing(CPX,SPY0,CPZ,6,40,70,4.6);
+    for(let q=0;q<7;q++)kput('plyBrk',[CPX+rr(10,46),SPY0+rr(1,4),CPZ+rr(-20,20)],
+     qEuler(rr(-.4,.4),rng()*TAU,rr(-.4,.4)),[rr(3,8),rr(2,5),rr(3,8)],stoneC());}}
   for(let j=0;j<(d>0?50:96);j++){const x=PCX+rr(-64,64),z=rr(-82,82);
-   if(Math.hypot(x-CVX,z)<CVR+14||!plymInside(LV[K0],x,z,5)||!clearOf(x,z))continue;
+   if(Math.hypot(x-CVX,z)<CVR+14||!plymInside(LV[K0],x,z,5)||!clearOf(x,z)||!civicClear(x,z))continue;
    const r2=rng();
    if(r2<.28)kput('plyTinBox',[x,SPY0+1.6,z],qEuler(0,rng()*TAU,0),[rr(3,6),3.2,rr(2.5,5)],tinC());
    else if(r2<.48)plyTree(x,SPY0,z,rr(9,d>0?20:14));
@@ -716,6 +788,12 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
      beam('plyBox',[MX+Math.cos(a0)*r0,y0,MZ+Math.sin(a0)*r0],
                    [MX+Math.cos(a1)*r0,y0,MZ+Math.sin(a1)*r0],.9,.9,stoneC());}}
    kput('plyDrum',[MX,TOPY+MASTH*.66,MZ],null,[6.5,3.2,6.5],stoneC());
+   // guys: four stays from the gallery to anchor blocks on the roof — an 88 m
+   // lattice on a 17 m base does not stand on its own legs in a wind
+   for(let q=0;q<4;q++){const a=q/4*TAU+.3,ax=MX+Math.cos(a)*66,az=MZ+Math.sin(a)*52;
+    if(!plymInside(O,ax,az,4))continue;
+    beam('plyBox',[MX+Math.cos(a)*4,TOPY+MASTH*.66,MZ+Math.sin(a)*4],[ax,TOPY+2,az],.35,.35,stoneC());
+    kput('plyBox',[ax,TOPY+1.2,az],null,[3.4,2.4,3.4],stoneC());}
    lring(MX,TOPY+MASTH*.66+2.5,MZ,6.8,14);
    kput('strip',[MX,TOPY+MASTH+2,MZ],null,[3,3,3],CYAN);
    kput('finial',[MX,TOPY+MASTH+6,MZ],null,[2.2,7,2.2],null);}
@@ -728,6 +806,35 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
 
  // ============================================================ THE RUIN
  if(d>0){
+  // ---- the secondary failures -----------------------------------------------
+  // What a dropped riser leaves: a floor, the dark lining six metres back, the
+  // two cut ends, the broken stubs of the four storey slabs between, the cross
+  // walls that made them flats, and the riser itself in pieces on the terrace
+  // it fell onto. Edges are found on the riser's own grid so the hole and its
+  // lining meet.
+  for(const Bt of BITES)for(let k=Bt.k0;k<=Bt.k1;k++){const O=LV[k],y0=YS[k];
+   const nu=Math.max(28,Math.round(O.per/11));let i0=-1,i1=-1;
+   for(let i=0;i<nu;i++)if(inBite(k,(i+.5)/nu)){if(i0<0)i0=i;i1=i;}
+   if(i0<0)continue;
+   const ua=i0/nu,ub=(i1+1)/nu,nq=Math.max(2,i1-i0+1);
+   const Q=(u,o)=>{const P=plymPt(O,u),N=plymNrm(O,u);return[P[0]-N[0]*o,P[1]-N[1]*o];};
+   VD.push(gridSurface((u,v)=>{const p=Q(lerp(ua,ub,u),6.2*v);return[p[0],y0+.06,p[1]];},nq,1,{uS:nq,vS:1}));
+   for(const ue of [ua,ub])VD.push(gridSurface((u,v)=>{const p=Q(ue,6.2*u);return[p[0],y0+v*(LH-.2),p[1]];},2,3,{uS:1,vS:2}));
+   const nb=Math.max(2,Math.round((ub-ua)*O.per/BW));
+   for(let j=0;j<nb;j++){const u=lerp(ua,ub,(j+.5)/nb),N=plymNrm(O,u),tq=qFacing([N[0],0,N[1]]);
+    for(let s2=1;s2<NST;s2++){if(rng()<.30)continue;
+     const dl=rr(2.2,5.6),p=Q(u,6-dl*.5);
+     kput('plyBox',[p[0],y0+s2*SY,p[1]],tq,[BW*rr(.7,1.02),.45,dl],new THREE.Color(0xb4aa98));
+     kput('boxD',[p[0],y0+s2*SY-.55,p[1]],tq,[BW*.9,.6,dl*.9],null);}
+    if(j%2===0){const p=Q(u,3.1);kput('boxD',[p[0],y0+LH*.5,p[1]],tq,[.5,LH-1,6],null);}
+    // the riser, on the terrace in front of it and in the room behind it
+    for(let q=0;q<5;q++){const t=rr(-1.5,7),p=Q(u,-t);
+     if(rng()<.5)kput('plyBox',[p[0],y0+rr(.4,1.8),p[1]],qEuler(rr(-.5,.5),rng()*TAU,rr(-.5,.5)),
+      [rr(2,6),rr(.6,1.4),rr(1.5,4)],new THREE.Color(0x8e8472));
+     else kput('rubble',[p[0],y0+.5,p[1]],qEuler(rng()*3,rng()*3,rng()*3),[rr(.8,2.6),rr(.5,1.4),rr(.8,2.6)],
+      new THREE.Color().setHSL(rr(.05,.10),rr(.08,.26),rr(.10,.24)));}
+    if(rng()<.35){const p=Q(u,-rr(1,6));plyScrub(p[0],y0,p[1],rr(1.4,3.2));}}}
+
   // ---- the slumped flank ------------------------------------------------------
   // NOT a cutaway section. A stepped mass has no depth of solid material at any
   // one place to cut through, so a section here comes back as a torn hole with

@@ -26,7 +26,7 @@ TEX.xChevron=canvasTex(128,128,(g,w,h)=>{g.fillStyle='#f2ead6';g.fillRect(0,0,w,
 TEX.xBrick=canvasTex(128,128,(g,w,h)=>{g.fillStyle='#d9c29a';g.fillRect(0,0,w,h);const bw=26,bh=9,cols=['#a8674a','#b5714f','#98583e','#b06a48'];
  for(let j=0;j<20;j++)for(let i=-2;i<8;i++){const odd=j%2;g.save();g.translate(i*bw*2+(odd?bw:0),j*bw*.5);g.rotate(odd?-Math.PI/4:Math.PI/4);g.fillStyle=cols[(i*3+j)%4];g.fillRect(0,0,bw,bh);g.restore();}},[1,1]);
 MAT.xChecker=xStd({map:TEX.xChecker,roughness:.3});MAT.xFin=xStd({map:TEX.xFin,roughness:.3});MAT.xFinBorder=xStd({map:TEX.xFinBorder,roughness:.35});MAT.xLeafTile=xStd({map:TEX.xLeafTile,roughness:.3});MAT.xChevron=xStd({map:TEX.xChevron,roughness:.5});MAT.xBrick=xStd({map:TEX.xBrick,roughness:.9});
-xWorldUV(MAT.xChecker,1.2,1.2);xWorldUV(MAT.xFin,.8,.8);xWorldUV(MAT.xFinBorder,1.6,1.6);xWorldUV(MAT.xLeafTile,1,1);xWorldUV(MAT.xChevron,.8,.8);xWorldUV(MAT.xBrick,.9,.9);
+vWorldUV(MAT.xChecker,1.2,1.2);vWorldUV(MAT.xFin,.8,.8);vWorldUV(MAT.xFinBorder,1.6,1.6);vWorldUV(MAT.xLeafTile,1,1);vWorldUV(MAT.xChevron,.8,.8);vWorldUV(MAT.xBrick,.9,.9);
 kdef('xCheckerB',VBOX,MAT.xChecker);kdef('xFinB',VBOX,MAT.xFin);kdef('xFinBorderB',VBOX,MAT.xFinBorder);kdef('xLeafTileB',VBOX,MAT.xLeafTile);kdef('xChevronB',VBOX,MAT.xChevron);kdef('xBrickB',VBOX,MAT.xBrick);
 MAT.xDarkWater=xStd({color:0x123a2e,roughness:.06,metalness:.3});kdef('xDarkWaterB',VBOX,MAT.xDarkWater);
 MAT.xMilk=xStd({color:0xbfe8ec,roughness:.1,metalness:.05,transparent:true,opacity:.85});kdef('xMilkB',VBOX,MAT.xMilk);

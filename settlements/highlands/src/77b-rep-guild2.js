@@ -79,10 +79,7 @@ function buildHlRepGuildAstro(G,o){reseed(21101+(o.v|0));const HX=-4,HZ=-1,W=16,
  kput('hBulbSc',[TX,BY+PH+.4,TZ],null,[4.6,4.4,4.6],cu);const tp=BY+PH+4.8;vPst('vIron',TX,tp-.3,TZ,.05,1.6,iron);hnRBGear(TX,tp+1.5,TZ,0,.4,.07,false,0,hC(HPAL.gold[0]));
  // the court: a sundial and an armillary sphere
  vnPaving(HX+4,0,FZ+3,12,4,0,ash,10);
- kput('hOctS',[HX+5,0,FZ+3],null,[.7,.9,.7],ash);kput('hRBDisc',[HX+5,.95,FZ+3],null,[.75,.05,.75],hC(0xb8903a));
- kput('vPipeC',[HX+5,.95,FZ+3.1],qEuler(-.8,0,0),[.03,.7,.03],hC(0x7a5a2a));
- kput('hOctS',[HX-1.5,0,FZ+3],null,[.5,1.1,.5],ash);{const c=[HX-1.5,1.9,FZ+3];vBall('hGold',c[0],c[1],c[2],.1,hC(HPAL.gold[0]));
-  for(const q of[qEuler(0,0,0),qEuler(Math.PI/2,0,0),qEuler(Math.PI/2,Math.PI/2,0),qEuler(.4,0,.4)])kput('hRBHoop',c,q,[.7,.7,1]);}
+ FURNISH('hl_rep_sundial',HX+5,0,FZ+3,0,{v:0});FURNISH('hl_rep_sundial',HX-1.5,0,FZ+3,0,{v:1});   // the sundial, the armillary sphere
  hnRBLamps([[HX-2.6,FZ+4.6],[HX+2.6,FZ+4.6],[TX-2,TZ+5.8]],3.4);vnFolk(HX+1,FZ+4.4,3,3);}
 
 // Round 10 (Travis: "make scavenger guild larger and more elaborate and move it just outside the port gate"): the guild
@@ -148,7 +145,7 @@ function buildHlRepGuildScav(G,o){reseed(21111+(o.v|0));
  vB('vIron',GX,0,YZ1-5,3.4,.14,5,0,iron);vB('vIron',GX,.14,YZ1-5,3.2,.02,4.8,0,hC(0x6a6258));
  vB('hPlankB',GX+4.2,0,YZ1-4,1.8,2.4,1.8,0,plank);vnShedRoof(GX+4.2,2.4,YZ1-4,2,2,.35,0,'vCorr',null,.2,.08);vnWin(GX+4.2,1,YZ1-3.08,0,.7,.6,'open','vWood',tar);
  hnRCCart(8,14,.4,tar,true);hnRCCart(24,16,-.3,tar,true);hnRCCart(GX,YZ1-5,0,tar,true);
- for(let k=0;k<8;k++)kput('vPanelB',[1+k*.14,.08+k*.1,14],qEuler(0,rr(-.1,.1),0),[1.4,.08,2.4],null);
+ hlRngSkip(8);FURNISH('hl_rep_plate_stack',1.49,0,14,0,{v:1});   // the stack of Ancient panels
  // ---- the salvage market along the road front
  for(let k=0;k<4;k++)hnStall(HX-9+k*6,0,FZ+8.5,0,hC(vPick(HPAL.aged)));
  hnBunting([HX-12,3,FZ+9.6],[HX+10,3,FZ+9.6],12);

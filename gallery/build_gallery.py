@@ -6,7 +6,11 @@ to gallery/site/worlds/<slug>.html, and writes gallery/site/index.html from
 index.template.html. Claude then publishes gallery/site/ as the Artifact named
 in gallery/README.md.
 
-Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL]
+Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL] [--lod CONFIG]
+
+--lod CONFIG (a TOML file: host/lod.toml) puts gallery/krator-bar.js first in every page: a bar to go to the other
+worlds, set the level of detail, or go home, and that world's level of detail; see both files. Without it the pages
+are exactly as built.
 
 --build-missing rebuilds only the worlds whose built page is absent (a fresh clone lacks the port's, which are
 not committed) and reuses every other built page as it is: what host/sitectl.bat does on Windows, where the
@@ -42,26 +46,43 @@ ENTRIES = [
     ('world', 'erewhon', 'settlements/xanadu/dist/erewhon.html', 'Erewhon',
      'The Pearl of Xanadu: a gilded valley city stepping up the hillsides, on the terrain of Travis\'s map.'),
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
-     'An outlying Beast Rider village in the central-crater hyperjungle.'),
+     'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
     ('world', 'mavs-refuge', 'settlements/mavs-refuge/mavs-refuge.html', "Mav's Refuge",
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea.'),
+    ('world', 'shade', 'settlements/shade/dist/shade.html', 'Shade',
+     'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
 
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
     ('kit', 'post-apoc-kit', 'kits/post-apoc/dist/post-apoc.html', 'Post-Apoc set',
-     'Reclaimed-and-recycled buildings (containers, silos, tanks, buses, tyre and bottle walls) with sockets for any culture\'s marks: switch between Generic, Iziz, Voth and Republic.'),
+     'Reclaimed-and-recycled buildings (containers, silos, tanks, buses, tyre and bottle walls) with sockets for any culture\'s marks: switch between eight culture packs. Cloth flutters, stovepipes smoke, and at night the windows go dark one by one.', 'new'),
     ('kit', 'ancients-kit', 'kits/ancients/dist/ancients-kit.html', 'Ancients',
-     'Ruined megastructures of the ancient civilisation: 33 structure types at every level of decay.'),
+     'Ruined megastructures of the ancient civilisation at every level of decay: the 33 original types, the Lighthouse, 29 arco alternates and five Yuni variants, each intact, ruined and rehabilitated.', 'new'),
     ('kit', 'ancients-worn', 'kits/ancients/dist/worn.html', 'Ancients, worn',
      'Every Ancients type intact beside its worn twin: whole, rust-streaked, the white skin tarnished.'),
     ('kit', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
      'The Iziz building families built the Ancient way, each intact, destroyed and rehabilitated, with the Iziz variants: cut-out apartments, offices and houses, towers on small plinths, and the tripod market.'),
     ('kit', 'ancient-engines', 'kits/ancients/dist/engines.html', 'The Engines',
      'Ten ruined cyclopean machines of unclear purpose on a red plain: the Harrow, Strider, Breech, Gyre, Press, Sleeper, Carapace, Retorts, Needle and Ram.', 'new'),
+    ('kit', 'ancient-alt-towers', 'kits/ancients/dist/alt-towers.html', 'Ancients alternates: towers',
+     'Six new towers after the arco references, each intact, ruined, reclaimed and rehabilitated: the Bole, the Stack, the Attraction hotel, the Undulant flatiron, the Rig and the Bloom.', 'new'),
+    ('kit', 'ancient-alt-domestic', 'kits/ancients/dist/alt-domestic.html', 'Ancients alternates: domestic',
+     'Ten new houses, apartments and works: the Undulant and Bridge houses, Fin apartments, a garden amphitheater, trestle fuel station, rotor radar, flower dish, the Rampart, Pilotis works and the Star laboratory.', 'new'),
+    ('kit', 'ancient-alt-civic', 'kits/ancients/dist/alt-civic.html', 'Ancients alternates: civic',
+     'Thirteen new civic buildings: three offices, a saucer starport, bastion bunker, reading-star library, the Horns gate, robotics rig, data center, watch-cup police, linked hospital, garden-bowl campus and the Citadel.', 'new'),
+    ('kit', 'ancient-spaceport', 'kits/ancients/dist/spaceport.html', 'The Iziz spaceport',
+     'The Iziz spaceport rebuilt as an Ancients type in all six states: intact, ruined, toppled tower, rehabilitated, reclaimed (fires, gardens, a market) and worn.', 'new'),
+    ('kit', 'ancient-lighthouse', 'kits/ancients/dist/lighthouse.html', 'The Lighthouse',
+     'A modified Skyscraper J on its own island with a turning beacon, a cliff stair and a jetty, at every level of decay; the beams sweep at night.', 'new'),
     # objects: things you place in a world rather than build in it (furniture, plants, watercraft)
     ('objects', 'ringsea-craft', 'kits/ringsea/dist/ringsea.html', 'Ring Sea watercraft',
-     'Twenty-one vessels of the Ring Sea at anchor, warships and cargo ships: Hykkousoi triremes and a siege hexareme, the Voth Ordinator flagship, Iziz turtle and wheel ships, the Xanadu swan barge, canoes, outriggers and rafts.', 'new'),
-    ('objects', 'yuni-furniture', 'settlements/yuni/yuni-furniture.html', 'Yuni furniture', 'The furniture catalogue, tagged by culture.'),
+     'Twenty-one vessels of the Ring Sea on a rolling swell, warships and cargo ships: Hykkousoi triremes and a siege hexareme, the Voth Ordinator flagship, Iziz turtle and wheel ships, the Xanadu swan barge, canoes, outriggers and rafts. Press Under way to set the fleet sailing, or walk aboard.', 'new'),
+    ('objects', 'krator-catalog', 'kits/catalog/dist/catalog.html', 'Master catalog',
+     'Furniture for the interiors phase: 1503 pieces on five pages (indoor, outdoor, indoor and outdoor, rugs, and job items by trade), a row per culture and tier, with tapestries, banners, friezes, scrolls and painted hangings carrying each culture\'s emblem. Generic wood and scrap for the poor, regional materials for the middle class, bespoke court sets with tapestries and wall art for Voth, Iziz, the Beast Riders, Lizardmen, the East Abyss, the Eastern Nomads, Xanadu, Screamers, Islanders, Republicans, Rustic Highlanders, the Painted Men, Reed Lake and the salvage lords, beside the harvested Yuni and Ancients sets, and the furniture the Highlands, Post-Apoc, Beast Rider, Abyss and Locus kits used to draw for themselves. Plus the generic goods that sit on all of it (barrels, crates, sacks, jars, bread, cheese, roasts, pies, wine, tea, candles, medicines) and a fruit for every fruiting plant in the biomes: scalefruit, gatepods, lantern pods, frillpods, ballmelons, cacao.', 'new'),
+    ('objects', 'interiors', 'kits/interiors/dist/interiors.html', 'Interiors',
+     'Buildings planned into rooms and furnished from the catalog: a townhouse, an inn, a three-storey tower, with a storey cut-away and people walking in from the street to sit, sleep and work.', 'new'),
+    ('objects', 'interiors-walk', 'kits/interiors/dist/interiors-walk.html', 'Interiors walk-through',
+     'The Highlands, Post-Apoc, Beast Rider, Locus and Abyss buildings with their rooms planned and furnished from the catalog: every residence with a bed, a food store and an item store. Walk in through the doors and up the stairs.', 'new'),
     ('objects', 'yuni-plants', 'settlements/yuni/yuni-plants.html', 'Yuni plants', 'The plants of Yuni\'s gardens and terraces.'),
     ('kit', 'voth-catalog', 'settlements/voth/catalog/index.html', 'Voth buildings',
      'Every Voth building on one walkable sheet: the structures the city builds, housing, manors, shops, taverns, warehouses, civic and military sets, with automatic LOD.'),
@@ -74,6 +95,7 @@ ENTRIES = [
     ('kit', 'reedlake-kit', 'settlements/reedlake/dist/reedlake.html', 'Reed Lake buildings', 'Dwellings, workshops, farms and islands.'),
     ('kit', 'screamers-furniture', 'settlements/screamers/dist/furniture.html', 'Screamer furniture', 'The Screamers\' furniture set.'),
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
+    ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
 
     # Arcologies: each its own kit target. 'new' marks this month's group (QA group arcC).
     ('arcology', 'arc-theodiga', 'kits/ancients/dist/theodiga.html', 'Theodiga',
@@ -102,8 +124,8 @@ ENTRIES = [
      'The bridge city across a 3.4 km gorge.', 'earlier'),
     ('arcology', 'arc-canyon', 'kits/ancients/dist/canyon.html', 'The Span',
      'Cross-canyon pipe works and everything hung beneath them.', 'earlier'),
-    ('arcology', 'arc-spire', 'kits/ancients/dist/spire.html', 'Vashtir',
-     'The recursive spire: a pale pyramid-mountain of self-similar towers.', 'earlier'),
+    ('arcology', 'arc-spire', 'kits/ancients/dist/spire.html', 'The Hanging City',
+     'A lattice pyramid after Shimizu\'s mega-city: an octahedral megatruss 1 km across in its own lagoon, towers hung in its cells; intact, ruined and rehabilitated.', 'new'),
     ('arcology', 'arc-arcube', 'kits/ancients/dist/arcube.html', 'Arcube',
      "Soleri's kilometre cube, stood on a horizontal diagonal.", 'new'),
     ('arcology', 'arc-wing', 'kits/ancients/dist/wing.html', 'The Wing',
@@ -185,12 +207,13 @@ ENTRIES = [
 
     ('biome', 'hyperjungle', 'biomes/hyperjungle/dist/hyperjungle.html', 'Central hyperjungle', 'Six hypertree species, understorey, epiphyte gardens, fauna.'),
     ('biome', 'eastabyss', 'biomes/eastabyss/dist/eastabyss.html', 'Eastern abyss', 'Salt lake, flats and marsh, coal-swamp jungle, mat reed beds.'),
-    ('biome', 'sedesert', 'biomes/sedesert/dist/sedesert.html', 'Eastern high desert', 'Socotran flora, mesas, hoodoos, a canyon ending in a cataract.'),
+    ('biome', 'sedesert', 'biomes/sedesert/dist/sedesert.html', 'Eastern high desert', 'Socotran flora, mesas, hoodoos, a canyon ending in a cataract that pours off an undercut lip.'),
     ('biome', 'rift', 'biomes/rift/dist/rift.html', 'The Rift', 'An algal salt lake, abyssal jungle, cloud forest on the mesas.'),
     ('biome', 'swbay', 'biomes/swbay/dist/swbay.html', 'Southwest bay', 'Bay hyperjungle, parasol savannah, the volcano, stepped cataracts.'),
     ('biome', 'swlowlands', 'biomes/swlowlands/dist/swlowlands.html', 'Southwestern lowlands', 'Sprawl oaks, an oak avenue, cork grove, crown-flowering trees.'),
     ('biome', 'nwlowlands', 'biomes/nwlowlands/dist/nwlowlands.html', 'Northwestern lowlands', 'Lake shore, Mediterranean foothills, bamboo groves, glow-willows.'),
     ('biome', 'xanadu', 'biomes/xanadu/dist/xanadu.html', 'Xanadu', 'An enclosed mountain lake and a sacred river; ornamental wildwood.'),
+    ('biome', 'nhighlands', 'biomes/nhighlands/dist/nhighlands.html', 'Northern highlands', 'Old-growth temperate to boreal forest, trumpet trees, glowing bell-bulbs, a stream from its tarn.'),
 ]
 
 
@@ -211,6 +234,20 @@ def bundle(path, three=THREE_CDN):
         body = open(os.path.join(here, src.replace('%20', ' ')), encoding='utf-8').read()
         return '<script>\n' + body.replace('</script', '<\\/script') + '\n</script>'
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
+
+
+def bar_head(cfg, slug):
+    """The <script>s that give a world its bar and level of detail: the config for this page, then krator-bar.js."""
+    tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
+    sections = [{'key': k, 'title': t} for k, t in re.findall(r"\{key:'([^']+)',\s*id:'[^']*',\s*title:'([^']+)'", tpl)]
+    conf = {'slug': slug, 'level': cfg.get('worlds', {}).get(slug, cfg.get('default', 'high')),
+            'levels': cfg.get('levels', {}), 'home': '/', 'share': cfg.get('share', '/share'), 'sections': sections,
+            'scenes': [{'slug': e[1], 'name': e[3], 'section': e[0], 'blurb': e[4], 'href': '/worlds/%s.html' % e[1]}
+                       for e in ENTRIES],
+            'extra': cfg.get('extra', [])}
+    js = open(os.path.join(HERE, 'krator-bar.js'), encoding='utf-8').read().replace('</script', '<\\/script')
+    return ('<script>window.KRATOR_BAR=%s;</script>\n<script>\n%s\n</script>\n'
+            % (json.dumps(conf, ensure_ascii=False).replace('</', '<\\/'), js))
 
 
 def arg(name):
@@ -242,16 +279,33 @@ def main():
     os.makedirs(os.path.join(site, 'worlds'))
     if three != THREE_CDN:   # the same r128 build every settlement vendors
         shutil.copy(os.path.join(ROOT, 'settlements/voth/three.min.js'), os.path.join(site, 'worlds', 'three.min.js'))
+    lod = None
+    if arg('--lod'):
+        import tomllib   # Python 3.11+; only the LAN build needs it
+        with open(arg('--lod'), 'rb') as f:
+            lod = tomllib.load(f)
+        unknown = set(lod.get('worlds', {})) - {e[1] for e in ENTRIES}
+        if unknown:
+            print('lod: no gallery page named %s (names are the file names under /worlds/)' % ', '.join(sorted(unknown)))
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
+        page = bundle(src, three)
+        if lod is not None:
+            page = page.replace('<head>', '<head>\n' + bar_head(lod, slug), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
-            fh.write(bundle(src, three))
+            fh.write(page)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
+    if lod is not None:   # the LAN site: a way to bring a phone or tablet in
+        share = lod.get('share', '/share')
+        page += ('\n<a id="krator-share" href="%s" style="position:fixed;top:12px;right:12px;z-index:10;'
+                 'background:rgba(18,14,58,.85);color:#e8c98a;border:1px solid #c99a55;padding:7px 12px;'
+                 'font:14px Georgia,serif;text-decoration:none;border-radius:2px">Open on your phone or tablet</a>\n'
+                 % html.escape(share))
     with open(os.path.join(site, 'index.html'), 'w', encoding='utf-8') as fh:
         fh.write(page)
     total = sum(os.path.getsize(os.path.join(site, 'worlds', i['slug'] + '.html')) for i in items)

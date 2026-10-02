@@ -1,0 +1,40 @@
+{
+ "calls": 235,
+ "counters": {
+  "_bakeCalls": 1173,
+  "_biome": "(large)",
+  "_buildMs": 22848,
+  "_dress": {
+   "crags": {
+    "drapes": 51,
+    "ferns": 130,
+    "glow": 0,
+    "heath": 132,
+    "moss": 355,
+    "saplings": 36
+   },
+   "tower": {
+    "drapes": 3922,
+    "ferns": 298,
+    "glow": 1138,
+    "heath": 64,
+    "moss": 3195,
+    "saplings": 136
+   }
+  },
+  "_instances": 2013518,
+  "_phases": {
+   "bake": 5325,
+   "biome": 14945,
+   "dress": 130,
+   "floor": 4230,
+   "ground": 2352,
+   "pre": 2184,
+   "structures": 96,
+   "trees": 10715
+  },
+  "_ready": true,
+  "_registered": 14095
+ },
+ "tris": 5325458
+}

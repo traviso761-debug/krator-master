@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- probe (window._api) — same contract as the Ancients kit's, so verify.py runs unchanged
 const BUDGET={
- showcase:{tris:4500000,calls:450},   // round 7c: the kit showcase grew (the frame, four salvage buildings)
+ showcase:{tris:3000000,calls:400},
  cls:{small:60000,medium:250000,sky:400000,mega:700000},
  type:{},   // every vernacular key defaults to 'medium'
 };
@@ -11,6 +11,8 @@ function _probePoints(){
   if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
   pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);
   for(const x of[bb.min.x,bb.max.x])for(const y of[bb.min.y,bb.max.y])for(const z of[bb.min.z,bb.max.z])pts.push([x,y,z]);});
+ // the catalog furniture is merged page-wide (89y), so its meshes' boxes say nothing: each placed piece is a sample
+ if(typeof HLF!=='undefined'&&HLF.on)for(const r of HLF.placed)pts.push([r.x,r.y+.5,r.z]);
  return pts;}
 function regOccupancy(){const BK=100,by={};REG.forEach((r,i)=>{const z0=Math.floor((r.z-r.r)/BK),z1=Math.floor((r.z+r.r)/BK);for(let b=z0;b<=z1;b++)(by[b]||(by[b]=[])).push(i);});
  const n=new Array(REG.length).fill(0);for(const p of _probePoints()){const cand=by[Math.floor(p[2]/BK)];if(!cand)continue;for(const i of cand){const r=REG[i];const dx=p[0]-r.x,dz=p[2]-r.z;if(dx*dx+dz*dz<=r.r*r.r&&p[1]>=r.y-2&&p[1]<=r.y+r.h+5)n[i]++;}}

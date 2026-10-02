@@ -14,9 +14,9 @@ function buildRsIslanderOruwa(){reseed(71900);
  for(const x of[-1.4,1.6]){const y=H.ys(.5);rsTube(B,'wood',[[x,y+.05,-.4],[x,y+.25,1.2],[x,y+.1,2.6],[x,.2,3.6]],.07,0x7a5a38,20,6);rsRope(B,[x,.22,3.45],[x,.05,3.6],.03,0xc8b080);}
  // mast and the two-spar sail
  const mx=.4,y0=H.ys(.5);rsLink(B,'wood',[mx,.1,0],[mx,y0+6.4,0],.07,0x6a4a2c,6,.05);for(const s of[-1,1])rsRope(B,[mx,y0+6.4,0],[mx,y0,s*.45]);rsRope(B,[mx,y0+6.4,0],[mx,.3,3.6]);
- const S=rsSail(B,{key:'islander-moon',O:[mx-.2,y0+.5,.12],U:[-.98,0,-.2],V:[0,1,0],belly:.35,nu:10,nv:10,
+ rsRig(B,[mx,0]);const S=rsSail(B,{key:'islander-moon',O:[mx-.2,y0+.5,.12],U:[-.98,0,-.2],V:[0,1,0],belly:.35,nu:10,nv:10,
   A:t=>[lerp(-.6,3.2,t),lerp(5.8,6.6,t)],Bf:t=>[lerp(-.4,3,t),lerp(.3,.1,t)],draw:rsMoonSail});
- rsSailEdge(B,S,0,.06,0x7a5a38,-.05,1.05);rsSailEdge(B,S,1,.05,0x7a5a38,-.05,1.05);
+ rsSailEdge(B,S,0,.06,0x7a5a38,-.05,1.05);rsSailEdge(B,S,1,.05,0x7a5a38,-.05,1.05);rsRigEnd(B);
  rsFigure(B,[-3,.1,0],0,0xe0d0b0,true,0x6a4028);rsFigure(B,[2.2,.1,0],Math.PI,0x2a6a8a,true,0x6a4028);
  rsLink(B,'wood',[-3.4,.9,.2],[-5.6,-.5,.4],.04,0x7a5a38,5);rsSphere(B,'rope',.35,[1.3,.4,0],[1.4,.6,1],0x9a8a60,8,6);
  rsBake(B,V.group,'islanderOruwa');V.deckY=.1;return V;}

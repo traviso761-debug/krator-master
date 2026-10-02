@@ -3,7 +3,7 @@
    Mav's Refuge live here. build.py rejects colour arrays declared anywhere
    else. sRGB hexes unless a comment says LINEAR.
 
-   Setting: Krator, the hypertropic (XA) jungle on the SE, lee shore of the
+   Setting: Krator, the hypertropic (XA) jungle on the NE, lee shore of the
    Ring Sea — ~1.9 atm, 33 C, red soil, iridescent violet/green canopy. */
 var PAL = {
   /* --- atmosphere (read by 20-stage / 21-sky / 82-daynight) --- */
@@ -121,6 +121,9 @@ var FAMMAT = {
 };
 
 var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000 };
+/* the catalog furniture's OWN budget (53-furnish.js: one merged mesh per render family). verify.py counts it apart:
+   BUDGET.triangles is the world without it. Set from the measured total (1.28 M, 2026-10) with ~15% headroom. */
+BUDGET.furnitureTriangles = 1470000;
 
 /* aliases */
 var PLANKC = PAL.plank, TIMBERC = PAL.timber, WALLC = PAL.wall, WALLDARKC = PAL.wallDark,

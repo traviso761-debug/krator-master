@@ -8,6 +8,29 @@ const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,12000);
 // uniform is the only shader change: 0 is the dust-and-haze day this kit has
 // always had, 1 is the night it needs for firelight to mean anything.
 const hemi=new THREE.HemisphereLight(0xffe2c4,0x6a3a2a,.75);scene.add(hemi);
+// SOFFITS (shared-code round; QA arcA, towers). Nothing in this kit casts a
+// shadow, so a surface facing DOWN is lit by the hemisphere's ground colour and
+// nothing else, and 0x6a3a2a painted every underside in the kit red-brown:
+// balconies, galleries, deck soffits, the Hotel's eaves, Skyscrapers I and J.
+// Builders had been painting the shade in one by one (Arcube, Arcoindian II,
+// the Ledge, the Wing, the Hill) or adding a bounce (lxBounce, the Launch).
+// This fixes it once, for every lit material: the ground term is DESATURATED in
+// proportion to how far the normal points down, to its own luminance with a
+// slight cool cast (the shade under a slab is lit by bounce off pale paving and
+// the sky beyond, not by red soil). A wall (normal level) keeps the full warm
+// ground term, so the facades are unchanged; a soffit gets that brightness x1.3
+// in neutral grey (at x1 it read charcoal by the sunlit brick). Keyed to the
+// uniform, so setNight() needs nothing new. It is
+// a patch to the shared chunk, so it reaches Standard, Lambert and Phong alike,
+// and any per-material onBeforeCompile hook (glass, flicker, lxBounce) composes
+// with it instead of fighting for the slot.
+(function soffitChunk(){const C=THREE.ShaderChunk,k='lights_pars_begin',
+  a='vec3 irradiance = mix( hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight );';
+ if(C[k].indexOf(a)<0){reportErr('soffitChunk: hemisphere anchor not found in '+k);return;}
+ C[k]=C[k].replace(a,'vec3 sfG = hemiLight.groundColor;\n'+
+  'float sfL = dot( sfG, vec3( 0.2126, 0.7152, 0.0722 ) );\n'+
+  'sfG = mix( sfG, vec3( 0.92, 1.0, 1.08 ) * ( sfL * 1.3 ), clamp( -dotNL * 1.6, 0.0, 1.0 ) );\n'+
+  'vec3 irradiance = mix( sfG, hemiLight.skyColor, hemiDiffuseWeight );');})();
 const sun=new THREE.DirectionalLight(0xfff0dc,1.7);sun.position.set(-1200,900,600);scene.add(sun);
 const fill=new THREE.DirectionalLight(0xc0d0ff,.35);fill.position.set(800,400,-900);scene.add(fill);
 // sky dome
@@ -25,14 +48,16 @@ const giant=new THREE.Sprite(new THREE.SpriteMaterial({map:giantTex,fog:false,tr
 const giantDir=new THREE.Vector3(Math.sin(66*Math.PI/180)*Math.cos(25*Math.PI/180),Math.sin(25*Math.PI/180),-Math.cos(66*Math.PI/180)*Math.cos(25*Math.PI/180));
 
 // ground: red Tharnish soil, greener where the ruins stand
-(function paintGround(){const c=TEX.ground.image,g=c.getContext('2d'),w=c.width,h=c.height;const id=g.getImageData(0,0,w,h),d=id.data;const S=40000;
+// A target may widen the ground with GROUND_S (its side in metres; default 40 000).
+const GROUND_SIDE=typeof GROUND_S!=='undefined'?GROUND_S:40000;
+(function paintGround(){const c=TEX.ground.image,g=c.getContext('2d'),w=c.width,h=c.height;const id=g.getImageData(0,0,w,h),d=id.data;const S=GROUND_SIDE;
  const ruins=RUINS.map(s=>[(s[0]/S+.5)*w,((s[1]-GROUND_C)/S+.5)*h,s[2]*w/S]);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=fbm(x/30,y/30,.3,2),n2=fbm(x/5,y/5,7,1),n3=fbm(x/12,y/12,3,1);
   let r=150+(n-.5)*70+(n2-.5)*20,gg=82+(n-.5)*40+(n2-.5)*12,b=58+(n-.5)*30;
   let gr=0;for(const R of ruins){const dx=x-R[0],dy=y-R[1];const dd=Math.sqrt(dx*dx+dy*dy)/R[2];gr=Math.max(gr,clamp(1.1-dd,0,1)*clamp((n3-.35)*2.5,0,1));}
   r=lerp(r,70+n2*30,gr);gg=lerp(gg,110+n2*40,gr);b=lerp(b,45,gr);d[i]=r;d[i+1]=gg;d[i+2]=b;d[i+3]=255;}
  g.putImageData(id,0,0);TEX.ground.needsUpdate=true;})();
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(40000,40000),MAT.ground);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
+const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIDE,GROUND_SIDE),MAT.ground);groundM.rotation.x=-Math.PI/2;groundM.position.set(0,-.05,GROUND_C);groundM.userData.probeSkip=true;scene.add(groundM);
 
 // A target may add builders of its own by declaring EXTRA_BUILDERS in its
 // 89z-rows.js fragment, so new work can live entirely in its own target and

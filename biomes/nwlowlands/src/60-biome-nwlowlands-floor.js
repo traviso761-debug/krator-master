@@ -9,7 +9,8 @@
 //   the PLAIN       bluebell carpets, ferns, rhododendrons, lilies, sea pens, green grass
 //   the HILLS       tussock and dry grass, kangaroo paw, saltbush, club pens, rocks
 // Three LOD bands along the spine, a grass carpet, the water, fallen trees, and an
-// understorey pass under the crowns.
+// understorey pass under the crowns. Runtime LOD (NWLOW.LOD): each is also drawn only within
+// its range of the camera, by chunk (the understorey keyed by its tree's foot).
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const PAL=NWLOW.PAL,zones=NWLOW.zones,blocked=NWLOW.blocked;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -143,22 +144,26 @@ NWLOW.buildFloor=function(R,q){
   const w=[Z.rain*1.3,Z.shore*.9,Z.sub*1.0,Z.med*1.1,Z.rip*.5];let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   planters[k](x,y,z,Z,lv,st);}
- [[10,560,0],[19,1400,560],[40,1e9,1400]].forEach((b,bi)=>{const lv=2-bi;
+ const L=NWLOW.LOD,bandR=[L.floor,L.floorMid,L.farFloor];
+ [[10,560,0],[19,1400,560],[40,1e9,1400]].forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .5*q*(lv===0?.45:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.72,patchScale:.014,pad:.5});});
  // a cheap second pass of grass: the ground cover of the plain and the hills
- [[5,480,0],[10,1200,480]].forEach((b,bi)=>{const lv=2-bi;
+ [[5,480,0],[10,1200,480]].forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return q*.7;},(x,y,z,d)=>{if(blocked(x,z,.4))return;const Z=zones(x,z);
     const w=(Z.med*.9+Z.sub*.4)*(1-Z.bamboo)*.75;if(rng()>w)return;grassTuft(x,y,z,1,Z.med>.5?PAL.grassDry:PAL.grassGreen,Z.med>.5?1.1:.8);st.tufts++;},{patch:.6,patchScale:.02,pad:.3});});
  // the water: lotus and lilies on still fresh water, reeds in the shallows
- [[7,560,0],[14,1400,560]].forEach((b,bi)=>{const lv=2-bi;
+ [[7,560,0],[14,1400,560]].forEach((b,bi)=>{const lv=2-bi;BIO.range=bandR[bi];
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z);if(h>.3||h<-3.5)return 0;
     const Z=zones(x,z);return q*(1-Z.flow*.85)*(.7*smooth(-3.5,-1,h)+.3*smooth(-.9,-.1,h));},
    (x,y,z,d)=>{if(!BIO.clearOf(x,z,1)||blocked(x,z,.5))return;if(y>-.5&&rng()<.35){reed(x,Math.max(y,-.4),z,lv);st.tufts++;}else lotus(x,z,lv,st);},{patch:.8,patchScale:.02,noMask:true,pad:.4});});
  // fallen trees
+ BIO.range=L.logs;
  BIO.grid(130,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1400)return 0;const Z=zones(x,z);return (Z.rain*.8+Z.sub*.35)*(1-Z.bamboo)*q;},(x,y,z,d)=>{for(let t=0;t<4;t++)if(log(x+rr(-25,25),y,z+rr(-25,25),st))break;},{patch:0,pad:3});
- // THE UNDERSTOREY under the near and mid crowns, scaled by the ground each crown covers
- for(const T of NWLOW.TREES){if(T.lv<1||T.crownR<3.5)continue;const Rc=Math.max(T.spread||T.crownR,T.crownR)*.9,area=Math.PI*Rc*Rc,n=Math.round(Math.min(T.lv===2?30:6,area*(T.lv===2?.02:.004))*q);
+ // THE UNDERSTOREY under the near and mid crowns, scaled by the ground each crown covers (keyed by its tree, to NWLOW.LOD.under)
+ BIO.range=L.under;
+ for(const T of NWLOW.TREES){if(T.lv<1||T.crownR<3.5)continue;BIO.owner=[T.x,T.z];const Rc=Math.max(T.spread||T.crownR,T.crownR)*.9,area=Math.PI*Rc*Rc,n=Math.round(Math.min(T.lv===2?30:6,area*(T.lv===2?.02:.004))*q);
   for(let i=0;i<n;i++){const a=rr(0,TAU),d=T.rb*2+.8+(Rc-T.rb*2)*Math.sqrt(rng()),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;
    if(BIO.mask(x,z)<=0||!okGround(x,z,.7))continue;const y=Y(x,z);if(y<.3)continue;const Z=zones(x,z);if(Z.bamboo>.2)continue;underPlant(x,y,z,Z,T.lv,st);st.understorey++;}}
+ BIO.owner=null;BIO.range=null;
  return{under:st};};
 })();

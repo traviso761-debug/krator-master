@@ -26,6 +26,9 @@ defBuilding({key:'shop-food',name:'Food shop',seed:4610,tags:{type:['market/shop
 function xxFoodShop(o){ ... }      // o.v = variant number (0..); place() already reseeded (seed + v*7). Use only rng()/rr()/pick(); NEVER Math.random.
 ```
 * Keep the order `key, name, seed, tags, w, d, h, build` (build.py reads the seed after the key). `seed`: unique four-digit block from your range in the brief. All randomness through `rng()` `rr(a,b)` `pick(list)`. Seeds are per building.
+* A def that builds at more than one size declares the others as `sizes:{large:{w,d,h,budget,front}}` (before `build`); `place(key,x,z,ry,{size:'large'})` picks one,
+  `declOf(key,o)` returns the def as declared for that placement and `rec.decl` records it (the footprint check uses it). Only `compound` has them (`large`, 82 x 76; `xl`, 106 x 76 with two great slots).
+  A showcase row entry (`src/89-rows.js`) is `'key'`, `'key@culture'` or `{key, o}` (place() options, e.g. `{key:'compound', o:{size:'large', slots:[...]}}`).
 * `tags.type` (README rule): one or more of `civic, market/shop, tavern/inn, industry, farm, single-family dwelling, multi-family dwelling, infrastructure, religious, funerary`.
   Also give `size`, `core` (the reclaimed object), `materials`. `culture` and `sockets` are added for you. `budget:N` raises the triangle limit (default 120000).
 * A builder never names a culture. Declare sockets; keep every awning/banner/flag/emblem/sign out of the geometry itself.
@@ -67,23 +70,81 @@ Never use a different colour space: pass hex numbers to `jc`, never `new THREE.C
 ## Reclaimed cores (32-cores.js) and additions (34-adds.js). READ THESE FILES before writing a building
 Cores: `container({len:6.06|12.19,hi,col,open:'front'|'end'})` (long axis x, +z front; sizes in `CT`), `silo({r,h,col,roofCol,rise})`, `tankV({r,h})`, `tankH({r,L})`, `bus({len,col})`,
 `semi({trailer,col,tcol})`, `bulkhead({w,h,th,hatch:'round'|'door'})` (Ancient white ceramic slab, hatch or doorway). Each draws in the current frame centred on the origin, base at y=0: `W(x,0,z,ry,()=>container(...))`.
-Additions: `door win porthole patchWall plankWall sheetWall bottleWall tireWall tireRing gableRoof leanRoof tarp deck stairs ladder stovepipe solar barrel crate sacks pallet lamp fire
-tireStack junkPile antenna fenceRun bottleString waterButt`. Appliqué doors/windows (`door`, `win`) sit ON a wall facing +z at (x, y=sill, z=wall face); use `W(...)` with ry to put them on other faces.
+Additions: `door win porthole patchWall plankWall sheetWall bottleWall tireWall tireRing gableRoof leanRoof tarp deck stairs ladder stovepipe solar antenna fenceRun bottleString`,
+the yard furniture helpers `barrel crate sacks pallet lamp fire tireStack junkPile waterButt tireStool tireChair tireTable` (they place catalog pieces: see *Furniture* below), and the steel access set for container and steel builds (timber `deck`/`stairs` read as wood):
+```
+stStairs(ax,ay,az, bx,by,bz, w, {tread:'plate'|'grate', rail})   channel stringers, checker-plate (or grating) treads with a nosing, pipe handrails on posts.
+                                                                 Same contract as stairs(): the top tread's top is at by, its back edge at the top point. stairs(...,{steel:true}) calls it.
+stLanding(x,y,z, w,d, {rail:['b','r','f','l'], posts, floor:'grate'|'plate'})   deck() in steel: top at y, grating floor, channel frame, square-tube posts to the ground when y>.5
+stFloor(x,y,z, w,d, {floor})     a grating (default) or checker-plate panel, top at y (catwalks)      stRail([x,z],[x,z], y, {h, toe})   pipe rail on posts with knee rail and toe plate
+``` Appliqué doors/windows (`door`, `win`) sit ON a wall facing +z at (x, y=sill, z=wall face); use `W(...)` with ry to put them on other faces.
 Real openings (an open-fronted shop, a walk-in porch) need `wallOpen` or a core with `open:'front'`.
 If you need a helper twice, add it at the top of YOUR fragment with your prefix. If you think the ENGINE (files 10-36, 80, 9x) needs a change, do not edit it: describe it in your report.
 
+## Furniture: placed from the catalog (FURNISH), never drawn
+Everything a building puts in or around itself that is not its structure (the core, the additions lashed to it, walls, fences, decks, stairs, ladders, outbuildings, the
+culture's sockets) is FURNITURE: a piece of the master catalog (`kits/catalog`: the `pa_*` pieces harvested from this kit in `krator-master-furniture-scrap.js` and
+`-post-apoc.js`, plus the `scrap_*`, `post-apoc_*` and `generic_*` pieces), placed as data and built by the catalog's own code. `build.py` inserts the generated
+bundle `38-furniture-bundle.js` (`kits/catalog/furniture_bundle.py` for the cultures `scrap`, `post-apoc`, `generic`, and `kits/interiors/kit_bundle.py` for the interior set
+`post-apoc`); `src/91f-furnish.js` is the glue.
+```
+FURNISH(key, lx, ly, lz, lry, {v, seed, setting, ax, az})   in the CURRENT frame (a builder's, or a W() frame inside it), like any primitive
+```
+`v` the catalog variant, `lry` turns the piece (+z is its front), `(ax, az)` is the point of the piece (in its own frame) that lands on `(lx, lz)` (a piece is centred on its
+footprint: a lamp post's pole is at `ax:-.23`). It returns the record `{key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting}` (`lx..lry` in the building's
+own frame, `x, y, z, ry` in the world) and pushes it on the building's REG record, `rec.furniture`. The pieces of the whole page go into one batch, flushed once per
+`buildWorld()` into about 20 merged meshes (`PAF.group`); their lights become HALO records (glow sprites, the night light pool, the lamp cones) and each piece but lamps and
+hung things leaves a collider box (`rec.coll`). A key the catalog lacks is counted, not thrown (`_api.furniture().missing`).
+The helpers in `34-adds.js` and the builders' own (`cvBench`, `shCrateProduce`, `shMannequin`, `fmScarecrow`, `fmCoop`, `fmWell` ...) call FURNISH and keep their names and
+arguments. Each still draws the random numbers its old drawing drew (`rngSkip(n)`), so the structure drawn after it keeps its random stream: every def, variant and culture
+pack draws exactly the same numbers as before the conversion.
+**Indoors** the rooms are the interiors kit's (`kits/interiors/sets/post-apoc.js`): a builder draws nothing inside a room the set plans (the shop boxes, the smithy shed,
+the longhouse and mess halls, the throne bay, the granary's loading bay ...). With **`?interiors=1`** every TOP-LEVEL placement (not a building a compound's slot places)
+whose key has a set item without `skip` is planned and furnished through the same batch: `rec.interior = {rooms, pieces, residence}`. Off by default (the roofs hide it).
+**`?furniture=0`** places no piece (the records are still kept). Probe: `_api.furniture()` = `{placed, keys, missing, tris, buildings, interiorBuildings, rooms, pieces,
+residenceFails}`; `_api.furniture(true)` adds every record; `window._build.furniture` the same counts for the last build.
+
 ## Night, and the invisible front door
 **Night:** the `Time` select (Day / Dusk / Night) or `?night=0..1` or `window._api.setNight(v)` drives sky (stars, dusk glow, moon), sun/moon light, hemisphere, fog, lit windows, lamp and fire glow, and a pool of six real point lights that follows the camera to the nearest lamps and fires.
-Nothing to author: about half of all `glass` panes are lit windows (deterministic, by position), and every `glow` piece (lamp bulbs, fires, `lit` windows) becomes a halo and a candidate light. To make something glow at night, draw it in `glow`.
-**Front door:** every placed building carries `rec.front = {source, local:{x,z,yaw}, world:{x,y,z,yaw}}`, invisible data (the `Doors` button draws a debug arrow at each). It is picked from the builder's `door()` calls (the widest door facing within 50 degrees of +z),
+Nothing to author: every light `glass` pane is a window the evening schedule can light (below), and every `glow` piece (lamp bulbs, fires, `lit` windows) becomes a halo and a candidate light. To make something glow at night, draw it in `glow`.
+**Front door:** every placed building carries `rec.front = {source, local:{x,z,yaw,y}, world:{x,y,z,yaw}}` (`local.y`: the threshold above the plot; `world.y`: the plot's ground), invisible data (the `Doors` button draws a debug arrow at each). It is picked from the builder's `door()` calls (the widest door facing within 50 degrees of +z),
 else a def may declare `front:{x,z,yaw}`, else the default (centre of the +z edge). `frontOf(key)` returns a def's local front; `placeFacing(key,x,z,tx,tz,o)` places a building so its front door faces a point (a road, a plaza). `_api.doors()` lists them all.
-Keep a building's main entrance a `door()` call, or declare `front`.
+Keep a building's main entrance a `door()` call, an `entry(x,y,z,w,h)` (same frame as `door()`, draws nothing: an open container front or service counter, a gate gap, a roll-up opening, a curtained doorway), or declare `front`. `verify --assert` fails if any building falls back to the default.
+
+## Collision and path data (36-def.js)
+**Colliders, per building, automatic:** while `place()` builds, the engine primitives (`box cyl cylH sph tire sector prism poly plane4`) are wrapped (the drawing and the rng are untouched) and record, in world space,
+`rec.coll = {solids, floors, ramps, links, water}`. A **solid** `{x,z,hx,hz,yaw,y0,y1,m}` is an oriented box (centre, half sizes along its own axes, the yaw of its +x, a y span) of a hard material: not `cloth chain glow water`,
+not `plant()` flora, not spinners; cylinders, tyres and domes are boxed, `beam()`/`pipe()` (poles, rails, posts) are not recorded. Solids inside a bigger one are merged away. A **floor** `{x,z,hx,hz,yaw,y}` is the top of a level slab
+of a floor material at least 0.4 x 0.4 m. `deck stLanding stFloor` record a floor, `stairs stStairs` a **ramp** `{a:[x,y,z],b:[x,y,z],w}`, `ladder` a **link** `{a,b}` (foot, top), `fenceRun` one thin solid, a gently sloping `plane4` of a floor
+material that starts at the ground a ramp, a `poly('water',...)` a **water** polygon. To state a surface a builder draws some other way: `collFloor(x,y,z,w,d,ry)`, `collRamp(ax,ay,az,bx,by,bz,w)`, `collLink(...)`, `collSolid(x,y,z,w,h,d,ry)` (current frame).
+**Nav grid, per scene:** `navBuild(opt)` / `navGet()` (cached per world build). Cells of 0.5 m over every placed building plus 6 m; up to 4 walkable **levels** a cell (ground unless water, floor tops, ramp heights, merged within 0.35 m).
+A level is blocked by a solid crossing h+0.45 .. h+1.55 m, or by a level less than 1.5 m above it (not on stairs). Levels connect to the 4 neighbours within 0.6 m (0.8 m on a ramp) and through ladders. Reach = flood fill from the open
+ground at the grid border. Each building's front door gets an **approach**: the first open level 0.6..2.4 m straight out from the door (up to 0.8 m to the side) within 0.75 m of the threshold. Door cells are flagged 1, approach cells 2.
+```
+_api.colliders()          per-building counts          _api.colliders(i)   REG[i].coll
+_api.nav()                {cell,x0,z0,nx,nz,touchedCells,blockedLevels,doors,unreachable:[..],doorList:[{key,door,yaw,approach,reachable}]}
+_api.navGrid()            the live grid: at(x,z) -> [{h,ramp,blocked,reach,door,approach}], levels, flag, reach, cellOf(x,z)
+_api.navAt(x,z)           levels of one cell             _api.showNav(on)   overlay: green reached, orange cut off, red blocked, cyan door/approach
+```
+`verify --assert` checks `colliders-published` and `door-approach-reachable`.
+
+## Night and animation (nothing to author for the defaults)
+**Window schedule:** every window pane (light `glass`, and the `winlit` half) carries a per-pane order (`aWin`, a position hash). A sim clock sets the share lit (`winFrac(h)`: ~85% at dusk,
+~55% at 23:30, ~20% at 02:30, a few early risers before dawn); panes go dark one by one. `nightSet(v)` sets the clock from v (Day 13:00, Dusk 19:30, Night 23:30); `nightClock(h)` sets the hour
+(and the sky from it); the **Clock** button or `?clock=N` runs it. **Light volumes:** an additive cone under every lamp bulb (a warm-white `glow` sphere over 1.4 m) and a spill out of every
+front door (`rec.front`) that the schedule has lit; unshadowed, depth-tested, two instanced draw calls, off by day.
+**Animation time:** `?t=12.5` pins it, `?anim=0` sets 0; `window._anim` = `{time(), pin(t), play(), stats()}`. Shader-side only: nothing moves a building vertex on the CPU.
+**Cloth:** awnings, banners and flags drawn by a culture pack flutter, pinned at their anchor (the wall edge, the rod, the pole); `tarp()` lifts in the middle. The geometry engine writes the weights
+(`aFlut`) while a rule is set: to make your own cloth flutter, draw it inside `withCloth(rule, () => {...})` where `rule(p, out)` sets `out` (a displacement vector in the current frame) from the
+vertex `p` in that frame (`clothRule('banner', {h})`, `clothRule('flag', {w})`, `clothRule('awning', {w,d})` and `clothTarp(x,z,w,d)` are ready-made). Only the `cloth`, `awn:*` and `ban:*` materials move.
+**Smoke:** `smokeAt(x,y,z,{r,kind:'stove'|'fire'|'stack'})` in a builder's frame adds a source (`stovepipe()` and `fire()` call it). Puffs are one instanced billboard mesh outside the registry.
+**Fire:** anything drawn in `glow` flickers (cones the most, spheres less, boxes a little), and so do the pool lights that sit on fires and lamps.
 
 ## Flora is a placeholder, always
 A building never models a plant. Anything living (crops, planter fill, kitchen garden, shrubs, vines, moss, a shade tree) is `plant(kind,x,y,z,{h,r,s,ry,moisture,riparian,tags})`
 (end of `34-adds.js`). Kinds are ROLES, the biome picks the species: `crop crop-tall crop-vine groundcover shrub flower tree vine-wall grass moss`. The default draws a small muted
 placeholder; the host installs biome-appropriate flora once, with `PLANTS.draw = slot => plantFrame(slot, () => {...draw the local species...})`, and every plant in every building follows.
-Each slot carries tags (`class:'flora'`, `role`, `biome`, `moisture: arid|mild|wet`, `riparian`, `cultivated`). `window._api.plants()` lists what each building placed. Beds, planters and supports stay in the building; only the living plant is a `plant()`.
+Each slot carries tags (`class:'flora'`, `role`, `biome`, `moisture: arid|mild|wet`, `riparian`, `cultivated`). `window._api.plants()` lists what each building placed. Planters, cold frames and beds are catalog furniture (`pa_planter`, `pa_cold_frame`); crop rows and supports stay in the building; only the living plant is a `plant()`.
 Sockets must also keep clear of windows, doors and panels: give every emblem/paint/banner socket its own patch of wall.
 
 ## The look

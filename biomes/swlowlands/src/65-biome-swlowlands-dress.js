@@ -81,6 +81,7 @@ SWLOW.dressWalls=function(geos,opt){opt=opt||{};
   else if(k<.45)curtain([f.p[0]+f.n[0]*.3,f.p[1],f.p[2]+f.n[2]*.3],f.n[0],f.n[2],rr(3,opt.hang||12),rr(1.5,4),{});
   else if(k<.7)bracket([f.p[0],f.p[1],f.p[2]],f.n,rr(.8,2.2));
   else moss([f.p[0]+f.n[0]*.05,f.p[1],f.p[2]+f.n[2]*.05],f.n,rr(.8,2));});};
-SWLOW.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));
- SWLOW.dressLedges(geos,opt.ledges||{});SWLOW.dressSoffits(geos,opt.soffits||{});SWLOW.dressWalls(geos,opt.walls||{});};
+// the dressing is drawn within SWLOW.LOD.dress of the camera (runtime LOD, by chunk; opt.range overrides it)
+SWLOW.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));const r0=BIO.range;BIO.range=opt.range||SWLOW.LOD.dress;
+ SWLOW.dressLedges(geos,opt.ledges||{});SWLOW.dressSoffits(geos,opt.soffits||{});SWLOW.dressWalls(geos,opt.walls||{});BIO.range=r0;};
 })();

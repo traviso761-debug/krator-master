@@ -1,5 +1,5 @@
 {
- "calls": 73,
+ "calls": 74,
  "counters": {
   "_adHocInfill": {
    "slumB": 6
@@ -361,7 +361,7 @@
    "riseFor": 6,
    "sacrificedToday": false,
    "state": "resting",
-   "stateT": 0.36
+   "stateT": 0.48
   },
   "_hohSite": {
    "fx": 60,
@@ -411,6 +411,7 @@
   },
   "_inspectFP": "(large)",
   "_inspectInst": "(large)",
+  "_krGo": "(large)",
   "_landingStairs": "(large)",
   "_layout": {
    "cantons": 11,
@@ -931,5 +932,5 @@
    "set": null
   }
  },
- "tris": 4265206
+ "tris": 2484070
 }
