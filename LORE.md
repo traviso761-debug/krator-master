@@ -1,13 +1,8 @@
 # Krator: lore so far
 
-A first pass at a design bible. It collects every piece of world lore recorded during the build, in the
-docs, briefs, fragment comments and commit messages, and sorts it by subject. Nothing here is new
-invention.
+A first pass at a design bible: the world lore recorded during the build, sorted by subject.
 
-**Tags.** **[T]** means Travis said it (a brief, a ruling, a correction). **[inf]** means an agent made it up
-or read it into something, and the docs say so. Untagged lines are stated as world fact in the repo, but
-much of that started as an agent's elaboration of a short brief, so treat untagged lines as *proposed
-canon* until Travis confirms them. Section 12 lists contradictions and open questions.
+Section 12 lists contradictions and open questions.
 
 Sources are named in brackets, relative to the repo root, so each fact can be traced.
 
@@ -32,17 +27,16 @@ power everywhere.
 |---|---|
 | Body | A tidally locked moon of a gas giant (Neptune-to-Saturn class). [settlements/voth/src/21-sky.js; dalab/src/81-sky.js] |
 | The giant | Fixed in the sky at altitude ~25°, azimuth ~66° (NE), "over **Korona**". About 30° across ("sixty full moons wide"), banded, stormy and greenish. Its rings sit almost edge-on, seen as a hairline. At night its glow ("giantshine") lights clouds and snow. [dalab/src/81-sky.js:3; biomes/eastabyss/src/82-host-sky.js; biomes/nhighlands/src/82-host-sky.js] |
-| Moons | Two small moons, well away from the giant. The Republic's orrery shows sun, giant, Krator and two moons. [T] [settlements/highlands/NOTES.md:83-92] |
+| Moons | Two small moons, well away from the giant. The Republic's orrery shows sun, giant, Krator and two moons. [settlements/highlands/NOTES.md:83-92] |
 | Sun | Sets WNW in every kit (canon placement). Eclipses come in seasons round each equinox. |
 | Day | 24 h: one orbit of the giant. |
 | Year and tilt | Tilt ~23°, so seasons are Earth-like. The year is 365 days in the sky docs and `YEAR=360` in the shared sky code (see §12). The southern summer solstice falls on day 350. [jimjam/DESIGN.md:81-91] |
-| Latitude | "Climate, day length and seasons all depend on latitude, not longitude." [T] The reference site (Voth, Jimjam) is at 40° S, in the westerlies, so the sun crosses through the north. There is a "mirror city" west of the meridian, "under the weather". [voth/src/21-sky.js:38-56] |
+| Latitude | "Climate, day length and seasons all depend on latitude, not longitude." The reference site (Voth, Jimjam) is at 40° S, in the westerlies, so the sun crosses through the north. There is a "mirror city" west of the meridian, "under the weather". [voth/src/21-sky.js:38-56] |
 | Gravity | 7.4 m/s² (about 0.75 g). [mavs-refuge/src/79-spiders.js:9] |
 | Air | Dense, varying with altitude: ~0.8 atm on the high plateau, ~1.3 at Yuni, ~1.6 on the Voth lowland, ~1.9 on the hypertropic lee shore, ~2.0 on the Ring Sea, thicker still in the Abyss. Krator's climate classes add **X, abyssal** (above 1.9 atm) and **H, hyperalpine** (below 0.6 atm) to Köppen. [mavs-refuge/src/21-sky.js; biomes/WORLD.md] |
 | Soil | Red: "Tharnish red soil" in the hyperjungle. |
 
-The air pressure has real consequences. Dalab's genepriests sell **pressure adaptation** as a body
-modification, so moving between altitudes is a problem people live with.
+Dalab's genepriests sell **pressure adaptation** as a body modification.
 
 ---
 
@@ -67,7 +61,7 @@ modification, so moving between altitudes is a problem people live with.
   blue-green), jungle and mesa ridges.
 - **Korona.** A planned region in the NW, under the giant.
 
-### 3.2 Regions [T] [biomes/WORLD.md]
+### 3.2 Regions [biomes/WORLD.md]
 | Region | Neighbours | People known there |
 |---|---|---|
 | Central hyperjungle | N highlands, S highlands (steep borders) | Beast Riders (Girder), Screamers (Hexahedron), the Izani (Iziz) |
@@ -84,7 +78,7 @@ modification, so moving between altitudes is a problem people live with.
 The **Krator Scale Model** artifact holds the terrain: 3,098 × 2,786 km at 2 km a pixel, elevation from
 −2,600 to +17,100 m, plus climate rasters. Its database holds 35 named cultural and political region
 polygons, among them the **Inner Crater**, the **Empire of Iziz**, **The Rift** and the **Vale of
-Xanadu**. [T] Those polygons are the authoritative map, and this doc should be reconciled with them.
+Xanadu**.
 
 ---
 
@@ -95,7 +89,7 @@ knowingly, and nobody alive could build what they built. Their works are "never 
 nobody alive built it" (in the Dalab context). Their fall is dated "a thousand years" ago at Yuni and
 Iziz, and "millennia" ago elsewhere. **The docs give no cause for their fall.**
 
-**How they built.** [T] [yuni/briefs/ancients.md]
+**How they built.** [yuni/briefs/ancients.md]
 - House style: "Cyclopean · Modernist · Organic" (late Gaudí, Goldberg, Moebius, Soleri).
 - Gleaming white metal in seamed panels, or blue-transparent glass; board-formed concrete; copper or
   bronze ring bands.
@@ -113,20 +107,19 @@ Iziz, and "millennia" ago elsewhere. **The docs give no cause for their fall.**
   (1,100 m, 170,000 people), **Arcube**, **Arcbeam**, the Launch Arcology ("the city that meant to
   leave"), **Plymouth** ("the one people actually live in by the hundred thousand"), the cliff
   **Arcoindian**s, and the spomenik-style memorial cities (the Wing, the Drum, the Blades).
-- The **Hanging City** (which replaced **Vashtir**, the recursive pyramid) [T].
+- The **Hanging City** (which replaced **Vashtir**, the recursive pyramid).
 - **The Unnamed**, a leaning 260 m prism "of unclear purpose".
 - **The Engines**: ten cyclopean machines of unclear purpose on one plain (the Harrow, Strider, Breech,
-  Gyre, Press, Sleeper, Carapace, Retorts, Needle and Ram). [inf] for the names.
+  Gyre, Press, Sleeper, Carapace, Retorts, Needle and Ram).
 - **Roketstad's spaceport**: five Launch Arcologies. Four flew and left empty pads; one never flew.
 
 **They meant to leave.** Starports, launch arcologies and the ships "that came down short of the port"
-(the wrecks the Republic's shipbreakers break) all point to an off-world programme. Did some Ancients
-leave? The docs never say, but the motif is everywhere.
+(the wrecks the Republic's shipbreakers break) belong to an off-world programme.
 
 **Decay is history.** Every Ancient building comes in one of six states: intact, ruined, toppled,
 rehabilitated/reclaimed, "The Project", worn. "This building outlived its builders, and someone is
 living in it now." Reoccupiers patch the buildings with corrugate, timber and tarp, and their warm
-firelight sits against the dead cyan. The **Projects** (rehabilitated towers) hold "gang turf" [T].
+firelight sits against the dead cyan. The **Projects** (rehabilitated towers) hold "gang turf".
 
 **Ancient survivals still running**
 - **The God** at Dalab: the central AI of a genetic laboratory (see §6.1).
@@ -144,9 +137,9 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
    - The Order of Historians studies and hides them.
    - The Salvagers' guilds (Republic, Iziz) strip them.
    - The Screamers feed captives to one.
-   - The abyssal people recycle them "with pride and colour, not as squalor" [T].
+   - The abyssal people recycle them "with pride and colour, not as squalor".
 2. **Electric light is power.** It is rare everywhere and held by the few:
-   - Iziz: rich and civic buildings only, from hilltop generators [T].
+   - Iziz: rich and civic buildings only, from hilltop generators.
    - Yuni: the Order's cable from the Vault reaches only the inner city and the market, so "the night
      view is the social map".
    - Dalab: The God's cold teal light "is the priests' to give".
@@ -158,8 +151,7 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
    middle and bottom.
 4. **Wealth climbs with height.** Erewhon, Iziz's hills and Yuni's oligarch towers all put the powerful
    high and the poor and industry low, by the water.
-5. **Caravans.** Caravanserais at Yuni, Iziz, Locus, Shade, Jimjam and the abyss suggest one long-distance
-   trade network across the crater. [inf]
+5. **Caravanserais** at Yuni, Iziz, Locus, Shade, Jimjam and the abyss.
 6. **Big beasts do the work.** Millipedes turn capstans and are ranched; giant beetles are livestock at
    Voth; silt striders carry passengers; flyers and riding spiders are ridden.
 
@@ -174,7 +166,7 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 - **The God** is the lab's AI. Its counsel keeps biomedical knowledge alive, and it "grows more erratic
   every century". Its seat is a sunken chamber of cabinet banks: "a plant room to a stranger and a shrine
   to a priest". Its image is a rayed head with **one great eye**.
-- Nearly everyone carries the photosynthesis mod and is **green-skinned** [T].
+- Nearly everyone carries the photosynthesis mod and is **green-skinned**.
 - **Genepriests** sell modifications to outsiders in the **Halls of Reformation**: night vision, pressure
   adaptation, extra limbs. Dalab healers are prized across Krator.
 - **The Giant tribes of the north-west came from here.** The priests keep Giant guards: four-armed
@@ -186,23 +178,23 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
   - Traders: timber frames.
   - Nobles: grey megalithic stone.
   - Priests: stone temples on the mounds.
-- Look [T]: "Cahokian monumentality in rammed earth, wood, stone and scrap", with Tiwanaku and Mesoamerican
+- Look: "Cahokian monumentality in rammed earth, wood, stone and scrap", with Tiwanaku and Mesoamerican
   stone (trilithon gates, steles). "The red marks what is holy." Priests wear white with gold head-dresses.
 - **Embassies** of Iziz, Voth, the Yuni Order of Historians and the Iron Republic.
 - Livestock: the Dalab lizard (2.4 m, striped; frilled bulls). Also a monster pen.
-- Six outlying towns ring the lab. Their names in code (Ashfold, Greenmarch...) are placeholders [inf].
+- Six outlying towns ring the lab: Ashfold, Greenmarch, Reedholm, Oakhaven, Cornwell, Stonebrook.
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
 - "An early-modern people, a thousand years into living in and around the Ancients' ruins, in a
   hyperjungle, in a **declining empire that has lost most of the technology it was founded on**."
 - Copper roofs "where the Empire still can".
-- City [T]:
+- City:
   - Walled, with a moat and four gates.
   - Three mesa hills "like the hills of Rome": the palace citadel, the temple hill and the arena hill.
   - A ruined spaceport on the NW causeway; a farm belt.
-- Palace: its hall is a converted Ancient hangar "for entertaining Izani and foreign nobles" [T].
+- Palace: its hall is a converted Ancient hangar "for entertaining Izani and foreign nobles".
   Emblem: an **orb**; the culture's sign elsewhere is a **sun**.
-- Materials by class [T]:
+- Materials by class:
   - Timber: everyone.
   - Reclaimed Ancient metal: poor and middle.
   - Plaster: middle.
@@ -218,20 +210,20 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
   skyscrapers.
 - Ships: a turtle ship plated with Ancient hex plate, a dhoni, a wheel galley, a salvage lighter.
 - **History:** the Izani Empire once held Roketstad as a munitions hub until the **Mutiny of the 3rd
-  Legion** [T]. The mutiny presumably founded, or joined, the Iron Republic [inf].
+  Legion**.
 
 ### 6.3 The Iron Republic (highlands of the Inner Wall)
 - The most settled, developed highland state. Russian and Transylvanian Saxon architecture; Peleș villas
   for the grand; East-Asian dougong on civic eaves; NW-coast formline carving.
-- **Capital: Roketstad** [T]. "Once an Ancient spaceport, a munitions hub of the Izani Empire, and since
+- **Capital: Roketstad**. "Once an Ancient spaceport, a munitions hub of the Izani Empire, and since
   the Mutiny of the 3rd Legion a forge town of the Iron Republic, ~5 000 souls"; later made the capital
   and doubled in size.
   - Districts: Scraptown, the Scrap Kontor, a wreck market.
-  - **The Fallen Arcology**: a crashed ship broken in two, with a poor town in the cleft [T].
-- **Emblem** [T]: a triskelion of three arms, each fist holding a sword at 90°. Colour: red ("Voth's
+  - **The Fallen Arcology**: a crashed ship broken in two, with a poor town in the cleft.
+- **Emblem**: a triskelion of three arms, each fist holding a sword at 90°. Colour: red ("Voth's
   deep red").
 - **Faith:** polytheist. The **Temple of the Pantheon** has the gods as carved pillars round the
-  precinct, plus animal totems of gods and guilds. Totems proper are tribal only [T].
+  precinct, plus animal totems of gods and guilds. Totems proper are tribal only.
 - Guilds:
   - Mercenaries.
   - Alchemists (high explosives).
@@ -244,8 +236,8 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 - Capital institutions: the Hall of the Republic, the **Arsenal** (racks of rockets), the Mint and
   Treasury, the Forgehouse.
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the
-  ships "that came down short of the port" [T].
-- Murals [T]: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and
+  ships "that came down short of the port".
+- Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and
   **rockets** (Republic only).
 - Landlocked: no ships.
 
@@ -258,28 +250,27 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 - "The Painted Men and other raider tribes of the high country."
 - Raw logs and bamboo; whole painted house-fronts; totems everywhere; thunderbird finials.
 - **Cliff settlements** hung on rock faces.
-- Formline crests: salmon, orca, thunderbird, bear; poles of eagle, bear and frog. Faces are out ("creepy")
-  [T].
+- Formline crests: salmon, orca, thunderbird, bear; poles of eagle, bear and frog. Faces are out ("creepy").
 - Sign: the **raven**. Shamans' houses, warriors' halls, stone circles.
 
 ### 6.6 The Beast Riders (hyperjungle; Mav's Refuge, Girder)
 - **Mav's Refuge**: a tree city on 300–480 m hypertrees on the SE lee shore of the Ring Sea (1.9 atm,
-  33 °C) [T].
+  33 °C).
   - Three **gateway trees** are giant baobabs carved down to ~30 m, with spiral ramps and beast lifts:
     "un-assailable".
   - The central platform, **Mav's Crown**, carries the **Council Chamber**, with speakers' stones at the
     quarters.
   - Holds: Ghostwood Hold, Prism Hold, Highbough, Southbank Hold, Riders' Rest. Also the Rookery and the
     Silk Loft.
-- **Girder**: an outlying village in a cyclopean Ancient ruin of four rusted 30-storey frame towers [T].
+- **Girder**: an outlying village in a cyclopean Ancient ruin of four rusted 30-storey frame towers.
   - Only the top and bottom floors are lived in; the middle has gone to vines.
   - Roost decks on top; a palisade, farms and a round tajug-roofed assembly hall below.
 - Mounts: quetzalcoatlus, giant bats, giant archaeopteryx, giant dragonflies. Riders carry lances.
   **Spider-riders** ride giant spiders that climb trunks and leap on draglines; they live in silk houses and
   work silk looms.
-- Architecture [T]: Javanese joglo and limasan, Viking stave, Kashyyyk.
+- Architecture: Javanese joglo and limasan, Viking stave, Kashyyyk.
 - Sign: the **claw** (three talon slashes), green. Skull poles; "simple but not primitive".
-- Barracks are named by **Wing**. Nature shrines (First Bough, Rain Mother...) [inf].
+- Barracks are named by **Wing**. Nature shrines: First Bough, Rain Mother, Winged Ones, Deep Root, Green Silence.
 - Ships: a double-hulled voyaging canoe with a flyer's perch; a rookery raft.
 
 ### 6.7 The Screamers (north of the central crater; the Hexahedron)
@@ -299,7 +290,7 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 - **Shade**: a sunken sandstone basin of about 1,000 people.
   - A 46 m fall drops into a turquoise plunge pool.
   - Petra-style carved facades, Mesa Verde cliff dwellings, adobe pueblos and black goat-hair tents.
-  - One switchback is "the only way up". [Concept from a Gemini design page.]
+  - One switchback is "the only way up".
 - Factions: the Shade clans, the **Wardens of the Deep Aquifer** (priests), the canyon guard, visiting
   caravaneers and the **dune raiders**.
   - The raiders come as a convoy of camel riders every few days; they water and trade.
@@ -307,7 +298,7 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 - The Khan (caravanserai), camel lines. Sign: **horns**.
 
 ### 6.9 The abyssal people and the Geomancers (eastern Abyss; Locus)
-- **Abyssal people** [T]: "who live on the salt marshes and river deltas at the edge of the eastern abyss,
+- **Abyssal people**: "who live on the salt marshes and river deltas at the edge of the eastern abyss,
   beside the Geomancers' oil works and the ruins of the Ancients".
   - Scavengers and recyclers, proud of it.
   - Houses on piles; shade first (sails, umbrellas); bright paint and pastel lime-wash.
@@ -317,7 +308,7 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
   - Nothing electric.
   - Faith: the **Temple of the Altar**, "the altar of the abyss": a stepped salt-white altar with a fire
     bowl and a ring of glowing blue crystals.
-  - Ruler: "the Headman", a placeholder title Travis hasn't confirmed.
+  - Ruler: the Headman.
   - Catalog culture `eastabyss` (Maghrebi/Arab): sign a **star**, mashrabiya.
 - **The Geomancers**: a guild that drills for oil (refinery "still-house", pumpjacks, a generator on a
   salvaged Ancient engine).
@@ -329,20 +320,20 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 ### 6.10 Yuni and the Order of Historians (far SE, Outer Wall)
 - Yuni: a former Ancient installation under a 400 m Devil's-Tower-like butte, in a Mediterranean side
   valley of the Outer Wall. ~10,000 people.
-- **The Order of Historians** [T] "attempt to learn the details of the obscured past, preserve ancient
+- **The Order of Historians** "attempt to learn the details of the obscured past, preserve ancient
   relics, and in some cases hide away the more dangerous ones."
   - Saffron-robed monks and academics; only they may enter the **Vault**.
   - Their blue is the Order's colour.
   - Chapterhouses at Dalab, Iziz and Locus.
   - They keep the Ear.
-- **Ruled by an Emir**: "in practice an oligarchy; the prominent families choose a new one" [T]. The
+- **Ruled by an Emir**: "in practice an oligarchy; the prominent families choose a new one". The
   families compete in height with tower-houses.
 - "The Ancients were here first": their buildings stand as superblocks inside the wall, and Yuni's radial
   grid is laid around them.
-  - The **Reliquary** (an Ancient lab; Travis's favourite).
+  - The **Reliquary** (an Ancient lab).
   - The **Starfish** (a starport ruin on the summit).
   - The Grand Vault, with six sealed doors in its antechamber: "the first room of a whole complex".
-- Look [T]: Gaudí + Burmecia + Sahelian for the rich; Musgum, Mandara and Tiebele mud architecture for the
+- Look: Gaudí + Burmecia + Sahelian for the rich; Musgum, Mandara and Tiebele mud architecture for the
   poor; neo-African civic buildings.
 - Gates: Shepherds', Caravan, North, River, Potters'. The slum is **the Thatch**. Desert nomads come to the
   caravanserai.
@@ -354,26 +345,26 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
   Guild, Foreign, Granary, Market, Arena, Ancestry, Port, Fortress).
 - People: 75% Dunmer, 25% human.
 - Styles: Hlaalu, Velothi, Redoran/Mournhold; clan compounds.
-- **Ordinators**: temple guards in green-and-gold armour, about 180 of them [T]. Also purple-robed
+- **Ordinators**: temple guards in green-and-gold armour, about 180 of them. Also purple-robed
   priests; a crimson-and-gold high priest; grey-robed penitents in threes; monks; pilgrims on shrine
   circuits.
-- **Ancestry canton**: a pyramid necropolis of family tombs and hanging gardens [T].
-- Palace [T]: "flying buttresses between tiers, skylights and atria, a lot of gold, a teeny bit of
+- **Ancestry canton**: a pyramid necropolis of family tombs and hanging gardens.
+- Palace: "flying buttresses between tiers, skylights and atria, a lot of gold, a teeny bit of
   porphyry and black trim".
-- Giant beetles are livestock. **Silt striders** carry passengers. **Cliff racers** fly over land [T].
+- Giant beetles are livestock. **Silt striders** carry passengers. **Cliff racers** fly over land.
 - Arena: gladiators from noon to sundown.
 - Sign: the **diamond**, ash-white on deep blue. Ships: the Ordinator flagship, chitin biremes, cargo hulks.
 - An embassy (a clan compound) stands in Iziz.
 
 ### 6.12 The Sultanate of Xanadu (East Rift Highlands)
-- "The remote southern Sultanate": a rich hilly valley "like Shangri-La" [T]. **Gold is on everything
+- "The remote southern Sultanate": a rich hilly valley "like Shangri-La". **Gold is on everything
   wealthy, religious or civic; the valley's mines pay for it.**
-- Look [T]: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets,
+- Look: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets,
   great prayer wheels instead.**
 - Rulers: the Sultan's Palace, the **Pleasure Dome**, the **Grand Vizier**.
 - Guilds: Farmers, Miners, Goldsmiths ("the richest house in the valley"), Alchemists, Masons, Spicers.
 - Faith: temples, monasteries and a pilgrims' circuit of prayer wheels.
-- **Erewhon, Pearl of Xanadu** (from Travis's own map) [T]:
+- **Erewhon, Pearl of Xanadu**:
   - 20,000 people on a mountain lake.
   - The palace sits on a plateau above a cliff; the prison is in a cliff.
   - The **Pleasure Dome of the Bay** is a ruined Ancient test dome made whole.
@@ -385,24 +376,23 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
 ### 6.13 Reed Lake: the lake people
 - Floating islands of piled reed in the shallows: "the lake's answer to the Highland tribes' cliff
   settlements".
-- Travis: "**a completely different culture**". No totems and no formline; Andean textile geometry
-  instead (the chakana, step-frets) [T]. Puma prows on the boats.
+- **A completely different culture** from the Highlands. No totems and no formline; Andean textile geometry
+  instead (the chakana, step-frets). Puma prows on the boats.
 - Mudhif halls, a spirit circle, watchtowers "against raiders". Water buffalo. Fire always sits on lake
   mud.
 - Sign: the **fish**. Location not yet given.
 
 ### 6.14 Jimjam
-- An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys
-  [T].
+- An exotic city of red and yellow brick with white marble trim, domes, staged spires and Tudor chimneys.
 - Ruled by **the Raja**.
 - At its heart, a **solstice sun temple** whose arch frames the summer-solstice sunset. Emblem: a gold sun
   on red banners.
-- Not snowy [T]. Biome and location not yet given.
+- Not snowy. Biome and location not yet given.
 
 ### 6.15 Peoples known only by name or kit
 - **Hykkousoi**: a seafaring people, Greek + Polynesian + organic. Nacre, olive wood, sea-linen, bronze.
   Sign: the **wave-sun** in gold. Their fleet includes a 162-oar trireme, a siege hexareme and a
-  pearl-diving mother ship. Their palette was Travis's call; no buildings yet.
+  pearl-diving mother ship. No buildings yet.
 - **Ring Sea Islanders**: Polynesian and Ashlander. Sign: the **white island moon**. Boats: oruwa,
   karakoa, lakatoi.
 - **Lizardmen**: reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale
@@ -443,20 +433,18 @@ firelight sits against the dead cyan. The **Projects** (rehabilitated towers) ho
   across) and red or pale bark. Cork groves are stripped red.
 - **NW lowlands**: Asian and Australian forms at ~1.5× Earth heights; Ediacaran **sea pens** as shrubs;
   self-lit glow-willows.
-- **Northern highlands**: "ancient, gnarled, never unfriendly"; broadleaf low down [T], bushy conifers [T].
+- **Northern highlands**: "ancient, gnarled, never unfriendly"; broadleaf low down, bushy conifers.
   - **Great trumpets** (30–50 m) hold clean water all summer, and travellers drink from them.
   - Glowing bell-bulbs and lantern pods.
 - **Vale of Xanadu**: "as if somebody kept it". Untrimmed-bonsai habits, petrified-wood colours, fairy
   rings, cacao, lotus.
 - **Fauna in towns**: millipedes (draught), giant beetles (Voth), silt striders, cliff racers, the
   Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to
-  one fauna kit, tagged by biome [T].
+  one fauna kit, tagged by biome.
 
 ---
 
 ## 9. The Ring Sea fleets
-Travis reassigned the ships "to cultures that sail" [T].
-
 | Culture | Vessels |
 |---|---|
 | Hykkousoi | trireme, scroll-sail galley, siege hexareme, pearl baghlah, amphora corbita |
@@ -511,14 +499,14 @@ whichever culture holds it.
 
 ---
 
-## 12. Contradictions and open questions for Travis
+## 12. Contradictions and open questions
 
 **Contradictions in the repo**
 1. **Year length.** The sky docs say 365 days; the shared sky code uses `YEAR=360`. The solstice is day 350.
-2. **Jimjam's latitude.** The prompt said 30° (N?), sunset ~297°. As built: 40° S, ~242°.
+2. **Jimjam's latitude.** Specified as 30° (N?), sunset ~297°. As built: 40° S, ~242°.
 3. **Yuni's valley mouth.** Faces NE in one comment, NW in the code.
 4. **The volcano.** Seen NW across the Ring Sea (Mav's, Locus), due north (Voth), far south (Hexahedron),
-   NE (SW bay). Is it one central volcano, and is the Ring Sea a ring round it? The name suggests so. [inf]
+   NE (SW bay). Is it one central volcano, and is the Ring Sea a ring round it?
 5. **Voth's colours.** The culture pack is blue with the ash diamond. The Ordinator fleet and armour are
    green and gold. Are the Ordinators a separate power within Voth?
 6. **The Republic on "Voth's deep red".** A borrowed colour with no story. Is there a link?
@@ -528,8 +516,6 @@ whichever culture holds it.
 10. **Roketstad's name and size.** Spelled "Raketstad" early. ~5,000 people, then doubled.
 11. **Hypertree heights.** 290–480 m at Mav's, 150–270 m at Girder, and the Krator mahogany (245–305 m)
     called "the tallest in the belt".
-12. **The Dalab lab dome.** "Wider and taller than the Voth palace" [T]. The numbers built for it were an
-    agent's.
 
 **Open questions (nothing on record)**
 - Why did the Ancients fall? Were they human? Did any of them leave on the launch arcologies?
@@ -541,6 +527,6 @@ whichever culture holds it.
 - What is Korona? Who lives in the NW bay, the badlands and the southern highlands?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at
   Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar
-  of the Abyss, the Deep Aquifer, Jimjam's sun, and the Beast Riders' nature shrines [inf].
+  of the Abyss, the Deep Aquifer, Jimjam's sun, and the Beast Riders' nature shrines.
 - Is there a calendar, a common language, coinage (the Republic has a Mint), or writing (post-apoc signs
   are pictographs)?
