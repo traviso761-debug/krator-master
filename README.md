@@ -65,9 +65,11 @@ holds the working rules for agents. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
-**Keep the Krator Worlds gallery current.** Whenever you push a new or changed
-settlement, building kit or biome to `main`, update the gallery in the same
-session: add the new page to `ENTRIES` in `gallery/build_gallery.py` if it is not
+**Keep the Krator Worlds gallery current.** Whenever you push a brand new
+settlement, kit or biome to `main`, or change the location of an old one's .html render, update the gallery in the same
+session: add new pages to `ENTRIES` in `gallery/build_gallery.py` if it are not
 listed, run `python3 gallery/build_gallery.py`, and republish `gallery/site/` to
 the Krator Worlds artifact at the URL in `gallery/README.md` (same URL, every file
 in `gallery/site/worlds/` attached). Do not publish a new artifact.
+
+When making changes to an existing or in-progress build, particurly after change that has wide impact or when trying to revise broken geometry, provide a link to the local version of the .html render or a mock.html.
