@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 164 (9%) | 0 (0%) | 6 (0%) | 374 (21%) | 1245 (70%) |
+| KB | 164 (9%) | 0 (0%) | 6 (0%) | 378 (21%) | 1245 (69%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -73,6 +73,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/85-probe.js` | 5.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-inspect.js` | 15.4 | [web] | 2 | 0 | 8 | 2 | 1 | 0 | 0 | 8 | 2 | 0 | 0 |  |
 | `src/87-pathviz.js` | 21.1 | [web] | 9 | 0 | 6 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/88b-voth-minimap.js` | 3.0 | [web] | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

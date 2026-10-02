@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 42 (8%) | 0 (0%) | 14 (3%) | 314 (57%) | 183 (33%) |
+| KB | 42 (7%) | 0 (0%) | 14 (3%) | 318 (57%) | 185 (33%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,7 +21,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/32-branches.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-kit.js` | 25.4 | [draw] | 37 | 0 | 0 | 0 | 0 | 13 | 15 | 2 | 0 | 0 | 0 |  |
 | `src/47-texture.js` | 9.3 | [draw] | 4 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/50-structure.js` | 16.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 40 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-structure.js` | 17.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 40 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-furnish.js` | 9.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-arch.js` | 51.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-interiors.js` | 16.7 | [web] | 5 | 0 | 0 | 0 | 8 | 3 | 1 | 0 | 0 | 0 | 0 | split: data inside host code |
@@ -30,11 +30,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/62-jungle.js` | 46.0 | [draw] | 19 | 6 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-lights.js` | 3.1 | [G native] | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 12.0 | [draw] | 22 | 0 | 0 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78-life.js` | 60.5 | [web] | 30 | 0 | 0 | 0 | 13 | 38 | 7 | 6 | 0 | 0 | 0 | split: data inside host code |
-| `src/80-camera.js` | 11.0 | [web] | 7 | 0 | 9 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
+| `src/78-life.js` | 60.6 | [web] | 30 | 0 | 0 | 0 | 13 | 38 | 7 | 6 | 0 | 0 | 0 | split: data inside host code |
+| `src/80-camera.js` | 11.2 | [web] | 7 | 0 | 10 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
 | `src/81-glow.js` | 4.7 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/83-walk.js` | 15.3 | [web] | 1 | 0 | 6 | 8 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/83-walk.js` | 19.4 | [web] | 1 | 0 | 6 | 8 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/84-flyers.js` | 88.1 | [web] | 37 | 0 | 0 | 0 | 2 | 8 | 6 | 3 | 0 | 0 | 0 |  |
 | `src/85-probe.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-inspect.js` | 3.7 | [web] | 0 | 0 | 7 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
