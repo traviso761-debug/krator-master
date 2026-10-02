@@ -26,6 +26,7 @@ What already crosses over, or is scaffolded to:
 | `core/terrain/36-core-carve.js` | floor and blocker lists as the carve builds | node test exists; no exporter |
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
 | `core/simulation/` | documents only: `ROADMAP.md`, `PLAN.md` | the life layers' shared vocabulary and `SIM.export()` (`krator-sim`), planned as the fourth exporter |
+| `settlements/ys` (the Hykkousoi capital; phases 0–2 built, the city not yet placed) | the layout, the land–sea lattice, the NAV grids and the ground stamps are records and Float32 grids with no three.js in them; every placed thing leaves a record (volumes, doors, windows, lights, rooms, spots, furniture) | no exporter yet. `settlements/ys/GODOT.md` reads the build against this plan: it takes `core/rand` and the terrain bake before its city pass, writes sim data instead of a life layer, and exports on the `KRATOR_EXPORT` shape |
 
 What does not cross over today, by size:
 
@@ -84,6 +85,11 @@ the browser-native code is concentrated. The top of the DOM-density list is noth
 `80-camera.js`, `90-host-camera.js`, `21-sky.js`, `93-polytool.js`, `89-sheetui.js`, `86-inspect.js`,
 `83-walk.js` and `92-hover.js`.
 
+One blind spot in the counts: a build whose geometry goes through its own kit hides `THREE.` from them. Ys's
+builders draw through `hykPut`, `hykLathe` and `hykTube` and come out [G data] (five fragments, 100 KB, on its first
+run); the same will hold for any build with a shell kit of its own. The hand pass over such a build comes first, not
+last, and `PORT.md` carries the corrected tags.
+
 ### 3.2 What the audit answers per build
 
 - Which fragments are host shell, and how far they have drifted from the others' copies.
@@ -107,7 +113,9 @@ Audit in the order the port will consume them, so each audit feeds a phase that 
    findings").
 3. `kits/catalog`, `kits/interiors`, `kits/post-apoc`, `kits/ringsea` (self-contained, data-shaped).
 4. The Ancients lineage (`kits/ancients`, `iziz`, `highlands`, `xanadu`, `reedlake`, `dalab`, `screamers`,
-   `port`, `jimjam`): one material and texture system, shared host shell. **Iziz first** (city kits review,
+   `port`, `jimjam`, `ys`): one material and texture system, shared host shell. `ys` is the lineage's newest build
+   and its only one with nothing placed yet; it waits for `core/rand` and the terrain bake before its city pass
+   rather than moving rubble later (`settlements/ys/GODOT.md`). **Iziz first** (city kits review,
    Oct 2026): it is the M5 city, so its split list sets that milestone's scope. Two provisional tags there are
    wrong and should be corrected first: `targets/city/90b-city-build.js` (43 KB) and Dalab's
    `targets/city/90b-city-build.js` are tagged [web] but run the city's placement and build passes; they are
@@ -418,6 +426,9 @@ golden tests pass in CI.
 | Voth lineage life layers | [G data] + [web] | Phase 5 |
 | `21-sky.js` (11 copies) | [G native] + one [G shader] | sky preset in `core/atmos` |
 | `gallery/`, `host/`, `host/WorldMenagerie/` | [web] | out of scope; the gallery stays the preview's front door |
+| `settlements/ys` layout, shore lattice, NAV, ground stamps (`targets/city/84b, 87, 87b, 87c`) | [G data] | records and Float32 grids already; the `kind:'paint'` stamps are polygon fills read by signed distance, so they place nothing from a canvas and move onto `core/mask` unchanged |
+| `settlements/ys` Hykkousoi shell kit and its 93 pieces (`src/61-66`, `70-79`) | [draw] + [G shader] | export as merged buckets (the biome export's shape); eight `fbm` painters bake to PNG; one hook (`hkNacreHook`) is one `.gdshader`. Growth (`hykAccrete`, `hykBridge` runners) decides placement inside draw code: split |
+| `settlements/ys` furniture frame (`35-furn-frame.js`, `66-hyk-furniture.js`) | [G data] + [draw] | a seventh copy of the furniture glue with its own piece and placement records; onto `core/furnish` with catalog-shaped entries (Phase 2) |
 | `archive/`, `wip/` | none | untouched |
 | `tools/scale-model/` | [G data] | the world's heightmap source; feeds `core/terrain` |
 

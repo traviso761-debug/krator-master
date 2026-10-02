@@ -34,7 +34,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 12 | 20. EMIT + GROUND + RIVER (1) |
 | `78-life.js` | 61 **big** | 78. LIFE — GIRDER (2) |
-| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (151) |
+| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (148) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-walk.js` | 19 | 25b. WALK MODE (1) |

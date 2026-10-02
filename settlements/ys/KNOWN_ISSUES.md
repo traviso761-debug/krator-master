@@ -81,4 +81,14 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
       let `F.pick('coral')` read true on cushions and slings.
 - [ ] The karst stacks are a heightfield: no overhangs or undercut bases, and the "knobbed top" is a noisy plateau.
+- [ ] (Travis, Oct 2 2026) **The Archon's Citadel reads as an arena, not a citadel** (`74b-hyk-citadel.js`, the
+      terraced arena-fortress on its stack). Keep the model as the city's arena with small tweaks (its name, a games
+      floor, the tiers as they are) and build the Citadel proper as a fortress when the city is placed.
+- [ ] (Travis, Oct 2 2026) **Walkways and pads round a host must clear its exterior geometry.** On the Scallop Stack
+      (Skyscraper B) the sheet's walkway ring runs through the stack's lobes: its radius comes from the host's capsule
+      radius, not from its outermost skin at that height. Take the clearance from the host's real silhouette
+      (`ysHostMembers`, `hostEdge`) at the walkway's level, with the same margin the runners keep.
+- [ ] (Travis, Oct 2 2026) **Host choice: prefer towers with little exterior geometry.** Not Skyscrapers B, F, I or J,
+      and none of the new arcology types except the Pierced Stack and the Bole: lobes, fins and struts fight every pod,
+      pad and runner. The P3 host list follows this (PLAN.md P3).
 

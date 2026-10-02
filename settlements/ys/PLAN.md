@@ -164,6 +164,10 @@ eye-level shot of every building before reporting.
    pods, landings and roof growth at ground scale; the accretion scheduler **spreads a host's pods over its
    inhabited plates** (different heights, every pod's floor a plate's top). `_api.city` counts the tall
    towers, the land hosts and the pod heights per host, and the invariants check them.
+   Host choice (Travis, Oct 2 2026): tower types with little exterior geometry; not Skyscrapers B, F, I or J, nor
+   the new arcology types except the Pierced Stack and the Bole. Walkways and pads round a host clear its outermost
+   skin at their level, not its capsule radius. The Citadel model (74b) becomes the city's arena; the Citadel proper
+   is a fortress still to design (KNOWN_ISSUES.md).
 6. `90a/90b`: terrain mesh, water, sky, build order (ancients → tideline → accretion → spans → kit
    buildings → foreign → ships → farms → biome → bake → labels), the lighting rule.
 7. `91z-views.js`: the opening shot (the Amphitriton from the main market across the drawbridge), the
