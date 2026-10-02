@@ -35,11 +35,13 @@ A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build
 ## The terrain and the fields: the scale model (Travis, Oct 2026)
 
 The world's terrain comes from the **Krator Scale Model** artifact's heightmap
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.10), with a couple of polishing
-passes before it goes to Godot. 4.10 softened the Inner Wall's outer flank (the ledge down to the
-highland shelf and basin floor is now an apron about 40 to 60 km wide; the crater-facing rim is
-unchanged), with the textures re-shaded and temperatures lapse-corrected to match: the scripts are
-in `tools/scale-model/`. What the artifact holds, as PNG rasters on one grid
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.12), with a couple of polishing
+passes before it goes to Godot. 4.10 and 4.11 softened the Inner Wall's outer flank (the ledge down to the
+highland shelf and basin floor is now a slope reaching about 50 km either side of the 'Inner
+Crater' region's outline; the crater-facing rim is unchanged); 4.12 weathered the four mesas in regions 37 and 38, carved the Bay of Voth off the
+Ring Sea and raised geyser islands over a fifth of the West Ring isles. Textures are re-shaded
+and temperatures lapse-corrected to match: the scripts are in `tools/scale-model/`. The regions
+collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
 
 - `h`: elevation, 16 bits (R,G) from -2,600 to +17,100 m, plus a water flag (B); `wl` water level;
