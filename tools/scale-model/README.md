@@ -29,3 +29,14 @@ export the regions collection from the artifact's database as JSON, then:
    list, the layer switch on each region, and labels along long, thin regions.
 
 Everything is deterministic (fixed seeds).
+
+## What-if: the eastern abyss as one bowl (preview, not in the live model)
+
+`abyss.py <region.json> 16` rebuilds the 'e abysss' biome region (from 4.14's outputs saved as
+`e414.npy`, `water414.npy`, `whas414.npy`, `wlev414.npy`, `feat414.npz`) as one bowl: walls
+falling from the drawn edge over ~16 km, a smooth floor to -2.6 km at three low points where the
+present lakes are, and a salt lake in each, about the size of the old one. Then `assemble.py`, then
+`abyss_climate.py <label> <out.html> <assembled.html>` re-derives the climate by the model's own
+rules (pressure from height; temperatures at 5.5 C/km; abyssal classes above 1.85 atm by the
+existing rain field: XW < 400 mm, XS < 800, XV < 1350, XA above; salt lakes WX) and writes
+`abyss_report.json`. Published as a separate preview page: https://claude.ai/artifact/GDfGZYF4XH75U7rZRmd83L
