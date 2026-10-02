@@ -14,7 +14,8 @@ passes ten of the eleven invariants.** What `verify.py dist/kit.html --assert` r
   class the hosts as `landmark` on the sheet or thin the kit's decay for them.
 
 None of the ten fragments has been looked at by anyone but its agent, and none of the
-ten agents' final look-rounds happened. Read this, then AGENT-BRIEF.md (the rules every fragment follows), then PLAN.md P2 (the merge) and P3.
+ten agents' final look-rounds happened. Read this, then GODOT.md (what main's Godot port plan changes for Ys: merge main first, finish P2 on correctness
+only, P3 as data passes), then AGENT-BRIEF.md (the rules every fragment follows), then PLAN.md P2 (the merge) and P3.
 
 ## What each agent left
 
