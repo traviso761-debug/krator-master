@@ -14,6 +14,14 @@ biome fragment cannot quietly grow a dependency on one world's engine.
 """
 import os, re, subprocess, sys
 
+# Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
+# tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
+import os as _os, subprocess as _sp, sys as _sys
+_cp = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), 'tools', 'check_port.py')
+if _os.path.isfile(_cp) and '--no-checks' not in _sys.argv and \
+        _sp.call([_sys.executable, _cp, '--quiet', _os.path.dirname(_os.path.abspath(__file__))]) != 0:
+    _sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
+
 
 def find_node():
     """node for the syntax check: $NODE, then PATH, then the usual install places

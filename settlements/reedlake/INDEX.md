@@ -4,7 +4,7 @@
 
 Reed Lake: a floating reed-lake village and its kit.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/reedlake-village.html`, `dist/reedlake.html`
 
