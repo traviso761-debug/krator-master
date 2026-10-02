@@ -6,6 +6,11 @@ already be written out as data in the shape a Godot importer will read, so nothi
 now has to be torn up for the port. It follows the conventions of
 `settlements/yuni/GAME_EXPORT.md` and `core/atmos/GODOT.md`.
 
+The repo-wide plan is `GODOT-PLAN.md`; this file is its authority for flora. Its tags for the
+core are in `core/PORT.md`, the kits' in each `biomes/<kit>/PORT.md`. What it changes for the
+biomes is in `WORLD.md` ("Against the port plan") and the items are in `TODO.md` ("Biomes: the
+port plan's findings").
+
 The rule that makes a port possible is the atmosphere's: keep **what** a plant is (data)
 apart from **how** three.js draws it (shader hooks).
 
@@ -70,6 +75,16 @@ texture id), `alphaTest`, `doubleSided`, `vertexColours`, `transparent`, `option
 hook's options: sway amplitude, two-tone and so on), `hooked` (a shader hook a port must
 rewrite).
 
+Not every hook has a core `kind` yet. Kits write their own: the iridescent bark
+(`BIO.iridBarkMat`, in eastabyss, nhighlands, rift and xanadu), the two-tone gloss bark
+(`barkMat2`, nwlowlands and swlowlands), the impostor materials (`farMat`, rift and swlowlands),
+nhighlands' hanging sway on bulbs and pods, and swbay's fauna material. They export as
+`hooked:true` with whatever `kind` they inherited (rift's impostor says `bark`). Each is to become
+a core kind (`irid`, `gloss`, `far`, `hang`, `anim`) whose options are data, so that `kind`
+names the library shader (`GODOT-PLAN.md`, rule 7), and the record then moves onto the plan's
+shared material vocabulary (Phase 3: `family`, `colour`, `map`, `roughness`, `metal`,
+`emissive`, `doubleSided`, `alphaTest`, `hook`).
+
 **LOD**: `null` for a mesh drawn at every range, or `{chunk:'cx,cz', range, minRange}`: the
 mesh is drawn while the camera is within `range` metres of the chunk (`BIO.LOD.chunk`, 1200 m)
 and at least `minRange` from it. In Godot that is `visibility_range_end` and
@@ -86,8 +101,8 @@ and at least `minRange` from it. In Godot that is `visibility_range_end` and
 - **A bucket** becomes a `MeshInstance3D` with an `ArrayMesh`.
 - **Materials** become a handful of shaders written once, not one per kit: the foliage card
   (wind sway, two-tone, the up-bent normal), bark, plain, the animated fauna body, and the
-  kits' own hooks (`hooked:true` without a core `kind`: the iridescent barks, the glow) as
-  they are ported. Wind and time come from the atmosphere's global shader parameters
+  kinds the kits' hooks become (iridescent bark, gloss bark, far impostor, hanging sway): about
+  seven for every kit, in the shared library (`core/godot/shaders/`, `GODOT-PLAN.md` Phase 3). Wind and time come from the atmosphere's global shader parameters
   (`atm_time`, `atm_wind`, `atm_gust_amp`: `core/atmos/GODOT.md`), so the forest and the
   smoke share one wind.
 - **Tags** (species, class, harvest, Köppen) are not in the export yet: the inspector's
@@ -100,9 +115,34 @@ by tile from the same rules. The three.js kits stay the reference. Once placemen
 by cell, a tile exported here is what a Godot generator must reproduce for the same seed and
 fields, instance for instance: the export is that test's golden data.
 
+Two things stand between that and today:
+
+- **The golden data is the placement records, not the meshes.** Items are instances already,
+  but hero trees are built unique and merged into buckets, and `GODOT-PLAN.md` ports no builder
+  code. So placement writes records (species, position, seed, size, tags, id; no LOD level),
+  the draw pass reads them, and the export carries the records beside the meshes. For Godot to
+  grow trees without the builders, each species and habit ships as a library of K baked variants
+  that the records choose by seed (Travis's call, pending; `WORLD.md`, blocker 10).
+- **The arithmetic must match.** `rng` (`10-core-head.js`) is mulberry32 and reproduces bit
+  for bit in GDScript. `h3` is a `Math.sin` hash, and `vnoise`, `fbm` and every field rest on it,
+  so it moves to `core/rand`'s integer hash (Phase 2) in the same event as cell seeding. Anything
+  that goes through trigonometry is compared within a tolerance, not bit for bit.
+
 ## Not done yet
 
-- Placement seeded by cell (a tile built alone gets the same plants as in a full build).
-- Tags and Köppen on the records.
+Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`'s.
+
+- Placement seeded by cell (a tile built alone gets the same plants as in a full build), on
+  `core/rand`'s integer hash: one reseeding event with the two items below that also move plants.
+- Placement records without an LOD level (today `T.lv` comes from the showcase's LOD spine,
+  `BIO.lodD`), in the export beside the meshes.
+- Stand-ins and far impostors as explicit LOD levels of the record they replace.
+- Ground height from the `core/terrain` heightmap, not each host's `terrainH` closure.
+- Trees as a variant library (pending Travis's call).
+- Tags, Köppen and deterministic ids on the records, items and buckets (for `core/tags`).
+- The kits' shader hooks as core material kinds; materials on the plan's shared vocabulary; a
+  `convention.colour` per table (this export is linear, the atmosphere's sRGB).
+- `BIO.download()` moved to the host (`core/host`): the export's one browser line.
+- `BIO.export` folded into `core/export/` (`krator-world`, Phase 4), and `tools/audit_port.py`
+  taught to see it in every build that lists `CORE_BIOME`.
 - A converter from this JSON to `.glb` / `.tscn` (`MultiMesh` resources).
-- Stand-ins and far impostors as explicit LOD levels of the item they replace.
