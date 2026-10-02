@@ -27,7 +27,7 @@ everything looks washed out.
 |---|---|---|
 | `atm_hour` | `A.U.hour` | the host's clock (0..24) |
 | `atm_night` | `A.U.night` | `night(hour)`, ramps over `presets.clock.dawn` and `dusk` |
-| `atm_time` | `A.U.time` | the module clock: `A.clock.t += dt * scale`. **Not the wall clock.** Use this, not Godot's `TIME`, so pause, time-lapse and fixed-time screenshots work |
+| `atm_time` | `A.U.time` | the module clock: `A.clock.t += dt * scale`, dt from the host's frame. **Not the wall clock.** Use this, not Godot's `TIME`, so pause, time-lapse and fixed-time screenshots work |
 | `atm_rain`, `atm_fog`, `atm_flash` | `A.U.rain/fog/flash` | the weather state machine (`ATMOS.W`) |
 | `atm_wind`, `atm_gust_amp`, `atm_wind_off` | `A.U.wind/gustAmp/windOff` | the wind: base x weather scale, slowly veering; `wind_off` is its integral over time (rain rides it) |
 | `atm_light` | `A.U.light` | `1 - nightDim * night` |
@@ -47,9 +47,12 @@ float atm_lit(float h, vec2 t) { float hh = h < 12.0 ? h + 24.0 : h;   // a ligh
     return smoothstep(t.x, t.x + 0.3, hh) * (1.0 - smoothstep(t.y - 0.3, t.y, hh)); }
 ```
 
-The CPU side (the clock, `night()`, the weather easing, lightning timing, the wind's veer) is about 60 lines in
-`89-atmos-0-core.js` and `89-atmos-4-weather.js`. It becomes one GDScript autoload, `Atmos`, that sets the global
-parameters in `_process(delta)`. The host's `weather({apply})` callback becomes the autoload adjusting
+One clock serves the whole world, not just the air: `GODOT-PLAN.md` (Phase 1, "The world clock") splits motion time
+`t` from world time `hour`, and `WorldClock.gd` owns both. `Atmos.gd` reads it.
+
+The CPU side (the clock, `night()`, the weather state machine `weatherTarget`/`weatherStep`/`flashAt`, the wind's
+veer) is about 60 lines in `89-atmos-0-core.js` and `89-atmos-4-weather.js`. It becomes one GDScript autoload,
+`Atmos`, that sets the global parameters in `_process(delta)`; `test-atmos.js` holds the vectors it is tested against. The host's `weather({apply})` callback becomes the autoload adjusting
 `WorldEnvironment` (fog density, `volumetric_fog_density`, sun energy, ground roughness through a global `atm_wet`).
 
 ## Particles: which Godot tool for which effect

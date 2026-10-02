@@ -43,6 +43,11 @@ LOAD_MS = 900000
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
 
 
+# console messages that mean a shader or a GL call failed, and the SwiftShader chatter that does not
+GL_ERR = re.compile(r"THREE\.WebGL(Program|Shader)|shader error|ERROR: 0:|GL_INVALID|INVALID_(OPERATION|VALUE|ENUM|FRAMEBUFFER_OPERATION)|CONTEXT_LOST|too many errors")
+GL_IGNORE = re.compile(r"GPU stall due to ReadPixels|Automatic fallback to software WebGL")
+
+
 async def launch_chromium(p, args=GL_ARGS):
     """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
     build, else a pinned build under /opt/pw-browsers: a cloud container ships
@@ -168,6 +173,7 @@ async def run(a):
     port = httpd.server_address[1]
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     fails = []
+    glerrs = []
     try:
         async with async_playwright() as p:
             b = await launch_chromium(p)
@@ -176,6 +182,10 @@ async def run(a):
             pg.set_default_timeout(600000)
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)))
+            # A shader that fails to compile, or a bad GL call, only logs to the console: it raises no page error and
+            # draws nothing. Collect those for the whole run (shaders compile lazily as views come into sight).
+            pg.on("console", lambda m: glerrs.append(m.text[:400])
+                  if m.type in ("error", "warning") and GL_ERR.search(m.text) and not GL_IGNORE.search(m.text) else None)
             # serve three.js from the repo instead of the CDN: offline, pinned to r128
             three = local_three(folder)
             if os.path.exists(three):
@@ -308,6 +318,11 @@ async def run(a):
     finally:
         httpd.shutdown()
 
+    if glerrs:
+        print("\nWEBGL / SHADER ERRORS (%d):" % len(glerrs))
+        for t in glerrs[:5]:
+            print("  " + t)
+        fails.append("webgl or shader errors in the console")
     if fails:
         print("\nFAILED: " + "; ".join(fails))
         return 1

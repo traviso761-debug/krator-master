@@ -6,22 +6,23 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 102 (41%) | 36 (14%) | 47 (19%) | 0 (0%) | 65 (26%) |
+| KB | 103 (41%) | 36 (14%) | 47 (19%) | 1 (0%) | 65 (26%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `atmos/89-atmos-0-core.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 1 | 3 | 1 | 3 | 0 | 0 | 0 | split: the clock reads performance.now once (line 28); becomes the Atmos autoload |
+| `atmos/89-atmos-0-core.js` | 9.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 3 | 0 | 0 | 0 | the host passes dt (onFrame), view height and pixel ratio; becomes the Atmos autoload |
 | `atmos/89-atmos-0p-presets.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | presets: one .tres per preset |
 | `atmos/89-atmos-1-street.js` | 5.6 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | per core/atmos/GODOT.md |
 | `atmos/89-atmos-2-lights.js` | 7.4 | [G native] | 0 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 | OmniLight3D for the nearest, halo quads for the rest |
 | `atmos/89-atmos-3-particles.js` | 8.9 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | stateless particles: MultiMesh + vertex shader, or GPUParticles3D per the table |
-| `atmos/89-atmos-4-weather.js` | 5.4 | [G data] | 0 | 0 | 3 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | split: the state machine is data; weatherUI (lines 40-41) and document.hidden (32) go to the host |
+| `atmos/89-atmos-4-weather.js` | 5.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | the state machine (weatherTarget, weatherStep, flashAt) is pure; the selector moved to 9-host |
 | `atmos/89-atmos-5-dress.js` | 7.9 | [draw] | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | canvas painters: bake |
 | `atmos/89-atmos-6-sewer.js` | 4.8 | [draw] | 0 | 2 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `atmos/89-atmos-7-cull.js` | 3.9 | [G native] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 9 | 0 | 0 | 0 | retire: Godot culls |
-| `atmos/89-atmos-8-export.js` | 3.0 | [G data] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: download() (line 23) is the one browser line; folds into core/export/ |
+| `atmos/89-atmos-8-export.js` | 2.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | folds into core/export/; download() moved to 9-host |
+| `atmos/89-atmos-9-host.js` | 1.2 | [web] | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Weather selector and the export download; moves to core/host/ |
 | `biome/10-core-head.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the PRNG and noise move to core/rand/ (Phase 2) |
 | `biome/20-core-kit.js` | 21.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: items and buckets on Float32 stores are data; the bake and LOD are three.js |
 | `biome/30-core-foliage.js` | 16.5 | [G shader] | 1 | 4 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
@@ -46,6 +47,6 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 ## Notes
 
 Tags set by hand from `GODOT-PLAN.md` section 5 (2026-10-02). The "split" rows each hold one or two browser
-lines inside otherwise engine-neutral code: the download helpers, the atmosphere's weather `<select>` and
-`document.hidden` check, and two reads of `performance.now` for timing. They move to `core/host/` in Phase 1;
-until then the lint reports them as warnings.
+lines inside otherwise engine-neutral code: the download helpers and the reads of `performance.now` for timing.
+They move to `core/host/` in Phase 1; until then the lint reports them as warnings. `core/atmos` was split on
+2026-10-02: its browser lines are in `89-atmos-9-host.js` ([web]), and the host passes time in as `dt`.

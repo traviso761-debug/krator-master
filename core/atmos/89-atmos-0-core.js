@@ -3,7 +3,8 @@
 // weather, ivy and window boxes, sewer grates, street lamps and fountains, culling. Every fragment is a closure that
 // adds to the one global `ATMOS`; nothing else is declared at top level, so any build can include the files.
 // A build binds it once:
-//   ATMOS.init({THREE, scene, camera, hour:()=>0..24, onFrame:fn=>{}, ground:(x,z)=>y, seed, err:msg=>{}, ui:element})
+//   ATMOS.init({THREE, scene, camera, hour:()=>0..24, onFrame:fn=>{/* call fn(dt) every frame */}, ground:(x,z)=>y, seed,
+//     err:msg=>{}, viewH:()=>innerHeight, pixelRatio:()=>renderer.getPixelRatio()})
 // then places things with the module calls and ends with ATMOS.finish() (bakes the instanced sets, builds the glow).
 // Its own PRNG (ATMOS.seed / rnd / rr / pick): it never touches the host's stream.
 const ATMOS={};
@@ -13,25 +14,28 @@ const ATMOS={};
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
    windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
-  A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let tl=-1;
+  A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let warned=false;
   // the shared GLSL, written from the presets so JS and shaders agree
   const f=A.glf;
   A.GLSL_WIND=`float atmGust(float t,vec2 xz,vec2 w){float s=t-dot(xz,w)/max(length(w),1e-3)/${f(PW.frontSpeed)};return ${PW.gust.map(g=>`${f(g[0])}*sin(s*${f(g[1])}+${f(g[2])})`).join('+')};}
   vec2 atmWind(float t,vec2 xz,vec2 w,float amp){return w*(1.0+amp*atmGust(t,xz,w));}`;
   A.GLSL_LIT=`float atmLit(float h,vec2 t){float hh=h<12.0?h+24.0:h;return smoothstep(t.x,t.x+${f(PC.ramp)},hh)*(1.0-smoothstep(t.y-${f(PC.ramp)},t.y,hh));}`;
-  // THE CLOCK: the module's own simulation time in seconds, from 0 at init. clock.scale speeds it up or stops it (0);
-  // clock.fixed pins it (deterministic shots: every shader and hook sees that time, and nothing eases). Every effect reads
-  // A.clock.t / A.U.time, never the wall clock, so a game engine drives it with its own delta.
+  // THE CLOCK: the module's own simulation time in seconds, from 0 at init. The HOST owns real time: its frame call
+  // passes dt (seconds since its last frame, capped by the host) as the first argument of the onFrame callback, and the
+  // module never reads a wall clock. clock.scale speeds it up or stops it (0); clock.fixed pins it (deterministic shots:
+  // every shader and hook sees that time, and nothing eases). Godot's Atmos autoload does the same from _process(delta).
   A.clock={t:0,dt:0,scale:1,fixed:null};
-  // the pixel ratio: on-screen sizes are framebuffer pixels, so px must include it (h.pixelRatio: a number or a function)
-  const pr=()=>{const r=typeof h.pixelRatio==='function'?h.pixelRatio():h.pixelRatio;return r>0?r:1;};
-  h.onFrame(()=>{const now=performance.now()/1000,C=A.clock,real=tl<0?0:Math.min(.1,now-tl);tl=now;C.dt=C.fixed!=null?0:real*C.scale;C.t=C.fixed!=null?C.fixed:C.t+C.dt;
+  // the view: sprite sizes are framebuffer pixels, so px needs the view's height in CSS pixels (h.viewH) and the pixel
+  // ratio (h.pixelRatio), each a number or a function; the host reads them from its window
+  const num=(v,d)=>{const r=typeof v==='function'?v():v;return r>0?r:d;};
+  h.onFrame(hostDt=>{const C=A.clock;let real=+hostDt;if(!(real>=0)){if(!warned){warned=true;A.err('onFrame must pass dt in seconds as its first argument; stepping 1/60 s');}real=1/60;}
+   C.dt=C.fixed!=null?0:Math.min(.1,real)*C.scale;C.t=C.fixed!=null?C.fixed:C.t+C.dt;
    const t=C.t,dt=C.dt,hr=h.hour(),U=A.U;U.hour.value=hr;U.night.value=A.night(hr);U.time.value=t;U.light.value=1-PC.nightDim*U.night.value;
    // the wind: a base vector (A.windBase, slowly veering) times A.windScale (the weather raises it); gusts are added per
    // place and time by atmGust() in the shaders. windOff is the base wind integrated over time, for things that ride it (rain)
    const v=PW.veer,veer=v[0]*Math.sin(t*v[1])+v[2]*Math.sin(t*v[3]+1.7),c=Math.cos(veer),s=Math.sin(veer),b=A.windBase;U.wind.value.set((b.x*c-b.y*s)*A.windScale,(b.x*s+b.y*c)*A.windScale);
    U.windOff.value.addScaledVector(U.wind.value,dt);
-   U.px.value=innerHeight*pr()/(2*Math.tan(h.camera.fov*Math.PI/360));for(const fn of A.hooks){try{fn(t,hr,dt);}catch(e){A.err('frame: '+e.message);}}});};
+   U.px.value=num(h.viewH,720)*num(h.pixelRatio,1)/(2*Math.tan(h.camera.fov*Math.PI/360));for(const fn of A.hooks){try{fn(t,hr,dt);}catch(e){A.err('frame: '+e.message);}}});};
  A.glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};   // a number as a GLSL float literal
  A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
  A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds

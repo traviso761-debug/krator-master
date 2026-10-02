@@ -4,7 +4,7 @@
 // baked) and before the views. Order: street furniture, the evening lights, the glow over the city's own lamps,
 // particles, weather, the dressing on buildings, the sewer, then finish (bake + glow) and the culling pass.
 reseed(SEED_CITY+50);
-ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr,pixelRatio:()=>renderer.getPixelRatio()});
+ATMOS.init({THREE,scene,camera,hour:()=>CITYSKY.hour,onFrame:fn=>FRAME_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:SEED_CITY+50,err:reportErr,viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});   // FRAME_HOOKS call f(dt,now): ATMOS steps its clock by dt
 const CITY_ATM={t0:performance.now()};
 // the top of whatever stands at (x,z): a ray down through the scene, ignoring the ground, the jungle and the module's own
 function cityTopAt(x,z,from){const rc=new THREE.Raycaster(new THREE.Vector3(x,from||400,z),new THREE.Vector3(0,-1,0),0,1000);
@@ -47,7 +47,7 @@ ATMOS.mistRing(t=>wallR(t),{inner:8,outer:40,y0:CITY.CHASM+7.5,y1:CITY.CHASM+13}
 {const pts=[];for(let i=0;i<700;i++){const t=rng()*TAU,r=Math.sqrt(rng())*(wallR(t)+30),x=r*Math.cos(t),z=r*Math.sin(t);pts.push([x,Math.max(terrainH(x,z),CITY.CHASM+7),z]);}ATMOS.fogBank(pts);}
 // ---------------------------------------------------------------- 4. weather: what it does to the city's own scene (fog, sun, the wet ground, a lightning flash)
 {const g0=new THREE.Color(1,1,1),gWet=new THREE.Color(.72,.72,.74);
- ATMOS.weather({apply:W=>{scene.fog.density=.00034*(1+4*W.fog+1.8*W.rain);sun.intensity*=1-.55*W.rain-.3*W.fog;if(cityHemi)cityHemi.intensity+=W.flash*1.4;
+ ATMOS.weather({reduceMotion:!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches),apply:W=>{scene.fog.density=.00034*(1+4*W.fog+1.8*W.rain);sun.intensity*=1-.55*W.rain-.3*W.fog;if(cityHemi)cityHemi.intensity+=W.flash*1.4;
   if(groundM){groundM.material.roughness=.96-.5*W.wet;groundM.material.color.copy(g0).lerp(gWet,W.wet);}}});}
 // ---------------------------------------------------------------- 5. dressing: ivy on walls, cisterns on flat roofs, window boxes under the vernacular panes
 {const idx=ATMOS.boxIndex(Object.keys(KIT.meshes).filter(n=>!/Win|Dark|boxD|Cloth|Tarp|Flag|Crop|Fence|Post|Sheet|Board|Plate|Sign|Pipe|Rope|Iron|Bulb|slab|strip|dot|cell|mull/i.test(n)).map(n=>KIT.meshes[n]),{minSize:2});
