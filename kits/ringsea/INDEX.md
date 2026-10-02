@@ -4,7 +4,7 @@
 
 Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/ringsea.html`
 

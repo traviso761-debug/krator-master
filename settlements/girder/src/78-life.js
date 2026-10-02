@@ -687,7 +687,7 @@ function lifeLiftTick(L, dt, day){
     L.vel=0; L.timer-=dt;
     if(L.timer<=0){
       L.idle+=dt;
-      if(L.nRide>0 || (L.state===0?L.nWait1:L.nWait0)>0 || (day && L.idle>18)){ L.state++; L.p=0; L.idle=0; L.trips++; L.carried+=L.nRide; }
+      if(L.nRide>0 || L.walker || (L.state===0?L.nWait1:L.nWait0)>0 || (day && L.idle>18)){   /* L.walker: the walk mode's walker is aboard (83-walk.js) */ L.state++; L.p=0; L.idle=0; L.trips++; L.carried+=L.nRide; }
     }
   }else{
     L.p += dt/LIFT_RIDE_S; var p=Math.min(1,L.p), s=p*p*(3-2*p); L.vel = 6*p*(1-p);

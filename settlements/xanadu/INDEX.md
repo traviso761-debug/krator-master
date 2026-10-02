@@ -4,7 +4,7 @@
 
 Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/erewhon.html`, `dist/xanadu.html`
 

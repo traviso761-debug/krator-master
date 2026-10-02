@@ -4,7 +4,7 @@
 
 Girder: an outlying Beast Rider village in the central-crater hyperjungle.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `girder.html`
 
@@ -24,7 +24,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
 | `45-kit.js` | 25 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 9 | 11. TEXTURES (1) |
-| `50-structure.js` | 16 | 12. STRUCTURE — GIRDER (1) |
+| `50-structure.js` | 18 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 9 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `55-arch.js` | 51 **big** | 14. ARCHITECTURE — GIRDER (1) |
 | `56-interiors.js` | 17 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
@@ -37,7 +37,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (148) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
-| `83-walk.js` | 15 | 25b. WALK MODE (1) |
+| `83-walk.js` | 19 | 25b. WALK MODE (1) |
 | `84-flyers.js` | 88 **big** | 84. FLYERS (1) |
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |

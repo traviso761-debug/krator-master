@@ -49,13 +49,21 @@ cd settlements/<name> && python3 build.py            # or kits/ancients, biomes/
 python3 verify.py <built html> --assert ...           # see that build's README
 ```
 
-Every build is deterministic. After a refactor, rebuild and compare the output
-hashes against the previous commit's. Identical hashes prove nothing changed.
+Every build is deterministic. After a refactor, rebuild and run
+`python3 tools/port_baseline.py`: it compares every built page with `PORT-BASELINE.json`.
+Identical hashes prove nothing changed.
+
+**The Godot port.** `GODOT-PLAN.md` is the plan. Each build's `PORT.md` tags its fragments
+(`tools/audit_port.py` writes it; keep its Tag and Note cells current when you split or move a
+fragment). `build.py` runs `tools/check_port.py` first: a fragment tagged `[G data]` must not touch
+the browser. New browser-side code goes in the host fragments, not in data or builder fragments.
 
 ## Publishing
 
-When a new or changed settlement, kit or biome goes to `main`, update and republish
-the Krator Worlds gallery (see the end of `README.md` and `gallery/README.md`).
+Update and republish the Krator Worlds gallery automatically only when a brand new
+settlement, kit or biome goes to `main` (see the end of `README.md` and `gallery/README.md`).
+A fix to one settlement or biome republishes only that build's files. A wider change
+(several builds, shared `core/`): ask the user whether to update the gallery.
 
 ## Shared and vendored code
 

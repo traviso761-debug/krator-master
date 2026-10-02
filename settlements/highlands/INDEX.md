@@ -4,7 +4,7 @@
 
 Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/highlands.html`, `dist/roketstad.html`
 
@@ -49,7 +49,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `79d-rep-scrap2.js` | 9 | 1. the stage tenement (10); 2. the smelter (27); 3. the wreck market hall (40); 4. the press works (52); 5. the gasholder tenement (64) |
 | `79e-rep-arco.js` | 13 |  |
 | `79f-rep-shipbreak.js` | 8 |  |
-| `80-rus-dwell.js` | 24 | Rustic kit items + helpers (prefix hRU / hnRU) (7); POOR (65); MIDDLE (104); RICH (153) |
+| `80-rus-dwell.js` | 25 | Rustic kit items + helpers (prefix hRU / hnRU) (7); POOR (65); MIDDLE (104); RICH (153) |
 | `81-rus-village.js` | 29 | helpers (prefix hnRU) (7); TEMPLE AND HALL (22); TRADE AND CRAFTS (111); FARMS AND MILLS (197) |
 | `81b-rus-salvage.js` | 12 | 1. the tank stue (8); 2. the container chalet (36); 3. the hull naust (59); 4. the silo stabbur (84); 5. the scrap-iron market (101) |
 | `84-tri-dwell.js` | 33 **big** | package kit (prefix hTR / hnTR) (9); package helpers (69); the base: stilts, or the cliff cantilever (109); SMALL (127); LARGE (185); the CLIFF SETTLEMENT (showcase + reusable) (240) |

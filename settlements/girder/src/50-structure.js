@@ -10,6 +10,7 @@ reseed(500001);
 var STRUCT = { planks:0, plates:0, columns:0, girders:0, stakes:0 };
 function yawX(dx,dz){ return Math.atan2(-dz,dx); }          /* aim local +x along (dx,dz) */
 function yawZ(dx,dz){ return Math.atan2(dx,dz); }           /* aim local +z along (dx,dz) */
+var STAIR_N = 12;                                           /* steps per flight: 2.5 m in risers of 0.21 m, treads of 0.73 m */
 
 function buildTower(T){
   var conc = pick(CONCRETEC), rustA = RUSTC[T.id%RUSTC.length], y0 = T.y0 - 3, top = T.top;
@@ -41,12 +42,26 @@ function buildTower(T){
       /* core walls on three sides (the west side is the corridor out to the gallery) */
       BOX(T.x, F.y, T.z-7.6, 16, F.H, 0.8, 0, shade(conc,-0.18), 'concrete'); BOX(T.x, F.y, T.z+7.6, 16, F.H, 0.8, 0, shade(conc,-0.18), 'concrete');
       BOX(T.x+7.6, F.y, T.z, 0.8, F.H, 14.4, 0, shade(conc,-0.18), 'concrete');
-      /* the switchback: two concrete flights and a half landing */
-      var sp = stairPts(T, F.k), rise = TOWER_FH/2, run = 8.8, L = Math.hypot(run,rise), pit = Math.asin(rise/L);
-      BOX(T.x, F.y+rise/2-0.35, T.z-2.6, 3.0, 0.5, L, [ pit, yawZ(-1,0)+Math.PI, 0], shade(conc,0.05), 'concrete');
-      BOX(T.x, F.y+rise*1.5-0.35, T.z+2.6, 3.0, 0.5, L, [ pit, yawZ(1,0)+Math.PI, 0], shade(conc,0.05), 'concrete');
+      /* the switchback: two concrete flights of STAIR_N steps on a sloped soffit, and a half landing. Flight one
+         rises east along z-2.6 from the floor to the landing, flight two west along z+2.6 to the next floor: the
+         same lines as the walker's ramps (83-walk.js) and stairPts(). In the kit's 'YXZ' Euler a POSITIVE pitch
+         tips local +z DOWN, so a slab that rises along +z takes -pit (the old slabs had +pit and fell the wrong
+         way, with the rails running through them). */
+      var rise = TOWER_FH/2, run = 8.8, L = Math.hypot(run,rise), pit = Math.atan2(rise,run), rh = rise/STAIR_N, tr = run/STAIR_N;
+      [[-2.6, 1, F.y], [2.6, -1, F.y+rise]].forEach(function(fl){
+        var z = T.z+fl[0], dir = fl[1], yA = fl[2], x0 = T.x-dir*run/2;
+        BOX(T.x, yA+rise/2-0.4*Math.cos(pit)-0.03, z, 3.0, 0.4, L, [-pit, yawZ(dir,0), 0], shade(conc,-0.02), 'concrete');
+        for(var st=0; st<STAIR_N; st++)
+          BOX(x0+dir*(st+0.5)*tr, yA+st*rh-0.06, z, tr+0.02, rh+0.06, 3.0, 0, shade(conc,0.05+0.02*(st%2)), 'concrete');
+        /* the handrail over the well side, a metre above the nosings, on posts at both ends */
+        var zr = z+(dir>0?1.45:-1.45);
+        ROD(x0, yA+1.0, zr, x0+dir*run, yA+rise+1.0, zr, 0.04, PAL.rustStain[0], 'rust');
+        ROD(x0+dir*0.3, yA+rh, zr, x0+dir*0.3, yA+1.0+0.3*rise/run, zr, 0.035, PAL.rustStain[0], 'rust');
+        ROD(x0+dir*(run-0.3), yA+rise, zr, x0+dir*(run-0.3), yA+rise+1.0-0.3*rise/run, zr, 0.035, PAL.rustStain[0], 'rust');
+      });
       BOX(T.x+6.0, F.y+rise-0.5, T.z, 3.2, 0.5, 8.2, 0, shade(conc,-0.05), 'concrete');
-      for(var s=0;s<2;s++) ROD(T.x-4.4, F.y+1.0+s*rise, T.z+(s?1.0:-1.0), T.x+4.4, F.y+1.0+rise+s*0, T.z+(s?1.0:-1.0), 0.04, PAL.rustStain[0], 'rust');
+      /* a rail across the well at the landing's open edge (the walker's 'well' solid stands under it) */
+      ROD(T.x+4.45, F.y+rise+1.0, T.z-1.15, T.x+4.45, F.y+rise+1.0, T.z+1.15, 0.04, PAL.rustStain[0], 'rust');
     }
     REGISTER({ name:T.name, kind:F.kind, label: F.k===TOWER_N ? 'Unfinished roof plate' : 'Floor '+(F.k+1)+' — '+(F.kind==='inhabited' ? (F.k<6?'lower dwellings':'upper dwellings') : 'abandoned, overgrown'),
                x:T.x, z:T.z, y:yb, h:TOWER_FH, r:T.half*1.45, hx:T.half, hz:T.half, lvl:F.k });

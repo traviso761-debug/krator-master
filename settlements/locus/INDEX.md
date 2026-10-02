@@ -4,7 +4,7 @@
 
 Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.
 
-Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`
+Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus-plants.html`, `locus.html`
 
