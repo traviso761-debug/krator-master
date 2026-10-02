@@ -21,6 +21,32 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## Port: next *(the ordered critical path; GODOT-PLAN.md, amended 2026-10-02)*
+
+The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md` (phases, rules, milestones),
+`biomes/WORLD.md` (the biome order), `core/materials/PLAN.md` (the library), `core/simulation/PLAN.md` (the sim),
+`settlements/ys/GODOT.md` (Ys). When one of them changes the order, change it here in the same commit.
+
+1. **DONE 2026-10-02:** the audit tool sees the shared exporters; Iziz's and Dalab's city build passes retagged;
+   the minimap split into data and host (port lint 16 warnings to 2); the Voth lineage in the hash baseline;
+   `core/rand` with golden vectors and its GDScript twin; Ys's city takes it.
+2. **The Godot spike** (GODOT-PLAN.md Phase 7, "The spike"), on Travis's machine: `krand_test.gd` headless; one
+   biome kit's `BIO.export()` and Iziz's `ATMOS.export()` in a scene; the Voth kit meshes by the route Travis's
+   friend used (ask him what it was). Write the importer's gap list into GODOT-PLAN.md.
+3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
+   and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
+   material work (M5).
+4. **The scoped hand pass** (GODOT-PLAN.md 3.3) on the biome kits, then Iziz, Girder, Voth and Ys. Other builds
+   keep provisional tags until a port session touches them.
+5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
+   records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
+   field with one kit as its first consumer. Needs the spike's findings on terrain.
+6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass.
+7. **The Girder pilot** (core/materials/PLAN.md): `TEX.def`, the record adapters, `core/furnish` with Girder as its
+   first consumer.
+8. **`core/mask` with Iziz's city** as its first consumer, then Iziz's export on the `KRATOR_EXPORT` shape (M5).
+9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
+
 ## Features
 
 - **DONE (first batch): `core/minimap/88-core-minimap.js` (`KMAP`), in Voth.** **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
@@ -45,13 +71,14 @@ first tile in Godot) needs. They start ahead: one core (`core/biome/`), one PRNG
 order are in `biomes/WORLD.md` ("Against the port plan"); the contract is `biomes/GODOT.md`. Suggested order:
 the audit, the shader kinds, tags and ids, the host, the reseeding event, then variants with opt-in heroes.
 
-- **Finish the port audit for the nine kits** (tooling, no tag). Correct the provisional tags in each
+- **Finish the port audit for the nine kits** (tooling, no tag; inside the scoped hand pass, `GODOT-PLAN.md` 3.3).
+  *The tool part is done (2026-10-02): `PORT-INDEX.md` names the `biome` exporter for every kit on the shared core,
+  and none for nwbay, whose old core copy has no exporter.* Correct the provisional tags in each
   `biomes/<kit>/PORT.md` and write the split lists into its Notes: `45-host-stage` holds `terrainH`, the water
   and the fields, which are data `core/terrain` replaces (note it "split", not plain host); `55-trees` is
   already a placement pass and a draw pass; `60-floor` and `65-dress` place and draw in one pass (`BIO.grid`
   then `BIO.put`); `85-host-tower` is a preview prop (a builder); `82-host-sky` becomes a `core/atmos` sky
-  preset. Teach `tools/audit_port.py` that a build listing `CORE_BIOME` has an exporter (`BIO.export`,
-  `core/biome/42-core-export.js`): `PORT-INDEX.md` shows the nine kits with none.
+  preset.
 - **[G shader] One copy of each biome shader hook, in the core.** The iridescent bark `BIO.iridBarkMat` is
   written in four kits (eastabyss, nhighlands, rift, xanadu), on the shared `BIO`: eastabyss and rift assign
   it unguarded and with different signatures, so with several kits resident the last kit loaded replaces the

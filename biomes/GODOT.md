@@ -148,6 +148,6 @@ Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`
 - The kits' shader hooks as core material kinds; materials on the plan's shared vocabulary; a
   `convention.colour` per table (this export is linear, the atmosphere's sRGB).
 - `BIO.download()` moved to the host (`core/host`): the export's one browser line.
-- `BIO.export` folded into `core/export/` (`krator-world`, Phase 4), and `tools/audit_port.py`
-  taught to see it in every build that lists `CORE_BIOME`.
+- `BIO.export` folded into `core/export/` (`krator-world`, Phase 4). (`tools/audit_port.py` sees it in every
+  build that lists `42-core-export.js` since 2026-10-02.)
 - A converter from this JSON to `.glb` / `.tscn` (`MultiMesh` resources).

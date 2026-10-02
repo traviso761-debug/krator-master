@@ -250,7 +250,7 @@ What the first delivery taught:
 2. **The rest of Girder's surfaces**, below.
 3. **Repetition break-up** for large surfaces (thatch, carved wood): a second variant per set, or a
    texture-bombing hook, which Godot gets as a shader.
-4. **Iziz**, then the nacre culture, as the plan's order of work says.
+4. **Iziz**, then the nacre culture (Ys's Hykkousoi), as the plan's order of work says.
 5. Decide Git LFS before the library passes ~100 MB.
 
 ## Still needed for Girder
@@ -306,5 +306,8 @@ For every generated image, write the exact prompt into the batch file's `_source
 
 - **Where 2048 px sources live:** outside the repo, or Git LFS.
 - **Voth's culture sheets:** what its patterns are.
-- **The nacre culture:** its name, palette and build folder once its session is pushed; the shell rows here
-  are written ahead of it.
+- ~~**The nacre culture:** its name, palette and build folder once its session is pushed.~~ *Settled 2026-10-02:* it
+  is the Hykkousoi, `settlements/ys` (on `main`). Ys did not start on the library: it has eight `fbm` canvas
+  painters of its own in `60-hyk-mat.js` (nacre, barnacle, weed, bone, floor, lens, dark) and one shader hook,
+  `hkNacreHook` (`settlements/ys/GODOT.md` item 11). The open choice is whether the `shell.*` rows here replace
+  those painters, or the painters bake to PNG and the rows wait for a second shell culture.
