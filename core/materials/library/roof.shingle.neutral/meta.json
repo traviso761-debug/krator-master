@@ -1,0 +1,37 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "../roof.shingle/normal.png",
+  "roughnessMap": "../roof.shingle/roughness.png"
+ },
+ "processing": {
+  "note": "albedo only; normal and roughness are the sibling set's",
+  "options": {
+   "mean_luminance": 0.65,
+   "mute": 0.9,
+   "neutral_of": "roof.shingle"
+  },
+  "script": "tools/textures/adopt.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.shingle.neutral",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "derived_from": "roof.shingle",
+  "file": "Weathered Rustic Wood Shingle Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row roof.shingle (exact wording not recorded)",
+  "sha1": "6f9885b2eb73be139d162c43c394af3e7abdf7e2"
+ }
+}
