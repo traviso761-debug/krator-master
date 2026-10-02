@@ -6,7 +6,6 @@ Four build targets come out of one source tree (`build.py`, fragments in `src/`)
 |---|---|---|
 | `yuni.html` | `world` | the valley, the butte, the Grand Vault, the wall and gates, the canal, the street network, the underground antechamber |
 | `yuni-assets.html` | `sheet` | every registered ASSET, each variant, laid out in family rows on flat ground |
-| `yuni-furniture.html` | `furn` | every registered FURN piece, grouped by the culture that made it |
 | `yuni-plants.html` | `flora` | every registered PLANT species, grouped by climate band |
 
 `SHEET` is true for all three catalogue targets (flat ground, no town); `CATALOG` names which
@@ -255,3 +254,62 @@ Open the panel, pick a population, and the goods network or the Order's circuit 
 
 Caravans are the one thing still not working: nine are spawned and drawn as four-beast carts with a caravanserai
 bias, but they register no corridors at all, on the same code path the carts run happily. Left as decoration.
+
+## Working doors and interiors
+
+Built for the game port. See `GAME_EXPORT.md` for the data contract. Four fragments:
+
+- `51-fixtures.js` holds the registries: `FIX.buildings`, `FIX.doors`, `FIX.windows` and `FIX.lights`.
+  Each record has a stable id, culture and type tags, and a Blender/Godot node name. `KRATOR_EXPORT` serialises them.
+- `53-assets.js` hosts `F.door`, a real door. Its leaf lives in a `leaf|*` bucket, hung from its hinge, and its
+  reveal in an `rvl|dark` bucket, so one instance matrix opens it. Hinges come from a position hash,
+  not `F.rnd`, so adding a door never moves anything else in an asset. `buildAsset` records each
+  building's big solid volumes (its *bodies*) and which kit instances it owns.
+- `64-interiors.js` holds the modules (FINISH, PARTITION, STAIR, LAYOUT, ROOM_PROGRAM) and the planner.
+  No asset describes its interior. Each exterior door is traced to the body behind it, rooms are
+  fitted inside that body, inset from its battered faces, and the body is split by the building's room program.
+  A body 6.2 m tall or more gets a second level with a stair, or a ladder in the poor quarters.
+  Furniture is placed by anchor (`back`, `corner`, `run-left` …), keeping door swings and stair landings clear.
+  Each interior also gets a walk graph in Mav's Refuge's vocabulary (`door doorway room stairfoot
+  stairtop`, edge kinds `door room stair ladder`), which joins the city NAV at each door node.
+  On slopes the ground floor is lifted clear of the terrain under the uphill side, by up to 0.9 m.
+- `76-doors.js` runs it:
+  - Doors open for the walker, for the life layer (`DOORS.touch`) or from the Doors control.
+  - An open door near the camera gets a stencil portal (mark, then reset depth to far), and the
+    building's interior is drawn last, only through that mark. From outside you see a room through the
+    doorway and nowhere else.
+  - Interiors are built lazily for the nearest 14 buildings and disposed when you leave, so the city pays nothing for them.
+  - Walk mode makes building bodies solid except through doors. Inside, the current level's rooms are walkable, and a stair carries you between levels.
+  - Standing inside a building hides its own exterior instances, its reveals and its window boxes, so nothing pokes into the room and you can see out.
+  - Cutaway clips the exterior at 2.4 m above the ground at the focus, so the plans can be reviewed from above.
+
+The life layer now walks up to a working door, opens it, steps in and is not drawn while it dwells
+indoors. It comes back out through the same door. `LIFE.sim(secs)` fast-forwards for headless tests.
+
+`python3 verify_walk.py <html> --asset <key> --variant <n> [--hour h]` walks up to a door, through it,
+up the stair, then takes a cutaway. It shoots each step and writes that building's export JSON.
+
+## Caravans, floors and the minimum kit (2026-10-01)
+
+**Debug a stuck agent in the page, not in the code.** The caravans took four rounds of rewrites
+because each one changed the state machine. Loading the page and printing one caravan's fields
+every few seconds showed the real faults in minutes: its `wait` fell at 0.04 s per real second
+(headless frames are that slow, and `LIFE.sim` never stepped vehicles), and the moment one was
+forced to set out its `x` and `z` became NaN, because `step()` reads `a.off` and vehicles never had
+one. When two "identical" code paths behave differently, look for a field one population has and
+the other lacks. `_life.caravans()` and `_life.vehicleRouteFailures()` exist for this now.
+
+**A black floor in the cutaway is usually the plinth.** Many assets lay a low dark box over the
+whole footprint (a tarred base band); its top face sits above the room's floor. buildAsset records
+those as `b._plinths`, and the cutaway hides them for the buildings whose interiors it shows.
+
+**Floors** draw in interior-only `fl-<family>` buckets (no new city draw calls), and the interior
+shader gives those a `uFloorLift` term. Patterns come from `FINISH.floor.pattern`.
+
+**The kit**: `window._kitAudit` (in verify.py's counters line) must read 0 for every `...Missing...`
+count. A kit slot that no room can hold stays as data, `virtual:true`.
+
+Declared sizes (2026-10): PLANT and FURN `w d h` should cover the built extent centred on the origin, as
+kits/catalog's `verify.py` requires. Seven plants, the socket rack and the mat rack were raised to their
+measured extents (KNOWN_ISSUES.md "Catalog verify-pass sync"). For furniture placed by an interior LAYOUT,
+`w` and `d` also drive placement.

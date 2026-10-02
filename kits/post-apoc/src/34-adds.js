@@ -5,6 +5,9 @@
 /* every door() call leaves an invisible record (world position, outward direction, size): place() picks the building's FRONT DOOR from them */
 let DOORS_CUR=[];
 function doorNote(x,y,z,w,h){const p=new THREE.Vector3(x,y,z+.03).applyMatrix4(CM);const dv=new THREE.Vector3(0,0,1).transformDirection(CM);DOORS_CUR.push({wx:p.x,wy:p.y,wz:p.z,dx:dv.x,dz:dv.z,w:w,h:h});}
+/* an entrance with no leaf (an open container front or service counter, a gate gap in a fence, a roll-up door opening, a doorway with a curtain):
+   draws nothing, leaves the same record as door(), so place() can pick it as the building's FRONT DOOR. Same frame: on a surface facing +z, y = threshold */
+function entry(x,y,z,w,h){doorNote(x,y,z,w,h||2.0);}
 function door(x,y,z,w,h,o){o=o||{};doorNote(x,y,z,w,h);const c=o.col===undefined?jc(pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0x8a5a30,0xc99a2e,0x4d6f3c]),.06):jc(o.col,.05);const fr=jc(o.frame||0x4a3a2c,.05);
  const dk=c.clone().multiplyScalar(.7);   /* leaf in unweathered paint (plank would be rusted toward the wall colour), with inset panels and a dark surround so it reads as a door, not as more wall */
  box('plain',x,y,z+.03,w-.1,h-.05,.06,c);
@@ -50,7 +53,7 @@ function leanRoof(x,zw,w,out,yHigh,yLow,o){o=o||{};const c=o.col===undefined?pic
   beam('wood',[x-w/2,yLow-.02,zw+out],[x+w/2,yLow-.02,zw+out],.1,jc(0x5c4630,.06));}}
 // a tarp or sheet stretched over poles at a slope: centre (x,y,z), w across x, d deep toward +z, drop toward the front
 function tarp(x,y,z,w,d,drop,col,o){o=o||{};const c=col===undefined?P('tarp'):(typeof col==='number'?jc(col,.05):col);
- plane4('cloth',[x-w/2,y,z],[x+w/2,y,z],[x-w/2,y-drop,z+d],[x+w/2,y-drop,z+d],.02,c);
+ withCloth(clothTarp(x,z,w,d),()=>plane4('cloth',[x-w/2,y,z],[x+w/2,y,z],[x-w/2,y-drop,z+d],[x+w/2,y-drop,z+d],.02,c));   /* flutters: 93-anim.js */
  if(o.poles!==false){for(const sx of [-1,1])beam('wood',[x+sx*w/2,y-drop-.4,z+d],[x+sx*w/2,y-drop+.05,z+d],.07,jc(0x5c4630,.06),true,6);}}
 // ---- platforms, stairs, ladders, rails
 function deck(x,y,z,w,d,o){o=o||{};const th=.12;box('plank',x,y-th,z,w,th,d,o.col===undefined?P('wood'):jc(o.col,.05));
@@ -60,40 +63,76 @@ function deck(x,y,z,w,d,o){o=o||{};const th=.12;box('plank',x,y-th,z,w,th,d,o.co
   const cs=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]];const names=['b','r','f','l'];
   for(let i=0;i<4;i++)if(sides.indexOf(names[i])>=0)seg(cs[i],cs[(i+1)%4]);}}
 // stair from a foot point to a top point (x,y,z each), width w: treads on two stringers
-function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
+function stairs(ax,ay,az,bx,by,bz,w,o){o=o||{};if(o.steel)return stStairs(ax,ay,az,bx,by,bz,w,o);   // steel: stStairs() below (o.steel keeps old call sites working)
+ const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
  const wc=jc(0x5c4630,.06),ic=jc(0x4a4038,.05);
  W(ax,ay,az,ang,()=>{const nx=[-w/2,w/2];
-  if(o.steel){ // steel: channel stringers, grating treads with a nosing, pipe handrails on posts (o.steel=true)
-   for(const sx of nx){beam('iron',[sx,0,0],[sx,dy,run],.09,ic);}
-   for(let k=1;k<=n;k++){const y=dy*k/n-.04,z=run*(k-.5)/n;box('iron',0,y,z,w,.04,run/n+.03,jc(0x6a5a4c,.06));box('iron',0,y+.04,z+run/n*.5-.03,w,.03,.04,jc(0x3a3430,.04));}
-   if(o.rail!==false)for(const sx of nx){const xs=sx*1.02;beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.035,ic,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.025,ic,true,5);
-    const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.04,ic,true,5);}}
-  }else{for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
+  {for(const sx of nx)beam('iron',[sx,0,0],[sx,dy,run],.07,ic);
    for(let k=1;k<=n;k++){box('plank',0,dy*k/n-.05,run*(k-.5)/n,w,.05,run/n+.04,jc(pick(PAL.wood),.07));}
    if(o.rail!==false)for(const sx of nx){beam('wood',[sx,1.0,0],[sx,dy+1.0,run],.05,wc);beam('wood',[sx,0,0],[sx,1.0,0],.05,wc,true,5);beam('wood',[sx,dy,run],[sx,dy+1.0,run],.05,wc,true,5);}}});}
+// ---- STEEL access: stairs, landings and pipe railings for container and steel builds (stacks, tank towers, catwalks). Same frames and heights as
+//      stairs()/deck(): a flight from a foot point to a top point ends with its top tread level with, and against the edge of, a landing whose top is y.
+//      Materials: 'iron' (heavy rust weathering) for the frame, stringers, grating and rails; 'steel' (light weathering) for checker-plate treads.
+const STC={frame:0x4a4038,grate:0x5a5550,rail:0x5a524a,plate:0x8a8680};
+// floor panel, TOP at y, centred (x,z), w along x, d along z. o.floor: 'grate' (default: bearing bars along the long side, cross rods, edge frame) or 'plate' (checker plate)
+function stFloor(x,y,z,w,d,o){o=o||{};const fc=jc(STC.frame,.05);
+ if(o.floor==='plate'){box('steel',x,y-.04,z,w,.04,d,jc(STC.plate,.06));return;}
+ const gc=jc(STC.grate,.06),alongX=w>=d,L=alongX?w:d,S=alongX?d:w,nb=Math.max(2,Math.round(S/.12)),nr=Math.max(1,Math.round(L/.6));
+ for(let k=0;k<=nb;k++){const t=-S/2+.03+k*(S-.06)/nb;if(alongX)box('iron',x,y-.045,z+t,L-.04,.045,.022,gc);else box('iron',x+t,y-.045,z,.022,.045,L-.04,gc);}
+ for(let k=1;k<nr;k++){const t=-L/2+k*L/nr;if(alongX)box('iron',x+t,y-.03,z,.014,.014,S-.04,gc);else box('iron',x,y-.03,z+t,S-.04,.014,.014,gc);}
+ for(const s of [-1,1]){box('iron',x,y-.06,z+s*(d/2-.025),w,.06,.05,fc);box('iron',x+s*(w/2-.025),y-.06,z,.05,.06,d-.1,fc);}}
+// pipe handrail along a->b ([x,z] pairs) standing on a floor at y: round posts every ~1.4 m, top rail at h (1.0), knee rail, toe plate
+function stRail(a,b,y,o){o=o||{};const h=o.h||1.0,c=o.col===undefined?jc(STC.rail,.05):jc(o.col,.05);const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.1)return;const n=Math.max(1,Math.round(L/1.4));
+ for(let k=0;k<=n;k++){const t=k/n;beam('iron',[a[0]+dx*t,y,a[1]+dz*t],[a[0]+dx*t,y+h,a[1]+dz*t],.045,c,true,6);}
+ beam('iron',[a[0],y+h,a[1]],[b[0],y+h,b[1]],.05,c,true,6);beam('iron',[a[0],y+h*.5,a[1]],[b[0],y+h*.5,b[1]],.032,c,true,5);
+ if(o.toe!==false)W((a[0]+b[0])/2,y,(a[1]+b[1])/2,Math.atan2(-dz,dx),()=>box('iron',0,0,0,L,.1,.012,c));}
+// landing / balcony: deck() with a steel floor (o.floor), a channel frame under the edge, square-tube posts to the ground when y>.5 (o.posts:false for
+// wall-bracketed ones), pipe rails on the named sides (o.rail: 'b','r','f','l' = -z, +x, +z, -x)
+function stLanding(x,y,z,w,d,o){o=o||{};const fc=jc(STC.frame,.05);stFloor(x,y,z,w,d,o);
+ for(const s of [-1,1]){box('iron',x,y-.2,z+s*(d/2-.05),w,.14,.1,fc);box('iron',x+s*(w/2-.05),y-.2,z,.1,.14,d-.2,fc);}
+ if(y>.5&&o.posts!==false){for(const sx of [-1,1])for(const sz of [-1,1]){const px=x+sx*(w/2-.1),pz=z+sz*(d/2-.1);beam('iron',[px,0,pz],[px,y-.2,pz],.11,fc);box('iron',px,0,pz,.26,.03,.26,fc);}}
+ if(o.rail){const cs=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]],names=['b','r','f','l'];
+  for(let i=0;i<4;i++)if(o.rail.indexOf(names[i])>=0)stRail(cs[i],cs[(i+1)%4],y,{h:o.h});}}
+// steel stair, foot (ax,ay,az) -> top (bx,by,bz), width w: channel stringers (web + flanges), checker-plate treads with a nosing angle (o.tread:'grate' for
+// open grating), pipe handrails with posts (o.rail:false drops them). The top tread's top is at by and its back edge at the top point.
+function stStairs(ax,ay,az,bx,by,bz,w,o){o=o||{};const dx=bx-ax,dz=bz-az,dy=by-ay;const run=Math.hypot(dx,dz);const n=Math.max(2,Math.round(dy/.2));const ang=Math.atan2(dx,dz);
+ const fc=jc(STC.frame,.05),rc=jc(STC.rail,.05),tc=jc(o.tread==='grate'?STC.grate:STC.plate,.06),td=run/n;
+ W(ax,ay,az,ang,()=>{
+  for(const sx of [-w/2-.035,w/2+.035]){plane4('iron',[sx,-.16,0],[sx,dy-.16,run],[sx,.08,0],[sx,dy+.08,run],.025,fc);
+   for(const sy of [-.16,.08])beam('iron',[sx,sy,0],[sx,dy+sy,run],.05,fc);}
+  for(let k=1;k<=n;k++){const y=dy*k/n,z=td*(k-.5);
+   if(o.tread==='grate'){for(let q=0;q<5;q++)box('iron',0,y-.04,z-td/2+.02+q*(td-.04)/4,w,.04,.018,tc);for(const sx of [-1,1])box('iron',sx*(w/2-.02),y-.05,z,.04,.05,td,fc);}
+   else box('steel',0,y-.035,z,w,.035,td+.02,tc);
+   box('iron',0,y-.07,z-td/2+.02,w,.07,.04,fc);}
+  if(o.rail!==false)for(const s of [-1,1]){const xs=s*(w/2+.09);beam('iron',[xs,1.0,0],[xs,dy+1.0,run],.045,rc,true,6);beam('iron',[xs,.5,0],[xs,dy+.5,run],.03,rc,true,5);
+   const np=Math.max(2,Math.round(run/1.4)+1);for(let k=0;k<np;k++){const t=k/(np-1);beam('iron',[xs,dy*t,run*t],[xs,dy*t+1.0,run*t],.045,rc,true,6);}}});}
 function ladder(x,y,z,h,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const c=jc(0x5a5048,.05);beam('iron',[-.22,0,0],[-.22,h,0],.05,c);beam('iron',[.22,0,0],[.22,h,0],.05,c);for(let k=1;k*.32<h;k++)beam('iron',[-.22,k*.32,0],[.22,k*.32,0],.035,c,true,5);});}
 // ---- roof and yard furniture
-function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038,0x5a4a3c,0x6a5a4c]),.05);cyl('iron',x,y,z,r,h,c,8);cyl('iron',x,y+h,z,r*1.5,.06,c,8);cone('iron',x,y+h+.06,z,r*2.2,.16,jc(0x3a3430,.05),8);
+function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038,0x5a4a3c,0x6a5a4c]),.05);cyl('iron',x,y,z,r,h,c,8);cyl('iron',x,y+h,z,r*1.5,.06,c,8);cone('iron',x,y+h+.06,z,r*2.2,.16,jc(0x3a3430,.05),8);smokeAt(x,y+h+.3,z,{r:r*2.4,kind:'stove'});
 }
 function solar(x,y,z,w,d,ry,tilt,o){o=o||{};W(x,y,z,ry||0,()=>{const t=tilt===undefined?.5:tilt;plane4('glass',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],[-w/2,d*Math.sin(t),d/2*Math.cos(t)],[w/2,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x1a2a4a,.05));
   beam('iron',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],.05,jc(0x8a8a86,.05));const n=Math.round(w/1.6);for(let k=0;k<=n;k++){const px=-w/2+k*w/n;beam('iron',[px,-.05,-d/2*Math.cos(t)],[px,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x8a8a86,.04));}
   for(const sx of [-1,1])beam('iron',[sx*w/2*.8,-y,d/4],[sx*w/2*.8,d*Math.sin(t)*.6,d/4*.4],.06,jc(0x4a4038,.05));});}
-function barrel(x,y,z,col,o){o=o||{};const c=col===undefined?jc(pick([0x8a3a2c,0x2f5f8f,0x4d6f3c,0x8a6a3a,0x9a9a92,0xc99a2e,0x5a5a56]),.08):(typeof col==='number'?jc(col,.05):col);cyl('sheet',x,y,z,.29,.88,c,10,.29,true);for(const f of [.18,.7])cyl('iron',x,y+f,z,.31,.05,jc(0x3a3430,.05),10);
- if(!o.open)cyl('iron',x,y+.88,z,.27,.02,jc(0x4a4038,.05),10);else cyl('rubber',x,y+.85,z,.26,.02,jc(0x201a12,.05),10);}
-function crate(x,y,z,s,ry,col){s=s||.6;box('plank',x,y,z,s,s,s,col===undefined?P('wood'):jc(col,.05),ry);box('plank',x,y+s*.42,z,s*1.02,.05,s*1.02,jc(0x4a3a2c,.05),ry);}
-function sacks(x,y,z,n,ry){W(x,y,z,ry||0,()=>{for(let k=0;k<n;k++){const r=k<3?k:k-3;const yy=k<3?0:.32;sph('cloth',-.4+r*.4,yy+.16,rr(-.05,.05),.22,jc(pick(PAL.cloth),.06),.7);}});}
-function pallet(x,y,z,w,d,ry){box('plank',x,y,z,w,.12,d,P('woodD'),ry);}
-function lamp(x,y,z,h,o){o=o||{};h=h||3.2;beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
-function fire(x,y,z,r){r=r||.5;for(let k=0;k<7;k++){const a=k/7*TAU;box('plank',x+Math.cos(a)*r*.5,y+.05,z+Math.sin(a)*r*.5,.07,.07,r*.9,jc(0x3a2a1c,.06),a,0,rr(-.3,.3));}
- for(let k=0;k<8;k++){const a=k/8*TAU;box('conc',x+Math.cos(a)*r*1.05,y,z+Math.sin(a)*r*1.05,.16,.14,.16,jc(0x8a8478,.08),a);}cone('glow',x,y+.06,z,r*.42,r*1.1,jc(0xff9a3a,.08),7);cone('glow',x,y+.06,z,r*.22,r*1.5,jc(0xffe28a,.05),6);}
-function tireStack(x,z,n,o){o=o||{};for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);}
-function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){const a=rng()*TAU,d=Math.sqrt(rng())*r;const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=(1-d/r)*r*.35;const t=rng();
- if(t<.3)box('sheet',px,py,pz,rr(.4,1.1),rr(.03,.06),rr(.4,1.0),pick([P('rust'),P('galv')]),rng()*TAU,rr(-.5,.5),rr(-.5,.5));
- else if(t<.5)beam('iron',[px,py,pz],[px+rr(-1,1),py+rr(.1,.9),pz+rr(-1,1)],rr(.04,.09),P('rust'),rng()<.5);
- else if(t<.65)tire(px,py+.15,pz,TYR.R,TYR.t,undefined,rng()*TAU,rr(-1,1),rr(-1,1));
- else if(t<.8)box('iron',px,py,pz,rr(.2,.5),rr(.15,.4),rr(.2,.5),P('black'),rng()*TAU);
- else if(t<.9)barrel(px,py,pz,undefined,{open:true});
- else box('plank',px,py,pz,rr(.6,1.4),.05,rr(.1,.2),P('woodD'),rng()*TAU,rr(-.4,.4),rr(-.4,.4));}}
+// YARD FURNITURE: master-catalog pieces placed through FURNISH (91f-furnish.js), not drawn here. Each helper keeps its name and
+// arguments, so no builder changed, and still draws the random numbers its old drawing drew (rngSkip), so the structure a builder
+// draws after it keeps its random stream (colours, patches, jitter). Keys: the pieces harvested from this kit (catalog scrap file).
+function rngSkip(n){for(let i=0;i<n;i++)rng();}
+function barrel(x,y,z,col,o){o=o||{};rngSkip(col===undefined?9:typeof col==='number'?8:6);return FURNISH('pa_drum',x,y,z,0,{v:o.open?1:0});}
+function crate(x,y,z,s,ry,col){s=s||.6;rngSkip(col===undefined?5:4);return FURNISH('pa_crate',x,y,z,ry||0,{v:s>.7?1:0});}   /* the catalog's crates: 0.6 and 0.8 m */
+function sacks(x,y,z,n,ry){rngSkip(4*n);return FURNISH('pa_sacks',x,y,z,ry||0,{v:n>3?1:0});}
+function pallet(x,y,z,w,d,ry){rngSkip(3);return FURNISH('pa_pallet_load',x,y,z,ry||0,{v:0});}
+/* a lamp post: the catalog's (3.2 or 3.8 m, arm toward +x, turned for a negative o.arm). A lamp under 2 m is a bracket light fixed to a
+   structure (a mast, a crane deck, a lookout rail), not a post: it stays drawn here */
+function lamp(x,y,z,h,o){o=o||{};h=h||3.2;if(h>=2){rngSkip(8);return FURNISH('pa_lamp_post',x,y,z,(o.arm||.35)<0?PI:0,{v:h>=3.5?1:0,ax:-.23});}
+ beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
+/* a camp fire (the catalog's, r 0.5): the smoke stays the kit's (93-anim.js) */
+function fire(x,y,z,r){r=r||.5;rngSkip(41);FURNISH('pa_camp_fire',x,y,z,0,{v:0});smokeAt(x,y+r*1.6,z,{r:r*.9,kind:'fire'});}
+/* a stack of loose tyres (2, 3 or 5 in the catalog). o.fixed: tyres that carry something (a tank's cradle) are structure and stay drawn */
+function tireStack(x,z,n,o){o=o||{};if(o.fixed){for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);return null;}
+ rngSkip(3*n);return FURNISH('pa_tyre_stack',x,o.y||0,z,0,{v:n<=2?0:n===3?1:2});}
+/* a junk pile (the catalog's small r 1.0 or large r 1.4); the skip replays the old draw: three numbers per item, then what its kind drew */
+function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){rng();rng();const t=rng();rngSkip(t<.3?13:t<.5?8:t<.65?3:t<.8?7:t<.9?9:8);}
+ return FURNISH('pa_junk_pile',x,o.y||0,z,0,{v:r>=1.3?1:0});}
 function antenna(x,y,z,h){beam('iron',[x,y,z],[x,y+h,z],.03,jc(0x8a8a86,.05),true,5);for(let k=1;k<4;k++)beam('iron',[x-.5+k*.05,y+h*(.35+k*.14),z],[x+.5-k*.05,y+h*(.35+k*.14),z],.02,jc(0x8a8a86,.05),true,4);}
 function fenceRun(x0,z0,x1,z1,h,o){o=o||{};h=h||1.6;const L=Math.hypot(x1-x0,z1-z0);if(L<.2)return;const n=Math.max(1,Math.round(L/2.4));const ang=Math.atan2(-(z1-z0),x1-x0);
  for(let k=0;k<=n;k++){const t=k/n;const px=x0+(x1-x0)*t,pz=z0+(z1-z0)*t;beam('wood',[px,0,pz],[px,h+.15,pz],.09,jc(0x5c4630,.06),true,6);}
@@ -106,8 +145,8 @@ function bottleString(a,b,n,o){o=o||{};for(let k=0;k<n;k++){const t=(k+.5)/n;con
  beam('plain',[x,y,z],[x,y-len,z],.006,jc(0x6a5a44,.05),true,3);const cl=pick([0x3f9a52,0xc98a2a,0x2f62b8,0xd5ecea,0xa04a2a]);cyl('glass',x,y-len-.26,z,.05,.24,jc(cl,.05),6);cyl('glass',x,y-len-.02,z,.02,.1,jc(cl,.05),6);}
  beam('plain',a,[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],.008,jc(0x6a5a44,.05),true,3);beam('plain',[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],b,.008,jc(0x6a5a44,.05),true,3);}
 // water butt on stilts: a small tank + legs + downpipe
-function waterButt(x,y,z,r,h,o){o=o||{};const c=o.col===undefined?jc(pick([0x3a6a8a,0x8a4a3a,0x6a7a78,0x4d6f3c]),.06):jc(o.col,.05);for(let k=0;k<4;k++){const a=k*PI/2+PI/4;beam('wood',[x+Math.cos(a)*r*.8,0,z+Math.sin(a)*r*.8],[x+Math.cos(a)*r*.8,y,z+Math.sin(a)*r*.8],.09,jc(0x5c4630,.06));}
- cyl('sheet',x,y,z,r,h,c,12,r,true);cyl('iron',x,y+h,z,r*.9,.05,jc(0x3a3430,.05),12);cone('iron',x,y+h+.05,z,r*.95,r*.3,jc(0x4a4038,.05),12);}
+/* the catalog's (tank on a 1.4 or a 1.1 m stand), standing on the ground (or on o.base: a deck); y was the old stand's height */
+function waterButt(x,y,z,r,h,o){o=o||{};rngSkip(o.col===undefined?15:14);return FURNISH('pa_water_butt',x,o.base||0,z,0,{v:y-(o.base||0)<1.25?1:0});}
 
 // ---------------------------------------------------------------- PLACEHOLDER FLORA
 // Buildings never model plants as part of themselves (README rule: a plant is its own tagged object, placed). Anything green a building wants
@@ -140,22 +179,9 @@ function plant(kind,x,y,z,o){o=o||{};const sl={kind,key:CURKEY,m:CM.clone().mult
 // ---------------------------------------------------------------- TYRE FURNITURE (stools, chairs, tables): stacked tyres, woven cord, timber frames
 // After the reference photos: two tyres stacked make a seat with a lattice of cord over the hole; a chair adds a tyre standing on edge as the backrest
 // (cord net inside it) in a timber frame with arms; a table is a tyre with a round wooden top. Cords stay in muted rope colours (ochre, olive, faded orange, dirty white).
-// All draw in the current frame, facing +z, base on y; pass ry to turn them. o: {n: tyres in the seat stack, wood: hex, cord: hex}
-const TYRE_CORDS=[0xa8892a,0x6a7a3a,0x9a5a2a,0xb8b0a0];
-function tireWeave(cx,cy,cz,r,cord,n,plane){n=n||5;const c=jc(cord,.05);for(let i=-n+1;i<n;i++){const off=i*r/n,h=Math.sqrt(Math.max(0,r*r-off*off));if(h<.03)continue;
- if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
- else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
-function tireStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)tire(x,y+.12+k*.235,z,R,t,undefined,rng()*TAU);
- cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),10);tireWeave(x,y+n*.235-.01,z,R-t,cord,5,'h');}   /* a sack-cloth pad in the hole, the cord lattice across the tyre top */
-function tireChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
-  tireStool(0,0,0,{n:n,cord:cord});
-  /* backrest: a tyre on edge behind the seat, cord net inside, held by two posts that run to the ground */
-  const bz=-.36,by=sy+.42;tire(0,by,bz,R*1.12,t,undefined,0,PI/2,0);tireWeave(0,by,bz,(R*1.12-t)*.98,cord,5,'v');
-  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.06,wc,true,6);   /* back posts */
-   beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.055,wc,true,5);                              /* arm rails, sloping to the front */
-   beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.055,wc,true,5);}                                     /* front arm posts */
-  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.035,wc,true,5);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.035,wc,true,5);});}
-function tireTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,t=TYR.t*1.1,top=n*.24+.25;
- for(const k of [0,1].slice(0,n))tire(x,y+.13+k*.24,z,R,t,undefined,rng()*TAU);
- for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.05,wc,true,6);
- cyl('wood',x,y+top,z,R+.1,.05,wc,14);}
+// They are the catalog's pieces now (pa_tyre_stool, pa_tyre_chair, pa_tyre_table, harvested from the kit's drawing): placed in the current frame,
+// facing +z, base on y; pass ry to turn a chair. o: {n: tyres in the seat stack, wood, cord: given colours draw no random number}
+/* the skips are the old draws (cord, tyre turns, colours) */
+function tireStool(x,y,z,o){o=o||{};const n=o.n||2;rngSkip(n+4+(o.cord?0:1));return FURNISH('pa_tyre_stool',x,y,z,o.ry||0,{v:n>=3?1:0});}
+function tireChair(x,y,z,ry,o){o=o||{};const n=o.n||2;rngSkip(n+6+(o.wood?2:3)+(o.cord?0:1));return FURNISH('pa_tyre_chair',x,y,z,ry||0);}
+function tireTable(x,y,z,o){o=o||{};const n=o.n||1;rngSkip(2+n);return FURNISH('pa_tyre_table',x,y,z,0,{v:n>=2?1:0});}

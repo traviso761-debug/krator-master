@@ -8,10 +8,20 @@
 // in the interior than at the rim, clumping kinds fringing it -- a sub-biome, not a
 // scatter. Beyond the LOD spine the trees become blob impostors and the groves blob
 // canopies.
+// RUNTIME LOD (the core's, as xanadu and swlowlands use it): a hero tree is drawn in full while
+// the camera is within NWLOW.LOD.tree of its chunk (BIO.LOD.chunk, 1200 m) and as a lite
+// stand-in impostor past that; a far tree is only ever its impostor. The groves' culms the same,
+// with lite blobs in the culm colour standing in for them.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=NWLOW.SPECIES,PAL=NWLOW.PAL,GOLD=2.399963;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 NWLOW.TREES=[];
+// the runtime LOD ranges (metres from the camera to a chunk's box; BIO.LOD.scale multiplies them):
+// hero trees and the groves' culms in full, the avenue's row (the showpiece, longer), the floor's
+// near / mid / far bands, the understorey under the crowns, fallen logs, the dressing on a world's
+// structures. Equal ranges share a mesh per item per chunk (the passes use many of the same items),
+// so they are kept to a few values: each distinct one is a draw call per item per chunk in view.
+NWLOW.LOD={tree:1200,grove:1200,avenue:2000,floor:800,floorMid:1200,farFloor:1200,under:800,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
@@ -258,9 +268,12 @@ B.banksia=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;const bo=bol
 // ---------------------------------------------------------------- impostors (the far canopy)
 // Blobs in the 'far' bucket. The wide species get flattened, overlapping blobs out
 // to their real width, so the silhouette from the hills reads WIDE too.
-let ICO=null;
-function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2200;let tris=0;
+// lite: the stand-in behind a hero tree (seen only past NWLOW.LOD.tree): fewer, coarser blobs
+// (the 20-triangle blob for crowns under 16 m) on a one-band bole; draws no random numbers, so
+// the heroes built after it are unchanged.
+let ICO=null,ICO0=null,OCT=null;
+function buildFar(T,fi,st,lite){const K=BIO.bucket('far');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}
+ const S=SP[T.sp],cheap=lite||BIO.lodD(T.x,T.z)>2200,ip=lite&&T.crownR<16?ICO0:ICO;let tris=0;   // a wide crown keeps the finer blob: at 1.2 km it is still 60-100 px across
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
@@ -271,7 +284,7 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
   tris+=ip.length/9;}
  const bc=C(S.bark[fi%S.bark.length]).convertSRGBToLinear(),seg=cheap?4:6,shape=({column:'column',fastigiate:'spindle',spire:(S.flatTop?'pine':'spindle'),willow:'weep'})[S.habit]||'round';
  const top=T.y0+T.H*(shape==='column'?(S.crotch?S.crotch[0]:.6):shape==='spindle'?.85:shape==='pine'?.9:.6),rings=[];
- [0,.06,.5,1].forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(.4,T.rb*(1-.5*u)*(u<.08?1.5:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
+ (lite?[0,1]:[0,.06,.5,1]).forEach(u=>{const y=T.y0+(top-T.y0)*u,r=Math.max(.4,T.rb*(1-.5*u)*(u<.08?1.5:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.45*(.7+.3*(r2/rings.length));
   [A,D,E,A,E,Bq].forEach(p=>vtx(p[0],p[1],p[2],p[3],.05,p[4],bc.r*sh,bc.g*sh,bc.b*sh));tris+=2;}
  const L=S.leaf.map(h=>bright(h,.85)),R=T.crownR,H=T.H,a0=(T.seed%628)/100,n=L.length;
@@ -285,7 +298,8 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
  else if(shape==='spindle'){blob(T.x,T.y0+H*.58,T.z,R*.95,H*.4,L[fi%n],L[(fi+1)%n],fi);}
  else if(shape==='weep'){blob(T.x,T.y0+H*.55,T.z,R*.85,H*.42,L[fi%n],L[(fi+1)%n],fi);}
  else{blob(T.x,T.y0+H*.72,T.z,R*.85,H*.25,L[fi%n],L[(fi+2)%n],fi);}
- K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+ {const kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);}   // written raw, so the impostor's triangles carry the tree's lod key here
+ K.tris+=tris;BIO.tally(tris,0,0);if(lite)st.lite+=tris;else st.far+=tris;}
 
 
 // ---------------------------------------------------------------- the BAMBOO GROVES
@@ -294,16 +308,20 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
 // middle and lower toward the rim so a grove reads as one mass; Buddha-belly bamboo and
 // coil cane fringe it where it is wet. Near the spine every culm has leaf sprays up its
 // top half; mid-range a couple of big sprays; far, the grove is a blob canopy.
+// Runtime LOD: the near and mid bands' culms and leaf are drawn within NWLOW.LOD.grove of the camera;
+// past it a lite blob (farGrove lite) stands in, one per 22 m cell (the far band's spacing) where a sky culm
+// clump stood. The far band is its blobs only, always drawn.
 function groves(R,q,st){const skyS=SP[20],bellyS=SP[21],coilS=SP[22],m=means();
  const culmTint=hex=>tint(vary(C(hex),.015,.06,.05),m.culm,1);
- const bands=[[6,420,0,2],[13,1250,420,1],[22,1e9,1250,0]];
- bands.forEach(b=>{const lv=b[3];
+ const bands=[[6,420,0,2],[13,1250,420,1],[22,1e9,1250,0]],STAND=new Map();
+ bands.forEach(b=>{const lv=b[3];BIO.range=lv?NWLOW.LOD.grove:null;BIO.minRange=0;
   BIO.grid(b[0],0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const Z=zones(x,z);return smooth(.04,.3,Z.bamboo)*q;},(x,y,z)=>{
    if(y<.35||blocked(x,z,.6))return;const Z=zones(x,z),e=smooth(.05,.7,Z.bamboo),fine=fbm(x*.05,z*.05,5504,2);
    // the rim: clumping kinds where it is wet, else a shorter sky bamboo
    const rim=e<.3&&rng()<.55,kind=rim?(Z.flow>.25||Z.wet>.92?'coil':'belly'):'sky',S=kind==='sky'?skyS:kind==='belly'?bellyS:coilS;
    if(lv===0){if(kind!=='sky')return;const H=rr(S.H[0],S.H[1])*mix(.6,1,e);farGrove(x,y,z,H,st);return;}
    const H=rr(S.H[0],S.H[1])*(kind==='sky'?mix(.55,1,e)*mix(.85,1.1,fine):1),r=rr(S.rb[0],S.rb[1]),lean=[rr(-.04,.04),1,rr(-.04,.04)];
+   if(kind==='sky'){const ck=Math.floor(x/22)+','+Math.floor(z/22);if(!STAND.has(ck))STAND.set(ck,[x,y,z,H]);}   // the cell's stand-in
    // culms come in tight clumps (a running bamboo's culms rise close together from one rhizome run)
    const n=kind==='sky'?(lv===2?ri(3,5):2):ri(3,5),spreadC=kind==='sky'?1.3:.8;
    for(let c=0;c<n;c++){const cx=x+(c?rr(-spreadC,spreadC):0),cz=z+(c?rr(-spreadC,spreadC):0),h=H*(c?rr(.75,1):1),col=culmTint(pick(S.bark));
@@ -316,27 +334,38 @@ function groves(R,q,st){const skyS=SP[20],bellyS=SP[21],coilS=SP[22],m=means();
    for(let k=0;k<nl;k++){const u=lv===2?rr(.32,1)*rr(.85,1.05):rr(.55,1),a=rr(0,TAU),d=rr(.4,2.6)*(kind==='sky'?1:.6),s=(lv===2?rr(4.4,6.4):rr(6,8))*(kind==='sky'?1:.65);
     clumpAt('bleaf',x+lean[0]*H*u+Math.cos(a)*d,y+H*u,z+lean[2]*H*u+Math.sin(a)*d,s,.75,C(pick(S.leaf)),x,y+H*.85,z,4,H*.3);st.clumps++;}},
   {patch:0,pad:.3});});
+ // the stand-ins: drawn only past the grove range, from where the culms were (no random numbers)
+ BIO.range=1e9;BIO.minRange=NWLOW.LOD.grove;for(const P of STAND.values())farGrove(P[0],P[1],P[2],P[3],st,true);
+ BIO.range=null;BIO.minRange=0;
  // shoots at the grove floor are the floor pass's (60)
 }
-function farGrove(x,y,z,H,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const ca=C(pick(PAL.bamboo)).convertSRGBToLinear(),cb=C(PAL.bamboo[0]).multiplyScalar(.6).convertSRGBToLinear();let tris=0;
+// lite: a near grove's stand-in, a 20-triangle blob from the ground to the culm tops in the pale
+// culm colour (what a grove of sky bamboo reads as from a kilometre off) under a little leaf; its
+// colours come from its cell, so it draws no random numbers
+function farGrove(x,y,z,H,st,lite){const K=BIO.bucket('far');if(!ICO){ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;}const ip=lite?ICO0:ICO;
+ const hc=Math.floor(x/22)*7+Math.floor(z/22)*13&0x7fffffff,pale=lite?C(PAL.culm[hc%PAL.culm.length]).lerp(C(0xffffff),.35):null;
+ const ca=(lite?pale.clone().lerp(C(PAL.bamboo[hc%PAL.bamboo.length]),.35):C(pick(PAL.bamboo))).convertSRGBToLinear(),cb=(lite?pale.clone().multiplyScalar(.8):C(PAL.bamboo[0]).multiplyScalar(.6)).convertSRGBToLinear();let tris=0;
+ const cy=lite?.55:.72,ry=lite?.5:.3;
  for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2],t=smooth(-.4,.7,dy),sh=.55+.45*smooth(-.7,.8,dy);
-  K.pos.push(x+dx*10,y+H*.72+dy*H*.3,z+dz*10);const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;K.nor.push(dx/nl,ny/nl,dz/nl);K.uv.push(0,0);K.col.push(mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
- tris=ip.length/9;K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+  K.pos.push(x+dx*10,y+H*cy+dy*H*ry,z+dz*10);const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;K.nor.push(dx/nl,ny/nl,dz/nl);K.uv.push(0,0);K.col.push(mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
+ tris=ip.length/9;{const kk=BIO._lodKey(x,z);for(let i=0;i<tris;i++)K.k.push(kk);}
+ K.tris+=tris;BIO.tally(tris,0,0);if(lite)st.lite+=tris;else st.far+=tris;}
 
 // the SMALL species far off: one 20-triangle blob in the leaf colour, so the chaparral
-// and the palm groves still read at range instead of stopping at the band edge
-let ICO0=null;
-function buildFarSmall(T,st){const K=BIO.bucket('far');if(!ICO0)ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;const S=SP[T.sp],ip=ICO0;
- const ca=bright(C(pick(S.leaf)),.85).convertSRGBToLinear(),cb=ca.clone().multiplyScalar(.55),R=T.crownR*.85,H=T.H,cy=T.y0+H*.62;
+// and the palm groves still read at range instead of stopping at the band edge.
+// lite (the stand-in behind a hero): an 8-triangle octahedron, its colour from the tree's seed
+function buildFarSmall(T,st,lite){const K=BIO.bucket('far');if(!ICO0)ICO0=new T3.IcosahedronGeometry(1,0).attributes.position.array;if(!OCT)OCT=new T3.OctahedronGeometry(1,0).attributes.position.array;
+ const S=SP[T.sp],ip=lite?OCT:ICO0;
+ const ca=bright(C(lite?S.leaf[T.seed%S.leaf.length]:pick(S.leaf)),.85).convertSRGBToLinear(),cb=ca.clone().multiplyScalar(.55),R=T.crownR*.85,H=T.H,cy=T.y0+H*.62;
  for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2],t=smooth(-.5,.7,dy),ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
   K.pos.push(T.x+dx*R,cy+dy*Math.max(R*.6,H*.38),T.z+dz*R);K.nor.push(dx/nl,ny/nl,dz/nl);K.uv.push(0,0);K.col.push(mix(cb.r,ca.r,t),mix(cb.g,ca.g,t),mix(cb.b,ca.b,t));}
- const tris=ip.length/9;K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+ const tris=ip.length/9,kk=BIO._lodKey(T.x,T.z);for(let i=0;i<tris;i++)K.k.push(kk);
+ K.tris+=tris;BIO.tally(tris,0,0);if(lite)st.lite+=tris;else st.far+=tris;}
 
 // ---------------------------------------------------------------- the pass
 NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  reseed(560031);q=q==null?1:q;R=R||2850;const m=means();if(!m.culm)m.culm=texMean(NWLOW.CULMTEX);
- const st={trunk:0,limb:0,far:0,limbs:0,clumps:0,blooms:0,moss:0,fronds:0,veils:0,lanterns:0,epi:0,culms:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ const st={trunk:0,limb:0,far:0,lite:0,limbs:0,clumps:0,blooms:0,moss:0,fronds:0,veils:0,lanterns:0,epi:0,culms:0,heroes:0,fars:0,byS:SP.map(()=>0)};
  const TREES=NWLOW.TREES;TREES.length=0;for(const k in HASH)delete HASH[k];
  const mk=(x,y,z,sp)=>{const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
  const DENS=.4;   // the showcase's stocking at q=1, measured against the budget (KNOWN_ISSUES)
@@ -352,7 +381,7 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  (opt.avenues||[]).forEach(av=>{const P=av.path,sp=SP.findIndex(S=>S.key===av.species),gap=av.spacing||18,off=av.offset||9;let carry=gap*.5;
   for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/L,uz=(b[1]-a[1])/L;let d=carry;
    for(;d<L;d+=gap*rr(.95,1.05))[-1,1].forEach(side=>{const o=off+rr(-.4,.8),x=a[0]+ux*d-uz*side*o,z=a[1]+uz*d+ux*side*o,y=Y(x,z);
-    if(y<.3||!BIO.clearOf(x,z,4)||blocked(x,z,2))return;const T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1100?2:ld<1700?1:0;TREES.push(T);hadd({x,z,r:gap*.4,rt:T.rb*1.6+.8});st.avenue=(st.avenue||0)+1;});
+    if(y<.3||!BIO.clearOf(x,z,4)||blocked(x,z,2))return;const T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1100?2:ld<1700?1:0;T.row=1;TREES.push(T);hadd({x,z,r:gap*.4,rt:T.rb*1.6+.8});st.avenue=(st.avenue||0)+1;});
    carry=d-L;}});
  // the emergents and the giants first
  pass(0,120,Z=>Z.rain*.7,{hero:1100,mid:1800,far:true,pad:10,own:.5,patch:.25});                                  // sky meranti
@@ -377,11 +406,18 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  pass(17,22,Z=>Z.med*.3*(1-Z.gully),{hero:700,mid:1200,far:true,pad:1,lodK:.5,patch:.5});                       // grass tree
  // build
  const trisS=SP.map(()=>0),cur=()=>{const t=BIO.stats[BIO.cur||'biome'];return t?t.tris:0;};
- const SMALL={1:1,2:1,3:1,17:1,18:1};
- TREES.forEach((T,i)=>{const t0=cur(),S=SP[T.sp];if(T.lv===0){if(SMALL[T.sp])buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[S.habit](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;});
+ // runtime LOD: a hero is drawn in full while the camera is within NWLOW.LOD.tree of its chunk (its foot
+ // keys all of it; the avenue's row: NWLOW.LOD.avenue) and as its lite stand-in past that; a far tree is
+ // only ever its impostor, always drawn. trisBySpecies counts the tree itself; the stand-ins are tris.lite.
+ const SMALL={1:1,2:1,3:1,17:1,18:1},far=(T,i,lite)=>SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
+ TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const t0=cur(),S=SP[T.sp],rg=T.row?NWLOW.LOD.avenue:NWLOW.LOD.tree;
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;}
+  st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;
+  if(T.lv>0){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}});
+ BIO.owner=null;BIO.range=null;BIO.minRange=0;
  // the groves last: they fill the patches the trees left
  const g0=cur();groves(R,q,st);trisS[20]+=cur()-g0;
  return{trees:TREES.length,avenue:st.avenue||0,heroes:st.heroes,far:st.fars,culms:st.culms,lanterns:st.lanterns,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),
-  trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
+  trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,tris:{trunk:st.trunk,limbs:st.limb,far:st.far,lite:st.lite}};};
 NWLOW._canopyH=function(x,z){let h=0;for(const T of NWLOW.TREES){if(Math.hypot(x-T.x,z-T.z)<Math.max(30,T.crownR))h=Math.max(h,T.y0+T.H);}return h||12;};
 })();

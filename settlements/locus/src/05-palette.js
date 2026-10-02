@@ -124,6 +124,16 @@ var PAL = {
   paddy    : [0x8aac52, 0x9cbc5e, 0x78a048, 0xb0c46c],                       /* salt-rice: yellower than upland rice */
   geoBrown : [0x6a4a2c, 0x5e4226, 0x7a5834],                                 /* Geomancer uniform brown (life layer) */
   flare    : 0xffb040,
+  /* --- ABYSS: the Eastern Abyssal kit (65-abyss-*.js): sails, salvage, lacquer, gild, crystal, salt --- */
+  abSailOrange : 0xe07b39, abSailRed : 0xb8402e,                               /* sail roofs; their patterned bands */
+  abBrightYellow:0xf2c230, abBrightTeal:0x2fa59a, abBrightPink:0xe26d8e,       /* painted facades (the umbrella street) */
+  abRustA : 0x8a4a2b, abRustB : 0xa5602f,                                      /* salvaged sheet */
+  abContainer : [0x3f6e8c, 0xa23a2a, 0xc9a33a, 0x5d7d4a, 0x7c7f80],            /* shipping-container colours (pick) */
+  abTarpBlue : 0x2e6fb7, abTin : 0xc9cdd2,                                     /* tarps; the tin-mirror base */
+  abLacquer : 0x9a2c26, abGild : 0xd4a537, abCrystal : 0x5bc8e6,              /* lacquered plinths; horn tips; blue crystals (sacred, glowing) */
+  abUmbrella : [0xe58fb8, 0xb59ad8, 0x7db8e8, 0x86d3b4, 0xf1da6a, 0xf4a98a],    /* umbrellas.jpg: strung-umbrella pastels (pick) */
+  abCream : [0xd8ccb2, 0xcfc1a3, 0xe0d6c0], abCreamCap : 0xe6ded0,             /* the silo-cluster picture: cream-rendered silos, pale domes */
+  abSalt : 0xe9e4d6, abRubble : 0x9c8e7c,                                      /* salt crust and plaza paving; rubble-stone bases */
   /* --- LOCUS world ground: the delta's own tones (from the eastern-abyss host, a stop darker) --- */
   ground : { mud:0x3d3526, alga:0x4c5c36, litter:0x3a3022, litterRed:0x4a3628, crust:0xf1ede6, silt:0x9a8c74, delta:0x574836, bed:0x8a6a5a,
              hill:0x8a6444, hillDry:0x9c7c52, hillGrass:0x6e7a42, laterite:0xa05a36 },
@@ -154,6 +164,10 @@ var FAMMAT = {
   tile   : { tex:null, scale:[2.0,2.0] },
   cloth  : { tex:null, scale:[2.0,2.0] },
   canvas : { tex:null, scale:[2.5,2.5] },     /* LOCUS: taut canvas (sun shades, tents, awnings) — no sway */
+  corrugate:{ tex:null, scale:[1.6,2.0] },    /* ABYSS: ribbed sheet metal, ribs run along v (tint it: rust, container paint) */
+  tinmirror:{ tex:null, scale:[1.4,1.4], phong:{ shininess:70, specular:0x8a9096 } },   /* ABYSS: flattened cans, foil, bottle bottoms, mirror shards. Phong, NOT a mirror: no env map, no render target */
+  rubble : { tex:null, scale:[3.0,3.0] },     /* ABYSS: rough rubble stone in mortar */
+  pattern: { tex:null, scale:[2.0,1.0] },     /* ABYSS: sail band — zigzags and triangles; the motif is a darker shade of the tint (COLOUR-weighted grey) */
   leafy  : { tex:null, scale:[3.0,3.0] },
   bark   : { tex:null, scale:[1.5,3.0] },
   dark   : { tex:null, scale:[1,1] },         /* openings */
@@ -165,6 +179,7 @@ var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
 var PASTELC=PAL.pastel, PASTELDC=PAL.pastelDeep, CANVASC=PAL.canvas, CANVASDYEC=PAL.canvasDye, REEDMATC=PAL.reedMat, PILEC=PAL.pile,
     MUDBROWNC=PAL.mudBrown, UMBERC=PAL.umber, SIENNAC=PAL.sienna, STEELDC=PAL.steelDark, PIPEC=PAL.pipeC, OILC=PAL.oil,
     SALTWATERC=PAL.saltWater, SALTCRUSTC=PAL.saltCrust, PADDYC=PAL.paddy, GEOBROWNC=PAL.geoBrown;
+var ABCONTC=PAL.abContainer;
 var GILDC=PAL.gild, BLUEGREYC=PAL.blueGrey, STONEC=PAL.stoneWarm, THORNC=PAL.thorn;
 var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.bluewashL, BLUEDC=PAL.bluewashD,
     MOSBLUEC=PAL.mosaicBlue, MOSWARMC=PAL.mosaicWarm, MOSGREENC=PAL.mosaicGreen, METALC=PAL.metal, TARNC=PAL.metalTarn,

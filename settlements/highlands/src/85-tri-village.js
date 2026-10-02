@@ -58,7 +58,7 @@ function buildHlTriLonghouse(G,o){reseed(23201+(o.v|0));const P=3.2,Xw=12,Zw=8.5
   vnDoor(s*Xw,P,0,s*Math.PI/2,1.6,2.6,'hPaint',blk,tar,false);hnForm('hFormA',s*(Xw+.02),P+3,0,s*Math.PI/2,5,2.5);}
  // the entrance: great doors between tall totem posts, a crest lintel
  vB('vDarkB',0,P,Zw+.02,3.2,4.4,.1,0);for(const s of[-1,1])kput('vWood',[s*1.95,P+2.2,Zw+.7],qEuler(0,s*.5,0),[1.5,4.3,.14],tar);
- for(const s of[-1,1]){hnTotemPost(s*2.3,P,Zw+.35,.36,5.2,0,true);hnForm('hFormV',s*3.2,P+.1,Zw+.02,0,.8,4.4);}
+ for(const s of[-1,1]){hnTotemPole(s*2.3,P,Zw+.35,.36,5.2,0,true);hnForm('hFormV',s*3.2,P+.1,Zw+.02,0,.8,4.4);}
  hnForm('hFormA',0,P+4.6,Zw+.04,0,4.6,2.1);
  // the gallery under the eaves: totem posts carrying the shell, a carved rail along the platform edge
  const gz=Z-1.3;for(const s of[-1,1])for(let x=-14;x<=14.01;x+=4){if(s>0&&Math.abs(x)<4.5)continue;const h=V.y(x,s*gz)-P-.1;hnTotemPost(x,P,s*gz,.3,h,s>0?0:Math.PI,Math.abs(x)%8<1);}
@@ -106,8 +106,7 @@ function buildHlTriWarriorHall(G,o){reseed(23211+(o.v|0));const W=24,D=10,F=.5,H
  const fz=hz+D/2;
  for(const u of[-9.5,-5.2,5.2,9.5])hnForm('hFormA',u,F+2.1,fz+.02,0,2.6,1.3);
  // shields racked along the front, spears leaning
- for(const s of[-1,1]){kput('hLogX',[s*7.35,F+1.85,fz+.3],null,[8.2,.07,.07],aged);
-  for(let k=0;k<7;k++){const x=s*(3.8+k*1.15);kput('hTRShield',[x,F+1.45,fz+.36],qEuler(-.08,0,0),[.47,.47,1],hC(vPick([0xffffff,0xe8c0a0,0xa0d0c8,0xf0d890,0xe0a098])));}}
+ for(const s of[-1,1]){hlRngSkip(7);FURNISH('hl_tri_shield_rail',s*6.1,F,fz+.34,0,{v:1});FURNISH('hl_tri_shield_rail',s*10.7,F,fz+.34,0,{v:0});}   // 5 + 3 shields, 1.15 m apart
  for(let k=0;k<6;k++){const x=rr(-11,11);if(Math.abs(x)<3)continue;kput('vPost',[x,0,fz+.55],qEuler(-.2,0,rr(-.1,.1)),[.03,2.8,.03],aged);}
  // the porch: a cross gable on four painted totem posts, horns on its gable
  for(const sx of[-1,1])for(const z of[fz+.4,fz+3.4])hnTotemPost(sx*1.9,F,z,.22,2.9,0,true);
@@ -120,9 +119,8 @@ function buildHlTriWarriorHall(G,o){reseed(23211+(o.v|0));const W=24,D=10,F=.5,H
  const rz=6.5,R=5.4;vPst('hTRDisc',0,-.02,rz,R,.06,hC(0xc8b088));
  for(let k=0;k<24;k++){const a=k/24*TAU,b=(k+1)/24*TAU;vPst('vPostB',Math.sin(a)*R,0,rz+Math.cos(a)*R,.12,.75,aged);beam('hBambooC',[Math.sin(a)*R,.68,rz+Math.cos(a)*R],[Math.sin(b)*R,.68,rz+Math.cos(b)*R],.05,.05,hC(0xa89070));}
  vnFolk(0,rz,2,1.2);vnFolk(0,rz+6.5,4,5);
- for(const s of[-1,1]){const x=s*9.5;for(const z of[rz-1.4,rz+1.4])vPst('vPost',x,0,z,.08,1.8,aged);kput('hLogX',[x,1.7,rz],qEuler(0,Math.PI/2,0),[3,.06,.06],aged);
-  for(let k=0;k<6;k++){const z=rz-1.2+k*.48;kput('vPost',[x+.25,0,z],qEuler(0,0,s*-.14),[.025,2.7,.025],aged);kput('vConeI',[x+.25-s*.37,2.68,z],qEuler(0,0,s*-.14),[.05,.26,.05],hC(0x5a5650));}}
- {const x=-13,z=9;vPst('vPost',x,0,z,.14,6.5,aged);for(let k=0;k<4;k++)hnTRHorns(x,2.6+k*1.1,z+.1,k*.9,.7);}
+ for(const s of[-1,1])hnFurn('hl_tri_spear_rack',s*9.5,0,rz,s*Math.PI/2,{},0,.11);   // the spears lean toward the ring
+ FURNISH('hl_tri_trophy_pole',-13,0,9,0);
  for(const s of[-1,1]){hnTRBrazier(s*3.4,0,fz+4.6,.9);hnTRBrazier(s*4,0,PD/2-2,.9);}
  hnWoodpile(PW/2-1.5,0,-8,Math.PI/2,6,1.6);hnFirepit(12,0,6,.7);}
 
@@ -139,18 +137,15 @@ function buildHlTriShaman(G,o){reseed(23221+(o.v|0));const R=4.2,S=.45,H=2.5,ap=
  kput('hTRBandCyl',[0,S+H-.55,0],qEuler(0,Math.PI/8,0),[ap+.02,.4,ap+.02],null);
  for(let k=1;k<8;k++){const a=k/8*TAU;hnForm('hFormV',Math.sin(a)*(ap+.02),S+.35,Math.cos(a)*(ap+.02),a,.62,1.9);}
  vnDoor(0,S,ap+.02,0,1,1.9,'hPaint',blk,hC(0x6a4a30),false);hnForm('hFormA',0,S+2,ap+.06,0,1.8,.5);hnTRHorns(0,S+2.55,ap+.12,0,.55);
- for(const s of[-1,1])hnTotemPost(s*1.05,0,ap+.6,.15,2.7,0,true);
+ for(const s of[-1,1])hnTotemPole(s*1.05,0,ap+.6,.15,2.7,0,true);
  vB('vStone',0,0,ap+.9,1.6,S,1,0,hC(vPick(HPAL.rubble)));
  // spirit poles round the house
- for(let k=0;k<9;k++){const a=(k+.5)/9*TAU*(10/11)+TAU/22+Math.PI*.09;const x=Math.sin(a)*8.2,z=Math.cos(a)*8.2;if(z>6)continue;const h=rr(3,4.8);
-  hnTotem(x,0,z,.2,h,a,{painted:k%2===0,wings:k%3===0?.9:0});
-  if(k%3)hnTRAntlers(x,h+.05,z,a,.7);for(let f=0;f<3;f++)kput('hWing',[x+Math.sin(a)*.21,h*.62-f*.05,z+Math.cos(a)*.21],vQ(a,0,-Math.PI/2+(f-1)*.35),[.55,.2,1],null);kput('vCloth',[x+Math.sin(a+1.57)*.3,h-.7,z+Math.cos(a+1.57)*.3],qEuler(0,a,0),[.18,1.2,1],hC(vPick([0xb3322a,0x2e9488,0xefe7d6,0xd19a3a])));}
+ for(let k=0;k<9;k++){const a=(k+.5)/9*TAU*(10/11)+TAU/22+Math.PI*.09;const x=Math.sin(a)*8.2,z=Math.cos(a)*8.2;if(z>6)continue;hlRngSkip(2);   // its height and its ribbon drew 2 numbers
+  hnFurn('hl_tri_totem',x,0,z,a,{v:3},0,.07);}
  // herbs drying, the fire and pot, cairns
- const hx=-6,hzz=4.5;for(const s of[-1,1])vPst('vPost',hx+s*1.6,0,hzz,.07,2.2,aged);beam('vWood',[hx-1.8,2.1,hzz],[hx+1.8,2.1,hzz],.07,.07,aged);
- for(let k=0;k<9;k++){const x=hx-1.4+k*.35;vPst('vRope',x,1.75,hzz,.01,.35,hC(0x9a8a6a));kput('vLeaf',[x,1.55,hzz],null,[.12,.3,.12],hC(vPick([0x6a7a3a,0x8a7a44,0x5a6a34,0x9a8050])));}
+ hlRngSkip(9);FURNISH('hl_tri_herb_rack',-6,0,4.5,0);
  for(let k=0;k<5;k++){const a=-.9+k*.45;vPst('vRope',Math.sin(a)*(R+.9),S+H-.4,Math.cos(a)*(R+.9),.01,.3,hC(0x9a8a6a));kput('vLeaf',[Math.sin(a)*(R+.9),S+H-.6,Math.cos(a)*(R+.9)],null,[.1,.26,.1],hC(vPick([0x6a7a3a,0x8a7a44])));}
- hnFirepit(2.2,0,ap+3.2,.55);for(let k=0;k<3;k++){const a=k/3*TAU;beam('vIron',[2.2+Math.sin(a)*.7,0,ap+3.2+Math.cos(a)*.7],[2.2,1.5,ap+3.2],.04,.04,hC(0x2e2a26));}
- vBall('vBall',2.2,.75,ap+3.2,.28,hC(0x2e2a26),.24);
+ hlRngSkip(9);FURNISH('hl_tri_firepit',2.2,0,ap+3.2,0,{v:2});   // with the tripod and the pot
  for(const [x,z] of[[6.5,5],[-7,-3],[4,-7]])for(let k=0;k<4;k++)kput('vRock',[x+rr(-.3,.3),.2+k*.25,z+rr(-.3,.3)],qEuler(rng(),rng(),0),[.35-k*.06,.2,.3-k*.05],hC(vPick(HPAL.rubble)));
  vnFolk(0,ap+4.5,2,1.5);}
 
@@ -162,8 +157,7 @@ function buildHlTriStoneCircle(G,o){reseed(23231+(o.v|0));const R=9;
  vPst('hTRDisc',0,-.03,0,R+1.6,.06,hC(0x8a7a5c));
  let k=0;for(let a=.62;a<TAU-.6;a+=(TAU-1.24)/12){const x=Math.sin(a)*R,z=Math.cos(a)*R;hnMenhir(x,0,z,a+Math.PI,rr(2.5,3.7),hC(vPick(HPAL.rubble)).multiplyScalar(rr(.75,1)),k%3===1);k++;}
  for(const s of[-1,1]){hnTotem(s*4.6,0,R*.9,.36,6.4,0,{wings:1.9,painted:true});for(let j=0;j<3;j++)hnMenhir(s*2.4,0,R+2+j*2,s*Math.PI/2,rr(1,1.4),null,false);}
- for(const s of[-1,1])vB('hRubB',s*.85,0,-1,.55,.85,.9,0,hC(vPick(HPAL.rubble)));vB('vStone',0,.85,-1,2.6,.28,1.3,0,hC(vPick(HPAL.rubble)));
- hnForm('hFormA',0,.02,-.52,0,1.4,.7);hnTRHorns(0,1.35,-1.3,0,.7);for(let j=0;j<3;j++)vBall('vGourd',-.8+j*.4,1.25,-.8,.12,hC(0xa08040));
+ hlRngSkip(3);FURNISH('hl_tri_stone_altar',0,0,-1,0);   // the table altar, its crest board, horns and gourds
  hnFirepit(0,0,2.4,.8);hnTRBrazier(-2.8,0,-3,.8);hnTRBrazier(2.8,0,-3,.8);vnFolk(0,4.5,3,3);}
 
 // ---------------------------------------------------------------- FARMS AND CRAFTS
@@ -183,10 +177,10 @@ function buildHlTriFarmhouse(G,o){reseed(23241+(o.v|0));const W=8,D=6,F=.4,H=2.5
  vnShedRoof(bx,1.95,0,D-.2,BW+.2,.55,Math.PI/2,'vThatchB',th,.35,.2);
  hnBambooRail([bx-BW/2+.2,0,D/2-.2],[bx+BW/2-.2,0,D/2-.2],bam,1.1);
  hnTRBeast(bx-.4,0,-.6,Math.PI/2,'cow');hnTRBeast(bx+.8,0,1.6,-.3,'goat');hnTRBeast(bx+1.2,0,-1.9,2.6,'goat');
- kput('vConeT',[bx+1.2,0,.4],null,[.9,1.1,.9],hC(0xc4a86a));
+ FURNISH('hl_tri_haycock',bx+1.2,0,.4,0,{v:0});
  // kitchen plot, woodpile, rack, fire
  const gx=-W/2-3.6;vnFence(gx,0,0,5,6,0,bam,1.2,1);for(let r=0;r<5;r++)for(let k=0;k<6;k++)vBall('vLeaf',gx-1.6+r*.8,.12,-2+k*.8,rr(.18,.26),hC(vPick([0x4f7a34,0x5f8a3a,0x3f6a2a])),.16);
- hnWoodpile(-1,0,-D/2-.8,0,5,1.3);vnDryingRack(1.5,0,D/2+3.4,0,3);hnFirepit(-2.4,0,D/2+2.6,.5);vnFolk(0,D/2+3,2,1.5);}
+ hnWoodpile(-1,0,-D/2-.8,0,5,1.3);hnDryingRack(1.5,0,D/2+3.4,0,3);hnFirepit(-2.4,0,D/2+2.6,.5);vnFolk(0,D/2+3,2,1.5);}
 
 // Farm — three dry-stone terraces (about 35 x 25 m) stepping up the hillside: greens in rows at the foot,
 // tall grain in the middle, fresh-turned ridges with squash above; a painted scarecrow totem with its arms
@@ -204,10 +198,8 @@ function buildHlTriFarm(G,o){reseed(23251+(o.v|0));const FW=34,TD=7.8;
    else{vB('vClayB',0,top,z,FW-2,.22,.45,0,soil.clone().multiplyScalar(.85));if(r%2===0)for(let k=0;k<6;k++)vBall('vGourd',rr(-FW/2+2,FW/2-2),top+.3,z,.2,hC(vPick([0xd08a2a,0xc07a24,0x9a8a3a])),.17);}}}
  // steps between terraces at the west end, the scarecrow, the shelter
  for(let t=1;t<3;t++)for(let k=0;k<3;k++)vB('vStone',-FW/2+.9,0,TD-t*TD+TD/2+.35-k*.3,1.2,t*.9-(2-k)*.3,.34,0,rub);
- {const x=3,z=0,y=.9;hnTotemPost(x,y,z,.16,2.6,0,true);kput('hLogX',[x,y+2.1,z],null,[2.2,.06,.06],hC(0x6a5a44));
-  for(const s of[-1,1])kput('hWing',[x+s*.9,y+2.1,z+.05],qEuler(0,0,s*.1),[s*1.4,.6,1],null);kput('vCloth',[x,y+1.3,z+.2],null,[.8,1,1],hC(HPAL.red));hnTRHorns(x,y+2.75,z+.1,0,.5);}
- {const x=FW/2-2.5,z=-TD,y=1.8;for(const s of[-1,1])for(const t of[-1,1])vPst('hBamboo',x+s*1.3,y,z+t*1.1,.08,2.2,bam);vnGableRoof(x,y+2.2,z,2.8,2.4,1.2,0,'vGableT',th,.3);
-  vnSacks(x,y,z,3);vB('vWood',x-.5,y,z-.4,1.2,.45,.45,0,hC(0x7a6a50));}
+ hlRngSkip(1);FURNISH('hl_tri_scarecrow',3,.9,0,0);   // the painted scarecrow totem
+ hlRngSkip(12);FURNISH('hl_tri_field_shelter',FW/2-2.5,1.8,-TD,0);   // the field shelter with its sacks
  for(const [a,b] of[[[-FW/2-.3,0,TD*1.5+.3],[FW/2+.3,0,TD*1.5+.3]],[[FW/2+.3,0,TD*1.5+.3],[FW/2+.3,0,TD/2-.1]],[[-FW/2-.3,0,TD*1.5+.3],[-FW/2-.3,0,TD/2-.1]]])hnBambooRail(a,b,bam,1.1);
  vnFolk(-5,TD,2,3);hnTRFolk(8,.9,0,1,1.5);}
 
@@ -225,8 +217,8 @@ function buildHlTriPen(G,o){reseed(23261+(o.v|0));const PW=14,PD=10;
  // shelter along the back
  for(const x of[-PW/2+.3,-2.3,2.3,PW/2-.3])vPst('hBamboo',x,0,-PD/2+3.2,.1,1.9,bam);
  vnShedRoof(0,1.9,-PD/2+1.6,PW-.2,3.4,.7,0,'vThatchB',th,.35,.2);
- kput('vConeT',[-4,0,-PD/2+1.5],null,[1.2,1.4,1.2],hC(0xc4a86a));
- kput('hLogX',[2,.25,1.2],null,[3,.25,.25],log);vB('vDarkB',2,.36,1.2,2.7,.16,.3,0);
+ FURNISH('hl_tri_haycock',-4,0,-PD/2+1.5,0,{v:1});
+ FURNISH('hl_tri_log_trough',2,0,1.2,0);
  hnTRBeast(-3,0,1,.6,'cow');hnTRBeast(3,0,-1.4,2.2,'goat');hnTRBeast(4.2,0,2.4,-.8,'goat');hnTRBeast(-1,0,-2.6,1.4,'goat');
  hnTRBeast(0,0,3,3,'pig');hnTRBeast(5.2,0,-3,1,'pig');vnFolk(3,PD/2+2,1,1);}
 
@@ -245,8 +237,8 @@ function buildHlTriGranary(G,o){reseed(23271+(o.v|0));const R=2.1,FL=1.9,H=2.4;
  for(const s of[-1,1])kput('hWing',[s*.45,FL+H+4.5,0],qEuler(0,0,s*-.2),[s*.9,.45,1],null);
  vB('vWood',0,FL+.9,R+.02,.8,.9,.08,0,log);                                                              // hatch
  vnLadder(0,0,R+1,0,FL+1,log);
- vPst('hTRDisc',4.2,-.02,1.5,2.2,.06,hC(0xb89a70));vnSacks(4,0,.6,4);kput('vPost',[5,.5,2.6],qEuler(0,0,.8),[.05,1.6,.05],log);
- vPst('vStave',-3.2,0,2,.3,.6,log);kput('vPost',[-3.2,.6,2],qEuler(.3,0,0),[.05,1.2,.05],log);vnFolk(3,4,1,1);}
+ vPst('hTRDisc',4.2,-.02,1.5,2.2,.06,hC(0xb89a70));hnSacks(4,0,.6,4);kput('vPost',[5,.5,2.6],qEuler(0,0,.8),[.05,1.6,.05],log);
+ FURNISH('hl_tri_grain_mortar',-3.2,0,2.05,0);vnFolk(3,4,1,1);}
 
 // Scrap smithy — a crude open forge under a thatch shelter patched with salvaged sheet: a fieldstone hearth
 // with a bed of embers under a hood of rusted plate and a salvage-pipe flue, bamboo piston bellows, an anvil of
@@ -259,22 +251,14 @@ function buildHlTriSmithy(G,o){reseed(23281+(o.v|0));const W=7,D=5.4,PH=2.6;
  hnGable(0,PH+.05,0,W,D,1.05,0,'vGableT',th,.6,null);
  kput('vSheet',[-1.6,PH+1.5,1.4],vQ(0,-Math.atan(1.05),0),[2.4,1.8,1],null);kput('vPlate',[1.8,PH+.9,-2.2],vQ(Math.PI,-Math.atan(1.05),0),[1.6,1.2,1],null);   // salvage patches
  vB('hBMatB',0,0,-D/2,W,2.2,.08,0,bam);
- // hearth, embers, hood and flue
- vB('hRubB',-1.2,0,-1.6,2,.95,1.5,0,rub);vB('vDarkB',-1.2,.95,-1.6,1.4,.04,1,0);for(let k=0;k<6;k++)vBall('vEmber',-1.2+rr(-.5,.5),.98,-1.6+rr(-.35,.35),rr(.1,.18),null,.06);
- kput('hTRFlame',[-1.2,.95,-1.6],null,[.2,.5,.2],null);
- kput('vRustB',[-1.2,2.05,-1.7],null,[1.7,.7,1.2],null);vPst('vPipeR',-1.2,2.4,-1.8,.2,2.8,null);
- // bellows: two bamboo piston tubes with handles, a pipe into the hearth
- for(const s of[-.25,.25]){vPst('hBamboo',.4+s,0,-1.5,.16,1.3,bam);vPst('vPost',.4+s,1.3,-1.5,.03,.5,log);}
- kput('hLogX',[.4,1.82,-1.5],null,[.7,.04,.04],log);beam('vPipeR',[.4,.25,-1.5],[-.3,.5,-1.6],.08,.08,null);
- // anvil, quench, tools, the scrap pile
- vPst('vPostB',.6,0,.6,.3,.55,log);vB('vRustB',.6,.55,.6,.6,.3,.3,0,null);vB('vRustB',.6,.85,.6,.8,.12,.34,0,null);
- kput('vStave',[-2.2,0,.6],null,[.45,.5,.45],log);vB('vDarkB',-2.2,.44,.6,.7,.08,.7,0);
+ // the forge (hearth, embers, hood of rusted plate, piston bellows), the anvil and the quench tub are furniture from the
+ // catalog (the embers drew 18 numbers); the salvage-pipe flue on up through the thatch is the shelter's own
+ hlRngSkip(18);hnFurn('hl_tri_forge',-1.2,0,-1.6,0,{v:0},.505,0);vPst('vPipeR',-1.2,3.2,-1.8,.2,2,null);
+ FURNISH('hl_tri_scrap_anvil',.6,0,.6,0,{v:0});FURNISH('hl_tri_quench_tub',-2.2,0,.6,0,{v:0});
+ // tools leaning on the back wall, the scrap pile
  for(let k=0;k<4;k++)kput('vPost',[1.6+k*.18,.5,-2.5],qEuler(.1,0,0),[.025,1.1,.025],hC(0x3a3430));
- {const x=W/2+2,z=.5;for(let k=0;k<7;k++)kput(vPick(['vSheet','vPlate','vPlate']),[x+rr(-1,1),.3+k*.08,z+rr(-1.2,1.2)],qEuler(-Math.PI/2+rr(-.3,.3),rng()*TAU,0),[rr(1,1.8),rr(.8,1.4),1],null);
-  for(let k=0;k<4;k++)kput('vPipeR',[x+rr(-1.2,1.2),.12,z+rr(-1,1)],qEuler(0,rng()*TAU,Math.PI/2),[.1,rr(1.2,2.4),.1],null);
-  for(let k=0;k<5;k++)vB('vRustB',x+rr(-1.3,1.3),0,z+rr(-1.4,1.4),rr(.2,.6),rr(.15,.4),rr(.2,.5),rng()*3,null);
-  kput('vHoop',[x-1.6,.5,z+1.5],qEuler(0,.4,0),[.5,.5,4],null);}
- hnTotemPost(-W/2-.6,0,D/2+.4,.16,2.8,0,true);hnWoodpile(-W/2-1,0,-.6,Math.PI/2,3,1.1);vnFolk(0,2,1,.6);vnFolk(2,D/2+1.5,1,1);}
+ hlRngSkip(95);FURNISH('hl_rep_scrap_heap',W/2+2,0,.5,0,{v:0});   // (the drawn pile drew 95 numbers)
+ hnTotemPole(-W/2-.6,0,D/2+.4,.16,2.8,0,true);hnWoodpile(-W/2-1,0,-.6,Math.PI/2,3,1.1);vnFolk(0,2,1,.6);vnFolk(2,D/2+1.5,1,1);}
 
 HL.def({key:'hl_tri_longhouse',name:'Village longhouse',branch:'tribal',family:'Halls',tags:{type:['civic'],wealth:'civic',lit:false,landmark:true},w:66,d:40,h:26,build:buildHlTriLonghouse});
 HL.def({key:'hl_tri_warrior_hall',name:"Warrior's hall",branch:'tribal',family:'Halls',tags:{type:['military'],wealth:'civic',lit:false},w:40,d:38,h:13,build:buildHlTriWarriorHall});

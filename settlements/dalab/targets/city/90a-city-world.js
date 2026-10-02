@@ -48,7 +48,7 @@ for(const S of SETTLE){const key=S.main?'dalab_palace_mound':'dalab_mound';const
 // An annulus from the terrain's edge out to 9 km painted with fields, hedges and forest blocks, and a merged mesh of
 // far-tree blobs in the forest belt. KratorSky (81, attached in 94) gives the giant, its rings, the sun, stars and moon.
 (function horizon(){reseed(SEED_CITY+7);const R0=CITY.WORLD/2-40,R1=9000;
- const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d');const S=R1*2/1024,pxh=v=>(v+R1)/S;
+ const cv=document.createElement('canvas');cv.width=cv.height=1024;const g=cv.getContext('2d',CANVAS_CPU);const S=R1*2/1024,pxh=v=>(v+R1)/S;
  g.fillStyle='#3a4a26';g.fillRect(0,0,1024,1024);
  // clearings with fields: a few dozen discs of farmland with strip fields, more toward the map
  for(let i=0;i<70;i++){const a=rng()*TAU,r=rr(R0*.9,R1*.85),x=Math.cos(a)*r,z=Math.sin(a)*r,rad=rr(260,900);g.save();g.beginPath();g.arc(pxh(x),pxh(z),rad/S,0,7);g.clip();

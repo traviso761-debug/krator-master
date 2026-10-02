@@ -6,7 +6,9 @@
 defBuilding({key:'arena',name:'Thunderdome arena',seed:5610,tags:{type:['civic'],size:'large',core:'scaffold + shipping containers + bus',materials:['scaffold','planks','earth-filled tyres','chain-link','corrugated sheet','bus']},w:56,d:56,h:20,budget:240000,build:arBuild});
 const arQ=[[.2,PI/2-.34],[PI/2+.34,PI-.2],[PI+.2,1.5*PI-.42],[1.5*PI+.42,TAU-.2]];      // stand quadrants (gaps: E/W gates, S tunnel, N loge)
 function arRad(r,a,y,fn){W(Math.cos(a)*r,y,Math.sin(a)*r,PI/2-a,fn);}     // frame with local +z pointing radially outward
-function arTire(x,y,z,R,col,ry){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
+function arTire(x,y,z,R,col,ry,rx){if(!_G.arTor){const g=new THREE.TorusGeometry(.67,.33,4,9);g.rotateX(PI/2);_G.arTor=g;}const m=TF(x,y,z,ry,rx||0,0);m.scale(new THREE.Vector3(R,R,R));emit('rubber',_G.arTor,m,col===undefined?jc(0x252220,.05):col);}
+/* the stands' tyre seats, armchairs and tables are the catalog's (tireStool, tireChair, tireTable in 34-adds.js: FURNISH), the low-poly copies
+   the arena drew are gone; the helpers draw the same random numbers the copies drew, so every colour in the arena is unchanged */
 function arBright(){return pick([0xc45a30,0xd8a020,0x3b7f8e,0x4d6f3c,0x9a3a2c,0xd8d0c0,0x2f5f8f,0x8a6a3a,0xc98a2a]);}
 function arWood(){return jc(pick([0x6a5238,0x7a6244,0x5c4630,0x8a7050]),.08);}
 function arSearch(x,y,z,ry,rx){W(x,y,z,ry,()=>{cylH('iron',0,0,0,.24,.6,jc(0x3a3430,.05),'z',10);sph('glow',0,0,.3,.17,jc(0xfff2c0,.03));box('iron',-.18,-.32,-.1,.36,.32,.2,jc(0x4a4038,.05));});}
@@ -70,7 +72,7 @@ function arEntry(){
  for(let k=0;k<6;k++)box('iron',0,CT.H+.12,12.9+k*2.1,7.4,.1,.14,jc(0x3a3430,.05));
  box('conc',0,0,18.4,2.44,.04,12.19,jc(0x8a7a66,.05));
  // outer arch: posts, a solid header beam, a hung plate with its own clear emblem field; banners hang from the posts, well away from the plate
- for(const sx of [-1,1]){box('iron',sx*4.3,0,24.6,.3,6.3,.3,jc(0x3a3532,.04));}
+ for(const sx of [-1,1]){box('iron',sx*4.3,0,24.6,.3,6.3,.3,jc(0x3a3532,.04));}entry(0,0,24.6,2.4,2.6);/* front door: the tunnel mouth */
  box('iron',0,6.0,24.6,9.0,.34,.3,jc(0x3a3532,.04));
  for(const sx of [-1,1])box('iron',sx*1.55,4.15,24.6,.1,1.85,.1,jc(0x3a3532,.04));            // hangers
  box('sheet',0,4.15,24.66,3.2,1.85,.1,jc(0xc99a2e,.06));                                       // plate 3.2 x 1.85, front face at z 24.71
@@ -89,9 +91,8 @@ function arEntry(){
  sock('awning',bx-.8,2.05,bz+CT.W/2,0,{w:2.4,d:1.2,drop:.35,h:1.55});sock('sign',bx+.2,2.4,bz+CT.W/2+.05,0,{w:2.2,h:.4,trade:'TICKETS'});
  stovepipe(bx+2.2,CT.H,bz-.3,1.2);arQueue(bx);tireStool(bx-2.6,0,bz+2.0,{});
  // two stalls: lean-to counters with awnings
- for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{box('plank',0,0,0,4.0,.1,2.4,jc(0x6a5a44,.06));wallOpen('plank',0,.1,-1.1,4.0,2.4,.1,[],jc(c,.06));
-   for(const px of [-1.9,1.9])beam('wood',[px,0,1.1],[px,2.5,1.1],.07,jc(0x5c4630,.06),true,6);box('plank',0,.1,.95,4.0,.9,.1,jc(0x8a6a3a,.06));box('plank',0,1.0,.95,4.2,.07,.5,jc(0x6a5a44,.06));
-   roofP('corr',-2.2,2.2,1.3,2.5,-1.3,2.9,.07,pick([P('galv'),P('paint')]));barrel(1.4,.0,-.5);crate(-1.3,0,-.5,.6,.2);sock('awning',0,2.55,1.35,0,{w:4.0,d:1.0,drop:.4,h:2.3});});}
+ for(const [sx,c] of [[-9.6,0x8a3a2c],[-15.4,0x3b7f6e]]){W(sx,0,25.4,0,()=>{rngSkip(35);FURNISH('pa_lean_to_stall',0,0,0,0,{v:1});   // the food stall (its drum and crate included)
+   sock('awning',0,2.55,1.35,0,{w:4.0,d:1.0,drop:.4,h:2.3});});}
  sock('sign',-12.5,3.2,24.2,0,{w:2.6,h:.6,trade:'FOOD'});box('wood',-12.5,2.7,24.15,2.7,.5,.08,jc(0x5c4630,.06));
 }
 function arQueue(bx){for(let k=0;k<4;k++){beam('wood',[bx-2.6+k*1.7,0,27.3],[bx-2.6+k*1.7,1.0,27.3],.05,jc(0x5c4630,.06),true,5);}beam('wood',[bx-2.6,.95,27.3],[bx+.8,.95,27.3],.04,jc(0x5c4630,.06));}
@@ -145,10 +146,10 @@ function arCage(){const rc=11.3,WT=2.65,CTP=WT+6.0;const st=jc(0x4a4038,.05),st2
  // winch on the roof over the hatch: frame, drum that turns, chain down through the hatch
  for(const sz of [-1,1])beam('iron',[0,CTP+.42,sz*.75],[0,CTP+1.9,sz*.75],.09,st,true,6);beam('iron',[0,CTP+1.9,-.75],[0,CTP+1.9,.75],.08,st);
  spin(0,CTP+1.35,0,0,'z',.4,()=>{cylH('iron',0,0,0,.34,1.2,jc(0x8a8a86,.05),'z',10);for(const sz of [-1,1])cylH('iron',0,0,sz*.62,.5,.05,jc(0x3a3430,.05),'z',10);});
- beam('iron',[0,CTP+1.0,0],[0,4.2,0],.03,jc(0x6a6a66,.05),true,3);for(let q=0;q<10;q++)sph('iron',0,CTP+.8-q*.55,0,.06,jc(0x7a7a76,.05),1.6);box('iron',-.12,3.9,-.05,.24,.35,.1,jc(0x3a3430,.05));
+ beam('iron',[0,CTP+1.0,0],[0,4.2,0],.03,jc(0x6a6a66,.05),true,3);for(let q=0;q<10;q++)box('iron',0,CTP+.8-q*.55-.1,0,.07,.2,.1,jc(0x7a7a76,.05),q*1.57);box('iron',-.12,3.9,-.05,.24,.35,.1,jc(0x3a3430,.05));
  // hanging from the roof hoops: chains with hooks and weapons, and four light rigs (cans point down)
  for(let i=0;i<10;i++){const a=i/10*TAU+.2,r=4.5,x=Math.cos(a)*r,z=Math.sin(a)*r,len=rr(1.6,3.4);beam('iron',[x,CTP+.2,z],[x,CTP-len,z],.022,jc(0x6a6a66,.05),true,3);
-  for(let q=0;q<len/.55;q++)sph('iron',x,CTP-.3-q*.55,z,.05,jc(0x7a7a76,.05),1.6);
+  for(let q=0;q<len/.55;q++)box('iron',x,CTP-.3-q*.55-.08,z,.06,.16,.09,jc(0x7a7a76,.05),q*1.57);
   if(i%3===0){box('iron',x-.03,CTP-len-1.0,z-.03,.06,1.0,.06,jc(0x4a4038,.05));box('iron',x-.09,CTP-len-.5,z-.09,.18,.5,.18,jc(0x5a5048,.05));}      // spiked club
   else if(i%3===1){box('iron',x-.02,CTP-len-1.3,z-.09,.04,1.3,.18,jc(0x9a9a96,.05));}                                                             // blade
   else sph('iron',x,CTP-len-.12,z,.14,jc(0x3a3430,.05));}

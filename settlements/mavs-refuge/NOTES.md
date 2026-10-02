@@ -1,7 +1,7 @@
 # Mav's Refuge — tree city of the beast-riders (Krator)
 
-A refuge in the hypertropic (XA) jungle on the SE, lee shore of the Ring Sea:
-~1.9 atm, red soil, iridescent canopy; the volcano lies NW across the sea, the
+A refuge in the hypertropic (XA) jungle on the NE, lee shore of the Ring Sea:
+~1.9 atm, red soil, iridescent canopy; the volcano lies SW across the sea, the
 gas giant hangs in the NE. Built with the painting-to-3d-world skill as a
 procedural Three.js (r128) world in one self-contained HTML file, on the Voth
 engine pattern (numbered `src/` fragments → `build.py` → `mavs-refuge.html`,
@@ -30,7 +30,7 @@ level via 3 stairs per level; soldiers at the gates; Voth-style dev tools.
   Hold, Riders' Rest, The Silk Loft, South Gate. 35 near hypertrees, 210 far.
 - 79 platforms (11 main + council + 67 satellites), 82 rope bridges (longest
   76 m), 379 bough skeletons (satellites sit on `under` boughs or hang from
-  `over` boughs), 555 roost bays, walk graph ~7.7k nodes (fully connected,
+  `over` boughs), 554 roost bays, walk graph ~7.7k nodes (fully connected,
   includes a forest-floor trail over the log bridge between the S and E gates).
 - Platform section: deck; each lower level steps in 3 m; open gallery at the
   rim, rooms behind, core wall at Rin. 3 stair bays per main platform: lane A
@@ -63,5 +63,5 @@ See `API.md` (the contract handed to subagents). Planner keeps 05,10,30,32,45,
   bats return mostly at dawn; rider lance stays on saddle when dismounted.
 - Gate facades stand up to ~1.5 m proud where bark relief dips.
 - Jungle pass is ~2× its triangle budget (905k) — trim if frame rate suffers.
-- `verify.py --sweep` is meaningless here (merged meshes have city-wide boxes).
+- `verify.py --sweep` samples the flyers' `window._legs` against the registered volumes (open-air ones cut to their floor), the `trunkR` trunks, the rope bridges' segments and the ground, not mesh boxes (merged meshes have city-wide boxes). Two control legs through a trunk and a level must hit, or the sweep fails as blind.
 - Headless full-world runs take 3–6 min; run view batches in the background.

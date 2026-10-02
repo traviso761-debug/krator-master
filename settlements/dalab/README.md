@@ -72,3 +72,25 @@ night. `N` toggles night while flying.
 | `91z-views.js` | presets, day and night |
 
 Lighting is the same package (`94-dalab-light.js`): KratorSky by hour, the night flip, The God's light on priest / noble / civic.
+
+## Level of detail (core/lod)
+
+The page takes the shared LOD from `core/lod/` (read `core/lod/README.md`): `build.py` adds `09-lod.js` and
+`97-lod-auto.js` to the fragment list, and 97 applies it to the finished scene. Big merged meshes are cut into chunks
+that switch to clustered proxies with distance and are drawn combined (one draw per level in view); instanced sets keep
+one draw call, drop their smallest instances by screen size and switch detailed shapes to a simplified version far off.
+The originals stay the raycast targets, so the inspector and `_api` see full detail (checked: the inspector names the
+same thing at nine screen points per view with LOD on and off). The panel (`l`, `measure`) reads draw calls and
+triangles; `LOD.enabled=false` or `?lod=0` puts back the exact scene. `verify.py --assert` passes with LOD on.
+
+`94-dalab-light.js` names the windmill sails (`DWIND`) in `LOD_OPTIONS.skipUnder`. The biome's sets keep every
+instance (the biome core thins its own flora) and are culled and simplified only.
+
+Measured 2026-10-01, 1000x640, SwiftShader (`LOD.flush()` then `LOD.measure()`: one render of the main scene, so
+calls and triangles as three.js counts them; sky passes not included):
+
+| View | LOD off: calls / triangles | LOD on: calls / triangles |
+|---|---|---|
+| city: opening | 213 / 10.78 M | 181 / 8.92 M |
+| city: Overview | 226 / 10.79 M | 179 / 6.74 M |
+| city: Main plaza, eye level | 215 / 10.78 M | 185 / 8.58 M |

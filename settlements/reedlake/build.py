@@ -33,13 +33,47 @@ Usage:  python build.py [--no-checks] [--assert-origin]
                    meaningful the moment a fragment is deliberately edited;
                    without the flag the comparison is reported, not enforced.
 
-NOTE ON THE SYNTAX CHECK: it runs `node --check`, and node is NOT installed on
-this machine. When node is missing this script says so plainly and does not
+NOTE ON THE SYNTAX CHECK: it runs `node --check` with the node find_node() finds
+($NODE, PATH, /opt/node*/bin, ~/.nvm). When node is missing this script says so plainly and does not
 claim the file is syntactically valid — the only thing that actually catches a
 syntax error here is verify.py, which loads the page and reads the on-screen
 error panel. Do not read a green build as "the JavaScript parses".
 """
 import hashlib, json, os, re, subprocess, sys
+
+# Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
+# tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
+import os as _os, subprocess as _sp, sys as _sys
+_cp = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), 'tools', 'check_port.py')
+if _os.path.isfile(_cp) and '--no-checks' not in _sys.argv and \
+        _sp.call([_sys.executable, _cp, '--quiet', _os.path.dirname(_os.path.abspath(__file__))]) != 0:
+    _sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
+
+
+def find_node():
+    """node for the syntax check: $NODE, then PATH, then the usual install places
+    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
+    there is none: the build then says plainly that the syntax was NOT checked.
+    Every build.py carries this same function; a fix belongs in all of them."""
+    import glob as _g, shutil as _sh
+    env = os.environ.get('NODE')
+    if env:
+        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
+        if hit:
+            return hit
+        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
+    hit = _sh.which('node')
+    if hit:
+        return hit
+    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
+    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
+                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
+                os.path.expanduser('~/.volta/bin/node')):
+        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
+        if hits:
+            return hits[0]
+    return None
+
 
 try:                                   # KNOWN_ISSUES.md uses em dashes
     sys.stdout.reconfigure(encoding='utf-8')
@@ -56,13 +90,20 @@ DIST = os.path.join(HERE, 'dist')
 ORIGIN = os.path.join(HERE, '.origin.html')
 CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (core/README.md)
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
+LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
+LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 
 
 def srcpath(f, base=None):
-    """Path of fragment f in base (default src/), falling back to core/materials/.
+    """Path of fragment f in base (default src/), falling back to core/materials/ (and to
+    core/materials/opt/ for the opt-in files in CORE_OPT_FILES).
     A local copy with the same name overrides the shared one."""
     p = os.path.join(base or SRC, f)
-    return p if os.path.exists(p) or f not in CORE_FILES else os.path.join(CORE, f)
+    if os.path.exists(p) or f not in CORE_FILES + CORE_OPT_FILES:
+        return p
+    return os.path.join(CORE if f in CORE_FILES else CORE_OPT, f)
 
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order. Everything
@@ -74,7 +115,8 @@ TARGET_OUT = {
 }
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
+    '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
+    '00-head.html', '09-lod.js', '97-lod-auto.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',          # vendored (via ../highlands/src) from ../iziz/src
@@ -190,6 +232,8 @@ def build_one(target, do_checks, assert_origin):
 
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
+    src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:
@@ -292,7 +336,7 @@ def main():
         with open(chk, 'w', encoding='utf-8') as fh:
             fh.write(body)
         try:
-            r = subprocess.run(['node', '--check', chk], capture_output=True, text=True)
+            r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)
             if r.returncode:
                 print(r.stdout + r.stderr)
                 sys.exit(1)

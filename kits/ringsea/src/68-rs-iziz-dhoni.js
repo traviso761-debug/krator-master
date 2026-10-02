@@ -23,10 +23,10 @@ function buildRsIzizDhoni(){reseed(71800);
  // the mast (raked forward), the long yard and the lateen
  const mx=1.2,base=dY(H.uAt(mx)),mh=9.5,rk=.12;const top=[mx+Math.sin(rk)*mh,base+mh,0];rsLink(B,'wood',[mx,base-.2,0],top,.14,0x6a4a2c,8,.09);
  const tack=[7.2,1.4],peak=[-7.6,12.2],clew=[-2.1,1.4];   // the clew stays forward of the shade
- const S=rsSail(B,{key:'iziz-lateen',O:[0,base,.32],U:[1,0,0],V:[0,1,0],belly:-.9,nu:20,nv:10,
+ rsRig(B,[[mx,base-.2,0],top]);const S=rsSail(B,{key:'iziz-lateen',O:[0,base,.32],U:[1,0,0],V:[0,1,0],belly:-.9,nu:20,nv:10,
   A:t=>[lerp(tack[0],peak[0],t),lerp(tack[1],peak[1],t)+Math.sin(Math.PI*t)*.5],Bf:t=>[lerp(clew[0],peak[0],t)+Math.sin(Math.PI*t)*.4,lerp(clew[1],peak[1],t)],draw:rsLateenCream});
  const yd=[];for(let k=0;k<=16;k++)yd.push(S.at(k/16,0));yd.unshift([yd[0][0]+1,yd[0][1]-.4,yd[0][2]]);rsTube(B,'wood',yd,t=>.13*(1-.5*Math.abs(t-.35)),0x7a5634,40,6);
- rsRope(B,top,S.at(.45,0));rsRope(B,S.at(0,1),[-6,dY(.1)+.4,1.4]);rsRope(B,top,[H.xAt(0,1),H.ys(0),0]);rsRope(B,yd[0],[pb[0],pb[1]+.2,0]);
+ rsRope(B,top,S.at(.45,0));rsRope(B,S.at(0,1),[-6,dY(.1)+.4,1.4]);rsRope(B,top,[H.xAt(0,1),H.ys(0),0]);rsRope(B,yd[0],[pb[0],pb[1]+.2,0]);rsRigEnd(B);
  // round 2: a painted chevron strake, a small mizzen lateen, rods out over the side, fish drying on
  // a line to the stem, a pennant off the stem finial, a lantern at the helm
  for(const a of rsAlong(H,.12,.9,22,.87)){const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),a.n).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),Math.PI/2));

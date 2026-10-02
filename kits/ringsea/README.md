@@ -1,13 +1,17 @@
 # Ring Sea watercraft
 
-Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding at anchor
-on one sheet and rowing in place. Built on the Ancients-lineage fragment contract
+Twenty-one procedural vessels for the Ring Sea, each tagged by culture, riding a live swell
+on one sheet (a Gerstner swell with whitecaps, to the horizon) with their sails and pennants breathing in
+the wind and their oars stroking. The **Under way** button (off by default, so the preset views stay put) sets
+each row sailing a racetrack course with wakes, heeling into the turns and trimming to the wind; off again, they
+run home to station in a few seconds. Walk mode (F) stands on the decks and rides with the ship. Built on the Ancients-lineage fragment contract
 (`core/materials/` + vendored shell), one vessel per fragment.
 
 ```
 python3 build.py                                    # -> dist/ringsea.html (deterministic; manifest in build-manifest.json)
 python3 verify.py dist/ringsea.html --assert --views "Opening,Overview" --out shots
-python3 verify.py dist/ringsea.html --views "Voth Brackwater Trireme,Voth Brackwater Trireme — abeam" --out shots
+python3 verify.py dist/ringsea.html --views "Voth Ordinator Flagship" --out shots \
+  --shot "aboard=()=>_api.walkAboard('vothFlagship',9,1.5,Math.PI)"   # --shot NAME=JS: pose, then screenshot
 ```
 
 Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> — abeam`.
@@ -25,13 +29,13 @@ Every vessel has two preset views: `<name>` (starboard bow quarter) and `<name> 
 | 9 | `68-rs-iziz-dhoni.js` | Iziz Dhoni | iziz-vernacular | coaster, main and mizzen lateen |
 | 10 | `69-rs-islander-oruwa.js` | Islander Oruwa | ringsea-islander | outrigger fishing canoe |
 | 11 | `70-rs-islander-karakoa.js` | Islander Karakoa | ringsea-islander | war outrigger (double outriggers, tanja sail) |
-| 12 | `71-rs-voth-chitin.js` | Voth Chitin Bireme | voth | bireme raider, carapace roof, Voth-blue fan sails, blue eyes |
+| 12 | `71-rs-voth-chitin.js` | Voth Chitin Bireme | voth | bireme raider, carapace roof, Voth-purple fan sails, blue eyes |
 | 13 | `72-rs-hyk-hexareme.js` | Hykkousoi Siege Hexareme | hykkousoi | three banks of great oars, towers, stone-thrower, boarding bridge |
 | 14 | `73-rs-hyk-pearl.js` | Hykkousoi Pearl Baghlah | hykkousoi | pearling mother ship: diving booms, divers, oyster baskets |
 | 15 | `74-rs-iziz-wheel.js` | Iziz Wheel Galley | iziz-vernacular | treadmill paddle-wheel warship (the wheels turn), orange trim, sun lateen |
 | 16 | `75-rs-beast-rookery.js` | Beast-Rider Rookery Raft | beast-rider | trimaran roost tower for flyers (`rsFlyer`) |
 | 17 | `76-rs-islander-lakatoi.js` | Islander Lakatoi | ringsea-islander | four-hull trading raft, twin pandanus crab claws |
-| 18 | `77-rs-voth-hulk.js` | Voth Cargo Hulk | voth | cargo: bluff hulk, castles, hold of sacks, derrick, Voth-blue square sail |
+| 18 | `77-rs-voth-hulk.js` | Voth Cargo Hulk | voth | cargo: bluff hulk, castles, hold of sacks, derrick, Voth-purple square sail |
 | 19 | `78-rs-hyk-corbita.js` | Hykkousoi Amphora Corbita | hykkousoi | cargo: round-ship, swan sternpost, amphorae |
 | 20 | `79-rs-xanadu-carrack.js` | Xanadu Bullion Carrack | xanadu | cargo: tiled castles, saffron wheel sails, bullion chests |
 | 21 | `80-rs-iziz-lighter.js` | Iziz Salvage Lighter | iziz-vernacular | cargo: flat lighter of Ancient panels and pipe, A-frame derrick |
@@ -47,8 +51,12 @@ from `10-core.js`), plus the vessel's own fragment. Then:
 ```js
 const V = RS.defs.vothTrireme.build();   // {group, anims, deckY, oars}
 V.group.position.set(x, 0, z); V.group.rotation.y = heading; scene.add(V.group);
-// each frame: for (const f of V.anims) f(seconds);
+// each frame: RS_U.uTime.value=t; rsRide(V.group, RS.defs.vothTrireme, x, z, heading, t, seaH); for (const f of V.anims) f(t);
+// optional: V.group.userData.rsU.uRsTrim.value = rig angle (rad), .uRsFlag.value = pennant swing (0 = as built)
 ```
+
+`seaH(x,z,t)` is your sea's height; leave it out to ride the kit's own swell (`rsSeaH`). `RS_U.uTime` drives the sails' and pennants' flutter.
+For a life layer, `95-rs-deck.js` (`rsDeckData`) turns any placed vessel into deck heights, a walk outline and obstacles.
 
 See `API.md` for the vessel frame and the builders.
 

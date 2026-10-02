@@ -87,16 +87,17 @@ var VIEWS = [
                                    altar, and volcano in frame." TEMPLE_ALTAR (65-facade.js) is the
                                    real altar position/height, inside the 8-pillar ring
                                    (TEMPLE_PILLAR_RING_R) under the gold dome. The volcano itself is a
-                                   sky-painted backdrop fixed at world bearing -z ("due north",
+                                   sky-painted backdrop fixed at world bearing 22.5 (north-north-east,
                                    20-stage.js) — not a worldspace object — so any camera standing
-                                   south of the altar and looking north (-z) catches it above the
-                                   horizon behind the altar for free; no coordinate needed for it.
-                                   Camera sits just outside the pillar ring (radius ~40, ring is
-                                   ~33.8) so it doesn't clip a pillar, at roughly altar-top height,
+                                   south-south-west of the altar and looking north-north-east catches it
+                                   above the horizon behind the altar for free; no coordinate needed.
+                                   Camera sits just outside the pillar ring (radius ~42, ring is
+                                   ~33.8), on bearing 202.5: the pillars stand every 45 deg from due
+                                   east, so that line runs between two of them. Roughly altar-top height,
                                    close enough to read as standing beside it. */
                                 var c=CIDX['Temple'], t=CANTON_TOPS['Temple'];
                                 var a = (typeof TEMPLE_ALTAR === 'object' && TEMPLE_ALTAR) ? TEMPLE_ALTAR : { x:c.x, y:t.y+2.7, z:c.z };
-                                setView(a.x+10, a.y+7, a.z+42, a.x, a.y+3, a.z); }],
+                                setView(a.x-16, a.y+7, a.z+39, a.x, a.y+3, a.z); }],
   ['Ancestry garden', function(){
                                 /* owner's follow-up: wants a steep DOWNWARD look highlighting the
                                    terraced planting, not the earlier eye-level shot (that put the
@@ -369,6 +370,11 @@ window._dbg = { setView:setView, ctl:ctl, camera:camera, applyCam:applyCam,
                 sky:skyMesh, skyScene:skyScene, skyCam:skyCam,
                 water:water, terrain:terrain, cantons:CANTONS, shore:SHORE,
                 polyPts:polyPts };
+/* LEVEL OF DETAIL (core/lod): 97-lod-auto.js takes over the finished city with these options. The life layer's
+   vehicles and crews are rewritten every frame, so they stay outside it; the panel sits bottom centre, clear of the
+   view list and the sky panel. */
+window.LOD_OPTIONS = { skip: function(o){ return !!o.userData.life; },
+                       panelStyle: 'right:auto;left:50%;bottom:8px;transform:translateX(-50%)' };
 VIEWS[0][1]();
 frame();
 document.getElementById('load').style.display = 'none';

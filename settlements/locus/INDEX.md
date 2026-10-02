@@ -4,9 +4,9 @@
 
 Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.
 
-Docs: `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`
+Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `locus-kit.html`, `locus.html`
+Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus.html`
 
 Build: `cd settlements/locus && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -15,15 +15,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 5 |  |
-| `05-palette.js` | 11 | 0. PALETTE (1) |
+| `00-head.html` | 6 |  |
+| `05-palette.js` | 13 | 0. PALETTE (1) |
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — LOCUS (100); 4. TERRAIN FIELD (220) |
-| `20-stage.js` | 13 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (218) |
-| `21-sky.js` | 55 **big** | 5b. KRATOR SKY (1) |
-| `30-layout.js` | 36 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (87); THE ROUTE GRID (102); WALK GRAPH (the life layer's network) (443) |
+| `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (228) |
+| `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
+| `30-layout.js` | 39 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (87); THE ROUTE GRID (103); WALK GRAPH (the life layer's network) (489) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
 | `45-kit.js` | 26 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
-| `47-texture.js` | 11 | 11. TEXTURES (1) |
+| `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `50-structure.js` | 10 | 12. STRUCTURE (massing) (1) |
 | `53-assets.js` | 17 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `55-mid-example.js` | 3 | 16a. ASSETS: reference example (1) |
@@ -37,14 +37,25 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `64-locus-chapterhouse.js` | 14 | 16Q. LOCUS — the Geomancers' Chapterhouse (1) |
 | `64-locus-core.js` | 16 | 16L. LOCUS — shared helpers (1) |
 | `64-locus-dwellings.js` | 19 | 16M. LOCUS — abyssal-desert dwellings, tents and (1) |
-| `64-locus-farm.js` | 7 | 16O. LOCUS — the salt-rice farm (1) |
+| `64-locus-farm.js` | 10 | 16O. LOCUS — the salt-rice farm (1) |
 | `64-locus-infra.js` | 8 | 16R. LOCUS — the warehouse, the fishing dock, an (1) |
 | `64-locus-petroleum.js` | 22 | 16P. LOCUS — the petroleum works (1) |
-| `64-locus-plants.js` | 3 | 16N. LOCUS — crops and marsh-edge plants (1) |
+| `64-locus-plants.js` | 4 | 16N. LOCUS — crops and marsh-edge plants (1) |
 | `64-locus-power.js` | 18 | 16W. LOCUS — power and fuel (1) |
+| `65-abyss-00-core.js` | 42 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (217); ABYSS 7. overhead clutter (236); ABYSS 8. the stepped square altar (264) |
+| `65-abyss-20-plants.js` | 3 | 16X-P. ABYSS — plants the abyssal kit needs that (1) |
+| `65-abyss-30-housing.js` | 21 | 16X-H. ABYSS — housing: poor, middle, rich (1) |
+| `65-abyss-40-shops.js` | 21 | 16X-S. ABYSS — shops (1) |
+| `65-abyss-50-civic.js` | 22 | 16X-C. ABYSS — hospitality and civic (1) |
+| `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
+| `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
+| `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
+| `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
+| `66-locus-furnish.js` | 8 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
 | `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
-| `69a1-bio-core-head.js` | 5 | PRNG (14); noise (24); host binding (32); accounting (72) |
-| `69a2-bio-core-kit.js` | 12 | merged buckets (46); bake (121) |
+| `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
+| `69a1-bio-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
+| `69a2-bio-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `69a3-bio-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `69a4-bio-core-place.js` | 6 | surface sampling (53) |
 | `69b-locus-biohost.js` | 4 | 19H. LOCUS — the biome host binding (1) |
@@ -54,17 +65,18 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `69c4-bio-eastabyss-dress.js` | 7 |  |
 | `69c5-bio-eastabyss.js` | <1 |  |
 | `69z-locus-flora.js` | 4 | 19Z. LOCUS — planting the biome (1) |
-| `70-sheet.js` | 3 | 19. THE INSPECTION SHEET (1) |
+| `70-sheet.js` | 4 | 19. THE INSPECTION SHEET (1) |
 | `71-catalog.js` | 4 | 19b. THE FURNITURE + PLANT CATALOGUES (1) |
-| `72-lights.js` | 4 | 18. FIXED LAMPS (1) |
+| `71g-locus-grid.js` | 9 | 18a. THE TOWN GRID — LOCUS (2026-10-01) (1) |
+| `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 12 | 20. EMIT + GROUND + WATER — LOCUS (1) |
-| `76-locus-anim.js` | 7 | 20L. LOCUS — animated machinery (1) |
+| `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
 | `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (149) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 5 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
 | `84-life.js` | 43 **big** | 20. THE LIFE LAYER — LOCUS (1) |
-| `85-probe.js` | <1 | 29. PROBE (1) |
+| `85-probe.js` | 1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 4 | 28. PATH VISUALIZER (1) |
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |

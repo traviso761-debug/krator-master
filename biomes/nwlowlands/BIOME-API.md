@@ -78,10 +78,34 @@ NWLOW.canopyH(x,z)
 NWLOW.SPECIES                    // 23 species (20 trees, 3 bamboos), tagged; NWLOW.PAL the palettes
 NWLOW.zones(x,z)                 // the zone weights (incl. bamboo, birchK, spireK)
 NWLOW.barkMat2(tex,key,{alt,gloss,gain})
+NWLOW.LOD                        // the runtime LOD ranges (below)
 ```
 `avenues:[{path:[[x,z],...], spacing, offset, species}]` works as in the SW kit (the
 host here lines a pale road with ghost gums). Then `BIO.bake()` once. `quality` scales
 every count; the ideal-type host reads `?q=`.
+
+**Runtime LOD** (the core's, as xanadu and swlowlands use it). The passes build under
+`BIO.range`, so bake splits every item and bucket into one mesh per 1200 m chunk and range,
+and the host calls `BIO.lodTick(camera)` every frame (after `camera.updateMatrixWorld()`): a
+chunk's mesh is drawn only while the camera is within its range of the chunk and the chunk is
+in view. The ranges are `NWLOW.LOD` (metres; `BIO.LOD.scale` multiplies them all):
+
+| key | what | m |
+|---|---|---|
+| `tree` | a hero tree in full (its foot keys it: limbs, foliage, moss, lanterns...) | 1200 |
+| `grove` | the bamboo groves' culms and leaf in the near and mid bands | 1200 |
+| `avenue` | the avenue's row (`avenues`) | 2000 |
+| `floor`, `floorMid`, `farFloor` | the floor's near / mid / far bands (grass and water: near / mid) | 800, 1200, 1200 |
+| `under` | the understorey under each crown (keyed by its tree) | 800 |
+| `logs` | fallen trees | 1200 |
+| `dress` | `NWLOW.dress` on a world's structures (`opt.range` overrides) | 1200 |
+
+Behind every hero stands a lite impostor (`minRange` = its range), drawn only past it; a far
+tree (beyond the spine's mid ring) is only its impostor, always drawn. A grove's near and mid
+culms have lite blobs behind them (ground to culm top, in the pale culm colour), one per 22 m cell
+where a sky-bamboo clump stood; the far band is its blob canopy, always drawn. The scene
+therefore HOLDS more than before (the stand-ins) and DRAWS far less: `BIO.lodShown` reports the chunk meshes and triangles drawn.
+Draw calls rise to one per item per chunk in view (KNOWN_ISSUES).
 
 ## Tags (project rule)
 

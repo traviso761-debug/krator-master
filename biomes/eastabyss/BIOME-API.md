@@ -66,11 +66,12 @@ the lake). The Vain fronds stay purple (canon).
 ## What the biome exports
 
 ```js
-EASTABYSS.build({R:3250, quality:1, lakeHue:0}) -> {trees, heroes, far, bySpecies, ..., beds, stems, under, tris}
+EASTABYSS.build({R:3250, quality:1, lakeHue:0}) -> {trees, heroes, far, bySpecies, ..., beds, stems, farBeds, under, tris}
 EASTABYSS.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette)
 EASTABYSS.canopyH(x,z)               // approximate canopy top
 EASTABYSS.SPECIES                    // the 21 species (tagged; the mat reed carries `use` and `bed`), EASTABYSS.PAL the palettes
 EASTABYSS.REEDBEDS                   // after build: the mat-reed beds [{x,z,r,n,depth,h}] -- a resource a world can harvest
+                                     // (within 1.9 km of the LOD spine; past it a bed is a far hull, counted in farBeds, not listed)
 EASTABYSS.hummock(x,z)               // the marsh's drier hummocks (beard oaks), a noise field
 EASTABYSS.zones(x,z)                 // the zone weights a world can reuse for its own placement
 ```

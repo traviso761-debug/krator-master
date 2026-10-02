@@ -35,8 +35,8 @@ function bracket(p,n,s){for(let b=0,nb=2+Math.floor(rng()*3);b<nb;b++){const sb=
   qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[sb,sb*.4,sb],C(pick(PAL.fungus)));}}
 // a PLANT on a ledge: an iridescent rosette, a curl, a tuft of scale-moss or a small bush
 function plant(p,s){const k=rng();const y=p[1];
- if(k<.35){BIO.put('irosette',[p[0],y,p[2]],qEuler(rr(-.08,.08),rng()*TAU,rr(-.08,.08)),[s*.8,s*.7,s*.8],C(pick(PAL.jungleGreen)),{c2:iridC2()});}
- else if(k<.6){for(let i=0,n=1+Math.floor(rng()*3);i<n;i++){const a=rng()*TAU,d=i?rr(.2,.6):0,h=s*rr(.8,1.4);BIO.put('curl',[p[0]+Math.cos(a)*d,y,p[2]+Math.sin(a)*d],qEuler(rr(-.15,.15),rng()*TAU,rr(-.15,.15)),[h,h,h],C(pick(PAL.tealGreen)),{c2:C(pick(PAL.irid.GB))});}}
+ if(k<.35){const rx=rr(-.08,.08),ry=rng()*TAU,rz=rr(-.08,.08);BIO.put('irosette',[p[0],y,p[2]],qEuler(rx,ry,rz),[s*.8,s*.7,s*.8],C(pick(PAL.jungleGreen)),{c2:iridC2(),n:RIFT.leanN(ry,.5)});}
+ else if(k<.6){for(let i=0,n=1+Math.floor(rng()*3);i<n;i++){const a=rng()*TAU,d=i?rr(.2,.6):0,h=s*rr(.8,1.4);BIO.put('curl',[p[0]+Math.cos(a)*d,y,p[2]+Math.sin(a)*d],qEuler(rr(-.15,.15),rng()*TAU,rr(-.15,.15)),[h,h,h],C(pick(PAL.tealGreen)),{c2:C(pick(PAL.irid.GB)),n:RIFT.leanN(a,.3+.6*d)});}}
  else if(k<.7){BIO.put('zebra',[p[0],y,p[2]],qEuler(rr(-.08,.08),rng()*TAU,rr(-.08,.08)),[s*.6,s*.45,s*.6],C(0xffffff).lerp(C(0xe0a0c0),.5));}
  else if(k<.8){BIO.put('clubmoss',[p[0],y-.05,p[2]],qEuler(0,rng()*TAU,0),[s*1.6,s*.6,s*1.6],C(pick(PAL.yellowGreen)),{c2:iridC2()});}
  else{const c=C(pick(PAL.jungleGreen)).offsetHSL(rr(-.1,.1),.05,.02);
@@ -72,6 +72,6 @@ RIFT.dressWalls=function(geos,opt){opt=opt||{};
   if(k<.45)curtain([f.p[0]+f.n[0]*.3,f.p[1],f.p[2]+f.n[2]*.3],f.n[0],f.n[2],rr(3,opt.hang||12),rr(1.5,4),{});
   else if(k<.7)bracket([f.p[0],f.p[1],f.p[2]],f.n,rr(.8,2.2));
   else moss([f.p[0]+f.n[0]*.05,f.p[1],f.p[2]+f.n[2]*.05],f.n,rr(.8,2));});};
-RIFT.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));
- RIFT.dressLedges(geos,opt.ledges||{});RIFT.dressSoffits(geos,opt.soffits||{});RIFT.dressWalls(geos,opt.walls||{});};
+RIFT.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));BIO.range=RIFT.LOD.dress;   // the runtime LOD: drawn near the camera
+ RIFT.dressLedges(geos,opt.ledges||{});RIFT.dressSoffits(geos,opt.soffits||{});RIFT.dressWalls(geos,opt.walls||{});BIO.range=null;};
 })();

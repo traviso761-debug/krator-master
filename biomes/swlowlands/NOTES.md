@@ -138,6 +138,26 @@ Fauna deferred, as for the other kits.
 - Softer algae on pale bark; finer willow strands; the road texture no longer stretches.
 - Ceilings raised to 12M scene / 9M per pass.
 
+## Sixth pass (runtime LOD, the impostors' bark)
+- The core's runtime LOD, ported from xanadu. Every pass builds under `BIO.range`, so bake
+  splits each item and bucket into one mesh per 1200 m chunk and range, and the host calls
+  `BIO.lodTick(camera)` every frame. A hero tree (its foot keys all of it) is drawn within
+  `SWLOW.LOD.tree` (1200 m) of its chunk and as a lite stand-in impostor past that; the
+  avenue's and the grove's rows keep their full trees to 2000 m. The far trees beyond the
+  spine's mid ring stay impostors only, always drawn. The floor's bands, the understorey,
+  the logs and the dressing have their own ranges (BIOME-API.md). The ranges are kept to a
+  few values because equal ranges share a mesh: each distinct one costs a draw call per item
+  per chunk.
+- The stand-ins draw no random numbers, so every hero is built exactly as before: the held
+  scene grew by the stand-ins only (0.36M triangles over 6.2k heroes).
+- The scene had drawn everything from every camera: the instanced items are not
+  frustum-culled and every bucket's bounding sphere spans the map. Chunking gives both the
+  range test and the frustum test, so even the near views draw ~40% less.
+- The far impostors' trunks carry their bark: the second colour mixed in by the mean of the
+  bark's mask (what the hero's texture averages to at range) and the gloss as the same sun
+  highlight the bark hook adds, through `SWLOW.farMat` and the trunk's uv.x. A ribbon gum's
+  stand-in is pale like the gum (it was the red of its stripes); a mangrove's shines.
+
 ## Lessons this build cost
 - A two-channel canvas (relief in R, a mask in G) plus one uniform colour per bucket gives
   every bark two colours for one draw call. Normalise the relief by its own mean in the

@@ -1,0 +1,31 @@
+// node core/walk/test-walk.js — the walk registry's contract, each check with a broken input that must fail.
+const fs=require('fs'),path=require('path');
+global.window=global;eval(fs.readFileSync(path.join(__dirname,'20-core-walk.js'),'utf8'));
+let bad=0;const ok=(name,pass,neg)=>{const r=pass&&!neg;if(!r)bad++;console.log((r?'PASS  ':'FAIL  ')+name+(neg?' (its negative passed)':''));};
+const W=KWALK.create();
+W.floor({rect:[0,20,0,10],y:0,name:'hall'});
+W.floor({rect:[0,20,0,10],y:16,name:'gallery'});
+W.strip({a:[20,5,0],b:[40,5,10],w:4,name:'stair'});
+W.block([5,6,4,6,0,8],'pillar');
+W.block([30,32,-10,-8,0,3],'far');
+const near=(a,b)=>Math.abs(a-b)<1e-9;
+
+ok('both levels over the hall, highest first',W.floorsAt(10,5).map(f=>f[1].name).join()==='gallery,hall',W.floorsAt(10,5).length!==2);
+ok('a walker on the ground stands on the hall, not the gallery',W.floorBelow(10,5,0)[1].name==='hall',W.floorBelow(10,5,0)[1].name==='gallery');
+ok('a walker on the gallery stands on the gallery',W.floorBelow(10,5,16)[1].name==='gallery',W.floorBelow(10,5,15)&&W.floorBelow(10,5,15)[1].name==='gallery');
+ok('the stair rises along its length',near(W.floorsAt(30,5)[0][0],5),near(W.floorsAt(30,5)[0][0],0));
+ok('off the side of the stair is no floor',W.floorsAt(30,7.5).length===0,W.floorsAt(30,6.9).length===0);
+ok('past the end of the stair is no floor',W.floorsAt(41,5).length===0,W.floorsAt(39,5).length===0);
+ok('the pillar blocks a walker beside it',W.blocked(4.8,0,5)!==null,W.blocked(4.5,0,5)!==null);
+ok('a block below the walker does not stop it',W.blocked(5.5,9,5)===null,W.blocked(5.5,7,5)===null);
+const p=W.push(4.9,0,5);ok('push moves the walker to the pillar\'s face',near(p[0],5-0.3)&&near(p[1],5),near(p[0],4.9));
+const c=W.push(4.85,0,3.85);ok('push slides round a corner rather than stopping',Math.hypot(c[0]-5,c[1]-4)>=0.3-1e-9&&c[0]<5&&c[1]<4,c[0]===4.85&&c[1]===3.85);
+const in_=W.push(5.4,0,5);ok('a walker inside a block leaves by the nearest face',W.blocked(in_[0],0,in_[1])===null,in_[0]===5.4);
+ok('bounds cover everything',W.bounds().join()==='0,42,-10,10',W.bounds()[1]<42);
+const E=W.export();
+ok('the export is plain data for Godot',E.format==='krator-walk'&&E.floors.length===3&&E.blocks.length===2&&JSON.stringify(E).length>0,E.floors[0].seq!==undefined);
+let threw=false;try{W.floor({rect:[0,1,0,1]});}catch(e){threw=true;}ok('a floor without a height is refused',threw,false);
+threw=false;try{W.strip({a:[0,0,0],b:[1,1,1],w:0});}catch(e){threw=true;}ok('a strip of no width is refused',threw,false);
+ok('instances are independent',KWALK.floors.length===0&&W.floors.length===3,false);
+W.clear();ok('clear empties it',W.floorsAt(10,5).length===0&&W.bounds()===null,false);
+console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

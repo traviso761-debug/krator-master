@@ -24,9 +24,6 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The host's floor mesh is Lambert-lit with no shadow maps, so open floor
       between plants reads a shade too bright; the litter colour is painted dark
       to compensate. A world with shadows should lighten `MAT_GROUND`.
-- [ ] `dress()` samples by triangle area: a structure with one huge roof plate
-      and many small ledges puts most of its moss on the roof. Pass per-shell
-      geometry lists (roof, floors, walls) with their own counts if that matters.
 - [ ] Fauna: the herds' waypoints avoid boles, saplings, the host mask and its
       obstacles, but not logs or boulders (a strider can walk through a fallen
       trunk). The flyers' paths are tested against boles at their centre only:
@@ -35,8 +32,23 @@ Read before changing anything here. `build.py` prints the open count.
       follow the hinge, so a flapping wing does not brighten and darken.
 - [ ] Only the hyperjungle is built; the abyssal savannah, Yuni Valley, highlands
       and arctic biomes are to be written against the same core.
+- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): gatepod, mahogany nut, silkpod, pandan keys (the screwpine). Each has a catalog piece in
+      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'hyperjungle'`). The pods are drawn. Add harvest tags. The screwpine's "hanging fruit head" is drawn as an upside-down fungus item (60-floor.js): give it the pandan-key head (orange keys, green tips).
 
 ## Done
+
+- [x] `dress()` per shell (Oct 2026): `BIO.faceSamples` takes `{geos, share}` shells (roof, floors, walls), each
+      sampled by area with its own share of the count (`core/biome/40-core-place.js`, `test-place.js`). A plain
+      list draws as before; this host's tower still passes one.
+
+- [x] On the shared core (`core/biome/`, Oct 2026), with the core's helpers as globals in
+      `41-hyperjungle-globals.js`. Geometry checked by mesh fingerprints against the kit's own core:
+      every pass's triangles and every item's count identical, trees, dress and fauna bit for bit. Eight
+      floor items placed round the boles (fronds, moss mats, ribbons, fungus, rods, strands, blooms,
+      under-cards) differ in 32-813 instances each: `boleProfile` now reads the bark bucket's Float32
+      store (the GPU's precision) where it read doubles, so a ring or a keep-clear test can fall the
+      other way and that plant lands elsewhere by its tree. `standQuantiles` and the fauna read
+      `BIO.center()` (the core keeps `host.origin` as a list).
 
 - [x] Leaf cards are Lambert with a two-sided light mix, an up-bent (or per-clump)
       normal and distance-boosted alpha — no white-out from below, no lace at range.

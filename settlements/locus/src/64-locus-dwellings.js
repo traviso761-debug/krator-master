@@ -8,12 +8,12 @@ reseed(641001);
   var PI=Math.PI, GROUP_H='Abyssal-desert dwellings (stilt houses)', GROUP_T='Abyssal-desert canvas: tents and sun shades';
   function past(F,i){ return PASTELC[(i==null?Math.floor(F.rnd()*PASTELC.length):i)%PASTELC.length]; }
   function deep(F,i){ return PASTELDC[i%PASTELDC.length]; }
-  /* a small rain jar and a fish-drying rack: the things that stand beside a marsh house */
-  function jar(F,x,y,z,s){ F.lathe('adobe', x,z, [[0.25*s,y],[0.42*s,y+0.35*s],[0.36*s,y+0.8*s],[0.22*s,y+0.95*s],[0.26*s,y+1.05*s]], F.pick(ADOBEREDC), { seg:8 }); }
-  function dryRack(F,x,z,yaw,L){ var c=Math.cos(yaw), s=Math.sin(yaw), tc=F.pick(TIMBERC);
-    [-1,1].forEach(function(e){ F.cyl(x+c*e*L/2, 0, z-s*e*L/2, 0.05, 1.9, 0, tc, 'timber'); });
-    [1.0,1.5].forEach(function(h){ F.rod(x-c*L/2,h,z+s*L/2, x+c*L/2,h,z-s*L/2, 0.025, tc, 'timber'); });
-    for(var i=0;i<Math.floor(L/0.35);i++){ var t=(i+0.5)/Math.floor(L/0.35)-0.5; F.box(x+c*t*L, 1.05, z-s*t*L, 0.10,0.42,0.03, yaw, F.pick(PAL.people.skin), 'cloth'); } }
+  /* the rain jars and the fish-drying rack that stand beside a marsh house are FURNITURE: catalog pieces placed through
+     FURNISH (66-locus-furnish.js) — clay pots (yuni_poor_clay_pots) and the eastabyss drying rack (abyss_smoking_rack).
+     The helpers keep their names and arguments (s, L: the catalog piece has its own size) and burn the colour picks
+     the inline drawing made, so the builder's later random choices do not shift. */
+  function jar(F,x,y,z,s){ LOCUS.burn(F, 1); furnishAt(F, 'yuni_poor_clay_pots', x,y,z, 0); }
+  function dryRack(F,x,z,yaw,L){ LOCUS.burn(F, 1+Math.floor(L/0.35)); furnishAt(F, 'abyss_smoking_rack', x,0,z, yaw); }
   function ridgeRoof(F, cx,cz, w,d, y, h, over, col, fam){ /* a gabled canvas / thatch roof: ridge along x */
     var a=[cx-w/2-over, y, cz-d/2-over], b=[cx+w/2+over, y, cz-d/2-over], c=[cx+w/2+over, y, cz+d/2+over], dd=[cx-w/2-over, y, cz+d/2+over];
     var r0=[cx-w/2-over, y+h, cz], r1=[cx+w/2+over, y+h, cz], c2=shade(col,-0.10);
@@ -25,7 +25,7 @@ reseed(641001);
     F.rod(cx-w/2-over-0.1, y+h, cz, cx+w/2+over+0.1, y+h, cz, 0.06, F.pick(TIMBERC), 'timber'); }
 
   /* =============================================================== 1. POOR STILT HOUSE */
-  ASSET({ key:'stilt_poor', name:'Marsh stilt house', family:'poor', kit:'locus', group:GROUP_H, culture:'abyssal-desert', types:['single-family dwelling'],
+  ASSET({ key:'stilt_poor', name:'Marsh stilt house', family:'poor', kit:['locus','abyss'], group:GROUP_H, kitGroup:{ abyss:'Housing — poor' }, culture:'abyssal-desert', types:['single-family dwelling'],
     districts:['poor'], wealth:[0,0.35], w:11, d:10, h:8, variants:3, variantNames:['reed mats, thatch hip','washed mud, canvas gable','two rooms, flat roof and sail'],
     build:function(F){
       var v=F.variant, H=[2.1,2.4,2.0][v]+F.rr(-0.15,0.15), pc=F.pick(PILEC), pk=F.pick(PLANKC);
@@ -65,11 +65,11 @@ reseed(641001);
       jar(F, DW/2-1.0, H, dz+DD/2-0.9, 0.9); jar(F, -DW/2-0.6, 0, dz-1.5, 1.1);
       if(F.chance(0.8)) dryRack(F, -DW/2-0.2, dz+DD/2+1.6, 0.4, 2.6);
       if(F.chance(0.6)) F.cyl(DW/2-0.6, 0, dz+DD/2+2.2, 0.55, 0.18, 0, shade(pk,-0.2), 'plank');            /* a coiled net / basket stand */
-      F.lantern(-0.2, H+2.05, fz+0.30, 0.6, 9, 0);
+      LOCUS.lantern(F, -0.2, H+2.05, fz+0.30, 0.6, 9);
     } });
 
   /* =============================================================== 2. MIDDLE-CLASS STILT HOUSE */
-  ASSET({ key:'stilt_mid', name:'Pastel stilt house', family:'mid', kit:'locus', group:GROUP_H, culture:'abyssal-desert', types:['single-family dwelling'],
+  ASSET({ key:'stilt_mid', name:'Pastel stilt house', family:'mid', kit:['locus','abyss'], group:GROUP_H, kitGroup:{ abyss:'Housing — middle' }, culture:'abyssal-desert', types:['single-family dwelling'],
     districts:['prosper','market','poor'], wealth:[0.3,0.75], w:16, d:16, h:12, variants:3, variantNames:['wind-catcher and loggia','two storeys under a sail','L-plan with wrapping verandah'],
     build:function(F){
       var v=F.variant, H=2.8+F.rr(-0.1,0.2), pc=PILEC[3], pk=F.pick(PLANKC), tc=F.pick(TIMBERC);
@@ -122,11 +122,11 @@ reseed(641001);
       F.lathe('adobe', DW/2-2.2, dz-DD/2-0.4, [[1.0,0],[1.1,0.9],[0.9,1.35]], F.pick(MUDBROWNC), { seg:10 }); F.cyl(DW/2-2.2, 1.2, dz-DD/2-0.4, 0.85, 0.1, 0, SALTWATERC[1], 'plaster');
       jar(F, bx+BW/2+0.6, H, fz+1.4, 1.1); jar(F, bx-BW/2-0.5, H, fz+1.2, 0.9);
       for(var k=0;k<3;k++) F.ball(bx-BW/2-0.5+k*0.8, H+0.3, fz+2.2, 0.36, PAL.shrub[k], 'leafy');                   /* potted plants along the loggia */
-      F.lantern(bx-1.5, H+2.5, fz+0.35, 0.8, 12, 0); F.lantern(bx+1.5, H+2.5, fz+0.35, 0.8, 12, 0);
+      LOCUS.lantern(F, bx-1.5, H+2.5, fz+0.35, 0.8, 12); LOCUS.lantern(F, bx+1.5, H+2.5, fz+0.35, 0.8, 12);
     } });
 
   /* =============================================================== 3. THE GREAT PAVILION TENT */
-  ASSET({ key:'tent_pavilion', name:'Great pavilion tent', family:'prop', kit:'locus', group:GROUP_T, culture:'abyssal-desert', types:['prop','tavern/inn'],
+  ASSET({ key:'tent_pavilion', name:'Great pavilion tent', family:'prop', kit:['locus','abyss'], group:GROUP_T, kitGroup:{ abyss:'Hospitality' }, culture:'abyssal-desert', types:['prop','tavern/inn'],
     districts:['market','poor'], wealth:[0.1,0.7], w:18, d:14, h:7, variants:3, variantNames:['striped ridge tent','sand-and-rose with rolled walls','round bell tent'],
     build:function(F){
       var v=F.variant, tc=F.pick(TIMBERC), c1=[CANVASDYEC[0],PASTELC[5],CANVASC[0]][v], c2=[CANVASC[2],PASTELC[0],CANVASDYEC[3]][v];
@@ -144,11 +144,13 @@ reseed(641001);
         LOCUS.hang(F, -W/2, -D/2, W/2, -D/2, EH-0.05, EH-0.1, c2);
         if(v===0){ LOCUS.roll(F, -W/2, EH-0.25, D/2+0.2, W/2, EH-0.25, D/2+0.2, 0.24, c2); }
         else { LOCUS.hang(F, -W/2, D/2, -W/2+4.5, D/2, EH-0.05, EH-0.1, c2); LOCUS.roll(F, -W/2+4.5, EH-0.25, D/2+0.2, W/2, EH-0.25, D/2+0.2, 0.24, c2); }
-        /* inside: a polychrome rug, cushions, a low table, a brazier */
-        F.box(0, 0.02, 0.6, 7.5, 0.05, 4.6, 0, 0xf0e6d0, 'paintcol');
-        for(var k=0;k<6;k++){ var a=k/6*TAU; F.ball(Math.cos(a)*2.3, 0.02, 0.6+Math.sin(a)*1.5, 0.42, CLOTHC[k%7], 'cloth'); }
-        F.cyl(0, 0, 0.6, 0.9, 0.42, 0, PLANKC[1], 'plank'); F.cyl(3.8, 0, -2.6, 0.32, 0.5, 0, BRASSC[0], 'metal'); F.lamp(3.8, 0.7, -2.6, 0.9, 10);
-        F.lantern(-3.6, RH-1.2, 0, 0.9, 14, 0.4); F.lantern(3.6, RH-1.2, 0, 0.9, 14, 0.4); }
+        /* inside, FURNITURE from the catalog: the polychrome rug (eastabyss_tent_rug, the floor covering: it stays under the
+           interiors' pieces, setting 'indoor'), floor cushions round a low table and a brass brazier (its glow stays this kit's
+           lamp). The open tent is a hall the interior set plans: those give way to the interiors with ?interiors=1 ('room'). */
+        FURNISH('eastabyss_tent_rug', 0,0.02,0.6, 0, { v:0, setting:'indoor' });
+        FURNISH('yuni_common_floor_seating', 0,0.07,0.6-1.8, 0, { setting:'room' }); FURNISH('yuni_common_floor_seating', 0,0.07,0.6+1.8, PI, { v:1, setting:'room' });
+        FURNISH('yuni_common_low_table', 0,0.07,0.6, 0, { setting:'room' }); FURNISH('yuni_court_brass_brazier', 3.8,0,-2.6, 0, { setting:'room' }); F.lamp(3.8, 0.7, -2.6, 0.9, 10);
+        LOCUS.lantern(F, -3.6, RH-1.2, 0, 0.9, 14); LOCUS.lantern(F, 3.6, RH-1.2, 0, 0.9, 14); }
       else { /* the bell tent: a centre pole, a canvas cone, a low canvas wall, a tied-open door */
         var R=6.0, WH=1.9, CH=6.2; LOCUS.pole(F, 0, 0, CH+0.3, 0.14, tc, true);
         F.mcone('canvas', 0, WH, 0, R+0.3, 0.25, CH-WH, c1, 18, { under:true, underDy:-0.2 });
@@ -156,11 +158,11 @@ reseed(641001);
         F.lathe('cloth', 0,0, [[R,0.0],[R,WH]], c2, { seg:18 });
         F.box(0, 0, R-0.05, 1.6, WH, 0.4, 0, VOIDC[1], 'dark');
         for(var g=0;g<12;g++){ var ga=g/12*TAU; LOCUS.guy(F, Math.cos(ga)*R, WH, Math.sin(ga)*R, Math.cos(ga)*(R+1.6), Math.sin(ga)*(R+1.6)); F.cyl(Math.cos(ga)*R, 0, Math.sin(ga)*R, 0.05, WH, 0, tc, 'timber'); }
-        F.box(0, 0.02, 0, 5.5, 0.05, 5.5, PI/4, 0xf0e6d0, 'paintcol'); F.cyl(0, 0, -2.6, 0.32, 0.5, 0, BRASSC[0], 'metal'); F.lamp(0, 0.7, -2.6, 0.9, 10); }
+        FURNISH('eastabyss_tent_rug', 0,0.02,0, PI/4, { v:1, setting:'indoor' }); FURNISH('yuni_court_brass_brazier', 0,0,-2.6, 0, { setting:'room' }); F.lamp(0, 0.7, -2.6, 0.9, 10); }
     } });
 
   /* =============================================================== 4. SUN SHADES */
-  ASSET({ key:'sunshade_poles', name:'Four-pole sun shade', family:'prop', kit:'locus', group:GROUP_T, culture:'abyssal-desert', types:['prop'],
+  ASSET({ key:'sunshade_poles', name:'Four-pole sun shade', family:'prop', kit:['locus','abyss'], group:GROUP_T, kitGroup:{ abyss:'Street furniture and docks' }, culture:'abyssal-desert', types:['prop'],
     districts:['core','prosper','market','poor'], wealth:[0,1], w:9, d:9, h:4.5, variants:3, variantNames:['square canvas','twin sails','striped with a bench'],
     build:function(F){
       var v=F.variant, tc=F.pick(TIMBERC), h=3.4, c1=past(F, v*2), c2=v===2 ? CANVASC[0] : past(F, v*2+5);
@@ -172,8 +174,9 @@ reseed(641001);
       else { [[-4,-3],[4,-3],[4,3],[-4,3]].forEach(function(p){ LOCUS.pole(F, p[0],p[1], h, 0.08, tc, true); LOCUS.guy(F, p[0], h, p[1], p[0]*1.2, p[1]*1.25); });
         LOCUS.stripes(F, [-4.4,h,-3.4],[4.4,h,-3.4],[4.4,h,3.4],[-4.4,h,3.4], 8, c1, c2, { sag:0.4 });
         for(var k=0;k<9;k++) F.box(-4+k*1.0, h-0.5, -3.45, 0.85, 0.5, 0.03, 0, k%2?c1:c2, 'cloth');                                     /* a fringe of hanging flaps on the sunny edge */
-        F.box(0, 0.42, 1.2, 4.4, 0.10, 0.6, 0, F.pick(PLANKC), 'plank'); [-1.8,1.8].forEach(function(x){ F.box(x, 0, 1.2, 0.4, 0.42, 0.5, 0, F.pick(MUDBROWNC), 'adobe'); });
-        for(var j=0;j<3;j++) F.ball(-1.5+j*1.5, 0.02, -1.0, 0.4, CLOTHC[(j+2)%7], 'cloth'); }
-      F.lantern(0, h-0.6, 0, 0.7, 10, 0.5);
+        /* FURNITURE (catalog): two plank benches where the long bench stood, and floor cushions (the bench's three colour picks burnt) */
+        LOCUS.burn(F, 3); FURNISH('abyss_bench', -1.1,0,1.2, 0); FURNISH('abyss_bench', 1.1,0,1.2, 0);
+        FURNISH('yuni_common_floor_seating', 0,0,-1.0, 0); }
+      LOCUS.lantern(F, 0, h-0.6, 0, 0.7, 10);
     } });
 })();

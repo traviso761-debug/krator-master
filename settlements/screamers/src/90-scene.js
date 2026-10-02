@@ -108,7 +108,7 @@ const skyTex=canvasTex(4096,2048,(g,w,h)=>{
  gm.addColorStop(0,'rgba(196,210,192,0)');gm.addColorStop(.3,'rgba(196,210,192,.32)');
  gm.addColorStop(1,'rgba(196,210,192,.95)');
  g.fillStyle=gm;g.fillRect(0,HZ-DEG*1.4,w,DEG*1.4+24);
-});
+},undefined,true);   // eager: draws from rng()
 skyTex.wrapS=THREE.RepeatWrapping;skyTex.wrapT=THREE.ClampToEdgeWrapping;
 const sky=new THREE.Mesh(new THREE.SphereGeometry(9000,72,44),
  new THREE.MeshBasicMaterial({map:skyTex,side:THREE.BackSide,fog:false,depthWrite:false}));

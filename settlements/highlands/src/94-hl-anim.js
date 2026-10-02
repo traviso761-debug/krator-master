@@ -15,3 +15,5 @@ hlSetHands();let _hlClockT=0;
 FRAME_HOOKS.push((dt)=>{for(const a of HLANIM){if(a.axis==='y')a.o.rotation.y+=a.w*dt;else a.o.rotation.z+=a.w*dt;}
  _hlClockT+=dt;if(_hlClockT>1){_hlClockT=0;hlSetHands();}});
 window._clocks=HLCLOCKS.length;window._orreryParts=HLANIM.length;
+// LEVEL OF DETAIL (core/lod): the orreries and clock hands above turn, so 97-lod-auto.js leaves them out
+window.LOD_OPTIONS=Object.assign(window.LOD_OPTIONS||{},{skipUnder:()=>HLANIM.map(a=>a.o).concat(HLHANDS?[HLHANDS.hr,HLHANDS.mn]:[])});

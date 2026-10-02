@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Headless verification for Voth (painting-to-3d-world).
+"""Headless verification for Locus (forked from Yuni's harness; the --assert invariants are Locus's own).
 
 Usage:
-  python3 verify.py mavs-refuge.html [--views "Overview,River mouth"] [--all-views]
+  python3 verify.py locus.html [--views "Overview,River mouth"] [--all-views]
                               [--assert] [--sweep] [--baseline base.json]
                               [--save-baseline base.json] [--out ./shots]
 
@@ -26,7 +26,74 @@ budget is exceeded — so it can gate a subagent's hand-off.
 
 Requires: pip install playwright && python3 -m playwright install chromium
 """
-import argparse, asyncio, http.server, json, os, socketserver, sys, threading
+import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, threading
+
+# --------------------------------------------------------------------------
+# Harness helpers. Every verify.py in the repo carries this same block: a fix
+# here belongs in all of them (grep for "Harness helpers").
+GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
+# Every page builds its world in one synchronous script, so "load" fires only when
+# the world is built: minutes under software GL on a shared box (Dalab's city took
+# 285 s with seven other agents running; 180 s timed Locus out mid-build).
+LOAD_MS = 900000
+# KRATOR_CHROME names a Chromium to launch. The other names are the ones single
+# copies of this harness used before they were merged; they still work.
+CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
+
+
+async def launch_chromium(p, args=GL_ARGS):
+    """$KRATOR_CHROME (or an older name in CHROME_ENV), else playwright's own
+    build, else a pinned build under /opt/pw-browsers: a cloud container ships
+    one that need not match the pip playwright's pin."""
+    for k in CHROME_ENV:
+        if os.environ.get(k):
+            return await p.chromium.launch(executable_path=os.environ[k], args=args)
+    try:
+        return await p.chromium.launch(args=args)
+    except Exception as e:
+        if "Executable doesn't exist" not in str(e):
+            raise
+        for c in ["/opt/pw-browsers/chromium"] + sorted(
+                glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"), reverse=True):
+            if os.path.exists(c):
+                return await p.chromium.launch(executable_path=c, args=args)
+        raise
+
+
+def local_three(folder):
+    """The pinned three.js r128 to serve in place of the CDN copy: this build's
+    own, the page folder's, else the repo's copy in kits/ancients (a build that
+    keeps none still runs offline). Returns a path that may not exist."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    cands = [os.path.join(here, "three.min.js"), os.path.join(folder, "three.min.js")]
+    d = here
+    for _ in range(4):
+        d = os.path.dirname(d)
+        cands.append(os.path.join(d, "kits", "ancients", "three.min.js"))
+    return next((c for c in cands if os.path.exists(c)), cands[0])
+
+
+def parse_views(spec, names=()):
+    """--views. Names separated by '|' or ';' are taken exactly, so a name may
+    hold commas. Separated by commas, consecutive pieces are joined back up
+    whenever that spells an existing preset's name, longest first: so
+    "Overview,Town types — row, stacked house, well, tower" is two views."""
+    spec = (spec or "").strip()
+    if not spec:
+        return []
+    if "|" in spec or ";" in spec:
+        return [v.strip() for v in re.split(r"[|;]", spec) if v.strip()]
+    names = set(names or ())
+    toks, out, i = spec.split(","), [], 0
+    while i < len(toks):
+        j = next((j for j in range(len(toks), i + 1, -1)
+                  if ",".join(toks[i:j]).strip() in names), i + 1)
+        v = ",".join(toks[i:j]).strip()
+        if v:
+            out.append(v)
+        i = j
+    return out
+
 
 # --------------------------------------------------------------------------
 SWEEP_JS = """()=>{const bb=new THREE.Box3();const p=new THREE.Vector3();const out=[];const boxes=[];const m=new THREE.Matrix4();
@@ -54,28 +121,36 @@ const R=[]; if(A.TARGET!=='world'){ const kind = A.TARGET==='furn'?'furniture' :
   if(A.TARGET==='furn'){ let bad=[]; A.FURNS.forEach(f=>{ if(!f.culture) bad.push(f.key); }); R.push({name:'furniture-culture-tagged', ok:!bad.length, detail: bad.length?JSON.stringify(bad):A.FURNS.length+' pieces, every one tagged with a culture'}); }
   if(A.TARGET==='flora'){ let bad=[]; A.PLANTS.forEach(f=>{ if(A.PLANT_CLIMATES.indexOf(f.climate)<0 || A.PLANT_ARIDITY.indexOf(f.aridity)<0) bad.push(f.key); }); R.push({name:'plant-climate-tagged', ok:!bad.length, detail: bad.length?JSON.stringify(bad):A.PLANTS.length+' species, every one tagged with a climate and an aridity'}); }
   return R; }
+/* ---- THE LOCUS WORLD. These were Yuni's invariants (gates, the wall, the butte, the Vault, the canal's
+   levels); Locus forked the engine but not that world, so they are rewritten against what Locus has:
+   two highways and a dock road, the canal, river and distributaries, the scheduled sites, the farms. */
 const S=window._streets||{};
 R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A.NAV.nodes.length, detail:JSON.stringify(S)+' · walk graph '+A.NAV.reachable+'/'+A.NAV.nodes.length+' reachable from the hub'});
-{ const angs=A.GATES.map(g=>g.a).concat([Math.PI/2]).map(a=>((a%(2*Math.PI))+2*Math.PI)%(2*Math.PI)).sort((a,b)=>a-b); let bad=[];
-  for(let i=0;i<angs.length;i++){ const d=((angs[(i+1)%angs.length]-angs[i])+2*Math.PI)%(2*Math.PI); if(Math.abs(d-Math.PI/3)>0.01) bad.push(+(d*180/Math.PI).toFixed(1)); }
-  R.push({name:'five-gates-and-vault-equidistant', ok:!bad.length&&A.GATES.length===5, detail: bad.length? JSON.stringify(bad) : '5 gates + the Vault, 60 deg apart'}); }
-{ let bad=[]; ['NW','NE','SE','SW'].forEach(k=>{ const H=A.HIGHWAYS.find(h=>h.name.indexOf(k)>=0); if(!H){ bad.push(k+' missing'); return; } const p=H.pts[H.pts.length-1]; if(Math.max(Math.abs(p[0]),Math.abs(p[1]))<3600) bad.push(k+' stops short');
-    const want={NW:[-1,-1],NE:[1,-1],SE:[1,1],SW:[-1,1]}[k]; if(Math.sign(p[0])!==want[0]||Math.sign(p[1])!==want[1]) bad.push(k+' wrong quadrant'); });
-  R.push({name:'highways-leave-the-map', ok:!bad.length, detail: bad.length? JSON.stringify(bad) : 'NW, NE, SE, SW all run off the map and are part of the connected graph'}); }
-{ const e0=[Math.cos(A.WALL.a0)*A.RW, Math.sin(A.WALL.a0)*A.RW], e1=[Math.cos(A.WALL.a1)*A.RW, Math.sin(A.WALL.a1)*A.RW];
-  const ok=A.inButte(e0[0],e0[1],30,0)&&A.inButte(e1[0],e1[1],30,0); R.push({name:'wall-ends-in-the-butte', ok:ok, detail: ok?'both wall ends are buried in the rock':'a wall end stops short of the butte'}); }
-{ let bad=0; A.ST.nodes.forEach(n=>{ if(n.dead) return; if(A.inButte(n.x,n.z,A.terrainH(n.x,n.z)+2,2) || A.riverDist(n.x,n.z)<0) bad++; });
-  const br=A.BRIDGES.length; R.push({name:'no-street-in-rock-or-river', ok:bad<=br*2, detail:bad+' nodes in rock/water ('+br+' bridge crossings allowed)'}); }
-{ /* every highway must be walkable from its own gate along highway/road edges alone */
+{ /* both highways run off the playable map (MAP_R 2600), and the life layer knows their ends */
+  const H=A.HIGHWAYS.filter(h=>h.cls==='highway'); let bad=[];
+  H.forEach(h=>{ const p=h.pts[h.pts.length-1]; if(Math.max(Math.abs(p[0]),Math.abs(p[1]))<2600-40) bad.push(h.name+' stops at '+[p[0]|0,p[1]|0]); });
+  const ends=(A.NAV.roadEnds||[]).length;
+  R.push({name:'highways-leave-the-map', ok:H.length>=2&&!bad.length&&ends===H.length,
+          detail: bad.length? JSON.stringify(bad) : H.length+' highways reach the map edge; '+ends+' road ends for the caravans'}); }
+{ /* every routed road is continuous along its own class from the town to its far end */
   const par=A.ST.nodes.map((n,i)=>i); const f=i=>{ while(par[i]!==i){ par[i]=par[par[i]]; i=par[i]; } return i; };
-  A.ST.edges.forEach(e=>{ if(e.dead) return; if(e.cls!=='highway' && e.cls!=='road') return; const a=f(e.a), b=f(e.b); if(a!==b) par[a]=b; });
-  let bad=[]; A.HIGHWAYS.forEach(H=>{ const g=A.GATES[H.gate], last=H.nodes[H.nodes.length-1];
-    if(!g||!g.node||!last||f(g.node.id)!==f(last.id)) bad.push(H.name); });
-  R.push({name:'highways-reach-their-gates', ok:!bad.length, detail: bad.length? JSON.stringify(bad) : A.HIGHWAYS.length+' runs, each continuous from its gate to the map edge'}); }
+  A.ST.edges.forEach(e=>{ if(e.dead) return; if(e.cls!=='highway'&&e.cls!=='road') return; const a=f(e.a), b=f(e.b); if(a!==b) par[a]=b; });
+  let bad=[]; A.HIGHWAYS.forEach(H=>{ const n0=H.nodes[0], n1=H.nodes[H.nodes.length-1]; if(!n0||!n1||f(n0.id)!==f(n1.id)) bad.push(H.name); });
+  R.push({name:'routed-roads-continuous', ok:!bad.length, detail: bad.length? JSON.stringify(bad) : A.HIGHWAYS.length+' routed roads, each one unbroken highway/road edges end to end'}); }
+{ /* a street that crosses the river, a distributary or the canal does it on a bridge */
+  const cross=(ax,az,bx,bz,cx,cz,dx,dz)=>{ const d=(bx-ax)*(dz-cz)-(bz-az)*(dx-cx); if(!d) return null;
+    const t=((cx-ax)*(dz-cz)-(cz-az)*(dx-cx))/d, u=((cx-ax)*(bz-az)-(cz-az)*(bx-ax))/d; return (t>=0&&t<=1&&u>=0&&u<=1)?[ax+(bx-ax)*t, az+(bz-az)*t]:null; };
+  const W=[A.RIVER, A.CANAL].concat(A.DISTRIB); let n=0, bad=[];
+  A.ST.edges.forEach(e=>{ if(e.dead) return; const p=A.ST.nodes[e.a], q=A.ST.nodes[e.b];
+    W.forEach(P=>{ for(let i=0;i<P.length-1;i++){ const x=cross(p.x,p.z,q.x,q.z,P[i][0],P[i][1],P[i+1][0],P[i+1][1]); if(!x) continue; n++;
+      if(!A.BRIDGES.some(B=>Math.hypot(B.x-x[0],B.z-x[1])<(B.L||20)/2+25)) bad.push(e.cls+' at '+[x[0]|0,x[1]|0]); } }); });
+  R.push({name:'water-crossings-bridged', ok:!bad.length, detail: bad.length? bad.length+' unbridged: '+JSON.stringify(bad.slice(0,6)) : n+' street crossings of river, mouths and canal; '+A.BRIDGES.length+' bridges cover them'}); }
 { /* nothing placed inside the wall may sit on a street, or inside another building.
      The overlap test is a real oriented-box test, not a circle test, because once the
      buildings are aligned to the grid a circle test is both too strict and too slack. */
-  const B=A.PLACED||[]; let onSt=0, clash=[];
+  /* Locus's PLACED also lists its town trees (tag 'plant', 69z): they stand on the street verges on
+     purpose and they ARE the TREE_SITES, so they are judged as trees, not buildings */
+  const B=(A.PLACED||[]).filter(b=>b.tag!=='plant'); let onSt=0, clash=[];
   const cor=(b,pad)=>{ const c=Math.cos(b.ry||0), s=Math.sin(b.ry||0), hw=(b.w||8)/2+pad, hd=(b.d||8)/2+pad;
     return [[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[ b.x + q[0]*hw*c + q[1]*hd*s, b.z - q[0]*hw*s + q[1]*hd*c ]); };
   const hit=(P,Q)=>{ let best=1e9; for(const R2 of [P,Q]) for(let e=0;e<2;e++){
@@ -85,7 +160,7 @@ R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A
         a0=Math.min(a0,pa); a1=Math.max(a1,pa); b0=Math.min(b0,pb); b1=Math.max(b1,pb); }
       if(a1 < b0 || b1 < a0) return false;
       const ov=Math.min(a1,b1)-Math.max(a0,b0); if(ov<best) best=ov; } return best; };
-  /* a scheduled superblock legitimately sits where the grid was suppressed, so the
+  /* a scheduled site legitimately sits where the grid was suppressed, so the
      street-centre test applies to the INFILL only */
   B.forEach(b=>{ if(!b.plotName && A.onStreet(b.x,b.z, Math.max(2,(b.rad||4)*0.55))) onSt++; });
   const boxes=B.map(b=>cor(b,0));
@@ -94,11 +169,13 @@ R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A
     const pen=hit(boxes[i],boxes[j]);
     if(pen!==false && pen>0.5) clash.push(B[i].key+'/'+B[j].key+' by '+pen.toFixed(1)+'m');
   }
-  R.push({name:'inner-city-placement-sane', ok: onSt<=Math.ceil(B.length*0.06) && clash.length===0,
-          detail: B.length+' buildings · '+onSt+' close to a street centre · '+(clash.length?clash.length+' box overlaps: '+JSON.stringify(clash.slice(0,5)):'no box overlaps')}); }
+  R.push({name:'placement-sane', ok: onSt<=Math.ceil(B.length*0.06) && clash.length===0,
+          detail: B.length+' placed · '+onSt+' close to a street centre · '+(clash.length?clash.length+' box overlaps: '+JSON.stringify(clash.slice(0,5)):'no box overlaps')}); }
 { /* NOTHING IN THE ROAD, NOTHING THROUGH A TREE. Both used to be point tests — the packer
      asked about a building's centre and then set down a box whose corners lay in the street. */
-  const B=(A.PLACED||[]).filter(b=>b.w!=null);
+  /* infill only: a scheduled site (plotName) owns the road or track that runs into it — the
+     caravanserai's gate passage, a pumpjack on its track, the market yard on the boulevard */
+  const all=(A.PLACED||[]).filter(b=>b.w!=null&&b.tag!=='plant'), B=all.filter(b=>!b.plotName);
   const segD=(px,pz,ax,az,bx,bz)=>{const vx=bx-ax,vz=bz-az,wx=px-ax,wz=pz-az,L=vx*vx+vz*vz,
     t=L>0?Math.max(0,Math.min(1,(wx*vx+wz*vz)/L)):0;return Math.hypot(px-(ax+vx*t),pz-(az+vz*t));};
   const samp=b=>{const c=Math.cos(b.ry),s=Math.sin(b.ry),hw=b.w/2,hd=b.d/2,o=[];
@@ -110,7 +187,7 @@ R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A
       for(const v of P){ const d=pad-segD(v[0],v[1],p.x,p.z,q.x,q.z); if(d>w) w=d; } }
     if(w>1.0){ inRoad.push(b.key+' by '+w.toFixed(1)+'m'); if(w>worst) worst=w; } });
   let trees=0;
-  (A.TREE_SITES||[]).forEach(t=>{ for(const b of B){
+  (A.TREE_SITES||[]).forEach(t=>{ for(const b of all){
       if(Math.hypot(b.x-t[0],b.z-t[1]) > Math.hypot(b.w,b.d)/2+4) continue;
       const c=Math.cos(b.ry), s=Math.sin(b.ry), dx=t[0]-b.x, dz=t[1]-b.z;
       const lx=dx*c-dz*s, lz=dx*s+dz*c, qx=Math.abs(lx)-b.w/2, qz=Math.abs(lz)-b.d/2;
@@ -118,49 +195,32 @@ R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A
       if(dd < (t[2]||2)-0.5){ trees++; break; } } });
   R.push({name:'nothing-in-the-road-or-through-a-tree',
           ok: inRoad.length <= Math.ceil(B.length*0.01) && trees <= 4,
-          detail: B.length+' buildings · '+inRoad.length+' with a box over a street edge by more than a metre'+
+          detail: B.length+' infill buildings · '+inRoad.length+' with a box over a street edge by more than a metre'+
                   (inRoad.length?' (worst '+worst.toFixed(1)+'m: '+JSON.stringify(inRoad.slice(0,4))+')':'')+
                   ' · '+trees+' standing trees inside a building'}); }
-{ /* the alignment pass: every building should face the hub, the wall, or along the ring */
-  const S=(window._place&&window._place.align)||{};
-  const B=A.PLACED||[], off=S.offGrid||0;
-  R.push({name:'inner-city-aligned-to-grid', ok: off <= Math.ceil(B.length*0.12),
-          detail: (B.length-off)+'/'+B.length+' on a grid axis · '+(S.snapped||0)+' took the street-facing axis, '+
-                  (S.fellBack||0)+' the next best, '+(S.refused||0)+' refused outright'}); }
-{ /* every plot in the schedule produced a building */
-  const names=new Set((A.PLACED||[]).map(b=>b.plotName&&b.plotName.replace(/ \d$| \(west\)$| \(east\)$/,'')));
-  const miss=(A.PLOTS||[]).filter(P=>!names.has(P.name)).map(P=>P.name);
-  R.push({name:'plot-schedule-built', ok:!miss.length, detail: miss.length?JSON.stringify(miss):(A.PLOTS||[]).length+' scheduled plots, all built'}); }
+{ /* every site in the schedule (30-layout.js SITES_L) was built */
+  const miss=(A.SITES_L||[]).filter(s=>!s.rec).map(s=>s.name);
+  R.push({name:'site-schedule-built', ok:A.SITES_L.length>0&&!miss.length, detail: miss.length?JSON.stringify(miss):A.SITES_L.length+' scheduled sites, all built ('+((window._place||{}).scheduled)+' placed by the schedule)'}); }
 { /* the life layer: everyone routed, every kind present, the key places found */
   const L = window._life;
   if(!L) R.push({name:'life-layer-alive', ok:false, detail:'window._life missing'});
   else {
-    const need = ['factory','lab','guild','hospital','yunilib','order','order_home','caravanserai','depot','market','park','shop','warehouse','fuel'];
+    const need = ['refinery','tank','generator','fuel','geochapter','civic','warehouse','caravanserai','dock','farm','pumpjack','market','shop','tavern','park','home_mid','home_poor','fisher_home'];
     const miss = need.filter(k => !(L.poi[k] > 0));
-    const kinds = ['rambler','worker','academic','monk','merchant'].filter(k => !(L.byKind[k] > 0));
+    const kinds = ['rambler','geomancer','merchant','farmer','fisher'].filter(k => !(L.byKind[k] > 0));
     const fails = L.routeFailures();
     R.push({name:'life-layer-alive',
             ok: !miss.length && !kinds.length && L.agents > 200 && L.vehicles > 20 && fails <= L.agents*0.05,
             detail: miss.length ? 'no POI for '+JSON.stringify(miss)
                   : kinds.length ? 'no agents of kind '+JSON.stringify(kinds)
-                  : L.agents+' people, '+L.vehicles+' carts and caravans, '+fails+' unroutable, '+
+                  : L.agents+' people, '+L.vehicles+' carts and caravans, '+L.boats+' boats, '+fails+' unroutable, '+
                     Object.keys(L.poi).length+' place categories'}); } }
-{ const cool=A.NL_LAMPS.filter(l=>l[5]).length; R.push({name:'vault-electric-light', ok:cool>=30, detail:cool+' electric fittings (cool), '+(A.NL_LAMPS.length-cool)+' oil lamps'}); }
-{ const cool=0; let bad=[], prev=1e9, L=A.CANAL_LEN;
-  for(let s=0;s<=L;s+=25){ const l=A.canalLevel(s); if(l>prev+1e-6) bad.push(['rises at',s|0]); prev=l; }
-  const head=A.canalLevel(0), tail=A.canalLevel(L);
-  R.push({name:'canal-falls-all-the-way', ok:!bad.length&&head>tail, detail: bad.length? JSON.stringify(bad.slice(0,4)) : 'head '+head.toFixed(2)+' m -> tail '+tail.toFixed(2)+' m over '+(L|0)+' m'}); }
-{ let bad=[], n=0;
-  for(let s=0;s<A.CANAL_LEN;s+=20){ const C=A.canalAt(s); n++;
-    if(A.inButte(C.x,C.z,A.terrainH(C.x,C.z)+2,6)) bad.push(['in the rock',s|0]);
-    if(s>420 && A.riverDist(C.x,C.z) < 40) bad.push(['too near the river',s|0]);
-    if(Math.hypot(C.x,C.z) < 760) bad.push(['inside the town',s|0]); }
-  R.push({name:'canal-route-sane', ok:!bad.length, detail: bad.length? JSON.stringify(bad.slice(0,4)) : n+' stations: clear of the rock, the river and the built-up area'}); }
+{ const n=A.NL_LAMPS.length; R.push({name:'night-lamps-placed', ok:n>=100, detail:n+' lamps, '+A.NL_WINDOWS.length+' lit windows'}); }
 { let onStreet=0, bad=0; A.FARM_PLOTS.forEach(p=>{ if(A.onStreet(p.x,p.z,4)) onStreet++; if(A.maskAt(p.x,p.z)!==7) bad++; });
-  R.push({name:'farm-belt-reserved', ok:onStreet===0 && bad===0 && A.FARM_PLOTS.length>150,
-          detail:A.FARM_PLOTS.length+' plots, '+onStreet+' on a street, '+bad+' not marked farmland'}); }
-{ const mouthOK = A.terrainH(-2600,-2600) < A.terrainH(2600,2600) - 200 && A.terrainH(2600,-2600) > A.terrainH(-2600,-2600) + 200;
-  R.push({name:'valley-opens-NW', ok:mouthOK, detail:'NW '+(A.terrainH(-2600,-2600)|0)+' m · SE head '+(A.terrainH(2600,2600)|0)+' m · NE wall '+(A.terrainH(2600,-2600)|0)+' m'}); }
+  R.push({name:'farms-reserved', ok:onStreet===0 && bad===0 && A.FARM_PLOTS.length>=3,
+          detail:A.FARM_PLOTS.length+' farm plots, '+onStreet+' on a street, '+bad+' not marked farmland'}); }
+{ const bad=A.PUMPJACKS.filter(p=>!p.track||!p.track.length).map(p=>p.name);
+  R.push({name:'pumpjacks-on-tracks', ok:A.PUMPJACKS.length>=20&&!bad.length, detail:bad.length?JSON.stringify(bad):A.PUMPJACKS.length+' pumpjacks, each on its track'}); }
 { const names=A.SITES.map(s=>s.name); R.push({name:'inspector-sites', ok:names.length>40, detail:names.length+' registered sites'}); }
 return R;}"""
 
@@ -180,19 +240,19 @@ async def run(a):
     fails = []
     try:
         async with async_playwright() as p:
-            b = await p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
+            b = await launch_chromium(p)
             W, H = [int(t) for t in a.size.split("x")]
             pg = await b.new_page(viewport={"width": W, "height": H})
             pg.set_default_timeout(300000)
             errs = []
             pg.on("pageerror", lambda e: errs.append(str(e)))
-            three = os.path.join(folder, "three.min.js")
+            three = local_three(folder)
             if os.path.exists(three):
                 await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
                     route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=180000)
+            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
             try:
-                await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=170000)
+                await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=580000)   # software GL on a shared box: 170 s timed out mid-build
             except Exception as e:
                 print("timed out waiting for the world to build")
             await pg.wait_for_timeout(2500)
@@ -251,7 +311,9 @@ async def run(a):
 
             if a.wait:
                 await pg.wait_for_timeout(a.wait)
-            views = [v.strip() for v in a.views.split(",") if v.strip()]
+            presets = await pg.evaluate(
+                "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+            views = parse_views(a.views, presets)
             if a.all_views:
                 views = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
             await pg.screenshot(path=os.path.join(a.out, "initial.png"))
@@ -263,7 +325,7 @@ async def run(a):
                     if not ok:
                         raise RuntimeError("no such preset button")
                     await pg.wait_for_timeout(900)
-                    fn = os.path.join(a.out, "view_" + v.replace(" ", "_") + ".png")
+                    fn = os.path.join(a.out, "view_" + v.replace(" ", "_").replace("/", "-") + ".png")
                     await pg.screenshot(path=fn)
                     print("shot:", fn)
                 except Exception as e:

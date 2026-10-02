@@ -1056,3 +1056,36 @@ views, including three eye-level plains and one from 1.9 km up.
 Measured: 326 k scene triangles. The heaviest machine is the Harrow at 69 k of
 250 k. There are 20 registered volumes, all occupied, and the error panel is
 clean. Every view was shot and looked at.
+
+## Iziz round 4: helpers the Iziz city asked for (2026-10-01)
+
+Five changes to shared helpers. Iziz vendors all three files, and Highlands and
+Port re-vendored `54-mat-concrete.js`. With nothing set, every builder
+behaves as before.
+
+* **The broken fall** (`52-sky-abc.js`, `54-mat-concrete.js`):
+  - `toppledUpper` takes an optional `partFn(U,y0,y1)`. While the global
+    `TOPPLE_BREAK` holds `{x,z}` (in the builder's local frame), the fallen
+    body is built in two pieces. The first runs from the stump to that point.
+    The second lies on beyond a gap: kinked about 0.3 rad toward the point's
+    side, flatter and slumped, with rubble at the break.
+  - `bodyGroup` passes `partFn`, so Skyscrapers D, E and F can break.
+  - The second piece's foot and bearing come back on `TOPPLE_BREAK.out`.
+  - A placer sets `TOPPLE_BREAK` around one call and clears it. Splitting the
+    build draws the PRNG differently, so the Iziz placer restores the stream
+    the unbroken build leaves.
+* **The tripod market, denser** (`77z`, `tripodMarket`):
+  - The great awnings reach 1.5 rb.
+  - Their stalls stand on a lattice that fills the shade.
+  - A ring of four-post canopies, each over a stall, fills the star's notches
+    out to the lot. They keep off the leg feet, the masts and the guy ropes.
+  - Optional `T.stalls` collects every stall's `{x,y,z,face}`. The REG entry
+    is tagged `market:true, destination:'market'`.
+* **Wreck slivers** (`77z`, `wreckRefine`): the cut keeps or drops whole
+  triangles. A lathed shell's long thin triangles left vertical slits, and the
+  destroyed Tyrell block read as see-through slats. Triangles are now split
+  until no edge exceeds 2.4 m before the cut, so holes come out as blobs.
+* **`measureKit` shaft** (`77z`): `meas.shaft` measures everything above the
+  podium, legs included, about the core centre.
+* **`trimPlinths` keep list** (`77z`): `keep` may be a list of OBBs (both
+  pieces of a broken fall).

@@ -2,10 +2,12 @@
 // Everything about WHERE things are: the wall, the gates, the three hills, the precinct discs, the terrain function.
 // Metres; x east, z south (+z is toward the painting's viewer, the south gate is the painting's approach).
 window.CITY=true;
+window.DOORS=[];window.CHIMNEYS=[];   // filled by vnDoor / vnChimney as the vernacular builds: the Paths overlay's doors, the smoke's sources
 const CITY={
  WORLD:1900,                 // side of the terrain plane
  PLATEAU:18,CHASM:-16,       // the plateau stands 34 m above the moat floor
- R:470,                      // mean wall radius: 4x the old map's area
+ R:470,                      // mean radius of the CORE (the round-3 wall line): 4x the old map's area
+ WALL_K:Math.sqrt(1.2),      // the wall stands this much further out (round 4, Travis): the enclosed area is 20% larger
  GATES:[90,200,315,30].map(d=>d*Math.PI/180),
  // the three hills: palace (largest), temple, arena. Each is a MESA: a level top of radius r0 standing H above the
  // plateau, an escarpment E metres wide (rock, unbuildable), then a gentle skirt. `ring` is the ring road's radius,
@@ -14,17 +16,23 @@ const CITY={
   palace:{x:200,z:-130,H:40,r0:96,E:34,ring:144},
   temple:{x:266,z:168,H:27,r0:94,E:26,ring:134},
   arena:{x:-240,z:20,H:23,r0:92,E:26,ring:130}},
- SPACEPORT_A:315*Math.PI/180,SPACEPORT_R:760,SPACEPORT_H:4,SPACEPORT_RAD:94,
+ SPACEPORT_A:315*Math.PI/180,SPACEPORT_R:800,   // out with the wall (round 4): the causeway ends at R+240
+SPACEPORT_H:4,SPACEPORT_RAD:94,
  QUALITY:1,                  // scales counts (biome, folk); 1 = the artifact
+ FAUNA:true,                 // the hyperjungle animals (biome fragment 58) in the jungle outside the wall
 };
 const GATES=CITY.GATES;
 const FRAME_HOOKS_PRE=[];   // per-frame fns registered before 90-scene defines FRAME_HOOKS (the biome's wind tick); 90b moves them over
 const SEED_CITY=424242;
 function polar(x,z){return{r:Math.hypot(x,z),t:Math.atan2(z,x)};}
 function smoothstep(e0,e1,x){const t=clamp((x-e0)/(e1-e0),0,1);return t*t*(3-2*t);}
-// the wall: the old Iziz outline, doubled, straight and flush around each gatehouse
+// the wall: the old Iziz outline, doubled, straight and flush around each gatehouse. coreR is the round-3 wall line:
+// the hills' districts, the ancient quarters and the settler lattice were laid out inside it and still are (so nothing
+// there moved when the wall went out); wallR is the wall now, WALL_K further out, and the ring between the two is the
+// farm belt with its own street grid (90b, pass 4b).
 function wallRaw(t){return CITY.R+44*Math.sin(3*t+1)+20*Math.sin(7*t+2)+12*Math.sin(11*t);}
-function wallR(t){let r=wallRaw(t);for(const g of GATES){const d=angDiff(t,g);if(d<.18){const k=1-smoothstep(.03,.18,d);r=r*(1-k)+wallRaw(g)*k;}}return r;}
+function coreR(t){let r=wallRaw(t);for(const g of GATES){const d=angDiff(t,g);if(d<.18){const k=1-smoothstep(.03,.18,d);r=r*(1-k)+wallRaw(g)*k;}}return r;}
+function wallR(t){return CITY.WALL_K*coreR(t);}
 function gatePos(g){const R=wallR(g);return[R*Math.cos(g),R*Math.sin(g)];}
 // hills: mesa profile (1 on top, S-curve down the escarpment) or the skirt, whichever is higher; plus the ramp
 // corridor up the gate bearing (20 m wide, rising over ~E+40 m so the road is steep but walkable)
@@ -57,6 +65,8 @@ function terrainBase(x,z){const p=polar(x,z),R=wallR(p.t),ro=p.r-R;
 terrainH=function(x,z){let h=terrainBase(x,z);const L=FLATGRID[Math.floor(x/FLATCELL)+','+Math.floor(z/FLATCELL)];if(L)for(const f of L){const d=Math.hypot(x-f[0],z-f[1]);if(d<f[2]+f[3]){const k=1-smoothstep(f[2],f[2]+f[3],d);h=h*(1-k)+f[4]*k;}}return h;};
 // inside the wall (with a margin), on the plateau
 function insideWall(x,z,margin){const p=polar(x,z);return p.r<wallR(p.t)-(margin||0);}
+// inside the round-3 wall line: the core layout (clusters, parks, settler lattice, the deliberate towers) keeps to it
+function insideCore(x,z,margin){const p=polar(x,z);return p.r<coreR(p.t)-(margin||0);}
 function nearestHill(x,z){let best=null,bd=1e9;for(const k in CITY.HILLS){const H=CITY.HILLS[k];const d=Math.hypot(x-H.x,z-H.z)-H.ring;if(d<bd){bd=d;best=k;}}return{key:best,d:bd};}
 // a point on the hill's ring road / top at bearing a
 function hillPt(H,a,r){return[H.x+r*Math.cos(a),H.z+r*Math.sin(a)];}

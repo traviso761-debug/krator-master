@@ -30,7 +30,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   var POI = LIFE.poi;
   function P(cat, x, z, extra){
     var e = { x:x, z:z, r:(extra && extra.r) || 8, name:(extra && extra.name) || '',
-              doors:(extra && extra.doors) || null };
+              doors:(extra && extra.doors) || null, doorIds:(extra && extra.doorIds) || null };
     (POI[cat] || (POI[cat]=[])).push(e); return e;
   }
   function named(b, re){ return b.plotName && re.test(b.plotName); }
@@ -47,7 +47,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   PLACED.forEach(function(b){
     var A = ASSET_BY_KEY[b.key]; if(!A) return;
     var rad = Math.max(A.w, A.d)*0.5 + 4;
-    var dr = doorsOf(b), f = A.family, EX = { r:rad, doors:dr };
+    var dr = doorsOf(b), f = A.family, EX = { r:rad, doors:dr, doorIds:b.doorIds ? b.doorIds.slice(0,6) : null };
     if(f==='poor') P('home_poor', b.x, b.z, EX);
     else if(f==='mid') P('home_mid', b.x, b.z, EX);
     else if(f==='rich') P('home_rich', b.x, b.z, EX);
@@ -55,7 +55,11 @@ var LIFE = { agents:[], poi:{}, stats:{} };
       if(b.key==='civic_library') P('yunilib', b.x, b.z, EX);
       if(b.key==='civic_archive' || b.key==='civic_chapter_house' || b.key==='civic_school') P('order', b.x, b.z, EX); }
     else if(f==='trade'){
-      if(b.key==='trade_caravanserai') P('caravanserai', b.x, b.z, EX);
+      if(b.key==='trade_caravanserai'){ var cv = P('caravanserai', b.x, b.z, EX);
+        /* its gate (local +z, 56-mid.js) and the court behind it, so a caravan drives in
+           through the gate and stands in the yard rather than anywhere within 50 m */
+        var Ag = A, gp = loc(b.x, b.z, 0, Ag.d/2 + 7, b.ry||0);
+        cv.gate = { x:gp[0], z:gp[1] }; cv.court = function(){ var q = loc(b.x, b.z, rr(-16,16), rr(-14,6), b.ry||0); return { x:q[0], z:q[1] }; }; }
       else if(named(b, /Vault depot/)) P('depot', b.x, b.z, EX);
       else if(b.key==='trade_market_hall') P('warehouse', b.x, b.z, EX);
       else P('shop', b.x, b.z, EX);
@@ -154,7 +158,9 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     var best = {};
     NAV.nodes.forEach(function(n){
       if(n.tag!=='highway' && n.tag!=='road') return;
-      var r = Math.hypot(n.x, n.z); if(r < 1300) return;
+      /* out past the farm belt and far beyond drawing range, but not the 5 km map edge: at a
+         camel's pace that is an hour and a half each way, and nobody would ever see one arrive */
+      var r = Math.hypot(n.x, n.z); if(r < 1300 || r > 2100) return;
       var q = Math.round(clockOf(n.x, n.z));
       if(!best[q] || r > best[q].r) best[q] = { id:n.id, x:n.x, z:n.z, r:r };
     });
@@ -193,16 +199,18 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   }
   for(var k in KINDS){ for(var i=0;i<KINDS[k].n;i++) spawn(k, KINDS[k]); }
 
+  /* A CARAVAN'S DAY is a loop, held as data on the caravan (`next`): in off the desert road
+     to the caravanserai's yard, a long stand there, sometimes a trip to the market circle and
+     back, then out along a highway to the map edge, where it is off the map (hidden) for a
+     while before it comes in again. Carts potter between the goods places. */
   function vehDestination(v){
     if(v.caravan){
-      /* A caravan's business is the caravanserai: two trips in three end in its yard, where
-         it stands for five to twelve minutes before moving on. */
-      /* and it does not set out for the yard it is already standing in — with a dwell of
-         several minutes that is how a caravan spends the whole day parked */
-      var yard = pool(['caravanserai'])[0];
-      var here = yard && Math.hypot(yard.x - v.x, yard.z - v.z) < 70;
-      if(!here && rnd() < 0.66) return yard;
-      return pick(pool(['market','warehouse','depot','shop']));
+      if(v.next==='out' && ROAD_END.length){ var re = pick(ROAD_END); return { x:re.x, z:re.z, r:4, name:'road end', roadEnd:true }; }
+      if(v.next==='market') return pick(pool(['market']));
+      var Y = pool(['caravanserai'])[0];
+      /* route to the street before the gate, then the last leg goes in through it to the court */
+      if(Y && Y.gate) return { x:Y.gate.x, z:Y.gate.z, r:6, name:'caravanserai yard', yard:Y };
+      return Y;
     }
     return pick(pool(v.cfg.order.concat(['plaza'])));
   }
@@ -227,11 +235,22 @@ var LIFE = { agents:[], poi:{}, stats:{} };
      city. Two code paths for one behaviour is how that happens; `viz` keeps them apart for
      the devtool and the draw without forking the simulation. */
   function spawnVeh(kind, cfg, nBeast){
-    var s0 = pick(kind==='caravan' ? pool(['caravanserai','market']) : pool(['depot','warehouse','market','shop']));
-    var s = { x:s0.x + rr(-10,10), z:s0.z + rr(-10,10) };
-    VEH.push({ kind:'cart', viz:kind, caravan:(kind==='caravan'), cfg:cfg, x:s.x, z:s.z, y:terrainH(s.x,s.z), ry:rr(0,TAU), path:null, seg:0, t:0,
-               leg:null, wait:rr(0,30), speed:cfg.speed*rr(0.85,1.1), want:null, node:-1, beasts:nBeast||1,
-               leg2:(kind==='caravan' ? (rnd()<0.5?'in':'rest') : null), atRoad:false, hidden:false, destFn:vehDestination,
+    var car = (kind==='caravan'), s0, next = null, hid = false, w0 = rr(0,30);
+    /* A caravan starts either out on the desert road, about to come in (off the map until it
+       has a route), or standing in the caravanserai's yard, about to leave. */
+    if(car && ROAD_END.length && rnd() < 0.5){ var re = pick(ROAD_END); s0 = { x:re.x, z:re.z }; next = 'yard'; hid = true; w0 = rr(0,25); }
+    var Y = car ? pool(['caravanserai'])[0] : null, court = null;
+    if(car && !hid){ s0 = Y.court ? Y.court() : Y; court = Y.gate || null; next = rnd() < 0.3 ? 'market' : 'out'; w0 = rr(5,60); }
+    else if(!car) s0 = pick(pool(['depot','warehouse','market','shop']));
+    var jit = car ? 0 : 10, s = { x:s0.x + rr(-jit,jit), z:s0.z + rr(-jit,jit) };
+    /* `off` and `step` are what step() reads to keep a walker to one side of the centre line
+       and to swing its gait. Vehicles never had them: off was undefined, so the first metre of
+       every route turned x and z into NaN and the vehicle vanished from the draw for good. That,
+       not the state machine, is why no caravan ever moved (and every cart stopped after its
+       first set-out). A vehicle keeps to the right of the road's centre line. */
+    VEH.push({ kind:'cart', viz:kind, caravan:car, cfg:cfg, x:s.x, z:s.z, y:terrainH(s.x,s.z), ry:rr(0,TAU), path:null, seg:0, t:0,
+               leg:null, wait:w0, speed:cfg.speed*rr(0.85,1.1), want:null, node:-1, beasts:nBeast||1,
+               off:rr(1.2,2.0), step:0, phase:rr(0,TAU), next:next, atRoad:hid, hidden:hid, court:court, destFn:vehDestination, trips:0,
                hide:pick(PAL.trunk), load:pick(PAL.cloth), garb:pick(PAL.people.garb), skin:pick(PAL.people.skin) });
   }
   for(i=0;i<CARTS.n;i++) spawnVeh('cart', CARTS, 1);
@@ -263,7 +282,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     return elsewhere(a, roll(), 5, roll);
   }
   /* ---- the request queue: a few routes solved per frame, never a stampede ---- */
-  var QUEUE = [], QPF = 5, failed = 0;
+  var QUEUE = [], QPF = 5, failed = 0, vfailed = 0;
   function ask(a, want, deep){ a.want = want; a.pathPending = true; QUEUE.push({ a:a, deep:!!deep }); }
   function serve(){
     var n = 0;
@@ -286,12 +305,16 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   }
 
   /* which threshold of this place, and is it worth crossing to? */
-  function standPoint(w, fromX, fromZ){
+  function standPoint(w, fromX, fromZ, vehicle){
     if(!w) return null;
-    if(w.doors && w.doors.length){
-      var best=null, bd=1e9;
+    if(w.yard && w.yard.court) return w.yard.court();               /* a caravan, through the gate into the court */
+    if(w.doors && w.doors.length && !vehicle){                       /* carts do not drive in at a door */
+      var best=null, bd=1e9, bi=-1;
       for(var i=0;i<w.doors.length;i++){ var d=w.doors[i], q=Math.hypot(d[0]-fromX, d[1]-fromZ);
-        if(q<bd){ bd=q; best=d; } }
+        if(q<bd){ bd=q; best=d; bi=i; } }
+      /* a WORKING door (76-doors.js): walk up to it, open it and go in, rather than loitering outside */
+      var D = (w.doorIds && bi>=0) ? FIX.byId[w.doorIds[bi]] : null;
+      if(best && bd < 70 && D && D.to==='interior' && D.style!=='gate') return { x:best[0], z:best[1], door:D.id };
       if(best && bd < 70) return { x:best[0] + rr(-1.2,1.2), z:best[1] + rr(-1.2,1.2) };
     }
     /* an open place — the market, a park, the forecourt — is stood IN, not at */
@@ -302,14 +325,21 @@ var LIFE = { agents:[], poi:{}, stats:{} };
 
   /* ---- movement ---- */
   function step(a, dt, hour){
-    if(a.wait > 0){ a.wait -= dt; return; }
+    if(a.wait > 0){ a.wait -= dt;
+      if(a.wait <= 0 && a.inside){ var Dx=FIX.byId[a.inside]; DOORS.touch(a.inside, 3.0); a.inside=null;   /* out through the door again */
+        if(Dx){ a.x=Dx.x+Math.sin(Dx.yaw)*0.9; a.z=Dx.z+Math.cos(Dx.yaw)*0.9; a.y=terrainH(a.x,a.z); } }
+      return; }
     /* THE LAST LEG COMES FIRST. It was below the no-path check, so an agent that had
        finished its route and was crossing to a doorstep looked path-less and was sent to
        ask for a new destination on the spot — which is what kept the caravans pinned to
        the depot flipping between states without ever setting out. */
     if(a.leg){
       var lx=a.leg.x-a.x, lz=a.leg.z-a.z, lL=Math.hypot(lx,lz);
-      if(lL < 0.5){ a.leg=null; if(!a.destFn){ var dl=a.cfg.dwell||[10,30]; a.wait=rr(dl[0],dl[1]); } a.step=0; return; }
+      if(lL < 0.5){
+        if(a.leg.door && !a.leg.inner){ var Dd=FIX.byId[a.leg.door]; DOORS.touch(Dd.id, 3.5);        /* at the threshold: open up, step in */
+          a.leg = { x:Dd.x-Math.sin(Dd.yaw)*1.4, z:Dd.z-Math.cos(Dd.yaw)*1.4, door:Dd.id, inner:true }; return; }
+        if(a.leg.inner){ a.inside = a.leg.door; }
+        a.leg=null; if(!a.destFn){ var dl=a.cfg.dwell||[10,30]; a.wait=rr(dl[0],dl[1]); } a.step=0; return; }
       var st = Math.min(lL, a.speed*0.72*dt);
       a.x += lx/lL*st; a.z += lz/lL*st; a.y = terrainH(a.x, a.z);
       a.ry = Math.atan2(lx, lz); a.step = (a.step||0) + a.speed*dt*2.2;
@@ -324,7 +354,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     var A = NAV.nodes[a.path[a.seg]], B = NAV.nodes[a.path[a.seg+1]];
     if(!B){ /* arrived at the street; now cross to the door */
       a.node = a.path[a.seg]; a.path = null;
-      a.leg = standPoint(a.want, a.x, a.z);
+      a.leg = standPoint(a.want, a.x, a.z, !!a.destFn);
       if(!a.leg){ var d = a.cfg.dwell || [10,30]; a.wait = rr(d[0], d[1]); a.step = 0; }
       return;
     }
@@ -332,7 +362,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     a.t += a.speed*dt / L;
     while(a.t >= 1){ a.t -= 1; a.seg++;
       A = NAV.nodes[a.path[a.seg]]; B = NAV.nodes[a.path[a.seg+1]];
-      if(!B){ a.node = a.path[a.seg]; a.path=null; a.leg = standPoint(a.want, a.x, a.z);
+      if(!B){ a.node = a.path[a.seg]; a.path=null; a.leg = standPoint(a.want, a.x, a.z, !!a.destFn);
         if(!a.leg){ var d2=a.cfg.dwell||[10,30]; a.wait=rr(d2[0],d2[1]); } return; }
       dx=B.x-A.x; dz=B.z-A.z; L=Math.hypot(dx,dz)||1;
     }
@@ -349,27 +379,38 @@ var LIFE = { agents:[], poi:{}, stats:{} };
      it impossible to see which of the two was asking. A vehicle asks for itself. */
   function stepVeh(v, dt, hour){
     if(v.wait > 0){ v.wait -= dt; return; }
+    if(!v.path && !v.leg && v.court){                  /* out of the court through the gate first */
+      v.leg = { x:v.court.x, z:v.court.z }; v.court = null; v.exiting = true; return; }
     if(!v.path && !v.leg){
       var w = v.destFn(v); v.want = w;
       var sN = v.node >= 0 ? v.node : navNear(v.x, v.z), gN = navNear(w.x, w.z);
       var pth = route(sN, gN, false);
       if(pth && pth.length > 1){
-        v.path = pth; v.seg = 0; v.t = 0; v.node = -1; v.hidden = false; remember(v.viz||v.kind, pth);
-      } else {
-        v.node = sN;
-        v.leg = standPoint(w, v.x, v.z);
+        v.path = pth; v.seg = 0; v.t = 0; v.node = -1; v.hidden = false; v.atRoad = false; remember(v.viz||v.kind, pth);
+      } else if(pth){                                   /* already at the nearest node: cross to the place */
+        v.node = sN; v.hidden = false;
+        v.leg = standPoint(w, v.x, v.z, true);
         if(!v.leg) arriveVeh(v, w);
+      } else {                                          /* no route: think again shortly */
+        v.node = sN; v.want = null; v.wait = rr(5,15); vfailed++; v.fails = (v.fails||0) + 1;
       }
       return;
     }
     var w2 = v.want;
     step(v, dt, hour);
-    if(!v.path && !v.leg && v.wait <= 0) arriveVeh(v, w2);
+    if(!isFinite(v.x) || !isFinite(v.z)){ ERR('life: a vehicle position went NaN'); v.path = null; v.leg = null; v.x = w2.x; v.z = w2.z; v.y = terrainH(v.x, v.z); }
+    /* step() has just finished the trip (it may have set a pedestrian's dwell: arriveVeh decides) */
+    if(!v.path && !v.leg){ if(v.exiting){ v.exiting = false; v.wait = 0; } else arriveVeh(v, w2); }
   }
   function arriveVeh(v, w){
     var d = v.cfg.dwell || [20,60];
+    v.trips++;
     if(v.caravan){
-      v.wait = rr(d[0], d[1]); return;                            /* the long stand in the yard */
+      if(w && w.roadEnd){ v.hidden = true; v.atRoad = true; v.next = 'yard'; v.wait = rr(60, 240); return; }   /* off the map */
+      if(v.next==='market'){ v.next = 'yard'; v.wait = rr(40, 110); return; }
+      v.next = rnd() < 0.3 ? 'market' : 'out';
+      if(w && w.yard){ var nd = NAV.nodes[v.node]; if(nd) v.court = { x:nd.x, z:nd.z }; }   /* the way back out */
+      v.wait = rr(d[0], d[1]); return;                           /* the long stand in the yard */
     }
     v.wait = rr(d[0], d[1]);
   }
@@ -397,6 +438,8 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     _c.setHex(col); mesh.setColorAt(idx, _c);
   }
 
+  /* fixed-step fast-forward for headless tests (frames there are far too slow to watch a day go by) */
+  LIFE.sim = function(secs, dt){ dt=dt||0.25; var h=skyHour(); for(var t=0;t<secs;t+=dt){ serve(); for(var i=0;i<AG.length;i++) step(AG[i], dt, h); for(i=0;i<VEH.length;i++) stepVeh(VEH[i], dt, h); } };
   var acc = 0;
   TICKS.push(function(dt, hour){
     serve();
@@ -406,7 +449,7 @@ var LIFE = { agents:[], poi:{}, stats:{} };
     for(var i=0;i<AG.length;i++){
       var a = AG[i];
       step(a, dt, hour);
-      if(nb >= MAXP) continue;
+      if(nb >= MAXP || a.inside) continue;                 /* indoors: not drawn until they come out */
       var ddx=a.x-cx, ddz=a.z-cz; if(ddx*ddx+ddz*ddz > far) continue;
       var bob = a.wait > 0 ? 0 : Math.abs(Math.sin(a.step))*0.055;
       var sway = a.wait > 0 ? 0 : Math.sin(a.step)*0.11;
@@ -475,5 +518,8 @@ var LIFE = { agents:[], poi:{}, stats:{} };
   LIFE.stats.poi = counts;
   window._life = { all:AG, veh:VEH, places:POI, agents:AG.length, vehicles:VEH.length, byKind:byKind, poi:counts, roadEnds:ROAD_END.length,
                    corridors:function(){ var o={}; for(var k in USED) o[k]=Object.keys(USED[k]).length; return o; },
-                   routeFailures:function(){ return failed; }, stats:LIFE.stats };
+                   routeFailures:function(){ return failed; }, vehicleRouteFailures:function(){ return vfailed; }, stats:LIFE.stats, sim:LIFE.sim,
+                   /* the caravans' loop, for the verifier and the console */
+                   caravans:function(){ return VEH.filter(function(v){ return v.caravan; }).map(function(v){
+                     return { x:+v.x.toFixed(1), z:+v.z.toFixed(1), next:v.next, moving:!!(v.path||v.leg), offMap:v.hidden, trips:v.trips, wait:+Math.max(0,v.wait).toFixed(1) }; }); } };
 })();

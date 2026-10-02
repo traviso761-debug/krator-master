@@ -54,7 +54,16 @@ rsDefMat('woodI',RSMAT.wood.clone());
 // edges (the Dalab key-border, the Voth roundels). rsSailMat caches one material per key.
 function rsSailMat(key,W,H,draw,outline){const mk='sail:'+key;if(RSMAT[mk])return mk;
  const t=canvasTex(W,H,(g,w,h)=>draw(g,w,h,outline));t.wrapS=t.wrapT=THREE.ClampToEdgeWrapping;
- rsDefMat(mk,new THREE.MeshStandardMaterial({map:t,roughness:.92,side:DS,alphaTest:.5}));return mk;}   // alphaTest: a painter may cut the cloth (the crab-claw's hollow leech)
+ const m=rsDefMat(mk,new THREE.MeshStandardMaterial({map:t,roughness:.92,side:DS,alphaTest:.5}));m.onBeforeCompile=rsSailWind;return mk;}   // alphaTest: a painter may cut the cloth (the crab-claw's hollow leech)
+// wind: the cloth breathes and flutters in the vertex shader. rsSail stores each vertex's flutter vector in
+// its (otherwise unused) colour, 0.5+0.5*D with |D|<=1: D runs along the belly side, scaled by the belly
+// profile (0 on the edge spars, the luff and the battens), so spars stay put and the cloth never swings
+// back through its mast; it is zero on every edge and corner (rsSail), so the sheets, yards and battens stay
+// attached. White (|D|>1) means rigid. The geometry stays the rest pose the probes check.
+function rsSailWind(sh){sh.uniforms.uRsTime=RS_U.uTime;
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\n#ifndef RS_UTIME\n#define RS_UTIME\nuniform float uRsTime;\n#endif\n#ifndef USE_COLOR\nattribute vec3 color;\n#endif')
+  .replace('#include <begin_vertex>','#include <begin_vertex>\n{vec3 rsD=color*2.-1.;if(dot(rsD,rsD)<1.01){vec3 rsP=(modelMatrix*vec4(position,1.)).xyz;'+
+   'float rsF=.55+.3*sin(uRsTime*1.3+rsP.x*.11+rsP.z*.07)+.15*sin(uRsTime*4.1+rsP.x*.7-rsP.y*.9+rsP.z*.5);transformed+=rsD*rsF;}}');}
 // helpers the sail painters share
 function rsPolyPath(g,P){g.beginPath();P.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();}
 function rsInset(P,d){let cx=0,cy=0;for(const p of P){cx+=p[0];cy+=p[1];}cx/=P.length;cy/=P.length;return P.map(p=>{const dx=p[0]-cx,dy=p[1]-cy,l=Math.hypot(dx,dy)||1;return[p[0]-dx/l*d,p[1]-dy/l*d];});}
@@ -66,7 +75,7 @@ function rsCentroid(P){let x=0,y=0;for(const p of P){x+=p[0];y+=p[1];}return[x/P
 // Copied from core/sockets/80-cultures.js (SYMBOLS and the mkCulture packs, on main): the same marks and
 // colours the buildings carry, so a ship reads as the same faction as its port. Re-copy if the packs change.
 const RS_CULT={iziz:{field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',ink:'#f3e2c0',ink2:'#e07a2a'},
- voth:{field:'#24487a',edge:'#182e4d',band:'#3a5f8f',ink:'#d8cdb4'}};
+ voth:{field:'#4b2a6e',edge:'#2f1a47',band:'#6a4a8f',ink:'#d8cdb4'}};
 function rsSymSun(g,cx,cy,R,c1,c2){g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,TAU);g.fill();
  for(let k=0;k<12;k++){const a=k*TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}}
 function rsSymDiamond(g,cx,cy,R,c1){g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,TAU);g.fill();}

@@ -83,9 +83,26 @@ saying what fixed it.
       under the "Scribes' hall" label. **Round 10 (merge to main):** it was the
       misaddressed label-atlas cell that Iziz upstream fixed (whole atlas
       cells); `93-labels.js` re-vendored, the bar is gone (`shots/c16`).
-- [ ] The placed count differs by a few between runs of the same build (875 /
+- [x] The placed count differs by a few between runs of the same build (875 /
       882): something in placement or the biome reads an unseeded source. The
-      audit is clean either way.
-- [ ] `verify.py --views` splits on commas, so a preset whose name holds a comma
+      audit is clean either way. **Fixed (Oct 2026):** not a PRNG — the GPU. The
+      buildable / class masks are 2048 px canvases whose anti-aliased road and
+      footprint edges `canBuild` thresholds at 235, and a GPU-rasterised 2D canvas
+      draws those edges differently from Chromium's CPU rasteriser: forcing GPU
+      canvas rasterisation reproduced 882 (main 528) against 875 on the CPU.
+      `85-city-paint.js` now creates the ground, mask and class canvases (and the
+      horizon map in `90a`) with `willReadFrequently`, which keeps them on the CPU
+      rasteriser everywhere: CPU and GPU loads both give 875, the same placement
+      hash and the same mask hashes. (34-kitdefs' leaf card still uses
+      Math.random, but only for its pixels.)
+- [x] `verify.py --views` splits on commas, so a preset whose name holds a comma
       (the set's row presets 'Town types — row, stacked house, well, tower' and
       friends) cannot be shot by name; the eye-level presets cover the types.
+      **Fixed:** `parse_views` takes `|` or `;` as exact separators, and with
+      commas rejoins pieces that spell a preset's name (every verify.py).
+
+## The vendored biome (Oct 2026)
+- [ ] The swlowlands biome is vendored as `src/86-bio-*`. Its core moved to `core/biome/` (one copy
+      for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
+      hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
+      Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.

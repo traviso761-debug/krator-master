@@ -116,3 +116,4 @@ SEDESERT.buildFauna=function(R,q){
  bands.forEach(b=>BIO.register({name:'Sand striders',x:b.x,z:b.z,y:Y(b.x,b.z)-4,r:b.len/2+14,h:10}));
  return{fauna:st};};
 })();
+BIO.kitEnd(SEDESERT);   // its exports run in its registry; the default kit is current again

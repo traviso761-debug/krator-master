@@ -34,9 +34,9 @@ function buildRsIslanderKarakoa(){reseed(72000);
  for(let i=0;i<9;i++){const x=rr(fx0+.5,fx1-.5),z=rr(-1.8,1.8);rsFigure(B,[x,fy,z],rr(0,TAU),[RED,0x3a2a1c,YEL][Math.floor(rng()*3)],false,0x6a4028);rsLink(B,'wood',[x+.2,fy+.3,z],[x+.4,fy+3,z],.025,0x5a4028,4);rsCone(B,'metal',.05,.3,[x+.41,fy+3.15,z],null,0xb0b4b8,4);}
  // bipod mast and the tilted tanja sail
  const mx=1.5,mh=9.5;for(const s of[-1,1])rsLink(B,'wood',[mx,fy,s*1.6],[mx+.4,fy+mh,0],.1,0x6a4a2c,6);
- const S=rsSail(B,{key:'islander-tanja',O:[mx+.2,fy+1.6,.2],U:[-.97,.26,0],V:[.3,1,0],belly:.7,nu:12,nv:10,
+ rsRig(B,[[mx,fy,0],[mx+.4,fy+mh,0]]);const S=rsSail(B,{key:'islander-tanja',O:[mx+.2,fy+1.6,.2],U:[-.97,.26,0],V:[.3,1,0],belly:.7,nu:12,nv:10,
   A:t=>[lerp(-2.8,7.4,t),6.6],Bf:t=>[lerp(-2,6.6,t),0],draw:rsTanjaStripes});
- rsSailEdge(B,S,0,.08,0x6a4a2c,-.04,1.04);rsSailEdge(B,S,1,.07,0x6a4a2c,-.04,1.04);rsRope(B,[mx+.4,fy+mh,0],S.at(.3,0));rsRope(B,[mx+.4,fy+mh,0],[pb[0],pb[1],0]);rsRope(B,S.at(1,1),[-9,yB,0]);
+ rsSailEdge(B,S,0,.08,0x6a4a2c,-.04,1.04);rsSailEdge(B,S,1,.07,0x6a4a2c,-.04,1.04);rsRope(B,[mx+.4,fy+mh,0],S.at(.3,0));rsRope(B,[mx+.4,fy+mh,0],[pb[0],pb[1],0]);rsRope(B,S.at(1,1),[-9,yB,0]);rsRigEnd(B);
  for(const x of[-10,10])rsFigure(B,[x,dY(H.uAt(x)),0],x>0?0:Math.PI,0x2a2a2a,false,0x6a4028);
  rsLink(B,'wood',[-10.5,dY(.05)+1,.4],[-13.5,-.6,.8],.06,0x6a4a2c,5);
  rsBake(B,V.group,'islanderKarakoa');V.deckY=fy;return V;}

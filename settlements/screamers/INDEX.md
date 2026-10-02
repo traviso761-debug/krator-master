@@ -4,7 +4,7 @@
 
 Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit.
 
-Docs: `KNOWN_ISSUES.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/furniture.html`, `dist/screamers.html`
 
@@ -18,7 +18,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7); animation (28) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7); animation (37) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
 | `32-surfaces.js` | 7 | surfaces (1) |
@@ -45,9 +45,9 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `65-veladiga.js` | 13 |  |
 | `66-office-c.js` | 2 |  |
 | `67-cultural.js` | 4 |  |
-| `68-hexahedron.js` | 45 **big** |  |
+| `68-hexahedron.js` | 63 **big** |  |
 | `69-mat-salvage.js` | 7 | salvage (decay level 3) (1); Screamer retint (85) |
-| `70-hypertree.js` | 7 |  |
+| `70-hypertree.js` | 12 |  |
 | `70-sky-g.js` | 5 |  |
 | `70c-furniture.js` | 7 | catalogue (106) |
 | `71-sky-h.js` | 3 |  |
@@ -57,8 +57,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `72a-wind.js` | 6 |  |
 | `73-police.js` | 3 |  |
 | `74-hospital.js` | 3 |  |
-| `75-biome-10-core-head.js` | 4 | PRNG (14); noise (24); host binding (32); accounting (60) |
-| `75-biome-20-core-kit.js` | 12 | merged buckets (46); bake (121) |
+| `75-biome-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (41); accounting (69) |
+| `75-biome-20-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
 | `75-biome-30-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
 | `75-biome-40-core-place.js` | 6 | surface sampling (49) |
 | `75-biome-45-init.js` | 1 |  |

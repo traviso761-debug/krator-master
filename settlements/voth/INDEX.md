@@ -4,7 +4,7 @@
 
 Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system.
 
-Docs: `API.md`, `PASS5.md`, `README.md`, `SUBAGENT.md`, `voth-districts-brief.md`, `voth-life-layer-brief.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `PASS5.md`, `PORT.md`, `README.md`, `SUBAGENT.md`, `voth-districts-brief.md`, `voth-life-layer-brief.md`
 
 Built output (never open it; edit `src/` and rebuild): `voth.html`
 
@@ -16,7 +16,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
-| `00-head.html` | 5 |  |
+| `00-head.html` | 6 |  |
 | `05-palette.js` | 25 | 0. PALETTE — FROZEN (1); BUDGET (263) |
 | `10-core.js` | 11 | 1. CORE (1); 2. WORLD CONSTANTS (72); 3. TERRAIN FIELD (174) |
 | `15-shore.js` | 4 | 4. THE SHORELINE (1) |
@@ -56,7 +56,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `70-veg.js` | 35 **big** | 18. VEGETATION (1); 18b. NAMED WILD FLORA + SHRUBS/SUCCULENTS (154); placement (437) |
 | `71-industry.js` | 43 **big** | 18b. WILDERNESS INDUSTRY (1); MINE ENTRANCE (45); QUARRY (151); MUSHROOM FARM (421); QUARRY LABORER SETTLEMENTS (659) |
 | `72-lanterns.js` | 6 | STATIC LANTERN FIXTURES (1) |
-| `75-terrain.js` | 8 | 21. FINISH THE GROUND (1); 22. EMIT THE CITY (17); 23. TERRAIN MESH (21); 24. WATER (92) |
+| `75-terrain.js` | 9 | 21. FINISH THE GROUND (1); 22. EMIT THE CITY (17); 23. TERRAIN MESH (21); 24. WATER (92) |
 | `78a-life-core.js` | 15 | 21. LIFE LAYER (1) |
 | `78b-life-nav.js` | 41 **big** | global nav-grid + A (1); local avoidance (first piece) (585) |
 | `78c-life-ships.js` | 70 **big** | big ships (1); the Fortress coast guard (931) |
@@ -70,11 +70,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `79a-convoys.js` | 12 | SILT STRIDER CONVOYS (moving) (1); WADING — the one tuning block (64) |
 | `79b-strider-nav.js` | 36 **big** | the strider's own nav grid + A (1) |
 | `79c-strider-model.js` | 42 **big** | THE BESPOKE SILT STRIDER MODEL (1) |
-| `80-camera.js` | 20 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (297) |
-| `82-daynight.js` | 45 **big** | DAY/NIGHT CYCLE (1); night-light props (143); moving-vehicle lanterns (280); the Guild canton's clock (478); NIGHT ILLUMINATION DRIVER (573) |
+| `80-camera.js` | 21 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (298) |
+| `82-daynight.js` | 47 **big** | DAY/NIGHT CYCLE (1); night-light props (162); moving-vehicle lanterns (299); the Guild canton's clock (497); NIGHT ILLUMINATION DRIVER (592) |
 | `83-weather.js` | 8 | WEATHER (1) |
 | `84-fauna.js` | 10 | AMBIENT WILDLIFE (1) |
 | `85-probe.js` | 6 | 20. PROBE (1) |
 | `86-inspect.js` | 15 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 21 | 28. PATH VISUALIZER (1) |
+| `88b-voth-minimap.js` | 3 | 27. MINIMAP (1) |
 | `99-tail.html` | <1 |  |

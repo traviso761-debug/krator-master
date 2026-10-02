@@ -31,5 +31,19 @@ host/site/
 host/site.toml
 host/menagerie/
 
-# Agent worktrees made by the Claude Code harness: nested checkouts, never part of the tree.
+# kitshots.py item dumps (one per sheet)
+settlements/locus/sheet-items*.json
+# a local copy for headless verification only (Locus loads three.js from the CDN)
+settlements/locus/three.min.js
+host/address.json
+host/address.json.tmp
+
+# Agent worktrees (Claude Code): never committed.
 .claude/worktrees/
+
+# A kit's local three.js copy for verify.py (the CDN may be blocked); sedesert keeps a tracked one.
+biomes/*/three.min.js
+
+# a local three.js copy for verify.py when the CDN is blocked (not committed)
+settlements/girder/three.min.js
+settlements/mavs-refuge/three.min.js

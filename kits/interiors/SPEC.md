@@ -1,7 +1,25 @@
-# kits/interiors/ — spec (scaffolding only)
+# kits/interiors/ — spec
 
-Nothing is built here yet. The goal is to place furniture inside buildings, and
-later to let people walk in. Right now people stop at the door. Yuni's
+**Status (2026-10): implemented here, all four "What to build first" steps.** `ROOM()`
+registration and the room-outline debug view (#1); a placer for every room kind in
+`IX.PROGRAMS`, not just hall and bedroom (#2), greedy with bounded backtracking, on a 0.1 m
+8-neighbour walk grid; doors joined to a life layer (#3: `IX.life`, walkers from the street
+through doors and up stairs to a seat, bed or bench and out, deterministic in time); the
+cut-away with a storey selector (#4). And the part of Yuni's planner that FINDS rooms inside a
+building: `IX.planBuilding(shell, program)` cuts a footprint into rooms per storey, with
+partitions, a door in each, stairs between storeys, windows and a walk graph. The catalog's
+lights come back as data and are stripped by default (a light budget). See `README.md`,
+`API.md` and `KNOWN_ISSUES.md`. Everything is engine-neutral and reads furniture through an
+adapter; the demo furnishes from the master catalog (`kits/catalog`, which replaces
+`kits/furniture/` below until that kit exists). Additions to the contract below: door `swing`,
+`hinge`, `h`, `leaf`, `id`; window `h`; room `id`, `seed`, `level`, `fixtures` (API.md
+"Registering rooms").
+
+**Implemented first in Yuni** (`settlements/yuni/src/64-interiors.js`, runtime in `76-doors.js`, data contract in
+`settlements/yuni/GAME_EXPORT.md`). Start there before building interiors for another settlement: the planner
+fits rooms inside an asset's captured bodies, so it should port to any build that uses the same asset frame.
+
+The goal is to place furniture inside buildings, and later to let people walk in. Right now people stop at the door. Yuni's
 `KNOWN_ISSUES.md` calls this out: "no interiors — people stand at the door, not
 inside".
 

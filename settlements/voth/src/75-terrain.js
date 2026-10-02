@@ -112,7 +112,11 @@ var waterUni = {
   uSky:    { value:new THREE.Color(0xc6c8c2) },
   uFogCol: { value:HAZE.clone() },
   uFogDen: { value:scene.fog.density },
-  uCam:    { value:new THREE.Vector3() }
+  uCam:    { value:new THREE.Vector3() },
+  /* light on the water, set every frame by 82-daynight.js: 1 / warm white by day
+     (the shader's original constants), dimmed and tinted by the key at night */
+  uBodyK:  { value:1.0 },
+  uSpecCol:{ value:new THREE.Color(1.0, 0.95, 0.84) }
 };
 
 var waterMat = new THREE.ShaderMaterial({
@@ -141,7 +145,8 @@ var waterMat = new THREE.ShaderMaterial({
   fragmentShader: [
     'precision highp float;',
     'uniform float uTime, uFogDen;',
-    'uniform vec3 uSun, uShallow, uDeep, uSky, uFogCol, uCam;',
+    'uniform vec3 uSun, uShallow, uDeep, uSky, uFogCol, uCam, uSpecCol;',
+    'uniform float uBodyK;',
     'varying vec3 vW; varying float vD; varying vec2 vP;',
     'vec2 wgrad(vec2 p, float t, float lod){',
     '  vec2 g = vec2(0.0);',
@@ -163,12 +168,12 @@ var waterMat = new THREE.ShaderMaterial({
     '  float deepT = smoothstep(0.8, 20.0, vD);',
     '  vec3 body = mix(uShallow, uDeep, deepT);',
     '  float diff = clamp(dot(N, uSun), 0.0, 1.0);',
-    '  body *= 0.66 + 0.44*diff;',
+    '  body *= (0.66 + 0.44*diff) * uBodyK;',
     '  vec3 H = normalize(uSun + V);',
     '  float spec = pow(clamp(dot(N,H),0.0,1.0), 190.0) * 1.5 * lod;',
     '  float glit = pow(clamp(dot(N,H),0.0,1.0), 34.0) * 0.10;',
     '  vec3 col = mix(body, uSky, clamp(fres*0.86,0.0,0.82));',
-    '  col += vec3(1.0,0.95,0.84) * (spec + glit);',
+    '  col += uSpecCol * (spec + glit);',
     '  float foam = smoothstep(1.7, 0.15, vD) * (0.5 + 0.5*lod*sin(vP.x*0.18 + vP.y*0.13 + uTime*1.6));',
     '  col = mix(col, vec3(0.90,0.89,0.85), clamp(foam,0.0,0.58));',
     '  float alpha = mix(0.72, 0.96, deepT);',

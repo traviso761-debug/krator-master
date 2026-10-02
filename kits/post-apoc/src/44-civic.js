@@ -1,8 +1,10 @@
 // prefix: cv
 // ---------------------------------------------------------------- civic and religious: longhouse, mess hall, big man's house, shaman hut
 // (uses lg* helpers from 42-lg-dwell.js: lgBox, lgGable, lgLean, lgRoof, lgTarp, lgP4, lgPost, lgHood, lgPatch, lgArcRail)
-function cvBench(x,y,z,len,ry){W(x,y,z,ry||0,()=>{box('plank',0,.42,0,len,.08,.42,jc(0x8a6a44,.06));for(const sx of [-1,1])box('plank',sx*(len/2-.2),0,0,.1,.42,.36,jc(0x5c4630,.06));});}
-function cvTable(x,y,z,len,ry){W(x,y,z,ry||0,()=>{box('plank',0,.82,0,len,.07,.9,jc(0x9a7a52,.06));for(const sx of [-1,1])for(const sz of [-1,1])beam('wood',[sx*(len/2-.2),y,sz*.35],[sx*(len/2-.2),.82,sz*.35],.09,jc(0x5c4630,.06));});}
+// benches and tables: the catalog's plank bench (2 or 3.6 m) and long table (3 or 6.8 m). Indoors (the halls the interior set plans) the
+// builders no longer place them: the interiors do (?interiors=1). cvSkip*: the random numbers the old drawing drew, so the structure keeps its stream
+function cvBench(x,y,z,len,ry){rngSkip(6);return FURNISH('pa_bench',x,y,z,ry||0,{v:len>=3.2?1:0});}
+function cvTable(x,y,z,len,ry){rngSkip(10);return FURNISH('pa_long_table',x,y,z,ry||0,{v:len>=5?1:0});}
 function cvPole(x,z,h,r,col){cyl('wood',x,0,z,r||.09,h,jc(col||0x5c4630,.06),8);}
 // a spiked pole: pole with a cone tip
 function cvSpike(x,z,h,col){cvPole(x,z,h,.07,col);cone('iron',x,h,z,.06,.5,jc(0x3a3430,.05),6);}
@@ -25,7 +27,7 @@ function cvLonghouse(o){
   for(let k=0;k<6;k++){const x=-12.5+k*5;if(k%2===0)door(x,py,fz+.05,1.3,2.3,{step:false,col:pick([0x7a2e28,0x2f5f8f,0x3b7f6e,0xc99a2e])});else win(x,py+1.0,fz+.06,1.2,1.1,{lit:true,shutters:true});}
   deck(0,py,fz+1.55,HW-1.5,2.2,{rail:['f'],posts:false,col:0x9a7a52});stairs(0,0,fz+4.4,0,py,fz+2.6,2.2);
   lgLean(0,fz,HW-1.5,2.9,wy-.1,wy-.9,{col:0xc0a040});
-  for(const x of [-8,-1.5,5.5,11])cvBench(x,py,fz+.55,3.0);for(const px of [-13,13])barrel(px,py,fz+1.6);
+  for(const x of [-8,-.5,5.5,11])cvBench(x,py,fz+.55,3.0);   /* 2 m benches; the second moved clear of the door at -2.5 */for(const px of [-13,13])barrel(px,py,fz+1.6);
   for(let k=0;k<3;k++)sock('awning',-6+k*6,wy-.5,fz+.02,0,{w:4.6,d:1.6,drop:.5,h:wy-.5-py+.02});
   for(const x of [-9.5,-3.5,2.5,8.5]){cvPole(x,fz+2.55,4.6,.08);sock('banner',x,4.5,fz+2.6,0,{w:.7,h:2.2});}});
  // front wall (z+): 'open' = bays so the hall reads from the street; 'closed' = solid wall with framed doors
@@ -54,33 +56,17 @@ function cvLonghouse(o){
   deck(0,py,fz+1.3,HW-1.5,2.6,{posts:false,col:0x9a7a52});stairs(0,0,fz+4.6,0,py,fz+2.6,2.2);
   for(const px of [-13,13]){barrel(px,py,fz+1.6);barrel(px+.5,py,fz+2.0);}
  }
- // ---- interior layouts (hall floor top y=.56, x -14.8..14.8, z -4.9..4.9)
- const lampH=(x,z)=>{beam('plain',[x,wy+.6,z],[x,wy-.35,z],.012,jc(0x4a4038,.05),true,3);sph('glow',x,wy-.55,z,.17,jc(0xffd890,.03));cyl('iron',x,wy-.4,z,.22,.04,jc(0x3a3430,.05),8);};
- if(v===0){ // feast hall: two long tables with benches, hearth pits down the middle, a head table on a dais
-  for(const z of [-1.7,1.7])cvTable(-1,py,z,21,0);for(const z of [-2.7,-.7,.7,2.7])cvBench(-1,py,z,20.4);
-  for(const x of [-8,0,8]){fire(x,py,0,.36);}
-  box('plank',13.6,py,0,2.6,.4,9,jc(0x8a6a44,.06));cvTable(13.7,py+.4,0,6.8,PI/2);cvBench(14.8,py+.4,0,6.6,PI/2);
-  for(const z of [-3.6,3.6]){box('plank',12.2,py+.4,z,.7,.7,.7,jc(pick([0x7a2e28,0x2f5f8f]),.06));}
-  for(let k=0;k<7;k++){const x=-11+k*4;lampH(x,-1.7);lampH(x,1.7);}
-  for(let k=0;k<6;k++){const x=-9+k*3.6;cyl('sheet',x,py+.9,-1.7+((k%2)*3.4),.11,.26,jc(pick([0xa8acac,0xc45a30,0x8a4a2a]),.06),8);}
- }else if(v===1){ // sleeping hall: bunk stalls along the back wall with partitions and curtains, a central hearth, chests along the front
-  for(let k=0;k<6;k++){const cx=-12.5+k*5;
-   for(const sx of [-1,1])for(const sz of [-1,1])beam('wood',[cx+sx*1.9,py,-4.6+sz*.9],[cx+sx*1.9,py+2.0,-4.6+sz*.9],.09,jc(0x5c4630,.06));
-   for(const yy of [.45,1.45]){box('plank',cx,py+yy,-4.6,3.9,.1,2.0,jc(0x8a6a44,.06));box('cloth',cx-.2,py+yy+.1,-4.6,3.3,.14,1.6,jc(pick([0xc9442a,0x2f7f8e,0xd8a020,0x4d6f3c,0x8a3a6a,0xe8dcc0]),.06));box('cloth',cx+1.4,py+yy+.1,-4.6,.6,.18,.9,jc(0xe8dcc0,.05));}
-   box('plank',cx-2.5,py,-3.6,.1,2.4,3.2,jc(0x7a5c3c,.06));
-   if(k%2===0)plane4('cloth',[cx-1.6,py+2.2,-3.0],[cx+1.6,py+2.2,-3.0],[cx-1.6,py+.6,-3.0],[cx-1.6,py+.6,-3.0],.02,jc(pick([0x8a3a2c,0x5a7a4a,0xb09a4a]),.06));}
-  for(const x of [-5,5]){fire(x,py,.4,.45);cvBench(x,py,1.8,3.6);cvBench(x,py,-1.0,3.6);}
-  for(let k=0;k<8;k++){const x=-13+k*3.8;box('plank',x,py,3.9,1.1,.6,.6,jc(pick([0x7a5c3c,0x6a4a30]),.06));box('plank',x,py+.6,3.9,1.14,.06,.64,jc(0x4a3a2c,.05));}
-  for(let k=0;k<4;k++)lampH(-9+k*6,0);
-  for(let k=0;k<3;k++){const x=-8+k*8;beam('wood',[x-1.5,py+2.7,1.2],[x+1.5,py+2.7,1.2],.05,jc(0x5c4630,.06),true,5);for(let j=0;j<4;j++)plane4('cloth',[x-1.2+j*.7,py+2.7,1.2],[x-.7+j*.7,py+2.7,1.2],[x-1.2+j*.7,py+1.9,1.2],[x-1.2+j*.7,py+1.9,1.2],.02,jc(pick([0xc9442a,0xe8dcc0,0x2f7f8e]),.06));}
- }else{ // council hall: central hearth ring, two curved benches, a dais with the chair at the west end
-  fire(0,py,0,.55);for(let k=0;k<11;k++){const a=k/11*TAU;sph('conc',Math.cos(a)*1.4,py+.12,Math.sin(a)*1.4,.24,jc(pick([0x9a9488,0xb0a898,0x8a8478]),.08),.7);}
-  for(const [r0,r1] of [[3.0,3.5],[4.0,4.45]]){sector('plank',0,0,r0,r1,PI/2+.3,PI*1.5-.3,py,py+.45,jc(0x8a6a44,.06));sector('plank',0,0,r0,r1,-PI/2+.3,PI/2-.3,py,py+.45,jc(0x8a6a44,.06));}
-  box('plank',-12.6,py,0,4.6,.5,9.0,jc(0x7a5c3c,.06));box('plank',-12.6,py+.5,0,4.0,.06,8.4,jc(0x9a7a52,.06));
-  box('plank',-13.6,py+.56,0,1.0,.55,1.0,jc(0x6a4a30,.06));box('plank',-14.2,py+1.1,0,.2,1.7,1.2,jc(0x6a4a30,.06));cyl('iron',-14.06,py+2.6,0,.4,.06,jc(0xb8902a,.05),12);
+ // ---- interior layouts (hall floor top y=.56, x -14.8..14.8, z -4.9..4.9): the hall is planned and furnished by the interiors kit
+ // (kits/interiors/sets/post-apoc.js), so the tables, benches, hearths, bunks, chests, chair and lamps the variants drew are gone; the
+ // dais and the posts and bunting stay (structure). The skips are the random numbers each variant's furniture drew.
+ if(v===0){ // feast hall: a dais at the east end for the head table
+  rngSkip(20+24+123);box('plank',13.6,py,0,2.6,.4,9,jc(0x8a6a44,.06));rngSkip(10+6+6+84+18);
+ }else if(v===1){ // sleeping hall
+  rngSkip(365);
+ }else{ // council hall: the chair's dais with its four posts, bunting along the back wall
+  rngSkip(41+33+8);box('plank',-12.6,py,0,4.6,.5,9.0,jc(0x7a5c3c,.06));box('plank',-12.6,py+.5,0,4.0,.06,8.4,jc(0x9a7a52,.06));rngSkip(6);
   for(const z of [-3.2,3.2]){cvPole(-11,z,3.6,.1);cvPole(-14.5,z,3.6,.1);}
-  for(const x of [-8,-4.5,4.5,8]){cvBench(x,py,x<0?-4.0:4.0,3.4);}
-  for(const [x,z] of [[-7,0],[7,0],[0,-4.4],[0,4.4]])lampH(x,z);lampH(0,0);lampH(-12.5,-3);lampH(-12.5,3);
+  rngSkip(24+42);
   for(let k=0;k<5;k++){cvFlags([-14,wy+1.0,-4.5],[14,wy+1.0,-4.5],0,cvFlagCols);}
  }
  // double-pitched sheet roof with smoke vents along the ridge
@@ -109,18 +95,15 @@ function cvMess(o){
  W(0,0,-cz,0,()=>container({len:L,col:o.v===1?0xc45a30:0x2f5f8f,open:'front'}));
  W(0,0,cz,0,()=>{for(let k=0;k<4;k++)porthole(-4.2+k*2.8,1.5,1.22,.3);door(5,.16,1.22,1.0,2.0,{step:true});win(-7.2,1.05,1.22,.9,.9,{lit:true});});
  W(0,0,-cz,PI,()=>{win(-3,1.05,1.22,1.4,1.0,{shutters:true});win(1.5,1.05,1.22,1.4,1.0,{lit:true});door(4.6,.16,1.22,1.0,2.0,{step:false});});
- box('plank',0,.16,-cz+1.3,9,.9,.5,jc(0x8a6a44,.06));box('plank',0,1.06,-cz+1.3,9.4,.08,.75,jc(0x5c4630,.06));
- for(let k=0;k<3;k++)box('plank',-4+k*4,1.9,-cz+1.35,3.6,.06,.4,jc(0x6a5238,.06));box('glow',0,2.3,-cz+1.2,8,.1,.05,jc(0xf2c26a,.05));
- for(let k=0;k<7;k++){const x=-4+k*1.3;cyl('sheet',x,1.95,-cz+1.35,.12,.28,jc(pick([0xa8acac,0xc45a30,0x8a4a2a]),.06),8);}
+  // the hall between the boxes is a tavern room the interior set plans: its servery, tables, benches, lamps and crates are the interiors'
+ rngSkip(33);
  const ry0=2.8;lgGable(0,ry0,0,L+3.2,2*cz+1.2,2.4,{ov:.3,col:0xc0552f,col2:0xc99a2e});
  for(const sx of [-1,1])for(const sz of [-1,1])lgPost(sx*(L/2+1.2),sz*(cz+.5),ry0+.1,0,.16);
  for(const sx of [-1,1])beam('wood',[sx*(L/2+1.2),ry0-.1,-cz-.5],[sx*(L/2+1.2),ry0-.1,cz+.5],.14,jc(0x5c4630,.06));
  box('earth',0,0,0,L,.08,2*cz-2.4,jc(0x7a6a52,.06));
- for(const z of [-1.2,1.2]){cvTable(0,0,z,10.4,0);}
- for(const z of [-2.1,-.3,.3,2.1])cvBench(0,0,z,10.2);
- for(let k=0;k<5;k++){const x=-4.8+k*2.4;beam('plain',[x,ry0+1.2,0],[x,ry0-.3,0],.01,jc(0x4a4038,.05),true,3);sph('glow',x,ry0-.5,0,.16,jc(0xffd890,.03));cyl('iron',x,ry0-.4,0,.2,.04,jc(0x3a3430,.05),8);}
+  rngSkip(20+24+30);
  bottleString([-6,ry0+.4,-1.6],[6,ry0+.4,-1.6],9);bottleString([-6,ry0+.4,1.6],[6,ry0+.4,1.6],9);
- for(const x of [-3,3])for(const z of [-3.6,3.6])crate(x,0,z,.6,.3);
+ rngSkip(20);
  // ---- kitchen shed at the west end of the hall, entered by a framed doorway (with a step) and a serving hatch in its east wall
  const kx1=-7.7,kx0=-11.2,kd=2.3,kh=2.6;
  box('plank',(kx0+kx1)/2,0,0,kx1-kx0,.14,2*kd,jc(0x6a5a44,.08));
@@ -132,8 +115,8 @@ function cvMess(o){
   box('plank',1.55,.96,.3,1.3,.06,.6,jc(0x8a6a44,.06));for(const sx of [1.0,2.1])beam('wood',[sx,.14,.06],[sx,1.95,.06],.09,jc(0x5c4630,.06));box('wood',1.55,1.85,.02,1.3,.1,.14,jc(0x5c4630,.06));
   box('glow',0,.3,-.9,.7,.12,.05,jc(0xff9a3a,.06));});
  W((kx0+kx1)/2,0,0,PI/2,()=>{lgRoof('corr',-kd-.3,kd+.3,-1.9,kh-.35,1.9,kh+.2,.06,jc(0x8a4a2a,.05));});
- box('iron',-9.6,.14,-1.3,1.4,.9,.8,jc(0x3a3430,.05));stovepipe(-9.6,1.04,-1.3,2.4);box('glow',-9.0,.4,-1.3,.05,.3,.4,jc(0xff9a3a,.06));
- box('plank',-10.4,.14,1.2,1.2,.9,.6,jc(0x8a6a44,.06));barrel(-10.7,.14,-.1);sacks(-8.6,.14,1.6,3);
+  // the kitchen shed is planned (its stove, bench, barrel and sacks are the interiors'); the stovepipe through its roof stays
+ rngSkip(2);stovepipe(-9.6,2.0,-1.3,1.44);rngSkip(2+2+9+12);
  // dinner bell on a post at the front corner
  cvPole(9.6,8.0,3.6,.1);beam('wood',[9.6,3.5,8.0],[9.6-.7,3.5,8.0],.08,jc(0x5c4630,.06),true,6);cone('iron',9.0,2.85,8.0,.24,.4,jc(0xb8902a,.05),10);sph('iron',9.0,2.75,8.0,.06,jc(0x3a3430,.05));beam('plain',[9.0,3.5,8.0],[9.0,3.2,8.0],.02,jc(0x3a3430,.05),true,3);
  lamp(-9.4,0,8.0,3.4);lamp(8.6,0,-8.0,3.4);junkPile(9.5,-6.5,1.2,6);tireStack(-9.5,-6.4,3);
@@ -196,9 +179,7 @@ function cvChief(o){
   box('plank',sx*4.15,ty,fz+(bd-1.0)/2,.3,8.3-ty,bd-1.0,jc(sx<0?0x8a5a30:0xa83a2c,.06));W(sx*4.32,0,fz+1.4,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{lit:true}));W(sx*4.32,0,fz+3.2,sx*PI/2,()=>win(0,ty+1.0,0,1.0,1.1,{shutters:true}));}
  for(const sx of [-1,1]){beam('wood',[sx*.2,10.55,.95],[sx*2.2,12.0,.95],.14,jc(0x3a2a1c,.05),true,6);cone('iron',sx*2.2,12.0,.95,.1,.5,jc(0xd8d0c0,.03),6);}
  stairs(-3.3,0,fz+bd+4.3,-3.3,ty,fz+bd,1.2,{steel:true});stairs(3.3,0,fz+bd+4.3,3.3,ty,fz+bd,1.2,{steel:true});
- W(0,ty,fz+.6,0,()=>{box('sheet',0,0,0,1.3,.6,.9,jc(0x9a3a2c,.05));box('sheet',0,.6,-.4,1.3,1.9,.14,jc(0x9a3a2c,.05));cyl('iron',0,1.9,-.34,.55,.08,jc(0xdcd8cc,.04),14);
-  for(const sx of [-1,1]){beam('iron',[sx*.65,.6,-.4],[sx*1.0,2.6,-.5],.07,jc(0x3a3430,.05),true,5);beam('iron',[sx*.65,1.3,-.4],[sx*1.3,2.2,-.5],.06,jc(0x3a3430,.05),true,5);}});
- sph('glow',0,ty+3.0,fz+.9,.12,jc(0xffd890,.03));
+  rngSkip(14+2);   // the throne and the bay's lamp: the bay is a room the interior set plans
  for(let k=0;k<7;k++)cone('iron',0,10.5,-11.5+k*2.0,.09,.8+(k%2?0:.4),jc(0x3a3430,.05),6);   // ridge finials
  // ---- gate wall in front of the wings: bus on the east, sheet-and-post palisade with spiked tops, side fences
  const wz=13.2;W(6.5,0,wz,0,()=>bus({len:8.4}));
@@ -208,10 +189,10 @@ function cvChief(o){
  fenceRun(-11.6,-16.3,11.6,-16.3,2.4,{type:'sheet'});
  for(const gx of [-1.9,1.9]){cvPole(gx,wz,5.2,.2,0x4a3a2c);cyl('iron',gx,4.9,wz+.2,.5,.06,jc(0xdcd8cc,.04),14);sph('plain',gx,5.4,wz,.26,jc(0xe0d6c0,.03));}
  beam('wood',[-1.9,4.7,wz],[1.9,4.7,wz],.2,jc(0x4a3a2c,.05),true,7);
- for(const [x,z,h] of [[-6,9.6,4.2],[-3.6,9.4,3.6],[3.6,9.4,3.6],[5.5,9.6,4.2]])cvSpike(x,z,h,0x4a4038);
+ for(const [x,z,h] of [[-6,9.6,4.2],[-3.6,9.4,3.6],[3.6,9.4,3.6],[5.5,9.6,4.2]]){if(Math.abs(x)===3.6){rngSkip(4);FURNISH('pa_junk_totem',x,0,z,0,{v:2});}else cvSpike(x,z,h,0x4a4038);}   // hubcap spikes: catalog
  for(const [x,z] of [[-6,9.6],[5.5,9.6]])box('sheet',x,2.6,z,1.3,.06,.9,jc(pick([0xa83a2c,0x2f5f8f,0xd8a020]),.05),.4,.3,0);
- for(let k=0;k<5;k++){cyl('iron',-3.6,1.2+k*.32,9.4,.32-.02*k,.05,jc(k%2?0xdcd8cc:0xb8902a,.05),12);cyl('iron',3.6,1.2+k*.32,9.4,.32-.02*k,.05,jc(k%2?0xb8902a:0xdcd8cc,.05),12);}
- for(let k=0;k<3;k++)barrel(-5.6+k*.5,0,5.6);tireRing(-4.6,2.2,.8,2,0,TAU);fire(-4.6,.44,2.2,.3);crate(5.0,0,5.0,.7,.2);sacks(4.6,0,6.2,4);junkPile(-5.5,8.6,1.2,7);lamp(4.6,0,4.0,3.8);lamp(-4.6,0,4.0,3.8);junkPile(0,-17.6,1.4,7);
+ rngSkip(20);
+ for(let k=0;k<3;k++)barrel(-5.6+k*.5,0,5.6);tireRing(-4.6,2.2,.8,2,0,TAU);fire(-4.6,0,2.2,.3);crate(5.0,0,5.0,.7,.2);sacks(4.6,0,6.2,4);junkPile(-5.5,8.6,1.2,7);lamp(4.6,0,4.0,3.8);lamp(-4.6,0,4.0,3.8);junkPile(0,-17.6,1.4,7);
  // ---- sockets: banners on their own free poles beside the bay, at the gate and on the terraces
  for(const [x,y,z,h] of [[-5.6,0,fz+bd+.9,8.6],[5.6,0,fz+bd+.9,8.6],[11.0,0,wz-.1,7.4]]){cvPole(x,z,y+h,.07);sock('banner',x,y+h-.05,z,0,{w:.8,h:2.6});}
  for(const x of [-1.9,1.9])sock('flag',x,5.5,wz,0,{w:1.4,h:.8});
@@ -227,7 +208,7 @@ function cvShaman(o){
  for(let c=0;c<9;c++){const y=c*.24+.12,Rc=(R0+.12)*Math.sqrt(Math.max(.02,1-Math.pow(y/(Hh+.1),2)));const n=Math.max(3,Math.round(TAU*Rc/.7));
   for(let k=0;k<n;k++){const a=(k+(c%2)*.5)/n*TAU;if(c<5&&Math.abs(Math.atan2(Math.sin(a-PI/2),Math.cos(a-PI/2)))<.34)continue;tire(Math.cos(a)*Rc,y,Math.sin(a)*Rc,TYR.R,TYR.t,undefined,rng()*TAU,rr(-.25,.25),rr(-.25,.25));}}
  // doorway: plank frame, dark hollow, hide curtain
- box('iron',0,0,R0*.98,1.2,1.4,.1,jc(0x14100c,.02));for(const sx of [-1,1])beam('wood',[sx*.62,0,R0+.15],[sx*.62,1.5,R0+.15],.12,jc(0x5c4630,.06));beam('wood',[-.7,1.5,R0+.15],[.7,1.5,R0+.15],.14,jc(0x5c4630,.06));
+ box('iron',0,0,R0*.98,1.2,1.4,.1,jc(0x14100c,.02));entry(0,0,R0+.15,1.2,1.5);/* front door: the curtained doorway */for(const sx of [-1,1])beam('wood',[sx*.62,0,R0+.15],[sx*.62,1.5,R0+.15],.12,jc(0x5c4630,.06));beam('wood',[-.7,1.5,R0+.15],[.7,1.5,R0+.15],.14,jc(0x5c4630,.06));
  plane4('cloth',[-.5,1.45,R0+.2],[.5,1.45,R0+.2],[-.5,.3,R0+.35],[-.5,.3,R0+.35],.03,jc(0x8a3a2c,.06));
  // bottle-glass windows set into the dome
  for(const a of [.2,PI-.2,PI+.7,-.7+TAU*.0]){const Rw=(R0+.06)*Math.sqrt(1-Math.pow(1.05/(Hh+.1),2));W(Math.cos(a)*Rw,1.05,Math.sin(a)*Rw,PI/2-a,()=>{box('bottle',0,-.4,0,.9,.8,.34,null);for(const sx of [-1,1])beam('wood',[sx*.5,-.45,.2],[sx*.5,.45,.2],.08,jc(0x5c4630,.06));box('glow',0,-.1,-.1,.5,.4,.05,jc(0xf2c26a,.05));});}
@@ -237,22 +218,14 @@ function cvShaman(o){
  for(let k=0;k<26;k++){const a=k/26*TAU,r=5.2+rr(-.15,.15);if(Math.abs(Math.atan2(Math.sin(a-PI/2),Math.cos(a-PI/2)))<.3)continue;const x=Math.cos(a)*r,z=Math.sin(a)*r;
   if(k%3===0)tire(x,.12,z,TYR.R,TYR.t,undefined,rng()*TAU,PI/2-.5,a);else sph('conc',x,.15,z,rr(.2,.34),jc(pick([0x9a9488,0xb0a898,0x8a8478]),.08),.7);}
  // junk totems: pole, hubcap stack, doll heads, pipes and rebar
- function totem(x,z,h,ry,kind){W(x,0,z,ry,()=>{cyl('wood',0,0,0,.14,h,jc(0x5c4630,.06),8);
-   for(let k=0;k<6;k++){const y=.9+k*.3;cyl('iron',0,y,0,.42-.02*k,.05,jc(k%2?0xdcd8cc:0xb8902a,.05),12);}
-   for(let k=0;k<3;k++){const y=2.9+k*.55;const a=k*2.1;sph('plain',Math.cos(a)*.24,y,Math.sin(a)*.24,.17,jc(pick([0xe8d8c0,0xd8c0a8,0xc8b090]),.05));sph('iron',Math.cos(a)*.24+.06,y+.03,Math.sin(a)*.24+.13,.03,jc(0x1a1614,.02));sph('iron',Math.cos(a)*.24-.06,y+.03,Math.sin(a)*.24+.13,.03,jc(0x1a1614,.02));}
-   pipe('iron',[[.15,.5,.1],[.55,.9,.2],[.55,2.0,.1],[.3,2.5,0]],.06,jc(0x8a5a3a,.05));
-   for(const [dx,dy,dz] of [[-.8,h-.3,0],[.8,h-.5,.1],[.1,h-.4,.7],[-.4,h-.4,-.7]])beam('iron',[0,h-1.1,0],[dx,dy,dz],.04,jc(0x6a3a26,.05),true,4);
-   box('plank',0,h-.2,0,1.4,.12,.12,jc(0x5c4630,.06));cone('iron',0,h,0,.13,.6,jc(0x3a3430,.05),6);
-   if(kind===1){box('sheet',0,h-1.0,.16,.9,.9,.05,jc(0xd8a020,.05),0,0,PI/4);}
-  });}
+ // junk totems: the catalog's hubcap totem (4.6 m) and the one with a painted plate (5.4 m); the skip is the old drawing's draw
+ function totem(x,z,h,ry,kind){rngSkip(kind===1?51:49);FURNISH('pa_junk_totem',x,0,z,ry,{v:kind===1?1:0});}
  totem(-3.4,4.4,5.4,.4,1);totem(3.6,3.6,4.6,-.4,0);totem(-4.2,-2.4,4.0,1.0,0);
  // hanging bottle chimes on cross-beams, prayer flags strung from the totem tops to the hut
  bottleString([-3.4+.7,5.0,4.4],[3.6-.7,4.2,3.6],7);bottleString([-3.4,4.9,4.4],[-.4,Hh+.9,.3],5);
  cvFlags([-3.4,5.2,4.4],[3.6,4.4,3.6],9,cvFlagCols);cvFlags([-3.4,5.2,4.4],[0,Hh+.9,0],7,cvFlagCols);cvFlags([3.6,4.4,3.6],[0,Hh+.9,0],7,cvFlagCols);cvFlags([-4.2,3.8,-2.4],[0,Hh+.9,0],6,cvFlagCols);
  // offerings: bowls, bones, candles, fruit crates at the foot of the totems
- for(const [x,z] of [[-2.6,4.9],[-3.9,5.2],[2.7,3.9],[3.1,4.6]]){cyl('sheet',x,0,z,.18,.08,jc(pick([0x8a3a2c,0x2f5f8f,0xc99a2e]),.06),10);sph('plain',x,.1,z,.09,jc(pick([0xd8a020,0xc45a30,0x4d6f3c]),.06));}
- for(let k=0;k<4;k++){cyl('plain',-.9+k*.6,0,5.3+rr(-.1,.1),.04,.16,jc(0xe0d6c0,.03),6);sph('glow',-.9+k*.6,.2,5.3,.045,jc(0xffd890,.03));}
- box('plank',1.6,0,5.5,.7,.3,.5,jc(0x8a6a44,.06));for(let k=0;k<3;k++)beam('plain',[-.6+k*.4,0,5.9],[-.6+k*.4+rr(-.15,.15),.05,6.2],.04,jc(0xe0d6c0,.03),true,4);
+ rngSkip(55);FURNISH('pa_offerings',0,0,5.3,0,{ax:-.085,az:-.45});   // the catalog's offerings: its row of candles where the kit's stood
  tireStack(-5.6,1.4,2);junkPile(5.6,-2.4,1.0,6);barrel(4.6,0,-3.6);
  // sockets: canopy over the door, banner and flag on the totems, emblem on a board
  beam('wood',[-.8,1.6,R0+.1],[-1.1,2.9,R0+.55],.09,jc(0x5c4630,.06));beam('wood',[.8,1.6,R0+.1],[1.1,2.9,R0+.55],.09,jc(0x5c4630,.06));

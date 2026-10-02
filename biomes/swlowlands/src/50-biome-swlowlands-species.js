@@ -15,6 +15,7 @@
 // Everything here is DATA and kit definitions; no placement. Tags follow the
 // project rule (climate / aridity / abyssal / riparian) and are honoured by
 // the placement passes.
+BIO.kit('swlowlands');   // this kit's own registry of items and buckets (core/biome: kits)
 var SWLOW={};
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
@@ -365,10 +366,11 @@ const PAINT={
 function barkTex2(kind){const W=256,H=512,cl=document.createElement('canvas'),cm=document.createElement('canvas');cl.width=cm.width=W;cl.height=cm.height=H;
  const L=cl.getContext('2d'),M=cm.getContext('2d');L.fillStyle='#8c8c8c';L.fillRect(0,0,W,H);M.fillStyle='#000';M.fillRect(0,0,W,H);
  PAINT[kind](L,M,W,H);
- const Ld=L.getImageData(0,0,W,H).data,Md=M.getImageData(0,0,W,H).data,out=L.createImageData(W,H),o=out.data;let s=0;
- for(let i=0;i<o.length;i+=4){o[i]=Ld[i];o[i+1]=Md[i];o[i+2]=Ld[i];o[i+3]=255;s+=Ld[i];}
+ const Ld=L.getImageData(0,0,W,H).data,Md=M.getImageData(0,0,W,H).data,out=L.createImageData(W,H),o=out.data;let s=0,sm=0;
+ for(let i=0;i<o.length;i+=4){o[i]=Ld[i];o[i+1]=Md[i];o[i+2]=Ld[i];o[i+3]=255;s+=Ld[i];sm+=Md[i];}
  const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(out,0,0);
- const t=new T3.CanvasTexture(c);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=8;t.encoding=T3.LinearEncoding;t.biomeMean=s/(W*H)/255;return t;}   // r128 textures have no userData
+ const t=new T3.CanvasTexture(c);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=8;t.encoding=T3.LinearEncoding;t.biomeMean=s/(W*H)/255;
+ t.maskMean=sm/(W*H)/255;return t;}   // r128 textures have no userData. maskMean: the second colour's share, what the far impostors mix in
 SWLOW.barkMat2=function(tex,key,o){o=o||{};
  const m=new T3.MeshLambertMaterial({color:0xffffff,map:tex,vertexColors:true,side:T3.DoubleSide});
  const alt=C(o.alt==null?0x808080:o.alt).convertSRGBToLinear();
@@ -382,7 +384,19 @@ SWLOW.barkMat2=function(tex,key,o){o=o||{};
    .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
    .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
- m.customProgramCacheKey=function(){return'swlbark|'+key;};return m;};
+ const ck='swlbark|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};
+ m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return m;};   // what the far impostor's trunk carries (55, buildFar)
+// THE FAR IMPOSTORS' material: vertex colours, plus the bark's sun highlight. buildFar writes the
+// trunk's gloss (the bucket's uGloss, less the matte share of its mask) into uv.x; the blobs carry 0.
+// The highlight is the bark hook's, so a glossy trunk shines the same either side of the switch.
+SWLOW.farMat=function(){const m=BIO.barkMat(null);
+ m.onBeforeCompile=sh=>{if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvFWP=(modelMatrix*vec4(transformed,1.0)).xyz;vFWN=normalize(mat3(modelMatrix)*objectNormal);vFGl=uv.x;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSunDir;varying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
+   .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
+    'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');};
+ const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};return m;};
 const BK={ember:barkTex2('ember'),lacquer:barkTex2('lacquer'),flay:barkTex2('flay'),mottle:barkTex2('mottle'),ring:barkTex2('ring'),
  furrow:barkTex2('furrow'),strip:barkTex2('strip'),ocelli:barkTex2('ocelli'),crack:barkTex2('crack'),plate:barkTex2('plate'),stringy:barkTex2('stringy'),pale:barkTex2('pale'),cork:barkTex2('cork'),cane:barkTex2('cane'),fibre:barkTex2('fibre')};
 SWLOW.BARKTEX=BK;
@@ -497,7 +511,9 @@ const M=SWLOW.MAT={
  .forEach(b=>BIO.bucket('bk_'+b[0],M.bk[b[0]],{label:b[1],uvScale:b[2]}));
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
 BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
-BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
+BIO.bucket('far',SWLOW.farMat(),{label:'Far trees (impostors)'});
+// each bark bucket's look ({alt, gloss, mask}) by bucket name, for the far impostors' trunks
+SWLOW.BARKLOOK={};for(const k in M.bk)SWLOW.BARKLOOK['bk_'+k]=M.bk[k].barkLook;
 
 // ---------------------------------------------------------------- instanced items
 BIO.def('oakleaf',BIO.geo.clump(),M.oakleaf,{attrs:['aN'],label:'Oak foliage'});

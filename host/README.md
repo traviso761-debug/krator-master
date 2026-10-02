@@ -26,6 +26,8 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `/iziz`, `/chicago`, … `/krator`, `/tongue` | every other Menagerie route, at the same URL as on the Menagerie |
 | `/src/*`, `/data/*`, `/css/*`, `/vendor/*` | the Menagerie's modules, data, styles and three.js |
 | `/scenes.json` | the scene menu the Menagerie pages carry: Krator's entries first, then the Menagerie's |
+| `/share` | the address other devices use, with a QR code (also `/phone`; `?page=/worlds/<slug>.html` shares one world) |
+| `/address.json` | that address, as `sitectl` found it on this computer (generated; read by `/share`) |
 | `/healthz` | returns `ok` |
 
 ## Files
@@ -38,7 +40,11 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `sitectl` | yes | adapted from the Menagerie's: the systemd user service `krator` (Linux) |
 | `sitectl.py` | yes | the same commands without systemd, for any system: `setup`, `serve`, `update`, … |
 | `sitectl.bat` | yes | Windows: finds Python 3.11+ and runs `sitectl.py`. Kept CRLF by `.gitattributes` |
-| `HOSTING.md` | yes | the setup guide for every system |
+| `HOSTING.md` | yes | the setup guide for every system (`START-HERE.md` at the top is the non-technical one) |
+| `share.html` | yes | the `/share` page: reads `address.json`, draws the QR codes with `vendor/qrcode.js` |
+| `vendor/` | yes | third-party code the site serves (`qrcode.js`, MIT); see its README |
+| `address.json` | no | generated at every check and start by `sitectl.py address`: this computer's addresses on its network |
+| `lod.toml` | yes | each Krator world's level of detail, what each level does, and the bar's extra links; `gallery/krator-bar.js` draws the bar (Scenes, LOD, Home) and applies the level |
 | `WorldMenagerie/` | yes | the World Menagerie itself, with its history: a git subtree (see below). Its Voth is in the source but never served |
 | `menagerie.lock` | yes | the Menagerie tree last synced (its git tree hash), and whether it had uncommitted changes |
 | `site.toml` | no | generated: `krator.toml` followed by the Menagerie's routes and mounts |
@@ -54,7 +60,13 @@ cd host
 ./sitectl serve         # run in the foreground on port 8001; or, as a service:
 ./sitectl install && ./sitectl enable
 ./sitectl update        # later: sync, build, reload
+./sitectl status        # running? and the address other devices use (./sitectl share: just the address)
+./sitectl reload        # apply a krator.toml change (after ./sitectl sync) without dropping anyone
 ```
+
+Day-to-day running, and how other devices find the site, are in `HOSTING.md` ("Running it day to day", "Sharing the
+address with other devices"). Nothing committed names a computer or an address: `sitectl` discovers them where it
+runs.
 
 The biome builds need `node` for their syntax check. On a machine without it, `./sitectl build` stops at the
 first biome; `./sitectl build --no-build` uses the pages already in each `dist/`.

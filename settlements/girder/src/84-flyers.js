@@ -289,7 +289,7 @@ var flyWingGeom, flyWingTris;
   var O = [0,0,0], HIP = [0.17,0.10,-0.05], KNEE = [0.19,-0.32,-0.05], SH = [0.25,0.64,-0.05], HDp = [0,0.76,-0.04], LB = [-0.46,-0.35,0.12], LT = [-0.46,3.0,-0.25];
   flyBones[FLY_R] = [
     { p:[0,0.10,-0.05], a:X, par:8 }, { p:HDp, a:Y, par:0 }, { p:SH, a:X, par:0 }, { p:HIP, a:X, par:8 }, { p:KNEE, a:X, par:3 },
-    { p:LB, a:[0,0,0], par:-1, k:1 }, { p:LT, a:Y, par:5 },
+    { p:LB, a:[0,0,0], par:8, k:1 }, { p:LT, a:Y, par:5 },     /* lance: carried by the rider (parent = his translate), so it leaves the saddle with him */
     { p:O, a:X, par:10, k:2 }, { p:O, a:Y, par:7, k:2 }, { p:O, a:[0,0,0], par:-1, k:1 }, { p:O, a:X, par:9 } ];
   var g = new FlyGeo({0:1,1:1,5:1,6:1,7:1,8:1,9:1,10:1});
   /* saddle, blanket, bedroll, reins (no bone: stay on the beast) */

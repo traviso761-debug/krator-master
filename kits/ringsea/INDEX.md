@@ -4,7 +4,7 @@
 
 Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/ringsea.html`
 
@@ -18,13 +18,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `40-rs-core.js` | 9 | ring sea: units, compass, the vessel frame (1); registry (9); materials (16); merge buckets (25); primitives (vessel frame, into a bucket) (62) |
-| `41-rs-tex.js` | 10 | ring sea textures (surfaces) (1); ring sea materials (36); sail textures (51); culture symbols and liveries (65) |
+| `40-rs-core.js` | 18 | ring sea: units, compass, the vessel frame (1); registry (9); materials (16); merge buckets (25); primitives (vessel frame, into a bucket) (92); the swell, the wind, riding (133) |
+| `41-rs-tex.js` | 11 | ring sea textures (surfaces) (1); ring sea materials (36); sail textures (51); culture symbols and liveries (74) |
 | `42-rs-hull.js` | 6 | ring sea hull (1) |
-| `43-rs-rig.js` | 7 | ring sea rig: oars and paddles (1); sails (25); spars, rigging, flags (49) |
+| `43-rs-rig.js` | 11 | ring sea rig: oars and paddles (1); sails (25); spars, rigging, flags (79) |
 | `44-rs-parts.js` | 5 | ring sea parts (shared by several vessels) (1) |
 | `60-rs-hyk-trireme.js` | 6 | vessel: Hykkousoi Trireme (1) |
 | `61-rs-iziz-turtle.js` | 6 | vessel: Iziz Turtle Ship (1) |
@@ -32,7 +32,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `63-rs-voth-flagship.js` | 6 | vessel: Voth Ordinator Flagship (1) |
 | `64-rs-beast-waa.js` | 5 | vessel: Beast-Rider Voyaging Canoe (wa'a kaulua) (1) |
 | `65-rs-hyk-galley.js` | 6 | vessel: Hykkousoi Scroll-Sail Galley (1) |
-| `66-rs-salvage-tug.js` | 6 | vessel: Salvagers' Sailing Tug (1) |
+| `66-rs-salvage-tug.js` | 7 | vessel: Salvagers' Sailing Tug (1) |
 | `67-rs-xanadu-dragon.js` | 7 | vessel: Xanadu Dragon Boat (1) |
 | `68-rs-iziz-dhoni.js` | 5 | vessel: Iziz Dhoni (1) |
 | `69-rs-islander-oruwa.js` | 3 | vessel: Islander Oruwa (outrigger fishing canoe) (1) |
@@ -47,9 +47,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `78-rs-hyk-corbita.js` | 5 | vessel: Hykkousoi Amphora Corbita (1) |
 | `79-rs-xanadu-carrack.js` | 5 | vessel: Xanadu Bullion Carrack (1) |
 | `80-rs-iziz-lighter.js` | 4 | vessel: Iziz Salvage Lighter (1) |
-| `90-rs-scene.js` | 6 | scene (the Ring Sea roadstead) (1) |
-| `91-rs-probe.js` | 6 | probe (window._api): the Ancients-kit contract,  (1) |
+| `90-rs-scene.js` | 9 | scene (the Ring Sea roadstead) (1) |
+| `91-rs-probe.js` | 13 | probe (window._api): the Ancients-kit contract,  (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
-| `94-rs-anim.js` | <1 | animation: the swell, the oars, the sea's normal (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
+| `94-rs-anim.js` | 10 | animation: the swell, the wind, the oars, under  (1) |
+| `95-rs-deck.js` | 10 | decks: walkable surfaces, collision, the life-la (1) |
 | `99-tail.html` | <1 |  |

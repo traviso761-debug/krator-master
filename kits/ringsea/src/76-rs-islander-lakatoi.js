@@ -22,10 +22,10 @@ function buildRsIslanderLakatoi(){reseed(72600);
  for(let i=0;i<22;i++){const x=rr(-2.6,2.6),z=rr(-4.2,4.2),y=yD+(i%3)*.45;if(Math.abs(z)<.6&&Math.abs(x)<1)continue;rsSphere(B,'paint',.3,[x,y+.28,z],[1,.85,1],[0xb05a30,0x9a4a28,0xc06a3a][i%3],10,8);rsCyl(B,'paint',.12,.16,.16,[x,y+.58,z],null,0x8a3a20,8);}
  // two crab-claw sails side by side, masts leaning aft
  for(const z of[-2.2,2.2]){const mx=2.4;rsLink(B,'wood',[mx,yD,z],[mx-.7,yD+8.5,z],.12,0x5a3a24,8,.08);
-  const S=rsSail(B,{key:'lakatoi-claw',O:[mx,yD+.3,z],U:[-1,0,0],V:[0,1,0],belly:.8*Math.sign(z),nu:24,nv:12,
+  rsRig(B,[[mx,yD,z],[mx-.7,yD+8.5,z]]);const S=rsSail(B,{key:'lakatoi-claw',O:[mx,yD+.3,z],U:[-1,0,0],V:[0,1,0],belly:.8*Math.sign(z),nu:24,nv:12,
    A:t=>[t*2.2+Math.sin(Math.PI*t)*.7-Math.pow(t,6)*1.6,t*14],Bf:t=>[t*5.4+Math.pow(t,5)*1.2,t*3.2+Math.sin(Math.PI*t)*.9+Math.pow(t,5)*2.4],draw:rsPandanusClaw});
   rsSailEdge(B,S,0,.09,0x6a4a2c,0,1.05);rsSailEdge(B,S,1,.08,0x6a4a2c,0,1.05);rsRope(B,S.at(.55,0),[mx+5.5,yD,z]);
-  const tip=S.at(1.05,0);rsPennant(B,tip,2.2,.25,[0xe8e0c8,0x2a2a2a,0xc83a24]);}
+  const tip=S.at(1.05,0);rsPennant(B,tip,2.2,.25,[0xe8e0c8,0x2a2a2a,0xc83a24]);}rsRigEnd(B);
  rsLink(B,'wood',[-6.5,yD+.8,0],[-10,-.8,.4],.08,0x6a4a30,6);
  for(const [x,z] of[[-6.2,.5],[0,.4],[3.8,-3.8],[6,3.5]])rsFigure(B,[x,yD,z],rr(0,TAU),[0xe0d0b0,0x8a3a1c,0x2a6a8a][Math.floor(rng()*3)],false,0x6a4028);
  rsBake(B,V.group,'islanderLakatoi');V.deckY=yD;return V;}

@@ -1,5 +1,5 @@
 // ================================================================= HIGHLANDS / TRIBAL — dwellings and the cliff settlement
-// The Painted Men and the other raider tribes of the high country. Raw logs, bamboo and thatch; everything that
+// The Painted Men and the other raider tribes of the north-east high country. Raw logs, bamboo and thatch; everything that
 // can carry paint carries it — whole house-fronts in formline on white, totems at every door, thunderbirds on
 // the gables. No electric light (fire only). Every tribal dwelling can be built on the ground (stilts) or HUNG ON
 // A CLIFF: pass o.cliff = true and the house stands on cantilever beams and raking struts driven back into a rock
@@ -78,23 +78,24 @@ function hnTRPent(G,x,y,z,ry,W,H,rise,mat){const P=[[-W/2,0],[W/2,0],[W/2,H],[0,
  for(const [u,yy] of P){const p=loc(x,z,u,0,ry);pos.push(p[0],y+yy,p[1]);uv.push(u/W+.5,yy/(H+rise));}
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
  geo.setIndex([0,1,2,0,2,4,4,2,3]);geo.computeVertexNormals();return mesh(geo,mat||MAT.trFront,G);}
+// Braziers, trophy horns, hanging gourds and fire cages are FURNITURE, placed from the catalog (FURNISH, 89y); the helpers
+// keep their arguments, pick the nearer catalog size, and burn the numbers the drawing drew (hlRngSkip, 73).
 // Iron brazier on a tripod with a fire in the bowl (s = scale, ~1 m tall bowl rim at s=1)
-function hnTRBrazier(x,y,z,s){s=s||1;const ic=hC(0x3a3430);for(let k=0;k<3;k++){const a=k/3*TAU;beam('vIron',[x+Math.cos(a)*.42*s,y,z+Math.sin(a)*.42*s],[x+Math.cos(a)*.12*s,y+.95*s,z+Math.sin(a)*.12*s],.05*s,.05*s,ic);}
- kput('hTRBowl',[x,y+1.25*s,z],null,[.42*s,.36*s,.42*s],null);vBall('vEmber',x,y+1.2*s,z,.34*s,null,.1*s);
- for(let k=0;k<3;k++)kput('hTRFlame',[x+rr(-.12,.12)*s,y+1.2*s,z+rr(-.12,.12)*s],null,[.13*s,rr(.4,.7)*s,.13*s],null);}
-// Trophy horns: a pair of curved horns on a painted boss block, on a gable apex or a gate post; ry = the way they face
-function hnTRHorns(x,y,z,ry,s){s=s||1;const bone=hC(0xe6dcc4);for(const sd of[-1,1]){let p=[x,y,z];let d=[sd*.9,.25,0];let w=.2*s;
-  for(let k=0;k<5;k++){d=[d[0]*.82,d[1]+.35,0];const L=.34*s;const r=hRot(ry,hNorm(d));const q=[p[0]+r[0]*L,p[1]+r[1]*L,p[2]+r[2]*L];beam('hPaint',p,q,w,w,bone.clone().multiplyScalar(1-k*.06));p=q;w*=.78;}}
- kput('hPaint',[x,y-.1*s,z],qEuler(0,ry,0),[.3*s,.3*s,.22*s],hC(HPAL.red));kput('hPaint',[x,y-.1*s,z],qEuler(0,ry,0),[.18*s,.18*s,.26*s],hC(HPAL.black));}
-// Antlers (elk/deer) on a pole top: two beams sweeping up and back, three tines each
-function hnTRAntlers(x,y,z,ry,s){s=s||1;const c=hC(0xd8ccb0);for(const sd of[-1,1]){let p=[x,y,z];for(let k=0;k<4;k++){const d=hRot(ry,[sd*(.5-k*.08),.55+k*.1,-.25]);const q=hAdd(p,hNorm(d),.32*s);
-  beam('hPaint',p,q,.06*s*(1-k*.15),.06*s*(1-k*.15),c);if(k>0){const t=hAdd(q,hNorm(hRot(ry,[sd*.1,.8,.4])),.28*s);beam('hPaint',q,t,.04*s,.04*s,c);}p=q;}}}
+function hnTRBrazier(x,y,z,s){hlRngSkip(9);return FURNISH('hl_tri_brazier',x,y,z,0,{v:(s||1)>=1?1:0});}
+// Trophy horns: a pair of curved horns on a painted boss block, on a gable apex or a gate post; ry = the way they face,
+// (x,y,z) the root of the horns
+function hnTRHorns(x,y,z,ry,s){const v=(s||1)>=1?1:0;return FURNISH('hl_tri_trophy_horns',x,y-.25*(v?1.3:.7),z,ry,{v});}
 // A few people standing at height y (on a deck, platform or terrace) — vnFolk always stands them on y=0
 function hnTRFolk(x,y,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spread),pz=z+rr(-spread,spread);kput('figB',[px,y,pz],qEuler(0,rng()*TAU,0),1,hC(vPick([0xe8d9b8,0xc9442a,0x2f8f8a,0xe0a030,0x3b4a8a,0x8a6a3a])));kput('figH',[px,y,pz],null,1,hC(0xc9a17e));}}
 // Hanging things along eaves and walkways: a gourd, or a lantern cage (a bamboo cage with a fire-pot, not electric)
-function hnTRGourd(x,y,z,c){vPst('vRope',x,y-.35,z,.01,.35,hC(0x9a8a6a));vBall('vGourd',x,y-.5,z,.15,c||hC(vPick([0xb08a4a,0x9a8a3a,0xc0a060])),.2);}
-function hnTRCage(x,y,z){vPst('vRope',x,y-.3,z,.01,.3,hC(0x9a8a6a));const bm=hC(vPick(HPAL.bamboo));vB('hPaint',x,y-.34,z,.3,.05,.3,0,hC(HPAL.black));vB('hPaint',x,y-.8,z,.3,.05,.3,0,hC(HPAL.black));
- for(const [a,b] of[[-1,-1],[1,-1],[1,1],[-1,1]])vPst('hBamboo',x+a*.13,y-.78,z+b*.13,.016,.44,bm);vBall('vEmber',x,y-.62,z,.08,null,.1);}
+// (x,y,z) the point it hangs from
+function hnTRGourd(x,y,z,c){if(!c)rng();return FURNISH('hl_tri_gourd',x,y-.7,z,0);}
+function hnTRCage(x,y,z){rng();return FURNISH('hl_tri_fire_cage',x,y-.8,z,0);}
+// The great plank-house's entrance pole is not furniture: its lowest figure's mouth is the door. Drawn (the totem the
+// tribes' hnTotem drew before it placed catalog poles): carved column, beak, thunderbird crossarm.
+function hnTREntrancePole(x,y,z,r,h,ry,wings,wingAt){kput('hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
+ const f=loc(x,z,0,r*.9,ry);kput('vConeI',[f[0],y+h*.86,f[1]],vQ(ry,Math.PI/2,0),[r*.34,r*1.3,r*.34],hC(HPAL.black));
+ const wy=y+h*wingAt;for(const s of[-1,1]){const p=loc(x,z,s*(r+wings*.5),r*.2,ry);kput('hWing',[p[0],wy,p[1]],vQ(ry,0,s*-.12),[s*wings,wings*.5,1],null);}}
 // A box-built beast for pens and byres: 'cow' (shaggy highland), 'goat', 'pig'
 function hnTRBeast(x,y,z,ry,kind,c){const K={cow:[1.7,.8,.62,.72],goat:[.9,.42,.32,.5],pig:[1.05,.5,.46,.28]}[kind]||[1,.5,.4,.5];const [L,Hb,Wb,Lg]=K;
  c=c||hC(kind==='cow'?vPick([0x8a4a2a,0x6a3a22,0xa0602e]):kind==='goat'?vPick([0xd8d0c0,0x6a5a4a,0xe8e0d0]):vPick([0xc89a8a,0x5a4a44]));
@@ -158,8 +159,8 @@ function buildHlTriSmallB(G,o){reseed(23011+(o.v|0));const R=2.7,FL=o.cliff?0:.9
  kput('vConeI',[0,Y+H+5.3,.2],vQ(0,Math.PI/2,0),[.06,.28,.06],hC(HPAL.red));
  vB('vWood',0,Y-.2,R+.9,2.2,.18,1.8,0,log);                                                          // deck
  hnForm('hFormV',-1.25,Y+.2,R-.25,.35,.55,1.5);hnForm('hFormV',1.25,Y+.2,R-.25,-.35,.55,1.5);      // painted boards beside the door
- if(!o.cliff){vnStairs(0,0,R+2.3,0,1.1,FL,3,'vWood',log);hnTotemPost(-1.6,0,R+1.6,.16,2.8,0,true);vnDryingRack(R+1.8,0,0,Math.PI/2,2.4);vnFolk(1.5,R+3.5,1,1);}
- else{hnBambooRail([-1.1,Y,R+1.75],[1.1,Y,R+1.75],bam,1);hnTotemPost(-1.3,Y,R+1.5,.14,2.4,0,true);}
+ if(!o.cliff){vnStairs(0,0,R+2.3,0,1.1,FL,3,'vWood',log);hnTotemPole(-1.6,0,R+1.6,.16,2.8,0,true);hnDryingRack(R+1.8,0,0,Math.PI/2,2.4);vnFolk(1.5,R+3.5,1,1);}
+ else{hnBambooRail([-1.1,Y,R+1.75],[1.1,Y,R+1.75],bam,1);hnTotemPole(-1.3,Y,R+1.5,.14,2.4,0,true);}
  for(let k=0;k<4;k++){const a=(k+.5)/4*Math.PI-Math.PI/2+Math.PI*.1;hnTRGourd(Math.sin(a)*(R+.25),Y+H+.05,Math.cos(a)*(R+.25));}}
 
 // C — painted earth-lodge: a low log hut on a fieldstone footing, gable to the front and the whole gable-end
@@ -177,9 +178,9 @@ function buildHlTriSmallC(G,o){reseed(23021+(o.v|0));const W=5.6,D=5.2,H=2.15,F=
  vnDoor(0,Y+F,D/2+.1,0,.9,1.75,'vWood',log,hC(0x3a2a20),false);
  for(const s of[-1,1])vnWin(s*W/2,Y+F+.9,0,s*Math.PI/2,.5,.5,'open','vWood',log);
  vPst('vPost',1.2,Y+F+H+rise*.3,-.8,.12,rise*.7+.6,hC(0x5a4a3a));                                    // smoke hole chimney-post
- if(!o.cliff){vB('vStone',0,0,D/2+.6,1.6,.2,1,0,hC(vPick(HPAL.rubble)));hnWoodpile(-W/2-.7,0,-.4,Math.PI/2,3,1.2);hnTotemPost(W/2+.6,0,D/2+.5,.17,2.6,0,true);
-  vnDryingRack(W/2+2,0,-1,Math.PI/2,2.2);hnFirepit(-1.8,0,D/2+2.6,.5);vnFolk(1,D/2+3.2,1,1);}
- else{hnBambooRail([-W/2,0,D/2+1.72],[W/2,0,D/2+1.72],null,1);hnTotemPost(W/2-.3,0,D/2+1.2,.15,2.4,0,true);hnTRCage(-W/2+.6,Y+F+H,D/2+.8);}}
+ if(!o.cliff){vB('vStone',0,0,D/2+.6,1.6,.2,1,0,hC(vPick(HPAL.rubble)));hnWoodpile(-W/2-.7,0,-.4,Math.PI/2,3,1.2);hnTotemPole(W/2+.6,0,D/2+.5,.17,2.6,0,true);
+  hnDryingRack(W/2+2,0,-1,Math.PI/2,2.2);hnFirepit(-1.8,0,D/2+2.6,.5);vnFolk(1,D/2+3.2,1,1);}
+ else{hnBambooRail([-W/2,0,D/2+1.72],[W/2,0,D/2+1.72],null,1);hnTotemPole(W/2-.3,0,D/2+1.2,.15,2.4,0,true);hnTRCage(-W/2+.6,Y+F+H,D/2+.8);}}
 
 // ---------------------------------------------------------------- LARGE
 // A — great plank-house (after the NW-coast house): a wide, low-pitched plank gable with the gable end to the
@@ -199,16 +200,16 @@ function buildHlTriLargeA(G,o){reseed(23031+(o.v|0));const W=13,D=11,H=3.4,F=o.c
  hnTRPent(G,0,Y,D/2+.07,0,W,H,rise,MAT.trFront);                                                          // the painted front
  for(const s of[-1,1]){hnMember('hPaint',[s*W/2,Y+H,D/2+.12],[0,Y+H+rise,D/2+.12],.26,.08,[0,0,1],hC(HPAL.black));}
  // the entrance pole: its lowest figure's mouth is the door
- const pz=D/2+.62;hnTotem(0,Y,pz,.62,o.cliff?8:11.5,0,{wings:2.6,wingAt:.84});kput('hTRVoid',[0,Y+.95,pz+.42],null,[.46,.95,.3]);
+ const pz=D/2+.62;hnTREntrancePole(0,Y,pz,.62,o.cliff?8:11.5,0,2.6,.84);kput('hTRVoid',[0,Y+.95,pz+.42],null,[.46,.95,.3]);
  vB('vDarkB',0,Y,D/2+.02,1.1,1.9,.1,0);
  // deck across the front, carved corner posts, steps
- vB('vWood',0,Y-.2,D/2+1.35,W+.6,.2,2.7,0,aged);for(const s of[-1,1])hnTotemPost(s*(W/2-.1),Y,D/2+2.4,.2,2.6,0,s>0);
+ vB('vWood',0,Y-.2,D/2+1.35,W+.6,.2,2.7,0,aged);for(const s of[-1,1])hnTotemPole(s*(W/2-.1),Y,D/2+2.4,.2,2.6,0,s>0);   // carved posts at the deck corners
  hnFrieze(0,Y-.4,D/2+2.72,0,W+.6,.35);
  for(const s of[-1,1]){vnWin(s*W/2,Y+1.2,-1.5,s*Math.PI/2,.8,.7,'open','vWood',aged);vnWin(s*W/2,Y+1.2,2.5,s*Math.PI/2,.8,.7,'open','vWood',aged);
   hnForm('hFormV',s*(W/2+.04),Y+.2,D/2-.8,s*Math.PI/2,.8,2.8);}
  for(let k=0;k<5;k++)hnTRGourd(-W/2+1.2+k*1.3,Y+H-.1,D/2+1);
  if(!o.cliff){vnStairs(-3.6,0,D/2+3.2,0,2.4,F,2,'vWood',aged);vnStairs(3.6,0,D/2+3.2,0,2.4,F,2,'vWood',aged);
-  vnDryingRack(W/2+2,0,0,Math.PI/2,5);vnDryingRack(-W/2-2,0,1,Math.PI/2,4);hnWoodpile(-W/2-1,0,-3.4,Math.PI/2,3,1.4);
+  hnDryingRack(W/2+2,0,0,Math.PI/2,5);hnDryingRack(-W/2-2,0,1,Math.PI/2,4);hnWoodpile(-W/2-1,0,-3.4,Math.PI/2,3,1.4);
   hnFirepit(4.5,0,D/2+6,.7);hnTotem(-5.5,0,D/2+4.5,.3,5,0,{painted:true,wings:1.3});vnFolk(0,D/2+6,3,2.5);}
  else{hnBambooRail([-W/2-.3,0,D/2+2.62],[-1,0,D/2+2.62],bam,1);hnBambooRail([1,0,D/2+2.62],[W/2+.3,0,D/2+2.62],bam,1);}}
 
@@ -233,7 +234,7 @@ function buildHlTriLargeB(G,o){reseed(23041+(o.v|0));const W=18,D=6.5,FL=o.cliff
   for(let k=0;k<4;k++)kput('vLeaf',[u-.7+k*.47,Y+1.8,D/2+.9],null,[.1,.28,.08],hC(vPick([0x8a7a44,0x6a7a3a,0xa08850])));}
  for(let k=0;k<6;k++)hnTRGourd(-W/2+1.5+k*3,Y+2.2,D/2+V-.05);
  if(!o.cliff){vnLadder(-6,0,D/2+V+.55,0,FL+.3,log);vnLadder(6,0,D/2+V+.55,0,FL+.3,log);
-  hnWoodpile(-3,0,-.5,0,6,1.3);vnDryingRack(0,0,D/2+V+3,0,6);vnDryingRack(W/2+2.2,0,-.5,Math.PI/2,4);
+  hnWoodpile(-3,0,-.5,0,6,1.3);hnDryingRack(0,0,D/2+V+3,0,6);hnDryingRack(W/2+2.2,0,-.5,Math.PI/2,4);
   hnTotem(0,0,D/2+V+1.4,.28,5.6,0,{wings:1.5,painted:true});hnFirepit(-4,0,D/2+V+4,.6);vnFolk(3,D/2+V+4,3,3);}}
 
 // ---------------------------------------------------------------- the CLIFF SETTLEMENT (showcase + reusable)
@@ -310,10 +311,7 @@ function buildHlTriCliffVillage(G,o){reseed(23101+(o.v|0));const X0=-40,X1=40,TO
  // the cliff-hung shrine: a painted spirit house on a bracketed platform, masks and a thunderbird crest
  {const [x,y]=SH;const z=Math.max(zf(x,y),zf(x,y+3),zf(x-2,y),zf(x+2,y))+2.2;const blk=hC(HPAL.black);
   kput('hLogX',[x,y-.3,z-1],qEuler(0,Math.PI/2,0),[5,.2,.2],c);for(const s of[-1,1])beam('vWood',[x+s*1.4,y-.4,z+1.4],[x+s*1.4,y-4,zf(x,y-4)-.3],.15,.15,c);
-  vB('vWood',x,y-.2,z,3.6,.2,3.4,0,c);vB('vWood',x,y,z-.5,2.4,2,2,0,hC(vPick(HPAL.tar)).multiplyScalar(1.3));
-  hnForm('hFormA',x,y+.2,z+.52,0,2.2,1.1);hnGable(x,y+2,z-.5,2.4,2,1.3,0,'vGableT',hC(vPick(VPAL.thatch)),.5,'hGablePaint',hC(HPAL.red));hnBarge(x,y+2,z-.5,2.4,2,1.3,0,.5,blk,'bird');
-  for(const s of[-1,1]){hnTotemPost(x+s*1.5,y,z+1.2,.13,2.2,0,true);hnForm('hFormV',x+s*.8,y+.3,z+.52,0,.45,1.5);}
-  for(let k=0;k<3;k++)vBall('vGourd',x-.6+k*.6,y+.12,z+1.1,.12,hC(0xa08040));hnTRCage(x,y+2.2,z+1.4);}
+  hlRngSkip(5);FURNISH('hl_tri_spirit_house',x,y-.2,z-.15,0);}   // the shrine on its deck (it drew 5 numbers): furniture from the catalog
  // the warrior lookout on the top ledge: a palisaded platform, a war totem, a horned shelter, a brazier
  {const [x,y]=LK;const z=Math.max(zf(x,y),zf(x-3,y),zf(x+3,y),zf(x,y+2))+2.8;
   for(const s of[-1,1])beam('vWood',[x+s*2.4,y-.4,z+2.2],[x+s*2.4,y-5,zf(x,y-5)-.3],.18,.18,c);

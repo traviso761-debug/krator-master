@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
-"""kitshots.py OUTDIR key[:variant][:view] ...   view = f (front 3/4, default) | b (back) | p (plan) | c (close eye-level front) | n (night front)
-Reads sheet-items.json (write it with: python3 verify.py locus-kit.html --eval "()=>JSON.stringify(_api.SHEET_ITEMS)" > items.txt, then parse)."""
+"""kitshots.py OUTDIR [--sheet FILE] key[:variant][:view] ...   view = f (front 3/4, default) | b (back) | p (plan) | c (close eye-level front) | n (night front)
+       kitshots.py OUTDIR [--sheet FILE] --dump
+--sheet picks the kit sheet (default locus-kit.html). --dump writes sheet-items-<sheet name>.json (the item list with
+positions); the shot run reads it, so dump each sheet once after a rebuild that moves its items."""
 import json, subprocess, sys, os
-out=sys.argv[1]
-if sys.argv[2]=='--dump':
-    r=subprocess.run(['python3','verify.py','locus-kit.html','--out',out,'--eval','()=>JSON.stringify(_api.SHEET_ITEMS)'],capture_output=True,text=True)
+args=sys.argv[1:]
+out=args.pop(0)
+sheet='locus-kit.html'
+if '--sheet' in args:
+    i=args.index('--sheet'); sheet=args[i+1]; del args[i:i+2]
+dumpf='sheet-items-%s.json' % os.path.splitext(os.path.basename(sheet))[0]
+if args and args[0]=='--dump':
+    r=subprocess.run(['python3','verify.py',sheet,'--out',out,'--eval','()=>JSON.stringify(_api.SHEET_ITEMS)'],capture_output=True,text=True)
     line=[l for l in r.stdout.splitlines() if l.startswith('eval:')][0]
-    json.dump(json.loads(json.loads(line[5:].strip())), open('sheet-items.json','w')); print('dumped', len(json.load(open('sheet-items.json'))), 'items'); sys.exit(0)
-items=json.load(open('sheet-items.json'))
+    json.dump(json.loads(json.loads(line[5:].strip())), open(dumpf,'w')); print('dumped', len(json.load(open(dumpf))), 'items to', dumpf); sys.exit(0)
+items=json.load(open(dumpf))
 cams=[]; hour=None
-for spec in sys.argv[2:]:
+for spec in args:
     parts=spec.split(':'); key=parts[0]; v=int(parts[1]) if len(parts)>1 and parts[1] else 0; view=parts[2] if len(parts)>2 else 'f'
     its=[i for i in items if i['key']==key]
     if not its: print('no such key', key); continue
@@ -21,7 +28,7 @@ for spec in sys.argv[2:]:
     else: c=(x-R*0.75, h*0.45+R*0.32, z-d/2-R*1.05, x,h*0.42,z)
     cams.append(('%s_%d_%s'%(key,v,view), c))
 os.makedirs(out, exist_ok=True)
-cmd=['python3','verify.py','locus-kit.html','--out',out]
+cmd=['python3','verify.py',sheet,'--out',out]
 for name,c in cams: cmd+=['--cam='+','.join('%.1f'%q for q in c)]
 if hour: cmd+=['--hour',str(hour)]
 cmd+=['--cam-name','shot']
