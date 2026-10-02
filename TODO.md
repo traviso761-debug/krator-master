@@ -161,6 +161,63 @@ Krator's own already.
 Skip: the street furniture (one primitive each), Moria's headframe, carts, chests and well, the gondolas, and
 the pumpjack. Krator's are better or the same.
 
+## Shafts, caverns and organic interiors *(Menagerie: the Flesh Pit, `src/fleshpit/`)*
+
+Krator has no vertical shaft, cavern network or organic interior. The eastern abyss paints its shelf wall on
+a backdrop sphere, and `core/terrain/36-core-carve.js` only does overhangs. Candidates for a new
+`core/terrain/37-core-shaft.js` beside carve, and for locus, eastabyss and the screamers' underground:
+
+- **[G data] The shaft as a profile, with layers in data** (`organism.js:50-75`). `radiusAt(d)` interpolates
+  radius per layer, adds cavity bulges and pinches at layer boundaries; `wallAt(d)` flares the mouth to meet
+  the hole cut in the ground. Every other module places itself from these two functions. The profile could
+  feed carve's `recessD`, so the heightfield opens over the shaft.
+- **[G data] The shaft wall** (`organism.js:164-206`): rings of 72 vertices every 6 m. The radius is
+  multiplied by wobble, wandering veins (`pow(max(cos),7)`), grooves and creases. Vertex colour darkens with
+  depth. Pure array maths, so it becomes an `ArrayMesh`. Rock or a sinkhole with a different palette.
+- **[G shader] A strata cut-face shader** (`section.js:91-176`). Depth below the local ground is warped by
+  fbm into bands: soil, laminated rock with cracks, seams, then folded beds. Each bed has its own thickness,
+  creases between folds, `fwidth`-faded fibre, a wet sheen along each fold crest, lens bodies the beds bow
+  round, and beds sagging round the shaft. Every input is world position. With a rock palette it is a
+  geology material for any cliff or cut face (`core/materials`). Krator's strata today are `sin` shelves
+  (`settlements/highlands/src/73-hl-carve.js:217`).
+- **[G native] Back faces only for interiors** (`organism.js:110-115`): walls drawn `BackSide` with faces wound
+  outward. From inside you see the far wall; from outside the near wall vanishes, which is a free cutaway.
+  Godot: `cull_front`.
+- **[G shader] Fluid that fills a volume to a level** (`lungs.js:41-48`): a copy of the cavity mesh whose
+  vertex shader clamps `y=min(y,uLevel)`. It is a flat-topped body that rises as `uLevel` animates. For
+  flooding cisterns, basins and ruins.
+- **[G data] Side tunnels from a small spec** (`tunnels.js:41-110`): `{d,a,r,len,bends,wander,drift,state}`
+  makes a Catmull-Rom tube that drifts in plan and depth. A black cap at the far end makes the light die
+  rather than the tunnel stop. The mouth gets a bulkhead, a grille, a ladder and a blinker. `state`
+  (sealed, surveyed, worked) adds rails, a cart and work lamps. Godot: `Path3D`.
+- **[G shader] + [G data] Breathing** (`organism.js:78-107`): a sine wave running down the axis pushes
+  vertices radially in the vertex shader. The same function in JS drives the matching machinery (rams), so
+  steel and wall stay in step. It is the injection technique `core/biome/30-core-foliage.js` already uses
+  for sway.
+- **[G shader] A pulse band running along a conduit** (`anatomy.js:30-46`): emissive
+  `pow(max(0,sin(phase+y·k)),sharp)`, with a two-stroke heartbeat. For glowing conduits, ley lines and power
+  cables (`core/materials`). See also City 17's climbing pulses below.
+- **[G data] Lamps hung by who installed them** (`organism.js:131-141,893-906`): the colour names the owner
+  (sodium, fluorescent, mercury vapour). Strings every 40 m, denser where people walk. All glows are one
+  additive point cloud. Wall brightness scales with depth. An `underground` atmos preset.
+- **[G data] Organic forms:**
+  - brain-fold bulbs from crossed sine fields, with groove depth reused as colour (`springs.js:44-73`);
+  - lobed lungs (`lungs.js:54-96`);
+  - a branching tree steered to stay inside a volume (`lungs.js:104-152`), for roots, coral and cave growths
+    (`core/biome` trees have no containment test);
+  - wall growth whose density rises with depth, merged per material (`organism.js:226-279`).
+- **[G data] Visitors:** queues that advance a slot every 5 s, and evacuation blended to the nearest exit with a
+  per-person delay (`visitors.js:35-52,129-160`). Krator's crowds have neither. Creatures that climb the
+  wall by riding `wallAt(d)` (`fauna.js:178`).
+
+**City 17's climbing light pulses** (`src/city17/landmarks.js:104-115,163-167`) are not a shader. Each conduit
+is a column of nine translucent unlit boxes, and the pulse is a separate bright box. Every frame its height
+is `fract(time·speed + phase)` mapped onto 10–90% of the tower. It is pushed out from the axis by the tower's
+own width at that height (`wid`, `dep`), so it hugs the taper. Its opacity breathes with a sine and with
+night. **[G data]** as written: a pure function of time, which Godot can drive identically. The cheaper way
+in both engines is the pulse-band shader above, **[G shader]**: one emissive band on the conduit material,
+with no extra mesh.
+
 ## Fixes *(Menagerie runtime)*
 
 - **[web]** Recover from a lost WebGL context: `preventDefault` on `webglcontextlost`, show a panel, restore.
