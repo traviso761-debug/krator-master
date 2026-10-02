@@ -3,7 +3,9 @@
 `GODOT-PLAN.md` (main, 2026-10-02) sets the direction: three.js generates and previews, Godot runs the world. This
 file reads the Ys build against it and says what changes in `PLAN.md`. Written 2026-10-02 from the branch
 `claude/youthful-planck-je9tyg`, which left `main` at 1672677, 398 commits before the plan; Ys is not on `main`,
-has no `PORT.md`, and is in neither `PORT-INDEX.md` nor `PORT-BASELINE.json`.
+has no `PORT.md`, and is in neither `PORT-INDEX.md` nor `PORT-BASELINE.json`. Phases 0–2 of PLAN.md are built (the
+phase 2 merge closed on Oct 1: `--assert` green on kit, mock and city, 93 defs, the Citadel in); P3, the city
+itself, has not started, which is what makes most of the items below cheap: nothing placed has to move.
 
 ## The numbers
 
@@ -77,8 +79,8 @@ Hykkousoi fragment the same way; the `PORT.md` Ys gets at the merge needs those 
    export, and does not write an agent runtime. The walk plan stays as what it is: NAV data plus the stair and ladder
    links.
 10. **Preview work to stop doing** (Phase 6): night-light passes, LOD tuning, walk-mode features, per-piece polish
-    rounds on the sheet. The P2 merge finishes on correctness (the four failing spots, the host budget, one sheet of
-    shots per row), not on looks.
+    rounds on the sheet (KNOWN_ISSUES.md's open look items stay open unless they are geometry errors). The sheet is
+    the kit's correctness test, not its showroom; Godot is the showroom.
 11. **Materials and textures.** `60-hyk-mat.js` has eight `canvasTex` painters on `fbm`/noise (nacre, barnacle,
     weed, bone, floor, lens, dark): PNG bakes by the plan's default, or `TEX.def` kinds if another build takes the
     Hykkousoi look. One shader hook, `hkNacreHook` (iridescence over the port's underwater fade): one `.gdshader`.
@@ -89,6 +91,8 @@ Hykkousoi fragment the same way; the `PORT.md` Ys gets at the merge needs those 
 
 ## What this does to PLAN.md
 
-P0–P2 stand (P2's merge finishes minimally, as above). P3 becomes two data passes and one draw pass, waits on
-`core/rand`, and bakes the terrain. P4 is replaced by the sim data and the export. P5 (polish) is Godot's. The
-build is finished, in the plan's sense, when its export opens beside Iziz's.
+P0–P2 stand as built. P3 becomes two data passes and one draw pass, waits on `core/rand`, and bakes the terrain;
+Travis's Oct 2026 requirements for it (three refurbished full-height towers, land blocks that are reclaimed Ancients
+hosts, pods spread over a host's plates) are placement data and belong to the first pass, with their invariants in
+the probe as planned. P4 is replaced by the sim data and the export. P5 (polish) is Godot's. The build is finished,
+in the plan's sense, when its export opens beside Iziz's.
