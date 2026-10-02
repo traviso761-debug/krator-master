@@ -19,7 +19,7 @@ Prefer items that are straightforward to port. **Godot order:** (1) the carver's
 which becomes collision shapes and the navigation mesh source; (2) the land-cover map, which becomes the
 terrain splat texture and the placement input; (3) the minimap drawn from exported data.
 
-**Counts:** tags used: about 46 [G data], 26 [G shader], 16 [G native] and 17 [web] (some items carry two, and the legend above uses one of each).
+**Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
 ## Features
 
@@ -35,6 +35,76 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
     layer to a PNG at export time and ship it with the tile.
   - Optional: a one-time overhead orthographic bake to a texture as the background, for the painted look.
     Hide the sky, fog and inspector helpers during the bake.
+
+## Biomes: the port plan's findings *(GODOT-PLAN.md, re-assessed Oct 2026)*
+
+The nine biome kits are next in the audit order (`GODOT-PLAN.md` 3.3, step 2) and are what milestone M4 (a
+first tile in Godot) needs. They start ahead: one core (`core/biome/`), one PRNG, a host reached only through
+`BIO.init`, a placement pass (`TREES` records) apart from the draw pass in every kit, an exporter
+(`BIO.export`), a probe and `--assert` in each, and pages that match `PORT-BASELINE.json`. The plan and the
+order are in `biomes/WORLD.md` ("Against the port plan"); the contract is `biomes/GODOT.md`. Suggested order:
+the audit, the shader kinds, tags and ids, the host, the reseeding event, then the variant decision.
+
+- **Finish the port audit for the nine kits** (tooling, no tag). Correct the provisional tags in each
+  `biomes/<kit>/PORT.md` and write the split lists into its Notes: `45-host-stage` holds `terrainH`, the water
+  and the fields, which are data `core/terrain` replaces (note it "split", not plain host); `55-trees` is
+  already a placement pass and a draw pass; `60-floor` and `65-dress` place and draw in one pass (`BIO.grid`
+  then `BIO.put`); `85-host-tower` is a preview prop (a builder); `82-host-sky` becomes a `core/atmos` sky
+  preset. Teach `tools/audit_port.py` that a build listing `CORE_BIOME` has an exporter (`BIO.export`,
+  `core/biome/42-core-export.js`): `PORT-INDEX.md` shows the nine kits with none.
+- **[G shader] One copy of each biome shader hook, in the core.** The iridescent bark `BIO.iridBarkMat` is
+  written in four kits (eastabyss, nhighlands, rift, xanadu), on the shared `BIO`: eastabyss and rift assign
+  it unguarded and with different signatures, so with several kits resident the last kit loaded replaces the
+  others' (a residency bug, not only a port cost). Also the two-tone gloss bark `barkMat2` (nwlowlands,
+  swlowlands), the impostor `farMat` (rift: iridescent; swlowlands: gloss), nhighlands' hanging sway on its
+  bulbs and pods, and swbay's own `animMat` beside `core/biome/35-core-anim.js`. Move them into
+  `30-core-foliage.js` and `35-core-anim.js` as material kinds (`irid`, `gloss`, `far`, `hang`, `anim`) with
+  their options as data, so the export names them and Godot writes about seven shaders for every kit: leaf
+  card, bark, iridescent bark, gloss bark, far impostor, hanging sway, fauna body. Prove it with mesh
+  fingerprints and screenshots: the HTML changes, the pictures must not.
+- **[G data] Tags and ids on what the kits place.** Only nhighlands (harvest) and swlowlands carry tags in kit
+  data, and no species has its Köppen classes. Put class, species, biome, Köppen and harvest in the `BIO.def`
+  options, and give every item, bucket and placement record a deterministic id in build order, so
+  `BIO.export` carries them and `core/tags` (Phase 2) takes the kits as they are.
+- **[G data] One fauna kit** (Travis's call, `biomes/README.md`): every biome's fauna and the settlements'
+  creatures in one kit on `core/biome/35-core-anim.js`, tagged by biome (the item above), each animal's motion
+  a function of time (`aP0`/`aP1` paths; the life layer section below). swbay's local `animMat` retires with it.
+- **[web] The biome hosts as the first `core/host` customer** (Phase 1). The kits' host fragments
+  (`host-stage`, `-sky`, `-build`, `-camera`, `-probe` in ten builds, `host-tower` in eight) are each their own
+  version (`PORT-INDEX.md`, host-shell copies), but a kit reaches its host only through `BIO.init`, so these
+  are the easiest builds to put on one shell. The stage's terrain, water and fields go to `core/terrain`;
+  its DOM goes to the host. Move `BIO.download()` there too: it is the one browser line in
+  `42-core-export.js` and one of `core/`'s port-lint warnings.
+- **[G data] Placement records carry no LOD level.** Each kit picks a tree's level (hero, lite stand-in, far
+  impostor: `T.lv`) as it places it, from the tree's distance to the showcase's LOD spine (`BIO.lodD`): the
+  preview's camera baked into the data. Godot has no spine and needs every tree at every level. Placement
+  writes level-free records; the draw pass picks the level in the preview; the export carries hero, stand-in
+  and impostor as levels of one record (`biomes/GODOT.md`, "Not done yet").
+- **[G data] One reseeding event for every kit.** `rng` in `core/biome/10-core-head.js` is mulberry32
+  (integer: it ports bit for bit). `h3` is a `Math.sin` hash, and `vnoise`, `fbm` and so every field and zone
+  rest on it, which a GDScript generator cannot reproduce. Do together, once: `h3` onto `core/rand` (Phase 2),
+  placement seeded by cell (`biomes/WORLD.md`), the level-free records above, and each kit's `terrainH`
+  closure baked to the `core/terrain` heightmap. Each of these moves every plant; together they cost one
+  screenshot set, one `tools/port_baseline.py --write` and one gallery update, not four. Tune preset views
+  after it, not before.
+- **[G data] A variant library for trees (Travis's call).** Trunks and branches are built unique per hero
+  tree and merged into buckets; only leaf cards, floor and dress are instanced. Godot grows the flora at run
+  time (`biomes/WORLD.md`), so unique trees would mean porting the tree builders to GDScript, which the plan
+  rules out (a builder crosses over as its meshes). Proposed: K baked variants per species and habit (12 to 24,
+  say) exported as meshes, chosen by each record's seed, with per-instance scale, turn and tint; only
+  placement is ported, and the golden test compares records, not meshes. The preview gains too: instanced
+  variants instead of unique trees cut held triangles (rift holds 25.7M in 1,737 meshes) and build time. The
+  cost: no tree is one of a kind.
+- **[G data] `BIO.export` onto the shared vocabulary** (Phases 3 and 4). Material records onto `{family,
+  colour, map, roughness, metal, emissive, doubleSided, alphaTest, hook}`, with `hook` naming a library shader
+  (the kinds above); a `convention.colour` per table (the biome export is linear, the atmosphere's sRGB); then
+  fold it into `core/export/` as the `krator-world` template. The canvas painters (3 to 9 per kit) bake to
+  PNG, which the export already does.
+- **[G native] Preview LOD: adopt `core/lod`, stop growing the kits' own.** The plan freezes runtime LOD as
+  preview-only. A kit's per-chunk `BIO.range`/`minRange` is data (it becomes Godot's `visibility_range`) and
+  stays; `BIO.lodTick` is preview machinery. `core/lod` already knows the biome sets (class `biome`,
+  `minPx:0`) and no kit lists it: measure it on rift (clustered proxies for merged buckets, frustum-culled
+  instance copies) before any more bespoke culling. The paused rift pass keeps its range data and profiling.
 
 ## Underground and interiors *(Menagerie: Moria)*
 

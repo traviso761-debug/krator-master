@@ -100,7 +100,9 @@ the browser-native code is concentrated. The top of the DOM-density list is noth
 Audit in the order the port will consume them, so each audit feeds a phase that starts right away:
 
 1. `core/` (every module; most are already tagged by their READMEs).
-2. The biome kits (nine, all on one core, the smallest delta per kit).
+2. The biome kits (nine, all on one core, the smallest delta per kit). Findings so far, and what this plan
+   changes for them: `biomes/WORLD.md` ("Against the port plan") and `TODO.md` ("Biomes: the port plan's
+   findings").
 3. `kits/catalog`, `kits/interiors`, `kits/post-apoc`, `kits/ringsea` (self-contained, data-shaped).
 4. The Ancients lineage (`kits/ancients`, `iziz`, `highlands`, `xanadu`, `reedlake`, `dalab`, `screamers`,
    `port`, `jimjam`): one material and texture system, shared host shell.
