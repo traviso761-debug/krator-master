@@ -57,6 +57,10 @@ a.card:hover .go,a.card:focus-visible .go{color:var(--accent)}
   font-variant-numeric:tabular-nums;border-top:1px dashed var(--rule);padding-top:8px;margin-top:4px}
 .go{color:var(--ink);white-space:nowrap}
 .src{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scale{border-bottom:1px solid var(--rule);padding:18px 0}
+.scale h2{font:400 22px/1.2 var(--display);letter-spacing:.02em;margin:0 0 6px}
+.scale p{max-width:62ch;margin:0;color:var(--muted)}
+.scale a{color:var(--accent);white-space:nowrap}
 footer{margin-top:48px;border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--muted)}
 footer code{font:12px var(--mono)}
 @media (max-width:560px){header{grid-template-columns:minmax(0,1fr)}header canvas{display:none}}
@@ -75,6 +79,12 @@ footer code{font:12px var(--mono)}
     </div>
     <canvas id="giant" width="264" height="264" aria-hidden="true"></canvas>
   </header>
+  <section class="scale" aria-labelledby="scale-h">
+    <h2 id="scale-h">Krator Scale Model</h2>
+    <p>The whole continent as one terrain map: 3,098 × 2,786 km, elevation, climate and the named regions.
+    Every world below sits somewhere on it.
+    <a href="https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q" target="_blank" rel="noopener">Open the scale model &rarr;</a></p>
+  </section>
   <main id="registers"></main>
   <footer>Built from the <code>krator-master</code> repository. Each card names the file it was built from.</footer>
 </div>
