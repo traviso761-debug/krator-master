@@ -1,0 +1,58 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.139,
+    1.179
+   ],
+   "seam_before": [
+    1.737,
+    1.168
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fibre",
+  "id": "fibre.cane",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Bamboo Basket Weave Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row fibre.cane (exact wording not recorded)",
+  "sha1": "8756abb80fccc8b0cf94aee6b4ab7fa7faa895b8"
+ }
+}
