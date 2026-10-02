@@ -218,6 +218,40 @@ night. **[G data]** as written: a pure function of time, which Godot can drive i
 in both engines is the pulse-band shader above, **[G shader]**: one emissive band on the conduit material,
 with no extra mesh.
 
+## Small set pieces worth taking *(Menagerie)*
+
+- **[web] → bake to PNG, or [G shader] A painted pine on gold leaf** (`src/infinitycastle/mats.js:92-122`,
+  `fusuma()`). These are the sliding panels at the back of every room, including Muzan's lab. It is painted
+  on a canvas:
+  - gold leaf laid in 14 px squares, each a little different, with fine seams;
+  - bands of cream cloud (suyari-gasumi) in rounded strips;
+  - rows of wave arcs along the foot;
+  - a pine drawn as a recursive branch: quadratic-curve limbs that narrow by 0.6 a step, with an ellipse of
+    needles at each joint;
+  - black lacquer frames and round pulls.
+  It is painted across four panels so a run reads as one picture. The recursive pine is a small, reusable
+  recipe for any painted screen, mural or banner (Xanadu, Republican). Bake it to a PNG for Godot, or keep
+  the recipe as data and paint it at export.
+- **[G data] + [G shader] A glowing floor sigil** (`src/infinitycastle/places.js:291-294,409-424`, Akaza's
+  hall). A 1024² canvas is drawn with `shadowBlur` for the glow: rings, twelve needles with branch ticks that
+  make it a snowflake as well, diamond points and a tick rim. It lies on a plane 3 cm over the floor with
+  **additive blending and depth write off**, tinted cyan. Each frame its opacity breathes
+  (`0.7+0.25·sin(1.3t)`) and it turns slowly (`0.05t`). A cyan point light and a glow sprite above make it
+  light the room. Repurpose it for ritual circles, Ancients floor seals, portals and landing pads. In Godot:
+  a `Decal` with emission, or an unshaded additive quad; the sigil could be drawn in a shader from polar
+  coordinates.
+- **[G shader] Horizon fire-glow behind the far range** (`src/minastirith/shadow.js:58-67,124`). It is one
+  plane at 0.99 of the backdrop radius, a little north of east, facing the camera. It uses an additive
+  shader (`One, One`) with no depth test, drawn just after the sky (`renderOrder -0.7`). The fragment is an
+  elliptical Gaussian, `exp(-r²·9)` with y stretched 2.2×, in deep orange. Its strength breathes with two
+  slow incommensurate sines (`0.55+0.15·sin(0.7t)+0.08·sin(3.1t)`). The same file lights the underside of
+  the cloud deck red toward the fire (`:96`: `exp(-max(d.y,0)·7)·smoothstep(-0.2,0.8,d.x)`).
+  - **For Krator's far volcano:** swbay's far-country volcano (`biomes/swbay/src/45-host-stage.js:212-252`)
+    and Voth's baked volcano dome (`settlements/voth/src/21-sky.js:188+`). Put the glow on the volcano's
+    bearing, raise it at night through `atm_night`, and tint the low sky and the base of the plume.
+  - In Godot it is a quad in the sky layer, or the same Gaussian added in the sky shader on the volcano's
+    direction, which is simpler.
+
 ## Fixes *(Menagerie runtime)*
 
 - **[web]** Recover from a lost WebGL context: `preventDefault` on `webglcontextlost`, show a panel, restore.
