@@ -14,10 +14,12 @@ like the biome core. Then, once the scene, camera and frame loop exist:
 ```js
 ATMOS.init({THREE, scene, camera,
   hour: () => myHour,                 // 0..24, the module's clock
-  onFrame: fn => myFrameHooks.push(fn),
+  onFrame: fn => myFrameHooks.push(fn),   // the host calls fn(dt) every frame, dt in seconds: the module reads no wall clock
   ground: (x, z) => terrainH(x, z),   // ground height for anything placed on it
   seed: 1234, err: msg => console.warn(msg),
+  viewH: () => innerHeight,             // the view's height in CSS pixels
   pixelRatio: () => renderer.getPixelRatio()});   // sprites are sized in framebuffer pixels: pass it, or HiDPI shrinks them
+ATMOS.weather({reduceMotion, apply: W => {/* the host's fog, sun, ground */}});   // reduceMotion: no lightning flashes
 // ...place things (below)...
 ATMOS.finish();                       // bakes the instanced sets and builds the glow layer
 ATMOS.cull(scene, {keep: m => m.userData.biome});   // optional, last
@@ -30,14 +32,20 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 
 - **`ATMOS.PRESETS`** (`0p-presets`) holds every effect's numbers: sizes, rates, alphas, colours (display-space `[r,g,b]`),
   the wind and the evening's hours. The shaders read them. Change a value before placing the effect.
-- **`ATMOS.clock`**: the module's own time, from 0 at `init`. `clock.scale` speeds it up or stops it; `clock.fixed = t`
-  pins every shader and hook to time `t` (repeatable screenshots). Hooks get `(t, hour, dt)` in clock seconds.
+- **`ATMOS.clock`**: the module's own time, from 0 at `init`, advanced by the host's `dt`. `clock.scale` speeds it up or
+  stops it; `clock.fixed = t` pins every shader and hook to time `t` (repeatable screenshots). Hooks get `(t, hour, dt)` in
+  clock seconds. It becomes a view onto the host's world clock (`GODOT-PLAN.md`, Phase 1, "The world clock").
 - **The wind** is `ATMOS.windBase` (from the preset), veering slowly, times `ATMOS.windScale` (the weather sets it: storm
   2.4x). Gust fronts travel downwind: `atmGust`/`atmWind` in GLSL, `ATMOS.gust`/`ATMOS.windAt(t,x,z)` in JS. Smoke, fog
   banks, rain, banner cloth and brazier flames all ride it.
 - **Haze**: searchlights, spot cones and beacons read stronger in fog and rain (`ATMOS.haze()`), and halos swell.
 - **`ATMOS.export()`** returns everything placed as JSON (presets, effect records `ATMOS.fx`, lamps, glows, prop sets);
   `ATMOS.download(name)` saves it. `GODOT.md` is the contract and the port plan.
+- **Engine-neutral by fragment.** `0`, `0p`, `4` and `8` touch no browser API (`tools/check_port.py` holds them to it).
+  The browser lines are in `9-host` ([web]): the Weather selector and the download. They move to `core/host/`.
+- **`node core/atmos/test-atmos.js`**: the evening, light hours, the weather state machine, the flash, the gusts, the
+  GLSL agreeing with the JS, and a fingerprint of a small street's export. Run it after any change here; the fingerprint
+  changes only when what the module places or exports changes (then take a screenshot diff and update `GOLD`).
 - **`ATMOS.sprites(name, attrs, material)`** makes a sprite cloud of camera-facing quads (not GL points). Particle
   shaders compute `mv` and a pixel size `ps`, end with `gl_Position = atmQuad(mv, ps)`, and read `vUv` in the fragment.
 
@@ -53,7 +61,8 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `5-dress` | `boxIndex(meshes)`, `dressBuilding(idx,b,o)`, `ivy`, `ivyClump`, `windowBox`, `cistern`, `windowBoxesOnPanes(im,o)` | an exact ray index over box instances. A building's real walls take ivy, its flat roof a cistern, and window panes get flower boxes under them |
 | `6-sewer` | `outfall(x,y,z,ry,o)`, `drain(pts,o)`, `inletGrate(x,y,z,ry)` | a culvert with an iron grate in a wall face, a trickle down to the water, a grated drain channel, an inlet grate |
 | `7-cull` | `cull(scene,o)` | splits big static InstancedMeshes into bearing sectors and bounds every set by its instances, so r128 can frustum-cull them. Raycasts still test each instance correctly |
-| `8-export` | `export()`, `download(name)` | the whole placed atmosphere as JSON for a game engine (`GODOT.md`) |
+| `8-export` | `export()` | the whole placed atmosphere as JSON for a game engine (`GODOT.md`) |
+| `9-host` | `weatherUI(el)`, `download(name)` | [web]: the Weather selector and the JSON download |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
 `(sin ry, cos ry)`. A *bearing* is the angle from `+x` toward `+z`.

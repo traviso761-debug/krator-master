@@ -177,6 +177,29 @@ Rules the shell enforces: the host owns the DOM, the camera, time, input and pic
 `{scene, terrainH, registry, exporters}` and gets `{hour, clock, camera}` back. A build fragment that
 touches `document` outside `core/host/` fails `check_port.py`.
 
+**The world clock (contract; proposed 2026-10-02, waiting on Travis's approval).** Four time sources are about
+to exist side by side: each life build's `SKY_T`/`skyHour()` with `TICKS.push(fn(dt, hour))`, `ATMOS.clock`,
+`KSCHED` (pure functions of t), and `SIM`'s fixed-rate stepper (`core/simulation/PLAN.md` 4.5). They become one
+clock, owned by `91-host-loop.js`, and everything else reads it:
+
+| Field | What | Read by |
+|---|---|---|
+| `dt` | real seconds since the last frame, capped at 0.1; 0 while paused or pinned | everything that eases (weather, fades) |
+| `t` | **motion time**: seconds since load, `t += dt * scale`; `scale` 0 pauses, `fixed` pins it for shots | wind and gusts, particles, flags, `KSCHED` timelines, agents' `pose(t)` between decisions, walking speed |
+| `hour`, `day` | **world time**: the hour of day (0..24) and a day count, advancing `rate` world hours per real hour (`rate` 0 holds the hour: today's preview default, set by the slider or `#hour=`) | the sky and sun, light schedules (`litAt`), weather's auto mode, `SIM.step()` once per simulated minute, life schedules |
+
+- The two axes are separate on purpose: a fast day (`rate` 60, an hour a minute) must not make people walk or
+  smoke rise 60 times faster. Motion keys off `t`; anything that cycles daily keys off `hour`.
+- The host calls each subscriber as `fn(dt, clock)`. `ATMOS.init` already takes `dt` as the first argument of
+  its `onFrame` call, and the life builds' `TICKS` already take `(dt, hour)`, so both bind without changes to
+  their bodies. `ATMOS.clock` becomes a view onto the host's (`scale` and `fixed` move up); `SIM.init({hour,
+  onTick})` takes the same; Shade, which has schedules and no clock, gets one by taking the host.
+- Godot: one autoload, `WorldClock.gd`, advances the same fields in `_process(delta)` and sets the global shader
+  parameters `atm_time` and `atm_hour`; `Atmos.gd` and the sim runtime read it. Saved games store `{t, day,
+  hour, rate}`.
+- To decide (Travis): the default `rate` once the world runs in Godot (real minutes per world day), and
+  whether the preview pages keep holding the hour by default.
+
 Done when: every build lists `core/host/` and keeps no `camera`, `probe`, `inspect`, `polytool`, `stats`
 or `sheetui` fragment of its own; each page's screenshots are unchanged; `check_port.py` is on for the
 whole of `src/` in every build. Nothing has been ported yet, but every remaining byte in `src/` is now
