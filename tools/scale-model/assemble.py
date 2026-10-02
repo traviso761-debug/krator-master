@@ -7,7 +7,7 @@ Isles region (east_isles.json, full-res px) and the source page (orig.html).
 
   python3 assemble.py <version label> <out.html>
 """
-import sys, json, base64, numpy as np
+import sys, os, json, base64, numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as nd
 
@@ -95,6 +95,9 @@ if JF.any():
 else:
     JY = JX = JSY = JSX = np.array([], int)
 
+def sstep_(a_, b_, x):
+    t_ = np.clip((x - a_) / (b_ - a_), 0, 1); return t_ * t_ * (3 - 2 * t_)
+
 def lam(E, zf, az, alt=45):
     gy, gx = np.gradient(E / 1000 * zf, 2.0)
     a = np.radians(az); l = np.radians(alt)
@@ -130,6 +133,12 @@ for k in ['st', 't', 'rt', 'ct']:
     res = np.where(nd.binary_dilation(JF, iterations=2)[..., None], nd.gaussian_filter(res, (1.2, 1.2, 0)), res)
     edge = nd.binary_dilation(islF | bayF, iterations=1) & ~(islF | bayF)
     res = np.where(edge[..., None], nd.gaussian_filter(res, (0.8, 0.8, 0)), res)
+    if k in ('st', 't') and os.path.exists('geysers_land.json'):
+        yy_, xx_ = np.mgrid[0:FH, 0:FW]
+        for gv in json.load(open('geysers_land.json')):
+            gx_, gy_ = gv['px']; rr = np.hypot(xx_ - gx_, yy_ - gy_)
+            al = (0.55 * (1 - sstep_(1.5, 4.5, rr)))[..., None]
+            res = res * (1 - al) + np.array([226, 228, 214.0]) * al
     f = np.clip(1 + g * (lam(EnF, zf, az) - lam(EoF, zf, az)), 0.6, 1.6)
     res[region] = res[region] * f[region, None]
     Image.fromarray(np.clip(res, 0, 255).round().astype(np.uint8)).save(k + '_new.jpg', qtables=src.quantization, subsampling=2)
@@ -163,7 +172,9 @@ for k, f in rep.items():
     s = s[:a] + base64.b64encode(open(f, 'rb').read()).decode() + s[b:]
 key = '"vents": ['; assert s.count(key) == 1
 a = s.index(key) + len(key)
-vents = data['vents'] + json.load(open('geysers_new.json'))
+import os
+land_g = json.load(open('geysers_land.json')) if os.path.exists('geysers_land.json') else []
+vents = data['vents'] + json.load(open('geysers_new.json')) + land_g
 b = a; depth = 1
 while depth:
     b += 1; depth += {'[': 1, ']': -1}.get(s[b], 0)
