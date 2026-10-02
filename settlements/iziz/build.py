@@ -95,7 +95,7 @@ LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
-TARGET_CORE = {'city': ['atmos']}
+TARGET_CORE = {'city': ['atmos', 'clock']}
 
 
 def srcpath(f, base=None):
@@ -138,6 +138,7 @@ _OLD_TARGETS = {
 DETERMINISTIC = {
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
+    '20-core-clock.js',                                # core/clock: the world clock (no randomness)
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',

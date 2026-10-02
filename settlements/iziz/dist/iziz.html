@@ -455,6 +455,48 @@ function triOf(g){if(!g)return 0;if(g.index)return g.index.count/3;const p=g.att
 const _KTRI={};
 function ktri(name){if(_KTRI[name]===undefined){const def=KIT.defs[name];_KTRI[name]=def?triOf(def.geo):0;}return _KTRI[name];}
 function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
+// ================================================================= CORE — the world clock: motion time and world time
+// One clock for a whole world (GODOT-PLAN.md, Phase 1, "The world clock"). The host's frame loop owns it and steps
+// it with the real seconds since its last frame; everything else reads it. Two axes, kept apart on purpose:
+//   t     MOTION time, seconds since load: wind, particles, flags, walking, KSCHED timelines. A fast day never
+//         makes anything move faster.
+//   hour  WORLD time, 0..24, with a day count: the sky and sun, light schedules, weather's auto mode, SIM.step()
+//         once per simulated minute, life schedules.
+// One world day is 72 real minutes (Travis, Oct 2026): 20 world hours per real hour, a world hour every 3 minutes.
+// The preview pages hold the hour still by default (running:false); the viewer can run time and set the hour.
+// No THREE, no DOM, no wall clock. One shared object, KCLOCK. Godot: WorldClock.gd, the same fields and step().
+//
+//   KCLOCK.DAY_SECONDS                      4320: real seconds in one world day
+//   KCLOCK.make({hour:12, day:0, dayLength:DAY_SECONDS, running:false, scale:1}) -> C
+//   C.step(dt)      dt real seconds (negative or NaN count as 0; capped at 0.1). t += dt*scale; if running, the hour
+//                   advances 24*dt*scale/dayLength and wraps into the next day. Returns C.
+//   C.set(hour)     jump to an hour (wrapped into 0..24); the day is kept
+//   C.run(on)       start or hold world time; motion time runs either way
+//   C.fixed         a number pins t there and makes dt 0 (repeatable shots); null runs
+//   C.t, C.dt, C.hour, C.day, C.running, C.scale, C.dayLength   read them directly
+//   C.rate()        world hours per real hour (20 for a 72-minute day)
+//   C.state() / C.load(s)   the clock as plain data (a saved game, the export) and back
+(function(root){
+  var DAY=72*60;
+  function wrap(h){h=h%24;return h<0?h+24:h;}
+  function make(o){
+    o=o||{};
+    var C={t:0,dt:0,hour:wrap(o.hour!=null?o.hour:12),day:o.day|0,dayLength:o.dayLength>0?o.dayLength:DAY,
+      running:!!o.running,scale:o.scale!=null?o.scale:1,fixed:null};
+    C.step=function(dt){
+      var real=+dt;if(!(real>0))real=0;if(real>.1)real=.1;
+      if(C.fixed!=null){C.dt=0;C.t=C.fixed;return C;}
+      C.dt=real*C.scale;C.t+=C.dt;
+      if(C.running&&C.dt>0){var h=C.hour+24*C.dt/C.dayLength;while(h>=24){h-=24;C.day++;}C.hour=h;}
+      return C;};
+    C.set=function(h){C.hour=wrap(+h||0);return C;};
+    C.run=function(on){C.running=on===undefined?!C.running:!!on;return C;};
+    C.rate=function(){return 24*3600/C.dayLength;};
+    C.state=function(){return{t:C.t,hour:C.hour,day:C.day,dayLength:C.dayLength,running:C.running,scale:C.scale};};
+    C.load=function(s){for(var k in s)if(k in C&&typeof C[k]!=='function')C[k]=s[k];C.hour=wrap(C.hour);return C;};
+    return C;}
+  root.KCLOCK={DAY_SECONDS:DAY,make:make};
+})(typeof window!=='undefined'?window:globalThis);
 // ---------------------------------------------------------------- textures
 // All procedural, all generated once at load, all in world-ish units: a texture
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
@@ -8104,6 +8146,12 @@ function citySkyTick(){KratorSky.update(camera.position,CITYSKY.hour,CITYSKY.day
  const day=clamp(L.dayF,0,1);MAT.warmPane.color.copy(CITY_GLOW.pane).lerp(CITY_GLOW.paneDay,day);MAT.bulb.color.copy(CITY_GLOW.bulb).lerp(CITY_GLOW.bulbDay,day);
  if(MAT.dot)MAT.dot.color.setScalar(1-.45*day);}
 const CITY_GLOW={pane:new THREE.Color(0xffcf8a),paneDay:new THREE.Color(0x5a5244),bulb:new THREE.Color(0xfff3d6),bulbDay:new THREE.Color(0xb8b0a0)};
+// THE WORLD CLOCK (core/clock): held at the hour by default, run by the toolbar's Run time button (a world day is
+// 72 real minutes). Anything may still set CITYSKY.hour directly (the slider, #hour=, _api, a harness): the clock
+// takes that hour up on the next frame. Stepped first, so the sky and the atmosphere see the new hour.
+const CITY_CLOCK=KCLOCK.make({hour:CITYSKY.hour});let cityHourSeen=CITYSKY.hour;
+FRAME_HOOKS.push(dt=>{if(CITYSKY.hour!==cityHourSeen)CITY_CLOCK.set(CITYSKY.hour);const d0=CITY_CLOCK.day;CITY_CLOCK.step(dt);
+ CITYSKY.day+=CITY_CLOCK.day-d0;CITYSKY.hour=cityHourSeen=CITY_CLOCK.hour;});
 FRAME_HOOKS.push(citySkyTick);for(const f of FRAME_HOOKS_PRE)FRAME_HOOKS.push(f);
 citySkyTick();
 // ---------------------------------------------------------------- the outer wall, the gates and their bridges
@@ -8781,12 +8829,16 @@ uiButton('Jungle',true,()=>{const v=!BIO.baked[0].visible;for(const m of BIO.bak
 // hour of day
 {const wrap=document.createElement('span');wrap.style.cssText='display:inline-flex;align-items:center;gap:4px;margin-left:6px;font:12px system-ui;color:#ffe2b0';
  const lab=document.createElement('span');lab.textContent='hour '+CITYSKY.hour.toFixed(1);const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=24;sl.step=.1;sl.value=CITYSKY.hour;sl.style.width='120px';
- sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);ATMOS.weatherUI(wrap);ui.appendChild(wrap);ui.style.maxWidth='calc(100vw - 24px)';}
-// the hour and the weather can come in the URL: #hour=20.5&weather=storm (shareable; also how the harness shoots the night)
-{const q=new URLSearchParams((location.hash||'').replace(/^#/,''));const h=parseFloat(q.get('hour'));if(isFinite(h)){CITYSKY.hour=h;const sl=ui.querySelector('input[type=range]');if(sl){sl.value=h;sl.oninput();}}
+ sl.oninput=()=>{CITYSKY.hour=parseFloat(sl.value);lab.textContent='hour '+CITYSKY.hour.toFixed(1);};wrap.appendChild(lab);wrap.appendChild(sl);
+ // run or hold world time (held by default); the slider and label follow the clock, however its hour was set
+ const rt=document.createElement('button');rt.id='cityRunTime';rt.title='Run world time: one day is 72 minutes';const rtSync=()=>{rt.textContent=CITY_CLOCK.running?'Hold time':'Run time';};
+ rt.onclick=()=>{CITY_CLOCK.run();rtSync();};rtSync();wrap.appendChild(rt);
+ let rtAcc=0;FRAME_HOOKS.push(dt=>{rtAcc+=dt;if(rtAcc<.5)return;rtAcc=0;if(Math.abs(parseFloat(sl.value)-CITYSKY.hour)<.05)return;sl.value=CITYSKY.hour;lab.textContent='hour '+CITYSKY.hour.toFixed(1);});ATMOS.weatherUI(wrap);ui.appendChild(wrap);ui.style.maxWidth='calc(100vw - 24px)';}
+// the hour, the weather and running time can come in the URL: #hour=20.5&weather=storm&time=run (shareable; also how the harness shoots the night)
+{const q=new URLSearchParams((location.hash||'').replace(/^#/,''));if(q.get('time')==='run'){CITY_CLOCK.run(true);const b=document.getElementById('cityRunTime');if(b)b.textContent='Hold time';}const h=parseFloat(q.get('hour'));if(isFinite(h)){CITYSKY.hour=h;const sl=ui.querySelector('input[type=range]');if(sl){sl.value=h;sl.oninput();}}
  const w=q.get('weather');if(w&&ATMOS.W&&ATMOS.W.MODES.includes(w)){ATMOS.W.mode=w;const sel=document.getElementById('atmosWeather');if(sel)sel.value=w;}}
 window._api.city={CITY,HILL,ROADS:()=>ROADS.length,clusters:()=>CLUSTERS.map(C=>({state:C.state,hill:C.hill,cells:C.nx*C.nz,slots:C.slots.length,built:C.slots.filter(s=>s.built).length})),occ:()=>OCC.list.length,
- setHour:h=>{CITYSKY.hour=h;},quota:QUOTA,vern:()=>{const by={};for(const v of VERN_PLACED)by[v.key]=(by[v.key]||0)+1;return by;},biome:()=>window._biome,
+ setHour:h=>{CITYSKY.hour=h;},clock:()=>CITY_CLOCK.state(),runTime:on=>CITY_CLOCK.run(on).running,quota:QUOTA,vern:()=>{const by={};for(const v of VERN_PLACED)by[v.key]=(by[v.key]||0)+1;return by;},biome:()=>window._biome,
  belt:()=>window._belt,atmos:()=>window._atmos,lifeDests:()=>({market:LIFE_DESTS.market.length,markets:REG.filter(r=>r.tags&&r.tags.destination==='market').map(r=>({name:r.name,x:r.x|0,z:r.z|0,stalls:r.tags.stalls,canopies:r.tags.canopies}))})};
 window.LIFE_DESTS=LIFE_DESTS;
 // ---------------------------------------------------------------- floating building labels (standard new-world package)

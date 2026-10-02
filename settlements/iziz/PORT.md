@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 156 (20%) | 23 (3%) | 42 (5%) | 88 (11%) | 473 (60%) |
+| KB | 156 (20%) | 23 (3%) | 42 (5%) | 89 (11%) | 473 (60%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -80,11 +80,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/87-city-layout.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/88-city-place.js` | 14.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/89z-rows.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/90a-city-world.js` | 8.3 | [web] | 9 | 1 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/90a-city-world.js` | 8.9 | [web] | 9 | 1 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/90b-city-build.js` | 42.6 | [web] | 9 | 0 | 0 | 0 | 4 | 6 | 3 | 0 | 0 | 0 | 0 |  |
 | `targets/city/90c-city-atmos.js` | 10.5 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `targets/city/91z-views.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/93-city-ui.js` | 3.4 | [web] | 1 | 2 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/93-city-ui.js` | 4.2 | [web] | 1 | 2 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/vernacular/89z-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/vernacular/91z-views.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/wA/89z-rows.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
