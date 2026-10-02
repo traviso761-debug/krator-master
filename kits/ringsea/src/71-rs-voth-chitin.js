@@ -2,11 +2,11 @@
 // The Voth build their fast raiders the old way, on the shell of something that lived: a 30 m hull
 // of lacquered chitin, its deck roofed by seven overlapping carapace segments like a beetle's back,
 // an insect prow of compound eyes and hooked mandibles, the abdomen's sting curling up at the stern.
-// Two banks of oars; two ribbed fan sails of Voth-blue silk on bone ribs with the ash-white diamond;
+// Two banks of oars; two ribbed fan sails of Voth-purple silk on bone ribs with the ash-white diamond;
 // the compound eyes are blue.
 // (Ref: the ribbed fan sails of the Dragons 2 sketches; Dunmer chitin; the turtle ship's idea of a roof.)
-// the fan sails in the Voth livery (core/sockets): deep blue field, dark edge, the ash-white diamond
-function rsFanVoth(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.voth,'diamond',.16);g.save();rsPolyPath(g,P);g.clip();const gr=g.createLinearGradient(0,H,0,0);gr.addColorStop(0,'rgba(0,0,20,.3)');gr.addColorStop(1,'rgba(160,190,230,.12)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore();}
+// the fan sails in the Voth livery (core/sockets): deep purple field, dark edge, the ash-white diamond
+function rsFanVoth(g,W,H,P){rsFactionSail(g,W,H,P,RS_CULT.voth,'diamond',.16);g.save();rsPolyPath(g,P);g.clip();const gr=g.createLinearGradient(0,H,0,0);gr.addColorStop(0,'rgba(14,0,20,.3)');gr.addColorStop(1,'rgba(190,160,230,.12)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore();}
 function buildRsVothChitin(){reseed(72100);
  const V={group:new THREE.Group(),anims:[]};const B=rsBucket();
  const lin=h=>new THREE.Color(h).convertSRGBToLinear();const CH=lin(0x2e2016),CH2=lin(0x2a1c14),DK=lin(0x120c08);   // the Voth lacquer: the same brown-black as the Ordinator Flagship (RS_VOTH_HULL)
@@ -30,7 +30,7 @@ function buildRsVothChitin(){reseed(72100);
  // the fore fan sweeps less far aft and the aft mast stands further back: the fans must not touch (sails-clear-sails)
  [[2,12.5,1,1.02],[-9.2,9.5,.85,1.2]].forEach(([mx,mh,k,a1])=>{const base=cy+2.2;rsLink(B,'paint',[mx,base-1.5,0],[mx,base+mh,0],.18,0xe8dcc0,8,.12);
   const R=mh*.95,a0=.1,A0=[0,0];
-  rsRig(B,[mx,0]);const S=rsSail(B,{key:'voth-fan-blue',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
+  rsRig(B,[mx,0]);const S=rsSail(B,{key:'voth-fan-purple',O:[mx,base+.6,.3],U:[-1,0,0],V:[0,1,0],belly:.6,nu:24,nv:10,
    A:t=>A0,Bf:t=>{const a=lerp(Math.PI/2-a0,Math.PI/2-a1,t);const rr0=R*(1-.07*Math.sin(t*Math.PI*6)**2);return[Math.cos(a)*rr0,Math.sin(a)*rr0];},draw:rsFanVoth});
   for(let i=0;i<=6;i++){const t=i/6,pts=[];for(let j=0;j<=6;j++)pts.push(S.at(t,j/6));rsTube(B,'paint',pts,t=>.07*(1-.5*t),0xe8dcc0,12,5);}
   rsRope(B,[mx,base+mh,0],[H.xAt(1,1),H.ys(1),0]);rsRope(B,S.at(1,1),[mx-7*k,cy+.5,0]);});rsRigEnd(B);
@@ -38,4 +38,4 @@ function buildRsVothChitin(){reseed(72100);
  rsBake(B,V.group,'vothChitin');V.deckY=cy;return V;}
 RS_VESSEL({key:'vothChitin',name:'Voth Chitin Bireme',culture:'voth',L:34,B:17,H:16,
  tags:{type:['warship','bireme','turtle ship'],propulsion:['oars','sail'],hull:'monohull',wealth:'state',crew:80,role:'fast raider'},
- blurb:'A brown-black chitin hull roofed by seven carapace segments, blue-eyed insect prow, two banks of oars, blue ribbed fan sails.',build:buildRsVothChitin});
+ blurb:'A brown-black chitin hull roofed by seven carapace segments, blue-eyed insect prow, two banks of oars, purple ribbed fan sails.',build:buildRsVothChitin});

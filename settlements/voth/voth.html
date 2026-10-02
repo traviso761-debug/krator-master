@@ -1362,7 +1362,7 @@ function makeSkyTexture(volc){
     }
   }
 
-  /* --- the distant volcano, painted due north (u = 0.75) ---
+  /* --- the distant volcano, painted north-north-east (azimuth 22.5, u = 0.6875) ---
      Kept low-contrast and warm on purpose: it is the farthest thing in the
      scene, so it should read as sitting in the same haze as everything
      else rather than as a dark cutout punched through it. Every fill below
@@ -1375,7 +1375,7 @@ function makeSkyTexture(volc){
     return 'rgba('+r+','+gg+','+b+','+a+')';
   }
   var ROCK=[118,106,90];               /* warm ash-rock, before haze mix    */
-  var vx = W*0.75, base = HZ+4, vh = 44, vw = 112;
+  var vx = W*0.6875, base = HZ+4, vh = 44, vw = 112;   /* u = (270 - az)/360, az 22.5 */
   function ridge(cx, halfw, height, col, jag){
     g.fillStyle=col; g.beginPath(); g.moveTo(cx-halfw, base);
     var n=48;
@@ -31210,16 +31210,17 @@ var VIEWS = [
                                    altar, and volcano in frame." TEMPLE_ALTAR (65-facade.js) is the
                                    real altar position/height, inside the 8-pillar ring
                                    (TEMPLE_PILLAR_RING_R) under the gold dome. The volcano itself is a
-                                   sky-painted backdrop fixed at world bearing -z ("due north",
+                                   sky-painted backdrop fixed at world bearing 22.5 (north-north-east,
                                    20-stage.js) — not a worldspace object — so any camera standing
-                                   south of the altar and looking north (-z) catches it above the
-                                   horizon behind the altar for free; no coordinate needed for it.
-                                   Camera sits just outside the pillar ring (radius ~40, ring is
-                                   ~33.8) so it doesn't clip a pillar, at roughly altar-top height,
+                                   south-south-west of the altar and looking north-north-east catches it
+                                   above the horizon behind the altar for free; no coordinate needed.
+                                   Camera sits just outside the pillar ring (radius ~42, ring is
+                                   ~33.8), on bearing 202.5: the pillars stand every 45 deg from due
+                                   east, so that line runs between two of them. Roughly altar-top height,
                                    close enough to read as standing beside it. */
                                 var c=CIDX['Temple'], t=CANTON_TOPS['Temple'];
                                 var a = (typeof TEMPLE_ALTAR === 'object' && TEMPLE_ALTAR) ? TEMPLE_ALTAR : { x:c.x, y:t.y+2.7, z:c.z };
-                                setView(a.x+10, a.y+7, a.z+42, a.x, a.y+3, a.z); }],
+                                setView(a.x-16, a.y+7, a.z+39, a.x, a.y+3, a.z); }],
   ['Ancestry garden', function(){
                                 /* owner's follow-up: wants a steep DOWNWARD look highlighting the
                                    terraced planting, not the earlier eye-level shot (that put the

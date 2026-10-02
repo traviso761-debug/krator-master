@@ -11,7 +11,7 @@ biomedical knowledge alive and grows more erratic every century. Dalab's
 healers are prized across Krator; its genepriests sell modifications (night
 vision, pressure adaptation, extra limbs) to outsiders in the **Halls of
 Reformation**. Nearly every citizen carries the photosynthesis mod and is
-**green-skinned**. The Giant tribes of the north-west came from here, and the
+**green-skinned**. The Giant tribes of the south-west came from here, and the
 priests keep Giant guards: four-armed ceremonial guards at the temples, two-armed
 patrols in the streets.
 

@@ -3,7 +3,7 @@
    Mav's Refuge live here. build.py rejects colour arrays declared anywhere
    else. sRGB hexes unless a comment says LINEAR.
 
-   Setting: Krator, the hypertropic (XA) jungle on the SE, lee shore of the
+   Setting: Krator, the hypertropic (XA) jungle on the NE, lee shore of the
    Ring Sea — ~1.9 atm, 33 C, red soil, iridescent violet/green canopy. */
 var PAL = {
   /* --- atmosphere (read by 20-stage / 21-sky / 82-daynight) --- */

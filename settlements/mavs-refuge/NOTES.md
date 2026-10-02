@@ -1,7 +1,7 @@
 # Mav's Refuge — tree city of the beast-riders (Krator)
 
-A refuge in the hypertropic (XA) jungle on the SE, lee shore of the Ring Sea:
-~1.9 atm, red soil, iridescent canopy; the volcano lies NW across the sea, the
+A refuge in the hypertropic (XA) jungle on the NE, lee shore of the Ring Sea:
+~1.9 atm, red soil, iridescent canopy; the volcano lies SW across the sea, the
 gas giant hangs in the NE. Built with the painting-to-3d-world skill as a
 procedural Three.js (r128) world in one self-contained HTML file, on the Voth
 engine pattern (numbered `src/` fragments → `build.py` → `mavs-refuge.html`,
