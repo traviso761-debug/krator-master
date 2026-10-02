@@ -43,7 +43,7 @@ first tile in Godot) needs. They start ahead: one core (`core/biome/`), one PRNG
 `BIO.init`, a placement pass (`TREES` records) apart from the draw pass in every kit, an exporter
 (`BIO.export`), a probe and `--assert` in each, and pages that match `PORT-BASELINE.json`. The plan and the
 order are in `biomes/WORLD.md` ("Against the port plan"); the contract is `biomes/GODOT.md`. Suggested order:
-the audit, the shader kinds, tags and ids, the host, the reseeding event, then the variant decision.
+the audit, the shader kinds, tags and ids, the host, the reseeding event, then variants with opt-in heroes.
 
 - **Finish the port audit for the nine kits** (tooling, no tag). Correct the provisional tags in each
   `biomes/<kit>/PORT.md` and write the split lists into its Notes: `45-host-stage` holds `terrainH`, the water
@@ -87,14 +87,22 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then t
   closure baked to the `core/terrain` heightmap. Each of these moves every plant; together they cost one
   screenshot set, one `tools/port_baseline.py --write` and one gallery update, not four. Tune preset views
   after it, not before.
-- **[G data] A variant library for trees (Travis's call).** Trunks and branches are built unique per hero
-  tree and merged into buckets; only leaf cards, floor and dress are instanced. Godot grows the flora at run
-  time (`biomes/WORLD.md`), so unique trees would mean porting the tree builders to GDScript, which the plan
-  rules out (a builder crosses over as its meshes). Proposed: K baked variants per species and habit (12 to 24,
-  say) exported as meshes, chosen by each record's seed, with per-instance scale, turn and tint; only
-  placement is ported, and the golden test compares records, not meshes. The preview gains too: instanced
-  variants instead of unique trees cut held triangles (rift holds 25.7M in 1,737 meshes) and build time. The
-  cost: no tree is one of a kind.
+- **[G data] Trees as variants by default, hero trees opt-in (Travis, Oct 2026).** Trunks and branches are
+  built unique per hero tree and merged into buckets; only leaf cards, floor and dress are instanced. Godot
+  grows the flora at run time (`biomes/WORLD.md`), so unique trees everywhere would mean porting the tree
+  builders to GDScript, which the plan rules out (a builder crosses over as its meshes). So: K baked variants
+  per species and habit (12 to 24, say) exported as meshes, chosen by each record's seed, with per-instance
+  scale, turn and tint; only placement is ported, and the golden test compares records, not meshes. The
+  preview gains too: instanced variants instead of unique trees cut held triangles (rift holds 25.7M in 1,737
+  meshes) and build time.
+  - **Hero trees stay, as an opt-in** (`biomes/WORLD.md`, "Hero trees: an opt-in"). The hero builders are
+    kept (each variant is one of their seeds). A record marked `hero` by a site or a hero zone is built unique,
+    baked per tile as its own mesh and streamed by Godot, never regrown. First users: Mav's Refuge, whose
+    architecture is built on its trees' `trunkR` (and Girder's hypertrees, the same builder), and
+    hyperjungle's hero disc. A hero budget per tile; a preview switch between every tree a hero and heroes
+    only where opted in.
+  - Mav's Refuge's and Girder's `60-trees.js` carry a provisional host tag in their `PORT.md`; they are
+    builders, and their trees cross over as meshes with the settlement.
 - **[G data] `BIO.export` onto the shared vocabulary** (Phases 3 and 4). Material records onto `{family,
   colour, map, roughness, metal, emissive, doubleSided, alphaTest, hook}`, with `hook` naming a library shader
   (the kinds above); a `convention.colour` per table (the biome export is linear, the atmosphere's sRGB); then

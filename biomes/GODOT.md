@@ -122,7 +122,11 @@ Two things stand between that and today:
   code. So placement writes records (species, position, seed, size, tags, id; no LOD level),
   the draw pass reads them, and the export carries the records beside the meshes. For Godot to
   grow trees without the builders, each species and habit ships as a library of K baked variants
-  that the records choose by seed (Travis's call, pending; `WORLD.md`, blocker 10).
+  that the records choose by seed (`WORLD.md`, blocker 10). Hero trees are an opt-in (Travis,
+  Oct 2026; `WORLD.md`, "Hero trees: an opt-in"): a record marked `hero` carries its own baked
+  mesh, made by the kit's hero builder, and Godot loads it with its tile instead of placing a
+  variant. Sites built on their trees (Mav's Refuge) and hero zones (hyperjungle's hero disc)
+  opt in.
 - **The arithmetic must match.** `rng` (`10-core-head.js`) is mulberry32 and reproduces bit
   for bit in GDScript. `h3` is a `Math.sin` hash, and `vnoise`, `fbm` and every field rest on it,
   so it moves to `core/rand`'s integer hash (Phase 2) in the same event as cell seeding. Anything
@@ -138,7 +142,8 @@ Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`
   `BIO.lodD`), in the export beside the meshes.
 - Stand-ins and far impostors as explicit LOD levels of the record they replace.
 - Ground height from the `core/terrain` heightmap, not each host's `terrainH` closure.
-- Trees as a variant library (pending Travis's call).
+- Trees as a variant library by default, with hero trees opt-in per record (`hero`, set by a
+  site or a hero zone) and baked per tile; a preview switch between all heroes and opt-in only.
 - Tags, Köppen and deterministic ids on the records, items and buckets (for `core/tags`).
 - The kits' shader hooks as core material kinds; materials on the plan's shared vocabulary; a
   `convention.colour` per table (this export is linear, the atmosphere's sRGB).

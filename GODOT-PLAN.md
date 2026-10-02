@@ -359,6 +359,11 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
   (routes, schedules, the door-transit rule) and prove the data shape before touching ships and the arena.
 - **Renderer.** Forward+ is assumed. If a web export of the Godot project is wanted, the sprite fallbacks
   in `core/atmos/GODOT.md` apply and `GPUParticles3D` features need checking per version.
+- **Unique trees** (Travis, Oct 2026). Godot grows the flora at run time and ports no builder, so a tree is
+  by default one of K baked variants of its species, placed by a ported placement pass. Hero trees, built
+  unique by the kits' hero builders, stay as an opt-in: a placement record marked `hero` by a site whose
+  architecture is fitted to its trees (Mav's Refuge) or by a hero zone (hyperjungle's hero disc) is baked per
+  tile and streamed as a mesh, under a per-tile budget (`biomes/WORLD.md`, "Hero trees: an opt-in").
 - **What is not worth porting.** The gallery, the LAN host, the Menagerie, the verify harnesses and the dev
   tools. They are the preview's tooling and stay in the browser.
 
