@@ -220,6 +220,15 @@ Godot's headless test runner; at least one build of each lineage runs on all thr
 Done when: a build's export carries a material table a Godot importer can apply without reading JS, and
 no new `canvasTex` painter is added without a `TEX.def` or a bake.
 
+**Content and status: `core/materials/PLAN.md`.** That file holds the library itself: about 45 shared PBR
+surfaces tinted per culture, culture pattern sheets, where each comes from (scan libraries, generated
+images, procedural), the generation prompts, and the processing script `tools/textures/process.py`. Status
+on 2026-10-02: nine Beast Rider sets processed into `core/materials/library/` and `patterns/`; next is the
+Girder pilot (`TEX.def`, the record adapters, Girder's families pointed at the sets), then the six scan
+sets and seven generated sets Girder still needs, listed with prompts in that file. Godot reads the sets
+directly: colour, normal (OpenGL convention, which Godot expects) and roughness map onto
+`StandardMaterial3D`, and world-unit tiling becomes its triplanar option.
+
 ### Phase 4: one exporter
 
 Generalise `BIO.export()`, `ATMOS.export()` and `KRATOR_EXPORT` into `core/export/`: one `krator-world`
