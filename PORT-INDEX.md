@@ -6,9 +6,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 26 | 215 | 67 | 36 | 47 | 0 | 65 | 7 | yes |  |  |
+| [`core`](core/PORT.md) | 30 | 250 | 102 | 36 | 47 | 0 | 65 | 8 | yes |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 59 | 714 | 149 | 40 | 10 | 50 | 466 | 9 |  | yes | yes |
-| [`settlements/girder`](settlements/girder/PORT.md) | 29 | 553 | 42 | 0 | 14 | 314 | 183 | 6 |  | yes | yes |
+| [`settlements/girder`](settlements/girder/PORT.md) | 29 | 559 | 42 | 0 | 14 | 318 | 185 | 6 |  | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 74 | 1078 | 221 | 19 | 13 | 77 | 748 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 81 | 782 | 156 | 23 | 42 | 88 | 473 | 5 |  | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 417 | 7 | 20 | 10 | 34 | 347 | 5 |  | yes | yes |
@@ -18,7 +18,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/reedlake`](settlements/reedlake/PORT.md) | 36 | 327 | 53 | 33 | 0 | 26 | 215 | 4 |  | yes | yes |
 | [`settlements/screamers`](settlements/screamers/PORT.md) | 76 | 569 | 19 | 19 | 27 | 44 | 460 | 6 |  | yes | yes |
 | [`settlements/shade`](settlements/shade/PORT.md) | 28 | 319 | 77 | 15 | 13 | 71 | 142 | 3 |  | yes | yes |
-| [`settlements/voth`](settlements/voth/PORT.md) | 62 | 1789 | 164 | 0 | 6 | 374 | 1245 | 14 |  | yes | yes |
+| [`settlements/voth`](settlements/voth/PORT.md) | 63 | 1792 | 164 | 0 | 6 | 378 | 1245 | 15 |  | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 64 | 886 | 437 | 19 | 10 | 56 | 365 | 6 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 47 | 1022 | 105 | 13 | 16 | 140 | 748 | 11 | yes | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 199 | 2473 | 239 | 34 | 174 | 27 | 1999 | 5 |  | yes | yes |
@@ -35,7 +35,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 15 | 0 | 10 | 41 | 114 | 2 |  | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 25 | 0 | 13 | 38 | 119 | 2 |  | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 2 |  | yes | yes |
-| **all** | 1274 | 17404 | 2225 (13%) | 298 (2%) | 568 (3%) | 2308 (13%) | 12005 (69%) | 136 | | | |
+| **all** | 1279 | 17448 | 2260 (13%) | 298 (2%) | 568 (3%) | 2315 (13%) | 12007 (69%) | 138 | | | |
 
 ## Host-shell copies
 
@@ -60,7 +60,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `sheetui` | 2 | 1 | 8 |
 | `polytool` | 2 | 2 | 10 |
 | `hover` | 2 | 2 | 9 |
-| `walk` | 1 | 1 | 15 |
+| `walk` | 1 | 1 | 19 |
 | `underview` | 1 | 1 | 3 |
 | `polygon` | 1 | 1 | 5 |
 | `host-polytool` | 1 | 1 | 6 |
