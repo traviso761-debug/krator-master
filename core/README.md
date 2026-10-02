@@ -2,7 +2,9 @@
 
 Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
-runs on), `terrain/` (carve patches for any heightfield world), `atmos/` (atmosphere and street dressing) and `sockets/` (cultural sockets).
+runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
+dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
+blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data).
 
 ## `materials/`
 
@@ -137,6 +139,11 @@ Godot (`biomes/GODOT.md`).
 |---|---|
 | `36-core-carve.js` | carve patches: overhangs (alcoves, niches, undercuts, or a shape a build registers) on a heightfield world. Global `KCARVE`; with the biome core loaded also `BIO.carve` |
 | `test-carve.js` | `node core/terrain/test-carve.js`: the module's contract on a synthetic cliff, each check with a negative |
+| `38-core-relief.js` | relief functions, all plain maths of (x,z) and a seed (global `KRELIEF`): `range` (a wall of mountains along a line: steep sides, broad serrated top, eased toe, tapered ends), `join` (where ranges meet: the tallest plus a quarter of the rest), `volcano` (a concave cone with gullies and a crater), `fields` (an enclosure lattice: field kinds, crop-row directions and hedge polylines, with missing hedges merging fields), `river` (a water surface that never climbs downstream, with the slope per vertex for foam) |
+| `test-relief.js` | `node core/terrain/test-relief.js`, each check with a negative |
+
+`38-core-relief.js`'s provenance is in `TODO.md`; no build uses it yet. It needs nothing at all, so a build lists it in `CORE_TERRAIN` (biomes)
+or as an ordinary fragment, and a Godot port evaluates the same functions at export or ports them line for line.
 
 **Used by** `biomes/sedesert` and `settlements/shade`. Opt-in by name: every
 biome's `build.py` has a `CORE_TERRAIN` list (empty in the biomes that do not use
@@ -183,6 +190,23 @@ draw calls and triangles with it off and on. Read `lod/README.md`.
 `iziz`, `highlands`, `xanadu`, `dalab`, `mavs-refuge`, `girder`. Each `build.py` adds the `core/lod/` files to its
 fragment list next to its `CORE_FILES`/`CORE_OPT_FILES` (a `src/` copy with the same name overrides) and lists both in
 `DETERMINISTIC`. A build passes options through `window.LOD_OPTIONS` (port, screamers, voth, highlands, dalab).
+
+## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
+
+Three small modules with no THREE and no DOM in their data side, each with a node test (each check has a negative).
+Their provenance is in `TODO.md`. Each is a global; a build adds the file to its fragment list
+and to `DETERMINISTIC` (none of them draws from the seeded stream).
+
+| File | What |
+|---|---|
+| `walk/20-core-walk.js` | `KWALK`: one list of walkable floors (level rects, sloping strips) and blockers, written by whatever builds the geometry as it builds it (after Moria's carver). Queries `floorsAt`, `floorBelow`, `blocked`, `push` (a walker slides round corners), and `export()` (navigation-mesh source and collision boxes for Godot) |
+| `sched/20-core-sched.js` | `KSCHED`: repeating timetables of eased segments (`timeline`), conflict-free phases (`slots`), a periodic event's strength (`eruption`: geysers), formations in the leader's frame, and a queued approach that slows as it arrives. Pure functions of t, so Godot plays them back identically |
+| `minimap/88-core-minimap.js` | `KMAP`: a map panel drawn from records (rects, turned boxes, strips, discs, labels, a hill-shaded relief grid, or a `KWALK` registry), base painted once, overlay a few times a second, hover names, click goes there, M toggles. `export()` is the plan as data |
+| `walk/test-walk.js`, `sched/test-sched.js`, `minimap/test-minimap.js` | `node core/<dir>/test-*.js` |
+
+**Used by** `settlements/voth` (the minimap: its `build.py` reads `core/minimap/` like `core/lod/`, and
+`src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons). `walk/` and `sched/` have no
+user yet.
 
 ## `sockets/`
 
