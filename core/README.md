@@ -4,7 +4,8 @@ Code shared by more than one build, kept here once instead of copied into each:
 `materials/` (the Ancients-lineage materials), `biome/` (the biome core every biome kit
 runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
 dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
-blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data).
+blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
+(the one generator, hash and noise a Godot port can reproduce) and `clock/` (the world clock).
 
 ## `materials/`
 
@@ -217,6 +218,23 @@ The world clock, `KCLOCK` (`GODOT-PLAN.md`, Phase 1, "The world clock"): motion 
 (`hour`, `day`) that runs at one world day per 72 real minutes when it runs. The preview holds the hour by default; the
 viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the host steps it with its frame's `dt`.
 `node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`).
+
+## `rand/`
+
+`KRAND` (`GODOT-PLAN.md`, Phase 2, item 1): the generator, hash and noise a Godot port reproduces bit for bit.
+
+| File | What |
+|---|---|
+| `rand/08-core-rand.js` | `KRAND.stream(seed)`: mulberry32, the same numbers as every lineage's `rng()`/`reseed()` (the test proves it against `kits/ancients` and `core/biome`), so moving draws onto a stream moves nothing. `hash(seed, ints...)`, `h3`, `vnoise`, `fbm`: an integer lattice hash (murmur3's finalizer) in place of the `Math.sin` hash, with the lineages' smoothstep noise on top; moving a build's noise onto it moves that build once. `cell(seed, ix, iz)` and `child(seed, name)`: seeds for a placement cell and for a named sub-stream |
+| `rand/golden.json` | the vectors: 1000 draws for 20 seeds, 3000 hashes, 4000 noise values, 1000 cell seeds, 30 child seeds (digests plus the first few values) |
+| `rand/test-rand.js` | `node core/rand/test-rand.js` (`--write` regenerates the vectors: only when the algorithm is meant to change) |
+| `rand/krand.gd`, `rand/krand_test.gd` | the GDScript twin and its golden test. Not yet run inside Godot: the first test of the Phase 7 project |
+| `rand/test_rand.py` | `python3 core/rand/test_rand.py`: `krand.gd` transliterated to Python with the same 64-bit tricks (split multiplies, u32 masks), passing the vectors, so the twin's arithmetic is proven before Godot runs it |
+
+Rules: lattice coordinates and hash inputs are int32; floats are floored. No `Math.sin`, `pow`, `exp`, `log` or
+`random` in the module (the test greps for them). A new build takes `core/rand` from the start (`GODOT-PLAN.md` rule 2).
+**Used by** `settlements/ys` (city target, `TARGET_CORE`: the P3 placement pass draws from it; nothing placed yet,
+so nothing moved).
 
 ## `sockets/`
 
