@@ -4,7 +4,7 @@ A working list. Items marked *(Menagerie)* come from reading the World Menagerie
 `host/WorldMenagerie/` (paths below are under it). Its code is read for ideas only: anything taken is
 rewritten as a Krator fragment, never imported from `host/` (`tools/check_insulation.py`).
 
-**Godot tags.** The plan (`biomes/WORLD.md`) is that three.js generates and previews, and Godot runs the open
+**Godot tags.** The repo-wide audit and port plan is `GODOT-PLAN.md`; it uses these tags. The plan (`biomes/WORLD.md`) is that three.js generates and previews, and Godot runs the open
 world. The port works when **what** a thing is (data) is kept apart from **how** three.js draws it
 (`biomes/GODOT.md`, `core/atmos/GODOT.md`). Each item is tagged:
 
