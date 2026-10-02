@@ -24,6 +24,7 @@ wlev_o = np.where(whas_o, LO + ((wl[..., 0] << 8) | wl[..., 1]) / 65535 * (HI - 
 water_n = np.load('water_new.npy'); whas_n = np.load('whas_new.npy'); wlev_n = np.load('wlev_new.npy')
 F = np.load('feat_masks.npz')
 isle, isle_norm, bay, mesa_zone = F['isle'], F['isle_norm'], F['bay'], F['mesa_zone']
+join_land = F['join_land'] if 'join_land' in F else np.zeros_like(isle)
 
 def enc(v):
     return np.round((v - LO) / (HI - LO) * 65535).astype(np.int64)
@@ -84,6 +85,16 @@ near_sea = seaF_o & nd.binary_dilation(bayF, iterations=20) & ~bayF
 by, bx = np.nonzero(bayF); ny_, nx_ = np.nonzero(near_sea)
 bpick = rng.integers(0, ny_.size, by.size)
 
+JF = upm(join_land)
+if JF.any():
+    _sat = np.array(Image.open('st.jpg').convert('RGB')).astype(int)
+    _green = _sat[..., 1] - (_sat[..., 0] + _sat[..., 2]) / 2 > 35
+    jdon = ~seaF_o & _green & nd.binary_dilation(JF, iterations=40) & ~JF   # the island's green interior, not its shore
+    _, (jy0, jx0) = nd.distance_transform_edt(~jdon, return_indices=True)
+    JY, JX = np.nonzero(JF); JSY, JSX = jy0[JY, JX], jx0[JY, JX]
+else:
+    JY = JX = JSY = JSX = np.array([], int)
+
 def lam(E, zf, az, alt=45):
     gy, gx = np.gradient(E / 1000 * zf, 2.0)
     a = np.radians(az); l = np.radians(alt)
@@ -113,8 +124,10 @@ for k in ['st', 't', 'rt', 'ct']:
     den = nd.gaussian_filter(nm, 6)
     fill = nd.gaussian_filter(im * nm[..., None], (6, 6, 0)) / np.maximum(den, 1e-6)[..., None]
     fill = np.where((den < 0.02)[..., None], im[near_sea].mean(0), fill)
-    alpha = np.clip(nd.gaussian_filter(bayF.astype(float), 1.2) * 1.8, 0, 1)[..., None]
+    alpha = np.clip(nd.gaussian_filter(nd.binary_dilation(bayF).astype(float), 0.8) * 2.2, 0, 1)[..., None]
     res = res * (1 - alpha) + fill * alpha
+    res[JY, JX] = im[JSY, JSX]
+    res = np.where(nd.binary_dilation(JF, iterations=2)[..., None], nd.gaussian_filter(res, (1.2, 1.2, 0)), res)
     edge = nd.binary_dilation(islF | bayF, iterations=1) & ~(islF | bayF)
     res = np.where(edge[..., None], nd.gaussian_filter(res, (0.8, 0.8, 0)), res)
     f = np.clip(1 + g * (lam(EnF, zf, az) - lam(EoF, zf, az)), 0.6, 1.6)
@@ -127,6 +140,7 @@ for k in ['z', 'c']:
     a = np.array(Image.open(k + '.png'))
     a[iy, ix] = a[sy, sx]
     a[by, bx] = a[ny_[bpick], nx_[bpick]]
+    a[JY, JX] = a[JSY, JSX]
     Image.fromarray(a, 'L').save(k + '_new.png', optimize=True)
 
 # ---- temperatures: lapse with the change in surface height ----

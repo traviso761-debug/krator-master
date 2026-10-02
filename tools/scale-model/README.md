@@ -13,7 +13,11 @@ export the regions collection from the artifact's database as JSON, then:
 2. `features.py <regions> <mesa ids>... --bay <id> --isles <id> 0.2`: weather the mesas in the
    given regions, carve the Bay of Voth off the Ring Sea, and raise geyser islands over 20% of the
    West Ring isles' water (heights, water, levels, geysers, masks).
-3. `assemble.py 4.12 out.html`: write the heights and water, re-shade the textures to the new
+   For 4.13, save that pass's outputs as `e412.npy`, `water412.npy`, `whas412.npy`, `wlev412.npy`,
+   `feat412.npz`, then `features2.py <regions> --water <id> --flatten <id> --border <id> 80
+   --join <id>`: region 42 to shallow sea, region 41's plateaus lowered, the cliff on Crag Men's
+   northern border eased (80 km either side), Spice isle joined into one landmass.
+3. `assemble.py 4.13 out.html`: write the heights and water, re-shade the textures to the new
    relief, paint the islands from East Ring Isles donors and the bay from the sea, update zones,
    climate class and temperatures, add the geysers to `vents`.
 4. `patch_ui.py out.html final.html`: political / geographic / biome region layers, the tabbed
