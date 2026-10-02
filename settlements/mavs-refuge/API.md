@@ -10,7 +10,7 @@ an IIFE where you can and export only what others need.
 
 **Units are metres.** `x` east, `z` south, `y` up. A person is 1.75 m.
 River surface ≈ y 0–14; forest floor ≈ y 5–30; main decks y 148–224;
-hypertrees are 290–480 m tall. The volcano/Ring Sea lie to the NW; the river
+hypertrees are 290–480 m tall. The volcano/Ring Sea lie to the SW; the river
 flows east→west. Rotation convention (same as Voth): a plain number `ry` is
 `rotation.y`; local +x then points along world angle `-ry`
 (`loc(x,z,lx,lz,ry)` converts). To aim local +x along heading (dx,dz):

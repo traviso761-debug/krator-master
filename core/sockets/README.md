@@ -58,7 +58,7 @@ A new symbol is one function in `SYMBOLS` (`38-symbols.js`): `(g, cx, cy, R, ink
 For a fully custom pack skip the factory and call `cultDef({key,name,paint,fill:{awning,banner,flag,emblem,sign,paint}})` with your own drawing functions; any `fill`
 you omit falls back to the generic pack.
 
-Shipped palettes: **Iziz** orange and teal, striped awnings. **Republic** Voth's deep red with cream, ochre and the triskelion. **Voth** deep blue with an ash-white glyph, ragged cloth.
+Shipped palettes: **Iziz** orange and teal, striped awnings. **Republic** Voth's deep red with cream, ochre and the triskelion. **Voth** deep purple with an ash-white glyph, ragged cloth.
 **Yuni** yellow with the hyperboloid. **Beast Riders** green with the claw, ragged hide-and-cloth.
 **Hykkousoi** pale sea-linen and slate blue with the gold wave-sun. **Xanadu** saffron bordered in maroon with the gold-hubbed wheel. **Ring Sea Islanders** bark-dyed cloth
 and pandanus with the white moon, pennant streamers. These three take their colours from the sails in `kits/ringsea`, so a culture's ships and buildings match.

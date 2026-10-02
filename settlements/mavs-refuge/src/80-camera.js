@@ -39,7 +39,7 @@ var VIEWS = [
   ['Bridge walk',      function(){ var b=BRIDGES[0]; setView(b.a.x, b.a.y+3, b.a.z, b.b.x, b.b.y-2, b.b.z); }],
   ['Cataract',         function(){ var c=CATARACTS[0]; setView(c.x-150, gnd(c.x-150,c.z+40,14), c.z+40, c.x+10, gnd(c.x,c.z,2), c.z); }],
   ['Forest floor',     function(){ setView(-230, gnd(-230,-120,2.2), -120, -40, 80, -250); }],
-  ['Canopy & volcano', function(){ setView(520, 520, 620, -300, 300, -300); }],
+  ['Canopy & volcano', function(){ setView(520, 520, -620, -300, 300, 300); }],   /* looking SW, across the sea to the volcano */
   ['Overview',         function(){ setView(200, 1500, 1500, 0, 120, -80); }]
 ];
 (function(){

@@ -29,6 +29,11 @@ scale Krator map for rough placement, not in this repo.
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
 
+**Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
+structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and
+microclimates. Its neighbours above are as first given; with Korona in the NE, its border with
+the NW lowlands needs checking against the scale model.
+
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.
 

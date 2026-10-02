@@ -1,5 +1,5 @@
 // ================================================================= HIGHLANDS / TRIBAL — dwellings and the cliff settlement
-// The Painted Men and the other raider tribes of the high country. Raw logs, bamboo and thatch; everything that
+// The Painted Men and the other raider tribes of the north-east high country. Raw logs, bamboo and thatch; everything that
 // can carry paint carries it — whole house-fronts in formline on white, totems at every door, thunderbirds on
 // the gables. No electric light (fire only). Every tribal dwelling can be built on the ground (stilts) or HUNG ON
 // A CLIFF: pass o.cliff = true and the house stands on cantilever beams and raking struts driven back into a rock
