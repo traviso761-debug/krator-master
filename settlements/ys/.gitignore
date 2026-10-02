@@ -1,0 +1,8 @@
+# Build and verify outputs (the port precedent): parallel agents would conflict on every merge.
+dist/
+shots/
+.syntax-*.js
+build-manifest-*.json
+log_*.txt
+*.done
+__pycache__/

@@ -908,6 +908,15 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
       through every one. **Reading the shots is not optional and never has
       been.**
 
+## Found by Ys (Oct 2026)
+
+- [ ] **Skyscrapers A, B and C have no stairs between their floor plates.** The ruined bodies carry a
+      pale plate every 8, 5 and 7 m (`52-sky-abc.js`, the cut-section blocks) but nothing joins one plate to
+      the next: no stair, no ramp round the core. Ys enters a drowned tower through a grown pod at one
+      plate and can walk only that storey. Add a stair per tower (keep the plate heights and the hole
+      predicate: a stair must not be eaten by the decay holes), then Ys re-vendors `52-sky-abc.js` and
+      re-applies its three helpers at the top of the file (`ysPodiumR`, `ysWallHole`, `ysCutY`; see
+      `settlements/ys/KNOWN_ISSUES.md`). The same holds for D–K wherever they carry plates.
 ## Shared-code round (2026-10-01)
 
 - [x] **Kit rubble read as pale eggs** (QA arcB). `rubble` is Arcoindian's knocked-corner block (`stoneBlockGeo()`, 12 tris, was a 36-tri dodecahedron) on a mottled stone map (`MAT.rubbleK`) under the same instance tints.
