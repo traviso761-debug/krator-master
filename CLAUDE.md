@@ -61,8 +61,8 @@ the browser. New browser-side code goes in the host fragments, not in data or bu
 ## Publishing
 
 Update and republish the Krator Worlds gallery automatically only when a brand new
-settlement or kit goes to `main` (see the end of `README.md` and `gallery/README.md`).
-A fix to one settlement republishes only that settlement's files. A wider change
+settlement, kit or biome goes to `main` (see the end of `README.md` and `gallery/README.md`).
+A fix to one settlement or biome republishes only that build's files. A wider change
 (several builds, shared `core/`): ask the user whether to update the gallery.
 
 ## Shared and vendored code
