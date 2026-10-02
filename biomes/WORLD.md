@@ -258,7 +258,8 @@ here, each an item in `TODO.md` ("Biomes: the port plan's findings"):
   the biome sets and no kit lists yet, rather than more culling in the kits.
 - **The audit.** Each kit's `PORT.md` carries provisional tags that need a person's pass (the
   stage is data as well as host; the trees are already split; floor and dress place and draw in
-  one pass), and `tools/audit_port.py` does not yet see the core's exporter.
+  one pass). The kits are inside the plan's scoped hand pass (`GODOT-PLAN.md` 3.3). `tools/audit_port.py`
+  sees the core's exporter since 2026-10-02.
 
 ## Hero trees: an opt-in (Travis, Oct 2026)
 

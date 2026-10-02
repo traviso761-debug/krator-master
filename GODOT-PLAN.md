@@ -5,7 +5,9 @@ world. This file is the repo-wide plan for getting there. It says how to audit e
 browser-native and get quarantined or retired, which parts cross over as data, and in what order. The per-module
 contracts already written stay the authority for their modules: `biomes/GODOT.md` (flora), `core/atmos/GODOT.md`
 (the air), `settlements/yuni/GAME_EXPORT.md` (buildings, doors, interiors). `TODO.md` tags each feature idea
-with the same four tags this plan uses.
+with the same four tags this plan uses, and its first section, **"Port: next"**, is the one ordered list of port
+work across this plan and the module plans (`biomes/WORLD.md`, `core/materials/PLAN.md`,
+`core/simulation/PLAN.md`, `settlements/ys/GODOT.md`). When an item here moves, that list moves with it.
 
 Survey numbers below were taken on 2026-10-02 from `src/`, `targets/` and `core/` (not `dist/`, `host/`,
 `archive/`).
@@ -25,8 +27,16 @@ What already crosses over, or is scaffolded to:
 | `core/sockets/` | a building declares sockets, a culture pack fills them | data side is the socket list; the packs draw with 2D canvas |
 | `core/terrain/36-core-carve.js` | floor and blocker lists as the carve builds | node test exists; no exporter |
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
+| `core/rand/` (2026-10-02) | one stream (the lineages' mulberry32, proven equal), an integer hash and noise; golden vectors; node test; GDScript twin `krand.gd`, its arithmetic proven by a Python transliteration, not yet run in Godot | Ys's city takes it for its placement pass |
+| `core/clock/` (2026-10-02) | the world clock (Phase 1's contract); node test | Iziz's city runs on it; becomes `WorldClock.gd` |
 | `core/simulation/` | documents only: `ROADMAP.md`, `PLAN.md` | the life layers' shared vocabulary and `SIM.export()` (`krator-sim`), planned as the fourth exporter |
 | `settlements/ys` (the Hykkousoi capital; phases 0–2 built, the city not yet placed) | the layout, the land–sea lattice, the NAV grids and the ground stamps are records and Float32 grids with no three.js in them; every placed thing leaves a record (volumes, doors, windows, lights, rooms, spots, furniture) | no exporter yet. `settlements/ys/GODOT.md` reads the build against this plan: it takes `core/rand` and the terrain bake before its city pass, writes sim data instead of a life layer, and exports on the `KRATOR_EXPORT` shape |
+
+**Field report (Travis, 2026-10-02).** A friend of Travis's imported the Voth city kit models into Godot. That
+proves three.js geometry from these builds reaches Godot as meshes. It says nothing yet about materials, tags,
+instancing, terrain, the atmosphere or the life layer, and the route he used is not in this repo (no build here has
+a glTF exporter). Ask him for the route and the files: if it is three.js's `GLTFExporter` over the scene, it is the
+cheapest mesh path Phase 4's converter could take, and the spike (Phase 7) should try it beside the JSON route.
 
 What does not cross over today, by size:
 
@@ -126,11 +136,21 @@ Audit in the order the port will consume them, so each audit feeds a phase that 
 5. The Voth lineage (`voth`, `yuni`, `locus`, `girder`, `mavs-refuge`): the life layers and `PAL`/`FAMMAT`.
 6. `shade` (sedesert biome plus a settlement; the two kinds in one page).
 
+**Scope of the hand pass (Travis, 2026-10-02).** A person's pass over 1,366 fragments will not happen, and most of
+them are [draw] builders whose tag changes nothing. The hand pass covers only the builds on the critical path:
+`core/` (done), the biome kits (M4), Iziz (M5), Girder (the Phase 3 pilot and M5's furniture), Voth (M6) and Ys (the
+lineage's newest build, and `core/rand`'s first user). Every other build keeps its provisional tags; its `PORT.md`
+is corrected in the session that next does port work on it, for the fragments that session touches. The order above
+stays the order in which builds are touched. The pass on a build means: the [web]/[G data]/[draw] tags right for
+every fragment over about 10 KB, a "split" note naming the data pass on every builder that decides placement, and a
+Notes paragraph listing the build's own copies of PRNG, noise, `terrainH` and palette.
+
 ## 4. The phases
 
 Each phase lists what it produces and what "done" means. Phase 0 is done. Phases 1 to 3 are independent of one
-another and can run in parallel; 4 to 6 build on them; 7 is the Godot side and starts as soon as Phase 1 gives it a
-first tile.
+another and can run in parallel; 4 to 6 build on them. Phase 7, the Godot side, **starts now with a spike** (Phase 7,
+"The spike") on the exports that already exist, and does not wait for Phases 1 to 4: the spike tells those phases
+what the importer actually needs, which is cheaper to learn before the substrate is written than after.
 
 ### Phase 0: freeze and baseline (done 2026-10-02)
 
@@ -150,17 +170,25 @@ first tile.
   browser (DOM, canvas 2D, input, `requestAnimationFrame`, `performance.now`, storage, network). A
   `[G data]` row noted "split" only warns until it is split. Every `build.py` runs it on its own folder
   before building and stops on a failure (`--no-checks` skips it, like the other checks). It is green on
-  every build today, with seven warnings in `core/` (download helpers, the weather `<select>`, two timing
-  reads) that Phase 1 moves to the host.
+  every build; on 2026-10-02 it had sixteen warnings in `core/`, thirteen of them the minimap's panel. The
+  minimap was split that day (`88-core-minimap.js` [G data], `88a-core-minimap-host.js` [web]); two remain,
+  `BIO.download()` and a timing read in the carver, which Phase 1 moves to the host.
+- **Baseline coverage (fixed 2026-10-02).** The first baseline hashed `dist/*.html` only, which left out the whole
+  Voth lineage: Voth, Yuni, Locus, Girder and Mav's Refuge write their pages beside `build.py`. Those ten pages are
+  in it now (117 pages). `--write` keeps the entries of pages not built in the checkout (Port's and Ys's dist/ are
+  gitignored); `--prune` drops them.
 
 First numbers from the provisional tags (`PORT-INDEX.md`): 1,244 fragments, 16.1 MB of source; 28% `[G data]`,
-46% `[draw]`, 21% `[web]`, 3% `[G shader]`, 3% `[G native]`; 125 fragments noted "split". The host-shell
-table confirms the drift: `camera` has 12 versions over 16 builds, `probe` 12 over 15, and every biome kit's
-`host-*` set is its own version.
+46% `[draw]`, 21% `[web]`, 3% `[G shader]`, 3% `[G native]`; 125 fragments noted "split". Refreshed on 2026-10-02
+after Ys joined main: 1,366 fragments, 18.6 MB, 143 noted "split"; by KB 13% `[G data]`, 69% `[draw]`, 13% `[web]`,
+2% `[G shader]`, 3% `[G native]`. The index's exporter column now names each build's exporter (its own, or `biome`
+and `atmos` taken from `core/`): nine of the ten biome kits have one (nwbay, on its old core copy, does not),
+plus Iziz (`atmos`) and Yuni (`fixtures`). The host-shell table confirms the drift: `camera` has 13 versions over
+17 builds, `probe` 12 over 15, and every biome kit's `host-*` set is its own version.
 
 Done when: ~~`PORT-INDEX.md` exists, every build has a `PORT.md`, the hash baseline is recorded.~~ Done.
-What remains of the audit is the human pass over the provisional tags, build by build, in the order of
-section 3.3 (core is done), writing the split lists into each `PORT.md`'s Notes.
+What remains of the audit is the hand pass, scoped to the critical-path builds (section 3.3): the biome kits,
+Iziz, Girder, Voth and Ys. Iziz's and Dalab's `90b-city-build.js` are corrected (2026-10-02: [draw], noted split).
 
 ### Phase 1: one host shell (the [web] quarantine)
 
@@ -176,6 +204,7 @@ The browser-native code becomes one module, `core/host/`, that a build takes the
 | `94-host-polytool.js` | `93-polytool.js` copies, `93-polygon.js`, nhighlands' path tool | the biome tool's seed |
 | `95-host-probe.js` | 15 `probe.js` copies | `window._api`, built from the registry and the exporters |
 | `96-host-sheet.js` | `89-sheetui.js`, catalog sheet UI | |
+| `97-host-minimap.js` | `core/minimap/88a-core-minimap-host.js` | split out 2026-10-02; moves in as it is |
 | `tools/harness.py` | the harness block in 25 `verify.py` files (TODO) | one copy, imported by each `verify.py` |
 
 The sky (`21-sky.js`, 11 copies, about 55 KB each) is [G native] plus one [G shader] (the gas giant and sun
@@ -189,7 +218,8 @@ touches `document` outside `core/host/` fails `check_port.py`.
 to exist side by side: each life build's `SKY_T`/`skyHour()` with `TICKS.push(fn(dt, hour))`, `ATMOS.clock`,
 `KSCHED` (pure functions of t), and `SIM`'s fixed-rate stepper (`core/simulation/PLAN.md` 4.5). They become one
 clock, owned by `91-host-loop.js`, and everything else reads it. The clock itself is `core/clock/20-core-clock.js`
-(`KCLOCK`, node test `test-clock.js`); Iziz's city is its first user:
+(`KCLOCK`, node test `test-clock.js`); Iziz's city is its first user. *Done 2026-10-02: this is the one piece of
+Phase 1 that has landed.*
 
 | Field | What | Read by |
 |---|---|---|
@@ -211,21 +241,34 @@ clock, owned by `91-host-loop.js`, and everything else reads it. The clock itsel
   slider and a Run time / Hold time button (Iziz: the toolbar; `#time=run` starts it running). The host shell
   carries both controls once Phase 1 lands; until then each build that takes `core/clock` adds them.
 
-Done when: every build lists `core/host/` and keeps no `camera`, `probe`, `inspect`, `polytool`, `stats`
-or `sheetui` fragment of its own; each page's screenshots are unchanged; `check_port.py` is on for the
-whole of `src/` in every build. Nothing has been ported yet, but every remaining byte in `src/` is now
-[G data], [draw] or [G shader].
+Done when (narrowed 2026-10-02): the biome kits (the easiest: each reaches its host only through `BIO.init`) and
+one settlement per lineage (Iziz, Voth) take `core/host/` and keep no `camera`, `probe`, `inspect`, `polytool`,
+`stats` or `sheetui` fragment of their own, with unchanged screenshots. Every other build adopts the shell in the
+next session that touches its host fragments, and every new build takes it from the start. Moving 31 builds onto
+one shell in one push is the largest hygiene job in this plan and buys no Godot capability; it is not worth doing
+ahead of need. `check_port.py` is on for the whole of `src/` in each build once that build is on the shell.
 
 ### Phase 2: the engine-neutral substrate
 
 Five small `core/` modules, each with a node test (and, where Godot runs the same algorithm, a GDScript
-twin) checked against the same golden vectors:
+twin) checked against the same golden vectors. Each ships with its **first consumer** in the same session (rule
+11), named here:
+
+| Module | First consumer | Status |
+|---|---|---|
+| `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; not yet run in Godot); Ys's city takes it |
+| `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
+| `core/tags/` | Yuni's `FIX.*` records or Voth's `PLACED` (both exist; map one) | not started |
+| `core/furnish/` | Girder (the material pilot is there too) | not started |
+| `core/mask/` | Iziz's city (M5) | not started |
 
 1. **`core/rand/`**: one PRNG (a 32-bit integer generator, `mulberry32` or `sfc32`, so the arithmetic is
    exact in both engines), one hash (`h3`), value noise and `fbm`, with reseed and the per-cell seeding
    `biomes/GODOT.md` lists as not done. Golden file: the first 1000 draws for 20 seeds, and noise at 1000
    points. The 26 local copies are retired build by build; a build whose stream changes re-baselines its
-   hash with a screenshot diff. Note that Math-library noise (`Math.sin` based hashes) is not portable
+   hash with a screenshot diff. *As built:* the stream is mulberry32 and equals the lineages' `rng()` bit for bit,
+   so moving a build's draws onto `KRAND.stream` moves nothing; only the hash and the noise move rubble, and only
+   when a build switches to them. Golden file `core/rand/golden.json` (digests plus first values). Note that Math-library noise (`Math.sin` based hashes) is not portable
    bit for bit; the port replaces it, so this is the one phase that is expected to move rubble.
 2. **`core/terrain/`** grows a `TERRAIN` field: a heightmap (Float32, metres, a grid at a fixed step) plus
    named carve patches and water levels, with `terrainH(x,z)` as bilinear sampling of it. A world either
@@ -407,7 +450,20 @@ freeze, and do not copy into new builds.
 
 ### Phase 7: the Godot project
 
-`godot/` in this repo (Godot 4.x, Forward+; Compatibility only if a web export is wanted):
+**The spike (now; added 2026-10-02).** Before Phases 1 to 4, a minimal `godot/` project that:
+
+1. runs `core/rand/krand_test.gd` headless and passes (the first bit-exactness proof inside Godot);
+2. imports one biome kit's existing `BIO.export()` JSON (rift or swlowlands) as MultiMesh for items and ArrayMesh for
+   buckets, per `biomes/GODOT.md`, with the PNG textures, on a flat plane;
+3. reads one `ATMOS.export()` from Iziz into the global shader parameters per `core/atmos/GODOT.md`;
+4. imports the Voth kit meshes by the route Travis's friend used (section 1), for comparison.
+
+It needs no shell, no `core/tags` and no `core/export`. Its output is a short list in this file of what the importer
+lacked (ids, tags, a material vocabulary, a terrain under the tile, a colour convention): that list sets the shape
+of Phases 2 to 4 instead of this plan guessing it. Godot is not installed where the repo is built, so the spike runs
+on Travis's (or his friend's) machine; `godot/README.md` should say how.
+
+The project, as it grows (Godot 4.x, Forward+; Compatibility only if a web export is wanted), in `godot/`:
 
 - `addons/krator/`: the importer (Phase 4), the tag metadata, collision from `-col` and from the carver's
   list, `visibility_range` from the LOD records;
@@ -463,7 +519,8 @@ golden tests pass in CI.
 These go into `README.md`'s design rules and `check_port.py` as they become enforceable:
 
 1. No `document`, canvas 2D, `requestAnimationFrame` or input handling outside `core/host/`.
-2. Random numbers and noise come from `core/rand/` only.
+2. Random numbers and noise come from `core/rand/` only (`KRAND`; it exists since 2026-10-02). Existing builds
+   keep their copies until their reseeding event; new placement passes never draw from them.
 3. Ground height comes from `core/terrain/` only.
 4. Everything placed is registered in `core/tags/` with its class and tags, before it is drawn.
 5. A builder takes a record and draws it; it does not decide where it goes or what it is. Placement is a
@@ -474,12 +531,18 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 9. Any new `core/` module ships a node test, and a GDScript twin when Godot must run the same algorithm.
 10. New builds take `core/host/`, `core/rand/`, `core/terrain/`, `core/tags/` and `core/export/` from the
     start; a build without an export is not finished.
+11. A new `core/` module ships with its first consumer, in the same session: a build that uses it on a page
+    that is built, baselined and checked (2026-10-02). `core/walk`, `core/sched` and `KRELIEF` were written ahead of
+    any user and still have none; each gets one, or is left alone, before anything is added to it.
 
 ## 7. Risks and the calls already made
 
 - **Determinism across engines.** JS doubles and GDScript floats differ; `Math.sin`-based hashes are not
   reproducible. The call: integer PRNG and integer hashes (Phase 2), tolerance-based golden tests for
   anything that touches trigonometry, and the three.js export as the reference rather than bit equality.
+- **Bit-exactness is proven in node and Python, not yet in Godot.** `krand_test.gd` is the spike's first job.
+  If Godot's JSON reader, `floori` or integer behaviour surprises, the fix lands in `krand.gd` and `test_rand.py`
+  together, and the vectors do not change.
 - **Moving rubble.** Replacing a build's PRNG changes that build's world. Do it one build at a time, with
   a before and after screenshot set, and accept the change; do not try to keep the old streams alive.
 - **Colour space.** The biome export is linear, the atmosphere export is sRGB (each says so). The unified
@@ -504,7 +567,8 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 
 | Milestone | Proves |
 |---|---|
-| M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0) |
+| M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0). **Done** |
+| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1 |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start) |
@@ -512,5 +576,8 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | M6 first citizens | Voth's citizen layer runs in Godot from exported sim data (Phase 5) |
 | M7 one world | two kits and one settlement stream together in Godot from the scale model's terrain (Phase 7, `biomes/WORLD.md`) |
 
-M1 to M3 are repo hygiene and can be done without Godot installed. M4 is the first point where the Godot
-project exists and the port is testable end to end; everything after it is iteration on the same pipeline.
+M1 to M3 are repo hygiene and can be done without Godot installed. The spike is the first point where the Godot
+project exists. **M4 no longer waits on M2 and M3** (2026-10-02): a biome tile needs the biome export, which exists,
+plus what the spike finds missing. M2 (the shell) is narrowed to the biome kits and one settlement per lineage, and
+can follow M4. M3's modules each land with their first consumer rather than as a set. Everything after M4 is
+iteration on the same pipeline.
