@@ -1,0 +1,37 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "../roof.thatch/normal.png",
+  "roughnessMap": "../roof.thatch/roughness.png"
+ },
+ "processing": {
+  "note": "albedo only; normal and roughness are the sibling set's",
+  "options": {
+   "mean_luminance": 0.65,
+   "mute": 0.9,
+   "neutral_of": "roof.thatch"
+  },
+  "script": "tools/textures/adopt.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.thatch.neutral",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2.5,
+   2.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "derived_from": "roof.thatch",
+  "file": "Weathered Tropical Thatch Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row roof.thatch (exact wording not recorded)",
+  "sha1": "0429b292c208734b8f7fcdb64ffff1dfca436cf8"
+ }
+}
