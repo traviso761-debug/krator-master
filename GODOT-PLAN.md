@@ -24,6 +24,7 @@ What already crosses over, or is scaffolded to:
 | `core/sockets/` | a building declares sockets, a culture pack fills them | data side is the socket list; the packs draw with 2D canvas |
 | `core/terrain/36-core-carve.js` | floor and blocker lists as the carve builds | node test exists; no exporter |
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
+| `core/simulation/` | documents only: `ROADMAP.md`, `PLAN.md` | the life layers' shared vocabulary and `SIM.export()` (`krator-sim`), planned as the fourth exporter |
 
 What does not cross over today, by size:
 
@@ -237,6 +238,14 @@ Done when: one build per lineage (a biome kit, `iziz`, `voth`) opens in Godot fr
 right materials, tags on every node and the terrain under it.
 
 ### Phase 5: the simulation layer as data
+
+**This phase is owned by `core/simulation/PLAN.md`** (on `main` since 2026-10-02, with Travis's roadmap in
+`core/simulation/ROADMAP.md`). That plan surveys every life layer, defines the shared vocabulary (`SIM`:
+factions, places with activities and slots, roles and schedules, actors, the NAV contract, routes as functions
+of time), keeps hand-edited `world/*.json` as a source that `SIM.load()` applies over what the geometry
+implies, and makes `SIM.export()` (`krator-sim`, written headless by `verify.py` to `dist/<name>.sim.json`)
+the fourth exporter beside atmos, biome and Yuni's fixtures. What follows is the shorter statement this
+plan made before that one existed; where they differ, `core/simulation/PLAN.md` wins.
 
 The README's rule ("never encode a world rule solely in the visual implementation") is the port's rule for
 the life layer. Voth's is the reference and the biggest. Split it into:
