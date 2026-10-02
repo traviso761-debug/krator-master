@@ -48,6 +48,31 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The accreted pods' room polygons are circles of 12 sides; a bed against the wall can still clip the
       shell by a few centimetres where the lathe noise pulls the wall inward. The interior pass should read the
       wall from the pod's `inner` surface rather than the nominal radius.
+- [x] (Oct 1 2026) `hykPad` inside a builder: its geometry went through the frame but its deck record did not, and
+      `HYK.placeOn`'s `o.landing` converted to world first, so a grown pod's landing stood at twice its coordinates
+      (agents B, C, D). It draws in the current frame and records world now; `hykBridge` and the pontoon likewise.
+- [x] (Oct 1 2026) Doors blocked by the building's own skin (Travis: the barracks). 90 of 210 doors on the kit sheet
+      showed a wall through their lip: the base fillets, skirts and second skins were never holed. Every HYK building
+      now clears its own geometry out of each door's passage when it is done (`hykCutDoorways`, 62); 206 doors are
+      clear. Of the four a ray still meets: the Treasury's swung-open seal leaf, the quay's edge and the Amphitriton's
+      shrine-niche step are by design; the hanging tavern's store door faces along the host and the host's skin
+      stands in its passage (agent C's layout: turn the door, or move the store pod off the face).
+- [x] (Oct 1 2026) The Amphitriton's vault let the rain in (Travis): the petals part where they taper and the spire
+      is an open lathe. A webbing shell under the petal edges, holed at the L2 doors, and a crown disc close it.
+- [ ] `hykLatheAt` reads the bare profile, so on a lobed, fluted or ringed lathe its point is off the skin (up to the
+      lobe amplitude: 0.85 m on the Citadel's wall) and a lip floats or sinks. Agents A, E and G each wrote a corrected
+      copy (`hykHouseLatheAt`, `hykTideAt`, the `hykMil…` radius); the Citadel uses `hykTideAt`. Fix it in 61 and
+      retire the copies (the callers that scale its result themselves must stop).
+- [ ] `hykStairSpiral` takes the host's world centre and `rAt`, so inside a builder it must be called with the frame
+      stood down (70's `hykHouseWorld`); give it the frame treatment `hykPad` got.
+- [ ] The kit sheet's generated `— front` and `— eye level` presets for a landmark (the Amphitriton, the Citadel, the
+      Inn) stand in or behind the neighbouring rows; judge those from the row preset or a `--cam`.
+- [ ] The merge look-round was at row and host scale (every row, every host from both sides, the Citadel close);
+      the agents' own close looks (eye level, inside) died with them and were not redone piece by piece.
+- [ ] The Citadel: its bridge head at the west waits for the span to the Amphitriton (P3); its terraces are 1.6 m
+      steps with flights on two bearings only (no seat steps); the towers have no way in; the Treasury's place in
+      the precinct is the city's to choose. The gate hole is cut on the wall's quad grid and its inside edge is ragged.
+- [ ] The dyer's cloth hangs as flat panels on a rail; from a distance the door's lip through them reads as a sign.
 - [ ] The view select does not follow a preset chosen by the harness or by `_api.setView` (cosmetic; the port
       behaves the same).
 - [ ] The furniture set's bowls, basins and the hearth have no inner skin (drawn before `F.lathe` took `flip`): a

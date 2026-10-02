@@ -108,7 +108,7 @@ ysPlaceHost(scene,{key,builder,x,z,y (the sink),ry,d,cutY,podium,holes,cap:{hw},
             floors:{y0,pitch,top,first},ways:[{a,y,R}],ring})
 hykTideline(host,{weed,specks,foam})
 hykAccrete(host,[{y,a,R,wealth,level,pad,cluster,into}])   // pods rooted into the host's face, landings, drips, rooms
-hykPad(x,y,z,R,{col,mat,stalk,own})                     // a lily-pad landing (world)
+hykPad(x,y,z,R,{col,mat,stalk,own})                     // a lily-pad landing in the current frame (local in a builder); deck record world
 hykStairSpiral(cx,cz,rAt,y0,y1,{a0,dir,w,col})          // treads and a rail down a round face
 hykBridge(A,B,{w,rise,col,own,                          // a backbone deck between landings: spine, vertebrae, edge ribs, rail
   branches:[{t,to:{x,y,z},w,rise,own}],                 //   a narrower run forking off at t toward a point (a perch, a landing)
@@ -123,7 +123,8 @@ hykLight(lx,ly,lz,{...,bracket:[lx,ly,lz]})            // a tube from an anchor 
   explicitly. `holes` scales the kit's decay holes for this host (default .4: the kit's full decay eats most of a
   skin, a reclaimed host keeps its wall). `rAt(y,a)` may take the bearing: a lobed host is wider at a crest.
 - `floors`: plate k's top is at `y0 + k*pitch + top` in the builder's own y (`first` replaces `k*pitch+top` for
-  k = 0), plus the sink. Pods must sit on plates: a pod's floor is the plate's top.
+  k = 0), plus the sink. A pod's floor is a plate's top, but pods round one host may take different plates. A pod between
+  plates is possible only where the host has no projecting plate rings: a ring crosses its door.
 - **Ways in.** A host must be declared with at least one way: `{a (bearing), y (the plate's top, world), R}`.
   The adapted builders cut that pod's hole through the skin and the lining (`52-sky-abc ysWallHole`), and the
   matching `hykAccrete` pod (`into:true`, same `a` and `R`, `y` optional) is bedded a fifth into the face with a
@@ -152,8 +153,9 @@ at about `+z = 0.3 R`, or `-0.2 R` bedded when `o.way` is set), root it with `hy
 on the face, put the door at +z and the landing in front of it with `o.landing(0,0,R*1.6,2.8)`; `o.faceZ(lx,ly)`
 is the face's local z at local x (≤ 0, the host curves away behind), `o.host.rAt(y,a)` its world radius. A way-in
 pod (`into:true` on the def) gets `o.way = {a,y,R}` and must put a back door at −z onto the plate (the hole in the
-wall is already cut to `R = w/2`). All helpers work in the local frame as in HYK.place; `hykPad` and
-`hykStairSpiral` take world coordinates (`hykW`). `w,d,h` are the pod's size; satellites and drips are the
+wall is already cut to `R = w/2`). All helpers work in the local frame as in HYK.place, `hykPad` too (its deck record
+is world); `hykStairSpiral` takes the host's world centre and `rAt`, so call it with the frame stood down (70's
+`hykHouseWorld` is the pattern). `w,d,h` are the pod's size; satellites and drips are the
 builder's to add (`hykAccrete` in 64 is the pattern, including the lamp on a bracket).
 
 ## Furniture (35-furn-frame.js, kits/furniture/SPEC.md)
@@ -181,13 +183,14 @@ with `hykW` first. `FURN_PLACED` records every placed piece.
 
 ## The kit sheet (targets/kit → dist/kit.html)
 
-The sheet lays every `HYK.def` out by `row`: free-standing rows march north from z = −40 on a land shelf at
+The sheet lays every `HYK.def` out by `row`: free-standing rows march north from z = −75 on a land shelf at
 +3.2 m, the Harbour row stands at the shore (z = 8, the water at z > 30) and the Spans row just inland of it;
 grown-on rows hang on Scallop Stack hosts in the sea to the east (x = 560), one host per eleven pieces, pods on
-the plate at +37.25 in the lobe troughs, each host with its own way-in pod. Presets are generated:
+plates from +27.25 to +47.25 in the lobe troughs (a plate or two apart), each host with its own way-in pod. Presets are generated:
 `'<name> — front'`, `'<name> — eye level'`, `'<name> inside'` (for dwellings, taverns and barracks, or
-`inside:true` on the def), `'<row> — row'`, `'<host> — the host'`, `'Kit — overview'`. The three mock houses sit
-in the housing rows as worked examples until the merge.
+`inside:true` on the def), `'<row> — row'` (back and up with the row's width), `'<host> — the host'`, `'<host> — the
+pods'` and `'<host> — the far pods'`, `'Kit — overview'`. The mock houses live only in the `mock` target now. A
+landmark's generated `— front` and `— eye level` stand in the neighbouring rows; judge one from its row preset or a `--cam`.
 
 ## The city's land–sea model (targets/city/84b-city-shore.js, DESIGN §3)
 
@@ -236,7 +239,7 @@ switches the rose and gizmo on, inside hides every exterior shell and shows the 
 
 | | |
 |---|---|
-| one building | 250 k triangles (landmarks 600 k: say so) |
+| one building | 250 k triangles (landmarks 600 k: say so with `cls:'landmark'` on the def) |
 | the mock sheet | 2 M |
 | draw calls | one per material per side for every merged shell in the world, plus one per kit item |
 

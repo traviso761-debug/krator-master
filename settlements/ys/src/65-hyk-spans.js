@@ -178,7 +178,7 @@ function hykSpanPontoon(A,B,o){o=o||{};const col=o.col||hC(hPick(HPAL.barnacle))
   if(k<n-1){const g0=s1,g1=s1+gap;for(const sd of [-.8,.8]){const a=at(g0-.25,sd,-.3),b=at(g1+.25,sd,-.3);const m=[(a[0]+b[0])/2,a[1]+.02,(a[2]+b[2])/2];
     hykPut('hkBone',hykTube([a,m,b],()=>.12,{seg:6,col:bone}));kput('hkBall',a,null,[.22,.2,.22],bone);kput('hkBall',b,null,[.22,.2,.22],bone);kput('hkBall',m,null,[.3,.26,.3],bone);}
    hykPut('hkBone',hykDeck([at(g0-.3,0,-.03),at((g0+g1)/2,0,-.03),at(g1+.3,0,-.03)],hw*1.5,{col:bone}));}}
- ysDeck({x0:Math.min(A.x,B.x)-hw,z0:Math.min(A.z,B.z)-hw,x1:Math.max(A.x,B.x)+hw,z1:Math.max(A.z,B.z)+hw,w:hw*2,y:A.y,kind:'pontoon',own:o.own||'pontoon',a:[A.x,A.y,A.z],b:[B.x,B.y,B.z]});
+ {const a=hykW(A.x,A.y,A.z),b=hykW(B.x,B.y,B.z);ysDeck({x0:Math.min(a[0],b[0])-hw,z0:Math.min(a[2],b[2])-hw,x1:Math.max(a[0],b[0])+hw,z1:Math.max(a[2],b[2])+hw,w:hw*2,y:a[1],kind:'pontoon',own:o.own||'pontoon',a,b,world:true});}
  hykSpanMark('wetdoor',A.x,A.y,A.z,-tx,-tz,hw*2,2.3,lv);hykSpanMark('wetdoor',B.x,B.y,B.z,tx,tz,hw*2,2.3,lv);
  return {n,sl};}
 // ================================================================= the defs: free-standing showcases for the kit sheet

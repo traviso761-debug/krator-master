@@ -130,6 +130,13 @@ function buildHykAmph(G,o){reseed(30600+(o.v|0));
   // a small urchin spire grows from the cornice at each petal boundary
   const bth=ph+pitch/2;hykPut('hkNacre',hykLathe({H:9,cx:HX+23.0*Math.cos(bth),cz:HZ+23.0*Math.sin(bth),yBase:VY0-.2,rFn:y=>1.3*Math.pow(1-y/9,.9)+.06,nu:14,nv:9,flute:{n:7,amp:.14,sharp:1.3},twist:.6,col:nac}));
   if(hasDoor)l2doors.push({k,ph,op:Object.assign(petalN(k,uDoor,0),{r:DOORW,ky:DOORK})});}
+ // the web between the petals: where they taper to their points they part, so a shell of revolution through the petals'
+ // edge line, a hand under it, closes the vault to the calyx (outside in nacre, inside in the lining) and keeps the rain out
+ {const wr=pr(uDoor);const ops=sc=>L2K.map(k=>{const ph=Math.PI/2+k*pitch;return {p:[HX+wr*sc*Math.cos(ph),L2Y+1.35,HZ+wr*sc*Math.sin(ph)],n:[Math.cos(ph),0,Math.sin(ph)],r:DOORW*1.15,ky:DOORK};});   // open at the L2 doors' passages
+  const web=(sc,o)=>hykLathe(Object.assign({H:VH,yBase:VY0,cx:HX,cz:HZ,rFn:y=>pr(clamp(y/VH,0,1))*sc,nu:84,nv:20,rings:{n:9,amp:.008},ops:ops(sc)},o));
+  hykPut('hkNacre',web(.985,{col:nac}));hykPut('hkIn',web(.95,{col:hC(hPick(HPAL.shell),.88),flip:true}),true);
+  // and its crown, closed under the calyx (the spire is an open lathe: from the hall the sky showed through it)
+  hykPut('hkNacre',hykDisc(HX,VY0+VH+.02,HZ,RT*.985+.1,{col:nac,nu:40}));hykPut('hkIn',hykDisc(HX,VY0+VH-.25,HZ,RT*.95,{col:hC(hPick(HPAL.shell),.88),nu:40,down:true}),true);}
  // the calyx the petal tips enter, the spire (fluted, twisted, ringed) and its finial with the beacon pearl
  const CY=VY0+VH-6;hykPut('hkNacre',hykLathe({H:9,yBase:CY,cx:HX,cz:HZ,rFn:y=>8.4-.3*y,lobes:{n:NP,amp:.07,ph:-Math.PI/2*NP},nu:42,nv:8,col:nac}));
  const SPH=60;hykPut('hkNacre',hykLathe({H:SPH,yBase:CY+8,cx:HX,cz:HZ,rFn:y=>5.9*Math.pow(1-y/SPH,.85)+.14,flute:{n:9,amp:.13,sharp:1.4},twist:.3,rings:{n:22,amp:.02},nu:28,nv:34,col:nac}));
@@ -225,6 +232,4 @@ function buildHykAmph(G,o){reseed(30600+(o.v|0));
  for(const s of [-1,1]){const an=dAt(Math.PI/2+s*.17,4.0,0,1);hykLight(an.p[0]+an.n[0]*.45,an.p[1]+.1,an.p[2]+an.n[2]*.45,{r:.22,nacre:true,level:'L1',bracket:an.p});}
  for(let i=0;i<6;i++){const a=i/6*TAU+.4;const r=DR*.93;const A=[HX+r*Math.cos(a),16.5,HZ+r*Math.sin(a)];hykLight(A[0]-Math.cos(a)*.5,16.6,A[2]-Math.sin(a)*.5,{r:.22,nacre:true,level:'L1',bracket:A});}
  hykReg('The Amphitriton',0,0,62,108,{landmark:true});}
-// the landmark budget (91's BUDGET.type is declared after this fragment and read only at probe time)
-setTimeout(function(){if(typeof BUDGET!=='undefined'&&BUDGET.type)BUDGET.type.hyk_amphitriton='landmark';},0);
-HYK.def({key:'hyk_amphitriton',name:'The Amphitriton',family:'civic',row:'Civic',w:108,d:110,h:108,r:62,inside:true,tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},build:buildHykAmph});
+HYK.def({key:'hyk_amphitriton',name:'The Amphitriton',family:'civic',row:'Civic',w:108,d:110,h:108,r:62,cls:'landmark',inside:true,tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},build:buildHykAmph});
