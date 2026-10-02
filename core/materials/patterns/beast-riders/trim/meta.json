@@ -1,0 +1,63 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1045,
+    1231
+   ],
+   "seam_after": [
+    1.3,
+    1.162
+   ],
+   "seam_before": [
+    2.834,
+    1.894
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.35,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "lacquer",
+  "id": "beast-riders/trim",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Crimson and Gold Ornamental Frieze.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Beast Rider ornate trim (red lacquer, gilt, verdigris); exact wording not recorded",
+  "sha1": "79212bd2601e0dcd7530f7ae3698a905782a6a19"
+ }
+}
