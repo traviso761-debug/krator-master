@@ -4,7 +4,7 @@
 
 Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit.
 
-Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `README.md`
+Docs: `API.md`, `DESIGN.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/iziz-vernacular.html`, `dist/iziz.html`, `dist/w-a.html`, `dist/w-b.html`, `dist/w-c.html`
 

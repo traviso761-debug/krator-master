@@ -4,7 +4,7 @@
 
 Girder: an outlying Beast Rider village in the central-crater hyperjungle.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
 Built output (never open it; edit `src/` and rebuild): `girder.html`
 

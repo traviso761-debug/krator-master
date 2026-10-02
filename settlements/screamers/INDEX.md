@@ -4,7 +4,7 @@
 
 Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit.
 
-Docs: `KNOWN_ISSUES.md`, `README.md`
+Docs: `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/furniture.html`, `dist/screamers.html`
 

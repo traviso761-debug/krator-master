@@ -108,21 +108,39 @@ Audit in the order the port will consume them, so each audit feeds a phase that 
 
 ## 4. The phases
 
-Each phase lists what it produces and what "done" means. Phases 1 to 3 are independent of one another and
-can run in parallel; 4 to 6 build on them; 7 is the Godot side and starts as soon as Phase 1 gives it a
+Each phase lists what it produces and what "done" means. Phase 0 is done. Phases 1 to 3 are independent of one
+another and can run in parallel; 4 to 6 build on them; 7 is the Godot side and starts as soon as Phase 1 gives it a
 first tile.
 
-### Phase 0: freeze and baseline
+### Phase 0: freeze and baseline (done 2026-10-02)
 
-- Rebuild every build and record the `dist/` hashes (every build is deterministic; `build-manifest.json`
-  already gives a sha1 per fragment). Any refactor in the phases below must either keep the hash or show
-  a screenshot diff.
-- Run the audit tool; commit the `PORT.md` files with provisional tags.
-- Add `tools/check_port.py` (a lint, run by every `build.py` next to the shared-scope check) with one rule
-  to start: **no DOM, canvas 2D or `requestAnimationFrame` in a fragment not tagged [web]**. The rule is
-  enforced only on fragments whose `PORT.md` row says [G data]; it tightens as fragments are moved.
+- **The hash baseline.** `PORT-BASELINE.json` holds the SHA-256 of every built page (103: every
+  `dist/*.html` and the sockets example). `python3 tools/port_baseline.py` compares a fresh rebuild with it
+  and exits 1 on any difference; `--write` records a new one. Every build is deterministic, so a refactor
+  in the phases below must either leave this check green or show a screenshot diff before rewriting the
+  baseline. (`settlements/port/dist/` is gitignored but still hashed: the rebuild reproduces it.)
+- **The audit tool.** `python3 tools/audit_port.py` writes a `PORT.md` per build (and one for `core/`) with
+  one row per fragment: KB, the API-family counts, a tag and a note, and `PORT-INDEX.md` at the root with
+  KB per tag per build, which builds have an exporter, a probe and `--assert`, and the host-shell copies
+  table (how many builds carry each host family and how many byte-distinct versions). Tags are provisional
+  from the counts and the filename family; a person corrects the Tag and Note cells and a rerun keeps them
+  (`--reset` retags). The `core/` tags were set by hand from section 5. A note starting "split" marks a
+  fragment that mixes data with drawing or host code: the audit's main finding per build.
+- **The lint.** `python3 tools/check_port.py [build]`: a fragment tagged `[G data]` must not touch the
+  browser (DOM, canvas 2D, input, `requestAnimationFrame`, `performance.now`, storage, network). A
+  `[G data]` row noted "split" only warns until it is split. Every `build.py` runs it on its own folder
+  before building and stops on a failure (`--no-checks` skips it, like the other checks). It is green on
+  every build today, with seven warnings in `core/` (download helpers, the weather `<select>`, two timing
+  reads) that Phase 1 moves to the host.
 
-Done when: `PORT-INDEX.md` exists, every build has a `PORT.md`, the hash baseline is recorded.
+First numbers from the provisional tags (`PORT-INDEX.md`): 1,244 fragments, 16.1 MB of source; 28% `[G data]`,
+46% `[draw]`, 21% `[web]`, 3% `[G shader]`, 3% `[G native]`; 125 fragments noted "split". The host-shell
+table confirms the drift: `camera` has 12 versions over 16 builds, `probe` 12 over 15, and every biome kit's
+`host-*` set is its own version.
+
+Done when: ~~`PORT-INDEX.md` exists, every build has a `PORT.md`, the hash baseline is recorded.~~ Done.
+What remains of the audit is the human pass over the provisional tags, build by build, in the order of
+section 3.3 (core is done), writing the split lists into each `PORT.md`'s Notes.
 
 ### Phase 1: one host shell (the [web] quarantine)
 

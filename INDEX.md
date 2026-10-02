@@ -12,7 +12,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 503 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
 | [`settlements/locus`](settlements/locus/INDEX.md) | 67 | 1024 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
-| [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 29 | 630 | 79 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
+| [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 29 | 631 | 79 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |
 | [`settlements/reedlake`](settlements/reedlake/INDEX.md) | 32 | 326 | 33 | Reed Lake: a floating reed-lake village and its kit. |
 | [`settlements/screamers`](settlements/screamers/INDEX.md) | 72 | 565 | 63 | Hexahedron: the Screamers' tribal village in and under a ruined arcology, forked from the Ancients kit. |

@@ -4,7 +4,7 @@
 
 Voth: a Venice/Vivec-like Dunmer city on an enclosed brackish bay, with the most complete life layer and collision system.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `PASS5.md`, `README.md`, `SUBAGENT.md`, `voth-districts-brief.md`, `voth-life-layer-brief.md`
+Docs: `API.md`, `KNOWN_ISSUES.md`, `PASS5.md`, `PORT.md`, `README.md`, `SUBAGENT.md`, `voth-districts-brief.md`, `voth-life-layer-brief.md`
 
 Built output (never open it; edit `src/` and rebuild): `voth.html`
 
@@ -70,7 +70,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `79a-convoys.js` | 12 | SILT STRIDER CONVOYS (moving) (1); WADING — the one tuning block (64) |
 | `79b-strider-nav.js` | 36 **big** | the strider's own nav grid + A (1) |
 | `79c-strider-model.js` | 42 **big** | THE BESPOKE SILT STRIDER MODEL (1) |
-| `80-camera.js` | 21 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (297) |
+| `80-camera.js` | 21 | 25. CAMERA & CONTROLS (1); 26. RENDER LOOP (298) |
 | `82-daynight.js` | 47 **big** | DAY/NIGHT CYCLE (1); night-light props (162); moving-vehicle lanterns (299); the Guild canton's clock (497); NIGHT ILLUMINATION DRIVER (592) |
 | `83-weather.js` | 8 | WEATHER (1) |
 | `84-fauna.js` | 10 | AMBIENT WILDLIFE (1) |
