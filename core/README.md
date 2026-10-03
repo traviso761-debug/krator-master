@@ -103,7 +103,8 @@ additions are in it, each marked with the kit it came from:
 | `35-core-anim.js` | animated items (orbit, flit, walk; flapping wings, swinging legs) for fauna |
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
 | `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
-| `42-core-export.js` | `BIO.export()` / `BIO.download()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
+| `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
+| `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME` |
 
 **Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
 `build.py`, read from here unless its `src/` has a copy of the same name (none does).

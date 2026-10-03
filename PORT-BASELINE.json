@@ -1,44 +1,44 @@
 {
  "pages": {
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 243301,
-   "sha256": "deed0a02afc88acef494ce2c39b00a6733b2aa164a6cd402673d4be284c0dd0b"
+   "bytes": 244187,
+   "sha256": "0292d6b6c17cb8242f1375f5dcd7242fa452b3c344ec7217aa51ebedfdba908b"
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 210497,
-   "sha256": "1e2ad8faca6f7bf4e1f074c367ed0245b78289cb1804e49f473c2344afcddc21"
+   "bytes": 211383,
+   "sha256": "3fface3a89947c08141bcf09b1a3d584310f022d7f47394fbf252f4a3fe0f4e2"
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 291994,
-   "sha256": "f0bc404d0d39e428202c17f3022cd77d40e47b5d1d256adf94ff7703c74ee5ca"
+   "bytes": 292880,
+   "sha256": "4b32fc9f701210f720dac398a40f670ec799f3d9cee0a715b42f80489dcd2304"
   },
   "biomes/nwbay/dist/nwbay.html": {
-   "bytes": 293840,
-   "sha256": "d0d790a85b35b8e163cd7b02106e048ce28f0464649058091d6e7fbc45eda28f"
+   "bytes": 294726,
+   "sha256": "7544dfb27a685e1e2bcf34bdbc056b8a7d6bc064c77e8fcf080a235473780c1d"
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 242661,
-   "sha256": "9cad3e4b347351b797d31dfe9e9fdc52037ff88f24d5a5fff345a23affa605e8"
+   "bytes": 243547,
+   "sha256": "34ff09d18a0be4d6e0df733b3126dde025ce5c97a3ca3ff988c950eaf3282ded"
   },
   "biomes/rift/dist/rift.html": {
-   "bytes": 273416,
-   "sha256": "ec74b8da164987cbca665c0398be575cea3f7e1134a650916919813d94ca9570"
+   "bytes": 274302,
+   "sha256": "9016428c745346813d5f205f6de24914ad31c9075e6f645238040a07f74eae35"
   },
   "biomes/sedesert/dist/sedesert.html": {
-   "bytes": 255087,
-   "sha256": "040ac7ae1343f946453feecb45fbd67ad03e597b1a228741766bce7af8ffdc0c"
+   "bytes": 255973,
+   "sha256": "ea05225ca4c2a0b2615c37701efc5d4d6bca42d5a95000e4ef95e9d0ac9c1cc1"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 249219,
-   "sha256": "b6997a67e6cea3645c106db15e414357b59db52d18f8cc8a45e3760b5aee099a"
+   "bytes": 250105,
+   "sha256": "9cc97aee82c1d0949d32784c87bc30cfd2a61433b45a4aa47420841ad96051cc"
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 264610,
-   "sha256": "b8f40e87753dff079e954e65d683c775fda824bd152444cd2126e7541519d70e"
+   "bytes": 265496,
+   "sha256": "3337e72d9a4ef87d9da7efe7b76d6d57d84ffedee8dcded01741da887de89d21"
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 275428,
-   "sha256": "ed9b0864f16105803014829069763edc286cac995f4ad32f0aac552b4e8d358f"
+   "bytes": 276314,
+   "sha256": "c86bbed7ce72d1ac9465607dc69471e31c21525f8b8652d96405c2e4f26b8ae5"
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 174286,
