@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1045,
+    1244
+   ],
+   "seam_after": [
+    0.48,
+    0.903
+   ],
+   "seam_before": [
+    1.334,
+    1.983
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "iziz/mosaic",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.35,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "iziz_tile_2.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Rustic Teal and Terracotta Star Tile Pattern.png",
+  "prompt": "Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: geometric mosaic of small hand-cut glazed tiles, interlocking star and diamond pattern, desert palette of burnt orange (#e07a2a), sand (#e2b676), deep teal and cream, slightly uneven grout lines, a few chipped tiles. The pattern repeats both ways. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "7717582b435de019ad38ba651ca6897ae04964a8"
+ }
+}

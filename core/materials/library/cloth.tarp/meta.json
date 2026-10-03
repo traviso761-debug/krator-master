@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.133,
+    1.685
+   ],
+   "seam_before": [
+    1.223,
+    0.995
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.9,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.tarp",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Patchwork Canvas Tarp Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Patchwork Canvas Tarp Texture.png",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral, mostly grey, so it can be tinted. Material: old heavy tarpaulin pieced together from several sun-faded panels, visible stitched seams, patches sewn over tears, dust in the creases. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "86a9d027351167977695becdecb80cfec63e2827"
+ }
+}

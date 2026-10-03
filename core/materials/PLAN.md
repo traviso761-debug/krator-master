@@ -130,7 +130,7 @@ derived from them in processing; no hand-made normal maps.
 | Iziz (iziz) | glazed star-and-diamond mosaic, hand-painted glazed tile, banner cloth, gilt work (base surfaces near-colourless; see "Iziz and Voth") |
 | Yuni, Locus (yuni, locus) | mosaic, black-and-white paint panel, colour paint panel, relief |
 | Voth (voth) | stone inlay band, banner cloth; the rest is base library, near-colourless (see "Iziz and Voth") |
-| Port (port) | hazard stripes, hull paint and primer, container livery |
+| Ancient Port (port; for Hook) | hazard stripes, hull paint and primer, container livery |
 | The nacre culture (WIP) | shell inlay, pearl mosaic, nacre-banded trim |
 
 ## Shader hooks
@@ -423,7 +423,7 @@ Voth, owner-written:
 | `patterns/voth/inlay` | Flat, front-on decorative panel of a stone inlay band: stepped chevrons and hooks cut from jade (#3f6b56), lapis (#1f3f6e), red-purple porphyry (#5e1e2d) and basalt (#2b2a28), set into a polished marble ground (#e8e1d2), with thin dark joints between the stones. The pattern repeats horizontally. Full colour. |
 | `patterns/voth/banner` | Flat, front-on decorative panel of banner cloth woven in stepped bands and hooked spirals in ash yellow (#e8d9a0), dark red (#7a2028) and charcoal (#2b2a28), visible weave, slightly faded and uneven dye. The pattern repeats horizontally. Full colour. |
 
-Port and the Hykkousoi (nacre culture):
+The Ancient Port (`settlements/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
 
 Port palette: container white #dcd8cf, blue #2f5f8a, oxide red #9a3a28, mustard #c89a3a (`74-port-dress.js:6`); hazard
 yellow #d9a12c (`89y-sp-1-yard.js:43`); iron #2c2e32; antifouling red #8c3026, topsides slate #3c4652, red-oxide
@@ -457,6 +457,285 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 Uncertain, to check when the images come back: Iziz gilt (the build has only a plain gilt material, so its motifs are
 invented); the Iziz banner (the build draws one non-tiling banner, made a repeat here); Port hazard and livery
 (extrapolated); the Hykkousoi inlay and trim (the build has no such painters).
+
+#### Prompts checked against the code (2026-10-02)
+
+The rows from here to "Scan-library metals" were written, then checked against each build's palette and painters (a
+research pass over `src/` only). Hex values below are the code's. Four rules came out of it:
+
+- **Maps are mostly near-grey and the instance tint carries the colour** (Highlands, Voth, Yuni, Xanadu, Ancients). A
+  prompt for a tintable surface says so, and its hexes are the *tints* the code applies. Jimjam, Reed Lake, Dalab and
+  Ring Sea paint full colour: no tint sentence.
+- **Row marked "design-only"** = the code draws no such texture (a flat colour, or geometry). Keep it only if the owner
+  wants the new art. Nothing is lost if it is dropped.
+- **Delivered images that go beyond the code** (peeling render, eroded adobe, tent and sail canvas) stay as design
+  additions, marked.
+- The painters work from 1024 px-ish canvases; "2 m tile" and similar are the code's world-unit repeat, usable as the
+  record's `scale`.
+
+#### Canvas, shared by every culture
+
+| id | Material line |
+|---|---|
+| `cloth.canvas` | Coarse heavy canvas in a plain over-under weave, a 3 px thread grid, bleached in soft patches, warm tan (#c8b08a). (Code: Highlands salvage tarp. Owner additions: water stains, a stitched mended patch.) Muted, so it can be tinted. |
+| `cloth.canvas.tent` *(design-only)* | Sun-bleached heavy tent canvas, patchy fading, creases from folding, a sewn seam across, a few scorch marks, warm tan (#c8b08a). Muted, so it can be tinted. |
+| `cloth.canvas.sail` *(design-only)* | Old sailcloth in panels with double-stitched seams, tanbark stains, patches, a rope-reinforced edge. Ring Sea sails are plain weave with 8 to 11 faint seam lines and light speckle in faction colours, so a faithful sail is a flat weave, not this. |
+| `cloth.canvas.striped` | Flat, front-on striped canvas for awnings, rugs and bolsters: off-white cloth (#ece6dc), six broad vertical stripes per tile alternating one dye colour with the off-white, each with a thin dark line beside it, fine woven grain. Dyes: madder #b0453a, indigo #3a4f7a, saffron #d4a040, cream #ece2cc, olive #7a7a48, umber #7a5034. Neutral base, so it can be tinted. |
+
+#### Republican, Rustic and Tribal (Highlands)
+
+The Iron Republic is Russian plus Transylvanian Saxon; Rustic is the villages; Tribal is the Northwest-coast formline branch.
+Highlands textures are near-grey and tinted per instance.
+
+| id | Material line |
+|---|---|
+| `stone.rendered` | Cream trowelled lime render with hairline cracks and slightly darker repair patches, no flaking and no exposed brick; ashlar quoins sit at the corners. Cream #eee3c8 (also #e8dcc0, #f2ead6, #e4d4b0); Saxon painted washes ochre #e0b870, sand #d8c0a0, sage #c8d0b0, apricot #e4c89a, rose #d8a888. Muted, so it can be tinted. |
+| `stone.rendered.ruined` *(design addition, as delivered)* | The same lime render flaking in large patches to show brick and rubble, hairline cracks, damp streaks near the base. Muted, so it can be tinted. |
+| `wood.log.carved` | Round horizontal logs, six courses per 2 m (about 0.33 m each), lit rounded crowns, dark moss or clay chinking between courses, drying checks along each log. Muted, so it can be tinted: fresh pine #c08850 (#b07a44, #c89a60, #a87040), aged silver-grey #8a7e70 (#7a6e60), tarred #4a3426 (#3a2a20), Falu red #8a2e22 (#9a3a28). |
+| `wood.rustic.plank` | Horizontal 0.25 m boards with dark shadow gaps, staggered butt joints, grain and a few knots. Warm tint, for example aged #8a7e70 or pine #c08850. |
+| `roof.shingle.onion` | Silvered split wooden shingles in staggered 0.25 by 0.5 m rows, each row with a darker shadow band at its foot. Tints #9a8a78, #8a7a68, #a8987e, #b0a28c. Onion domes use this, the fish-scale map below, or gold #d4a03a. |
+| `roof.scale.tinted` (replaces `roof.tile.saxon`: the code has no clay tile here) | Rounded fish-scale roof tiles about 0.25 m across, grey, each with a shadowed rim, staggered rows. Tinted roof red #a0402a (#8a3424, #b04a30) or slate #565c66 (#4c525c). |
+| `metal.verdigris` | Patinated copper sheet: brown copper (#96623e) showing through pale blue-green verdigris (#44988a) in mottled patches, with vertical run streaks heavier toward the bottom. No seams, no rivets. |
+| `stone.ashlar.limestone` | Coursed limestone ashlar blocks 1.2 by 0.6 m, recessed mortar, mottled weathering, a lit arris on each block, cream-grey; tints #d8d0bc, #c8c0ac, #e0d8c4, #cfc4a8. |
+| `stone.fieldstone` | Rounded fieldstones in deep mortar, grey-brown, 4 m repeat; tints #9a948a, #8a8478, #a8a296. |
+| `rock.cliff.granite` | Fractured grey granite (#8a8680) with vertical joints, bedding strata, water streaks and lichen. |
+| `roof.turf` | Mottled green sod with bare patches; tints #a0b080, #90a070. |
+| `patterns/republic/timber-frame` *(design-only: the code builds it from geometry)* | Flat, front-on panel of half-timbered wall. The Republic: beams #5e2a1c (#6a3020, #542418, #6e3624) on cream plaster #eee3c8. The Tudor style: beams #2a221e (#322822, #3a2a22) on #f2eee4. The pattern repeats horizontally. |
+| `patterns/republic/folk-painted` *(design-only)* | Flat, front-on panel of Russian folk painted wood: bold stylised flowers, leaves and scrolling vines in red #b3322a, teal #2e9488, blue #3a6aa8 and ochre #d19a3a with cream, on a black #171311 ground, hand-painted, slightly worn. The pattern repeats both ways. (Code: the white or teal-and-red lace valance, same trim colours.) |
+| `patterns/tribal/formline` | Flat, front-on panel of Northwest-coast formline painting: swelling black #171311 lines with ovoid and U-shapes in red #b3322a and teal #2e9488 on a cedar ground #b27a4c (shade #8a5634); white #efe7d6 as the ground only on the white variant. No readable figures. The pattern repeats horizontally. |
+
+#### Yuni and Locus, base surfaces
+
+The painted pattern rows are in "Yuni and Locus" above. Yuni's textures are near-grey and tinted.
+
+| id | Material line |
+|---|---|
+| `earth.banco` | Sahel banco mud plaster with arc-shaped palm-smoothing swipes, chopped-straw flecks and hairline cracks. Neutral, so it can be tinted: ochre #c89a62 (#bc8e58, #d4a66e, #b08250, #dcb27c) or laterite red #b4683e (#a85c36). |
+| `earth.banco.eroded` *(design addition: the code has only a dark adobe, #8a6a48 and #7c5e40)* | Mud-brick wall eroded by rain: bare bricks showing through broken plaster, rounded edges, vertical wash gullies, a few lighter patched repairs. |
+| `wood.toron` | Dark brown stub-cut palm beams projecting from a mud wall, rough grain along each post; tints #4a3624, #3e2e20, #56402c. |
+| `concrete.board` | Concrete with horizontal board lines every 1 m, crack lines and darker stain bands, in dull grey-brown #9a958a (#8c887e, #a6a094, #7e7a72). No tie holes. |
+| `metal.ancient.white` | Ancient white metal panels 2 by 1 m with recessed seams, a fastener at each corner, faint brushed grain and slow tarnish; tints #e6e4dc, #dad8ce, tarnish #b4b0a2. |
+| `plaster.washes` | Brushy lime wash. Whitewash #f2eee2, light blue #a8cce0, indigo #2e5a8a (#28507c). |
+| `tile.terracotta` | Overlapping terracotta pan tiles; tints #b8633a, #a85832, #c47044, #9c5030. |
+| `mosaic.trencadis` | Broken-tile shards on dark grout, in blues #2a6ab0, #3a86c8, #1e4e90. |
+
+#### Ancients and the kits forked from them (Screamers, Iziz's Ancient Iziz Style)
+
+Ancients textures are near-grey and tinted per instance. The kit has no glass, stone-block, basalt or plate texture, so those
+rows are cut.
+
+| id | Material line |
+|---|---|
+| `concrete.ancient` | Board-formed concrete of an ancient megastructure: horizontal boards about 0.65 m deep, each poured a slightly different shade, a dark groove with a lit lip at every joint, a regular grid of round recessed form-tie holes with a rust weep below each, damp streaks running down from the joints, fine aggregate speckle. Warm pale grey #d2cec6; the ruined version is darker, #7c746c. |
+| `stone.rubble.ancient` (replaces `stone.megalith`) | Mottled warm grey rough stone, fine non-directional grain, no joints or courses; tint #d6ccbe. |
+| `metal.ancient` | Ancient white panel metal: warm near-white sheets, each a slightly different tone, recessed seam grooves with a lit lip, a round fastener at each sheet corner, faint vertical brushed grain. Neutral, so it can be tinted. |
+| `metal.ancient.rust` | Tarnished steel: dull silver-grey (#7e766c) turning orange-brown rust (#723c26 to #a65a36) in runs that widen downward, a dark band under each ledge, panel seams ghosting through. Neutral, so it can be tinted. |
+| `metal.worn` | The white panel metal washed with orange-brown tarnish (#b07054) at the seams, fasteners and runs. |
+| `metal.verdigris` | See "Republican, Rustic and Tribal"; the Ancients use the same map (copper #96623e, patina #44988a). |
+| `ground.ruin` | Red-brown laterite soil (#96523a) with soft mottling and fine grain, turning to moss green (#466e2d) in patches. |
+| `paving.concrete` | The ancient concrete texture tinted a dull brown-grey, #8e8578. |
+| `thatch.palm` (Screamers) | Palm thatch: base #6b5a33 with many short olive-brown strokes and nine darker horizontal binding lines; tint #a8996f. |
+| `wood.lash` (Screamers) | Lashed hardwood: vertical fibre streaks on brown #6a5038, four pale cord bands (#bcaa78) across. |
+| `metal.scrap.corrugated` (Screamers) | Flattened corrugated salvage sheet with 0.8 m ribs, orange-brown rust and dents; tint #8a6a52. Plain Ancients salvage is galvanised grey with rust to #a05a44. |
+| `wood.timber` | Sawn boards 0.25 m wide, brown, grain along each board, dark gap between boards. |
+| `cloth.tarp` (Ancients) | Sun-bleached woven tarp, fine weave, tan; tint #c8b08a. |
+| `bark.ironbark` | Ironbark #5a3424: deep dark furrows with red-brown highlights and black cracks. |
+| `bark.ghostwood` | Ghostwood #d9d4c4: pale birch-like peel with dark lenticels. |
+| `bark.prismgum` | Prism gum #8c8666: shed strips in several colours. |
+| `bark.baobab` | Baobab #7a6e5e: smooth, wrinkled across. Pale boughs #b8a494. |
+| `patterns/ancients/glyph-band` *(design-only)* | Flat, front-on panel of a carved glyph frieze: rows of abstract geometric glyphs and bands (no readable text) incised into pale stone (#c4bba8). (Code: raised rectangular glyph cells in clusters on concrete facets.) The pattern repeats horizontally. |
+| `patterns/screamers/daub` *(design-only)* | Tribal paint over cracked concrete: hand-smeared ochre (#b8683e), white and black handprints, tally marks, spiral daubs, flaking. |
+
+#### Jimjam
+
+Jimjam is full colour and untinted (instance tint is white). The textures are in `settlements/jimjam/src/60-jj-mat.js`.
+
+| id | Material line |
+|---|---|
+| `brick.jimjam.red` | Fine fired red brick in running bond, each course half a brick out of step, stretchers about 24 by 8 cm. Faces vary between deep red-brown #8f2f24 and warm red #b84a34. Mortar pale grey-buff #cbbca6 in thin joints. Every sixth course is a header course of half-length bricks in darker oxblood (#7d2a22, #8a3026, #6e241e). About a quarter of the bricks have a darker scorched end; fine dark and light speckle. Full colour. |
+| `brick.jimjam.yellow` | Fine fired yellow-ochre brick in running bond. Faces #c99239 to #e0ae55, mortar pale cream #efe2c8. Every sixth course is half-length headers in deeper ochre (#bf8634, #c88f3a). Scorched ends and speckle. Full colour. |
+| `brick.jimjam.deep` | Dark oxblood brick in running bond: faces #6f241e to #8c3428, mortar #a8957e, heavy speckle. For plinths, copings and flat roof slabs. |
+| `brick.jimjam.dark` | Very dark brown-red brick: faces #33231f, #3e2a26, #4a2f29, #5a3328, #7a2e24; mortar #8f8170. |
+| `brick.jimjam.band` | Red running-bond brick with a gold-yellow header band every fourth course (#d8a447, #cf9a3f, #e0ae55); mortar #cbbca6. |
+| `stone.marble.trim` | White marble ashlar in running bond, blocks 1.2 by 0.6 m, four courses to a tile. Base #f2eee6 with soft cloudy patches, meandering grey-brown veins running diagonally (about 26 per tile), thin grey-brown joint lines with a white highlight below. Polished. |
+| `roof.dome.tile` | Overlapping fish-scale tiles in staggered rows, each scale lighter at the top and about 38 percent darker at the bottom, a dark gap between scales. Three colourways, full colour: terracotta #c4602f (gaps #6e3018), slate #3a404e (gaps #1c1f26), gilded #e2b33a (gaps #8a6514, metallic). |
+| `plaster.jimjam.ochre` | Lime-plaster wash #dfae55 mottled with brown and cream blotches, fine grain, a few hairline cracks; 4 m tile. For poor houses. |
+| `inlay.jimjam.sunray` | Round plaza inlay: 32 alternating sectors of red (#a8322a) and gold (#d9a520) on cream #efe5cf, a dark slate (#2f3440) disc at the centre with a gold (#e4b54a) disc inside. |
+| `patterns/jimjam/shaft-*` (spiral, chevron, diamond, ogee, fleur, tracery) | Flat, front-on panel of fired-brick relief: a red brick ground (#a94332) with faint horizontal course lines about every 10 px and fine speckle, carved with bold pale-gold (#e5b66a) lines forming [two sine spirals / zigzag chevrons / open diamond lozenges on a regular grid / vertical ogee waves / fleur-de-lis on a grid / sine tracery waves]. The pattern repeats both ways. Full colour. (Replaces the invented `patterns/jimjam/brickwork`.) |
+
+#### Shade and the Eastern Nomads (sedesert)
+
+Shade and the sedesert biome share one set of painters (`settlements/shade/src/77a..e`, `35-core-strata.js`).
+
+| id | Material line |
+|---|---|
+| `rock.sandstone` | Layered desert sandstone cliff face in horizontal beds of different thickness: thick cross-bedded sandstone in rust and orange (#b5643a, #c2723f, #a85a36, #bd7a4e, #c98a58), thin purple-brown shale seams (#7b4a3e, #6f4a44, #80503c), chocolate mudstone (#93553f, #8a5a48, #9c6248), pale buff bleached bands (#d9b48a, #e0c39a, #cfa27a) and rare grey-green beds (#8c8a6e, #9a9478). Beds dip gently and wander, with fine laminae. Dark desert-varnish streaks hang from the top of each bed and fade down it; pale dust (#c9a27e) sits on the ledges. |
+| `rock.sandstone.carved` | Smooth chisel-cut pale grey stone with fine short diagonal tool marks, neutral grey base (#d6d6d6) with light (#f5f5f5) and mid-grey (#aaaaaa) strokes. The code tints it by world height with the cliff's strata colours. |
+| `rock.sandstone.boulder` | Red sandstone with horizontal bands of varying lightness, grain and the occasional dark seam (#321e14), warm brown. |
+| `earth.pueblo` | Hand-smoothed adobe plaster, warm pale sand-grey (#e2d6c8), mottled with softer darker (#beaa96) and lighter (#f0e8de) blotches, hundreds of tiny dark straw flecks, five hairline cracks. Neutral, so it can be tinted: #d8b48a, #cfa47a, #c89a70, #dcbc94. |
+| `cloth.tent.black` | Coarse black-brown goat-hair cloth (#3a322c), fine horizontal thread lines, one pale brown (#786450) sewn strip seam and one dark seam (#14100e) per metre. |
+| `wood.timber.pueblo` | Plain timber, grain running along it: brown #96785f with wavy darker brown #50372a grain lines; tinted #6a4a32 for vigas, ladders, poles and lintels. |
+| `patterns/nomads/kilim` *(design-only)* | Flat, front-on panel of a nomad kilim rug: bold diamonds, hooks and stepped triangles in madder #b0453a, indigo #3a4f7a, saffron #d4a040 and cream #ece2cc, a visible flat weave. (Code: a block of the striped canvas.) The pattern repeats horizontally. |
+
+#### Mav's Refuge and Girder (hypertropic jungle)
+
+Beast Rider cloths, carved and tarred wood, thatch, cane and rope are above.
+
+| id | Material line |
+|---|---|
+| `thatch.reed.mavs` | Reed thatch in courses with fibre strands and an edge shadow; tints #b09a5a, #a08a4e, #c0aa68, #8e7a44. |
+| `cane.woven` | Woven split-cane over a frame, a 16 px over-under weave; tints #b89a6c, #a88a5e, #c4a878, #9a7e56, #d0b88a, dark #6e5238. |
+| `roof.shingle.shakes` | Staggered dark wooden shakes; tints #6a5a44, #5a4c3a, #7a684e, #4e4234. |
+| `rope.twist` | Diagonal rope twist; tints #a8966a, #98865c. |
+| `trim.council` | Red lacquer #8a2f2a, gilt #b08432, verdigris #2f6a5a, deep red #7a2028. |
+| `metal.rust.plate` | Plated weathering steel with seams every 1 m, rivet rows and downward streaks; tints #7a3b22, #8a4526, #6a311e, #94522c, #5a2a1a, stain #4a2a1c. |
+| `concrete.girder` | Board-marked, stained, cracked concrete; tints #8a857a, #7c786e, #969084. |
+| `bark.hypertree` | Ironbark #7a4630 with braided furrows; ghostwood chalk-white #e6e2d4 with dark eye-scars; prism gum with rainbow streaks (#9a8f6a, #6f9a6a, #b8683e, #5a6fa0, #8a4f78, #c2a24e); baobab #8a7a66, smooth and pitted. |
+| `wood.driftwood`, `wood.bark.lashed`, `leaf.palm.thatch`, `ground.mud.wet` *(design-only)* | Not in the code. Ground is vertex colour: litter #4a3a24, red soil #7a3a26, moss #3e5a2c, river bank #4a4636. |
+
+#### Reed Lake additions
+
+Reed Lake is full colour (`settlements/reedlake/src/74-rl-mat.js`). The four existing rows hold, with these fixes: the chakana is three nested stepped crosses in black #221c18 (outer), madder #a8352a and ochre #d19a3a with a round black hole at the centre (the code cuts it out, so the field is yours); the lattice (#c9b06a, #b89c5a, shadow #3c2814) and the fringe (#cbb36e, #b39c5c) match.
+
+| id | Material line |
+|---|---|
+| `reed.bundle` | Tightly bound reed bundles with stalks running vertically, pale straw gold (about #bea776) with dark gaps and darker nodes, two brown rope lashings per tile. |
+| `ground.reedbed` | Island top: a dense mat of short straws lying every way on #b8a262, strokes of #8a7440, #d8c27e, #c4ac66 and #e6d494, dark damp patches and small green tufts (#6f8f3a, #88a050). |
+| `reed.layers` | Island side: horizontal reed courses every 0.2 m, about #ac947a, darkening toward the water. |
+| `fibre.reedmat.twill` | Twill weave of 0.12 m straw strips, over and under, a dark shadowed edge, straw about #c4a870. |
+| `roof.thatch.totora` | Long pale straws laid down the slope in loose courses, about #b89870, the lower part of each course darker. |
+| `reed.living` | Clumps of green stalks (#6f8f3a, #8aaa4c, #a8b860) with brown seed heads (#6a4a2a, #8a6a3a). |
+| `fibre.net` | A square mesh of thin dark cord, #3a3226. |
+| `patterns/reedlake/band` | A woven band 4:1: madder red field #a8352a, black selvedges #221c18, thin ochre lines #d19a3a, four stepped diamonds (black, white #efe4cc, indigo #2f4a7a), white zigzags above and below. |
+| `patterns/reedlake/awayo` | Awayo cloth 1:1: horizontal stripes in red, ochre, black, white, indigo, green #3f7a5a and plum #6a2a4a, with black-edged bands of stepped diamonds and zigzags. |
+
+#### Dalab additions
+
+Dalab is full colour (`settlements/dalab/src/69d-dalab-mat.js`). The six existing rows hold, with these fixes: the checker grout is each lozenge colour darkened to 45 percent, not brown; the deco-panel pupil is cream #e4c69a; the god-panel has black feet, red staff tips and three gold stripes on the body.
+
+| id | Material line |
+|---|---|
+| `earth.rammed.dalab` | Rammed earth in lifts about 0.34 m high with a dark joint line, form-board ends, pits and damp. Neutral warm grey, tinted #b5824f, #a8763f, #c4915c, #9c6d3a (foot #8a5e34). |
+| `cloth.banner.dalab` | Grey cloth with a pale eye ring, rays, two bars and a fringe, tinted to the field colour. |
+| `ground.turf.mound` | Cropped grass over a mound, tinted #6a9a44 or #5f8a3a, with bare mole-hill patches. |
+| `mosaic.dalab` | Blue #2a6ab0 and cream diamonds with ochre centres and dark grout. |
+| `patterns/dalab/mural-god-hero`, `mural-lizards` | Variant 0: a god avatar plus a hero with a red shield. Variant 3: two turquoise lizards with gold stripes either side of a gold maize sheaf. |
+
+#### Post-apoc reclaimed set (`kits/post-apoc`)
+
+Textures are grey and tinted per vertex. Port's rows are in the Ancient Port rows above; its code matches those hexes.
+
+| id | Material line |
+|---|---|
+| `metal.container` | Corrugated container side with wide vertical ribs, four per 1.2 m, mid-grey (#bababa) with rust streaks and blotches (orange-brown) and dark specks. Livery tints #7a2e28, #9a3a2c, #2f5f8f, #3b7f6e, #4d6f3c, #c99a2e, #c5c0b4, #8a5a30, #d06a30, #6a4c7a, weathered toward rust. |
+| `metal.sheet` | Patchwork sheet: overlapping rectangular patches in different greys with dark outlines, rows of dark rivets along the top and bottom of each, rust runs. Grey, tintable. |
+| `glass.bottle` | Hex-packed bottle bases in mortar: round discs with a bright centre and dark rim, in green (#3f9a52, #8fe0a0), amber #c98a2a, blue #2f62b8 and clear #d5ecea, on grey-brown mortar #8e8674; 1.28 m tile. |
+| `wood.plank.postapoc` | Four boards per 2 m repeat, staggered joints, nail dots, soft grain; tints #9a7a52, #8a6a44, #a88a5e, #7a5c3c, #b09468. |
+| `earth.dirt` | Warm brown packed earth (#9e7e5c) mottled with crack lines. |
+| `metal.steel` | Clean structural steel, brushed grey streaks with a few orange rust flecks. |
+| `concrete.slab` | Pale concrete (#dcdcdc) with a 2 m grid of joint lines, corner bolts and a few vertical damp stripes. |
+| `cloth.weave.sack` | Fine plain weave with a few damp patches; sack and tarp tints #b8a888, #a89a7c, #8a7a62, #c6b898, #3a6a8a, #5a7a4a, #8a4a3a, #b09a4a. |
+| `metal.tyre`, `metal.drum` *(no texture in the code)* | Tyres are smooth near-black tori (#232120); drums are plain painted cylinders with two dark ring ribs (#3a3430): red #8a3a2c, grey #5a5a56, blue #2f5f8f, olive #4d6f3c, ochre #8a6a3a, mustard #c99a2e. |
+
+#### Ring Sea watercraft (`kits/ringsea`)
+
+Only plank, cloth, thatch, tile, hex plate, chitin and grain have painters; hull colours are per vessel.
+
+| id | Material line |
+|---|---|
+| `wood.hull` | Sixteen horizontal strakes per 4 m, each a slightly different pale cream-grey, faint wavy grain lines, a dark caulking seam with a pale lit lip under each strake, two butt joints per strake with pairs of dark nail dots, scattered dark specks. Tinted per hull (the Hyk trireme #8a5a36 with a gold band #d8a640 and a blue band #3f86a6; a black waterline #3a3a30). |
+| `paint.grain` | Warm near-white (#e8e4dc) with about forty faint wavy horizontal grain lines and speckle; takes the paint colour. |
+| `cloth.sail` | Plain weave with 8 to 11 faint seam lines and light speckle, in the vessel's colour: Iziz #e07a2a with a #2f8f8a edge, Voth #4b2a6e, Hyk #ece6d6 with a #3f86a6 border, dhoni cream #ece2c8, moon sail #8a5a32, pandanus #c8a868, crab maroon #6a1c2a, carrack #e89a2a; generic tan #a88660. |
+| `thatch.reed` | Straw strokes on #b8a67c in 8 courses with dark binding bands. |
+| `tile.hull` | Staggered overlapping tiles, light centre fading to darker edges, a dark underlip. |
+| `plate.hex` | Bevelled hexagonal plates, a cream-grey radial gradient with dark outlines and a centre dot, on #b8b4ac. |
+| `shell.chitin` | Overlapping curved scale plates from cream (#f0e8c8) to dark (#5a503c) with dark outlines, on #6a6048. |
+| `metal.hull.rivet`, `paint.antifoul`, `rope.tarred` *(design-only)* | The code has smooth metal (#3a3a3c, #2a2a2c), flat tug paint (oxide #6a2a1e, waterline #0e0e10, rust patches #8a4a2a, white band #d6d2c6) and a plain tarred rope (#3a3026). Port's antifouling red (#8c3026) and slate (#3c4652) are Port-only. |
+
+#### Ancient Port (Hook), additions
+
+The hexes already in the Ancient Port and Hykkousoi rows above match the code; the Hyk file is `settlements/ys/src/60-hyk-mat.js`. Container livery
+colours: #dcd8cf, #2f5f8a, #9a3a28, #c89a3a, #3a6a5a, #80807c, #b8532e, #4a5070, #e8e4da, #2a4a6a; awning stripes #f4f0e6 and #c9c2b4 in 8 px bands.
+Not in PLAN yet: quay concrete #cfcbc2 (coping #f0ede6, riprap #958e84), white painted steel #e9e8e4, crane steel #8a8e92, tide weed #2e3a26,
+water #134a5c at 68 percent, safety yellow #d9a12c, Hyk barnacle grey #cdc8bd and weed green #3c5a3a.
+
+#### Voth and Xanadu additions
+
+Voth jade #3f6b56 (#35594a, #4a7d64) and porphyry #5e1e2d (#6a2434, #521826) are flat tints over the shared dressed-ashlar map, not painted textures (no veins, no crystals); the Voth ashlar is 24 warm greys (#8c8579 to #837d6f) plus marble #e8e1d2, basalt #2b2a28, lapis #1f3f6e; roof terracotta #b35a3a (#a04f32, #c36a42). `wood.willow` does not exist: the Voth willow is olive foliage (#6f7c46, #7d8a4e, #66743f, #8a9358) on a trunk of #5a4b3a with vertical grain.
+
+| id | Material line |
+|---|---|
+| `stone.rammed` (Xanadu) | Rammed earth, 2 m tile, a horizontal lift every 0.375 m, each lift with a dark shadow line at its top and a lighter band below; a mottled warm tan-grey body (about #b6a995) with rain pitting. Tintable (#b89468, #a8845a, #c0a070, #9a7a52). No pebbles. |
+| `plaster.xanadu.whitewash` | Lime whitewash over rubble, near-white warm grey with mottle and rain-drip streaks, 2 m tile; tintable (#f2ede2, #ece6d8, #f6f1e6, #e8e0d0). |
+| `tile.xanadu.glazed` | Small glazed tiles 0.25 m square in a 2 m tile, grey-neutral with a dark grout gap and a lit arris; tinted turquoise #2aa5a0, lapis #1e3f8a, #39b0b8 or #2a80a0. |
+| `stone.xanadu.rubble` | Fieldstone: irregular Voronoi stones with dark joints, grey with slight warm and cool variation, 4 m tile; tint #9a948a family. |
+| `stone.xanadu.ashlar` | Dressed grey ashlar: blocks 1.2 by 0.6 m, running bond, recessed mortar, a lit arris, damp streaks; tint #b8b0a0 family. |
+| `wood.xanadu.boards` | Upright and horizontal 0.25 m boards with butt joints, knots and grain; tints #a87a4e, #8a7e70, #5a3a24. |
+| `band.xanadu.twig` | Penbey twig band: vertical bundled tamarisk twigs with stitched joints every half tile; tinted maroon #6e2a2a. |
+| `emblem.xanadu.sun` | Sun-and-moon roundel: a gold #e0b040 disc, a maroon #6e2a2a ring, a 12-point gold star, a cream centre with a maroon crescent. |
+| `roof.gilt` *(untextured in the code)* | Smooth gilded metal, no seams, tinted #e0b040, #d4a030, #f0c850, #dcae3c. |
+
+#### Biomes
+
+The scan library covers tileable bark (`bark_*`) and leaf litter (`forest_leaves_*`, `dry_decay_leaves`). Leaf cards need an alpha
+mask, so a generated atlas is prompted on a flat key colour:
+
+```
+A single sheet of nine different leaves of one species, seen from above on a solid flat bright magenta (#ff00ff) background, flat even lighting, no shadows, no overlap, each leaf fully visible and well separated, natural variation in size and colour, visible veins. Square, 2048x2048.
+```
+
+| id | Material line |
+|---|---|
+| `bark.desert` | Dragon tree #8a7a66 (#7e6e5a, #968672): bands of horizontal leaf scars with fine vertical cracks. Mesquite: dark furrowed #4a3a2e (#3e3026, #564638). Bottle and boojum: pale peeling grey-olive #8a8070, #8e8e78. |
+| `bark.palm` | Wadi palm #6a5a44 (#5e4e3a, #766650): many short vertical fibre strands with dark oval scars. No ring scars. Fan palmetto #4e4232. |
+| `bark.mangrove` | Smooth bark #4e4640 (#5a4e44, #443c36) with pale lenticels on a cage of prop roots. (The SW lowlands version is red lacquer #8e2418, #9a2e1a, #7a1e16.) No algae, no barnacles. |
+| `ground.salt` | Pale salt crust #f1ede6 over flat #e2ddd2, an irregular crack network of dark brown-grey lines; mud #3d3526 and algae #4c5c36 beside it. |
+| `ground.snow`, `ground.ash` *(colour only in the code)* | Snow #e6ecf2 as patches on north faces and in hollows (species tint #eef2f6); ash #5a5452 (lava #36302e, flows #241c1a, summit cap #c8c0b4). |
+
+#### Scan-library metals (AmbientCG, added 2026-10-02)
+
+Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each with a metalness map:
+
+| Set | Reads as | For |
+|---|---|---|
+| `Metal034` | flat saturated yellow gold, no detail | `metal.gold` (needs the metalness map; add a hammered normal in the shader) |
+| `Foil002`, `Metal042A` | pale champagne gold / brass | `metal.gold` or `metal.bronze` lightened |
+| `Metal008` | warm brown-pink copper, mottled | `metal.bronze` |
+| `Metal003` | light grey painted aluminium | `steel.painted` |
+| `Metal038` | dark grey cast steel | `metal.iron` |
+| `Metal049A` | near-white painted metal | `steel.painted` (tinted) |
+| `Metal017`, `Metal062C` | grey metal with flaking, peeling paint | `steel.painted`, `concrete.cracked` look |
+| `Metal053C`, `Metal054C` | orange rust on grey | `steel.rust` |
+| `Metal058C` | turquoise verdigris paint | `metal.verdigris` |
+| `MetalPlates001` | grey plates with rivet groups | `metal.plated` |
+
+
+#### Second survey (2026-10-03): biomes, city streets and parks, furniture
+
+The owner's newer downloads (44 sets: AmbientCG Ground, Rock, Gravel, Snow, Fabric, Tiles, Marble, Moss, and Poly Haven sand,
+grass, mosaic and fabric) are in the demo kit under these columns. All are provisional scan picks (scale marked "scale?").
+
+- **Hyperjungle:** Ground047 (moss on wet soil), Ground068 (red soil, moss), Ground072 (leaf mulch), Ground106 (dark floor), Moss001, Moss002/003.
+- **N highlands:** Snow011, Snow015, ScatteredLeaves008 (autumn litter), Rock058 (slate), forest_leaves_02/04.
+- **Desert (sedesert, Shade):** Ground080, Ground093C (sand), gravelly_sand, Rocks013, Ground111, sandstone_*.
+- **Bays and coast:** damp_beach_sand, coast_sand_rocks_02, Rock035 and Rock037 (black volcanic), palm and willow bark.
+- **Lowlands and savanna:** Ground037, leafy_grass, sparse_grass, withered_grass, grass_ground.
+- **City parks and streets:** Ground003 (lawn), Pathway004 and grass_path_3 (paths), Gravel019/042, Rock064 and grassy_cobblestone (cobbles), Tiles144 (plaza), old_mosaic_floor, dirt, brown_mud_02.
+- **Furniture:** Fabric027 (basket weave), Fabric045 (linen), denim_fabric_05, quatrefoil_jacquard (upholstery), Marble012 (tops), wood_cabinet_worn_long (did not reduce: a 700 MB 16k PNG inside a zip; needs a 4k download), the existing leather and Metal sets.
+
+Still missing: ~~leaf cards with an alpha mask~~ (corrected 2026-10-03: the AmbientCG `Leaf*` and `LeafSet*` zips DO carry `_Opacity.png` maps; `ingest_polyhaven.py` only reads colour, so a leaf-card step must read the opacity map: LeafSet019 fronds, 023 and 024 broad leaves, 029 lobed, 013 long willow leaves); fern, palm and vine sheets; clean kerb, flagstone and asphalt
+or dirt-road surfaces with ruts; glass; wicker or rattan with an alpha edge; ceramic glaze, bone and wax; iridescent canopy shader; ghostwood and prism-gum
+bark (white and rainbow-streaked); water. `Foliage008` (green beans on white) and `SurfaceImperfections017` are not materials. `Fabric083`
+looks like an alpha-preview checker.
+
+**Scale review log (owner, 2026-10-03):** scale judged fine for Gravel042, Ground003, Ground095B and the grounds in the demo generally; no scale was
+called questionable yet. Add any that are, here, so a "looks wrong" report can be traced to the scale guess first.
+**Roughness (2026-10-03):** AmbientCG ground and pavement roughness maps average 0.45 to 0.65 and read as wet under sun and environment light;
+Poly Haven dirt, mud and sand are about 0.95 and read fine. The demo's Matte slider pulls non-metals toward matte (default on). When these sets are
+adopted, raise the committed roughness map for ground, pavement, plaster and stone sets (about `r + (1-r)*0.65`) instead of relying on the renderer.
+
+Dalab: 13 generated images now exist (relief and tile sets, two god panels, five murals, a harlequin checker); processed into the demo, prompts not recorded.
+Mockup: `core/materials/demo/mockups/girder/` builds a Girder stand-in from these sets (notes in the page list the gaps).
 
 ## Built so far (2026-10-02)
 
@@ -497,12 +776,12 @@ What the first delivery taught:
 
 ## Next steps
 
-0. **Poly Haven (waiting on the owner):** run the catalog pass, pick, run `--only` for the picks, `adopt.py`, a
-   contact sheet, commit. Then fill "Available, not committed".
-   **Culture images:** the owner is retrieving the Iziz and Voth images from the earlier session. Process them as
-   they arrive (`process.py`, patterns with `--pattern`, base surfaces with `--mute` for the near-colourless
-   Iziz and Voth rows), prompt text in "Pattern-sheet prompts by culture". The other cultures' prompts are written
-   and wait for images.
+0. **Scan libraries:** catalogued (see "Available, not committed"). Nothing is reduced or committed until the demo texture
+   kit (below) exists. **Culture images:** the Iziz, Voth and cloth deliveries are processed from
+   `tools/textures/batches/iziz-voth-cloth.json` (19 sets, all tile on their `preview.py` sheets) and wait on the owner's
+   go-ahead to commit. Still to be generated: Voth stucco, fungus cap and stem; the other prompts in this file.
+   **Demo texture kit** (after the core is written): render every candidate set on a common test scene, mark the per-metre
+   `scale` picks separately, then the owner rejects or keeps each one.
 1. **Girder hookup** (the Phase 3 pilot session): `TEX.def` and the record adapters in `core/materials`,
    Girder's `47-texture.js` painters moved onto them with an unchanged look, then each FAMMAT family pointed
    at its library set, with normal and roughness maps on the materials and FAMMAT's world-unit `scale` kept.
@@ -514,8 +793,29 @@ What the first delivery taught:
 
 ## Available, not committed
 
-Poly Haven assets in the owner's download that are not in the repo, by slug, to pull in later with
-`ingest_polyhaven.py --only` and `adopt.py`. (Filled in after the catalog is uploaded.)
+**Decision (2026-10-02, owner):** nothing from the scan libraries is committed yet. Once `core/materials` is written, a **demo
+texture kit** renders the candidates and the owner rejects or keeps each one. Picks that carry a per-metre `scale` are marked
+separately in the demo, so the scale is judged by eye.
+
+Candidates picked from the catalog (one or two per id; provisional): `wood.plank` old_wooden_floor_02, weathered_brown_planks;
+`wood.beam` medieval_wood, wooden_gate; `rock` rock_boulder_dry, rock_face; `steel.rust` rusty_metal_04, rusty_metal_05 (and
+AmbientCG Metal053C, Metal054C); `concrete` concrete_wall_009, brushed_concrete; `concrete.cracked` cracked_concrete_wall;
+`ground.moss` AmbientCG Moss002, Moss003; `stone.cut` large_sandstone_blocks; `stone.rubble` old_stone_wall, rock_wall_12;
+`plaster` white_stucco_02, grey_plaster_03; `earth.adobe` patterned_clay_plaster, clay_block_wall; `brick` brick_wall_001,
+red_brick; `paving` cobblestone_01, pavement_01; `ground.dirt` dirt, brown_mud_02; `ground.sand` coast_sand_01, park_sand;
+`roof.tile` ceramic_roof_01, clay_roof_tiles; `metal.corrugated` corrugated_iron_02, worn_corrugated_iron; `steel.painted`
+blue_metal_plate; `metal.grating` metal_grate_rusty; `wood.bamboo` bamboo_wall, AmbientCG Bamboo001C; `tile.glazed`
+marble_mosaic_tiles; `ground.turf` grass_ground; `stone.coral` coral_stone_wall; `bark.*` bark_brown_01, bark_willow_02,
+bark_bluegum, palm_tree_bark, AmbientCG Bark015; `leaf.*` forest_leaves_02, forest_leaves_04. Sandstone for `sedesert` and Shade:
+sandstone_cracks, sandstone_blocks_04, large_sandstone_blocks, rock_wall_11. The AmbientCG metals are tabulated under "Scan-library
+metals" above.
+
+Not usable: `marble_cliff_02` (truncated download); the AmbientCG `Leaf*` sets are single-leaf atlases with no alpha map (cut a
+mask for leaf cards, not for the tiling library); Poly Haven has no gold or bronze.
+
+Catalog notes: 367 Poly Haven assets (302 read first time, 24 more after the 16k fix; run with `--prefix` to split the pass),
+25 AmbientCG colour sets plus the metals. The remaining slugs are in the owner's download and need no list here: rerun
+`ingest_polyhaven.py --catalog-only` on it.
 
 ## Still needed for Girder
 

@@ -56,6 +56,13 @@ CANON = {'diffuse': 'diff', 'color': 'diff', 'colour': 'diff', 'col': 'diff', 'a
 FMT_PREF = {'nor_gl': ('exr', 'png', 'tif', 'tiff', 'jpg', 'jpeg'), 'rough': ('exr', 'png', 'tif', 'tiff', 'jpg', 'jpeg'),
             'arm': ('png', 'tif', 'tiff', 'jpg', 'jpeg', 'exr'), 'diff': ('jpg', 'jpeg', 'png', 'tif', 'tiff', 'exr')}
 
+# ambientCG naming: Bark015_1K-PNG_Color.png, Asset_2K_Color.jpg (NormalGL is OpenGL; NormalDX is never used)
+AMBIENT_RE = re.compile(r'^(?P<slug>.+?)_(?P<res>\d+)K(?:-(?:PNG|JPG|JPEG))?_(?P<map>Color|NormalGL|NormalDX|Roughness|'
+                        r'Metalness|Displacement|AmbientOcclusion|Opacity)\.(?P<ext>jpg|jpeg|png|exr|tif|tiff)$', re.I)
+AMBIENT_MAPS = {'color': 'diff', 'normalgl': 'nor_gl', 'normaldx': 'nor_dx', 'roughness': 'rough',
+                'metalness': 'metal', 'displacement': 'disp', 'ambientocclusion': 'ao', 'opacity': 'opacity'}
+GENERIC_SLUGS = ('asset', 'material', 'texture', 'tex')
+
 # first match wins; a suggestion for the selection step only (ids from core/materials/PLAN.md)
 SUGGEST = [
     ('concrete.cracked', r'concrete.*(crack|damag|broken|rebar|stain)|(crack|damag).*concrete'),
@@ -102,7 +109,23 @@ def scan(root):
     found = {}
 
     def add(name, src, size):
-        m = NAME_RE.match(os.path.basename(name))
+        base = os.path.basename(name)
+        if '_rough_ao' in base.lower():         # Poly Haven's packed rough+ao sheet: not a map of its own
+            return
+        am = AMBIENT_RE.match(base)
+        if am:                                  # ambientCG: <Asset>_<n>K[-PNG]_<Map>.<ext>
+            slug = am.group('slug')
+            if slug.lower() in GENERIC_SLUGS:   # "Asset_2K_Color.jpg": the folder or zip carries the name
+                outer = src[0] if isinstance(src, tuple) else os.path.dirname(src)
+                slug = re.sub(r'[_-]\d+K(-(PNG|JPG|JPEG))?$', '', os.path.splitext(os.path.basename(outer))[0], flags=re.I)
+                if isinstance(src, tuple) and '/' in name:
+                    slug = name.split('/')[-2]
+            mp = AMBIENT_MAPS.get(am.group('map').lower())
+            if mp:
+                found.setdefault(slug, {}).setdefault(mp, []).append(dict(
+                    src=src, ext=am.group('ext').lower(), res=int(am.group('res')) * 1024, var=0, size=size, origin='ambientcg'))
+            return
+        m = NAME_RE.match(base)
         if not m:
             return
         mp = m.group('map').lower()
@@ -219,6 +242,8 @@ def load(src, ext, target=SIZE):
         while w0 // (scale * 2) >= target * 1.0:
             scale *= 2
         im.draft('RGB', (w0 // min(scale, 4), im.size[1] // min(scale, 4)))
+    if w0 > 4096 and im.mode in ('RGB', 'RGBA', 'L', 'P', 'LA'):
+        im = im.reduce(max(1, w0 // 2048))      # box reduction by an integer keeps a tiling map tiling; 16k floats are 3 GB
     if im.mode in ('I;16', 'I;16B', 'I;16L', 'I'):
         a = np.asarray(im).astype(np.float32) / 65535.0
     elif im.mode == 'F':
@@ -347,7 +372,8 @@ def process_asset(job):
                        'roughness': round(float(r.mean()), 3), 'metal': round(metal, 2) if metal > 0.05 else 0,
                        'scale': [2.0, 2.0], 'tint': tint},
             'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.png', 'roughnessMap': 'roughness.png'},
-            'source': {'library': 'Poly Haven', 'asset': slug, 'url': 'https://polyhaven.com/a/' + slug,
+            'source': {'library': 'ambientCG' if dc.get('origin') == 'ambientcg' else 'Poly Haven', 'asset': slug,
+                       'url': ('https://ambientcg.com/view?id=' if dc.get('origin') == 'ambientcg' else 'https://polyhaven.com/a/') + slug,
                        'licence': 'CC0', 'file': files['diff'], 'sha1': sha1_of(dc['src']), 'files': files},
             'processing': {'script': 'tools/textures/ingest_polyhaven.py', 'version': VERSION,
                            'options': {'size': SIZE, 'roughness_from': rough_from, 'normal': 'nor_gl'},
@@ -397,6 +423,7 @@ def main():
     ap.add_argument('--catalog-only', action='store_true', help='thumbnails and the summary only, no sets')
     ap.add_argument('--only', help='comma-separated slugs')
     ap.add_argument('--match', help='only slugs containing this text (e.g. bark)')
+    ap.add_argument('--prefix', help='only slugs starting with one of these letters (e.g. a-f or xyz), to split a big pass')
     ap.add_argument('--jobs', type=int, default=max(1, min(4, os.cpu_count() or 1)))
     a = ap.parse_args()
 
@@ -410,6 +437,11 @@ def main():
         slugs = [s for s in slugs if s in want]
     if a.match:
         slugs = [s for s in slugs if a.match.lower() in s.lower()]
+    if a.prefix:
+        ch = set()
+        for part in re.findall(r'.-.|.', a.prefix.lower()):
+            ch.update(chr(c) for c in range(ord(part[0]), ord(part[-1]) + 1))
+        slugs = [s for s in slugs if s[:1].lower() in ch]
     print('%d assets found (%d after filters)' % (len(found), len(slugs)))
     jobs = [(s, found[s], os.path.join(a.out, 'sets', s), a.catalog_only) for s in slugs]
     if a.jobs > 1 and len(jobs) > 1:

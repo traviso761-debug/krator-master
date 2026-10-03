@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Material Demo Kit</title>
+<style>
+:root{--bg:#1b1a19;--panel:#262422;--ink:#ece7de;--dim:#a39b8f;--line:#3a3733;--committed:#6dbf73;--new:#5aa5e6;--scan:#e6a94d}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#d9d4ca;--panel:#f1ede5;--ink:#1c1a17;--dim:#5e574d;--line:#c4bdb0;color-scheme:light}}
+:root[data-theme="light"]{--bg:#d9d4ca;--panel:#f1ede5;--ink:#1c1a17;--dim:#5e574d;--line:#c4bdb0;color-scheme:light}
+:root{color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#c{position:fixed;inset:0;display:block;touch-action:none;cursor:grab}#c.drag{cursor:grabbing}
+#bar{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;flex-wrap:wrap;gap:3px 10px;align-items:center;padding:4px 10px;font-size:11px;background:color-mix(in srgb,var(--panel) 92%,transparent);border-bottom:1px solid var(--line)}
+#bar b{font-size:14px}#bar .grp{display:flex;flex-wrap:wrap;gap:4px;align-items:center}#bar .lbl{color:var(--dim);margin-right:2px}
+button,select,input{font:inherit;color:var(--ink)}
+button{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:11px;cursor:pointer}button:hover{border-color:var(--dim)}button.on{background:var(--ink);color:var(--bg)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+#labels{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.cap{position:absolute;transform:translate(-50%,0);font-size:11px;line-height:1.25;text-align:center;white-space:nowrap;text-shadow:0 1px 2px #000a;color:#fff}
+.cap small{display:block;color:#fffa;font-size:10px}
+.hdr{position:absolute;font-weight:600;font-size:13px;padding:2px 8px;border-radius:4px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);white-space:nowrap}
+.col{transform:translateX(-50%)}.row{transform:translateY(-50%)}
+#side{position:fixed;top:0;right:0;bottom:0;width:320px;z-index:6;background:var(--panel);border-left:1px solid var(--line);padding:12px;overflow:auto;display:none}
+#side h3{margin:0 0 4px;font-size:15px}#side .k{color:var(--dim)}#side table{border-collapse:collapse;width:100%;margin:8px 0}#side td{padding:2px 4px;vertical-align:top;border-top:1px solid var(--line)}
+#side .prompt{font-size:11px;color:var(--dim);max-height:140px;overflow:auto;border:1px solid var(--line);padding:6px;border-radius:5px}
+#load{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;background:var(--panel);padding:14px 22px;border-radius:8px;border:1px solid var(--line)}
+#hint{position:fixed;left:12px;bottom:10px;z-index:5;color:var(--dim);font-size:11px;background:color-mix(in srgb,var(--panel) 85%,transparent);padding:4px 8px;border-radius:5px}
+</style></head><body>
+<canvas id=c></canvas><div id=labels></div>
+<div id=bar></div>
+<div id=side></div><div id=load>Loading textures…</div>
+<div id=hint>Drag the background to pan · drag an object to turn it (double-click resets) · wheel to zoom · click for details · column and row buttons fly there</div>
+<script>/*THREE*/</script>
+<script>/*DATA*/</script>

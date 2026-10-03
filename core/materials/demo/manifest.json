@@ -1,0 +1,1876 @@
+{
+ "rows": [
+  "Stone & rock",
+  "Brick, paving & tile",
+  "Plaster & earth",
+  "Concrete",
+  "Wood",
+  "Metal",
+  "Cloth & canvas",
+  "Roof",
+  "Fibre & organic",
+  "Ground",
+  "Bark & leaf",
+  "Pattern sheets"
+ ],
+ "cols": [
+  "Generic",
+  "Beast Riders",
+  "Iziz",
+  "Voth",
+  "Dalab",
+  "Highlands",
+  "Yuni / Locus",
+  "Ancients",
+  "Ancient Port (Hook)",
+  "Hykkousoi (Ys)",
+  "Desert",
+  "Hyperjungle",
+  "N highlands",
+  "Bays & coast",
+  "Lowlands & savanna",
+  "City (parks & streets)",
+  "Furniture"
+ ],
+ "statuses": {
+  "committed": "In the library (git)",
+  "scan": "Scan candidate"
+ },
+ "entries": [
+  {
+   "src": "library/wood.carved",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.tarred",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/roof.thatch",
+   "row": "Roof",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/roof.shingle",
+   "row": "Roof",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/fibre.cane",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fibre.rope",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.weave.plain",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.weave.twill",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.weave.canvas",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.weave.burlap",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.felt",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.knit",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/roof.thatch.neutral",
+   "row": "Roof",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/roof.shingle.neutral",
+   "row": "Roof",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/cloth-1",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/cloth-2",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/trim",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/earth.adobe",
+   "row": "Plaster & earth",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.scrap",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.reclaimed",
+   "row": "Wood",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.tarp",
+   "row": "Cloth & canvas",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.chitin",
+   "row": "Fibre & organic",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.scale",
+   "row": "Metal",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.plain",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.lacquer",
+   "row": "Wood",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/iziz/mosaic",
+   "row": "Pattern sheets",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/iziz/tile",
+   "row": "Pattern sheets",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/voth/inlay",
+   "row": "Pattern sheets",
+   "col": "Voth",
+   "status": "committed",
+   "scale": [
+    2,
+    1
+   ]
+  },
+  {
+   "src": "patterns/voth/banner",
+   "row": "Pattern sheets",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/voth/banner-ordinator",
+   "row": "Pattern sheets",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/voth/banner-solar",
+   "row": "Pattern sheets",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/cloth-3",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/cloth-4",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/cloth-5",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/cloth-6",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/awning",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.canvas",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.canvas.b",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.canvas.tent",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.canvas.sail",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/canvas/stripe-red",
+   "row": "Pattern sheets",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/earth.banco",
+   "row": "Plaster & earth",
+   "col": "Yuni / Locus",
+   "status": "committed"
+  },
+  {
+   "src": "library/earth.banco.eroded",
+   "row": "Plaster & earth",
+   "col": "Yuni / Locus",
+   "status": "committed"
+  },
+  {
+   "src": "library/earth.banco.eroded.b",
+   "row": "Plaster & earth",
+   "col": "Yuni / Locus",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.toron",
+   "row": "Wood",
+   "col": "Yuni / Locus",
+   "status": "committed"
+  },
+  {
+   "src": "library/concrete.board",
+   "row": "Concrete",
+   "col": "Yuni / Locus",
+   "status": "committed",
+   "also": [
+    "Ancients"
+   ]
+  },
+  {
+   "src": "library/stone.rendered",
+   "row": "Stone & rock",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/ancients/glyph-band",
+   "row": "Pattern sheets",
+   "col": "Ancients",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/ancients/glyph-band-b",
+   "row": "Pattern sheets",
+   "col": "Ancients",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/republic/folk-painted",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/republic/folk-formline-a",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/republic/folk-formline-b",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/crane-floral",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/voth/inlay-b",
+   "row": "Pattern sheets",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "ph/rock_boulder_dry",
+   "row": "Stone & rock",
+   "col": "Generic",
+   "status": "scan",
+   "scale": [
+    3,
+    3
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/rock_face",
+   "row": "Stone & rock",
+   "col": "Generic",
+   "status": "scan",
+   "scale": [
+    3,
+    3
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/old_stone_wall",
+   "row": "Stone & rock",
+   "col": "Highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/rock_wall_12",
+   "row": "Stone & rock",
+   "col": "Highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/large_sandstone_blocks",
+   "row": "Stone & rock",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/coral_stone_wall",
+   "row": "Stone & rock",
+   "col": "Hykkousoi (Ys)",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/sandstone_cracks",
+   "row": "Stone & rock",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    3,
+    3
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/sandstone_blocks_04",
+   "row": "Stone & rock",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/rock_wall_11",
+   "row": "Stone & rock",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/brick_wall_001",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/red_brick",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/cobblestone_01",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/pavement_01",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/marble_mosaic_tiles",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/white_stucco_02",
+   "row": "Plaster & earth",
+   "col": "Voth",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/grey_plaster_03",
+   "row": "Plaster & earth",
+   "col": "Voth",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/patterned_clay_plaster",
+   "row": "Plaster & earth",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/clay_block_wall",
+   "row": "Plaster & earth",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/concrete_wall_009",
+   "row": "Concrete",
+   "col": "Generic",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/brushed_concrete",
+   "row": "Concrete",
+   "col": "Generic",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/cracked_concrete_wall",
+   "row": "Concrete",
+   "col": "Ancients",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/old_wooden_floor_02",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/weathered_brown_planks",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/medieval_wood",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/wooden_gate",
+   "row": "Wood",
+   "col": "Highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/bamboo_wall",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "amb/Bamboo001C",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/rusty_metal_04",
+   "row": "Metal",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false
+  },
+  {
+   "src": "ph/rusty_metal_05",
+   "row": "Metal",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false
+  },
+  {
+   "src": "ph/corrugated_iron_02",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0.8,
+   "tint": false
+  },
+  {
+   "src": "ph/worn_corrugated_iron",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0.8,
+   "tint": false
+  },
+  {
+   "src": "ph/blue_metal_plate",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false
+  },
+  {
+   "src": "ph/metal_grate_rusty",
+   "row": "Metal",
+   "col": "Ancients",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.8,
+   "tint": false
+  },
+  {
+   "src": "amb/Metal053C",
+   "row": "Metal",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false,
+   "note": "rust"
+  },
+  {
+   "src": "amb/Metal054C",
+   "row": "Metal",
+   "col": "Beast Riders",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false,
+   "note": "rust"
+  },
+  {
+   "src": "amb/Metal062C",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false,
+   "note": "peeling paint"
+  },
+  {
+   "src": "amb/Metal017",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.6,
+   "tint": false,
+   "note": "flaking paint"
+  },
+  {
+   "src": "amb/Metal003",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.7,
+   "tint": false,
+   "note": "painted aluminium"
+  },
+  {
+   "src": "amb/Metal049A",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.5,
+   "tint": false,
+   "note": "white painted"
+  },
+  {
+   "src": "amb/Metal038",
+   "row": "Metal",
+   "col": "Highlands",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.8,
+   "tint": false,
+   "note": "cast iron"
+  },
+  {
+   "src": "amb/Metal008",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.9,
+   "tint": false,
+   "note": "bronze or copper"
+  },
+  {
+   "src": "amb/Metal034",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 1.0,
+   "tint": false,
+   "note": "gold"
+  },
+  {
+   "src": "amb/Metal042A",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.95,
+   "tint": false,
+   "note": "pale gold or brass"
+  },
+  {
+   "src": "amb/Foil002",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.9,
+   "tint": false,
+   "note": "foil gold"
+  },
+  {
+   "src": "amb/Metal058C",
+   "row": "Metal",
+   "col": "Highlands",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.7,
+   "tint": false,
+   "note": "verdigris"
+  },
+  {
+   "src": "amb/MetalPlates001",
+   "row": "Metal",
+   "col": "Ancients",
+   "status": "scan",
+   "scale": [
+    1,
+    1
+   ],
+   "scaleGuess": true,
+   "metal": 0.7,
+   "tint": false,
+   "note": "plate"
+  },
+  {
+   "src": "ph/ceramic_roof_01",
+   "row": "Roof",
+   "col": "Highlands",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/clay_roof_tiles",
+   "row": "Roof",
+   "col": "Iziz",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/dirt",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/brown_mud_02",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/coast_sand_01",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/park_sand",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/grass_ground",
+   "row": "Ground",
+   "col": "Lowlands & savanna",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "amb/Moss002",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "amb/Moss003",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "amb/Ground095B",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/bark_brown_01",
+   "row": "Bark & leaf",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/bark_willow_02",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/bark_bluegum",
+   "row": "Bark & leaf",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/palm_tree_bark",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "amb/Bark015",
+   "row": "Bark & leaf",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/forest_leaves_02",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "ph/forest_leaves_04",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "scan",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "scaleGuess": true,
+   "metal": 0,
+   "tint": true
+  },
+  {
+   "src": "patterns/iziz/gilt",
+   "row": "Pattern sheets",
+   "col": "Iziz",
+   "status": "committed",
+   "scale": [
+    2,
+    0.88
+   ]
+  },
+  {
+   "src": "patterns/iziz/banner",
+   "row": "Pattern sheets",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "sv/Fabric027",
+   "row": "Cloth & canvas",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "woven basket-weave: wicker and rattan upholstery"
+  },
+  {
+   "src": "sv/Fabric045",
+   "row": "Cloth & canvas",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "pale linen: sheets, cushions"
+  },
+  {
+   "src": "sv/Fabric083",
+   "row": "Cloth & canvas",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "grey checker; may be an alpha placeholder, check"
+  },
+  {
+   "src": "sv/denim_fabric_05",
+   "row": "Cloth & canvas",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "denim: heavy plain cloth"
+  },
+  {
+   "src": "sv/quatrefoil_jacquard_fabric",
+   "row": "Cloth & canvas",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "red jacquard: upholstery and hangings"
+  },
+  {
+   "src": "sv/Gravel019",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "garden gravel path"
+  },
+  {
+   "src": "sv/Gravel042",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "pale gravel, yard and plaza"
+  },
+  {
+   "src": "sv/Ground003",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "park lawn with bare patches"
+  },
+  {
+   "src": "sv/Ground013",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "trodden grey-green verge"
+  },
+  {
+   "src": "sv/Ground020",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "muddy track with leaves"
+  },
+  {
+   "src": "sv/Pathway004",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "dry grass path"
+  },
+  {
+   "src": "sv/grass_path_3",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "worn grass path"
+  },
+  {
+   "src": "sv/Ground037",
+   "row": "Ground",
+   "col": "Lowlands & savanna",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "green meadow"
+  },
+  {
+   "src": "sv/Ground047",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "dark moss on wet soil"
+  },
+  {
+   "src": "sv/Ground068",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "red soil with moss"
+  },
+  {
+   "src": "sv/Ground072",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "leaf mulch and twigs"
+  },
+  {
+   "src": "sv/Ground106",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "dark forest floor with litter"
+  },
+  {
+   "src": "sv/Moss001",
+   "row": "Ground",
+   "col": "Hyperjungle",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "grass, moss and litter"
+  },
+  {
+   "src": "sv/Ground080",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "fine sand"
+  },
+  {
+   "src": "sv/Ground093C",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "pale smooth sand"
+  },
+  {
+   "src": "sv/gravelly_sand",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "sand with gravel"
+  },
+  {
+   "src": "sv/sandy_gravel_02",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "sandy gravel"
+  },
+  {
+   "src": "sv/Ground108",
+   "row": "Ground",
+   "col": "Ancients",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "gravel and rubble: ruin floor"
+  },
+  {
+   "src": "sv/Ground111",
+   "row": "Stone & rock",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "red-pink granite grit"
+  },
+  {
+   "src": "sv/Rocks013",
+   "row": "Stone & rock",
+   "col": "Desert",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "sand with flat dark flakes"
+  },
+  {
+   "src": "sv/Marble012",
+   "row": "Stone & rock",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "grey marble: tops, trim"
+  },
+  {
+   "src": "sv/Rock035",
+   "row": "Stone & rock",
+   "col": "Bays & coast",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "near-black basalt"
+  },
+  {
+   "src": "sv/Rock037",
+   "row": "Stone & rock",
+   "col": "Bays & coast",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "black, veined volcanic rock"
+  },
+  {
+   "src": "sv/Rock058",
+   "row": "Stone & rock",
+   "col": "N highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "blue-grey slate"
+  },
+  {
+   "src": "sv/Rock064",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "mossy cobblestones"
+  },
+  {
+   "src": "sv/grassy_cobblestone",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "cobbles with grass in the joints"
+  },
+  {
+   "src": "sv/Tiles144",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "orange paving tiles: plaza"
+  },
+  {
+   "src": "sv/old_mosaic_floor",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "old mosaic floor"
+  },
+  {
+   "src": "sv/Snow011",
+   "row": "Ground",
+   "col": "N highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "trampled snow"
+  },
+  {
+   "src": "sv/Snow015",
+   "row": "Ground",
+   "col": "N highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "snow with grass"
+  },
+  {
+   "src": "sv/ScatteredLeaves008",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "autumn leaf litter"
+  },
+  {
+   "src": "sv/leafy_grass",
+   "row": "Ground",
+   "col": "Lowlands & savanna",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "grass with leaves"
+  },
+  {
+   "src": "sv/sparse_grass",
+   "row": "Ground",
+   "col": "Lowlands & savanna",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "thin turf"
+  },
+  {
+   "src": "sv/withered_grass",
+   "row": "Ground",
+   "col": "Lowlands & savanna",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "dry savanna grass"
+  },
+  {
+   "src": "sv/coast_sand_rocks_02",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "sand with mossy rocks"
+  },
+  {
+   "src": "sv/damp_beach_sand",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "damp beach sand"
+  },
+  {
+   "src": "sv/wood_cabinet_worn_long",
+   "row": "Wood",
+   "col": "Furniture",
+   "status": "scan",
+   "scale": [
+    2,
+    2
+   ],
+   "scaleGuess": true,
+   "tint": true,
+   "note": "worn cabinet wood"
+  },
+  {
+   "src": "patterns/dalab/relief-chevron",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/dalab/relief-squares",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/dalab/relief-tile-teal",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/dalab/relief-tile-red",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/dalab/checker-harlequin",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/dalab/god-panel-a",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    0.8,
+    2
+   ]
+  },
+  {
+   "src": "patterns/dalab/god-panel-b",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    0.8,
+    2
+   ]
+  },
+  {
+   "src": "patterns/dalab/mural-eye-god",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    3,
+    1.5
+   ]
+  },
+  {
+   "src": "patterns/dalab/mural-eye-god-b",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    3,
+    1.5
+   ]
+  },
+  {
+   "src": "patterns/dalab/mural-soldiers",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    3,
+    1.5
+   ]
+  },
+  {
+   "src": "patterns/dalab/mural-harvest",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    3,
+    1.5
+   ]
+  },
+  {
+   "src": "patterns/dalab/mural-giants",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    3,
+    1.5
+   ]
+  },
+  {
+   "src": "patterns/dalab/mural-priests",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "committed",
+   "scale": [
+    3,
+    1.5
+   ]
+  }
+ ]
+}

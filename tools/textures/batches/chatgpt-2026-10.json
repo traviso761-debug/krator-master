@@ -1,0 +1,988 @@
+[
+ {
+  "src": "republic_folk-formline-a.webp",
+  "out": "core/materials/patterns/republic/folk-formline-a",
+  "record": {
+   "id": "republic/folk-formline-a",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/republic/folk-painted and patterns/tribal/formline (combined) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "republic_folk-painted.webp",
+  "out": "core/materials/patterns/republic/folk-painted",
+  "record": {
+   "id": "republic/folk-painted",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/republic/folk-painted (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "cloth.canvas.webp",
+  "out": "core/materials/library/cloth.canvas",
+  "record": {
+   "id": "cloth.canvas",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row cloth.canvas (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "cloth.canvas.b.webp",
+  "out": "core/materials/library/cloth.canvas.b",
+  "record": {
+   "id": "cloth.canvas.b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row cloth.canvas (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "cloth.canvas.tent.webp",
+  "out": "core/materials/library/cloth.canvas.tent",
+  "record": {
+   "id": "cloth.canvas.tent",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row cloth.canvas.tent (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "cloth.canvas.sail.webp",
+  "out": "core/materials/library/cloth.canvas.sail",
+  "record": {
+   "id": "cloth.canvas.sail",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row cloth.canvas.sail (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "canvas_stripe-red.webp",
+  "out": "core/materials/patterns/canvas/stripe-red",
+  "record": {
+   "id": "canvas/stripe-red",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/canvas/stripe-awning (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "earth.banco.webp",
+  "out": "core/materials/library/earth.banco",
+  "record": {
+   "id": "earth.banco",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row earth.banco (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "earth.banco.eroded.webp",
+  "out": "core/materials/library/earth.banco.eroded",
+  "record": {
+   "id": "earth.banco.eroded",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row earth.banco.eroded (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "wood.toron.webp",
+  "out": "core/materials/library/wood.toron",
+  "record": {
+   "id": "wood.toron",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row wood.toron (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "concrete.board.webp",
+  "out": "core/materials/library/concrete.board",
+  "record": {
+   "id": "concrete.board",
+   "family": "concrete",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row concrete.board (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "stone.rendered.webp",
+  "out": "core/materials/library/stone.rendered",
+  "record": {
+   "id": "stone.rendered",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row stone.rendered (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "ancients_glyph-band.webp",
+  "out": "core/materials/patterns/ancients/glyph-band",
+  "record": {
+   "id": "ancients/glyph-band",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/ancients/glyph-band (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "ancients_glyph-band-b.webp",
+  "out": "core/materials/patterns/ancients/glyph-band-b",
+  "record": {
+   "id": "ancients/glyph-band-b",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/ancients/glyph-band (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_crane-floral.webp",
+  "out": "core/materials/patterns/highlands/crane-floral",
+  "record": {
+   "id": "highlands/crane-floral",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row a Highlands painted-panel colourway (no plan row) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "earth.banco.eroded.b.webp",
+  "out": "core/materials/library/earth.banco.eroded.b",
+  "record": {
+   "id": "earth.banco.eroded.b",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row earth.banco.eroded (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "voth_inlay-b.webp",
+  "out": "core/materials/patterns/voth/inlay-b",
+  "record": {
+   "id": "voth/inlay-b",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/voth/inlay (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "republic_folk-formline-b.webp",
+  "out": "core/materials/patterns/republic/folk-formline-b",
+  "record": {
+   "id": "republic/folk-formline-b",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/republic/folk-painted and patterns/tribal/formline (combined, second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "iziz_gilt.webp",
+  "out": "core/materials/patterns/iziz/gilt",
+  "record": {
+   "id": "iziz/gilt",
+   "family": "gilt",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/iziz/gilt (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "iziz_banner.webp",
+  "out": "core/materials/patterns/iziz/banner",
+  "record": {
+   "id": "iziz/banner",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/iziz/banner (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_relief-chevron.png",
+  "out": "core/materials/patterns/dalab/relief-chevron",
+  "record": {
+   "id": "dalab/relief-chevron",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a stepped chevron relief (Dalab relief family) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "dalab_relief-squares.png",
+  "out": "core/materials/patterns/dalab/relief-squares",
+  "record": {
+   "id": "dalab/relief-squares",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a stepped-square relief (Dalab relief family) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "dalab_relief-tile-teal.png",
+  "out": "core/materials/patterns/dalab/relief-tile-teal",
+  "record": {
+   "id": "dalab/relief-tile-teal",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, the Dalab relief-turquoise tile (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "dalab_relief-tile-red.png",
+  "out": "core/materials/patterns/dalab/relief-tile-red",
+  "record": {
+   "id": "dalab/relief-tile-red",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a red colourway of the Dalab relief tile (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "dalab_checker-harlequin.png",
+  "out": "core/materials/patterns/dalab/checker-harlequin",
+  "record": {
+   "id": "dalab/checker-harlequin",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, the Dalab checker (harlequin diamonds) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 1.0,
+   "delight": 0.3,
+   "lift": 0.0
+  }
+ },
+ {
+  "src": "dalab_god-panel-a.png",
+  "out": "core/materials/patterns/dalab/god-panel-a",
+  "record": {
+   "id": "dalab/god-panel-a",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.8,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, the Dalab god-panel (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_god-panel-b.png",
+  "out": "core/materials/patterns/dalab/god-panel-b",
+  "record": {
+   "id": "dalab/god-panel-b",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.8,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, the Dalab god-panel (second design) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_mural-eye-god.png",
+  "out": "core/materials/patterns/dalab/mural-eye-god",
+  "record": {
+   "id": "dalab/mural-eye-god",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, the Dalab mural, variant 0 (god avatar) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_mural-eye-god-b.png",
+  "out": "core/materials/patterns/dalab/mural-eye-god-b",
+  "record": {
+   "id": "dalab/mural-eye-god-b",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, the Dalab mural, variant 0 (second design) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_mural-soldiers.png",
+  "out": "core/materials/patterns/dalab/mural-soldiers",
+  "record": {
+   "id": "dalab/mural-soldiers",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a Dalab mural (soldiers; no plan row) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_mural-harvest.png",
+  "out": "core/materials/patterns/dalab/mural-harvest",
+  "record": {
+   "id": "dalab/mural-harvest",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a Dalab mural (maize harvest; the code's variant 3 has a maize sheaf) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_mural-giants.png",
+  "out": "core/materials/patterns/dalab/mural-giants",
+  "record": {
+   "id": "dalab/mural-giants",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a Dalab mural (giants and soldiers; no plan row) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "dalab_mural-priests.png",
+  "out": "core/materials/patterns/dalab/mural-priests",
+  "record": {
+   "id": "dalab/mural-priests",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, Dalab, a Dalab mural (priests; no plan row) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ }
+]

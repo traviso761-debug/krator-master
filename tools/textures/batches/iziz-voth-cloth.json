@@ -1,0 +1,582 @@
+[
+ {
+  "src": "Rustic Straw-Infused Earthen Plaster Texture.png",
+  "out": "core/materials/library/earth.adobe",
+  "record": {
+   "id": "earth.adobe",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral, nearly colourless pale grey-beige, so it can be tinted to any earth colour. Material: hand-smoothed mud plaster wall with chopped straw in it, faint palm-smoothing marks, hairline cracks, a few small pits and flaked patches. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Straw-Infused Earthen Plaster Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Weathered Patchwork Metal Wall.png",
+  "out": "core/materials/library/metal.scrap",
+  "record": {
+   "id": "metal.scrap",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0.7,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral, mostly grey, so it can be tinted. Material: patchwork wall of reclaimed sheet-metal panels of different sizes riveted and bolted together, overlapping edges, dents, rust bleeding from the rivets, traces of old paint on some panels. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Patchwork Metal Wall.png"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "normal_strength": 1.3,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Weathered Gray Wood Plank Texture.png",
+  "out": "core/materials/library/wood.reclaimed",
+  "record": {
+   "id": "wood.reclaimed",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral, sun-bleached grey, so it can be tinted. Material: horizontal reclaimed wooden boards of uneven widths, sun-bleached and dried out, old nail holes, a few patches of flaking old paint, split ends. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Gray Wood Plank Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Weathered Patchwork Canvas Tarp Texture.png",
+  "out": "core/materials/library/cloth.tarp",
+  "record": {
+   "id": "cloth.tarp",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral, mostly grey, so it can be tinted. Material: old heavy tarpaulin pieced together from several sun-faded panels, visible stitched seams, patches sewn over tears, dust in the creases. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Patchwork Canvas Tarp Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Seamless Weathered Chitin Plate Texture.png",
+  "out": "core/materials/library/organic.chitin",
+  "record": {
+   "id": "organic.chitin",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Muted, so it can be tinted. Material: overlapping plates of giant insect shell used as armour and building panels, smooth hard segments with fine growth ridges near their edges, a waxy finish, a few scratches. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Weathered Chitin Plate Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "dark_gloss": 0.3,
+   "normal_strength": 1.2,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Weathered Riveted Steel Scale Texture.png",
+  "out": "core/materials/library/metal.scale",
+  "record": {
+   "id": "metal.scale",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.7,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral grey, so it can be tinted gold or bronze. Material: hand-hammered metal roof plates laid in overlapping curved rows like fish scales, small dents from the hammer, rivets along each row, streaks of weathering. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Riveted Steel Scale Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "normal_strength": 1.3,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "iziz_tile_2.png",
+  "out": "core/materials/patterns/iziz/mosaic",
+  "record": {
+   "id": "iziz/mosaic",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: geometric mosaic of small hand-cut glazed tiles, interlocking star and diamond pattern, desert palette of burnt orange (#e07a2a), sand (#e2b676), deep teal and cream, slightly uneven grout lines, a few chipped tiles. The pattern repeats both ways. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Teal and Terracotta Star Tile Pattern.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "normal_strength": 0.8,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "iziz_tile_1.png",
+  "out": "core/materials/patterns/iziz/tile",
+  "record": {
+   "id": "iziz/tile",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: square hand-painted glazed ceramic wall tiles in a regular grid, each tile with the same simple geometric motif in burnt orange (#e07a2a) and deep teal on cream, slight variation in glaze, thin grout lines, a few crazed or chipped tiles. The pattern repeats both ways. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Aged Terracotta and Teal Moorish Tilework.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "normal_strength": 0.8,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Geometric Marble Mosaic Border.png",
+  "out": "core/materials/patterns/voth/inlay",
+  "record": {
+   "id": "voth/inlay",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished stone inlay band set into pale marble (#e8e1d2), an angular geometric motif of stepped chevrons and interlocking hooks in dark jade (#3f6b56), deep lapis blue (#1f3f6e), deep red-purple stone and near-black basalt (#2b2a28), fine joints between the pieces, slightly worn. The pattern repeats horizontally. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Geometric Marble Mosaic Border.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "normal_strength": 0.5,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "voth_banner_red.png",
+  "out": "core/materials/patterns/voth/banner",
+  "record": {
+   "id": "voth/banner",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy woven cloth with an angular geometric pattern of stepped bands and hooked spirals, dyed ash yellow, dark red and charcoal black, a little volcanic ash dust in the weave, slightly faded. The pattern repeats horizontally. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ashen Dunmer Geometric Tapestry.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "voth_banner_ordinator.png",
+  "out": "core/materials/patterns/voth/banner-ordinator",
+  "record": {
+   "id": "voth/banner-ordinator",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Variant of the voth/banner prompt (same family, other colours); exact wording not recorded. Base text: Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy woven cloth with an angular geometric pattern of stepped bands and hooked spirals, dyed ash yellow, dark red and charcoal black, a little volcanic ash dust in the weave, slightly faded. The pattern repeats horizontally.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Emerald and Gold Mask Tapestry.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "voth_banner_purple_solar.png",
+  "out": "core/materials/patterns/voth/banner-solar",
+  "record": {
+   "id": "voth/banner-solar",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Variant of the voth/banner prompt (same family, other colours); exact wording not recorded. Base text: Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: heavy woven cloth with an angular geometric pattern of stepped bands and hooked spirals, dyed ash yellow, dark red and charcoal black, a little volcanic ash dust in the weave, slightly faded. The pattern repeats horizontally.",
+    "licence": "generated for this project by its owner",
+    "original_title": "banner_cloth_purple_solar (title not kept)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Rust and Cream Kilim Weave Pattern.png",
+  "out": "core/materials/patterns/beast-riders/cloth-3",
+  "record": {
+   "id": "beast-riders/cloth-3",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/beast-riders/cloth-3 (burnt rust orange) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rust and Cream Kilim Weave Pattern.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Purple and Ochre Tribal Woven Pattern.png",
+  "out": "core/materials/patterns/beast-riders/cloth-4",
+  "record": {
+   "id": "beast-riders/cloth-4",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/beast-riders/cloth-4 (indigo-violet) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Purple and Ochre Tribal Woven Pattern.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Rustic Ochre Tribal Woven Textile.png",
+  "out": "core/materials/patterns/beast-riders/cloth-5",
+  "record": {
+   "id": "beast-riders/cloth-5",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/beast-riders/cloth-5 (ochre, red, green) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Ochre Tribal Woven Textile.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Rustic Ochre Tribal Woven Tapestry.png",
+  "out": "core/materials/patterns/beast-riders/cloth-6",
+  "record": {
+   "id": "beast-riders/cloth-6",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a further Beast Rider cloth colourway (no plan row) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Ochre Tribal Woven Tapestry.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Rust and Sage Striped Canvas Texture.png",
+  "out": "core/materials/patterns/beast-riders/awning",
+  "record": {
+   "id": "beast-riders/awning",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row patterns/beast-riders/awning (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Rust and Sage Striped Canvas Texture.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "normal_strength": 0.6,
+   "delight": 0.3,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Beige Linen Weave.png",
+  "out": "core/materials/library/cloth.plain",
+  "record": {
+   "id": "cloth.plain",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row cloth.plain (undyed linen) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Beige Linen Weave.png"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Distressed Red Lacquered Wood Texture.png",
+  "out": "core/materials/library/wood.lacquer",
+  "record": {
+   "id": "wood.lacquer",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row wood.lacquer (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Distressed Red Lacquered Wood Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "dark_gloss": 0.3
+  }
+ }
+]

@@ -19,6 +19,7 @@ Steps, in order:
   5. normal     OpenGL convention (+Y up), which three.js and Godot both expect.
   6. roughness  a base value per material, varied by the relief; `--dark-gloss` makes dark areas smoother
                 (tar, lacquer, polished nacre).
+  3b. --keep-aspect  a non-square sheet keeps its shape (long side = SIZE) instead of being squeezed square.
   7. mute       optional, for library surfaces a culture palette will tint (`--mute`).
 
 Requires numpy and Pillow. Deterministic: the same source and options give the same bytes.
@@ -53,13 +54,15 @@ def seam_score(a):
 
 
 def resize_periodic(a, size, pad=24):
+    """size: an int (square) or a (W, H) tuple."""
     h, w = a.shape[:2]
+    tw, th = (size, size) if isinstance(size, int) else size
     p = np.pad(a, ((pad, pad), (pad, pad), (0, 0)), mode='wrap')
     im = Image.fromarray((np.clip(p, 0, 1) * 255 + 0.5).astype(np.uint8))
-    W2, H2 = int(round((w + 2 * pad) * size / w)), int(round((h + 2 * pad) * size / h))
+    W2, H2 = int(round((w + 2 * pad) * tw / w)), int(round((h + 2 * pad) * th / h))
     q = np.asarray(im.resize((W2, H2), Image.LANCZOS)).astype(np.float64) / 255.0
-    ox, oy = int(round(pad * size / w)), int(round(pad * size / h))
-    return q[oy:oy + size, ox:ox + size]
+    ox, oy = int(round(pad * tw / w)), int(round(pad * th / h))
+    return q[oy:oy + th, ox:ox + tw]
 
 
 # ---------------------------------------------------------------- step 1: seamless
@@ -123,7 +126,11 @@ def process(src, out_dir, opt):
 
     # 3. resize, periodically: pad with wrapped copies so the filter sees across the seam, then crop
     size = opt['size']
-    a = resize_periodic(a, size)
+    if opt['keep_aspect']:      # tall or wide sheets keep their shape: the long side is `size`
+        k = size / max(a.shape[:2])
+        a = resize_periodic(a, (int(round(a.shape[1] * k)), int(round(a.shape[0] * k))))
+    else:
+        a = resize_periodic(a, size)
 
     # 7. mute (before the derived maps, which read luminance only)
     if opt['mute'] > 0:
@@ -170,7 +177,7 @@ def process(src, out_dir, opt):
     return log
 
 
-DEFAULTS = dict(pattern=False, band=0.06, delight=0.6, lift=0.15, size=1024, mute=0.0,
+DEFAULTS = dict(keep_aspect=False, pattern=False, band=0.06, delight=0.6, lift=0.15, size=1024, mute=0.0,
                 height_soften=0.8, invert_height=False, normal_strength=1.0,
                 rough=0.75, rough_var=0.25, dark_gloss=0.0)
 

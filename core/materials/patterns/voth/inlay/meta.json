@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1766,
+    806
+   ],
+   "seam_after": [
+    0.711,
+    0.207
+   ],
+   "seam_before": [
+    2.125,
+    1.047
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "voth/inlay",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.3,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Seamless Geometric Marble Mosaic Border.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Geometric Marble Mosaic Border.png",
+  "prompt": "Seamless tileable texture, square, 2048x2048. A flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: polished stone inlay band set into pale marble (#e8e1d2), an angular geometric motif of stepped chevrons and interlocking hooks in dark jade (#3f6b56), deep lapis blue (#1f3f6e), deep red-purple stone and near-black basalt (#2b2a28), fine joints between the pieces, slightly worn. The pattern repeats horizontally. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "12e76fcb6bbcfc8dd9e3a106db38df92a22634e6"
+ }
+}
