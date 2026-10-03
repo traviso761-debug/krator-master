@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.0,
+   "rough_lift": 0.0,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 16384,
+   "source_size": 16384
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.265,
+   "mean_saturation": 0.66,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.rusty_metal_05",
+  "metal": 0.6,
+  "roughness": 0.855,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "asset": "rusty_metal_05",
+  "file": "rusty_metal_05_diff_16k.png",
+  "files": {
+   "diff": "rusty_metal_05_diff_16k.png",
+   "nor_gl": "rusty_metal_05_nor_gl_16k.png",
+   "rough": "rusty_metal_05_rough_16k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "e6f875edfaf457ee59e55e7617cc96d446ba420a",
+  "url": "https://polyhaven.com/a/rusty_metal_05"
+ }
+}

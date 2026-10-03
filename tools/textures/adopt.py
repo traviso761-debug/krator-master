@@ -10,7 +10,7 @@
                     sibling set's normal and roughness (../SRC/...), so the 2 MB of PNGs are not stored twice.
                     The colour is muted with process.py's formula (--mute, default 0.9) and the mean luminance
                     set to --lum (default 0.65: a tint multiplies, so the base must not be dark).
---polyhaven DIR B   B is a list of {slug, id, family?, mute?, neutral?, scale?, tint?, note?}. For each, the set
+--polyhaven DIR B   B is a list of {slug, id, family?, mute?, neutral?, scale?, tint?, note?, rough_lift?, rough_floor?, metal?}. For each, the set
                     DIR/sets/<slug> (from ingest_polyhaven.py) becomes library/<id>: the colour map is muted
                     lightly when the id is tintable (mute 0.35 unless given), normal and roughness are copied
                     unchanged, meta.json is updated (id, scale, tint, adoption). neutral:true also writes
@@ -80,12 +80,19 @@ def adopt_polyhaven(ingest, batch):
         os.makedirs(dd, exist_ok=True)
         a = read_albedo(os.path.join(sd, 'albedo.jpg'))
         save_albedo(mute(a, amount) if amount > 0 else a, os.path.join(dd, 'albedo.jpg'))
-        for f in ('normal.png', 'roughness.png'):
-            shutil.copyfile(os.path.join(sd, f), os.path.join(dd, f))
+        shutil.copyfile(os.path.join(sd, 'normal.png'), os.path.join(dd, 'normal.png'))
+        lift, floor = job.get('rough_lift', 0.0), job.get('rough_floor', 0.0)
+        if lift > 0 or floor > 0:       # scan roughness maps run wet under sun and environment light: r' = max(r + (1-r)*lift, floor)
+            r = np.asarray(Image.open(os.path.join(sd, 'roughness.png')).convert('L')).astype(np.float64) / 255.0
+            r = np.maximum(r + (1 - r) * lift, floor)
+            Image.fromarray((np.clip(r, 0, 1) * 255 + 0.5).astype(np.uint8), 'L').save(os.path.join(dd, 'roughness.png'), optimize=True)
+        else:
+            shutil.copyfile(os.path.join(sd, 'roughness.png'), os.path.join(dd, 'roughness.png'))
         rec.update(id=job['id'], family=job.get('family', job['id'].split('.')[0]), tint=tint)
         if 'scale' in job:
             rec['scale'] = job['scale']
-        meta['processing']['adopt'] = {'script': 'tools/textures/adopt.py', 'mute': amount, 'note': job.get('note', '')}
+        meta['processing']['adopt'] = {'script': 'tools/textures/adopt.py', 'mute': amount, 'rough_lift': lift, 'rough_floor': floor, 'note': job.get('note', '')}
+        if 'metal' in job: rec['metal'] = job['metal']
         meta['processing']['stats'].pop('scale_note', None) if 'scale' in job else None
         with open(os.path.join(dd, 'meta.json'), 'w') as fh:
             json.dump(meta, fh, indent=1, sort_keys=True)

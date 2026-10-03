@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "damp beach sand | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.383,
+   "mean_saturation": 0.293,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.damp_beach_sand",
+  "metal": 0,
+  "roughness": 0.942,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "damp_beach_sand",
+  "file": "damp_beach_sand_diff_1k.png",
+  "files": {
+   "diff": "damp_beach_sand_diff_1k.png",
+   "nor_gl": "damp_beach_sand_nor_gl_1k.png",
+   "rough": "damp_beach_sand_rough_1k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "7c9f5eec55c5996432ce21b14c2f296b53022e52",
+  "url": "https://polyhaven.com/a/damp_beach_sand"
+ }
+}

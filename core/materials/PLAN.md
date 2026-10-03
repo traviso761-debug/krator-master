@@ -737,6 +737,23 @@ adopted, raise the committed roughness map for ground, pavement, plaster and sto
 Dalab: 13 generated images now exist (relief and tile sets, two god panels, five murals, a harlequin checker); processed into the demo, prompts not recorded.
 Mockup: `core/materials/demo/mockups/girder/` builds a Girder stand-in from these sets (notes in the page list the gaps).
 
+
+#### Scan picks committed (2026-10-03)
+
+The owner reviewed the scan candidates in the demo kit ("the picks looked fine") and 101 were committed to `core/materials/library`, as
+`<family>.<slug>`: `ground.*`, `rock.*`, `paving.*`, `plaster.*`, `concrete.*`, `wood.*`, `metal.*`, `roof.*`, `fibre.*`, `cloth.*`, `bark.*`, `leaf.*`
+(for example `ground.gravel042`, `rock.rock_face`, `metal.metal034`). Batches: `tools/textures/batches/scan-2026-10-*.json`; run
+`adopt.py --polyhaven <ingest dir> <batch>` with the demo scratch folders to reproduce.
+- Colour maps are unmuted (`mute: 0`) as the owner saw them; `tint` is per set. Metals carry their metalness in the record (`metal`).
+- Roughness maps are baked matte: `r' = max(r + (1-r)*0.8, floor)`, floor 0.9 for natural surfaces, 0.7 for wood and the rest, 0.55 for glazed and polished
+  ones (`rough_lift`, `rough_floor` in each meta). Metals keep their own roughness.
+- Scales are the provisional guesses (see the scale log). The base ids in "The base library" (`wood.plank`, `rock`, `steel.rust`, ...) are the variants'
+  parents: choose the one a build uses per id, or alias it.
+- Not committed: `grey_plaster_03` (truncated download), `sandy_gravel_02` and `wood_cabinet_worn_long` (16k files that did not reduce), `Fabric083`
+  (alpha-preview checker), `Foliage008` and `SurfaceImperfections017` (not materials).
+- **Size:** `core/materials/library` is now about 350 MB and `patterns` 80 MB, so PLAN's "revisit Git LFS at 250 MB" trigger has passed. Normal maps are
+  2 MB each and do not compress further; storing normals as 2-channel or at 512 px are the options if the repo needs to shrink.
+
 ## Built so far (2026-10-02)
 
 Nine ChatGPT-generated sources from the Beast Rider prompts above, processed by `tools/textures/process.py`

@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "sand with mossy rocks | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.267,
+   "mean_saturation": 0.422,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.coast_sand_rocks_02",
+  "metal": 0,
+  "roughness": 0.845,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "coast_sand_rocks_02",
+  "file": "coast_sand_rocks_02_diff_1k.png",
+  "files": {
+   "diff": "coast_sand_rocks_02_diff_1k.png",
+   "nor_gl": "coast_sand_rocks_02_nor_gl_1k.png",
+   "rough": "coast_sand_rocks_02_rough_1k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "3fc32bef2d2278295dfce6a8c32c2dec454c4242",
+  "url": "https://polyhaven.com/a/coast_sand_rocks_02"
+ }
+}

@@ -1,0 +1,223 @@
+[
+ {
+  "slug": "Bamboo001C",
+  "id": "wood.bamboo001c",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.7
+ },
+ {
+  "slug": "Metal053C",
+  "id": "metal.metal053c",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "rust | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "Metal054C",
+  "id": "metal.metal054c",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "rust | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "Metal062C",
+  "id": "metal.metal062c",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "peeling paint | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "Metal017",
+  "id": "metal.metal017",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "flaking paint | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "Metal003",
+  "id": "metal.metal003",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "painted aluminium | provisional scale; chosen from the demo kit",
+  "metal": 0.7
+ },
+ {
+  "slug": "Metal049A",
+  "id": "metal.metal049a",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "white painted | provisional scale; chosen from the demo kit",
+  "metal": 0.5
+ },
+ {
+  "slug": "Metal038",
+  "id": "metal.metal038",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "cast iron | provisional scale; chosen from the demo kit",
+  "metal": 0.8
+ },
+ {
+  "slug": "Metal008",
+  "id": "metal.metal008",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "bronze or copper | provisional scale; chosen from the demo kit",
+  "metal": 0.9
+ },
+ {
+  "slug": "Metal034",
+  "id": "metal.metal034",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "gold | provisional scale; chosen from the demo kit",
+  "metal": 1.0
+ },
+ {
+  "slug": "Metal042A",
+  "id": "metal.metal042a",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "pale gold or brass | provisional scale; chosen from the demo kit",
+  "metal": 0.95
+ },
+ {
+  "slug": "Foil002",
+  "id": "metal.foil002",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "foil gold | provisional scale; chosen from the demo kit",
+  "metal": 0.9
+ },
+ {
+  "slug": "Metal058C",
+  "id": "metal.metal058c",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "verdigris | provisional scale; chosen from the demo kit",
+  "metal": 0.7
+ },
+ {
+  "slug": "MetalPlates001",
+  "id": "metal.metalplates001",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": "plate | provisional scale; chosen from the demo kit",
+  "metal": 0.7
+ },
+ {
+  "slug": "Moss002",
+  "id": "ground.moss002",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Moss003",
+  "id": "ground.moss003",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground095B",
+  "id": "ground.ground095b",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Bark015",
+  "id": "bark.bark015",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ }
+]
