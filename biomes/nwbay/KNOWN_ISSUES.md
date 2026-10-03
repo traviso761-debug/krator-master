@@ -52,7 +52,26 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Done
 
-- [x] The core fragments (10–40) are byte-identical to swbay's (a world vendors them once).
+- [x] The core fragments (10–40) were byte-identical to swbay's (a world vendors them once). Superseded
+      by the entry below: nwbay now reads them from `core/biome/`.
+- [x] ON THE SHARED BIOME CORE (2026-10-03). `build.py` lists `CORE_BIOME` (10, 20, 30, 40 and
+      42-core-export) as rift's does; the four src copies are deleted, and `BIO.export()` is new here.
+      The old copies were the swbay-1 core. Differences from `core/biome/`, and whether nwbay depends
+      on them: BIO.version string (no); the noise lattice cache in vnoise (bit-identical); `BIO.host`
+      gains waterH, register, lod, windows, clock, wind (nwbay binds none: waterH 0, no wind, so the
+      sway terms are x1 and +0); the default mask (nwbay passes its own); fields flow, mist, cold, rock
+      default to 0 (read by nobody here); kits/namespaces (nwbay stays in the default kit); float32
+      stores and the indexed-vertex bake (nwbay's own `K.pos.push(...)` calls work unchanged);
+      runtime LOD keys (BIO.range stays null: one mesh per item, as before); BIO.dynamic/tick/col
+      (unused); `BIO.grid` calls `accept` before the host mask (same RNG draws unless an accept uses
+      the RNG; here none did); `BIO.faceSamples` takes shell groups (plain lists draw as before).
+      No nwbay fragment needed a change. Checked in headless Chromium, SwiftShader, 36 preset views,
+      frame loop frozen after load: `window._api.totals` identical before and after (8,214,841 tris,
+      593,505 instances, 4 meshes, 2,343 registered, 5 types), a hash of every REG record identical
+      (no plant moved), page error panel empty, and no view differs from its before by more than
+      0.13 % of pixels over 24 levels (sea and sky edges). `BIO.export({})` now returns 39 items, 11
+      buckets, 44 materials, 32 textures (214 MB of JSON, digest 227809611 under h=h*31+c); the old core
+      has no exporter, so there is no before to compare. Baseline rewritten for nwbay only.
 - [x] The karst: `karst(x,z)` field, stacks as their own meshes, terrainH on the tops, the mask
       zero on the faces; the probe checks nothing roots on a face and every fig is on the karst.
 - [x] The three new land species: cliff fig (root curtains to the waterline), flame-crown
