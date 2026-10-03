@@ -6,76 +6,78 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 164 (9%) | 0 (0%) | 6 (0%) | 378 (21%) | 1245 (69%) |
+| KB | 407 (23%) | 0 (0%) | 106 (6%) | 105 (6%) | 1175 (66%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 5.8 | [web] | 0 | 0 | 4 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/05-palette.js` | 25.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 |  |
-| `src/10-core.js` | 10.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/05-palette.js` | 25.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | PAL (every colour), FAMMAT (family to material), BUDGET, and the *C aliases: the palette truth. Exports as material records (core/materials); no code in it |
+| `src/10-core.js` | 10.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | SEED, rnd, h2, vn, fbm, sig, terrainH, landDist: this build's own PRNG, noise and ground (see Notes). Pure; moves to KRAND and core/terrain at the reseeding event |
 | `src/15-shore.js` | 3.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/20-stage.js` | 24.7 | [web] | 21 | 6 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/21-sky.js` | 52.9 | [web] | 61 | 0 | 14 | 5 | 0 | 9 | 24 | 0 | 0 | 0 | 0 |  |
-| `src/30a-layout-districts.js` | 24.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/30b-mainland-shore.js` | 18.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/30c-roads.js` | 42.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/30d-wall-stations.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/40-ground.js` | 11.3 | [draw] | 0 | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/45-kit.js` | 30.0 | [draw] | 18 | 0 | 0 | 0 | 0 | 25 | 18 | 3 | 0 | 0 | 0 |  |
-| `src/47-texture.js` | 15.7 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50a-cantons.js` | 20.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/50b-palace.js` | 58.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 78 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/50c-canton-types.js` | 36.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50d-guild.js` | 59.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 80 | 0 | 7 | 0 | 0 | 0 |  |
-| `src/50e-necropolis.js` | 35.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50f-spans-build.js` | 19.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/55-chinampa.js` | 23.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/60-land.js` | 59.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 32 | 0 | 1 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/61-monastery.js` | 50.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65a-smoke.js` | 21.2 | [web] | 7 | 0 | 0 | 0 | 4 | 4 | 1 | 3 | 0 | 0 | 0 |  |
-| `src/65b-town-props.js` | 32.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 55 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/65c-flora.js` | 25.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 48 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/65d-canton-structures.js` | 30.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65e-docks-ferry-fishing.js` | 39.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/65f-shrines-barge-docks.js` | 15.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65g-coastguard-dock.js` | 36.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65h-showcase.js` | 23.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/65i-wall-gates.js` | 17.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/65j-tavern-healing.js` | 26.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/65k-granary-mills-ranch.js` | 28.3 | [web] | 6 | 0 | 0 | 0 | 6 | 43 | 0 | 3 | 0 | 0 | 0 |  |
-| `src/65l-arena-built.js` | 16.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 3 | 0 | 0 | 0 |  |
-| `src/66-striders.js` | 11.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/20-stage.js` | 24.7 | [web] | 21 | 6 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | host: renderer, scene, lights, the canvas sky texture, the eruption timer (3 Math.random calls, deliberately unseeded) |
+| `src/21-sky.js` | 52.9 | [G native] | 61 | 0 | 14 | 5 | 0 | 9 | 24 | 0 | 0 | 0 | 0 | the Krator sky (11 copies): a sky preset in core/atmos plus one [G shader] for the star, giant and ring layers; its panel and probe are host |
+| `src/30a-layout-districts.js` | 24.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | districts, the shoreline as arc length, river and bay tests: layout data |
+| `src/30b-mainland-shore.js` | 18.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | mainland shore, wall offset and zone tests, farm fade, shore roads: layout data |
+| `src/30c-roads.js` | 42.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the road graph and the warren block carving: the street network that every placer and the life layer reads. 43 rnd draws; reseeded at its head |
+| `src/30d-wall-stations.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the 17-vertex curtain wall chain and its gates where a major road crosses: layout data |
+| `src/40-ground.js` | 11.3 | [draw] | 0 | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the ground canvases. maskAt, openAt, inCity and W2P are the land-cover query every placer reads; fillPoly and strokePoly paint the canvas that query reads, so the canvas is placement state. Move the query onto core/mask; the canvas stays as the preview's ground texture |
+| `src/45-kit.js` | 30.0 | [draw] | 18 | 0 | 0 | 0 | 0 | 25 | 18 | 3 | 0 | 0 | 0 | the geometry kit (BOX, FR8, emitBuckets). structure() chooses roof and style per building kind. The night illumination pool (nl*, nlmBake canvas) goes to the host. REGISTER-style tagging goes through core/tags |
+| `src/47-texture.js` | 15.7 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters (grain, periodicLattice, noiseP): become TEX.def records and library sets (core/materials/PLAN.md); keeps its own noise table (see Notes) |
+| `src/50a-cantons.js` | 20.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 | split: bedAt, tierWeights, faceHwAt, cantonFacesRecord, cantonArrivalLevel and the stair endpoints are canton geometry data that other fragments read: a data pass. The stair and plinth draws follow |
+| `src/50b-palace.js` | 58.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 78 | 0 | 1 | 0 | 0 | 0 | one hero building (buttresses, atria, kiosks, gate). split: palaceLandingShift, palaceGateShift and palFree decide where the landing and gate stand, and 50f-spans-build reads them: move them to the canton records |
+| `src/50c-canton-types.js` | 36.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 | monoCanton, platCanton, arenaDeck, marketDeck, treeBaseGrass: decks drawn from the canton record by name. rnd() varies detail only; no split |
+| `src/50d-guild.js` | 59.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 80 | 0 | 7 | 0 | 0 | 0 | split: guildHallsDeck lays out the four craft halls and the local market on the deck while it draws them. Data pass: hall and stall records; draw pass builds them |
+| `src/50e-necropolis.js` | 35.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 | split: ancestryCascade lays out the tomb spiral (steppedTomb, wallNicheTomb) as it draws it. Data pass: tomb records; draw pass builds them. portDeck and cantonPiers read the canton record only |
+| `src/50f-spans-build.js` | 19.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | bridge spans and the reclaimed causeway drawn from the span records; reads the palace landing shift. No split |
+| `src/55-chinampa.js` | 23.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | split: chinGenerateZone, placeUnitAt, fillStretch, chinBlocked and unitCanalOk place the beds by row-lines off the shoreline: a [G data] bed pass writing records (also the bed footprints the life layer avoids). chinampaBed, chinampaHut and willow are the draw pass |
+| `src/60-land.js` | 59.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 32 | 0 | 1 | 0 | 0 | 0 | split: the land placement. claim, gridPut, gridHit, footing, nearestDistrictFrontage, faceStreet and nudgeClearOfRoad are the placer; compound() and townBuilding() pick sizes (rr), facing and colour (pick) and then draw. Data pass: PLACED records with tag, footprint, ry, colour and wealth; draw pass: compound and structure(). PLACED is the registry the life layer and the facade pass read |
+| `src/61-monastery.js` | 50.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 71 | 0 | 0 | 0 | 0 | 0 | split: monasteryCompound fixes the layout (chapel, dorms, warehouse, well, pen, fields, clash test via monasteryClash) in the same function that draws it. Data pass: the compound's building records |
+| `src/65a-smoke.js` | 21.2 | [draw] | 7 | 0 | 0 | 0 | 4 | 4 | 1 | 3 | 0 | 0 | 0 | two parts. Lines 1 to 71, the facade pass: doors, windows, cornices and awnings on the claimed buildings (draw, no split). Lines 72 on, the smoke particle system: its own requestAnimationFrame loop and InstancedMesh, so [web]; the emitter list is data and moves to the sim layer |
+| `src/65b-town-props.js` | 32.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 55 | 0 | 2 | 0 | 0 | 0 | townFacade, compoundFacade, shrines, statues, benches, braziers, the canoe, ferry and trees, each a parameterised model; they place nothing. No split |
+| `src/65c-flora.js` | 25.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 48 | 0 | 1 | 0 | 0 | 0 | parameterised flora and funerary models (weepingWillow, mangrove, giantFern, familyTomb, funeraryTemple); the header says no placement here |
+| `src/65d-canton-structures.js` | 30.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 | canton-scale models (templeCanton, ordinatorFortress, customsHouse); the header says none is placed in this fragment |
+| `src/65e-docks-ferry-fishing.js` | 39.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 1 | 0 | 0 | 0 | split: lifeBuildFerryPier and buildFishDockZone, fishDockBerthWet and fishDockCantonEdge choose the pier and berth sites as they draw them, and the life layer reads the records (LIFE_FISH_CART_STOPS and the ferry stops). Data pass: berth and stop records |
+| `src/65f-shrines-barge-docks.js` | 15.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split: lifeFindShrineSite is a spiral search that claims a site, so it places: a [G data] site pass. Shrine and barge-dock models draw |
+| `src/65g-coastguard-dock.js` | 36.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 38 | 0 | 0 | 0 | 0 | 0 | the coast-guard dock, ports and window dressing. split: it fills LIFE_CGUARD_BERTHS, the builder-fills and consumer-reads hand-off: make it a data record, written once, read by the ships |
+| `src/65h-showcase.js` | 23.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 1 | 0 | 0 | 0 | unplaced showcase models (gates, wall ruins, motifs); the header says no placement here |
+| `src/65i-wall-gates.js` | 17.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 1 | 0 | 0 | 0 | split: facadeFindGateSite searches outward from an anchor and claims the gate site; the wall segment overlap tests (wallOBBOverlap) belong to it. A [G data] site pass; watchtower and wallSegRender draw |
+| `src/65j-tavern-healing.js` | 26.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 34 | 0 | 0 | 0 | 0 | 0 | tavern and house of healing models; 69-district-content places the tavern (placeTavernAtPoint), so no split here |
+| `src/65k-granary-mills-ranch.js` | 28.3 | [draw] | 6 | 0 | 0 | 0 | 6 | 43 | 0 | 3 | 0 | 0 | 0 | granary, windmill, watermill and beetle ranch models (parameterised, unplaced). registerMillCluster, millRebuild and updateMills run an own rAF loop on an InstancedMesh: that part is [web], and the mill list is data |
+| `src/65l-arena-built.js` | 16.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 3 | 0 | 0 | 0 | the built half of the arena (benches, pit entrance, VIP box); it writes the ARENA_SITE record that 78j reads. No split |
+| `src/66-striders.js` | 11.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split (small): striderFindStation and striderRegisterStation pick and register the station sites; striderStationBuild draws |
 | `src/68-props.js` | 9.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/69-district-content.js` | 69.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/70-veg.js` | 35.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/71-industry.js` | 42.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/69-district-content.js` | 69.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 1 | 0 | 0 | 0 | split: the district placer. scatterTownBuildings, scatterNear, placeTavernAtPoint, placeGuildRowHall, the stall and shop loops and the graves each call claim() with a random site, so they place; buildGuildRowHall, funeraryGate, fenceAround draw. Data pass: PLACED records for market, park and funerary content. 105 rnd draws, 17 terrainH reads |
+| `src/70-veg.js` | 35.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 1 | 0 | 0 | 0 | split: plant, floraSample, fgPut, fgFree and shrubAt scatter vegetation (260 rnd draws, 17 terrainH reads, skipping district polygons); birch, monkeyPuzzle, treeFern and the succulents draw. Data pass: flora records. Same shape as the biome kits: placement is portable, the builders cross over as meshes |
+| `src/71-industry.js` | 42.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 | split: siteSlope and mushroomDensityFill choose where things go; mineEntrance, quarryPit and mushroomFarm are hand-sited set pieces that draw from a given (x, z, ry). 39 terrainH reads. Data pass: the three sites and the mushroom density records |
 | `src/72-lanterns.js` | 5.9 | [G native] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 8.5 | [draw] | 17 | 1 | 0 | 0 | 0 | 2 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78a-life-core.js` | 14.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78b-life-nav.js` | 41.0 | [web] | 32 | 0 | 0 | 0 | 1 | 13 | 0 | 3 | 0 | 0 | 0 | split: data inside host code |
-| `src/78c-life-ships.js` | 70.5 | [draw] | 27 | 0 | 0 | 0 | 0 | 30 | 14 | 14 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78d-life-ferries-barges.js` | 62.8 | [draw] | 59 | 0 | 0 | 0 | 0 | 31 | 1 | 14 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78e-life-dhows.js` | 36.8 | [web] | 21 | 0 | 0 | 0 | 1 | 13 | 1 | 8 | 0 | 0 | 0 | split: data inside host code |
-| `src/78f-life-citizens.js` | 44.4 | [draw] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78g-life-monks.js` | 28.6 | [draw] | 11 | 0 | 0 | 0 | 0 | 4 | 0 | 3 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78h-life-temple.js` | 50.9 | [draw] | 22 | 0 | 0 | 0 | 0 | 9 | 0 | 2 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78i-life-trade.js` | 28.1 | [draw] | 37 | 0 | 0 | 0 | 0 | 23 | 0 | 5 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78j-life-arena.js` | 52.9 | [draw] | 81 | 0 | 0 | 0 | 0 | 58 | 0 | 9 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/79a-convoys.js` | 11.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/79b-strider-nav.js` | 35.5 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/79c-strider-model.js` | 42.3 | [draw] | 50 | 0 | 0 | 0 | 0 | 32 | 0 | 3 | 0 | 0 | 0 |  |
-| `src/80-camera.js` | 20.9 | [web] | 10 | 0 | 10 | 13 | 1 | 2 | 0 | 1 | 3 | 0 | 0 |  |
-| `src/82-daynight.js` | 46.9 | [web] | 49 | 6 | 3 | 4 | 3 | 6 | 0 | 12 | 0 | 0 | 0 |  |
+| `src/78a-life-core.js` | 14.7 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | life constants (LIFE_TIERS, LIFE_HUB, LIFE_MAJOR), destination picking (lifePickDestination, lifeCantonApproach) and the ground-height queries (lifeGroundY, lifeBridgeY, lifeCausewayY): the shared data of the life layer (core/simulation/PLAN.md section 1) |
+| `src/78b-life-nav.js` | 41.0 | [G data] | 32 | 0 | 0 | 0 | 1 | 13 | 0 | 3 | 0 | 0 | 0 | split: the water nav grid, A*, line-of-sight and simplify (lifeNavBuildGrid, lifeNavAStar, lifeNavSimplify) are [G data] and port as they are. The lifeCurveFrom* functions build THREE.CatmullRomCurve3 and the local avoidance reads vehicle meshes, and the canoe paddle phase reads performance.now (78b:723): the draw adapter |
+| `src/78c-life-ships.js` | 70.5 | [draw] | 27 | 0 | 0 | 0 | 0 | 30 | 14 | 14 | 0 | 0 | 0 | split: the big ships and the coast guard. LIFE_QUAYS, LIFE_NORTH_INLET, the relay, departures and avoidance are integrated state with random departures, which Godot cannot reproduce from the clock (core/simulation/PLAN.md): a schedule record per ship. The hull, sail and mast part lists are the draw |
+| `src/78d-life-ferries-barges.js` | 62.8 | [draw] | 59 | 0 | 0 | 0 | 0 | 31 | 1 | 14 | 0 | 0 | 0 | split: ferries, water taxis and river barges. LIFE_FERRIES (stops, seats), lifeTaxiPickDest, lifeRiverCurve, the boarding by queueCount and the barge docks are [G data] routes; the hull geometry and updateFerries mesh writes are the draw |
+| `src/78e-life-dhows.js` | 36.8 | [draw] | 21 | 0 | 0 | 0 | 1 | 13 | 1 | 8 | 0 | 0 | 0 | split: fishing dhows. Their sites, routes and crew are data; the hull, sail and gear geometry (lifeDhow*) is the draw |
+| `src/78f-life-citizens.js` | 44.4 | [G data] | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | split: the pedestrian rules. LIFE_DOORS, LIFE_PED_CAT_ORDER, the closed-area test, lifePedPickDestination, lifePedRambleTarget and lifePedBuildLeg are [G data]; the door-transit rule is a place with a capacity. The pedestrian pool's instanced draw is the adapter. LIFE_HOUR_BEHAVIOR is all null and race and class are stored and unread (core/simulation/PLAN.md section 3) |
+| `src/78g-life-monks.js` | 28.6 | [G data] | 11 | 0 | 0 | 0 | 0 | 4 | 0 | 3 | 0 | 0 | 0 | split: monks, shopkeepers, quarry laborers, compound workers and penitents. MONK_WORK_START, the penitent groups (LIFE_PEN_GROUPS, LIFE_PEN_STOPS) and the state machines in updateMonk, updateShopkeeper, updateCompoundWorker are role and schedule data; updatePedestrians and updatePenitents write the instance matrices (draw) |
+| `src/78h-life-temple.js` | 50.9 | [G data] | 22 | 0 | 0 | 0 | 0 | 9 | 0 | 2 | 0 | 0 | 0 | split: ordinators and the priests. The road graph (lifeRoadPath, LIFE_ROAD_ADJ, lifeNearestRoadNode), posts, ring patrols, fortress squads and drill groups (LIFE_ORD_*, LIFE_FORT_*) are [G data]; the figure geometry (lifeOrdHullParts) and mesh writes are the draw |
+| `src/78i-life-trade.js` | 28.1 | [G data] | 37 | 0 | 0 | 0 | 0 | 23 | 0 | 5 | 0 | 0 | 0 | split: guild workers and merchant caravans. The caravan spawn, harbour, market, warehouse and quarry destination pools (LIFE_CARAVAN_*) are literal coordinates: records. Caravans have no notion of goods or origin (core/simulation/PLAN.md section 3). The caravan and worker geometry is the draw |
+| `src/78j-life-arena.js` | 52.9 | [draw] | 81 | 0 | 0 | 0 | 0 | 58 | 0 | 9 | 0 | 0 | 0 | split: gladiator combat. ARENA_HOUR_OPEN, ARENA_HOUR_CLOSE, ARENA_BOUT_N and the bout schedule are [G data]; the gladiator, beast, beetle and crowd geometry and the instanced writes (81 THREE and 58 geom lines) are the draw. Reads ARENA_SITE from 65l |
+| `src/79a-convoys.js` | 11.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | strider convoys: the wading tuning block and the solid, push-to-wadeable and deck tests (striderSolidAt, striderPushToWadeable): data and rules |
+| `src/79b-strider-nav.js` | 35.5 | [G data] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: the strider's own nav grid, A*, line-of-sight, simplify and road refinement are [G data]. The performance.now reads that time the build (STRIDER_NAV_BUILD_MS) go to the host |
+| `src/79c-strider-model.js` | 42.3 | [draw] | 50 | 0 | 0 | 0 | 0 | 32 | 0 | 3 | 0 | 0 | 0 | the bespoke strider mesh (body, legs, howdah). split: striderSampleLeg and striderNavCandidate pick foot and route candidates inside the model file: move them to the nav data |
+| `src/80-camera.js` | 20.9 | [web] | 10 | 0 | 10 | 13 | 1 | 2 | 0 | 1 | 3 | 0 | 0 | fly camera, controls, polygon tool, render loop: host shell |
+| `src/82-daynight.js` | 46.9 | [G native] | 49 | 6 | 3 | 4 | 3 | 6 | 0 | 12 | 0 | 0 | 0 | day and night is native in Godot (core/atmos). split: the static-flame list (a feed to the illumination pool in 45-kit), the moving-vehicle lanterns and the Guild canton clock are placed props: records. The night illumination driver is host. It has its own rAF loop |
 | `src/83-weather.js` | 8.1 | [web] | 16 | 0 | 2 | 1 | 0 | 2 | 0 | 4 | 0 | 0 | 0 |  |
-| `src/84-fauna.js` | 10.1 | [web] | 13 | 0 | 0 | 0 | 5 | 5 | 0 | 4 | 0 | 0 | 0 |  |
+| `src/84-fauna.js` | 10.1 | [draw] | 13 | 0 | 0 | 0 | 5 | 5 | 0 | 4 | 0 | 0 | 0 | split: faunaWaterPoint, faunaLandPoint and faunaBuildFlocks pick flock centres by rejection sampling: a [G data] pass. The gull and racer boxes and faunaWriteFlock are the draw; own rAF loop is host |
 | `src/85-probe.js` | 5.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/86-inspect.js` | 15.4 | [web] | 2 | 0 | 8 | 2 | 1 | 0 | 0 | 8 | 2 | 0 | 0 |  |
-| `src/87-pathviz.js` | 21.1 | [web] | 9 | 0 | 6 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-inspect.js` | 15.4 | [web] | 2 | 0 | 8 | 2 | 1 | 0 | 0 | 8 | 2 | 0 | 0 | dev inspector (footprint registry and per-instance identity): host shell |
+| `src/87-pathviz.js` | 21.1 | [web] | 9 | 0 | 6 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | path visualizer: overlay, discovery by convention: host shell |
 | `src/88b-voth-minimap.js` | 3.0 | [web] | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
 
-(none yet: the split lists and the overrides go here)
+**Hand pass (GODOT-PLAN.md 3.3, Travis, 2026-10-02): every fragment over 10 KB is tagged by hand.** A note that starts "split" means the fragment mixes a data pass with a draw or host pass; the tag is the side to port. The life layers (`78a` to `78j`, `79a` to `79c`, `84-fauna`) follow GODOT-PLAN.md section 5 ("Voth lineage life layers", [G data] + [web], Phase 5) and `core/simulation/PLAN.md` section 1: the nav, schedules, doors and routes are data, the figures and hulls are the embodiment. Fragments under 10 KB keep their provisional tags. The `65c`, `65d`, `65h`, `65j`, `65k` models are parameterised and mostly unplaced; they are builders, so they carry no split note. The Voth builders that place things (`60-land`, `69-district-content`, `70-veg`, `55-chinampa`, `71-industry`, the site finders in `65f`, `65i`, `66`) all do it inline with `rnd()`, `claim()` and `terrainH`; their data passes write the `PLACED`-shaped records.
+
+**This build's own copies (none uses `core/rand`, `core/terrain` or `core/materials` yet).** PRNG: `rnd()` at `10-core.js:5` (Park-Miller, 16807 mod 2^31-1, `SEED` 20260914) with `rr`, `ri`, `pick`, `chance` and `reseed`; `build.py` enforces a `reseed(N)` at the head of every generative fragment (`RE_HEAD_SEED`), 29 of them, so each owns a stream. The life layers draw from the same `rnd`. Other generators and hashes: `skyRnd` (LCG 1664525/1013904223, `21-sky.js:248`), `nlHash` (`45-kit.js:226`), `noiseP` and `stoneNoise` (`47-texture.js:99`, `:125`), `plasterHash` (`65a-smoke.js:67`), `arenaHash2` (a sine hash, `65l-arena-built.js:49`). Unseeded `Math.random`: 3 calls in `20-stage.js` (the eruption timer, deliberate). Noise: `h2`, `vn`, `fbm`, `sig` at `10-core.js:19-33`. `terrainH` at `10-core.js:176`: `landDist` gives a shelf and a basin below the shore, then the land with ridges and a river floodplain; `40-ground.js` and the ground canvases read it. Palette: `PAL` (`05-palette.js:14`), `FAMMAT` (`:245`, family to material), `BUDGET` (`:272`) and the `*C` aliases from `:375`.
