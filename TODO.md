@@ -36,7 +36,7 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
    and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
    material work (M5).
-4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03 for the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1). Still to do: Iziz, Girder, Voth and Ys. Other builds
+4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). Still to do: Iziz and Ys. Other builds
    keep provisional tags until a port session touches them.
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
