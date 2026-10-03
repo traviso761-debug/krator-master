@@ -30,14 +30,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 13 | 175 | 17 | 0 | 14 | 34 | 110 | 2 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 135 | 2 | 0 | 12 | 21 | 100 | 2 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 222 | 19 | 0 | 34 | 49 | 121 | 3 | biome | yes | yes |
-| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 19 | 261 | 31 | 13 | 10 | 64 | 142 | 3 |  | yes | yes |
+| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 224 | 20 | 0 | 10 | 64 | 130 | 2 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 174 | 17 | 0 | 13 | 38 | 106 | 2 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 204 | 25 | 0 | 16 | 33 | 131 | 2 | biome | yes | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 173 | 20 | 0 | 13 | 55 | 83 | 2 | biome | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 15 | 0 | 10 | 41 | 114 | 2 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 25 | 0 | 13 | 38 | 119 | 2 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 2 | biome | yes | yes |
-| **all** | 1366 | 18595 | 2367 (13%) | 339 (2%) | 608 (3%) | 2370 (13%) | 12911 (69%) | 143 | | | |
+| **all** | 1362 | 18558 | 2356 (13%) | 326 (2%) | 608 (3%) | 2370 (13%) | 12900 (70%) | 142 | | | |
 
 ## Host-shell copies
 
