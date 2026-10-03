@@ -692,6 +692,28 @@ A single sheet of nine different leaves of one species, seen from above on a sol
 | `ground.salt` | Pale salt crust #f1ede6 over flat #e2ddd2, an irregular crack network of dark brown-grey lines; mud #3d3526 and algae #4c5c36 beside it. |
 | `ground.snow`, `ground.ash` *(colour only in the code)* | Snow #e6ecf2 as patches on north faces and in hollows (species tint #eef2f6); ash #5a5452 (lava #36302e, flows #241c1a, summit cap #c8c0b4). |
 
+#### Furniture and city (generic, for every culture)
+
+Gaps the scan libraries do not fill. Start each with the base template; for tintable surfaces add the muting sentence. Rows that need cut-outs
+(`glass.*`, `fibre.wicker`) are prompted on a flat key colour, so a mask can be cut from them the way the leaf cards are.
+
+| id | Material line |
+|---|---|
+| `glass.clear` | Old window glass, one thick slightly wavy pane seen straight on, faint green tint at the edges, a few tiny trapped bubbles, fine surface scratches and a light film of dust, on a solid flat neutral grey (#808080) background that is not part of the glass. |
+| `glass.bottle` | Thick bottle glass in deep green, rough hand-blown surface with swirls, bubbles and uneven thickness, light scuffing, on a solid flat neutral grey background. |
+| `glass.frosted` | Frosted glass, fine even acid-etched grain, slightly cloudy, with a few clear scratches, on a solid flat neutral grey background. |
+| `ceramic.glaze` | Glazed ceramic surface in plain white, glossy, with fine crazing lines, tiny pinholes, slight thickness variation and a few small chips showing the biscuit underneath. Neutral, so it can be tinted. |
+| `ceramic.terracotta` | Unglazed terracotta pottery, fine porous clay surface in warm orange, faint throwing rings running horizontally, a few darker fire clouds and scratches. Muted, so it can be tinted. |
+| `fibre.wicker` | Open wicker weave of split rattan strands, over-under pattern, strands slightly uneven in width and colour, with the gaps showing a solid flat bright magenta (#ff00ff) background so the openings can be cut out. |
+| `bone.ivory` | Polished bone or ivory, creamy off-white with fine parallel grain lines and tiny pores, a few hairline cracks, faint yellowing toward the edges of each plate. |
+| `wax.candle` | Beeswax surface, pale warm yellow, smooth and slightly translucent-looking, with soft flow marks, small air pits and finger smudges. |
+| `cloth.rug.wool` | Thick plain wool rug pile seen from above, dense short tufts with a visible pile direction, soft uneven density, a few flattened patches from wear. Neutral, so it can be tinted. |
+| `wood.furniture.polished` | Polished hardwood tabletop, fine straight grain with a few small knots, a warm satin varnish with faint circular cup rings and scratches, slightly darker at the edge of each board. |
+| `ground.road.ruts` | Top-down view of a packed dirt cart road, two parallel wheel ruts running top to bottom with a raised grassy crown between them, hoof prints and small stones, drying cracks in the ruts. The road runs vertically and the texture repeats vertically. |
+| `paving.kerb` | A row of granite kerbstones seen from above and slightly toward the front, each a different length with fine joints, chipped corners and tyre scuffs, the row running left to right. The pattern repeats horizontally. |
+| `paving.flagstone` | Large irregular flagstones laid tightly, each a different size and colour (grey, buff, brown), narrow dark joints with a few weeds and moss, worn smooth in the middle of each stone. |
+| `ground.asphalt` | Old worn asphalt road surface, dark grey with small exposed stones, fine cracks, a few patched rectangles in a different tone, oil stains and faded paint chips. |
+
 #### Scan-library metals (AmbientCG, added 2026-10-02)
 
 Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each with a metalness map:
@@ -753,6 +775,11 @@ The owner reviewed the scan candidates in the demo kit ("the picks looked fine")
   (alpha-preview checker), `Foliage008` and `SurfaceImperfections017` (not materials).
 - **Size:** `core/materials/library` is now about 350 MB and `patterns` 80 MB, so PLAN's "revisit Git LFS at 250 MB" trigger has passed. Normal maps are
   2 MB each and do not compress further; storing normals as 2-channel or at 512 px are the options if the repo needs to shrink.
+
+
+**Delivered 2026-10-03, not yet processed:** 39 ChatGPT images in the texture folder root (Highlands tile-d/s/t/w, harlequin, lattice grid, fret, maze; four wide friezes; Andean chakana textiles and emblem; golden straw fringe; four abalone, three mother-of-pearl, two pink onyx; three reptile scale, two chitin, a mushroom cap; fossil limestone; crimson lacquer, tarred planks, carved wood; golden bamboo lattice).
+The cream-on-charcoal lattice is `patterns/highlands/lattice-lantern`; the cream triskelion lattice is a second fret (`patterns/highlands/lattice-triskelion`, used alongside the spiral `lattice-fret`).
+`hide.leather008`, `hide.leather009` and `hide.leather033c` (AmbientCG Leather) were committed 2026-10-03 for `hide`.
 
 ## Built so far (2026-10-02)
 
