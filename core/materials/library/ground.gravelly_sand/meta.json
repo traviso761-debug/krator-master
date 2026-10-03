@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "sand with gravel | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 16384,
+   "source_size": 16384
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.453,
+   "mean_saturation": 0.482,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.gravelly_sand",
+  "metal": 0,
+  "roughness": 0.788,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "gravelly_sand",
+  "file": "gravelly_sand_diff_16k.png",
+  "files": {
+   "diff": "gravelly_sand_diff_16k.png",
+   "nor_gl": "gravelly_sand_nor_gl_16k.png",
+   "rough": "gravelly_sand_rough_16k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "dbbbb0ab369fb0d90b6470a15677df68933e0eeb",
+  "url": "https://polyhaven.com/a/gravelly_sand"
+ }
+}

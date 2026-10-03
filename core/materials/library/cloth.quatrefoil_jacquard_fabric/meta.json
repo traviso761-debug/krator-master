@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "red jacquard: upholstery and hangings | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "metal"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.14,
+   "mean_saturation": 0.979,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.quatrefoil_jacquard_fabric",
+  "metal": 0.19,
+  "roughness": 0.716,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "quatrefoil_jacquard_fabric",
+  "file": "quatrefoil_jacquard_fabric_diff_1k.png",
+  "files": {
+   "diff": "quatrefoil_jacquard_fabric_diff_1k.png",
+   "nor_gl": "quatrefoil_jacquard_fabric_nor_gl_1k.png",
+   "rough": "quatrefoil_jacquard_fabric_rough_1k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "27a1004474f57717fa14a5bfd1e4ea803a1a4423",
+  "url": "https://polyhaven.com/a/quatrefoil_jacquard_fabric"
+ }
+}

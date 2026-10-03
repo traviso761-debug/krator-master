@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "blue-grey slate | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "jpg",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "jpg",
+   "roughness_format": "jpg",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.328,
+   "mean_saturation": 0.16,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.rock058",
+  "metal": 0,
+  "roughness": 0.65,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "Rock058",
+  "file": "Rock058_1K-JPG_Color.jpg",
+  "files": {
+   "diff": "Rock058_1K-JPG_Color.jpg",
+   "nor_gl": "Rock058_1K-JPG_NormalGL.jpg",
+   "rough": "Rock058_1K-JPG_Roughness.jpg"
+  },
+  "library": "ambientCG",
+  "licence": "CC0",
+  "sha1": "5425cd93cf3dd3641a275a4025ca15e648e1ebd9",
+  "url": "https://ambientcg.com/view?id=Rock058"
+ }
+}

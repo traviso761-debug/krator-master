@@ -34,7 +34,7 @@
  ],
  "statuses": {
   "committed": "In the library (git)",
-  "scan": "Scan candidate"
+  "scan": "Not committed (failed or rejected)"
  },
  "entries": [
   {
@@ -369,10 +369,10 @@
    "status": "committed"
   },
   {
-   "src": "ph/rock_boulder_dry",
+   "src": "library/rock.rock_boulder_dry",
    "row": "Stone & rock",
    "col": "Generic",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     3,
     3
@@ -382,10 +382,10 @@
    "tint": true
   },
   {
-   "src": "ph/rock_face",
+   "src": "library/rock.rock_face",
    "row": "Stone & rock",
    "col": "Generic",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     3,
     3
@@ -395,10 +395,10 @@
    "tint": true
   },
   {
-   "src": "ph/old_stone_wall",
+   "src": "library/rock.old_stone_wall",
    "row": "Stone & rock",
    "col": "Highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -408,10 +408,10 @@
    "tint": true
   },
   {
-   "src": "ph/rock_wall_12",
+   "src": "library/rock.rock_wall_12",
    "row": "Stone & rock",
    "col": "Highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -421,10 +421,10 @@
    "tint": true
   },
   {
-   "src": "ph/large_sandstone_blocks",
+   "src": "library/rock.large_sandstone_blocks",
    "row": "Stone & rock",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -434,10 +434,10 @@
    "tint": true
   },
   {
-   "src": "ph/coral_stone_wall",
+   "src": "library/rock.coral_stone_wall",
    "row": "Stone & rock",
    "col": "Hykkousoi (Ys)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -447,10 +447,10 @@
    "tint": true
   },
   {
-   "src": "ph/sandstone_cracks",
+   "src": "library/rock.sandstone_cracks",
    "row": "Stone & rock",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     3,
     3
@@ -460,10 +460,10 @@
    "tint": true
   },
   {
-   "src": "ph/sandstone_blocks_04",
+   "src": "library/rock.sandstone_blocks_04",
    "row": "Stone & rock",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -473,10 +473,10 @@
    "tint": true
   },
   {
-   "src": "ph/rock_wall_11",
+   "src": "library/rock.rock_wall_11",
    "row": "Stone & rock",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -486,10 +486,10 @@
    "tint": true
   },
   {
-   "src": "ph/brick_wall_001",
+   "src": "library/paving.brick_wall_001",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -499,10 +499,10 @@
    "tint": true
   },
   {
-   "src": "ph/red_brick",
+   "src": "library/paving.red_brick",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -512,10 +512,10 @@
    "tint": true
   },
   {
-   "src": "ph/cobblestone_01",
+   "src": "library/paving.cobblestone_01",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -525,10 +525,10 @@
    "tint": true
   },
   {
-   "src": "ph/pavement_01",
+   "src": "library/paving.pavement_01",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -538,10 +538,10 @@
    "tint": true
   },
   {
-   "src": "ph/marble_mosaic_tiles",
+   "src": "library/paving.marble_mosaic_tiles",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -551,10 +551,10 @@
    "tint": true
   },
   {
-   "src": "ph/white_stucco_02",
+   "src": "library/plaster.white_stucco_02",
    "row": "Plaster & earth",
    "col": "Voth",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -577,10 +577,10 @@
    "tint": true
   },
   {
-   "src": "ph/patterned_clay_plaster",
+   "src": "library/plaster.patterned_clay_plaster",
    "row": "Plaster & earth",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -590,10 +590,10 @@
    "tint": true
   },
   {
-   "src": "ph/clay_block_wall",
+   "src": "library/plaster.clay_block_wall",
    "row": "Plaster & earth",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -603,10 +603,10 @@
    "tint": true
   },
   {
-   "src": "ph/concrete_wall_009",
+   "src": "library/concrete.concrete_wall_009",
    "row": "Concrete",
    "col": "Generic",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -616,10 +616,10 @@
    "tint": true
   },
   {
-   "src": "ph/brushed_concrete",
+   "src": "library/concrete.brushed_concrete",
    "row": "Concrete",
    "col": "Generic",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -629,10 +629,10 @@
    "tint": true
   },
   {
-   "src": "ph/cracked_concrete_wall",
+   "src": "library/concrete.cracked_concrete_wall",
    "row": "Concrete",
    "col": "Ancients",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -642,10 +642,10 @@
    "tint": true
   },
   {
-   "src": "ph/old_wooden_floor_02",
+   "src": "library/wood.old_wooden_floor_02",
    "row": "Wood",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -655,10 +655,10 @@
    "tint": true
   },
   {
-   "src": "ph/weathered_brown_planks",
+   "src": "library/wood.weathered_brown_planks",
    "row": "Wood",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -668,10 +668,10 @@
    "tint": true
   },
   {
-   "src": "ph/medieval_wood",
+   "src": "library/wood.medieval_wood",
    "row": "Wood",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -681,10 +681,10 @@
    "tint": true
   },
   {
-   "src": "ph/wooden_gate",
+   "src": "library/wood.wooden_gate",
    "row": "Wood",
    "col": "Highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -694,10 +694,10 @@
    "tint": true
   },
   {
-   "src": "ph/bamboo_wall",
+   "src": "library/wood.bamboo_wall",
    "row": "Wood",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -707,10 +707,10 @@
    "tint": true
   },
   {
-   "src": "amb/Bamboo001C",
+   "src": "library/wood.bamboo001c",
    "row": "Wood",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -720,10 +720,10 @@
    "tint": true
   },
   {
-   "src": "ph/rusty_metal_04",
+   "src": "library/metal.rusty_metal_04",
    "row": "Metal",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -733,10 +733,10 @@
    "tint": false
   },
   {
-   "src": "ph/rusty_metal_05",
+   "src": "library/metal.rusty_metal_05",
    "row": "Metal",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -746,10 +746,10 @@
    "tint": false
   },
   {
-   "src": "ph/corrugated_iron_02",
+   "src": "library/metal.corrugated_iron_02",
    "row": "Metal",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -759,10 +759,10 @@
    "tint": false
   },
   {
-   "src": "ph/worn_corrugated_iron",
+   "src": "library/metal.worn_corrugated_iron",
    "row": "Metal",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -772,10 +772,10 @@
    "tint": false
   },
   {
-   "src": "ph/blue_metal_plate",
+   "src": "library/metal.blue_metal_plate",
    "row": "Metal",
    "col": "Ancient Port (Hook)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -785,10 +785,10 @@
    "tint": false
   },
   {
-   "src": "ph/metal_grate_rusty",
+   "src": "library/metal.metal_grate_rusty",
    "row": "Metal",
    "col": "Ancients",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -798,10 +798,10 @@
    "tint": false
   },
   {
-   "src": "amb/Metal053C",
+   "src": "library/metal.metal053c",
    "row": "Metal",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -812,10 +812,10 @@
    "note": "rust"
   },
   {
-   "src": "amb/Metal054C",
+   "src": "library/metal.metal054c",
    "row": "Metal",
    "col": "Beast Riders",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -826,10 +826,10 @@
    "note": "rust"
   },
   {
-   "src": "amb/Metal062C",
+   "src": "library/metal.metal062c",
    "row": "Metal",
    "col": "Ancient Port (Hook)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -840,10 +840,10 @@
    "note": "peeling paint"
   },
   {
-   "src": "amb/Metal017",
+   "src": "library/metal.metal017",
    "row": "Metal",
    "col": "Ancient Port (Hook)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -854,10 +854,10 @@
    "note": "flaking paint"
   },
   {
-   "src": "amb/Metal003",
+   "src": "library/metal.metal003",
    "row": "Metal",
    "col": "Ancient Port (Hook)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -868,10 +868,10 @@
    "note": "painted aluminium"
   },
   {
-   "src": "amb/Metal049A",
+   "src": "library/metal.metal049a",
    "row": "Metal",
    "col": "Ancient Port (Hook)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -882,10 +882,10 @@
    "note": "white painted"
   },
   {
-   "src": "amb/Metal038",
+   "src": "library/metal.metal038",
    "row": "Metal",
    "col": "Highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -896,10 +896,10 @@
    "note": "cast iron"
   },
   {
-   "src": "amb/Metal008",
+   "src": "library/metal.metal008",
    "row": "Metal",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -910,10 +910,10 @@
    "note": "bronze or copper"
   },
   {
-   "src": "amb/Metal034",
+   "src": "library/metal.metal034",
    "row": "Metal",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -924,10 +924,10 @@
    "note": "gold"
   },
   {
-   "src": "amb/Metal042A",
+   "src": "library/metal.metal042a",
    "row": "Metal",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -938,10 +938,10 @@
    "note": "pale gold or brass"
   },
   {
-   "src": "amb/Foil002",
+   "src": "library/metal.foil002",
    "row": "Metal",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -952,10 +952,10 @@
    "note": "foil gold"
   },
   {
-   "src": "amb/Metal058C",
+   "src": "library/metal.metal058c",
    "row": "Metal",
    "col": "Highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -966,10 +966,10 @@
    "note": "verdigris"
   },
   {
-   "src": "amb/MetalPlates001",
+   "src": "library/metal.metalplates001",
    "row": "Metal",
    "col": "Ancients",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1,
     1
@@ -980,10 +980,10 @@
    "note": "plate"
   },
   {
-   "src": "ph/ceramic_roof_01",
+   "src": "library/roof.ceramic_roof_01",
    "row": "Roof",
    "col": "Highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -993,10 +993,10 @@
    "tint": true
   },
   {
-   "src": "ph/clay_roof_tiles",
+   "src": "library/roof.clay_roof_tiles",
    "row": "Roof",
    "col": "Iziz",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -1006,10 +1006,10 @@
    "tint": true
   },
   {
-   "src": "ph/dirt",
+   "src": "library/ground.dirt",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1019,10 +1019,10 @@
    "tint": true
   },
   {
-   "src": "ph/brown_mud_02",
+   "src": "library/ground.brown_mud_02",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1032,10 +1032,10 @@
    "tint": true
   },
   {
-   "src": "ph/coast_sand_01",
+   "src": "library/ground.coast_sand_01",
    "row": "Ground",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1045,10 +1045,10 @@
    "tint": true
   },
   {
-   "src": "ph/park_sand",
+   "src": "library/ground.park_sand",
    "row": "Ground",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1058,10 +1058,10 @@
    "tint": true
   },
   {
-   "src": "ph/grass_ground",
+   "src": "library/ground.grass_ground",
    "row": "Ground",
    "col": "Lowlands & savanna",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1071,10 +1071,10 @@
    "tint": true
   },
   {
-   "src": "amb/Moss002",
+   "src": "library/ground.moss002",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -1084,10 +1084,10 @@
    "tint": true
   },
   {
-   "src": "amb/Moss003",
+   "src": "library/ground.moss003",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -1097,10 +1097,10 @@
    "tint": true
   },
   {
-   "src": "amb/Ground095B",
+   "src": "library/ground.ground095b",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -1110,10 +1110,10 @@
    "tint": true
   },
   {
-   "src": "ph/bark_brown_01",
+   "src": "library/bark.bark_brown_01",
    "row": "Bark & leaf",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -1123,10 +1123,10 @@
    "tint": true
   },
   {
-   "src": "ph/bark_willow_02",
+   "src": "library/bark.bark_willow_02",
    "row": "Bark & leaf",
    "col": "Bays & coast",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -1136,10 +1136,10 @@
    "tint": true
   },
   {
-   "src": "ph/bark_bluegum",
+   "src": "library/bark.bark_bluegum",
    "row": "Bark & leaf",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -1149,10 +1149,10 @@
    "tint": true
   },
   {
-   "src": "ph/palm_tree_bark",
+   "src": "library/bark.palm_tree_bark",
    "row": "Bark & leaf",
    "col": "Bays & coast",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -1162,10 +1162,10 @@
    "tint": true
   },
   {
-   "src": "amb/Bark015",
+   "src": "library/bark.bark015",
    "row": "Bark & leaf",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.2,
     1.2
@@ -1175,10 +1175,10 @@
    "tint": true
   },
   {
-   "src": "ph/forest_leaves_02",
+   "src": "library/leaf.forest_leaves_02",
    "row": "Bark & leaf",
    "col": "N highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -1188,10 +1188,10 @@
    "tint": true
   },
   {
-   "src": "ph/forest_leaves_04",
+   "src": "library/leaf.forest_leaves_04",
    "row": "Bark & leaf",
    "col": "N highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     1.5,
     1.5
@@ -1217,10 +1217,10 @@
    "status": "committed"
   },
   {
-   "src": "sv/Fabric027",
+   "src": "library/cloth.fabric027",
    "row": "Cloth & canvas",
    "col": "Furniture",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     0.6,
     0.6
@@ -1230,10 +1230,10 @@
    "note": "woven basket-weave: wicker and rattan upholstery"
   },
   {
-   "src": "sv/Fabric045",
+   "src": "library/cloth.fabric045",
    "row": "Cloth & canvas",
    "col": "Furniture",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     0.6,
     0.6
@@ -1256,10 +1256,10 @@
    "note": "grey checker; may be an alpha placeholder, check"
   },
   {
-   "src": "sv/denim_fabric_05",
+   "src": "library/cloth.denim_fabric_05",
    "row": "Cloth & canvas",
    "col": "Furniture",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     0.6,
     0.6
@@ -1269,10 +1269,10 @@
    "note": "denim: heavy plain cloth"
   },
   {
-   "src": "sv/quatrefoil_jacquard_fabric",
+   "src": "library/cloth.quatrefoil_jacquard_fabric",
    "row": "Cloth & canvas",
    "col": "Furniture",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     0.6,
     0.6
@@ -1282,10 +1282,10 @@
    "note": "red jacquard: upholstery and hangings"
   },
   {
-   "src": "sv/Gravel019",
+   "src": "library/ground.gravel019",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1295,10 +1295,10 @@
    "note": "garden gravel path"
   },
   {
-   "src": "sv/Gravel042",
+   "src": "library/ground.gravel042",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1308,10 +1308,10 @@
    "note": "pale gravel, yard and plaza"
   },
   {
-   "src": "sv/Ground003",
+   "src": "library/ground.ground003",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1321,10 +1321,10 @@
    "note": "park lawn with bare patches"
   },
   {
-   "src": "sv/Ground013",
+   "src": "library/ground.ground013",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1334,10 +1334,10 @@
    "note": "trodden grey-green verge"
   },
   {
-   "src": "sv/Ground020",
+   "src": "library/ground.ground020",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1347,10 +1347,10 @@
    "note": "muddy track with leaves"
   },
   {
-   "src": "sv/Pathway004",
+   "src": "library/ground.pathway004",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1360,10 +1360,10 @@
    "note": "dry grass path"
   },
   {
-   "src": "sv/grass_path_3",
+   "src": "library/ground.grass_path_3",
    "row": "Ground",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1373,10 +1373,10 @@
    "note": "worn grass path"
   },
   {
-   "src": "sv/Ground037",
+   "src": "library/ground.ground037",
    "row": "Ground",
    "col": "Lowlands & savanna",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1386,10 +1386,10 @@
    "note": "green meadow"
   },
   {
-   "src": "sv/Ground047",
+   "src": "library/ground.ground047",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1399,10 +1399,10 @@
    "note": "dark moss on wet soil"
   },
   {
-   "src": "sv/Ground068",
+   "src": "library/ground.ground068",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1412,10 +1412,10 @@
    "note": "red soil with moss"
   },
   {
-   "src": "sv/Ground072",
+   "src": "library/ground.ground072",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1425,10 +1425,10 @@
    "note": "leaf mulch and twigs"
   },
   {
-   "src": "sv/Ground106",
+   "src": "library/ground.ground106",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1438,10 +1438,10 @@
    "note": "dark forest floor with litter"
   },
   {
-   "src": "sv/Moss001",
+   "src": "library/ground.moss001",
    "row": "Ground",
    "col": "Hyperjungle",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1451,10 +1451,10 @@
    "note": "grass, moss and litter"
   },
   {
-   "src": "sv/Ground080",
+   "src": "library/ground.ground080",
    "row": "Ground",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1464,10 +1464,10 @@
    "note": "fine sand"
   },
   {
-   "src": "sv/Ground093C",
+   "src": "library/ground.ground093c",
    "row": "Ground",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1477,10 +1477,10 @@
    "note": "pale smooth sand"
   },
   {
-   "src": "sv/gravelly_sand",
+   "src": "library/ground.gravelly_sand",
    "row": "Ground",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1503,10 +1503,10 @@
    "note": "sandy gravel"
   },
   {
-   "src": "sv/Ground108",
+   "src": "library/ground.ground108",
    "row": "Ground",
    "col": "Ancients",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1516,10 +1516,10 @@
    "note": "gravel and rubble: ruin floor"
   },
   {
-   "src": "sv/Ground111",
+   "src": "library/rock.ground111",
    "row": "Stone & rock",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1529,10 +1529,10 @@
    "note": "red-pink granite grit"
   },
   {
-   "src": "sv/Rocks013",
+   "src": "library/rock.rocks013",
    "row": "Stone & rock",
    "col": "Desert",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1542,10 +1542,10 @@
    "note": "sand with flat dark flakes"
   },
   {
-   "src": "sv/Marble012",
+   "src": "library/rock.marble012",
    "row": "Stone & rock",
    "col": "Furniture",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1555,10 +1555,10 @@
    "note": "grey marble: tops, trim"
   },
   {
-   "src": "sv/Rock035",
+   "src": "library/rock.rock035",
    "row": "Stone & rock",
    "col": "Bays & coast",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1568,10 +1568,10 @@
    "note": "near-black basalt"
   },
   {
-   "src": "sv/Rock037",
+   "src": "library/rock.rock037",
    "row": "Stone & rock",
    "col": "Bays & coast",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1581,10 +1581,10 @@
    "note": "black, veined volcanic rock"
   },
   {
-   "src": "sv/Rock058",
+   "src": "library/rock.rock058",
    "row": "Stone & rock",
    "col": "N highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1594,10 +1594,10 @@
    "note": "blue-grey slate"
   },
   {
-   "src": "sv/Rock064",
+   "src": "library/paving.rock064",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1607,10 +1607,10 @@
    "note": "mossy cobblestones"
   },
   {
-   "src": "sv/grassy_cobblestone",
+   "src": "library/paving.grassy_cobblestone",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1620,10 +1620,10 @@
    "note": "cobbles with grass in the joints"
   },
   {
-   "src": "sv/Tiles144",
+   "src": "library/paving.tiles144",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1633,10 +1633,10 @@
    "note": "orange paving tiles: plaza"
   },
   {
-   "src": "sv/old_mosaic_floor",
+   "src": "library/paving.old_mosaic_floor",
    "row": "Brick, paving & tile",
    "col": "City (parks & streets)",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1646,10 +1646,10 @@
    "note": "old mosaic floor"
   },
   {
-   "src": "sv/Snow011",
+   "src": "library/ground.snow011",
    "row": "Ground",
    "col": "N highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1659,10 +1659,10 @@
    "note": "trampled snow"
   },
   {
-   "src": "sv/Snow015",
+   "src": "library/ground.snow015",
    "row": "Ground",
    "col": "N highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1672,10 +1672,10 @@
    "note": "snow with grass"
   },
   {
-   "src": "sv/ScatteredLeaves008",
+   "src": "library/leaf.scatteredleaves008",
    "row": "Bark & leaf",
    "col": "N highlands",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1685,10 +1685,10 @@
    "note": "autumn leaf litter"
   },
   {
-   "src": "sv/leafy_grass",
+   "src": "library/ground.leafy_grass",
    "row": "Ground",
    "col": "Lowlands & savanna",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1698,10 +1698,10 @@
    "note": "grass with leaves"
   },
   {
-   "src": "sv/sparse_grass",
+   "src": "library/ground.sparse_grass",
    "row": "Ground",
    "col": "Lowlands & savanna",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1711,10 +1711,10 @@
    "note": "thin turf"
   },
   {
-   "src": "sv/withered_grass",
+   "src": "library/ground.withered_grass",
    "row": "Ground",
    "col": "Lowlands & savanna",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1724,10 +1724,10 @@
    "note": "dry savanna grass"
   },
   {
-   "src": "sv/coast_sand_rocks_02",
+   "src": "library/ground.coast_sand_rocks_02",
    "row": "Ground",
    "col": "Bays & coast",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2
@@ -1737,10 +1737,10 @@
    "note": "sand with mossy rocks"
   },
   {
-   "src": "sv/damp_beach_sand",
+   "src": "library/ground.damp_beach_sand",
    "row": "Ground",
    "col": "Bays & coast",
-   "status": "scan",
+   "status": "committed",
    "scale": [
     2,
     2

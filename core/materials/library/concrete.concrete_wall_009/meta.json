@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 16384,
+   "source_size": 16384
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.602,
+   "mean_saturation": 0.132,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "concrete",
+  "id": "concrete.concrete_wall_009",
+  "metal": 0,
+  "roughness": 0.798,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "concrete_wall_009",
+  "file": "concrete_wall_009_diff_16k.png",
+  "files": {
+   "diff": "concrete_wall_009_diff_16k.png",
+   "nor_gl": "concrete_wall_009_nor_gl_16k.png",
+   "rough": "concrete_wall_009_rough_16k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "eeeaa81ba7dfe0869b0dde18b5b17c25e2c03086",
+  "url": "https://polyhaven.com/a/concrete_wall_009"
+ }
+}

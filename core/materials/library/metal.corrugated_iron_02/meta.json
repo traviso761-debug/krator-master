@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.0,
+   "rough_lift": 0.0,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao",
+    "metal"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 4096,
+   "source_size": 4096
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.342,
+   "mean_saturation": 0.093,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.corrugated_iron_02",
+  "metal": 0.8,
+  "roughness": 0.521,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "asset": "corrugated_iron_02",
+  "file": "corrugated_iron_02_diff_4k.png",
+  "files": {
+   "diff": "corrugated_iron_02_diff_4k.png",
+   "nor_gl": "corrugated_iron_02_nor_gl_4k.png",
+   "rough": "corrugated_iron_02_rough_4k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "3e585077ba09cc865a6cc353c6d1e11a25b1dbb9",
+  "url": "https://polyhaven.com/a/corrugated_iron_02"
+ }
+}

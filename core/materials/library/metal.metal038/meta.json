@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "cast iron | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.0,
+   "rough_lift": 0.0,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "metal"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.38,
+   "mean_saturation": 0.024,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.metal038",
+  "metal": 0.8,
+  "roughness": 0.366,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "asset": "Metal038",
+  "file": "Metal038_1K-PNG_Color.png",
+  "files": {
+   "diff": "Metal038_1K-PNG_Color.png",
+   "nor_gl": "Metal038_1K-PNG_NormalGL.png",
+   "rough": "Metal038_1K-PNG_Roughness.png"
+  },
+  "library": "ambientCG",
+  "licence": "CC0",
+  "sha1": "ec3244aceba09175f869fac99b89da89b31e2f72",
+  "url": "https://ambientcg.com/view?id=Metal038"
+ }
+}

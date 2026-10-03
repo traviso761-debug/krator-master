@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 4096,
+   "source_size": 4096
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.69,
+   "mean_saturation": 0.186,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "concrete",
+  "id": "concrete.cracked_concrete_wall",
+  "metal": 0,
+  "roughness": 0.47,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "cracked_concrete_wall",
+  "file": "cracked_concrete_wall_diff_4k.png",
+  "files": {
+   "diff": "cracked_concrete_wall_diff_4k.png",
+   "nor_gl": "cracked_concrete_wall_nor_gl_4k.png",
+   "rough": "cracked_concrete_wall_rough_4k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "a2af3f14d216e27c64829a89c8aebd686310a0f0",
+  "url": "https://polyhaven.com/a/cracked_concrete_wall"
+ }
+}

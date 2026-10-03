@@ -1,0 +1,509 @@
+[
+ {
+  "slug": "Fabric027",
+  "id": "cloth.fabric027",
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "woven basket-weave: wicker and rattan upholstery | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Fabric045",
+  "id": "cloth.fabric045",
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "pale linen: sheets, cushions | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "denim_fabric_05",
+  "id": "cloth.denim_fabric_05",
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "denim: heavy plain cloth | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "quatrefoil_jacquard_fabric",
+  "id": "cloth.quatrefoil_jacquard_fabric",
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "red jacquard: upholstery and hangings | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Gravel019",
+  "id": "ground.gravel019",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "garden gravel path | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Gravel042",
+  "id": "ground.gravel042",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "pale gravel, yard and plaza | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground003",
+  "id": "ground.ground003",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "park lawn with bare patches | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground013",
+  "id": "ground.ground013",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "trodden grey-green verge | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground020",
+  "id": "ground.ground020",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "muddy track with leaves | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Pathway004",
+  "id": "ground.pathway004",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "dry grass path | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "grass_path_3",
+  "id": "ground.grass_path_3",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "worn grass path | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground037",
+  "id": "ground.ground037",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "green meadow | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground047",
+  "id": "ground.ground047",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "dark moss on wet soil | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground068",
+  "id": "ground.ground068",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "red soil with moss | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground072",
+  "id": "ground.ground072",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "leaf mulch and twigs | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground106",
+  "id": "ground.ground106",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "dark forest floor with litter | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Moss001",
+  "id": "ground.moss001",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "grass, moss and litter | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground080",
+  "id": "ground.ground080",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "fine sand | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground093C",
+  "id": "ground.ground093c",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "pale smooth sand | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "gravelly_sand",
+  "id": "ground.gravelly_sand",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "sand with gravel | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground108",
+  "id": "ground.ground108",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "gravel and rubble: ruin floor | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Ground111",
+  "id": "rock.ground111",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "red-pink granite grit | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Rocks013",
+  "id": "rock.rocks013",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "sand with flat dark flakes | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Marble012",
+  "id": "rock.marble012",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "grey marble: tops, trim | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.55
+ },
+ {
+  "slug": "Rock035",
+  "id": "rock.rock035",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "near-black basalt | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Rock037",
+  "id": "rock.rock037",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "black, veined volcanic rock | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Rock058",
+  "id": "rock.rock058",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "blue-grey slate | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Rock064",
+  "id": "paving.rock064",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "mossy cobblestones | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "grassy_cobblestone",
+  "id": "paving.grassy_cobblestone",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "cobbles with grass in the joints | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Tiles144",
+  "id": "paving.tiles144",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "orange paving tiles: plaza | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.55
+ },
+ {
+  "slug": "old_mosaic_floor",
+  "id": "paving.old_mosaic_floor",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "old mosaic floor | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.55
+ },
+ {
+  "slug": "Snow011",
+  "id": "ground.snow011",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "trampled snow | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "Snow015",
+  "id": "ground.snow015",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "snow with grass | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "ScatteredLeaves008",
+  "id": "leaf.scatteredleaves008",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "autumn leaf litter | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "leafy_grass",
+  "id": "ground.leafy_grass",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "grass with leaves | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "sparse_grass",
+  "id": "ground.sparse_grass",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "thin turf | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "withered_grass",
+  "id": "ground.withered_grass",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "dry savanna grass | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "coast_sand_rocks_02",
+  "id": "ground.coast_sand_rocks_02",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "sand with mossy rocks | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "damp_beach_sand",
+  "id": "ground.damp_beach_sand",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": "damp beach sand | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ }
+]

@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.0,
+   "rough_lift": 0.0,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 4096,
+   "source_size": 4096
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.23,
+   "mean_saturation": 0.472,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.blue_metal_plate",
+  "metal": 0.6,
+  "roughness": 0.284,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "asset": "blue_metal_plate",
+  "file": "blue_metal_plate_diff_4k.png",
+  "files": {
+   "diff": "blue_metal_plate_diff_4k.png",
+   "nor_gl": "blue_metal_plate_nor_gl_4k.png",
+   "rough": "blue_metal_plate_rough_4k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "398300615495b58d34a05793da41b0d26b56432a",
+  "url": "https://polyhaven.com/a/blue_metal_plate"
+ }
+}

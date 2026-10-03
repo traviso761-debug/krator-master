@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 16384,
+   "source_size": 16384
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.616,
+   "mean_saturation": 0.165,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.rock_boulder_dry",
+  "metal": 0,
+  "roughness": 0.634,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "rock_boulder_dry",
+  "file": "rock_boulder_dry_diff_16k.png",
+  "files": {
+   "diff": "rock_boulder_dry_diff_16k.png",
+   "nor_gl": "rock_boulder_dry_nor_gl_16k.png",
+   "rough": "rock_boulder_dry_rough_16k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "48e1c2554c7adf6b8c5721e4fca63df3d3c6fde7",
+  "url": "https://polyhaven.com/a/rock_boulder_dry"
+ }
+}

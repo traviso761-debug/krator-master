@@ -1,0 +1,63 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.407,
+   "mean_saturation": 0.221,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paving",
+  "id": "paving.cobblestone_01",
+  "metal": 0,
+  "roughness": 0.816,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "cobblestone_01",
+  "file": "cobblestone_01_diff_1k.png",
+  "files": {
+   "diff": "cobblestone_01_diff_1k.png",
+   "nor_gl": "cobblestone_01_nor_gl_1k.png",
+   "rough": "cobblestone_01_rough_1k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "d254d15678ba9885c265c398fd0036624033e43b",
+  "url": "https://polyhaven.com/a/cobblestone_01"
+ }
+}

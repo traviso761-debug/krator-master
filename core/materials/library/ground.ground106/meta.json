@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "dark forest floor with litter | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.9,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.393,
+   "mean_saturation": 0.389,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.ground106",
+  "metal": 0,
+  "roughness": 0.643,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "Ground106",
+  "file": "Ground106_1K-PNG_Color.png",
+  "files": {
+   "diff": "Ground106_1K-PNG_Color.png",
+   "nor_gl": "Ground106_1K-PNG_NormalGL.png",
+   "rough": "Ground106_1K-PNG_Roughness.png"
+  },
+  "library": "ambientCG",
+  "licence": "CC0",
+  "sha1": "a983937e454f8dcb9fc350394a2ca4b9ff29d5ce",
+  "url": "https://ambientcg.com/view?id=Ground106"
+ }
+}

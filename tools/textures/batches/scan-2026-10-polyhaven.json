@@ -1,0 +1,568 @@
+[
+ {
+  "slug": "rock_boulder_dry",
+  "id": "rock.rock_boulder_dry",
+  "scale": [
+   3,
+   3
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "rock_face",
+  "id": "rock.rock_face",
+  "scale": [
+   3,
+   3
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "old_stone_wall",
+  "id": "rock.old_stone_wall",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "rock_wall_12",
+  "id": "rock.rock_wall_12",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "large_sandstone_blocks",
+  "id": "rock.large_sandstone_blocks",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "coral_stone_wall",
+  "id": "rock.coral_stone_wall",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "sandstone_cracks",
+  "id": "rock.sandstone_cracks",
+  "scale": [
+   3,
+   3
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "sandstone_blocks_04",
+  "id": "rock.sandstone_blocks_04",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "rock_wall_11",
+  "id": "rock.rock_wall_11",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "brick_wall_001",
+  "id": "paving.brick_wall_001",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "red_brick",
+  "id": "paving.red_brick",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "cobblestone_01",
+  "id": "paving.cobblestone_01",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "pavement_01",
+  "id": "paving.pavement_01",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "marble_mosaic_tiles",
+  "id": "paving.marble_mosaic_tiles",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.55
+ },
+ {
+  "slug": "white_stucco_02",
+  "id": "plaster.white_stucco_02",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "patterned_clay_plaster",
+  "id": "plaster.patterned_clay_plaster",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "clay_block_wall",
+  "id": "plaster.clay_block_wall",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "concrete_wall_009",
+  "id": "concrete.concrete_wall_009",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "brushed_concrete",
+  "id": "concrete.brushed_concrete",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "cracked_concrete_wall",
+  "id": "concrete.cracked_concrete_wall",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "old_wooden_floor_02",
+  "id": "wood.old_wooden_floor_02",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.7
+ },
+ {
+  "slug": "weathered_brown_planks",
+  "id": "wood.weathered_brown_planks",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.7
+ },
+ {
+  "slug": "medieval_wood",
+  "id": "wood.medieval_wood",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.7
+ },
+ {
+  "slug": "wooden_gate",
+  "id": "wood.wooden_gate",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.7
+ },
+ {
+  "slug": "bamboo_wall",
+  "id": "wood.bamboo_wall",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.7
+ },
+ {
+  "slug": "rusty_metal_04",
+  "id": "metal.rusty_metal_04",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": " | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "rusty_metal_05",
+  "id": "metal.rusty_metal_05",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": " | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "corrugated_iron_02",
+  "id": "metal.corrugated_iron_02",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": " | provisional scale; chosen from the demo kit",
+  "metal": 0.8
+ },
+ {
+  "slug": "worn_corrugated_iron",
+  "id": "metal.worn_corrugated_iron",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": " | provisional scale; chosen from the demo kit",
+  "metal": 0.8
+ },
+ {
+  "slug": "blue_metal_plate",
+  "id": "metal.blue_metal_plate",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": " | provisional scale; chosen from the demo kit",
+  "metal": 0.6
+ },
+ {
+  "slug": "metal_grate_rusty",
+  "id": "metal.metal_grate_rusty",
+  "scale": [
+   1,
+   1
+  ],
+  "mute": 0.0,
+  "tint": false,
+  "note": " | provisional scale; chosen from the demo kit",
+  "metal": 0.8
+ },
+ {
+  "slug": "ceramic_roof_01",
+  "id": "roof.ceramic_roof_01",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.55
+ },
+ {
+  "slug": "clay_roof_tiles",
+  "id": "roof.clay_roof_tiles",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "dirt",
+  "id": "ground.dirt",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "brown_mud_02",
+  "id": "ground.brown_mud_02",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "coast_sand_01",
+  "id": "ground.coast_sand_01",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "park_sand",
+  "id": "ground.park_sand",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "grass_ground",
+  "id": "ground.grass_ground",
+  "scale": [
+   2,
+   2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "bark_brown_01",
+  "id": "bark.bark_brown_01",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "bark_willow_02",
+  "id": "bark.bark_willow_02",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "bark_bluegum",
+  "id": "bark.bark_bluegum",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "palm_tree_bark",
+  "id": "bark.palm_tree_bark",
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "forest_leaves_02",
+  "id": "leaf.forest_leaves_02",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ },
+ {
+  "slug": "forest_leaves_04",
+  "id": "leaf.forest_leaves_04",
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "mute": 0.0,
+  "tint": true,
+  "note": " | provisional scale; chosen from the demo kit",
+  "rough_lift": 0.8,
+  "rough_floor": 0.9
+ }
+]

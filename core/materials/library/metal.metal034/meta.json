@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "gold | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.0,
+   "rough_lift": 0.0,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "metal"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.686,
+   "mean_saturation": 0.967,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.metal034",
+  "metal": 1.0,
+  "roughness": 0.074,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "asset": "Metal034",
+  "file": "Metal034_1K-PNG_Color.png",
+  "files": {
+   "diff": "Metal034_1K-PNG_Color.png",
+   "nor_gl": "Metal034_1K-PNG_NormalGL.png",
+   "rough": "Metal034_1K-PNG_Roughness.png"
+  },
+  "library": "ambientCG",
+  "licence": "CC0",
+  "sha1": "bb976efd4617f75d3ab91d245c49c51adf6c2d70",
+  "url": "https://ambientcg.com/view?id=Metal034"
+ }
+}

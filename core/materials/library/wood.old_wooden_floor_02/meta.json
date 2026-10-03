@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": " | provisional scale; chosen from the demo kit",
+   "rough_floor": 0.7,
+   "rough_lift": 0.8,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp",
+    "ao"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 4096,
+   "source_size": 4096
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.207,
+   "mean_saturation": 0.862,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.old_wooden_floor_02",
+  "metal": 0,
+  "roughness": 0.464,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "old_wooden_floor_02",
+  "file": "old_wooden_floor_02_diff_4k.png",
+  "files": {
+   "diff": "old_wooden_floor_02_diff_4k.png",
+   "nor_gl": "old_wooden_floor_02_nor_gl_4k.png",
+   "rough": "old_wooden_floor_02_rough_4k.png"
+  },
+  "library": "Poly Haven",
+  "licence": "CC0",
+  "sha1": "90bfeedd5ab8e8e80e5df374c85c25131f9df8e6",
+  "url": "https://polyhaven.com/a/old_wooden_floor_02"
+ }
+}
