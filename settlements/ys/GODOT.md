@@ -43,9 +43,9 @@ Hykkousoi fragment the same way; the `PORT.md` Ys gets at the merge needs those 
 1. ~~**Not on main, no audit row, no baseline, no lint.**~~ *Done 2026-10-02:* Ys is on `main` with a `PORT.md`,
    its three pages in `PORT-BASELINE.json` and the port lint in `build.py`. Ys is one of the builds the plan's
    scoped hand pass covers (`GODOT-PLAN.md` 3.3), so the four agent-fragment tags above are corrected there.
-2. **`biomes/nwbay` sits on the biome core as it was at 1672677.** Main's core has moved since (hero trees as an
-   opt-in, the export, `BIO.register`). Re-vendor it onto main's core before any more work on it; its `host-*` set is
-   one more version in the drift table Phase 1 is about to collapse.
+2. **DONE 2026-10-03: `biomes/nwbay` is on main's biome core** (`CORE_BIOME` in its `build.py`, the four src copies
+   deleted, `BIO.export` gained; `biomes/nwbay/KNOWN_ISSUES.md` has the differences and the before/after check).
+   Its `host-*` set is still one more version in the drift table Phase 1 is about to collapse.
 3. **The terrain is a closure** (`YS_NAT`: shore, sink, karst, river), one of the plan's 39 `terrainH` definitions.
    Phase 2 bakes these to a heightmap at a fixed step. Ys's port grid (10 m tensor cells) is already a grid; bake
    `YS_NAT` into it once and sample. The river profile is already a sampled array; the karst and the sink are

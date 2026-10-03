@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 108 (42%) | 36 (14%) | 47 (18%) | 5 (2%) | 65 (25%) |
+| KB | 108 (41%) | 36 (14%) | 47 (18%) | 6 (2%) | 65 (25%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -28,7 +28,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `biome/30-core-foliage.js` | 16.5 | [G shader] | 1 | 4 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 | foliage card, bark, wind: the shader library |
 | `biome/35-core-anim.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | fauna paths are data; the body shader is [G shader] |
 | `biome/40-core-place.js` | 8.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | placement: ports to GDScript, tested tile for tile |
-| `biome/42-core-export.js` | 6.8 | [G data] | 2 | 0 | 1 | 0 | 0 | 0 | 1 | 4 | 0 | 0 | 0 | split: download() (line 75) is the one browser line; folds into core/export/ |
+| `biome/42-core-export.js` | 6.5 | [G data] | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 4 | 0 | 0 | 0 | pure data now: the one browser line, download(), moved to 43-core-export-host.js (2026-10-03); folds into core/export/ |
+| `biome/43-core-export-host.js` | 1.1 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BIO.download(): a Blob and a link click, no caller yet; moves to core/host/ (Phase 1) |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `lod/09-lod.js` | 32.7 | [G native] | 0 | 0 | 6 | 3 | 8 | 14 | 0 | 10 | 3 | 0 | 0 | keep for the preview; no port |
 | `lod/97-lod-auto.js` | 0.8 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
