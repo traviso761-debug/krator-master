@@ -1,0 +1,63 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "adopt": {
+   "mute": 0.0,
+   "note": "leather grain | provisional scale",
+   "rough_floor": 0.45,
+   "rough_lift": 0.3,
+   "script": "tools/textures/adopt.py"
+  },
+  "log": {
+   "colour_format": "png",
+   "extras_available": [
+    "disp"
+   ],
+   "normal_format": "png",
+   "roughness_format": "png",
+   "source_res": 1024,
+   "source_size": 1024
+  },
+  "options": {
+   "normal": "nor_gl",
+   "roughness_from": "rough",
+   "size": 1024
+  },
+  "script": "tools/textures/ingest_polyhaven.py",
+  "stats": {
+   "mean_luminance": 0.12,
+   "mean_saturation": 0.102,
+   "tint_guess": "name and saturation; metals and rust false"
+  },
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "hide.leather009",
+  "metal": 0,
+  "roughness": 0.409,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "asset": "Leather009",
+  "file": "Leather009_1K-PNG_Color.png",
+  "files": {
+   "diff": "Leather009_1K-PNG_Color.png",
+   "nor_gl": "Leather009_1K-PNG_NormalGL.png",
+   "rough": "Leather009_1K-PNG_Roughness.png"
+  },
+  "library": "ambientCG",
+  "licence": "CC0",
+  "sha1": "cf60bf60abc8b56c50fe86d8f15dfaee883ef097",
+  "url": "https://ambientcg.com/view?id=Leather009"
+ }
+}
