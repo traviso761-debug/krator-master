@@ -1,0 +1,38 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "top",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.ghostwood-flower",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-ghostwood-flower.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Ghostwood flower: one hanging chain of small violet blossoms, about 30 cm long, hung end at the top.",
+  "sha1": "b9c0fafef821697dde6b932a775ff94c208ef272"
+ }
+}

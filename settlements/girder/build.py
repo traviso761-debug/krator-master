@@ -77,7 +77,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
 # (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). It sits between the textures (47) and
 # the glue (53-furnish.js); both bundles are closures, so the build rules (reseed, palette, shared names)
 # do not apply to them. The furniture cultures: beast-rider and its fallback chain (IX.CULTURE_FAMILY).
-FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic']
+FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic', 'generic-goods', 'generic-fruit']   # generic-fruit: the fruit-seller stalls (55-arch.js); generic-goods holds the fruit colours (FPAL generic)
 INTERIOR_SETS = ['beast-rider']
 VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js'}
 

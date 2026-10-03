@@ -21,6 +21,9 @@ Processing, per family:
            distance gets its furrows and seams back.
   normal   resized and renormalised (OpenGL convention, as the library and Godot use)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
+  card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
+           and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
+           tint.mean null keeps the set's own brightness (a colour card such as a flower).
 Requires numpy and Pillow.
 """
 import argparse, base64, hashlib, io, json, os, sys
@@ -38,7 +41,12 @@ def sha1(path):
 def load(path, size, mode):
     im = Image.open(path).convert(mode)
     if im.size != (size, size):
-        im = im.resize((size, size), Image.LANCZOS)
+        if mode == 'RGBA':      # Pillow resizes RGBA premultiplied, which blanks the colour under alpha 0 (a card's bleed)
+            rgb = im.convert('RGB').resize((size, size), Image.LANCZOS)
+            al = im.getchannel('A').resize((size, size), Image.LANCZOS)
+            im = Image.merge('RGBA', rgb.split() + (al,))
+        else:
+            im = im.resize((size, size), Image.LANCZOS)
     return np.asarray(im).astype(np.float64) / 255.0
 
 
@@ -46,7 +54,7 @@ def webp(arr, quality, mode):
     a = np.clip(np.rint(arr * 255.0), 0, 255).astype(np.uint8)
     im = Image.fromarray(a, mode)
     buf = io.BytesIO()
-    im.save(buf, 'WEBP', quality=quality, method=6)
+    im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100, exact=(mode == 'RGBA'))
     return buf.getvalue()
 
 
@@ -60,24 +68,33 @@ def process(fam, cfg, size):
     path = lambda k, default: os.path.normpath(os.path.join(d, mp.get(k, default)))
     pa, pn, pr = path('map', 'albedo.jpg'), path('normalMap', 'normal.png'), path('roughnessMap', 'roughness.png')
     out, files = {}, {}
-    # albedo
-    a = load(pa, size, 'RGB')
+    card = rec.get('kind') == 'card'
+    # albedo (a card keeps its alpha; its statistics are taken over the opaque pixels only)
+    a = load(pa, size, 'RGBA' if card else 'RGB')
+    alpha = a[..., 3] if card else None
+    if card:
+        a = a[..., :3]
     t = cfg.get('tint', {})
-    keep, target = float(t.get('keep', 0.0)), float(t.get('mean', 0.78))
+    keep = float(t.get('keep', 0.0))
     L = a[..., 0] * 0.2126 + a[..., 1] * 0.7152 + a[..., 2] * 0.0722
-    m = float(L.mean()) or 1.0
+    m = float(L[alpha > 0.5].mean() if card else L.mean()) or 1.0
+    target = float(t['mean']) if t.get('mean') is not None else m   # mean null: keep the set's own brightness
     con = float(t.get('contrast', 1.0))            # >1 deepens the set's own light and dark around its mean
     k = (m + (L - m) * con) / np.maximum(L, 1e-4)  # per-pixel factor that applies the contrast to L and to the colour
     grey = np.repeat((L * k / m * target)[..., None], 3, axis=2)
     col = a * k[..., None] / m * target
-    out['map'] = webp(grey * (1 - keep) + col * keep, 82, 'RGB')
+    rgb = grey * (1 - keep) + col * keep
+    if card:
+        out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
+    else:
+        out['map'] = webp(rgb, 82, 'RGB')
     # normal
-    if os.path.isfile(pn):
+    if os.path.isfile(pn) and not card:
         n = load(pn, size, 'RGB') * 2 - 1
         n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
         out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB')
     # roughness
-    if os.path.isfile(pr):
+    if os.path.isfile(pr) and not card:
         r = load(pr, size, 'L')
         lift = float(cfg.get('roughLift', 0.0))
         out['roughnessMap'] = webp(r + (1 - r) * lift, 85, 'L')
@@ -89,6 +106,7 @@ def process(fam, cfg, size):
         'normalScale': cfg.get('normalScale', 1.0),
         'specular': cfg.get('specular', 0.5),
         'breakup': cfg.get('breakup'),
+        'card': card,
         'tint': {'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
         'roughLift': cfg.get('roughLift', 0.0),
         'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},

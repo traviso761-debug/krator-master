@@ -1,0 +1,210 @@
+[
+ {
+  "src": "card-ironbark.png",
+  "out": "core/materials/library/card.ironbark",
+  "record": {
+   "id": "card.ironbark",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Ironbark: dense combed sprays of dark green needles on short twigs."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-ghostwood.png",
+  "out": "core/materials/library/card.ghostwood",
+  "record": {
+   "id": "card.ghostwood",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Ghostwood: airy cluster of small round yellow-green leaves on thin twigs."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-prismgum.png",
+  "out": "core/materials/library/card.prismgum",
+  "record": {
+   "id": "card.prismgum",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Prism gum: drooping fan of long narrow lance-shaped leaves, deep green."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "top",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-baobab.png",
+  "out": "core/materials/library/card.baobab",
+  "record": {
+   "id": "card.baobab",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Baobab: a few broad palmate leaves, five to seven lobes each, mid green."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-ghostwood-flower.png",
+  "out": "core/materials/library/card.ghostwood-flower",
+  "record": {
+   "id": "card.ghostwood-flower",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Ghostwood flower: one hanging chain of small violet blossoms, about 30 cm long, hung end at the top."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "top",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-fern-frond.png",
+  "out": "core/materials/library/card.fern",
+  "record": {
+   "id": "card.fern",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Fern frond (straight)."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-treefern.png",
+  "out": "core/materials/library/card.treefern",
+  "record": {
+   "id": "card.treefern",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Tree-fern frond (curved)."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "bottom",
+   "pad": 0.03
+  }
+ },
+ {
+  "src": "card-broadleaf.png",
+  "out": "core/materials/library/card.broadleaf",
+  "record": {
+   "id": "card.broadleaf",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Wide jungle broadleaf plant, seen from above."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03
+  }
+ }
+]

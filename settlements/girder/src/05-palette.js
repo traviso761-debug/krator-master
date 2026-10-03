@@ -109,6 +109,8 @@ var PAL = {
    ADDS A DRAW CALL (x2 if it is used by both the instanced kit and the merged
    mesh builder). `scale` is the world-unit tile size of its texture;
    47-texture.js fills `tex`. */
+var GIRDER_EXPOSURE = 1.38;   /* the library look's tone-mapping exposure (47-texture.js) */
+
 var FAMMAT = {
   plank  : { tex:null, scale:[3.0,3.0] },
   timber : { tex:null, scale:[2.0,4.0] },

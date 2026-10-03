@@ -20,7 +20,11 @@ reseed(450001);
 
 /* ------------------------------------------------------------------ A. instanced */
 var BUCKET = {}, KIT_EMITTED = false, KIT_LATE = 0;
+/* the library look (KMAT.mode 'lib'; ?mat=proc keeps the old shapes): tall square rust columns get chamfered vertical
+   edges ('boxc'), and cylinders and cones get 16 sides instead of 10. Shape only: no rnd() is drawn. */
+var KIT_LOOK = (typeof KMAT !== 'undefined' && KMAT.mode === 'lib');
 function push(shape, fam, rec){
+  if(KIT_LOOK && shape === 'box' && fam === 'rust' && Math.abs(rec[3]-rec[5]) < 1e-6 && rec[4] > 4*rec[3] && typeof rec[6] === 'number') shape = 'boxc';
   if(KIT_EMITTED){ if(!KIT_LATE++) ERR('kit: '+shape+'|'+fam+' pushed AFTER the kit was emitted (75-terrain.js) - it will never render. Static fabric belongs in a fragment < 75.'); return; }
   var k = shape+'|'+fam;
   (BUCKET[k] || (BUCKET[k] = { shape:shape, fam:fam, list:[] })).list.push(rec);
@@ -75,14 +79,28 @@ function rectFrus(tx,tz){
   g.computeVertexNormals();
   return g;
 }
+/* a unit square prism, base at y 0, its four vertical edges cut back by c (a fraction of the side): the cut catches the
+   light along every column edge, which a plain box never does */
+function chamferPrism(c){
+  var h=0.5, k=0.5-c, ring=[[k,-h],[h,-k],[h,k],[k,h],[-k,h],[-h,k],[-h,-k],[-k,-h]], pos=[], uv=[];
+  function v(x,y,z,u,w){ pos.push(x,y,z); uv.push(u,w); }
+  for(var i=0;i<8;i++){ var a=ring[i], b=ring[(i+1)%8], u0=i/8, u1=(i+1)/8;
+    v(a[0],0,a[1],u0,0); v(b[0],0,b[1],u1,0); v(b[0],1,b[1],u1,1);  v(a[0],0,a[1],u0,0); v(b[0],1,b[1],u1,1); v(a[0],1,a[1],u0,1);
+    v(0,1,0,0.5,0.5); v(b[0],1,b[1],b[0]+0.5,b[1]+0.5); v(a[0],1,a[1],a[0]+0.5,a[1]+0.5);
+    v(0,0,0,0.5,0.5); v(a[0],0,a[1],a[0]+0.5,a[1]+0.5); v(b[0],0,b[1],b[0]+0.5,b[1]+0.5); }
+  var g=new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv,2));
+  g.computeVertexNormals(); return g;
+}
 var SHAPES = {
   box : function(){ return new THREE.BoxGeometry(1,1,1).translate(0,0.5,0); },
   fr8 : function(){ return rectFrus(0.84,0.84); },
   fr5 : function(){ return rectFrus(0.50,0.50); },
   pyr : function(){ return rectFrus(0.02,0.02); },
-  cyl : function(){ return new THREE.CylinderGeometry(1,1,1,10).translate(0,0.5,0); },
+  cyl : function(){ return new THREE.CylinderGeometry(1,1,1,KIT_LOOK?16:10).translate(0,0.5,0); },
+  boxc: function(){ return chamferPrism(0.06); },
   cyl6: function(){ return new THREE.CylinderGeometry(1,1,1,5,1,true).translate(0,0.5,0); },
-  cone: function(){ return new THREE.ConeGeometry(1,1,10).translate(0,0.5,0); },
+  cone: function(){ return new THREE.ConeGeometry(1,1,KIT_LOOK?16:10).translate(0,0.5,0); },
   dome: function(){ return new THREE.SphereGeometry(1,12,6,0,Math.PI*2,0,Math.PI*0.5); },
   blob: function(){ return new THREE.SphereGeometry(1,7,4,0,Math.PI*2,0,Math.PI*0.5); },
   ball: function(){ return new THREE.SphereGeometry(1,8,6).translate(0,1,0); }
@@ -104,6 +122,41 @@ function applyWorldUV(sh, sc){
     '  vUv = uv * vec2(_u / ' + su + ', _v / ' + sv + ') + _uoff;\n' +
     '#endif\n');
 }
+/* CONTACT SHADING (the library look; ?mat=proc has none). No ambient-occlusion pass exists in the preview, so two cheap
+   terms darken where surfaces meet, both from geometry the shader already has:
+   - a standing instance's vertical faces darken over their bottom metre (posts, walls, stalls, counters on a floor);
+   - inside the four towers, vertical faces darken just above each floor plate's top and just under its soffit, so the
+     columns and core walls meet the slabs instead of passing through them.
+   Godot: SSAO does this natively ([G native]); this hook is preview-only and exports nothing. */
+function applyContactAO(sh, instanced){
+  sh.vertexShader = sh.vertexShader
+    .replace('#include <common>', '#include <common>\nvarying vec3 vAoWP; varying float vAoH; varying float vAoV;')
+    .replace('#include <project_vertex>', [
+      '#ifdef USE_INSTANCING',
+      '  vAoWP = (modelMatrix * instanceMatrix * vec4(transformed,1.0)).xyz;',
+      '  vec3 _aoUp = normalize(instanceMatrix[1].xyz);',
+      '  vAoH = abs(_aoUp.y) > 0.9 ? position.y * length(instanceMatrix[1].xyz) : 99.0;',
+      '  vAoV = 1.0 - abs(normalize(mat3(modelMatrix * instanceMatrix) * objectNormal).y);',
+      '#else',
+      '  vAoWP = (modelMatrix * vec4(transformed,1.0)).xyz; vAoH = 99.0;',
+      '  vAoV = 1.0 - abs(normalize(mat3(modelMatrix) * objectNormal).y);',
+      '#endif',
+      '#include <project_vertex>'].join('\n'));
+  var T0 = (SETTLE_Y + 0.6).toFixed(3), FH = TOWER_FH.toFixed(3), SL = SLAB.toFixed(3), TO = TOWER_OFF.toFixed(3), TH = (TOWER_HALF+0.1).toFixed(3);
+  sh.fragmentShader = sh.fragmentShader
+    .replace('#include <common>', '#include <common>\nvarying vec3 vAoWP; varying float vAoH; varying float vAoV;')
+    .replace('#include <color_fragment>', [
+      '#include <color_fragment>',
+      '{ float _v = smoothstep(0.35, 0.8, vAoV);',
+      '  float _ao = mix(0.62, 1.0, smoothstep(0.0, 1.0, vAoH));',
+      '  vec2 _t = abs(abs(vAoWP.xz) - ' + TO + ');',
+      '  if(max(_t.x, _t.y) < ' + TH + ' && vAoWP.y > ' + T0 + '){',
+      '    float _m = mod(vAoWP.y - ' + T0 + ', ' + FH + ');',
+      '    if(_m < ' + FH + ' - ' + SL + ') _ao *= mix(0.58, 1.0, smoothstep(0.0, 1.3, _m)) * mix(0.72, 1.0, smoothstep(0.0, 0.9, ' + FH + ' - ' + SL + ' - _m));',
+      '  }',
+      '  diffuseColor.rgb *= mix(1.0, _ao, _v); }'].join('\n'));
+}
+
 /* wind sway for the 'cloth' family: local y=1 is the hung edge, y=0 swings */
 var CLOTH_TIME = { value: 0 };
 function applyClothSway(sh){
@@ -260,8 +313,8 @@ function emitBuckets(){
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); if(KIT_LOOK) applyContactAO(sh, true); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : '') + (KIT_LOOK ? '|ao' : ''); };
       })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
@@ -447,7 +500,8 @@ function emitMerged(){
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
     var mat = famMaterial(fm, { vertexColors:true, alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''), fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
+    nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : '')+(KIT_LOOK ? '|ao' : ''),
+      KIT_LOOK ? (function(L){ return function(sh){ if(L) KMAT.libHooks(sh, L); applyContactAO(sh, false); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;

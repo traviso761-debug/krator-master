@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.078,
+    1.099
+   ],
+   "seam_before": [
+    2.882,
+    4.766
+   ],
+   "source_size": [
+    724,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.prismgum",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "bark.prismgum.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Base template (core/materials/PLAN.md) + Rainbow eucalyptus bark, long vertical shed strips in olive #9a8f6a, green #6f9a6a, orange #b8683e, blue #5a6fa0, plum #8a4f78 and ochre #c2a24e, smooth between the strips.",
+  "sha1": "495b33f69abbcc1a44be11ec1da58f12eb79d046"
+ }
+}

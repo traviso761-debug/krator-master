@@ -38,6 +38,11 @@ fruit. Across all kits that means:
 
 ## Hyperjungle
 
+**In a world: Girder (2026-10-03).** Its Gate baobabs' hanging pods are the gatepods (`SPECIES[3].harvest` in
+`settlements/girder/src/30-layout.js`, named by the inspector), and its fruit-seller stalls sell gatepod rounds and
+chalk, mahogany nuts, silkpods and pandan keys from the catalog (`STALL_FRUIT`, `55-arch.js`). A build that bundles
+`generic-fruit` must bundle `generic-goods` too: the fruit's colours live there (`kits/catalog/KNOWN_ISSUES.md`).
+
 | Fruit | Borne by | What it is | Catalog key |
 |---|---|---|---|
 | Gatepod | `baobab` (orange velvet pods, also in `swbay`) | The pods hang 4 to 14 m and are sawn into rounds. The chalky cream pulp around the seeds dries into sweet-sour "gatepod chalk" blocks that keep for a year. | `generic_fruit_gatepod` |
