@@ -171,6 +171,16 @@ function treeFoliageHook(o){
         '  diffuseColor.rgb *= mix(vTreeC2, vColor, _k) / max(vColor, vec3(0.004)); }' ].join('\n'));
   };
 }
+/* ---- the library cards (materials.json leaf0..leaf3, flower): the painters above still run, so the random
+        stream every later tree draws from is unchanged; ?mat=proc keeps the painted textures ---- */
+(function(){
+  if(KMAT.mode !== 'lib') return;
+  function card(name){ var L = KMAT.packed('girder', name); if(!L) return null;
+    var t = KMAT.textures(L, { aniso: FAST ? 1 : 4, flipY: false }).map;
+    t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter; return t; }
+  for(var sp=0; sp<4; sp++){ var t = card('leaf'+sp); if(t) TREE_LEAFTEX[sp] = t; }
+  var fl = card('flower'); if(fl) TREE_FLOWERTEX = fl;
+})();
 function treeLeafMat(sp){
   var m = new THREE.MeshLambertMaterial({ color:0xffffff, map:TREE_LEAFTEX[sp], alphaTest:0.42, side:THREE.DoubleSide });
   return nlMaterial(m, 'treeleaf'+sp, treeFoliageHook({ aN:true, irid:sp===2, swayW:'1.0', swayA:0.20 }), 'vTreeWP');
@@ -302,7 +312,8 @@ BRANCHES.forEach(function(B){ treeLimbsOf[TREES.indexOf(B.tree)].push({ pts:B.pt
 TREES.forEach(function(T, ti){
   var sp=T.sp, Hb=TREE_HAB[sp], fam='bark'+sp, vs=(FAMMAT[fam].scale||[10,20])[1];
   var C=treeCtx(T, T.x, T.z, T.crownR+40);
-  REGISTER({ name:SPECIES[sp].name, kind:'tree', label:'Hypertree', x:T.x, z:T.z, y:T.y0, h:T.H, r:trunkR(T,T.y0+60)+2 });
+  REGISTER({ name:SPECIES[sp].name, kind:'tree', label:'Hypertree'+(SPECIES[sp].harvest ? ', bears '+SPECIES[sp].harvest.fruit.toLowerCase()+'s' : ''),
+    harvest:SPECIES[sp].harvest||null, x:T.x, z:T.z, y:T.y0, h:T.H, r:trunkR(T,T.y0+60)+2 });
 
   /* ---- trunk: sections between multiples of the texture height, each with a constant repeat ---- */
   var topU = sp===3 ? 0.925 : 0.985, Hend=T.H*topU, half=vs*0.5, ys=[], k;
@@ -492,7 +503,7 @@ var flwTris=treeEmit(treeFlw, treeRacemeGeo(),
              treeFoliageHook({ aN:true, irid:false, swayW:'(-position.y)', swayA:0.9 }), 'vTreeWP'), 'Ghostwood flower racemes')||0;
 var podTris=treeEmit(treePod, treePodGeo(),
   nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true }), 'treepod',
-             treeFoliageHook({ aN:false, irid:false, swayW:'(-position.y)', swayA:0.5 }), 'vTreeWP'), 'Baobab pod fruit', { cast:true })||0;
+             treeFoliageHook({ aN:false, irid:false, swayW:'(-position.y)', swayA:0.5 }), 'vTreeWP'), 'Gatepods (Gate baobab fruit)', { cast:true })||0;
 
 /* ------------------------------------------------------------ the far forest: impostors */
 (function(){

@@ -814,8 +814,20 @@ What the first delivery taught:
 - **Girder's choices** (`settlements/girder/materials.json`): planks, timber, cane walls, thatch and shingle
   (the neutral copies), rope, plain weave, rock face, rusty plates, board-marked concrete, willow bark for the
   ironbark (at 12 x 18 m: the trunks are 60 to 270 m tall), blue gum for the baobab, forest leaves on the ground.
-  Still procedural, because the library has no fit: the leafy understorey blobs, the spider web, the ghostwood and
-  prism gum barks. Those four are the gaps to fill (prompts above: `bark.ghostwood`, `bark.prismgum` and the "Mav's Refuge and Girder" rows).
+  *2026-10-03, the owner's generated sets:* `bark.ghostwood` (12 x 12 m), `bark.prismgum` (24 x 30 m, full colour, the
+  strips must stay about 2 m wide to read at a distance), `leaf.understorey` on the `leafy` family, and every bark
+  with the break-up. The spider web stays procedural (it reads fine).
+- **Cards** (alpha cut-outs: `record.kind 'card'`, written by `tools/textures/cards.py`, batch
+  `girder-cards-2026-10.json`): `card.ironbark`, `card.ghostwood`, `card.prismgum`, `card.baobab` (the four species'
+  leaf clumps), `card.ghostwood-flower` (the racemes, full colour), `card.fern` and `card.broadleaf` (two cells of the
+  undergrowth atlas), `card.treefern` (not used yet). The card step crops to the opaque pixels, squares the image on an
+  anchor (centre, bottom for a frond, top for a hanging chain) and bleeds the leaf colour out under the transparent
+  pixels, so mipmaps never pull in the generator's background. `pack.py` keeps a card's alpha (lossless) and the colour
+  under it, and resizes colour and alpha apart (Pillow's RGBA resize is premultiplied and blanks that colour).
+  In Girder the painted leaf textures still run first, so the random stream every later tree draws from is unchanged.
+- **Prompts that worked** for cards: "Leaf spray cut-out on a fully transparent background, PNG with alpha, square,
+  2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray
+  filling the middle 70% of the frame. Leaves: ..." (each card's meta.json holds its exact line).
 
 ## Next steps
 

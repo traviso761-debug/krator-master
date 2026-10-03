@@ -15,10 +15,11 @@
   KMAT.breakupOn = !/[?&#]breakup=0\b/.test(q);   /* ?breakup=0: the library maps without the tiling break-up, to compare */
   if(typeof window !== 'undefined') window._texPending = 0;
   var cache = {};
-  function tex(url, srgb, aniso){
-    var key = url.length + ':' + url.slice(-48) + (srgb ? 's' : 'l');
+  function tex(url, srgb, aniso, flipY){
+    var key = url.length + ':' + url.slice(-48) + (srgb ? 's' : 'l') + (flipY === false ? 'f' : '');
     if(cache[key]) return cache[key];
     var t = new THREE.Texture();
+    if(flipY === false) t.flipY = false;
     t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = aniso || 1;
     t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
     var img = new Image(); window._texPending++;
@@ -71,10 +72,19 @@
   /* every hook a library material takes, in order; and the matching part of its program cache key */
   KMAT.libHooks = function(sh, L){ KMAT.specularHook(sh, L.specular); KMAT.breakupHook(sh, L.breakup); };
   KMAT.libKey = function(L){ var b = L.breakup; return '|lib' + (L.specular == null ? '' : L.specular) + (b ? '|bu' + [b.mix, b.macro, b.cell].join('_') : ''); };
+  /* opt.flipY false: row 0 of the image is v = 0, as in a DataTexture or canvas texture a card replaces */
   KMAT.textures = function(entry, opt){
-    var a = (opt && opt.aniso) || 1;
-    return { map: entry.map ? tex(entry.map, true, a) : null,
-             normalMap: entry.normalMap ? tex(entry.normalMap, false, a) : null,
-             roughnessMap: entry.roughnessMap ? tex(entry.roughnessMap, false, a) : null };
+    var a = (opt && opt.aniso) || 1, fy = opt && opt.flipY;
+    return { map: entry.map ? tex(entry.map, true, a, fy) : null,
+             normalMap: entry.normalMap ? tex(entry.normalMap, false, a, fy) : null,
+             roughnessMap: entry.roughnessMap ? tex(entry.roughnessMap, false, a, fy) : null };
+  };
+  /* a pack entry's colour map as a decoded Image, for a build that composes it into a canvas (an atlas):
+     cb(img) once it has loaded; counted in window._texPending like the textures */
+  KMAT.image = function(entry, cb){
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ window._texPending--; cb(img); };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed image failed to decode'); };
+    img.src = entry.map;
   };
 })();

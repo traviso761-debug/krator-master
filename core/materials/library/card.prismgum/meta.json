@@ -1,0 +1,38 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "top",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2000,
+   2000
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.prismgum",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-prismgum.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Prism gum: drooping fan of long narrow lance-shaped leaves, deep green.",
+  "sha1": "e6c9239ceec20df0688cc2951730f5bce61a9a42"
+ }
+}

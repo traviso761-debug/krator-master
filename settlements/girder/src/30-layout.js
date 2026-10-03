@@ -17,7 +17,9 @@ var SPECIES = [
   { name:'Ironbark',    H:[215,270], rb:[15,18], crown0:0.50, crownR:[100,130] },
   { name:'Ghostwood',   H:[200,250], rb:[12,14], crown0:0.46, crownR:[90,115] },
   { name:'Prism gum',   H:[190,240], rb:[13,16], crown0:0.52, crownR:[110,140] },
-  { name:'Gate baobab', H:[150,175], rb:[21,25], crown0:0.80, crownR:[70,90] }
+  { name:'Gate baobab', H:[150,175], rb:[21,25], crown0:0.80, crownR:[70,90],
+    /* what the tree yields (biomes/FRUIT.md): the hanging pods are gatepods, the catalog's generic_fruit_gatepod */
+    harvest:{ fruit:'Gatepod', key:'generic_fruit_gatepod' } }
 ];
 function trunkR(T, y){
   var yy = Math.max(0, y - T.y0), u = clamp(yy/T.H, 0, 1), r;

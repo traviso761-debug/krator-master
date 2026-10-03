@@ -1,0 +1,38 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.ghostwood",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-ghostwood.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Ghostwood: airy cluster of small round yellow-green leaves on thin twigs.",
+  "sha1": "b39553f39ffd9a84cddcf4c58e6c5d017fac693d"
+ }
+}

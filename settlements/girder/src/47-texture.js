@@ -185,7 +185,7 @@ function gtexKind(fam, S, fn, opt){
 (function(){
   var order = ['plank','timber','wall','thatch','shingle','rope','cloth','rock','rust','concrete','leafy','web','bark0','bark1','bark2','bark3'];
   order.forEach(function(fam){
-    var fm = FAMMAT[fam], L = KMAT.mode === 'lib' && fam !== 'bark2' ? KMAT.packed('girder', fam) : null;
+    var fm = FAMMAT[fam], L = KMAT.mode === 'lib' ? KMAT.packed('girder', fam) : null;
     if(L){ gtexLibrary(fm, L); return; }
     var d = GTEX[fam];
     fm.tex = GTEX_CANVAS[fam] ? texFinish(GTEX_CANVAS[fam]()) : texFinish(texFill(d.size, TEX.fn(d)), d.aniso);
@@ -197,6 +197,11 @@ function gtexLibrary(fm, L){
   [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(sc[0]/L.scale[0], sc[1]/L.scale[1]); });
   fm.tex = T.map; fm.lib = L; fm.libTex = T;
 }
+
+/* ---- the library look's tone mapping (?mat=proc keeps the old linear output): ACES filmic rolls the highlights off
+        and deepens the shade; the exposure keeps the mean brightness the palette was tuned on. The sky's shaders include
+        the tone-mapping chunk, so sky, haze and ground stay matched. ---- */
+if(KMAT.mode === 'lib'){ renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = GIRDER_EXPOSURE; }
 
 /* ---- the adapter: every family as a material record, for the export (window._materials) ---- */
 (function(){

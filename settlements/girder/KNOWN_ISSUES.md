@@ -2,6 +2,11 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] Library trees and the library look (2026-10-03): ghostwood and prism gum barks, the leaf mass on `leafy`, leaf
+      and flower cards, two undergrowth cards, the break-up on every bark; fruit on the fruit-seller stalls and the
+      gatepod harvest tag; tone mapping, contact shading, chamfered columns, 16-sided cylinders. Bundling the catalog's
+      `generic-goods` (for the fruit colours) changed the interiors by one piece (3810 to 3811); budgets pass
+      (68/110 world calls, 2.60 M triangles; furniture 41/45 calls). GPU cost on a real machine is not measured.
 - [x] Z-fighting where the towers' columns met the floors (2026-10-03). The edge columns' outer faces, the perimeter
       spandrels' outer faces and the floor plates' edges sat at 24.00, 24.00 and 24.01 m from the tower centre, and
       neighbouring bays overlapped by 2 cm, so their tops fought along every seam. The bays now abut on the bay

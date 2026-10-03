@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.917,
+    1.179
+   ],
+   "seam_before": [
+    2.549,
+    2.335
+   ],
+   "source_size": [
+    724,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "leaf.understorey",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "leaf.understorey.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Base template (core/materials/PLAN.md) + Dense mass of overlapping dark tropical leaves seen from above, no gaps, natural variation in leaf size and shade.",
+  "sha1": "2f4d70d1af843bb7701e39d2333004f175857348"
+ }
+}

@@ -6,9 +6,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 38 | 275 | 116 | 36 | 47 | 12 | 65 | 3 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 38 | 276 | 116 | 36 | 47 | 12 | 65 | 3 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 59 | 714 | 149 | 40 | 10 | 38 | 478 | 9 |  | yes | yes |
-| [`settlements/girder`](settlements/girder/PORT.md) | 29 | 565 | 119 | 0 | 88 | 40 | 318 | 11 |  | yes | yes |
+| [`settlements/girder`](settlements/girder/PORT.md) | 29 | 572 | 119 | 0 | 88 | 40 | 325 | 11 |  | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 74 | 1078 | 221 | 19 | 13 | 77 | 748 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 81 | 784 | 156 | 23 | 42 | 47 | 516 | 6 | atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 417 | 7 | 20 | 10 | 34 | 347 | 5 |  | yes | yes |
@@ -37,7 +37,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1366 | 18579 | 2533 (14%) | 326 (2%) | 781 (4%) | 1783 (10%) | 13156 (71%) | 202 | | | |
+| **all** | 1366 | 18587 | 2533 (14%) | 326 (2%) | 781 (4%) | 1784 (10%) | 13163 (71%) | 202 | | | |
 
 ## Host-shell copies
 

@@ -222,7 +222,7 @@ A subfolder, so the Ancients-lineage builds that take every top-level `core/mate
 |---|---|
 | `23-mat-record.js` | `KMAT` ([G data]): `record()` checks a material record in the Phase 3 vocabulary; `adapter(build, recs)`, `table(build)` (the export's material table: maps named by library set or `TEX.def` id); `pack()`/`packed()` hold the build's library pack |
 | `24-tex-def.js` | `TEX` ([G data]): `kind()`, `def()`, `fn()` (the pure pixel function), `pixels()` (the bytes a canvas fill writes), `defs()` |
-| `25-matlib-host.js` | [web]: `KMAT.mode` from `?mat=proc`, `KMAT.textures(entry)` (data URLs to three.js textures; `window._texPending`), `KMAT.specularHook` |
+| `25-matlib-host.js` | [web]: `KMAT.mode` from `?mat=proc`, `KMAT.breakupOn` from `?breakup=0`, `KMAT.textures(entry, {aniso, flipY})` (data URLs to three.js textures; `flipY:false` for a card that replaces a canvas or data texture; `window._texPending`), `KMAT.image(entry, cb)` (the decoded image, for a build composing an atlas), `KMAT.specularHook`, `KMAT.breakupHook`, `KMAT.libHooks`/`libKey` |
 | `test-record.js` | `node core/materials/record/test-record.js` |
 
 **Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`

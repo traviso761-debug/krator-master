@@ -182,11 +182,20 @@ Own meshes: set `mesh.userData.inspectLabel = 'Giant bat'` (or
 
 Every FAMMAT family is a material record (`core/materials/record/`). By default the families named in
 `materials.json` use their **library set** (`core/materials/library/`): colour, normal and roughness maps on a
-`MeshStandardMaterial`, tinted by the same instance and vertex colours as before. The rest (`leafy`, `web`, `bark1`
-ghostwood, `bark2` prism gum, `glowmat`) keep their procedural map, now a `TEX.def` kind in 47-texture.js.
+`MeshStandardMaterial`, tinted by the same instance and vertex colours as before. `web` and `glowmat` keep a
+procedural map, a `TEX.def` kind in 47-texture.js. Every bark takes the tiling break-up.
 
-- `girder.html?mat=proc` is the old look: every family procedural, byte for byte the materials, textures and meshes
-  of the page before the library (checked 2026-10-03).
+- **Cards** (`materials.json` leaf0..leaf3, flower, jfrond, jbush): alpha cut-outs replace the four species' painted
+  leaf textures, the ghostwood raceme and the frond and bush cells of the undergrowth atlas (60-trees.js, 62-jungle.js).
+  The painters still run first, so every later random draw is unchanged.
+- **The library look** (also off with `?mat=proc`): ACES tone mapping at `GIRDER_EXPOSURE` (05-palette.js); contact
+  shading (`applyContactAO`, 45-kit.js: a standing piece's vertical faces darken over their bottom metre, and inside the
+  towers just above each plate and under each soffit); chamfered tall rust columns (`boxc`, one more draw call);
+  16-sided cylinders and cones. All preview-only: Godot's SSAO and tone mapping replace them.
+- `girder.html?mat=proc` is the old look: every family procedural, the old shapes and linear output. Its materials and
+  textures match the page before the library; since 2026-10-03 the plates and girders (the z-fighting fix) and the
+  fruit stalls differ from that page in both modes.
+- `?breakup=0` turns the tiling break-up off, to compare.
 - Change a set, a tile size or a tint in `materials.json`, then `python3 ../../tools/textures/pack.py settlements/girder`
   from the repo root (needs numpy and Pillow), then `python3 build.py`. Commit `tex/` with it.
 - Geometry never depends on the library: FAMMAT.scale lays out the UVs; a library map repeats at its own size

@@ -1,0 +1,38 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1500,
+   1500
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.broadleaf",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.75,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-broadleaf.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Leaf spray cut-out on a fully transparent background, PNG with alpha, square, 2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray filling the middle 70% of the frame. Leaves: Wide jungle broadleaf plant, seen from above.",
+  "sha1": "ef13ca17d38eef16f6b6f72fc9cfa1d10d78b5dc"
+ }
+}

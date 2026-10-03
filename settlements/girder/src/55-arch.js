@@ -595,6 +595,8 @@ PLOTS.forEach(function(p){
 
 /* ------------------------------------------------------------------ MARKET STALLS */
 var STALL_GOODS = ['Fruit-seller','Tack & harness','Potter','Weaver','Herbalist','Fletcher','Dried meats','Rope & cord'];
+/* [catalog key, variant]: gatepod rounds and chalk from the Gate baobabs, mahogany nuts, silkpods, pandan keys */
+var STALL_FRUIT = [['generic_fruit_gatepod',0], ['generic_fruit_mahogany_nut',0], ['generic_fruit_gatepod',1], ['generic_fruit_silkpod',0], ['generic_fruit_pandan_keys',0]];
 STALLS.forEach(function(s,i){
   var L=Math.hypot(s.x-HALL.x,s.z-HALL.z)||1, f=FRM(s.x,s.z,-(s.x-HALL.x)/L,-(s.z-HALL.z)/L), y=s.y, tc=TIMBERC[i%4];
   gfAt(s, 'girder.stall.'+i, f, y, 0.5);
@@ -607,7 +609,10 @@ STALLS.forEach(function(s,i){
   for(var g=0; g<5; g++){ var gz=0.85+rr(-0.15,0.15), k=(g+i)%4;
     if(k===0){ for(var pz=0;pz<3;pz++){ rr(-0.15,0.15); rr(-0.12,0.12); } }          /* the pods' draws, kept */
     else if(k===1) rr(-0.3,0.3);
-    FURNISH('br_h_stall_goods', -1.0+g*0.5, 1.08, Math.max(0.75,Math.min(0.95,gz)), 0, { v:[0,1,2,2][k], seed:g+i+1, setting:'outdoor' }); }
+    if(STALL_GOODS[i%STALL_GOODS.length]==='Fruit-seller'){   /* the catalog's hyperjungle fruit (biomes/FRUIT.md), as picked and as sold */
+      var fr = STALL_FRUIT[(g+i)%STALL_FRUIT.length];
+      FURNISH(fr[0], -1.0+g*0.5, 1.08, Math.max(0.75,Math.min(0.95,gz)), g*0.7, { v:fr[1], setting:'outdoor' });
+    } else FURNISH('br_h_stall_goods', -1.0+g*0.5, 1.08, Math.max(0.75,Math.min(0.95,gz)), 0, { v:[0,1,2,2][k], seed:g+i+1, setting:'outdoor' }); }
   var bq=LP(f,1.35,-0.3); barrel(bq[0],y,bq[1],0.9); if(i%2){ var cq=LP(f,2.2,0.5); crate(cq[0],y,cq[1],0.7,f.ry+0.3); }
   if(i%3!==2){ var lq=LP(f,0.9,1.35); lamp(lq[0],y+2.0,lq[1],0.7,10,false,0.3); }
   ARCH.stalls++;

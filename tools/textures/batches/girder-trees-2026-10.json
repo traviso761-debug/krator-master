@@ -1,0 +1,17 @@
+[
+ {"src": "bark.ghostwood.png", "out": "core/materials/library/bark.ghostwood",
+  "record": {"id": "bark.ghostwood", "family": "bark", "colour": "#ffffff", "roughness": 0.85, "metal": 0, "scale": [2, 2], "tint": true,
+   "_source": {"generator": "ChatGPT image generation, Oct 2026", "licence": "generated for this project by its owner",
+    "prompt": "Base template (core/materials/PLAN.md) + Ghostwood bark, chalk-white #e6e2d4 birch-like peel with grey peel patches, long thin horizontal dark lenticels and a few large dark eye-shaped scars."}},
+  "options": {"rough": 0.85, "rough_var": 0.2, "delight": 0.5, "lift": 0.1, "normal_strength": 1.1}},
+ {"src": "bark.prismgum.png", "out": "core/materials/library/bark.prismgum",
+  "record": {"id": "bark.prismgum", "family": "bark", "colour": "#ffffff", "roughness": 0.7, "metal": 0, "scale": [2, 2], "tint": false,
+   "_source": {"generator": "ChatGPT image generation, Oct 2026", "licence": "generated for this project by its owner",
+    "prompt": "Base template (core/materials/PLAN.md) + Rainbow eucalyptus bark, long vertical shed strips in olive #9a8f6a, green #6f9a6a, orange #b8683e, blue #5a6fa0, plum #8a4f78 and ochre #c2a24e, smooth between the strips."}},
+  "options": {"rough": 0.7, "rough_var": 0.2, "delight": 0.3, "lift": 0.05, "normal_strength": 0.8}},
+ {"src": "leaf.understorey.png", "out": "core/materials/library/leaf.understorey",
+  "record": {"id": "leaf.understorey", "family": "leaf", "colour": "#ffffff", "roughness": 0.8, "metal": 0, "scale": [2, 2], "tint": true,
+   "_source": {"generator": "ChatGPT image generation, Oct 2026", "licence": "generated for this project by its owner",
+    "prompt": "Base template (core/materials/PLAN.md) + Dense mass of overlapping dark tropical leaves seen from above, no gaps, natural variation in leaf size and shade."}},
+  "options": {"rough": 0.8, "rough_var": 0.25, "delight": 0.5, "lift": 0.1, "normal_strength": 1.0}}
+]

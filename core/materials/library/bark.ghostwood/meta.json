@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.019,
+    1.104
+   ],
+   "seam_before": [
+    3.367,
+    1.458
+   ],
+   "source_size": [
+    724,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.1,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.ghostwood",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark.ghostwood.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Base template (core/materials/PLAN.md) + Ghostwood bark, chalk-white #e6e2d4 birch-like peel with grey peel patches, long thin horizontal dark lenticels and a few large dark eye-shaped scars.",
+  "sha1": "cd377ad74229ba94ef9a4a04523d477cc55cd120"
+ }
+}

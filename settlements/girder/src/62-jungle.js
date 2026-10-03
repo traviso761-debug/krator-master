@@ -217,6 +217,17 @@ var JUNGLE_CARDS = null;
     var tex=new THREE.DataTexture(new Uint8Array(d.buffer.slice(0)), S, S, THREE.RGBAFormat);
     tex.generateMipmaps=true; tex.minFilter=THREE.LinearMipmapLinearFilter; tex.magFilter=THREE.LinearFilter;
     tex.encoding=THREE.sRGBEncoding; tex.anisotropy = FAST?1:4; tex.needsUpdate=true;
+    /* the library cards (materials.json jfrond, jbush) replace the frond and the bush cells once they decode; the giant
+       leaf and the moss stay painted. The painting above still runs, so its random draws are unchanged. */
+    if(KMAT.mode === 'lib'){
+      var cells = [['jfrond',0,0],['jbush',1,0]].filter(function(c){ return KMAT.packed('girder', c[0]); }), left = cells.length;
+      cells.forEach(function(c){ KMAT.image(KMAT.packed('girder', c[0]), function(img){
+        g.clearRect(c[1]*256, c[2]*256, 256, 256); g.drawImage(img, c[1]*256+2, c[2]*256+2, 252, 252);
+        if(--left) return;
+        var im2=g.getImageData(0,0,S,S), d2=im2.data;
+        for(var p2=0;p2<d2.length;p2+=4){ if(d2[p2+3]<110){ d2[p2]=d2[p2+1]=d2[p2+2]=200; } }
+        tex.image.data = new Uint8Array(d2.buffer.slice(0)); tex.needsUpdate = true; }); });
+    }
     return tex;
   }
 
