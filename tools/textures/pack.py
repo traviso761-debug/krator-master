@@ -88,6 +88,7 @@ def process(fam, cfg, size):
         'metal': cfg.get('metal', rec.get('metal', 0)),
         'normalScale': cfg.get('normalScale', 1.0),
         'specular': cfg.get('specular', 0.5),
+        'breakup': cfg.get('breakup'),
         'tint': {'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
         'roughLift': cfg.get('roughLift', 0.0),
         'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
