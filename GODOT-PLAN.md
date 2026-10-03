@@ -484,6 +484,7 @@ golden tests pass in CI.
 | `core/biome/` 10, 20, 40 | [G data] | port placement to GDScript (Phase 7); stays the reference generator |
 | `core/biome/` 30, 35 | [G shader] | foliage, bark, fauna shaders in the library |
 | `core/biome/42-core-export.js` | [G data] | folds into `core/export/` |
+| `core/biome/43-core-export-host.js` | [web] | `BIO.download()`, split out 2026-10-03; moves to `core/host/` |
 | `core/atmos/` 0, 0p, 4 | [G data] | the autoload; presets as resources |
 | `core/atmos/` 1, 2, 3, 5, 6 | [G shader] / [G native] | per the table in `core/atmos/GODOT.md` |
 | `core/atmos/7-cull` | [G native] | retire |

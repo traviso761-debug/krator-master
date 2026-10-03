@@ -6,7 +6,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 
 | Build | Frags | KB | [G data] | [G shader] | [G native] | [web] | [draw] | split | exporter | probe | assert |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| [`core`](core/PORT.md) | 34 | 261 | 108 | 36 | 47 | 5 | 65 | 4 | atmos, biome |  |  |
+| [`core`](core/PORT.md) | 35 | 262 | 108 | 36 | 47 | 6 | 65 | 3 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 59 | 714 | 149 | 40 | 10 | 38 | 478 | 9 |  | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 29 | 559 | 42 | 0 | 14 | 318 | 185 | 6 |  | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 74 | 1078 | 221 | 19 | 13 | 77 | 748 | 7 |  | yes | yes |
@@ -27,17 +27,17 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 390 | 1 | 8 | 0 | 54 | 327 | 2 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
-| [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 13 | 175 | 17 | 0 | 14 | 34 | 110 | 2 | biome | yes | yes |
-| [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 135 | 2 | 0 | 12 | 21 | 100 | 2 | biome | yes | yes |
-| [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 222 | 19 | 0 | 34 | 49 | 121 | 3 | biome | yes | yes |
-| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 19 | 261 | 31 | 13 | 10 | 64 | 142 | 3 |  | yes | yes |
-| [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 174 | 17 | 0 | 13 | 38 | 106 | 2 | biome | yes | yes |
-| [`biomes/rift`](biomes/rift/PORT.md) | 13 | 204 | 25 | 0 | 16 | 33 | 131 | 2 | biome | yes | yes |
-| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 173 | 20 | 0 | 13 | 55 | 83 | 2 | biome | yes | yes |
-| [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 15 | 0 | 10 | 41 | 114 | 2 | biome | yes | yes |
-| [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 25 | 0 | 13 | 38 | 119 | 2 | biome | yes | yes |
-| [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 2 | biome | yes | yes |
-| **all** | 1366 | 18595 | 2367 (13%) | 339 (2%) | 608 (3%) | 2370 (13%) | 12911 (69%) | 143 | | | |
+| [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 13 | 175 | 1 | 0 | 14 | 29 | 131 | 5 | biome | yes | yes |
+| [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 135 | 2 | 0 | 12 | 16 | 105 | 6 | biome | yes | yes |
+| [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 222 | 0 | 0 | 34 | 44 | 145 | 6 | biome | yes | yes |
+| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 19 | 261 | 12 | 13 | 10 | 59 | 165 | 7 |  | yes | yes |
+| [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 174 | 1 | 0 | 13 | 34 | 127 | 5 | biome | yes | yes |
+| [`biomes/rift`](biomes/rift/PORT.md) | 13 | 204 | 1 | 0 | 16 | 29 | 159 | 5 | biome | yes | yes |
+| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 173 | 1 | 0 | 13 | 51 | 108 | 6 | biome | yes | yes |
+| [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
+| [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
+| [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
+| **all** | 1367 | 18596 | 2216 (12%) | 339 (2%) | 608 (3%) | 2329 (13%) | 13104 (70%) | 176 | | | |
 
 ## Host-shell copies
 
