@@ -212,6 +212,22 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 `src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons). `walk/` and `sched/` have no
 user yet.
 
+**Testing the minimap hover in headless Chromium** (checked on Voth, 2026-10-03: the hover bar draws; no code fault). A
+check that sees "no change" is usually probing wrong, not the panel. What works:
+
+- Open the map with a real `page.keyboard.press('m')`, wait ~2 s, then read the canvas rect from
+  `document.querySelector('.kmap canvas').getBoundingClientRect()`.
+- Aim at a record, not at a guess. `_minimap.export()` gives `frame` `[x0,x1,z0,z1]` and the records; a disc or box
+  record has `x`,`z` and a `name`. Pixel = `(x-frame[0])/(frame[1]-frame[0])*300` and the same for z (map size is 300).
+  Most of the canvas is water or ground with no record, which draws no bar, so a blind grid of moves reads as "dead".
+- One `page.mouse.move(rect.x+px, rect.y+py)` is enough. Under software GL with Voth's render loop a move takes
+  ~1.5 s to return; do not scan a grid (hundreds of moves run for many minutes). Then wait 200 ms or more.
+- Read the result from canvas pixels, never an element screenshot (it times out): the bar is `rgba(0,0,0,.65)` over the
+  bottom 16 px, so sample `getImageData(290,286,1,1)` before (217 on the water-blue base) and after (76).
+- To prove delivery, add a `mousemove` counter listener to the canvas first; `elementFromPoint` there is the canvas.
+  The 4 Hz redraw timer keeps `hoverTxt`, so the bar survives to the next frame.
+- Do not `pkill -f` a pattern that also matches your own shell command line.
+
 ## `clock/`
 
 The world clock, `KCLOCK` (`GODOT-PLAN.md`, Phase 1, "The world clock"): motion time `t` in seconds, and world time
