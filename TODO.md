@@ -36,7 +36,7 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
    and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
    material work (M5).
-4. **The scoped hand pass** (GODOT-PLAN.md 3.3) on the biome kits, then Iziz, Girder, Voth and Ys. Other builds
+4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03 for the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1). Still to do: Iziz, Girder, Voth and Ys. Other builds
    keep provisional tags until a port session touches them.
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
@@ -71,7 +71,7 @@ first tile in Godot) needs. They start ahead: one core (`core/biome/`), one PRNG
 order are in `biomes/WORLD.md` ("Against the port plan"); the contract is `biomes/GODOT.md`. Suggested order:
 the audit, the shader kinds, tags and ids, the host, the reseeding event, then variants with opt-in heroes.
 
-- **Finish the port audit for the nine kits** (tooling, no tag; inside the scoped hand pass, `GODOT-PLAN.md` 3.3).
+- **DONE 2026-10-03: the port audit for the ten kits** (tooling, no tag; the scoped hand pass, `GODOT-PLAN.md` 3.3; the text below is what was asked, kept for the record). One finding differs from it: `65-dress` is not a `BIO.grid` pass, it samples the host's shells (`BIO.upFaces` and the like) and puts; its note says so. nwbay's Notes record its old core copy.
   *The tool part is done (2026-10-02): `PORT-INDEX.md` names the `biome` exporter for every kit on the shared core,
   and none for nwbay, whose old core copy has no exporter.* Correct the provisional tags in each
   `biomes/<kit>/PORT.md` and write the split lists into its Notes: `45-host-stage` holds `terrainH`, the water
@@ -100,8 +100,8 @@ the audit, the shader kinds, tags and ids, the host, the reseeding event, then v
   (`host-stage`, `-sky`, `-build`, `-camera`, `-probe` in ten builds, `host-tower` in eight) are each their own
   version (`PORT-INDEX.md`, host-shell copies), but a kit reaches its host only through `BIO.init`, so these
   are the easiest builds to put on one shell. The stage's terrain, water and fields go to `core/terrain`;
-  its DOM goes to the host. Move `BIO.download()` there too: it is the one browser line in
-  `42-core-export.js` and one of `core/`'s port-lint warnings.
+  its DOM goes to the host. `BIO.download()` is split out (2026-10-03) into `core/biome/43-core-export-host.js` [web];
+  it joins `core/host/` with the rest in Phase 1.
 - **[G data] Placement records carry no LOD level.** Each kit picks a tree's level (hero, lite stand-in, far
   impostor: `T.lv`) as it places it, from the tree's distance to the showcase's LOD spine (`BIO.lodD`): the
   preview's camera baked into the data. Godot has no spine and needs every tree at every level. Placement

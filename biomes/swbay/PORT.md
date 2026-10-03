@@ -6,22 +6,22 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 15 (8%) | 0 (0%) | 10 (6%) | 41 (23%) | 114 (63%) |
+| KB | 1 (1%) | 0 (0%) | 10 (6%) | 37 (20%) | 133 (74%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/45-host-stage.js` | 22.8 | [web] | 40 | 3 | 3 | 1 | 0 | 8 | 13 | 0 | 0 | 0 | 0 |  |
+| `src/45-host-stage.js` | 22.8 | [web] | 40 | 3 | 3 | 1 | 0 | 8 | 13 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
 | `src/50-biome-swbay-species.js` | 34.3 | [draw] | 0 | 5 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/55-biome-swbay-trees.js` | 48.0 | [draw] | 0 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/60-biome-swbay-floor.js` | 14.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/65-biome-swbay-dress.js` | 8.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/55-biome-swbay-trees.js` | 48.0 | [draw] | 0 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | placement pass: `SWBAY.buildTrees` (line 410); `mk` (line 414) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 449) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar` for the far impostor. The two passes share one function but not one loop |
+| `src/60-biome-swbay-floor.js` | 14.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
+| `src/65-biome-swbay-dress.js` | 8.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-swbay.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/75-biome-swbay-fauna.js` | 18.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 3 | 11 | 0 | 0 | 0 |  |
-| `src/82-host-sky.js` | 10.0 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/85-host-tower.js` | 4.6 | [web] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/75-biome-swbay-fauna.js` | 18.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 3 | 11 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
+| `src/82-host-sky.js` | 10.0 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
+| `src/85-host-tower.js` | 4.6 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/86-host-jetty.js` | 4.6 | [draw] | 4 | 1 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/90-host-camera.js` | 7.4 | [web] | 5 | 0 | 4 | 7 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |  |
@@ -30,4 +30,4 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 
 ## Notes
 
-(none yet: the split lists and the overrides go here)
+**Hand pass (2026-10-03): the kit's own copies.** PRNG and noise: none of its own. `reseed`/`rng` (mulberry32), `h3` (a sin hash), `vnoise` and `fbm` are the one copy in `core/biome/10-core-head.js` (`BIO.fn`); its `rng` already equals `KRAND.stream` (`core/PORT.md`), and the sin-based `h3`, `vnoise` and `fbm` move to `core/rand` in the biome reseeding event. Terrain: its own `terrainH` (line 77) in `src/45-host-stage.js` and the climate-field bake `FC`, which is the data `core/terrain` replaces. Palette: its own `SWBAY.PAL`, built in `src/50-biome-swbay-species.js` (line 34).
