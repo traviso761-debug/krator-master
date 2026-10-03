@@ -205,14 +205,14 @@ function gtexLibrary(fm, L){
     var fm = FAMMAT[fam], L = fm.lib, d = GTEX[fam];
     if(fam === 'glowmat'){ recs[fam] = { id:'girder.glowmat', family:fam, scale:fm.scale, tint:true, hook:'unlit', note:'unlit emissive bits' }; return; }
     recs[fam] = { id:'girder.'+fam, family:fam, scale: L ? L.scale : fm.scale, tint:true, roughness:1,
-      metal: L ? (L.metal||0) : 0, specular: L ? L.specular : 0, normalScale: L ? L.normalScale : 1, lib: L ? L.lib : null, tex: L ? null : (d ? d.id : null),
+      metal: L ? (L.metal||0) : 0, specular: L ? L.specular : 0, normalScale: L ? L.normalScale : 1, breakup: L ? (L.breakup||null) : null, lib: L ? L.lib : null, tex: L ? null : (d ? d.id : null),
       bake: !L && !!d, alphaTest: fm.alpha ? 0.35 : 0, doubleSided: !!fm.alpha,
       hook: fam === 'cloth' ? 'world-uv+cloth-sway' : 'world-uv',
       note: L ? 'library set, tint keep '+L.tint : (fm.colour ? 'procedural colour map' : 'procedural grey map, tinted') };
   });
   var G = KMAT.mode === 'lib' ? KMAT.packed('girder', 'ground') : null;
   recs.ground = { id:'girder.ground', family:'ground', scale: G ? G.scale : [9,9], tint:true, roughness:1, metal:0, specular: G ? G.specular : 0,
-    lib: G ? G.lib : null, tex: G ? null : 'girder.ground', bake: !G, hook:'planar-uv', note:'the forest floor (75-terrain.js)' };
+    breakup: G ? (G.breakup||null) : null, lib: G ? G.lib : null, tex: G ? null : 'girder.ground', bake: !G, hook:'planar-uv', note:'the forest floor (75-terrain.js)' };
   KMAT.adapter('girder', recs);
   window._materials = KMAT.table('girder');
 })();

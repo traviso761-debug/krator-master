@@ -7,7 +7,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | Build | Fragments | src KB | Largest KB | What |
 |---|---|---|---|---|
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 46 | 631 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
-| [`settlements/girder`](settlements/girder/INDEX.md) | 29 | 564 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
+| [`settlements/girder`](settlements/girder/INDEX.md) | 29 | 565 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 46 | 739 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 503 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |

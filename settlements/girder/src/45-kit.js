@@ -260,8 +260,8 @@ function emitBuckets(){
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.specularHook(sh, fm.lib.specular); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' : ''); };
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
       })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
@@ -447,7 +447,7 @@ function emitMerged(){
     g.computeBoundingSphere();
     var fm = FAMMAT[fam] || {};
     var mat = famMaterial(fm, { vertexColors:true, alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std' : ''), fm.lib ? (function(L){ return function(sh){ KMAT.specularHook(sh, L.specular); }; })(fm.lib) : null);
+    nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''), fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;

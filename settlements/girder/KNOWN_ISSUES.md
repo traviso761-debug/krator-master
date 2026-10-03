@@ -2,6 +2,11 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] Z-fighting where the towers' columns met the floors (2026-10-03). The edge columns' outer faces, the perimeter
+      spandrels' outer faces and the floor plates' edges sat at 24.00, 24.00 and 24.01 m from the tower centre, and
+      neighbouring bays overlapped by 2 cm, so their tops fought along every seam. The bays now abut on the bay
+      lines, the plates stand 6 cm proud of the columns (`PLATE_LIP`, 50-structure.js) and the spandrels 10 cm in.
+      Only the concrete and rust box instances moved; nav, invariants and budgets pass.
 - [ ] UNCONFIRMED BRIEF: "platforms protected by rope bridges" was read as "connected by rope bridges" — ask Travis
 - [ ] Terrain: ground drops 4-12 m below brook water level in a hollow below the cascade; widen the vale in terrainH (10-core)
 - [ ] "Girder from the brook" view was moved onto the footbridge after the last render — never re-shot

@@ -102,7 +102,7 @@ def matlib_pack():
     for fam in sorted(pack['families']):
         e = pack['families'][fam]
         f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
-             'specular': e.get('specular', 0.5),
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
              'tint': e['tint']['keep']}
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()

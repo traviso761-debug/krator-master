@@ -2,6 +2,11 @@
  "build": "girder",
  "families": {
   "bark0": {
+   "breakup": {
+    "cell": 8,
+    "macro": 0.1,
+    "mix": 0.5
+   },
    "files": {
     "map": "bark0.albedo.webp",
     "normalMap": "bark0.normal.webp",
@@ -30,6 +35,11 @@
    }
   },
   "bark3": {
+   "breakup": {
+    "cell": 8,
+    "macro": 0.1,
+    "mix": 0.5
+   },
    "files": {
     "map": "bark3.albedo.webp",
     "normalMap": "bark3.normal.webp",
@@ -58,6 +68,11 @@
    }
   },
   "cloth": {
+   "breakup": {
+    "cell": 3,
+    "macro": 0.06,
+    "mix": 0.3
+   },
    "files": {
     "map": "cloth.albedo.webp",
     "normalMap": "cloth.normal.webp",
@@ -86,6 +101,11 @@
    }
   },
   "concrete": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.14,
+    "mix": 0.6
+   },
    "files": {
     "map": "concrete.albedo.webp",
     "normalMap": "concrete.normal.webp",
@@ -114,6 +134,11 @@
    }
   },
   "ground": {
+   "breakup": {
+    "cell": 9,
+    "macro": 0.18,
+    "mix": 0.6
+   },
    "files": {
     "map": "ground.albedo.webp",
     "normalMap": "ground.normal.webp",
@@ -142,6 +167,11 @@
    }
   },
   "plank": {
+   "breakup": {
+    "cell": 5,
+    "macro": 0.12,
+    "mix": 0.55
+   },
    "files": {
     "map": "plank.albedo.webp",
     "normalMap": "plank.normal.webp",
@@ -170,6 +200,11 @@
    }
   },
   "rock": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.15,
+    "mix": 0.5
+   },
    "files": {
     "map": "rock.albedo.webp",
     "normalMap": "rock.normal.webp",
@@ -198,6 +233,11 @@
    }
   },
   "rope": {
+   "breakup": {
+    "cell": 3,
+    "macro": 0.05,
+    "mix": 0.0
+   },
    "files": {
     "map": "rope.albedo.webp",
     "normalMap": "rope.normal.webp",
@@ -226,6 +266,11 @@
    }
   },
   "rust": {
+   "breakup": {
+    "cell": 4,
+    "macro": 0.12,
+    "mix": 0.5
+   },
    "files": {
     "map": "rust.albedo.webp",
     "normalMap": "rust.normal.webp",
@@ -254,6 +299,11 @@
    }
   },
   "shingle": {
+   "breakup": {
+    "cell": 4,
+    "macro": 0.1,
+    "mix": 0.5
+   },
    "files": {
     "map": "shingle.albedo.webp",
     "normalMap": "shingle.normal.webp",
@@ -282,6 +332,11 @@
    }
   },
   "thatch": {
+   "breakup": {
+    "cell": 5,
+    "macro": 0.12,
+    "mix": 0.55
+   },
    "files": {
     "map": "thatch.albedo.webp",
     "normalMap": "thatch.normal.webp",
@@ -310,6 +365,11 @@
    }
   },
   "timber": {
+   "breakup": {
+    "cell": 4,
+    "macro": 0.08,
+    "mix": 0.4
+   },
    "files": {
     "map": "timber.albedo.webp",
     "normalMap": "timber.normal.webp",
@@ -338,6 +398,11 @@
    }
   },
   "wall": {
+   "breakup": {
+    "cell": 4,
+    "macro": 0.1,
+    "mix": 0.45
+   },
    "files": {
     "map": "wall.albedo.webp",
     "normalMap": "wall.normal.webp",

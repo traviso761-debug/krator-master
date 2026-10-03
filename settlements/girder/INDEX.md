@@ -22,7 +22,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 22 | 5. LAYOUT — GIRDER (1); THE RUIN (39); THE TERRACE (145); THE FOREST (179); NAV GRAPH (214) |
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 26 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `45-kit.js` | 27 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 13 | 11. TEXTURES (1) |
 | `50-structure.js` | 18 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 9 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |

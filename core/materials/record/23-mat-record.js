@@ -7,6 +7,9 @@
        normalScale, pattern, hook, lib (library set id), tex (TEX.def id for a procedural map), bake }
    specular is Godot's StandardMaterial3D `specular` (0..1, 0.5 = the physical default): how much direct light a
    dielectric reflects. Palette-tinted surfaces under a strong sun want less, or grazing views wash them grey.
+   breakup {mix, macro, cell} hides the tiling of a big surface (a library shader, 'breakup'): a world-space noise of
+   `cell` metres blends the map with a shifted copy of itself (up to `mix`), and a slower one varies the brightness
+   by +-`macro`. Godot: one .gdshader with the same three parameters.
 
    [G data]: no THREE, no DOM. A build declares an ADAPTER from its own material names (FAMMAT keys, MAT
    names, catalog family strings) onto records; its old names stay valid (PLAN.md "Order of work" 5).
@@ -22,9 +25,9 @@
 var KMAT = (function(){
   'use strict';
   var FIELDS = ['id','family','colour','map','normalMap','roughnessMap','roughness','metal','specular','emissive','doubleSided',
-                'alphaTest','scale','tint','normalScale','pattern','hook','lib','tex','bake','note'];
+                'alphaTest','scale','tint','normalScale','breakup','pattern','hook','lib','tex','bake','note'];
   var DEF = { colour:'#ffffff', roughness:1, metal:0, specular:0.5, emissive:null, doubleSided:false, alphaTest:0, scale:[1,1],
-              tint:true, normalScale:1, map:null, normalMap:null, roughnessMap:null, pattern:null, hook:null,
+              tint:true, normalScale:1, breakup:null, map:null, normalMap:null, roughnessMap:null, pattern:null, hook:null,
               lib:null, tex:null, bake:false, note:'' };
   var PACKS = {}, ADAPTERS = {};
   function record(o){
