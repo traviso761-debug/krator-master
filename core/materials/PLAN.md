@@ -2,7 +2,8 @@
 
 Status, 2026-10-02: the library is started. Eleven sets plus six procedural cloth sets are processed (see "Built
 so far"); the Poly Haven ingest tool is written and waits for the owner's download; the prompts for every culture's
-pattern sheets are below. The record adapters, `TEX.def` and the Girder hookup are not built yet. This is the content side of GODOT-PLAN.md Phase 3
+pattern sheets are below. **2026-10-03: the record system is built and Girder is the pilot** (see "How a build adopts
+the library", below). This is the content side of GODOT-PLAN.md Phase 3
 ("textures and materials as data"): that phase defines the record format and the exporter path; this file
 defines what goes in the library, where the textures come from, and how a build adopts it.
 
@@ -735,7 +736,7 @@ Poly Haven dirt, mud and sand are about 0.95 and read fine. The demo's Matte sli
 adopted, raise the committed roughness map for ground, pavement, plaster and stone sets (about `r + (1-r)*0.65`) instead of relying on the renderer.
 
 Dalab: 13 generated images now exist (relief and tile sets, two god panels, five murals, a harlequin checker); processed into the demo, prompts not recorded.
-Mockup: `core/materials/demo/mockups/girder/` builds a Girder stand-in from these sets (notes in the page list the gaps).
+Mockup: removed 2026-10-03 (the owner judged the Girder stand-in poor). The pilot is the real Girder build, starting from its baselined page.
 
 
 #### Scan picks committed (2026-10-03)
@@ -791,6 +792,31 @@ What the first delivery taught:
   "shadowless", and expect the de-light step anyway.
 - Record the exact prompt with each image. These nine only point at the plan's rows.
 
+## How a build adopts the library (built 2026-10-03; Girder is the pilot)
+
+- **The code** is `core/materials/record/` (not under `core/materials/`'s top level, so the Ancients-lineage builds
+  that take every top-level fragment do not pick it up): `23-mat-record.js` (`KMAT`: the record above, a build's
+  adapter, the pack registry, `table()` for the exporter), `24-tex-def.js` (`TEX`: a procedural texture as a record,
+  `{id, kind, size, seed, params}`, with a pure pixel function; a canvas-drawn kind is marked `bake`), and
+  `25-matlib-host.js` (the browser half: `?mat=proc`, data-URL images to three.js textures, `window._texPending`,
+  and `KMAT.specularHook`, Godot's `specular` in three.js). `node core/materials/record/test-record.js`.
+- **The build's adapter** is `<build>/materials.json`: per material family the library set, its tile size in world
+  metres, `tint.keep` (how much of the set's own colour survives the build's palette tint; 0 = a grey detail map),
+  `tint.mean` (the brightness to normalise to: the mean of the procedural map it replaces, so the build's palette and
+  lights stay tuned), `tint.contrast`, `roughLift`, `specular`, `metal`.
+- **The pack**: `python3 tools/textures/pack.py <build>` writes small processed copies (512 px WebP) into
+  `<build>/tex/` with `pack.json`. The build reads only those committed files and inlines them as data URLs
+  (a generated fragment), so it stays deterministic and needs no image library; `--check` says whether `tex/` is stale.
+- **In the page**: a library family gets a `MeshStandardMaterial` with colour, normal and roughness maps; the others
+  keep their procedural `TEX.def` map on the material they had. Geometry is unchanged: a library map repeats at its
+  own tile size through the material, not through the build's UVs. `?mat=proc` shows the old look (Girder proved
+  identical to its baseline: every material, texture pixel and static mesh). `window._materials` is the table.
+- **Girder's choices** (`settlements/girder/materials.json`): planks, timber, cane walls, thatch and shingle
+  (the neutral copies), rope, plain weave, rock face, rusty plates, board-marked concrete, willow bark for the
+  ironbark (at 12 x 18 m: the trunks are 60 to 270 m tall), blue gum for the baobab, forest leaves on the ground.
+  Still procedural, because the library has no fit: the leafy understorey blobs, the spider web, the ghostwood and
+  prism gum barks. Those four are the gaps to fill (prompts above: `bark.ghostwood`, `bark.prismgum` and the "Mav's Refuge and Girder" rows).
+
 ## Next steps
 
 0. **Scan libraries:** catalogued (see "Available, not committed"). Nothing is reduced or committed until the demo texture
@@ -799,9 +825,9 @@ What the first delivery taught:
    go-ahead to commit. Still to be generated: Voth stucco, fungus cap and stem; the other prompts in this file.
    **Demo texture kit** (after the core is written): render every candidate set on a common test scene, mark the per-metre
    `scale` picks separately, then the owner rejects or keeps each one.
-1. **Girder hookup** (the Phase 3 pilot session): `TEX.def` and the record adapters in `core/materials`,
-   Girder's `47-texture.js` painters moved onto them with an unchanged look, then each FAMMAT family pointed
-   at its library set, with normal and roughness maps on the materials and FAMMAT's world-unit `scale` kept.
+1. ~~**Girder hookup**~~ *Done 2026-10-03* (above). Open from it: the four procedural gaps; the owner's look
+   review of `girder.html` against `girder.html?mat=proc`; GPU cost of the standard material on a real machine
+   (the headless budget run counts draw calls and triangles, which did not change).
 2. **The rest of Girder's surfaces**, below.
 3. **Repetition break-up** for large surfaces (thatch, carved wood): a second variant per set, or a
    texture-bombing hook, which Godot gets as a shader.

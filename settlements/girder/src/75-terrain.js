@@ -55,12 +55,17 @@ var terrGeo = new THREE.PlaneGeometry(2, 2, SEG, SEG).rotateX(-Math.PI/2);
   terrGeo.setAttribute('color', new THREE.BufferAttribute(col,3));
   terrGeo.computeVertexNormals(); terrGeo.computeBoundingSphere();
 })();
-/* a litter detail texture, tiled in world units and multiplied over the vertex colour */
-var terrTex = (function(){
-  var S=256, a=texNoise(S,10,301), b=texNoise(S,48,302), c=texNoise(S,110,303);
-  return texFinish(texFill(S,function(x,y){ return 0.62 + 0.30*(a(x,y)-0.5) + 0.34*(b(x,y)-0.5) + 0.28*(c(x,y)-0.5) + (c(x,y)>0.80?0.12:0); }));
-})();
-var terrMat = nlMaterial(new THREE.MeshLambertMaterial({ vertexColors:true, map:terrTex }), 'terrain');
+/* a litter detail texture, tiled in world units and multiplied over the vertex colour: the library's forest-floor
+   set (materials.json 'ground'), or the procedural TEX.def girder.ground (47-texture.js) with ?mat=proc.
+   The UVs above are x/9 m; a library set repeats at its own tile size through the texture. */
+var terrLib = KMAT.mode === 'lib' ? KMAT.packed('girder', 'ground') : null;
+var terrTex = terrLib ? null : texFinish(texFill(GTEX.ground.size, TEX.fn(GTEX.ground)));
+var terrMat;
+if(terrLib){
+  var terrT = KMAT.textures(terrLib, { aniso: FAST ? 1 : 8 });
+  [terrT.map, terrT.normalMap, terrT.roughnessMap].forEach(function(t){ if(t) t.repeat.set(9/terrLib.scale[0], 9/terrLib.scale[1]); });
+  terrMat = nlMaterial(famMaterial({ lib:terrLib, libTex:terrT }, { vertexColors:true }), 'terrain|std', function(sh){ KMAT.specularHook(sh, terrLib.specular); });
+} else terrMat = nlMaterial(new THREE.MeshLambertMaterial({ vertexColors:true, map:terrTex }), 'terrain');
 var terrain = new THREE.Mesh(terrGeo, terrMat);
 terrain.receiveShadow = !FAST; terrain.frustumCulled = false; terrain.userData.inspectLabel = 'Forest floor';
 scene.add(terrain);

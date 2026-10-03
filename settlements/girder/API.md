@@ -178,6 +178,23 @@ Own meshes: set `mesh.userData.inspectLabel = 'Giant bat'` (or
 **Path viz.** `PATHVIZ.push({ key, label, color, paths:function(){ return [ [[x,y,z],…], … ]; } })`
 (`var PATHVIZ` is declared in 10-core.js) — every moving population registers its routes.
 
+## Materials (47-texture.js, materials.json, tex/)
+
+Every FAMMAT family is a material record (`core/materials/record/`). By default the families named in
+`materials.json` use their **library set** (`core/materials/library/`): colour, normal and roughness maps on a
+`MeshStandardMaterial`, tinted by the same instance and vertex colours as before. The rest (`leafy`, `web`, `bark1`
+ghostwood, `bark2` prism gum, `glowmat`) keep their procedural map, now a `TEX.def` kind in 47-texture.js.
+
+- `girder.html?mat=proc` is the old look: every family procedural, byte for byte the materials, textures and meshes
+  of the page before the library (checked 2026-10-03).
+- Change a set, a tile size or a tint in `materials.json`, then `python3 ../../tools/textures/pack.py settlements/girder`
+  from the repo root (needs numpy and Pillow), then `python3 build.py`. Commit `tex/` with it.
+- Geometry never depends on the library: FAMMAT.scale lays out the UVs; a library map repeats at its own size
+  through the material (`gtexLibrary`, the world-UV hook's scale).
+- New static fabric uses an existing family; a new family needs a FAMMAT entry, a painter kind or a
+  `materials.json` row, and the planner's approval (a draw call).
+- `window._materials` is the material table (`KMAT.table('girder')`), what an exporter writes for Godot.
+
 ## Budget (whole build: 110 draw calls, 4.2 M triangles, 260k instances; furniture apart: 45 calls, 1.69 M triangles)
 
 The catalog furniture (outdoor pieces and the furnished interiors) has its own line, `BUDGET.furniture`:

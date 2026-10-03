@@ -48,7 +48,7 @@ def fragments(build):
     if build == 'core':
         for mod in sorted(os.listdir(base)):
             for dp, dn, fn in os.walk(os.path.join(base, mod)):
-                dn[:] = sorted(x for x in dn if x not in ('example', 'node_modules'))
+                dn[:] = sorted(x for x in dn if x not in ('example', 'demo', 'node_modules'))
                 for f in sorted(fn):
                     if f.endswith('.js') and not f.startswith('test-') and not f.startswith('.'):
                         out.append(os.path.relpath(os.path.join(dp, f), base))

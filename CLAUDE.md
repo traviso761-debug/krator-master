@@ -49,6 +49,9 @@ about 3 MB each); `core/materials/PLAN.md` says what each is, and `core/material
 binary, so searches skip them. **Open an image only when the task is graphics or performance** (judging a surface, a render run, a texture budget),
 and then open the few you need, not a folder. Never read every `meta.json`; read `PLAN.md` first.
 
+**A build adopts the library** through `<build>/materials.json` and `python3 tools/textures/pack.py <build>`, which writes
+`<build>/tex/` (commit it); the code is `core/materials/record/` (`KMAT`, `TEX`). Girder is the worked example.
+
 **If a surface has no good texture, ask the owner to find one or generate one.** Name the gap and, for a generated image, give the prompt
 (`core/materials/PLAN.md`, "Prompts for generated sources" has the template and per-culture rows). Do not paper over a missing texture with a
 procedural stand-in without saying so.

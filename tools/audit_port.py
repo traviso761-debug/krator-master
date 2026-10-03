@@ -137,7 +137,7 @@ def fragments(build):
             if not os.path.isdir(d):
                 continue
             for dp, dn, fn in os.walk(d):
-                dn[:] = sorted(x for x in dn if x not in ('example', 'node_modules'))
+                dn[:] = sorted(x for x in dn if x not in ('example', 'demo', 'node_modules'))
                 for f in sorted(fn):
                     if f.endswith('.js') and not f.startswith('test-') and not f.startswith('.'):
                         p = os.path.join(dp, f)
