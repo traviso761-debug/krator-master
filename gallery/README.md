@@ -32,6 +32,11 @@ toolbar, `core/clock`), from `main` at ce6fb1ea. The index and every other page 
 Version 38 (2026-10-02): a "Krator Scale Model" section with a link to the scale model artifact added under the header
 (`index.template.html`); only the index page was republished.
 
+Version 39 (2026-10-03): `worlds/girder.html` replaced with Girder on the material library (library textures with
+the tiling break-up, leaf and flower cards, the fruit stalls, tone mapping and contact shading; `?mat=proc` shows
+the old look), from `main` at 01f78aa3, with the index regenerated (Girder now 6.3 MB). Every other page is as in
+version 36 to 38.
+
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
 The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
