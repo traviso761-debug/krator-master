@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.288,
+    1.091
+   ],
+   "seam_before": [
+    1.404,
+    1.487
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.3,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.2,
+   "pattern": false,
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.chitin",
+  "metal": 0,
+  "roughness": 0.4,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Seamless Weathered Chitin Plate Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Weathered Chitin Plate Texture.png",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Muted, so it can be tinted. Material: overlapping plates of giant insect shell used as armour and building panels, smooth hard segments with fine growth ridges near their edges, a waxy finish, a few scratches. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "8271a03cb0149c7307f30bc55025bee748cd07b7"
+ }
+}

@@ -42,6 +42,17 @@ Pass `--glob '!**/dist/**'` (or search a `src/` folder) when using Grep.
 - **Change code with targeted edits.** Do not regenerate a fragment to change part of it.
 - **Take one screenshot per meaningful change,** not one per tweak.
 
+## Textures (the material library)
+
+`core/materials/library/` and `core/materials/patterns/` hold the shared texture sets (`albedo.jpg`, `normal.png`, `roughness.png`, `meta.json`,
+about 3 MB each); `core/materials/PLAN.md` says what each is, and `core/materials/demo/` builds the page that shows them. The images are
+binary, so searches skip them. **Open an image only when the task is graphics or performance** (judging a surface, a render run, a texture budget),
+and then open the few you need, not a folder. Never read every `meta.json`; read `PLAN.md` first.
+
+**If a surface has no good texture, ask the owner to find one or generate one.** Name the gap and, for a generated image, give the prompt
+(`core/materials/PLAN.md`, "Prompts for generated sources" has the template and per-culture rows). Do not paper over a missing texture with a
+procedural stand-in without saying so.
+
 ## Build and verify
 
 ```

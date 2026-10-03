@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.278,
+    1.287
+   ],
+   "seam_before": [
+    2.485,
+    3.41
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.9,
+   "normal_strength": 1.3,
+   "pattern": false,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.scale",
+  "metal": 0.7,
+  "roughness": 0.5,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Riveted Steel Scale Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Riveted Steel Scale Texture.png",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Neutral grey, so it can be tinted gold or bronze. Material: hand-hammered metal roof plates laid in overlapping curved rows like fish scales, small dents from the hammer, rivets along each row, streaks of weathering. [Prompt supplied by the owner (chat, 2026-10-02) for this row. The delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "0a09d4777a3509c6760cd53d37c16e266bebcac6"
+ }
+}

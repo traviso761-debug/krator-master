@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1453,
+    857
+   ],
+   "seam_after": [
+    0.433,
+    0.433
+   ],
+   "seam_before": [
+    4.646,
+    8.377
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "dalab/mural-soldiers",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.6,
+  "scale": [
+   3,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "dalab_mural-soldiers.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, Dalab, a Dalab mural (soldiers; no plan row) (exact wording as delivered not recorded)",
+  "sha1": "75a851d252e20e5d6637a02f47f59bec34633f77"
+ }
+}
