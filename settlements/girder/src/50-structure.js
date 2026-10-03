@@ -20,22 +20,28 @@ function buildTower(T){
     BOX(T.x+cx, y0, T.z+cz, 3.2, top-y0+over, 3.2, 0, shade(RUSTC[(i+j+T.id)%RUSTC.length], edge?0:-0.12), 'rust'); STRUCT.columns++;
     if(over > 2) for(var rb=0; rb<4; rb++) ROD(T.x+cx+rr(-1.2,1.2), top+over-0.2, T.z+cz+rr(-1.2,1.2), T.x+cx+rr(-1.8,1.8), top+over+rr(1.2,3.4), T.z+cz+rr(-1.8,1.8), 0.07, PAL.rustStain[0], 'rust');
   }); });
-  /* --- floor plates, bay by bay; the core bay is cut for the stair well --- */
+  /* --- floor plates, bay by bay; the core bay is cut for the stair well ---
+     No coplanar faces (they flickered at a distance): neighbouring bays ABUT on the bay lines (they used to
+     overlap by 2 cm, so their tops fought in a strip along every seam), and the outer bays stand PLATE_LIP proud
+     of the edge columns' outer faces (they ended 1 cm out, which fought where a plate edge crossed a column). */
+  var PLATE_LIP = 0.06, bayLo = function(b){ return b<0 ? -(T.half+PLATE_LIP) : b>0 ? 8 : -8; },
+      bayHi = function(b){ return b<0 ? -8 : b>0 ? T.half+PLATE_LIP : 8; };
   T.floors.forEach(function(F){
     var yb = F.y - SLAB;
     for(var bi=-1;bi<=1;bi++) for(var bj=-1;bj<=1;bj++){
       if(F.missing.indexOf(bi+','+bj) >= 0) continue;
       var pc = shade(conc, rr(-0.10,0.06));
-      if(bi||bj){ BOX(T.x+bi*16, yb, T.z+bj*16, 16.02, SLAB, 16.02, 0, pc, 'concrete'); STRUCT.plates++; }
+      if(bi||bj){ BOX(T.x+(bayLo(bi)+bayHi(bi))/2, yb, T.z+(bayLo(bj)+bayHi(bj))/2, bayHi(bi)-bayLo(bi), SLAB, bayHi(bj)-bayLo(bj), 0, pc, 'concrete'); STRUCT.plates++; }
       else if(F.k < TOWER_N){
         BOX(T.x-6.2, yb, T.z, 3.6, SLAB, 16, 0, pc, 'concrete');                       /* west landing */
         BOX(T.x+1.8, yb, T.z-6.1, 12.4, SLAB, 3.8, 0, pc, 'concrete');                 /* north + south strips */
         BOX(T.x+1.8, yb, T.z+6.1, 12.4, SLAB, 3.8, 0, pc, 'concrete');
       }
     }
-    /* perimeter spandrel girders + the interior girder lines under the plate */
+    /* perimeter spandrel girders + the interior girder lines under the plate. The spandrel's outer face stands 10 cm
+       inside the columns' outer faces (it was flush with them, and fought) */
     [[0,-1],[0,1],[-1,0],[1,0]].forEach(function(f){
-      BOX(T.x+f[0]*(T.half-0.35), yb-0.9, T.z+f[1]*(T.half-0.35), f[0]?0.7:48, 1.5, f[0]?48:0.7, 0, shade(rustA, rr(-0.12,0.08)), 'rust'); STRUCT.girders++; });
+      BOX(T.x+f[0]*(T.half-0.45), yb-0.9, T.z+f[1]*(T.half-0.45), f[0]?0.7:48, 1.5, f[0]?48:0.7, 0, shade(rustA, rr(-0.12,0.08)), 'rust'); STRUCT.girders++; });
     [-8,8].forEach(function(c){
       BOX(T.x+c, yb-0.8, T.z, 0.9, 0.8, 47, 0, shade(rustA,-0.18), 'rust'); BOX(T.x, yb-0.8, T.z+c, 47, 0.8, 0.9, 0, shade(rustA,-0.18), 'rust'); STRUCT.girders+=2; });
     if(F.k < TOWER_N){

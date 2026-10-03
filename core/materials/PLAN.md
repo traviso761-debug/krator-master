@@ -829,8 +829,11 @@ What the first delivery taught:
    review of `girder.html` against `girder.html?mat=proc`; GPU cost of the standard material on a real machine
    (the headless budget run counts draw calls and triangles, which did not change).
 2. **The rest of Girder's surfaces**, below.
-3. **Repetition break-up** for large surfaces (thatch, carved wood): a second variant per set, or a
-   texture-bombing hook, which Godot gets as a shader.
+3. ~~**Repetition break-up**~~ *Done 2026-10-03 as a shader hook* (`KMAT.breakupHook`, record field `breakup:
+   {mix, macro, cell}`): a world-space noise blends each map with a shifted copy of itself and varies the brightness
+   slowly; colour, normal and roughness share the mask. Girder sets it per family in `materials.json` (strongest on
+   the floor plates, decking and ground); `?breakup=0` turns it off to compare. Godot: one `.gdshader`, same three
+   parameters.
 4. **Iziz**, then the nacre culture (Ys's Hykkousoi), as the plan's order of work says.
 5. ~~Decide Git LFS~~ Decided no; revisit at 250 MB (see "Git LFS").
 

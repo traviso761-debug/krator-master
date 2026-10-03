@@ -64,7 +64,7 @@ var terrMat;
 if(terrLib){
   var terrT = KMAT.textures(terrLib, { aniso: FAST ? 1 : 8 });
   [terrT.map, terrT.normalMap, terrT.roughnessMap].forEach(function(t){ if(t) t.repeat.set(9/terrLib.scale[0], 9/terrLib.scale[1]); });
-  terrMat = nlMaterial(famMaterial({ lib:terrLib, libTex:terrT }, { vertexColors:true }), 'terrain|std', function(sh){ KMAT.specularHook(sh, terrLib.specular); });
+  terrMat = nlMaterial(famMaterial({ lib:terrLib, libTex:terrT }, { vertexColors:true }), 'terrain|std'+KMAT.libKey(terrLib), function(sh){ KMAT.libHooks(sh, terrLib); });
 } else terrMat = nlMaterial(new THREE.MeshLambertMaterial({ vertexColors:true, map:terrTex }), 'terrain');
 var terrain = new THREE.Mesh(terrGeo, terrMat);
 terrain.receiveShadow = !FAST; terrain.frustumCulled = false; terrain.userData.inspectLabel = 'Forest floor';
