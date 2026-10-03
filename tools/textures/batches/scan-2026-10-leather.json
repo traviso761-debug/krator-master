@@ -1,0 +1,5 @@
+[
+ {"slug": "Leather008", "id": "hide.leather008", "scale": [0.6, 0.6], "mute": 0.0, "tint": true, "rough_lift": 0.3, "rough_floor": 0.45, "note": "grey-brown leather grain | provisional scale"},
+ {"slug": "Leather009", "id": "hide.leather009", "scale": [0.6, 0.6], "mute": 0.0, "tint": true, "rough_lift": 0.3, "rough_floor": 0.45, "note": "leather grain | provisional scale"},
+ {"slug": "Leather033C", "id": "hide.leather033c", "scale": [0.6, 0.6], "mute": 0.0, "tint": true, "rough_lift": 0.3, "rough_floor": 0.45, "note": "coloured leather | provisional scale"}
+]
