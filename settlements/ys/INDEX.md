@@ -4,7 +4,7 @@
 
 Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).
 
-Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `GODOT.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `README.md`
+Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `GODOT.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/kit.html`, `dist/mock.html`, `dist/ys.html`
 

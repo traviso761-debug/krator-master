@@ -59,6 +59,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: kits/, settlements/
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
+# the material records (core/materials/record: KMAT, TEX and the browser loader; GODOT-PLAN.md Phase 3)
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 OUT = os.path.join(HERE, 'girder.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
@@ -67,7 +70,8 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html',
                  '53-furnish.js',      # FURNISH: catalog furniture placed as data (no rnd())
                  '56-interiors.js',    # the interiors: rooms planned and furnished per building (own RNG)
-                 '83-walk.js'}         # the first-person walk mode
+                 '83-walk.js',         # the first-person walk mode
+                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js'}   # core/materials/record (no rnd())
 # GENERATED fragment, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one
 # closure exposing KratorFurniture) and the interiors core with the Beast Rider interior set
 # (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). It sits between the textures (47) and
@@ -75,14 +79,38 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
 # do not apply to them. The furniture cultures: beast-rider and its fallback chain (IX.CULTURE_FAMILY).
 FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic']
 INTERIOR_SETS = ['beast-rider']
-VIRTUAL = {'51-furniture-bundle.js'}
+VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js'}
 
 
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'51-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS)}
+    return {'51-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS),
+            '46-matlib-pack.js': matlib_pack()}
+
+
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the
+    committed tex/ files only, never the library or an image encoder, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return '/* no tex/pack.json: Girder runs on its procedural textures */\nKMAT.pack(\'girder\', {});\n'
+    pack = json.load(open(pj))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5),
+             'tint': e['tint']['keep']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== 11a. LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
+            '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
+            "KMAT.pack('girder', {\n" + ',\n'.join(out) + '\n});\n')
 
 
 PALETTE_FILE = '05-palette.js'
@@ -160,9 +188,10 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for f in os.listdir(LOD_DIR):          # a src/ copy with the same name overrides
-        if f[0].isdigit() and f not in paths:
-            paths[f] = os.path.join(LOD_DIR, f)
+    for d in (LOD_DIR, RECORD_DIR):        # a src/ copy with the same name overrides
+        for f in os.listdir(d):
+            if f[0].isdigit() and f.endswith('.js') and f not in paths:
+                paths[f] = os.path.join(d, f)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:

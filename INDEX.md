@@ -7,7 +7,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | Build | Fragments | src KB | Largest KB | What |
 |---|---|---|---|---|
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 46 | 631 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
-| [`settlements/girder`](settlements/girder/INDEX.md) | 29 | 559 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
+| [`settlements/girder`](settlements/girder/INDEX.md) | 29 | 564 | 88 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 46 | 739 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 51 | 503 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
@@ -29,7 +29,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 13 | 175 | 59 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 135 | 33 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 16 | 222 | 50 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 19 | 261 | 61 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 15 | 224 | 61 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 174 | 56 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 204 | 68 | Biome kit: see `biomes/README.md`. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 173 | 35 | Biome kit: see `biomes/README.md`. |

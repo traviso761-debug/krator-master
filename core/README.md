@@ -213,6 +213,21 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 `src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons). `walk/` and `sched/` have no
 user yet.
 
+## `materials/record/`: material records and the library loader
+
+`GODOT-PLAN.md` Phase 3, as built 2026-10-03 (the how-to is `core/materials/PLAN.md`, "How a build adopts the library").
+A subfolder, so the Ancients-lineage builds that take every top-level `core/materials/` fragment do not take these.
+
+| File | What |
+|---|---|
+| `23-mat-record.js` | `KMAT` ([G data]): `record()` checks a material record in the Phase 3 vocabulary; `adapter(build, recs)`, `table(build)` (the export's material table: maps named by library set or `TEX.def` id); `pack()`/`packed()` hold the build's library pack |
+| `24-tex-def.js` | `TEX` ([G data]): `kind()`, `def()`, `fn()` (the pure pixel function), `pixels()` (the bytes a canvas fill writes), `defs()` |
+| `25-matlib-host.js` | [web]: `KMAT.mode` from `?mat=proc`, `KMAT.textures(entry)` (data URLs to three.js textures; `window._texPending`), `KMAT.specularHook` |
+| `test-record.js` | `node core/materials/record/test-record.js` |
+
+**Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`
+from `tex/`, which `tools/textures/pack.py` writes from `materials.json`).
+
 ## `clock/`
 
 The world clock, `KCLOCK` (`GODOT-PLAN.md`, Phase 1, "The world clock"): motion time `t` in seconds, and world time

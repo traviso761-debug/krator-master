@@ -42,7 +42,9 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
    field with one kit as its first consumer. Needs the spike's findings on terrain.
 6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass.
-7. **The Girder pilot** (core/materials/PLAN.md): `TEX.def`, the record adapters, `core/furnish` with Girder as its
+7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
+   `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
+   four texture gaps (leafy, web, ghostwood, prism gum), the owner's look review, and `core/furnish` with Girder as its
    first consumer.
 8. **`core/mask` with Iziz's city** as its first consumer, then Iziz's export on the `KRATOR_EXPORT` shape (M5).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.

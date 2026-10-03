@@ -22,8 +22,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 22 | 5. LAYOUT — GIRDER (1); THE RUIN (39); THE TERRACE (145); THE FOREST (179); NAV GRAPH (214) |
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 25 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
-| `47-texture.js` | 9 | 11. TEXTURES (1) |
+| `45-kit.js` | 26 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `47-texture.js` | 13 | 11. TEXTURES (1) |
 | `50-structure.js` | 18 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 9 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `55-arch.js` | 51 **big** | 14. ARCHITECTURE — GIRDER (1) |
@@ -32,9 +32,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `60-trees.js` | 39 **big** | 14. TREES (1) |
 | `62-jungle.js` | 46 **big** | 15. JUNGLE (Girder) (1) |
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
-| `75-terrain.js` | 12 | 20. EMIT + GROUND + RIVER (1) |
+| `75-terrain.js` | 13 | 20. EMIT + GROUND + RIVER (1) |
 | `78-life.js` | 61 **big** | 78. LIFE — GIRDER (2) |
-| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (148) |
+| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (151) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-walk.js` | 19 | 25b. WALK MODE (1) |

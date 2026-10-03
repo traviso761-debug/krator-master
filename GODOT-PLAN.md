@@ -353,6 +353,12 @@ path, and a GPU and a CPU load give the same placement hash.
 Done when: a build's export carries a material table a Godot importer can apply without reading JS, and
 no new `canvasTex` painter is added without a `TEX.def` or a bake.
 
+*Status 2026-10-03:* the record system is built (`core/materials/record/`: `KMAT`, `TEX`, the browser loader, a
+node test) with the pack tool `tools/textures/pack.py`, and **Girder is the pilot**: thirteen families on library
+sets with colour, normal and roughness maps, the rest as `TEX.def` kinds, `window._materials` as its table,
+`?mat=proc` identical to the old page. Not yet: an exporter that writes the table to a file (Phase 4), Iziz as the
+second pilot, the shader-library ids for the hooks (`world-uv`, `cloth-sway` are named, not yet `.gdshader`s).
+
 **Content and status: `core/materials/PLAN.md`.** That file holds the library itself: about 45 shared PBR
 surfaces tinted per culture, culture pattern sheets, where each comes from (scan libraries, generated
 images, procedural), the generation prompts, and the processing script `tools/textures/process.py`. Status
