@@ -1,0 +1,1580 @@
+[
+ {
+  "src": "highlands_tile-d.png",
+  "out": "core/materials/patterns/highlands/tile-d",
+  "record": {
+   "id": "highlands/tile-d",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/tile-d (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Chevron Fish-Scale Ceramic Tile Mosaic.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_tile-s.png",
+  "out": "core/materials/patterns/highlands/tile-s",
+  "record": {
+   "id": "highlands/tile-s",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/tile-s (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Colorful Fish-Scale Ceramic Tile Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_tile-t.png",
+  "out": "core/materials/patterns/highlands/tile-t",
+  "record": {
+   "id": "highlands/tile-t",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/tile-t (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Glossy Multicolor Scallop Tile Mosaic.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_tile-w.png",
+  "out": "core/materials/patterns/highlands/tile-w",
+  "record": {
+   "id": "highlands/tile-w",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/tile-w (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Vintage Oxblood and Forest Green Scallop Tiles.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_harlequin.png",
+  "out": "core/materials/patterns/highlands/harlequin",
+  "record": {
+   "id": "highlands/harlequin",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/harlequin (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Glossy Green-and-Gold Diamond Tile Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_lattice-lantern.png",
+  "out": "core/materials/patterns/highlands/lattice-lantern",
+  "record": {
+   "id": "highlands/lattice-lantern",
+   "family": "lattice",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/lattice-lantern (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cream Geometric Lattice on Charcoal.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_lattice-triskelion.png",
+  "out": "core/materials/patterns/highlands/lattice-triskelion",
+  "record": {
+   "id": "highlands/lattice-triskelion",
+   "family": "lattice",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/lattice-triskelion (a second fret, used beside lattice-fret) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cream Triskelion Lattice Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_lattice-fret.png",
+  "out": "core/materials/patterns/highlands/lattice-fret",
+  "record": {
+   "id": "highlands/lattice-fret",
+   "family": "lattice",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/lattice-fret (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Greek-Key Spiral Lattice Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_lattice-grid.png",
+  "out": "core/materials/patterns/highlands/lattice-grid",
+  "record": {
+   "id": "highlands/lattice-grid",
+   "family": "lattice",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/lattice-grid (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Minimalist Cream 6\u00d76 Lattice Grid.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_maze.png",
+  "out": "core/materials/patterns/highlands/maze",
+  "record": {
+   "id": "highlands/maze",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/maze (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Stone Labyrinth Tile Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_maze-weathered.png",
+  "out": "core/materials/patterns/highlands/maze-weathered",
+  "record": {
+   "id": "highlands/maze-weathered",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/highlands/maze (weathered variant) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Weathered Stone Labyrinth Tile Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_frieze-nw-totemic.png",
+  "out": "core/materials/patterns/highlands/frieze-nw-totemic",
+  "record": {
+   "id": "highlands/frieze-nw-totemic",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a Highlands painted frieze (formline or caihua; no exact row) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Northwest Coast Totemic Painted Wood Frieze.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_frieze-asian-nw.png",
+  "out": "core/materials/patterns/highlands/frieze-asian-nw",
+  "record": {
+   "id": "highlands/frieze-asian-nw",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a Highlands painted frieze (caihua candidate) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Symmetrical East Asian and Northwest Coast Frieze.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_frieze-teal-gold.png",
+  "out": "core/materials/patterns/highlands/frieze-teal-gold",
+  "record": {
+   "id": "highlands/frieze-teal-gold",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a Highlands painted frieze (caihua candidate) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Teal and Gold Tribal Ornamental Frieze.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "highlands_frieze-cloud-lotus.png",
+  "out": "core/materials/patterns/highlands/frieze-cloud-lotus",
+  "record": {
+   "id": "highlands/frieze-cloud-lotus",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a Highlands painted frieze (caihua candidate) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Asian Cloud and Lotus Frieze.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "reedlake_chakana.png",
+  "out": "core/materials/patterns/reedlake/chakana",
+  "record": {
+   "id": "reedlake/chakana",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/reedlake/chakana (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Andean Cross Emblem.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "reedlake_chakana-textile-terracotta.png",
+  "out": "core/materials/patterns/reedlake/chakana-textile-terracotta",
+  "record": {
+   "id": "reedlake/chakana-textile-terracotta",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a Reed Lake chakana textile (awayo candidate) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Andean Terracotta Chakana Textile Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "reedlake_chakana-textile-red.png",
+  "out": "core/materials/patterns/reedlake/chakana-textile-red",
+  "record": {
+   "id": "reedlake/chakana-textile-red",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a Reed Lake chakana textile (awayo candidate) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Woven Red Chakana Textile Pattern.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "reedlake_fringe.png",
+  "out": "core/materials/patterns/reedlake/fringe",
+  "record": {
+   "id": "reedlake/fringe",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/reedlake/fringe (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Golden Straw Fringe Texture.png"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "wood.carved.reddish.png",
+  "out": "core/materials/library/wood.carved.reddish",
+  "record": {
+   "id": "wood.carved.reddish",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row wood.carved (reddish variant) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Carved Reddish-Brown Wood Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.5
+  }
+ },
+ {
+  "src": "wood.tarred.b.png",
+  "out": "core/materials/library/wood.tarred.b",
+  "record": {
+   "id": "wood.tarred.b",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row wood.tarred (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Tar-Coated Weathered Wooden Planks.png"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "dark_gloss": 0.3
+  }
+ },
+ {
+  "src": "wood.lacquer.crimson.png",
+  "out": "core/materials/library/wood.lacquer.crimson",
+  "record": {
+   "id": "wood.lacquer.crimson",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row wood.lacquer (crimson variant) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Crimson Lacquered Wood Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "fibre.bamboo.lattice.png",
+  "out": "core/materials/library/fibre.bamboo.lattice",
+  "record": {
+   "id": "fibre.bamboo.lattice",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, a woven bamboo lattice (fibre.cane family) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Woven Golden Bamboo Lattice Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "organic.scale.png",
+  "out": "core/materials/library/organic.scale",
+  "record": {
+   "id": "organic.scale",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row organic.scale (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Earthy Reptile Scale Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "organic.scale.b.png",
+  "out": "core/materials/library/organic.scale.b",
+  "record": {
+   "id": "organic.scale.b",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row organic.scale (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Earthy Reptilian Scale Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "organic.scale.olive.png",
+  "out": "core/materials/library/organic.scale.olive",
+  "record": {
+   "id": "organic.scale.olive",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row organic.scale (olive variant) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Olive Reptile Scale Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "organic.chitin.shingle.png",
+  "out": "core/materials/library/organic.chitin.shingle",
+  "record": {
+   "id": "organic.chitin.shingle",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row organic.chitin (shingle variant) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Chitin Shingle Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "dark_gloss": 0.3
+  }
+ },
+ {
+  "src": "organic.chitin.scale.png",
+  "out": "core/materials/library/organic.chitin.scale",
+  "record": {
+   "id": "organic.chitin.scale",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row organic.chitin (scale variant) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Chitinous Scale Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "dark_gloss": 0.3
+  }
+ },
+ {
+  "src": "organic.fungus.cap.png",
+  "out": "core/materials/library/organic.fungus.cap",
+  "record": {
+   "id": "organic.fungus.cap",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row organic.fungus (cap; radial, so it tiles only as a swatch) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Radial Mushroom Cap Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "stone.coral.png",
+  "out": "core/materials/library/stone.coral",
+  "record": {
+   "id": "stone.coral",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row stone.coral (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Fossil-Rich Limestone Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "shell.abalone.png",
+  "out": "core/materials/library/shell.abalone",
+  "record": {
+   "id": "shell.abalone",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.abalone (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Abalone Shell Texture(1).png"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.abalone.waves.png",
+  "out": "core/materials/library/shell.abalone.waves",
+  "record": {
+   "id": "shell.abalone.waves",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.abalone (waves) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Abalone Shell Waves.png"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.abalone.c.png",
+  "out": "core/materials/library/shell.abalone.c",
+  "record": {
+   "id": "shell.abalone.c",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.abalone (third image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "abalone 2"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.abalone.soft.png",
+  "out": "core/materials/library/shell.abalone.soft",
+  "record": {
+   "id": "shell.abalone.soft",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.abalone (soft lighting) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "abalone-soft-lighting"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.nacre.png",
+  "out": "core/materials/library/shell.nacre",
+  "record": {
+   "id": "shell.nacre",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.nacre (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Mother-of-Pearl Waves(1).png"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.nacre.b.png",
+  "out": "core/materials/library/shell.nacre.b",
+  "record": {
+   "id": "shell.nacre.b",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.nacre (second image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Mother-of-Pearl Waves.png"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.nacre.c.png",
+  "out": "core/materials/library/shell.nacre.c",
+  "record": {
+   "id": "shell.nacre.c",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.nacre (third image) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "mother of pearl 2"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.conch.png",
+  "out": "core/materials/library/shell.conch",
+  "record": {
+   "id": "shell.conch",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.conch (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Polished Pink Onyx Shell Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "shell.conch.waves.png",
+  "out": "core/materials/library/shell.conch.waves",
+  "record": {
+   "id": "shell.conch.waves",
+   "family": "shell",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row shell.conch (waves) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Polished Pink Onyx Wave Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.25,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "ceramic.glaze.png",
+  "out": "core/materials/library/ceramic.glaze",
+  "record": {
+   "id": "ceramic.glaze",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 ceramic.glaze (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Aged Crackled Ceramic Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "glass.bottle.png",
+  "out": "core/materials/library/glass.bottle",
+  "record": {
+   "id": "glass.bottle",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.12,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 glass.bottle (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Emerald Glass Swirl Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.12,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "paving.flagstone.png",
+  "out": "core/materials/library/paving.flagstone",
+  "record": {
+   "id": "paving.flagstone",
+   "family": "paving",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 paving.flagstone (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Mossy Irregular Flagstone Mosaic.png"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "wax.candle.png",
+  "out": "core/materials/library/wax.candle",
+  "record": {
+   "id": "wax.candle",
+   "family": "wax",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 wax.candle (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Pale Honey Wax Swirls and Bubbles.png"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "ground.road.ruts.png",
+  "out": "core/materials/library/ground.road.ruts",
+  "record": {
+   "id": "ground.road.ruts",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 ground.road.ruts (runs vertically) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Muddy Wheel Track Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "bone.ivory.png",
+  "out": "core/materials/library/bone.ivory",
+  "record": {
+   "id": "bone.ivory",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 bone.ivory (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Porous Ivory Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "fibre.wicker.png",
+  "out": "core/materials/library/fibre.wicker",
+  "record": {
+   "id": "fibre.wicker",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 fibre.wicker (magenta key background: a cut-out mask is still to be made) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Rattan Lattice on Magenta.png"
+   }
+  },
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "ceramic.terracotta.png",
+  "out": "core/materials/library/ceramic.terracotta",
+  "record": {
+   "id": "ceramic.terracotta",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 ceramic.terracotta (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Terracotta Clay Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "ceramic.terracotta.sooty.png",
+  "out": "core/materials/library/ceramic.terracotta.sooty",
+  "record": {
+   "id": "ceramic.terracotta.sooty",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 ceramic.terracotta (soot-kissed) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "Soot-Kissed Terracotta Wheel Texture.png"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "cloth.rug.wool.webp",
+  "out": "core/materials/library/cloth.rug.wool",
+  "record": {
+   "id": "cloth.rug.wool",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 cloth.rug.wool (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "21.webp"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "paving.kerb.webp",
+  "out": "core/materials/patterns/paving.kerb",
+  "record": {
+   "id": "paving.kerb",
+   "family": "paving",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 paving.kerb (a row of kerbstones, repeats horizontally) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "22.webp"
+   },
+   "pattern": true
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.6,
+   "delight": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "ground.asphalt.webp",
+  "out": "core/materials/library/ground.asphalt",
+  "record": {
+   "id": "ground.asphalt",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 ground.asphalt (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "23.webp"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "glass.clear.webp",
+  "out": "core/materials/library/glass.clear",
+  "record": {
+   "id": "glass.clear",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.1,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 glass.clear (grey key background) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "24.webp"
+   }
+  },
+  "options": {
+   "rough": 0.1,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ },
+ {
+  "src": "glass.frosted.webp",
+  "out": "core/materials/library/glass.frosted",
+  "record": {
+   "id": "glass.frosted",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, section 8 glass.frosted (grey key background) (exact wording as delivered not recorded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "25.webp"
+   }
+  },
+  "options": {
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "keep_aspect": false
+  }
+ }
+]

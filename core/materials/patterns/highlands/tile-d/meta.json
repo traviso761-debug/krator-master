@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1125,
+    1032
+   ],
+   "seam_after": [
+    0.627,
+    0.997
+   ],
+   "seam_before": [
+    1.025,
+    9.445
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "highlands/tile-d",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.35,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "highlands_tile-d.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Chevron Fish-Scale Ceramic Tile Mosaic.png",
+  "prompt": "core/materials/PLAN.md, patterns/highlands/tile-d (exact wording as delivered not recorded)",
+  "sha1": "7ec00c97b1af990b21213cc0813c9a92ce1bf921"
+ }
+}

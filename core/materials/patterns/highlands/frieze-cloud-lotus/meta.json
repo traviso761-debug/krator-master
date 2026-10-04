@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2116,
+    470
+   ],
+   "seam_after": [
+    1.601,
+    0.413
+   ],
+   "seam_before": [
+    4.589,
+    5.671
+   ],
+   "source_size": [
+    2123,
+    478
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.6,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "highlands/frieze-cloud-lotus",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.6,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "highlands_frieze-cloud-lotus.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Asian Cloud and Lotus Frieze.png",
+  "prompt": "core/materials/PLAN.md, a Highlands painted frieze (caihua candidate) (exact wording as delivered not recorded)",
+  "sha1": "2ba71d496ae0f4686a4391560ccdfac642d90b8f"
+ }
+}

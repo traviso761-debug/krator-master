@@ -9,6 +9,7 @@
   "Cloth & canvas",
   "Roof",
   "Fibre & organic",
+  "Glass, ceramic & bone",
   "Ground",
   "Bark & leaf",
   "Pattern sheets"
@@ -20,6 +21,7 @@
   "Voth",
   "Dalab",
   "Highlands",
+  "Reed Lake",
   "Yuni / Locus",
   "Ancients",
   "Ancient Port (Hook)",
@@ -1871,6 +1873,328 @@
     3,
     1.5
    ]
+  },
+  {
+   "src": "patterns/highlands/tile-d",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/tile-s",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/tile-t",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/tile-w",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/harlequin",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/lattice-lantern",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/lattice-triskelion",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/lattice-fret",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/lattice-grid",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/maze",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/maze-weathered",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/frieze-nw-totemic",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/frieze-asian-nw",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/frieze-teal-gold",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/highlands/frieze-cloud-lotus",
+   "row": "Pattern sheets",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/reedlake/chakana",
+   "row": "Pattern sheets",
+   "col": "Reed Lake",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/reedlake/chakana-textile-terracotta",
+   "row": "Pattern sheets",
+   "col": "Reed Lake",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/reedlake/chakana-textile-red",
+   "row": "Pattern sheets",
+   "col": "Reed Lake",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/reedlake/fringe",
+   "row": "Pattern sheets",
+   "col": "Reed Lake",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.carved.reddish",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.tarred.b",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.lacquer.crimson",
+   "row": "Wood",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "library/fibre.bamboo.lattice",
+   "row": "Fibre & organic",
+   "col": "Highlands",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.scale",
+   "row": "Fibre & organic",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.scale.b",
+   "row": "Fibre & organic",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.scale.olive",
+   "row": "Fibre & organic",
+   "col": "Generic",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.chitin.shingle",
+   "row": "Fibre & organic",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.chitin.scale",
+   "row": "Fibre & organic",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.fungus.cap",
+   "row": "Fibre & organic",
+   "col": "Voth",
+   "status": "committed"
+  },
+  {
+   "src": "library/stone.coral",
+   "row": "Stone & rock",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.abalone",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.abalone.waves",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.abalone.c",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.abalone.soft",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.nacre",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.nacre.b",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.nacre.c",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.conch",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/shell.conch.waves",
+   "row": "Fibre & organic",
+   "col": "Hykkousoi (Ys)",
+   "status": "committed"
+  },
+  {
+   "src": "library/ceramic.glaze",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/glass.bottle",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/paving.flagstone",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "committed"
+  },
+  {
+   "src": "library/wax.candle",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/ground.road.ruts",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "committed"
+  },
+  {
+   "src": "library/bone.ivory",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/fibre.wicker",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/ceramic.terracotta",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/ceramic.terracotta.sooty",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.rug.wool",
+   "row": "Cloth & canvas",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/paving.kerb",
+   "row": "Brick, paving & tile",
+   "col": "City (parks & streets)",
+   "status": "committed",
+   "scale": [
+    2,
+    1
+   ]
+  },
+  {
+   "src": "library/ground.asphalt",
+   "row": "Ground",
+   "col": "City (parks & streets)",
+   "status": "committed"
+  },
+  {
+   "src": "library/glass.clear",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
+  },
+  {
+   "src": "library/glass.frosted",
+   "row": "Glass, ceramic & bone",
+   "col": "Furniture",
+   "status": "committed"
   }
  ]
 }

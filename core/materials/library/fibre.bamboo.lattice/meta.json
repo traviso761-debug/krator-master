@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.455,
+    1.442
+   ],
+   "seam_before": [
+    1.968,
+    1.781
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fibre",
+  "id": "fibre.bamboo.lattice",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "fibre.bamboo.lattice.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Woven Golden Bamboo Lattice Texture.png",
+  "prompt": "core/materials/PLAN.md, a woven bamboo lattice (fibre.cane family) (exact wording as delivered not recorded)",
+  "sha1": "bd4d897d368c18db6416fdf8704fcc3580a512e6"
+ }
+}

@@ -715,6 +715,46 @@ Gaps the scan libraries do not fill. Start each with the base template; for tint
 | `paving.flagstone` | Large irregular flagstones laid tightly, each a different size and colour (grey, buff, brown), narrow dark joints with a few weeds and moss, worn smooth in the middle of each stone. |
 | `ground.asphalt` | Old worn asphalt road surface, dark grey with small exposed stones, fine cracks, a few patched rectangles in a different tone, oil stains and faded paint chips. |
 
+#### Beast Riders: furniture, street furniture, market goods and interiors
+
+What the Beast Rider catalog pieces (`kits/catalog/krator-master-furniture-beast-rider.js`) and Girder's street furniture still draw as flat palette
+colours. Colours below are the code's: bone #e8e0cc and #c8b898; mahogany #6a2a1e, #44190f, #8a4030; claw green #3f7a3a, claw pale #e6dcc2, moss dark #2e5a2c;
+gourd ochre #b89040, green #8a9a4a, rust #b07a3a, pale #c2a05a; fruit orange #e0862a, amber #d06a20, gold #f0a040; silk #e8ecec and #d8dede;
+iron #2a2620, #6a655a, #4a4038; leather #5a4630; lacquer red #8a2f2a, gilt #b08432, verdigris #2f6a5a, deep lacquer #7a2028; rope hemp #a8966a, jute #98865c;
+crate tan #877558 and #6d5e45; flame #ff8a3c; lantern glow #ffb347. Beast Rider style: Amerindian and Javan influences, lashed hardwood,
+hide and woven fibre, bone and horn, big animal skulls; court pieces in hyper-mahogany with bone inlay and skull crests. Start each request with the base template.
+Tintable rows say so; everything else is full colour.
+
+| id | Material line |
+|---|---|
+| `wood.mahogany` | Polished hyper-mahogany for court furniture: dense, close straight grain with a faint ribbon figure, deep red-brown (#6a2a1e) shading to near-black (#44190f) in the grain lines and warmer (#8a4030) in the lighter ribbons, a hand-rubbed oil finish with a soft satin sheen, a few tiny pores and hairline checks, light wear and pale scuffs at the edges. Boards about 20 cm wide with fine butt joints. |
+| `patterns/beast-riders/bone-inlay` | Flat, front-on decorative panel of a bone-inlay band on hyper-mahogany (#6a2a1e, grain visible): a horizontal strip with a central row of small bone-ivory (#e8e0cc, #c8b898) diamonds and claw-shaped hooks, bordered above and below by thin bone fillets, each piece cut separately with hair-thin dark joints, slightly proud of the wood, a few chips. The pattern repeats horizontally. |
+| `hide.pelt.cat` | Tanned big-cat pelt used as a rug or seat cover, seen from above: short dense fur lying in one direction, warm tawny base (#b89050) with dark rosette spots ringed in rust (#7a4a2a) and black centres, paler belly fur along one edge, a few worn bald patches and a faint pressed crease. Muted, so it can be tinted. (A second colourway, striped in tan and umber, is `hide.pelt.stripe`: the same pelt with vertical bold stripes instead of rosettes.) |
+| `hide.rawhide` | Stretched rawhide drying on a frame, seen straight on: taut, slightly translucent cream-amber skin (#c9a86a) with a mottled darker spine line down the middle, fine hair roots, evenly spaced lacing holes along all four edges with twisted sinew (#a8966a) passing through them, a few small tears. |
+| `bone.horn` | Polished animal horn plate for handles, lantern panels and inlays: smooth, slightly translucent honey-brown (#a8803c) fading to dark umber (#3a2a1c) along curved growth bands, fine longitudinal fibres, small cracks near the base, a warm waxy sheen. |
+| `bone.antler` | Weathered antler surface, pale grey-brown (#c8b898) with long raised vertical ridges and rounded nodules, darker stained grooves (#7a6648), a worn tip showing cream bone (#e8e0cc), a few hairline cracks. |
+| `bone.skull` | Surface of a very large animal skull used for crests and skullpoles, seen from above: ivory (#e8e0cc) bone with fine branching suture lines between plates, small foramen pits, a rough brow ridge, stained umber (#c8b898) in the hollows, weathered chalky patches and a few old hairline cracks. |
+| `organic.gourd` | Dried gourd rind, in one tile three finishes side by side as vertical strips: smooth waxy olive green (#8a9a4a), ochre (#b89040) with tan freckles, and rust (#b07a3a) with darker mottling; all with fine warts, faint longitudinal ribs and tiny scars. Muted, so it can be tinted. |
+| `fibre.basket.coiled` | Coiled basketry: a continuous bundle of grass wrapped in flat split palm strips and stitched in a tight spiral of parallel rows, honey (#c4a878) and dark brown (#6e5238) strips alternating in a stepped zigzag, visible stitches, a few frayed ends and loose fibres. |
+| `patterns/beast-riders/claw-tapestry` | Flat, front-on decorative panel of a woven hanging: a claw-green (#3f7a3a) field with deeper moss (#2e5a2c) borders, a repeating motif of three parallel claw-pale (#e6dcc2) curved claw slashes in a half-drop grid, visible plain weave, slightly faded and uneven dye, a hand-sewn hem at the top. The pattern repeats in both directions. |
+| `patterns/beast-riders/emblem` | Flat, front-on decorative panel of the Beast Rider house emblem on cloth: a square with a claw-green (#3f7a3a) field, a moss (#2e5a2c) edge and an olive band inside it, and a claw-pale (#e6dcc2) ink device of a stylised three-toed claw mark inside a ring, woven or painted with slight unevenness, faded. Single emblem centred; the cloth edge repeats in both directions. |
+| `patterns/beast-riders/totem` | Flat, front-on panel of a carved and painted skullpole, a tall vertical band about three times higher than wide: weathered hardwood (#6a5038) carved in stacked tiers of a skull, a beak and a claw, painted in lacquer red (#8a2f2a), bone (#e8e0cc), black and a little verdigris (#2f6a5a), the paint cracked and flaking to bare wood. The pattern repeats vertically. |
+| `wax.tallow` | Rendered animal tallow in a dish, seen from above: matte creamy grey-white (#e0d8c0), slightly greasy with a faint sheen, small air pits and soot-grey streaks near a central wick hollow, a thumbprint or two, a thin crust cracking at the edges. |
+| `cloth.silk` | Court silk hanging: very fine plain weave in white (#e8ecec) and pale grey (#d8dede) stripes, a soft sheen that shifts with the weave direction, tiny slubs, a few gentle fold creases and a slightly crinkled hem. Neutral, so it can be tinted. |
+| `metal.iron.pitted` | Hand-forged wrought iron for pots, hinges and brackets: dark (#2a2620) with grey (#6a655a) worn highlights, tiny pits, hammer facets, a thin rust-brown film (#4a4038) in the hollows, a few scale flakes. Neutral, so it can be tinted. |
+| `wood.lamppost` | Weathered hardwood post for Girder's lamp posts, about 20 cm square: vertical grain, deep checks along the length, tar-dark brown (#4a3624) with a silvered lighter weathered surface in places, a few old lashing grooves and nail holes, darker at the base from damp. |
+| `lantern.horn` | Glowing lantern panel seen from the front, as the unlit surface of the lamp: a flat plate of thin scraped horn, warm honey (#ffb347 lit from within, so bright centre and darker rim), fine long fibres and faint cloudy bands, a few tiny cracks; thin dark timber framing it at the edges. |
+| `lantern.paper` | Oiled paper lantern panel, front-on: fibrous translucent paper in warm amber (#ffb347), visible long pulp fibres and a few small patched repairs, soft darker edges where it is glued to a timber frame, light soot staining at the top. |
+| `patterns/beast-riders/pennant` | Flat, front-on decorative panel of a row of prayer flags and swallow-tail pennants strung on a cord: square flags in claw-green (#3f7a3a), rust (#8a5a2a), mustard (#c2a24e), plum (#4a3a6a) and wheat (#b0894a), each with a faint woodblock-printed claw mark in pale ink, edges frayed, on a plain pale sky background. The row repeats horizontally. |
+| `patterns/beast-riders/plaque` | Flat, front-on decorative panel of a gallery plaque: a carved hardwood board (#6a5038) with a raised border and a central relief of a stylised claw and skull in gilt (#b08432) over lacquer red (#8a2f2a), worn at the edges to show wood, small verdigris (#2f6a5a) corner studs. Single plaque centred. |
+| `fruit.skin.orange` | Fruit rind of the orange orchard fruit, seen close: slightly bumpy skin in glowing orange (#e0862a) with fine pores, a few darker dimples and a pale scar, a hint of amber (#d06a20) toward one edge. |
+| `fruit.skin.amber` | Smooth-skinned amber fruit, close: glossy skin in amber (#d06a20) shading to gold (#f0a040) with pale freckles, a few soft bruises and a faint waxy bloom. |
+| `fruit.husk` | The husk of a baobab pod: thick velvety fur in grey-brown (#8a7a66) with short dense hairs lying one way, ridges and a few pale patches where it has rubbed away, tiny dry cracks. |
+| `card.crop` | Crop leaf card for market and field dressing: nine long green leaves (#5c8a3a, #7a9a3e, #4e7a32) of a maize-like plant arching in different directions, with pale central ribs and slightly torn tips, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. |
+| `fibre.net` | Fishing and hunting net of knotted cord: a regular square mesh of twisted hemp (#a8966a) cord with visible knots at every crossing, slightly uneven sizes, a few broken strands, on a solid flat bright magenta (#ff00ff) background so the openings can be cut out. |
+| `fibre.mat.floor` | Woven floor mat of flat reed strips in a twill weave, strips about 2 cm wide in two shades of straw (#c4a870 and #a88a5e) forming diagonal ribs, darker worn walkways, a few broken reeds and frayed edges. |
+| `earth.floor.packed` | Interior packed-earth floor, seen from above: smooth hard-trodden brown clay (#8a6c48) with faint sweeping marks from brooms, small pebbles pressed flush, hairline drying cracks, and darker greasy patches near a hearth. |
+
 #### Scan-library metals (AmbientCG, added 2026-10-02)
 
 Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each with a metalness map:
@@ -781,6 +821,21 @@ The owner reviewed the scan candidates in the demo kit ("the picks looked fine")
 **Delivered 2026-10-03, not yet processed:** 39 ChatGPT images in the texture folder root (Highlands tile-d/s/t/w, harlequin, lattice grid, fret, maze; four wide friezes; Andean chakana textiles and emblem; golden straw fringe; four abalone, three mother-of-pearl, two pink onyx; three reptile scale, two chitin, a mushroom cap; fossil limestone; crimson lacquer, tarred planks, carved wood; golden bamboo lattice).
 The cream-on-charcoal lattice is `patterns/highlands/lattice-lantern`; the cream triskelion lattice is a second fret (`patterns/highlands/lattice-triskelion`, used alongside the spiral `lattice-fret`).
 `hide.leather008`, `hide.leather009` and `hide.leather033c` (AmbientCG Leather) were committed 2026-10-03 for `hide`.
+
+
+**Section 8 deliveries (2026-10-03, not yet processed):** aged crackled ceramic, emerald glass swirl, mossy flagstone mosaic, pale honey wax, muddy wheel track (1024x1536, process with `--keep-aspect`), porous ivory, rattan lattice on magenta (needs a mask), two terracotta clays, and five more: a shaggy wool rug (`cloth.rug.wool`), granite kerbstones in a row (`paving.kerb`, 2:1), worn asphalt (`ground.asphalt`), a bubbled greenish glass pane (`glass.clear`) and a grey frosted glass (`glass.frosted`). Still missing from section 8: `wood.furniture.polished`.
+
+
+#### Delivered 2026-10-03 and processed (committed with the history cleanup)
+
+53 more ChatGPT sets (`tools/textures/batches/chatgpt-2026-10b.json`, sources in the owner's `texture\chatgpt-2026-10b`): Highlands `tile-d`, `tile-s`, `tile-t`, `tile-w`
+(chevron, colourful, multicolour and oxblood-and-green fish-scale), `harlequin`, `lattice-grid`, `lattice-fret`, `lattice-triskelion`, `lattice-lantern`, `maze`
+(and a weathered one) and four wide friezes (`frieze-nw-totemic`, `frieze-asian-nw`, `frieze-teal-gold`, `frieze-cloud-lotus`: caihua or formline candidates, trimmed of
+their white margins, 4.5:1); Reed Lake `chakana`, `fringe` and two chakana textiles (awayo candidates); `wood.carved.reddish`, `wood.tarred.b`, `wood.lacquer.crimson`,
+`fibre.bamboo.lattice`, `stone.coral`; `organic.scale` (three), `organic.chitin.shingle`, `organic.chitin.scale`, `organic.fungus.cap`; `shell.abalone` (four) and `shell.nacre`
+(three) and `shell.conch` (two); section 8: `ceramic.glaze`, `ceramic.terracotta` (two), `glass.bottle`, `glass.clear`, `glass.frosted`, `paving.flagstone`, `paving.kerb`,
+`wax.candle`, `bone.ivory`, `fibre.wicker` (magenta key still to be cut), `cloth.rug.wool`, `ground.road.ruts`, `ground.asphalt`. Still missing from section 8: `wood.furniture.polished`.
+Wide or tall sheets keep their shape (`process.py --keep-aspect`); painted sheets are not de-lit.
 
 ## Built so far (2026-10-02)
 
