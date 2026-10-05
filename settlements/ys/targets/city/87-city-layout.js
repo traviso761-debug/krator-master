@@ -46,7 +46,7 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  // the Pharos's old block; the Facet stump that stood off the harbour (1,4), in the way of the harbour approach, moves
  // south of the Project H to (1,6); (1,4) is left to the water
  {const PH=ysBlock(1,5),old=Pb,ap=ysBlock(1,4),sx=ysBlock(1,6);
-  if(PH&&PH.kind!=='land'&&old){old.use=null;old.tag=null;PH.use='pharos';PH.tag='Ph';old.use='host';old.tag='H';old.host='tall';old.full='skyH';}
+  if(PH&&PH.kind!=='land'&&old){old.use=null;old.tag=null;PH.use='pharos';PH.tag='Ph';old.use='host';old.tag='H';old.host='tall';old.full='skyA';}   /* Travis: A and H swapped back; the Pharos is built on the Project H (88) */
   if(ap&&ap.kind!=='land'){ap.use='water';ap.tag='~';}
   if(sx&&sx.kind!=='land'){sx.use='host';sx.tag='H';sx.host='tall';sx.type='skyL';}}
  setWet(ai-sT[0]*3,aj-sT[1]*3,'citadel','E');
@@ -62,6 +62,10 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
   if(L){b.use=b.s>560*LAYOUT.K?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
  for(const b of LAYOUT.blocks)if(b.use&&!/^(host|homegrown|neighbourhood|farm|foreign|industry|aquaculture)$/.test(b.use))LAYOUT.landmarks[b.use]=b;
+ // Travis (Oct 5 2026): the Citadel stands on the Sentinel, the big stack south of the harbour (620, 930), not on a block
+ // of the grid; its block is freed to the water (the harbour approach), and the Sentinel is its stack (STACKS[0] moves there)
+ if(LAYOUT.landmarks.citadel){const old=LAYOUT.landmarks.citadel;old.use='water';old.tag='~';
+  const c={i:70,j:70,x:620,z:930,s:ysShoreDist(620,930),y:0,kind:'open',use:'citadel',tag:'E',wealth:'civic',dA:0,synthetic:true};LAYOUT.blocks.push(c);LAYOUT.by['70,70']=c;LAYOUT.landmarks.citadel=c;}
  // the Citadel's and the Winds' karst stacks stand under their blocks wherever the layout puts them (their shore loops move
  // too), sized to their landmark's footprint (Travis, Oct 5 2026: smaller, footprint-fitting): an ellipse whose axis runs
  // along the building's local x (the citadel's axis points away from its bridge door, the Winds' is its width), with
@@ -69,7 +73,9 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  const mv=(st,b,r,e)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;st.r=r;st.e=e;const d=toA(b),l=Math.hypot(d[0],d[1]);st.a=Math.atan2(-d[1]/l,-d[0]/l);ysStacksDirty();
   const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopStack(st);};
  const toA=b=>[A.x-b.x,A.z-b.z];
- mv(CITY.STACKS[0],LAYOUT.landmarks.citadel,64,1.3);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds,54,1.05);
+ mv(CITY.STACKS[0],LAYOUT.landmarks.citadel,70,1.25);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds,54,1.05);
+ // the Citadel's axis: along its local x, which faces the Pharos square-on (the gate, +z, faces the Pharos; 88 sets ry so)
+ {const st=CITY.STACKS[0],c=LAYOUT.landmarks.citadel,p=LAYOUT.landmarks.pharos;if(p){const fx=p.x-c.x,fz=p.z-c.z;st.a=Math.atan2(-fx,fz);ysStacksDirty();const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopStack(st);}}
  // the land quarter's reclaimed Ancients: half the neighbourhood blocks off the head (at least four), in the order of a
  // hash of their cell; the first two are skyscraper stumps (Travis: at least two podded stumps on land). A host block
  // has no lanes (the host takes its middle); every other neighbourhood block is quartered by lanes (87c).

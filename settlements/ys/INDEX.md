@@ -31,7 +31,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `52-sky-abc.js` | 30 **big** |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 6 |  |
-| `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (99) |
+| `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (100) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 14 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
 | `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
@@ -66,9 +66,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `74f-hyk-civic-minor.js` | 33 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
 | `75-hyk-harbour.js` | 37 **big** | shared bits (12) |
 | `76-hyk-industry.js` | 46 **big** | shared helpers (8); the armoured hall (73); warehouses: armoured halls with lipped cart door (124); the scrap smithies (157); the shipwright: a slipway under an open shed, a  (232); the granary: sealed silos on a raised pad, the s (274); the windmill: a sail-wheel of weed-cloth fins on (307); the generator: an Ancient machine reclaimed insi (350) |
+| `76b-hyk-warehouse-round.js` | 2 |  |
 | `77-hyk-military.js` | 31 **big** | shared helpers (used by 78-hyk-agri.js too) (7); the barracks (93); the ballista emplacement (163); the mustering ground (211) |
 | `78-hyk-agri.js` | 15 | the farm field (18); farmhouse 1: fused barnacle cones with a byre (48); farmhouse 2: a long pod with a drying-rack yard (86) |
 | `79-hyk-markets.js` | 18 | shared bits (7) |
+| `79z-ys-matlib.js` | 5 |  |
 | `81-sky.js` | 10 |  |
 | `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (34) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
@@ -83,6 +85,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 147 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 161 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

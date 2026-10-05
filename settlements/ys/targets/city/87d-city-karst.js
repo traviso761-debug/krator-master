@@ -44,7 +44,7 @@ function ysOnKarst(x,z,m){for(const s of ysStacksNear(x,z)){const L=ysStackLocal
    if(k>0)moved++;if(k<60)out.push([x,z]);}h.pts=out;}
  const S=[];for(const st of LAYOUT.streets){const L=Math.hypot(st.b[0]-st.a[0],st.b[1]-st.a[1]);const n=Math.max(2,Math.ceil(L/5));let run=null;const flush=()=>{if(run&&Math.hypot(run.b[0]-run.a[0],run.b[1]-run.a[1])>=20)S.push(run);run=null;};
   let broke=false;for(let i=0;i<=n;i++){const t=i/n,x=st.a[0]+(st.b[0]-st.a[0])*t,z=st.a[1]+(st.b[1]-st.a[1])*t;
-   if(st.kind!=='canal'&&ysOnKarst(x,z,st.w/2+3)){broke=true;flush();continue;}
+   if(ysOnKarst(x,z,st.w/2+3)){broke=true;flush();continue;}   /* a canal line too: a stack stands in the drowned grid (the Citadel's) */
    if(!run)run=Object.assign({},st,{a:[x,z],b:[x,z]});else run.b=[x,z];}
   flush();if(broke)cut++;}
  LAYOUT.streets=S;KARST.roads={highwayPointsMoved:moved,streetsCut:cut};

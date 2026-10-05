@@ -7,7 +7,7 @@ const VIEWS={
  'The shore at eye level':_ysEye(120,-380,600,-100,3),
  'Night on the water':[1000,60,500,200,8,-200,22.2],
  'The river terraces':[-330,30,380,-620,8,110],
- 'The Citadel stack from the water':[CITY.STACKS[0].x+308,30,CITY.STACKS[0].z+298,CITY.STACKS[0].x,40,CITY.STACKS[0].z],
+ 'The Citadel stack from the water':[CITY.STACKS[0].x-330,60,CITY.STACKS[0].z-120,CITY.STACKS[0].x,50,CITY.STACKS[0].z],
  'The layout from above':[(CITY.HEAD[0]+LAYOUT.A.x)/2,1100,(CITY.HEAD[1]+LAYOUT.A.z)/2+1,(CITY.HEAD[0]+LAYOUT.A.x)/2,0,(CITY.HEAD[1]+LAYOUT.A.z)/2],
  'The drowned grid from the south-east':[LAYOUT.A.x+420,200,LAYOUT.A.z+620,LAYOUT.A.x-120,0,LAYOUT.A.z+35],
  'The head of the bay — compass':[CITY.HEAD[0]+260,140,CITY.HEAD[1]+260,CITY.HEAD[0],4,CITY.HEAD[1],null,true],
@@ -44,6 +44,8 @@ const VIEWS={
   const t=PLACE.hosts.find(h=>h.land&&h.tall);if(t)V['A skyscraper stump on land']=[t.x-N[0]*230+T[0]*140,t.top*.7,t.z-N[1]*230+T[1]*140,t.x,t.top*.45,t.z];
   const m=PLACE.moles.find(m=>/military harbour mole 1/.test(m.name));if(m){const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;V['The military harbour quay']=[cx-N[0]*90+T[0]*140,40,cz-N[1]*90+T[1]*140,cx,3,cz];}
   const sh=PLACE.hosts.find(h=>h.pods.some(p=>p.stair));if(sh){const p=sh.pods.find(p=>p.stair);const r=sh.rAt(p.y,p.a)+34;V['A spiral stair down a tower']=[sh.x+Math.cos(p.a+.5)*r,p.y+8,sh.z+Math.sin(p.a+.5)*r,sh.x+Math.cos(p.a)*(r-30),p.y-5,sh.z+Math.sin(p.a)*(r-30)];}
+  {const B=YS_BAND;const mx=(B[1][0]+B[3][0]+B[0][0]+B[4][0])/4,mz=(B[1][1]+B[3][1]+B[0][1]+B[4][1])/4;V['The half-sunk Ancients']=[mx-N[0]*60-T[0]*330,120,mz-N[1]*60-T[1]*330,mx,10,mz];}
+  {const m=PLACE.moles.find(m=>/military harbour mole 1/.test(m.name));if(m){const c=m.star;V['The harbour piers']=[c[0]-N[0]*40+T[0]*260,150,c[1]-N[1]*40+T[1]*260,c[0]+N[0]*60,2,c[1]+N[1]*60];}}
   const ar=LAYOUT.landmarks.arena;if(ar)V['The Arena']=[ar.x-N[0]*210+T[0]*120,110,ar.z-N[1]*210+T[1]*120,ar.x,16,ar.z];}
  V['The main market']=[H[0]+N[0]*150-T[0]*110,55,H[1]+N[1]*150-T[1]*110,H[0],4,H[1]];
  {const r=PLACE.blds.find(r=>/^hyk_house_rich/.test(r.key));if(r){const f=[Math.sin(r.ry),Math.cos(r.ry)],x=[Math.cos(r.ry),-Math.sin(r.ry)];V['A rich house']=[r.x+f[0]*34+x[0]*14,r.y+13,r.z+f[1]*34+x[1]*14,r.x,r.y+4,r.z];}}

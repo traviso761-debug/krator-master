@@ -11,7 +11,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  PLACE.hosts.forEach((h,i)=>{const T=YS_HOST_TYPES[h.type];const builder=typeof window[T.builder]==='function'?window[T.builder]:null;
   if(!builder){reportErr('host type '+h.type+' has no builder '+T.builder);return;}
   const host=ysPlaceHost(scene,{key:T.key,builder,x:h.x,z:h.z,y:h.sink,ry:h.ry,d:h.d,cutY:h.cutY,podium:h.podium,cap:h.cap,rAt:h.rAt,name:h.n,
-   floors:h.floors,ways:h.ways,sockets:h.sockets||null,noPlinth:!!h.noPlinth,ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
+   floors:h.floors,ways:h.ways,sockets:h.sockets||null,noPlinth:true,   /* Travis: no restand plinths at all (they override the streets) */ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
   if(!host){fail++;return;}
   // the floors table runs to the top of what stands, not on into the sky over a full tower
   h.G=host.G;host.floors=host.floors.filter(f=>f.y<h.top+2);host.full=h.full;host.shaped=h.shaped;host.rec=h;h.drawn=true;
@@ -23,17 +23,17 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  // it, so nothing built on the mole fights the ground) and, round a walled one, a shell quay wall down to the bed on
  // every edge (hykHarbWall, world frame: HYK.cur is null here), its outward face found from the polygon's centroid
  {reseed(32395);TSTAT.cur='mole quay/0';let nw=0;const col=hC(hPick(HPAL.shellWarm)),wcol=hC(hPick(HPAL.shell));
-  for(const m of PLACE.moles){if(!m.plate)continue;const P=m.poly,y=m.y-.12;
+  for(const m of PLACE.moles){if(!m.plate)continue;const P=m.poly,y=m.y-(m.wall?.05:.12);
    if(m.star){const c=m.star,n=P.length;const ring=u=>{const f=((u%1)+1)%1*n;const i=Math.floor(f)%n,j=(i+1)%n,t=f-Math.floor(f);return [P[i][0]*(1-t)+P[j][0]*t,P[i][1]*(1-t)+P[j][1]*t];};
     const g=hykSurf((u,v)=>{const p=ring(u);return [c[0]+(p[0]-c[0])*v,y,c[1]+(p[1]-c[1])*v];},n*2,3,{col,flip:ysPlPolyArea(P)<0});
     {const pa=g.attributes.position.array,uv=g.attributes.uv.array;for(let i=0;i<uv.length/2;i++){uv[i*2]=pa[i*3]/4;uv[i*2+1]=pa[i*3+2]/4;}g.attributes.uv.needsUpdate=true;}   /* planar metre UVs: a fan's stretch radially */
-    hykPutRaw('hkFloor',g,true);
+    hykPutRaw('hkFloor',g);
     for(const f of m.stairs)hykSpanStairStraight(f.A,f.B,{w:2.4,rails:'both'});}
    else if(P.length===4){hykPutRaw('hkFloor',hykSurf((u,v)=>{const ax=P[0][0]+(P[1][0]-P[0][0])*u,az=P[0][1]+(P[1][1]-P[0][1])*u,bx=P[3][0]+(P[2][0]-P[3][0])*u,bz=P[3][1]+(P[2][1]-P[3][1])*u;return [ax+(bx-ax)*v,y,az+(bz-az)*v];},
      Math.max(2,Math.round(Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/8)),Math.max(2,Math.round(Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/8)),{col,uS:Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/4,vS:Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/4,flip:ysPlPolyArea(P)<0}));}
    if(!m.wall)continue;const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;
    for(let i=0;i<P.length;i++){let a=P[i],b=P[(i+1)%P.length];const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;const dx=b[0]-a[0],dz=b[1]-a[1];if((cx-mx)*(-dz)+(cz-mz)*dx>0){const t=a;a=b;b=t;}   /* the outward face to the right of a->b */
-    hykHarbWall([a[0],a[1]],[b[0],b[1]],0,{top:y+.12,col:wcol,batter:.35});nw++;}}
+    hykHarbWall([a[0],a[1]],[b[0],b[1]],0,{top:m.y,col:wcol,batter:.35});nw++;}}
   TSTAT.cur=null;window._moles={plates:PLACE.moles.filter(m=>m.plate).length,walls:nw};}
  // the roads as ribbons (87c LAYOUT.roads): a plate of paving 22 cm over the ground along each run, sampled every 4 m
  // (the heightfield is linear between its 10 m vertices; the lift keeps the ribbon over a hollow); the two street
@@ -74,6 +74,16 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
     hykSpanStairStraight(A2,{x:A.x,y:A.y,z:A.z},{w:1.6,rails:'both'});hykSpanStairStraight(B2,{x:B.x,y:B.y,z:B.z},{w:1.6,rails:'both'});S.drawn=true;nb++;}
   }catch(e){reportErr('span '+S.kind+' '+e.stack);}}
   TSTAT.cur=null;window._spans={built:nb,of:SPANS.list.length,refused:SPANS.refused.length,piers:np,shore:SPANS.shore,nodes:SPANS.nodes.length};}
+ // the river's water (Travis: the river did not read as running the map): each pool of the terraced bed (84 ysRiverProfile:
+ // a flat bed between two rimstone lips) gets a sheet of the sea's water at its lip's height less 10 cm, a ribbon along
+ // the centre line 1.8 widths wide (the banks hide its edges); below the sea's level the sea sheet takes over
+ {TSTAT.cur='river/0';const pr=ysRiverProfile(),R=CITY.RIVER;const at=s=>{let e=pr.seg[pr.seg.length-1];for(const q of pr.seg)if(s<=q.s0+q.L){e=q;break;}const t=e.L?(s-e.s0)/e.L:0;return [e.a[0]+(e.b[0]-e.a[0])*t,e.a[1]+(e.b[1]-e.a[1])*t,(e.b[0]-e.a[0])/e.L,(e.b[1]-e.a[1])/e.L];};
+  let k=0,n=0;while(k<pr.bed.length){let k1=k;while(k1+1<pr.bed.length&&pr.bed[k1+1]===pr.bed[k])k1++;const y=pr.bed[k]+R.rise*.55-.1;
+   if(y>.1){const pos=[],idx=[];let q=0;for(let j=k;j<=k1+1&&j<pr.bed.length;j++){const s=Math.min(j*pr.DS,pr.len);const [x,z,tx,tz]=at(s);const w=(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.9;
+     pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(j>k){idx.push(q-2,q,q-1,q-1,q,q+1);}q+=2;}
+    if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,MAT.pkSea);m.name='river pool';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);n++;const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}}
+   k=k1+1;}
+  TSTAT.cur=null;window._river={pools:n,len:Math.round(pr.len)};}
  // the karst's dressing (Travis's cards, through the library adapter 79z): jungle clumps on every field stack's crown (two
  // crossed quads each, their feet on the crown) and vines hung over the rim of its wall, facing outward; one mesh per
  // card. Not on a landmark's stack (its building takes the top). Positions from KRAND, so the dressing is the same in

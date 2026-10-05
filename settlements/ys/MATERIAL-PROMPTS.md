@@ -136,3 +136,21 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 ```
 
 *one tile = 6 m; full colour; replaces the Facet's panels (HFA_MAT).*
+
+## The ocean's rust (Oct 5 2026, Travis: "the ancient buildings here are quite rusty")
+
+### `concrete.rust.streaked`
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Board-formed grey concrete of a tall ruined tower, seen face-on, weathered for centuries beside the sea: long rust streaks running straight down the face from rows of corroded fixings and rebar ends, orange-brown bleeding into dark brown, between them pale salt bloom and grey-green algae staining, small spalls where the concrete has broken off round rusting bars, hairline cracks, the board marks still faintly visible. The streaks run strictly vertical (down the image) so the tile can run up a wall. Keep the base concrete a muted mid grey and the rust a muted orange-brown, with no single streak so distinct that it would repeat visibly on a 300 m tower.
+```
+
+*one tile = 8 m (vertical streaks: tile across 8 m, up 8 m); not tinted; replaces the ruined concrete of the Monolith, the Warden and the stumps (`MAT.concreteR`), and the rust skin of the Conocylinder's stumps (`MAT.rust`).*
+
+### `metal.rust.heavy`
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavily corroded steel plate, decades in salt water and spray: flaking layers of orange, red-brown and near-black rust, blistered and scaled, pits and holes eaten through in places showing dark shadow beneath, lines of rusted rivets along a plate seam, a few barnacle clusters and white salt crust at the edges. Keep the rust muted and even in brightness so it reads at a distance as a dark red-brown surface rather than a bright orange one.
+```
+
+*one tile = 2 m; not tinted; the struts, legs, pipes and iron of the drowned Ancients (`MAT.pipeRust`, the Conocylinder's strut ring, the Capsule Stalks' tubes).*

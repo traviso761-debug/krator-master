@@ -152,9 +152,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       (a tile is a bay, about 20 m, so the ashlar's blocks read 3 m). The karst dressing is quads with no wind, no
       lighting trick for the cards' backs, and the vines hang 2.6 m off the analytic wall (the mesh wall can be a few
       metres off it). The kit sheet and the mock take the same pack (their pages grew 4 MB).
-- [ ] (Oct 5 2026) The restand plinth (52 `skyPlinth`: wall, columns, ring) of a Monolith, Warden or Facet is left out
-      when a spiral stair or a bridge off a low plate would run through it (`YS_CUT.noPlinth`); the other hosts keep
-      theirs. The Conocylinder takes no stair (its body skin runs down to the strut ring where the record says core),
+- [x] (Oct 5 2026) The restand plinths are gone from every host (`YS_CUT.noPlinth` always: Travis; the Facet's apron
+      overrode a street). The hosts' record caps still measure the old podium, so a host reserves more ground than it
+      covers. The Conocylinder takes no stair (its body skin runs down to the strut ring where the record says core),
       and the bone ladder (11 m, water to the L1 datum) still has no place: every host's deck at that height is its ring.
 - [x] (Oct 5 2026) The city stood at 11.85 M of a 12 M budget with its densities cut to fit. The budget is 30 M for now
       (Travis) and the city's span two-thirds; the densities are back and the city is 8.5 M.
@@ -173,3 +173,13 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       and none of the new arcology types except the Pierced Stack and the Bole: lobes, fins and struts fight every pod,
       pad and runner. The P3 host list follows this (PLAN.md P3).
 
+- [ ] (Oct 5 2026) Rust: the Ancients in the water are rust-stained by tint only (`MAT.concreteR`); the vendored
+      Arcades' sandstone and Bell Hall's travertine keep their colours (vendored byte for byte). A library set of
+      board-formed concrete with rust streaks and a salt line (`concrete.rust.streaked`) and a heavy rust
+      (`metal.rust.heavy`) would make them read as the ocean's; Travis offered one.
+- [ ] (Oct 5 2026) The harbour piers face straight out from their mole's edge; none is angled for the tide, and the
+      shore run's piers keep their old spacing. The round warehouse's cart doors face wherever the mole's frame
+      points, not the quay.
+- [ ] (Oct 5 2026) The river's pool sheets are flat ribbons 1.8 widths wide at each pool's lip height: on a bend the
+      ribbon's edge can show past the bank, and the sheet does not fall at the lip (no cascade). The sea sheet takes
+      over below the datum. The band's half-sunk hosts are all Arcades this seed (the low pool picks per cell).

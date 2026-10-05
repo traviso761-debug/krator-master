@@ -23,11 +23,14 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
  const addPod=(h,key,y,a)=>{const D=HYK.defs[key];const p={key,a:+a.toFixed(4),y,level:y>=20?'L2':'L1',into:true,wealth:D.tags.wealth,bridge:true};h.pods.push(p);h.ways.push({a:p.a,y,R:D.w/2});ysPlCount(key);return h.pods.length-1;};
  const level=y=>y>=20?'L2':'L1';
  // ---- 1. host to host: the pair's pods face each other on plates as near as the hosts allow; every lattice pair first
- const pair=(hA,hB)=>{const aA=Math.atan2(hB.z-hA.z,hB.x-hA.x),aB=aA+Math.PI;
-  const kA=ysPlPick(st,PL_WAYS[hA.wealth]),kB=ysPlPick(st,PL_WAYS[hB.wealth]);
-  let best=null;for(const yA of hA.plates)for(const yB of hB.plates){if(Math.abs(yA-yB)>8)continue;const c=Math.abs(yA-yB)*3+Math.abs((yA+yB)/2-28);if(best&&c>=best.c)continue;
-    if(!fits(hA,kA,yA,aA)||!fits(hB,kB,yB,aB))continue;best={yA,yB,c};}
-  if(!best)return false;const iA=addPod(hA,kA,best.yA,aA),iB=addPod(hB,kB,best.yB,aB);
+ const pair=(hA,hB)=>{const a0=Math.atan2(hB.z-hA.z,hB.x-hA.x);
+  const kA0=ysPlPick(st,PL_WAYS[hA.wealth]),kB0=ysPlPick(st,PL_WAYS[hB.wealth]);
+  // the pods face each other; when that face is taken on every plate, a little off it (the span angles in); plates
+  // within 8 m, else a climbing span (18 m) rather than none; the wealth's way-in pod, else the smallest (a host whose
+  // levels leave a pod one plate, the Arcades)
+  let best=null;for(const [kA,kB] of [[kA0,kB0],['hyk_pod_poor_1','hyk_pod_poor_1']]){for(const tol of [8,18]){for(const da of [0,.45,-.45,.9,-.9]){const aA=a0+da,aB=a0+Math.PI-da;for(const yA of hA.plates)for(const yB of hB.plates){if(Math.abs(yA-yB)>tol)continue;const c=Math.abs(yA-yB)*3+Math.abs((yA+yB)/2-28)+Math.abs(da)*10;if(best&&c>=best.c)continue;
+    if(!fits(hA,kA,yA,aA)||!fits(hB,kB,yB,aB))continue;best={yA,yB,c,aA,aB,kA,kB};}}if(best)break;}if(best)break;}
+  if(!best)return false;const iA=addPod(hA,best.kA,best.yA,best.aA),iB=addPod(hB,best.kB,best.yB,best.aB);
   SPANS.list.push({kind:'bridge',a:{host:hA.n,pod:iA},b:{host:hB.n,pod:iB},level:level((best.yA+best.yB)/2),na:hA.n,nb:hB.n});return true;};
  for(const b of LAYOUT.blocks){const hA=byBlock[b.i+','+b.j];if(!hA)continue;
   for(const [di,dj] of [[1,0],[0,1]]){const hB=byBlock[(b.i+di)+','+(b.j+dj)];if(!hB)continue;if(!pair(hA,hB))SPANS.refused.push(hA.n+' / '+hB.n);}}
@@ -50,6 +53,7 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
  if(A&&Tb&&tides){const dx=A.x-Tb.x,dz=A.z-Tb.z,l=Math.hypot(dx,dz),ux=dx/l,uz=dz/l;const fA=[-LAYOUT.N[0],-LAYOUT.N[1]];   // the Amphitriton faces the land
   const Lx=-uz,Lz=ux,lat=34;   /* beside the temple: its back is flush with the mole's seaward edge, its front fills the middle */
   const port={x:A.x+fA[0]*47.7,y:12,z:A.z+fA[1]*47.7};const moleSea={x:Tb.x+ux*29+Lx*lat,y:2.5,z:Tb.z+uz*29+Lz*lat};
+  {const m=tides.mole;let s=0;for(;s<80;s+=2){const x=Tb.x+ux*s+Lx*lat,z=Tb.z+uz*s+Lz*lat;if(!ysPlInPoly(m.poly,x,z))break;}moleSea.x=Tb.x+ux*Math.max(12,s-3)+Lx*lat;moleSea.z=Tb.z+uz*Math.max(12,s-3)+Lz*lat;}   /* the organic mole's real seaward edge on that line */
   SPANS.list.push({kind:'drawbridge',A:moleSea,B:port,level:'L1',na:'the Tides mole',nb:'the Amphitriton'});join(N.find(n=>n.kind==='amph').i,tides.i);
   // the shore end: walk landward from the mole's landward edge until the natural ground stands at the quay datum
   const moleLand={x:Tb.x-ux*44+Lx*lat,y:2.5,z:Tb.z-uz*44+Lz*lat};let s=44,shore=null;for(;s<420;s+=4){const x=Tb.x-ux*s+Lx*lat,z=Tb.z-uz*s+Lz*lat;if(terrainH(x,z)>=2.2){shore={x,y:2.5,z};break;}}
@@ -73,8 +77,8 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
   return best;};
  // a bridge from host h toward the point Q (kind: mole, shore, citadel, winds): a way-in pod on the plate nearest Q's
  // height (never under the lowest), facing Q; null when no plate takes the pod
- const hostTo=(h,Q)=>{const a=Math.atan2(Q.z-h.z,Q.x-h.x);const key=ysPlPick(st,PL_WAYS[h.wealth]);const want=Math.max(h.plates[0],Q.y+(Q.kind==='citadel'?0:6));
-  const Pl=h.plates.slice().sort((p,q)=>Math.abs(p-want)-Math.abs(q-want));for(const y of Pl){if(Math.abs(y-want)>40)break;if(!fits(h,key,y,a))continue;return {pod:addPod(h,key,y,a),y};}return null;};
+ const hostTo=(h,Q)=>{const a0=Math.atan2(Q.z-h.z,Q.x-h.x);const key0=ysPlPick(st,PL_WAYS[h.wealth]);const want=Math.max(h.plates[0],Q.y+(Q.kind==='citadel'?0:6));
+  const Pl=h.plates.slice().sort((p,q)=>Math.abs(p-want)-Math.abs(q-want));for(const key of [key0,'hyk_pod_poor_1'])for(const da of [0,.45,-.45,.9,-.9]){const a=a0+da;for(const y of Pl){if(Math.abs(y-want)>40)break;if(!fits(h,key,y,a))continue;return {pod:addPod(h,key,y,a),y};}}return null;};
  const nodeEnd=(n,toward)=>{const tx=toward.x-n.x,tz=toward.z-n.z,l=Math.hypot(tx,tz)||1;
   if(n.kind==='mole')return Object.assign(edgeOf(n.mole,tx/l,tz/l),{kind:'mole',n:n.n});
   if(n.kind==='winds'){const s=stk[1];const phi=Math.atan2(tz,tx);const d=Math.max(8,stackEdge(s,phi)-7);const x=n.x+Math.cos(phi)*d,z=n.z+Math.sin(phi)*d;return {x,y:terrainH(x,z)+.3,z,kind:'winds',n:n.n};}
@@ -104,7 +108,7 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
  // ---- 3. the spanning tree: every candidate edge by cost, joining components; a node's shore edge is a candidate too
  const cand=[];for(let i=0;i<N.length;i++){for(let j=i+1;j<N.length;j++){const p=N[i],q=N[j];if(p.kind==='amph'||q.kind==='amph')continue;const d=Math.hypot(p.x-q.x,p.z-q.z);const lm=/citadel|winds/.test(p.kind+q.kind);if(d>(lm?450:300))continue;
    if(lm&&p.kind!=='host'&&q.kind!=='host')continue;   /* a landmark reaches the network through a host */
-   if(/citadel/.test(p.kind+q.kind)){const c=p.kind==='citadel'?p:q,h=p.kind==='citadel'?q:p;if(!c.gate||(h.x-c.gate.x)*c.gate.fx+(h.z-c.gate.z)*c.gate.fz<40)continue;}   /* from the front */
+   if(/citadel/.test(p.kind+q.kind)){const c=p.kind==='citadel'?p:q,h=p.kind==='citadel'?q:p;if(!/Pharos/.test(h.n)||!c.gate||(h.x-c.gate.x)*c.gate.fx+(h.z-c.gate.z)*c.gate.fz<40)continue;}   /* Travis: the Citadel links to the Pharos alone (the harbour approach stays clear) */
    const f=(p.kind==='host')!==(q.kind==='host')?1.2:1;cand.push({i,j,c:d*f,d});}
   const p=N[i];if(p.kind==='host'||p.kind==='mole'){const S=shoreOf(p);if(S){p.shoreD=S.d;cand.push({i,j:SH,c:S.d*(p.kind==='host'?1.15:1),d:S.d});}}}
  cand.sort((a,b)=>a.c-b.c);
@@ -130,8 +134,7 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
    const foot=dir=>{const a=a0+dir*da;return {a,x:s.x+Math.cos(a)*(stackEdge(s,a)+6),z:s.z+Math.sin(a)*(stackEdge(s,a)+6)};};
    const F=[1,-1].map(foot).sort((p,q)=>{const t=target?target.n:{x:g.x-s.x*0,z:g.z};return Math.hypot(p.x-t.x,p.z-t.z)-Math.hypot(q.x-t.x,q.z-t.z);})[0];const dir=F.a>a0?1:-1;
    const rec={kind:'cliffstair',cx:s.x,cz:s.z,stack:0,a0,dir,y0:top-.1,y1:1.0,gnd,top:s.h,head:{x:s.x+Math.cos(a0)*(rr-3),y:top,z:s.z+Math.sin(a0)*(rr-3)},foot:{x:F.x,y:1.0,z:F.z},na:'the Citadel',nb:'the water'};SPANS.list.push(rec);
-   if(target&&target.d<320){const m=target.n;const E=edgeOf(m.mole,F.x-m.x,F.z-m.z);SPANS.list.push({kind:'walkway',A:{x:F.x,y:1.3,z:F.z},B:E,level:'quay',na:'the Citadel stair',nb:m.n});}
-   else{const Q=shoreOf({x:F.x,z:F.z});if(Q){ysPlTake(Q.box);SPANS.list.push({kind:'walkway',A:{x:F.x,y:1.3,z:F.z},B:{x:Q.x,y:Q.y,z:Q.z},level:'quay',na:'the Citadel stair',nb:'the shore'});}}}}
+   /* no walkway from the stair's foot (Travis: the Citadel's one link is the Pharos; the foot is a boat landing) */}}
  SPANS.shore=N.filter(n=>find(n.i)===find(SH)).length;
  for(const n of N)if(find(n.i)!==find(SH))SPANS.refused.push(n.n+' (no path to the shore)');
 })();

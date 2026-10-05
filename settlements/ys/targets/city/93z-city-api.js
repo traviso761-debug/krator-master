@@ -8,7 +8,7 @@ window._api.city.records=()=>({blds:PLACE.blds.map(r=>({key:r.key,x:+r.x.toFixed
  slots:PLACE.slots.map(s=>{const o=Object.assign({},s);delete o.box;return o;}),moles:PLACE.moles.map(m=>({name:m.name,y:m.y,poly:m.poly}))});
 // the spans the bridge graph does not lay yet (PLAN.md P3 step 3): the audit names them apart
 const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stair','hyk_ladder','hyk_lilypad','hyk_walkway','hyk_pontoon'];
-BUDGET.type.roads='env';BUDGET.type['mole quay']='env';BUDGET.type['karst cards']='env';   // the city's own ground work: the road ribbons, the moles' plates and quay walls
+BUDGET.type.roads='env';BUDGET.type['mole quay']='env';BUDGET.type['karst cards']='env';BUDGET.type.river='env';   // the city's own ground work: the road ribbons, the moles' plates and quay walls
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const spanKey={bridge:null,drawbridge:'hyk_drawbridge',walkway:'hyk_walkway',pontoon:'hyk_pontoon'};const used=new Set(SPANS.list.filter(s=>s.drawn).map(s=>s.kind==='bridge'?(s.level==='L2'?'hyk_span_l2':'hyk_span_l1'):spanKey[s.kind]));
   if(SPANS.list.some(s=>s.drawn&&s.kind==='bridge'&&s.b.pad))used.add('hyk_lilypad');
@@ -33,6 +33,8 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
   // every node of the bridge graph (the drowned hosts, the walled moles, the Citadel, the Winds, the Amphitriton) reaches the shore over it
   const lost=SPANS.refused.filter(r=>/no path/.test(r));R.push({name:'bridge-network-reaches-the-shore',ok:!lost.length,detail:lost.length?lost.length+' cut off: '+lost.join(' | '):SPANS.nodes.length+' nodes, all with a foot path to the shore; '+SPANS.list.filter(s=>s.kind==='bridge'&&s.b.kind==='shore').length+' towers bridged straight to it'});}
  {const T=PLACE.hosts.filter(h=>h.land&&h.tall);R.push({name:'two-skyscraper-stumps-on-land',ok:T.length>=2&&T.every(h=>h.pods.length>0&&h.drawn),detail:T.map(h=>h.n+' '+Math.round(h.top)+' m, '+h.pods.length+' pods').join(' | ')||'none'});}
+ R.push({name:'harbour-piers',ok:(PLACE.piers||0)>=24,detail:(PLACE.piers||0)+' piers in the harbour (the moles\' every 26 m where a 40 m square off the head is clear, the shore runs)'});
+ R.push({name:'half-sunk-band',ok:(PLACE.band||0)>=3,detail:(PLACE.band||0)+' half-sunk mid-rise hosts in the band north-east of the head, '+PLACE.hosts.filter(h=>/half-sunk/.test(h.n)).reduce((s,h)=>s+h.pods.length,0)+' pods'});
  {const lanes=LAYOUT.streets.filter(s=>s.kind==='lane').length,laned=PLACE.blds.filter(b=>b.why==='lane').length;R.push({name:'lanes-lined',ok:lanes>0&&laned>lanes*2,detail:lanes+' lanes, '+laned+' buildings on them, '+(window._roads||0)+' road ribbons'});}
  return R;}
 {const _x=window._api.extra;window._api.extra=()=>_x().concat(ysCityChecks());}

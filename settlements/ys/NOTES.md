@@ -410,3 +410,26 @@ weed ribbons' canvas texture (alpha-tested now); the vines and clumps dress the 
 field stack's crown, vines hung over the rim facing outward, one mesh per card, positions from KRAND). `?mat=proc`
 shows the procedural look; `window._materials` is the records table; the verifier waits for the packed textures to
 decode (`window._texPending`).
+
+## Travis's third batch (Oct 5 2026): the Citadel on the Sentinel, the harbour's piers, organic podiums, the band, no plinths
+**The swap back**: the Project A tower stands on (2,1) again and the Pharos is built on a Project H at (1,5) (its crown
+on the Warden's top). **The Citadel** stands on the Sentinel, the big stack south of the harbour (620, 930): its grid block
+is water now (the harbour approach), `STACKS[0]` moves to the Sentinel's place (the scenery Sentinel is gone), the stack
+an ellipse 70 × 88 m whose axis is the building's x, the gate facing the Pharos, the Treasury on the far side. Its one
+link is the Pharos (the span graph refuses every other partner); the cliff stair still runs down to a wet landing but
+sends no walkway on. **The podiums**: the Tides' and the Library's moles are organic (`ysPlOrganic`, sized so the
+building's box lies inside the outline's narrowest radius; the drawbridge's foot is found on the Tides mole's real edge),
+and so are the harbour moles (the headland a lobed round, the military harbour's two a stretched oval each) with **a large
+round warehouse** (`hyk_warehouse_round`, 76b: a lobed drum 32 m across, three cart doors, a store room) at each one's
+centre. **The piers**: along the water edges of the harbour moles every 34 m, a pier facing out wherever a 60 m square off
+its head is clear of anything built (so a ship can work round the moles), then the harbour shore filled with piers in
+the gaps; `harbour-piers` wants two dozen. **The z-fight on the moles**: the plate stood 18 cm over the fill, which the
+depth buffer cannot hold apart at a kilometre; the fill is 70 cm under the datum now and the plate 5 cm. **The river**
+runs from past the map's north-west edge to 100 m out in the bay. **The band** (`YS_BAND`): half-sunk mid-rise hosts
+every 125 m along the middle of Travis's strip 50–200 m off the coast north-east of the head, sunk to the bed and cut
+low, synthetic blocks (60+k, 0) so KRAND seeds them by cell; the span graph's tree links them. **No plinths**: every host
+is drawn without its restand (`noPlinth` always; the Facet's apron ran over a street). **Rust**: the ruined concrete is
+rust-stained (`MAT.concreteR`); a streaked-rust concrete set is the real fix (asked for). **The river has water**: each
+pool of the terraced bed gets a sheet of the sea's material at its lip's height (11 pools); the mouth runs into the bay.
+**The Pharos crown** stands on the highest plate that takes it. A pair of hosts with no plates within 8 m takes a
+climbing span (18 m) rather than none, so the band's three link up.

@@ -9,10 +9,10 @@ const CITY={WORLD:3200,HW:1600,SEA0:0,
  HEAD:[380,-60],     // the head of the bay: the main market stands near here
  // the karst stacks (Krabi): {x,z,r,h}; the first two carry the Citadel (E) and the Temple of the Winds (D)
  STACKS:[{x:842,z:652,r:95,h:62,n:'the Citadel stack',flat:true},{x:1204,z:-89,r:70,h:48,n:"the Winds' stack",flat:true},{x:1360,z:230,r:55,h:70,n:'the Needle'},
-  {x:620,z:930,r:85,h:84,n:'the Sentinel'},{x:1120,z:720,r:48,h:58,n:'the Tooth'},{x:-60,z:1260,r:120,h:96,n:'the Headland stack'},
+  {x:1120,z:720,r:48,h:58,n:'the Tooth'},{x:-60,z:1260,r:120,h:96,n:'the Headland stack'},
   {x:930,z:-820,r:72,h:74,n:'the Lantern'},{x:1270,z:-1150,r:80,h:88,n:'the Anvil'},{x:-420,z:-520,r:110,h:118,n:'the Inland stack'}],
  // the river: from the north-west down to the bay west of the civilian harbour, in travertine terraces (Semuc Champey)
- RIVER:{pts:[[165,710],[-60,520],[-300,330],[-560,140],[-860,-80],[-1200,-300],[-1550,-520]],w0:34,w1:14,depth:6,rise:3.2},
+ RIVER:{pts:[[260,790],[165,710],[-60,520],[-300,330],[-560,140],[-860,-80],[-1200,-300],[-1550,-520],[-1760,-680]],w0:34,w1:14,depth:6,rise:3.2},   /* from past the map's edge to 100 m out in the bay (Travis: the whole map) */
 };
 // signed distance to the shore polyline: > 0 inland (north-west of the line), < 0 at sea. The polyline runs
 // south to north-east, so the land is on its LEFT (cross product > 0 when x east, z south).
