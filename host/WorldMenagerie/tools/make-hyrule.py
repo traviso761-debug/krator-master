@@ -46,11 +46,25 @@ def Pl(pts):
 # ---------------------------------------------------------------- the coast
 # The land is everything inside this outline: the sea is east and south-east (the Lanayru, Necluda and Faron seas);
 # west and north the land runs on out of the map, into the mountains at the edge of the world.
-COAST = Pl([(-80, -80), (1290, -80), (1300, 100), (1330, 170), (1395, 240), (1420, 330), (1425, 450), (1405, 560),
-            (1395, 650), (1390, 720), (1405, 800), (1380, 870), (1330, 910), (1325, 990), (1270, 1050), (1210, 1095),
-            (1100, 1112), (980, 1132), (880, 1162), (800, 1182), (720, 1196), (680, 1232), (650, 1330), (-80, 1330)])
-ISLANDS = [(P(1395, 1112), 26 * PX, "Eventide Island", 160.0)] + [(P(px, py), r * PX, "an islet", top) for px, py, r, top in
-           [(1405, 440, 7, 26), (1413, 470, 5, 18), (1409, 506, 7, 30), (1416, 540, 5, 16), (1402, 590, 4, 14)]]
+COAST = Pl([(-80, -80), (1480, -80), (1440, 20), (1390, 70), (1340, 115), (1310, 145), (1330, 170), (1370, 172),
+            (1400, 185), (1425, 210), (1428, 245), (1408, 275), (1395, 298), (1365, 305), (1352, 330), (1356, 360),
+            (1372, 385), (1376, 420), (1373, 460), (1372, 500), (1376, 540), (1380, 580), (1385, 612),
+            # Lanayru Bay: in by a narrow way between Zora's Domain and the cape east of Mount Lanayru
+            (1366, 640), (1352, 665), (1346, 695), (1325, 703), (1290, 700), (1255, 697), (1225, 707), (1212, 725),
+            (1218, 750), (1245, 766), (1290, 757), (1330, 765), (1348, 748), (1356, 712), (1368, 668), (1380, 648),
+            (1393, 660), (1397, 720), (1398, 790), (1402, 860), (1400, 900), (1405, 935),
+            # Hateno's three capes, and the bay below the village
+            (1418, 960), (1415, 990), (1395, 995), (1380, 975), (1365, 955), (1352, 960), (1348, 985), (1336, 988),
+            (1330, 960), (1318, 958), (1312, 985), (1300, 980), (1295, 955), (1270, 965), (1255, 980), (1238, 1000),
+            (1225, 1030), (1228, 1060), (1250, 1078), (1272, 1088), (1250, 1100), (1228, 1105),
+            # the hooked spit, Lurelin's inlet, and the long south coast of Faron
+            (1215, 1125), (1225, 1150), (1260, 1150), (1290, 1118), (1297, 1124), (1270, 1162), (1225, 1168),
+            (1190, 1160), (1180, 1145), (1172, 1112), (1160, 1110), (1155, 1140), (1120, 1160), (1080, 1162),
+            (1040, 1175), (1000, 1172), (970, 1150), (930, 1160), (880, 1168), (830, 1172), (780, 1178), (730, 1172),
+            (690, 1166), (660, 1178), (655, 1330), (-80, 1330)])
+ISLANDS = [(P(1398, 1130), 27 * PX, "Eventide Island", 160.0)] + [(P(px, py), r * PX, "an islet", top) for px, py, r, top in
+           [(1405, 440, 7, 26), (1413, 470, 5, 18), (1406, 506, 7, 30), (1412, 540, 5, 16), (1400, 560, 4, 14),
+            (1405, 135, 16, 12)]]
 LAKE_LEVEL = {}                                 # the levels worked out for lakes given as None (main fills it in)
 
 
@@ -78,38 +92,121 @@ def coast_dist(x, z):
 
 
 # ---------------------------------------------------------------- the land's features
-# (kind, pixel x, pixel y, radius x px, radius y px, height m, name). Heights are the game's proportions, made a
-# little gentler: Hyrule Field around forty metres, the Great Plateau a cliff-walled table, Death Mountain a kilometre.
-FEATURES = [
-    # the north and the west: Hebra, Tabantha, the Gerudo Highlands, and the mountains at the edge of the world
-    ("peak", 330, 230, 210, 140, 1250, "Hebra Mountains"), ("peak", 250, 170, 90, 70, 1350, "Hebra Peak"),
-    ("peak", 440, 200, 110, 80, 1050, "North Tabantha"), ("hill", 520, 300, 130, 90, 480, "Tabantha Tundra"),
-    ("hill", 300, 470, 120, 110, 420, "Tabantha Frontier"), ("plateau", 282, 384, 78, 66, 490, "the Rito highland"), ("hill", 600, 210, 70, 60, 300, "Tabantha Hills"),
-    ("range", 0, 0, 0, 0, 1400, "the edge of the world"),
-    ("peak", 210, 740, 200, 110, 1150, "Gerudo Highlands"), ("peak", 160, 720, 80, 60, 1300, "Gerudo Summit"),
-    ("peak", 330, 760, 90, 60, 900, "Gerudo Highlands east"),
-    ("desert", 220, 1060, 330, 200, 70, "Gerudo Desert"),
-    ("hill", 520, 980, 90, 140, 320, "Gerudo Canyon"), ("hill", 560, 1150, 80, 80, 360, "Gerudo Canyon south"),
-    # the middle: the Great Plateau, Mount Hylia, Hyrule Ridge (a table of land with its lake on top), the castle's hill
-    ("plateau", 470, 690, 95, 78, 240, "Great Plateau"), ("peak", 415, 845, 46, 36, 520, "Mount Hylia"),
-    ("plateau", 470, 548, 92, 76, 290, "Hyrule Ridge"), ("hill", 380, 600, 60, 50, 420, "Satori Mountain"),
-    ("hill", 730, 505, 45, 38, 70, "Hyrule Castle's hill"),
-    ("hill", 640, 860, 60, 50, 120, "Ruined hills"), ("hill", 600, 990, 70, 60, 180, "Faron Grasslands hills"),
-    # the north-east: the Great Hyrule Forest, Death Mountain, Akkala
-    ("plateau", 805, 345, 88, 70, 110, "Great Hyrule Forest"),
-    ("volcano", 1105, 290, 128, 116, 1050, "Death Mountain"), ("hill", 1000, 260, 90, 90, 600, "Eldin Mountains"),
-    ("hill", 1040, 430, 110, 70, 300, "Eldin Canyon"),
-    ("hill", 1260, 330, 120, 150, 260, "Akkala Highlands"), ("hill", 1220, 230, 70, 60, 380, "North Akkala"),
-    # the east: Zora's Domain, Mount Lanayru, Necluda, the Dueling Peaks
-    ("plateau", 1215, 580, 110, 82, 290, "Zora's Domain"), ("peak", 1300, 560, 50, 50, 520, "Ploymus Mountain"),
-    ("peak", 1300, 820, 115, 95, 950, "Mount Lanayru"),
-    ("hill", 1040, 760, 110, 70, 260, "West Necluda highlands"), ("hill", 1130, 990, 120, 80, 240, "East Necluda"),
-    ("peak", 936, 872, 24, 26, 440, "Dueling Peaks west"), ("peak", 966, 918, 24, 26, 430, "Dueling Peaks east"),   # split by the Squabble River
-    ("hill", 960, 1050, 120, 70, 140, "Faron jungle"), ("hill", 1110, 1060, 60, 40, 160, "Lurelin hills"),
-    # more of the map: Death Mountain's western lava field, the mesa south of the Gerudo canyon, Akkala's hills
-    ("hill", 1000, 255, 70, 55, 640, "Eldin lava field"), ("plateau", 560, 1212, 82, 36, 200, "the southern mesa"),
-    ("hill", 1210, 175, 50, 40, 330, "Skull Lake's rim"), ("hill", 1140, 780, 70, 30, 280, "Necluda ridge"),
+# Two kinds. MASSIFS are the country's highlands, each an outline read off the map by eye (a few dozen points, in the
+# map's pixels) with the height its top reaches and how wide the slope up to it is: like a contour map drawn by hand,
+# nested outlines stepping up - the tan of a highland, then its snow. The ground takes the highest of them. FEATURES
+# are the few things better made by rule: single peaks, the volcano, the plateaus with cliff walls, the desert's dunes.
+# (name, top m, slope px, outline)
+MASSIFS = [
+    # the mountains at the edge of the world, north and west, beyond the low ground that rings the country
+    ("the edge of the world, north", 1300, 40, [(-80, -80), (1340, -80), (1300, 20), (1250, 58), (1150, 62), (1080, 50), (1000, 48),
+        (900, 40), (800, 45), (700, 45), (600, 42), (520, 35), (470, 42), (440, 75), (400, 100), (370, 95), (345, 65), (320, 25),
+        (200, 20), (100, 25), (60, 45), (30, 60), (-80, 60)]),
+    ("the edge of the world, west", 1300, 40, [(-80, 40), (30, 60), (25, 150), (28, 250), (45, 290), (70, 340), (95, 400), (130, 450),
+        (145, 500), (135, 550), (110, 590), (70, 610), (40, 640), (15, 700), (5, 800), (-80, 820)]),
+    # Hebra and Tabantha: one highland from Hebra's west wall to the tundra, Rito Village and the Tabantha Frontier
+    ("Hebra and Tabantha", 330, 22, [(150, 110), (200, 108), (260, 100), (310, 108), (360, 125), (400, 152), (420, 160), (445, 138),
+        (470, 118), (510, 106), (545, 112), (575, 128), (610, 122), (640, 128), (660, 123), (690, 135), (692, 162), (672, 182),
+        (645, 195), (640, 218), (650, 240), (640, 258), (628, 262), (600, 285), (565, 318), (530, 360), (500, 380), (470, 400),
+        (440, 410), (400, 405), (370, 410), (330, 430), (325, 500), (330, 560), (320, 600), (300, 620), (250, 625), (210, 615),
+        (205, 560), (200, 500), (205, 440), (190, 410), (165, 395), (150, 370), (152, 330), (145, 280), (138, 220), (135, 170), (140, 130)]),
+    ("the Tabantha Tundra", 460, 40, [(470, 125), (545, 112), (610, 124), (660, 124), (690, 138), (690, 165), (660, 192), (645, 220),
+        (640, 255), (600, 285), (560, 318), (520, 345), (470, 330), (440, 290), (450, 200)]),
+    ("the Hebra Mountains", 820, 45, [(250, 118), (300, 113), (340, 138), (390, 163), (425, 168), (455, 148), (485, 130), (520, 135),
+        (560, 150), (595, 170), (600, 200), (585, 225), (545, 235), (500, 255), (450, 275), (400, 290), (355, 305), (320, 285),
+        (290, 250), (262, 215), (248, 175)]),
+    ("Hebra's western snows", 700, 30, [(160, 115), (225, 112), (235, 140), (215, 170), (180, 165), (160, 140)]),
+    ("the Frontier's hills", 420, 30, [(225, 460), (270, 455), (300, 480), (310, 530), (300, 580), (260, 595), (225, 570), (215, 510)]),
+    # Hyrule Ridge, and the Ridgeland running east past the Great Hyrule Forest under Death Mountain
+    ("Hyrule Ridge", 300, 30, [(358, 420), (420, 415), (480, 420), (530, 430), (570, 440), (592, 470), (588, 520), (572, 560),
+        (560, 600), (520, 625), (470, 630), (420, 625), (380, 615), (360, 580), (355, 520)]),
+    ("the Ridgeland", 190, 35, [(655, 233), (680, 215), (700, 190), (712, 150), (728, 118), (780, 110), (860, 108), (950, 112),
+        (1000, 118), (975, 200), (950, 260), (930, 330), (922, 400), (910, 440), (860, 448), (800, 445), (740, 445), (690, 448),
+        (640, 440), (600, 438), (560, 440), (520, 432), (498, 405), (515, 375), (555, 335), (595, 295), (628, 268), (645, 250)]),
+    # Eldin: a broad foot, the snow and ash above it, the volcano on top (a FEATURE)
+    ("Eldin", 330, 40, [(905, 125), (1000, 118), (1080, 118), (1150, 116), (1210, 113), (1232, 150), (1228, 250), (1218, 350),
+        (1205, 430), (1190, 500), (1150, 540), (1100, 560), (1050, 560), (1000, 540), (960, 500), (935, 445), (915, 390), (908, 300), (905, 200)]),
+    ("Death Mountain's shoulders", 720, 70, [(950, 140), (1000, 122), (1080, 120), (1150, 115), (1190, 140), (1200, 190), (1205, 260),
+        (1195, 330), (1180, 390), (1150, 428), (1100, 442), (1040, 438), (1000, 420), (975, 370), (962, 300), (955, 220)]),
+    # Akkala, down to its coast; Zora's Domain on its height; Mount Lanayru and the Necluda hills
+    ("Akkala", 210, 30, [(1210, 113), (1245, 118), (1285, 140), (1310, 150), (1330, 172), (1370, 175), (1400, 188), (1422, 212),
+        (1425, 245), (1406, 275), (1390, 295), (1365, 305), (1352, 330), (1356, 360), (1370, 385), (1374, 420), (1372, 460),
+        (1375, 500), (1340, 510), (1300, 505), (1250, 495), (1210, 480), (1195, 400), (1205, 300), (1225, 200)]),
+    ("Zora's Domain", 380, 35, [(1150, 470), (1200, 460), (1260, 470), (1320, 490), (1360, 520), (1372, 560), (1370, 610),
+        (1345, 640), (1330, 680), (1290, 694), (1250, 692), (1210, 690), (1180, 680), (1160, 652), (1140, 610), (1142, 540)]),
+    ("Necluda", 250, 35, [(990, 668), (1060, 660), (1120, 668), (1160, 690), (1200, 700), (1218, 712), (1212, 742), (1240, 768),
+        (1290, 757), (1345, 752), (1380, 800), (1398, 880), (1405, 935), (1418, 962), (1380, 992), (1290, 978), (1255, 985),
+        (1228, 1030), (1232, 1080), (1210, 1110), (1180, 1112), (1150, 1092), (1100, 1072), (1060, 1045), (1035, 995),
+        (1020, 945), (1045, 905), (1075, 860), (1065, 820), (1035, 800), (1005, 780), (985, 740), (982, 700)]),
+    ("Mount Lanayru", 700, 60, [(1215, 775), (1260, 768), (1300, 762), (1340, 770), (1370, 790), (1392, 820), (1395, 880),
+        (1385, 935), (1350, 948), (1300, 948), (1262, 935), (1232, 900), (1212, 860), (1205, 815)]),
+    ("the hills over Kakariko", 360, 30, [(1010, 700), (1060, 690), (1130, 700), (1170, 730), (1180, 770), (1150, 800), (1100, 800),
+        (1060, 792), (1030, 780), (1010, 750)]),
+    ("East Necluda", 380, 40, [(1020, 960), (1080, 945), (1140, 950), (1200, 960), (1235, 990), (1230, 1060), (1200, 1080),
+        (1150, 1080), (1100, 1075), (1060, 1060), (1030, 1030), (1015, 990)]),
+    ("West Necluda", 220, 30, [(890, 845), (950, 835), (1000, 850), (1010, 900), (1000, 960), (960, 990), (915, 985), (890, 940), (880, 890)]),
+    ("Faron's south hills", 110, 30, [(690, 1110), (760, 1100), (830, 1110), (900, 1120), (960, 1120), (1000, 1140), (1000, 1170),
+        (930, 1160), (830, 1172), (730, 1172), (690, 1166)]),
+    # the Gerudo Highlands and their long apron, the canyon running south-east from them, and the mesa at its end
+    ("the Gerudo apron", 380, 60, [(0, 620), (130, 612), (200, 622), (330, 640), (362, 690), (372, 738), (420, 765), (470, 800),
+        (490, 840), (470, 880), (430, 905), (330, 915), (250, 905), (180, 910), (100, 905), (30, 900), (0, 880)]),
+    ("the Gerudo Highlands", 950, 70, [(20, 660), (60, 640), (120, 630), (190, 632), (250, 648), (310, 668), (360, 705), (378, 740),
+        (420, 772), (445, 820), (440, 870), (400, 880), (340, 885), (280, 872), (220, 880), (150, 875), (90, 865), (40, 850), (15, 800)]),
+    ("the Gerudo Canyon", 330, 30, [(420, 880), (470, 880), (505, 915), (525, 955), (548, 995), (578, 1028), (608, 1048), (618, 1100),
+        (612, 1150), (590, 1168), (560, 1150), (540, 1110), (520, 1062), (490, 1032), (460, 1002), (440, 962), (425, 920)]),
+    ("the southern mesa", 230, 18, [(490, 1180), (520, 1170), (600, 1172), (650, 1180), (662, 1260), (500, 1260), (480, 1220)]),
 ]
+# (kind, pixel x, pixel y, radius x px, radius y px, height m, name)
+FEATURES = [
+    ("peak", 300, 150, 70, 45, 1250, "Hebra Peak"), ("peak", 450, 200, 90, 55, 1150, "Hebra's eastern summits"),
+    ("peak", 590, 195, 35, 30, 800, "the Tundra's hill"), ("peak", 195, 140, 35, 25, 900, "Hebra's west summit"),
+    ("plateau", 282, 384, 78, 66, 490, "the Rito highland"),
+    ("peak", 110, 730, 55, 90, 1300, "Gerudo Summit"), ("peak", 330, 770, 90, 40, 1100, "the Gerudo Highlands' east end"),
+    ("peak", 588, 1095, 22, 48, 650, "the canyon's snowy peak"),
+    ("desert", 220, 1060, 330, 200, 70, "Gerudo Desert"),
+    ("plateau", 472, 715, 92, 72, 240, "Great Plateau"), ("hill", 395, 520, 30, 35, 420, "Satori Mountain"),
+    ("hill", 735, 495, 45, 38, 70, "Hyrule Castle's hill"),
+    ("hill", 640, 860, 60, 50, 120, "Ruined hills"), ("hill", 580, 1010, 70, 70, 180, "Faron Grasslands hills"),
+    ("plateau", 820, 338, 75, 72, 150, "Great Hyrule Forest"),
+    ("volcano", 1120, 265, 105, 95, 1150, "Death Mountain"),
+    ("hill", 1225, 168, 45, 38, 280, "Skull Lake's rim"),
+    ("peak", 1300, 545, 40, 30, 650, "Ploymus Mountain"), ("hill", 1178, 668, 22, 20, 160, "the Great Spring's hill"),
+    ("peak", 1300, 840, 75, 65, 1050, "Mount Lanayru"),
+    ("peak", 936, 872, 24, 26, 440, "Dueling Peaks west"), ("peak", 966, 918, 24, 26, 430, "Dueling Peaks east"),   # split by the Squabble River
+    ("hill", 960, 1050, 120, 70, 140, "Faron jungle"), ("hill", 1110, 1125, 40, 32, 220, "Lurelin hills"),
+]
+
+
+def massif_grid(xs, zs):
+    """The highest of the massifs over the whole terrain grid, at once (numpy): each outline's signed distance, then
+    its top eased in over its slope, varied a little so no highland is a flat table, with ridges on the high ones."""
+    import numpy as np
+    GX, GZ = np.meshgrid(np.asarray(xs, float), np.asarray(zs, float))
+    out = np.zeros(GX.shape)
+    nz_ = (np.sin(GX / 431.0 + 0.7) * np.cos(GZ / 377.0 - 0.4) * 0.6 + np.sin(GX / 173.0 - GZ / 211.0) * 0.3
+           + np.cos(GX / 89.0 + GZ / 97.0) * 0.12)
+    n2 = np.sin(GX / 730.0 + 1.3) * np.cos(GZ / 610.0 - 0.2) * 0.5 + np.sin(GX / 1210.0 - GZ / 980.0) * 0.5   # broad swells across a top
+    rd = np.maximum(1 - np.abs(np.sin(GX / 290.0 + np.sin(GZ / 410.0) * 1.6)), 1 - np.abs(np.sin(GZ / 330.0 + np.sin(GX / 520.0) * 1.3))) ** 2
+    jit = 70 * (np.sin(GX / 213.0 + np.cos(GZ / 167.0) * 2.1) * 0.6 + np.sin(GZ / 241.0 - GX / 389.0) * 0.4)
+    for name, top, ramp, poly in MASSIFS:
+        pts = Pl(poly)
+        d = np.full(GX.shape, np.inf)
+        inside = np.zeros(GX.shape, bool)
+        for k in range(len(pts)):
+            (ax, az), (bx, bz) = pts[k], pts[(k + 1) % len(pts)]
+            dx, dz = bx - ax, bz - az
+            L = dx * dx + dz * dz or 1e-9
+            t = np.clip(((GX - ax) * dx + (GZ - az) * dz) / L, 0, 1)
+            d = np.minimum(d, np.hypot(GX - ax - t * dx, GZ - az - t * dz))
+            if az != bz:
+                inside ^= ((az > GZ) != (bz > GZ)) & (GX < dx * (GZ - az) / dz + ax)
+        # the outline wanders a little (no straight facets), and the slope up is a long one: the map's highlands mostly
+        # rise over a few hundred metres; the cliff-walled tables are FEATURES
+        u = np.clip((np.where(inside, d, -d) + jit) / (ramp * PX * 1.6), 0, 1)
+        k = u * u * (3 - 2 * u)
+        v = top * k * (0.8 + 0.12 * nz_ + 0.12 * n2) + top * rd * k * (0.16 if top > 500 else 0.08)
+        out = np.maximum(out, v)
+    return out
 
 
 def bump(x, z, c, rx, rz, inner=0.0, ragged=False):
@@ -137,11 +234,6 @@ def ridge(x, z):
 def feature_height(x, z):
     h = 0.0
     for kind, px, py, rx, ry, top, name in FEATURES:
-        if kind == "range":
-            # the mountains at the edge of the world: along the north and the west edges of the map
-            e = max(smoothstep(Z0 + 1400, Z0, z) * (1 - smoothstep(4600, 5800, x)), smoothstep(X0 + 1200, X0, x) * (1 - smoothstep(1500, 3500, z)))
-            h = max(h, top * e * (0.75 + 0.25 * noise(x * 0.6 + 400, z * 0.6)) * (0.85 + 0.15 * ridge(x, z)))
-            continue
         c = P(px, py)
         d, k = bump(x, z, c, rx * PX, ry * PX, ragged=kind in ('plateau', 'volcano'))
         if k <= 0:
@@ -174,35 +266,44 @@ def ellipse(cx, cy, rx, ry, n=28, rot=0.0):
 # level None: worked out from the ground round the lake (the lowest point of its shore, less a metre), so a lake up in
 # the hills sits where the hills put it. hot: a hot spring - teal and steaming (the page draws it so).
 LAKES = [
-    ("Lake Hylia", ellipse(735, 955, 62, 46), 12.0),
-    ("Lanayru Wetlands", ellipse(975, 650, 62, 28), 26.0),
-    ("East Reservoir Lake", ellipse(1255, 600, 30, 42), 300.0),
-    ("Lake Kolomo", ellipse(810, 205, 32, 26), 60.0),
-    ("Rito Village's lake", ellipse(275, 378, 34, 28), None),   # up on the Rito highland
-    ("Hyrule Ridge's lake", ellipse(482, 538, 20, 32, rot=0.3), None),
-    ("Skull Lake", ellipse(1212, 168, 20, 15), None),
-    ("Lake Akkala", ellipse(1290, 392, 26, 30), None),
-    ("the Lanayru Great Spring", ellipse(1177, 669, 9, 9), None),
+    ("Lake Hylia", Pl([(683, 960), (700, 933), (750, 932), (752, 950), (770, 935), (790, 945), (805, 975), (822, 995), (828, 1015),
+                      (810, 1018), (790, 1005), (775, 1000), (745, 1010), (725, 1030), (712, 1043), (700, 1030), (690, 1005), (682, 985)]), 12.0),
+    ("Lanayru Wetlands", Pl([(950, 625), (985, 612), (1010, 630), (1045, 640), (1062, 660), (1050, 690), (1020, 705), (1000, 725),
+                            (970, 728), (950, 712), (944, 680), (948, 650)]), 26.0),
+    ("East Reservoir Lake", Pl([(1247, 590), (1265, 580), (1290, 585), (1300, 600), (1292, 618), (1282, 632), (1270, 647), (1255, 642),
+                               (1243, 626), (1240, 605)]), None),
+    ("the lake north of the forest", ellipse(808, 210, 22, 24), None),
+    ("Rito Village's lake", ellipse(278, 385, 32, 26), None),   # up on the Rito highland
+    ("Hyrule Ridge's lake", ellipse(478, 530, 22, 28, rot=0.3), None),
+    ("Skull Lake", ellipse(1225, 168, 17, 14), None),
+    ("Lake Akkala", Pl([(1285, 380), (1310, 375), (1318, 395), (1305, 410), (1302, 430), (1310, 450), (1330, 462), (1305, 468),
+                        (1288, 450), (1282, 415)]), None),   # round the west of Tarrey Town's rock
+    ("Akkala's long tarn", ellipse(1317, 215, 5, 20), None),
+    ("the Lanayru Great Spring", ellipse(1178, 668, 9, 9), None),
     ("Necluda's long lake", ellipse(1132, 784, 30, 6, rot=-0.45), None),
     ("the lake by the plateau", ellipse(604, 905, 28, 14), None),
-    ("Hebra's long lake", ellipse(215, 310, 12, 38, rot=0.35), None),
-    ("Hebra's north lake", ellipse(352, 350, 15, 20), None),
-    ("Hebra's east lake", ellipse(384, 376, 20, 10, rot=0.4), None),
-    ("Tabantha's lake", ellipse(313, 437, 26, 15), None),
+    ("the pool below the plateau", ellipse(522, 860, 15, 14), None),
+    ("the lake north of Lake Hylia", ellipse(832, 915, 22, 30), None),
+    ("Hebra's long lake", Pl([(232, 252), (245, 262), (238, 285), (222, 305), (205, 322), (190, 333), (185, 325), (200, 305), (215, 285), (226, 262)]), None),
+    ("Hebra's eastern lake", Pl([(352, 322), (362, 328), (366, 348), (372, 362), (390, 368), (400, 378), (385, 382), (362, 376), (347, 352), (346, 332)]), None),
+    ("Hebra's narrow lake", ellipse(394, 320, 4, 22, rot=-0.4), None),
+    ("Tabantha's lake", ellipse(298, 452, 18, 15), None),
     ("a pond in the field", ellipse(700, 792, 14, 8, rot=0.3), None),
     ("a pond by the woods", ellipse(852, 716, 8, 8), None),
     ("a pond on the plain", ellipse(618, 690, 7, 6), None),
-    ("the Goron hot springs", ellipse(1084, 440, 24, 8, rot=-0.6), None, True),
+    ("Lurelin's tarn", ellipse(1110, 1128, 6, 8), None),
+    ("the Goron hot springs", ellipse(1062, 448, 24, 8, rot=-0.3), None, True),
     ("the hot crater lake", ellipse(1130, 160, 13, 13), None, True),
 ]
 LAKES = [l if len(l) == 4 else l + (False,) for l in LAKES]
 # moats: (name, centre px, inner radius px, outer radius px, level)
-MOATS = [("Hyrule Castle's moat", (730, 505), 46, 58, 34.0), ("the moat of the Great Hyrule Forest", (805, 345), 92, 104, 42.0)]
+MOATS = [("Hyrule Castle's moat", (730, 505), 46, 58, 34.0), ("the moat of the Great Hyrule Forest", (820, 338), 80, 92, 42.0)]
 # the two rivers that frame Hyrule Field, from the castle's water down to Lake Hylia, and the one round the plateau
 RIVERS = [
     ("Hylia River", [(792, 470), (833, 468), (876, 539), (881, 635), (857, 730), (824, 802), (800, 897), (772, 930)], 32),
-    ("the western river", [(668, 470), (647, 530), (618, 601), (585, 644), (576, 687), (595, 754), (585, 816), (600, 880), (690, 925), (715, 940)], 26),
-    ("the plateau's river", [(560, 600), (452, 630), (382, 672), (370, 742), (410, 808), (500, 830), (560, 852), (600, 882)], 22),
+    ("the western river", [(668, 470), (647, 530), (618, 601), (588, 640), (582, 690), (575, 735), (560, 775), (540, 800), (525, 830),
+                           (530, 870), (565, 895), (610, 905), (650, 930), (690, 945), (712, 952)], 26),   # down the plateau's east side
+    ("the plateau's river", [(368, 735), (372, 700), (400, 690), (425, 660), (450, 645), (480, 648), (520, 652), (560, 648), (588, 640)], 22),
     ("Lanayru River", [(1170, 640), (1080, 612), (1035, 640), (990, 600), (930, 575), (882, 590)], 30),   # into the Hylia River
     ("Faron River", [(750, 1000), (760, 1080), (768, 1180)], 26),
     ("Squabble River", [(1062, 962), (1010, 925), (951, 895), (905, 882), (860, 870), (824, 850)], 22),   # between the Dueling Peaks
@@ -222,7 +323,7 @@ def lake_mask(x, z):
     return None
 
 
-def raw_height(x, z):
+def raw_height(x, z, massif=0.0):
     if not in_poly(x, z, COAST) and not any(math.hypot(x - c[0], z - c[1]) < r for c, r, n, t in ISLANDS):
         return None
     base = 24 + 14 * noise(x * 0.5, z * 0.5) + 10 * noise(x * 0.25 + 900, z * 0.27)
@@ -230,7 +331,7 @@ def raw_height(x, z):
         d = math.hypot(x - c[0], z - c[1]) / r
         if d < 1:
             base = max(base, top * (1 - d) ** 1.5 + 2)
-    return max(base, feature_height(x, z))
+    return max(base, massif, feature_height(x, z))
 
 
 def main():
@@ -246,11 +347,12 @@ def main():
     nx = int((X1 - X0) // STEP) + 2
     nz = int((Z1 - Z0) // STEP) + 2
     H = [[0.0] * nx for _ in range(nz)]
+    MG = massif_grid([X0 + i * STEP for i in range(nx)], [Z0 + j * STEP for j in range(nz)])
     for j in range(nz):
         z = Z0 + j * STEP
         for i in range(nx):
             x = X0 + i * STEP
-            h = raw_height(x, z)
+            h = raw_height(x, z, float(MG[j][i]))
             if h is None:                                            # the sea: shelving away from the coast
                 d = coast_dist(x, z)
                 h = 0.7 - min(30.0, 1.5 + d * 0.02)
@@ -302,14 +404,33 @@ def main():
     rivers = []
     for name, pts, wpx in RIVERS:
         rivers.append({"name": name, "width": wpx * 1.0, "pts": carve(pts, wpx * 1.0, 3.0)})
-    # the lakes: a basin under each, and the shore down to the water
-    for j in range(nz):
+    # the lakes: round each a shore that slopes down to the water, not a wall: within a couple of hundred metres the
+    # ground comes no higher than the water plus a gentle rise (numpy over a box round each lake)
+    import numpy as np
+    HA = np.array(H)
+    for name, poly, lv0, hot in LAKES:
+        lv = lv0 if lv0 is not None else LAKE_LEVEL[name]
+        xs_ = [x for x, z in poly]
+        zs_ = [z for x, z in poly]
+        i0, i1 = max(0, int((min(xs_) - 260 - X0) / STEP)), min(nx, int((max(xs_) + 260 - X0) / STEP) + 2)
+        j0, j1 = max(0, int((min(zs_) - 260 - Z0) / STEP)), min(nz, int((max(zs_) + 260 - Z0) / STEP) + 2)
+        GX, GZ = np.meshgrid(X0 + np.arange(i0, i1) * STEP, Z0 + np.arange(j0, j1) * STEP)
+        d = np.full(GX.shape, np.inf)
+        for k in range(len(poly)):
+            (ax, az), (bx, bz) = poly[k], poly[(k + 1) % len(poly)]
+            dx, dz = bx - ax, bz - az
+            L = dx * dx + dz * dz or 1e-9
+            t = np.clip(((GX - ax) * dx + (GZ - az) * dz) / L, 0, 1)
+            d = np.minimum(d, np.hypot(GX - ax - t * dx, GZ - az - t * dz))
+        shore = lv + 0.6 + d * 0.32 + (d / 60.0) ** 2 * 6
+        HA[j0:j1, i0:i1] = np.minimum(HA[j0:j1, i0:i1], np.where(d < 260, shore, np.inf))
+    for j in range(nz):                               # the water itself: re-cut below the level inside each lake
         z = Z0 + j * STEP
         for i in range(nx):
-            x = X0 + i * STEP
-            lv = lake_mask(x, z)
+            lv = lake_mask(X0 + i * STEP, z)
             if lv is not None:
-                H[j][i] = min(H[j][i], lv - 4.0)
+                HA[j][i] = min(HA[j][i], lv - 4.0)
+    H = HA.tolist()
     hs = [int(round(H[j][i] * 10)) for j in range(nz) for i in range(nx)]
     out["terrain"] = {"step": STEP, "nx": nx, "nz": nz, "x0": q(X0), "z0": q(Z0), "datum": 0.0, "h": hs}
 
@@ -337,18 +458,18 @@ def main():
         return d
     S = {
         "castle": site(730, 505), "castletown": site(742, 575),
-        "plateau": site(470, 690), "temple_of_time": site(488, 680), "resurrection": site(455, 655), "oldman": site(500, 706),
-        "kakariko": site(1015, 782), "hateno": site(1240, 930), "techlab": site(1290, 912),
-        "rito": site(275, 378), "zora": site(1205, 585), "goron": site(1040, 330), "gerudo_town": site(245, 1035),
-        "lurelin": site(1150, 1092), "tarrey": site(1320, 420), "korok": site(805, 345), "akkala_citadel": site(1262, 318),
-        "spiral": site(1392, 338), "eventide": site(1395, 1112),
-        "lomei_north": site(660, 150), "lomei_south": site(520, 1095), "lomei_island": site(1415, 135),
-        "ruta": site(1255, 600), "rudania": site(1080, 330), "medoh": site(275, 378), "naboris": site(190, 1010),
-        "dueling": site(951, 895), "deathmountain": site(1110, 290),
-        "hylia_bridge": site(722, 958), "fort_hateno": site(1170, 900),
+        "plateau": site(470, 705), "temple_of_time": site(490, 700), "resurrection": site(452, 668), "oldman": site(505, 735),
+        "kakariko": site(1015, 782), "hateno": site(1258, 928), "techlab": site(1290, 912),
+        "rito": site(275, 378), "zora": site(1225, 562), "goron": site(1000, 298), "gerudo_town": site(245, 1035),
+        "lurelin": site(1150, 1092), "tarrey": site(1328, 425), "korok": site(820, 345), "akkala_citadel": site(1262, 318),
+        "spiral": site(1392, 338), "eventide": site(1398, 1130),
+        "lomei_north": site(660, 150), "lomei_south": site(520, 1095), "lomei_island": site(1405, 135),
+        "ruta": site(1270, 612), "rudania": site(1080, 330), "medoh": site(275, 378), "naboris": site(190, 1010),
+        "dueling": site(951, 895), "deathmountain": site(1120, 265),
+        "hylia_bridge": site(770, 988), "fort_hateno": site(1170, 900),
     }
     # the Sheikah towers, and the shrines: a few dozen, so every region has its lights
-    TOWERS = {"Great Plateau Tower": (470, 700), "Central Tower": (705, 640), "Dueling Peaks Tower": (938, 850),
+    TOWERS = {"Great Plateau Tower": (470, 718), "Central Tower": (705, 640), "Dueling Peaks Tower": (938, 850),
               "Hateno Tower": (1170, 870), "Lanayru Tower": (1012, 642), "Akkala Tower": (1232, 425), "Eldin Tower": (1000, 450),
               "Woodland Tower": (885, 430), "Ridgeland Tower": (450, 520), "Tabantha Tower": (500, 330), "Hebra Tower": (330, 185),
               "Gerudo Tower": (245, 700), "Wasteland Tower": (300, 980), "Lake Tower": (655, 950), "Faron Tower": (900, 1020)}
@@ -489,10 +610,10 @@ def main():
     # ---------- the plan ----------
     lakes = [{"name": n, "level": lv if lv is not None else LAKE_LEVEL[n], "hot": hot, "poly": [[round(x, 1), round(z, 1)] for x, z in poly]} for n, poly, lv, hot in LAKES]
     moats = [{"name": n, "x": P(px, py)[0], "z": P(px, py)[1], "r0": r0 * PX, "r1": r1 * PX, "level": lv} for n, (px, py), r0, r1, lv in MOATS]
-    REGIONS = {"desert": [P(220, 1060), 330 * PX, 200 * PX], "deathmountain": [P(1080, 280), 200 * PX, 170 * PX],
-               "lavafield": [P(1000, 255), 72 * PX, 55 * PX],
-               "akkala": [P(1260, 360), 140 * PX, 150 * PX], "faron": [P(930, 1060), 150 * PX, 90 * PX],
-               "hebra": [P(330, 230), 240 * PX, 170 * PX], "gerudo_high": [P(210, 740), 220 * PX, 130 * PX]}
+    REGIONS = {"desert": [P(220, 1060), 330 * PX, 200 * PX], "deathmountain": [P(1095, 285), 170 * PX, 165 * PX],
+               "lavafield": [P(1020, 290), 45 * PX, 110 * PX],
+               "akkala": [P(1290, 300), 120 * PX, 190 * PX], "faron": [P(930, 1060), 150 * PX, 90 * PX],
+               "hebra": [P(330, 230), 240 * PX, 170 * PX], "gerudo_high": [P(230, 760), 230 * PX, 130 * PX]}
     plan = {"_": "written by tools/make-hyrule.py: metres east (x) and south (z) of the origin; y is the ground",
             "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
             "rivers": rivers, "regions": REGIONS, "coast": [[round(x, 1), round(z, 1)] for x, z in COAST]}

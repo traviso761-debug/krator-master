@@ -318,7 +318,7 @@ export function landmarks(api){
   // ================================================================ Hylia Bridge, over Lake Hylia
   bridge(L,x,z){
     const B=S.hylia_bridge,lake=(PL.lakes||[]).find(l=>/Hylia/.test(l.name)),lv=lake?lake.level:12,parts=[];
-    const a0=[B.x-20,B.z-360],a1=[B.x+40,B.z+360],dx=a1[0]-a0[0],dz=a1[1]-a0[1],Lg=Math.hypot(dx,dz),yaw=-Math.atan2(dz,dx);
+    const a0=[B.x-120,B.z-340],a1=[B.x+120,B.z+340],dx=a1[0]-a0[0],dz=a1[1]-a0[1],Lg=Math.hypot(dx,dz),yaw=-Math.atan2(dz,dx);
     parts.push(blk((a0[0]+a1[0])/2,lv+14,(a0[1]+a1[1])/2,Lg,2.5,12,M.stone,yaw));
     for(let k=0;k<=14;k++){const t=k/14,px=a0[0]+dx*t,pz=a0[1]+dz*t;parts.push(blk(px,lv-4,pz,4,18,10,M.stone2,yaw));}
     const nx=-dz/Lg,nz=dx/Lg;   // across the deck

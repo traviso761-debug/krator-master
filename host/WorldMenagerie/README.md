@@ -939,11 +939,17 @@ country is laid out by reading the game's published map by eye - where the regio
 and places are - used as a reference for arrangement only: no height, colour or pixel of it is used, and it is not in
 the repository. North is up, about twelve kilometres across at eight metres a pixel of the map.
 
-- **The land** is built from simple features placed where the map has them: peaks with ridged shoulders (Hebra,
-  the Gerudo Highlands, Mount Lanayru, the mountains at the edge of the world), plateaus with ragged cliff edges (the
-  Great Plateau, the Great Hyrule Forest, Zora's Domain), Death Mountain's cone and crater, hills, the Gerudo Desert's
-  dunes, and the lakes and rivers cut into it at levels that only fall downstream. The sea is east and south-east,
-  with the land cut out of the water sheet; north and west the land runs on out of the map.
+- **The land** is drawn like a contour map by hand. The highlands are `MASSIFS`: about twenty-five outlines read
+  off the map by eye (a few dozen points each), each with the height its top reaches and a long slope up to it,
+  nested so a highland steps up into its snows: Hebra and Tabantha, the Tundra, the Frontier, Hyrule Ridge, the
+  Ridgeland, Eldin and Death Mountain's shoulders, Akkala, Zora's Domain, Necluda, Mount Lanayru, the hills over
+  Kakariko, East and West Necluda, the Gerudo Highlands and their apron, the Gerudo Canyon, the southern mesa, and the
+  mountains at the edge of the world beyond the low ground that rings the country. Each outline wanders a little and
+  each top swells and ridges, so nothing is a flat table; it is all worked at once over the grid with numpy distance
+  fields. On top of them, the `FEATURES` made by rule: single peaks, Death Mountain's cone and crater, the cliff-walled
+  tables (the Great Plateau, the Great Hyrule Forest, the Rito highland), and the desert's dunes. The coast has the
+  map's bays and capes: Lanayru Bay in by its narrow way, Hateno's three capes, the hooked spit, Lurelin's inlet, the
+  long Faron shore. Lakes are outlines too, each with a shore that slopes down to the water rather than a wall.
 - **The ground's colours** (`paint.js`) are repainted per vertex from the plan's regions: soft greens, jungle in
   Faron, autumn in Akkala, sand in the desert, ash and lava-red on Death Mountain, snow on the cold heights (lower in
   the north and west), grey rock on anything steep. The water - sea, lakes, the castle's and the forest's moats,
@@ -980,7 +986,7 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   campfire with smoke and a glow that grows at night, Bokoblins milling round it), travellers walking and riding the
   roads, deer and boar grazing, smoke from the villages' chimneys, steam off the hot springs and at the foot of the
   waterfalls, stable lanterns and fireflies after dark, and the white lines of the wind over the fields.
-- **More of the map**: twenty lakes (Hyrule Ridge's on its table of land, Skull Lake, Lake Akkala, the Lanayru Great
+- **More of the map**: two dozen lakes (Hyrule Ridge's on its table of land, Skull Lake, Lake Akkala, the Lanayru Great
   Spring, the Hebra and Tabantha lakes, the field's ponds, two teal hot springs on Death Mountain). A lake given no
   level takes the lowest point of its shore, so it sits where the ground puts it; Rito Village's lake does this, on
   its own highland. The two rivers that frame Hyrule Field, the river round the Great Plateau, the Squabble River
