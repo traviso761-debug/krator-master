@@ -20,7 +20,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — LOCUS (100); 4. TERRAIN FIELD (220) |
 | `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (228) |
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
-| `30-layout.js` | 39 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (87); THE ROUTE GRID (103); WALK GRAPH (the life layer's network) (489) |
+| `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
 | `45-kit.js` | 26 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
@@ -52,7 +52,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
 | `66-locus-furnish.js` | 8 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
-| `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
+| `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
 | `69b-locus-biohost.js` | 4 | 19H. LOCUS — the biome host binding (1) |
 | `69z-locus-flora.js` | 5 | 19Z. LOCUS — planting the biome (1) |
@@ -66,7 +66,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
-| `84-life.js` | 43 **big** | 20. THE LIFE LAYER — LOCUS (1) |
+| `84-life.js` | 51 **big** | 20. THE LIFE LAYER — LOCUS (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 4 | 28. PATH VISUALIZER (1) |

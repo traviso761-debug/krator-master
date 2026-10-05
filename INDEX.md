@@ -11,7 +11,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 46 | 738 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
 | [`settlements/iziz`](settlements/iziz/INDEX.md) | 52 | 505 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
-| [`settlements/locus`](settlements/locus/INDEX.md) | 60 | 914 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
+| [`settlements/locus`](settlements/locus/INDEX.md) | 60 | 925 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 29 | 632 | 81 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |
 | [`settlements/mungo`](settlements/mungo/INDEX.md) | 19 | 206 | 55 | Mungo: a trade village at a river mouth on a salt lake in the Eastern Abyss: a floating reed village (the Reed Lake kit, run inside the page; Reed's Local), one pontoon to an Eastern Abyssal town, the Geomancers' chapterhouse among Yuni houses with their dune buggies. Shares the Locus engine and kits by name (build.py); the first world on core/simulation (SIM) and core/clock: a scheduled life layer whose data is world/*.json. |
 | [`settlements/port`](settlements/port/INDEX.md) | 48 | 718 | 39 |  |

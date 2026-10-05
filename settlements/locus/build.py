@@ -103,14 +103,25 @@ PALETTE_FILE = '05-palette.js'
 ROOT = os.path.dirname(os.path.dirname(HERE))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js'}
+VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js'}
 
 
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'65z-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, harvested=True) + kit_bundle.bundle(INTERIOR_SETS)}
+    vb = {'65z-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, harvested=True) + kit_bundle.bundle(INTERIOR_SETS)}
+    # the Motor Vehicles kit (KratorVehicles): the Geomancers' dune buggies in the buggy park (84-life.js)
+    vdir = os.path.join(ROOT, 'kits', 'motor-vehicles')
+    if os.path.isfile(os.path.join(vdir, 'vehicle_bundle.py')):
+        sys.path.insert(0, vdir)
+        try:
+            import vehicle_bundle
+            vb['65y-vehicles-bundle.js'] = vehicle_bundle.bundle()
+        except Exception as e:
+            print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
+    vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
+    return vb
 
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')

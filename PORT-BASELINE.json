@@ -273,20 +273,20 @@
    "sha256": "6c68b3d3227bd7c7c0d172f449de55e982a1470a76da7031bf3022e0b0a0e33a"
   },
   "settlements/locus/abyss-kit.html": {
-   "bytes": 2166252,
-   "sha256": "da917db00aedb29ec480eb5f9544af805f1766c27f5029db8e0ae47edd6a337f"
+   "bytes": 2272360,
+   "sha256": "36f9739505c2959bfcbf134bb5b0ac68130a84cffb44a9edab7c81f63bb294b2"
   },
   "settlements/locus/locus-kit.html": {
-   "bytes": 2166242,
-   "sha256": "58b74a087399e8da745e8daff186bc6abd150f3b0c3f265b03fe2c3c31c8756d"
+   "bytes": 2272350,
+   "sha256": "96be96c213173513f6502dfd88a15aa048272ad704cb100d089ad138b9f58dc3"
   },
   "settlements/locus/locus-plants.html": {
-   "bytes": 2166230,
-   "sha256": "d0f119550cffaf1dd52421a33d82bdf1bb593c9381c176644cc4283fc2ca28bb"
+   "bytes": 2272338,
+   "sha256": "13bb1fb7d74ff50eaf36f123b53a3c11ef15f4f68ae03d1a2146901ce7cbd3e9"
   },
   "settlements/locus/locus.html": {
-   "bytes": 2166169,
-   "sha256": "74dbe79d8b4f9f17c1194d00f7387f58ec39f154f31dbe6f0fdd2db442f095f2"
+   "bytes": 2272277,
+   "sha256": "aa7fbcabcb4f1db54efc04d5cbe2e6c38a50162d51ff7dc49edaa61f8feb2aeb"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 1424500,
