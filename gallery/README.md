@@ -37,6 +37,11 @@ the tiling break-up, leaf and flower cards, the fruit stalls, tone mapping and c
 the old look), from `main` at 01f78aa3, with the index regenerated (Girder now 6.3 MB). Every other page is as in
 version 36 to 38.
 
+Version 40 (2026-10-05): `worlds/girder.html` replaced with Girder dressed in the full Beast Rider texture set (detail maps on the
+furniture and mounts, the village dressing families, the extra cards; 12.2 MB), from branch `claude/beast-rider-textures` at d4f6c391,
+with the index's Girder entry updated (size, blurb). Every other page is as in version 39. The Material Demo Kit
+(https://claude.ai/artifact/PiddSxzJWKzfzRu9nycrXL) was republished the same day with the 2026-10-05 sets (version 6).
+
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
 The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
