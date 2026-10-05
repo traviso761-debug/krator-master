@@ -51,3 +51,6 @@ settlements/mavs-refuge/three.min.js
 # The material demo kit: a 28 MB page built from scratch sets (core/materials/demo/build.py)
 core/materials/demo/dist/
 core/materials/demo/mockups/*/dist/
+
+# tools/edits: notes queued from the browser (tools/edits/README.md)
+/edits/

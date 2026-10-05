@@ -192,6 +192,13 @@ python3 tools/textures/ingest_polyhaven.py "<downloads>" ph-out --catalog-only
 python3 tools/textures/ingest_polyhaven.py "<downloads>" ph-out --only slug1,slug2,...
 ```
 
+**No local download?** `tools/textures/fetch_polyhaven.py` goes to the API instead: `gaps` lists the library
+roles with no set and the best Poly Haven candidates for each, `search WORD...` finds assets, and
+`fetch SLUG... --out DIR` downloads only the maps the ingest reads (1k colour jpg, nor_gl png, rough png; about
+15 MB each, md5-checked) into DIR, plus `DIR/batch-stub.json` for `adopt.py` with `scale` taken from Poly Haven's
+real dimensions. Then run the two passes above on DIR. Its candidates are keyword guesses: judge them in the
+demo kit as usual.
+
 Selection is made from the catalog: the script's suggested library id (keyword guess) is only a hint. Rules:
 best one or two sets per id; a **new id** is fine for bark and leaf variants (`bark.*`, `leaf.*`; the biome kits use
 many); everything else goes in "Available, not committed" below with its slug, so it can be pulled in later

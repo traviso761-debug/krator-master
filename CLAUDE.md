@@ -61,6 +61,12 @@ owner's `krator-before-cleanup.bundle` and in the other branches on the remote, 
 (`core/materials/PLAN.md`, "Prompts for generated sources" has the template and per-culture rows). Do not paper over a missing texture with a
 procedural stand-in without saying so.
 
+## Edit requests from the browser
+
+The owner can Alt+click a spot in any world served by `python3 tools/edits/serve.py` and leave a note.
+"Apply the pending edits" means: `python3 tools/edits/pending.py`, make each change in `src/`, rebuild, verify,
+then `pending.py --done <id>`. See `tools/edits/README.md`.
+
 ## Build and verify
 
 ```
