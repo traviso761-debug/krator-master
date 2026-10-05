@@ -36,6 +36,7 @@ const VIEWS={
    V['A mole\'s '+pm.kind+' to the shore']=[pm.A.x-dx/l*30-dz/l*22,16,pm.A.z-dz/l*30+dx/l*22,mx,2.5,mz];}
   const lp=SPANS.list.filter(s=>s.kind==='bridge'&&(s.piers||0)>0).sort((a,b)=>b.piers-a.piers)[0];if(lp){const E=lp.b.host?PLACE.hosts.find(x=>x.n===lp.b.host):lp.b;const h=PLACE.hosts.find(x=>x.n===lp.a.host);const mx=(h.x+E.x)/2,mz=(h.z+E.z)/2;const dx=E.x-h.x,dz=E.z-h.z,l=Math.hypot(dx,dz)||1;
    V['The longest bridge and its piers']=[mx-dz/l*120,14,mz+dx/l*120,mx,12,mz];}
+  const cs=SPANS.list.find(s=>s.kind==='cliffstair');if(cs){const a=cs.a0+cs.dir*.9;const r=ysStackEdge(CITY.STACKS[0],a)+70;V['The Citadel\'s cliff stair']=[cs.cx+Math.cos(a)*r,38,cs.cz+Math.sin(a)*r,cs.cx+Math.cos(a)*(r-60),28,cs.cz+Math.sin(a)*(r-60)];}
   const ct=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='citadel');if(ct){const h=PLACE.hosts.find(x=>x.n===ct.a.host);const mx=(h.x+ct.b.x)/2,mz=(h.z+ct.b.z)/2;const dx=ct.b.x-h.x,dz=ct.b.z-h.z,l=Math.hypot(dx,dz)||1;
    V['The Citadel\'s span']=[mx-dz/l*220,90,mz+dx/l*220,mx,50,mz];}}
  // the land quarter: a laned block, a skyscraper stump on land, the military harbour's quay (Travis, Oct 5 2026)
@@ -48,5 +49,6 @@ const VIEWS={
  {const r=PLACE.blds.find(r=>/^hyk_house_rich/.test(r.key));if(r){const f=[Math.sin(r.ry),Math.cos(r.ry)],x=[Math.cos(r.ry),-Math.sin(r.ry)];V['A rich house']=[r.x+f[0]*34+x[0]*14,r.y+13,r.z+f[1]*34+x[1]*14,r.x,r.y+4,r.z];}}
  const ph=PLACE.hosts.find(h=>/Pharos/.test(h.n));if(ph)V['The Pharos']=[ph.x-N[0]*260+T[0]*120,ph.top-10,ph.z-N[1]*260+T[1]*120,ph.x,ph.top-40,ph.z];
  {const r=PLACE.blds.find(r=>r.key==='hyk_navigators_guild')||PLACE.blds.find(r=>r.why==='civilian harbour');if(r)V['The civilian harbour']=[r.x+N[0]*140+T[0]*90,38,r.z+N[1]*140+T[1]*90,r.x,4,r.z];}
- {const r=PLACE.blds.find(r=>r.why==='home-grown mole');if(r){const m=PLACE.moles.find(m=>/home-grown/.test(m.name)&&ysPlInPoly(m.poly,r.x,r.z));const cx=m?(m.x0+m.x1)/2:r.x,cz=m?(m.z0+m.z1)/2:r.z;V['A home-grown mole']=[cx+N[0]*120+T[0]*80,45,cz+N[1]*120+T[1]*80,cx,3,cz];}}
+ {const r=PLACE.blds.find(r=>r.why==='home-grown mole');if(r){const m=PLACE.moles.find(m=>/home-grown/.test(m.name)&&ysPlInPoly(m.poly,r.x,r.z));const cx=m?(m.x0+m.x1)/2:r.x,cz=m?(m.z0+m.z1)/2:r.z;V['A home-grown mole']=[cx+N[0]*150+T[0]*100,70,cz+N[1]*150+T[1]*100,cx,3,cz];}}
+ {const am=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='amph');if(am){const h=PLACE.hosts.find(x=>x.n===am.a.host);const mx=(h.x+am.b.x)/2,mz=(h.z+am.b.z)/2;const dx=am.b.x-h.x,dz=am.b.z-h.z,l=Math.hypot(dx,dz)||1;V['The Amphitriton\'s coastal span']=[mx-dz/l*160,60,mz+dx/l*160,mx,28,mz];}}
 })();

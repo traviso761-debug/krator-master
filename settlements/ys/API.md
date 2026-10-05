@@ -224,7 +224,9 @@ downstream edge; the valley is 2.2 widths wide). Every stack and the Amphitriton
 plates:[y],ways:[{a,y,R}],pods:[{key,a,y,level,into}]}`, `PLACE.slots` `{kind:'foreign'|'chapterhouse'|'land host'|'low host',
 swap|wish,x,z,ry,w,d,y}`, `PLACE.moles` `{name,poly,y,wall,plate,node}` (the terrain's `fill` stamp lies 30 cm under
 `y`, inset 7 m and sharp-edged under a walled mole; the draw pass lays a plate at `y - .12` and, if `wall`, a shell quay
-wall down to the bed round every edge; `node` makes the mole a node of the bridge graph). Host types live in
+wall down to the bed round every edge; `node` makes the mole a node of the bridge graph; `star` marks an organic
+outline, `ysPlOrganic`, whose plate is a fan and whose inset is a pull toward the centre; `stairs` the flights between
+terraces). `ysPlEdgeRun(m,b,{pool,kind,why,tag,max,land})` lines a polygon's edges with buildings facing outward. Host types live in
 `YS_HOST_TYPES` (storey table, face radius by local y, cut ranges, the plate sunk to L2). Helpers: `ysPlBox`/`ysPlHit`
 (oriented boxes), `ysPlClash(B,skip)`, `ysPlTry`/`ysPlByName`/`ysPlSeek` (a def by name, quietly, counted, or over
 candidates), `ysPlFront(b,{pool,kind,sides,h})` (the frontage walker), `ysPlShoreRun(uses,seq)` (pieces squared to the
@@ -238,7 +240,9 @@ the runs the draw pass lays as ribbons of paving on the ground (`88b`, 22–30 c
 own lift). The placer never puts a footprint on a street.
 **The bridge graph** (`88-city-spans.js`): `SPANS.nodes` (the drowned hosts, the walled moles, the Citadel, the Winds,
 the Amphitriton), `SPANS.list` records `{kind:'bridge',a:{host,pod},b:{host,pod}|{x,y,z,kind:'mole'|'shore'|'citadel'|
-'winds',pad},level,na,nb}` and `{kind:'drawbridge'|'walkway'|'pontoon',A,B,level}`, `SPANS.refused` (pairs and nodes
+'winds',pad},level,na,nb}` and `{kind:'drawbridge'|'walkway'|'pontoon',A,B,level}`, a `citadel` end being the gate landing (`node.gate`), an `amph`
+end one of the Amphitriton's L2 doors (`node.doors`, resolved to the door mark at draw time), and `{kind:'cliffstair',
+cx,cz,stack,a0,dir,y0,y1,head,foot}` (the Citadel's stair down its stack), `SPANS.refused` (pairs and nodes
 left to the boats), `SPANS.shore` (nodes with a foot path to the shore). The draw pass resolves a pod end to its
 landing, a `citadel` end to the pad `NAV_EXTRA` names `'Citadel bridge head'`, a `pad` end to a lily pad it grows there,
 and puts piers under a bridge longer than 55 m (`S.piers`).

@@ -24,7 +24,10 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  // every edge (hykHarbWall, world frame: HYK.cur is null here), its outward face found from the polygon's centroid
  {reseed(32395);TSTAT.cur='mole quay/0';let nw=0;const col=hC(hPick(HPAL.shellWarm)),wcol=hC(hPick(HPAL.shell));
   for(const m of PLACE.moles){if(!m.plate)continue;const P=m.poly,y=m.y-.12;
-   if(P.length===4){hykPutRaw('hkFloor',hykSurf((u,v)=>{const ax=P[0][0]+(P[1][0]-P[0][0])*u,az=P[0][1]+(P[1][1]-P[0][1])*u,bx=P[3][0]+(P[2][0]-P[3][0])*u,bz=P[3][1]+(P[2][1]-P[3][1])*u;return [ax+(bx-ax)*v,y,az+(bz-az)*v];},
+   if(m.star){const c=m.star,n=P.length;const ring=u=>{const f=((u%1)+1)%1*n;const i=Math.floor(f)%n,j=(i+1)%n,t=f-Math.floor(f);return [P[i][0]*(1-t)+P[j][0]*t,P[i][1]*(1-t)+P[j][1]*t];};
+    const R=Math.max(m.x1-m.x0,m.z1-m.z0)/2;hykPutRaw('hkFloor',hykSurf((u,v)=>{const p=ring(u);return [c[0]+(p[0]-c[0])*v,y,c[1]+(p[1]-c[1])*v];},n*2,3,{col,uS:TAU*R/4,vS:R/4,flip:ysPlPolyArea(P)<0}));
+    for(const f of m.stairs)hykSpanStairStraight(f.A,f.B,{w:2.4,rails:'both'});}
+   else if(P.length===4){hykPutRaw('hkFloor',hykSurf((u,v)=>{const ax=P[0][0]+(P[1][0]-P[0][0])*u,az=P[0][1]+(P[1][1]-P[0][1])*u,bx=P[3][0]+(P[2][0]-P[3][0])*u,bz=P[3][1]+(P[2][1]-P[3][1])*u;return [ax+(bx-ax)*v,y,az+(bz-az)*v];},
      Math.max(2,Math.round(Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/8)),Math.max(2,Math.round(Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/8)),{col,uS:Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/4,vS:Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/4,flip:ysPlPolyArea(P)<0}));}
    if(!m.wall)continue;const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;
    for(let i=0;i<P.length;i++){let a=P[i],b=P[(i+1)%P.length];const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;const dx=b[0]-a[0],dz=b[1]-a[1];if((cx-mx)*(-dz)+(cz-mz)*dx>0){const t=a;a=b;b=t;}   /* the outward face to the right of a->b */
@@ -36,7 +39,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  {TSTAT.cur='roads/0';let n=0;const pc=hC(hPick(HPAL.barnacle),.86),hc=hC(hPick(HPAL.barnacle),.8);
   for(const r of LAYOUT.roads){const dx=r.b[0]-r.a[0],dz=r.b[1]-r.a[1],L=Math.hypot(dx,dz);if(L<6)continue;const tx=dx/L,tz=dz/L;
    const alongU=Math.abs(tx*LAYOUT.U[0]+tz*LAYOUT.U[1])>.9;const lift=r.kind==='highway'?.3:r.kind==='lane'?.18:alongU?.22:.26;const nu=Math.max(2,Math.round(L/4));
-   hykPutRaw('hkFloor',hykSurf((u,v)=>{const x=r.a[0]+dx*u-tz*(v-.5)*r.w,z=r.a[1]+dz*u+tx*(v-.5)*r.w;return [x,terrainH(x,z)+lift,z];},nu,2,{col:r.kind==='highway'?hc:pc,uS:L/4,vS:r.w/4}));n++;}
+   hykPutRaw('hkFloor',hykSurf((u,v)=>{const x=r.a[0]+dx*u-tz*(v-.5)*r.w,z=r.a[1]+dz*u+tx*(v-.5)*r.w;let y=terrainH(x,z)+lift;if(y>-.4&&y<.4)y=y<0?-.4:.4;return [x,y,z];},nu,2,{col:r.kind==='highway'?hc:pc,uS:L/4,vS:r.w/4}));n++;}
   TSTAT.cur=null;window._roads=n;}
  // the bridge graph (88-city-spans): host to host, landing to landing; host to a mole's edge, a shore landing (a lily
  // pad on a stalk), the Citadel's bridge head or the Winds' stack top; mole to mole and mole to shore as walkways or
@@ -45,7 +48,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  {let nb=0;const land=(h,p)=>{const H=HOSTS.find(x=>x.n===h.n);const l=H&&H.landings.find(l=>Math.abs(Math.atan2(Math.sin(l.a-p.a),Math.cos(l.a-p.a)))<.03&&Math.abs(l.y-p.y)<3);
    if(l)return l;const r=h.rAt(p.y,p.a)+HYK.defs[p.key].w*.8;return {x:h.x+Math.cos(p.a)*r,y:p.y,z:h.z+Math.sin(p.a)*r,r:2.8};};
   const endOf=(E,toward)=>{if(E.host){const h=PLACE.hosts.find(x=>x.n===E.host);return land(h,h.pods[E.pod]);}
-   if(E.kind==='citadel'){const d=NAV_EXTRA.find(d=>d.own==='Citadel bridge head');if(d)return {x:(d.x0+d.x1)/2,y:d.y,z:(d.z0+d.z1)/2,r:3.2};}
+   if(E.kind==='amph'){const M=MARKS.filter(m=>m.kind==='door'&&m.key==='hyk_amphitriton'&&m.level==='L2').sort((p,q)=>Math.hypot(p.x-E.x,p.z-E.z)-Math.hypot(q.x-E.x,q.z-E.z))[0];if(M)return {x:M.x+M.nx*1.2,y:M.y,z:M.z+M.nz*1.2,r:0};}
    if(E.pad){once('hyk_lilypad');const tx=toward.x-E.x,tz=toward.z-E.z;hykSpanLilypad(E.x,E.y,E.z,3.4,{rail:{a0:Math.atan2(tz,tx),gap:1.2},level:'quay',own:'shore landing'});return {x:E.x,y:E.y,z:E.z,r:3.4};}
    return {x:E.x,y:E.y,z:E.z,r:E.r||0};};
   const piers=(br,P0,P1,lv)=>{const L=Math.hypot(P1.x-P0.x,P1.z-P0.z);if(L<55)return 0;const n=Math.floor(L/40);let k=0;const col=hC(hPick(HPAL.shell));
@@ -57,6 +60,13 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
     once(S.level==='L2'?'hyk_span_l2':'hyk_span_l1');const br=(S.level==='L2'?hykSpanBridgeL2:hykSpanBridgeL1)(P0,P1,{own:'bridge '+S.na+' – '+S.nb,level:S.level});S.piers=piers(br,P0,P1,S.level);np+=S.piers;S.drawn=true;nb++;}
    else if(S.kind==='drawbridge'){once('hyk_drawbridge');hykSpanDrawbridge(S.A,S.B,{own:'the Amphitriton drawbridge',level:'L1'});S.drawn=true;nb++;}
    else if(S.kind==='walkway'){once('hyk_walkway');hykSpanWalkway(S.A,S.B,{own:'walkway '+S.na+' – '+S.nb,level:'quay'});S.drawn=true;nb++;}
+   else if(S.kind==='cliffstair'){once('hyk_spiral_stair');const s=CITY.STACKS[S.stack];const col=hykSpanBone(),sc=hC(hPick(HPAL.shell));
+    const rAt=(y,a)=>ysStackEdge(s,a)-8*clamp((y-S.gnd)/S.top,0,1)+3;   /* the wall's plan radius at that height, 3 m off for the heightfield's facets */
+    hykSpanPad(S.head.x,S.head.y,S.head.z,2.6,{stalk:false,col:sc,rail:{a0:S.a0+Math.PI,gap:2.2},own:'Citadel cliff stair head'});
+    const st=hykSpanStairSpiral(S.cx,S.cz,rAt,S.y0,S.y1,{a0:S.a0,dir:S.dir,w:1.3,col});
+    const yb=terrainH(S.foot.x,S.foot.z)-.8;hykSpanPad(S.foot.x,S.foot.y+.3,S.foot.z,3.0,{col:sc,ground:yb,rail:{a0:st.a1+Math.PI,gap:2.4},lamp:{a:st.a1+Math.PI/2,cool:true,level:'wet'},own:'Citadel cliff stair foot'});
+    const cs=Math.cos(st.a1),sn=Math.sin(st.a1);const f0=[S.cx+(st.r1+.1)*cs,st.y1-.02,S.cz+(st.r1+.1)*sn],f1=[S.foot.x-cs*2.4,S.foot.y+.3,S.foot.z-sn*2.4];
+    hykPut('hkShell',hykDeck([f0,[(f0[0]+f1[0])/2,(f0[1]+f1[1])/2,(f0[2]+f1[2])/2],f1],1.4,{col:sc,camber:.04}));S.drawn=true;nb++;}
    else if(S.kind==='pontoon'){const A=S.A,B=S.B;const dx=B.x-A.x,dz=B.z-A.z,L=Math.hypot(dx,dz)||1;const tx=dx/L,tz=dz/L;const wet=.55;for(let k=0;k<Math.ceil(L/50);k++)once('hyk_pontoon');   /* its budget per 50 m */
     const A2={x:A.x+tx*6,y:wet,z:A.z+tz*6},B2={x:B.x-tx*6,y:wet,z:B.z-tz*6};hykSpanPontoon(A2,B2,{sea:-.45,own:'pontoon '+S.na+' – '+S.nb,level:'wet'});
     hykSpanStairStraight(A2,{x:A.x,y:A.y,z:A.z},{w:1.6,rails:'both'});hykSpanStairStraight(B2,{x:B.x,y:B.y,z:B.z},{w:1.6,rails:'both'});S.drawn=true;nb++;}

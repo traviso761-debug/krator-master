@@ -35,12 +35,14 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
  const N=SPANS.nodes;for(const h of PLACE.hosts)if(!h.land)N.push({kind:'host',n:h.n,x:h.x,z:h.z,y:h.plates[0],rec:h,wealth:h.wealth});
  for(const m of PLACE.moles)if(m.node)N.push(m.node);
  const LM=LAYOUT.landmarks;const stk=CITY.STACKS;
- if(LM.citadel)N.push({kind:'citadel',n:'the Citadel',x:LM.citadel.x,z:LM.citadel.z,y:Math.max(terrainH(LM.citadel.x,LM.citadel.z),0)+12,wealth:'civic'});
+ if(LM.citadel){const r=PLACE.blds.find(r=>r.key==='hyk_citadel');const node={kind:'citadel',n:'the Citadel',x:LM.citadel.x,z:LM.citadel.z,y:Math.max(terrainH(LM.citadel.x,LM.citadel.z),0)+12,wealth:'civic'};
+  if(r){const fx=Math.sin(r.ry),fz=Math.cos(r.ry);const gx=r.x+fx*54,gz=r.z+fz*54;node.gate={x:gx,z:gz,y:terrainH(gx,gz)+.3,fx,fz};node.y=node.gate.y;}N.push(node);}
  if(LM.temple_winds)N.push({kind:'winds',n:'the Temple of the Winds',x:LM.temple_winds.x,z:LM.temple_winds.z,y:terrainH(LM.temple_winds.x,LM.temple_winds.z)+.3,wealth:'civic'});
  const A=LAYOUT.A,Tb=LAYOUT.landmarks.temple_tides;const tides=N.find(n=>n.n==='the Tides mole')||null;
- // the distance from a stack's centre to its wall along the world bearing phi (the plan is an ellipse that wanders)
- const stackEdge=(s,phi)=>{const e=s.e||1,a=s.a||0;const L=ysStackLocal(s,s.x+Math.cos(phi)*s.r,s.z+Math.sin(phi)*s.r);const k=Math.sqrt(Math.cos(phi-a)*Math.cos(phi-a)/(e*e)+Math.sin(phi-a)*Math.sin(phi-a))||1;return ysStackRR(s,L.th)/k;};
- if(A)N.push({kind:'amph',n:'the Amphitriton',x:A.x,z:A.z,y:12,wealth:'civic'});
+ const stackEdge=ysStackEdge;
+ // the Amphitriton's two L2 landing doors (74a: petals 1 and 4 of seven, 28 m up): the draw pass finds the door marks
+ if(A){const r=PLACE.blds.find(r=>r.key==='hyk_amphitriton');const doors=[];if(r)for(const k of [1,4]){const ph=Math.PI/2+k*TAU/7;const p=loc(r.x,r.z,22*Math.cos(ph),22*Math.sin(ph),r.ry);const q=loc(r.x,r.z,23*Math.cos(ph),23*Math.sin(ph),r.ry);doors.push({k,x:p[0],z:p[1],y:r.y+28,nx:q[0]-p[0],nz:q[1]-p[1]});}
+  N.push({kind:'amph',n:'the Amphitriton',x:A.x,z:A.z,y:28,wealth:'civic',doors});}
  N.forEach((n,i)=>{n.i=i;});const par=N.map((_,i)=>i).concat([N.length]);const SH=N.length;   // SH: the shore
  const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};const join=(i,j)=>{const a=find(i),b=find(j);if(a===b)return false;par[a]=b;return true;};
  for(const S of SPANS.list)join(N.find(n=>n.n===S.na).i,N.find(n=>n.n===S.nb).i);
@@ -52,10 +54,11 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
   // the shore end: walk landward from the mole's landward edge until the natural ground stands at the quay datum
   const moleLand={x:Tb.x-ux*44+Lx*lat,y:2.5,z:Tb.z-uz*44+Lz*lat};let s=44,shore=null;for(;s<420;s+=4){const x=Tb.x-ux*s+Lx*lat,z=Tb.z-uz*s+Lz*lat;if(terrainH(x,z)>=2.2){shore={x,y:2.5,z};break;}}
   if(shore&&s>50){SPANS.list.push({kind:'walkway',A:shore,B:moleLand,level:'quay',na:'the Tides mole',nb:'the shore'});join(tides.i,SH);}}
+
  // ---- the end points. A mole's is on its edge toward the far end, 2 m in; the shore's is the first natural ground at the
  // quay datum walking from the node toward the land (the nearest land block, else straight inland), clear of the
  // river, the karst and anything built, nudged along the shore when something stands there
- const edgeOf=(m,tx,tz)=>{const P=m.poly;const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;let best=1e9;
+ const edgeOf=(m,tx,tz)=>{const P=m.poly;const cx=m.star?m.star[0]:(m.x0+m.x1)/2,cz=m.star?m.star[1]:(m.z0+m.z1)/2;{const l=Math.hypot(tx,tz)||1;tx/=l;tz/=l;}let best=1e9;
   for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length];const ex=b[0]-a[0],ez=b[1]-a[1];const den=tx*ez-tz*ex;if(Math.abs(den)<1e-9)continue;
    const t=((a[0]-cx)*ez-(a[1]-cz)*ex)/den,u=((a[0]-cx)*tz-(a[1]-cz)*tx)/den;if(t>0&&u>=0&&u<=1)best=Math.min(best,t);}
   if(best>1e8)best=Math.min(m.x1-m.x0,m.z1-m.z0)/2;const d=Math.max(2,best-2);return {x:cx+tx*d,y:m.y+.15,z:cz+tz*d};};
@@ -75,9 +78,10 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
  const nodeEnd=(n,toward)=>{const tx=toward.x-n.x,tz=toward.z-n.z,l=Math.hypot(tx,tz)||1;
   if(n.kind==='mole')return Object.assign(edgeOf(n.mole,tx/l,tz/l),{kind:'mole',n:n.n});
   if(n.kind==='winds'){const s=stk[1];const phi=Math.atan2(tz,tx);const d=Math.max(8,stackEdge(s,phi)-7);const x=n.x+Math.cos(phi)*d,z=n.z+Math.sin(phi)*d;return {x,y:terrainH(x,z)+.3,z,kind:'winds',n:n.n};}
-  // the Citadel's bridge head: its pad outside the west door (local -x, which faces the Amphitriton: the stack's axis
-  // points the other way); an estimate here, the draw pass finds the pad itself
-  if(n.kind==='citadel'){const s=stk[0];const phi=(s.a||0)+Math.PI;const d=s.r*(s.e||1)+3.4;return {x:n.x+Math.cos(phi)*d,y:n.y,z:n.z+Math.sin(phi)*d,kind:'citadel',n:n.n};}
+  // the Citadel: a landing on the stack top just outside its gate (local +z, the rampart's gate at 45 m; Travis: not a
+  // flyover to the west bastion's bridge head); the span must come from the front, so a host behind it is refused
+  if(n.kind==='citadel'){const g=n.gate;if(!g)return null;if((toward.x-g.x)*g.fx+(toward.z-g.z)*g.fz<40)return null;return {x:g.x,y:g.y,z:g.z,kind:'citadel',n:n.n};}
+  if(n.kind==='amph'){const D=n.doors.map(d=>({d,c:-((d.x-n.x)*tx+(d.z-n.z)*tz)/l})).sort((p,q)=>p.c-q.c)[0];if(!D||D.c>-.2)return null;const d=D.d;return {x:d.x+d.nx*1.2,y:d.y,z:d.z+d.nz*1.2,kind:'amph',door:d.k,n:n.n};}   /* the L2 door that looks that way */
   return null;};
  // realise an edge between nodes (or a node and the shore); true when it is now a record
  const link=(p,q)=>{let rec=null;const shore=q==null;const Q=shore?shoreOf(p):null;if(shore&&!Q)return false;
@@ -92,9 +96,15 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
    const poor=p.wealth==='poor'||(q&&q.wealth==='poor');rec={kind:poor?'pontoon':'walkway',A:Pa,B:Pb,level:poor?'wet':'quay',na:p.n,nb:shore?'the shore':q.n};ysPlCount(poor?'hyk_pontoon':'hyk_walkway');}
   else return false;   // a landmark reaches the network through a host
   SPANS.list.push(rec);return true;};
+ // the Amphitriton's coastal links (Travis): each of its L2 doors to the nearest host it looks toward
+ {const am=N.find(n=>n.kind==='amph');if(am&&am.doors.length)for(const d of am.doors){const l=Math.hypot(d.nx,d.nz)||1;const dx=d.nx/l,dz=d.nz/l;
+   const h=N.filter(n=>n.kind==='host').map(n=>({n,dd:Math.hypot(n.x-d.x,n.z-d.z),c:(n.x-d.x)*dx+(n.z-d.z)*dz})).filter(o=>o.dd<340&&o.c>o.dd*.2).sort((p,q)=>p.dd-q.dd)[0];
+   if(!h)continue;const far={x:d.x+dx*1.2,y:d.y,z:d.z+dz*1.2,kind:'amph',door:d.k,n:am.n};const e=hostTo(h.n.rec,far);if(!e)continue;
+   SPANS.list.push({kind:'bridge',a:{host:h.n.n,pod:e.pod},b:far,level:'L2',na:h.n.n,nb:am.n});join(h.n.i,am.i);}}
  // ---- 3. the spanning tree: every candidate edge by cost, joining components; a node's shore edge is a candidate too
  const cand=[];for(let i=0;i<N.length;i++){for(let j=i+1;j<N.length;j++){const p=N[i],q=N[j];if(p.kind==='amph'||q.kind==='amph')continue;const d=Math.hypot(p.x-q.x,p.z-q.z);const lm=/citadel|winds/.test(p.kind+q.kind);if(d>(lm?450:300))continue;
    if(lm&&p.kind!=='host'&&q.kind!=='host')continue;   /* a landmark reaches the network through a host */
+   if(/citadel/.test(p.kind+q.kind)){const c=p.kind==='citadel'?p:q,h=p.kind==='citadel'?q:p;if(!c.gate||(h.x-c.gate.x)*c.gate.fx+(h.z-c.gate.z)*c.gate.fz<40)continue;}   /* from the front */
    const f=(p.kind==='host')!==(q.kind==='host')?1.2:1;cand.push({i,j,c:d*f,d});}
   const p=N[i];if(p.kind==='host'||p.kind==='mole'){const S=shoreOf(p);if(S){p.shoreD=S.d;cand.push({i,j:SH,c:S.d*(p.kind==='host'?1.15:1),d:S.d});}}}
  cand.sort((a,b)=>a.c-b.c);
@@ -110,6 +120,18 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
   for(const h of PLACE.hosts){if(h.land||!/^sky[DHL]$/.test(h.type)||!h.plates.length||ns>=4)continue;const y0=h.plates[0];if(y0<8||y0>22)continue;
    const a=bear(h,'hyk_spiral_stair',y0);if(a!=null){h.pods.push({key:'hyk_spiral_stair',a:+a.toFixed(4),y:y0,level:'L1',into:false,wealth:'civic',stair:true});ysPlCount('hyk_spiral_stair');h.noPlinth=true;ns++;}}
   SPANS.stairs=ns;}
+ // ---- 5. the Citadel's cliff stair (Travis: a second link, to the platform north of it): from the stack top outside the
+ // gate, a spiral stair hugging the karst wall down to a wet landing, then a walkway at the quay datum to the nearest
+ // walled mole (within 320 m) or the shore. The wall's radius at a height comes from ysKarstH's profile (near-vertical
+ // over 8 m of plan); the stair keeps 3 m off it for the heightfield's facets
+ {const c=N.find(n=>n.kind==='citadel');const s=stk[0];if(c&&c.gate&&s){const g=c.gate;const a0=Math.atan2(g.z-s.z,g.x-s.x);const gnd=Math.max(0,terrainH(s.x,s.z)-s.h);const top=terrainH(g.x,g.z);
+   const target=N.filter(n=>n.kind==='mole').map(n=>({n,d:Math.hypot(n.x-g.x,n.z-g.z)})).sort((p,q)=>p.d-q.d)[0];
+   const arc=(top-1.0)/.19*.64;const rr=stackEdge(s,a0);const da=arc/(rr+3);
+   const foot=dir=>{const a=a0+dir*da;return {a,x:s.x+Math.cos(a)*(stackEdge(s,a)+6),z:s.z+Math.sin(a)*(stackEdge(s,a)+6)};};
+   const F=[1,-1].map(foot).sort((p,q)=>{const t=target?target.n:{x:g.x-s.x*0,z:g.z};return Math.hypot(p.x-t.x,p.z-t.z)-Math.hypot(q.x-t.x,q.z-t.z);})[0];const dir=F.a>a0?1:-1;
+   const rec={kind:'cliffstair',cx:s.x,cz:s.z,stack:0,a0,dir,y0:top-.1,y1:1.0,gnd,top:s.h,head:{x:s.x+Math.cos(a0)*(rr-3),y:top,z:s.z+Math.sin(a0)*(rr-3)},foot:{x:F.x,y:1.0,z:F.z},na:'the Citadel',nb:'the water'};SPANS.list.push(rec);
+   if(target&&target.d<320){const m=target.n;const E=edgeOf(m.mole,F.x-m.x,F.z-m.z);SPANS.list.push({kind:'walkway',A:{x:F.x,y:1.3,z:F.z},B:E,level:'quay',na:'the Citadel stair',nb:m.n});}
+   else{const Q=shoreOf({x:F.x,z:F.z});if(Q){ysPlTake(Q.box);SPANS.list.push({kind:'walkway',A:{x:F.x,y:1.3,z:F.z},B:{x:Q.x,y:Q.y,z:Q.z},level:'quay',na:'the Citadel stair',nb:'the shore'});}}}}
  SPANS.shore=N.filter(n=>find(n.i)===find(SH)).length;
  for(const n of N)if(find(n.i)!==find(SH))SPANS.refused.push(n.n+' (no path to the shore)');
 })();

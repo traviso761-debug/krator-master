@@ -126,6 +126,12 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       down to the bed round every edge of the big moles (the aprons keep their soft beach side, with the plate).
 - [ ] (Oct 5 2026) The moles' quay walls are plain (coping, batter, the tide crust): no bollards, rings, stairs or
       ladders down to the water yet, and a mole's plate is one flat colour (the ground library's terrazzo is for it).
+      The home-grown moles are organic and terraced now; the harbour moles (the military harbour, the headland, the
+      Tides, the Library) are still rectangles. An upper terrace is lightly built (a few small houses) and its middle
+      is bare; the flight between terraces has no landing at the top.
+- [ ] (Oct 5 2026) The Citadel's cliff stair hugs the analytic karst wall; the heightfield's 10 m facets put the mesh wall
+      up to a few metres off it, so the stair floats a little in places and its brackets root in air or stone by chance.
+      Its walkway north lands on the home-grown mole's quay edge; the Winds' stack has no stair yet.
 - [x] (Oct 5 2026) The Citadel stack carried the arena model under the Citadel's name. Now `hyk_citadel` is the
       new Archon's Citadel (74b: a swept ridge-backed mass with a honeycomb of oval windows, a great pointed arch over
       the audience hall, verdigris spires and dome, a crescent colonnade and a reflecting pool, the west bastion with the

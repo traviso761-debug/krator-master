@@ -363,3 +363,25 @@ gate, and the west bastion with the Warden's lodge pod, the bridge door and the 
 with room for it (its middle levelled by a flat stamp), its gate to the head, the block lined with the market's shops. **Stairs**: a spiral stair down the
 face of a Monolith, Warden or Facet from its lowest plate to a wet landing, four at most; such a host, and any host
 whose bridge leaves a plate under sink + 30, stands without its restand plinth (`YS_CUT.noPlinth`, 52 `skyPlinth`).
+
+## The Citadel's gate landing and cliff stair, the Amphitriton's coastal spans, organic moles (Oct 5 2026, Travis)
+**The Citadel's span** lands on the stack top 9 m outside its gate (local +z), not on the west bastion's pad: it was
+a flyover across the forecourt. A host behind the Citadel is refused as its partner (the span must come from the front);
+the stack is 64 × 83 m now so the landing has ground. **The cliff stair**: from a pad beside that landing a spiral stair
+hugs the karst wall (its plan radius at each height from ysKarstH's profile, 3 m off for the heightfield's facets) down to
+a wet landing on a stalk, a stub deck between, then a walkway at the quay datum to the nearest walled mole within 320 m
+(else the shore): the Citadel's second link, north to the home-grown mole. **The Amphitriton's coastal spans**: each of
+its two L2 landing doors (74a, petals 1 and 4, 28 m up) takes an L2 bridge to the nearest host it looks toward (the
+Pharos and the grown plaza), landing a metre outside the door mark. **The bridge to nowhere** was `edgeOf` given an
+un-normalised direction (a mole's walkway ran on past its edge); it normalises now. **The home-grown moles are organic**
+(`ysPlOrganic`: sixteen radii from KRAND smoothed round the ring, stretched along a random bearing, the centre pushed
+10 m off the block's middle; star-shaped, so the fill is a pull toward the centre and the plate a fan), each with an
+upper terrace 2.2 m up to one side (twelve points, its own ring of small houses) and a knoll on that half the time, a
+flight between terraces on the side facing the mole's middle; the Hykkousoi line every edge facing the water
+(`ysPlEdgeRun`). A home-grown block on a scenery stack is left to the water, and the karst field keeps off every block
+of the grid, drowned ones too (a mole clipped a stack).
+**Travis's moves**: the Pharos stands at the bay's south end on (1,5), the Project H tower that stood there takes the
+Pharos's old block, the Facet stump off the harbour (1,4) moves south of the Project H to (1,6) (one block past the
+span, admitted by name) and (1,4) is left to the water (the harbour approach). The road ribbons keep 40 cm off the sea
+plane (the awash streets z-fought it). Each reclaimed Ancient on land gets a ring of small houses and shops about its
+cap, fronts outward (`ysPlEdgeRun` with `land`).

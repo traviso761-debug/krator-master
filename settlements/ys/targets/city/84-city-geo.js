@@ -35,6 +35,8 @@ function ysStacksNear(x,z){if(!YS_STK){YS_STK={n:CITY.STACKS.length,m:new Map()}
 // the stack's local frame: u along the axis (shrunk by e), v across; d the scaled distance, th the bearing in that frame
 function ysStackLocal(s,x,z){const dx=x-s.x,dz=z-s.z,a=s.a||0,c=Math.cos(a),sn=Math.sin(a);const u=(dx*c+dz*sn)/(s.e||1),v=-dx*sn+dz*c;return {d:Math.hypot(u,v),th:Math.atan2(v,u),u};}
 function ysStackRR(s,th){return s.r*(1+(s.flat?.14:.4)*(fbm(Math.cos(th)*2.2+s.x*.013,Math.sin(th)*2.2+s.z*.013,3.1,2)-.5));}   // the plan wanders ±20 % (±7 % on a landmark's stack: its building must fit)
+// the distance from a stack's centre to its wall along the world bearing phi (the plan is an ellipse that wanders)
+function ysStackEdge(s,phi){const e=s.e||1,a=s.a||0;const L=ysStackLocal(s,s.x+Math.cos(phi)*s.r,s.z+Math.sin(phi)*s.r);const k=Math.sqrt(Math.cos(phi-a)*Math.cos(phi-a)/(e*e)+Math.sin(phi-a)*Math.sin(phi-a))||1;return ysStackRR(s,L.th)/k;}
 // the karst field: 1 on a stack, falling to 0 over 20 m outside it (the biome masks its ground plants off the cliffs)
 function ysKarst(x,z){let k=0;for(const s of ysStacksNear(x,z)){const L=ysStackLocal(s,x,z);const t=clamp((s.r+10-L.d)/20,0,1);k=Math.max(k,t*t*(3-2*t));}return k;}
 // a stack's height above the ground it stands on: a near-vertical wall over 8 m, then the crown

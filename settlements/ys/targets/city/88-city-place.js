@@ -44,9 +44,26 @@ function ysPlInset(P,d){const n=P.length,out=[];const cx=P.reduce((a,p)=>a+p[0],
    if((cx-(p[0]+q[0])/2)*nx+(cz-(p[1]+q[1])/2)*nz<0){nx=-nx;nz=-nz;}L.push({px:p[0]+nx*d,pz:p[1]+nz*d,dx:dx/l,dz:dz/l});}
   const [e,f]=L;const den=e.dx*f.dz-e.dz*f.dx;if(Math.abs(den)<1e-6){out.push([b[0]+(cx-b[0])/Math.hypot(cx-b[0],cz-b[1])*d,b[1]+(cz-b[1])/Math.hypot(cx-b[0],cz-b[1])*d]);continue;}
   const t=((f.px-e.px)*f.dz-(f.pz-e.pz)*f.dx)/den;out.push([e.px+e.dx*t,e.pz+e.dz*t]);}return out;}
-function ysPlMole(name,poly,y,soft,o){o=o||{};const m={name,poly,y,soft:soft==null?6:soft,wall:!!o.wall,plate:o.plate!==false&&y>1,node:o.node||null,x0:Math.min(...poly.map(p=>p[0])),x1:Math.max(...poly.map(p=>p[0])),z0:Math.min(...poly.map(p=>p[1])),z1:Math.max(...poly.map(p=>p[1]))};
+// an organic outline (Travis, Oct 5 2026: the platforms looked square): n points about a centre pushed off the block's
+// middle, radii from KRAND smoothed round the ring, stretched e along the bearing a; star-shaped, so the inset is a
+// pull toward the centre and the plate a fan
+function ysPlOrganic(st,cx,cz,R,o){o=o||{};const n=o.n||14,e=o.e||1,a=o.a||0,amp=o.amp!=null?o.amp:.3;const off=o.off||0;const oa=st.range(0,TAU);cx+=Math.cos(oa)*off;cz+=Math.sin(oa)*off;
+ let r=[...Array(n)].map(()=>1+amp*(st.next()-.5)*2);for(let k=0;k<2;k++)r=r.map((v,i)=>(r[(i-1+n)%n]+2*v+r[(i+1)%n])/4);
+ const c=Math.cos(a),sn=Math.sin(a);const poly=r.map((v,i)=>{const t=i/n*TAU;const u=R*v*e*Math.cos(t),w=R*v*Math.sin(t);return [cx+u*c-w*sn,cz+u*sn+w*c];});return {poly,c:[cx,cz]};}
+function ysPlInsetStar(P,c,d){return P.map(p=>{const dx=p[0]-c[0],dz=p[1]-c[1],l=Math.hypot(dx,dz)||1;const k=Math.max(.2,1-d/l);return [c[0]+dx*k,c[1]+dz*k];});}
+function ysPlMole(name,poly,y,soft,o){o=o||{};const m={name,poly,y,soft:soft==null?6:soft,wall:!!o.wall,plate:o.plate!==false&&y>1,node:o.node||null,star:o.star||null,stairs:[],x0:Math.min(...poly.map(p=>p[0])),x1:Math.max(...poly.map(p=>p[0])),z0:Math.min(...poly.map(p=>p[1])),z1:Math.max(...poly.map(p=>p[1]))};
  if(m.node){m.node.x=(m.x0+m.x1)/2;m.node.z=(m.z0+m.z1)/2;m.node.y=y;m.node.mole=m;}
- PLACE.moles.push(m);if(m.plate)CITY_STAMPS.push({kind:'fill',poly:m.wall?ysPlInset(poly,7):poly,y:y-.3,soft:m.wall?0:m.soft,paint:'pave'});else CITY_STAMPS.push({kind:'fill',poly,y,soft:m.soft,paint:null});return m;}
+ PLACE.moles.push(m);if(m.plate)CITY_STAMPS.push({kind:'fill',poly:m.wall?(m.star?ysPlInsetStar(poly,m.star,7):ysPlInset(poly,7)):poly,y:y-.3,soft:m.wall?0:m.soft,paint:'pave'});else CITY_STAMPS.push({kind:'fill',poly,y,soft:m.soft,paint:null});return m;}
+// buildings along a mole's edges, fronts to the water: along each edge the cursor drops a def from the pool set back 2 m
+// inside the edge (the box must be wholly on the mole: the ground check refuses a corner in the water or on a terrace)
+function ysPlEdgeRun(m,b,o){const st=ysPlStream('edge:'+(o.tag||''),b);const P=m.poly,c=m.star||[(m.x0+m.x1)/2,(m.z0+m.z1)/2];let n=0;
+ for(let i=0;i<P.length;i++){const a=P[i],q=P[(i+1)%P.length];const dx=q[0]-a[0],dz=q[1]-a[1],L=Math.hypot(dx,dz)||1;const tx=dx/L,tz=dz/L;let nx=-tz,nz=tx;if((c[0]-(a[0]+q[0])/2)*nx+(c[1]-(a[1]+q[1])/2)*nz>0){nx=-nx;nz=-nz;}   /* outward */
+  const ry=ysPlFacing(nx,nz);let t=3;while(t<L-3&&n<(o.max||99)){if(st.chance(PL_GARDEN[o.kind]||0)){t+=st.range(8,16);continue;}
+   const key=ysPlPick(st,o.pool),D=HYK.defs[key];if(t+D.w>L-3)break;const s=t+D.w/2;const cx=a[0]+tx*s-nx*(D.d/2+2),cz=a[1]+tz*s-nz*(D.d/2+2);
+   const B=ysPlBox(cx,cz,D.w/2+1,D.d/2+1,ry,key);{const cl=ysPlClash(B);if(cl){ysPlRefuse('occupied by '+ysPlWhat(cl));t+=6;continue;}}
+   const y=ysPlGround(B,o.land?undefined:{min:m.y-.5,slope:1});if(y==null){t+=6;continue;}
+   ysPlBld(key,B,o.land?y:m.y,o.why,b,st);n++;t+=D.w+st.range(...PL_GAP[o.kind]);}}
+ return n;}
 function ysPlBlockPoly(b,u0,u1,v0,v1){return [[u0,v0],[u1,v0],[u1,v1],[u0,v1]].map(q=>ysPlAt(b,q[0],q[1]));}
 function ysPlBoxPoly(B){return [[-1,-1],[1,-1],[1,1],[-1,1]].map(k=>[B.cx+B.ux[0]*k[0]*B.hw+B.uz[0]*k[1]*B.hd,B.cz+B.ux[1]*k[0]*B.hw+B.uz[1]*k[1]*B.hd]);}
 // the ground under a box: nine samples; null (refused) when it is water, cliff, river valley or too steep
@@ -273,15 +290,15 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  const hostBlocks=LAYOUT.blocks.filter(b=>b.use==='host');
  if(LM.pharos)ysPlHost(LM.pharos,{type:'skyA',full:true,name:'The Pharos',crown:'hyk_pharos_crown',must:['hyk_pharos_crown'],way:'hyk_pod_rich_1',pods:4});
  // the full towers: farthest-point picks among the tall hosts in open water, away from the Pharos and the Amphitriton
- {const tall=hostBlocks.filter(b=>b.host==='tall');const chosen=[LM.pharos||A,A];const full=[];
-  for(let n=0;n<2&&tall.length;n++){let best=null;for(const b of tall){if(full.indexOf(b)>=0)continue;const d=Math.min(...chosen.map(c=>Math.hypot(c.x-b.x,c.z-b.z)));if(!best||d>best.d)best={b,d};}
-   full.push(best.b);chosen.push(best.b);}
-  for(const b of full){b.full=true;ysPlHost(b,{full:true});}}
+ {const tall=hostBlocks.filter(b=>b.host==='tall');const chosen=[LM.pharos||A,A];const full=tall.filter(b=>typeof b.full==='string');chosen.push(...full);
+  for(let n=full.length;n<2&&tall.length;n++){let best=null;for(const b of tall){if(full.indexOf(b)>=0)continue;const d=Math.min(...chosen.map(c=>Math.hypot(c.x-b.x,c.z-b.z)));if(!best||d>best.d)best={b,d};}
+   if(!best)break;full.push(best.b);chosen.push(best.b);}
+  for(const b of full){const type=typeof b.full==='string'?b.full:null;b.full=true;ysPlHost(b,Object.assign({full:true},type?{type}:{}));}}
  if(LM.grown_plaza){const b=LM.grown_plaza;ysPlHost(Object.assign(b,{host:'mid'}),{name:'The grown plaza',must:['hyk_market_plaza'],pods:3});}
  // the hosts of every other block: an awash block's is a low one (D or H, cut short, standing on the bed)
  // a scenery stack (the Needle, the Tooth...) standing in a host block's cap leaves the block to the water
  const onStack=b=>CITY.STACKS.slice(2).some(t=>ysStackLocal(t,b.x,b.z).d<t.r*1.25+70);
- for(const b of hostBlocks){if(b.full)continue;if(onStack(b)){ysPlRefuse('karst: host block');continue;}ysPlHost(b,{});}
+ for(const b of hostBlocks){if(b.full)continue;if(onStack(b)){ysPlRefuse('karst: host block');continue;}ysPlHost(b,b.type?{type:b.type}:{});}
  // the kit audit over the pods: a grown def no host drew takes the place of a pod whose def is drawn elsewhere, on a host
  // of its wealth if one has room, else on any (an into def opens a way where it lands)
  {const grown=HYK.order.filter(k=>HYK.defs[k].grown&&!/^hyk_(pharos_crown|market_plaza|spiral_stair)$/.test(k)&&!PL_COUNT[k]);
@@ -338,7 +355,9 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   const want=NB.filter(b=>b.landHost).length;let got=0,tall=0;
   for(const b of order.filter(b=>b.landHost).concat(order.filter(b=>!b.landHost))){if(got>=want)break;const st=ysPlStream('land host',b);const isTall=tall<2;const type=ysPlType(st,isTall?'landTall':'land'),cap=YS_HOST_TYPES[type].cap;
    for(const c of ysPlCands(b,0,0,93-cap-2)){const B=ysPlBox(c[0],c[1],cap,cap,PL_RY,'land host');if(ysPlClash(B))continue;const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B,{slope:5});PLACE.refused=n0;
-    if(y==null)continue;ysPlHost(b,{land:true,y,type,x:c[0],z:c[1],cutRange:isTall?[80,124]:null,tall:isTall});b.hostPlaced=true;got++;if(isTall)tall++;break;}}
+    if(y==null)continue;const rec=ysPlHost(b,{land:true,y,type,x:c[0],z:c[1],cutRange:isTall?[80,124]:null,tall:isTall});b.hostPlaced=true;got++;if(isTall)tall++;
+    {const R=cap+16;const ring={poly:ysPlBoxPoly(ysPlBox(c[0],c[1],R,R,PL_RY)),star:[c[0],c[1]],y,x0:c[0]-R,x1:c[0]+R,z0:c[1]-R,z1:c[1]+R};ysPlEdgeRun(ring,b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'host ring',tag:'ring',land:true,max:10});}   /* the Hykkousoi settle round the reclaimed Ancient (Travis) */
+    break;}}
   if(got<want)ysPlRefuse('land hosts: '+got+' of '+want);
   // the lanes quarter every neighbourhood block without a host (87c ysLanes), reserved like the streets
   for(const b of NB)if(!b.hostPlaced)for(const s of ysLanes(b))ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:lane'));}
@@ -360,9 +379,20 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);const fr=ysPlFacing(PL_V[0],PL_V[1]);
   const p=ysPlAt(b,st.range(-20,20),-50);ysPlByName(st.chance(.5)?'hyk_farmhouse_1':'hyk_farmhouse_2',p[0],p[1],fr,'farm',b);
   const nf=b.s<700*LAYOUT.K?2:1;for(let k=0;k<nf;k++){const q=ysPlAt(b,k?28:-28,10);ysPlByName('hyk_farm_field',q[0],q[1],PL_RY,'farm',b);}}
- // ---- 5. the drowned home-grown blocks: a mole at the quay datum, the Hykkousoi round its edge facing the water
- for(const b of LAYOUT.blocks.filter(b=>b.use==='homegrown')){ysPlMole('home-grown mole ('+b.i+','+b.j+')',ysPlBlockPoly(b,-62,62,-62,62),2.5,6,{wall:true,node:{kind:'mole',n:'home-grown mole ('+b.i+','+b.j+')',wealth:b.wealth,block:b.i+','+b.j}});
-  ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'home-grown mole',h:58,sides:2});}
+ // ---- 5. the drowned home-grown blocks: an organic mole at the quay datum (Travis: not square: asymmetric, with
+ // terraces), the Hykkousoi round its edge facing the water; an upper terrace 2.2 m up to one side with its own ring of
+ // houses, a knoll on top of that now and then, a flight between each pair of terraces on the side facing the mole's middle
+ for(const b of LAYOUT.blocks.filter(b=>b.use==='homegrown')){if(onStack(b)){ysPlRefuse('karst: home-grown block');continue;}const st=ysPlStream('mole',b);const nm='home-grown mole ('+b.i+','+b.j+')';
+  const lo=ysPlOrganic(st,b.x,b.z,64,{n:16,e:st.range(1,1.3),a:st.range(0,TAU),amp:.34,off:10});
+  const m=ysPlMole(nm,lo.poly,2.5,6,{wall:true,star:lo.c,node:{kind:'mole',n:nm,wealth:b.wealth,block:b.i+','+b.j}});
+  ysPlEdgeRun(m,b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'home-grown mole',tag:'quay'});
+  const up=ysPlOrganic(st,lo.c[0],lo.c[1],30,{n:12,amp:.3,off:16});const mu=ysPlMole(nm+', upper terrace',up.poly,4.7,0,{wall:true,star:up.c});
+  ysPlEdgeRun(mu,b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'home-grown mole',tag:'terrace',max:6});
+  const flight=(low,high)=>{const P=high.poly;let best=null;for(let i=0;i<P.length;i++){const a=P[i],q=P[(i+1)%P.length];const mx=(a[0]+q[0])/2,mz=(a[1]+q[1])/2;const d=Math.hypot(mx-low.star[0],mz-low.star[1]);if(!best||d<best.d)best={d,mx,mz,a,q};}
+   const dx=best.q[0]-best.a[0],dz=best.q[1]-best.a[1],L=Math.hypot(dx,dz)||1;let nx=-dz/L,nz=dx/L;if((high.star[0]-best.mx)*nx+(high.star[1]-best.mz)*nz>0){nx=-nx;nz=-nz;}   /* outward from the upper terrace */
+   const A={x:best.mx+nx*5,y:low.y,z:best.mz+nz*5},B={x:best.mx-nx*.6,y:high.y,z:best.mz-nz*.6};ysPlTake(ysPlBox((A.x+B.x)/2,(A.z+B.z)/2,1.6,3.5,Math.atan2(B.x-A.x,B.z-A.z),'flight'));low.stairs.push({A,B});};
+  flight(m,mu);
+  if(st.chance(.5)){const top=ysPlOrganic(st,up.c[0],up.c[1],13,{n:10,amp:.25,off:6});const mt=ysPlMole(nm+', the knoll',top.poly,6.9,0,{wall:true,star:top.c});flight(mu,mt);}}
 })();
 // counters for _api.city.place() and the probe
 function ysPlaceCensus(){const by={},why={};for(const r of PLACE.blds){by[r.key]=(by[r.key]||0)+1;why[r.why]=(why[r.why]||0)+1;}

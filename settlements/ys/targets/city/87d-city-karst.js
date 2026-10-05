@@ -7,7 +7,7 @@
 const KARST={SEED:32500,made:[]};
 (function karstField(){const H=CITY.HEAD,T=LAYOUT.T,N=LAYOUT.N,K=LAYOUT.K;const st=KRAND.stream(KRAND.child(KARST.SEED,'field'));
  const at=(t,s)=>[H[0]+T[0]*t-N[0]*s,H[1]+T[1]*t-N[1]*s];   // t along the coast, s inland (the land is -N)
- const cityLand=LAYOUT.blocks.filter(b=>b.kind==='land'&&b.use!=='farm');
+ const cityLand=LAYOUT.blocks.filter(b=>b.use!=='farm');   /* every block of the grid, drowned ones too: a mole clipped a stack */
  const hw=[];for(const h of LAYOUT.highways)for(let i=1;i<h.pts.length;i++)hw.push([h.pts[i-1],h.pts[i]]);
  const segD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;const u=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1);return Math.hypot(x-a[0]-dx*u,z-a[1]-dz*u);};
  const clear=(x,z,R)=>{if(Math.abs(x)>1580||Math.abs(z)>1580)return false;

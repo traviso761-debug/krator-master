@@ -26,7 +26,7 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  const T=best.t;let N=[-T[1],T[0]];if(ysShoreDist(LAYOUT.HEAD[0]+N[0]*200,LAYOUT.HEAD[1]+N[1]*200)>0)N=[T[1],-T[0]];LAYOUT.T=T;LAYOUT.N=N;
  const gstep=v=>{const du=v[0]*LAYOUT.U[0]+v[1]*LAYOUT.U[1],dv=v[0]*LAYOUT.V[0]+v[1]*LAYOUT.V[1];return Math.abs(du)>Math.abs(dv)?[du>0?1:-1,0]:[0,dv>0?1:-1];};
  const sN=gstep(N),sT=gstep(T);LAYOUT.sN=sN;LAYOUT.sT=sT;
- for(let i=-9;i<=9;i++)for(let j=-9;j<=9;j++){const c=ysBlockXZ(i,j);if(Math.abs(c[0])>1500||Math.abs(c[1])>1500)continue;const s=ysShoreDist(c[0],c[1]);const K=LAYOUT.K;if(s>820*K||s<-800*K)continue;if(Math.abs((c[0]-LAYOUT.HEAD[0])*T[0]+(c[1]-LAYOUT.HEAD[1])*T[1])>1650*K)continue;
+ for(let i=-9;i<=9;i++)for(let j=-9;j<=9;j++){const c=ysBlockXZ(i,j);if(Math.abs(c[0])>1500||Math.abs(c[1])>1500)continue;const s=ysShoreDist(c[0],c[1]);const K=LAYOUT.K;if(s>820*K||s<-800*K)continue;if(Math.abs((c[0]-LAYOUT.HEAD[0])*T[0]+(c[1]-LAYOUT.HEAD[1])*T[1])>1650*K&&!(i===1&&j===6))continue;   /* (1,6): one block past the span, for the Facet stump (Travis, below) */
   const y=ysPlaneY(s);const b={i,j,x:c[0],z:c[1],s,y,kind:ysKindOf(y),use:null,tag:null};LAYOUT.blocks.push(b);LAYOUT.by[i+','+j]=b;}
  const lineDist=(x,z)=>Math.abs((x-LAYOUT.HEAD[0])*N[1]-(z-LAYOUT.HEAD[1])*N[0]);
  const drowned=LAYOUT.blocks.filter(b=>b.kind==='canal'||b.kind==='open');
@@ -42,6 +42,13 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  const edge=LAYOUT.blocks.filter(b=>b.kind!=='land'&&!ysBlock(b.i+sN[0],b.j+sN[1]));const tside=b=>(b.x-A.x)*T[0]+(b.z-A.z)*T[1];
  const Db=edge.filter(b=>tside(b)>60).sort((a,b)=>tside(a)-tside(b))[0];if(Db)set(Db.i,Db.j,'temple_winds','D');
  const Pb=edge.filter(b=>tside(b)<-60).sort((a,b)=>tside(b)-tside(a))[0];if(Pb)set(Pb.i,Pb.j,'pharos','Ph');
+ // Travis (Oct 5 2026): the Pharos stands at the bay's south end on the Project H tower's block (1,5) and that tower takes
+ // the Pharos's old block; the Facet stump that stood off the harbour (1,4), in the way of the harbour approach, moves
+ // south of the Project H to (1,6); (1,4) is left to the water
+ {const PH=ysBlock(1,5),old=Pb,ap=ysBlock(1,4),sx=ysBlock(1,6);
+  if(PH&&PH.kind!=='land'&&old){old.use=null;old.tag=null;PH.use='pharos';PH.tag='Ph';old.use='host';old.tag='H';old.host='tall';old.full='skyH';}
+  if(ap&&ap.kind!=='land'){ap.use='water';ap.tag='~';}
+  if(sx&&sx.kind!=='land'){sx.use='host';sx.tag='H';sx.host='tall';sx.type='skyL';}}
  setWet(ai-sT[0]*3,aj-sT[1]*3,'citadel','E');
  for(const m of [1,2])setWet(ai-sN[0]*m-sT[0],aj-sN[1]*m-sT[1],'military_harbour','MH');setWet(ai-sN[0]*2-sT[0]*2,aj-sN[1]*2-sT[1]*2,'wet_cells','WC');
  set(0,0,'main_market','M');for(const m of [1,2])set(-sT[0]*m,-sT[1]*m,'civilian_harbour','CH');set(-sT[0]*3,-sT[1]*3,'fishing_docks','FD');
@@ -62,7 +69,7 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  const mv=(st,b,r,e)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;st.r=r;st.e=e;const d=toA(b),l=Math.hypot(d[0],d[1]);st.a=Math.atan2(-d[1]/l,-d[0]/l);ysStacksDirty();
   const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopStack(st);};
  const toA=b=>[A.x-b.x,A.z-b.z];
- mv(CITY.STACKS[0],LAYOUT.landmarks.citadel,56,1.5);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds,54,1.05);
+ mv(CITY.STACKS[0],LAYOUT.landmarks.citadel,64,1.3);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds,54,1.05);
  // the land quarter's reclaimed Ancients: half the neighbourhood blocks off the head (at least four), in the order of a
  // hash of their cell; the first two are skyscraper stumps (Travis: at least two podded stumps on land). A host block
  // has no lanes (the host takes its middle); every other neighbourhood block is quartered by lanes (87c).
@@ -85,7 +92,7 @@ function ysLayoutCensus(){const c={blocks:LAYOUT.blocks.length,kinds:{},uses:{},
  c.A=LAYOUT.A?[Math.round(LAYOUT.A.x),Math.round(LAYOUT.A.z),Math.round(LAYOUT.A.s)]:null;return c;}
 
 // ---------------------------------------------------------------- the layout overlay (CITY.LAYOUT_DEBUG): a quad per block, named blocks labelled
-const LAYOUT_COL={land:0xd9c9a1,awash:0xbfe3e8,canal:0x6fb7cf,open:0x2f6f9a,amphitriton:0xffd700,temple_tides:0xff9ad5,library:0xffb347,grown_plaza:0xc3f7a3,temple_winds:0xff9ad5,pharos:0xffffff,
+const LAYOUT_COL={water:0x2a5a80,land:0xd9c9a1,awash:0xbfe3e8,canal:0x6fb7cf,open:0x2f6f9a,amphitriton:0xffd700,temple_tides:0xff9ad5,library:0xffb347,grown_plaza:0xc3f7a3,temple_winds:0xff9ad5,pharos:0xffffff,
  citadel:0xe07b39,arena:0xd2a24c,military_harbour:0x9aaaaa,wet_cells:0x555555,main_market:0xff6b6b,civilian_harbour:0x8888aa,fishing_docks:0x8888aa,river_mouth:0x44aadd,headland_military:0xbb5555,foreign:0xd9b3ff,industry:0xaa6688,aquaculture:0x77ffdd,farm:0x99cc66};
 const LAYOUT_NAMES={amphitriton:'The Amphitriton',temple_tides:'Temple of the Tides',library:'Library of Ys',grown_plaza:'The grown plaza',temple_winds:'Temple of the Winds',pharos:'The Pharos',citadel:"The Archon's Citadel",arena:'The Arena',military_harbour:'Military harbour',wet_cells:'The Wet Cells',main_market:'Main market',civilian_harbour:'Civilian harbour',fishing_docks:'Fishing docks',river_mouth:'River mouth',headland_military:'The headland: barracks',foreign:'Foreign quarter',industry:'Industry',aquaculture:'Aquaculture pens'};
 const YS_BUILD=[];   // the city's build hooks (the scene runs them after the terrain, before the bake); 88 pushes the placer
