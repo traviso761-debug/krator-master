@@ -34,7 +34,7 @@ CASES = {
     "iziz": dict(page="settlements/iziz/dist/iziz.html", ground="terrainH",
                  target=[0, 0], lift=10, eye=[90, 60, 110], hour="ATMOS.U.hour.value"),
     "yuni": dict(page="settlements/yuni/yuni.html", ground=None, building="bld_00005",
-                 lift=2, eye=[45, 70, 60]),   # high: Yuni climbs a slope, and lower the eye lands inside its neighbours
+                 lift=2, eye=[150, 70, 170]),   # outside the Foundry's 146 x 92 m footprint: the records case draws it as a translucent box, and an eye over its roof sees only that
 }
 
 # before any page script: record the cameras and what the page renders (godot/tools/stage_hook.js)

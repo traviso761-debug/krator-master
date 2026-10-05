@@ -99,3 +99,18 @@ The pages must be built first (`cd biomes/rift && python3 build.py`, and so on).
 - This folder holds no Krator logic of its own that a build needs: the builds never read it.
 - `tests/rand/` follows `core/rand/`, never the other way: fix upstream, then `python3 godot/tools/sync_core.py`.
 - An importer that has to guess records the guess as a gap in its report, so the list stays honest.
+
+## Colour space in the Compatibility renderer
+
+Measured on 2026-10-05 (Godot 4.5, a lit grey plane): Forward+ decodes a `source_color` texture when it is sampled
+and takes `ALBEDO` as linear; **Compatibility reads the texture raw and decodes `ALBEDO` itself** (sRGB to linear)
+before lighting. A shader that only passes a texture to `ALBEDO` is right in both. One that multiplies a texture by
+linear data (vertex and instance colours, the stage's linear colour uniforms) is wrong in Compatibility by a gamma:
+Girder's floor and roof came out at a third of their brightness. `shaders/kcolour.gdshaderinc` has the fix: `k_tex()`
+decodes a sample, `k_albedo()` writes the result, both no-ops in Forward+. Every shader here that mixes a texture with
+a colour uses them. `halo` writes the atmosphere's sRGB colours and stays as it is.
+
+Also measured: Godot's ACES is three's curve with other scaling (`stage.gd`: white 16, exposure / 1.08), the sky
+`PanoramaSkyMaterial` samples a low mip under Compatibility (`shaders/panorama.gdshader` reads level 0), and three's
+exporter writes no tangents, so `library.gdshader` builds the normal map's frame from screen derivatives as three's
+`perturbNormal2Arb` does.

@@ -4,6 +4,8 @@
 shader_type spatial;
 render_mode diffuse_lambert, specular_disabled;
 
+#include "res://shaders/kcolour.gdshaderinc"
+
 uniform sampler2D map_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform bool has_map = false;
 uniform vec3 colour = vec3(1.0);
@@ -15,7 +17,7 @@ uniform bool use_vc = false;
 void fragment() {
 	vec2 uv = UV * uv_repeat + uv_offset;
 	if (flip_v) uv.y = 1.0 - uv.y;
-	vec3 c = colour * (has_map ? texture(map_tex, uv).rgb : vec3(1.0));
+	vec3 c = colour * (has_map ? k_tex(texture(map_tex, uv).rgb) : vec3(1.0));
 	if (use_vc) c *= COLOR.rgb;
-	ALBEDO = c;
+	ALBEDO = k_albedo(c);
 }

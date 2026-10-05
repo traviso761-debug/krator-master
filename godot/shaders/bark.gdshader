@@ -10,6 +10,7 @@ shader_type spatial;
 render_mode cull_disabled, diffuse_lambert, specular_disabled;
 
 #include "res://shaders/atmos.gdshaderinc"
+#include "res://shaders/kcolour.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D data_tex : filter_linear_mipmap_anisotropic, repeat_enable;   // the same map, undecoded (gloss)
@@ -45,7 +46,7 @@ void vertex() {
 void fragment() {
 	vec2 uv = vec2(UV.x * uv_repeat.x, flip_v ? 1.0 - UV.y * uv_repeat.y : UV.y * uv_repeat.y);
 	vec4 tx = has_tex ? texture(albedo_tex, uv) : vec4(1.0);
-	vec3 c = tx.rgb * COLOR.rgb * colour;
+	vec3 c = k_tex(tx.rgb) * COLOR.rgb * colour;
 	vec3 V = normalize(CAMERA_POSITION_WORLD - v_wp);
 	vec3 N = normalize(v_wn);
 	if (mode == 1) {
@@ -84,7 +85,7 @@ void fragment() {
 	} else if (mode == 5) {
 		EMISSION = emissive * mix(night_k.x, night_k.y, atm_night);
 	}
-	ALBEDO = c;
+	ALBEDO = k_albedo(c);
 	if (alpha_test > 0.0) {
 		ALPHA = tx.a;
 		ALPHA_SCISSOR_THRESHOLD = alpha_test;

@@ -5,7 +5,9 @@
 // KM_OFF (up to `mix`), and a slower noise varies the brightness by +-`macro`. Maps keep their own UVs (and the
 // glTF texture transform, uv_scale and uv_offset), except on instances with `world_uv` (below).
 shader_type spatial;
-render_mode cull_disabled;   // three draws most library surfaces front-only; a few are double-sided, and glTF carries the flag per material
+render_mode cull_disabled;
+
+#include "res://shaders/kcolour.gdshaderinc"   // three draws most library surfaces front-only; a few are double-sided, and glTF carries the flag per material
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
@@ -59,9 +61,9 @@ void fragment() {
 	vec2 uv = v_uv;
 	float m = smoothstep(0.3, 0.7, km_n(v_wp / bu_cell)) * bu_mix;
 	vec4 a = mix(texture(albedo_tex, uv), texture(albedo_tex, uv + KM_OFF), m);
-	vec3 c = a.rgb * (tint ? COLOR.rgb : vec3(1.0));
+	vec3 c = k_tex(a.rgb) * (tint ? COLOR.rgb : vec3(1.0));
 	c *= 1.0 + bu_macro * (km_n(v_wp / (bu_cell * 2.7) + 19.1) * 2.0 - 1.0);
-	ALBEDO = c;
+	ALBEDO = k_albedo(c);
 	if (has_rough) {
 		ROUGHNESS = roughness_k * mix(texture(rough_tex, uv).g, texture(rough_tex, uv + KM_OFF).g, m);
 	} else {

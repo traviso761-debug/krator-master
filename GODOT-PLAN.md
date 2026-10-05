@@ -549,6 +549,15 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
     walls, furniture and nav links), and they say their frame. Gaps: no meshes (a second route is needed), MultiMesh
     instances cannot hold tags (doors and windows need a side table), wall openings need cutting, light units differ.
 
+14. **The page's look as data** (2026-10-05, `biomes/GODOT.md` "The stage"): every export now carries `stage`
+    (lights, fog, tonemapping, sky panorama, ground look) and `godot/krator/stage.gd` applies it, so the spike
+    starts from the page's light instead of its own. Side by side from one camera (`godot/tools/compare_shots.py`),
+    what still differed and is fixed: core/lod's render copies reach the glTF beside their originals (the importer
+    drops them; the exporter should), instanced primitives tile their maps in world units (three's `applyWorldUV`,
+    now a `library.gdshader` mode), no tangents in the glTF (a derivative frame), Godot's ACES scaling, the
+    Compatibility renderer's colour space (`godot/README.md`). Open: the spike's shadows and specular are Godot's,
+    not three's; Yuni's records case has no meshes to compare.
+
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the
 bake and fauna animation are what is left; `core/tags/PROPOSAL.md` drafts the first.)

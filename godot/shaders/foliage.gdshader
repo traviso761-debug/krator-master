@@ -7,6 +7,7 @@ shader_type spatial;
 render_mode cull_disabled, diffuse_lambert, specular_disabled, skip_vertex_transform;
 
 #include "res://shaders/atmos.gdshaderinc"
+#include "res://shaders/kcolour.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform bool has_tex = true;
@@ -67,7 +68,7 @@ void fragment() {
 		float k = smoothstep(0.22, 0.78, sf * 1.15 - fr * 0.80 + 0.30 + sh);
 		c = mix(v_c2 * colour, c, k);
 	}
-	ALBEDO = tx.rgb * c;
+	ALBEDO = k_albedo(k_tex(tx.rgb) * c);
 	// far cards keep more of their cut-out (three: diffuseColor.a *= 1 + clamp(d/650, 0, 1.1))
 	ALPHA = tx.a * (1.0 + clamp(v_depth / 650.0, 0.0, 1.1));
 	ALPHA_SCISSOR_THRESHOLD = alpha_test;
