@@ -25,7 +25,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
 | `47-texture.js` | 14 | 11. TEXTURES (1) |
 | `48-detail.js` | 7 | 11b. DETAIL MAPS: the library on meshes without  (1) |
-| `50-structure.js` | 18 | 12. STRUCTURE — GIRDER (1) |
+| `50-structure.js` | 19 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 10 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `55-arch.js` | 53 **big** | 14. ARCHITECTURE — GIRDER (1) |
 | `56-interiors.js` | 17 | 13c. INTERIORS (THE INTERIORS KIT) (1) |

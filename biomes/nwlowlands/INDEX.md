@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/nwlowlands.html`
 Build: `cd biomes/nwlowlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 ## src/
 
@@ -17,7 +17,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 2 |  |
 | `45-host-stage.js` | 19 | the axis, the sea, the river (34); terrain (64); the climate fields (88); the host binding (104); the ground (113); the water (159); the road (200) |
-| `50-biome-nwlowlands-species.js` | 56 **big** | palettes (28); the species (82); leaf textures (135); TWO-TONE BARK (273); geometries local to this biome (432); materials (484); instanced items (544) |
+| `50-biome-nwlowlands-species.js` | 57 **big** | palettes (28); the species (82); leaf textures (135); TWO-TONE BARK (273); geometries local to this biome (433); materials (485); instanced items (545) |
 | `55-biome-nwlowlands-trees.js` | 42 **big** | zones from the fields (26); colour (41); keep-clear between trees (62); the LIMB (73); foliage and epiphytes (90); the crown, ON its branches (111); the builders (149); impostors (the far canopy) (268); the BAMBOO GROVES (305); the pass (365) |
 | `60-biome-nwlowlands-floor.js` | 16 | small plants (26); the zone planters (86); the understorey (under the crowns) (125); the pass (137) |
 | `65-biome-nwlowlands-dress.js` | 8 |  |

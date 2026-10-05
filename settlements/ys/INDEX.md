@@ -6,8 +6,6 @@ Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the he
 
 Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `GODOT.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/kit.html`, `dist/mock.html`, `dist/ys.html`
-
 Build: `cd settlements/ys && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
