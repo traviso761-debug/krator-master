@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Krator Ancients — civic alternates</title>
+<title>Ancient hosts — five types for the Hykkousoi</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a2a24;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -24388,36 +24388,45 @@ function buildLighthouse(scene,gx,gz,d){reseed(9790+d);KOFF=[gx,0,gz];
  {const x=4,z=58;site.lookUp=[x,landH(x,z)+1.7,z];}   // for the 'Looking up' preset: clear of the base block's lip
  LH_SITE[d]=site;
  KOFF=[0,0,0];return G;}
-// TARGET: alt-civic — the civic group's ALTERNATE builders (arco1 / arco2),
-// one row each along +z, every decay side by side across x:
-//   x = -s  intact (0)    x = 0  rehabilitated (3)    x = +s  ruined (1)    x = t  reclaimed (2)
-// The builders are in src/8al-alt-*.js; notes and references in NOTES.md here.
-// A row is listed only when its builder exists (a top-level function
-// declaration is a property of window), so the target builds at every step of
-// the work and the coordinator can lift single rows into the kit.
-const TITLE='Krator Ancients — civic alternates';
-const DECAYS=[0,1,2,3];
-const ALT_CIVIC=[
- // key        builder                     s    r    pitch  caption
- ['altOffT',  'buildAltOfficeTerrace',    170, 110, 420, 'Office alt 1 — the Terrace Wedge'],
- ['altOffS',  'buildAltOfficeStack',      150, 100, 420, 'Office alt 2 — the Stacked Piers'],
- ['altOffF',  'buildAltOfficeFins',       190, 120, 440, 'Office alt 3 — the Sail Fins'],
- ['altPort',  'buildAltStarport',         330, 260, 680, 'Starport alt — the Saucer Deck'],
- ['altBunk',  'buildAltBunker',           170, 110, 400, 'Bunker alt — the Bastion Drum'],
- ['altLib',   'buildAltLibrary',          170, 110, 420, 'Library alt — the Reading Star'],
- ['altGate',  'buildAltGate',             380, 220, 640, 'Gate alt — the Horns'],
- ['altRobo',  'buildAltRobotics',         230, 160, 500, 'Robotics alt — the Rig'],
- ['altDc',    'buildAltDataCenter',       200, 140, 460, 'Data center alt — the Perforated Stacks'],
- ['altPolice','buildAltPolice',           130,  80, 340, 'Police alt — the Watch Cup'],
- ['altHosp',  'buildAltHospital',         200, 140, 460, 'Hospital alt — the Linked Blocks'],
- ['altCampus','buildAltCampus',           300, 220, 640, 'Campus alt — the Garden Bowl'],
- ['altGov',   'buildAltGovernment',       220, 150, 500, 'Government alt — the Citadel'],
-];
-const ROWS={},EXTRA_BUILDERS={},ALT_CAP={};
-{let z=0;for(const[k,fn,s,r,pitch,cap]of ALT_CIVIC){if(typeof window[fn]!=='function')continue;
-  z+=pitch/2;ROWS[k]={z,s,r,t:2*s};EXTRA_BUILDERS[k]=window[fn];ALT_CAP[k]=cap;z+=pitch/2;}}
-const GROUND_C=Object.keys(ROWS).length?(ROWS[Object.keys(ROWS)[Object.keys(ROWS).length-1]].z)/2:0;
-const RUINS=[];for(const k in ROWS){const R=ROWS[k];RUINS.push([R.s,R.z,R.r*.9],[R.t,R.z,R.r*.9],[0,R.z,R.r*.6]);}
+// TARGET: hosts — five Ancient types drawn from the start as HOSTS for the Hykkousoi of Ys (src/8ap-host-*):
+// Skyscraper L the Facet, Skyscraper M the Bastion, and three mid-rise: the Arcades, the Capsule Stalks and the
+// Bell Hall. One row per type along +z, in the kit's decay layout: intact x=-s, rehabilitated x=0, ruined x=+s,
+// and for the two towers toppled x=t and the Project (decay 4) x=j.
+// Behind each type a second row shows it AS YS HOSTS IT: ruined (x=+s) cut at a storey from its spec's `cuts`,
+// reclaimed (x=0) cut at a `land` storey, each with a shrunk podium and one way-in hole cut through its skin and
+// lining, through the same hooks Ys defines (mocked below exactly as settlements/ys/src/52-sky-abc.js has them).
+const TITLE='Ancient hosts — five types for the Hykkousoi';
+const GROUND_C=1000;
+const DECAYS=[0,1,3];
+// ---- the Ys hooks, as Ys defines them (the kit's own builders never call these; the 8ap-host builders do)
+let YS_CUT=null;
+function ysPodiumR(R){return (typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.podium!=null)?Math.min(R,YS_CUT.podium):R;}
+function ysWallHole(hole,y0){const W=(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.ways)?YS_CUT.ways:null;if(!W||!W.length)return hole;
+ return (u,y)=>{if(hole&&hole(u,y))return true;const ya=y+y0;for(const w of W){let du=Math.abs(u-w.u);if(du>.5)du=1-du;if(du<w.uw&&Math.abs(ya-w.y)<w.hh)return true;}return false;};}
+function ysCutY(d){return ((d===1||d===3)&&typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.cutY!=null)?YS_CUT.cutY:null;}
+// A builder run the way ysPlaceHost runs it: the cut snapped to a storey (T.Y0 + n*pitch, the middle of the
+// class's range), the podium shrunk, and one way in {a, the plate about half way up the stump, R} turned into the
+// YS_CUT.ways entry exactly as 64-hyk-accrete.js turns it. The way's plate and bearing are written to HOSTS_WAY
+// so the views can look at the hole.
+const HOSTS_WAY={};
+function hostsAsHost(key,TF,fn,o){return (scene,gx,gz,d)=>{const T=TF(),r=T.cuts[d===3?'land':o.cls];
+ const cutY=T.Y0+Math.round(((r[0]+r[1])/2-T.Y0)/T.floors.pitch)*T.floors.pitch;
+ let n=0;while(T.plate(n+1)<cutY-2*o.R-3)n++;const k=Math.max(T.k0||0,Math.round(n*.5)),y=T.plate(k),a=o.a,R=o.R,rs=T.rAt(y,a);
+ YS_CUT={cutY,podium:o.podium,ways:[{u:((a/TAU)%1+1)%1,y:y+R*.447,uw:R*.9/(TAU*rs),hh:R*.88}]};
+ HOSTS_WAY[key+'/'+d]={x:gx+rs*Math.cos(a),y:y+R*.45,z:gz+rs*Math.sin(a),a,cutY};
+ try{return fn(scene,gx,gz,d);}finally{YS_CUT=null;}};}
+// key, label, spec (a getter: this file loads before src/8ap-*, whose consts are not yet defined), builder, z, s, toppled x, project x, the host row's cut class, the way's bearing and radius, podium
+const HOSTS_T=[
+ ['skyL','Skyscraper L — the Facet',()=>HOSTSPEC_FACET,typeof buildHostFacet!=='undefined'?buildHostFacet:null,0,170,560,-400,'mid',Math.PI/2+.3,5,26],
+ ['skyM','Skyscraper M — the Bastion',()=>HOSTSPEC_BASTION,typeof buildHostBastion!=='undefined'?buildHostBastion:null,700,190,600,-440,'mid',Math.PI/2+.47,5,40],
+ ['midArcades','The Arcades',()=>HOSTSPEC_ARCADES,typeof buildHostArcades!=='undefined'?buildHostArcades:null,1400,120,0,0,'mid',-Math.PI/2,4,30],
+ ['midStalks','The Capsule Stalks',()=>HOSTSPEC_STALKS,typeof buildHostStalks!=='undefined'?buildHostStalks:null,1750,120,0,0,'mid',Math.PI/2+.5,3.5,30],
+ ['midBell','The Bell Hall',()=>HOSTSPEC_BELLHALL,typeof buildHostBellHall!=='undefined'?buildHostBellHall:null,2100,120,0,0,'mid',Math.PI*1.05,4,30]];
+const ROWS={},EXTRA_BUILDERS={},HOSTS_NAME={},HOSTS_ROW={};
+for(const [k,nm,T,fn,z,s,t,j,cls,a,R,pod] of HOSTS_T){if(!fn||!T)continue;const tall=!!t;
+ ROWS[k]={z,s,r:s*.8,ds:tall?[0,1,2,3,4]:[0,1,3]};if(tall){ROWS[k].t=t;ROWS[k].j=j;}EXTRA_BUILDERS[k]=fn;HOSTS_NAME[k]=nm;
+ const kh=k+'Host';ROWS[kh]={z:z+(tall?320:170),s,r:s*.6,ds:[1,3]};EXTRA_BUILDERS[kh]=hostsAsHost(kh,T,fn,{cls,a,R,podium:pod});HOSTS_ROW[k]=kh;}
+const RUINS=Object.values(ROWS).flatMap(R=>[[R.s,R.z,R.r],[0,R.z,R.r*.7]].concat(R.t?[[R.t+150,R.z,R.r*1.6]]:[]));
 // ================================================================= THE WING — a monument that is also a city
 // First of the memorial group. One figure against the sky: a coffered DRUM held
 // in a yoke on ONE pedestal, and two wings of stacked horizontal slabs lifting
@@ -31765,26 +31774,30 @@ window._api={
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),
  views:()=>Object.keys(VIEWS),
 };
-// Presets for alt-civic, generated per row. The sun stands west-south-west,
-// so every shot stands south (and a little west) of what it looks at.
-// Per type: the row (all four decays), intact close, ruined close, and the
-// reclaimed variant at night (seventh element 1), when its fires show.
-// ALT_VIEW_H: a rough height per type, to aim the shots at the body.
-const ALT_VIEW_H={altOffT:60,altOffS:55,altOffF:45,altPort:50,altBunk:22,altLib:30,altGate:110,altRobo:30,altDc:35,altPolice:25,altHosp:40,altCampus:30,altGov:55};
-// ALT_VIEW_D: how far back the close shots stand (about 2.4 x the building's radius).
-const ALT_VIEW_D={altOffT:190,altOffS:160,altOffF:190,altPort:300,altBunk:160,altLib:140,altGate:420,altRobo:270,altDc:230,altPolice:130,altHosp:220,altCampus:230,altGov:240};
-const VIEWS={};
-{const ks=Object.keys(ROWS);
- if(ks.length){const R0=ROWS[ks[0]],RL=ROWS[ks[ks.length-1]];
-  VIEWS['All civic alternates']=[-1500,1100,RL.z+500,250,0,(R0.z+RL.z)/2];}
- for(const k of ks){const R=ROWS[k],H=ALT_VIEW_H[k]||40,c=ALT_CAP[k],D=ALT_VIEW_D[k]||R.r*2;
-  VIEWS[c]=[R.s*.5-R.r*.3,H+R.r*.7,R.z+R.s*1.5+R.r*.5,R.s*.5,H*.4,R.z];
-  VIEWS[c+' · intact']=[-R.s-D*.45,H*.7,R.z+D*.9,-R.s,H*.55,R.z];
-  VIEWS[c+' · ruined']=[R.s-D*.45,H*.7,R.z+D*.9,R.s,H*.45,R.z];
-  VIEWS[c+' · reclaimed by day']=[R.t-D*.4,H*.5,R.z+D*.8,R.t,H*.4,R.z];
-  VIEWS[c+' · reclaimed at night']=[R.t-D*.4,H*.5,R.z+D*.8,R.t,H*.4,R.z,1];
-  VIEWS[c+' · rehabilitated']=[-D*.45,H*.7,R.z+D*.9,0,H*.5,R.z];}
- if(!ks.length)VIEWS['Empty']=[0,200,600,0,0,0];}
+// Budgets for the host types (91-probe.js reads BUDGET at measure time): the brief's ceilings, a ruined tower
+// 100 k triangles and a mid-rise 50 k, as two classes of their own so an overrun reports against them.
+Object.assign(BUDGET.cls,{hostSky:100000,hostMid:50000});
+for(const k in HOSTS_NAME)BUDGET.type[k]=ROWS[k].t?'hostSky':'hostMid';
+for(const k in HOSTS_ROW)BUDGET.type[HOSTS_ROW[k]]=ROWS[k].t?'hostSky':'hostMid';
+// Presets: the sheet, then per type a hero of each decay, the host row (cut, podium shrunk, a way-in hole), a close
+// shot at eye level and, for the towers, the toppled body and the Project by night. HOSTS_FRAME per type: [hero
+// target height, camera distance, close-up [dx,y,dz,tx,ty,tz] relative to the intact site].
+const HOSTS_FRAME={skyL:[190,760,[60,6,120,0,60,0]],skyM:[160,760,[80,6,140,0,50,0]],
+ midArcades:[30,190,[20,3,75,0,18,0]],midStalks:[32,190,[30,3,80,0,24,0]],midBell:[30,200,[10,3,85,10,26,0]]};
+const VIEWS=(function(){const V={};
+ const zs=Object.values(ROWS).map(R=>R.z),z0=Math.min(...zs),z1=Math.max(...zs);
+ V['The sheet']=[1500,1300,(z0+z1)/2+900,0,40,(z0+z1)/2];
+ for(const k in HOSTS_NAME){const R=ROWS[k],F=HOSTS_FRAME[k]||[60,300,[30,3,80,0,20,0]],n=HOSTS_NAME[k].replace(/^.* — /,'').replace(/^the /i,''),ty=F[0],D=F[1],c=F[2],RH=ROWS[HOSTS_ROW[k]];
+  const hero=(x,z,ni)=>[x-D*.3,ty*.9+D*.1,z+D,x,ty,z].concat(ni?[1]:[]);
+  V[n]=hero(-R.s,R.z);
+  V[n+' ruined']=hero(R.s,R.z);
+  V[n+' reclaimed']=hero(0,R.z);
+  if(RH){const w=HOSTS_WAY[HOSTS_ROW[k]+'/1'];
+   V[n+' as a host']=w?[w.x+Math.cos(w.a)*D*.35+D*.08,w.y+D*.08,w.z+Math.sin(w.a)*D*.35,R.s,w.y*.8,RH.z]:hero(R.s,RH.z);
+   V[n+' reclaimed host']=hero(0,RH.z);}
+  V[n+' close']=[-R.s+c[0],c[1],R.z+c[2],-R.s+c[3],c[4],R.z+c[5]];
+  if(R.t){V[n+' toppled']=[R.t+120,140,R.z+620,R.t+160,40,R.z];V[n+' Project by night']=hero(R.j,R.z,1);}}
+ return V;})();
 // ---------------------------------------------------------------- camera control
 // ---------------------------------------------------------------- DAY / NIGHT
 // There was no scene-state toggle in this kit before The Project needed one, so
