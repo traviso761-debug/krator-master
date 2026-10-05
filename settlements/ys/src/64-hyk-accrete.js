@@ -12,8 +12,14 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  // the ways in: a pod declared here gets its hole cut through the body wall and the lining by the adapted builders
  // (52-sky-abc ysWallHole); hykAccrete then grows the pod bedded into that hole with a back door onto the plate.
  const ways=(o.ways||[]).map(w=>{const R=w.R||4;const rs=rAt(w.y,w.a);const u=((((w.a+ry)/TAU)%1)+1)%1;return {a:w.a,y:w.y,R,u,yb:w.y-sink+R*.447,uw:R*.9/(TAU*rs),hh:R*.88,door:null,room:null};});
+ // every pod (way-in or not), so a builder can clear a ledge proud of its skin where one stands (52 ysBandHole: B's lobe
+ // bands): {u,y (the pod's mid-height, builder y),uw,hh}. The draw pass does not pass `pods` yet; until it does (88b-city-draw:
+ // pods:h.pods) the city's record is read by the host's name, typeof-guarded so the kit and the mock are untouched.
+ const podL=o.pods||((typeof PLACE!=='undefined'&&PLACE.hosts&&o.name)?((PLACE.hosts.find(h=>h.n===o.name)||{}).pods||[]):[]);
+ const pods=podL.filter(p=>!p.core&&p.y!=null).map(p=>{const D=(typeof HYK!=='undefined'&&HYK.defs[p.key])||null;const R=D?D.w/2:4,h=D?D.h:6;const rs=rAt(p.y,p.a);const u=((((p.a+ry)/TAU)%1)+1)%1;
+  return {u,y:p.y-sink+h/2,uw:(R+1.2)/(TAU*rs),hh:h/2+.8};});
  const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;{const t=tcur();t.host=true;t.n=(t.n||0)+1;}const lush=BIOME.lush;BIOME.lush=0;
- YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||o.sockets||o.noPlinth)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,noPlinth:!!o.noPlinth,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;   /* noPlinth: the restand's columns and ring are left out (a stair or a low bridge runs through them) */
+ YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||pods.length||o.sockets||o.noPlinth)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,noPlinth:!!o.noPlinth,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh})),pods}:null;   /* noPlinth: the restand's columns and ring are left out (a stair or a low bridge runs through them) */
  HOLES=o.holes!=null?o.holes:.4;   // the kit's full decay eats 83 % of a tower's skin; a reclaimed host keeps most of its wall
  const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}

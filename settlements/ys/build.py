@@ -75,7 +75,11 @@ def srcpath(f, base=None):
 # fragment -> upstream directory (relative to the repo root)
 VENDORED = {}
 for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.js', '71-sky-h.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
-           '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html']:
+           '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html',
+           # the podded Ancient stumps (Oct 5 2026): Sky E and K, the alternates (the Pierced Stack, the Attraction, the
+           # Undulant house, the office terrace, the library) with the helpers they share, and the worn pass (the Library)
+           '57-sky-e.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '8al-alt-00-lib.js', '8al-alt-01-office-terrace.js', '8al-alt-06-library.js', '69w-worn.js']:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
@@ -87,7 +91,9 @@ VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', '
 for _f in VENDOR_RENAME:
     VENDORED[_f] = 'kits/ancients/src'
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
-ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js'}
+ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
+           '57-sky-e.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '8al-alt-01-office-terrace.js', '8al-alt-06-library.js'}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
@@ -101,6 +107,7 @@ DETERMINISTIC = {
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js',
+    '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
