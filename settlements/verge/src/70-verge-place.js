@@ -311,6 +311,11 @@ function trail(){
 // ---------------------------------------------------------------- run
 const U=upper(),Lw=lower(),T=trail();
 // the paint the ground reads: the streets, the plazas and the yards of both cities
+// the paint averaged over a ground vertex's footprint (r: half its cell): {street, plaza, yard} as fractions, or null.
+// A vertex every 4 m sampling a 1.5 m raster at one point aliases a street into blotches; this fades it by coverage
+VERGE_PAINT.cover=function(x,z,r){let n=0,st=0,pl=0,yd=0;const m=Math.max(1,Math.min(4,Math.round(r/CELL)));
+ for(let a=-m;a<=m;a++)for(let b=-m;b<=m;b++){const p=VERGE_PAINT.at(x+a*r/m,z+b*r/m);n++;if(!p)continue;if(p.kind==='street')st++;else if(p.kind==='plaza')pl++;else yd++;}
+ return st||pl||yd?{street:st/n,plaza:pl/n,yard:yd/n}:null;};
 VERGE_PAINT.at=function(x,z){for(const c of [U,Lw]){const i=Math.floor((x-c.x0)/CELL),j=Math.floor((z-c.z0)/CELL);if(i<0||j<0||i>=c.nx||j>=c.nz)continue;
  const v=c.D[(j*c.nx+i)*4];if(v===CODE.street)return{kind:'street',k:1};if(v===CODE.plaza)return{kind:'plaza',k:1};if(v===CODE.yard||v===CODE.building)return{kind:'yard',k:.55};}return null;};
 // the reserve the flora mask reads: streets, plazas, yards and buildings (1.5 m cells)

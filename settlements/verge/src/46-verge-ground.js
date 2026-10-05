@@ -52,8 +52,9 @@ function groundColour(x,z,h,slope,out){
    out.lerp(GP.rip,smooth(.5,.9,wet)*.6);out.lerp(GP.mud,smooth(.7,1,flow)*.55);
    _gt.copy(GP.salt).lerp(GP.crust,clamp(.5+n1*1.5,0,1));out.lerp(_gt,smooth(.25,.8,salt));}}
  // the city's paint: streets, plazas, yards, fields (VERGE_PAINT from the placement pass)
- if(typeof VERGE_PAINT!=='undefined'){const p=VERGE_PAINT.at(x,z);if(p){
-  const c=p.kind==='street'?(up?GP.streetU:GP.streetL):p.kind==='plaza'?(up?GP.plazaU:GP.plazaL):p.kind==='field'?GP.field:GP.yard;out.lerp(c,p.k*.85);}}
+ // (averaged over this vertex's cell, GROUND_R: a street fades in by how much of the cell it covers)
+ if(typeof VERGE_PAINT!=='undefined'&&VERGE_PAINT.cover){const p=VERGE_PAINT.cover(x,z,GROUND_R);if(p){
+  out.lerp(GP.yard,p.yard*.55*.85);out.lerp(up?GP.plazaU:GP.plazaL,p.plaza*.85);out.lerp(up?GP.streetU:GP.streetL,p.street*.85);}}
  const tn=VG.trailNear(x,z);if(tn&&tn.d<VG.TRAIL.half+2.5)out.lerp(GP.trail,smooth(VG.TRAIL.half+2.5,VG.TRAIL.half,tn.d)*.85);
  const pd=VG.padAt(x,z);if(pd)out.lerp(GP.trail,pd.k*.6);
  if(x<-2700&&x>-3700){const rp=VG.rampNear(x,z);if(rp)out.lerp(GP.trail,smooth(rp.R.half+2,rp.R.half,rp.d)*.75);}
@@ -69,7 +70,8 @@ function tileCell(x0,z0,S){
   if(x>L-80&&x<L+VG.escW(z,x)+60)esc=true;if(x<L&&Math.abs(z-VG.canZ(x))<VG.canHW(x)+VG.CAN_WALL+60)can=true;}
  if(esc||can)return 8;
  const cx=x0+S/2,cz=z0+S/2;if(Math.abs(cz)<1600&&cx>-5000&&cx<3600)return 16;return 32;}
-function makeTile(x0,z0,S,cell){
+let GROUND_R=2;   // half the cell of the tile being built: the footprint groundColour averages the city's paint over
+function makeTile(x0,z0,S,cell){GROUND_R=cell/2;
  const N=Math.round(S/cell),M=N+3,Hh=new Float32Array(M*M);       // heights with a one-cell apron
  for(let j=0;j<M;j++)for(let i=0;i<M;i++)Hh[j*M+i]=terrainH(x0+(i-1)*cell,z0+(j-1)*cell);
  const nv=(N+1)*(N+1),sk=4*(N+1),pos=new Float32Array((nv+sk)*3),nor=new Float32Array((nv+sk)*3),col=new Float32Array((nv+sk)*3),rk=new Float32Array(nv+sk),ck=new Float32Array(nv+sk);
