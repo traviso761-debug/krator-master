@@ -736,7 +736,8 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 // the conventions are settlements/yuni/GAME_EXPORT.md's and core/atmos/GODOT.md's:
 // metres, +Y up, x east, z south, right-handed, the same as glTF and Godot).
 //
-//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true}) -> one JSON-able object
+//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true, ground:2}) -> one JSON-able object (ground: a tile's
+//                                                                         heights and water on a 2 m grid)
 //   BIO.download(name, opt)                                     -> in 43-core-export-host.js ([web]): saves it as <name>.biome.json
 //
 // It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
@@ -762,6 +763,12 @@ const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLengt
 const pack=(arr)=>({type:arr.constructor.name,n:arr.length,b64:B64(arr)});
 // plain data only: numbers, strings, booleans, arrays and objects of them (a hook's functions
 // and three objects are dropped; a texture becomes its id)
+// a foliage hook's sway weight is GLSL text (30-core-foliage.js: '1.0', '(-position.y)', '(position.x)'...); the export
+// adds it as data, weight = c + dot(w, position), so an importer need not read GLSL. Text it does not know stays text.
+const SWAY={'1.0':[1,[0,0,0]],'1':[1,[0,0,0]],'0.0':[0,[0,0,0]],'0':[0,[0,0,0]],'(-position.y)':[0,[0,-1,0]],'(position.y)':[0,[0,1,0]],
+ '(position.x)':[0,[1,0,0]],'(-position.x)':[0,[-1,0,0]],'(position.z)':[0,[0,0,1]],'(-position.z)':[0,[0,0,-1]]};
+function swayOf(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=SWAY[e];
+ return k?{c:k[0],w:k[1],a:o.swayA==null?.06:o.swayA,axis:o.axis|0}:{text:e,a:o.swayA==null?.06:o.swayA,axis:o.axis|0};}
 function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;const t=typeof v;
  if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
  if(v.isTexture)return texId(v);if(v.isColor)return '#'+v.getHexString();
@@ -770,7 +777,9 @@ function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;con
  return undefined;}
 BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
  const out={format:'krator-biome',version:1,
-  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear'},
+  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear',
+   colours:{instances:'linear',vertices:'linear',materials:'linear (three\'s working values, written as hex: do not convert)',
+    textures:'sRGB images'},ground:'heights in metres on a grid: row j is z0 + j*step, column i x0 + i*step'},
   core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
  const mats=new Map(),texs=new Map();
  // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
@@ -783,7 +792,8 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
    map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
-   options:b&&b.opts?plain(b.opts,texId):null,hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
+   options:b&&b.opts?plain(b.opts,texId):null,sway:b?swayOf(b.opts):null,
+   hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
   if(g.index)r.index=pack(g.index.array);return r;};
@@ -806,6 +816,12 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
     if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
    const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
    out.buckets.push(Object.assign(base,{triangles:idx.length/3,geometry:geo}));}}
+ // the ground under a tile (opt.ground: the grid step in metres, 2 by default; opt.ground:false leaves it out): the
+ // host's terrainH and waterH sampled on a grid over the box. A stand-in for core/terrain's bake (GODOT-PLAN.md Phase 2)
+ if(box&&opt.ground!==false){const st=+opt.ground>0?+opt.ground:2,nx=Math.floor((box[2]-box[0])/st)+1,nz=Math.floor((box[3]-box[1])/st)+1,
+   H=new Float32Array(nx*nz),W=new Float32Array(nx*nz);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+i*st,z=box[1]+j*st;H[j*nx+i]=BIO.terrainH(x,z);W[j*nx+i]=BIO.waterH(x,z);}
+  out.ground={x0:box[0],z0:box[1],step:st,nx,nz,heights:pack(H),water:pack(W)};}
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  return out;};
@@ -1399,6 +1415,7 @@ BIO.iridBarkMat=function(tex,key,colA,colB){const m=BIO.barkMat(tex);
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
+ m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
  const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 // the four iridescent barks' pairs (facing the eye, at grazing angles); the impostors read them too (55-trees)
 RIFT.IRIDBARK={frill:[[0.80,1.16,1.06],[1.22,0.86,1.30]],bell:[[1.0,1.02,0.98],[1.08,0.96,1.12]],carrot:[[0.92,1.14,0.96],[1.18,0.90,1.22]],trumpet:[[1.0,1.08,0.9],[1.1,1.0,1.2]]};
@@ -1418,7 +1435,7 @@ RIFT.farMat=function(){const m=BIO.barkMat(null);
     'if(vFM<1.5){float sf=dot(N,uSunDir)*0.5+0.5;k=1.0-smoothstep(0.22,0.78,sf*1.15-fr*0.80+0.30+sh);}'+
     'else k=smoothstep(0.12,0.82,fr*0.85+0.15+sh);'+
     'diffuseColor.rgb=mix(diffuseColor.rgb,vFC2,k);}');};
- const ck='riftfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'bark',irid:'packed uv'};BIO._tickWind();return m;};
+ const ck='riftfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}};BIO._tickWind();return m;};
 // the iridescence's normal per instance (aN), the lighting the geometry's as before (bent toward world-up): a curl or a
 // rosette is real geometry, not a clump of cards, so it keeps its own shading (leafMat with aN would light it by aN)
 RIFT.iridOnlyN=function(m){const f=m.onBeforeCompile;m.onBeforeCompile=sh=>{f(sh);

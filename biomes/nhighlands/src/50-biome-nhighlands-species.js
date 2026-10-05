@@ -392,6 +392,7 @@ BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
+ m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};   // what it is, as data (42-core-export: a Godot shader of this kind)
  const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 // ---------------------------------------------------------------- materials
@@ -439,7 +440,8 @@ M.halo.visible=M.haloV.visible=false;
 // the bulbs sway on their threads like the pods of the core
 [M.bulb,M.pod].forEach((m,i)=>{m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+=-position.y*.05*sin(uWindT*1.1+ph);transformed.z+=-position.y*.05*cos(uWindT*.8+ph*1.3);}\n#endif');};
- const ck=BIO.kitKey('nh-glow'+i);m.customProgramCacheKey=()=>ck;});
+ const ck=BIO.kitKey('nh-glow'+i);m.customProgramCacheKey=()=>ck;
+ m.userData.bio={kind:'hang',key:BIO.kitKey(i?'pod':'bulb'),opts:{swayA:.05,swayW:'(-position.y)',emissive:true}};});   // as data (42-core-export)
 NHL._glowMaterials=[M.bulb,M.pod];
 NHL._night=0;
 NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;

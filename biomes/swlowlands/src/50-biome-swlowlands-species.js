@@ -384,6 +384,7 @@ SWLOW.barkMat2=function(tex,key,o){o=o||{};
    .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
    .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
+ m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:{alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain:o.gain==null?.52:o.gain,gloss:o.gloss||0}};   // as data (42-core-export)
  const ck='swlbark|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};
  m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return m;};   // what the far impostor's trunk carries (55, buildFar)
 // THE FAR IMPOSTORS' material: vertex colours, plus the bark's sun highlight. buildFar writes the
@@ -396,7 +397,8 @@ SWLOW.farMat=function(){const m=BIO.barkMat(null);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSunDir;varying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
    .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');};
- const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};return m;};
+ const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{uv:'u: the trunk gloss (0 on the blobs)'}};return m;};   // as data (42-core-export)
 const BK={ember:barkTex2('ember'),lacquer:barkTex2('lacquer'),flay:barkTex2('flay'),mottle:barkTex2('mottle'),ring:barkTex2('ring'),
  furrow:barkTex2('furrow'),strip:barkTex2('strip'),ocelli:barkTex2('ocelli'),crack:barkTex2('crack'),plate:barkTex2('plate'),stringy:barkTex2('stringy'),pale:barkTex2('pale'),cork:barkTex2('cork'),cane:barkTex2('cane'),fibre:barkTex2('fibre')};
 SWLOW.BARKTEX=BK;

@@ -43,7 +43,9 @@ no image for a DataTexture at all (the spike found it: hyperjungle's leaf cards 
 Colours are **linear** (the core converts every designer's sRGB hex once, at `BIO.put` and
 at every bucket write). In a Godot shader read `COLOR` and the custom data as they are; do
 not mark them `source_color`. Texture PNGs are sRGB images: declare their samplers
-`source_color`.
+`source_color`. **Material colours are linear too**: `colour` is three's working value written as hex (the pages
+render with `outputEncoding = sRGB`, so three treats `material.color` as linear). Read it with `Color.html()` and do
+not convert it. `convention.colours` says this per table (since 2026-10-05).
 
 ## The object
 
@@ -53,6 +55,7 @@ not mark them `source_color`. Texture PNGs are sRGB images: declare their sample
 | `convention` | units, up, axes, handedness, matrix order, colour space (above) |
 | `core`, `kits` | the core's version, the kits resident in the page (`BIO.kit`) |
 | `box` | the tile, or null |
+| `ground` | with a box: the ground under the tile, `{x0, z0, step, nx, nz, heights, water}` (typed arrays; row j is z0 + j*step). The host's `terrainH` and `waterH` sampled on a grid (`opt.ground`: the step, 2 m by default; `false` leaves it out). A stand-in for the `core/terrain` bake (since 2026-10-05) |
 | `items` | one record per instanced mesh (below) |
 | `buckets` | one record per merged mesh (below) |
 | `materials` | one record per material (below) |
@@ -77,15 +80,22 @@ and only the triangles inside it, so an importer drops unused vertices).
 vertex-coloured textured wood; `anim`: an animated fauna body; `plain`: anything else),
 `key` (the kit's own name for it), `type` (the three.js material type), `colour`, `map` (a
 texture id), `alphaTest`, `doubleSided`, `vertexColours`, `transparent`, `options` (the
-hook's options: sway amplitude, two-tone and so on), `hooked` (a shader hook a port must
+hook's options: sway amplitude, two-tone and so on), `sway` (the foliage sway as data: weight =
+`c + dot(w, position)`, amplitude `a`, `axis`; or `{text}` for a GLSL weight it does not know), `hooked` (a shader hook a port must
 rewrite).
 
-Not every hook has a core `kind` yet. Kits write their own: the iridescent bark
-(`BIO.iridBarkMat`, in eastabyss, nhighlands, rift and xanadu), the two-tone gloss bark
-(`barkMat2`, nwlowlands and swlowlands), the impostor materials (`farMat`, rift and swlowlands),
-nhighlands' hanging sway on bulbs and pods, and swbay's fauna material. They export as
-`hooked:true` with whatever `kind` they inherited (rift's impostor says `bark`). Each is to become
-a core kind (`irid`, `gloss`, `far`, `hang`, `anim`) whose options are data, so that `kind`
+The kits' own hooks are named since 2026-10-05: each sets `userData.bio`, so the export writes its `kind`, `key`
+and options as data (the hook code still lives in the kit):
+
+| `kind` | Kits | Options | Godot (`godot/shaders/`) |
+|---|---|---|---|
+| `irid` | eastabyss, nhighlands, rift, xanadu (`BIO.iridBarkMat`) | `a`, `b`: the tints facing the eye and at grazing angles | `bark.gdshader` mode 1 |
+| `gloss` | nwlowlands, swlowlands (`barkMat2`) | `alt` (linear), `mean`, `gain`, `gloss`: the map is data (red brightness, green a mask) | `bark.gdshader` mode 2 |
+| `far` | rift, swlowlands (`farMat`): the far impostors | `uv`: what the impostor packs into its uvs | not yet |
+| `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `emissive` | not yet |
+| `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, walk), `attribute: 'aPh'` | not yet |
+
+They still export `hooked:true`. Each is to become a core kind whose hook lives once in the core, so that `kind`
 names the library shader (`GODOT-PLAN.md`, rule 7), and the record then moves onto the plan's
 shared material vocabulary (Phase 3: `family`, `colour`, `map`, `roughness`, `metal`,
 `emissive`, `doubleSided`, `alphaTest`, `hook`).
@@ -146,12 +156,13 @@ Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`
 - Placement records without an LOD level (today `T.lv` comes from the showcase's LOD spine,
   `BIO.lodD`), in the export beside the meshes.
 - Stand-ins and far impostors as explicit LOD levels of the record they replace.
-- Ground height from the `core/terrain` heightmap, not each host's `terrainH` closure.
+- Ground height from the `core/terrain` heightmap, not each host's `terrainH` closure. *(A sampled stand-in, the
+  export's `ground`, since 2026-10-05.)*
 - Trees as a variant library by default, with hero trees opt-in per record (`hero`, set by a
   site or a hero zone) and baked per tile; a preview switch between all heroes and opt-in only.
 - Tags, Köppen and deterministic ids on the records, items and buckets (for `core/tags`).
-- The kits' shader hooks as core material kinds; materials on the plan's shared vocabulary; a
-  `convention.colour` per table (this export is linear, the atmosphere's sRGB).
+- The kits' shader hooks as core material kinds (named as data since 2026-10-05; the hook code is still each
+  kit's); materials on the plan's shared vocabulary. *(`convention.colours` per table: done 2026-10-05.)*
 - `BIO.download()` moved to the host (`core/host`): the export's one browser line. *(Split out to `core/biome/43-core-export-host.js` [web] 2026-10-03; it joins `core/host/` in Phase 1.)*
 - `BIO.export` folded into `core/export/` (`krator-world`, Phase 4). (`tools/audit_port.py` sees it in every
   build that lists `42-core-export.js` since 2026-10-02.)

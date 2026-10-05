@@ -13,7 +13,7 @@ possible is to keep **what** an effect is (data) apart from **how** three.js dra
 | `presets` | every effect's numbers: sizes, rates, alphas, colours, wind, the evening's hours | one `Resource` (`.tres`) per preset, or read straight from the JSON |
 | `clock`, `wind` | the clock time and the base wind | the autoload's state |
 | `fx` | one record per placed effect: `searchlight`, `spotcone`, `beacon`, `brazier`, `floodlight`, `banner`, `fountain`, `smoke`, `fireflies`, `moths`, `mist`, `fogbank`, `weather`, `outfall`, `drain` | one node or scene per record (table below) |
-| `lamps` | every street-lamp head and its hours | `OmniLight3D`s for the nearest few, sprites for the rest |
+| `lamps` | every street-lamp head and its hours, its halo (`glow`: an index into `glow`) and colour. three.js gives a lamp no light, only the halo and its moths (`light` says so) | `OmniLight3D`s for the nearest few, of the halo's colour; sprites for the rest |
 | `glow` | every light's halo: position, colour, size, hours | a MultiMesh of halo quads; hours go in `INSTANCE_CUSTOM` |
 | `props` | each instanced set: unit geometry kind, material, instances `[x,y,z, sx,sy,sz, ry, colour]` | one `MultiMeshInstance3D` per set |
 
@@ -55,8 +55,11 @@ float atm_gust(float t, vec2 xz, vec2 w) {               // presets.wind.gust: [
     return 0.5*sin(s*0.31) + 0.3*sin(s*0.73 + 1.3) + 0.2*sin(s*1.9 + 4.1);
 }
 vec2 atm_wind_at(vec2 xz) { return atm_wind * (1.0 + atm_gust_amp * atm_gust(atm_time, xz, atm_wind)); }
-float atm_lit(float h, vec2 t) { float hh = h < 12.0 ? h + 24.0 : h;   // a light's [on, off] hours
+float atm_lit(float h, vec2 t) { float hh = h < 12.0 ? h + 24.0 : h;   // a light's [on, off] hours (moths, lamps)
     return smoothstep(t.x, t.x + 0.3, hh) * (1.0 - smoothstep(t.y - 0.3, t.y, hh)); }
+float atm_glow_lit(float h, vec2 t) {                    // a HALO's hours (89-atmos-2-lights.js): two more cases
+    return t.x < 0.0 ? 0.25 + 0.75 * atm_night           //   on < 0 (a glow added with no hours): dims by day
+         : (t.x == 0.0 ? 1.0 : atm_lit(h, t)); }         //   on = 0: always lit
 ```
 
 One clock serves the whole world, not just the air: `GODOT-PLAN.md` (Phase 1, "The world clock") splits motion time

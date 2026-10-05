@@ -86,7 +86,9 @@ function animMat(kind){const m=new T3.MeshLambertMaterial({vertexColors:true,sid
     kind==='swim'?['{float bob=sin(uT*aPh+aPh*5.0); transformed.y+=bob*0.16-0.06; transformed.y+=position.z*sin(uT*aPh*0.9+aPh)*0.12;}'].join('\n'):
     ['{if(position.y<0.5){float side=sign(position.x)*sign(position.z); float sw=sin(uT*aPh+aPh*3.0+(side>0.0?0.0:3.14159))*0.55;',
      ' transformed.z+=(0.5-position.y)*sw;} transformed.y+=0.02*sin(uT*aPh*2.0+aPh);}'].join('\n')));};
- const ck='biofauna|'+BIO.kitKey(kind);m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;}
+ const ck='biofauna|'+BIO.kitKey(kind);m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'anim-phase',key:BIO.kitKey(kind),opts:{mode:kind,attribute:'aPh'}};   // as data (42-core-export): a wing-beat, bob or leg-swing driven by a per-instance phase
+ BIO._tickWind();return m;}
 
 // ---------------------------------------------------------------- the pass
 SWBAY.buildFauna=function(R,q){reseed(750021);q=q==null?1:q;R=R||2400;
