@@ -19,6 +19,14 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   for(const p of h.pods){once(p.key);const hp=p.core?Object.create(host,{x:{value:p.cx},z:{value:p.cz},rAt:{value:()=>p.cr}}):host;   /* a socket pod is framed on its own core */
    const G=HYK.placeOn(scene,p.key,hp,{y:p.y,a:p.a,level:p.level,into:p.into});if(G)p.drawn=true;else fail++;}
   TSTAT.cur=null;});
+ // the subdivided floors (88a): the partitions as thin shell walls in the interior bucket, both faces; the floors marked
+ reseed(32390);const wc=hC(hPick(HPAL.shell),.92);let nw=0;
+ for(const P of FLOORS.plans){const cs=Math.cos(P.ry),sn=Math.sin(P.ry);const W=(lx,lz)=>[P.hx+lx*cs+lz*sn,P.hz-lx*sn+lz*cs];const y0=P.y+.3;
+  for(const w of P.walls){const f=w.arc?(u,v)=>{const th=u*TAU;const p=W(w.cx+w.r*Math.cos(th),w.cz+w.r*Math.sin(th));return [p[0],y0+v*P.H,p[1]];}
+    :(u,v)=>{const r=w.r0+(w.r1-w.r0)*u;const p=W(w.cx+r*Math.cos(w.th),w.cz+r*Math.sin(w.th));return [p[0],y0+v*P.H,p[1]];};
+   const nu=w.arc?Math.max(16,Math.round(w.r*1.2)):1;for(const flip of [false,true])hykPutRaw('hkIn',hykSurf(f,nu,1,{col:wc,flip,uS:4,vS:1}),true);nw++;}
+  const host=HOSTS.find(x=>x.n===P.host);if(host){const fl=host.floors.find(f=>Math.abs(f.y-P.y)<.6);if(fl){fl.kind='inhabited';fl.use=Math.max(fl.use||0,.5);fl.rooms=P.rooms;}}}
+ window._floors={plans:FLOORS.plans.length,rooms:FLOORS.rooms,spots:FLOORS.spots,walls:nw};
  // the Ancients builders draw a host as a dozen plain meshes (skin, lining, ribbons, plinth...), so thirty hosts were two
  // hundred draw calls: every host's static opaque meshes are merged across the city, one mesh per material and layout
  window._cityMerge=ysMergeHostMeshes(scene,PLACE.hosts.filter(h=>h.G).map(h=>h.G));

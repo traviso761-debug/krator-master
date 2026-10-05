@@ -298,3 +298,20 @@ mid pools and as full towers; the mid-rises take the awash blocks and the land p
 pods from just over their terrace). A host whose wealth's way-in pod fits no plate takes the smallest one; a type whose
 faces leave one usable plate (the Stalks' smooth band) keeps only its way in. The Stalks' sockets (`sockets(d)`) are
 not grown into yet: `HYK.placeOn` frames a pod on the host's own axis, and the sockets are on three cores.
+
+## Pods in the sockets, the courtyard rings, the lived floors (Oct 5 2026, Travis)
+**The Capsule Stalks' sockets** take pods now: the placer plugs them onto all three cores on the row just above a plate,
+off faces that look at another core, the bridges and the disc, clear of each other; the draw pass frames each on its own
+core through a proxy host (`Object.create(host)` with the core's centre and radius); the builder leaves out the tubes a
+pod covers (`ysSocketTaken`, typeof-guarded upstream and in Ys alike).
+**The land quarter is denser**: every street of a neighbourhood block is built (three on the outermost), gaps and
+gardens are tighter, and a courtyard ring of small houses and corner shops faces inward round each block's middle
+(`PL_SMALL`, `inward`): 411 neighbourhood buildings where there were 170.
+**The lived floors** (`88a-city-floors.js`): in every host with pods, the pods' plates and two floors above the top one
+and two below the bottom one (never under the tide, never above the cut) are subdivided: a lift core, a corridor ring,
+rings of sector rooms (two rings with the corridor between on a deep floor, one on a shallow one; the Stalks per core),
+each a ROOMS record with a door to the corridor and its spots (living: bed, food, store, and a hearth and a table at
+middle and rich; work: two benches; shop: a store and a counter), a hall where a way-in pod's back door opens. KRAND
+draws the uses (about 60/25/15 living/work/shop, more shops on a floor with a shop pod). The partitions are thin shell
+walls in the interior bucket; the host's floors table marks those plates `inhabited` with their rooms. 178 floors,
+3240 rooms, 9900 spots; `spots-fit-their-rooms` and `residence-minimum-spots` pass over all of them.
