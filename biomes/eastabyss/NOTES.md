@@ -63,7 +63,8 @@ rafts of floating leaves with the odd water hyacinth where the raft field says s
 straight off the bark. The floor by zone: samphire / salt grass / rosettes on the flats,
 reed beds / sedge / marsh shrub in the marsh, lily pads on still water, a three-colour
 club-moss carpet + giant ferns + fallen scale-trees in the jungle, dry grass + Vain fronds
-+ frond shrubs on the savannah. Fauna deferred, as for the hyperjungle.
++ frond shrubs on the savannah. Fauna deferred, as for the hyperjungle (it came in 2026-10: 75,
+flamingos and frilled lizards ported from Locus; BIOME-API.md, "The fauna").
 
 ## The far ring (55)
 Past each species' mid radius from the LOD spine everything is one merged bucket, `far`:

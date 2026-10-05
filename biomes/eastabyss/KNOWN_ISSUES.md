@@ -35,7 +35,14 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The east river's climb up the slope is a ribbon in the water material with no
       cataracts; the west river has no slope reach at all (it stays in the basin).
 - [ ] Only one Girder tower dresses. `dress()` samples by triangle area within a shell: the core takes shells (`{geos, share}`: the roof, the walls, the ledges, each with its own share of the samples, `core/biome/40-core-place.js`), but this host's tower still passes one list.
-- [ ] No fauna yet.
+- [ ] The fauna (75, 2026-10) is a first pass: rigid parts (a flamingo's neck is two stiff
+      segments, a lizard's tail never curls and its front legs hang in the air when it runs
+      upright), birds of a flock and lizards can pass through each other, and the skeins fly a
+      fixed ellipse (they never land or take off). Past 1.5 km (flocks), 3 km (skeins) or 900 m
+      (lizards) from `BIO.eye()` a group keeps its last pose. In this host's pink lake (hue 0) the
+      flamingos read poorly against the water.
+- [ ] `BIO.dynamic` (core) sets no `userData.kit`; 75 sets it on its own meshes so `BIO.export({kit})`
+      keeps them.
 - [ ] The mat-reed beds are registered per bed (a few hundred volumes); a world that
       registers its own structures densely may want only `EASTABYSS.REEDBEDS`.
 - [ ] The beard oak's boughs are clamped 1.2 m above terrainH point by point; on a

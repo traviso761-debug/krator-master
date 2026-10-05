@@ -27,17 +27,17 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
-| [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 13 | 175 | 1 | 0 | 14 | 29 | 131 | 5 | biome | yes | yes |
+| [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 196 | 1 | 0 | 14 | 31 | 150 | 5 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 137 | 2 | 0 | 12 | 16 | 107 | 6 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 223 | 0 | 0 | 34 | 44 | 145 | 6 | biome | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 224 | 1 | 0 | 10 | 59 | 154 | 6 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 174 | 1 | 0 | 13 | 34 | 127 | 5 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 205 | 1 | 0 | 16 | 29 | 159 | 5 | biome | yes | yes |
-| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 190 | 1 | 0 | 13 | 51 | 125 | 6 | biome | yes | yes |
+| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 192 | 1 | 0 | 13 | 52 | 125 | 6 | biome | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1388 | 18837 | 2626 (14%) | 339 (2%) | 788 (4%) | 1790 (10%) | 13294 (71%) | 202 | | | |
+| **all** | 1389 | 18860 | 2626 (14%) | 339 (2%) | 788 (4%) | 1793 (10%) | 13315 (71%) | 202 | | | |
 
 ## Host-shell copies
 
@@ -52,7 +52,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `host-stage` | 11 | 11 | 228 |
 | `host-sky` | 11 | 9 | 161 |
 | `host-build` | 11 | 11 | 13 |
-| `host-camera` | 11 | 11 | 92 |
+| `host-camera` | 11 | 11 | 94 |
 | `host-probe` | 11 | 11 | 61 |
 | `host-tower` | 9 | 9 | 42 |
 | `pathviz` | 6 | 5 | 40 |
