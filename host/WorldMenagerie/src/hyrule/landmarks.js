@@ -9,6 +9,8 @@
 // spiral; Hylia Bridge; Fort Hateno; and the decayed Guardians lying in the fields. The Divine Beasts and Calamity
 // Ganon are beasts.js.
 
+import { guardianKit } from './guardian.js';
+
 export function landmarks(api){
   const {THREE,ctx,group,gh,animHooks}=api;
   const PL=ctx.plan||{sites:{}},S=PL.sites;
@@ -37,12 +39,9 @@ export function landmarks(api){
   const build=(L,parts)=>group(L,solid(parts));
   const hz=v=>{const t=Math.sin(v*12.9898)*43758.5453;return t-Math.floor(t);};
 
-  // a decayed Guardian: the dome, half sunk, its legs out round it, moss on it
-  function deadGuardian(parts,x,z,s,yaw){const y=gh(x,z);s=s||1;
-    const dome=sph(x,y+1.5*s,z,4.2*s,M.guardian,1,0.75,1);dome.rotation.set(0.25*hz(x),yaw||0,0.3*hz(z));parts.push(dome);
-    parts.push(sph(x+1.5*s,y+3.5*s,z,1.1*s,M.black),sph(x+2.3*s,y+3.5*s,z,0.5*s,eyeM));
-    for(let k=0;k<6;k++){const a=k/6*Math.PI*2+(yaw||0),r=7*s;parts.push(limb([x+Math.cos(a)*3*s,y+1*s,z+Math.sin(a)*3*s],[x+Math.cos(a)*r,y,z+Math.sin(a)*r],0.6*s,0.45*s,M.guardian,6));}
-    parts.push(sph(x-1*s,y+4.2*s,z+0.5*s,2*s,M.moss,1.2,0.4,1));}
+  // a decayed Guardian (guardian.js): sunk to its drum, the head tipped or fallen off, legs folded or gone, moss on it
+  const GK=guardianKit(THREE);
+  function deadGuardian(parts,x,z,s,yaw){GK.fallen(parts,x,gh(x,z),z,yaw||0,Math.floor(Math.abs(x*7.3+z*3.1))%997);}
 
   return {
   // ================================================================ Hyrule Castle

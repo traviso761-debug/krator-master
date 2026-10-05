@@ -12,6 +12,7 @@
 //   glider     someone in green paraglides down from a tower; the camera follows
 //   storm      a thunderstorm: rain, lightning striking the high ground, the sky flashing
 //   korok      a Korok pops up somewhere with a sparkle, and is gone
+//   guardian   the camera finds a Guardian Stalker out in the fields and walks alongside it a while
 import { createHappenings } from '../core/happenings.js';
 
 export function events(api){
@@ -98,6 +99,12 @@ export function events(api){
   function glider(){if(!ctx.launchGlider)return;const f=ctx.launchGlider();const G=ctx.glider;
     notice('Paragliding','Someone in green has jumped from '+f.T.name+' and is gliding down over the country.',()=>{const p=G.position;return [p.x-40,p.y+15,p.z+50,p.x,p.y,p.z];},()=>G.visible?G.position:null);}
 
+  // ---- alongside a Guardian Stalker ----
+  function guardian(){const L=ctx.stalkers;if(!L||!L.length)return;const s=L[Math.floor(R()*L.length)],t0=performance.now();
+    notice('A Guardian Stalker','One of the Guardians the Calamity turned, still walking the fields round the castle, its eye sweeping the ground.',
+      ()=>{const p=s.g.position,a=s.g.rotation.y;return [p.x-Math.cos(a)*26+Math.sin(a)*22,p.y+16,p.z+Math.sin(a)*26+Math.cos(a)*22,p.x,p.y+7,p.z];},
+      ()=>performance.now()-t0<40000?s.g.position:null);}
+
   // ---- a thunderstorm ----
   function storm(){
     const N=3000,pos=new Float32Array(N*3),g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));
@@ -134,6 +141,6 @@ export function events(api){
       if(t>14){burst(x,y+2,z,80,6,0xfff6a0,1.2,2);scene.remove(g);return false;}});}
 
   H=createHappenings(api,{events:{bloodmoon:['The Blood Moon',bloodmoon],beasts:['The Divine Beasts fire',beasts],tower:['A tower activates',tower],
-      glider:['Paraglide',glider],storm:['Thunderstorm',storm],korok:['A Korok',korok]},
-    order:['tower','glider','korok','storm','beasts','bloodmoon'],first:25000,every:[55000,100000]});
+      glider:['Paraglide',glider],storm:['Thunderstorm',storm],korok:['A Korok',korok],guardian:['A Guardian Stalker',guardian]},
+    order:['tower','glider','guardian','korok','storm','beasts','bloodmoon'],first:25000,every:[55000,100000]});
 }

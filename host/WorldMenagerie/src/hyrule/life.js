@@ -5,6 +5,7 @@
 // ground in front of them; wild horses grazing in herds on the open plains; hawks circling; and now and then a
 // figure in green paragliding down from one of the towers. The Divine Beasts and Ganon move in beasts.js.
 import { mkRng } from '../core/rng.js';
+import { guardianKit } from './guardian.js';
 
 export function life(api){
   const {THREE,ctx,scene,animHooks,groundH}=api;
@@ -12,23 +13,24 @@ export function life(api){
   const R=mkRng(1986);
   const mat=c=>new THREE.MeshLambertMaterial({color:c,flatShading:true});
   const nightF=()=>api.nightF&&api.hour?api.nightF(api.hour()):0;
-  const wet=(x,z)=>{for(const L of (PL.lakes||[])){let c=false;const p=L.poly;for(let i=0,j=p.length-1;i<p.length;j=i++){if((p[i][1]>z)!==(p[j][1]>z)&&x<(p[j][0]-p[i][0])*(z-p[i][1])/(p[j][1]-p[i][1])+p[i][0])c=!c;}if(c)return true;}return groundH(x,z)<2;};
+  const wet=(x,z)=>{for(const L of (PL.lakes||[])){let c=false;const p=L.poly;for(let i=0,j=p.length-1;i<p.length;j=i++){if((p[i][1]>z)!==(p[j][1]>z)&&x<(p[j][0]-p[i][0])*(z-p[i][1])/(p[j][1]-p[i][1])+p[i][0])c=!c;}if(c)return true;}
+    for(const M of (PL.moats||[])){const d=Math.hypot(x-M.x,z-M.z);if(d>M.r0-8&&d<M.r1+8)return true;}
+    for(const Rv of (PL.rivers||[])){const P=Rv.pts;for(let i=0;i+1<P.length;i++){const [ax,az]=P[i],[bx,bz]=P[i+1],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l)):0;
+      if(Math.hypot(x-ax-t*dx,z-az-t*dz)<Rv.width*1.6)return true;}}
+    return groundH(x,z)<2;};
 
-  // ---- Guardian Stalkers: a dome on six legs, walking a loop, the eye's red line sweeping the ground ahead ----
-  const gm=mat(0x7c7a72),gm2=mat(0x5e5c56),eyeM=new THREE.MeshBasicMaterial({color:0xff6a2a}),lineM=new THREE.MeshBasicMaterial({color:0xff2a2a,transparent:true,opacity:0.7});
+  // ---- Guardian Stalkers (guardian.js): walking a loop on six legs, the head turning, the eye's red line sweeping
+  // the ground ahead, a red point where it lands ----
+  const GK=guardianKit(THREE),lineM=new THREE.MeshBasicMaterial({color:0xff2a2a,transparent:true,opacity:0.7,depthWrite:false}),dotM=new THREE.MeshBasicMaterial({color:0xff4a3a});
   const stalkers=[];
-  for(let k=0;k<7;k++){const g=new THREE.Group();
-    const dome=new THREE.Mesh(new THREE.SphereGeometry(4,14,8,0,Math.PI*2,0,Math.PI*0.6),gm);dome.position.y=7;g.add(dome);
-    g.add(Object.assign(new THREE.Mesh(new THREE.CylinderGeometry(4.2,3.6,1.6,14),gm2),{}));g.children[1].position.y=6.4;
-    const head=new THREE.Group();head.position.y=9.5;g.add(head);
-    const eye=new THREE.Mesh(new THREE.SphereGeometry(0.9,10,8),eyeM);eye.position.set(3.4,0,0);head.add(eye);
-    const beam=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,1,4),lineM);beam.userData.noFingerprint=true;scene.add(beam);
-    const legs=[];for(let i=0;i<6;i++){const a=i/6*Math.PI*2,l=new THREE.Group();l.position.set(Math.cos(a)*3,6.4,Math.sin(a)*3);l.rotation.y=-a;
-      const u=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.55,5).translate(0,0,0).rotateZ(-1.0),gm2);u.position.set(2.2,0.6,0);l.add(u);
-      const d=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.3,6.6).translate(0,-3.3,0),gm2);d.position.set(4.3,2,0);l.add(d);g.add(l);legs.push(l);}
-    g.traverse(o=>{if(o.isMesh)o.castShadow=true;o.userData.noFingerprint=true;});scene.add(g);
-    const a0=R()*Math.PI*2,r=500+R()*900,cx=S.castle.x+Math.cos(a0)*r,cz=S.castle.z+300+Math.sin(a0)*r*0.7;
-    stalkers.push({g,head,beam,legs,cx,cz,rad:60+R()*120,ph:R()*6.28,sp:(0.04+R()*0.03)*(R()<0.5?-1:1)});}
+  for(let k=0;k<7;k++){const G=GK.make();G.g.traverse(o=>{o.userData.noFingerprint=true;});scene.add(G.g);
+    const beam=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,1,4),lineM);beam.userData.noFingerprint=true;beam.userData.noWire=true;scene.add(beam);
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(0.5,8,6),dotM);dot.userData.noFingerprint=true;scene.add(dot);
+    // a loop that stays on dry ground, legs and all
+    let cx,cz,rad;for(let tries=0;tries<40;tries++){const a0=R()*Math.PI*2,r=500+R()*900;cx=S.castle.x+Math.cos(a0)*r;cz=S.castle.z+300+Math.sin(a0)*r*0.7;rad=60+R()*120;
+      let dry=true;for(let i=0;i<24&&dry;i++){const b=i/24*Math.PI*2;for(const e of [-12,0,12])if(wet(cx+Math.cos(b)*(rad+e),cz+Math.sin(b)*(rad+e)))dry=false;}if(dry)break;}
+    stalkers.push(Object.assign(G,{y0:G.body.position.y,beam,dot,cx,cz,rad,ph:R()*6.28,sp:(0.04+R()*0.03)*(R()<0.5?-1:1)}));}
+  ctx.stalkers=stalkers;
 
   // ---- wild horses: a herd or two on the plains, grazing and wandering ----
   const coats=[0x8a5a3a,0x5a3a2a,0xe8e0d0,0x3a2a22,0xb08860].map(mat),hide=new THREE.Group(),horses=[];
@@ -64,14 +66,21 @@ export function life(api){
 
   let last=performance.now();
   animHooks.push(now=>{const t=now/1000,dt=Math.min(0.05,(now-last)/1000);last=now;
+    const q=new THREE.Quaternion(),eye=new THREE.Vector3(),fwd=new THREE.Vector3();
     for(const s of stalkers){const a=s.ph+t*s.sp,x=s.cx+Math.cos(a)*s.rad,z=s.cz+Math.sin(a)*s.rad,y=groundH(x,z);
       s.g.position.set(x,y,z);s.g.rotation.y=-(a+(s.sp>0?Math.PI/2:-Math.PI/2));
-      s.legs.forEach((l,i)=>{l.position.y=6.4+Math.max(0,Math.sin(t*3+i*Math.PI/3))*0.6;});
-      s.head.rotation.y=Math.sin(t*0.7+s.ph)*0.8;
+      // a tripod gait: three legs swing forward lifted while the other three push back on the ground
+      const speed=Math.abs(s.sp)*s.rad,ph=t*speed*0.9;
+      s.legs.forEach((l,i)=>{const p=ph+(i%2)*Math.PI,lift=Math.max(0,Math.sin(p));l.rotation.y=l.userData.yaw+Math.cos(p)*0.22;l.rotation.z=lift*0.28;});
+      s.body.position.y=s.y0+Math.abs(Math.sin(ph))*0.25;
+      s.body.rotation.z=Math.sin(ph)*0.03;
+      s.head.rotation.y=Math.sin(t*0.7+s.ph)*0.8;s.head.rotation.z=-0.12+Math.sin(t*0.45+s.ph)*0.08;
       // the sight line: from the eye, forward and down onto the ground
-      const e=new THREE.Vector3(3.4,0,0).applyQuaternion(s.head.getWorldQuaternion(new THREE.Quaternion()));const eye=new THREE.Vector3();s.head.getWorldPosition(eye);eye.add(e);
-      const dir=e.clone().normalize();const tx=eye.x+dir.x*60,tz=eye.z+dir.z*60,target=new THREE.Vector3(tx,groundH(tx,tz)+0.3,tz),d=target.clone().sub(eye),L=d.length();
-      s.beam.scale.set(1,L,1);s.beam.position.copy(eye).addScaledVector(d,0.5);s.beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());}
+      s.eye.getWorldPosition(eye);fwd.set(1,0,0).applyQuaternion(s.head.getWorldQuaternion(q));
+      const tx=eye.x+fwd.x*60,tz=eye.z+fwd.z*60,target=new THREE.Vector3(tx,groundH(tx,tz)+0.3,tz),d=target.clone().sub(eye),L=d.length();
+      s.beam.scale.set(1,L,1);s.beam.position.copy(eye).addScaledVector(d,0.5);s.beam.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());
+      s.dot.position.copy(target);s.dot.scale.setScalar(1+Math.sin(t*10+s.ph)*0.3);}
+    lineM.opacity=0.55+Math.sin(t*14)*0.15;
     for(const h of horses){if(!h.graze){h.a+=Math.sin(t*0.1+h.ph)*dt*0.3;const nx=h.x+Math.cos(h.a)*dt*1.2,nz=h.z+Math.sin(h.a)*dt*1.2;if(!wet(nx,nz)){h.x=nx;h.z=nz;}else h.a+=Math.PI;}
       h.g.position.set(h.x,groundH(h.x,h.z),h.z);h.g.rotation.y=-h.a;const down=h.graze?(0.6+Math.sin(t*0.3+h.ph)*0.4):0;h.g.userData.neck.rotation.z=-0.6-down*0.9;h.g.userData.head.position.set(1.7+down*0.2,2.7-down*1.8,0);
       if(Math.sin(t*0.05+h.ph)>0.97)h.graze=!h.graze;}

@@ -960,8 +960,13 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   built at twice the first size, since in the game they tower over the land.
   Calamity Ganon is rings of crimson malice turning round the Sanctum with an eye in them; Death Mountain has a lava
   lake, lava running downhill from the rim, and smoke.
-- **Life** (`life.js`): Guardian Stalkers walking the fields with the eye's red line sweeping the ground, wild horses
-  grazing, hawks, and someone in green paragliding down from a tower now and then.
+- **Guardians** (`guardian.js`): one model for the walking and the fallen. A dome of a head with glowing lines over
+  it (rings round, lines down) and the eye standing out of the front in a rimmed housing; a squat drum of a body with
+  a pointed belly; six spider legs, thigh up to the knee and a long shin down to a pointed foot. The fallen ones are
+  sunk to the drum, the head tipped or lying beside it, legs folded or gone, moss over the dome, the eye dark.
+- **Life** (`life.js`): Guardian Stalkers walking loops on dry ground with a tripod gait, the head turning and the
+  eye's red line sweeping the ground to a red point; wild horses grazing (kept out of the lakes, rivers and moats),
+  hawks, and someone in green paragliding down from a tower now and then.
 - **Flora, rocks and clouds** (`flora.js`, instanced): firs on Hebra, Tabantha and any high slope (snow on the
   highest), Akkala's woods in autumn, palms along the south coast and round Lurelin and Gerudo, boulders in the
   fields and outcrops on the slopes (pale above the snow line), and soft clouds drifting east, dimmed at night. Only
@@ -978,7 +983,8 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   wherever a river drops steeply; the western lava field; the islets off Akkala.
 - **Events** (`events.js`, on `src/core/happenings.js`): `bloodmoon` (a red moon, a crimson sky, embers of malice
   rising), `beasts` (the four Divine Beasts turn blue and fire on the castle), `tower` (a tower activates: blue, a
-  column of light, a ring over the land), `glider`, `storm` (rain and lightning on the high ground), `korok`.
+  column of light, a ring over the land), `glider`, `guardian` (walk alongside a Guardian Stalker), `storm` (rain and
+  lightning on the high ground), `korok`.
 
 Regenerate with `python3 tools/make-hyrule.py`. It writes the land, the roads, the villages' houses and the woods for
 the engine (`hyrule-osm.json`), and the places, towers, shrines, stables, camps, lakes, moats, rivers and regions for the page
@@ -1824,7 +1830,7 @@ src/
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
-  hyrule/   main.js paint.js flora.js alive.js landmarks.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
+  hyrule/   main.js paint.js flora.js alive.js landmarks.js guardian.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
