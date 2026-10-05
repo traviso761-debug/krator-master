@@ -45,156 +45,160 @@
    "sha256": "3d7b24099164ac4787d151b8358797beb50a5557e47b49a29749e9f4b2629971"
   },
   "kits/ancients/dist/alt-civic.html": {
-   "bytes": 2351390,
-   "sha256": "3596f7cae2a2d43e1dd6b9d0473983feaea5ee4f8f8e9f82c357d668b19dba77"
+   "bytes": 2410678,
+   "sha256": "ee32cd8b5cbdef457744f87a56768a38616d2e932a604bb0f53d0164d953d480"
   },
   "kits/ancients/dist/alt-domestic.html": {
-   "bytes": 2350914,
-   "sha256": "298a66c2d5bd26aea144de7e4eeb5755a7bb8e43905d2ca64ea64b22d13064b6"
+   "bytes": 2410202,
+   "sha256": "bf0fb9598eab2da729e1586dbab3f8868eeb73455361693fd63efcba951e0ae2"
   },
   "kits/ancients/dist/alt-towers.html": {
-   "bytes": 2350133,
-   "sha256": "5ba3c3e7a0ba1d91a926cd7159e9cbb8496ca0c36fbf59d234cd06a06fe3d580"
+   "bytes": 2409421,
+   "sha256": "e92b111c76b1172da2db5f37c06cf7a5f5f2d2860a951f51db694f5e6b7225f6"
   },
   "kits/ancients/dist/ancients-kit.html": {
-   "bytes": 2373371,
-   "sha256": "3b9d1a7ad74a85e09bd3b8aebaaad8435315facd4e256234eb55d8cbaa809ec1"
+   "bytes": 2432659,
+   "sha256": "371d1188bbf1d10e35dcb2fd0172745d5f43ee2cd78acc09b83336b5a0b340e7"
   },
   "kits/ancients/dist/arcbeam.html": {
-   "bytes": 2356627,
-   "sha256": "2bf79060b3a354383aba2355f8b74d1053011d90cf95dca965774e5cb2956c26"
+   "bytes": 2415915,
+   "sha256": "9c81f2979f42472af63629a868cf534ea93ccf804d21dd5d461d707aecdee679"
   },
   "kits/ancients/dist/arcoindian.html": {
-   "bytes": 2358625,
-   "sha256": "4cb54694854e0d390d3a78c2b53202ac7449e992282457c58e7a22d9e91b535d"
+   "bytes": 2417913,
+   "sha256": "37977eeea7dd9ee64d9c08da2a2de081dffb21578b026589f8241bdfce46ffe6"
   },
   "kits/ancients/dist/arcoindian2.html": {
-   "bytes": 2359283,
-   "sha256": "797e9d8a79bf85db3cafa38fdc1c0a4d2154d01fcfa387f6ad3898e4c950db88"
+   "bytes": 2418571,
+   "sha256": "28281d79081876ca04166c89b10d924230cd1ed6927c763b36f2af0bcb609768"
   },
   "kits/ancients/dist/arcube.html": {
-   "bytes": 2358236,
-   "sha256": "ad4b59337df7e0f85f6ff59d46c78a9213940caa7531408de7893a59cf4ca68c"
+   "bytes": 2417524,
+   "sha256": "7e0e2da212ef4727d1697cb55590c034eda239d9fc665b86bcc1044d4a1cc2f6"
   },
   "kits/ancients/dist/blades.html": {
-   "bytes": 2354621,
-   "sha256": "5a44de5335daa25b7c51b2f77231ebe35ddd19bbada3cd3b8eca857f1f1aa985"
+   "bytes": 2413909,
+   "sha256": "d271dd6d70e86d04dbe9cfae865da2a081af9b702ae0d91e0a7a3e104d34e053"
   },
   "kits/ancients/dist/canyon.html": {
-   "bytes": 2348650,
-   "sha256": "d61ea1e733f5af1af5dbeef637e50ead9ad79960b8de374b7f521e184a406e0e"
+   "bytes": 2407938,
+   "sha256": "310004c73d238ece6c5ff3f2f4a82286b7f50810ad586dde026a246dfa5749c8"
   },
   "kits/ancients/dist/crescent.html": {
-   "bytes": 2352181,
-   "sha256": "d78314537e9b93aa14359db92927d161d6552a5debe76ba76aa3ba85f6f9e1e7"
+   "bytes": 2411469,
+   "sha256": "cda202164834792785eeec7d81fd7e5938d955e2da87e5f8f898e1988d88e6f2"
   },
   "kits/ancients/dist/dalab.html": {
-   "bytes": 2351593,
-   "sha256": "dc3b15a703fa3976dae547a9951226e72955a1f8e6ab389f074a131466d76346"
+   "bytes": 2410881,
+   "sha256": "0f227a21a6ae2037baba074dd82497730fc1f219db693700dde6cc9be9283bb2"
   },
   "kits/ancients/dist/darco.html": {
-   "bytes": 2349635,
-   "sha256": "b477899ad1b8da4f079e6f574821159bd1c4c8b20071568a0a5034ca2ed581fd"
+   "bytes": 2408923,
+   "sha256": "ef6ddcae48415eea4fabb2601322c7751ed2b4106b9765c0d0fb062b829ee7ee"
   },
   "kits/ancients/dist/drum.html": {
-   "bytes": 2353788,
-   "sha256": "a15d6310cb40e540fb69dc80153fe896a31e14a6dc2dbb95a5b085c903a7d432"
+   "bytes": 2413076,
+   "sha256": "136cefe32057fe25bcce53e0781a82b31167d5c6e60ba853d0f0c32f37845ec4"
   },
   "kits/ancients/dist/engines.html": {
-   "bytes": 2351859,
-   "sha256": "c2672ec16e4e3914e7b4cfce19b6858ca813464f9a602d10aa41f0f9faf9b21d"
+   "bytes": 2411147,
+   "sha256": "a69c33ae37a7deae5eb12b65444f9d1c9b8018398343ddead8b80095f7579cb3"
   },
   "kits/ancients/dist/forest.html": {
-   "bytes": 2352608,
-   "sha256": "217c27c6b6b648d0f800a4000086aa16eff1b7773c0a9c7a085eae17b73e742a"
+   "bytes": 2411896,
+   "sha256": "a6bcc5b2111ce369545eaf572c435bf58068a3f9c2aad712205e530762ebb581"
   },
   "kits/ancients/dist/hexahedron.html": {
-   "bytes": 2355495,
-   "sha256": "4524ad04369fecf013ca80c90253abb38a076e020c7426784812018a5655a2ad"
+   "bytes": 2414783,
+   "sha256": "13470e53c2748de44e4dfb0662f9a401fa31cef8b93d9df13e2f9a6b4e6ec55f"
   },
   "kits/ancients/dist/hill.html": {
-   "bytes": 2361024,
-   "sha256": "95a41315a56dc9396248e24b8ed8f2e161230ee118be84d43ec60561348fba0c"
+   "bytes": 2420312,
+   "sha256": "5a64110762a91f69061960d6b58cc3d15d7b372b1e63e5cf9d967551458ded13"
+  },
+  "kits/ancients/dist/hosts.html": {
+   "bytes": 2412661,
+   "sha256": "b12c1d8d9bd0d87a672ced0eb929b21f2fe9375faa0ad0647f5329d5ebb9760f"
   },
   "kits/ancients/dist/iziz-style.html": {
-   "bytes": 2353572,
-   "sha256": "f9b7323bac11bf3a773566cce9cafa43fb9cca4b65f7942f8aaadfbffcc10dba"
+   "bytes": 2412860,
+   "sha256": "6136d9ef885d26fe709a3a1feb03af5695fe0d4db7a2170e70eb8e853b5b53cd"
   },
   "kits/ancients/dist/iziz-variants.html": {
-   "bytes": 2350218,
-   "sha256": "7c6f1e4cabc78404272a99d3cbbb7f810828093b8c922baa191a4359f61bb46d"
+   "bytes": 2409506,
+   "sha256": "625fff756fe02c52f0cbd3336b418118d1d16cb003348b2f644587b9c9b3426d"
   },
   "kits/ancients/dist/launch.html": {
-   "bytes": 2360499,
-   "sha256": "ff8fa41e65e6e64aa63fb8cb8b7fbb196eace51ba6c193609050728f5a2be709"
+   "bytes": 2419787,
+   "sha256": "9075240b7269ad62ec477a2ba992d164bdeb4d26c235e93efe762c3a071bb7b6"
   },
   "kits/ancients/dist/ledge.html": {
-   "bytes": 2352603,
-   "sha256": "9b04046fc9da8746a6f49e0bf3d6348dd451b58ca26007a76691e92b36f43be7"
+   "bytes": 2411891,
+   "sha256": "af513ee3d29477769b33766c36ddcdecfc83f2ec0c3936f789b3b263d2b66723"
   },
   "kits/ancients/dist/lighthouse.html": {
-   "bytes": 2350421,
-   "sha256": "404a084a27a08977411b7d7166fb6351b2212077681b51784d21139839b76d8b"
+   "bytes": 2409709,
+   "sha256": "df8bbf5471458372eafbf7f2e756e95f70a7ca008ff23bd7dba945c2076df750"
   },
   "kits/ancients/dist/monolith.html": {
-   "bytes": 2351909,
-   "sha256": "bea9cd0e1eb576ab89d43aa7cfaed45e164e10dc645641245f22368821aebb4e"
+   "bytes": 2411197,
+   "sha256": "2edce262c87e18735b17c4ac0e78c0878f2441d1689b72b4a4941e0ea538e4f2"
   },
   "kits/ancients/dist/plymouth.html": {
-   "bytes": 2354038,
-   "sha256": "4cb125736c2d7f43e560fadd03f4011de622dedfad2148d9f3044cdd859fc05c"
+   "bytes": 2413326,
+   "sha256": "03f1b9a0364335d0c0e526c663afd1e07cfc78e0f8c7a6fb8b190c80ce4f19e3"
   },
   "kits/ancients/dist/ring.html": {
-   "bytes": 2357320,
-   "sha256": "f0748c3702ba053b434854df26dc446a70cabeb5761814ca2e5b15bf304f45ba"
+   "bytes": 2416608,
+   "sha256": "67c15f0dcbcc9b70f2dfefed446a38aef7d3fe1b92fed067b72a7cb43a27b6a7"
   },
   "kits/ancients/dist/skyi.html": {
-   "bytes": 2351261,
-   "sha256": "18eb3e1507dc46bfafa9391638f6e2c6b937f9bcbe586e24532ba7207fee48fc"
+   "bytes": 2410549,
+   "sha256": "b66706e7d4fc3ee6bb9799cc4612bad1e49f8a0916f671966d7d85db87918427"
   },
   "kits/ancients/dist/skyj.html": {
-   "bytes": 2350140,
-   "sha256": "c345b36d4f392bf427b706e2f860fc51206374b7a38cd9c6fb08c644ed5c9661"
+   "bytes": 2409428,
+   "sha256": "bd198a2f754f8d37f8ff0a1a25fc457d117ec6951427e05e2e1b81ab43f79455"
   },
   "kits/ancients/dist/skyk.html": {
-   "bytes": 2349452,
-   "sha256": "d17d35b87c9b5034c7c420a28f57de9bedbe2808924eaa44e68b6650d229890d"
+   "bytes": 2408740,
+   "sha256": "483ac89a43b44b7c2f2cd7d2efcad41cec3c2e47740cbbd13287e5e91421c6d7"
   },
   "kits/ancients/dist/spaceport.html": {
-   "bytes": 2349229,
-   "sha256": "1e755c2a3f863a065f267d382367fa0c15a4f0dd162d1bad6119d6cd0bc0a9ca"
+   "bytes": 2408517,
+   "sha256": "cf4f3eb8c1a50983dffb7bd4c4bb978a72c6bc8ec4ddeb446dc86726bba55e95"
   },
   "kits/ancients/dist/spire.html": {
-   "bytes": 2351242,
-   "sha256": "4fc1be617a20f3bb0620fd81aafe98655120dbd67fe968beca1712f46aa705a3"
+   "bytes": 2410530,
+   "sha256": "65aa55f84427bc42f81db9744dc7a00f50112c46c833526c4d886d596369d899"
   },
   "kits/ancients/dist/theodiga.html": {
-   "bytes": 2348860,
-   "sha256": "055e6919caf821408b394c6b0b40b8af67377393316b32a7e8ac27e3c424f975"
+   "bytes": 2408148,
+   "sha256": "25fe91dce4a66b0f1010c85c679b9b3bbe025b08a7e6be256c88af4d7794f500"
   },
   "kits/ancients/dist/trigon.html": {
-   "bytes": 2352182,
-   "sha256": "683d973986b3aed4fb409725fdc1c1914a9a96a8a5e84758b4c7c1a04a6317d0"
+   "bytes": 2411470,
+   "sha256": "3d495dfffecda6a07b18d9bc1fd6306222102982548d894026383826ef969b92"
   },
   "kits/ancients/dist/veladiga.html": {
-   "bytes": 2348890,
-   "sha256": "cc37294063a753da5151d66bb7817f7a9bc2ecfc08fb49f74c82e0373fba9062"
+   "bytes": 2408178,
+   "sha256": "82a087115b7b5f8d7f51c379c8d20752803000608944e11718d65d67dc10191d"
   },
   "kits/ancients/dist/wheel.html": {
-   "bytes": 2354669,
-   "sha256": "db2b7cd01a27b5da847562ffd21137322b05e991a6d05db6c9710a2589849c3c"
+   "bytes": 2413957,
+   "sha256": "61c46331fd02d887c3eba0b571ae2144d2a10341d509b8b0b80e0feda82605ac"
   },
   "kits/ancients/dist/wing.html": {
-   "bytes": 2352166,
-   "sha256": "50ad2f4710999d720c64b7a31d274071fec9225caf21bb4a58c144467403cc56"
+   "bytes": 2411454,
+   "sha256": "1450a5e237ee289edd5e67a5e5d78b909c593d664ed96fcb3cf65c9b12cbe900"
   },
   "kits/ancients/dist/worn.html": {
-   "bytes": 2359126,
-   "sha256": "28145a7af83c5ddba07aa30309560599e7bb628ff6e682dea20ed1fb03ed7284"
+   "bytes": 2418414,
+   "sha256": "aa88f884972377f095f0d6862864e103169ce2ac6fc37398e99c407e77a66bb5"
   },
   "kits/ancients/dist/yuni-variants.html": {
-   "bytes": 2350258,
-   "sha256": "e11aa313483c7f882e8dbc220f42b61e9a45af562b52a86a36b0e73c944f9285"
+   "bytes": 2409546,
+   "sha256": "9e0d730e6bc40b6c19eefdb29106c8936d3ba15e0c846cddd1ff3fd914f31a4d"
   },
   "kits/catalog/dist/catalog.html": {
    "bytes": 1113643,

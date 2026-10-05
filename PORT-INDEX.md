@@ -22,7 +22,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 64 | 886 | 437 | 19 | 10 | 56 | 365 | 6 |  | yes | yes |
 | [`settlements/ys`](settlements/ys/PORT.md) | 71 | 986 | 119 | 30 | 51 | 44 | 742 | 5 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 47 | 1022 | 105 | 13 | 16 | 140 | 748 | 11 | fixtures | yes | yes |
-| [`kits/ancients`](kits/ancients/PORT.md) | 199 | 2473 | 239 | 34 | 174 | 27 | 1999 | 5 |  | yes | yes |
+| [`kits/ancients`](kits/ancients/PORT.md) | 207 | 2537 | 244 | 34 | 174 | 27 | 2057 | 11 |  | yes | yes |
 | [`kits/catalog`](kits/catalog/PORT.md) | 37 | 1329 | 11 | 0 | 10 | 55 | 1254 | 3 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 390 | 1 | 8 | 0 | 54 | 327 | 2 |  | yes | yes |
@@ -37,7 +37,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1373 | 18698 | 2582 (14%) | 328 (2%) | 803 (4%) | 1789 (10%) | 13196 (71%) | 202 | | | |
+| **all** | 1381 | 18762 | 2588 (14%) | 328 (2%) | 803 (4%) | 1789 (10%) | 13254 (71%) | 208 | | | |
 
 ## Host-shell copies
 
