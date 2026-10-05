@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 216 (20%) | 19 (2%) | 13 (1%) | 77 (7%) | 752 (70%) |
+| KB | 216 (20%) | 19 (2%) | 13 (1%) | 77 (7%) | 753 (70%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -67,7 +67,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/roketstad/82d-anc-bunker.js` | 2.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/82e-anc-aa.js` | 0.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/84-rk-geo.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/roketstad/85-rk-paint.js` | 5.2 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `targets/roketstad/85-rk-paint.js` | 5.3 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `targets/roketstad/86-bio-10-core-head.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/86-bio-20-core-kit.js` | 13.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 5 | 0 | 0 | 0 | split: data candidate that also draws |
 | `targets/roketstad/86-bio-30-core-foliage.js` | 13.3 | [G shader] | 0 | 3 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 |  |
@@ -84,7 +84,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/roketstad/90a-rk-world.js` | 7.9 | [web] | 9 | 1 | 0 | 0 | 2 | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/90b-rk-build.js` | 40.5 | [web] | 7 | 0 | 0 | 0 | 4 | 6 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/91z-views.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/roketstad/93-rk-ui.js` | 2.4 | [web] | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/roketstad/93-rk-ui.js` | 2.6 | [web] | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/roketstad/93b-rk-lod.js` | 3.2 | [G native] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 |  |
 
 ## Notes

@@ -94,7 +94,10 @@ saying what fixed it.
       horizon map in `90a`) with `willReadFrequently`, which keeps them on the CPU
       rasteriser everywhere: CPU and GPU loads both give 875, the same placement
       hash and the same mask hashes. (34-kitdefs' leaf card still uses
-      Math.random, but only for its pixels.)
+      Math.random, but only for its pixels.) **Replaced (2026-10-05):** the mask and
+      class grids are core/mask (`KMASK.canvas`, hard-edged, no canvas at all) and the
+      far forest keeps off the fields by a list of field discs; placement went from
+      3349 to 3378 records, the same on GPU and CPU canvas loads (`core/mask/README.md`).
 - [x] `verify.py --views` splits on commas, so a preset whose name holds a comma
       (the set's row presets 'Town types — row, stacked house, well, tower' and
       friends) cannot be shot by name; the eye-level presets cover the types.

@@ -183,28 +183,28 @@
  },
  "roketstad": {
   "interiors-off": {
-   "batchTris": 3189006,
-   "geometry": "d04d49e0",
-   "groupTris": 3189006,
+   "batchTris": 3502168,
+   "geometry": "159bfaa5",
+   "groupTris": 3502168,
    "interiorPieces": 0,
    "interiors": 0,
    "lights": 0,
    "meshes": 16,
    "missing": {},
-   "placed": 5513,
-   "records": "b936160d"
+   "placed": 5818,
+   "records": "1a33d0b1"
   },
   "interiors-on": {
-   "batchTris": 19336330,
-   "geometry": "e2c269d5",
-   "groupTris": 19336330,
-   "interiorPieces": 41184,
-   "interiors": 1548,
+   "batchTris": 21021956,
+   "geometry": "f311ce6",
+   "groupTris": 21021956,
+   "interiorPieces": 43572,
+   "interiors": 1689,
    "lights": 0,
-   "meshes": 3181,
+   "meshes": 3326,
    "missing": {},
-   "placed": 5513,
-   "records": "b936160d"
+   "placed": 5818,
+   "records": "1a33d0b1"
   }
  }
 }

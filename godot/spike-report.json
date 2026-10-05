@@ -16,7 +16,7 @@
       },
       "images": 48,
       "instances": 521,
-      "load_ms": 461,
+      "load_ms": 426,
       "materials": 57,
       "meshes": 57,
       "multimeshes": 11,
@@ -85,7 +85,7 @@
       "buckets": 3,
       "instances": 4348,
       "items": 19,
-      "load_ms": 286,
+      "load_ms": 333,
       "materials": 32,
       "textures": 21,
       "triangles": 10738
@@ -107,28 +107,28 @@
       "extras_keys": {
         "atmos": 12,
         "isGround": 1,
-        "krator_instanced": 114,
+        "krator_instanced": 122,
         "krator_spike": 1,
         "probeSkip": 6,
-        "sectorOf": 56
+        "sectorOf": 67
       },
       "images": 18,
-      "instances": 6542,
-      "load_ms": 131,
-      "materials": 77,
-      "meshes": 153,
-      "multimeshes": 114,
-      "nodes_with_extras": 121,
-      "triangles": 355320
+      "instances": 6752,
+      "load_ms": 154,
+      "materials": 75,
+      "meshes": 161,
+      "multimeshes": 122,
+      "nodes_with_extras": 129,
+      "triangles": 360183
     },
     "file": "res://data/iziz/region.glb",
     "gaps": {
       "ShaderMaterial": "5 ShaderMaterials (water, sky, glow) became magenta stand-ins",
       "attributes": "custom vertex attributes dropped: { \"aN\": 7.0, \"aC2\": 1.0, \"aP0\": 5.0, \"aP1\": 5.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
-      "instancing": "114 instanced meshes (6542 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
-      "shader hooks": "44 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
-      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 783 records); no mesh names its record yet: the exporter has to write each record's id into its node's extras",
-      "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+      "instancing": "122 instanced meshes (6752 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
+      "shader hooks": "42 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 784 records); no mesh names its record yet: the exporter has to write each record's id into its node's extras",
+      "unlit": "5 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
     },
     "route": "glTF (three GLTFExporter r128)",
     "stage": {
@@ -138,20 +138,20 @@
     "tags": {
       "build": "iziz/Iziz",
       "classes": {
-        "building": 594,
-        "feature": 111,
+        "building": 592,
+        "feature": 113,
         "flora": 67,
         "landmark": 1,
-        "life": 5,
+        "life": 6,
         "prop": 5
       },
-      "records": 783
+      "records": 784
     }
   },
   "iziz-atmos": {
     "counts": {
       "fx": {
-        "banner": 13,
+        "banner": 11,
         "beacon": 1,
         "brazier": 4,
         "drain": 1,
@@ -167,10 +167,10 @@
         "spotcone": 8,
         "weather": 1
       },
-      "glow": 328,
-      "lamps": 70,
-      "load_ms": 27,
-      "prop_instances": 2467,
+      "glow": 322,
+      "lamps": 65,
+      "load_ms": 29,
+      "prop_instances": 2339,
       "prop_sets": 26
     },
     "file": "res://data/iziz/atmos.json",
@@ -195,7 +195,7 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 1105,
+      "load_ms": 1241,
       "materials": 51,
       "textures": 35,
       "triangles": 186920
@@ -222,7 +222,7 @@
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 334,
+      "load_ms": 458,
       "windows": 6841
     },
     "counts_interior": {

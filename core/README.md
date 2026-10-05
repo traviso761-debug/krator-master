@@ -291,6 +291,20 @@ vocabulary), for the inspector, the minimap, the exporters and Godot node metada
 | `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
 
+## `mask/`
+
+A city's placement raster (GODOT-PLAN.md Phase 2 item 5): `KMASK.canvas(w, h)` stands in for the canvases the four
+mask-placed cities paint their buildable mask and street classes on, with the same calls, rasterised hard-edged by
+pixel centre so every browser (GPU or CPU canvas) and Godot get the same bytes. `mask/README.md` has the rule.
+**Used by** the city targets of `settlements/iziz`, `dalab`, `xanadu` (Erewhon) and `highlands` (Roketstad), each
+through `TARGET_CORE`.
+
+| File | What |
+|---|---|
+| `25-core-mask.js` | [G data] `KMASK.canvas`, `hash`, `ops`, `export`; the rasteriser (`disc`, `ring`, `polyline`, `polygons`, `rect`) |
+| `test-mask.js` | `node core/mask/test-mask.js` (`--write` rewrites `golden.json`) |
+| `kmask.gd`, `kmask_test.gd`, `golden.json` | the GDScript twin, replaying the ops to the same bytes (passing in Godot 4.5); copied to `godot/tests/mask/` |
+
 ## Planned: a material registry
 
 This comes later, with the furniture kit and the Blender export. The plan is not
