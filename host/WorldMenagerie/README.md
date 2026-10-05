@@ -955,10 +955,15 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   cabin); Kakariko, Hateno and its laboratory and Fort Hateno, Rito Village on its pillar, Zora's Domain, Goron City,
   Gerudo Town, Lurelin; the Great Deku Tree and the Master Sword; the three Lomei Labyrinths (seeded mazes); Akkala
   Citadel and the spiral in the sea; Hylia Bridge; and decayed Guardians in the fields.
-- **The Divine Beasts** (`beasts.js`), each moving: Vah Ruta spraying from its trunk in the East Reservoir, Vah
-  Rudania crawling round Death Mountain, Vah Medoh circling high over Rito Village, Vah Naboris walking the desert;
-  built at twice the first size, since in the game they tower over the land.
-  Calamity Ganon is rings of crimson malice turning round the Sanctum with an eye in them; Death Mountain has a lava
+- **The Divine Beasts** (`divine.js`), each moving, at twice the first size since in the game they tower over the
+  land. Each is carved stone: a turned hull banded with seams, jointed limbs, plates, and glowing lines and spirals.
+  Vah Ruta stands in the East Reservoir on pillar legs with knee rings and toed feet, fanning great round ears, a
+  pavilion on its back, spraying from a six-jointed trunk. Vah Rudania crawls round Death Mountain laid to the slope
+  (pitched and rolled to the ground under it): a broad flat body with a domed shell, a wide head with big round eyes,
+  splayed legs with spread fingers, a swaying tail. Vah Medoh circles high over Rito Village with a deck and tower
+  on its back and wings of long feather panels. Vah Naboris walks the desert on very tall jointed legs, two humps and
+  a long neck. Each moving part is merged by material, so each Beast is a few dozen draw calls.
+- **Ganon and Death Mountain** (`beasts.js`): Calamity Ganon is rings of crimson malice turning round the Sanctum with an eye in them; Death Mountain has a lava
   lake, lava running downhill from the rim, and smoke.
 - **Guardians** (`guardian.js`): one model for the walking and the fallen. A dome of a head with glowing lines over
   it (rings round, lines down) and the eye standing out of the front in a rimmed housing; a squat drum of a body with
@@ -1830,7 +1835,7 @@ src/
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
-  hyrule/   main.js paint.js flora.js alive.js landmarks.js guardian.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
+  hyrule/   main.js paint.js flora.js alive.js landmarks.js guardian.js divine.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)

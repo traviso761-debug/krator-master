@@ -9,6 +9,7 @@ import {build} from '../engine/build.js';
 import {sceneRows} from '../core/layout.js';
 import {landmarks} from './landmarks.js';
 import {beasts} from './beasts.js';
+import {divine} from './divine.js';
 import {paint} from './paint.js';
 import {flora} from './flora.js';
 import {alive} from './alive.js';
@@ -39,7 +40,7 @@ function fingerprint(api){
 (async()=>{
   const C0=await fetch('data/cities/hyrule.json').then(r=>r.json()).catch(()=>({}));
   const plan=await fetch(C0.plan||'data/cities/hyrule-plan.json').then(r=>r.json()).catch(e=>{report('the plan',e);return null;});
-  const ctx=window._iz={defaultCity:'hyrule',plan,models:[landmarks,beasts],
+  const ctx=window._iz={defaultCity:'hyrule',plan,models:[landmarks,beasts,divine],
     extras:[{name:'paint',fn:paint},{name:'flora',fn:flora},{name:'life',fn:life},{name:'alive',fn:alive},{name:'events',fn:events},{name:'fingerprint',fn:fingerprint}]};
   boot(()=>build(ctx));
 })();
