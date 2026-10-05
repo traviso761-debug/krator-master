@@ -3861,7 +3861,7 @@ BIO.def('lizard',G.lizard(),M.body,{label:'Rock lizards'});
 // ---------------------------------------------------------------- walkers: a pose that is a function of the clock (2026-10)
 // The deer and the coyotes are WALKERS: each goes round a closed polyline at a trapezoid speed (it eases
 // out of and into each stop) and stands at some of its vertices for a while. walkAt(W,t,back) gives the
-// pose at clock t as a pure function of t: nothing is integrated frame to frame, so any frame rate, or a
+// pose at clock t (the BIO clock, BIO.WIND.t) as a pure function of t: nothing is integrated frame to frame, so any frame rate, or a
 // port replaying the clock (biomes/GODOT.md), lands on the same pose. `back` puts a follower that many
 // metres behind on the same path: it moves and stops with its leader. The ground under the path is
 // sampled once at build (W.gy, about every metre), so a frame calls no terrainH.
@@ -4018,7 +4018,7 @@ SEDESERT.buildFauna=function(R,q,keep){
  // ---- deer and coyotes (2026-10): walkers (above) on dry, gentle, unmasked ground; the draws come after
  // every older kind's, so the kites, swifts, striders and lizards lie exactly where they did
  const fok=typeof keep==='function'?keep:null;   // the host's own filter, (kind,x,z)->bool (BIOME-API.md)
- const dryOK=(x,z,Z)=>BIO.depth(x,z)<-.3&&Z.slope<.45&&BIO.mask(x,z)>.5&&BIO.clearOf(x,z,2);
+ const dryOK=(x,z,Z)=>BIO.depth(x,z)<-.3&&Z.slope<.45&&BIO.mask(x,z)>.5&&BIO.clearOf(x,z,2)&&!SEDESERT.blocked(x,z,.6);   // not through a trunk
  const deerOK=(x,z)=>{const Z=zones(x,z);return Z.rip+Z.oasis+Z.bank*.5+Z.scrub*.6+Z.bench*.3>.3&&dryOK(x,z,Z)&&(!fok||fok('deer',x,z));};
  const coyOK=(x,z)=>{const Z=zones(x,z);return Z.scrub+Z.rip+Z.bad*.6+Z.oasis+Z.bench*.4>.25&&dryOK(x,z,Z)&&(!fok||fok('coyote',x,z));};
  // a leg is walkable: every 3 m on it passes, and it climbs no steeper than 1 in 2.5
@@ -4028,9 +4028,9 @@ SEDESERT.buildFauna=function(R,q,keep){
  // ---- DEER: herds of 3-8 in the canyon's riparian strip and at the pond, browsing between points in
  // the bosque and the scrub beside it; each deer walks its own loop through the herd's browse points
  const herds=[],deer=[];
- BIO.grid(220,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.rip*.8+Z.oasis*.9+Z.bank*.3)*q*smooth(.45,.2,Z.slope);},(x,y,z)=>{
+ BIO.grid(170,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.rip*.8+Z.oasis*.9+Z.bank*.3)*q*smooth(.45,.2,Z.slope);},(x,y,z)=>{
   if(!deerOK(x,z))return;const pool=[[x,z]];
-  for(let k=0;k<40&&pool.length<9;k++){const a=rr(0,TAU),r=rr(5,34),px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
+  for(let k=0;k<70&&pool.length<9;k++){const a=rr(0,TAU),r=rr(5,34),px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
    if(!deerOK(px,pz)||pool.some(p=>Math.hypot(p[0]-px,p[1]-pz)<5))continue;pool.push([px,pz]);}
   if(pool.length<4)return;
   const H={x,z,pool,deer:[]},n=ri(3,8);
@@ -4046,7 +4046,7 @@ SEDESERT.buildFauna=function(R,q,keep){
  // ---- COYOTES: singly or in pairs, trotting long loops through the scrub and the canyon floor and
  // pausing at some of the corners to sniff or to look round; a pair travels in file
  const packs=[],coys=[];
- BIO.grid(800,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.scrub*.5+Z.rip*.7+Z.bad*.3+Z.oasis*.4)*q*.55*smooth(.45,.2,Z.slope);},(x,y,z)=>{
+ BIO.grid(800,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.scrub*.5+Z.rip*.7+Z.bad*.3+Z.oasis*.4)*q*.8*smooth(.45,.2,Z.slope);},(x,y,z)=>{
   const n=ri(5,8),R0=rr(70,190),a0=rr(0,TAU),pts=[];
   for(let j=0;j<n;j++){let ok=null;for(let g=0;g<6&&!ok;g++){const a=a0+j/n*TAU+rr(-.25,.25),r=R0*rr(.55,1.1)*(1-g*.12),px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
     if(!coyOK(px,pz)||(pts.length&&!legOK(pts[pts.length-1],[px,pz],coyOK)))continue;ok=[px,pz];}
@@ -4067,9 +4067,12 @@ SEDESERT.buildFauna=function(R,q,keep){
  const CY=coys.length?Object.assign({body:BIO.dynamic('coyote',G.coyBody(),M.body,coys.length,{label:'Coyotes'}),
    head:BIO.dynamic('coyotehead',G.coyHead(),M.body,coys.length,{label:'Coyotes'}),ant:null,
    legs:BIO.dynamic('coyoteleg',G.coyLeg(),M.body,coys.length*4,{label:'Coyotes'})},COY):null;
+ [DR,CY].forEach(Rg=>Rg&&[Rg.body,Rg.head,Rg.legs,Rg.ant].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';}));   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
  const FAR2=1600*1600;let first2=true;
  const flag=Rg=>{for(const m of [Rg.body,Rg.head,Rg.legs,Rg.ant])if(m){m.instanceMatrix.needsUpdate=true;if(first2&&m.instanceColor)m.instanceColor.needsUpdate=true;}};
- BIO.tick((dt,t)=>{const E=BIO.eye(),far=(x,z)=>!first2&&E&&(x-E[0])*(x-E[0])+(z-E[2])*(z-E[2])>FAR2;   // past 1.6 km a herd keeps its last pose
+ // t is the BIO clock (BIO.WIND.t: the host's clock() when it binds one, else the core's own), the one the
+ // foliage sways to, so one world clock drives both and a port replays the same poses from it
+ BIO.tick(dt=>{const t=BIO.WIND.t.value,E=BIO.eye(),far=(x,z)=>!first2&&E&&(x-E[0])*(x-E[0])+(z-E[2])*(z-E[2])>FAR2;   // past 1.6 km a herd keeps its last pose
   if(DR){deer.forEach((d,i)=>{if(far(d.H.x,d.H.z))return;const o=walkAt(d.W,t,0,.8);o.pt=wPitch(d.W,o.s,.42*d.k);
     rigPose(DR,i,o,d.k,headAt(o,.22,1.85,-.3,1.3),first2?d.c:null,d.ai);});flag(DR);}
   if(CY){coys.forEach((c,i)=>{if(far(c.P.x,c.P.z))return;const o=walkAt(c.W,t,c.back,1.5);o.pt=wPitch(c.W,o.s,.3*c.k);
@@ -5418,17 +5421,222 @@ EASTABYSS.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));
 // ==================== 56e-bio-biome-eastabyss.js   (biomes/eastabyss/src/70-biome-eastabyss.js)
 // ================================================================= EASTERN ABYSS — build / dress / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
-// 60 (floor) and 65 (dress); this file only orders them and reports.
+// 60 (floor), 65 (dress) and 75 (fauna); this file only orders them and reports.
 EASTABYSS.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==null?1:opt.quality;
  if(opt.lakeHue!=null)EASTABYSS.setLake(opt.lakeHue);
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(EASTABYSS.buildTrees){BIO.cur='abyss/trees';Object.assign(out,EASTABYSS.buildTrees(R,q));}
  if(EASTABYSS.buildReedBeds){BIO.cur='abyss/reeds';Object.assign(out,EASTABYSS.buildReedBeds(R,q));}
  if(EASTABYSS.buildFloor){BIO.cur='abyss/floor';Object.assign(out,EASTABYSS.buildFloor(R,q));}
+ // opt.fauna (75): false builds none; a function (kind,x,z)->bool keeps the animals off ground the host keeps
+ if(EASTABYSS.buildFauna&&opt.fauna!==false){BIO.cur='abyss/fauna';Object.assign(out,EASTABYSS.buildFauna(R,q,opt.fauna));}
  BIO.cur=null;return out;};
 EASTABYSS.dress=function(geos,opt){if(EASTABYSS.dressGeos){BIO.cur='abyss/dress';EASTABYSS.dressGeos(geos,opt||{});BIO.cur=null;}};
 EASTABYSS.canopyH=function(x,z){return EASTABYSS._canopyH?EASTABYSS._canopyH(x,z):12;};
-BIO.kitEnd(EASTABYSS);   // its exports run in its registry; the default kit is current again
+// BIO.kitEnd(EASTABYSS) is at the end of 75 (the fauna), the kit's last fragment
+
+// ==================== 56f-bio-biome-eastabyss-fauna.js   (biomes/eastabyss/src/75-biome-eastabyss-fauna.js)
+// ================================================================= EASTERN ABYSS — fauna
+// The abyss floor's animals on the biome contract (2026-10), ported from Locus's ambient fauna
+// (settlements/locus/src/83-locus-fauna.js: its flamingos and frilled lizards, there on Locus's own
+// globals) and placed from the same fields the flora reads:
+//   FLAMINGOS  flocks of 12-60 standing and feeding in the shallows (BIO.depth .03..55 m: the salt
+//              lake's margin, the river channels' edges, the delta, the marsh pools), each bird
+//              wading its own small loop, head down in the water to feed or up; and a few skeins
+//              in V formation flying long loops over the lake and the flats, wings flapping; 1.3 m
+//   FRILLED LIZARDS  on dry ground near the rivers and on the salt flats' damp edges, basking, then a
+//              dash on the hind legs; the frill opens and the lizard rears and turns to face the
+//              viewer (BIO.eye) inside ~25 m; 0.9 m nose to tail
+// Every pose is a pure function of the BIO clock (BIO.WIND.t) and the kit's seeded layout: walkers
+// (below) for the waders and the lizards, closed-form loops for the skeins. Nothing is integrated
+// frame to frame, so a port replays the same poses from the same clock (biomes/GODOT.md). The frill
+// is a function of the viewer's distance only. All of it is dynamic instanced meshes (BIO.dynamic)
+// driven by one BIO.tick. Tags follow the project rule.
+(function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
+const zones=EASTABYSS.zones,blocked=EASTABYSS.blocked;
+const T3=BIO.host.THREE;
+EASTABYSS.FAUNA=[
+ {key:'flamingo',name:'Salt-lake flamingo',H:[1.2,1.4],tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'both'}},
+ {key:'frilled_lizard',name:'Frilled lizard',L:[.8,1.0],tags:{climate:'tropic',aridity:'semiarid',abyssal:true,riparian:'both'}},
+];
+// ---------------------------------------------------------------- walkers: a pose that is a function of the clock
+// (the same walkers as biomes/sedesert's fauna, 75: a kit keeps its own copy.) A WALKER goes round a
+// closed polyline at a trapezoid speed (it eases out of and into each stop) and stands at some of its
+// vertices for a while; walkAt(W,t) is its pose at clock t. The ground under the path is sampled once
+// at build (W.gy), so a frame calls no terrainH.
+const wrapA=a=>{a=(a+Math.PI)%TAU;if(a<0)a+=TAU;return a-Math.PI;},lerpA=(a,b,u)=>a+wrapA(b-a)*u;
+function wSeg(W,s){const c=W.cum;let lo=0,hi=W.pts.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(c[m]<=s)lo=m;else hi=m-1;}return lo;}
+function wAt(W,s){s=((s%W.L)+W.L)%W.L;const i=wSeg(W,s),n=W.pts.length,a=W.pts[i],b=W.pts[(i+1)%n],l=W.cum[i+1]-W.cum[i],u=l>0?(s-W.cum[i])/l:0;return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];}
+function wY(W,s){s=((s%W.L)+W.L)%W.L;const f=s/W.ds,k=Math.min(Math.floor(f),W.gy.length-2),u=f-k;return W.gy[k]+(W.gy[k+1]-W.gy[k])*u;}
+function wHd(W,s,all,rc){s=((s%W.L)+W.L)%W.L;const n=W.pts.length,i=wSeg(W,s),c=W.cum,a=s-c[i],b=c[i+1]-s;
+ if(a<rc&&(all||!W.isStop[i]))return lerpA(W.dir[(i+n-1)%n],W.dir[i],smooth(-rc,rc,a));
+ if(b<rc&&(all||!W.isStop[(i+1)%n]))return lerpA(W.dir[i],W.dir[(i+1)%n],smooth(-rc,rc,-b));
+ return W.dir[i];}
+// pts [[x,z]...] closed; stops [{i,d,...}] sorted by vertex; runs [{...}] one a stop (what the walker does
+// on the way to the next stop); v m/s; ta the ease (s); off the clock offset (s); hs the half-stride (m)
+function mkWalker(pts,stops,v,ta,off,hs,runs){const n=pts.length,cum=[0],dir=[];
+ for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];cum.push(cum[i]+Math.hypot(b[0]-a[0],b[1]-a[1]));dir.push(Math.atan2(b[0]-a[0],b[1]-a[1]));}
+ const L=cum[n],N=Math.max(2,Math.ceil(L)),W={pts,cum,dir,L,ds:L/N,gy:new Float32Array(N+1),stops,v,off,tl:[],P:0,hs:L/(2*Math.max(1,Math.round(L/(2*hs)))),isStop:new Uint8Array(n)};
+ for(let k=0;k<=N;k++){const p=wAt(W,k*W.ds);W.gy[k]=BIO.terrainH(p[0],p[1]);}
+ stops.forEach(S=>W.isStop[S.i]=1);
+ let t0=0;
+ for(let k=0;k<stops.length;k++){const S=stops[k],S2=stops[(k+1)%stops.length];
+  W.tl.push({run:0,s0:cum[S.i],D:S.d,t0,stop:S,hIn:dir[(S.i+n-1)%n],hOut:dir[S.i]});t0+=S.d;
+  let Lr=cum[S2.i]-cum[S.i];if(Lr<=0)Lr+=L;const te=Math.min(ta,Lr/v),D=Lr/v+te;
+  W.tl.push({run:1,s0:cum[S.i],Lr,D,ta:te,t0,R:runs?runs[k]:null});t0+=D;}
+ W.P=t0;return W;}
+// {x,z,y (ground), s, hd, vf (speed 0..1), e (the timeline entry), tau (s into it), stop, u, ph (gait)}
+function walkAt(W,t){let r=(t+W.off)%W.P;if(r<0)r+=W.P;
+ let e=W.tl[0];for(let k=1;k<W.tl.length&&W.tl[k].t0<=r;k++)e=W.tl[k];
+ const tau=r-e.t0,o={e,tau,stop:null,u:0,vf:0,s:0,hd:0};
+ if(!e.run){o.stop=e.stop;o.u=tau;o.s=e.s0;const d=e.D,tt=Math.min(1.5,d*.4);o.hd=lerpA(e.hIn,e.hOut,smooth(d-tt,d,tau));}
+ else{const v=W.v,ta=e.ta;let s;
+  if(ta<=0){s=v*tau;o.vf=1;}else if(tau<ta){s=v*tau*tau/(2*ta);o.vf=tau/ta;}
+  else if(tau>e.D-ta){const k=e.D-tau;s=e.Lr-v*k*k/(2*ta);o.vf=k/ta;}else{s=v*(tau-ta/2);o.vf=1;}
+  o.s=e.s0+s;o.hd=wHd(W,o.s,false,.3);}
+ const p=wAt(W,o.s);o.x=p[0];o.z=p[1];o.y=wY(W,o.s);o.ph=Math.PI*o.s/W.hs;return o;}
+// ---------------------------------------------------------------- geometries (vertex-coloured; bodies face +z, the ground at y=0)
+const _c=new T3.Color();
+function asm(parts){const pos=[],nor=[],col=[];
+ parts.forEach(p=>{const g=p.g.index?p.g.toNonIndexed():p.g,a=g.attributes.position.array,b=g.attributes.normal.array;
+  for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(b[i],b[i+1],b[i+2]);
+   _c.set(typeof p.c==='function'?p.c(a[i],a[i+1],a[i+2]):p.c).convertSRGBToLinear();col.push(_c.r,_c.g,_c.b);}});
+ return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);}
+const ell=(rx,ry,rz,x,y,z,ws,hs,rotx)=>{const g=new T3.SphereGeometry(1,ws||7,hs||5);g.scale(rx,ry,rz);if(rotx)g.rotateX(rotx);g.translate(x,y,z);return g;};
+const tube=(a,b,r0,r1,seg)=>{const d=new T3.Vector3(b[0]-a[0],b[1]-a[1],b[2]-a[2]),L=d.length(),g=new T3.CylinderGeometry(r1,r0,L,seg||4,1,true);g.translate(0,L/2,0);
+ g.applyMatrix4(new T3.Matrix4().makeRotationFromQuaternion(new T3.Quaternion().setFromUnitVectors(new T3.Vector3(0,1,0),d.normalize())));g.translate(a[0],a[1],a[2]);return g;};
+const quad=(P,c)=>{const g=new T3.BufferGeometry(),p=[...P[0],...P[1],...P[2],...P[0],...P[2],...P[3]];g.setAttribute('position',new T3.Float32BufferAttribute(p,3));g.computeVertexNormals();return{g,c};};
+const FC={pink:0xf2909e,deep:0xe4687e,black:0x1c1818,leg:0xdc7c8a,bill:0xe6d6cc,tip:0x1a1414,
+ liz:0x7c6444,lizD:0x56442e,lizB:0xb8a482,frill:0xd2502c,frillC:0xe8a848};
+const G={};
+// the wader's body (the folded wings dark at the tail), the ground at y=0
+G.flaBody=()=>asm([{g:ell(.16,.15,.3,0,.8,0),c:FC.pink},{g:ell(.12,.06,.17,0,.86,-.17,5,3),c:(x,y,z)=>z<-.27?FC.black:FC.deep}]);
+// the lower neck: pivot at its root, along +y, 0.36 m
+G.flaNeck=()=>asm([{g:tube([0,-.05,-.03],[0,.37,0],.05,.034,4),c:FC.pink}]);
+// the upper neck and the head: pivot at the lower neck's tip, along +y; the bill points +z and bends down
+G.flaHead=()=>asm([{g:tube([0,-.01,0],[0,.27,0],.034,.03,4),c:FC.pink},{g:ell(.042,.042,.06,0,.28,.025,6,4),c:FC.pink},
+ {g:tube([0,.28,.07],[0,.255,.15],.024,.014,4),c:FC.bill},{g:tube([0,.255,.15],[0,.215,.18],.014,.006,4),c:FC.tip}]);
+// a leg: hip at y=0, the foot at y=-1; the knee (the ankle, in fact) a darker band
+G.flaLeg=()=>{const g=new T3.CylinderGeometry(.014,.011,1,4,2,true);g.translate(0,-.5,0);return asm([{g,c:(x,y,z)=>Math.abs(y+.5)<.06?FC.deep:FC.leg}]);};
+// in flight: neck stretched forward, legs trailing, along +z; the wings are their own instances (they flap)
+G.flaFly=()=>asm([{g:ell(.15,.13,.3,0,0,0),c:FC.pink},{g:tube([0,.02,.22],[0,.04,.8],.04,.03,4),c:FC.pink},{g:ell(.042,.042,.06,0,.04,.84,6,4),c:FC.pink},
+ {g:tube([0,.03,.88],[0,-.01,.98],.022,.008,4),c:FC.tip},{g:tube([.03,-.04,-.2],[.03,-.05,-.95],.012,.01,4),c:FC.leg},{g:tube([-.03,-.04,-.2],[-.03,-.05,-.95],.012,.01,4),c:FC.leg}]);
+// one wing, out along +x from the hinge at the body's side: the pink coverts, the black flight feathers
+G.flaWing=()=>asm([quad([[.08,0,.15],[.46,0,.13],[.46,0,-.17],[.08,0,-.17]],FC.deep),quad([[.46,0,.13],[.86,-.02,.04],[.84,-.02,-.12],[.46,0,-.17]],FC.black)]);
+// a frilled lizard, 0.9 m: the origin at the hips, the head +z, the tail -z, legs splayed
+G.lizard=()=>{const c=(x,y,z)=>y>.1?FC.lizD:y<.055?FC.lizB:FC.liz,P=[{g:ell(.065,.05,.17,0,.08,.1,7,5),c},{g:ell(.042,.038,.07,0,.1,.32,6,4,-.1),c},
+ {g:tube([0,.07,-.04],[0,.035,-.58],.034,.006,5),c:(x,y,z)=>Math.floor(-z*14)%2?FC.lizD:FC.liz}];
+ for(const s of [1,-1]){P.push({g:tube([s*.05,.07,.2],[s*.12,0,.24],.014,.01,4),c:FC.lizD});P.push({g:tube([s*.05,.07,0],[s*.13,0,-.04],.016,.01,4),c:FC.lizD});}
+ return asm(P);};
+// the frill: a ruff round the neck in the xy plane, facing +z; the pivot at the neck
+G.frill=()=>{const g=new T3.CircleGeometry(.2,10,-.4,Math.PI+.8);return asm([{g,c:(x,y,z)=>Math.hypot(x,y)>.12?FC.frill:FC.frillC}]);};
+const M={body:BIO.leafMat(null,'fauna-body',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true})};
+const _w1=new T3.Color(1,1,1),_m4=new T3.Matrix4(),_p3=new T3.Vector3(),_q1=new T3.Quaternion(),_q2=new T3.Quaternion(),_eu=new T3.Euler(),_s3=new T3.Vector3(),_v3=new T3.Vector3();
+const setI=(im,i,x,y,z,rx,ry,rz,sx,sy,sz,col)=>{_p3.set(x,y,z);_eu.set(rx,ry,rz,'YXZ');_q2.setFromEuler(_eu);_s3.set(sx,sy,sz);_m4.compose(_p3,_q2,_s3);im.setMatrixAt(i,_m4);if(col)im.setColorAt(i,col);};
+// a point in a body frame (heading hd, pitch pt) at scale k, from the origin o, into _v3
+const inBody=(o,hd,pt,k,l)=>{_eu.set(pt,hd,0,'YXZ');_q1.setFromEuler(_eu);_v3.set(l[0]*k,l[1]*k,l[2]*k).applyQuaternion(_q1).add(o);return _v3;};
+// the wader's rig: the neck's root in the body, the lower neck's length, the hips, the leg length; the two necks'
+// tilts (rad from upright, forward positive) standing and feeding
+const FLA={neck:[0,.86,.22],lowL:.36,hips:[[.06,.68,-.02],[-.06,.68,-.02]],legLen:.68,stand:[.55,-.75],feed:[2.35,3.05]};
+// ---------------------------------------------------------------- the pass
+// keep (optional, the host's): (kind,x,z)->bool, false where it keeps the ground (BIOME-API.md)
+EASTABYSS.buildFauna=function(R,q,keep){
+ reseed(750011);q=q==null?1:q;R=R||3000;const st={flamingos:0,flocks:0,skeins:0,flying:0,lizards:0};
+ const LOD=BIO.LOD(),Y=(x,z)=>BIO.terrainH(x,z),fok=typeof keep==='function'?keep:null;
+ const tint=(dl)=>{const c=new T3.Color(1,1,1);c.offsetHSL(rr(-.01,.01),rr(-.04,.02),dl==null?rr(-.06,.04):dl);return c.convertSRGBToLinear();};
+ // a leg of a path is good when every metre-ish point on it passes
+ const legOK=(a,b,ok,step)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/(step||1.5));for(let i=1;i<n;i++){const u=i/n;if(!ok(a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u))return false;}return true;};
+ // ---- FLAMINGOS: shallow water (the waders stand on the bed), clear of the host's obstacles
+ const shallow=(x,z)=>{const d=BIO.depth(x,z);return d>.03&&d<.55&&BIO.clearOf(x,z,1)&&(!fok||fok('flamingo',x,z));};
+ const cand=[];
+ BIO.grid(55,0,R,(x,z)=>BIO.lodD(x,z)>LOD.mid?0:1,(x,y,z)=>{const Z=zones(x,z);cand.push([x,z,.35+.65*Math.max(Z.salt,Z.flow,Z.marsh)]);},{patch:0,pad:0,noMask:true,depth:[.08,.45]});
+ for(let i=cand.length-1;i>0;i--){const j=Math.floor(rng()*(i+1)),t=cand[i];cand[i]=cand[j];cand[j]=t;}
+ const flocks=[],birds=[],NF=Math.max(1,Math.round(8*q));
+ for(const c of cand){if(flocks.length>=NF)break;if(rng()>c[2]||!shallow(c[0],c[1]))continue;if(flocks.some(f=>Math.hypot(f.x-c[0],f.z-c[1])<340))continue;
+  const n=Math.max(12,Math.round(ri(12,60)*q)),rf=6+Math.sqrt(n)*2.4,F={x:c[0],z:c[1],birds:[]};
+  for(let b=0;b<n;b++){let home=null;
+   for(let g=0;g<14&&!home;g++){const a=rr(0,TAU),r=rf*Math.sqrt(rng()),px=F.x+Math.cos(a)*r,pz=F.z+Math.sin(a)*r;
+    if(shallow(px,pz)&&!F.birds.some(o=>Math.hypot(o.W.pts[0][0]-px,o.W.pts[0][1]-pz)<1.1))home=[px,pz];}
+   if(!home)continue;const pts=[home];
+   for(let g=0;g<16&&pts.length<3;g++){const a=rr(0,TAU),r=rr(1.5,4.5),p=[home[0]+Math.cos(a)*r,home[1]+Math.sin(a)*r];if(shallow(p[0],p[1])&&legOK(pts[pts.length-1],p,shallow))pts.push(p);}
+   if(pts.length===3&&!legOK(pts[2],pts[0],shallow))pts.pop();
+   if(pts.length<2)pts.push([home[0]+.01,home[1]]);   // a bird with nowhere to wade stands
+   // at each stop it feeds (head down) or stands; on each leg it feeds as it wades or walks head up
+   const stops=pts.map((p,i)=>({i,d:rr(6,24),feed:rng()<.62?1:0})),runs=pts.map(()=>({feed:rng()<.6?1:0}));
+   const W=mkWalker(pts,stops,rr(.16,.3),1,rr(0,900),.24,runs);
+   W.tl.forEach((e,k)=>{e.hf=e.run?e.R.feed:e.stop.feed;});W.tl.forEach((e,k)=>{e.hp=W.tl[(k+W.tl.length-1)%W.tl.length].hf;});
+   const juv=rng()<.1,B={W,F,k:rr(.9,1.04),ph:rr(0,TAU),c:juv?tint(-.18):tint()};F.birds.push(B);birds.push(B);}
+  if(F.birds.length>=8)flocks.push(F);else F.birds.forEach(B=>birds.splice(birds.indexOf(B),1));}
+ st.flocks=flocks.length;st.flamingos=birds.length;
+ // ---- the skeins: V formations flying an ellipse that joins two flocks (or loops one), over the lake and the flats
+ const skeins=[],flyers=[];
+ for(let s=0;s<Math.min(3,flocks.length);s++){const A=flocks[s],B=flocks[(s+1)%flocks.length],cx=(A.x+B.x)/2,cz=(A.z+B.z)/2,th=Math.atan2(B.z-A.z,B.x-A.x),
+   ra=Math.max(260,Math.hypot(B.x-A.x,B.z-A.z)/2+120),rb=ra*rr(.35,.55);let g=-1e9;
+  for(let k=0;k<32;k++){const a=k/32*TAU,x=cx+Math.cos(th)*ra*Math.cos(a)-Math.sin(th)*rb*Math.sin(a),z=cz+Math.sin(th)*ra*Math.cos(a)+Math.cos(th)*rb*Math.sin(a);g=Math.max(g,Y(x,z)+EASTABYSS.canopyH(x,z),BIO.waterH(x,z));}   // over the canopy too
+  const S={x:cx,z:cz,th,ra,rb,y:g+rr(30,55),w:rr(13,17)/ra*(rng()<.5?1:-1),a0:rr(0,TAU),n:ri(8,15)};
+  for(let b=0;b<S.n;b++){const row=Math.ceil(b/2),side=b%2?1:-1;flyers.push({S,back:row*2.3+rr(-.3,.3),lat:side*row*1.5,dy:rr(-.6,.6),ph:rr(0,TAU),k:rr(.92,1.04),c:tint()});}
+  skeins.push(S);}
+ st.skeins=skeins.length;st.flying=flyers.length;
+ // ---- FRILLED LIZARDS: dry, open ground near the rivers and on the flats' damp edges
+ const dry=(x,z)=>BIO.depth(x,z)<-.4&&BIO.mask(x,z)>.5&&BIO.clearOf(x,z,1)&&!blocked(x,z,.4)&&(!fok||fok('frilled_lizard',x,z));
+ const lizards=[];
+ BIO.grid(70,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);
+  return clamp(smooth(.3,.8,Z.flow)*(1-Z.marsh*.6)*(1-Z.jung)*.9+Z.flat*smooth(.95,.7,Z.salt)*smooth(.03,.12,Z.wet)*.7,0,1)*.32*q;},(x,y,z)=>{
+  if(!dry(x,z))return;const pts=[[x,z]];
+  for(let g=0;g<14&&pts.length<3;g++){const a=rr(0,TAU),r=rr(2.5,8),p=[x+Math.cos(a)*r,z+Math.sin(a)*r];if(dry(p[0],p[1])&&legOK(pts[pts.length-1],p,dry,1))pts.push(p);}
+  if(pts.length===3&&!legOK(pts[2],pts[0],dry,1))pts.pop();if(pts.length<2)return;
+  const stops=pts.map((p,i)=>({i,d:rr(4,22)}));   // basking, then a dash on the hind legs
+  lizards.push({W:mkWalker(pts,stops,rr(1.6,2.6),.3,rr(0,700),.2),x,z,k:rr(.85,1.08),c:tint()});},{patch:.3,pad:1});
+ st.lizards=lizards.length;
+ // ---- the meshes
+ const nB=birds.length,nF=flyers.length,nL=lizards.length;
+ const mB=nB?BIO.dynamic('flamingo',G.flaBody(),M.body,nB,{label:'Salt-lake flamingos'}):null,
+  mN=nB?BIO.dynamic('flamingoneck',G.flaNeck(),M.body,nB,{label:'Salt-lake flamingos'}):null,
+  mH=nB?BIO.dynamic('flamingohead',G.flaHead(),M.body,nB,{label:'Salt-lake flamingos'}):null,
+  mL=nB?BIO.dynamic('flamingoleg',G.flaLeg(),M.body,nB*2,{label:'Salt-lake flamingos'}):null,
+  mF=nF?BIO.dynamic('flamingoflying',G.flaFly(),M.body,nF,{label:'Salt-lake flamingos (flying)'}):null,
+  mW=nF?BIO.dynamic('flamingowing',G.flaWing(),M.body,nF*2,{label:'Salt-lake flamingos (flying)'}):null,
+  mZ=nL?BIO.dynamic('frilledlizard',G.lizard(),M.body,nL,{label:'Frilled lizards'}):null,
+  mR=nL?BIO.dynamic('frill',G.frill(),M.body,nL,{label:'Frilled lizards'}):null;
+ [mB,mN,mH,mL,mF,mW,mZ,mR].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';});   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
+ const o3=new T3.Vector3(),hip=new T3.Vector3();let first=true;
+ const flag=(...ms)=>ms.forEach(m=>{if(!m)return;m.instanceMatrix.needsUpdate=true;if(first&&m.instanceColor)m.instanceColor.needsUpdate=true;});
+ // t is the BIO clock (BIO.WIND.t: the host's clock() when it binds one, else the core's own)
+ BIO.tick(dt=>{const t=BIO.WIND.t.value,E=BIO.eye(),far=(x,z,r)=>!first&&E&&Math.hypot(x-E[0],z-E[2])>r;   // far groups keep their last pose
+  // waders: the head eases between down and up over 1.5 s at each change of what the bird is doing
+  if(mB)birds.forEach((B,i)=>{if(far(B.F.x,B.F.z,1500))return;const o=walkAt(B.W,t),k=B.k,f=mix(o.e.hp,o.e.hf,smooth(0,1.5,o.tau)),col=first?B.c:null;
+   const hd=o.hd+(o.stop?.22*f*Math.sin(t*.55+B.ph)*smooth(0,2,o.u)*smooth(o.stop.d,o.stop.d-2,o.u):0),pt=.18*f;   // a feeding bird sweeps its head side to side
+   o3.set(o.x,o.y,o.z);setI(mB,i,o.x,o.y,o.z,pt,hd,0,k,k,k,col);
+   const a1=mix(FLA.stand[0],FLA.feed[0],f),a2=mix(FLA.stand[1],FLA.feed[1],f);
+   const n0=inBody(o3,hd,pt,k,FLA.neck).clone();setI(mN,i,n0.x,n0.y,n0.z,pt+a1,hd,0,k,k,k,col);
+   const n1=inBody(n0,hd,pt+a1,k,[0,FLA.lowL,0]);setI(mH,i,n1.x,n1.y,n1.z,pt+a2,hd,0,k,k,k,col);
+   for(let l=0;l<2;l++){hip.copy(inBody(o3,hd,pt,k,FLA.hips[l]));setI(mL,i*2+l,hip.x,hip.y,hip.z,.35*o.vf*Math.sin(o.ph+l*Math.PI),hd,0,k,k*FLA.legLen,k,col);}});
+  // skeins: the leader on the ellipse, the rest in the V behind it; wings flap ~0.9 a second
+  if(mF)flyers.forEach((F,i)=>{const S=F.S;if(far(S.x,S.z,3000))return;const a=S.a0+S.w*t,ca=Math.cos(a),sa=Math.sin(a),ct=Math.cos(S.th),stt=Math.sin(S.th),sg=Math.sign(S.w);
+   const lx=S.x+ct*S.ra*ca-stt*S.rb*sa,lz=S.z+stt*S.ra*ca+ct*S.rb*sa;let tx=(-ct*S.ra*sa-stt*S.rb*ca)*sg,tz=(-stt*S.ra*sa+ct*S.rb*ca)*sg;const L=Math.hypot(tx,tz)||1;tx/=L;tz/=L;
+   const x=lx-tx*F.back-tz*F.lat,z=lz-tz*F.back+tx*F.lat,y=S.y+F.dy+.5*Math.sin(t*.4+F.ph),hd=Math.atan2(tx,tz),fl=.55*Math.sin(t*5.6+F.ph),k=F.k,col=first?F.c:null;
+   setI(mF,i,x,y,z,0,hd,0,k,k,k,col);setI(mW,i*2,x,y+.04*k,z,0,hd,fl,k,k,k,col);setI(mW,i*2+1,x,y+.04*k,z,0,hd,-fl,-k,k,k,col);});
+  // lizards: bask, dash upright on the hind legs; inside ~25 m of the viewer the frill opens, the lizard rears
+  // and turns to face it (a function of the viewer's distance, not of the past)
+  if(mZ)lizards.forEach((Z,i)=>{if(far(Z.x,Z.z,900))return;const o=walkAt(Z.W,t),k=Z.k,col=first?Z.c:null;
+   const dE=E?Math.hypot(E[0]-o.x,E[1]-o.y,E[2]-o.z):1e9,f=smooth(26,16,dE),toE=E?Math.atan2(E[0]-o.x,E[2]-o.z):o.hd;
+   const hd=lerpA(o.hd,toE,f*(1-o.vf)),run=o.vf*(o.stop?0:1),pt=-.3*run-.32*f*(1-run),lift=(.13*run+.05*f*(1-run))*k;
+   setI(mZ,i,o.x,o.y+lift,o.z,pt,hd,0,k,k,k,col);
+   const p=inBody(o3.set(o.x,o.y+lift,o.z),hd,pt,k,[0,.1,.25]);const fs=mix(.4,1,f)*k;
+   setI(mR,i,p.x,p.y,p.z,pt+mix(-1.35,-.15,f),hd,0,fs,fs,k,first?_w1:null);});
+  flag(mB,mN,mH,mL,mF,mW,mZ,mR);first=false;});
+ // ---- the volumes the inspector names, with their tags (the project rule)
+ const FT={};EASTABYSS.FAUNA.forEach(f=>FT[f.key]=f.tags);
+ flocks.forEach(F=>{let cx=0,cz=0,n=0,r=0,y0=1e9,y1=-1e9;F.birds.forEach(B=>B.W.pts.forEach(p=>{cx+=p[0];cz+=p[1];n++;}));cx/=n;cz/=n;
+  F.birds.forEach(B=>{B.W.pts.forEach(p=>r=Math.max(r,Math.hypot(p[0]-cx,p[1]-cz)));for(let k=0;k<B.W.gy.length;k++){y0=Math.min(y0,B.W.gy[k]);y1=Math.max(y1,B.W.gy[k]);}});
+  F.x=cx;F.z=cz;F.r=r;BIO.register({name:'Flamingo flock',key:'flamingo',kind:'fauna',x:cx,z:cz,y:y0-2,r:r+3,h:y1-y0+4,tags:FT.flamingo});});
+ skeins.forEach(S=>BIO.register({name:'Flamingo skein',key:'flamingo',kind:'fauna',x:S.x,z:S.z,y:S.y-10,r:S.ra+30,h:16,tags:FT.flamingo}));
+ lizards.forEach(Z=>{let y0=1e9,y1=-1e9,r=0;Z.W.pts.forEach(p=>r=Math.max(r,Math.hypot(p[0]-Z.x,p[1]-Z.z)));for(let k=0;k<Z.W.gy.length;k++){y0=Math.min(y0,Z.W.gy[k]);y1=Math.max(y1,Z.W.gy[k]);}
+  BIO.register({name:'Frilled lizard',key:'frilled_lizard',kind:'fauna',x:Z.x,z:Z.z,y:y0-2,r:r+3,h:y1-y0+4,tags:FT.frilled_lizard});});
+ EASTABYSS.FAUNA_LAYOUT={flocks,birds,skeins,flyers,lizards};   // a world's camera may want to find them; the walkers are data
+ return{fauna:st};};
+})();
+BIO.kitEnd(EASTABYSS);   // its exports run in its registry; the default kit is current again (moved here from 70 with the fauna)
 
 // ==================== 62-catalog-bundle.js   (GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni))
 /* kits/catalog furniture bundle (furniture_bundle.py): krator-furniture-core.js, krator-symbols.js, krator-furniture-kit.js, krator-master-furniture.js, krator-master-furniture-eastabyss.js, krator-master-furniture-generic-goods.js, krator-master-furniture-generic.js, krator-master-furniture-iziz.js, krator-master-furniture-jobs.js, krator-master-furniture-nomad.js, krator-master-furniture-scrap.js, krator-furniture-runtime.js. GENERATED; edit the catalog files. */
@@ -20737,6 +20945,12 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'trade_market_hall#1', name: 'Arcaded market hall (variant 2: flat roof and three domes)', culture: 'yuni-common', wealth: 0.6, types: ['market/shop'], lot: [22, 14],
       rooms: marketHall(2.475, -2.475), note: 'as variant 0; four arcade bays front and back (a pier on the axis), so the front and back ways in are the bays at x +-2.475' },
 
+    /* ---------- The market's props (56-mid.js 10, 10b): open to the street; their wares are the builder's own */
+    { key: 'prop_market_stall', name: 'Market stall', culture: 'yuni-common', wealth: 0.45, types: ['market/shop'], lot: [3, 3],
+      skip: 'an open counter under an awning on two posts, no walls: the jars, cloth, crates and lantern on it are drawn by the builder' },
+    { key: 'prop_market_tent', name: "Nomad's goat-hair tent", culture: 'nomad', wealth: 0.35, types: ['market/shop'], lot: [5, 5],
+      skip: 'a low open-fronted tent (0.95 m at the eaves) over the trader\'s bales; the jar, bales and basket at its mouth are the builder\'s' },
+
     { key: 'trade_shop_house', name: 'Shop-house', culture: 'yuni-common', wealth: 0.55, types: ['market/shop', 'single-family dwelling'], lot: [9, 11],
       bodies: shopHouse(1, 2),
       note: 'variant 0: the shop behind the wide shopfront arch (x -1.35) and a store below, the family\'s living room and bedroom above, the ' +
@@ -30452,13 +30666,17 @@ function fits(city,x,z,w,d,ry,o){o=o||{};const hx=w/2+(o.m||0),hz=d/2+(o.m||0),t
  if(hi-lo>tol)return{ok:false,why:'slope'};return{ok:true,y:lo,y1:hi};}
 function why(k){OUT.rejected[k]=(OUT.rejected[k]||0)+1;}
 let NB=0;
+// a kit's own words in core/tags' vocabulary: Locus's 'abyssal-desert' is the East Abyss in its Locus style; a stall is a market
+function tagsOf(K){const c=K.culture==='iziz-vernacular'?'iziz':K.culture,t={culture:c,types:K.types.map(x=>x==='prop'?'market':x),
+ wealth:typeof K.wealth==='number'?K.wealth:K.wealth==='civic'?null:K.wealth};
+ if(c==='abyssal-desert'){t.culture='eastabyss';t.style='abyssal-desert';}return t;}
 function record(city,K,x,z,ry,y,o){o=o||{};const v=o.v!=null?o.v:(K.variants>1?S.int(0,K.variants-1):0);
  const front=loc(x,z,0,K.d/2+1.2,ry);
  const R={id:'vb_'+String(NB++).padStart(4,'0'),key:K.key,kit:o.kit||K.kit,name:K.name,city:city.C.id,district:o.district||null,x:+x.toFixed(3),z:+z.toFixed(3),y:+y.toFixed(3),
   ry:+ry.toFixed(5),w:K.w,d:K.d,h:K.h,v,wealth:K.wealth,culture:K.culture,types:K.types,door:[+front[0].toFixed(2),+front[1].toFixed(2)],landmark:o.landmark||null,
   seed:KRAND.hash(VG.SEED,NB,Math.floor(x),Math.floor(z))>>>8,params:o.params||null};
  const T=TAGS.add({class:'building',key:K.key,name:K.name+(o.landmark?' ('+o.landmark+')':''),at:[R.x,R.y,R.z],ry:R.ry,size:[K.w,K.d,K.h],
-  tags:{culture:K.culture==='iziz-vernacular'?'iziz':K.culture,types:K.types,wealth:typeof K.wealth==='number'?K.wealth:K.wealth==='civic'?null:K.wealth}});
+  tags:tagsOf(K)});
  R.tag=T.id;R.uid=T.uid;
  city.buildings.push(R);OUT.buildings.push(R);
  // paint the footprint, and a yard ring a little wider (chaotic: the gap to the next is the yard's own)
@@ -30489,7 +30707,8 @@ function addStreet(city,pts,w,cls,o){o=o||{};const id='vs_'+String(OUT.streets.l
 function growLane(city,x,z,ang,maxLen,w,o){o=o||{};const pts=[[x,z]],st=5,turn=o.turn||.3;let len=0,join=false,a=ang,cross=null;
  while(len<maxLen){a+=(S.next()-.5)*turn;const nx=x+Math.cos(a)*st,nz=z+Math.sin(a)*st;
   // look ahead a little further than one step, and to both sides
-  const ahead=[0,-1,1].map(k=>city.code(nx+Math.cos(a)*(w/2+1)-Math.sin(a)*k*w/2,nz+Math.sin(a)*(w/2+1)+Math.cos(a)*k*w/2));
+  // (sampled every 1.5 m over the whole step, so a lane never jumps a narrow alley and crosses it unjoined)
+  const ahead=[];for(let t=1.5;t<=st+w/2+1;t+=1.5)for(const k of [0,-1,1])ahead.push(city.code(x+Math.cos(a)*t-Math.sin(a)*k*w/2,z+Math.sin(a)*t+Math.cos(a)*k*w/2));
   if(ahead.some(c=>c===CODE.building||c===CODE.yard)){why('lane:building');break;}
   if(ahead.some(c=>c===CODE.blocked)){
    // a river: a bridge, if this lane may cross and the far bank is buildable within reach
@@ -30518,6 +30737,9 @@ const POOLS={
    ['trade_shop_house',2],['abyss_tavern',1.4],['trade_tavern',1],['stilt_mid',1],['mid_djenne_house',1.4],['trade_market_hall',.4]],
   dwelling:[['abyss_house_poor',3],['abyss_house_mid',3],['abyss_house_rich',.6],['stilt_poor',2],['stilt_mid',1.5],['poor_mud_house',2],['mid_courtyard_house',1],['mid_bluewash_townhouse',1],
    ['mid_round_tower_house',.8],['mid_djenne_house',1],['tent_pavilion',.8],['abyss_inn',1],['rich_merchant_palace',.3]]}};
+// what stands in the back row: small houses, sheds and workshops
+const BACK={upper:[['vern_house_poor_a',3],['vern_house_poor_b',3],['vern_house_poor_c',3],['vern_house_mid_a',1.5],['vern_workshop_a',1.2]],
+ lower:[['abyss_house_poor',3],['stilt_poor',2],['poor_mud_house',3],['abyss_house_mid',1.5],['tent_pavilion',.6]]};
 function districtOf(city,x,z){const h=city.C.head,r=Math.hypot(x-h[0],z-h[1]);for(const g of city.C.rings)if(r>=g[0]&&r<g[1])return g[2];return'dwelling';}
 function pickKey(pool){let sum=0;for(const p of pool)sum+=p[1];let u=S.next()*sum;for(const p of pool){u-=p[1];if(u<=0)return p[0];}return pool[pool.length-1][0];}
 // fill both sides of a street with plots facing it
@@ -30532,29 +30754,40 @@ function frontage(city,S0,o){o=o||{};const dense=city.C.id==='upper';let placed=
     const set=dense?S.range(.6,2.2):S.range(1.2,4.5),cx=p[0]+nx*(S0.w/2+set+K.d/2),cz=p[1]+nz*(S0.w/2+set+K.d/2);
     const ry=Math.atan2(-nx,-nz)+S.range(-.1,.1)*(dense?1:1.6);
     const f=fits(city,cx,cz,K.w,K.d,ry,{m:.4,tol:dense?2.2:1.8});
-    if(f.ok){record(city,K,cx,cz,ry,f.y,{district:dist,yard:dense?S.range(.3,1.2):S.range(.8,2.6)});s+=K.w+(dense?S.range(.4,2):S.range(1.5,6));placed++;done=true;}
+    if(f.ok){record(city,K,cx,cz,ry,f.y,{district:dist,yard:dense?S.range(.3,1.2):S.range(.8,2.6)});s+=K.w+(dense?S.range(.4,2):S.range(1.5,6));placed++;done=true;
+     // the back row: a smaller house behind it, reached down a passage beside the front one (o.back: the chance of one)
+     const back=o.back!=null?o.back:dense?.8:.25;if(S.next()<back){const K2=cat(pickKey(o.backPool||BACK[city.C.id]));if(K2){
+      const off=S0.w/2+set+K.d+S.range(1.2,3)+K2.d/2,bx=p[0]+nx*off+(S.next()-.5)*2,bz=p[1]+nz*off,bry=ry+S.range(-.2,.2)+(S.next()<.25?Math.PI/2:0);
+      const f2=fits(city,bx,bz,K2.w,K2.d,bry,{m:.4,tol:2.2});if(f2.ok){record(city,K2,bx,bz,bry,f2.y,{district:dist,yard:S.range(.3,.9)});placed++;}else why('back:'+f2.why);}}}
     else why('plot:'+f.why);}
    if(!done)s+=3;}}
  return placed;}
 // ---------------------------------------------------------------- the back lots
 // Chaotic, not planned: small houses and sheds squeezed into the free ground behind the frontages, each facing the
-// nearest street it can see within 30 m (so it still has a way in), at any angle.
-function infill(city,tries,keys){let placed=0;const B=city.C.box;
+// nearest street it can see within reach (30 m; Upper Verge 40), so it still has a way in, at any angle.
+function infill(city,tries,keys,reach){let placed=0;const B=city.C.box;reach=reach||30;
  for(let k=0;k<tries;k++){const x=S.range(B[0],B[1]),z=S.range(B[2],B[3]);if(city.code(x,z)!==CODE.free)continue;
   // the nearest street, by casting eight rays
-  let best=null;for(let a=0;a<8;a++){const ang=a/8*Math.PI*2;for(let d=4;d<=30;d+=2){const c=city.code(x+Math.cos(ang)*d,z+Math.sin(ang)*d);if(c===CODE.street||c===CODE.plaza){if(!best||d<best.d)best={d,ang};break;}if(c===CODE.blocked)break;}}
+  let best=null;for(let a=0;a<8;a++){const ang=a/8*Math.PI*2;for(let d=4;d<=reach;d+=2){const c=city.code(x+Math.cos(ang)*d,z+Math.sin(ang)*d);if(c===CODE.street||c===CODE.plaza){if(!best||d<best.d)best={d,ang};break;}if(c===CODE.blocked)break;}}
   if(!best)continue;const K=cat(keys[S.int(0,keys.length-1)]);if(!K)continue;
   const ry=Math.atan2(Math.cos(best.ang),Math.sin(best.ang))+S.range(-.25,.25),f=fits(city,x,z,K.w,K.d,ry,{m:.5,tol:2});
   if(f.ok){record(city,K,x,z,ry,f.y,{district:districtOf(city,x,z),yard:S.range(.3,1)});placed++;}else why('infill:'+f.why);}
  return placed;}
 // ---------------------------------------------------------------- the trailheads: a plaza, the toll gate and palisade
 function trailGate(city,s,kGate,kPal,kToll,nPal){
+ // the gate stands where the ground under its span is least below the trail (its ends may sink into a bank, never hang): searched 12 m either way of s
+ const span=s=>{const p=VG.trailAt(s),q=VG.trailAt(s-6),a=Math.atan2(p[1]-q[1],p[0]-q[0]),G=cat(kGate);if(!G)return 0;
+  return Math.max(...obb(p[0],p[1],G.w/2,G.d/2,Math.atan2(Math.cos(a),Math.sin(a))).map(c=>p[2]-VG.groundH(c[0],c[1])));};
+ let best=s,bv=span(s);for(let d=-12;d<=12;d+=1.5){const t=Math.min(VG.TRAIL.len-7,Math.max(7,s+d)),v=span(t);if(v<bv-1e-6){bv=v;best=t;}}s=best;
  const p=VG.trailAt(s),a=Math.atan2(p[1]-VG.trailAt(s-6)[1],p[0]-VG.trailAt(s-6)[0]);   // the direction of travel downhill
  const ry=Math.atan2(Math.cos(a),Math.sin(a));                                         // the gate's +z along the trail
  const G=cat(kGate),P=cat(kPal),out={gate:null,palisade:[],toll:null};if(!G)return out;
- out.gate=record(city,G,p[0],p[1],ry,p[2]-.1,{landmark:'toll gate',yard:0});
+ const glo=Math.min(...obb(p[0],p[1],G.w/2,G.d/2,ry).map(c=>VG.groundH(c[0],c[1])));   // sunk a little where a bank falls away
+ out.gate=record(city,G,p[0],p[1],ry,Math.min(p[2]-.1,glo+.5),{landmark:'toll gate',yard:0});
  if(P){for(const side of [-1,1])for(let k=0;k<nPal;k++){const off=side*(G.w/2+P.w/2+k*P.w),q=loc(p[0],p[1],off,0,ry),h=terrainH(q[0],q[1]);
-   if(Math.abs(h-p[2])>6)break;out.palisade.push(record(city,P,q[0],q[1],ry,h-.2,{landmark:'palisade',yard:0}));}}
+   // each segment stands on the lowest ground under it (its posts sunk at the high end); one on too steep a slope ends the run
+   const gs=obb(q[0],q[1],P.w/2,P.d/2,ry).map(c=>terrainH(c[0],c[1])).concat([h]),lo=Math.min(...gs),hi=Math.max(...gs);
+   if(Math.abs(h-p[2])>6||hi-lo>2.2)break;out.palisade.push(record(city,P,q[0],q[1],ry,lo-.1,{landmark:'palisade',yard:0}));}}
  if(kToll){const T=cat(kToll);if(T){// the toll house beside the gate, its +x (the toll window) toward the trail
    const q=loc(p[0],p[1],-(G.w/2+T.d/2+2.5),T.w/2+3,ry);const R=hunt(city,kToll,q[0],q[1],[ry-Math.PI/2,ry+Math.PI/2,ry],{landmark:'toll house',radius:24,m:.8,tol:3});out.toll=R;}}
  return out;}
@@ -30591,19 +30824,20 @@ function upper(){const C=VG.CITY.upper,city=City(C);OUT.cities.upper=city;
  const mk=[];for(let k=0;k<4;k++){const a=k/4*Math.PI*2+.4,x=MK[0]+Math.cos(a)*22,z=MK[1]+Math.sin(a)*22;mk.push(hunt(city,'vern_market',x,z,[a+Math.PI/2,a],{landmark:'market canopy',radius:14,allow:[CODE.plaza],m:.5}));}
  // the lanes: branching off the highway, then alleys off the lanes
  const lanes=[];
- for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(34,58))===0)){if(p[0]>head[0]-30)continue;
+ for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(42,72))===0)){if(p[0]>head[0]-30)continue;
   for(const side of [-1,1]){if(S.next()<.1)continue;const a=p[2]+side*(Math.PI/2+S.range(-.6,.6));
-   const L0=growLane(city,p[0]+Math.cos(a)*7,p[1]+Math.sin(a)*7,a,S.range(80,260),S.range(4.5,6.5),{bridge:side<0&&S.next()<.5,turn:.35});if(L0)lanes.push(L0);}}
+   const L0=growLane(city,p[0]+Math.cos(a)*7,p[1]+Math.sin(a)*7,a,S.range(80,240),S.range(4.5,6.5),{bridge:side<0&&S.next()<.5,turn:.35,gap:16});if(L0)lanes.push(L0);}}
  // the market's streets and the trailhead's
  for(let k=0;k<5;k++){const a=k/5*Math.PI*2+.2;const L0=growLane(city,MK[0]+Math.cos(a)*46,MK[1]+Math.sin(a)*46,a,S.range(60,160),5,{turn:.4});if(L0)lanes.push(L0);}
  // lanes off the lanes, then alleys off everything
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(50,80),20)){const side=S.next()<.5?-1:1;if(S.next()<.35)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
-   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(60,180),S.range(4,5.5),{turn:.4,gap:8});if(L1)lanes.push(L1);}}
- const alleys=[];for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(22,40),10)){for(const side of [-1,1]){if(S.next()<.3)continue;
-   const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));const A=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(30,110),S.range(3,4.2),{cls:'alley',turn:.45,gap:7,min:14});if(A)alleys.push(A);}}}
+ // (each street must leave a two-deep block of plots each side: gap 16 m for lanes, 12 m for alleys)
+ for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(80,120),30)){const side=S.next()<.5?-1:1;if(S.next()<.6)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
+   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(50,150),S.range(4,5.5),{turn:.4,gap:16});if(L1)lanes.push(L1);}}
+ const alleys=[];for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(55,90),15)){if(S.next()<.75)continue;const side=S.next()<.5?-1:1;
+   const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));const A=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(25,70),S.range(3,4.2),{cls:'alley',turn:.45,gap:12,min:14});if(A)alleys.push(A);}}
  // the plots: the highway's frontage, the lanes', the alleys'; then the back lots
  let n=0;for(const S0 of city.streets)n+=frontage(city,S0);
- infill(city,1400,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a','vern_workshop_a','vern_shops']);
+ infill(city,5000,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a','vern_workshop_a','vern_shops'],40);
  // the city spills down the top of the trail: houses on little pads beside the first legs
  spill(city,[60,520],8,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a'],'up');
  city.landmarks=Object.assign(L,{gate});return city;}
@@ -30630,16 +30864,19 @@ function lower(){const C=VG.CITY.lower,city=City(C);OUT.cities.lower=city;
   mk.push(hunt(city,k%2?'prop_market_tent':'prop_market_stall',x,z,[a+Math.PI/2,a],{landmark:'market stall',radius:12,allow:[CODE.plaza],m:.4}));}
  mk.push(hunt(city,'trade_market_hall',MK[0],MK[1]-70,[0,Math.PI],{landmark:'market hall',radius:50}));
  const lanes=[];
- for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(70,120))===0)){if(p[0]<head[0]+30)continue;
+ for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(50,90))===0)){if(p[0]<head[0]+30)continue;
   for(const side of [-1,1]){if(S.next()<.15)continue;const a=p[2]+side*(Math.PI/2+S.range(-.7,.7));
-   const L0=growLane(city,p[0]+Math.cos(a)*8,p[1]+Math.sin(a)*8,a,S.range(100,320),S.range(5,7.5),{bridge:side<0&&S.next()<.4,turn:.3,gap:12});if(L0)lanes.push(L0);}}
+   const L0=growLane(city,p[0]+Math.cos(a)*8,p[1]+Math.sin(a)*8,a,S.range(150,380),S.range(5,7.5),{bridge:side<0&&S.next()<.4,turn:.22,gap:14});if(L0)lanes.push(L0);}}
  for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.5;const L0=growLane(city,MK[0]+Math.cos(a)*60,MK[1]+Math.sin(a)*60,a,S.range(80,220),5.5,{turn:.35,gap:11});if(L0)lanes.push(L0);}
  // toward the pool and the chapterhouse: a lane west along the river's south bank
  {const L0=growLane(city,head[0]-30,head[1]-60,Math.PI*1.05,620,6,{turn:.18,gap:10,min:40});if(L0)lanes.push(L0);}
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(40,70),14)){for(const side of [-1,1]){if(S.next()<.5)continue;
+ // lanes off the lanes, as in Upper Verge but looser
+ for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(70,110),30)){const side=S.next()<.5?-1:1;if(S.next()<.45)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
+   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(60,200),S.range(4.5,6),{turn:.35,gap:16});if(L1)lanes.push(L1);}}
+ for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(50,85),14)){for(const side of [-1,1]){if(S.next()<.75)continue;
    const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(30,120),S.range(3.5,4.5),{cls:'alley',turn:.4,gap:9,min:14});}}}
- for(const S0 of city.streets)frontage(city,S0);
- infill(city,500,['abyss_house_poor','stilt_poor','poor_mud_house','abyss_house_mid','tent_pavilion']);
+ for(const S0 of city.streets)frontage(city,S0,{back:.5});
+ infill(city,1500,['abyss_house_poor','stilt_poor','poor_mud_house','abyss_house_mid','tent_pavilion']);
  spill(city,[VG.TRAIL.len-700,VG.TRAIL.len-60],10,['stilt_poor','abyss_house_poor','poor_mud_house','abyss_house_mid'],'down');
  city.landmarks=Object.assign(L,{gate});return city;}
 // ---------------------------------------------------------------- spill: houses beside the trail's first (or last) legs
@@ -30656,6 +30893,8 @@ function spill(city,range,n,keys,dir){let placed=0;
   for(const r of VG.TRAIL.rest)if(Math.hypot(r.x-cx,r.z-cz)<30)ok=false;
   if(!ok){why('spill:clear');continue;}
   const pad={id:'spill_'+OUT.pads.length,x:cx,z:cz,hx:K.w/2+1.2,hz:K.d/2+1.2,y:p[2]+.1,blend:6,yaw:-ry};OUT.pads.push(pad);VG.PADS.push(pad);
+  // the pad must hold the whole house: where the trail's next leg or its bank wins over a corner, take the pad back
+  if(obb(cx,cz,K.w/2,K.d/2,ry).some(c=>Math.abs(VG.groundH(c[0],c[1])-pad.y)>.5)){OUT.pads.pop();VG.PADS.pop();why('spill:pad');continue;}
   const R=record(city,K,cx,cz,ry,p[2]+.1,{district:'trail',yard:0});R.spill=dir;placed++;}
  return placed;}
 // ---------------------------------------------------------------- the trail's own structures
@@ -33062,7 +33301,7 @@ const C={
    for(const j of L){if(j<=i||/palisade/.test(B[j].key))continue;if(Math.hypot(B[j].x-R.x,B[j].z-R.z)>(Math.hypot(R.w,R.d)+Math.hypot(B[j].w,B[j].d))/2)continue;if(!sep(bi,box(B[j]))){n++;if(!first)first=R.id+' x '+B[j].id;}}}});
   return{ok:n===0,detail:n+' overlapping pairs of '+B.length+(first?' (first '+first+')':'')};},
  // every building stands on its ground: its floor no more than 0.5 m above the lowest ground under its box
- onGround:B=>{let bad=0,first=null;for(const R of B){const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);const lo=Math.min(...c.map(p=>terrainH(p[0],p[1])),terrainH(R.x,R.z));if(R.y-lo>.6||lo-R.y>4.5){bad++;if(!first)first=R.id+' '+R.key+' '+(R.y-lo).toFixed(1);}}
+ onGround:B=>{let bad=0,first=null;for(const R of B){const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);const lo=Math.min(...c.map(p=>terrainH(p[0],p[1])),terrainH(R.x,R.z));if(R.y-lo>.6||lo-R.y>4.5){bad++;if(!first)first='';if(bad<=6)first+=(bad>1?', ':'')+R.id+' '+R.key+' '+(R.y-lo).toFixed(1);}}
   return{ok:bad===0,detail:bad+' of '+B.length+' off their ground'+(first?' (first '+first+')':'')};},
  // the only way between the two cities is the trail: with the trail's edges taken away no route exists
  trailOnlyWay:()=>{const a=SIM.PBY.port_west.node,b=SIM.PBY.port_east.node,w=SIM.route(a,b),wo=SIM.route(a,b,{noLayer:['trail']});
@@ -33083,7 +33322,8 @@ const C={
  // the world has one clock: the sky's hour is the world clock's
  oneClock:()=>{const a=typeof skyHour==='function'?skyHour():NaN,b=CLOCK.hour;return{ok:Math.abs(a-b)<.02,detail:'sky '+a.toFixed(2)+', clock '+b.toFixed(2)};},
  // everything placed is registered in core/tags with known vocabulary
- tags:()=>{const a=KTAGS.page.audit();return{ok:!a.unknown||!Object.keys(a.unknown).length,detail:JSON.stringify(a).slice(0,240)};}};
+ tags:reg=>{const a=reg.audit(),uk=Object.keys(a.unknownKeys||{}).concat(Object.keys(a.unknownValues||{}));
+  return{ok:!a.unknown&&!a.missingCulture,detail:a.records+' records'+(uk.length?', UNKNOWN '+uk.join(' '):', every key and value known')+(a.missingCulture?', '+a.missingCulture+' without a culture':'')};}};
 // the inputs, and their broken twins
 const B=P.buildings,places=SIM.PLACES.filter(p=>p.slots&&p.slots.length);
 const through=SIM.GROUPS.find(G=>G.subkind==='through');
@@ -33092,7 +33332,7 @@ const CASES=[
  ['trail-on-ground',()=>C.trailOnGround(T.pts),()=>C.trailOnGround(T.pts.map(p=>[p[0],p[1],p[2]+3]))],
  ['rest-stops-at-marks',()=>C.restMarks(T.rest),()=>C.restMarks(T.rest.map(r=>Object.assign({},r,{y:r.y+120})))],
  ['falls-in-the-gorge',()=>C.fallsInGorge(VG.FALLS),()=>C.fallsInGorge(VG.FALLS.map(f=>Object.assign({},f,{bot:f.bot+400})))],
- ['buildings-do-not-overlap',()=>C.noOverlap(B),()=>C.noOverlap(B.slice(0,40).concat([Object.assign({},B[5],{id:'dup'})]))],
+ ['buildings-do-not-overlap',()=>C.noOverlap(B),()=>{const L=B.filter(R=>!/palisade/.test(R.key)).slice(0,40);return C.noOverlap(L.concat([Object.assign({},L[5],{id:'dup'})]));}],
  ['buildings-on-their-ground',()=>C.onGround(B),()=>C.onGround([Object.assign({},B[0],{y:B[0].y+5})])],
  ['the-trail-is-the-only-way-down',()=>C.trailOnlyWay(),null],
  ['one-body-one-slot',()=>C.slotsUnique(places),()=>C.slotsUnique([{slots:[{busy:[[0,100],[50,150]]}]}])],
@@ -33100,7 +33340,7 @@ const CASES=[
  ['the-timetable-is-full',()=>C.timetable(window._sim.groups),()=>C.timetable({porter:1})],
  ['caravans-follow-not-march',()=>C.follows(through),()=>C.follows(through&&Object.assign({},through,{members:through.members.map(M=>Object.assign({},M,{lag:0}))}))],
  ['one-clock',()=>C.oneClock(),null],
- ['tags-vocabulary',()=>C.tags(),null]];
+ ['tags-vocabulary',()=>C.tags(KTAGS.page),()=>{const r=KTAGS.create({build:'neg'});r.add({class:'building',key:'x',at:[0,0,0],tags:{culture:'no-such-culture'}});return C.tags(r);}]];
 function checks(){const out=[];for(const [name,f,neg] of CASES){let r;try{r=f();}catch(e){r={ok:false,detail:'threw: '+e.message};}
   if(neg){let n;try{n=neg();}catch(e){n={ok:false,detail:'threw'};}if(n.ok){r={ok:false,detail:'NEGATIVE CONTROL PASSED (the check cannot fail): '+n.detail};}else r.detail+='  [negative fails as it should]';}
   out.push({name,ok:r.ok,detail:r.detail});}return out;}

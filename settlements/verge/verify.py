@@ -88,7 +88,11 @@ async def run(a):
         print("counters:", json.dumps(st["counters"], sort_keys=True)[:6000])
         if a.eval:
             try:
-                print("EVAL:", json.dumps(await pg.evaluate(a.eval))[:20000])
+                ev = json.dumps(await pg.evaluate(a.eval))
+                if a.eval_out:
+                    open(a.eval_out, 'w').write(ev); print("EVAL: written to", a.eval_out, "(%d bytes)" % len(ev))
+                else:
+                    print("EVAL:", ev[:20000])
             except Exception as e:
                 print("EVAL FAILED:", str(e)[:800]); fails.append("eval")
         if a.assert_:
@@ -140,6 +144,7 @@ if __name__ == '__main__':
     ap.add_argument('--out', default=os.path.join(HERE, 'shots'))
     ap.add_argument('--hour', type=float, default=None)
     ap.add_argument('--cam', action='append')
+    ap.add_argument('--eval-out', dest='eval_out', help='write the --eval result here (whole), not to the log')
     ap.add_argument('--eval', default='')
     ap.add_argument('--wait', default='')
     ap.add_argument('--query', default='')

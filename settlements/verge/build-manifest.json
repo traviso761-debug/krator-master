@@ -117,7 +117,7 @@
  ],
  "54f-bio-biome-sedesert-fauna.js": [
   "biomes/sedesert/src/75-biome-sedesert-fauna.js",
-  "05b4af3fdeff"
+  "b747ff1bdd45"
  ],
  "56a-bio-biome-eastabyss-species.js": [
   "biomes/eastabyss/src/50-biome-eastabyss-species.js",
@@ -137,7 +137,11 @@
  ],
  "56e-bio-biome-eastabyss.js": [
   "biomes/eastabyss/src/70-biome-eastabyss.js",
-  "f944bee3662f"
+  "c36e06194359"
+ ],
+ "56f-bio-biome-eastabyss-fauna.js": [
+  "biomes/eastabyss/src/75-biome-eastabyss-fauna.js",
+  "03d7625a4c67"
  ],
  "62-catalog-bundle.js": [
   "GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni)",
@@ -153,7 +157,7 @@
  ],
  "70-verge-place.js": [
   "settlements/verge/src/70-verge-place.js",
-  "56050a2eb68d"
+  "5586c3db2d37"
  ],
  "71-verge-furnish.js": [
   "settlements/verge/src/71-verge-furnish.js",

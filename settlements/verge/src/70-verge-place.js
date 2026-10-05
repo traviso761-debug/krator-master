@@ -107,7 +107,8 @@ function addStreet(city,pts,w,cls,o){o=o||{};const id='vs_'+String(OUT.streets.l
 function growLane(city,x,z,ang,maxLen,w,o){o=o||{};const pts=[[x,z]],st=5,turn=o.turn||.3;let len=0,join=false,a=ang,cross=null;
  while(len<maxLen){a+=(S.next()-.5)*turn;const nx=x+Math.cos(a)*st,nz=z+Math.sin(a)*st;
   // look ahead a little further than one step, and to both sides
-  const ahead=[0,-1,1].map(k=>city.code(nx+Math.cos(a)*(w/2+1)-Math.sin(a)*k*w/2,nz+Math.sin(a)*(w/2+1)+Math.cos(a)*k*w/2));
+  // (sampled every 1.5 m over the whole step, so a lane never jumps a narrow alley and crosses it unjoined)
+  const ahead=[];for(let t=1.5;t<=st+w/2+1;t+=1.5)for(const k of [0,-1,1])ahead.push(city.code(x+Math.cos(a)*t-Math.sin(a)*k*w/2,z+Math.sin(a)*t+Math.cos(a)*k*w/2));
   if(ahead.some(c=>c===CODE.building||c===CODE.yard)){why('lane:building');break;}
   if(ahead.some(c=>c===CODE.blocked)){
    // a river: a bridge, if this lane may cross and the far bank is buildable within reach
@@ -136,6 +137,9 @@ const POOLS={
    ['trade_shop_house',2],['abyss_tavern',1.4],['trade_tavern',1],['stilt_mid',1],['mid_djenne_house',1.4],['trade_market_hall',.4]],
   dwelling:[['abyss_house_poor',3],['abyss_house_mid',3],['abyss_house_rich',.6],['stilt_poor',2],['stilt_mid',1.5],['poor_mud_house',2],['mid_courtyard_house',1],['mid_bluewash_townhouse',1],
    ['mid_round_tower_house',.8],['mid_djenne_house',1],['tent_pavilion',.8],['abyss_inn',1],['rich_merchant_palace',.3]]}};
+// what stands in the back row: small houses, sheds and workshops
+const BACK={upper:[['vern_house_poor_a',3],['vern_house_poor_b',3],['vern_house_poor_c',3],['vern_house_mid_a',1.5],['vern_workshop_a',1.2]],
+ lower:[['abyss_house_poor',3],['stilt_poor',2],['poor_mud_house',3],['abyss_house_mid',1.5],['tent_pavilion',.6]]};
 function districtOf(city,x,z){const h=city.C.head,r=Math.hypot(x-h[0],z-h[1]);for(const g of city.C.rings)if(r>=g[0]&&r<g[1])return g[2];return'dwelling';}
 function pickKey(pool){let sum=0;for(const p of pool)sum+=p[1];let u=S.next()*sum;for(const p of pool){u-=p[1];if(u<=0)return p[0];}return pool[pool.length-1][0];}
 // fill both sides of a street with plots facing it
@@ -150,17 +154,21 @@ function frontage(city,S0,o){o=o||{};const dense=city.C.id==='upper';let placed=
     const set=dense?S.range(.6,2.2):S.range(1.2,4.5),cx=p[0]+nx*(S0.w/2+set+K.d/2),cz=p[1]+nz*(S0.w/2+set+K.d/2);
     const ry=Math.atan2(-nx,-nz)+S.range(-.1,.1)*(dense?1:1.6);
     const f=fits(city,cx,cz,K.w,K.d,ry,{m:.4,tol:dense?2.2:1.8});
-    if(f.ok){record(city,K,cx,cz,ry,f.y,{district:dist,yard:dense?S.range(.3,1.2):S.range(.8,2.6)});s+=K.w+(dense?S.range(.4,2):S.range(1.5,6));placed++;done=true;}
+    if(f.ok){record(city,K,cx,cz,ry,f.y,{district:dist,yard:dense?S.range(.3,1.2):S.range(.8,2.6)});s+=K.w+(dense?S.range(.4,2):S.range(1.5,6));placed++;done=true;
+     // the back row: a smaller house behind it, reached down a passage beside the front one (o.back: the chance of one)
+     const back=o.back!=null?o.back:dense?.8:.25;if(S.next()<back){const K2=cat(pickKey(o.backPool||BACK[city.C.id]));if(K2){
+      const off=S0.w/2+set+K.d+S.range(1.2,3)+K2.d/2,bx=p[0]+nx*off+(S.next()-.5)*2,bz=p[1]+nz*off,bry=ry+S.range(-.2,.2)+(S.next()<.25?Math.PI/2:0);
+      const f2=fits(city,bx,bz,K2.w,K2.d,bry,{m:.4,tol:2.2});if(f2.ok){record(city,K2,bx,bz,bry,f2.y,{district:dist,yard:S.range(.3,.9)});placed++;}else why('back:'+f2.why);}}}
     else why('plot:'+f.why);}
    if(!done)s+=3;}}
  return placed;}
 // ---------------------------------------------------------------- the back lots
 // Chaotic, not planned: small houses and sheds squeezed into the free ground behind the frontages, each facing the
-// nearest street it can see within 30 m (so it still has a way in), at any angle.
-function infill(city,tries,keys){let placed=0;const B=city.C.box;
+// nearest street it can see within reach (30 m; Upper Verge 40), so it still has a way in, at any angle.
+function infill(city,tries,keys,reach){let placed=0;const B=city.C.box;reach=reach||30;
  for(let k=0;k<tries;k++){const x=S.range(B[0],B[1]),z=S.range(B[2],B[3]);if(city.code(x,z)!==CODE.free)continue;
   // the nearest street, by casting eight rays
-  let best=null;for(let a=0;a<8;a++){const ang=a/8*Math.PI*2;for(let d=4;d<=30;d+=2){const c=city.code(x+Math.cos(ang)*d,z+Math.sin(ang)*d);if(c===CODE.street||c===CODE.plaza){if(!best||d<best.d)best={d,ang};break;}if(c===CODE.blocked)break;}}
+  let best=null;for(let a=0;a<8;a++){const ang=a/8*Math.PI*2;for(let d=4;d<=reach;d+=2){const c=city.code(x+Math.cos(ang)*d,z+Math.sin(ang)*d);if(c===CODE.street||c===CODE.plaza){if(!best||d<best.d)best={d,ang};break;}if(c===CODE.blocked)break;}}
   if(!best)continue;const K=cat(keys[S.int(0,keys.length-1)]);if(!K)continue;
   const ry=Math.atan2(Math.cos(best.ang),Math.sin(best.ang))+S.range(-.25,.25),f=fits(city,x,z,K.w,K.d,ry,{m:.5,tol:2});
   if(f.ok){record(city,K,x,z,ry,f.y,{district:districtOf(city,x,z),yard:S.range(.3,1)});placed++;}else why('infill:'+f.why);}
@@ -216,19 +224,20 @@ function upper(){const C=VG.CITY.upper,city=City(C);OUT.cities.upper=city;
  const mk=[];for(let k=0;k<4;k++){const a=k/4*Math.PI*2+.4,x=MK[0]+Math.cos(a)*22,z=MK[1]+Math.sin(a)*22;mk.push(hunt(city,'vern_market',x,z,[a+Math.PI/2,a],{landmark:'market canopy',radius:14,allow:[CODE.plaza],m:.5}));}
  // the lanes: branching off the highway, then alleys off the lanes
  const lanes=[];
- for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(34,58))===0)){if(p[0]>head[0]-30)continue;
+ for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(42,72))===0)){if(p[0]>head[0]-30)continue;
   for(const side of [-1,1]){if(S.next()<.1)continue;const a=p[2]+side*(Math.PI/2+S.range(-.6,.6));
-   const L0=growLane(city,p[0]+Math.cos(a)*7,p[1]+Math.sin(a)*7,a,S.range(80,260),S.range(4.5,6.5),{bridge:side<0&&S.next()<.5,turn:.35});if(L0)lanes.push(L0);}}
+   const L0=growLane(city,p[0]+Math.cos(a)*7,p[1]+Math.sin(a)*7,a,S.range(80,240),S.range(4.5,6.5),{bridge:side<0&&S.next()<.5,turn:.35,gap:16});if(L0)lanes.push(L0);}}
  // the market's streets and the trailhead's
  for(let k=0;k<5;k++){const a=k/5*Math.PI*2+.2;const L0=growLane(city,MK[0]+Math.cos(a)*46,MK[1]+Math.sin(a)*46,a,S.range(60,160),5,{turn:.4});if(L0)lanes.push(L0);}
  // lanes off the lanes, then alleys off everything
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(50,80),20)){const side=S.next()<.5?-1:1;if(S.next()<.35)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
-   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(60,180),S.range(4,5.5),{turn:.4,gap:8});if(L1)lanes.push(L1);}}
- const alleys=[];for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(22,40),10)){for(const side of [-1,1]){if(S.next()<.3)continue;
-   const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));const A=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(30,110),S.range(3,4.2),{cls:'alley',turn:.45,gap:7,min:14});if(A)alleys.push(A);}}}
+ // (each street must leave a two-deep block of plots each side: gap 16 m for lanes, 12 m for alleys)
+ for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(80,120),30)){const side=S.next()<.5?-1:1;if(S.next()<.6)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
+   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(50,150),S.range(4,5.5),{turn:.4,gap:16});if(L1)lanes.push(L1);}}
+ const alleys=[];for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(55,90),15)){if(S.next()<.75)continue;const side=S.next()<.5?-1:1;
+   const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));const A=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(25,70),S.range(3,4.2),{cls:'alley',turn:.45,gap:12,min:14});if(A)alleys.push(A);}}
  // the plots: the highway's frontage, the lanes', the alleys'; then the back lots
  let n=0;for(const S0 of city.streets)n+=frontage(city,S0);
- infill(city,1400,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a','vern_workshop_a','vern_shops']);
+ infill(city,5000,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a','vern_workshop_a','vern_shops'],40);
  // the city spills down the top of the trail: houses on little pads beside the first legs
  spill(city,[60,520],8,['vern_house_poor_a','vern_house_poor_b','vern_house_poor_c','vern_house_mid_a'],'up');
  city.landmarks=Object.assign(L,{gate});return city;}
@@ -255,16 +264,19 @@ function lower(){const C=VG.CITY.lower,city=City(C);OUT.cities.lower=city;
   mk.push(hunt(city,k%2?'prop_market_tent':'prop_market_stall',x,z,[a+Math.PI/2,a],{landmark:'market stall',radius:12,allow:[CODE.plaza],m:.4}));}
  mk.push(hunt(city,'trade_market_hall',MK[0],MK[1]-70,[0,Math.PI],{landmark:'market hall',radius:50}));
  const lanes=[];
- for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(70,120))===0)){if(p[0]<head[0]+30)continue;
+ for(const p of along(hw,1,0).filter((q,i)=>i%Math.round(S.range(50,90))===0)){if(p[0]<head[0]+30)continue;
   for(const side of [-1,1]){if(S.next()<.15)continue;const a=p[2]+side*(Math.PI/2+S.range(-.7,.7));
-   const L0=growLane(city,p[0]+Math.cos(a)*8,p[1]+Math.sin(a)*8,a,S.range(100,320),S.range(5,7.5),{bridge:side<0&&S.next()<.4,turn:.3,gap:12});if(L0)lanes.push(L0);}}
+   const L0=growLane(city,p[0]+Math.cos(a)*8,p[1]+Math.sin(a)*8,a,S.range(150,380),S.range(5,7.5),{bridge:side<0&&S.next()<.4,turn:.22,gap:14});if(L0)lanes.push(L0);}}
  for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.5;const L0=growLane(city,MK[0]+Math.cos(a)*60,MK[1]+Math.sin(a)*60,a,S.range(80,220),5.5,{turn:.35,gap:11});if(L0)lanes.push(L0);}
  // toward the pool and the chapterhouse: a lane west along the river's south bank
  {const L0=growLane(city,head[0]-30,head[1]-60,Math.PI*1.05,620,6,{turn:.18,gap:10,min:40});if(L0)lanes.push(L0);}
- for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(40,70),14)){for(const side of [-1,1]){if(S.next()<.5)continue;
+ // lanes off the lanes, as in Upper Verge but looser
+ for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(70,110),30)){const side=S.next()<.5?-1:1;if(S.next()<.45)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
+   const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(60,200),S.range(4.5,6),{turn:.35,gap:16});if(L1)lanes.push(L1);}}
+ for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(50,85),14)){for(const side of [-1,1]){if(S.next()<.75)continue;
    const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(30,120),S.range(3.5,4.5),{cls:'alley',turn:.4,gap:9,min:14});}}}
- for(const S0 of city.streets)frontage(city,S0);
- infill(city,500,['abyss_house_poor','stilt_poor','poor_mud_house','abyss_house_mid','tent_pavilion']);
+ for(const S0 of city.streets)frontage(city,S0,{back:.5});
+ infill(city,1500,['abyss_house_poor','stilt_poor','poor_mud_house','abyss_house_mid','tent_pavilion']);
  spill(city,[VG.TRAIL.len-700,VG.TRAIL.len-60],10,['stilt_poor','abyss_house_poor','poor_mud_house','abyss_house_mid'],'down');
  city.landmarks=Object.assign(L,{gate});return city;}
 // ---------------------------------------------------------------- spill: houses beside the trail's first (or last) legs
