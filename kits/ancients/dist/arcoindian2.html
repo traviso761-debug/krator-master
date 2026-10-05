@@ -31040,6 +31040,552 @@ function buildIzSpaceport(scene,gx,gz,d){reseed(10460);KOFF=[gx,0,gz];const G=ne
  figures(0,0,dd?4:10,100);
  civFlatten(G);
  KOFF=[0,0,0];return G;}
+// ================================================================= ANCIENT HOSTS — the shared helpers (src/8ap-host-*)
+// Five Ancient types drawn from the start as HOSTS for the Hykkousoi of Ys (settlements/ys): two skyscrapers
+// (L the Facet, M the Bastion) and three mid-rise (the Arcades, the Capsule Stalks, the Bell Hall). What makes a
+// good host is written once here and kept by all five:
+//  * plain faces at pod heights. Projections only where a HOSTSPEC_* says, and its avoid() and bearings() keep
+//    pods off them.
+//  * a regular storey table: plate k's top at floors.y0 + k*pitch + top (builder y). The plates are drawn behind
+//    the skin (a pale slab over a dark soffit) whenever the fabric is open (decay > 0), so any cut shows floors.
+//  * a cut at any storey: Ys names it through ysCutY at decay 1 and 3; the skin and the lining take a ragged top
+//    there and the plates stop under it. A cut from the host drops the collapse scar (the stump keeps its walls).
+//  * way-in holes: Ys's ysWallHole wraps each body's hole predicate, so the skin AND its lining open for a pod.
+//  * a shrinkable podium: ysPodiumR (Ys) shrinks it; the apron and the ground planting are skipped then.
+// Every Ys hook sits behind a typeof guard, so the kit runs these unchanged and Ys vendors them byte for byte.
+// HOSTSPEC_<TYPE> beside each builder is pure data and arithmetic (no three.js), in the shape of Ys's
+// YS_HOST_TYPES (settlements/ys/targets/city/88-city-place.js); the plan functions it calls are the ones the
+// builder draws with, so the spec and the geometry cannot drift.
+//
+// PLANS. A polygon plan is a list of [x,z] vertices in order of increasing bearing (th from +x toward +z, the
+// lathe's convention: a point at bearing th is [r cos th, r sin th]). It may change with height (plan(yb), yb the
+// builder's y), but never its vertex count. anhPrism draws one strip per edge, so corners stay crisp; holes are
+// asked of the cell's real bearing (u = th/TAU), which is what ysWallHole and holeFn expect.
+
+// the radius of plan P along bearing th: the first exit of a ray from the axis (a slot's back wall, not its lips)
+function anhRayR(P,th){const c=Math.cos(th),s=Math.sin(th),n=P.length;let best=Infinity;
+ for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],ex=b[0]-a[0],ez=b[1]-a[1],det=ex*s-c*ez;if(Math.abs(det)<1e-9)continue;
+  const t=(ex*a[1]-a[0]*ez)/det,w=(c*a[1]-s*a[0])/det;if(t>1e-6&&w>=-1e-9&&w<=1+1e-9&&t<best)best=t;}
+ return best===Infinity?0:best;}
+// the mean of anhRayR over 24 bearings (a host's rAt with no bearing)
+function anhMeanR(P){let s=0;for(let i=0;i<24;i++)s+=anhRayR(P,(i+.5)/24*TAU);return s/24;}
+// the inscribed radius: the nearest edge line to the axis (rooms and fittings stay inside it)
+function anhInR(P){let m=Infinity;const n=P.length;for(let i=0;i<n;i++){const a=P[i],b=P[(i+1)%n],ex=b[0]-a[0],ez=b[1]-a[1],L=Math.hypot(ex,ez);
+ if(L<1e-6)continue;m=Math.min(m,Math.abs(a[0]*ez-a[1]*ex)/L);}return m;}
+// cells per edge for a plan, about `seg` metres each; fixed once per building so every height has the same grid
+function anhCols(P,seg){return P.map((a,i)=>{const b=P[(i+1)%P.length];return Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/seg));});}
+// bearings for n pods: the faces F in a shuffled order, then again `off` radians either side (Ys's ysPlFaces shape)
+function anhFaces(F,st,n,off,jit){const f=F.slice();for(let i=f.length-1;i>0;i--){const j=st.int(0,i);const t=f[i];f[i]=f[j];f[j]=t;}
+ const out=[];for(let i=0;i<n;i++){const k=i%f.length,lap=Math.floor(i/f.length);out.push(f[k]+(lap?(lap%2?off:-off):0)+st.range(-jit,jit));}return out;}
+// true when [yl, yl+h] (a pod standing on a plate) crosses any of the heights in Y, with a margin
+function anhCross(Y,yl,h,m){m=m==null?1.2:m;return Y.some(y=>yl+.5<y+m&&yl+h+m>y);}
+
+// A PRISM SKIN on a polygon plan.  o: {plan(yb), y0 (builder y of local 0), yA,yB (the local range), top (a local
+// cut inside it, or null), jag, seed, cols (anhCols), dy (row pitch), hole(u,yl,e,uc) (u the cell's bearing fraction; e, uc its edge and
+// place along it, for striping), k (scale about the axis: the lining is k .86), skip(e) (edges left out)}  ->  [geometries], one per edge
+function anhPrism(o){const out=[],k=o.k||1,y0=o.y0||0,cut=o.top!=null&&o.top<o.yB,yTop=cut?o.top:o.yB;if(yTop<=o.yA+.2)return out;
+ const P0=o.plan(y0+o.yA),n=P0.length,jag=cut?(o.jag||0):0,sd=o.seed||0;
+ const topAt=(x,z)=>{if(!jag)return yTop;const u=(Math.atan2(z,x)/TAU+1)%1;return Math.max(o.yA+.5,yTop+jag*(fbm(u*7+sd,2.3,sd*.7,3)*2-1));};
+ const at=(e,t,y)=>{const P=o.plan(y0+y),a=P[e],b=P[(e+1)%n];return[(a[0]+(b[0]-a[0])*t)*k,(a[1]+(b[1]-a[1])*t)*k];};
+ const nv=Math.max(1,Math.round((yTop-o.yA)/(o.dy||3)));
+ for(let e=0;e<n;e++){if(o.skip&&o.skip(e))continue;const m=o.cols[e],a=P0[e],b=P0[(e+1)%n],len=Math.hypot(b[0]-a[0],b[1]-a[1])*k;
+  out.push(gridSurface((u,v)=>{const b0=at(e,u,o.yA),y=o.yA+v*(topAt(b0[0],b0[1])-o.yA),xz=at(e,u,y);return[xz[0],y,xz[1]];},m,nv,
+   {uS:len/8,vS:(yTop-o.yA)/8,hole:o.hole?(u,v)=>{const y=o.yA+v*(yTop-o.yA),xz=at(e,u,y);return o.hole((Math.atan2(xz[1],xz[0])/TAU+1)%1,y,e,u);}:null}));}
+ return out;}
+// a flat fan over plan P at height y (scaled k): up-facing, or down-facing for a soffit
+function anhFan(P,y,k,down){const pos=[0,y,0],idx=[],n=P.length;for(const p of P)pos.push(p[0]*k,y,p[1]*k);
+ for(let i=0;i<n;i++){const a=1+i,b=1+(i+1)%n;if(down)idx.push(0,a,b);else idx.push(0,b,a);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();return g;}
+// the vertical band round plan P from ya to yb (a plate's edge, a parapet)
+function anhBand(P,ya,yb,k){const n=P.length;return gridSurface((u,v)=>{const p=P[Math.round(u*n)%n];return[p[0]*k,ya+v*(yb-ya),p[1]*k];},n,1,{});}
+// THE STOREYS behind an open skin: a pale plate (its top at y+.3) over a dark soffit, on the plan at that height
+// scaled by k, for every local y in ys. Geometry goes to acc.pale / acc.dark, merged by the caller.
+function anhPlates(plan,y0,ys,k,acc){for(const y of ys){const P=plan(y0+y);acc.pale.push(anhFan(P,y+.3,k),anhBand(P,y-.3,y+.3,k));acc.dark.push(anhFan(P,y-.32,k*.985,true));}}
+// the local heights of the plates a body from builder y0 holds, on the storey table Yf + m*pitch (m >= 1),
+// stopping `gap` under a local top L
+function anhStoreys(Yf,pitch,y0,L,gap){const out=[];for(let yb=Yf+pitch*Math.max(1,Math.ceil((y0-Yf)/pitch-1e-6));yb<y0+L-gap;yb+=pitch)if(yb>y0+.5)out.push(yb-y0);return out;}
+// a point on edge e of the plan at fraction t, local height y, pushed `off` out along the face's normal; the
+// normal leans with the face (a folded facet), so a window lies flat on it.  -> {p,n}
+function anhOnFace(plan,y0,e,t,y,off){const f=yy=>{const P=plan(y0+yy),a=P[e],b=P[(e+1)%P.length];return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,b[0]-a[0],b[1]-a[1]];};
+ const c=f(y),up=f(y+.5),dn=f(y-.5),L=Math.hypot(c[2],c[3])||1,nx=c[3]/L,nz=-c[2]/L,s=(up[0]-dn[0])*nx+(up[1]-dn[1])*nz,m=Math.hypot(1,s);
+ const N=[nx/m,-s/m,nz/m];return{p:[c[0]+N[0]*off,y+N[1]*off,c[1]+N[2]*off],n:N};}
+// the shared plate colours, and a merge helper: buckets {material: [geometries]} into one mesh each
+const ANH={plate:new THREE.MeshStandardMaterial({color:0xbdb7ad,roughness:.9,metalness:0,side:DS}),
+ soffit:new THREE.MeshStandardMaterial({color:0x191b1f,roughness:1,metalness:0,side:DS})};
+function anhFlush(B,P){for(const [mat,geos] of B)meshMerged(geos,mat,P);B.clear();}
+function anhPut(B,mat,g){if(!g)return;if(!B.has(mat))B.set(mat,[]);if(Array.isArray(g))B.get(mat).push(...g);else B.get(mat).push(g);}
+// ================================================================= SKYSCRAPER L — "the Facet" (a host: folded bronze facets, two spines, a needle)
+// A slender shaft on a rounded-triangle plan whose three faces fold in and out in long diamond panels: each face
+// is cut by creases at its quarter, half and three-quarter lines, the half crease swinging out while the quarter
+// creases swing in and back again every 44 m (eight storeys), so each panel is pinched to a point at its top and
+// bottom and the silhouette zig-zags gently. The corners are chamfered; a pale metal spine runs the whole height of
+// two of them (270 and 30 degrees) and up into a sloping crown, from which an 80 m needle mast rises.
+// The facets are OPAQUE panelling (bronze; verdigris in ruin) with narrow glazed slots, so a ruin keeps a wall to
+// root pods in. HOST: pods go on the three flat faces between the creases (bearings 90, 210, 330 and either side);
+// the spines are on the corners, which no bearing reaches. Plates every 5.5 m from 11.5 m.
+// DECAY 4 is "Project L", reoccupied whole, as Projects A, D and H.
+const HFA={H:360,Y0:6,PR:38,P:5.5,FOLD:44,MAST:80,RC:36,CROWN:318,RUIN:6+5.5*46,SEED:123};
+const HFA_C=[Math.PI/6,Math.PI/6+TAU/3,Math.PI/6+2*TAU/3];      // the corners: 30, 150, 270 degrees
+const HFA_SPINE=[9,14];                                            // the chamfer edges with a spine: 270 and 30 degrees
+// the taper: 20 % over the shaft, then the crown slopes in to .45 of that over its last 42 m
+function hfaScale(yb){const t=clamp((yb-HFA.Y0)/(HFA.H-HFA.Y0),0,1);let s=1-.2*t;if(yb>HFA.CROWN)s*=1-.55*Math.pow(clamp((yb-HFA.CROWN)/(HFA.H-HFA.CROWN),0,1),1.2);return s;}
+// THE PLAN at builder height yb: per face [A, Q1, M, Q2, B] (A, B the chamfer ends, M the face centre, Q the quarter
+// creases), fifteen vertices in order of bearing. tw is the fold, a triangle wave of period FOLD.
+function hfaPlan(yb){const s=hfaScale(yb)*HFA.RC,ph=(((yb-HFA.Y0)/HFA.FOLD)%1+1)%1,tw=1-4*Math.abs(ph-.5),ch=.14;
+ const C=HFA_C.map(a=>[s*Math.cos(a),s*Math.sin(a)]),out=[];
+ for(let i=0;i<3;i++){const a=C[i],b=C[(i+1)%3],A=[a[0]+(b[0]-a[0])*ch,a[1]+(b[1]-a[1])*ch],B=[b[0]+(a[0]-b[0])*ch,b[1]+(a[1]-b[1])*ch];
+  const fm=1.24*(1+.13*tw),M=[(a[0]+b[0])/2*fm,(a[1]+b[1])/2*fm],q=1-.07*tw;
+  out.push(A,[(A[0]+M[0])/2*q,(A[1]+M[1])/2*q],M,[(B[0]+M[0])/2*q,(B[1]+M[1])/2*q],B);}
+ return out;}
+const HFA_MAT={
+ bronze:new THREE.MeshStandardMaterial({map:TEX.panel,roughnessMap:TEX.panelRM,metalnessMap:TEX.panelRM,color:0xa9773f,metalness:1,roughness:1,side:DS,flatShading:true}),
+ verd:new THREE.MeshStandardMaterial({map:TEX.verdigris,roughnessMap:TEX.verdigrisRM,metalnessMap:TEX.verdigrisRM,color:0xc4c8b4,metalness:1,roughness:1,side:DS,flatShading:true})};
+// THE HOST SPEC (pure data: Ys's YS_HOST_TYPES shape). rAt is the plan the builder draws.
+const HOSTSPEC_FACET={name:'the Facet',key:'skyL',builder:'buildHostFacet',H:HFA.H,Y0:HFA.Y0,podium:HFA.PR,cap:HFA.PR+2,shaped:true,square:false,
+ floors:{y0:HFA.Y0+HFA.P,pitch:HFA.P,top:.3,first:.3},k0:0,plate:k=>HFA.Y0+HFA.P*(k+1)+.3,
+ rAt:(yl,th)=>{if(yl<HFA.Y0)return HFA.PR;const P=hfaPlan(Math.min(yl,HFA.H));return th==null?anhMeanR(P):anhRayR(P,th);},
+ cuts:{tall:[170,260],mid:[110,164],low:[62,98],land:[44,74]},crownY:312,sink:'seabed',minY:9,
+ avoid:(yl,h)=>yl+h+1>HFA.CROWN,                                 // the crown slopes in: no pod reaches into it
+ bearings:(st,n)=>anhFaces([Math.PI/2,Math.PI/2+TAU/3,Math.PI/2+2*TAU/3],st,n,.3,.04)};   // the face centres, then either side
+
+function buildHostFacet(scene,gx,gz,d){reseed(12000+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+ const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark(),H=HFA.H,Y0=HFA.Y0,PS=HFA.P;
+ REGISTER({name:PROJ?'Project L — the Facet reoccupied whole (rehabilitated)':'Skyscraper L — the Facet ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:HFA.PR+2,h:H+HFA.MAST+6});
+ skyPlinth(G,dd,HFA.PR);const PRs=(typeof ysPodiumR==='function'?ysPodiumR(HFA.PR):HFA.PR);
+ const P0=hfaPlan(Y0),cols=anhCols(P0,2.6),colsL=anhCols(P0,4.6);
+ const build=(P,dx,y0,y1,upper)=>{let yc=y1;if(yc==null&&!upper&&!PROJ&&d!==2)yc=(typeof ysCutY==='function'?ysCutY(d):null);const host=yc!=null&&d!==2;
+  const cut=(dx>0&&!upper&&yc!=null)?yc:(dx>0&&d===1?HFA.RUIN:null),L=(cut!=null?cut:H)-y0,B=new Map(),skin=dx>0?HFA_MAT.verd:HFA_MAT.bronze;
+  let hole=holeFn(dx,HFA.SEED+(upper?1:0),cut!=null?L:null,1.2);if(d===1&&!upper&&!host)hole=skyScarHole(hole,.25,.11,L*.4,L,HFA.SEED);   // the collapse scar faces the row camera
+  if(typeof ysWallHole==='function')hole=ysWallHole(hole,y0);       // YS: a way-in pod's hole through the skin and the lining
+  anhPut(B,skin,anhPrism({plan:hfaPlan,y0,yA:0,yB:H-y0,top:cut!=null?L:null,jag:5,seed:HFA.SEED,cols,dy:PS/2,hole}));
+  const ys=anhStoreys(Y0,PS,y0,L,dx>0?2.5:1e9);
+  if(dx>0){anhPut(B,MAT.guts,anhPrism({plan:hfaPlan,y0,yA:0,yB:H-y0,top:cut!=null?L:null,jag:5,seed:HFA.SEED,cols:colsL,dy:PS,hole,k:.86}));
+   const acc={pale:[],dark:[]};anhPlates(hfaPlan,y0,ys,.9,acc);anhPut(B,ANH.plate,acc.pale);anhPut(B,ANH.soffit,acc.dark);
+   if(ys.length)skyRooms({rFn:y=>anhInR(hfaPlan(y+y0))*.84,y0:ys[0],y1:L-2,step:PS,soff:1.3,hole,d,seed:HFA.SEED});}
+  // THE SLOTS: two narrow glazed slots per crease-to-crease panel per storey, lying flat on the folded facet
+  const NB=24,top=Math.min(L,HFA.CROWN-y0-3),burns=PROJ?fireMask('L',NB,Math.ceil(H/PS),12004,9):null;
+  for(let yb=Y0+PS*.5;yb<y0+top-2;yb+=PS){if(yb<y0+1)continue;const y=yb-y0,sy=Math.round((yb-Y0)/PS);
+   for(let f=0;f<3;f++)for(let s=0;s<4;s++)for(const t of [.3,.7]){const e=f*5+s,F=anhOnFace(hfaPlan,y0,e,t,y,.08),u=(Math.atan2(F.p[2],F.p[0])/TAU+1)%1;
+    if(hole&&hole(u,y))continue;const q=qFacing(F.n),b=f*8+s*2+(t>.5?1:0);
+    if(PROJ&&burns(b,sy)){fireWindow(F.p,F.n,q,1.1,3.0);continue;}
+    kput(dx>0?'paneD':'pane',F.p,q,[1.1,3.1,1],null);}}
+  // THE SPINES: a pale metal rib up the middle of two chamfers, storey by storey so it follows the taper and the crown
+  for(const e of HFA_SPINE)for(let yb=Y0;yb<y0+L-.5;yb+=PS){if(yb+PS<y0)continue;const ya=Math.max(yb,y0),yt=Math.min(yb+PS,y0+L),hm=(ya+yt)/2-y0;
+   const F=anhOnFace(hfaPlan,y0,e,.5,hm,.75);kput(dx>0?'pierR':'pierW',F.p,qFacing(F.n),[2.2,yt-ya+.04,1.5],null);}
+  // the crown: a roof over the sloped panels, a lantern drum and the needle (broken in a ruin)
+  if(cut==null){const Pt=hfaPlan(H),ring=[...Array(20)].map((_,i)=>[6*Math.cos(i/20*TAU),6*Math.sin(i/20*TAU)]);anhPut(B,skin,anhFan(Pt,L,1));
+   anhPut(B,dx>0?MAT.rust:MAT.white,lathe({rFn:()=>6,H:7,nu:20,nv:1}).translate(0,L,0));anhPut(B,dx>0?MAT.rust:MAT.white,anhFan(ring,L+7,1));
+   const mh=dx>0?HFA.MAST*.42:HFA.MAST;
+   anhPut(B,dx>0?MAT.rust:MAT.white,lathe({rFn:y=>2.6*(1-y/HFA.MAST)+.35,H:mh,nu:10,nv:6}).translate(0,L+7,0));
+   for(const [yy,r] of [[18,3.2],[38,2.5],[58,1.8]])if(yy<mh)kput(dx>0?'ringR':'ringW',[0,L+7+yy,0],qEuler(Math.PI/2,0,0),[r,r,6],null);
+   if(dx===0)kput('finial',[0,L+7+mh+1,0],null,[1.2,2,1.2],null);}
+  anhFlush(B,P);};
+ bodyGroup(G,Y0,d,dd,build,Y0+PS*13,anhMeanR(hfaPlan(Y0+PS*13)),PROJ);
+ if(dd>0&&PRs===HFA.PR)vinesOnRing(0,Y0+10,0,anhMeanR(P0),24,22);
+ if(PROJ){for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(33,HFA.PR*.9);firePit('L',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
+ if(d===3){const ct=(typeof ysCutY==='function'?ysCutY(d):null);skyHoist((y,a)=>anhRayR(hfaPlan(Math.min(y,H)),a),(ct!=null?ct:HFA.CROWN)-4,5,12003);}
+ if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
+ if(PRs===HFA.PR)figures(-HFA.PR,HFA.PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
+// ================================================================= SKYSCRAPER M — "the Bastion" (a host: battered base, terraced setbacks, a slotted shaft)
+// A colossal chamfered-square keep. Its first four storeys are a massively BATTERED base (52 m half-width at the
+// ground, 46 at 24 m) clad in vertical stripes of rust-red metal and pale concrete running up the slope; on it a
+// stack of three setback tiers, each a 4 m deck of railings and plant boxes; then a tall chamfered shaft whose four
+// faces each hold a deep vertical SLOT, a hanging-garden channel of balconies and green with a glazed strip either
+// side of it; a cluttered roof of masts, plant rooms and planting on top.
+// HOST: pods go on the shaft's flat panels BESIDE the slots (bearings face +-.47 rad, 15 m off the face centre),
+// and stand on the setback decks, which are plates of the storey table (24.3, 36.3, 48.3, 60.3). The railings
+// leave a gap at each pod bearing. avoid() keeps pods off the tier steps and the batter. Plates every 6 m from 6 m.
+// DECAY 4 is "Project M", reoccupied whole; its decks are where the camps are.
+const HBA={H:288,Y0:24,P:6,WB:52,CB:16,SEED:131,RUIN:24+6*30,W:30,C:9,SW:4.5,SD:6,
+ TIERS:[[24,36,42,12],[36,48,38,11],[48,60,34,10]],DECKS:[24,36,48,60]};
+const HBA_BEAR=[0,1,2,3].flatMap(f=>[f*Math.PI/2+.47,f*Math.PI/2-.47]);   // the pod bearings: beside each slot
+// a chamfered square, half-width W, chamfer c: eight vertices in order of bearing
+function hbaSq(W,c){const a=W-c;return[[W,-a],[W,a],[a,W],[-a,W],[-W,a],[-W,-a],[-a,-W],[a,-W]];}
+// the shaft's plan: per face its corner end, the slot's lips and back, the other corner end (24 vertices)
+function hbaSlot(W,c,sw,sd){const a=W-c,out=[];for(let f=0;f<4;f++){const C=Math.cos(f*Math.PI/2),S=Math.sin(f*Math.PI/2);
+ for(const p of [[W,-a],[W,-sw],[W-sd,-sw],[W-sd,sw],[W,sw],[W,a]])out.push([p[0]*C-p[1]*S,p[0]*S+p[1]*C]);}return out;}
+// the plan at builder height yb (wb: the base's half-width at the ground, shrunk with a Ys podium); plate=true gives
+// the shaft without its slots (the plates run 3 m out into the slot as its balconies)
+function hbaPlan(yb,wb,plate){wb=wb||HBA.WB;if(yb<HBA.Y0){const t=clamp(yb/HBA.Y0,0,1);return hbaSq(lerp(wb,46,t),lerp(HBA.CB*wb/HBA.WB,13,t));}
+ for(const T of HBA.TIERS)if(yb<T[1])return hbaSq(T[2],T[3]);return plate?hbaSq(HBA.W,HBA.C):hbaSlot(HBA.W,HBA.C,HBA.SW,HBA.SD);}
+const HBA_MAT={red:new THREE.MeshStandardMaterial({map:TEX.panel,roughnessMap:TEX.panelRM,metalnessMap:TEX.panelRM,color:0xa9503a,metalness:1,roughness:1,side:DS})};
+const HOSTSPEC_BASTION={name:'the Bastion',key:'skyM',builder:'buildHostBastion',H:HBA.H,Y0:HBA.Y0,podium:HBA.WB,cap:HBA.WB+2,shaped:true,square:true,
+ floors:{y0:HBA.P,pitch:HBA.P,top:.3,first:.3},k0:0,plate:k=>HBA.P*(k+1)+.3,
+ rAt:(yl,th)=>{const P=hbaPlan(clamp(yl,0,HBA.H));return th==null?anhMeanR(P):anhRayR(P,th);},
+ cuts:{tall:[170,250],mid:[110,164],low:[66,98],land:[66,90]},crownY:276,sink:'seabed',minY:9,
+ avoid:(yl,h)=>yl<HBA.Y0-.5||anhCross([36,48,60],yl,h)||yl+h+1>HBA.H-8,   // the batter, the tier steps, the roof clutter
+ bearings:(st,n)=>anhFaces(HBA_BEAR,st,n,.06,.03)};
+
+function buildHostBastion(scene,gx,gz,d){reseed(12010+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+ const PROJ=d===4,FLM=PROJ?fireLightMark():null,SM=skyShardMark(),H=HBA.H,Y0=HBA.Y0,PS=HBA.P;
+ REGISTER({name:PROJ?'Project M — the Bastion reoccupied whole (rehabilitated)':'Skyscraper M — the Bastion ('+(d===2?'toppled':STATE(d))+')',x:0,z:0,r:62,h:H+46});
+ // THE BASE (not part of the body: it never topples). A Ys podium narrows its foot, never its top.
+ const PRs=(typeof ysPodiumR==='function'?ysPodiumR(HBA.WB):HBA.WB),wb=clamp(PRs,47,HBA.WB),shrunk=PRs<HBA.WB,BB=new Map();
+ const bplan=yb=>hbaPlan(yb,wb),bcols=anhCols(bplan(0),2.7);
+ {let hole=holeFn(dd*.6,HBA.SEED+5,null,1.4);if(typeof ysWallHole==='function')hole=ysWallHole(hole,0);
+  const red=(e,uc)=>Math.floor(uc*bcols[e]/2)%2===0;    // stripes two cells wide, alternately red and pale
+  anhPut(BB,dd?MAT.rust:HBA_MAT.red,anhPrism({plan:bplan,y0:0,yA:0,yB:Y0,cols:bcols,dy:3,hole:(u,y,e,uc)=>!red(e,uc)||(hole&&hole(u,y))}));
+  anhPut(BB,CONC(dd),anhPrism({plan:bplan,y0:0,yA:0,yB:Y0,cols:bcols,dy:3,hole:(u,y,e,uc)=>red(e,uc)||(hole&&hole(u,y))}));
+  if(dd){anhPut(BB,MAT.guts,anhPrism({plan:bplan,y0:0,yA:0,yB:Y0,cols:anhCols(bplan(0),5),dy:6,hole,k:.88}));
+   const acc={pale:[],dark:[]};anhPlates(bplan,0,[6,12,18],.9,acc);anhPut(BB,ANH.plate,acc.pale);anhPut(BB,ANH.soffit,acc.dark);}
+  anhPut(BB,CONC(dd),anhFan(bplan(0),.05,1));
+  for(let k=0;k<4;k++){const th=k*Math.PI/2+Math.PI/2,r=lerp(wb,46,4.5/Y0)+.25;kput('archOpen',[r*Math.cos(th),4.5,r*Math.sin(th)],qFacing([Math.cos(th),(wb-46)/Y0,Math.sin(th)]),[1,1,1],null);}}   // a door in each face
+ anhFlush(BB,G);
+ // A DECK: the annulus between a tier's top and the next tier's face, its edge, a railing with a gap at each pod
+ // bearing, and plant boxes on its chamfers. Corners and the railing take the deck's own plan.
+ const deck=(P,yb,outer,inner,dx,y0,B)=>{const y=yb-y0,n=outer.length;
+  anhPut(B,CONC(dx),gridSurface((u,v)=>{const i=Math.round(u*n)%n,a=inner[i],b=outer[i];return[lerp(a[0],b[0],v),y+.3,lerp(a[1],b[1],v)];},n,1,{uS:30,vS:1}));
+  anhPut(B,CONC(dx),anhBand(outer,y-.2,y+.3,1));
+  const gap=(x,z)=>{const a=Math.atan2(z,x);return HBA_BEAR.some(b=>{let e=Math.abs(a-b)%TAU;if(e>Math.PI)e=TAU-e;return e<.07;});};
+  for(let i=0;i<n;i++){const a=outer[i],b=outer[(i+1)%n],L=Math.hypot(b[0]-a[0],b[1]-a[1]),m=Math.max(1,Math.round(L/3));
+   for(let j=0;j<m;j++){const t0=j/m,t1=(j+1)/m,p0=[lerp(a[0],b[0],t0)*.985,lerp(a[1],b[1],t0)*.985],p1=[lerp(a[0],b[0],t1)*.985,lerp(a[1],b[1],t1)*.985];
+    if(gap((p0[0]+p1[0])/2,(p0[1]+p1[1])/2))continue;if(dx>0&&h3(p0[0],yb,p0[1])<.25)continue;
+    kput(dx>0?'strutR':'strutW',[p0[0],y+.85,p0[1]],null,[.12,1.1,.12],null);beam(dx>0?'strutR':'strutW',[p0[0],y+1.4,p0[1]],[p1[0],y+1.4,p1[1]],.1,.1);}}
+  for(let i=1;i<n;i+=2){const a=outer[i],b=outer[(i+1)%n],c=inner[i],e=inner[(i+1)%n];   // the chamfers: plant boxes
+   for(const t of [.25,.5,.75]){const x=lerp(lerp(a[0],b[0],t),lerp(c[0],e[0],t),.5),z=lerp(lerp(a[1],b[1],t),lerp(c[1],e[1],t),.5),r=Math.atan2(b[1]-a[1],b[0]-a[0]);
+    kput(BOXC(dx),[x,y+.75,z],qEuler(0,-r,0),[2.6,.9,1.3],null);kput('hedge',[x,y+1.45,z],qEuler(0,-r,0),[2.3,.6+h3(x,y,z)*.9,1.0],null);}}};
+ const build=(P,dx,y0,y1,upper)=>{let yc=y1;if(yc==null&&!upper&&!PROJ&&d!==2)yc=(typeof ysCutY==='function'?ysCutY(d):null);const host=yc!=null&&d!==2;
+  const cut=(dx>0&&!upper&&yc!=null)?yc:(dx>0&&d===1?HBA.RUIN:null),L=(cut!=null?cut:H)-y0,B=new Map();
+  let hole=holeFn(dx,HBA.SEED+(upper?1:0),cut!=null?L:null,1.1);if(d===1&&!upper&&!host)hole=skyScarHole(hole,.31,.1,L*.4,L,HBA.SEED);
+  if(typeof ysWallHole==='function')hole=ysWallHole(hole,y0);       // YS: a way-in pod's hole through the skin and the lining
+  // the tiers and the shaft, each its own prism, cut where the body is cut
+  const segs=HBA.TIERS.map(T=>[T[0],T[1]]).concat([[60,H]]);
+  for(const [ya,yb] of segs){const yA=Math.max(ya,y0)-y0,yB=yb-y0;if(yB<=.01||yA>=L)continue;
+   const plan=yb2=>hbaPlan(Math.min(Math.max(yb2,ya+.01),yb-.01)),P0=plan(ya);
+   anhPut(B,CONC(dx),anhPrism({plan,y0,yA,yB,top:L<yB?L:null,jag:4,seed:HBA.SEED,cols:anhCols(P0,2.6),dy:PS/2,hole}));
+   if(dx>0)anhPut(B,MAT.guts,anhPrism({plan,y0,yA,yB,top:L<yB?L:null,jag:4,seed:HBA.SEED,cols:anhCols(P0,4.5),dy:PS,hole,k:.86}));}
+  // the decks: the base's top (24) and each tier's, where the body reaches them
+  for(let i=0;i<4;i++){const yb=HBA.DECKS[i];if(yb<y0-.01||yb-y0>L-1.5)continue;deck(P,yb,hbaPlan(yb-.01,wb),hbaPlan(yb+.01,wb,true),dx,y0,B);}
+  const ys=anhStoreys(0,PS,y0,L,dx>0?2.5:1e9),pplan=yb=>hbaPlan(yb+.01,wb,true);
+  if(dx>0){const acc={pale:[],dark:[]};anhPlates(pplan,y0,ys,.9,acc);anhPut(B,ANH.plate,acc.pale);anhPut(B,ANH.soffit,acc.dark);
+   if(ys.length)skyRooms({rFn:y=>anhInR(pplan(y+y0))*.84,y0:ys[0],y1:L-2,step:PS,soff:1.3,hole,d,seed:HBA.SEED});}
+  // THE SLOTS: a balcony every storey (the plates are the balconies once the fabric is open), a planter along its lip
+  // and green hanging from it; a glazed strip either side on the face, and the back wall glazed
+  const glass=[];
+  for(let f=0;f<4;f++){const C=Math.cos(f*Math.PI/2),S=Math.sin(f*Math.PI/2),R=(x,z)=>[x*C-z*S,x*S+z*C],yA=Math.max(60,y0)-y0,yT=L-1;if(yT<=yA)continue;
+   for(const s of [-1,1])glass.push(gridSurface((u,v)=>{const p=R(HBA.W+.06,s*(HBA.SW+.2+u*2.4));return[p[0],yA+v*(yT-yA),p[1]];},1,Math.max(1,Math.round((yT-yA)/PS)),{hole:hole?(u,v)=>{const p=R(HBA.W,s*5.7);return hole((Math.atan2(p[1],p[0])/TAU+1)%1,yA+v*(yT-yA));}:null}));
+   glass.push(gridSurface((u,v)=>{const p=R(HBA.W-HBA.SD+.06,(u-.5)*2*HBA.SW);return[p[0],yA+v*(yT-yA),p[1]];},1,1,{}));
+   for(let yb=Math.max(60,y0)+PS;yb<y0+L-1.5;yb+=PS){const y=yb-y0,bx=HBA.W-HBA.SD+1.5,c=R(bx,0);
+    if(dx===0)kput(BOXC(0),[c[0],y,c[1]],qEuler(0,-f*Math.PI/2,0),[3,.6,HBA.SW*2-.1],null);
+    const pl=R(HBA.W-HBA.SD+2.7,0);kput(BOXC(dx),[pl[0],y+.75,pl[1]],qEuler(0,-f*Math.PI/2,0),[.6,.9,HBA.SW*2-.4],null);
+    kput('hedge',[pl[0],y+1.4,pl[1]],qEuler(0,-f*Math.PI/2,0),[.9,.5+h3(f,yb,1)*.8,HBA.SW*2-.8],null);
+    const vr=rng();if(vr<.55*BIOME.lush){const q=R(HBA.W-HBA.SD+2.9,(h3(f,yb,2)-.5)*6);kput('vine',[q[0],y+.3,q[1]],null,[1.2,3+h3(f,yb,3)*4,1.2],null);}}}
+  if(dx===0)for(const g of glass)mesh(g,MAT.glass,P);else anhPut(B,MAT.dark,glass);
+  // windows: small panes in rows on the shaft's panels and the tiers' faces
+  const NB=32,burns=PROJ?fireMask('M',NB,Math.ceil(H/PS),12014,9):null;
+  for(let yb=Y0+PS*.5;yb<y0+L-2;yb+=PS){if(yb<y0+1)continue;const y=yb-y0,sy=Math.round((yb-Y0)/PS),T=hbaPlan(yb,wb,true),Wf=T[0][0],cf=Wf+T[0][1];
+   const offs=yb<60?[...Array(Math.floor((Wf-cf-2)/3.6))].map((_,i)=>(i+.5)*3.6).flatMap(o=>[o,-o]):[9,12.5,16,19.5,-9,-12.5,-16,-19.5];
+   for(let f=0;f<4;f++){const th=f*Math.PI/2,C=Math.cos(th),S=Math.sin(th);offs.forEach((o,j)=>{const x=(Wf+.08)*C-o*S,z=(Wf+.08)*S+o*C,u=(Math.atan2(z,x)/TAU+1)%1;
+    if(hole&&hole(u,y))return;const n=[C,0,S],q=qFacing(n);if(PROJ&&yb>60&&burns(f*8+j,sy)){fireWindow([x,y,z],n,q,1.5,2.3);return;}
+    kput(dx>0?'paneD':'pane',[x,y,z],q,[1.5,2.3,1],null);});}}
+  // the roof: a slab, a parapet, plant rooms, planting and a thicket of masts
+  if(cut==null){const Pt=hbaPlan(H-.01,wb,true);anhPut(B,CONC(dx),anhFan(Pt,L,1));anhPut(B,CONC(dx),anhBand(Pt,L,L+1.2,1.01));
+   for(const [x,z,w,h,dp] of [[-8,-6,12,7,10],[9,7,8,5,12],[10,-12,7,9,6],[-14,12,6,4,8]])kput(BOXC(dx),[x,L+h/2,z],null,[w,h,dp],null);
+   for(let k=0;k<14;k++){const a=k/14*TAU+.2,r=14+h3(k,1,2)*8;kput('hedge',[r*Math.cos(a),L+.8,r*Math.sin(a)],qEuler(0,-a,0),[3,1+h3(k,3,1),1.4],null);}
+   const masts=[[-4,2,42],[6,-3,30],[-12,-14,22],[15,14,18],[2,16,26]];
+   for(const [x,z,h] of masts){const hh=dx>0&&h>25?h*.55:h;kput(dx>0?'strutR':'strutW',[x,L+hh/2,z],null,[.7,hh,.7],null);
+    for(let yy=6;yy<hh-2;yy+=7)kput(dx>0?'strutR':'strutW',[x,L+yy,z],qEuler(0,h3(x,yy,z)*3,0),[4,.25,.25],null);}}
+  anhFlush(B,P);};
+ bodyGroup(G,Y0,d,dd,build,Y0+PS*14,anhMeanR(hbaPlan(Y0+PS*14)),PROJ);
+ if(dd>0&&!shrunk){vinesOnRing(0,Y0,0,48,30,18);scatterMoss(0,0,0,wb+4,wb+90,180,3.5);rubbleRing(0,0,0,wb+2,wb+70,110,3);trees(0,0,wb+30,wb+150,24);}
+ if(PROJ){for(const yb of HBA.DECKS)for(let k=0;k<3;k++){const P=hbaPlan(yb+.01),a=HBA_BEAR[(k*3+yb)%8]+.25,r=anhRayR(P,a)+1.8;firePit('M',r*Math.cos(a),yb+.4,r*Math.sin(a),rr(1.4,2.4));}
+  for(let k=0;k<4;k++)firePit('M',rr(-18,18),H+.4,rr(-18,18),rr(1.6,2.8));}
+ if(d===3){const ct=(typeof ysCutY==='function'?ysCutY(d):null),top=(ct!=null?ct:H)-2;skyHoist((y,a)=>y>=top-1.5?40:anhRayR(hbaPlan(clamp(y,0,H),wb),a),top,0,12013);}
+ if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
+ if(!shrunk)figures(0,wb+12,6,8);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
+// ================================================================= MID-RISE — "the Arcades" (a host: stepped arched bays, planted terraces, a barrel vault)
+// A warm sandstone slab, twelve storeys, whose front is a stack of four levels of giant semicircular-arched bays.
+// Each level steps back 5 m from the one below, leaving a planted terrace in front of its arches; behind each arch
+// a 3.5 m loggia and a glazed wall. The fourth level is narrower and roofed by a full barrel vault, its front a tall
+// glazed arch. Narrow arched windows run up both sides in a regular rhythm; a long stair climbs the east flank to the
+// third level. HOST: the terraces are ready landings (no rail in front of an arch: planters stand only before the
+// piers) and the arches ready way-ins; pods also root on the plain back wall and the west side (bearings 90, 270,
+// 180 and either side). The stair's flank (east) takes none. Plates every 4.5 m from 6 m; a terrace is a plate.
+const HAC={Y0:1.5,P:4.5,LH:13.5,X:25.5,X3:18,ZB:-20,ZF:[21,16,11,6],LOG:3.5,VR:18,SEED:141,PX:34,PZB:-27,PZF:30,BAY:17,SPAN:12,SPRING:6.5};
+HAC.H=HAC.Y0+4*HAC.LH+HAC.VR;HAC.VY=HAC.Y0+4*HAC.LH;            // 73.5 to the vault's crown; the vault springs at 55.5
+function hacLevel(yb){return clamp(Math.floor((yb-HAC.Y0)/HAC.LH),0,3);}
+// the plan at builder height yb: a rectangle from the back wall to the level's arcade (inner: to its glazed wall);
+// over the vault, the vault's section at that height
+function hacPlan(yb,inner){const k=hacLevel(yb);let X=k<3?HAC.X:HAC.X3;if(yb>HAC.VY)X=Math.sqrt(Math.max(.25,HAC.VR*HAC.VR-(yb-HAC.VY)*(yb-HAC.VY)));
+ const zf=HAC.ZF[k]-(inner&&k<3?HAC.LOG:0);return[[X,HAC.ZB],[X,zf],[-X,zf],[-X,HAC.ZB]];}
+const HAC_MAT={sand:new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xe6c897,roughness:1,metalness:0,side:DS}),
+ sandR:new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xa38a68,roughness:1,metalness:0,side:DS})};
+const HAC_S=d=>d>0?HAC_MAT.sandR:HAC_MAT.sand;
+// ONE LEVEL'S ARCADE: three bays of 17 m, each a 12 m semicircular-headed opening springing at 6.5 m, in a 1.2 m
+// wall whose front face is at z=0 (instanced: three levels share it)
+function hacArcadeGeo(){const X=HAC.X,s=new THREE.Shape();s.moveTo(-X,0);
+ for(let b=0;b<3;b++){const cx=(b-1)*HAC.BAY,r=HAC.SPAN/2;s.lineTo(cx-r,0);s.lineTo(cx-r,HAC.SPRING);s.absarc(cx,HAC.SPRING,r,Math.PI,0,true);s.lineTo(cx+r,0);}
+ s.lineTo(X,0);s.lineTo(X,HAC.LH);s.lineTo(-X,HAC.LH);s.lineTo(-X,0);
+ const g=new THREE.ExtrudeGeometry(s,{depth:1.2,bevelEnabled:false,curveSegments:14});g.translate(0,0,-1.2);return g;}
+kdef('hacArcade',hacArcadeGeo(),HAC_MAT.sand);kdef('hacArcadeR',hacArcadeGeo(),HAC_MAT.sandR);
+// rAt toward the front is the arcade's face (a pier); through an arch the wall is the loggia's glass, 3.5 m in.
+const HOSTSPEC_ARCADES={name:'the Arcades',key:'midArcades',builder:'buildHostArcades',H:HAC.H,Y0:HAC.Y0,podium:45,cap:46,shaped:true,square:true,
+ floors:{y0:HAC.Y0+HAC.P,pitch:HAC.P,top:.3,first:.3},k0:0,plate:k=>HAC.Y0+HAC.P*(k+1)+.3,
+ rAt:(yl,th)=>{if(yl<HAC.Y0)return 45;const P=hacPlan(Math.min(yl,HAC.H-.5));return th==null?anhMeanR(P):anhRayR(P,th);},
+ cuts:{tall:[42,55],mid:[28,42],low:[15,28],land:[15,42]},crownY:55,sink:'seabed',minY:9,
+ avoid:(yl,h)=>anhCross([15,28.5,42],yl,h,.8)||yl+h+1>HAC.VY,      // a pod stays within one level: the front steps back at each
+ bearings:(st,n)=>anhFaces([Math.PI/2,3*Math.PI/2,Math.PI],st,n,.55,.04),
+ terraces:HAC.ZF.slice(1).map((z,k)=>({y:HAC.Y0+HAC.LH*(k+1)+.3,z0:z,z1:HAC.ZF[k],x:k<2?HAC.X:HAC.X3}))};   // the landings, builder frame
+
+function buildHostArcades(scene,gx,gz,d){reseed(12020+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+ const SM=skyShardMark(),Y0=HAC.Y0,PS=HAC.P,LH=HAC.LH,B=new Map(),S=HAC_S(dd);
+ REGISTER({name:'The Arcades — stepped arched terraces ('+(d===2?'collapsed':STATE(d))+')',x:0,z:0,r:44,h:HAC.H+2});
+ const yc=(typeof ysCutY==='function'?ysCutY(d):null),host=yc!=null;
+ const cut=d===2?Y0+PS*5:yc!=null?yc:(d===1?Y0+PS*11:null),L=cut!=null?cut:HAC.H;   // builder y (the body is drawn in the builder's frame)
+ let hole=holeFn(dd*(d===2?1.3:1),HAC.SEED,cut!=null?L+25:null,1.3);   // the cut's erosion over its top 20 m, not 45: a low building
+ if(d===1&&!host)hole=skyScarHole(hole,.75,.12,L*.45,L,HAC.SEED);
+ if(typeof ysWallHole==='function')hole=ysWallHole(hole,0);         // YS: a way-in pod's hole through the skin and the lining
+ // THE PODIUM: a 1.5 m terrace with steps at the front; a Ys podium shrinks it toward the building, never inside it
+ const PRs=(typeof ysPodiumR==='function'?ysPodiumR(45):45),ps=clamp(PRs/45,.82,1),shrunk=PRs<45;
+ {const pp=[[HAC.PX*ps,HAC.PZB*ps],[HAC.PX*ps,HAC.PZF*ps],[-HAC.PX*ps,HAC.PZF*ps],[-HAC.PX*ps,HAC.PZB*ps]];
+  anhPut(B,S,anhBand(pp,0,Y0,1));anhPut(B,S,anhFan(pp,Y0,1));
+  for(let i=0;i<3;i++)kput(BOXC(dd),[0,Y0*(2-i)/3/2,HAC.PZF*ps+.6+.6*i],null,[24-2*i,Y0*(2-i)/3+.01,1.2],null);}
+ // THE LEVELS: each a prism on three sides (its front is the arcade), lined and floored when open
+ const cols=anhCols(hacPlan(Y0),2.6);
+ for(let k=0;k<4;k++){const ya=Y0+k*LH,yb=ya+LH;if(ya>=L)break;const plan=y=>hacPlan(clamp(y,ya+.01,yb-.01)),pin=y=>hacPlan(clamp(y,ya+.01,yb-.01),true);
+  anhPut(B,S,anhPrism({plan,y0:0,yA:ya,yB:yb,top:L<yb?L:null,jag:2.5,seed:HAC.SEED,cols,dy:PS/2,hole,skip:e=>e===1}));
+  if(dd)anhPut(B,MAT.guts,anhPrism({plan:pin,y0:0,yA:ya,yB:yb,top:L<yb?L:null,jag:2.5,seed:HAC.SEED,cols:anhCols(pin(ya),4.2),dy:PS,hole,k:.86}));
+  if(L>=yb-.01){const P=plan(ya);anhPut(B,S,anhFan(P,yb+.3,1));anhPut(B,S,anhBand(P,yb,yb+.3,1));}   // the roof: the next level's terrace
+  const zf=HAC.ZF[k];
+  if(k<3){// the arcade, or its pier stubs under a cut
+   if(L>=yb-.01)kput(dd?'hacArcadeR':'hacArcade',[0,ya,zf],null,1,null);
+   else for(const [x0,x1] of [[-HAC.X,-HAC.X+2.5],[-11,-6],[6,11],[HAC.X-2.5,HAC.X]]){const h=Math.max(.6,(L-ya)*(.55+.45*h3(x0,ya,3)));kput(BOXC(dd),[(x0+x1)/2,ya+h/2,zf-.6],null,[x1-x0,h,1.2],null);}
+   // the loggia's glazed wall, one pane per bay (gone in a ruin: the rooms show)
+   if(!dd)for(let b=0;b<3;b++){const cx=(b-1)*HAC.BAY;mesh(gridSurface((u,v)=>[cx+(u-.5)*12.4,ya+v*Math.min(12.6,L-ya),zf-HAC.LOG],1,1,{}),MAT.glass,G);}
+   // the terrace in front of this level's arcade is the roof of the level below: planters only before the piers
+   if(k>0){const yt=ya+.3;for(const x of [-HAC.X+1.3,-8.5,8.5,HAC.X-1.3]){if(dd&&h3(x,k,7)<.3)continue;
+    kput(BOXC(dd),[x,yt+.5,HAC.ZF[k-1]-.9],null,[x===-8.5||x===8.5?5:2.4,1,1.4],null);kput('hedge',[x,yt+1.25,HAC.ZF[k-1]-.9],null,[x===-8.5||x===8.5?4.4:2,.6+h3(x,k,1)*.8,1.1],null);}}}
+  // narrow arched windows up both sides, a sparser rhythm on the back
+  for(let yw=ya+PS*.5;yw<Math.min(yb,L-2.4);yw+=PS){const zi=zf-(k<3?HAC.LOG:0)-1.6,X=k<3?HAC.X:HAC.X3;
+   for(const s of [-1,1])for(let z=HAC.ZB+2.2;z<zi;z+=3.4){const u=(Math.atan2(z,s*X)/TAU+1)%1;if(hole&&hole(u,yw))continue;kput(dd?'winD':'winI',[s*(X+.06),yw,z],qFacing([s,0,0]),[.75,.8,.6],null);}
+   for(let x=-X+4;x<X-3;x+=8.5){const u=(Math.atan2(HAC.ZB,x)/TAU+1)%1;if(hole&&hole(u,yw)||Math.round((yw-Y0)/PS)%2)continue;kput(dd?'winD':'winI',[x,yw,HAC.ZB-.06],qFacing([0,0,-1]),[.75,.8,.6],null);}}}
+ // the storeys behind the open fabric
+ const ys=anhStoreys(Y0,PS,0,Math.min(L,HAC.VY),dd?2:1e9);
+ if(dd){const acc={pale:[],dark:[]};anhPlates(y=>hacPlan(y+.01,true),0,ys,.9,acc);anhPut(B,ANH.plate,acc.pale);anhPut(B,ANH.soffit,acc.dark);
+  if(ys.length)skyRooms({rFn:y=>anhInR(hacPlan(y+.01,true))*.84,y0:ys[0],y1:Math.min(L,HAC.VY)-2,step:PS,soff:1.3,hole,d,seed:HAC.SEED});}
+ // THE VAULT over the fourth level, its back closed, its front a tall glazed arch in a sandstone archivolt
+ if(L>=HAC.H-.01){const VY=HAC.VY,R=HAC.VR,z0=HAC.ZB,z1=HAC.ZF[3];
+  anhPut(B,S,gridSurface((u,v)=>{const a=u*Math.PI;return[R*Math.cos(a),VY+R*Math.sin(a),lerp(z0,z1,v)];},24,10,{uS:7,vS:3,hole:hole?(u,v)=>{const a=u*Math.PI,x=R*Math.cos(a);return hole((Math.atan2(lerp(z0,z1,v),x)/TAU+1)%1,VY+R*Math.sin(a));}:null}));
+  const semi=[...Array(25)].map((_,i)=>{const a=i/24*Math.PI;return[R*Math.cos(a),R*Math.sin(a)];});
+  {const s=new THREE.Shape();s.moveTo(R,0);for(const p of semi)s.lineTo(p[0],p[1]);anhPut(B,S,new THREE.ShapeGeometry(s).translate(0,VY,z0));}
+  {const s=new THREE.Shape();s.moveTo(-R,-LH);s.lineTo(R,-LH);for(const p of semi)s.lineTo(p[0],p[1]);if(!dd)mesh(new THREE.ShapeGeometry(s).translate(0,VY,z1),MAT.glass,G);
+   for(let x=-R+3.6;x<R-1;x+=3.6){const yt=VY+Math.sqrt(R*R-x*x);if(dd&&h3(x,1,9)<.35)continue;kput(dd?'mullR':'mullW',[x,(VY-LH+yt)/2,z1+.1],null,[.5,yt-(VY-LH),.5],null);}
+   for(let y=VY-LH+PS;y<VY+R-1;y+=PS){const w=y<VY?R:Math.sqrt(R*R-(y-VY)*(y-VY));if(dd&&h3(y,2,9)<.35)continue;kput(dd?'mullR':'mullW',[0,y,z1+.1],qEuler(0,0,Math.PI/2),[.5,w*2,.5],null);}}
+  {const s=new THREE.Shape();s.moveTo(R+1.6,0);s.absarc(0,0,R+1.6,0,Math.PI,false);s.lineTo(-R,0);s.absarc(0,0,R,Math.PI,0,true);s.lineTo(R+1.6,0);
+   anhPut(B,S,new THREE.ExtrudeGeometry(s,{depth:1.5,bevelEnabled:false,curveSegments:20}).translate(0,VY,z1-.7));
+   for(const sx of [-1,1])kput(BOXC(dd),[sx*(R+.8),VY-LH/2,z1+.05],null,[1.6,LH,1.5],null);}}
+ // THE STAIR up the east flank: one long flight from the podium at the front to the third level at the back
+ if(L>Y0+2*LH-2){const xa=HAC.X+.7,xb=HAC.X+3.7,zA=22,zB=-16.5,yA=Y0,yB=Y0+2*LH+.3,n=Math.round((yB-yA)/.3);
+  for(let i=0;i<n;i++){const t=(i+.5)/n;if(dd&&h3(i,3,5)<.12)continue;kput(BOXC(dd),[(xa+xb)/2,lerp(yA,yB,t)-.15,lerp(zA,zB,t)],null,[xb-xa,.3,Math.abs(zA-zB)/n+.05],null);}
+  anhPut(B,S,gridSurface((u,v)=>[lerp(xa,xb,u),lerp(yA,yB,v)-.9,lerp(zA,zB,v)],1,1,{}));                 // its soffit
+  anhPut(B,S,gridSurface((u,v)=>[xb+.1,lerp(yA,yB,v)-.9+u*2.2,lerp(zA,zB,v)],1,8,{hole:dd?(u,v)=>h3(v*8|0,4,4)<.2:null}));   // its parapet
+  kput(BOXC(dd),[(xa+xb)/2,yB-.15,-18.25],null,[xb-xa,.3,3.5],null);kput('archOpen',[HAC.X+.05,yB+2.3,-18.25],qFacing([1,0,0]),[.5,.5,.6],null);}
+ anhFlush(B,G);
+ if(dd>0&&!shrunk){scatterMoss(0,0,0,40,110,160,3.2);rubbleRing(0,0,0,30,70,d===2?160:70,d===2?4:2.5);trees(0,0,52,130,18);if(d!==2)vinesOnRing(0,Y0+LH,0,24,18,10);}
+ if(d===2)rubbleRing(0,Y0,0,6,28,120,4.5);
+ if(d>0)skyShards(SM,d===3?.25:.5);
+ if(!shrunk)figures(0,HAC.PZF+8,5,10);KOFF=[0,0,0];return G;}
+// ================================================================= MID-RISE — "the Capsule Stalks" (a host made of sockets: plug-in cores on a round deck)
+// Three cylindrical service cores of different heights on a shared round podium deck: a central stalk (63 m) and two
+// lesser ones (47 and 37 m) on a diagonal. Each core is studded over parts of its height with a dense staggered grid
+// of short projecting capsule tubes, each ending in a porthole: plug-in SOCKETS, with plain smooth bands between the
+// studded ones and a simple disc cap on top. A bridge joins the centre to each lesser stalk; a disc platform rings
+// the centre stalk at 40 m.
+// HOST: the sockets are where pods plug in. HOSTSPEC_STALKS.sockets(d) lists every one, local to the builder:
+// {x,y,z (the tube's mouth), nx,ny,nz (outward), r, core}; a ruin (d>0) has lost some (the same ones the builder
+// leaves off). bands lists the studded bands. Generic pods root on the centre stalk's smooth bands (bearings clear of
+// the lesser stalks); avoid() keeps them off its studded bands, the bridges and the disc. Plates every 5 m from 10 m.
+const HST={Y0:5,P:5,PR:40,SEED:151,TUBE:{r:.85,len:1.4},
+ CORES:[{n:'A',x:0,z:0,r:11,top:63,bands:[[20,30],[44,54]],ruin:51},
+        {n:'B',x:-22.5,z:13,r:8.5,top:47,bands:[[12,22],[32,42]],ruin:47},
+        {n:'C',x:22.5,z:-13,r:7.5,top:37,bands:[[12,22]],ruin:29}],
+ BRIDGES:[['A','B',30],['A','C',25]],DISC:{core:'A',y:40,r:16.5}};
+// every socket, in the builder's frame; d>0 drops the ones a ruin has lost (a position hash: no rng)
+function hstSockets(d){const out=[];for(const C of HST.CORES){const n=Math.round(TAU*C.r/2.6);
+ for(const [y0,y1] of C.bands)for(let j=0,y=y0+1.25;y<y1;y+=2.5,j++)for(let i=0;i<n;i++){const a=(i+(j%2)*.5)/n*TAU;
+  if(d>0&&h3(C.x*.13+i*.37,y*.21,C.z*.17+j*.71)<.18)continue;
+  const c=Math.cos(a),s=Math.sin(a),R=C.r+HST.TUBE.len;out.push({x:C.x+c*R,y,z:C.z+s*R,nx:c,ny:0,nz:s,r:HST.TUBE.r,core:C.n});}}
+ return out;}
+// the face radius along bearing th at builder height yl: the outermost core surface the ray leaves (the podium below 5)
+function hstRAt(yl,th){if(yl<HST.Y0)return HST.PR;const c=Math.cos(th),s=Math.sin(th);let best=0;
+ for(const C of HST.CORES){if(yl>C.top)continue;const b=c*C.x+s*C.z,q=b*b-(C.x*C.x+C.z*C.z)+C.r*C.r;if(q<0)continue;best=Math.max(best,b+Math.sqrt(q));}
+ return best||HST.CORES[0].r;}
+kdef('hstTube',new THREE.CylinderGeometry(1,1,1,10,1,true).rotateX(Math.PI/2).translate(0,0,.5),MAT.white);
+kdef('hstTubeR',new THREE.CylinderGeometry(1,1,1,10,1,true).rotateX(Math.PI/2).translate(0,0,.5),MAT.rust);
+kdef('hstPort',new THREE.CircleGeometry(1,10),MAT.winIntact);kdef('hstPortD',new THREE.CircleGeometry(1,10),MAT.winDead);
+const HOSTSPEC_STALKS={name:'the Capsule Stalks',key:'midStalks',builder:'buildHostStalks',H:63,Y0:HST.Y0,podium:HST.PR,cap:HST.PR+2,shaped:true,square:false,
+ floors:{y0:HST.Y0+HST.P,pitch:HST.P,top:.3,first:.3},k0:0,plate:k=>HST.Y0+HST.P*(k+1)+.3,
+ rAt:(yl,th)=>th==null?HST.CORES[0].r+2:hstRAt(yl,th),
+ cuts:{tall:[45,60],mid:[35,50],low:[20,35],land:[20,45]},crownY:58,sink:'seabed',minY:9,
+ avoid:(yl,h)=>anhCross([25.3,30.3,40.3],yl,h)||HST.CORES[0].bands.some(b=>yl<b[1]+.5&&yl+h>b[0]-.5)||yl+h+1>HST.CORES[0].top,
+ bearings:(st,n)=>anhFaces([Math.PI/3,4*Math.PI/3,Math.PI*7/12,Math.PI*19/12],st,n,.3,.04),   // the centre stalk, clear of B (150) and C (330)
+ sockets:d=>hstSockets(d),
+ bands:HST.CORES.flatMap(C=>C.bands.map(b=>({core:C.n,x:C.x,z:C.z,R:C.r,y0:b[0],y1:b[1]})))};
+
+function buildHostStalks(scene,gx,gz,d){reseed(12030+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+ const SM=skyShardMark(),Y0=HST.Y0,PS=HST.P,B=new Map();
+ REGISTER({name:'The Capsule Stalks — plug-in cores ('+(d===2?'collapsed':STATE(d))+')',x:0,z:0,r:HST.PR+2,h:66});
+ const yc=(typeof ysCutY==='function'?ysCutY(d):null),host=yc!=null,gcut=d===2?Y0+PS*3:yc;   // a cut for every core (builder y), or null
+ let hole=holeFn(dd*(d===2?1.3:1),HST.SEED,gcut!=null?gcut-Y0+25:null,1.5);   // the cut's erosion over its top 20 m
+ if(typeof ysWallHole==='function')hole=ysWallHole(hole,Y0);          // YS: a way-in pod's hole through a core's skin and lining
+ // THE PODIUM DECK: a drum, its top, steps at the front; a Ys podium shrinks it, never inside the stalks
+ const PRs=(typeof ysPodiumR==='function'?ysPodiumR(HST.PR):HST.PR),pr=clamp(PRs,37.5,HST.PR),shrunk=PRs<HST.PR;
+ anhPut(B,CONC(dd),lathe({rFn:()=>pr,H:Y0,nu:64,nv:1}));
+ anhPut(B,CONC(dd),anhFan([...Array(64)].map((_,i)=>[pr*Math.cos(i/64*TAU),pr*Math.sin(i/64*TAU)]),Y0,1));
+ if(!shrunk)for(let i=0;i<8;i++)kput(BOXC(dd),[0,(i+.5)*Y0/8/2,pr+.4+(7-i)*.7],null,[12,(i+.5)*Y0/8,.7],null);
+ for(let k=0;k<64;k++){const a=k/64*TAU,r=pr-.4;if(dd&&h3(k,1,3)<.3)continue;kput(dd?'strutR':'strutW',[r*Math.cos(a),Y0+.55,r*Math.sin(a)],null,[.12,1.1,.12],null);}
+ // THE STALKS: each in its own group at its foot, so its holes, lining, plates and rooms are its own; its hole
+ // predicate asks the HOST's bearing (u from the builder's axis), which is what ysWallHole and the ways mean
+ const socks=hstSockets(d);
+ for(const C of HST.CORES){const top=gcut!=null?Math.min(C.top,gcut):(d===1?C.ruin:C.top),L=top-Y0,cutC=top<C.top;
+  const P=new THREE.Group();P.position.set(C.x,Y0,C.z);G.add(P);useGroupXF(P);const BP=new Map();
+  const hc=hole?(u,y)=>{const a=u*TAU;return hole((Math.atan2(C.z+C.r*Math.sin(a),C.x+C.r*Math.cos(a))/TAU+1)%1,y);}:null;
+  const nu=Math.max(32,Math.round(TAU*C.r/1.6));
+  anhPut(BP,CONC(dd),lathe({rFn:()=>C.r,H:L,cut:cutC?L:null,jag:cutC?2.5:0,nu,nv:Math.round(L/2.5),hole:hc,seed:HST.SEED}));
+  if(dd){anhPut(BP,MAT.guts,lathe({rFn:()=>C.r*.86,H:L,cut:cutC?L:null,jag:cutC?2.5:0,nu:Math.round(nu*.6),nv:Math.round(L/5),hole:hc,seed:HST.SEED}));
+   const ys=anhStoreys(Y0,PS,Y0,L,2);for(const y of ys){kput('slab',[0,y,0],null,[C.r*.9,.6,C.r*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-.95,0],null,[C.r*.87,.7,C.r*.87],new THREE.Color(0x191b1f));}
+   if(ys.length)skyRooms({rFn:()=>C.r*.84,y0:ys[0],y1:L-2,step:PS,soff:1.3,hole:hc,d,seed:HST.SEED});}
+  // a thin metal ring at the head and foot of each studded band, the band itself a darker skin behind the tubes
+  for(const [b0,b1] of C.bands){if(b0>=top-1)continue;const t1=Math.min(b1,top-.5);
+   for(const yy of [b0,t1])if(yy<top-.5)kput(dd?'ringR':'ringW',[0,yy-Y0,0],qEuler(Math.PI/2,0,0),[C.r+.15,C.r+.15,5],null);}
+  // the cap: a disc a little proud of the shaft, a low dome on the tallest
+  if(!cutC){anhPut(BP,dd?MAT.rust:MAT.white,lathe({rFn:()=>C.r+.9,H:1.6,nu,nv:1}).translate(0,L,0));
+   anhPut(BP,dd?MAT.rust:MAT.white,anhFan([...Array(nu)].map((_,i)=>[(C.r+.9)*Math.cos(i/nu*TAU),(C.r+.9)*Math.sin(i/nu*TAU)]),L+1.6,1));
+   if(C.n==='A')anhPut(BP,CONC(dd),lathe({rFn:y=>7.5*Math.sqrt(clamp(1-Math.pow(y/4,2),0,1)),H:4,nu:32,nv:5}).translate(0,L+1.6,0));
+   if(C.n==='C')kput(dd?'strutR':'strutW',[0,L+1.6+7,0],null,[.4,14,.4],null);}
+  anhFlush(BP,P);endGroupXF();
+  // the sockets on this stalk: a capsule tube from inside the wall out to the mouth, a porthole on its end
+  for(const S of socks){if(S.core!==C.n||S.y>top-1.5)continue;if(typeof ysSocketTaken==='function'&&ysSocketTaken(S))continue;/* YS: a pod plugs in here */const q=qFacing([S.nx,0,S.nz]),r0=C.r-.25,len=HST.TUBE.len+.25;
+   kput(dd?'hstTubeR':'hstTube',[S.x-S.nx*len,S.y,S.z-S.nz*len],q,[S.r,S.r,len],null);
+   kput(dd?'hstPortD':'hstPort',[S.x+S.nx*.02,S.y,S.z+S.nz*.02],q,[S.r*.72,S.r*.72,1],null);}}
+ // THE BRIDGES (centre to each lesser stalk) and THE DISC round the centre stalk, where the stalks still reach
+ const core=n=>HST.CORES.find(C=>C.n===n),topOf=C=>gcut!=null?Math.min(C.top,gcut):(d===1?C.ruin:C.top);
+ for(const [a,b,y] of HST.BRIDGES){const A=core(a),Bc=core(b);if(y>topOf(A)-1||y>topOf(Bc)-1)continue;
+  const dx=Bc.x-A.x,dz=Bc.z-A.z,D=Math.hypot(dx,dz),ux=dx/D,uz=dz/D,s0=A.r-.3,s1=D-Bc.r+.3,mx=A.x+ux*(s0+s1)/2,mz=A.z+uz*(s0+s1)/2,q=qFacing([ux,0,uz]);
+  kput(BOXC(dd),[mx,y-.1,mz],q,[3.2,.8,s1-s0],null);
+  for(const sd of [-1,1])kput(dd?'strutR':'strutW',[mx-uz*sd*1.5,y+.9,mz+ux*sd*1.5],q,[.1,.1,s1-s0],null);}
+ {const C=core(HST.DISC.core),y=HST.DISC.y,R=HST.DISC.r;if(y<topOf(C)-1){const ring=(r0,r1,yy)=>gridSurface((u,v)=>{const a=u*TAU,r=lerp(r0,r1,v);return[C.x+r*Math.cos(a),yy,C.z+r*Math.sin(a)];},48,1,{});
+  anhPut(B,CONC(dd),[ring(C.r,R,y+.3),ring(C.r,R,y-.4),lathe({rFn:()=>R,H:.7,nu:48,nv:1}).translate(C.x,y-.4,C.z)]);
+  for(let k=0;k<40;k++){const a=k/40*TAU;if(dd&&h3(k,5,1)<.3)continue;kput(dd?'strutR':'strutW',[C.x+(R-.3)*Math.cos(a),y+.85,C.z+(R-.3)*Math.sin(a)],null,[.1,1.1,.1],null);}}}
+ anhFlush(B,G);
+ if(dd>0&&!shrunk){scatterMoss(0,0,0,pr+2,pr+80,150,3.2);rubbleRing(0,0,0,pr,pr+50,d===2?150:60,d===2?4:2.5);trees(0,0,pr+20,pr+110,16);vinesOnRing(0,Y0,0,pr-.4,24,4);}
+ if(d===2)for(const C of HST.CORES)rubbleRing(C.x,Y0,C.z,C.r*.4,C.r*2.2,60,4);
+ if(d>0)skyShards(SM,d===3?.25:.5);
+ if(!shrunk)figures(0,pr+8,5,10);KOFF=[0,0,0];return G;}
+// ================================================================= MID-RISE — "the Bell Hall" (a host: travertine drums, a concave wall, a campanile slab)
+// A civic hall in pale travertine on a round podium terrace with steps and a balustrade. Three interlocking drums of
+// different heights hold its rooms: a great drum (26 m) with a columned loggia round its top storey, a tall drum
+// (36 m) of round windows, and a low drum whose ground storey is an arcade of round arches. In front of them one
+// sweeping CONCAVE wall rises from 8 m at its west end to 48 m where it meets a tall narrow slab campanile (58 m);
+// the slab's front carries a clock and a rusted iron cage of bells that rises 8 m above the slab top and closes as
+// an open crown of ribs.
+// HOST: the drums are big plain curved faces (bearings 180 to 320, behind the wall), the slab's east end a flat one.
+// The great drum's loggia faces the front, away from every bearing; avoid() keeps pods under its roof (26 m), as the
+// bearings that reach it cannot know the height. The cage, the clock and the wall face no bearing. Plates every
+// 5 m from 7.5 m in each drum and the slab.
+const HBH={Y0:2.5,P:5,PR:44,SEED:161,
+ DRUMS:[{n:'great',x:-14,z:-14,r:17,top:26,ruin:26,loggia:[19.5,24],arc:[-.5,3],win:'pane'},
+        {n:'tall',x:8,z:-18,r:12,top:36,ruin:31,win:'oval'},
+        {n:'low',x:-26,z:16,r:9,top:12,ruin:12,arcade:8,win:'pane'}],
+ SLAB:{x0:21,x1:33,z0:6,z1:11,top:58,ruin:50},
+ WALL:{cx:0,cz:40,R:36,a0:-120*Math.PI/180,a1:-55*Math.PI/180,h0:8,h1:48,t:1.4},
+ CAGE:{x0:22,x1:32,z0:11,z1:15,y0:40,y1:66,cx:27,cy:73,cz:13},CLOCK:[27,32]};
+// the face radius along bearing th at builder height yl: the outermost drum or slab face the ray leaves
+function hbhRAt(yl,th){if(yl<HBH.Y0)return HBH.PR;const c=Math.cos(th),s=Math.sin(th);let best=0;
+ for(const D of HBH.DRUMS){if(yl>D.top)continue;const b=c*D.x+s*D.z,q=b*b-(D.x*D.x+D.z*D.z)+D.r*D.r;if(q>=0)best=Math.max(best,b+Math.sqrt(q));}
+ const S=HBH.SLAB;if(yl<=S.top){let t0=-1e9,t1=1e9;for(const [o,a,b] of [[c,S.x0,S.x1],[s,S.z0,S.z1]]){if(Math.abs(o)<1e-9){if(0<a||0>b){t1=-1;}continue;}const p=a/o,q=b/o;t0=Math.max(t0,Math.min(p,q));t1=Math.min(t1,Math.max(p,q));}
+  if(t1>=Math.max(t0,0))best=Math.max(best,t1);}
+ return best||HBH.DRUMS[0].r;}
+const HBH_MAT={trav:new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0xf0e6d2,roughness:1,metalness:0,side:DS}),
+ travR:new THREE.MeshStandardMaterial({map:TEX.concrete,roughnessMap:TEX.concreteRM,color:0x9d978b,roughness:1,metalness:0,side:DS})};
+const HBH_T=d=>d>0?HBH_MAT.travR:HBH_MAT.trav;
+kdef('hbhBell',new THREE.LatheGeometry([[.001,1],[.24,1],[.31,.93],[.35,.62],[.43,.32],[.58,.09],[.66,0],[.6,-.02]].map(p=>new THREE.Vector2(p[0],p[1])),16),MAT.verdigris);
+kdef('hbhDial',new THREE.CircleGeometry(1,24),MAT.white);kdef('hbhDialR',new THREE.CircleGeometry(1,24),MAT.guts);
+const HOSTSPEC_BELLHALL={name:'the Bell Hall',key:'midBell',builder:'buildHostBellHall',H:HBH.SLAB.top,Y0:HBH.Y0,podium:HBH.PR,cap:HBH.PR+4,shaped:true,square:false,
+ floors:{y0:HBH.Y0+HBH.P,pitch:HBH.P,top:.3,first:.3},k0:0,plate:k=>HBH.Y0+HBH.P*(k+1)+.3,
+ rAt:(yl,th)=>th==null?24:hbhRAt(yl,th),
+ cuts:{tall:[27,37],mid:[17,32],low:[12,22],land:[12,27]},crownY:25,sink:'seabed',minY:9,
+ avoid:(yl,h)=>yl+h+.5>HBH.DRUMS[0].top,   // the bearings reach the great drum: no pod above its roof (the loggia faces the front, away from them)
+ bearings:(st,n)=>anhFaces([Math.PI,1.17*Math.PI,1.36*Math.PI,1.67*Math.PI,1.78*Math.PI],st,n,.12,.03)};   // the great and tall drums, behind the wall
+
+function buildHostBellHall(scene,gx,gz,d){reseed(12040+d);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const dd=d>0?1:0;
+ const SM=skyShardMark(),Y0=HBH.Y0,PS=HBH.P,B=new Map(),T=HBH_T(dd),S=HBH.SLAB,W=HBH.WALL,K=HBH.CAGE;
+ REGISTER({name:'The Bell Hall — drums, a concave wall and a campanile ('+(d===2?'collapsed':STATE(d))+')',x:0,z:0,r:HBH.PR+2,h:K.cy+2});
+ const yc=(typeof ysCutY==='function'?ysCutY(d):null),host=yc!=null,gcut=d===2?Y0+PS*2+2:yc;
+ const topOf=(t,ruin)=>gcut!=null?Math.min(t,gcut):(d===1?ruin:t);
+ let hole=holeFn(dd*(d===2?1.3:1),HBH.SEED,gcut!=null?gcut-Y0+25:null,1.5);
+ if(typeof ysWallHole==='function')hole=ysWallHole(hole,Y0);         // YS: a way-in pod's hole through a drum's skin and lining
+ const hostU=(x,z)=>(Math.atan2(z,x)/TAU+1)%1;
+ // THE PODIUM TERRACE: steps at the front, a balustrade round the rest
+ const PRs=(typeof ysPodiumR==='function'?ysPodiumR(HBH.PR):HBH.PR),pr=clamp(PRs,40.5,HBH.PR),shrunk=PRs<HBH.PR;
+ anhPut(B,T,lathe({rFn:()=>pr,H:Y0,nu:72,nv:1}));anhPut(B,T,anhFan([...Array(72)].map((_,i)=>[pr*Math.cos(i/72*TAU),pr*Math.sin(i/72*TAU)]),Y0,1));
+ if(!shrunk)for(let i=0;i<5;i++)kput(BOXC(dd),[0,(i+.5)*Y0/5/2,pr-.2+(5-i)*.75],null,[18,(i+.5)*Y0/5,.75],null);
+ {const n=Math.round(TAU*pr/2.4),gap=a=>Math.abs(Math.atan2(Math.sin(a-Math.PI/2),Math.cos(a-Math.PI/2)))<.24;
+  for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,r=pr-.4;if(gap(a0)||gap(a1))continue;if(dd&&h3(k,2,7)<.22)continue;
+   const p0=[r*Math.cos(a0),Y0,r*Math.sin(a0)],p1=[r*Math.cos(a1),Y0,r*Math.sin(a1)];
+   kput(BOXC(dd),[p0[0],Y0+.5,p0[2]],null,[.35,1,.35],null);beam(BOXC(dd),[p0[0],Y0+1.05,p0[2]],[p1[0],Y0+1.05,p1[2]],.22,.3);}}
+ // THE DRUMS, each in its own group at its foot; the hole predicate asks the host's bearing
+ for(const D of HBH.DRUMS){const top=topOf(D.top,D.ruin),L=top-Y0,cutD=top<D.top-.01;
+  const P=new THREE.Group();P.position.set(D.x,Y0,D.z);G.add(P);useGroupXF(P);const BP=new Map();
+  const hc=hole?(u,y)=>{const a=u*TAU;return hole(hostU(D.x+D.r*Math.cos(a),D.z+D.r*Math.sin(a)),y);}:null;
+  const lg=D.loggia&&D.loggia[1]<=top?[D.loggia[0]-Y0,D.loggia[1]-Y0]:null,ar=D.arcade&&D.arcade<=top?D.arcade-Y0:null;
+  const nb=14,bw=TAU*D.r/nb;   // the arcade's bays
+  const arch=(u,y)=>{if(ar==null||y>ar)return false;const s=((u*nb)%1-.5)*bw;return Math.abs(s)<1.45&&y<ar-2.2+Math.sqrt(Math.max(0,2.1-s*s));};
+  const inArc=u=>{if(!D.arc)return true;const a=Math.atan2(Math.sin(u*TAU),Math.cos(u*TAU));return a>D.arc[0]&&a<D.arc[1];};   // the loggia faces the front only
+  const skinHole=(u,y)=>(hc&&hc(u,y))||(lg&&y>lg[0]&&y<lg[1]&&inArc(u))||arch(u,y);
+  const nu=ar!=null?nb*6:Math.max(40,Math.round(TAU*D.r/1.7));
+  anhPut(BP,T,lathe({rFn:()=>D.r,H:L,cut:cutD?L:null,jag:cutD?2:0,nu,nv:Math.round(L/(ar!=null?.55:2.5)),hole:skinHole,seed:HBH.SEED}));
+  if(dd){anhPut(BP,MAT.guts,lathe({rFn:()=>D.r*.86,H:L,cut:cutD?L:null,jag:cutD?2:0,nu:Math.round(nu*.6),nv:Math.round(L/5),hole:hc,seed:HBH.SEED}));
+   const ys=anhStoreys(Y0,PS,Y0,L,2);for(const y of ys){kput('slab',[0,y,0],null,[D.r*.9,.6,D.r*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-.95,0],null,[D.r*.87,.7,D.r*.87],new THREE.Color(0x191b1f));}
+   if(ys.length)skyRooms({rFn:()=>D.r*.84,y0:ys[0],y1:L-2,step:PS,soff:1.3,hole:hc,d,seed:HBH.SEED});}
+  const ring=(r0,r1,y)=>gridSurface((u,v)=>{const a=u*TAU,r=lerp(r0,r1,v);return[r*Math.cos(a),y,r*Math.sin(a)];},48,1,{});
+  // the loggia: a recessed glazed wall 3 m in, a floor, a soffit, a ring of columns
+  if(lg){const A=D.arc,arcS=(r0,r1,y0,y1)=>gridSurface((u,v)=>{const a=lerp(A[0],A[1],u),r=y0===y1?lerp(r0,r1,v):r0;return[r*Math.cos(a),y0===y1?y0:lerp(y0,y1,v),r*Math.sin(a)];},30,1,{});
+   anhPut(BP,MAT.darkGlass,arcS(D.r-3,0,lg[0],lg[1]));anhPut(BP,T,[arcS(D.r-3,D.r,lg[0],lg[0]),arcS(D.r-3,D.r,lg[1],lg[1])]);
+   for(const e of A)anhPut(BP,T,gridSurface((u,v)=>[lerp(D.r-3,D.r,u)*Math.cos(e),lerp(lg[0],lg[1],v),lerp(D.r-3,D.r,u)*Math.sin(e)],1,1,{}));   // its end walls
+   for(let k=0;k<20;k++){const a=lerp(A[0],A[1],(k+.5)/20);if(dd&&h3(k,D.r,3)<.15)continue;kput(dd?'postR':'postW',[(D.r-.7)*Math.cos(a),(lg[0]+lg[1])/2,(D.r-.7)*Math.sin(a)],null,[.5,lg[1]-lg[0],.5],null);}}
+  // the arcade: a dark wall 3.2 m in behind the arches, and its soffit
+  if(ar!=null){anhPut(BP,MAT.dark,lathe({rFn:()=>D.r-3.2,H:ar,nu:48,nv:1}));anhPut(BP,T,ring(D.r-3.2,D.r,ar));}
+  // the roof and a low parapet, where the drum is whole
+  if(!cutD){anhPut(BP,T,anhFan([...Array(48)].map((_,i)=>[(D.r+.05)*Math.cos(i/48*TAU),(D.r+.05)*Math.sin(i/48*TAU)]),L,1));anhPut(BP,T,lathe({rFn:()=>D.r+.05,H:1.1,nu:48,nv:1}).translate(0,L,0));}
+  // small windows, square or round, in a sparse regular grid
+  for(let y=PS*.5+(ar!=null?ar:0);y<L-2.5;y+=PS){const inLg=lg&&y>lg[0]-1.5&&y<lg[1]+1;const n=Math.round(TAU*D.r/(D.win==='oval'?7:6));
+   for(let k=0;k<n;k++){const a=(k+.5*((y/PS|0)%2))/n*TAU,c=Math.cos(a),s=Math.sin(a),u=hostU(D.x+D.r*c,D.z+D.r*s);if(hc&&hc(a/TAU,y))continue;if(inLg&&inArc(a/TAU))continue;
+    if(D.win==='oval')kput(dd?'ovalD':'ovalI',[c*(D.r+.05),y,s*(D.r+.05)],qFacing([c,0,s]),[.75,.75,.6],null);
+    else kput(dd?'paneD':'pane',[c*(D.r+.06),y,s*(D.r+.06)],qFacing([c,0,s]),[1.3,1.3,1],null);}}
+  anhFlush(BP,P);endGroupXF();}
+ // THE SLAB CAMPANILE, in the builder's frame (its plan does not hold the axis)
+ const st=topOf(S.top,S.ruin),sL=st,sCut=st<S.top-.01;
+ {const hs=hole?(u,y)=>hole(u,y-Y0):null,plan=()=>[[S.x1,S.z0],[S.x1,S.z1],[S.x0,S.z1],[S.x0,S.z0]],inner=()=>[[S.x1-.7,S.z0+.7],[S.x1-.7,S.z1-.7],[S.x0+.7,S.z1-.7],[S.x0+.7,S.z0+.7]];
+  anhPut(B,T,anhPrism({plan,y0:0,yA:Y0,yB:S.top,top:sCut?sL:null,jag:2,seed:HBH.SEED,cols:anhCols(plan(),1.8),dy:2.5,hole:hs}));
+  if(dd){anhPut(B,MAT.guts,anhPrism({plan:inner,y0:0,yA:Y0,yB:S.top,top:sCut?sL:null,jag:2,seed:HBH.SEED,cols:anhCols(inner(),3),dy:5,hole:hs}));
+   for(const y of anhStoreys(Y0,PS,0,sL,2)){kput('boxW',[(S.x0+S.x1)/2,y,(S.z0+S.z1)/2],null,[S.x1-S.x0-1.2,.6,S.z1-S.z0-1.2],new THREE.Color(0xbdb7ad));kput('boxD',[(S.x0+S.x1)/2,y-.95,(S.z0+S.z1)/2],null,[S.x1-S.x0-1.4,.7,S.z1-S.z0-1.4],null);}}
+  if(!sCut){anhPut(B,T,anhFan(plan().map(p=>[p[0]-27,p[1]-8.5]),0,1).translate(27,S.top,8.5));}
+  // the clock on the slab's front
+  const [cx,cy]=HBH.CLOCK;if(cy<sL-3){kput(dd?'hbhDialR':'hbhDial',[cx,cy,S.z1+.06],null,[3.2,3.2,1],null);kput(dd?'ringR':'ringW',[cx,cy,S.z1+.1],null,[3.4,3.4,3],null);
+   kput('strutR',[cx+.9*Math.sin(.6),cy+.9*Math.cos(.6),S.z1+.2],qEuler(0,0,-.6),[.22,1.9,.1],null);kput('strutR',[cx+1.2*Math.sin(2.9),cy+1.2*Math.cos(2.9),S.z1+.22],qEuler(0,0,-2.9),[.16,2.5,.1],null);}}
+ // THE BELL CAGE: rusted iron, proud of the slab's front, rising above its top to an open crown of ribs
+ {const ct=sCut?Math.min(sL+1.5,K.y1):K.y1,R='strutR',w=.45,V=[[K.x0,K.z0],[K.x1,K.z0],[K.x0,K.z1],[K.x1,K.z1],[K.x0+(K.x1-K.x0)/3,K.z1],[K.x0+2*(K.x1-K.x0)/3,K.z1]];
+  if(ct>K.y0+1){for(const [x,z] of V){const h=sCut?(ct-K.y0)*(.5+.5*h3(x,z,1)):ct-K.y0;kput(R,[x,K.y0+h/2,z],null,[w,h,w],null);}
+   for(let y=K.y0;y<=ct-.5;y+=6.5){kput(R,[(K.x0+K.x1)/2,y,K.z1],null,[K.x1-K.x0,w,w],null);kput(R,[(K.x0+K.x1)/2,y,K.z0+.1],null,[K.x1-K.x0,w,w],null);
+    for(const x of [K.x0,K.x1])kput(R,[x,y,(K.z0+K.z1)/2],null,[w,w,K.z1-K.z0],null);}
+   if(!sCut){for(const [x,z] of V){const m=[lerp(x,K.cx,.35)+(x-K.cx)*.25,K.y1+4.5,lerp(z,K.cz,.35)+(z-K.cz)*.25];
+     beam(R,[x,K.y1,z],m,w,w);beam(R,m,[K.cx,K.cy,K.cz],w,w);}kput(R,[K.cx,K.cy+3,K.cz],null,[.2,6,.2],null);}}
+  // the bells: hung from beams across the cage; those above a broken top lie on the terrace in front
+  const bells=[[24.6,46,2.4],[29.4,46,2.4],[27,52.5,2.9],[25,59,2],[29,59,2]];
+  bells.forEach(([x,y,s],i)=>{if(y+s<ct-.5){kput(R,[27,y+s+.2,(K.z0+K.z1)/2],null,[K.x1-K.x0,.4,.4],null);kput(R,[x,y+s*.5+.15,(K.z0+K.z1)/2],null,[.15,s*.6,.15],null);kput('hbhBell',[x,y,(K.z0+K.z1)/2],null,s,null);}
+   else if(dd)kput('hbhBell',[x+rr(-4,4),Y0+s*.45,K.z1+5+rr(0,8)],qEuler(rr(1.2,1.9),rr(0,TAU),0),s,null);});}
+ // THE CONCAVE WALL, from 8 m at its west end to 48 m against the slab, its hollow to the front
+ {const top=a=>{const t=(a-W.a0)/(W.a1-W.a0),h=W.h0+(W.h1-W.h0)*Math.pow(t,1.6);return Math.max(Y0+1,Math.min(gcut!=null?gcut:(d===1?h*.82+fbm(a*9,1,3,2)*4:h),h));};
+  const at=(a,r)=>[W.cx+r*Math.cos(a),W.cz+r*Math.sin(a)],nu=40,wh=hole?(u,v,r)=>{const a=lerp(W.a0,W.a1,u),p=at(a,r);return hole(hostU(p[0],p[1]),Y0+v*(top(a)-Y0)-Y0);}:null;
+  for(const r of [W.R,W.R+W.t])anhPut(B,T,gridSurface((u,v)=>{const a=lerp(W.a0,W.a1,u),p=at(a,r);return[p[0],Y0+v*(top(a)-Y0),p[1]];},nu,Math.round((W.h1-Y0)/3),{uS:8,vS:5,hole:wh?(u,v)=>wh(u,v,r):null}));
+  anhPut(B,T,gridSurface((u,v)=>{const a=lerp(W.a0,W.a1,u),p=at(a,lerp(W.R,W.R+W.t,v));return[p[0],top(a),p[1]];},nu,1,{}));
+  anhPut(B,T,gridSurface((u,v)=>{const p=at(W.a0,lerp(W.R,W.R+W.t,u));return[p[0],Y0+v*(top(W.a0)-Y0),p[1]];},1,2,{}));}
+ anhFlush(B,G);
+ if(dd>0&&!shrunk){scatterMoss(0,0,0,pr+2,pr+80,150,3.2);rubbleRing(0,0,0,pr,pr+50,d===2?150:60,d===2?4:2.5);trees(0,0,pr+20,pr+110,16);vinesOnRing(0,Y0+1,0,pr-.5,22,3);}
+ if(d===2)for(const D of HBH.DRUMS)rubbleRing(D.x,Y0,D.z,D.r*.4,D.r*1.8,50,4);
+ if(d>0)skyShards(SM,d===3?.25:.5);
+ if(!shrunk)figures(0,pr+8,5,10);KOFF=[0,0,0];return G;}
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 239 (10%) | 34 (1%) | 174 (7%) | 27 (1%) | 1999 (81%) |
+| KB | 244 (10%) | 34 (1%) | 174 (7%) | 27 (1%) | 2057 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -131,6 +131,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8am-yv-e-hosp.js` | 5.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8an-iz-stumps.js` | 14.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8ao-iz-spaceport.js` | 36.2 | [draw] | 18 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/8ap-host-0-lib.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | split: the plan arithmetic (anhRayR, anhMeanR, anhInR, anhFaces, anhCross) is data; the rest draws |
+| `src/8ap-host-a-facet.js` | 7.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_FACET and hfaPlan are data (the Ys host record) |
+| `src/8ap-host-b-bastion.js` | 11.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_BASTION and hbaPlan are data (the Ys host record) |
+| `src/8ap-host-c-arcades.js` | 10.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_ARCADES and hacPlan are data (the Ys host record) |
+| `src/8ap-host-d-stalks.js` | 8.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_STALKS, hstSockets and hstRAt are data (the Ys host record and its sockets) |
+| `src/8ap-host-e-bellhall.js` | 12.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_BELLHALL and hbhRAt are data (the Ys host record) |
 | `src/90-scene.js` | 8.5 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.7 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 6.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |
@@ -169,6 +175,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/hexahedron/91z-views.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hill/89z-rows.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hill/91z-views.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/hosts/89z-rows.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/hosts/91z-views.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/iziz-style/89z-rows.js` | 5.3 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |  |
 | `targets/iziz-style/91z-views.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/iziz-variants/89z-rows.js` | 2.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

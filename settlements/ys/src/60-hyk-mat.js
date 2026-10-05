@@ -72,6 +72,7 @@ function hkMatPair(key,map,opt){opt=opt||{};const base={map,roughness:opt.rough!
  MAT[key+'I']=new THREE.MeshStandardMaterial(Object.assign({},base));}
 hkMatPair('hkShell',TEX.hkShell,{rough:.62});
 hkMatPair('hkBarn',TEX.hkBarn,{rough:.88});
+hkMatPair('hkWet',TEX.hkBarn,{rough:.9});   // the Wet Cells' dark wet rock: the library's rock.wet.dark, else the barnacle map under its dark tint
 hkMatPair('hkBone',TEX.hkBone,{rough:.48,metal:.02});
 hkMatPair('hkMosaic',TEX.hkMosaic,{rough:.32,metal:.06});
 hkMatPair('hkCrust',TEX.hkCrust,{rough:.96});
@@ -79,6 +80,7 @@ hkMatPair('hkWeed',TEX.hkWeed,{rough:.85,side:THREE.DoubleSide});
 hkMatPair('hkFloor',TEX.hkShell,{rough:.74});
 hkMatPair('hkIn',TEX.hkShell,{rough:.7});                        // interior skins (built facing inward)
 hkMatPair('hkNacre',TEX.hkShell,{rough:.22,metal:.18});
+hkMatPair('hkVerd',TEX.hkShell,{rough:.5,metal:.3});             // verdigris bronze (the Citadel's spires and dome): the library's metal.bronze.verdigris, else shell tinted sea green
 // THE NACRE HOOK: mother-of-pearl is a view-dependent play of colour. At grazing angles the diffuse colour is
 // mixed toward a cosine rainbow keyed on the view angle and the surface height, so a dome crown or a door
 // surround shifts from pink to green to blue as the camera moves. The constants live in the source text and

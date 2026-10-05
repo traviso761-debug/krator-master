@@ -16,7 +16,10 @@ function ysLoopAdd(name,pts,closed,extra){const P=pts.map(p=>[p[0],p[1]]);if(clo
  const L=Object.assign({name,pts:P,closed:!!closed,cum,len:cum[cum.length-1]},extra||{});SHORE_LOOPS.push(L);return L;}
 function ysLoopCircle(name,cx,cz,r,n,extra){const pts=[];n=n||32;for(let i=0;i<n;i++){const a=i/n*TAU;pts.push([cx+r*Math.cos(a),cz+r*Math.sin(a)]);}return ysLoopAdd(name,pts,true,Object.assign({cx,cz,r},extra||{}));}
 ysLoopAdd('mainland',CITY.SHORE,false);
-for(const s of CITY.STACKS)ysLoopCircle(s.n,s.x,s.z,s.r,24,{stack:s});
+// a stack's loop: its plan ellipse (r along the across axis, r·e along the axis bearing a; 84-city-geo.js)
+function ysLoopStack(s){const e=s.e||1,a=s.a||0,c=Math.cos(a),sn=Math.sin(a);const pts=[];const n=24;for(let i=0;i<n;i++){const t=i/n*TAU;const u=s.r*e*Math.cos(t),v=s.r*Math.sin(t);pts.push([s.x+u*c-v*sn,s.z+u*sn+v*c]);}
+ return ysLoopAdd(s.n,pts,true,{cx:s.x,cz:s.z,r:s.r,stack:s});}
+for(const s of CITY.STACKS)ysLoopStack(s);
 // the point on a loop at arc length s (wrapping on a closed loop), its tangent, and the normal toward the water
 function shoreAt(loop,s){if(loop.closed)s=((s%loop.len)+loop.len)%loop.len;else s=clamp(s,0,loop.len);let i=1;while(i<loop.cum.length-1&&loop.cum[i]<s)i++;
  const a=loop.pts[i-1],b=loop.pts[i];const seg=loop.cum[i]-loop.cum[i-1]||1;const t=(s-loop.cum[i-1])/seg;const x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;

@@ -42,6 +42,10 @@ budget counter cannot see where a thing is. **Read the shots. Every round.**
 * **`KNOWN_ISSUES.md`** — what is broken and what is merely unfinished.
 * **`NOTES.md`** — what changed, round by round.
 
+**Ancient hosts** (`src/8ap-host-*`, `--target hosts`): five types drawn as Hykkousoi hosts for Ys: Skyscrapers L
+(the Facet) and M (the Bastion), the Arcades, the Capsule Stalks and the Bell Hall. Each has a pure-data `HOSTSPEC_*`
+beside its builder, in the shape of Ys's `YS_HOST_TYPES`. Read the header of `src/8ap-host-0-lib.js`.
+
 Published: [kit](https://claude.ai/artifact/FSKTzZ3duwQ2zrbdEEqYYf) (current; [older kit build](https://claude.ai/artifact/1V5VxyNVxS2ZsEy9M7QJhE)) · [viewer of the new arcologies and towers](https://claude.ai/artifact/DUmUNgR1mKa66P4zD42X47) · [Theodiga](https://claude.ai/artifact/UT9zLRC3sigZRPbMCuhuQf)
 
 `src/` fragments are concatenated in filename order into a single `<script>`;
