@@ -385,3 +385,28 @@ Pharos's old block, the Facet stump off the harbour (1,4) moves south of the Pro
 span, admitted by name) and (1,4) is left to the water (the harbour approach). The road ribbons keep 40 cm off the sea
 plane (the awash streets z-fought it). Each reclaimed Ancient on land gets a ring of small houses and shops about its
 cap, fronts outward (`ysPlEdgeRun` with `land`).
+
+## The material library on Ys (Oct 5 2026, Travis)
+Travis generated every set in MATERIAL-PROMPTS.md (fifteen tiles; the kelp, vine and two jungle-clump sheets on magenta,
+split by `tools/textures/sheet.py` into 36 cards) and they are in `core/materials/library/` (`shell.ribbed`, `.b`,
+`organic.barnacle`, `organic.bone`, `shell.tideline`, `shell.nacre`, `paving.shell.terrazzo`, `cloth.seaweed`,
+`rock.limestone.karst`, `ground.jungle.canopy`, `stone.travertine`, `stone.sandstone.ashlar`, `metal.bronze.verdigris`,
+`card.kelp.0-8`, `card.vine.hanging.0-8`, `card.jungle.clump.0-17`; batches `tools/textures/batches/ys-*.json`).
+**Ys adopts them the Girder way**: `materials.json` names, per material family, the set and how it is used (scale in
+world metres per tile, how much of its colour survives the vertex colour, the roughness lift, the break-up);
+`tools/textures/pack.py settlements/ys` packs them into `tex/` (512 px WebP, 3.3 MB); `build.py` inlines `tex/` as the
+generated fragment `26-matlib-pack.js` (`KMAT.pack('ys')`) after the record fragments it now takes from
+`core/materials/record/` (`23-mat-record.js`, `25-matlib-host.js`; not `24-tex-def.js`, whose `TEX` would clash with the
+lineage's texture table). **The adapter** (`79z-ys-matlib.js`) binds the packed maps onto the materials the earlier
+fragments made, in place, before the first frame: the hyk pairs (`hkShell` the ribbed shell on every pod, house and
+temple; `hkFloor`/`hkIn` the finer variant; `hkBarn`, `hkBone`, `hkMosaic` the shell terrazzo, `hkNacre` the nacre under
+its play-of-colour hook, `hkCrust` the mussel tideline, and the new `hkVerd` pair, the verdigris bronze the Citadel's
+spires and dome now wear), the terrain (`ground`: the karst limestone as grey detail under the vertex colours, 14 m
+tiles), the Arcades' sandstone (`HAC_MAT`), the Bell Hall's travertine (`HBH_MAT`) and the core's `MAT.verdigris`. Each
+set repeats over the fragment's own UV tile (hykSurf lays 4 m; the terrain 18 m; the towers 1:1). Every bound material
+takes the library hooks (specular, the tiling break-up) after the hook it had, or the underwater tint (71's patch skips
+a material that already has a hook, so the adapter calls `portUWsh` itself). **The cards**: the first kelp replaces the
+weed ribbons' canvas texture (alpha-tested now); the vines and clumps dress the karst (88b: crossed clump quads on every
+field stack's crown, vines hung over the rim facing outward, one mesh per card, positions from KRAND). `?mat=proc`
+shows the procedural look; `window._materials` is the records table; the verifier waits for the packed textures to
+decode (`window._texPending`).

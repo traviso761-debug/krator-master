@@ -93,12 +93,12 @@ function buildHykCitadel(G,o){reseed(30625+(o.v|0));
  hykSpot(hall,'seat',0,HZ-7.4,0,1.2,1.0);hykSpot(hall,'table',0,HZ-3.2,0,2.6,1.1);hykSpot(hall,'shrine',-7.2,HZ-3,Math.PI/2,.7,.5);hykSpot(hall,'seat',6.4,HZ-1.5,-Math.PI/2,1.0,.9);hykSpot(hall,'seat',-5.8,HZ+2.4,Math.PI/2,1.0,.9);
  // ---- the crown: the drum and the shallow ribbed dome at the centre of the ridge, two tall and two short twisted spires
  // on the back slope, each with a knuckle two-thirds up and a gold tip; a collar where each leaves the mass
- const spire=(cx,cz,yB,H,R0,tall)=>{hykPut('hkShell',hykLathe({H,yBase:yB,cx,cz,rFn:y=>R0*Math.pow(1-y/H,.8)+.14+R0*.5*Math.exp(-Math.pow((y-.64*H)/(.055*H),2)),flute:{n:8,amp:.17,sharp:1.3},twist:.33,rings:{n:16,amp:.02},nu:22,nv:28,col:verd}));
+ const spire=(cx,cz,yB,H,R0,tall)=>{hykPut('hkVerd',hykLathe({H,yBase:yB,cx,cz,rFn:y=>R0*Math.pow(1-y/H,.8)+.14+R0*.5*Math.exp(-Math.pow((y-.64*H)/(.055*H),2)),flute:{n:8,amp:.17,sharp:1.3},twist:.33,rings:{n:16,amp:.02},nu:22,nv:28,col:verd}));
   kput('hkBall',[cx,yB+H+.15,cz],null,[.42,.8,.42],gold);if(tall)hykLight(cx,yB+H+1.3,cz,{r:.3,bare:true,level:'L2',bracket:[cx,yB+H+.8,cz]});};
  for(const s of [-1,1]){spire(s*12,-24,22,44,2.7,true);kput('hkBall',[s*12,25.2,-24],null,[3.3,1.4,3.3],verd);spire(s*26,-22,9,27,1.8,false);kput('hkBall',[s*26,11.4,-22],null,[2.3,1.0,2.3],verd);}
  hykPut('hkShell',hykLathe({H:12,yBase:30,cx:0,cz:MZ,rFn:y=>9.2+.3*Math.sin(Math.PI*y/12),flute:{n:18,amp:.025,sharp:1.3},nu:64,nv:6,col:colW}));
  {const pts=[];for(let i=0;i<=64;i++){const a=i/64*TAU;pts.push([9.5*Math.cos(a),42.1,MZ+9.5*Math.sin(a)]);}hykPut('hkNacre',hykTube(pts,(u,i)=>.36*(1+.2*Math.max(0,Math.cos(i*1.3))),{seg:7,col:nac}));}
- hykPut('hkShell',hykLathe({H:4.8,yBase:42,cx:0,cz:MZ,rFn:y=>9.6*Math.sqrt(Math.max(0,1-Math.pow(y/4.8,2)))+.1,flute:{n:24,amp:.045,sharp:1.2},rings:{n:3,amp:.01},nu:64,nv:12,col:verd}));
+ hykPut('hkVerd',hykLathe({H:4.8,yBase:42,cx:0,cz:MZ,rFn:y=>9.6*Math.sqrt(Math.max(0,1-Math.pow(y/4.8,2)))+.1,flute:{n:24,amp:.045,sharp:1.2},rings:{n:3,amp:.01},nu:64,nv:12,col:verd}));
  hykPut('hkNacre',hykLathe({H:3.2,yBase:46.6,cx:0,cz:MZ,rFn:y=>.7*Math.pow(1-y/3.2,.7)+.1,flute:{n:6,amp:.15,sharp:1.3},twist:.6,nu:14,nv:8,col:gold}));kput('hkBall',[0,49.9,MZ],null,[.4,.55,.4],gold);hykLight(0,50.9,MZ,{r:.28,bare:true,level:'L2',bracket:[0,50.3,MZ]});
  // the tendrils: bone ribs that root the wings' feet, climbing the ends of the mass
  for(const s of [-1,1]){const R=[[[s*(XE-1.5),0,MZ+9],[s*27,12.5,MZ+6.8]],[[s*(XE-3),0,MZ-9],[s*28,13,MZ-5.5]],[[s*(XE+1.2),0,MZ],[s*30.5,10.5,MZ+2.2]]];

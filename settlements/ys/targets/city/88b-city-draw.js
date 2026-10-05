@@ -25,7 +25,9 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  {reseed(32395);TSTAT.cur='mole quay/0';let nw=0;const col=hC(hPick(HPAL.shellWarm)),wcol=hC(hPick(HPAL.shell));
   for(const m of PLACE.moles){if(!m.plate)continue;const P=m.poly,y=m.y-.12;
    if(m.star){const c=m.star,n=P.length;const ring=u=>{const f=((u%1)+1)%1*n;const i=Math.floor(f)%n,j=(i+1)%n,t=f-Math.floor(f);return [P[i][0]*(1-t)+P[j][0]*t,P[i][1]*(1-t)+P[j][1]*t];};
-    const R=Math.max(m.x1-m.x0,m.z1-m.z0)/2;hykPutRaw('hkFloor',hykSurf((u,v)=>{const p=ring(u);return [c[0]+(p[0]-c[0])*v,y,c[1]+(p[1]-c[1])*v];},n*2,3,{col,uS:TAU*R/4,vS:R/4,flip:ysPlPolyArea(P)<0}));
+    const g=hykSurf((u,v)=>{const p=ring(u);return [c[0]+(p[0]-c[0])*v,y,c[1]+(p[1]-c[1])*v];},n*2,3,{col,flip:ysPlPolyArea(P)<0});
+    {const pa=g.attributes.position.array,uv=g.attributes.uv.array;for(let i=0;i<uv.length/2;i++){uv[i*2]=pa[i*3]/4;uv[i*2+1]=pa[i*3+2]/4;}g.attributes.uv.needsUpdate=true;}   /* planar metre UVs: a fan's stretch radially */
+    hykPutRaw('hkFloor',g,true);
     for(const f of m.stairs)hykSpanStairStraight(f.A,f.B,{w:2.4,rails:'both'});}
    else if(P.length===4){hykPutRaw('hkFloor',hykSurf((u,v)=>{const ax=P[0][0]+(P[1][0]-P[0][0])*u,az=P[0][1]+(P[1][1]-P[0][1])*u,bx=P[3][0]+(P[2][0]-P[3][0])*u,bz=P[3][1]+(P[2][1]-P[3][1])*u;return [ax+(bx-ax)*v,y,az+(bz-az)*v];},
      Math.max(2,Math.round(Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/8)),Math.max(2,Math.round(Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/8)),{col,uS:Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/4,vS:Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/4,flip:ysPlPolyArea(P)<0}));}
@@ -72,6 +74,23 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
     hykSpanStairStraight(A2,{x:A.x,y:A.y,z:A.z},{w:1.6,rails:'both'});hykSpanStairStraight(B2,{x:B.x,y:B.y,z:B.z},{w:1.6,rails:'both'});S.drawn=true;nb++;}
   }catch(e){reportErr('span '+S.kind+' '+e.stack);}}
   TSTAT.cur=null;window._spans={built:nb,of:SPANS.list.length,refused:SPANS.refused.length,piers:np,shore:SPANS.shore,nodes:SPANS.nodes.length};}
+ // the karst's dressing (Travis's cards, through the library adapter 79z): jungle clumps on every field stack's crown (two
+ // crossed quads each, their feet on the crown) and vines hung over the rim of its wall, facing outward; one mesh per
+ // card. Not on a landmark's stack (its building takes the top). Positions from KRAND, so the dressing is the same in
+ // any engine; ?mat=proc has no cards and draws none
+ if(typeof YS_MATLIB!=='undefined'&&YS_MATLIB.cards.clump.length&&typeof KARST!=='undefined'){TSTAT.cur='karst cards/0';const st=KRAND.stream(KRAND.child(KARST.SEED,'dress'));const C=YS_MATLIB.cards;
+  const G={};const quad=(key,cx,y0,cz,w,h,phi)=>{const g=G[key]||(G[key]={pos:[],uv:[],nor:[]});const ux=-Math.sin(phi),uz=Math.cos(phi),nx=Math.cos(phi),nz=Math.sin(phi);
+   const P=[[cx-ux*w/2,y0,cz-uz*w/2,0,0],[cx+ux*w/2,y0,cz+uz*w/2,1,0],[cx+ux*w/2,y0+h,cz+uz*w/2,1,1],[cx-ux*w/2,y0+h,cz-uz*w/2,0,1]];
+   for(const i of [0,1,2,0,2,3]){g.pos.push(P[i][0],P[i][1],P[i][2]);g.uv.push(P[i][3],P[i][4]);g.nor.push(nx,0,nz);}};
+  let nc=0,nv=0;for(const s of CITY.STACKS){if(s.flat)continue;const e=s.e||1,a=s.a||0,ca=Math.cos(a),sa=Math.sin(a);
+   const n=clamp(Math.round(s.r*e*s.r/350),3,14);for(let k=0;k<n;k++){const t=st.range(0,TAU),rr=Math.sqrt(st.next())*.72;const u=rr*Math.cos(t)*s.r*e,v=rr*Math.sin(t)*s.r;const x=s.x+u*ca-v*sa,z=s.z+u*sa+v*ca;
+    const y=terrainH(x,z);if(y<2)continue;const w=st.range(6,13),phi=st.range(0,TAU),key='clump'+st.int(0,C.clump.length-1);quad(key,x,y-.3,z,w,w*1.05,phi);quad(key,x,y-.3,z,w,w*1.05,phi+Math.PI/2);nc++;}
+   const m=clamp(Math.round(TAU*s.r*(1+e)/2/28),3,10);for(let k=0;k<m;k++){const phi=st.range(0,TAU);const edge=ysStackEdge(s,phi);const top=terrainH(s.x+Math.cos(phi)*(edge-5),s.z+Math.sin(phi)*(edge-5));if(top<6)continue;
+    const r=edge+2.6;const h=st.range(9,18),w=st.range(5,9);quad('vine'+st.int(0,C.vine.length-1),s.x+Math.cos(phi)*r,top-1.5-h,s.z+Math.sin(phi)*r,w,h,phi);nv++;}}
+  for(const key in G){const g=G[key];const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(g.pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(g.nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(g.uv,2));
+   const t=C[key.replace(/\d+$/,'')][+key.match(/\d+$/)[0]];const mat=new THREE.MeshStandardMaterial({map:t,alphaTest:.42,side:THREE.DoubleSide,roughness:.9,metalness:0});if(typeof portUWsh==='function'){mat.onBeforeCompile=portUWsh;mat.customProgramCacheKey=()=>'yscard';}
+   const mesh=new THREE.Mesh(geo,mat);mesh.name='karst-'+key;mesh.userData.probeSkip=true;scene.add(mesh);const tc=tcur();if(tc){tc.tris+=g.pos.length/9;tc.meshes++;}}
+  TSTAT.cur=null;window._karstCards={clumps:nc,vines:nv,meshes:Object.keys(G).length};}
  // the subdivided floors (88a): the partitions as thin shell walls in the interior bucket, both faces; the floors marked
  reseed(32390);const wc=hC(hPick(HPAL.shell),.92);let nw=0;
  for(const P of FLOORS.plans){const cs=Math.cos(P.ry),sn=Math.sin(P.ry);const W=(lx,lz)=>[P.hx+lx*cs+lz*sn,P.hz-lx*sn+lz*cs];const y0=P.y+.3;

@@ -247,6 +247,14 @@ left to the boats), `SPANS.shore` (nodes with a foot path to the shore). The dra
 landing, a `citadel` end to the pad `NAV_EXTRA` names `'Citadel bridge head'`, a `pad` end to a lily pad it grows there,
 and puts piers under a bridge longer than 55 m (`S.piers`).
 
+## The material library
+
+`materials.json` is Ys's adapter (families = material keys: the hyk pairs, `ground`, `sand`, `trav`, `verdigris`, the cards
+`kelp0-2`, `vine0-2`, `clump0-3`); `python3 tools/textures/pack.py settlements/ys` writes `tex/` (commit it); `build.py`
+inlines it as `26-matlib-pack.js`. `79z-ys-matlib.js`: `YS_MATLIB.on` (`?mat=proc` turns it off), `YS_MATLIB.bound`
+(family → set), `YS_MATLIB.cards` (`kelp`, `vine`, `clump`: alpha cut-out textures for quads), `window._materials` (the
+records table). A new hyk material pair wants a row in materials.json and a line in the adapter's list.
+
 ## Animation
 
 A builder that moves something (the Pharos beam, a windmill's sails) pushes `fn(dt,t)` onto `window.YS_TICKS`

@@ -138,11 +138,20 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       bridge door and the bridge-head pad) and the old model is `hyk_arena` (74b2) on the nearest land block with room
       for it, its ground levelled, ringed with the market's shops. The landmark stacks are fitted: the Citadel's an ellipse 56 × 84 m (its
       axis away from the bridge door, the Treasury on that side), the Winds' 54 × 57 m, both near flat on top.
-- [ ] (Oct 5 2026) The new Citadel's verdigris is `HPAL.seaGreen` vertex colour on the shell texture and its gold a warm
-      hex on nacre: no copper or metal material in the kit yet (`metal.bronze.verdigris` in MATERIAL-PROMPTS.md is the
-      texture for it). Its oval windows have bone-tube surrounds and a pane, not `hykWin`'s lip (the lip instance per
-      window was a third of the budget); a window near a wing's ridge can show a sliver of the back face through its
-      reveal. The Arena's pod room is still named the tribune.
+- [x] (Oct 5 2026) The new Citadel's verdigris was sea-green vertex colour on shell: its spires and dome are the `hkVerd`
+      pair now, the library's `metal.bronze.verdigris` (riveted panels: the rivets read at the spires' scale, a
+      plain-patina variant would suit them better). The gold is still a warm hex on nacre.
+- [ ] (Oct 5 2026) The Citadel's oval windows have bone-tube surrounds and a pane, not `hykWin`'s lip (the lip instance
+      per window was a third of the budget); a window near a wing's ridge can show a sliver of the back face through
+      its reveal. The Arena's pod room is still named the tribune.
+- [ ] (Oct 5 2026) The library on Ys, first pass: the terrain keeps its procedural map (the karst limestone tiled over
+      the flat read as vertical stripes: a wall set; a ground needs a slope-and-karst blend); the jungle canopy set is processed but unused (a slope-and-karst blend
+      of limestone and canopy wants a two-map hook); the seaweed weave (`cloth.seaweed`) is unused (the awnings are the
+      Iziz vernacular's `MAT.cloth`, not a hyk material); the Ancient towers' concrete (`MAT.white`, `MAT.rust`) keeps the
+      procedural panel maps (no prompt for them yet); the sandstone and travertine repeat 1:1 over the towers' own UVs
+      (a tile is a bay, about 20 m, so the ashlar's blocks read 3 m). The karst dressing is quads with no wind, no
+      lighting trick for the cards' backs, and the vines hang 2.6 m off the analytic wall (the mesh wall can be a few
+      metres off it). The kit sheet and the mock take the same pack (their pages grew 4 MB).
 - [ ] (Oct 5 2026) The restand plinth (52 `skyPlinth`: wall, columns, ring) of a Monolith, Warden or Facet is left out
       when a spiral stair or a bridge off a low plate would run through it (`YS_CUT.noPlinth`); the other hosts keep
       theirs. The Conocylinder takes no stair (its body skin runs down to the strut ring where the record says core),

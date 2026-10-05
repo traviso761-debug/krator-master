@@ -55,6 +55,35 @@ CORE = os.path.join(ROOT, 'core', 'materials')
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook the vendored Iziz vernacular uses (core/README.md)
+# the material records (core/materials/record: KMAT and the browser loader; GODOT-PLAN.md Phase 3). Not 24-tex-def.js:
+# its TEX would clash with the lineage's TEX texture table (core/materials/20-textures.js)
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
+PACK_FRAGMENT = '26-matlib-pack.js'        # GENERATED at build time from tex/, never written to src/
+
+
+def matlib_pack():
+    """The library textures materials.json names, as data URLs (KMAT.pack). It reads the committed tex/ files only,
+    never the library or an image encoder, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return '/* no tex/pack.json: Ys runs on its procedural textures */\nKMAT.pack(\'ys\', {});\n'
+    pack = json.load(open(pj))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'), 'card': e.get('card', False), 'tint': e['tint']['keep']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ================================================================= THE LIBRARY PACK (generated)\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
+            '   and its processed maps as data URLs. Do not edit; edit materials.json and repack. */\n'
+            "KMAT.pack('ys', {\n" + ',\n'.join(out) + '\n});\n')
+
 
 TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<name>.html
 
@@ -101,6 +130,7 @@ DETERMINISTIC = {
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js',
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-pack.js', '79z-ys-matlib.js',   # the material records, the pack, the adapter
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
@@ -194,6 +224,7 @@ def build_one(target, do_checks):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})
@@ -202,9 +233,11 @@ def build_one(target, do_checks):
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
-    order = sorted(paths)
-    bodies = {}
+    order = sorted(list(paths) + [PACK_FRAGMENT])
+    bodies = {PACK_FRAGMENT: matlib_pack()}
     for f in order:
+        if f == PACK_FRAGMENT:
+            continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
     if do_checks:

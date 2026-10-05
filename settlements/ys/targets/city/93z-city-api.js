@@ -8,7 +8,7 @@ window._api.city.records=()=>({blds:PLACE.blds.map(r=>({key:r.key,x:+r.x.toFixed
  slots:PLACE.slots.map(s=>{const o=Object.assign({},s);delete o.box;return o;}),moles:PLACE.moles.map(m=>({name:m.name,y:m.y,poly:m.poly}))});
 // the spans the bridge graph does not lay yet (PLAN.md P3 step 3): the audit names them apart
 const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stair','hyk_ladder','hyk_lilypad','hyk_walkway','hyk_pontoon'];
-BUDGET.type.roads='env';BUDGET.type['mole quay']='env';   // the city's own ground work: the road ribbons, the moles' plates and quay walls
+BUDGET.type.roads='env';BUDGET.type['mole quay']='env';BUDGET.type['karst cards']='env';   // the city's own ground work: the road ribbons, the moles' plates and quay walls
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const spanKey={bridge:null,drawbridge:'hyk_drawbridge',walkway:'hyk_walkway',pontoon:'hyk_pontoon'};const used=new Set(SPANS.list.filter(s=>s.drawn).map(s=>s.kind==='bridge'?(s.level==='L2'?'hyk_span_l2':'hyk_span_l1'):spanKey[s.kind]));
   if(SPANS.list.some(s=>s.drawn&&s.kind==='bridge'&&s.b.pad))used.add('hyk_lilypad');
