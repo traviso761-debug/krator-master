@@ -60,3 +60,11 @@ const VIEWS={
  {const r=PLACE.blds.find(r=>r.why==='home-grown mole');if(r){const m=PLACE.moles.find(m=>/home-grown/.test(m.name)&&ysPlInPoly(m.poly,r.x,r.z));const cx=m?(m.x0+m.x1)/2:r.x,cz=m?(m.z0+m.z1)/2:r.z;V['A home-grown mole']=[cx+N[0]*150+T[0]*100,70,cz+N[1]*150+T[1]*100,cx,3,cz];}}
  {const am=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='amph');if(am){const h=PLACE.hosts.find(x=>x.n===am.a.host);const mx=(h.x+am.b.x)/2,mz=(h.z+am.b.z)/2;const dx=am.b.x-h.x,dz=am.b.z-h.z,l=Math.hypot(dx,dz)||1;V['The Amphitriton\'s coastal span']=[mx-dz/l*160,60,mz+dx/l*160,mx,28,mz];}}
 })();
+// the biome (89-city-biome.js): a field stack's forested top with its cliff figs, and the river's bank
+(function(){const V=VIEWS,H=CITY.HEAD;
+ {let best=null;for(const s of CITY.STACKS){if(s.flat||/far karst/.test(s.n||''))continue;const d=Math.hypot(s.x-H[0],s.z-H[1]);if(d>1300||s.r<40)continue;const sc=s.r*(s.e||1)-d*.04;if(!best||sc>best.sc)best={s,sc};}
+  if(best){const s=best.s,e=s.e||1,R=s.r*e+90,top=terrainH(s.x,s.z);const a=Math.atan2(H[1]-s.z,H[0]-s.x);   /* from the city's side, above the rim, across the top */
+   V['The karst forest']=[s.x+Math.cos(a)*R,top+42,s.z+Math.sin(a)*R,s.x-Math.cos(a)*s.r*.3,top+6,s.z-Math.sin(a)*s.r*.3];}}
+ {const P=CITY.RIVER.pts,a=P[2],b=P[3];const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;const y=Math.max(terrainH(mx,mz),0);
+  V['The river bank']=[mx-dz/l*120+dx/l*40,y+38,mz+dx/l*120+dz/l*40,mx,y+4,mz];}
+})();

@@ -9,6 +9,8 @@ window._api.city.records=()=>({blds:PLACE.blds.map(r=>({key:r.key,x:+r.x.toFixed
 // the spans the bridge graph does not lay yet (PLAN.md P3 step 3): the audit names them apart
 const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stair','hyk_ladder','hyk_lilypad','hyk_walkway','hyk_pontoon'];
 BUDGET.type.roads='env';BUDGET.type['mole quay']='env';BUDGET.type['karst cards']='env';BUDGET.type.river='env';   // the city's own ground work: the road ribbons, the moles' plates and quay walls
+BUDGET.type.biome='biome';BUDGET.cls.biome=4500000;   // the biome's passes (89-city-biome charges 'biome/trees', 'biome/floor', 'biome/dress'...): each under 4.5 M
+window._api.biome=()=>window._biome;
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const spanKey={bridge:null,drawbridge:'hyk_drawbridge',walkway:'hyk_walkway',pontoon:'hyk_pontoon'};const used=new Set(SPANS.list.filter(s=>s.drawn).map(s=>s.kind==='bridge'?(s.level==='L2'?'hyk_span_l2':'hyk_span_l1'):spanKey[s.kind]));
   if(SPANS.list.some(s=>s.drawn&&s.kind==='bridge'&&s.b.pad))used.add('hyk_lilypad');
@@ -45,5 +47,21 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const RU=PLACE.ruins||[];R.push({name:'ruins-in-the-east-shallows',ok:RU.length>=3&&RU.every(r=>r.drawn&&r.sink<-6),detail:RU.length?RU.map(r=>r.name+' ('+Math.round(r.x)+','+Math.round(r.z)+') bed '+r.sink.toFixed(1)+' m, '+r.h+' m tall').join(' | '):'none placed'});}
  R.push({name:'half-sunk-band',ok:(PLACE.band||0)>=3,detail:(PLACE.band||0)+' half-sunk mid-rise hosts in the band north-east of the head, '+PLACE.hosts.filter(h=>/half-sunk/.test(h.n)).reduce((s,h)=>s+h.pods.length,0)+' pods'});
  {const lanes=LAYOUT.streets.filter(s=>s.kind==='lane').length,laned=PLACE.blds.filter(b=>b.why==='lane').length;R.push({name:'lanes-lined',ok:lanes>0&&laned>lanes*2,detail:lanes+' lanes, '+laned+' buildings on them, '+(window._roads||0)+' road ribbons'});}
+ // the biome (89-city-biome.js, BIOME-API.md): bound and rooted where the mask allows; the biome's own invariants
+ if(typeof NWBAY!=='undefined'&&NWBAY.TREES){const T=NWBAY.TREES,SP=NWBAY.SPECIES,B=window._biome||{};
+  const wetSp=t=>/mangrove|pandan|pipereed/.test(SP[t.sp].key);   /* the semi-aquatic fringe stands in the shallows past the mask by design */
+  let onWater=0,onStreet=0,inBld=0,onMole=0;const first=[];
+  for(const t of T){if(!wetSp(t)&&terrainH(t.x,t.z)<.3){onWater++;if(first.length<4)first.push(SP[t.sp].key+' in the water at '+Math.round(t.x)+','+Math.round(t.z));continue;}
+   const c=ysPlClash(ysPlBox(t.x,t.z,.3,.3,0,'bio'));if(c){if(/^(street|highway)/.test(c.tag))onStreet++;else inBld++;if(first.length<4)first.push(SP[t.sp].key+' on '+c.tag);continue;}
+   for(const m of PLACE.moles)if(t.x>=m.x0&&t.x<=m.x1&&t.z>=m.z0&&t.z<=m.z1&&ysPlInPoly(m.poly,t.x,t.z)){onMole++;if(first.length<4)first.push(SP[t.sp].key+' on '+m.name);break;}}
+  const bad=onWater+onStreet+inBld+onMole;
+  R.push({name:'biome-bound',ok:T.length>200&&!bad,detail:T.length+' trees ('+(B.heroes||0)+' heroes, '+(B.far||0)+' impostors, '+(B.karstTrees||0)+' on the karst tops), '+(B.floor||0)+' floor plants, '+(B.dress||0)+' hanging-garden items on '+(B.stacksDressed||0)+' stacks'
+   +(bad?'; '+onWater+' in the water, '+onStreet+' on a street, '+inBld+' in a footprint, '+onMole+' on a mole: '+first.join(' | '):'; none in the water, on a street, in a footprint or on a mole')});
+  let onFace=0;for(const t of T){const k=BIO.field('karst',t.x,t.z);if(k>.03&&k<.9)onFace++;}
+  R.push({name:'nothing-on-a-cliff-face',ok:onFace===0,detail:onFace+' trees rooted where karst is between .03 and .9 (the rim band and the face)'});
+  const figs=T.filter(t=>SP[t.sp].key==='clifffig'),onK=figs.filter(t=>BIO.field('karst',t.x,t.z)>.9).length;
+  R.push({name:'figs-on-the-karst',ok:figs.length>0&&onK===figs.length,detail:figs.length+' cliff figs, '+onK+' on the karst, '+(B.figsOnEdge||0)+' at a rim with their roots down the face'});
+  let tallest=0,tallSp='';for(const t of T)if(t.H>tallest){tallest=t.H;tallSp=SP[t.sp].key;}
+  R.push({name:'height-ceiling',ok:tallest<=NWBAY.TEMPLE_H*1.01+.5,detail:'tallest tree '+tallest.toFixed(1)+' m ('+tallSp+') against a ceiling of '+NWBAY.TEMPLE_H+' m'});}
  return R;}
 {const _x=window._api.extra;window._api.extra=()=>_x().concat(ysCityChecks());}

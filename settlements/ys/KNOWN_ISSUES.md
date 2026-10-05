@@ -21,12 +21,17 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] Phase 0 terrain is the port's tensor grid sized for a coast along x: 10 m cells only within ~900 m of the
       origin, 90 m cells beyond. Phase 3 replaces it with the Ys terrain mesh (regular cells over the 3.2 km map,
       a far-country mesh for the volcano and the Inner Wall).
-- [ ] No nature scatter on the natural ground until the NW-bay biome is bound (phase 3).
+- [x] (Oct 5 2026) No nature scatter on the natural ground until the NW-bay biome is bound (phase 3). Bound: `biomes/nwbay`
+      vendored as `src/86-bio-*.js`, the host binding in `targets/city/86-bio-45-city-init.js` and `89-city-biome.js`
+      (NOTES.md "The biome bound", API.md "The biome").
 - [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) will carry no ROOM records until
       their own kits register them (DESIGN §7).
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
 - [ ] The ground painter is the port's (red soil in patches, dry grass): re-key it to the bay's lush ground and
-      the karst when the NW-bay biome is bound (phase 3).
+      the karst when the NW-bay biome is bound (phase 3). *Still open after the bind (Oct 5 2026):* the biome's floor
+      (ferns, grass, moss, logs) covers the port's paint near the spine; beyond the floor's LOD bands (1.25 km) the red
+      soil shows between the impostor trees. The painter should read the biome's zones (`NWBAY.zones`) the way the
+      nwbay ideal type paints by zone (its 45-host-stage: litter, rainforest litter, tawny slope, beach, crust).
 - [ ] The nacre material fades underwater only through its own hook (`hkNacreHook` calls `portUWsh` first);
       any new shell material with an `onBeforeCompile` must do the same or it will glow under the sea.
 - [ ] The sea plane shows moiré at the mockup's low grazing presets (the port's sea at a 10 m tensor cell);
@@ -86,8 +91,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
       let `F.pick('coral')` read true on cushions and slings.
 - [ ] The karst stacks are a heightfield: no overhangs, undercut bases or sea notches (Krabi's towers have all three);
-      `core/terrain`'s carve patches are the way to them. The crowns are domed now, painted jungle; the jungle itself (trees
-      hanging off the walls) waits on the NW-bay biome.
+      `core/terrain`'s carve patches are the way to them. The crowns are domed now, painted jungle; *the jungle is bound
+      (Oct 5 2026)*: cliff figs with root curtains at the rims, the karst forest on the tops, the hanging gardens on the
+      faces (89-city-biome.js); the overhangs and notches are still the open part.
 - [x] (Oct 5 2026) **Every drowned host was Skyscraper A.** The chain is re-vendored and the hosts are A, D (the
       Monolith) and H (the Warden), D and H standing on the bed with pods on their faces; the awash blocks carry short
       Wardens and Monoliths. Still open: the Pierced Stack and the Bole (the alternates' helpers and kdefs in
@@ -212,6 +218,18 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       `avoid(yl,h)` only: on K a pod can land on the porch arch, on the Attraction beside a great spire; `avoid` wants
       the bearing); the tideline crust on C and the Stack is a ring round the axis, not round each leg or piloti; Sky J
       is not a host (its plates reach far past the glazing). The Library's and the office's rust passes are left out.
+- [ ] (Oct 5 2026) The biome, first bind (89-city-biome.js): **no cinder pines** (0 placed: the city map has no lava field
+      and its headlands are karst, so the `cinder` zone is empty; a lava tongue or a `salt` spray band on the headland slopes
+      would bring them) and no mat-reed beds (the kit's beds want still fresh water at y 0 inside the river's `flow` band; the
+      mouth is salt); the kit roots only its cliff figs on the rock (55-trees drops every other species where karst > .02),
+      so the tops' fan-crowns, ferns and shrubs are the city's own pass on the kit's builders (`ysBioKarstForest`), not the
+      kit's zones; the dress pass reads the stacks' faces off the 10 m heightfield, so a root curtain or fern can stand a
+      metre or two off the analytic wall where the facets do; Travis's karst cards (clumps on the crowns, vines over the
+      rims, 88b) are still drawn under the biome's trees and gardens and double them; the biome's foliage materials carry
+      no `portUWsh`, so a mangrove's prop roots do not fade under the sea; `window._biome.fauna` reads 0 birds and
+      swimmers though 1766 fauna instances were built (the fauna pass returns its counts under other keys: read
+      `BIO.stats['nwbay/fauna']`); the far impostors beyond the floor's LOD bands stand on the port's red-soil paint
+      (the ground painter item above); `Q` .55 is the density knob (3.0 M triangles; 1 would be ~5.5 M, over the budget).
 - [ ] (Oct 5 2026) The building editor's live view is a preview, not the build: a live building's label is not made
       (93-labels builds once at load), its ROOM/SPOT records are not in the Rooms overlay until it is rebuilt, and a
       deleted building keeps its label, its REG volume (the inspector still names it) and its MARKS until the next build.

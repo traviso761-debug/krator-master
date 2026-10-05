@@ -214,6 +214,56 @@
   "from": "kits/ancients/src",
   "sha1": "9c554d78a51a"
  },
+ "86-bio-10-core-head.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "79691236dfbd"
+ },
+ "86-bio-20-core-kit.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "8702bbc17f64"
+ },
+ "86-bio-30-core-foliage.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "98b0f4e59ec2"
+ },
+ "86-bio-40-core-place.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "86d05ad00910"
+ },
+ "86-bio-50-biome-nwbay-species.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "8fe91686f985"
+ },
+ "86-bio-55-biome-nwbay-trees.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "27c802404418"
+ },
+ "86-bio-60-biome-nwbay-floor.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "ce3c7c1ddd5f"
+ },
+ "86-bio-65-biome-nwbay-dress.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "49bde2c3b134"
+ },
+ "86-bio-70-biome-nwbay.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "097ec443275c"
+ },
+ "86-bio-75-biome-nwbay-fauna.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "6a4341c64324"
+ },
  "89-lab.js": {
   "adapted": false,
   "from": "kits/ancients/src",

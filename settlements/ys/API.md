@@ -295,6 +295,54 @@ inlines it as `26-matlib-pack.js`. `79z-ys-matlib.js`: `YS_MATLIB.on` (`?mat=pro
 (family → set), `YS_MATLIB.cards` (`kelp`, `vine`, `clump`: alpha cut-out textures for quads), `window._materials` (the
 records table). A new hyk material pair wants a row in materials.json and a line in the adapter's list.
 
+## The biome (targets/city/89-city-biome.js, biomes/nwbay/BIOME-API.md)
+
+The city page carries `biomes/nwbay` on the shared biome core, vendored byte for byte as `src/86-bio-*.js` (build.py
+`BIO_VENDORED`; `TARGET_ONLY` keeps them out of the kit sheet and the mock). Two host fragments bind it:
+`86-bio-45-city-init.js` calls `BIO.init({THREE})` before fragment 50 loads (the species build their textures against
+`BIO.host.THREE` at load; `NWBAY_TEMPLE_H` 110 and `NWBAY_BAY.hue` .47 are set there too), and `89-city-biome.js`, a
+`YS_AFTER` hook (after every placer, the shell flush and the lattice; before `kbake`), binds the city's facts and builds:
+
+```js
+BIO.init({THREE,scene,terrainH,                 // terrainH is the city's: ysKarstH already returns a stack's top inside its footprint
+  mask:ysBioMask,                               // 0..1, the density multiplier (the rules below)
+  obstacles:ysBioObstacles(),                   // cylinders {x,z,r,y0,y1}: every host's cap over its height, the landmarks' and ruins' REG volumes, buildings r >= 14; never the stacks
+  ticks:fn=>window.YS_TICKS.push(fn),           // the wind and the fauna run on the scene's tick list
+  seed:11,origin:ysBioSpine(),center:CITY.HEAD, // the LOD spine: the shore a kilometre either way from the head, and the river's lower reach
+  fields:{wet,salt,upland,flow,karst},eye:()=>camera,
+  stat:(k,tris,inst)=>TSTAT.by['biome/'+pass]}); // the passes are budgeted as types of the 'biome' class (93z: 4.5 M each)
+NWBAY.build({R:2500,quality:.55,bayHue:.47,fauna:true});
+NWBAY.dress([faceGeometry],{karst:true,...});     // once per stack within 1.7 km of the spine: the hanging gardens
+ysBioKarstForest();                               // fan-crowns, crown ferns and splay shrubs on the field stacks' tops (the kit roots only its figs on the rock)
+BIO.bake();
+```
+
+**The mask** (`ysBioMask`): 0 on water (`terrainH < .3`) and off the map; 0 on a stack's rim band (12 m inside the
+wall's top edge), on its face and on the scree 8 m past its foot, and on the whole top of a landmark's stack (its
+building takes it); 0 in the river's water strip (`ysRiverDist(x,z).d < .85 w`, rising to 1 by 1.3 w); 0 on every
+occupancy box (`ysPlClash(ysPlBox(x,z,.6,.6,0,'bio'))`: buildings, hosts' caps, streets, highways, piers, slots) and on
+the moles' plates; .15 in the city's land blocks and the drowned grid's awash land (so the streets read), .35 in the
+farm blocks; 1 on natural ground. The semi-aquatic species (mangrove, pandan, pipe reed) root past the mask by the
+kit's rule; the `wet` field keeps them off the paving (.25 on any box or mole) and out of the drowned grid (.3).
+
+**The fields**: `wet` 1 round the bay and along the river, .14 on the high slope, .62 inside the blocks (the
+flame-crown's lowland, not the giants' jungle), damp (≥ .55) on the stack tops; `salt` 1 at the waterline and at
+sea, 0 by 250 m inland (`ysShoreDist`), 0 in the drowned grid; `upland` the natural ground before the carve
+(`ysNatBase`), 4 m → 0, 59 m → 1; `flow` 1 within a width of the river's line, 0 by 3.4 widths; `karst`
+(`ysBioKarst`) 1 from 13 m inside a stack's top edge, 0 from 6 m beyond its foot, the band between is the face
+(`ysStackRR` is the wall, so the field follows the wandering plan, not the nominal radius). The slow readers
+(`ysRiverDist`, `ysShoreDist`, `ysNatBase`) are cached on an 8 m lattice (`ysBioCache`).
+
+**The faces** for the dress pass are read off the drawn terrain (`PORT_TERRAIN.chunks`): a chunk triangle within 4 m
+of a stack's wall with `|ny| < .6` is a face, an up-facing one 6..26 m inside a field stack's top edge is the rim
+ledge (the curtains hang off its outer edge). One `BufferGeometry` per stack, never added to the scene.
+
+`window._biome` (`_api.biome()`): trees, heroes, far, shrubs, figsOnEdge, karstTrees, bySpecies, floor, reeds, dress,
+stacksDressed, fauna, tris, inst, calls, registered, obstacles, ms. The registered trees are `cls:'flora'`
+(`tags.culture 'wild'`): in the inspector and the tag audit, out of the labels. Checks (93z): `biome-bound`,
+`nothing-on-a-cliff-face`, `figs-on-the-karst`, `height-ceiling`. Presets: 'The karst forest', 'The river bank'.
+The knobs are `YS_BIO` at the top of 89: `Q` (density), `R`, `RIM`, `FOOT`, `HUE`.
+
 ## Animation
 
 A builder that moves something (the Pharos beam, a windmill's sails) pushes `fn(dt,t)` onto `window.YS_TICKS`

@@ -521,3 +521,45 @@ from under it. **The editor** (an agent): see API.md "The editor" and the round 
 **The wet rock** (Travis's `rock.wet.dark`, `tools/textures/batches/ys-2026-10b.json`): a new shell pair `hkWet` bound to
 it (keep .85: the set carries the darkness, the builder's tints are light), used by the Wet Cells alone; every other
 barnacle surface keeps `hkBarn`.
+
+## The biome bound (phase 3, Oct 5 2026)
+`biomes/nwbay` on the city page (PLAN P3 item 6, DESIGN §8). The shared biome core (`core/biome` 10, 20, 30, 40) and the
+kit's six fragments (50 species, 55 trees, 60 floor, 65 dress, 70 build, 75 fauna) are vendored byte for byte as
+`src/86-bio-*.js` (`BIO_VENDORED` in build.py, in `VENDOR.json`, `--vendor-check` clean: 48 identical); `TARGET_ONLY`
+keeps them to the city target, so the kit sheet and the mock build as before (98 and 100 fragments; the city 123). Two
+host fragments: `targets/city/86-bio-45-city-init.js` binds THREE before fragment 50 loads (the species build their
+textures against `BIO.host.THREE` at load: the fragment number is load-bearing, as the Ancients bind and dalab's
+`86-bio-45-init` found), sets the ceiling (110 m) and the bay hue (.47) and routes the foliage's wind tick into
+`window.YS_TICKS`; `targets/city/89-city-biome.js` binds the city's facts in a `YS_AFTER` hook (after every placer, the
+shell flush and the land–sea lattice, before `kbake`, which never sees the biome's meshes) and builds. The contract
+given (API.md "The biome"): `terrainH` the city's own (`ysKarstH` already returns a stack's top inside its footprint),
+a mask that is 0 wherever the city is (water, the rim band 12 m inside a wall's top, the face and 8 m of scree, a
+landmark's whole top, the river's water strip, every occupancy box, the moles' plates; .15 in the land blocks and the
+awash land, .35 in the farm blocks), the five fields (`wet` from the shore and the river, .62 in the blocks so they carry
+the flame-crown's lowland rather than 100 m prism gums, .3 in the drowned grid so no mangrove stands between the
+stumps; `salt` 1 at the tideline falling to 0 by 250 m; `upland` from `ysNatBase`; `flow` from `ysRiverDist`; `karst`
+1 from 13 m inside a stack's top edge to 0 at 6 m beyond its foot, measured against `ysStackRR`, the wandering wall,
+not the nominal radius), 117 obstacles (every host's cap over its height, the landmarks' and ruins' REG volumes, the
+buildings over 14 m), a LOD spine along the shore a kilometre either way from the head plus the river's lower reach,
+`center` CITY.HEAD, `eye` the camera. The slow readers are cached on an 8 m lattice.
+
+**The karst.** Ys's stacks are the heightfield, not meshes, so the faces for `NWBAY.dress(...,{karst:true})` are read
+off the drawn terrain chunks: a triangle within 4 m of a wall with |ny| < .6 is a face, an up-facing one 6..26 m inside a
+field stack's top edge is the rim ledge (so the curtains hang from the rim); one BufferGeometry per stack, 49 stacks
+within 1.7 km of the spine, counts by perimeter and height thinned with the LOD. The kit's tree pass roots nothing but
+its cliff figs on the rock (55-trees: a species past the mask could reach a sea stack's foot), so the fan-crowns,
+crown ferns and splay shrubs its zones table promises for the tops are placed by the city itself on the kit's builders
+(`NWBAY.BUILDERS[sp]`, the API's own route), where karst > .97 and the mask allows: 1215 trees on the tops.
+
+**Numbers** (`verify.py dist/ys.html --assert --views "The karst forest,The river bank,Opening — ..."`): error panel
+clean, every invariant green, 26.13 M of 30 M scene triangles (the city was 23.1 M: the biome is 3.02 M at Q .55:
+trees 1.26 M, the hanging gardens 1.01 M, the karst forest .39 M, the floor .33 M, reeds and fauna .02 M), 179 draw
+calls at the opening (148–178 over the three views; the biome adds 48), 1898 registered volumes (785 of them the
+biome's heroes and reed beds, `cls:'flora'`, out of the labels). 3408 trees: 1664 heroes, 529 impostors; by species
+prism gum 55, baobab 71, fan-crown 238, ironbark 57, crown fern 656, splay 676, dragon tree 75, umbrella thorn 83, cliff
+fig 55 (40 at a rim with their root curtains down the face), flame-crown 62, mangrove 109, pandan 33, lotus trumpet 7,
+pipe reed 16; 30,686 floor plants, 2229 reed stems, 120,947 hanging-garden items; 13.5 s of the build. Checks (93z):
+`biome-bound` (3408 > 200; none in the water, on a street, in a footprint or on a mole), `nothing-on-a-cliff-face` (0),
+`figs-on-the-karst` (55 of 55), `height-ceiling` (109.6 m against 110). Presets `The karst forest` and `The river bank`.
+Looked at: the karst forest (fan-crowns, ferns and figs on a tower's domed top, ferns and epiphytes down the pale face,
+root strands to the ground, baobabs and the river beyond), the river bank, the opening shot (the city still reads).

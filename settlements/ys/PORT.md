@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 216 (15%) | 35 (2%) | 104 (7%) | 70 (5%) | 1017 (71%) |
+| KB | 255 (15%) | 52 (3%) | 104 (6%) | 87 (5%) | 1166 (70%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -30,7 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/56-sky-d.js` | 5.9 | [G native] | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/57-sky-e.js` | 3.8 | [G native] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/58-sky-f.js` | 5.6 | [G native] | 1 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/60-hyk-mat.js` | 9.8 | [G shader] | 20 | 6 | 0 | 0 | 0 | 13 | 3 | 0 | 0 | 0 | 0 |  |
+| `src/60-hyk-mat.js` | 10.0 | [G shader] | 20 | 6 | 0 | 0 | 0 | 13 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/60-ys-registries.js` | 3.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/61-hyk-shell.js` | 14.7 | [draw] | 15 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-hyk-helpers.js` | 23.0 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
@@ -72,7 +72,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/74c-hyk-tides.js` | 20.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74d-hyk-winds.js` | 10.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/74e-hyk-pharos.js` | 12.6 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/74f-hyk-civic-minor.js` | 33.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/74f-hyk-civic-minor.js` | 34.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-hotel.js` | 14.9 | [draw] | 10 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-hyk-harbour.js` | 36.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-hyk-industry.js` | 45.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -85,6 +85,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/80-aa-battery.js` | 1.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/82-apartments.js` | 8.9 | [draw] | 6 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-bio-10-core-head.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-bio-20-core-kit.js` | 21.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/86-bio-30-core-foliage.js` | 16.5 | [G shader] | 1 | 4 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 |  |
+| `src/86-bio-40-core-place.js` | 8.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-bio-50-biome-nwbay-species.js` | 43.8 | [draw] | 0 | 3 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/86-bio-55-biome-nwbay-trees.js` | 61.1 | [draw] | 0 | 1 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-bio-60-biome-nwbay-floor.js` | 18.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/86-bio-65-biome-nwbay-dress.js` | 9.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86-bio-70-biome-nwbay.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/86-bio-75-biome-nwbay-fauna.js` | 12.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 6 | 0 | 0 | 0 |  |
 | `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89m-sky-k.js` | 42.2 | [G native] | 42 | 1 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-a-bole.js` | 15.0 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
@@ -102,6 +112,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/84-city-geo.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/84b-city-shore.js` | 8.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/86-bio-45-city-init.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/86-city-edits.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/87-city-layout.js` | 14.1 | [G data] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the layout is records; only the debug overlay draws (move it to its own fragment) |
 | `targets/city/87b-city-nav.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -110,10 +121,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/88-city-place.js` | 64.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | pass 1 of P3: the placement as records on KRAND (blds, hosts with plates and pods, slots, moles); reads the layout and terrainH only |
 | `targets/city/88-city-spans.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/88a-city-floors.js` | 5.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/88b-city-draw.js` | 18.5 | [draw] | 4 | 0 | 0 | 0 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | the draw pass: reads PLACE and calls HYK.place, ysPlaceHost, HYK.placeOn; decides nothing |
+| `targets/city/88b-city-draw.js` | 18.6 | [draw] | 4 | 0 | 0 | 0 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | the draw pass: reads PLACE and calls HYK.place, ysPlaceHost, HYK.placeOn; decides nothing |
+| `targets/city/89-city-biome.js` | 13.8 | [web] | 1 | 0 | 0 | 0 | 2 | 3 | 0 | 1 | 0 | 0 | 0 |  |
 | `targets/city/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/91z-views.js` | 8.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/93z-city-api.js` | 8.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the probe: _api.city.place()/records() and the city invariants on window._api |
+| `targets/city/91z-views.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/city/93z-city-api.js` | 11.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the probe: _api.city.place()/records() and the city invariants on window._api |
 | `targets/city/94-city-editor.js` | 21.5 | [web] | 8 | 0 | 19 | 4 | 0 | 1 | 1 | 4 | 1 | 0 | 0 |  |
 | `targets/kit/84-kit-geo.js` | 0.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/89z-rows.js` | 6.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

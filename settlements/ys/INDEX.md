@@ -35,7 +35,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `56-sky-d.js` | 6 |  |
 | `57-sky-e.js` | 4 |  |
 | `58-sky-f.js` | 6 |  |
-| `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (100) |
+| `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (101) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 15 | the surface builder (35); lathe: the shell body (47); pod: a superellipsoid with real openings (64); conch: a tapering tube along a log spiral (83); tube along a polyline (parallel-transport frames (99); fillet: roots a shell into a face or the ground (113); disc: floors, landings, lily pads (normal up unl (120) |
 | `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
@@ -90,6 +90,16 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `80-aa-battery.js` | 1 |  |
 | `81-sky.js` | 10 |  |
 | `82-apartments.js` | 9 |  |
+| `86-bio-10-core-head.js` | 9 | PRNG (14); noise (24); host binding (41); accounting (124) |
+| `86-bio-20-core-kit.js` | 22 | kits (namespaces) (13); merged buckets (80); runtime LOD (xanadu-1, additive) (154); indexed buckets (181); bake (204); dynamic instances (sedesert-1) (238) |
+| `86-bio-30-core-foliage.js` | 16 | alpha textures (26); card geometries (56); the foliage hook (118); colour (sedesert-1) (188) |
+| `86-bio-40-core-place.js` | 8 | surface sampling (59) |
+| `86-bio-50-biome-nwbay-species.js` | 44 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (87); leaf textures (145); bark textures (269); geometries local to this biome (326); materials (392); instanced items (438) |
+| `86-bio-55-biome-nwbay-trees.js` | 61 **big** | zones from the fields (15); colour (36); polyline helpers (Girder's) (58); keep-clear between trees (67); the karst's edge (74); epiphytes, lianas (86); foliage helpers (105); the builders (118); impostors (the far canopy) (465); the reed beds (503) |
+| `86-bio-60-biome-nwbay-floor.js` | 19 | fields local to the floor (29); small plants (34); the zone planters (112); the pass (176) |
+| `86-bio-65-biome-nwbay-dress.js` | 10 |  |
+| `86-bio-70-biome-nwbay.js` | 1 |  |
+| `86-bio-75-biome-nwbay-fauna.js` | 13 | geometries (vertex-coloured, unit-sized) (31); the animated materials (53); the pass (65) |
 | `89-lab.js` | 7 |  |
 | `89m-sky-k.js` | 42 **big** |  |
 | `8aj-alt-a-bole.js` | 15 | THE BOLE (74) |
@@ -112,6 +122,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 200 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `86-bio-45-city-init.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89-city-biome.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 219 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

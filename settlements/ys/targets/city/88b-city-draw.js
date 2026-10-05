@@ -87,11 +87,11 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   // the pool's water level; where the bed steps down at a lip the pair is laid twice, at the upper and the lower level,
   // so the surface falls vertically there; it ends where the sea's own sheet takes over
   // the level: the pool's (bed + 55 % of the rise, the lip's height less 25 cm) or, where the heightfield's cells have not
-  // carved the valley to the bed (10 m cells over a 34 m valley, 90 m cells past 900 m), 35 cm over the mesh under the
-  // strip (its middle and both edges, the highest of the three samples either side), so the water is never buried
+  // carved the valley to the bed (10 m cells over a 34 m valley), 35 cm over the mesh under the strip's middle (the
+  // highest of three samples inside the bed's flat, either side), so the water is never buried
   const N=pr.bed.length,pos=[],idx=[];let q=0,pools=1;const lvl=k=>pr.bed[k]+R.rise*.55-.25;
   const geo=k=>{const s=Math.min(k*pr.DS,pr.len);const [x,z]=at(s);const [x0,z0]=at(Math.max(0,s-pr.DS)),[x1,z1]=at(Math.min(pr.len,s+pr.DS));let tx=x1-x0,tz=z1-z0;const l=Math.hypot(tx,tz)||1;return {x,z,tx:tx/l,tz:tz/l,w:(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.62};};
-  const mesh=k=>{const g=geo(k);return Math.max(terrainH(g.x,g.z),terrainH(g.x-g.tz*g.w,g.z+g.tx*g.w),terrainH(g.x+g.tz*g.w,g.z-g.tx*g.w));};
+  const mesh=k=>{const g=geo(k),f=.45;return Math.max(terrainH(g.x,g.z),terrainH(g.x-g.tz*g.w*f,g.z+g.tx*g.w*f),terrainH(g.x+g.tz*g.w*f,g.z-g.tx*g.w*f));};   /* sampled inside the bed's flat, not on the banks: at the strip's edge the bank lifted the water to a lid over the valley */
   const floor=k=>{let m=-1e9;for(let j=-3;j<=3;j++){const q2=k+j;if(q2>=0&&q2<N)m=Math.max(m,mesh(q2));}return m+.35;};
   const level=k=>Math.max(lvl(k),floor(k));
   const pair=(k,y)=>{const {x,z,tx,tz,w}=geo(k);pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(q>=2)idx.push(q-2,q,q-1,q-1,q,q+1);q+=2;};

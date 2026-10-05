@@ -123,6 +123,17 @@ for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js'
 VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', 'a-facet', 'b-bastion', 'c-arcades', 'd-stalks', 'e-bellhall']}
 for _f in VENDOR_RENAME:
     VENDORED[_f] = 'kits/ancients/src'
+# the biome (phase 3, DESIGN §8): the shared biome core from core/biome and the north-west bay kit from biomes/nwbay/src,
+# byte-identical, as src/86-bio-*.js (the dalab pattern). Only the city target takes them (TARGET_ONLY); the city's host
+# binding is targets/city/86-bio-45-city-init.js (THREE before fragment 50) and 89-city-biome.js (the facts, the build).
+BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place',
+                '50-biome-nwbay-species', '55-biome-nwbay-trees', '60-biome-nwbay-floor',
+                '65-biome-nwbay-dress', '70-biome-nwbay', '75-biome-nwbay-fauna']
+for _b in BIO_VENDORED:
+    VENDOR_RENAME['86-bio-%s.js' % _b] = _b + '.js'
+    VENDORED['86-bio-%s.js' % _b] = 'core/biome' if '-core-' in _b else 'biomes/nwbay/src'
+# src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome.
+TARGET_ONLY = {'86-bio-': ('city',)}
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
            '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
@@ -145,6 +156,7 @@ DETERMINISTIC = {
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-pack.js', '79z-ys-matlib.js',   # the material records, the pack, the adapter
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
     '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery
+    '89-city-biome.js',   # the biome's host binding and build: the biome keeps its own PRNG, the lineage's rng() is never drawn
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
@@ -235,7 +247,8 @@ def build_one(target, do_checks):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
         sys.exit('no such target: %s' % target)
-    src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()
+           and all(target in tg for pre, tg in TARGET_ONLY.items() if f.startswith(pre))}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
