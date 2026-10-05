@@ -459,6 +459,16 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
 - Acceptance: `core/simulation/example/` builds a 20-actor sheet (like
   `core/sockets/example/`) that runs on the module alone; Shade's `_life.OUT`
   audit numbers are unchanged when read from `_sim`.
+- Shade moved (2026-10-05): `world/*.json` holds its activities, faction, orgs, roles and
+  convoy; `84-host-life.js` registers its grid as the `pedestrian` layer, its places (a
+  place's capacity is SIM's `cap`, shared by its activities) and ports, and populates with
+  `deal:'round'`; its own audits (only way up, convoy, commutes) ride on `SIM.audits`. Every
+  `_life.OUT` number is unchanged, and `_life` is now a view of `_sim.audit()`. Then the
+  convoy got its rider role and DEPART and IDLE their records (`activities` 15), and SIM.fire
+  follows an event's `legs`; Shade's probe steps everyone and the convoy. Still open: stepping
+  per frame, which waits for the people to be drawn (Phase 3b).
+- The example sheet is `core/simulation/example/` (20 townsfolk, a caravan, a 2D canvas):
+  `python3 build.py && python3 check.py` (4 checks and 4 negatives, determinism across loads).
 
 ### Phase 2: translate Voth (Society)
 

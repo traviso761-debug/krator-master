@@ -6,7 +6,7 @@ Girder: an outlying Beast Rider village in the central-crater hyperjungle.
 
 Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `girder.html`
+Built output (never open it; edit `src/` and rebuild): `girder-hero.html`, `girder.html`
 
 Build: `cd settlements/girder && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -20,7 +20,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (79); 3. TERRAIN FIELD (140) |
 | `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (285) |
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
-| `30-layout.js` | 22 | 5. LAYOUT — GIRDER (1); THE RUIN (41); THE TERRACE (147); THE FOREST (181); NAV GRAPH (216) |
+| `30-layout.js` | 24 | 5. LAYOUT — GIRDER (1); THE RUIN (41); THE TERRACE (148); THE FOREST (182); NAV GRAPH (217) |
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
 | `45-kit.js` | 31 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
 | `47-texture.js` | 14 | 11. TEXTURES (1) |

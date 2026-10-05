@@ -9,7 +9,7 @@ reseed(400001);
 
 var GC_RES = FAST ? 2048 : 4096, MASK_RES = 2400;
 var GROUND_CANVAS = document.createElement('canvas'); GROUND_CANVAS.width = GROUND_CANVAS.height = GC_RES;
-var MASK_CANVAS = document.createElement('canvas'); MASK_CANVAS.width = MASK_CANVAS.height = MASK_RES;
+var MASK_CANVAS = KMASK.xform(KMASK.canvas(MASK_RES, MASK_RES));   /* core/mask: hard-edged, the same bytes on any machine and in Godot */
 var MASK_DATA = null;
 function maskAt(x,z){
   if(!MASK_DATA) return 0;

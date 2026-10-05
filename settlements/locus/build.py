@@ -61,6 +61,23 @@ LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   
 FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
+MASK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'mask')   # KMASK: the placement mask as data (core/mask/README.md)
+ATMOS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'atmos')   # the lake's wave field (core/atmos/README.md)
+CLOCK_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'clock')   # KCLOCK: the world clock (core/clock)
+MINIMAP_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'minimap')   # KMAP: the plan panel (core/minimap)
+# The eastern-abyss biome: core/biome and the canonical kit biomes/eastabyss, read in place under Locus's slot names (the
+# names keep their order: after the kit builders, before 69b's host binding and 69z's planting). Mungo reads this map too.
+_ROOT = os.path.dirname(os.path.dirname(HERE))
+BIO_CANON = {'69a1-bio-core-head.js': ('core', 'biome', '10-core-head.js'),
+             '69a2-bio-core-kit.js': ('core', 'biome', '20-core-kit.js'),
+             '69a3-bio-core-foliage.js': ('core', 'biome', '30-core-foliage.js'),
+             '69a4-bio-core-place.js': ('core', 'biome', '40-core-place.js'),
+             '69c1-bio-eastabyss-species.js': ('biomes', 'eastabyss', 'src', '50-biome-eastabyss-species.js'),
+             '69c2-bio-eastabyss-trees.js': ('biomes', 'eastabyss', 'src', '55-biome-eastabyss-trees.js'),
+             '69c3-bio-eastabyss-floor.js': ('biomes', 'eastabyss', 'src', '60-biome-eastabyss-floor.js'),
+             '69c4-bio-eastabyss-dress.js': ('biomes', 'eastabyss', 'src', '65-biome-eastabyss-dress.js'),
+             '69c5-bio-eastabyss.js': ('biomes', 'eastabyss', 'src', '70-biome-eastabyss.js')}
+BIO_CANON = {k: os.path.join(_ROOT, *v) for k, v in BIO_CANON.items()}
 OUT = os.path.join(HERE, 'locus.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FURN = os.path.join(HERE, 'yuni-furniture.html')
@@ -73,6 +90,8 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '84-life.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '66-locus-furnish.js'}
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
+DETERMINISTIC |= {'25-core-mask.js', '26-core-mask-xform.js'}   # core/mask (no rnd())
+DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')} | {'90-atmos-host.js', '20-core-clock.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js'}   # core/atmos: IIFE-scoped, its own PRNG; core/clock
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
 
@@ -178,10 +197,12 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
+    for f, p in BIO_CANON.items():                               # the biome, in place (a src/ copy would override)
+        paths.setdefault(f, p)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:

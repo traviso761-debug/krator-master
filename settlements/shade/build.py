@@ -3,12 +3,16 @@
 
   00-head.html          page shell, opens <script>
   10..40                BIOME CORE      vendored from biomes/sedesert/src
+  20-core-clock, -sched read from core/clock and core/sched (CORE_MODULES, one shared copy each, like Mungo)
   36-core-carve         the carve patches, read from core/terrain (one shared copy, not vendored)
   44-host-layout        HOST: where everything is (terrainH, waterH, the places, the switchback)
   45-host-stage         HOST: renderer, fields, flora mask, BIO.init, ground, water
   50..75                BIOME LEAVES    vendored from biomes/sedesert/src (flora and fauna)
+  77-sim-*              the simulation records (SIM), read from core/simulation (CORE_MODULES)
   82-host-sky           HOST: the standard Krator sky (vendored from biomes/sedesert/src)
-  84-host-life          HOST: the life layer's data and the walkable grid
+  83-host-world-json    generated: settlements/shade/world/*.json inlined as SHADE_WORLD_JSON for SIM.load
+  84-host-life          HOST: the life layer declared into SIM (places, ports, the walkable grid as its
+                        'pedestrian' layer, the population) and Shade's own audits
   86..91                HOST: overlays, build order, camera and dev tools, probe
   99-tail.html          closes <script>
 
@@ -32,6 +36,8 @@ UP = os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert', 'src'
 OUT = 'shade.html'
 CORE_TERRAIN = ['36-core-carve.js']   # shared fragments read from core/terrain (opt-in by name; a local copy wins)
 CORE_T = os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'terrain'))
+CORE_MODULES = ['clock', 'sched', 'simulation']   # core/<module>/[0-9]*.js, every fragment (a local copy wins)
+WORLD_DIR = os.path.join(HERE, 'world'); WORLD_FRAG = '83-host-world-json.js'
 VENDORED = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-strata.js', '40-core-place.js',
             '50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
             '65-biome-sedesert-dress.js', '70-biome-sedesert.js', '75-biome-sedesert-fauna.js',
@@ -51,14 +57,40 @@ def vendor_check():
                               else 'DRIFT in ' + ', '.join(drift) + ' - fix upstream and re-vendor, or record it in KNOWN_ISSUES.md'))
     return 1 if drift else 0
 
+def world_json():
+    """settlements/shade/world/*.json -> SHADE_WORLD_JSON, the argument of SIM.load (as Mungo's build.py). Each file
+    is a list of records, one per line; its name before the first '-' or '.' is the record kind."""
+    recs = {}
+    for f in sorted(os.listdir(WORLD_DIR)) if os.path.isdir(WORLD_DIR) else []:
+        if not f.endswith('.json'):
+            continue
+        try:
+            data = json.load(open(os.path.join(WORLD_DIR, f), encoding='utf8'))
+        except Exception as e:
+            sys.exit('world/%s: %s' % (f, e))
+        if not isinstance(data, list):
+            sys.exit('world/%s: must be a list of records' % f)
+        for i, r in enumerate(data):
+            if isinstance(r, dict):
+                r.setdefault('_src', '%s:%d' % (f, i + 1))
+        recs.setdefault(re.split(r'[-.]', f, maxsplit=1)[0], []).extend(data)
+    return ('// ==================== WORLD DATA (generated from settlements/shade/world/*.json; edit the JSON, never this)\n'
+            '// The life layer\'s records for SIM.load (core/simulation/SCHEMA.md): activities, factions, orgs, roles, events.\n'
+            'const SHADE_WORLD_JSON = %s;\n' % json.dumps(recs, separators=(',', ':'), ensure_ascii=False))
+
 def main():
     path = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if not f.startswith('.')}
     for f in CORE_TERRAIN:
         if f not in path: path[f] = os.path.join(CORE_T, f)
+    for mod in CORE_MODULES:
+        d = os.path.normpath(os.path.join(HERE, '..', '..', 'core', mod))
+        for f in sorted(os.listdir(d)):
+            if f[0].isdigit() and f.endswith('.js') and f not in path: path[f] = os.path.join(d, f)
+    path[WORLD_FRAG] = None
     frags = sorted(path)
     out, bad = [], []
     for f in frags:
-        s = open(path[f], encoding='utf8').read()
+        s = world_json() if f == WORLD_FRAG else open(path[f], encoding='utf8').read()
         n = int(re.match(r'(\d+)', f).group(1))
         if 10 <= n < 80 and '-host-' not in f:
             for w in FORBID:

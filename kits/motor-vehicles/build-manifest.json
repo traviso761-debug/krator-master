@@ -1,0 +1,15 @@
+{
+ "00-head.html": "5bf7de070a32",
+ "50-vehicles-bundle.js": "85d34b1aa32e",
+ "80-sky-hash.js": "29fada89e7a1",
+ "81-sky.js": "a7c46ee78a05",
+ "90-sheet.js": "9b20dd6f18de",
+ "92-hover.js": "3fde2106f120",
+ "93-polygon.js": "268e65157c21",
+ "99-tail.html": "841595c4eabb",
+ "bundle:kits/catalog/krator-furniture-core.js": "de7684b92d3f",
+ "bundle:kits/motor-vehicles/krator-vehicles-geomancer.js": "23829496a7ac",
+ "bundle:kits/motor-vehicles/krator-vehicles-runtime.js": "8975d0e13bb7",
+ "bundle:kits/motor-vehicles/vehicles-core.js": "9c4b30bca9e3",
+ "krator-asset-engine.js": "e72b6df51040"
+}

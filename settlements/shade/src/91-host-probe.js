@@ -148,6 +148,20 @@ const CHK={
  // the canyon is open: its east port reachable from the Khan over the ground (optionally with cells blocked)
  canyonOpen(block){const K=polyCentre(PLACES.find(p=>p.id==='khan').poly),S=LIFE.reach(K[0],K[1],block),P=PORTS.canyon_east;
   const k=Math.round((P.x-LIFE.NAV.x0)/LIFE.NAV.c)+Math.round((P.z-LIFE.NAV.z0)/LIFE.NAV.c)*LIFE.NAV.nx;return{ok:!!S[k],detail:'the canyon\'s east port '+(S[k]?'reachable':'UNREACHABLE')+' from the Khan'};},
+ // SIM steps: at each hour every resident, starting from home, decides (SIM.jump) and finds its way; none stuck, no
+ // route failed. Leaves them where the last hour put them (nothing draws them yet) and the clock at its hour.
+ lifeSteps(hours){const C=LIFE.CLOCK,h0=C.hour,res=SIM.all('actor').filter(a=>a.present&&!a.transient),out=[];let bad=false;
+  for(const h of hours){res.forEach(a=>{SIM.release(a);a.task=null;a.pos=null;a.place=null;a.wanted=null;});const f0=SIM.routeFail.length;C.hour=h+.5/60;SIM.jump();
+   const stuck=res.filter(a=>!a.task),fell=res.filter(a=>a.activity!==a.wanted).length,rf=SIM.routeFail.length-f0;if(stuck.length||rf)bad=true;
+   out.push(h+'h '+(res.length-stuck.length)+' placed'+(fell?' ('+fell+' fell back)':'')+(stuck.length?', '+stuck.length+' STUCK (first '+stuck[0].id+' wanting '+stuck[0].wanted+')':'')+(rf?', '+rf+' ROUTES FAILED':''));}
+  C.hour=h0;return{ok:!bad,detail:out.join('; ')+' ('+LIFE.ROUTE_CACHE.size+' routes kept)'};},
+ // an event fired at 6:00 and stepped minute by minute: its stops in the order the audit routed them (want), then out
+ // by its port, every leg found on the ground
+ convoyRuns(E,want){const C=LIFE.CLOCK,f0=SIM.routeFail.length;C.hour=6+.5/60;const G=SIM.fire(E,SIM.minute(),C.t);if(!G)return{ok:false,detail:E.id+' did not fire'};
+  const stops=[];let ph=G.phase,m=0;for(;m<24*60&&SIM.get('group',G.id);m++){LIFE.run(1);
+   if(G.phase!==ph){ph=G.phase;if(ph==='dwell'){const A=SIM.get('actor',G.leader),L=A.plan[A.planI];stops.push(L.activity+' at '+L.place);}}}
+  const left=!SIM.get('group',G.id),rf=SIM.routeFail.length-f0,same=stops.join()===want.join();C.hour=12;
+  return{ok:left&&!rf&&same,detail:G.members.length+' riders: '+stops.join(' -> ')+(left?'; out by '+G.to+' after '+m+' min':'; STILL IN after '+m+' min')+(rf?'; '+rf+' ROUTES FAILED':'')+(same?'':'; WANTED '+want.join(' -> '))};},
 };
 function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('falls-land-in-the-pool',CHK.falls(worldVerts(WATER.falls)));
@@ -182,6 +196,8 @@ function shadeChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('life: activities known and offered',{ok:!L.unknownActivities.length,detail:L.unknownActivities.join(', ')||'all '+L.activities});
  const ev=L.events.raider_convoy;add('life: raider convoy routed',{ok:!ev.missing.length&&ev.exitOnSwitchback_m>=200,detail:ev.legs.map(l=>l.to+' '+l.len+' m').join(' -> ')+'; exit on the switchback '+ev.exitOnSwitchback_m+' m'+(ev.missing.length?'; MISSING '+ev.missing.join(', '):'')});
  const unr=Object.keys(L.routes).filter(j=>L.routes[j].unrouted);add('life: every job\'s commute routed',{ok:!unr.length,detail:unr.length?unr.join(', '):Object.keys(L.routes).length+' jobs'});
+ add('life: SIM steps everyone (2h, 8h, 13h, 20h)',CHK.lifeSteps([2,8,13,20]));
+ add('life: the raider convoy steps through its legs',CHK.convoyRuns(SIM.get('event','raider_convoy'),ev.legs.filter(l=>!/^exit /.test(l.to)).map(l=>l.to)));
  return R;}
 // each check fed a broken input; every one of these must FAIL
 function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
@@ -211,6 +227,11 @@ function shadeNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,det
  {const B=window._buildings.records.find(b=>b.backLine&&b.family==='treasury'),c=B.center,m=(p)=>[p[0]+(c[0]-B.backLine[0][0])*.0+(B.face?B.face[0]:0)*4,p[1]+(B.face?B.face[1]:0)*4];
   add('a carved front standing 4 m out from the cliff',CHK.wallContact([Object.assign({},B,{backLine:B.backLine.map(m),center:[c[0]+(B.face?B.face[0]:0)*4,c[1]+(B.face?B.face[1]:0)*4]})]));}
  {const B=Object.assign({},window._buildings,{byFamily:Object.assign({},window._buildings.byFamily,{tower:0})});add('a building family omitted',CHK.buildingFamilies(B));}
+ {const P=SIM.nav.layers.pedestrian;SIM.nav.layer('pedestrian',{route:()=>null});const r=CHK.lifeSteps([8]);SIM.nav.layers.pedestrian=P;
+  SIM.all('actor').forEach(a=>{a.bad={};a.mem={};});add('no way on the ground for anyone',r);}
+ {const E=SIM.get('event','raider_convoy'),X=Object.assign({},E,{id:'convoy_lost',to:['nowhere']});SIM.port({id:'nowhere',x:2000,z:2000});SIM.event(X);
+  add('a convoy whose exit port is off the map',CHK.convoyRuns(X,LIFE.OUT.events.raider_convoy.legs.filter(l=>!/^exit /.test(l.to)).map(l=>l.to)));
+  SIM.remove('event',X.id);SIM.remove('port','nowhere');SIM.routeFail.length=0;}
  {const B=window._buildings.records[0];add('a doorway beyond the walkable map',CHK.buildingDoorsReachable([Object.assign({},B,{door:[1000,1000]})]));}
  return R;}
 window._api={BUDGET,REG,

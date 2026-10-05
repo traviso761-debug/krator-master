@@ -6,7 +6,7 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 1503 furniture pieces
+furniture entry and every variant, and `verify.py --assert` passes: all 1514 furniture pieces
 (2266 instances over five pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, carry their tags, and sit on exactly one page. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
@@ -31,7 +31,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-master-furniture.js` | 122 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 58, Ancients 4) |
 | `krator-master-furniture-<culture>.js` | **one file per culture** (17 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
 | `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (33, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
-| `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 10 pieces harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray). See "Rugs and Jobs" |
+| `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 13 pieces: 10 harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray) and 3 carpentry pieces for the abyss builders' yard (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`, 2026-10). See "Rugs and Jobs" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
 | `three.min.js` | three.js r128, the copy every other build uses |
@@ -313,7 +313,7 @@ its file says how to add them.
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
 (`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke
 pieces of the first pass, 112 hangings of the second, and the 122 harvested ones (the interiors pass; with the
-kit harvests, the trade roles, the tent rug and the jobs file it is 1503). The poor tier is the two generic sets:
+kit harvests, the trade roles, the tent rug and the jobs file it is 1503; with the Mungo pass's reed tavern pieces, the builders' yard's carpentry pieces and its bricks, lime and reed bundles, 1514). The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -376,6 +376,8 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | ancient | ancients_workstation (wall) |
 | voth | tavern_table, tavern_bench, tavern_stool, tavern_bar, offering_table, candle_stand, prayer_mat, lantern_bracket (wall); tableware, candles (surface) |
 | beast-rider | br_tool_set (surface) |
+| reedlake | bar, jar_rack, long_bench, long_table (common); sleeping_mat (poor): the Mungo pass, for Reed's Local and the Reed Lake interiors set |
+| eastabyss | abyss_reed_bundles, abyss_brick_stack, abyss_lime_sacks (outdoor): the Mungo pass, for the Builders' yard |
 
 ### Trades and households (the 2026-10 interiors-sets pass)
 

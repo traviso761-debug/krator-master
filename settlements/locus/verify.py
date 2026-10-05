@@ -257,7 +257,7 @@ async def run(a):
                 print("timed out waiting for the world to build")
             await pg.wait_for_timeout(2500)
             if a.hour is not None:
-                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
+                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && /Hold time/.test(p.textContent)) p.click(); }", a.hour)
                 await pg.wait_for_timeout(1200)
             try:
                 st = await pg.evaluate(STATS_JS)
@@ -386,7 +386,7 @@ if __name__ == "__main__":
     ap.add_argument("--baseline", default="")
     ap.add_argument("--save-baseline", default="")
     ap.add_argument("--out", default="./shots")
-    ap.add_argument("--hour", type=float, default=None, help="set the sky clock (and pause it) before the screenshots")
+    ap.add_argument("--hour", type=float, default=None, help="set the world clock (LCLOCK; held) before the screenshots")
     ap.add_argument("--cam", action="append", help="custom shot: cx,cy,cz,tx,ty,tz (repeatable)")
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--shot-eval", action="append", help="JS arrow function to run, then screenshot evN.png (repeatable)")

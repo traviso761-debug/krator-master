@@ -49,7 +49,7 @@ passes its negative cannot fail, and fails the run.
 | `77b..e-kit-nomad-*.js` | the builders: carved (Treasury, crow-step house, rock stair, gallery), pueblo compound, caravanserai, black tent, market stall, cliff pueblo, watch tower |
 | `80-host-buildings.js` | builds `SHADE_PLAN`, sets each on the ground, registers it, pushes obstacles, merges all into one mesh per material; `NAV_BLOCK` for 84 |
 | `82-host-sky.js` | the standard Krator sky (Inner Wall west, gas giant NE), vendored |
-| `84-host-life.js` | factions, jobs, schedules, events, the walkable grid, A*, building navigation shadows |
+| `84-host-life.js` | the life layer declared into SIM (`core/simulation`, PLAN.md Phase 1): the walkable grid and its A* as SIM's `pedestrian` layer, building navigation shadows, the places and ports, the population; Shade's own audits. Factions, orgs, roles (schedules) and events are `world/*.json`, inlined by `build.py` as `83-host-world-json.js` |
 | `86-host-overlay.js` | ribbons for the places and the routes |
 | `87-host-views.js` | the preset views (their camera spots are reserved before the flora grows) |
 | `88-host-build.js` | build order: the biome grows round the buildings' obstacles, then one bake |

@@ -18,6 +18,7 @@ says which build holds what.
 | `kits/catalog/` | master catalog: asset engine, 1051 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
+| `kits/motor-vehicles/` | the Motor Vehicles kit: a `VEHICLE` registry on the catalog core, one file per culture (now geomancer: the dune buggy), bundled for any world as `KratorVehicles` (`vehicle_bundle.bundle()`). Verified: `build.py`, `verify.py --assert` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
