@@ -375,3 +375,22 @@ switches the rose and gizmo on, inside hides every exterior shell and shows the 
 - The port's underwater fade skips a material that has its own `onBeforeCompile` hook: a hooked material (the
   nacre) calls `portUWsh(sh)` itself.
 - A view name with a comma splits in the harness.
+
+**The foreign quarter** (`88c-city-foreign.js`, after `88b`; the kits vendored in `build.py`: `VENDORED_IZIZ_FQ`, `VENDORED_HL`,
+city target only; `77-voth-townhouses.js` the three Voth houses). At load, every `PLACE.slots` record of kind `foreign` or
+`chapterhouse` gets a `fill` `{key,rot,scale,v,ry,pry,culture,x,z,y,w,d,box}`: the builder is picked from the slot's `swap` globs
+over `VERN.order` (`ysFqPool`), among those whose footprint fits `w × d` within +1 m whole, or turned 90° (`rot`), or at
+scale .92 / .86 when nothing fits whole (`ysFqFits`; whole and unturned weigh most, a builder not yet standing in the
+quarter six times more, `ysFqPick`), from `KRAND.stream(KRAND.child(KRAND.cell(YS_FQ.SEED, i, j), kind+':'+n))` (the
+block's cell, the slot's index in its block). The slot's `standIn` record is spliced out of `PLACE.blds` and its box freed
+(`ysPlFree`); a slot nothing fits keeps it (`YS_FQ.kept`). A compound bigger than any plot (the Voth embassy; the
+chapterhouse when 88 reserved no square) is seated by `compound(key, blocks, culture)`: a box behind a lane of its
+culture's blocks, facing the lane, where the only things in the way are that lane's small houses (`why 'foreign quarter
+lane'`), which it replaces (`YS_FQ.lanesCleared`). The draw hook places each fill with `VERN.place(scene,key,x,z,ry,{v,scale,y})`,
+lays a 1.5 m stone pad under the footprint, stamps every REG volume the builder made (`culture:'iziz'|'republic'|'voth'|
+'historians'`, `type`, `wealth`, `decay:0`, `foreign:true`, the name prefixed with the culture) and turns the vern helpers'
+`DOORS` into `MARKS` door records; the accounting is `TSTAT 'foreign:<culture>'`, one `n` per building (`BUDGET.cls.foreign`).
+Before the bake, `ysFqMerge` takes this pass's kit instances out of `KIT.items` and merges them into one vertex-coloured
+mesh per material (the night kit and transparent items stay instanced). `FURNISH` (the Highlands kit's catalog furniture)
+is a stub here. `_api.city.foreign()` → `window._foreign` (counts per culture and key, the embassy and the chapterhouse,
+door marks, the merge). Presets `The foreign quarter`, `The Voth embassy`, `The Historians' chapterhouse`, `The Republican plots`.

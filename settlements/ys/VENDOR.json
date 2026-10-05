@@ -144,10 +144,25 @@
   "from": "kits/ancients/src",
   "sha1": "3d93cfdb531f"
  },
+ "70-hl-tex.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "89684ac3e3ee"
+ },
  "70-port-core.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "b6e114e2932b"
+ },
+ "70-vern-dwellings.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "83a46d297ae4"
+ },
+ "71-hl-mat.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "2b3109400c54"
  },
  "71-port-terrain.js": {
   "adapted": true,
@@ -159,15 +174,35 @@
   "from": "kits/ancients/src",
   "sha1": "19e7d7fb8124"
  },
+ "71-vern-trade.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "5e176829a2b5"
+ },
+ "71b-hl-motif.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "bf315ee9ebc6"
+ },
  "72-datacenter.js": {
   "adapted": false,
   "from": "kits/ancients/src",
   "sha1": "4c2f5395ed13"
  },
+ "72-hl-helpers.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "d0d7fa9524d0"
+ },
  "72-port-kit.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "6aaf10b6d2ad"
+ },
+ "73-hl-carve.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "6d57fdefd8a5"
  },
  "73-police.js": {
   "adapted": false,
@@ -189,10 +224,25 @@
   "from": "settlements/port/src",
   "sha1": "2adaa490788f"
  },
+ "74-rep-dwell.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "810a299e405f"
+ },
  "75-hotel.js": {
   "adapted": false,
   "from": "kits/ancients/src",
   "sha1": "a6b0a5d61da6"
+ },
+ "75-port-embassy.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "545ad29ee770"
+ },
+ "76-port-chapterhouse.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "6501ec0bf155"
  },
  "79-government.js": {
   "adapted": false,

@@ -68,3 +68,12 @@ const VIEWS={
  {const P=CITY.RIVER.pts,a=P[2],b=P[3];const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;const y=Math.max(terrainH(mx,mz),0);
   V['The river bank']=[mx-dz/l*120+dx/l*40,y+38,mz+dx/l*120+dz/l*40,mx,y+4,mz];}
 })();
+// the foreign quarter (88c-city-foreign.js): the Iziz plots nearest the market, seen from the market's side; the Voth embassy from its gate
+(function(){const V=VIEWS,H=CITY.HEAD;if(typeof YS_FQ==='undefined')return;
+ {const F=PLACE.slots.filter(s=>s.fill&&s.fill.culture==='iziz');if(F.length){const cx=F.reduce((a,s)=>a+s.x,0)/F.length,cz=F.reduce((a,s)=>a+s.z,0)/F.length,cy=F.reduce((a,s)=>a+s.y,0)/F.length;
+   const dx=H[0]-cx,dz=H[1]-cz,l=Math.hypot(dx,dz)||1;V['The foreign quarter']=[cx+dx/l*125-dz/l*40,cy+52,cz+dz/l*125+dx/l*40,cx,cy+4,cz];}}
+ {const E=YS_FQ.embassy;if(E){const fx=Math.sin(E.ry),fz=Math.cos(E.ry),sx=Math.cos(E.ry),sz=-Math.sin(E.ry);V['The Voth embassy']=[E.x+fx*64+sx*28,E.y+26,E.z+fz*64+sz*28,E.x,E.y+8,E.z];}}
+ {const C=YS_FQ.chapterhouse;if(C){const fx=Math.sin(C.ry),fz=Math.cos(C.ry),sx=Math.cos(C.ry),sz=-Math.sin(C.ry);V['The Historians\' chapterhouse']=[C.x+fx*66-sx*30,C.y+28,C.z+fz*66-sz*30,C.x,C.y+8,C.z];}}
+ {const R=PLACE.slots.filter(s=>s.fill&&s.fill.culture==='republic');if(R.length){const s=R[Math.floor(R.length/2)];const fx=Math.sin(s.ry),fz=Math.cos(s.ry),sx=Math.cos(s.ry),sz=-Math.sin(s.ry);
+   V['The Republican plots']=[s.x+fx*30+sx*34,s.y+14,s.z+fz*30+sz*34,s.x,s.y+4,s.z];}}
+})();

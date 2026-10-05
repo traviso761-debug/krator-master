@@ -573,3 +573,14 @@ cards** (Travis's clump and vine cards) are no longer drawn: the biome dresses t
 **The gallery** has an entry for the city (`gallery/build_gallery.py` ENTRIES, 'ys', marked new); it is republished when
 the branch reaches `main` (CLAUDE.md, gallery/README.md). Still open from PLAN.md P4: back-porting the compass to the
 standard `92-camera.js` pack (a cross-build change, not done here).
+
+## The foreign quarter (phase 3, Oct 5 2026)
+An agent vendored the Iziz Vernacular (dwellings, trade), the Republican dwellings of the Highlands kit (renamed at build
+time where its names clashed with Ys's: KNOWN_ISSUES "Deliberate drift"), the Voth embassy and the Historians'
+chapterhouse, and wrote three Voth townhouses in the embassy's idiom (`77-voth-townhouses.js`). `88c-city-foreign.js`
+fills every foreign plot from its swap list with a builder that fits it (whole, turned, or at .92/.86 when nothing fits
+whole), splices the Hykkousoi stand-in out, lays a stone pad, registers the volumes under their culture and turns the
+kits' door records into marks; the embassy and the chapterhouse, bigger than any plot, take a box behind a lane of their
+culture's blocks. 133 of 133 plots filled (45 Iziz, 48 Republic, 41 Voth, the chapterhouse); the pass's kit instances
+are merged into one mesh per material before the bake (draw calls 215 of 220). The plots were sized before the kits came
+and do not fit them well: see KNOWN_ISSUES. API.md "The foreign quarter".

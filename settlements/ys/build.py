@@ -118,6 +118,34 @@ for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-e
     VENDORED[_f] = 'settlements/port/src'
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
+# the foreign quarter (phase 3, DESIGN §2 and §6; NOTES.md "The foreign quarter"): the Iziz Vernacular dwellings and
+# trade, the Voth embassy and the Historians' chapterhouse (the Yuni-set ports) from Iziz; the Highlands kit's
+# Republican dwellings with the textures, materials, motifs, helpers and carving they need. Byte-identical copies
+# (--vendor-check); the city target alone takes them (TARGET_ONLY). Not taken: 72-vern-civic (nothing in it fits a
+# foreign plot), 73b-hl-frame (74 does not need it, and its overrides of vnWin/vnGableRoof/vnHipRoof would redraw the
+# Iziz houses), 75-rep-trade and 89y-hl-furnish (FURNISH places furniture from the master catalog; 88c stubs it).
+VENDORED_IZIZ_FQ = ['70-vern-dwellings.js', '71-vern-trade.js', '75-port-embassy.js', '76-port-chapterhouse.js']
+VENDORED_HL = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '74-rep-dwell.js']
+for _f in VENDORED_IZIZ_FQ:
+    VENDORED[_f] = 'settlements/iziz/src'
+for _f in VENDORED_HL:
+    VENDORED[_f] = 'settlements/highlands/src'
+# Build-time renames in a vendored fragment's body (the file on disk stays byte-identical to its upstream, so
+# --vendor-check stays clean and a re-vendor is a plain copy). Only for collisions in the shared scope that cannot be
+# avoided: Ys's 60-hyk-mat.js already declares `HPAL` (the Hykkousoi palette, read by 88b) and `hC`, both `const`, and
+# the Highlands kit declares the same two names (its formline palette; its hC is vC, exactly what Ys's hC does); the kit
+# also overwrites `MAT.rock` and `MAT.turf` from core/materials/68-mat-v5.js, which 36-decor.js and 64-houses-def.js
+# draw with. Recorded in KNOWN_ISSUES.md. (regex, replacement) pairs, applied in order.
+VENDOR_SUBST = {}
+for _f in VENDORED_HL:
+    VENDOR_SUBST[_f] = [(r'\bHPAL\b', 'HLPAL'), (r'\bMAT\.rock\b', 'MAT.hlRock'), (r'\bMAT\.turf\b', 'MAT.hlTurf')]
+VENDOR_SUBST['71-hl-mat.js'].insert(0, (r'^const hC=vC;', '/* hC: Ys has it (60-hyk-mat.js: hC = vC) */'))
+
+
+def subst(f, body):
+    for rx, rep in VENDOR_SUBST.get(f, []):
+        body = re.sub(rx, rep, body, flags=re.M)
+    return body
 # vendored under another name (Ys's load order: the five host-ready types must sort after 68-mat-v5 and before the city's
 # placer, which reads their HOSTSPEC_* at load): Ys name -> upstream name
 VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', 'a-facet', 'b-bastion', 'c-arcades', 'd-stalks', 'e-bellhall']}
@@ -132,8 +160,11 @@ BIO_VENDORED = ['10-core-head', '20-core-kit', '30-core-foliage', '40-core-place
 for _b in BIO_VENDORED:
     VENDOR_RENAME['86-bio-%s.js' % _b] = _b + '.js'
     VENDORED['86-bio-%s.js' % _b] = 'core/biome' if '-core-' in _b else 'biomes/nwbay/src'
-# src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome.
+# src fragments only the named targets take: prefix -> targets. The kit sheet and the mock carry no biome and no
+# foreign kits.
 TARGET_ONLY = {'86-bio-': ('city',)}
+for _f in VENDORED_IZIZ_FQ + VENDORED_HL:
+    TARGET_ONLY[_f] = ('city',)
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
            '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
@@ -157,6 +188,9 @@ DETERMINISTIC = {
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
     '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery
     '89-city-biome.js',   # the biome's host binding and build: the biome keeps its own PRNG, the lineage's rng() is never drawn
+    # the foreign quarter: the Highlands kit's textures, materials, motifs, helpers and carving carry no builder; the
+    # city's foreign pass (88c) picks and places from KRAND streams, and every builder it calls reseeds itself
+    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '88c-city-foreign.js',
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
@@ -266,7 +300,7 @@ def build_one(target, do_checks):
         if f == PACK_FRAGMENT:
             continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
-            bodies[f] = fh.read()
+            bodies[f] = subst(f, fh.read())   # VENDOR_SUBST: the recorded renames, on the body only
     if do_checks:
         errs = check(order, bodies)
         if errs:

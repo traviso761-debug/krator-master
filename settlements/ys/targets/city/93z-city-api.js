@@ -11,6 +11,9 @@ const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stai
 BUDGET.type.roads='env';BUDGET.type['mole quay']='env';BUDGET.type['karst cards']='env';BUDGET.type.river='env';   // the city's own ground work: the road ribbons, the moles' plates and quay walls
 BUDGET.type.biome='biome';BUDGET.cls.biome=4500000;   // the biome's passes (89-city-biome charges 'biome/trees', 'biome/floor', 'biome/dress'...): each under 4.5 M
 window._api.biome=()=>window._biome;
+// the foreign quarter (88c-city-foreign): one class for the three cultures' buildings, budgeted per building (t.n counts them)
+for(const c of ['iziz','republic','voth','historians'])BUDGET.type['foreign:'+c]='foreign';BUDGET.cls.foreign=160000;
+window._api.city.foreign=()=>window._foreign;
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const spanKey={bridge:null,drawbridge:'hyk_drawbridge',walkway:'hyk_walkway',pontoon:'hyk_pontoon'};const used=new Set(SPANS.list.filter(s=>s.drawn).map(s=>s.kind==='bridge'?(s.level==='L2'?'hyk_span_l2':'hyk_span_l1'):spanKey[s.kind]));
   if(SPANS.list.some(s=>s.drawn&&s.kind==='bridge'&&s.b.pad))used.add('hyk_lilypad');
@@ -40,13 +43,29 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  // at his points, the Wet Cells at the Needle's foot
  {const P1=[[-52.3,-445.6],[-178.0,378.3],[166.1,647.4],[466.6,-328.8]],P2=[[941.5,-1087.0],[538.5,-1127.2],[355.5,-348.0],[563.6,-309.0]];
   const inP=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
-  const n1=PLACE.blds.filter(r=>inP(P1,r.x,r.z)).length,n2=PLACE.blds.filter(r=>inP(P2,r.x,r.z)).length;R.push({name:'inner-quarter-density',ok:n1>=n2,detail:n1+' buildings inside the inner quarter against '+n2+' in the coast quarter'});
+  const cnt=P=>PLACE.blds.filter(r=>inP(P,r.x,r.z)).length+PLACE.slots.filter(s=>s.fill&&inP(P,s.x,s.z)).length;   /* a filled foreign slot is a building (88c) */
+  const n1=cnt(P1),n2=cnt(P2);R.push({name:'inner-quarter-density',ok:n1>=n2,detail:n1+' buildings inside the inner quarter against '+n2+' in the coast quarter'});
   const pt=PLACE.hosts.filter(h=>/Trays stump at the head|Lens stump by the river|sunk Terrace Wedge/.test(h.n));R.push({name:'point-hosts',ok:pt.length===4&&pt.every(h=>h.drawn&&h.pods.length>0),detail:pt.map(h=>h.n+' ('+Math.round(h.x)+','+Math.round(h.z)+') '+h.pods.length+' pods'+(SPANS.list.some(e=>e.na===h.n||e.nb===h.n)?', bridged':h.land?'':', unbridged')).join(' | ')||'none'});
   const wc=PLACE.blds.find(r=>r.key==='hyk_wet_cells');const nd=CITY.STACKS.find(s=>/Needle/.test(s.n));R.push({name:'wet-cells-at-the-needle',ok:!!(wc&&nd&&Math.hypot(wc.x-nd.x,wc.z-nd.z)<nd.r+30&&wc.sink>2),detail:wc?'at ('+Math.round(wc.x)+','+Math.round(wc.z)+'), rock '+wc.sink.toFixed(1)+' m to the bed':'not placed'});}
  {const sh=PLACE.hosts.filter(h=>/strip ring/.test(h.n)||(h.block&&/^9\d,0$|^1\d\d,0$/.test(h.block)&&!/Trays|Lens stump|sunk Terrace/.test(h.n)));R.push({name:'strip-hosts',ok:(PLACE.strip||0)>=6&&sh.every(h=>h.drawn&&h.pods.length>0),detail:(PLACE.strip||0)+' small reclaimed Ancients on the strip east of the inner quarter: '+sh.map(h=>h.type).join(', ')});}
  {const RU=PLACE.ruins||[];R.push({name:'ruins-in-the-east-shallows',ok:RU.length>=3&&RU.every(r=>r.drawn&&r.sink<-6),detail:RU.length?RU.map(r=>r.name+' ('+Math.round(r.x)+','+Math.round(r.z)+') bed '+r.sink.toFixed(1)+' m, '+r.h+' m tall').join(' | '):'none placed'});}
  R.push({name:'half-sunk-band',ok:(PLACE.band||0)>=3,detail:(PLACE.band||0)+' half-sunk mid-rise hosts in the band north-east of the head, '+PLACE.hosts.filter(h=>/half-sunk/.test(h.n)).reduce((s,h)=>s+h.pods.length,0)+' pods'});
  {const lanes=LAYOUT.streets.filter(s=>s.kind==='lane').length,laned=PLACE.blds.filter(b=>b.why==='lane').length;R.push({name:'lanes-lined',ok:lanes>0&&laned>lanes*2,detail:lanes+' lanes, '+laned+' buildings on them, '+(window._roads||0)+' road ribbons'});}
+ // the foreign quarter (88c-city-foreign.js): at least 100 slots filled with a foreign building, each inside its slot's box
+ // and clear of every street, the three cultures all standing; the embassy and the chapterhouse named
+ {const F=window._foreign||{};const fills=PLACE.slots.filter(s=>s.fill);const streets=PLACE.occ.filter(o=>/^(street|highway)/.test(o.tag));const bad=[];let out=0,onSt=0,nd=0;
+  const inside=(B,S)=>{for(const [a,c] of [[-1,-1],[1,-1],[-1,1],[1,1]]){const px=B.cx+B.ux[0]*a*B.hw+B.uz[0]*c*B.hd,pz=B.cz+B.ux[1]*a*B.hw+B.uz[1]*c*B.hd;const dx=px-S.cx,dz=pz-S.cz;
+   if(Math.abs(dx*S.ux[0]+dz*S.ux[1])>S.hw+.01||Math.abs(dx*S.uz[0]+dz*S.uz[1])>S.hd+.01)return false;}return true;};
+  for(const s of fills){const f=s.fill;if(!f.drawn)nd++;if(!inside(f.box,s.box)){out++;if(bad.length<4)bad.push(f.key+' outside its slot');}
+   for(const st of streets)if(ysPlHit(f.box,st)){onSt++;if(bad.length<4)bad.push(f.key+' on '+st.tag);break;}}
+  const comp=[F.embassy,F.chapterhouse].filter(Boolean);for(const c of comp){const B=(c===F.embassy?YS_FQ.embassy:YS_FQ.chapterhouse).box;for(const st of streets)if(ysPlHit(B,st)){onSt++;if(bad.length<4)bad.push('compound on '+st.tag);break;}}
+  const by=F.byCulture||{};const cultures=['iziz','republic','voth'].filter(c=>fills.some(s=>s.fill.culture===c&&s.fill.drawn));
+  R.push({name:'foreign-quarter-built',ok:fills.length>=100&&!out&&!onSt&&!nd&&cultures.length===3&&!!(F.embassy&&F.embassy.drawn),
+   detail:fills.length+' of '+PLACE.slots.filter(s=>s.kind==='foreign'||s.kind==='chapterhouse').length+' slots filled ('+Object.keys(by).map(c=>by[c]+' '+c).join(', ')+'), '+(F.kept||0)+' stand-ins kept, '+(F.dropped||0)+' dropped'
+    +(bad.length?'; '+(out+onSt)+' bad: '+bad.join(' | '):'; every one inside its slot and off the streets')+(nd?'; '+nd+' not drawn':'')
+    +'; embassy '+(F.embassy?(F.embassy.drawn?'at '+F.embassy.x+','+F.embassy.z+' (block '+F.embassy.block+', '+F.embassy.cleared+' lane houses cleared)':'not drawn'):'NOT PLACED')
+    +'; chapterhouse '+(F.chapterhouse?(F.chapterhouse.drawn?'at '+F.chapterhouse.x+','+F.chapterhouse.z+(F.chapterhouse.onSquare?' on its square':' in block '+F.chapterhouse.block):'not drawn'):'NOT PLACED')
+    +'; '+(F.doors||0)+' door marks; merge '+(F.merge?F.merge.instances+' instances into '+F.merge.meshes+' meshes':'none')});}
  // the biome (89-city-biome.js, BIOME-API.md): bound and rooted where the mask allows; the biome's own invariants
  if(typeof NWBAY!=='undefined'&&NWBAY.TREES){const T=NWBAY.TREES,SP=NWBAY.SPECIES,B=window._biome||{};
   const wetSp=t=>/mangrove|pandan|pipereed/.test(SP[t.sp].key);   /* the semi-aquatic fringe stands in the shallows past the mask by design */

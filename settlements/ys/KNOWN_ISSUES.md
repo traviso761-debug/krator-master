@@ -17,6 +17,13 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   `n` toggles noon/night, the camera and walker stay above the sea, the inspector names ground and sea, and
   the Compass toggle. Back-port the compass to the standard pack once Ys is on `main`.
 
+- The Highlands kit (`70-hl-tex`, `71-hl-mat`, `71b-hl-motif`, `72-hl-helpers`, `73-hl-carve`, `74-rep-dwell`, from
+  `settlements/highlands/src`, Oct 5 2026) is byte-identical on disk but RENAMED AT BUILD TIME (`VENDOR_SUBST` in
+  build.py, applied to the body only): `HPAL` → `HLPAL` and `const hC=vC` dropped (Ys's `60-hyk-mat.js` declares both
+  names, and 88b reads `HPAL`; the kit's hC is vC, exactly Ys's hC), `MAT.rock` → `MAT.hlRock` and `MAT.turf` →
+  `MAT.hlTurf` (the kit overwrote core's `68-mat-v5` materials that `36-decor` and `64-houses-def` draw with). A
+  re-vendor is a plain copy; a new name clash shows up as the build's duplicate-name error.
+
 ## Open
 - [ ] (Travis, Oct 5 2026) **Infill the empty spaces in the central region**: the open ground between the inner quarter's
       blocks, the strip and the shore still has gaps where nothing stands (the lanes' quarters that refused a villa, the
@@ -33,8 +40,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [x] (Oct 5 2026) No nature scatter on the natural ground until the NW-bay biome is bound (phase 3). Bound: `biomes/nwbay`
       vendored as `src/86-bio-*.js`, the host binding in `targets/city/86-bio-45-city-init.js` and `89-city-biome.js`
       (NOTES.md "The biome bound", API.md "The biome").
-- [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) will carry no ROOM records until
-      their own kits register them (DESIGN §7).
+- [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) carry no ROOM records until
+      their own kits register them (DESIGN §7). Built since Oct 5 2026 (88c-city-foreign.js): door marks only, the
+      Highlands houses' and the embassy's estimated at the middle of the front (their helpers record no door).
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
 - [x] (Oct 5 2026) The ground painter was the port's (red soil in patches, dry grass). Re-keyed to the bay's jungle floor
       (`ysGroundLush`, 84-city-geo.js); the farms' soil paint is softened half-way to it. The city's land blocks read as
@@ -134,8 +142,25 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] (Oct 5 2026) The roads are ribbons 22–30 cm over the heightfield (its 10 m cells made the vertex paint read as a
       zig-zag): on a hollow between two grid lines the ribbon can float by that much; the canal streets under the water
       are still not drawn. The lanes' ribbons stop at the streets' edges; no kerbs, no crossings.
-- [ ] (Oct 5 2026) The foreign quarter is 60 reserved plots and the chapterhouse's square, with their swap lists; none
-      of the foreign sets is vendored, so the quarter reads empty. The caravanserai stands on its nearest block.
+- [x] (Oct 5 2026) The foreign quarter is 60 reserved plots and the chapterhouse's square, with their swap lists; none
+      of the foreign sets is vendored, so the quarter reads empty. The caravanserai stands on its nearest block. *Built
+      (Oct 5 2026, phase 3): the Iziz Vernacular, the Republican dwellings, the Voth embassy and three Voth townhouses, the
+      Historians' chapterhouse, in every slot (NOTES.md "The foreign quarter").* Open after the build:
+- [ ] (Oct 5 2026) The foreign plots (`PL_FOREIGN` in 88) were sized before the sets were vendored and do not match the
+      kits' footprints: of the Republican set only the log izba (13 x 14, turned), the two-room log house (14 x 9) and the
+      Saxon townhouse (9 x 13) fit the 13 x 11 / 15 x 12 / 18 x 10 plots whole, so 88c also admits a builder at scale .92
+      or .86, and none of the Republican trade (75-rep-trade, not vendored) fits at all; of the Iziz set the shop row,
+      the tavern and the rich houses never fit. Resize the plots per culture from the kits' `VERN.defs` w x d (Republic:
+      15 x 15, 20 x 14, 10 x 14; Iziz: 19 x 13 for the shop row) when 88 is next open.
+- [ ] (Oct 5 2026) The Highlands kit's furniture is placed from the master catalog (`FURNISH`, 89y-hl-furnish.js, not
+      vendored): 88c stubs it, so the Republican houses stand without their barrels, woodpiles, racks and sacks, and the
+      kit's 73b-hl-frame (the Fachwerk frames and the harlequin roofs) is left out, since its overrides of `vnWin`,
+      `vnGableRoof` and `vnHipRoof` would redraw the Iziz houses too. The Voth townhouses are new builders in the embassy's
+      idiom (77-voth-townhouses.js): Voth's own house builders are not on the Ancients lineage and were not ported.
+- [ ] (Oct 5 2026) The Voth embassy and the Historians' chapterhouse stand behind a lane of a Voth and a Republic block,
+      facing the lane, where nothing had to be cleared: 88 never reserved the chapterhouse's 44 m square (the lanes cross
+      the block's centre) and no plot takes a 36 x 34 compound. Neither has a square of its own, and the embassy's gate
+      looks at the backs of the lane's small Hykkousoi houses.
 - [x] (Oct 5 2026) The moles were fill stamps with soft edges, no quay walls, and everything on them stood on the fill's
       own height (Travis: the military harbour z-fought at a distance). Now the fill lies 30 cm under the datum (inset
       7 m, sharp, under a walled mole), a plate at the datum less 12 cm covers the polygon, and a shell quay wall runs
@@ -199,9 +224,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [x] (Oct 5 2026) The river's pool sheets were flat ribbons at each pool's lip height and did not meet on the bends
       (Travis: discontinuous). One strip now, 62 % of the valley's width at bed + 55 % of the rise. Still no cascade at
       a lip: the strip steps where the bed does. The band's half-sunk hosts are all Arcades this seed (the low pool picks per cell).
-- [ ] (Oct 5 2026) The foreign slots' stand-ins are Hykkousoi houses of the middle pool (Travis: density); when the
+- [x] (Oct 5 2026) The foreign slots' stand-ins are Hykkousoi houses of the middle pool (Travis: density); when the
       Iziz, Republic and Voth sets land, the slot's `standIn` record is the one to drop. The industry blocks' lanes carry
-      small warehouses, smithies and poor houses (`PL_INDUSTRY_SMALL`).
+      small warehouses, smithies and poor houses (`PL_INDUSTRY_SMALL`). *Dropped (Oct 5 2026): 88c splices every filled
+      slot's stand-in out of `PLACE.blds` at load and frees its box; a slot nothing fits would keep its stand-in (none this
+      seed).*
 - [ ] (Oct 5 2026) The sunk office terraces stand whole 100 m (east) and 116 m (north) above the water: the ocean's tallest
       ruins after the three full towers; their rust is the concrete tint only (`MAT.concreteR`, see above).
 - [ ] (Oct 5 2026) The Comb (`altOfficeC`) is a flat bar in a radial host model: its back wall is 7 m from the axis at the
