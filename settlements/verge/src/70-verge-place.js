@@ -292,7 +292,12 @@ function spill(city,range,n,keys,dir){let placed=0;
   for(const P of OUT.pads)if(Math.hypot(P.x-cx,P.z-cz)<P.hx+K.w/2+3)ok=false;
   for(const r of VG.TRAIL.rest)if(Math.hypot(r.x-cx,r.z-cz)<30)ok=false;
   if(!ok){why('spill:clear');continue;}
-  const pad={id:'spill_'+OUT.pads.length,x:cx,z:cz,hx:K.w/2+1.2,hz:K.d/2+1.2,y:p[2]+.1,blend:6,yaw:-ry};OUT.pads.push(pad);VG.PADS.push(pad);
+  const pad={id:'spill_'+OUT.pads.length,x:cx,z:cz,hx:K.w/2+1.2,hz:K.d/2+1.2,y:p[2]+.1,blend:6,yaw:-ry};
+  // its blend must not reshape ground a building already stands on
+  {const c=city.code&&city.C.box?obb(cx,cz,pad.hx+pad.blend,pad.hz+pad.blend,ry):null;let hit=false;
+   if(c)for(let u=0;u<=8&&!hit;u++)for(let v=0;v<=8&&!hit;v++){const a=u/8,b=v/8,x=(c[0][0]*(1-a)+c[1][0]*a)*(1-b)+(c[3][0]*(1-a)+c[2][0]*a)*b,z=(c[0][1]*(1-a)+c[1][1]*a)*(1-b)+(c[3][1]*(1-a)+c[2][1]*a)*b;
+    const k=city.code(x,z);if(k===CODE.building||k===CODE.yard)hit=true;}
+   if(hit){why('spill:neighbour');continue;}}OUT.pads.push(pad);VG.PADS.push(pad);
   // the pad must hold the whole house: where the trail's next leg or its bank wins over a corner, take the pad back
   if(obb(cx,cz,K.w/2,K.d/2,ry).some(c=>Math.abs(VG.groundH(c[0],c[1])-pad.y)>.5)){OUT.pads.pop();VG.PADS.pop();why('spill:pad');continue;}
   const R=record(city,K,cx,cz,ry,p[2]+.1,{district:'trail',yard:0});R.spill=dir;placed++;}

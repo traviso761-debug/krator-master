@@ -27,6 +27,9 @@ const C={
  // every building stands on its ground: its floor no more than 0.5 m above the lowest ground under its box
  onGround:B=>{let bad=0,first=null;for(const R of B){const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);const lo=Math.min(...c.map(p=>terrainH(p[0],p[1])),terrainH(R.x,R.z));if(R.y-lo>.6||lo-R.y>4.5){bad++;if(!first)first='';if(bad<=6)first+=(bad>1?', ':'')+R.id+' '+R.key+' '+(R.y-lo).toFixed(1);}}
   return{ok:bad===0,detail:bad+' of '+B.length+' off their ground'+(first?' (first '+first+')':'')};},
+ // the trail is clear: no block of the funicular's ruin (walls, piers, girders, rubble) stands in its corridor
+ trailClear:blocks=>{let n=0,first=null;for(let s=0;s<T.len;s+=1){const p=VG.trailAt(s);for(const b of blocks)if(p[0]>b[0]-1.2&&p[0]<b[1]+1.2&&p[1]>b[2]-1.2&&p[1]<b[3]+1.2&&b[4]<p[2]+2.2&&b[5]>p[2]+.15){n++;if(!first)first='s '+s;break;}}
+  return{ok:n===0,detail:n?n+' m of trail run through the ruin (first at '+first+')':'no block of the ruin on the trail ('+blocks.length+' blocks)'};},
  // the only way between the two cities is the trail: with the trail's edges taken away no route exists
  trailOnlyWay:()=>{const a=SIM.PBY.port_west.node,b=SIM.PBY.port_east.node,w=SIM.route(a,b),wo=SIM.route(a,b,{noLayer:['trail']});
   return{ok:!!w&&!wo,detail:(w?'a route':'NO route')+' with the trail, '+(wo?'A ROUTE':'none')+' without it'};},
@@ -59,6 +62,7 @@ const CASES=[
  ['falls-in-the-gorge',()=>C.fallsInGorge(VG.FALLS),()=>C.fallsInGorge(VG.FALLS.map(f=>Object.assign({},f,{bot:f.bot+400})))],
  ['buildings-do-not-overlap',()=>C.noOverlap(B),()=>{const L=B.filter(R=>!/palisade/.test(R.key)).slice(0,40);return C.noOverlap(L.concat([Object.assign({},L[5],{id:'dup'})]));}],
  ['buildings-on-their-ground',()=>C.onGround(B),()=>C.onGround([Object.assign({},B[0],{y:B[0].y+5})])],
+ ['the-trail-is-clear',()=>C.trailClear(VG.FUNI.rec?VG.FUNI.rec.blocks:[]),()=>{const p=VG.trailAt(T.len/2);return C.trailClear([[p[0]-1,p[0]+1,p[1]-1,p[1]+1,p[2]-1,p[2]+3]]);}],
  ['the-trail-is-the-only-way-down',()=>C.trailOnlyWay(),null],
  ['one-body-one-slot',()=>C.slotsUnique(places),()=>C.slotsUnique([{slots:[{busy:[[0,100],[50,150]]}]}])],
  ['every-building-has-its-interior',()=>C.interiors(B),()=>C.interiors([{key:'trade_shop_house',v:9}])],

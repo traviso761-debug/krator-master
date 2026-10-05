@@ -1352,7 +1352,7 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 //   the LIP              x ~ -1400: the edge of the plateau
 //   the ESCARPMENT       north and south of the canyon mouth: benched cliffs ~560 m deep
 //   the SPUR             z -190..190: the easiest descent, a long concave ramp 1400 m deep down which the
-//                        SWITCHBACK runs (26 legs, ~7 km, 12% grade) and the Ancients' FUNICULAR ran
+//                        SWITCHBACK runs (26 legs, ~7 km, 12% grade), and beside it the Ancients' FUNICULAR ran
 //   the GORGE            z ~ -226, cut into the escarpment north of the spur: SEVEN CATARACTS, ~120 m each, from the
 //                        lip (858 m) to the PLUNGE POOL (3 m) at its foot
 //   the ABYSS FLOOR      ~0..6 m round the city, falling east; LOWER VERGE round the trailhead, the pool and the river
@@ -1558,10 +1558,12 @@ function zoneAt(x,z){const L=lipX(z);if(x<=L){const dz=Math.abs(z-canZ(x));retur
  const u=(x-L)/escW(z,x);if(u<1)return kSpur(z,x)>.5?'spur':'cliff';return x>5000&&lakeD(x,z)<400?'salt':'floor';}
 
 // ---------------------------------------------------------------- the funicular's line
-// The Ancients' funicular ran straight down the middle of the spur, from its upper station on the canyon floor to the
+// The Ancients' funicular ran straight down the spur's south side, from its upper station on the canyon floor to the
 // lower station on the abyss floor. The kit (kits/ancients, FUNICULAR) plans its piers, spans and breaks from this.
-const FUNI={z:58,a:null,b:null};
-FUNI.a=[E.LIP_X-46,canFloorH(E.LIP_X-46,58)+9,58];FUNI.b=[lipX(58)+escW(58)+60,floorH(lipX(58)+escW(58)+60,58)+4,58];
+// Its line (z 162) is clear of the trail's corridor (the hairpins and their banks reach z 132, the south rest stops'
+// pads 150), so the switchback never has to pass through its cuttings or piers: it climbs beside the ruin.
+const FZ=162,FUNI={z:FZ,a:null,b:null};
+FUNI.a=[E.LIP_X-46,canFloorH(E.LIP_X-46,FZ)+9,FZ];FUNI.b=[lipX(FZ)+escW(FZ)+60,floorH(lipX(FZ)+escW(FZ)+60,FZ)+4,FZ];
 
 // ---------------------------------------------------------------- the highways
 // One highway: in from the west along the canyon floor (south of the river) to the upper trailhead, down the
@@ -30898,7 +30900,12 @@ function spill(city,range,n,keys,dir){let placed=0;
   for(const P of OUT.pads)if(Math.hypot(P.x-cx,P.z-cz)<P.hx+K.w/2+3)ok=false;
   for(const r of VG.TRAIL.rest)if(Math.hypot(r.x-cx,r.z-cz)<30)ok=false;
   if(!ok){why('spill:clear');continue;}
-  const pad={id:'spill_'+OUT.pads.length,x:cx,z:cz,hx:K.w/2+1.2,hz:K.d/2+1.2,y:p[2]+.1,blend:6,yaw:-ry};OUT.pads.push(pad);VG.PADS.push(pad);
+  const pad={id:'spill_'+OUT.pads.length,x:cx,z:cz,hx:K.w/2+1.2,hz:K.d/2+1.2,y:p[2]+.1,blend:6,yaw:-ry};
+  // its blend must not reshape ground a building already stands on
+  {const c=city.code&&city.C.box?obb(cx,cz,pad.hx+pad.blend,pad.hz+pad.blend,ry):null;let hit=false;
+   if(c)for(let u=0;u<=8&&!hit;u++)for(let v=0;v<=8&&!hit;v++){const a=u/8,b=v/8,x=(c[0][0]*(1-a)+c[1][0]*a)*(1-b)+(c[3][0]*(1-a)+c[2][0]*a)*b,z=(c[0][1]*(1-a)+c[1][1]*a)*(1-b)+(c[3][1]*(1-a)+c[2][1]*a)*b;
+    const k=city.code(x,z);if(k===CODE.building||k===CODE.yard)hit=true;}
+   if(hit){why('spill:neighbour');continue;}}OUT.pads.push(pad);VG.PADS.push(pad);
   // the pad must hold the whole house: where the trail's next leg or its bank wins over a corner, take the pad back
   if(obb(cx,cz,K.w/2,K.d/2,ry).some(c=>Math.abs(VG.groundH(c[0],c[1])-pad.y)>.5)){OUT.pads.pop();VG.PADS.pop();why('spill:pad');continue;}
   const R=record(city,K,cx,cz,ry,p[2]+.1,{district:'trail',yard:0});R.spill=dir;placed++;}
@@ -33330,6 +33337,9 @@ const C={
  // every building stands on its ground: its floor no more than 0.5 m above the lowest ground under its box
  onGround:B=>{let bad=0,first=null;for(const R of B){const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);const lo=Math.min(...c.map(p=>terrainH(p[0],p[1])),terrainH(R.x,R.z));if(R.y-lo>.6||lo-R.y>4.5){bad++;if(!first)first='';if(bad<=6)first+=(bad>1?', ':'')+R.id+' '+R.key+' '+(R.y-lo).toFixed(1);}}
   return{ok:bad===0,detail:bad+' of '+B.length+' off their ground'+(first?' (first '+first+')':'')};},
+ // the trail is clear: no block of the funicular's ruin (walls, piers, girders, rubble) stands in its corridor
+ trailClear:blocks=>{let n=0,first=null;for(let s=0;s<T.len;s+=1){const p=VG.trailAt(s);for(const b of blocks)if(p[0]>b[0]-1.2&&p[0]<b[1]+1.2&&p[1]>b[2]-1.2&&p[1]<b[3]+1.2&&b[4]<p[2]+2.2&&b[5]>p[2]+.15){n++;if(!first)first='s '+s;break;}}
+  return{ok:n===0,detail:n?n+' m of trail run through the ruin (first at '+first+')':'no block of the ruin on the trail ('+blocks.length+' blocks)'};},
  // the only way between the two cities is the trail: with the trail's edges taken away no route exists
  trailOnlyWay:()=>{const a=SIM.PBY.port_west.node,b=SIM.PBY.port_east.node,w=SIM.route(a,b),wo=SIM.route(a,b,{noLayer:['trail']});
   return{ok:!!w&&!wo,detail:(w?'a route':'NO route')+' with the trail, '+(wo?'A ROUTE':'none')+' without it'};},
@@ -33362,6 +33372,7 @@ const CASES=[
  ['falls-in-the-gorge',()=>C.fallsInGorge(VG.FALLS),()=>C.fallsInGorge(VG.FALLS.map(f=>Object.assign({},f,{bot:f.bot+400})))],
  ['buildings-do-not-overlap',()=>C.noOverlap(B),()=>{const L=B.filter(R=>!/palisade/.test(R.key)).slice(0,40);return C.noOverlap(L.concat([Object.assign({},L[5],{id:'dup'})]));}],
  ['buildings-on-their-ground',()=>C.onGround(B),()=>C.onGround([Object.assign({},B[0],{y:B[0].y+5})])],
+ ['the-trail-is-clear',()=>C.trailClear(VG.FUNI.rec?VG.FUNI.rec.blocks:[]),()=>{const p=VG.trailAt(T.len/2);return C.trailClear([[p[0]-1,p[0]+1,p[1]-1,p[1]+1,p[2]-1,p[2]+3]]);}],
  ['the-trail-is-the-only-way-down',()=>C.trailOnlyWay(),null],
  ['one-body-one-slot',()=>C.slotsUnique(places),()=>C.slotsUnique([{slots:[{busy:[[0,100],[50,150]]}]}])],
  ['every-building-has-its-interior',()=>C.interiors(B),()=>C.interiors([{key:'trade_shop_house',v:9}])],

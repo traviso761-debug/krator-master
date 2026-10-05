@@ -6,8 +6,9 @@ fills the canyon floor at the top: it is run by a governor sent from Iziz and bu
 Verge** spreads round the plunge pool and the river at the bottom: it is run by a mayor its residents elect and is
 built in the Yuni and Eastern Abyssal styles, like Locus. The two cities are joined by a switchback trail of 26 legs and
 about 7 km, with a toll house and a small palisade at each end and four rest stops at the 200, 400, 600 and 800 m marks
-of the descent. The rusted, broken remnants of an Ancient funicular run down the same spur. Salt lakes lie far to the
-east.
+of the descent. The rusted, broken remnants of an Ancient funicular run down the same spur, beside the trail. Salt
+lakes lie far to the east. Each city has about 800 to 900 buildings: Upper Verge packed into the canyon, Lower Verge
+spread over the floor.
 
 `DESIGN.md` reads the brief back as decisions. `API.md` is the contract every fragment keeps. `KNOWN_ISSUES.md` lists
 what is still open. `PORT.md` says how each fragment reaches Godot.
@@ -44,7 +45,10 @@ node tests/test-layout.js                          # the layout in node: no brow
 `?hour=21` sets the clock and `?time=run` starts it.
 `?furnishR=500` furnishes interiors out to 500 m from the camera; the default is 320 m.
 
-A headless load takes about 2 minutes under SwiftShader, and each screenshot about 30 s.
+A headless load takes 2 to 4 minutes under SwiftShader with everything on (about 40 s with
+`flora=0&interiors=0`), and each screenshot about 30 s. `--eval-out FILE` writes a whole `--eval` result to a file.
+
+Two views find their subject when picked: 'A caravan on the trail' and 'A caravanserai yard'.
 
 ## Godot
 

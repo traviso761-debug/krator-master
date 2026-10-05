@@ -23875,6 +23875,12 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'trade_market_hall#1', name: 'Arcaded market hall (variant 2: flat roof and three domes)', culture: 'yuni-common', wealth: 0.6, types: ['market/shop'], lot: [22, 14],
       rooms: marketHall(2.475, -2.475), note: 'as variant 0; four arcade bays front and back (a pier on the axis), so the front and back ways in are the bays at x +-2.475' },
 
+    /* ---------- The market's props (56-mid.js 10, 10b): open to the street; their wares are the builder's own */
+    { key: 'prop_market_stall', name: 'Market stall', culture: 'yuni-common', wealth: 0.45, types: ['market/shop'], lot: [3, 3],
+      skip: 'an open counter under an awning on two posts, no walls: the jars, cloth, crates and lantern on it are drawn by the builder' },
+    { key: 'prop_market_tent', name: "Nomad's goat-hair tent", culture: 'nomad', wealth: 0.35, types: ['market/shop'], lot: [5, 5],
+      skip: 'a low open-fronted tent (0.95 m at the eaves) over the trader\'s bales; the jar, bales and basket at its mouth are the builder\'s' },
+
     { key: 'trade_shop_house', name: 'Shop-house', culture: 'yuni-common', wealth: 0.55, types: ['market/shop', 'single-family dwelling'], lot: [9, 11],
       bodies: shopHouse(1, 2),
       note: 'variant 0: the shop behind the wide shopfront arch (x -1.35) and a store below, the family\'s living room and bedroom above, the ' +

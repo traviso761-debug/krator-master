@@ -15,7 +15,7 @@
 //   the LIP              x ~ -1400: the edge of the plateau
 //   the ESCARPMENT       north and south of the canyon mouth: benched cliffs ~560 m deep
 //   the SPUR             z -190..190: the easiest descent, a long concave ramp 1400 m deep down which the
-//                        SWITCHBACK runs (26 legs, ~7 km, 12% grade) and the Ancients' FUNICULAR ran
+//                        SWITCHBACK runs (26 legs, ~7 km, 12% grade), and beside it the Ancients' FUNICULAR ran
 //   the GORGE            z ~ -226, cut into the escarpment north of the spur: SEVEN CATARACTS, ~120 m each, from the
 //                        lip (858 m) to the PLUNGE POOL (3 m) at its foot
 //   the ABYSS FLOOR      ~0..6 m round the city, falling east; LOWER VERGE round the trailhead, the pool and the river
@@ -221,10 +221,12 @@ function zoneAt(x,z){const L=lipX(z);if(x<=L){const dz=Math.abs(z-canZ(x));retur
  const u=(x-L)/escW(z,x);if(u<1)return kSpur(z,x)>.5?'spur':'cliff';return x>5000&&lakeD(x,z)<400?'salt':'floor';}
 
 // ---------------------------------------------------------------- the funicular's line
-// The Ancients' funicular ran straight down the middle of the spur, from its upper station on the canyon floor to the
+// The Ancients' funicular ran straight down the spur's south side, from its upper station on the canyon floor to the
 // lower station on the abyss floor. The kit (kits/ancients, FUNICULAR) plans its piers, spans and breaks from this.
-const FUNI={z:58,a:null,b:null};
-FUNI.a=[E.LIP_X-46,canFloorH(E.LIP_X-46,58)+9,58];FUNI.b=[lipX(58)+escW(58)+60,floorH(lipX(58)+escW(58)+60,58)+4,58];
+// Its line (z 162) is clear of the trail's corridor (the hairpins and their banks reach z 132, the south rest stops'
+// pads 150), so the switchback never has to pass through its cuttings or piers: it climbs beside the ruin.
+const FZ=162,FUNI={z:FZ,a:null,b:null};
+FUNI.a=[E.LIP_X-46,canFloorH(E.LIP_X-46,FZ)+9,FZ];FUNI.b=[lipX(FZ)+escW(FZ)+60,floorH(lipX(FZ)+escW(FZ)+60,FZ)+4,FZ];
 
 // ---------------------------------------------------------------- the highways
 // One highway: in from the west along the canyon floor (south of the river) to the upper trailhead, down the
