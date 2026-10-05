@@ -270,6 +270,39 @@ function heroReplan(wp, fin){
   if(heroBan.size === n0) return null;
   return heroRoute(fin[0], fin[1], fin[2]);
 }
+/* the walk graph against the walk solids: nodes a body cannot stand on (nothing under them, or inside a solid) and
+   edges it cannot walk straight along. The graph (30-layout.js) is drawn from the layout, the solids (83-walk.js) from
+   what was built, so where they disagree a walker (villager, hero, a port's agent) is routed through a wall. Lift
+   edges and their head nodes (the cage is not always there) are left out. */
+function heroNavAudit(){
+  var badN = [], badE = [], r1 = function(v){ return Math.round(v*10)/10; };
+  /* what stops a body at (x, z) with its feet at f: the tags of the solids, or 'drop' */
+  function why(x, z, f){
+    var t = {}; wkNear(x, z, WALKER.r+0.1, function(s){ if(wkStops(s, x, z, f)) t[s.tag||'?'] = 1; return false; });
+    WALKER.rings.forEach(function(g){ if(wkRingStops(g, x, z, f)) t[g.tag||'ring'] = 1; });
+    return Object.keys(t).join(',');
+  }
+  /* the first point along a->b where a straight walk fails, and why */
+  function where(a, b){
+    var L = Math.hypot(b.x-a.x, b.z-a.z), n = Math.max(1, Math.ceil(L/0.4)), f = a.y;
+    for(var i=1;i<=n;i++){ var t = i/n, x = a.x+(b.x-a.x)*t, z = a.z+(b.z-a.z)*t, s = heroFloor(x, z, f);
+      if(s < f - WALKER.step) return { at:[r1(x), r1(f), r1(z)], why:'drop to '+r1(s) };
+      f = s; var w = why(x, z, f); if(w) return { at:[r1(x), r1(f), r1(z)], why:w }; }
+    return { at:[r1(b.x), r1(f), r1(b.z)], why:'ends at '+r1(f)+' not '+r1(b.y) };
+  }
+  NAVN.forEach(function(n){
+    if(n.tag === 'lifthead') return;
+    if(!heroStandable([n.x, n.y, n.z])){ var fl = heroFloor(n.x, n.z, n.y+0.3);
+      badN.push({ id:n.id, tag:n.tag, at:[r1(n.x), r1(n.y), r1(n.z)], why: fl < n.y - 1 ? 'drop to '+r1(fl) : why(n.x, n.z, fl) }); }
+  });
+  NAVE.forEach(function(e){
+    if(e.kind === 'lift') return;
+    var a = NAVN[e.a], b = NAVN[e.b];
+    if(!heroClear(a.x, a.y, a.z, b.x, b.y, b.z) && !heroClear(b.x, b.y, b.z, a.x, a.y, a.z)){ var w = where(a, b);
+      badE.push({ id:e.id, kind:e.kind, tags:a.tag+'-'+b.tag, a:[r1(a.x), r1(a.y), r1(a.z)], b:[r1(b.x), r1(b.y), r1(b.z)], stop:w.at, why:w.why }); }
+  });
+  return { nodes:NAVN.length, edges:NAVE.length, badNodes:badN, badEdges:badE };
+}
 
 /* --- the destination ring --- */
 function heroMarkAt(p){
@@ -437,6 +470,7 @@ window._hero = { get on(){ return H.on; }, get ready(){ return H.ready; }, follo
   step:function(dt, n){ for(var i=0;i<(n||1);i++) heroTick(dt); return this.pose(); },
   place:function(x, z, feet){ H.x = x; H.z = z; H.feet = heroFloor(x, z, feet); H.vy = 0; H.grounded = true; H.path.length = 0; heroPlace(); return this.pose(); },
   detour:function(x, y, z){ return heroDetour([x, y, z]); },
+  navAudit:heroNavAudit,
   state:function(){ return { ready:H.ready, moving:H.path.length>0, clip:heroCur, err:H.err, snaps:H.snaps, detours:H.detours, snapLog:H.snapLog, nat:heroNat }; } };
-heroRig('styv', heroSetup);
+heroRig(HERO_CAST.hero.model, heroSetup);   /* the hero is hero/cast.json's hero */
 })();
