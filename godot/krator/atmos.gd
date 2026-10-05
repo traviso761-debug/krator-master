@@ -21,6 +21,19 @@ var clock := {"dawn": [5.5, 7.2], "dusk": [17.2, 18.8], "nightDim": 0.82}
 var wind := {"base": [0.8, 0.35], "gustAmp": 0.55, "veer": [0.22, 0.021, 0.1, 0.057]}
 var loaded_from := ""
 
+# presets.waves (89-atmos-0p-presets.js), the open-water wave field: shaders/atmos_waves.gdshaderinc bakes these numbers
+# in (tools/atmos_waves.js writes it); wave_height/wave_slope below are its CPU twin. load_presets() overwrites
+const WAVES := {"period": 600, "amp": 0.22, "tilt": 1.77, "warpAmp": 6,
+	"chop": [[0.24, 0.18, 86, 0.5], [-0.16, 0.27, 117, 0.32], [0.44, -0.31, 162, 0.18]],
+	"mid": [[0.1015, 0.0369, 62, 0.45], [-0.0248, 0.1406, 72, 0.33], [0.0735, -0.0515, 79, 0.22]],
+	"swell": [[0.0364, 0.0209, 44, 0.46], [-0.0119, 0.0328, 38, 0.33], [0.024, 0.0343, 50, 0.21]],
+	"group": [[0.021, 0.013, 14], [-0.011, 0.024, 11], [0.0152, -0.0262, 17]],
+	"warp": [[0.0141, -0.0083, 9], [0.0067, 0.0126, 7]],
+	"gain": {"chop": 1, "mid": 4, "swell": 2}, "groupMix": {"chop": [0.55, 0.9], "mid": [0.45, 0.75], "swell": [0.5, 0.8]},
+	"crestMix": {"chop": [0.35, 0.65], "mid": [0.32, 0.58], "swell": [0, 0.45]}, "crestNorm": 0.72, "skip": 0.01,
+	"fade": {"chop": [150, 480], "mid": [420, 1100], "swell": [1400, 3000]}}
+var waves: Dictionary = WAVES.duplicate(true)
+
 # THE WEATHER (89-atmos-4-weather.js). Off until set_weather(mode) or an export with a weather record turns it on.
 # W: mode, rain, fog, wet (rises in rain, dries after), flash (lightning), wind (1 calm .. 2.4 storm: scales the wind)
 const MODES := ["auto", "clear", "rain", "storm", "fog"]
@@ -43,6 +56,8 @@ func load_presets(export: Dictionary) -> void:
 		wind = p["wind"]
 		if wind.has("weather"):
 			weather_wind = wind["weather"]
+	if p.has("waves"):
+		waves = p["waves"]
 	for f in export.get("fx", []):
 		if f.get("type") == "weather":
 			set_weather(str(f.get("mode", "auto")))
@@ -113,6 +128,7 @@ func reset_defaults() -> void:
 	flash = 0.0
 	clock = {"dawn": [5.5, 7.2], "dusk": [17.2, 18.8], "nightDim": 0.82}
 	wind = {"base": [0.8, 0.35], "gustAmp": 0.55, "veer": [0.22, 0.021, 0.1, 0.057]}
+	waves = WAVES.duplicate(true)
 	loaded_from = ""
 
 
@@ -152,6 +168,91 @@ func wind_now() -> Vector2:
 	return Vector2(bx * cos(veer) - bz * sin(veer), bx * sin(veer) + bz * cos(veer)) * wind_scale
 
 
+# THE WAVE FIELD's CPU twin (89-atmos-a-waves.js: ATMOS.waveWrap, waveHeight, waveSlope), for buoyancy and tests.
+# A wave is [kx, kz, c, a]; in turns [kx/TAU, kz/TAU, c/period], and phase = TAU*(fract(x*k0)+fract(z*k1)+fract(t*k2)),
+# so every argument stays small. t is the module clock (wrapped here); x, z world metres. All in 64-bit floats (no
+# Vector2/Vector3 inside: they are 32-bit), so the twin matches the JavaScript to the last few bits.
+func wave_wrap(tt: float) -> float:
+	var p := float(waves["period"])
+	return fmod(fmod(tt, p) + p, p)
+
+
+static func _fr(x: float) -> float:
+	return x - floor(x)
+
+
+func _wph(x: float, z: float, tt: float, w: Array) -> float:
+	return TAU * (_fr(x * (float(w[0]) / TAU)) + _fr(z * (float(w[1]) / TAU)) + _fr(tt * (float(w[2]) / float(waves["period"]))))
+
+
+func _wwarp(x: float, z: float, tt: float) -> PackedFloat64Array:
+	var a := _wph(x, z, tt, waves["warp"][0])
+	var b := _wph(x, z, tt, waves["warp"][1])
+	var wa := float(waves["warpAmp"])
+	return PackedFloat64Array([x + wa * (sin(a) + 0.6 * cos(b)), z + wa * (sin(b) - 0.6 * cos(a))])
+
+
+func _wgroup(x: float, z: float, tt: float) -> float:
+	var G: Array = waves["group"]
+	return 0.52 + 0.48 * sin(_wph(x, z, tt, G[0])) * (0.62 * sin(_wph(x, z, tt, G[1])) + 0.38 * sin(_wph(x, z, tt, G[2])))
+
+
+# one family at a point, per unit amplitude: (crest, dh/dx, dh/dz)
+func _wfam(F: Array, x: float, z: float, tt: float) -> PackedFloat64Array:
+	var c := 0.0
+	var sx := 0.0
+	var sz := 0.0
+	for w in F:
+		var p := _wph(x, z, tt, w)
+		c += sin(p) * float(w[3])
+		sx += cos(p) * float(w[3]) * float(w[0])
+		sz += cos(p) * float(w[3]) * float(w[1])
+	return PackedFloat64Array([c, sx, sz])
+
+
+# metres above the still water at world (x, z), module clock tt: the swell, plus the chop where chop_w > 0
+func wave_height(x: float, z: float, tt: float, chop_w := 0.0) -> float:
+	var G: Dictionary = waves["gain"]
+	var M: Dictionary = waves["groupMix"]
+	var amp := float(waves["amp"])
+	tt = wave_wrap(tt)
+	var q := _wwarp(x, z, tt)
+	var g := _wgroup(q[0], q[1], tt)
+	var h := _wfam(waves["swell"], q[0], q[1], tt)[0] * amp * float(G["swell"]) * (float(M["swell"][0]) + float(M["swell"][1]) * g)
+	if chop_w > 0.0:
+		h += _wfam(waves["chop"], x, z, tt)[0] * amp * float(G["chop"]) * chop_w * (float(M["chop"][0]) + float(M["chop"][1]) * g)
+	return h
+
+
+# [dh/dx, dh/dz, crest] seen from camera distance d: each family faded by d; crest 0.5 is still water
+func wave_slope(x: float, z: float, tt: float, d: float) -> PackedFloat64Array:
+	tt = wave_wrap(tt)
+	var fams := ["chop", "mid", "swell"]
+	var wt := {}
+	var any := false
+	var skip := float(waves["skip"])
+	for f in fams:
+		var fd: Array = waves["fade"][f]
+		wt[f] = 1.0 - _ss(float(fd[0]), float(fd[1]), d)
+		if wt[f] > skip:
+			any = true
+	var o := PackedFloat64Array([0.0, 0.0, 0.0])
+	if any:
+		var q := _wwarp(x, z, tt)
+		var g := _wgroup(q[0], q[1], tt)
+		for f in fams:
+			if wt[f] > skip:
+				var r := _wfam(waves["chop"], x, z, tt) if f == "chop" else _wfam(waves[f], q[0], q[1], tt)
+				var M: Array = waves["groupMix"][f]
+				var C: Array = waves["crestMix"][f]
+				var k := float(waves["amp"]) * float(waves["gain"][f]) * float(wt[f]) * (float(M[0]) + float(M[1]) * g)
+				o[0] += r[1] * k
+				o[1] += r[2] * k
+				o[2] += r[0] * float(wt[f]) * (float(C[0]) + float(C[1]) * g)
+	o[2] = o[2] * float(waves["crestNorm"]) * 0.5 + 0.5
+	return o
+
+
 func _process(delta: float) -> void:
 	if not paused:
 		t += delta * scale
@@ -184,3 +285,5 @@ func _process(delta: float) -> void:
 	RenderingServer.global_shader_parameter_set("atm_fog", fog)
 	RenderingServer.global_shader_parameter_set("atm_flash", flash)
 	RenderingServer.global_shader_parameter_set("atm_sun_dir", sun_dir.normalized())
+	RenderingServer.global_shader_parameter_set("atm_wave_t", wave_wrap(t))
+	RenderingServer.global_shader_parameter_set("atm_wave_amp", float(waves["amp"]))

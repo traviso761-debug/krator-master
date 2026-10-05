@@ -36,10 +36,18 @@ everything looks washed out.
 | `atm_wave_t` | `A.U.waveTime` (GLSL `atmWaveT`) | the module clock wrapped at `presets.waves.period`; every wave runs whole cycles per period, so the wrap is seamless |
 | `atm_wave_amp` | `A.U.waveAmp` (GLSL `atmWaveAmp`) | `presets.waves.amp`, metres |
 
-**The wave field** (`89-atmos-a-waves.js`) becomes `atmos_waves.gdshaderinc`: `ATMOS.waveGLSL()` prints the GLSL from
-`presets.waves`, and its functions translate line for line (`fract`, `sin`, `smoothstep` are the same; `vec3` stays
-`vec3`). Read `atm_wave_t` instead of `TIME`. `ATMOS.waveHeight`/`waveSlope` are the CPU twin a GDScript buoyancy
-function reproduces; `test-atmos.js` pins the clock and the bounds, and the GLSL was checked against the twin on a GPU.
+**The wave field** (`89-atmos-a-waves.js`) is ported. `godot/shaders/atmos_waves.gdshaderinc` is generated:
+`node godot/tools/atmos_waves.js` loads core/atmos, takes `ATMOS.waveGLSL()` (written from `presets.waves`) and swaps
+its two uniforms for the global parameters `atm_wave_t` and `atm_wave_amp`; the bodies are unchanged and the functions
+take snake_case names (`atm_wave_height(xz, chopW)`, `atm_wave_slope(xz, camDist)`, `atm_wave_normal(xz, camDist, k)`).
+**Rerun it after changing `presets.waves` or the chunk**, then `node godot/tools/atmos_golden.js`: the golden keeps a
+copy of the include, so `atmos_test.gd` fails on a stale one. The `Atmos` autoload sets `atm_wave_t` (its clock wrapped
+at `presets.waves.period`) and `atm_wave_amp` (`presets.waves.amp`), and carries the CPU twin, `Atmos.wave_height(x, z,
+t, chopW)` and `Atmos.wave_slope(x, z, t, camDist)` (64-bit, for buoyancy), checked against `ATMOS.waveHeight`/`waveSlope`
+to 1e-9 by `godot/tests/atmos/atmos_test.gd`; `godot/tests/atmos/waves_gpu_check.gd` draws the include on a GPU and
+reads it back against the twin. No Godot water surface uses it yet: the spike's water is a flat biome sheet
+(`kdata.gd`) and the glTF regions' water `ShaderMaterial`s arrive as stand-ins. A water shader includes it and adds
+`atm_wave_height(world xz, 0.0)` to `VERTEX.y` (the swell only, on a coarse mesh).
 
 **The sky's light** (`89-atmos-b-skylight.js`) has no port: a `WorldEnvironment` with a `Sky` resource lights every
 `StandardMaterial3D` from that sky, ambient and reflections both (`ambient_light_source = SKY`,

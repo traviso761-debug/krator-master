@@ -78,3 +78,11 @@ atm_sun_dir={
 "type": "vec3",
 "value": Vector3(0.45, 0.72, -0.52)
 }
+atm_wave_t={
+"type": "float",
+"value": 0.0
+}
+atm_wave_amp={
+"type": "float",
+"value": 0.22
+}
