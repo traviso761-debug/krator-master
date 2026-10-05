@@ -49,6 +49,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65-abyss-50-civic.js` | 22 | 16X-C. ABYSS — hospitality and civic (1) |
 | `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
 | `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
+| `65-abyss-75-verge.js` | 22 | 16X-V. ABYSS — Lower Verge: the mayor's compound (1) |
 | `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
 | `66-locus-furnish.js` | 8 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |

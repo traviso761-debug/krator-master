@@ -34,6 +34,9 @@ the clone in `kbake`).
   and the streets present; the failure is in the plot test on benched ground — to be traced with the probe
   (`scratchpad/probe.py` pattern: load the page, evaluate `planFront` step by step) and fixed. Suspect: the
   plot's front-edge test points fall inside the road's mask stroke, so every plot fails unless the road is wide.
+  *2026-10-05:* not the soft edge. The mask is core/mask now (hard-edged, `core/mask/README.md`): placement rose from
+  2794 to 2912 records and is the same on GPU and CPU canvas loads, but `_infill` is still 0. The cause is elsewhere in
+  the plot test.
 * Building count is down to 973 + 0 infill (was 1109) after the street thinning; expect ~2000 once the plots pass.
 * Verify the door orientation with the Doors overlay from the overhead views; the walker sets the plot's front
   toward the road by construction, the infill pass passes the road's outward normal.

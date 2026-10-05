@@ -62,12 +62,17 @@ def find_node():
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
+FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
+RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 OUT = os.path.join(HERE, 'mavs-refuge.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
+DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
+DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
 DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, the interiors hook): no generation of its own
 
@@ -162,9 +167,10 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for f in os.listdir(LOD_DIR):          # a src/ copy with the same name overrides
-        if f[0].isdigit() and f not in paths:
-            paths[f] = os.path.join(LOD_DIR, f)
+    for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR):       # a src/ copy with the same name overrides
+        for f in os.listdir(d):
+            if f[0].isdigit() and f.endswith('.js') and f not in paths:
+                paths[f] = os.path.join(d, f)
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:

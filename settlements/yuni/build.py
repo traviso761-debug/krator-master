@@ -61,6 +61,9 @@ def find_node():
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
+RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')  # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')  # the tag registry (core/tags/README.md)
+CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR)
 OUT = os.path.join(HERE, 'yuni.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
@@ -69,6 +72,8 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
+CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
@@ -110,7 +115,7 @@ def units(order, bodies):
     unit's first file) and the unit bodies."""
     groups = {}
     for f in order:
-        groups.setdefault(re.match(r'\d+', f).group(0), []).append(f)
+        groups.setdefault(f if f in CORE_FRAGS else re.match(r'\d+', f).group(0), []).append(f)
     PARTS.clear()
     for g in groups.values():
         start = 0
@@ -170,9 +175,11 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for f in os.listdir(LOD_DIR):          # a src/ copy with the same name overrides
-        if f[0].isdigit() and f not in paths:
-            paths[f] = os.path.join(LOD_DIR, f)
+    for d in CORE_DIRS:                    # a src/ copy with the same name overrides
+        for f in os.listdir(d):
+            if f[0].isdigit() and f.endswith('.js') and f not in paths:
+                paths[f] = os.path.join(d, f)
+                CORE_FRAGS.add(f)
     order = sorted(paths)
     bodies = {}
     for f in order:

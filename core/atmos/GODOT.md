@@ -13,8 +13,9 @@ possible is to keep **what** an effect is (data) apart from **how** three.js dra
 | `presets` | every effect's numbers: sizes, rates, alphas, colours, wind, the evening's hours | one `Resource` (`.tres`) per preset, or read straight from the JSON |
 | `clock`, `wind` | the clock time and the base wind | the autoload's state |
 | `fx` | one record per placed effect: `searchlight`, `spotcone`, `beacon`, `brazier`, `floodlight`, `banner`, `fountain`, `smoke`, `fireflies`, `moths`, `mist`, `fogbank`, `weather`, `outfall`, `drain` | one node or scene per record (table below) |
-| `lamps` | every street-lamp head and its hours | `OmniLight3D`s for the nearest few, sprites for the rest |
+| `lamps` | every street-lamp head and its hours, its halo (`glow`: an index into `glow`) and colour. three.js gives a lamp no light, only the halo and its moths (`light` says so) | `OmniLight3D`s for the nearest few, of the halo's colour; sprites for the rest |
 | `glow` | every light's halo: position, colour, size, hours | a MultiMesh of halo quads; hours go in `INSTANCE_CUSTOM` |
+| `stage` | the page's light, fog, tonemapping, sky and ground look: `KSTAGE.capture` (`biomes/GODOT.md`, "The stage"), around `opt.at` (above the first lamp by default); `opt.stage: false` leaves it out | `godot/krator/stage.gd` |
 | `props` | each instanced set: unit geometry kind, material, instances `[x,y,z, sx,sy,sz, ry, colour]` | one `MultiMeshInstance3D` per set |
 
 Colours are in **display (sRGB) space**. The three.js shaders write them out as they are. Godot lights in linear space,
@@ -35,10 +36,18 @@ everything looks washed out.
 | `atm_wave_t` | `A.U.waveTime` (GLSL `atmWaveT`) | the module clock wrapped at `presets.waves.period`; every wave runs whole cycles per period, so the wrap is seamless |
 | `atm_wave_amp` | `A.U.waveAmp` (GLSL `atmWaveAmp`) | `presets.waves.amp`, metres |
 
-**The wave field** (`89-atmos-a-waves.js`) becomes `atmos_waves.gdshaderinc`: `ATMOS.waveGLSL()` prints the GLSL from
-`presets.waves`, and its functions translate line for line (`fract`, `sin`, `smoothstep` are the same; `vec3` stays
-`vec3`). Read `atm_wave_t` instead of `TIME`. `ATMOS.waveHeight`/`waveSlope` are the CPU twin a GDScript buoyancy
-function reproduces; `test-atmos.js` pins the clock and the bounds, and the GLSL was checked against the twin on a GPU.
+**The wave field** (`89-atmos-a-waves.js`) is ported. `godot/shaders/atmos_waves.gdshaderinc` is generated:
+`node godot/tools/atmos_waves.js` loads core/atmos, takes `ATMOS.waveGLSL()` (written from `presets.waves`) and swaps
+its two uniforms for the global parameters `atm_wave_t` and `atm_wave_amp`; the bodies are unchanged and the functions
+take snake_case names (`atm_wave_height(xz, chopW)`, `atm_wave_slope(xz, camDist)`, `atm_wave_normal(xz, camDist, k)`).
+**Rerun it after changing `presets.waves` or the chunk**, then `node godot/tools/atmos_golden.js`: the golden keeps a
+copy of the include, so `atmos_test.gd` fails on a stale one. The `Atmos` autoload sets `atm_wave_t` (its clock wrapped
+at `presets.waves.period`) and `atm_wave_amp` (`presets.waves.amp`), and carries the CPU twin, `Atmos.wave_height(x, z,
+t, chopW)` and `Atmos.wave_slope(x, z, t, camDist)` (64-bit, for buoyancy), checked against `ATMOS.waveHeight`/`waveSlope`
+to 1e-9 by `godot/tests/atmos/atmos_test.gd`; `godot/tests/atmos/waves_gpu_check.gd` draws the include on a GPU and
+reads it back against the twin. No Godot water surface uses it yet: the spike's water is a flat biome sheet
+(`kdata.gd`) and the glTF regions' water `ShaderMaterial`s arrive as stand-ins. A water shader includes it and adds
+`atm_wave_height(world xz, 0.0)` to `VERTEX.y` (the swell only, on a coarse mesh).
 
 **The sky's light** (`89-atmos-b-skylight.js`) has no port: a `WorldEnvironment` with a `Sky` resource lights every
 `StandardMaterial3D` from that sky, ambient and reflections both (`ambient_light_source = SKY`,
@@ -55,8 +64,11 @@ float atm_gust(float t, vec2 xz, vec2 w) {               // presets.wind.gust: [
     return 0.5*sin(s*0.31) + 0.3*sin(s*0.73 + 1.3) + 0.2*sin(s*1.9 + 4.1);
 }
 vec2 atm_wind_at(vec2 xz) { return atm_wind * (1.0 + atm_gust_amp * atm_gust(atm_time, xz, atm_wind)); }
-float atm_lit(float h, vec2 t) { float hh = h < 12.0 ? h + 24.0 : h;   // a light's [on, off] hours
+float atm_lit(float h, vec2 t) { float hh = h < 12.0 ? h + 24.0 : h;   // a light's [on, off] hours (moths, lamps)
     return smoothstep(t.x, t.x + 0.3, hh) * (1.0 - smoothstep(t.y - 0.3, t.y, hh)); }
+float atm_glow_lit(float h, vec2 t) {                    // a HALO's hours (89-atmos-2-lights.js): two more cases
+    return t.x < 0.0 ? 0.25 + 0.75 * atm_night           //   on < 0 (a glow added with no hours): dims by day
+         : (t.x == 0.0 ? 1.0 : atm_lit(h, t)); }         //   on = 0: always lit
 ```
 
 One clock serves the whole world, not just the air: `GODOT-PLAN.md` (Phase 1, "The world clock") splits motion time

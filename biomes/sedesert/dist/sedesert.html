@@ -988,7 +988,8 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 // the conventions are settlements/yuni/GAME_EXPORT.md's and core/atmos/GODOT.md's:
 // metres, +Y up, x east, z south, right-handed, the same as glTF and Godot).
 //
-//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true}) -> one JSON-able object
+//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true, ground:2}) -> one JSON-able object (ground: a tile's
+//                                                                         heights and water on a 2 m grid)
 //   BIO.download(name, opt)                                     -> in 43-core-export-host.js ([web]): saves it as <name>.biome.json
 //
 // It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
@@ -1001,11 +1002,12 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 //  - buckets:   one record per merged Mesh: indexed positions, normals, uvs, vertex colours.
 //  - materials: one record per material: its kind (leaf, bark, anim, or plain), colour,
 //               alpha test, side, the hook's options, and its texture by id.
-//  - textures:  the procedural canvases, as PNG data URLs (opt.textures:false leaves them out).
+//  - textures:  every map as a PNG data URL (canvases and DataTextures alike) with its flipY; opt.textures:false
+//               leaves the images out.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
 //               which a Godot importer turns into visibility_range_begin / _end.
-// opt.box keeps only instances whose origin, and triangles whose centroid, lie in the box
-// (a tile); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
+// opt.box keeps only instances whose origin lies in the box (a tile), and whole bucket pieces whose foot does
+// (opt.cut:'triangle': triangles by centroid, the rule before 2026-10-05); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
 // ({b64, type, n}) so a whole build is not a list of numbers in text.
 (function(){
 const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength);let s='';const K=0x8000;
@@ -1013,6 +1015,22 @@ const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLengt
 const pack=(arr)=>({type:arr.constructor.name,n:arr.length,b64:B64(arr)});
 // plain data only: numbers, strings, booleans, arrays and objects of them (a hook's functions
 // and three objects are dropped; a texture becomes its id)
+// a foliage hook's sway weight is GLSL text (30-core-foliage.js: '1.0', '(-position.y)', '(position.x)'...); the export
+// adds it as data, weight = c + dot(w, position), so an importer need not read GLSL. Text it does not know stays text.
+const SWAY={'1.0':[1,[0,0,0]],'1':[1,[0,0,0]],'0.0':[0,[0,0,0]],'0':[0,[0,0,0]],'(-position.y)':[0,[0,-1,0]],'(position.y)':[0,[0,1,0]],
+ '(position.x)':[0,[1,0,0]],'(-position.x)':[0,[-1,0,0]],'(position.z)':[0,[0,0,1]],'(-position.z)':[0,[0,0,-1]]};
+function swayOf(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=SWAY[e];
+ return k?{c:k[0],w:k[1],a:o.swayA==null?.06:o.swayA,axis:o.axis|0}:{text:e,a:o.swayA==null?.06:o.swayA,axis:o.axis|0};}
+// a bucket's PIECES: the connected runs of triangles (a trunk, a limb, a log), each with its foot, the xz of its lowest
+// vertex. A tile keeps a piece whole when its foot lies in the box (opt.cut 'piece', the default), so a hero tree on
+// a tile edge is never sliced, and every piece still lands in exactly one tile. opt.cut 'triangle' is the old rule
+// (each triangle by its centroid).
+function pieceOwner(P,I){const nv=P.length/3,par=new Int32Array(nv);for(let i=0;i<nv;i++)par[i]=i;
+ const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};
+ for(let t=0;t<I.length;t+=3){const a=find(I[t]),b=find(I[t+1]),c=find(I[t+2]);if(a!==b)par[b]=a;const a2=find(a);if(a2!==c)par[c]=a2;}
+ const root=new Int32Array(nv),lowY=new Float32Array(nv).fill(Infinity),x=new Float32Array(nv),z=new Float32Array(nv);
+ for(let i=0;i<nv;i++){const r=find(i);root[i]=r;if(P[i*3+1]<lowY[r]){lowY[r]=P[i*3+1];x[r]=P[i*3];z[r]=P[i*3+2];}}
+ return {root,x,z};}
 function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;const t=typeof v;
  if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
  if(v.isTexture)return texId(v);if(v.isColor)return '#'+v.getHexString();
@@ -1021,16 +1039,24 @@ function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;con
  return undefined;}
 BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
  const out={format:'krator-biome',version:1,
-  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear'},
+  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear',
+   colours:{instances:'linear',vertices:'linear',materials:'linear (three\'s working values, written as hex: do not convert)',
+    textures:'sRGB images'},ground:'heights in metres on a grid: row j is z0 + j*step, column i x0 + i*step'},
   core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
  const mats=new Map(),texs=new Map();
- const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y]};
-  if(opt.textures!==false&&t.image&&t.image.toDataURL){try{r.png=t.image.toDataURL('image/png');r.size=[t.image.width,t.image.height];}catch(e){r.error=String(e.message||e);}}
+ // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
+ // The PNG is the image as stored, so an importer flips v only where flipY is true. Encoding a PNG is the host's
+ // job (BIO.texPNG, 43-core-export-host.js); without one a record says why it has no image.
+ const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y],flipY:!!t.flipY};
+  if(opt.textures!==false&&t.image){if(!BIO.texPNG)r.error='no PNG encoder (load 43-core-export-host.js)';
+   else{try{const p=BIO.texPNG(t);if(p){r.png=p.png;r.size=p.size;}else r.error='image kind not encodable';}catch(e){r.error=String(e.message||e);}}}
   texs.set(t,r);return id;};
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
+   emissive:m.emissive&&(m.emissive.r||m.emissive.g||m.emissive.b)?'#'+m.emissive.getHexString():null,emissiveIntensity:m.emissiveIntensity==null?null:m.emissiveIntensity,
    map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
-   options:b&&b.opts?plain(b.opts,texId):null,hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
+   options:b&&b.opts?plain(b.opts,texId):null,sway:b?swayOf(b.opts):null,
+   hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
   if(g.index)r.index=pack(g.index.array);return r;};
@@ -1048,11 +1074,19 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
    for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
    out.items.push(rec);}
   else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
-   if(box){const k=[];for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
-     if(inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3))k.push(I[t],I[t+1],I[t+2]);}
+   if(box){const k=[],own=opt.cut==='triangle'?null:pieceOwner(P,I);   // a whole piece goes to the tile holding its foot
+    for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
+     const keep=own?inBox(own.x[own.root[I[t]]],own.z[own.root[I[t]]]):inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3);
+     if(keep)k.push(I[t],I[t+1],I[t+2]);}
     if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
    const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
    out.buckets.push(Object.assign(base,{triangles:idx.length/3,geometry:geo}));}}
+ // the ground under a tile (opt.ground: the grid step in metres, 2 by default; opt.ground:false leaves it out): the
+ // host's terrainH and waterH sampled on a grid over the box. A stand-in for core/terrain's bake (GODOT-PLAN.md Phase 2)
+ if(box&&opt.ground!==false){const st=+opt.ground>0?+opt.ground:2,nx=Math.floor((box[2]-box[0])/st)+1,nz=Math.floor((box[3]-box[1])/st)+1,
+   H=new Float32Array(nx*nz),W=new Float32Array(nx*nz);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+i*st,z=box[1]+j*st;H[j*nx+i]=BIO.terrainH(x,z);W[j*nx+i]=BIO.waterH(x,z);}
+  out.ground={x0:box[0],z0:box[1],step:st,nx,nz,heights:pack(H),water:pack(W)};}
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  return out;};
@@ -1066,12 +1100,197 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
 // kit takes both files (list 43-core-export-host.js after 42-core-export.js in CORE_BIOME).
 //
 //   BIO.download(name, opt)   -> saves BIO.export(opt) as <name>.biome.json; returns the export's stats
+//   BIO.export(opt)           -> wrapped: with a box, the export gains `stage` (KSTAGE.capture, 44-core-stage.js)
+//   BIO.texPNG(texture)       -> {png: data URL, size: [w, h]} or null: the export's image encoder. A canvas encodes
+//                                as it is; a DataTexture of 8-bit RGBA (the leaf atlases) goes through a canvas, rows
+//                                as stored; an <img> or ImageBitmap is drawn first. Anything else returns null.
 (function(){
 'use strict';
 if(typeof BIO==='undefined'||!BIO.export)throw new Error('43-core-export-host: load core/biome/42-core-export.js first');
+BIO.texPNG=function(t){const im=t&&t.image;if(!im)return null;
+ if(im.toDataURL)return{png:im.toDataURL('image/png'),size:[im.width,im.height]};
+ const cv=document.createElement('canvas'),w=im.width,h=im.height;if(!w||!h)return null;cv.width=w;cv.height=h;const cx=cv.getContext('2d');
+ if(im.data&&im.data.length===w*h*4&&(im.data instanceof Uint8Array||im.data instanceof Uint8ClampedArray))
+  cx.putImageData(new ImageData(new Uint8ClampedArray(im.data.buffer,im.data.byteOffset,im.data.length),w,h),0,0);
+ else if((typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement)||(typeof ImageBitmap!=='undefined'&&im instanceof ImageBitmap))cx.drawImage(im,0,0);
+ else return null;
+ return{png:cv.toDataURL('image/png'),size:[w,h]};};
+// the stage (44-core-stage.js, when a kit lists it): a tile's export also carries the page's light, fog, tonemapping,
+// sky panorama and the ground's look on the export's own ground grid. opt.stage:false leaves it out; opt.sky: the
+// panorama's width (1024).
+const _export=BIO.export;
+BIO.export=function(opt){const o=_export(opt);opt=opt||{};
+ if(opt.stage!==false&&o.box&&typeof KSTAGE!=='undefined'){const b=o.box,cx=(b[0]+b[2])/2,cz=(b[1]+b[3])/2,g=o.ground;
+  o.stage=KSTAGE.capture({at:[cx,BIO.terrainH(cx,cz)+40,cz],sky:opt.sky==null?1024:opt.sky,box:b,step:g?g.step:4,ground:BIO.terrainH});}
+ return o;};
 BIO.download=function(name,opt){const o=BIO.export(opt),blob=new Blob([JSON.stringify(o)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(name||'biome')+'.biome.json';document.body.appendChild(a);a.click();
  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);return o.stats;};
+})();
+
+// ==================== 44-core-stage.js
+// ================================================================= STAGE — the page's light, air, sky and ground as data
+// [web]: reads the three.js scene and renderer and renders the sky; no build calls it while it draws. The exporters
+// carry what it returns as their `stage` (BIO.export, ATMOS.export, godot/tools/export_spike.py), so a Godot scene can
+// be lit, fogged, tonemapped and skied like the page (godot/krator/stage.gd). Standalone: it needs only THREE.
+//
+//   KSTAGE.capture({ scene, renderer, at: [x, y, z], sky: 1024, box, step, ground: h(x, z) }) -> the stage record
+//     scene, renderer  default: what the page rendered last frame (godot/tools/stage_hook.js records it), else the
+//                      globals `scene` and `renderer`
+//     at               where the sky panorama is taken from (the tile's centre, above the ground)
+//     sky              the panorama's width in pixels (height half); 0 leaves the sky out
+//     box, step, ground  with a box: the ground's look sampled on that grid (below)
+//
+// The record (colours are three's working values, linear, as hex; a Godot importer converts them to sRGB for a
+// light or an Environment colour):
+//   { format: 'krator-stage', version: 1,
+//     renderer: { toneMapping: 'ACESFilmic' | 'Linear' | 'Reinhard' | 'Cineon' | 'None', exposure, output: 'sRGB' | 'linear' },
+//     lights: { directional: [{ dir (unit vector the light TRAVELS along), colour, intensity, shadow }],
+//               hemisphere: [{ sky, ground, intensity }], ambient: [{ colour, intensity }], points: n },
+//     fog: { type: 'exp2', colour, density } | { type: 'linear', colour, near, far } | null,
+//     environment: { specular, diffuse, source } | null (the page lights standard materials from its sky: scene.environment),
+//     background: colour | 'texture' | null,
+//     sky: { png (equirectangular, sRGB, the page's sky and far scenery from `at`, nearer than skyNear clipped), size, at, near } | null,
+//       skyNear defaults to half the box's shorter side, so the panorama holds exactly what the export leaves out (the page's
+//       forest right outside the tile, hazed at its true distance); 1500 m without a box. What rises above `at` + near
+//       (a hero canopy) is in both.
+//     ground: { x0, z0, step, nx, nz, uv (per sample; exact when the ground is planar-mapped: uvFit), colour (per sample,
+//               linear, the nearest vertex's; null without vertex colours), mesh, rays (how many of nine rays found it),
+//               material: { type, colour, map (png), repeat, offset, flipY, vertexColours, roughness, hooked } } | null }
+var KSTAGE = (function(){
+ 'use strict';
+ const K = {};
+ const hex = c => c && c.isColor ? '#' + c.getHexString() : null;
+ const TONE = { 0: 'None', 1: 'Linear', 2: 'Reinhard', 3: 'Cineon', 4: 'ACESFilmic' };
+ function pick(o){
+  const h = window.__kstage, last = h && h.last;
+  const scenes = o.scenes || (last && last.scenes.length ? last.scenes : null) ||
+   [o.scene || (typeof scene !== 'undefined' ? scene : null)].filter(Boolean);
+  const r = o.renderer || (last && last.renderer) || (typeof renderer !== 'undefined' ? renderer : null);
+  return { scenes, renderer: r, main: o.scene || scenes[scenes.length - 1] };
+ }
+ K.lights = function(scenes){
+  const T = THREE, L = { directional: [], hemisphere: [], ambient: [], points: 0 }, a = new T.Vector3(), b = new T.Vector3();
+  scenes.forEach(s => s.traverse(o => {
+   if(!o.isLight || o.visible === false) return;
+   if(o.isDirectionalLight){ o.updateMatrixWorld(); a.setFromMatrixPosition(o.matrixWorld); o.target.updateMatrixWorld(); b.setFromMatrixPosition(o.target.matrixWorld);
+    const d = b.sub(a).normalize(); L.directional.push({ dir: [d.x, d.y, d.z], colour: hex(o.color), intensity: o.intensity, shadow: !!o.castShadow }); }
+   else if(o.isHemisphereLight) L.hemisphere.push({ sky: hex(o.color), ground: hex(o.groundColor), intensity: o.intensity });
+   else if(o.isAmbientLight) L.ambient.push({ colour: hex(o.color), intensity: o.intensity });
+   else L.points++; }));
+  L.directional.sort((p, q) => q.intensity - p.intensity);   // the sun first
+  return L;
+ };
+ // the sky as an equirectangular PNG: a cube camera at `at` renders every scene the page renders (its sky scene
+ // first, as the page does), clipping everything nearer than `near`, and a pass unwraps the cube
+ K.sky = function(scenes, r, at, w, near){
+  const T = THREE, h = w / 2, size = Math.min(1024, w / 2);
+  const crt = new T.WebGLCubeRenderTarget(size, { format: T.RGBAFormat, type: T.UnsignedByteType, generateMipmaps: false });
+  const cam = new T.CubeCamera(near, 40000, crt); cam.position.set(at[0], at[1], at[2]); cam.updateMatrixWorld(true);
+  const ac = r.autoClear, tm = r.toneMapping, cc = r.getClearColor(new T.Color()), ca = r.getClearAlpha(); r.toneMapping = T.NoToneMapping;
+  // one face at a time so several scenes stack like the page's passes
+  const faces = cam.children;
+  for(let f = 0; f < 6; f++){ r.setRenderTarget(crt, f); r.setClearColor(0x000000, 1); r.clear();
+   r.autoClear = false; scenes.forEach(s => r.render(s, faces[f])); }
+  r.autoClear = ac; r.setClearColor(cc, ca);
+  const rt = new T.WebGLRenderTarget(w, h, { type: T.UnsignedByteType });
+  const q = new T.Mesh(new T.PlaneGeometry(2, 2), new T.ShaderMaterial({ uniforms: { cube: { value: crt.texture } }, depthTest: false, depthWrite: false,
+   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+   fragmentShader: 'uniform samplerCube cube; varying vec2 vUv;\n' +
+    'vec3 toSRGB(vec3 c){ return mix(c * 12.92, 1.055 * pow(c, vec3(1.0/2.4)) - 0.055, step(0.0031308, c)); }\n' +
+    'void main(){ float lon = (vUv.x - 0.5) * 6.2831853, lat = (vUv.y - 0.5) * 3.1415927;\n' +
+    '  vec3 d = vec3(sin(lon) * cos(lat), sin(lat), -cos(lon) * cos(lat));\n' +   // u 0.5 looks along -z (Godot's forward)
+    '  vec4 c = textureCube(cube, d); gl_FragColor = vec4(toSRGB(clamp(c.rgb, 0.0, 1.0)), 1.0); }' }));
+  const qs = new T.Scene(); qs.add(q); const qc = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  r.setRenderTarget(rt); r.render(qs, qc);
+  const px = new Uint8Array(w * h * 4); r.readRenderTargetPixels(rt, 0, 0, w, h, px);
+  r.setRenderTarget(null); r.toneMapping = tm;
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'), id = g.createImageData(w, h);
+  for(let y = 0; y < h; y++) id.data.set(px.subarray((h - 1 - y) * w * 4, (h - y) * w * 4), y * w * 4);   // GL rows bottom-up
+  g.putImageData(id, 0, 0);
+  crt.dispose(); rt.dispose(); q.geometry.dispose(); q.material.dispose();
+  return { png: cv.toDataURL('image/png'), size: [w, h], at, near };
+ };
+ // the ground's look on a grid. The ground mesh is chosen by rays: from high above nine points of the box, the
+ // candidate (opaque, not instanced, overlapping the box) hit most often at the ground height h(x, z) wins, so a
+ // world-wide merged bucket of tree limbs never passes for the forest floor. Its uv is an exact affine fit of the
+ // mesh's vertices over (x, z) when the ground is planar-mapped (a PlaneGeometry), else the nearest vertex's; its
+ // colour is the nearest vertex's (a spatial hash).
+ K.ground = function(scenes, box, step, hFn){
+  const T = THREE, cands = [];
+  scenes.forEach(s => s.traverse(o => {
+   if(!o.isMesh || o.isInstancedMesh || o.visible === false || !o.geometry || !o.geometry.attributes.position) return;
+   const m = Array.isArray(o.material) ? o.material[0] : o.material; if(!m || m.transparent) return;
+   if(!o.geometry.boundingBox) o.geometry.computeBoundingBox(); o.updateMatrixWorld();
+   const bb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+   if(bb.max.x < box[0] || bb.min.x > box[2] || bb.max.z < box[1] || bb.min.z > box[3]) return;
+   cands.push(o); }));
+  if(!cands.length || !hFn) return null;
+  const rc = new T.Raycaster(), down = new T.Vector3(0, -1, 0), score = new Map();
+  for(let a = 1; a <= 3; a++) for(let b = 1; b <= 3; b++){
+   const x = box[0] + (box[2] - box[0]) * a / 4, z = box[1] + (box[3] - box[1]) * b / 4, y = hFn(x, z);
+   rc.set(new T.Vector3(x, y + 5000, z), down); rc.far = 10000;
+   for(const o of cands){ const h = rc.intersectObject(o, false)[0]; if(h && Math.abs(h.point.y - y) < 2) score.set(o, (score.get(o) || 0) + 1); } }
+  let main = null, best = 0; score.forEach((n, o) => { if(n > best){ best = n; main = o; } });
+  if(!main) return null;
+  const g = main.geometry, P = g.attributes.position, U = g.attributes.uv, Cc = g.attributes.color, v = new T.Vector3(), W = new Float32Array(P.count * 3);
+  for(let i = 0; i < P.count; i++){ v.fromBufferAttribute(P, i).applyMatrix4(main.matrixWorld); W[i * 3] = v.x; W[i * 3 + 1] = v.y; W[i * 3 + 2] = v.z; }
+  // uv as an affine function of (x, z): least squares over the vertices, kept when it fits to 1e-4
+  let fit = null;
+  if(U){ const A = [[0,0,0],[0,0,0],[0,0,0]], bu = [0,0,0], bv = [0,0,0];
+   for(let i = 0; i < P.count; i++){ const r = [W[i * 3], W[i * 3 + 2], 1], u = U.getX(i), w = U.getY(i);
+    for(let p = 0; p < 3; p++){ bu[p] += r[p] * u; bv[p] += r[p] * w; for(let q = 0; q < 3; q++) A[p][q] += r[p] * r[q]; } }
+   const solve = (M, y) => { const m = M.map((row, i) => row.concat([y[i]]));
+    for(let c = 0; c < 3; c++){ let piv = c; for(let r = c + 1; r < 3; r++) if(Math.abs(m[r][c]) > Math.abs(m[piv][c])) piv = r; [m[c], m[piv]] = [m[piv], m[c]];
+     if(Math.abs(m[c][c]) < 1e-12) return null; for(let r = 0; r < 3; r++) if(r !== c){ const f = m[r][c] / m[c][c]; for(let k = c; k < 4; k++) m[r][k] -= f * m[c][k]; } }
+    return [m[0][3] / m[0][0], m[1][3] / m[1][1], m[2][3] / m[2][2]]; };
+   const cu = solve(A, bu), cv = solve(A, bv);
+   if(cu && cv){ let err = 0; for(let i = 0; i < P.count; i += Math.max(1, P.count >> 10)){ const x = W[i * 3], z = W[i * 3 + 2];
+     err = Math.max(err, Math.abs(cu[0] * x + cu[1] * z + cu[2] - U.getX(i)), Math.abs(cv[0] * x + cv[1] * z + cv[2] - U.getY(i))); }
+    if(err < 1e-4) fit = { u: cu, v: cv }; } }
+  const C = 8, map = new Map();
+  for(let i = 0; i < P.count; i++){ const k = Math.floor(W[i * 3] / C) + ',' + Math.floor(W[i * 3 + 2] / C); let a = map.get(k); if(!a) map.set(k, a = []); a.push(i); }
+  const nearest = (x, z) => { let bi = -1, bd = Infinity; for(let r = 1; r < 6 && bi < 0; r++){ const cx = Math.floor(x / C), cz = Math.floor(z / C);
+    for(let dx = -r; dx <= r; dx++) for(let dz = -r; dz <= r; dz++){ const a = map.get((cx + dx) + ',' + (cz + dz)); if(!a) continue;
+     for(const i of a){ const ex = W[i * 3] - x, ez = W[i * 3 + 2] - z, d = ex * ex + ez * ez; if(d < bd){ bd = d; bi = i; } } } }
+   return bi; };
+  const nx = Math.floor((box[2] - box[0]) / step) + 1, nz = Math.floor((box[3] - box[1]) / step) + 1;
+  const UV = new Float32Array(nx * nz * 2), COL = new Float32Array(nx * nz * 3).fill(1);
+  for(let j = 0; j < nz; j++) for(let i = 0; i < nx; i++){ const x = box[0] + i * step, z = box[1] + j * step, s = j * nx + i;
+   const k = (fit && !Cc) ? -1 : nearest(x, z);
+   if(fit){ UV[s * 2] = fit.u[0] * x + fit.u[1] * z + fit.u[2]; UV[s * 2 + 1] = fit.v[0] * x + fit.v[1] * z + fit.v[2]; }
+   else if(U && k >= 0){ UV[s * 2] = U.getX(k); UV[s * 2 + 1] = U.getY(k); }
+   if(Cc && k >= 0){ COL[s * 3] = Cc.getX(k); COL[s * 3 + 1] = Cc.getY(k); COL[s * 3 + 2] = Cc.getZ(k); } }
+  const m = Array.isArray(main.material) ? main.material[0] : main.material, t = m.map;
+  let png = null; if(t && t.image){ try{ const im = t.image;
+   if(im.toDataURL) png = im.toDataURL('image/png');
+   else if(im.width){ const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height; cv.getContext('2d').drawImage(im, 0, 0); png = cv.toDataURL('image/png'); } }catch(e){} }
+  const enc = a => { const u = new Uint8Array(a.buffer); let s = ''; for(let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+   return { type: 'Float32Array', n: a.length, b64: btoa(s) }; };
+  return { x0: box[0], z0: box[1], step, nx, nz, uv: enc(UV), colour: Cc ? enc(COL) : null, uvFit: fit, rays: best + '/9',
+   mesh: main.name || main.userData.inspectLabel || '',
+   material: { type: m.type, colour: hex(m.color), map: png, repeat: t ? [t.repeat.x, t.repeat.y] : [1, 1], offset: t ? [t.offset.x, t.offset.y] : [0, 0],
+    flipY: t ? !!t.flipY : true, vertexColours: !!m.vertexColors, roughness: m.roughness == null ? null : m.roughness,
+    hooked: !!(m.onBeforeCompile && m.onBeforeCompile !== T.Material.prototype.onBeforeCompile) } };
+ };
+ K.capture = function(o){
+  o = o || {}; const T = THREE, P = pick(o), r = P.renderer, sc = P.main;
+  const out = { format: 'krator-stage', version: 1,
+   convention: { colours: 'linear (three\'s working values, as hex)', dir: 'the direction a light travels, world, unit', sky: 'equirectangular, sRGB, u=0.5 faces -z' },
+   renderer: r ? { toneMapping: TONE[r.toneMapping] || String(r.toneMapping), exposure: r.toneMappingExposure, output: r.outputEncoding === T.sRGBEncoding ? 'sRGB' : 'linear' } : null,
+   lights: K.lights(P.scenes),
+   fog: sc && sc.fog ? (sc.fog.isFogExp2 ? { type: 'exp2', colour: hex(sc.fog.color), density: sc.fog.density } : { type: 'linear', colour: hex(sc.fog.color), near: sc.fog.near, far: sc.fog.far }) : null,
+   background: sc && sc.background ? (sc.background.isColor ? hex(sc.background) : 'texture') : null,
+   // scene.environment: the page's sky as the light on its standard materials (core/atmos/89-atmos-b-skylight.js). Godot
+   // reflects its own Sky; specular and diffuse are the shares the page gives the map (PRESETS.skylight), 1 and 0 by default
+   environment: sc && sc.environment ? (function(){ var P = typeof ATMOS !== 'undefined' && ATMOS.PRESETS && ATMOS.PRESETS.skylight;
+     return { specular: P ? P.specular : 1, diffuse: P ? P.diffuse : 0, source: P ? 'atmos skylight' : 'envMap' }; })() : null,
+   scenes: P.scenes.length, sky: null, ground: null };
+  if(r && o.sky !== 0 && o.at) try{ out.sky = K.sky(P.scenes, r, o.at, o.sky || 1024, o.skyNear || (o.box ? Math.min(o.box[2] - o.box[0], o.box[3] - o.box[1]) / 2 : 1500)); }catch(e){ out.skyError = String(e.message || e); }
+  if(o.box) try{ out.ground = K.ground(P.scenes, o.box, o.step || 4, o.ground); }catch(e){ out.groundError = String(e.message || e); }
+  return out;
+ };
+ return K;
 })();
 
 // ==================== 45-host-stage.js
@@ -2361,7 +2580,8 @@ SEDESERT.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==null
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(SEDESERT.buildTrees){BIO.cur='desert/trees';Object.assign(out,SEDESERT.buildTrees(R,q));}
  if(SEDESERT.buildFloor){BIO.cur='desert/floor';Object.assign(out,SEDESERT.buildFloor(R,q));}
- if(SEDESERT.buildFauna){BIO.cur='desert/fauna';Object.assign(out,SEDESERT.buildFauna(R,q));}
+ // opt.fauna: false builds none; a function (kind,x,z)->bool keeps the deer and coyotes off ground the host keeps
+ if(SEDESERT.buildFauna&&opt.fauna!==false){BIO.cur='desert/fauna';Object.assign(out,SEDESERT.buildFauna(R,q,opt.fauna));}
  BIO.cur=null;return out;};
 SEDESERT.dress=function(geos,opt){if(SEDESERT.dressGeos){BIO.cur='desert/dress';SEDESERT.dressGeos(geos,opt||{});BIO.cur=null;}};
 SEDESERT.canopyH=function(x,z){return SEDESERT._canopyH?SEDESERT._canopyH(x,z):6;};
@@ -2379,6 +2599,13 @@ SEDESERT.canopyH=function(x,z){return SEDESERT._canopyH?SEDESERT._canopyH(x,z):6
 //   STRIDERS   long-legged flightless walkers in small bands on the canyon
 //              floor and at the pond, pacing the river; sand-coloured, 2.4 m
 //   LIZARDS    basking on the floor's boulders (SEDESERT.ROCKS), banded, still
+//   DEER       canyon mule deer (2026-10): herds of 3-8 in the riparian strip and at the pond, each
+//              walking its own loop between browse points in the bosque and the scrub beside it,
+//              head down to browse, up for a glance; bucks carry forked antlers; 1 m at the shoulder
+//   COYOTES    (2026-10) singly or in pairs (in file), trotting long loops through the scrub and the
+//              canyon floor, pausing to sniff or look round; 0.6 m at the shoulder
+// The deer and coyotes are walkers: their pose is a pure function of the clock (walkAt), so a port can
+// replay it; their legs are separate instances swinging on the hips (this kit does not load 35-core-anim).
 // Tags follow the project rule. No fauna is ever part of a building.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const PAL=SEDESERT.PAL,zones=SEDESERT.zones,C=SEDESERT.C,{bright,vary}=SEDESERT;
@@ -2388,6 +2615,8 @@ SEDESERT.FAUNA=[
  {key:'swift',name:'Wadi swift',span:[.6,.8],tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'yes'}},
  {key:'strider',name:'Sand strider',H:[2.0,2.7],tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'both'}},
  {key:'lizard',name:'Rock lizard',L:[.25,.45],tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ {key:'deer',name:'Canyon mule deer',H:[.86,1.1],tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'yes'}},
+ {key:'coyote',name:'Coyote',H:[.55,.64],tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'both'}},
 ];
 // ---------------------------------------------------------------- geometries (unit, vertex-coloured)
 const G={};
@@ -2426,10 +2655,113 @@ const M={
  solid:BIO.solidMat(null,0xffffff),
 };
 BIO.def('lizard',G.lizard(),M.body,{label:'Rock lizards'});
+// ---------------------------------------------------------------- walkers: a pose that is a function of the clock (2026-10)
+// The deer and the coyotes are WALKERS: each goes round a closed polyline at a trapezoid speed (it eases
+// out of and into each stop) and stands at some of its vertices for a while. walkAt(W,t,back) gives the
+// pose at clock t (the BIO clock, BIO.WIND.t) as a pure function of t: nothing is integrated frame to frame, so any frame rate, or a
+// port replaying the clock (biomes/GODOT.md), lands on the same pose. `back` puts a follower that many
+// metres behind on the same path: it moves and stops with its leader. The ground under the path is
+// sampled once at build (W.gy, about every metre), so a frame calls no terrainH.
+const wrapA=a=>{a=(a+Math.PI)%TAU;if(a<0)a+=TAU;return a-Math.PI;},lerpA=(a,b,u)=>a+wrapA(b-a)*u;
+function wSeg(W,s){const c=W.cum;let lo=0,hi=W.pts.length-1;while(lo<hi){const m=(lo+hi+1)>>1;if(c[m]<=s)lo=m;else hi=m-1;}return lo;}
+function wAt(W,s){s=((s%W.L)+W.L)%W.L;const i=wSeg(W,s),n=W.pts.length,a=W.pts[i],b=W.pts[(i+1)%n],l=W.cum[i+1]-W.cum[i],u=l>0?(s-W.cum[i])/l:0;return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];}
+function wY(W,s){s=((s%W.L)+W.L)%W.L;const f=s/W.ds,k=Math.min(Math.floor(f),W.gy.length-2),u=f-k;return W.gy[k]+(W.gy[k+1]-W.gy[k])*u;}
+// heading along the path; a corner is eased over rc metres (a walker eases only the corners it does not stop at)
+function wHd(W,s,all,rc){s=((s%W.L)+W.L)%W.L;const n=W.pts.length,i=wSeg(W,s),c=W.cum,a=s-c[i],b=c[i+1]-s;
+ if(a<rc&&(all||!W.isStop[i]))return lerpA(W.dir[(i+n-1)%n],W.dir[i],smooth(-rc,rc,a));
+ if(b<rc&&(all||!W.isStop[(i+1)%n]))return lerpA(W.dir[i],W.dir[(i+1)%n],smooth(-rc,rc,-b));
+ return W.dir[i];}
+// pts [[x,z]...] a closed loop; stops [{i,d,...}] sorted by vertex; v the cruising speed (m/s); ta the ease (s);
+// off the walker's clock offset (s); hs the half-stride (m): the gait phase is pi per half-stride, rounded so the
+// loop holds whole strides and the phase never jumps at the wrap
+function mkWalker(pts,stops,v,ta,off,hs){const n=pts.length,cum=[0],dir=[];
+ for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];cum.push(cum[i]+Math.hypot(b[0]-a[0],b[1]-a[1]));dir.push(Math.atan2(b[0]-a[0],b[1]-a[1]));}
+ const L=cum[n],N=Math.max(2,Math.ceil(L)),W={pts,cum,dir,L,ds:L/N,gy:new Float32Array(N+1),stops,v,off,tl:[],P:0,hs:L/(2*Math.max(1,Math.round(L/(2*hs)))),isStop:new Uint8Array(n)};
+ for(let k=0;k<=N;k++){const p=wAt(W,k*W.ds);W.gy[k]=BIO.terrainH(p[0],p[1]);}
+ stops.forEach(S=>W.isStop[S.i]=1);
+ let t0=0;
+ if(!stops.length){W.tl.push({run:1,s0:0,Lr:L,D:L/v,ta:0,t0:0});t0=L/v;}
+ else for(let k=0;k<stops.length;k++){const S=stops[k],S2=stops[(k+1)%stops.length];
+  W.tl.push({run:0,s0:cum[S.i],D:S.d,t0,stop:S,hIn:dir[(S.i+n-1)%n],hOut:dir[S.i]});t0+=S.d;
+  let Lr=cum[S2.i]-cum[S.i];if(Lr<=0)Lr+=L;const te=Math.min(ta,Lr/v),D=Lr/v+te;
+  W.tl.push({run:1,s0:cum[S.i],Lr,D,ta:te,t0});t0+=D;}
+ W.P=t0;return W;}
+// the pose at clock t: {x,z,y (the ground), s, hd (heading), vf (0..1 of the cruising speed), stop, u (s into it), ph (gait)}
+function walkAt(W,t,back,rc){let r=(t+W.off)%W.P;if(r<0)r+=W.P;
+ let e=W.tl[0];for(let k=1;k<W.tl.length&&W.tl[k].t0<=r;k++)e=W.tl[k];
+ const tau=r-e.t0,o={stop:null,u:0,vf:0,s:0,hd:0};
+ if(!e.run){o.stop=e.stop;o.u=tau;o.s=e.s0;const d=e.D,tt=Math.min(1.5,d*.4);o.hd=lerpA(e.hIn,e.hOut,smooth(d-tt,d,tau));}
+ else{const v=W.v,ta=e.ta;let s;
+  if(ta<=0){s=v*tau;o.vf=1;}else if(tau<ta){s=v*tau*tau/(2*ta);o.vf=tau/ta;}
+  else if(tau>e.D-ta){const k=e.D-tau;s=e.Lr-v*k*k/(2*ta);o.vf=k/ta;}else{s=v*(tau-ta/2);o.vf=1;}
+  o.s=e.s0+s;o.hd=wHd(W,o.s,false,rc);}
+ if(back){o.s-=back;o.hd=wHd(W,o.s,true,rc);}
+ const p=wAt(W,o.s);o.x=p[0];o.z=p[1];o.y=wY(W,o.s);o.ph=Math.PI*o.s/W.hs;return o;}
+// the body's pitch from the ground along the path, half-length e
+const wPitch=(W,s,e)=>clamp(-Math.atan2(wY(W,s+e)-wY(W,s-e),2*e),-.3,.3);
+// ---------------------------------------------------------------- quadrupeds: deer and coyotes (2026-10)
+// Four dynamic meshes an animal kind (body, head on its neck, legs, the bucks' antlers), every part
+// posed from the walker's pose: the head swings on its neck pivot about the body's x (positive is
+// down), each leg on its hip, diagonal pairs in step (a walk or a trot), the swing scaled by the speed.
+// Bodies face +z, the ground at y=0, units metres at scale 1.
+const _c=new T3.Color();
+function asm(parts){const pos=[],nor=[],col=[];
+ parts.forEach(p=>{const g=p.g.index?p.g.toNonIndexed():p.g,a=g.attributes.position.array,b=g.attributes.normal.array;
+  for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(b[i],b[i+1],b[i+2]);
+   _c.set(typeof p.c==='function'?p.c(a[i],a[i+1],a[i+2]):p.c).convertSRGBToLinear();col.push(_c.r,_c.g,_c.b);}});
+ return BIO.geo._make(pos,nor,new Array(pos.length/3*2).fill(0),col);}
+const ell=(rx,ry,rz,x,y,z,ws,hs,rotx,rotz)=>{const g=new T3.SphereGeometry(1,ws||8,hs||6);g.scale(rx,ry,rz);if(rotx)g.rotateX(rotx);if(rotz)g.rotateZ(rotz);g.translate(x,y,z);return g;};
+// an open tube from a (radius r0) to b (radius r1)
+const tube=(a,b,r0,r1,seg)=>{const d=new T3.Vector3(b[0]-a[0],b[1]-a[1],b[2]-a[2]),L=d.length(),g=new T3.CylinderGeometry(r1,r0,L,seg||5,1,true);g.translate(0,L/2,0);
+ g.applyMatrix4(new T3.Matrix4().makeRotationFromQuaternion(new T3.Quaternion().setFromUnitVectors(new T3.Vector3(0,1,0),d.normalize())));g.translate(a[0],a[1],a[2]);return g;};
+// a leg: hip at y=0, the hoof or paw at y=-1 (scaled by the leg's length), tapered, hooves dark
+const legGeo=(r0,r1,up,low,foot)=>{const g=new T3.CylinderGeometry(r0,r1,1,5,3,true);g.translate(0,-.5,0);return asm([{g,c:(x,y,z)=>y<-.93?foot:y<-.45?low:up}]);};
+const DEER_C={tan:0x8a6c4c,belly:0xd2c2a2,rump:0xe4dac6,face:0x75604a,muz:0xcfc4b0,dark:0x18130f,antler:0xd6cab0};
+G.deerBody=function(){const K=DEER_C,coat=(x,y,z)=>z<-.36&&y>.66?K.rump:y<.69?K.belly:K.tan;
+ return asm([{g:ell(.19,.21,.5,0,.83,0,10,7),c:coat},{g:ell(.16,.19,.21,0,.87,.3,8,5),c:(x,y,z)=>y<.73?K.belly:K.tan},
+  {g:tube([0,.9,-.47],[0,.79,-.6],.04,.03,4),c:(x,y,z)=>y<.83?K.dark:K.rump}]);};
+// the head on its neck: the pivot (0,0,0) is the neck's root, at DEER.neck in the body
+G.deerHead=function(){const K=DEER_C,ear=s=>{const g=new T3.SphereGeometry(1,6,4);g.scale(.085,.045,.012);g.rotateZ(s*.45);g.translate(s*.1,.53,.3);return{g,c:K.tan};};
+ return asm([{g:tube([0,-.07,-.05],[0,.41,.28],.1,.065,6),c:K.tan},{g:ell(.07,.08,.13,0,.44,.36,7,5,.5),c:K.face},
+  {g:ell(.045,.05,.08,0,.385,.46,6,4,.5),c:K.muz},{g:ell(.024,.02,.02,0,.355,.525,4,3),c:K.dark},ear(1),ear(-1)]);};
+// a mule deer's antlers: a beam that forks, and forks again
+G.deerAntler=function(){const K=DEER_C,P=[];
+ for(const s of [1,-1]){const b0=[s*.035,.52,.33],b1=[s*.12,.66,.3],b2=[s*.2,.74,.37],b3=[s*.16,.79,.24],b4=[s*.25,.86,.43],b5=[s*.23,.88,.33],b6=[s*.19,.92,.21],b7=[s*.13,.9,.27];
+  [[b0,b1,.02,.016],[b1,b2,.016,.012],[b1,b3,.016,.012],[b2,b4,.012,.006],[b2,b5,.012,.006],[b3,b6,.012,.006],[b3,b7,.011,.006]].forEach(e=>P.push({g:tube(e[0],e[1],e[2],e[3],3),c:K.antler}));}
+ return asm(P);};
+G.deerLeg=()=>legGeo(.034,.018,DEER_C.tan,0x6e5840,DEER_C.dark);
+const COY_C={grey:0x8e7e68,back:0x5c5042,belly:0xcfc1a6,muz:0xbcad92,dark:0x1c1814};
+G.coyBody=function(){const K=COY_C,coat=(x,y,z)=>y>.6?K.back:y<.43?K.belly:K.grey;
+ return asm([{g:ell(.12,.14,.34,0,.5,0,9,6),c:coat},{g:ell(.11,.14,.15,0,.52,.21,7,5),c:coat},
+  {g:tube([0,.54,-.3],[0,.28,-.5],.04,.066,5),c:(x,y,z)=>y<.34?K.dark:K.grey}]);};
+G.coyHead=function(){const K=COY_C,ear=s=>{const g=new T3.CylinderGeometry(0,.032,.085,4,1,true);g.rotateZ(-s*.25);g.translate(s*.042,.245,.13);return{g,c:K.back};};
+ return asm([{g:tube([0,-.06,-.04],[0,.12,.12],.075,.055,6),c:K.grey},{g:ell(.07,.065,.09,0,.15,.16,7,5),c:K.grey},
+  {g:tube([0,.13,.22],[0,.105,.345],.042,.018,5),c:K.muz},{g:ell(.016,.014,.014,0,.104,.348,4,3),c:K.dark},ear(1),ear(-1)]);};
+G.coyLeg=()=>legGeo(.024,.013,COY_C.grey,0x9a8a72,COY_C.dark);
+// the rigs: hips [front L, front R, hind L, hind R] and the neck's root in the body, the leg length, the
+// swing (rad) and the bob (m) at full speed
+const DEER={hips:[[.085,.78,.33],[-.085,.78,.33],[.085,.8,-.34],[-.085,.8,-.34]],neck:[0,.95,.36],legLen:.8,amp:.34,bob:.02};
+const COY={hips:[[.06,.47,.22],[-.06,.47,.22],[.06,.48,-.24],[-.06,.48,-.24]],neck:[0,.56,.27],legLen:.48,amp:.5,bob:.035};
+const _w1=new T3.Color(1,1,1),_m4=new T3.Matrix4(),_p3=new T3.Vector3(),_q1=new T3.Quaternion(),_q2=new T3.Quaternion(),_eu=new T3.Euler(),_s3=new T3.Vector3(),_v3=new T3.Vector3();
+// pose animal i of rig R (its meshes in R.body, R.head, R.legs, R.ant) from walker pose o at size k, the head
+// angle `head`; col (linear) on the first frame; ai the antler instance (-1: none). Legs stay plumb on a slope.
+function rigPose(R,i,o,k,head,col,ai){const hd=o.hd,pt=o.pt||0,sw=R.amp*o.vf,y=o.y+R.bob*k*o.vf*Math.abs(Math.sin(o.ph));
+ _eu.set(pt,hd,0,'YXZ');_q1.setFromEuler(_eu);_p3.set(o.x,y,o.z);_s3.set(k,k,k);_m4.compose(_p3,_q1,_s3);R.body.setMatrixAt(i,_m4);if(col)R.body.setColorAt(i,col);
+ _v3.set(R.neck[0]*k,R.neck[1]*k,R.neck[2]*k).applyQuaternion(_q1);_eu.set(pt+head,hd,0,'YXZ');_q2.setFromEuler(_eu);
+ _p3.set(o.x+_v3.x,y+_v3.y,o.z+_v3.z);_m4.compose(_p3,_q2,_s3);R.head.setMatrixAt(i,_m4);if(col)R.head.setColorAt(i,col);
+ if(R.ant&&ai>=0){R.ant.setMatrixAt(ai,_m4);if(col)R.ant.setColorAt(ai,_w1);}   // every mesh on M.body needs instance colours (one program for all of them)
+ _s3.set(k,k*R.legLen,k);
+ for(let l=0;l<4;l++){const H=R.hips[l],a=sw*Math.sin(o.ph+(l===0||l===3?0:Math.PI));
+  _v3.set(H[0]*k,H[1]*k,H[2]*k).applyQuaternion(_q1);_eu.set(a,hd,0,'YXZ');_q2.setFromEuler(_eu);
+  _p3.set(o.x+_v3.x,y+_v3.y,o.z+_v3.z);_m4.compose(_p3,_q2,_s3);R.legs.setMatrixAt(i*4+l,_m4);if(col)R.legs.setColorAt(i*4+l,col);}}
+// the head: `base` while walking; at a stop it eases to `down` (browsing, sniffing) and, for a glance
+// (stop.ga, stop.gd: when and how long), up to `alert`
+function headAt(o,base,down,alert,ramp){if(!o.stop)return base;const S=o.stop,u=o.u,d=S.d,dn=smooth(0,ramp,u)*smooth(d,d-ramp*1.2,u);
+ const g=S.gd?smooth(S.ga-.5,S.ga,u)*smooth(S.ga+S.gd+.5,S.ga+S.gd,u):0,tgt=S.look?alert:down+(alert-down)*g;return base+(tgt-base)*dn;}
 // ---------------------------------------------------------------- the pass
 // Static fauna is put like any item; the moving kinds are laid out here and
 // driven by one tick.
-SEDESERT.buildFauna=function(R,q){
+SEDESERT.buildFauna=function(R,q,keep){
  reseed(700021);q=q==null?1:q;R=R||3000;const T=T3,st={kites:0,swifts:0,striders:0,lizards:0,thermals:0,flocks:0,bands:0};
  const LOD=BIO.LOD(),Y=(x,z)=>BIO.terrainH(x,z);
  // ---- lizards: on the boulders the floor left, where the ground is dry and rocky
@@ -2480,7 +2812,78 @@ SEDESERT.buildFauna=function(R,q){
     setI(legM,i*2+l,(x+lx)/2,g+legH*.55,(z+lz)/2,swing*.9,heading,0,.11,legH*1.1,.11,first?sd.c:null);}});   // the swing is fore-aft: about the local x
    bodyM.instanceMatrix.needsUpdate=true;legM.instanceMatrix.needsUpdate=true;if(first){bodyM.instanceColor.needsUpdate=true;legM.instanceColor.needsUpdate=true;}}
   first=false;});
- SEDESERT.FAUNA_LAYOUT={thermals:therm,flocks:flocks,bands:bands};   // a world's camera may want to find them
+ // ---- deer and coyotes (2026-10): walkers (above) on dry, gentle, unmasked ground; the draws come after
+ // every older kind's, so the kites, swifts, striders and lizards lie exactly where they did
+ const fok=typeof keep==='function'?keep:null;   // the host's own filter, (kind,x,z)->bool (BIOME-API.md)
+ const dryOK=(x,z,Z)=>BIO.depth(x,z)<-.3&&Z.slope<.45&&BIO.mask(x,z)>.5&&BIO.clearOf(x,z,2)&&!SEDESERT.blocked(x,z,.6);   // not through a trunk
+ const deerOK=(x,z)=>{const Z=zones(x,z);return Z.rip+Z.oasis+Z.bank*.5+Z.scrub*.6+Z.bench*.3>.3&&dryOK(x,z,Z)&&(!fok||fok('deer',x,z));};
+ const coyOK=(x,z)=>{const Z=zones(x,z);return Z.scrub+Z.rip+Z.bad*.6+Z.oasis+Z.bench*.4>.25&&dryOK(x,z,Z)&&(!fok||fok('coyote',x,z));};
+ // a leg is walkable: every 3 m on it passes, and it climbs no steeper than 1 in 2.5
+ const legOK=(a,b,ok)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(L/3);if(Math.abs(Y(b[0],b[1])-Y(a[0],a[1]))>L*.4)return false;
+  for(let i=1;i<n;i++){const u=i/n;if(!ok(a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u))return false;}return true;};
+ const tint=()=>{const c=new T.Color(1,1,1);c.offsetHSL(rr(-.012,.012),rr(-.05,.03),rr(-.07,.05));return c.convertSRGBToLinear();};
+ // ---- DEER: herds of 3-8 in the canyon's riparian strip and at the pond, browsing between points in
+ // the bosque and the scrub beside it; each deer walks its own loop through the herd's browse points
+ const herds=[],deer=[];
+ BIO.grid(170,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.rip*.8+Z.oasis*.9+Z.bank*.3)*q*smooth(.45,.2,Z.slope);},(x,y,z)=>{
+  if(!deerOK(x,z))return;const pool=[[x,z]];
+  for(let k=0;k<70&&pool.length<9;k++){const a=rr(0,TAU),r=rr(5,34),px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
+   if(!deerOK(px,pz)||pool.some(p=>Math.hypot(p[0]-px,p[1]-pz)<5))continue;pool.push([px,pz]);}
+  if(pool.length<4)return;
+  const H={x,z,pool,deer:[]},n=ri(3,8);
+  for(let j=0;j<n;j++){const want=ri(3,5),path=[pick(pool)];
+   for(let g=0;g<30&&path.length<want;g++){const p=pick(pool),l=path[path.length-1];if(path.indexOf(p)>=0||!legOK(l,p,deerOK))continue;path.push(p);}
+   while(path.length>2&&!legOK(path[path.length-1],path[0],deerOK))path.pop();
+   if(path.length<2)continue;
+   const stops=path.map((p,i)=>{const d=rr(7,18),S={i,d};if(rng()<.6){S.ga=rr(.25,.55)*d;S.gd=rr(1.5,3);if(S.ga+S.gd+.6>d-1.6)delete S.gd;}return S;});
+   const buck=rng()<.3,W=mkWalker(path.map(p=>[p[0],p[1]]),stops,rr(.45,.75),.8,rr(0,600),.55);
+   const d={W,H,buck,k:buck?rr(1.0,1.1):rr(.86,.97),c:tint()};H.deer.push(d);deer.push(d);}
+  if(H.deer.length)herds.push(H);},{patch:.2,pad:4});
+ st.herds=herds.length;st.deer=deer.length;
+ // ---- COYOTES: singly or in pairs, trotting long loops through the scrub and the canyon floor and
+ // pausing at some of the corners to sniff or to look round; a pair travels in file
+ const packs=[],coys=[];
+ BIO.grid(800,0,R,(x,z)=>{if(BIO.lodD(x,z)>LOD.mid)return 0;const Z=zones(x,z);return (Z.scrub*.5+Z.rip*.7+Z.bad*.3+Z.oasis*.4)*q*.8*smooth(.45,.2,Z.slope);},(x,y,z)=>{
+  const n=ri(5,8),R0=rr(70,190),a0=rr(0,TAU),pts=[];
+  for(let j=0;j<n;j++){let ok=null;for(let g=0;g<6&&!ok;g++){const a=a0+j/n*TAU+rr(-.25,.25),r=R0*rr(.55,1.1)*(1-g*.12),px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
+    if(!coyOK(px,pz)||(pts.length&&!legOK(pts[pts.length-1],[px,pz],coyOK)))continue;ok=[px,pz];}
+   if(ok)pts.push(ok);}
+  while(pts.length>3&&!legOK(pts[pts.length-1],pts[0],coyOK))pts.pop();
+  if(pts.length<4||!legOK(pts[pts.length-1],pts[0],coyOK))return;
+  const stops=[];pts.forEach((p,i)=>{if(rng()<.45)stops.push({i,d:rr(2.5,8),look:rng()<.45});});if(!stops.length)stops.push({i:0,d:rr(3,6),look:true});
+  const W=mkWalker(pts,stops,rr(2.0,2.8),.6,rr(0,1000),.5),m=rng()<.45?2:1,P={x,z,W,n:m};
+  for(let j=0;j<m;j++)coys.push({W,P,back:j?rr(5,8):0,k:rr(.92,1.06),c:tint()});
+  packs.push(P);},{patch:.2,pad:4});
+ st.packs=packs.length;st.coyotes=coys.length;
+ // ---- their meshes and their tick (the older kinds' tick above is untouched)
+ let nB=0;deer.forEach(d=>d.ai=d.buck?nB++:-1);
+ const DR=deer.length?Object.assign({body:BIO.dynamic('deer',G.deerBody(),M.body,deer.length,{label:'Canyon mule deer'}),
+   head:BIO.dynamic('deerhead',G.deerHead(),M.body,deer.length,{label:'Canyon mule deer'}),
+   ant:nB?BIO.dynamic('deerantler',G.deerAntler(),M.body,nB,{label:'Canyon mule deer (buck)'}):null,
+   legs:BIO.dynamic('deerleg',G.deerLeg(),M.body,deer.length*4,{label:'Canyon mule deer'})},DEER):null;
+ const CY=coys.length?Object.assign({body:BIO.dynamic('coyote',G.coyBody(),M.body,coys.length,{label:'Coyotes'}),
+   head:BIO.dynamic('coyotehead',G.coyHead(),M.body,coys.length,{label:'Coyotes'}),ant:null,
+   legs:BIO.dynamic('coyoteleg',G.coyLeg(),M.body,coys.length*4,{label:'Coyotes'})},COY):null;
+ [DR,CY].forEach(Rg=>Rg&&[Rg.body,Rg.head,Rg.legs,Rg.ant].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';}));   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
+ const FAR2=1600*1600;let first2=true;
+ const flag=Rg=>{for(const m of [Rg.body,Rg.head,Rg.legs,Rg.ant])if(m){m.instanceMatrix.needsUpdate=true;if(first2&&m.instanceColor)m.instanceColor.needsUpdate=true;}};
+ // t is the BIO clock (BIO.WIND.t: the host's clock() when it binds one, else the core's own), the one the
+ // foliage sways to, so one world clock drives both and a port replays the same poses from it
+ BIO.tick(dt=>{const t=BIO.WIND.t.value,E=BIO.eye(),far=(x,z)=>!first2&&E&&(x-E[0])*(x-E[0])+(z-E[2])*(z-E[2])>FAR2;   // past 1.6 km a herd keeps its last pose
+  if(DR){deer.forEach((d,i)=>{if(far(d.H.x,d.H.z))return;const o=walkAt(d.W,t,0,.8);o.pt=wPitch(d.W,o.s,.42*d.k);
+    rigPose(DR,i,o,d.k,headAt(o,.22,1.85,-.3,1.3),first2?d.c:null,d.ai);});flag(DR);}
+  if(CY){coys.forEach((c,i)=>{if(far(c.P.x,c.P.z))return;const o=walkAt(c.W,t,c.back,1.5);o.pt=wPitch(c.W,o.s,.3*c.k);
+    rigPose(CY,i,o,c.k,headAt(o,.3,1.1,-.25,.7),first2?c.c:null,-1);});flag(CY);}
+  first2=false;});
+ // the volumes the inspector names, and the tags (the project rule) on each
+ const FT={};SEDESERT.FAUNA.forEach(f=>FT[f.key]=f.tags);
+ const span=(Ws,ptsOf)=>{let cx=0,cz=0,n=0;Ws.forEach(W=>ptsOf(W).forEach(p=>{cx+=p[0];cz+=p[1];n++;}));cx/=n;cz/=n;let r=0,y0=1e9,y1=-1e9;
+  Ws.forEach(W=>{ptsOf(W).forEach(p=>r=Math.max(r,Math.hypot(p[0]-cx,p[1]-cz)));for(let k=0;k<W.gy.length;k++){y0=Math.min(y0,W.gy[k]);y1=Math.max(y1,W.gy[k]);}});return{x:cx,z:cz,r,y0,y1};};
+ herds.forEach(H=>{const s=span(H.deer.map(d=>d.W),W=>W.pts);H.x=s.x;H.z=s.z;H.r=s.r;
+  BIO.register({name:'Mule deer herd',key:'deer',kind:'fauna',x:s.x,z:s.z,y:s.y0-3,r:s.r+5,h:s.y1-s.y0+8,tags:FT.deer});});
+ packs.forEach(P=>{const s=span([P.W],W=>W.pts);P.x=s.x;P.z=s.z;P.r=s.r;
+  BIO.register({name:P.n>1?'Coyotes (a pair)':'Coyote',key:'coyote',kind:'fauna',x:s.x,z:s.z,y:s.y0-3,r:s.r+5,h:s.y1-s.y0+8,tags:FT.coyote});});
+ SEDESERT.FAUNA_LAYOUT={thermals:therm,flocks:flocks,bands:bands,herds:herds,packs:packs,deer:deer,coyotes:coys};   // a world's camera may want to find them
  therm.forEach(t=>BIO.register({name:'Kite thermal',x:t.x,z:t.z,y:t.y0-60,r:t.r*1.2+6,h:t.climb+80}));
  bands.forEach(b=>BIO.register({name:'Sand striders',x:b.x,z:b.z,y:Y(b.x,b.z)-4,r:b.len/2+14,h:10}));
  return{fauna:st};};
@@ -2793,6 +3196,9 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 // the fauna nearest a point: a thermal, a flock, a band (the layout the fauna pass left)
 function nearFauna(kind,x,z){const L=(SEDESERT.FAUNA_LAYOUT||{})[kind]||[];let b=null,bd=1e9;for(const f of L){const d=Math.hypot(f.x-x,f.z-z);if(d<bd){bd=d;b=f;}}return b||{x:x,z:z,y0:gh(x,z)+80,r:60,len:80};}
 const TH=nearFauna('thermals',BUTTE.x-200,BUTTE.z-400),FL=nearFauna('flocks',POND.x,POND.z),BD=nearFauna('bands',600,zR(600));
+// the deer herd nearest a coyote loop (2026-10): the camera stands off its far side, at the deer's height
+const HD=(function(){const L=SEDESERT.FAUNA_LAYOUT||{},Hs=L.herds||[],Ps=L.packs||[];let b=null,bd=1e9;
+ for(const H of Hs){let d=1e9;for(const P of Ps)d=Math.min(d,Math.hypot(P.x-H.x,P.z-H.z)-P.r);if(d<bd){bd=d;b=H;}}return b||{x:600,z:zR(600),r:20};})();
 // the nearest built hero of a species to a point, so a preset frames a real tree
 function nearTree(sp,x,z,minH){return SEDESERT.nearestTree(sp,x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
 // a camera d metres from a tree, looking at its crown
@@ -2823,6 +3229,14 @@ const VIEWS={
  'From afar':look(-2500,2550,360,0,0,40),
  'Krator rising':[-600,gh(-600,600,30),600,1900,900,-2100],
 };
+// the walkers move, so these two presets are getters: each frames the animal where it stands when chosen
+// (one deer of that herd, the nearest coyote loop's leader), from the side at its own height
+const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements;
+ return[e[12]-d*.8,e[13]+d*.28,e[14]+d*.6,e[12],e[13]+d*.1,e[14]];};
+Object.defineProperty(VIEWS,'Mule deer',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{};
+ return animalView('biome:deer',(L.deer||[]).indexOf(HD.deer&&HD.deer[0]),8,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
+Object.defineProperty(VIEWS,'Coyotes',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{},C=L.coyotes||[];let b=-1,bd=1e9;
+ C.forEach((c,i)=>{const d=Math.hypot(c.P.x-HD.x,c.P.z-HD.z);if(!c.back&&d<bd){bd=d;b=i;}});return animalView('biome:coyote',b,6,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
 const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}

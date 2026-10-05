@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 ## src/
 
@@ -24,11 +24,11 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `55-biome-sedesert-trees.js` | 35 **big** | zones from the fields (16); colour (the maths is the core's, BIO.col) (37); polyline helpers (Girder's) (52); keep-clear between trees (60); foliage helpers (67); the builders (84); impostors (the far canopy) (261); the pass (313); the passes (data: species, cell, acceptance from (343) |
 | `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
 | `65-biome-sedesert-dress.js` | 5 |  |
-| `70-biome-sedesert.js` | <1 |  |
-| `75-biome-sedesert-fauna.js` | 11 | geometries (unit, vertex-coloured) (23); materials (53); the pass (60) |
+| `70-biome-sedesert.js` | 1 |  |
+| `75-biome-sedesert-fauna.js` | 28 | geometries (unit, vertex-coloured) (32); materials (62); walkers: a pose that is a function of the clock  (69); quadrupeds: deer and coyotes (2026-10) (113); the pass (172) |
 | `82-host-sky.js` | 13 | the Inner Wall painter (8) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
-| `90-host-camera.js` | 9 |  |
+| `90-host-camera.js` | 10 |  |
 | `91-host-probe.js` | 8 |  |
 | `99-tail.html` | <1 |  |

@@ -26,6 +26,68 @@ canvas{display:block}
 <pre id="errs"></pre>
 <script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
 <script>
+// ================================================================= CORE — rand: one generator, one hash, one noise
+// GODOT-PLAN.md Phase 2, item 1. Every number here is reproducible bit for bit in GDScript (krand.gd beside this
+// file) because nothing in it calls Math.sin, Math.pow or any other library function whose last bits differ by
+// engine: the stream and the hash are 32-bit integer arithmetic, and the noise is +, -, *, / and floor on doubles,
+// in a fixed order. golden.json holds the vectors both engines are tested against (test-rand.js, test_rand.py).
+//
+//   KRAND.stream(seed)             a mulberry32 stream: the SAME numbers as the rng()/reseed() every Krator lineage
+//                                  already uses (kits/ancients 10-core.js, core/biome 10-core-head.js), so a build
+//                                  that moves its draws onto a stream moves no rubble
+//     s.next()  [0,1)   s.u32()  integer   s.range(a,b)   s.int(a,b) inclusive   s.pick(arr)   s.chance(p)
+//     s.state() / s.setState(u32)          for saving and resuming a stream
+//   KRAND.hash(seed, a, b, c...)   u32 from a seed and any number of int32 values (floats are floored first)
+//   KRAND.unit(u32)                [0,1)
+//   KRAND.h3(x,y,z, seed)          [0,1) at an integer lattice point: the portable replacement for the lineages'
+//                                  sin-based h3 (which a GDScript port cannot reproduce). Floats are floored.
+//   KRAND.vnoise(x,y,z, seed)      value noise in [0,1]: the lineages' vnoise (smoothstep trilinear) on h3 above
+//   KRAND.fbm(x,y,z, octaves, seed)  the lineages' fbm (octaves default 3, frequency x2.03, amplitude 1/f)
+//   KRAND.cell(seed, ix, iz)       a seed for one placement cell, so a tile built alone draws what it draws in a
+//                                  full build (biomes/WORLD.md: placement seeded by cell)
+//   KRAND.child(seed, name)        a seed for a named sub-stream ('trees', 'rubble'...), no collisions to manage
+//
+// Ranges: lattice coordinates and hash inputs are int32 (|x| < 2^31). Seeds are taken as u32 (seed>>>0).
+// The noise of a NEW seed is not the old sin-based noise: moving a build's terrain or textures onto it moves them
+// (GODOT-PLAN.md section 7, "Moving rubble": one build at a time, with a screenshot set).
+(function(root){
+  'use strict';
+  var imul=Math.imul;
+  // murmur3's 32-bit finalizer: full avalanche
+  function mix32(h){h^=h>>>16;h=imul(h,0x85ebca6b);h^=h>>>13;h=imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0;}
+  function step(h,v){h=imul(h^(v|0),0x9E3779B1);return (h<<13|h>>>19);}
+  function hash(seed){var h=(seed>>>0)^0x2545F491,n=arguments.length-1;
+    for(var i=1;i<=n;i++)h=step(h,Math.floor(arguments[i]));
+    return mix32(h^n);}
+  function hash3(seed,a,b,c){return mix32(step(step(step((seed>>>0)^0x2545F491,a),b),c)^3);}  // hash(seed,a,b,c), unrolled
+  var INV=1/4294967296;
+  function unit(u){return (u>>>0)*INV;}
+  function h3(x,y,z,seed){return hash3(seed||0,Math.floor(x),Math.floor(y),Math.floor(z))*INV;}
+  function vnoise(x,y,z,seed){seed=seed||0;
+    var xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+    var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+    var a0=hash3(seed,xi,yi,zi)*INV,a1=hash3(seed,xi+1,yi,zi)*INV,b0=hash3(seed,xi,yi+1,zi)*INV,b1=hash3(seed,xi+1,yi+1,zi)*INV,
+        c0=hash3(seed,xi,yi,zi+1)*INV,c1=hash3(seed,xi+1,yi,zi+1)*INV,d0=hash3(seed,xi,yi+1,zi+1)*INV,d1=hash3(seed,xi+1,yi+1,zi+1)*INV;
+    var a=a0+(a1-a0)*u,b=b0+(b1-b0)*u,c=c0+(c1-c0)*u,d=d0+(d1-d0)*u;
+    var e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
+  function fbm(x,y,z,o,seed){o=o||3;var a=0,f=1,s=0;for(var i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f,seed)/f;s+=1/f;f*=2.03;}return a/s;}
+  function cell(seed,ix,iz){return hash3(seed,ix,iz,0x51ED);}
+  function child(seed,name){var h=0x811C9DC5;name=String(name);   // FNV-1a over UTF-16 code units, then mixed with the seed
+    for(var i=0;i<name.length;i++)h=imul(h^name.charCodeAt(i),0x01000193);
+    return hash(seed,h|0);}
+  function stream(seed){
+    var s=seed>>>0;
+    function u32(){s|=0;s=s+0x6D2B79F5|0;var t=imul(s^s>>>15,1|s);t=t+imul(t^t>>>7,61|t)^t;return (t^t>>>14)>>>0;}
+    function next(){return u32()*INV;}
+    return {next:next,u32:u32,
+      range:function(a,b){return a+(b-a)*next();},
+      int:function(a,b){return a+Math.floor(next()*(b-a+1));},
+      pick:function(arr){return arr[Math.floor(next()*arr.length)%arr.length];},
+      chance:function(p){return next()<p;},
+      state:function(){return s>>>0;},setState:function(v){s=v>>>0;}};
+  }
+  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,cell:cell,child:child,mix32:mix32};
+})(typeof window!=='undefined'?window:globalThis);
 // ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
 // One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
 // calls and no change to how it makes geometry:
@@ -620,6 +682,170 @@ const SHELL=d=>d>0?MAT.rust:MAT.white;      // exterior skin by decay
 const WIN=d=>d>0?MAT.winDead:MAT.winIntact;
 const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new THREE.Color(0x0a0c0e);
 
+// ================================================================= CORE MASK — a city's placement raster ([G data])
+// GODOT-PLAN.md Phase 2 item 5. The four mask-placed cities (Iziz, Dalab, Erewhon, Roketstad) paint their buildable
+// mask and street classes onto 2D canvases and read the pixels back to place buildings. A canvas anti-aliases, and a
+// GPU-backed canvas and a CPU-backed one do not give the same pixels, so placement differed by machine (Dalab's
+// willReadFrequently stopgap; Erewhon's plot failures inside a road's soft edge). This is that canvas, as data:
+//
+//   const mv = KMASK.canvas(2048, 2048)   in place of a document canvas element; mv.getContext() -> ctx (any argument)
+//   ctx  the subset of CanvasRenderingContext2D the painters use on their masks:
+//        fillStyle strokeStyle lineWidth lineCap lineJoin (any value: every stroke has round caps and joins)
+//        beginPath moveTo lineTo arc (full circles only: 0 to >= 2 PI) rect closePath fill stroke fillRect
+//        getImageData(0, 0, w, h) (a copy) createImageData putImageData(img, 0, 0)
+//   KMASK.hash(c)          FNV-1a of the RGBA bytes, 8 hex digits: the proof two loads painted the same
+//   KMASK.ops(c)           every paint as data ([op, ...numbers]): what Godot replays (kmask.gd)
+//   KMASK.export(c, opt)   { format: 'krator-mask', version: 1, width, height, hash, ops } (opt.data adds the bytes, base64)
+//
+// The rule: a pixel (i, j) is painted when its centre (i + .5, j + .5) is inside the shape, hard-edged, no
+// anti-aliasing. Inside, for a fill: nonzero winding (polygons) or distance <= r (a full-circle arc); for a stroke: distance
+// to the polyline <= lineWidth / 2 (round caps and joins), or | distance - r | <= lineWidth / 2 for a circle. A colour
+// is '#rgb', '#rrggbb', 'rgb(r,g,b)' or 'rgba(r,g,b,a)': opaque replaces; a < 1 blends, round(src * a + dst * (1 - a)).
+// Only +, -, *, / and comparisons, in a fixed order (no sqrt, no trig), so GDScript gives the same bytes.
+(function(){
+ 'use strict';
+ var root = typeof globalThis !== 'undefined' ? globalThis : this;
+ var K = { version: 1 };
+
+ function parseColour(s){
+   s = String(s).trim();
+   var m;
+   if (s.charAt(0) === '#') {
+     if (s.length === 4) return [parseInt(s[1] + s[1], 16), parseInt(s[2] + s[2], 16), parseInt(s[3] + s[3], 16), 1];
+     return [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16), 1];
+   }
+   if ((m = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/.exec(s)))
+     return [Math.round(+m[1]), Math.round(+m[2]), Math.round(+m[3]), m[4] === undefined ? 1 : +m[4]];
+   throw new Error('core/mask: a colour it cannot read: ' + s);
+ }
+ K.parseColour = parseColour;
+
+ // ---- the rasteriser, on a raw RGBA byte array (w x h): each call paints one shape ----
+ function put(d, o, c){
+   if (c[3] >= 1) { d[o] = c[0]; d[o + 1] = c[1]; d[o + 2] = c[2]; d[o + 3] = 255; return; }
+   var a = c[3];
+   d[o] = Math.round(c[0] * a + d[o] * (1 - a)); d[o + 1] = Math.round(c[1] * a + d[o + 1] * (1 - a));
+   d[o + 2] = Math.round(c[2] * a + d[o + 2] * (1 - a)); d[o + 3] = Math.round(255 * a + d[o + 3] * (1 - a));
+ }
+ function clampI(v, lo, hi){ return v < lo ? lo : v > hi ? hi : v; }
+ // the pixels whose centres x + .5 lie in [a, b]: i from ceil(a - .5) to floor(b - .5)
+ function i0(a, n){ return clampI(Math.ceil(a - 0.5), 0, n); }
+ function i1(b, n){ return clampI(Math.floor(b - 0.5), -1, n - 1); }
+
+ K.disc = function(d, w, h, cx, cy, r, c){
+   var r2 = r * r, ja = i0(cy - r, h), jb = i1(cy + r, h), ia = i0(cx - r, w), ib = i1(cx + r, w);
+   for (var j = ja; j <= jb; j++) { var dy = j + 0.5 - cy, dy2 = dy * dy;
+     for (var i = ia; i <= ib; i++) { var dx = i + 0.5 - cx; if (dx * dx + dy2 <= r2) put(d, (j * w + i) * 4, c); } }
+ };
+ K.ring = function(d, w, h, cx, cy, r, hw, c){   // a stroked circle: r - hw <= distance <= r + hw
+   var ro = r + hw, ri = r - hw, ro2 = ro * ro, ri2 = ri > 0 ? ri * ri : -1;
+   var ja = i0(cy - ro, h), jb = i1(cy + ro, h), ia = i0(cx - ro, w), ib = i1(cx + ro, w);
+   for (var j = ja; j <= jb; j++) { var dy = j + 0.5 - cy, dy2 = dy * dy;
+     for (var i = ia; i <= ib; i++) { var dx = i + 0.5 - cx, q = dx * dx + dy2; if (q <= ro2 && q >= ri2) put(d, (j * w + i) * 4, c); } }
+ };
+ // a polyline with round caps and joins: each pixel is painted once (a mark per pixel per stroke, so a blend is not doubled)
+ K.polyline = function(d, w, h, pts, hw, c){
+   if (pts.length < 2) return;
+   var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, k;
+   for (k = 0; k < pts.length; k += 2) { if (pts[k] < x0) x0 = pts[k]; if (pts[k] > x1) x1 = pts[k]; if (pts[k + 1] < y0) y0 = pts[k + 1]; if (pts[k + 1] > y1) y1 = pts[k + 1]; }
+   var ia = i0(x0 - hw, w), ib = i1(x1 + hw, w), ja = i0(y0 - hw, h), jb = i1(y1 + hw, h);
+   if (ib < ia || jb < ja) return;
+   var bw = ib - ia + 1, mark = new Uint8Array(bw * (jb - ja + 1)), hw2 = hw * hw;
+   for (k = 0; k + 3 < pts.length; k += 2) {
+     var ax = pts[k], ay = pts[k + 1], ex = pts[k + 2] - ax, ey = pts[k + 3] - ay, L2 = ex * ex + ey * ey;
+     var sa = i0((ax < ax + ex ? ax : ax + ex) - hw, w), sb = i1((ax > ax + ex ? ax : ax + ex) + hw, w);
+     var ta = i0((ay < ay + ey ? ay : ay + ey) - hw, h), tb = i1((ay > ay + ey ? ay : ay + ey) + hw, h);
+     for (var j = ta; j <= tb; j++) { var py = j + 0.5 - ay;
+       for (var i = sa; i <= sb; i++) {
+         var m = (j - ja) * bw + (i - ia); if (mark[m]) continue;
+         var px = i + 0.5 - ax, t = L2 > 0 ? (px * ex + py * ey) / L2 : 0;
+         if (t < 0) t = 0; else if (t > 1) t = 1;
+         var qx = px - t * ex, qy = py - t * ey;
+         if (qx * qx + qy * qy <= hw2) { mark[m] = 1; put(d, (j * w + i) * 4, c); }
+       } }
+   }
+ };
+ // polygons (each a flat [x, y, x, y ...] ring, closed implicitly), filled together by the nonzero winding rule
+ K.polygons = function(d, w, h, rings, c){
+   var y0 = Infinity, y1 = -Infinity, r, k;
+   for (r = 0; r < rings.length; r++) for (k = 1; k < rings[r].length; k += 2) { if (rings[r][k] < y0) y0 = rings[r][k]; if (rings[r][k] > y1) y1 = rings[r][k]; }
+   var ja = i0(y0, h), jb = i1(y1, h), xs = [], ws = [];
+   for (var j = ja; j <= jb; j++) {
+     var yc = j + 0.5; xs.length = 0; ws.length = 0;
+     for (r = 0; r < rings.length; r++) { var P = rings[r], n = P.length;
+       for (k = 0; k < n; k += 2) { var ax = P[k], ay = P[k + 1], bx = P[(k + 2) % n], by = P[(k + 3) % n];
+         if ((ay <= yc && by > yc) || (by <= yc && ay > yc)) { xs.push(ax + (yc - ay) * (bx - ax) / (by - ay)); ws.push(by > ay ? 1 : -1); } } }
+     if (!xs.length) continue;
+     var ord = xs.map(function(_, q){ return q; }).sort(function(a, b){ return xs[a] - xs[b] || a - b; }), wind = 0;
+     for (var q = 0; q < ord.length - 1; q++) { wind += ws[ord[q]];
+       if (wind !== 0) { var ia = i0(xs[ord[q]], w), ib = i1(xs[ord[q + 1]], w); for (var i = ia; i <= ib; i++) put(d, (j * w + i) * 4, c); } }
+   }
+ };
+ K.rect = function(d, w, h, x, y, rw, rh, c){   // pixel centres in [x, x + rw) x [y, y + rh)
+   var ia = clampI(Math.ceil(x - 0.5), 0, w), ib = clampI(Math.ceil(x + rw - 0.5) - 1, -1, w - 1);
+   var ja = clampI(Math.ceil(y - 0.5), 0, h), jb = clampI(Math.ceil(y + rh - 0.5) - 1, -1, h - 1);
+   for (var j = ja; j <= jb; j++) for (var i = ia; i <= ib; i++) put(d, (j * w + i) * 4, c);
+ };
+
+ // ---- the canvas: a context that records its path and paints on fill / stroke ----
+ var TAU = 2 * Math.PI;
+ K.canvas = function(w, h){
+   var data = new Uint8ClampedArray(w * h * 4), ops = [];
+   for (var o = 3; o < data.length; o += 4) data[o] = 0;   // transparent black, as a fresh canvas
+   var cv = { width: w, height: h, _kmask: true, data: data, ops: ops };
+   var path = [], cur = null;   // path: subpaths, each { pts: [x, y ...], closed, circle: [cx, cy, r] }
+   function sub(){ if (!cur) { cur = { pts: [], closed: false, circle: null }; path.push(cur); } return cur; }
+   function cc(s){ return parseColour(s); }
+   var ctx = { canvas: cv, fillStyle: '#000', strokeStyle: '#000', lineWidth: 1, lineCap: 'butt', lineJoin: 'miter',
+     beginPath: function(){ path = []; cur = null; },
+     moveTo: function(x, y){ cur = { pts: [x, y], closed: false, circle: null }; path.push(cur); },
+     lineTo: function(x, y){ var s = sub(); if (s.circle) throw new Error('core/mask: a line after a circle in one subpath'); s.pts.push(x, y); },
+     closePath: function(){ if (cur) { cur.closed = true; var p = cur.pts; cur = { pts: p.length ? [p[0], p[1]] : [], closed: false, circle: null }; path.push(cur); } },
+     arc: function(x, y, r, a0, a1){
+       if (Math.abs(a1 - a0) < TAU - 1e-9) throw new Error('core/mask: only full-circle arcs (0 to >= 2 PI) are portable');
+       cur = { pts: [], closed: true, circle: [x, y, r] }; path.push(cur); cur = null; },
+     rect: function(x, y, rw, rh){ cur = { pts: [x, y, x + rw, y, x + rw, y + rh, x, y + rh], closed: true, circle: null }; path.push(cur); cur = null; },
+     fill: function(){
+       var c = cc(this.fillStyle), rings = [], k;
+       for (k = 0; k < path.length; k++) { var s = path[k];
+         if (s.circle) { ops.push(['disc', s.circle[0], s.circle[1], s.circle[2]].concat(c)); K.disc(data, w, h, s.circle[0], s.circle[1], s.circle[2], c); }
+         else if (s.pts.length >= 6) rings.push(s.pts.slice()); }
+       if (rings.length) { ops.push(['polygons', rings].concat(c)); K.polygons(data, w, h, rings, c); }
+     },
+     stroke: function(){
+       var c = cc(this.strokeStyle), hw = this.lineWidth / 2, k;
+       for (k = 0; k < path.length; k++) { var s = path[k];
+         if (s.circle) { ops.push(['ring', s.circle[0], s.circle[1], s.circle[2], hw].concat(c)); K.ring(data, w, h, s.circle[0], s.circle[1], s.circle[2], hw, c); continue; }
+         var p = s.closed && s.pts.length >= 4 ? s.pts.concat([s.pts[0], s.pts[1]]) : s.pts;
+         if (p.length >= 4) { ops.push(['polyline', p.slice(), hw].concat(c)); K.polyline(data, w, h, p, hw, c); } }
+     },
+     fillRect: function(x, y, rw, rh){ var c = cc(this.fillStyle); ops.push(['rect', x, y, rw, rh].concat(c)); K.rect(data, w, h, x, y, rw, rh, c); },
+     getImageData: function(x, y, gw, gh){
+       if (x !== 0 || y !== 0 || gw !== w || gh !== h) throw new Error('core/mask: getImageData reads the whole mask');
+       return { width: w, height: h, data: data.slice() }; },
+     createImageData: function(cw, ch){ return { width: cw, height: ch, data: new Uint8ClampedArray(cw * ch * 4) }; },
+     putImageData: function(img, x, y){
+       if (x !== 0 || y !== 0 || img.width !== w || img.height !== h) throw new Error('core/mask: putImageData replaces the whole mask');
+       data.set(img.data); ops.push(['put', K.hashBytes(img.data)]); },
+     save: function(){}, restore: function(){}
+   };
+   cv.getContext = function(){ return ctx; };
+   return cv;
+ };
+
+ K.hashBytes = function(b){ var hsh = 2166136261 >>> 0; for (var i = 0; i < b.length; i++) { hsh ^= b[i]; hsh = Math.imul(hsh, 16777619) >>> 0; } return ('0000000' + hsh.toString(16)).slice(-8); };
+ K.hash = function(cv){ return K.hashBytes(cv.data); };
+ K.ops = function(cv){ return cv.ops; };
+ K.export = function(cv, opt){
+   var out = { format: 'krator-mask', version: 1, width: cv.width, height: cv.height, hash: K.hash(cv),
+     rule: 'pixel centres, hard-edged, nonzero fill, round strokes (core/mask/README.md)', ops: cv.ops };
+   if (opt && opt.data && typeof btoa === 'function') { var s = '', d = cv.data; for (var i = 0; i < d.length; i += 8192) s += String.fromCharCode.apply(null, d.subarray(i, i + 8192)); out.data = btoa(s); }
+   return out;
+ };
+
+ if (typeof module !== 'undefined' && module.exports) module.exports = K;
+ root.KMASK = K;
+})();
 // ---------------------------------------------------------------- instancing kit
 // `meshes` is filled by kbake: name -> the one InstancedMesh that item baked
 // into. One kdef is one InstancedMesh, so anything that wants to switch a whole
@@ -1061,6 +1287,355 @@ function luceShells(parent,xc,zc,Wb,Hs,Dd,d,seed,skin){[-1,1].forEach(side=>{con
  kput('archOpen',[xc,3,zc-Dd*.05],qFacing([0,0,1]),[.45,.45,1],null);}
 function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],0))),28,r,8,false);}
 
+// ================================================================= CORE FURNISH — the placement pass ([G data])
+// One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
+// A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
+// writes the placement RECORD, counts missing keys, applies the catalog's recentring table, assigns a deterministic
+// id, and hands the record to the build's draw adapter. No THREE, no DOM: the records are what crosses to Godot.
+//
+//   const R = KFURN.create(cfg)
+//   R.place(key, x, y, z, ry, o, loc, ctx)   -> the record, or null (a key the catalog lacks: counted in R.missing)
+//        x y z ry  the world transform (three.js rotation.y: the piece's front, +z, turns to (sin ry, cos ry))
+//        o         the builder's options: { v, seed, setting, ... } (the adapter's own keys pass through)
+//        loc       [lx, ly, lz, lry] in the builder's frame, or null (a piece placed in world space)
+//        ctx       { building, list, wealth, part, room, dry }: list receives the record (the building's own list;
+//                  listOf() instead makes it only when a record lands, for a build whose owners start without one);
+//                  dry places nothing anywhere else (a throwaway build: Post-Apoc's frontOf)
+//   R.frm(f, lx, lz, lry)                    -> [x, z, ry] in a FRM frame {x, z, fx, fz} (55-arch): +z its front,
+//                                               +x its right (-fz, fx); lry 0 faces the front
+//   R.interior(item, x, z, ry, adapter, opt) -> the interiors kit's rooms planned and furnished at a placement,
+//                                               summarised as data ({ item, rooms, pieces, residence }); pushed on R.buildings
+//   R.summary()                              -> counts for a probe: placed, byKey, missing, interiors, interiorPieces
+//   KFURN.SRGB_LIN                           -> Float32Array(256): an sRGB byte to linear (the catalog's colours are sRGB)
+//
+// cfg: {
+//   catalog:   { has(key), entry(key), dims(entry, variant) }   (KFURN.catalogOf(KratorFurniture) makes it)
+//   interiors: KratorInteriors (for R.interior), optional
+//   on, interiorsOn: the page's switches (?furniture=0, ?interiors=: 53-core-furnish-host.js reads them)
+//   seed(o, ctx, R, x, y, z, loc) -> the seed when o.seed is not given. Each build keeps the rule its pieces were
+//              placed with, so moving onto this module moves nothing (README.md, "Seeds")
+//   shift:     { key: [dx, dz] | function(variant) -> [dx, dz] | null }: pieces the catalog recentred on their
+//              footprint; the placement undoes it (Mav's Refuge's BRF_SHIFT)
+//   finish(rec): rounds or wraps the record's numbers the way the build always has (Girder: 3 decimals)
+//   onRecord(rec, ctx, o, entry, dims) -> false to place nothing more (deferred to the interiors); collision,
+//              inspector entries and the like go here
+//   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
+//   idPrefix:  'furn' (ids: furn_00001 in placement order)
+//   tags:      a core/tags registry (KTAGS.create): every placed record onRecord keeps is registered there too, as
+//              class furniture, before it is drawn (GODOT-PLAN.md rule 4; core/tags/README.md). The furniture record is not changed }
+//
+// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
+// job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
+var KFURN = (function(){
+'use strict';
+ const K = {};
+ K.SRGB_LIN = (function(){ const t = new Float32Array(256);
+   for(let i=0;i<256;i++){ const v = i/255; t[i] = v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); } return t; })();
+ K.catalogOf = function(KF){ return {
+   has: function(key){ return KF.has(key); },
+   entry: function(key){ return KF.FURN_BY_KEY[key]; },
+   dims: function(A, v){ return KF.entryDims(A, v); } }; };
+ function pad(n){ const s = String(n); return s.length >= 5 ? s : '00000'.slice(s.length) + s; }
+ // a placed record into core/tags: its id unchanged, the catalog entry's type as kind, its culture, tier and job, the
+ // setting and room, and the placement's 0..1 wealth (core/tags maps it to poor, middle, rich). parent is the building
+ // as the build names it (a key or an id): a build that registers its buildings in core/tags passes their ids.
+ K.tag = function(T, rec, A, dm, ctx){
+   const t = { setting: rec.setting };
+   if(A && A.culture) t.culture = A.culture;
+   if(A && A.tier) t.tier = A.tier;
+   if(rec.job) t.job = rec.job;
+   if(rec.room) t.room = String(rec.room);
+   if(typeof ctx.wealth === 'number') t.wealth = ctx.wealth;
+   if(rec.variant) t.variant = rec.variant;
+   return T.add({ id: rec.id, 'class': 'furniture', kind: (A && A.type) || null, key: rec.key, name: (A && A.name) || null,
+     parent: rec.building == null ? null : String(rec.building), at: [rec.x, rec.y, rec.z], ry: rec.ry,
+     size: dm ? [dm.w, dm.d, dm.h] : undefined, tags: t, frag: 'core/furnish' });
+ };
+ K.create = function(cfg){
+   const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
+     lights: 0, group: null, batch: null, adapter: null, cfg: cfg };
+   const prefix = cfg.idPrefix || 'furn';
+   R.place = function(key, x, y, z, ry, o, loc, ctx){
+     o = o || {}; ctx = ctx || {};
+     if(!C.has(key)){ if(!ctx.dry) R.missing[key] = (R.missing[key]||0) + 1; return null; }
+     const v = o.v|0;
+     if(cfg.shift && cfg.shift[key]){
+       let sh = cfg.shift[key]; if(typeof sh === 'function') sh = sh(v);
+       if(sh){ const c = Math.cos(ry), s = Math.sin(ry); x -= sh[0]*c + sh[1]*s; z -= -sh[0]*s + sh[1]*c; }
+     }
+     const A = C.entry(key);
+     const rec = { key: key, variant: v, seed: o.seed || cfg.seed(o, ctx, R, x, y, z, loc),
+       lx: loc ? loc[0] : null, ly: loc ? loc[1] : null, lz: loc ? loc[2] : null, lry: loc ? loc[3] : null,
+       x: x, y: y, z: z, ry: ry, building: ctx.building == null ? null : ctx.building };
+     if(ctx.part != null) rec.part = ctx.part;
+     rec.setting = o.setting || 'outdoor';
+     if(cfg.finish) cfg.finish(rec);
+     const L = ctx.list || (ctx.listOf && ctx.listOf()); if(L) L.push(rec);
+     if(!ctx.dry){ R.placed.push(rec); rec.id = prefix + '_' + pad(R.placed.length); }
+     rec.room = ctx.room || o.room || null;
+     rec.job = (A && A.job) || null;
+     const dm = A ? C.dims(A, v) : null;
+     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;   // deferred: not registered, not drawn
+     if(cfg.tags && rec.id) K.tag(cfg.tags, rec, A, dm, ctx);
+     if(ctx.dry || !R.on || !cfg.draw) return rec;
+     cfg.draw(rec, ctx, o, A);
+     return rec;
+   };
+   R.frm = function(f, lx, lz, lry){
+     return [f.x - f.fz*lx + f.fx*lz, f.z + f.fx*lx + f.fz*lz, Math.atan2(f.fx, f.fz) + (lry||0)];
+   };
+   R.interior = function(item, x, z, ry, adapter, opt){
+     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, opt);
+     const sum = { item: item.key, rooms: r.inst.rooms.length,
+       pieces: Object.keys(r.plans).reduce(function(a, k){ return a + r.plans[k].placements.length; }, 0), residence: r.residence };
+     R.buildings.push({ key: item.key, x: x, z: z, ry: ry||0, baseY: (opt && opt.baseY) || 0, interior: sum });
+     return { summary: sum, result: r };
+   };
+   R.summary = function(){
+     const byKey = {}; R.placed.forEach(function(r){ byKey[r.key] = (byKey[r.key]||0) + 1; });
+     return { on: R.on, placed: R.placed.length, keys: Object.keys(byKey).length, byKey: byKey, missing: R.missing,
+       lights: R.lights, interiors: R.buildings.length,
+       interiorPieces: R.buildings.reduce(function(a, b){ return a + b.interior.pieces; }, 0) };
+   };
+   return R;
+ };
+ if(typeof module !== 'undefined' && module.exports) module.exports = K;
+ return K;
+})();
+// ================================================================= CORE TAGS — the registry ([G data])
+// One registry of WHAT a placed thing is, for every build (GODOT-PLAN.md Phase 2 item 3, rule 4; PROPOSAL.md and
+// README.md here). It holds no geometry, collision, draw or live state: only the record. No THREE, no DOM: it runs
+// in node (test-tags.js), and its export is what crosses to Godot as node metadata.
+//
+//   const T = KTAGS.create({ build: 'yuni' })
+//   T.add(rec)               -> the stored record, with its id and uid (defaults filled, tags normalised)
+//   T.child(parentId, rec)   -> a record whose id is a path under its parent: 'bld_00098.room.4'
+//   T.get(id)                -> the record (a removed one too), or null
+//   T.remove(id)             -> the record, marked removed: true. It keeps its id; no id is ever reused
+//   T.query(q)               -> the live records matching q = { class, kind, key, parent, tags: { culture: 'voth',
+//                               types: 'shop' }, box: [x0, z0, x1, z1], removed: true (to include removed ones) }
+//   T.at(x, z, y)            -> the smallest live record whose footprint (and height, when y is given) holds the
+//                               point: the inspector's rule, once
+//   T.audit()                -> { records, removed, byClass, unknownKeys, unknownValues, unknown, missingCulture,
+//                               missingTypes }: unknown vocabulary is counted here, never thrown
+//   T.export()               -> { format: 'krator-tags', version: 1, build, convention, vocab, records }
+//   KTAGS.uid(cls, key, at)  -> the position hash, 8 hex digits (README.md, "The uid": Godot reproduces it)
+//   KTAGS.instanceId(id, i)  -> 'flora_00012#37': an instance of an item's record (an instance has no record)
+//   KTAGS.norm(tags)         -> { tags, problems }: the input mapping (aliases, wealth names) and the checks
+//
+// The record: { id, uid, class, kind, key, name, parent, at: [x,y,z], ry, size: [w,d,h] | r (+ h), tags, note, src }
+//   at   the base centre in world metres (+Y up, x east, z south): y is where it stands. x, y, z on input work too
+//   ry   radians about +Y, three's rotation.y (the front, +z, turns to (sin ry, cos ry)); yaw is an alias on input
+//   size full extents in its own frame; a round thing gives r (and h) instead
+// The vocabulary (KTAGS.VOCAB) is 52-core-tags-vocab.js; the label the inspector shows is 53-core-tags-host.js.
+(function(){
+ 'use strict';
+ var root = typeof globalThis !== 'undefined' ? globalThis : this;
+ var K = { version: 1 };
+
+ function krand(){
+   if (typeof KRAND !== 'undefined') return KRAND;
+   if (root.KRAND) return root.KRAND;
+   throw new Error('core/tags needs core/rand (08-core-rand.js) loaded first: the uid is a KRAND.hash');
+ }
+ function vocab(){
+   if (!K.VOCAB) throw new Error('core/tags: load 52-core-tags-vocab.js before the first add');
+   return K.VOCAB;
+ }
+ function pad5(n){ return ('0000' + n).slice(-5); }
+ function r4(v){ return +(+v).toFixed(4); }
+
+ // ---- the uid: KRAND.hash(0, str(class), str(key), cm10(x), cm10(y), cm10(z)) as 8 lowercase hex digits.
+ // str(s) is FNV-1a over the UTF-16 code units of s ('' for a null key), as int32; cm10(v) = floor(v * 10 + 0.5),
+ // the position in 10 cm steps (KRAND.hash floors its arguments, so it is passed v * 10 + 0.5). README.md, "The uid".
+ function str32(s){
+   var h = 0x811C9DC5; s = s == null ? '' : String(s);
+   for (var i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+   return h | 0;
+ }
+ K.str32 = str32;
+ K.uid = function(cls, key, at){
+   var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
+   return ('0000000' + u.toString(16)).slice(-8);
+ };
+ K.instanceId = function(id, i){ return id + '#' + i; };
+
+ // ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
+ // value stays on the record as given and is reported as a problem, which audit() counts.
+ K.norm = function(tags){
+   var V = vocab(), out = {}, problems = [], k;
+   tags = tags || {};
+   for (k in tags) if (tags[k] !== undefined && (!V.keyAlias || !V.keyAlias[k])) out[k] = tags[k];
+   if (V.keyAlias) for (k in tags) if (tags[k] !== undefined && V.keyAlias[k] && !(V.keyAlias[k] in out)) out[V.keyAlias[k]] = tags[k];
+   // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
+   if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
+     var al = V.cultureAlias[out.culture];
+     out.culture = al.culture;
+     for (k in al) if (k !== 'culture' && !(k in out)) out[k] = al[k];   // a given value, null too, wins
+   }
+   if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
+   else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
+   if (typeof out.types === 'string') out.types = [out.types];
+   if (Array.isArray(out.types) && V.typeAlias) {   // older spellings: one may become several; no duplicates
+     var ty = [];
+     for (var ti = 0; ti < out.types.length; ti++) {
+       var tv = V.typeAlias[out.types[ti]] || [out.types[ti]];
+       for (var tj = 0; tj < tv.length; tj++) if (ty.indexOf(tv[tj]) < 0) ty.push(tv[tj]);
+     }
+     out.types = ty;
+   }
+   if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
+   for (k in out) {
+     var rule = V.keys[k], v = out[k];
+     if (!rule) { problems.push({ key: k }); continue; }
+     if (v === null || rule === 'free') continue;
+     if (rule === 'bool') { if (typeof v !== 'boolean') problems.push({ key: k, value: v }); continue; }
+     if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
+     var list = V[rule];
+     if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
+     else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
+   }
+   return { tags: out, problems: problems };
+ };
+
+ K.create = function(cfg){
+   cfg = cfg || {};
+   var V = null, recs = [], byId = {}, counters = {}, childCount = {};
+   var T = { build: cfg.build || null, records: recs };
+
+   function prefixOf(rec){
+     if (rec.prefix) return rec.prefix;
+     if (rec['class'] === 'fixture' && V.fixturePrefix[rec.kind]) return V.fixturePrefix[rec.kind];
+     return V.prefix[rec['class']];
+   }
+   // a passed-through order id moves its prefix's counter past it, so a later made id never collides
+   function claim(id){
+     var m = /^([a-z]+)_(\d+)$/.exec(id);
+     if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, parseInt(m[2], 10) + 1);
+   }
+   function make(rec, parent){
+     V = V || vocab();
+     var cls = rec['class'] != null ? rec['class'] : rec.cls;
+     if (cls === 'fauna') throw new Error('core/tags: fauna is not a class; a placed animal is class "life" with its species as kind');
+     if (V.classes.indexOf(cls) < 0) throw new Error('core/tags: unknown class ' + cls);
+     var at = rec.at ? rec.at : [rec.x || 0, rec.y || 0, rec.z || 0];
+     var o = { id: null, uid: null, 'class': cls, kind: rec.kind != null ? rec.kind : null, key: rec.key != null ? rec.key : null,
+       name: rec.name != null ? rec.name : null, parent: parent || (rec.parent != null ? rec.parent : null),
+       at: [r4(at[0]), r4(at[1]), r4(at[2])], ry: r4(rec.ry != null ? rec.ry : (rec.yaw || 0)) };
+     if (rec.size) o.size = rec.size.map(r4);
+     else if (rec.r != null) { o.r = r4(rec.r); if (rec.h != null) o.h = r4(rec.h); }
+     o.tags = K.norm(rec.tags).tags;
+     if (rec.note != null) o.note = String(rec.note);
+     o.src = { build: T.build, frag: rec.frag || (rec.src && rec.src.frag) || null };
+     if (rec.id != null) {
+       if (byId[rec.id]) throw new Error('core/tags: duplicate id ' + rec.id);
+       o.id = String(rec.id); claim(o.id);
+     } else if (parent) {
+       var seg = rec.kind || cls, ck = parent + '.' + seg;
+       o.id = ck + '.' + (childCount[ck] = (childCount[ck] || 0) + 1, childCount[ck] - 1);
+     } else {
+       var p = prefixOf(o);
+       if (!p) throw new Error('core/tags: no id prefix for class ' + cls);
+       counters[p] = counters[p] || 0;
+       o.id = p + '_' + pad5(counters[p]++);
+     }
+     o.uid = K.uid(cls, o.key, o.at);
+     recs.push(o); byId[o.id] = o;
+     return o;
+   }
+
+   T.add = function(rec){ return make(rec, null); };
+   T.child = function(parentId, rec){
+     if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
+     return make(rec, parentId);
+   };
+   T.get = function(id){ return byId[id] || null; };
+   T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
+
+   function tagMatch(r, want){
+     for (var k in want) {
+       var have = r.tags[k], w = want[k];
+       if (Array.isArray(have) ? have.indexOf(w) < 0 : have !== w) return false;
+     }
+     return true;
+   }
+   T.query = function(q){
+     q = q || {};
+     var out = [];
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed && !q.removed) continue;
+       if (q['class'] != null && r['class'] !== q['class']) continue;
+       if (q.kind != null && r.kind !== q.kind) continue;
+       if (q.key != null && r.key !== q.key) continue;
+       if (q.parent !== undefined && r.parent !== q.parent) continue;
+       if (q.tags && !tagMatch(r, q.tags)) continue;
+       if (q.box && (r.at[0] < q.box[0] || r.at[0] > q.box[2] || r.at[2] < q.box[1] || r.at[2] > q.box[3])) continue;
+       out.push(r);
+     }
+     return out;
+   };
+
+   // the footprint test in the record's own frame: its +z front at (sin ry, cos ry), its +x right at (cos ry, -sin ry)
+   function holds(r, x, z, y){
+     var dx = x - r.at[0], dz = z - r.at[2], h;
+     if (r.size) {
+       var c = Math.cos(r.ry), s = Math.sin(r.ry);
+       var lx = dx * c - dz * s, lz = dx * s + dz * c;
+       if (Math.abs(lx) > r.size[0] / 2 || Math.abs(lz) > r.size[1] / 2) return 0;
+       h = r.size[2];
+       if (y != null && h != null && (y < r.at[1] || y > r.at[1] + h)) return 0;
+       return r.size[0] * r.size[1];
+     }
+     if (r.r != null) {
+       if (dx * dx + dz * dz > r.r * r.r) return 0;
+       if (y != null && r.h != null && (y < r.at[1] || y > r.at[1] + r.h)) return 0;
+       return Math.PI * r.r * r.r;
+     }
+     return 0;
+   }
+   T.at = function(x, z, y){
+     var best = null, ba = Infinity;
+     for (var i = 0; i < recs.length; i++) {
+       if (recs[i].removed) continue;
+       var a = holds(recs[i], x, z, y);
+       if (a > 0 && a < ba) { ba = a; best = recs[i]; }
+     }
+     return best;
+   };
+
+   T.audit = function(){
+     var a = { records: 0, removed: 0, byClass: {}, unknownKeys: {}, unknownValues: {}, unknown: 0, missingCulture: 0, missingTypes: 0 };
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed) { a.removed++; continue; }
+       a.records++;
+       a.byClass[r['class']] = (a.byClass[r['class']] || 0) + 1;
+       var ps = K.norm(r.tags).problems;
+       for (var j = 0; j < ps.length; j++) {
+         a.unknown++;
+         if (!('value' in ps[j])) a.unknownKeys[ps[j].key] = (a.unknownKeys[ps[j].key] || 0) + 1;
+         else { var kv = ps[j].key + ':' + ps[j].value; a.unknownValues[kv] = (a.unknownValues[kv] || 0) + 1; }
+       }
+       if (r['class'] === 'building') {
+         if (!r.tags.culture) a.missingCulture++;
+         if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
+       }
+     }
+     return a;
+   };
+
+   T.export = function(){
+     return { format: 'krator-tags', version: 1, build: T.build,
+       convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
+       vocab: K.VOCAB, records: recs };
+   };
+   return T;
+ };
+
+ if (typeof module !== 'undefined' && module.exports) module.exports = K;
+ root.KTAGS = K;   // a global, so the fragment is one IIFE that leaks nothing into a build's shared scope
+})();
 // ---------------------------------------------------------------- v3: inspector registry + group transforms
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
 function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
@@ -1070,6 +1645,206 @@ kdef('boxD',new THREE.BoxGeometry(1,1,1),MAT.dark);
 kdef('boxW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('boxR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
 
+// ================================================================= CORE FURNISH — the draw adapter's helpers ([draw])
+// The three.js side of core/furnish: a placement record into the catalog's batch (KratorFurniture), and the one
+// colour step every build needs when the batch becomes meshes. The catalog writes its colours as sRGB bytes; a
+// build that renders in linear light converts them once, either in the vertex shader or into a float attribute.
+// Each build keeps its own flush (it ties the meshes to its night lights and shadows); these are the parts the
+// six copies shared.
+//
+//   KFURN.useBatch(R, KF, KI)            -> R.batch (a KratorFurniture batch) and R.adapter (KratorInteriors' runtime
+//                                           adapter over it, for the interiors hook); call again for a fresh batch
+//   KFURN.drawRec(R, rec, wealth, opt)   -> the batch's result for one record ({ lights, error, ... }); opt.detail
+//                                           sets KratorFurniture's detail for this piece and restores it
+//   KFURN.srgbHook(shader)               -> an onBeforeCompile body: linearise vColor in the vertex shader
+//   KFURN.linearColours(geometry)        -> the colour attribute's sRGB bytes as linear floats (KFURN.SRGB_LIN)
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('52-core-furnish-draw: load 50-core-furnish.js first');
+KFURN.useBatch = function(R, KF, KI){ R.batch = KF.batch(); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
+KFURN.drawRec = function(R, rec, wealth, opt){
+  const KF = R.KF, d = opt && opt.detail;
+  if(d != null) KF.setDetail(d);
+  const r = R.batch.place(rec.key, rec.x, rec.y, rec.z, rec.ry, { variant: rec.variant, seed: rec.seed, wealth: wealth,
+    building: rec.building, setting: rec.setting });
+  if(d != null) KF.setDetail(opt.after == null ? .5 : opt.after);
+  return r;
+};
+KFURN.srgbHook = function(sh){
+  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
+    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
+};
+KFURN.linearColours = function(geo){
+  const a = geo.getAttribute('color'); if(!a || a.array instanceof Float32Array) return;
+  const src = a.array, out = new Float32Array(src.length), L = KFURN.SRGB_LIN;
+  for(let i=0;i<src.length;i++) out[i] = L[src[i]];
+  geo.setAttribute('color', new THREE.BufferAttribute(out, a.itemSize || 3));
+};
+})();
+// ================================================================= CORE TAGS — the vocabulary ([G data])
+// The one table of the values core/tags knows (PROPOSAL.md, "Vocabularies" and "Decisions"). The catalog's lists
+// are COPIED here, not read at run time: a build need not load kits/catalog to tag what it places. test-tags.js
+// reads kits/catalog/krator-furniture-core.js and fails when a copied list no longer matches its source, so drift
+// is a failing test, not a silent fork.
+//
+//   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
+//               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
+
+ // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
+   'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+ // BUILDING_TYPES
+ var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
+   'infrastructure', 'religious', 'funerary'];
+ // FURN_TIERS: a 0..1 wealth band per tier
+ var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+ // FURN_JOBS
+ var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+ // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
+ var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
+
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
+ var CULTURE_NAMES = {
+   'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
+   'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
+   'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+ };
+ var CULTURES = Object.keys(CULTURE_NAMES);
+ // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
+ var CULTURE_ALIAS = {
+   'ancients-salvage': { culture: 'ancient', state: 'salvage' },
+   'yuni-court': { culture: 'yuni', wealth: 'rich' },
+   'yuni-common': { culture: 'yuni', wealth: 'middle' },
+   'yuni-poor': { culture: 'yuni', wealth: 'poor' },
+   'sahelian': { culture: 'yuni', style: 'sahelian' },
+   'iziz-old': { culture: 'iziz' },
+   // Iziz's REG (2026-10-05): its Ancients groups and its own vernacular
+   'ancients': { culture: 'ancient' },
+   'ancients-transplant': { culture: 'ancient', style: 'transplant' },   // whole Ancients buildings moved into the city
+   'ancients-reclaimed': { culture: 'ancient', state: 'reclaimed' },    // Ancients buildings the Izani live in
+   'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
+   'yuni-order': { culture: 'order' },
+   'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
+   'scrap': { culture: null, set: 'scrap' }
+ };
+
+ // wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
+ var WEALTH = ['poor', 'middle', 'rich'];
+ var WEALTH_ALIAS = { common: 'middle', court: 'rich', civic: null };
+ function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
+
+ K.VOCAB = {
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   // older spellings of a type, on input (Iziz's REG): one becomes one or more
+   typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
+     'multi-family dwelling': ['dwelling-multi'] },
+   // older tag keys, on input: Iziz's type (a list) and place (indoor, outdoor)
+   keyAlias: { type: 'types', place: 'setting' },
+   stateAlias: { rehabilitated: 'rehab', destroyed: 'ruined' },
+   wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
+   tiers: Object.keys(CATALOG_TIERS),
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage', 'reclaimed'],   // reclaimed: lived in again, not rebuilt
+   settings: CATALOG_SETTINGS.concat(['room']),
+   jobs: CATALOG_JOBS,
+   sets: ['generic', 'scrap'],
+   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
+   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
+   // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
+   doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
+   keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
+     job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
+     style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
+   // the order id's prefix per class; a fixture's per kind
+   prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
+     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+   fixturePrefix: { door: 'door', window: 'window', light: 'light' },
+   // what test-tags.js compares with the catalog
+   catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }
+ };
+})();
+// ================================================================= CORE FURNISH — the page's switches ([web])
+// The one browser read in core/furnish: the query string. ?furniture=0 places nothing (the records are still
+// kept); the interiors are ?interiors=1 to turn on (most builds: roofs hide them) or ?interiors=0 to turn off
+// (Girder, whose interiors are on by default).
+//
+//   KFURN.flags(interiorsByDefault)   -> { on, interiorsOn }: pass it straight into KFURN.create
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('53-core-furnish-host: load 50-core-furnish.js first');
+KFURN.flags = function(interiorsByDefault){
+  const q = location.search;
+  return { on: !/[?&]furniture=0\b/.test(q),
+    interiorsOn: interiorsByDefault ? !/[?&]interiors=0\b/.test(q) : /[?&]interiors=1\b/.test(q) };
+};
+})();
+// ================================================================= CORE TAGS — the label ([web])
+// The inspector's text, made from the record and never stored (PROPOSAL.md, Decisions 6, "A label, generated").
+// The inspector hook itself belongs to core/host (GODOT-PLAN.md Phase 1); this is only the text.
+//
+//   KTAGS.label(rec, instance)  -> 'Name\nclass · Culture · types or kind · ...\nsize · id' (+ '\n' + note)
+//
+// The parts, in a fixed order, each left out when it has no value:
+//   line 1  the name; else the kind or key; else the class
+//   line 2  class, culture (its display name), types (else kind, when the name is not already it), job, state,
+//           setting, wealth, 'Köppen <code>', 'harvest: ...', the flags (lit), 'in <parent>'
+//   line 3  'w × d m' (or '⌀ d m'), ', h m tall' from 2 m up; then the id ('#<instance>' for an instance)
+//   line 4  the note
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('53-core-tags-host: load 50-core-tags.js first');
+ function num(v){ return String(+(+v).toFixed(2)); }
+ function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+ K.label = function(rec, instance){
+   var t = rec.tags || {}, V = K.VOCAB || {}, names = V.cultureNames || {}, p = [];
+   var title = rec.name || (rec.kind && cap(String(rec.kind))) || (rec.key && String(rec.key)) || cap(rec['class']);
+   p.push(rec['class']);
+   if (t.culture) p.push(names[t.culture] || t.culture);
+   if (t.types && t.types.length) p.push(t.types.join(', '));
+   else if (rec.kind && rec.name) p.push(rec.kind);
+   if (t.job) p.push(t.job);
+   if (t.state) p.push(t.state);
+   if (t.setting) p.push(t.setting);
+   if (t.wealth) p.push(t.wealth);
+   if (t.koppen) p.push('Köppen ' + (Array.isArray(t.koppen) ? t.koppen.join(', ') : t.koppen));
+   if (t.harvest) {
+     var h = [];
+     if (t.harvest.wood) h.push('wood');
+     if (t.harvest.edible) h = h.concat(t.harvest.edible);
+     if (t.harvest.medicinal) h.push('medicinal');
+     if (h.length) p.push('harvest: ' + h.join(', '));
+   }
+   if (t.lit) p.push('lit');
+   if (rec.parent) p.push('in ' + rec.parent);
+   var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
+   if (rec.size) {
+     s = num(rec.size[0]) + ' × ' + num(rec.size[1]) + ' m';
+     if (rec.size[2] >= 2) s += ', ' + num(rec.size[2]) + ' m tall';
+   } else if (rec.r != null) {
+     s = '⌀ ' + num(rec.r * 2) + ' m';
+     if (rec.h >= 2) s += ', ' + num(rec.h) + ' m tall';
+   }
+   var out = title + '\n' + p.join(' · ') + '\n' + (s ? s + ' · ' : '') + id;
+   if (rec.note) out += '\n' + rec.note;
+   return out;
+ };
+})();
 // ---------------------------------------------------------------- v4: concrete, brick, glass panes
 // Board-formed concrete: horizontal boards ~0.65 m deep, each poured a shade
 // different, with the joint standing proud, a form-tie hole grid, a rust weep
@@ -1962,7 +2737,8 @@ const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 
    Every piece is authored in the FLOOR frame (origin = footprint centre at the
    bottom of the piece, +z front); anchor tells a placer where it mounts:
      floor   — stands on the floor at y = floorY
-     wall    — stands at floor level, back face (local z = -d/2) flush to a wall
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+               a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
      ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
      surface — stands on a table, shelf or counter top at y = surfaceY
    materials are canonical names from CATALOG_MATERIALS below.
@@ -1997,10 +2773,24 @@ function FURN(o) {
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
    at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+/* wall pieces that hang rather than stand: wall art (a mask, a skull, antlers, a plate) centred at eye height,
+   friezes and pennant strings near the top of the wall. Everything else on a wall stands on the floor. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top' };
+function furnWallHung(A) {
+  if (!A || A.anchor !== 'wall') return null;
+  if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
+  return A.type === 'art' ? 'eye' : null;
+}
 function furnAnchorY(A, variant, at) {
   at = at || {};
   const floorY = at.floorY || 0;
   if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  const hung = furnWallHung(A);
+  if (hung) {
+    const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
+    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    return Math.max(floorY, Math.min(y, top - h));
+  }
   if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
   return floorY;
 }
@@ -18896,8 +19686,10 @@ HL.def({key:'hl_tri_large_b',name:'Long-dwelling on stilts',branch:'tribal',fami
 // these canvases and the ROADS list, and the terrain mesh wears the albedo. 3072 px over 3400 m ≈ .9 px/m.
 const CS=3072,PXS=CS/RK.WORLD,px=v=>(v+RK.WORLD/2)*PXS;
 const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+// the mask and the classes are core/mask grids (KMASK.canvas: the same calls, hard-edged, identical in every browser and
+// in Godot; GODOT-PLAN.md Phase 2 item 5), so placement no longer depends on the canvas; only the albedo is one
+const mv=KMASK.canvas(CS,CS);const mg=mv.getContext('2d');
+const kv=KMASK.canvas(CS,CS);const kg=kv.getContext('2d');
 // mask: R = buildable (255) or not; G = 'green' (the biome may put understorey here even where R is 0)
 const KL={none:0,plaza:1,park:2,highway:3,main:4,street:5,lane:6,farm:7,water:8,court:9,building:10,rock:11,field:12,port:13,wall:14};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';
@@ -21406,50 +22198,49 @@ const STREETS={made:0,tries:0};
 // structure and outbuildings) is FURNITURE: a master-catalog piece (kits/catalog), placed as data and built by
 // the catalog's own code through KratorFurniture (69d, generated: kits/catalog/furniture_bundle.py), merged
 // into one mesh per render family for the whole page. A builder calls, in its own local frame:
-//   FURNISH(key, lx, ly, lz, lry, {v, seed, setting})   -> the placement record (also on G.userData.furniture)
+//   FURNISH(key, lx, ly, lz, lry, {v, seed, setting})   -> the placement record (core/furnish; also on G.userData.furniture)
 // Indoors, the rooms of every top-level building are the interiors kit's: its set (kits/interiors/sets/
 // highlands.js) is planned and furnished through the same catalog (?interiors=1; off by default, as the roofs
 // hide it and it adds millions of triangles). ?furniture=0 places nothing (the records are still kept).
 KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round furniture parts
-const HLF={on:!/[?&]furniture=0\b/.test(location.search),interiors:/[?&]interiors=1\b/.test(location.search),
- batch:KratorFurniture.batch(),placed:[],missing:{},buildings:[]};
-HLF.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,HLF.batch);
-function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
- if(!KratorFurniture.has(key)){HLF.missing[key]=(HLF.missing[key]||0)+1;return null;}
- if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
- const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
- const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx,ly,lz,lry:lry||0,x:p[0],y:(c.o.y||0)+ly*s,z:p[1],ry:c.ry+(lry||0),
-  building:c.D.key,setting:o.setting||'outdoor'};
- (c.G.userData.furniture||(c.G.userData.furniture=[])).push(rec);HLF.placed.push(rec);
- const dm=KratorFurniture.entryDims(KratorFurniture.FURN_BY_KEY[key],rec.variant);   // murals fitted after the builder (hlFlush) keep clear of the piece
- if(!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[lx,ly+dm.h/2,lz],qEuler(0,lry||0,0),[dm.w,dm.h,dm.d]]);
+// the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is the Highlands
+// adapter onto it: its seed rule (the record's place in the list), the murals' keep-clear boxes, full detail outside
+const HLF=KFURN.create(Object.assign(KFURN.flags(false),{
+ catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ tags:(KTAGS.page=KTAGS.create({build:'highlands'})),   // every piece registered in core/tags (core/tags/README.md)
+ seed:(o,ctx,R)=>R.placed.length+1,
+ onRecord:(rec,ctx,o,A,dm)=>{const c=ctx.vern;   // murals fitted after the builder (hlFlush) keep clear of the piece
+  if(c&&!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[rec.lx,rec.ly+dm.h/2,rec.lz],qEuler(0,rec.lry,0),[dm.w,dm.h,dm.d]]);},
  // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
  // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
- if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});KratorFurniture.setDetail(.5);}
- return rec;}
+ draw:(rec,ctx)=>{KFURN.drawRec(HLF,rec,ctx.wealth,{detail:1,after:.5});}}));
+KFURN.useBatch(HLF,KratorFurniture,KratorInteriors);
+function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
+ if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
+ const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
+ return HLF.place(key,p[0],(c.o.y||0)+ly*s,p[1],c.ry+(lry||0),o,[lx,ly,lz,lry||0],
+  {building:c.D.key,wealth:hlfWealth(c.D),vern:c,listOf:()=>c.G.userData.furniture||(c.G.userData.furniture=[])});}
 // outside any builder (a town's own furniture, placed by its layout: Roketstad's market stalls), with {world: a name for
 // the record's `building`}: (x, y, z, ry) are world coordinates; the record goes on HLF.placed only
-function hlfWorld(key,x,y,z,ry,o){const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx:x,ly:y,lz:z,lry:ry,x,y,z,ry,building:o.world,setting:o.setting||'outdoor'};
- HLF.placed.push(rec);
- if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,x,y,z,ry,{variant:rec.variant,seed:rec.seed,wealth:o.wealth!=null?o.wealth:.5,building:o.world,setting:rec.setting});KratorFurniture.setDetail(.5);}
- return rec;}
+function hlfWorld(key,x,y,z,ry,o){return HLF.place(key,x,y,z,ry,o,[x,y,z,ry],{building:o.world,wealth:o.wealth!=null?o.wealth:.5});}
 function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // the interiors hook: a TOP-LEVEL placement (not a sub-building a compound places) with an interior set item
 // gets its rooms planned and furnished at its placement; the plan is data on the group (userData.interior)
 const hlfPlace=VERN.place;
 VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;const G=hlfPlace.call(VERN,sc,key,x,z,ry,o);
  if(top&&G&&HLF.interiors){const it=KratorInteriors.sets.find(key);
-  if(it&&!it.skip){const r=KratorInteriors.sets.furnish(it,x,z,ry||0,HLF.adapter,{baseY:(o&&o.y)||0,prefix:'hl.'+HLF.buildings.length+'.'});
-   G.userData.interior={rooms:r.inst.rooms.length,pieces:Object.keys(r.plans).reduce((a,k)=>a+r.plans[k].placements.length,0),residence:r.residence};
-   HLF.buildings.push({key,x,z,ry:ry||0,interior:G.userData.interior});}}
+  if(it&&!it.skip){const r=HLF.interior(it,x,z,ry||0,HLF.adapter,{baseY:(o&&o.y)||0,prefix:'hl.'+HLF.buildings.length+'.'}).summary;
+   G.userData.interior={rooms:r.rooms,pieces:r.pieces,residence:r.residence};
+   Object.assign(HLF.buildings[HLF.buildings.length-1],{key,interior:G.userData.interior});}}
  return G;};
 // the batch becomes meshes once, when the kit bakes its instances
 const hlfBake=kbake;
 // the catalog's colours are sRGB values taken as they are; this kit's materials are linear (hC converts every colour), so
 // the furniture keeps its 8-bit vertex colours and linearises them in the vertex shader (as Girder and Locus do)
-function hlfSRGB(sh){sh.vertexShader=sh.vertexShader.replace('#include <color_vertex>','#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');}
+const hlfSRGB=KFURN.srgbHook;
 kbake=function(sc){const g=HLF.batch.flush(sc);g.userData.probeSkip=false;HLF.group=g;g.children.forEach(m=>{m.material.onBeforeCompile=hlfSRGB;});return hlfBake(sc);};
 // TARGET: roketstad — the town. No showcase rows: 90a/90b place everything from the layout (the showcase block in
+if(KTAGS.page) KTAGS.page.build='roketstad';   // the tag registry (core/tags) names this target, not the Highlands
 // 90-scene is skipped because window.CITY). TITLE is read by build.py for the page <title>.
 const TITLE='Roketstad';
 const HL_BRANCHES=[];
@@ -22178,6 +22969,7 @@ labelsBuild();
 BUDGET.showcase={tris:32000000,calls:1200};   // round 9: the capital, twice the town; LOD (93b) keeps what is DRAWN far below this
 BUDGET.cls.city=20000000;for(const k in TSTAT.by){BUDGET.type[k.split('/')[0]]='city';}
 const PATHS={on:false,tex:null};
+window._masks=()=>({mask:KMASK.hash(mv),klass:KMASK.hash(kv),ops:KMASK.ops(mv).length+KMASK.ops(kv).length});   // core/mask: the proof two loads painted the same
 function pathsTexture(){if(PATHS.tex)return PATHS.tex;const c=document.createElement('canvas');c.width=c.height=CS;const g=c.getContext('2d');
  const COL={0:'#26221e',1:'#c8a860',2:'#2e7a3a',3:'#e8e0d0',4:'#c8c0b0',5:'#b8a890',6:'#a89878',7:'#6a6a3a',8:'#1a3a3a',9:'#a08868',10:'#4a2a2a',11:'#3a3430',12:'#6a5a2a',13:'#6a6e74',14:'#50303a'};
  const img=g.createImageData(CS,CS);const d=img.data;const rgb={};for(const k in COL){const s=COL[k];rgb[k]=[parseInt(s.slice(1,3),16),parseInt(s.slice(3,5),16),parseInt(s.slice(5,7),16)];}

@@ -5,7 +5,8 @@ Code shared by more than one build, kept here once instead of copied into each:
 runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
 dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
-(the one generator, hash and noise a Godot port can reproduce) and `clock/` (the world clock).
+(the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock) and `tags/` (what a placed
+thing is: ids, class, tags).
 
 ## `materials/`
 
@@ -104,7 +105,8 @@ additions are in it, each marked with the kit it came from:
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
 | `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
 | `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
-| `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME` |
+| `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
+| `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
 
 **Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
 `build.py`, read from here unless its `src/` has a copy of the same name (none does).
@@ -197,6 +199,20 @@ draw calls and triangles with it off and on. Read `lod/README.md`.
 fragment list next to its `CORE_FILES`/`CORE_OPT_FILES` (a `src/` copy with the same name overrides) and lists both in
 `DETERMINISTIC`. A build passes options through `window.LOD_OPTIONS` (port, screamers, voth, highlands, dalab).
 
+## `furnish/`
+
+The furniture glue, once (GODOT-PLAN.md Phase 2 item 4): a builder's `FURNISH(...)` becomes a placement record here,
+and the build's own adapter draws it. Girder, Mav's Refuge, Locus, Highlands (and Roketstad) and Post-Apoc take it;
+each lists the three fragments the way it lists `lod/`. `furnish/README.md` has the record, the adapters and the proof.
+
+| File | What |
+|---|---|
+| `50-core-furnish.js` | [G data] `KFURN.create(cfg)`: the registry and the placement pass (records with ids, room and job; missing keys; the recentring table; the interiors hook; the summary). No THREE, no DOM |
+| `52-core-furnish-draw.js` | [draw] a record into the catalog batch, and the sRGB-to-linear colour step |
+| `53-core-furnish-host.js` | [web] `KFURN.flags()`: `?furniture=0`, `?interiors=` |
+| `test-furnish.js` | `node core/furnish/test-furnish.js` |
+| `fingerprint.py` | every furnished page's records and furniture meshes, compared with `fingerprint.json`: a change to this module must leave them `same` |
+
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 
 Three small modules with no THREE and no DOM in their data side, each with a node test (each check has a negative).
@@ -252,12 +268,42 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 Rules: lattice coordinates and hash inputs are int32; floats are floored. No `Math.sin`, `pow`, `exp`, `log` or
 `random` in the module (the test greps for them). A new build takes `core/rand` from the start (`GODOT-PLAN.md` rule 2).
 **Used by** `settlements/ys` (city target, `TARGET_CORE`: the P3 placement pass draws from it; nothing placed yet,
-so nothing moved).
+so nothing moved), and `settlements/yuni` (only `core/tags`' uid hash: no draws).
 
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
 builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
+
+## `tags/`
+
+One engine-neutral registry of what every build places (an order id, a position-hash `uid`, class, kind, tags from one
+vocabulary), for the inspector, the minimap, the exporters and Godot node metadata (GODOT-PLAN.md Phase 2 item 3).
+`tags/README.md` has the record, the ids, the uid recipe Godot reproduces, the vocabulary and the adopters;
+`tags/PROPOSAL.md` is the design with Travis's decisions. Needs `rand/` loaded first. **Used by** `settlements/yuni`
+(its fixtures registry forwards into it; `KRATOR_EXPORT.tags()`).
+
+| File | What |
+|---|---|
+| `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
+| `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
+| `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
+| `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
+| `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
+
+## `mask/`
+
+A city's placement raster (GODOT-PLAN.md Phase 2 item 5): `KMASK.canvas(w, h)` stands in for the canvases the four
+mask-placed cities paint their buildable mask and street classes on, with the same calls, rasterised hard-edged by
+pixel centre so every browser (GPU or CPU canvas) and Godot get the same bytes. `mask/README.md` has the rule.
+**Used by** the city targets of `settlements/iziz`, `dalab`, `xanadu` (Erewhon) and `highlands` (Roketstad), each
+through `TARGET_CORE`.
+
+| File | What |
+|---|---|
+| `25-core-mask.js` | [G data] `KMASK.canvas`, `hash`, `ops`, `export`; the rasteriser (`disc`, `ring`, `polyline`, `polygons`, `rect`) |
+| `test-mask.js` | `node core/mask/test-mask.js` (`--write` rewrites `golden.json`) |
+| `kmask.gd`, `kmask_test.gd`, `golden.json` | the GDScript twin, replaying the ops to the same bytes (passing in Godot 4.5); copied to `godot/tests/mask/` |
 
 ## Planned: a material registry
 

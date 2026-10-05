@@ -5,9 +5,29 @@
 // kit takes both files (list 43-core-export-host.js after 42-core-export.js in CORE_BIOME).
 //
 //   BIO.download(name, opt)   -> saves BIO.export(opt) as <name>.biome.json; returns the export's stats
+//   BIO.export(opt)           -> wrapped: with a box, the export gains `stage` (KSTAGE.capture, 44-core-stage.js)
+//   BIO.texPNG(texture)       -> {png: data URL, size: [w, h]} or null: the export's image encoder. A canvas encodes
+//                                as it is; a DataTexture of 8-bit RGBA (the leaf atlases) goes through a canvas, rows
+//                                as stored; an <img> or ImageBitmap is drawn first. Anything else returns null.
 (function(){
 'use strict';
 if(typeof BIO==='undefined'||!BIO.export)throw new Error('43-core-export-host: load core/biome/42-core-export.js first');
+BIO.texPNG=function(t){const im=t&&t.image;if(!im)return null;
+ if(im.toDataURL)return{png:im.toDataURL('image/png'),size:[im.width,im.height]};
+ const cv=document.createElement('canvas'),w=im.width,h=im.height;if(!w||!h)return null;cv.width=w;cv.height=h;const cx=cv.getContext('2d');
+ if(im.data&&im.data.length===w*h*4&&(im.data instanceof Uint8Array||im.data instanceof Uint8ClampedArray))
+  cx.putImageData(new ImageData(new Uint8ClampedArray(im.data.buffer,im.data.byteOffset,im.data.length),w,h),0,0);
+ else if((typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement)||(typeof ImageBitmap!=='undefined'&&im instanceof ImageBitmap))cx.drawImage(im,0,0);
+ else return null;
+ return{png:cv.toDataURL('image/png'),size:[w,h]};};
+// the stage (44-core-stage.js, when a kit lists it): a tile's export also carries the page's light, fog, tonemapping,
+// sky panorama and the ground's look on the export's own ground grid. opt.stage:false leaves it out; opt.sky: the
+// panorama's width (1024).
+const _export=BIO.export;
+BIO.export=function(opt){const o=_export(opt);opt=opt||{};
+ if(opt.stage!==false&&o.box&&typeof KSTAGE!=='undefined'){const b=o.box,cx=(b[0]+b[2])/2,cz=(b[1]+b[3])/2,g=o.ground;
+  o.stage=KSTAGE.capture({at:[cx,BIO.terrainH(cx,cz)+40,cz],sky:opt.sky==null?1024:opt.sky,box:b,step:g?g.step:4,ground:BIO.terrainH});}
+ return o;};
 BIO.download=function(name,opt){const o=BIO.export(opt),blob=new Blob([JSON.stringify(o)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(name||'biome')+'.biome.json';document.body.appendChild(a);a.click();
  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);return o.stats;};

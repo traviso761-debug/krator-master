@@ -25,6 +25,9 @@ const look=(cx,cz,dyc,tx,tz,dyt)=>[cx,gh(cx,cz,dyc),cz,tx,gh(tx,tz,dyt),tz];
 // the fauna nearest a point: a thermal, a flock, a band (the layout the fauna pass left)
 function nearFauna(kind,x,z){const L=(SEDESERT.FAUNA_LAYOUT||{})[kind]||[];let b=null,bd=1e9;for(const f of L){const d=Math.hypot(f.x-x,f.z-z);if(d<bd){bd=d;b=f;}}return b||{x:x,z:z,y0:gh(x,z)+80,r:60,len:80};}
 const TH=nearFauna('thermals',BUTTE.x-200,BUTTE.z-400),FL=nearFauna('flocks',POND.x,POND.z),BD=nearFauna('bands',600,zR(600));
+// the deer herd nearest a coyote loop (2026-10): the camera stands off its far side, at the deer's height
+const HD=(function(){const L=SEDESERT.FAUNA_LAYOUT||{},Hs=L.herds||[],Ps=L.packs||[];let b=null,bd=1e9;
+ for(const H of Hs){let d=1e9;for(const P of Ps)d=Math.min(d,Math.hypot(P.x-H.x,P.z-H.z)-P.r);if(d<bd){bd=d;b=H;}}return b||{x:600,z:zR(600),r:20};})();
 // the nearest built hero of a species to a point, so a preset frames a real tree
 function nearTree(sp,x,z,minH){return SEDESERT.nearestTree(sp,x,z,minH)||{x:x,z:z,y0:gh(x,z),H:8,crownR:5};}
 // a camera d metres from a tree, looking at its crown
@@ -55,6 +58,14 @@ const VIEWS={
  'From afar':look(-2500,2550,360,0,0,40),
  'Krator rising':[-600,gh(-600,600,30),600,1900,900,-2100],
 };
+// the walkers move, so these two presets are getters: each frames the animal where it stands when chosen
+// (one deer of that herd, the nearest coyote loop's leader), from the side at its own height
+const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements;
+ return[e[12]-d*.8,e[13]+d*.28,e[14]+d*.6,e[12],e[13]+d*.1,e[14]];};
+Object.defineProperty(VIEWS,'Mule deer',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{};
+ return animalView('biome:deer',(L.deer||[]).indexOf(HD.deer&&HD.deer[0]),8,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
+Object.defineProperty(VIEWS,'Coyotes',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{},C=L.coyotes||[];let b=-1,bd=1e9;
+ C.forEach((c,i)=>{const d=Math.hypot(c.P.x-HD.x,c.P.z-HD.z);if(!c.back&&d<bd){bd=d;b=i;}});return animalView('biome:coyote',b,6,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
 const ui=document.getElementById('ui');const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 // hidden buttons, one per preset: verify.py drives the views through these
 const _hb=document.createElement('div');_hb.style.display='none';ui.appendChild(_hb);for(const k in VIEWS){const b=document.createElement('button');b.textContent=k;b.onclick=()=>setView(...VIEWS[k]);_hb.appendChild(b);}

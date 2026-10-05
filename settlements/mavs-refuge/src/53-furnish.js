@@ -10,22 +10,36 @@
                                                                               rotation.y, the piece's front is +z
    o.v is the catalog variant; o.lamp = [amp, rad, cool, maxLights] registers the piece's own lights (the catalog
    keeps them as data) in the night light volume, as LANTERN() did. Each call returns the placement record
-   {key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting}; the records are kept in BRF.placed and on
+   (core/furnish) {id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting, room, job}; kept in BRF.placed and on
    the open building (brfIn(name) ... brfDone(site): site.furniture). A key the catalog lacks is counted in
    BRF.missing, never thrown. ?furniture=0 places nothing (the records are still kept).
    Interiors: brfInterior(setKey, x, z, ry, baseY, site) plans and furnishes the rooms of a TOP-LEVEL building
    from the interiors kit's beast-rider set (kits/interiors/sets/beast-rider.js) with ?interiors=1 (off by
    default: the roofs hide it). Only the builders whose walls match a set item call it (API.md, Furniture). */
 KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round furniture parts */
-var BRF = { on: !/[?&]furniture=0\b/.test(location.search), interiors: /[?&]interiors=1\b/.test(location.search),
-            batch: KratorFurniture.batch(), placed: [], missing: {}, buildings: [], cur: null, stack: [], frame: null, lights: 0, group: null };
-BRF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, BRF.batch);
-window._brf = BRF;                                                     /* read-only, for probes and the console */
 /* the catalog recentred some harvested pieces on their footprint (F.shift(dx,dz) in the piece's build): the
    placement undoes it, so the piece stands where the builder drew it */
 var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br_h_speaker_rostrum:[0,-0.325],
   br_h_smithy_forge:function(v){ return v?null:[0.497,0]; }, br_h_banner_pole:[-0.5,0], br_market_stall:[0.04,-0.14],
   br_h_barrel_cluster:function(v){ return [-0.443, v?0.304:-0.069]; }, br_h_hitching_rail:function(v){ return v?null:[0.43,-0.43]; } };
+/* the placement pass is core/furnish (50-core-furnish.js: the record, the recentring above, the missing count, the
+   id); this is Mav's Refuge's adapter onto it: its seed rule (a hash of the spot), the open building, and the lamps */
+var BRF = KFURN.create(Object.assign(KFURN.flags(false), {
+  catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors, shift: BRF_SHIFT,
+  tags: (KTAGS.page = KTAGS.create({ build:'mavs-refuge' })),   /* every piece registered in core/tags (core/tags/README.md) */
+  seed: function(o, ctx, R, x, y, z){ return 1 + Math.floor(phash(x, y, z, 7.7)*999983); },
+  draw: function(rec, ctx, o){
+    var w = o.wealth==null ? 0.5 : o.wealth;
+    KFURN.drawRec(BRF, rec, w);
+    if(o.lamp){
+      var c = Math.cos(rec.ry), s = Math.sin(rec.ry), ls = KratorFurniture.lightsOf(rec.key, rec.variant, rec.seed, w), L = o.lamp, n = Math.min(ls.length, L[3]==null ? 99 : L[3]);
+      for(var i=0;i<n;i++){ var l = ls[i]; nlLampAdd(rec.x + l.x*c + l.z*s, rec.y + l.y, rec.z - l.x*s + l.z*c, L[0], L[1], L[2]); BRF.lights++; }
+    }
+  }
+}));
+Object.assign(BRF, { cur: null, stack: [], frame: null });
+KFURN.useBatch(BRF, KratorFurniture, KratorInteriors);
+window._brf = BRF;                                                     /* read-only, for probes and the console */
 /* the pieces the many small benches, tables and spear racks use (one place to trade look for triangles) */
 var BRF_BENCH = 'br_bench', BRF_TABLE = 'br_table', BRF_SPEARS = 'br_weapon_rack';
 function brfSkip(n){ for(var i=0;i<n;i++) rnd(); }                    /* draw what a removed drawing drew, so the stream after it does not move */
@@ -45,33 +59,16 @@ function FURNISH(key, lx, ly, lz, lry, o){
 function FURNISH_AT(key, x, y, z, ry, o){ return brfPlace(key, x, y, z, ry||0, o, null); }
 function brfPlace(key, x, y, z, ry, o, loc){
   o = o || {};
-  if(!KratorFurniture.has(key)){ BRF.missing[key] = (BRF.missing[key]||0) + 1; return null; }
-  var v = o.v|0, sh = BRF_SHIFT[key], c = Math.cos(ry), s = Math.sin(ry);
-  if(typeof sh === 'function') sh = sh(v);
-  if(sh){ x -= sh[0]*c + sh[1]*s; z -= -sh[0]*s + sh[1]*c; }
-  var seed = o.seed || (1 + Math.floor(phash(x, y, z, 7.7)*999983));
-  var rec = { key:key, variant:v, seed:seed, lx:loc?loc[0]:null, ly:loc?loc[1]:null, lz:loc?loc[2]:null, lry:loc?loc[3]:null,
-              x:x, y:y, z:z, ry:ry, building:BRF.cur ? BRF.cur.name : (o.building||'street'), setting:o.setting||'outdoor' };
-  BRF.placed.push(rec); if(BRF.cur) BRF.cur.furniture.push(rec);
-  if(BRF.on){
-    var w = o.wealth==null ? 0.5 : o.wealth;
-    BRF.batch.place(key, x, y, z, ry, { variant:v, seed:seed, wealth:w, building:rec.building, setting:rec.setting });
-    if(o.lamp){
-      var ls = KratorFurniture.lightsOf(key, v, seed, w), L = o.lamp, n = Math.min(ls.length, L[3]==null ? 99 : L[3]);
-      for(var i=0;i<n;i++){ var l = ls[i]; nlLampAdd(x + l.x*c + l.z*s, y + l.y, z - l.x*s + l.z*c, L[0], L[1], L[2]); BRF.lights++; }
-    }
-  }
-  return rec;
+  return BRF.place(key, x, y, z, ry, o, loc, { building: BRF.cur ? BRF.cur.name : (o.building||'street'), list: BRF.cur ? BRF.cur.furniture : null });
 }
 /* the interiors hook: plan + furnish a top-level building's rooms from its set item, at its placement */
 function brfInterior(key, x, z, ry, baseY, site){
   if(!BRF.interiors || !BRF.on) return null;
   var it = KratorInteriors.sets.find(key);
   if(!it || it.skip) return null;
-  var r = KratorInteriors.sets.furnish(it, x, z, ry||0, BRF.adapter, { baseY:baseY||0, prefix:'mr.'+BRF.buildings.length+'.' });
-  var rec = { key:key, x:x, z:z, ry:ry||0, baseY:baseY||0, rooms:r.inst.rooms.length,
-              pieces:Object.keys(r.plans).reduce(function(a,k){ return a + r.plans[k].placements.length; }, 0), residence:r.residence };
-  BRF.buildings.push(rec); if(site) site.interior = rec;
+  var r = BRF.interior(it, x, z, ry||0, BRF.adapter, { baseY:baseY||0, prefix:'mr.'+BRF.buildings.length+'.' }).summary;
+  var rec = { key:key, x:x, z:z, ry:ry||0, baseY:baseY||0, rooms:r.rooms, pieces:r.pieces, residence:r.residence };
+  if(site) site.interior = rec;
   return rec;
 }
 /* the batch becomes meshes once, when the kit is emitted (75-terrain.js). Shaded like the kit: the kit's surfaces
@@ -100,7 +97,7 @@ emitBuckets = function(){
   BRF.tint = tint;
   var tris = 0; g.children.forEach(function(m){ tris += m.geometry.attributes.position.count/3; });
   window._furniture = { placed:BRF.placed.length, tris:tris|0, meshes:g.children.length, lights:BRF.lights, missing:BRF.missing,
-                        interiors:BRF.buildings.length, interiorPieces:BRF.buildings.reduce(function(a,b){ return a+b.pieces; }, 0),
+                        interiors:BRF.buildings.length, interiorPieces:BRF.buildings.reduce(function(a,b){ return a+b.interior.pieces; }, 0),
                         byKey:BRF.placed.reduce(function(a,r){ a[r.key]=(a[r.key]||0)+1; return a; }, {}) };
   return brfEmit0();
 };

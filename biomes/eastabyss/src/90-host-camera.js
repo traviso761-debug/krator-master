@@ -13,6 +13,16 @@ function viewOfSpecies(sp,anchor,dist,h,az){return()=>{let best=null,bd=1e9;
 function viewOfBed(anchor,dist,h){return()=>{let best=null,bd=1e9;
  for(const B of (EASTABYSS.REEDBEDS||[])){if(B.n<120)continue;const d=Math.hypot(B.x-anchor[0],B.z-anchor[1]);if(d<bd){bd=d;best=B;}}
  if(!best)return[anchor[0]+dist,h,anchor[1],anchor[0],2,anchor[1]];return[best.x+dist*.7,h,best.z+dist*.7,best.x,1.5,best.z];};}
+// the fauna (75) moves, so this preset is found when chosen: the frilled lizard nearest a flamingo flock, from a
+// few metres behind it (inside 25 m, so its frill is open), looking past it at the flock
+function viewOfFauna(){const L=EASTABYSS.FAUNA_LAYOUT||{},Fs=L.flocks||[],Zs=L.lizards||[],m=scene.getObjectByName('biome:frilledlizard');
+ let bi=-1,bd=1e9,bf=null;Zs.forEach((Z,i)=>Fs.forEach(F=>{const d=Math.hypot(F.x-Z.x,F.z-Z.z);if(d<bd){bd=d;bi=i;bf=F;}}));
+ if(bi<0||!m)return bf?[bf.x+40,6,bf.z+40,bf.x,.5,bf.z]:[1180,42,-260,-300,0,120];
+ const M=new THREE.Matrix4();m.getMatrixAt(bi,M);const e=M.elements,x=e[12],y=e[13],z=e[14],d=Math.hypot(bf.x-x,bf.z-z)||1,ux=(x-bf.x)/d,uz=(z-bf.z)/d;
+ return[x+ux*6.5-uz*1.5,y+1.5,z+uz*6.5+ux*1.5,bf.x,Math.max(terrainH(bf.x,bf.z),0)+.9,bf.z];}
+// a skein's leader where it flies now, from below and behind its wing
+function viewOfSkein(){const m=scene.getObjectByName('biome:flamingoflying');if(!m)return[1180,42,-260,-300,0,120];const M=new THREE.Matrix4();m.getMatrixAt(4,M);const e=M.elements;
+ const fx=e[8],fz=e[10],l=Math.hypot(fx,fz)||1;return[e[12]-fx/l*14+fz/l*14,e[13]-6,e[14]-fz/l*14-fx/l*14,e[12]+fx/l*6,e[13],e[14]+fz/l*6];}
 const VIEWS={
  'The salt lake':[1180,42,-260,-300,0,120],
  'Shore lycopsids':[690,9,-380,900,2,-300],
@@ -23,6 +33,8 @@ const VIEWS={
  'The marsh':[1250,8,-120,1520,14,-330],
  'Marsh pools':[1180,5,70,1270,-.5,-5],
  'The east delta':[1110,22,540,800,4,300],
+ 'Flamingos and a frilled lizard':viewOfFauna,
+ 'Flamingos in flight':viewOfSkein,
  'Beard oaks':viewOfSpecies(18,[1700,0],42,7,.9),
  'Mat-reed beds':viewOfBed([1000,0],34,5),
  'Cordaites at the shore':viewOfSpecies(15,[900,-300],60,12,-.6),

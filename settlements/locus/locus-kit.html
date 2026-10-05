@@ -288,6 +288,68 @@ var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.b
     MOSBLUEC=PAL.mosaicBlue, MOSWARMC=PAL.mosaicWarm, MOSGREENC=PAL.mosaicGreen, METALC=PAL.metal, TARNC=PAL.metalTarn,
     RUSTC=PAL.rust, CONCRETEC=PAL.concrete, GLASSC=PAL.glass, VOIDC=PAL.darkVoid, ROCKC=PAL.rock, TIMBERC=PAL.timber,
     TORONC=PAL.toron, PLANKC=PAL.plank, THATCHC=PAL.thatch, TILEC=PAL.tile, CLOTHC=PAL.cloth, AWNINGC=PAL.awning, BRASSC=PAL.brass;
+// ================================================================= CORE — rand: one generator, one hash, one noise
+// GODOT-PLAN.md Phase 2, item 1. Every number here is reproducible bit for bit in GDScript (krand.gd beside this
+// file) because nothing in it calls Math.sin, Math.pow or any other library function whose last bits differ by
+// engine: the stream and the hash are 32-bit integer arithmetic, and the noise is +, -, *, / and floor on doubles,
+// in a fixed order. golden.json holds the vectors both engines are tested against (test-rand.js, test_rand.py).
+//
+//   KRAND.stream(seed)             a mulberry32 stream: the SAME numbers as the rng()/reseed() every Krator lineage
+//                                  already uses (kits/ancients 10-core.js, core/biome 10-core-head.js), so a build
+//                                  that moves its draws onto a stream moves no rubble
+//     s.next()  [0,1)   s.u32()  integer   s.range(a,b)   s.int(a,b) inclusive   s.pick(arr)   s.chance(p)
+//     s.state() / s.setState(u32)          for saving and resuming a stream
+//   KRAND.hash(seed, a, b, c...)   u32 from a seed and any number of int32 values (floats are floored first)
+//   KRAND.unit(u32)                [0,1)
+//   KRAND.h3(x,y,z, seed)          [0,1) at an integer lattice point: the portable replacement for the lineages'
+//                                  sin-based h3 (which a GDScript port cannot reproduce). Floats are floored.
+//   KRAND.vnoise(x,y,z, seed)      value noise in [0,1]: the lineages' vnoise (smoothstep trilinear) on h3 above
+//   KRAND.fbm(x,y,z, octaves, seed)  the lineages' fbm (octaves default 3, frequency x2.03, amplitude 1/f)
+//   KRAND.cell(seed, ix, iz)       a seed for one placement cell, so a tile built alone draws what it draws in a
+//                                  full build (biomes/WORLD.md: placement seeded by cell)
+//   KRAND.child(seed, name)        a seed for a named sub-stream ('trees', 'rubble'...), no collisions to manage
+//
+// Ranges: lattice coordinates and hash inputs are int32 (|x| < 2^31). Seeds are taken as u32 (seed>>>0).
+// The noise of a NEW seed is not the old sin-based noise: moving a build's terrain or textures onto it moves them
+// (GODOT-PLAN.md section 7, "Moving rubble": one build at a time, with a screenshot set).
+(function(root){
+  'use strict';
+  var imul=Math.imul;
+  // murmur3's 32-bit finalizer: full avalanche
+  function mix32(h){h^=h>>>16;h=imul(h,0x85ebca6b);h^=h>>>13;h=imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0;}
+  function step(h,v){h=imul(h^(v|0),0x9E3779B1);return (h<<13|h>>>19);}
+  function hash(seed){var h=(seed>>>0)^0x2545F491,n=arguments.length-1;
+    for(var i=1;i<=n;i++)h=step(h,Math.floor(arguments[i]));
+    return mix32(h^n);}
+  function hash3(seed,a,b,c){return mix32(step(step(step((seed>>>0)^0x2545F491,a),b),c)^3);}  // hash(seed,a,b,c), unrolled
+  var INV=1/4294967296;
+  function unit(u){return (u>>>0)*INV;}
+  function h3(x,y,z,seed){return hash3(seed||0,Math.floor(x),Math.floor(y),Math.floor(z))*INV;}
+  function vnoise(x,y,z,seed){seed=seed||0;
+    var xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+    var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+    var a0=hash3(seed,xi,yi,zi)*INV,a1=hash3(seed,xi+1,yi,zi)*INV,b0=hash3(seed,xi,yi+1,zi)*INV,b1=hash3(seed,xi+1,yi+1,zi)*INV,
+        c0=hash3(seed,xi,yi,zi+1)*INV,c1=hash3(seed,xi+1,yi,zi+1)*INV,d0=hash3(seed,xi,yi+1,zi+1)*INV,d1=hash3(seed,xi+1,yi+1,zi+1)*INV;
+    var a=a0+(a1-a0)*u,b=b0+(b1-b0)*u,c=c0+(c1-c0)*u,d=d0+(d1-d0)*u;
+    var e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
+  function fbm(x,y,z,o,seed){o=o||3;var a=0,f=1,s=0;for(var i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f,seed)/f;s+=1/f;f*=2.03;}return a/s;}
+  function cell(seed,ix,iz){return hash3(seed,ix,iz,0x51ED);}
+  function child(seed,name){var h=0x811C9DC5;name=String(name);   // FNV-1a over UTF-16 code units, then mixed with the seed
+    for(var i=0;i<name.length;i++)h=imul(h^name.charCodeAt(i),0x01000193);
+    return hash(seed,h|0);}
+  function stream(seed){
+    var s=seed>>>0;
+    function u32(){s|=0;s=s+0x6D2B79F5|0;var t=imul(s^s>>>15,1|s);t=t+imul(t^t>>>7,61|t)^t;return (t^t>>>14)>>>0;}
+    function next(){return u32()*INV;}
+    return {next:next,u32:u32,
+      range:function(a,b){return a+(b-a)*next();},
+      int:function(a,b){return a+Math.floor(next()*(b-a+1));},
+      pick:function(arr){return arr[Math.floor(next()*arr.length)%arr.length];},
+      chance:function(p){return next()<p;},
+      state:function(){return s>>>0;},setState:function(v){s=v>>>0;}};
+  }
+  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,cell:cell,child:child,mix32:mix32};
+})(typeof window!=='undefined'?window:globalThis);
 // ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
 // One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
 // calls and no change to how it makes geometry:
@@ -3475,6 +3537,355 @@ function texFill(S, fn){
     FAMMAT.bark.tex = texFinish(texFill(S,function(x,y){ var g=0.5+0.5*Math.sin(x*TAU/S*14 + n1(x,y*0.2)*6);
       return 0.66 + 0.30*(g-0.5) + 0.2*(n2(x,y)-0.5); })); })();
 })();
+// ================================================================= CORE FURNISH — the placement pass ([G data])
+// One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
+// A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
+// writes the placement RECORD, counts missing keys, applies the catalog's recentring table, assigns a deterministic
+// id, and hands the record to the build's draw adapter. No THREE, no DOM: the records are what crosses to Godot.
+//
+//   const R = KFURN.create(cfg)
+//   R.place(key, x, y, z, ry, o, loc, ctx)   -> the record, or null (a key the catalog lacks: counted in R.missing)
+//        x y z ry  the world transform (three.js rotation.y: the piece's front, +z, turns to (sin ry, cos ry))
+//        o         the builder's options: { v, seed, setting, ... } (the adapter's own keys pass through)
+//        loc       [lx, ly, lz, lry] in the builder's frame, or null (a piece placed in world space)
+//        ctx       { building, list, wealth, part, room, dry }: list receives the record (the building's own list;
+//                  listOf() instead makes it only when a record lands, for a build whose owners start without one);
+//                  dry places nothing anywhere else (a throwaway build: Post-Apoc's frontOf)
+//   R.frm(f, lx, lz, lry)                    -> [x, z, ry] in a FRM frame {x, z, fx, fz} (55-arch): +z its front,
+//                                               +x its right (-fz, fx); lry 0 faces the front
+//   R.interior(item, x, z, ry, adapter, opt) -> the interiors kit's rooms planned and furnished at a placement,
+//                                               summarised as data ({ item, rooms, pieces, residence }); pushed on R.buildings
+//   R.summary()                              -> counts for a probe: placed, byKey, missing, interiors, interiorPieces
+//   KFURN.SRGB_LIN                           -> Float32Array(256): an sRGB byte to linear (the catalog's colours are sRGB)
+//
+// cfg: {
+//   catalog:   { has(key), entry(key), dims(entry, variant) }   (KFURN.catalogOf(KratorFurniture) makes it)
+//   interiors: KratorInteriors (for R.interior), optional
+//   on, interiorsOn: the page's switches (?furniture=0, ?interiors=: 53-core-furnish-host.js reads them)
+//   seed(o, ctx, R, x, y, z, loc) -> the seed when o.seed is not given. Each build keeps the rule its pieces were
+//              placed with, so moving onto this module moves nothing (README.md, "Seeds")
+//   shift:     { key: [dx, dz] | function(variant) -> [dx, dz] | null }: pieces the catalog recentred on their
+//              footprint; the placement undoes it (Mav's Refuge's BRF_SHIFT)
+//   finish(rec): rounds or wraps the record's numbers the way the build always has (Girder: 3 decimals)
+//   onRecord(rec, ctx, o, entry, dims) -> false to place nothing more (deferred to the interiors); collision,
+//              inspector entries and the like go here
+//   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
+//   idPrefix:  'furn' (ids: furn_00001 in placement order)
+//   tags:      a core/tags registry (KTAGS.create): every placed record onRecord keeps is registered there too, as
+//              class furniture, before it is drawn (GODOT-PLAN.md rule 4; core/tags/README.md). The furniture record is not changed }
+//
+// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
+// job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
+var KFURN = (function(){
+'use strict';
+ const K = {};
+ K.SRGB_LIN = (function(){ const t = new Float32Array(256);
+   for(let i=0;i<256;i++){ const v = i/255; t[i] = v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); } return t; })();
+ K.catalogOf = function(KF){ return {
+   has: function(key){ return KF.has(key); },
+   entry: function(key){ return KF.FURN_BY_KEY[key]; },
+   dims: function(A, v){ return KF.entryDims(A, v); } }; };
+ function pad(n){ const s = String(n); return s.length >= 5 ? s : '00000'.slice(s.length) + s; }
+ // a placed record into core/tags: its id unchanged, the catalog entry's type as kind, its culture, tier and job, the
+ // setting and room, and the placement's 0..1 wealth (core/tags maps it to poor, middle, rich). parent is the building
+ // as the build names it (a key or an id): a build that registers its buildings in core/tags passes their ids.
+ K.tag = function(T, rec, A, dm, ctx){
+   const t = { setting: rec.setting };
+   if(A && A.culture) t.culture = A.culture;
+   if(A && A.tier) t.tier = A.tier;
+   if(rec.job) t.job = rec.job;
+   if(rec.room) t.room = String(rec.room);
+   if(typeof ctx.wealth === 'number') t.wealth = ctx.wealth;
+   if(rec.variant) t.variant = rec.variant;
+   return T.add({ id: rec.id, 'class': 'furniture', kind: (A && A.type) || null, key: rec.key, name: (A && A.name) || null,
+     parent: rec.building == null ? null : String(rec.building), at: [rec.x, rec.y, rec.z], ry: rec.ry,
+     size: dm ? [dm.w, dm.d, dm.h] : undefined, tags: t, frag: 'core/furnish' });
+ };
+ K.create = function(cfg){
+   const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
+     lights: 0, group: null, batch: null, adapter: null, cfg: cfg };
+   const prefix = cfg.idPrefix || 'furn';
+   R.place = function(key, x, y, z, ry, o, loc, ctx){
+     o = o || {}; ctx = ctx || {};
+     if(!C.has(key)){ if(!ctx.dry) R.missing[key] = (R.missing[key]||0) + 1; return null; }
+     const v = o.v|0;
+     if(cfg.shift && cfg.shift[key]){
+       let sh = cfg.shift[key]; if(typeof sh === 'function') sh = sh(v);
+       if(sh){ const c = Math.cos(ry), s = Math.sin(ry); x -= sh[0]*c + sh[1]*s; z -= -sh[0]*s + sh[1]*c; }
+     }
+     const A = C.entry(key);
+     const rec = { key: key, variant: v, seed: o.seed || cfg.seed(o, ctx, R, x, y, z, loc),
+       lx: loc ? loc[0] : null, ly: loc ? loc[1] : null, lz: loc ? loc[2] : null, lry: loc ? loc[3] : null,
+       x: x, y: y, z: z, ry: ry, building: ctx.building == null ? null : ctx.building };
+     if(ctx.part != null) rec.part = ctx.part;
+     rec.setting = o.setting || 'outdoor';
+     if(cfg.finish) cfg.finish(rec);
+     const L = ctx.list || (ctx.listOf && ctx.listOf()); if(L) L.push(rec);
+     if(!ctx.dry){ R.placed.push(rec); rec.id = prefix + '_' + pad(R.placed.length); }
+     rec.room = ctx.room || o.room || null;
+     rec.job = (A && A.job) || null;
+     const dm = A ? C.dims(A, v) : null;
+     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;   // deferred: not registered, not drawn
+     if(cfg.tags && rec.id) K.tag(cfg.tags, rec, A, dm, ctx);
+     if(ctx.dry || !R.on || !cfg.draw) return rec;
+     cfg.draw(rec, ctx, o, A);
+     return rec;
+   };
+   R.frm = function(f, lx, lz, lry){
+     return [f.x - f.fz*lx + f.fx*lz, f.z + f.fx*lx + f.fz*lz, Math.atan2(f.fx, f.fz) + (lry||0)];
+   };
+   R.interior = function(item, x, z, ry, adapter, opt){
+     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, opt);
+     const sum = { item: item.key, rooms: r.inst.rooms.length,
+       pieces: Object.keys(r.plans).reduce(function(a, k){ return a + r.plans[k].placements.length; }, 0), residence: r.residence };
+     R.buildings.push({ key: item.key, x: x, z: z, ry: ry||0, baseY: (opt && opt.baseY) || 0, interior: sum });
+     return { summary: sum, result: r };
+   };
+   R.summary = function(){
+     const byKey = {}; R.placed.forEach(function(r){ byKey[r.key] = (byKey[r.key]||0) + 1; });
+     return { on: R.on, placed: R.placed.length, keys: Object.keys(byKey).length, byKey: byKey, missing: R.missing,
+       lights: R.lights, interiors: R.buildings.length,
+       interiorPieces: R.buildings.reduce(function(a, b){ return a + b.interior.pieces; }, 0) };
+   };
+   return R;
+ };
+ if(typeof module !== 'undefined' && module.exports) module.exports = K;
+ return K;
+})();
+// ================================================================= CORE TAGS — the registry ([G data])
+// One registry of WHAT a placed thing is, for every build (GODOT-PLAN.md Phase 2 item 3, rule 4; PROPOSAL.md and
+// README.md here). It holds no geometry, collision, draw or live state: only the record. No THREE, no DOM: it runs
+// in node (test-tags.js), and its export is what crosses to Godot as node metadata.
+//
+//   const T = KTAGS.create({ build: 'yuni' })
+//   T.add(rec)               -> the stored record, with its id and uid (defaults filled, tags normalised)
+//   T.child(parentId, rec)   -> a record whose id is a path under its parent: 'bld_00098.room.4'
+//   T.get(id)                -> the record (a removed one too), or null
+//   T.remove(id)             -> the record, marked removed: true. It keeps its id; no id is ever reused
+//   T.query(q)               -> the live records matching q = { class, kind, key, parent, tags: { culture: 'voth',
+//                               types: 'shop' }, box: [x0, z0, x1, z1], removed: true (to include removed ones) }
+//   T.at(x, z, y)            -> the smallest live record whose footprint (and height, when y is given) holds the
+//                               point: the inspector's rule, once
+//   T.audit()                -> { records, removed, byClass, unknownKeys, unknownValues, unknown, missingCulture,
+//                               missingTypes }: unknown vocabulary is counted here, never thrown
+//   T.export()               -> { format: 'krator-tags', version: 1, build, convention, vocab, records }
+//   KTAGS.uid(cls, key, at)  -> the position hash, 8 hex digits (README.md, "The uid": Godot reproduces it)
+//   KTAGS.instanceId(id, i)  -> 'flora_00012#37': an instance of an item's record (an instance has no record)
+//   KTAGS.norm(tags)         -> { tags, problems }: the input mapping (aliases, wealth names) and the checks
+//
+// The record: { id, uid, class, kind, key, name, parent, at: [x,y,z], ry, size: [w,d,h] | r (+ h), tags, note, src }
+//   at   the base centre in world metres (+Y up, x east, z south): y is where it stands. x, y, z on input work too
+//   ry   radians about +Y, three's rotation.y (the front, +z, turns to (sin ry, cos ry)); yaw is an alias on input
+//   size full extents in its own frame; a round thing gives r (and h) instead
+// The vocabulary (KTAGS.VOCAB) is 52-core-tags-vocab.js; the label the inspector shows is 53-core-tags-host.js.
+(function(){
+ 'use strict';
+ var root = typeof globalThis !== 'undefined' ? globalThis : this;
+ var K = { version: 1 };
+
+ function krand(){
+   if (typeof KRAND !== 'undefined') return KRAND;
+   if (root.KRAND) return root.KRAND;
+   throw new Error('core/tags needs core/rand (08-core-rand.js) loaded first: the uid is a KRAND.hash');
+ }
+ function vocab(){
+   if (!K.VOCAB) throw new Error('core/tags: load 52-core-tags-vocab.js before the first add');
+   return K.VOCAB;
+ }
+ function pad5(n){ return ('0000' + n).slice(-5); }
+ function r4(v){ return +(+v).toFixed(4); }
+
+ // ---- the uid: KRAND.hash(0, str(class), str(key), cm10(x), cm10(y), cm10(z)) as 8 lowercase hex digits.
+ // str(s) is FNV-1a over the UTF-16 code units of s ('' for a null key), as int32; cm10(v) = floor(v * 10 + 0.5),
+ // the position in 10 cm steps (KRAND.hash floors its arguments, so it is passed v * 10 + 0.5). README.md, "The uid".
+ function str32(s){
+   var h = 0x811C9DC5; s = s == null ? '' : String(s);
+   for (var i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+   return h | 0;
+ }
+ K.str32 = str32;
+ K.uid = function(cls, key, at){
+   var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
+   return ('0000000' + u.toString(16)).slice(-8);
+ };
+ K.instanceId = function(id, i){ return id + '#' + i; };
+
+ // ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
+ // value stays on the record as given and is reported as a problem, which audit() counts.
+ K.norm = function(tags){
+   var V = vocab(), out = {}, problems = [], k;
+   tags = tags || {};
+   for (k in tags) if (tags[k] !== undefined && (!V.keyAlias || !V.keyAlias[k])) out[k] = tags[k];
+   if (V.keyAlias) for (k in tags) if (tags[k] !== undefined && V.keyAlias[k] && !(V.keyAlias[k] in out)) out[V.keyAlias[k]] = tags[k];
+   // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
+   if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
+     var al = V.cultureAlias[out.culture];
+     out.culture = al.culture;
+     for (k in al) if (k !== 'culture' && !(k in out)) out[k] = al[k];   // a given value, null too, wins
+   }
+   if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
+   else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
+   if (typeof out.types === 'string') out.types = [out.types];
+   if (Array.isArray(out.types) && V.typeAlias) {   // older spellings: one may become several; no duplicates
+     var ty = [];
+     for (var ti = 0; ti < out.types.length; ti++) {
+       var tv = V.typeAlias[out.types[ti]] || [out.types[ti]];
+       for (var tj = 0; tj < tv.length; tj++) if (ty.indexOf(tv[tj]) < 0) ty.push(tv[tj]);
+     }
+     out.types = ty;
+   }
+   if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
+   for (k in out) {
+     var rule = V.keys[k], v = out[k];
+     if (!rule) { problems.push({ key: k }); continue; }
+     if (v === null || rule === 'free') continue;
+     if (rule === 'bool') { if (typeof v !== 'boolean') problems.push({ key: k, value: v }); continue; }
+     if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
+     var list = V[rule];
+     if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
+     else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
+   }
+   return { tags: out, problems: problems };
+ };
+
+ K.create = function(cfg){
+   cfg = cfg || {};
+   var V = null, recs = [], byId = {}, counters = {}, childCount = {};
+   var T = { build: cfg.build || null, records: recs };
+
+   function prefixOf(rec){
+     if (rec.prefix) return rec.prefix;
+     if (rec['class'] === 'fixture' && V.fixturePrefix[rec.kind]) return V.fixturePrefix[rec.kind];
+     return V.prefix[rec['class']];
+   }
+   // a passed-through order id moves its prefix's counter past it, so a later made id never collides
+   function claim(id){
+     var m = /^([a-z]+)_(\d+)$/.exec(id);
+     if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, parseInt(m[2], 10) + 1);
+   }
+   function make(rec, parent){
+     V = V || vocab();
+     var cls = rec['class'] != null ? rec['class'] : rec.cls;
+     if (cls === 'fauna') throw new Error('core/tags: fauna is not a class; a placed animal is class "life" with its species as kind');
+     if (V.classes.indexOf(cls) < 0) throw new Error('core/tags: unknown class ' + cls);
+     var at = rec.at ? rec.at : [rec.x || 0, rec.y || 0, rec.z || 0];
+     var o = { id: null, uid: null, 'class': cls, kind: rec.kind != null ? rec.kind : null, key: rec.key != null ? rec.key : null,
+       name: rec.name != null ? rec.name : null, parent: parent || (rec.parent != null ? rec.parent : null),
+       at: [r4(at[0]), r4(at[1]), r4(at[2])], ry: r4(rec.ry != null ? rec.ry : (rec.yaw || 0)) };
+     if (rec.size) o.size = rec.size.map(r4);
+     else if (rec.r != null) { o.r = r4(rec.r); if (rec.h != null) o.h = r4(rec.h); }
+     o.tags = K.norm(rec.tags).tags;
+     if (rec.note != null) o.note = String(rec.note);
+     o.src = { build: T.build, frag: rec.frag || (rec.src && rec.src.frag) || null };
+     if (rec.id != null) {
+       if (byId[rec.id]) throw new Error('core/tags: duplicate id ' + rec.id);
+       o.id = String(rec.id); claim(o.id);
+     } else if (parent) {
+       var seg = rec.kind || cls, ck = parent + '.' + seg;
+       o.id = ck + '.' + (childCount[ck] = (childCount[ck] || 0) + 1, childCount[ck] - 1);
+     } else {
+       var p = prefixOf(o);
+       if (!p) throw new Error('core/tags: no id prefix for class ' + cls);
+       counters[p] = counters[p] || 0;
+       o.id = p + '_' + pad5(counters[p]++);
+     }
+     o.uid = K.uid(cls, o.key, o.at);
+     recs.push(o); byId[o.id] = o;
+     return o;
+   }
+
+   T.add = function(rec){ return make(rec, null); };
+   T.child = function(parentId, rec){
+     if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
+     return make(rec, parentId);
+   };
+   T.get = function(id){ return byId[id] || null; };
+   T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
+
+   function tagMatch(r, want){
+     for (var k in want) {
+       var have = r.tags[k], w = want[k];
+       if (Array.isArray(have) ? have.indexOf(w) < 0 : have !== w) return false;
+     }
+     return true;
+   }
+   T.query = function(q){
+     q = q || {};
+     var out = [];
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed && !q.removed) continue;
+       if (q['class'] != null && r['class'] !== q['class']) continue;
+       if (q.kind != null && r.kind !== q.kind) continue;
+       if (q.key != null && r.key !== q.key) continue;
+       if (q.parent !== undefined && r.parent !== q.parent) continue;
+       if (q.tags && !tagMatch(r, q.tags)) continue;
+       if (q.box && (r.at[0] < q.box[0] || r.at[0] > q.box[2] || r.at[2] < q.box[1] || r.at[2] > q.box[3])) continue;
+       out.push(r);
+     }
+     return out;
+   };
+
+   // the footprint test in the record's own frame: its +z front at (sin ry, cos ry), its +x right at (cos ry, -sin ry)
+   function holds(r, x, z, y){
+     var dx = x - r.at[0], dz = z - r.at[2], h;
+     if (r.size) {
+       var c = Math.cos(r.ry), s = Math.sin(r.ry);
+       var lx = dx * c - dz * s, lz = dx * s + dz * c;
+       if (Math.abs(lx) > r.size[0] / 2 || Math.abs(lz) > r.size[1] / 2) return 0;
+       h = r.size[2];
+       if (y != null && h != null && (y < r.at[1] || y > r.at[1] + h)) return 0;
+       return r.size[0] * r.size[1];
+     }
+     if (r.r != null) {
+       if (dx * dx + dz * dz > r.r * r.r) return 0;
+       if (y != null && r.h != null && (y < r.at[1] || y > r.at[1] + r.h)) return 0;
+       return Math.PI * r.r * r.r;
+     }
+     return 0;
+   }
+   T.at = function(x, z, y){
+     var best = null, ba = Infinity;
+     for (var i = 0; i < recs.length; i++) {
+       if (recs[i].removed) continue;
+       var a = holds(recs[i], x, z, y);
+       if (a > 0 && a < ba) { ba = a; best = recs[i]; }
+     }
+     return best;
+   };
+
+   T.audit = function(){
+     var a = { records: 0, removed: 0, byClass: {}, unknownKeys: {}, unknownValues: {}, unknown: 0, missingCulture: 0, missingTypes: 0 };
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed) { a.removed++; continue; }
+       a.records++;
+       a.byClass[r['class']] = (a.byClass[r['class']] || 0) + 1;
+       var ps = K.norm(r.tags).problems;
+       for (var j = 0; j < ps.length; j++) {
+         a.unknown++;
+         if (!('value' in ps[j])) a.unknownKeys[ps[j].key] = (a.unknownKeys[ps[j].key] || 0) + 1;
+         else { var kv = ps[j].key + ':' + ps[j].value; a.unknownValues[kv] = (a.unknownValues[kv] || 0) + 1; }
+       }
+       if (r['class'] === 'building') {
+         if (!r.tags.culture) a.missingCulture++;
+         if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
+       }
+     }
+     return a;
+   };
+
+   T.export = function(){
+     return { format: 'krator-tags', version: 1, build: T.build,
+       convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
+       vocab: K.VOCAB, records: recs };
+   };
+   return T;
+ };
+
+ if (typeof module !== 'undefined' && module.exports) module.exports = K;
+ root.KTAGS = K;   // a global, so the fragment is one IIFE that leaks nothing into a build's shared scope
+})();
 /* ============================== 12. STRUCTURE (massing) ==============================
    PLANNER-OWNED. The butte, the city wall with its sentry towers and five
    gates, and the highway bridge. Shared shape helpers used by later passes
@@ -3592,6 +4003,138 @@ function LOCUS_BRIDGE(B){
     [-1,1].forEach(function(sd){ BLUNT_TOWER(mix(ax,bx,t2)+nx*sd*(B.w/2+0.9), deckY-0.5, mix(az,bz,t2)+nz*sd*(B.w/2+0.9), 1.0, 4.6, { flutes:6, windows:[], finial:false, seg:10 }); }); }
   REGISTER({ name:B.name, kind:'bridge', label:'infrastructure · culture: yuni · type: infrastructure · '+nA+' parabolic arches', x:B.x, y:wl-3, z:B.z, r:B.L/2, h:deckY-wl+10 });
 }
+// ================================================================= CORE FURNISH — the draw adapter's helpers ([draw])
+// The three.js side of core/furnish: a placement record into the catalog's batch (KratorFurniture), and the one
+// colour step every build needs when the batch becomes meshes. The catalog writes its colours as sRGB bytes; a
+// build that renders in linear light converts them once, either in the vertex shader or into a float attribute.
+// Each build keeps its own flush (it ties the meshes to its night lights and shadows); these are the parts the
+// six copies shared.
+//
+//   KFURN.useBatch(R, KF, KI)            -> R.batch (a KratorFurniture batch) and R.adapter (KratorInteriors' runtime
+//                                           adapter over it, for the interiors hook); call again for a fresh batch
+//   KFURN.drawRec(R, rec, wealth, opt)   -> the batch's result for one record ({ lights, error, ... }); opt.detail
+//                                           sets KratorFurniture's detail for this piece and restores it
+//   KFURN.srgbHook(shader)               -> an onBeforeCompile body: linearise vColor in the vertex shader
+//   KFURN.linearColours(geometry)        -> the colour attribute's sRGB bytes as linear floats (KFURN.SRGB_LIN)
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('52-core-furnish-draw: load 50-core-furnish.js first');
+KFURN.useBatch = function(R, KF, KI){ R.batch = KF.batch(); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
+KFURN.drawRec = function(R, rec, wealth, opt){
+  const KF = R.KF, d = opt && opt.detail;
+  if(d != null) KF.setDetail(d);
+  const r = R.batch.place(rec.key, rec.x, rec.y, rec.z, rec.ry, { variant: rec.variant, seed: rec.seed, wealth: wealth,
+    building: rec.building, setting: rec.setting });
+  if(d != null) KF.setDetail(opt.after == null ? .5 : opt.after);
+  return r;
+};
+KFURN.srgbHook = function(sh){
+  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
+    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
+};
+KFURN.linearColours = function(geo){
+  const a = geo.getAttribute('color'); if(!a || a.array instanceof Float32Array) return;
+  const src = a.array, out = new Float32Array(src.length), L = KFURN.SRGB_LIN;
+  for(let i=0;i<src.length;i++) out[i] = L[src[i]];
+  geo.setAttribute('color', new THREE.BufferAttribute(out, a.itemSize || 3));
+};
+})();
+// ================================================================= CORE TAGS — the vocabulary ([G data])
+// The one table of the values core/tags knows (PROPOSAL.md, "Vocabularies" and "Decisions"). The catalog's lists
+// are COPIED here, not read at run time: a build need not load kits/catalog to tag what it places. test-tags.js
+// reads kits/catalog/krator-furniture-core.js and fails when a copied list no longer matches its source, so drift
+// is a failing test, not a silent fork.
+//
+//   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
+//               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
+
+ // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
+   'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+ // BUILDING_TYPES
+ var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
+   'infrastructure', 'religious', 'funerary'];
+ // FURN_TIERS: a 0..1 wealth band per tier
+ var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+ // FURN_JOBS
+ var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+ // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
+ var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
+
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
+ var CULTURE_NAMES = {
+   'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
+   'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
+   'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+ };
+ var CULTURES = Object.keys(CULTURE_NAMES);
+ // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
+ var CULTURE_ALIAS = {
+   'ancients-salvage': { culture: 'ancient', state: 'salvage' },
+   'yuni-court': { culture: 'yuni', wealth: 'rich' },
+   'yuni-common': { culture: 'yuni', wealth: 'middle' },
+   'yuni-poor': { culture: 'yuni', wealth: 'poor' },
+   'sahelian': { culture: 'yuni', style: 'sahelian' },
+   'iziz-old': { culture: 'iziz' },
+   // Iziz's REG (2026-10-05): its Ancients groups and its own vernacular
+   'ancients': { culture: 'ancient' },
+   'ancients-transplant': { culture: 'ancient', style: 'transplant' },   // whole Ancients buildings moved into the city
+   'ancients-reclaimed': { culture: 'ancient', state: 'reclaimed' },    // Ancients buildings the Izani live in
+   'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
+   'yuni-order': { culture: 'order' },
+   'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
+   'scrap': { culture: null, set: 'scrap' }
+ };
+
+ // wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
+ var WEALTH = ['poor', 'middle', 'rich'];
+ var WEALTH_ALIAS = { common: 'middle', court: 'rich', civic: null };
+ function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
+
+ K.VOCAB = {
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   // older spellings of a type, on input (Iziz's REG): one becomes one or more
+   typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
+     'multi-family dwelling': ['dwelling-multi'] },
+   // older tag keys, on input: Iziz's type (a list) and place (indoor, outdoor)
+   keyAlias: { type: 'types', place: 'setting' },
+   stateAlias: { rehabilitated: 'rehab', destroyed: 'ruined' },
+   wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
+   tiers: Object.keys(CATALOG_TIERS),
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage', 'reclaimed'],   // reclaimed: lived in again, not rebuilt
+   settings: CATALOG_SETTINGS.concat(['room']),
+   jobs: CATALOG_JOBS,
+   sets: ['generic', 'scrap'],
+   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
+   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
+   // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
+   doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
+   keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
+     job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
+     style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
+   // the order id's prefix per class; a fixture's per kind
+   prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
+     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+   fixturePrefix: { door: 'door', window: 'window', light: 'light' },
+   // what test-tags.js compares with the catalog
+   catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }
+ };
+})();
 /* ============================== 13b. ASSET REGISTRY + BUILD FRAME ==============================
    PLANNER-OWNED. Every building type in Yuni is an ASSET: metadata + a build(F)
    function that draws ONE instance through a local frame F, so no builder ever
@@ -3790,6 +4333,74 @@ function buildFrom(reg, what, key, x,z,ry, opt){
 }
 function buildFurn(key,x,z,ry,opt){ return buildFrom(FURN_BY_KEY,'furniture',key,x,z,ry,opt); }
 function buildPlant(key,x,z,ry,opt){ return buildFrom(PLANT_BY_KEY,'plant',key,x,z,ry,opt); }
+// ================================================================= CORE FURNISH — the page's switches ([web])
+// The one browser read in core/furnish: the query string. ?furniture=0 places nothing (the records are still
+// kept); the interiors are ?interiors=1 to turn on (most builds: roofs hide them) or ?interiors=0 to turn off
+// (Girder, whose interiors are on by default).
+//
+//   KFURN.flags(interiorsByDefault)   -> { on, interiorsOn }: pass it straight into KFURN.create
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('53-core-furnish-host: load 50-core-furnish.js first');
+KFURN.flags = function(interiorsByDefault){
+  const q = location.search;
+  return { on: !/[?&]furniture=0\b/.test(q),
+    interiorsOn: interiorsByDefault ? !/[?&]interiors=0\b/.test(q) : /[?&]interiors=1\b/.test(q) };
+};
+})();
+// ================================================================= CORE TAGS — the label ([web])
+// The inspector's text, made from the record and never stored (PROPOSAL.md, Decisions 6, "A label, generated").
+// The inspector hook itself belongs to core/host (GODOT-PLAN.md Phase 1); this is only the text.
+//
+//   KTAGS.label(rec, instance)  -> 'Name\nclass · Culture · types or kind · ...\nsize · id' (+ '\n' + note)
+//
+// The parts, in a fixed order, each left out when it has no value:
+//   line 1  the name; else the kind or key; else the class
+//   line 2  class, culture (its display name), types (else kind, when the name is not already it), job, state,
+//           setting, wealth, 'Köppen <code>', 'harvest: ...', the flags (lit), 'in <parent>'
+//   line 3  'w × d m' (or '⌀ d m'), ', h m tall' from 2 m up; then the id ('#<instance>' for an instance)
+//   line 4  the note
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('53-core-tags-host: load 50-core-tags.js first');
+ function num(v){ return String(+(+v).toFixed(2)); }
+ function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+ K.label = function(rec, instance){
+   var t = rec.tags || {}, V = K.VOCAB || {}, names = V.cultureNames || {}, p = [];
+   var title = rec.name || (rec.kind && cap(String(rec.kind))) || (rec.key && String(rec.key)) || cap(rec['class']);
+   p.push(rec['class']);
+   if (t.culture) p.push(names[t.culture] || t.culture);
+   if (t.types && t.types.length) p.push(t.types.join(', '));
+   else if (rec.kind && rec.name) p.push(rec.kind);
+   if (t.job) p.push(t.job);
+   if (t.state) p.push(t.state);
+   if (t.setting) p.push(t.setting);
+   if (t.wealth) p.push(t.wealth);
+   if (t.koppen) p.push('Köppen ' + (Array.isArray(t.koppen) ? t.koppen.join(', ') : t.koppen));
+   if (t.harvest) {
+     var h = [];
+     if (t.harvest.wood) h.push('wood');
+     if (t.harvest.edible) h = h.concat(t.harvest.edible);
+     if (t.harvest.medicinal) h.push('medicinal');
+     if (h.length) p.push('harvest: ' + h.join(', '));
+   }
+   if (t.lit) p.push('lit');
+   if (rec.parent) p.push('in ' + rec.parent);
+   var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
+   if (rec.size) {
+     s = num(rec.size[0]) + ' × ' + num(rec.size[1]) + ' m';
+     if (rec.size[2] >= 2) s += ', ' + num(rec.size[2]) + ' m tall';
+   } else if (rec.r != null) {
+     s = '⌀ ' + num(rec.r * 2) + ' m';
+     if (rec.h >= 2) s += ', ' + num(rec.h) + ' m tall';
+   }
+   var out = title + '\n' + p.join(' · ') + '\n' + (s ? s + ' · ' : '') + id;
+   if (rec.note) out += '\n' + rec.note;
+   return out;
+ };
+})();
 /* ============================== 16a. ASSETS: reference example ==============================
    PLANNER-OWNED reference asset — the pattern every asset fragment follows.
    One IIFE, reseed at the head, colours only from PAL, geometry only through F. */
@@ -8457,6 +9068,241 @@ reseed(657001);
       [-1,1].forEach(function(s){ FURNISH('abyss_lacquer_standard', s*(W/2-2),0,D/2-2, 0); });
     } });
 })();
+/* ============================== 16X-V. ABYSS — Lower Verge: the mayor's compound, the guard tower, the toll house, the palisade ==============================
+   Lower Verge stands on the abyssal floor by the plunge pool of the Verge cataracts: a Yuni-controlled town in a mix of Yuni and
+   eastern-abyssal building, run by a MAYOR ELECTED BY ITS RESIDENTS. These five assets are ADDITIONS to the Eastern Abyssal kit
+   (kit 'abyss'), laid out in their own last row ('Lower Verge') so every earlier sheet item keeps its seed. They use only the kit
+   API (F, ABYSS.*, LOCUS.*, PAL, FURNISH): a world that bundles the kit (settlements/verge) places them with an explicit y.
+     abyss_mayor_compound  70 x 56: walled court, gate on +z; the raised open-sided COUNCIL HALL under a great swoop-and-horn
+                           roof (civic, not royal: paint and sails, no gilt), tiered benches inside; the mayor's lime-washed
+                           residence (left), the office and records wing (right); a sail-shaded forecourt where petitioners wait.
+     abyss_guard_tower     26 x 20: a three-storey square tower (rubble, then salvaged plate) under a tin-mirror cone with a beacon,
+                           and the guard's barrack hall attached on its right (+x), both doors on the front (+z) onto a drill yard.
+     abyss_toll_house      14 x 10: booth and strongroom under one roof; the toll COUNTER WINDOW is on the +x side (the road),
+                           under a sail on masts; the booth door on +z.
+     abyss_palisade        ONE modular segment, exactly 6 m along local x (every part inside x = +-3): segments with centres 6 m
+                           apart on one line and yaw join face to face. +z = the outside face (the plate), stakes, drums and
+                           braces on the inside. 2 variants (stakes and plate; drums and plate).
+     abyss_palisade_gate   a road gate 14 m long (x -7..+7: replaces 14 m of palisade, so the next segments' centres are at +-10),
+                           a 9 m clear opening between two pylons, 4.2 m clear under the raised stake gate: a camel caravan passes. */
+reseed(657501);
+(function(){
+  var PI=Math.PI, ROW='Lower Verge';
+  KIT_ROWS.abyss.push(ROW);
+  function plateCol(F){ return F.pick([PAL.abRustA, PAL.abRustB, RUSTC[0], STEELDC[0], RUSTC[3]]); }
+
+  /* =============================================================== THE MAYOR'S COMPOUND */
+  ASSET({ key:'abyss_mayor_compound', name:"The Mayor's compound", family:'civic', kit:'abyss', group:ROW, culture:'abyssal-desert', types:['civic','single-family dwelling'],
+    wealth:[0.6,0.9], w:70, d:56, h:27, variants:1, sim:{ activity:'GOVERN', capacity:220, focus:[0,1.6,-11] },
+    build:function(F){ var P=1.6, WH=7.0, teal=PAL.abBrightTeal, yel=PAL.abBrightYellow, red=PAL.abSailRed, salt=PAL.abSalt, wc=F.pick(PASTELC), WALLH=4.2;
+      /* the court: salt paving inside the wall */
+      F.box(0,0,-0.5, 67,0.08,51, 0, salt, 'plaster');
+      /* the court wall: rubble below, lime-wash above, a painted teal coping; the gate gap x -5..5 on +z */
+      function wseg(x0,z0,x1,z1){ var L=Math.hypot(x1-x0,z1-z0), mx=(x0+x1)/2, mz=(z0+z1)/2, yaw=Math.atan2(x1-x0,z1-z0)+PI/2;
+        F.box(mx,0,mz, L,1.4,1.0, yaw, PAL.abRubble, 'rubble'); F.box(mx,1.4,mz, L,WALLH-1.4,0.8, yaw, wc, 'plaster'); F.box(mx,WALLH,mz, L+0.2,0.3,1.0, yaw, teal, 'relief'); }
+      wseg(-34,-26.5, 34,-26.5); wseg(-34,-26.5,-34,25.5); wseg(34,-26.5,34,25.5); wseg(-34,25.5,-7.8,25.5); wseg(7.8,25.5,34,25.5);
+      /* the gate: two painted pylons under a small swoop roof (painted tips, no gilt), the leaves swung in */
+      [-1,1].forEach(function(s){ var x=s*6.4; F.box(x,0,25.5, 3.0,1.8,3.2, 0, PAL.abRubble, 'rubble'); F.box(x,1.8,25.5, 2.8,5.4,3.0, 0, wc, 'plaster');
+        F.box(x,4.6,25.5, 2.9,0.25,3.1, 0, yel, 'relief'); F.box(x,7.2,25.5, 3.0,0.3,3.2, 0, teal, 'relief');
+        F.box(s*4.75,0,21.5, 0.15,4.4,5.0, 0, teal, 'plank'); F.box(s*4.75,1.8,21.5, 0.2,0.2,5.0, 0, yel, 'plank'); });
+      F.box(0,5.6,25.5, 10.0,1.6,2.6, 0, yel, 'plaster'); F.box(0,5.55,25.5, 10.1,0.25,2.7, 0, red, 'relief');
+      ABYSS.mural(F, 0,6.0,26.8, 0,1, 6.0,1.0);
+      ABYSS.swoopRoof(F, 0,25.5, 15.6,3.0, 4.0, { y0:7.5, horn:2.4, over:0.8, col:THATCHC[1], tip:yel, gable:teal });
+      ABYSS.lantern(F, -3.8,5.0,27.0, true); ABYSS.lantern(F, 3.8,5.0,27.0, true);
+
+      /* ---- the COUNCIL HALL: a painted rubble plinth, open sides between painted posts, the great swoop-and-horn roof */
+      var hz=-11;
+      F.box(0,0,hz, 32,P,24, 0, PAL.abRubble, 'rubble');
+      [[0.45,teal],[1.05,yel]].forEach(function(b){ F.box(0,b[0],hz, 32.12,0.2,24.12, 0, b[1], 'relief'); });
+      F.box(0,P-0.04,hz, 31.6,0.08,23.6, 0, shade(F.pick(PLANKC),0.05), 'plank');
+      for(var i=0;i<=8;i++){ var px=-15+30*i/8; [0,-22].forEach(function(pz){ F.cyl(px,P,pz, 0.4,WH, 0, teal, 'plaster'); F.cyl(px,P+WH-0.55,pz, 0.52,0.4, 0, yel, 'plaster'); F.cyl(px,P,pz, 0.5,0.35, 0, red, 'plaster'); }); }
+      for(var k=1;k<6;k++){ var pz2=-22+22*k/6; [-15,15].forEach(function(px2){ F.cyl(px2,P,pz2, 0.4,WH, 0, teal, 'plaster'); F.cyl(px2,P+WH-0.55,pz2, 0.52,0.4, 0, yel, 'plaster'); F.cyl(px2,P,pz2, 0.5,0.35, 0, red, 'plaster'); }); }
+      /* the eave beams (painted red) round the post heads */
+      F.box(0,P+WH-0.15,0, 30.8,0.5,0.6, 0, red, 'relief'); F.box(0,P+WH-0.15,-22, 30.8,0.5,0.6, 0, red, 'relief');
+      F.box(-15,P+WH-0.15,hz, 0.6,0.5,22.6, 0, red, 'relief'); F.box(15,P+WH-0.15,hz, 0.6,0.5,22.6, 0, red, 'relief');
+      /* the back wall behind the tiers: a painted civic mural (the town's emblem), 5 m high */
+      F.box(0,P,-21.95, 29.2,5.0,0.3, 0, wc, 'plaster'); ABYSS.mural(F, 0,P+1.6,-21.8, 0,1, 16,3.2);
+      /* tiered benches on three sides (built in: three steps of 0.42 x 0.9), aisles at the back corners */
+      var pk=F.pick(PLANKC);
+      for(var t=0;t<3;t++){ var dz=0.9*(3-t), hh=0.42*(t+1);
+        F.box(0,P,-21.6+dz/2, 23.8,hh,dz, 0, t%2?shade(pk,-0.08):pk, 'plank');
+        [-1,1].forEach(function(s){ F.box(s*(14.6-dz/2),P,-11.45, dz,hh,14.9, 0, t%2?shade(pk,-0.08):pk, 'plank'); }); }
+      F.box(0,P+0.42-0.06,-18.88, 23.8,0.08,0.1, 0, teal, 'relief'); [-1,1].forEach(function(s){ F.box(s*11.92,P+0.42-0.06,-11.45, 0.1,0.08,14.9, 0, teal, 'relief'); });
+      /* the roof: the largest swoop roof in Lower Verge, painted gables, painted horn tips (no gilt, no carved spines) */
+      ABYSS.swoopRoof(F, 0,hz, 30,22, 10, { y0:P+WH+0.1, horn:5, over:2.2, eaveLift:1.6, saddle:2.4, col:THATCHC[2], tip:yel, gable:0xffffff, gableFam:'paintcol' });
+      /* the front stair, 10 m wide, and the council's table (an open room: the interiors furnish it when they run) */
+      LOCUS.stair(F, 0, 1+P*1.15, 0,-1, P, 10);
+      ABYSS.furn(F, 'abyss_table_stools', 0,-11, 0, { ly:P, variant:1, setting:'room' });
+      [-1,1].forEach(function(s){ ABYSS.furn(F, 'abyss_brazier', s*6.6,2.4, 0, { variant:1 }); });
+      [-16,-6].forEach(function(z){ F.box(0,P+WH-0.15,z, 30.4,0.4,0.4, 0, red, 'relief'); [-10,0,10].forEach(function(x){ ABYSS.lantern(F, x,P+WH-1.0,z, true); }); });
+
+      /* ---- the MAYOR'S RESIDENCE (left): a pastel lime-washed house, two storeys on a rubble plinth, a sail over the roof terrace */
+      var rx=-26, rz=-19, rc=F.pick(PASTELC), rdeep=shade(rc,-0.3);
+      F.box(rx,0,rz, 12.4,0.6,12.4, 0, PAL.abRubble, 'rubble');
+      F.box(rx,0.6,rz, 12,6.6,12, 0, rc, 'plaster');
+      F.box(rx,3.75,rz, 12.12,0.2,12.12, 0, rdeep, 'relief'); F.box(rx,7.0,rz, 12.2,0.25,12.2, 0, rdeep, 'relief');
+      LOCUS.parapet(F, rx,7.2,rz, 12,12, 0.25,0.8, rc, null);
+      F.door(rx, rz+6.05, 0,1, 1.3, 2.4, teal, 0.6); ABYSS.trim(F, rx,0.6,rz+6.06, 0,1, 1.3,2.4, true);
+      F.box(rx,0,rz+6.9, 2.6,0.3,1.4, 0, PAL.abRubble, 'rubble'); F.box(rx,0.3,rz+6.55, 2.6,0.3,0.7, 0, PAL.abRubble, 'rubble');
+      [-3.5,3.5].forEach(function(o){ F.window(rx+o,2.3,rz+6.0, 0,1, 1.1,1.3); F.window(rx+o,5.5,rz+6.0, 0,1, 1.1,1.3); });
+      LOCUS.lattice(F, rx,5.4,rz+6.02, 0,1, 1.8,2.0); ABYSS.balcony(F, rx,4.15,rz+6.0, 0,1, 3.0,1.0);
+      [-1,1].forEach(function(s){ [-3,3].forEach(function(o){ F.window(rx+s*6.0,2.3,rz+o, s,0, 1.0,1.2); F.window(rx+s*6.0,5.5,rz+o, s,0, 1.0,1.2); }); });
+      ABYSS.mural(F, rx-6.0,4.6,rz, -1,0, 3.0,1.4);
+      var RS=[[rx-5.4,7.2,rz-5.4,3.4],[rx+5.4,7.2,rz-5.4,2.8],[rx+5.4,7.2,rz+5.4,3.4],[rx-5.4,7.2,rz+5.4,2.8]];
+      RS.forEach(function(m){ F.cyl(m[0],m[1],m[2], 0.1,m[3], 0, F.pick(TIMBERC), 'timber'); });
+      ABYSS.sail(F, RS.map(function(m){ return [m[0],m[1]+m[3],m[2]]; }), PAL.abSailOrange, { swoop:0.7, band:PAL.abSailOrange, bandW:0.5 });
+      ABYSS.lantern(F, rx+1.6,3.3,rz+6.45, true);
+      [-3.2,3.2].forEach(function(o){ ABYSS.furn(F, 'abyss_planter', rx+o,rz+7.2, 0, { variant:1 }); });
+
+      /* ---- the OFFICE AND RECORDS WING (right): one tall storey, a striped canvas veranda, the records room tin-clad at the back */
+      var ox=26, oz=-18, oc=F.pick(PASTELC);
+      F.box(ox,0,oz, 13.4,0.6,14.4, 0, PAL.abRubble, 'rubble');
+      F.box(ox,0.6,oz, 13,4.4,14, 0, oc, 'plaster'); F.box(ox,4.8,oz, 13.2,0.25,14.2, 0, shade(oc,-0.3), 'relief');
+      LOCUS.parapet(F, ox,5.0,oz, 13,14, 0.25,0.7, oc, null);
+      ABYSS.tinClad(F, { box:[ox,0.6,oz,13,4.4,14], faces:'b' });
+      F.door(ox, oz+7.05, 0,1, 1.4, 2.5, yel, 0.6);
+      F.box(ox,0,oz+7.7, 2.8,0.3,1.0, 0, PAL.abRubble, 'rubble');
+      [-4.5,-2.4,2.4,4.5].forEach(function(o){ F.window(ox+o,2.6,oz+7.0, 0,1, 1.1,1.4); });
+      [-4,0,4].forEach(function(o){ F.window(ox+6.5,2.6,oz+o, 1,0, 1.0,1.3); F.window(ox-6.5,2.6,oz+o, -1,0, 1.0,1.3); });
+      ABYSS.sign(F, ox,4.3,oz+7.12, 0,1, 1.6,0.8, 'book');
+      LOCUS.stripes(F, [ox-6.2,3.9,oz+7.0],[ox+6.2,3.9,oz+7.0],[ox+6.2,3.1,oz+9.8],[ox-6.2,3.1,oz+9.8], 8, teal, CANVASC[0], { sag:0.15 });
+      [-6,-2,2,6].forEach(function(o){ LOCUS.pole(F, ox+o,oz+9.75, 3.1, 0.08); });
+      ABYSS.lantern(F, ox-1.6,3.2,oz+7.5, true);
+      ABYSS.furn(F, 'abyss_bench', ox+4.0,oz+8.6, PI, { variant:1 });
+
+      /* ---- the FORECOURT: three sails on masts over the petitioners' benches, lantern posts along the path */
+      var MX=[-15,-5,5,15], MZ=[6,18];
+      function mh(i,j){ return (i+j)%2 ? 5.6 : 6.5; }
+      MX.forEach(function(x,i){ MZ.forEach(function(z,j){ ABYSS.mast(F, x,z, mh(i,j), { r:0.16, finial:yel }); }); });
+      for(var q=0;q<3;q++){ var x0=MX[q], x1=MX[q+1];
+        ABYSS.sail(F, [[x0,mh(q,0),6],[x1,mh(q+1,0),6],[x1,mh(q+1,1),18],[x0,mh(q,1),18]], q===1?PAL.abSailOrange:teal, { swoop:1.1, band:q===1?PAL.abSailOrange:yel, bandW:0.8 }); }
+      [-1,1].forEach(function(s){ [9.5,12.5,15.5].forEach(function(z){ [7.5,12.5].forEach(function(x){ ABYSS.furn(F, 'abyss_bench', s*x,z, PI, { variant:(x>10?1:0) }); }); }); });
+      [5,11,17,23].forEach(function(z){ [-1,1].forEach(function(s){ ABYSS.furn(F, 'abyss_lantern_post', s*3.6,z, s<0?0:PI, { variant:1 }); }); });
+      ABYSS.mast(F, -24,22, 10, { flag:teal, finial:yel, guys:3, guyR:3 }); ABYSS.mast(F, 24,22, 10, { flag:yel, finial:yel, guys:3, guyR:3 });
+      ABYSS.furn(F, 'abyss_water_butt', -18.5,2.5, 0); ABYSS.furn(F, 'abyss_water_butt', 18.5,2.5, 0);
+    } });
+
+  /* =============================================================== THE GUARD TOWER AND BARRACK */
+  ASSET({ key:'abyss_guard_tower', name:'Guard tower and barrack', family:'civic', kit:'abyss', group:ROW, culture:'abyssal-desert', types:['military'],
+    wealth:[0.4,0.8], w:26, d:20, h:21, variants:1, sim:{ activity:'GARRISON', capacity:30, focus:[-7.5,10.9,-3] },
+    build:function(F){ var TX=-7.5, TZ=-3, TS=9, S1=0.4, ST=3.4, TOP=S1+3*ST, lac=PAL.abLacquer, yel=PAL.abBrightYellow, pc=plateCol(F);
+      /* the yard */
+      F.box(0,0,5.6, 26,0.06,8.6, 0, PAL.abSalt, 'plaster');
+      /* ---- the tower: a rubble ground storey, two storeys of salvaged plate, lacquer bands at the floors */
+      F.box(TX,0,TZ, TS+0.4,S1,TS+0.4, 0, PAL.abRubble, 'rubble');
+      F.box(TX,S1,TZ, TS,ST,TS, 0, PAL.abRubble, 'rubble');
+      F.box(TX,S1+ST,TZ, TS,2*ST,TS, 0, pc, 'rust');
+      [S1+ST, S1+2*ST].forEach(function(y){ F.box(TX,y-0.11,TZ, TS+0.12,0.22,TS+0.12, 0, lac, 'relief'); });
+      for(var i=1;i<6;i++){ var o=-TS/2+TS*i/6;                                     /* plate seams on the four faces */
+        F.box(TX+o,S1+ST,TZ+TS/2+0.02, 0.1,2*ST,0.05, 0, STEELDC[1], 'rust'); F.box(TX+o,S1+ST,TZ-TS/2-0.02, 0.1,2*ST,0.05, 0, STEELDC[1], 'rust');
+        F.box(TX-TS/2-0.02,S1+ST,TZ+o, 0.05,2*ST,0.1, 0, STEELDC[1], 'rust'); }
+      /* the roof slab, merlons and the tin-mirror cone with an arch onto the roof walk; the beacon on the cone's head */
+      F.box(TX,TOP,TZ, TS+0.6,0.3,TS+0.6, 0, shade(pc,-0.15), 'rust');
+      [-1,1].forEach(function(s){ for(var m=0;m<4;m++){ var u=-3.6+m*2.4;
+        F.box(TX+u,TOP+0.3,TZ+s*(TS/2+0.05), 1.1,1.0,0.5, 0, pc, 'rust'); F.box(TX+s*(TS/2+0.05),TOP+0.3,TZ+u, 0.5,1.0,1.1, 0, pc, 'rust'); } });
+      var cn=ABYSS.coneShell(F, TX,TZ, 3.4, 6.2, { y0:TOP+0.3, fam:'tinmirror', col:PAL.abTin, k:1.15, arch:{ w:1.6, h:2.2 }, archCol:lac, ring:lac, thick:0.25, finial:false });
+      F.cyl(TX,cn.top-0.6,TZ, 0.1,1.9, 0, STEELDC[0], 'rust');
+      F.cyl(TX,cn.top+1.25,TZ, 0.5,0.12, 0, STEELDC[0], 'rust');
+      for(var b=0;b<8;b++){ var a=b/8*TAU; F.rod(TX+Math.cos(a)*0.5,cn.top+1.3,TZ+Math.sin(a)*0.5, TX+Math.cos(a)*0.62,cn.top+1.9,TZ+Math.sin(a)*0.62, 0.025, STEELDC[0], 'rust'); }
+      LOCUS.flame(F, TX,cn.top+1.35,TZ, 0.42, 2.4);
+      /* windows: small on the rubble storey, larger on the plate storeys; slits on the side the barrack roof meets */
+      F.window(TX-2.6,2.5,TZ+TS/2, 0,1, 0.8,1.0); F.window(TX+2.6,2.5,TZ+TS/2, 0,1, 0.8,1.0);
+      [S1+ST+1.8, S1+2*ST+1.8].forEach(function(y){ [-2.4,0,2.4].forEach(function(o){ F.window(TX+o,y,TZ+TS/2, 0,1, 0.8,1.1); F.window(TX+o,y,TZ-TS/2, 0,-1, 0.8,1.1); F.window(TX-TS/2,y,TZ+o, -1,0, 0.8,1.1); }); });
+      F.window(TX-2.6,2.5,TZ-TS/2, 0,-1, 0.8,1.0); F.window(TX-TS/2,2.5,TZ, -1,0, 0.8,1.0);
+      [-2.4,0,2.4].forEach(function(o){ F.box(TX+TS/2+0.02,TOP-1.6,TZ+o, 0.12,1.0,0.25, 0, VOIDC[0], 'dark'); });
+      F.door(TX, TZ+TS/2+0.05, 0,1, 1.2, 2.3, PLANKC[3], S1); ABYSS.trim(F, TX,S1,TZ+TS/2+0.06, 0,1, 1.2,2.3, true);
+      F.box(TX,0,TZ+TS/2+0.55, 2.0,0.22,1.1, 0, PAL.abRubble, 'rubble');
+      ABYSS.lantern(F, TX+1.3,3.0,TZ+TS/2+0.45, true);
+      /* ---- the barrack hall on the tower's right: a rubble footing, pastel walls, a swoop roof with its ridge along z (horns to the yard and the back) */
+      var BX=3.5, BZ=-2.75, BW=13, BD=8.5, BF=0.8, bc=F.pick(PASTELC);
+      F.box(BX,0,BZ, BW,BF,BD, 0, PAL.abRubble, 'rubble');
+      F.box(BX,BF,BZ, BW-0.1,3.0,BD-0.1, 0, bc, 'plaster'); F.box(BX,BF+2.9,BZ, BW,0.2,BD, 0, shade(bc,-0.3), 'relief');
+      ABYSS.swoopRoof(F, BX,BZ, BD,BW, 5.0, { y0:BF+3.1, yaw:PI/2, horn:2.0, over:0.9, col:THATCHC[0], tip:yel, gable:shade(bc,-0.1) });
+      F.door(BX+0.5, BZ+BD/2+0.05, 0,1, 1.2, 2.2, PLANKC[3], BF);
+      F.box(BX+0.5,0,BZ+BD/2+0.5, 2.0,0.4,1.0, 0, PAL.abRubble, 'rubble');
+      [-3.6,4.4].forEach(function(o){ LOCUS.lattice(F, BX+o,BF+1.7,BZ+BD/2+0.04, 0,1, 1.4,1.1); });
+      [-2.2,2.2].forEach(function(o){ LOCUS.lattice(F, BX+BW/2+0.04,BF+1.7,BZ+o, 1,0, 1.4,1.1); LOCUS.lattice(F, BX+o*2,BF+1.7,BZ-BD/2-0.04, 0,-1, 1.4,1.1); });
+      ABYSS.lantern(F, BX+2.0,3.2,BZ+BD/2+0.45, true);
+      /* ---- the drill yard: racks, an armour stand, a fire, the guard's flag */
+      ABYSS.furn(F, 'abyss_rack_spears', 6.5,7.8, PI); ABYSS.furn(F, 'abyss_rack_spears', 9.5,7.8, PI);
+      ABYSS.furn(F, 'abyss_armor_stand', 11.5,4.2, -PI/2, { variant:1 });
+      ABYSS.furn(F, 'abyss_brazier', 0.5,6.5, 0, { variant:1 });
+      ABYSS.furn(F, 'abyss_bench', -3.5,6.5, PI/2, { variant:0 });
+      ABYSS.furn(F, 'abyss_water_butt', 11.6,0.4, 0);
+      ABYSS.mast(F, -12,8.8, 9, { flag:PAL.abSailRed, finial:yel, guys:2, guyR:1.0 });
+    } });
+
+  /* =============================================================== THE TOLL HOUSE */
+  ASSET({ key:'abyss_toll_house', name:'Toll house at the trailhead', family:'civic', kit:'abyss', group:ROW, culture:'abyssal-desert', types:['civic'],
+    wealth:[0.4,0.7], w:14, d:10, h:8, variants:1, sim:{ activity:'GOVERN', capacity:6, focus:[3.4,0.4,-1] },
+    build:function(F){ var cx=-1, cz=-1, W=7, D=5, Y=0.4, WH=2.8, teal=PAL.abBrightTeal, yel=PAL.abBrightYellow, bc=F.pick(PASTELC);
+      F.box(cx,0,cz, W+0.3,Y,D+0.3, 0, PAL.abRubble, 'rubble');
+      /* the booth (x -1..2.5, lime-wash) and the strongroom (x -4.5..-1, rubble under tin plate, iron straps) under one roof */
+      F.box(0.75,Y,cz, 3.5,WH,D, 0, bc, 'plaster');
+      F.box(-2.75,Y,cz, 3.5,WH,D, 0, PAL.abRubble, 'rubble'); ABYSS.tinClad(F, { box:[-2.75,Y,cz,3.5,WH,D], faces:'fbl' });
+      [-3.9,-1.6].forEach(function(x){ F.box(x,Y,cz+D/2+0.07, 0.14,WH,0.06, 0, STEELDC[0], 'rust'); F.box(x,Y,cz-D/2-0.07, 0.14,WH,0.06, 0, STEELDC[0], 'rust'); });
+      F.box(-4.5-0.06,Y+1.6,cz, 0.1,0.5,0.9, 0, VOIDC[0], 'dark'); [-0.3,0,0.3].forEach(function(o){ F.rod(-4.6,Y+1.6,cz+o, -4.6,Y+2.1,cz+o, 0.025, STEELDC[1], 'rust'); });
+      F.box(cx,Y+WH,cz, W+0.4,0.25,D+0.4, 0, shade(bc,-0.3), 'relief');
+      LOCUS.parapet(F, cx,Y+WH+0.25,cz, W+0.4,D+0.4, 0.2,0.5, bc, null);
+      /* the door on +z; the toll COUNTER WINDOW on +x (the road): a wide window, a plank counter shelf, a canvas flap above */
+      F.door(1.6, cz+D/2+0.05, 0,1, 1.0, 2.2, teal, Y); F.box(1.6,0,cz+D/2+0.45, 1.6,0.2,0.9, 0, PAL.abRubble, 'rubble');
+      F.window(-0.1,1.7,cz+D/2, 0,1, 0.8,0.9);
+      F.window(2.5,1.75,cz, 1,0, 2.4,1.0); F.box(2.95,1.1,cz, 0.9,0.12,2.8, 0, F.pick(PLANKC), 'plank');
+      [-1.2,1.2].forEach(function(o){ F.rod(2.55,0.6,cz+o, 3.3,1.08,cz+o, 0.04, F.pick(TIMBERC), 'timber'); });
+      LOCUS.canopy(F, [[2.55,2.75,cz-1.5],[2.55,2.75,cz+1.5],[3.5,2.45,cz+1.5],[3.5,2.45,cz-1.5]], yel, { sag:0.04 });
+      ABYSS.sign(F, 2.78,3.4,cz, 1,0, 1.4,0.6, 'book');
+      /* the sail over the queue on the road side, masts with lit lanterns */
+      var M=[[3.6,-4.4,3.8],[6.6,-4.4,3.4],[6.6,4.4,3.8],[3.6,4.4,3.4]];
+      M.forEach(function(m){ ABYSS.mast(F, m[0],m[1], m[2], { r:0.12, lantern:m[0]>5?'lit':null }); });
+      ABYSS.sail(F, M.map(function(m){ return [m[0],m[2],m[1]]; }), PAL.abSailOrange, { swoop:0.5, band:PAL.abSailOrange, bandW:0.5 });
+      /* the toll boom, raised: a pivot post, a drum counterweight, a striped pole pointing up */
+      F.cyl(6.4,0,4.7, 0.14,1.3, 0, F.pick(TIMBERC), 'timber'); F.box(6.62,0.95,4.7, 0.45,0.45,0.45, 0, ABYSS.rust(F), 'rust');
+      for(var s=0;s<4;s++){ var t0=s/4, t1=(s+1)/4; F.rod(6.4-0.8*t0,1.3+4.8*t0,4.7, 6.4-0.8*t1,1.3+4.8*t1,4.7, 0.07, s%2?PAL.abSalt:PAL.abSailRed, 'plaster'); }
+      ABYSS.furn(F, 'abyss_bench', 5.0,-2.6, -PI/2, { variant:0 });
+      ABYSS.furn(F, 'abyss_crates', -5.6,3.3, 0, { variant:0 });
+      ABYSS.lantern(F, 0.6,2.6,cz+D/2+0.45, true);
+    } });
+
+  /* =============================================================== THE PALISADE (one 6 m segment) */
+  var PL=6;
+  ABYSS.PALISADE = { L:PL, gateW:14, gateClear:9, gateClearH:4.2 };
+  ASSET({ key:'abyss_palisade', name:'Palisade segment (6 m)', family:'civic', kit:'abyss', group:ROW, culture:'abyssal-desert', types:['military','infrastructure'],
+    wealth:[0.2,0.6], w:PL, d:3, h:4.2, variants:2, variantNames:['stakes and plate','drums and plate'], sim:{ activity:'GARRISON', capacity:1 },
+    build:function(F){ var tc=F.pick(TIMBERC);
+      F.box(0,0,0, PL,0.3,1.0, 0, PAL.abRubble, 'rubble');                                            /* the footing: x -3..3 */
+      if(F.variant===0){
+        for(var i=0;i<=10;i++){ var x=-2.75+i*0.55, h=F.rr(3.2,3.7); F.cyl(x,0.2,0, 0.11,h, 0, F.pick(TIMBERC), 'timber'); F.cone(x,0.2+h,0, 0.11,0.42, 0, shade(tc,-0.15), 'timber'); }
+        [-2,0,2].forEach(function(x){ F.box(x,0.3,0.17, 2.0,F.rr(2.2,2.6),0.06, 0, plateCol(F), 'rust'); });
+        [-1,1].forEach(function(x){ F.box(x,0.3,0.21, 0.1,2.3,0.04, 0, STEELDC[1], 'rust'); });
+        [1.0,2.6].forEach(function(y){ F.box(0,y,-0.17, PL,0.14,0.1, 0, tc, 'timber'); });
+        [-1.1,1.1].forEach(function(x){ var c=ABYSS.rust(F); F.cyl(x,0.3,-0.62, 0.3,0.88, 0, c, 'rust'); F.cyl(x,1.15,-0.62, 0.31,0.05, 0, shade(c,-0.25), 'rust'); });
+        [-2.5,0,2.5].forEach(function(x){ F.rod(x,2.2,-0.15, x,0.05,-1.3, 0.06, tc, 'timber'); });
+      } else {
+        for(var k=0;k<6;k++){ var dx=-2.5+k; [0,1].forEach(function(r){ var c=ABYSS.rust(F); F.cyl(dx,0.3+r*0.9,-0.15, 0.42,0.88, 0, c, 'rust'); F.cyl(dx,1.16+r*0.9,-0.15, 0.43,0.04, 0, shade(c,-0.25), 'rust'); }); }
+        [-2.85,-0.95,0.95,2.85].forEach(function(x){ F.cyl(x,0.3,0.42, 0.1,3.6, 0, tc, 'timber'); });
+        F.box(0,2.1,0.4, PL,1.5,0.06, 0, plateCol(F), 'rust'); F.box(0,2.0,0.4, PL,0.12,0.12, 0, tc, 'timber'); F.box(0,3.55,0.4, PL,0.12,0.12, 0, tc, 'timber');
+        for(var j=0;j<12;j++){ var px=-2.75+j*0.5; F.cyl(px,3.6,0.4, 0.05,0.35, 0, tc, 'timber'); F.cone(px,3.95,0.4, 0.05,0.2, 0, shade(tc,-0.15), 'timber'); }
+      } } });
+
+  /* =============================================================== THE PALISADE ROAD GATE */
+  ASSET({ key:'abyss_palisade_gate', name:'Palisade road gate', family:'civic', kit:'abyss', group:ROW, culture:'abyssal-desert', types:['military','infrastructure'],
+    wealth:[0.3,0.7], w:14, d:4, h:7.8, variants:1, sim:{ activity:'GARRISON', capacity:4 },
+    build:function(F){ var teal=PAL.abBrightTeal, yel=PAL.abBrightYellow, tc=F.pick(TIMBERC);
+      F.box(0,0,0, 9.0,0.06,3.0, 0, PAL.abSalt, 'plaster');
+      /* two pylons: rubble base, salvaged plate, a painted band, a tin-mirror cap; the clear opening is x -4.5..4.5 */
+      [-1,1].forEach(function(s){ var x=s*5.6;
+        F.box(x,0,0, 2.3,2.0,3.1, 0, PAL.abRubble, 'rubble'); F.box(x,2.0,0, 2.2,4.4,3.0, 0, plateCol(F), 'rust');
+        F.box(x,6.3,0, 2.3,0.3,3.1, 0, teal, 'relief'); F.pyr(x,6.6,0, 2.3,1.1,3.1, 0, PAL.abTin, 'tinmirror');
+        F.box(x,2.0,1.53, 0.12,4.4,0.05, 0, STEELDC[1], 'rust');
+        F.rod(x-s*0.6,4.9,1.5, x-s*0.6,4.9,1.95, 0.04, STEELDC[0], 'rust'); ABYSS.lantern(F, x-s*0.6,4.6,1.92, true); });
+      /* the lintel and its painted board */
+      F.box(0,6.2,0, 9.0,0.6,0.7, 0, tc, 'timber'); F.box(0,6.4,0.4, 4.2,0.9,0.08, 0, yel, 'plank'); F.box(0,6.35,0.38, 4.4,1.0,0.05, 0, teal, 'timber');
+      /* the stake gate, raised under the lintel on chains: 4.2 m clear beneath it */
+      for(var i=0;i<18;i++){ var x=-4.25+i*0.5; F.cyl(x,4.2,0, 0.08,1.9, 0, F.pick(TIMBERC), 'timber'); }
+      [4.6,5.7].forEach(function(y){ F.box(0,y,0.1, 8.8,0.14,0.1, 0, tc, 'timber'); });
+      [-3.5,3.5].forEach(function(x){ F.rod(x,5.8,0.1, x,6.2,0.1, 0.03, STEELDC[0], 'rust'); });
+    } });
+})();
 /* ============================== 16X-M. ABYSS — military: the wall system, the fortress, the barracks ==============================
    THE WALL SYSTEM (modular; documented in ABYSS-KIT-NOTES.md):
      abyss_wall_seg     one segment, exactly ABYSS.WALL.L = 12 m long (local x -6..+6), 8 m high, 3 m thick (z -1.5..+1.5),
@@ -8969,7 +9815,8 @@ const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 
    Every piece is authored in the FLOOR frame (origin = footprint centre at the
    bottom of the piece, +z front); anchor tells a placer where it mounts:
      floor   — stands on the floor at y = floorY
-     wall    — stands at floor level, back face (local z = -d/2) flush to a wall
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+               a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
      ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
      surface — stands on a table, shelf or counter top at y = surfaceY
    materials are canonical names from CATALOG_MATERIALS below.
@@ -9004,10 +9851,24 @@ function FURN(o) {
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
    at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+/* wall pieces that hang rather than stand: wall art (a mask, a skull, antlers, a plate) centred at eye height,
+   friezes and pennant strings near the top of the wall. Everything else on a wall stands on the floor. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top' };
+function furnWallHung(A) {
+  if (!A || A.anchor !== 'wall') return null;
+  if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
+  return A.type === 'art' ? 'eye' : null;
+}
 function furnAnchorY(A, variant, at) {
   at = at || {};
   const floorY = at.floorY || 0;
   if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  const hung = furnWallHung(A);
+  if (hung) {
+    const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
+    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    return Math.max(floorY, Math.min(y, top - h));
+  }
   if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
   return floorY;
 }
@@ -21331,7 +22192,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
 /* ---- kits/interiors/sets/abyss.js ---- */
 /* ======================== Interior set: Eastern Abyssal (settlements/locus, kit `abyss`) ========================
    The interiors of the Eastern Abyssal building kit (ABYSS-KIT-NOTES.md): one item per the 31 NEW ASSET keys
-   on the abyss sheet (65-abyss-30..90-*.js; the two tag demos abyss_helpers_demo and abyss_wall_run are
+   on the abyss sheet (65-abyss-30..90-*.js, with the five Lower Verge keys of 65-abyss-75-verge.js; the two tag demos abyss_helpers_demo and abyss_wall_run are
    skipped as demos), plus `<key>#n` items where a variant's rooms differ a lot from variant 0. The ten keys
    the abyss sheet shares with the Locus sheet (stilt_poor, stilt_mid, tent_pavilion, sunshade_poles,
    farm_saltrice, infra_fishing_dock, ind_pumpjack, ind_oil_tank, prop_pipe_rack, prop_drum_stack) are in
@@ -21714,6 +22575,44 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       note: 'the five ground containers (6.1 m, turned along z, x -12.2..12.2) on the yard, each entered by its cargo doors on the ' +
         'front end; one store each. The three containers stacked on them have no door; the sails and the yard are open' },
 
+    /* ---------- Lower Verge (65-abyss-75-verge.js) */
+    { key: 'abyss_mayor_compound', name: 'The Mayor\'s compound', culture: 'eastabyss', wealth: 0.75, types: ['civic', 'single-family dwelling'], lot: [70, 56],
+      bodies: [
+        { id: 'residence', poly: rect(12, 12, -26, -19), y: 0.6, levels: [{ h: 2.95 }, { h: 3.05 }], wall: 0.3, roof: 'flat', slab: 0.3,
+          doors: [{ at: [-26, -13], w: 1.3 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom', 'study']] },
+        { id: 'office', poly: rect(13, 14, 26, -18), y: 0.6, levels: [{ h: 4.0 }], wall: 0.3, roof: 'flat',
+          doors: [{ at: [26, -11], w: 1.4 }], program: [['study', 'library', 'store']] }],
+      rooms: [{ id: 'council-hall', kind: 'hall', poly: rect(29.2, 21.2, 0, -11), y: 1.6, h: 6.5,
+        doors: [{ at: [0, -0.4], w: 10, swing: 'none' }],
+        fixtures: [
+          { id: 'tiers-back', kind: 'bench', x: 0, z: -20.25, ry: 0, w: 23.8, d: 2.7, h: 1.26, reach: false },
+          { id: 'tiers-west', kind: 'bench', x: -13.25, z: -11.45, ry: 0, w: 2.7, d: 14.9, h: 1.26, reach: false },
+          { id: 'tiers-east', kind: 'bench', x: 13.25, z: -11.45, ry: 0, w: 2.7, d: 14.9, h: 1.26, reach: false }] }],
+      note: 'the mayor\'s lime-washed residence (12 x 12, two storeys on a 0.6 m plinth: living room and kitchen, two bedrooms and a study), ' +
+        'the office and records wing (13 x 14, one 4.4 m storey: office, records library, store) and the council hall: the open floor ' +
+        'of the raised (1.6 m) open-sided hall inside its posts, the three built-in tiers of benches as fixtures, entered by the 10 m front ' +
+        'stair. The court, the sail-shaded forecourt and the gate are open' },
+    { key: 'abyss_guard_tower', name: 'Guard tower and barrack', culture: 'eastabyss', wealth: 0.6, types: ['military'], lot: [26, 20],
+      bodies: [
+        { id: 'tower', poly: rect(9, 9, -7.5, -3), y: 0.4, levels: [{ h: 3.1 }, { h: 3.1 }, { h: 3.1 }], wall: 0.6, roof: 'flat', slab: 0.3,
+          doors: [{ at: [-7.5, 1.5], w: 1.2 }], program: [['barracks'], ['barracks'], ['barracks']] },
+        { id: 'barrack', poly: rect(13, 8.5, 3.5, -2.75), y: 0.8, levels: [{ h: 2.9 }], wall: 0.3, roof: 'gable', pitch: 0.8,
+          doors: [{ at: [4.0, 1.5], w: 1.2 }], program: [['dormitory', 'kitchen', 'dormitory']] }],
+      note: 'the three-storey tower (9 x 9: a rubble storey and two of salvaged plate, floors at 0.4, 3.8, 7.2) as three guard rooms (no ' +
+        'stair is drawn: the planner fits one; the roof walk under the cone is open), and the barrack hall attached on its right (13 x 8.5 ' +
+        'on a 0.8 m footing): two dormitories and the mess kitchen. The drill yard is open' },
+    { key: 'abyss_toll_house', name: 'Toll house at the trailhead', culture: 'eastabyss', wealth: 0.55, types: ['civic'], lot: [14, 10],
+      rooms: [
+        { id: 'booth', kind: 'shop', poly: rect(3.05, 4.4, 0.675, -1.0), y: 0.4, h: 2.6,
+          doors: [{ at: [1.6, 1.2], w: 1.0 }, { at: [-0.85, -1.0], w: 0.9 }], windows: [{ at: [2.2, -1.0], w: 2.4, sill: 1.25, h: 1.0 }] },
+        { id: 'strongroom', kind: 'store', poly: rect(3.05, 4.4, -2.675, -1.0), y: 0.4, h: 2.6, doors: [{ at: [-1.15, -1.0], w: 0.9 }] }],
+      note: 'the booth (the toll counter window on +x, the road side; its door on +z) and the strongroom behind its inner door, under one ' +
+        'roof (7 x 5 on a 0.4 m plinth). The sail over the queue and the boom are open' },
+    { key: 'abyss_palisade', name: 'Palisade segment (6 m)', types: ['military', 'infrastructure'], lot: [6, 3],
+      skip: 'a modular palisade segment (stakes, salvaged plate, drums): nothing enclosed' },
+    { key: 'abyss_palisade_gate', name: 'Palisade road gate', types: ['military', 'infrastructure'], lot: [14, 4],
+      skip: 'an open road gate between two solid pylons under a raised stake gate: nothing enclosed' },
+
     /* ---------- Tag demo */
     { key: 'abyss_helpers_demo', name: 'ABYSS helper demo', types: ['prop'], lot: [64, 36],
       skip: 'a tag demo: every ABYSS helper once, not a building' }
@@ -21881,8 +22780,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
    catalog's own code through KratorFurniture (65z, generated by build.py from kits/catalog/furniture_bundle.py),
    merged into one mesh per render family for the whole page. A builder calls, in its own local frame:
      FURNISH(key, lx, ly, lz, lry, { v, seed, setting, lamp })   -> the placement record
-   (ABYSS.furn(F, key, lx,lz, yaw, opt) is the Abyss kit's own spelling of the same call). The record
-   { key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part, setting } goes on the frame (F.furniture)
+   (ABYSS.furn(F, key, lx,lz, yaw, opt) is the Abyss kit's own spelling of the same call). The record (core/furnish)
+   { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part, setting, room, job } goes on the frame (F.furniture)
    and on the building's record (buildAsset(...).furniture). The catalog origin is the piece's FOOTPRINT CENTRE.
    setting: 'outdoor' (default) | 'indoor' (inside, in a space the interior set plans no room for) |
             'room' (stands in an OPEN room the interior set plans — a stall, a sail court, a tavern deck: placed only
@@ -21895,10 +22794,26 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
    LOCF.unfurnished.noItem. ?furniture=0 places
    nothing (the records are still kept). A key the catalog lacks is counted in LOCF.missing, never thrown. */
 KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round furniture parts */
-var LOCF = { on:!/[?&]furniture=0\b/.test(location.search), interiors:/[?&]interiors=1\b/.test(location.search),
-  batch:KratorFurniture.batch(), placed:[], missing:{}, buildings:[], stack:[], lastTop:null, deferred:0, group:null,
-  unfurnished:{ noItem:{}, skip:{}, none:{} } };
-LOCF.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, LOCF.batch);
+/* the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Locus's adapter
+   onto it: its seed rule (the frame's seed and the spot in it), the open rooms the interiors take over, the night lamps
+   and the inspector entry */
+var LOCF = KFURN.create(Object.assign(KFURN.flags(false), {
+  catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  tags: (KTAGS.page = KTAGS.create({ build:'locus' })),   /* every piece registered in core/tags (core/tags/README.md) */
+  seed: function(o, ctx, R, x, y, z, loc){ return (((ctx.frame.seed||1)*37+Math.round(loc[0]*11+loc[2]*17)+997)&0xffff); },
+  onRecord: function(rec, ctx){
+    if(rec.setting==='room' && LOCF.interiors && LOCF.item(ctx.building, ctx.top.variant|0)){ rec.deferred='interiors'; LOCF.deferred++; return false; } },
+  draw: function(rec, ctx, o, A){
+    var r=KFURN.drawRec(LOCF, rec, ctx.frame.wealth);
+    if(r.error) ERR('furniture '+rec.key+': '+r.error);
+    r.lights.forEach(function(l){ nlLampAdd(l.x, l.y, l.z, o.lamp?o.lamp[0]:l.intensity, o.lamp?o.lamp[1]:l.distance, false); });
+    var dm=KratorFurniture.entryDims(A, rec.variant)||A;
+    REGISTER({ name:A.name+(A.variantNames?' — '+A.variantNames[rec.variant%A.variantNames.length]:''), kind:'furniture',
+      label:'furniture · catalog · culture: '+A.culture+' · '+(A.type||'')+' · '+rec.setting+' · '+dm.w+' x '+dm.d+' m · key '+rec.key,
+      x:rec.x, y:rec.y-0.2, z:rec.z, r:Math.hypot(dm.w,dm.d)/2+0.4, h:(dm.h||2)+0.6 }); }
+}));
+Object.assign(LOCF, { stack:[], lastTop:null, deferred:0, unfurnished:{ noItem:{}, skip:{}, none:{} } });
+KFURN.useBatch(LOCF, KratorFurniture, KratorInteriors);
 window._locf = LOCF;   /* for probes: the records, LOCF.missing, LOCF.buildings */
 /* the interior-set item that furnishes a building of this key and variant (null: none, or skipped). Variant 0 is `<key>`,
    variant n `<key>#n` ONLY: no fallback to `<key>`, whose rooms are measured on variant 0's body */
@@ -21911,21 +22826,9 @@ LOCF.why = function(key, v){ var it=LOCF.itemOf(key, v), base=v?KratorInteriors.
   return it ? 'skip' : (base ? (base.skip ? 'skip' : 'noItem') : 'none'); };
 /* place a catalog piece at (lx,ly,lz) in frame F (the catalog origin: the footprint centre), turned lry */
 function furnishAt(F, key, lx,ly,lz, lry, o){ o=o||{};
-  var F0=LOCF.stack[0]||F, top=F0.asset?F0.asset.key:'', setting=o.setting||'outdoor';
-  if(!KratorFurniture.has(key)){ LOCF.missing[key]=(LOCF.missing[key]||0)+1; return null; }
-  var q=F.p(lx,lz), rec={ key:key, variant:o.v|0, seed:o.seed||(((F.seed||1)*37+Math.round(lx*11+lz*17)+997)&0xffff),
-    lx:lx, ly:ly, lz:lz, lry:lry||0, x:q[0], y:F.y+ly, z:q[1], ry:F.ry+(lry||0), building:top, part:F.asset&&F.asset.key!==top?F.asset.key:null, setting:setting };
-  (F0.furniture||(F0.furniture=[])).push(rec); LOCF.placed.push(rec);
-  if(setting==='room' && LOCF.interiors && LOCF.item(top, F0.variant|0)){ rec.deferred='interiors'; LOCF.deferred++; return rec; }
-  if(!LOCF.on) return rec;
-  var r=LOCF.batch.place(key, rec.x, rec.y, rec.z, rec.ry, { variant:rec.variant, seed:rec.seed, wealth:F.wealth, building:top, setting:setting });
-  if(r.error) ERR('furniture '+key+': '+r.error);
-  r.lights.forEach(function(l){ nlLampAdd(l.x, l.y, l.z, o.lamp?o.lamp[0]:l.intensity, o.lamp?o.lamp[1]:l.distance, false); });
-  var A=KratorFurniture.FURN_BY_KEY[key], dm=KratorFurniture.entryDims(A, rec.variant)||A;
-  REGISTER({ name:A.name+(A.variantNames?' — '+A.variantNames[rec.variant%A.variantNames.length]:''), kind:'furniture',
-    label:'furniture · catalog · culture: '+A.culture+' · '+(A.type||'')+' · '+setting+' · '+dm.w+' x '+dm.d+' m · key '+key,
-    x:rec.x, y:rec.y-0.2, z:rec.z, r:Math.hypot(dm.w,dm.d)/2+0.4, h:(dm.h||2)+0.6 });
-  return rec; }
+  var F0=LOCF.stack[0]||F, top=F0.asset?F0.asset.key:'', q=F.p(lx,lz);
+  return LOCF.place(key, q[0], F.y+ly, q[1], F.ry+(lry||0), o, [lx, ly, lz, lry||0],
+    { building:top, part:F.asset&&F.asset.key!==top?F.asset.key:null, frame:F, top:F0, listOf:function(){ return F0.furniture||(F0.furniture=[]); } }); }
 /* the builder's call: its own (innermost) frame is the one on top of the stack */
 function FURNISH(key, lx,ly,lz, lry, o){ var F=LOCF.stack[LOCF.stack.length-1];
   if(!F){ ERR('FURNISH '+key+' outside a builder'); return null; } return furnishAt(F, key, lx,ly,lz, lry, o); }
@@ -21939,17 +22842,17 @@ buildAsset = function(key, x,z,ry, opt){ var top=!LOCF.stack.length; LOCF.lastTo
   var rec=locfBuildAsset(key, x,z,ry, opt), F=LOCF.lastTop; if(!rec || !top) return rec;
   rec.furniture = (F && F.furniture) || [];
   if(LOCF.interiors && F){ var it=LOCF.item(key, F.variant|0);
-    if(it){ var r=KratorInteriors.sets.furnish(it, x, z, ry||0, LOCF.adapter, { baseY:F.y, prefix:'lc.'+LOCF.buildings.length+'.' });
-      rec.interior={ item:it.key, rooms:r.inst.rooms.length, pieces:Object.keys(r.plans).reduce(function(a,k){ return a+r.plans[k].placements.length; },0), residence:r.residence };
+    if(it){ var fi=LOCF.interior(it, x, z, ry||0, LOCF.adapter, { baseY:F.y, prefix:'lc.'+LOCF.buildings.length+'.' }), r=fi.result;
+      rec.interior=fi.summary;
       r.inst.rooms.forEach(function(R){ var P=r.plans[R.id]; (P&&P.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, l.intensity||0.7, l.distance||10, false); }); });
-      LOCF.buildings.push({ key:key, variant:F.variant|0, x:x, z:z, ry:ry||0, interior:rec.interior }); }
+      Object.assign(LOCF.buildings[LOCF.buildings.length-1], { key:key, variant:F.variant|0 }); }
     else { var w=LOCF.why(key, F.variant|0), u=LOCF.unfurnished[w], k=key+((F.variant|0)?'#'+(F.variant|0):''); u[k]=(u[k]||0)+1; } }
   return rec; };
 /* the batch becomes meshes once, when the kit emits its instances (75-terrain.js); they take the night-glow hook */
 var locfEmit = emitBuckets;
 /* the batch's vertex colours are the catalog's sRGB bytes; this renderer outputs sRGB from LINEAR colours (the kit converts
    its own instance colours), so they are converted here, through a 256-entry table, into a float attribute */
-var LOCF_LIN = (function(){ var t=new Float32Array(256); for(var i=0;i<256;i++){ var v=i/255; t[i]=v<=0.04045?v/12.92:Math.pow((v+0.055)/1.055,2.4); } return t; })();
+var LOCF_LIN = KFURN.SRGB_LIN;
 emitBuckets = function(){ var g=LOCF.batch.flush(scene); g.traverse(function(m){ if(!m.isMesh) return;
     var c=m.geometry.attributes.color; if(c){ var a=c.array, f=new Float32Array(a.length); for(var i=0;i<a.length;i++) f[i]=LOCF_LIN[a[i]]; m.geometry.setAttribute('color', new THREE.BufferAttribute(f, 3)); }
     if(!m.material.isMeshBasicMaterial) nlMaterial(m.material, 'kf-'+m.material.userData.family); });

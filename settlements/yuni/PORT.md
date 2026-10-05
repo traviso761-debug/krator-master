@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 105 (10%) | 13 (1%) | 16 (2%) | 140 (14%) | 748 (73%) |
+| KB | 105 (10%) | 13 (1%) | 16 (2%) | 142 (14%) | 748 (73%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -22,7 +22,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/45-kit.js` | 27.7 | [draw] | 40 | 0 | 0 | 0 | 0 | 15 | 15 | 2 | 0 | 0 | 0 |  |
 | `src/47-texture.js` | 10.9 | [draw] | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/50-structure.js` | 15.2 | [draw] | 8 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/51-fixtures.js` | 10.5 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/51-fixtures.js` | 12.7 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/52-vault.js` | 14.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-assets.js` | 20.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 53 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/54-under.js` | 7.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 2 | 0 | 0 | 0 | 0 |  |

@@ -1089,3 +1089,14 @@ behaves as before.
   podium, legs included, about the core centre.
 * **`trimPlinths` keep list** (`77z`): `keep` may be a list of OBBs (both
   pieces of a broken fall).
+
+## The Funicular (2026-10-05, `--target funicular`)
+
+A new structure type for Verge's cliff: the rusted, broken remnants of a massive Ancient funicular, as two
+calls rather than a builder: `FUNICULAR.plan()` (plain data, every ground sample, no THREE, its own hashed
+stream) and `FUNICULAR.draw()` (renders the record through kput before kbake). API.md "The funicular" has the
+record. It is the kit's first type that stands on host terrain, so it takes the ground as a function and
+never reads `terrainH`; `carveY` hands the cuttings back to the host. The target is a 400 m incline down a
+synthetic escarpment (221 m drop): 35 k triangles; a 1.7 km track is about 124 k. Verified: `--assert` all
+six invariants pass; shots read (overview, a broken span, the winding house, the car, down the incline,
+the platform hall).

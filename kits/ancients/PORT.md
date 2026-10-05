@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 239 (10%) | 34 (1%) | 174 (7%) | 27 (1%) | 1999 (81%) |
+| KB | 240 (10%) | 34 (1%) | 174 (7%) | 27 (1%) | 2043 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -131,6 +131,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8am-yv-e-hosp.js` | 5.5 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8an-iz-stumps.js` | 14.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8ao-iz-spaceport.js` | 36.2 | [draw] | 18 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/8ap-funicular.js` | 40.5 | [draw] | 32 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | split by design: FUNICULAR.plan() is the data pass (no THREE, plain record), draw() renders it |
 | `src/90-scene.js` | 8.5 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.7 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 6.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |
@@ -165,6 +166,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/engines/91z-views.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/forest/89z-rows.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/forest/91z-views.js` | 4.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/funicular/89z-rows.js` | 3.8 | [draw] | 5 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/funicular/91z-views.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hexahedron/89z-rows.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hexahedron/91z-views.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hill/89z-rows.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

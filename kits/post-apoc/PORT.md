@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (0%) | 8 (2%) | 0 (0%) | 54 (14%) | 327 (84%) |
+| KB | 1 (0%) | 8 (2%) | 0 (0%) | 47 (12%) | 334 (86%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -33,7 +33,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-rows.js` | 1.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90-scene.js` | 8.5 | [web] | 19 | 3 | 1 | 0 | 2 | 2 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 3.5 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/91f-furnish.js` | 7.3 | [web] | 2 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/91f-furnish.js` | 7.1 | [draw] | 1 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (building seed and place in its list), the matrix frame (CM) and ax/az anchors, colliders, lights as halos, dry runs for frontOf, a fresh batch per buildWorld (its performance.now timing is host code) |
 | `src/91n-night.js` | 9.9 | [web] | 15 | 2 | 3 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 10.7 | [web] | 13 | 0 | 21 | 14 | 4 | 2 | 0 | 0 | 3 | 0 | 0 |  |
 | `src/93-anim.js` | 8.6 | [web] | 14 | 0 | 0 | 0 | 3 | 4 | 6 | 3 | 0 | 0 | 0 |  |

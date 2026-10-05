@@ -34,6 +34,13 @@ Read before changing anything here. `build.py` prints the open count.
 - [ ] The fauna is a first pass: the kites glide (no flap), the swifts follow a Lissajous
       swarm rather than a boid flock, the striders' legs are two rods swinging fore and aft,
       and the lizards never move. Nothing reacts to the camera.
+- [ ] The deer and coyotes (2026-10) are rigid parts on a walker: legs are single tapered segments
+      (no knee or hock), the head swings with its neck as one piece, the deer's walk uses the
+      trot's diagonal pairs, and nothing avoids anything else (two deer of a herd can cross; a
+      coyote loop can run through a herd). Their paths avoid trunks only at 3 m samples. Past
+      1.6 km from `BIO.eye()` a herd or a loop keeps its last pose (this host binds no eye).
+      `BIO.dynamic` (core) sets no `userData.kit`, so 75 sets it on the new meshes; the older
+      kinds' meshes still export with kit '' (`BIO.export({kit})` drops them).
 - [ ] The floor's planters are cumulative-threshold ladders (`t<.22`, `t<.55` ...) rather
       than weighted tables; inserting a plant means re-deriving the thresholds after it.
       The bottle tree / desert rose and puya / agave builders could share a caudex and a
@@ -106,6 +113,7 @@ Read before changing anything here. `build.py` prints the open count.
       the cliffs in Shade. The random draws are made either way, so nothing else moves.
       Found by Shade's `no-flora-on-cliffs` check (settlements/shade).
 - [x] Fauna: kites, swifts, striders and lizards on the contract (75), driven by BIO.tick.
+- [x] Deer and coyotes (2026-10): walkers whose pose is a function of the BIO clock (75).
 - [x] The quality pass (NOTES.md): typed stores, memoised terrain, BIO.col, data-driven
       impostors, a pass table, shared helpers, host hooks for register / lod / windows.
 - [x] The dragon tree forks six times into a filled umbrella (tufts between the tips as

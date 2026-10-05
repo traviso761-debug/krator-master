@@ -30,13 +30,15 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 1. **DONE 2026-10-02:** the audit tool sees the shared exporters; Iziz's and Dalab's city build passes retagged;
    the minimap split into data and host (port lint 16 warnings to 2); the Voth lineage in the hash baseline;
    `core/rand` with golden vectors and its GDScript twin; Ys's city takes it.
-2. **The Godot spike** (GODOT-PLAN.md Phase 7, "The spike"), on Travis's machine: `krand_test.gd` headless; one
-   biome kit's `BIO.export()` and Iziz's `ATMOS.export()` in a scene; the Voth kit meshes by the route Travis's
-   friend used (ask him what it was). Write the importer's gap list into GODOT-PLAN.md.
+2. **The Godot spike** (GODOT-PLAN.md Phase 7, "The spike"). **Underway 2026-10-05:** `godot/` holds the project,
+   five exports (hyperjungle and rift tiles, Girder and Iziz as glTF, Iziz's atmosphere, Yuni's records) and their
+   importers; `krand_test.gd` passes in Godot 4.5; the first gap list is in GODOT-PLAN.md ("The spike: first findings").
+   Open: the look on Travis's machine in Forward+ (`godot/CHECKLIST.md`), the editor's glTF import, and the route
+   Travis's friend used for the Voth kit (ask what it was).
 3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
    and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
    material work (M5).
-4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). Still to do: Iziz and Ys. Other builds
+4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). **Iziz DONE 2026-10-05** (its `PORT.md`: tags corrected by reading the code, split notes on 90a, 90b, 90c, 85 and the mask readers, the own-copies Notes; Voth's `68-props.js` split note added). Still to do: Ys. Other builds
    keep provisional tags until a port session touches them.
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
@@ -44,9 +46,14 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass.
 7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
    `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
-   four texture gaps (leafy, web, ghostwood, prism gum), the owner's look review, and `core/furnish` with Girder as its
-   first consumer.
-8. **`core/mask` with Iziz's city** as its first consumer, then Iziz's export on the `KRATOR_EXPORT` shape (M5).
+   four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **`core/furnish` DONE 2026-10-05:**
+   Girder, Mav's Refuge, Locus, Highlands and Post-Apoc place through it, fingerprints unchanged (`core/furnish/README.md`).
+   **`core/tags` steps 1 and 2 DONE 2026-10-05:** the registry, vocabulary, label, node test and uid twin; Yuni on it,
+   its records arriving in Godot as node metadata (`core/tags/README.md`). Steps 3 and 4 DONE the same day: core/furnish's five
+   builds register their furniture (fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in. Next: the biome kits, with the
+   reseeding event (`core/tags/PROPOSAL.md`).
+8. **`core/mask` DONE 2026-10-05** (Iziz, Dalab, Erewhon, Roketstad place from it; `core/mask/README.md`). Next: Iziz's export
+   on the `KRATOR_EXPORT` shape (M5).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
 
 ## Features
@@ -390,6 +397,17 @@ with no extra mesh.
   MultiMesh `custom_aabb`.
 - **[web]** One shared polygon-offset ladder. **[G data]** A shared mitred ribbon helper for roads, rivers and
   walls, whose output is plain geometry.
+
+## Surfaces *(spiderbench, github.com/xikhar/spiderbench, read 2026-10-05; detail in `core/materials/PLAN.md`, "From spiderbench")*
+
+- **[G shader]** Analytic coursing: ashlar and brick joints from UV math and a per-block hash, not a painted
+  canvas. A `coursing` TEX kind, pilot on Voth's canton walls.
+- **[G shader]** `breakup` gains `rough` and `grime`; grime samples one shared streak sheet (8 by 16 masks, each
+  opening picks a cell by hash). One generated image; prompt to write in PLAN.md.
+- **[G native]** A detail normal at close range: record field `detail`, Godot `detail_normal`; one shared
+  `detail.*` library set.
+- **[G data]** Any hash shared between placement code and a shader is written once in `core/` with GDScript and
+  `.gdshader` twins and a comparison test.
 
 ## Worlds *(Menagerie)*
 

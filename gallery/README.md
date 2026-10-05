@@ -42,6 +42,28 @@ furniture and mounts, the village dressing families, the extra cards; 12.2 MB), 
 with the index's Girder entry updated (size, blurb). Every other page is as in version 39. The Material Demo Kit
 (https://claude.ai/artifact/PiddSxzJWKzfzRu9nycrXL) was republished the same day with the 2026-10-05 sets (version 6).
 
+Version 41 (2026-10-05): `worlds/girder.html` replaced with Girder Hero (play as Styv, talk to Phil in the Assembly Hall;
+`settlements/girder/hero/README.md`), from `main` at 5dc478e2, built with `build_hero.py --models-url girder-` because the
+embedded page (20.5 MB) is over the 16 MB per-file limit: the page (12.4 MB) fetches `worlds/girder-styv.glb.txt` and
+`worlds/girder-phil.glb.txt` (base64; `.glb` is not a served type). The index's Girder entry was updated (blurb, 20.0 MB,
+source). `build_gallery.py` still lists plain `girder.html`; a full rebuild would put the plain page back.
+That version failed in the gallery ("hero: styv: Failed to fetch"): the gallery's frame cannot fetch files published
+beside a page.
+
+Version 42 (2026-10-05): Girder Hero as its own card. `worlds/girder.html` is plain Girder again (the page committed on
+`main`, 12.3 MB); a new "Girder · Hero" entry after it opens `worlds/girder-hero.html`, built from `main` at df74443b with
+`build_hero.py --slim` (the models slimmed and embedded, 15.0 MB). `worlds/girder-styv.glb.txt` and
+`worlds/girder-phil.glb.txt` were removed. The hero entry is not in `build_gallery.py`'s `ENTRIES` (it needs the
+`--slim` build); a full rebuild leaves it out, so republish it by hand as above.
+
+Version 43 (2026-10-05): `worlds/girder-hero.html` replaced (`main` at 0989ccf2). Version 42's page still failed in the
+gallery ("Failed to fetch"): GLTFLoader fetched the models' embedded textures as blob: URLs and the gallery's frame
+blocks fetch. The hero now loads them as data: images through an <img>. Checked headless under `connect-src 'none'`.
+
+Version 44 (2026-10-05): `worlds/girder.html` and `worlds/girder-hero.html` replaced from `main` at 6728d4f6: Girder's walk
+graph corrected against its walk solids (the villagers walk the galleries inside the columns), and the hero's cast and
+dialogue read from `settlements/girder/hero/cast.json`. Index sizes 12.4 and 15.0 MB.
+
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
 The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
