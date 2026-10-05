@@ -235,7 +235,11 @@ middle pool inside each foreign slot it reserves, `slot.standIn` → the record,
 (pieces squared to the real waterline), `ysPlHostAt(x,z,type,{capScale,name,host:{...}})` (a host at a point Travis named:
 a synthetic block `(90+k,0)`, the point first then a 12 m grid out to 36 m round it, on land with ground, in the water
 over a canal line; the block the point falls in is marked `hostPlaced`, so it is not laned). A landmark record may carry
-`sink` (the Wet Cells: the bed's depth under it); the draw pass hands it to the builder as `o.sink`. The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
+`sink` (the Wet Cells: the bed's depth under it); the draw pass hands it to the builder as `o.sink`. `PLACE.ruins`
+`{key,builder,name,x,z,ry,d,sink,box,w,dd,h}` (the Ancients' civic and industrial ruins in `YS_RUINS_POLY`; the draw pass
+stands each with `ysPlaceRuin(scene,o)` from `64b-ys-ruins.js`, which returns `{n,key,x,z,ry,y,d,G,reg,r}` and pushes it to
+`YS_RUINS`; `YS_RUIN_TYPES` `{key,name,builder,kind,w,d,h,r,cx,cz}`). `YS_HOST_OFFICES` (`69j-host-offices.js`) adds the
+kit's Apartments, Office B and Office C to `YS_HOST_TYPES` like `YS_HOST_ANCIENTS`. The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
 the zero list, plates per host) and `_api.city.records()` (the records as plain JSON).
 **Roads** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`, and the
 `lane`s that quarter a neighbourhood block without a reclaimed Ancient: `b.landHost`, set by the layout), `LAYOUT.highways`

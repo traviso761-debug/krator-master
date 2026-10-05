@@ -97,8 +97,9 @@ function civDA(a,b){const x=((a-b)%TAU+TAU)%TAU;return Math.min(x,TAU-x);}
 
 // ================================================================= OFFICES (two variants)
 function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const G=new THREE.Group();G.position.set(gx,0,gz);scene.add(G);const skin=SHELL(d);
+ const ysA=(typeof YS_CUT!=='undefined'&&YS_CUT)||null;   /* YS: a host: Office B (the lobed tower) alone, on the origin, with slabs, holed for the ways in; A and C are left out */
  // A — flared ring (Tange mushroom)
- {REGISTER({name:'Office A — flared ring ('+STATE(d)+')',x:0,z:0,r:55,h:42});const stem=y=>y<12?11+.04*Math.pow(12-y,2):(y<21?11+32*Math.pow((y-12)/9,1.6):43);
+ if(!ysA){REGISTER({name:'Office A — flared ring ('+STATE(d)+')',x:0,z:0,r:55,h:42});const stem=y=>y<12?11+.04*Math.pow(12-y,2):(y<21?11+32*Math.pow((y-12)/9,1.6):43);
   // RUIN: a sector of the ring has come down (it used to stand whole, rusted,
   // with the same silhouette as the intact one). SEC is its centre, facing the
   // row camera; the wall tear is ragged, the floors stick out past it, and the
@@ -138,15 +139,16 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
  // 265 m row pitch: the rehabilitated Office C stood in the ruined Office A, and
  // the intact C against the rehabilitated A. Round 2: B moves in to x=105 and C
  // stands behind them at (95,-75); the site is now 195 m wide.
- {const bx=105;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,cut=d>0?H*.72:null;
+ {const bx=ysA?0:105;REGISTER({name:'Office B — lobed tower ('+STATE(d)+')',x:bx,z:0,r:20,h:60});const B=new THREE.Group();B.position.set(bx,0,0);G.add(B);const R=13,H=52,ysc=(typeof ysCutY==='function')?ysCutY(d):null,cut=ysc!=null?ysc:(d>0?H*.72:null);   /* YS: on the origin; cut where the city says */
   const lobe=th=>R*(1+.32*(.5+.5*Math.cos(8*th)));
   mesh(lathe({rFn:()=>6,H:12,nu:24,nv:2}),skin,B);for(let k=0;k<16;k++){const th=k/16*TAU;if(d>0&&(k===4||k===11))continue;kput(d>0?'colR':'colW',[bx+Math.cos(th)*13.5,0,Math.sin(th)*13.5],null,[1.3,12,1.3],null);}
-  const hole=holeFn(d,210,cut,1.8);
+  const hole0=holeFn(d,210,cut,1.8),hole=(typeof ysWallHole==='function')?ysWallHole(hole0,12):hole0;   /* YS: the ways in through the skin */
   mesh(lathe({rFn:()=>R,H:H-12,cut:cut?cut-12:null,jag:cut?3:0,flutes:8,amp:.32,sharp:1,nu:96,nv:40,hole,seed:210}),skin,B,0,12,0);
+  if(ysA)for(let s=0;s<Math.floor(((cut||H)-12)/4);s++)kput('slab',[bx,12+4*s,0],null,[R*.95,.5,R*.95],new THREE.Color(d>0?0x3a3632:0xd8d4cc));   /* YS: the plates the pods stand on */
   if(d>0){mesh(lathe({rFn:()=>R*.6,H:H-12,cut:cut-12,jag:3,nu:32,nv:6,seed:210}),MAT.guts,B,0,12,0);civRooms({cx:bx,cy:12,rFn:()=>R,y0:4,y1:(cut||H)-12,step:4,d,seed:212,cut:cut?cut-12:null,rIn:.6});}
   const bBands=[];   // ten storeys of lobed banding in one mesh
   for(let s=0;s<Math.floor(((cut||H)-12)/4);s++){const y=12+s*4;
-   const bh=d>0?(u,v)=>fbm(u*10+s,2,211+s,2)<.24*d:null;
+   const bh0=d>0?(u,v)=>fbm(u*10+s,2,211+s,2)<.24*d:null,ysb=(typeof ysBandHole==='function')?ysBandHole(y+3):null,bh=ysb?(u,v)=>(bh0&&bh0(u,v))||ysb(u,v):bh0;   /* YS: the bands cut round every pod */
    bBands.push(lathe({rFn:()=>R*1.09,H:1,flutes:8,amp:.34,sharp:1,nu:96,nv:1,hole:bh}).translate(0,y+3,0));
    bBands.push(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(lobe(th)*.97,lobe(th)*1.09,v);return[r*Math.cos(th),y+3.9,r*Math.sin(th)];},96,2,{hole:bh}));
    for(let k=0;k<8;k++)for(let j=-1;j<=1;j+=2){const th=k/8*TAU+j*.16;const u=((th%TAU)+TAU)%TAU/TAU;if(hole&&hole(u,y-12))continue;const r=lobe(th)+.1;
@@ -156,6 +158,6 @@ function buildOffices(scene,gx,gz,d){reseed(d>0?9501:9500);KOFF=[gx,0,gz];const 
   if(!cut){kput('slab',[bx,H+.2,0],null,[R*1.1,.6,R*1.1],new THREE.Color(0xd8d4cc));mesh(lathe({rFn:y=>7*Math.sqrt(clamp(1-Math.pow(y/6,2),0,1)),H:6,nu:24,nv:6}),skin,B,0,H+.5,0);}
   else{rubbleRing(bx,0,0,15,26,60,2.5);mossOnRing(bx,cut,0,R,10,1.5);}
   if(d>0){vinesOnRing(bx,12,0,R*1.05,20,10);scatterMoss(bx,0,0,15,28,40,2);}}
- {const OCX=95,OCZ=-75,CG=new THREE.Group();CG.position.set(OCX-330,0,OCZ);G.add(CG);KOFF=[gx+OCX-330,0,gz+OCZ];officeC(CG,d);KOFF=[gx,0,gz];}
- figures(60,50,5,5);figures(105,22,3,3);civFlatten(G);KOFF=[0,0,0];return G;}
+ if(!ysA){const OCX=95,OCZ=-75,CG=new THREE.Group();CG.position.set(OCX-330,0,OCZ);G.add(CG);KOFF=[gx+OCX-330,0,gz+OCZ];officeC(CG,d);KOFF=[gx,0,gz];}
+ if(!ysA){figures(60,50,5,5);figures(105,22,3,3);}civFlatten(G);KOFF=[0,0,0];return G;}
 

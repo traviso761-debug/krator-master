@@ -35,9 +35,19 @@
   "sha1": "9498fec642c8"
  },
  "42-offices.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "72435f572b8f"
+ },
+ "46-bunker.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "7672279e14a8"
+  "sha1": "efb26646e968"
+ },
+ "48-library.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "901324c86be5"
  },
  "50-registry.js": {
   "adapted": false,
@@ -63,6 +73,21 @@
   "adapted": true,
   "from": "kits/ancients/src",
   "sha1": "f7faef225a09"
+ },
+ "62-robotics.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "8ce20d3edc9b"
+ },
+ "64-houses-def.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "21f45acb82c3"
+ },
+ "66-office-c.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "59780b05c877"
  },
  "69-mat-salvage.js": {
   "adapted": false,
@@ -129,25 +154,65 @@
   "from": "kits/ancients/src",
   "sha1": "19e7d7fb8124"
  },
+ "72-datacenter.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "4c2f5395ed13"
+ },
  "72-port-kit.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "6aaf10b6d2ad"
+ },
+ "73-police.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "5acbf202e061"
  },
  "73-port-edges.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "79339087e90d"
  },
+ "74-hospital.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "12fbfb1281e3"
+ },
  "74-port-dress.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "2adaa490788f"
  },
+ "75-hotel.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "a6b0a5d61da6"
+ },
+ "79-government.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "72bcf46cdb0a"
+ },
+ "80-aa-battery.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "5043b92bbe55"
+ },
  "81-sky.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
   "sha1": "b13975f23277"
+ },
+ "82-apartments.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "9c554d78a51a"
+ },
+ "89-lab.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "a771f81f4b41"
  },
  "89m-sky-k.js": {
   "adapted": true,

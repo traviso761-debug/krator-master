@@ -45,6 +45,8 @@ const VIEWS={
   const m=PLACE.moles.find(m=>/military harbour mole 1/.test(m.name));if(m){const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;V['The military harbour quay']=[cx-N[0]*90+T[0]*140,40,cz-N[1]*90+T[1]*140,cx,3,cz];}
   const sh=PLACE.hosts.find(h=>h.pods.some(p=>p.stair));if(sh){const p=sh.pods.find(p=>p.stair);const r=sh.rAt(p.y,p.a)+34;V['A spiral stair down a tower']=[sh.x+Math.cos(p.a+.5)*r,p.y+8,sh.z+Math.sin(p.a+.5)*r,sh.x+Math.cos(p.a)*(r-30),p.y-5,sh.z+Math.sin(p.a)*(r-30)];}
   {const B=YS_BAND;const mx=(B[1][0]+B[3][0]+B[0][0]+B[4][0])/4,mz=(B[1][1]+B[3][1]+B[0][1]+B[4][1])/4;V['The half-sunk Ancients']=[mx-N[0]*60-T[0]*330,120,mz-N[1]*60-T[1]*330,mx,10,mz];}
+  {const P=YS_RUINS_POLY;const mx=P.reduce((s,p)=>s+p[0],0)/P.length,mz=P.reduce((s,p)=>s+p[1],0)/P.length;V['The ruined shallows']=[mx+330,150,mz+420,mx,0,mz];
+   const r=(PLACE.ruins||[])[0];if(r)V['A ruin in the shallows']=[r.x+Math.max(r.w,r.dd)*.9,45,r.z+Math.max(r.w,r.dd)*.9,r.x,8,r.z];}
   {const P=CITY.RIVER.pts;const a=P[2],b=P[4];V['The river']=[a[0]+120,140,a[1]+160,b[0],0,b[1]];}
   {const w=PLACE.blds.find(r=>r.key==='hyk_wet_cells');if(w){const fx=Math.sin(w.ry),fz=Math.cos(w.ry);V['The Wet Cells at the Needle']=[w.x+fx*70-fz*30,22,w.z+fz*70+fx*30,w.x,4,w.z];}}
   {const h=PLACE.hosts.find(h=>/sunk Terrace Wedge \(east\)/.test(h.n));if(h)V['The sunk office']=[h.x-220,90,h.z+160,h.x,30,h.z];}

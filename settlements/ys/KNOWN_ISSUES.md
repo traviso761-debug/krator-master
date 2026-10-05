@@ -188,6 +188,18 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       small warehouses, smithies and poor houses (`PL_INDUSTRY_SMALL`).
 - [ ] (Oct 5 2026) The sunk office terraces stand whole 100 m (east) and 116 m (north) above the water: the ocean's tallest
       ruins after the three full towers; their rust is the concrete tint only (`MAT.concreteR`, see above).
+- [ ] (Oct 5 2026) The Comb (`altOfficeC`) is a flat bar in a radial host model: its back wall is 7 m from the axis at the
+      middle, so a pod's satellites sit 40° round and one may land on a horn's end; the lived floors draw a small corridor
+      ring in it. Office B's lobe bands are mostly holes at decay 3 anyway. The Apartments keep tray 6 (the kit drops it in
+      ruin: it would float over the stem).
+- [ ] (Oct 5 2026) The ruins in the east shallows: the polygon takes only the ruins that fit it with their footprint
+      clear (the Vault, 390 m, and the Assembly, 210 × 260, never fit); a ruin's registry volumes are the kit's (`cls:'ruin'`),
+      with no door marks; their meshes are not merged with the hosts' (`ysMergeHostMeshes` could take `YS_RUINS`).
+- [ ] (Oct 5 2026) The river's strip rides 35 cm over the terrain mesh wherever the heightfield has not carved the valley
+      to the bed (the valley is missing over much of the farmland, e.g. at (-300, 330), and the cells are 90 m past 900 m
+      from the origin): there the water lies on the grass as a sheet, not in a valley. The carve (`ysRiverY`) and the
+      heightfield's sampling of it are the thing to look at. Before this round no strip was drawn at all: the loop broke
+      at the first sample under the sea, at the mouth.
 - [ ] (Oct 5 2026) The Wet Cells' rock is a plain lathe to the bed (28 m at the Needle's foot): no ledges, no weed below
       the crust band; its library barnacle set reads paler than the tint asks (Travis: ominous). A darker barnacle or
       wet-rock set would do it.

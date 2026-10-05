@@ -108,7 +108,11 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
            # the podded Ancient stumps (Oct 5 2026): Sky E and K, the alternates (the Pierced Stack, the Attraction, the
            # Undulant house, the office terrace, the library) with the helpers they share, and the worn pass (the Library)
            '57-sky-e.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
-           '8al-alt-00-lib.js', '8al-alt-01-office-terrace.js', '8al-alt-06-library.js', '69w-worn.js']:
+           '8al-alt-00-lib.js', '8al-alt-01-office-terrace.js', '8al-alt-06-library.js', '69w-worn.js',
+           # the original offices and apartments as land hosts (69j-host-offices.js) and the civic and industrial ruins
+           # in the shallows (64b-ys-ruins.js), with the helpers they need (64-houses-def: domRoom; 80-aa-battery)
+           '82-apartments.js', '66-office-c.js', '64-houses-def.js', '80-aa-battery.js', '62-robotics.js',   # 62: civMergeGeo for the Assembly's hoods
+           '46-bunker.js', '48-library.js', '73-police.js', '74-hospital.js', '75-hotel.js', '79-government.js', '89-lab.js', '72-datacenter.js']:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
     VENDORED[_f] = 'settlements/port/src'
@@ -122,7 +126,8 @@ for _f in VENDOR_RENAME:
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
            '57-sky-e.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
-           '8al-alt-01-office-terrace.js', '8al-alt-06-library.js'}
+           '8al-alt-01-office-terrace.js', '8al-alt-06-library.js',
+           '82-apartments.js', '42-offices.js', '66-office-c.js'}   # the Ys branch draws one building of each, holed for the ways in
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
@@ -138,6 +143,7 @@ DETERMINISTIC = {
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js',
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-pack.js', '79z-ys-matlib.js',   # the material records, the pack, the adapter
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
+    '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0

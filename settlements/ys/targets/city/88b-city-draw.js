@@ -22,6 +22,8 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   for(const p of h.pods){once(p.key);const hp=p.core?Object.create(host,{x:{value:p.cx},z:{value:p.cz},rAt:{value:()=>p.cr}}):host;   /* a socket pod is framed on its own core */
    const G=HYK.placeOn(scene,p.key,hp,{y:p.y,a:p.a,level:p.level,into:p.into});if(G)p.drawn=true;else fail++;}
   TSTAT.cur=null;});
+ // the ruins in the east shallows (88 PLACE.ruins; 64b ysPlaceRuin): the kit's builder at its ruined state, on the bed
+ for(const r of (PLACE.ruins||[])){if(typeof ysPlaceRuin!=='function'){fail++;continue;}const R=ysPlaceRuin(scene,{key:r.key,builder:r.builder,x:r.x,z:r.z,ry:r.ry,d:r.d,sink:r.sink,name:r.name});if(R){r.drawn=true;r.G=R.G;}else fail++;}
  // the moles (88 ysPlMole): a plate at the datum less 12 cm over the whole polygon (the terrain's fill is 30 cm under
  // it, so nothing built on the mole fights the ground) and, round a walled one, a shell quay wall down to the bed on
  // every edge (hykHarbWall, world frame: HYK.cur is null here), its outward face found from the polygon's centroid
@@ -84,10 +86,16 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   // one continuous strip down the river: a vertex pair every sample, across the averaged tangent (no gap at a bend), at
   // the pool's water level; where the bed steps down at a lip the pair is laid twice, at the upper and the lower level,
   // so the surface falls vertically there; it ends where the sea's own sheet takes over
+  // the level: the pool's (bed + 55 % of the rise, the lip's height less 25 cm) or, where the heightfield's cells have not
+  // carved the valley to the bed (10 m cells over a 34 m valley, 90 m cells past 900 m), 35 cm over the mesh under the
+  // strip (its middle and both edges, the highest of the three samples either side), so the water is never buried
   const N=pr.bed.length,pos=[],idx=[];let q=0,pools=1;const lvl=k=>pr.bed[k]+R.rise*.55-.25;
-  const pair=(k,y)=>{const s=Math.min(k*pr.DS,pr.len);const [x,z]=at(s);const [x0,z0]=at(Math.max(0,s-pr.DS)),[x1,z1]=at(Math.min(pr.len,s+pr.DS));let tx=x1-x0,tz=z1-z0;const l=Math.hypot(tx,tz)||1;tx/=l;tz/=l;
-   const w=(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.62;pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(q>=2)idx.push(q-2,q,q-1,q-1,q,q+1);q+=2;};
-  for(let k=0;k<N;k++){const y=lvl(k);if(y<=.1)break;if(k>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,lvl(k-1));pools++;}pair(k,y);}
+  const geo=k=>{const s=Math.min(k*pr.DS,pr.len);const [x,z]=at(s);const [x0,z0]=at(Math.max(0,s-pr.DS)),[x1,z1]=at(Math.min(pr.len,s+pr.DS));let tx=x1-x0,tz=z1-z0;const l=Math.hypot(tx,tz)||1;return {x,z,tx:tx/l,tz:tz/l,w:(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.62};};
+  const mesh=k=>{const g=geo(k);return Math.max(terrainH(g.x,g.z),terrainH(g.x-g.tz*g.w,g.z+g.tx*g.w),terrainH(g.x+g.tz*g.w,g.z-g.tx*g.w));};
+  const floor=k=>{let m=-1e9;for(let j=-3;j<=3;j++){const q2=k+j;if(q2>=0&&q2<N)m=Math.max(m,mesh(q2));}return m+.35;};
+  const level=k=>Math.max(lvl(k),floor(k));
+  const pair=(k,y)=>{const {x,z,tx,tz,w}=geo(k);pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(q>=2)idx.push(q-2,q,q-1,q-1,q,q+1);q+=2;};
+  for(let k=0;k<N;k++){if(lvl(k)<=.1)continue;   /* under the sea's sheet (the mouth): the strip starts where the bed's water rises above the datum */const y=level(k);if(q>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,Math.max(level(k-1),y));pools++;}pair(k,y);}
   if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(ysFaceUp(g),MAT.pkSea);m.name='river';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}
   TSTAT.cur=null;window._river={pools,len:Math.round(pr.len)};}
  // the karst's dressing (Travis's cards, through the library adapter 79z): jungle clumps on every field stack's crown (two

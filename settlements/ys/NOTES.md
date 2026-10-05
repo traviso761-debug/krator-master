@@ -460,7 +460,8 @@ named (`inner-quarter-density`). **The mole plates** read as under water: the or
 plate whose faces point down is culled from above. `ysFaceUp` reverses the indices when the first faces' normal points
 down. **The river** is one continuous strip now (`_river.pools` 1, 2.5 km): one pair of bank points per sample with the
 tangent averaged over its neighbours, 62 % of the valley's width, at the bed plus 55 % of the rise, doubled at each
-pool's lip; before, each pool was its own flat sheet and the sheets did not meet on the bends. **Point hosts**
+pool's lip, and never below 35 cm over the terrain mesh under it (the heightfield does not carve the valley everywhere);
+before, each pool was its own flat sheet, and in fact none was drawn: the loop broke at the first sample under the sea. **Point hosts**
 (`ysPlHostAt`): the Tripod (C) at (165, 117) and the Lens (E) by the river at (84, 459) as tall land stumps, and the
 office terrace, which dwarfed the houses round it on land, stands in the ocean instead, whole and podded, at (875, 245)
 and (1180, −869), each a node of the bridge graph (bridged to the Project A tower and to the north shore's hosts). The
@@ -469,3 +470,17 @@ land pass keeps the Ancient Library and, when `YS_HOST_OFFICES` is loaded, the o
 the record carries `sink`, the draw pass hands it over) with a 15 m top, the warders' cone 11.5 m and leaning, twelve
 cells, eight drowned mouths, darker, and a ring of bone stakes leaning out over the water (none across the landing).
 Their old block is a host's. The sheet still draws them on a 2.6 m shelf.
+**The original offices and apartments** (an agent, `69j-host-offices.js`, `YS_HOST_OFFICES`): the kit's own Apartments
+(the terrace stack: eight lobed trays on a stem, cap 36), Office B (the lobed tower on its colonnade, cap 20) and Office C
+(the Comb, a brise-soleil bar on an arc, cap 40) stand whole among the Hykkousoi houses on land, pods from their first
+floor; each is one building of a kit call that draws several side by side, so `82-apartments`, `42-offices` and
+`66-office-c` take a Ys branch (`YS_CUT` present: alone, on the origin, slabs, the skin holed for the ways in; `ADAPTED`).
+The land pass takes one of each first, then the Library; the land pool carries them too. Unusable: the Flatiron, the
+Apartments' honeycomb wall and column variants, Office A's mushroom ring (nothing to root a pod in at pod height).
+**The ruins** (`64b-ys-ruins.js`, `ysPlaceRuin`, `YS_RUIN_TYPES`; the civic and industrial builders vendored unchanged:
+police, library, lab, bunker, hospital, hotel, government, data centre): the placer (`PLACE.ruins`, smallest first on a
+25 m grid of Travis's east polygon `YS_RUINS_POLY`, clear of everything but the water lines, off the stacks, every corner
+in the water, the middle 6 m deep or more, standing at the bed's lowest point under the footprint) and the draw pass
+(`ysPlaceRuin`: the kit builder at its ruined state, holes scaled 1.3 for the city's decay 4, flat ground, no planting,
+the registry re-tagged `ruin`). The bed east of the Amphitriton is 20–28 m down, so a 60–90 m ruin stands with its lower
+half under the water. Not podded, no ways, no floors.
