@@ -133,6 +133,7 @@ derived from them in processing; no hand-made normal maps.
 | Voth (voth) | stone inlay band, banner cloth; the rest is base library, near-colourless (see "Iziz and Voth") |
 | Ancient Port (port; for Hook) | hazard stripes, hull paint and primer, container livery |
 | The nacre culture (WIP) | shell inlay, pearl mosaic, nacre-banded trim |
+| Shared (every culture) | **grime streak sheet**: a grid of 8 by 16 vertical streak masks (soot, damp, rust run-off), grey on transparent, no colour. Each opening, sill or cornice picks one cell by hash, so one small sheet gives every window its own run-off and no two neighbours match. Spiderbench (see "Shader hooks") does this as layer 16 of its wall array; here it is one generated sheet, applied by the breakup hook below or baked into a wall's vertex colours |
 
 ## Shader hooks
 
@@ -144,6 +145,43 @@ derived from them in processing; no hand-made normal maps.
 - **World-space UVs** stay as today in the previews; in Godot they are the material's built-in triplanar
   option.
 - Glass Fresnel, water and glow are already in the Phase 3 shader list.
+
+### From spiderbench (reviewed 2026-10-05)
+
+Spiderbench (github.com/xikhar/spiderbench, a Claude-written web-swinging city, non-commercial) bakes its surfaces
+offline into texture arrays and puts all the variety in one facade shader of about 3,500 lines. That whole is the
+opposite of this plan (every hook here is a hand rewrite into Godot), but four of its pieces are small, portable and
+fix things Voth's `47-texture.js` history records fighting:
+
+- **[G shader] Analytic coursing instead of painted joints.** Its ashlar is pure UV math: a per-course random slide,
+  a per-block tone from a hash of (course, block), joints as box-filtered step functions (`boxAA`), sills and belt
+  courses the same way. No texture repeat, and no mip smear of the joints at distance, which is what Voth's 256 px
+  ashlar canvas loses first. Shape here: a `TEX.kind('coursing')` whose pixel function and whose `.gdshader` are the
+  same formula, parameters `{courseH, blockW, slide, joint, tone}`; the base map (`stone.cut`) stays underneath as
+  the surface and the kind only draws the joints and the per-block tone. The lattice helper is already pure
+  (`noiseP`, Voth 47-texture.js).
+- **[G shader] Variety as world-space macro noise, extended.** `breakup` (done 2026-10-03) already blends a shifted
+  copy and varies brightness. Spiderbench also varies **roughness** and **grime** from the same macro field, and
+  offsets each building's UV by a hash of its seed (`gOff`), so sixteen wall layers read as hundreds: building-scale
+  patches of peeling, re-pointing and stains, not per-tile ones. Add `rough` and `grime` to `breakup`'s parameters
+  (`{mix, macro, cell, rough, grime}`), grime sampling the shared streak sheet above. Voth's per-instance UV offset
+  in `45-kit.js` is the CPU half of the same idea; keep one hash and name it in both places.
+- **[G native] A detail normal at close range.** A tiling micro-relief normal blended over the base normal, fading
+  with distance (spiderbench derives the tangent frame from `dFdx`/`dFdy` so it needs no UV tangents). Godot has it
+  built in (`detail_normal`, `detail_mask`, `detail_uv_layer` on `StandardMaterial3D`), so in this plan it is a
+  **record field**, not a hook: `detail:{normal, scale, strength}` on the record in `23-mat-record.js`, and the
+  three.js preview applies it in the world-UV hook only for the near LOD. One shared `detail.*` set in the library
+  (plaster grain, stone grain, metal brush) serves every culture.
+- **[G data] One hash, bit-exact on both sides.** Its window occupancy is hashed identically in JavaScript and GLSL
+  (`nh3`), so the CPU-side light list agrees with what the shader draws. Rule for the port: any hash a shader shares
+  with placement code (lit windows, per-block tone, streak cell) is one integer hash written once in `core/`, with its
+  GDScript and `.gdshader` twins beside it, and a test that compares the three on a fixed input set.
+
+Smaller notes from the same read: colour maps sRGB and every data map explicitly no colour space (the library's
+`meta.json` already says which is which; the Girder adapter should set `colorSpace` from it, not by file name);
+its image loader retries with backoff because Chromium drops decodes under load (`ERR_INSUFFICIENT_RESOURCES`), which
+matters once a build loads `tex/` as files instead of data URLs; and a 4096 px ad atlas costs it 85 MB with mips,
+the number to remember when a pattern sheet is tempted past 1024.
 
 ## Processing pipeline
 
@@ -1013,6 +1051,9 @@ What the first delivery taught:
    parameters.
 4. **Iziz**, then the nacre culture (Ys's Hykkousoi), as the plan's order of work says.
 5. ~~Decide Git LFS~~ Decided no; revisit at 250 MB (see "Git LFS").
+6. **From the spiderbench read (2026-10-05, "Shader hooks"):** the `detail` record field and one shared `detail.*`
+   set; `rough` and `grime` on `breakup` with the shared grime streak sheet (one generated image, prompt to write);
+   a `coursing` TEX kind for ashlar and brick, piloted on Voth's canton walls, where the painted-joint history is.
 
 ## Available, not committed
 

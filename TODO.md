@@ -393,6 +393,17 @@ with no extra mesh.
 - **[web]** One shared polygon-offset ladder. **[G data]** A shared mitred ribbon helper for roads, rivers and
   walls, whose output is plain geometry.
 
+## Surfaces *(spiderbench, github.com/xikhar/spiderbench, read 2026-10-05; detail in `core/materials/PLAN.md`, "From spiderbench")*
+
+- **[G shader]** Analytic coursing: ashlar and brick joints from UV math and a per-block hash, not a painted
+  canvas. A `coursing` TEX kind, pilot on Voth's canton walls.
+- **[G shader]** `breakup` gains `rough` and `grime`; grime samples one shared streak sheet (8 by 16 masks, each
+  opening picks a cell by hash). One generated image; prompt to write in PLAN.md.
+- **[G native]** A detail normal at close range: record field `detail`, Godot `detail_normal`; one shared
+  `detail.*` library set.
+- **[G data]** Any hash shared between placement code and a shader is written once in `core/` with GDScript and
+  `.gdshader` twins and a comparison test.
+
 ## Worlds *(Menagerie)*
 
 These are the best Godot candidates: generators whose output is data.
