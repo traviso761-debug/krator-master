@@ -8,7 +8,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | [`core`](core/PORT.md) | 48 | 354 | 161 | 42 | 52 | 17 | 82 | 4 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 59 | 714 | 149 | 40 | 10 | 38 | 478 | 9 |  | yes | yes |
-| [`settlements/girder`](settlements/girder/PORT.md) | 32 | 600 | 122 | 7 | 89 | 42 | 340 | 11 | atmos | yes | yes |
+| [`settlements/girder`](settlements/girder/PORT.md) | 32 | 602 | 124 | 7 | 89 | 42 | 340 | 11 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 74 | 1078 | 216 | 19 | 13 | 77 | 753 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 82 | 787 | 158 | 23 | 42 | 47 | 517 | 6 | atmos | yes | yes |
 | [`settlements/jimjam`](settlements/jimjam/PORT.md) | 34 | 417 | 7 | 20 | 10 | 34 | 347 | 5 |  | yes | yes |
@@ -20,9 +20,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/shade`](settlements/shade/PORT.md) | 28 | 319 | 77 | 15 | 13 | 71 | 142 | 3 |  | yes | yes |
 | [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1798 | 411 | 0 | 106 | 107 | 1175 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 64 | 886 | 437 | 19 | 10 | 56 | 365 | 6 |  | yes | yes |
-| [`settlements/ys`](settlements/ys/PORT.md) | 64 | 874 | 70 | 28 | 29 | 39 | 708 | 5 |  | yes | yes |
+| [`settlements/ys`](settlements/ys/PORT.md) | 135 | 1917 | 307 | 52 | 104 | 104 | 1351 | 8 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 47 | 1024 | 105 | 13 | 16 | 142 | 748 | 11 | fixtures | yes | yes |
-| [`kits/ancients`](kits/ancients/PORT.md) | 199 | 2473 | 239 | 34 | 174 | 27 | 1999 | 5 |  | yes | yes |
+| [`kits/ancients`](kits/ancients/PORT.md) | 207 | 2537 | 244 | 34 | 174 | 27 | 2057 | 11 |  | yes | yes |
 | [`kits/catalog`](kits/catalog/PORT.md) | 37 | 1330 | 11 | 0 | 10 | 55 | 1255 | 3 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
@@ -37,7 +37,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1383 | 18710 | 2582 (14%) | 339 (2%) | 788 (4%) | 1790 (10%) | 13211 (71%) | 201 | | | |
+| **all** | 1462 | 19818 | 2827 (14%) | 363 (2%) | 862 (4%) | 1855 (9%) | 13912 (70%) | 210 | | | |
 
 ## Host-shell copies
 

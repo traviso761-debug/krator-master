@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 122 (20%) | 7 (1%) | 89 (15%) | 42 (7%) | 340 (57%) |
+| KB | 124 (21%) | 7 (1%) | 89 (15%) | 42 (7%) | 340 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -17,7 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/10-core.js` | 8.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/20-stage.js` | 14.5 | [web] | 21 | 6 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | host: renderer, scene, lights, the canvas sky-dome painter and the eruption timer; the volcano and dome presets belong to core/atmos |
 | `src/21-sky.js` | 54.3 | [G native] | 62 | 0 | 19 | 6 | 0 | 9 | 25 | 0 | 0 | 0 | 0 | the Krator sky (11 copies): a sky preset in core/atmos plus one [G shader] for the star, giant and ring layers; its panel and probe are host (GODOT-PLAN.md section 5) |
-| `src/30-layout.js` | 21.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the layout as records: SLOTS, TOWERS, PLOTS, ROADS, GATES, TREES (addTree), FARTREES and the NAV graph. Exports as is; its rnd() draws (trees, clearings) move to KRAND at the reseeding event |
+| `src/30-layout.js` | 23.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the layout as records: SLOTS, TOWERS, PLOTS, ROADS, GATES, TREES (addTree), FARTREES and the NAV graph. Exports as is; its rnd() draws (trees, clearings) move to KRAND at the reseeding event |
 | `src/32-branches.js` | 4.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-kit.js` | 30.6 | [draw] | 41 | 0 | 0 | 0 | 0 | 14 | 21 | 2 | 0 | 0 | 0 | the geometry kit (BOX, SECTOR, emitBuckets, emitMerged). REGISTER and SITES are the tag registry: move to core/tags. The night light volume (nlv*, canvas bake) is [web]/[G native] and goes to the host |
 | `src/47-texture.js` | 14.3 | [draw] | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Phase 3 pilot (2026-10-03): every painter is a TEX.def kind (pure pixel functions; web and ghostwood are canvas kinds, baked at export); library families take materials.json's sets from the generated pack; the adapter KMAT.adapter('girder') gives window._materials, the table an exporter writes |

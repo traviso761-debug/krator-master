@@ -104,7 +104,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/86-bio-60-biome-nwbay-floor.js` | 18.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/86-bio-65-biome-nwbay-dress.js` | 9.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-bio-70-biome-nwbay.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/86-bio-75-biome-nwbay-fauna.js` | 12.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 6 | 0 | 0 | 0 |  |
+| `src/86-bio-75-biome-nwbay-fauna.js` | 12.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 6 | 0 | 0 | 0 |  |
 | `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89m-sky-k.js` | 42.2 | [G native] | 42 | 1 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/8aj-alt-a-bole.js` | 15.0 | [draw] | 14 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
