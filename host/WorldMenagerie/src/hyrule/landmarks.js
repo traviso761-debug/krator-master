@@ -93,6 +93,12 @@ export function landmarks(api){
         parts.push(cyl(px,y-0.8,pz,9,9,0.8,deck,10),limb([R_.x+Math.cos(a)*(r-8),y-7,R_.z+Math.sin(a)*(r-8)],[px,y-0.8,pz],0.7,0.7,rail,5));
         if(h!==1){parts.push(cyl(px,y,pz,4.6,4.6,4,deck,10),cone(px,y+4,pz,6.4,7,cloth[(lv+h)%cloth.length],10));}
         else parts.push(blk(px,y,pz,6,1,0.3,rail,-a));}}
+    // the spire: the rock goes on up past the village, slender and leaning, to an anvil of rock overhanging the
+    // lake - the shape the village is known by from far off
+    {let sx=R_.x+9,sz=R_.z-4,sy=base+H-4;const n=9;
+      for(let k=0;k<n;k++){const t=k/n,r0=10-t*4.4,r1=10-(t+1/n)*4.4,h=14,ox=Math.sin(k*0.9)*2.2+t*3,oz=Math.cos(k*1.3)*1.6;
+        parts.push(mesh(new THREE.CylinderGeometry(r1,r0,h,9).translate(0,h/2,0),k%2?rockA:rockB,sx+ox,sy+k*h,sz+oz));}
+      const ty=sy+n*14,tx=sx+Math.sin(n*0.9)*2.2+3;parts.push(sph(tx+8,ty+3,sz,1,rockA,22,6.5,10),sph(tx+18,ty+4.5,sz+1,1,rockB,12,4.5,7));}
     // the top: a wide deck and the elder's big hut
     parts.push(cyl(R_.x,base+H+6,R_.z,18,18,1,deck,14),cyl(R_.x,base+H+7,R_.z,7,7,5,deck,12),cone(R_.x,base+H+12,R_.z,10,10,cloth[0],12));
     if(lake)for(const a of [0.4,2.6]){const bx=R_.x+Math.cos(a)*36,bz=R_.z+Math.sin(a)*36,ex=R_.x+Math.cos(a)*170,ez=R_.z+Math.sin(a)*130;

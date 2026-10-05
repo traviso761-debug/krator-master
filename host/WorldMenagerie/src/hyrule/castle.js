@@ -15,13 +15,13 @@ import { kit } from './kit.js';
 import { guardianKit } from './guardian.js';
 
 export function castle(api){
-  const K=kit(api),{THREE,M,slab,blk,cyl,cone,sph,dome,limb,gable,hip,frame,wall,windows,house,build,hz,rng,gh,glowM,mesh}=K;
+  const K=kit(api),{THREE,M,mat:mat_,slab,blk,cyl,cone,sph,dome,limb,gable,hip,frame,wall,windows,house,build,hz,rng,gh,glowM,mesh}=K;
   const PL=api.ctx.plan||{sites:{}},S=PL.sites,GK=guardianKit(THREE);
   const malice=glowM(0xb0185a,1.2),eyeM=glowM(0xff9a2a,1.4),blueGlow=glowM(0x4ad8ff,1.2);
   const deadG=(parts,x,z,yaw)=>GK.fallen(parts,x,gh(x,z),z,yaw||0,Math.floor(Math.abs(x*7.3+z*3.1))%997);
   // a round tower with a cone roof, a band below the roof, slit windows
   const tower=(parts,x,y,z,r,h,roofH,m,roofM)=>{parts.push(cyl(x,y,z,r*1.06,r,h,m||M.stone,12),cyl(x,y+h-r*0.5,z,r*1.18,r*1.18,r*0.5,M.stone2,12),
-      cone(x,y+h,z,r*1.3,roofH||r*2.6,roofM||M.slate,12));
+      cone(x,y+h,z,r*1.3,roofH||r*3.6,roofM||M.slate,12));
     for(let k=0;k<3;k++){const a=k*2.1+x,yy=y+h*(0.35+k*0.18);parts.push(blk(x+Math.cos(a)*(r+0.05),yy,z+Math.sin(a)*(r+0.05),0.8,2.4,0.8,M.dark,-a));}};
   // a ring of merlons round a polygon's rim
   const merlonRing=(parts,pts,y,m,size)=>{for(let k=0;k<pts.length;k++){const a=pts[k],b=pts[(k+1)%pts.length],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.floor(L/(size*2.2)),yaw=-Math.atan2(b[1]-a[1],b[0]-a[0]);
@@ -65,6 +65,11 @@ export function castle(api){
     for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const [px,pz]=F(ku+a*(ks/2+1),kw+b*(ks/2+1));tower(parts,px,KT-28,pz,5,44,20,M.pale);}
     parts.push(cyl(kx,KT+7,kz,15,13,16,M.pale,8),cone(kx,KT+23,kz,19,92,M.slate2,8),cyl(kx,KT+70,kz,6.4,6.4,3,M.gold,8),cone(kx,KT+114,kz,1.4,14,M.gold,6));
     for(let k=0;k<8;k++){const a=k/8*Math.PI*2+ry;parts.push(gable(kx+Math.cos(a)*15.5,KT+16,kz+Math.sin(a)*15.5,5,4,6,M.slate2,-a+Math.PI/2));}
+    // the crown: a ring of thin spires standing round the great one, and taller pinnacles at the keep's corners,
+    // so the Sanctum ends in a cluster of points as it does against the sky
+    for(let k=0;k<12;k++){const a=k/12*Math.PI*2+ry,r=k%2?21:24,px=kx+Math.cos(a)*r,pz=kz+Math.sin(a)*r,h=k%2?10:16;
+      parts.push(cyl(px,KT+7,pz,1.5,1.3,h,M.pale,6),cone(px,KT+7+h,pz,1.9,h*1.6,M.slate2,6));}
+    for(let k=0;k<4;k++){const a=k/4*Math.PI*2+Math.PI/4+ry;parts.push(cyl(kx+Math.cos(a)*10,KT+23,kz+Math.sin(a)*10,2.2,1.8,22,M.pale,6),cone(kx+Math.cos(a)*10,KT+45,kz+Math.sin(a)*10,2.6,22,M.slate2,6));}
     // the observation tower, tall and round to the north-east, and its bridge across to the keep
     {const [ox,oz]=F(70,-70);tower(parts,ox,Y1-1,oz,11,KH-10,34,M.pale,M.slate2);const yb=Y2+92;
       parts.push(blk((ox+kx)/2,yb,(oz+kz)/2,Math.hypot(ox-kx,oz-kz)-20,4,6,M.stone2,-Math.atan2(oz-kz,ox-kx)));
@@ -80,9 +85,20 @@ export function castle(api){
       parts.push(blk((ax+bx)/2,y-3,(az+bz)/2,Math.hypot(bx-ax,bz-az),3,12,M.stone2,yawB));
       for(let k=1;k<4;k++){const t=k/4,px=ax+(bx-ax)*t,pz=az+(bz-az)*t;parts.push(blk(px,y-22,pz,4,20,10,M.stone2,yawB));}
       for(const s of [-1,1])parts.push(blk((ax+bx)/2-Math.sin(a)*s*5.6,y,(az+bz)/2+Math.cos(a)*s*5.6,Math.hypot(bx-ax,bz-az),1.4,0.8,M.stone,yawB));}
+    // the monoliths: great dark slabs of rock standing round the castle, leaning, crusted with malice that glows
+    const mono=mat_(0x3a3440),R2=rng(cx+77);
+    for(let k=0;k<5;k++){const a=k/5*Math.PI*2+0.5+R2()*0.4,r=270+R2()*50,mx=cx+Math.cos(a)*r,mz=cz+Math.sin(a)*r*0.85,my=gh(mx,mz)-8,h=90+R2()*45,lean=(R2()-0.5)*0.5;
+      // a mass of rock in three heaped, leaning lumps, narrowing as it rises
+      for(let i=0;i<3;i++){const t=i/3,sx_=(30-i*7)*(0.9+R2()*0.3),sy_=h*0.42,sz_=(22-i*5)*(0.9+R2()*0.3),ox=Math.sin(lean)*h*t*0.6;
+        const rk=sph(mx+ox*Math.cos(a),my+h*t+sy_*0.45,mz+ox*Math.sin(a),1,mono,sx_,sy_,sz_);rk.rotation.set(lean*0.6,-a+R2(),(R2()-0.5)*0.3);parts.push(rk);}
+      for(let i=0;i<6;i++){const t=0.15+i*0.13,sp=sph(mx+(R2()-0.5)*24,my+h*t,mz+(R2()-0.5)*18,2.5+R2()*3.5,malice,1.8,0.5,1.2);parts.push(sp);}}
+    // tendrils of malice: thick strands climbing from the moat over the walls and terraces toward the keep
+    for(let k=0;k<9;k++){const a=k/9*Math.PI*2+0.2,pts=[];for(let i=0;i<=6;i++){const t=i/6,r=320-t*220,b=a+Math.sin(t*3+k)*0.25,px=cx+Math.cos(b)*r,pz=cz+Math.sin(b)*r*0.85;
+        pts.push(new THREE.Vector3(px,Math.max(gh(px,pz),t<0.3?gh(px,pz):t<0.65?Y1:Y2)+2+Math.sin(t*9+k)*3,pz));}
+      const td=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),40,2.2-k*0.08,6),malice);parts.push(td);}
     // malice: the red-black goo on the walls and terraces, with its eyes
     for(let k=0;k<22;k++){const a=hz(k*3.1)*Math.PI*2,r=40+hz(k*7.7)*250,mx=cx+Math.cos(a)*r,mz=cz+Math.sin(a)*r*0.85,my=r<110?Y2:r<170?Y1:gh(mx,mz);
-      const b=sph(mx,my,mz,8+hz(k*2.3)*10,malice,1.4,0.35,1.1);b.userData.noMerge=true;parts.push(b);if(k%3===0){parts.push(sph(mx,my+3,mz,2.2,M.white),sph(mx+1.6,my+3.2,mz,1.1,eyeM));}}
+      const b=sph(mx,my,mz,8+hz(k*2.3)*10,malice,1.4,0.35,1.1);parts.push(b);if(k%3===0){parts.push(sph(mx,my+3,mz,2.2,M.white),sph(mx+1.6,my+3.2,mz,1.1,eyeM));}}
     return build(L,parts);
   },
 
@@ -136,10 +152,14 @@ export function castle(api){
     // the round east end, open to the sky, the goddess's statue before it
     {const [ex,ez]=F(NL/2,0);const ap=mesh(new THREE.CylinderGeometry(NW/2,NW/2,HH*0.8,14,1,true,0,Math.PI).translate(0,HH*0.4,0),M.stone,ex,ty,ez);ap.rotation.y=0;ap.material=M.stone;parts.push(ap);
       const [gx,gz]=F(NL/2-8,0);parts.push(cyl(gx,ty,gz,2.4,2.2,3,M.stone2,8),lathe_goddess(gx,ty+3,gz));}
-    // the bell tower at the north-west corner: square, belfry openings, a pyramid roof and a spire
-    {const [tx,tz]=F(-NL/2-4,-NW/2-4);parts.push(blk(tx,ty,tz,13,48,13,M.stone),blk(tx,ty+48,tz,14.5,1.6,14.5,M.stone2),hip(tx,ty+49.6,tz,15,15,14,M.slate),cone(tx,ty+63,tz,0.6,6,M.gold,6));
-      for(const [du,dw] of [[1,0],[-1,0],[0,1],[0,-1]])parts.push(blk(tx+du*6.6,ty+38,tz+dw*6.6,du?0.4:5,8,dw?0.4:5,M.dark));
-      for(let k=1;k<4;k++)parts.push(blk(tx,ty+k*12,tz,13.8,1,13.8,M.stone2));}
+    // the bell tower, rising from just behind the middle of the west front over the door: square, banded, belfry
+    // openings on each face, a tall four-sided spire; a smaller spired tower stands beside it to the south
+    const tower2=(u,w,sz,h,sp)=>{const [tx,tz]=F(u,w);parts.push(blk(tx,ty,tz,sz,h,sz,M.stone),blk(tx,ty+h,tz,sz+1.5,1.6,sz+1.5,M.stone2),hip(tx,ty+h+1.6,tz,sz+1.2,sz+1.2,sp,M.slate),cone(tx,ty+h+1.6+sp,tz,0.5,5,M.gold,6));
+      for(const [du,dw] of [[1,0],[-1,0],[0,1],[0,-1]]){parts.push(blk(tx+du*(sz/2+0.1),ty+h-11,tz+dw*(sz/2+0.1),du?0.4:sz*0.4,8,dw?0.4:sz*0.4,M.dark),gable(tx+du*(sz/2+0.1),ty+h-3,tz+dw*(sz/2+0.1),du?0.5:sz*0.4,du?sz*0.4:0.5,2,M.dark,0));}
+      for(let k=1;k<4;k++)parts.push(blk(tx,ty+k*h/4,tz,sz+0.8,1,sz+0.8,M.stone2));};
+    tower2(-NL/2+5,0,12,54,20);tower2(-NL/2+4,NW/2+3,7,40,12);
+    // ivy over the walls
+    for(let k=0;k<22;k++){const s_=R()<0.5?-1:1,[ix,iz]=F(-NL/2+R()*NL,s_*(NW/2+1.4));parts.push(sph(ix,ty+2+R()*14,iz,1.6+R()*2,M.moss,0.7,2+R()*2,0.5));}
     for(let k=0;k<26;k++){const [rx,rz]=F((R()-0.5)*90,(R()-0.5)*60);parts.push(blk(rx,ty,rz,1.5+R()*3,0.8+R()*2,1.5+R()*3,R()<0.5?M.stone2:M.stone,R()*3));}
     // the wall round the rim of the plateau, with gaps where it has fallen and towers
     const P0=S.plateau;for(let k=0;k<64;k++){if(k%9===4||k%13===0)continue;const a=k/64*Math.PI*2,a2=(k+1)/64*Math.PI*2,r=640,rz=530;

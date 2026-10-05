@@ -15,12 +15,14 @@ import { kit } from './kit.js';
 export function peoples(api){
   const K=kit(api),{THREE,M,mat,glowM,mesh,slab,blk,cyl,cone,sph,dome,limb,lathe,gable,hip,frame,wall,windows,house,build,hz,rng,gh}=K;
   const PL=api.ctx.plan||{sites:{}},S=PL.sites;
-  const lum=glowM(0x9ae8ff,1.1),fire=glowM(0xff8a3a,1.4);
+  const lum=glowM(0x5aeaff,1.2),fire=glowM(0xff8a3a,1.4);
 
   return {
   // ================================================================ Zora's Domain
   zora(L,x,z){
     const Z=S.zora,zy=gh(Z.x,Z.z),parts=[],R=rng(Z.x),water=mat(0x5ab8e0,{transparent:false});
+    // the Zora's stone: pale with a blue-green cast, and the deeper teal of the trim
+    M.zora=mat(0xcfe6ea);M.zora2=mat(0x4aa8b8);
     // the plaza: a broad disc, a raised rim, a ring of water inside it, the floor round the palace
     parts.push(lathe([[0.1,-6],[52,-6],[56,0],[57,1.6],[54,1.6],[54,0.6],[0.1,0.6]],M.zora,Z.x,zy,Z.z,40));
     parts.push(cyl(Z.x,zy+0.6,Z.z,40,40,0.4,water,32),cyl(Z.x,zy+0.6,Z.z,28,28,0.7,M.zora2,32));
@@ -31,7 +33,15 @@ export function peoples(api){
       const fin=mesh(new THREE.BoxGeometry(1,26,9).translate(0,13,4.5),M.zora2,fx,zy+12,fz,-a+Math.PI/2);fin.rotation.x=-0.35;parts.push(fin);
       parts.push(blk(Z.x+Math.cos(a)*19.4,zy+3,Z.z+Math.sin(a)*19.4,4,6,0.3,M.dark,-a+Math.PI/2));}
     for(const h of [30,52])parts.push(mesh(new THREE.TorusGeometry(h===30?11.6:6.6,0.5,5,28).rotateX(Math.PI/2),lum,Z.x,zy+11+h,Z.z));
-    {const o=mesh(new THREE.SphereGeometry(3.4,14,10),lum,Z.x,zy+95,Z.z);o.userData.noMerge=true;parts.push(o);}
+    // the crown: from the spire's point a slender stalk, and at its top a cup of petals edged with light
+    parts.push(lathe([[1.4,0],[1,10],[0.9,18],[2.4,22],[0.1,23]],M.zora2,Z.x,zy+90,Z.z,10));
+    for(let k=0;k<12;k++){const a=k/12*Math.PI*2,pt=mesh(new THREE.BoxGeometry(0.6,14,5).translate(0,7,0),k%2?M.zora:M.zora2,Z.x+Math.cos(a)*2.4,zy+110,Z.z+Math.sin(a)*2.4);
+      pt.rotation.set(0,-a,0);pt.rotateZ(-0.55);parts.push(pt);const tip=sph(Z.x+Math.cos(a)*10.5,zy+121.5,Z.z+Math.sin(a)*10.5,0.9,lum);parts.push(tip);}
+    {const o=mesh(new THREE.SphereGeometry(3,14,10),lum,Z.x,zy+113,Z.z);parts.push(o);}
+    // the colonnade round the plaza: luminous columns and arches between them
+    for(let k=0;k<20;k++){const a=k/20*Math.PI*2,b=(k+1)/20*Math.PI*2,r=50,px=Z.x+Math.cos(a)*r,pz=Z.z+Math.sin(a)*r;
+      parts.push(cyl(px,zy+1.6,pz,1.3,1,9,k%2?M.zora2:lum,8));
+      const mx=Z.x+Math.cos((a+b)/2)*r,mz=Z.z+Math.sin((a+b)/2)*r;const arch=mesh(new THREE.TorusGeometry(r*Math.sin(Math.PI/20),0.7,5,12,Math.PI),M.zora,mx,zy+10.6,mz);arch.rotation.y=-(a+b)/2+Math.PI/2;parts.push(arch);}
     // small domed houses round the rim, between the lamps
     for(let k=0;k<8;k++){const a=k/8*Math.PI*2+0.2;if(k===2)continue;const hx=Z.x+Math.cos(a)*46,hz_=Z.z+Math.sin(a)*46;
       parts.push(cyl(hx,zy+0.6,hz_,5,5,5,M.zora2,12),dome(hx,zy+5.6,hz_,5.6,M.zora,1.1,12),blk(hx-Math.cos(a)*5,zy+0.6,hz_-Math.sin(a)*5,0.3,3,2,M.dark,-a+Math.PI/2));}
@@ -105,6 +115,13 @@ export function peoples(api){
       const a2=F(s*26-t*22,t*24+s*22),b2=F(s*26+t*22,t*24-s*22);windows(parts,a2,b2,gy+12,7,2.4,5,0);}
     parts.push(cyl(G.x,gy+28,G.z,13,13,6,M.sand,20),dome(G.x,gy+34,G.z,13.6,tileD,1.15,20),cone(G.x,gy+49,G.z,1,6,M.gold,8));
     for(const [s,t] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const [mx,mz]=F(s*31,t*28);parts.push(cyl(mx,gy,mz,3,2.6,46,M.sand,10),cyl(mx,gy+40,mz,3.6,3.6,2,M.sand2,10),dome(mx,gy+46,mz,2.8,tileD,1.3,10),cone(mx,gy+49.6,mz,0.4,4,M.gold,6));}
+    // the rock formations north of the town: two great mushroom-shaped stacks, water falling from the top of one
+    // into a pool at its foot
+    const rockS=mat(0xc89a6a),rockS2=mat(0xb0845a),fallM=mat(0xeaf6ff,{transparent:true,opacity:0.85,emissive:0x203038});
+    for(const [u,w,h,sc] of [[-30,-205,78,1],[25,-215,64,0.85]]){const [rx,rz]=F(u,w),rgy=gh(rx,rz)-2;
+      parts.push(lathe([[14,0],[9,h*0.3],[7.5,h*0.55],[10,h*0.75],[18,h*0.9],[19,h*0.97],[0.1,h]].map(([r,y_])=>[r*sc,y_]),u<0?rockS:rockS2,rx,rgy,rz,12));
+      if(u<0){const [fx,fz]=F(u,w+19.5),fall=mesh(new THREE.PlaneGeometry(6,h*0.9).translate(0,h*0.45,0),fallM,fx,rgy+2,fz,ry);fall.userData.noMerge=true;parts.push(fall);
+        const [px_,pz_]=F(u,w+24);parts.push(cyl(px_,gh(px_,pz_)-0.3,pz_,9,9,0.6,mat(0x4ab0d0),16));}}
     // palms outside the gate, either side of the road in
     for(let k=0;k<14;k++){const [px,pz]=F(152+R()*50,(k%2?1:-1)*(14+R()*40));const py=gh(px,pz),h=8+R()*5,lean=(R()-0.5)*0.6,tx=px+lean*h*0.3;
       parts.push(limb([px,py,pz],[tx,py+h,pz],0.45,0.3,M.trunk,6));for(let f=0;f<7;f++){const a=f/7*Math.PI*2;parts.push(limb([tx,py+h,pz],[tx+Math.cos(a)*4.6,py+h-1.6,pz+Math.sin(a)*4.6],0.55,0.1,M.leaf2,4));}}

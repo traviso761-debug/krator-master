@@ -69,6 +69,11 @@ export function kit(api){
     else if(kind==='flat')parts.push(blk(x,y1+h,z,w+0.4,0.6,d+0.4,roofM,ry));
     else if(kind==='dome')parts.push(dome(x,y1+h,z,Math.min(w,d)*0.5,roofM,0.9));
     if(o.chimney){const [cx_,cz_]=F(w*0.3,-d*0.15);parts.push(blk(cx_,y1+h,cz_,1.1,rh*0.9+1.2,1.1,M.stone2,ry));}
+    // Hateno's chimney: a tall stack against the gable end, wide at the foot and tapering to well over the ridge
+    if(o.stack){const [cx_,cz_]=F(-w/2-1.1,0);parts.push(mesh(new THREE.CylinderGeometry(0.75,1.9,h+rh+4.5,4,1).rotateY(Math.PI/4).translate(0,(h+rh+4.5)/2,0),o.stackM||wallM,cx_,y1-0.2,cz_,ry));}
+    // Kakariko's ridge: crossed boards standing up at each end of the little gable on the roof
+    if(o.chigi){const top=y1+h+rh*1.0,half=(w+ov*2)*1.1*0.26;for(const s of [-1,1]){const [ex,ez]=F(s*half,0);
+        for(const t of [-1,1]){const [ax,az]=F(s*half,t*0.3),[bx,bz]=F(s*half,-t*1.4);parts.push(limb([ax,top-0.6,az],[bx,top+1.6,bz],0.16,0.12,o.chigiM||M.wood2,4));}}}
     return y1+h;};
   // one mesh per material for everything that does not move or glow on its own
   function solid(parts){const keep=[],b=new Map();

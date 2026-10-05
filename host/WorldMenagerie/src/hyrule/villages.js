@@ -33,7 +33,7 @@ export function villages(api){
     const rows=[];for(let k=0;k<8;k++){const w=60-k*17;for(const s of [-1,1]){rows.push([s*(17+R()*4),w+R()*4,s]);if(R()<0.75)rows.push([s*(40+R()*8),w+R()*6,s]);}}
     for(const [u,w,s] of rows){const [hx,hz_]=F(u,w),hy=gh(hx,hz_),tall=Math.abs(u)>30?1.6:0.6,bw=9+R()*3,bd=7+R()*2;
       parts.push(blk(hx,hy-1,hz_,bw+4,1+tall,bd+4,M.stone2,ry));
-      house(parts,hx,hy+tall,hz_,bw,bd,3.4,yaw+(s>0?-Math.PI/2:Math.PI/2),{kind:'irimoya',wall:M.wood3,roof:R()<0.5?M.thatch:M.thatch2,rh:5.2,over:1.1,winM:M.paper,doorM:M.paper});
+      house(parts,hx,hy+tall,hz_,bw,bd,3.4,yaw+(s>0?-Math.PI/2:Math.PI/2),{kind:'irimoya',wall:M.wood3,roof:R()<0.5?M.thatch:M.thatch2,rh:6.4,over:1.6,winM:M.paper,doorM:M.paper,chigi:true});
       if(R()<0.5){const [fx,fz]=F(u+s*7,w+4);fence(parts,[fx,fz],F(u+s*7,w-6),1.4,M.bark);}}
     // lanterns along the path, both sides, every ten metres; stepping stones
     for(let w=-70;w<=78;w+=10)for(const s of [-1,1]){const [lx,lz]=F(s*6.5,w),ly=gh(lx,lz);parts.push(blk(lx,ly,lz,0.3,2.6,0.3,M.wood2),blk(lx,ly+2.6,lz,1.3,0.25,1.3,M.wood2,ry));
@@ -48,6 +48,19 @@ export function villages(api){
       house(parts,ix,iy+3,iz,26,18,6,yaw+Math.PI,{kind:'hip',wall:M.wood3,roof:M.thatch2,rh:6,over:2.4,winM:M.paper,doorM:M.paper});
       parts.push(blk(ix,iy+15,iz,15,4.5,10,M.wood3,ry));irimoya(parts,ix,iy+19.5,iz,21,15,8,M.thatch2,ry);
       for(const s of [-1,1]){const [lx,lz]=F(s*9,-64);parts.push(blk(lx,gh(lx,lz),lz,1.4,3,1.4,M.stone2,ry),blk(lx,gh(lx,lz)+3,lz,1.8,1.2,1.8,lamp,ry),hip(lx,gh(lx,lz)+4.2,lz,2.6,2.6,1.4,M.stone2,ry));}}
+    // trees among the houses, little gardens fenced in rows, and behind Impa's house the cliff and its waterfall
+    const crowns=[M.leaf,M.leaf2,mat(0x6a9a46)];
+    for(let k=0;k<30;k++){const [tx,tz]=F((R()<0.5?-1:1)*(8+R()*70),-75+R()*160),ty=gh(tx,tz),h=4+R()*3;
+      parts.push(limb([tx,ty,tz],[tx,ty+h,tz],0.4,0.3,M.trunk,5),sph(tx,ty+h+1.6,tz,2.6+R()*1.4,crowns[k%3],1.2,0.9,1.2));}
+    for(let k=0;k<5;k++){const gu=(k%2?1:-1)*(28+R()*20),gw=-40+k*22,G=frame(...F(gu,gw),yaw);
+      for(let r=0;r<4;r++){const [a1,a2]=G(-5,-3+r*2),[b1,b2]=G(5,-3+r*2);wall(parts,[a1,a2],[b1,b2],0.4,0.9,M.leaf2,0,gh(a1,a2)-0.1);}
+      fence(parts,G(-6,-4.5),G(6,-4.5),1,M.bark);fence(parts,G(6,-4.5),G(6,4.5),1,M.bark);}
+    {const [cx_,cz_]=F(0,-118),cy=gh(cx_,cz_),fallM=mat(0xeaf6ff,{transparent:true,opacity:0.85,emissive:0x203038});
+      // the cliff: heaped rock rising behind the house, the water coming over a notch in it
+      for(let k=0;k<9;k++){const [rx,rz]=F(-48+k*12+(R()-0.5)*6,-124-R()*8);parts.push(sph(rx,cy+18+R()*16,rz,1,k%2?M.rock:M.rock2,9+R()*5,26+R()*14,9+R()*4,1));}
+      for(let k=0;k<6;k++){const [rx,rz]=F(-40+k*16,-136);parts.push(sph(rx,cy+52+R()*10,rz,1,M.rock2,10,18,9,1));}
+      const [wx,wz]=F(-12,-109.6);const fall=mesh(new THREE.PlaneGeometry(5,60).translate(0,30,0),fallM,wx,cy,wz,ry);fall.userData.noMerge=true;parts.push(fall);
+      const [px_,pz_]=F(-12,-102);parts.push(cyl(px_,cy-0.4,pz_,7,7,0.6,M.blue2,16),sph(px_,cy+0.5,pz_,4,M.white,1.4,0.4,1.4));}
     // the Great Fairy's bud, closed, by its pond in the trees east of the village
     {const [fx,fz]=F(95,-30),fy=gh(fx,fz);parts.push(cyl(fx,fy-0.4,fz,14,14,0.6,M.blue2,20));
       parts.push(lathe([[0.1,0],[5,1],[8,5],[7.6,10],[5,14],[2,16.5],[0.1,17]],M.pink,fx,fy,fz,10),sph(fx,fy+1,fz,9,M.leaf,1.5,0.35,1.5));}
@@ -59,10 +72,11 @@ export function villages(api){
     const V=S.hateno,parts=[],R=rng(V.x+11);
     // the street: a winding line west to east through the village; houses either side facing it
     const street=[];for(let k=0;k<=12;k++){const t=k/12;street.push([V.x-150+t*300,V.z+Math.sin(t*5)*18+(t-0.5)*30]);}
-    const roofs=[M.tile,M.tile2,M.tileB,M.tile];
+    const roofs=[M.tile,M.tile2,M.tile,M.tileB,M.tile],cream=mat(0xe8d6a4);
     for(let k=0;k<12;k++){const [ax,az]=street[k],[bx,bz]=street[k+1],a=Math.atan2(bz-az,bx-ax);
       for(const s of [-1,1]){if(R()<0.15)continue;const d=16+R()*10,hx=(ax+bx)/2-Math.sin(a)*s*d,hz_=(az+bz)/2+Math.cos(a)*s*d,hy=gh(hx,hz_),two=R()<0.4;
-        house(parts,hx,hy,hz_,9+R()*4,7+R()*2,two?6.4:3.6,a+(s>0?Math.PI:0)+Math.PI/2,{kind:'gable',wall:M.plaster,roof:roofs[Math.floor(R()*roofs.length)],timber:true,chimney:R()<0.7,plinth:0.6,rh:4.6});
+        if(R()<0.15){const r=4+R()*1.5,h=two?8:5.5;parts.push(cyl(hx,hy,hz_,r,r,h,cream,12),cone(hx,hy+h,hz_,r+0.9,r*1.4,M.tile,12),blk(hx,hy,hz_+r,1.4,2.4,0.4,M.wood2));continue;}
+        const st=R()<0.6;house(parts,hx,hy,hz_,9+R()*4,7+R()*2,two?6.4:3.6,a+(s>0?Math.PI:0)+Math.PI/2,{kind:'gable',wall:cream,roof:roofs[Math.floor(R()*roofs.length)],timber:!st,chimney:!st&&R()<0.7,stack:st,stackM:cream,plinth:0.6,rh:4.6});
         if(R()<0.4){const ox=hx-Math.sin(a)*s*12,oz=hz_+Math.cos(a)*s*12,oy=gh(ox,oz);house(parts,ox,oy,oz,6,5,2.8,a,{kind:'gable',wall:M.wood,roof:M.thatch,rh:3});}}}
     // the street itself, and lamps along it
     for(let k=0;k<12;k++){const [ax,az]=street[k],[bx,bz]=street[k+1];wall(parts,[ax,az],[bx,bz],0.3,4.5,M.sand3,0,Math.min(gh(ax,az),gh(bx,bz))-0.1);
@@ -102,6 +116,10 @@ export function villages(api){
     const hullG=new THREE.SphereGeometry(1,10,6,0,Math.PI*2,Math.PI/2,Math.PI/2);
     for(let k=0;k<6;k++){const [bx,bz]=F(k<3?55+R()*20:95+R()*60,(R()-0.5)*120),by=Math.max(gh(bx,bz),0.2);const b=mesh(hullG,k%2?M.wood:M.wood3,bx,by+0.8,bz,-best+R()*0.5);b.scale.set(4,1,1.3);parts.push(b);
       if(k>=3)parts.push(limb([bx,by+0.8,bz],[bx,by+6,bz],0.1,0.08,M.wood2,4));}
+    // the big boat moored at the end of the pier: a long hull, a cabin with its roof, two masts with lamps
+    {const [bx,bz]=F(112,-36),hull=mesh(hullG,M.wood,bx,0.9,bz,-best);hull.scale.set(12,2.2,3.6);parts.push(hull);
+      parts.push(blk(bx,1,bz,10,1.2,5,M.wood3,-best),blk(bx,2.2,bz,6,3,4,M.wood,-best),hip(bx,5.2,bz,7.4,5.4,2.4,M.thatch2,-best));
+      for(const u of [-6,6]){const mx=bx+Math.cos(best)*u,mz=bz+Math.sin(best)*u;parts.push(limb([mx,1,mz],[mx,11,mz],0.18,0.12,M.wood2,5),blk(mx,10,mz,0.8,0.9,0.8,lamp));}}
     // nets drying on frames, palms
     for(let k=0;k<4;k++){const [nx,nz]=F(30+R()*10,(R()-0.5)*80),ny=gh(nx,nz);parts.push(blk(nx-1.6,ny,nz,0.2,2.4,0.2,M.wood2),blk(nx+1.6,ny,nz,0.2,2.4,0.2,M.wood2),blk(nx,ny+0.6,nz,3.2,1.6,0.05,M.cloth2));}
     for(let k=0;k<18;k++){const [px,pz]=F(-70+R()*120,(R()-0.5)*200);if(gh(px,pz)>0.8)palm(parts,px,pz,8+R()*6,(R()-0.5)*0.8);}
@@ -111,18 +129,22 @@ export function villages(api){
   // ================================================================ Tarrey Town, on its rock in Lake Akkala
   tarrey(L,x,z){
     const V=S.tarrey,vy=gh(V.x,V.z),parts=[],R=rng(V.x),lake=(PL.lakes||[]).find(l=>/Lake Akkala/.test(l.name)),lv=lake?lake.level:vy-12;
-    const bright=[mat(0xd8503a),mat(0xe8b830),mat(0x3a7ad0),mat(0x4aa060),mat(0xe07a3a),mat(0x9a5ac0)],walls=mat(0xe8dcc0);
+    const bright=[mat(0xd8503a),mat(0xe8b830),mat(0x3a7ad0),mat(0x4aa060),mat(0xe07a3a),mat(0x9a5ac0)],walls=mat(0xf0ece0);
     // the rock: a stack of pale drums out of the water, a little wider at the top
     parts.push(lathe([[30,lv-6],[34,lv],[32,vy-8],[38,vy-1],[40,vy],[0.1,vy]].map(([r,h])=>[r,h-lv+6]),M.rock,V.x,lv-6,V.z,14));
-    // round houses on the rim, bright roofs, little windows; walkways between them
-    for(let k=0;k<9;k++){const a=k/9*Math.PI*2+0.3,r=26+R()*6,hx=V.x+Math.cos(a)*r,hz_=V.z+Math.sin(a)*r,hr=4+R()*1.6,hh=4+R()*3;
-      parts.push(cyl(hx,vy,hz_,hr,hr,hh,walls,12),dome(hx,vy+hh,hz_,hr*1.12,bright[k%bright.length],0.8,12));
-      parts.push(blk(hx-Math.cos(a)*(hr+0.05),vy,hz_-Math.sin(a)*(hr+0.05),0.3,2.4,1.4,M.wood2,-a+Math.PI/2));
-      if(k%3===0)parts.push(cyl(hx,vy+hh+hr*0.8,hz_,0.3,0.3,2.6,M.wood2,6));}
-    // the hall in the middle: a tall drum, a terrace round it, the tall golden roof with its curl
-    parts.push(cyl(V.x,vy,V.z,11,10,12,walls,16),cyl(V.x,vy+12,V.z,13,13,1,M.wood,16),cyl(V.x,vy+13,V.z,8,7.6,8,bright[2],16),
-      lathe([[9,0],[8.6,3],[6,9],[3,15],[1.2,19],[0.1,21]],M.gold,V.x,vy+21,V.z,16));
-    windows(parts,[V.x-10.5,V.z+3],[V.x-10.5,V.z-3],vy+5,2,1.4,2.4,0);
+    // the square: paved, the tall monument in the middle - a slim red-brown shaft on a stepped base, gold at its top
+    parts.push(cyl(V.x,vy-0.3,V.z,18,18,0.6,M.stone,16),blk(V.x,vy,V.z,7,1.2,7,M.stone2),blk(V.x,vy+1.2,V.z,5,1,5,M.stone2),blk(V.x,vy+2.2,V.z,2.6,20,2.6,mat(0xa8543a)),cone(V.x,vy+22.2,V.z,1.8,3,M.gold,4));
+    // the houses round the square: white, two storeys, green bands at the floor and the eaves, green frames on the
+    // corners and round the windows, red hipped roofs; a balcony on some
+    const gtrim=mat(0x4a8a5a),redR=mat(0xb04a32);
+    for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.4,r=27,hx=V.x+Math.cos(a)*r,hz_=V.z+Math.sin(a)*r,yaw=a+Math.PI/2,G=frame(hx,hz_,yaw),ry=-yaw,w=11,d=8,h=8.4;
+      parts.push(blk(hx,vy,hz_,w,h,d,walls,ry),blk(hx,vy+h*0.48,hz_,w+0.3,0.5,d+0.3,gtrim,ry),blk(hx,vy+h-0.5,hz_,w+0.3,0.5,d+0.3,gtrim,ry),hip(hx,vy+h,hz_,w+1.6,d+1.6,4.2,redR,ry));
+      for(const [u,v] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const [cx_,cz_]=G(u*w/2,v*d/2);parts.push(blk(cx_,vy,cz_,0.5,h,0.5,gtrim,ry));}
+      for(const fl of [0,1])for(const u of [-3,3]){const [wx,wz]=G(u,-d/2-0.12);parts.push(blk(wx,vy+1.2+fl*4.2,wz,2,2.2,0.2,gtrim,ry),blk(wx,vy+1.5+fl*4.2,wz,1.4,1.6,0.25,M.dark,ry));}
+      if(k%2===0){const [bx,bz]=G(0,-d/2-1);parts.push(blk(bx,vy+4.1,bz,6,0.3,2,M.wood,ry),blk(bx,vy+4.4,bz-0,6,1,0.15,M.wood2,ry));}}
+    // golden-leaved trees round the rim
+    const goldLeaf=mat(0xe8b830),goldLeaf2=mat(0xd89a2a);
+    for(let k=0;k<10;k++){const a=k/10*Math.PI*2,tx=V.x+Math.cos(a)*36,tz=V.z+Math.sin(a)*36;parts.push(limb([tx,vy,tz],[tx,vy+5,tz],0.4,0.3,M.trunk,5),sph(tx,vy+7,tz,3.2,k%2?goldLeaf:goldLeaf2,1.2,1,1.2));}
     // the arch over the way in, and the walkway out across the water to the west shore
     const w0=[V.x-38,V.z],w1=[V.x-150,V.z+20];
     for(const s of [-1,1])parts.push(cyl(V.x-36,vy,V.z+s*4,0.8,0.8,9,M.wood,8));

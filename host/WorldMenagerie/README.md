@@ -960,23 +960,27 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   - `castle.js`: **Hyrule Castle**: the curtain wall with round towers, merlons and a gatehouse; two walled terraces
     with turrets; the great hall, two wings and the library under steep slate, rows of tall windows, buttresses; the
     Sanctum's banded keep with its crown of turrets and the great spire; the observation tower and its bridge; slim
-    towers everywhere; bridges on piers over the moat; malice. **Castle Town**: its broken ring wall, streets of
+    towers everywhere; bridges on piers over the moat; a crown of thin spires round the great one; leaning masses of dark rock round the
+    castle crusted with glowing malice, and tendrils of it climbing the terraces. **Castle Town**: its broken ring wall, streets of
     roofless houses (a gable end, a chimney), the plaza and fountain, the church's shell. **The Great Plateau**: the
     Temple of Time (bays of tall open windows, buttresses, half the roof and the rafters of the rest, the west front's
-    rose window, the round east end, the bell tower, the goddess); the rim wall; the old man's cabin.
-  - `villages.js`: **Kakariko** (houses on stone terraces under thatch, lanterns along the path, the gate, Impa's
-    house on its platform, the Great Fairy's bud), **Hateno** (white walls, dark timbers, red and blue roofs and
-    chimneys along the street, fields in rows; the Tech Lab with its telescope and blue flame; Fort Hateno),
-    **Lurelin** (stilt huts, piers, boats, nets, palms), **Tarrey Town** (bright round houses on its rock in Lake
-    Akkala, the golden-roofed hall, the walkway across the water).
-  - `peoples.js`: **Zora's Domain** (the plaza with its ring of water, the finned spire and its orb, domed houses,
+    rose window under its central bell tower and a second spire, the round east end, the goddess, ivy); the rim wall; the old man's cabin.
+  - `villages.js`: **Kakariko** (houses on stone terraces under thick thatch with crossed boards at the ridge, trees and gardens,
+    the waterfall coming over the cliff behind, lanterns along the path, the gate, Impa's
+    house on its platform, the Great Fairy's bud), **Hateno** (cream walls, red and blue tiled roofs, tall tapering chimney stacks against the gable
+    ends, a few round houses along the street, fields in rows; the Tech Lab with its telescope and blue flame; Fort Hateno),
+    **Lurelin** (stilt huts, piers, boats, nets, palms), **Tarrey Town** (white two-storey houses with green trim and red hipped roofs round
+    a square on its rock in Lake Akkala, the tall monument, golden trees, the walkway across the water).
+  - `peoples.js`: **Zora's Domain** (the plaza with its ring of water and colonnade of luminous arches, the finned spire
+    and the cup of glowing petals on its stalk, domed houses,
     lamps, the princess's statue, the arched bridges), **Goron City** (rock domes, the lava channel, red-cloth
     shops, fire bowls, mine rails, the hero's statue), **Gerudo Town** (the merloned wall and domed towers, packed
-    flat-roofed houses with awnings, the palace's tiers, dome and minarets, palms at the gate).
-  - `wayside.js`: the **shrines** (dark stone bells on stepped platforms, rings and lines of light, the lit doorway,
-    the pedestal) and the **stables** (the banded canvas tent, the great horse's head, lamps, the sign, a corral with
+    flat-roofed houses with awnings, the palace's tiers, dome and minarets, palms at the gate, the mushroom-shaped rock stacks to the north with water falling from one).
+  - `wayside.js`: the **shrines** (tall rounded monoliths on stepped platforms, a swirl of light on the face and lines
+    running from it, the lit doorway, the pedestal) and the **stables** (the banded canvas tent with its green crown, the great horse's head high on a
+    lattice neck hung with banners, bunting, the sign, a corral with
     horses, the cooking pot).
-  - `landmarks.js`: the fifteen Sheikah towers; Rito Village on its pillar; the **Great Deku Tree** (flared trunk on
+  - `landmarks.js`: the fifteen Sheikah towers; Rito Village on its pillar, the rock going on up past it to an anvil top; the **Great Deku Tree** (flared trunk on
     its roots, the face with brows and a beard of moss, limbs holding a dome of leaves) and the Master Sword on its
     dais; the three Lomei Labyrinths; the **Akkala Citadel** (broken wall and towers, the stepped-ruin keep, the
     roofless hall, the watchtower, Guardians) and the spiral in the sea; Hylia Bridge, the Tabantha Great Bridge,
