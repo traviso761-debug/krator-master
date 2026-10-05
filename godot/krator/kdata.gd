@@ -143,10 +143,10 @@ static func oct_encode(v: Vector3) -> Vector2:
 # krator-heightfield (written by godot/tools/export_spike.py): a grid mesh with the spike's ground shader,
 # a biome tile's ground (BIO.export's `ground`: the same grid, heights and water) as the same mesh, with a flat
 # water sheet where the water stands above the ground
-static func ground(g: Dictionary) -> Node3D:
+static func ground(g: Dictionary, look = null) -> Node3D:
 	var hf := {"format": "krator-biome ground", "nx": g["nx"], "nz": g["nz"], "step": g["step"], "x0": g["x0"], "z0": g["z0"],
 		"heights": g["heights"]}
-	var n := _grid(hf)
+	var n := _grid(hf, look)
 	if g.has("water"):
 		var w := floats(g["water"])
 		var h := floats(g["heights"])
@@ -173,25 +173,34 @@ static func ground(g: Dictionary) -> Node3D:
 	return n
 
 
-static func heightfield(path: String) -> Node3D:
+static func heightfield(path: String, look = null) -> Node3D:
 	var hf = read_json(path)
 	if not (hf is Dictionary):
 		return null
-	return _grid(hf)
+	return _grid(hf, look)
 
 
-static func _grid(hf: Dictionary) -> Node3D:
+# look: the stage's ground (KSTAGE.ground) on the same grid: per-sample uvs and colours and the page's ground material
+static func _grid(hf: Dictionary, look = null) -> Node3D:
 	var nx: int = int(hf["nx"])
 	var nz: int = int(hf["nz"])
 	var step: float = float(hf["step"])
 	var x0: float = float(hf["x0"])
 	var z0: float = float(hf["z0"])
 	var h := floats(hf["heights"])
+	var lk: Dictionary = look if look is Dictionary and int(look.get("nx", -1)) == nx and int(look.get("nz", -1)) == nz else {}
+	var UV := floats(lk["uv"]) if lk.has("uv") and lk["uv"] != null else PackedFloat32Array()
+	var CO := floats(lk["colour"]) if lk.has("colour") and lk["colour"] != null else PackedFloat32Array()
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for j in nz:
 		for i in nx:
-			st.add_vertex(Vector3(x0 + i * step, h[j * nx + i], z0 + j * step))
+			var s := j * nx + i
+			if UV.size() > 0:
+				st.set_uv(Vector2(UV[s * 2], UV[s * 2 + 1]))
+			if CO.size() > 0:
+				st.set_color(Color(CO[s * 3], CO[s * 3 + 1], CO[s * 3 + 2]))
+			st.add_vertex(Vector3(x0 + i * step, h[s], z0 + j * step))
 	for j in nz - 1:
 		for i in nx - 1:
 			var a := j * nx + i
@@ -201,7 +210,21 @@ static func _grid(hf: Dictionary) -> Node3D:
 	st.generate_normals()
 	var mesh := st.commit()
 	var mat := ShaderMaterial.new()
-	mat.shader = load("res://shaders/terrain.gdshader")
+	if lk.has("material"):   # the page's own ground: its texture, colour and vertex colours
+		var m: Dictionary = lk["material"]
+		mat.shader = load("res://shaders/ground.gdshader")
+		if m.get("map") != null:
+			mat.set_shader_parameter("map_tex", texture_from_data_url(m["map"]))
+			mat.set_shader_parameter("has_map", true)
+		mat.set_shader_parameter("colour", colour(m.get("colour", "#ffffff"), false))
+		var rp: Array = m.get("repeat", [1, 1])
+		var of: Array = m.get("offset", [0, 0])
+		mat.set_shader_parameter("uv_repeat", Vector2(float(rp[0]), float(rp[1])))
+		mat.set_shader_parameter("uv_offset", Vector2(float(of[0]), float(of[1])))
+		mat.set_shader_parameter("flip_v", bool(m.get("flipY", true)))
+		mat.set_shader_parameter("use_vc", CO.size() > 0 and bool(m.get("vertexColours", false)))
+	else:
+		mat.shader = load("res://shaders/terrain.gdshader")
 	mesh.surface_set_material(0, mat)
 	var mi := MeshInstance3D.new()
 	mi.name = "Terrain"

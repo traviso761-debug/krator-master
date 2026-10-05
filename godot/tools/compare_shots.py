@@ -37,15 +37,8 @@ CASES = {
                  lift=2, eye=[45, 70, 60]),   # high: Yuni climbs a slope, and lower the eye lands inside its neighbours
 }
 
-# before any page script: record every PerspectiveCamera made (the first is the main one)
-INIT = r"""
-(() => { window.__cams = []; let T;
-  // three's UMD wrapper assigns an empty THREE first and fills it after, so catch the class as it is assigned
-  Object.defineProperty(window, 'THREE', { configurable: true, get() { return T; }, set(v) { T = v; let K;
-    Object.defineProperty(v, 'PerspectiveCamera', { configurable: true, enumerable: true, get() { return K; }, set(P) {
-      K = class extends P { constructor(...a) { super(...a); window.__cams.push(this); } }; } }); } });
-})();
-"""
+# before any page script: record the cameras and what the page renders (godot/tools/stage_hook.js)
+INIT = open(os.path.join(HERE, "stage_hook.js")).read()
 PIN = r"""([E, Tg]) => {
   const c = window.__cams[0]; if (!c) return null;
   const fov = c.fov;

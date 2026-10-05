@@ -57,6 +57,7 @@ not convert it. `convention.colours` says this per table (since 2026-10-05).
 | `core`, `kits` | the core's version, the kits resident in the page (`BIO.kit`) |
 | `box` | the tile, or null |
 | `ground` | with a box: the ground under the tile, `{x0, z0, step, nx, nz, heights, water}` (typed arrays; row j is z0 + j*step). The host's `terrainH` and `waterH` sampled on a grid (`opt.ground`: the step, 2 m by default; `false` leaves it out). A stand-in for the `core/terrain` bake (since 2026-10-05) |
+| `stage` | with a box: the page's look (`core/biome/44-core-stage.js`, "The stage" below); `opt.stage: false` leaves it out, `opt.sky` sets the panorama's width (1024) |
 | `items` | one record per instanced mesh (below) |
 | `buckets` | one record per merged mesh (below) |
 | `materials` | one record per material (below) |
@@ -105,6 +106,25 @@ shared material vocabulary (Phase 3: `family`, `colour`, `map`, `roughness`, `me
 mesh is drawn while the camera is within `range` metres of the chunk (`BIO.LOD.chunk`, 1200 m)
 and at least `minRange` from it. In Godot that is `visibility_range_end` and
 `visibility_range_begin` on the node, with a fade margin.
+
+## The stage
+
+`KSTAGE.capture()` (`core/biome/44-core-stage.js`, [web], export time only) records how the page looks, so a port
+starts from the same light instead of guessing. Every Krator page can call it; `BIO.export` and `ATMOS.export`
+add it as `stage`, and `godot/tools/export_spike.py` writes it as `stage.json` for the glTF cases.
+
+| Key | What | Godot (`godot/krator/stage.gd`) |
+|---|---|---|
+| `renderer` | `toneMapping` (`ACESFilmic`, `Reinhard`, ...), `exposure`, `output` encoding | `Environment.tonemap_mode`, `tonemap_exposure` |
+| `lights` | `directional`: `dir` (light to target, unit), `colour`, `intensity`, `shadow`, brightest first; `hemisphere` `{sky, ground, intensity}`; `ambient`; `points` (a count) | the first is the sun, the rest fill lights; `light_energy` = intensity (three's legacy units). Hemisphere and ambient become a colour ambient |
+| `fog` | `{type:'exp2', colour, density}` or `{type:'linear', colour, near, far}` | exponential fog with density `0.8326 * d` (one exponential matched to three's squared one at the half-way distance); depth fog for linear |
+| `background` | a colour, or `'texture'` / `'cube'` | the clear colour when there is no sky |
+| `sky` | `{png, width, height, at, near}`: what the page draws past `near` metres (1500), rendered from `at` into a cube and unwrapped: u = 0.5 looks down -z, u = 0.75 down +x, v = 0 is straight up | `PanoramaSkyMaterial` |
+| `ground` | on the export's grid (`x0, z0, step, nx, nz`): `uv` (2 a sample) and `colour` (3, or null) read from the mesh under each point, and its `material` (`colour`, `map` as a PNG, `repeat`, `offset`, `flipY`, `vertexColours`, `roughness`, `hooked`); `mesh` names it, `uvFit` says the uvs are an exact affine fit | `shaders/ground.gdshader` on the heightfield |
+
+Colours are three's linear working values, as everywhere in this export: Godot's light, fog and ambient colours are
+sRGB, so `stage.gd` converts them (`linear_to_srgb`). The sky PNG is already sRGB. What it cannot see: shader hooks
+on the ground (`hooked`), fog written in a ShaderMaterial, and anything a page changes per frame (it is one frame).
 
 ## In Godot
 

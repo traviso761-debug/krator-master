@@ -29,6 +29,8 @@ REPO = os.path.dirname(GODOT)
 DATA = os.path.join(GODOT, "data")
 THREE = os.path.join(REPO, "kits", "ancients", "three.min.js")
 INJECT = [os.path.join(HERE, "vendor", "GLTFExporter.r128.js"), os.path.join(HERE, "spike_export.js")]
+STAGE = os.path.join(REPO, "core", "biome", "44-core-stage.js")   # KSTAGE, for pages that do not list it
+HOOK = os.path.join(HERE, "stage_hook.js")                         # what the page renders, for the stage's sky
 GL_ARGS = ["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
 
 # the page's ground height, sampled on a grid: [x0, z0, x1, z1], step in metres, the JS expression for h(x, z)
@@ -110,21 +112,31 @@ async def run_case(browser, port, name, c, log):
     errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
     await pg.route("**/three.min.js", lambda r: asyncio.ensure_future(r.fulfill(path=THREE, content_type="application/javascript")))
+    await pg.add_init_script(open(HOOK).read())
     t0 = time.time()
     await pg.goto(f"http://127.0.0.1:{port}/{c['page']}", timeout=900000)
     await pg.wait_for_function("window._ready===true", timeout=900000)
     log(f"{name}: built in {time.time() - t0:.0f} s ({len(errs)} page errors)")
     for f in INJECT:
         await pg.add_script_tag(path=f)
+    if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):
+        await pg.add_script_tag(path=STAGE)
+    await pg.wait_for_timeout(1500)   # a few frames, so the hook has seen what the page renders
     files = {}
     if c["kind"] == "biome":
-        exp = await pg.evaluate("box => BIO.export({box})", c["box"])
+        exp = await pg.evaluate("box => BIO.export({box})", c["box"])   # with the stage (43-core-export-host.js wraps it)
         exp = compact_buckets(exp)
         files["biome.json"] = write_json(os.path.join(out, "biome.json"), exp)
         log(f"{name}: {exp['stats']}")
     elif c["kind"] == "gltf" or c["kind"] == "atmos":
         if c["kind"] == "atmos":
-            files["atmos.json"] = write_json(os.path.join(out, "atmos.json"), await pg.evaluate("ATMOS.export()"))
+            files["atmos.json"] = write_json(os.path.join(out, "atmos.json"), await pg.evaluate("ATMOS.export({stage: false})"))
+        # the stage (KSTAGE): light, fog, tonemapping, the sky from above the region, and the ground's look on the same
+        # grid as terrain.json, so the importer can texture the sampled ground
+        hb, hs = c.get("hbox", c["box"]), c.get("hstep", c["step"])
+        st = await pg.evaluate("""([box, region, step, fn]) => { const h = eval(fn), cx = (region[0] + region[2]) / 2, cz = (region[1] + region[3]) / 2;
+            return KSTAGE.capture({ at: [cx, h(cx, cz) + 40, cz], sky: 1024, box, step, ground: h }); }""", [hb, c["box"], hs, c["height"]])
+        files["stage.json"] = write_json(os.path.join(out, "stage.json"), st)
         g = await pg.evaluate("([box, name]) => KSPIKE.gltf(box, {name})", [c["box"], name])
         with open(os.path.join(out, "region.glb"), "wb") as f:
             f.write(base64.b64decode(g["b64"]))

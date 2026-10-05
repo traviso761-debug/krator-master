@@ -15,6 +15,7 @@ possible is to keep **what** an effect is (data) apart from **how** three.js dra
 | `fx` | one record per placed effect: `searchlight`, `spotcone`, `beacon`, `brazier`, `floodlight`, `banner`, `fountain`, `smoke`, `fireflies`, `moths`, `mist`, `fogbank`, `weather`, `outfall`, `drain` | one node or scene per record (table below) |
 | `lamps` | every street-lamp head and its hours, its halo (`glow`: an index into `glow`) and colour. three.js gives a lamp no light, only the halo and its moths (`light` says so) | `OmniLight3D`s for the nearest few, of the halo's colour; sprites for the rest |
 | `glow` | every light's halo: position, colour, size, hours | a MultiMesh of halo quads; hours go in `INSTANCE_CUSTOM` |
+| `stage` | the page's light, fog, tonemapping, sky and ground look: `KSTAGE.capture` (`biomes/GODOT.md`, "The stage"), around `opt.at` (above the first lamp by default); `opt.stage: false` leaves it out | `godot/krator/stage.gd` |
 | `props` | each instanced set: unit geometry kind, material, instances `[x,y,z, sx,sy,sz, ry, colour]` | one `MultiMeshInstance3D` per set |
 
 Colours are in **display (sRGB) space**. The three.js shaders write them out as they are. Godot lights in linear space,

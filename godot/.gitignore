@@ -3,3 +3,4 @@
 # the editor's glTF import writes these next to each .glb: generated, not data
 data/**/*.import
 data/**/region_*.png
+editor_import/

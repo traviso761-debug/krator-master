@@ -21,8 +21,9 @@ godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/r
 godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather)
 ```
 
-Or open `godot/project.godot` in the editor (Import, then F5). The first open imports `data/` (the `.glb` files are
-also imported by the editor's own glTF importer: compare that with the runtime load, `CHECKLIST.md` item 4).
+Or open `godot/project.godot` in the editor (Import, then F5). The editor skips `data/` (`data/.gdignore`): the
+spike loads its exports at runtime, and the editor's glTF import of a 20 MB region with LOD generation took over
+twenty minutes. To try the editor's import route, copy a `.glb` out of `data/` (`CHECKLIST.md` item 3).
 
 In the window: right mouse drag to look, WASD to move, Q/E down and up, Shift for x5, wheel for speed. `[` `]` step the
 hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
@@ -52,15 +53,18 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/gltf_region.gd` | a `.glb` loaded at runtime, glTF extras copied to node metadata |
 | `krator/gltf_instancing.gd`, `addons/krator_gltf/` | `EXT_mesh_gpu_instancing` (Godot 4.5 has no importer for it): instanced meshes come in as MultiMeshes, at runtime and in the editor's importer (the plugin is enabled in `project.godot`) |
 | `krator/weather_fx.gd` | the weather drawn: rain particles that ride the camera, the lightning bolt on `Atmos.strike` |
+| `krator/stage.gd` | the export's `stage` (or `data/<case>/stage.json`): tonemapping, exposure, sky panorama, sun and fill lights, ambient, fog, matched to the page (`biomes/GODOT.md`, "The stage") |
 | `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes with every record on its node as metadata |
 | `krator/fly_camera.gd` | the camera |
-| `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain` |
+| `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain`, `ground` (the stage's ground material on the heightfield) |
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
 | `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos) |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
 | `tools/export_spike.py` | writes `data/` from the built pages (headless Chromium; `pip install playwright`) |
 | `tools/spike_export.js`, `tools/vendor/GLTFExporter.r128.js` | the glTF region exporter injected into a page, and three r128's own exporter (MIT, from the three@0.128.0 npm package) |
+| `tools/stage_hook.js` | an init script for a page: finds its cameras and what it renders each frame, so `KSTAGE` can read the scenes |
+| `tools/compare_shots.py` | the web page and the spike side by side from the same camera (`shots/compare/`) |
 | `tools/shot.sh` | a screenshot on a machine with no display (Xvfb + Compatibility) |
 | `shots/` | screenshots from `tools/shot.sh` (gitignored, like every `shots/` in the repo) |
 

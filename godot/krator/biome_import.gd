@@ -88,11 +88,13 @@ static func build(path: String) -> Node3D:
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
 	_gap(report, "tags", "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label")
 	if d.has("ground"):
-		var g := KData.ground(d["ground"])
+		var g := KData.ground(d["ground"], d["stage"].get("ground") if d.get("stage") is Dictionary else null)
 		root.add_child(g)
 		root.set_meta("ground", g)
 	else:
 		_gap(report, "terrain", "no ground in the export (an export from before 2026-10-05): the spike samples terrainH into terrain.json")
+	if d.get("stage") is Dictionary:
+		root.set_meta("stage", d["stage"])
 	root.set_meta("report", report)
 	return root
 

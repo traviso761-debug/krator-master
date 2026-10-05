@@ -39,7 +39,8 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
       (the life layer's attributes). Instanced pieces arrive as MultiMeshes (`krator/gltf_instancing.gd`).
 - [ ] The library surfaces (hall roof, timber, planks, rope, cane, rock, ground) are rebuilt
       from Girder's pack with the break-up (`krator/kmat.gd`): compare their tiling with the browser.
-- [ ] Drag `data/girder/region.glb` into the editor's FileSystem dock (the Krator glTF plugin is on, so its instances
+- [ ] Copy `data/girder/region.glb` to a new folder `godot/editor_import/` (the editor skips `data/`: `data/.gdignore`;
+      expect the import to take a long while with LOD generation on, so try it off too) and open it from the FileSystem dock (the Krator glTF plugin is on, so its instances
       should import as MultiMeshes too), open it, and look at the Import dock: is there an
       option to import extras as metadata in your version? Does the editor import differ from the runtime load?
 - [ ] **Ask your friend** how the Voth kit got into Godot (GODOT-PLAN.md section 1). If it was `GLTFExporter`, this case

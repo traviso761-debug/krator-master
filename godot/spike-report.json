@@ -18,12 +18,12 @@
       },
       "images": 26,
       "instances": 1015,
-      "load_ms": 451,
+      "load_ms": 449,
       "materials": 53,
       "meshes": 77,
       "multimeshes": 17,
       "nodes_with_extras": 78,
-      "triangles": 1004311
+      "triangles": 1295543
     },
     "file": "res://data/girder/region.glb",
     "gaps": {
@@ -49,14 +49,18 @@
 
       }
     },
-    "route": "glTF (three GLTFExporter r128)"
+    "route": "glTF (three GLTFExporter r128)",
+    "stage": {
+      "lights": "1 directional, 1 hemisphere, 1 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [0.0, 74.5643702376741, 0.0] (nearer than 1500.0 m left out)"
+    }
   },
   "hyperjungle": {
     "counts": {
       "buckets": 3,
       "instances": 4348,
       "items": 19,
-      "load_ms": 205,
+      "load_ms": 268,
       "materials": 32,
       "textures": 21,
       "triangles": 10738
@@ -67,7 +71,11 @@
       "fauna paths": "fauna that fly a path in the shader (aP0, aP1) stand still at their path centre: the anim shader and its second channel are not ported",
       "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
     },
-    "route": "krator-biome JSON"
+    "route": "krator-biome JSON",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [162.0, 14.6507150406976, -747.0] (nearer than 1500.0 m left out)"
+    }
   },
   "iziz": {
     "counts": {
@@ -82,7 +90,7 @@
       },
       "images": 18,
       "instances": 9556,
-      "load_ms": 180,
+      "load_ms": 197,
       "materials": 77,
       "meshes": 266,
       "multimeshes": 193,
@@ -97,7 +105,11 @@
       "shader hooks": "44 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
     },
-    "route": "glTF (three GLTFExporter r128)"
+    "route": "glTF (three GLTFExporter r128)",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 4 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 1500.0 m left out)"
+    }
   },
   "iziz-atmos": {
     "counts": {
@@ -120,7 +132,7 @@
       },
       "glow": 328,
       "lamps": 70,
-      "load_ms": 29,
+      "load_ms": 32,
       "prop_instances": 2467,
       "prop_sets": 26
     },
@@ -146,7 +158,7 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 829,
+      "load_ms": 1023,
       "materials": 51,
       "textures": 35,
       "triangles": 186920
@@ -156,7 +168,11 @@
       "lod": "LOD is per chunk box in three and per node point in Godot: ranges widened by the chunk half-diagonal (849 m); stand-ins and impostors are not LOD levels of what they replace",
       "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
     },
-    "route": "krator-biome JSON"
+    "route": "krator-biome JSON",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [-300.0, 223.742704022042, 300.0] (nearer than 1500.0 m left out)"
+    }
   },
   "yuni": {
     "counts": {
@@ -172,7 +188,7 @@
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 176,
+      "load_ms": 240,
       "windows": 6841
     },
     "counts_interior": {

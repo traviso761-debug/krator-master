@@ -28,6 +28,7 @@ var hud: Label
 var help_on := true
 var reports := {}
 var _shot := ""
+var _stage_base := {}   # the stage's sun, ambient and fog, which the clock and the weather scale
 var _shot_frames := 0
 
 
@@ -114,8 +115,9 @@ func _load_case(name: String) -> Dictionary:
 	var focus := Vector3.ZERO
 	var report := {}
 	var terrain: Node3D = null
+	var stage = KData.read_json(dir + "stage.json") if FileAccess.file_exists(dir + "stage.json") else null
 	if FileAccess.file_exists(dir + "terrain.json"):
-		terrain = KData.heightfield(dir + "terrain.json")
+		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
 	match name:
 		"hyperjungle", "rift":
@@ -124,6 +126,8 @@ func _load_case(name: String) -> Dictionary:
 			report = b.get_meta("report")
 			var box: Array = b.get_meta("krator", {}).get("box", [0, 0, 0, 0])
 			focus = Vector3((box[0] + box[2]) * 0.5, 0, (box[1] + box[3]) * 0.5)
+			if b.has_meta("stage"):
+				stage = b.get_meta("stage")
 			if b.has_meta("ground"):   # the export's own ground (since 2026-10-05) replaces the sampled terrain.json
 				if terrain:
 					terrain.queue_free()
@@ -149,6 +153,12 @@ func _load_case(name: String) -> Dictionary:
 			focus = r.get_meta("focus", Vector3.ZERO)
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
+	_stage_base = {}
+	if stage is Dictionary:   # the page's light, fog, tonemapping and sky (krator/stage.gd)
+		_stage_base = load("res://krator/stage.gd").apply(stage, env, sun, world)
+		report["stage"] = _stage_base.get("report", {})
+	else:
+		_default_stage()
 	var span := 60.0 if name in ["girder", "yuni"] else 140.0
 	cam.look_from(focus + Vector3(span * 0.6, span * 0.45, span * 0.8), focus)
 	cam.set("speed", span * 0.25)
@@ -209,11 +219,12 @@ func _check_all() -> void:
 
 func _process(_d: float) -> void:
 	var n: float = Atmos.night(Atmos.hour)
-	sun.light_energy = lerpf(1.6, 0.04, n) * (1.0 - 0.5 * Atmos.rain) + 4.0 * Atmos.flash   # a strike lights the scene
-	env.fog_density = 0.0012 + 0.004 * Atmos.fog
-	env.ambient_light_energy = lerpf(0.8, 0.12, n)
+	var B := _stage_base if not _stage_base.is_empty() else {"sun": 1.6, "ambient": 0.8, "fog_density": 0.0012, "fog_colour": Color(0.7, 0.72, 0.74)}
+	sun.light_energy = float(B["sun"]) * lerpf(1.0, 0.025, n) * (1.0 - 0.5 * Atmos.rain) + 4.0 * Atmos.flash   # a strike lights the scene
+	env.fog_density = float(B["fog_density"]) * (1.0 + 3.0 * Atmos.fog)
+	env.ambient_light_energy = float(B["ambient"]) * lerpf(1.0, 0.15, n)
 	env.background_energy_multiplier = lerpf(1.0, 0.08, n)
-	env.fog_light_color = Color(0.7, 0.72, 0.74).lerp(Color(0.05, 0.06, 0.09), n)
+	env.fog_light_color = (B["fog_colour"] as Color).lerp(Color(0.05, 0.06, 0.09), n)
 	if _shot != "":
 		_shot_frames += 1
 		if _shot_frames == 30:
@@ -258,3 +269,19 @@ func _unhandled_input(e: InputEvent) -> void:
 		var i := Atmos.MODES.find(Atmos.W["mode"]) if Atmos.weather_on else -1
 		Atmos.set_weather(Atmos.MODES[(i + 1) % Atmos.MODES.size()])
 	_update_hud()
+
+
+# the spike's own stage when an export carries none (Yuni's records): a stock sky, Filmic, a fixed sun
+func _default_stage() -> void:
+	var psm := ProceduralSkyMaterial.new()
+	psm.sky_top_color = Color(0.32, 0.5, 0.78)
+	psm.sky_horizon_color = Color(0.72, 0.76, 0.8)
+	psm.ground_horizon_color = Color(0.5, 0.48, 0.44)
+	env.sky.sky_material = psm
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_exposure = 1.0
+	env.fog_enabled = true
+	env.fog_mode = Environment.FOG_MODE_EXPONENTIAL
+	_aim_sun()
+	sun.light_color = Color.WHITE

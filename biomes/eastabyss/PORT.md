@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 16.2 | [web] | 25 | 3 | 3 | 1 | 0 | 3 | 9 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-eastabyss-species.js` | 43.7 | [draw] | 0 | 4 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-eastabyss-species.js` | 43.8 | [draw] | 0 | 4 | 0 | 0 | 0 | 5 | 5 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-eastabyss-trees.js` | 59.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | placement pass: `EASTABYSS.buildTrees` (line 485); `mk` (line 489) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 532) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop; `EASTABYSS.buildReedBeds` (line 543) places and draws in one pass |
 | `src/60-biome-eastabyss-floor.js` | 16.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-eastabyss-dress.js` | 6.8 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
