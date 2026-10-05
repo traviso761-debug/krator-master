@@ -45,9 +45,9 @@
 </style>
 </head>
 <body>
-<div id="load">Raising Locusâ€¦</div>
+<div id="load">Laying out the abyssal kitâ€¦</div>
 <div id="ui">
-  <h1 id="ttl">Eastern Abyss — building kit</h1>
+  <h1 id="ttl">Eastern Abyss â€” building kit</h1>
   <div id="views"></div>
   <div id="hint">Drag&nbsp;= orbit Â· Wheel&nbsp;= zoom Â· WASD/QE&nbsp;= pan Â· Shift&nbsp;= fast<br>Click anything to print its coordinates (x, z and height).</div>
   <div id="dnControls">
@@ -9856,11 +9856,11 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   return _add(m);
 }
 /* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
-   block spans 2*rBottom across at its base — r reads as a radius/half-width in every
+   block spans 2*rBottom across at its base â€” r reads as a radius/half-width in every
    case. sides=4 is a tapered SQUARE block with its faces square to the frame, sides=8
    a tapered octagonal mass, higher for a rounder tower drum.
    (For sides=4 the geometry is a diamond in plan, so it is over-sized by sqrt(2) and
-   turned 45 deg to put the faces — not the corners — on the axes.) */
+   turned 45 deg to put the faces â€” not the corners â€” on the axes.) */
 function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
   const n = (sides || 8) > 8 ? _seg(sides, 8) : (sides || 8);
   const k = (n === 4) ? Math.SQRT2 : 1;
@@ -9873,7 +9873,7 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
 /* a pyramidal / hip roof covering EXACTLY w (x) by d (z) at its eaves, peak h above y.
    The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
    then scaled, which makes the covered footprint exactly w by d rather than w+d over
-   root two — and keeps a non-square roof square to its building. */
+   root two â€” and keeps a non-square roof square to its building. */
 /* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
    canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
    (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
@@ -9984,11 +9984,11 @@ const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 
    setting: indoor | outdoor | both.  anchor: floor | wall | ceiling | surface.
    Every piece is authored in the FLOOR frame (origin = footprint centre at the
    bottom of the piece, +z front); anchor tells a placer where it mounts:
-     floor   — stands on the floor at y = floorY
-     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+     floor   â€” stands on the floor at y = floorY
+     wall    â€” stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
                a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
-     ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
-     surface — stands on a table, shelf or counter top at y = surfaceY
+     ceiling â€” hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
+     surface â€” stands on a table, shelf or counter top at y = surfaceY
    materials are canonical names from CATALOG_MATERIALS below.
    Back-compat: an old entry with room: 'x' is normalised to rooms: ['x'], and
    room always holds rooms[0] for code that still reads it. */
@@ -10107,7 +10107,7 @@ function PLANT(o) {
   PLANTS.push(o); PLANT_BY_KEY[o.key] = o;
 }
 /* ASSET({key,name,culture,family,districts,wealth,w,d,h,variants,variantDims,build})
-   — a building. w/d/h are the overall footprint and height in metres. When variants
+   â€” a building. w/d/h are the overall footprint and height in metres. When variants
    differ a lot in size (a 20 m tower and an 8 m hovel under one key), give
    variantDims: [{w,d,h}, ...] with one entry per variant and w/d/h as the largest. */
 const ASSETS = [], ASSET_BY_KEY = {};
@@ -10119,7 +10119,7 @@ function ASSET(o) {
   ASSETS.push(o); ASSET_BY_KEY[o.key] = o;
 }
 /* declared size of one variant: its own entry if given, else the entry's overall box.
-   Works for ASSET, FURN and PLANT alike — any of them may carry variantDims. */
+   Works for ASSET, FURN and PLANT alike â€” any of them may carry variantDims. */
 function entryDims(A, v) {
   const vd = A.variantDims && A.variantDims[v || 0];
   return { w: (vd && vd.w) || A.w, d: (vd && vd.d) || A.d, h: (vd && vd.h) || A.h };
@@ -10410,8 +10410,8 @@ const PAL = {
   pine: [0x1f3d24, 0x254a2a], olive: [0x6f7d42, 0x7d8a4a], palm: [0x2c8a5e, 0x3a9a68],
   cypress: [0x1e4a28, 0x2a5a34], shrub: [0x556b2f, 0x4a5e28], trunk: [0x5d5140, 0x6a5c48, 0x4e4536, 0x5a4028]
 };
-/* A generic tree. Builds an actual woody structure — tapered bole in stacked segments,
-   primary limbs, branchlets, and foliage clustered at the limb ends — rather than a
+/* A generic tree. Builds an actual woody structure â€” tapered bole in stacked segments,
+   primary limbs, branchlets, and foliage clustered at the limb ends â€” rather than a
    stick with a ball on it, and tops out at very close to h so the declared height is
    the real height. kind: pine | olive | palm | shrub | cypress (default). */
 function treeHelper(F, lx, lz, kind, h, ly) {
@@ -10602,7 +10602,7 @@ function rebuildInstance(g, changes) {
 }
 
 /* measured world-space size of an instance, and how much of it got built.
-   Measures actual transformed VERTICES, not Box3.expandByObject — that takes the
+   Measures actual transformed VERTICES, not Box3.expandByObject â€” that takes the
    AABB of each mesh's own AABB, which inflates anything rotated off-axis by up to
    sqrt(2) and would quietly overstate every tapered tower and turned roof here. */
 const _mv = new THREE.Vector3();
@@ -11452,11 +11452,11 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   return _add(m);
 }
 /* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
-   block spans 2*rBottom across at its base — r reads as a radius/half-width in every
+   block spans 2*rBottom across at its base â€” r reads as a radius/half-width in every
    case. sides=4 is a tapered SQUARE block with its faces square to the frame, sides=8
    a tapered octagonal mass, higher for a rounder tower drum.
    (For sides=4 the geometry is a diamond in plan, so it is over-sized by sqrt(2) and
-   turned 45 deg to put the faces — not the corners — on the axes.) */
+   turned 45 deg to put the faces â€” not the corners â€” on the axes.) */
 function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
   const n = (sides || 8) > 8 ? _seg(sides, 8) : (sides || 8);
   const k = (n === 4) ? Math.SQRT2 : 1;
@@ -11469,7 +11469,7 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
 /* a pyramidal / hip roof covering EXACTLY w (x) by d (z) at its eaves, peak h above y.
    The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
    then scaled, which makes the covered footprint exactly w by d rather than w+d over
-   root two — and keeps a non-square roof square to its building. */
+   root two â€” and keeps a non-square roof square to its building. */
 /* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
    canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
    (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
@@ -11580,11 +11580,11 @@ const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 
    setting: indoor | outdoor | both.  anchor: floor | wall | ceiling | surface.
    Every piece is authored in the FLOOR frame (origin = footprint centre at the
    bottom of the piece, +z front); anchor tells a placer where it mounts:
-     floor   — stands on the floor at y = floorY
-     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+     floor   â€” stands on the floor at y = floorY
+     wall    â€” stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
                a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
-     ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
-     surface — stands on a table, shelf or counter top at y = surfaceY
+     ceiling â€” hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
+     surface â€” stands on a table, shelf or counter top at y = surfaceY
    materials are canonical names from CATALOG_MATERIALS below.
    Back-compat: an old entry with room: 'x' is normalised to rooms: ['x'], and
    room always holds rooms[0] for code that still reads it. */
@@ -11703,7 +11703,7 @@ function PLANT(o) {
   PLANTS.push(o); PLANT_BY_KEY[o.key] = o;
 }
 /* ASSET({key,name,culture,family,districts,wealth,w,d,h,variants,variantDims,build})
-   — a building. w/d/h are the overall footprint and height in metres. When variants
+   â€” a building. w/d/h are the overall footprint and height in metres. When variants
    differ a lot in size (a 20 m tower and an 8 m hovel under one key), give
    variantDims: [{w,d,h}, ...] with one entry per variant and w/d/h as the largest. */
 const ASSETS = [], ASSET_BY_KEY = {};
@@ -11715,7 +11715,7 @@ function ASSET(o) {
   ASSETS.push(o); ASSET_BY_KEY[o.key] = o;
 }
 /* declared size of one variant: its own entry if given, else the entry's overall box.
-   Works for ASSET, FURN and PLANT alike — any of them may carry variantDims. */
+   Works for ASSET, FURN and PLANT alike â€” any of them may carry variantDims. */
 function entryDims(A, v) {
   const vd = A.variantDims && A.variantDims[v || 0];
   return { w: (vd && vd.w) || A.w, d: (vd && vd.d) || A.d, h: (vd && vd.h) || A.h };
@@ -12006,8 +12006,8 @@ const PAL = {
   pine: [0x1f3d24, 0x254a2a], olive: [0x6f7d42, 0x7d8a4a], palm: [0x2c8a5e, 0x3a9a68],
   cypress: [0x1e4a28, 0x2a5a34], shrub: [0x556b2f, 0x4a5e28], trunk: [0x5d5140, 0x6a5c48, 0x4e4536, 0x5a4028]
 };
-/* A generic tree. Builds an actual woody structure — tapered bole in stacked segments,
-   primary limbs, branchlets, and foliage clustered at the limb ends — rather than a
+/* A generic tree. Builds an actual woody structure â€” tapered bole in stacked segments,
+   primary limbs, branchlets, and foliage clustered at the limb ends â€” rather than a
    stick with a ball on it, and tops out at very close to h so the declared height is
    the real height. kind: pine | olive | palm | shrub | cypress (default). */
 function treeHelper(F, lx, lz, kind, h, ly) {
@@ -12198,7 +12198,7 @@ function rebuildInstance(g, changes) {
 }
 
 /* measured world-space size of an instance, and how much of it got built.
-   Measures actual transformed VERTICES, not Box3.expandByObject — that takes the
+   Measures actual transformed VERTICES, not Box3.expandByObject â€” that takes the
    AABB of each mesh's own AABB, which inflates anything rotated off-axis by up to
    sqrt(2) and would quietly overstate every tapered tower and turned roof here. */
 const _mv = new THREE.Vector3();
@@ -12563,7 +12563,7 @@ const FK = (function () {
 /* ======== Role builders: beds and seating (bed, bedFine, bench, chair, throne, divan) ======== */
   /* ================================================================ role builders
      Every builder: (F, S, o) with o = { w, d, h, variant, court } and the piece inside
-     x ±w/2, z ±d/2, y 0..h. +z is the front. */
+     x Â±w/2, z Â±d/2, y 0..h. +z is the front. */
   const B = {};
   K.build = B;
 
@@ -14079,7 +14079,7 @@ const FK = (function () {
      registers every role of the tier as FURN entries keyed <culture>_<tier>_<role>; with
      roles: 'trade' it registers FK.ROLES.trade instead (keyed <culture>_trade_<role>) at the tier given. */
   /* the job (FURN_JOBS) of each trade role: the catalog's Jobs page groups work pieces by job. Roles left out
-     (bunk, locker, altar) are a trade set's household and shrine pieces: they keep a `Jobs · trade · <culture>` row. */
+     (bunk, locker, altar) are a trade set's household and shrine pieces: they keep a `Jobs Â· trade Â· <culture>` row. */
   K.TRADE_JOB = { forge: 'smithing', anvil: 'smithing', grindstone: 'smithing', armour_stand: 'smithing', weapon_rack: 'smithing',
     trough: 'herding', hayrack: 'herding', stall: 'trading', display: 'trading', vat: 'weaving', still: 'brewing', barrel: 'brewing',
     bin: 'warehousing', larder: 'warehousing', lathe: 'carpentry', press: 'milling', kiln: 'pottery' };
@@ -14120,7 +14120,7 @@ const FK = (function () {
 
 /* ---- kits/catalog/krator-master-furniture.js ---- */
 /* ======================================================================
-   Krator Master Furniture Registry — 122 pieces
+   Krator Master Furniture Registry â€” 122 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
@@ -14698,7 +14698,7 @@ FURN({
       F.box(px - s * 0.17, 1.12, 0, 0.34, 1.18, 0.05, 0, col, 'cloth');
       F.box(px - s * 0.17, 1.06, 0, 0.38, 0.07, 0.07, 0, iron, 'metal');
       F.cone(px - s * 0.17, 0.94, 0, 0.04, 0.14, 0, F.col('clothGold'), 'metal');
-      /* shield hung on the back of the post — a disc standing in the x-y plane */
+      /* shield hung on the back of the post â€” a disc standing in the x-y plane */
       F.rod(px, 1.95, -0.14, px, 1.95, -0.24, 0.21, F.col('steel'), 'metal');
       F.ball(px, 1.95, -0.26, 0.06, F.shade('steel', 0.25), 'metal');
     }
@@ -15860,7 +15860,7 @@ FURN({
     F.ball(0, headY + 1.9, 0, 0.16, F.col('giltLight'), 'metal');
 
     if (F.variant === 0) {
-      /* herald — raised arm with a lit staff */
+      /* herald â€” raised arm with a lit staff */
       F.rod(0.9, torsoY + 3.6, 0, 2.0, torsoY + 6.0, 0.3, 0.19, bronze, 'metal');
       F.rod(-0.9, torsoY + 3.6, 0, -1.1, torsoY + 0.6, 0.2, 0.19, bronze, 'metal');
       F.ball(-1.1, torsoY + 0.5, 0.2, 0.22, bronzeDark, 'metal');
@@ -15869,7 +15869,7 @@ FURN({
       F.cone(2.0, torsoY + 10.2, 0.3, 0.45, 0.95, 0, F.col('ice'), 'glow');
       F.lamp(2.0, torsoY + 10.6, 0.3, 1.0, 16);
     } else if (F.variant === 1) {
-      /* winged guardian — crossed arms, swept wings, reads from every side */
+      /* winged guardian â€” crossed arms, swept wings, reads from every side */
       F.rod(0.7, torsoY + 3.4, 0.2, -0.5, torsoY + 2.3, 0.7, 0.18, bronze, 'metal');
       F.rod(-0.7, torsoY + 3.4, 0.3, 0.5, torsoY + 2.1, 0.75, 0.18, bronze, 'metal');
       for (let s = -1; s <= 1; s += 2) {
@@ -15879,7 +15879,7 @@ FURN({
       }
       F.box(0, torsoY + 2.0, 0.85, 1.4, 2.6, 0.2, 0, F.shade(bronze, 0.08), 'metal');
     } else {
-      /* orb bearer — both arms raised holding a glowing orb */
+      /* orb bearer â€” both arms raised holding a glowing orb */
       F.rod(-0.8, torsoY + 2.6, 0, -0.45, torsoY + 7.0, 0, 0.19, bronze, 'metal');
       F.rod(0.8, torsoY + 2.6, 0, 0.45, torsoY + 7.0, 0, 0.19, bronze, 'metal');
       F.cyl(0, torsoY + 6.9, 0, 1.1, 0.16, 0, bronzeDark, 'metal');
@@ -16222,7 +16222,7 @@ FURN({
       F.rod(bx, 0.05, 0.12, bx - 0.15, 1.42, -0.1, F.rr(0.02, 0.035), pale, 'wood');
       F.cone(bx - 0.16, 1.42, -0.11, 0.045, 0.16, 0, F.col('pewter'), 'metal');
     }
-    /* shield hung on its own peg — a disc standing in the x-y plane */
+    /* shield hung on its own peg â€” a disc standing in the x-y plane */
     F.box(0.6, 0, -0.16, 0.08, 1.4, 0.08, 0, timber, 'wood');
     F.rod(0.6, 0.7, -0.1, 0.6, 0.7, -0.02, 0.36, F.col('redCopper'), 'metal');
     F.rod(0.6, 0.7, -0.02, 0.6, 0.7, 0.03, 0.15, F.shade('redCopper', 0.18), 'metal');
@@ -16973,7 +16973,7 @@ FURN({
         F.rod(cx * 0.14, 0.36, cz * 0.14, cx * 0.21, 0.02, cz * 0.21, 0.026, F.shade(wood, -0.15), 'wood');
         F.box(cx * 0.21, 0, cz * 0.21, 0.06, 0.025, 0.06, a, F.shade(wood, -0.3), 'wood');
       }
-      /* low stretchers between opposite legs — the joinery that keeps it square */
+      /* low stretchers between opposite legs â€” the joinery that keeps it square */
       F.rod(-0.16, 0.10, -0.16, 0.16, 0.10, 0.16, 0.016, F.shade(wood, -0.22), 'wood');
       F.rod(0.16, 0.13, -0.16, -0.16, 0.13, 0.16, 0.016, F.shade(wood, -0.22), 'wood');
     }
@@ -17442,7 +17442,7 @@ FURN({
   w: 2.2, d: 0.46, h: 2.05, variants: 2,
   build: function (F) {
     const metal = F.col('pewter');
-    /* a carcass with real depth to it — the cells are boxes, not a painted face */
+    /* a carcass with real depth to it â€” the cells are boxes, not a painted face */
     F.box(0, 0.05, -0.04, 2.2, 2.0, 0.38, 0, metal, 'metal');
     F.box(0, 0, -0.03, 2.24, 0.05, 0.40, 0, F.shade(metal, -0.14), 'metal');   /* plinth */
     const xs = [-0.75, -0.25, 0.25, 0.75], ys = [0.18, 0.66, 1.14, 1.60];
@@ -19607,12 +19607,12 @@ FK.set({ culture: 'generic', tier: 'poor', roles: 'trade', prefix: 'generic_trad
 
 /* ---- kits/catalog/krator-master-furniture-jobs.js ---- */
 /* ======================================================================
-   krator-master-furniture-jobs.js — WORK ITEMS, by trade (the Jobs category, 2026-10)
+   krator-master-furniture-jobs.js â€” WORK ITEMS, by trade (the Jobs category, 2026-10)
    Not a culture file. Like -generic-goods.js its name is a category: each entry keeps its real `culture`
    (the culture of the building that draws it) and carries `job`, the trade or occupation it serves, from
    FURN_JOBS (krator-furniture-core.js: farming fishing salt oil smithing milling warehousing ...). The
-   catalog sheet's Jobs page lays these out a row per job (`Jobs · fishing`), with the cultures' FK trade
-   pieces (forge, anvil, vat ...) after them, a row per culture (`Jobs · trade · <culture>`).
+   catalog sheet's Jobs page lays these out a row per job (`Jobs Â· fishing`), with the cultures' FK trade
+   pieces (forge, anvil, vat ...) after them, a row per culture (`Jobs Â· trade Â· <culture>`).
    The file adds the colours its pieces need to each culture's palette through its own PALETTE block (as
    defaults: the culture's own file wins for a key both define), so it needs no culture file beside it: furniture_bundle.bundle([..., 'jobs']) picks it up by its suffix.
    Pieces draw only through F (no culture file's helpers), so a bundle may carry it alone.

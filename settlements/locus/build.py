@@ -20,6 +20,7 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+if hasattr(sys.stdout, "reconfigure"): sys.stdout.reconfigure(errors="replace")   # a Windows console cannot print every character in KNOWN_ISSUES.md
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -219,7 +220,7 @@ def main():
     for f in order:
         if f in vb:
             continue
-        with open(paths[f]) as fh:
+        with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
 
     if do_checks:
@@ -231,7 +232,7 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
         t = html.replace('<title>Locus</title>', '<title>%s</title>' % title, 1)
@@ -240,23 +241,23 @@ def main():
     locus = flavour('locus', 'Locus Building Kit', 'Locus — building kit', 'Laying out the Locus kit…')
     abyss = flavour('abyss', 'Abyssal Building Kit', 'Eastern Abyss — building kit', 'Laying out the abyssal kit…')
     flora = flavour('flora', 'Locus Plants', 'Locus — plants', 'Laying out the plants…')
-    with open(OUT_LOCUS, 'w') as fh: fh.write(locus)
-    with open(OUT_ABYSS, 'w') as fh: fh.write(abyss)
-    with open(OUT_FLORA, 'w') as fh: fh.write(flora)
+    with open(OUT_LOCUS, 'w', encoding='utf-8', newline='\n') as fh: fh.write(locus)
+    with open(OUT_ABYSS, 'w', encoding='utf-8', newline='\n') as fh: fh.write(abyss)
+    with open(OUT_FLORA, 'w', encoding='utf-8', newline='\n') as fh: fh.write(flora)
     os.makedirs(os.path.join(HERE,'publish'), exist_ok=True)
     for src_html, name in ((html,'locus.html'),(locus,'locus-building-kit.html'),(abyss,'abyss-building-kit.html'),(flora,'locus-plants.html')):
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')
-        with open(os.path.join(HERE,'publish',name),'w') as fh: fh.write(a_.lstrip())
-    with open(MANIFEST, 'w') as fh:
+        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8', newline='\n') as fh: fh.write(a_.lstrip())
+    with open(MANIFEST, 'w', encoding='utf-8', newline='\n') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
     body = html.split("function BUILD(){", 1)[1].rsplit("</script>", 1)[0]
     body = body.rsplit('}', 1)[0]
     chk = os.path.join(HERE, '.syntax.js')
-    with open(chk, 'w') as fh:
+    with open(chk, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write("function BUILD(){'use strict';\n" + body + "\n}\n")
     try:
         r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)
@@ -280,7 +281,7 @@ if __name__ == '__main__':
 import os as _os
 _ki = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'KNOWN_ISSUES.md')
 if _os.path.exists(_ki):
-    _open = [l.rstrip() for l in open(_ki) if l.startswith('- [ ]')]
+    _open = [l.rstrip() for l in open(_ki, encoding='utf-8') if l.startswith('- [ ]')]
     if _open:
         print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md - tell the user before making changes:' % len(_open))
         for l in _open: print('  ' + l[6:])

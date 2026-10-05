@@ -56,6 +56,9 @@ ENTRIES = [
     ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
      'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 
+    ('world', 'mungo', 'settlements/mungo/dist/mungo.html', 'Mungo',
+     "A trade village on a salt lake in the Eastern Abyss: a floating reed village with its great tavern, Reed's Local, one pontoon to an abyssal town at a marshy river mouth, and the Geomancers' chapterhouse with their dune buggies. Its people live by core/simulation: fishers out at dawn, caravans and lizard riders stopping overnight, a buggy off the map and back.", 'new'),
+
     ('kit', 'jimjam-kit', 'settlements/jimjam/dist/jimjam-kit.html', 'Jimjam',
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
     ('kit', 'post-apoc-kit', 'kits/post-apoc/dist/post-apoc.html', 'Post-Apoc set',
@@ -100,6 +103,8 @@ ENTRIES = [
     ('kit', 'screamers-furniture', 'settlements/screamers/dist/furniture.html', 'Screamer furniture', 'The Screamers\' furniture set.'),
     ('kit', 'locus-kit', 'settlements/locus/locus-kit.html', 'Locus buildings', 'Dwellings, farm, infrastructure, petroleum and power.'),
     ('kit', 'abyss-kit', 'settlements/locus/abyss-kit.html', 'Eastern Abyssal buildings', 'The abyssal-desert city: salvage and stilt housing, shops, inn and tavern, caravanserai, cone-shell library, temple of the altar, the Headman\'s palace, walls and citadel, granary and windpump.'),
+    ('kit', 'motor-vehicles', 'kits/motor-vehicles/dist/motor-vehicles.html', 'Motor Vehicles',
+     "The first motor vehicle: the Geomancers' dune buggy in its three fits (Scout, Crew, Drill rig), wheels that roll and steer, lamps that switch.", 'new'),
     ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
      'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
 
