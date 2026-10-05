@@ -38,7 +38,10 @@ function heroLoader(cb){
   document.head.appendChild(s);
 }
 /* cb({ root, mixer, acts:{clip name: action}, head }) once the named model (HERO_GLB[name], the GLB as base64) is in
-   the scene, idling. The models are always in the page: the gallery's frame cannot fetch files published beside it */
+   the scene, idling. Nothing here may use fetch: the gallery's frame blocks it (connect-src), for files beside the page
+   and for blob: URLs alike. So the models are in the page, and GLTFLoader is kept off ImageBitmapLoader (which fetches
+   the textures' blob: URLs) by hiding createImageBitmap while its parser is made: it then takes TextureLoader, an <img>,
+   as Girder's own library textures load */
 function heroRig(name, cb){
   heroLoader(function(){ heroParse(name, heroB64(HERO_GLB[name]), cb); });
 }
@@ -47,7 +50,35 @@ function heroB64(s){
   for(var i=0;i<bin.length;i++) buf[i] = bin.charCodeAt(i);
   return buf.buffer;
 }
+/* the GLB with each embedded image moved from its bufferView to a data: URI in the JSON, so TextureLoader puts it
+   straight into an <img> (GLTFLoader would make a blob: URL of a bufferView image, which a strict frame may refuse) */
+function heroDataImages(ab){
+  var dv = new DataView(ab), jl = dv.getUint32(12, true), td = new TextDecoder();
+  var j = JSON.parse(td.decode(new Uint8Array(ab, 20, jl)));
+  if(!j.images) return ab;
+  var binOff = 20 + jl + 8, binLen = dv.getUint32(20 + jl, true);
+  j.images.forEach(function(im){
+    if(im.bufferView === undefined) return;
+    var v = j.bufferViews[im.bufferView], u8 = new Uint8Array(ab, binOff + (v.byteOffset||0), v.byteLength), s = '';
+    for(var i=0;i<u8.length;i+=0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i+0x8000));
+    im.uri = 'data:' + (im.mimeType || 'image/jpeg') + ';base64,' + btoa(s);
+    delete im.bufferView;
+  });
+  var js = new TextEncoder().encode(JSON.stringify(j)), pad = (4 - js.length % 4) % 4, jlen = js.length + pad;
+  var out = new Uint8Array(12 + 8 + jlen + 8 + binLen), o = new DataView(out.buffer);
+  o.setUint32(0, 0x46546C67, true); o.setUint32(4, 2, true); o.setUint32(8, out.length, true);
+  o.setUint32(12, jlen, true); o.setUint32(16, 0x4E4F534A, true); out.set(js, 20);
+  for(var k=0;k<pad;k++) out[20 + js.length + k] = 0x20;
+  out.set(new Uint8Array(ab, 20 + jl, 8 + binLen), 20 + jlen);
+  return out.buffer;
+}
 function heroParse(name, ab, cb){
+  ab = heroDataImages(ab);
+  var cib = window.createImageBitmap;
+  try{ window.createImageBitmap = undefined; heroParseNow(name, ab, cb); }
+  finally{ window.createImageBitmap = cib; }
+}
+function heroParseNow(name, ab, cb){
   new THREE.GLTFLoader().parse(ab, '', function(g){
     try{
       var root = g.scene, head = null;
