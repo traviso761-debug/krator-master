@@ -16,8 +16,9 @@ function ysStripPoly(a,b,w){const dx=b[0]-a[0],dz=b[1]-a[1];const L=Math.hypot(d
   const key=b.i+','+b.j+'-'+di+','+dj;if(seen[key])continue;seen[key]=1;
   // the shared edge: midway between the centres, running along the other axis
   const mx=(b.x+n.x)/2,mz=(b.z+n.z)/2;const ax=di?V:U;const a=[mx-ax[0]*P/2,mz-ax[1]*P/2],e=[mx+ax[0]*P/2,mz+ax[1]*P/2];
-  const wet=b.kind!=='land'&&n.kind!=='land';const awash=(b.kind==='awash'||n.kind==='awash')&&!wet;
-  LAYOUT.streets.push({a,b:e,w:STREET_W,kind:wet?'canal':awash?'awash':'street',blocks:[b,n]});}
+  // its kind from the old plane at its own midpoint: a street between a land block and a canal block lies in the water
+  const ym=ysPlaneY(ysShoreDist(mx,mz));
+  LAYOUT.streets.push({a,b:e,w:STREET_W,kind:ym>1?'street':ym>-1.2?'awash':'canal',blocks:[b,n]});}
  // the highways: from the head along +T (the coast NE), along -N (inland NW) and along -T (the southern shore)
  const H=LAYOUT.HEAD,T=LAYOUT.T,N=LAYOUT.N;
  for(const [d,L,name] of [[T,1500,'NE coast'],[[-N[0],-N[1]],1600,'NW inland'],[[-T[0],-T[1]],1400,'S shore']]){

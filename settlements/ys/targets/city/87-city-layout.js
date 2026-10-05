@@ -43,7 +43,7 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  for(const m of [1,2,3]){set(-sN[0]-sT[0]*m,-sN[1]-sT[1]*m,'industry','I');set(-sN[0]+sT[0]*m,-sN[1]+sT[1]*m,'industry','I');}
  for(const m of [3,4,5,6])for(let n=0;n<4;n++){const b=ysBlock(sT[0]*m+sN[0]*n,sT[1]*m+sN[1]*n);if(b&&b.kind!=='land'){set(b.i,b.j,'aquaculture','Aq');break;}}
  // the rest: wealth by distance from A (wider rings on land), neighbourhoods and farms, hosts and home-grown moles (75/25)
- for(const b of LAYOUT.blocks){const d=Math.hypot(b.x-A.x,b.z-A.z);b.dA=d;const L=b.kind==='land';b.wealth=d<(L?520:300)?'rich':d<(L?900:620)?'middle':'poor';
+ for(const b of LAYOUT.blocks){const d=Math.hypot(b.x-A.x,b.z-A.z);b.dA=d;const L=b.kind==='land';b.wealth=d<(L?740:300)?'rich':d<(L?1000:620)?'middle':'poor';   // land rings wider: the nearest land is 600 m off
   if(b.use)continue;
   if(L){b.use=b.s>560?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
