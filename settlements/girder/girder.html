@@ -3672,6 +3672,103 @@ var GDET = (function(){
   return { family:family, hook:hook, atlas:atlas, atlasHook:atlasHook, stats:stats, on:ON };
 })();
 window._detail = GDET.stats;
+// ================================================================= CORE FURNISH — the placement pass ([G data])
+// One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
+// A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
+// writes the placement RECORD, counts missing keys, applies the catalog's recentring table, assigns a deterministic
+// id, and hands the record to the build's draw adapter. No THREE, no DOM: the records are what crosses to Godot.
+//
+//   const R = KFURN.create(cfg)
+//   R.place(key, x, y, z, ry, o, loc, ctx)   -> the record, or null (a key the catalog lacks: counted in R.missing)
+//        x y z ry  the world transform (three.js rotation.y: the piece's front, +z, turns to (sin ry, cos ry))
+//        o         the builder's options: { v, seed, setting, ... } (the adapter's own keys pass through)
+//        loc       [lx, ly, lz, lry] in the builder's frame, or null (a piece placed in world space)
+//        ctx       { building, list, wealth, part, room, dry }: list receives the record (the building's own list;
+//                  listOf() instead makes it only when a record lands, for a build whose owners start without one);
+//                  dry places nothing anywhere else (a throwaway build: Post-Apoc's frontOf)
+//   R.frm(f, lx, lz, lry)                    -> [x, z, ry] in a FRM frame {x, z, fx, fz} (55-arch): +z its front,
+//                                               +x its right (-fz, fx); lry 0 faces the front
+//   R.interior(item, x, z, ry, adapter, opt) -> the interiors kit's rooms planned and furnished at a placement,
+//                                               summarised as data ({ item, rooms, pieces, residence }); pushed on R.buildings
+//   R.summary()                              -> counts for a probe: placed, byKey, missing, interiors, interiorPieces
+//   KFURN.SRGB_LIN                           -> Float32Array(256): an sRGB byte to linear (the catalog's colours are sRGB)
+//
+// cfg: {
+//   catalog:   { has(key), entry(key), dims(entry, variant) }   (KFURN.catalogOf(KratorFurniture) makes it)
+//   interiors: KratorInteriors (for R.interior), optional
+//   on, interiorsOn: the page's switches (?furniture=0, ?interiors=: 53-core-furnish-host.js reads them)
+//   seed(o, ctx, R, x, y, z, loc) -> the seed when o.seed is not given. Each build keeps the rule its pieces were
+//              placed with, so moving onto this module moves nothing (README.md, "Seeds")
+//   shift:     { key: [dx, dz] | function(variant) -> [dx, dz] | null }: pieces the catalog recentred on their
+//              footprint; the placement undoes it (Mav's Refuge's BRF_SHIFT)
+//   finish(rec): rounds or wraps the record's numbers the way the build always has (Girder: 3 decimals)
+//   onRecord(rec, ctx, o, entry, dims) -> false to place nothing more (deferred to the interiors); collision,
+//              inspector entries and the like go here
+//   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
+//   idPrefix:  'furn' (ids: furn_00001 in placement order) }
+//
+// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
+// job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
+var KFURN = (function(){
+'use strict';
+ const K = {};
+ K.SRGB_LIN = (function(){ const t = new Float32Array(256);
+   for(let i=0;i<256;i++){ const v = i/255; t[i] = v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); } return t; })();
+ K.catalogOf = function(KF){ return {
+   has: function(key){ return KF.has(key); },
+   entry: function(key){ return KF.FURN_BY_KEY[key]; },
+   dims: function(A, v){ return KF.entryDims(A, v); } }; };
+ function pad(n){ const s = String(n); return s.length >= 5 ? s : '00000'.slice(s.length) + s; }
+ K.create = function(cfg){
+   const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
+     lights: 0, group: null, batch: null, adapter: null, cfg: cfg };
+   const prefix = cfg.idPrefix || 'furn';
+   R.place = function(key, x, y, z, ry, o, loc, ctx){
+     o = o || {}; ctx = ctx || {};
+     if(!C.has(key)){ if(!ctx.dry) R.missing[key] = (R.missing[key]||0) + 1; return null; }
+     const v = o.v|0;
+     if(cfg.shift && cfg.shift[key]){
+       let sh = cfg.shift[key]; if(typeof sh === 'function') sh = sh(v);
+       if(sh){ const c = Math.cos(ry), s = Math.sin(ry); x -= sh[0]*c + sh[1]*s; z -= -sh[0]*s + sh[1]*c; }
+     }
+     const A = C.entry(key);
+     const rec = { key: key, variant: v, seed: o.seed || cfg.seed(o, ctx, R, x, y, z, loc),
+       lx: loc ? loc[0] : null, ly: loc ? loc[1] : null, lz: loc ? loc[2] : null, lry: loc ? loc[3] : null,
+       x: x, y: y, z: z, ry: ry, building: ctx.building == null ? null : ctx.building };
+     if(ctx.part != null) rec.part = ctx.part;
+     rec.setting = o.setting || 'outdoor';
+     if(cfg.finish) cfg.finish(rec);
+     const L = ctx.list || (ctx.listOf && ctx.listOf()); if(L) L.push(rec);
+     if(!ctx.dry){ R.placed.push(rec); rec.id = prefix + '_' + pad(R.placed.length); }
+     rec.room = ctx.room || o.room || null;
+     rec.job = (A && A.job) || null;
+     const dm = A ? C.dims(A, v) : null;
+     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;
+     if(ctx.dry || !R.on || !cfg.draw) return rec;
+     cfg.draw(rec, ctx, o, A);
+     return rec;
+   };
+   R.frm = function(f, lx, lz, lry){
+     return [f.x - f.fz*lx + f.fx*lz, f.z + f.fx*lx + f.fz*lz, Math.atan2(f.fx, f.fz) + (lry||0)];
+   };
+   R.interior = function(item, x, z, ry, adapter, opt){
+     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, opt);
+     const sum = { item: item.key, rooms: r.inst.rooms.length,
+       pieces: Object.keys(r.plans).reduce(function(a, k){ return a + r.plans[k].placements.length; }, 0), residence: r.residence };
+     R.buildings.push({ key: item.key, x: x, z: z, ry: ry||0, baseY: (opt && opt.baseY) || 0, interior: sum });
+     return { summary: sum, result: r };
+   };
+   R.summary = function(){
+     const byKey = {}; R.placed.forEach(function(r){ byKey[r.key] = (byKey[r.key]||0) + 1; });
+     return { on: R.on, placed: R.placed.length, keys: Object.keys(byKey).length, byKey: byKey, missing: R.missing,
+       lights: R.lights, interiors: R.buildings.length,
+       interiorPieces: R.buildings.reduce(function(a, b){ return a + b.interior.pieces; }, 0) };
+   };
+   return R;
+ };
+ if(typeof module !== 'undefined' && module.exports) module.exports = K;
+ return K;
+})();
 /* ============================== 12. STRUCTURE — GIRDER ==============================
    PLANNER-OWNED. The ancient ruin and the load-bearing timber the beast-riders
    hung on it: the four towers (cyclopean columns, floor plates, girders,
@@ -13283,6 +13380,57 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   ] });
 })(KratorInteriors);
 
+// ================================================================= CORE FURNISH — the draw adapter's helpers ([draw])
+// The three.js side of core/furnish: a placement record into the catalog's batch (KratorFurniture), and the one
+// colour step every build needs when the batch becomes meshes. The catalog writes its colours as sRGB bytes; a
+// build that renders in linear light converts them once, either in the vertex shader or into a float attribute.
+// Each build keeps its own flush (it ties the meshes to its night lights and shadows); these are the parts the
+// six copies shared.
+//
+//   KFURN.useBatch(R, KF, KI)            -> R.batch (a KratorFurniture batch) and R.adapter (KratorInteriors' runtime
+//                                           adapter over it, for the interiors hook); call again for a fresh batch
+//   KFURN.drawRec(R, rec, wealth, opt)   -> the batch's result for one record ({ lights, error, ... }); opt.detail
+//                                           sets KratorFurniture's detail for this piece and restores it
+//   KFURN.srgbHook(shader)               -> an onBeforeCompile body: linearise vColor in the vertex shader
+//   KFURN.linearColours(geometry)        -> the colour attribute's sRGB bytes as linear floats (KFURN.SRGB_LIN)
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('52-core-furnish-draw: load 50-core-furnish.js first');
+KFURN.useBatch = function(R, KF, KI){ R.batch = KF.batch(); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
+KFURN.drawRec = function(R, rec, wealth, opt){
+  const KF = R.KF, d = opt && opt.detail;
+  if(d != null) KF.setDetail(d);
+  const r = R.batch.place(rec.key, rec.x, rec.y, rec.z, rec.ry, { variant: rec.variant, seed: rec.seed, wealth: wealth,
+    building: rec.building, setting: rec.setting });
+  if(d != null) KF.setDetail(opt.after == null ? .5 : opt.after);
+  return r;
+};
+KFURN.srgbHook = function(sh){
+  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
+    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
+};
+KFURN.linearColours = function(geo){
+  const a = geo.getAttribute('color'); if(!a || a.array instanceof Float32Array) return;
+  const src = a.array, out = new Float32Array(src.length), L = KFURN.SRGB_LIN;
+  for(let i=0;i<src.length;i++) out[i] = L[src[i]];
+  geo.setAttribute('color', new THREE.BufferAttribute(out, a.itemSize || 3));
+};
+})();
+// ================================================================= CORE FURNISH — the page's switches ([web])
+// The one browser read in core/furnish: the query string. ?furniture=0 places nothing (the records are still
+// kept); the interiors are ?interiors=1 to turn on (most builds: roofs hide them) or ?interiors=0 to turn off
+// (Girder, whose interiors are on by default).
+//
+//   KFURN.flags(interiorsByDefault)   -> { on, interiorsOn }: pass it straight into KFURN.create
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('53-core-furnish-host: load 50-core-furnish.js first');
+KFURN.flags = function(interiorsByDefault){
+  const q = location.search;
+  return { on: !/[?&]furniture=0\b/.test(q),
+    interiorsOn: interiorsByDefault ? !/[?&]interiors=0\b/.test(q) : /[?&]interiors=1\b/.test(q) };
+};
+})();
 /* ============================== 13b. FURNITURE (CATALOG PIECES AS DATA) ==============================
    Everything Girder's builders put in or round a building that is not the building itself (its structure
    and its outbuildings) is FURNITURE: a master-catalog piece (kits/catalog), placed as DATA and built by the
@@ -13298,17 +13446,27 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
      FURNISHW(key, x, y, z, ry, o)        the same at a WORLD point and heading (helpers that work in world space)
    Headings are the catalog's: ry turns the piece's front (+z) to (sin ry, cos ry); in an FRM frame lry 0 faces
    the frame's front and lry +PI/2 its LEFT (the catalog's x is the mirror of FRM's "right").
-   A record: { key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting }. A key the bundle lacks is
+   A record (core/furnish): { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting, room, job }. A key the bundle lacks is
    COUNTED in GFURN.missing, never thrown. ?furniture=0 builds nothing (the records are still kept).
    The batch becomes meshes ONCE, when the kit emits its buckets (75-terrain.js calls emitBuckets()).
    The interiors (56-interiors.js) furnish the rooms through the same batch: ?interiors=0 turns them off.
    A catalog piece's lights stay data: the glue hands them to the night light volume (nlLampAdd); pieces that
    replace one of Girder's own lamps keep Girder's lamp (noLight: true) so the night is lit as before.     */
 KratorFurniture.setDetail(.5);   /* settlement scale: half the segments on round furniture parts */
-var GFURN = { on: !/[?&]furniture=0\b/.test(location.search), interiors: !/[?&]interiors=0\b/.test(location.search),
-           batch: KratorFurniture.batch(), placed: [], missing: {}, cur: null, group: null, lights: 0,
-           buildings: [], ixPlaced: [], residenceFails: [], ms: 0 };
-GFURN.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GFURN.batch);
+/* the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Girder's
+   adapter onto it: its seed rule (the record's place in the list), its rounding, its walk solids and its lights */
+var GFURN = KFURN.create(Object.assign(KFURN.flags(true), {
+  catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  seed: function(o, ctx, R){ return R.placed.length + 1; },
+  finish: function(r){ r.x=+r.x.toFixed(3); r.y=+r.y.toFixed(3); r.z=+r.z.toFixed(3); r.ry=+wrapPi(r.ry).toFixed(4); },
+  onRecord: function(rec, ctx, o, A, dm){   /* the walk mode bumps into it */
+    if(A.anchor!=='ceiling' && A.anchor!=='surface' && A.type!=='lamp' && A.type!=='rug' && dm.h>=0.3) gwBox(rec.x, rec.y, rec.z, dm.w, dm.h, dm.d, rec.ry, 'furniture'); },
+  draw: function(rec, ctx, o){ var b = KFURN.drawRec(GFURN, rec, ctx.wealth);
+    if(b.error) ERR('furniture '+rec.key+': '+b.error);
+    if(!o.noLight) gfLights(b, 0.7); }
+}));
+Object.assign(GFURN, { cur: null, ixPlaced: [], residenceFails: [], ms: 0 });
+KFURN.useBatch(GFURN, KratorFurniture, KratorInteriors);
 if(!GFURN.on) GFURN.adapter.build = function(p, room){   /* ?furniture=0: plan the rooms, keep the data, build nothing */
   return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; };
 function gfAt(owner, id, f, y, wealth){ GFURN.cur = { owner:owner, id:id, f:f||null, y:y||0, wealth:wealth==null?0.45:wealth }; return GFURN.cur; }
@@ -13316,18 +13474,10 @@ function gfLights(rec, k){            /* a built piece's lights into the night l
   (rec.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, (l.intensity||1)*(k||0.7), Math.min(18, l.distance||12), false); GFURN.lights++; });
 }
 function gfPlace(key, x, y, z, ry, o, loc){
-  var c=GFURN.cur; o=o||{};
+  var c=GFURN.cur;
   if(!c){ ERR('FURNISH '+key+' outside a building (call gfAt first)'); return null; }
-  if(!KratorFurniture.has(key)){ GFURN.missing[key]=(GFURN.missing[key]||0)+1; return null; }
-  var rec={ key:key, variant:o.v|0, seed:o.seed||(GFURN.placed.length+1), lx:loc[0], ly:loc[1], lz:loc[2], lry:loc[3],
-            x:+x.toFixed(3), y:+y.toFixed(3), z:+z.toFixed(3), ry:+wrapPi(ry).toFixed(4), building:c.id, setting:o.setting||'outdoor' };
-  (c.owner.furniture||(c.owner.furniture=[])).push(rec); GFURN.placed.push(rec);
-  var A=KratorFurniture.FURN_BY_KEY[key], dm=KratorFurniture.entryDims(A, rec.variant);   /* the walk mode bumps into it */
-  if(A.anchor!=='ceiling' && A.anchor!=='surface' && A.type!=='lamp' && A.type!=='rug' && dm.h>=0.3) gwBox(rec.x, rec.y, rec.z, dm.w, dm.h, dm.d, rec.ry, 'furniture');
-  if(GFURN.on){ var b=GFURN.batch.place(key, rec.x, rec.y, rec.z, rec.ry, { variant:rec.variant, seed:rec.seed, wealth:c.wealth, building:c.id, setting:rec.setting });
-    if(b.error) ERR('furniture '+key+': '+b.error);
-    if(!o.noLight) gfLights(b, 0.7); }
-  return rec;
+  return GFURN.place(key, x, y, z, ry, o, loc, { building:c.id, wealth:c.wealth,
+    listOf: function(){ return c.owner.furniture||(c.owner.furniture=[]); } });
 }
 function FURNISH(key, lx, ly, lz, lry, o){
   var c=GFURN.cur, f=c&&c.f, x, z, ry;
@@ -13352,10 +13502,7 @@ function gfMatHooks(mt, key){
     if(dh) mt.customProgramCacheKey = function(){ return key + '|det'; };
   } else nlMaterial(mt, key + (dh ? '|det' : ''), dh ? function(sh){ gfSRGBHook(sh); dh(sh); } : gfSRGBHook);   /* + the lamp pools at night */
 }
-function gfSRGBHook(sh){
-  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
-    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
-}
+var gfSRGBHook = KFURN.srgbHook;   /* the same linearising hook, one copy in core/furnish */
 /* painted panels (the catalog's F.decal: a canvas map) leave a batch as one mesh each; they are merged per
    material, so each painted pattern is one draw call. gfDecal(m) -> its geometry in world space, non-indexed */
 function gfDecal(m){ m.updateMatrix(); var g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); g.applyMatrix4(m.matrix); m.geometry.dispose(); return g; }
@@ -19201,7 +19348,7 @@ PATHVIZ.unshift({ key:'navgraph', label:'Walk graph (all edges)', color:0xffffff
 const ATMOS={};
 (function(){const A=ATMOS;
  A.init=function(h){A.h=h;const T=A.T=h.THREE,P=A.PRESETS,PW=P.wind,PC=P.clock;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
-  A.sets={};A.glow=[];A.lamps=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
    windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
@@ -19342,8 +19489,8 @@ ATMOS.PRESETS={
  // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
  A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
   A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
-  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
-  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them)
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.lampGlow.push(A.glow.length);A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
+  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them); A.lampGlow: its halo's index in A.glow
  // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
  // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
  A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}
@@ -19699,7 +19846,8 @@ ATMOS.PRESETS={
     colors:'hex or [r,g,b] in display (sRGB) space',colour:'srgb',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
    uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
    presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
-   fx:A.fx,lamps:A.lamps.map(l=>({at:[l[0],l[1],l[2]],hours:[l[3],l[4]]})),
+   fx:A.fx,lamps:A.lamps.map((l,i)=>{const g=A.glow[A.lampGlow[i]];return{at:[l[0],l[1],l[2]],hours:[l[3],l[4]],glow:A.lampGlow[i],color:g?[g[3],g[4],g[5]]:null,
+    light:'none in three.js: the lamp is its halo (glow) and its moths; a game engine may give the nearest an OmniLight3D of this colour'};}),
    glow:A.glow.map(g=>({at:[g[0],g[1],g[2]],color:[g[3],g[4],g[5]],size:g[6],hours:[g[7],g[8]]})),
    props,stats:A.stats});};
 })();
@@ -19707,6 +19855,13 @@ ATMOS.PRESETS={
 // [web]. Everything here touches the DOM, so it is kept out of the engine-neutral fragments (GODOT-PLAN.md Phase 1:
 // the host owns the DOM). It moves to core/host/ when that exists; a game engine has its own UI and file saving.
 (function(){const A=ATMOS;
+ // the stage (core/biome/44-core-stage.js: KSTAGE, when the page has it): ATMOS.export(opt) also carries the page's light,
+ // fog, tonemapping and sky panorama, taken from opt.at (default: above the first lamp). opt.stage:false leaves it out.
+ const _export=A.export;
+ A.export=opt=>{const o=_export();opt=opt||{};
+  if(opt.stage!==false&&typeof KSTAGE!=='undefined'){const l=A.lamps[0],at=opt.at||(l?[l[0],l[1]+40,l[2]]:[0,60,0]);
+   o.stage=KSTAGE.capture({at,sky:opt.sky==null?1024:opt.sky,box:opt.box,step:opt.step,ground:opt.ground});}
+  return o;};
  // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
  A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
   for(const m of W.MODES){const op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);}sel.value=W.mode;sel.onchange=()=>{W.mode=sel.value;};el.appendChild(sel);return sel;};

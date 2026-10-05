@@ -2110,7 +2110,8 @@ const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 
    Every piece is authored in the FLOOR frame (origin = footprint centre at the
    bottom of the piece, +z front); anchor tells a placer where it mounts:
      floor   — stands on the floor at y = floorY
-     wall    — stands at floor level, back face (local z = -d/2) flush to a wall
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+               a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
      ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
      surface — stands on a table, shelf or counter top at y = surfaceY
    materials are canonical names from CATALOG_MATERIALS below.
@@ -2145,10 +2146,24 @@ function FURN(o) {
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
    at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+/* wall pieces that hang rather than stand: wall art (a mask, a skull, antlers, a plate) centred at eye height,
+   friezes and pennant strings near the top of the wall. Everything else on a wall stands on the floor. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top' };
+function furnWallHung(A) {
+  if (!A || A.anchor !== 'wall') return null;
+  if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
+  return A.type === 'art' ? 'eye' : null;
+}
 function furnAnchorY(A, variant, at) {
   at = at || {};
   const floorY = at.floorY || 0;
   if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  const hung = furnWallHung(A);
+  if (hung) {
+    const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
+    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    return Math.max(floorY, Math.min(y, top - h));
+  }
   if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
   return floorY;
 }
