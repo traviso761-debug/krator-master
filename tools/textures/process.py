@@ -4,7 +4,7 @@
     python3 tools/textures/process.py SOURCE OUT_DIR --id roof.thatch [options]
     python3 tools/textures/process.py --batch tools/textures/batches/beast-riders.json SRC_DIR
 
-Writes OUT_DIR/albedo.jpg, normal.png, roughness.png (all SIZE x SIZE) and meta.json.
+Writes OUT_DIR/albedo.jpg, normal.jpg, roughness.png (all SIZE x SIZE) and meta.json.
 Every step works on a periodic (wrap-around) image, so the outputs tile.
 
 Steps, in order:
@@ -164,11 +164,13 @@ def process(src, out_dir, opt):
         Image.fromarray((np.clip(arr, 0, 1) * 255 + 0.5).astype(np.uint8), mode).save(
             os.path.join(out_dir, name), optimize=True)
     # the colour map as high-quality JPEG (a fifth of the PNG size; the engine recompresses it anyway);
-    # normal and roughness stay lossless, since block artefacts in a normal map show as faceting.
+    # the normal map as JPEG q95 with no chroma subsampling: X and Y live in red and green, so 4:2:0 would
+    # halve their resolution (about 5 degrees mean error); 4:4:4 keeps it near 1.6. Roughness stays lossless.
     # The height map is not kept: it is derived from the colour map and can be regenerated.
     Image.fromarray((np.clip(a, 0, 1) * 255 + 0.5).astype(np.uint8)).save(
         os.path.join(out_dir, 'albedo.jpg'), quality=92, subsampling=0, optimize=True)
-    save(n * 0.5 + 0.5, 'normal.png')
+    Image.fromarray((np.clip(n * 0.5 + 0.5, 0, 1) * 255 + 0.5).astype(np.uint8)).save(
+        os.path.join(out_dir, 'normal.jpg'), quality=95, subsampling=0, optimize=True)
     save(r, 'roughness.png', 'L')
 
     log['seam_after'] = seam_score(a)
@@ -189,7 +191,7 @@ def run_one(src, out_dir, rec, opt):
         sha = hashlib.sha1(fh.read()).hexdigest()
     meta = {
         'record': rec,
-        'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.png', 'roughnessMap': 'roughness.png'},
+        'maps': {'map': 'albedo.jpg', 'normalMap': 'normal.jpg', 'roughnessMap': 'roughness.png'},
         'source': {'file': os.path.basename(src), 'sha1': sha},
         'processing': {'script': 'tools/textures/process.py', 'version': VERSION, 'options': o, 'log': log},
     }
