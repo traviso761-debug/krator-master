@@ -8,9 +8,10 @@ Adds three fragments to build.py's list (hero/README.md); the first is generated
   89-talk.js        hero/89-talk.js: the controls, the people to talk to (Phil), name tags, the dialogue box
 
 Usage:  python3 build_hero.py [--no-checks]
-        python3 build_hero.py --models-url girder- --out <page.html>
-          for a host with a per-file size limit: the page fetches each model from <prefix><name>.glb beside it
-          (copy hero/*.glb there under those names) instead of carrying it, about 8 MB lighter. Not committed.
+        python3 build_hero.py --models-url girder- --out <dir>/<page.html>
+          for a host with a per-file size limit: the page fetches each model from <prefix><name>.glb.txt beside it
+          (base64 text, which a host serving only web types accepts) instead of carrying it, about 8 MB lighter.
+          The build writes those files into <dir> too. Not committed.
 """
 import base64, os, sys
 import build            # build.py: its port lint and open-issue list run on import, as when it is run itself
@@ -31,7 +32,10 @@ def hero_bodies():
     if MODELS_URL is None:
         rows = [" %s: '%s'" % (f[:-4], base64.b64encode(open(os.path.join(HERO, f), 'rb').read()).decode()) for f in glbs]
     else:
-        rows = [" %s: 'url:%s%s'" % (f[:-4], MODELS_URL, f) for f in glbs]
+        rows = [" %s: 'url:%s%s.txt'" % (f[:-4], MODELS_URL, f) for f in glbs]
+        for f in glbs:
+            with open(os.path.join(os.path.dirname(build.OUT), MODELS_URL + f + '.txt'), 'w', encoding='ascii', newline='') as fh:
+                fh.write(base64.b64encode(open(os.path.join(HERO, f), 'rb').read()).decode())
     model = ('/* ============================== 30. HERO MODELS (generated) ==============================\n'
              '   hero/*.glb as base64 (or, built with --models-url, where to fetch it), by file name: build_hero.py\n'
              '   writes it, hero/prep_model.py makes the GLBs. Do not edit. */\n'

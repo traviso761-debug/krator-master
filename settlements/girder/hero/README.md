@@ -56,7 +56,7 @@ the hearth, facing the south door.
 - **GLTFLoader** comes from the jsDelivr CDN (three r128's), loaded after the page builds, as three.js itself is.
 - The page is 20.5 MB (Girder alone is 12.5 MB). **The gallery** (https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,
   `worlds/girder.html`) takes at most 16 MB a file, so it gets a page that fetches the models from beside itself:
-  `python3 build_hero.py --models-url girder- --out <dir>/girder.html`, then `hero/styv.glb` and `hero/phil.glb` copied
-  to `<dir>/girder-styv.glb` and `<dir>/girder-phil.glb` and published with it (12.4 MB + 2 × 3 MB). Fetching needs a
-  web server: that page does not work opened from disk.
+  `python3 build_hero.py --models-url girder- --out <dir>/girder.html` writes the page and, beside it,
+  `girder-styv.glb.txt` and `girder-phil.glb.txt` (the GLBs as base64 text: the gallery serves only web types, not
+  `.glb`); publish all three (12.4 MB + 2 × 4 MB). Fetching needs a web server: that page does not work opened from disk.
 - Not done: riding the lifts, Styv using his gesture or talking clips in conversation, branching dialogue.

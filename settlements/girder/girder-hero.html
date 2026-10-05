@@ -19383,19 +19383,23 @@ function heroLoader(cb){
   document.head.appendChild(s);
 }
 /* cb({ root, mixer, acts:{clip name: action}, head }) once the named model (HERO_GLB[name]) is in the scene, idling.
-   HERO_GLB[name] is the GLB as base64, or 'url:<path>' for a page built with --models-url (the GLB beside the page) */
+   HERO_GLB[name] is the GLB as base64, or 'url:<path>' for a page built with --models-url: a file beside the page
+   holding the GLB as base64 text (a host that serves only web types takes .txt where it refuses .glb) */
 function heroRig(name, cb){
   heroLoader(function(){
     var src = HERO_GLB[name];
     if(/^url:/.test(src)){
-      fetch(src.slice(4)).then(function(r){ if(!r.ok) throw new Error(r.status+' '+src.slice(4)); return r.arrayBuffer(); })
-        .then(function(ab){ heroParse(name, ab, cb); }).catch(function(e){ ERR('hero: '+name+': '+(e&&e.message||e)); });
+      fetch(src.slice(4)).then(function(r){ if(!r.ok) throw new Error(r.status+' '+src.slice(4)); return r.text(); })
+        .then(function(t){ heroParse(name, heroB64(t.trim()), cb); }).catch(function(e){ ERR('hero: '+name+': '+(e&&e.message||e)); });
       return;
     }
-    var bin = atob(src), buf = new Uint8Array(bin.length);
-    for(var i=0;i<bin.length;i++) buf[i] = bin.charCodeAt(i);
-    heroParse(name, buf.buffer, cb);
+    heroParse(name, heroB64(src), cb);
   });
+}
+function heroB64(s){
+  var bin = atob(s), buf = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
 }
 function heroParse(name, ab, cb){
   new THREE.GLTFLoader().parse(ab, '', function(g){
