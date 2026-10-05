@@ -169,6 +169,9 @@ function frame(){
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2200).add(tmpV.set(ctl.tx, ctl.ty, ctl.tz));
   sun.target.position.set(ctl.tx, ctl.ty, ctl.tz); sun.target.updateMatrixWorld();
 
+  /* the shared atmosphere module (90-atmos-host.js), last before drawing: the sky's light captures the sky as this frame draws it */
+  atmosFrame(dt);
+
   acc+=dt; frames++; if(acc>0.5){ fps=frames/acc; acc=0; frames=0; }
   try{
     renderer.info.autoReset=false; renderer.info.reset();

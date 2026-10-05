@@ -51,7 +51,7 @@ def fragments(build):
                 dn[:] = sorted(x for x in dn if x not in ('example', 'demo', 'node_modules'))
                 for f in sorted(fn):
                     if f.endswith('.js') and not f.startswith('test-') and not f.startswith('.'):
-                        out.append(os.path.relpath(os.path.join(dp, f), base))
+                        out.append(os.path.relpath(os.path.join(dp, f), base).replace(os.sep, '/'))
         return out
     if build == 'kits/catalog':
         out += [f for f in sorted(os.listdir(base)) if f.endswith('.js') and not f.startswith(('.', 'three'))]
@@ -60,7 +60,8 @@ def fragments(build):
             dn[:] = sorted(dn)
             for f in sorted(fn):
                 if (f.endswith('.js') or f.endswith('.html')) and not f.startswith('.') and not f.endswith('.min.js'):
-                    out.append(os.path.relpath(os.path.join(dp, f), base))
+                    # PORT.md rows use '/', and relpath gives '\' on Windows
+                    out.append(os.path.relpath(os.path.join(dp, f), base).replace(os.sep, '/'))
     return out
 
 

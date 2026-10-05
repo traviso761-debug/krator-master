@@ -23,5 +23,28 @@ ATMOS.PRESETS={
  wind:{base:[.8,.35],gustAmp:.55,frontSpeed:12,veer:[.22,.021,.1,.057],gust:[[.5,.31,0],[.3,.73,1.3],[.2,1.9,4.1]],
   weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5}},
  // the evening: night(h) ramps over these hours; a light's own on/off ramps take `ramp` hours
- clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82}
+ clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82},
+ // THE WAVE FIELD (89-atmos-a-waves.js): open water as three families of travelling waves. A wave is [kx,kz,c,a]: its
+ // wave vector in radians per metre, c whole cycles per `period` seconds (the clock the shaders read wraps at `period`,
+ // so whole cycles make the wrap seamless), and its share of the family. chop (12-21 m) only shades, near the camera;
+ // mid (44-70 m) shades out to a kilometre; swell (150-180 m) is the one a coarse water mesh can displace. group is the
+ // slow envelope that gathers waves into sets, warp the slow bend of every crest line ([kx,kz,c], warpAmp metres).
+ // amp is the half-height scale in metres; gain multiplies it per family; groupMix [floor,depth] is how far the group
+ // envelope swells and calms each family; fade [near,far] metres of camera distance retires a family before its
+ // wavelength drops under a pixel; tilt turns slope into shading normal. From World of ClaudeCraft (MIT).
+ waves:{period:600,amp:.22,tilt:1.77,warpAmp:6,
+  chop:[[.24,.18,86,.5],[-.16,.27,117,.32],[.44,-.31,162,.18]],
+  mid:[[.1015,.0369,62,.45],[-.0248,.1406,72,.33],[.0735,-.0515,79,.22]],
+  swell:[[.0364,.0209,44,.46],[-.0119,.0328,38,.33],[.024,.0343,50,.21]],
+  group:[[.021,.013,14],[-.011,.024,11],[.0152,-.0262,17]],
+  warp:[[.0141,-.0083,9],[.0067,.0126,7]],
+  gain:{chop:1,mid:4,swell:2},groupMix:{chop:[.55,.9],mid:[.45,.75],swell:[.5,.8]},
+  crestMix:{chop:[.35,.65],mid:[.32,.58],swell:[0,.45]},crestNorm:.72,skip:.01,
+  fade:{chop:[150,480],mid:[420,1100],swell:[1400,3000]}},
+ // THE SKY'S LIGHT (89-atmos-b-skylight.js): the sky scene captured into a cube map of `size` px a side, prefiltered and
+ // set as scene.environment. It recaptures when the hour moves stepH hours (or the host's key changes), at most once every
+ // `every` frames. specular and diffuse scale the map's two terms on standard materials (diffuse is compiled in: set it
+ // before the first frame; 0 keeps a build's tuned hemisphere and ambient fill as the only diffuse light). groundK scales
+ // the ground colour the host passes for the lower half of the capture.
+ skylight:{size:128,stepH:.2,every:30,specular:1,diffuse:0,groundK:1}
 };

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 56 (9%) | 0 (0%) | 14 (2%) | 263 (42%) | 298 (47%) |
+| KB | 56 (9%) | 0 (0%) | 14 (2%) | 265 (42%) | 298 (47%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -25,7 +25,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/53-furnish.js` | 8.3 | [draw] | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-arch.js` | 59.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/56-levels.js` | 66.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/60-trees.js` | 40.1 | [web] | 35 | 2 | 0 | 0 | 2 | 8 | 8 | 5 | 0 | 0 | 0 |  |
+| `src/60-trees.js` | 40.4 | [web] | 35 | 2 | 0 | 0 | 2 | 8 | 8 | 5 | 0 | 0 | 0 |  |
 | `src/62-jungle.js` | 45.3 | [draw] | 15 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/63-trails.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/72-lights.js` | 3.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -35,7 +35,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/80-camera.js` | 10.8 | [web] | 7 | 0 | 9 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
 | `src/81-glow.js` | 4.7 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/84-flyers.js` | 79.2 | [web] | 45 | 0 | 0 | 0 | 2 | 8 | 6 | 3 | 0 | 0 | 0 |  |
+| `src/84-flyers.js` | 80.6 | [web] | 49 | 0 | 0 | 0 | 2 | 8 | 6 | 3 | 0 | 0 | 0 |  |
 | `src/85-probe.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/86-inspect.js` | 3.4 | [web] | 0 | 0 | 7 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/87-pathviz.js` | 3.2 | [web] | 5 | 0 | 4 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |

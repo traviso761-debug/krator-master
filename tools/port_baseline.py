@@ -39,19 +39,22 @@ def pages():
     ex = os.path.join(ROOT, 'core', 'sockets', 'example')
     if os.path.isdir(ex):
         out += [os.path.relpath(os.path.join(ex, f), ROOT) for f in sorted(os.listdir(ex)) if f.endswith('.html')]
-    return out
+    return [p.replace(os.sep, '/') for p in out]   # the baseline's keys use '/'; relpath gives '\' on Windows
+
+
+def read_lf(path):
+    """A page's bytes with CRLF as LF: a Windows checkout (core.autocrlf) builds CRLF pages from CRLF fragments, and
+    the same page built from LF fragments must hash the same. On an LF checkout this changes nothing."""
+    with open(path, 'rb') as fh:
+        return fh.read().replace(b'\r\n', b'\n')
 
 
 def sha(path):
-    h = hashlib.sha256()
-    with open(path, 'rb') as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b''):
-            h.update(chunk)
-    return h.hexdigest()
+    return hashlib.sha256(read_lf(path)).hexdigest()
 
 
 def main(argv):
-    now = {p: {'sha256': sha(os.path.join(ROOT, p)), 'bytes': os.path.getsize(os.path.join(ROOT, p))} for p in pages()}
+    now = {p: {'sha256': sha(os.path.join(ROOT, p)), 'bytes': len(read_lf(os.path.join(ROOT, p)))} for p in pages()}
     if '--write' in argv:
         if os.path.isfile(OUT) and '--prune' not in argv:
             kept = {p: v for p, v in json.load(open(OUT))['pages'].items() if p not in now}

@@ -40,6 +40,13 @@ RE_SECTION = [re.compile(r'^/\*\s*={3,}\s*(.+?)\s*=*\s*(?:\*/)?\s*$'),
               re.compile(r'^//\s*-{8,}\s*(\S.*?)\s*$')]
 
 
+
+def fsize(p):
+    """A file's size with CRLF counted as LF, so a Windows checkout (core.autocrlf) indexes the same sizes."""
+    with open(p, 'rb') as fh:
+        return len(fh.read().replace(b'\r\n', b'\n'))
+
+
 def sections(path):
     out = []
     with open(path, encoding='utf-8', errors='replace') as fh:
@@ -91,7 +98,7 @@ def frag_table(build, folder, rel):
         p = os.path.join(folder, f)
         if not os.path.isfile(p) or not f[0].isdigit():
             continue
-        size = os.path.getsize(p)
+        size = fsize(p)
         note = GENERATED.get('%s/%s/%s' % (build, rel, f))
         secs = '; '.join(sections(p)[:10]) if f.endswith('.js') else ''
         flag = ' **big**' if size >= BIG else ''
@@ -138,7 +145,7 @@ def build_index(build):
                   '| File | KB | Sections (line) |', '|---|---|---|']
         for f in top:
             p = os.path.join(d, f)
-            size = os.path.getsize(p)
+            size = fsize(p)
             lines.append('| `%s` | %s%s | %s |' % (f, kb(size), ' **big**' if size >= BIG else '',
                                                   '; '.join([t for t in sections(p) if not t.startswith('= (')][:10])))
         lines += ['']
@@ -154,11 +161,11 @@ def build_index(build):
             if os.path.isdir(td):
                 fs = [f for f in os.listdir(td) if f[0].isdigit()]
                 lines.append('| `%s` | %s | %s |' % (t, ', '.join('`%s`' % f for f in sorted(fs)),
-                                                    kb(sum(os.path.getsize(os.path.join(td, f)) for f in fs))))
+                                                    kb(sum(fsize(os.path.join(td, f)) for f in fs))))
     with open(os.path.join(d, 'INDEX.md'), 'w', encoding='utf-8') as fh:
         fh.write('\n'.join(lines) + '\n')
-    sizes = [os.path.getsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
-    sizes += [os.path.getsize(os.path.join(d, f)) for f in top]
+    sizes = [fsize(os.path.join(src, f)) for f in os.listdir(src) if f[0].isdigit()]
+    sizes += [fsize(os.path.join(d, f)) for f in top]
     return len(sizes), sum(sizes), max(sizes), outs
 
 

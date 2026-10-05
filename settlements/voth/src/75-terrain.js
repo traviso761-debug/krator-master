@@ -104,8 +104,12 @@ var watGeo = new THREE.PlaneGeometry(2, 2, FAST?190:250, FAST?190:250).rotateX(-
   watGeo.computeBoundingSphere();
 })();
 
+/* The wave field is the shared one (core/atmos/89-atmos-a-waves.js): 90-atmos-host.js adds its two uniforms (atmWaveT,
+   the module clock wrapped at a whole number of cycles, and atmWaveAmp) and both stages #include <atmos_waves>, which
+   ATMOS.init registers before the first frame (98-start.js). The swell (150-180 m) displaces this grid, which is ~5 m
+   apart at the centre and ~75 m at the rim; the chop and the mid waves only shade, each faded out by camera distance
+   before its wavelength drops under a pixel. Before 2026-10-05: five summed sines on a clock that grew without bound. */
 var waterUni = {
-  uTime:   { value:0 },
   uSun:    { value:SUNDIR.clone() },
   uShallow:{ value:new THREE.Color(0x6d9c92) },
   uDeep:   { value:new THREE.Color(0x1d3c48) },
@@ -124,19 +128,14 @@ var waterMat = new THREE.ShaderMaterial({
   transparent: true,
   side: THREE.FrontSide,
   vertexShader: [
+    '#include <atmos_waves>',
     'attribute float aDepth;',
-    'uniform float uTime;',
     'varying vec3 vW; varying float vD; varying vec2 vP;',
-    'float wv(vec2 p, vec2 d, float f, float s, float t){ return sin(dot(p,d)*f + t*s); }',
     'void main(){',
     '  vec3 pos = position;',
     '  vP = pos.xz; vD = aDepth;',
     '  float att = clamp(aDepth/7.0, 0.0, 1.0);',
-    '  float t = uTime, h = 0.0;',
-    '  h += 0.62*wv(pos.xz, normalize(vec2( 0.92, 0.39)), 0.0148, 1.35, t);',
-    '  h += 0.44*wv(pos.xz, normalize(vec2(-0.36, 0.93)), 0.0221, 1.71, t);',
-    '  h += 0.26*wv(pos.xz, normalize(vec2( 0.62,-0.78)), 0.0403, 2.30, t);',
-    '  pos.y += h*att;',
+    '  pos.y += atmWaveHeight(pos.xz, 0.0)*att;',   /* swell only: the grid cannot carry the chop */
     '  vec4 wp = modelMatrix * vec4(pos,1.0);',
     '  vW = wp.xyz;',
     '  gl_Position = projectionMatrix * viewMatrix * wp;',
@@ -144,25 +143,18 @@ var waterMat = new THREE.ShaderMaterial({
   ].join('\n'),
   fragmentShader: [
     'precision highp float;',
-    'uniform float uTime, uFogDen;',
+    '#include <atmos_waves>',
+    'uniform float uFogDen;',
     'uniform vec3 uSun, uShallow, uDeep, uSky, uFogCol, uCam, uSpecCol;',
     'uniform float uBodyK;',
     'varying vec3 vW; varying float vD; varying vec2 vP;',
-    'vec2 wgrad(vec2 p, float t, float lod){',
-    '  vec2 g = vec2(0.0);',
-    '  vec2 d1=normalize(vec2( 0.92, 0.39)); g += 0.62*0.0148*cos(dot(p,d1)*0.0148 + t*1.35)*d1;',
-    '  vec2 d2=normalize(vec2(-0.36, 0.93)); g += 0.44*0.0221*cos(dot(p,d2)*0.0221 + t*1.71)*d2;',
-    '  vec2 d3=normalize(vec2( 0.62,-0.78)); g += 0.26*0.0403*cos(dot(p,d3)*0.0403 + t*2.30)*d3;',
-    '  vec2 d4=normalize(vec2( 0.15, 0.99)); g += lod*0.11*0.1310*cos(dot(p,d4)*0.1310 + t*3.90)*d4;',
-    '  vec2 d5=normalize(vec2(-0.87, 0.49)); g += lod*0.09*0.1870*cos(dot(p,d5)*0.1870 + t*4.70)*d5;',
-    '  return g;',
-    '}',
     'void main(){',
     '  float att = clamp(vD/7.0, 0.0, 1.0);',
     '  float vdist = length(uCam - vW);',
     '  float lod = 1.0 - smoothstep(260.0, 1500.0, vdist);',
-    '  vec2 g = wgrad(vP, uTime, lod) * (12.0*att + 1.0) * mix(0.35, 1.0, lod);',
-    '  vec3 N = normalize(vec3(-g.x, 1.0, -g.y));',
+    /* the shallows settle toward glass, as they did under the old (12*att+1) gain. 3x the preset tilt: WoCC lays detail
+       normal maps over this field, and Voth has none, so from the 200-1500 m views the field is all the texture there is */
+    '  vec3 N = atmWaveNormal(vP, vdist, 3.0*(0.08 + 0.92*att));',
     '  vec3 V = normalize(uCam - vW);',
     '  float fres = pow(1.0 - clamp(dot(N,V),0.0,1.0), 3.4);',
     '  float deepT = smoothstep(0.8, 20.0, vD);',
@@ -174,7 +166,8 @@ var waterMat = new THREE.ShaderMaterial({
     '  float glit = pow(clamp(dot(N,H),0.0,1.0), 34.0) * 0.10;',
     '  vec3 col = mix(body, uSky, clamp(fres*0.86,0.0,0.82));',
     '  col += uSpecCol * (spec + glit);',
-    '  float foam = smoothstep(1.7, 0.15, vD) * (0.5 + 0.5*lod*sin(vP.x*0.18 + vP.y*0.13 + uTime*1.6));',
+    /* the lap: 153 whole cycles per 600 s wrap (1.602 rad/s, was 1.6), so it never jumps at the wrap */
+    '  float foam = smoothstep(1.7, 0.15, vD) * (0.5 + 0.5*lod*sin(vP.x*0.18 + vP.y*0.13 + 6.283185307*fract(atmWaveT*0.255)));',
     '  col = mix(col, vec3(0.90,0.89,0.85), clamp(foam,0.0,0.58));',
     '  float alpha = mix(0.72, 0.96, deepT);',
     '  alpha = mix(alpha, 0.99, clamp(fres,0.0,1.0));',

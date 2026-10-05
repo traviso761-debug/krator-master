@@ -61,6 +61,7 @@ SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 # the material records (core/materials/record: KMAT, TEX and the browser loader; GODOT-PLAN.md Phase 3)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')   # shared atmosphere: the sky's light on the library materials (core/atmos/README.md)
 TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 OUT = os.path.join(HERE, 'girder.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
@@ -73,7 +74,9 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '83-walk.js',         # the first-person walk mode
                  '48-detail.js',       # library detail maps on meshes without UVs (no rnd())
                  '64-cards.js',        # the library's extra plant and net cards (its own generator)
-                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js'}   # core/materials/record (no rnd())
+                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js',   # core/materials/record (no rnd())
+                 '90-atmos-host.js'}   # binds core/atmos
+DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 # GENERATED fragment, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one
 # closure exposing KratorFurniture) and the interiors core with the Beast Rider interior set
 # (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). It sits between the textures (47) and
@@ -190,7 +193,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, RECORD_DIR):        # a src/ copy with the same name overrides
+    for d in (LOD_DIR, RECORD_DIR, ATMOS_DIR):        # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)

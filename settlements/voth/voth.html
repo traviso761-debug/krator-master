@@ -21802,8 +21802,12 @@ var watGeo = new THREE.PlaneGeometry(2, 2, FAST?190:250, FAST?190:250).rotateX(-
   watGeo.computeBoundingSphere();
 })();
 
+/* The wave field is the shared one (core/atmos/89-atmos-a-waves.js): 90-atmos-host.js adds its two uniforms (atmWaveT,
+   the module clock wrapped at a whole number of cycles, and atmWaveAmp) and both stages #include <atmos_waves>, which
+   ATMOS.init registers before the first frame (98-start.js). The swell (150-180 m) displaces this grid, which is ~5 m
+   apart at the centre and ~75 m at the rim; the chop and the mid waves only shade, each faded out by camera distance
+   before its wavelength drops under a pixel. Before 2026-10-05: five summed sines on a clock that grew without bound. */
 var waterUni = {
-  uTime:   { value:0 },
   uSun:    { value:SUNDIR.clone() },
   uShallow:{ value:new THREE.Color(0x6d9c92) },
   uDeep:   { value:new THREE.Color(0x1d3c48) },
@@ -21822,19 +21826,14 @@ var waterMat = new THREE.ShaderMaterial({
   transparent: true,
   side: THREE.FrontSide,
   vertexShader: [
+    '#include <atmos_waves>',
     'attribute float aDepth;',
-    'uniform float uTime;',
     'varying vec3 vW; varying float vD; varying vec2 vP;',
-    'float wv(vec2 p, vec2 d, float f, float s, float t){ return sin(dot(p,d)*f + t*s); }',
     'void main(){',
     '  vec3 pos = position;',
     '  vP = pos.xz; vD = aDepth;',
     '  float att = clamp(aDepth/7.0, 0.0, 1.0);',
-    '  float t = uTime, h = 0.0;',
-    '  h += 0.62*wv(pos.xz, normalize(vec2( 0.92, 0.39)), 0.0148, 1.35, t);',
-    '  h += 0.44*wv(pos.xz, normalize(vec2(-0.36, 0.93)), 0.0221, 1.71, t);',
-    '  h += 0.26*wv(pos.xz, normalize(vec2( 0.62,-0.78)), 0.0403, 2.30, t);',
-    '  pos.y += h*att;',
+    '  pos.y += atmWaveHeight(pos.xz, 0.0)*att;',   /* swell only: the grid cannot carry the chop */
     '  vec4 wp = modelMatrix * vec4(pos,1.0);',
     '  vW = wp.xyz;',
     '  gl_Position = projectionMatrix * viewMatrix * wp;',
@@ -21842,25 +21841,18 @@ var waterMat = new THREE.ShaderMaterial({
   ].join('\n'),
   fragmentShader: [
     'precision highp float;',
-    'uniform float uTime, uFogDen;',
+    '#include <atmos_waves>',
+    'uniform float uFogDen;',
     'uniform vec3 uSun, uShallow, uDeep, uSky, uFogCol, uCam, uSpecCol;',
     'uniform float uBodyK;',
     'varying vec3 vW; varying float vD; varying vec2 vP;',
-    'vec2 wgrad(vec2 p, float t, float lod){',
-    '  vec2 g = vec2(0.0);',
-    '  vec2 d1=normalize(vec2( 0.92, 0.39)); g += 0.62*0.0148*cos(dot(p,d1)*0.0148 + t*1.35)*d1;',
-    '  vec2 d2=normalize(vec2(-0.36, 0.93)); g += 0.44*0.0221*cos(dot(p,d2)*0.0221 + t*1.71)*d2;',
-    '  vec2 d3=normalize(vec2( 0.62,-0.78)); g += 0.26*0.0403*cos(dot(p,d3)*0.0403 + t*2.30)*d3;',
-    '  vec2 d4=normalize(vec2( 0.15, 0.99)); g += lod*0.11*0.1310*cos(dot(p,d4)*0.1310 + t*3.90)*d4;',
-    '  vec2 d5=normalize(vec2(-0.87, 0.49)); g += lod*0.09*0.1870*cos(dot(p,d5)*0.1870 + t*4.70)*d5;',
-    '  return g;',
-    '}',
     'void main(){',
     '  float att = clamp(vD/7.0, 0.0, 1.0);',
     '  float vdist = length(uCam - vW);',
     '  float lod = 1.0 - smoothstep(260.0, 1500.0, vdist);',
-    '  vec2 g = wgrad(vP, uTime, lod) * (12.0*att + 1.0) * mix(0.35, 1.0, lod);',
-    '  vec3 N = normalize(vec3(-g.x, 1.0, -g.y));',
+    /* the shallows settle toward glass, as they did under the old (12*att+1) gain. 3x the preset tilt: WoCC lays detail
+       normal maps over this field, and Voth has none, so from the 200-1500 m views the field is all the texture there is */
+    '  vec3 N = atmWaveNormal(vP, vdist, 3.0*(0.08 + 0.92*att));',
     '  vec3 V = normalize(uCam - vW);',
     '  float fres = pow(1.0 - clamp(dot(N,V),0.0,1.0), 3.4);',
     '  float deepT = smoothstep(0.8, 20.0, vD);',
@@ -21872,7 +21864,8 @@ var waterMat = new THREE.ShaderMaterial({
     '  float glit = pow(clamp(dot(N,H),0.0,1.0), 34.0) * 0.10;',
     '  vec3 col = mix(body, uSky, clamp(fres*0.86,0.0,0.82));',
     '  col += uSpecCol * (spec + glit);',
-    '  float foam = smoothstep(1.7, 0.15, vD) * (0.5 + 0.5*lod*sin(vP.x*0.18 + vP.y*0.13 + uTime*1.6));',
+    /* the lap: 153 whole cycles per 600 s wrap (1.602 rad/s, was 1.6), so it never jumps at the wrap */
+    '  float foam = smoothstep(1.7, 0.15, vD) * (0.5 + 0.5*lod*sin(vP.x*0.18 + vP.y*0.13 + 6.283185307*fract(atmWaveT*0.255)));',
     '  col = mix(col, vec3(0.90,0.89,0.85), clamp(foam,0.0,0.58));',
     '  float alpha = mix(0.72, 0.96, deepT);',
     '  alpha = mix(alpha, 0.99, clamp(fres,0.0,1.0));',
@@ -31429,7 +31422,6 @@ function frame(){
   var dt = Math.min(0.06, clock.getDelta());
   panStep(dt);
 
-  waterUni.uTime.value += dt;
   waterUni.uCam.value.copy(camera.position);
   CLOTH_TIME.value += dt;
   updateLife(dt);
@@ -31450,6 +31442,9 @@ function frame(){
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2000).add(tmpV.set(ctl.tx, 0, ctl.tz));
   sun.target.position.set(ctl.tx, 0, ctl.tz);
   sun.target.updateMatrixWorld();
+
+  /* the shared atmosphere module (90-atmos-host.js), last before drawing: its clock and hooks (the bay's wave time) */
+  atmosFrame(dt);
 
   acc += dt; frames++;
   if(acc > 0.5){ fps = frames/acc; acc = 0; frames = 0; }
@@ -31498,9 +31493,7 @@ window._dbg = { setView:setView, ctl:ctl, camera:camera, applyCam:applyCam,
    view list and the sky panel. */
 window.LOD_OPTIONS = { skip: function(o){ return !!o.userData.life; },
                        panelStyle: 'right:auto;left:50%;bottom:8px;transform:translateX(-50%)' };
-VIEWS[0][1]();
-frame();
-document.getElementById('load').style.display = 'none';
+/* the first view and the first frame are in 98-start.js, after every fragment (the lineage's order: Girder, Yuni) */
 
 /* ============================== DAY/NIGHT CYCLE ==============================
    Purely visual — sun/moon arc across the sky, sun intensity and sky/fog tint
@@ -33775,6 +33768,654 @@ window._pathviz = { get:function(){ return PATHVIZ_ON; }, show:pathvizShow, hide
   window._minimap={ records:M.records.length, open:panel.open, isOpen:panel.isOpen, pick:M.pick, export:M.export,
     target:function(){ return [ctl.tx, ctl.tz]; } };
 })();
+// ================================================================= ATMOS — core: the host binding, the clock, instanced sets, the glow registry
+// ATMOS is the portable atmosphere and street-dressing module (core/atmos/README.md): evening lights, glow, particles,
+// weather, ivy and window boxes, sewer grates, street lamps and fountains, culling. Every fragment is a closure that
+// adds to the one global `ATMOS`; nothing else is declared at top level, so any build can include the files.
+// A build binds it once:
+//   ATMOS.init({THREE, scene, camera, hour:()=>0..24, onFrame:fn=>{/* call fn(dt) every frame */}, ground:(x,z)=>y, seed,
+//     err:msg=>{}, viewH:()=>innerHeight, pixelRatio:()=>renderer.getPixelRatio()})
+// then places things with the module calls and ends with ATMOS.finish() (bakes the instanced sets, builds the glow).
+// Its own PRNG (ATMOS.seed / rnd / rr / pick): it never touches the host's stream.
+const ATMOS={};
+(function(){const A=ATMOS;
+ A.init=function(h){A.h=h;const T=A.T=h.THREE,P=A.PRESETS,PW=P.wind,PC=P.clock;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
+  A.sets={};A.glow=[];A.lamps=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
+  A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
+   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
+  A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let warned=false;
+  // the shared GLSL, written from the presets so JS and shaders agree
+  const f=A.glf;
+  A.GLSL_WIND=`float atmGust(float t,vec2 xz,vec2 w){float s=t-dot(xz,w)/max(length(w),1e-3)/${f(PW.frontSpeed)};return ${PW.gust.map(g=>`${f(g[0])}*sin(s*${f(g[1])}+${f(g[2])})`).join('+')};}
+  vec2 atmWind(float t,vec2 xz,vec2 w,float amp){return w*(1.0+amp*atmGust(t,xz,w));}`;
+  A.GLSL_LIT=`float atmLit(float h,vec2 t){float hh=h<12.0?h+24.0:h;return smoothstep(t.x,t.x+${f(PC.ramp)},hh)*(1.0-smoothstep(t.y-${f(PC.ramp)},t.y,hh));}`;
+  // THE CLOCK: the module's own simulation time in seconds, from 0 at init. The HOST owns real time: its frame call
+  // passes dt (seconds since its last frame, capped by the host) as the first argument of the onFrame callback, and the
+  // module never reads a wall clock. clock.scale speeds it up or stops it (0); clock.fixed pins it (deterministic shots:
+  // every shader and hook sees that time, and nothing eases). Godot's Atmos autoload does the same from _process(delta).
+  A.clock={t:0,dt:0,scale:1,fixed:null};
+  // the view: sprite sizes are framebuffer pixels, so px needs the view's height in CSS pixels (h.viewH) and the pixel
+  // ratio (h.pixelRatio), each a number or a function; the host reads them from its window
+  const num=(v,d)=>{const r=typeof v==='function'?v():v;return r>0?r:d;};
+  h.onFrame(hostDt=>{const C=A.clock;let real=+hostDt;if(!(real>=0)){if(!warned){warned=true;A.err('onFrame must pass dt in seconds as its first argument; stepping 1/60 s');}real=1/60;}
+   C.dt=C.fixed!=null?0:Math.min(.1,real)*C.scale;C.t=C.fixed!=null?C.fixed:C.t+C.dt;
+   const t=C.t,dt=C.dt,hr=h.hour(),U=A.U;U.hour.value=hr;U.night.value=A.night(hr);U.time.value=t;U.light.value=1-PC.nightDim*U.night.value;
+   // the wind: a base vector (A.windBase, slowly veering) times A.windScale (the weather raises it); gusts are added per
+   // place and time by atmGust() in the shaders. windOff is the base wind integrated over time, for things that ride it (rain)
+   const v=PW.veer,veer=v[0]*Math.sin(t*v[1])+v[2]*Math.sin(t*v[3]+1.7),c=Math.cos(veer),s=Math.sin(veer),b=A.windBase;U.wind.value.set((b.x*c-b.y*s)*A.windScale,(b.x*s+b.y*c)*A.windScale);
+   U.windOff.value.addScaledVector(U.wind.value,dt);
+   U.px.value=num(h.viewH,720)*num(h.pixelRatio,1)/(2*Math.tan(h.camera.fov*Math.PI/360));for(const fn of A.hooks){try{fn(t,hr,dt);}catch(e){A.err('frame: '+e.message);}}});
+  for(const fn of A.onInit)fn(h);};
+ // later fragments that need the bound host (A.T, A.U, A.hook) push a setup function here; init runs them in file order
+ A.onInit=[];
+ A.glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};   // a number as a GLSL float literal
+ A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
+ A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds
+ A.ground=(x,z)=>A.h.ground?A.h.ground(x,z):0;
+ // EFFECT RECORDS: every placing call also records what it placed, as plain data (ATMOS.export() writes them out)
+ A.rec=(type,o)=>{const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
+ // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
+ A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+ A.night=h=>{const C=A.PRESETS.clock;return Math.min(1,Math.max(0,1-A.ss(C.dawn[0],C.dawn[1],h)+A.ss(C.dusk[0],C.dusk[1],h)));};
+ A.litAt=(h,on,off)=>{const hh=h<12?h+24:h,r=A.PRESETS.clock.ramp;return A.ss(on,on+r,hh)*(1-A.ss(off-r,off,hh));};
+ // GUSTS: a gust factor in -1..1 at time t and place (x,z). Gust fronts travel downwind (wind.frontSpeed m/s), so
+ // neighbours differ and a plume shows the wave going up it. The same sum in JS (A.gust, A.windAt) and GLSL (atmGust, atmWind).
+ A.gust=(t,x,z)=>{const P=A.PRESETS.wind,w=A.U.wind.value,l=Math.hypot(w.x,w.y)||1,s=t-(x*w.x+z*w.y)/l/P.frontSpeed;let g=0;for(const q of P.gust)g+=q[0]*Math.sin(s*q[1]+q[2]);return g;};
+ A.windAt=(t,x,z)=>{const w=A.U.wind.value,f=1+A.U.gustAmp.value*A.gust(t,x,z);return[w.x*f,w.y*f];};
+ // HAZE: how much fog and rain thicken the air for a light (beams and halos read stronger in it)
+ A.haze=()=>1+1.6*A.U.fog.value+.9*A.U.rain.value;
+ // PRNG (mulberry32)
+ let s=1;A.seed=n=>{s=(n>>>0)||1;};A.rnd=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+ // a separate stream (same generator) for things added late, so they never shift the placement stream
+ A.stream=n=>{let s=(n>>>0)||1;return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};};
+ A.rr=(a,b)=>a+(b-a)*A.rnd();A.pick=a=>a[Math.floor(A.rnd()*a.length)];
+ A.col=hex=>new A.T.Color(hex).convertSRGBToLinear();
+ // shared geometry (unit sizes; posts and cones stand on y=0) and cached materials
+ const G={};A.geo=k=>{if(G[k])return G[k];const T=A.T;
+  G[k]=k==='box'?new T.BoxGeometry(1,1,1):k==='post'?new T.CylinderGeometry(1,1,1,8).translate(0,.5,0):k==='post16'?new T.CylinderGeometry(1,1,1,16).translate(0,.5,0):
+   k==='ball'?new T.SphereGeometry(1,8,6):k==='cone'?new T.ConeGeometry(1,1,7).translate(0,.5,0):k==='plane'?new T.PlaneGeometry(1,1):null;return G[k];};
+ A.geoPut=(k,g)=>(G[k]=g);A.geoKinds=()=>G;
+ const M={};A.mat=(k,make)=>M[k]||(M[k]=make());
+ A.lam=(hex,rough)=>A.mat('std'+hex+'_'+(rough||.85),()=>new A.T.MeshStandardMaterial({color:hex,roughness:rough||.85,metalness:0}));
+ // INSTANCED SETS: put() collects, finish() bakes one InstancedMesh per set. Item: [x,y,z, sx,sy,sz, ry|Quaternion, color]
+ A.set=(name,geo,mat)=>A.sets[name]||(A.sets[name]={geo:typeof geo==='string'?A.geo(geo):geo,mat,items:[]});
+ A.put=(name,item)=>{A.sets[name].items.push(item);};
+ A.bakeSets=()=>{const T=A.T,m=new T.Matrix4(),p=new T.Vector3(),sc=new T.Vector3(),q0=new T.Quaternion(),qy=new T.Quaternion(),Y=new T.Vector3(0,1,0),W=new T.Color(1,1,1);
+  for(const name in A.sets){const S=A.sets[name];if(!S.items.length||S.mesh)continue;const im=new T.InstancedMesh(S.geo,S.mat,S.items.length);let col=false;
+   S.items.forEach((o,i)=>{p.set(o[0],o[1],o[2]);sc.set(o[3],o[4],o[5]);const q=o[6]==null?q0:(o[6].isQuaternion?o[6]:qy.setFromAxisAngle(Y,o[6]));m.compose(p,q,sc);im.setMatrixAt(i,m);if(o[7]!=null)col=true;});
+   if(col)S.items.forEach((o,i)=>im.setColorAt(i,o[7]!=null?(o[7].isColor?o[7]:A.col(o[7])):W));
+   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;im.name='atmos:'+name;im.userData.atmos=name;A.root.add(im);S.mesh=im;A.stats[name]=S.items.length;}};
+ // the GLOW registry: a soft additive sprite over every light. on/off are the light's hours (on<0: follows the night)
+ A.glowAdd=(x,y,z,col,size,on,off)=>{A.glow.push([x,y,z,col[0],col[1],col[2],size||6,on==null?-1:on,off==null?30:off]);};
+ A.noRay=o=>{o.raycast=()=>{};o.userData.probeSkip=true;return o;};
+ A.add=o=>{A.root.add(o);return o;};
+ // SPRITE CLOUDS: camera-facing quads, one instance per particle (not GL points: points clip at the screen edge as soon as
+ // their centre leaves it, are capped in size by the driver, and have no equivalent in a game engine; a quad maps 1:1 onto a
+ // Godot MultiMesh or particle quad). attrs: {name:[itemSize, array]}, one item per particle; the particle's position
+ // goes in `ipos`. The vertex shader works out mv (view-space centre) and ps (on-screen size in pixels, as gl_PointSize
+ // did) and ends with gl_Position=atmQuad(mv,ps); the fragment shader reads vUv (0..1 across the sprite, as gl_PointCoord).
+ A.GLSL_QUAD='attribute vec3 ipos;uniform float px;varying vec2 vUv;\n vec4 atmQuad(vec4 mv,float ps){vUv=position.xy+0.5;return projectionMatrix*vec4(mv.xy+position.xy*ps*max(-mv.z,1e-3)/px,mv.z,1.0);}';
+ A.sprites=(name,attrs,m,order)=>{const T=A.T,g=new T.InstancedBufferGeometry(),n=attrs.ipos[1].length/3;
+  g.setAttribute('position',new T.Float32BufferAttribute([-.5,-.5,0,.5,-.5,0,.5,.5,0,-.5,.5,0],3));g.setIndex([0,1,2,0,2,3]);
+  for(const k in attrs)g.setAttribute(k,new T.InstancedBufferAttribute(new Float32Array(attrs[k][1]),attrs[k][0]));g.instanceCount=n;
+  const mesh=new T.Mesh(g,m);mesh.frustumCulled=false;mesh.renderOrder=order||3;mesh.name='atmos:'+name;A.add(mesh);A.noRay(mesh);A.stats[name]=n;return mesh;};
+ A.finish=()=>{A.bakeSets();if(A.buildGlow)A.buildGlow();return A.stats;};
+})();
+// ================================================================= ATMOS — presets: every effect's tunable numbers, as plain data
+// The particle shaders read these (as uniforms) instead of carrying literals, and ATMOS.export() writes them out, so a
+// game engine builds the same effects from the same numbers (core/atmos/GODOT.md). A host may change a value before it
+// places the effect. Plain data only: numbers, arrays, strings.
+// Colours are [r,g,b] 0..1 in DISPLAY (sRGB) space: the three.js shaders write them straight out; an engine that lights in
+// linear space converts them (Godot: a `source_color` uniform, or Color.srgb_to_linear()).
+// Sizes are metres (a particle's diameter); px clamps are on-screen pixels; rates are 1/lifetime in seconds.
+ATMOS.PRESETS={
+ // smoke kinds share one cloud; an emitter names its kind ([x,y,z,'chimney'] or the index 0/1/2)
+ smoke:{
+  chimney:{index:0,n:12,rate:.11,rise:16,drift:9,wobble:1.2,size:[1.2,5.5],alpha:.35,rainDamp:.5,color:[.46,.44,.42]},
+  steam:  {index:1,n:14,rate:.3, rise:9, drift:4,wobble:1.2,size:[.8,3.2], alpha:.32,rainDamp:0, color:[.92,.94,.96]},
+  spray:  {index:2,n:16,rate:.45,rise:3.5,drift:1.5,wobble:1.2,size:[.8,3.2],alpha:.32,rainDamp:0,color:[.92,.94,.96]},
+  pxMax:256,fadeIn:.12,distFade:.0018,blend:'normal'},
+ fireflies:{n:6,spread:5,size:.35,pxMax:24,distFade:.004,color:[.75,1,.35],blend:'add'},
+ moths:{n:8,p:.6,max:800,size:.2,pxMax:10,alpha:1,fadeNear:25,fadeFar:70,windHide:[1.6,3.2],color:[1,.87,.6],blend:'add'},
+ mist:{n:420,size:[26,60],alpha:.12,distFade:.0012,nearFade:[4,30],night:[.1,.11,.19],day:[.86,.88,.92],pxMax:220,blend:'normal'},
+ fogbank:{size:[30,70],alpha:.16,distFade:.0009,nearFade:[3,25],sway:14,night:[.14,.15,.2],day:[.86,.87,.9],pxMax:220,blend:'normal'},
+ glow:{pxMin:2,pxMax:240,distFade:.0022,fogFade:.004,fogSwell:.7,rainSwell:.4,gain:1.7,dayFloor:.15,blend:'add'},
+ rain:{drops:7000,box:240,fall:60,streak:2.4,slant:.25,windRide:6,fade:[50,120],alpha:.42,color:[.72,.77,.86]},
+ // the wind every effect shares: a base vector that veers slowly, scaled by the weather, with gust fronts travelling
+ // downwind (atmGust in the shaders, ATMOS.gust in JS)
+ wind:{base:[.8,.35],gustAmp:.55,frontSpeed:12,veer:[.22,.021,.1,.057],gust:[[.5,.31,0],[.3,.73,1.3],[.2,1.9,4.1]],
+  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5}},
+ // the evening: night(h) ramps over these hours; a light's own on/off ramps take `ramp` hours
+ clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82},
+ // THE WAVE FIELD (89-atmos-a-waves.js): open water as three families of travelling waves. A wave is [kx,kz,c,a]: its
+ // wave vector in radians per metre, c whole cycles per `period` seconds (the clock the shaders read wraps at `period`,
+ // so whole cycles make the wrap seamless), and its share of the family. chop (12-21 m) only shades, near the camera;
+ // mid (44-70 m) shades out to a kilometre; swell (150-180 m) is the one a coarse water mesh can displace. group is the
+ // slow envelope that gathers waves into sets, warp the slow bend of every crest line ([kx,kz,c], warpAmp metres).
+ // amp is the half-height scale in metres; gain multiplies it per family; groupMix [floor,depth] is how far the group
+ // envelope swells and calms each family; fade [near,far] metres of camera distance retires a family before its
+ // wavelength drops under a pixel; tilt turns slope into shading normal. From World of ClaudeCraft (MIT).
+ waves:{period:600,amp:.22,tilt:1.77,warpAmp:6,
+  chop:[[.24,.18,86,.5],[-.16,.27,117,.32],[.44,-.31,162,.18]],
+  mid:[[.1015,.0369,62,.45],[-.0248,.1406,72,.33],[.0735,-.0515,79,.22]],
+  swell:[[.0364,.0209,44,.46],[-.0119,.0328,38,.33],[.024,.0343,50,.21]],
+  group:[[.021,.013,14],[-.011,.024,11],[.0152,-.0262,17]],
+  warp:[[.0141,-.0083,9],[.0067,.0126,7]],
+  gain:{chop:1,mid:4,swell:2},groupMix:{chop:[.55,.9],mid:[.45,.75],swell:[.5,.8]},
+  crestMix:{chop:[.35,.65],mid:[.32,.58],swell:[0,.45]},crestNorm:.72,skip:.01,
+  fade:{chop:[150,480],mid:[420,1100],swell:[1400,3000]}},
+ // THE SKY'S LIGHT (89-atmos-b-skylight.js): the sky scene captured into a cube map of `size` px a side, prefiltered and
+ // set as scene.environment. It recaptures when the hour moves stepH hours (or the host's key changes), at most once every
+ // `every` frames. specular and diffuse scale the map's two terms on standard materials (diffuse is compiled in: set it
+ // before the first frame; 0 keeps a build's tuned hemisphere and ambient fill as the only diffuse light). groundK scales
+ // the ground colour the host passes for the lower half of the capture.
+ skylight:{size:128,stepH:.2,every:30,specular:1,diffuse:0,groundK:1}
+};
+// ================================================================= ATMOS — street furniture: lamp posts, lamp rows, banners, planters, fountains
+// All positions are world metres; y defaults to the host's ground. Returns what a host may want to register.
+(function(){const A=ATMOS;
+ const iron=()=>A.lam(0x2e2a26,.6),wood=()=>A.lam(0x4a3a2a,.9),stone=()=>A.lam(0xcdb48a,.95);
+ const headMat=()=>A.mat('lampHead',()=>{const m=new A.T.MeshBasicMaterial({color:0xffe0a0});const day=new A.T.Color(0x6a6458),lit=new A.T.Color(0xffe0a0);
+  A.hook(()=>{m.color.copy(day).lerp(lit,A.U.night.value);});return m;});
+ // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
+ A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
+  A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
+  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them)
+ // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
+ // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
+ A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}
+  const out=[];let acc=0;for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],l=seg[i];if(l<1){continue;}const ux=(b[0]-a[0])/l,uz=(b[1]-a[1])/l;
+   for(let s=Math.ceil((acc-step/2)/step)*step+step/2-acc;s<l;s+=step){if(s<0)continue;const f=(acc+s)/Math.max(1,L);for(const sd of(o.sides||[-1,1])){const x=a[0]+ux*s-uz*off*sd,z=a[1]+uz*s+ux*off*sd;if(o.ok&&!o.ok(x,z))continue;
+     A.lamp(x,z,{heading:Math.atan2(uz*sd,-ux*sd),on:(o.on||17.55)+spread*f+(sd>0?.02:0),off:(o.off2||29.55)+spread*(1-f)});out.push([x,z,sd,f,ux,uz]);}}acc+=l;}return out;};
+ // a planter: timber box and a mound of leaves
+ A.planter=(x,z,ry,o)=>{o=o||{};const y=A.ground(x,z)-.1;A.set('planter','box',A.lam(0x8a6a3a,.9));A.set('planterLeaf','ball',A.lam(0x4f8a3e,.9));
+  A.put('planter',[x,y+.6,z,o.w||2.2,1.2,o.d||1.2,ry]);A.put('planterLeaf',[x,y+1.25,z,(o.w||2.2)*.48,.5,(o.d||1.2)*.48,ry]);};
+ // the FLAG cloth: a box subdivided down and across, its lower part pushed downwind (the wind across the flag's face, with
+ // the gust at its pole) and rippling; the top stays on its crossbar. One material for every banner.
+ const flagGeo=()=>A.geo('flag')||(A.geoPut('flag',new A.T.BoxGeometry(1,1,1,1,12,6)));
+ const flagMat=()=>A.mat('flag',()=>{const m=new A.T.MeshStandardMaterial({color:0xffffff,roughness:.95,metalness:0});
+  m.onBeforeCompile=sh=>{sh.uniforms.time=A.U.time;sh.uniforms.wind=A.U.wind;sh.uniforms.gustAmp=A.U.gustAmp;
+   sh.vertexShader='uniform float time;uniform vec2 wind;uniform float gustAmp;\n'+A.GLSL_WIND+'\n'+sh.vertexShader.replace('#include <begin_vertex>',`#include <begin_vertex>
+   #ifdef USE_INSTANCING
+   vec3 fN=normalize((instanceMatrix*vec4(1.0,0.0,0.0,0.0)).xyz);vec3 fP=(instanceMatrix*vec4(0.0,0.0,0.0,1.0)).xyz;float fS=max(length(instanceMatrix[0].xyz),1e-3);
+   vec2 fw=atmWind(time,fP.xz,wind,gustAmp);float hf=clamp(0.5-position.y,0.0,1.0);float sway=clamp(dot(fw,fN.xz)*0.55,-1.7,1.7);
+   float rip=sin(time*(2.2+0.5*length(fw))+position.z*4.5+position.y*6.0+fP.x*0.37)*(0.12+0.1*length(fw));
+   transformed.x+=hf*sqrt(hf)*(sway+rip)/fS;
+   #endif`);};m.customProgramCacheKey=()=>'atmos-flag';return m;});
+ // a banner: an 11 m pole, a cloth flag hung square across the bearing `ry` (radians, x toward z: the flag faces along it), a cap
+ A.banner=(x,z,ry,hex,o)=>{o=o||{};const y=A.ground(x,z)-.2,h=o.h||11;A.set('bannerPole','post',wood());A.set('bannerFlag',flagGeo(),flagMat());A.set('bannerCap','box',A.lam(0xc8a868,.8));
+  A.rec('banner',{at:[x,y,z],bearing:ry,h,color:typeof hex==='number'?'#'+new A.T.Color(hex).getHexString():hex,cloth:[2.2,h*.6],note:'cloth hangs from a crossbar; it swings downwind and ripples (flag shader)'});
+  A.put('bannerPole',[x,y,z,.22,h,.22,0]);A.put('bannerFlag',[x,y+h*.32+3.2,z,.2,h*.6,2.2,-ry,hex]);A.put('bannerCap',[x,y+h-.35,z,.45,.45,2.8,-ry]);};
+ // a fountain: stone basin, rippling water, a fluted column, a top bowl, a lit spout
+ A.fountain=(x,z,o)=>{o=o||{};const r=o.r||4,y=(o.y!=null?o.y:A.ground(x,z))-.15;A.set('fountainStone','post16',stone());
+  const water=A.mat('fountainWater',()=>{const m=new A.T.MeshStandardMaterial({color:0x4aa8d8,roughness:.08,metalness:.1,transparent:true,opacity:.82});
+   A.hook(t=>{m.emissive.setRGB(.05,.12+.04*Math.sin(t*2.3),.2);});return m;});A.set('fountainWater','post16',water);
+  A.put('fountainStone',[x,y,z,r,1.1,r,0]);A.put('fountainStone',[x,y+1.05,z,r+.25,.2,r+.25,0]);A.put('fountainWater',[x,y+1.0,z,r-.4,.14,r-.4,0]);
+  A.put('fountainStone',[x,y+1,z,r*.14,3.2,r*.14,0]);A.put('fountainStone',[x,y+4.1,z,r*.34,.35,r*.34,0]);A.put('fountainWater',[x,y+4.35,z,r*.3,.08,r*.3,0]);
+  A.set('fountainJet','cone',A.mat('fountainJet',()=>new A.T.MeshBasicMaterial({color:0xcfeeff,transparent:true,opacity:.55,depthWrite:false})));A.put('fountainJet',[x,y+4.3,z,.25,1.4,.25,0]);
+  A.glowAdd(x,y+4.9,z,[.6,.85,1],4,-1,30);A.rec('fountain',{at:[x,y,z],r,spout:[x,y+4.3,z],basinY:y+1.07});return{x,y,z,r:r+.4,h:5.8};};
+})();
+// ================================================================= ATMOS — the evening: searchlight beams, spot cones, beacons, braziers, floodlights
+// Beams and cones are additive cones whose brightness fades along their length (no real lights: they cost nothing per
+// fragment). Each has an on/off window in hours; the glow layer puts a soft sprite at its source. Real PointLights are
+// only made by floodLight(); a host should keep those to a handful (every lit material pays for every light).
+(function(){const A=ATMOS;
+ const fadeCone=(len,rad,seg)=>{const g=new A.T.ConeGeometry(rad,len,seg||12,1,true).translate(0,-len/2,0);const p=g.attributes.position,c=new Float32Array(p.count*3);
+  for(let i=0;i<p.count;i++){const f=1-Math.min(1,Math.abs(p.getY(i))/len),v=f*f;c[i*3]=c[i*3+1]=c[i*3+2]=v;}g.setAttribute('color',new A.T.BufferAttribute(c,3));return g;};   // apex at the origin, opening toward -y
+ const beamMat=hex=>new A.T.MeshBasicMaterial({color:hex||0xfff2d0,vertexColors:true,transparent:true,opacity:0,blending:A.T.AdditiveBlending,depthWrite:false,side:A.T.DoubleSide,fog:false});
+ const housing=()=>A.lam(0x2a2826,.6);
+ // a SEARCHLIGHT on a tower: sweeps ±sweep rad about `heading` (bearing, x toward z), tilted `tilt` below the horizontal.
+ // o.sky: points up and wanders round the sky instead (palace roofs).
+ A.sweepBeam=(x,y,z,o)=>{o=o||{};const T=A.T,piv=new T.Group();piv.position.set(x,y,z);A.add(piv);A.noRay(piv);
+  const hm=new T.Mesh(A.geo('post'),housing());hm.scale.set(1.3,1.4,1.3);hm.position.y=-.7;piv.add(hm);
+  const m=beamMat(o.color);const cone=new T.Mesh(fadeCone(o.len||220,o.rad||9),m);
+  const tilt=new T.Group();piv.add(tilt);tilt.add(cone);if(o.sky){cone.rotation.x=Math.PI;}else tilt.rotation.x=-(Math.PI/2-(o.tilt||.12));
+  const on=o.on!=null?o.on:17.9,off=o.off!=null?o.off:29.7,ph=A.rr(0,6.28),rate=A.rr(.2,.35),base=Math.PI/2-(o.heading||0),sw=o.sweep==null?.7:o.sweep;
+  A.rec('searchlight',{at:[x,y,z],heading:o.heading||0,sweep:sw,tilt:o.tilt||.12,sky:!!o.sky,len:o.len||220,rad:o.rad||9,color:'#'+new A.T.Color(o.color||0xfff2d0).getHexString(),opacity:o.opacity||.2,hours:[on,off]});
+  A.glowAdd(x,y+.6,z,[1,.95,.8],o.glow||9,on,off);
+  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=Math.min(.55,(o.opacity||.2)*l*A.haze());cone.visible=l>.01;
+   if(o.sky){piv.rotation.z=.5*Math.sin(t*rate+ph);piv.rotation.y=t*.25+ph;}else piv.rotation.y=base+sw*Math.sin(t*rate+ph);});return piv;};
+ // a fixed SPOT CONE from (x,y,z) along dir (world vector): a gate lamp throwing light down on a bridge
+ A.spotCone=(x,y,z,dir,o)=>{o=o||{};const T=A.T,m=beamMat(o.color);const c=new T.Mesh(fadeCone(o.len||120,o.rad||14),m);c.position.set(x,y,z);
+  c.quaternion.setFromUnitVectors(new T.Vector3(0,-1,0),new T.Vector3(dir[0],dir[1],dir[2]).normalize());A.add(c);A.noRay(c);
+  const on=o.on!=null?o.on:17.75,off=o.off!=null?o.off:29.8;A.glowAdd(x,y,z,[1,.95,.8],o.glow||10,on,off);
+  A.rec('spotcone',{at:[x,y,z],dir:[dir[0],dir[1],dir[2]],len:o.len||120,rad:o.rad||14,color:'#'+new A.T.Color(o.color||0xfff2d0).getHexString(),opacity:o.opacity||.13,hours:[on,off]});
+  A.hook((t,h)=>{const l=A.litAt(h,on,off);m.opacity=Math.min(.4,(o.opacity||.13)*l*A.haze());c.visible=l>.01;});return c;};
+ // a rotating BEACON: two thin cones back to back, red by default, faint by day
+ A.beacon=(x,y,z,o)=>{o=o||{};const T=A.T,g=new T.Group();g.position.set(x,y,z);A.add(g);A.noRay(g);const m=beamMat(o.color||0xff6040);const geo=fadeCone(o.len||90,o.rad||4,10);
+  for(const a of[0,Math.PI]){const w=new T.Group();w.rotation.y=a;const c=new T.Mesh(geo,m);c.rotation.x=-(Math.PI/2-.05);w.add(c);g.add(w);}
+  A.rec('beacon',{at:[x,y,z],len:o.len||90,rad:o.rad||4,color:'#'+new A.T.Color(o.color||0xff6040).getHexString(),spin:1.5,hours:[0,30]});
+  A.glowAdd(x,y,z,[1,.3,.2],o.glow||10,0,30);A.hook(t=>{m.opacity=Math.min(.7,(.35*A.U.night.value+.05)*A.haze());g.rotation.y=t*1.5;});return g;};
+ // a BRAZIER: an iron bowl on a post, a flickering flame (scaled to nothing when out)
+ A.brazier=(x,y,z,o)=>{o=o||{};A.set('brazier','post',A.lam(0x5c4a3a,.7));A.put('brazier',[x,y,z,.4,2.2,.4,0]);A.put('brazier',[x,y+2.2,z,1.05,.7,1.05,0]);
+  const T=A.T,fm=A.mat('flame',()=>new T.MeshBasicMaterial({color:0xffa040,transparent:true,opacity:.92,depthWrite:false}));const f=new T.Mesh(A.geo('cone'),fm);f.position.set(x,y+2.85,z);A.add(f);A.noRay(f);
+  const on=o.on!=null?o.on:17.5,off=o.off!=null?o.off:29.9;A.glowAdd(x,y+3.6,z,[1,.6,.2],o.glow||7,on,off);
+  A.rec('brazier',{at:[x,y,z],flame:[x,y+2.85,z],hours:[on,off],note:'flame leans downwind; a game engine may give it an OmniLight3D and an embers emitter'});
+  A.hook((t,h)=>{const l=A.litAt(h,on,off),k=(.85+.2*Math.sin(t*7+x))*l;f.visible=l>.01;f.scale.set(.75*k+.001,1.7*k+.001,.75*k+.001);
+   const w=A.windAt(t,x,z);f.rotation.set(Math.max(-.6,Math.min(.6,w[1]*.35)),0,-Math.max(-.6,Math.min(.6,w[0]*.35)));});return f;};   // the flame leans downwind
+ // a scheduled FLOODLIGHT (a real PointLight), warming up from dim orange as it comes on
+ A.floodLight=(x,y,z,o)=>{o=o||{};const L=new A.T.PointLight(0xffd9a0,0,o.dist||140,o.decay||1.6);L.position.set(x,y,z);A.add(L);const on=o.on!=null?o.on:17.1,off=o.off!=null?o.off:22.3;
+  A.rec('floodlight',{at:[x,y,z],range:o.dist||140,decay:o.decay||1.6,intensity:o.intensity||1.1,color:'#ffd9a0',hours:[on,off],warmup:.45});
+  A.glowAdd(x,y,z,[1,.85,.6],o.glow||12,on,off);
+  A.hook((t,h)=>{const hh=h<12?h+24:h,w=Math.min(1,Math.max(0,(hh-on)/.45));L.intensity=(o.intensity||1.1)*A.litAt(h,on,off)*(.3+.7*w);L.color.setRGB(1,.54+.31*w,.23+.4*w);});return L;};
+ // THE GLOW LAYER: one sprite cloud over every registered light; a light's sprite follows its hours, a night light the night
+ A.buildGlow=()=>{const n=A.glow.length;if(!n)return null;const T=A.T,P=A.PRESETS.glow,F=A.glf;const pos=new Float32Array(n*3),col=new Float32Array(n*3),sz=new Float32Array(n),lt=new Float32Array(n*2);
+  A.glow.forEach((g,i)=>{pos.set([g[0],g[1],g[2]],i*3);col.set([g[3],g[4],g[5]],i*3);sz[i]=g[6];lt[i*2]=g[7];lt[i*2+1]=g[8];});
+  const cv=document.createElement('canvas');cv.width=cv.height=64;const c2=cv.getContext('2d');const gr=c2.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.18,'rgba(255,255,255,.75)');gr.addColorStop(.5,'rgba(255,255,255,.18)');gr.addColorStop(1,'rgba(255,255,255,0)');c2.fillStyle=gr;c2.fillRect(0,0,64,64);
+  const gm=new T.ShaderMaterial({uniforms:{map:{value:new T.CanvasTexture(cv)},hour:A.U.hour,night:A.U.night,px:A.U.px,rain:A.U.rain,fog:A.U.fog},transparent:true,depthWrite:false,blending:T.AdditiveBlending,fog:false,
+   vertexShader:`attribute float psize;attribute vec3 color;attribute vec2 lt;uniform float hour;uniform float night;uniform float rain;uniform float fog;varying vec3 vC;varying float vA;${A.GLSL_LIT}
+    ${A.GLSL_QUAD}
+    void main(){float f=lt.x<0.0?0.25+0.75*night:(lt.x==0.0?1.0:atmLit(hour,lt));vec4 mv=modelViewMatrix*vec4(ipos,1.0);float d=max(-mv.z,1.0);
+     float ps=clamp(psize*px/d*(0.6+0.4*f)*(1.0+${F(P.rainSwell)}*rain+${F(P.fogSwell)}*fog),${F(P.pxMin)},${F(P.pxMax)});vA=exp(-d*(${F(P.distFade)}+${F(P.fogFade)}*fog))*f*(${F(P.dayFloor)}+${F(1-P.dayFloor)}*night)*(1.0+0.35*fog);vC=color;gl_Position=atmQuad(mv,ps);}`,
+   fragmentShader:`uniform sampler2D map;varying vec3 vC;varying float vA;varying vec2 vUv;void main(){float a=texture2D(map,vUv).a*vA;if(a<0.004)discard;gl_FragColor=vec4(vC*a*${F(P.gain)},a);}`});
+  const pts=A.sprites('glow',{ipos:[3,pos],color:[3,col],psize:[1,sz],lt:[2,lt]},gm,6);return pts;};
+})();
+// ================================================================= ATMOS — particles: chimney smoke and vent steam, fireflies, a mist ring, fog banks, moths
+// Each is one sprite cloud (A.sprites: camera-facing quads) animated in its vertex shader: a particle's position is a pure
+// function of its seeds and the clock, with no per-frame CPU work and no state. Its numbers come from ATMOS.PRESETS
+// (sizes in world metres), and each call records what it placed (A.rec) for ATMOS.export().
+(function(){const A=ATMOS;
+ const v3=c=>new A.T.Vector3(c[0],c[1],c[2]),F=v=>A.glf(v);
+ // a particle material: vs/fs are the bodies of main(); head goes above main (extra uniforms and attributes)
+ const pmat=(vs,fs,blend,extra,head)=>new A.T.ShaderMaterial({uniforms:Object.assign({time:A.U.time,px:A.U.px,wind:A.U.wind,gustAmp:A.U.gustAmp,light:A.U.light,rain:A.U.rain,night:A.U.night,fog:A.U.fog,k:{value:0}},extra||{}),
+  vertexShader:`uniform float time;uniform vec2 wind;uniform float gustAmp;uniform float light;uniform float rain;uniform float night;uniform float fog;uniform float k;attribute vec4 pp;varying float vA;varying vec3 vC;
+   ${A.GLSL_QUAD}
+   ${A.GLSL_WIND}
+   ${head||''}
+   void main(){${vs}}`,fragmentShader:`varying float vA;varying vec3 vC;varying vec2 vUv;void main(){float d=length(vUv-0.5);${fs}}`,
+  transparent:true,depthWrite:false,fog:false,blending:blend==='add'?A.T.AdditiveBlending:A.T.NormalBlending});
+ // SMOKE: emitters [x,y,z,kind] (kind: a PRESETS.smoke name, or its index: 0 chimney, 1 steam, 2 spray); each particle
+ // loops its age, rising and drifting downwind on the gust it met halfway up. o.n: particles per emitter (else the kind's n)
+ A.smoke=(list,o)=>{o=o||{};if(!list.length)return null;const P=A.PRESETS.smoke,kinds=Object.keys(P).filter(k=>P[k]&&P[k].index!=null).sort((a,b)=>P[a].index-P[b].index);
+  const kindOf=e=>typeof e[3]==='string'?P[e[3]].index:e[3];const pos=[],pp=[];
+  for(const e of list){const ki=kindOf(e),n=o.n||P[kinds[ki]].n;for(let k=0;k<n;k++){pos.push(e[0],e[1],e[2]);pp.push(k/n+A.rr(-.02,.02),ki,A.rnd(),A.rnd());}}
+  A.rec('smoke',{preset:'smoke',emitters:list.map(e=>[e[0],e[1],e[2],kinds[kindOf(e)]])});
+  const SA=kinds.map(k=>new A.T.Vector4(P[k].rate,P[k].rise,P[k].drift,P[k].alpha)),SB=kinds.map(k=>new A.T.Vector4(P[k].size[0],P[k].size[1],P[k].rainDamp,P[k].wobble)),SC=kinds.map(k=>v3(P[k].color)),N=kinds.length;
+  return A.sprites('smoke',{ipos:[3,pos],pp:[4,pp]},pmat(`int ki=int(pp.y+0.5);vec4 a=SA[0];vec4 b=SB[0];vec3 col=SC[0];
+   for(int i=1;i<${N};i++){if(i==ki){a=SA[i];b=SB[i];col=SC[i];}}
+   float rate=a.x;float age=fract(time*rate+pp.x);
+   vec2 wv=atmWind(time-age/rate*0.5,ipos.xz,wind,gustAmp);vec3 p=ipos+vec3(wv.x,0.0,wv.y)*age*a.z+vec3(0.0,age*a.y,0.0)+vec3(sin(pp.z*6.28+age*3.0),0.0,cos(pp.w*6.28+age*2.5))*age*b.w;
+   vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(mix(b.x,b.y,age)*px/dd,1.0,${F(P.pxMax)});vA=smoothstep(0.0,${F(P.fadeIn)},age)*(1.0-age)*a.w*(1.0-b.z*rain)*exp(-dd*${F(P.distFade)});
+   vC=col*(0.3+0.7*light);gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.1,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`,P.blend,{SA:{value:SA},SB:{value:SB},SC:{value:SC}},
+   `uniform vec4 SA[${N}];uniform vec4 SB[${N}];uniform vec3 SC[${N}];`));};
+ // FIREFLIES round centres [x,y,z]: n per centre, wandering within `spread` m, blinking, only at night and not in rain
+ A.fireflies=(centres,o)=>{o=o||{};const P=A.PRESETS.fireflies,n=o.n||P.n,sp=o.spread||P.spread,pos=[],pp=[];
+  for(const c of centres)for(let i=0;i<n;i++){pos.push(c[0]+A.rr(-sp,sp),c[1]+A.rr(.5,3.5),c[2]+A.rr(-sp,sp));pp.push(A.rnd()*6.28,A.rr(.5,1.1),A.rnd()*2,A.rr(.5,.9));}
+  if(!pos.length)return null;A.rec('fireflies',{preset:'fireflies',centres:centres.map(c=>[c[0],c[1],c[2]]),n,spread:sp});
+  return A.sprites('fireflies',{ipos:[3,pos],pp:[4,pp]},pmat(`float t=time*pp.y+pp.x;vec3 p=ipos+vec3(sin(t*0.7)*1.8,sin(t*1.3+pp.z)*0.8+0.4,cos(t*0.6+pp.z*2.0)*1.8);
+   float blink=pow(max(sin(time*(1.2+pp.z)+pp.x*6.0),0.0),5.0);vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(pp.w*(0.5+blink)*px/dd*${F(P.size)},1.0,${F(P.pxMax)});vA=blink*night*exp(-dd*${F(P.distFade)})*(1.0-rain);vC=col;gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC*a,a);`,P.blend,{col:{value:v3(P.color)}},'uniform vec3 col;'));};
+ // a MIST RING drifting round a closed curve r(t) (a moat): `inner`..`outer` m out from it at heights y0..y1; thick at dawn
+ // and in rain (k is set each frame from the hour and the rain)
+ A.mistRing=(rFn,o)=>{o=o||{};const P=A.PRESETS.mist,N=o.n||P.n,samples=256,R=[];for(let i=0;i<samples;i++)R.push(rFn(i/samples*Math.PI*2));
+  const pos=[],pp=[];for(let i=0;i<N;i++){pos.push(A.rnd()*Math.PI*2,A.rr(o.inner||8,o.outer||38),A.rr(o.y0||-9,o.y1||-3));pp.push(A.rr(P.size[0],P.size[1]),A.rr(-.004,.004),A.rnd()*6.28,A.rnd());}
+  // each particle carries its own radius (the curve at its bearing plus its offset); it drifts slowly round in bearing
+  for(let i=0;i<N;i++){const t=pos[i*3];pos[i*3+1]+=R[Math.floor(((t/(Math.PI*2))%1)*samples)];}
+  A.rec('mist',{preset:'mist',curve:R.filter((r,i)=>i%4===0),inner:o.inner||8,outer:o.outer||38,y:[o.y0||-9,o.y1||-3],n:N,
+   note:'curve: radius from the origin at 64 even bearings (bearing = angle from +x toward +z)'});
+  const m=pmat(`float t=ipos.x+time*pp.y;float r=ipos.y;vec3 p=vec3(r*cos(t),ipos.z+sin(time*0.2+pp.z)*0.8,r*sin(t));vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(pp.x*px/dd,1.0,${F(P.pxMax)});vA=k*${F(P.alpha)}*exp(-dd*${F(P.distFade)})*smoothstep(${F(P.nearFade[0])},${F(P.nearFade[1])},dd);vC=mix(cN,cD,smoothstep(0.3,1.0,light));gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`,P.blend,{cN:{value:v3(P.night)},cD:{value:v3(P.day)}},'uniform vec3 cN;uniform vec3 cD;');
+  const p=A.sprites('mist',{ipos:[3,pos],pp:[4,pp]},m);A.hook((t,h)=>{const v=Math.min(1,A.ss(4.3,5.5,h)*(1-A.ss(7.8,9.4,h))+.25*A.U.rain.value+.4*A.U.fog.value);m.uniforms.k.value=v;p.visible=v>.07;});return p;};
+ // FOG BANKS: low soft sprites at the given points [x,y,z], seen only when the weather's fog is up
+ A.fogBank=(points,o)=>{o=o||{};const P=A.PRESETS.fogbank,pos=[],pp=[];for(const q of points){pos.push(q[0],q[1]+A.rr(1,8),q[2]);pp.push(A.rr(P.size[0],P.size[1]),A.rnd()*6.28,A.rnd(),A.rnd());}
+  A.rec('fogbank',{preset:'fogbank',points:points.map(q=>[q[0],q[1],q[2]])});
+  const m=pmat(`vec2 wv=atmWind(time,ipos.xz,wind,gustAmp);vec3 p=ipos+vec3(wv.x,0.0,wv.y)*sin(time*0.05+pp.y)*${F(P.sway)};p.y+=sin(time*0.13+pp.y)*0.8;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);
+   float ps=clamp(pp.x*px/dd,1.0,${F(P.pxMax)});vA=fog*${F(P.alpha)}*smoothstep(${F(P.nearFade[0])},${F(P.nearFade[1])},dd)*exp(-dd*${F(P.distFade)});vC=mix(cN,cD,smoothstep(0.3,1.0,light));gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.0,0.5,d))*vA;if(a<0.003)discard;gl_FragColor=vec4(vC,a);`,P.blend,{cN:{value:v3(P.night)},cD:{value:v3(P.day)}},'uniform vec3 cN;uniform vec3 cD;');
+  const p=A.sprites('fogbank',{ipos:[3,pos],pp:[4,pp]},m);A.hook(()=>{p.visible=A.U.fog.value>.01;});return p;};
+ // MOTHS round lamp heads (A.lamps, or o.at: [[x,y,z,on,off]]): n per lamp on a share p of them (at most o.max lamps),
+ // looping and jinking about the light while it is lit, at night, out of the rain, and not in a strong wind.
+ // Seeded on a stream of their own, so adding them moves nothing else.
+ A.moths=o=>{o=o||{};const P=A.PRESETS.moths,src=o.at||A.lamps,n=o.n||P.n,p=o.p==null?P.p:o.p,max=o.max||P.max,R=A.stream((o.seed||A.h.seed||1)*7+911);
+  const pick=src.filter(()=>R()<p),step=Math.max(1,pick.length/max),pos=[],pp=[],lt=[],at=[];
+  for(let i=0;i<pick.length;i+=step){const L=pick[Math.floor(i)];at.push(L.slice(0,5));for(let k=0;k<n;k++){pos.push(L[0],L[1]-.1,L[2]);pp.push(R()*6.28,.7+R()*.8,.35+R()*.9,R());lt.push(L[3],L[4]);}}
+  if(!pos.length)return null;A.rec('moths',{preset:'moths',lamps:at,n,note:'lamps: [x,y,z,on,off] lamp heads; moths circle 0.35-1.25 m round each while it is lit'});
+  return A.sprites('moths',{ipos:[3,pos],pp:[4,pp],lt:[2,lt]},pmat(`float t=time*pp.y+pp.x;
+   vec3 o=vec3(sin(t*2.3)+0.5*sin(t*5.1+pp.x),0.6*sin(t*1.7+pp.w*6.0)+0.3*sin(t*7.3),cos(t*2.0)+0.5*cos(t*4.3+pp.x*2.0))*pp.z
+    +0.07*vec3(sin(time*29.0+pp.x*9.0),sin(time*23.0+pp.w*7.0),cos(time*31.0+pp.x*5.0));
+   vec4 mv=modelViewMatrix*vec4(ipos+o,1.0);float dd=max(-mv.z,0.5);float flap=0.7+0.3*sin(time*38.0+pp.x*20.0);
+   float ps=clamp(${F(P.size)}*px/dd,1.0,${F(P.pxMax)});vA=atmLit(hour,lt)*night*(1.0-rain)*(1.0-0.6*fog)*(1.0-smoothstep(${F(P.windHide[0])},${F(P.windHide[1])},length(wind)))*(1.0-smoothstep(${F(P.fadeNear)},${F(P.fadeFar)},dd))*flap*${F(P.alpha)};
+   vC=col;gl_Position=atmQuad(mv,ps);`,
+   `float a=(1.0-smoothstep(0.15,0.5,d))*vA;if(a<0.004)discard;gl_FragColor=vec4(vC,a);`,P.blend,{hour:A.U.hour,col:{value:v3(P.color)}},'uniform float hour;uniform vec3 col;attribute vec2 lt;'+A.GLSL_LIT),5);};
+})();
+// ================================================================= ATMOS — weather: modes, rain streaks, lightning, fog, wet ground
+// ATMOS.weather(o) starts it. Modes: auto (dawn fog, an evening shower 19:30-22:00, from the hour), clear, rain, storm
+// (rain with lightning), fog. The state eases toward the mode's target each frame: W.rain, W.fog, W.wet (rises in rain,
+// dries after), W.flash (lightning). The module draws the rain and the bolt; what the weather does to the HOST's scene
+// (fog density, sun, ground roughness) is the host's. W.wind (1 calm .. 2.4 storm) scales the module's wind.
+// o.apply(W) is called every frame after the state is updated.
+// o.ui: an element to put a Weather selector in. Never flashes when the viewer asks for reduced motion.
+(function(){const A=ATMOS;
+ // THE STATE MACHINE, pure: what the weather is heading for at an hour in a mode, one eased step of the state, and
+ // the lightning flash e ms after a strike. No THREE, no DOM: test-atmos.js runs these, and Godot's Atmos autoload
+ // ports them line for line.
+ A.MODES=['auto','clear','rain','storm','fog'];
+ A.weatherAuto=h=>({rain:A.ss(19.5,19.9,h)*(1-A.ss(21.6,22,h)),fog:.7*A.ss(4.3,5.5,h)*(1-A.ss(8.4,9.6,h))});
+ A.weatherTarget=(M,h)=>{const au=A.weatherAuto(h),PW=A.PRESETS.wind.weather;
+  return{rain:M==='rain'?.75:M==='storm'?1:M==='auto'?au.rain:0,fog:M==='fog'?1:M==='auto'?au.fog:M==='storm'?.3:0,
+   wind:M==='storm'?PW.storm:M==='rain'?PW.rain:M==='auto'?1+PW.autoRain*au.rain:PW.clear};};
+ A.weatherStep=(W,h,dt)=>{const g=A.weatherTarget(W.mode,h);W.rain+=(g.rain-W.rain)*Math.min(1,dt*1.5);W.fog+=(g.fog-W.fog)*Math.min(1,dt*.8);
+  W.wet=Math.min(1,Math.max(0,W.wet+dt*(W.rain>.15?.12*W.rain:-.02)));W.wind+=(g.wind-W.wind)*Math.min(1,dt*.4);return W;};
+ A.flashAt=e=>e<80?1:e<150?.25:e<230?.8:e<600?.8*(1-(e-230)/370):0;
+ A.weatherState=mode=>({mode:mode||'auto',rain:0,fog:0,wet:0,flash:0,wind:1,MODES:A.MODES});
+ // o.reduceMotion (the host reads the viewer's setting): never flash
+ A.weather=o=>{o=o||{};const T=A.T,W=A.W=A.weatherState(o.mode);
+  // rain: streaks in a box (240 m) that travels with the camera
+  const P=A.PRESETS.rain,F=A.glf,B=P.box/2,N=o.drops||P.drops,pos=new Float32Array(N*6),end=new Float32Array(N*2);for(let i=0;i<N;i++){const x=A.rr(-B,B),y=A.rr(-B,B),z=A.rr(-B,B);pos.set([x,y,z,x,y,z],i*6);end[i*2+1]=1;}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('tip',new T.BufferAttribute(end,1));
+  const rm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,rain:A.U.rain},transparent:true,depthWrite:false,fog:false,
+   vertexShader:`uniform float time;uniform vec2 wind;uniform vec2 windOff;uniform float rain;attribute float tip;varying float vA;
+    void main(){vec3 p=position;p.y=mod(p.y-time*${F(P.fall)},${F(P.box)})-${F(B)}+cameraPosition.y;p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+windOff*${F(P.windRide)},${F(P.box)})-${F(B)}+cameraPosition.xz;
+     p+=normalize(vec3(wind.x*${F(P.slant)},-1.0,wind.y*${F(P.slant)}))*tip*${F(P.streak)};vec4 mv=viewMatrix*vec4(p,1.0);vA=rain*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},length(mv.xyz)))*(0.35+0.65*tip);gl_Position=projectionMatrix*mv;}`,
+   fragmentShader:`uniform float light;varying float vA;void main(){gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.35+0.65*light),vA*${F(P.alpha)});}`});
+  const rain=new T.LineSegments(g,rm);rain.frustumCulled=false;rain.renderOrder=4;rain.name='atmos:rain';A.add(rain);A.noRay(rain);
+  // lightning: a jagged ribbon far off, a double flash
+  const K=14,bp=new Float32Array((K+1)*6),idx=[];for(let k=0;k<K;k++){const q=k*2;idx.push(q,q+1,q+2,q+1,q+3,q+2);}
+  const bg=new T.BufferGeometry();bg.setAttribute('position',new T.BufferAttribute(bp,3));bg.setIndex(idx);
+  const bm=new T.MeshBasicMaterial({color:0xe8ecff,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false,side:T.DoubleSide});
+  const bolt=new T.Mesh(bg,bm);bolt.frustumCulled=false;bolt.visible=false;A.add(bolt);A.noRay(bolt);
+  const reduce=!!o.reduceMotion;let next=A.clock.t*1000+6000,t0=-1e9;
+  const strike=()=>{const cam=A.h.camera.position,a=A.rnd()*Math.PI*2,dist=700+A.rnd()*500,cx=cam.x+Math.cos(a)*dist,cz=cam.z+Math.sin(a)*dist,top=380+A.rnd()*120,base=A.ground(cx,cz);
+   const sx=-Math.sin(a),sz=Math.cos(a);let x=cx,z=cz;for(let k=0;k<=K;k++){const y=top+(base-top)*k/K;if(k){x+=(A.rnd()-.5)*40;z+=(A.rnd()-.5)*40;}const w=3.2-2.4*k/K;bp.set([x-sx*w,y,z-sz*w,x+sx*w,y,z+sz*w],k*6);}
+   bg.attributes.position.needsUpdate=true;bg.computeBoundingSphere();t0=A.clock.t*1000;next=t0+5000+A.rnd()*9000;};
+  A.hook((t,h,dt)=>{const now=t*1000;A.weatherStep(W,h,dt);
+   if(W.mode==='storm'&&!reduce&&W.rain>.6&&now>next)strike();W.flash=A.flashAt(now-t0);A.windScale=W.wind;A.U.gustAmp.value=.55+.25*Math.min(1,W.wind-1);
+   A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;rain.visible=W.rain>.01;bolt.visible=W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
+   if(o.apply)o.apply(W);});
+  A.rec('weather',{preset:'rain',modes:W.MODES,mode:W.mode,drops:N,auto:{rain:[19.5,19.9,21.6,22],fog:[.7,4.3,5.5,8.4,9.6]},storm:{fog:.3,strikeEvery:[5,14],strikeDist:[700,1200]},
+   note:'auto: rain ramps up over the first pair of hours and down over the second; fog = scale * ramps. W.rain/fog/wet/flash/wind are the state a host reads'});
+  if(o.ui&&A.weatherUI)A.weatherUI(o.ui);A.strike=strike;return W;};   // the selector itself is host code: 89-atmos-9-host.js
+})();
+// ================================================================= ATMOS — dressing on buildings: ivy, window boxes, rooftop cisterns
+// A.boxIndex(meshes) indexes every instance of box-geometry InstancedMeshes (walls, slabs, roofs) as an oriented box in an
+// 8 m grid; idx.ray(origin, dir, maxD) returns the nearest hit {t, p, n, top} exactly (slab test in the box's own frame).
+// dressBuilding() uses it to find a building's real walls and roof, so the dressing lands on fabric, not on a footprint.
+(function(){const A=ATMOS;
+ A.boxIndex=(meshes,o)=>{o=o||{};const T=A.T,C=8,cells={},list=[],m=new T.Matrix4(),p=new T.Vector3(),q=new T.Quaternion(),s=new T.Vector3(),min=o.minSize||2;
+  for(const im of meshes){if(!im||!im.isInstancedMesh||im.geometry.type!=='BoxGeometry')continue;im.geometry.computeBoundingBox();const bb=im.geometry.boundingBox;
+   for(let i=0;i<im.count;i++){im.getMatrixAt(i,m);m.decompose(p,q,s);const big=[s.x,s.y,s.z].filter(v=>v>=min).length;if(big<2)continue;
+    const M=m.clone(),inv=m.clone().invert(),box=new T.Box3().copy(bb).applyMatrix4(M);const e={M,inv,bb,top:box.max.y,box};list.push(e);
+    for(let cx=Math.floor(box.min.x/C);cx<=Math.floor(box.max.x/C);cx++)for(let cz=Math.floor(box.min.z/C);cz<=Math.floor(box.max.z/C);cz++)(cells[cx+','+cz]||(cells[cx+','+cz]=[])).push(e);}}
+  const lo=new T.Vector3(),ld=new T.Vector3(),nm=new T.Matrix3();
+  const ray=(org,dir,maxD)=>{const seen=new Set();let best=null;const L=maxD||60,step=C/2;
+   for(let t=0;t<=L+step;t+=step){const x=org[0]+dir[0]*t,z=org[2]+dir[2]*t;const cell=cells[Math.floor(x/C)+','+Math.floor(z/C)];if(!cell)continue;
+    for(const e of cell){if(seen.has(e))continue;seen.add(e);lo.set(org[0],org[1],org[2]).applyMatrix4(e.inv);ld.set(dir[0],dir[1],dir[2]);   // the direction goes through the linear part only: t is the same in both frames
+    const el=e.inv.elements;const dx=el[0]*ld.x+el[4]*ld.y+el[8]*ld.z,dy=el[1]*ld.x+el[5]*ld.y+el[9]*ld.z,dz=el[2]*ld.x+el[6]*ld.y+el[10]*ld.z;
+     let t0=-1e9,t1=1e9,ax=-1,sg=0;const O=[lo.x,lo.y,lo.z],D=[dx,dy,dz],mn=[e.bb.min.x,e.bb.min.y,e.bb.min.z],mx=[e.bb.max.x,e.bb.max.y,e.bb.max.z];let ok=true;
+     for(let k=0;k<3&&ok;k++){if(Math.abs(D[k])<1e-9){if(O[k]<mn[k]||O[k]>mx[k])ok=false;continue;}let a=(mn[k]-O[k])/D[k],b=(mx[k]-O[k])/D[k],s=-1;if(a>b){const c=a;a=b;b=c;s=1;}if(a>t0){t0=a;ax=k;sg=s;}if(b<t1)t1=b;if(t0>t1)ok=false;}
+     if(!ok||t0<0||t0>L||ax<0)continue;if(!best||t0<best.t){const n=new T.Vector3(ax===0?sg:0,ax===1?sg:0,ax===2?sg:0);nm.getNormalMatrix(e.M);n.applyMatrix3(nm).normalize();
+      best={t:t0,p:[org[0]+dir[0]*t0,org[1]+dir[1]*t0,org[2]+dir[2]*t0],n:[n.x,n.y,n.z],top:e.top,box:e.box};}}}
+   return best;};
+  A.stats.boxIndex=list.length;return{ray,count:list.length};};
+ // IVY: a canvas atlas of three leaf-sheet variants (vines rooted along the bottom, thinning to their tips)
+ let ivyTex=null;const ivyAtlas=()=>{if(ivyTex)return ivyTex;const cv=document.createElement('canvas');cv.width=768;cv.height=256;const g=cv.getContext('2d');const R=A.rnd;
+  const leaf=(x,y,sz,a,l)=>{g.save();g.translate(x,y);g.rotate(a);g.fillStyle=`rgb(${l-40},${l},${l-55})`;g.beginPath();g.moveTo(0,sz*.9);g.lineTo(-sz*.5,sz*.15);g.lineTo(-sz,-sz*.3);g.lineTo(-sz*.35,-sz*.28);g.lineTo(0,-sz);g.lineTo(sz*.35,-sz*.28);g.lineTo(sz,-sz*.3);g.lineTo(sz*.5,sz*.15);g.closePath();g.fill();g.restore();};
+  for(let v=0;v<3;v++){const ox=v*256,stems=[];for(let k=0;k<6+Math.floor(R()*3);k++){const x0=ox+28+R()*200,top=256*(.03+.62*R()),pts=[];let x=x0,y=256,ph=R()*6;while(y>top){pts.push([x,y]);y-=6;x=Math.max(ox+16,Math.min(ox+240,x+Math.sin(y*.05+ph)*2.2+(R()-.5)*3));}stems.push(pts);}
+   g.lineCap='round';for(const st of stems){g.strokeStyle='rgba(74,56,38,.95)';g.lineWidth=2.2;g.beginPath();st.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.stroke();}
+   for(const st of stems){const x0=st[0][0];for(let i=0;i<46;i++){const r=28*Math.sqrt(R()),a=R()*6.283,x=x0+Math.cos(a)*r*1.3,y=250+Math.sin(a)*r*.9;if(x<ox+8||x>ox+248)continue;leaf(x,y,6+R()*4,R()*6.283,150+Math.floor(R()*80));}
+    st.forEach((q,i)=>{const f=1-i/st.length;if(R()>.6+.4*f)return;const x=q[0]+(R()-.5)*(8+14*f),y=q[1]+(R()-.5)*8;if(x<ox+8||x>ox+248)return;leaf(x,y,5+R()*3+3*f,R()*6.283,155+Math.floor(R()*80));});}}
+  ivyTex=new A.T.CanvasTexture(cv);ivyTex.encoding=A.T.sRGBEncoding;ivyTex.anisotropy=4;return ivyTex;};
+ const IVYG=[0x3f9a4c,0x4cb35a,0x3a8a6a,0x52a870,0x62c488,0x6fb04a,0x80bf5a],FLOWER=[0xff5fa2,0xffd34a,0xe8443a,0xf4f0e6,0xb06adf,0xff8a3a];
+ const ivySet=v=>{const k='ivy'+v;if(A.sets[k])return k;const g=new A.T.PlaneGeometry(1,1).translate(0,.5,0);const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setX(i,(v+uv.getX(i))/3);
+  A.set(k,g,A.mat('ivy',()=>new A.T.MeshLambertMaterial({color:0xffffff,map:ivyAtlas(),alphaTest:.35,side:A.T.DoubleSide})));return k;};
+ // an ivy panel climbing from (x,y,z) on a face whose outward normal has bearing `ry` (rotation about y; the panel faces +z)
+ A.ivy=(x,y,z,ry,w,h)=>{A.put(ivySet(Math.floor(A.rnd()*3)),[x,y,z,w,h,1,ry,A.pick(IVYG)]);};
+ A.ivyClump=(x,y,z,s)=>{A.set('ivyClump','ball',A.lam(0x4f9a4a,.9));A.put('ivyClump',[x,y,z,s,s*.7,s,A.rnd()*6.28,A.pick(IVYG)]);};
+ // a WINDOW BOX under a sill at (x,y,z), facing ry, w wide: timber trough, leaves, a few flowers
+ A.windowBox=(x,y,z,ry,w)=>{A.set('wbox','box',A.lam(0xffffff,.9));A.set('wboxLeaf','ball',A.lam(0xffffff,.9));A.set('wboxFlower','box',A.lam(0xffffff,.8));
+  A.put('wbox',[x,y,z,w,.38,.46,ry,A.pick([0xa8552a,0x8a5a3a,0x9c6a4a])]);A.put('wboxLeaf',[x,y+.3,z,w*.5,.3,.26,ry,A.pick(IVYG)]);
+  const c=Math.cos(ry),s=Math.sin(ry);for(let i=0,n=3+Math.floor(A.rnd()*4);i<n;i++){const lx=(A.rnd()-.5)*w*.85,lz=(A.rnd()-.3)*.2;A.put('wboxFlower',[x+lx*c+lz*s,y+.45+A.rnd()*.25,z-lx*s+lz*c,.16,.16,.16,A.rnd()*6.28,A.pick(FLOWER)]);}};
+ // a rooftop CISTERN: a timber tank with two iron hoops and a conical lid
+ A.cistern=(x,y,z,r,h)=>{A.set('cistern','post16',A.lam(0xffffff,.9));A.set('cisternHoop','post16',A.lam(0x3a3632,.6));A.set('cisternLid','cone',A.lam(0x5a4a3a,.9));
+  A.put('cistern',[x,y,z,r,h,r,0,A.pick([0x8a6a4a,0x9c7a55,0x7a5a3a])]);A.put('cisternHoop',[x,y+h*.2,z,r*1.04,.12,r*1.04,0]);A.put('cisternHoop',[x,y+h*.7,z,r*1.04,.12,r*1.04,0]);A.put('cisternLid',[x,y+h,z,r*1.05,r*.45,r*1.05,0]);};
+ // window boxes under pane instances: im an InstancedMesh of window panes whose local +z faces out; p the share dressed
+ A.windowBoxesOnPanes=(im,o)=>{o=o||{};if(!im)return 0;const T=A.T,m=new T.Matrix4(),p=new T.Vector3(),q=new T.Quaternion(),s=new T.Vector3(),n=new T.Vector3();let k=0;
+  for(let i=0;i<im.count;i++){if(A.rnd()>(o.p||.3))continue;im.getMatrixAt(i,m);m.decompose(p,q,s);if(s.x<.6||s.x>3||s.y<.8)continue;n.set(0,0,1).applyQuaternion(q);if(Math.abs(n.y)>.2)continue;
+   if(o.ok&&!o.ok(p.x,p.z))continue;const ry=Math.atan2(n.x,n.z),by=p.y-s.y/2-.24;A.windowBox(p.x+n.x*.3,by,p.z+n.z*.3,ry,s.x+.25);k++;}A.stats.windowBoxes=(A.stats.windowBoxes||0)+k;return k;};
+ // DRESS ONE BUILDING: b {x,z,y (ground), R (reach of its footprint), ry}; finds its walls by rays in from four sides and
+ // its roof by a ray down; o.ivy chance per side, o.cistern chance of a tank on a flat roof
+ A.dressBuilding=(idx,b,o)=>{o=o||{};let n=0;
+  for(let k=0;k<4;k++){if(A.rnd()>(o.ivy==null?.35:o.ivy))continue;const a=(b.ry||0)+k*Math.PI/2+A.rr(-.35,.35),dx=Math.sin(a),dz=Math.cos(a),R=b.R+4;
+   const hit=idx.ray([b.x+dx*R,b.y+1.3,b.z+dz*R],[-dx,0,-dz],R);if(!hit||Math.abs(hit.n[1])>.3)continue;const H=Math.min(A.rr(2.2,5.5),hit.top-b.y-.2);if(H<1.5)continue;
+   const ry=Math.atan2(hit.n[0],hit.n[2]),w=A.rr(1.2,2.6);A.ivy(hit.p[0]+hit.n[0]*.08,b.y,hit.p[2]+hit.n[2]*.08,ry,w,H);if(A.rnd()<.5)A.ivyClump(hit.p[0]+hit.n[0]*.3,b.y+H-.2,hit.p[2]+hit.n[2]*.3,A.rr(.5,.9));n++;}
+  if(A.rnd()<(o.cistern||0)){const x=b.x+A.rr(-1.5,1.5),z=b.z+A.rr(-1.5,1.5),hit=idx.ray([x,b.y+80,z],[0,-1,0],80);
+   if(hit&&hit.n[1]>.9&&hit.p[1]>b.y+2.6&&hit.box.max.x-hit.box.min.x>3.2&&hit.box.max.z-hit.box.min.z>3.2){A.cistern(hit.p[0],hit.p[1],hit.p[2],A.rr(.8,1.25),A.rr(1.6,2.3));n++;}}
+  return n;};
+})();
+// ================================================================= ATMOS — sewers: an outfall with its grate, a trickle to the water, a grated drain
+// A.outfall(x,y,z,ry,o): a culvert mouth set into a wall face at (x,y,z) (y = the culvert floor), the face's outward
+// normal at bearing ry (rotation about y; local +z is out). Jambs, a stepped lintel, an iron grate, a spill lip, and a
+// trickle that runs from the lip down the ground (A.ground) until it meets o.waterY. o.lean: the face's batter (m per m).
+// A.drain(pts,o): a grated channel along a polyline on the ground; A.inletGrate(): an iron grate over a dark opening.
+(function(){const A=ATMOS;
+ const dark=()=>A.mat('sewerDark',()=>new A.T.MeshBasicMaterial({color:0x0b0907})),iron=()=>A.lam(0x2f2b28,.55),stone=()=>A.lam(0x8f8272,.95),lintel=()=>A.lam(0xb8a07a,.9);
+ const flowTex=()=>A.mat('flowTex',()=>{const cv=document.createElement('canvas');cv.width=64;cv.height=256;const g=cv.getContext('2d');g.fillStyle='rgb(200,210,220)';g.fillRect(0,0,64,256);
+  for(let i=0;i<70;i++){const x=A.rnd()*64,w=1+A.rnd()*4,l=30+A.rnd()*60,v=A.rnd()<.5?255:150,y=A.rnd()*256;g.fillStyle=`rgba(${v},${v},${v},${.2+A.rnd()*.5})`;g.fillRect(x,y,w,l);if(y+l>256)g.fillRect(x,y-256,w,l);}
+  const t=new A.T.CanvasTexture(cv);t.wrapS=t.wrapT=A.T.RepeatWrapping;A.hook(tt=>{t.offset.y=-tt*.9;});return t;});
+ const P=(x,z,ry,lx,lz)=>[x+lx*Math.cos(ry)+lz*Math.sin(ry),z-lx*Math.sin(ry)+lz*Math.cos(ry)];
+ const box=(set,mat,x,y,z,ry,lx,ly,lz,w,h,d)=>{A.set(set,'box',mat);const p=P(x,z,ry,lx,lz);A.put(set,[p[0],y+ly,p[1],w,h,d,ry]);};
+ A.outfall=(x,y,z,ry,o)=>{o=o||{};const lean=o.lean||0,zf=yy=>-lean*yy;
+  box('sewerDark',dark(),x,y,z,ry,0,1.8,zf(1.8)-.9,3.8,3.6,2.4);
+  for(const sd of[-1,1])box('sewerStone',stone(),x,y,z,ry,sd*2.55,2.4,zf(2.4)+.15,1.1,4.8,1.7);
+  box('sewerLintel',lintel(),x,y,z,ry,0,5.1,zf(5.1)+.25,6.6,.9,2.0);box('sewerStone',stone(),x,y,z,ry,0,6.0,zf(6)+.05,5.2,.7,1.6);box('sewerLintel',lintel(),x,y,z,ry,0,6.7,zf(6.7)-.1,3.6,.55,1.3);
+  box('sewerStone',stone(),x,y,z,ry,0,.25,zf(.25)+1.15,5.4,.55,2.7);                                      // the spill lip
+  for(let k=-3;k<=3;k++)box('sewerIron',iron(),x,y,z,ry,k*.55,1.8,zf(1.8)+.35,.16,3.5,.16);                // the grate
+  for(const yy of[1.1,2.6])box('sewerIron',iron(),x,y,z,ry,0,yy,zf(yy)+.35,3.9,.16,.16);
+  // the trickle: a ribbon over the lip and down the ground to the water, widening as it goes
+  const T=A.T,pos=[],uv=[],idx=[];let v=0,prev=null;const wy=o.waterY!=null?o.waterY:-1e9;
+  for(let k=0;k<200;k++){const out=2.2+k*.5,c=P(x,z,ry,0,out),gy=A.ground(c[0],c[1]),yy=k===0?y+.55:Math.max(gy+.12,wy);if(prev){v+=Math.hypot(.5,yy-prev)/3;}
+   const w=1.2+Math.min(1.4,k*.03);for(const sd of[-1,1]){const q=P(x,z,ry,sd*w/2,out);pos.push(q[0],yy,q[1]);uv.push(sd<0?0:1,v);}
+   if(k){const b=(k-1)*2;idx.push(b,b+2,b+1,b+1,b+2,b+3);}prev=yy;if(gy<=wy+.05||k>8&&yy<=wy+.13)break;}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+  const m=A.mat('trickle',()=>new T.MeshStandardMaterial({color:0x8fb4c8,map:flowTex(),transparent:true,opacity:.8,roughness:.15,depthWrite:false,side:T.DoubleSide}));
+  const mesh=new T.Mesh(g,m);mesh.name='atmos:trickle';mesh.renderOrder=2;A.add(mesh);A.stats.outfalls=(A.stats.outfalls||0)+1;
+  const mouth=P(x,z,ry,0,1.5);A.rec('outfall',{at:[x,y,z],ry,lean,waterY:o.waterY,trickle:pos.length/6});return{x:mouth[0],y:y+2,z:mouth[1],r:4,h:7.5};};
+ // a grated channel along pts ([[x,z],...]) at the ground: a dark slot, stone kerbs, iron bars across every 0.55 m
+ A.drain=(pts,o)=>{o=o||{};const w=o.w||1.3;let n=0;A.rec('drain',{pts:pts.map(p=>[p[0],p[1]]),w});for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<.05)continue;
+   const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),ry=-ang,mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,y=A.ground(mx,mz)+.02;
+   A.set('sewerDark','box',dark());A.put('sewerDark',[mx,y,mz,len+.05,.06,w,ry]);A.set('sewerStone','box',stone());
+   for(const sd of[-1,1])A.put('sewerStone',[mx-Math.sin(ang)*sd*(w/2+.15),y+.02,mz+Math.cos(ang)*sd*(w/2+.15),len+.05,.12,.3,ry]);
+   A.set('sewerIron','box',iron());const nb=Math.floor(len/.55);for(let k=0;k<nb;k++){const f=(k+.5)/nb;A.put('sewerIron',[a[0]+(b[0]-a[0])*f,y+.05,a[1]+(b[1]-a[1])*f,.14,.05,w,ry]);n++;}}
+  A.stats.drainBars=(A.stats.drainBars||0)+n;return n;};
+ // an inlet grate on a wall foot at (x,y,z), facing ry: a dark opening behind five iron bars
+ A.inletGrate=(x,y,z,ry,o)=>{o=o||{};const w=o.w||2.4,h=o.h||1.3;box('sewerDark',dark(),x,y,z,ry,0,h/2-.1,-.05,w,h,.3);for(let k=-2;k<=2;k++)box('sewerIron',iron(),x,y,z,ry,k*w*.19,h/2-.1,.12,.12,h,.12);
+  box('sewerStone',stone(),x,y,z,ry,0,h+.05,.05,w+.6,.3,.5);};
+})();
+// ================================================================= ATMOS — culling for InstancedMeshes
+// three r128 culls an InstancedMesh by its base geometry's sphere at the origin, so every set built with frustumCulled
+// on vanishes when the origin leaves the view, and every set built with it off (the kits) is drawn always. cull():
+//  1. splits each big static set (count >= o.split, identity world matrix, not o.keep(mesh)) into K bearing sectors, so the
+//     far side of the map is skipped;
+//  2. gives every static set a bounding sphere computed from its instances, on a geometry of its own that shares the
+//     vertex buffers, and turns frustum culling on;
+//  3. keeps raycasting right: an InstancedMesh raycast tests each instance against the geometry's sphere, so the sets
+//     put the base sphere back for the duration of a raycast.
+// o.skip(mesh): leave a mesh alone entirely (moving sets, ones the host animates per instance).
+(function(){const A=ATMOS;
+ A.cull=(scene,o)=>{o=o||{};const T=A.T,K=o.sectors||8,SPLIT=o.split||1500,ident=new T.Matrix4();scene.updateMatrixWorld(true);
+  const sliceAttr=(a,idx)=>{const it=a.itemSize,arr=new a.array.constructor(idx.length*it);for(let d=0;d<idx.length;d++){const s0=idx[d]*it;for(let k=0;k<it;k++)arr[d*it+k]=a.array[s0+k];}const b=new T.InstancedBufferAttribute(arr,it);b.normalized=a.normalized;return b;};
+  const shareGeo=g=>{const g2=new T.BufferGeometry();g2.setIndex(g.index);for(const k in g.attributes)g2.setAttribute(k,g.attributes[k]);g2.groups=g.groups;
+   if(!g.boundingSphere)g.computeBoundingSphere();g2.userData.baseSphere=g.boundingSphere.clone();g2.userData.baseBox=g.boundingBox?g.boundingBox.clone():null;return g2;};
+  const fixRay=im=>{im.raycast=function(rc,out){const g=this.geometry,bs=g.boundingSphere;if(g.userData.baseSphere)g.boundingSphere=g.userData.baseSphere;try{T.InstancedMesh.prototype.raycast.call(this,rc,out);}finally{g.boundingSphere=bs;}};};
+  const list=[];scene.traverse(m=>{if(m.isInstancedMesh)list.push(m);});let split=0,bound=0;
+  for(const m of list){if(o.skip&&o.skip(m))continue;if(m.count>=SPLIT&&m.matrixWorld.equals(ident)&&!(o.keep&&o.keep(m))){
+    const bins=Array.from({length:K},()=>[]),M=m.instanceMatrix.array;for(let i=0;i<m.count;i++)bins[Math.min(K-1,Math.floor((Math.atan2(M[i*16+14],M[i*16+12])+Math.PI)/(2*Math.PI)*K))].push(i);
+    const parent=m.parent;for(const idx of bins){if(!idx.length)continue;const g=shareGeo(m.geometry);for(const k in m.geometry.attributes){const a=m.geometry.attributes[k];if(a.isInstancedBufferAttribute)g.setAttribute(k,sliceAttr(a,idx));}
+     const p=new T.InstancedMesh(g,m.material,idx.length);p.instanceMatrix=sliceAttr(m.instanceMatrix,idx);if(m.instanceColor)p.instanceColor=sliceAttr(m.instanceColor,idx);
+     p.name=m.name;p.renderOrder=m.renderOrder;p.userData=Object.assign({},m.userData,{sectorOf:m.name});p.visible=m.visible;parent.add(p);}
+    parent.remove(m);split++;}}
+  const v=new T.Vector3(),c=new T.Vector3(),tm=new T.Matrix4();
+  scene.traverse(m=>{if(!m.isInstancedMesh||(o.skip&&o.skip(m))||!m.count||!m.matrixWorld.equals(ident))return;if(!m.geometry.userData.baseSphere)m.geometry=shareGeo(m.geometry);
+   const g=m.geometry,r0=g.userData.baseSphere.radius,c0=g.userData.baseSphere.center,M=m.instanceMatrix.array,n=m.count,cs=new Float32Array(n*4);c.set(0,0,0);
+   for(let i=0;i<n;i++){tm.fromArray(M,i*16);v.copy(c0).applyMatrix4(tm);const s=Math.max(Math.hypot(M[i*16],M[i*16+1],M[i*16+2]),Math.hypot(M[i*16+4],M[i*16+5],M[i*16+6]),Math.hypot(M[i*16+8],M[i*16+9],M[i*16+10]));
+    cs[i*4]=v.x;cs[i*4+1]=v.y;cs[i*4+2]=v.z;cs[i*4+3]=r0*s;c.add(v);}c.multiplyScalar(1/n);let rad=0;for(let i=0;i<n;i++)rad=Math.max(rad,Math.hypot(cs[i*4]-c.x,cs[i*4+1]-c.y,cs[i*4+2]-c.z)+cs[i*4+3]);
+   g.boundingSphere=new T.Sphere(c.clone(),rad*1.02+(o.pad||0));m.frustumCulled=true;fixRay(m);bound++;});
+  A.stats.cull={split,bound};return A.stats.cull;};
+})();
+// ================================================================= ATMOS — export: everything the module placed, as plain JSON for a game engine
+// ATMOS.export() returns one object (core/atmos/GODOT.md is its contract): the coordinate convention, the shared
+// uniforms, the presets, the clock and wind, every effect record (A.fx), every light's glow, every lamp, and every
+// instanced prop set (geometry kind, material, instances). ATMOS.download(name) (89-atmos-9-host.js) saves it.
+// Numbers are rounded to 3 decimals. Nothing here changes the scene.
+(function(){const A=ATMOS;
+ const r3=v=>typeof v==='number'?Math.round(v*1000)/1000:Array.isArray(v)?v.map(r3):v&&typeof v==='object'&&!v.isColor?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,r3(x)])):v;
+ const hex=c=>c&&c.isColor?'#'+c.getHexString():null;
+ A.export=()=>{const T=A.T,q=new T.Quaternion(),e=new T.Euler(),props={};
+  for(const name in A.sets){const S=A.sets[name];if(!S.items.length)continue;const m=S.mat||{},g=S.geo,kind=Object.keys(A.geoKinds()).find(k=>A.geoKinds()[k]===g)||(g.parameters?g.type:'custom');
+   props[name]={geometry:kind,size:g.parameters||null,material:{color:hex(m.color),roughness:m.roughness,metalness:m.metalness,transparent:!!m.transparent,opacity:m.opacity,emissive:m.isMeshBasicMaterial?'unlit':undefined,shader:name==='bannerFlag'?'flag':undefined},
+    instances:S.items.map(o=>{let ry=o[6];if(ry&&ry.isQuaternion){e.setFromQuaternion(q.copy(ry),'YXZ');ry=[e.x,e.y,e.z];}
+     const c=o[7]==null?null:o[7].isColor?'#'+o[7].getHexString():'#'+new T.Color(o[7]).getHexString();return[o[0],o[1],o[2],o[3],o[4],o[5],ry==null?0:ry,c];})};}
+  return r3({format:'krator-atmos',version:1,
+   convention:{units:'metres',up:'+y',x:'east',z:'south',handed:'right (glTF)',ry:'radians about +y; local +z turns to (sin ry, cos ry)',bearing:'angle from +x toward +z',
+    hours:'0..24; a light [on,off] is lit from on in the evening to off next morning (off may be past 24; on<0 follows the night; on=0 always)',
+    colors:'hex or [r,g,b] in display (sRGB) space',colour:'srgb',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
+   uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
+   presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
+   fx:A.fx,lamps:A.lamps.map(l=>({at:[l[0],l[1],l[2]],hours:[l[3],l[4]]})),
+   glow:A.glow.map(g=>({at:[g[0],g[1],g[2]],color:[g[3],g[4],g[5]],size:g[6],hours:[g[7],g[8]]})),
+   props,stats:A.stats});};
+})();
+// ================================================================= ATMOS — the browser side: the Weather selector and the export download
+// [web]. Everything here touches the DOM, so it is kept out of the engine-neutral fragments (GODOT-PLAN.md Phase 1:
+// the host owns the DOM). It moves to core/host/ when that exists; a game engine has its own UI and file saving.
+(function(){const A=ATMOS;
+ // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
+ A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
+  for(const m of W.MODES){const op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);}sel.value=W.mode;sel.onchange=()=>{W.mode=sel.value;};el.appendChild(sel);return sel;};
+ // ATMOS.export() saved as a JSON file
+ A.download=name=>{const b=new Blob([JSON.stringify(A.export())],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(name||'atmos')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+})();
+// ================================================================= ATMOS - waves: the open-water wave field, one GLSL chunk and its JS twin
+// Ported from World of ClaudeCraft (MIT; src/render/water_wave_core.ts and the water shader that reads it). Three families
+// of travelling waves (PRESETS.waves): the CHOP (12-21 m) shades the water near the camera, the MID waves (44-70 m) shade it
+// out to a kilometre, the SWELL (150-180 m) is long enough for a coarse water mesh to displace. A slow GROUP envelope gathers
+// them into sets (a running set, then a near-glassy lull) and a slow WARP bends every crest line, so open water neither
+// reads as one corduroy sheet nor interferes on a fixed lattice. group takes three waves and warp two; the families any number.
+// ONE SEAMLESS CLOCK: the shaders read ATMOS.U.waveTime, the module clock wrapped at PRESETS.waves.period. Every wave runs a
+// whole number of cycles per period, so the wrap is exact and phases never grow (fp32 sin() goes steppy on long sessions).
+// A HOST'S WATER SHADER: after ATMOS.init, ATMOS.waveUniforms(material.uniforms) adds atmWaveT (the shared clock) and
+// atmWaveAmp. Both stages then `#include <atmos_waves>` at the top (init registers the ShaderChunk; three.js resolves it when
+// the material first compiles, so a material made before the atmos fragments is fine) and call
+//   atmWaveHeight(xz, chopW)       metres to add to position.y: the swell, plus the chop where chopW > 0 (a fine mesh only)
+//   atmWaveSlope(xz, camDist)      vec3: (dh/dx, dh/dz) for shading, every family faded by camera distance; .z the crest
+//                                  height, 0.5 = still water (whitecaps, the light through a crest)
+//   atmWaveNormal(xz, camDist, k)  the shading normal, its tilt scaled by k (0..1: a depth or shore fade)
+// JS twin: ATMOS.waveHeight(x,z,t,chopW) and ATMOS.waveSlope(x,z,t,camDist) compute the same field (boats, buoys, tests).
+// Engine-neutral: no browser API. Godot: the chunk becomes a .gdshaderinc ([G shader]) and the presets carry the numbers.
+(function(){const A=ATMOS,TAU=Math.PI*2;
+ // a wave in TURNS: [kx/TAU, kz/TAU, c/period], so phase = TAU*(fract(x*k0)+fract(z*k1)+fract(t*k2)). Each fract drops a
+ // whole number of turns from its own term, which leaves sin and cos unchanged and keeps every argument small.
+ const turns=w=>[w[0]/TAU,w[1]/TAU,w[2]/A.PRESETS.waves.period];
+ const fr=x=>x-Math.floor(x),ph=(x,z,t,k)=>TAU*(fr(x*k[0])+fr(z*k[1])+fr(t*k[2]));
+ A.waveWrap=t=>{const p=A.PRESETS.waves.period;return(t%p+p)%p;};
+ const warp=(x,z,t)=>{const P=A.PRESETS.waves,a=ph(x,z,t,turns(P.warp[0])),b=ph(x,z,t,turns(P.warp[1]));
+  return[x+P.warpAmp*(Math.sin(a)+.6*Math.cos(b)),z+P.warpAmp*(Math.sin(b)-.6*Math.cos(a))];};
+ const group=(x,z,t)=>{const G=A.PRESETS.waves.group;
+  return .52+.48*Math.sin(ph(x,z,t,turns(G[0])))*(.62*Math.sin(ph(x,z,t,turns(G[1])))+.38*Math.sin(ph(x,z,t,turns(G[2]))));};
+ // one family at a point, per unit amplitude: [crest, dh/dx, dh/dz]
+ const fam=(F,x,z,t)=>{let c=0,sx=0,sz=0;for(const w of F){const p=ph(x,z,t,turns(w));c+=Math.sin(p)*w[3];sx+=Math.cos(p)*w[3]*w[0];sz+=Math.cos(p)*w[3]*w[1];}return[c,sx,sz];};
+ A.waveHeight=(x,z,t,chopW)=>{const P=A.PRESETS.waves,G=P.gain,M=P.groupMix;t=A.waveWrap(t);const q=warp(x,z,t),g=group(q[0],q[1],t);
+  let h=fam(P.swell,q[0],q[1],t)[0]*P.amp*G.swell*(M.swell[0]+M.swell[1]*g);
+  if(chopW>0)h+=fam(P.chop,x,z,t)[0]*P.amp*G.chop*chopW*(M.chop[0]+M.chop[1]*g);return h;};
+ A.waveSlope=(x,z,t,d)=>{const P=A.PRESETS.waves;t=A.waveWrap(t);const w={},out=[0,0,0];let any=false;
+  for(const f of['chop','mid','swell']){w[f]=1-A.ss(P.fade[f][0],P.fade[f][1],d);if(w[f]>P.skip)any=true;}
+  if(any){const q=warp(x,z,t),g=group(q[0],q[1],t);
+   for(const f of['chop','mid','swell'])if(w[f]>P.skip){const r=f==='chop'?fam(P.chop,x,z,t):fam(P[f],q[0],q[1],t),M=P.groupMix[f],C=P.crestMix[f],k=P.amp*P.gain[f]*w[f]*(M[0]+M[1]*g);
+    out[0]+=r[1]*k;out[1]+=r[2]*k;out[2]+=r[0]*w[f]*(C[0]+C[1]*g);}}
+  out[2]=out[2]*P.crestNorm*.5+.5;return out;};
+ // THE CHUNK, written from the presets so it computes what the twin above does
+ A.waveGLSL=()=>{const P=A.PRESETS.waves,f=A.glf,v3=w=>{const k=turns(w);return'vec3('+k.map(f).join(',')+')';};
+  const famFn=(name,F)=>'vec3 '+name+'(vec2 p){vec3 r=vec3(0.0);'+F.map(w=>'atmWaveAdd(p,'+v3(w)+','+f(w[3])+',r);').join('')+'return r;}';
+  const mix=(f2,a)=>'('+f(a[0])+'+'+f(a[1])+'*g)';
+  const term=(n,fn,pt)=>'if(w'+n+'>'+f(P.skip)+'){r='+fn+'('+pt+');s+=r.yz*atmWaveAmp*'+f(P.gain[n])+'*w'+n+'*'+mix(0,P.groupMix[n])+';c+=r.x*w'+n+'*'+mix(0,P.crestMix[n])+';}';
+  const fade=n=>'float w'+n+'=1.0-smoothstep('+f(P.fade[n][0])+','+f(P.fade[n][1])+',d);';
+  return['uniform float atmWaveT;uniform float atmWaveAmp;',
+   'float atmWavePh(vec2 p,vec3 k){return 6.283185307*(fract(p.x*k.x)+fract(p.y*k.y)+fract(atmWaveT*k.z));}',
+   'void atmWaveAdd(vec2 p,vec3 k,float a,inout vec3 r){float q=atmWavePh(p,k);r.x+=sin(q)*a;r.yz+=cos(q)*a*k.xy*6.283185307;}',
+   'vec2 atmWaveWarp(vec2 p){float a=atmWavePh(p,'+v3(P.warp[0])+'),b=atmWavePh(p,'+v3(P.warp[1])+');return p+'+f(P.warpAmp)+'*vec2(sin(a)+0.6*cos(b),sin(b)-0.6*cos(a));}',
+   'float atmWaveGroup(vec2 q){return 0.52+0.48*sin(atmWavePh(q,'+v3(P.group[0])+'))*(0.62*sin(atmWavePh(q,'+v3(P.group[1])+'))+0.38*sin(atmWavePh(q,'+v3(P.group[2])+')));}',
+   famFn('atmWaveChop',P.chop),famFn('atmWaveMid',P.mid),famFn('atmWaveSwell',P.swell),
+   'float atmWaveHeight(vec2 p,float chopW){vec2 q=atmWaveWarp(p);float g=atmWaveGroup(q);float h=atmWaveSwell(q).x*atmWaveAmp*'+f(P.gain.swell)+'*'+mix(0,P.groupMix.swell)+';',
+   ' if(chopW>0.0)h+=atmWaveChop(p).x*atmWaveAmp*'+f(P.gain.chop)+'*chopW*'+mix(0,P.groupMix.chop)+';return h;}',
+   'vec3 atmWaveSlope(vec2 p,float d){'+fade('chop')+fade('mid')+fade('swell')+'vec2 s=vec2(0.0);float c=0.0;',
+   ' if(wchop>'+f(P.skip)+'||wmid>'+f(P.skip)+'||wswell>'+f(P.skip)+'){vec2 q=atmWaveWarp(p);float g=atmWaveGroup(q);vec3 r;',
+   '  '+term('chop','atmWaveChop','p')+term('mid','atmWaveMid','q')+term('swell','atmWaveSwell','q')+'}',
+   ' return vec3(s,c*'+f(P.crestNorm)+'*0.5+0.5);}',
+   'vec3 atmWaveNormal(vec2 p,float d,float k){vec3 w=atmWaveSlope(p,d);return normalize(vec3(-w.x*'+f(P.tilt)+'*k,1.0,-w.y*'+f(P.tilt)+'*k));}'].join('\n');};
+ A.waveUniforms=u=>{u.atmWaveT=A.U.waveTime;u.atmWaveAmp=A.U.waveAmp;return u;};
+ A.onInit.push(h=>{A.U.waveTime={value:0};A.U.waveAmp={value:A.PRESETS.waves.amp};
+  if(A.T.ShaderChunk)A.T.ShaderChunk.atmos_waves=A.waveGLSL();
+  A.hook(t=>{A.U.waveTime.value=A.waveWrap(t);});});
+})();
+// ================================================================= ATMOS - skylight: the build's own sky as the light on every standard material
+// ATMOS.skylight({renderer, sky, scene, ground, key}) captures `sky` (a scene holding only the sky - dome, sun, giant, stars,
+// drawn about the origin, as the 21-sky.js lineage's skyScene is) into a small cube map, prefilters it with three.js's
+// PMREMGenerator (r128 core, no addon) and sets it as scene.environment. Every MeshStandardMaterial then reflects the
+// world's actual sky: metal and glass show the giant and the sun-side glow, rough stone and wood get a sky-coloured sheen
+// at grazing angles instead of reading wet and black between the sun's highlights.
+// WHEN: the first frame, then whenever the host's hour moves PRESETS.skylight.stepH hours or key() returns something new
+// (an eclipse, the air pressure), at most once every `every` frames. A capture is six tiny renders plus the prefilter.
+// DIFFUSE: r128 adds the map's irradiance on top of the hemisphere and ambient lights a build was tuned on, so by default
+// (diffuse 0) the map feeds the SPECULAR term only and the tuned diffuse balance is untouched. PRESETS.skylight.diffuse is
+// compiled into the standard material chunk: set it before the first frame (1 = physically the sky's own fill).
+// GROUND: the lower half of the capture is ground() (a THREE.Color, linear: the host's hemisphere ground colour times its
+// intensity, say) times groundK, so walls and the undersides of eaves reflect soil rather than the dome's under-horizon paint.
+// The capture renders with the sky as the screen sees it (the target's encoding is the renderer's output encoding), and
+// it leaves renderer.info's counts as they were, so a build's draw-call budget does not see it.
+// Godot: WorldEnvironment builds this from its Sky resource itself ([G native]); keep for the preview.
+(function(){const A=ATMOS;
+ A.skylight=function(o){const T=A.T,P=A.PRESETS.skylight,r=o.renderer,sky=o.sky,scene=o.scene||A.h.scene;
+  // the diffuse share: one literal in the shared chunk, before any standard material compiles
+  const CH=T.ShaderChunk,re=/iblIrradiance\s*\+=\s*getLightProbeIndirectIrradiance\(/;
+  if(CH.lights_fragment_maps.indexOf('atmos skylight')<0){
+   if(re.test(CH.lights_fragment_maps))CH.lights_fragment_maps='// atmos skylight: diffuse '+A.glf(P.diffuse)+'\n'+CH.lights_fragment_maps.replace(re,'iblIrradiance += '+A.glf(P.diffuse)+' * getLightProbeIndirectIrradiance(');
+   else A.err('skylight: no irradiance line in lights_fragment_maps (not r128?); the map lights the diffuse term too');}
+  const rt=new T.WebGLCubeRenderTarget(P.size,{format:T.RGBAFormat,type:T.UnsignedByteType,encoding:r.outputEncoding,generateMipmaps:false,minFilter:T.LinearFilter,magFilter:T.LinearFilter});
+  const cam=new T.CubeCamera(1,1e5,rt),pm=new T.PMREMGenerator(r);pm.compileCubemapShader();
+  // r128's prefilter reads a cube map with x negated, the convention of a cube map loaded from six images; a cube a
+  // CubeCamera rendered is not mirrored, so unpatched every reflection shows the sky left-right swapped (measured: the
+  // giant's disc reflected at -x). three.js r130 added flipEnvMap for this; here the generator's own shader is unflipped
+  const cs=pm._cubemapShader,flip=/vec3\(\s*-\s*vOutputDirection\.x\s*,\s*vOutputDirection\.yz\s*\)/;
+  if(cs&&flip.test(cs.fragmentShader)){cs.fragmentShader=cs.fragmentShader.replace(flip,'vOutputDirection');cs.needsUpdate=true;}
+  else A.err('skylight: the prefilter cube shader is not r128\'s; check that reflections are not mirrored');
+  const gMat=new T.MeshBasicMaterial({color:0,side:T.BackSide,depthTest:false,depthWrite:false,fog:false});
+  const gnd=new T.Mesh(new T.SphereGeometry(50,24,8,0,Math.PI*2,Math.PI/2,Math.PI/2),gMat);gnd.renderOrder=-5;gnd.name='atmos:skylightGround';
+  const S=A.skyEnv={target:null,captures:0,hour:null,key:null,age:1e9,
+   capture(){const c=o.ground?o.ground():null,ri=r.info.render,keep=[ri.calls,ri.triangles,ri.points,ri.lines],ac=r.autoClear;
+    if(c){gMat.color.copy(c).multiplyScalar(P.groundK);sky.add(gnd);}
+    r.autoClear=true;cam.update(r,sky);r.autoClear=ac;if(c)sky.remove(gnd);
+    const out=pm.fromCubemap(rt.texture);if(S.target)S.target.dispose();S.target=out;scene.environment=out.texture;
+    ri.calls=keep[0];ri.triangles=keep[1];ri.points=keep[2];ri.lines=keep[3];S.captures++;A.stats.skylight=S.captures;}};
+  // the specular share: a standard material's envMapIntensity scales the map's whole contribution
+  if(P.specular!==1)scene.traverse(m=>{const ms=m.material?(Array.isArray(m.material)?m.material:[m.material]):[];for(const x of ms)if(x.isMeshStandardMaterial&&!x.envMap)x.envMapIntensity=P.specular;});
+  A.hook((t,hour)=>{S.age++;const k=o.key?String(o.key()):'';let dh=S.hour==null?99:Math.abs(hour-S.hour);dh=Math.min(dh,24-dh);
+   if(S.age>=P.every&&(dh>=P.stepH||k!==S.key)){S.hour=hour;S.key=k;S.age=0;S.capture();}});
+  return S;};
+})();
+/* ============================== ATMOS: the shared atmosphere module, bound to Voth ==============================
+   core/atmos (its README.md). Voth takes it for the wave field the bay's water shader reads (89-atmos-a-waves.js,
+   PRESETS.waves): three families of travelling waves in sets, on the module clock wrapped at a whole number of cycles,
+   so the bay never steps or jumps however long the page runs, and ATMOS.clock.fixed = t pins it for a repeatable shot.
+   Voth places nothing else through ATMOS yet: its lamps, braziers, weather and night lights are its own (82-daynight.js,
+   83-weather.js). frame() in 80-camera.js calls atmosFrame(dt) last, just before it draws. */
+var ATMOS_HOOKS = [];
+function atmosFrame(dt){ for(var i = 0; i < ATMOS_HOOKS.length; i++) ATMOS_HOOKS[i](dt); }
+ATMOS.init({ THREE: THREE, scene: scene, camera: camera,
+  hour: function(){ return skyHour(); },
+  onFrame: function(fn){ ATMOS_HOOKS.push(fn); },
+  ground: function(x, z){ return terrainH(x, z); },
+  seed: 90001,
+  err: function(m){ console.warn(m); },
+  viewH: function(){ return innerHeight; },
+  pixelRatio: function(){ return renderer.getPixelRatio(); } });
+ATMOS.waveUniforms(waterUni);
 // ================================================================= LOD: take over the finished scene (core/lod)
 // Sorts after every build's scene, camera and frame loop, and before 99-tail. It reads the build's `scene`, `camera`
 // and `renderer` (every Krator build names them so) and the build's options from window.LOD_OPTIONS, if it set any.
@@ -33785,6 +34426,14 @@ window._pathviz = { get:function(){ return PATHVIZ_ON; }, show:pathvizShow, hide
  try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));LOD.applied=LOD.apply();}
  catch(e){const m='LOD: '+(e&&e.stack||e);if(typeof reportErr==='function')reportErr(m);else if(typeof ERR==='function')ERR(m);else console.error(m);}
 })();
+/* ============================== 98. START ==============================
+   The first view and the first frame, after every fragment has run. They used to close 80-camera.js, so the first frame
+   drew before 82-88 and the shared atmosphere module (89, bound in 90) existed: the water shader includes the module's
+   wave chunk, which only exists once ATMOS.init has run. Same order as Girder, Mav's Refuge, Locus and Yuni. */
+VIEWS[0][1]();
+frame();
+document.getElementById('load').style.display = 'none';
+window._ready = true;
 }
 if(window._krGo) window._krGo();   /* the second half of the handshake in 00-head.html: three.js may already be here */
 </script>

@@ -19,8 +19,8 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `41-hyperjungle-globals.js` | <1 |  |
 | `45-host-stage.js` | 5 | terrain (23); the host binding (33) |
 | `50-biome-hyperjungle-species.js` | 20 | leaf textures (55); bark textures (126); materials (182); instanced items (206) |
-| `55-biome-hyperjungle-trees.js` | 27 | trunk profile (20); colour (29); polyline helpers (Girder) (64); one hero hypertree (93); an immature hypertree (231); the far forest: impostors (264); the pass (298) |
-| `58-biome-hyperjungle-fauna.js` | 14 | bodies (25); textures, materials, items (67); placement helpers (89); the herds (CPU) (98); the pass (123) |
+| `55-biome-hyperjungle-trees.js` | 28 | trunk profile (20); colour (29); polyline helpers (Girder) (64); one hero hypertree (93); an immature hypertree (238); the far forest: impostors (271); the pass (305) |
+| `58-biome-hyperjungle-fauna.js` | 15 | bodies (25); textures, materials, items (67); placement helpers (94); the herds (CPU) (103); the pass (128) |
 | `60-biome-hyperjungle-floor.js` | 33 **big** | colour (22); keep-clear (58); bole profiles (72); fields (92); the plants (98); the belt's own understorey (165); fallen hypertrees (210); lianas (261); the pass (269) |
 | `65-biome-hyperjungle-dress.js` | 7 |  |
 | `70-biome-hyperjungle.js` | 1 |  |

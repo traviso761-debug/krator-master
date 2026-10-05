@@ -306,7 +306,6 @@ function frame(){
   var dt = Math.min(0.06, clock.getDelta());
   panStep(dt);
 
-  waterUni.uTime.value += dt;
   waterUni.uCam.value.copy(camera.position);
   CLOTH_TIME.value += dt;
   updateLife(dt);
@@ -327,6 +326,9 @@ function frame(){
   sun.position.copy(SKY_STATE.keyDir).multiplyScalar(2000).add(tmpV.set(ctl.tx, 0, ctl.tz));
   sun.target.position.set(ctl.tx, 0, ctl.tz);
   sun.target.updateMatrixWorld();
+
+  /* the shared atmosphere module (90-atmos-host.js), last before drawing: its clock and hooks (the bay's wave time) */
+  atmosFrame(dt);
 
   acc += dt; frames++;
   if(acc > 0.5){ fps = frames/acc; acc = 0; frames = 0; }
@@ -375,7 +377,5 @@ window._dbg = { setView:setView, ctl:ctl, camera:camera, applyCam:applyCam,
    view list and the sky panel. */
 window.LOD_OPTIONS = { skip: function(o){ return !!o.userData.life; },
                        panelStyle: 'right:auto;left:50%;bottom:8px;transform:translateX(-50%)' };
-VIEWS[0][1]();
-frame();
-document.getElementById('load').style.display = 'none';
+/* the first view and the first frame are in 98-start.js, after every fragment (the lineage's order: Girder, Yuni) */
 
