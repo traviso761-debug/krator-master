@@ -3,6 +3,7 @@ build.py prints every unticked item on each build. Claude: when Travis asks for 
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
 ## Deliberate drift in vendored fragments (`build.py --vendor-check` reports these as "adapted")
+- `71-port-terrain.js` also calls `ysGroundTint` (the karst's colours) when the city defines it (Oct 5 2026).
 - `54-mat-concrete.js` (from `kits/ancients/src`, Oct 5 2026): `bodyGroup` passes `ysCutY(d)` to a standing body, so
   every tower that builds through it (D, E, F, H) is cut at a storey when the city names a height. One line.
 - `71-port-terrain.js` (from `settlements/port/src`): `portNatH` delegates to `YS_NAT` when the city target
@@ -84,7 +85,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The kit sheet draws variant 0 of every furniture piece, so the shell stool's barnacle variant is never seen.
 - [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
       let `F.pick('coral')` read true on cushions and slings.
-- [ ] The karst stacks are a heightfield: no overhangs or undercut bases, and the "knobbed top" is a noisy plateau.
+- [ ] The karst stacks are a heightfield: no overhangs, undercut bases or sea notches (Krabi's towers have all three);
+      `core/terrain`'s carve patches are the way to them. The crowns are domed now, painted jungle; the jungle itself (trees
+      hanging off the walls) waits on the NW-bay biome.
 - [x] (Oct 5 2026) **Every drowned host was Skyscraper A.** The chain is re-vendored and the hosts are A, D (the
       Monolith) and H (the Warden), D and H standing on the bed with pods on their faces; the awash blocks carry short
       Wardens and Monoliths. Still open: the Pierced Stack and the Bole (the alternates' helpers and kdefs in

@@ -28,11 +28,15 @@ function ysStripPoly(a,b,w){const dx=b[0]-a[0],dz=b[1]-a[1];const L=Math.hypot(d
   LAYOUT.highways.push({name,pts,w:HIGHWAY_W});}
  // the stamps: dry streets and the highways painted; the awash streets keep their paving too (it shows at low water)
  // the streets, except the canals and the ones the river valley cuts (a highway crosses it: its span comes later)
- const inValley=(a,b)=>{const r=ysRiverDist((a[0]+b[0])/2,(a[1]+b[1])/2);return r.d<r.w*2.2;};
- for(const s of LAYOUT.streets){if(s.kind==='canal'||inValley(s.a,s.b))continue;CITY_STAMPS.push({kind:'paint',poly:ysStripPoly(s.a,s.b,s.w),paint:'pave',soft:0});}
- for(const h of LAYOUT.highways)for(let i=1;i<h.pts.length;i++)CITY_STAMPS.push({kind:'paint',poly:ysStripPoly(h.pts[i-1],h.pts[i],h.w),paint:'pave',soft:0});
+ // (the road stamps are pushed by ysRoadStamps() once the karst field has trimmed the roads: 87d-city-karst.js)
  // precincts: the market block and the mustering ground paved, the farm blocks soil
  for(const b of LAYOUT.blocks){const pv=b.use==='main_market'||b.use==='headland_military'?'pave':b.use==='farm'?'soil':null;if(!pv||b.kind!=='land')continue;
   const h=P*.46;CITY_STAMPS.push({kind:'paint',poly:[[-1,-1],[1,-1],[1,1],[-1,1]].map(q=>[b.x+U[0]*q[0]*h+V[0]*q[1]*h,b.z+U[1]*q[0]*h+V[1]*q[1]*h]),paint:pv,soft:0});}
  LAYOUT.stampCount=CITY_STAMPS.length;
 })();
+// the road paint: the dry and awash streets (not the ones the river valley cuts: a highway crosses it, its span comes
+// later) and the highways, painted pave. Called once the karst has trimmed the roads (87d-city-karst.js).
+function ysRoadStamps(){const inValley=(a,b)=>{const r=ysRiverDist((a[0]+b[0])/2,(a[1]+b[1])/2);return r.d<r.w*2.2;};
+ for(const s of LAYOUT.streets){if(s.kind==='canal'||inValley(s.a,s.b))continue;CITY_STAMPS.push({kind:'paint',poly:ysStripPoly(s.a,s.b,s.w),paint:'pave',soft:0,road:true});}
+ for(const h of LAYOUT.highways)for(let i=1;i<h.pts.length;i++)CITY_STAMPS.push({kind:'paint',poly:ysStripPoly(h.pts[i-1],h.pts[i],h.w),paint:'pave',soft:0,road:true});
+ LAYOUT.stampCount=CITY_STAMPS.length;}

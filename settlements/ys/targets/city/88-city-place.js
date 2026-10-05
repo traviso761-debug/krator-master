@@ -233,7 +233,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  if(LM.grown_plaza){const b=LM.grown_plaza;ysPlHost(Object.assign(b,{host:'mid'}),{name:'The grown plaza',must:['hyk_market_plaza'],pods:3});}
  // the hosts of every other block: an awash block's is a low one (D or H, cut short, standing on the bed)
  // a scenery stack (the Needle, the Tooth...) standing in a host block's cap leaves the block to the water
- const onStack=b=>CITY.STACKS.slice(2).some(t=>Math.hypot(t.x-b.x,t.z-b.z)<t.r*1.25+70);
+ const onStack=b=>CITY.STACKS.slice(2).some(t=>ysStackLocal(t,b.x,b.z).d<t.r*1.25+70);
  for(const b of hostBlocks){if(b.full)continue;if(onStack(b)){ysPlRefuse('karst: host block');continue;}ysPlHost(b,{});}
  // the kit audit over the pods: a grown def no host drew takes the place of a pod whose def is drawn elsewhere, on a host
  // of its wealth if one has room, else on any (an into def opens a way where it lands)

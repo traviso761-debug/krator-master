@@ -56,7 +56,7 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
  for(const b of LAYOUT.blocks)if(b.use&&!/^(host|homegrown|neighbourhood|farm|foreign|industry|aquaculture)$/.test(b.use))LAYOUT.landmarks[b.use]=b;
  // the Citadel's and the Winds' karst stacks stand under their blocks wherever the layout puts them (their shore loops move too)
- const mv=(st,b)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopCircle(st.n,st.x,st.z,st.r,24,{stack:st});};
+ const mv=(st,b)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;ysStacksDirty();const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopCircle(st.n,st.x,st.z,st.r,24,{stack:st});};
  mv(CITY.STACKS[0],LAYOUT.landmarks.citadel);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds);
  if(typeof ysLoopCircle==='function')ysLoopCircle('the Amphitriton island',A.x,A.z,80,32,{island:true});
 })();

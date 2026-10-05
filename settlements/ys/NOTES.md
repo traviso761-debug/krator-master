@@ -272,3 +272,15 @@ gives every grown def a pod (it takes the place of a duplicate). The land hosts 
 neighbourhoods, at least three) tried in a cell-hash order, each anywhere in its block a clear spot fits it.
 Result: 60 blocks, 11 drowned hosts with 52 pods, 4 land hosts, 243 kit buildings, 8.5 M triangles of 30 M, 77 draw
 calls; `--assert` green.
+
+## The karst on land (Oct 5 2026, Travis: "something a bit like Krabi"; "no streets on top of a stack")
+`87d-city-karst.js` grows a karst field into `CITY.STACKS` at load, from KRAND: 26 clusters of towers and ridges 600–1500 m
+inland (taller and denser with distance), a headland ridge at each end of the bay with islets off its tip, and a range of
+tall towers along the north-west horizon; 53 stacks, every one kept off the city's land blocks, the river's valley and the
+highways. Stacks may be ridges (`e`, `a`: stretched along a bearing, the crest broken into summits) and have domed
+crowns, except the two that carry buildings (`flat`); a 200 m bucket keeps `terrainH` as fast as before. The terrain's
+10 m cells now cover the field (`PORT_LAYOUT_DEF.fine` ±1550–1600). The painter takes a Ys hook (`ysGroundTint`, 71
+adapted): jungle in patches on crowns and shoulders, pale limestone walls with rust-tan and grey streaks. After the field,
+the roads go round it: a highway point inside a stack is pushed out along the stack's radial line, a street is cut where
+it meets karst and keeps its clear runs, and only then is the road paint laid (`ysRoadStamps`, moved from 87c) and the
+placer's street reservations made. Two streets were cut; no highway had to move.
