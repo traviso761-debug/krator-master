@@ -7,7 +7,8 @@ A card is drawn on a quad with alpha testing, not tiled, so it has no seams to f
 OUT_DIR/albedo.png (RGBA, SIZE x SIZE) and meta.json (record.kind = 'card').
 
 Steps:
-  1. crop     to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
+  0. key      (option `key`: "#ff00ff", with `key_lo`/`key_hi` distances) cuts a flat-colour background out first.
+  1. crop     (anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
               'center' (a spray seen from above), 'bottom' (a frond or a plant: its base on the bottom edge,
               centred) or 'top' (a hanging chain: its hung end on the top edge, centred). `pad` is the margin.
   2. resize   to SIZE.
@@ -28,6 +29,8 @@ def crop_square(im, anchor, pad):
     ys, xs = np.nonzero(a > 16)
     x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     im = im.crop((x0, y0, x1, y1))
+    if anchor == 'tight':     # no squaring: the opaque box itself, stretched to the square later (a quad that maps the whole image onto the object's box un-stretches it)
+        return im
     w, h = im.size
     side = int(round(max(w, h) * (1 + 2 * pad)))
     out = Image.new('RGBA', (side, side), (0, 0, 0, 0))
@@ -74,9 +77,27 @@ def bleed(rgba):
     return np.concatenate([np.clip(res, 0, 255), rgba[..., 3:4]], -1).astype(np.uint8)
 
 
+def key_out(im, key, lo, hi):
+    """Chroma key: alpha from the RGB distance to the key colour (0 inside `lo`, 1 beyond `hi`), and the key's tint removed from the
+    semi-transparent edge pixels (their red and blue are pulled down to the green when the key is magenta). For a sheet drawn on a flat
+    background colour, as PROMPTS-ready.md asks (#ff00ff). Pink petals stay opaque: a deep pink is ~150 from pure magenta."""
+    k = np.array([int(key.lstrip('#')[i:i + 2], 16) for i in (0, 2, 4)], dtype=np.float64)
+    rgb = np.asarray(im.convert('RGB')).astype(np.float64)
+    d = np.sqrt(((rgb - k) ** 2).sum(-1))
+    a = np.clip((d - lo) / max(hi - lo, 1e-6), 0, 1)
+    edge = (a < 1)[..., None]
+    if k[0] > 200 and k[2] > 200 and k[1] < 60:      # magenta: spill is red and blue above green
+        spill = np.maximum(np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1], 0)[..., None] * 0.9
+        rgb = np.where(edge, rgb - np.concatenate([spill, 0 * spill, spill], -1), rgb)
+    out = np.concatenate([np.clip(rgb, 0, 255), (a * 255)[..., None]], -1)
+    return Image.fromarray(np.rint(out).astype(np.uint8), 'RGBA')
+
+
 def run_one(src, out_dir, rec, opt):
     size, anchor, pad = int(opt.get('size', 1024)), opt.get('anchor', 'center'), float(opt.get('pad', 0.03))
     im = Image.open(src).convert('RGBA')
+    if opt.get('key'):
+        im = key_out(im, opt['key'], float(opt.get('key_lo', 45)), float(opt.get('key_hi', 120)))
     sq = crop_square(im, anchor, pad).resize((size, size), Image.LANCZOS)
     arr = bleed(np.asarray(sq).astype(np.float64))
     os.makedirs(out_dir, exist_ok=True)

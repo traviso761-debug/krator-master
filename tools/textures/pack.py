@@ -21,6 +21,9 @@ Processing, per family:
            distance gets its furrows and seams back.
   normal   resized and renormalised (OpenGL convention, as the library and Godot use)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
+  mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
+  optional a family with `"optional": true` is skipped (with a note) while its library set does not exist yet: the build
+           then runs on whatever it did before (fauna sheets are wired this way before they are generated)
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
@@ -89,12 +92,12 @@ def process(fam, cfg, size):
     else:
         out['map'] = webp(rgb, 82, 'RGB')
     # normal
-    if os.path.isfile(pn) and not card:
+    if os.path.isfile(pn) and not card and not cfg.get('mapOnly'):
         n = load(pn, size, 'RGB') * 2 - 1
         n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), 1e-6)
         out['normalMap'] = webp(n * 0.5 + 0.5, 92, 'RGB')
     # roughness
-    if os.path.isfile(pr) and not card:
+    if os.path.isfile(pr) and not card and not cfg.get('mapOnly'):
         r = load(pr, size, 'L')
         lift = float(cfg.get('roughLift', 0.0))
         out['roughnessMap'] = webp(r + (1 - r) * lift, 85, 'L')
@@ -132,7 +135,11 @@ def main(argv):
             'size': size, 'families': {}}
     allfiles = {}
     for fam in sorted(cfg['families']):
-        e, files = process(fam, cfg['families'][fam], size)
+        fc = cfg['families'][fam]
+        if fc.get('optional') and not os.path.isfile(os.path.join(LIB, fc['lib'], 'meta.json')):
+            print('skipped %s: library set %s not delivered yet (optional)' % (fam, fc['lib']))
+            continue
+        e, files = process(fam, fc, size)
         pack['families'][fam] = e
         allfiles.update(files)
     pj = json.dumps(pack, indent=1, sort_keys=True) + '\n'
