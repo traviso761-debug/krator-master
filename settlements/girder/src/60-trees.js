@@ -351,14 +351,15 @@ TREES.forEach(function(T, ti){
   }
 
   /* ---- surface roots, one off each buttress ---- */
+  var rootCol = trunkPt(1.5).col;   /* a root takes the trunk's own tint at its height above the ground (band and moss): where it leaves the trunk it matches the trunk there, and on the ground it matches the mossy base */
   lobes.forEach(function(L){
     if(sp===3 && chance(0.45)) return;
     var ang=L.a;
     var R0=trunkR(T,T.y0+7)*(1+Hb.butA*0.35*L.amp), len=rr(26,70)*(sp===3?0.6:1)*(0.6+0.4*L.amp), rr0=clamp(T.rb*0.17*L.amp,1.0,3.2), pts=[], a=ang, wob=rr(0,TAU);
     for(var k=0;k<=9;k++){ var t=k/9, d=R0*0.72+len*t; a=ang+0.32*Math.sin(wob+t*5.2)*t+0.10*Math.sin(wob*2+t*11);
       var x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; if(k>1 && (riverDist(x,z)<3.5 || treeKeepOut(x,z,2))) break;
-      var r=mix(rr0,0.22,Math.pow(t,0.75)); pts.push({ x:x, y:terrainH(x,z)+r*(k===0?1.6:0.22)+(k===0?3:0), z:z, r:r, col:k<3?undefined:shade(treeBarkCol(sp,1),-0.12) }); }
-    if(pts.length>3){ TS.rootTris += treeTube(fam, pts, treeBarkCol(sp,1), 6, false); TS.roots++; }
+      var r=mix(rr0,0.22,Math.pow(t,0.75)); pts.push({ x:x, y:terrainH(x,z)+r*(k===0?1.6:0.22)+(k===0?3:0), z:z, r:r, col:trunkPt(r*(k===0?1.6:0.22)+(k===0?3:0)).col }); }
+    if(pts.length>3){ TS.rootTris += treeTube(fam, pts, rootCol, 6, false); TS.roots++; }
   });
 
   /* ---- top boughs and crown fillers of my own ---- */
@@ -381,8 +382,9 @@ TREES.forEach(function(T, ti){
   var spots=[], hangs=[];
   limbs.forEach(function(Lm){
     var pts=Lm.pts, r0=pts[0].r, n=pts.length;
-    var cpts=pts.map(function(p,i){ return { x:p.x,y:p.y,z:p.z,r:p.r, col:treeBarkCol(sp, i<n*0.4?1:2) }; });
-    TS.limbTris += treeTube(fam, cpts, treeBarkCol(sp,1), r0>=4.5?10:(r0>=2.6?8:6), true);
+    var lc = trunkPt(clamp(pts[0].y - T.y0, 0, Hend)).col;   /* the trunk's tint where this limb leaves it, kept along the limb and its boughs and twigs */
+    var cpts=pts.map(function(p,i){ return { x:p.x,y:p.y,z:p.z,r:p.r, col:lc }; });
+    TS.limbTris += treeTube(fam, cpts, lc, r0>=4.5?10:(r0>=2.6?8:6), true);
     var cum=treeCum(pts), L=cum[n-1], sStart=L*Hb.secStart, side=chance(0.5)?1:-1;
     for(var s=sStart+rr(0,Hb.secGap*0.5); s<L*0.985; s+=Hb.secGap*rr(0.75,1.3)){
       var at=treePolyAt(pts,cum,s), t=s/L; side=-side;
@@ -392,7 +394,7 @@ TREES.forEach(function(T, ti){
       var sec=treeGrow(at,d1,len1,rS,0.14,4,Hb.secCurve+rr(-0.05,0.05),0.07), ok=true;
       for(var q=1;q<sec.length;q++) if(!treeClear(C,sec[q].x,sec[q].y,sec[q].z,sec[q].r+2.5,sec[q].r+2.5)){ ok=false; break; }
       if(!ok) continue;
-      TS.boughTris += treeTube(fam, sec, treeBarkCol(sp,2), rS>0.9?5:4, false); TS.boughs++;
+      TS.boughTris += treeTube(fam, sec, lc, rS>0.9?5:4, false); TS.boughs++;
       var sprd=clamp(len1*0.26,5,12);
       spots.push({ p:sec[2], s:sprd, inner:true }, { p:sec[3], s:sprd }, { p:sec[4], s:sprd*0.9, tip:true });
       if(sp===3 && chance(0.8)) hangs.push({ x:sec[1].x, y:sec[1].y-sec[1].r*0.7, z:sec[1].z });
@@ -405,7 +407,7 @@ TREES.forEach(function(T, ti){
         var d2=treeDir(a2.tx,a2.ty,a2.tz, sd2, rr(0.5,0.9), rr(0.6,1.0), Hb.secUp*0.8+rr(-0.15,0.25));
         var tw=treeGrow(a2,d2,len2,Math.max(0.15,a2.r*0.6),0.08,2,Hb.secCurve,0.05);
         if(!treeClear(C,tw[2].x,tw[2].y,tw[2].z,2.5,2.5) || !treeClear(C,tw[1].x,tw[1].y,tw[1].z,2.5,2.5)) continue;
-        TS.twigTris += treeTube(fam, tw, treeBarkCol(sp,2), 3, false); TS.twigs++;
+        TS.twigTris += treeTube(fam, tw, lc, 3, false); TS.twigs++;
         spots.push({ p:tw[1], s:clamp(len2*0.4,3.6,8) }, { p:tw[2], s:clamp(len2*0.45,3.6,8.5), tip:true });
         if(sp===1 && chance(0.55)) hangs.push({ x:tw[2].x, y:tw[2].y-0.5, z:tw[2].z });
         if(sp===1 && chance(0.30)) hangs.push({ x:tw[1].x, y:tw[1].y-0.5, z:tw[1].z });
@@ -478,7 +480,7 @@ var TREE_SAPLINGS=[];
       var o={ x:mix(bp.x,bq.x,f), y:mix(bp.y,bq.y,f), z:mix(bp.z,bq.z,f) }, tk=(u2-band[0])/(band[1]-band[0]);
       var len=S.cr*(sp===0?mix(1.0,0.35,tk):rr(0.7,1.0)), el=sp===0?rr(0.0,0.3):sp===1?rr(0.7,1.1):sp===2?rr(0.35,0.7):rr(0.2,0.6);
       var br=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,Math.max(0.12,mix(bp.r,bq.r,f)*0.5),0.06,3,Hb.secCurve,0.08);
-      TS.sapTris += treeTube(fam, br, treeBarkCol(sp,2), 4, false);
+      TS.sapTris += treeTube(fam, br, treeBarkCol(sp,si%3), 4, false);
       spots.push(br[1],br[2],br[3],br[3]); if(sp!==3 && sp!==1) spots.push(br[2]); }
     var tp=pts[7]; spots.push(tp,tp,{x:tp.x,y:tp.y-H*0.07,z:tp.z}); if(sp===3) spots.push(tp,tp);
     var cy=S.y0+H*mix(band[0],1,0.5), size0=clamp(H*0.15,3.2,8.5);

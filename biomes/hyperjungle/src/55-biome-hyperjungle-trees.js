@@ -130,13 +130,14 @@ function buildHero(T,ti,q,st){
    (R,ang)=>R.r*trunkMul(R.yy,ang),
    (R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.50+.50*clamp(lobeSum(ang)*1.4,0,1),f):1;});
   i0=i1;}
- // ---- surface roots, one off each buttress ----
+ // ---- surface roots, one off each buttress: the bole's own bucket and base tint (band and moss), so a root reads as the trunk running into the ground ----
+ const rootCol=trunkPt(1.5).col;   // a root takes the trunk's tint at its height above the ground: it matches the trunk where it leaves it and the mossy base on the ground
  lobes.forEach(L=>{if(sp===3&&rng()<.45)return;
   const ang=L.a,R0=trunkR(T,T.y0+7)*(1+Hb.butA*.35*L.amp),len=rr(26,70)*(sp===3?.6:1)*(.6+.4*L.amp),rr0=clamp(T.rb*.17*L.amp,1,3.2),pts=[],wob=rr(0,TAU);
   for(let j=0;j<=9;j++){const t=j/9,d=R0*.72+len*t,a=ang+.32*Math.sin(wob+t*5.2)*t+.10*Math.sin(wob*2+t*11);
    const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
-   const r=mix(rr0,.22,Math.pow(t,.75));pts.push({x:x,y:BIO.terrainH(x,z)+r*(j===0?1.6:.22)+(j===0?3:0),z:z,r:r,col:j<3?undefined:shade(limbCol(sp,1),-.12)});}
-  if(pts.length>3){st.root+=BIO.tube('limb',pts,limbCol(sp,1),{seg:6});st.roots++;}});
+   const r=mix(rr0,.22,Math.pow(t,.75));pts.push({x:x,y:BIO.terrainH(x,z)+r*(j===0?1.6:.22)+(j===0?3:0),z:z,r:r,col:trunkPt(r*(j===0?1.6:.22)+(j===0?3:0)).col});}
+  if(pts.length>3){st.root+=BIO.tube(fam,pts,rootCol,{seg:6});st.roots++;}});
  // ---- boughs of my own: top tuft, crown fillers, and the lower tier ----
  const mine=[],nTop=ri(Hb.topN[0],Hb.topN[1]),a0=rr(0,TAU);
  function ownBough(u,ang,len,el,curve,rScale,rMin,rMax){
@@ -157,8 +158,9 @@ function buildHero(T,ti,q,st){
  const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[];
  const terGap=Hb.terGap*(farHalf?1.35:1);
  mine.forEach(Lm=>{const pts=Lm.pts,r0=pts[0].r,n=pts.length;
-  const cpts=pts.map((p,i)=>({x:p.x,y:p.y,z:p.z,r:p.r,col:limbCol(sp,i<n*.4?1:2)}));
-  st.limb+=BIO.tube('limb',cpts,limbCol(sp,1),{seg:r0>=4.5?10:(r0>=2.6?8:6),cap:true});
+  const lc=limbCol(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
+  const cpts=pts.map((p,i)=>({x:p.x,y:p.y,z:p.z,r:p.r,col:lc}));
+  st.limb+=BIO.tube('limb',cpts,lc,{seg:r0>=4.5?10:(r0>=2.6?8:6),cap:true});
   const cum=treeCum(pts),L=cum[n-1],sStart=L*Hb.secStart;let side=rng()<.5?1:-1;
   for(let s=sStart+rr(0,Hb.secGap*.5);s<L*.985;s+=Hb.secGap*rr(.75,1.3)){
    const at=treePolyAt(pts,cum,s),t=s/L;side=-side;
@@ -168,7 +170,7 @@ function buildHero(T,ti,q,st){
    const sec=treeGrow(at,d1,len1,rS,.14,4,Hb.secCurve+rr(-.05,.05),.07);let ok=true;
    for(let j=1;j<sec.length;j++)if(!clear3(sec[j].x,sec[j].y,sec[j].z,sec[j].r+2.5,sec[j].r+2.5)){ok=false;break;}
    if(!ok)continue;
-   st.bough+=BIO.tube('limb',sec,limbCol(sp,2),{seg:rS>.9?5:4});st.boughs++;
+   st.bough+=BIO.tube('limb',sec,lc,{seg:rS>.9?5:4});st.boughs++;
    const sprd=clamp(len1*.26,5,12);
    spots.push({p:sec[2],s:sprd,inner:true},{p:sec[3],s:sprd},{p:sec[4],s:sprd*.9,tip:true});
    if(sp===3&&rng()<.8)hangs.push({x:sec[1].x,y:sec[1].y-sec[1].r*.7,z:sec[1].z});
@@ -183,7 +185,7 @@ function buildHero(T,ti,q,st){
     const d2=treeDir(a2.tx,a2.ty,a2.tz,sd2,rr(.5,.9),rr(.6,1),Hb.secUp*.8+rr(-.15,.25));
     const tw=treeGrow(a2,d2,len2,Math.max(.15,a2.r*.6),.08,2,Hb.secCurve,.05);
     if(!clear3(tw[2].x,tw[2].y,tw[2].z,2.5,2.5)||!clear3(tw[1].x,tw[1].y,tw[1].z,2.5,2.5))continue;
-    st.twig+=BIO.tube('limb',tw,limbCol(sp,2),{seg:3});st.twigs++;
+    st.twig+=BIO.tube('limb',tw,lc,{seg:3});st.twigs++;
     spots.push({p:tw[1],s:clamp(len2*.4,3.6,8)},{p:tw[2],s:clamp(len2*.45,3.6,8.5),tip:true});
     if(sp===1&&rng()<.55)hangs.push({x:tw[2].x,y:tw[2].y-.5,z:tw[2].z});
     if(sp===1&&rng()<.30)hangs.push({x:tw[1].x,y:tw[1].y-.5,z:tw[1].z});
