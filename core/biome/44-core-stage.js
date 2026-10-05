@@ -19,6 +19,9 @@
 //     fog: { type: 'exp2', colour, density } | { type: 'linear', colour, near, far } | null,
 //     background: colour | 'texture' | null,
 //     sky: { png (equirectangular, sRGB, the page's sky and far scenery from `at`, nearer than skyNear clipped), size, at, near } | null,
+//       skyNear defaults to half the box's shorter side, so the panorama holds exactly what the export leaves out (the page's
+//       forest right outside the tile, hazed at its true distance); 1500 m without a box. What rises above `at` + near
+//       (a hero canopy) is in both.
 //     ground: { x0, z0, step, nx, nz, uv (per sample; exact when the ground is planar-mapped: uvFit), colour (per sample,
 //               linear, the nearest vertex's; null without vertex colours), mesh, rays (how many of nine rays found it),
 //               material: { type, colour, map (png), repeat, offset, flipY, vertexColours, roughness, hooked } } | null }
@@ -147,7 +150,7 @@ var KSTAGE = (function(){
    fog: sc && sc.fog ? (sc.fog.isFogExp2 ? { type: 'exp2', colour: hex(sc.fog.color), density: sc.fog.density } : { type: 'linear', colour: hex(sc.fog.color), near: sc.fog.near, far: sc.fog.far }) : null,
    background: sc && sc.background ? (sc.background.isColor ? hex(sc.background) : 'texture') : null,
    scenes: P.scenes.length, sky: null, ground: null };
-  if(r && o.sky !== 0 && o.at) try{ out.sky = K.sky(P.scenes, r, o.at, o.sky || 1024, o.skyNear || 1500); }catch(e){ out.skyError = String(e.message || e); }
+  if(r && o.sky !== 0 && o.at) try{ out.sky = K.sky(P.scenes, r, o.at, o.sky || 1024, o.skyNear || (o.box ? Math.min(o.box[2] - o.box[0], o.box[3] - o.box[1]) / 2 : 1500)); }catch(e){ out.skyError = String(e.message || e); }
   if(o.box) try{ out.ground = K.ground(P.scenes, o.box, o.step || 4, o.ground); }catch(e){ out.groundError = String(e.message || e); }
   return out;
  };
