@@ -16,7 +16,8 @@
 //  - buckets:   one record per merged Mesh: indexed positions, normals, uvs, vertex colours.
 //  - materials: one record per material: its kind (leaf, bark, anim, or plain), colour,
 //               alpha test, side, the hook's options, and its texture by id.
-//  - textures:  the procedural canvases, as PNG data URLs (opt.textures:false leaves them out).
+//  - textures:  every map as a PNG data URL (canvases and DataTextures alike) with its flipY; opt.textures:false
+//               leaves the images out.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
 //               which a Godot importer turns into visibility_range_begin / _end.
 // opt.box keeps only instances whose origin, and triangles whose centroid, lie in the box
@@ -39,8 +40,12 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
   convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear'},
   core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
  const mats=new Map(),texs=new Map();
- const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y]};
-  if(opt.textures!==false&&t.image&&t.image.toDataURL){try{r.png=t.image.toDataURL('image/png');r.size=[t.image.width,t.image.height];}catch(e){r.error=String(e.message||e);}}
+ // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
+ // The PNG is the image as stored, so an importer flips v only where flipY is true. Encoding a PNG is the host's
+ // job (BIO.texPNG, 43-core-export-host.js); without one a record says why it has no image.
+ const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y],flipY:!!t.flipY};
+  if(opt.textures!==false&&t.image){if(!BIO.texPNG)r.error='no PNG encoder (load 43-core-export-host.js)';
+   else{try{const p=BIO.texPNG(t);if(p){r.png=p.png;r.size=p.size;}else r.error='image kind not encodable';}catch(e){r.error=String(e.message||e);}}}
   texs.set(t,r);return id;};
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,

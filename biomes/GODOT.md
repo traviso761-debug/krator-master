@@ -35,6 +35,11 @@ Metres, +Y up, x east, z south, right-handed: glTF's convention and Godot's. Mat
 columns as the basis and the fourth as the origin. Godot's forward is -Z; a plant has no
 forward, a fauna body is modelled with +X forward and +Y up (`35-core-anim.js`).
 
+**Texture rows.** Each PNG is the image as stored. A canvas texture has `flipY:true` (three uploads it flipped:
+the image's top row sits at v=1), a DataTexture (the kits' leaf atlases) has `flipY:false` (row 0 at v=0). Godot puts
+the image's top row at v=0, so an importer flips v (`1 - v`) only for `flipY:true`. Before 2026-10-05 the export wrote
+no image for a DataTexture at all (the spike found it: hyperjungle's leaf cards came out solid).
+
 Colours are **linear** (the core converts every designer's sRGB hex once, at `BIO.put` and
 at every bucket write). In a Godot shader read `COLOR` and the custom data as they are; do
 not mark them `source_color`. Texture PNGs are sRGB images: declare their samplers
@@ -51,7 +56,7 @@ not mark them `source_color`. Texture PNGs are sRGB images: declare their sample
 | `items` | one record per instanced mesh (below) |
 | `buckets` | one record per merged mesh (below) |
 | `materials` | one record per material (below) |
-| `textures` | one record per texture: `id`, `wrap`, `repeat`, `size`, `png` (a data URL) |
+| `textures` | one record per texture: `id`, `wrap`, `repeat`, `flipY`, `size`, `png` (a data URL, encoded by the host's `BIO.texPNG`), or `error` saying why there is no image |
 | `stats` | counts: items, instances, buckets, triangles |
 
 Typed arrays are `{type, n, b64}`: the array's bytes, base64. `Float32Array`,
