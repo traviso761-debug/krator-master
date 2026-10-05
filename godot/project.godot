@@ -1,4 +1,10 @@
-; Krator's Godot project: the port spike (GODOT-PLAN.md Phase 7). README.md says how to run it.
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
@@ -7,24 +13,23 @@ config_version=5
 config/name="Krator spike"
 config/description="Krator's exports (biome tiles, atmosphere, glTF regions, records) opened in Godot to find what the importer lacks."
 run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.5", "Forward Plus")
 
 [autoload]
 
 Atmos="*res://krator/atmos.gd"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/krator_gltf/plugin.cfg")
 
 [display]
 
 window/size/viewport_width=1600
 window/size/viewport_height=900
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/krator_gltf/plugin.cfg", "res://addons/godot_mcp/plugin.cfg")
+
 [rendering]
 
-renderer/rendering_method="forward_plus"
 anti_aliasing/quality/msaa_3d=2
 
 [shader_globals]

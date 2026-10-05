@@ -64,6 +64,21 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `tools/shot.sh` | a screenshot on a machine with no display (Xvfb + Compatibility) |
 | `shots/` | screenshots from `tools/shot.sh` (gitignored, like every `shots/` in the repo) |
 
+## Driving the editor (Godot MCP)
+
+`addons/godot_mcp` (vendored from tomyud1/godot-mcp v0.6.0, MIT; `VENDOR.md`) is the editor half of an MCP server,
+`godot-mcp-server`, which the repo's `.mcp.json` registers for Claude Code (pre-approved in `.claude/settings.json`).
+With the editor open, Claude can read and edit scenes, scripts and project settings, list errors and validate scripts.
+
+- **On a desktop:** open `godot/` in Godot 4.5 (the plugin is enabled in `project.godot`), start Claude Code in the
+  repo, and the plugin shows "MCP Connected".
+- **In a cloud session:** the start hook (`.claude/hooks/session-start.sh`) installs Godot 4.5 as `godot`; then
+  `godot/tools/editor.sh` starts the editor under Xvfb (`stop` ends it). The first start imports the project
+  (minutes). Checked 2026-10-05: the editor tools answer (project settings, scripts, errors). `run_scene` and
+  `take_screenshot` timed out there: the main scene loads a whole biome tile under software rendering. Use
+  `tools/shot.sh` for screenshots in the cloud.
+- The plugin talks only to `127.0.0.1:6505`. The server's optional visualizer (`map_project`) serves on port 6510.
+
 ## Re-exporting the data
 
 ```
