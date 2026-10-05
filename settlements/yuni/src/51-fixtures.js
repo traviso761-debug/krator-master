@@ -106,11 +106,11 @@ function buildingTags(A){
 }
 
 /* a building's wealth tag: none for a building that is only civic, religious, infrastructure or a park (civic is a
-   type, not a wealth); a yuni-* culture's tier otherwise (core/tags maps yuni-court to rich, yuni-common to middle,
+   type, not a wealth), or an Ancients ruin; a yuni-* culture's tier otherwise (core/tags maps yuni-court to rich, yuni-common to middle,
    yuni-poor to poor); any other culture's from the placement's 0..1 */
 function fixWealth(tg, F){
   var civic = tg.types.every(function(t){ return /^(civic|religious|infrastructure|funerary|park)$/.test(t); });
-  if(civic) return null;
+  if(civic || tg.culture==='ancient') return null;   /* Ancients ruins: no wealth (Travis, 2026-10-05) */
   if(/^yuni-/.test(tg.culture)) return undefined;
   return F.wealth;
 }

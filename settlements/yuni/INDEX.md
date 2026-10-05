@@ -26,7 +26,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `45-kit.js` | 28 | 10. KIT (1); NIGHT LIGHT VOLUME (130) |
 | `47-texture.js` | 11 | 11. TEXTURES (1) |
 | `50-structure.js` | 15 | 12. STRUCTURE (massing) (1) |
-| `51-fixtures.js` | 12 | 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS (1); EXPORT (130) |
+| `51-fixtures.js` | 13 | 13a. FIXTURES: BUILDINGS, DOORS, WINDOWS, LIGHTS (1); EXPORT (130) |
 | `52-vault.js` | 15 | 13. THE GRAND VAULT (1) |
 | `53-assets.js` | 21 | 13b. ASSET REGISTRY + BUILD FRAME (1) |
 | `54-under.js` | 7 | 14. UNDERGROUND (test wing) (1) |
