@@ -374,7 +374,7 @@ RIFT.farMat=function(){const m=BIO.barkMat(null);
     'if(vFM<1.5){float sf=dot(N,uSunDir)*0.5+0.5;k=1.0-smoothstep(0.22,0.78,sf*1.15-fr*0.80+0.30+sh);}'+
     'else k=smoothstep(0.12,0.82,fr*0.85+0.15+sh);'+
     'diffuseColor.rgb=mix(diffuseColor.rgb,vFC2,k);}');};
- const ck='riftfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}};BIO._tickWind();return m;};
+ const ck='riftfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{pack:'c2-rule',uv:'u: the second colour, 8 bits a channel on sqrt(linear); v: 0 none, 1 the leaf rule, 2 the irid bark rule'}};BIO._tickWind();return m;};
 // the iridescence's normal per instance (aN), the lighting the geometry's as before (bent toward world-up): a curl or a
 // rosette is real geometry, not a clump of cards, so it keeps its own shading (leafMat with aN would light it by aN)
 RIFT.iridOnlyN=function(m){const f=m.onBeforeCompile;m.onBeforeCompile=sh=>{f(sh);

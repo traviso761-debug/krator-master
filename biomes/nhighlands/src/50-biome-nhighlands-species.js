@@ -441,7 +441,7 @@ M.halo.visible=M.haloV.visible=false;
 [M.bulb,M.pod].forEach((m,i)=>{m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
  .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+=-position.y*.05*sin(uWindT*1.1+ph);transformed.z+=-position.y*.05*cos(uWindT*.8+ph*1.3);}\n#endif');};
  const ck=BIO.kitKey('nh-glow'+i);m.customProgramCacheKey=()=>ck;
- m.userData.bio={kind:'hang',key:BIO.kitKey(i?'pod':'bulb'),opts:{swayA:.05,swayW:'(-position.y)',emissive:true}};});   // as data (42-core-export)
+ m.userData.bio={kind:'hang',key:BIO.kitKey(i?'pod':'bulb'),opts:{swayA:.05,swayW:'(-position.y)',night:i?[.04,1.5]:[.05,1.35]}};});   // as data (42-core-export); night: the emissive intensity by day and by night (NHL.setNight)
 NHL._glowMaterials=[M.bulb,M.pod];
 NHL._night=0;
 NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;

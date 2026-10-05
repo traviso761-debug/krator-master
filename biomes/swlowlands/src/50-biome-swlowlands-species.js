@@ -398,7 +398,7 @@ SWLOW.farMat=function(){const m=BIO.barkMat(null);
    .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');};
  const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};
- m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{uv:'u: the trunk gloss (0 on the blobs)'}};return m;};   // as data (42-core-export)
+ m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{pack:'gloss',uv:'u: the trunk gloss (0 on the blobs)'}};return m;};   // as data (42-core-export)
 const BK={ember:barkTex2('ember'),lacquer:barkTex2('lacquer'),flay:barkTex2('flay'),mottle:barkTex2('mottle'),ring:barkTex2('ring'),
  furrow:barkTex2('furrow'),strip:barkTex2('strip'),ocelli:barkTex2('ocelli'),crack:barkTex2('crack'),plate:barkTex2('plate'),stringy:barkTex2('stringy'),pale:barkTex2('pale'),cork:barkTex2('cork'),cane:barkTex2('cane'),fibre:barkTex2('fibre')};
 SWLOW.BARKTEX=BK;

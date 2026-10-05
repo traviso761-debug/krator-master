@@ -754,8 +754,8 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 //               leaves the images out.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
 //               which a Godot importer turns into visibility_range_begin / _end.
-// opt.box keeps only instances whose origin, and triangles whose centroid, lie in the box
-// (a tile); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
+// opt.box keeps only instances whose origin lies in the box (a tile), and whole bucket pieces whose foot does
+// (opt.cut:'triangle': triangles by centroid, the rule before 2026-10-05); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
 // ({b64, type, n}) so a whole build is not a list of numbers in text.
 (function(){
 const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength);let s='';const K=0x8000;
@@ -769,6 +769,16 @@ const SWAY={'1.0':[1,[0,0,0]],'1':[1,[0,0,0]],'0.0':[0,[0,0,0]],'0':[0,[0,0,0]],
  '(position.x)':[0,[1,0,0]],'(-position.x)':[0,[-1,0,0]],'(position.z)':[0,[0,0,1]],'(-position.z)':[0,[0,0,-1]]};
 function swayOf(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=SWAY[e];
  return k?{c:k[0],w:k[1],a:o.swayA==null?.06:o.swayA,axis:o.axis|0}:{text:e,a:o.swayA==null?.06:o.swayA,axis:o.axis|0};}
+// a bucket's PIECES: the connected runs of triangles (a trunk, a limb, a log), each with its foot, the xz of its lowest
+// vertex. A tile keeps a piece whole when its foot lies in the box (opt.cut 'piece', the default), so a hero tree on
+// a tile edge is never sliced, and every piece still lands in exactly one tile. opt.cut 'triangle' is the old rule
+// (each triangle by its centroid).
+function pieceOwner(P,I){const nv=P.length/3,par=new Int32Array(nv);for(let i=0;i<nv;i++)par[i]=i;
+ const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};
+ for(let t=0;t<I.length;t+=3){const a=find(I[t]),b=find(I[t+1]),c=find(I[t+2]);if(a!==b)par[b]=a;const a2=find(a);if(a2!==c)par[c]=a2;}
+ const root=new Int32Array(nv),lowY=new Float32Array(nv).fill(Infinity),x=new Float32Array(nv),z=new Float32Array(nv);
+ for(let i=0;i<nv;i++){const r=find(i);root[i]=r;if(P[i*3+1]<lowY[r]){lowY[r]=P[i*3+1];x[r]=P[i*3];z[r]=P[i*3+2];}}
+ return {root,x,z};}
 function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;const t=typeof v;
  if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
  if(v.isTexture)return texId(v);if(v.isColor)return '#'+v.getHexString();
@@ -791,6 +801,7 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
   texs.set(t,r);return id;};
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
+   emissive:m.emissive&&(m.emissive.r||m.emissive.g||m.emissive.b)?'#'+m.emissive.getHexString():null,emissiveIntensity:m.emissiveIntensity==null?null:m.emissiveIntensity,
    map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
    options:b&&b.opts?plain(b.opts,texId):null,sway:b?swayOf(b.opts):null,
    hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
@@ -811,8 +822,10 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
    for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
    out.items.push(rec);}
   else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
-   if(box){const k=[];for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
-     if(inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3))k.push(I[t],I[t+1],I[t+2]);}
+   if(box){const k=[],own=opt.cut==='triangle'?null:pieceOwner(P,I);   // a whole piece goes to the tile holding its foot
+    for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
+     const keep=own?inBox(own.x[own.root[I[t]]],own.z[own.root[I[t]]]):inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3);
+     if(keep)k.push(I[t],I[t+1],I[t+2]);}
     if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
    const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
    out.buckets.push(Object.assign(base,{triangles:idx.length/3,geometry:geo}));}}
@@ -1487,7 +1500,7 @@ SWLOW.farMat=function(){const m=BIO.barkMat(null);
    .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');};
  const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};
- m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{uv:'u: the trunk gloss (0 on the blobs)'}};return m;};   // as data (42-core-export)
+ m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{pack:'gloss',uv:'u: the trunk gloss (0 on the blobs)'}};return m;};   // as data (42-core-export)
 const BK={ember:barkTex2('ember'),lacquer:barkTex2('lacquer'),flay:barkTex2('flay'),mottle:barkTex2('mottle'),ring:barkTex2('ring'),
  furrow:barkTex2('furrow'),strip:barkTex2('strip'),ocelli:barkTex2('ocelli'),crack:barkTex2('crack'),plate:barkTex2('plate'),stringy:barkTex2('stringy'),pale:barkTex2('pale'),cork:barkTex2('cork'),cane:barkTex2('cane'),fibre:barkTex2('fibre')};
 SWLOW.BARKTEX=BK;

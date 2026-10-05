@@ -20,7 +20,8 @@ In a kit's page, after it has built (the probe's `window._ready`):
 
 ```js
 BIO.export()                                   // the whole build, one object
-BIO.export({box:[x0,z0,x1,z1]})                // one tile: instances whose origin, triangles whose centroid lie in it
+BIO.export({box:[x0,z0,x1,z1]})                // one tile: instances whose origin lies in it, and whole bucket pieces whose
+                                               // foot does (opt.cut:'triangle' clips by triangle centroid instead)
 BIO.export({kit:'rift', textures:false})       // one kit's meshes; leave the PNGs out
 BIO.download('rift-tile-0-0', {box:[0,0,500,500]})   // saves rift-tile-0-0.biome.json
 ```
@@ -91,8 +92,8 @@ and options as data (the hook code still lives in the kit):
 |---|---|---|---|
 | `irid` | eastabyss, nhighlands, rift, xanadu (`BIO.iridBarkMat`) | `a`, `b`: the tints facing the eye and at grazing angles | `bark.gdshader` mode 1 |
 | `gloss` | nwlowlands, swlowlands (`barkMat2`) | `alt` (linear), `mean`, `gain`, `gloss`: the map is data (red brightness, green a mask) | `bark.gdshader` mode 2 |
-| `far` | rift, swlowlands (`farMat`): the far impostors | `uv`: what the impostor packs into its uvs | not yet |
-| `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `emissive` | not yet |
+| `far` | rift, swlowlands (`farMat`): the far impostors | `pack` (`c2-rule`: rift, `gloss`: swlowlands) and `uv`: what the impostor packs into its uvs | `bark.gdshader` modes 3, 4 |
+| `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `night` (the emissive intensity by day and by night); the material's `emissive` | `bark.gdshader` mode 5 |
 | `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, walk), `attribute: 'aPh'` | not yet |
 
 They still export `hooked:true`. Each is to become a core kind whose hook lives once in the core, so that `kind`
