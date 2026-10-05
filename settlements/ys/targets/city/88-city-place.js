@@ -162,7 +162,7 @@ const YS_BAND=[[471.5,-122.0],[851.4,-728.1],[875.6,-644.6],[718.0,-34.6],[530.7
 function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);const cls=o.full?'full':o.land?'land':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];if(!T)return ysPlRefuse('no host type for '+cls);
  // a land host (decay 3, reclaimed) stands on the ground, its pods above its podium's colonnade (17 m)
  const sink=o.land?o.y-.5:T.sink==='seabed'?Math.min(terrainH(b.x,b.z),b.y)-1.5:-(T.plate(T.k0)-T.plateAt)+st.range(-2.5,2.5);
- const whole=o.full||(o.land&&(/^mid/.test(T.key)||T.whole));   /* a reclaimed mid-rise, a villa, an office, the Library stand whole */
+ const whole=o.full||o.whole||(o.land&&(/^mid/.test(T.key)||T.whole));   /* a reclaimed mid-rise, a villa, an office, the Library stand whole */
  let cutY=null;if(!whole){const r=o.cutRange||T.cuts[cls]||T.cuts.mid;const n0=Math.ceil((r[0]-T.Y0)/T.floors.pitch),n1=Math.floor((r[1]-T.Y0)/T.floors.pitch);cutY=T.Y0+st.int(n0,n1)*T.floors.pitch;}
  const top=(whole?T.crownY:cutY)+sink;const ry=T.square?PL_RY+st.int(0,3)*Math.PI/2:st.range(0,TAU);
  const P='Project '+T.key.slice(3);const nm=T.name.replace('the ','');const mid=/^mid/.test(T.key);
@@ -229,6 +229,7 @@ const PL_POOL={
 const PL_SMALL={poor:[['hyk_house_poor_1',3],['hyk_house_poor_2',3],['hyk_house_poor_3',3],['hyk_shop_food',.5],['hyk_shop_general',.5]],
  middle:[['hyk_house_mid_1',3],['hyk_house_mid_3',3],['hyk_house_poor_2',1],['hyk_shop_alchemy',.4],['hyk_shop_salt',.4],['hyk_shop_food',.5]],
  rich:[['hyk_house_mid_1',2],['hyk_house_mid_3',2],['hyk_house_rich_3',1],['hyk_shop_pearl',.6]]};
+const PL_INDUSTRY_SMALL=[['hyk_warehouse_small',2],['hyk_smithy_small',1.5],['hyk_house_poor_2',1],['hyk_shop_general',.4]];   // the industry blocks' lanes
 const PL_GAP={poor:[2,5],middle:[3,7],rich:[6,13],market:[3,6],industry:[6,12],foreign:[5,10]};
 const PL_GARDEN={poor:.06,middle:.1,rich:.18,market:0,industry:.15,foreign:.1};
 const PL_FOREIGN={iziz:[[14,12],[16,13],[12,12]],republic:[[13,11],[15,12],[18,10]],voth:[[16,14],[20,16]]};
@@ -241,7 +242,8 @@ function ysPlFront(b,o){const st=ysPlStream('front:'+(o.tag||''),b);const pool=o
    if(t+w>h-4)break;const s=t+w/2;const cx=b.x+S.n[0]*(h-d/2)+S.t[0]*s,cz=b.z+S.n[1]*(h-d/2)+S.t[1]*s;
    const B=ysPlBox(cx,cz,w/2+1,d/2+1,ry,key||'slot');{const c=ysPlClash(B);if(c){ysPlRefuse('occupied by '+ysPlWhat(c));t+=6;continue;}}
    const y=ysPlGround(B,o.ground);if(y==null){t+=6;continue;}
-   if(key)ysPlBld(key,B,y,o.why,b,st);else{ysPlTake(B);PLACE.slots.push({kind:'foreign',foreign:fq,swap:PL_SWAP[fq],x:cx,z:cz,ry,w,d,y,block:b.i+','+b.j,box:B});}
+   if(key)ysPlBld(key,B,y,o.why,b,st);else{ysPlTake(B);const slot={kind:'foreign',foreign:fq,swap:PL_SWAP[fq],x:cx,z:cz,ry,w,d,y,block:b.i+','+b.j,box:B};PLACE.slots.push(slot);
+    if(o.standIn){const fit=PL_POOL.middle.filter(([k])=>HYK.defs[k].w<=w&&HYK.defs[k].d<=d);if(fit.length){const k2=ysPlPick(st,fit);const r=ysPlBld(k2,ysPlBox(cx,cz,HYK.defs[k2].w/2,HYK.defs[k2].d/2,ry,k2),y,o.why+' stand-in',b,st);r.standIn=true;slot.standIn=r;}}}
    n++;t+=w+st.range(...PL_GAP[o.kind]);}}
  return n;}
 const PL_SWAP={iziz:['vern_*'],republic:['hl_rep_*'],voth:['voth_embassy','voth_townhouse_*']};
@@ -295,7 +297,8 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   const a0=Math.atan2(-d[1],-d[0]);const C=[];for(const r of [61,65,57])for(let k=0;k<12;k++){const a=a0+(k%2?1:-1)*Math.ceil(k/2)*.35;C.push([b.x+r*Math.cos(a),b.z+r*Math.sin(a)]);}
   ysPlSeek('hyk_treasury',C,c=>ysPlFacing(b.x-c[0],b.z-c[1]),'landmark',b,{ground:{stack:true,slope:7}});}
  // the Wet Cells: an island reached only by water, at the water datum
- if(LM.wet_cells){const b=LM.wet_cells;ysPlByName('hyk_wet_cells',b.x,b.z,ysPlFacing(PL_N[0],PL_N[1]),'landmark',b,{y:0});}
+ if(LM.wet_cells){const b=LM.wet_cells;const g=terrainH(b.x,b.z);const sk=Math.max(2.6,-g+.6);   /* its rock rises from the bed (the builder reads `sink`) */
+  ysPlByName('hyk_wet_cells',b.x,b.z,ysPlFacing(b.x-CITY.STACKS[2].x,b.z-CITY.STACKS[2].z),'landmark',b,{y:0,skip:/^street/,extra:{over:/^street/,sink:sk}});}
  // ---- 2. the hosts: the Pharos and two more full-height towers, the grown plaza's host, then every host block
  const hostBlocks=LAYOUT.blocks.filter(b=>b.use==='host');
  if(LM.pharos)ysPlHost(LM.pharos,{type:'skyH',full:true,name:'The Pharos',crown:'hyk_pharos_crown',must:['hyk_pharos_crown'],way:'hyk_pod_rich_1',pods:4});   /* on a Project H (Travis) */
@@ -309,6 +312,25 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // a scenery stack (the Needle, the Tooth...) standing in a host block's cap leaves the block to the water
  const onStack=b=>CITY.STACKS.some(t=>ysStackLocal(t,b.x,b.z).d<t.r*1.25+70);   /* any stack, the landmarks' too (the Citadel's stands over a block) */
  for(const b of hostBlocks){if(b.full)continue;if(onStack(b)){ysPlRefuse('karst: host block');continue;}ysPlHost(b,b.type?{type:b.type}:{});}
+ // a host at a point Travis named: a synthetic block (90+k, 0), the ground or the bed under it, the block it falls in
+ // kept from lanes (a lane would run through it); on land the box must be clear of the streets, in the water a canal
+ // line may pass under
+ let ysPlPointK=0;
+ function ysPlHostAt(x,z,type,o){o=o||{};const g=ysBlockIJ(x,z);const home=ysBlock(Math.round(g[0]),Math.round(g[1]));const land=terrainH(x,z)>1;
+  const b={i:90+ysPlPointK++,j:0,x,z,s:ysShoreDist(x,z),y:ysPlaneY(ysShoreDist(x,z)),kind:land?'land':'open',use:'host',host:'mid',wealth:o.wealth||'middle',point:true};
+  const T=YS_HOST_TYPES[type];if(!T)return ysPlRefuse('point host: no type '+type);const cap=T.cap*(o.capScale||1);
+  // the point first, then a 12 m grid out to 36 m round it, nearest first: the first clear spot (on land: with ground)
+  const cands=[[x,z]];for(let u=-36;u<=36;u+=12)for(let v=-36;v<=36;v+=12)if(u||v)cands.push([x+u,z+v]);cands.sort((p,q)=>Math.hypot(p[0]-x,p[1]-z)-Math.hypot(q[0]-x,q[1]-z));
+  let at=null,y=null,why='occupied';for(const c of cands){const B=ysPlBox(c[0],c[1],cap,cap,PL_RY,'host');const cl=ysPlClash(B,land?null:/^street/);if(cl){why='occupied by '+ysPlWhat(cl);continue;}
+   if(land){const n0=Object.assign({},PLACE.refused);y=ysPlGround(B,{slope:6});PLACE.refused=n0;if(y==null){why='no ground';continue;}}at=c;break;}
+  if(!at)return ysPlRefuse('point host '+type+': '+why);b.x=at[0];b.z=at[1];
+  LAYOUT.blocks.push(b);LAYOUT.by[b.i+','+b.j]=b;if(home)home.hostPlaced=true;
+  const rec=ysPlHost(b,Object.assign({type,capScale:o.capScale||1},land?{land:true,y}:{},o.host||{}));if(rec&&o.name)rec.n=o.name;return rec;}
+ // Travis (Oct 5 2026): two skyscraper stumps of types not yet standing, on the land quarter's points he named
+ ysPlHostAt(165.3,117.0,'skyC',{capScale:.8,host:{cutRange:YS_HOST_TYPES.skyC?YS_HOST_TYPES.skyC.cuts.land:null,tall:true},name:'The Tripod stump at the head'});
+ ysPlHostAt(47.7,495.4,'skyE',{host:{cutRange:[80,124],tall:true},name:'The Lens stump by the river'});
+ // Travis (Oct 5 2026): the office terrace stands in the ocean instead, whole and podded, at the two points he named
+ if(YS_HOST_TYPES.altOffice1){ysPlHostAt(874.5,245.0,'altOffice1',{capScale:.8,host:{whole:true},name:'The sunk Terrace Wedge (east)'});ysPlHostAt(1179.5,-869.4,'altOffice1',{capScale:.8,host:{whole:true},name:'The sunk Terrace Wedge (north)'});}
  // the band of half-sunk Ancients (Travis): mid-rise hosts standing in the shallows along the coast north-east of the
  // head (YS_BAND, a strip 50–200 m offshore), every 125 m along its middle, sunk to the bed and cut low, each a node of
  // the bridge graph (the spanning tree links them to their neighbours and the shore)
@@ -367,7 +389,12 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   ysPlSeek('hyk_caravanserai',ysPlCands(b,u0,v0,66),ysPlFacing(S.n[0],S.n[1]),'caravanserai',b);}
  // the foreign quarter: slots with their swap lists (Iziz nearest the market, the Republic, Voth furthest) and the
  // Historians' chapterhouse on its own square
- FQ.forEach((b,i)=>{const fq=i<2?'iziz':i<4?'republic':'voth';ysPlFront(b,{kind:'foreign',foreign:fq,why:'foreign quarter',sides:2,max:10});});
+ // (Travis, Oct 5 2026: the inner quarter as dense as the coast's neighbourhoods) every side, and a lane-quartered middle
+ // with small houses; every foreign slot keeps its swap list and, until the set lands, a Hykkousoi stand-in is drawn in it
+ FQ.forEach((b,i)=>{const fq=i<2?'iziz':i<4?'republic':'voth';if(!b.hostPlaced)for(const s of ysLanes(b))ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:lane'));   /* the lanes first: a side's house must not straddle a lane's end */
+  ysPlFront(b,{kind:'foreign',foreign:fq,why:'foreign quarter',sides:4,max:40,standIn:true});
+  if(!b.hostPlaced)for(const [qu,qv] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const c=ysPlAt(b,qu*48,qv*48);const q={x:c[0],z:c[1],i:b.i,j:b.j,wealth:'middle'};
+   ysPlFront(q,{pool:PL_SMALL.middle,kind:'middle',why:'foreign quarter lane',h:40,sides:2,only:[[-qu*PL_U[0],-qu*PL_U[1]],[-qv*PL_V[0],-qv*PL_V[1]]],tag:'flane'+qu+qv});}});
  if(FQ.length>2){const b=FQ[2];const B=ysPlBox(b.x,b.z,22,22,PL_RY,'chapterhouse');if(!ysPlClash(B)){const y=ysPlGround(B);if(y!=null){ysPlTake(B);PLACE.slots.push({kind:'chapterhouse',swap:['civic_chapter_house'],x:b.x,z:b.z,ry:PL_RY,w:44,d:44,y,block:b.i+','+b.j,box:B});}}}
  // ---- 4. the land quarter: neighbourhoods (sides built by distance from the head), shrines and the two small markets,
  // the reclaimed Ancients' plots (a quarter of the neighbourhood blocks; slots until the mid-rise types are vendored),
@@ -385,7 +412,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // stumps; 87-city-layout.js), before any civic piece or frontage: each block anywhere a clear spot fits the host's
  // footprint; a marked block that cannot take one hands its turn to the next block in the hash order, and is laned instead
  {const order=NB.map(b=>[b,KRAND.unit(KRAND.hash(KRAND.child(LAYOUT.HOST_SEED,'land hosts'),b.i,b.j))]).sort((p,q)=>p[1]-q[1]).map(p=>p[0]);
-  const special=['altOffice1','altOffice1','altLibrary'].filter(k=>YS_HOST_TYPES[k]);   /* Travis: two podded office terraces and the Ancient Library, whole, on land blocks */
+  const special=['altLibrary'].concat(typeof YS_HOST_OFFICES!=='undefined'?YS_HOST_OFFICES.slice(0,2).map(S=>S.key):[]).filter(k=>YS_HOST_TYPES[k]);   /* Travis: the Ancient Library and the original kit's offices and apartments (not the terrace: it dwarfs the houses) */
   const want=NB.filter(b=>b.landHost).length+special.length;let got=0,tall=0;   /* the share is a wish: the blocks with a clear spot decide */
   for(const b of order.filter(b=>b.landHost).concat(order.filter(b=>!b.landHost))){if(got>=want)break;const st=ysPlStream('land host',b);const isTall=tall<2;const type=isTall?ysPlType(st,'landTall'):(special.length?special[0]:ysPlType(st,'land'));if(!type)break;const cap=YS_HOST_TYPES[type].cap;
    for(const c of ysPlCands(b,0,0,93-cap-2)){const B=ysPlBox(c[0],c[1],cap,cap,PL_RY,'land host');if(ysPlClash(B))continue;const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B,{slope:5});PLACE.refused=n0;
@@ -416,7 +443,10 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
       ysPlEdgeRun(ring,b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'host ring',tag:'ring'+qu+qv,land:true,max:5});}else ysPlRefuse('quarter host: '+type);}
    ysPlFront(q,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'lane',h:40,sides:2,only:[[-qu*PL_U[0],-qu*PL_U[1]],[-qv*PL_V[0],-qv*PL_V[1]]],tag:'lane'+qu+qv});   /* the lane frontage after the quarter's host, so the houses fit round it */}}
   if(st.chance(.3)){const k=st.chance(.5)?'hyk_shrine_tides':'hyk_shrine_seagods';ysPlSeek(k,ysPlCands(b,st.range(-30,30),st.range(-30,30),60).slice(0,30),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood shrine',b);}}
- for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:2});
+ for(const b of LAYOUT.blocks.filter(b=>b.use==='industry')){if(!b.hostPlaced)for(const s of ysLanes(b))ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:lane'));
+  ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:4});
+  if(!b.hostPlaced)for(const [qu,qv] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const c=ysPlAt(b,qu*48,qv*48);const q={x:c[0],z:c[1],i:b.i,j:b.j,wealth:'poor'};
+   ysPlFront(q,{pool:PL_INDUSTRY_SMALL,kind:'industry',why:'industry lane',h:40,sides:2,only:[[-qu*PL_U[0],-qu*PL_U[1]],[-qv*PL_V[0],-qv*PL_V[1]]],tag:'ilane'+qu+qv});}}
  for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);const fr=ysPlFacing(PL_V[0],PL_V[1]);
   const p=ysPlAt(b,st.range(-20,20),-50);ysPlByName(st.chance(.5)?'hyk_farmhouse_1':'hyk_farmhouse_2',p[0],p[1],fr,'farm',b);
   const nf=b.s<700*LAYOUT.K?2:1;for(let k=0;k<nf;k++){const q=ysPlAt(b,k?28:-28,10);ysPlByName('hyk_farm_field',q[0],q[1],PL_RY,'farm',b);}}

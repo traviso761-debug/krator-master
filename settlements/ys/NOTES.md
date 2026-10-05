@@ -449,3 +449,23 @@ their caps), the Undulant villas stand in the laned blocks' quarters (the quarte
 clear of the frontage), and K and C stay out of the land pools (caps 88 and 68 fit no land block). The band's pool is the
 sturdy stumps (the Arcades, the Pierced Stack, the Lens, D, H), cut low: the Stalks and the Bell Hall left no way in. The lived floors' corridor ring is bounded by the plan's inscribed radius
 (K's flat back).
+
+## Travis's fourth batch (Oct 5 2026): the inner quarter, the plates, the river, point hosts, the Wet Cells
+**The inner quarter** (the foreign and industry blocks between the head and the river) had two sides built and nothing
+in its middle: 60 reserved foreign plots drew nothing. Now every side of those blocks is lined, each block without a
+host is quartered by lanes with the small houses on them (the lanes are reserved before the frontage, so no house
+straddles a lane's end), and every foreign slot keeps its swap list but draws a Hykkousoi house of the middle pool inside
+it until the foreign sets land (`standIn`): 311 buildings inside Travis's polygon against 219 in the coast quarter he
+named (`inner-quarter-density`). **The mole plates** read as under water: the organic outlines wind either way, and a
+plate whose faces point down is culled from above. `ysFaceUp` reverses the indices when the first faces' normal points
+down. **The river** is one continuous strip now (`_river.pools` 1, 2.5 km): one pair of bank points per sample with the
+tangent averaged over its neighbours, 62 % of the valley's width, at the bed plus 55 % of the rise, doubled at each
+pool's lip; before, each pool was its own flat sheet and the sheets did not meet on the bends. **Point hosts**
+(`ysPlHostAt`): the Tripod (C) at (165, 117) and the Lens (E) by the river at (84, 459) as tall land stumps, and the
+office terrace, which dwarfed the houses round it on land, stands in the ocean instead, whole and podded, at (875, 245)
+and (1180, −869), each a node of the bridge graph (bridged to the Project A tower and to the north shore's hosts). The
+land pass keeps the Ancient Library and, when `YS_HOST_OFFICES` is loaded, the original kit's offices and apartments.
+**The Wet Cells** stand at the foot of the Needle (1294, 228), their rock a lathe from the real bed (28 m down there:
+the record carries `sink`, the draw pass hands it over) with a 15 m top, the warders' cone 11.5 m and leaning, twelve
+cells, eight drowned mouths, darker, and a ring of bone stakes leaning out over the water (none across the landing).
+Their old block is a host's. The sheet still draws them on a 2.6 m shelf.

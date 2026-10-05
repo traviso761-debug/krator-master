@@ -224,13 +224,18 @@ downstream edge; the valley is 2.2 widths wide). Every stack and the Amphitriton
 plates:[y],ways:[{a,y,R}],pods:[{key,a,y,level,into}]}`, `PLACE.slots` `{kind:'foreign'|'chapterhouse'|'land host'|'low host',
 swap|wish,x,z,ry,w,d,y}`, `PLACE.moles` `{name,poly,y,wall,plate,node}` (the terrain's `fill` stamp lies 30 cm under
 `y`, inset 7 m and sharp-edged under a walled mole; the draw pass lays a plate at `y - .12` and, if `wall`, a shell quay
-wall down to the bed round every edge; `node` makes the mole a node of the bridge graph; `star` marks an organic
+wall down to the bed round every edge, `ysFaceUp` turning the plate's faces upward whatever the outline's winding;
+`node` makes the mole a node of the bridge graph; `star` marks an organic
 outline, `ysPlOrganic`, whose plate is a fan and whose inset is a pull toward the centre; `stairs` the flights between
 terraces). `ysPlEdgeRun(m,b,{pool,kind,why,tag,max,land})` lines a polygon's edges with buildings facing outward. Host types live in
 `YS_HOST_TYPES` (storey table, face radius by local y, cut ranges, the plate sunk to L2). Helpers: `ysPlBox`/`ysPlHit`
 (oriented boxes), `ysPlClash(B,skip)`, `ysPlTry`/`ysPlByName`/`ysPlSeek` (a def by name, quietly, counted, or over
-candidates), `ysPlFront(b,{pool,kind,sides,h})` (the frontage walker), `ysPlShoreRun(uses,seq)` (pieces squared to the
-real waterline). The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
+candidates), `ysPlFront(b,{pool,kind,sides,h,only,standIn})` (the frontage walker; `standIn` draws a Hykkousoi house of the
+middle pool inside each foreign slot it reserves, `slot.standIn` → the record, `r.standIn:true`), `ysPlShoreRun(uses,seq)`
+(pieces squared to the real waterline), `ysPlHostAt(x,z,type,{capScale,name,host:{...}})` (a host at a point Travis named:
+a synthetic block `(90+k,0)`, the point first then a 12 m grid out to 36 m round it, on land with ground, in the water
+over a canal line; the block the point falls in is marked `hostPlaced`, so it is not laned). A landmark record may carry
+`sink` (the Wet Cells: the bed's depth under it); the draw pass hands it to the builder as `o.sink`. The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
 the zero list, plates per host) and `_api.city.records()` (the records as plain JSON).
 **Roads** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`, and the
 `lane`s that quarter a neighbourhood block without a reclaimed Ancient: `b.landHost`, set by the layout), `LAYOUT.highways`

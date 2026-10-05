@@ -66,7 +66,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `74c-hyk-tides.js` | 21 | the temple (45) |
 | `74d-hyk-winds.js` | 10 | the temple (16) |
 | `74e-hyk-pharos.js` | 12 | the crown (20) |
-| `74f-hyk-civic-minor.js` | 33 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
+| `74f-hyk-civic-minor.js` | 34 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
 | `75-hyk-harbour.js` | 37 **big** | shared bits (12) |
 | `76-hyk-industry.js` | 46 **big** | shared helpers (8); the armoured hall (73); warehouses: armoured halls with lipped cart door (124); the scrap smithies (157); the shipwright: a slipway under an open shed, a  (232); the granary: sealed silos on a raised pad, the s (274); the windmill: a sail-wheel of weed-cloth fins on (307); the generator: an Ancient machine reclaimed insi (350) |
 | `76b-hyk-warehouse-round.js` | 2 |  |
@@ -96,6 +96,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 162 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 169 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

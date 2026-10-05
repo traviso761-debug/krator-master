@@ -180,9 +180,17 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] (Oct 5 2026) The harbour piers face straight out from their mole's edge; none is angled for the tide, and the
       shore run's piers keep their old spacing. The round warehouse's cart doors face wherever the mole's frame
       points, not the quay.
-- [ ] (Oct 5 2026) The river's pool sheets are flat ribbons 1.8 widths wide at each pool's lip height: on a bend the
-      ribbon's edge can show past the bank, and the sheet does not fall at the lip (no cascade). The sea sheet takes
-      over below the datum. The band's half-sunk hosts are all Arcades this seed (the low pool picks per cell).
+- [x] (Oct 5 2026) The river's pool sheets were flat ribbons at each pool's lip height and did not meet on the bends
+      (Travis: discontinuous). One strip now, 62 % of the valley's width at bed + 55 % of the rise. Still no cascade at
+      a lip: the strip steps where the bed does. The band's half-sunk hosts are all Arcades this seed (the low pool picks per cell).
+- [ ] (Oct 5 2026) The foreign slots' stand-ins are Hykkousoi houses of the middle pool (Travis: density); when the
+      Iziz, Republic and Voth sets land, the slot's `standIn` record is the one to drop. The industry blocks' lanes carry
+      small warehouses, smithies and poor houses (`PL_INDUSTRY_SMALL`).
+- [ ] (Oct 5 2026) The sunk office terraces stand whole 100 m (east) and 116 m (north) above the water: the ocean's tallest
+      ruins after the three full towers; their rust is the concrete tint only (`MAT.concreteR`, see above).
+- [ ] (Oct 5 2026) The Wet Cells' rock is a plain lathe to the bed (28 m at the Needle's foot): no ledges, no weed below
+      the crust band; its library barnacle set reads paler than the tint asks (Travis: ominous). A darker barnacle or
+      wet-rock set would do it.
 - [ ] (Oct 5 2026) The new hosts' blemishes: the bridge graph's pods ignore a type's bearings (`fits` consults
       `avoid(yl,h)` only: on K a pod can land on the porch arch, on the Attraction beside a great spire; `avoid` wants
       the bearing); the tideline crust on C and the Stack is a ring round the axis, not round each leg or piloti; Sky J

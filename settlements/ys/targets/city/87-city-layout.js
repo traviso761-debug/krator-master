@@ -62,6 +62,9 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
   if(L){b.use=b.s>560*LAYOUT.K?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
  for(const b of LAYOUT.blocks)if(b.use&&!/^(host|homegrown|neighbourhood|farm|foreign|industry|aquaculture)$/.test(b.use))LAYOUT.landmarks[b.use]=b;
+ // Travis (Oct 5 2026): the Wet Cells stand at the foot of the Needle (1294, 228), not on a block; their block is a host's
+ if(LAYOUT.landmarks.wet_cells){const old=LAYOUT.landmarks.wet_cells;old.use='host';old.tag='H';old.host=old.kind==='open'?'tall':old.kind==='canal'?'mid':'low';
+  const w={i:71,j:71,x:1294.1,z:228.1,s:ysShoreDist(1294.1,228.1),y:0,kind:'open',use:'wet_cells',tag:'WC',wealth:'poor',dA:0,synthetic:true};LAYOUT.blocks.push(w);LAYOUT.by['71,71']=w;LAYOUT.landmarks.wet_cells=w;}
  // Travis (Oct 5 2026): the Citadel stands on the Sentinel, the big stack south of the harbour (620, 930), not on a block
  // of the grid; its block is freed to the water (the harbour approach), and the Sentinel is its stack (STACKS[0] moves there)
  if(LAYOUT.landmarks.citadel){const old=LAYOUT.landmarks.citadel;old.use='water';old.tag='~';

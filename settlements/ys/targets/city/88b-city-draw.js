@@ -4,9 +4,12 @@
 // record names. A slot (the foreign quarter, the land quarter's reclaimed Ancients) draws nothing: its builder is not in
 // this build yet. The draw code's own scatter (the tideline's weed and specks, the builders' detail) is the lineage's
 // stream, reseeded per host here (seeds 32100 + the host's index, below 32400); where things stand came from KRAND.
+// a plate faces up whatever its polygon's winding: the first face's normal decides, and the indices are reversed if it points down
+function ysFaceUp(g){const p=g.attributes.position.array,ix=g.index.array;let ny=0;for(let t=0;t<ix.length&&t<60;t+=3){const a=ix[t]*3,b=ix[t+1]*3,c=ix[t+2]*3;const ux=p[b]-p[a],uy=p[b+1]-p[a+1],uz=p[b+2]-p[a+2],vx=p[c]-p[a],vy=p[c+1]-p[a+1],vz=p[c+2]-p[a+2];ny+=uz*vx-ux*vz;}
+ if(ny<0){for(let t=0;t<ix.length;t+=3){const k=ix[t+1];ix[t+1]=ix[t+2];ix[t+2]=k;}g.index.needsUpdate=true;g.computeVertexNormals();}return g;}
 YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  const once=k=>{TSTAT.cur=k+'/0';const t=tcur();t.n=(t.n||0)+1;};   // per-placement budgets (91-ys-probe typeStats)
- for(const r of PLACE.blds){once(r.key);const G=HYK.place(scene,r.key,r.x,r.z,r.ry,{y:r.y,v:r.v});if(!G)fail++;else r.drawn=true;}
+ for(const r of PLACE.blds){once(r.key);const G=HYK.place(scene,r.key,r.x,r.z,r.ry,{y:r.y,v:r.v,sink:r.sink});   /* sink: the Wet Cells' rock reaches the bed */if(!G)fail++;else r.drawn=true;}
  TSTAT.cur=null;
  PLACE.hosts.forEach((h,i)=>{const T=YS_HOST_TYPES[h.type];const builder=typeof window[T.builder]==='function'?window[T.builder]:null;
   if(!builder){reportErr('host type '+h.type+' has no builder '+T.builder);return;}
@@ -25,12 +28,12 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  {reseed(32395);TSTAT.cur='mole quay/0';let nw=0;const col=hC(hPick(HPAL.shellWarm)),wcol=hC(hPick(HPAL.shell));
   for(const m of PLACE.moles){if(!m.plate)continue;const P=m.poly,y=m.y-(m.wall?.05:.12);
    if(m.star){const c=m.star,n=P.length;const ring=u=>{const f=((u%1)+1)%1*n;const i=Math.floor(f)%n,j=(i+1)%n,t=f-Math.floor(f);return [P[i][0]*(1-t)+P[j][0]*t,P[i][1]*(1-t)+P[j][1]*t];};
-    const g=hykSurf((u,v)=>{const p=ring(u);return [c[0]+(p[0]-c[0])*v,y,c[1]+(p[1]-c[1])*v];},n*2,3,{col,flip:ysPlPolyArea(P)<0});
+    const g=hykSurf((u,v)=>{const p=ring(u);return [c[0]+(p[0]-c[0])*v,y,c[1]+(p[1]-c[1])*v];},n*2,3,{col});
     {const pa=g.attributes.position.array,uv=g.attributes.uv.array;for(let i=0;i<uv.length/2;i++){uv[i*2]=pa[i*3]/4;uv[i*2+1]=pa[i*3+2]/4;}g.attributes.uv.needsUpdate=true;}   /* planar metre UVs: a fan's stretch radially */
-    hykPutRaw('hkFloor',g);
+    hykPutRaw('hkFloor',ysFaceUp(g));
     for(const f of m.stairs)hykSpanStairStraight(f.A,f.B,{w:2.4,rails:'both'});}
-   else if(P.length===4){hykPutRaw('hkFloor',hykSurf((u,v)=>{const ax=P[0][0]+(P[1][0]-P[0][0])*u,az=P[0][1]+(P[1][1]-P[0][1])*u,bx=P[3][0]+(P[2][0]-P[3][0])*u,bz=P[3][1]+(P[2][1]-P[3][1])*u;return [ax+(bx-ax)*v,y,az+(bz-az)*v];},
-     Math.max(2,Math.round(Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/8)),Math.max(2,Math.round(Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/8)),{col,uS:Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/4,vS:Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/4,flip:ysPlPolyArea(P)<0}));}
+   else if(P.length===4){hykPutRaw('hkFloor',ysFaceUp(hykSurf((u,v)=>{const ax=P[0][0]+(P[1][0]-P[0][0])*u,az=P[0][1]+(P[1][1]-P[0][1])*u,bx=P[3][0]+(P[2][0]-P[3][0])*u,bz=P[3][1]+(P[2][1]-P[3][1])*u;return [ax+(bx-ax)*v,y,az+(bz-az)*v];},
+     Math.max(2,Math.round(Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/8)),Math.max(2,Math.round(Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/8)),{col,uS:Math.hypot(P[1][0]-P[0][0],P[1][1]-P[0][1])/4,vS:Math.hypot(P[3][0]-P[0][0],P[3][1]-P[0][1])/4,flip:false})));}
    if(!m.wall)continue;const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;
    for(let i=0;i<P.length;i++){let a=P[i],b=P[(i+1)%P.length];const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;const dx=b[0]-a[0],dz=b[1]-a[1];if((cx-mx)*(-dz)+(cz-mz)*dx>0){const t=a;a=b;b=t;}   /* the outward face to the right of a->b */
     hykHarbWall([a[0],a[1]],[b[0],b[1]],0,{top:m.y,col:wcol,batter:.35});nw++;}}
@@ -77,13 +80,16 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  // the river's water (Travis: the river did not read as running the map): each pool of the terraced bed (84 ysRiverProfile:
  // a flat bed between two rimstone lips) gets a sheet of the sea's water at its lip's height less 10 cm, a ribbon along
  // the centre line 1.8 widths wide (the banks hide its edges); below the sea's level the sea sheet takes over
- {TSTAT.cur='river/0';const pr=ysRiverProfile(),R=CITY.RIVER;const at=s=>{let e=pr.seg[pr.seg.length-1];for(const q of pr.seg)if(s<=q.s0+q.L){e=q;break;}const t=e.L?(s-e.s0)/e.L:0;return [e.a[0]+(e.b[0]-e.a[0])*t,e.a[1]+(e.b[1]-e.a[1])*t,(e.b[0]-e.a[0])/e.L,(e.b[1]-e.a[1])/e.L];};
-  let k=0,n=0;while(k<pr.bed.length){let k1=k;while(k1+1<pr.bed.length&&pr.bed[k1+1]===pr.bed[k])k1++;const y=pr.bed[k]+R.rise*.55-.25;
-   if(y>.1){const pos=[],idx=[];let q=0;for(let j=k;j<=k1+1&&j<pr.bed.length;j++){const s=Math.min(j*pr.DS,pr.len);const [x,z,tx,tz]=at(s);const w=(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.62;   /* the flat floor is half a width each side; the sheet reaches a little up the bank */
-     pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(j>k){idx.push(q-2,q,q-1,q-1,q,q+1);}q+=2;}
-    if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,MAT.pkSea);m.name='river pool';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);n++;const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}}
-   k=k1+1;}
-  TSTAT.cur=null;window._river={pools:n,len:Math.round(pr.len)};}
+ {TSTAT.cur='river/0';const pr=ysRiverProfile(),R=CITY.RIVER;const at=s=>{let e=pr.seg[pr.seg.length-1];for(const q of pr.seg)if(s<=q.s0+q.L){e=q;break;}const t=e.L?(s-e.s0)/e.L:0;return [e.a[0]+(e.b[0]-e.a[0])*t,e.a[1]+(e.b[1]-e.a[1])*t];};
+  // one continuous strip down the river: a vertex pair every sample, across the averaged tangent (no gap at a bend), at
+  // the pool's water level; where the bed steps down at a lip the pair is laid twice, at the upper and the lower level,
+  // so the surface falls vertically there; it ends where the sea's own sheet takes over
+  const N=pr.bed.length,pos=[],idx=[];let q=0,pools=1;const lvl=k=>pr.bed[k]+R.rise*.55-.25;
+  const pair=(k,y)=>{const s=Math.min(k*pr.DS,pr.len);const [x,z]=at(s);const [x0,z0]=at(Math.max(0,s-pr.DS)),[x1,z1]=at(Math.min(pr.len,s+pr.DS));let tx=x1-x0,tz=z1-z0;const l=Math.hypot(tx,tz)||1;tx/=l;tz/=l;
+   const w=(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.62;pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(q>=2)idx.push(q-2,q,q-1,q-1,q,q+1);q+=2;};
+  for(let k=0;k<N;k++){const y=lvl(k);if(y<=.1)break;if(k>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,lvl(k-1));pools++;}pair(k,y);}
+  if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(ysFaceUp(g),MAT.pkSea);m.name='river';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}
+  TSTAT.cur=null;window._river={pools,len:Math.round(pr.len)};}
  // the karst's dressing (Travis's cards, through the library adapter 79z): jungle clumps on every field stack's crown (two
  // crossed quads each, their feet on the crown) and vines hung over the rim of its wall, facing outward; one mesh per
  // card. Not on a landmark's stack (its building takes the top). Positions from KRAND, so the dressing is the same in

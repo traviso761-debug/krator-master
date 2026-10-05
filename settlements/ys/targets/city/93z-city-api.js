@@ -22,7 +22,7 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const recs=PLACE.blds.concat(PLACE.slots);const boxes=recs.map(r=>r.box);const streets=PLACE.occ.filter(o=>/^(street|highway)/.test(o.tag));const bad=[];
   // the market hall stands over the junction of its three highways (the record says so: `over`)
   recs.forEach((r,i)=>{for(const s of streets)if(!(r.over&&r.over.test(s.tag))&&ysPlHit(boxes[i],s)){bad.push(boxes[i].tag+' on '+s.tag);break;}});
-  const pairs=[];for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++)if(ysPlHit(boxes[i],boxes[j]))pairs.push(boxes[i].tag+' / '+boxes[j].tag);
+  const pairs=[];for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){if(recs[i].standIn===recs[j]||recs[j].standIn===recs[i])continue;   /* a foreign slot's stand-in stands inside its slot */if(ysPlHit(boxes[i],boxes[j]))pairs.push(boxes[i].tag+' / '+boxes[j].tag);}
   R.push({name:'nothing-on-a-street',ok:!bad.length,detail:bad.length?bad.length+': '+bad.slice(0,4).join(' | '):boxes.length+' footprints clear of '+streets.length+' street and highway boxes'});
   R.push({name:'footprints-clear-of-each-other',ok:!pairs.length,detail:pairs.length?pairs.length+': '+pairs.slice(0,4).join(' | '):boxes.length+' footprints, no two overlapping'});}
  {const nb=PLACE.blds.filter(r=>!r.drawn).length,nh=PLACE.hosts.filter(h=>!h.drawn).length,np=PLACE.hosts.reduce((s,h)=>s+h.pods.filter(p=>!p.drawn).length,0);
@@ -34,6 +34,13 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
   const lost=SPANS.refused.filter(r=>/no path/.test(r));R.push({name:'bridge-network-reaches-the-shore',ok:!lost.length,detail:lost.length?lost.length+' cut off: '+lost.join(' | '):SPANS.nodes.length+' nodes, all with a foot path to the shore; '+SPANS.list.filter(s=>s.kind==='bridge'&&s.b.kind==='shore').length+' towers bridged straight to it'});}
  {const T=PLACE.hosts.filter(h=>h.land&&h.tall);R.push({name:'two-skyscraper-stumps-on-land',ok:T.length>=2&&T.every(h=>h.pods.length>0&&h.drawn),detail:T.map(h=>h.n+' '+Math.round(h.top)+' m, '+h.pods.length+' pods').join(' | ')||'none'});}
  R.push({name:'harbour-piers',ok:(PLACE.piers||0)>=24,detail:(PLACE.piers||0)+' piers in the harbour (the moles\' every 26 m where a 40 m square off the head is clear, the shore runs)'});
+ // Travis (Oct 5 2026) batch 4: the inner quarter as dense as the coast's neighbourhoods, the stumps and the sunk offices
+ // at his points, the Wet Cells at the Needle's foot
+ {const P1=[[-52.3,-445.6],[-178.0,378.3],[166.1,647.4],[466.6,-328.8]],P2=[[941.5,-1087.0],[538.5,-1127.2],[355.5,-348.0],[563.6,-309.0]];
+  const inP=(P,x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+  const n1=PLACE.blds.filter(r=>inP(P1,r.x,r.z)).length,n2=PLACE.blds.filter(r=>inP(P2,r.x,r.z)).length;R.push({name:'inner-quarter-density',ok:n1>=n2,detail:n1+' buildings inside the inner quarter against '+n2+' in the coast quarter'});
+  const pt=PLACE.hosts.filter(h=>h.block&&/^9\d,0$/.test(h.block));R.push({name:'point-hosts',ok:pt.length===4&&pt.every(h=>h.drawn&&h.pods.length>0),detail:pt.map(h=>h.n+' ('+Math.round(h.x)+','+Math.round(h.z)+') '+h.pods.length+' pods'+(SPANS.list.some(e=>e.na===h.n||e.nb===h.n)?', bridged':h.land?'':', unbridged')).join(' | ')||'none'});
+  const wc=PLACE.blds.find(r=>r.key==='hyk_wet_cells');const nd=CITY.STACKS.find(s=>/Needle/.test(s.n));R.push({name:'wet-cells-at-the-needle',ok:!!(wc&&nd&&Math.hypot(wc.x-nd.x,wc.z-nd.z)<nd.r+30&&wc.sink>2),detail:wc?'at ('+Math.round(wc.x)+','+Math.round(wc.z)+'), rock '+wc.sink.toFixed(1)+' m to the bed':'not placed'});}
  R.push({name:'half-sunk-band',ok:(PLACE.band||0)>=3,detail:(PLACE.band||0)+' half-sunk mid-rise hosts in the band north-east of the head, '+PLACE.hosts.filter(h=>/half-sunk/.test(h.n)).reduce((s,h)=>s+h.pods.length,0)+' pods'});
  {const lanes=LAYOUT.streets.filter(s=>s.kind==='lane').length,laned=PLACE.blds.filter(b=>b.why==='lane').length;R.push({name:'lanes-lined',ok:lanes>0&&laned>lanes*2,detail:lanes+' lanes, '+laned+' buildings on them, '+(window._roads||0)+' road ribbons'});}
  return R;}
