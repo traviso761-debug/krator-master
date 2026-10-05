@@ -29,15 +29,18 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 
 - [ ] Fly 1 km away: the chunked meshes should fade out near their range (they are placed at the chunk centre with the
       range widened by the chunk half-diagonal). Popping or holes: note where.
-- [ ] Iridescent bark shifts tint with the view angle (`bark.gdshader` mode 1); the far impostors still draw plain.
+- [ ] Iridescent bark shifts tint with the view angle (`bark.gdshader` mode 1). Fly 1 km out: the far impostors
+      should keep the valley's colours (mode 3).
 
 ## 3. girder (key 3): glTF, the friend's route
 
 - [ ] Library textures on the hall: thatch, shingle, timber. Compare with `settlements/girder/girder.html` up close.
-- [ ] What tonight showed: stalls and people come in near-white (their colours live in shader hooks and custom
-      attributes glTF drops). The library surfaces (hall roof, timber, planks, rope, cane, rock, ground) are rebuilt
+- [ ] Stalls and furniture now keep their colours (an exporter bug, fixed); only the people come in near-white
+      (the life layer's attributes). Instanced pieces arrive as MultiMeshes (`krator/gltf_instancing.gd`).
+- [ ] The library surfaces (hall roof, timber, planks, rope, cane, rock, ground) are rebuilt
       from Girder's pack with the break-up (`krator/kmat.gd`): compare their tiling with the browser.
-- [ ] Drag `data/girder/region.glb` into the editor's FileSystem dock, open it, and look at the Import dock: is there an
+- [ ] Drag `data/girder/region.glb` into the editor's FileSystem dock (the Krator glTF plugin is on, so its instances
+      should import as MultiMeshes too), open it, and look at the Import dock: is there an
       option to import extras as metadata in your version? Does the editor import differ from the runtime load?
 - [ ] **Ask your friend** how the Voth kit got into Godot (GODOT-PLAN.md section 1). If it was `GLTFExporter`, this case
       is that route; if it was something else (Blender, an OBJ export), try it on Girder and write down the difference.
@@ -47,8 +50,8 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 - [ ] It opens at 19:30: lamps and halos lit, braziers flickering, searchlights sweeping, smoke rising from chimneys.
 - [ ] `[` `]` across dusk (17:00 to 19:00) and dawn: lights come on and go off by their hours; the sky and sun dim.
 - [ ] Fog banks: Forward+ only (FogVolume). Turn on volumetric fog in the WorldEnvironment if they do not show; note it.
-- [ ] Weather: in the remote inspector (or a line in `spike.gd`) call `Atmos.set_weather("storm")`: rain and fog
-      rise, the wind strengthens, and `Atmos.strike` fires every 5 to 14 s (nothing draws the bolt or the rain yet).
+- [ ] Weather: `Shift+W` cycles it (or `-- --case=iziz --weather=storm`): rain streaks ride the camera and slant
+      with the wind, fog thickens, a bolt flashes every 5 to 14 s in a storm. Is the rain dense enough on a real GPU?
 - [ ] Halo brightness under the Filmic tonemapper (the gain is 0.6 x the three.js value here, a guess).
 - [ ] The city ground's texture and the five magenta stand-ins (ShaderMaterials: water, sky, glow) are expected.
 

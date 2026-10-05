@@ -25,7 +25,7 @@ Or open `godot/project.godot` in the editor (Import, then F5). The first open im
 also imported by the editor's own glTF importer: compare that with the runtime load, `CHECKLIST.md` item 4).
 
 In the window: right mouse drag to look, WASD to move, Q/E down and up, Shift for x5, wheel for speed. `[` `]` step the
-hour, `T` runs a time-lapse, `P` pauses the clock, `F1` hides the help, `F2` prints the case's report.
+hour, `T` runs a time-lapse, `P` pauses the clock, `Shift+W` cycles the weather (or start with `-- --weather=storm`), `F1` hides the help, `F2` prints the case's report.
 
 ## The five cases
 
@@ -50,6 +50,8 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/atmos.gd` | the `Atmos` autoload: clock, `night()`, a light's and a halo's hours, the veering wind, the weather state machine and lightning, the global shader parameters (`core/atmos/GODOT.md`) |
 | `krator/atmos_import.gd`, `atmos_lights.gd` | `krator-atmos` to lights, halos, props, smoke, fog volumes; the lights' hours, flicker and sweeps |
 | `krator/gltf_region.gd` | a `.glb` loaded at runtime, glTF extras copied to node metadata |
+| `krator/gltf_instancing.gd`, `addons/krator_gltf/` | `EXT_mesh_gpu_instancing` (Godot 4.5 has no importer for it): instanced meshes come in as MultiMeshes, at runtime and in the editor's importer (the plugin is enabled in `project.godot`) |
+| `krator/weather_fx.gd` | the weather drawn: rain particles that ride the camera, the lightning bolt on `Atmos.strike` |
 | `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes with every record on its node as metadata |
 | `krator/fly_camera.gd` | the camera |

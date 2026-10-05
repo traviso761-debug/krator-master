@@ -39,8 +39,12 @@ static func apply(scene: Node, state: GLTFState, tex_dir: String) -> Dictionary:
 	var stack: Array[Node] = [scene]
 	while stack.size() > 0:
 		var n: Node = stack.pop_back()
-		if n is MeshInstance3D and (n as MeshInstance3D).mesh:
-			var mesh: Mesh = (n as MeshInstance3D).mesh
+		var mesh: Mesh = null
+		if n is MeshInstance3D:
+			mesh = (n as MeshInstance3D).mesh
+		elif n is MultiMeshInstance3D and (n as MultiMeshInstance3D).multimesh:
+			mesh = (n as MultiMeshInstance3D).multimesh.mesh
+		if mesh:
 			for s in mesh.get_surface_count():
 				var m := mesh.surface_get_material(s)
 				if m and swap.has(m):

@@ -79,6 +79,11 @@ func _build_stage() -> void:
 	cam.set_script(load("res://krator/fly_camera.gd"))
 	cam.far = 8000.0
 	add_child(cam)
+	var wfx := Node3D.new()
+	wfx.set_script(load("res://krator/weather_fx.gd"))
+	wfx.set("cam", cam)
+	wfx.name = "Weather"
+	add_child(wfx)
 	var layer := CanvasLayer.new()
 	hud = Label.new()
 	hud.position = Vector2(12, 10)
@@ -154,6 +159,9 @@ func _load_case(name: String) -> Dictionary:
 		cam.look_from(focus + Vector3(e[0], e[1], e[2]), focus + Vector3(a[0], a[1], a[2]))
 	if args.has("hour"):
 		Atmos.hour = float(args["hour"])
+	if args.has("weather"):   # --weather=rain|storm|fog|clear|auto
+		Atmos.set_weather(str(args["weather"]))
+		Atmos.W["rain"] = 1.0 if args["weather"] in ["rain", "storm"] else 0.0   # start at full strength, for a screenshot
 	reports[name] = report
 	_print_report(name, report)
 	_update_hud()
@@ -193,7 +201,8 @@ func _check_all() -> void:
 
 func _process(_d: float) -> void:
 	var n: float = Atmos.night(Atmos.hour)
-	sun.light_energy = lerpf(1.6, 0.04, n)
+	sun.light_energy = lerpf(1.6, 0.04, n) * (1.0 - 0.5 * Atmos.rain) + 4.0 * Atmos.flash   # a strike lights the scene
+	env.fog_density = 0.0012 + 0.004 * Atmos.fog
 	env.ambient_light_energy = lerpf(0.8, 0.12, n)
 	env.background_energy_multiplier = lerpf(1.0, 0.08, n)
 	env.fog_light_color = Color(0.7, 0.72, 0.74).lerp(Color(0.05, 0.06, 0.09), n)
@@ -212,9 +221,10 @@ func _process(_d: float) -> void:
 func _update_hud() -> void:
 	if not hud:
 		return
-	var s := "%s: %s\nhour %.1f  wind %s  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))), Engine.get_frames_per_second()]
+	var s := "%s: %s\nhour %.1f  wind %s  weather %s (rain %.2f fog %.2f)  fps %d" % [current, ABOUT.get(current, ""), Atmos.hour, str(Atmos.wind_now().snapped(Vector2(0.01, 0.01))),
+		Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog, Engine.get_frames_per_second()]
 	if help_on:
-		s += "\n1-5 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   F1 hide help   F2 print report" % " ".join(CASES)
+		s += "\n1-5 case (%s)   RMB+mouse look   WASD QE move   Shift fast   wheel speed\n[ ] hour   T time-lapse   P pause clock   Shift+W weather   F1 hide help   F2 print report" % " ".join(CASES)
 	hud.text = s
 
 
@@ -236,4 +246,7 @@ func _unhandled_input(e: InputEvent) -> void:
 		Atmos.hour_rate = 0.0 if Atmos.hour_rate > 0.0 else 1.0
 	elif k == KEY_P:
 		Atmos.paused = not Atmos.paused
+	elif k == KEY_W and (e as InputEventKey).shift_pressed:   # Shift+W: the next weather mode
+		var i := Atmos.MODES.find(Atmos.W["mode"]) if Atmos.weather_on else -1
+		Atmos.set_weather(Atmos.MODES[(i + 1) % Atmos.MODES.size()])
 	_update_hud()

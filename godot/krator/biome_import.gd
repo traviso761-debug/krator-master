@@ -224,8 +224,21 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 				sm.set_shader_parameter("gloss_mean", float(o.get("mean", 0.55)))
 				sm.set_shader_parameter("gloss_gain", float(o.get("gain", 0.52)))
 				sm.set_shader_parameter("gloss_k", float(o.get("gloss", 0.0)))
-			"far", "hang":
-				_gap(report, kind, "material kind '%s' is named in the export but has no Godot shader yet: drawn as plain bark" % kind)
+			"far":   # the far impostors: what the uvs pack says which
+				var pk := str(o.get("pack", ""))
+				if pk == "c2-rule":
+					sm.set_shader_parameter("mode", 3)
+				elif pk == "gloss":
+					sm.set_shader_parameter("mode", 4)
+				else:
+					_gap(report, "far", "a far impostor material without `pack` (an export from before 2026-10-05): drawn plain")
+			"hang":  # nhighlands' bulbs and pods: the sway and the night glow
+				sm.set_shader_parameter("mode", 5)
+				sm.set_shader_parameter("hang_a", float(o.get("swayA", 0.05)))
+				var nk: Array = o.get("night", [0.0, 1.0])
+				sm.set_shader_parameter("night_k", Vector2(float(nk[0]), float(nk[1])))
+				if m.get("emissive") != null:
+					sm.set_shader_parameter("emissive", KData.colour(m["emissive"], false))
 		if m["alphaTest"] > 0.0:
 			sm.set_shader_parameter("alpha_test", float(m["alphaTest"]))
 	if m.get("hooked") and not (kind in ["leaf", "anim", "anim-phase", "irid", "gloss", "far", "hang"]):

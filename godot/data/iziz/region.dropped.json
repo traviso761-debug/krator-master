@@ -1,1 +1,1 @@
-{"box":[-80,-80,80,80],"stats":{"meshes":266,"triangles":543306,"materials":77},"dropped":{"hookedMaterials":44,"attributes":{"aN":14,"aC2":2,"aP0":9,"aP1":9,"aPos":1,"aBig":1,"aHide":1,"ipos":4,"pp":3,"lt":2,"psize":1},"shaderMaterials":5}}
+{"box":[-80,-80,80,80],"stats":{"meshes":266,"triangles":543306,"materials":77,"instancedMeshes":193,"instances":9556},"dropped":{"hookedMaterials":44,"attributes":{"aN":14,"aC2":2,"aP0":9,"aP1":9,"aPos":1,"aBig":1,"aHide":1,"ipos":4,"pp":3,"lt":2,"psize":1},"shaderMaterials":5}}

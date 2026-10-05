@@ -13,6 +13,10 @@ config/features=PackedStringArray("4.3", "Forward Plus")
 
 Atmos="*res://krator/atmos.gd"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/krator_gltf/plugin.cfg")
+
 [display]
 
 window/size/viewport_width=1600

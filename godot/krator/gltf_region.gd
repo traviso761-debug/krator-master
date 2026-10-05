@@ -10,6 +10,7 @@ extends RefCounted
 static func build(path: String) -> Node3D:
 	var t0 := Time.get_ticks_msec()
 	var report := {"route": "glTF (three GLTFExporter r128)", "file": path, "gaps": {}, "counts": {}}
+	_register_instancing()
 	var doc := GLTFDocument.new()
 	var state := GLTFState.new()
 	var err := doc.append_from_file(path, state)
@@ -53,16 +54,26 @@ static func build(path: String) -> Node3D:
 			unlit += 1
 	var meshes := 0
 	var tris := 0
+	var instanced := 0
+	var instances := 0
 	var stack: Array[Node] = [scene]
 	while stack.size() > 0:
 		var n: Node = stack.pop_back()
-		if n is MeshInstance3D and (n as MeshInstance3D).mesh:
+		var mesh: Mesh = null
+		var copies := 1
+		if n is MeshInstance3D:
+			mesh = (n as MeshInstance3D).mesh
+		elif n is MultiMeshInstance3D and (n as MultiMeshInstance3D).multimesh:
+			mesh = (n as MultiMeshInstance3D).multimesh.mesh
+			copies = (n as MultiMeshInstance3D).multimesh.instance_count
+			instanced += 1
+			instances += copies
+		if mesh:
 			meshes += 1
-			var mesh: Mesh = (n as MeshInstance3D).mesh
 			for s in mesh.get_surface_count():
 				var a := mesh.surface_get_arrays(s)
 				var idx = a[Mesh.ARRAY_INDEX]
-				tris += (idx.size() if idx != null else a[Mesh.ARRAY_VERTEX].size()) / 3
+				tris += (idx.size() if idx != null else a[Mesh.ARRAY_VERTEX].size()) / 3 * copies
 		for c in n.get_children():
 			stack.append(c)
 
@@ -88,12 +99,24 @@ static func build(path: String) -> Node3D:
 			report["gaps"]["attributes"] = "custom vertex attributes dropped: %s" % [dd["attributes"]]
 		if dd.get("dataTextures", 0) > 0:
 			report["gaps"]["DataTexture"] = "%d DataTextures could not be written as images" % dd["dataTextures"]
-	report["gaps"]["instancing"] = "glTF r128 has no instancing: every InstancedMesh arrives merged into one big mesh (no MultiMesh, no per-instance tags)"
+	if instanced > 0:
+		report["gaps"]["instancing"] = "%d instanced meshes (%d instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags" % [instanced, instances]
+	else:
+		report["gaps"]["instancing"] = "no instancing in this file: every InstancedMesh arrived merged into one mesh (an export without EXT_mesh_gpu_instancing)"
 	if unlit > 0:
 		report["gaps"]["unlit"] = "%d materials came through as KHR_materials_unlit (MeshBasicMaterial)" % unlit
 	if keys.is_empty():
 		report["gaps"]["tags"] = "no extras on any node: the page's userData held no tags to carry"
-	report["counts"] = {"meshes": meshes, "triangles": tris, "materials": mats.size(), "images": json.get("images", []).size(),
+	report["counts"] = {"meshes": meshes, "triangles": tris, "multimeshes": instanced, "instances": instances, "materials": mats.size(), "images": json.get("images", []).size(),
 		"nodes_with_extras": with_extras, "extras_keys": keys, "load_ms": Time.get_ticks_msec() - t0}
 	root.set_meta("report", report)
 	return root
+
+
+static var _ext: GLTFDocumentExtension
+
+
+static func _register_instancing() -> void:
+	if _ext == null:
+		_ext = preload("res://krator/gltf_instancing.gd").new()
+		GLTFDocument.register_gltf_document_extension(_ext)
