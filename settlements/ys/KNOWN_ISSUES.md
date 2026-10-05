@@ -105,9 +105,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       material library has neither (kits/ancients/KNOWN_ISSUES.md has the prompts).
 - [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
       their faces and ledges instead.
-- [ ] (Oct 5 2026) The spans are not placed: the bridge graph (PLAN.md P3 step 3: which blocks link at L1, which towers
-      at L2, the drawbridge to the Amphitriton, the Citadel's span) is the next pass. The kit audit names the eight span
-      defs apart; NAV's L1 and L2 layers are empty until it lands.
+- [x] (Oct 5 2026) The spans are not placed. The bridge graph (`88-city-spans.js`) joins every pair of neighbouring
+      drowned hosts pod to pod, and the Amphitriton to land through the Tides mole: 8 spans, NAV L1 35 cells, L2 31.
+- [ ] (Oct 5 2026) The bridge graph's gaps: the host-to-host bridges are free spans with no piers (some run 100 m+); the
+      L2 network reaches land only through the Amphitriton chain (no tower is bridged to a shore block or a mole); the
+      Citadel's span, spiral stairs, ladders, lilypads and pontoons are not placed yet (the kit audit lists them).
 - [ ] (Oct 5 2026) The foreign quarter is 60 reserved plots and the chapterhouse's square, with their swap lists; none
       of the foreign sets is vendored, so the quarter reads empty. The caravanserai stands on its nearest block.
 - [ ] (Oct 5 2026) The moles (home-grown blocks, the Tides and the Library, the headland, the military harbour, the quay

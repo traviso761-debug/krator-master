@@ -9,7 +9,9 @@ window._api.city.records=()=>({blds:PLACE.blds.map(r=>({key:r.key,x:+r.x.toFixed
 // the spans wait on the bridge graph (PLAN.md P3 step 3): the audit names them apart
 const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stair','hyk_ladder','hyk_lilypad','hyk_walkway','hyk_pontoon'];
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
- {const zero=C.zero.filter(k=>YS_PL_LATER.indexOf(k)<0),later=C.zero.filter(k=>YS_PL_LATER.indexOf(k)>=0);
+ {const spanKey={bridge:null,drawbridge:'hyk_drawbridge',walkway:'hyk_walkway'};const used=new Set(SPANS.list.filter(s=>s.drawn).map(s=>s.kind==='bridge'?(s.level==='L2'?'hyk_span_l2':'hyk_span_l1'):spanKey[s.kind]));
+  C.zero=C.zero.filter(k=>!used.has(k));   /* a span def is in the city when its helper is (the defs are the sheet's showcases) */
+  const zero=C.zero.filter(k=>YS_PL_LATER.indexOf(k)<0),later=C.zero.filter(k=>YS_PL_LATER.indexOf(k)>=0);
   R.push({name:'kit-audit-every-def-placed',ok:!zero.length,detail:(zero.length?zero.length+' never placed: '+zero.join(' '):(HYK.order.length-later.length)+' defs placed')+(later.length?'; waiting on the bridge graph: '+later.join(' '):'')});}
  {const full=HOSTS.filter(h=>h.full);R.push({name:'three-full-height-towers',ok:full.length>=3&&full.some(h=>/Pharos/.test(h.n)),detail:full.length+' full: '+full.map(h=>h.n+' '+Math.round(YS_HOST_TYPES[h.rec.type].H+h.rec.sink)+' m').concat(['the tallest stump '+Math.round(Math.max(...PLACE.hosts.filter(h=>!h.full).map(h=>h.cutY+h.sink)))+' m']).join(' | ')});}
  {const flat=PLACE.hosts.filter(h=>h.pods.length>1&&new Set(h.pods.map(p=>p.y)).size<2);const n=PLACE.hosts.map(h=>new Set(h.pods.map(p=>p.y)).size);
@@ -23,5 +25,6 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const nb=PLACE.blds.filter(r=>!r.drawn).length,nh=PLACE.hosts.filter(h=>!h.drawn).length,np=PLACE.hosts.reduce((s,h)=>s+h.pods.filter(p=>!p.drawn).length,0);
   R.push({name:'every-record-built',ok:!nb&&!nh&&!np,detail:(nb||nh||np)?nb+' buildings, '+nh+' hosts, '+np+' pods not built':PLACE.blds.length+' buildings, '+PLACE.hosts.length+' hosts, '+C.pods+' pods built'});}
  {const L=PLACE.hosts.filter(h=>h.land);R.push({name:'land-hosts',ok:L.length>0&&L.every(h=>h.drawn),detail:L.length+' reclaimed Ancients (decay 3) on the land quarter, '+L.filter(h=>h.drawn).length+' drawn, with '+L.reduce((s,h)=>s+h.pods.length,0)+' pods: '+L.map(h=>h.n).join(' | ')});}
+ {const nd=SPANS.list.filter(s=>!s.drawn);R.push({name:'bridges-built',ok:!nd.length&&SPANS.list.length>0,detail:SPANS.list.length+' spans ('+SPANS.list.filter(s=>s.kind==='bridge').length+' host to host, the drawbridge and the causeway), '+nd.length+' not built; '+SPANS.refused.length+' neighbouring pairs left to the boats'});}
  return R;}
 {const _x=window._api.extra;window._api.extra=()=>_x().concat(ysCityChecks());}

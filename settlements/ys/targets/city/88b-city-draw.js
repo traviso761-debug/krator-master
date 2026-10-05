@@ -19,6 +19,17 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   for(const p of h.pods){once(p.key);const hp=p.core?Object.create(host,{x:{value:p.cx},z:{value:p.cz},rAt:{value:()=>p.cr}}):host;   /* a socket pod is framed on its own core */
    const G=HYK.placeOn(scene,p.key,hp,{y:p.y,a:p.a,level:p.level,into:p.into});if(G)p.drawn=true;else fail++;}
   TSTAT.cur=null;});
+ // the bridge graph (88-city-spans): host to host, landing to landing; the Amphitriton's walkway and drawbridge
+ {let nb=0;const land=(h,p)=>{const H=HOSTS.find(x=>x.n===h.n);const l=H&&H.landings.find(l=>Math.abs(Math.atan2(Math.sin(l.a-p.a),Math.cos(l.a-p.a)))<.03&&Math.abs(l.y-p.y)<3);
+   if(l)return l;const r=h.rAt(p.y,p.a)+HYK.defs[p.key].w*.8;return {x:h.x+Math.cos(p.a)*r,y:p.y,z:h.z+Math.sin(p.a)*r,r:2.8};};
+  for(const S of SPANS.list){try{
+   if(S.kind==='bridge'){const ha=PLACE.hosts.find(x=>x.n===S.a.host),hb=PLACE.hosts.find(x=>x.n===S.b.host);const la=land(ha,ha.pods[S.a.pod]),lb=land(hb,hb.pods[S.b.pod]);
+    const dx=lb.x-la.x,dz=lb.z-la.z,dl=Math.hypot(dx,dz)||1;const P0={x:la.x+dx/dl*la.r*.6,y:la.y,z:la.z+dz/dl*la.r*.6},P1={x:lb.x-dx/dl*lb.r*.6,y:lb.y,z:lb.z-dz/dl*lb.r*.6};
+    once(S.level==='L2'?'hyk_span_l2':'hyk_span_l1');(S.level==='L2'?hykSpanBridgeL2:hykSpanBridgeL1)(P0,P1,{own:'bridge '+ha.n+' – '+hb.n,level:S.level});S.drawn=true;nb++;}
+   else if(S.kind==='drawbridge'){once('hyk_drawbridge');hykSpanDrawbridge(S.A,S.B,{own:'the Amphitriton drawbridge',level:'L1'});S.drawn=true;nb++;}
+   else if(S.kind==='walkway'){once('hyk_walkway');hykSpanWalkway(S.A,S.B,{own:'the Tides causeway',level:'quay'});S.drawn=true;nb++;}
+  }catch(e){reportErr('span '+S.kind+' '+e.stack);}}
+  TSTAT.cur=null;window._spans={built:nb,of:SPANS.list.length,refused:SPANS.refused.length};}
  // the subdivided floors (88a): the partitions as thin shell walls in the interior bucket, both faces; the floors marked
  reseed(32390);const wc=hC(hPick(HPAL.shell),.92);let nw=0;
  for(const P of FLOORS.plans){const cs=Math.cos(P.ry),sn=Math.sin(P.ry);const W=(lx,lz)=>[P.hx+lx*cs+lz*sn,P.hz-lx*sn+lz*cs];const y0=P.y+.3;

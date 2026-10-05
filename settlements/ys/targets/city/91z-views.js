@@ -25,6 +25,10 @@ const VIEWS={
  {const g=PLACE.hosts.find(h=>h.type==='midStalks');if(g){const c=Math.cos(g.ry+.9),sn=Math.sin(g.ry+.9);V['The Capsule Stalks and their pods']=[g.x+c*85,g.sink+48,g.z+sn*85,g.x,g.sink+26,g.z];V['The Capsule Stalks from the other side']=[g.x-c*85,g.sink+40,g.z-sn*85,g.x,g.sink+26,g.z];}}
  {let best=null;for(const P of FLOORS.plans){const h=PLACE.hosts.find(x=>x.n===P.host);if(!h||h.full||h.cutY==null||h.land)continue;const gap=h.top-P.y;if(!best||gap<best.gap)best={P,h,gap};}
   if(best){const h=best.h;V['Into a stump: its lived floors']=[h.x+18,h.top+70,h.z+30,h.x,best.P.y,h.z];}}
+ {const S=SPANS.list.find(s=>s.kind==='bridge');if(S){const ha=PLACE.hosts.find(x=>x.n===S.a.host),hb=PLACE.hosts.find(x=>x.n===S.b.host);const mx=(ha.x+hb.x)/2,mz=(ha.z+hb.z)/2,y=ha.pods[S.a.pod].y;const dx=hb.x-ha.x,dz=hb.z-ha.z,l=Math.hypot(dx,dz);
+   V['A bridge between two hosts']=[mx-dz/l*110,y+30,mz+dx/l*110,mx,y,mz];}
+  const D=SPANS.list.find(s=>s.kind==='drawbridge');if(D)V['The drawbridge to the Amphitriton']=[(D.A.x+D.B.x)/2-(D.B.z-D.A.z)*.9,40,(D.A.z+D.B.z)/2+(D.B.x-D.A.x)*.9,(D.A.x+D.B.x)/2,8,(D.A.z+D.B.z)/2];
+  V['The L2 walk grid']=[LAYOUT.A.x+300,260,LAYOUT.A.z+380,LAYOUT.A.x,20,LAYOUT.A.z];}
  V['The main market']=[H[0]+N[0]*150-T[0]*110,55,H[1]+N[1]*150-T[1]*110,H[0],4,H[1]];
  {const r=PLACE.blds.find(r=>/^hyk_house_rich/.test(r.key));if(r){const f=[Math.sin(r.ry),Math.cos(r.ry)],x=[Math.cos(r.ry),-Math.sin(r.ry)];V['A rich house']=[r.x+f[0]*34+x[0]*14,r.y+13,r.z+f[1]*34+x[1]*14,r.x,r.y+4,r.z];}}
  const ph=PLACE.hosts.find(h=>/Pharos/.test(h.n));if(ph)V['The Pharos']=[ph.x-N[0]*260+T[0]*120,ph.top-10,ph.z-N[1]*260+T[1]*120,ph.x,ph.top-40,ph.z];

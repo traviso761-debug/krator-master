@@ -315,3 +315,15 @@ middle and rich; work: two benches; shop: a store and a counter), a hall where a
 draws the uses (about 60/25/15 living/work/shop, more shops on a floor with a shop pod). The partitions are thin shell
 walls in the interior bucket; the host's floors table marks those plates `inhabited` with their rooms. 178 floors,
 3240 rooms, 9900 spots; `spots-fit-their-rooms` and `residence-minimum-spots` pass over all of them.
+
+## The bridge graph (Oct 5 2026, Travis)
+`88-city-spans.js` runs after the placer and before the lived floors (so the pods it adds are lived round). **Host to
+host**: every pair of 4-neighbouring drowned blocks that both carry a host is joined. Each host grows a way-in pod facing
+the other, on plates within 8 m of each other, chosen by the cost |Δy|·3 + |mean − 28| (near the L2 datum); a plate
+whose pod would clash with the cut, the type's `avoid` ledges or a pod already there is passed over, and a pair with
+no plate face to face is left to the boats (`SPANS.refused`, none now). The draw pass runs the span landing to landing
+with the rib bridge helper (`hykSpanBridgeL2` above +20, `L1` below). **The Amphitriton**: a walkway at the quay datum
+from the shore to the Temple of the Tides' mole, 34 m to the side of the temple, and the drawbridge from the mole's
+seaward edge up to the Amphitriton's port (+12), its one foot link to land. 6 bridges, the drawbridge and the causeway;
+`bridges-built` checks every record drew. Views: *A bridge between two hosts*, *The drawbridge to the Amphitriton*,
+*The L2 walk grid*.

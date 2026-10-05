@@ -4,7 +4,7 @@
 
 Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).
 
-Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `GODOT.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`, `README.md`
+Docs: `AGENT-BRIEF.md`, `API.md`, `DESIGN.md`, `GODOT.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `MATERIAL-PROMPTS.md`, `NOTES.md`, `PLAN.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/kit.html`, `dist/mock.html`, `dist/ys.html`
 
@@ -35,7 +35,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 14 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
 | `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
-| `64-hyk-accrete.js` | 15 | the tideline: crust, weed, barnacle specks, foam (51); accretion: pods grown onto a host's face (65) |
+| `64-hyk-accrete.js` | 15 | the tideline: crust, weed, barnacle specks, foam (55); accretion: pods grown onto a host's face (69) |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
@@ -82,6 +82,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 95 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 112 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |
