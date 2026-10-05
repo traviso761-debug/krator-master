@@ -25,7 +25,7 @@ const C={
    for(const j of L){if(j<=i||/palisade/.test(B[j].key))continue;if(Math.hypot(B[j].x-R.x,B[j].z-R.z)>(Math.hypot(R.w,R.d)+Math.hypot(B[j].w,B[j].d))/2)continue;if(!sep(bi,box(B[j]))){n++;if(!first)first=R.id+' x '+B[j].id;}}}});
   return{ok:n===0,detail:n+' overlapping pairs of '+B.length+(first?' (first '+first+')':'')};},
  // every building stands on its ground: its floor no more than 0.5 m above the lowest ground under its box
- onGround:B=>{let bad=0,first=null;for(const R of B){const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);const lo=Math.min(...c.map(p=>terrainH(p[0],p[1])),terrainH(R.x,R.z));if(R.y-lo>.6||lo-R.y>4.5){bad++;if(!first)first=R.id+' '+R.key+' '+(R.y-lo).toFixed(1);}}
+ onGround:B=>{let bad=0,first=null;for(const R of B){const c=P.obb(R.x,R.z,R.w/2,R.d/2,R.ry);const lo=Math.min(...c.map(p=>terrainH(p[0],p[1])),terrainH(R.x,R.z));if(R.y-lo>.6||lo-R.y>4.5){bad++;if(!first)first='';if(bad<=6)first+=(bad>1?', ':'')+R.id+' '+R.key+' '+(R.y-lo).toFixed(1);}}
   return{ok:bad===0,detail:bad+' of '+B.length+' off their ground'+(first?' (first '+first+')':'')};},
  // the only way between the two cities is the trail: with the trail's edges taken away no route exists
  trailOnlyWay:()=>{const a=SIM.PBY.port_west.node,b=SIM.PBY.port_east.node,w=SIM.route(a,b),wo=SIM.route(a,b,{noLayer:['trail']});
@@ -46,7 +46,8 @@ const C={
  // the world has one clock: the sky's hour is the world clock's
  oneClock:()=>{const a=typeof skyHour==='function'?skyHour():NaN,b=CLOCK.hour;return{ok:Math.abs(a-b)<.02,detail:'sky '+a.toFixed(2)+', clock '+b.toFixed(2)};},
  // everything placed is registered in core/tags with known vocabulary
- tags:()=>{const a=KTAGS.page.audit();return{ok:!a.unknown||!Object.keys(a.unknown).length,detail:JSON.stringify(a).slice(0,240)};}};
+ tags:reg=>{const a=reg.audit(),uk=Object.keys(a.unknownKeys||{}).concat(Object.keys(a.unknownValues||{}));
+  return{ok:!a.unknown&&!a.missingCulture,detail:a.records+' records'+(uk.length?', UNKNOWN '+uk.join(' '):', every key and value known')+(a.missingCulture?', '+a.missingCulture+' without a culture':'')};}};
 // the inputs, and their broken twins
 const B=P.buildings,places=SIM.PLACES.filter(p=>p.slots&&p.slots.length);
 const through=SIM.GROUPS.find(G=>G.subkind==='through');
@@ -55,7 +56,7 @@ const CASES=[
  ['trail-on-ground',()=>C.trailOnGround(T.pts),()=>C.trailOnGround(T.pts.map(p=>[p[0],p[1],p[2]+3]))],
  ['rest-stops-at-marks',()=>C.restMarks(T.rest),()=>C.restMarks(T.rest.map(r=>Object.assign({},r,{y:r.y+120})))],
  ['falls-in-the-gorge',()=>C.fallsInGorge(VG.FALLS),()=>C.fallsInGorge(VG.FALLS.map(f=>Object.assign({},f,{bot:f.bot+400})))],
- ['buildings-do-not-overlap',()=>C.noOverlap(B),()=>C.noOverlap(B.slice(0,40).concat([Object.assign({},B[5],{id:'dup'})]))],
+ ['buildings-do-not-overlap',()=>C.noOverlap(B),()=>{const L=B.filter(R=>!/palisade/.test(R.key)).slice(0,40);return C.noOverlap(L.concat([Object.assign({},L[5],{id:'dup'})]));}],
  ['buildings-on-their-ground',()=>C.onGround(B),()=>C.onGround([Object.assign({},B[0],{y:B[0].y+5})])],
  ['the-trail-is-the-only-way-down',()=>C.trailOnlyWay(),null],
  ['one-body-one-slot',()=>C.slotsUnique(places),()=>C.slotsUnique([{slots:[{busy:[[0,100],[50,150]]}]}])],
@@ -63,7 +64,7 @@ const CASES=[
  ['the-timetable-is-full',()=>C.timetable(window._sim.groups),()=>C.timetable({porter:1})],
  ['caravans-follow-not-march',()=>C.follows(through),()=>C.follows(through&&Object.assign({},through,{members:through.members.map(M=>Object.assign({},M,{lag:0}))}))],
  ['one-clock',()=>C.oneClock(),null],
- ['tags-vocabulary',()=>C.tags(),null]];
+ ['tags-vocabulary',()=>C.tags(KTAGS.page),()=>{const r=KTAGS.create({build:'neg'});r.add({class:'building',key:'x',at:[0,0,0],tags:{culture:'no-such-culture'}});return C.tags(r);}]];
 function checks(){const out=[];for(const [name,f,neg] of CASES){let r;try{r=f();}catch(e){r={ok:false,detail:'threw: '+e.message};}
   if(neg){let n;try{n=neg();}catch(e){n={ok:false,detail:'threw'};}if(n.ok){r={ok:false,detail:'NEGATIVE CONTROL PASSED (the check cannot fail): '+n.detail};}else r.detail+='  [negative fails as it should]';}
   out.push({name,ok:r.ok,detail:r.detail});}return out;}

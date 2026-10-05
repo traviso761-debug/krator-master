@@ -66,13 +66,17 @@ function fits(city,x,z,w,d,ry,o){o=o||{};const hx=w/2+(o.m||0),hz=d/2+(o.m||0),t
  if(hi-lo>tol)return{ok:false,why:'slope'};return{ok:true,y:lo,y1:hi};}
 function why(k){OUT.rejected[k]=(OUT.rejected[k]||0)+1;}
 let NB=0;
+// a kit's own words in core/tags' vocabulary: Locus's 'abyssal-desert' is the East Abyss in its Locus style; a stall is a market
+function tagsOf(K){const c=K.culture==='iziz-vernacular'?'iziz':K.culture,t={culture:c,types:K.types.map(x=>x==='prop'?'market':x),
+ wealth:typeof K.wealth==='number'?K.wealth:K.wealth==='civic'?null:K.wealth};
+ if(c==='abyssal-desert'){t.culture='eastabyss';t.style='abyssal-desert';}return t;}
 function record(city,K,x,z,ry,y,o){o=o||{};const v=o.v!=null?o.v:(K.variants>1?S.int(0,K.variants-1):0);
  const front=loc(x,z,0,K.d/2+1.2,ry);
  const R={id:'vb_'+String(NB++).padStart(4,'0'),key:K.key,kit:o.kit||K.kit,name:K.name,city:city.C.id,district:o.district||null,x:+x.toFixed(3),z:+z.toFixed(3),y:+y.toFixed(3),
   ry:+ry.toFixed(5),w:K.w,d:K.d,h:K.h,v,wealth:K.wealth,culture:K.culture,types:K.types,door:[+front[0].toFixed(2),+front[1].toFixed(2)],landmark:o.landmark||null,
   seed:KRAND.hash(VG.SEED,NB,Math.floor(x),Math.floor(z))>>>8,params:o.params||null};
  const T=TAGS.add({class:'building',key:K.key,name:K.name+(o.landmark?' ('+o.landmark+')':''),at:[R.x,R.y,R.z],ry:R.ry,size:[K.w,K.d,K.h],
-  tags:{culture:K.culture==='iziz-vernacular'?'iziz':K.culture,types:K.types,wealth:typeof K.wealth==='number'?K.wealth:K.wealth==='civic'?null:K.wealth}});
+  tags:tagsOf(K)});
  R.tag=T.id;R.uid=T.uid;
  city.buildings.push(R);OUT.buildings.push(R);
  // paint the footprint, and a yard ring a little wider (chaotic: the gap to the next is the yard's own)
@@ -163,12 +167,19 @@ function infill(city,tries,keys){let placed=0;const B=city.C.box;
  return placed;}
 // ---------------------------------------------------------------- the trailheads: a plaza, the toll gate and palisade
 function trailGate(city,s,kGate,kPal,kToll,nPal){
+ // the gate stands where the ground under its span is least below the trail (its ends may sink into a bank, never hang): searched 12 m either way of s
+ const span=s=>{const p=VG.trailAt(s),q=VG.trailAt(s-6),a=Math.atan2(p[1]-q[1],p[0]-q[0]),G=cat(kGate);if(!G)return 0;
+  return Math.max(...obb(p[0],p[1],G.w/2,G.d/2,Math.atan2(Math.cos(a),Math.sin(a))).map(c=>p[2]-VG.groundH(c[0],c[1])));};
+ let best=s,bv=span(s);for(let d=-12;d<=12;d+=1.5){const t=Math.min(VG.TRAIL.len-7,Math.max(7,s+d)),v=span(t);if(v<bv-1e-6){bv=v;best=t;}}s=best;
  const p=VG.trailAt(s),a=Math.atan2(p[1]-VG.trailAt(s-6)[1],p[0]-VG.trailAt(s-6)[0]);   // the direction of travel downhill
  const ry=Math.atan2(Math.cos(a),Math.sin(a));                                         // the gate's +z along the trail
  const G=cat(kGate),P=cat(kPal),out={gate:null,palisade:[],toll:null};if(!G)return out;
- out.gate=record(city,G,p[0],p[1],ry,p[2]-.1,{landmark:'toll gate',yard:0});
+ const glo=Math.min(...obb(p[0],p[1],G.w/2,G.d/2,ry).map(c=>VG.groundH(c[0],c[1])));   // sunk a little where a bank falls away
+ out.gate=record(city,G,p[0],p[1],ry,Math.min(p[2]-.1,glo+.5),{landmark:'toll gate',yard:0});
  if(P){for(const side of [-1,1])for(let k=0;k<nPal;k++){const off=side*(G.w/2+P.w/2+k*P.w),q=loc(p[0],p[1],off,0,ry),h=terrainH(q[0],q[1]);
-   if(Math.abs(h-p[2])>6)break;out.palisade.push(record(city,P,q[0],q[1],ry,h-.2,{landmark:'palisade',yard:0}));}}
+   // each segment stands on the lowest ground under it (its posts sunk at the high end); one on too steep a slope ends the run
+   const gs=obb(q[0],q[1],P.w/2,P.d/2,ry).map(c=>terrainH(c[0],c[1])).concat([h]),lo=Math.min(...gs),hi=Math.max(...gs);
+   if(Math.abs(h-p[2])>6||hi-lo>2.2)break;out.palisade.push(record(city,P,q[0],q[1],ry,lo-.1,{landmark:'palisade',yard:0}));}}
  if(kToll){const T=cat(kToll);if(T){// the toll house beside the gate, its +x (the toll window) toward the trail
    const q=loc(p[0],p[1],-(G.w/2+T.d/2+2.5),T.w/2+3,ry);const R=hunt(city,kToll,q[0],q[1],[ry-Math.PI/2,ry+Math.PI/2,ry],{landmark:'toll house',radius:24,m:.8,tol:3});out.toll=R;}}
  return out;}
@@ -270,6 +281,8 @@ function spill(city,range,n,keys,dir){let placed=0;
   for(const r of VG.TRAIL.rest)if(Math.hypot(r.x-cx,r.z-cz)<30)ok=false;
   if(!ok){why('spill:clear');continue;}
   const pad={id:'spill_'+OUT.pads.length,x:cx,z:cz,hx:K.w/2+1.2,hz:K.d/2+1.2,y:p[2]+.1,blend:6,yaw:-ry};OUT.pads.push(pad);VG.PADS.push(pad);
+  // the pad must hold the whole house: where the trail's next leg or its bank wins over a corner, take the pad back
+  if(obb(cx,cz,K.w/2,K.d/2,ry).some(c=>Math.abs(VG.groundH(c[0],c[1])-pad.y)>.5)){OUT.pads.pop();VG.PADS.pop();why('spill:pad');continue;}
   const R=record(city,K,cx,cz,ry,p[2]+.1,{district:'trail',yard:0});R.spill=dir;placed++;}
  return placed;}
 // ---------------------------------------------------------------- the trail's own structures
