@@ -60,6 +60,10 @@ Version 43 (2026-10-05): `worlds/girder-hero.html` replaced (`main` at 0989ccf2)
 gallery ("Failed to fetch"): GLTFLoader fetched the models' embedded textures as blob: URLs and the gallery's frame
 blocks fetch. The hero now loads them as data: images through an <img>. Checked headless under `connect-src 'none'`.
 
+Version 44 (2026-10-05): `worlds/girder.html` and `worlds/girder-hero.html` replaced from `main` at 6728d4f6: Girder's walk
+graph corrected against its walk solids (the villagers walk the galleries inside the columns), and the hero's cast and
+dialogue read from `settlements/girder/hero/cast.json`. Index sizes 12.4 and 15.0 MB.
+
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
 The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
