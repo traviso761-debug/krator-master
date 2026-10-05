@@ -18,6 +18,15 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   the Compass toggle. Back-port the compass to the standard pack once Ys is on `main`.
 
 ## Open
+- [ ] (Travis, Oct 5 2026) **Infill the empty spaces in the central region**: the open ground between the inner quarter's
+      blocks, the strip and the shore still has gaps where nothing stands (the lanes' quarters that refused a villa, the
+      edges of the land blocks toward the water). A pass with the small pool, as the strip's ring houses are placed.
+- [ ] (Travis, Oct 5 2026) **Every Sky F must be the stump-plus-pods version**: a Trays tower drawn whole or without pods
+      (the tall pool's cut at 178–250 m reads as a whole tower; a stump whose pods failed) is wrong; cut them lower and
+      make sure each carries pods on its trays.
+- [ ] (Travis, Oct 5 2026) **More ruined buildings in the drowned area**: beyond the three civic ruins in the east polygon,
+      the drowned grid between the stumps wants more fully-ruined, un-podded Ancient kit buildings (the hospital, the hotel,
+      the bunker, the smaller civic pieces) standing on the bed with their lower floors under water.
 - [ ] Phase 0 terrain is the port's tensor grid sized for a coast along x: 10 m cells only within ~900 m of the
       origin, 90 m cells beyond. Phase 3 replaces it with the Ys terrain mesh (regular cells over the 3.2 km map,
       a far-country mesh for the volcano and the Inner Wall).
