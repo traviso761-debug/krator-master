@@ -17,7 +17,7 @@ const KARST={SEED:32500,made:[]};
   for(const s of CITY.STACKS)if(Math.hypot(s.x-x,s.z-z)<(s.r*(s.e||1))*.6+R*.6&&s.flat)return false;   // the landmark stacks stand alone
   return true;};
  const add=(o)=>{const R=o.r*(o.e||1);if(!clear(o.x,o.z,R*.85))return null;o.n=o.n||'a karst tower';o.field=true;CITY.STACKS.push(o);KARST.made.push(o);
-  if(YS_NAT(o.x,o.z)<0&&typeof ysLoopCircle==='function')ysLoopCircle(o.n,o.x,o.z,o.r,24,{stack:o});return o;};
+  if(YS_NAT(o.x,o.z)<0&&typeof ysLoopStack==='function')ysLoopStack(o);return o;};
  const coastA=Math.atan2(T[1],T[0]);   // ridges run roughly with the coast, as Krabi's do
  // 1. behind the town: clusters of towers and ridges, denser and taller with distance inland
  for(let k=0;k<26;k++){const t=st.range(-1700,1700),s=st.range(600,1500);const c=at(t,s);const nC=st.int(1,4);const far=clamp((s-600)/900,0,1);

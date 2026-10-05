@@ -107,15 +107,31 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       their faces and ledges instead.
 - [x] (Oct 5 2026) The spans are not placed. The bridge graph (`88-city-spans.js`) joins every pair of neighbouring
       drowned hosts pod to pod, and the Amphitriton to land through the Tides mole: 8 spans, NAV L1 35 cells, L2 31.
-- [ ] (Oct 5 2026) The bridge graph's gaps: the host-to-host bridges are free spans with no piers (some run 100 m+); the
-      L2 network reaches land only through the Amphitriton chain (no tower is bridged to a shore block or a mole); the
-      Citadel's span, spiral stairs, ladders, lilypads and pontoons are not placed yet (the kit audit lists them).
+- [x] (Oct 5 2026) The bridge graph's gaps: no piers, no link to land but the Amphitriton chain, the Citadel's span and
+      the lily pads and pontoons unplaced. Now: piers under every bridge over 55 m, a spanning tree that puts every
+      node (host, walled mole, the Citadel, the Winds) on a foot path to the shore, two towers bridged straight to it.
+- [ ] (Oct 5 2026) The bridge graph's remaining gaps: the spiral stair and the ladder are still unplaced (a stair down a
+      host or a stack to a wet landing is the natural next link; the ladder is 11 m tall, a quay wall is 2.5); the Wet
+      Cells stay an island reached by water (DESIGN); a landmark's span lands on the Winds' stack top beside the temple
+      and on the Citadel's bridge-head pad (the pad `NAV_EXTRA` names 'Citadel bridge head'; without it the record's
+      estimate at the stack's edge is used); the pontoon's flights at each end stand on the mole's plate edge.
+- [ ] (Oct 5 2026) The roads are ribbons 22–30 cm over the heightfield (its 10 m cells made the vertex paint read as a
+      zig-zag): on a hollow between two grid lines the ribbon can float by that much; the canal streets under the water
+      are still not drawn. The lanes' ribbons stop at the streets' edges; no kerbs, no crossings.
 - [ ] (Oct 5 2026) The foreign quarter is 60 reserved plots and the chapterhouse's square, with their swap lists; none
       of the foreign sets is vendored, so the quarter reads empty. The caravanserai stands on its nearest block.
-- [ ] (Oct 5 2026) The moles (home-grown blocks, the Tides and the Library, the headland, the military harbour, the quay
-      aprons) are fill stamps with soft edges: no quay walls yet, the terrain's slope shows on the water sides.
+- [x] (Oct 5 2026) The moles were fill stamps with soft edges, no quay walls, and everything on them stood on the fill's
+      own height (Travis: the military harbour z-fought at a distance). Now the fill lies 30 cm under the datum (inset
+      7 m, sharp, under a walled mole), a plate at the datum less 12 cm covers the polygon, and a shell quay wall runs
+      down to the bed round every edge of the big moles (the aprons keep their soft beach side, with the plate).
+- [ ] (Oct 5 2026) The moles' quay walls are plain (coping, batter, the tide crust): no bollards, rings, stairs or
+      ladders down to the water yet, and a mole's plate is one flat colour (the ground library's terrazzo is for it).
 - [ ] (Oct 5 2026) The Citadel stack carries the arena model (`hyk_citadel`) under the Citadel's name and the Treasury in
-      its precinct; the fortress Travis asked for is still to design (see his note below).
+      its precinct; the fortress Travis asked for is being built (his two references: a Gaudí-like honeycomb facade of
+      oval windows with verdigris spires, and a swept relief-carved mass with a great arch and a crescent colonnade);
+      the arena model moves to the land quarter as `hyk_arena`. The landmark stacks are fitted now: the Citadel's an
+      ellipse 56 × 84 m (its axis away from the bridge door, the Treasury on that side), the Winds' 54 × 57 m, both
+      near flat on top and wandering ±7 %.
 - [x] (Oct 5 2026) The city stood at 11.85 M of a 12 M budget with its densities cut to fit. The budget is 30 M for now
       (Travis) and the city's span two-thirds; the densities are back and the city is 8.5 M.
 - [ ] (Oct 5 2026) `shoreAt` (84b) chooses the water side from ±9 m and flips on a flat beach (the fishing docks); the

@@ -327,3 +327,23 @@ from the shore to the Temple of the Tides' mole, 34 m to the side of the temple,
 seaward edge up to the Amphitriton's port (+12), its one foot link to land. 6 bridges, the drawbridge and the causeway;
 `bridges-built` checks every record drew. Views: *A bridge between two hosts*, *The drawbridge to the Amphitriton*,
 *The L2 walk grid*.
+
+## The connected bridge network, piers, lanes, quay walls, land stumps (Oct 5 2026, Travis)
+**The network** (`88-city-spans.js`): the nodes are the drowned hosts, the walled moles, the Citadel, the Winds and the
+Amphitriton; the lattice pairs are bridged pod to pod as before, then a spanning tree (Kruskal over the node pairs within
+300 m, 450 m for a landmark, and each node's shore point) joins the rest until every node has a foot path to the shore;
+the two or three hosts nearest the shore bridge straight to it. Host to mole, shore or landmark: a way-in pod grown on
+the plate nearest the far end's height, the bridge from its landing to the mole's edge, to a lily pad on a stalk at the
+shore, to the Citadel's bridge-head pad or to the Winds' stack top. Mole to mole or shore: a walkway on stalks at the quay
+datum, or a pontoon with a flight up each end when a poor mole is on it. **Piers**: fluted stalks from the bed to the
+underside of every bridge over 55 m, one per 40 m, none over a mole or the land. 24 spans, 40 piers, 22 nodes all on the
+shore's component.
+**The roads are ribbons** (`LAYOUT.roads`, drawn in 88b): the vertex paint on the 10 m heightfield read as a zig-zag; now
+every street, lane and highway run is a plate of paving 22–30 cm over `terrainH`, sampled every 4 m, and the stamp under
+it keeps the scrub off without painting. **The lanes**: a neighbourhood block with no reclaimed Ancient is quartered by
+two 7 m lanes through its centre (`ysLanes`, made by the placer once its land hosts stand, reserved like streets); the
+small houses and corner shops line both sides of each (the courtyard ring is gone). **The land hosts**: half the
+neighbourhood blocks (the layout marks them, `b.landHost`, in a hash order; the first two are skyscraper stumps cut at
+80–124 m), placed before the civic pieces so they find room: six, two of them stumps of 99 and 92 m with pods.
+**The moles** have plates and quay walls (KNOWN_ISSUES has the mechanics); the **landmark stacks** are ellipses fitted
+to the Citadel (with the Treasury) and the Winds, near flat on top.

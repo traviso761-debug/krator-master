@@ -24,7 +24,7 @@ function ysShoreDist(x,z){let best=1e9,sign=1;const P=CITY.SHORE;
 // THE KARST (Krabi). A stack is {x,z,r,h,n} and may be a RIDGE: e (≥1) stretches it along the axis bearing a (radians, from
 // +x toward +z), so it runs r·e along the axis and r across it. Its plan wanders ±20 % (fbm on the bearing), its walls are
 // near-vertical over 8 m, and its top is a domed jungle crown (a ridge's crest rises and falls into several summits) unless
-// `flat` (the Citadel's and the Winds' stacks carry buildings). Stacks are looked up through a 200 m bucket rebuilt when
+// `flat` (the Citadel's and the Winds' stacks carry buildings: the layout sizes those two to their landmark's footprint). Stacks are looked up through a 200 m bucket rebuilt when
 // CITY.STACKS changes (ysStacksDirty()), so a field of sixty costs what nine did.
 let YS_STK=null;function ysStacksDirty(){YS_STK=null;}
 function ysStackReach(s){return s.r*(s.e||1)*1.3+14;}
@@ -34,13 +34,13 @@ function ysStacksNear(x,z){if(!YS_STK){YS_STK={n:CITY.STACKS.length,m:new Map()}
  return YS_STK.m.get(Math.floor(x/200)+','+Math.floor(z/200))||[];}
 // the stack's local frame: u along the axis (shrunk by e), v across; d the scaled distance, th the bearing in that frame
 function ysStackLocal(s,x,z){const dx=x-s.x,dz=z-s.z,a=s.a||0,c=Math.cos(a),sn=Math.sin(a);const u=(dx*c+dz*sn)/(s.e||1),v=-dx*sn+dz*c;return {d:Math.hypot(u,v),th:Math.atan2(v,u),u};}
-function ysStackRR(s,th){return s.r*(1+.4*(fbm(Math.cos(th)*2.2+s.x*.013,Math.sin(th)*2.2+s.z*.013,3.1,2)-.5));}   // the plan wanders ±20 %
+function ysStackRR(s,th){return s.r*(1+(s.flat?.14:.4)*(fbm(Math.cos(th)*2.2+s.x*.013,Math.sin(th)*2.2+s.z*.013,3.1,2)-.5));}   // the plan wanders ±20 % (±7 % on a landmark's stack: its building must fit)
 // the karst field: 1 on a stack, falling to 0 over 20 m outside it (the biome masks its ground plants off the cliffs)
 function ysKarst(x,z){let k=0;for(const s of ysStacksNear(x,z)){const L=ysStackLocal(s,x,z);const t=clamp((s.r+10-L.d)/20,0,1);k=Math.max(k,t*t*(3-2*t));}return k;}
 // a stack's height above the ground it stands on: a near-vertical wall over 8 m, then the crown
 function ysKarstH(x,z,g){let h=g;for(const s of ysStacksNear(x,z)){const L=ysStackLocal(s,x,z);if(L.d>s.r*1.25+12)continue;
   const rr=ysStackRR(s,L.th);const t=clamp((rr-L.d)/8,0,1);if(t<=0)continue;const w=t*t*(3-2*t);
-  let top=Math.max(g,0)+s.h*(1+.16*(fbm(x/23+s.x,z/23,4.4,2)-.5));
+  let top=Math.max(g,0)+s.h*(1+(s.flat?.03:.16)*(fbm(x/23+s.x,z/23,4.4,2)-.5));   /* a landmark's stack is near flat on top */
   if(!s.flat){const q=clamp(L.d/rr,0,1);top=Math.max(g,0)+(top-Math.max(g,0))*(1-.32*q*q);   // the domed crown
    if((s.e||1)>1.3)top=Math.max(g,0)+(top-Math.max(g,0))*(.72+.28*fbm(L.u/55+s.z*.01,s.x*.01,7.7,2));}   // a ridge's summits
   h=Math.max(h,g+(top-g)*w);}return h;}

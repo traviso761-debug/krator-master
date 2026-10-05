@@ -222,15 +222,26 @@ downstream edge; the valley is 2.2 widths wide). Every stack and the Amphitriton
 **The placement** (`88-city-place.js`, pass 1, records only, KRAND): `PLACE.blds` `{key,x,z,ry,y,v,why,block,wealth,box}`
 (x,z the def's origin: on the quay line for a harbour piece), `PLACE.hosts` `{n,block,type,x,z,ry,sink,d,cutY,full,top,
 plates:[y],ways:[{a,y,R}],pods:[{key,a,y,level,into}]}`, `PLACE.slots` `{kind:'foreign'|'chapterhouse'|'land host'|'low host',
-swap|wish,x,z,ry,w,d,y}`, `PLACE.moles` `{name,poly,y}` (pushed onto `CITY_STAMPS` as `fill`). Host types live in
+swap|wish,x,z,ry,w,d,y}`, `PLACE.moles` `{name,poly,y,wall,plate,node}` (the terrain's `fill` stamp lies 30 cm under
+`y`, inset 7 m and sharp-edged under a walled mole; the draw pass lays a plate at `y - .12` and, if `wall`, a shell quay
+wall down to the bed round every edge; `node` makes the mole a node of the bridge graph). Host types live in
 `YS_HOST_TYPES` (storey table, face radius by local y, cut ranges, the plate sunk to L2). Helpers: `ysPlBox`/`ysPlHit`
 (oriented boxes), `ysPlClash(B,skip)`, `ysPlTry`/`ysPlByName`/`ysPlSeek` (a def by name, quietly, counted, or over
 candidates), `ysPlFront(b,{pool,kind,sides,h})` (the frontage walker), `ysPlShoreRun(uses,seq)` (pieces squared to the
 real waterline). The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
 the zero list, plates per host) and `_api.city.records()` (the records as plain JSON).
-**Paint** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`),
-`LAYOUT.highways` (three), and `CITY_STAMPS` of `kind:'paint'` (the adapted terrain: colour only, no reshaping, no
-`y`) for the dry streets, the highways and the paved or soiled precincts. The placer never puts a footprint on a street.
+**Roads** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`, and the
+`lane`s that quarter a neighbourhood block without a reclaimed Ancient: `b.landHost`, set by the layout), `LAYOUT.highways`
+(three), `CITY_STAMPS` of `kind:'paint'` (the adapted terrain: colour only, no reshaping, no `y`) for the paved or soiled
+precincts and, with `paint:null`, for every road (the stamp keeps the scrub off it), and `LAYOUT.roads` `{a,b,w,kind}`:
+the runs the draw pass lays as ribbons of paving on the ground (`88b`, 22–30 cm over `terrainH`, each direction at its
+own lift). The placer never puts a footprint on a street.
+**The bridge graph** (`88-city-spans.js`): `SPANS.nodes` (the drowned hosts, the walled moles, the Citadel, the Winds,
+the Amphitriton), `SPANS.list` records `{kind:'bridge',a:{host,pod},b:{host,pod}|{x,y,z,kind:'mole'|'shore'|'citadel'|
+'winds',pad},level,na,nb}` and `{kind:'drawbridge'|'walkway'|'pontoon',A,B,level}`, `SPANS.refused` (pairs and nodes
+left to the boats), `SPANS.shore` (nodes with a foot path to the shore). The draw pass resolves a pod end to its
+landing, a `citadel` end to the pad `NAV_EXTRA` names `'Citadel bridge head'`, a `pad` end to a lily pad it grows there,
+and puts piers under a bridge longer than 55 m (`S.piers`).
 
 ## Animation
 

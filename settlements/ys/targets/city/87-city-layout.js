@@ -8,7 +8,7 @@
 // Prototyped in Python first (NOTES.md phase 3) and ported here number for number.
 // K: the city's span (Travis, Oct 5 2026: two-thirds of the first layout's, inland, offshore and along the coast; the
 // blocks stay 200 m because the hosts need them). Every distance of the layout below is the first layout's times K.
-const LAYOUT={K:2/3,P:200,TH:12*Math.PI/180,HEAD:CITY.HEAD,blocks:[],by:{},A:null,N:null,T:null,U:null,V:null,landmarks:{}};
+const LAYOUT={K:2/3,P:200,HOST_SEED:32000,TH:12*Math.PI/180,HEAD:CITY.HEAD,blocks:[],by:{},A:null,N:null,T:null,U:null,V:null,landmarks:{}};
 LAYOUT.U=[Math.cos(LAYOUT.TH),Math.sin(LAYOUT.TH)];LAYOUT.V=[-Math.sin(LAYOUT.TH),Math.cos(LAYOUT.TH)];
 // the old city plane by signed shore distance: the natural land inland, the sink at sea (1.5 degrees plus a 4 m step);
 // at sea the profile is the first layout's squeezed into the span K (the same depths at K times the distance)
@@ -55,9 +55,22 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
   if(L){b.use=b.s>560*LAYOUT.K?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
  for(const b of LAYOUT.blocks)if(b.use&&!/^(host|homegrown|neighbourhood|farm|foreign|industry|aquaculture)$/.test(b.use))LAYOUT.landmarks[b.use]=b;
- // the Citadel's and the Winds' karst stacks stand under their blocks wherever the layout puts them (their shore loops move too)
- const mv=(st,b)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;ysStacksDirty();const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopCircle(st.n,st.x,st.z,st.r,24,{stack:st});};
- mv(CITY.STACKS[0],LAYOUT.landmarks.citadel);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds);
+ // the Citadel's and the Winds' karst stacks stand under their blocks wherever the layout puts them (their shore loops move
+ // too), sized to their landmark's footprint (Travis, Oct 5 2026: smaller, footprint-fitting): an ellipse whose axis runs
+ // along the building's local x (the citadel's axis points away from its bridge door, the Winds' is its width), with
+ // room for the Treasury on the far side of the Citadel. The placer reads the stack's top through the natural ground.
+ const mv=(st,b,r,e)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;st.r=r;st.e=e;const d=toA(b),l=Math.hypot(d[0],d[1]);st.a=Math.atan2(-d[1]/l,-d[0]/l);ysStacksDirty();
+  const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopStack(st);};
+ const toA=b=>[A.x-b.x,A.z-b.z];
+ mv(CITY.STACKS[0],LAYOUT.landmarks.citadel,56,1.5);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds,54,1.05);
+ // the land quarter's reclaimed Ancients: half the neighbourhood blocks off the head (at least four), in the order of a
+ // hash of their cell; the first two are skyscraper stumps (Travis: at least two podded stumps on land). A host block
+ // has no lanes (the host takes its middle); every other neighbourhood block is quartered by lanes (87c).
+ {const NB=LAYOUT.blocks.filter(b=>b.use==='neighbourhood'&&Math.hypot(b.x-CITY.HEAD[0],b.z-CITY.HEAD[1])>150*LAYOUT.K);const want=Math.max(4,Math.round(NB.length/2));
+  NB.map(b=>[b,KRAND.unit(KRAND.hash(KRAND.child(LAYOUT.HOST_SEED,'land hosts'),b.i,b.j))]).sort((p,q)=>p[1]-q[1]).slice(0,want).forEach(([b],i)=>{b.landHost=i<2?'tall':'mid';});}
+ // the Arena (the old Citadel model, copied: Travis) takes the neighbourhood block nearest the head once its def exists
+ if(typeof HYK!=='undefined'&&HYK.defs.hyk_arena){const NB=LAYOUT.blocks.filter(b=>b.use==='neighbourhood'&&!b.landHost).sort((p,q)=>Math.hypot(p.x-CITY.HEAD[0],p.z-CITY.HEAD[1])-Math.hypot(q.x-CITY.HEAD[0],q.z-CITY.HEAD[1]));
+  if(NB.length){NB[0].use='arena';NB[0].tag='Ar';LAYOUT.landmarks.arena=NB[0];}}
  if(typeof ysLoopCircle==='function')ysLoopCircle('the Amphitriton island',A.x,A.z,80,32,{island:true});
 })();
 // the sink under the drowned grid: the old city plane where the grid lies, blended into the natural seabed over the
@@ -74,8 +87,8 @@ function ysLayoutCensus(){const c={blocks:LAYOUT.blocks.length,kinds:{},uses:{},
 
 // ---------------------------------------------------------------- the layout overlay (CITY.LAYOUT_DEBUG): a quad per block, named blocks labelled
 const LAYOUT_COL={land:0xd9c9a1,awash:0xbfe3e8,canal:0x6fb7cf,open:0x2f6f9a,amphitriton:0xffd700,temple_tides:0xff9ad5,library:0xffb347,grown_plaza:0xc3f7a3,temple_winds:0xff9ad5,pharos:0xffffff,
- citadel:0xe07b39,military_harbour:0x9aaaaa,wet_cells:0x555555,main_market:0xff6b6b,civilian_harbour:0x8888aa,fishing_docks:0x8888aa,river_mouth:0x44aadd,headland_military:0xbb5555,foreign:0xd9b3ff,industry:0xaa6688,aquaculture:0x77ffdd,farm:0x99cc66};
-const LAYOUT_NAMES={amphitriton:'The Amphitriton',temple_tides:'Temple of the Tides',library:'Library of Ys',grown_plaza:'The grown plaza',temple_winds:'Temple of the Winds',pharos:'The Pharos',citadel:"The Archon's Citadel",military_harbour:'Military harbour',wet_cells:'The Wet Cells',main_market:'Main market',civilian_harbour:'Civilian harbour',fishing_docks:'Fishing docks',river_mouth:'River mouth',headland_military:'The headland: barracks',foreign:'Foreign quarter',industry:'Industry',aquaculture:'Aquaculture pens'};
+ citadel:0xe07b39,arena:0xd2a24c,military_harbour:0x9aaaaa,wet_cells:0x555555,main_market:0xff6b6b,civilian_harbour:0x8888aa,fishing_docks:0x8888aa,river_mouth:0x44aadd,headland_military:0xbb5555,foreign:0xd9b3ff,industry:0xaa6688,aquaculture:0x77ffdd,farm:0x99cc66};
+const LAYOUT_NAMES={amphitriton:'The Amphitriton',temple_tides:'Temple of the Tides',library:'Library of Ys',grown_plaza:'The grown plaza',temple_winds:'Temple of the Winds',pharos:'The Pharos',citadel:"The Archon's Citadel",arena:'The Arena',military_harbour:'Military harbour',wet_cells:'The Wet Cells',main_market:'Main market',civilian_harbour:'Civilian harbour',fishing_docks:'Fishing docks',river_mouth:'River mouth',headland_military:'The headland: barracks',foreign:'Foreign quarter',industry:'Industry',aquaculture:'Aquaculture pens'};
 const YS_BUILD=[];   // the city's build hooks (the scene runs them after the terrain, before the bake); 88 pushes the placer
 YS_BUILD.push(function(scene){if(!CITY.LAYOUT_DEBUG)return;
  const pos=[],col=[],idx=[];const U=LAYOUT.U,V=LAYOUT.V,h=LAYOUT.P*.46;let n=0;

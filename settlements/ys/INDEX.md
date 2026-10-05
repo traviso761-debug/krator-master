@@ -82,6 +82,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 112 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 134 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |
