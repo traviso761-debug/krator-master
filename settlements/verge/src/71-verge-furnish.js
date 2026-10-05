@@ -18,9 +18,12 @@ const VFURN=(function(){
    r.lights.forEach(l=>{F.lamps.push([l.x,l.y,l.z,o.lamp?o.lamp[0]:l.intensity,o.lamp?o.lamp[1]:l.distance]);});}}));
  Object.assign(F,{stack:[],deferred:0,lamps:[],interiorsOn:!/[?&]interiors=0\b/.test(location.search),queue:[],done:0,pieces:0,groups:[]});
  KFURN.useBatch(F,KratorFurniture,KratorInteriors);
- // the interior-set item for a building of this key and variant: '<key>' for variant 0, '<key>#<n>' for another
- // (never variant 0's rooms on another body); null when the set has none or skips it
- F.itemOf=(key,v)=>{const S=KratorInteriors.sets;return S.find(v?key+'#'+v:key)||null;};
+ // the interior-set item for a building of this key and variant: '<key>' for variant 0, '<key>#<n>' for another.
+ // Each kit's own rule for a variant with no '#n' item: the Iziz Vernacular's variants change only their seed
+ // (colours and picks, never the shell), so they take variant 0's rooms (kits/interiors/sets/iziz.js: '#n where a
+ // variant's rooms differ'); a Yuni or Abyssal variant is another body, and is not furnished with variant 0's rooms
+ F.sharesRooms=key=>typeof IZV!=='undefined'&&!!IZV.VERN.defs[key];
+ F.itemOf=(key,v)=>{const S=KratorInteriors.sets;return S.find(v?key+'#'+v:key)||(v&&F.sharesRooms(key)?S.find(key):null)||null;};
  F.item=(key,v)=>{const it=F.itemOf(key,v);return it&&!it.skip?it:null;};
  F.why=(key,v)=>{const it=F.itemOf(key,v),base=v?KratorInteriors.sets.find(key):null;return it?'skip':base?(base.skip?'skip':'noItem'):'none';};
  return F;})();

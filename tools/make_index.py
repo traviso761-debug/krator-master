@@ -21,6 +21,7 @@ ABOUT = {
     'settlements/reedlake': 'Reed Lake: a floating reed-lake village and its kit.',
     'settlements/screamers': 'Hexahedron: the Screamers\' tribal village in and under a ruined arcology, forked from the Ancients kit.',
     'settlements/locus': 'Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.',
+    'settlements/verge': 'Verge: twin cities at the top and foot of an 860 m descent into the eastern abyss (Iziz Vernacular above, Yuni and Eastern Abyssal below), joined by a switchback trail; caravans, porters and nomads on a timetable; a Godot twin of its life layer.',
     'settlements/girder': 'Girder: an outlying Beast Rider village in the central-crater hyperjungle.',
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
     'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).',

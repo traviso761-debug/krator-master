@@ -29,7 +29,7 @@ function cat(key){
  OUT.missing[key]=(OUT.missing[key]||0)+1;return null;}
 // ---------------------------------------------------------------- a city's raster
 function City(C){
- const [x0,x1,z0,z1]=C.box,nx=Math.ceil((x1-x0)/CELL),nz=Math.ceil((z1-z0)/CELL),cv=KMASK.canvas(nx,nz),ctx=cv.getContext('2d'),D=cv.data,H=new Float32Array(nx*nz);
+ const [x0,x1,z0,z1]=C.box,nx=Math.ceil((x1-x0)/CELL),nz=Math.ceil((z1-z0)/CELL),cv=KMASK.canvas(nx,nz),ctx=cv.getContext(),D=cv.data,H=new Float32Array(nx*nz);
  const X=i=>x0+(i+.5)*CELL,Z=j=>z0+(j+.5)*CELL;
  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++)H[j*nx+i]=terrainH(X(i),Z(j));
  // the ground no building may use, from the terrain alone

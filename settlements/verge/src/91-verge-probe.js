@@ -33,9 +33,10 @@ const C={
  // one body to one slot: no slot is held twice at once in the timetable's cycle
  slotsUnique:places=>{let n=0,slots=0;for(const Pl of places)for(const S of Pl.slots){slots++;const b=S.busy;for(let i=0;i<b.length;i++)for(let j=i+1;j<b.length;j++)for(const k of [-SIM.T,0,SIM.T])if(b[i][0]<b[j][1]+k&&b[j][0]+k<b[i][1])n++;}
   return{ok:n===0,detail:slots+' slots, '+n+' double bookings'};},
- // every placed building has an interior chosen by the interiors kit, or its set says why not (a skip)
+ // every placed building has an interior chosen by the interiors kit, or its set says why not (a skip): no key
+ // without an item, and no variant left bare (the negative: a Yuni shop-house variant no set has)
  interiors:B=>{let item=0,skip=0,none=[],noItem=0;for(const R of B){const it=VFURN.itemOf(R.key,R.v);if(it&&!it.skip)item++;else if(it&&it.skip)skip++;else{const base=VFURN.itemOf(R.key,0);if(base&&!base.skip&&R.v)noItem++;else if(base&&base.skip)skip++;else none.push(R.key);}}
-  return{ok:none.length===0,detail:item+' with rooms, '+skip+' skipped by their set, '+noItem+' variants without their own item'+(none.length?', NO ITEM for '+Array.from(new Set(none)).join(', '):'')};},
+  return{ok:none.length===0&&noItem===0,detail:item+' with rooms, '+skip+' skipped by their set, '+noItem+' variants without their own item'+(none.length?', NO ITEM for '+Array.from(new Set(none)).join(', '):'')};},
  // the timetable has everything it asked for: caravans through and back, porters, nomads, patrols
  timetable:g=>{const want={'caravan:through':8,'caravan:turnaround':8,porter:10,nomads:4,patrol:6};const miss=Object.keys(want).filter(k=>(g[k]||0)<want[k]);
   return{ok:!miss.length,detail:JSON.stringify(g)+(miss.length?' short: '+miss.join(', '):'')};},
@@ -60,7 +61,7 @@ const CASES=[
  ['buildings-on-their-ground',()=>C.onGround(B),()=>C.onGround([Object.assign({},B[0],{y:B[0].y+5})])],
  ['the-trail-is-the-only-way-down',()=>C.trailOnlyWay(),null],
  ['one-body-one-slot',()=>C.slotsUnique(places),()=>C.slotsUnique([{slots:[{busy:[[0,100],[50,150]]}]}])],
- ['every-building-has-its-interior',()=>C.interiors(B),()=>C.interiors([{key:'no_such_key',v:0}])],
+ ['every-building-has-its-interior',()=>C.interiors(B),()=>C.interiors([{key:'trade_shop_house',v:9}])],
  ['the-timetable-is-full',()=>C.timetable(window._sim.groups),()=>C.timetable({porter:1})],
  ['caravans-follow-not-march',()=>C.follows(through),()=>C.follows(through&&Object.assign({},through,{members:through.members.map(M=>Object.assign({},M,{lag:0}))}))],
  ['one-clock',()=>C.oneClock(),null],
