@@ -59,7 +59,7 @@ function upperH(x,z){
 // ---------------------------------------------------------------- the lip, the escarpment and the spur
 function lipX(z){const k=smooth(240,520,Math.abs(z+40));return E.LIP_X+k*(34*Math.sin(z*.0031+1)+16*Math.sin(z*.011)+140*(fbm(z*.0011,3.7,3,S_ESC+7)-.5)+22*Math.sin(z*.023+2));}
 function kSpur(z,x){const w=x===undefined?0:22*Math.sin(x*.0063+1.2)+12*Math.sin(x*.017);return smooth(-204,-166,z)*(1-smooth(194+w,262+w,z));}   // its north flank drops to the river below the pool; its south flank wanders
-function escW(z,x){return mix(560*(1+.5*(fbm(z*.0016,9.1,2,S_ESC+3)-.5)),1400,kSpur(z,x));}
+function escW(z,x){return mix(560*(1+.5*(fbm(z*.0016,9.1,2,S_ESC+3)-.5)),1400+70*(fbm(z*.009,4.4,2,S_ESC+11)-.5),kSpur(z,x));}   // the spur's toe is ragged too
 // the abyss floor (east of the escarpment's foot), falling gently east toward the salt lakes
 const SALT_LAKES=[{x:10400,z:-600,rx:2900,rz:1500,a:.25},{x:14600,z:2100,rx:2300,rz:1700,a:-.4},{x:12600,z:-4300,rx:2600,rz:1200,a:.1},{x:7400,z:3900,rx:1500,rz:900,a:.6}];
 const SALT_Y=-27;
@@ -73,7 +73,8 @@ function floorH(x,z){
 // the cliff's profile across the escarpment (u 0 at the lip .. 1 at the foot): benches like bedded rock
 function cliffP(u){const uc=Math.min(1,u/.84),f=1-uc,n=7;return .06*(1-smooth(.8,1,u))+.94*clamp(f-Math.sin(2*Math.PI*n*f)/(2*Math.PI*n)*.86,0,1);}   // benched cliff, then a talus apron
 // the spur's profile: concave, steeper at the top, easing out onto the floor
-function spurP(u){return Math.pow(1-u,1.12);}
+// the spur's long profile: a steady fall, stepped by low ledges (the beds it is cut from) every ~55 m of height
+function spurP(u){const f=Math.pow(1-u,1.12),n=16;return clamp(f-Math.sin(2*Math.PI*n*f)/(2*Math.PI*n)*.38,0,1);}
 function escH(x,z,F){const L=lipX(z),W=escW(z,x),u0=(x-L)/W;if(u0>=1)return F;
  const k=kSpur(z,x);
  // buttresses and bays: the cliff's face is ribbed every ~130 m along the rim

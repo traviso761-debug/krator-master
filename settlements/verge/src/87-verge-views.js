@@ -14,10 +14,15 @@ const VIEWS=(function(){
   'The cataracts from below':[P.x+260,P.y+70,P.z-170,F[3].x,F[3].top-40,VG.gorgeZ(F[3].x)],
   'The plunge pool':[P.x+110,P.y+24,P.z+70,P.x-40,P.y+60,P.z],
   'The switchback from below':look(260,-30,60,-500,10,180),
-  'On the trail':[q1[0]+3,q1[2]+1.8,q1[1]+2,q1[0]+90,q1[2]-30,q1[1]-40],
-  'A rest stop over the falls':[R[0].x+28,R[0].y+12,R[0].z-28,R[0].x,R[0].y+2,R[0].z],
+  // on the trail: down the leg ahead, the legs below it and the abyss beyond
+  // (in the middle of a leg near the 30% mark, looking along it to the next hairpin)
+  'On the trail':(()=>{let s0=T.len*.27;for(let s=T.len*.27;s<T.len*.33;s+=2)if(Math.abs(tAt(s)[1]-20)<Math.abs(tAt(s0)[1]-20))s0=s;
+   const c=tAt(s0),a=tAt(s0+90);return[c[0]-1,c[2]+2.0,c[1],a[0]+10,a[2]-6,a[1]];})(),
+  // the first stop, on the north flank: seen from the trail below it, with the gorge and its falls behind
+  'A rest stop over the falls':[R[0].x+40,R[0].y+8,R[0].z+45,R[0].x-10,R[0].y-4,R[0].z-40],
   'A rest stop cut in the rock':[R[1].x+30,R[1].y+10,R[1].z+20,R[1].x,R[1].y+2,R[1].z],
-  'The funicular':look((VG.FUNI.a[0]+VG.FUNI.b[0])/2+140,VG.FUNI.z+260,120,(VG.FUNI.a[0]+VG.FUNI.b[0])/2,VG.FUNI.z,0),
+  // from out on the floor south-east of the spur's toe, up the whole incline to the rim
+  'The funicular':[VG.FUNI.b[0]+240,250,VG.FUNI.z+360,(VG.FUNI.a[0]+VG.FUNI.b[0])/2+90,330,VG.FUNI.z-60],
   'Lower Verge: the trailhead':look(L.head[0]+140,L.head[1]+110,30,L.head[0],L.head[1],2),
   'Lower Verge from the river':look(700,-420,26,200,-60,4),
   'The escarpment from the abyss':look(2600,520,140,-900,-60,420),

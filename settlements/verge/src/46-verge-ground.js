@@ -1,7 +1,7 @@
 // ================================================================= VERGE — the ground ([draw])
 // The ground is cut into TILES so each part of a 30 km map gets the detail it needs and the camera culls the rest:
-// 512 m tiles over the near map (x -6144..4096, z -2048..2048), each at 4, 8, 16 or 32 m cells by what is on it
-// (the cities, the trail, the gorge at 4 m; the canyon and the escarpment at 8 m), and 2048 m tiles at 64 m beyond,
+// 512 m tiles over the near map (x -6144..4096, z -2048..2048), each at 2, 4, 8, 16 or 32 m cells by what is on it
+// (the switchback at 2 m; the cities and the gorge at 4 m; the canyon and the escarpment at 8 m), and 2048 m tiles at 64 m beyond,
 // out to the salt lakes. Neighbours of different detail meet over a skirt hung from every edge. Each tile's heights
 // come from one sampling of terrainH (with an apron for the normals), its colours from the fields and the city's paint
 // (VERGE_PAINT, the placement pass 70), its rock weight (the strata shader) from its slope.
@@ -63,7 +63,8 @@ function groundColour(x,z,h,slope,out){
 function tileCell(x0,z0,S){
  const hit=(b)=>!(b[1]<x0||b[0]>x0+S||b[3]<z0||b[2]>z0+S);
  const U=VG.CITY.upper.box,Lw=VG.CITY.lower.box;
- if(hit(U)||hit(Lw)||hit([VG.E.LIP_X-30,40,-170,150])||hit([VG.GORGE.x0-10,VG.POOL.x+VG.POOL.r+30,-300,-150]))return 4;
+ if(hit([VG.E.LIP_X-30,40,-170,150]))return 2;      // the switchback: a 4.4 m trail on a carved bench needs 2 m cells
+ if(hit(U)||hit(Lw)||hit([VG.GORGE.x0-10,VG.POOL.x+VG.POOL.r+30,-300,-150]))return 4;
  let esc=false,can=false;for(let i=0;i<=4;i++)for(let j=0;j<=4;j++){const x=x0+S*i/4,z=z0+S*j/4,L=VG.lipX(z);
   if(x>L-80&&x<L+VG.escW(z,x)+60)esc=true;if(x<L&&Math.abs(z-VG.canZ(x))<VG.canHW(x)+VG.CAN_WALL+60)can=true;}
  if(esc||can)return 8;
@@ -78,7 +79,11 @@ function makeTile(x0,z0,S,cell){
   pos[v*3]=x;pos[v*3+1]=h;pos[v*3+2]=z;nor[v*3]=nx;nor[v*3+1]=ny;nor[v*3+2]=nz;
   const slope=clamp(Math.hypot(hx,hz)/(2*cell)*1.6,0,1);
   groundColour(x,z,h,slope,_gc);_gc.convertSRGBToLinear();col[v*3]=_gc.r;col[v*3+1]=_gc.g;col[v*3+2]=_gc.b;
-  rk[v]=smooth(.42,.78,1-ny);ck[v]=x>VG.lipX(z)+VG.escW(z,x)?fieldAt('crack',x,z):0;}
+  // rock where it is steep; on the spur, outcrops of the beds between the scree (never on the trail or a pad)
+  let r=smooth(.42,.78,1-ny);const ks=VG.kSpur(z,x);
+  if(ks>.01&&x>VG.lipX(z)&&x<VG.lipX(z)+VG.escW(z,x)){const tn=VG.trailNear(x,z),clear=tn?smooth(VG.TRAIL.half+1,VG.TRAIL.half+5,tn.d):1;
+   r=Math.max(r,ks*clear*smooth(.38,.62,VG.fbm(x*.011,z*.011,3,77)+.6*smooth(.1,.3,1-ny)-.15)*(VG.padAt(x,z)?0:1));}
+  rk[v]=r;ck[v]=x>VG.lipX(z)+VG.escW(z,x)?fieldAt('crack',x,z):0;}
  const idx=[];for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,c=a+N+1,d=c+1;idx.push(a,c,b,b,c,d);}
  // the skirts: each edge's vertices copied down by a few cells, the strip facing out
  const depth=cell*3+4;let v=nv;const edge=[];

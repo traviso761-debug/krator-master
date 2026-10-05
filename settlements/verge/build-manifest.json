@@ -45,7 +45,7 @@
  ],
  "41-verge-layout.js": [
   "settlements/verge/src/41-verge-layout.js",
-  "d71a59ff6b47"
+  "b524fa547f39"
  ],
  "42-core-export.js": [
   "core/biome/42-core-export.js",
@@ -65,7 +65,7 @@
  ],
  "46-verge-ground.js": [
   "settlements/verge/src/46-verge-ground.js",
-  "c546670130cb"
+  "0abc57ccddcf"
  ],
  "47-verge-water.js": [
   "settlements/verge/src/47-verge-water.js",
@@ -193,7 +193,7 @@
  ],
  "87-verge-views.js": [
   "settlements/verge/src/87-verge-views.js",
-  "0e125e27e19e"
+  "1a64d60be1dc"
  ],
  "88-verge-build.js": [
   "settlements/verge/src/88-verge-build.js",
