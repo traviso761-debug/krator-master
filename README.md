@@ -4,6 +4,7 @@ Write code with an eye to an eventual port to Godot. We want new builds to refer
 
 When placing streets, paths, and highways, make sure they connect to existing network unless otherwise specified. Ask if unclear.
 By default, builds should use the standard Krator skybox with gas giant and sun, +/- relevant local details (distant mountains and volcano position, etc). This will eventually be replaced with a more fully rendered open world.
+Open water (bays, lakes, the sea) uses the shared wave field, and standard (PBR) materials take their reflections from the build's own sky: both come from `core/atmos` (`#include <atmos_waves>`, `ATMOS.skylight`; `core/atmos/README.md` says how to take them). Do not write a build's own wave sum or environment map.
 
 **DEV TOOLS**
 Add inspector tool to all builds that is toggleable; when on, mousing over shows top level name of asset, classification (building vs flora vs furniture vs life layer etc), tags (biome, culture, .

@@ -62,13 +62,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
 MINIMAP_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'minimap')   # shared minimap (core/minimap/88-core-minimap.js)
+ATMOS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'atmos')   # shared atmosphere: the bay's wave field (core/atmos/README.md)
 OUT = os.path.join(HERE, 'voth.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '15-shore.js',
                  '40-ground.js', '75-terrain.js', '80-camera.js', '85-probe.js',
-                 '86-inspect.js', '87-pathviz.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-voth-minimap.js', '99-tail.html'}
+                 '86-inspect.js', '87-pathviz.js', '88-core-minimap.js', '88a-core-minimap-host.js', '88b-voth-minimap.js', '99-tail.html',
+                 '90-atmos-host.js', '98-start.js'}
+DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 PALETTE_FILE = '05-palette.js'
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
@@ -151,7 +154,7 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, MINIMAP_DIR):       # a src/ copy with the same name overrides
+    for d in (LOD_DIR, MINIMAP_DIR, ATMOS_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f not in paths:
                 paths[f] = os.path.join(d, f)

@@ -141,7 +141,7 @@ def fragments(build):
                 for f in sorted(fn):
                     if f.endswith('.js') and not f.startswith('test-') and not f.startswith('.'):
                         p = os.path.join(dp, f)
-                        out.append((os.path.relpath(p, os.path.join(ROOT, 'core')), p))
+                        out.append((os.path.relpath(p, os.path.join(ROOT, 'core')).replace(os.sep, '/'), p))
         return out
     if build == 'kits/catalog':                     # its registries are top-level files (build.py SOURCES)
         d = os.path.join(ROOT, build)
@@ -158,7 +158,7 @@ def fragments(build):
                 if (f.endswith('.js') or f.endswith('.html')) and not f.startswith('.') \
                         and not f.endswith('.min.js'):
                     p = os.path.join(dp, f)
-                    out.append((os.path.relpath(p, os.path.join(ROOT, build)), p))
+                    out.append((os.path.relpath(p, os.path.join(ROOT, build)).replace(os.sep, '/'), p))   # PORT.md rows use '/'
     return out
 
 

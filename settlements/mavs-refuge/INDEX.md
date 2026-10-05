@@ -38,7 +38,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (146) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
-| `84-flyers.js` | 79 **big** | 84. FLYERS (1) |
+| `84-flyers.js` | 81 **big** | 84. FLYERS (1) |
 | `85-probe.js` | <1 | 29. PROBE (1) |
 | `86-inspect.js` | 3 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |

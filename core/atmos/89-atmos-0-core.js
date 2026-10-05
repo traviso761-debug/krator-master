@@ -35,7 +35,10 @@ const ATMOS={};
    // place and time by atmGust() in the shaders. windOff is the base wind integrated over time, for things that ride it (rain)
    const v=PW.veer,veer=v[0]*Math.sin(t*v[1])+v[2]*Math.sin(t*v[3]+1.7),c=Math.cos(veer),s=Math.sin(veer),b=A.windBase;U.wind.value.set((b.x*c-b.y*s)*A.windScale,(b.x*s+b.y*c)*A.windScale);
    U.windOff.value.addScaledVector(U.wind.value,dt);
-   U.px.value=num(h.viewH,720)*num(h.pixelRatio,1)/(2*Math.tan(h.camera.fov*Math.PI/360));for(const fn of A.hooks){try{fn(t,hr,dt);}catch(e){A.err('frame: '+e.message);}}});};
+   U.px.value=num(h.viewH,720)*num(h.pixelRatio,1)/(2*Math.tan(h.camera.fov*Math.PI/360));for(const fn of A.hooks){try{fn(t,hr,dt);}catch(e){A.err('frame: '+e.message);}}});
+  for(const fn of A.onInit)fn(h);};
+ // later fragments that need the bound host (A.T, A.U, A.hook) push a setup function here; init runs them in file order
+ A.onInit=[];
  A.glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};   // a number as a GLSL float literal
  A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
  A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds

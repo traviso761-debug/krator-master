@@ -15,7 +15,7 @@
    convention:{units:'metres',up:'+y',x:'east',z:'south',handed:'right (glTF)',ry:'radians about +y; local +z turns to (sin ry, cos ry)',bearing:'angle from +x toward +z',
     hours:'0..24; a light [on,off] is lit from on in the evening to off next morning (off may be past 24; on<0 follows the night; on=0 always)',
     colors:'hex or [r,g,b] in display (sRGB) space',colour:'srgb',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
-   uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)'},
+   uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
    presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
    fx:A.fx,lamps:A.lamps.map(l=>({at:[l[0],l[1],l[2]],hours:[l[3],l[4]]})),
    glow:A.glow.map(g=>({at:[g[0],g[1],g[2]],color:[g[3],g[4],g[5]],size:g[6],hours:[g[7],g[8]]})),

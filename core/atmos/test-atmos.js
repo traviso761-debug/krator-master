@@ -42,6 +42,22 @@ const gG=toJs(glsl.wind,'atmGust'),gL=toJs(glsl.lit,'atmLit');
 ok('GLSL atmGust equals ATMOS.gust',(()=>{for(let t=0;t<200;t+=3.1)for(const p of[[0,0],[40,-7],[-300,120]])if(!near(gG(t,p,[.8,.35]),A.gust(t,p[0],p[1]),1e-9))return false;return true;})(),near(gG(3,[0,0],[.8,.35]),A.gust(4,0,0),1e-9));
 ok('GLSL atmLit equals ATMOS.litAt',(()=>{for(let h=0;h<24;h+=.25)if(!near(gL(h,{x:17.6,y:29.6}),A.litAt(h,17.6,29.6),1e-9))return false;return true;})(),near(gL(18.6,{x:17.6,y:29.6}),A.litAt(18.6,18.5,29.6),1e-9));
 
+// ---- the wave field (89-atmos-a-waves.js). Its GLSL was checked against the JS twin on a GPU on 2026-10-05 (16 points,
+// height, slope and crest within 6e-6, three r128 in Voth); here: the clock, the bounds, and the chunk carrying the presets
+const PW=A.PRESETS.waves,WP=[[0,0],[-2500,1800],[812.5,-333],[3100,2900],[-40.25,77]];
+ok('every wave runs a whole number of cycles per period (the wrap cannot jump)',['chop','mid','swell','group','warp'].every(f=>PW[f].every(w=>Number.isInteger(w[2]))),Number.isInteger(86.5));
+ok('the wrapped clock is seamless: the field at t=0 equals the field at t=period',WP.every(p=>near(A.waveHeight(p[0],p[1],0,1),A.waveHeight(p[0],p[1],PW.period,1),1e-12)&&near(A.waveSlope(p[0],p[1],0,90)[0],A.waveSlope(p[0],p[1],PW.period,90)[0],1e-12)),
+ WP.every(p=>near(A.waveHeight(p[0],p[1],0,1),A.waveHeight(p[0],p[1],PW.period/2,1),1e-12)));
+ok('...and so is a time far past the period (a long session)',WP.every(p=>near(A.waveHeight(p[0],p[1],37.5,1),A.waveHeight(p[0],p[1],37.5+PW.period*400,1),1e-9)),false);
+const swMax=PW.amp*PW.gain.swell*(PW.groupMix.swell[0]+PW.groupMix.swell[1])*PW.swell.reduce((s,w)=>s+w[3],0);let swSeen=0;
+for(let t=0;t<PW.period;t+=11.3)for(const p of WP)swSeen=Math.max(swSeen,Math.abs(A.waveHeight(p[0],p[1],t,0)));
+ok('the swell heaves, within amp x gain x (floor+depth) x its shares ('+swSeen.toFixed(3)+' of '+swMax.toFixed(3)+' m)',swSeen<=swMax&&swSeen>.1*swMax,swSeen<.01);
+ok('the far sea is still: past every fade the slope is 0 and the crest 0.5',(()=>{const s=A.waveSlope(500,500,123,PW.fade.swell[1]+1);return s[0]===0&&s[1]===0&&s[2]===.5;})(),(()=>{const s=A.waveSlope(500,500,123,0);return s[0]===0&&s[1]===0;})());
+const WG=A.waveGLSL();
+ok('the chunk carries every wave of the presets and the three calls a host uses',['chop','mid','swell','group','warp'].every(f=>PW[f].every(w=>WG.includes('vec3('+[w[0]/(2*Math.PI),w[1]/(2*Math.PI),w[2]/PW.period].map(A.glf).join(',')+')')))&&
+ /float atmWaveHeight\(vec2 p,float chopW\)/.test(WG)&&/vec3 atmWaveSlope\(vec2 p,float d\)/.test(WG)&&/vec3 atmWaveNormal\(vec2 p,float d,float k\)/.test(WG),WG.includes('vec3(9.0,9.0,9.0)'));
+ok('the sky light leaves a build\'s tuned diffuse alone unless asked (PRESETS.skylight.diffuse 0)',typeof A.skylight==='function'&&A.PRESETS.skylight.diffuse===0,A.PRESETS.skylight.diffuse===1);
+
 // ---- placement and export (needs three.js r128)
 const T3=['../../settlements/iziz/three.min.js','../../biomes/sedesert/three.min.js'].map(p=>path.join(__dirname,p)).find(p=>fs.existsSync(p));
 if(!T3)console.log('skip  placement and export (no three.min.js found)');
@@ -58,7 +74,7 @@ else{const THREE=require(T3);
  ok('every record has an id and a type; the export says its colour space',E.fx.every(r=>r.id&&r.type)&&E.convention.colour==='srgb',false);
  ok('moths: one per lamp head times n',A.lamps.length>0&&E.fx.find(r=>r.type==='moths').lamps.length===A.lamps.length,false);
  ok('lamps follow the row: the evening running down it',E.lamps.length===A.lamps.length&&E.lamps[E.lamps.length-1].hours[0]>E.lamps[0].hours[0],E.lamps[0].hours[0]>E.lamps[E.lamps.length-1].hours[0]);
- const GOLD='edd16b3cb9aa4c01';
+ const GOLD='5ff8eab08faee7ea';   // 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms; nothing placed changed
  ok('export fingerprint '+fp+(fp===GOLD?'':' (golden '+GOLD+'; if the change is meant, take a screenshot diff and update GOLD)'),fp===GOLD,false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

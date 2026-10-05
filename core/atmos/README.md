@@ -1,9 +1,14 @@
 # core/atmos: the atmosphere and street-dressing module
 
-Evening lights, a glow layer, particles, weather, ivy and window boxes, sewer grates, street lamps and fountains, and
-InstancedMesh culling. The pieces are portable: each fragment is a closure that adds to one global, `ATMOS`, and declares
-nothing else at top level. It has its own PRNG and never touches a host's stream. It needs only three.js r128 and
-the five things a host passes to `init`. The Iziz city is its first user (`settlements/iziz/targets/city/90c-city-atmos.js`).
+Evening lights, a glow layer, particles, weather, ivy and window boxes, sewer grates, street lamps and fountains,
+InstancedMesh culling, **the open-water wave field** and **the sky's light on standard materials**. The pieces are
+portable: each fragment is a closure that adds to one global, `ATMOS`, and declares nothing else at top level. It has
+its own PRNG and never touches a host's stream. It needs only three.js r128 and the five things a host passes to `init`.
+
+**Users:** the Iziz city takes all of it (`settlements/iziz/targets/city/90c-city-atmos.js`); Voth takes the wave field
+for its bay; Girder takes the sky's light for its library-textured families. Voth's and Girder's
+`src/90-atmos-host.js` are the worked examples of a 21-sky.js-lineage binding (below). **A new build with open water or
+standard materials takes these instead of writing its own:** one water shader and one sky-light path for every world.
 
 ## Taking it into a build
 
@@ -25,6 +30,16 @@ ATMOS.finish();                       // bakes the instanced sets and builds the
 ATMOS.cull(scene, {keep: m => m.userData.biome});   // optional, last
 ```
 
+**A 21-sky.js-lineage build** (Voth, Girder, Mav's Refuge, Locus, Yuni) takes it in four steps, as Voth and Girder do:
+1. `build.py`: `ATMOS_DIR = <root>/core/atmos` in the loop that adds core directories (beside `LOD_DIR`), and
+   `DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}` (the files open with no `reseed`).
+2. `src/90-atmos-host.js`: an `ATMOS_HOOKS` array, `function atmosFrame(dt)` calling each, and `ATMOS.init({..., onFrame:
+   fn => ATMOS_HOOKS.push(fn), hour: () => skyHour(), ground: terrainH})`; then `ATMOS.waveUniforms(...)` and/or
+   `ATMOS.skylight({...})`.
+3. `80-camera.js` `frame()`: `atmosFrame(dt)` last, just before drawing, so a sky capture sees the frame as drawn.
+4. The first `frame()` call must come after fragment 90 (`98-start.js`): a material that includes `<atmos_waves>`
+   cannot compile before `init` registers the chunk.
+
 Everything it makes goes under one group, `ATMOS.root`. Sprites, beams and rain have their raycasting switched off and
 carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 
@@ -41,7 +56,8 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 - **Haze**: searchlights, spot cones and beacons read stronger in fog and rain (`ATMOS.haze()`), and halos swell.
 - **`ATMOS.export()`** returns everything placed as JSON (presets, effect records `ATMOS.fx`, lamps, glows, prop sets);
   `ATMOS.download(name)` saves it. `GODOT.md` is the contract and the port plan.
-- **Engine-neutral by fragment.** `0`, `0p`, `4` and `8` touch no browser API (`tools/check_port.py` holds them to it).
+- **Engine-neutral by fragment.** `0`, `0p`, `4` and `8` touch no browser API (`tools/check_port.py` holds them to it);
+  `a` (waves) touches none either and is tagged [G shader]: its chunk becomes a `.gdshaderinc`.
   The browser lines are in `9-host` ([web]): the Weather selector and the download. They move to `core/host/`.
 - **`node core/atmos/test-atmos.js`**: the evening, light hours, the weather state machine, the flash, the gusts, the
   GLSL agreeing with the JS, and a fingerprint of a small street's export. Run it after any change here; the fingerprint
@@ -63,9 +79,30 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `7-cull` | `cull(scene,o)` | splits big static InstancedMeshes into bearing sectors and bounds every set by its instances, so r128 can frustum-cull them. Raycasts still test each instance correctly |
 | `8-export` | `export()` | the whole placed atmosphere as JSON for a game engine (`GODOT.md`) |
 | `9-host` | `weatherUI(el)`, `download(name)` | [web]: the Weather selector and the JSON download |
+| `a-waves` | `waveUniforms(u)`, `waveGLSL()`, `waveHeight(x,z,t,chopW)`, `waveSlope(x,z,t,camDist)`, `waveWrap(t)`; GLSL `#include <atmos_waves>`: `atmWaveHeight(xz,chopW)`, `atmWaveSlope(xz,camDist)`, `atmWaveNormal(xz,camDist,k)` | the open-water wave field (`PRESETS.waves`, from World of ClaudeCraft, MIT): chop, mid waves and swell in sets, on the module clock wrapped at a whole number of cycles. Displace with the swell only unless the mesh is finer than ~4 m; the chop and the mid waves only shade |
+| `b-skylight` | `skylight({renderer, sky, scene, ground, key})`, `skyEnv` | the host's sky scene captured into a prefiltered cube map as `scene.environment`, recaptured as the hour moves (`PRESETS.skylight`). Standard materials only (Lambert ignores it). Specular by default: `diffuse` 0 keeps a build's tuned hemisphere and ambient fill |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
 `(sin ry, cos ry)`. A *bearing* is the angle from `+x` toward `+z`.
+
+## Water and the sky's light: what to know
+
+- **The wave field is in metres and seconds.** `PRESETS.waves.amp` (0.22) is the half-height scale; Voth's swell peaks
+  near 0.45 m. A host scales the shading tilt per build with `atmWaveNormal`'s `k`: Voth passes 3x, because WoCC lays
+  detail normal maps over this field and Voth has none, so from 200-1500 m up the field is all the texture there is.
+- **Anything else a water shader animates must run whole cycles per `PRESETS.waves.period`** on `atmWaveT`, or it jumps
+  when the clock wraps: write `6.283185307*fract(atmWaveT*c/600.0)` for c cycles (Voth's foam lap: c = 153).
+- **It is for open water.** A river ribbon (Girder, Mav's Refuge, Yuni) flows: its noise scrolls downstream, which the
+  field does not do. Lakes and bays take it; a river keeps its flow shader.
+- **The sky's light lights MeshStandardMaterial only** (r128: `scene.environment` reaches standard materials). Lambert
+  worlds (Voth, Locus, Mav's Refuge today) see nothing until they adopt the material library's standard families.
+- **r128's prefilter mirrors a rendered cube left to right.** `PMREMGenerator.fromCubemap` samples with x negated (right
+  for a cube map loaded from six images); a CubeCamera's cube is not mirrored, so unpatched every reflection showed the
+  giant on the wrong side. `b-skylight` unflips its own generator's shader (three.js r130 added `flipEnvMap` for this).
+  Tested with a chrome sphere: the giant's dark disc reflects at its true bearing.
+- **Capture with the sky as drawn:** the cube target takes the renderer's output encoding, so custom sky shaders that
+  write display values (the giant, the dome's onBeforeCompile) land in the map as the screen shows them.
+- **`renderer.info` is left as it was** after a capture, so a build's draw-call budget does not count it.
 
 ## Tags
 

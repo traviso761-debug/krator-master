@@ -177,9 +177,11 @@ contract and its tunables are in the header of `36-core-carve.js`.
 ## `atmos/`
 
 The atmosphere and street-dressing module: evening lights and a glow layer, particles, weather, ivy and window boxes,
-sewer grates, lamps and fountains, InstancedMesh culling. One global (`ATMOS`) behind a five-item host binding, so any
+sewer grates, lamps and fountains, InstancedMesh culling, the open-water wave field (`#include <atmos_waves>`) and the
+sky's light on standard materials (`ATMOS.skylight`). One global (`ATMOS`) behind a five-item host binding, so any
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
-reads it through `TARGET_CORE`).
+reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves) and `settlements/girder` (the sky's light); both
+add `core/atmos` to their `build.py` core loop and bind it in `src/90-atmos-host.js`.
 
 ## `lod/`
 

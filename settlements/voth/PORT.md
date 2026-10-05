@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 407 (23%) | 0 (0%) | 106 (6%) | 105 (6%) | 1175 (66%) |
+| KB | 407 (23%) | 0 (0%) | 106 (6%) | 107 (6%) | 1175 (65%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -52,7 +52,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-veg.js` | 35.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 1 | 0 | 0 | 0 | split: plant, floraSample, fgPut, fgFree and shrubAt scatter vegetation (260 rnd draws, 17 terrainH reads, skipping district polygons); birch, monkeyPuzzle, treeFern and the succulents draw. Data pass: flora records. Same shape as the biome kits: placement is portable, the builders cross over as meshes |
 | `src/71-industry.js` | 42.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 | split: siteSlope and mushroomDensityFill choose where things go; mineEntrance, quarryPit and mushroomFarm are hand-sited set pieces that draw from a given (x, z, ry). 39 terrainH reads. Data pass: the three sites and the mushroom density records |
 | `src/72-lanterns.js` | 5.9 | [G native] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 1 | 0 | 0 | 0 |  |
-| `src/75-terrain.js` | 8.5 | [draw] | 17 | 1 | 0 | 0 | 0 | 2 | 10 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/75-terrain.js` | 8.5 | [draw] | 17 | 1 | 0 | 0 | 0 | 2 | 13 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/78a-life-core.js` | 14.7 | [G data] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | life constants (LIFE_TIERS, LIFE_HUB, LIFE_MAJOR), destination picking (lifePickDestination, lifeCantonApproach) and the ground-height queries (lifeGroundY, lifeBridgeY, lifeCausewayY): the shared data of the life layer (core/simulation/PLAN.md section 1) |
 | `src/78b-life-nav.js` | 41.0 | [G data] | 32 | 0 | 0 | 0 | 1 | 13 | 0 | 3 | 0 | 0 | 0 | split: the water nav grid, A*, line-of-sight and simplify (lifeNavBuildGrid, lifeNavAStar, lifeNavSimplify) are [G data] and port as they are. The lifeCurveFrom* functions build THREE.CatmullRomCurve3 and the local avoidance reads vehicle meshes, and the canoe paddle phase reads performance.now (78b:723): the draw adapter |
 | `src/78c-life-ships.js` | 70.5 | [draw] | 27 | 0 | 0 | 0 | 0 | 30 | 14 | 14 | 0 | 0 | 0 | split: the big ships and the coast guard. LIFE_QUAYS, LIFE_NORTH_INLET, the relay, departures and avoidance are integrated state with random departures, which Godot cannot reproduce from the clock (core/simulation/PLAN.md): a schedule record per ship. The hull, sail and mast part lists are the draw |
@@ -66,7 +66,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/79a-convoys.js` | 11.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | strider convoys: the wading tuning block and the solid, push-to-wadeable and deck tests (striderSolidAt, striderPushToWadeable): data and rules |
 | `src/79b-strider-nav.js` | 35.5 | [G data] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: the strider's own nav grid, A*, line-of-sight, simplify and road refinement are [G data]. The performance.now reads that time the build (STRIDER_NAV_BUILD_MS) go to the host |
 | `src/79c-strider-model.js` | 42.3 | [draw] | 50 | 0 | 0 | 0 | 0 | 32 | 0 | 3 | 0 | 0 | 0 | the bespoke strider mesh (body, legs, howdah). split: striderSampleLeg and striderNavCandidate pick foot and route candidates inside the model file: move them to the nav data |
-| `src/80-camera.js` | 20.9 | [web] | 10 | 0 | 10 | 13 | 1 | 2 | 0 | 1 | 3 | 0 | 0 | fly camera, controls, polygon tool, render loop: host shell |
+| `src/80-camera.js` | 21.0 | [web] | 10 | 0 | 9 | 13 | 1 | 2 | 0 | 1 | 3 | 0 | 0 | fly camera, controls, polygon tool, render loop: host shell |
 | `src/82-daynight.js` | 46.9 | [G native] | 49 | 6 | 3 | 4 | 3 | 6 | 0 | 12 | 0 | 0 | 0 | day and night is native in Godot (core/atmos). split: the static-flame list (a feed to the illumination pool in 45-kit), the moving-vehicle lanterns and the Guild canton clock are placed props: records. The night illumination driver is host. It has its own rAF loop |
 | `src/83-weather.js` | 8.1 | [web] | 16 | 0 | 2 | 1 | 0 | 2 | 0 | 4 | 0 | 0 | 0 |  |
 | `src/84-fauna.js` | 10.1 | [draw] | 13 | 0 | 0 | 0 | 5 | 5 | 0 | 4 | 0 | 0 | 0 | split: faunaWaterPoint, faunaLandPoint and faunaBuildFlocks pick flock centres by rejection sampling: a [G data] pass. The gull and racer boxes and faunaWriteFlock are the draw; own rAF loop is host |
@@ -74,6 +74,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/86-inspect.js` | 15.4 | [web] | 2 | 0 | 8 | 2 | 1 | 0 | 0 | 8 | 2 | 0 | 0 | dev inspector (footprint registry and per-instance identity): host shell |
 | `src/87-pathviz.js` | 21.1 | [web] | 9 | 0 | 6 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | path visualizer: overlay, discovery by convention: host shell |
 | `src/88b-voth-minimap.js` | 3.0 | [web] | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/90-atmos-host.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | binds core/atmos (init, the frame hook, the wave uniforms): host shell, moves to core/host/ |
+| `src/98-start.js` | 0.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the first view and the first frame, after every fragment: host shell |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

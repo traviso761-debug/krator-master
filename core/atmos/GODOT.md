@@ -32,6 +32,18 @@ everything looks washed out.
 | `atm_wind`, `atm_gust_amp`, `atm_wind_off` | `A.U.wind/gustAmp/windOff` | the wind: base x weather scale, slowly veering; `wind_off` is its integral over time (rain rides it) |
 | `atm_light` | `A.U.light` | `1 - nightDim * night` |
 | `atm_px` | `A.U.px` | not needed in Godot (it sizes sprites in pixels; size them in metres instead) |
+| `atm_wave_t` | `A.U.waveTime` (GLSL `atmWaveT`) | the module clock wrapped at `presets.waves.period`; every wave runs whole cycles per period, so the wrap is seamless |
+| `atm_wave_amp` | `A.U.waveAmp` (GLSL `atmWaveAmp`) | `presets.waves.amp`, metres |
+
+**The wave field** (`89-atmos-a-waves.js`) becomes `atmos_waves.gdshaderinc`: `ATMOS.waveGLSL()` prints the GLSL from
+`presets.waves`, and its functions translate line for line (`fract`, `sin`, `smoothstep` are the same; `vec3` stays
+`vec3`). Read `atm_wave_t` instead of `TIME`. `ATMOS.waveHeight`/`waveSlope` are the CPU twin a GDScript buoyancy
+function reproduces; `test-atmos.js` pins the clock and the bounds, and the GLSL was checked against the twin on a GPU.
+
+**The sky's light** (`89-atmos-b-skylight.js`) has no port: a `WorldEnvironment` with a `Sky` resource lights every
+`StandardMaterial3D` from that sky, ambient and reflections both (`ambient_light_source = SKY`,
+`reflected_light_source = SKY`). `presets.skylight.diffuse` 0 matches `ambient_light_sky_contribution = 0` with the
+hemisphere fill kept as the ambient colour.
 
 The gust function must be the same everywhere. It lives in `presets.wind`, and `A.GLSL_WIND` is written from it.
 
