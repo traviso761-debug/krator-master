@@ -10,6 +10,7 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 - [ ] Pull the branch. Godot 4.3 or later (4.5 is what was tested).
 - [ ] `godot --headless --path godot --script res://tests/rand/krand_test.gd` prints `all passed` (it did here: the
       first bit-exactness proof inside Godot).
+- [ ] `godot --headless --path godot --script res://tests/atmos/atmos_test.gd` prints `all passed` (the weather port).
 - [ ] `godot --headless --path godot -- --check` lists five cases with no `SCRIPT ERROR`.
 
 ## 1. hyperjungle (key 1): the biome export, foliage
@@ -28,13 +29,14 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 
 - [ ] Fly 1 km away: the chunked meshes should fade out near their range (they are placed at the chunk centre with the
       range widened by the chunk half-diagonal). Popping or holes: note where.
-- [ ] Iridescent bark and the far impostors draw plain (no core material kind for them yet). How bad does it look?
+- [ ] Iridescent bark shifts tint with the view angle (`bark.gdshader` mode 1); the far impostors still draw plain.
 
 ## 3. girder (key 3): glTF, the friend's route
 
 - [ ] Library textures on the hall: thatch, shingle, timber. Compare with `settlements/girder/girder.html` up close.
 - [ ] What tonight showed: stalls and people come in near-white (their colours live in shader hooks and custom
-      attributes glTF drops), and 51 of 53 materials lost their hook (the library's break-up, tint and contrast).
+      attributes glTF drops). The library surfaces (hall roof, timber, planks, rope, cane, rock, ground) are rebuilt
+      from Girder's pack with the break-up (`krator/kmat.gd`): compare their tiling with the browser.
 - [ ] Drag `data/girder/region.glb` into the editor's FileSystem dock, open it, and look at the Import dock: is there an
       option to import extras as metadata in your version? Does the editor import differ from the runtime load?
 - [ ] **Ask your friend** how the Voth kit got into Godot (GODOT-PLAN.md section 1). If it was `GLTFExporter`, this case
@@ -45,6 +47,8 @@ a software GPU. What that could not show is the **look on a real GPU in Forward+
 - [ ] It opens at 19:30: lamps and halos lit, braziers flickering, searchlights sweeping, smoke rising from chimneys.
 - [ ] `[` `]` across dusk (17:00 to 19:00) and dawn: lights come on and go off by their hours; the sky and sun dim.
 - [ ] Fog banks: Forward+ only (FogVolume). Turn on volumetric fog in the WorldEnvironment if they do not show; note it.
+- [ ] Weather: in the remote inspector (or a line in `spike.gd`) call `Atmos.set_weather("storm")`: rain and fog
+      rise, the wind strengthens, and `Atmos.strike` fires every 5 to 14 s (nothing draws the bolt or the rain yet).
 - [ ] Halo brightness under the Filmic tonemapper (the gain is 0.6 x the three.js value here, a guess).
 - [ ] The city ground's texture and the five magenta stand-ins (ShaderMaterials: water, sky, glow) are expected.
 

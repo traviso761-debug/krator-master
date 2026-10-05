@@ -505,30 +505,43 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    to belong to the tile that holds their record (blocker 10's records), not be clipped by it.
 4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`).
 5. **No ground in any export.** The spike samples `terrainH` into a heightfield (`krator-heightfield`, spike-only); the
-   `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags.
+   `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags. *Compensated 2026-10-05:* `BIO.export` writes
+   a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it.
 6. **Kit shader hooks with no core kind** come in plain: rift's iridescent bark and far impostors (their records have
    no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
+   *Compensated 2026-10-05:* every kit hook is named as data (`irid`, `gloss`, `far`, `hang`, `anim-phase`:
+   `biomes/GODOT.md`); `irid` and `gloss` have Godot shaders. Open: `far`, `hang`, both fauna kinds.
 7. **`swayW` is GLSL text** in the export. The three values the kits use map to `c + dot(w, position)`; make it data.
+   *Done 2026-10-05:* the export adds `sway` as data.
 8. **LOD is measured to the chunk's box in three and to a point in Godot:** the spike widens ranges by the chunk
    half-diagonal. Stand-ins and impostors are not LOD levels of what they replace.
 9. **Colour spaces differ by table:** biome instance and vertex colours are linear, material colours are written as
    three holds them (the importer assumes sRGB), the atmosphere is sRGB. One `convention.colour` per table.
+   *Done 2026-10-05, with a correction:* the pages render with `outputEncoding = sRGB`, so a material colour is linear
+   as well, and the importer's sRGB assumption was wrong. `convention.colours` now says so per table.
 10. **glTF (three r128 `GLTFExporter`) gets meshes and the library's textures across** and carries `userData` as
     extras, but: no instancing (every InstancedMesh merges into one mesh, no per-instance tags); every
     `onBeforeCompile` hook is lost (51 of Girder's 53 materials: the library's break-up, tint and contrast, wind, glow);
     custom attributes are dropped, so stalls and people come in near-white (`aGarb`, `aSkin`, `aPRO`); ShaderMaterials
-    (water, sky, glow) have no glTF form. Good for a look at static architecture, not a pipeline.
+    (water, sky, glow) have no glTF form. Good for a look at static architecture, not a pipeline. The exporter also
+    drops a roughness map that has no matching metalness map. *Compensated 2026-10-05 for the library:* a library
+    material keeps its name in the glTF extras (`lib`, `fam`), so `godot/krator/kmat.gd` rebuilds it from the build's
+    pack (`tex/pack.json` and its maps) as `library.gdshader`, with roughness, normal, specular and the break-up.
 11. **Godot 4.5's runtime `GLTFState.get_scene_node()` returned null for most nodes;** extras are mapped by node name instead.
 12. **The atmosphere's lamp records** carry position and hours only: range, colour and energy are guessed. Halo gain
-    needs retuning under a tonemapper. `mist`'s `curve` layout is not stated in the contract. `atm_lit` in
-    `core/atmos/GODOT.md` omits the export's own `on=0` (always) and `on<0` (follows night) cases. The weather state
-    machine, fireflies, moths, the flag shader and the fountain jets are not ported.
+    needs retuning under a tonemapper. ~~`mist`'s `curve` layout is not stated~~ (it is, in the record's own `note`:
+    radius from the origin at 64 even bearings). The weather state machine, fireflies, moths, the flag shader and
+    the fountain jets are not ported. *Compensated 2026-10-05:* a lamp record names its halo (`glow`) and colour, and
+    says three gives it no light. The halo's own hours (`on<0` dims by day, `on=0` always) are written into
+    `core/atmos/GODOT.md` as `atm_glow_lit`; the plain `atm_lit` was right, and moths use it. The weather is ported
+    to the `Atmos` autoload and matches the JavaScript on every vector (`godot/tests/atmos/`).
 13. **Yuni's records import cleanly** (1770 buildings, 1842 doors, 6841 windows, 2591 lights, one compound's rooms,
     walls, furniture and nav links), and they say their frame. Gaps: no meshes (a second route is needed), MultiMesh
     instances cannot hold tags (doors and windows need a side table), wall openings need cutting, light units differ.
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
-material kinds with `swayW` as data, then fauna animation.
+material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the
+bake, the `far` and `hang` shaders and fauna animation are what is left.)
 
 The project, as it grows (Godot 4.x, Forward+; Compatibility only if a web export is wanted), in `godot/`:
 

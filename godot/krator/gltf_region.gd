@@ -66,6 +66,14 @@ static func build(path: String) -> Node3D:
 		for c in n.get_children():
 			stack.append(c)
 
+	# library materials rebuilt from the build's pack (godot/data/<case>/tex: tools/textures/pack.py's output)
+	var tex_dir := path.get_base_dir() + "/tex"
+	if FileAccess.file_exists(tex_dir + "/pack.json"):
+		var k := KratorKmat.apply(scene, state, tex_dir)
+		report["materials_library"] = k
+		if k.get("replaced", 0) > 0:
+			report["gaps"]["library materials"] = "%d library surfaces rebuilt from the pack (%s) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost" % [k["replaced"], ", ".join(PackedStringArray(k["families"].keys()))]
+
 	# the exporter's own record of what it could not carry (region.dropped.json beside the .glb)
 	var dropped_path := path.get_basename() + ".dropped.json"
 	if FileAccess.file_exists(dropped_path):

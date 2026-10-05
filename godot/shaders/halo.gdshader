@@ -13,7 +13,7 @@ void vertex() {
 	vec3 origin = (MODELVIEW_MATRIX * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
 	float s = length(MODEL_MATRIX[0].xyz);
 	VERTEX = origin + vec3(VERTEX.xy * s, 0.0);
-	v_lit = atm_lit(atm_hour, INSTANCE_CUSTOM.xy);
+	v_lit = atm_glow_lit(atm_hour, INSTANCE_CUSTOM.xy);
 }
 
 void fragment() {

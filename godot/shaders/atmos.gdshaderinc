@@ -13,12 +13,12 @@ float atm_gust(float t, vec2 xz, vec2 w) {               // presets.wind.gust
 	return 0.5 * sin(s * 0.31) + 0.3 * sin(s * 0.73 + 1.3) + 0.2 * sin(s * 1.9 + 4.1);
 }
 vec2 atm_wind_at(vec2 xz) { return atm_wind * (1.0 + atm_gust_amp * atm_gust(atm_time, xz, atm_wind)); }
-float atm_lit(float h, vec2 t) {                          // a light's [on, off] hours
-	// on=0: always lit; on<0: follows the night (the export's convention; GODOT.md's version lacks both)
-	if (t.x == 0.0) return 1.0;
-	if (t.x < 0.0) return atm_night;
+float atm_lit(float h, vec2 t) {                          // a light's [on, off] hours (moths, lamps)
 	float hh = h < 12.0 ? h + 24.0 : h;
 	return smoothstep(t.x, t.x + 0.3, hh) * (1.0 - smoothstep(t.y - 0.3, t.y, hh));
+}
+float atm_glow_lit(float h, vec2 t) {                     // a halo's hours: on<0 dims by day, on=0 always lit
+	return t.x < 0.0 ? 0.25 + 0.75 * atm_night : (t.x == 0.0 ? 1.0 : atm_lit(h, t));
 }
 
 // the octahedral decoding of a unit vector packed into two floats (biomes/GODOT.md, INSTANCE_CUSTOM)

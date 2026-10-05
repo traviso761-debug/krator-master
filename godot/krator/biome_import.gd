@@ -87,7 +87,12 @@ static func build(path: String) -> Node3D:
 	report["counts"] = {"items": d["items"].size(), "instances": instances, "buckets": d["buckets"].size(), "triangles": tris,
 		"materials": d["materials"].size(), "textures": d["textures"].size(), "load_ms": Time.get_ticks_msec() - t0}
 	_gap(report, "tags", "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label")
-	_gap(report, "terrain", "no ground in the export: the spike samples the page's terrainH into terrain.json")
+	if d.has("ground"):
+		var g := KData.ground(d["ground"])
+		root.add_child(g)
+		root.set_meta("ground", g)
+	else:
+		_gap(report, "terrain", "no ground in the export (an export from before 2026-10-05): the spike samples terrainH into terrain.json")
 	root.set_meta("report", report)
 	return root
 
@@ -186,27 +191,50 @@ static func _material(m: Dictionary, tex: Dictionary, texrec: Dictionary, instan
 		sm.set_shader_parameter("sway_axis", int(o.get("axis", 0)) if o.get("axis") != null else 0)
 		sm.set_shader_parameter("use_an", bool(o.get("aN", false)))
 		sm.set_shader_parameter("irid", bool(o.get("irid", false)))
-		var sw := _sway(str(o.get("swayW", "1.0")) if o.get("swayW") != null else "1.0")
-		sm.set_shader_parameter("sway_c", sw[0])
-		sm.set_shader_parameter("sway_w", sw[1])
-		if not sw[2]:
-			_gap(report, "swayW:" + str(o.get("swayW")), "foliage sway weight '%s' is GLSL text in the export; the Godot shader knows only c + dot(w, position)" % o.get("swayW"))
+		var sd = m.get("sway")   # the export's sway as data (since 2026-10-05): weight = c + dot(w, position)
+		if sd is Dictionary and sd.has("c"):
+			var w: Array = sd["w"]
+			sm.set_shader_parameter("sway_c", float(sd["c"]))
+			sm.set_shader_parameter("sway_w", Vector3(float(w[0]), float(w[1]), float(w[2])))
+		else:
+			var sw := _sway(str(o.get("swayW", "1.0")) if o.get("swayW") != null else "1.0")
+			sm.set_shader_parameter("sway_c", sw[0])
+			sm.set_shader_parameter("sway_w", sw[1])
+			if not sw[2]:
+				_gap(report, "swayW:" + str(o.get("swayW")), "foliage sway weight '%s' is GLSL text the export could not turn into data" % o.get("swayW"))
+			elif sd == null:
+				_gap(report, "sway data", "an export from before 2026-10-05: sway read from the GLSL text")
 		if o.get("dist"):
 			_gap(report, "leaf.dist", "foliage option dist=true (%s) is not ported" % m.get("key"))
 	else:
 		sm.shader = BARK
-		if kind == "anim":
-			_gap(report, "anim", "material kind 'anim' (animated fauna body) drawn with the bark shader, unanimated")
+		match kind:
+			"anim", "anim-phase":
+				_gap(report, kind, "material kind '%s' (animated fauna: %s) drawn with the bark shader, unanimated" % [kind, "a path in aP0/aP1" if kind == "anim" else "a per-instance phase, aPh"])
+			"irid":   # BIO.iridBarkMat: the bark's colour swings between two tints with the view angle
+				var a: Array = o.get("a", [0.78, 1.18, 0.92])
+				var b: Array = o.get("b", [1.45, 0.82, 0.74])
+				sm.set_shader_parameter("mode", 1)
+				sm.set_shader_parameter("irid_a", Vector3(float(a[0]), float(a[1]), float(a[2])))
+				sm.set_shader_parameter("irid_b", Vector3(float(b[0]), float(b[1]), float(b[2])))
+			"gloss":  # barkMat2: the map's red is brightness, green a mask toward a second colour; a sun highlight
+				var alt: Array = o.get("alt", [0.22, 0.22, 0.22])
+				sm.set_shader_parameter("mode", 2)
+				sm.set_shader_parameter("gloss_alt", Vector3(float(alt[0]), float(alt[1]), float(alt[2])))
+				sm.set_shader_parameter("gloss_mean", float(o.get("mean", 0.55)))
+				sm.set_shader_parameter("gloss_gain", float(o.get("gain", 0.52)))
+				sm.set_shader_parameter("gloss_k", float(o.get("gloss", 0.0)))
+			"far", "hang":
+				_gap(report, kind, "material kind '%s' is named in the export but has no Godot shader yet: drawn as plain bark" % kind)
 		if m["alphaTest"] > 0.0:
 			sm.set_shader_parameter("alpha_test", float(m["alphaTest"]))
-	if m.get("hooked") and kind != "leaf" and kind != "anim":
-		_gap(report, "hooked:" + str(m.get("key")), "kind '%s' material %s carries a kit shader hook (iridescent bark, gloss, far impostor, hang) with no core kind: drawn plain" % [kind, m.get("key")])
-	# the export says colours are linear, but a material colour is three's material.color as written: assume sRGB
-	sm.set_shader_parameter("colour", KData.colour(m["colour"], true) if m["colour"] != null else Color(1, 1, 1))
-	if m["colour"] != null and str(m["colour"]) != "#ffffff":
-		_gap(report, "material colour space", "material colours other than white: the contract's 'linear' covers instance and vertex colours; material.color is read as sRGB here")
+	if m.get("hooked") and not (kind in ["leaf", "anim", "anim-phase", "irid", "gloss", "far", "hang"]):
+		_gap(report, "hooked:" + str(m.get("key")), "kind '%s' material %s carries a kit shader hook the export does not name: drawn plain" % [kind, m.get("key")])
+	# material colours are three's linear working values written as hex (convention.colours.materials): no conversion
+	sm.set_shader_parameter("colour", KData.colour(m["colour"], false) if m["colour"] != null else Color(1, 1, 1))
 	if map_id != null and tex.has(map_id) and tex[map_id] != null:
 		sm.set_shader_parameter("albedo_tex", tex[map_id])
+		sm.set_shader_parameter("data_tex", tex[map_id])
 		sm.set_shader_parameter("has_tex", true)
 		var r: Array = texrec[map_id]["repeat"]
 		sm.set_shader_parameter("uv_repeat", Vector2(float(r[0]), float(r[1])))

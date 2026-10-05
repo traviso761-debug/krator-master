@@ -31,12 +31,12 @@ static func build(path: String) -> Node3D:
 		var o := OmniLight3D.new()
 		o.position = _v3(l["at"])
 		o.omni_range = 16.0
-		o.light_color = Color(1.0, 0.85, 0.45).srgb_to_linear()
+		o.light_color = KData.colour(l.get("color", [1.0, 0.85, 0.45]), true)   # the lamp's halo colour (since 2026-10-05)
 		o.set_meta("hours", l["hours"])
 		o.set_meta("energy", 1.6)
 		o.set_meta("kind", "lamp")
 		lights.add_child(o)
-	report["gaps"]["lamp light"] = "a lamp record has a position and hours only: range, colour and energy are guessed here (16 m, the glow's colour, 1.6)"
+	report["gaps"]["lamp light"] = "three.js gives a lamp no light, only its halo (the record says so): range and energy are the spike's choice (16 m, 1.6), the colour the halo's"
 
 	# halos: one MultiMesh of camera-facing quads; hours in INSTANCE_CUSTOM
 	var glow: Array = d["glow"]

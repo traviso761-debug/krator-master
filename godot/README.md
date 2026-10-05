@@ -18,6 +18,7 @@ godot --path godot                                # the window: keys 1-5 switch 
 godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)
+godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather)
 ```
 
 Or open `godot/project.godot` in the editor (Import, then F5). The first open imports `data/` (the `.glb` files are
@@ -46,13 +47,15 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `project.godot`, `main.tscn`, `spike.gd` | the project, its one scene, and the case loader, HUD, `--check` and `--shot` |
 | `krator/kdata.gd` | decoding shared by the importers: typed arrays, matrices, colours, data-URL textures, three geometry to `ArrayMesh` (winding reversed), the heightfield |
 | `krator/biome_import.gd` | `krator-biome` to MultiMesh and ArrayMesh, per `biomes/GODOT.md` |
-| `krator/atmos.gd` | the `Atmos` autoload: clock, `night()`, the veering wind, the global shader parameters (`core/atmos/GODOT.md`) |
+| `krator/atmos.gd` | the `Atmos` autoload: clock, `night()`, a light's and a halo's hours, the veering wind, the weather state machine and lightning, the global shader parameters (`core/atmos/GODOT.md`) |
 | `krator/atmos_import.gd`, `atmos_lights.gd` | `krator-atmos` to lights, halos, props, smoke, fog volumes; the lights' hours, flicker and sweeps |
 | `krator/gltf_region.gd` | a `.glb` loaded at runtime, glTF extras copied to node metadata |
+| `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
 | `krator/records_import.gd` | Yuni's records to stand-in nodes with every record on its node as metadata |
 | `krator/fly_camera.gd` | the camera |
-| `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain), `halo`, `terrain` |
+| `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain` |
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
+| `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos) |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
 | `tools/export_spike.py` | writes `data/` from the built pages (headless Chromium; `pip install playwright`) |
 | `tools/spike_export.js`, `tools/vendor/GLTFExporter.r128.js` | the glTF region exporter injected into a page, and three r128's own exporter (MIT, from the three@0.128.0 npm package) |

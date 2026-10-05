@@ -11,7 +11,7 @@ func _process(_d: float) -> void:
 			continue
 		var l := c as Light3D
 		var hours: Array = l.get_meta("hours", [0, 0])
-		var k: float = Atmos.lit(h, float(hours[0]), float(hours[1]))
+		var k: float = Atmos.glow_lit(h, float(hours[0]), float(hours[1]))   # the beacon (on 0) always, the rest by their hours
 		var e: float = l.get_meta("energy", 1.0) * k
 		match l.get_meta("kind", ""):
 			"brazier":

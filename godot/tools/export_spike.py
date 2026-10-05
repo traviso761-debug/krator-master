@@ -11,17 +11,17 @@ cover the routes the plan names and to differ from each other:
 
   hyperjungle  krator-biome JSON (BIO.export), a 300 m tile round a hero hypertree; DataTexture leaf atlases; no LOD chunks
   rift         krator-biome JSON, one tile; every mesh LOD-chunked; hooked materials (irid bark, far impostors)
-  girder       glTF (three's own GLTFExporter over a region): the material library's textures, shader hooks lost
+  girder       glTF (three's own GLTFExporter over a region) plus its material records (KMAT.table) and pack (tex/)
   iziz         krator-atmos JSON (ATMOS.export) for the whole city, plus a glTF region of the city round it
   yuni         KRATOR_EXPORT records (fixtures and one building's interior): ids, tags, nav, no meshes at all
 
-Every case except yuni also writes terrain.json: the page's ground height sampled on a grid over the
-region (krator-heightfield, a spike-only stand-in for the core/terrain bake that Phase 2 plans), because
-no exporter carries the ground yet and the plants would float.
+The biome tiles carry their own ground (BIO.export's `ground`, since 2026-10-05). Girder and Iziz also write
+terrain.json: the page's ground height sampled on a grid (krator-heightfield, a spike-only stand-in for the
+core/terrain bake that Phase 2 plans), since their exports carry no ground of their own.
 
 Needs: pip install playwright (the cloud containers ship Chromium in /opt/pw-browsers).
 """
-import argparse, asyncio, base64, functools, glob, http.server, json, os, socketserver, struct, sys, threading, time
+import argparse, asyncio, base64, functools, glob, http.server, json, os, shutil, socketserver, struct, sys, threading, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GODOT = os.path.dirname(HERE)
@@ -40,11 +40,12 @@ HEIGHT_JS = """([box, step, fn]) => { const h = eval(fn); const nx = Math.floor(
 
 CASES = {
     "hyperjungle": dict(page="biomes/hyperjungle/dist/hyperjungle.html", kind="biome",
-                        box=[12, -897, 312, -597], height="(x,z)=>BIO.terrainH(x,z)", step=2),   # centred on a hero hypertree (162, -747)
+                        box=[12, -897, 312, -597]),   # centred on a hero hypertree (162, -747)
     "rift": dict(page="biomes/rift/dist/rift.html", kind="biome",
-                 box=[-450, 150, -150, 450], height="(x,z)=>BIO.terrainH(x,z)", step=2),
+                 box=[-450, 150, -150, 450]),
     "girder": dict(page="settlements/girder/girder.html", kind="gltf",
-                   box=[-30, -30, 30, 30], height="(x,z)=>_api.terrainH(x,z)", step=1),
+                   box=[-30, -30, 30, 30], height="(x,z)=>_api.terrainH(x,z)", step=1,
+                   kmat="girder", tex="settlements/girder/tex"),   # the material library pilot: records and its pack
     "iziz": dict(page="settlements/iziz/dist/iziz.html", kind="atmos",
                  box=[-80, -80, 80, 80], height="(x,z)=>terrainH(x,z)", step=2,
                  hbox=[-440, -620, 620, 450], hstep=4),
@@ -129,6 +130,13 @@ async def run_case(browser, port, name, c, log):
             f.write(base64.b64decode(g["b64"]))
         files["region.glb"] = g["bytes"]
         write_json(os.path.join(out, "region.dropped.json"), {"box": c["box"], "stats": g["stats"], "dropped": g["dropped"]})
+        if c.get("kmat"):   # the material records (KMAT.table) and the pack the Godot side rebuilds library surfaces from
+            files["materials.json"] = write_json(os.path.join(out, "materials.json"), await pg.evaluate("b => KMAT.table(b)", c["kmat"]))
+        if c.get("tex"):
+            dst = os.path.join(out, "tex")
+            shutil.rmtree(dst, ignore_errors=True)
+            shutil.copytree(os.path.join(REPO, c["tex"]), dst)
+            files["tex/"] = sum(os.path.getsize(os.path.join(dst, f)) for f in os.listdir(dst))
         log(f"{name}: glb {g['stats']} dropped {g['dropped']}")
     elif c["kind"] == "records":
         files["fixtures.json"] = write_json(os.path.join(out, "fixtures.json"), await pg.evaluate("KRATOR_EXPORT.fixtures()"))

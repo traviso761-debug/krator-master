@@ -119,6 +119,10 @@ func _load_case(name: String) -> Dictionary:
 			report = b.get_meta("report")
 			var box: Array = b.get_meta("krator", {}).get("box", [0, 0, 0, 0])
 			focus = Vector3((box[0] + box[2]) * 0.5, 0, (box[1] + box[3]) * 0.5)
+			if b.has_meta("ground"):   # the export's own ground (since 2026-10-05) replaces the sampled terrain.json
+				if terrain:
+					terrain.queue_free()
+				terrain = b.get_meta("ground")
 		"girder", "iziz":
 			if terrain:
 				terrain.position.y = -0.25   # the region carries its own ground: keep the sampled one just under it

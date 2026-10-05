@@ -17,18 +17,35 @@
         "shape": 14
       },
       "images": 26,
-      "load_ms": 241,
+      "load_ms": 439,
       "materials": 53,
       "meshes": 77,
       "nodes_with_extras": 78,
-      "triangles": 1262903
+      "triangles": 1371447
     },
     "file": "res://data/girder/region.glb",
     "gaps": {
       "attributes": "custom vertex attributes dropped: { \"aN\": 10.0, \"aC2\": 2.0, \"aAux\": 1.0, \"aFall\": 1.0, \"aPRO\": 4.0, \"aAnim\": 4.0, \"aGarb\": 4.0, \"aSkin\": 4.0, \"aHair\": 4.0, \"aFlyB\": 6.0, \"aFlyP0\": 6.0, \"aFlyP1\": 6.0, \"aFlyP2\": 6.0, \"aFlyP3\": 6.0 }",
       "instancing": "glTF r128 has no instancing: every InstancedMesh arrives merged into one big mesh (no MultiMesh, no per-instance tags)",
+      "library materials": "24 library surfaces rebuilt from the pack (plank, timber, rope, shingle, cloth, rock, wall, ground) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost",
       "shader hooks": "51 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+    },
+    "materials_library": {
+      "families": {
+        "cloth": 1,
+        "ground": 1,
+        "plank": 2,
+        "rock": 1,
+        "rope": 1,
+        "shingle": 2,
+        "timber": 3,
+        "wall": 1
+      },
+      "replaced": 24,
+      "unmatched": {
+
+      }
     },
     "route": "glTF (three GLTFExporter r128)"
   },
@@ -37,17 +54,16 @@
       "buckets": 3,
       "instances": 4348,
       "items": 19,
-      "load_ms": 190,
+      "load_ms": 274,
       "materials": 32,
       "textures": 21,
       "triangles": 11085
     },
     "file": "res://data/hyperjungle/biome.json",
     "gaps": {
-      "anim": "material kind 'anim' (animated fauna body) drawn with the bark shader, unanimated",
+      "anim": "material kind 'anim' (animated fauna: a path in aP0/aP1) drawn with the bark shader, unanimated",
       "fauna paths": "fauna that fly a path in the shader (aP0, aP1) stand still at their path centre: the anim shader and its second channel are not ported",
-      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label",
-      "terrain": "no ground in the export: the spike samples the page's terrainH into terrain.json"
+      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
     },
     "route": "krator-biome JSON"
   },
@@ -63,7 +79,7 @@
         "sectorOf": 89
       },
       "images": 18,
-      "load_ms": 332,
+      "load_ms": 342,
       "materials": 77,
       "meshes": 266,
       "nodes_with_extras": 234,
@@ -100,7 +116,7 @@
       },
       "glow": 328,
       "lamps": 70,
-      "load_ms": 27,
+      "load_ms": 29,
       "prop_instances": 2467,
       "prop_sets": 26
     },
@@ -113,7 +129,7 @@
       "fogbank": "fog banks are FogVolume ellipsoids (Forward+ with volumetric fog on; invisible on Compatibility): density guessed",
       "fountain": "fountain: only its props are drawn (no flag shader, water jet, or flow)",
       "glow gain": "three draws halos with no tonemapper at gain 1.7; under Godot's Filmic tonemapper the spike uses 0.6x: retune and move the number into the preset",
-      "lamp light": "a lamp record has a position and hours only: range, colour and energy are guessed here (16 m, the glow's colour, 1.6)",
+      "lamp light": "three.js gives a lamp no light, only its halo (the record says so): range and energy are the spike's choice (16 m, 1.6), the colour the halo's",
       "mist": "mist's 'curve' is a flat number list whose layout the contract does not state (radii round the moat?): not imported",
       "moths": "moths are stateless sprites in three; the MultiMesh + vertex shader port is not written",
       "outfall": "outfall: only its props are drawn (no flag shader, water jet, or flow)",
@@ -126,17 +142,16 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 778,
+      "load_ms": 934,
       "materials": 51,
       "textures": 35,
       "triangles": 186840
     },
     "file": "res://data/rift/biome.json",
     "gaps": {
-      "hooked:<null>": "kind 'bark' material <null> carries a kit shader hook (iridescent bark, gloss, far impostor, hang) with no core kind: drawn plain",
+      "far": "material kind 'far' is named in the export but has no Godot shader yet: drawn as plain bark",
       "lod": "LOD is per chunk box in three and per node point in Godot: ranges widened by the chunk half-diagonal (849 m); stand-ins and impostors are not LOD levels of what they replace",
-      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label",
-      "terrain": "no ground in the export: the spike samples the page's terrainH into terrain.json"
+      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
     },
     "route": "krator-biome JSON"
   },
@@ -154,7 +169,7 @@
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 176,
+      "load_ms": 159,
       "windows": 6841
     },
     "counts_interior": {

@@ -141,10 +141,46 @@ static func oct_encode(v: Vector3) -> Vector2:
 
 
 # krator-heightfield (written by godot/tools/export_spike.py): a grid mesh with the spike's ground shader,
+# a biome tile's ground (BIO.export's `ground`: the same grid, heights and water) as the same mesh, with a flat
+# water sheet where the water stands above the ground
+static func ground(g: Dictionary) -> Node3D:
+	var hf := {"format": "krator-biome ground", "nx": g["nx"], "nz": g["nz"], "step": g["step"], "x0": g["x0"], "z0": g["z0"],
+		"heights": g["heights"]}
+	var n := _grid(hf)
+	if g.has("water"):
+		var w := floats(g["water"])
+		var h := floats(g["heights"])
+		var wet := 0
+		var lvl := 0.0
+		for i in w.size():
+			if w[i] > h[i] + 0.01:
+				wet += 1
+				lvl += w[i]
+		if wet > 0:
+			var q := PlaneMesh.new()
+			q.size = Vector2((float(g["nx"]) - 1.0) * float(g["step"]), (float(g["nz"]) - 1.0) * float(g["step"]))
+			var mat := StandardMaterial3D.new()
+			mat.albedo_color = Color(0.12, 0.22, 0.26, 0.75)
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.roughness = 0.08
+			q.material = mat
+			var wm := MeshInstance3D.new()
+			wm.name = "Water"
+			wm.mesh = q
+			wm.position = Vector3(float(g["x0"]) + q.size.x * 0.5, lvl / wet, float(g["z0"]) + q.size.y * 0.5)
+			wm.set_meta("krator", {"note": "one sheet at the mean water level of the wet cells (%d of %d)" % [wet, w.size()]})
+			n.add_child(wm)
+	return n
+
+
 static func heightfield(path: String) -> Node3D:
 	var hf = read_json(path)
 	if not (hf is Dictionary):
 		return null
+	return _grid(hf)
+
+
+static func _grid(hf: Dictionary) -> Node3D:
 	var nx: int = int(hf["nx"])
 	var nz: int = int(hf["nz"])
 	var step: float = float(hf["step"])
