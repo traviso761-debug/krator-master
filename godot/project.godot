@@ -1,0 +1,71 @@
+; Krator's Godot project: the port spike (GODOT-PLAN.md Phase 7). README.md says how to run it.
+
+config_version=5
+
+[application]
+
+config/name="Krator spike"
+config/description="Krator's exports (biome tiles, atmosphere, glTF regions, records) opened in Godot to find what the importer lacks."
+run/main_scene="res://main.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+
+[autoload]
+
+Atmos="*res://krator/atmos.gd"
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+anti_aliasing/quality/msaa_3d=2
+
+[shader_globals]
+
+atm_hour={
+"type": "float",
+"value": 12.0
+}
+atm_night={
+"type": "float",
+"value": 0.0
+}
+atm_time={
+"type": "float",
+"value": 0.0
+}
+atm_rain={
+"type": "float",
+"value": 0.0
+}
+atm_fog={
+"type": "float",
+"value": 0.0
+}
+atm_flash={
+"type": "float",
+"value": 0.0
+}
+atm_wind={
+"type": "vec2",
+"value": Vector2(0.8, 0.35)
+}
+atm_gust_amp={
+"type": "float",
+"value": 0.55
+}
+atm_wind_off={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
+atm_light={
+"type": "float",
+"value": 1.0
+}
+atm_sun_dir={
+"type": "vec3",
+"value": Vector3(0.45, 0.72, -0.52)
+}

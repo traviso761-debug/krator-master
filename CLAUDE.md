@@ -21,6 +21,7 @@ says which build holds what.
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
+| `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
@@ -31,7 +32,7 @@ says which build holds what.
 These files are big and generated. **Do not open or grep them:**
 `dist/`, `voth.html`, `yuni*.html`, `.syntax*.js`, `.origin.html`,
 `three.min.js`, `*.zip`, `shots/`, `archive/`, `host/site/`, `host/menagerie/`,
-`host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked; `.ignore` keeps it out of repo-wide searches, so name the path to search it).
+`godot/data/` (the spike's exports; `.ignore` keeps it out of searches), `host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked; `.ignore` keeps it out of repo-wide searches, so name the path to search it).
 Pass `--glob '!**/dist/**'` (or search a `src/` folder) when using Grep.
 
 - **Edit only in `src/` and `targets/`.** The HTML is rebuilt from them.

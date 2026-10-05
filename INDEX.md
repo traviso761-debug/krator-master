@@ -43,6 +43,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 |---|---|
 | `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |
 | `kits/furniture/` | spec only |
+| `godot/` | the Godot project: the port spike's importers, shaders and test exports (`godot/README.md`, GODOT-PLAN.md Phase 7) |
 | `gallery/` | the shareable gallery of every built world |
 | `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |
 | `tools/` | repo-wide scripts: this index |

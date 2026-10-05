@@ -27,7 +27,7 @@ What already crosses over, or is scaffolded to:
 | `core/sockets/` | a building declares sockets, a culture pack fills them | data side is the socket list; the packs draw with 2D canvas |
 | `core/terrain/36-core-carve.js` | floor and blocker lists as the carve builds | node test exists; no exporter |
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
-| `core/rand/` (2026-10-02) | one stream (the lineages' mulberry32, proven equal), an integer hash and noise; golden vectors; node test; GDScript twin `krand.gd`, its arithmetic proven by a Python transliteration, not yet run in Godot | Ys's city takes it for its placement pass |
+| `core/rand/` (2026-10-02) | one stream (the lineages' mulberry32, proven equal), an integer hash and noise; golden vectors; node test; GDScript twin `krand.gd`, its arithmetic proven by a Python transliteration, passing in Godot 4.5 headless since 2026-10-05 (`godot/tests/rand/`) | Ys's city takes it for its placement pass |
 | `core/clock/` (2026-10-02) | the world clock (Phase 1's contract); node test | Iziz's city runs on it; becomes `WorldClock.gd` |
 | `core/simulation/` | documents only: `ROADMAP.md`, `PLAN.md` | the life layers' shared vocabulary and `SIM.export()` (`krator-sim`), planned as the fourth exporter |
 | `settlements/ys` (the Hykkousoi capital; phases 0–2 built, the city not yet placed) | the layout, the land–sea lattice, the NAV grids and the ground stamps are records and Float32 grids with no three.js in them; every placed thing leaves a record (volumes, doors, windows, lights, rooms, spots, furniture) | no exporter yet. `settlements/ys/GODOT.md` reads the build against this plan: it takes `core/rand` and the terrain bake before its city pass, writes sim data instead of a life layer, and exports on the `KRATOR_EXPORT` shape |
@@ -256,7 +256,7 @@ twin) checked against the same golden vectors. Each ships with its **first consu
 
 | Module | First consumer | Status |
 |---|---|---|
-| `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; not yet run in Godot); Ys's city takes it |
+| `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; passing in Godot 4.5 since 2026-10-05); Ys's city takes it |
 | `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
 | `core/tags/` | Yuni's `FIX.*` records or Voth's `PLACED` (both exist; map one) | not started |
 | `core/furnish/` | Girder (the material pilot is there too) | not started |
@@ -490,6 +490,46 @@ lacked (ids, tags, a material vocabulary, a terrain under the tile, a colour con
 of Phases 2 to 4 instead of this plan guessing it. Godot is not installed where the repo is built, so the spike runs
 on Travis's (or his friend's) machine; `godot/README.md` should say how.
 
+**The spike: first findings (2026-10-05).** `godot/` exists (`godot/README.md`; tomorrow's steps in
+`godot/CHECKLIST.md`). Run in a cloud container with Godot 4.5-stable: headless for the imports, the Compatibility
+renderer on a software GPU for screenshots. **Not yet run: Forward+ on a real GPU, the editor's import route, speed.**
+Five cases, chosen to differ: hyperjungle and rift tiles (`krator-biome`), Girder and Iziz regions as glTF (three's
+own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krator-atmos`, Yuni's `KRATOR_EXPORT` records.
+`godot --headless --path godot -- --check` prints each importer's gap list.
+
+1. **`krand_test.gd` passes in Godot 4.5** (streams, hash, noise, cell): `core/rand` is bit-exact in both engines. Spike item 1 done.
+2. **Fixed in the exporter:** `BIO.export` wrote no image for a DataTexture (every kit's leaf atlases), so cards came
+   in solid. `BIO.texPNG` (in `43-core-export-host.js`, [web]) now encodes canvases, DataTextures and images, and each
+   texture record carries `flipY` (canvases flip v, DataTextures do not). Ten biome pages rebuilt; only export code changed.
+3. **Biome tiles clip buckets by triangle centroid,** so a hero tree on a tile edge is cut in half. Hero trees want
+   to belong to the tile that holds their record (blocker 10's records), not be clipped by it.
+4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`).
+5. **No ground in any export.** The spike samples `terrainH` into a heightfield (`krator-heightfield`, spike-only); the
+   `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags.
+6. **Kit shader hooks with no core kind** come in plain: rift's iridescent bark and far impostors (their records have
+   no `key` either, so the report cannot even name them). Fauna (`anim`, `aP0`/`aP1`) stand still at their path centre.
+7. **`swayW` is GLSL text** in the export. The three values the kits use map to `c + dot(w, position)`; make it data.
+8. **LOD is measured to the chunk's box in three and to a point in Godot:** the spike widens ranges by the chunk
+   half-diagonal. Stand-ins and impostors are not LOD levels of what they replace.
+9. **Colour spaces differ by table:** biome instance and vertex colours are linear, material colours are written as
+   three holds them (the importer assumes sRGB), the atmosphere is sRGB. One `convention.colour` per table.
+10. **glTF (three r128 `GLTFExporter`) gets meshes and the library's textures across** and carries `userData` as
+    extras, but: no instancing (every InstancedMesh merges into one mesh, no per-instance tags); every
+    `onBeforeCompile` hook is lost (51 of Girder's 53 materials: the library's break-up, tint and contrast, wind, glow);
+    custom attributes are dropped, so stalls and people come in near-white (`aGarb`, `aSkin`, `aPRO`); ShaderMaterials
+    (water, sky, glow) have no glTF form. Good for a look at static architecture, not a pipeline.
+11. **Godot 4.5's runtime `GLTFState.get_scene_node()` returned null for most nodes;** extras are mapped by node name instead.
+12. **The atmosphere's lamp records** carry position and hours only: range, colour and energy are guessed. Halo gain
+    needs retuning under a tonemapper. `mist`'s `curve` layout is not stated in the contract. `atm_lit` in
+    `core/atmos/GODOT.md` omits the export's own `on=0` (always) and `on<0` (follows night) cases. The weather state
+    machine, fireflies, moths, the flag shader and the fountain jets are not ported.
+13. **Yuni's records import cleanly** (1770 buildings, 1842 doors, 6841 windows, 2591 lights, one compound's rooms,
+    walls, furniture and nav links), and they say their frame. Gaps: no meshes (a second route is needed), MultiMesh
+    instances cannot hold tags (doors and windows need a side table), wall openings need cutting, light units differ.
+
+What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
+material kinds with `swayW` as data, then fauna animation.
+
 The project, as it grows (Godot 4.x, Forward+; Compatibility only if a web export is wanted), in `godot/`:
 
 - `addons/krator/`: the importer (Phase 4), the tag metadata, collision from `-col` and from the carver's
@@ -596,7 +636,7 @@ These go into `README.md`'s design rules and `check_port.py` as they become enfo
 | Milestone | Proves |
 |---|---|
 | M1 audit | `PORT-INDEX.md`, a `PORT.md` per build, `check_port.py` running (Phase 0). **Done** |
-| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1 |
+| S spike | `krand_test.gd` passes in Godot; one biome export and one atmosphere export open in a Godot scene; the importer's gap list is written here (Phase 7, "The spike"). Comes right after M1. **Underway 2026-10-05:** `krand_test.gd` passes; five exports open headless with gap lists ("The spike: first findings"); the look on a real GPU is next |
 | M2 shell | one `core/host/`, no camera/probe/inspector copies left, hashes or screenshots unchanged (Phase 1) |
 | M3 substrate | `core/rand`, `core/terrain` field, `core/tags` with node tests and GDScript twins; `core/furnish` in the six furnished builds; `core/mask` under the four mask-placed cities (Phase 2) |
 | M4 first tile | a biome kit's tile opens in Godot from `core/export` with materials and tags (Phases 3, 4, 7 start) |
