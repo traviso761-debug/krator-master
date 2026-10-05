@@ -46,6 +46,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `73-police.js` | 5 |  |
 | `73-vern-infra.js` | 9 | grain silos: four stave silos on stilts under th (5); storage tank: a reclaimed Ancient tank on a ston (24); electric generator: stone engine house, a reclai (47) |
 | `74-vern-guilds.js` | 35 **big** | local helpers (LOCAL frame, y = base of the piec (8); Farmers' Guild: half-timber hall on a stone plin (86); Beast Hunters' Guild: trophy hall with a towerin (140); caravanserai: walled court, gatehouse with a two (190); Forgemaster's Hall: tall stone hall with a 9 m o (238) |
+| `74b-vern-frontier.js` | 38 **big** | local helpers (LOCAL frame, y = base of the piec (9); the Governor's Palace: walled forecourt, iron ga (41); the guard tower and barracks: a square stone tow (99); the watch house: a two-storey city-watch post, s (141); the toll house: at the trailhead, a toll window  (161); the palisade: ONE modular segment, o.len metres  (194); the palisade gate: two log towers either side of (205); the mustering ground: an open drill yard inside  (230); the rest stop on the cliff trail. v0: cut into t (259) |
 | `75-port-embassy.js` | 24 | textures (near-grey, tinted per instance; 128 px (10); materials (35); geometry (43); kit items (58); local helpers (vp prefix) (68); the embassy (84) |
 | `76-campus.js` | 9 |  |
 | `76-port-chapterhouse.js` | 17 |  |
@@ -77,7 +78,7 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `city` | `84-city-geo.js`, `85-city-paint.js`, `86-bio-10-core-head.js`, `86-bio-20-core-kit.js`, `86-bio-30-core-foliage.js`, `86-bio-35-core-anim.js`, `86-bio-40-core-place.js`, `86-bio-45-init.js`, `86-bio-50-biome-hyperjungle-species.js`, `86-bio-55-biome-hyperjungle-trees.js`, `86-bio-58-biome-hyperjungle-fauna.js`, `86-bio-60-biome-hyperjungle-floor.js`, `86-bio-65-biome-hyperjungle-dress.js`, `86-bio-70-biome-hyperjungle.js`, `87-city-layout.js`, `88-city-place.js`, `89z-rows.js`, `90a-city-world.js`, `90b-city-build.js`, `90c-city-atmos.js`, `91z-views.js`, `93-city-ui.js` | 274 |
-| `vernacular` | `89z-rows.js`, `91z-views.js` | 3 |
+| `vernacular` | `89z-rows.js`, `91z-views.js` | 5 |
 | `wA` | `89z-rows.js`, `91z-views.js` | 2 |
 | `wB` | `89z-rows.js`, `91z-views.js` | 1 |
 | `wC` | `89z-rows.js`, `91z-views.js` | 2 |

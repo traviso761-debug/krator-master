@@ -928,3 +928,12 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [x] **Proof the pure refactors changed nothing:** dist hashes necessarily change (the source is in the page), so the proof is a geometry hash per scene group (positions, normals, uvs, indices, world matrices; instance matrices and colours): on a scratch target of House D-F, Amphitheater, Foundry (domMould, holeFn without `foot`, meshMerged, apron) every group is bit-identical before/after; on the Ring every intact group is (rbeam), only the ruin differs (the foot term, by design).
 - [ ] The soffit fix is a global shader patch: a builder that painted its own shade in (Arcube, Arcoindian II, Ledge, Wing, Hill) now gets neutral light on top of its painted grey and may read a step lighter underneath than it was tuned to. Not re-tuned this round.
 
+
+## The Funicular (`--target funicular`; `src/8ap-funicular.js`, taken by Verge)
+
+- [ ] Funicular concrete needs `TEX.concrete` (54-mat-concrete.js). Verge's bundle does not list that fragment, so there the
+      piers, deck and stations render a flat stained grey with no board marks. Either bundle 54 or accept the grey; no new
+      texture is needed. (core/materials/68-mat-v5.js reads TEX.concrete too.)
+- [ ] Funicular: no sand drift, scree or plants on the ruin yet; no night state (nothing burns in it); the stairs mesh is one
+      merged mesh per draw() call and is not chunked for LOD.
+- [x] The deck is not in `blocks`: a host walks it through `walk` (or `deckY`). Blocks are vertical solids only.

@@ -3190,7 +3190,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
 /* ---------- sets/abyss.js ---------- */
 /* ======================== Interior set: Eastern Abyssal (settlements/locus, kit `abyss`) ========================
    The interiors of the Eastern Abyssal building kit (ABYSS-KIT-NOTES.md): one item per the 31 NEW ASSET keys
-   on the abyss sheet (65-abyss-30..90-*.js; the two tag demos abyss_helpers_demo and abyss_wall_run are
+   on the abyss sheet (65-abyss-30..90-*.js, with the five Lower Verge keys of 65-abyss-75-verge.js; the two tag demos abyss_helpers_demo and abyss_wall_run are
    skipped as demos), plus `<key>#n` items where a variant's rooms differ a lot from variant 0. The ten keys
    the abyss sheet shares with the Locus sheet (stilt_poor, stilt_mid, tent_pavilion, sunshade_poles,
    farm_saltrice, infra_fishing_dock, ind_pumpjack, ind_oil_tank, prop_pipe_rack, prop_drum_stack) are in
@@ -3572,6 +3572,44 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       }),
       note: 'the five ground containers (6.1 m, turned along z, x -12.2..12.2) on the yard, each entered by its cargo doors on the ' +
         'front end; one store each. The three containers stacked on them have no door; the sails and the yard are open' },
+
+    /* ---------- Lower Verge (65-abyss-75-verge.js) */
+    { key: 'abyss_mayor_compound', name: 'The Mayor\'s compound', culture: 'eastabyss', wealth: 0.75, types: ['civic', 'single-family dwelling'], lot: [70, 56],
+      bodies: [
+        { id: 'residence', poly: rect(12, 12, -26, -19), y: 0.6, levels: [{ h: 2.95 }, { h: 3.05 }], wall: 0.3, roof: 'flat', slab: 0.3,
+          doors: [{ at: [-26, -13], w: 1.3 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom', 'study']] },
+        { id: 'office', poly: rect(13, 14, 26, -18), y: 0.6, levels: [{ h: 4.0 }], wall: 0.3, roof: 'flat',
+          doors: [{ at: [26, -11], w: 1.4 }], program: [['study', 'library', 'store']] }],
+      rooms: [{ id: 'council-hall', kind: 'hall', poly: rect(29.2, 21.2, 0, -11), y: 1.6, h: 6.5,
+        doors: [{ at: [0, -0.4], w: 10, swing: 'none' }],
+        fixtures: [
+          { id: 'tiers-back', kind: 'bench', x: 0, z: -20.25, ry: 0, w: 23.8, d: 2.7, h: 1.26, reach: false },
+          { id: 'tiers-west', kind: 'bench', x: -13.25, z: -11.45, ry: 0, w: 2.7, d: 14.9, h: 1.26, reach: false },
+          { id: 'tiers-east', kind: 'bench', x: 13.25, z: -11.45, ry: 0, w: 2.7, d: 14.9, h: 1.26, reach: false }] }],
+      note: 'the mayor\'s lime-washed residence (12 x 12, two storeys on a 0.6 m plinth: living room and kitchen, two bedrooms and a study), ' +
+        'the office and records wing (13 x 14, one 4.4 m storey: office, records library, store) and the council hall: the open floor ' +
+        'of the raised (1.6 m) open-sided hall inside its posts, the three built-in tiers of benches as fixtures, entered by the 10 m front ' +
+        'stair. The court, the sail-shaded forecourt and the gate are open' },
+    { key: 'abyss_guard_tower', name: 'Guard tower and barrack', culture: 'eastabyss', wealth: 0.6, types: ['military'], lot: [26, 20],
+      bodies: [
+        { id: 'tower', poly: rect(9, 9, -7.5, -3), y: 0.4, levels: [{ h: 3.1 }, { h: 3.1 }, { h: 3.1 }], wall: 0.6, roof: 'flat', slab: 0.3,
+          doors: [{ at: [-7.5, 1.5], w: 1.2 }], program: [['barracks'], ['barracks'], ['barracks']] },
+        { id: 'barrack', poly: rect(13, 8.5, 3.5, -2.75), y: 0.8, levels: [{ h: 2.9 }], wall: 0.3, roof: 'gable', pitch: 0.8,
+          doors: [{ at: [4.0, 1.5], w: 1.2 }], program: [['dormitory', 'kitchen', 'dormitory']] }],
+      note: 'the three-storey tower (9 x 9: a rubble storey and two of salvaged plate, floors at 0.4, 3.8, 7.2) as three guard rooms (no ' +
+        'stair is drawn: the planner fits one; the roof walk under the cone is open), and the barrack hall attached on its right (13 x 8.5 ' +
+        'on a 0.8 m footing): two dormitories and the mess kitchen. The drill yard is open' },
+    { key: 'abyss_toll_house', name: 'Toll house at the trailhead', culture: 'eastabyss', wealth: 0.55, types: ['civic'], lot: [14, 10],
+      rooms: [
+        { id: 'booth', kind: 'shop', poly: rect(3.05, 4.4, 0.675, -1.0), y: 0.4, h: 2.6,
+          doors: [{ at: [1.6, 1.2], w: 1.0 }, { at: [-0.85, -1.0], w: 0.9 }], windows: [{ at: [2.2, -1.0], w: 2.4, sill: 1.25, h: 1.0 }] },
+        { id: 'strongroom', kind: 'store', poly: rect(3.05, 4.4, -2.675, -1.0), y: 0.4, h: 2.6, doors: [{ at: [-1.15, -1.0], w: 0.9 }] }],
+      note: 'the booth (the toll counter window on +x, the road side; its door on +z) and the strongroom behind its inner door, under one ' +
+        'roof (7 x 5 on a 0.4 m plinth). The sail over the queue and the boom are open' },
+    { key: 'abyss_palisade', name: 'Palisade segment (6 m)', types: ['military', 'infrastructure'], lot: [6, 3],
+      skip: 'a modular palisade segment (stakes, salvaged plate, drums): nothing enclosed' },
+    { key: 'abyss_palisade_gate', name: 'Palisade road gate', types: ['military', 'infrastructure'], lot: [14, 4],
+      skip: 'an open road gate between two solid pylons under a raised stake gate: nothing enclosed' },
 
     /* ---------- Tag demo */
     { key: 'abyss_helpers_demo', name: 'ABYSS helper demo', types: ['prop'], lot: [64, 36],
@@ -4456,6 +4494,234 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
 
   IX.sets.add({ set: 'highlands', title: 'Highlands: Republican, Rustic, Tribal', culture: 'republican', items: L });
 })(KratorInteriors);
+/* ---------- sets/iziz.js ---------- */
+/* ======================== Interior set: Iziz Vernacular (settlements/iziz) ========================
+   The interiors of the Iziz Vernacular building kit: one item per VERN.def key (settlements/iziz
+   src/70-vern-dwellings.js, 71-vern-trade.js, 72-vern-civic.js, 73-vern-infra.js, 74-vern-guilds.js and
+   74b-vern-frontier.js, the frontier set built for Verge's upper city), plus `<key>#n` where a variant's
+   rooms differ a lot from variant 0 (the rest stop).
+   Local frame = the builders': origin at the plot centre on the ground, +z the front (the door side), metres.
+   The builders draw every body as a solid box (walls implied), so `poly` is the box's outer face and `y` the
+   top of its plinth or floor. Where a builder stacks a storey on a cornice, the lower level's h is chosen so
+   the planner's next floor (y + h + 0.25 slab) lands on the drawn one.
+   Furniture culture: iziz (common, court; the poor tier pulls from the generic sets through the culture
+   chain). Wealth from the def's tag: poor 0.2, middle 0.5, rich 0.8, civic 0.65.
+   sets/README.md says how an item is written.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const SH = IX.sets.shape, rect = SH.rect;
+  /* the builder's roof rise / half-span -> the planner's pitch in radians */
+  const pt = function (r) { return Math.round(Math.atan(r) * 100) / 100; };
+  const POOR = 0.2, MID = 0.5, RICH = 0.8, CIVIC = 0.65;
+  const SF = ['single-family dwelling'], MF = ['multi-family dwelling'];
+  const L = [];
+  const add = function (it) { L.push(it); return it; };
+
+  /* ================================================================ dwellings (70-vern-dwellings.js) */
+  add({ key: 'vern_house_poor_a', name: 'Stilt hut', wealth: POOR, types: SF, lot: [8, 10],
+    bodies: [{ id: 'hut', poly: rect(5.3, 5.9), y: 1.7, levels: [{ h: 2.5 }], wall: 0.15, roof: 'gable', pitch: pt(2.7 / 2.95),
+      doors: [{ at: [0, 2.95], w: 0.95 }], program: ['cottage'] }],
+    note: 'one board room on stilts (floor 1.7), entered from the front platform up the ladder; the thatch loft is not planned' });
+  add({ key: 'vern_house_poor_b', name: 'Corrugate shack', wealth: POOR, types: SF, lot: [10, 8],
+    bodies: [{ id: 'shack', poly: rect(6, 5), y: 0.35, levels: [{ h: 2.6 }], wall: 0.12, roof: 'flat',
+      doors: [{ at: [-1.4, 2.5], w: 0.95 }], program: ['cottage'] }],
+    note: 'one salvage room on a rubble pad under a shed roof (planned flat); the tarp lean-to on +x is open' });
+  add({ key: 'vern_house_poor_c', name: 'Panel house', wealth: POOR, types: SF, lot: [9, 10],
+    bodies: [{ id: 'house', poly: rect(6.4, 6.2), y: 0.6, levels: [{ h: 2.7 }], wall: 0.15, roof: 'hip', pitch: pt(2.4 / 3.1),
+      doors: [{ at: [-0.6, 3.1], w: 0.95 }], program: ['cottage'] }],
+    note: 'one panel-walled room on low stilts, the veranda in front is open' });
+  add({ key: 'vern_house_mid_a', name: 'Plaster townhouse', wealth: MID, types: SF, lot: [10, 13],
+    bodies: [{ id: 'house', poly: rect(8.4, 8.8), y: 0.4, levels: [{ h: 3.35 }, { h: 3.0 }], wall: 0.3, roof: 'gable', pitch: pt(2.5 / 4.4),
+      doors: [{ at: [-1.6, 4.4], w: 1.15 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }],
+    note: 'two plaster storeys over a timber string course; the porch and the gable attic are not planned' });
+  add({ key: 'vern_house_mid_b', name: 'Setback house', wealth: MID, types: MF, units: 2, lot: [12, 11],
+    bodies: [{ id: 'lower', poly: rect(9.4, 9), y: 0.35, levels: [{ h: 3.4 }], wall: 0.3, roof: 'flat',
+      doors: [{ at: [-2.6, 4.5], w: 1.1 }, { at: [2.6, 4.5], w: 1.1 }], program: ['living', 'kitchen', 'bedroom', 'bedroom'] },
+      { id: 'upper', poly: rect(6.2, 5.6, 0, -1.45), y: 4.59, levels: [{ h: 2.9 }], wall: 0.25, roof: 'hip', pitch: pt(2.0 / 2.8),
+        doors: [{ at: [0, 1.35], w: 1.0 }], program: ['cottage'] }],
+    note: 'two households: the ground storey (two street doors) and the set-back upper storey, entered from the roof terrace up ' +
+      'the outside stair on +x, each its own body; the terrace is open' });
+  add({ key: 'vern_house_mid_c', name: 'Long house', wealth: MID, types: SF, lot: [15, 14],
+    bodies: [{ id: 'house', poly: rect(11, 7.2), y: 0.5, levels: [{ h: 3.7 }], wall: 0.25, roof: 'hip', pitch: pt(2.8 / 3.6),
+      doors: [{ at: [-1.8, 3.6], w: 1.1 }, { at: [2.8, 3.6], w: 1.0 }], program: ['living', 'kitchen', 'bedroom', 'bedroom'] }],
+    note: 'one storey on low stilts behind the full-width veranda (open)' });
+  add({ key: 'vern_house_rich_a', name: 'Stone manor', wealth: RICH, types: SF, lot: [28, 24],
+    bodies: [{ id: 'manor', poly: rect(11, 9.4), y: 0.6, levels: [{ h: 5.75 }, { h: 3.4 }], wall: 0.45, roof: 'hip', pitch: pt(2.7 / 4.7),
+      doors: [{ at: [0, 4.7], w: 1.7 }], program: [['hall', 'kitchen'], ['bedroom', 'bedroom', 'study']] }],
+    note: 'both storeys are planned on the gallery storey\'s 11 x 9.4 (the battered ground storey is 14 x 12 at its foot, 12 x 10.3 ' +
+      'at its head: the planner wants one footprint for a stair to pass); the stepped cornice is ' +
+      '1.4 m of solid stone, so the ground storey is planned 5.75 high to put the gallery floor on its drawn height (6.62); the ' +
+      'corner tower, the balcony and the walled court are not planned' });
+  add({ key: 'vern_house_rich_b', name: 'Domed house', wealth: RICH, types: SF, lot: [26, 23],
+    bodies: [{ id: 'house', poly: rect(12.4, 11.6), y: 0.5, levels: [{ h: 4.65 }, { h: 3.5 }], wall: 0.45, roof: 'flat',
+      doors: [{ at: [0, 5.8], w: 1.6 }], program: [['hall', 'living', 'kitchen', 'store'], ['bedroom', 'bedroom', 'study', 'bedroom']] }],
+    note: 'two ashlar storeys under a parapet and the dome (the drum is not planned), the upper one (11.8 x 11 drawn) planned on the ' +
+      'ground footprint; the loggia in front and the garden are open' });
+
+  /* ================================================================ trade and industry (71-vern-trade.js) */
+  add({ key: 'vern_shops', name: 'Shop row', wealth: MID, types: ['market/shop'], lot: [18, 12],
+    bodies: [-4.6, 0, 4.6].map(function (x, i) {
+      return { id: 'unit' + (i + 1), poly: rect(4.6, 7.4, x, 0), y: 0.3, levels: [{ h: 3.3 }], wall: 0.2, roof: 'gable', pitch: pt(2.2 / 3.7),
+        doors: [{ at: [x + 1.55, 3.7], w: 0.9 }], program: ['shop', 'store'] };
+    }),
+    note: 'three units under one roof, each its own body (the party walls); each sells over the counter in its shop-front opening, ' +
+      'the door beside it' });
+  add({ key: 'vern_tavern', name: 'Tavern', wealth: MID, types: ['tavern/inn'], lot: [22, 20],
+    bodies: [{ id: 'hall', poly: rect(16, 10), y: 0.35, levels: [{ h: 4.05 }, { h: 2.6 }], wall: 0.3, roof: 'gable', pitch: pt(4.2 / 5),
+      doors: [{ at: [0, 5], w: 1.5 }], program: [['tavern', 'kitchen', 'store'], ['bedroom', 'bedroom', 'bedroom', 'bedroom']] }],
+    note: 'the long hall and the inn rooms in the board storey above; the cross-gabled porch is open' });
+  add({ key: 'vern_workshop_a', name: "Carpenter's workshop", wealth: MID, types: ['industry'], lot: [14, 12],
+    bodies: [{ id: 'store', poly: rect(8.8, 3.85, 0, -1.575), y: 0.2, levels: [{ h: 3.4 }], wall: 0.12, roof: 'flat',
+      doors: [{ at: [-1.2, 0.35], w: 1.0 }], program: ['store'] }],
+    rooms: [{ id: 'shed', kind: 'workshop', poly: rect(8.7, 2.9, 0, 1.85), y: 0.2, h: 3.3, doors: [{ at: [0, 3.3], w: 8.0, swing: 'none' }],
+      fixtures: [{ id: 'bench-a', kind: 'bench', x: -2.2, z: 2.1, ry: 0, w: 3.2, d: 0.9, h: 0.9, reach: false },
+        { id: 'bench-b', kind: 'bench', x: 2.4, z: 2.2, ry: 0, w: 2.4, d: 0.8, h: 0.9, reach: false }] }],
+    note: 'the open-fronted shed (its two benches are fixtures) and the board-walled back half as a store; the builder draws no ' +
+      'door into the back half: one is assumed from the shed' });
+  add({ key: 'vern_workshop_b', name: "Potter's workshop", wealth: MID, types: ['industry', 'market/shop'], lot: [16, 12],
+    bodies: [{ id: 'shop', poly: rect(8, 7), y: 0.3, levels: [{ h: 3.2 }], wall: 0.25, roof: 'hip', pitch: pt(2.1 / 3.5),
+      doors: [{ at: [2.4, 3.5], w: 1.0 }], program: ['shop', 'workshop'] }],
+    note: 'the sales front (its counter stands outside the opening) and the workroom; the kiln and its drying shelves are outside' });
+  add({ key: 'vern_smithy', name: 'Scrap smithy', wealth: POOR, types: ['industry'], lot: [18, 14],
+    skip: 'open forge shed on pipe posts: one back wall of plate, nothing enclosed' });
+  add({ key: 'vern_market', name: 'Market canopy', wealth: MID, types: ['market/shop'], lot: [30, 22],
+    skip: 'open market canopy on posts over rows of stalls: nothing enclosed' });
+  add({ key: 'vern_warehouse', name: 'Warehouse', wealth: MID, types: ['industry'], lot: [30, 20],
+    bodies: [{ id: 'shed', poly: rect(22, 12), y: 0.9, levels: [{ h: 5.2 }], wall: 0.25, roof: 'gable', pitch: pt(3.4 / 11),
+      doors: [{ at: [-6, 6], w: 2.2 }, { at: [0, 6], w: 2.2 }, { at: [6, 6], w: 2.2 }, { at: [11, -1], w: 3.6 }], program: ['store', 'store', 'store'] },
+      { id: 'office', poly: rect(4.6, 4.8, -13.6, 3.5), y: 0, levels: [{ h: 3.0 }], wall: 0.15, roof: 'flat',
+        doors: [{ at: [-13.6, 5.9], w: 1.0 }], program: ['study'] }],
+    note: 'the shed at loading height (0.9) behind the dock, three doors on the front and the gable door on +x; the lean-to office ' +
+      'on -x; the loft hatch is not planned' });
+
+  /* ================================================================ civic (72-vern-civic.js) */
+  add({ key: 'vern_school', name: 'School', wealth: CIVIC, types: ['civic'], lot: [34, 30],
+    bodies: [{ id: 'hall', poly: rect(16, 8, 0, -7), y: 0.5, levels: [{ h: 4.07 }, { h: 3.6 }], wall: 0.45, roof: 'hip',
+      pitch: pt(2.6 / 3.8), doors: [{ at: [0, -3], w: 1.7 }], program: [['school', 'school'], ['library', 'study']] },
+      { id: 'wing-w', poly: rect(7, 13, -10.5, 1.5), y: 0.5, levels: [{ h: 3.6 }], wall: 0.4, roof: 'flat',
+        doors: [{ at: [-7, -4.1], w: 1.2 }], program: ['school', 'school'] },
+      { id: 'wing-e', poly: rect(7, 13, 10.5, 1.5), y: 0.5, levels: [{ h: 3.6 }], wall: 0.4, roof: 'flat',
+        doors: [{ at: [7, -4.1], w: 1.2 }], program: ['school', 'school'] }],
+    note: 'the two-storey hall and the two classroom wings round the yard (their shed roofs planned flat); the bell tower and the ' +
+      'yard shade are not planned' });
+  add({ key: 'vern_hospital', name: 'Hospital', wealth: CIVIC, types: ['civic'], lot: [38, 28],
+    bodies: [{ id: 'ward', poly: rect(26, 9, 0, -2), y: 0.7, levels: [{ h: 4.8 }], wall: 0.45, roof: 'gable', pitch: pt(2.6 / 4.5),
+      doors: [{ at: [-7.43, 2.5], w: 1.3 }, { at: [3.71, 2.5], w: 1.3 }, { at: [-7.43, -6.5], w: 1.3 }, { at: [3.71, -6.5], w: 1.3 }],
+      program: ['dormitory', 'dormitory', 'dormitory', 'store'] },
+      { id: 'pavilion', poly: rect(8, 5.7, 0, 5.35), y: 0.7, levels: [{ h: 4.87 }, { h: 3.0 }], wall: 0.45, roof: 'flat',
+        doors: [{ at: [0, 8.2], w: 1.9 }, { at: [3.71, 2.5], w: 1.3 }], program: [['antechamber', 'study'], ['study', 'library']] },
+      { id: 'store', poly: rect(3.2, 5, 15.6, -2), y: 0.7, levels: [{ h: 3.2 }], wall: 0.4, roof: 'hip', pitch: pt(1.2 / 2.5),
+        doors: [{ at: [15.6, 0.5], w: 1.0 }], program: ['store'] }],
+    note: 'the long ward (its front door at x 3.7 opens into the domed entrance pavilion, which is planned as its own body up to the ' +
+      'ward face), the pavilion (the drum and dome are not planned) and the store room on +x; the verandas and the herb court are open' });
+  add({ key: 'vern_barracks', name: 'Barracks and drill yard', wealth: CIVIC, types: ['civic', 'military'], lot: [48, 38],
+    bodies: [{ id: 'block-w', poly: rect(8, 20, -13.5, -2), y: 0.4, levels: [{ h: 3.6 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 4),
+      doors: [{ at: [-9.5, -7], w: 1.2 }, { at: [-9.5, 3], w: 1.2 }], program: ['barracks', 'barracks', 'barracks', 'store'] },
+      { id: 'block-e', poly: rect(8, 20, 13.5, -2), y: 0.4, levels: [{ h: 3.6 }], wall: 0.3, roof: 'gable', pitch: pt(2.4 / 4),
+        doors: [{ at: [9.5, -7], w: 1.2 }, { at: [9.5, 3], w: 1.2 }], program: ['barracks', 'barracks', 'barracks', 'store'] },
+      { id: 'armoury', poly: rect(9, 6, 0, -11.5), y: 0, levels: [{ h: 3.4 }], wall: 0.5, roof: 'hip', pitch: pt(1.4 / 3),
+        doors: [{ at: [0, -8.5], w: 1.6 }], program: ['store'], windows: false }],
+    note: 'the two barrack blocks (doors to the yard) and the stone armoury; the watch tower (ladder landings only), the gate towers ' +
+      'and the drill yard are open' });
+  add({ key: 'vern_alchemist', name: "Alchemist's compound", wealth: CIVIC, types: ['civic', 'industry'], lot: [32, 28],
+    bodies: [{ id: 'house', poly: rect(11, 8, -5, -5), y: 0.4, levels: [{ h: 3.87 }, { h: 3.2 }], wall: 0.4, roof: 'hip',
+      pitch: pt(2.4 / 3.85), doors: [{ at: [-3.5, -1], w: 1.4 }], program: [['workshop', 'study', 'store'], ['library', 'bedroom']] }],
+    note: 'the two-storey house only. The lab tower is a solid stone drum with no door (its glass lantern is not a floor), and the ' +
+      'still-house is an open shed whose stills and bench fill its open half, the back half a solid plaster block with no door' });
+
+  /* ================================================================ infrastructure (73-vern-infra.js) */
+  add({ key: 'vern_silos', name: 'Grain silos', wealth: MID, types: ['farm', 'infrastructure'], lot: [22, 16],
+    skip: 'four stave grain bins on stilts filled through a hatch from a ladder, and an open loading deck: no room a person uses' });
+  add({ key: 'vern_tank', name: 'Storage tank', wealth: MID, types: ['infrastructure'], lot: [24, 16],
+    bodies: [{ id: 'pump-hut', poly: rect(3.2, 3.0, -8.2, 1.5), y: 0, levels: [{ h: 2.6 }], wall: 0.12, roof: 'flat',
+      doors: [{ at: [-8.2, 3.0], w: 0.9 }], program: ['store'] }],
+    note: 'the pump hut only; the tank is a closed vessel' });
+  add({ key: 'vern_generator', name: 'Electric generator', wealth: CIVIC, types: ['infrastructure', 'civic'], lot: [24, 18],
+    rooms: [{ id: 'engine-house', kind: 'workshop', poly: rect(7.4, 6.2, 0, -0.6), y: 0.4, h: 4.6, doors: [{ at: [0, 2.5], w: 7.4, swing: 'none' }],
+      fixtures: [{ id: 'machine', kind: 'machine', x: -0.6, z: -1.2, ry: 0, w: 5.2, d: 3.4, h: 3.2, reach: false },
+        { id: 'switchboard', kind: 'machine', x: 4.05, z: 2.4, ry: 0, w: 0.3, d: 1.0, h: 2.6, reach: false }] }],
+    note: 'the engine house, open on the front: three stone walls round the machine (a fixture)' });
+
+  /* ================================================================ guilds (74-vern-guilds.js) */
+  add({ key: 'vern_farmers_guild', name: "Farmers' Guild", wealth: CIVIC, types: ['civic', 'farm'], lot: [30, 22],
+    bodies: [{ id: 'hall', poly: [[-8, -9], [8, -9], [8, 2], [3.3, 2], [3.3, 4.7], [-3.3, 4.7], [-3.3, 2], [-8, 2]], y: 0.6,
+      levels: [{ h: 3.97 }, { h: 3.0 }], wall: 0.3, roof: 'gable', pitch: pt(5.2 / 5.5),
+      doors: [{ at: [0, 4.7], w: 2.0 }, { at: [-3.8, -9], w: 1.2 }], program: [['hall', 'store', 'study'], ['library', 'store', 'study']] },
+      { id: 'granary', poly: rect(5.6, 7.2, -11.8, -3.0), y: 2.5, levels: [{ h: 3.2 }], wall: 0.12, roof: 'gable', pitch: pt(2.6 / 2.8),
+        doors: [{ at: [-11.8, 0.6], w: 1.1 }], program: ['store'] }],
+    note: 'the half-timber hall with its entrance bay (one L-plan body), and the grain loft on stilts reached by its ladder; the cart ' +
+      'shed and the silo are not planned' });
+  add({ key: 'vern_beast_hunters_guild', name: "Beast Hunters' Guild", wealth: CIVIC, types: ['civic', 'military'], lot: [28, 22],
+    bodies: [{ id: 'hall', poly: rect(14, 10, -4.5, -4), y: 0.7, levels: [{ h: 4.2 }], wall: 0.3, roof: 'gable', pitch: pt(3.8 / 5),
+      doors: [{ at: [-4.5, 1], w: 2.0 }, { at: [-10.5, -9], w: 1.1 }], program: ['hall', 'store', 'study'] }],
+    note: 'the trophy hall; the towering porch, the beast pen and the watch platform are open' });
+  add({ key: 'vern_caravanserai', name: 'Caravanserai', wealth: MID, types: ['tavern/inn', 'market/shop'], lot: [36, 30],
+    bodies: [-12.96, -6.48, 0, 6.48, 12.96].map(function (x, i) {
+      return { id: 'lodging' + (i + 1), poly: rect(6.48, 3.9, x, -11.35), y: 0.4, levels: [{ h: 2.9 }], wall: 0.2, roof: 'flat',
+        doors: [{ at: [[-12, -6, 0, 6, 12][i], -9.4], w: 1.1 }], program: ['dormitory'] };
+    }).concat([-1, 1].map(function (s) {
+      return { id: s < 0 ? 'stores-w' : 'stores-e', poly: rect(11.3, 3.9, s * 10.45, 11.35), y: 0.4, levels: [{ h: 2.9 }], wall: 0.2, roof: 'flat',
+        doors: [{ at: [s * 7.6, 9.4], w: 1.7 }, { at: [s * 12.4, 9.4], w: 1.7 }], program: ['store', 'store'] };
+    })),
+    note: 'the lodging range on the back wall (five rooms, one per door) and the store ranges either side of the gate; the room over ' +
+      'the gate has no stair and no door (not planned); the stables and the stall arcade are open' });
+  add({ key: 'vern_forgemasters_hall', name: "Forgemaster's Hall", wealth: CIVIC, types: ['civic', 'industry'], lot: [40, 32],
+    rooms: [{ id: 'hall', kind: 'smithy', poly: rect(28, 18, 0, -5), y: 0.5, h: 9.5, doors: [{ at: [0, 4], w: 9, swing: 'none' }],
+      fixtures: [{ id: 'gantry', kind: 'machine', x: 0, z: -3.5, ry: 0, w: 10.4, d: 8, h: 9.3, reach: false },
+        { id: 'forge', kind: 'machine', x: -10.5, z: -12.4, ry: 0, w: 3.2, d: 2.4, h: 3.6, reach: false },
+        { id: 'arm-bench', kind: 'bench', x: -9.5, z: -1.5, ry: 0, w: 4.6, d: 1.3, h: 1.2, reach: false },
+        { id: 'tool-bench', kind: 'bench', x: 13.4, z: -11, ry: 0, w: 1.0, d: 6.0, h: 1.6, reach: false },
+        { id: 'drums', kind: 'machine', x: 11.3, z: -2.3, ry: 0, w: 2.0, d: 2.9, h: 1.2, reach: false }] }],
+    note: 'one hollow hall behind the 9 m opening; the mech in its gantry, the forge, the benches and the drums are fixtures' });
+
+  /* ================================================================ the frontier (74b-vern-frontier.js, Verge's upper city) */
+  add({ key: 'vern_governor_palace', name: "Governor's Palace", wealth: CIVIC, types: ['civic', 'single-family dwelling'], lot: [42, 36],
+    bodies: [{ id: 'palace', poly: [[-15, -14], [15, -14], [15, 0], [5.5, 0], [5.5, 4.4], [-5.5, 4.4], [-5.5, 0], [-15, 0]], y: 1.63,
+      levels: [{ h: 5.22 }, { h: 4.2 }], wall: 0.5, roof: 'hip', pitch: pt(3.4 / 6.8),
+      doors: [{ at: [0, 4.4], w: 2.2 }, { at: [15, -10], w: 1.4 }],
+      program: [['antechamber', 'hall', 'hall', 'study', 'kitchen', 'store', 'store'], ['hall', 'living', 'bedroom', 'bedroom', 'study', 'library', 'bedroom']] },
+      { id: 'lodge', poly: rect(4, 3.6, -15.5, 12.6), y: 0, levels: [{ h: 3.0 }], wall: 0.4, roof: 'hip', pitch: pt(1.6 / 2),
+        doors: [{ at: [-13.5, 12.6], w: 1.0 }], program: ['antechamber'] }],
+    note: 'the main block and its front pavilion as one T-plan body on the podium: the entrance hall in the pavilion, the hall and ' +
+      'offices below, the audience hall and the governor\'s household above (the drawn upper storey is 0.2 m in from the ground ' +
+      'storey\'s face and the pavilion\'s upper floors sit 0.1 m higher than the block\'s: planned on one footprint and one floor). ' +
+      'Not planned: the pavilion\'s third storey under the dome and the flag tower (no stair drawn above the roof). The gate lodge ' +
+      'is its own body' });
+  add({ key: 'vern_guard_tower', name: 'Guard tower and barracks', wealth: CIVIC, types: ['military', 'civic'], lot: [26, 20],
+    bodies: [{ id: 'tower', poly: rect(9, 9, -6.5, -1), y: 0.6, levels: [{ h: 3.55 }, { h: 3.55 }, { h: 3.55 }], wall: 0.6, roof: 'flat',
+      doors: [{ at: [-6.5, 3.5], w: 1.6 }], program: [['antechamber', 'store'], ['barracks'], ['study']] },
+      { id: 'barracks', poly: rect(13, 7, 4.5, -1.5), y: 0.5, levels: [{ h: 3.47 }, { h: 3.0 }], wall: 0.35, roof: 'hip', pitch: pt(2.3 / 3.5),
+        doors: [{ at: [1.2, 2], w: 1.2 }, { at: [7.8, 2], w: 1.2 }], program: [['barracks', 'hall', 'kitchen'], ['barracks', 'barracks']] }],
+    note: 'the three-storey tower (the guard room and armoury, a barrack floor, the officers\' room; the roof platform is open and its ' +
+      'stair kiosk stands over the plan\'s stair) and the two-storey barrack block beside it' });
+  add({ key: 'vern_watch_house', name: 'Watch house', wealth: CIVIC, types: ['civic', 'military'], lot: [10, 9],
+    bodies: [{ id: 'post', poly: rect(6.4, 5.6, 0, -0.8), y: 0.4, levels: [{ h: 3.27 }, { h: 2.8 }], wall: 0.4, roof: 'hip', pitch: pt(2.6 / 2.8),
+      doors: [{ at: [-1.4, 2], w: 1.1 }], program: [['antechamber', 'store'], ['barracks']] }],
+    note: 'the watch room and a lock-up below, the watchmen\'s bunks above' });
+  add({ key: 'vern_toll_house', name: 'Toll house', wealth: CIVIC, types: ['civic', 'infrastructure'], lot: [14, 10],
+    bodies: [{ id: 'house', poly: rect(7.5, 6.5, -0.3, 0), y: 0.4, levels: [{ h: 3.27 }, { h: 2.8 }], wall: 0.4, roof: 'hip', pitch: pt(2.2 / 3.25),
+      doors: [{ at: [-2.6, 3.25], w: 1.1 }], program: [['shop', 'store'], ['living', 'bedroom']] }],
+    rooms: [{ id: 'strongroom', kind: 'store', poly: rect(1.7, 3.5, -5.35, -0.6), y: 0.1, h: 2.6, doors: [{ at: [-4.5, -0.6], w: 0.9 }] }],
+    note: 'the toll room behind the window and counter on the road side (+x) and the clerk\'s office below, the keeper\'s rooms above; ' +
+      'the strongroom annex on -x is entered from inside (no outer door)' });
+  add({ key: 'vern_palisade', name: 'Palisade (segment)', wealth: CIVIC, types: ['infrastructure', 'military'], lot: [6, 2.6],
+    skip: 'one modular wall segment: nothing enclosed' });
+  add({ key: 'vern_palisade_gate', name: 'Palisade gate', wealth: CIVIC, types: ['infrastructure', 'military'], lot: [14, 4],
+    skip: 'an open road gate; its two log towers are 2.0 m closets (inside 1.6 m) with a ladder to the platform' });
+  add({ key: 'vern_mustering_ground', name: 'Mustering ground', wealth: CIVIC, types: ['military', 'civic'], lot: [44, 32],
+    skip: 'open drill yard inside a low wall; the reviewing stand is an open deck under a roof on posts' });
+  add({ key: 'vern_rest_stop', name: 'Rest stop', wealth: MID, types: ['infrastructure'], lot: [18, 12],
+    rooms: [{ id: 'chamber', kind: 'dormitory', poly: rect(10, 3.6, 0, -3.4), y: 0.2, h: 3.4, doors: [{ at: [0, -1.6], w: 1.1 }] }],
+    note: 'variant 0: the chamber cut into the rock behind the arch (10 x 3.6, its timber screen and door in the 1 m arch passage); ' +
+      'the benches, the cistern, the trough and the awning are outside. Variant 1 (on the cliff edge) is vern_rest_stop#1' });
+  add({ key: 'vern_rest_stop#1', name: 'Rest stop (variant 2: built on the cliff edge)', wealth: MID, types: ['infrastructure'], lot: [18, 12],
+    rooms: [{ id: 'shelter', kind: 'living', poly: rect(4.7, 4.3, -5.8, -2.3), y: 0.15, h: 2.8, doors: [{ at: [-3.45, -2.3], w: 1.0 }] }],
+    note: 'the one-room stone shelter with its hearth (the chimney on the back wall), entered from the platform on its +x end; the ' +
+      'platform, the trough and the shade by the parapet are open' });
+
+  IX.sets.add({ set: 'iziz', title: 'Iziz Vernacular', culture: 'iziz', items: L });
+})(KratorInteriors);
 /* ---------- sets/locus.js ---------- */
 /* ======================== Interior set: Locus (settlements/locus, kit `locus`) ========================
    The interiors of the Locus building kit (LOCUS-KIT-NOTES.md): one item per ASSET key on the Locus sheet
@@ -4822,6 +5088,283 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'dock', name: 'Dock', culture: 'scrap', wealth: 0.3, types: ['infrastructure'], lot: [52, 46],
       bodies: [box('office', CL20, 1.5, -9.4, 0, [{ at: [3.3, -8.18], w: 0.9 }], ['store'])],
       note: 'only the land-side harbour office box is planned. The quay, pier and crane are open; the tug, the raft house and the barge float (their cabins move with the water and belong to a vessel set)' }
+  ] });
+})(KratorInteriors);
+/* ---------- sets/yuni.js ---------- */
+/* ======================== Interior set: Yuni (the Yuni base kit: settlements/yuni, settlements/locus 56-59) ========================
+   The interiors of the Yuni BASE building kit, for the keys a Yuni-built town places (Lower Verge places exactly these):
+   civic_chapter_house, trade_market_hall, trade_shop_house, trade_tavern, trade_caravanserai, mid_djenne_house,
+   mid_courtyard_house, mid_bluewash_townhouse, mid_round_tower_house, poor_mud_house, rich_merchant_palace.
+   One item per key (read from the builders in settlements/locus/src/56-mid.js, 57-poor.js, 58-rich.js, 59-civic.js, the
+   same code as settlements/yuni), plus `<key>#n` items for every variant > 0 (a variant with no item is not furnished).
+   Local frame = the builder's F: origin at the footprint centre on the ground, +z the front (the door side), metres.
+   Furniture cultures (the catalog's Yuni tiers, kits/catalog README "Pieces added in the 2026-10 interiors pass"):
+   poor -> yuni-poor, middle and trade -> yuni-common, rich -> yuni-court; the Historians' chapter house -> order (the
+   Order's own pieces: cell cots, the kitchen range, bookcases, reading tables). Yuni's own tags (51-fixtures.js
+   BUILDING_TAGS) call the Djenne house `sahelian` and the caravanserai `nomad`; both fall back through yuni-common.
+   Wealth = the middle of the ASSET's wealth band. The battered walls (fr8, rbody k 0.93-0.95) lean in: the plan uses the
+   footprint at the base and walls 0.45-0.5 thick, so the rooms stay inside the upper storeys too.
+   sets/README.md says how an item is written.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const SH = IX.sets.shape, rect = SH.rect;
+  const R3 = function (v) { return Math.round(v * 1000) / 1000; };
+  const PI = Math.PI;
+
+  /* ---- the Historians' chapter house (59-civic.js): the two curved two-storey gallery wings round the court C = (0, 2),
+     r 16.5..21.5, angles [PI+0.31, PI+1.14] (back left) and [2PI-1.14, 2PI-0.31] (back right); four arcade bays each on the
+     court face (the doors are the middle two bays) */
+  const CH_C = [0, 2];
+  function chPol(r, a) { return [R3(CH_C[0] + r * Math.cos(a)), R3(CH_C[1] + r * Math.sin(a))]; }
+  function chWing(id, a0, a1) {
+    const n = 8, poly = [];
+    for (let i = 0; i <= n; i++) poly.push(chPol(21.5, a0 + (a1 - a0) * i / n));
+    for (let i = n; i >= 0; i--) poly.push(chPol(16.5, a0 + (a1 - a0) * i / n));
+    const da = (a1 - a0) / 4;
+    return { id: id, poly: poly, y: 0.06, levels: [{ h: 3.0 }, { h: 2.9 }], wall: 0.45, roof: 'flat',
+      doors: [{ at: chPol(16.5, a0 + da * 1.5), w: 2.4, swing: 'none' }, { at: chPol(16.5, a0 + da * 2.5), w: 2.4, swing: 'none' }],
+      program: [['library', 'study'], ['dormitory', 'dormitory']] };
+  }
+
+  /* ---- the arcaded market hall (56-mid.js): arcades W 21 x D 13.2 (0.6 thick) on a 0.3 plinth, corner piers 1.5, three inner
+     piers at x -6.5, 0, 6.5; four stall counters (2.6 x 1.1) and two big pots drawn by the builder -> fixtures */
+  const mhFix = [[-6.5, 0, 0.9, 0.9, 4.9], [0, 0, 0.9, 0.9, 4.9], [6.5, 0, 0.9, 0.9, 4.9],
+    [-9.6, -5.7, 0.7, 0.7, 4.9], [9.6, -5.7, 0.7, 0.7, 4.9], [-9.6, 5.7, 0.7, 0.7, 4.9], [9.6, 5.7, 0.7, 0.7, 4.9],
+    [-7.5, 2.5, 2.6, 1.1, 1.4], [-2.5, -2.5, 2.6, 1.1, 1.4], [3.5, 2.5, 2.6, 1.1, 1.4], [8, -2.5, 2.6, 1.1, 1.4],
+    [-4.5, -3.5, 1.0, 1.0, 1.3], [5.6, 3.2, 0.9, 0.9, 1.2]].map(function (f, i) {
+    return { id: 'mh-' + i, kind: i < 7 ? 'post' : 'counter', x: f[0], z: f[1], ry: 0, w: f[2], d: f[3], h: f[4], reach: false };
+  });
+  function marketHall(fx, bx) {
+    return [{ id: 'hall', kind: 'shop', poly: rect(19.8, 12.0, 0, 0), y: 0.3, h: 4.4, fixtures: mhFix,
+      doors: [{ at: [fx, 6.0], w: 2.8, swing: 'none' }, { at: [bx, -6.0], w: 2.8, swing: 'none' },
+        { at: [-9.9, 0], w: 2.8, swing: 'none' }, { at: [9.9, 0], w: 2.8, swing: 'none' }] }];
+  }
+
+  /* ---- the shop-house (56-mid.js): rbody 8.2 x 6.4 at z -2.1 (front 1.1), the wide shopfront arch (3.3) at x = -m*1.35 and the
+     house door at x = m*2.55; st storeys of 3.2 */
+  function shopHouse(m, st) {
+    return [{ id: 'house', poly: rect(8.2, 6.4, 0, -2.1), y: 0.1, levels: st === 3 ? [{ h: 2.9 }, { h: 2.9 }, { h: 2.9 }] : [{ h: 2.9 }, { h: 2.9 }],
+      wall: 0.45, roof: 'flat',
+      doors: [{ at: [R3(-m * 1.35), 1.1], w: 3.2, swing: 'none' }, { at: [R3(m * 2.55), 1.1], w: 1.15 }],
+      program: st === 3 ? [['shop', 'store'], ['living', 'bedroom'], ['bedroom', 'store']] : [['shop', 'store'], ['living', 'bedroom']] }];
+  }
+
+  /* ---- the tavern (56-mid.js): rbody 8.4 x 6.4 at (bx = -m*2.5, -2.5), the door mid-front under the arcaded porch; the kitchen
+     lean-to (3.6 x 3.0, 2.9 high) at the back of the walled yard (x = m*4.15), its doorway on the front */
+  function tavern(m, st) {
+    const bx = R3(-m * 2.5), kx = R3(m * 4.15);
+    return {
+      bodies: [{ id: 'house', poly: rect(8.4, 6.4, bx, -2.5), y: 0.1, levels: st === 3 ? [{ h: 2.9 }, { h: 2.9 }, { h: 2.9 }] : [{ h: 2.9 }, { h: 2.9 }],
+        wall: 0.45, roof: 'flat', doors: [{ at: [bx, 0.7], w: 1.5 }],
+        program: st === 3 ? [['tavern', 'store'], ['bedroom', 'bedroom'], ['bedroom', 'bedroom']] : [['tavern', 'store'], ['bedroom', 'bedroom']] }],
+      rooms: [{ id: 'kitchen', kind: 'kitchen', poly: rect(3.2, 2.6, kx, -4.0), y: 0, h: 2.6, doors: [{ at: [kx, -2.7], w: 1.0 }] }]
+    };
+  }
+
+  /* ---- the caravanserai (56-mid.js): X 47, Z 35, ranges RB 4.7 deep against the outer wall, two storeys (4.4, 8.2), galleries
+     G 7.5 to the court arcades; corner towers r 3.5 at (+-42.4, +-30.4). The builder cuts room doors (dark openings) behind
+     the galleries: back range ground every 2nd bay of 15 (8 doors), back range upper every 4th (4 doors), right range ground
+     6 doors, front range 3 each side of the gate. The left range is the stables (no room doors). */
+  const caravanRooms = (function () {
+    const out = [], LB = 79, LS = 55, D = [];
+    for (let k = 0; k < 8; k++) D.push(R3((2 * k - 7) * LB / 15));
+    const ends = 38.6, zb = -32.45, db = 3.9;
+    function cells(xs, lo, hi) { const b = [lo]; for (let i = 0; i < xs.length - 1; i++) b.push((xs[i] + xs[i + 1]) / 2); b.push(hi); return b; }
+    const bg = cells(D, -ends, ends), kindsG = ['store', 'dormitory', 'store', 'kitchen', 'tavern', 'store', 'dormitory', 'store'];
+    D.forEach(function (x, k) {
+      const x0 = bg[k] + (k ? 0.1 : 0), x1 = bg[k + 1] - (k < 7 ? 0.1 : 0);
+      out.push({ id: 'back-' + k, kind: kindsG[k], poly: rect(R3(x1 - x0), db, R3((x0 + x1) / 2), zb), y: 0.06, h: 4.0, doors: [{ at: [x, -30.5], w: 1.1 }] });
+    });
+    const DU = [D[0], D[2], D[4], D[6]], bu = cells(DU, -ends, ends);
+    DU.forEach(function (x, k) {
+      const x0 = bu[k] + (k ? 0.1 : 0), x1 = bu[k + 1] - (k < 3 ? 0.1 : 0);
+      out.push({ id: 'back-up-' + k, kind: 'dormitory', level: 1, poly: rect(R3(x1 - x0), db, R3((x0 + x1) / 2), zb), y: 4.4, h: 3.5, doors: [{ at: [x, -30.5], w: 1.1 }] });
+    });
+    const DR = [-25, -15, -5, 5, 15, 25], br = cells(DR, -26.8, 26.8), kindsR = ['dormitory', 'dormitory', 'store', 'dormitory', 'dormitory', 'store'];
+    DR.forEach(function (z, k) {
+      const z0 = br[k] + (k ? 0.1 : 0), z1 = br[k + 1] - (k < 5 ? 0.1 : 0);
+      out.push({ id: 'right-' + k, kind: kindsR[k], poly: rect(db, R3(z1 - z0), 44.45, R3((z0 + z1) / 2)), y: 0.06, h: 4.0, doors: [{ at: [42.5, z], w: 1.1 }] });
+    });
+    [-1, 1].forEach(function (s) {
+      [[13, 11.0, 18.15, 'store'], [23.5, 18.35, 28.65, 'dormitory'], [34, 28.85, 38.6, 'dormitory']].forEach(function (c, k) {
+        out.push({ id: (s < 0 ? 'front-w-' : 'front-e-') + k, kind: c[3], poly: rect(R3(c[2] - c[1]), db, R3(s * (c[1] + c[2]) / 2), 32.45), y: 0.06, h: 4.0,
+          doors: [{ at: [R3(s * c[0]), 30.5], w: 1.1 }] });
+      });
+    });
+    return out;
+  })();
+
+  /* ---- the Djenne-front house (56-mid.js): fr8 9.4 x 7.0 at z -0.4 battered 0.16 to the top, the door in the potige panel
+     at x 0 (the wall's base face at z 3.1); H = 6.4 / 7.4 / 4.3 (two, two, one storeys) */
+  function djenne(H) {
+    if (H < 5) return [{ id: 'house', poly: rect(9.4, 7.0, 0, -0.4), y: 0.1, levels: [{ h: 3.6 }], wall: 0.5, roof: 'flat',
+      doors: [{ at: [0, 3.1], w: 1.45 }], program: [['living', 'bedroom']] }];
+    const h0 = H > 7 ? 3.2 : 2.8, h1 = H > 7 ? 3.0 : 2.6;
+    return [{ id: 'house', poly: rect(9.4, 7.0, 0, -0.4), y: 0.1, wall: 0.5, roof: 'flat', slab: 0.3,
+      levels: [{ h: h0 }, { h: h1 }],
+      doors: [{ at: [0, 3.1], w: 1.45 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }];
+  }
+
+  /* ---- the courtyard house (56-mid.js): S 11, four ranges 3.5 deep round a 4 m court (floors on the 0.7 m base slab), walls 3.9;
+     the corner tower (R 2.35) at (m*3.5, 3.5); the front door at x = -m*1.2; doorways from the court into the front and back
+     ranges at x 0; the tower's upper room opens onto the roof (y 3.9) toward the court */
+  function courtyard(m) {
+    const s = m;
+    return [
+      { id: 'front', kind: 'living', poly: s > 0 ? [[-5.1, 2.3], [1.0, 2.3], [1.0, 5.1], [-5.1, 5.1]] : [[5.1, 2.3], [-1.0, 2.3], [-1.0, 5.1], [5.1, 5.1]],
+        y: 0.7, h: 3.0, doors: [{ at: [R3(-s * 1.2), 5.1], w: 1.4 }, { at: [0, 2.3], w: 1.0 }] },
+      { id: 'back', kind: 'bedroom', poly: [[-5.1, -5.1], [5.1, -5.1], [5.1, -2.3], [-2.3, -2.3], [-2.3, 1.7], [-5.1, 1.7]].map(function (p) { return [R3(s * p[0]), p[1]]; }),
+        y: 0.7, h: 3.0, doors: [{ at: [0, -2.3], w: 1.0 }] },
+      { id: 'side', kind: 'kitchen', poly: rect(2.8, 3.1, R3(s * 3.7), -0.45), y: 0.7, h: 3.0, doors: [{ at: [R3(s * 2.3), -0.45], w: 0.9 }] },
+      { id: 'tower', kind: 'study', level: 1, poly: SH.circle(1.85, 12, R3(s * 3.5), 3.5), y: 3.9, h: 3.2, doors: [{ at: [R3(s * 3.5), 1.65], w: 0.9 }] }
+    ];
+  }
+
+  /* ---- the blue-wash townhouse (56-mid.js): rbody W x 7.2 at z -0.7 (front 2.9), storeys of 3.2; v0/v2 two storeys W 8.6, door
+     x -1.89; v1/v3 three storeys W 7.8, door x +1.72 */
+  function bluewash(st) {
+    const W = st === 3 ? 7.8 : 8.6, dx = st === 3 ? 1.716 : -1.892;
+    return [{ id: 'house', poly: rect(W, 7.2, 0, -0.7), y: 0.1, wall: 0.45, roof: 'flat',
+      levels: st === 3 ? [{ h: 2.9 }, { h: 2.9 }, { h: 2.9 }] : [{ h: 2.9 }, { h: 2.9 }],
+      doors: [{ at: [dx, 2.9], w: 1.4 }],
+      program: st === 3 ? [['living', 'kitchen'], ['bedroom', 'store'], ['bedroom', 'study']] : [['living', 'kitchen'], ['bedroom', 'bedroom']] }];
+  }
+
+  /* ---- the round-tower house (56-mid.js): the drum (R 3.7, battered 0.1) at (tx = -m*2.6, -0.5), the front door in it, its upper
+     storey opening onto the wing's roof terrace (y Hw) at angle 0.18 (m = 1) / PI-0.18; the lower wing (6.6 x 6.4, Hw high) at
+     x = m*2.9, z -0.9, entered only from the drum */
+  function roundTower(m, Hw) {
+    const tx = R3(-m * 2.6), tz = -0.5, a = m > 0 ? 0.18 : PI - 0.18, rU = 3.0;
+    return [
+      { id: 'drum', kind: 'living', poly: SH.circle(3.25, 16, tx, tz), y: 0.1, h: 3.0,
+        doors: [{ at: [tx, 2.75], w: 1.4 }, { at: [R3(m * 0.8), tz], w: 0.9 }] },
+      { id: 'drum-upper', kind: 'bedroom', level: 1, poly: SH.circle(rU, 16, tx, tz), y: Hw, h: 2.8,
+        doors: [{ at: [R3(tx + Math.cos(a) * rU), R3(tz + Math.sin(a) * rU)], w: 0.95 }] },
+      { id: 'wing', kind: 'kitchen', poly: m > 0 ? [[0.95, -3.75], [5.85, -3.75], [5.85, 1.95], [0.95, 1.95]] : [[-0.95, -3.75], [-5.85, -3.75], [-5.85, 1.95], [-0.95, 1.95]],
+        y: 0.1, h: R3(Hw - 0.4), doors: [{ at: [R3(m * 0.8), tz], w: 0.9 }] }
+    ];
+  }
+
+  /* ---- the merchant prince's palace (58-rich.js): the ground rear block 17.6 x 9.5 at z -2.75 (5.0 high) behind the open loggia,
+     the upper block 18 x 14.3 at z -0.35 riding on the arcade (piano nobile 5.0-8.7, attic 8.7-11.8); the door on the rear block's
+     front (z 2.0) at x = 0 / -2.2 / -0.75 by variant */
+  function merchantPalace(dox) {
+    const up = rect(18, 14.3, 0, -0.35);
+    return [{ id: 'palace', poly: rect(17.6, 9.5, 0, -2.75), y: 0, wall: 0.5, roof: 'flat', slab: 0.3,
+      levels: [{ h: 4.6 }, { h: 3.4, poly: up }, { h: 2.8, poly: up }],
+      doors: [{ at: [dox, 2.0], w: 1.5 }],
+      program: [['hall', 'store', 'kitchen'], ['living', 'bedroom', 'study'], ['bedroom', 'bedroom', 'store']] }];
+  }
+
+  /* ---- the flat-roofed mud house (57-poor.js mudRoom: fr8 battered 0.16, the door in the front face) */
+  const mudL = [[-4.6, 3.9], [-0.6, 3.9], [-0.6, 0.5], [4.6, 0.5], [4.6, -4.1], [-4.0, -4.1], [-4.0, -0.1], [-4.6, -0.1]];
+
+  IX.sets.add({ set: 'yuni', title: 'Yuni: the base kit (the keys a Yuni town places)', culture: 'yuni-common', items: [
+    /* ---------- Civic (59-civic.js) */
+    { key: 'civic_chapter_house', name: 'Chapter house of the Historians', culture: 'order', wealth: 0.78, types: ['civic', 'religious'], lot: [56, 48],
+      rooms: [
+        { id: 'chapter-library', kind: 'library', poly: SH.circle(7.0, 20, 0, -15.5), y: 0.1, h: 7.0, doors: [{ at: [0, -8.5], w: 1.7 }] },
+        { id: 'shrine', kind: 'shrine', poly: SH.circle(5.5, 16, -19, 2), y: 0.1, h: 5.0, doors: [{ at: [R3(-19 + 5.5 * Math.cos(-0.35)), R3(2 + 5.5 * Math.sin(-0.35))], w: 1.3 }] },
+        { id: 'scriptorium', kind: 'study', poly: SH.circle(5.5, 16, 19, 2), y: 0.1, h: 5.0, doors: [{ at: [R3(19 + 5.5 * Math.cos(PI + 0.35)), R3(2 + 5.5 * Math.sin(PI + 0.35))], w: 1.3 }] }],
+      bodies: [chWing('west-wing', PI + 0.31, PI + 1.14), chWing('east-wing', 2 * PI - 1.14, 2 * PI - 0.31)],
+      note: 'the Order of Historians (saffron-robed scholar monks): the great drum (R 7.5, one 8.6 m hall, door on +z) is their library, ' +
+        'the west drum (R 6) a shrine, the east drum a scriptorium (study), each entered from the court; the two curved two-storey gallery ' +
+        'wings (r 16.5-21.5) hold a reading gallery and study below (entered through the middle two arcade bays) and the monks\' ' +
+        'dormitories above (no stair is drawn: the planner fits one). The court, the rotunda and the gate are open' },
+
+    /* ---------- Trade (56-mid.js) */
+    { key: 'trade_market_hall', name: 'Arcaded market hall', culture: 'yuni-common', wealth: 0.6, types: ['market/shop'], lot: [22, 14],
+      rooms: marketHall(0, 0),
+      note: 'one open hall inside the arcades (19.8 x 12 on the 0.3 m plinth); the inner piers, corner piers, the four stall counters and ' +
+        'two big pots the builder draws are fixtures. Variant 1 (four bays, domes) is trade_market_hall#1' },
+    { key: 'trade_market_hall#1', name: 'Arcaded market hall (variant 2: flat roof and three domes)', culture: 'yuni-common', wealth: 0.6, types: ['market/shop'], lot: [22, 14],
+      rooms: marketHall(2.475, -2.475), note: 'as variant 0; four arcade bays front and back (a pier on the axis), so the front and back ways in are the bays at x +-2.475' },
+
+    { key: 'trade_shop_house', name: 'Shop-house', culture: 'yuni-common', wealth: 0.55, types: ['market/shop', 'single-family dwelling'], lot: [9, 11],
+      bodies: shopHouse(1, 2),
+      note: 'variant 0: the shop behind the wide shopfront arch (x -1.35) and a store below, the family\'s living room and bedroom above, the ' +
+        'house door at x 2.55. The roof-terrace bulkhead and the awning are open' },
+    { key: 'trade_shop_house#1', name: 'Shop-house (variant 2)', culture: 'yuni-common', wealth: 0.55, types: ['market/shop', 'single-family dwelling'], lot: [9, 11],
+      bodies: shopHouse(-1, 2), note: 'variant 1: variant 0 mirrored (shopfront at x 1.35, door at x -2.55)' },
+    { key: 'trade_shop_house#2', name: 'Shop-house (variant 3)', like: 'trade_shop_house', note: 'variant 2: the plan of variant 0 (other goods)' },
+    { key: 'trade_shop_house#3', name: 'Shop-house (variant 4: three storeys)', culture: 'yuni-common', wealth: 0.55, types: ['market/shop', 'single-family dwelling'], lot: [9, 11],
+      bodies: shopHouse(-1, 3), note: 'variant 3: mirrored, three storeys: shop and store, living room and bedroom, a bedroom and a store' },
+
+    Object.assign({ key: 'trade_tavern', name: 'Tavern with shaded yard', culture: 'yuni-common', wealth: 0.55, types: ['tavern/inn'], lot: [14, 12],
+      note: 'variant 0: the house (8.4 x 6.4, two storeys) at x -2.5: the taproom and a store below, two guest rooms above; the kitchen lean-to ' +
+        'at the back of the yard. The arcaded porch, its terrace and the walled yard under the olive are open' }, tavern(1, 2)),
+    Object.assign({ key: 'trade_tavern#1', name: 'Tavern with shaded yard (variant 2: three storeys)', culture: 'yuni-common', wealth: 0.55, types: ['tavern/inn'], lot: [14, 12],
+      note: 'variant 1: mirrored (the house at x 2.5, the yard and kitchen on the left), three storeys: four guest rooms above the taproom' }, tavern(-1, 3)),
+
+    { key: 'trade_caravanserai', name: 'Caravanserai of the desert road', culture: 'yuni-common', wealth: 0.65, types: ['tavern/inn', 'market/shop'], lot: [96, 72],
+      rooms: caravanRooms,
+      note: 'one room behind each door the builder cuts: the back range\'s eight ground rooms (stores, lodgings, a kitchen and a taproom) and ' +
+        'four upper dormitories (reached by the two court ramps and the upper gallery), the right range\'s six rooms, three rooms either side ' +
+        'of the gate. The left range is the stables (mangers in the gallery, no room doors); the court, the galleries, the gate tower (solid) ' +
+        'and the corner towers (no door) are not planned. Yuni\'s own tag is nomad; furnished as yuni-common' },
+
+    /* ---------- Middle-class houses (56-mid.js) */
+    { key: 'mid_djenne_house', name: 'Djenne-front town house', culture: 'yuni-common', wealth: 0.5, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: djenne(6.4),
+      note: 'variant 0: two storeys in the battered banco block (9.4 x 7.0, H 6.4), the door in the potige at x 0; the upper storey is ' +
+        'drawn in by the batter (the 0.5 m walls absorb it). Yuni\'s own tag is sahelian; furnished as yuni-common (its fallback reaches sahelian)' },
+    { key: 'mid_djenne_house#1', name: 'Djenne-front town house (variant 2)', culture: 'yuni-common', wealth: 0.5, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: djenne(7.4), note: 'variant 1: H 7.4, two taller storeys' },
+    { key: 'mid_djenne_house#2', name: 'Djenne-front town house (variant 3: one storey)', culture: 'yuni-common', wealth: 0.5, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: djenne(4.3), note: 'variant 2: H 4.3, one storey: living room and bedroom' },
+
+    { key: 'mid_courtyard_house', name: 'Courtyard house with corner tower', culture: 'yuni-common', wealth: 0.58, types: ['single-family dwelling'], lot: [12, 12],
+      rooms: courtyard(1),
+      note: 'four ranges round a 4 m court on the 0.7 m base slab: the front range (living room, the street door and a doorway to the court), ' +
+        'the back range and the far side range as one L bedroom, the tower-side range a kitchen open to the court; the tower\'s upper room ' +
+        '(a study) opens onto the roof. The tower\'s ground storey is inside the front range\'s corner (not planned)' },
+    { key: 'mid_courtyard_house#1', name: 'Courtyard house with corner tower (variant 2)', culture: 'yuni-common', wealth: 0.58, types: ['single-family dwelling'], lot: [12, 12],
+      rooms: courtyard(-1), note: 'variant 1: mirrored (the tower on the left)' },
+
+    { key: 'mid_bluewash_townhouse', name: 'Blue-wash townhouse', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [10, 10],
+      bodies: bluewash(2),
+      note: 'variant 0: two storeys of 3.2 in the battered body (8.6 x 7.2), the door at x -1.89; the mashrabiya bay and the roof terrace ' +
+        'with its stair bulkhead are not planned' },
+    { key: 'mid_bluewash_townhouse#1', name: 'Blue-wash townhouse (variant 2: three storeys)', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [10, 10],
+      bodies: bluewash(3), note: 'variant 1: three storeys, 7.8 wide, the door at x +1.72' },
+    { key: 'mid_bluewash_townhouse#2', name: 'Blue-wash townhouse (variant 3)', like: 'mid_bluewash_townhouse', note: 'variant 2: the plan of variant 0' },
+    { key: 'mid_bluewash_townhouse#3', name: 'Blue-wash townhouse (variant 4)', like: 'mid_bluewash_townhouse#1', note: 'variant 3: the plan of variant 1' },
+
+    { key: 'mid_round_tower_house', name: 'Round-tower house', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [13, 10],
+      rooms: roundTower(1, 3.5),
+      note: 'variant 0: the drum\'s ground storey (living room, the street door) and its upper storey (a bedroom opening onto the wing\'s roof ' +
+        'terrace), the lower wing (a kitchen) entered from the drum; no stair is drawn in the drum' },
+    { key: 'mid_round_tower_house#1', name: 'Round-tower house (variant 2)', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [13, 10],
+      rooms: roundTower(-1, 3.5), note: 'variant 1: mirrored (the drum on the right)' },
+    { key: 'mid_round_tower_house#2', name: 'Round-tower house (variant 3)', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [13, 10],
+      rooms: roundTower(1, 3.9), note: 'variant 2: as variant 0, the wing 3.9 m high (the drum\'s upper floor at 3.9)' },
+
+    /* ---------- Poor (57-poor.js) */
+    { key: 'poor_mud_house', name: 'Flat-roofed mud house', culture: 'yuni-poor', wealth: 0.22, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: [{ id: 'house', poly: rect(7.2, 5.0, 0, -0.6), y: 0, levels: [{ h: 2.4 }], wall: 0.45, roof: 'flat', doors: [{ at: [-1.2, 1.9], w: 0.95 }], program: ['cottage'] }],
+      note: 'variant 0: one banco room 7.2 x 5.0 (the door at x -1.2); the roof terrace up the ladder is open' },
+    { key: 'poor_mud_house#1', name: 'Flat-roofed mud house (variant 2)', culture: 'yuni-poor', wealth: 0.22, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: [{ id: 'house', poly: rect(8.8, 5.6, 0, -0.8), y: 0, levels: [{ h: 2.6 }], wall: 0.45, roof: 'flat', doors: [{ at: [0.8, 2.0], w: 0.95 }], program: ['cottage'] }],
+      note: 'variant 1: one room 8.8 x 5.6 (the door at x 0.8); the shelter on the roof is open' },
+    { key: 'poor_mud_house#2', name: 'Flat-roofed mud house (variant 3: L-shape)', culture: 'yuni-poor', wealth: 0.22, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: [{ id: 'house', poly: mudL, y: 0, levels: [{ h: 2.2 }], wall: 0.45, roof: 'flat', doors: [{ at: [1.9, 0.5], w: 0.95 }], program: ['living', 'bedroom'] }],
+      note: 'variant 2: the main range (8.6 x 4.6) and the lower wing coming forward on the left (4 x 4, no door of its own) as one L' },
+    { key: 'poor_mud_house#3', name: 'Flat-roofed mud house (variant 4: two rooms and a yard)', culture: 'yuni-poor', wealth: 0.22, types: ['single-family dwelling'], lot: [11, 9],
+      bodies: [
+        { id: 'room', poly: rect(4.9, 4.0, -2.5, -2.1), y: 0, levels: [{ h: 2.4 }], wall: 0.45, roof: 'flat', doors: [{ at: [-2.2, -0.1], w: 0.95 }], program: ['bedroom'] },
+        { id: 'kitchen', poly: rect(4.6, 3.7, 2.2, -2.4), y: 0, levels: [{ h: 2.2 }], wall: 0.45, roof: 'flat', doors: [{ at: [2.0, -0.55], w: 0.95 }], program: ['kitchen'] }],
+      note: 'variant 3: two banco rooms side by side, each with its own door onto the walled yard (fire and pots in the yard)' },
+
+    /* ---------- Rich (58-rich.js) */
+    { key: 'rich_merchant_palace', name: 'Merchant prince\'s town palace', culture: 'yuni-court', wealth: 0.85, types: ['single-family dwelling', 'market/shop'], lot: [20, 16],
+      bodies: merchantPalace(0),
+      note: 'variant 0: the ground rear block (17.6 x 9.5, 5 m) behind the giant arcade: the merchant\'s hall, store and kitchen; the upper ' +
+        'block (18 x 14.3) over it: the piano nobile and the attic. The loggia, the roof terrace and its pavilion are open' },
+    { key: 'rich_merchant_palace#1', name: 'Merchant prince\'s town palace (variant 2)', culture: 'yuni-court', wealth: 0.85, types: ['single-family dwelling', 'market/shop'], lot: [20, 16],
+      bodies: merchantPalace(-2.2), note: 'variant 1: four arcade bays, the door at x -2.2' },
+    { key: 'rich_merchant_palace#2', name: 'Merchant prince\'s town palace (variant 3)', culture: 'yuni-court', wealth: 0.85, types: ['single-family dwelling', 'market/shop'], lot: [20, 16],
+      bodies: merchantPalace(-0.75), note: 'variant 2: two arcade bays, the door at x -0.75; the tower on the roof is not planned' }
   ] });
 })(KratorInteriors);
 /* ---------- src-sets/70-sets.js ---------- */

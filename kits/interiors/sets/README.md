@@ -13,6 +13,8 @@ residence holds, per unit, at least one bed, one food container and one item con
 | `beast-rider.js` | Beast Rider (Mav's Refuge, Girder) | `kits/catalog/krator-master-buildings-beast-rider.js` `ASSET` keys `br_bldg_*` | `beast-rider` |
 | `locus.js` | Locus (the Geomancers' oil town) | `settlements/locus` kit `locus` (`LOCUS-KIT-NOTES.md`) | `yuni-common` / `yuni-court` (geomancer), `eastabyss` (abyssal-desert) |
 | `abyss.js` | Eastern Abyssal | `settlements/locus` kit `abyss` (`ABYSS-KIT-NOTES.md`) | `eastabyss` |
+| `yuni.js` | Yuni: the base kit (the keys a Yuni town places: Lower Verge) | `settlements/locus` `56-mid.js` `57-poor.js` `58-rich.js` `59-civic.js` (the same keys as `settlements/yuni`) | `yuni-poor` / `yuni-common` / `yuni-court` by wealth, `order` (the Historians' chapter house) |
+| `iziz.js` | Iziz Vernacular (Iziz, and Verge's upper city) | `settlements/iziz` `VERN.def` keys `vern_*` (`src/70-74`, `74b-vern-frontier.js`) | `iziz` (the poor tier through the generic chain) |
 
 A world that places one of these buildings at `(x, z, ry)` calls
 `IX.sets.instantiate(IX.sets.byName[set].byKey[key], x, z, ry, { baseY })` and gets planned buildings

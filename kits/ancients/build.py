@@ -146,6 +146,7 @@ TARGET_OUT = {
     'yuni-variants': 'yuni-variants.html',     # the Yuni fork's variants, ported (src/8am-yv-*)
     'iziz-variants': 'iziz-variants.html',     # dev: Sky C tripod market, small-podium A-C, tower stumps (8an-iz-*)
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
+    'funicular': 'funicular.html',             # the broken Ancient funicular on an escarpment (8ap-funicular; Verge takes it)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -157,6 +158,7 @@ DETERMINISTIC = {
     '50-registry.js', '54-mat-concrete.js', '66-office-c.js', '68-mat-v5.js',
     '78-factory-silo.js', '80-aa-battery.js', '40-factory-extras.js', '90-scene.js',
     '69-mat-salvage.js', '69w-worn.js',
+    '8ap-funicular.js',                  # its own hashed stream: no rng(), no reseed, moves nobody's rubble
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
 }

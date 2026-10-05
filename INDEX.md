@@ -9,7 +9,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`settlements/dalab`](settlements/dalab/INDEX.md) | 46 | 631 | 57 | Dalab: the mound settlement of the southwestern lowlands, and its building set. |
 | [`settlements/girder`](settlements/girder/INDEX.md) | 32 | 600 | 91 | Girder: an outlying Beast Rider village in the central-crater hyperjungle. |
 | [`settlements/highlands`](settlements/highlands/INDEX.md) | 46 | 738 | 53 | Highlands: Republican, Rustic and Tribal building kits for the temperate highlands of the Inner Wall, and the town of Roketstad. |
-| [`settlements/iziz`](settlements/iziz/INDEX.md) | 52 | 505 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
+| [`settlements/iziz`](settlements/iziz/INDEX.md) | 53 | 543 | 52 | Iziz: the city rebuilt on the Iziz Vernacular style and the Ancients kit. |
 | [`settlements/jimjam`](settlements/jimjam/INDEX.md) | 32 | 412 | 56 |  |
 | [`settlements/locus`](settlements/locus/INDEX.md) | 67 | 1024 | 84 | Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue. |
 | [`settlements/mavs-refuge`](settlements/mavs-refuge/INDEX.md) | 29 | 632 | 81 | Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea. |

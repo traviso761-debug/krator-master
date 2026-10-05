@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Verge — the twin cities on the cataracts</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#2c2420;font:13px/1.4 system-ui,sans-serif;color:#eee}
+canvas{display:block}
+#ui{position:fixed;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;max-width:60vw;z-index:5}
+#ui button{background:rgba(30,16,10,.75);color:#f4e4d0;border:1px solid #a06a48;border-radius:4px;padding:5px 9px;cursor:pointer}
+#viewsel{background:rgba(30,16,10,.85);color:#f4e4d0;border:1px solid #a06a48;border-radius:4px;padding:5px 9px;font-size:13px}
+#tools{position:fixed;right:10px;top:10px;background:rgba(30,16,10,.82);border:1px solid #a06a48;border-radius:4px;padding:6px 10px;z-index:6;display:flex;flex-direction:column;gap:3px}
+#tools label{cursor:pointer;white-space:nowrap}
+#poly{position:fixed;right:10px;top:120px;width:300px;background:rgba(30,16,10,.88);border:1px solid #a06a48;border-radius:4px;padding:6px 8px;z-index:6}
+#poly textarea{width:100%;height:90px;box-sizing:border-box;background:#140c08;color:#f0dcc4;border:1px solid #6a4a38;font:11px ui-monospace,monospace}
+#poly button{background:#7a4a30;color:#fff;border:0;border-radius:3px;padding:3px 8px;margin:3px 3px 0 0;cursor:pointer}
+#hud{position:fixed;right:10px;bottom:10px;background:rgba(0,0,0,.5);padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre;z-index:5}
+#errs{position:fixed;left:10px;bottom:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.85);color:#fff;padding:6px 9px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap;display:none;z-index:9}
+#insp{position:fixed;left:10px;top:78px;background:rgba(0,0,0,.6);color:#ffd9a8;padding:5px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre;z-index:5;margin:0;max-width:46vw;overflow:hidden}
+#cap{position:fixed;left:10px;top:44px;background:rgba(0,0,0,.45);padding:4px 8px;border-radius:4px;font-size:12px;color:#f0dcc4;z-index:5;max-width:60vw}
+@media (max-width:700px){#cap{display:none}#insp{top:44px;max-width:90vw}#tools{top:auto;bottom:60px}}
+</style><div id="ui"></div>
+<div id="cap">Verge — twin cities where the high desert falls ~860 m into the Eastern Abyss: Upper Verge in the canyon (the Governor of Iziz), the switchback and the seven cataracts, Lower Verge by the plunge pool (its elected Mayor) · hover to inspect · drag to orbit · wheel to zoom · right-drag / WASD to move</div>
+<div id="tools"></div>
+<div id="poly"><b>Polygon tool</b> — click the ground to add points<textarea id="polyout" readonly></textarea><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polycopy">Copy</button></div>
+<pre id="insp">inspector: hover the world</pre>
+<div id="hud"></div>
+<pre id="errs"></pre>
+<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
+<script>

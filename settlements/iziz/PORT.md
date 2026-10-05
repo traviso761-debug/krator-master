@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 158 (20%) | 23 (3%) | 42 (5%) | 47 (6%) | 517 (66%) |
+| KB | 198 (24%) | 23 (3%) | 42 (5%) | 47 (6%) | 517 (63%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -41,6 +41,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/73-police.js` | 4.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/73-vern-infra.js` | 8.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/74-vern-guilds.js` | 34.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/74b-vern-frontier.js` | 37.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-port-embassy.js` | 23.6 | [draw] | 17 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-campus.js` | 9.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/76-port-chapterhouse.js` | 16.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
@@ -86,8 +87,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/90c-city-atmos.js` | 10.5 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `targets/city/91z-views.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/93-city-ui.js` | 4.3 | [web] | 1 | 2 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `targets/vernacular/89z-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/vernacular/91z-views.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/vernacular/89z-rows.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/vernacular/91z-views.js` | 2.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/wA/89z-rows.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/wA/91z-views.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/wB/89z-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

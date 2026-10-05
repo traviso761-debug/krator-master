@@ -26,6 +26,7 @@ now in `refs/abyss/` and are compared with the kit under "The reference images" 
 | `65-abyss-50-civic.js` | 655001 | inn, tavern, caravanserai, library, school, amphitheatre |
 | `65-abyss-60-temple.js` | 656001 | the Temple of the Altar |
 | `65-abyss-70-palace.js` | 657001 | the Headman's palace and plaza |
+| `65-abyss-75-verge.js` | 657501 | Lower Verge (Oct 2026): the mayor's compound, the guard tower, the toll house, the palisade and its gate |
 | `65-abyss-80-military.js` | 658001 | the wall system, the citadel, the barracks |
 | `65-abyss-90-farm.js` | 659001 | farmhouse, granary, windpump, warehouse |
 
@@ -82,6 +83,11 @@ triangles), including placed furniture and plants.
 | Street furniture and docks | `sunshade_poles` | Four-pole sun shade | 3 | 9 x 9 x 4.5 | abyssal-desert · prop | 1.0 k | old |
 | | `infra_fishing_dock` | Fishing dock | 2 | 12 x 34 x 5 | abyssal-desert · infrastructure | 2.5 k | old |
 | | `abyss_helpers_demo` | ABYSS helper demo | 1 | 64 x 36 x 16 | prop · tag demo | 13.7 k | |
+| Lower Verge | `abyss_mayor_compound` | The Mayor's compound | 1 | 70 x 56 x 27 | civic + single-family dwelling | | new |
+| | `abyss_guard_tower` | Guard tower and barrack | 1 | 26 x 20 x 21 | military | | new |
+| | `abyss_toll_house` | Toll house at the trailhead | 1 | 14 x 10 x 8 | civic | | new |
+| | `abyss_palisade` | Palisade segment (6 m) | 2 (stakes and plate · drums and plate) | 6 x 3 x 4.2 | military + infrastructure | | new |
+| | `abyss_palisade_gate` | Palisade road gate | 1 | 14 x 4 x 7.8 | military + infrastructure | | new |
 
 All new assets: culture `abyssal-desert`, `kit:'abyss'`. Counted: **31 new keys, all present; none missing.**
 Not on this sheet, by the brief: `ind_refinery`, `ind_generator_house`, `trade_fuel_station`, `civic_geomancer_chapterhouse`,
@@ -220,6 +226,34 @@ they face the two runs). `ABYSS.WALL = { L, H, T, walk, gateSegments }`. `abyss_
 through `ABYSS.sub` — segment, tower, segment, gate, segment, corner, segment (the last turned along −z) — and the
 citadel builds its whole circuit (front: segment + gate + segment; other sides four segments; corner towers; joint
 towers mid-side) the same way on a 4 m rubble mound (70 m at the foot, 58.8 m on top).
+
+## Lower Verge (Oct 2026, `65-abyss-75-verge.js`)
+
+Five additions for the lower city of Verge (an elected mayor; Yuni-controlled, built in Yuni and abyssal styles), in their
+own LAST row (`KIT_ROWS.abyss` gets `'Lower Verge'`), so every earlier sheet item keeps its seed (`1000 + index*7`). The
+builders use only the kit API (F, `ABYSS.*`, `LOCUS.*`, PAL, FURNISH); no Locus world globals.
+
+- `abyss_mayor_compound` (70 x 56): court wall (rubble, lime-wash, teal coping) with the gate on +z (9.8 m between painted
+  pylons, a small swoop roof with painted tips, leaves swung in); the COUNCIL HALL on a 1.6 m painted rubble plinth
+  (x -16..16, z -23..1): open sides between teal posts, three built-in tiers of benches (back and both sides), a painted
+  mural wall at the back, the great swoop-and-horn roof with painted gables (`paintcol`) and painted horn tips, no gilt, no
+  spines; a 10 m stair at the front (foot z 2.8). The mayor's residence (12 x 12, two storeys, door (-26, -13)), the office
+  and records wing (13 x 14, door (26, -11), tin-clad back), the forecourt (z 6..18) under three sails with 12 petitioners'
+  benches, lit lantern posts along the path. Doors (F.door): residence, office.
+- `abyss_guard_tower` (26 x 20): square tower 9 x 9 at (-7.5, -3), three storeys (floors 0.4, 3.8, 7.2; rubble then
+  salvaged plate), merlons, a tin-mirror cone with an arch onto the roof walk and an iron beacon basket (a flame and a night
+  lamp) on its head; the barrack hall (13 x 8.5 at (3.5, -2.75)) under a swoop roof whose ridge runs along z. Doors on +z:
+  tower (-7.5, 1.5), barrack (4.0, 1.5). Drill yard z 1.5..10.
+- `abyss_toll_house` (14 x 10): booth (x -1..2.5) and strongroom (x -4.5..-1, tin-clad, barred slit) under one roof on a
+  0.4 m plinth; the COUNTER WINDOW faces +x (the road) with a plank shelf and a canvas flap; door (1.6, 1.5) on +z; a sail
+  over the queue (x 3.6..6.6) and a raised striped boom at (6.4, 4.7).
+- `abyss_palisade` (one 6 m segment): footing x -3..3, everything inside x = +-3; place segments with centres 6 m apart on
+  one line, same yaw. +z = the outside (plate); stakes, drums and braces inside.
+- `abyss_palisade_gate` (14 x 4): a 9 m clear opening (x -4.5..4.5) between pylons (x +-4.5..6.75), 4.2 m clear under the
+  raised stake gate; it takes the place of 14 m of palisade (next segment centres at x +-10).
+
+Interiors: `kits/interiors/sets/abyss.js` (residence, office, the hall's open floor with the tiers as fixtures; the tower's
+three guard rooms and the barrack's two dormitories and mess; the booth and the strongroom); palisade and gate skip.
 
 ## The windpump (animated)
 
