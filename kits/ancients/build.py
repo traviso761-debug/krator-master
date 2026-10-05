@@ -146,6 +146,7 @@ TARGET_OUT = {
     'yuni-variants': 'yuni-variants.html',     # the Yuni fork's variants, ported (src/8am-yv-*)
     'iziz-variants': 'iziz-variants.html',     # dev: Sky C tripod market, small-podium A-C, tower stumps (8an-iz-*)
     'spaceport': 'spaceport.html',             # dev: the Iziz spaceport in every decay (8ao-iz-spaceport)
+    'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -159,6 +160,7 @@ DETERMINISTIC = {
     '69-mat-salvage.js', '69w-worn.js',
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the

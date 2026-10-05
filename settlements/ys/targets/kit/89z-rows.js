@@ -56,7 +56,7 @@ YS_BUILD.push(function(scene){
  for(const rec of SHEET.rows){if(rec.grown)continue;if(rec.furn){for(const it of rec.items){TSTAT.cur='furn/'+it.F.key;placeFurn(it.F.key,it.x,it.z,0,{y:terrainH(it.x,it.z),seed:3});}continue;}
   for(const it of rec.items){const D=it.D;TSTAT.cur=D.key+'/0';HYK.place(scene,D.key,it.x,it.z,0,{y:terrainH(it.x,it.z)});}}
  TSTAT.cur=null;
- for(const H of SHEET.hosts){const host=ysPlaceHost(scene,{key:'skyB',builder:buildSkyB,x:H.x,z:H.z,y:KIT_HOST_SINK,d:1,cutY:80,podium:52,cap:{hw:74},rAt:kitHostR,name:H.n,
+ for(const H of SHEET.hosts){const host=ysPlaceHost(scene,{key:'skyB',builder:buildSkyB,x:H.x,z:H.z,y:KIT_HOST_SINK,d:1,cutY:80,podium:52,cap:{hw:56},rAt:kitHostR,name:H.n,
    floors:{y0:37,pitch:5,top:.25},ways:[{a:KIT_WAY_A,y:KIT_POD_Y,R:4.0}].concat(H.ways),ring:2});
   hykTideline(host);hykAccrete(host,[{a:KIT_WAY_A,R:4.0,wealth:'middle',level:'L2',into:true}]);
   for(const it of H.items){TSTAT.cur=it.D.key+'/0';HYK.placeOn(scene,it.D.key,host,{y:it.y,a:it.a,level:it.level,into:it.into});}TSTAT.cur=null;}

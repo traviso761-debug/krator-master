@@ -2,7 +2,7 @@
  "10-core.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "e3edbbeee86a"
+  "sha1": "ea36e1d844e8"
  },
  "12-stats.js": {
   "adapted": false,
@@ -17,82 +17,347 @@
  "32-surfaces.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "f41847f87f7c"
+  "sha1": "260f318aa045"
  },
  "34-kitdefs.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "7347254ffed9"
+  "sha1": "426932435c82"
  },
  "36-decor.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "ed924131e430"
+  "sha1": "4f0f2d66851b"
  },
  "38-helpers2.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "97d25c565adf"
+  "sha1": "9498fec642c8"
+ },
+ "42-offices.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "72435f572b8f"
+ },
+ "46-bunker.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "efb26646e968"
+ },
+ "48-library.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "901324c86be5"
  },
  "50-registry.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "d0f77add9a31"
+  "sha1": "2dbe98a3a5b6"
  },
  "52-sky-abc.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "3143ffd0d872"
+  "sha1": "e56847f6542b"
  },
  "54-mat-concrete.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "e5a2b3f1e212"
+ },
+ "56-sky-d.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "ed5091b41781"
+ },
+ "57-sky-e.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "f7faef225a09"
+ },
+ "58-sky-f.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "af69d732fd7f"
+ },
+ "62-robotics.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "29e42e7083f5"
+  "sha1": "8ce20d3edc9b"
+ },
+ "64-houses-def.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "21f45acb82c3"
+ },
+ "66-office-c.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "bf71b44243d4"
  },
  "69-mat-salvage.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "c3955fecff77"
+  "sha1": "346781f9e5cd"
  },
  "69b-vern-mat.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "ce0c96e91940"
+  "sha1": "4bc1d2ce639f"
  },
  "69c-vern-helpers.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "310adda27c42"
+  "sha1": "160cad10b9a2"
+ },
+ "69h-host-0-lib.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "a795d96213f1"
+ },
+ "69h-host-a-facet.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "2a89eeee0af1"
+ },
+ "69h-host-b-bastion.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "d4d4fe3ba652"
+ },
+ "69h-host-c-arcades.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "51f5db7ef834"
+ },
+ "69h-host-d-stalks.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "52a90143f6cc"
+ },
+ "69h-host-e-bellhall.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "d474b6e27eda"
+ },
+ "69w-worn.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "3d93cfdb531f"
+ },
+ "70-hl-tex.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "89684ac3e3ee"
  },
  "70-port-core.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "b6e114e2932b"
  },
+ "70-vern-dwellings.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "83a46d297ae4"
+ },
+ "71-hl-mat.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "2b3109400c54"
+ },
  "71-port-terrain.js": {
   "adapted": true,
   "from": "settlements/port/src",
-  "sha1": "a39178080e3b"
+  "sha1": "ed208e100433"
+ },
+ "71-sky-h.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "19e7d7fb8124"
+ },
+ "71-vern-trade.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "5e176829a2b5"
+ },
+ "71b-hl-motif.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "bf315ee9ebc6"
+ },
+ "72-datacenter.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "4c2f5395ed13"
+ },
+ "72-hl-helpers.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "d0d7fa9524d0"
  },
  "72-port-kit.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "6aaf10b6d2ad"
  },
+ "73-hl-carve.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "6d57fdefd8a5"
+ },
+ "73-police.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "5acbf202e061"
+ },
  "73-port-edges.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "79339087e90d"
+ },
+ "74-hospital.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "12fbfb1281e3"
  },
  "74-port-dress.js": {
   "adapted": false,
   "from": "settlements/port/src",
   "sha1": "2adaa490788f"
  },
+ "74-rep-dwell.js": {
+  "adapted": false,
+  "from": "settlements/highlands/src",
+  "sha1": "810a299e405f"
+ },
+ "75-hotel.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "a6b0a5d61da6"
+ },
+ "75-port-embassy.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "545ad29ee770"
+ },
+ "76-port-chapterhouse.js": {
+  "adapted": false,
+  "from": "settlements/iziz/src",
+  "sha1": "6501ec0bf155"
+ },
+ "79-government.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "72bcf46cdb0a"
+ },
+ "80-aa-battery.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "5043b92bbe55"
+ },
  "81-sky.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
   "sha1": "b13975f23277"
+ },
+ "82-apartments.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "9c554d78a51a"
+ },
+ "86-bio-10-core-head.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "79691236dfbd"
+ },
+ "86-bio-20-core-kit.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "8702bbc17f64"
+ },
+ "86-bio-30-core-foliage.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "98b0f4e59ec2"
+ },
+ "86-bio-40-core-place.js": {
+  "adapted": false,
+  "from": "core/biome",
+  "sha1": "86d05ad00910"
+ },
+ "86-bio-50-biome-nwbay-species.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "8fe91686f985"
+ },
+ "86-bio-55-biome-nwbay-trees.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "27c802404418"
+ },
+ "86-bio-60-biome-nwbay-floor.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "ce3c7c1ddd5f"
+ },
+ "86-bio-65-biome-nwbay-dress.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "49bde2c3b134"
+ },
+ "86-bio-70-biome-nwbay.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "097ec443275c"
+ },
+ "86-bio-75-biome-nwbay-fauna.js": {
+  "adapted": false,
+  "from": "biomes/nwbay/src",
+  "sha1": "6a4341c64324"
+ },
+ "89-lab.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "a771f81f4b41"
+ },
+ "89m-sky-k.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "eba9d0e600ec"
+ },
+ "8aj-alt-a-bole.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "4ab8a97e9e2b"
+ },
+ "8aj-alt-b-stack.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "a34796b4ecd1"
+ },
+ "8aj-alt-c-hotel.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "6bee63f28144"
+ },
+ "8ak-alt-a-houses.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "9b7917e5ad95"
+ },
+ "8al-alt-00-lib.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "9e0352867c0b"
+ },
+ "8al-alt-01-office-terrace.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "cf81ad0dbe00"
+ },
+ "8al-alt-06-library.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "0d059975e84e"
  },
  "92-camera.js": {
   "adapted": true,
@@ -102,7 +367,7 @@
  "93-labels.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "99c2c595e0f4"
+  "sha1": "d78e5d807c2d"
  },
  "99-tail.html": {
   "adapted": false,

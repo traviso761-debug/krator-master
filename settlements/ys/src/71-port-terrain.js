@@ -248,7 +248,7 @@ function portBuildTerrain(scene,layout){
   // slope for colour: the steeper one-sided slope, so a cut bank reads as rock
   const sl=Math.max(Math.abs(sxm||0),Math.abs(sxp||0),Math.abs(szm||0),Math.abs(szp||0));
   const cs=Math.max(i>0?xs[i]-xs[i-1]:0,i<nx-1?xs[i+1]-xs[i]:0,j>0?zs[j]-zs[j-1]:0,j<nz-1?zs[j+1]-zs[j]:0);
-  const c=portGroundColor(xs[i],zs[j],h,Math.min(sl,3),portPaint(xs[i],zs[j]),cs);
+  let c=portGroundColor(xs[i],zs[j],h,Math.min(sl,3),portPaint(xs[i],zs[j]),cs);if(typeof ysGroundTint==='function')c=ysGroundTint(xs[i],zs[j],h,sl,c);   /* Ys: the karst's colours */
   COL[k*3]=c[0];COL[k*3+1]=c[1];COL[k*3+2]=c[2];}
  const CH=96;const chunks=[];
  for(let i0=0;i0<nx-1;i0+=CH){const i1=Math.min(nx-1,i0+CH),cw=i1-i0+1;

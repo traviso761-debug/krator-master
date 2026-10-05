@@ -219,9 +219,129 @@ water or the ground, `ysKarst(x,z)` the 0..1 field for the painter), then the ri
 `ysRiverY`: the bed follows `ysRiverProfile()`, the centre-line ground smoothed over ±100 m, taken as the running
 minimum from upstream, `depth` under it and quantised to `rise` m terraces, each pool with a rimstone lip at its
 downstream edge; the valley is 2.2 widths wide). Every stack and the Amphitriton island are shore loops.
-**Paint** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`),
-`LAYOUT.highways` (three), and `CITY_STAMPS` of `kind:'paint'` (the adapted terrain: colour only, no reshaping, no
-`y`) for the dry streets, the highways and the paved or soiled precincts. The placer never puts a footprint on a street.
+**The placement** (`88-city-place.js`, pass 1, records only, KRAND): `PLACE.blds` `{key,x,z,ry,y,v,why,block,wealth,box}`
+(x,z the def's origin: on the quay line for a harbour piece), `PLACE.hosts` `{n,block,type,x,z,ry,sink,d,cutY,full,top,
+plates:[y],ways:[{a,y,R}],pods:[{key,a,y,level,into}]}`, `PLACE.slots` `{kind:'foreign'|'chapterhouse'|'land host'|'low host',
+swap|wish,x,z,ry,w,d,y}`, `PLACE.moles` `{name,poly,y,wall,plate,node}` (the terrain's `fill` stamp lies 30 cm under
+`y`, inset 7 m and sharp-edged under a walled mole; the draw pass lays a plate at `y - .12` and, if `wall`, a shell quay
+wall down to the bed round every edge, `ysFaceUp` turning the plate's faces upward whatever the outline's winding;
+`node` makes the mole a node of the bridge graph; `star` marks an organic
+outline, `ysPlOrganic`, whose plate is a fan and whose inset is a pull toward the centre; `stairs` the flights between
+terraces). `ysPlEdgeRun(m,b,{pool,kind,why,tag,max,land})` lines a polygon's edges with buildings facing outward. Host types live in
+`YS_HOST_TYPES` (storey table, face radius by local y, cut ranges, the plate sunk to L2). Helpers: `ysPlBox`/`ysPlHit`
+(oriented boxes), `ysPlClash(B,skip)`, `ysPlTry`/`ysPlByName`/`ysPlSeek` (a def by name, quietly, counted, or over
+candidates), `ysPlFront(b,{pool,kind,sides,h,only,standIn})` (the frontage walker; `standIn` draws a Hykkousoi house of the
+middle pool inside each foreign slot it reserves, `slot.standIn` → the record, `r.standIn:true`), `ysPlShoreRun(uses,seq)`
+(pieces squared to the real waterline), `ysPlHostAt(x,z,type,{capScale,name,host:{...}})` (a host at a point Travis named:
+a synthetic block `(90+k,0)`, the point first then a 12 m grid out to 36 m round it, on land with ground, in the water
+over a canal line; the block the point falls in is marked `hostPlaced`, so it is not laned). A landmark record may carry
+`sink` (the Wet Cells: the bed's depth under it); the draw pass hands it to the builder as `o.sink`. `PLACE.ruins`
+`{key,builder,name,x,z,ry,d,sink,box,w,dd,h}` (the Ancients' civic and industrial ruins in `YS_RUINS_POLY`; the draw pass
+stands each with `ysPlaceRuin(scene,o)` from `64b-ys-ruins.js`, which returns `{n,key,x,z,ry,y,d,G,reg,r}` and pushes it to
+`YS_RUINS`; `YS_RUIN_TYPES` `{key,name,builder,kind,w,d,h,r,cx,cz}`). `YS_HOST_OFFICES` (`69j-host-offices.js`) adds the
+kit's Apartments, Office B and Office C to `YS_HOST_TYPES` like `YS_HOST_ANCIENTS`. The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
+the zero list, plates per host) and `_api.city.records()` (the records as plain JSON).
+**Roads** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`, and the
+`lane`s that quarter a neighbourhood block without a reclaimed Ancient: `b.landHost`, set by the layout), `LAYOUT.highways`
+(three), `CITY_STAMPS` of `kind:'paint'` (the adapted terrain: colour only, no reshaping, no `y`) for the paved or soiled
+precincts and, with `paint:null`, for every road (the stamp keeps the scrub off it), and `LAYOUT.roads` `{a,b,w,kind}`:
+the runs the draw pass lays as ribbons of paving on the ground (`88b`, 22–30 cm over `terrainH`, each direction at its
+own lift). The placer never puts a footprint on a street.
+**The bridge graph** (`88-city-spans.js`): `SPANS.nodes` (the drowned hosts, the walled moles, the Citadel, the Winds,
+the Amphitriton), `SPANS.list` records `{kind:'bridge',a:{host,pod},b:{host,pod}|{x,y,z,kind:'mole'|'shore'|'citadel'|
+'winds',pad},level,na,nb}` and `{kind:'drawbridge'|'walkway'|'pontoon',A,B,level}`, a `citadel` end being the gate landing (`node.gate`), an `amph`
+end one of the Amphitriton's L2 doors (`node.doors`, resolved to the door mark at draw time), and `{kind:'cliffstair',
+cx,cz,stack,a0,dir,y0,y1,head,foot}` (the Citadel's stair down its stack), `SPANS.refused` (pairs and nodes
+left to the boats), `SPANS.shore` (nodes with a foot path to the shore). The draw pass resolves a pod end to its
+landing, a `citadel` end to the pad `NAV_EXTRA` names `'Citadel bridge head'`, a `pad` end to a lily pad it grows there,
+and puts piers under a bridge longer than 55 m (`S.piers`).
+
+## The editor (targets/city/94-city-editor.js, 86-city-edits.js)
+
+A dev tool on the city page only: **Edit** in the top bar opens the panel. The baked meshes know their owner (`HYK_OWNER`,
+61: `hykOwnBegin(owner)` / `hykOwnEnd(snap)` round every `HYK.place`, `HYK.placeOn` and `ysPlaceHost` stamp
+`geo.userData.owner` on each put and `b` on each kit instance; `hykFlush` records `mesh.userData.ranges =
+[{o,v0,v1,i0,i1}]` per merged mesh), so a click maps to a building: `instanceId → KIT.items[name][i].b`, or
+`faceIndex*3 → ranges → o`, else the inspector's `regAt`.
+
+```js
+hykPlaceLive(scene,key,x,z,ry,{y,v})   // HYK.place after the bake: the new buckets and kit items merged into one holder
+                                        // group (a Mesh per material and side, an InstancedMesh per item), buckets and
+                                        // items truncated back; H.userData = {G, rec, snap, tris, inst}
+hykLiveRemove(H)                        // takes it down; prunes HYK_PLACED/REG/MARKS/ROOMS/SPOTS... only when it is the last placed
+window._api.city.editor = {toggle, place(key,x,z,ry?,{y,v}), rotate(d), setYaw(ry), move(x,z), select(owner), selectAt(x,z),
+                           del(owner), deleteAt(x,z), undo(), json(), list(), hist(), what(owner), recordAt(x,z)}
+window._api.city.edits()                // {add:[{key,x,z,ry,y}], del:[{key,x,z}]}: the built-in YS_EDITS plus this session's
+```
+- **Place**: pick a def (every `HYK.def` that is not `grown`, grouped by family and row), click the ground. It stands at the
+  hit flush to `terrainH` (under water: the sea datum 0, with a note), its front to the camera, snapped to 15°. The slider
+  or **Q/E** turn the *last placed* one in 15° steps, **Shift+click** moves it (a re-place: its records are the last, so
+  they are pruned and made again). Earlier ones are final until Undo reaches them. A footprint that overlaps the occupancy
+  (`ysPlClash`) is placed anyway with a warning: the probe will flag it.
+- **Delete**: click a building to select it (a wire box), then **Delete** (key or button): its instances are scaled to
+  zero and its shell vertices collapsed to its origin; `{key,x,z}` (x,z to .1) joins the list. Hosts and grown pods are
+  selectable (named) but not deletable: they are `PLACE.hosts` records, not `PLACE.blds`.
+- **Copy JSON** gives the `YS_EDITS` literal for `targets/city/86-city-edits.js`. The next build applies it:
+  `ysApplyEdits()` (called at the end of the placer pass in 88) removes every `PLACE.blds` record of a `del`'s key within
+  1 m and frees its box, then stands each `add` with `ysPlByName(key,x,z,ry,'edit',null,{y,margin:0,skip:/./})`: exactly
+  where the editor put it, nothing refused. `PLACE.edits` reports `{add,del,missed,refused}`.
+- Deterministic unless used: no KRAND, no scene change at load. The kit and the mock do not load the fragment.
+
+## The material library
+
+`materials.json` is Ys's adapter (families = material keys: the hyk pairs, `ground`, `sand`, `trav`, `verdigris`, the cards
+`kelp0-2`, `vine0-2`, `clump0-3`); `python3 tools/textures/pack.py settlements/ys` writes `tex/` (commit it); `build.py`
+inlines it as `26-matlib-pack.js`. `79z-ys-matlib.js`: `YS_MATLIB.on` (`?mat=proc` turns it off), `YS_MATLIB.bound`
+(family → set), `YS_MATLIB.cards` (`kelp`, `vine`, `clump`: alpha cut-out textures for quads), `window._materials` (the
+records table). A new hyk material pair wants a row in materials.json and a line in the adapter's list.
+
+## The biome (targets/city/89-city-biome.js, biomes/nwbay/BIOME-API.md)
+
+The city page carries `biomes/nwbay` on the shared biome core, vendored byte for byte as `src/86-bio-*.js` (build.py
+`BIO_VENDORED`; `TARGET_ONLY` keeps them out of the kit sheet and the mock). Two host fragments bind it:
+`86-bio-45-city-init.js` calls `BIO.init({THREE})` before fragment 50 loads (the species build their textures against
+`BIO.host.THREE` at load; `NWBAY_TEMPLE_H` 110 and `NWBAY_BAY.hue` .47 are set there too), and `89-city-biome.js`, a
+`YS_AFTER` hook (after every placer, the shell flush and the lattice; before `kbake`), binds the city's facts and builds:
+
+```js
+BIO.init({THREE,scene,terrainH,                 // terrainH is the city's: ysKarstH already returns a stack's top inside its footprint
+  mask:ysBioMask,                               // 0..1, the density multiplier (the rules below)
+  obstacles:ysBioObstacles(),                   // cylinders {x,z,r,y0,y1}: every host's cap over its height, the landmarks' and ruins' REG volumes, buildings r >= 14; never the stacks
+  ticks:fn=>window.YS_TICKS.push(fn),           // the wind and the fauna run on the scene's tick list
+  seed:11,origin:ysBioSpine(),center:CITY.HEAD, // the LOD spine: the shore a kilometre either way from the head, and the river's lower reach
+  fields:{wet,salt,upland,flow,karst},eye:()=>camera,
+  stat:(k,tris,inst)=>TSTAT.by['biome/'+pass]}); // the passes are budgeted as types of the 'biome' class (93z: 4.5 M each)
+NWBAY.build({R:2500,quality:.55,bayHue:.47,fauna:true});
+NWBAY.dress([faceGeometry],{karst:true,...});     // once per stack within 1.7 km of the spine: the hanging gardens
+ysBioKarstForest();                               // fan-crowns, crown ferns and splay shrubs on the field stacks' tops (the kit roots only its figs on the rock)
+BIO.bake();
+```
+
+**The mask** (`ysBioMask`): 0 on water (`terrainH < .3`) and off the map; 0 on a stack's rim band (12 m inside the
+wall's top edge), on its face and on the scree 8 m past its foot, and on the whole top of a landmark's stack (its
+building takes it); 0 in the river's water strip (`ysRiverDist(x,z).d < .85 w`, rising to 1 by 1.3 w); 0 on every
+occupancy box (`ysPlClash(ysPlBox(x,z,.6,.6,0,'bio'))`: buildings, hosts' caps, streets, highways, piers, slots) and on
+the moles' plates; .15 in the city's land blocks and the drowned grid's awash land (so the streets read), .35 in the
+farm blocks; 1 on natural ground. The semi-aquatic species (mangrove, pandan, pipe reed) root past the mask by the
+kit's rule; the `wet` field keeps them off the paving (.25 on any box or mole) and out of the drowned grid (.3).
+
+**The fields**: `wet` 1 round the bay and along the river, .14 on the high slope, .62 inside the blocks (the
+flame-crown's lowland, not the giants' jungle), damp (≥ .55) on the stack tops; `salt` 1 at the waterline and at
+sea, 0 by 250 m inland (`ysShoreDist`), 0 in the drowned grid; `upland` the natural ground before the carve
+(`ysNatBase`), 4 m → 0, 59 m → 1; `flow` 1 within a width of the river's line, 0 by 3.4 widths; `karst`
+(`ysBioKarst`) 1 from 13 m inside a stack's top edge, 0 from 6 m beyond its foot, the band between is the face
+(`ysStackRR` is the wall, so the field follows the wandering plan, not the nominal radius). The slow readers
+(`ysRiverDist`, `ysShoreDist`, `ysNatBase`) are cached on an 8 m lattice (`ysBioCache`).
+
+**The faces** for the dress pass are read off the drawn terrain (`PORT_TERRAIN.chunks`): a chunk triangle within 4 m
+of a stack's wall with `|ny| < .6` is a face, an up-facing one 6..26 m inside a field stack's top edge is the rim
+ledge (the curtains hang off its outer edge). One `BufferGeometry` per stack, never added to the scene.
+
+`window._biome` (`_api.biome()`): trees, heroes, far, shrubs, figsOnEdge, karstTrees, bySpecies, floor, reeds, dress,
+stacksDressed, fauna, tris, inst, calls, registered, obstacles, ms. The registered trees are `cls:'flora'`
+(`tags.culture 'wild'`): in the inspector and the tag audit, out of the labels. Checks (93z): `biome-bound`,
+`nothing-on-a-cliff-face`, `figs-on-the-karst`, `height-ceiling`. Presets: 'The karst forest', 'The river bank'.
+The knobs are `YS_BIO` at the top of 89: `Q` (density), `R`, `RIM`, `FOOT`, `HUE`.
 
 ## Animation
 
@@ -255,3 +375,22 @@ switches the rose and gizmo on, inside hides every exterior shell and shows the 
 - The port's underwater fade skips a material that has its own `onBeforeCompile` hook: a hooked material (the
   nacre) calls `portUWsh(sh)` itself.
 - A view name with a comma splits in the harness.
+
+**The foreign quarter** (`88c-city-foreign.js`, after `88b`; the kits vendored in `build.py`: `VENDORED_IZIZ_FQ`, `VENDORED_HL`,
+city target only; `77-voth-townhouses.js` the three Voth houses). At load, every `PLACE.slots` record of kind `foreign` or
+`chapterhouse` gets a `fill` `{key,rot,scale,v,ry,pry,culture,x,z,y,w,d,box}`: the builder is picked from the slot's `swap` globs
+over `VERN.order` (`ysFqPool`), among those whose footprint fits `w × d` within +1 m whole, or turned 90° (`rot`), or at
+scale .92 / .86 when nothing fits whole (`ysFqFits`; whole and unturned weigh most, a builder not yet standing in the
+quarter six times more, `ysFqPick`), from `KRAND.stream(KRAND.child(KRAND.cell(YS_FQ.SEED, i, j), kind+':'+n))` (the
+block's cell, the slot's index in its block). The slot's `standIn` record is spliced out of `PLACE.blds` and its box freed
+(`ysPlFree`); a slot nothing fits keeps it (`YS_FQ.kept`). A compound bigger than any plot (the Voth embassy; the
+chapterhouse when 88 reserved no square) is seated by `compound(key, blocks, culture)`: a box behind a lane of its
+culture's blocks, facing the lane, where the only things in the way are that lane's small houses (`why 'foreign quarter
+lane'`), which it replaces (`YS_FQ.lanesCleared`). The draw hook places each fill with `VERN.place(scene,key,x,z,ry,{v,scale,y})`,
+lays a 1.5 m stone pad under the footprint, stamps every REG volume the builder made (`culture:'iziz'|'republic'|'voth'|
+'historians'`, `type`, `wealth`, `decay:0`, `foreign:true`, the name prefixed with the culture) and turns the vern helpers'
+`DOORS` into `MARKS` door records; the accounting is `TSTAT 'foreign:<culture>'`, one `n` per building (`BUDGET.cls.foreign`).
+Before the bake, `ysFqMerge` takes this pass's kit instances out of `KIT.items` and merges them into one vertex-coloured
+mesh per material (the night kit and transparent items stay instanced). `FURNISH` (the Highlands kit's catalog furniture)
+is a stub here. `_api.city.foreign()` → `window._foreign` (counts per culture and key, the embassy and the chapterhouse,
+door marks, the merge). Presets `The foreign quarter`, `The Voth embassy`, `The Historians' chapterhouse`, `The Republican plots`.

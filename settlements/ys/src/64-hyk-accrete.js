@@ -12,13 +12,20 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  // the ways in: a pod declared here gets its hole cut through the body wall and the lining by the adapted builders
  // (52-sky-abc ysWallHole); hykAccrete then grows the pod bedded into that hole with a back door onto the plate.
  const ways=(o.ways||[]).map(w=>{const R=w.R||4;const rs=rAt(w.y,w.a);const u=((((w.a+ry)/TAU)%1)+1)%1;return {a:w.a,y:w.y,R,u,yb:w.y-sink+R*.447,uw:R*.9/(TAU*rs),hh:R*.88,door:null,room:null};});
+ // every pod (way-in or not), so a builder can clear a ledge proud of its skin where one stands (52 ysBandHole: B's lobe
+ // bands): {u,y (the pod's mid-height, builder y),uw,hh}. The draw pass does not pass `pods` yet; until it does (88b-city-draw:
+ // pods:h.pods) the city's record is read by the host's name, typeof-guarded so the kit and the mock are untouched.
+ const podL=o.pods||[];
+ const pods=podL.filter(p=>!p.core&&p.y!=null).map(p=>{const D=(typeof HYK!=='undefined'&&HYK.defs[p.key])||null;const R=D?D.w/2:4,h=D?D.h:6;const rs=rAt(p.y,p.a);const u=((((p.a+ry)/TAU)%1)+1)%1;
+  return {u,y:p.y-sink+h/2,uw:(R+1.2)/(TAU*rs),hh:h/2+.8};});
  const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;{const t=tcur();t.host=true;t.n=(t.n||0)+1;}const lush=BIOME.lush;BIOME.lush=0;
- YS_CUT=(o.cutY!=null||o.podium!=null||ways.length)?{cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;
+ YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||pods.length||o.sockets||o.noPlinth)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,noPlinth:!!o.noPlinth,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh})),pods}:null;   /* noPlinth: the restand's columns and ring are left out (a stair or a low bridge runs through them) */
  HOLES=o.holes!=null?o.holes:.4;   // the kit's full decay eats 83 % of a tower's skin; a reclaimed host keeps most of its wall
- const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
+ const snap=hykOwnBegin('host:'+(o.name||o.key));   // the kit items' lengths now, and the owner stamp for the editor
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}
  YS_CUT=null;HOLES=1;BIOME.lush=lush;endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
  for(const n of ['trunk','leafCard'])if(KIT.items[n])KIT.items[n].length=snap[n]||0;    // a plant is never part of a building
+ hykOwnEnd(snap);
  // the port's REGISTER already carries the group transform (KXF), so the volumes are in world space here; the kit's
  // generous radius (130 for A) shrinks to the host's cap so neighbouring hosts' volumes stop overlapping (the
  // inspector named A's pod after B, whose volume reached it)
@@ -31,29 +38,38 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  if(o.floors){const top=host.cutY!=null?host.cutY-2:1e9;const F=o.floors;for(let k=0;k<400&&F.pitch>0;k++){const y=sink+F.y0+(k?k*F.pitch+(F.top||0):(F.first!=null?F.first:(F.top||0)));if(y>=top)break;
   host.floors.push({k,y,H:F.pitch-.4,kind:y<-.6?'drowned':y<1.4?'tide':'wild',use:0});}}
  host.members=ysHostMembers(host,d);ysHost(host);return host;}
+// A socketed host (the Capsule Stalks) leaves out the capsule tubes a pod plugs into: YS_CUT.sockets lists, per pod,
+// its core, the core's centre (builder frame), the pod's bearing about it, its height span and its half-width on the face.
+function ysSocketTaken(S){const L=(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.sockets)||null;if(!L)return false;
+ for(const t of L){if(t.core!==S.core||S.y<t.y0||S.y>t.y1)continue;let d=Math.abs(Math.atan2(S.z-t.cz,S.x-t.cx)-t.th);d=Math.min(d,TAU-d);if(d*t.r<t.half)return true;}return false;}
 // The host's members in world space, {n,a,b,r} capsules: the struts and legs a runner can reach for. They mirror the
-// kit's own constants (52-sky-abc.js: A's 24 struts from r 98 at y 5 to r rFn(64)*.96 at y 70, three gone when ruined;
-// B's 12 legs at r 70 from y 5 to 32 with struts in to r rFn(30)*1.15, two gone) and must be re-read if the kit changes.
+// kit's own constants (52-sky-abc.js after the RESTAND: A's 24 struts from r 60 at y 5 to r rFn(64)*.96 at y 70, three
+// gone when ruined; B's 12 legs raked straight from r 42 at the podium to the lobe tips at r rFn(30)*1.15, y 32, two
+// gone) and must be re-read if the kit changes.
 function ysHostMembers(h,d){const M=[];const W=(lx,ly,lz)=>{const p=loc(h.x,h.z,lx,lz,h.ry);return [p[0],ly+h.y,p[1]];};const V=(lx,lz)=>{const p=loc(0,0,lx,lz,h.ry);return [p[0],0,p[1]];};
  const seg=(n,a,b,r,extra)=>M.push(Object.assign({n,a:W(a[0],a[1],a[2]),b:W(b[0],b[1],b[2]),r},extra||{}));
  // a strut's shaft is a 5.5 x 4 beam, modelled as a capsule of r 2.75 (its corners stand .65 m proud of that); a strut
  // head is the kit's 7 x 9 x 6 box at the strut's top, 3 m down from the beam's end, its long axis radial
  if(h.key==='skyA'){const rT=(40+26*Math.pow(.42/.58,1.7))*.96;for(let k=0;k<24;k++){if(d>0&&(k===5||k===13||k===19))continue;const th=(k+.5)/24*TAU;const c=Math.cos(th),s=Math.sin(th);
-   seg('strut '+k,[c*98,5,s*98],[c*rT,70,s*rT],2.75);
+   seg('strut '+k,[c*60,5,s*60],[c*rT,70,s*rT],2.75);
    M.push({n:'strut head '+k,c:W(c*rT,67,s*rT),u:V(c,s),v:[0,1,0],w:V(-s,c),he:[3.5,4.5,3],head:true});}}
- else if(h.key==='skyB'){const r30=(26+10*Math.pow(.1,1.4))*1.15;for(let k=0;k<12;k++){if(d>0&&(k===3||k===8))continue;const th=k/12*TAU;const c=Math.cos(th),s=Math.sin(th);
-   seg('leg '+k,[c*70,5,s*70],[c*70,32,s*70],2.25);seg('leg strut '+k,[c*70,31,s*70],[c*r30,32,s*r30],2.5);}}
+ else if(h.key==='skyB'){const rb=(26+10*Math.pow(30/300,1.4))*1.15,LR=42;const ux=rb-LR,uy=27,ul=Math.hypot(ux,uy),ex=ux/ul,ey=uy/ul;
+  for(let k=0;k<12;k++){if(d>0&&(k===3||k===8))continue;const th=k/12*TAU;const c=Math.cos(th),s=Math.sin(th);
+   seg('leg '+k,[c*(LR-ex*7),5-ey*7,s*(LR-ex*7)],[c*(rb+ex*6),32+ey*6,s*(rb+ex*6)],1.7);}}
  return M;}
 // a host floor is inhabited once something is grown at it
 function ysHostInhabit(host,y,use){let best=null;for(const f of host.floors)if(Math.abs(f.y-y)<4.5&&(!best||Math.abs(f.y-y)<Math.abs(best.y-y)))best=f;if(best){best.kind='inhabited';best.use=Math.max(best.use,use||.5);}return best;}
 // ---------------------------------------------------------------- the tideline: crust, weed, barnacle specks, foam
-function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const R=y=>host.rAt(y)+.3;
- hykPut('hkCrust',hykLathe({H:yt-yb,yBase:yb,cx:host.x,cz:host.z,rFn:y=>R(y+yb),nu:84,nv:6,noise:{amp:.05,su:7,sv:.6,seed:11},col:hC(hPick(HPAL.crust))}));
- const n=o.weed||Math.round(TAU*R(0)/1.5);for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.12,.12);const r=R(.3)+.1;const h=rr(1.2,3.4),w=rr(.5,1.2);
+// A `shaped` host (a square keep, a rounded-square monolith: the city's D and H) has a face that depends on the bearing:
+// the band, the weed, the specks and the foam follow host.rAt(y,a) round it; a round host keeps the lathe it always had.
+function hykTideline(host,o){o=o||{};const yb=-1.7,yt=1.3;const S=!!host.shaped;const R=(y,a)=>host.rAt(y,S?a:undefined)+.3;
+ if(S)hykPut('hkCrust',hykSurf((u,v)=>{const th=u*TAU,y=yb+v*(yt-yb);const r=R(y,th);return [host.x+r*Math.cos(th),y,host.z+r*Math.sin(th)];},192,6,{col:hC(hPick(HPAL.crust)),uS:TAU*R(0,0)/4,vS:(yt-yb)/4}));
+ else hykPut('hkCrust',hykLathe({H:yt-yb,yBase:yb,cx:host.x,cz:host.z,rFn:y=>R(y+yb),nu:84,nv:6,noise:{amp:.05,su:7,sv:.6,seed:11},col:hC(hPick(HPAL.crust))}));
+ const n=o.weed||Math.round(TAU*R(0,0)/1.5);for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.12,.12);const r=R(.3,a)+.1;const h=rr(1.2,3.4),w=rr(.5,1.2);
   kput('hkWeedCard',[host.x+r*Math.cos(a),.35-h/2,host.z+r*Math.sin(a)],qFacing([Math.cos(a),0,Math.sin(a)]),[w,h,1],hC(hPick(HPAL.weed)));}
- const m=o.specks||Math.round(TAU*R(0)*2.4);for(let i=0;i<m;i++){const a=rng()*TAU,y=rr(-1.3,1.2);const r=R(y)+.04;const s=rr(.08,.24);
+ const m=o.specks||Math.round(TAU*R(0,0)*2.4);for(let i=0;i<m;i++){const a=rng()*TAU,y=rr(-1.3,1.2);const r=R(y,a)+.04;const s=rr(.08,.24);
   kput('hkBarnB',[host.x+r*Math.cos(a),y,host.z+r*Math.sin(a)],null,[s,s*.7,s],hC(hPick(HPAL.barnacle)));}
- const f=hykSurf((u,v)=>{const th=u*TAU;const r=R(0)+.1+v*(o.foam||2.4)*(1+.3*Math.sin(th*7));return [host.x+r*Math.cos(th),.06,host.z+r*Math.sin(th)];},84,2,{col:HYK_WHITE,flip:true});
+ const f=hykSurf((u,v)=>{const th=u*TAU;const r=R(0,th)+.1+v*(o.foam||2.4)*(1+.3*Math.sin(th*7));return [host.x+r*Math.cos(th),.06,host.z+r*Math.sin(th)];},S?192:84,2,{col:HYK_WHITE,flip:true});
  const fm=new THREE.Mesh(f,MAT.hkFoam);fm.userData.probeSkip=true;fm.renderOrder=2;scene.add(fm);}
 // the depth of a superellipsoid pod's underside below its centre at a horizontal offset (dx,dz), or null outside it
 function hykPodUnder(a,b,c,e1,e2,dx,dz){const q=Math.pow(Math.abs(dx)/a,2/e2)+Math.pow(Math.abs(dz)/c,2/e2);const t=Math.pow(q,e2/e1);if(t>=1)return null;return b*Math.pow(1-t,e1/2);}

@@ -51,6 +51,8 @@ ENTRIES = [
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea.'),
     ('world', 'shade', 'settlements/shade/dist/shade.html', 'Shade',
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
+    ('world', 'ys', 'settlements/ys/dist/ys.html', 'Ys',
+     'The half-drowned capital of the Hykkousoi on the ruins of an Ancient city: grown shell houses on reclaimed and drowned skyscrapers, a bridge network over the bay, the Pharos, the Citadel on its karst stack, a river in travertine pools and the north-west bay jungle on the stacks.', 'new'),
     ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
      'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 
