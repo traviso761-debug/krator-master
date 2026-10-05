@@ -95,7 +95,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   const floor=k=>{let m=-1e9;for(let j=-3;j<=3;j++){const q2=k+j;if(q2>=0&&q2<N)m=Math.max(m,mesh(q2));}return m+.35;};
   const level=k=>Math.max(lvl(k),floor(k));
   const pair=(k,y)=>{const {x,z,tx,tz,w}=geo(k);pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(q>=2)idx.push(q-2,q,q-1,q-1,q,q+1);q+=2;};
-  for(let k=0;k<N;k++){if(lvl(k)<=.1)continue;   /* under the sea's sheet (the mouth): the strip starts where the bed's water rises above the datum */const y=level(k);if(q>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,Math.max(level(k-1),y));pools++;}pair(k,y);}
+  for(let k=0;k<N;k++){if(lvl(k)<=-3)continue;   /* the strip starts 3 m under the sea's sheet at the mouth, so it emerges from under it rather than beginning in the open */const y=level(k);if(q>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,Math.max(level(k-1),y));pools++;}pair(k,y);}
   if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(ysFaceUp(g),MAT.pkSea);m.name='river';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}
   TSTAT.cur=null;window._river={pools,len:Math.round(pr.len)};}
  // the karst's dressing (Travis's cards, through the library adapter 79z): jungle clumps on every field stack's crown (two

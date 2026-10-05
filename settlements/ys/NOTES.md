@@ -484,3 +484,37 @@ in the water, the middle 6 m deep or more, standing at the bed's lowest point un
 (`ysPlaceRuin`: the kit builder at its ruined state, holes scaled 1.3 for the city's decay 4, flat ground, no planting,
 the registry re-tagged `ruin`). The bed east of the Amphitriton is 20–28 m down, so a 60–90 m ruin stands with its lower
 half under the water. Not podded, no ways, no floors.
+
+## The building editor (Oct 5 2026, Travis: "pick from a settlement's kits, place a building flush to the ground, rotate it, or delete")
+A dev tool on the city page (API.md "The editor"): **Edit** opens a panel with every free-standing `HYK.def` by family and
+row; a click on the ground stands the chosen one there flush to the ground, facing the camera, drawn at once
+(`hykPlaceLive`: `HYK.place` after the bake, its buckets and kit items merged into their own meshes and the buckets
+truncated back, so nothing leaks into later bakes); the slider or Q/E turn the last one in 15° steps, Shift+click moves it.
+A click on a building selects it and Delete hides it: the baked meshes know their owner now (`HYK_OWNER` stamped on every
+put geometry and kit instance while a building is built; `hykFlush` keeps per-owner vertex and index ranges on each merged
+mesh), so its instances are scaled to zero and its shell vertices collapsed to its origin. The edits are data: Copy JSON
+gives the `YS_EDITS` literal for `targets/city/86-city-edits.js` ([G data]), and `ysApplyEdits()` at the end of the placer
+pass deletes and places the same on the next build, where the draw pass builds them like any record (the door cut, the
+rooms, the labels). Live, the door cut runs on the building's own geometry before it is merged, so doors are cut live too;
+what the live view cannot do is in KNOWN_ISSUES. Hosts and pods are selectable (named) but not deletable: they are
+`PLACE.hosts` records. Verified: all three targets build, the port lint passes (86 touches no browser), `--assert` is green
+with the scene identical to the build before (instances, volumes, triangles), and the headless API places, turns, deletes
+and undoes with the registries back at their bake-time lengths.
+
+## Travis's fifth batch (Oct 5 2026): the strip, the Trays, the Lens on its foot, the beam over the spire, the Comb mended, the river's meander, the editor
+**The strip** between the inner quarter and the shore, (304, 36) to (163, 603) and 70 m wide, was open ground: it takes
+small reclaimed Ancients every 52 m along its middle (the Undulant villas and the Office B towers, the only podded types
+under 45 m across), each with a few houses round it (`ysPlHostAt` with `noHome`, so the block the point falls in keeps its
+lanes; check `strip-hosts`). **Sky F**, the Trays (an agent: `58-sky-f.js` adapted, `HOSTSPEC_SKYF`: a tray every 12 m
+with the glass band's lining where a pod roots, the cut snapped to a tray top, the core carried to the ground, every tray
+standing) takes the Tripod's turns in the tall pool and stands at the head of the inner quarter in its place. **The Lens**
+floated: without its plinth the lens starts at its Y0 (10 m); a type's `foot` is the builder y of its lowest geometry
+without the plinth, and the land rule sinks it by that. Its point lies in the river's valley, so it seeks 84 m round it
+with its cap at 72 %. **The Pharos's beam** swept through the Warden's spire: the crown now takes the top plate whatever
+the cut, and when the beam would still be under the spire's finial (`spire` on the type, `rec.spireY`) it is hoisted 6 m
+over it, straight up from the crown on a nacre mast with three collars. **The Comb** was dissected: `buildAltOfficeC`
+added its sub-group's offset after the host's rotation, so the instanced fins stood 60 m from the merged bar; in a host
+the offset goes through the nested group transform. **The river** is a Catmull-Rom spline through its points with a
+meander across it (22 m, two sines of the arc length, fading in over the first 300 m so the mouth stays put), sampled every
+20 m; every reader walks `seg`. The valley is 2.6 widths wide, and the strip starts 3 m under the sea's sheet so it emerges
+from under it. **The editor** (an agent): see API.md "The editor" and the round below it.

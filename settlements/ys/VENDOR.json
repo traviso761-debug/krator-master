@@ -74,6 +74,11 @@
   "from": "kits/ancients/src",
   "sha1": "f7faef225a09"
  },
+ "58-sky-f.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "af69d732fd7f"
+ },
  "62-robotics.js": {
   "adapted": false,
   "from": "kits/ancients/src",
@@ -87,7 +92,7 @@
  "66-office-c.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "59780b05c877"
+  "sha1": "bf71b44243d4"
  },
  "69-mat-salvage.js": {
   "adapted": false,

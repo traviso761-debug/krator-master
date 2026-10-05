@@ -34,17 +34,18 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 6 |  |
 | `57-sky-e.js` | 4 |  |
+| `58-sky-f.js` | 6 |  |
 | `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (100) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
-| `61-hyk-shell.js` | 14 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
+| `61-hyk-shell.js` | 15 | the surface builder (35); lathe: the shell body (47); pod: a superellipsoid with real openings (64); conch: a tapering tube along a log spiral (83); tube along a polyline (parallel-transport frames (99); fillet: roots a shell into a face or the ground (113); disc: floors, landings, lily pads (normal up unl (120) |
 | `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
 | `62-robotics.js` | 8 |  |
 | `64-houses-def.js` | 9 |  |
-| `64-hyk-accrete.js` | 16 | the tideline: crust, weed, barnacle specks, foam (61); accretion: pods grown onto a host's face (75) |
+| `64-hyk-accrete.js` | 16 | the tideline: crust, weed, barnacle specks, foam (62); accretion: pods grown onto a host's face (76) |
 | `64b-ys-ruins.js` | 6 |  |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
-| `66-office-c.js` | 4 |  |
+| `66-office-c.js` | 5 |  |
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
@@ -54,7 +55,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `69h-host-c-arcades.js` | 10 |  |
 | `69h-host-d-stalks.js` | 9 |  |
 | `69h-host-e-bellhall.js` | 13 |  |
-| `69i-host-ancients.js` | 11 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
+| `69i-host-ancients.js` | 12 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
 | `69j-host-offices.js` | 6 | the specs (28) |
 | `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hyk-housing.js` | 69 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (128); POOR 2: the stilt pod. A small pod carried 2.6 m (146); POOR 3: the limpet house. One ringed limpet cone (166); MIDDLE 1: the barnacle tower. One tall twisted b (183); MIDDLE 2: the pod cluster. Three pods of graded  (206); MIDDLE 3: the stair drum. A lobed drum with a st (232); RICH 1: the conch stair house. A nacre conch who (246); RICH 2: the urchin house. A lobed nacre dome rin (311); RICH 3: the scallop court. A ribbed scallop valv (346) |
@@ -75,7 +76,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `74b2-hyk-arena.js` | 11 |  |
 | `74c-hyk-tides.js` | 21 | the temple (45) |
 | `74d-hyk-winds.js` | 10 | the temple (16) |
-| `74e-hyk-pharos.js` | 12 | the crown (20) |
+| `74e-hyk-pharos.js` | 13 | the crown (20) |
 | `74f-hyk-civic-minor.js` | 34 **big** | helpers shared by the three (prefixed hykLib…) (8); the Library of Ys: a nautilus of reading galleri (29); a barnacle cone: the Wet Cells' unit (and the Tr (154); the Treasury: the strongroom in the Citadel's co (167); the Wet Cells: the prison, a barnacle island rea (219) |
 | `75-hotel.js` | 15 |  |
 | `75-hyk-harbour.js` | 37 **big** | shared bits (12) |
@@ -111,6 +112,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 173 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `86-city-edits.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js`, `94-city-editor.js` | 200 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

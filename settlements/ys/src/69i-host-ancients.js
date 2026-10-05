@@ -1,7 +1,7 @@
 // ================================================================= YS HOST TYPES: the Ancients brought in as hosts (Oct 5 2026, Travis)
 // Data only: one HOSTSPEC_* per vendored Ancient builder, in the shape of YS_HOST_TYPES.skyD/skyH (88-city-place.js)
 // and of the five built-to-be-hosts (69h-host-*): what the placer needs to know about a builder before it runs. The
-// numbers are read off the vendored builders (52-sky-abc B and C, 57-sky-e, 89m-sky-k, 8aj-alt-b/c, 8ak-alt-a,
+// numbers are read off the vendored builders (52-sky-abc B and C, 57-sky-e, 58-sky-f, 89m-sky-k, 8aj-alt-b/c, 8ak-alt-a,
 // 8al-alt-01/06); re-read them if the kit is re-vendored. `YS_HOST_ANCIENTS` lists the ones the city places.
 //  plate(k)   the top of plate k, builder y (the kit's slabs; a type without slabs gets them from its Ys hook)
 //  rAt(yl,th) the face radius at builder y and local bearing (null: a mean); a non-round host casts a ray on its plan
@@ -53,7 +53,7 @@ const HOSTSPEC_SKYC={name:'the Tripod',key:'skyC',builder:'buildSkyC',H:380,Y0:1
 const HOSTSPEC_SKYE={name:'the Lens',key:'skyE',builder:'buildSkyE',H:HSE.H,Y0:HSE.Y0,podium:HSE.PR,cap:HSE.PR+2,shaped:true,square:false,
  floors:{y0:14,pitch:4,top:.18,first:.18},k0:0,plate:k=>14+4*k+.18,
  rAt:(yl,th)=>yl<HSE.Y0?HSE.PR:hsaRayOrMean(hsaLensPlan(yl),th),
- cuts:{tall:[170,258],mid:[110,162],low:[62,98],land:[46,74]},crownY:350,sink:'seabed',minY:9,
+ cuts:{tall:[170,258],mid:[110,162],low:[62,98],land:[46,74]},crownY:350,sink:'seabed',minY:9,foot:HSE.Y0,   /* without its plinth the lens starts at Y0: on land the placer sinks it by that (Travis: the stump floated) */
  bearings:(st,n)=>anhFaces([Math.PI/2+.18,3*Math.PI/2+.18],st,n,.35,.05)};   // the broad faces, turned with the lens at the stump's height
 // K, the Sail: a flat-backed, bellied sail 140 m long with a pointed-arch porch in its foot and plates every 4.5 m;
 // the rose (250 m), the campanile and the hoop are above or outside a stump. Pods on the back and the belly, off the
@@ -64,6 +64,18 @@ const HOSTSPEC_SKYK={name:'the Sail',key:'skyK',builder:'buildSkyK',H:HSK.H,Y0:H
  cuts:{tall:[124,196],mid:[106,160],low:[61,97],land:[47,74]},crownY:372,sink:'seabed',minY:9,
  avoid:(yl,h)=>[38.5,74.5,110.5,146.5,182.5].some(b=>yl-1<b+2.4&&yl+h+1>b-.6),   // the battens, raised seams across both faces
  bearings:(st,n)=>anhFaces([4.0,4.7,5.4,.75,2.7],st,n,.2,.05)};   // the back three, the belly either side of the porch
+// F, the Trays: concrete trays every 12 m (tray p's top at 22 + 12 p, three lobes 22 % proud, turned .14 a storey) on an
+// 11 m core, a 9.1 m glass band between them; ruined, the glass is a dark lining at 72 % of the tray's edge, and that is
+// where a pod roots: it stands on the tray under the tray above, its back door through the lining (58-sky-f ysWallHole).
+// The cut snaps to Y0 + 12 n = a tray's top, so a stump's roof is its last tray. Every tray stands (the kit drops every
+// seventh); the lobe crests are the bearings (the tray is widest there: 9.7 to 10.8 m outside the lining).
+const HSF={H:290,Y0:10,TS:12,PR:44};
+const HOSTSPEC_SKYF={name:'the Trays',key:'skyF',builder:'buildSkyF',H:HSF.H,Y0:HSF.Y0,podium:HSF.PR,cap:46,shaped:true,square:false,
+ floors:{y0:22,pitch:12,top:0,first:0},k0:0,plate:k=>22+12*k,
+ rAt:(yl,th)=>{if(yl<HSF.Y0)return 11;const m=Math.floor((yl-HSF.Y0+1)/HSF.TS),t=clamp((HSF.Y0+HSF.TS*m)/HSF.H,0,1),R=(28*(1-.2*t)+6*Math.sin(Math.PI*t))*.72;   // the band a metre under a plate counts as the one above it (the slab)
+  return th==null?R:R*(1+.22*Math.cos(3*(th-(m+1)*.14)));},
+ cuts:{tall:[178,250],mid:[118,166],low:[58,106],land:[58,130]},crownY:290,sink:'seabed',minY:9,lo:21,
+ bearings:(st,n)=>anhFaces([.7,.7+TAU/3,.7+2*TAU/3],st,n,.4,.06)};   // the crests of a mid-stump band (k = 5); a storey turns them .14
 // the Attraction: thirteen fluted parabolic spires on an arcaded podium 14 m tall (the kit's 74 m podium shrunk to 54, its
 // turrets riding in with it: a land block takes a cap of 68 at most); pods on the central spire between the four great
 // spires (the diagonals), off its ring balconies every 18 m. The slabs are Ys's (8aj-alt-c-hotel hook).
@@ -105,4 +117,4 @@ const HOSTSPEC_LIBRARY={name:'the Ancient Library',key:'altLibrary',builder:'bui
 
 // the ones the city places (the placer's pools name the keys; a key not here is skipped). The Undulant house waits
 // on the placer's `lo` (its plates are under the 18 m colonnade rule); Sky J (the Whorl) is not vendored: see NOTES.md.
-const YS_HOST_ANCIENTS=[HOSTSPEC_SKYB,HOSTSPEC_SKYC,HOSTSPEC_SKYE,HOSTSPEC_SKYK,HOSTSPEC_ATTRACTION,HOSTSPEC_STACK,HOSTSPEC_OFFICE1,HOSTSPEC_LIBRARY,HOSTSPEC_UNDULANT];
+const YS_HOST_ANCIENTS=[HOSTSPEC_SKYB,HOSTSPEC_SKYC,HOSTSPEC_SKYE,HOSTSPEC_SKYK,HOSTSPEC_SKYF,HOSTSPEC_ATTRACTION,HOSTSPEC_STACK,HOSTSPEC_OFFICE1,HOSTSPEC_LIBRARY,HOSTSPEC_UNDULANT];

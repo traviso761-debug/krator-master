@@ -107,7 +107,7 @@ for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.
            '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html',
            # the podded Ancient stumps (Oct 5 2026): Sky E and K, the alternates (the Pierced Stack, the Attraction, the
            # Undulant house, the office terrace, the library) with the helpers they share, and the worn pass (the Library)
-           '57-sky-e.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-a-bole.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
            '8al-alt-00-lib.js', '8al-alt-01-office-terrace.js', '8al-alt-06-library.js', '69w-worn.js',
            # the original offices and apartments as land hosts (69j-host-offices.js) and the civic and industrial ruins
            # in the shallows (64b-ys-ruins.js), with the helpers they need (64-houses-def: domRoom; 80-aa-battery)
@@ -125,7 +125,7 @@ for _f in VENDOR_RENAME:
     VENDORED[_f] = 'kits/ancients/src'
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js',
-           '57-sky-e.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
+           '57-sky-e.js', '58-sky-f.js', '89m-sky-k.js', '8aj-alt-b-stack.js', '8aj-alt-c-hotel.js', '8ak-alt-a-houses.js',
            '8al-alt-01-office-terrace.js', '8al-alt-06-library.js',
            '82-apartments.js', '42-offices.js', '66-office-c.js'}   # the Ys branch draws one building of each, holed for the ways in
 
@@ -141,6 +141,7 @@ DETERMINISTIC = {
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js',
+    '86-city-edits.js', '94-city-editor.js',   # the edits as data, and the live editor (no builder, no reseed)
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-pack.js', '79z-ys-matlib.js',   # the material records, the pack, the adapter
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
     '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery

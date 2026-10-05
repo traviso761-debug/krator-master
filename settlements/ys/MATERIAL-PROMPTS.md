@@ -154,3 +154,16 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 ```
 
 *one tile = 2 m; not tinted; the struts, legs, pipes and iron of the drowned Ancients (`MAT.pipeRust`, the Conocylinder's strut ring, the Capsule Stalks' tubes).*
+
+## The Wet Cells' rock (Oct 5 2026, Travis: "bigger and more ominous")
+
+### `rock.wet.dark`
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: dark wet sea rock at the tide line, near-black grey-green stone with a thin wet film that darkens it evenly (the wetness as colour, not as specular highlights), fine pitting and small pocks all over, a sparse crust of small grey barnacles and a few limpets in patches, thin streaks and smears of black-green algae running one way, pale salt rime caught in the crevices, hairline cracks. No large shapes: nothing wider than a tenth of the frame.
+```
+
+*one tile = 4 m (hykSurf's tile; vertical streaks run up); not tinted; the Wet Cells' rock and cones (`hkBarn` there) and
+any other barnacle rock that should read dark and wet (the drowned moles' tide crust, `hkCrust`, could take it darkened).
+Process it with `tools/textures/process.py` like the other sets (albedo, normal from the albedo, roughness high and flat:
+the wet look comes from the colour, so keep roughness ~.7 or the specular hook will make it a mirror).*

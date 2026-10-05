@@ -40,7 +40,7 @@ function ysStripPoly(a,b,w){const dx=b[0]-a[0],dz=b[1]-a[1];const L=Math.hypot(d
 // Travis, Oct 5 2026: the vertex paint on the 10 m grid read as a zig-zag) and a ribbon of paving laid on the ground
 // by the draw pass (88b, ysRoadRibbons) from LAYOUT.roads. Called once the karst has trimmed the roads (87d).
 LAYOUT.roads=[];
-function ysRoadInValley(a,b){const r=ysRiverDist((a[0]+b[0])/2,(a[1]+b[1])/2);return r.d<r.w*2.2;}
+function ysRoadInValley(a,b){const r=ysRiverDist((a[0]+b[0])/2,(a[1]+b[1])/2);return r.d<r.w*2.6;}
 // the lanes (Travis, Oct 5 2026: smaller streets to address the buildings in the middle of a block): a neighbourhood
 // block with no reclaimed Ancient on it is quartered by two lanes through its centre, one along each axis, from street
 // to street; the placer makes them once its land hosts stand (88), reserves them, and lines them with the small houses

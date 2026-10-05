@@ -200,6 +200,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       from the origin): there the water lies on the grass as a sheet, not in a valley. The carve (`ysRiverY`) and the
       heightfield's sampling of it are the thing to look at. Before this round no strip was drawn at all: the loop broke
       at the first sample under the sea, at the mouth.
+- [ ] (Oct 5 2026) The Trays (`skyF`): a pod that is not a way in is centred on its plate, so its lower half sinks into the
+      tray slab and shows as a bump under the tray, and its lily pad lies inside the slab; bearings are the crests of the
+      middle band, and the lobes turn .14 rad a storey, so a pod far from the stump's middle sits up to .6 rad off a crest.
+- [ ] (Oct 5 2026) The Pharos's mast is a plain nacre pole, 50–60 m from the crown's finial to over the Warden's spire; it
+      wants stays or a cage. The beam's cone still clips the spire's finial when the crown stands on the spire's own side.
 - [ ] (Oct 5 2026) The Wet Cells' rock is a plain lathe to the bed (28 m at the Needle's foot): no ledges, no weed below
       the crust band; its library barnacle set reads paler than the tint asks (Travis: ominous). A darker barnacle or
       wet-rock set would do it.
@@ -207,3 +212,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       `avoid(yl,h)` only: on K a pod can land on the porch arch, on the Attraction beside a great spire; `avoid` wants
       the bearing); the tideline crust on C and the Stack is a ring round the axis, not round each leg or piloti; Sky J
       is not a host (its plates reach far past the glazing). The Library's and the office's rust passes are left out.
+- [ ] (Oct 5 2026) The building editor's live view is a preview, not the build: a live building's label is not made
+      (93-labels builds once at load), its ROOM/SPOT records are not in the Rooms overlay until it is rebuilt, and a
+      deleted building keeps its label, its REG volume (the inspector still names it) and its MARKS until the next build.
+      Hosts and grown pods cannot be deleted live or by `YS_EDITS` (they are `PLACE.hosts` records; the hosts' plain meshes
+      are merged across the city without owners by `ysMergeHostMeshes`); the tideline, the bridges and the mole quays carry
+      no owner (built with no frame) and are not selectable. A live placement reseeds the lineage's rng() (the builder's
+      `reseed`), so a later live draw from it (none today) would differ from the build. Raycasting a click against the
+      merged city meshes has no BVH: a selection can take a second.

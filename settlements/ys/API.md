@@ -256,6 +256,37 @@ left to the boats), `SPANS.shore` (nodes with a foot path to the shore). The dra
 landing, a `citadel` end to the pad `NAV_EXTRA` names `'Citadel bridge head'`, a `pad` end to a lily pad it grows there,
 and puts piers under a bridge longer than 55 m (`S.piers`).
 
+## The editor (targets/city/94-city-editor.js, 86-city-edits.js)
+
+A dev tool on the city page only: **Edit** in the top bar opens the panel. The baked meshes know their owner (`HYK_OWNER`,
+61: `hykOwnBegin(owner)` / `hykOwnEnd(snap)` round every `HYK.place`, `HYK.placeOn` and `ysPlaceHost` stamp
+`geo.userData.owner` on each put and `b` on each kit instance; `hykFlush` records `mesh.userData.ranges =
+[{o,v0,v1,i0,i1}]` per merged mesh), so a click maps to a building: `instanceId → KIT.items[name][i].b`, or
+`faceIndex*3 → ranges → o`, else the inspector's `regAt`.
+
+```js
+hykPlaceLive(scene,key,x,z,ry,{y,v})   // HYK.place after the bake: the new buckets and kit items merged into one holder
+                                        // group (a Mesh per material and side, an InstancedMesh per item), buckets and
+                                        // items truncated back; H.userData = {G, rec, snap, tris, inst}
+hykLiveRemove(H)                        // takes it down; prunes HYK_PLACED/REG/MARKS/ROOMS/SPOTS... only when it is the last placed
+window._api.city.editor = {toggle, place(key,x,z,ry?,{y,v}), rotate(d), setYaw(ry), move(x,z), select(owner), selectAt(x,z),
+                           del(owner), deleteAt(x,z), undo(), json(), list(), hist(), what(owner), recordAt(x,z)}
+window._api.city.edits()                // {add:[{key,x,z,ry,y}], del:[{key,x,z}]}: the built-in YS_EDITS plus this session's
+```
+- **Place**: pick a def (every `HYK.def` that is not `grown`, grouped by family and row), click the ground. It stands at the
+  hit flush to `terrainH` (under water: the sea datum 0, with a note), its front to the camera, snapped to 15°. The slider
+  or **Q/E** turn the *last placed* one in 15° steps, **Shift+click** moves it (a re-place: its records are the last, so
+  they are pruned and made again). Earlier ones are final until Undo reaches them. A footprint that overlaps the occupancy
+  (`ysPlClash`) is placed anyway with a warning: the probe will flag it.
+- **Delete**: click a building to select it (a wire box), then **Delete** (key or button): its instances are scaled to
+  zero and its shell vertices collapsed to its origin; `{key,x,z}` (x,z to .1) joins the list. Hosts and grown pods are
+  selectable (named) but not deletable: they are `PLACE.hosts` records, not `PLACE.blds`.
+- **Copy JSON** gives the `YS_EDITS` literal for `targets/city/86-city-edits.js`. The next build applies it:
+  `ysApplyEdits()` (called at the end of the placer pass in 88) removes every `PLACE.blds` record of a `del`'s key within
+  1 m and frees its box, then stands each `add` with `ysPlByName(key,x,z,ry,'edit',null,{y,margin:0,skip:/./})`: exactly
+  where the editor put it, nothing refused. `PLACE.edits` reports `{add,del,missed,refused}`.
+- Deterministic unless used: no KRAND, no scene change at load. The kit and the mock do not load the fragment.
+
 ## The material library
 
 `materials.json` is Ys's adapter (families = material keys: the hyk pairs, `ground`, `sand`, `trav`, `verdigris`, the cards

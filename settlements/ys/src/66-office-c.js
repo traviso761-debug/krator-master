@@ -28,7 +28,10 @@ function officeC(G,d){const cx=330;REGISTER({name:'Office C — the Comb ('+STAT
  if(d>0){mossOnRing(cx,NS*SH+.5,-R*.6,R*.7,20,2);vinesOnRing(cx,NS*SH,-R*.6,R-2,16,12);rubbleRing(cx,.3,-R*.6+R*.9,5,30,30,2);}}
 /* YS: the Comb as a free-standing builder (the kit draws it inside buildOffices at (330, 0)): its middle (cx, OC_YS_ZC) stands
    on (gx, gz), the host's axis, so a land block takes it alone. Seeds 9460..9464 */
-function buildAltOfficeC(scene,gx,gz,d){reseed(9460+d);const G=new THREE.Group();G.position.set(gx-330,0,gz-OC_YS_ZC);scene.add(G);KOFF=[gx-330,0,gz-OC_YS_ZC];
- officeC(G,d);civFlatten(G);KOFF=[0,0,0];return G;}
+function buildAltOfficeC(scene,gx,gz,d){reseed(9460+d);const G=new THREE.Group();G.position.set(gx-330,0,gz-OC_YS_ZC);scene.add(G);
+ /* YS: in a host (KXF set: the host group's transform) the instanced fins go through the nested transform, so the sub-group's
+    offset turns with the host; KOFF added after the rotation left them 60 m off the bar (Travis: "dissected") */
+ const CX=KXF;if(CX){G.updateMatrix();KXF={m:CX.m.clone().multiply(G.matrix),q:CX.q.clone().multiply(G.quaternion)};KOFF=[0,0,0];}else KOFF=[gx-330,0,gz-OC_YS_ZC];
+ officeC(G,d);civFlatten(G);KOFF=[0,0,0];KXF=CX;return G;}
 
 

@@ -21,10 +21,11 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;{const t=tcur();t.host=true;t.n=(t.n||0)+1;}const lush=BIOME.lush;BIOME.lush=0;
  YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||pods.length||o.sockets||o.noPlinth)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,noPlinth:!!o.noPlinth,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh})),pods}:null;   /* noPlinth: the restand's columns and ring are left out (a stair or a low bridge runs through them) */
  HOLES=o.holes!=null?o.holes:.4;   // the kit's full decay eats 83 % of a tower's skin; a reclaimed host keeps most of its wall
- const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
+ const snap=hykOwnBegin('host:'+(o.name||o.key));   // the kit items' lengths now, and the owner stamp for the editor
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}
  YS_CUT=null;HOLES=1;BIOME.lush=lush;endGroupXF();KOFF=[0,0,0];TSTAT.cur=null;
  for(const n of ['trunk','leafCard'])if(KIT.items[n])KIT.items[n].length=snap[n]||0;    // a plant is never part of a building
+ hykOwnEnd(snap);
  // the port's REGISTER already carries the group transform (KXF), so the volumes are in world space here; the kit's
  // generous radius (130 for A) shrinks to the host's cap so neighbouring hosts' volumes stop overlapping (the
  // inspector named A's pod after B, whose volume reached it)
