@@ -12,7 +12,8 @@ const VIEWS=(function(){
   'The canyon and the oasis':look(-3300,VG.rivUZ(-3300)+150,40,-2400,VG.rivUZ(-2400),0),
   'The cataracts from the lip':[F[0].x-6,F[0].top+18,VG.gorgeZ(F[0].x)+46,F[3].x,F[3].bot,VG.gorgeZ(F[3].x)],
   'The cataracts from below':[P.x+260,P.y+70,P.z-170,F[3].x,F[3].top-40,VG.gorgeZ(F[3].x)],
-  'The plunge pool':[P.x+110,P.y+24,P.z+70,P.x-40,P.y+60,P.z],
+  // from the floor north-east of the pool (the spur's flank stands south of it), up into the last falls
+  'The plunge pool':[P.x+150,gh(P.x+150,P.z-70,22),P.z-70,P.x-40,P.y+60,P.z],
   'The switchback from below':look(260,-30,60,-500,10,180),
   // on the trail: down the leg ahead, the legs below it and the abyss beyond
   // (in the middle of a leg near the 30% mark, looking along it to the next hairpin)

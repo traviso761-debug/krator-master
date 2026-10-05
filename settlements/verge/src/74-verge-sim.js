@@ -196,7 +196,10 @@ function pathAt(P,s,out){out=out||[0,0,0,0];const c=P.cum,n=c.length;if(n<2){con
  s=clamp(s,0,P.len);let lo=0,hi=n-1;while(hi-lo>1){const m=(lo+hi)>>1;if(c[m]<=s)lo=m;else hi=m;}const a=P.pts[lo],b=P.pts[hi],t=(s-c[lo])/Math.max(1e-6,c[hi]-c[lo]);
  out[0]=a[0]+(b[0]-a[0])*t;out[1]=a[1]+(b[1]-a[1])*t;out[2]=a[2]+(b[2]-a[2])*t;
  // the heading looks a little ahead, so a corner is turned rather than snapped
- const j=Math.min(n-1,hi+1),q=P.pts[j],p0=P.pts[lo];out[3]=Math.atan2(q[0]-p0[0],q[1]-p0[1]);return out;}
+ // (past any point within 5 cm of where it looks from, so a doubled point never gives a heading of noise)
+ let j=Math.min(n-1,hi+1),i0=lo;while(j<n-1&&Math.hypot(P.pts[j][0]-P.pts[i0][0],P.pts[j][1]-P.pts[i0][1])<.05)j++;
+ while(i0>0&&Math.hypot(P.pts[j][0]-P.pts[i0][0],P.pts[j][1]-P.pts[i0][1])<.05)i0--;
+ const q=P.pts[j],p0=P.pts[i0];out[3]=Math.atan2(q[0]-p0[0],q[1]-p0[1]);return out;}
 // ---------------------------------------------------------------- cross-country: a coarse grid per level
 // For the nomads, who come from any edge of the map: A* over 40 m cells, the cost the climb (no cliff, no canyon
 // wall: those cells are closed) and, on the abyss floor, a ford's cost for the river.

@@ -84,10 +84,21 @@ static func path_at(g: Dictionary, s: float) -> Array:
 	var a: Array = pts[lo]
 	var b: Array = pts[hi]
 	var t := (s - cum[lo]) / maxf(1e-6, cum[hi] - cum[lo])
+	# (past any point within 5 cm of where it looks from, so a doubled point never gives a heading of noise)
 	var j := mini(n - 1, hi + 1)
+	var i0 := lo
+	while j < n - 1 and _d2(pts[j], pts[i0]) < 0.05:
+		j += 1
+	while i0 > 0 and _d2(pts[j], pts[i0]) < 0.05:
+		i0 -= 1
 	var q: Array = pts[j]
-	var h := atan2(float(q[0]) - float(a[0]), float(q[1]) - float(a[1]))
+	var p0: Array = pts[i0]
+	var h := atan2(float(q[0]) - float(p0[0]), float(q[1]) - float(p0[1]))
 	return [float(a[0]) + (float(b[0]) - float(a[0])) * t, float(a[1]) + (float(b[1]) - float(a[1])) * t, float(a[2]) + (float(b[2]) - float(a[2])) * t, h]
+
+
+static func _d2(p: Array, q: Array) -> float:
+	return Vector2(float(p[0]) - float(q[0]), float(p[1]) - float(q[1])).length()
 
 
 # walking a short polyline [[x, z, y]...] d metres from its start (2-D lengths, as walkLeg in 74)

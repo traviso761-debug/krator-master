@@ -112,6 +112,12 @@ async def run(a):
                 with open(os.path.join(a.export, k + '.json'), 'w') as fh:
                     fh.write(data)
                 print("export %-10s %8d KB" % (k, len(data) // 1024))
+            # the meta every godot/data case carries: what made it, from which page, and that the page ran clean
+            import datetime
+            files = {f: os.path.getsize(os.path.join(a.export, f)) for f in sorted(os.listdir(a.export)) if f.endswith('.json') and f != 'meta.json'}
+            with open(os.path.join(a.export, 'meta.json'), 'w') as fh:
+                json.dump({"case": "verge", "page": "settlements/verge/dist/verge.html", "kind": "data", "query": a.query or "",
+                           "files": files, "page_errors": errs[:20], "exported": datetime.date.today().isoformat()}, fh)
         views = [v.strip() for v in a.views.split(",") if v.strip()]
         if a.all_views:
             views = await pg.evaluate("()=>Object.keys(VIEWS)")

@@ -49,9 +49,7 @@
         "trim": 1
       },
       "replaced": 16,
-      "unmatched": {
-
-      },
+      "unmatched": {},
       "world_uv": 8
     },
     "route": "glTF (three GLTFExporter r128)",
@@ -247,5 +245,19 @@
       "records": 13044,
       "version": 1.0
     }
+  },
+  "verge": {
+    "counts": {
+      "buildings": 1745,
+      "groups": 36,
+      "member_nodes": 647,
+      "nav_nodes": 20235,
+      "places": 1745
+    },
+    "gaps": {
+      "citizens": "the citizens walk by decisions taken at run time (SIM.decide, logged); not replayed here",
+      "rigs": "stand-ins: capsules and boxes, no gait (the page's rigs are three.js; RIGS' API is the contract)"
+    },
+    "route": "krator-sim + krator-verge-place (settlements/verge)"
   }
 }
