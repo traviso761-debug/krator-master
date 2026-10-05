@@ -48,6 +48,9 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
    `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
    four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **`core/furnish` DONE 2026-10-05:**
    Girder, Mav's Refuge, Locus, Highlands and Post-Apoc place through it, fingerprints unchanged (`core/furnish/README.md`).
+   **`core/tags` steps 1 and 2 DONE 2026-10-05:** the registry, vocabulary, label, node test and uid twin; Yuni on it,
+   its records arriving in Godot as node metadata (`core/tags/README.md`). Next: core/furnish's `onRecord` into it
+   (step 3, five builds' furniture at once), then Iziz's `REG`, Voth's `PLACED`, the biome kits (`core/tags/PROPOSAL.md`).
 8. **`core/mask` with Iziz's city** as its first consumer, then Iziz's export on the `KRATOR_EXPORT` shape (M5).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
 
