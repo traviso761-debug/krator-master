@@ -3714,7 +3714,8 @@ var KFURN = (function(){
  K.norm = function(tags){
    var V = vocab(), out = {}, problems = [], k;
    tags = tags || {};
-   for (k in tags) if (tags[k] !== undefined) out[k] = tags[k];
+   for (k in tags) if (tags[k] !== undefined && (!V.keyAlias || !V.keyAlias[k])) out[k] = tags[k];
+   if (V.keyAlias) for (k in tags) if (tags[k] !== undefined && V.keyAlias[k] && !(V.keyAlias[k] in out)) out[V.keyAlias[k]] = tags[k];
    // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
    if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
      var al = V.cultureAlias[out.culture];
@@ -3724,6 +3725,15 @@ var KFURN = (function(){
    if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
    else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
    if (typeof out.types === 'string') out.types = [out.types];
+   if (Array.isArray(out.types) && V.typeAlias) {   // older spellings: one may become several; no duplicates
+     var ty = [];
+     for (var ti = 0; ti < out.types.length; ti++) {
+       var tv = V.typeAlias[out.types[ti]] || [out.types[ti]];
+       for (var tj = 0; tj < tv.length; tj++) if (ty.indexOf(tv[tj]) < 0) ty.push(tv[tj]);
+     }
+     out.types = ty;
+   }
+   if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
    for (k in out) {
      var rule = V.keys[k], v = out[k];
      if (!rule) { problems.push({ key: k }); continue; }
@@ -4074,6 +4084,12 @@ KFURN.linearColours = function(geo){
    'yuni-poor': { culture: 'yuni', wealth: 'poor' },
    'sahelian': { culture: 'yuni', style: 'sahelian' },
    'iziz-old': { culture: 'iziz' },
+   // Iziz's REG (2026-10-05): its Ancients groups and its own vernacular
+   'ancients': { culture: 'ancient' },
+   'ancients-transplant': { culture: 'ancient', style: 'transplant' },   // whole Ancients buildings moved into the city
+   'ancients-reclaimed': { culture: 'ancient', state: 'reclaimed' },    // Ancients buildings the Izani live in
+   'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
+   'yuni-order': { culture: 'order' },
    'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
    'scrap': { culture: null, set: 'scrap' }
  };
@@ -4086,10 +4102,16 @@ KFURN.linearColours = function(geo){
  K.VOCAB = {
    classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
    cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
-   types: CATALOG_TYPES.concat(['park', 'military', 'statue']),   // + Yuni's park, Iziz's military and statue
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   // older spellings of a type, on input (Iziz's REG): one becomes one or more
+   typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
+     'multi-family dwelling': ['dwelling-multi'] },
+   // older tag keys, on input: Iziz's type (a list) and place (indoor, outdoor)
+   keyAlias: { type: 'types', place: 'setting' },
+   stateAlias: { rehabilitated: 'rehab', destroyed: 'ruined' },
    wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
    tiers: Object.keys(CATALOG_TIERS),
-   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage'],
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage', 'reclaimed'],   // reclaimed: lived in again, not rebuilt
    settings: CATALOG_SETTINGS.concat(['room']),
    jobs: CATALOG_JOBS,
    sets: ['generic', 'scrap'],
@@ -4102,7 +4124,8 @@ KFURN.linearColours = function(geo){
    keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
      job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
-     lit: 'bool', harvest: 'object' },
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

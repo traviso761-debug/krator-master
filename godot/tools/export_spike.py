@@ -164,6 +164,9 @@ async def run_case(browser, port, name, c, log):
         files["tags.json"] = write_json(os.path.join(out, "tags.json"), await pg.evaluate("KRATOR_EXPORT.tags()"))
         files["building.json"] = write_json(os.path.join(out, "building.json"),
                                             await pg.evaluate("id => KRATOR_EXPORT.building(id)", c["building"]))
+    if c["kind"] != "records" and await pg.evaluate("typeof KTAGS !== 'undefined' && !!KTAGS.page"):
+        # the page's core/tags registry (core/tags/README.md): every record the page placed, as data beside the region
+        files["tags.json"] = write_json(os.path.join(out, "tags.json"), await pg.evaluate("KTAGS.page.export()"))
     if c.get("height"):
         hb = c.get("hbox", c.get("box"))
         hf = await pg.evaluate(HEIGHT_JS, [hb, c.get("hstep", c["step"]), c["height"]])

@@ -122,9 +122,20 @@ MultiMesh keeps the records of its instances in a side table (`"records"` metada
 | Yuni | 2026-10-05 | `src/51-fixtures.js`: `FIX_TAGS`, fed by `FIX_BUILDING_BEGIN` and `fixReg` (buildings, doors, windows, lights; ids unchanged). `KRATOR_EXPORT.tags()`, `KRATOR_EXPORT.tagAudit()`. 13044 records, zero unknowns |
 | Girder, Mav's Refuge, Locus, Highlands, Roketstad, Post-Apoc | 2026-10-05 | core/furnish: their adapter passes `tags: KTAGS.create({build})` and every piece the placement keeps is registered as class `furniture` (`KFURN.tag`: kind the catalog type, culture, tier, job, setting, room, wealth; parent the building as the build names it). Post-Apoc starts a fresh registry with each world (its ids restart). `core/furnish/fingerprint.py` prints each page's tag audit |
 
+| Iziz (all five targets) | 2026-10-05 | `src/91t-iziz-tags.js`: `REG` read once the world is built, before the first frame (77z-iziz-style rolls trial builds back, so reading as `REG` grows would keep undone records). The class from REG's `cls` (farm plots are features; city furniture by type: plaza a feature, statue a landmark, else a prop; the biome's untagged trees flora, its animals life). Records keep REG's `r`, `h`; a tag `note` becomes the record's note. City: 783 records, zero unknowns |
+| Voth | 2026-10-05 | `src/97t-voth-tags.js`: `PLACED` (the claim grid) and the inspector's canton-top footprints (`_inspectFP`), read before the first frame (`gridRemove` takes claims back). `VOTH_TAG_CLASS` turns each claim tag into a class, kind and types; town houses keep their true footprint, base, height, style (`hlaalu velothi domed hovel`) and wealth. 4165 records, zero unknowns. Canton-top records stand at the ground's height under them, not on their deck (inspectClaim keeps no y) |
+
+The vocabulary took Iziz's older spellings as input aliases (2026-10-05): the keys `type` (as `types`) and `place` (as
+`setting`); the types `market/shop`, `tavern/inn`, `single-family dwelling`, `multi-family dwelling`; the cultures
+`ancients`, `ancients-transplant` (style `transplant`), `ancients-reclaimed` (state `reclaimed`), `iziz-vernacular`
+(style `vernacular`), `yuni-order`; the states `destroyed` (ruined) and `rehabilitated` (rehab). New values: types
+`plaza`, `fountain`; state `reclaimed`; keys `role`, `quarter`, `part`, `finish`, `destination`, `stalls`, `canopies`
+(free), `landmark`, `market` (booleans).
+
 **`KTAGS.page`** is the page's registry, set by the build where it creates it, so an exporter or a probe finds it
 without knowing the build (`KTAGS.page.export()`, `KTAGS.page.audit()`).
 
 A build lists `core/rand` and `core/tags` the way it lists `core/lod` (its `build.py`: `RAND_DIR`, `TAGS_DIR`, the
-fragment names in `DETERMINISTIC`). Next (PROPOSAL.md, "Order of adoption"): Iziz's `REG`, Voth's `PLACED`, the
-biome kits.
+fragment names in `DETERMINISTIC`). Next (PROPOSAL.md, "Order of adoption"): the biome kits, once
+placement writes plant records (the reseeding event). `godot/tools/export_spike.py` writes any page's `KTAGS.page` as
+`tags.json`; the glTF importer keeps it as data (root meta `tags`) until the exporter names each mesh's record.

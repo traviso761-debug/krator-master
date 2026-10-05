@@ -129,6 +129,20 @@ static func build(path: String) -> Node3D:
 		report["gaps"]["tags"] = "no extras on any node: the page's userData held no tags to carry"
 	report["counts"] = {"meshes": meshes, "triangles": tris, "multimeshes": instanced, "instances": instances, "materials": mats.size(), "images": json.get("images", []).size(),
 		"nodes_with_extras": with_extras, "extras_keys": keys, "load_ms": Time.get_ticks_msec() - t0}
+	# the page's core/tags records (tags.json beside the region, core/tags/README.md): kept whole on the root as
+	# {id: record} in meta "tags", for gameplay queries. Meshes do not yet name their record (a glTF node carries no id)
+	var tp := path.get_base_dir() + "/tags.json"
+	if FileAccess.file_exists(tp):
+		var t = KData.read_json(tp)
+		if t is Dictionary and t.get("format") == "krator-tags":
+			var by := {}
+			var cls := {}
+			for r in t["records"]:
+				by[r["id"]] = r
+				cls[r["class"]] = cls.get(r["class"], 0) + 1
+			root.set_meta("tags", by)
+			report["tags"] = {"build": t.get("build"), "records": by.size(), "classes": cls}
+			report["gaps"]["tag nodes"] = "the core/tags records arrive as data (root meta 'tags', %d records); no mesh names its record yet: the exporter has to write each record's id into its node's extras" % by.size()
 	root.set_meta("report", report)
 	return root
 

@@ -16,7 +16,7 @@
       },
       "images": 48,
       "instances": 521,
-      "load_ms": 438,
+      "load_ms": 461,
       "materials": 57,
       "meshes": 57,
       "multimeshes": 11,
@@ -29,6 +29,7 @@
       "instancing": "11 instanced meshes (521 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
       "library materials": "16 library surfaces rebuilt from the pack (timber, rope, shingle, totem, awning, lacquer, post, plank, f_stone, life_Cage, inlay, trim, ground) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost",
       "shader hooks": "55 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 1331 records); no mesh names its record yet: the exporter has to write each record's id into its node's extras",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
     },
     "materials_library": {
@@ -58,6 +59,13 @@
       "environment": "reflections from the sky panorama (the page's envMap: specular 1.0, diffuse 0.0)",
       "lights": "1 directional, 1 hemisphere, 1 ambient, 0 point lights (points not carried)",
       "sky": "the page's sky panorama, from [0.0, 74.5643702376741, 0.0] (nearer than 30.0 m left out)"
+    },
+    "tags": {
+      "build": "girder",
+      "classes": {
+        "furniture": 1331
+      },
+      "records": 1331
     }
   },
   "girder-lamps": {
@@ -77,7 +85,7 @@
       "buckets": 3,
       "instances": 4348,
       "items": 19,
-      "load_ms": 279,
+      "load_ms": 286,
       "materials": 32,
       "textures": 21,
       "triangles": 10738
@@ -106,7 +114,7 @@
       },
       "images": 18,
       "instances": 6542,
-      "load_ms": 120,
+      "load_ms": 131,
       "materials": 77,
       "meshes": 153,
       "multimeshes": 114,
@@ -119,12 +127,25 @@
       "attributes": "custom vertex attributes dropped: { \"aN\": 7.0, \"aC2\": 1.0, \"aP0\": 5.0, \"aP1\": 5.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
       "instancing": "114 instanced meshes (6542 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
       "shader hooks": "44 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 783 records); no mesh names its record yet: the exporter has to write each record's id into its node's extras",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
     },
     "route": "glTF (three GLTFExporter r128)",
     "stage": {
       "lights": "2 directional, 1 hemisphere, 0 ambient, 4 point lights (points not carried)",
       "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 80.0 m left out)"
+    },
+    "tags": {
+      "build": "iziz/Iziz",
+      "classes": {
+        "building": 594,
+        "feature": 111,
+        "flora": 67,
+        "landmark": 1,
+        "life": 5,
+        "prop": 5
+      },
+      "records": 783
     }
   },
   "iziz-atmos": {
@@ -148,7 +169,7 @@
       },
       "glow": 328,
       "lamps": 70,
-      "load_ms": 29,
+      "load_ms": 27,
       "prop_instances": 2467,
       "prop_sets": 26
     },
@@ -174,7 +195,7 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 1023,
+      "load_ms": 1105,
       "materials": 51,
       "textures": 35,
       "triangles": 186920
@@ -201,7 +222,7 @@
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 385,
+      "load_ms": 334,
       "windows": 6841
     },
     "counts_interior": {

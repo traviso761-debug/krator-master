@@ -44,6 +44,12 @@
    'yuni-poor': { culture: 'yuni', wealth: 'poor' },
    'sahelian': { culture: 'yuni', style: 'sahelian' },
    'iziz-old': { culture: 'iziz' },
+   // Iziz's REG (2026-10-05): its Ancients groups and its own vernacular
+   'ancients': { culture: 'ancient' },
+   'ancients-transplant': { culture: 'ancient', style: 'transplant' },   // whole Ancients buildings moved into the city
+   'ancients-reclaimed': { culture: 'ancient', state: 'reclaimed' },    // Ancients buildings the Izani live in
+   'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
+   'yuni-order': { culture: 'order' },
    'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
    'scrap': { culture: null, set: 'scrap' }
  };
@@ -56,10 +62,16 @@
  K.VOCAB = {
    classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
    cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
-   types: CATALOG_TYPES.concat(['park', 'military', 'statue']),   // + Yuni's park, Iziz's military and statue
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   // older spellings of a type, on input (Iziz's REG): one becomes one or more
+   typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
+     'multi-family dwelling': ['dwelling-multi'] },
+   // older tag keys, on input: Iziz's type (a list) and place (indoor, outdoor)
+   keyAlias: { type: 'types', place: 'setting' },
+   stateAlias: { rehabilitated: 'rehab', destroyed: 'ruined' },
    wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
    tiers: Object.keys(CATALOG_TIERS),
-   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage'],
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage', 'reclaimed'],   // reclaimed: lived in again, not rebuilt
    settings: CATALOG_SETTINGS.concat(['room']),
    jobs: CATALOG_JOBS,
    sets: ['generic', 'scrap'],
@@ -72,7 +84,8 @@
    keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
      job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
-     lit: 'bool', harvest: 'object' },
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
      landmark: 'site', infrastructure: 'infra', feature: 'feat' },

@@ -512,6 +512,68 @@ var FIELDC     = PAL.field;
    legend in one place is the point of a colour-coded devtool. */
 var PATHVIZ_STRIDER_COLS = [0x8a6a3c, 0x4a8a6c, 0x6a5a9a, 0xb06a8a, 0x3a8ab0];
 var PATHVIZ_AUTO_COLS    = [0x46c8e6, 0xd76f9c, 0x86d24a, 0xd8a0ff, 0xffb347, 0x7fe0c0, 0xc2b280, 0xff7f7f];
+// ================================================================= CORE — rand: one generator, one hash, one noise
+// GODOT-PLAN.md Phase 2, item 1. Every number here is reproducible bit for bit in GDScript (krand.gd beside this
+// file) because nothing in it calls Math.sin, Math.pow or any other library function whose last bits differ by
+// engine: the stream and the hash are 32-bit integer arithmetic, and the noise is +, -, *, / and floor on doubles,
+// in a fixed order. golden.json holds the vectors both engines are tested against (test-rand.js, test_rand.py).
+//
+//   KRAND.stream(seed)             a mulberry32 stream: the SAME numbers as the rng()/reseed() every Krator lineage
+//                                  already uses (kits/ancients 10-core.js, core/biome 10-core-head.js), so a build
+//                                  that moves its draws onto a stream moves no rubble
+//     s.next()  [0,1)   s.u32()  integer   s.range(a,b)   s.int(a,b) inclusive   s.pick(arr)   s.chance(p)
+//     s.state() / s.setState(u32)          for saving and resuming a stream
+//   KRAND.hash(seed, a, b, c...)   u32 from a seed and any number of int32 values (floats are floored first)
+//   KRAND.unit(u32)                [0,1)
+//   KRAND.h3(x,y,z, seed)          [0,1) at an integer lattice point: the portable replacement for the lineages'
+//                                  sin-based h3 (which a GDScript port cannot reproduce). Floats are floored.
+//   KRAND.vnoise(x,y,z, seed)      value noise in [0,1]: the lineages' vnoise (smoothstep trilinear) on h3 above
+//   KRAND.fbm(x,y,z, octaves, seed)  the lineages' fbm (octaves default 3, frequency x2.03, amplitude 1/f)
+//   KRAND.cell(seed, ix, iz)       a seed for one placement cell, so a tile built alone draws what it draws in a
+//                                  full build (biomes/WORLD.md: placement seeded by cell)
+//   KRAND.child(seed, name)        a seed for a named sub-stream ('trees', 'rubble'...), no collisions to manage
+//
+// Ranges: lattice coordinates and hash inputs are int32 (|x| < 2^31). Seeds are taken as u32 (seed>>>0).
+// The noise of a NEW seed is not the old sin-based noise: moving a build's terrain or textures onto it moves them
+// (GODOT-PLAN.md section 7, "Moving rubble": one build at a time, with a screenshot set).
+(function(root){
+  'use strict';
+  var imul=Math.imul;
+  // murmur3's 32-bit finalizer: full avalanche
+  function mix32(h){h^=h>>>16;h=imul(h,0x85ebca6b);h^=h>>>13;h=imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0;}
+  function step(h,v){h=imul(h^(v|0),0x9E3779B1);return (h<<13|h>>>19);}
+  function hash(seed){var h=(seed>>>0)^0x2545F491,n=arguments.length-1;
+    for(var i=1;i<=n;i++)h=step(h,Math.floor(arguments[i]));
+    return mix32(h^n);}
+  function hash3(seed,a,b,c){return mix32(step(step(step((seed>>>0)^0x2545F491,a),b),c)^3);}  // hash(seed,a,b,c), unrolled
+  var INV=1/4294967296;
+  function unit(u){return (u>>>0)*INV;}
+  function h3(x,y,z,seed){return hash3(seed||0,Math.floor(x),Math.floor(y),Math.floor(z))*INV;}
+  function vnoise(x,y,z,seed){seed=seed||0;
+    var xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+    var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+    var a0=hash3(seed,xi,yi,zi)*INV,a1=hash3(seed,xi+1,yi,zi)*INV,b0=hash3(seed,xi,yi+1,zi)*INV,b1=hash3(seed,xi+1,yi+1,zi)*INV,
+        c0=hash3(seed,xi,yi,zi+1)*INV,c1=hash3(seed,xi+1,yi,zi+1)*INV,d0=hash3(seed,xi,yi+1,zi+1)*INV,d1=hash3(seed,xi+1,yi+1,zi+1)*INV;
+    var a=a0+(a1-a0)*u,b=b0+(b1-b0)*u,c=c0+(c1-c0)*u,d=d0+(d1-d0)*u;
+    var e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
+  function fbm(x,y,z,o,seed){o=o||3;var a=0,f=1,s=0;for(var i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f,seed)/f;s+=1/f;f*=2.03;}return a/s;}
+  function cell(seed,ix,iz){return hash3(seed,ix,iz,0x51ED);}
+  function child(seed,name){var h=0x811C9DC5;name=String(name);   // FNV-1a over UTF-16 code units, then mixed with the seed
+    for(var i=0;i<name.length;i++)h=imul(h^name.charCodeAt(i),0x01000193);
+    return hash(seed,h|0);}
+  function stream(seed){
+    var s=seed>>>0;
+    function u32(){s|=0;s=s+0x6D2B79F5|0;var t=imul(s^s>>>15,1|s);t=t+imul(t^t>>>7,61|t)^t;return (t^t>>>14)>>>0;}
+    function next(){return u32()*INV;}
+    return {next:next,u32:u32,
+      range:function(a,b){return a+(b-a)*next();},
+      int:function(a,b){return a+Math.floor(next()*(b-a+1));},
+      pick:function(arr){return arr[Math.floor(next()*arr.length)%arr.length];},
+      chance:function(p){return next()<p;},
+      state:function(){return s>>>0;},setState:function(v){s=v>>>0;}};
+  }
+  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,cell:cell,child:child,mix32:mix32};
+})(typeof window!=='undefined'?window:globalThis);
 // ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
 // One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
 // calls and no change to how it makes geometry:
@@ -5901,6 +5963,240 @@ FAMMAT.fungus.tex  = TEX_FUNGUS;
 FAMMAT.metal.tex   = TEX_METAL;
 
 window._tex = { size:TEXSZ, families:Object.keys(FAMMAT).filter(function(k){ return !!FAMMAT[k].tex; }).length };
+// ================================================================= CORE TAGS — the registry ([G data])
+// One registry of WHAT a placed thing is, for every build (GODOT-PLAN.md Phase 2 item 3, rule 4; PROPOSAL.md and
+// README.md here). It holds no geometry, collision, draw or live state: only the record. No THREE, no DOM: it runs
+// in node (test-tags.js), and its export is what crosses to Godot as node metadata.
+//
+//   const T = KTAGS.create({ build: 'yuni' })
+//   T.add(rec)               -> the stored record, with its id and uid (defaults filled, tags normalised)
+//   T.child(parentId, rec)   -> a record whose id is a path under its parent: 'bld_00098.room.4'
+//   T.get(id)                -> the record (a removed one too), or null
+//   T.remove(id)             -> the record, marked removed: true. It keeps its id; no id is ever reused
+//   T.query(q)               -> the live records matching q = { class, kind, key, parent, tags: { culture: 'voth',
+//                               types: 'shop' }, box: [x0, z0, x1, z1], removed: true (to include removed ones) }
+//   T.at(x, z, y)            -> the smallest live record whose footprint (and height, when y is given) holds the
+//                               point: the inspector's rule, once
+//   T.audit()                -> { records, removed, byClass, unknownKeys, unknownValues, unknown, missingCulture,
+//                               missingTypes }: unknown vocabulary is counted here, never thrown
+//   T.export()               -> { format: 'krator-tags', version: 1, build, convention, vocab, records }
+//   KTAGS.uid(cls, key, at)  -> the position hash, 8 hex digits (README.md, "The uid": Godot reproduces it)
+//   KTAGS.instanceId(id, i)  -> 'flora_00012#37': an instance of an item's record (an instance has no record)
+//   KTAGS.norm(tags)         -> { tags, problems }: the input mapping (aliases, wealth names) and the checks
+//
+// The record: { id, uid, class, kind, key, name, parent, at: [x,y,z], ry, size: [w,d,h] | r (+ h), tags, note, src }
+//   at   the base centre in world metres (+Y up, x east, z south): y is where it stands. x, y, z on input work too
+//   ry   radians about +Y, three's rotation.y (the front, +z, turns to (sin ry, cos ry)); yaw is an alias on input
+//   size full extents in its own frame; a round thing gives r (and h) instead
+// The vocabulary (KTAGS.VOCAB) is 52-core-tags-vocab.js; the label the inspector shows is 53-core-tags-host.js.
+(function(){
+ 'use strict';
+ var root = typeof globalThis !== 'undefined' ? globalThis : this;
+ var K = { version: 1 };
+
+ function krand(){
+   if (typeof KRAND !== 'undefined') return KRAND;
+   if (root.KRAND) return root.KRAND;
+   throw new Error('core/tags needs core/rand (08-core-rand.js) loaded first: the uid is a KRAND.hash');
+ }
+ function vocab(){
+   if (!K.VOCAB) throw new Error('core/tags: load 52-core-tags-vocab.js before the first add');
+   return K.VOCAB;
+ }
+ function pad5(n){ return ('0000' + n).slice(-5); }
+ function r4(v){ return +(+v).toFixed(4); }
+
+ // ---- the uid: KRAND.hash(0, str(class), str(key), cm10(x), cm10(y), cm10(z)) as 8 lowercase hex digits.
+ // str(s) is FNV-1a over the UTF-16 code units of s ('' for a null key), as int32; cm10(v) = floor(v * 10 + 0.5),
+ // the position in 10 cm steps (KRAND.hash floors its arguments, so it is passed v * 10 + 0.5). README.md, "The uid".
+ function str32(s){
+   var h = 0x811C9DC5; s = s == null ? '' : String(s);
+   for (var i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+   return h | 0;
+ }
+ K.str32 = str32;
+ K.uid = function(cls, key, at){
+   var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
+   return ('0000000' + u.toString(16)).slice(-8);
+ };
+ K.instanceId = function(id, i){ return id + '#' + i; };
+
+ // ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
+ // value stays on the record as given and is reported as a problem, which audit() counts.
+ K.norm = function(tags){
+   var V = vocab(), out = {}, problems = [], k;
+   tags = tags || {};
+   for (k in tags) if (tags[k] !== undefined && (!V.keyAlias || !V.keyAlias[k])) out[k] = tags[k];
+   if (V.keyAlias) for (k in tags) if (tags[k] !== undefined && V.keyAlias[k] && !(V.keyAlias[k] in out)) out[V.keyAlias[k]] = tags[k];
+   // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
+   if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
+     var al = V.cultureAlias[out.culture];
+     out.culture = al.culture;
+     for (k in al) if (k !== 'culture' && !(k in out)) out[k] = al[k];   // a given value, null too, wins
+   }
+   if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
+   else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
+   if (typeof out.types === 'string') out.types = [out.types];
+   if (Array.isArray(out.types) && V.typeAlias) {   // older spellings: one may become several; no duplicates
+     var ty = [];
+     for (var ti = 0; ti < out.types.length; ti++) {
+       var tv = V.typeAlias[out.types[ti]] || [out.types[ti]];
+       for (var tj = 0; tj < tv.length; tj++) if (ty.indexOf(tv[tj]) < 0) ty.push(tv[tj]);
+     }
+     out.types = ty;
+   }
+   if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
+   for (k in out) {
+     var rule = V.keys[k], v = out[k];
+     if (!rule) { problems.push({ key: k }); continue; }
+     if (v === null || rule === 'free') continue;
+     if (rule === 'bool') { if (typeof v !== 'boolean') problems.push({ key: k, value: v }); continue; }
+     if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
+     var list = V[rule];
+     if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
+     else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
+   }
+   return { tags: out, problems: problems };
+ };
+
+ K.create = function(cfg){
+   cfg = cfg || {};
+   var V = null, recs = [], byId = {}, counters = {}, childCount = {};
+   var T = { build: cfg.build || null, records: recs };
+
+   function prefixOf(rec){
+     if (rec.prefix) return rec.prefix;
+     if (rec['class'] === 'fixture' && V.fixturePrefix[rec.kind]) return V.fixturePrefix[rec.kind];
+     return V.prefix[rec['class']];
+   }
+   // a passed-through order id moves its prefix's counter past it, so a later made id never collides
+   function claim(id){
+     var m = /^([a-z]+)_(\d+)$/.exec(id);
+     if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, parseInt(m[2], 10) + 1);
+   }
+   function make(rec, parent){
+     V = V || vocab();
+     var cls = rec['class'] != null ? rec['class'] : rec.cls;
+     if (cls === 'fauna') throw new Error('core/tags: fauna is not a class; a placed animal is class "life" with its species as kind');
+     if (V.classes.indexOf(cls) < 0) throw new Error('core/tags: unknown class ' + cls);
+     var at = rec.at ? rec.at : [rec.x || 0, rec.y || 0, rec.z || 0];
+     var o = { id: null, uid: null, 'class': cls, kind: rec.kind != null ? rec.kind : null, key: rec.key != null ? rec.key : null,
+       name: rec.name != null ? rec.name : null, parent: parent || (rec.parent != null ? rec.parent : null),
+       at: [r4(at[0]), r4(at[1]), r4(at[2])], ry: r4(rec.ry != null ? rec.ry : (rec.yaw || 0)) };
+     if (rec.size) o.size = rec.size.map(r4);
+     else if (rec.r != null) { o.r = r4(rec.r); if (rec.h != null) o.h = r4(rec.h); }
+     o.tags = K.norm(rec.tags).tags;
+     if (rec.note != null) o.note = String(rec.note);
+     o.src = { build: T.build, frag: rec.frag || (rec.src && rec.src.frag) || null };
+     if (rec.id != null) {
+       if (byId[rec.id]) throw new Error('core/tags: duplicate id ' + rec.id);
+       o.id = String(rec.id); claim(o.id);
+     } else if (parent) {
+       var seg = rec.kind || cls, ck = parent + '.' + seg;
+       o.id = ck + '.' + (childCount[ck] = (childCount[ck] || 0) + 1, childCount[ck] - 1);
+     } else {
+       var p = prefixOf(o);
+       if (!p) throw new Error('core/tags: no id prefix for class ' + cls);
+       counters[p] = counters[p] || 0;
+       o.id = p + '_' + pad5(counters[p]++);
+     }
+     o.uid = K.uid(cls, o.key, o.at);
+     recs.push(o); byId[o.id] = o;
+     return o;
+   }
+
+   T.add = function(rec){ return make(rec, null); };
+   T.child = function(parentId, rec){
+     if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
+     return make(rec, parentId);
+   };
+   T.get = function(id){ return byId[id] || null; };
+   T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
+
+   function tagMatch(r, want){
+     for (var k in want) {
+       var have = r.tags[k], w = want[k];
+       if (Array.isArray(have) ? have.indexOf(w) < 0 : have !== w) return false;
+     }
+     return true;
+   }
+   T.query = function(q){
+     q = q || {};
+     var out = [];
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed && !q.removed) continue;
+       if (q['class'] != null && r['class'] !== q['class']) continue;
+       if (q.kind != null && r.kind !== q.kind) continue;
+       if (q.key != null && r.key !== q.key) continue;
+       if (q.parent !== undefined && r.parent !== q.parent) continue;
+       if (q.tags && !tagMatch(r, q.tags)) continue;
+       if (q.box && (r.at[0] < q.box[0] || r.at[0] > q.box[2] || r.at[2] < q.box[1] || r.at[2] > q.box[3])) continue;
+       out.push(r);
+     }
+     return out;
+   };
+
+   // the footprint test in the record's own frame: its +z front at (sin ry, cos ry), its +x right at (cos ry, -sin ry)
+   function holds(r, x, z, y){
+     var dx = x - r.at[0], dz = z - r.at[2], h;
+     if (r.size) {
+       var c = Math.cos(r.ry), s = Math.sin(r.ry);
+       var lx = dx * c - dz * s, lz = dx * s + dz * c;
+       if (Math.abs(lx) > r.size[0] / 2 || Math.abs(lz) > r.size[1] / 2) return 0;
+       h = r.size[2];
+       if (y != null && h != null && (y < r.at[1] || y > r.at[1] + h)) return 0;
+       return r.size[0] * r.size[1];
+     }
+     if (r.r != null) {
+       if (dx * dx + dz * dz > r.r * r.r) return 0;
+       if (y != null && r.h != null && (y < r.at[1] || y > r.at[1] + r.h)) return 0;
+       return Math.PI * r.r * r.r;
+     }
+     return 0;
+   }
+   T.at = function(x, z, y){
+     var best = null, ba = Infinity;
+     for (var i = 0; i < recs.length; i++) {
+       if (recs[i].removed) continue;
+       var a = holds(recs[i], x, z, y);
+       if (a > 0 && a < ba) { ba = a; best = recs[i]; }
+     }
+     return best;
+   };
+
+   T.audit = function(){
+     var a = { records: 0, removed: 0, byClass: {}, unknownKeys: {}, unknownValues: {}, unknown: 0, missingCulture: 0, missingTypes: 0 };
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed) { a.removed++; continue; }
+       a.records++;
+       a.byClass[r['class']] = (a.byClass[r['class']] || 0) + 1;
+       var ps = K.norm(r.tags).problems;
+       for (var j = 0; j < ps.length; j++) {
+         a.unknown++;
+         if (!('value' in ps[j])) a.unknownKeys[ps[j].key] = (a.unknownKeys[ps[j].key] || 0) + 1;
+         else { var kv = ps[j].key + ':' + ps[j].value; a.unknownValues[kv] = (a.unknownValues[kv] || 0) + 1; }
+       }
+       if (r['class'] === 'building') {
+         if (!r.tags.culture) a.missingCulture++;
+         if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
+       }
+     }
+     return a;
+   };
+
+   T.export = function(){
+     return { format: 'krator-tags', version: 1, build: T.build,
+       convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
+       vocab: K.VOCAB, records: recs };
+   };
+   return T;
+ };
+
+ if (typeof module !== 'undefined' && module.exports) module.exports = K;
+ root.KTAGS = K;   // a global, so the fragment is one IIFE that leaks nothing into a build's shared scope
+})();
 /* ============================== 11. CANTONS ============================== */
 reseed(500001);   /* fragment head seed — build.py enforces this. Each fragment
                    owns its own PRNG stream so an edit here cannot shift
@@ -9859,6 +10155,155 @@ CAUSEWAYS.forEach(function(cw){
   }
   reserve(land[0], land[1], 30, 30, 0);
 });
+// ================================================================= CORE TAGS — the vocabulary ([G data])
+// The one table of the values core/tags knows (PROPOSAL.md, "Vocabularies" and "Decisions"). The catalog's lists
+// are COPIED here, not read at run time: a build need not load kits/catalog to tag what it places. test-tags.js
+// reads kits/catalog/krator-furniture-core.js and fails when a copied list no longer matches its source, so drift
+// is a failing test, not a silent fork.
+//
+//   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
+//               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
+
+ // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
+   'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+ // BUILDING_TYPES
+ var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
+   'infrastructure', 'religious', 'funerary'];
+ // FURN_TIERS: a 0..1 wealth band per tier
+ var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+ // FURN_JOBS
+ var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+ // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
+ var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
+
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
+ var CULTURE_NAMES = {
+   'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
+   'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
+   'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+ };
+ var CULTURES = Object.keys(CULTURE_NAMES);
+ // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
+ var CULTURE_ALIAS = {
+   'ancients-salvage': { culture: 'ancient', state: 'salvage' },
+   'yuni-court': { culture: 'yuni', wealth: 'rich' },
+   'yuni-common': { culture: 'yuni', wealth: 'middle' },
+   'yuni-poor': { culture: 'yuni', wealth: 'poor' },
+   'sahelian': { culture: 'yuni', style: 'sahelian' },
+   'iziz-old': { culture: 'iziz' },
+   // Iziz's REG (2026-10-05): its Ancients groups and its own vernacular
+   'ancients': { culture: 'ancient' },
+   'ancients-transplant': { culture: 'ancient', style: 'transplant' },   // whole Ancients buildings moved into the city
+   'ancients-reclaimed': { culture: 'ancient', state: 'reclaimed' },    // Ancients buildings the Izani live in
+   'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
+   'yuni-order': { culture: 'order' },
+   'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
+   'scrap': { culture: null, set: 'scrap' }
+ };
+
+ // wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
+ var WEALTH = ['poor', 'middle', 'rich'];
+ var WEALTH_ALIAS = { common: 'middle', court: 'rich', civic: null };
+ function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
+
+ K.VOCAB = {
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   // older spellings of a type, on input (Iziz's REG): one becomes one or more
+   typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
+     'multi-family dwelling': ['dwelling-multi'] },
+   // older tag keys, on input: Iziz's type (a list) and place (indoor, outdoor)
+   keyAlias: { type: 'types', place: 'setting' },
+   stateAlias: { rehabilitated: 'rehab', destroyed: 'ruined' },
+   wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
+   tiers: Object.keys(CATALOG_TIERS),
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage', 'reclaimed'],   // reclaimed: lived in again, not rebuilt
+   settings: CATALOG_SETTINGS.concat(['room']),
+   jobs: CATALOG_JOBS,
+   sets: ['generic', 'scrap'],
+   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
+   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
+   // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
+   doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
+   keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
+     job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
+     style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
+   // the order id's prefix per class; a fixture's per kind
+   prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
+     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+   fixturePrefix: { door: 'door', window: 'window', light: 'light' },
+   // what test-tags.js compares with the catalog
+   catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }
+ };
+})();
+// ================================================================= CORE TAGS — the label ([web])
+// The inspector's text, made from the record and never stored (PROPOSAL.md, Decisions 6, "A label, generated").
+// The inspector hook itself belongs to core/host (GODOT-PLAN.md Phase 1); this is only the text.
+//
+//   KTAGS.label(rec, instance)  -> 'Name\nclass · Culture · types or kind · ...\nsize · id' (+ '\n' + note)
+//
+// The parts, in a fixed order, each left out when it has no value:
+//   line 1  the name; else the kind or key; else the class
+//   line 2  class, culture (its display name), types (else kind, when the name is not already it), job, state,
+//           setting, wealth, 'Köppen <code>', 'harvest: ...', the flags (lit), 'in <parent>'
+//   line 3  'w × d m' (or '⌀ d m'), ', h m tall' from 2 m up; then the id ('#<instance>' for an instance)
+//   line 4  the note
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('53-core-tags-host: load 50-core-tags.js first');
+ function num(v){ return String(+(+v).toFixed(2)); }
+ function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+ K.label = function(rec, instance){
+   var t = rec.tags || {}, V = K.VOCAB || {}, names = V.cultureNames || {}, p = [];
+   var title = rec.name || (rec.kind && cap(String(rec.kind))) || (rec.key && String(rec.key)) || cap(rec['class']);
+   p.push(rec['class']);
+   if (t.culture) p.push(names[t.culture] || t.culture);
+   if (t.types && t.types.length) p.push(t.types.join(', '));
+   else if (rec.kind && rec.name) p.push(rec.kind);
+   if (t.job) p.push(t.job);
+   if (t.state) p.push(t.state);
+   if (t.setting) p.push(t.setting);
+   if (t.wealth) p.push(t.wealth);
+   if (t.koppen) p.push('Köppen ' + (Array.isArray(t.koppen) ? t.koppen.join(', ') : t.koppen));
+   if (t.harvest) {
+     var h = [];
+     if (t.harvest.wood) h.push('wood');
+     if (t.harvest.edible) h = h.concat(t.harvest.edible);
+     if (t.harvest.medicinal) h.push('medicinal');
+     if (h.length) p.push('harvest: ' + h.join(', '));
+   }
+   if (t.lit) p.push('lit');
+   if (rec.parent) p.push('in ' + rec.parent);
+   var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
+   if (rec.size) {
+     s = num(rec.size[0]) + ' × ' + num(rec.size[1]) + ' m';
+     if (rec.size[2] >= 2) s += ', ' + num(rec.size[2]) + ' m tall';
+   } else if (rec.r != null) {
+     s = '⌀ ' + num(rec.r * 2) + ' m';
+     if (rec.h >= 2) s += ', ' + num(rec.h) + ' m tall';
+   }
+   var out = title + '\n' + p.join(' · ') + '\n' + (s ? s + ' · ' : '') + id;
+   if (rec.note) out += '\n' + rec.note;
+   return out;
+ };
+})();
 /* ============================== 14. CHINAMPAS ==============================
    Raised beds built out of the shallows. Ground-up rewrite per the owner's
    explicit spec: a single hand-marked zone polygon, concentric row-lines
@@ -33780,7 +34225,7 @@ window._pathviz = { get:function(){ return PATHVIZ_ON; }, show:pathvizShow, hide
 const ATMOS={};
 (function(){const A=ATMOS;
  A.init=function(h){A.h=h;const T=A.T=h.THREE,P=A.PRESETS,PW=P.wind,PC=P.clock;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
-  A.sets={};A.glow=[];A.lamps=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
    windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
@@ -33921,8 +34366,8 @@ ATMOS.PRESETS={
  // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
  A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
   A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
-  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
-  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them)
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.lampGlow.push(A.glow.length);A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
+  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them); A.lampGlow: its halo's index in A.glow
  // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
  // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
  A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}
@@ -34278,7 +34723,8 @@ ATMOS.PRESETS={
     colors:'hex or [r,g,b] in display (sRGB) space',colour:'srgb',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
    uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
    presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
-   fx:A.fx,lamps:A.lamps.map(l=>({at:[l[0],l[1],l[2]],hours:[l[3],l[4]]})),
+   fx:A.fx,lamps:A.lamps.map((l,i)=>{const g=A.glow[A.lampGlow[i]];return{at:[l[0],l[1],l[2]],hours:[l[3],l[4]],glow:A.lampGlow[i],color:g?[g[3],g[4],g[5]]:null,
+    light:'none in three.js: the lamp is its halo (glow) and its moths; a game engine may give the nearest an OmniLight3D of this colour'};}),
    glow:A.glow.map(g=>({at:[g[0],g[1],g[2]],color:[g[3],g[4],g[5]],size:g[6],hours:[g[7],g[8]]})),
    props,stats:A.stats});};
 })();
@@ -34286,6 +34732,13 @@ ATMOS.PRESETS={
 // [web]. Everything here touches the DOM, so it is kept out of the engine-neutral fragments (GODOT-PLAN.md Phase 1:
 // the host owns the DOM). It moves to core/host/ when that exists; a game engine has its own UI and file saving.
 (function(){const A=ATMOS;
+ // the stage (core/biome/44-core-stage.js: KSTAGE, when the page has it): ATMOS.export(opt) also carries the page's light,
+ // fog, tonemapping and sky panorama, taken from opt.at (default: above the first lamp). opt.stage:false leaves it out.
+ const _export=A.export;
+ A.export=opt=>{const o=_export();opt=opt||{};
+  if(opt.stage!==false&&typeof KSTAGE!=='undefined'){const l=A.lamps[0],at=opt.at||(l?[l[0],l[1]+40,l[2]]:[0,60,0]);
+   o.stage=KSTAGE.capture({at,sky:opt.sky==null?1024:opt.sky,box:opt.box,step:opt.step,ground:opt.ground});}
+  return o;};
  // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
  A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
   for(const m of W.MODES){const op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);}sel.value=W.mode;sel.onchange=()=>{W.mode=sel.value;};el.appendChild(sel);return sel;};
@@ -34425,6 +34878,54 @@ ATMOS.waveUniforms(waterUni);
  const opt=(typeof window.LOD_OPTIONS==='undefined')?{}:window.LOD_OPTIONS;if(opt===false)return;
  try{LOD.init(Object.assign({THREE,scene,camera,renderer},opt));LOD.applied=LOD.apply();}
  catch(e){const m='LOD: '+(e&&e.stack||e);if(typeof reportErr==='function')reportErr(m);else if(typeof ERR==='function')ERR(m);else console.error(m);}
+})();
+/* ============================== 97t. CORE TAGS: VOTH'S PLACED ==============================
+   Voth's claimed footprints (PLACED, 60-land.js) and the inspector's canton-top footprints
+   (window._inspectFP, 86-inspect.js) as core/tags records (core/tags/README.md, step 4 of
+   core/tags/PROPOSAL.md's order of adoption). Built after every fragment has placed and before the first
+   frame (98-start.js), not as claim() runs: gridRemove() takes records back out, and only what stays is
+   registered. PLACED stays Voth's live collision grid; core/tags only reads it.
+   VOTH_TAG_CLASS turns a claim tag into a class, a kind and building types (claim tags are Voth's own
+   words: compound, rshed, exotic...). What a record knows beyond its tag is kept:
+     town      the true footprint (fx0, fz0, not the claim's padded one), its base (yb), height, its
+               style (hlaalu, velothi, domed, hovel) and poor (wealth poor, else middle)
+     the rest  the claimed footprint, padding included; the ground's height under its centre
+   Canton-top records carry no height of their own: they stand at the ground's height under them, which is
+   wrong for a deck 40 m up (inspectClaim takes no y; a refurbishing item). */
+var VOTH_TAG_CLASS = {
+  town:['building','house',['dwelling-single']], 'velothi-out':['building','house',['dwelling-single']],
+  compound:['building','compound',['dwelling-multi']], cantonBuilding:['building','canton-building',['dwelling-multi']],
+  farm:['building','farmstead',['farm','dwelling-single']], shed:['building','shed',['farm']], barn:['building','barn',['farm']],
+  warehouse:['building','warehouse',['industry']], industry:['building','industrial-site',['industry']],
+  rshed:['building','river-shed',['infrastructure']], fixed:['building','structure',['infrastructure']],
+  lighthouse:['building','lighthouse',['infrastructure']], customs:['building','customs-house',['civic']],
+  tower:['building','watchtower',['military']], keep:['building','keep',['military']],
+  gate:['building','gate',['military','infrastructure']], palaceGate:['building','palace-gate',['civic','military']],
+  shrine:['building','shrine',['religious']], temple:['building','funerary-temple',['religious','funerary']],
+  tomb:['building','family-tomb',['funerary']], shop:['building','shop',['shop']], tavern:['building','tavern',['tavern']],
+  manor:['building','manor',['dwelling-single']], guildhall:['building','guild-hall',['civic']],
+  cantonHall:['building','great-hall',['civic']], palaceAtrium:['building','palace-atrium',['civic']],
+  houseOfHealing:['building','house-of-healing',['civic']], arena:['building','arena',['civic']],
+  arenafloor:['part','arena-floor'], arenapit:['part','arena-pit'], arenavip:['part','arena-box'],
+  field:['feature','field',['farm']], grave:['feature','grave',['funerary']], palaceGarden:['feature','garden',['park']],
+  fishdock:['infrastructure','fish-dock'], rdock:['infrastructure','river-dock'], dock:['infrastructure','dock'],
+  cantonStair:['infrastructure','stair'], cantonDoor:['infrastructure','door'],
+  stall:['prop','stall',['market']], prop:['prop','roadside-structure'], monument:['landmark','monument',['statue']],
+  exotic:['flora','ornamental-tree']
+};
+(function(){
+  var T = KTAGS.page = KTAGS.create({ build:'voth' });
+  function add(o, label, frag){
+    var m = VOTH_TAG_CLASS[o.tag] || ['feature', o.tag], t = { culture:'voth' };
+    if(m[2]) t.types = m[2].slice();
+    var fx = o.fx0 != null ? o.fx0 : o.fx, fz = o.fz0 != null ? o.fz0 : o.fz, h = o.h != null ? o.h : null;
+    if(o.tag === 'town'){ t.style = o.kind; t.wealth = o.poor ? 'poor' : 'middle'; }
+    T.add({ 'class':m[0], kind:m[1], key:o.tag, name:label || TAG_LABEL[o.tag] || null,
+      at:[o.x, o.yb != null ? o.yb : terrainH(o.x, o.z), o.z], ry:o.ry || 0,
+      size:h != null ? [fx*2, fz*2, h] : [fx*2, fz*2], tags:t, frag:frag });
+  }
+  PLACED.forEach(function(o){ add(o, null, '97t-voth-tags (PLACED)'); });
+  (window._inspectFP || []).forEach(function(o){ add(o, o.label, '97t-voth-tags (_inspectFP)'); });
 })();
 /* ============================== 98. START ==============================
    The first view and the first frame, after every fragment has run. They used to close 80-camera.js, so the first frame

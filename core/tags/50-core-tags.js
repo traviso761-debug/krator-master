@@ -61,7 +61,8 @@
  K.norm = function(tags){
    var V = vocab(), out = {}, problems = [], k;
    tags = tags || {};
-   for (k in tags) if (tags[k] !== undefined) out[k] = tags[k];
+   for (k in tags) if (tags[k] !== undefined && (!V.keyAlias || !V.keyAlias[k])) out[k] = tags[k];
+   if (V.keyAlias) for (k in tags) if (tags[k] !== undefined && V.keyAlias[k] && !(V.keyAlias[k] in out)) out[V.keyAlias[k]] = tags[k];
    // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
    if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
      var al = V.cultureAlias[out.culture];
@@ -71,6 +72,15 @@
    if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
    else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
    if (typeof out.types === 'string') out.types = [out.types];
+   if (Array.isArray(out.types) && V.typeAlias) {   // older spellings: one may become several; no duplicates
+     var ty = [];
+     for (var ti = 0; ti < out.types.length; ti++) {
+       var tv = V.typeAlias[out.types[ti]] || [out.types[ti]];
+       for (var tj = 0; tj < tv.length; tj++) if (ty.indexOf(tv[tj]) < 0) ty.push(tv[tj]);
+     }
+     out.types = ty;
+   }
+   if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
    for (k in out) {
      var rule = V.keys[k], v = out[k];
      if (!rule) { problems.push({ key: k }); continue; }

@@ -61,6 +61,15 @@ ok(N({ wealth: 0.2 }).wealth === 'poor' && N({ wealth: 0.35 }).wealth === 'middl
    N({ wealth: 0.7 }).wealth === 'rich', 'wealth 0..1: < .35 poor, < .7 middle, else rich');
 ok(N({ wealth: 'civic' }).wealth === null && N({ wealth: 'court' }).wealth === 'rich', 'civic is no wealth; court is rich');
 ok(same(N({ types: 'shop' }).types, ['shop']), 'a single type becomes a list');
+// Iziz's REG spellings (2026-10-05)
+ok(same(N({ type: ['market/shop', 'shop', 'single-family dwelling'], place: 'outdoor' }), { types: ['market', 'shop', 'dwelling-single'], setting: 'outdoor' }),
+  'type and place are older keys; market/shop is two types, no duplicates');
+ok(same(N({ culture: 'ancients-reclaimed', state: 'reclaimed' }), { culture: 'ancient', state: 'reclaimed' }) &&
+   same(N({ culture: 'ancients-transplant' }), { culture: 'ancient', style: 'transplant' }) && N({ culture: 'iziz-vernacular' }).style === 'vernacular',
+  'the Ancients groups and the Iziz vernacular are cultures with a state or a style');
+ok(N({ state: 'destroyed' }).state === 'ruined' && N({ state: 'rehabilitated' }).state === 'rehab' && P({ state: 'reclaimed', landmark: true, role: 'x' }) === '',
+  'older state spellings; reclaimed, landmark and role are known');
+ok(P({ type: ['castle'] }) === 'types:castle' && P({ landmark: 'yes' }) === 'landmark:yes', 'negative: an aliased key is still checked');
 
 // ---- a fixed run ----
 const T = K.create({ build: 'test' });
@@ -140,7 +149,7 @@ const ex = T.export();
 ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 18, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = '4d836bbd';   // 2026-10-05: core/tags step 1, the first run
+const DIGEST = 'b93dacd3';   // 2026-10-05: step 4, the vocabulary took Iziz's aliases (step 1: 4d836bbd)
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);
