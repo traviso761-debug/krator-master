@@ -74,3 +74,9 @@ Version 45 (2026-10-05): `worlds/ys.html` added, the Ys city at the close of pha
 hosts with their grown pods, the bridge graph, the harbours, the river, the north-west bay biome, the foreign quarter,
 the building editor), with `worlds/ys-kit.html` and `worlds/ys-mock.html` replaced by their current builds and the index
 regenerated (Ys 5.9 MB), from `main` at a7f371b6. Every other page is as in version 44. One publish call.
+
+Version 46 (2026-10-05): `worlds/mungo.html` added (Mungo, the reed-lake trade village on `core/simulation`) and
+`worlds/motor-vehicles.html` (the Motor Vehicles kit, the Geomancers' dune buggy), with the index regenerated, from
+`main` at 199cfdfe. Every other page is as in version 45: Locus (now on the shared core, with its buggy park), the
+Locus and Eastern Abyssal kits, Reed Lake (Reed's Local), Shade (its life on `core/simulation`), the catalog, the
+interiors and the eastern-abyss biome changed on `main` too and were not republished. One publish call.
