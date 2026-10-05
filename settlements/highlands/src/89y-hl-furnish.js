@@ -12,6 +12,7 @@ KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round
 // adapter onto it: its seed rule (the record's place in the list), the murals' keep-clear boxes, full detail outside
 const HLF=KFURN.create(Object.assign(KFURN.flags(false),{
  catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ tags:(KTAGS.page=KTAGS.create({build:'highlands'})),   // every piece registered in core/tags (core/tags/README.md)
  seed:(o,ctx,R)=>R.placed.length+1,
  onRecord:(rec,ctx,o,A,dm)=>{const c=ctx.vern;   // murals fitted after the builder (hlFlush) keep clear of the piece
   if(c&&!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[rec.lx,rec.ly+dm.h/2,rec.lz],qEuler(0,rec.lry,0),[dm.w,dm.h,dm.d]]);},

@@ -43,6 +43,12 @@ overrides, and an override goes in its `KNOWN_ISSUES.md`).
 
 This is the shape `core/tags` will register as class `furniture` (Phase 2 item 3) and the exporter will write.
 
+## Tags
+
+With `cfg.tags` (a `KTAGS.create` registry) every record the placement keeps (not a dry run, not one `onRecord`
+defers) is also registered in core/tags as class `furniture`, before it is drawn (`KFURN.tag`; `core/tags/README.md`).
+The furniture record itself is unchanged, so the fingerprint is too. All five builds pass it (2026-10-05).
+
 ## Seeds
 
 A build's seed rule decides how each piece looks (its variant details, wear, colours), so the module does not pick

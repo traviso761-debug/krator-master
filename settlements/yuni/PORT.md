@@ -22,7 +22,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/45-kit.js` | 27.7 | [draw] | 40 | 0 | 0 | 0 | 0 | 15 | 15 | 2 | 0 | 0 | 0 |  |
 | `src/47-texture.js` | 10.9 | [draw] | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/50-structure.js` | 15.2 | [draw] | 8 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/51-fixtures.js` | 12.5 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/51-fixtures.js` | 12.7 | [web] | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/52-vault.js` | 14.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-assets.js` | 20.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 53 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/54-under.js` | 7.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 8 | 2 | 0 | 0 | 0 | 0 |  |

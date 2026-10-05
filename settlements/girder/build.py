@@ -63,6 +63,8 @@ LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 ATMOS_DIR = os.path.join(ROOT, 'core', 'atmos')   # shared atmosphere: the sky's light on the library materials (core/atmos/README.md)
 FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement pass and its draw helpers (core/furnish/README.md)
+RAND_DIR = os.path.join(ROOT, 'core', 'rand')   # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(ROOT, 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 OUT = os.path.join(HERE, 'girder.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
@@ -77,6 +79,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '64-cards.js',        # the library's extra plant and net cards (its own generator)
                  '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js',   # core/materials/record (no rnd())
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
+                 '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
                  '90-atmos-host.js'}   # binds core/atmos
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 # GENERATED fragment, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one
@@ -195,7 +198,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for d in (LOD_DIR, RECORD_DIR, ATMOS_DIR, FURNISH_DIR):   # a src/ copy with the same name overrides
+    for d in (LOD_DIR, RECORD_DIR, ATMOS_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR):   # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)

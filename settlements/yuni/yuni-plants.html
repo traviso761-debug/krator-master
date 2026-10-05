@@ -3551,202 +3551,202 @@ function texFill(S, fn){
 //   size full extents in its own frame; a round thing gives r (and h) instead
 // The vocabulary (KTAGS.VOCAB) is 52-core-tags-vocab.js; the label the inspector shows is 53-core-tags-host.js.
 (function(){
-'use strict';
-var root = typeof globalThis !== 'undefined' ? globalThis : this;
-var K = { version: 1 };
+ 'use strict';
+ var root = typeof globalThis !== 'undefined' ? globalThis : this;
+ var K = { version: 1 };
 
-function krand(){
-  if (typeof KRAND !== 'undefined') return KRAND;
-  if (root.KRAND) return root.KRAND;
-  throw new Error('core/tags needs core/rand (08-core-rand.js) loaded first: the uid is a KRAND.hash');
-}
-function vocab(){
-  if (!K.VOCAB) throw new Error('core/tags: load 52-core-tags-vocab.js before the first add');
-  return K.VOCAB;
-}
-function pad5(n){ return ('0000' + n).slice(-5); }
-function r4(v){ return +(+v).toFixed(4); }
+ function krand(){
+   if (typeof KRAND !== 'undefined') return KRAND;
+   if (root.KRAND) return root.KRAND;
+   throw new Error('core/tags needs core/rand (08-core-rand.js) loaded first: the uid is a KRAND.hash');
+ }
+ function vocab(){
+   if (!K.VOCAB) throw new Error('core/tags: load 52-core-tags-vocab.js before the first add');
+   return K.VOCAB;
+ }
+ function pad5(n){ return ('0000' + n).slice(-5); }
+ function r4(v){ return +(+v).toFixed(4); }
 
-// ---- the uid: KRAND.hash(0, str(class), str(key), cm10(x), cm10(y), cm10(z)) as 8 lowercase hex digits.
-// str(s) is FNV-1a over the UTF-16 code units of s ('' for a null key), as int32; cm10(v) = floor(v * 10 + 0.5),
-// the position in 10 cm steps (KRAND.hash floors its arguments, so it is passed v * 10 + 0.5). README.md, "The uid".
-function str32(s){
-  var h = 0x811C9DC5; s = s == null ? '' : String(s);
-  for (var i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
-  return h | 0;
-}
-K.str32 = str32;
-K.uid = function(cls, key, at){
-  var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
-  return ('0000000' + u.toString(16)).slice(-8);
-};
-K.instanceId = function(id, i){ return id + '#' + i; };
+ // ---- the uid: KRAND.hash(0, str(class), str(key), cm10(x), cm10(y), cm10(z)) as 8 lowercase hex digits.
+ // str(s) is FNV-1a over the UTF-16 code units of s ('' for a null key), as int32; cm10(v) = floor(v * 10 + 0.5),
+ // the position in 10 cm steps (KRAND.hash floors its arguments, so it is passed v * 10 + 0.5). README.md, "The uid".
+ function str32(s){
+   var h = 0x811C9DC5; s = s == null ? '' : String(s);
+   for (var i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+   return h | 0;
+ }
+ K.str32 = str32;
+ K.uid = function(cls, key, at){
+   var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
+   return ('0000000' + u.toString(16)).slice(-8);
+ };
+ K.instanceId = function(id, i){ return id + '#' + i; };
 
-// ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
-// value stays on the record as given and is reported as a problem, which audit() counts.
-K.norm = function(tags){
-  var V = vocab(), out = {}, problems = [], k;
-  tags = tags || {};
-  for (k in tags) if (tags[k] !== undefined) out[k] = tags[k];
-  // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
-  if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
-    var al = V.cultureAlias[out.culture];
-    out.culture = al.culture;
-    for (k in al) if (k !== 'culture' && !(k in out)) out[k] = al[k];   // a given value, null too, wins
-  }
-  if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
-  else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
-  if (typeof out.types === 'string') out.types = [out.types];
-  for (k in out) {
-    var rule = V.keys[k], v = out[k];
-    if (!rule) { problems.push({ key: k }); continue; }
-    if (v === null || rule === 'free') continue;
-    if (rule === 'bool') { if (typeof v !== 'boolean') problems.push({ key: k, value: v }); continue; }
-    if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
-    var list = V[rule];
-    if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
-    else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
-  }
-  return { tags: out, problems: problems };
-};
+ // ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
+ // value stays on the record as given and is reported as a problem, which audit() counts.
+ K.norm = function(tags){
+   var V = vocab(), out = {}, problems = [], k;
+   tags = tags || {};
+   for (k in tags) if (tags[k] !== undefined) out[k] = tags[k];
+   // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
+   if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
+     var al = V.cultureAlias[out.culture];
+     out.culture = al.culture;
+     for (k in al) if (k !== 'culture' && !(k in out)) out[k] = al[k];   // a given value, null too, wins
+   }
+   if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
+   else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
+   if (typeof out.types === 'string') out.types = [out.types];
+   for (k in out) {
+     var rule = V.keys[k], v = out[k];
+     if (!rule) { problems.push({ key: k }); continue; }
+     if (v === null || rule === 'free') continue;
+     if (rule === 'bool') { if (typeof v !== 'boolean') problems.push({ key: k, value: v }); continue; }
+     if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
+     var list = V[rule];
+     if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
+     else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
+   }
+   return { tags: out, problems: problems };
+ };
 
-K.create = function(cfg){
-  cfg = cfg || {};
-  var V = null, recs = [], byId = {}, counters = {}, childCount = {};
-  var T = { build: cfg.build || null, records: recs };
+ K.create = function(cfg){
+   cfg = cfg || {};
+   var V = null, recs = [], byId = {}, counters = {}, childCount = {};
+   var T = { build: cfg.build || null, records: recs };
 
-  function prefixOf(rec){
-    if (rec.prefix) return rec.prefix;
-    if (rec['class'] === 'fixture' && V.fixturePrefix[rec.kind]) return V.fixturePrefix[rec.kind];
-    return V.prefix[rec['class']];
-  }
-  // a passed-through order id moves its prefix's counter past it, so a later made id never collides
-  function claim(id){
-    var m = /^([a-z]+)_(\d+)$/.exec(id);
-    if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, parseInt(m[2], 10) + 1);
-  }
-  function make(rec, parent){
-    V = V || vocab();
-    var cls = rec['class'] != null ? rec['class'] : rec.cls;
-    if (cls === 'fauna') throw new Error('core/tags: fauna is not a class; a placed animal is class "life" with its species as kind');
-    if (V.classes.indexOf(cls) < 0) throw new Error('core/tags: unknown class ' + cls);
-    var at = rec.at ? rec.at : [rec.x || 0, rec.y || 0, rec.z || 0];
-    var o = { id: null, uid: null, 'class': cls, kind: rec.kind != null ? rec.kind : null, key: rec.key != null ? rec.key : null,
-      name: rec.name != null ? rec.name : null, parent: parent || (rec.parent != null ? rec.parent : null),
-      at: [r4(at[0]), r4(at[1]), r4(at[2])], ry: r4(rec.ry != null ? rec.ry : (rec.yaw || 0)) };
-    if (rec.size) o.size = rec.size.map(r4);
-    else if (rec.r != null) { o.r = r4(rec.r); if (rec.h != null) o.h = r4(rec.h); }
-    o.tags = K.norm(rec.tags).tags;
-    if (rec.note != null) o.note = String(rec.note);
-    o.src = { build: T.build, frag: rec.frag || (rec.src && rec.src.frag) || null };
-    if (rec.id != null) {
-      if (byId[rec.id]) throw new Error('core/tags: duplicate id ' + rec.id);
-      o.id = String(rec.id); claim(o.id);
-    } else if (parent) {
-      var seg = rec.kind || cls, ck = parent + '.' + seg;
-      o.id = ck + '.' + (childCount[ck] = (childCount[ck] || 0) + 1, childCount[ck] - 1);
-    } else {
-      var p = prefixOf(o);
-      if (!p) throw new Error('core/tags: no id prefix for class ' + cls);
-      counters[p] = counters[p] || 0;
-      o.id = p + '_' + pad5(counters[p]++);
-    }
-    o.uid = K.uid(cls, o.key, o.at);
-    recs.push(o); byId[o.id] = o;
-    return o;
-  }
+   function prefixOf(rec){
+     if (rec.prefix) return rec.prefix;
+     if (rec['class'] === 'fixture' && V.fixturePrefix[rec.kind]) return V.fixturePrefix[rec.kind];
+     return V.prefix[rec['class']];
+   }
+   // a passed-through order id moves its prefix's counter past it, so a later made id never collides
+   function claim(id){
+     var m = /^([a-z]+)_(\d+)$/.exec(id);
+     if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, parseInt(m[2], 10) + 1);
+   }
+   function make(rec, parent){
+     V = V || vocab();
+     var cls = rec['class'] != null ? rec['class'] : rec.cls;
+     if (cls === 'fauna') throw new Error('core/tags: fauna is not a class; a placed animal is class "life" with its species as kind');
+     if (V.classes.indexOf(cls) < 0) throw new Error('core/tags: unknown class ' + cls);
+     var at = rec.at ? rec.at : [rec.x || 0, rec.y || 0, rec.z || 0];
+     var o = { id: null, uid: null, 'class': cls, kind: rec.kind != null ? rec.kind : null, key: rec.key != null ? rec.key : null,
+       name: rec.name != null ? rec.name : null, parent: parent || (rec.parent != null ? rec.parent : null),
+       at: [r4(at[0]), r4(at[1]), r4(at[2])], ry: r4(rec.ry != null ? rec.ry : (rec.yaw || 0)) };
+     if (rec.size) o.size = rec.size.map(r4);
+     else if (rec.r != null) { o.r = r4(rec.r); if (rec.h != null) o.h = r4(rec.h); }
+     o.tags = K.norm(rec.tags).tags;
+     if (rec.note != null) o.note = String(rec.note);
+     o.src = { build: T.build, frag: rec.frag || (rec.src && rec.src.frag) || null };
+     if (rec.id != null) {
+       if (byId[rec.id]) throw new Error('core/tags: duplicate id ' + rec.id);
+       o.id = String(rec.id); claim(o.id);
+     } else if (parent) {
+       var seg = rec.kind || cls, ck = parent + '.' + seg;
+       o.id = ck + '.' + (childCount[ck] = (childCount[ck] || 0) + 1, childCount[ck] - 1);
+     } else {
+       var p = prefixOf(o);
+       if (!p) throw new Error('core/tags: no id prefix for class ' + cls);
+       counters[p] = counters[p] || 0;
+       o.id = p + '_' + pad5(counters[p]++);
+     }
+     o.uid = K.uid(cls, o.key, o.at);
+     recs.push(o); byId[o.id] = o;
+     return o;
+   }
 
-  T.add = function(rec){ return make(rec, null); };
-  T.child = function(parentId, rec){
-    if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
-    return make(rec, parentId);
-  };
-  T.get = function(id){ return byId[id] || null; };
-  T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
+   T.add = function(rec){ return make(rec, null); };
+   T.child = function(parentId, rec){
+     if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
+     return make(rec, parentId);
+   };
+   T.get = function(id){ return byId[id] || null; };
+   T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
 
-  function tagMatch(r, want){
-    for (var k in want) {
-      var have = r.tags[k], w = want[k];
-      if (Array.isArray(have) ? have.indexOf(w) < 0 : have !== w) return false;
-    }
-    return true;
-  }
-  T.query = function(q){
-    q = q || {};
-    var out = [];
-    for (var i = 0; i < recs.length; i++) {
-      var r = recs[i];
-      if (r.removed && !q.removed) continue;
-      if (q['class'] != null && r['class'] !== q['class']) continue;
-      if (q.kind != null && r.kind !== q.kind) continue;
-      if (q.key != null && r.key !== q.key) continue;
-      if (q.parent !== undefined && r.parent !== q.parent) continue;
-      if (q.tags && !tagMatch(r, q.tags)) continue;
-      if (q.box && (r.at[0] < q.box[0] || r.at[0] > q.box[2] || r.at[2] < q.box[1] || r.at[2] > q.box[3])) continue;
-      out.push(r);
-    }
-    return out;
-  };
+   function tagMatch(r, want){
+     for (var k in want) {
+       var have = r.tags[k], w = want[k];
+       if (Array.isArray(have) ? have.indexOf(w) < 0 : have !== w) return false;
+     }
+     return true;
+   }
+   T.query = function(q){
+     q = q || {};
+     var out = [];
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed && !q.removed) continue;
+       if (q['class'] != null && r['class'] !== q['class']) continue;
+       if (q.kind != null && r.kind !== q.kind) continue;
+       if (q.key != null && r.key !== q.key) continue;
+       if (q.parent !== undefined && r.parent !== q.parent) continue;
+       if (q.tags && !tagMatch(r, q.tags)) continue;
+       if (q.box && (r.at[0] < q.box[0] || r.at[0] > q.box[2] || r.at[2] < q.box[1] || r.at[2] > q.box[3])) continue;
+       out.push(r);
+     }
+     return out;
+   };
 
-  // the footprint test in the record's own frame: its +z front at (sin ry, cos ry), its +x right at (cos ry, -sin ry)
-  function holds(r, x, z, y){
-    var dx = x - r.at[0], dz = z - r.at[2], h;
-    if (r.size) {
-      var c = Math.cos(r.ry), s = Math.sin(r.ry);
-      var lx = dx * c - dz * s, lz = dx * s + dz * c;
-      if (Math.abs(lx) > r.size[0] / 2 || Math.abs(lz) > r.size[1] / 2) return 0;
-      h = r.size[2];
-      if (y != null && h != null && (y < r.at[1] || y > r.at[1] + h)) return 0;
-      return r.size[0] * r.size[1];
-    }
-    if (r.r != null) {
-      if (dx * dx + dz * dz > r.r * r.r) return 0;
-      if (y != null && r.h != null && (y < r.at[1] || y > r.at[1] + r.h)) return 0;
-      return Math.PI * r.r * r.r;
-    }
-    return 0;
-  }
-  T.at = function(x, z, y){
-    var best = null, ba = Infinity;
-    for (var i = 0; i < recs.length; i++) {
-      if (recs[i].removed) continue;
-      var a = holds(recs[i], x, z, y);
-      if (a > 0 && a < ba) { ba = a; best = recs[i]; }
-    }
-    return best;
-  };
+   // the footprint test in the record's own frame: its +z front at (sin ry, cos ry), its +x right at (cos ry, -sin ry)
+   function holds(r, x, z, y){
+     var dx = x - r.at[0], dz = z - r.at[2], h;
+     if (r.size) {
+       var c = Math.cos(r.ry), s = Math.sin(r.ry);
+       var lx = dx * c - dz * s, lz = dx * s + dz * c;
+       if (Math.abs(lx) > r.size[0] / 2 || Math.abs(lz) > r.size[1] / 2) return 0;
+       h = r.size[2];
+       if (y != null && h != null && (y < r.at[1] || y > r.at[1] + h)) return 0;
+       return r.size[0] * r.size[1];
+     }
+     if (r.r != null) {
+       if (dx * dx + dz * dz > r.r * r.r) return 0;
+       if (y != null && r.h != null && (y < r.at[1] || y > r.at[1] + r.h)) return 0;
+       return Math.PI * r.r * r.r;
+     }
+     return 0;
+   }
+   T.at = function(x, z, y){
+     var best = null, ba = Infinity;
+     for (var i = 0; i < recs.length; i++) {
+       if (recs[i].removed) continue;
+       var a = holds(recs[i], x, z, y);
+       if (a > 0 && a < ba) { ba = a; best = recs[i]; }
+     }
+     return best;
+   };
 
-  T.audit = function(){
-    var a = { records: 0, removed: 0, byClass: {}, unknownKeys: {}, unknownValues: {}, unknown: 0, missingCulture: 0, missingTypes: 0 };
-    for (var i = 0; i < recs.length; i++) {
-      var r = recs[i];
-      if (r.removed) { a.removed++; continue; }
-      a.records++;
-      a.byClass[r['class']] = (a.byClass[r['class']] || 0) + 1;
-      var ps = K.norm(r.tags).problems;
-      for (var j = 0; j < ps.length; j++) {
-        a.unknown++;
-        if (!('value' in ps[j])) a.unknownKeys[ps[j].key] = (a.unknownKeys[ps[j].key] || 0) + 1;
-        else { var kv = ps[j].key + ':' + ps[j].value; a.unknownValues[kv] = (a.unknownValues[kv] || 0) + 1; }
-      }
-      if (r['class'] === 'building') {
-        if (!r.tags.culture) a.missingCulture++;
-        if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
-      }
-    }
-    return a;
-  };
+   T.audit = function(){
+     var a = { records: 0, removed: 0, byClass: {}, unknownKeys: {}, unknownValues: {}, unknown: 0, missingCulture: 0, missingTypes: 0 };
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed) { a.removed++; continue; }
+       a.records++;
+       a.byClass[r['class']] = (a.byClass[r['class']] || 0) + 1;
+       var ps = K.norm(r.tags).problems;
+       for (var j = 0; j < ps.length; j++) {
+         a.unknown++;
+         if (!('value' in ps[j])) a.unknownKeys[ps[j].key] = (a.unknownKeys[ps[j].key] || 0) + 1;
+         else { var kv = ps[j].key + ':' + ps[j].value; a.unknownValues[kv] = (a.unknownValues[kv] || 0) + 1; }
+       }
+       if (r['class'] === 'building') {
+         if (!r.tags.culture) a.missingCulture++;
+         if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
+       }
+     }
+     return a;
+   };
 
-  T.export = function(){
-    return { format: 'krator-tags', version: 1, build: T.build,
-      convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
-      vocab: K.VOCAB, records: recs };
-  };
-  return T;
-};
+   T.export = function(){
+     return { format: 'krator-tags', version: 1, build: T.build,
+       convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
+       vocab: K.VOCAB, records: recs };
+   };
+   return T;
+ };
 
-if (typeof module !== 'undefined' && module.exports) module.exports = K;
-root.KTAGS = K;   // a global, so the fragment is one IIFE that leaks nothing into a build's shared scope
+ if (typeof module !== 'undefined' && module.exports) module.exports = K;
+ root.KTAGS = K;   // a global, so the fragment is one IIFE that leaks nothing into a build's shared scope
 })();
 /* ============================== 12. STRUCTURE (massing) ==============================
    PLANNER-OWNED. The butte, the city wall with its sentry towers and five
@@ -3963,7 +3963,7 @@ var FIX_CTX = null;               /* the building being built (set by buildAsset
 /* core/tags (core/tags/README.md): every building, door, window and light is forwarded into the shared tag registry
    as it is registered here, before it is drawn (GODOT-PLAN.md rule 4). The ids pass through unchanged; the export
    is KRATOR_EXPORT.tags() (format 'krator-tags'). */
-var FIX_TAGS = KTAGS.create({ build:'yuni' });
+var FIX_TAGS = KTAGS.page = KTAGS.create({ build:'yuni' });   /* KTAGS.page: the page's registry, for the exporters */
 
 /* the kinds a fixture may take — the vocabulary the export and the engines key on */
 var DOOR_STYLES  = ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'];
@@ -4133,79 +4133,79 @@ window.KRATOR_EXPORT = KRATOR_EXPORT; window.FIX = FIX;
 //   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
 //               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
 (function(){
-'use strict';
-var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
-if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
-// ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
-// FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
-var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
-  'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-  'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
-// BUILDING_TYPES
-var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
-  'infrastructure', 'religious', 'funerary'];
-// FURN_TIERS: a 0..1 wealth band per tier
-var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
-// FURN_JOBS
-var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
-  'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
-// FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
-var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
+ // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
+   'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+ // BUILDING_TYPES
+ var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
+   'infrastructure', 'religious', 'funerary'];
+ // FURN_TIERS: a 0..1 wealth band per tier
+ var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+ // FURN_JOBS
+ var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+ // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
+ var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
-// ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
-// Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
-var CULTURE_NAMES = {
-  'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
-  'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
-  'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-  'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
-};
-var CULTURES = Object.keys(CULTURE_NAMES);
-// old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
-var CULTURE_ALIAS = {
-  'ancients-salvage': { culture: 'ancient', state: 'salvage' },
-  'yuni-court': { culture: 'yuni', wealth: 'rich' },
-  'yuni-common': { culture: 'yuni', wealth: 'middle' },
-  'yuni-poor': { culture: 'yuni', wealth: 'poor' },
-  'sahelian': { culture: 'yuni', style: 'sahelian' },
-  'iziz-old': { culture: 'iziz' },
-  'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
-  'scrap': { culture: null, set: 'scrap' }
-};
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
+ var CULTURE_NAMES = {
+   'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
+   'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
+   'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+ };
+ var CULTURES = Object.keys(CULTURE_NAMES);
+ // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
+ var CULTURE_ALIAS = {
+   'ancients-salvage': { culture: 'ancient', state: 'salvage' },
+   'yuni-court': { culture: 'yuni', wealth: 'rich' },
+   'yuni-common': { culture: 'yuni', wealth: 'middle' },
+   'yuni-poor': { culture: 'yuni', wealth: 'poor' },
+   'sahelian': { culture: 'yuni', style: 'sahelian' },
+   'iziz-old': { culture: 'iziz' },
+   'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
+   'scrap': { culture: null, set: 'scrap' }
+ };
 
-// wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
-var WEALTH = ['poor', 'middle', 'rich'];
-var WEALTH_ALIAS = { common: 'middle', court: 'rich', civic: null };
-function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
+ // wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
+ var WEALTH = ['poor', 'middle', 'rich'];
+ var WEALTH_ALIAS = { common: 'middle', court: 'rich', civic: null };
+ function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
 
-K.VOCAB = {
-  classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
-  cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
-  types: CATALOG_TYPES.concat(['park', 'military', 'statue']),   // + Yuni's park, Iziz's military and statue
-  wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
-  tiers: Object.keys(CATALOG_TIERS),
-  states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage'],
-  settings: CATALOG_SETTINGS.concat(['room']),
-  jobs: CATALOG_JOBS,
-  sets: ['generic', 'scrap'],
-  // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
-  koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
-  // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
-  doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
-  lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
-  // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
-  keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
-    job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
-    style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
-    lit: 'bool', harvest: 'object' },
-  // the order id's prefix per class; a fixture's per kind
-  prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
-    landmark: 'site', infrastructure: 'infra', feature: 'feat' },
-  fixturePrefix: { door: 'door', window: 'window', light: 'light' },
-  // what test-tags.js compares with the catalog
-  catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }
-};
+ K.VOCAB = {
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue']),   // + Yuni's park, Iziz's military and statue
+   wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
+   tiers: Object.keys(CATALOG_TIERS),
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage'],
+   settings: CATALOG_SETTINGS.concat(['room']),
+   jobs: CATALOG_JOBS,
+   sets: ['generic', 'scrap'],
+   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
+   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
+   // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
+   doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
+   keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
+     job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
+     style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
+     lit: 'bool', harvest: 'object' },
+   // the order id's prefix per class; a fixture's per kind
+   prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
+     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+   fixturePrefix: { door: 'door', window: 'window', light: 'light' },
+   // what test-tags.js compares with the catalog
+   catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }
+ };
 })();
 /* ============================== 13. THE GRAND VAULT ==============================
    PLANNER-OWNED. The facade of the Ancient installation, standing in the slot cut into
@@ -4695,45 +4695,45 @@ function buildPlant(key,x,z,ry,opt){ return buildFrom(PLANT_BY_KEY,'plant',key,x
 //   line 3  'w × d m' (or '⌀ d m'), ', h m tall' from 2 m up; then the id ('#<instance>' for an instance)
 //   line 4  the note
 (function(){
-'use strict';
-var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
-if (!K) throw new Error('53-core-tags-host: load 50-core-tags.js first');
-function num(v){ return String(+(+v).toFixed(2)); }
-function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('53-core-tags-host: load 50-core-tags.js first');
+ function num(v){ return String(+(+v).toFixed(2)); }
+ function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
-K.label = function(rec, instance){
-  var t = rec.tags || {}, V = K.VOCAB || {}, names = V.cultureNames || {}, p = [];
-  var title = rec.name || (rec.kind && cap(String(rec.kind))) || (rec.key && String(rec.key)) || cap(rec['class']);
-  p.push(rec['class']);
-  if (t.culture) p.push(names[t.culture] || t.culture);
-  if (t.types && t.types.length) p.push(t.types.join(', '));
-  else if (rec.kind && rec.name) p.push(rec.kind);
-  if (t.job) p.push(t.job);
-  if (t.state) p.push(t.state);
-  if (t.setting) p.push(t.setting);
-  if (t.wealth) p.push(t.wealth);
-  if (t.koppen) p.push('Köppen ' + (Array.isArray(t.koppen) ? t.koppen.join(', ') : t.koppen));
-  if (t.harvest) {
-    var h = [];
-    if (t.harvest.wood) h.push('wood');
-    if (t.harvest.edible) h = h.concat(t.harvest.edible);
-    if (t.harvest.medicinal) h.push('medicinal');
-    if (h.length) p.push('harvest: ' + h.join(', '));
-  }
-  if (t.lit) p.push('lit');
-  if (rec.parent) p.push('in ' + rec.parent);
-  var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
-  if (rec.size) {
-    s = num(rec.size[0]) + ' × ' + num(rec.size[1]) + ' m';
-    if (rec.size[2] >= 2) s += ', ' + num(rec.size[2]) + ' m tall';
-  } else if (rec.r != null) {
-    s = '⌀ ' + num(rec.r * 2) + ' m';
-    if (rec.h >= 2) s += ', ' + num(rec.h) + ' m tall';
-  }
-  var out = title + '\n' + p.join(' · ') + '\n' + (s ? s + ' · ' : '') + id;
-  if (rec.note) out += '\n' + rec.note;
-  return out;
-};
+ K.label = function(rec, instance){
+   var t = rec.tags || {}, V = K.VOCAB || {}, names = V.cultureNames || {}, p = [];
+   var title = rec.name || (rec.kind && cap(String(rec.kind))) || (rec.key && String(rec.key)) || cap(rec['class']);
+   p.push(rec['class']);
+   if (t.culture) p.push(names[t.culture] || t.culture);
+   if (t.types && t.types.length) p.push(t.types.join(', '));
+   else if (rec.kind && rec.name) p.push(rec.kind);
+   if (t.job) p.push(t.job);
+   if (t.state) p.push(t.state);
+   if (t.setting) p.push(t.setting);
+   if (t.wealth) p.push(t.wealth);
+   if (t.koppen) p.push('Köppen ' + (Array.isArray(t.koppen) ? t.koppen.join(', ') : t.koppen));
+   if (t.harvest) {
+     var h = [];
+     if (t.harvest.wood) h.push('wood');
+     if (t.harvest.edible) h = h.concat(t.harvest.edible);
+     if (t.harvest.medicinal) h.push('medicinal');
+     if (h.length) p.push('harvest: ' + h.join(', '));
+   }
+   if (t.lit) p.push('lit');
+   if (rec.parent) p.push('in ' + rec.parent);
+   var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
+   if (rec.size) {
+     s = num(rec.size[0]) + ' × ' + num(rec.size[1]) + ' m';
+     if (rec.size[2] >= 2) s += ', ' + num(rec.size[2]) + ' m tall';
+   } else if (rec.r != null) {
+     s = '⌀ ' + num(rec.r * 2) + ' m';
+     if (rec.h >= 2) s += ', ' + num(rec.h) + ' m tall';
+   }
+   var out = title + '\n' + p.join(' · ') + '\n' + (s ? s + ' · ' : '') + id;
+   if (rec.note) out += '\n' + rec.note;
+   return out;
+ };
 })();
 /* ============================== 14. UNDERGROUND (test wing) ==============================
    PLANNER-OWNED. The tunnel from the great door and the single round,

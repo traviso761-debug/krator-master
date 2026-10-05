@@ -94,6 +94,9 @@ LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (cor
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
 FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
 FURNISH_FILES = sorted(f for f in os.listdir(FURNISH_DIR) if f[0].isdigit() and f.endswith('.js'))
+RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
+TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
@@ -149,6 +152,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook
     '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
+    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js', '93b-rk-lod.js', '82e-anc-aa.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
 
@@ -274,6 +278,7 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
     if clash:

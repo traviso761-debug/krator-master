@@ -24,7 +24,7 @@ var FIX_CTX = null;               /* the building being built (set by buildAsset
 /* core/tags (core/tags/README.md): every building, door, window and light is forwarded into the shared tag registry
    as it is registered here, before it is drawn (GODOT-PLAN.md rule 4). The ids pass through unchanged; the export
    is KRATOR_EXPORT.tags() (format 'krator-tags'). */
-var FIX_TAGS = KTAGS.create({ build:'yuni' });
+var FIX_TAGS = KTAGS.page = KTAGS.create({ build:'yuni' });   /* KTAGS.page: the page's registry, for the exporters */
 
 /* the kinds a fixture may take — the vocabulary the export and the engines key on */
 var DOOR_STYLES  = ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'];

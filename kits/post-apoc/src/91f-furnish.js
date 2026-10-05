@@ -25,7 +25,8 @@ const PAF=KFURN.create(Object.assign(KFURN.flags(false),{
 Object.assign(PAF,{cur:null,dry:0,
  FIRE:{pa_camp_fire:1,pa_forge:1,pa_brick_grill:1,pa_box_stove:1},   // their lights are fires (big halos), the rest lamps
  NOCOLL:{pa_lamp_post:1,pa_hanging_lamp:1,pa_goods_rail:1,pa_gibbet:1}});   // thin or hung: no collider
-function pafNewBatch(){KFURN.useBatch(PAF,KratorFurniture,KratorInteriors);PAF.placed=[];PAF.missing={};PAF.buildings=[];}
+// a fresh world starts its ids again, so it gets a fresh core/tags registry too (core/tags/README.md)
+function pafNewBatch(){KFURN.useBatch(PAF,KratorFurniture,KratorInteriors);PAF.placed=[];PAF.missing={};PAF.buildings=[];PAF.cfg.tags=KTAGS.page=KTAGS.create({build:'post-apoc'});}
 pafNewBatch();
 function pafWealth(key){const it=KratorInteriors.sets.find(key);return it&&it.wealth!=null?it.wealth:.3;}
 function FURNISH(key,lx,ly,lz,lry,o){o=o||{};const c=PAF.cur;if(!c||!CURKEY){reportErr('FURNISH '+key+' outside a builder');return null;}

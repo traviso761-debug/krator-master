@@ -52,6 +52,7 @@ except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')   # shared: the socket + culture system (core/sockets/README.md)
 CORE_FURNISH = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # shared: the furniture placement pass (core/furnish/README.md)
+CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags')]   # shared: KRAND and the tag registry the furniture is registered in (core/tags/README.md)
 OUT = os.path.join(DIST, 'post-apoc.html')
 ROOT = os.path.dirname(os.path.dirname(HERE))
 # GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and
@@ -77,6 +78,7 @@ ALLOW_GENERIC = {'P', 'W', 'PI', 'TAU'}   # engine names on purpose
 def main():
     paths = {f: os.path.join(CORE_SOCK, f) for f in os.listdir(CORE_SOCK) if f[0].isdigit()}
     paths.update({f: os.path.join(CORE_FURNISH, f) for f in os.listdir(CORE_FURNISH) if f[0].isdigit() and f.endswith('.js')})
+    for d in CORE_TAGS: paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a local copy with the same name overrides the shared one
     vb = virtual_bodies()
     files = sorted(list(paths) + list(vb))
@@ -103,7 +105,7 @@ def main():
             if len(fs) > 1: errs.append('seed %d claimed twice: %s' % (s, ', '.join(fs)))
         for f in files:   # building fragments own a prefix
             m = re.match(r'// prefix: (\w+)', bodies[f])
-            if re.match(r'(4\d|5\d|6\d|7\d)-', f) and f.endswith('.js') and not paths.get(f, '').startswith(CORE_FURNISH):   # core/furnish is shared, not a building
+            if re.match(r'(4\d|5\d|6\d|7\d)-', f) and f.endswith('.js') and not paths.get(f, '').startswith(tuple([CORE_FURNISH] + CORE_TAGS)):   # core/furnish and core/tags are shared, not buildings
                 if not m: errs.append('%s: building fragments start with `// prefix: xx`' % f); continue
                 pre = m.group(1)
                 for n in RE_DECL.findall(bodies[f]):

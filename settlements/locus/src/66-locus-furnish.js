@@ -23,6 +23,7 @@ KratorFurniture.setDetail(.5);   /* settlement-scale: half the segments on round
    and the inspector entry */
 var LOCF = KFURN.create(Object.assign(KFURN.flags(false), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  tags: (KTAGS.page = KTAGS.create({ build:'locus' })),   /* every piece registered in core/tags (core/tags/README.md) */
   seed: function(o, ctx, R, x, y, z, loc){ return (((ctx.frame.seed||1)*37+Math.round(loc[0]*11+loc[2]*17)+997)&0xffff); },
   onRecord: function(rec, ctx){
     if(rec.setting==='room' && LOCF.interiors && LOCF.item(ctx.building, ctx.top.variant|0)){ rec.deferred='interiors'; LOCF.deferred++; return false; } },

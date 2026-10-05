@@ -50,6 +50,12 @@ JS = r"""() => {
 }"""
 
 
+# the page's core/tags registry (core/tags/README.md): how many records, and unknown vocabulary (must be 0)
+TAGS_JS = r"""() => { if (typeof KTAGS === 'undefined' || !KTAGS.page) return null; const a = KTAGS.page.audit();
+ return { records: a.records, furniture: a.byClass.furniture || 0, unknown: a.unknown, unknownKeys: a.unknownKeys, unknownValues: a.unknownValues }; }"""
+TAGS = {}
+
+
 def chromium():
     c = sorted(glob.glob("/opt/pw-browsers/chromium-*/chrome-linux/chrome"))
     return os.environ.get("KRATOR_CHROME") or (c[-1] if c else None)
@@ -82,6 +88,9 @@ async def run(names):
                     fp = dict(fp or {}, pageErrors=errs[:5])
                 out[n][label] = fp
                 print(n, label, json.dumps(fp), flush=True)
+                tg = await pg.evaluate(TAGS_JS)   # core/tags: printed, not part of the fingerprint
+                TAGS[n + ' ' + label] = tg
+                print(n, label, 'tags', json.dumps(tg), flush=True)
                 await pg.close()
         await br.close()
     srv.shutdown()
@@ -98,6 +107,9 @@ def main():
         json.dump(old, open(OUT, 'w'), indent=1, sort_keys=True)
         print('wrote', os.path.relpath(OUT, ROOT))
         return
+    for k, tg in TAGS.items():
+        if not tg or tg['unknown'] or tg['furniture'] == 0:
+            print('TAGS    ' + k + ': ' + (json.dumps(tg) if tg else 'no KTAGS.page'))
     want = json.load(open(OUT))
     bad = 0
     for n, v in got.items():

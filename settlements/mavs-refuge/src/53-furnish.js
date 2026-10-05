@@ -26,6 +26,7 @@ var BRF_SHIFT = { br_h_viewing_stand:[0,-0.1], br_h_reviewing_dais:[0,-0.36], br
    id); this is Mav's Refuge's adapter onto it: its seed rule (a hash of the spot), the open building, and the lamps */
 var BRF = KFURN.create(Object.assign(KFURN.flags(false), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors, shift: BRF_SHIFT,
+  tags: (KTAGS.page = KTAGS.create({ build:'mavs-refuge' })),   /* every piece registered in core/tags (core/tags/README.md) */
   seed: function(o, ctx, R, x, y, z){ return 1 + Math.floor(phash(x, y, z, 7.7)*999983); },
   draw: function(rec, ctx, o){
     var w = o.wealth==null ? 0.5 : o.wealth;

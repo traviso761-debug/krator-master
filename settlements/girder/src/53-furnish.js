@@ -24,6 +24,7 @@ KratorFurniture.setDetail(.5);   /* settlement scale: half the segments on round
    adapter onto it: its seed rule (the record's place in the list), its rounding, its walk solids and its lights */
 var GFURN = KFURN.create(Object.assign(KFURN.flags(true), {
   catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  tags: (KTAGS.page = KTAGS.create({ build:'girder' })),   /* every piece registered in core/tags (core/tags/README.md) */
   seed: function(o, ctx, R){ return R.placed.length + 1; },
   finish: function(r){ r.x=+r.x.toFixed(3); r.y=+r.y.toFixed(3); r.z=+r.z.toFixed(3); r.ry=+wrapPi(r.ry).toFixed(4); },
   onRecord: function(rec, ctx, o, A, dm){   /* the walk mode bumps into it */

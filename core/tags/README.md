@@ -120,7 +120,11 @@ MultiMesh keeps the records of its instances in a side table (`"records"` metada
 | Build | Since | Adapter |
 |---|---|---|
 | Yuni | 2026-10-05 | `src/51-fixtures.js`: `FIX_TAGS`, fed by `FIX_BUILDING_BEGIN` and `fixReg` (buildings, doors, windows, lights; ids unchanged). `KRATOR_EXPORT.tags()`, `KRATOR_EXPORT.tagAudit()`. 13044 records, zero unknowns |
+| Girder, Mav's Refuge, Locus, Highlands, Roketstad, Post-Apoc | 2026-10-05 | core/furnish: their adapter passes `tags: KTAGS.create({build})` and every piece the placement keeps is registered as class `furniture` (`KFURN.tag`: kind the catalog type, culture, tier, job, setting, room, wealth; parent the building as the build names it). Post-Apoc starts a fresh registry with each world (its ids restart). `core/furnish/fingerprint.py` prints each page's tag audit |
+
+**`KTAGS.page`** is the page's registry, set by the build where it creates it, so an exporter or a probe finds it
+without knowing the build (`KTAGS.page.export()`, `KTAGS.page.audit()`).
 
 A build lists `core/rand` and `core/tags` the way it lists `core/lod` (its `build.py`: `RAND_DIR`, `TAGS_DIR`, the
-fragment names in `DETERMINISTIC`). Next (PROPOSAL.md, "Order of adoption"): core/furnish's `onRecord`, Iziz's
-`REG`, Voth's `PLACED`, the biome kits.
+fragment names in `DETERMINISTIC`). Next (PROPOSAL.md, "Order of adoption"): Iziz's `REG`, Voth's `PLACED`, the
+biome kits.
