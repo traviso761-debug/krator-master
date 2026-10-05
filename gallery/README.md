@@ -47,6 +47,14 @@ Version 41 (2026-10-05): `worlds/girder.html` replaced with Girder Hero (play as
 embedded page (20.5 MB) is over the 16 MB per-file limit: the page (12.4 MB) fetches `worlds/girder-styv.glb.txt` and
 `worlds/girder-phil.glb.txt` (base64; `.glb` is not a served type). The index's Girder entry was updated (blurb, 20.0 MB,
 source). `build_gallery.py` still lists plain `girder.html`; a full rebuild would put the plain page back.
+That version failed in the gallery ("hero: styv: Failed to fetch"): the gallery's frame cannot fetch files published
+beside a page.
+
+Version 42 (2026-10-05): Girder Hero as its own card. `worlds/girder.html` is plain Girder again (the page committed on
+`main`, 12.3 MB); a new "Girder · Hero" entry after it opens `worlds/girder-hero.html`, built from `main` at df74443b with
+`build_hero.py --slim` (the models slimmed and embedded, 15.0 MB). `worlds/girder-styv.glb.txt` and
+`worlds/girder-phil.glb.txt` were removed. The hero entry is not in `build_gallery.py`'s `ENTRIES` (it needs the
+`--slim` build); a full rebuild leaves it out, so republish it by hand as above.
 
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
