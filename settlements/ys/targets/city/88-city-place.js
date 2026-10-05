@@ -143,9 +143,9 @@ function ysPlFaces(F,st,n){const f=F.slice();for(let i=f.length-1;i>0;i--){const
  const out=[];for(let i=0;i<n;i++){const k=i%f.length,lap=Math.floor(i/f.length);out.push(f[k]+(lap?(lap%2?.32:-.32):0)+st.range(-.04,.04));}return out;}
 // the host type for a block by its class (the Pharos and the plaza name theirs)
 const PL_TYPES={tall:[['skyA',1],['skyD',1],['skyH',1],['skyL',1.2],['skyM',1.2],['skyB',.8],['skyC',.8],['skyJ',.8],['skyK',.8]],mid:[['skyA',.8],['skyD',1],['skyH',1],['skyL',1],['skyM',1],['skyB',.8],['skyE',.6],['skyJ',.8],['skyK',.8],['altStack',.8]],
- low:[['skyD',.5],['skyH',.5],['midArcades',1],['midStalks',1],['midBell',1],['altAttraction',.8],['altStack',.6]],land:[['skyD',.5],['skyH',.5],['midArcades',1.2],['midStalks',1.2],['midBell',1.2],['skyB',.7],['skyC',.7],['skyE',.5],['skyJ',.7],['skyK',.7],['altAttraction',.8],['altStack',.8]],
- full:[['skyA',1],['skyD',1],['skyH',1],['skyL',1],['skyM',1]],landTall:[['skyD',1],['skyH',1],['skyL',1],['skyM',1],['skyB',1],['skyJ',1],['skyK',1]],
- villa:[['altUndulant',1]]};
+ low:[['skyD',.5],['skyH',.5],['midArcades',1],['midStalks',1],['midBell',1],['altAttraction',.8],['altStack',.6]],land:[['skyD',.5],['skyH',.5],['midArcades',1.2],['midStalks',1.2],['midBell',1.2],['skyB',.7],['skyE',.6],['altAttraction',.8],['altStack',.8]],
+ full:[['skyA',1],['skyD',1],['skyH',1],['skyL',1],['skyM',1]],landTall:[['skyD',1],['skyH',1],['skyL',1],['skyM',1],['skyB',1],['skyE',1]],
+ villa:[['altUndulant',1]],band:[['midArcades',1],['altStack',1],['skyE',.8],['skyD',.5],['skyH',.5]]};   /* the band: stumps whose cut keeps plates for a way in (not the Stalks or the Bell Hall) */
 function ysPlType(st,cls){const L=(PL_TYPES[cls]||PL_TYPES.mid).filter(e=>YS_HOST_TYPES[e[0]]);if(!L.length)return null;let t=L.reduce((s,e)=>s+e[1],0)*st.next();for(const [k,w] of L){t-=w;if(t<=0)return k;}return L[L.length-1][0];}
 // the grown pools: [key, weight]; the way-in pods per wealth (a host needs one: every-host-has-a-way-in)
 const PL_PODS={
@@ -170,7 +170,7 @@ function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);c
   x:o.x!=null?o.x:b.x,z:o.z!=null?o.z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:o.land?3:1,land:!!o.land,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
   shaped:!!T.shaped,wealth:b.wealth,tall:!!o.tall,plates:[],pods:[],ways:[]};
  rec.rAt=(y,a)=>T.rAt(y-rec.sink,a==null?null:a+rec.ry);   // a world bearing a is the local bearing a + ry
- for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+(/^mid/.test(T.key)?4:18):T.minY;   /* a mid-rise has a terrace, not a colonnade, at its foot */if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
+ for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+(T.lo!=null?T.lo:(/^mid/.test(T.key)?4:18)):T.minY;   /* a mid-rise has a terrace, not a colonnade, at its foot */if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
  // the pods: the way in first, then the wealth pool; bearings from the type, plates stepped about a base
  const n=o.pods!=null?o.pods:PL_PODN[o.full?'full':b.wealth];const keys=[o.way||ysPlPick(st,PL_WAYS[b.wealth])];for(const k of (o.must||[]))keys.push(k);
  while(keys.length<n)keys.push(ysPlPick(st,PL_PODS[b.wealth]));
@@ -315,8 +315,8 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  {const B=YS_BAND;const e0=[(B[0][0]+B[4][0])/2,(B[0][1]+B[4][1])/2],e1=[(B[1][0]+B[2][0])/2,(B[1][1]+B[2][1])/2];const mid=k=>[e0[0]+(e1[0]-e0[0])*k,e0[1]+(e1[1]-e0[1])*k];
   const L=Math.hypot(mid(1)[0]-mid(0)[0],mid(1)[1]-mid(0)[1]);const n=Math.floor(L/125);let got=0;
   for(let k=0;k<=n;k++){const c=mid((k+.5)/(n+1));if(terrainH(c[0],c[1])>-1)continue;const b={i:60+k,j:0,x:c[0],z:c[1],s:ysShoreDist(c[0],c[1]),y:ysPlaneY(ysShoreDist(c[0],c[1])),kind:'awash',use:'host',host:'low',wealth:k%3===0?'poor':'middle',band:true};
-   const st=ysPlStream('band',b);const type=ysPlType(st,'low'),cap=YS_HOST_TYPES[type].cap*.8;{const cl=ysPlClash(ysPlBox(c[0],c[1],cap,cap,PL_RY,'host'),/^street/);if(cl){ysPlRefuse('band: occupied by '+ysPlWhat(cl));continue;}}
-   LAYOUT.blocks.push(b);LAYOUT.by[b.i+','+b.j]=b;const rec=ysPlHost(b,{type,capScale:.8,cutRange:YS_HOST_TYPES[type].cuts.mid});if(rec){rec.n='The half-sunk '+YS_HOST_TYPES[type].name.replace('the ','')+' ('+(k+1)+')';got++;}}
+   const st=ysPlStream('band',b);const type=ysPlType(st,'band'),cap=YS_HOST_TYPES[type].cap*.8;{const cl=ysPlClash(ysPlBox(c[0],c[1],cap,cap,PL_RY,'host'),/^street/);if(cl){ysPlRefuse('band: occupied by '+ysPlWhat(cl));continue;}}
+   LAYOUT.blocks.push(b);LAYOUT.by[b.i+','+b.j]=b;const rec=ysPlHost(b,{type,capScale:.8,cutRange:type==='midArcades'?YS_HOST_TYPES[type].cuts.mid:YS_HOST_TYPES[type].cuts.low});if(rec){rec.n='The half-sunk '+YS_HOST_TYPES[type].name.replace('the ','')+' ('+(k+1)+')';got++;}}
   PLACE.band=got;}
  // the kit audit over the pods: a grown def no host drew takes the place of a pod whose def is drawn elsewhere, on a host
  // of its wealth if one has room, else on any (an into def opens a way where it lands)
@@ -385,13 +385,14 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // stumps; 87-city-layout.js), before any civic piece or frontage: each block anywhere a clear spot fits the host's
  // footprint; a marked block that cannot take one hands its turn to the next block in the hash order, and is laned instead
  {const order=NB.map(b=>[b,KRAND.unit(KRAND.hash(KRAND.child(LAYOUT.HOST_SEED,'land hosts'),b.i,b.j))]).sort((p,q)=>p[1]-q[1]).map(p=>p[0]);
-  const want=NB.filter(b=>b.landHost).length;let got=0,tall=0;
-  for(const b of order.filter(b=>b.landHost).concat(order.filter(b=>!b.landHost))){if(got>=want)break;const st=ysPlStream('land host',b);const isTall=tall<2;const type=ysPlType(st,isTall?'landTall':'land');if(!type)break;const cap=YS_HOST_TYPES[type].cap;
+  const special=['altOffice1','altOffice1','altLibrary'].filter(k=>YS_HOST_TYPES[k]);   /* Travis: two podded office terraces and the Ancient Library, whole, on land blocks */
+  const want=NB.filter(b=>b.landHost).length+special.length;let got=0,tall=0;   /* the share is a wish: the blocks with a clear spot decide */
+  for(const b of order.filter(b=>b.landHost).concat(order.filter(b=>!b.landHost))){if(got>=want)break;const st=ysPlStream('land host',b);const isTall=tall<2;const type=isTall?ysPlType(st,'landTall'):(special.length?special[0]:ysPlType(st,'land'));if(!type)break;const cap=YS_HOST_TYPES[type].cap;
    for(const c of ysPlCands(b,0,0,93-cap-2)){const B=ysPlBox(c[0],c[1],cap,cap,PL_RY,'land host');if(ysPlClash(B))continue;const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B,{slope:5});PLACE.refused=n0;
-    if(y==null)continue;const rec=ysPlHost(b,{land:true,y,type,x:c[0],z:c[1],cutRange:isTall?[80,124]:null,tall:isTall});b.hostPlaced=true;got++;if(isTall)tall++;
+    if(y==null)continue;const rec=ysPlHost(b,{land:true,y,type,x:c[0],z:c[1],cutRange:isTall?[80,124]:null,tall:isTall,name:type==='altLibrary'?'The Ancient Library':null});b.hostPlaced=true;got++;if(isTall)tall++;if(!isTall&&special.length&&special[0]===type)special.shift();
     {const R=cap+16;const ring={poly:ysPlBoxPoly(ysPlBox(c[0],c[1],R,R,PL_RY)),star:[c[0],c[1]],y,x0:c[0]-R,x1:c[0]+R,z0:c[1]-R,z1:c[1]+R};ysPlEdgeRun(ring,b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'host ring',tag:'ring',land:true,max:10});}   /* the Hykkousoi settle round the reclaimed Ancient (Travis) */
     break;}}
-  if(got<want)ysPlRefuse('land hosts: '+got+' of '+want);
+  if(got<want)ysPlRefuse('land hosts: '+got+' of '+want+' wished');
   // the lanes quarter every neighbourhood block without a host (87c ysLanes), reserved like the streets
   for(const b of NB)if(!b.hostPlaced)for(const s of ysLanes(b))ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:lane'));}
  // the sectors about the head: north-west inland (-N), north-east (+T side), south (-T side); a market and a shrine in each
@@ -406,15 +407,14 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   // the lanes' frontages (a block without a reclaimed Ancient is quartered by two lanes, 87c): the small houses and
   // corner shops line both sides of each lane, in each quarter facing its two lane sides
   if(!b.hostPlaced)for(const [qu,qv] of [[1,1],[1,-1],[-1,1],[-1,-1]]){const c=ysPlAt(b,qu*48,qv*48);const q={x:c[0],z:c[1],i:b.i,j:b.j,wealth:b.wealth};
-   ysPlFront(q,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'lane',h:40,sides:2,only:[[-qu*PL_U[0],-qu*PL_U[1]],[-qv*PL_V[0],-qv*PL_V[1]]],tag:'lane'+qu+qv});
+
    // the quarter's middle (Travis, Oct 5 2026): a podded Ancient villa (the Undulant house) most of the time; the first
    // two quarters off the head take the office alternate, one the Ancient Library; a few Hykkousoi houses round each
-   {const qs=ysPlStream('quarter host:'+qu+qv,b);let type=null,name=null;if(!PL_QUARTER.office&&YS_HOST_TYPES.altOffice1&&PL_QUARTER.n<2){type='altOffice1';PL_QUARTER.n++;}
-    else if(!PL_QUARTER.library&&YS_HOST_TYPES.altLibrary&&PL_QUARTER.n>=2){type='altLibrary';name='The Ancient Library';PL_QUARTER.library=true;}
-    else if(qs.chance(.7))type=ysPlType(qs,'villa');
-    if(type){const T=YS_HOST_TYPES[type];const cc=ysPlAt(b,qu*56,qv*56);const B=ysPlBox(cc[0],cc[1],T.cap,T.cap,PL_RY,'quarter host');const n0=Object.assign({},PLACE.refused);const y=ysPlClash(B)?null:ysPlGround(B,{slope:3});PLACE.refused=n0;
+   {const qs=ysPlStream('quarter host:'+qu+qv,b);let type=null,name=null;if(qs.chance(.7))type=ysPlType(qs,'villa');   /* the villas; the offices and the Library take land blocks (below) */
+    if(type){const T=YS_HOST_TYPES[type];const ins=Math.min(56,Math.max(28,93-T.cap-18));   /* clear of the lanes and of the frontage's houses */const cc=ysPlAt(b,qu*ins,qv*ins);const B=ysPlBox(cc[0],cc[1],T.cap,T.cap,PL_RY,'quarter host');const n0=Object.assign({},PLACE.refused);const y=ysPlClash(B)?null:ysPlGround(B,{slope:3});PLACE.refused=n0;
      if(y!=null){ysPlHost(b,{land:true,y,type,x:cc[0],z:cc[1],name,pods:type==='altUndulant'?2:3});const R=T.cap+10;const ring={poly:ysPlBoxPoly(ysPlBox(cc[0],cc[1],R,R,PL_RY)),star:[cc[0],cc[1]],y,x0:cc[0]-R,x1:cc[0]+R,z0:cc[1]-R,z1:cc[1]+R};
-      ysPlEdgeRun(ring,b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'host ring',tag:'ring'+qu+qv,land:true,max:5});}else ysPlRefuse('quarter host: '+type);}}}
+      ysPlEdgeRun(ring,b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'host ring',tag:'ring'+qu+qv,land:true,max:5});}else ysPlRefuse('quarter host: '+type);}
+   ysPlFront(q,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'lane',h:40,sides:2,only:[[-qu*PL_U[0],-qu*PL_U[1]],[-qv*PL_V[0],-qv*PL_V[1]]],tag:'lane'+qu+qv});   /* the lane frontage after the quarter's host, so the houses fit round it */}}
   if(st.chance(.3)){const k=st.chance(.5)?'hyk_shrine_tides':'hyk_shrine_seagods';ysPlSeek(k,ysPlCands(b,st.range(-30,30),st.range(-30,30),60).slice(0,30),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood shrine',b);}}
  for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:2});
  for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);const fr=ysPlFacing(PL_V[0],PL_V[1]);

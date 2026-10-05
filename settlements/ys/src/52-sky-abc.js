@@ -9,6 +9,10 @@ function ysPodiumR(R){return (typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.podium
 function ysWallHole(hole,y0){const W=(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.ways)?YS_CUT.ways:null;if(!W||!W.length)return hole;
  return (u,y)=>{if(hole&&hole(u,y))return true;const ya=y+y0;for(const w of W){let du=Math.abs(u-w.u);if(du>.5)du=1-du;if(du<w.uw&&Math.abs(ya-w.y)<w.hh)return true;}return false;};}
 function ysCutY(d){return ((d===1||d===3)&&typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.cutY!=null)?YS_CUT.cutY:null;}
+/* YS: a ledge proud of the skin (B's lobe bands) is cut where any pod stands, way-in or not: YS_CUT.pods, the same shape
+   as the ways, set by ysPlaceHost (64-hyk-accrete.js) from the host's record */
+function ysBandHole(y0){const C=(typeof YS_CUT!=='undefined'&&YS_CUT)||null;const L=C?(C.ways||[]).concat(C.pods||[]):[];if(!L.length)return null;
+ return (u,y)=>{const ya=y+y0;for(const w of L){let du=Math.abs(u-w.u);if(du>.5)du=1-du;if(du<w.uw&&Math.abs(ya-w.y)<w.hh)return true;}return false;};}
 // ================================================================= SKYSCRAPERS — three variants, d: 0 intact, 1 ruined, 2 toppled
 // each variant = plinth(G,d) + body(P,d,y0,y1) in local coords (local y=0 ⇔ absolute y0)
 // `dir` is which way the upper body goes down: +1 (default) east, -1 west. It
@@ -256,7 +260,7 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShar
  for(let k=0;k<NL;k++){const th=k/NL*TAU;const gone=dd>0&&(k===3||k===8);const c=Math.cos(th),s=Math.sin(th),rb=rFn(30)*1.15;
   const ux=(rb-LR),uy=27,ul=Math.hypot(ux,uy),ex=ux/ul,ey=uy/ul,a=[c*(LR-ex*7),5-ey*7,s*(LR-ex*7)],b=[c*(rb+ex*6),32+ey*6,s*(rb+ex*6)];
   if(!gone){const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(c*ex,ey,s*ex));kput(dd>0?'colR':'colW',a,q,[3.4,ul+13,3.4],null);}else rubbleRing(c*LR,5,s*LR,2,16,30,2.2);}
- const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);hole=ysWallHole(hole,y0);
+ const body=(P,dx,y0,y1,upper)=>{const cut=(dx>0&&!upper&&y1!=null)?y1:(dx>0&&d===1?H*.8:null);const L=(cut!=null?cut:H)-y0;let hole=holeFn(dx,17+(upper?1:0),cut!=null?L:null,1.5);if(d===1&&!upper)hole=skyScarHole(hole,.3,.08,L*.45,L,17);hole=ysWallHole(hole,y0);const ysBH=ysBandHole(y0);   /* YS: the bands clear every pod */
   mesh(lathe({rFn:y=>rFn(y+y0),H:H-y0,cut:cut!=null?L:null,jag:cut?4:0,flutes:NL,amp:.3,sharp:1,nu:144,nv:60,hole,seed:17}),SHELL(dx),P);
   // THE CUT SECTION, as on Skyscraper A: the lining shares the outer skin's
   // hole predicate (it had none, so it stood whole behind every tear and hid
@@ -266,10 +270,10 @@ function buildSkyB(scene,gx,gz,d){reseed(9110+d);KOFF=[gx,0,gz];const SM=skyShar
    for(let y=5;y<L-2;y+=5){const rp=rFn(y+y0);kput('slab',[0,y,0],null,[rp*.9,.5,rp*.9],new THREE.Color(0xbdb7ad));kput('slab',[0,y-1.2,0],null,[rp*.87,.6,rp*.87],new THREE.Color(0x191b1f));}
    skyRooms({rFn:y=>rFn(y+y0)*.84,y0:5,y1:L-2,step:5,soff:1.2,hole,d,seed:17,dens:6});}
   const bands=[];   // one mesh for the whole stack, not two per storey
-  for(let s=0;s*5<L-4;s++){const y=s*5;const bh=dx>0?(u,v)=>fbm(u*10+s,2,18+s,2)<.25*dx||(d===1&&!upper&&hole(u,y)):null;
+  for(let s=0;s*5<L-4;s++){const y=s*5;const bh=dx>0?(u,v)=>fbm(u*10+s,2,18+s,2)<.25*dx||(d===1&&!upper&&hole(u,y))||(ysBH&&ysBH(u,y+3.8)):null;
    bands.push(gridSurface((u,v)=>{const th=u*TAU;const r=lerp(lobe(th,y+y0)*.97,lobe(th,y+y0)*1.1,v);return[r*Math.cos(th),y+3.9,r*Math.sin(th)];},144,2,{hole:bh}));
    bands.push(gridSurface((u,v)=>{const th=u*TAU;const r=lobe(th,y+y0)*1.1;return[r*Math.cos(th),y+3.2+v*1.1,r*Math.sin(th)];},144,1,{uS:30,hole:bh}));
-   for(let k=0;k<NL;k++)for(let j=-1;j<=1;j+=2){const th=k/NL*TAU+j*.13;const u=((th%TAU)+TAU)%TAU/TAU;if(hole&&hole(u,y))continue;const r=lobe(th,y+y0)+.1;
+   for(let k=0;k<NL;k++)for(let j=-1;j<=1;j+=2){const th=k/NL*TAU+j*.13;const u=((th%TAU)+TAU)%TAU/TAU;if((hole&&hole(u,y))||(ysBH&&ysBH(u,y+2)))continue;const r=lobe(th,y+y0)+.1;
     kput(dx>0?'winSmD':'winSmI',[r*Math.cos(th),y+2,r*Math.sin(th)],qFacing([Math.cos(th),0,Math.sin(th)]),[2.6,2.2,1],null);}
    if(s%4===0)stripRing(0,y+2.6,0,rFn(y+y0)*.85,dx,36);}
   meshMerged(bands,SHELL(dx),P);

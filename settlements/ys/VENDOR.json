@@ -47,7 +47,7 @@
  "52-sky-abc.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "2f88aefb3ed1"
+  "sha1": "e56847f6542b"
  },
  "54-mat-concrete.js": {
   "adapted": true,
@@ -58,6 +58,11 @@
   "adapted": true,
   "from": "kits/ancients/src",
   "sha1": "ed5091b41781"
+ },
+ "57-sky-e.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "f7faef225a09"
  },
  "69-mat-salvage.js": {
   "adapted": false,
@@ -104,6 +109,11 @@
   "from": "kits/ancients/src",
   "sha1": "d474b6e27eda"
  },
+ "69w-worn.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "3d93cfdb531f"
+ },
  "70-port-core.js": {
   "adapted": false,
   "from": "settlements/port/src",
@@ -138,6 +148,46 @@
   "adapted": false,
   "from": "settlements/iziz/src",
   "sha1": "b13975f23277"
+ },
+ "89m-sky-k.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "eba9d0e600ec"
+ },
+ "8aj-alt-a-bole.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "4ab8a97e9e2b"
+ },
+ "8aj-alt-b-stack.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "a34796b4ecd1"
+ },
+ "8aj-alt-c-hotel.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "6bee63f28144"
+ },
+ "8ak-alt-a-houses.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "9b7917e5ad95"
+ },
+ "8al-alt-00-lib.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "9e0352867c0b"
+ },
+ "8al-alt-01-office-terrace.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "cf81ad0dbe00"
+ },
+ "8al-alt-06-library.js": {
+  "adapted": true,
+  "from": "kits/ancients/src",
+  "sha1": "0d059975e84e"
  },
  "92-camera.js": {
   "adapted": true,

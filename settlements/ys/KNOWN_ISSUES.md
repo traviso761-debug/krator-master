@@ -183,3 +183,7 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] (Oct 5 2026) The river's pool sheets are flat ribbons 1.8 widths wide at each pool's lip height: on a bend the
       ribbon's edge can show past the bank, and the sheet does not fall at the lip (no cascade). The sea sheet takes
       over below the datum. The band's half-sunk hosts are all Arcades this seed (the low pool picks per cell).
+- [ ] (Oct 5 2026) The new hosts' blemishes: the bridge graph's pods ignore a type's bearings (`fits` consults
+      `avoid(yl,h)` only: on K a pod can land on the porch arch, on the Attraction beside a great spire; `avoid` wants
+      the bearing); the tideline crust on C and the Stack is a ring round the axis, not round each leg or piloti; Sky J
+      is not a host (its plates reach far past the glazing). The Library's and the office's rust passes are left out.

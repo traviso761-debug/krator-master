@@ -11,7 +11,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  PLACE.hosts.forEach((h,i)=>{const T=YS_HOST_TYPES[h.type];const builder=typeof window[T.builder]==='function'?window[T.builder]:null;
   if(!builder){reportErr('host type '+h.type+' has no builder '+T.builder);return;}
   const host=ysPlaceHost(scene,{key:T.key,builder,x:h.x,z:h.z,y:h.sink,ry:h.ry,d:h.d,cutY:h.cutY,podium:h.podium,cap:h.cap,rAt:h.rAt,name:h.n,
-   floors:h.floors,ways:h.ways,sockets:h.sockets||null,noPlinth:true,   /* Travis: no restand plinths at all (they override the streets) */ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
+   floors:h.floors,ways:h.ways,sockets:h.sockets||null,pods:h.pods,noPlinth:true,   /* Travis: no restand plinths at all (they override the streets) */ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
   if(!host){fail++;return;}
   // the floors table runs to the top of what stands, not on into the sky over a full tower
   h.G=host.G;host.floors=host.floors.filter(f=>f.y<h.top+2);host.full=h.full;host.shaped=h.shaped;host.rec=h;h.drawn=true;
@@ -78,8 +78,8 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  // a flat bed between two rimstone lips) gets a sheet of the sea's water at its lip's height less 10 cm, a ribbon along
  // the centre line 1.8 widths wide (the banks hide its edges); below the sea's level the sea sheet takes over
  {TSTAT.cur='river/0';const pr=ysRiverProfile(),R=CITY.RIVER;const at=s=>{let e=pr.seg[pr.seg.length-1];for(const q of pr.seg)if(s<=q.s0+q.L){e=q;break;}const t=e.L?(s-e.s0)/e.L:0;return [e.a[0]+(e.b[0]-e.a[0])*t,e.a[1]+(e.b[1]-e.a[1])*t,(e.b[0]-e.a[0])/e.L,(e.b[1]-e.a[1])/e.L];};
-  let k=0,n=0;while(k<pr.bed.length){let k1=k;while(k1+1<pr.bed.length&&pr.bed[k1+1]===pr.bed[k])k1++;const y=pr.bed[k]+R.rise*.55-.1;
-   if(y>.1){const pos=[],idx=[];let q=0;for(let j=k;j<=k1+1&&j<pr.bed.length;j++){const s=Math.min(j*pr.DS,pr.len);const [x,z,tx,tz]=at(s);const w=(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.9;
+  let k=0,n=0;while(k<pr.bed.length){let k1=k;while(k1+1<pr.bed.length&&pr.bed[k1+1]===pr.bed[k])k1++;const y=pr.bed[k]+R.rise*.55-.25;
+   if(y>.1){const pos=[],idx=[];let q=0;for(let j=k;j<=k1+1&&j<pr.bed.length;j++){const s=Math.min(j*pr.DS,pr.len);const [x,z,tx,tz]=at(s);const w=(R.w0+(R.w1-R.w0)*clamp(s/pr.len,0,1))*.62;   /* the flat floor is half a width each side; the sheet reaches a little up the bank */
      pos.push(x-tz*w,y,z+tx*w,x+tz*w,y,z-tx*w);if(j>k){idx.push(q-2,q,q-1,q-1,q,q+1);}q+=2;}
     if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,MAT.pkSea);m.name='river pool';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);n++;const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}}
    k=k1+1;}

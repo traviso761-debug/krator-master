@@ -433,3 +433,19 @@ rust-stained (`MAT.concreteR`); a streaked-rust concrete set is the real fix (as
 pool of the terraced bed gets a sheet of the sea's material at its lip's height (11 pools); the mouth runs into the bay.
 **The Pharos crown** stands on the highest plate that takes it. A pair of hosts with no plates within 8 m takes a
 climbing span (18 m) rather than none, so the band's three link up.
+
+## Eight more Ancients as hosts (Oct 5 2026, Travis: density)
+An agent brought Sky B (the Scallop Stack), C (the Tripod), E (the Lens), K (the Sail), the Attraction and the Pierced
+Stack in as stumps, and the office terrace (the Terrace Wedge), the Ancient Library (the Reading Star, worn) and the
+Undulant house whole; the specs are `69i-host-ancients.js` (data only), the hooks in the vendored builders
+(`build.py --vendor-check`: adapted on purpose). B's lobe bands are cut round every pod (`YS_CUT.pods`, which the draw
+pass now hands over); E's pods root in the ruined lens's lining behind the diagrid; K keeps its porch and loses its
+hoop, hall and campanile; the Attraction's podium shrinks to 54 so it fits a land block; the Stack loses its oculus over
+a low cut; the Library is the builder at decay 0 re-skinned worn (its rust and weather passes read the structure in its
+own frame, so they are left out). Sky J stays out: its plates stand 4.6 m apart far past the glazing, nothing to root a
+pod in. The placer's land rule takes a type's own `lo` (the villa's floors start at 3 m); the two office terraces and the
+Ancient Library take the first non-stump turns of the land pass (whole, on land blocks: a quarter is too small for
+their caps), the Undulant villas stand in the laned blocks' quarters (the quarter's host before its lane houses, inset
+clear of the frontage), and K and C stay out of the land pools (caps 88 and 68 fit no land block). The band's pool is the
+sturdy stumps (the Arcades, the Pierced Stack, the Lens, D, H), cut low: the Stalks and the Bell Hall left no way in. The lived floors' corridor ring is bounded by the plan's inscribed radius
+(K's flat back).

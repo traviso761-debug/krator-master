@@ -28,14 +28,15 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `42-offices.js` | 15 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 30 **big** |  |
+| `52-sky-abc.js` | 31 **big** |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
 | `56-sky-d.js` | 6 |  |
+| `57-sky-e.js` | 4 |  |
 | `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (100) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 14 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
 | `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
-| `64-hyk-accrete.js` | 16 | the tideline: crust, weed, barnacle specks, foam (55); accretion: pods grown onto a host's face (69) |
+| `64-hyk-accrete.js` | 16 | the tideline: crust, weed, barnacle specks, foam (61); accretion: pods grown onto a host's face (75) |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
@@ -47,6 +48,8 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `69h-host-c-arcades.js` | 10 |  |
 | `69h-host-d-stalks.js` | 9 |  |
 | `69h-host-e-bellhall.js` | 13 |  |
+| `69i-host-ancients.js` | 11 | numeric helpers (plans as [x,z] polygons, rays t (16); the specs (36) |
+| `69w-worn.js` | 12 | the WORN variant (decay 5) (1) |
 | `70-hyk-housing.js` | 69 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (128); POOR 2: the stilt pod. A small pod carried 2.6 m (146); POOR 3: the limpet house. One ringed limpet cone (166); MIDDLE 1: the barnacle tower. One tall twisted b (183); MIDDLE 2: the pod cluster. Three pods of graded  (206); MIDDLE 3: the stair drum. A lobed drum with a st (232); RICH 1: the conch stair house. A nacre conch who (246); RICH 2: the urchin house. A lobed nacre dome rin (311); RICH 3: the scallop court. A ribbed scallop valv (346) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
 | `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (61); the grown-on base (the G frame: origin on the ho (108); the trade dressings (F from a base: at(th,y,out) (135); the free-standing stores (row 'Shops') (296); the grown-on stores (row 'Grown-on shops', the G (367) |
@@ -72,6 +75,14 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `79-hyk-markets.js` | 18 | shared bits (7) |
 | `79z-ys-matlib.js` | 5 |  |
 | `81-sky.js` | 10 |  |
+| `89m-sky-k.js` | 42 **big** |  |
+| `8aj-alt-a-bole.js` | 15 | THE BOLE (74) |
+| `8aj-alt-b-stack.js` | 10 |  |
+| `8aj-alt-c-hotel.js` | 8 |  |
+| `8ak-alt-a-houses.js` | 25 | helpers (27) |
+| `8al-alt-00-lib.js` | 10 |  |
+| `8al-alt-01-office-terrace.js` | 7 |  |
+| `8al-alt-06-library.js` | 7 |  |
 | `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (34) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
 | `92-camera.js` | 15 | camera, inspector, polygon tool, walk mode, comp (1) |
@@ -85,6 +96,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 161 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88-city-spans.js`, `88a-city-floors.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 162 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

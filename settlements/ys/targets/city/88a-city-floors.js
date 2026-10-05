@@ -24,7 +24,7 @@ const FLOORS={plans:[],rooms:0,spots:0};
    const plan={host:h.n,k,y,H,rooms:[],walls:[],hx:h.x,hz:h.z,ry:h.ry};let any=false;
    for(const C of cores){if(yl+H>C.top)continue;
     const NB=48,rw=[...Array(NB)].map((_,i)=>C.rw(yl,i/NB*TAU));const mean=rw.reduce((a,b)=>a+b,0)/NB;if(mean<5)continue;
-    const rc=mean<14?1.6:Math.max(2.5,mean*.26),deep=mean-rc>16;   /* a slim stair core in a small one */const rm=deep?(rc+mean)/2:rc+1.2;   // the corridor's centre line
+    const minR=Math.min(...rw);const rc=mean<14?1.6:Math.max(2.5,mean*.26),deep=minR-rc>16;   /* a slim stair core in a small one; a flat-sided plan (the Sail) bounds the rings by its inscribed radius */const rm=Math.min(deep?(rc+mean)/2:rc+1.2,Math.max(rc+1.2,minR-2));   // the corridor's centre line
     const rings=deep?[[rc,rm-1.2],[rm+1.2,null]]:[[rm+1.2,null]];   // null: out to the wall
     const P=(r,th)=>W(C.x+r*Math.cos(th),C.z+r*Math.sin(th));const wallR=th=>{const f=((th/TAU)%1+1)%1*NB;const i=Math.floor(f)%NB,j=(i+1)%NB,t=f-Math.floor(f);return rw[i]*(1-t)+rw[j]*t;};
     // the corridor's walls
