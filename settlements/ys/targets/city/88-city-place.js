@@ -189,13 +189,17 @@ const PL_POOL={
   ['hyk_shop_cloth',1],['hyk_shop_potter',1],['hyk_tavern_1',.6],['hyk_inn',.3]],
  industry:[['hyk_warehouse_large',1.5],['hyk_warehouse_small',2],['hyk_smithy_large',1],['hyk_smithy_small',1.5],['hyk_granary',1]],
  foreign:[['iziz',1]]};   // placeholder: the foreign quarter's plots are slots (sizes from PL_FOREIGN)
-const PL_GAP={poor:[3,7],middle:[5,11],rich:[10,20],market:[3,6],industry:[6,12],foreign:[5,10]};
-const PL_GARDEN={poor:.12,middle:.18,rich:.25,market:0,industry:.15,foreign:.1};
+// small buildings for the courtyard rings: the houses and the corner shops of each wealth (no inns, no big shops)
+const PL_SMALL={poor:[['hyk_house_poor_1',3],['hyk_house_poor_2',3],['hyk_house_poor_3',3],['hyk_shop_food',.5],['hyk_shop_general',.5]],
+ middle:[['hyk_house_mid_1',3],['hyk_house_mid_3',3],['hyk_house_poor_2',1],['hyk_shop_alchemy',.4],['hyk_shop_salt',.4],['hyk_shop_food',.5]],
+ rich:[['hyk_house_mid_1',2],['hyk_house_mid_3',2],['hyk_house_rich_3',1],['hyk_shop_pearl',.6]]};
+const PL_GAP={poor:[2,5],middle:[3,7],rich:[6,13],market:[3,6],industry:[6,12],foreign:[5,10]};
+const PL_GARDEN={poor:.06,middle:.1,rich:.18,market:0,industry:.15,foreign:.1};
 const PL_FOREIGN={iziz:[[14,12],[16,13],[12,12]],republic:[[13,11],[15,12],[18,10]],voth:[[16,14],[20,16]]};
 function ysPlSides(b,h){const S=[[PL_U,PL_V],[[-PL_U[0],-PL_U[1]],PL_V],[PL_V,PL_U],[[-PL_V[0],-PL_V[1]],PL_U]];
  return S.map(([n,t])=>({n,t,mx:b.x+n[0]*h,mz:b.z+n[1]*h})).sort((p,q)=>Math.hypot(p.mx-CITY.HEAD[0],p.mz-CITY.HEAD[1])-Math.hypot(q.mx-CITY.HEAD[0],q.mz-CITY.HEAD[1]));}
 function ysPlFront(b,o){const st=ysPlStream('front:'+(o.tag||''),b);const pool=o.pool,h=o.h||91,sides=ysPlSides(b,h).slice(0,o.sides||4);let n=0;
- for(const S of sides){let t=-h+4;const ry=ysPlFacing(S.n[0],S.n[1]);
+ for(const S of sides){let t=-h+4;const ry=o.inward?ysPlFacing(-S.n[0],-S.n[1]):ysPlFacing(S.n[0],S.n[1]);   /* inward: a courtyard ring, backs to the street frontage */
   while(t<h-4&&n<(o.max||99)){if(st.chance(PL_GARDEN[o.kind]||0)){t+=st.range(12,22);continue;}
    let key,w,d,fq=null;if(o.kind==='foreign'){fq=o.foreign;const sz=st.pick(PL_FOREIGN[fq]);w=sz[0];d=sz[1];key=null;}else{key=ysPlPick(st,pool);const D=HYK.defs[key];w=D.w;d=D.d;}
    if(t+w>h-4)break;const s=t+w/2;const cx=b.x+S.n[0]*(h-d/2)+S.t[0]*s,cz=b.z+S.n[1]*(h-d/2)+S.t[1]*s;
@@ -325,7 +329,9 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
     if(y==null)continue;ysPlHost(b,{land:true,y,type,x:c[0],z:c[1]});got++;break;}}
   if(got<want)ysPlRefuse('land hosts: '+got+' of '+want);}
  for(const b of NB){const st=ysPlStream('land host',b);
-  const sides=b.dH<450*LAYOUT.K?4:b.dH<750*LAYOUT.K?2:1;   /* the first layout's densities, at the span K (budget 30 M) */ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
+  const sides=b.dH<750*LAYOUT.K?4:3;   /* every street of a neighbourhood built, but the outermost's back */ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
+  // the courtyard ring: small houses and shops round the block's middle, fronts inward, a lane behind them
+  ysPlFront(b,{pool:PL_SMALL[b.wealth],kind:b.wealth,why:'courtyard',h:58,sides:4,inward:true,tag:'court'});
   if(st.chance(.3)){const k=st.chance(.5)?'hyk_shrine_tides':'hyk_shrine_seagods';ysPlSeek(k,ysPlCands(b,st.range(-30,30),st.range(-30,30),60).slice(0,30),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood shrine',b);}}
  for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:2});
  for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);const fr=ysPlFacing(PL_V[0],PL_V[1]);

@@ -302,6 +302,9 @@ cloth): "Hand-woven heavy cotton cloth with a tribal geometric pattern of stripe
 dyed in deep red (#7a2028) with ochre (#c2a24e) and dark green (#2f5a3a) accents, visible weave, slightly
 faded and uneven dye."
 
+The Ys prompts (the Hykkousoi shell family, the tideline, the karst and its cards, the new Ancient hosts' travertine,
+sandstone and bronze) are in `settlements/ys/MATERIAL-PROMPTS.md`, with their tints, tile sizes and the code each replaces.
+
 ### Pattern-sheet prompts by culture
 
 Prepend the base template (pattern form: "a flat, front-on decorative panel" in place of "perfectly flat surface",
