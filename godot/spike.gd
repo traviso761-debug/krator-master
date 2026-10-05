@@ -157,6 +157,14 @@ func _load_case(name: String) -> Dictionary:
 		var e: PackedFloat64Array = str(args["eye"]).split_floats(",")
 		var a: PackedFloat64Array = str(args["at"]).split_floats(",")
 		cam.look_from(focus + Vector3(e[0], e[1], e[2]), focus + Vector3(a[0], a[1], a[2]))
+	if args.has("eyew") and args.has("atw"):   # --eyew=x,y,z --atw=x,y,z: world coordinates (godot/tools/compare_shots.py)
+		var ew: PackedFloat64Array = str(args["eyew"]).split_floats(",")
+		var aw: PackedFloat64Array = str(args["atw"]).split_floats(",")
+		cam.look_from(Vector3(ew[0], ew[1], ew[2]), Vector3(aw[0], aw[1], aw[2]))
+	if args.has("fov"):
+		cam.fov = float(args["fov"])
+	if args.has("nohud"):
+		hud.visible = false
 	if args.has("hour"):
 		Atmos.hour = float(args["hour"])
 	if args.has("weather"):   # --weather=rain|storm|fog|clear|auto

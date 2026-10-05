@@ -166,11 +166,13 @@ Steps 1 and 2 are each about a session, with tests. Step 5 waits for the reseedi
 | `ancient` | `ancient` |
 | `ancients-salvage` | `ancient` with `state: 'salvage'` (reused Ancients material, not a people) |
 | `yuni-court`, `yuni-common`, `yuni-poor` | `yuni` with `wealth` rich, middle, poor |
-| `sahelian`, `order`, `nomad`, `voth`, `iziz`, `beast-rider`, `lizardmen`, `eastabyss`, `xanadu`, `screamer`, `islander`, `republican`, `rustic`, `reedlake`, `post-apoc`, `hykkousoi` | themselves (`republican` and `rustic` are, with `painted`, the Highlands' three) |
+| `sahelian` | `yuni` with `style: 'sahelian'` (Travis, 2026-10-05: folded into Yuni). Its pieces and buildings (the carved stool, strip loom, banco bed, clay oven; Yuni's Djenne-front houses and Sankore spires; the mud-banco finishes) are Yuni's Sahelian style, not a people of their own |
+| `order`, `nomad`, `voth`, `iziz`, `beast-rider`, `lizardmen`, `eastabyss`, `xanadu`, `screamer`, `islander`, `republican`, `rustic`, `reedlake`, `post-apoc`, `hykkousoi` | themselves (`republican` and `rustic` are, with `painted`, the Highlands' three) |
 | `painted` | `painted`: the Highlands' tribal culture (Travis, 2026-10-05) |
 | `generic`, `scrap` | not cultures: the catalog's poor-tier sets any culture draws on. A piece keeps them as its catalog `set`, not its culture |
 
-That leaves 19 cultures. Kit and settlement names that are not in the list (`ys` uses
+That leaves 18 cultures. `style` is a free tag beside `culture` for a culture's regional or period look (`sahelian`
+for Yuni); it never stands in for the culture in a query. Kit and settlement names that are not in the list (`ys` uses
 `hykkousoi`; `girder` and `mavs-refuge` use `beast-rider`) map by the build's adapter.
 
 ### A label, generated
