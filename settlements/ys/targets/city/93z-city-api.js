@@ -11,7 +11,7 @@ const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stai
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const zero=C.zero.filter(k=>YS_PL_LATER.indexOf(k)<0),later=C.zero.filter(k=>YS_PL_LATER.indexOf(k)>=0);
   R.push({name:'kit-audit-every-def-placed',ok:!zero.length,detail:(zero.length?zero.length+' never placed: '+zero.join(' '):(HYK.order.length-later.length)+' defs placed')+(later.length?'; waiting on the bridge graph: '+later.join(' '):'')});}
- {const full=HOSTS.filter(h=>h.full);R.push({name:'three-full-height-towers',ok:full.length>=3&&full.some(h=>/Pharos/.test(h.n)),detail:full.length+' full: '+full.map(h=>h.n+' top '+Math.round(h.rec.top)+' m').join(' | ')});}
+ {const full=HOSTS.filter(h=>h.full);R.push({name:'three-full-height-towers',ok:full.length>=3&&full.some(h=>/Pharos/.test(h.n)),detail:full.length+' full: '+full.map(h=>h.n+' '+Math.round(YS_HOST_TYPES[h.rec.type].H+h.rec.sink)+' m')+'; the tallest stump '+Math.round(Math.max(...PLACE.hosts.filter(h=>!h.full).map(h=>h.cutY+h.sink)))+' m'.join(' | ')});}
  {const flat=PLACE.hosts.filter(h=>h.pods.length>1&&new Set(h.pods.map(p=>p.y)).size<2);const n=PLACE.hosts.map(h=>new Set(h.pods.map(p=>p.y)).size);
   R.push({name:'pods-on-several-plates',ok:!flat.length,detail:flat.length?flat.length+' hosts with one plate: '+flat.map(h=>h.n).join(' | '):PLACE.hosts.length+' hosts, '+Math.min(...n)+'–'+Math.max(...n)+' plates each'});}
  {const recs=PLACE.blds.concat(PLACE.slots);const boxes=recs.map(r=>r.box);const streets=PLACE.occ.filter(o=>/^(street|highway)/.test(o.tag));const bad=[];
@@ -22,6 +22,6 @@ function ysCityChecks(){const R=[];const C=ysPlaceCensus();
   R.push({name:'footprints-clear-of-each-other',ok:!pairs.length,detail:pairs.length?pairs.length+': '+pairs.slice(0,4).join(' | '):boxes.length+' footprints, no two overlapping'});}
  {const nb=PLACE.blds.filter(r=>!r.drawn).length,nh=PLACE.hosts.filter(h=>!h.drawn).length,np=PLACE.hosts.reduce((s,h)=>s+h.pods.filter(p=>!p.drawn).length,0);
   R.push({name:'every-record-built',ok:!nb&&!nh&&!np,detail:(nb||nh||np)?nb+' buildings, '+nh+' hosts, '+np+' pods not built':PLACE.blds.length+' buildings, '+PLACE.hosts.length+' hosts, '+C.pods+' pods built'});}
- {const L=PLACE.slots.filter(s=>s.kind==='land host'),W=PLACE.slots.filter(s=>s.kind==='low host');R.push({name:'land-hosts-reserved',ok:L.length>0,detail:L.length+' land-quarter plots reserved for reclaimed Ancients (decay 3) and '+W.length+' awash host blocks, '+L.concat(W).filter(s=>s.builder).length+' drawn: the mid-rise types are not vendored yet'});}
+ {const L=PLACE.hosts.filter(h=>h.land);R.push({name:'land-hosts',ok:L.length>0&&L.every(h=>h.drawn),detail:L.length+' reclaimed Ancients (decay 3) on the land quarter, '+L.filter(h=>h.drawn).length+' drawn, with '+L.reduce((s,h)=>s+h.pods.length,0)+' pods: '+L.map(h=>h.n).join(' | ')});}
  return R;}
 {const _x=window._api.extra;window._api.extra=()=>_x().concat(ysCityChecks());}

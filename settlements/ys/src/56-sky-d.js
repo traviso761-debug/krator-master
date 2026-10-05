@@ -62,7 +62,7 @@ function buildSkyD(scene,gx,gz,d){reseed(9130+d);KOFF=[gx,0,gz];const G=new THRE
  if(PROJ){const hy=Y0+(H-Y0)+2.6;
   for(let k=0;k<6;k++){const a=rng()*TAU,r=rFn(H)*rr(.25,1.5);firePit('D',r*Math.cos(a),hy,r*Math.sin(a),rr(1.8,3.4));}
   for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(36.5,PR*.92);firePit('D',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
- if(d===3)skyHoist((y,a)=>rFn(y)*se(a,3.2),H-4,5,9130);
+ if(d===3)skyHoist((y,a)=>rFn(y)*se(a,3.2),(ysCutY(d)!=null?ysCutY(d):H)-4,5,9130);/* YS: from a cut host's top */
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
 

@@ -241,3 +241,17 @@ The Ancients builders draw a host as a dozen plain meshes and thirty hosts were 
 `ysMergeHostMeshes` merges every host's static opaque meshes city-wide by material (139 meshes to 5), 236 calls to 102.
 E (a glass lens behind a diagrid at decay 1, nothing to root a pod in) is left out; the Pierced Stack and the Bole wait
 on the alternates' helpers.
+
+## The land quarter's reclaimed Ancients (Oct 5 2026)
+The four land-quarter plots are hosts now: Wardens and Monoliths at decay 3 (reclaimed), cut at 44–74 m (`ysCutY` takes
+decay 3 as well as 1), standing on the ground with their podium colonnades, two or three pods on their lowest plates
+above the colonnade (17 m), the decay-3 hoist hung from the cut top (D and H are adapted for it). They are the "low
+blocks" of DESIGN §5 rather than the apartments and offices: the kit's single-building mid-rises fit the plots badly
+(the hospital and the government are 240–300 m across) and the apartments and offices draw three variants side by side
+in one call. The port's salvage dressing (`portRepair`) is not applied: it samples a group in its own frame and does not
+handle a rotated host.
+A bug of this round, fixed: the comment that marked `bodyGroup`'s hook was a `//` in the middle of a one-line function
+and swallowed its `endGroupXF()`, so every D and H body left a frame on the transform stack and every host built after
+the first one was misplaced (the inspector volumes and the instanced floors of thirty hosts stood in the hinterland).
+The kit and the mock never build through `bodyGroup`; the city's two earlier commits of the day carried it.
+`_XFSTACK.length` is 0 after the build.

@@ -90,6 +90,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       Wardens and Monoliths. Still open: the Pierced Stack and the Bole (the alternates' helpers and kdefs in
       `8aj-alt-a-bole.js`, and their own cut and breach in place of `bodyGroup`'s), and the 4 land-quarter plots
       (`PLACE.slots`, kind `land host`) that wait on the mid-rise types.
+- [ ] (Oct 5 2026) The land quarter's reclaimed Ancients are Warden and Monolith stumps (decay 3), not the apartments and
+      offices DESIGN §5 names: those builders draw several variants in one call and need splitting first. The port's
+      salvage dressing is not applied to any host (`portRepair` does not handle a rotated group).
+- [ ] (Oct 5 2026) A `//` comment inside a one-line vendored function swallows the rest of the line (it cost the city a
+      leaked transform this round). Mark Ys hooks in vendored fragments with `/* */` only.
 - [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
       their faces and ledges instead.
 - [ ] (Oct 5 2026) The spans are not placed: the bridge graph (PLAN.md P3 step 3: which blocks link at L1, which towers

@@ -8,7 +8,7 @@
 function ysPodiumR(R){return (typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.podium!=null)?Math.min(R,YS_CUT.podium):R;}
 function ysWallHole(hole,y0){const W=(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.ways)?YS_CUT.ways:null;if(!W||!W.length)return hole;
  return (u,y)=>{if(hole&&hole(u,y))return true;const ya=y+y0;for(const w of W){let du=Math.abs(u-w.u);if(du>.5)du=1-du;if(du<w.uw&&Math.abs(ya-w.y)<w.hh)return true;}return false;};}
-function ysCutY(d){return (d===1&&typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.cutY!=null)?YS_CUT.cutY:null;}
+function ysCutY(d){return ((d===1||d===3)&&typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.cutY!=null)?YS_CUT.cutY:null;}
 // ================================================================= SKYSCRAPERS — three variants, d: 0 intact, 1 ruined, 2 toppled
 // each variant = plinth(G,d) + body(P,d,y0,y1) in local coords (local y=0 ⇔ absolute y0)
 // `dir` is which way the upper body goes down: +1 (default) east, -1 west. It

@@ -47,17 +47,17 @@
  "52-sky-abc.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "5bc7036e1cf3"
+  "sha1": "b971bb5d6b35"
  },
  "54-mat-concrete.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "11135f6c34d9"
+  "sha1": "e00dd20ab31b"
  },
  "56-sky-d.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "685243a60c13"
+  "sha1": "ed5091b41781"
  },
  "69-mat-salvage.js": {
   "adapted": false,
@@ -87,7 +87,7 @@
  "71-sky-h.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "0b6f75efaa21"
+  "sha1": "19e7d7fb8124"
  },
  "72-port-kit.js": {
   "adapted": false,

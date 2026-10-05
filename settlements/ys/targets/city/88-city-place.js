@@ -90,14 +90,14 @@ const YS_HOST_TYPES={
  skyD:{name:'the Monolith',builder:'buildSkyD',key:'skyD',H:340,Y0:14,podium:44,cap:46,shaped:true,square:true,
   floors:{y0:20,pitch:6,top:.3,first:.3},k0:0,plate:k=>20+6*k+.3,
   rAt:(yl,th)=>{if(yl<14)return 44;const t=clamp(yl/340,0,1);const r=30*(1-.12*t)+(t>.84?9*Math.pow((t-.84)/.16,.7):0);return r*(th==null?1.08:se(th,3.2));},
-  cuts:{tall:[170,260],mid:[110,164],low:[62,98]},crownY:262,sink:'seabed',minY:9,
+  cuts:{tall:[170,260],mid:[110,164],low:[62,98],land:[44,74]},crownY:262,sink:'seabed',minY:9,
   bearings:(st,n)=>ysPlFaces([Math.PI/2,Math.PI,3*Math.PI/2],st,n)},   // never on the spine's face
  // the Warden: a square keep (se 7), plates every 6 m, setback ledges with corner turrets every 66 m
  skyH:{name:'the Warden',builder:'buildSkyH',key:'skyH',H:330,Y0:8,podium:52,cap:50,shaped:true,square:true,
   floors:{y0:14,pitch:6,top:.3,first:.3},k0:0,plate:k=>14+6*k+.3,
   rAt:(yl,th)=>{if(yl<8)return 52;const t=clamp(yl/330,0,1);const step=Math.floor(t*5)/5;const h=34*(1-.45*step)-2*(t*5-step*5)*.3;
    const g=th!=null&&Math.abs(Math.sin(2*th))>.995?.9:1;return h*(th==null?1.1:se(th,7))*g;},
-  cuts:{tall:[170,250],mid:[110,164],low:[62,98]},crownY:318,sink:'seabed',minY:9,
+  cuts:{tall:[170,250],mid:[110,164],low:[62,98],land:[44,74]},crownY:318,sink:'seabed',minY:9,
   avoid:(yl,h)=>[66,132,198,264].some(ys=>yl-1.5<ys+9&&yl+h+1.5>ys-1),   // a ledge and the turrets on it
   bearings:(st,n)=>ysPlFaces([0,Math.PI/2,Math.PI,3*Math.PI/2],st,n)}
 };
@@ -105,7 +105,7 @@ const YS_HOST_TYPES={
 function ysPlFaces(F,st,n){const f=F.slice();for(let i=f.length-1;i>0;i--){const j=st.int(0,i);[f[i],f[j]]=[f[j],f[i]];}
  const out=[];for(let i=0;i<n;i++){const k=i%f.length,lap=Math.floor(i/f.length);out.push(f[k]+(lap?(lap%2?.32:-.32):0)+st.range(-.04,.04));}return out;}
 // the host type for a block by its class (the Pharos and the plaza name theirs)
-const PL_TYPES={tall:[['skyA',1],['skyD',1],['skyH',1]],mid:[['skyA',.8],['skyD',1],['skyH',1]],low:[['skyD',1],['skyH',1]],full:[['skyA',1],['skyD',1],['skyH',1]]};
+const PL_TYPES={tall:[['skyA',1],['skyD',1],['skyH',1]],mid:[['skyA',.8],['skyD',1],['skyH',1]],low:[['skyD',1],['skyH',1]],land:[['skyD',1],['skyH',1]],full:[['skyA',1],['skyD',1],['skyH',1]]};
 function ysPlType(st,cls){const L=PL_TYPES[cls]||PL_TYPES.mid;let t=L.reduce((s,e)=>s+e[1],0)*st.next();for(const [k,w] of L){t-=w;if(t<=0)return k;}return L[L.length-1][0];}
 // the grown pools: [key, weight]; the way-in pods per wealth (a host needs one: every-host-has-a-way-in)
 const PL_PODS={
@@ -117,20 +117,21 @@ const PL_WAYS={poor:[['hyk_pod_poor_1',1]],middle:[['hyk_pod_mid_1',2],['hyk_pod
 const PL_PODN={poor:2,middle:3,rich:4,full:6};
 // one host record: the type, the cut snapped to a storey, how it stands (sunk for A, on the bed for D and H), its plates
 // (world y) and its pods spread over them (different plates, a few apart, every pod's floor a plate's top)
-function ysPlHost(b,o){const st=ysPlStream('host',b);const cls=o.full?'full':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];
- const sink=T.sink==='seabed'?Math.min(terrainH(b.x,b.z),b.y)-1.5:-(T.plate(T.k0)-T.plateAt)+st.range(-2.5,2.5);
+function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);const cls=o.full?'full':o.land?'land':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];
+ // a land host (decay 3, reclaimed) stands on the ground, its pods above its podium's colonnade (17 m)
+ const sink=o.land?o.y-.5:T.sink==='seabed'?Math.min(terrainH(b.x,b.z),b.y)-1.5:-(T.plate(T.k0)-T.plateAt)+st.range(-2.5,2.5);
  let cutY=null;if(!o.full){const r=T.cuts[cls]||T.cuts.mid;const n0=Math.ceil((r[0]-T.Y0)/T.floors.pitch),n1=Math.floor((r[1]-T.Y0)/T.floors.pitch);cutY=T.Y0+st.int(n0,n1)*T.floors.pitch;}
  const top=(o.full?T.crownY:cutY)+sink;const ry=T.square?PL_RY+st.int(0,3)*Math.PI/2:st.range(0,TAU);
  const P='Project '+T.key.slice(3);const nm=T.name.replace('the ','');
- const rec={n:o.name||(o.full?P+' tower ('+b.i+','+b.j+')':'The '+nm+' stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
-  x:b.x,z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:1,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
+ const rec={n:o.name||(o.full?P+' tower ('+b.i+','+b.j+')':o.land?'The reclaimed '+nm+' ('+b.i+','+b.j+')':'The '+nm+' stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
+  x:b.x,z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:o.land?3:1,land:!!o.land,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
   shaped:!!T.shaped,wealth:b.wealth,plates:[],pods:[],ways:[]};
  rec.rAt=(y,a)=>T.rAt(y-rec.sink,a==null?null:a+rec.ry);   // a world bearing a is the local bearing a + ry
- for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;if(T.minY!=null&&y<T.minY)continue;rec.plates.push(+y.toFixed(2));}
+ for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+18:T.minY;if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
  // the pods: the way in first, then the wealth pool; bearings from the type, plates stepped about a base
  const n=o.pods!=null?o.pods:PL_PODN[o.full?'full':b.wealth];const keys=[o.way||ysPlPick(st,PL_WAYS[b.wealth])];for(const k of (o.must||[]))keys.push(k);
  while(keys.length<n)keys.push(ysPlPick(st,PL_PODS[b.wealth]));
- const TH=T.bearings(st,keys.length),Pl=rec.plates;const STEP=[0,2,-1,3,1,-2,4,-3];const base=Math.min(Pl.length-1,Math.max(0,Math.round(Pl.length*(o.full?.18:.35))));
+ const TH=T.bearings(st,keys.length),Pl=rec.plates;const STEP=[0,2,-1,3,1,-2,4,-3];const base=o.land?0:Math.min(Pl.length-1,Math.max(0,Math.round(Pl.length*(o.full?.18:.35))));   // a land host's pods at ground scale: the lowest plates
  const ok=(k,D)=>Pl[k]+D.h+2<=top&&!(T.avoid&&T.avoid(Pl[k]-sink,D.h));
  keys.forEach((key,i)=>{const D=HYK.defs[key];if(!D||!Pl.length)return;let k=clamp(base+STEP[i%STEP.length]*(o.full?3:1),0,Pl.length-1);
   if(o.crown&&key===o.crown)k=Math.max(0,Pl.length-4);
@@ -272,8 +273,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  for(const sec of ['NW','NE','S']){const L=NB.filter(b=>sector(b)===sec);if(!L.length)continue;const b=L[Math.min(L.length-1,1)];
   civic[sec].forEach((k,i)=>{ysPlSeek(k,ysPlCands(b,i?40:-40,0,72),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood civic',b);});}
  for(const b of NB){const st=ysPlStream('land host',b);
-  if(st.chance(.25)&&b.dH>250){const B=ysPlBox(b.x,b.z,52,52,PL_RY,'land host');if(!ysPlClash(B)){const y=ysPlGround(B,{slope:4});if(y!=null){ysPlTake(B);
-    PLACE.slots.push({kind:'land host',decay:3,wish:['apartments','offices','hotel','hospital','government','flatiron'],builder:null,x:b.x,z:b.z,ry:PL_RY,w:104,d:104,y,block:b.i+','+b.j,wealth:b.wealth,box:B});}}}
+  if(st.chance(.25)&&b.dH>250){const B=ysPlBox(b.x,b.z,52,52,PL_RY,'land host');if(!ysPlClash(B)){const y=ysPlGround(B,{slope:4});if(y!=null)ysPlHost(b,{land:true,y});}}
   const sides=b.dH<450?3:1;ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
   if(st.chance(.3)){const k=st.chance(.5)?'hyk_shrine_tides':'hyk_shrine_seagods';ysPlSeek(k,ysPlCands(b,st.range(-30,30),st.range(-30,30),60).slice(0,30),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood shrine',b);}}
  for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:1});
@@ -282,7 +282,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   const nf=b.s<620?1:0;for(let k=0;k<nf;k++){const q=ysPlAt(b,k?28:-28,10);ysPlByName('hyk_farm_field',q[0],q[1],PL_RY,'farm',b);}}
  // ---- 5. the drowned home-grown blocks: a mole at the quay datum, the Hykkousoi round its edge facing the water
  for(const b of LAYOUT.blocks.filter(b=>b.use==='homegrown')){ysPlMole('home-grown mole ('+b.i+','+b.j+')',ysPlBlockPoly(b,-44,44,-44,44),2.5,6);
-  ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'home-grown mole',h:40,sides:2});}
+  ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'home-grown mole',h:40,sides:1});}
 })();
 // counters for _api.city.place() and the probe
 function ysPlaceCensus(){const by={},why={};for(const r of PLACE.blds){by[r.key]=(by[r.key]||0)+1;why[r.why]=(why[r.why]||0)+1;}

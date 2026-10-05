@@ -53,7 +53,7 @@ function buildSkyH(scene,gx,gz,d){reseed(9170+d);KOFF=[gx,0,gz];const G=new THRE
  if(PROJ){const ht=half(H);
   for(let k=0;k<4;k++)firePit('H',rr(-ht,ht),Y0+(H-Y0)+2.4,rr(-ht,ht),rr(1.6,2.8));   // the crown slab
   for(let k=0;k<8;k++){const a=rng()*TAU,r=rr(44.5,PR*.9);firePit('H',r*Math.cos(a),5.4,r*Math.sin(a),rr(1.6,3));}}
- if(d===3)skyHoist((y,a)=>half(y)*se(a,7),H-2,5,9170);
+ if(d===3)skyHoist((y,a)=>half(y)*se(a,7),(ysCutY(d)!=null?ysCutY(d):H)-2,5,9170);/* YS: from a cut host's top */
  if(d>0&&!PROJ)skyShards(SM,d===3?.25:.5);
  figures(-PR,PR*1.28,6,6);if(PROJ)fireLights(FLM,3);KOFF=[0,0,0];return G;}
 
