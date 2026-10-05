@@ -95,7 +95,7 @@ FEATURES = [
     ("hill", 640, 860, 60, 50, 120, "Ruined hills"), ("hill", 600, 990, 70, 60, 180, "Faron Grasslands hills"),
     # the north-east: the Great Hyrule Forest, Death Mountain, Akkala
     ("plateau", 805, 345, 88, 70, 110, "Great Hyrule Forest"),
-    ("volcano", 1110, 290, 165, 140, 1050, "Death Mountain"), ("hill", 1000, 260, 90, 90, 600, "Eldin Mountains"),
+    ("volcano", 1105, 290, 128, 116, 1050, "Death Mountain"), ("hill", 1000, 260, 90, 90, 600, "Eldin Mountains"),
     ("hill", 1040, 430, 110, 70, 300, "Eldin Canyon"),
     ("hill", 1260, 330, 120, 150, 260, "Akkala Highlands"), ("hill", 1220, 230, 70, 60, 380, "North Akkala"),
     # the east: Zora's Domain, Mount Lanayru, Necluda, the Dueling Peaks
@@ -304,7 +304,7 @@ def main():
         "plateau": site(470, 690), "temple_of_time": site(488, 680), "resurrection": site(455, 655), "oldman": site(500, 706),
         "kakariko": site(1015, 782), "hateno": site(1240, 930), "techlab": site(1290, 912),
         "rito": site(275, 378), "zora": site(1205, 585), "goron": site(1040, 330), "gerudo_town": site(245, 1035),
-        "lurelin": site(1150, 1092), "tarrey": site(1290, 410), "korok": site(805, 345), "akkala_citadel": site(1215, 300),
+        "lurelin": site(1150, 1092), "tarrey": site(1290, 410), "korok": site(805, 345), "akkala_citadel": site(1262, 318),
         "spiral": site(1360, 350), "eventide": site(1395, 1112),
         "lomei_north": site(660, 150), "lomei_south": site(520, 1095), "lomei_island": site(1415, 135),
         "ruta": site(1255, 600), "rudania": site(1080, 330), "medoh": site(275, 378), "naboris": site(190, 1010),

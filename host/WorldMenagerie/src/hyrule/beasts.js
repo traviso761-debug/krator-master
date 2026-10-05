@@ -30,7 +30,7 @@ export function beasts(api){
   // ================================================================ Vah Ruta, the elephant
   ruta(L,x,z){
     const R_=S.ruta,lake=(PL.lakes||[]).find(l=>/Reservoir/.test(l.name)),wl=lake?lake.level:gh(R_.x,R_.z),g=new THREE.Group(),glow=lineM();
-    g.position.set(R_.x,wl,R_.z);
+    g.position.set(R_.x,wl,R_.z);g.scale.setScalar(2);   // the size the game gives them: they tower over the land
     // drawn facing +x: legs in the water, the body, the head with its ears, and the trunk in three joints
     g.add(ball(1,stone,0,38,0,30,20,18));
     for(const [a,b] of [[18,10],[18,-10],[-18,10],[-18,-10]])g.add(limb([a,-6,b],[a,24,b],5.5,5,stone2,8));
@@ -54,7 +54,7 @@ export function beasts(api){
       g.rotation.y=Math.sin(t*0.05)*0.4;
       tip.getWorldPosition(v);d.set(1,0.6,0).applyAxisAngle(UP,g.rotation.y);
       for(let i=0;i<N;i++){if(life[i]<=0){if(t<next)continue;next=t+0.004;life[i]=2.4;pos[i*3]=v.x;pos[i*3+1]=v.y;pos[i*3+2]=v.z;
-          vel[i*3]=d.x*28+(Math.random()-0.5)*5;vel[i*3+1]=22+Math.random()*8;vel[i*3+2]=d.z*28+(Math.random()-0.5)*5;}
+          vel[i*3]=d.x*40+(Math.random()-0.5)*7;vel[i*3+1]=30+Math.random()*10;vel[i*3+2]=d.z*40+(Math.random()-0.5)*7;}
         life[i]-=0.016;vel[i*3+1]-=9.8*0.016;pos[i*3]+=vel[i*3]*0.016;pos[i*3+1]+=vel[i*3+1]*0.016;pos[i*3+2]+=vel[i*3+2]*0.016;if(pos[i*3+1]<wl)life[i]=0;}
       pg.attributes.position.needsUpdate=true;});
     return grp;
@@ -63,6 +63,7 @@ export function beasts(api){
   // ================================================================ Vah Rudania, the salamander
   rudania(L,x,z){
     const D=S.deathmountain,g=new THREE.Group(),glow=lineM(),legs=[];
+    g.scale.setScalar(2);
     g.add(ball(1,stone,0,6,0,30,7,13),ball(1,stone2,26,7,0,11,6,9),ball(1,stone,-30,5,0,14,5,8));
     const tail=limb([-40,5,0],[-80,3,0],5,1.2,stone,8);g.add(tail);
     for(const [a,b] of [[16,1],[16,-1],[-18,1],[-18,-1]]){const l=new THREE.Group();l.position.set(a,4,b*12);l.add(limb([0,0,0],[6,-2,b*16],3,2.4,stone2,6),limb([6,-2,b*16],[10,-8,b*20],2.4,2,stone2,6));g.add(l);legs.push(l);}
@@ -81,6 +82,7 @@ export function beasts(api){
   // ================================================================ Vah Medoh, the bird
   medoh(L,x,z){
     const R_=S.rito,g=new THREE.Group(),glow=lineM(),wings=[];
+    g.scale.setScalar(2.2);
     g.add(ball(1,stone,0,0,0,26,9,10),ball(1,stone2,26,4,0,8,6,6),limb([30,4,0],[40,0,0],2,0.4,mat(0xe8c060),6),limb([-24,0,0],[-44,4,0],7,1,stone,6));
     g.add(ball(1,dark,0,8,0,16,4,9));                                       // the deck on its back
     for(const s of [-1,1]){const w=new THREE.Group();w.position.set(4,2,s*8);
@@ -99,6 +101,7 @@ export function beasts(api){
   // ================================================================ Vah Naboris, the camel
   naboris(L,x,z){
     const N=S.naboris,g=new THREE.Group(),glow=lineM(),legs=[];
+    g.scale.setScalar(2);
     g.add(ball(1,stone,0,62,0,34,12,14),ball(1,stone2,-10,76,0,10,8,9),ball(1,stone2,14,76,0,10,8,9));
     g.add(limb([30,64,0],[46,90,0],5,3.5,stone,8),ball(1,stone,50,94,0,9,6,6));
     for(const s of [-1,1])g.add(ball(1.6,glow,56,96,s*3.4));

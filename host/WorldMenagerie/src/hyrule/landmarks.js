@@ -203,13 +203,28 @@ export function landmarks(api){
   // A pillar of rock standing out of a lake, a walkway spiralling up it, the Rito's huts under pointed roofs
   rito(L,x,z){
     const R_=S.rito,parts=[],lake=(PL.lakes||[]).find(l=>/Rito/.test(l.name)),base=lake?lake.level-4:gh(R_.x,R_.z),H=150;
-    parts.push(mesh(new THREE.CylinderGeometry(22,34,H,10).translate(0,H/2,0),M.rock,R_.x,base,R_.z),sph(R_.x,base+H,R_.z,24,M.rock2,1,0.4,1));
-    const cloth=[mat(0xd84a3a),mat(0x3a7ad8),mat(0xe8c040),mat(0x4aa060)];
-    for(let k=0;k<70;k++){const t=k/70,a=t*Math.PI*2*3.2,y=base+10+t*(H-10),r=(34-12*t)+5;
-      parts.push(blk(R_.x+Math.cos(a)*r,y,R_.z+Math.sin(a)*r,6,0.5,3.4,M.wood,-a));
-      if(k%6===0){const hx=R_.x+Math.cos(a)*(r+5),hz_=R_.z+Math.sin(a)*(r+5);parts.push(cyl(hx,y,hz_,3.6,3.6,3,M.wood2,8),cone(hx,y+3,hz_,4.6,5,cloth[k%4],8));}}
+    const rockA=mat(0xb0a28c),rockB=mat(0x9a8c78),deck=mat(0x9a7044),rail=mat(0x6a4a30);
+    const cloth=[mat(0xd84a3a),mat(0x3a7ad8),mat(0xe8c040),mat(0x4aa060),mat(0xe07ab0)];
+    // the pillar: pale rock in tapering drums, each a little off the last, ledges where they meet
+    for(let k=0;k<6;k++){const r0=34-k*3.6,r1=r0-3.2,h=H/6,ox=Math.sin(k*1.7)*2.5,oz=Math.cos(k*2.3)*2.5;
+      parts.push(mesh(new THREE.CylinderGeometry(r1,r0,h,11).translate(0,h/2,0),k%2?rockA:rockB,R_.x+ox,base+k*h,R_.z+oz));
+      parts.push(cyl(R_.x+ox,base+k*h+h-1.2,R_.z+oz,r1+1.5,r1+1.5,1.6,rockB,11));}
+    parts.push(sph(R_.x,base+H+2,R_.z,15,rockA,1,0.45,1));
+    // the walkway, spiralling up the outside on brackets, with a rail
+    for(let k=0;k<96;k++){const t=k/96,a=t*Math.PI*2*3.4,y=base+8+t*(H-6),r=(34-21*t)+5.5;
+      const px=R_.x+Math.cos(a)*r,pz=R_.z+Math.sin(a)*r;parts.push(blk(px,y,pz,6.4,0.7,4.6,deck,-a));
+      parts.push(blk(R_.x+Math.cos(a)*(r+2.6),y+0.7,R_.z+Math.sin(a)*(r+2.6),6.4,1.1,0.25,rail,-a));
+      if(k%4===0)parts.push(limb([R_.x+Math.cos(a)*(r-2.5),y-4,R_.z+Math.sin(a)*(r-2.5)],[px,y,pz],0.35,0.35,rail,4));}
+    // the platforms: broad round decks out from the rock at five heights, each with huts under bright pointed roofs
+    for(let lv=0;lv<5;lv++){const t=(lv+0.5)/5,y=base+12+t*(H-20),a0=lv*1.9,r=(34-21*t)+12;
+      for(let h=0;h<3;h++){const a=a0+h*0.9,px=R_.x+Math.cos(a)*r,pz=R_.z+Math.sin(a)*r;
+        parts.push(cyl(px,y-0.8,pz,9,9,0.8,deck,10),limb([R_.x+Math.cos(a)*(r-8),y-7,R_.z+Math.sin(a)*(r-8)],[px,y-0.8,pz],0.7,0.7,rail,5));
+        if(h!==1){parts.push(cyl(px,y,pz,4.6,4.6,4,deck,10),cone(px,y+4,pz,6.4,7,cloth[(lv+h)%cloth.length],10));}
+        else parts.push(blk(px,y,pz,6,1,0.3,rail,-a));}}
+    // the top: a wide deck and the elder's big hut
+    parts.push(cyl(R_.x,base+H+6,R_.z,18,18,1,deck,14),cyl(R_.x,base+H+7,R_.z,7,7,5,deck,12),cone(R_.x,base+H+12,R_.z,10,10,cloth[0],12));
     if(lake)for(const a of [0.4,2.6]){const bx=R_.x+Math.cos(a)*36,bz=R_.z+Math.sin(a)*36,ex=R_.x+Math.cos(a)*170,ez=R_.z+Math.sin(a)*130;
-      parts.push(blk((bx+ex)/2,lake.level+3,(bz+ez)/2,Math.hypot(ex-bx,ez-bz),1,4,M.wood,-Math.atan2(ez-bz,ex-bx)));}
+      parts.push(blk((bx+ex)/2,lake.level+3,(bz+ez)/2,Math.hypot(ex-bx,ez-bz),1,5,deck,-Math.atan2(ez-bz,ex-bx)));}
     return build(L,parts);
   },
 

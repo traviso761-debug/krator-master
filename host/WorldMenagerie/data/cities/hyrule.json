@@ -37,9 +37,9 @@
   "low": "#8fb556",
   "high": "#a8c068",
   "steep": "#8a8478",
-  "far": "#8a9a86"
+  "far": "#7f9468"
  },
- "farLevel": 40,
+ "farLevel": -3,
  "roofColours": [
   "#8a4a32",
   "#6a4a3a",
@@ -212,8 +212,8 @@
   {
    "name": "Akkala Citadel",
    "at": [
-    0.023036,
-    0.032699
+    0.02174,
+    0.036076
    ],
    "model": "akkala",
    "info": "The citadel where the kingdom's army made its last stand, in ruins, Guardians among the ruins. Out to sea, a spiral of rock."
@@ -513,26 +513,26 @@
   ],
   "Zora's Domain and Vah Ruta": [
    [
-    -0.00036,
-    0.028566,
-    451.3
+    0.004859,
+    0.030902,
+    411.3
    ],
    [
-    0.00252,
-    0.03198,
-    331.3
+    0.00144,
+    0.035573,
+    348.5
    ]
   ],
   "Rito Village": [
    [
-    0.014451,
-    -0.038268,
-    202.3
+    0.014721,
+    -0.032519,
+    640.0
    ],
    [
     0.017421,
     -0.034854,
-    102.3
+    560.0
    ]
   ],
   "Vah Medoh over Rito": [
@@ -609,19 +609,20 @@
   ],
   "Akkala": [
    [
-    0.018537,
-    0.028207,
-    548.5
+    0.015441,
+    0.044161,
+    628.3
    ],
    [
-    0.023036,
-    0.032699,
-    308.5
+    0.02174,
+    0.036076,
+    228.3
    ]
   ]
  },
  "defaultView": "Hyrule Castle",
  "life": {
   "seed": 1987
- }
+ },
+ "_farLevel": "the land beyond the map sits below the sea: at 40 m it covered low ground inside the box"
 }

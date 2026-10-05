@@ -866,11 +866,16 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   Gerudo Town, Lurelin; the Great Deku Tree and the Master Sword; the three Lomei Labyrinths (seeded mazes); Akkala
   Citadel and the spiral in the sea; Hylia Bridge; and decayed Guardians in the fields.
 - **The Divine Beasts** (`beasts.js`), each moving: Vah Ruta spraying from its trunk in the East Reservoir, Vah
-  Rudania crawling round Death Mountain, Vah Medoh circling high over Rito Village, Vah Naboris walking the desert.
+  Rudania crawling round Death Mountain, Vah Medoh circling high over Rito Village, Vah Naboris walking the desert;
+  built at twice the first size, since in the game they tower over the land.
   Calamity Ganon is rings of crimson malice turning round the Sanctum with an eye in them; Death Mountain has a lava
   lake, lava running downhill from the rim, and smoke.
 - **Life** (`life.js`): Guardian Stalkers walking the fields with the eye's red line sweeping the ground, wild horses
   grazing, hawks, and someone in green paragliding down from a tower now and then.
+- **Flora, rocks and clouds** (`flora.js`, instanced): firs on Hebra, Tabantha and any high slope (snow on the
+  highest), Akkala's woods in autumn, palms along the south coast and round Lurelin and Gerudo, boulders in the
+  fields and outcrops on the slopes (pale above the snow line), and soft clouds drifting east, dimmed at night. Only
+  the autumn crowns cast shadows: thousands of firs and rocks are not worth theirs.
 - **Events** (`events.js`, on `src/core/happenings.js`): `bloodmoon` (a red moon, a crimson sky, embers of malice
   rising), `beasts` (the four Divine Beasts turn blue and fire on the castle), `tower` (a tower activates: blue, a
   column of light, a ring over the land), `glider`, `storm` (rain and lightning on the high ground), `korok`.
@@ -1718,7 +1723,7 @@ src/
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
-  hyrule/   main.js paint.js landmarks.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
+  hyrule/   main.js paint.js flora.js landmarks.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
