@@ -7,7 +7,9 @@
      3. the material family of the kit / merged mesh that was hit               */
 var INSPECT_FAM = { plank:'Decking', timber:'Timber frame', wall:'Wall', thatch:'Thatch roof', shingle:'Shingle roof',
   rope:'Rope', cloth:'Cloth', rock:'Rock', web:'Spider web', leafy:'Undergrowth', bark0:'Ironbark', bark1:'Ghostwood',
-  bark2:'Prism gum', bark3:'Gate baobab', glowmat:'Lantern', rust:'Ancient steel', concrete:'Ancient concrete' };
+  bark2:'Prism gum', bark3:'Gate baobab', glowmat:'Lantern', rust:'Ancient steel', concrete:'Ancient concrete',
+  hidep:'Drying rawhide', pelt:'Big-cat pelt', banner:'Clan banner', tapestry:'Claw tapestry', blanket:'Saddle blanket', flag:'Prayer flag',
+  awning:'Awning', plaque:'Stall plaque', post:'Lamp post', totem:'Carved post', trim:'Lacquer and gilt frieze', inlay:'Bone inlay', lantern:'Paper lantern' };
 var inspectOn = false, inspectTip = document.getElementById('inspectTip'), inspectLast = 0;
 function inspectSite(p){
   var best=null, bv=1e18, lvl=null, lv=1e18;

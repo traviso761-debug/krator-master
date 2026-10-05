@@ -71,6 +71,8 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '53-furnish.js',      # FURNISH: catalog furniture placed as data (no rnd())
                  '56-interiors.js',    # the interiors: rooms planned and furnished per building (own RNG)
                  '83-walk.js',         # the first-person walk mode
+                 '48-detail.js',       # library detail maps on meshes without UVs (no rnd())
+                 '64-cards.js',        # the library's extra plant and net cards (its own generator)
                  '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js'}   # core/materials/record (no rnd())
 # GENERATED fragment, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one
 # closure exposing KratorFurniture) and the interiors core with the Beast Rider interior set
@@ -103,7 +105,7 @@ def matlib_pack():
         e = pack['families'][fam]
         f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
              'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
-             'tint': e['tint']['keep']}
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))

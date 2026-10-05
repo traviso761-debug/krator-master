@@ -9,14 +9,14 @@ reseed(720001);
 function LANTERN(x,y,z, amp, rad, cool, hang){
   /* y is the flame height. hang>0 draws a cord up to the thing it hangs from */
   BOX(x, y-0.28, z, 0.34, 0.50, 0.34, 0, TIMBERC[2], 'timber');
-  BOX(x, y-0.20, z, 0.26, 0.34, 0.26, 0.78, cool ? PAL.glowCool : PAL.glowWarm, 'glowmat');
+  BOX(x, y-0.20, z, 0.26, 0.34, 0.26, 0.78, cool ? PAL.glowCool : (KIT_LOOK ? 0xfff2dc : PAL.glowWarm), (KIT_LOOK && !cool) ? 'lantern' : 'glowmat');   /* the library look: oiled paper over the flame */
   PYR(x, y+0.22, z, 0.50, 0.26, 0.50, 0, SHINGLEC[1], 'shingle');
   if(hang) ROD(x, y+0.4, z, x, y+0.4+hang, z, 0.02, ROPEC[1], 'rope');
   nlLampAdd(x, y, z, amp==null?1:amp, rad==null?15:rad, cool);
 }
 function LAMPPOST(x,y,z, h, amp, rad, cool){
-  BOX(x, y, z, 0.20, h, 0.20, 0, TIMBERC[0], 'timber');
-  BOX(x, y+h-0.12, z+0.35, 0.10, 0.10, 0.8, 0, TIMBERC[0], 'timber');
+  BOX(x, y, z, 0.20, h, 0.20, 0, KIT_LOOK ? 0xc8beb4 : TIMBERC[0], KIT_LOOK ? 'post' : 'timber');   /* the library look: the weathered lamp-post hardwood */
+  BOX(x, y+h-0.12, z+0.35, 0.10, 0.10, 0.8, 0, KIT_LOOK ? 0xc8beb4 : TIMBERC[0], KIT_LOOK ? 'post' : 'timber');
   LANTERN(x, y+h-0.55, z+0.7, amp, rad, cool, 0.3);
 }
 var FIXED_LAMPS = 0;

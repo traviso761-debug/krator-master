@@ -217,10 +217,10 @@ var JUNGLE_CARDS = null;
     var tex=new THREE.DataTexture(new Uint8Array(d.buffer.slice(0)), S, S, THREE.RGBAFormat);
     tex.generateMipmaps=true; tex.minFilter=THREE.LinearMipmapLinearFilter; tex.magFilter=THREE.LinearFilter;
     tex.encoding=THREE.sRGBEncoding; tex.anisotropy = FAST?1:4; tex.needsUpdate=true;
-    /* the library cards (materials.json jfrond, jbush) replace the frond and the bush cells once they decode; the giant
-       leaf and the moss stay painted. The painting above still runs, so its random draws are unchanged. */
+    /* the library cards (materials.json jfrond, jbush, jvine) replace the frond, the bush and the hanging-moss cells once
+       they decode (the vine curtain hangs from the cell's top edge, as the moss did); the giant leaf stays painted. The painting above still runs, so its random draws are unchanged. */
     if(KMAT.mode === 'lib'){
-      var cells = [['jfrond',0,0],['jbush',1,0]].filter(function(c){ return KMAT.packed('girder', c[0]); }), left = cells.length;
+      var cells = [['jfrond',0,0],['jbush',1,0],['jvine',1,1]].filter(function(c){ return KMAT.packed('girder', c[0]); }), left = cells.length;
       cells.forEach(function(c){ KMAT.image(KMAT.packed('girder', c[0]), function(img){
         g.clearRect(c[1]*256, c[2]*256, 256, 256); g.drawImage(img, c[1]*256+2, c[2]*256+2, 252, 252);
         if(--left) return;
@@ -345,7 +345,7 @@ var JUNGLE_CARDS = null;
       var A=logAt(G,s); if(A.r<1.6) continue;
       if(chance(0.75)){
         var lat = rr(-0.45,0.45)*A.r, up = Math.sqrt(Math.max(0.01, A.r*A.r - lat*lat)), mr = rr(0.22,0.42)*A.r;
-        BLOB(A.x+G.px*lat, A.y+up-mr*0.30, A.z+G.pz*lat, mr, mr*rr(0.22,0.4), rr(0,TAU), vary(pick(PAL.moss),-0.3,0.05), 'leafy'); CNT.moss++;
+        BLOB(A.x+G.px*lat, A.y+up-mr*0.30, A.z+G.pz*lat, mr, mr*rr(0.22,0.4), rr(0,TAU), vary(pick(PAL.moss),-0.3,0.05), KIT_LOOK?'mossy':'leafy'); CNT.moss++;
       }
       if(chance(0.6)){
         var l2 = rr(-0.55,0.55)*A.r, u2 = Math.sqrt(Math.max(0.01, A.r*A.r - l2*l2)), x=A.x+G.px*l2, z=A.z+G.pz*l2, y=A.y+u2-0.4;
@@ -376,7 +376,7 @@ var JUNGLE_CARDS = null;
     var g=gY(x,z), lv=brookLevel(s), base=g-0.25*r, tp=Math.max(g+r*0.35, lv+top);
     BLOB(x, base, z, r, (tp-base), rr(0,TAU), rockCol(), 'rock'); CNT.rocks++;
     if(Math.abs(lat) < riverHalfAt(s)) JUNGLE_ROCKS.push({ x:x, z:z, r:r*0.85, s:s, y:tp });
-    if(!flat && r>0.9 && chance(0.55)){ BLOB(x+rr(-0.2,0.2), tp-r*0.16, z+rr(-0.2,0.2), r*0.62, r*0.2, rr(0,TAU), vary(pick(PAL.moss),-0.3,0), 'leafy'); CNT.moss++; }
+    if(!flat && r>0.9 && chance(0.55)){ BLOB(x+rr(-0.2,0.2), tp-r*0.16, z+rr(-0.2,0.2), r*0.62, r*0.2, rr(0,TAU), vary(pick(PAL.moss),-0.3,0), KIT_LOOK?'mossy':'leafy'); CNT.moss++; }
     return [x,tp,z];
   }
   function pebble(x,z,r){
@@ -478,7 +478,7 @@ var JUNGLE_CARDS = null;
   /* ------------------------------------------------------------ UNDERSTOREY */
   function subTree(x,y,z,dO){
     var H = rr(10,30)*(chance(0.25)?1:0.8), r = 0.3+H*0.022, lean=rr(0,TAU), lk=rr(0,0.06)*H;
-    var fam = chance(0.5)?'bark3':'bark0', col = shade(pick(chance(0.5)?PAL.deadwood:PAL.bark[3]), rr(-0.45,-0.15));
+    var fam0 = chance(0.5)?'bark3':'bark0', fam = KIT_LOOK ? 'jbark' : fam0, col = shade(pick(chance(0.5)?PAL.deadwood:PAL.bark[3]), rr(-0.45,-0.15));   /* the library look: the mahogany's flaky bark on the sub-canopy trees */
     var but = rr(1.8,2.8), near = dO<600;
     TUBE(fam, [ {x:x,y:y-1,z:z,r:r}, {x:x,y:y+H*0.1,z:z,r:r}, {x:x+Math.cos(lean)*lk*0.4,y:y+H*0.5,z:z+Math.sin(lean)*lk*0.4,r:r*0.8}, {x:x+Math.cos(lean)*lk,y:y+H*0.86,z:z+Math.sin(lean)*lk,r:r*0.5} ],
          col, { seg:near?6:4, rfn:function(q,ang){ return q===0 ? (Math.cos(3*ang)>0 ? but : 0.9) : 1; } });
@@ -556,7 +556,7 @@ var JUNGLE_CARDS = null;
     var n = dO<420 ? ri(1,3) : 1, R=rr(1.2,3.4);
     for(var i=0;i<n;i++){ var a=rr(0,TAU), d=i?R*rr(0.7,1.2):0, r=R*(i?rr(0.35,0.7):1), bx=x+Math.cos(a)*d, bz=z+Math.sin(a)*d, by=terrainH(bx,bz), h=r*rr(0.55,0.95);
       BLOB(bx, by-r*0.25, bz, r, h+r*0.25, rr(0,TAU), rockCol(), 'rock');
-      if(dO<520){ BLOB(bx+rr(-0.15,0.15)*r, by+h*0.62, bz+rr(-0.15,0.15)*r, r*rr(0.62,0.8), h*0.42, rr(0,TAU), vary(pick(PAL.moss),-0.3,0.02), 'leafy'); CNT.moss++; }
+      if(dO<520){ BLOB(bx+rr(-0.15,0.15)*r, by+h*0.62, bz+rr(-0.15,0.15)*r, r*rr(0.62,0.8), h*0.42, rr(0,TAU), vary(pick(PAL.moss),-0.3,0.02), KIT_LOOK?'mossy':'leafy'); CNT.moss++; }
       if(dO<420 && i===0 && chance(0.6)){ frondCrown(bx+r*0.5, by+h*0.55, bz+r*0.3, rr(1.2,2.2), 5, 0.5, 0.3, 0.36, vary(pick(PAL.fern),-0.3,0.05)); CNT.ferns++; } }
     CNT.boulders++;
   }

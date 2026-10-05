@@ -201,7 +201,7 @@ function buildPalisade(){
     GATES.forEach(function(g){ if(Math.hypot(x-g.x,z-g.z) < 5.2) gate=true; });
     if(gate) continue;
     var h=PALISADE.h+rr(-0.5,0.9), y=terrainH(x,z)-0.8, c=TIMBERC[i%4];
-    push('cyl6','timber',[x,y,z,0.46,h+0.8,0.46,0,shade(c,rr(-0.15,0.1))]); CONE(x, y+h+0.8, z, 0.46, 1.1, 0, shade(c,-0.1), 'timber'); STRUCT.stakes++;
+    push('cyl6',KIT_LOOK?'tarred':'timber',[x,y,z,0.46,h+0.8,0.46,0,shade(c,rr(-0.15,0.1))]);   /* the library look: tar-sealed stakes */ CONE(x, y+h+0.8, z, 0.46, 1.1, 0, shade(c,-0.1), 'timber'); STRUCT.stakes++;
   }
   /* wall-walk: a plank ledge inside the wall, 3.6 m up, on posts */
   var ww=SETTLE_Y+3.6;

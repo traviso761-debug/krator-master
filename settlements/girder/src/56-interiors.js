@@ -193,8 +193,7 @@ function gixAccum(key, kind, material, geo){
 }
 function gixMaterial(m, kind){
   if(kind==='uv') gfDecalMaterial(m.material);
-  else if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
-  else nlMaterial(m.material, 'ix|'+m.material.userData.family, gfSRGBHook);
+  else gfMatHooks(m.material, 'ix|'+m.material.userData.family);   /* the sRGB hook, the night glow and the family's detail map (53-furnish.js) */
   m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false; m.userData.furniture = true; m.userData.interiors = true;
 }
 function gixMerge(){

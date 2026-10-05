@@ -48,10 +48,11 @@ function mCone(fam,x,yb,z,rb,rt,h,col,seg,rot,under){
   }
 }
 function bush(x,y,z,r,h,col){ mCone('leafy',x,y,z,r*0.75,r,h*0.4,col,6,x); mCone('leafy',x,y+h*0.4,z,r,0,h*0.6,shade(col,0.08),6,x); }
-function pod(x,y,z,r,col){
+function pod(x,y,z,r,col,fam){   /* fam: the library look's fruit or gourd skin (05-palette.js); 'leafy' otherwise */
+  fam = fam || 'leafy';
   var t=[x,y+r*1.3,z], b=[x,y-r*0.2,z], q=[[x+r,y+r*0.5,z],[x,y+r*0.5,z+r],[x-r,y+r*0.5,z],[x,y+r*0.5,z-r]];
   for(var i=0;i<4;i++){ var p0=q[i], p1=q[(i+1)%4], mx=(p0[0]+p1[0])/2-x, mz=(p0[2]+p1[2])/2-z;
-    oTri('leafy',p0,p1,t,col,mx,0.5,mz); oTri('leafy',p0,p1,b,shade(col,-0.2),mx,-0.5,mz); }
+    oTri(fam,p0,p1,t,col,mx,0.5,mz); oTri(fam,p0,p1,b,shade(col,-0.2),mx,-0.5,mz); }
 }
 /* a lamp keeps Girder's own light (the night volume and its halo); its body is a catalog piece:
    a lantern on a cord when it hangs, else a lantern on a wall bracket facing ry (flame at y either way) */
@@ -113,7 +114,7 @@ function finial(p,dx,dz,s,col){
 }
 /* carved post: shaft, collar bands and a cap */
 function carvedPost(x,y,z,h,s,col,trim){
-  BOX(x,y,z,s,h,s,0,col,'timber'); gwBox(x,y,z,s,h,s,0,'post'); BOX(x,y+h*0.3,z,s*1.35,0.14,s*1.35,0.78,trim,'timber'); BOX(x,y+h*0.62,z,s*1.35,0.14,s*1.35,0.78,trim,'timber');
+  BOX(x,y,z,s,h,s,0,KIT_LOOK?0xffffff:col,KIT_LOOK?'totem':'timber'); gwBox(x,y,z,s,h,s,0,'post');   /* the library look: the carved skull-and-talon sheet */ BOX(x,y+h*0.3,z,s*1.35,0.14,s*1.35,0.78,trim,'timber'); BOX(x,y+h*0.62,z,s*1.35,0.14,s*1.35,0.78,trim,'timber');
   BOX(x,y+h-0.2,z,s*1.7,0.2,s*1.7,0,trim,'timber');
 }
 function fence(x0,z0,x1,z1,y,h,col,skip){
@@ -157,7 +158,7 @@ function pentEave(f,x0,x1,z,yw,out,drop,col){
 function clothAwning(f,x0,x1,z,yw,out,drop,colA,colB){
   var n=Math.max(2,Math.round((x1-x0)/1.1)), L=Math.hypot(out,drop), pit=Math.atan2(drop,out);
   for(var i=0;i<n;i++){ var lx=x0+(x1-x0)*(i+0.5)/n, p=LP(f,lx,z+out/2);
-    BOX(p[0],yw-drop/2-0.02,p[1],(x1-x0)/n,0.04,L,[pit,f.rz2,0],(i%2)?colA:colB,'cloth'); }
+    BOX(p[0],yw-drop/2-0.02,p[1],(x1-x0)/n,0.04,L,[pit,f.rz2,0],KIT_LOOK?shade((i%2)?colA:colB,0.65):((i%2)?colA:colB),KIT_LOOK?'awning':'cloth'); }
   fBEAM(f,x0,yw-drop,z+out,x1,yw-drop,z+out,0.07,0.07,TIMBERC[1],'timber');
 }
 
@@ -223,7 +224,7 @@ function buildDwelling(S){
        a lot that drew a forge becomes a smithy (forge and anvil), the others a workshop */
     S.shell.forge = chance(0.45); S.shell.counterX = ccx; S.shell.counterW = ccw;
     /* hides / saddle blankets hung to dry from the top plate */
-    for(var hq=0; hq<ri(1,3); hq++){ var hp=LP(f,x1-0.9-hq*1.2,zf-0.22), hl=rr(0.9,1.5); BOX(hp[0],y+H-0.3-hl,hp[1],0.85,hl,0.04,f.ry,pick(CLOTHC),'cloth'); }
+    for(var hq=0; hq<ri(1,3); hq++){ var hp=LP(f,x1-0.9-hq*1.2,zf-0.22), hl=rr(0.9,1.5), hc=pick(CLOTHC); BOX(hp[0],y+H-0.3-hl,hp[1],0.85,hl,0.04,f.ry,KIT_LOOK?0xffffff:hc,KIT_LOOK?((hq%2)?'pelt':'hidep'):'cloth'); }
     name = N_CRAFT[(S.id*5+S.k*3)%N_CRAFT.length];
   }
   else if(kind==='common'){
@@ -233,10 +234,10 @@ function buildDwelling(S){
     fBOX(f,0,zb+0.08,y,bw,1.0,0.14,wcol,'wall'); fBOX(f,x0+0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,wcol,'wall'); fBOX(f,x1-0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,wcol,'wall');
     gwF(f,0,zb+0.08,y,bw,1.0,0.14,'rail'); gwF(f,x0+0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,'rail'); gwF(f,x1-0.08,(zb+zf)/2,y,0.14,1.0,depth-0.4,'rail');
     fBOX(f,0,zb+0.08,y+H-0.3,bw,0.26,0.2,pcol,'timber'); fBOX(f,0,zf-0.2,y+H-0.3,bw,0.26,0.2,pcol,'timber');
-    fmBox('plank',f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,PLANKC[S.id%4],true); gwF(f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,'floor');
+    fmBox(KIT_LOOK?'mat':'plank',f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,KIT_LOOK?0xd8ccb4:PLANKC[S.id%4],true);   /* the library look: a woven reed floor mat */ gwF(f,0,(zb+zf)/2,y,bw-0.2,0.12,depth-0.3,'floor');
     /* the long table, its benches and the hearth stood inside the pavilion the interiors now furnish */
     if(chance(0.7)) clothAwning(f,x0+0.1,x1-0.1,zf-0.1,y+3.25,1.0,0.5,pick(AWNINGC),pick(AWNINGC));
-    for(var bn=0; bn<2; bn++){ var bq=LP(f,(bn?1:-1)*(bw/2-0.25),zf-0.22); BOX(bq[0],y+1.3,bq[1],0.7,2.3,0.04,f.ry,pick(CLOTHC),'cloth'); }
+    for(var bn=0; bn<2; bn++){ var bq=LP(f,(bn?1:-1)*(bw/2-0.25),zf-0.22); var tc=pick(CLOTHC); BOX(bq[0],y+1.3,bq[1],0.7,2.3,0.04,f.ry,KIT_LOOK?0xffffff:tc,KIT_LOOK?'tapestry':'cloth'); }
     name = 'Common room';
   }
   else { /* shrine: a small tajug on a plinth, cool light */
@@ -255,7 +256,7 @@ function buildDwelling(S){
     FURNISH('br_h_offering_stone', -1.3, 0.3, zf-0.7, 0, { seed:S.id%3+1 });
     /* prayer flags from the roof to the lot's front corners */
     [-1,1].forEach(function(sg){ var a=L3(f,0,y+3.4,sc+sw*0.3), b=L3(f,sg*(bw/2),y+2.4,zf); ROD(a[0],a[1],a[2],b[0],b[1],b[2],0.012,ROPEC[0],'rope');
-      for(var q=1;q<5;q++){ var t=q/5; BOX(mix(a[0],b[0],t),mix(a[1],b[1],t)-0.34,mix(a[2],b[2],t),0.3,0.32,0.02,yawOf(b[0]-a[0],b[2]-a[2]),CLOTHC[(q+S.id)%CLOTHC.length],'cloth'); } });
+      for(var q=1;q<5;q++){ var t=q/5; BOX(mix(a[0],b[0],t),mix(a[1],b[1],t)-0.34,mix(a[2],b[2],t),0.3,0.32,0.02,yawOf(b[0]-a[0],b[2]-a[2]),KIT_LOOK?shade(CLOTHC[(q+S.id)%CLOTHC.length],0.55):CLOTHC[(q+S.id)%CLOTHC.length],KIT_LOOK?'flag':'cloth'); } });
     name = 'Shrine';
   }
   /* a thatch lid on the low shabby ones; a real roof where the plate above is gone */
@@ -304,8 +305,8 @@ TOWERS.forEach(function(T){
         }
         if(!top && chance(F.k>=25 ? 0.5*use+0.1 : 0.22*use)){                   /* a banner / drying hide over the girder */
           var bx=rr(sg[0]+1,sg[1]-1), bl=rr(2.0,3.4), bw2=rr(1.0,1.6), bp=LP(f,bx,0.07), bc=F.k>=25?CLOTHC[(T.id*2+si)%CLOTHC.length]:pick(CLOTHC);
-          BOX(bp[0],y-0.05-bl,bp[1],bw2,bl,0.04,f.ry,bc,'cloth'); fBOX(f,bx,0.07,y-0.08,bw2+0.3,0.08,0.08,TIMBERC[0],'timber');
-          if(F.k>=25) BOX(bp[0]+f.fx*0.03,y-0.05-bl*0.62,bp[1]+f.fz*0.03,bw2*0.45,bw2*0.45,0.03,f.ry,ORNATEC[1],'cloth');
+          BOX(bp[0],y-0.05-bl,bp[1],bw2,bl,0.04,f.ry,KIT_LOOK?0xffffff:bc,KIT_LOOK?(F.k>=25?'banner':'blanket'):'cloth'); fBOX(f,bx,0.07,y-0.08,bw2+0.3,0.08,0.08,TIMBERC[0],'timber');
+          if(F.k>=25 && !KIT_LOOK) BOX(bp[0]+f.fx*0.03,y-0.05-bl*0.62,bp[1]+f.fz*0.03,bw2*0.45,bw2*0.45,0.03,f.ry,ORNATEC[1],'cloth');
           ARCH.banners++;
         }
       });
@@ -330,10 +331,10 @@ ROOSTS.forEach(function(R){
   if(R.id%2===0) FURNISH('br_h_water_butt', sd*(hw-0.7), 0, -1.2, 0, { v:0 });
   /* perch wrapping: rope lashings along the launch beam, a rider's pennant at its tip */
   for(var w=0;w<6;w++) fBOX(f,0,-0.9+w*0.78,y-0.005,0.64,0.5,0.22,ROPEC[w%2],'plank');
-  var pq=LP(f,0.34,3.2); BOX(pq[0],y-1.15,pq[1],0.05,1.3,0.55,f.ry,CLOTHC[(R.plat.id*2+R.id)%CLOTHC.length],'cloth');
+  var pq=LP(f,0.34,3.2); BOX(pq[0],y-1.15,pq[1],0.05,1.3,0.55,f.ry,KIT_LOOK?shade(CLOTHC[(R.plat.id*2+R.id)%CLOTHC.length],0.5):CLOTHC[(R.plat.id*2+R.id)%CLOTHC.length],KIT_LOOK?'flag':'cloth');
   /* tether ring + rope, stall plaque, the odd lantern on a back post */
   fROD(f,-sd*0.9,y+0.05,-1.6,-sd*(hw-0.3),y+1.2,-0.4,0.025,ROPEC[1],'rope');
-  fBOX(f,sd*(hw-0.02),-0.15,y+2.3,0.5,0.35,0.06,PLANKC[0],'plank');
+  fBOX(f,sd*(hw-0.02),-0.15,y+2.3,0.5,0.35,0.06,KIT_LOOK?0xffffff:PLANKC[0],KIT_LOOK?'plaque':'plank');
   if(R.id%3===1){ var lq=LP(f,sd*(hw-0.35),-7.6); lamp(lq[0],y+3.0,lq[1],0.6,10,false,0.5); }
   ARCH.roosts++;
   REGISTER({ name:'Roost stall '+(R.id+1), kind:'roost', label:'Roost stall — perch, tack and trough', x:R.x-R.ox*3.2, z:R.z-R.oz*3.2, y:y, h:6, r:4.8, plat:R.plat.id });
@@ -475,7 +476,7 @@ PLOTS.forEach(function(p){
       else if(v===2){ for(var t2=-len/2+1; t2<len/2; t2+=2.2){ var q2=LP(f,X,t2);
           for(var k=0;k<3;k++){ var a=k*2.1+t2; ROD(q2[0]+Math.cos(a)*0.45,y,q2[1]+Math.sin(a)*0.45,q2[0],y+2.1,q2[1],0.025,TIMBERC[3],'timber'); }
           mCone('leafy',q2[0],y+0.15,q2[1],0.55,0.1,1.7,CROPC[(k+p.id)&3],5,t2); } }
-      else { fmBox('leafy',f,X,0,y+0.12,0.95,0.2,len-0.3,CROPC[3],true); for(var t3=-len/2+0.8; t3<len/2; t3+=1.7){ var q3=LP(f,X+rr(-0.3,0.3),t3); pod(q3[0],y+0.3,q3[1],rr(0.2,0.32),FRUITC[Math.round(t3+lx)&1?0:2]); } }
+      else { fmBox('leafy',f,X,0,y+0.12,0.95,0.2,len-0.3,CROPC[3],true); for(var t3=-len/2+0.8; t3<len/2; t3+=1.7){ var q3=LP(f,X+rr(-0.3,0.3),t3); pod(q3[0],y+0.3,q3[1],rr(0.2,0.32),FRUITC[Math.round(t3+lx)&1?0:2],KIT_LOOK?'gourd':'leafy'); } }
     });
     /* a tool lean-to / scarecrow at the back */
     var scx=rr(-Lx+2,Lx-2), scc=CLOTHC.indexOf(pick(CLOTHC)); FURNISH('br_h_scarecrow', scx, 0, -Lz+1.2, 0, { seed:scc+1 });
@@ -490,7 +491,7 @@ PLOTS.forEach(function(p){
       var q5=LP(f,lx2+rr(-0.6,0.6),lz2+rr(-0.6,0.6)), th=rr(1.6,2.3), cr=rr(1.7,2.3), lc=PAL.leaf[v===1?1:3][(p.id+Math.round(ox+oz+3))%3];
       ROD(q5[0],y-0.1,q5[1],q5[0]+rr(-0.2,0.2),y+th+0.6,q5[1]+rr(-0.2,0.2),0.17,PAL.bark[3][1],'timber');
       bush(q5[0],y+th,q5[1],cr,cr*1.35,lc); bush(q5[0]+rr(-0.8,0.8),y+th+cr*0.5,q5[1]+rr(-0.8,0.8),cr*0.6,cr*0.9,shade(lc,0.1));
-      for(var pd=0;pd<5;pd++){ var pa=pd*1.3+ox; pod(q5[0]+Math.cos(pa)*cr*0.8,y+th+0.2+rr(0,0.5),q5[1]+Math.sin(pa)*cr*0.8,0.2,(v===2?FLOWERC:FRUITC)[pd%3]); } }
+      for(var pd=0;pd<5;pd++){ var pa=pd*1.3+ox; pod(q5[0]+Math.cos(pa)*cr*0.8,y+th+0.2+rr(0,0.5),q5[1]+Math.sin(pa)*cr*0.8,0.2,(v===2?FLOWERC:FRUITC)[pd%3],(KIT_LOOK&&v!==2)?'fruit':'leafy'); } }
     FURNISH('br_common_store', 1.8, 0, Lz-2.5, 0);                    /* the pickers' gourds and baskets */
     FURNISH('br_h_wall_ladder', -Lx+3, 0, 0.8, 0, { v:2 });           /* a picking ladder */
   } else if(p.kind==='garden'){
@@ -541,17 +542,18 @@ PLOTS.forEach(function(p){
     SECTOR('wall',P,rw-0.3,rw,a+dg,b-dg,fy,fy+wh,wc,{faces:'ios',step:2.2,colInner:shade(wc,-0.25)});
     for(var ws=0, wn=Math.ceil((b-a-2*dg)*rw/1.2); ws<wn; ws++){ var wa0=mix(a+dg,b-dg,ws/wn), wa1=mix(a+dg,b-dg,(ws+1)/wn), wp0=pt(rw-0.15,wa0,0), wp1=pt(rw-0.15,wa1,0);
       gwSeg(wp0[0],wp0[2],wp1[0],wp1[2],0.34,fy,fy+wh,'wall'); }
-    SECTOR('timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy,fy+0.55,deep,{faces:'tio',step:2.2});
-    SECTOR('timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy+3.3,fy+3.55,red,{faces:'tbio',step:2.2});
+    /* the library look: a bone-inlaid sill band and a lacquer-and-gilt frieze (patterns/beast-riders) */
+    SECTOR(KIT_LOOK?'inlay':'timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy,fy+0.55,KIT_LOOK?0xffffff:deep,{faces:'tio',step:2.2});
+    SECTOR(KIT_LOOK?'trim':'timber',P,rw-0.34,rw+0.06,a+dg,b-dg,fy+3.3,fy+3.55,KIT_LOOK?0xffffff:red,{faces:'tbio',step:2.2});
     SECTOR('wall',P,rw-0.3,rw,a-dg,a+dg,fy+3.3,fy+wh,shade(wc,-0.1),{faces:'bio',step:2.2});
-    SECTOR('timber',P,rw-0.36,rw+0.1,a-dg,a+dg,fy+3.1,fy+3.45,gilt,{faces:'tbio',step:2.2});
+    SECTOR(KIT_LOOK?'trim':'timber',P,rw-0.36,rw+0.1,a-dg,a+dg,fy+3.1,fy+3.45,KIT_LOOK?0xffffff:gilt,{faces:'tbio',step:2.2});
     /* windows: five tall panes per quadrant */
     for(var w=0;w<5;w++){ var wa=mix(a+dg,b-dg,(w+0.5)/5), p=pt(rw,wa,fy+2.1), nx=Math.cos(wa), nz=Math.sin(wa);
       BOX(p[0],fy+1.1,p[2],0.14,2.0,1.15,-wa,deep,'timber'); pane(p[0]+nx*0.03,fy+2.1,p[2]+nz*0.03,nx,nz,0.85,1.7,false); }
     /* door posts, leaves standing open, banners, braziers */
     [-1,1].forEach(function(sd){
       var pp=pt(rw+0.05,a+sd*dg,fy); carvedPost(pp[0],fy,pp[2],3.3,0.36,red,gilt);
-      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,'plank'); gwBox(lf[0],fy,lf[2],1.4,3.0,0.1,-a,'door');
+      var lf=pt(rw+0.75,a+sd*(dg+0.02),fy); BOX(lf[0],fy,lf[2],1.4,3.0,0.1,-a,deep,KIT_LOOK?'lacquer':'plank');   /* lacquered door leaves in the library look */ gwBox(lf[0],fy,lf[2],1.4,3.0,0.1,-a,'door');
       /* a banner pole either side of the door and a brazier on a post below the plinth: catalog pieces */
       var bn=pt(R-0.55,a+sd*3.0/R,fy), ba=a+sd*3.0/R; FURNISHW('br_h_banner_pole', bn[0], fy, bn[2], Math.atan2(Math.cos(ba),Math.sin(ba)), { v:0, seed:(i%2)+1 });
       var bz=pt(R+2.0,a+sd*2.7/R,y); nlLampAdd(bz[0],y+2.0,bz[2],1.3,20,false); ARCH.lamps++; FURNISHW('br_h_post_brazier', bz[0], y, bz[2], 0, { noLight:true });
@@ -562,7 +564,7 @@ PLOTS.forEach(function(p){
   for(var i=0;i<NP;i++){ var a=(i+0.5)/NP*TAU; if(nearDoor(a,2.4/rc)) continue; var p=pt(rc,a,fy);
     carvedPost(p[0],fy,p[2],4.4,0.34,(i%2)?red:deep,gilt);
     var a2=(i+1.5)/NP*TAU; if(!nearDoor(a2,2.4/rc) && !nearDoor((a+a2)/2,2.0/rc)) SECTOR('timber',P,rc-0.06,rc+0.06,a,a2,fy+0.85,fy+0.97,verd,{faces:'tbio',step:30}); }
-  SECTOR('timber',P,rc-0.2,rc+0.2,0,TAU,fy+4.4,fy+4.75,red,{faces:'tbio',step:3});
+  SECTOR(KIT_LOOK?'trim':'timber',P,rc-0.2,rc+0.2,0,TAU,fy+4.4,fy+4.75,KIT_LOOK?0xffffff:red,{faces:'tbio',step:3});
   /* ---- the roof ---- */
   var sh=[SHINGLEC[1],SHINGLEC[0],SHINGLEC[3]], yy=fy+4.7;
   function ribs(rb,yb,rt,yt,n,col,tip){ for(var i=0;i<n;i++){ var a=i/n*TAU+doors[0], b0=pt(rb+0.1,a,yb+0.12), b1=pt(rt,a,yt+0.15);

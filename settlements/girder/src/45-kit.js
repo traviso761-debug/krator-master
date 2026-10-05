@@ -308,14 +308,14 @@ function emitBuckets(){
     if(!B.list.length) continue;
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
-    var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff })
+    var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, map: fm.lib ? fm.tex : null })   /* a library panel on an unlit family: the lantern paper */
             : famMaterial(fm, { alphaTest: fm.alpha ? 0.35 : 0, side: (fm.alpha || B.shape==='cyl6') ? THREE.DoubleSide : THREE.FrontSide });
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
         mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); if(KIT_LOOK) applyContactAO(sh, true); applyNightGlow(sh); };
         mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : '') + (KIT_LOOK ? '|ao' : ''); };
-      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
+      })(!!fm.tex && !(fm.panel && fm.lib), !!FAM_SWAY[B.fam], fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size; a panel family keeps the box's own 0..1 face UVs */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;

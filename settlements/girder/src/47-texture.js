@@ -190,6 +190,15 @@ function gtexKind(fam, S, fn, opt){
     var d = GTEX[fam];
     fm.tex = GTEX_CANVAS[fam] ? texFinish(GTEX_CANVAS[fam]()) : texFinish(texFill(d.size, TEX.fn(d)), d.aniso);
   });
+  /* the Beast Rider dressing families (05-palette.js, after `proc`): the library set where it is packed, else the
+     procedural map of the family they name; an unlit panel (the lantern paper) keeps no map under ?mat=proc */
+  Object.keys(FAMMAT).forEach(function(fam){
+    var fm = FAMMAT[fam]; if(!fm.proc && !(fm.basic && fm.panel)) return;
+    var L = KMAT.mode === 'lib' ? KMAT.packed('girder', fam) : null;
+    if(L){ gtexLibrary(fm, L); return; }
+    fm.panel = false;
+    if(fm.proc){ var p = FAMMAT[fm.proc]; fm.tex = p.tex; fm.scale = p.scale.slice(); }
+  });
 })();
 /* a library family: its three maps, repeating at the set's own tile size over UVs laid out in FAMMAT.scale metres */
 function gtexLibrary(fm, L){

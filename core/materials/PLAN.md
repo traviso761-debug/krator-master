@@ -975,6 +975,13 @@ What the first delivery taught:
   with the break-up. The spider web stays procedural (it reads fine).
   *2026-10-05:* the generated `bark.ironbark` (12 x 18 m) and `bark.baobab` (8 x 8 m) replace the willow and the blue gum,
   and the dragonfly wing is the optional `flywing` card (`wing.dragonfly`, mapped by each wing's bounding box).
+  *2026-10-05, the full Beast Rider set (89 families; settlements/girder/KNOWN_ISSUES.md lists each use):* meshes without UVs (the catalog
+  furniture, the mounts, the millipedes, the gatepods) take a library set as a **detail map** (`48-detail.js`: triplanar projection of the
+  mesh's own, pre-skinning position; the set's mean brightness divided back out, so the vertex colours keep theirs); a mount packs four sets
+  into a 2x2 atlas chosen per colour (`FlyGeo.slots`), still one draw call. The village dressing takes new FAMMAT families, a **panel**
+  family putting a whole sheet on each box face (banners, hides, plaques). The extra cards (bromeliad, screwpine, moss, maize, flowers,
+  young mahogany, nets) are one merged mesh from their own generator (`64-cards.js`). `pack.py` takes pattern sheets (`patterns/...` as a
+  family's `lib`) and a per-family `size`. Godot: the detail map is StandardMaterial3D's triplanar mode; the atlas quadrant a `CUSTOM0` value.
 - **Cards** (alpha cut-outs: `record.kind 'card'`, written by `tools/textures/cards.py`, batch
   `girder-cards-2026-10.json`): `card.ironbark`, `card.ghostwood`, `card.prismgum`, `card.baobab` (the four species'
   leaf clumps), `card.ghostwood-flower` (the racemes, full colour), `card.fern` and `card.broadleaf` (two cells of the

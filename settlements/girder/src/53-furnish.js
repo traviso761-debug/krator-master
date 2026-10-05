@@ -58,6 +58,15 @@ var gfEmitKit = emitBuckets;
 emitBuckets = function(){ gfFlush(); return gfEmitKit(); };
 /* the catalog's colours are sRGB values; Girder's fabric is linear (45-kit converts every colour): the
    furniture meshes keep their 8-bit vertex colours and linearise them in the vertex shader */
+/* the furniture's render families take a library detail map (48-detail.js; materials.json f_<family>) by triplanar
+   projection of their world positions; gfMatHooks(mt, key) sets it up with the sRGB hook and the night glow */
+function gfMatHooks(mt, key){
+  var fam = mt.userData.family || 'plain', dh = GDET.hook('f_' + fam, mt);
+  if(mt.isMeshBasicMaterial){
+    mt.onBeforeCompile = dh ? function(sh){ gfSRGBHook(sh); dh(sh); } : gfSRGBHook;
+    if(dh) mt.customProgramCacheKey = function(){ return key + '|det'; };
+  } else nlMaterial(mt, key + (dh ? '|det' : ''), dh ? function(sh){ gfSRGBHook(sh); dh(sh); } : gfSRGBHook);   /* + the lamp pools at night */
+}
 function gfSRGBHook(sh){
   sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
     '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
@@ -86,8 +95,7 @@ function gfFlush(){
   g.children.slice().forEach(function(m){
     if(m.material.map){ var k=m.material.uuid; (decals[k]||(decals[k]={ mt:m.material, geos:[] })).geos.push(gfDecal(m)); g.remove(m); return; }
     m.geometry.computeBoundingSphere();
-    if(m.material.isMeshBasicMaterial) m.material.onBeforeCompile = gfSRGBHook;
-    else nlMaterial(m.material, 'furn|'+m.material.userData.family, gfSRGBHook);   /* + the lamp pools at night */
+    gfMatHooks(m.material, 'furn|'+m.material.userData.family);
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;
   });
   Object.keys(decals).forEach(function(k){ var D=decals[k], m=new THREE.Mesh(gfMergeGeos(D.geos), gfDecalMaterial(D.mt));

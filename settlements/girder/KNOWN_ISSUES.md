@@ -16,10 +16,30 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       (`FlyGeo` took an optional UV for this; only the wing mesh carries UVs) and skips the hand-built vein quads while the sheet is set. A close-up of a dragonfly in a headless
       render shows the vein net and the dark tip spot on a translucent wing. The sheet is a tight crop stretched square (cards.py anchor `tight`), so it loses vertical
       resolution, and the fore and hind wings share one image.
-- [ ] (2026-10-05) The Beast Rider sets delivered 2026-10-05 (PLAN.md, "Delivered 2026-10-05") are in the library but Girder has not adopted them: the catalog
-      furniture, lamp posts, lanterns, banners and fruit are still flat vertex colours. `wood.lamppost`, `wood.mahogany`, `bone.*`, `hide.*`, `fibre.*`,
-      `lantern-*` and the Beast Rider patterns are ready to map; the quetzal, bat, archaeopteryx, spider and millipede bodies and membranes need the shader
-      mapping (box projection from the bind pose plus a per-triangle material id) because the FlyGeo bodies have no UVs.
+- [x] (2026-10-05) The Beast Rider sets are in Girder (materials.json: 89 families). How each is used:
+      - 48-detail.js: a DETAIL map by triplanar projection for meshes with no UVs, its mean brightness divided back out so the vertex colours keep their
+        brightness. The catalog furniture's render families (f_<family>: wood.carved, wood.lamppost, wood.mahogany, fibre.rope, cloth.silk, hide.fur.brown,
+        lantern-horn on the glow, leaf.understorey, rock face, thatch, earth.floor.packed, terracotta, metal.iron.pitted, fruit.skin.amber on food, bone.skull,
+        basket-coil on wicker, metal.gold), the gatepods (fruit.husk), the draught millipedes (chitin.millipede) and the lift cages (fibre.cane).
+      - The mounts: FlyGeo.slots maps each colour to a quadrant of a per-species 2x2 atlas (vertex attribute aDetS), sampled by triplanar projection of the
+        BIND-POSE position, so the sheet rides on the flapping wing. Quetzal: hide.strider fuzz, membrane.pterosaur, the crest feathers, bone.horn; bat:
+        fur.bat, membrane.bat, bone.antler; archaeopteryx: the raptor feathers, organic.scale.terracotta; dragonfly: organic.chitin.iridescent, chitin.spider
+        legs (wings: wing.dragonfly); rider: the saddle blanket, leather, wood.lamppost lance, rope. One draw call per species, as before.
+      - Village dressing (new FAMMAT families; 05-palette.js): rawhides and big-cat pelts on the workshop frames, the clan emblem on the upper galleries'
+        banners and saddle blankets on the lower ones, claw tapestries in the common rooms, prayer flags and perch pennants (cloth-5), striped awnings, stall
+        plaques, lamp posts (wood.lamppost), carved posts (the totem sheet: the hall colonnade, pavilions, shrines), the hall's lacquer-and-gilt frieze (trim),
+        bone-inlaid sill band and lacquered door leaves, paper lanterns, reed floor mats in the pavilions, tar-sealed palisade stakes, orange-peel orchard
+        fruit, gourds on the crop rows, seed capsules on the overgrown ledges, moss cushions (fur.sloth) and mahogany bark on the sub-canopy trees.
+      - Cards: the undergrowth atlas's hanging-moss cell is card.vine; 64-cards.js adds bromeliads, screwpines and moss cushions round the hypertrees and
+        along the brook, young mahoganies, flowering shrubs outside the palisade, maize along the plot fences and cargo nets in every second roost stall
+        (its own generator: rnd is untouched).
+      Every switch is behind KIT_LOOK / KMAT.mode, so ?mat=proc is the committed page. Not used in Girder: wax.tallow (no candle surface), the pennant sheet
+      (a row of flags against sky, not a texture), and of the older sets cloth-1 to cloth-4 and cloth-6, cloth.plain and cloth.canvas.
+- [ ] (2026-10-05) Girder's page is 12.5 MB (6.6 MB before): tex/ holds 89 packed families (8.5 MB). The new families are colour maps only and the
+      detail maps 256 px; the cards are 512 px with lossless alpha. Draw calls 91 of 110 (83 world families before the last nine). 256 px cards would save ~1 MB.
+- [ ] (2026-10-05) The detail maps' tile sizes and keep values (materials.json) are first guesses, judged only on headless close-ups: the dragonfly's chitin and the
+      archaeopteryx feathers read as coarse patches from 15 m; the atlases fall back to texture2D (seams at quadrant edges) on WebGL1. The flat rosette cards
+      (bromeliads, screwpines, moss) lie level and do not follow a slope, and cast no shadow.
 - [ ] (2026-10-05) `tools/textures/pack.py settlements/girder` takes about two minutes and rewrites tex/ even when nothing changed (the bytes came out identical this time).
 - [x] Library trees and the library look (2026-10-03): ghostwood and prism gum barks, the leaf mass on `leafy`, leaf
       and flower cards, two undergrowth cards, the break-up on every bark; fruit on the fruit-seller stalls and the

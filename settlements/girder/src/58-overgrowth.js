@@ -30,9 +30,10 @@ function cone(x,yb,z,rb,rt,h,col,seg,rot){
 }
 function bush(x,y,z,r,h,col){ cone(x,y,z,r*0.7,r,h*0.4,col,6,x); cone(x,y+h*0.4,z,r,0,h*0.6,shade(col,0.08),6,x+0.5); }
 function pod(x,y,z,r,col){
+  var fam = (KIT_LOOK && FRUITC.indexOf(col) >= 0) ? 'capsule' : 'leafy';   /* the library look: seed-capsule skin on the fruit */
   var t=[x,y+r*1.3,z], b=[x,y-r*0.3,z], q=[[x+r,y+r*0.5,z],[x,y+r*0.5,z+r],[x-r,y+r*0.5,z],[x,y+r*0.5,z-r]];
   for(var i=0;i<4;i++){ var p0=q[i], p1=q[(i+1)%4], mx=(p0[0]+p1[0])/2-x, mz=(p0[2]+p1[2])/2-z;
-    oTri('leafy',p0,p1,t,col,mx,0.5,mz); oTri('leafy',p0,p1,b,shade(col,-0.2),mx,-0.5,mz); }
+    oTri(fam,p0,p1,t,col,mx,0.5,mz); oTri(fam,p0,p1,b,shade(col,-0.2),mx,-0.5,mz); }
 }
 function FRM(x,z,fx,fz){ return { x:x, z:z, fx:fx, fz:fz, rx:-fz, rz:fx }; }
 function L3(f,lx,y,lz){ return [f.x+f.rx*lx+f.fx*lz, y, f.z+f.rz*lx+f.fz*lz]; }

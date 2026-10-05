@@ -503,9 +503,11 @@ var flwN=treeFlw.count, podN=treePod.count;
 var flwTris=treeEmit(treeFlw, treeRacemeGeo(),
   nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, map:TREE_FLOWERTEX, alphaTest:0.4, side:THREE.DoubleSide }), 'treeflower',
              treeFoliageHook({ aN:true, irid:false, swayW:'(-position.y)', swayA:0.9 }), 'vTreeWP'), 'Ghostwood flower racemes')||0;
+/* the gatepods carry the library's velvet pod husk as a detail map (48-detail.js; materials.json `pod`) */
+var podMat=new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true }), podDet=GDET.hook('pod', podMat),
+    podSway=treeFoliageHook({ aN:false, irid:false, swayW:'(-position.y)', swayA:0.5 });
 var podTris=treeEmit(treePod, treePodGeo(),
-  nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true }), 'treepod',
-             treeFoliageHook({ aN:false, irid:false, swayW:'(-position.y)', swayA:0.5 }), 'vTreeWP'), 'Gatepods (Gate baobab fruit)', { cast:true })||0;
+  nlMaterial(podMat, 'treepod'+(podDet?'|det':''), podDet ? function(sh){ podSway(sh); podDet(sh); } : podSway, 'vTreeWP'), 'Gatepods (Gate baobab fruit)', { cast:true })||0;
 
 /* ------------------------------------------------------------ the far forest: impostors */
 (function(){

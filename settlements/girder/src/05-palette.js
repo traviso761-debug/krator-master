@@ -126,8 +126,33 @@ var FAMMAT = {
   leafy  : { tex:null, scale:[3.0,3.0] },          /* solid understorey blobs, crops */
   bark0  : { tex:null, scale:[10,20] }, bark1:{ tex:null, scale:[10,20] },
   bark2  : { tex:null, scale:[12,24] }, bark3:{ tex:null, scale:[14,14] },
-  glowmat: { tex:null, scale:[1,1], basic:true }   /* unlit emissive bits */
+  glowmat: { tex:null, scale:[1,1], basic:true },  /* unlit emissive bits */
+  /* Beast Rider dressing from the library (materials.json; 2026-10). A PANEL family puts one whole sheet on each box
+     face (a hide, a banner, a plaque); the others tile in world units like the families above. Each names the family
+     whose procedural map it borrows under ?mat=proc (`proc`), so the old look keeps a texture. */
+  hidep  : { tex:null, scale:[1.0,1.0], panel:true, proc:'cloth' },     /* drying rawhides */
+  pelt   : { tex:null, scale:[1.2,1.2], proc:'cloth' },                 /* big-cat pelts among them */
+  banner : { tex:null, scale:[1.2,2.4], panel:true, proc:'cloth' },     /* the clan emblem on the upper galleries */
+  tapestry:{ tex:null, scale:[0.8,2.3], panel:true, proc:'cloth' },     /* claw hangings: common rooms */
+  blanket: { tex:null, scale:[1.2,2.4], panel:true, proc:'cloth' },     /* saddle blankets airing over the girders */
+  flag   : { tex:null, scale:[0.6,0.6], proc:'cloth' },                 /* prayer flags, perch pennants */
+  awning : { tex:null, scale:[2.0,2.0], proc:'cloth' },                 /* striped stall awnings */
+  plaque : { tex:null, scale:[0.5,0.35], panel:true, proc:'plank' },    /* roost-stall plaques */
+  post   : { tex:null, scale:[0.8,1.0], proc:'timber' },                /* lamp posts */
+  totem  : { tex:null, scale:[0.4,1.2], proc:'timber' },                /* carved posts: the hall's colonnade, pavilions, shrines */
+  trim   : { tex:null, scale:[1.2,0.35], proc:'timber' },               /* the hall's lacquer and gilt bands */
+  inlay  : { tex:null, scale:[1.1,0.55], proc:'timber' },               /* the hall's bone-inlaid sill band */
+  lantern: { tex:null, scale:[1,1], basic:true, panel:true },           /* lantern panels: unlit, paper over the glow */
+  fruit  : { tex:null, scale:[0.3,0.3], proc:'leafy' },                 /* orchard fruit: orange peel */
+  gourd  : { tex:null, scale:[0.6,0.6], proc:'leafy' },                 /* gourds on the crop rows */
+  capsule: { tex:null, scale:[0.4,0.4], proc:'leafy' },                 /* seed capsules on the overgrown ledges */
+  mossy  : { tex:null, scale:[1.2,1.2], proc:'leafy' },                 /* moss cushions on logs and boulders */
+  jbark  : { tex:null, scale:[3.0,4.0], proc:'bark0' },                 /* the sub-canopy trees' flaky bark */
+  mat    : { tex:null, scale:[1.5,1.5], proc:'plank' },                 /* woven reed floor mats */
+  lacquer: { tex:null, scale:[1.4,3.0], proc:'plank' },                 /* lacquered door leaves */
+  tarred : { tex:null, scale:[1.0,2.0], proc:'timber' }                 /* tar-sealed palisade stakes */
 };
+var FAM_SWAY = { cloth:1, flag:1, awning:1, banner:1, tapestry:1, blanket:1, hidep:1, pelt:1 };   /* families the cloth sway moves */
 
 var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000,
   /* the catalog furniture's OWN budget (53-furnish.js outdoor pieces + 56-interiors.js rooms), counted apart from

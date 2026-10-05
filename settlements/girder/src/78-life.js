@@ -288,7 +288,9 @@ function lifeHook(legPiv, armPiv){
 }
 function lifeMesh(geo, count, key, legPiv, armPiv){
   var mat = new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true });
-  nlMaterial(mat, 'life'+key, lifeHook(legPiv, armPiv));
+  /* the millipedes' chitin and the lift cages' cane come from the library as detail maps (48-detail.js; life_<key>) */
+  var lh = lifeHook(legPiv, armPiv), dh = GDET.hook('life_'+key, mat);
+  nlMaterial(mat, 'life'+key+(dh?'|det':''), dh ? function(sh){ lh(sh); dh(sh); } : lh);
   var g = geo;
   var m = new THREE.InstancedMesh(g, mat, count);
   var A = { anim:new Float32Array(count*4), garb:new Float32Array(count*3), skin:new Float32Array(count*3), hair:new Float32Array(count*3) };

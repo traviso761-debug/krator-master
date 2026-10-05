@@ -27,7 +27,7 @@ var FLY_CAP = 140, FLY_RCAP = 140;
 var flyTmpC = new THREE.Color();
 function flyCol(hex, f){ flyTmpC.set(f ? shade(hex, f) : hex).convertSRGBToLinear(); return [flyTmpC.r, flyTmpC.g, flyTmpC.b]; }
 
-function FlyGeo(centre){ this.p = []; this.n = []; this.c = []; this.b = []; this.uv = []; this.mx = 1; this.tris = 0; this.cb = centre || {}; }
+function FlyGeo(centre){ this.p = []; this.n = []; this.c = []; this.b = []; this.uv = []; this.s = []; this.slots = null; this.mx = 1; this.tris = 0; this.cb = centre || {}; }
 FlyGeo.prototype.tri = function(a, b, c, col, bone, uv){   /* uv: optional [[u,v],[u,v],[u,v]] for a, b, c */
   var m = this.mx; if(m < 0){ var t = b; b = c; c = t; if(uv){ t = uv[1]; uv = [uv[0], uv[2], t]; } }
   var ax = a[0]*m, bx = b[0]*m, cx = c[0]*m;
@@ -35,7 +35,8 @@ FlyGeo.prototype.tri = function(a, b, c, col, bone, uv){   /* uv: optional [[u,v
   var nx = uy*vz-uz*vy, ny = uz*vx-ux*vz, nz = ux*vy-uy*vx, L = Math.sqrt(nx*nx+ny*ny+nz*nz) || 1;
   nx /= L; ny /= L; nz /= L;
   this.p.push(ax, a[1], a[2], bx, b[1], b[2], cx, c[1], c[2]);
-  for(var i=0;i<3;i++){ this.uv.push(uv ? uv[i][0] : 0, uv ? uv[i][1] : 0); this.n.push(nx, ny, nz); this.c.push(col[0], col[1], col[2]); this.b.push(bone+1, this.cb[bone] ? 1 : m); }
+  var sl = (this.slots && this.slots.has(col)) ? this.slots.get(col) : -1;   /* the detail atlas quadrant this colour wears (48-detail.js), -1 none */
+  for(var i=0;i<3;i++){ this.s.push(sl); this.uv.push(uv ? uv[i][0] : 0, uv ? uv[i][1] : 0); this.n.push(nx, ny, nz); this.c.push(col[0], col[1], col[2]); this.b.push(bone+1, this.cb[bone] ? 1 : m); }
   this.tris++;
 };
 FlyGeo.prototype.quad = function(a, b, c, d, col, bone){ this.tri(a, b, c, col, bone); this.tri(a, c, d, col, bone); };
@@ -78,6 +79,7 @@ FlyGeo.prototype.both = function(fn){ this.mx = 1; fn(this); this.mx = -1; fn(th
 FlyGeo.prototype.build = function(withUV){
   var g = new THREE.BufferGeometry();
   if(withUV) g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
+  if(this.slots) g.setAttribute('aDetS', new THREE.Float32BufferAttribute(this.s, 1));
   g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(this.c, 3));
@@ -140,6 +142,7 @@ var flyBones = [], flyFold = [], flyGeoms = [], flyTris = [];
   /*            neck  headP headY wSw   wFlap wTw  oSw   oFlap leg */
   flyFold[FLY_Q] = [-0.85, 1.05, 0,   0.30,-1.22, 0,   0.35, 2.50,-1.25, 0,0,0,0,0,0,0];
   var g = new FlyGeo({0:1,1:1,2:1});
+  g.slots = new Map([[body,0],[belly,0],[dark,0],[mem,1],[mem2,1],[crest,2],[beak,3]]);   /* detail atlas (FLY_DETAIL): fuzz, membrane, crest feathers, horn */
   g.ell([0,-0.05,-0.35], [0.42,0.40,0.98], body, -1, 6, 4, belly);
   g.limb([0,-0.05,-1.25], [0,-0.02,-1.75], 0.12, 0.01, body, -1, 3);
   g.limb([0,0.12,0.40], [0,0.30,3.32], 0.21, 0.13, body, 0, 4);
@@ -174,6 +177,7 @@ var flyBones = [], flyFold = [], flyGeoms = [], flyTris = [];
   /*            head headY -   wSw  wFlap wTw mFlap oSw  oFlap leg */
   flyFold[FLY_B] = [-0.6, 0,   0,  0.25,-1.30, 0, -1.25, 1.10,-0.70, 0, 0,0,0,0,0,0];
   var g = new FlyGeo({0:1,1:1,2:1});
+  g.slots = new Map([[fur,0],[fur2,0],[mem,1],[mem2,1],[ear,1],[bone,2]]);   /* detail atlas: fur, membrane, bone */
   g.ell([0,0,-0.30], [0.45,0.42,0.88], fur, -1, 6, 4);
   g.ell([0,0.06,0.28], [0.54,0.47,0.46], fur2, -1, 6, 3);
   g.ell([0,0.20,0.98], [0.28,0.27,0.36], fur, 1, 5, 3);
@@ -211,6 +215,7 @@ var flyBones = [], flyFold = [], flyGeoms = [], flyTris = [];
   /*            neck headY tailP wSw  wFlap  wTw oSw   oFlap leg   tailY */
   flyFold[FLY_A] = [-0.35, 0,  0.30, 1.25,-0.38, 0.15, 0.22, 0.10,-1.07, 0, 0,0,0,0,0,0];
   var g = new FlyGeo({0:1,1:1,2:1,9:1});
+  g.slots = new Map([[blue,0],[blue2,0],[rust,0],[rust2,0],[cream,0],[skin,1]]);   /* detail atlas: feathers, scaled skin */
   g.ell([0,0,-0.35], [0.40,0.42,0.92], blue, -1, 6, 4, cream);
   g.limb([0,0.12,0.35], [0,0.58,1.17], 0.22, 0.13, blue, 0, 4);
   g.ell([0,0.64,1.36], [0.17,0.17,0.29], blue2, 1, 5, 3);
@@ -263,6 +268,7 @@ var flyWingGeom, flyWingTris;
   /*            abd  abd2 legs  fw hw fwg hwg headY */
   flyFold[FLY_D] = [-0.12, -0.10, -0.75, 0.04, -0.04, 0.04, -0.04, 0, 0,0,0,0,0,0,0,0];
   var g = new FlyGeo({0:1,1:1,7:1});
+  g.slots = new Map([[teal,0],[teal2,0],[blu,0],[blu2,0],[legc,1]]);   /* detail atlas: iridescent chitin, bristled legs */
   g.ell([0,0,0.30], [0.50,0.56,0.82], teal, -1, 6, 4, blu);
   g.ell([0,0.05,1.28], [0.36,0.32,0.30], teal2, 7, 5, 3);
   g.limb([0,-0.10,1.5], [0,-0.18,1.78], 0.16, 0.06, legc, 7, 3);
@@ -310,6 +316,7 @@ var flyWingGeom, flyWingTris;
     { p:LB, a:[0,0,0], par:8, k:1 }, { p:LT, a:Y, par:5 },     /* lance: carried by the rider (parent = his translate), so it leaves the saddle with him */
     { p:O, a:X, par:10, k:2 }, { p:O, a:Y, par:7, k:2 }, { p:O, a:[0,0,0], par:-1, k:1 }, { p:O, a:X, par:9 } ];
   var g = new FlyGeo({0:1,1:1,5:1,6:1,7:1,8:1,9:1,10:1});
+  g.slots = new Map([[blanket,0],[pennon,0],[leather,1],[leather2,1],[dark,1],[wood,2],[rope,3]]);   /* detail atlas: saddle blanket, leather, lance wood, rope */
   /* saddle, blanket, bedroll, reins (no bone: stay on the beast) */
   g.box([0,-0.08,0], [0.50,0.16,0.80], leather, -1);
   g.box([0,0.08,-0.42], [0.46,0.26,0.10], leather2, -1);
@@ -602,10 +609,15 @@ function flyMakeMesh(sp, geom, cap, mat, share){
   m.count = 1; scene.add(m);
   return m;
 }
-for(var flyI=0; flyI<5; flyI++){
+/* library detail maps per species (48-detail.js; materials.json): four families in one atlas, a quadrant per colour (FlyGeo.slots) */
+var FLY_DETAIL = [ ['fly_q_fuzz','fly_q_membrane','fly_q_crest','fly_q_horn'], ['fly_b_fur','fly_b_membrane','fly_b_bone',null],
+                   ['fly_a_feather','fly_a_scale',null,null], ['fly_d_chitin','fly_d_legs',null,null], ['fly_r_blanket','fly_r_leather','fly_r_wood','fly_r_rope'] ];
+for(var flyI=0; flyI<5; flyI++) (function(flyI){
+  var mat = new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide }), sk = flySkinHook(flyBones[flyI]);
+  var dA = (typeof GDET !== 'undefined') ? GDET.atlasHook(GDET.atlas(FLY_DETAIL[flyI]), mat) : null;
   flyMesh[flyI] = flyMakeMesh(flyI, flyGeoms[flyI], flyI === FLY_R ? FLY_RCAP : FLY_CAP,
-    nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide }), 'fly'+flyI, flySkinHook(flyBones[flyI])));
-}
+    nlMaterial(mat, 'fly'+flyI+(dA?'|det':''), dA ? function(sh){ sk(sh); dA(sh); } : sk));
+})(flyI);
 flyWingMesh = flyMakeMesh(FLY_D, flyWingGeom, FLY_CAP,
   nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide, transparent:true, opacity:FLY_WINGTEX ? 0.9 : 0.55, depthWrite:false, map:FLY_WINGTEX }), 'flyWing' + (FLY_WINGTEX ? 'Tex' : ''), flySkinHook(flyBones[FLY_D])), FLY_D);
 flyWingMesh.renderOrder = 3;
