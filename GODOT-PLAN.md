@@ -324,7 +324,10 @@ path, and a GPU and a CPU load give the same placement hash.
   a `StandardMaterial3D` or one of the library shaders.
 - **The shader library.** `core/godot/shaders/`: `atmos.gdshaderinc` (already specified), foliage card, bark,
   animated fauna body, world-unit UV (triplanar or world-space UV: `vWorldUV` is [G native] in Godot), the
-  flag, the glass Fresnel, the water. Each three.js hook in `core/` names the shader it corresponds to.
+  flag, the glass Fresnel, the water, `breakup` (world-space macro variety: shifted copy, brightness, roughness,
+  grime), `coursing` (analytic ashlar and brick joints: no texture repeat, no mip smear). A detail normal is
+  **not** a shader: it is `StandardMaterial3D`'s `detail_*` fields, fed from the record's `detail` field
+  (`core/materials/PLAN.md`, "From spiderbench"). Each three.js hook in `core/` names the shader it corresponds to.
   Rules for writing it (checked against the godot-shaders-basics skill, thedivergentai/gd-agentic-skills, Oct 2026):
   - **`alphaTest` becomes alpha scissor, never alpha blending.** A cut-out (leaf card, frond, fence, wicker)
     maps to `ALPHA_SCISSOR_THRESHOLD` (or alpha hash for far cards that shimmer), so it keeps casting shadows and
