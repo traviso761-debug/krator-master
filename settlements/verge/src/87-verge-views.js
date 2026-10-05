@@ -31,6 +31,15 @@ const VIEWS=(function(){
   'The whole descent':look(-600,1500,900,-700,-40,300),
   'Krator from the canyon':look(-2200,-150,6,-2200+Math.sin(66*Math.PI/180)*1000,-150-Math.cos(66*Math.PI/180)*1000,420),
  };
+ // two live views: each looks for its subject when it is picked (the life layer moves; a fixed camera would miss it)
+ const o={},find=pred=>{for(const G of SIM.GROUPS){const base=((CLOCK.t-G.phase)%SIM.T+SIM.T)%SIM.T;
+   for(let c=0;c<G.copies;c++)for(const M of G.members){if(M.kind==='person')continue;SIM.memberPose(G,M,base+c*SIM.T,o);if(o.vis&&pred(G,o))return[o.x,o.y,o.z];}}return null;};
+ Object.defineProperty(V,'A caravan on the trail',{enumerable:true,get(){
+  const p=find((G,o)=>G.kind==='caravan'&&!o.dispersed&&o.y>60&&o.y<800&&VG.trailNear(o.x,o.z)&&VG.trailNear(o.x,o.z).d<4);
+  return p?[p[0]+22,p[1]+9,p[2]+14,p[0],p[1]+1,p[2]]:V['The switchback from below'];}});
+ Object.defineProperty(V,'A caravanserai yard',{enumerable:true,get(){
+  const p=find((G,o)=>o.dispersed&&o.pose!=='walk');
+  return p?[p[0]+26,p[1]+16,p[2]+26,p[0],p[1],p[2]]:V['Upper Verge: the trailhead'];}});
  return V;})();
 // the reserved camera spots (88 pushes them into OBSTACLES before the biomes grow)
 const VIEW_CLEAR=Object.keys(VIEWS).map(k=>({x:VIEWS[k][0],z:VIEWS[k][2],r:18,y0:-1e9,y1:1e9,view:k}));
