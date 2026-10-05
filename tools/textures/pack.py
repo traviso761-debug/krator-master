@@ -21,6 +21,8 @@ Processing, per family:
            distance gets its furrows and seams back.
   normal   resized and renormalised (OpenGL convention, as the library and Godot use)
   rough    r + (1 - r) * roughLift: the scan sets read wet under a sun with no environment map
+  lib      a library id, or a pattern sheet as 'patterns/<culture>/<name>'
+  size     per family: overrides the build's map size
   mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
   optional a family with `"optional": true` is skipped (with a note) while its library set does not exist yet: the build
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
@@ -35,6 +37,12 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIB = os.path.join(ROOT, 'core', 'materials', 'library')
+MATS = os.path.join(ROOT, 'core', 'materials')
+
+
+def set_dir(lib):
+    """A family's set: a library id (core/materials/library/<id>) or a pattern sheet ('patterns/<culture>/<name>')."""
+    return os.path.join(MATS, lib) if lib.startswith('patterns/') else os.path.join(LIB, lib)
 
 
 def sha1(path):
@@ -63,7 +71,8 @@ def webp(arr, quality, mode):
 
 def process(fam, cfg, size):
     lib = cfg['lib']
-    d = os.path.join(LIB, lib)
+    d = set_dir(lib)
+    size = int(cfg.get('size', size))      # a family may ask for a smaller map (a detail map on small furniture)
     meta = json.load(open(os.path.join(d, 'meta.json')))
     rec = meta.get('record', {})
     # map paths come from meta.json 'maps' (a neutral copy points at its sibling's normal and roughness)
@@ -136,7 +145,7 @@ def main(argv):
     allfiles = {}
     for fam in sorted(cfg['families']):
         fc = cfg['families'][fam]
-        if fc.get('optional') and not os.path.isfile(os.path.join(LIB, fc['lib'], 'meta.json')):
+        if fc.get('optional') and not os.path.isfile(os.path.join(set_dir(fc['lib']), 'meta.json')):
             print('skipped %s: library set %s not delivered yet (optional)' % (fam, fc['lib']))
             continue
         e, files = process(fam, fc, size)

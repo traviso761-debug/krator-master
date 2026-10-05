@@ -2195,6 +2195,384 @@
    "row": "Glass, ceramic & bone",
    "col": "Furniture",
    "status": "committed"
+  },
+  {
+   "src": "library/stone.cut",
+   "row": "Stone & rock",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/stone.cut.b",
+   "row": "Stone & rock",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/brick",
+   "row": "Brick, paving & tile",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/plaster",
+   "row": "Plaster & earth",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.corrugated",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.iron",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.bronze",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.gold",
+   "row": "Metal",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/roof.tile",
+   "row": "Roof",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/glass.frosted.b",
+   "row": "Glass, ceramic & bone",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/iziz/mosaic-b",
+   "row": "Pattern sheets",
+   "col": "Iziz",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.mahogany",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/wood.lamppost",
+   "row": "Wood",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/metal.iron.pitted",
+   "row": "Metal",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/bone.skull",
+   "row": "Glass, ceramic & bone",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/bone.horn",
+   "row": "Glass, ceramic & bone",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/bone.antler",
+   "row": "Glass, ceramic & bone",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/wax.tallow",
+   "row": "Glass, ceramic & bone",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/hide.pelt.cat",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/hide.fur.brown",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fibre.reedmat",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.gourd",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fruit.skin.orange",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fruit.skin.amber",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fruit.capsule",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fruit.husk",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fibre.net",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/cloth.silk",
+   "row": "Cloth & canvas",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/earth.floor.packed",
+   "row": "Plaster & earth",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.scale.terracotta",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/organic.chitin.iridescent",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/membrane.pterosaur",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/membrane.bat",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fur.sloth",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/hide.strider",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/fur.bat",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/chitin.spider",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/chitin.millipede",
+   "row": "Fibre & organic",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/bark.mahogany",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/bark.baobab",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/bark.ironbark",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.flower.bloom",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.feather.archae",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.feather.crest",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.bromeliad",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.mahogany",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.vine",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.moss",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.screwpine",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.screwpine.b",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/card.crop",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "library/wing.dragonfly",
+   "row": "Bark & leaf",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/bone-inlay",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/claw-tapestry",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/emblem",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/totem",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/pennant",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/plaque",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/beast-riders/saddle",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/common/rawhide",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/common/basket-coil",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/common/lantern-horn",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
+  },
+  {
+   "src": "patterns/common/lantern-paper",
+   "row": "Pattern sheets",
+   "col": "Beast Riders",
+   "status": "committed"
   }
  ]
 }

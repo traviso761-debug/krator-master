@@ -49,6 +49,20 @@ def enc(path, size, kind):
     return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
 
 
+def enc_card(path, size, kind):
+    """A cut-out card for the wall: its colour over a mid grey where it is transparent, a flat normal, a constant roughness."""
+    im = Image.open(path).convert('RGBA')
+    k = size / max(im.size); im = im.resize((max(1, round(im.size[0] * k)), max(1, round(im.size[1] * k))), Image.LANCZOS)
+    if kind == 'a':
+        bg = Image.new('RGBA', im.size, (122, 122, 122, 255)); bg.alpha_composite(im); out = bg.convert('RGB')
+    elif kind == 'n':
+        out = Image.new('RGB', im.size, (128, 128, 255))
+    else:
+        out = Image.new('L', im.size, 200)
+    b = io.BytesIO(); out.save(b, 'JPEG', quality=85, optimize=True)
+    return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
+
+
 def resolve(src, scratch):
     kind, _, rest = src.partition('/')
     if kind == 'library':
@@ -77,9 +91,12 @@ def main():
         mp = meta.get('maps', {})
         files = {k: os.path.normpath(os.path.join(d, mp.get(m, f))) for k, m, f in
                  (('a', 'map', 'albedo.jpg'), ('n', 'normalMap', 'normal.png'), ('r', 'roughnessMap', 'roughness.png'))}
-        if not all(os.path.isfile(v) for v in files.values()):
-            skipped.append(e['src'] + ' (maps)'); continue
         rec = meta.get('record', {})
+        card = rec.get('kind') == 'card'
+        if card and os.path.isfile(files['a']):      # a cut-out: no normal or roughness map; shown on a grey card
+            files['n'] = files['r'] = None
+        elif not all(os.path.isfile(v) for v in files.values()):
+            skipped.append(e['src'] + ' (maps)'); continue
         src = meta.get('source', {})
         s = dict(e)
         s['id'] = e.get('id') or rec.get('id') or os.path.basename(d)
@@ -93,8 +110,9 @@ def main():
         if s['pattern']:       # a sheet that kept its shape: its tile is as tall as its width says
             w0, h0 = Image.open(files['a']).size
             if w0 != h0: s['scale'] = [s['scale'][0], round(s['scale'][0] * h0 / w0, 3)]
+        s['card'] = card
         for k in 'anr':
-            s[k] = enc(files[k], a.size, k)
+            s[k] = enc_card(files['a'], a.size, k) if card else enc(files[k], a.size, k)
         sets.append(s)
     if skipped:
         print('skipped (source missing):', ', '.join(skipped))
