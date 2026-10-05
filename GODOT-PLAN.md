@@ -258,7 +258,7 @@ twin) checked against the same golden vectors. Each ships with its **first consu
 |---|---|---|
 | `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; passing in Godot 4.5 since 2026-10-05); Ys's city takes it |
 | `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
-| `core/tags/` | Yuni's `FIX.*` records or Voth's `PLACED` (both exist; map one) | **draft proposal 2026-10-05** (`core/tags/PROPOSAL.md`: the record, ids, vocabularies, adapters, order of adoption, open questions) |
+| `core/tags/` | Yuni's `FIX.*` records | **written 2026-10-05**: registry, vocabulary (the catalog's lists copied, drift a failing test), label, node test, the uid's GDScript twin `ktags.gd` (passing in Godot 4.5); Yuni on it (13044 records, zero unknown vocabulary, nothing drawn moved), its export carries `krator-tags` and the spike's `yuni` case puts each record on its node (`core/tags/README.md`). Next: core/furnish's `onRecord`, Iziz's `REG`, Voth's `PLACED`, the biome kits (`PROPOSAL.md`, order of adoption) |
 | `core/furnish/` | Girder (the material pilot is there too) | **written 2026-10-05**: placement pass, draw helpers, host switches, node test; Girder, Mav's Refuge, Locus, Highlands and Post-Apoc on it with their furniture fingerprints unchanged (`core/furnish/README.md`). The catalog's own `F.furn` keeps its code |
 | `core/mask/` | Iziz's city (M5) | not started |
 
@@ -279,7 +279,10 @@ twin) checked against the same golden vectors. Each ships with its **first consu
    Yuni's), `name`, `class` (building, flora, fauna, furniture, prop, life, infrastructure), `tags`
    (culture, biome, Köppen, type, harvest, indoor/outdoor), `transform`, `footprint`, `parent`. The
    inspector reads it; the exporter writes it as glTF extras; the minimap draws from it. `BIO.register`,
-   Voth's `PLACED`, Yuni's `FIX.*` and the catalog's entries all map onto it.
+   Voth's `PLACED`, Yuni's `FIX.*` and the catalog's entries all map onto it. *As built (2026-10-05):* two ids
+   per record, the order id and a `uid` (a `KRAND.hash` of class, key and position in 10 cm steps, reproduced by
+   `core/tags/ktags.gd`); `at`, `ry`, `size` for transform and footprint; `class` is `building part fixture furniture
+   prop flora life landmark infrastructure feature` (`life` holds animals and citizens). Yuni is the first adopter.
 
 4. **`core/furnish/`**: one furniture glue in place of the six copies (Oct 2026 review). A **placement pass**
    with no THREE and no DOM turns `FURNISH(key, lx, ly, lz, lry, {v, seed, setting})` and the interiors hook
@@ -508,7 +511,9 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
    to belong to the tile that holds their record (blocker 10's records), not be clipped by it. *Compensated
    2026-10-05:* a tile keeps whole bucket pieces (connected runs of triangles) by the foot of each piece
    (`opt.cut`, `'piece'` by default), so nothing is sliced and each piece lands in one tile. Records still replace it.
-4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`).
+4. **No ids or tags** on biome items or buckets: node metadata can carry only name and label (`core/tags`). *Partly
+   answered 2026-10-05:* `core/tags` exists and Yuni's records arrive as node metadata (`tags.json`); the biome kits
+   adopt it last, once placement writes plant records (an item's record, `flora_00012#37` per instance).
 5. **No ground in any export.** The spike samples `terrainH` into a heightfield (`krator-heightfield`, spike-only); the
    `core/terrain` bake (Phase 2 item 2) is what M4 needs first after tags. *Compensated 2026-10-05:* `BIO.export` writes
    a tile's `ground` (heights and water on a grid), and the importer builds it; the bake still replaces it.

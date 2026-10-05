@@ -18,6 +18,7 @@ godot --path godot                                # the window: keys 1-5 switch 
 godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)
+godot --headless --path godot --script res://tests/tags/ktags_test.gd   # core/tags' uid vectors (exits 0 on pass)
 godot --headless --path godot --script res://tests/atmos/atmos_test.gd  # the Atmos autoload against core/atmos (night, hours, weather)
 ```
 
@@ -55,10 +56,11 @@ this stands in for the `core/terrain` bake (Phase 2) so the plants have somethin
 | `krator/weather_fx.gd` | the weather drawn: rain particles that ride the camera, the lightning bolt on `Atmos.strike` |
 | `krator/stage.gd` | the export's `stage` (or `data/<case>/stage.json`): tonemapping, exposure, sky panorama, sun and fill lights, ambient, fog, matched to the page (`biomes/GODOT.md`, "The stage") |
 | `krator/kmat.gd` | library materials rebuilt on a glTF region from the build's pack (`data/<case>/tex/`), by the `lib` and `fam` the glTF extras keep |
-| `krator/records_import.gd` | Yuni's records to stand-in nodes with every record on its node as metadata |
+| `krator/records_import.gd` | Yuni's records to stand-in nodes, each node's `krator` metadata its core/tags record (`tags.json`; a MultiMesh keeps its instances' records in a `records` side table) |
 | `krator/fly_camera.gd` | the camera |
 | `shaders/` | `atmos.gdshaderinc` (the shared globals and functions), `foliage`, `bark` (also plain, and the kits' `irid` and `gloss` kinds), `library` (the material library: break-up, specular), `halo`, `terrain`, `ground` (the stage's ground material on the heightfield) |
 | `tests/rand/` | copies of `core/rand/krand.gd`, `krand_test.gd`, `golden.json` (`res://` cannot reach outside `godot/`); `tools/sync_core.py --check` reports drift |
+| `tests/tags/` | copies of `core/tags/ktags.gd` (the uid), `ktags_test.gd`, `golden.json`, kept by `tools/sync_core.py` the same way |
 | `tests/atmos/` | `atmos_test.gd` and its `golden.json`, written from core/atmos's JavaScript by `tools/atmos_golden.js` (rerun it after changing core/atmos) |
 | `data/<case>/` | the exports (below); `meta.json` says where each came from |
 | `tools/export_spike.py` | writes `data/` from the built pages (headless Chromium; `pip install playwright`) |

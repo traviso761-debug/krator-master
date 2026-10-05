@@ -21,6 +21,10 @@
 var FIX_SCHEMA = 'krator.fixtures/1';
 var FIX = { buildings:[], doors:[], windows:[], lights:[], byId:{} };
 var FIX_CTX = null;               /* the building being built (set by buildAsset), or null for street fixtures */
+/* core/tags (core/tags/README.md): every building, door, window and light is forwarded into the shared tag registry
+   as it is registered here, before it is drawn (GODOT-PLAN.md rule 4). The ids pass through unchanged; the export
+   is KRATOR_EXPORT.tags() (format 'krator-tags'). */
+var FIX_TAGS = KTAGS.create({ build:'yuni' });
 
 /* the kinds a fixture may take — the vocabulary the export and the engines key on */
 var DOOR_STYLES  = ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'];
@@ -32,7 +36,17 @@ function fixReg(list, prefix, o){
   o.building = FIX_CTX ? FIX_CTX.id : null;
   list.push(o); FIX.byId[o.id] = o;
   if(FIX_CTX) (FIX_CTX[prefix+'s'] || (FIX_CTX[prefix+'s']=[])).push(o.id);
+  fixTag(prefix, o);
   return o;
+}
+/* a fixture into core/tags: class fixture, kind door | window | light. at is the base centre: a door's y is its
+   sill already, a window's is the pane's centre. Doors and windows carry no depth; 0.2 and 0.1 m stand in. */
+function fixTag(prefix, o){
+  var r = { id:o.id, 'class':'fixture', kind:prefix, parent:o.building, ry:o.yaw || 0, frag:'51-fixtures' };
+  if(prefix==='door'){ r.at = [o.x, o.y, o.z]; r.size = [o.w, 0.2, o.h]; r.tags = { door:o.style }; }
+  else if(prefix==='window'){ r.at = [o.x, o.y - o.h/2, o.z]; r.size = [o.w, 0.1, o.h]; r.tags = {}; }
+  else { r.at = [o.x, o.y, o.z]; r.tags = { light:o.kind, lit:true }; }
+  FIX_TAGS.add(r);
 }
 /* Game-engine node name. CamelCase type, building, ordinal: 'Door.bld_00042.0'. Blender keeps
    the dots; Godot's glTF importer keeps them too. Collision hints use Godot's suffixes
@@ -91,13 +105,25 @@ function buildingTags(A){
   return { culture:'yuni-common', types:[{ poor:'dwelling-single', mid:'dwelling-single', rich:'dwelling-single', trade:'shop', civic:'civic' }[A.family] || 'infrastructure'] };
 }
 
+/* a building's wealth tag: none for a building that is only civic, religious, infrastructure or a park (civic is a
+   type, not a wealth); a yuni-* culture's tier otherwise (core/tags maps yuni-court to rich, yuni-common to middle,
+   yuni-poor to poor); any other culture's from the placement's 0..1 */
+function fixWealth(tg, F){
+  var civic = tg.types.every(function(t){ return /^(civic|religious|infrastructure|funerary|park)$/.test(t); });
+  if(civic) return null;
+  if(/^yuni-/.test(tg.culture)) return undefined;
+  return F.wealth;
+}
 /* open a building record; buildAsset closes it */
 function FIX_BUILDING_BEGIN(A, F){
   var tg = buildingTags(A);
   var b = { id:'bld_'+fixPad(FIX.buildings.length), asset:A.key, name:A.name, family:A.family,
             culture:tg.culture, types:tg.types, variant:F.variant, seed:F.seed, wealth:+F.wealth.toFixed(3),
             x:F.x, y:F.y, z:F.z, yaw:F.ry, w:A.w, d:A.d, h:A.h||8, bodies:[] };
-  FIX.buildings.push(b); FIX.byId[b.id] = b; FIX_CTX = b; return b;
+  FIX.buildings.push(b); FIX.byId[b.id] = b; FIX_CTX = b;
+  FIX_TAGS.add({ id:b.id, 'class':'building', kind:A.key, key:A.key, name:A.name, at:[b.x, b.y, b.z], ry:b.yaw, size:[b.w, b.d, b.h],
+    tags:{ culture:tg.culture, types:tg.types.slice(), family:A.family, wealth:fixWealth(tg, F) }, frag:'51-fixtures' });
+  return b;
 }
 function FIX_BUILDING_END(){ FIX_CTX = null; }
 
@@ -129,6 +155,9 @@ var KRATOR_EXPORT = {
     if(typeof buildingKit==='function') out.kit = buildingKit(id);
     return out;
   },
+  /* the core/tags registry (core/tags/README.md): every building and fixture, with its uid and normalised tags */
+  tags: function(){ return FIX_TAGS.export(); },
+  tagAudit: function(){ return FIX_TAGS.audit(); },
   fixtures: function(){
     return { schema:FIX_SCHEMA, coords:'glTF: metres, +Y up, right-handed; x east, z south; yaw about +Y; local +Z = outward',
       buildings:FIX.buildings.map(function(b){ return { id:b.id, asset:b.asset, name:b.name, culture:b.culture, types:b.types,

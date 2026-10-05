@@ -13,7 +13,7 @@ cover the routes the plan names and to differ from each other:
   rift         krator-biome JSON, one tile; every mesh LOD-chunked; hooked materials (irid bark, far impostors)
   girder       glTF (three's own GLTFExporter over a region) plus its material records (KMAT.table) and pack (tex/)
   iziz         krator-atmos JSON (ATMOS.export) for the whole city, plus a glTF region of the city round it
-  yuni         KRATOR_EXPORT records (fixtures and one building's interior): ids, tags, nav, no meshes at all
+  yuni         KRATOR_EXPORT records (fixtures, core/tags records, one building's interior): ids, tags, nav, no meshes at all
 
 The biome tiles carry their own ground (BIO.export's `ground`, since 2026-10-05). Girder and Iziz also write
 terrain.json: the page's ground height sampled on a grid (krator-heightfield, a spike-only stand-in for the
@@ -152,6 +152,8 @@ async def run_case(browser, port, name, c, log):
         log(f"{name}: glb {g['stats']} dropped {g['dropped']}")
     elif c["kind"] == "records":
         files["fixtures.json"] = write_json(os.path.join(out, "fixtures.json"), await pg.evaluate("KRATOR_EXPORT.fixtures()"))
+        # the core/tags registry (core/tags/README.md): the record every node carries as its "krator" metadata
+        files["tags.json"] = write_json(os.path.join(out, "tags.json"), await pg.evaluate("KRATOR_EXPORT.tags()"))
         files["building.json"] = write_json(os.path.join(out, "building.json"),
                                             await pg.evaluate("id => KRATOR_EXPORT.building(id)", c["building"]))
     if c.get("height"):

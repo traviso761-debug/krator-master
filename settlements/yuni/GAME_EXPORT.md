@@ -19,6 +19,12 @@ code. This file is the contract for that data.
 - **Export fixtures** downloads every building, door, window and light in the world, flat.
 - From script or a headless run, call `KRATOR_EXPORT.building('bld_00098')` or
   `KRATOR_EXPORT.fixtures()`.
+- `KRATOR_EXPORT.tags()` is the same buildings, doors, windows and lights as core/tags records (format
+  `krator-tags`, `core/tags/README.md`): the ids unchanged, a position-hash `uid`, `class` building or fixture,
+  `at` the base centre, `ry`, `size`, and tags from the shared vocabulary (`yuni-court`, `yuni-common`, `yuni-poor`
+  become `yuni` with a wealth; `sahelian` becomes `yuni` with `style: 'sahelian'`; a civic-only building has
+  `wealth: null`). `KRATOR_EXPORT.tagAudit()` counts unknown vocabulary (zero). The Godot spike puts each record on
+  its node as the `krator` metadata.
 - `python3 verify_walk.py <html> --asset <key> --variant <n>` writes
   `shots/export-<key>-<n>.json` for one building as part of its walk-through.
 
