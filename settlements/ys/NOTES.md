@@ -359,7 +359,7 @@ tunnelling into the audience hall (a ribbed vault, a nacre dais, three gilded fi
 ribbed dome and four twisted spires in sea-green shell with gold tips, bone tendrils rooting the wings, the forecourt
 with its oval pool, fountains and a twenty-column crescent colonnade, a domed pavilion, the lobed rampart with the
 gate, and the west bastion with the Warden's lodge pod, the bridge door and the bridge-head pad the span graph lands on
-(`own:'Citadel bridge head'`). The old terraced model is `hyk_arena` (74b2, seeds 30690–30697) on the land block nearest
-the head, its gate to the head, the block lined with the market's shops and taverns. **Stairs**: a spiral stair down the
+(`own:'Citadel bridge head'`). The old terraced model is `hyk_arena` (74b2, seeds 30690–30697) on the nearest land block
+with room for it (its middle levelled by a flat stamp), its gate to the head, the block lined with the market's shops. **Stairs**: a spiral stair down the
 face of a Monolith, Warden or Facet from its lowest plate to a wet landing, four at most; such a host, and any host
 whose bridge leaves a plate under sink + 30, stands without its restand plinth (`YS_CUT.noPlinth`, 52 `skyPlinth`).

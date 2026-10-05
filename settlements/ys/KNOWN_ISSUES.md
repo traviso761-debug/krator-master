@@ -129,8 +129,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [x] (Oct 5 2026) The Citadel stack carried the arena model under the Citadel's name. Now `hyk_citadel` is the
       new Archon's Citadel (74b: a swept ridge-backed mass with a honeycomb of oval windows, a great pointed arch over
       the audience hall, verdigris spires and dome, a crescent colonnade and a reflecting pool, the west bastion with the
-      bridge door and the bridge-head pad) and the old model is `hyk_arena` (74b2) on the land quarter's block nearest
-      the head, ringed with the market's shops. The landmark stacks are fitted: the Citadel's an ellipse 56 × 84 m (its
+      bridge door and the bridge-head pad) and the old model is `hyk_arena` (74b2) on the nearest land block with room
+      for it, its ground levelled, ringed with the market's shops. The landmark stacks are fitted: the Citadel's an ellipse 56 × 84 m (its
       axis away from the bridge door, the Treasury on that side), the Winds' 54 × 57 m, both near flat on top.
 - [ ] (Oct 5 2026) The new Citadel's verdigris is `HPAL.seaGreen` vertex colour on the shell texture and its gold a warm
       hex on nacre: no copper or metal material in the kit yet (`metal.bronze.verdigris` in MATERIAL-PROMPTS.md is the
