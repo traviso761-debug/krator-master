@@ -106,9 +106,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       aprons) are fill stamps with soft edges: no quay walls yet, the terrain's slope shows on the water sides.
 - [ ] (Oct 5 2026) The Citadel stack carries the arena model (`hyk_citadel`) under the Citadel's name and the Treasury in
       its precinct; the fortress Travis asked for is still to design (see his note below).
-- [ ] (Oct 5 2026) The city stands at 11.85 M of the 12 M triangle budget with the densities cut to fit (NOTES.md,
-      phase 3): the bridges and the biome need room. Either a coarser host (the Conocylinder is 70 k at decay 1) or a
-      distance cut-off in the preview; Godot is the showroom, so do not tune the look to the budget.
+- [x] (Oct 5 2026) The city stood at 11.85 M of a 12 M budget with its densities cut to fit. The budget is 30 M for now
+      (Travis) and the city's span two-thirds; the densities are back and the city is 8.5 M.
 - [ ] (Oct 5 2026) `shoreAt` (84b) chooses the water side from ±9 m and flips on a flat beach (the fishing docks); the
       shore run decides it from ±40 m itself. Fix it at the source before anything else squares itself to a loop.
 - [ ] (Oct 5 2026) The Urchin pod (`hyk_pod_rich_1`) placed without a way puts its store in its door swing; the city

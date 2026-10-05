@@ -3,7 +3,7 @@
 // version, which samples merged-mesh vertices), the Iziz tag audit, the port checks when the layout places
 // segments, and the Ys registries (marks, rooms, spots, hosts) for the interiors and Godot passes.
 const BUDGET={
- showcase:{tris:12000000,calls:220},
+ showcase:{tris:30000000,calls:220},   // 30 M (Travis, Oct 5 2026: for now; Godot is the showroom)
  cls:{env:2500000,small:60000,medium:250000,landmark:600000,host:400000,seg:200000,vessel:250000},
  type:{},   // stat-key base -> cls; then a HYK.def's cls (cls:'landmark'), a port registration's cls; else 'medium'
 };

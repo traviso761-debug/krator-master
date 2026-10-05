@@ -11,7 +11,7 @@ const YS_PL_LATER=['hyk_span_l1','hyk_span_l2','hyk_drawbridge','hyk_spiral_stai
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const zero=C.zero.filter(k=>YS_PL_LATER.indexOf(k)<0),later=C.zero.filter(k=>YS_PL_LATER.indexOf(k)>=0);
   R.push({name:'kit-audit-every-def-placed',ok:!zero.length,detail:(zero.length?zero.length+' never placed: '+zero.join(' '):(HYK.order.length-later.length)+' defs placed')+(later.length?'; waiting on the bridge graph: '+later.join(' '):'')});}
- {const full=HOSTS.filter(h=>h.full);R.push({name:'three-full-height-towers',ok:full.length>=3&&full.some(h=>/Pharos/.test(h.n)),detail:full.length+' full: '+full.map(h=>h.n+' '+Math.round(YS_HOST_TYPES[h.rec.type].H+h.rec.sink)+' m')+'; the tallest stump '+Math.round(Math.max(...PLACE.hosts.filter(h=>!h.full).map(h=>h.cutY+h.sink)))+' m'.join(' | ')});}
+ {const full=HOSTS.filter(h=>h.full);R.push({name:'three-full-height-towers',ok:full.length>=3&&full.some(h=>/Pharos/.test(h.n)),detail:full.length+' full: '+full.map(h=>h.n+' '+Math.round(YS_HOST_TYPES[h.rec.type].H+h.rec.sink)+' m').concat(['the tallest stump '+Math.round(Math.max(...PLACE.hosts.filter(h=>!h.full).map(h=>h.cutY+h.sink)))+' m']).join(' | ')});}
  {const flat=PLACE.hosts.filter(h=>h.pods.length>1&&new Set(h.pods.map(p=>p.y)).size<2);const n=PLACE.hosts.map(h=>new Set(h.pods.map(p=>p.y)).size);
   R.push({name:'pods-on-several-plates',ok:!flat.length,detail:flat.length?flat.length+' hosts with one plate: '+flat.map(h=>h.n).join(' | '):PLACE.hosts.length+' hosts, '+Math.min(...n)+'–'+Math.max(...n)+' plates each'});}
  {const recs=PLACE.blds.concat(PLACE.slots);const boxes=recs.map(r=>r.box);const streets=PLACE.occ.filter(o=>/^(street|highway)/.test(o.tag));const bad=[];

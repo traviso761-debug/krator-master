@@ -21,7 +21,7 @@ function ysStripPoly(a,b,w){const dx=b[0]-a[0],dz=b[1]-a[1];const L=Math.hypot(d
   LAYOUT.streets.push({a,b:e,w:STREET_W,kind:ym>1?'street':ym>-1.2?'awash':'canal',blocks:[b,n]});}
  // the highways: from the head along +T (the coast NE), along -N (inland NW) and along -T (the southern shore)
  const H=LAYOUT.HEAD,T=LAYOUT.T,N=LAYOUT.N;
- for(const [d,L,name] of [[T,1500,'NE coast'],[[-N[0],-N[1]],1600,'NW inland'],[[-T[0],-T[1]],1400,'S shore']]){
+ for(const [d,L,name] of [[T,1500*LAYOUT.K,'NE coast'],[[-N[0],-N[1]],1600*LAYOUT.K,'NW inland'],[[-T[0],-T[1]],1400*LAYOUT.K,'S shore']]){
   const pts=[[H[0],H[1]]];let x=H[0],z=H[1];for(let s=60;s<=L;s+=60){x=H[0]+d[0]*s;z=H[1]+d[1]*s;
    // the coast roads keep 40 m inland of the waterline: nudge along the landward normal where the shore comes close
    if(name!=='NW inland'){const sd=ysShoreDist(x,z);if(sd<40){x-=N[0]*(40-sd);z-=N[1]*(40-sd);}}pts.push([x,z]);}

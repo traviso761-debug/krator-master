@@ -255,3 +255,20 @@ and swallowed its `endGroupXF()`, so every D and H body left a frame on the tran
 the first one was misplaced (the inspector volumes and the instanced floors of thirty hosts stood in the hinterland).
 The kit and the mock never build through `bodyGroup`; the city's two earlier commits of the day carried it.
 `_XFSTACK.length` is 0 after the build.
+
+## The city at two-thirds, the budget at 30 M (Oct 5 2026, Travis)
+Travis: raise the triangle budget to 30 M for now, and make the city a third smaller. The span is two-thirds in every
+direction from the head of the bay (`LAYOUT.K = 2/3`: inland 547 m, offshore 533 m, 1100 m either way along the
+coast), the blocks stay 200 m (the hosts need them), so the city has 60 blocks where it had 124 (30 drowned). Every
+distance of the layout is the first layout's times K: the sink plane is squeezed into the span (the same depths at
+two-thirds the distance, so the awash, canal and open rings keep their proportions), the Amphitriton's target is 300 m
+offshore, the wealth rings, the farm line and the highways scale, and the Citadel's and the Winds' karst stacks move to
+wherever their blocks land (their shore loops with them). The drowned landmarks take the nearest free drowned block when
+their rule-placed block is land or taken (`setWet`: nearer the shore, the military harbour had taken the civilian
+harbour's block and the Wet Cells had landed on land). A scenery stack standing in a host block's cap leaves the block
+to the water. The densities cut to fit 12 M are back (gardens, four-sided core blocks, two fields a farm, 124 m moles
+built on two sides) and pods are richer (4, 5, 6 per host, 8 on a full tower). With eleven hosts a pass after them
+gives every grown def a pod (it takes the place of a duplicate). The land hosts are a share (a third of the outer
+neighbourhoods, at least three) tried in a cell-hash order, each anywhere in its block a clear spot fits it.
+Result: 60 blocks, 11 drowned hosts with 52 pods, 4 land hosts, 243 kit buildings, 8.5 M triangles of 30 M, 77 draw
+calls; `--assert` green.

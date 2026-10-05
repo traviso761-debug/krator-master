@@ -114,7 +114,7 @@ const PL_PODS={
   ['hyk_pod_shop_cloth',.35],['hyk_pod_shop_potter',.35],['hyk_pod_tavern_2',.4],['hyk_pod_shrine_tides',.3],['hyk_pod_shrine_seagods',.3]],
  rich:[['hyk_pod_rich_2',2.5],['hyk_pod_rich_1',1],['hyk_pod_shop_pearl',.6],['hyk_pod_shrine_seagods',.35],['hyk_pod_shop_alchemy',.3]]};
 const PL_WAYS={poor:[['hyk_pod_poor_1',1]],middle:[['hyk_pod_mid_1',2],['hyk_pod_shop_food',1],['hyk_pod_shop_general',1],['hyk_pod_tavern_1',1]],rich:[['hyk_pod_rich_1',1]]};
-const PL_PODN={poor:2,middle:3,rich:4,full:6};
+const PL_PODN={poor:4,middle:5,rich:6,full:8};
 // one host record: the type, the cut snapped to a storey, how it stands (sunk for A, on the bed for D and H), its plates
 // (world y) and its pods spread over them (different plates, a few apart, every pod's floor a plate's top)
 function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);const cls=o.full?'full':o.land?'land':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];
@@ -124,7 +124,7 @@ function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);c
  const top=(o.full?T.crownY:cutY)+sink;const ry=T.square?PL_RY+st.int(0,3)*Math.PI/2:st.range(0,TAU);
  const P='Project '+T.key.slice(3);const nm=T.name.replace('the ','');
  const rec={n:o.name||(o.full?P+' tower ('+b.i+','+b.j+')':o.land?'The reclaimed '+nm+' ('+b.i+','+b.j+')':'The '+nm+' stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
-  x:b.x,z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:o.land?3:1,land:!!o.land,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
+  x:o.x!=null?o.x:b.x,z:o.z!=null?o.z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:o.land?3:1,land:!!o.land,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
   shaped:!!T.shaped,wealth:b.wealth,plates:[],pods:[],ways:[]};
  rec.rAt=(y,a)=>T.rAt(y-rec.sink,a==null?null:a+rec.ry);   // a world bearing a is the local bearing a + ry
  for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+18:T.minY;if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
@@ -142,7 +142,7 @@ function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);c
  // fits to the nearest other plate
  if(rec.pods.length>1&&new Set(rec.pods.map(p=>p.y)).size<2){const y0=rec.pods[0].y;const alt=Pl.filter(y=>y!==y0).sort((p,q)=>Math.abs(p-y0)-Math.abs(q-y0));
   for(const p of rec.pods.slice(1)){const D=HYK.defs[p.key];const y=alt.find(y=>y+D.h+2<=top&&!(T.avoid&&T.avoid(y-sink,D.h)));if(y==null)continue;p.y=y;p.level=y>=20?'L2':'L1';const w=rec.ways.find(w=>w.a===p.a);if(w)w.y=y;break;}}
- ysPlTake(ysPlBox(b.x,b.z,T.cap,T.cap,PL_RY,'host '+rec.n));PLACE.hosts.push(rec);return rec;}
+ ysPlTake(ysPlBox(rec.x,rec.z,T.cap,T.cap,PL_RY,'host '+rec.n));PLACE.hosts.push(rec);return rec;}
 
 // ---------------------------------------------------------------- the frontage walker: a block's streets lined with buildings
 // The four sides of a block, nearest the market first; `sides` of them are built. Along a side the cursor drops a def from
@@ -158,7 +158,7 @@ const PL_POOL={
  industry:[['hyk_warehouse_large',1.5],['hyk_warehouse_small',2],['hyk_smithy_large',1],['hyk_smithy_small',1.5],['hyk_granary',1]],
  foreign:[['iziz',1]]};   // placeholder: the foreign quarter's plots are slots (sizes from PL_FOREIGN)
 const PL_GAP={poor:[3,7],middle:[5,11],rich:[10,20],market:[3,6],industry:[6,12],foreign:[5,10]};
-const PL_GARDEN={poor:.36,middle:.34,rich:.3,market:0,industry:.15,foreign:.1};
+const PL_GARDEN={poor:.12,middle:.18,rich:.25,market:0,industry:.15,foreign:.1};
 const PL_FOREIGN={iziz:[[14,12],[16,13],[12,12]],republic:[[13,11],[15,12],[18,10]],voth:[[16,14],[20,16]]};
 function ysPlSides(b,h){const S=[[PL_U,PL_V],[[-PL_U[0],-PL_U[1]],PL_V],[PL_V,PL_U],[[-PL_V[0],-PL_V[1]],PL_U]];
  return S.map(([n,t])=>({n,t,mx:b.x+n[0]*h,mz:b.z+n[1]*h})).sort((p,q)=>Math.hypot(p.mx-CITY.HEAD[0],p.mz-CITY.HEAD[1])-Math.hypot(q.mx-CITY.HEAD[0],q.mz-CITY.HEAD[1]));}
@@ -232,7 +232,16 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   for(const b of full){b.full=true;ysPlHost(b,{full:true});}}
  if(LM.grown_plaza){const b=LM.grown_plaza;ysPlHost(Object.assign(b,{host:'mid'}),{name:'The grown plaza',must:['hyk_market_plaza'],pods:3});}
  // the hosts of every other block: an awash block's is a low one (D or H, cut short, standing on the bed)
- for(const b of hostBlocks)if(!b.full)ysPlHost(b,{});
+ // a scenery stack (the Needle, the Tooth...) standing in a host block's cap leaves the block to the water
+ const onStack=b=>CITY.STACKS.slice(2).some(t=>Math.hypot(t.x-b.x,t.z-b.z)<t.r*1.25+70);
+ for(const b of hostBlocks){if(b.full)continue;if(onStack(b)){ysPlRefuse('karst: host block');continue;}ysPlHost(b,{});}
+ // the kit audit over the pods: a grown def no host drew takes the place of a pod whose def is drawn elsewhere, on a host
+ // of its wealth if one has room, else on any (an into def opens a way where it lands)
+ {const grown=HYK.order.filter(k=>HYK.defs[k].grown&&!/^hyk_(pharos_crown|market_plaza|spiral_stair)$/.test(k)&&!PL_COUNT[k]);
+  for(const k of grown){const D=HYK.defs[k];let done=false;
+   for(const pass of [0,1])for(const h of PLACE.hosts){if(done)break;if(pass===0&&h.wealth!==D.tags.wealth)continue;
+    for(const p of h.pods){if(p.into||PL_COUNT[p.key]<2||p.y+D.h+2>h.top)continue;PL_COUNT[p.key]--;p.key=k;p.wealth=D.tags.wealth;p.into=!!D.into;
+     if(p.into)h.ways.push({a:p.a,y:p.y,R:D.w/2});ysPlCount(k);done=true;break;}}}}
  // ---- 3. the precincts on land and in the shallows
  // the main market: the hall at the centre, its front to the docks; the block lined with shops
  {const b=ysBlock(0,0);if(b){ysPlSeek('hyk_market_main',[12,4,-4,-12,-20].map(k=>[b.x+PL_N[0]*k,b.z+PL_N[1]*k]),ysPlFacing(PL_N[0],PL_N[1]),'main market',b,{margin:3,skip:/^highway/,extra:{over:/^highway/}});ysPlFront(b,{pool:PL_POOL.market,kind:'market',why:'main market',sides:4});}}
@@ -270,19 +279,29 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // the sectors about the head: north-west inland (-N), north-east (+T side), south (-T side); a market and a shrine in each
  const sector=b=>{const dx=b.x-CITY.HEAD[0],dz=b.z-CITY.HEAD[1];const t=dx*PL_T[0]+dz*PL_T[1],n=-(dx*PL_N[0]+dz*PL_N[1]);return n>Math.abs(t)?'NW':t>0?'NE':'S';};
  const civic={NW:['hyk_market_nbhd_1','hyk_shrine_tides'],NE:['hyk_shrine_seagods','hyk_market_nbhd_2'],S:['hyk_market_nbhd_2','hyk_shrine_tides']};
- for(const sec of ['NW','NE','S']){const L=NB.filter(b=>sector(b)===sec);if(!L.length)continue;const b=L[Math.min(L.length-1,1)];
-  civic[sec].forEach((k,i)=>{ysPlSeek(k,ysPlCands(b,i?40:-40,0,72),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood civic',b);});}
+ const civLeft=[];for(const sec of ['NW','NE','S']){const L=NB.filter(b=>sector(b)===sec);if(!L.length){civLeft.push(...civic[sec]);continue;}const b=L[Math.min(L.length-1,1)];
+  civic[sec].forEach((k,i)=>{if(!ysPlSeek(k,ysPlCands(b,i?40:-40,0,72),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood civic',b))civLeft.push(k);});}
+ // a sector the span left without neighbourhoods hands its market and shrine to the nearest other neighbourhood block
+ for(const k of civLeft){if(PL_COUNT[k]&&/shrine/.test(k))continue;for(const b of NB)if(ysPlSeek(k,ysPlCands(b,0,40,72),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood civic',b))break;}
+ // the reclaimed Ancients take a share of the outer neighbourhood blocks (a third, at least three), before any frontage: the
+ // blocks are tried in the order of a hash of their cell (the same in any engine), each anywhere a clear spot fits its
+ // footprint, until the share is met
+ {const want=Math.max(3,Math.round(NB.length/3));let got=0;
+  for(const [b] of NB.filter(b=>b.dH>250*LAYOUT.K).map(b=>[b,KRAND.unit(KRAND.hash(KRAND.child(PLACE.SEED,'land hosts'),b.i,b.j))]).sort((p,q)=>p[1]-q[1])){
+   if(got>=want)break;const st=ysPlStream('land host',b);const type=ysPlType(st,'land'),cap=YS_HOST_TYPES[type].cap;
+   for(const c of ysPlCands(b,0,0,93-cap-2)){const B=ysPlBox(c[0],c[1],cap,cap,PL_RY,'land host');if(ysPlClash(B))continue;const n0=Object.assign({},PLACE.refused);const y=ysPlGround(B,{slope:5});PLACE.refused=n0;
+    if(y==null)continue;ysPlHost(b,{land:true,y,type,x:c[0],z:c[1]});got++;break;}}
+  if(got<want)ysPlRefuse('land hosts: '+got+' of '+want);}
  for(const b of NB){const st=ysPlStream('land host',b);
-  if(st.chance(.25)&&b.dH>250){const B=ysPlBox(b.x,b.z,52,52,PL_RY,'land host');if(!ysPlClash(B)){const y=ysPlGround(B,{slope:4});if(y!=null)ysPlHost(b,{land:true,y});}}
-  const sides=b.dH<450?3:1;ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
+  const sides=b.dH<450*LAYOUT.K?4:b.dH<750*LAYOUT.K?2:1;   /* the first layout's densities, at the span K (budget 30 M) */ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
   if(st.chance(.3)){const k=st.chance(.5)?'hyk_shrine_tides':'hyk_shrine_seagods';ysPlSeek(k,ysPlCands(b,st.range(-30,30),st.range(-30,30),60).slice(0,30),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood shrine',b);}}
- for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:1});
- for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);if(b.s>800)continue;/* the outer farms are soil paint only: the budget */const fr=ysPlFacing(PL_V[0],PL_V[1]);
+ for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:2});
+ for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);const fr=ysPlFacing(PL_V[0],PL_V[1]);
   const p=ysPlAt(b,st.range(-20,20),-50);ysPlByName(st.chance(.5)?'hyk_farmhouse_1':'hyk_farmhouse_2',p[0],p[1],fr,'farm',b);
-  const nf=b.s<620?1:0;for(let k=0;k<nf;k++){const q=ysPlAt(b,k?28:-28,10);ysPlByName('hyk_farm_field',q[0],q[1],PL_RY,'farm',b);}}
+  const nf=b.s<700*LAYOUT.K?2:1;for(let k=0;k<nf;k++){const q=ysPlAt(b,k?28:-28,10);ysPlByName('hyk_farm_field',q[0],q[1],PL_RY,'farm',b);}}
  // ---- 5. the drowned home-grown blocks: a mole at the quay datum, the Hykkousoi round its edge facing the water
- for(const b of LAYOUT.blocks.filter(b=>b.use==='homegrown')){ysPlMole('home-grown mole ('+b.i+','+b.j+')',ysPlBlockPoly(b,-44,44,-44,44),2.5,6);
-  ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'home-grown mole',h:40,sides:1});}
+ for(const b of LAYOUT.blocks.filter(b=>b.use==='homegrown')){ysPlMole('home-grown mole ('+b.i+','+b.j+')',ysPlBlockPoly(b,-62,62,-62,62),2.5,6);
+  ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'home-grown mole',h:58,sides:2});}
 })();
 // counters for _api.city.place() and the probe
 function ysPlaceCensus(){const by={},why={};for(const r of PLACE.blds){by[r.key]=(by[r.key]||0)+1;why[r.why]=(why[r.why]||0)+1;}

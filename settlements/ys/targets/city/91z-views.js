@@ -7,9 +7,9 @@ const VIEWS={
  'The shore at eye level':_ysEye(120,-380,600,-100,3),
  'Night on the water':[1000,60,500,200,8,-200,22.2],
  'The river terraces':[-330,30,380,-620,8,110],
- 'The Citadel stack from the water':[1150,30,950,842,40,652],
- 'The layout from above':[820,1500,101,820,0,100],
- 'The drowned grid from the south-east':[1500,260,900,850,0,100],
+ 'The Citadel stack from the water':[CITY.STACKS[0].x+308,30,CITY.STACKS[0].z+298,CITY.STACKS[0].x,40,CITY.STACKS[0].z],
+ 'The layout from above':[(CITY.HEAD[0]+LAYOUT.A.x)/2,1100,(CITY.HEAD[1]+LAYOUT.A.z)/2+1,(CITY.HEAD[0]+LAYOUT.A.x)/2,0,(CITY.HEAD[1]+LAYOUT.A.z)/2],
+ 'The drowned grid from the south-east':[LAYOUT.A.x+420,200,LAYOUT.A.z+620,LAYOUT.A.x-120,0,LAYOUT.A.z+35],
  'The head of the bay — compass':[CITY.HEAD[0]+260,140,CITY.HEAD[1]+260,CITY.HEAD[0],4,CITY.HEAD[1],null,true],
 };
 // the placed city (88): presets found from the records, so they follow the placement
