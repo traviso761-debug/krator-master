@@ -1,6 +1,7 @@
 # core/tags: draft proposal
 
-**Status: DRAFT for Travis's review (2026-10-05). Nothing here is built.** GODOT-PLAN.md Phase 2 item 3 names
+**Status: DRAFT, reviewed by Travis 2026-10-05 (his answers are under "Decisions", and they override the text above
+them where the two differ). Nothing here is built.** GODOT-PLAN.md Phase 2 item 3 names
 the module; rule 4 says everything placed is registered in it before it is drawn. This draft proposes what goes
 in it, grounded in a survey of the registries the builds keep today. Open questions are at the end; the answers
 change the shape, so they come before any code.
@@ -135,7 +136,68 @@ Each existing registry gets a one-line forward into `T.add`, and keeps working a
 
 Steps 1 and 2 are each about a session, with tests. Step 5 waits for the reseeding event.
 
-## Open questions for Travis
+## Decisions (Travis, 2026-10-05)
+
+1. **Ids: both.** The order id (`bld_00042`) and a `uid`: the `core/rand` integer hash of (class, key, the
+   position rounded to 10 cm), so a save that names a building finds it again after the build changes.
+2. **Cultures: `FURN_CULTURES` is the master list**, cleaned of what is not a culture (below). `iziz` and `iziz-old`
+   are the same culture: the input alias maps `iziz-old` to `iziz`, with no era tag.
+3. **Wealth: `poor`, `middle`, `rich`, or `null`.** Civic buildings are a type, not a wealth, and most of them take
+   `wealth: null` for now (a poor and a rich temple can be told apart later if a build wants it). The numeric
+   0..1 the catalog and the interiors use stays inside them; the tag is the three names, mapped on input
+   (`< .35` poor, `< .7` middle, else rich, as `FURN_TIERS`).
+4. **Köppen per species**, always. Per settlement, one code for the prototype's visualisation only; the open world
+   map will give each place its climate later.
+5. **Plants: one record per item, with per-instance ids only** (`flora_00012#37`: the item's record and the
+   instance's index in it). An instance has no record of its own; its tags are the item's.
+6. **Labels: generated from the record** (example below). A record may add a `note` that is appended; there is no
+   free-text override.
+7. **Fauna is a special case of the life layer.** Wild animals take the life layer's systems: schedules (diurnal,
+   nocturnal), jobs (hunt, graze), relations (beast riders meet less hostility from some animals). In core/tags
+   a placed animal or citizen is `class: 'life'` with `kind` its species or role (`fauna` is not a class of its
+   own); what it does over time is `core/simulation`'s, not a tag.
+
+### The culture list, cleaned
+
+`FURN_CULTURES` mixes three things: cultures, wealth tiers and generic sets. As tags:
+
+| `FURN_CULTURES` entry | As a core/tags culture |
+|---|---|
+| `ancient` | `ancient` |
+| `ancients-salvage` | `ancient` with `state: 'salvage'` (reused Ancients material, not a people) |
+| `yuni-court`, `yuni-common`, `yuni-poor` | `yuni` with `wealth` rich, middle, poor |
+| `sahelian`, `order`, `nomad`, `voth`, `iziz`, `beast-rider`, `lizardmen`, `eastabyss`, `xanadu`, `screamer`, `islander`, `republican`, `rustic`, `reedlake`, `post-apoc`, `hykkousoi` | themselves |
+| `painted` | **to confirm:** a culture (the Highlands' tribal people?) or a style |
+| `generic`, `scrap` | not cultures: the catalog's poor-tier sets any culture draws on. A piece keeps them as its catalog `set`, not its culture |
+
+That leaves 18 cultures (19 if `painted` is one). Kit and settlement names that are not in the list (`ys` uses
+`hykkousoi`; `girder` and `mavs-refuge` use `beast-rider`) map by the build's adapter.
+
+### A label, generated
+
+The inspector's text is made from the record, never stored as text. For Iziz's first gatehouse:
+
+```
+{ id: 'bld_00042', uid: 'a91f3c07', class: 'building', kind: 'gatehouse', key: 'iziz_gate', name: 'Gatehouse 1',
+  at: [212.0, 41.5, -96.0], ry: 1.57, size: [12, 9, 14],
+  tags: { culture: 'iziz', types: ['military', 'infrastructure'], wealth: null, state: 'intact', lit: true } }
+```
+
+reads
+
+```
+Gatehouse 1
+building · Iziz · military, infrastructure · intact · lit
+12 × 9 m, 14 m tall · bld_00042
+```
+
+A bench placed by the furniture glue: `Bench (variant 2)` / `furniture · Beast Riders · seat · outdoor · in
+bld_00017` / `1.8 × 0.5 m · furn_00311`. A plant instance: `Hypertree` / `flora · Köppen Af · harvest: wood,
+pods` / `flora_00012#37`. The order of the parts is fixed (name; class, culture, types or kind, state, wealth
+when not null, the flags; size and id), and a part with no value is left out. The culture's display name comes
+from `FURN_CULTURE_INFO`.
+
+## Open questions for Travis (answered above; kept for the record)
 
 1. **Ids:** registration order only (simple, but a build change can shift them), or also the position-hash `uid`
    for matching across versions (saves a game that references a building)?
