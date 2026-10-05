@@ -27,8 +27,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) will carry no ROOM records until
       their own kits register them (DESIGN §7).
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
-- [ ] The ground painter is the port's (red soil in patches, dry grass): re-key it to the bay's lush ground and
-      the karst when the NW-bay biome is bound (phase 3). *Still open after the bind (Oct 5 2026):* the biome's floor
+- [x] (Oct 5 2026) The ground painter was the port's (red soil in patches, dry grass). Re-keyed to the bay's jungle floor
+      (`ysGroundLush`, 84-city-geo.js); the farms' soil paint is softened half-way to it. The city's land blocks read as
+      lawn: no worn paths or dust round the houses yet. *Still open after the bind (Oct 5 2026):* the biome's floor
       (ferns, grass, moss, logs) covers the port's paint near the spine; beyond the floor's LOD bands (1.25 km) the red
       soil shows between the impostor trees. The painter should read the biome's zones (`NWBAY.zones`) the way the
       nwbay ideal type paints by zone (its 45-host-stage: litter, rainforest litter, tawny slope, beach, crust).
@@ -224,11 +225,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       mouth is salt); the kit roots only its cliff figs on the rock (55-trees drops every other species where karst > .02),
       so the tops' fan-crowns, ferns and shrubs are the city's own pass on the kit's builders (`ysBioKarstForest`), not the
       kit's zones; the dress pass reads the stacks' faces off the 10 m heightfield, so a root curtain or fern can stand a
-      metre or two off the analytic wall where the facets do; Travis's karst cards (clumps on the crowns, vines over the
-      rims, 88b) are still drawn under the biome's trees and gardens and double them; the biome's foliage materials carry
+      metre or two off the analytic wall where the facets do; (Travis's karst cards, clumps on the crowns and vines over the
+      rims, were drawn under the biome's and doubled it: dropped the same day, the sets stay in the library); the biome's foliage materials carry
       no `portUWsh`, so a mangrove's prop roots do not fade under the sea; `window._biome.fauna` reads 0 birds and
       swimmers though 1766 fauna instances were built (the fauna pass returns its counts under other keys: read
-      `BIO.stats['nwbay/fauna']`); the far impostors beyond the floor's LOD bands stand on the port's red-soil paint
+      `BIO.stats['nwbay/fauna']`); the far impostors beyond the floor's LOD bands stood on the port's red-soil paint (the ground is re-keyed now)
       (the ground painter item above); `Q` .55 is the density knob (3.0 M triangles; 1 would be ~5.5 M, over the budget).
 - [ ] (Oct 5 2026) The building editor's live view is a preview, not the build: a live building's label is not made
       (93-labels builds once at load), its ROOM/SPOT records are not in the Rooms overlay until it is rebuilt, and a

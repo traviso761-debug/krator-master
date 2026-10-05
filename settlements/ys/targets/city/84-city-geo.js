@@ -49,7 +49,17 @@ function ysKarstH(x,z,g){let h=g;for(const s of ysStacksNear(x,z)){const L=ysSta
 // the karst's colours (Krabi), read by the terrain painter (71-port-terrain's Ys hook): a stack's crown and gentler
 // shoulders are jungle in patches of darker and lighter green, its walls pale limestone with rust-tan and grey streaks
 // where the water runs down; the feather outside the wall blends into the port's ground
-function ysGroundTint(x,z,h,sl,c){const k=ysKarst(x,z);if(k<=0)return c;
+// the bay's ground (phase 3, Oct 5 2026): the port painted red soil and dry grass; Ys's natural ground above the beach is the
+// jungle floor, dark green with damp patches, leaf litter in the hollows, paler and drier on the upland toward the Inner
+// Wall, bare rock where it is steep. A stamp's paint (the farms' soil, the paved precincts) is kept. Linear, like the port's.
+function ysGroundLush(x,z,h,sl,c){const pt=typeof portPaint==='function'?portPaint(x,z):null;if(h<2.4||(pt&&pt!=='soil'))return c;const soil=pt==='soil';   /* the farms' soil paint is tilled ground in a green land: half-way to the floor */
+ const n=fbm(x/160,z/160,2.7,3),n2=fbm(x/17,z/17,8.1,2),n3=fbm(x/55,z/55,5.3,2);const up=clamp((ysNatBase(x,z)-6)/50,0,1);
+ const G=[.21,.29,.14],Dk=[.13,.20,.10],Lt=[.34,.37,.18],Li=[.31,.25,.15];
+ const damp=clamp((n-.5)*3,0,1),lit=clamp((n3-.58)*4,0,1)*(1-damp);let m=[0,1,2].map(i=>(G[i]+(Dk[i]-G[i])*damp)*(1-up)+Lt[i]*up);
+ m=m.map((v,i)=>(v+(Li[i]-v)*lit*.7)*(.9+(n2-.5)*.24));
+ if(sl>.55){const t=clamp((sl-.55)*2.5,0,1);m=m.map((v,i)=>v+([.44,.40,.36][i]-v)*t);}
+ const fade=clamp((h-2.4)/1.6,0,1)*(soil?.45:1);const lin=m.map(v=>Math.pow(clamp(v,0,1),1.9));return [0,1,2].map(i=>c[i]+(lin[i]-c[i])*fade);}
+function ysGroundTint(x,z,h,sl,c){c=ysGroundLush(x,z,h,sl,c);const k=ysKarst(x,z);if(k<=0)return c;
  const n=fbm(x/38,z/38,6.1,3),jt=.8+.4*n;const J=[.15*jt,.29*jt,.11*jt];
  const st=fbm(x*.09+z*.05,h*.006,2.7,3),gr=fbm(x*.13-z*.07,h*.01,9.4,2);const L=[.66,.63,.57],O=[.68,.44,.26],D=[.36,.36,.34];
  const o=clamp((st-.45)*2.4,0,1)*.8,d=clamp((gr-.55)*2.5,0,1)*.6;const f=.82+.18*fbm(x/6,z/6,h/8,1);

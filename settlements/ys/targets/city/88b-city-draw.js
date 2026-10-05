@@ -98,23 +98,9 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
   for(let k=0;k<N;k++){if(lvl(k)<=-3)continue;   /* the strip starts 3 m under the sea's sheet at the mouth, so it emerges from under it rather than beginning in the open */const y=level(k);if(q>0&&pr.bed[k]!==pr.bed[k-1]){pair(k,Math.max(level(k-1),y));pools++;}pair(k,y);}
   if(idx.length){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(ysFaceUp(g),MAT.pkSea);m.name='river';m.userData.probeSkip=true;m.renderOrder=1;scene.add(m);const tc=tcur();if(tc){tc.tris+=idx.length/3;tc.meshes++;}}
   TSTAT.cur=null;window._river={pools,len:Math.round(pr.len)};}
- // the karst's dressing (Travis's cards, through the library adapter 79z): jungle clumps on every field stack's crown (two
- // crossed quads each, their feet on the crown) and vines hung over the rim of its wall, facing outward; one mesh per
- // card. Not on a landmark's stack (its building takes the top). Positions from KRAND, so the dressing is the same in
- // any engine; ?mat=proc has no cards and draws none
- if(typeof YS_MATLIB!=='undefined'&&YS_MATLIB.cards.clump.length&&typeof KARST!=='undefined'){TSTAT.cur='karst cards/0';const st=KRAND.stream(KRAND.child(KARST.SEED,'dress'));const C=YS_MATLIB.cards;
-  const G={};const quad=(key,cx,y0,cz,w,h,phi)=>{const g=G[key]||(G[key]={pos:[],uv:[],nor:[]});const ux=-Math.sin(phi),uz=Math.cos(phi),nx=Math.cos(phi),nz=Math.sin(phi);
-   const P=[[cx-ux*w/2,y0,cz-uz*w/2,0,0],[cx+ux*w/2,y0,cz+uz*w/2,1,0],[cx+ux*w/2,y0+h,cz+uz*w/2,1,1],[cx-ux*w/2,y0+h,cz-uz*w/2,0,1]];
-   for(const i of [0,1,2,0,2,3]){g.pos.push(P[i][0],P[i][1],P[i][2]);g.uv.push(P[i][3],P[i][4]);g.nor.push(nx,0,nz);}};
-  let nc=0,nv=0;for(const s of CITY.STACKS){if(s.flat)continue;const e=s.e||1,a=s.a||0,ca=Math.cos(a),sa=Math.sin(a);
-   const n=clamp(Math.round(s.r*e*s.r/350),3,14);for(let k=0;k<n;k++){const t=st.range(0,TAU),rr=Math.sqrt(st.next())*.72;const u=rr*Math.cos(t)*s.r*e,v=rr*Math.sin(t)*s.r;const x=s.x+u*ca-v*sa,z=s.z+u*sa+v*ca;
-    const y=terrainH(x,z);if(y<2)continue;const w=st.range(6,13),phi=st.range(0,TAU),key='clump'+st.int(0,C.clump.length-1);quad(key,x,y-.3,z,w,w*1.05,phi);quad(key,x,y-.3,z,w,w*1.05,phi+Math.PI/2);nc++;}
-   const m=clamp(Math.round(TAU*s.r*(1+e)/2/28),3,10);for(let k=0;k<m;k++){const phi=st.range(0,TAU);const edge=ysStackEdge(s,phi);const top=terrainH(s.x+Math.cos(phi)*(edge-5),s.z+Math.sin(phi)*(edge-5));if(top<6)continue;
-    const r=edge+2.6;const h=st.range(9,18),w=st.range(5,9);quad('vine'+st.int(0,C.vine.length-1),s.x+Math.cos(phi)*r,top-1.5-h,s.z+Math.sin(phi)*r,w,h,phi);nv++;}}
-  for(const key in G){const g=G[key];const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(g.pos,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(g.nor,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(g.uv,2));
-   const t=C[key.replace(/\d+$/,'')][+key.match(/\d+$/)[0]];const mat=new THREE.MeshStandardMaterial({map:t,alphaTest:.42,side:THREE.DoubleSide,roughness:.9,metalness:0});if(typeof portUWsh==='function'){mat.onBeforeCompile=portUWsh;mat.customProgramCacheKey=()=>'yscard';}
-   const mesh=new THREE.Mesh(geo,mat);mesh.name='karst-'+key;mesh.userData.probeSkip=true;scene.add(mesh);const tc=tcur();if(tc){tc.tris+=g.pos.length/9;tc.meshes++;}}
-  TSTAT.cur=null;window._karstCards={clumps:nc,vines:nv,meshes:Object.keys(G).length};}
+ // (the karst's card dressing, Travis's clump and vine cards, was drawn here until the biome was bound: 89-city-biome.js dresses
+ // the faces and plants the tops now; the sets stay in the library)
+ window._karstCards={clumps:0,vines:0,meshes:0};
  // the subdivided floors (88a): the partitions as thin shell walls in the interior bucket, both faces; the floors marked
  reseed(32390);const wc=hC(hPick(HPAL.shell),.92);let nw=0;
  for(const P of FLOORS.plans){const cs=Math.cos(P.ry),sn=Math.sin(P.ry);const W=(lx,lz)=>[P.hx+lx*cs+lz*sn,P.hz-lx*sn+lz*cs];const y0=P.y+.3;

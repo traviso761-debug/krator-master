@@ -1,6 +1,6 @@
 {
  "build": "ys",
- "note": "Ys's adapter onto the material library (core/materials/PLAN.md; settlements/ys/MATERIAL-PROMPTS.md has every set's prompt). The families are Ys's material keys: the hyk shell kit's MAT pairs (hkShell..hkVerd: hykSurf lays metre UVs, a tile is 4 m, so the adapter repeats each set 4/scale times), the terrain (ground: 71-port-terrain lays x/18, z/18), the Ancient hosts' own tables (sand: the Arcades HAC_MAT, trav: the Bell Hall HBH_MAT, verdigris: core MAT.verdigris; their UVs are the towers' own, so scale is nominal and the map replaces the procedural one 1:1). scale is world metres per tile. tint.keep is how much of the set's colour survives the vertex colour (the hyk buckets are vertex-coloured cream, teal, coral: a low keep), tint.mean the brightness the procedural greys had. Cards (kelp0-2 the weed ribbons on the tidelines, vine0-2 and clump0-3 the karst's dressing) keep their own colour. Run python3 tools/textures/pack.py settlements/ys after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "note": "Ys's adapter onto the material library (core/materials/PLAN.md; settlements/ys/MATERIAL-PROMPTS.md has every set's prompt). The families are Ys's material keys: the hyk shell kit's MAT pairs (hkShell..hkVerd: hykSurf lays metre UVs, a tile is 4 m, so the adapter repeats each set 4/scale times), the terrain (ground: 71-port-terrain lays x/18, z/18), the Ancient hosts' own tables (sand: the Arcades HAC_MAT, trav: the Bell Hall HBH_MAT, verdigris: core MAT.verdigris; their UVs are the towers' own, so scale is nominal and the map replaces the procedural one 1:1). scale is world metres per tile. tint.keep is how much of the set's colour survives the vertex colour (the hyk buckets are vertex-coloured cream, teal, coral: a low keep), tint.mean the brightness the procedural greys had. Cards (kelp0-2, the weed ribbons on the tidelines) keep their own colour; the vine and clump cards left when the biome took the karst's dressing. Run python3 tools/textures/pack.py settlements/ys after any change, then python3 build.py; ?mat=proc shows the procedural look.",
  "size": 512,
  "families": {
   "hkShell": {
@@ -249,97 +249,6 @@
   },
   "kelp2": {
    "lib": "card.kelp.7",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "vine0": {
-   "lib": "card.vine.hanging.0",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "vine1": {
-   "lib": "card.vine.hanging.4",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "vine2": {
-   "lib": "card.vine.hanging.8",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "clump0": {
-   "lib": "card.jungle.clump.1",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "clump1": {
-   "lib": "card.jungle.clump.5",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "clump2": {
-   "lib": "card.jungle.clump.10",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "roughLift": 0,
-   "specular": 0.2
-  },
-  "clump3": {
-   "lib": "card.jungle.clump.14",
    "scale": [
     1,
     1

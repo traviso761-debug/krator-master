@@ -563,3 +563,13 @@ pipe reed 16; 30,686 floor plants, 2229 reed stems, 120,947 hanging-garden items
 `figs-on-the-karst` (55 of 55), `height-ceiling` (109.6 m against 110). Presets `The karst forest` and `The river bank`.
 Looked at: the karst forest (fan-crowns, ferns and figs on a tower's domed top, ferns and epiphytes down the pale face,
 root strands to the ground, baobabs and the river beyond), the river bank, the opening shot (the city still reads).
+
+## Phase 3 closed out, phase 4 (Oct 5 2026)
+**The ground** is the bay's now (`ysGroundLush`, 84): above the beach and off a stamp's paint, the jungle floor, dark green
+with damp patches and leaf litter in the hollows, paler and drier toward the Inner Wall, rock where it is steep; the farms'
+soil paint is carried half-way to it, so the fields read as tilled ground in a green land, not red squares. **The karst
+cards** (Travis's clump and vine cards) are no longer drawn: the biome dresses the faces and plants the tops; the
+`vine*`/`clump*` families left `materials.json` (the sets stay in the library), the kelp cards stay on the weed ribbons.
+**The gallery** has an entry for the city (`gallery/build_gallery.py` ENTRIES, 'ys', marked new); it is republished when
+the branch reaches `main` (CLAUDE.md, gallery/README.md). Still open from PLAN.md P4: back-porting the compass to the
+standard `92-camera.js` pack (a cross-build change, not done here).

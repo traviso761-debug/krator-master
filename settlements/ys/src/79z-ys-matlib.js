@@ -29,7 +29,7 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
  {const L=P('verdigris');if(L&&MAT.verdigris)bind(MAT.verdigris,'verdigris',L,null);}
  // the cards: alpha cut-outs, mipmapped; the first kelp replaces the weed ribbons' texture (alpha-tested now)
  const card=n=>{const L=P(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;return t;};
- for(const [kind,n] of [['kelp',3],['vine',3],['clump',4]])for(let i=0;i<n;i++){const t=card(kind+i);if(t)YS_MATLIB.cards[kind].push(t);}
+ for(const [kind,n] of [['kelp',3]])for(let i=0;i<n;i++){const t=card(kind+i);if(t)YS_MATLIB.cards[kind].push(t);}   /* the vine and clump cards left with the karst's card dressing (the biome dresses it) */
  if(YS_MATLIB.cards.kelp.length)for(const m of [MAT.hkWeed,MAT.hkWeedI]){m.map=YS_MATLIB.cards.kelp[0];m.alphaTest=.4;m.needsUpdate=true;YS_MATLIB.bound.hkWeed='card.kelp';}
 })();
 // the records table for the export: every family as one record (GODOT-PLAN.md Phase 3)
@@ -37,5 +37,5 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
  const uv={hkShell:[4,4],hkFloor:[4,4],hkIn:[4,4],hkBarn:[4,4],hkBone:[4,4],hkMosaic:[4,4],hkNacre:[4,4],hkCrust:[4,4],hkVerd:[4,4],hkWet:[4,4],hkWeed:[1,1],ground:[18,18],sand:[20,20],trav:[20,20],verdigris:[12,12]};
  for(const fam in uv){const L=YS_MATLIB.on?P(fam):null;recs[fam]={id:'ys.'+fam,family:fam,scale:L?L.scale:uv[fam],tint:true,roughness:1,metal:L?(L.metal||0):0,specular:L?L.specular:0.5,
    breakup:L?(L.breakup||null):null,lib:L?L.lib:null,bake:!L,hook:fam==='hkNacre'?'nacre':fam==='ground'?'planar-uv':'metre-uv',note:L?'library set, tint keep '+L.tint:'procedural canvas map, vertex-coloured'};}
- for(const [kind,n] of [['kelp',3],['vine',3],['clump',4]])for(let i=0;i<n;i++){const L=YS_MATLIB.on?P(kind+i):null;if(L)recs[kind+i]={id:'ys.'+kind+i,family:'card',scale:[1,1],tint:false,roughness:.9,alphaTest:.42,doubleSided:true,lib:L.lib,note:'card'};}
+ for(const [kind,n] of [['kelp',3]])for(let i=0;i<n;i++){const L=YS_MATLIB.on?P(kind+i):null;if(L)recs[kind+i]={id:'ys.'+kind+i,family:'card',scale:[1,1],tint:false,roughness:.9,alphaTest:.42,doubleSided:true,lib:L.lib,note:'card'};}
  KMAT.adapter('ys',recs);window._materials=KMAT.table('ys');})();
