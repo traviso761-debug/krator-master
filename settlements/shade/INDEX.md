@@ -37,7 +37,7 @@ From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 | `77d-kit-nomad-khan.js` | 6 |  |
 | `77e-kit-nomad-camp.js` | 5 |  |
 | `80-host-buildings.js` | 7 |  |
-| `82-host-sky.js` | 13 | the Inner Wall painter (8) |
+| `82-host-sky.js` | 14 | the Inner Wall painter (8) |
 | `84-host-life.js` | 13 | the walkable grid (47); the checks the probe reads (97) |
 | `86-host-overlay.js` | 3 |  |
 | `87-host-views.js` | 3 |  |

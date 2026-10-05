@@ -17,7 +17,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/port`](settlements/port/PORT.md) | 112 | 760 | 42 | 0 | 0 | 32 | 686 | 4 |  | yes | yes |
 | [`settlements/reedlake`](settlements/reedlake/PORT.md) | 36 | 327 | 53 | 33 | 0 | 26 | 215 | 4 |  | yes | yes |
 | [`settlements/screamers`](settlements/screamers/PORT.md) | 76 | 569 | 19 | 19 | 27 | 44 | 460 | 6 |  | yes | yes |
-| [`settlements/shade`](settlements/shade/PORT.md) | 28 | 319 | 77 | 15 | 13 | 71 | 142 | 3 |  | yes | yes |
+| [`settlements/shade`](settlements/shade/PORT.md) | 28 | 319 | 77 | 15 | 14 | 71 | 142 | 3 |  | yes | yes |
 | [`settlements/verge`](settlements/verge/PORT.md) | 19 | 287 | 108 | 12 | 6 | 111 | 49 | 1 | biome | yes | yes |
 | [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1798 | 411 | 0 | 106 | 107 | 1175 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 64 | 886 | 437 | 19 | 10 | 56 | 365 | 6 |  | yes | yes |
@@ -28,17 +28,18 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
-| [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 196 | 1 | 0 | 14 | 31 | 150 | 6 | biome | yes | yes |
-| [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 137 | 2 | 0 | 12 | 16 | 107 | 6 | biome | yes | yes |
+| [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 199 | 1 | 0 | 14 | 31 | 153 | 6 | biome | yes | yes |
+| [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 138 | 2 | 0 | 12 | 16 | 108 | 6 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 223 | 0 | 0 | 34 | 44 | 145 | 6 | biome | yes | yes |
-| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 224 | 1 | 0 | 10 | 59 | 154 | 6 | biome | yes | yes |
-| [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 174 | 1 | 0 | 13 | 34 | 127 | 5 | biome | yes | yes |
+| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 225 | 1 | 0 | 10 | 59 | 154 | 6 | biome | yes | yes |
+| [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 175 | 1 | 0 | 13 | 34 | 127 | 5 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 205 | 1 | 0 | 16 | 29 | 159 | 5 | biome | yes | yes |
-| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 192 | 1 | 0 | 13 | 52 | 125 | 6 | biome | yes | yes |
+| [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 193 | 1 | 0 | 14 | 52 | 126 | 6 | biome | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
-| [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1408 | 19146 | 2734 (14%) | 351 (2%) | 794 (4%) | 1904 (10%) | 13364 (70%) | 204 | | | |
+| [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
+| [`openworld/little-demo`](openworld/little-demo/PORT.md) | 16 | 140 | 43 | 0 | 9 | 81 | 6 | 2 |  | yes | yes |
+| **all** | 1424 | 19294 | 2778 (14%) | 351 (2%) | 805 (4%) | 1986 (10%) | 13375 (69%) | 206 | | | |
 
 ## Host-shell copies
 
@@ -51,7 +52,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `sky` | 12 | 5 | 340 |
 | `stats` | 11 | 1 | 13 |
 | `host-stage` | 11 | 11 | 228 |
-| `host-sky` | 11 | 9 | 161 |
+| `host-sky` | 11 | 9 | 163 |
 | `host-build` | 11 | 11 | 13 |
 | `host-camera` | 11 | 11 | 94 |
 | `host-probe` | 11 | 11 | 61 |

@@ -21,12 +21,12 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `35-core-strata.js` | 9 |  |
 | `45-host-stage.js` | 30 **big** | the river, the canyon, the butte, the mesas (44); terrain (83); the host binding (138); the ground (148); the water (223) |
 | `50-biome-sedesert-species.js` | 29 | THE WATER COLOUR (18); the tree species (70); leaf textures (131); bark, rock, wood textures (207); geometries local to this biome (246); materials (300); instanced items (332) |
-| `55-biome-sedesert-trees.js` | 35 **big** | zones from the fields (16); colour (the maths is the core's, BIO.col) (37); polyline helpers (Girder's) (52); keep-clear between trees (60); foliage helpers (67); the builders (84); impostors (the far canopy) (261); the pass (313); the passes (data: species, cell, acceptance from (343) |
+| `55-biome-sedesert-trees.js` | 36 **big** | zones from the fields (16); colour (the maths is the core's, BIO.col) (37); polyline helpers (Girder's) (52); keep-clear between trees (60); foliage helpers (67); the builders (84); impostors (the far canopy) (261); the pass (313); the passes (data: species, cell, acceptance from (343); one tree alone (biomes/WORLD.md: trees as varian (372) |
 | `60-biome-sedesert-floor.js` | 14 | fields local to the floor (29); small plants (39); the zone planters (96); the pass (147) |
 | `65-biome-sedesert-dress.js` | 5 |  |
 | `70-biome-sedesert.js` | 1 |  |
 | `75-biome-sedesert-fauna.js` | 28 | geometries (unit, vertex-coloured) (32); materials (62); walkers: a pose that is a function of the clock  (69); quadrupeds: deer and coyotes (2026-10) (113); the pass (172) |
-| `82-host-sky.js` | 13 | the Inner Wall painter (8) |
+| `82-host-sky.js` | 14 | the Inner Wall painter (8) |
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | <1 |  |
 | `90-host-camera.js` | 10 |  |

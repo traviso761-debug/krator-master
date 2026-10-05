@@ -27,16 +27,17 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/interiors`](kits/interiors/INDEX.md) | 23 | 230 | 32 | Interiors: ROOM() registration and an engine-neutral furniture placer (ported from Yuni) with a catalog adapter; building planner (storeys, partitions, stairs), walkers and a light budget; the building SETS (Highlands, Post-Apoc, Beast Rider, Locus, Abyss: every building's rooms as data, the residence rule checked); a verified demo, a sets sheet, and a walkable mockup of furnished rooms inside the real buildings. |
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 26 | 389 | 32 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 37 | 230 | 18 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
-| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 14 | 196 | 59 | Biome kit: see `biomes/README.md`. |
-| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 137 | 33 | Biome kit: see `biomes/README.md`. |
+| [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 14 | 199 | 62 | Biome kit: see `biomes/README.md`. |
+| [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 138 | 33 | Biome kit: see `biomes/README.md`. |
 | [`biomes/nhighlands`](biomes/nhighlands/INDEX.md) | 16 | 223 | 51 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 15 | 224 | 61 | Biome kit: see `biomes/README.md`. |
-| [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 174 | 57 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwbay`](biomes/nwbay/INDEX.md) | 15 | 225 | 61 | Biome kit: see `biomes/README.md`. |
+| [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 175 | 57 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 205 | 68 | Biome kit: see `biomes/README.md`. |
-| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 192 | 35 | Biome kit: see `biomes/README.md`. |
+| [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 193 | 36 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 181 | 48 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 196 | 60 | Biome kit: see `biomes/README.md`. |
-| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 206 | 66 | Biome kit: see `biomes/README.md`. |
+| [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 207 | 66 | Biome kit: see `biomes/README.md`. |
+| [`openworld/little-demo`](openworld/little-demo/INDEX.md) | 16 | 140 | 31 | Little Demo: the scale model's eastern desert region at 1:1 (1.3 million km2), streamed: terrain from the scale model's heights, the sedesert, eastabyss and hyperjungle kits' flora placed by climate as cell-seeded instances, settlements marked. |
 
 ## Not builds
 

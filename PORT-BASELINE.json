@@ -1,44 +1,44 @@
 {
  "pages": {
   "biomes/eastabyss/dist/eastabyss.html": {
-   "bytes": 264244,
-   "sha256": "acad4ede043f24152e2cdf2de19b587da710fb177f701e39fc2385a34a861481"
+   "sha256": "421f448891e69a27b7e55eb42cb5b16d1ea95d810902ebac2acd7d41ebca28f6",
+   "bytes": 288824
   },
   "biomes/hyperjungle/dist/hyperjungle.html": {
-   "bytes": 232863,
-   "sha256": "e80249b9c182c5810014c66c318033b14985c81f13a96ee74d59f8e57a21caaf"
+   "sha256": "e1c624c9c77a2cdde29ceeceabe7a5153b9e7b36d2eb0f6a161fb4f522a563aa",
+   "bytes": 234485
   },
   "biomes/nhighlands/dist/nhighlands.html": {
-   "bytes": 313162,
-   "sha256": "cb9b7bda6c00e1e5d3192142294b10eb06214e66b842c6b79c65c9e55c28ffda"
+   "sha256": "8c028a58eabe6887be92fadc90777284515cffb6ed5b7cf31b11acf415c3c159",
+   "bytes": 313185
   },
   "biomes/nwbay/dist/nwbay.html": {
-   "bytes": 314825,
-   "sha256": "33502579e72ca6c54deffa9e434b6bcf71b0c1042717d98b025d224a1ddb6623"
+   "sha256": "09e5341771fdc24ec8bc2bcda2ec6bffc15914eac9385a682a8e3977276bbe75",
+   "bytes": 315014
   },
   "biomes/nwlowlands/dist/nwlowlands.html": {
-   "bytes": 263644,
-   "sha256": "c71a33de7ef189f2dbbc42dbe7fa7bfdbe7a0f38f171b0b4f88e0370b21ed6b5"
+   "sha256": "ec3d64db967444ce0103b53a19aaa1b669c103131f6ade1842391594ca1cf965",
+   "bytes": 263833
   },
   "biomes/rift/dist/rift.html": {
-   "bytes": 294494,
-   "sha256": "7a53f99d630c6478f8fde1a2cbe27aec19aba88d0c19840c40c9bd802a8151aa"
+   "sha256": "ce6aef61f10ad1b7e760823d54010cca4d15cff278cdcde6f5cac53c69953387",
+   "bytes": 294683
   },
   "biomes/sedesert/dist/sedesert.html": {
-   "bytes": 275887,
-   "sha256": "c7effc56a14c74c1cbf96511b3f6a1e4edc13ff37e858ac59f28d94c78f970f5"
+   "sha256": "856e3a83d37f3706827233e680226ade7e9802c6ecbea33e1a0dae60f7a65e67",
+   "bytes": 296711
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 270204,
-   "sha256": "4b6fd8f2fc3c1af8a8c5a228db70fea4301ead78e06f3072b926411d251de98a"
+   "sha256": "469b2085a1d291c2e23f13fd300e1fc8e62eccf8257943fb36c9e2fc28f729c0",
+   "bytes": 270393
   },
   "biomes/swlowlands/dist/swlowlands.html": {
-   "bytes": 285736,
-   "sha256": "a452635560d5dc7172233c3f12eec2c46d024a6a7242bea5a64e38d861dd139d"
+   "sha256": "04a57b8d11ead582cb8be42f213172037f6250b79e6c85449a6a9631b5f36ea3",
+   "bytes": 285925
   },
   "biomes/xanadu/dist/xanadu.html": {
-   "bytes": 296370,
-   "sha256": "dd0a92754e0a71c7d3ee8db8fd92a8780c0b5608273cb187992a3b686b55c658"
+   "sha256": "ad224386d0e7cd2bd6bb07e9e0be05782522a7719320e23f15f2812ce90e5afc",
+   "bytes": 296559
   },
   "core/sockets/example/sockets-example.html": {
    "bytes": 174286,
@@ -421,16 +421,16 @@
    "sha256": "0159c05c90b606cd97e270f0e6d5ba6851272d27a621daec8ee8845eb6453a8f"
   },
   "settlements/screamers/dist/furniture.html": {
-   "bytes": 625580,
-   "sha256": "34372fcebf646338f46a47bdf353470bb39deee10ce80224dff2fe8050643b93"
+   "sha256": "f27116401f7f3c0b4a6b5df1840aac0d3511eccb90b433dcf9c4ac7b2303547e",
+   "bytes": 625769
   },
   "settlements/screamers/dist/screamers.html": {
-   "bytes": 628115,
-   "sha256": "38667312d729259cccab54f8b717d10dd7ba7629ede4f5eacfcd294bb3905d97"
+   "sha256": "955e0c5038504ed61c3cda7d951751154dcf2bce821542968c637a4f4e1c3718",
+   "bytes": 628304
   },
   "settlements/shade/dist/shade.html": {
-   "bytes": 341438,
-   "sha256": "bf410a8b4300101e8e6526ec18642cb9957e2d548dc96a32874eeed4bc10c4e4"
+   "sha256": "629c825c09f07d1d09378bda1c5ef0000a752ecdba9bf616fdb5c5138e3f2e6f",
+   "bytes": 341627
   },
   "settlements/voth/voth.html": {
    "bytes": 1992682,
@@ -467,6 +467,14 @@
   "settlements/yuni/yuni.html": {
    "bytes": 1109762,
    "sha256": "7eab9b199884f2b3f528c4095f7998e346d603b189f8763866075219b26bb28e"
+  },
+  "openworld/little-demo/dist/little-demo.html": {
+   "sha256": "ae483332afa7a07150c82b7ec674c4392781a7dbfcb71291738161cfae640886",
+   "bytes": 1828015
+  },
+  "openworld/little-demo/dist/little-demo.artifact.html": {
+   "sha256": "89624ad723bcd19e7aed0244777305ba958946ad381779135f8e8eeda2fbb3f5",
+   "bytes": 1827757
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

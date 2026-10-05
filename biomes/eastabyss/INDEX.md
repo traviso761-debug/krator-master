@@ -18,7 +18,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 2 |  |
 | `45-host-stage.js` | 16 | the lake, the rivers, the zones (39); terrain (64); the host binding (86); the ground (96); the water (146) |
 | `50-biome-eastabyss-species.js` | 44 **big** | THE LAKE COLOUR (20); the tree species (64); leaf textures (141); an iridescent bark (284); bark textures (300); geometries local to this biome (349); materials (407); instanced items (456) |
-| `55-biome-eastabyss-trees.js` | 59 **big** | zones from the fields (15); colour (28); polyline helpers (Girder's) (49); keep-clear between trees (57); cauliflory (64); beard moss (73); foliage helpers (78); the builders (99); the coal-swamp set (290); impostors (the far canopy) (412) |
+| `55-biome-eastabyss-trees.js` | 62 **big** | zones from the fields (15); colour (28); polyline helpers (Girder's) (49); keep-clear between trees (57); cauliflory (64); beard moss (73); foliage helpers (78); the builders (99); the coal-swamp set (290); impostors (the far canopy) (412) |
 | `60-biome-eastabyss-floor.js` | 16 | fields local to the floor (31); small plants (39); the zone planters (108); the pass (146) |
 | `65-biome-eastabyss-dress.js` | 7 |  |
 | `70-biome-eastabyss.js` | 1 |  |
