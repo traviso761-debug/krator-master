@@ -122,3 +122,55 @@ Step 1: `node core/tags/test-tags.js` prints `all passed`, with the digest, the 
 `core/PORT.md` tags the three fragments; `core/README.md` has the row. Step 2: Yuni's page builds, its export
 carries `krator-tags`, the spike's `yuni` case loads it as node metadata, `--check` passes on all six cases,
 `T.audit()` reads zero unknowns, and the baseline is updated with a screenshot pair showing nothing drawn moved.
+
+---
+
+## Addendum: the second session (2026-10-05, later), and where to pick up
+
+Everything below is on `main`. Read `core/tags/README.md` and `core/mask/README.md` before this; they hold what was
+built. This addendum is the state and the next steps.
+
+### Done
+
+- **core/tags steps 1 to 4.** The module (registry, vocabulary, label, node test, the uid's GDScript twin `ktags.gd`).
+  Yuni's fixtures (13044 records); core/furnish's five builds register their furniture (`cfg.tags`, `KFURN.tag`,
+  fingerprints `same` on all sixteen loads); Iziz's `REG` (`src/91t-iziz-tags.js`, 783 records on the city) and Voth's
+  `PLACED` plus the canton-top footprints (`src/97t-voth-tags.js`, 4165 records) are read in before the first frame.
+  Zero unknown vocabulary on every page. `KTAGS.page` is the page's registry; `export_spike.py` writes it as
+  `tags.json`. Decisions taken with Travis on the way: Ancients ruins and civic-only buildings take `wealth: null`.
+- **core/mask** (GODOT-PLAN.md Phase 2 item 5). `KMASK.canvas`, a drop-in for the mask and class canvases, hard-edged
+  by pixel centre; `kmask.gd` replays the ops bit for bit. Iziz, Dalab, Erewhon and Roketstad place from it, the same on
+  GPU-canvas and CPU-canvas loads; rubble moved once per city, each with a screenshot pair (counts in its README).
+  Caveat: this container's headless Chromium draws 2D canvases in software either way, so the GPU-versus-CPU proof
+  has not been run on a real GPU.
+- **The spike's open issues** (GODOT-PLAN.md finding 14): Girder's lamps cross as data (`_api.lamps`, `lamps.json`,
+  `godot/krator/lamps_import.gd`; `compare_shots.py girder --hour=21` shows them); the exporter skips core/lod's render
+  copies; a region's sky panorama starts at the region's edge; the atmos wave field is ported
+  (`godot/shaders/atmos_waves.gdshaderinc`, the globals, a CPU twin with golden vectors).
+
+### Open, in the order I would take them
+
+1. **The biome reseeding event** (TODO.md, Port: next, item 5): `KRAND` noise and cell seeding, plant records (one
+   record per item, `flora_00012#37` per instance: tags step 5, Köppen per species), the `core/terrain` heightmap bake.
+   One change, one screenshot set. It finishes M3 and opens M4.
+2. **Iziz's export on the `KRATOR_EXPORT` shape** (M5), now that its city places from core/mask and its records are in
+   core/tags. The glTF exporter should write each mesh's record id into its node extras (the spike reports the gap
+   `tag nodes`: the records reach Godot only as data today).
+3. **Refurbishing items the adapters work around** (Travis: "voth and iziz both need some architectural refurbishing"):
+   Voth's canton-top records stand at ground height (`inspectClaim` keeps no y); Iziz's 72 biome trees and animals
+   carry no `cls` or tags in `REG` (classed by name); Voth's claim footprints include their padding except the town
+   houses'.
+4. **Godot's night** is far darker than the page's (no night ambient or moonlight in the stage record) and its halos
+   are fainter (gain 1.0): tune against `compare_shots.py girder --hour=21`.
+5. **Erewhon's infill** still places nothing: the mask's soft edge was not the cause (`settlements/xanadu/KNOWN_ISSUES.md`).
+6. **Iziz's material pack** waits on Iziz adopting the material library, which the Ancients re-vendor session gates.
+7. For Travis: the Forward+ look check on his machine (`godot/CHECKLIST.md`) and the route his friend used for the
+   Voth kit.
+
+### Proving a change, as this session did
+
+`node core/{tags,furnish,mask,rand}/test-*.js`; `python3 godot/tools/sync_core.py --check`; the Godot golden tests
+(`res://tests/{rand,tags,mask,atmos}/*_test.gd`); `godot --headless --path godot --import` then `-- --check` (all
+cases, zero `SCRIPT ERROR`); `python3 core/furnish/fingerprint.py` (prints each page's tag audit too); a screenshot pair
+for anything that may move what is drawn; then `tools/audit_port.py`, `tools/make_index.py` (it rewrites
+`settlements/locus/INDEX.md` for a page this container may not have built: check that diff), `tools/port_baseline.py --write`.
