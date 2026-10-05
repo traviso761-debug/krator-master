@@ -98,6 +98,11 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       salvage dressing is not applied to any host (`portRepair` does not handle a rotated group).
 - [ ] (Oct 5 2026) A `//` comment inside a one-line vendored function swallows the rest of the line (it cost the city a
       leaked transform this round). Mark Ys hooks in vendored fragments with `/* */` only.
+- [ ] (Oct 5 2026) The Capsule Stalks' sockets are not used: pods take the centre stalk's smooth band only (one plate,
+      so one pod). Growing into a socket needs `HYK.placeOn` to frame a pod on an off-axis core (a socket's position and
+      normal are in `HOSTSPEC_STALKS.sockets(d)`; drop the ones above the cut).
+- [ ] (Oct 5 2026) The Arcades' sandstone and the Bell Hall's travertine are the board-formed concrete map, tinted: the
+      material library has neither (kits/ancients/KNOWN_ISSUES.md has the prompts).
 - [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
       their faces and ledges instead.
 - [ ] (Oct 5 2026) The spans are not placed: the bridge graph (PLAN.md P3 step 3: which blocks link at L1, which towers

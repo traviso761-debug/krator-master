@@ -74,6 +74,36 @@
   "from": "settlements/iziz/src",
   "sha1": "160cad10b9a2"
  },
+ "69h-host-0-lib.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "a795d96213f1"
+ },
+ "69h-host-a-facet.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "2a89eeee0af1"
+ },
+ "69h-host-b-bastion.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "d4d4fe3ba652"
+ },
+ "69h-host-c-arcades.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "51f5db7ef834"
+ },
+ "69h-host-d-stalks.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "02c23d98e538"
+ },
+ "69h-host-e-bellhall.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "d474b6e27eda"
+ },
  "70-port-core.js": {
   "adapted": false,
   "from": "settlements/port/src",

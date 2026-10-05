@@ -31307,7 +31307,8 @@ function buildHostArcades(scene,gx,gz,d){reseed(12020+d);KOFF=[gx,0,gz];const G=
  REGISTER({name:'The Arcades — stepped arched terraces ('+(d===2?'collapsed':STATE(d))+')',x:0,z:0,r:44,h:HAC.H+2});
  const yc=(typeof ysCutY==='function'?ysCutY(d):null),host=yc!=null;
  const cut=d===2?Y0+PS*5:yc!=null?yc:(d===1?Y0+PS*11:null),L=cut!=null?cut:HAC.H;   // builder y (the body is drawn in the builder's frame)
- let hole=holeFn(dd*(d===2?1.3:1),HAC.SEED,cut!=null?L+25:null,1.3);   // the cut's erosion over its top 20 m, not 45: a low buildingif(d===1&&!host)hole=skyScarHole(hole,.75,.12,L*.45,L,HAC.SEED);
+ let hole=holeFn(dd*(d===2?1.3:1),HAC.SEED,cut!=null?L+25:null,1.3);   // the cut's erosion over its top 20 m, not 45: a low building
+ if(d===1&&!host)hole=skyScarHole(hole,.75,.12,L*.45,L,HAC.SEED);
  if(typeof ysWallHole==='function')hole=ysWallHole(hole,0);         // YS: a way-in pod's hole through the skin and the lining
  // THE PODIUM: a 1.5 m terrace with steps at the front; a Ys podium shrinks it toward the building, never inside it
  const PRs=(typeof ysPodiumR==='function'?ysPodiumR(45):45),ps=clamp(PRs/45,.82,1),shrunk=PRs<45;

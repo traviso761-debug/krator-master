@@ -41,6 +41,12 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
+| `69h-host-0-lib.js` | 7 |  |
+| `69h-host-a-facet.js` | 7 |  |
+| `69h-host-b-bastion.js` | 12 |  |
+| `69h-host-c-arcades.js` | 10 |  |
+| `69h-host-d-stalks.js` | 9 |  |
+| `69h-host-e-bellhall.js` | 13 |  |
 | `70-hyk-housing.js` | 69 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (128); POOR 2: the stilt pod. A small pod carried 2.6 m (146); POOR 3: the limpet house. One ringed limpet cone (166); MIDDLE 1: the barnacle tower. One tall twisted b (183); MIDDLE 2: the pod cluster. Three pods of graded  (206); MIDDLE 3: the stair drum. A lobed drum with a st (232); RICH 1: the conch stair house. A nacre conch who (246); RICH 2: the urchin house. A lobed nacre dome rin (311); RICH 3: the scallop court. A ribbed scallop valv (346) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
 | `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (61); the grown-on base (the G frame: origin on the ho (108); the trade dressings (F from a base: at(th,y,out) (135); the free-standing stores (row 'Shops') (296); the grown-on stores (row 'Grown-on shops', the G (367) |
@@ -76,6 +82,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 94 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `87d-city-karst.js`, `88-city-place.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 95 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

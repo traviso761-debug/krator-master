@@ -284,3 +284,17 @@ adapted): jungle in patches on crowns and shoulders, pale limestone walls with r
 the roads go round it: a highway point inside a stack is pushed out along the stack's radial line, a street is cut where
 it meets karst and keeps its clear runs, and only then is the road paint laid (`ysRoadStamps`, moved from 87c) and the
 placer's street reservations made. Two streets were cut; no highway had to move.
+
+## Five host-ready Ancient types (Oct 5 2026, from Travis's references)
+A subagent built them upstream (`kits/ancients/src/8ap-host-*`, a `hosts` target sheet): L the Facet (a folded bronze
+spire, verdigris in ruin) and M the Bastion (a battered rust-and-concrete base, stepped tiers, a shaft with a garden slot
+up each face), and three mid-rises, the Arcades (stepped arched terraces), the Capsule Stalks (Metabolist cores studded
+with sockets) and the Bell Hall (travertine drums, a concave wall, a slab campanile with its bell cage). Every one takes
+the cut, the podium and the way-in holes behind `typeof` guards and carries a `HOSTSPEC_*` in `YS_HOST_TYPES`'s shape, so
+Ys vendors them byte for byte, as `69h-host-*` (they must sort after `68-mat-v5` and before the placer:
+`build.py`'s `VENDOR_RENAME` keeps the drift check pointed at the upstream names). One upstream bug fixed at the merge: a
+`//` in the Arcades swallowed its collapse scar. In the city the Facet and the Bastion join A, D and H in the tall and
+mid pools and as full towers; the mid-rises take the awash blocks and the land plots (on land they stand whole at decay 3,
+pods from just over their terrace). A host whose wealth's way-in pod fits no plate takes the smallest one; a type whose
+faces leave one usable plate (the Stalks' smooth band) keeps only its way in. The Stalks' sockets (`sockets(d)`) are
+not grown into yet: `HYK.placeOn` frames a pod on the host's own axis, and the sockets are on three cores.

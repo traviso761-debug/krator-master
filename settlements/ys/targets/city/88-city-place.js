@@ -101,11 +101,17 @@ const YS_HOST_TYPES={
   avoid:(yl,h)=>[66,132,198,264].some(ys=>yl-1.5<ys+9&&yl+h+1.5>ys-1),   // a ledge and the turrets on it
   bearings:(st,n)=>ysPlFaces([0,Math.PI/2,Math.PI,3*Math.PI/2],st,n)}
 };
+// the five types built to be hosts (kits/ancients 8ap-host-*, vendored as 69h-host-*): their specs are already in this
+// shape. L the Facet and M the Bastion are skyscrapers; the Arcades, the Capsule Stalks and the Bell Hall are mid-rises
+// for the shallows and the land quarter.
+for(const S of [HOSTSPEC_FACET,HOSTSPEC_BASTION,HOSTSPEC_ARCADES,HOSTSPEC_STALKS,HOSTSPEC_BELLHALL])YS_HOST_TYPES[S.key]=S;
 // bearings on a square host's faces: the face centres in a random order, then the faces again either side of centre
 function ysPlFaces(F,st,n){const f=F.slice();for(let i=f.length-1;i>0;i--){const j=st.int(0,i);[f[i],f[j]]=[f[j],f[i]];}
  const out=[];for(let i=0;i<n;i++){const k=i%f.length,lap=Math.floor(i/f.length);out.push(f[k]+(lap?(lap%2?.32:-.32):0)+st.range(-.04,.04));}return out;}
 // the host type for a block by its class (the Pharos and the plaza name theirs)
-const PL_TYPES={tall:[['skyA',1],['skyD',1],['skyH',1]],mid:[['skyA',.8],['skyD',1],['skyH',1]],low:[['skyD',1],['skyH',1]],land:[['skyD',1],['skyH',1]],full:[['skyA',1],['skyD',1],['skyH',1]]};
+const PL_TYPES={tall:[['skyA',1],['skyD',1],['skyH',1],['skyL',1.2],['skyM',1.2]],mid:[['skyA',.8],['skyD',1],['skyH',1],['skyL',1],['skyM',1]],
+ low:[['skyD',.5],['skyH',.5],['midArcades',1],['midStalks',1],['midBell',1]],land:[['skyD',.5],['skyH',.5],['midArcades',1.2],['midStalks',1.2],['midBell',1.2]],
+ full:[['skyA',1],['skyD',1],['skyH',1],['skyL',1],['skyM',1]]};
 function ysPlType(st,cls){const L=PL_TYPES[cls]||PL_TYPES.mid;let t=L.reduce((s,e)=>s+e[1],0)*st.next();for(const [k,w] of L){t-=w;if(t<=0)return k;}return L[L.length-1][0];}
 // the grown pools: [key, weight]; the way-in pods per wealth (a host needs one: every-host-has-a-way-in)
 const PL_PODS={
@@ -120,28 +126,33 @@ const PL_PODN={poor:4,middle:5,rich:6,full:8};
 function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);const cls=o.full?'full':o.land?'land':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];
  // a land host (decay 3, reclaimed) stands on the ground, its pods above its podium's colonnade (17 m)
  const sink=o.land?o.y-.5:T.sink==='seabed'?Math.min(terrainH(b.x,b.z),b.y)-1.5:-(T.plate(T.k0)-T.plateAt)+st.range(-2.5,2.5);
- let cutY=null;if(!o.full){const r=T.cuts[cls]||T.cuts.mid;const n0=Math.ceil((r[0]-T.Y0)/T.floors.pitch),n1=Math.floor((r[1]-T.Y0)/T.floors.pitch);cutY=T.Y0+st.int(n0,n1)*T.floors.pitch;}
- const top=(o.full?T.crownY:cutY)+sink;const ry=T.square?PL_RY+st.int(0,3)*Math.PI/2:st.range(0,TAU);
- const P='Project '+T.key.slice(3);const nm=T.name.replace('the ','');
- const rec={n:o.name||(o.full?P+' tower ('+b.i+','+b.j+')':o.land?'The reclaimed '+nm+' ('+b.i+','+b.j+')':'The '+nm+' stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
+ const whole=o.full||(o.land&&/^mid/.test(T.key));   /* a reclaimed mid-rise stands whole */
+ let cutY=null;if(!whole){const r=T.cuts[cls]||T.cuts.mid;const n0=Math.ceil((r[0]-T.Y0)/T.floors.pitch),n1=Math.floor((r[1]-T.Y0)/T.floors.pitch);cutY=T.Y0+st.int(n0,n1)*T.floors.pitch;}
+ const top=(whole?T.crownY:cutY)+sink;const ry=T.square?PL_RY+st.int(0,3)*Math.PI/2:st.range(0,TAU);
+ const P='Project '+T.key.slice(3);const nm=T.name.replace('the ','');const mid=/^mid/.test(T.key);
+ const rec={n:o.name||(o.full?P+' tower ('+b.i+','+b.j+')':o.land?'The reclaimed '+nm+' ('+b.i+','+b.j+')':mid?'The drowned '+nm+' ('+b.i+','+b.j+')':'The '+nm+' stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
   x:o.x!=null?o.x:b.x,z:o.z!=null?o.z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:o.land?3:1,land:!!o.land,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
   shaped:!!T.shaped,wealth:b.wealth,plates:[],pods:[],ways:[]};
  rec.rAt=(y,a)=>T.rAt(y-rec.sink,a==null?null:a+rec.ry);   // a world bearing a is the local bearing a + ry
- for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+18:T.minY;if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
+ for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;const lo=o.land?sink+(/^mid/.test(T.key)?4:18):T.minY;   /* a mid-rise has a terrace, not a colonnade, at its foot */if(lo!=null&&y<lo)continue;rec.plates.push(+y.toFixed(2));}
  // the pods: the way in first, then the wealth pool; bearings from the type, plates stepped about a base
  const n=o.pods!=null?o.pods:PL_PODN[o.full?'full':b.wealth];const keys=[o.way||ysPlPick(st,PL_WAYS[b.wealth])];for(const k of (o.must||[]))keys.push(k);
  while(keys.length<n)keys.push(ysPlPick(st,PL_PODS[b.wealth]));
  const TH=T.bearings(st,keys.length),Pl=rec.plates;const STEP=[0,2,-1,3,1,-2,4,-3];const base=o.land?0:Math.min(Pl.length-1,Math.max(0,Math.round(Pl.length*(o.full?.18:.35))));   // a land host's pods at ground scale: the lowest plates
  const ok=(k,D)=>Pl[k]+D.h+2<=top&&!(T.avoid&&T.avoid(Pl[k]-sink,D.h));
- keys.forEach((key,i)=>{const D=HYK.defs[key];if(!D||!Pl.length)return;let k=clamp(base+STEP[i%STEP.length]*(o.full?3:1),0,Pl.length-1);
+ const place=(key,i)=>{const D=HYK.defs[key];if(!D||!Pl.length)return false;let k=clamp(base+STEP[i%STEP.length]*(o.full?3:1),0,Pl.length-1);
   if(o.crown&&key===o.crown)k=Math.max(0,Pl.length-4);
-  if(!ok(k,D)){let best=-1;for(let d=1;d<Pl.length;d++){for(const q of [k-d,k+d])if(q>=0&&q<Pl.length&&ok(q,D)){best=q;break;}if(best>=0)break;}if(best<0)return;k=best;}   // the pod clears the cut and the host's own ledges
+  if(!ok(k,D)){let best=-1;for(let d=1;d<Pl.length;d++){for(const q of [k-d,k+d])if(q>=0&&q<Pl.length&&ok(q,D)){best=q;break;}if(best>=0)break;}if(best<0)return false;k=best;}   // the pod clears the cut and the host's own ledges
   const y=Pl[k];const a=TH[i]-ry;const into=!!D.into;   // an into def is drawn only as a way in (the kit sheet tests it so: the Urchin pod's other layout puts its store in the door swing)
-  rec.pods.push({key,a:+a.toFixed(4),y,level:y>=20?'L2':'L1',into,wealth:D.tags.wealth});if(into)rec.ways.push({a:+a.toFixed(4),y,R:D.w/2});ysPlCount(key);});
+  rec.pods.push({key,a:+a.toFixed(4),y,level:y>=20?'L2':'L1',into,wealth:D.tags.wealth});if(into)rec.ways.push({a:+a.toFixed(4),y,R:D.w/2});ysPlCount(key);return true;};
+ // the way in first: if the wealth's way-in pod fits no plate, the smallest one (every host needs a way in)
+ keys.forEach((key,i)=>{if(!place(key,i)&&i===0)place('hyk_pod_poor_1',0);});
  // pods round one host stand on different plates (Travis, Oct 2026): if the cut squeezed them onto one, move a pod that
  // fits to the nearest other plate
  if(rec.pods.length>1&&new Set(rec.pods.map(p=>p.y)).size<2){const y0=rec.pods[0].y;const alt=Pl.filter(y=>y!==y0).sort((p,q)=>Math.abs(p-y0)-Math.abs(q-y0));
   for(const p of rec.pods.slice(1)){const D=HYK.defs[p.key];const y=alt.find(y=>y+D.h+2<=top&&!(T.avoid&&T.avoid(y-sink,D.h)));if(y==null)continue;p.y=y;p.level=y>=20?'L2':'L1';const w=rec.ways.find(w=>w.a===p.a);if(w)w.y=y;break;}}
+ // a type whose faces leave pods one usable plate (the Capsule Stalks' smooth band) keeps only its way in
+ if(rec.pods.length>1&&new Set(rec.pods.map(p=>p.y)).size<2){for(const p of rec.pods.slice(1))PL_COUNT[p.key]--;rec.pods.length=1;rec.ways=rec.ways.filter(w=>w.a===rec.pods[0].a);}
  ysPlTake(ysPlBox(rec.x,rec.z,T.cap,T.cap,PL_RY,'host '+rec.n));PLACE.hosts.push(rec);return rec;}
 
 // ---------------------------------------------------------------- the frontage walker: a block's streets lined with buildings

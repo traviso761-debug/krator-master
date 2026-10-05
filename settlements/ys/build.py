@@ -81,6 +81,11 @@ for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-e
     VENDORED[_f] = 'settlements/port/src'
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
+# vendored under another name (Ys's load order: the five host-ready types must sort after 68-mat-v5 and before the city's
+# placer, which reads their HOSTSPEC_* at load): Ys name -> upstream name
+VENDOR_RENAME = {'69h-host-%s.js' % p: '8ap-host-%s.js' % p for p in ['0-lib', 'a-facet', 'b-bastion', 'c-arcades', 'd-stalks', 'e-bellhall']}
+for _f in VENDOR_RENAME:
+    VENDORED[_f] = 'kits/ancients/src'
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
 ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js'}
 
@@ -95,7 +100,7 @@ DETERMINISTIC = {
     '35-furn-frame.js', '84-kit-geo.js', '87-city-layout.js', '84b-city-shore.js', '87b-city-nav.js', '87c-city-paint.js',
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
-    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js',
+    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js',
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0
@@ -238,7 +243,7 @@ def vendor_manifest():
 def vendor_check():
     same, adapted, drift, missing = [], [], [], []
     for f in sorted(VENDORED):
-        up = os.path.join(ROOT, VENDORED[f], f)
+        up = os.path.join(ROOT, VENDORED[f], VENDOR_RENAME.get(f, f))
         here = srcpath(f)
         if not os.path.exists(up):
             missing.append(f); continue
