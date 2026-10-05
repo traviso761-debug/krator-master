@@ -6,14 +6,23 @@
   about 856 m through **seven cataracts** in a slot cut into the cliff, into a **plunge pool** (x -886, z -226). From
   there the **lower river** runs east toward the **salt lakes**, which lie 7.4 to 14.6 km east and below the floor, so
   they are seen from the lip and from the trail.
-- **The spur.** South of the gorge the escarpment does not stand as a cliff: it comes down as a **spur**, a ridge
-  1.4 km long. This is the easiest descent, and the reason the city exists. Its profile is stepped by low ledges (the
-  beds it is cut from) and its toe is ragged. Rock outcrops show between the scree.
-- **The trail.** It zigzags down the spur in **26 legs** (about 7.06 km at 12.2%), between z -138 and z +116. The
-  hairpins have a radius of 7 m; the trail is 4.4 m wide and its bench is cut 8.5 m into the slope.
-- **The funicular.** The rusted remnant of an Ancient funicular runs straight down the spur's crest (z 58): an upper
-  station on the rim, piers, broken spans and a fallen car. The trail shares its cuttings where they cross. It is the
-  only Ancient structure in Verge.
+- **The spur.** South of the gorge the escarpment does not stand as a cliff: it comes down as a **spur**, a broad
+  buttress of bedded rock about 900 m deep and 800 m wide (z -190 to about 600), falling at about 44°. This is the
+  easiest descent, and the reason the city exists.
+  - Its profile is stepped by low ledges (the beds it is cut from), and deep gullies and buttress ribs run down its
+    face.
+  - Its toe on the floor is ragged, 460 to 650 m east of the lip.
+  - Rock outcrops show between the scree.
+- **The trail.** It wanders down the spur in about **16 long legs** (about 7 km at 12.1%).
+  - Each hairpin sits at its own spot: on the gorge side between z -90 and -60, on the far side mostly between 300
+    and 470, and now and then doubling back early (140 to 260).
+  - Each hairpin has its own radius, 6 to 10 m.
+  - A leg follows the slope's contour at the trail's height, so it bends round every gully and buttress and is barely
+    cut in.
+  - The trail is 4.4 m wide, on a bench blended 8.5 m into the slope.
+- **The funicular.** The rusted remnant of an Ancient funicular runs straight down the spur's north edge, above the
+  gorge (z -140), at about 40°. It has an upper station beside the upper trailhead, piers, broken spans and a fallen
+  car. The trail never crosses it. It is the only Ancient structure in Verge.
 - **The biomes.**
   - Above: the eastern high desert (`biomes/sedesert`) over the plateau and the canyon. A linear oasis follows the upper
     river's banks.
@@ -39,7 +48,7 @@ and Eastern Abyssal** styles, as Locus is. Its landmarks are:
 
 - the guard tower;
 - the **Mayor's compound**, a new 70 × 56 m courtyard palace in the Eastern Abyssal style;
-- the **Historian chapterhouse**;
+- the **Historian chapterhouse**, just off the trailhead among the first shops (about 190 m from the gate);
 - two caravanserais;
 - a temple, a library and a school;
 - three watch posts;
@@ -67,9 +76,13 @@ no walls and no gates elsewhere.
 **The spill.** A few houses stand on pads beside the trail's first legs below the top and its last legs above the
 bottom. Neither city comes near spanning the descent.
 
-**The rest stops** stand by the hairpins nearest the 200, 400, 600 and 800 m marks of the descent, on alternate
-sides. The north ones are built out over the gorge on a cliff deck; the south ones are cut into the rock. They are a
-new model in the Vernacular kit (`vern_rest_stop`, two variants).
+**The rest stops** stand on the legs at the 200, 400, 600 and 800 m marks of the descent: within a few metres of fall
+of each mark, at the nearest spot whose pad keeps clear of the other legs. They alternate between two kinds:
+
+- **built out on the cliff** below the trail (variant 1), with the drop before it;
+- **cut into the rock** above the trail (variant 0), its back to the rock.
+
+They are a new model in the Vernacular kit (`vern_rest_stop`, two variants).
 
 ## New buildings went into their kits
 

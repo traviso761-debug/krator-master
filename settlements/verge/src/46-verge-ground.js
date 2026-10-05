@@ -60,11 +60,15 @@ function groundColour(x,z,h,slope,out){
  if(x<-2700&&x>-3700){const rp=VG.rampNear(x,z);if(rp)out.lerp(GP.trail,smooth(rp.R.half+2,rp.R.half,rp.d)*.75);}
  const k=1+n1*.12;out.r=clamp(out.r*k,0,1);out.g=clamp(out.g*k,0,1);out.b=clamp(out.b*k,0,1);
  return out;}
+// the switchback's box (its legs, their banks and the rest stops' pads)
+const TRAIL_BOX=(()=>{const b=[1e9,-1e9,1e9,-1e9];for(const p of VG.TRAIL.pts){b[0]=Math.min(b[0],p[0]);b[1]=Math.max(b[1],p[0]);b[2]=Math.min(b[2],p[1]);b[3]=Math.max(b[3],p[1]);}
+ for(const r of VG.TRAIL.rest){b[0]=Math.min(b[0],r.x-30);b[1]=Math.max(b[1],r.x+30);b[2]=Math.min(b[2],r.z-30);b[3]=Math.max(b[3],r.z+30);}
+ return[b[0]-20,b[1]+20,b[2]-20,b[3]+20];})();
 // the cell size a tile needs, from what stands on it
 function tileCell(x0,z0,S){
  const hit=(b)=>!(b[1]<x0||b[0]>x0+S||b[3]<z0||b[2]>z0+S);
  const U=VG.CITY.upper.box,Lw=VG.CITY.lower.box;
- if(hit([VG.E.LIP_X-30,40,-170,150]))return 2;      // the switchback: a 4.4 m trail on a carved bench needs 2 m cells
+ if(hit(TRAIL_BOX))return 2;      // the switchback: a 4.4 m trail on a carved bench needs 2 m cells
  if(hit(U)||hit(Lw)||hit([VG.GORGE.x0-10,VG.POOL.x+VG.POOL.r+30,-300,-150]))return 4;
  let esc=false,can=false;for(let i=0;i<=4;i++)for(let j=0;j<=4;j++){const x=x0+S*i/4,z=z0+S*j/4,L=VG.lipX(z);
   if(x>L-80&&x<L+VG.escW(z,x)+60)esc=true;if(x<L&&Math.abs(z-VG.canZ(x))<VG.canHW(x)+VG.CAN_WALL+60)can=true;}

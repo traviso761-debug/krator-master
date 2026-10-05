@@ -6,7 +6,8 @@
 // reproduces it from the same seed (GODOT-PLAN.md rules 2 and 3).
 //
 // COMPASS: x east, z south, north is -z; metres; y up. A person is 1.75 m.
-// ORIGIN: the LOWER TRAILHEAD, at the foot of the descent (the Yuni-engine kit's night-light volume is centred here).
+// ORIGIN: on the abyss floor east of the spur's toe (the lower trailhead is ~480 m west of it, at the toe; the
+// Yuni-engine kit's night-light volume is centred on the origin).
 //
 // THE MAP (west to east):
 //   the PLATEAU          ~938 m, eastern high desert; mesas well out (sedesert biome)
@@ -14,8 +15,9 @@
 //                        UPPER VERGE and the linear oasis; the canyon flares to 600 m wide at its mouth
 //   the LIP              x ~ -1400: the edge of the plateau
 //   the ESCARPMENT       north and south of the canyon mouth: benched cliffs ~560 m deep
-//   the SPUR             z -190..190: the easiest descent, a long concave ramp 1400 m deep down which the
-//                        SWITCHBACK runs (26 legs, ~7 km, 12% grade), and beside it the Ancients' FUNICULAR ran
+//   the SPUR             z -190..600: the easiest descent, a steep buttress of bedded rock ~900 m deep, ribbed by
+//                        gullies, down which the SWITCHBACK wanders (about 13 long legs on the contours, ~12.5%),
+//                        and along its north edge, above the gorge, the Ancients' FUNICULAR ran
 //   the GORGE            z ~ -226, cut into the escarpment north of the spur: SEVEN CATARACTS, ~120 m each, from the
 //                        lip (858 m) to the PLUNGE POOL (3 m) at its foot
 //   the ABYSS FLOOR      ~0..6 m round the city, falling east; LOWER VERGE round the trailhead, the pool and the river
@@ -58,8 +60,9 @@ function upperH(x,z){
 
 // ---------------------------------------------------------------- the lip, the escarpment and the spur
 function lipX(z){const k=smooth(240,520,Math.abs(z+40));return E.LIP_X+k*(34*Math.sin(z*.0031+1)+16*Math.sin(z*.011)+140*(fbm(z*.0011,3.7,3,S_ESC+7)-.5)+22*Math.sin(z*.023+2));}
-function kSpur(z,x){const w=x===undefined?0:22*Math.sin(x*.0063+1.2)+12*Math.sin(x*.017);return smooth(-204,-166,z)*(1-smooth(194+w,262+w,z));}   // its north flank drops to the river below the pool; its south flank wanders
-function escW(z,x){return mix(560*(1+.5*(fbm(z*.0016,9.1,2,S_ESC+3)-.5)),1400+70*(fbm(z*.009,4.4,2,S_ESC+11)-.5),kSpur(z,x));}   // the spur's toe is ragged too
+const SPUR_W=900;   // the spur's run, lip to toe: ~44 degrees on average over its 860 m fall
+function kSpur(z,x){const w=x===undefined?0:30*Math.sin(x*.0063+1.2)+16*Math.sin(x*.017);return smooth(-204,-166,z)*(1-smooth(540+w,640+w,z));}   // its north flank is the gorge's south wall; its south flank wanders
+function escW(z,x){return mix(560*(1+.5*(fbm(z*.0016,9.1,2,S_ESC+3)-.5)),SPUR_W+170*(fbm(z*.005,4.4,3,S_ESC+11)-.5)+38*Math.sin(z*.019+.7),kSpur(z,x));}   // the spur's toe is ragged too
 // the abyss floor (east of the escarpment's foot), falling gently east toward the salt lakes
 const SALT_LAKES=[{x:10400,z:-600,rx:2900,rz:1500,a:.25},{x:14600,z:2100,rx:2300,rz:1700,a:-.4},{x:12600,z:-4300,rx:2600,rz:1200,a:.1},{x:7400,z:3900,rx:1500,rz:900,a:.6}];
 const SALT_Y=-27;
@@ -81,10 +84,13 @@ function escH(x,z,F){const L=lipX(z),W=escW(z,x),u0=(x-L)/W;if(u0>=1)return F;
  const u=clamp(u0+(1-k)*.055*Math.sin(z*.048+6*fbm(z*.004,x*.002,2,S_ESC+5)),0,1);
  const P=mix(cliffP(u),spurP(u0),k),U=upperH(L,z);
  const rough=(1-k*.85)*18*(fbm(x*.006,z*.006,3,S_ESC)-.5)*Math.sin(Math.PI*clamp(u0,0,1));
- // the spur is a ridge: its crest stands a little above its flanks, and shallow ribs run down it
- const crest=k*(14*Math.sin(Math.PI*clamp((z+200)/460,0,1))-6)*Math.sin(Math.PI*clamp(u0,0,1));
- const ribs=k*3.5*(fbm(x*.004,z*.03,2,S_ESC+9)-.5)*Math.sin(Math.PI*clamp(u0,0,1));
- return F+(U-F)*P+rough+crest+ribs;}
+ // the spur is a buttress: its crest stands above its flanks; deep gullies and buttress ribs run down it (strongest
+ // mid-slope, fading at the lip and the toe), and shallow ribs on those
+ const env=Math.sin(Math.PI*clamp(u0,0,1));
+ const crest=k*(22*Math.sin(Math.PI*clamp((z+190)/800,0,1))-8)*env;
+ const gully=k*44*(fbm(z*.0085,x*.0012+7.3,3,S_ESC+13)-.5)*Math.pow(env,.7);
+ const ribs=k*5*(fbm(x*.004,z*.03,2,S_ESC+9)-.5)*env;
+ return F+(U-F)*P+rough+crest+gully+ribs;}
 
 // ---------------------------------------------------------------- the gorge and the cataracts
 // The river leaves the canyon at the lip and drops through seven cataracts in a slot cut into the escarpment north of
@@ -135,42 +141,70 @@ function groundH0(x,z){
  return h;}
 
 // ---------------------------------------------------------------- the switchback
-// N legs zigzag down the spur between z = zN (the gorge side) and z = zS, joined by small hairpin arcs. The height
-// falls linearly with distance walked; each hairpin sits where the slope's own height is the trail's height there
-// (found by bisection on the ground), so the legs are cut in at one end and built out at the other by a few metres.
-const TRAIL={legs:26,zN:-138,zS:116,r:7,half:2.2,bank:8.5,top:null,bot:null,pts:null,len:0,grade:0,hairpins:[],rest:[]};
-TRAIL.top=[E.LIP_X-8,-58];TRAIL.bot=[14,-36];
+// Long legs wander down the spur between the gorge side (z -90..-60, below the funicular's line) and the far side
+// (z 300..470, now and then doubling back early at 140..260), each hairpin at its own seeded spot and radius. A leg
+// is not a straight line: it follows the slope's contour at the height the trail has there, so it bends round every
+// gully and buttress and is barely cut in; near each hairpin it eases onto the arc. The height falls linearly with
+// distance walked (one grade, about 12.5%), so the hairpins' heights and the legs' contours are found together by
+// iterating. The number of legs is the one that gives that grade.
+const TRAIL={legs:0,half:2.2,bank:8.5,top:null,bot:null,pts:null,len:0,grade:0,hairpins:[],rest:[]};
+TRAIL.top=[E.LIP_X-8,-58];TRAIL.bot=[lipX(-36)+escW(-36)+18,-36];
 (function(){
- const yTop=canFloorH(TRAIL.top[0],TRAIL.top[1])+.15,yBot=floorH(TRAIL.bot[0],TRAIL.bot[1])+.15;
- // x where the ground at row z is at height y (the escarpment is monotone down-slope along a row)
- const xAt=(y,z)=>{let lo=lipX(z)+2,hi=lipX(z)+escW(z)+40;for(let k=0;k<44;k++){const m=(lo+hi)/2;if(groundH0(m,z)>y)lo=m;else hi=m;}return(lo+hi)/2;};
- const N=TRAIL.legs;let hy=[];for(let k=1;k<N;k++)hy.push(yTop+(yBot-yTop)*k/N);
- let pts=null,len=0;
- for(let it=0;it<8;it++){
-  const H=[];for(let k=1;k<N;k++){const z=k%2?TRAIL.zS:TRAIL.zN;H.push({k,z,x:xAt(hy[k-1],z),side:k%2?'S':'N'});}
-  // the polyline: the top, each hairpin as a semicircle bulging outward, the bottom
-  const P=[[TRAIL.top[0],TRAIL.top[1]]],r=TRAIL.r;
-  for(const h of H){const out=h.side==='S'?1:-1;
-   for(let j=0;j<=10;j++){const a=Math.PI*j/10;P.push([h.x-r*Math.cos(a),h.z+out*r*Math.sin(a)]);}}
-  P.push([TRAIL.bot[0],TRAIL.bot[1]]);
-  let s=0;const S=[0];for(let i=1;i<P.length;i++){s+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);S.push(s);}
-  // the hairpins' heights from the arc length at their apex
-  const nh=H.map((h,i)=>{const iApex=1+i*11+5;return yTop+(yBot-yTop)*S[iApex]/s;});
-  let moved=0;for(let i=0;i<nh.length;i++){moved=Math.max(moved,Math.abs(nh[i]-hy[i]));}
-  hy=nh;pts=P.map((p,i)=>[p[0],p[1],yTop+(yBot-yTop)*S[i]/s,S[i]]);len=s;TRAIL.hairpins=H.map((h,i)=>({id:'hairpin-'+h.k,k:h.k,x:h.x,z:h.z,side:h.side,y:hy[i]}));
-  if(moved<.05)break;}
- TRAIL.pts=pts;TRAIL.len=len;TRAIL.yTop=yTop;TRAIL.yBot=yBot;TRAIL.grade=(yTop-yBot)/len;
- // the rest stops: at the hairpins nearest the 0.2, 0.4, 0.6 and 0.8 km marks of the DESCENT (metres below the top).
- // On the gorge side (N) the stop is built out on the cliff over the falls; on the S side it is cut into the rock.
- // They alternate: cliff, carved, cliff, carved.
- [.2,.4,.6,.8].forEach((km,i)=>{const y=yTop-km*1000,side=i%2?'S':'N';let b=null;for(const h of TRAIL.hairpins)if(h.side===side&&(!b||Math.abs(h.y-y)<Math.abs(b.y-y)))b=h;
-  const out=b.side==='S'?1:-1;
-  TRAIL.rest.push({id:'rest-'+Math.round(km*1000),km,mark:Math.round(km*1000),hairpin:b.id,side:b.side,variant:b.side==='N'?1:0,
-   x:b.x,z:b.z+out*(TRAIL.r+12),y:b.y,yaw:Math.PI});});   // vern_rest_stop: its +z toward the trail on the gate side, so +z faces north on both sides
- // a bucket grid of segments (8 m cells)
+ const yTop=canFloorH(TRAIL.top[0],TRAIL.top[1])+.15,yBot=floorH(TRAIL.bot[0],TRAIL.bot[1])+.15,DY=yTop-yBot;
+ // x where the ground at row z is at height y (the escarpment falls monotonically along a row)
+ const xAt=(y,z)=>{let lo=lipX(z)+2,hi=lipX(z)+escW(z)+40;for(let k=0;k<40;k++){const m=(lo+hi)/2;if(groundH0(m,z)>y)lo=m;else hi=m;}return(lo+hi)/2;};
+ // the hairpins' own spots: alternating, the far side first
+ const R=KRAND.stream(KRAND.child(SEED,'trail')),ENDS=[];
+ for(let k=1;k<=40;k++){const S=k%2===1;ENDS.push({k,side:S?'S':'N',r:R.range(6,10),
+  z:S?(R.next()<.2?R.range(140,260):R.range(300,470)):R.range(-90,-60)});}
+ function build(N){
+  const H=ENDS.slice(0,N-1).map(e=>Object.assign({},e));
+  // first guess at each hairpin's arc length: by the z it travels
+  let est=0;const zs=[TRAIL.top[1]].concat(H.map(h=>h.z),[TRAIL.bot[1]]);const cum=[0];
+  for(let i=1;i<zs.length;i++){est+=Math.abs(zs[i]-zs[i-1])*1.1+30;cum.push(est);}
+  H.forEach((h,i)=>{h.s=cum[i+1];});let len=est,P=null;
+  for(let it=0;it<14;it++){
+   H.forEach(h=>{h.y=yTop-DY*h.s/len;h.x=xAt(h.y,h.z);});
+   P=[[TRAIL.top[0],TRAIL.top[1]]];const apex=[];
+   let A={x:TRAIL.top[0],z:TRAIL.top[1],s:0};
+   const leg=(A,B)=>{const n=Math.max(2,Math.ceil(Math.abs(B.z-A.z)/6));
+    const xc=t=>{const z=mix(A.z,B.z,t),y=yTop-DY*mix(A.s,B.s,t)/len;return xAt(y,z);};
+    const dA=A.x-xc(0),dB=B.x-xc(1);
+    for(let j=1;j<n;j++){const t=j/n,z=mix(A.z,B.z,t),da=Math.abs(z-A.z),db=Math.abs(z-B.z);
+     P.push([xc(t)+dA*(1-smooth(0,50,da))+dB*(1-smooth(0,50,db)),z]);}};
+   for(const h of H){const out=h.side==='S'?1:-1;
+    leg(A,{x:h.x-h.r,z:h.z,s:h.s-Math.PI*h.r/2});
+    for(let j=0;j<=10;j++){const a=Math.PI*j/10;P.push([h.x-h.r*Math.cos(a),h.z+out*h.r*Math.sin(a)]);if(j===5)apex.push(P.length-1);}
+    A={x:h.x+h.r,z:h.z,s:h.s+Math.PI*h.r/2};}
+   leg(A,{x:TRAIL.bot[0],z:TRAIL.bot[1],s:len});P.push([TRAIL.bot[0],TRAIL.bot[1]]);
+   let s=0;const S=[0];for(let i=1;i<P.length;i++){s+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);S.push(s);}
+   let moved=Math.abs(s-len);H.forEach((h,i)=>{moved=Math.max(moved,Math.abs(S[apex[i]]-h.s));h.s=S[apex[i]];});len=s;
+   P=P.map((p,i)=>[p[0],p[1],yTop-DY*S[i]/s,S[i]]);
+   if(moved<.05)break;}
+  return{H,P,len};}
+ // the number of legs: the one whose grade is nearest 12.5% (never steeper than 14.5%)
+ let best=null;for(let N=8;N<=24;N++){const r=build(N),g=DY/r.len;if(g>.145)continue;if(!best||Math.abs(g-.125)<Math.abs(best.g-.125))best=Object.assign(r,{g,N});if(g<.11)break;}
+ const pts=best.P;TRAIL.legs=best.N;TRAIL.pts=pts;TRAIL.len=best.len;TRAIL.yTop=yTop;TRAIL.yBot=yBot;TRAIL.grade=DY/best.len;
+ TRAIL.hairpins=best.H.map(h=>({id:'hairpin-'+h.k,k:h.k,x:h.x,z:h.z,side:h.side,r:h.r,y:h.y,s:h.s}));
+ // a bucket grid of segments (8 m cells), before the rest stops (which ask it)
  const C=8,B=new Map();for(let k=0;k<pts.length-1;k++){const a=pts[k],b=pts[k+1],r=TRAIL.bank+1;
   for(let i=Math.floor((Math.min(a[0],b[0])-r)/C);i<=Math.floor((Math.max(a[0],b[0])+r)/C);i++)for(let j=Math.floor((Math.min(a[1],b[1])-r)/C);j<=Math.floor((Math.max(a[1],b[1])+r)/C);j++){const kk=i*65536+j;if(!B.has(kk))B.set(kk,[]);B.get(kk).push(k);}}
- TRAIL.C=C;TRAIL.B=B;})();
+ TRAIL.C=C;TRAIL.B=B;
+ // the rest stops: on a leg, at the 0.2, 0.4, 0.6 and 0.8 km marks of the DESCENT (metres below the top) or as near
+ // as a clear spot allows (within 30 m of fall). They alternate: built out on the cliff below the trail (variant 1,
+ // its +z to the drop), then cut into the rock above it (variant 0, its back to the rock, its +z to the trail).
+ // A spot is clear when its pad and the pad's blend keep off every other stretch of the trail and off the hairpins.
+ [.2,.4,.6,.8].forEach((km,i)=>{const v=i%2?0:1,s0=km*1000*best.len/DY;let got=null;
+  for(let k=0;k<=34&&!got;k++){const ds=(k%2?1:-1)*Math.ceil(k/2)*7,s=s0+ds;if(s<60||s>best.len-60)continue;
+   if(TRAIL.hairpins.some(h=>Math.abs(h.s-s)<h.r*2+30))continue;
+   const p=trailAt(s),a=p[3];let nx=-Math.sin(a),nz=Math.cos(a);if(nx<0){nx=-nx;nz=-nz;}   // the downhill side (east)
+   const off=TRAIL.half+1.5+8,sg=v?1:-1,cx=p[0]+nx*off*sg,cz=p[1]+nz*off*sg;
+   let ok=cz>-118;for(let u=-18;u<=18&&ok;u+=6)for(let w=-15;w<=15&&ok;w+=5){const x=cx+u*nz+w*nx,z=cz-u*nx+w*nz,tn=trailNear(x,z);
+    if(tn&&tn.d<TRAIL.bank+1&&Math.abs(tn.s-s)>40)ok=false;if(kSpur(z,x)<.95)ok=false;}
+   if(ok)got={s,p,cx,cz,nx,nz};}
+  if(!got)throw new Error('VG: no clear spot for the rest stop at the '+km*1000+' m mark');
+  TRAIL.rest.push({id:'rest-'+Math.round(km*1000),km,mark:Math.round(km*1000),s:got.s,gate:[got.p[0],got.p[1]],side:v?'out':'in',variant:v,
+   x:got.cx,z:got.cz,y:got.p[2],yaw:Math.atan2(got.nx,got.nz)});});})();
 // nearest point on the trail: {d, y, s} (null when no segment is near)
 function trailNear(x,z){const L=TRAIL.B.get(Math.floor(x/TRAIL.C)*65536+Math.floor(z/TRAIL.C));if(!L)return null;const P=TRAIL.pts;
  let bd=1e9,by=0,bs=0;for(const k of L){const a=P[k],b=P[k+1],ex=b[0]-a[0],ez=b[1]-a[1],l2=ex*ex+ez*ez,t=l2>0?clamp(((x-a[0])*ex+(z-a[1])*ez)/l2,0,1):0,d=Math.hypot(x-a[0]-ex*t,z-a[1]-ez*t);
@@ -221,11 +255,11 @@ function zoneAt(x,z){const L=lipX(z);if(x<=L){const dz=Math.abs(z-canZ(x));retur
  const u=(x-L)/escW(z,x);if(u<1)return kSpur(z,x)>.5?'spur':'cliff';return x>5000&&lakeD(x,z)<400?'salt':'floor';}
 
 // ---------------------------------------------------------------- the funicular's line
-// The Ancients' funicular ran straight down the spur's south side, from its upper station on the canyon floor to the
-// lower station on the abyss floor. The kit (kits/ancients, FUNICULAR) plans its piers, spans and breaks from this.
-// Its line (z 162) is clear of the trail's corridor (the hairpins and their banks reach z 132, the south rest stops'
-// pads 150), so the switchback never has to pass through its cuttings or piers: it climbs beside the ruin.
-const FZ=162,FUNI={z:FZ,a:null,b:null};
+// The Ancients' funicular ran straight down the spur's north edge, above the gorge, from its upper station on the
+// canyon floor beside the trailhead to the lower station on the abyss floor below the spur's toe: about 40 degrees.
+// Its line (z -140) keeps off the trail (whose gorge-side hairpins and their banks stop at z -108) and off the gorge's
+// rim, so the switchback never passes through its cuttings or piers.
+const FZ=-140,FUNI={z:FZ,a:null,b:null};
 FUNI.a=[E.LIP_X-46,canFloorH(E.LIP_X-46,FZ)+9,FZ];FUNI.b=[lipX(FZ)+escW(FZ)+60,floorH(lipX(FZ)+escW(FZ)+60,FZ)+4,FZ];
 
 // ---------------------------------------------------------------- the highways
@@ -250,8 +284,8 @@ const CITY={
   box:[-2780,TRAIL.top[0]-4,-420,232],rings:[[0,230,'warehouse'],[230,560,'trade'],[560,2000,'dwelling']],
   edge:[-2700,HWY_U[0][1]]},
  lower:{id:'lower',name:'Lower Verge',culture:'yuni',faction:'yuni',head:[TRAIL.bot[0]+30,TRAIL.bot[1]],
-  box:[-820,1350,-520,420],rings:[[0,260,'warehouse'],[260,640,'trade'],[640,2000,'dwelling']],
-  edge:[1280,0]}};
+  box:[-880,TRAIL.bot[0]+1350,-520,560],rings:[[0,260,'warehouse'],[260,640,'trade'],[640,2000,'dwelling']],
+  edge:[TRAIL.bot[0]+1280,0]}};
 
 function polyHas(poly,x,z){let a=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][0],zi=poly[i][1],xj=poly[j][0],zj=poly[j][1];
  if(((zi>z)!==(zj>z))&&(x<(xj-xi)*(z-zi)/(zj-zi)+xi))a=!a;}return a;}

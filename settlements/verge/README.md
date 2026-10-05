@@ -4,9 +4,9 @@ Twin cities at the far southeast of the crater, where the high desert's river fa
 into the Eastern Abyss, at the easiest descent from the western trade routes to the abyssal floor. **Upper Verge**
 fills the canyon floor at the top: it is run by a governor sent from Iziz and built in the Iziz Vernacular. **Lower
 Verge** spreads round the plunge pool and the river at the bottom: it is run by a mayor its residents elect and is
-built in the Yuni and Eastern Abyssal styles, like Locus. The two cities are joined by a switchback trail of 26 legs and
-about 7 km, with a toll house and a small palisade at each end and four rest stops at the 200, 400, 600 and 800 m marks
-of the descent. The rusted, broken remnants of an Ancient funicular run down the same spur, beside the trail. Salt
+built in the Yuni and Eastern Abyssal styles, like Locus. The two cities are joined by a switchback trail of about 16 long,
+irregular legs and about 7 km, with a toll house and a small palisade at each end and four rest stops at the 200, 400, 600 and 800 m marks
+of the descent. The rusted, broken remnants of an Ancient funicular run steeply down the same spur's north edge, above the gorge. Salt
 lakes lie far to the east. Each city has about 800 to 900 buildings: Upper Verge packed into the canyon, Lower Verge
 spread over the floor.
 
@@ -71,4 +71,4 @@ godot --headless --path godot --script res://tests/verge/verge_sim_test.gd
 ## Compass
 
 x east, z south, north is -z; metres; y up.
-The origin is the lower trailhead. Upper Verge spans x -2780..-1404, and the lip of the escarpment is at x ≈ -1400.
+The origin is on the abyss floor; the lower trailhead is about 490 m west of it, at the spur's toe. Upper Verge spans x -2780..-1404, and the lip of the escarpment is at x ≈ -1400.

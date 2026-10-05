@@ -16,11 +16,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `41-verge-layout.js` | 22 | the plateau (34); the canyon (upper river) (40); the lip, the escarpment and the spur (59); the gorge and the cataracts (89); the lower river (102); the ground without the trail (121); the switchback (137); the canyon ramps (182); levelled pads (193); terrain (201) |
+| `41-verge-layout.js` | 25 | the plateau (36); the canyon (upper river) (42); the lip, the escarpment and the spur (61); the gorge and the cataracts (95); the lower river (108); the ground without the trail (127); the switchback (143); the canyon ramps (216); levelled pads (227); terrain (235) |
 | `45-verge-stage.js` | 10 | the climate fields (34); the flora mask (reserve before you build) (89); the host binding (109) |
-| `46-verge-ground.js` | 10 |  |
+| `46-verge-ground.js` | 11 |  |
 | `47-verge-water.js` | 12 | the cataracts (65) |
-| `70-verge-place.js` | 34 **big** | the kits' catalogue (24); a city's raster (30); streets (101); districts and what grows in them (130); the back lots (165); the trailheads: a plaza, the toll gate and palis (176); UPPER VERGE (194); the funicular's plan (the Ancients kit, kits/anc (195); LOWER VERGE (244); spill: houses beside the trail's first (or last) (282) |
+| `70-verge-place.js` | 34 **big** | the kits' catalogue (24); a city's raster (30); streets (101); districts and what grows in them (130); the back lots (165); the trailheads: a plaza, the toll gate and palis (176); UPPER VERGE (194); the funicular's plan (the Ancients kit, kits/anc (195); LOWER VERGE (244); spill: houses beside the trail's first (or last) (283) |
 | `71-verge-furnish.js` | 5 |  |
 | `72-verge-buildings.js` | 7 |  |
 | `74-verge-sim.js` | 45 **big** | factions and organisations (28); places, from what was placed (60); slots: one body each, reserved in time (79); NAV: one graph (117); A* over the graph (176); cross-country: a coarse grid per level (203); the timetable's groups (222); the citizens (rambling pedestrians) (329); a group member's pose: a FUNCTION OF TIME (358); the checks the probe runs (data only) (394) |

@@ -79,7 +79,7 @@ function heightfield(box,step){const nx=Math.floor((box[2]-box[0])/step)+1,nz=Ma
  const u=new Uint8Array(a.buffer);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));
  return{format:'krator-heightfield',version:0,note:'sampled from the page (terrainH, core/rand noise); row-major, z rows of x',x0:box[0],z0:box[1],step,nx,nz,heights:{type:'Float32Array',n:a.length,b64:btoa(s)}};}
 const PARTS={
- terrain:()=>heightfield([-3000,-640,1600,520],6),
+ terrain:()=>heightfield([-3000,-640,1600,720],6),
  tags:()=>KTAGS.page.export(),
  walk:()=>KWALK.export(),
  sim:()=>SIM.export(),

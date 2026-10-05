@@ -8,7 +8,13 @@ function grade(pts){let m=0;for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts
 // the trail
 ok(grade(T.pts)<=.16,'trail grade at most 16%','steepest '+(grade(T.pts)*100).toFixed(1)+'%');
 ok(!(grade([[0,0,0],[10,0,3]])<=.16),'  negative: a 30% stretch fails');
-ok(T.legs>=20&&T.hairpins.length===T.legs-1,'many, many switchbacks',T.legs+' legs');
+ok(T.legs>=10&&T.legs<=20&&T.hairpins.length===T.legs-1,'switchbacks: fewer, longer legs',T.legs+' legs');
+// irregular, not every x feet: the legs' runs differ (their spread in z is wide), and they are long
+const runs=H=>{const z=[T.top[1]].concat(H.map(h=>h.z),[T.bot[1]]);const r=[];for(let i=1;i<z.length;i++)r.push(Math.abs(z[i]-z[i-1]));return r;};
+const spread=r=>{const m=r.reduce((a,b)=>a+b,0)/r.length;return Math.sqrt(r.reduce((a,b)=>a+(b-m)*(b-m),0)/r.length);};
+const R0=runs(T.hairpins),mean=R0.reduce((a,b)=>a+b,0)/R0.length;
+ok(spread(R0)>40&&mean>300,'the legs are long and irregular','mean run '+mean.toFixed(0)+' m, spread '+spread(R0).toFixed(0)+' m');
+ok(!(spread(runs(T.hairpins.map((h,i)=>({z:i%2?-80:300}))).slice(1,-1))>40),'  negative: evenly spaced hairpins fail');
 ok(T.yTop-T.yBot>800,'the descent is nearly a kilometre',(T.yTop-T.yBot).toFixed(0)+' m');
 let mx=0;for(let s=0;s<T.len;s+=10){const p=VG.trailAt(s);mx=Math.max(mx,Math.abs(VG.groundH(p[0],p[1])-p[2]));}
 ok(mx<.6,'the ground follows the trail','max '+mx.toFixed(2)+' m');

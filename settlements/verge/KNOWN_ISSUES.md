@@ -5,9 +5,9 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
 ## The world
 
 - **The trail does not use the funicular's track.** The brief allowed the path to use parts of the ruined track. It
-  doesn't: the ruin's line (z 162) runs beside the switchback, clear of it, so the trail never passes through its
-  cuttings or piers (the `the-trail-is-clear` check). On the line down the middle of the spur that it had first, the
-  trail crossed it 26 times, through walls and piers. To share stretches of the deck, the kit's plan would need
+  doesn't: the ruin's line (z -140) runs along the spur's north edge above the gorge, clear of the switchback, so the
+  trail never passes through its cuttings or piers (the `the-trail-is-clear` check). On the line down the middle of
+  the spur that it had first, the trail crossed it 26 times, through walls and piers. To share stretches of the deck, the kit's plan would need
   crossings: a gap in a cutting's walls, and no pier within reach of the trail
   (`kits/ancients/src/8ap-funicular.js`).
 - **The ground is a vertex-coloured heightfield.** The trail and its 8.5 m bench read at 2 m cells. The cities' paint

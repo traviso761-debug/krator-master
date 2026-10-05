@@ -249,15 +249,16 @@ function lower(){const C=VG.CITY.lower,city=City(C);OUT.cities.lower=city;
  const gate=trailGate(city,VG.TRAIL.len-16,'abyss_palisade_gate','abyss_palisade','abyss_toll_house',4);
  const L={};const hz=x=>{const p=VG.HWY_L.find(q=>q[0]>=x)||VG.HWY_L[VG.HWY_L.length-1];return p[1];};
  L.guard=hunt(city,'abyss_guard_tower',C.edge[0]-40,hz(C.edge[0]-40)-30,[0,Math.PI,-Math.PI/2],{landmark:'guard tower',radius:90});
- L.mayor=hunt(city,'abyss_mayor_compound',520,hz(520)+70,[Math.PI,Math.PI*1.04],{landmark:"mayor's compound",radius:160,tol:3});
- L.chapter=hunt(city,'civic_chapter_house',-470,-410,[0,Math.PI*.5,-Math.PI*.5],{landmark:'chapterhouse of the Order of Historians',radius:200,tol:3});
- L.cara1=hunt(city,'abyss_caravanserai',900,hz(900)+46,[Math.PI],{landmark:'caravanserai',radius:110});
- L.cara2=hunt(city,'trade_caravanserai',1150,hz(1150)-44,[0],{landmark:'caravanserai',radius:110});
+ L.mayor=hunt(city,'abyss_mayor_compound',head[0]+560,hz(head[0]+560)+70,[Math.PI,Math.PI*1.04],{landmark:"mayor's compound",radius:160,tol:3});
+ // the Historians' chapterhouse stands just off the trailhead, among the first shops (not out on its own)
+ L.chapter=hunt(city,'civic_chapter_house',head[0]+150,head[1]+120,[Math.PI,Math.PI*.5,-Math.PI*.5],{landmark:'chapterhouse of the Order of Historians',radius:110,tol:3});
+ L.cara1=hunt(city,'abyss_caravanserai',head[0]+900,hz(head[0]+900)+46,[Math.PI],{landmark:'caravanserai',radius:110});
+ L.cara2=hunt(city,'trade_caravanserai',head[0]+1150,hz(head[0]+1150)-44,[0],{landmark:'caravanserai',radius:110});
  campYard(city,L.cara1);campYard(city,L.cara2);
- L.temple=hunt(city,'abyss_temple',300,hz(300)+150,[Math.PI,0],{landmark:'temple of the altar',radius:150,tol:3});
- L.library=hunt(city,'abyss_library',-240,120,[Math.PI/2,Math.PI],{landmark:'library',radius:140});
- L.school=hunt(city,'abyss_school',700,hz(700)-120,[0,Math.PI],{landmark:'school',radius:150});
- L.watch=[];for(const [x,z] of [[head[0]+60,head[1]+50],[600,-220],[1150,hz(1150)+40]])L.watch.push(hunt(city,'abyss_barracks',x,z,[0,Math.PI/2,Math.PI],{landmark:'watch post',radius:70}));
+ L.temple=hunt(city,'abyss_temple',head[0]+380,hz(head[0]+380)+150,[Math.PI,0],{landmark:'temple of the altar',radius:150,tol:3});
+ L.library=hunt(city,'abyss_library',head[0]+330,head[1]+260,[Math.PI/2,Math.PI],{landmark:'library',radius:140});
+ L.school=hunt(city,'abyss_school',head[0]+700,hz(head[0]+700)-120,[0,Math.PI],{landmark:'school',radius:150});
+ L.watch=[];for(const [x,z] of [[head[0]+60,head[1]+50],[head[0]+640,hz(head[0]+640)-90],[head[0]+1150,hz(head[0]+1150)+40]])L.watch.push(hunt(city,'abyss_barracks',x,z,[0,Math.PI/2,Math.PI],{landmark:'watch post',radius:70}));
  L.ware=[];for(let k=0;k<9;k++){const a=-Math.PI*.15+k*.42,r=70+(k%3)*45,x=head[0]+Math.cos(a)*r,z=head[1]+Math.sin(a)*r;
   L.ware.push(hunt(city,k%2?'locus_warehouse':'abyss_warehouse',x,z,[Math.atan2(head[0]-x,head[1]-z),Math.atan2(head[0]-x,head[1]-z)+Math.PI/2],{landmark:'warehouse',radius:80,tol:3}));}
  const mk=[];for(let k=0;k<7;k++){const a=k/7*Math.PI*2+.2,r=k%2?34:20,x=MK[0]+Math.cos(a)*r,z=MK[1]+Math.sin(a)*r;
@@ -268,8 +269,8 @@ function lower(){const C=VG.CITY.lower,city=City(C);OUT.cities.lower=city;
   for(const side of [-1,1]){if(S.next()<.15)continue;const a=p[2]+side*(Math.PI/2+S.range(-.7,.7));
    const L0=growLane(city,p[0]+Math.cos(a)*8,p[1]+Math.sin(a)*8,a,S.range(150,380),S.range(5,7.5),{bridge:side<0&&S.next()<.4,turn:.22,gap:14});if(L0)lanes.push(L0);}}
  for(let k=0;k<6;k++){const a=k/6*Math.PI*2+.5;const L0=growLane(city,MK[0]+Math.cos(a)*60,MK[1]+Math.sin(a)*60,a,S.range(80,220),5.5,{turn:.35,gap:11});if(L0)lanes.push(L0);}
- // toward the pool and the chapterhouse: a lane west along the river's south bank
- {const L0=growLane(city,head[0]-30,head[1]-60,Math.PI*1.05,620,6,{turn:.18,gap:10,min:40});if(L0)lanes.push(L0);}
+ // toward the pool: a lane west along the river's south bank, under the spur's north flank
+ {const L0=growLane(city,head[0]-30,head[1]-60,Math.PI*1.05,380,6,{turn:.18,gap:10,min:40});if(L0)lanes.push(L0);}
  // lanes off the lanes, as in Upper Verge but looser
  for(const L0 of lanes.slice()){for(const p of along(L0.pts,S.range(70,110),30)){const side=S.next()<.5?-1:1;if(S.next()<.45)continue;const a=p[2]+side*(Math.PI/2+S.range(-.5,.5));
    const L1=growLane(city,p[0]+Math.cos(a)*(L0.w/2+1),p[1]+Math.sin(a)*(L0.w/2+1),a,S.range(60,200),S.range(4.5,6),{turn:.35,gap:16});if(L1)lanes.push(L1);}}

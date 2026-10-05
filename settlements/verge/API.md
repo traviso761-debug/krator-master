@@ -14,16 +14,16 @@ node.
 | `VG.E` | the levels: `PLAT` 938 (the plateau), `CAN_LIP` 862 (the canyon floor at the lip), `FLOOR` 4, `POOL_Y` 3; `LIP_X` -1400 |
 | `VG.canZ(x)`, `canHW(x)`, `canFloor`, `canFloorH(x,z)`, `upperH(x,z)` | the canyon: its centreline, its half-width, its floor |
 | `VG.rivUZ(x)`, `WLU(x)` | the upper river: its centreline and water level |
-| `VG.lipX(z)`, `escW(z,x)`, `kSpur(z,x)` | the escarpment's lip, its width, and how much of it is the spur (0 cliff .. 1 spur) |
+| `VG.lipX(z)`, `escW(z,x)`, `kSpur(z,x)` | the escarpment's lip, its width (the spur's is `SPUR_W` 900, ragged at the toe), and how much of it is the spur (0 cliff .. 1 spur, z -190 to about 600) |
 | `VG.cliffP(u)`, `spurP(u)` | the profiles down the cliff (benched, with a talus apron) and down the spur (stepped by low ledges) |
 | `VG.FALLS` | seven cataracts `{id, x, top, bot}`, from the lip down to the pool |
 | `VG.POOL` | `{x, z, r, y, depth}` |
 | `VG.gorgeZ(x)`, `gorgeHW(x)`, `WLG(x)` | the slot the falls drop through, and its water level |
 | `VG.RIVL`, `WLL(s)`, `rivLNear(x,z)` | the lower river (Catmull-Rom), its level by arc length, the nearest point |
 | `VG.SALT_LAKES`, `SALT_Y`, `lakeD(x,z)` | four salt lakes 7.4 to 14.6 km east, below the floor |
-| `VG.TRAIL` | `{pts:[[x,z,y]], len, legs, hairpins, rest, grade, half, bank, yTop, yBot}`: 26 legs, about 7.06 km at 12.2% |
+| `VG.TRAIL` | `{pts:[[x,z,y,s]], len, legs, hairpins, rest, grade, half, bank, yTop, yBot}`: about 16 legs on the contours, each hairpin `{id, k, x, z, side, r, y, s}` at its own seeded spot; about 7 km at 12.1% |
 | `VG.trailAt(s)`, `trailNear(x,z)` | a point on the trail by arc length; the nearest `{s, d}` |
-| `VG.TRAIL.rest` | the four rest stops `{id, km, mark, hairpin, side, variant, x, z, y, yaw}`, by the hairpins nearest the 200, 400, 600 and 800 m marks of the descent (variant 1, built out on the cliff, on the north side; variant 0, cut into the rock, on the south) |
+| `VG.TRAIL.rest` | the four rest stops `{id, km, mark, s, gate, side: 'out'|'in', variant, x, z, y, yaw}` on the legs at the 200, 400, 600 and 800 m marks of the descent; `gate` is where the stop meets the trail. They alternate: variant 1 built out below the trail, variant 0 cut into the rock above it; both face +z toward the drop |
 | `VG.RAMPS`, `rampNear` | the north and south ramps up the canyon walls (about 12%) |
 | `VG.PADS`, `padAt(x,z)` | level pads (rest stops, spilt houses); 70 adds to them |
 | `VG.CARVE` | `{fn, box}`: the funicular's cuttings, set by 70 from `IZV.FUNICULAR.plan` |

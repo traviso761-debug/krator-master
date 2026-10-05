@@ -111,7 +111,7 @@ function PLACE_FITS(city,x,z,w,d,ry){if(!city||!city.code)return null;const c=PL
 const RESTS=[];
 for(const R of PLACE.buildings){if(R.key!=='vern_rest_stop')continue;const rs=VG.TRAIL.rest.find(r=>r.id===R.rest);
  const P=addPlace({id:'pl_'+R.rest,name:'The rest stop at the '+rs.mark+' m mark',city:'trail',x:R.x,z:R.z,y:R.y,door:[R.x,R.z],activities:['REST','WATER_CAMELS'],capacity:24,tags:{mark_m:rs.mark,variant:rs.variant}});
- const hp=VG.TRAIL.hairpins.find(h=>h.id===rs.hairpin),n=VG.trailNear(hp.x,hp.z);P.trailS=n.s;P.gate=[hp.x,hp.z+(rs.side==='S'?1:-1)*VG.TRAIL.r];
+ P.trailS=rs.s;P.gate=rs.gate.slice();                    // where the stop meets the trail
  P.slots=slotGrid(R.x,R.z,R.ry,6,2,2.6,3.2,'animal',R.y+.1,P).concat(slotGrid(R.x+Math.sin(R.ry)*-4.2,R.z+Math.cos(R.ry)*-4.2,R.ry,6,2,1.5,1.3,'person',R.y+.1,P));
  RESTS.push(P);}
 // ---------------------------------------------------------------- NAV: one graph
@@ -253,7 +253,7 @@ const cityPlaces=(city,re)=>PLACES.filter(P=>P.city===city&&re.test(P.key||'')&&
 const WARE={upper:cityPlaces('upper',/warehouse|silos/),lower:cityPlaces('lower',/warehouse|granary/)};
 const CARA={upper:CARAVANSERAIS.filter(P=>P.city==='upper'&&P.node!=null),lower:CARAVANSERAIS.filter(P=>P.city==='lower'&&P.node!=null)};
 const TOLL={upper:PLACE.cities.upper.landmarks&&PLACE.cities.upper.landmarks.gate.gate,lower:PLACE.cities.lower.landmarks&&PLACE.cities.lower.landmarks.gate.gate};
-// the arc length on a path nearest to a point (for a stop: the toll gate, a rest stop's hairpin, a caravanserai's door)
+// the arc length on a path nearest to a point (for a stop: the toll gate, where a rest stop meets the trail, a caravanserai's door)
 function sNear(P,x,z){let best=0,bd=1e9;for(let i=0;i<P.pts.length;i++){const d=Math.hypot(P.pts[i][0]-x,P.pts[i][1]-z);if(d<bd){bd=d;best=P.cum[i];}}return{s:best,d:bd};}
 const R0=RS('timetable');
 // THROUGH caravans: in at one end, the trail, out at the other; a toll at each gate; a rest at one or two stops

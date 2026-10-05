@@ -248,11 +248,11 @@
   },
   "verge": {
     "counts": {
-      "buildings": 1570,
+      "buildings": 1572,
       "groups": 36,
       "member_nodes": 647,
-      "nav_nodes": 15692,
-      "places": 1570
+      "nav_nodes": 18205,
+      "places": 1574
     },
     "gaps": {
       "citizens": "the citizens walk by decisions taken at run time (SIM.decide, logged); not replayed here",
