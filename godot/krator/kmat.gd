@@ -48,7 +48,15 @@ static func apply(scene: Node, state: GLTFState, tex_dir: String) -> Dictionary:
 			for s in mesh.get_surface_count():
 				var m := mesh.surface_get_material(s)
 				if m and swap.has(m):
-					mesh.surface_set_material(s, swap[m])
+					var nm: ShaderMaterial = swap[m]
+					if n is MultiMeshInstance3D:   # an instanced primitive: three tiles it in world units (applyWorldUV)
+						if not cache.has(nm):
+							var w := nm.duplicate() as ShaderMaterial
+							w.set_shader_parameter("world_uv", true)
+							cache[nm] = w
+						nm = cache[nm]
+						out["world_uv"] = out.get("world_uv", 0) + 1
+					mesh.surface_set_material(s, nm)
 					out["replaced"] += 1
 		for c in n.get_children():
 			stack.append(c)
@@ -84,6 +92,8 @@ static func _material(F: Dictionary, old: Material, tex_dir: String, cache: Dict
 	sm.set_shader_parameter("normal_scale", float(F.get("normalScale", 1.0)))
 	sm.set_shader_parameter("metal", float(F.get("metal", 0.0)))
 	sm.set_shader_parameter("specular_k", float(F.get("specular", 0.5)))
+	var sc = F.get("scale", [2.0, 2.0])   # metres per tile
+	sm.set_shader_parameter("tile_m", Vector2(float(sc[0]), float(sc[1])))
 	var b = F.get("breakup")
 	if b is Dictionary:
 		sm.set_shader_parameter("bu_mix", float(b.get("mix", 0.0)))

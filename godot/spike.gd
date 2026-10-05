@@ -154,7 +154,7 @@ func _load_case(name: String) -> Dictionary:
 	if terrain:
 		focus.y = KData.height_at(terrain, focus.x, focus.z)
 	_stage_base = {}
-	if stage is Dictionary:   # the page's light, fog, tonemapping and sky (krator/stage.gd)
+	if stage is Dictionary and not _args().has("nostage"):   # --nostage: the spike's own stock light, to compare   # the page's light, fog, tonemapping and sky (krator/stage.gd)
 		_stage_base = load("res://krator/stage.gd").apply(stage, env, sun, world)
 		report["stage"] = _stage_base.get("report", {})
 	else:

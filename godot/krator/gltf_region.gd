@@ -40,6 +40,26 @@ static func build(path: String) -> Node3D:
 			continue
 		gn.set_meta("extras", nd["extras"])
 		with_extras += 1
+	# core/lod's render copies (extras.lodCopy): a page draws them in place of the originals, which it keeps in the scene
+	# (on a layer the camera skips) with full detail and every tag. Both reach the glTF, so drawn together they
+	# z-fight; the originals stay, and Godot's own LOD (visibility ranges, mesh LOD) takes the copies' job.
+	var lod_copies := 0
+	var drop: Array[Node] = []
+	var walk: Array[Node] = [scene]
+	while walk.size() > 0:
+		var n: Node = walk.pop_back()
+		var ex = n.get_meta("extras", {})
+		if ex is Dictionary and ex.get("lodCopy", false):
+			drop.append(n)
+			continue
+		for c in n.get_children():
+			walk.append(c)
+	for n in drop:
+		lod_copies += 1
+		n.get_parent().remove_child(n)
+		n.queue_free()
+	if lod_copies > 0:
+		report["gaps"]["lod copies"] = "%d core/lod render copies dropped (the originals are in the file too; the exporter could leave them out)" % lod_copies
 	var keys := {}
 	for nd in nodes:
 		if nd.has("extras"):

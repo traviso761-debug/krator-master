@@ -19,13 +19,20 @@ static func apply(st: Dictionary, env: Environment, sun: DirectionalLight3D, par
 	if r is Dictionary:
 		env.tonemap_mode = TONE.get(str(r.get("toneMapping")), Environment.TONE_MAPPER_FILMIC)
 		env.tonemap_exposure = float(r.get("exposure", 1.0))
+		if env.tonemap_mode == Environment.TONE_MAPPER_ACES:
+			# the same curve (Hill's fit) with different scaling: three r128 multiplies by exposure / 0.6; Godot by 1.8 and
+			# then divides by the curve at `white` (0.78 at 1). A white of 16 makes that divisor 1.002, and the exposure
+			# takes three's 1/0.6 in place of Godot's 1.8
+			env.tonemap_white = 16.0
+			env.tonemap_exposure = float(r.get("exposure", 1.0)) / (0.6 * 1.8)
+	env.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED   # three's materials here have no envMap: no sky in their specular
 	env.glow_enabled = false   # three's pages draw no bloom (none uses a composer): glow blurs and whitens the panorama
 	var sky = st.get("sky")
 	if sky is Dictionary and sky.has("png"):
 		var tex := KData.texture_from_data_url(sky["png"])
-		var pm := PanoramaSkyMaterial.new()
-		pm.panorama = tex
-		pm.filter = true
+		var pm := ShaderMaterial.new()   # shaders/panorama.gdshader: full resolution (PanoramaSkyMaterial blurred it)
+		pm.shader = load("res://shaders/panorama.gdshader")
+		pm.set_shader_parameter("pano", tex)
 		env.sky.sky_material = pm
 		env.background_mode = Environment.BG_SKY
 		out["report"]["sky"] = "the page's sky panorama, from %s (nearer than %s m left out)" % [str(sky.get("at")), str(sky.get("near"))]
@@ -55,7 +62,7 @@ static func apply(st: Dictionary, env: Environment, sun: DirectionalLight3D, par
 		l.look_at_from_position(Vector3.ZERO, dir, Vector3.UP if abs(dir.y) < 0.99 else Vector3.FORWARD)
 		l.light_color = _srgb(d["colour"])
 		l.light_energy = float(d["intensity"])   # three's legacy lights and Godot's energy both light an albedo fully at 1
-		l.shadow_enabled = bool(d.get("shadow", false)) if i > 0 else true   # the spike keeps the sun's shadows for depth
+		l.shadow_enabled = bool(d.get("shadow", false))   # as the page: a sun with no shadow on the web lights what is under a roof
 	out["sun"] = sun.light_energy
 	var f = st.get("fog")
 	if f is Dictionary:
