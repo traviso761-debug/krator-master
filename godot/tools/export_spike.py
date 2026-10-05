@@ -47,7 +47,8 @@ CASES = {
                  box=[-450, 150, -150, 450]),
     "girder": dict(page="settlements/girder/girder.html", kind="gltf",
                    box=[-30, -30, 30, 30], height="(x,z)=>_api.terrainH(x,z)", step=1,
-                   kmat="girder", tex="settlements/girder/tex"),   # the material library pilot: records and its pack
+                   kmat="girder", tex="settlements/girder/tex",   # the material library pilot: records and its pack
+                   lamps="b => _api.lamps(b)", lamp_margin=20),   # its flames and halos as data (lamps.json)
     "iziz": dict(page="settlements/iziz/dist/iziz.html", kind="atmos",
                  box=[-80, -80, 80, 80], height="(x,z)=>terrainH(x,z)", step=2,
                  hbox=[-440, -620, 620, 450], hstep=4),
@@ -132,16 +133,23 @@ async def run_case(browser, port, name, c, log):
         if c["kind"] == "atmos":
             files["atmos.json"] = write_json(os.path.join(out, "atmos.json"), await pg.evaluate("ATMOS.export({stage: false})"))
         # the stage (KSTAGE): light, fog, tonemapping, the sky from above the region, and the ground's look on the same
-        # grid as terrain.json, so the importer can texture the sampled ground
+        # grid as terrain.json, so the importer can texture the sampled ground. The panorama starts at the glTF region's
+        # edge, not the terrain's (Iziz's terrain box is far wider than its region): what the region leaves out, the
+        # city beyond it, is in the sky; nearer terrain the panorama repeats lies under Godot's own heightfield
         hb, hs = c.get("hbox", c["box"]), c.get("hstep", c["step"])
         st = await pg.evaluate("""([box, region, step, fn]) => { const h = eval(fn), cx = (region[0] + region[2]) / 2, cz = (region[1] + region[3]) / 2;
-            return KSTAGE.capture({ at: [cx, h(cx, cz) + 40, cz], sky: 1024, box, step, ground: h }); }""", [hb, c["box"], hs, c["height"]])
+            const skyNear = Math.min(region[2] - region[0], region[3] - region[1]) / 2;
+            return KSTAGE.capture({ at: [cx, h(cx, cz) + 40, cz], sky: 1024, skyNear, box, step, ground: h }); }""", [hb, c["box"], hs, c["height"]])
         files["stage.json"] = write_json(os.path.join(out, "stage.json"), st)
         g = await pg.evaluate("([box, name]) => KSPIKE.gltf(box, {name})", [c["box"], name])
         with open(os.path.join(out, "region.glb"), "wb") as f:
             f.write(base64.b64decode(g["b64"]))
         files["region.glb"] = g["bytes"]
         write_json(os.path.join(out, "region.dropped.json"), {"box": c["box"], "stats": g["stats"], "dropped": g["dropped"]})
+        if c.get("lamps"):   # the page's lamps (halos and flames its own shaders light): krator-lamps, krator/lamps_import.gd
+            m = c.get("lamp_margin", 0)
+            lb = [c["box"][0] - m, c["box"][1] - m, c["box"][2] + m, c["box"][3] + m]
+            files["lamps.json"] = write_json(os.path.join(out, "lamps.json"), await pg.evaluate(c["lamps"], lb))
         if c.get("kmat"):   # the material records (KMAT.table) and the pack the Godot side rebuilds library surfaces from
             files["materials.json"] = write_json(os.path.join(out, "materials.json"), await pg.evaluate("b => KMAT.table(b)", c["kmat"]))
         if c.get("tex"):

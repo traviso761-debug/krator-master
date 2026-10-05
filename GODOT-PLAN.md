@@ -258,7 +258,7 @@ twin) checked against the same golden vectors. Each ships with its **first consu
 |---|---|---|
 | `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; passing in Godot 4.5 since 2026-10-05); Ys's city takes it |
 | `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
-| `core/tags/` | Yuni's `FIX.*` records | **written 2026-10-05**: registry, vocabulary (the catalog's lists copied, drift a failing test), label, node test, the uid's GDScript twin `ktags.gd` (passing in Godot 4.5); Yuni on it (13044 records, zero unknown vocabulary, nothing drawn moved), its export carries `krator-tags` and the spike's `yuni` case puts each record on its node (`core/tags/README.md`). Next: core/furnish's `onRecord`, Iziz's `REG`, Voth's `PLACED`, the biome kits (`PROPOSAL.md`, order of adoption) |
+| `core/tags/` | Yuni's `FIX.*` records | **written 2026-10-05**: registry, vocabulary (the catalog's lists copied, drift a failing test), label, node test, the uid's GDScript twin `ktags.gd` (passing in Godot 4.5); Yuni on it (13044 records, zero unknown vocabulary, nothing drawn moved), its export carries `krator-tags` and the spike's `yuni` case puts each record on its node (`core/tags/README.md`); the five core/furnish builds register their furniture (step 3, fingerprints unchanged). Next: Iziz's `REG`, Voth's `PLACED`, the biome kits (`PROPOSAL.md`, order of adoption) |
 | `core/furnish/` | Girder (the material pilot is there too) | **written 2026-10-05**: placement pass, draw helpers, host switches, node test; Girder, Mav's Refuge, Locus, Highlands and Post-Apoc on it with their furniture fingerprints unchanged (`core/furnish/README.md`). The catalog's own `F.furn` keeps its code |
 | `core/mask/` | Iziz's city (M5) | not started |
 
@@ -568,6 +568,14 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
     `scene.environment` (the skylight) is in the record and Godot reflects the panorama for it; Girder's braziers
     burn on the page and sit dark in Godot (an unlit glow family not crossing: to find); Iziz's library pack holds
     only the two fauna sheets and its materials carry no `userData.lib`, so its export case takes no pack yet.
+    *Later the same day:* the braziers' flames did cross (unlit, orange); what the page shows and the glTF cannot carry
+    is its halo cloud (`81-glow.js`, a Points ShaderMaterial) and the night light volume its own shaders read. Girder's
+    lamps now cross as data (`_api.lamps`, `lamps.json`, `krator/lamps_import.gd`: halos on `halo.gdshader`, the nearest
+    32 as OmniLight3D; `compare_shots.py girder --hour=21` shows them burning and lighting the hall). Still open there:
+    Godot's night is far darker than the page's (the page's night ambient and moonlight are not in the stage record) and
+    its halos are fainter (gain 1.0, to tune against the page). The exporter skips core/lod's render copies at the source; a region's sky panorama starts at the
+    region's edge, not the terrain's (Iziz: 80 m, was 530 m); the wave field is ported (`core/atmos/GODOT.md`). Iziz's
+    pack waits on Iziz adopting the material library, which the Ancients re-vendor session gates (TODO.md, Port: next).
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the

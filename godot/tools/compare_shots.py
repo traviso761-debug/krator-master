@@ -30,7 +30,8 @@ CASES = {
     "rift": dict(page="biomes/rift/dist/rift.html", ground="BIO.terrainH",
                  target=[-300, 300], lift=12, eye=[50, 25, 60]),
     "girder": dict(page="settlements/girder/girder.html", ground="_api.terrainH",
-                   target=[-2, 8], lift=2, eye=[-16, 6, 20], hour="_api.skyHour()"),
+                   target=[-2, 8], lift=2, eye=[-16, 6, 20], hour="_api.skyHour()",
+                   set_hour="h => { _api.skySetHour(h); const p = document.getElementById('dnPause'); if (p && !/Resume/.test(p.textContent)) p.click(); }"),
     "iziz": dict(page="settlements/iziz/dist/iziz.html", ground="terrainH",
                  target=[0, 0], lift=10, eye=[90, 60, 110], hour="ATMOS.U.hour.value"),
     "yuni": dict(page="settlements/yuni/yuni.html", ground=None, building="bld_00005",
@@ -91,6 +92,9 @@ async def web(names):
             target = [tx, ty + c["lift"], tz]
             eye = [tx + c["eye"][0], ty + c["eye"][1], tz + c["eye"][2]]
             info = await pg.evaluate(PIN, [eye, target])
+            if HOUR is not None and c.get("set_hour"):   # --hour=h: both sides at that hour (a night pair shows the lamps)
+                await pg.evaluate(c["set_hour"], HOUR)
+                await pg.wait_for_timeout(1500)
             hour = await pg.evaluate(c["hour"]) if c.get("hour") else None
             await pg.wait_for_timeout(6000)   # LOD, culling and late textures settle on the pinned view
             os.makedirs(OUT, exist_ok=True)
@@ -126,8 +130,10 @@ def compose(n):
     d = ImageDraw.Draw(out)
     d.text((10, 10), "%s: web (three.js r128, the built page)" % n, fill=(235, 235, 235))
     d.text((w + 18, 10), "%s: Godot 4.5 spike (Compatibility renderer, software GL)" % n, fill=(235, 235, 235))
-    out.save(os.path.join(OUT, n + ".png"))
+    out.save(os.path.join(OUT, n + (("-h%g" % HOUR) if HOUR is not None else "") + ".png"))
 
+
+HOUR = next((float(a.split("=", 1)[1]) for a in sys.argv[1:] if a.startswith("--hour=")), None)
 
 if __name__ == "__main__":
     names = [a for a in sys.argv[1:] if a in CASES] or list(CASES)

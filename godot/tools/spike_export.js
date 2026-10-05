@@ -19,12 +19,15 @@ const inBox=(b,x,z)=>x>=b[0]&&z>=b[1]&&x<b[2]&&z<b[3];
 const isDrawn=o=>o.visible!==false&&(o.isMesh)&&!o.isSkinnedMesh&&o.geometry&&o.geometry.attributes.position;
 // every ancestor visible, so a hidden LOD level or a hidden interior is not exported
 const shown=o=>{for(let p=o;p;p=p.parent)if(p.visible===false)return false;return true;};
+// core/lod's render copies (userData.lodCopy, on the copy or on the LOD root above it): the page draws them in place of
+// the originals it keeps with full detail and every tag, so only the originals are exported (Godot's own LOD does the rest)
+const lodCopy=o=>{for(let p=o;p;p=p.parent)if(p.userData&&p.userData.lodCopy)return true;return false;};
 function triCount(g){return (g.index?g.index.count:g.attributes.position.count)/3;}
 
 const KSPIKE={};
 KSPIKE.count=function(box){const s={meshes:0,instanced:0,instances:0,triangles:0},v=new T.Vector3(),M=new T.Matrix4();
  scene.updateMatrixWorld(true);
- scene.traverse(o=>{if(!isDrawn(o)||!shown(o))return;const g=o.geometry,tri=triCount(g);
+ scene.traverse(o=>{if(!isDrawn(o)||!shown(o)||lodCopy(o))return;const g=o.geometry,tri=triCount(g);
   if(o.isInstancedMesh){let k=0;for(let i=0;i<o.count;i++){o.getMatrixAt(i,M);v.setFromMatrixPosition(M).applyMatrix4(o.matrixWorld);if(inBox(box,v.x,v.z))k++;}
    if(k){s.instanced++;s.instances+=k;s.triangles+=k*tri;}return;}
   if(!g.boundingBox)g.computeBoundingBox();const bb=g.boundingBox.clone().applyMatrix4(o.matrixWorld);
@@ -112,7 +115,7 @@ KSPIKE.gltf=function(box,opt){opt=opt||{};const dropped={},mats=new Map(),root=n
  const instancing=opt.instancing!==false,itable={},q=new T.Quaternion(),sc=new T.Vector3(),I4=new T.Matrix4();let ninst=0,nimesh=0;
  root.name=opt.name||'region';root.userData={krator_spike:{box,page:location.pathname,convention:'metres, +Y up, x east, z south (glTF)'}};
  scene.updateMatrixWorld(true);let n=0,tris=0;
- scene.traverse(o=>{if(!isDrawn(o)||!shown(o))return;if(Array.isArray(o.material)){dropped.multiMaterial=(dropped.multiMaterial||0)+1;return;}
+ scene.traverse(o=>{if(!isDrawn(o)||!shown(o))return;if(lodCopy(o)){dropped.lodCopies=(dropped.lodCopies||0)+1;return;}if(Array.isArray(o.material)){dropped.multiMaterial=(dropped.multiMaterial||0)+1;return;}
   const g=o.geometry,hasN=!!g.attributes.normal,hasU=!!g.attributes.uv,extra=Object.keys(g.attributes).filter(k=>!['position','normal','uv','color','uv2'].includes(k));
   if(extra.length){dropped.attributes=dropped.attributes||{};for(const k of extra)dropped.attributes[k]=(dropped.attributes[k]||0)+1;}
   const out={pos:[],nor:[],uv:[],col:[]};

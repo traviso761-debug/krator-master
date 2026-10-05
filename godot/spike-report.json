@@ -3,18 +3,16 @@
     "counts": {
       "extras_keys": {
         "A": 1,
-        "fam": 32,
-        "furniture": 48,
-        "inspectLabel": 4,
+        "fam": 16,
+        "furniture": 38,
+        "inspectLabel": 2,
         "interiors": 28,
-        "kit": 18,
-        "krator_instanced": 21,
+        "kit": 9,
+        "krator_instanced": 11,
         "krator_spike": 1,
         "life": 1,
-        "lodCopy": 28,
-        "merged": 14,
-        "probeSkip": 28,
-        "shape": 18
+        "merged": 7,
+        "shape": 9
       },
       "images": 48,
       "instances": 521,
@@ -22,15 +20,14 @@
       "materials": 57,
       "meshes": 57,
       "multimeshes": 11,
-      "nodes_with_extras": 86,
-      "triangles": 728245
+      "nodes_with_extras": 58,
+      "triangles": 909813
     },
     "file": "res://data/girder/region.glb",
     "gaps": {
-      "attributes": "custom vertex attributes dropped: { \"aN\": 10.0, \"aC2\": 2.0, \"aAux\": 1.0, \"aFall\": 1.0, \"aPRO\": 4.0, \"aAnim\": 4.0, \"aGarb\": 4.0, \"aSkin\": 4.0, \"aHair\": 4.0, \"aDetS\": 5.0, \"aFlyB\": 6.0, \"aFlyP0\": 6.0, \"aFlyP1\": 6.0, \"aFlyP2\": 6.0, \"aFlyP3\": 6.0 }",
+      "attributes": "custom vertex attributes dropped: { \"aN\": 5.0, \"aC2\": 1.0, \"aAux\": 1.0, \"aFall\": 1.0, \"aPRO\": 4.0, \"aAnim\": 4.0, \"aGarb\": 4.0, \"aSkin\": 4.0, \"aHair\": 4.0, \"aDetS\": 5.0, \"aFlyB\": 6.0, \"aFlyP0\": 6.0, \"aFlyP1\": 6.0, \"aFlyP2\": 6.0, \"aFlyP3\": 6.0 }",
       "instancing": "11 instanced meshes (521 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
       "library materials": "16 library surfaces rebuilt from the pack (timber, rope, shingle, totem, awning, lacquer, post, plank, f_stone, life_Cage, inlay, trim, ground) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost",
-      "lod copies": "28 core/lod render copies dropped (the originals are in the file too; the exporter could leave them out)",
       "shader hooks": "55 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
     },
@@ -63,12 +60,24 @@
       "sky": "the page's sky panorama, from [0.0, 74.5643702376741, 0.0] (nearer than 30.0 m left out)"
     }
   },
+  "girder-lamps": {
+    "counts": {
+      "lamps": 62,
+      "lights": 32
+    },
+    "file": "res://data/girder/lamps.json",
+    "gaps": {
+      "lamp hours": "the page lights its lamps by its night factor (DAYNIGHT_NIGHT_K), the export by hours [17.2, 30.8] (dusk to dawn)",
+      "lamp light": "the page lights its scene through a baked light volume its own shaders read (45-kit.js); here the nearest 32 lamps are OmniLight3D, energy 1.2 x amp, range the lamp's radius: the spike's choice, to tune against the page"
+    },
+    "route": "krator-lamps JSON"
+  },
   "hyperjungle": {
     "counts": {
       "buckets": 3,
       "instances": 4348,
       "items": 19,
-      "load_ms": 286,
+      "load_ms": 279,
       "materials": 32,
       "textures": 21,
       "triangles": 10738
@@ -88,36 +97,34 @@
   "iziz": {
     "counts": {
       "extras_keys": {
-        "atmos": 22,
-        "isGround": 2,
-        "krator_instanced": 193,
+        "atmos": 12,
+        "isGround": 1,
+        "krator_instanced": 114,
         "krator_spike": 1,
-        "lodCopy": 113,
-        "probeSkip": 119,
-        "sectorOf": 89
+        "probeSkip": 6,
+        "sectorOf": 56
       },
       "images": 18,
       "instances": 6542,
-      "load_ms": 191,
+      "load_ms": 120,
       "materials": 77,
       "meshes": 153,
       "multimeshes": 114,
-      "nodes_with_extras": 234,
+      "nodes_with_extras": 121,
       "triangles": 355320
     },
     "file": "res://data/iziz/region.glb",
     "gaps": {
       "ShaderMaterial": "5 ShaderMaterials (water, sky, glow) became magenta stand-ins",
-      "attributes": "custom vertex attributes dropped: { \"aN\": 14.0, \"aC2\": 2.0, \"aP0\": 9.0, \"aP1\": 9.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
+      "attributes": "custom vertex attributes dropped: { \"aN\": 7.0, \"aC2\": 1.0, \"aP0\": 5.0, \"aP1\": 5.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
       "instancing": "114 instanced meshes (6542 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
-      "lod copies": "113 core/lod render copies dropped (the originals are in the file too; the exporter could leave them out)",
       "shader hooks": "44 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
       "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
     },
     "route": "glTF (three GLTFExporter r128)",
     "stage": {
       "lights": "2 directional, 1 hemisphere, 0 ambient, 4 point lights (points not carried)",
-      "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 530.0 m left out)"
+      "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 80.0 m left out)"
     }
   },
   "iziz-atmos": {
@@ -141,7 +148,7 @@
       },
       "glow": 328,
       "lamps": 70,
-      "load_ms": 33,
+      "load_ms": 29,
       "prop_instances": 2467,
       "prop_sets": 26
     },
@@ -167,7 +174,7 @@
       "buckets": 9,
       "instances": 48432,
       "items": 51,
-      "load_ms": 1068,
+      "load_ms": 1023,
       "materials": 51,
       "textures": 35,
       "triangles": 186920
@@ -194,7 +201,7 @@
       },
       "doors": 1842,
       "lights": 2591,
-      "load_ms": 373,
+      "load_ms": 385,
       "windows": 6841
     },
     "counts_interior": {
