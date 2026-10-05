@@ -2,6 +2,25 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] (2026-10-05) Tree tints: roots take the trunk's tint at their height above the ground (colour band and moss) and limbs, boughs and twigs take the trunk's tint
+      at the height where the limb leaves it (60-trees.js: `trunkPt(...)`, `lc`); the old lighter-base, darker-outer split along a limb is gone. Looked at in headless
+      renders against the committed page (trunk base, root fan, a limb on the ironbark): the limb now reads as the trunk's colour where the old one was darker. Triangles
+      moved by 1,700 to 3,000 over the committed page, not traced.
+- [ ] (2026-10-05) The trunk's mossy base is a strongly olive skirt (the moss tint is up to 55% over the first ~20 m) with a sharp horizontal line about 9 m up where the lathe
+      section changes its texture scale; the committed page has the same line at the same height, so it is not from the tint change. Roots now match the skirt, which makes the
+      skirt the most visible tint step left on a hypertree. A softer moss fade, or one texture scale across the flare, would remove it.
+- [x] (2026-10-05) Bark: `bark0` (ironbark) and `bark3` (baobab) use the generated `bark.ironbark` and `bark.baobab` instead of the borrowed willow and blue gum. The tint
+      numbers (keep 0.15; mean 0.579 and 0.614 as before; contrast 1.3 and 1.5) are first guesses, judged on headless renders only: the ironbark reads red-brown with a braided
+      relief up close; the baobab has not been looked at closely.
+- [x] (2026-10-05) Dragonfly wing sheet: 84-flyers.js maps the library's `wing.dragonfly` (materials.json family `flywing`) over each wing's bounding box
+      (`FlyGeo` took an optional UV for this; only the wing mesh carries UVs) and skips the hand-built vein quads while the sheet is set. A close-up of a dragonfly in a headless
+      render shows the vein net and the dark tip spot on a translucent wing. The sheet is a tight crop stretched square (cards.py anchor `tight`), so it loses vertical
+      resolution, and the fore and hind wings share one image.
+- [ ] (2026-10-05) The Beast Rider sets delivered 2026-10-05 (PLAN.md, "Delivered 2026-10-05") are in the library but Girder has not adopted them: the catalog
+      furniture, lamp posts, lanterns, banners and fruit are still flat vertex colours. `wood.lamppost`, `wood.mahogany`, `bone.*`, `hide.*`, `fibre.*`,
+      `lantern-*` and the Beast Rider patterns are ready to map; the quetzal, bat, archaeopteryx, spider and millipede bodies and membranes need the shader
+      mapping (box projection from the bind pose plus a per-triangle material id) because the FlyGeo bodies have no UVs.
+- [ ] (2026-10-05) `tools/textures/pack.py settlements/girder` takes about two minutes and rewrites tex/ even when nothing changed (the bytes came out identical this time).
 - [x] Library trees and the library look (2026-10-03): ghostwood and prism gum barks, the leaf mass on `leafy`, leaf
       and flower cards, two undergrowth cards, the break-up on every bark; fruit on the fruit-seller stalls and the
       gatepod harvest tag; tone mapping, contact shading, chamfered columns, 16-sided cylinders. Bundling the catalog's

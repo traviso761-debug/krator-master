@@ -3,6 +3,24 @@
 Open items are `- [ ]`; `build.py` prints them. Close one by ticking it and
 saying what fixed it.
 
+## Open, 2026-10-05
+
+- [ ] (2026-10-05) Fauna sheets: `settlements/iziz/materials.json` (families fauna_wing, fauna_fur, fauna_hide, fauna_ray; all optional) and `fauna_pack()` in build.py
+      write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
+      (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are not generated yet, and the darts are not textured by design
+      (their wing and body share UVs). Not looked at in a real browser.
+- [ ] (2026-10-05) Tree tints (biome 55-trees, hand-copied into targets/city/86-bio-55-...): roots now use the species bark bucket with the trunk's tint at their height above the ground; limbs,
+      boughs and twigs take the limb tint of the trunk's colour band where they leave it. The limbs still use the shared pale limb texture, not the species bark
+      texture, so the texture on a limb differs from the trunk even when the colour matches. Not looked at.
+- [ ] (2026-10-05) Headless `verify.py dist/iziz.html` ends in `WebGL: CONTEXT_LOST_WEBGL` and FAILED even on the committed page (checked against
+      `git show HEAD:settlements/iziz/dist/iziz.html`): the error panel is clean and the counters print (814 draw calls). It is the software GL on the city, not a regression;
+      the Iziz page has no headless pass at the moment.
+- [ ] (2026-10-05) `python3 build.py --vendor-bio` crashes in `bio_wrap` ("expected one 'const HYPERJUNGLE={};'") after opening the vendored file for writing, which
+      empties it (restore with git). The 58 and 55 copies were patched by hand (they differ from upstream only in the wrapper line). `build.py --help` also runs a full
+      build and rewrites the manifests.
+- [ ] (2026-10-05) 11 Iziz material sets were processed 2026-10-05 (stone.cut, stone.cut.b, plaster, brick, metal.corrugated, roof.tile, metal.iron, metal.bronze, metal.gold,
+      patterns/iziz/mosaic-b, glass.frosted.b; PLAN.md) but Iziz has not adopted the library; its materials are still the procedural ones.
+
 ## Vernacular set (round 1)
 - [x] Windows on the battered stone ground storey (Stone manor) sit on the face at
       sill height, so the frame stands proud at the head and sinks at the sill

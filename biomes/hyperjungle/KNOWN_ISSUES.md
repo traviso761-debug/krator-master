@@ -4,6 +4,14 @@ Read before changing anything here. `build.py` prints the open count.
 
 ## Open
 
+- [ ] (2026-10-05) Fauna sheets are an opt-in hook, not a look: `HYPERJUNGLE.FAUNATEX = {wing, fur, hide, ray}` (THREE.Texture or image URL) set before
+      58-biome-hyperjungle-fauna.js maps fur on the sloth, hide on the striders, skin on the sky rays and a wing cut-out on the butterflies. Unset, the fauna is
+      exactly the vertex-coloured one. The dart/flitter material takes no texture (wing and body share UVs). Each part's UV repeats once over the part, so the
+      fur is set to repeat 2x.
+- [ ] (2026-10-05) Tree tints (55-biome-hyperjungle-trees.js): roots now draw in the species bark bucket with the trunk's tint at their height above the ground (band and moss), and limbs, boughs
+      and twigs use the limb tint of the trunk's colour band at the attachment height. The limbs still use the shared pale `limb` texture; only their colour is
+      matched to the trunk. Iziz carries a hand-patched copy.
+
 - [ ] PUBLISH AFTER EVERY PASS. The claude.ai artifact is a separate copy of
       `dist/hyperjungle.html`; strip everything before `<title>` and the trailing
       `</body></html>` before publishing (00-head.html carries the page wrapper).

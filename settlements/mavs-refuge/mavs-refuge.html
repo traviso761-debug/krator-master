@@ -17541,14 +17541,15 @@ TREES.forEach(function(T, ti){
   }
 
   /* ---- surface roots, one off each buttress ---- */
+  var rootCol = trunkPt(1.5).col;   /* a root takes the trunk's own tint at its height above the ground (band and moss): where it leaves the trunk it matches the trunk there, and on the ground it matches the mossy base */
   lobes.forEach(function(L){
     if(sp===3 && chance(0.45)) return;
     var ang=L.a;
     var R0=trunkR(T,T.y0+7)*(1+Hb.butA*0.35*L.amp), len=rr(45,120)*(sp===3?0.6:1)*(0.6+0.4*L.amp), rr0=clamp(T.rb*0.17*L.amp,1.6,5.2), pts=[], a=ang, wob=rr(0,TAU);
     for(var k=0;k<=9;k++){ var t=k/9, d=R0*0.72+len*t; a=ang+0.32*Math.sin(wob+t*5.2)*t+0.10*Math.sin(wob*2+t*11);
       var x=T.x+Math.cos(a)*d, z=T.z+Math.sin(a)*d; if(k>2 && riverDist(x,z)<4) break;
-      var r=mix(rr0,0.35,Math.pow(t,0.75)); pts.push({ x:x, y:terrainH(x,z)+r*(k===0?1.6:0.22)+(k===0?5:0), z:z, r:r, col:k<3?undefined:shade(treeBarkCol(sp,1),-0.12) }); }
-    if(pts.length>3){ TS.rootTris += treeTube(fam, pts, treeBarkCol(sp,1), 6, false); TS.roots++; }
+      var r=mix(rr0,0.35,Math.pow(t,0.75)); pts.push({ x:x, y:terrainH(x,z)+r*(k===0?1.6:0.22)+(k===0?5:0), z:z, r:r, col:trunkPt(r*(k===0?1.6:0.22)+(k===0?5:0)).col }); }
+    if(pts.length>3){ TS.rootTris += treeTube(fam, pts, rootCol, 6, false); TS.roots++; }
   });
 
   /* ---- top boughs and crown fillers of my own ---- */
@@ -17571,8 +17572,9 @@ TREES.forEach(function(T, ti){
   var spots=[], hangs=[];
   limbs.forEach(function(Lm){
     var pts=Lm.pts, r0=pts[0].r, n=pts.length;
-    var cpts=pts.map(function(p,i){ return { x:p.x,y:p.y,z:p.z,r:p.r, col:treeBarkCol(sp, i<n*0.4?1:2) }; });
-    TS.limbTris += treeTube(fam, cpts, treeBarkCol(sp,1), r0>=5?12:(r0>=3?10:8), true);
+    var lc = trunkPt(clamp(pts[0].y - T.y0, 0, Hend)).col;   /* the trunk's tint where this limb leaves it, kept along the limb and its boughs and twigs */
+    var cpts=pts.map(function(p,i){ return { x:p.x,y:p.y,z:p.z,r:p.r, col:lc }; });
+    TS.limbTris += treeTube(fam, cpts, lc, r0>=5?12:(r0>=3?10:8), true);
     var cum=treeCum(pts), L=cum[n-1], sStart=L*Hb.secStart, side=chance(0.5)?1:-1;
     if(Lm.kind==='under') sStart=Math.max(sStart, cum[Math.min(n-1,10)]-4);
     for(var s=sStart+rr(0,Hb.secGap*0.5); s<L*0.985; s+=Hb.secGap*rr(0.75,1.3)){
@@ -17583,7 +17585,7 @@ TREES.forEach(function(T, ti){
       var sec=treeGrow(at,d1,len1,rS,0.22,4,Hb.secCurve+rr(-0.05,0.05),0.07), ok=true;
       for(var q=1;q<sec.length;q++) if(!treeClear(C,sec[q].x,sec[q].y,sec[q].z,sec[q].r+2.5,sec[q].r+2.5)){ ok=false; break; }
       if(!ok) continue;
-      TS.boughTris += treeTube(fam, sec, treeBarkCol(sp,2), rS>1.3?5:4, false); TS.boughs++;
+      TS.boughTris += treeTube(fam, sec, lc, rS>1.3?5:4, false); TS.boughs++;
       var sprd=clamp(len1*0.26,8,20);
       spots.push({ p:sec[2], s:sprd, inner:true }, { p:sec[3], s:sprd }, { p:sec[4], s:sprd*0.9, tip:true });
       if(sp===3 && chance(0.8)) hangs.push({ x:sec[1].x, y:sec[1].y-sec[1].r*0.7, z:sec[1].z });
@@ -17596,7 +17598,7 @@ TREES.forEach(function(T, ti){
         var d2=treeDir(a2.tx,a2.ty,a2.tz, sd2, rr(0.5,0.9), rr(0.6,1.0), Hb.secUp*0.8+rr(-0.15,0.25));
         var tw=treeGrow(a2,d2,len2,Math.max(0.25,a2.r*0.6),0.12,2,Hb.secCurve,0.05);
         if(!treeClear(C,tw[2].x,tw[2].y,tw[2].z,2.5,2.5) || !treeClear(C,tw[1].x,tw[1].y,tw[1].z,2.5,2.5)) continue;
-        TS.twigTris += treeTube(fam, tw, treeBarkCol(sp,2), 3, false); TS.twigs++;
+        TS.twigTris += treeTube(fam, tw, lc, 3, false); TS.twigs++;
         spots.push({ p:tw[1], s:clamp(len2*0.4,6,13) }, { p:tw[2], s:clamp(len2*0.45,6,14), tip:true });
         if(sp===1 && chance(0.55)) hangs.push({ x:tw[2].x, y:tw[2].y-0.5, z:tw[2].z });
         if(sp===1 && chance(0.30)) hangs.push({ x:tw[1].x, y:tw[1].y-0.5, z:tw[1].z });
@@ -17676,7 +17678,7 @@ var TREE_SAPLINGS=[];
       var o={ x:mix(bp.x,bq.x,f), y:mix(bp.y,bq.y,f), z:mix(bp.z,bq.z,f) }, tk=(u2-band[0])/(band[1]-band[0]);
       var len=S.cr*(sp===0?mix(1.0,0.35,tk):rr(0.7,1.0)), el=sp===0?rr(0.0,0.3):sp===1?rr(0.7,1.1):sp===2?rr(0.35,0.7):rr(0.2,0.6);
       var br=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,Math.max(0.18,mix(bp.r,bq.r,f)*0.5),0.08,3,Hb.secCurve,0.08);
-      TS.sapTris += treeTube(fam, br, treeBarkCol(sp,2), 4, false);
+      TS.sapTris += treeTube(fam, br, treeBarkCol(sp,si%3), 4, false);
       spots.push(br[1],br[2],br[3],br[3]); if(sp!==3 && sp!==1) spots.push(br[2]); }
     var tp=pts[7]; spots.push(tp,tp,{x:tp.x,y:tp.y-H*0.07,z:tp.z}); if(sp===3) spots.push(tp,tp);
     var cy=S.y0+H*mix(band[0],1,0.5), size0=clamp(H*0.13,4.5,12);
@@ -20915,19 +20917,19 @@ var FLY_CAP = 300, FLY_RCAP = 260;
 var flyTmpC = new THREE.Color();
 function flyCol(hex, f){ flyTmpC.set(f ? shade(hex, f) : hex).convertSRGBToLinear(); return [flyTmpC.r, flyTmpC.g, flyTmpC.b]; }
 
-function FlyGeo(centre){ this.p = []; this.n = []; this.c = []; this.b = []; this.mx = 1; this.tris = 0; this.cb = centre || {}; }
-FlyGeo.prototype.tri = function(a, b, c, col, bone){
-  var m = this.mx; if(m < 0){ var t = b; b = c; c = t; }
+function FlyGeo(centre){ this.p = []; this.n = []; this.c = []; this.b = []; this.uv = []; this.mx = 1; this.tris = 0; this.cb = centre || {}; }
+FlyGeo.prototype.tri = function(a, b, c, col, bone, uv){   /* uv: optional [[u,v],[u,v],[u,v]] for a, b, c */
+  var m = this.mx; if(m < 0){ var t = b; b = c; c = t; if(uv){ t = uv[1]; uv = [uv[0], uv[2], t]; } }
   var ax = a[0]*m, bx = b[0]*m, cx = c[0]*m;
   var ux = bx-ax, uy = b[1]-a[1], uz = b[2]-a[2], vx = cx-ax, vy = c[1]-a[1], vz = c[2]-a[2];
   var nx = uy*vz-uz*vy, ny = uz*vx-ux*vz, nz = ux*vy-uy*vx, L = Math.sqrt(nx*nx+ny*ny+nz*nz) || 1;
   nx /= L; ny /= L; nz /= L;
   this.p.push(ax, a[1], a[2], bx, b[1], b[2], cx, c[1], c[2]);
-  for(var i=0;i<3;i++){ this.n.push(nx, ny, nz); this.c.push(col[0], col[1], col[2]); this.b.push(bone+1, this.cb[bone] ? 1 : m); }
+  for(var i=0;i<3;i++){ this.uv.push(uv ? uv[i][0] : 0, uv ? uv[i][1] : 0); this.n.push(nx, ny, nz); this.c.push(col[0], col[1], col[2]); this.b.push(bone+1, this.cb[bone] ? 1 : m); }
   this.tris++;
 };
 FlyGeo.prototype.quad = function(a, b, c, d, col, bone){ this.tri(a, b, c, col, bone); this.tri(a, c, d, col, bone); };
-FlyGeo.prototype.plate = function(pts, col, bone){ for(var i=1;i<pts.length-1;i++) this.tri(pts[0], pts[i], pts[i+1], col, bone); };
+FlyGeo.prototype.plate = function(pts, col, bone, uvs){ for(var i=1;i<pts.length-1;i++) this.tri(pts[0], pts[i], pts[i+1], col, bone, uvs ? [uvs[0], uvs[i], uvs[i+1]] : null); };
 /* tapered prism from a to b */
 FlyGeo.prototype.limb = function(a, b, r0, r1, col, bone, ns, cap){
   ns = ns || 3;
@@ -20963,8 +20965,9 @@ FlyGeo.prototype.box = function(c, s, col, bone){
   this.quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0], col, bone); this.quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1], col, bone);
 };
 FlyGeo.prototype.both = function(fn){ this.mx = 1; fn(this); this.mx = -1; fn(this); this.mx = 1; };
-FlyGeo.prototype.build = function(){
+FlyGeo.prototype.build = function(withUV){
   var g = new THREE.BufferGeometry();
+  if(withUV) g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
   g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(this.c, 3));
@@ -21127,6 +21130,13 @@ var flyBones = [], flyFold = [], flyGeoms = [], flyTris = [];
   flyGeoms[FLY_A] = g.build(); flyTris[FLY_A] = g.tris;
 })();
 
+/* Optional library sheet for the dragonfly wings: a build sets FLYTEX = { wing: THREE.Texture | image URL } before this fragment. An alpha cut-out of ONE wing,
+   root at the left edge, leading edge at the top, stretched over each wing's bounding box (the fore and hind wings share it). Absent: the vertex-coloured wings. */
+var FLY_WINGTEX = null;
+if(typeof FLYTEX !== 'undefined' && FLYTEX && FLYTEX.wing){
+  FLY_WINGTEX = (typeof FLYTEX.wing === 'string') ? new THREE.TextureLoader().load(FLYTEX.wing) : FLYTEX.wing;
+  FLY_WINGTEX.anisotropy = 8; FLY_WINGTEX.encoding = THREE.sRGBEncoding;
+}
 /* --- GIANT DRAGONFLY: 6 m body, 4 wings (separate translucent mesh) --- */
 var flyWingGeom, flyWingTris;
 (function(){
@@ -21154,12 +21164,17 @@ var flyWingGeom, flyWingTris;
   var w = new FlyGeo();
   function oneWing(w, root, len, sweep, bone, y){
     var z = root[2], dx = function(u){ return root[0]+len*u; }, dz = function(u, o){ return z + sweep*u + o; };
-    w.plate([[root[0],y,z+0.05], [dx(0.35),y,dz(0.35,0.40)], [dx(0.85),y,dz(0.85,0.36)], [dx(1.0),y,dz(1.0,0.05)], [dx(0.88),y,dz(0.88,-0.36)], [dx(0.30),y,dz(0.30,-0.30)], [root[0],y,z-0.08]], wing, bone);
+    var pts = [[root[0],y,z+0.05], [dx(0.35),y,dz(0.35,0.40)], [dx(0.85),y,dz(0.85,0.36)], [dx(1.0),y,dz(1.0,0.05)], [dx(0.88),y,dz(0.88,-0.36)], [dx(0.30),y,dz(0.30,-0.30)], [root[0],y,z-0.08]];
+    var x0 = root[0], x1 = dx(1.0), z0 = 1e9, z1 = -1e9, uvs = [];
+    for(var i=0;i<pts.length;i++){ z0 = Math.min(z0, pts[i][2]); z1 = Math.max(z1, pts[i][2]); }
+    for(i=0;i<pts.length;i++) uvs.push([(pts[i][0]-x0)/(x1-x0), (pts[i][2]-z0)/(z1-z0)]);   /* u root to tip, v trailing to leading edge */
+    w.plate(pts, wing, bone, uvs);
   }
   w.both(function(w){
     oneWing(w, FW, 3.35, 0.35, 3, 0.50); oneWing(w, HW, 3.15, -0.45, 4, 0.50);
     oneWing(w, FW, 3.35, 0.35, 5, 0.50); oneWing(w, HW, 3.15, -0.45, 6, 0.50);
-    /* veins + pterostigma on the real wings */
+    /* veins + pterostigma on the real wings (a library sheet draws its own) */
+    if(FLY_WINGTEX) return;
     w.quad([0.28,0.52,0.86], [3.2,0.52,1.42], [3.2,0.52,1.34], [0.28,0.52,0.78], vein, 3);
     w.quad([2.75,0.52,1.36], [3.15,0.52,1.42], [3.15,0.52,1.24], [2.75,0.52,1.18], vein, 3);
     w.quad([0.28,0.52,0.74], [3.3,0.52,0.92], [3.3,0.52,0.86], [0.28,0.52,0.68], vein, 3);
@@ -21167,7 +21182,7 @@ var flyWingGeom, flyWingTris;
     w.quad([2.6,0.52,0.02], [3.0,0.52,-0.04], [3.0,0.52,-0.22], [2.6,0.52,-0.16], vein, 4);
     w.quad([0.28,0.52,0.06], [3.1,0.52,-0.42], [3.1,0.52,-0.48], [0.28,0.52,0.0], vein, 4);
   });
-  flyWingGeom = w.build(); flyWingTris = w.tris;
+  flyWingGeom = w.build(!!FLY_WINGTEX); flyWingTris = w.tris;
 })();
 
 /* --- BEAST-RIDER + SADDLE. Origin = top of the seat. --- */
@@ -21426,7 +21441,7 @@ for(var flyI=0; flyI<5; flyI++){
     nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide }), 'fly'+flyI, flySkinHook(flyBones[flyI])));
 }
 flyWingMesh = flyMakeMesh(FLY_D, flyWingGeom, FLY_CAP,
-  nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide, transparent:true, opacity:0.55, depthWrite:false }), 'flyWing', flySkinHook(flyBones[FLY_D])), FLY_D);
+  nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide, transparent:true, opacity:FLY_WINGTEX ? 0.9 : 0.55, depthWrite:false, map:FLY_WINGTEX }), 'flyWing' + (FLY_WINGTEX ? 'Tex' : ''), flySkinHook(flyBones[FLY_D])), FLY_D);
 flyWingMesh.renderOrder = 3;
 
 function flySlotGet(sp, owner){

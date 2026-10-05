@@ -2,6 +2,12 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [ ] (2026-10-05) Tree tints (60-trees.js, same change as Girder): roots take the trunk's tint at their height above the ground, limbs/boughs/twigs the trunk's tint where they leave it.
+      Built, not run (`verify.py` not called) and not looked at.
+- [ ] (2026-10-05) 84-flyers.js has the optional dragonfly-wing hook (`FLYTEX = { wing }` before the fragment) but Mav's Refuge has no material-library machinery
+      (no materials.json, no KMAT, no tex/), so nothing sets it and the wings stay vertex-coloured. Adopting the library here is the larger job.
+- [ ] (2026-10-05) This copy of 84-flyers.js and Girder's differ by about 9 KB (Girder has the roost traffic); the model block and FlyGeo are shared. Any
+      model or UV change has to be made in both.
 - [x] Flyers: wingtips clip the gallery posts on landing (84-flyers; Girder's version lands on the beam outside the post line — port it)
   2026-10-01: ported. Roosts are centred between two gallery posts (30-layout); the landing lips are longer (main 3.0-3.6 m, hangar 3.6-4.2, satellite 2.2; 56-levels stores Ro.lipL); quetzals/archaeopteryx/dragonflies touch down on the lip ~2.5-3 m outside the post line, fold first, then walk in, and walk back out to the lip end to launch. Bats still fly in to hang from the ceiling, with shallow beats on the last 16 m (as Girder).
 - [x] Flyers: circuit flyers never land (fixed in Girder's 84-flyers with peel-off timers — port it)
