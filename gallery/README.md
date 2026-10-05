@@ -56,6 +56,10 @@ Version 42 (2026-10-05): Girder Hero as its own card. `worlds/girder.html` is pl
 `worlds/girder-phil.glb.txt` were removed. The hero entry is not in `build_gallery.py`'s `ENTRIES` (it needs the
 `--slim` build); a full rebuild leaves it out, so republish it by hand as above.
 
+Version 43 (2026-10-05): `worlds/girder-hero.html` replaced (`main` at 0989ccf2). Version 42's page still failed in the
+gallery ("Failed to fetch"): GLTFLoader fetched the models' embedded textures as blob: URLs and the gallery's frame
+blocks fetch. The hero now loads them as data: images through an <img>. Checked headless under `connect-src 'none'`.
+
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
 The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
