@@ -37,33 +37,43 @@ function heroLoader(cb){
   s.onerror = function(){ ERR('hero: could not load GLTFLoader from the CDN'); };
   document.head.appendChild(s);
 }
-/* cb({ root, mixer, acts:{clip name: action}, head }) once the named model (HERO_GLB[name]) is in the scene, idling */
+/* cb({ root, mixer, acts:{clip name: action}, head }) once the named model (HERO_GLB[name]) is in the scene, idling.
+   HERO_GLB[name] is the GLB as base64, or 'url:<path>' for a page built with --models-url (the GLB beside the page) */
 function heroRig(name, cb){
   heroLoader(function(){
-    var bin = atob(HERO_GLB[name]), buf = new Uint8Array(bin.length);
+    var src = HERO_GLB[name];
+    if(/^url:/.test(src)){
+      fetch(src.slice(4)).then(function(r){ if(!r.ok) throw new Error(r.status+' '+src.slice(4)); return r.arrayBuffer(); })
+        .then(function(ab){ heroParse(name, ab, cb); }).catch(function(e){ ERR('hero: '+name+': '+(e&&e.message||e)); });
+      return;
+    }
+    var bin = atob(src), buf = new Uint8Array(bin.length);
     for(var i=0;i<bin.length;i++) buf[i] = bin.charCodeAt(i);
-    new THREE.GLTFLoader().parse(buf.buffer, '', function(g){
-      try{
-        var root = g.scene, head = null;
-        root.traverse(function(o){
-          if(o.isMesh){ o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; o.userData.noPick = true;
-            if(o.material && o.material.map) o.material.map.anisotropy = 4; }
-          if(/Head$/.test(o.name)) head = o;
-        });
-        root.userData.noPick = true;
-        scene.add(root);
-        var mixer = new THREE.AnimationMixer(root), acts = {};
-        g.animations.forEach(function(c){
-          /* in place: the hips keep their bob but not any drift across the ground */
-          c.tracks.forEach(function(t){ if(/Hips\.position$/.test(t.name)){ var v=t.values, x0=v[0], z0=v[2];
-            for(var i=0;i<v.length;i+=3){ v[i]=x0; v[i+2]=z0; } } });
-          acts[c.name] = mixer.clipAction(c);
-        });
-        if(acts.idle) acts.idle.play();
-        cb({ root:root, mixer:mixer, acts:acts, head:head });
-      }catch(e){ ERR('hero: '+name+': '+(e&&e.stack||e)); }
-    }, function(e){ ERR('hero: '+name+': '+(e&&e.message||e)); });
+    heroParse(name, buf.buffer, cb);
   });
+}
+function heroParse(name, ab, cb){
+  new THREE.GLTFLoader().parse(ab, '', function(g){
+    try{
+      var root = g.scene, head = null;
+      root.traverse(function(o){
+        if(o.isMesh){ o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; o.userData.noPick = true;
+          if(o.material && o.material.map) o.material.map.anisotropy = 4; }
+        if(/Head$/.test(o.name)) head = o;
+      });
+      root.userData.noPick = true;
+      scene.add(root);
+      var mixer = new THREE.AnimationMixer(root), acts = {};
+      g.animations.forEach(function(c){
+        /* in place: the hips keep their bob but not any drift across the ground */
+        c.tracks.forEach(function(t){ if(/Hips\.position$/.test(t.name)){ var v=t.values, x0=v[0], z0=v[2];
+          for(var i=0;i<v.length;i+=3){ v[i]=x0; v[i+2]=z0; } } });
+        acts[c.name] = mixer.clipAction(c);
+      });
+      if(acts.idle) acts.idle.play();
+      cb({ root:root, mixer:mixer, acts:acts, head:head });
+    }catch(e){ ERR('hero: '+name+': '+(e&&e.stack||e)); }
+  }, function(e){ ERR('hero: '+name+': '+(e&&e.message||e)); });
 }
 function heroSetup(R){
   heroRoot = R.root; heroMixer = R.mixer; heroActs = R.acts; heroRoot.userData.head = R.head;

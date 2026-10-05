@@ -54,5 +54,9 @@ the hearth, facing the south door.
   close and low under a roof the solids do not model (the hall, houses, shelters, stalls).
 - **The portrait** is the scene drawn from a camera in front of the speaker's face, once, when the box opens.
 - **GLTFLoader** comes from the jsDelivr CDN (three r128's), loaded after the page builds, as three.js itself is.
-- The page is 20.5 MB (Girder alone is 12.5 MB).
+- The page is 20.5 MB (Girder alone is 12.5 MB). **The gallery** (https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,
+  `worlds/girder.html`) takes at most 16 MB a file, so it gets a page that fetches the models from beside itself:
+  `python3 build_hero.py --models-url girder- --out <dir>/girder.html`, then `hero/styv.glb` and `hero/phil.glb` copied
+  to `<dir>/girder-styv.glb` and `<dir>/girder-phil.glb` and published with it (12.4 MB + 2 × 3 MB). Fetching needs a
+  web server: that page does not work opened from disk.
 - Not done: riding the lifts, Styv using his gesture or talking clips in conversation, branching dialogue.
