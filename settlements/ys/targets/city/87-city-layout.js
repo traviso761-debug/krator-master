@@ -68,9 +68,8 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  // has no lanes (the host takes its middle); every other neighbourhood block is quartered by lanes (87c).
  {const NB=LAYOUT.blocks.filter(b=>b.use==='neighbourhood'&&Math.hypot(b.x-CITY.HEAD[0],b.z-CITY.HEAD[1])>150*LAYOUT.K);const want=Math.max(4,Math.round(NB.length/2));
   NB.map(b=>[b,KRAND.unit(KRAND.hash(KRAND.child(LAYOUT.HOST_SEED,'land hosts'),b.i,b.j))]).sort((p,q)=>p[1]-q[1]).slice(0,want).forEach(([b],i)=>{b.landHost=i<2?'tall':'mid';});}
- // the Arena (the old Citadel model, copied: Travis) takes the neighbourhood block nearest the head once its def exists
- if(typeof HYK!=='undefined'&&HYK.defs.hyk_arena){const NB=LAYOUT.blocks.filter(b=>b.use==='neighbourhood'&&!b.landHost).sort((p,q)=>Math.hypot(p.x-CITY.HEAD[0],p.z-CITY.HEAD[1])-Math.hypot(q.x-CITY.HEAD[0],q.z-CITY.HEAD[1]));
-  if(NB.length){NB[0].use='arena';NB[0].tag='Ar';LAYOUT.landmarks.arena=NB[0];}}
+ // (the Arena takes the nearest neighbourhood block that has room for it: the placer decides, since the highways
+ // are laid after the layout)
  if(typeof ysLoopCircle==='function')ysLoopCircle('the Amphitriton island',A.x,A.z,80,32,{island:true});
 })();
 // the sink under the drowned grid: the old city plane where the grid lies, blended into the natural seabed over the

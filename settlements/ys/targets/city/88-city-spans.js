@@ -84,6 +84,7 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
   if(p.kind==='host'&&q&&q.kind==='host')return pair(p.rec,q.rec);
   if(p.kind==='host'){const far=shore?Q:nodeEnd(q,p);if(!far)return false;const e=hostTo(p.rec,far);if(!e)return false;
    if(shore){ysPlTake(Q.box);ysPlCount('hyk_lilypad');far.kind='shore';far.n='the shore';far.pad=true;}
+   if(e.y<p.rec.sink+30)p.rec.noPlinth=true;   /* the deck falls through the restand's ring (sink + 18): drop the plinth (Travis) */
    rec={kind:'bridge',a:{host:p.n,pod:e.pod},b:far,level:level((e.y+far.y)/2),na:p.n,nb:far.n};}
   else if(q&&q.kind==='host'){return link(q,p);}
   else if(p.kind==='mole'&&(shore||q.kind==='mole')){const Pa=edgeOf(p.mole,shore?(Q.x-p.x):(q.x-p.x),shore?(Q.z-p.z):(q.z-p.z));const Pb=shore?Object.assign({},Q,{kind:'shore',n:'the shore'}):edgeOf(q.mole,p.x-q.x,p.z-q.z);
@@ -100,6 +101,15 @@ const SPANS={list:[],refused:[],nodes:[],shore:0};
  for(const e of cand){if(find(e.i)===find(e.j))continue;if(link(N[e.i],e.j===SH?null:N[e.j]))join(e.i,e.j);}
  // the hosts nearest the shore bridge to it anyway (Travis: some towers bridging to shore blocks), three at most
  {let n=0;for(const p of N.filter(n=>n.kind==='host'&&n.shoreD!=null).sort((a,b)=>a.shoreD-b.shoreD)){if(n>=3||p.shoreD>260)break;if(SPANS.list.some(S=>S.na===p.n&&S.nb==='the shore'))continue;if(link(p,null))n++;}}
+ // ---- 4. the spiral stair down a tower's face from its lowest plate to a wet landing (a grown def: a pod record with
+ // no way in), on the plain shafts (the Monolith, the Warden, the Facet), whose restand plinth is then left out (Travis:
+ // the columns and ring stood right under the lowest plate, in the stair's way). Not the Conocylinder (its body skin
+ // runs down to the strut ring, not its core), not the Bastion (its own base). Where the face is clear of pods (`fits`),
+ // and never on the Monolith's spine face
+ {let ns=0;const bear=(h,key,y)=>{const a0=st.range(0,TAU);for(let k=0;k<8;k++){const a=a0+k*Math.PI/4;if(h.type==='skyD'&&Math.abs(Math.atan2(Math.sin(a-h.ry),Math.cos(a-h.ry)))<.7)continue;if(fits(h,key,y,a))return a;}return null;};
+  for(const h of PLACE.hosts){if(h.land||!/^sky[DHL]$/.test(h.type)||!h.plates.length||ns>=4)continue;const y0=h.plates[0];if(y0<8||y0>22)continue;
+   const a=bear(h,'hyk_spiral_stair',y0);if(a!=null){h.pods.push({key:'hyk_spiral_stair',a:+a.toFixed(4),y:y0,level:'L1',into:false,wealth:'civic',stair:true});ysPlCount('hyk_spiral_stair');h.noPlinth=true;ns++;}}
+  SPANS.stairs=ns;}
  SPANS.shore=N.filter(n=>find(n.i)===find(SH)).length;
  for(const n of N)if(find(n.i)!==find(SH))SPANS.refused.push(n.n+' (no path to the shore)');
 })();

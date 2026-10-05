@@ -33,7 +33,7 @@ const VIEWS={
   const sh=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='shore');if(sh){const h=PLACE.hosts.find(x=>x.n===sh.a.host);const mx=(h.x+sh.b.x)/2,mz=(h.z+sh.b.z)/2;const dx=sh.b.x-h.x,dz=sh.b.z-h.z,l=Math.hypot(dx,dz)||1;
    V['A tower bridged to the shore']=[mx-dz/l*150,46,mz+dx/l*150,mx,10,mz];}
   const pm=SPANS.list.find(s=>s.kind==='pontoon'||s.kind==='walkway'&&/mole/.test(s.na)&&!/Tides/.test(s.na));if(pm){const mx=(pm.A.x+pm.B.x)/2,mz=(pm.A.z+pm.B.z)/2;const dx=pm.B.x-pm.A.x,dz=pm.B.z-pm.A.z,l=Math.hypot(dx,dz)||1;
-   V['A mole\'s '+pm.kind+' to the shore']=[mx-dz/l*70,22,mz+dx/l*70,mx,2,mz];}
+   V['A mole\'s '+pm.kind+' to the shore']=[pm.A.x-dx/l*30-dz/l*22,16,pm.A.z-dz/l*30+dx/l*22,mx,2.5,mz];}
   const lp=SPANS.list.filter(s=>s.kind==='bridge'&&(s.piers||0)>0).sort((a,b)=>b.piers-a.piers)[0];if(lp){const E=lp.b.host?PLACE.hosts.find(x=>x.n===lp.b.host):lp.b;const h=PLACE.hosts.find(x=>x.n===lp.a.host);const mx=(h.x+E.x)/2,mz=(h.z+E.z)/2;const dx=E.x-h.x,dz=E.z-h.z,l=Math.hypot(dx,dz)||1;
    V['The longest bridge and its piers']=[mx-dz/l*120,14,mz+dx/l*120,mx,12,mz];}
   const ct=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='citadel');if(ct){const h=PLACE.hosts.find(x=>x.n===ct.a.host);const mx=(h.x+ct.b.x)/2,mz=(h.z+ct.b.z)/2;const dx=ct.b.x-h.x,dz=ct.b.z-h.z,l=Math.hypot(dx,dz)||1;
@@ -42,7 +42,8 @@ const VIEWS={
  {const b=LAYOUT.blocks.find(b=>b.use==='neighbourhood'&&!b.hostPlaced);if(b)V['A laned block from above']=[b.x-N[0]*60,250,b.z-N[1]*60+1,b.x,2,b.z];
   const t=PLACE.hosts.find(h=>h.land&&h.tall);if(t)V['A skyscraper stump on land']=[t.x-N[0]*230+T[0]*140,t.top*.7,t.z-N[1]*230+T[1]*140,t.x,t.top*.45,t.z];
   const m=PLACE.moles.find(m=>/military harbour mole 1/.test(m.name));if(m){const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;V['The military harbour quay']=[cx-N[0]*90+T[0]*140,40,cz-N[1]*90+T[1]*140,cx,3,cz];}
-  const ar=LAYOUT.landmarks.arena;if(ar)V['The Arena']=[ar.x-N[0]*40+T[0]*210,120,ar.z-N[1]*40+T[1]*210,ar.x,20,ar.z];}
+  const sh=PLACE.hosts.find(h=>h.pods.some(p=>p.stair));if(sh){const p=sh.pods.find(p=>p.stair);const r=sh.rAt(p.y,p.a)+34;V['A spiral stair down a tower']=[sh.x+Math.cos(p.a+.5)*r,p.y+8,sh.z+Math.sin(p.a+.5)*r,sh.x+Math.cos(p.a)*(r-30),p.y-5,sh.z+Math.sin(p.a)*(r-30)];}
+  const ar=LAYOUT.landmarks.arena;if(ar)V['The Arena']=[ar.x-N[0]*210+T[0]*120,110,ar.z-N[1]*210+T[1]*120,ar.x,16,ar.z];}
  V['The main market']=[H[0]+N[0]*150-T[0]*110,55,H[1]+N[1]*150-T[1]*110,H[0],4,H[1]];
  {const r=PLACE.blds.find(r=>/^hyk_house_rich/.test(r.key));if(r){const f=[Math.sin(r.ry),Math.cos(r.ry)],x=[Math.cos(r.ry),-Math.sin(r.ry)];V['A rich house']=[r.x+f[0]*34+x[0]*14,r.y+13,r.z+f[1]*34+x[1]*14,r.x,r.y+4,r.z];}}
  const ph=PLACE.hosts.find(h=>/Pharos/.test(h.n));if(ph)V['The Pharos']=[ph.x-N[0]*260+T[0]*120,ph.top-10,ph.z-N[1]*260+T[1]*120,ph.x,ph.top-40,ph.z];

@@ -110,8 +110,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [x] (Oct 5 2026) The bridge graph's gaps: no piers, no link to land but the Amphitriton chain, the Citadel's span and
       the lily pads and pontoons unplaced. Now: piers under every bridge over 55 m, a spanning tree that puts every
       node (host, walled mole, the Citadel, the Winds) on a foot path to the shore, two towers bridged straight to it.
-- [ ] (Oct 5 2026) The bridge graph's remaining gaps: the spiral stair and the ladder are still unplaced (a stair down a
-      host or a stack to a wet landing is the natural next link; the ladder is 11 m tall, a quay wall is 2.5); the Wet
+- [ ] (Oct 5 2026) The bridge graph's remaining gaps: the ladder is unplaced (above); the spiral stairs are showcases
+      down a few shafts' faces to a wet landing, not links of the network (a stair down a stack is the next one); the Wet
       Cells stay an island reached by water (DESIGN); a landmark's span lands on the Winds' stack top beside the temple
       and on the Citadel's bridge-head pad (the pad `NAV_EXTRA` names 'Citadel bridge head'; without it the record's
       estimate at the stack's edge is used); the pontoon's flights at each end stand on the mole's plate edge.
@@ -126,12 +126,21 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       down to the bed round every edge of the big moles (the aprons keep their soft beach side, with the plate).
 - [ ] (Oct 5 2026) The moles' quay walls are plain (coping, batter, the tide crust): no bollards, rings, stairs or
       ladders down to the water yet, and a mole's plate is one flat colour (the ground library's terrazzo is for it).
-- [ ] (Oct 5 2026) The Citadel stack carries the arena model (`hyk_citadel`) under the Citadel's name and the Treasury in
-      its precinct; the fortress Travis asked for is being built (his two references: a Gaudí-like honeycomb facade of
-      oval windows with verdigris spires, and a swept relief-carved mass with a great arch and a crescent colonnade);
-      the arena model moves to the land quarter as `hyk_arena`. The landmark stacks are fitted now: the Citadel's an
-      ellipse 56 × 84 m (its axis away from the bridge door, the Treasury on that side), the Winds' 54 × 57 m, both
-      near flat on top and wandering ±7 %.
+- [x] (Oct 5 2026) The Citadel stack carried the arena model under the Citadel's name. Now `hyk_citadel` is the
+      new Archon's Citadel (74b: a swept ridge-backed mass with a honeycomb of oval windows, a great pointed arch over
+      the audience hall, verdigris spires and dome, a crescent colonnade and a reflecting pool, the west bastion with the
+      bridge door and the bridge-head pad) and the old model is `hyk_arena` (74b2) on the land quarter's block nearest
+      the head, ringed with the market's shops. The landmark stacks are fitted: the Citadel's an ellipse 56 × 84 m (its
+      axis away from the bridge door, the Treasury on that side), the Winds' 54 × 57 m, both near flat on top.
+- [ ] (Oct 5 2026) The new Citadel's verdigris is `HPAL.seaGreen` vertex colour on the shell texture and its gold a warm
+      hex on nacre: no copper or metal material in the kit yet (`metal.bronze.verdigris` in MATERIAL-PROMPTS.md is the
+      texture for it). Its oval windows have bone-tube surrounds and a pane, not `hykWin`'s lip (the lip instance per
+      window was a third of the budget); a window near a wing's ridge can show a sliver of the back face through its
+      reveal. The Arena's pod room is still named the tribune.
+- [ ] (Oct 5 2026) The restand plinth (52 `skyPlinth`: wall, columns, ring) of a Monolith, Warden or Facet is left out
+      when a spiral stair or a bridge off a low plate would run through it (`YS_CUT.noPlinth`); the other hosts keep
+      theirs. The Conocylinder takes no stair (its body skin runs down to the strut ring where the record says core),
+      and the bone ladder (11 m, water to the L1 datum) still has no place: every host's deck at that height is its ring.
 - [x] (Oct 5 2026) The city stood at 11.85 M of a 12 M budget with its densities cut to fit. The budget is 30 M for now
       (Travis) and the city's span two-thirds; the densities are back and the city is 8.5 M.
 - [ ] (Oct 5 2026) `shoreAt` (84b) chooses the water side from ±9 m and flips on a flat beach (the fishing docks); the

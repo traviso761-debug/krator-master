@@ -347,3 +347,19 @@ neighbourhood blocks (the layout marks them, `b.landHost`, in a hash order; the 
 80–124 m), placed before the civic pieces so they find room: six, two of them stumps of 99 and 92 m with pods.
 **The moles** have plates and quay walls (KNOWN_ISSUES has the mechanics); the **landmark stacks** are ellipses fitted
 to the Citadel (with the Treasury) and the Winds, near flat on top.
+
+## The new Archon's Citadel, the Arena, the stairs (Oct 5 2026, Travis)
+Travis's two references for the Citadel: a Gaudí-like civic hall (a honeycomb of oval windows in cartilage surrounds with
+mosaic infill, verdigris twisted spires and a green dome) and a monumental memorial (a terracotta mass sweeping down
+in concave curves from a tall centre, relief-carved, a vast pointed arch with a gilded group, a crescent colonnade round a
+reflecting pool). An agent built `hyk_citadel` anew in the shell kit (74b, 108 k triangles): one parametric loft for the
+swept mass (a 45 m plateau sweeping to 12 m wings and the ground at x = ±38), its front a mosaic field in teal and gold
+pierced by about sixty oval windows in knuckled bone surrounds, a blind arcade at the foot, the pointed arch 10 × 16 m
+tunnelling into the audience hall (a ribbed vault, a nacre dais, three gilded figures) over a broad stair, a drum and
+ribbed dome and four twisted spires in sea-green shell with gold tips, bone tendrils rooting the wings, the forecourt
+with its oval pool, fountains and a twenty-column crescent colonnade, a domed pavilion, the lobed rampart with the
+gate, and the west bastion with the Warden's lodge pod, the bridge door and the bridge-head pad the span graph lands on
+(`own:'Citadel bridge head'`). The old terraced model is `hyk_arena` (74b2, seeds 30690–30697) on the land block nearest
+the head, its gate to the head, the block lined with the market's shops and taverns. **Stairs**: a spiral stair down the
+face of a Monolith, Warden or Facet from its lowest plate to a wet landing, four at most; such a host, and any host
+whose bridge leaves a plate under sink + 30, stands without its restand plinth (`YS_CUT.noPlinth`, 52 `skyPlinth`).

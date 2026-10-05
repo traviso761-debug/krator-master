@@ -11,7 +11,7 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  PLACE.hosts.forEach((h,i)=>{const T=YS_HOST_TYPES[h.type];const builder=typeof window[T.builder]==='function'?window[T.builder]:null;
   if(!builder){reportErr('host type '+h.type+' has no builder '+T.builder);return;}
   const host=ysPlaceHost(scene,{key:T.key,builder,x:h.x,z:h.z,y:h.sink,ry:h.ry,d:h.d,cutY:h.cutY,podium:h.podium,cap:h.cap,rAt:h.rAt,name:h.n,
-   floors:h.floors,ways:h.ways,sockets:h.sockets||null,ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
+   floors:h.floors,ways:h.ways,sockets:h.sockets||null,noPlinth:!!h.noPlinth,ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
   if(!host){fail++;return;}
   // the floors table runs to the top of what stands, not on into the sky over a full tower
   h.G=host.G;host.floors=host.floors.filter(f=>f.y<h.top+2);host.full=h.full;host.shaped=h.shaped;host.rec=h;h.drawn=true;

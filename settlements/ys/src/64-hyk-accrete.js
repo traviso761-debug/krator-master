@@ -13,7 +13,7 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  // (52-sky-abc ysWallHole); hykAccrete then grows the pod bedded into that hole with a back door onto the plate.
  const ways=(o.ways||[]).map(w=>{const R=w.R||4;const rs=rAt(w.y,w.a);const u=((((w.a+ry)/TAU)%1)+1)%1;return {a:w.a,y:w.y,R,u,yb:w.y-sink+R*.447,uw:R*.9/(TAU*rs),hh:R*.88,door:null,room:null};});
  const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;{const t=tcur();t.host=true;t.n=(t.n||0)+1;}const lush=BIOME.lush;BIOME.lush=0;
- YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||o.sockets)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;
+ YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||o.sockets||o.noPlinth)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,noPlinth:!!o.noPlinth,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;   /* noPlinth: the restand's columns and ring are left out (a stair or a low bridge runs through them) */
  HOLES=o.holes!=null?o.holes:.4;   // the kit's full decay eats 83 % of a tower's skin; a reclaimed host keeps most of its wall
  const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}

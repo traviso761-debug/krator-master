@@ -292,9 +292,6 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // ---- 3. the precincts on land and in the shallows
  // the main market: the hall at the centre, its front to the docks; the block lined with shops
  {const b=ysBlock(0,0);if(b){ysPlSeek('hyk_market_main',[12,4,-4,-12,-20].map(k=>[b.x+PL_N[0]*k,b.z+PL_N[1]*k]),ysPlFacing(PL_N[0],PL_N[1]),'main market',b,{margin:3,skip:/^highway/,extra:{over:/^highway/}});ysPlFront(b,{pool:PL_POOL.market,kind:'market',why:'main market',sides:4});}}
- // the Arena (Travis: the old Citadel model, copied) on the neighbourhood block nearest the head, its gate to the head, lined with the market's shops and taverns
- if(LM.arena){const b=LM.arena;const d=[CITY.HEAD[0]-b.x,CITY.HEAD[1]-b.z],l=Math.hypot(d[0],d[1])||1;
-  ysPlByName('hyk_arena',b.x,b.z,ysPlFacing(d[0]/l,d[1]/l),'landmark',b,{margin:3});ysPlFront(b,{pool:PL_POOL.market,kind:'market',why:'arena',sides:4});}
  // the headland: a mole over the awash block at the quay datum, the barracks and the mustering ground, ballistas to the sea
  if(LM.headland_military){const b=LM.headland_military;ysPlMole('the headland',ysPlBlockPoly(b,-88,88,-88,88),2.5,8,{wall:true,node:{kind:'mole',n:'the headland',wealth:'civic',block:b.i+','+b.j}});const fr=ysPlFacing(PL_U[0],PL_U[1]);
   const at=(u,v)=>ysPlAt(b,u,v);ysPlSeek('hyk_barracks',ysPlCands(b,-30,-40,76),fr,'headland',b);ysPlSeek('hyk_muster',ysPlCands(b,-25,35,76),fr,'headland',b);
@@ -326,6 +323,14 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  // the reclaimed Ancients' plots (a quarter of the neighbourhood blocks; slots until the mid-rise types are vendored),
  // industry, farms
  const NB=LAYOUT.blocks.filter(b=>b.use==='neighbourhood').map(b=>Object.assign(b,{dH:Math.hypot(b.x-CITY.HEAD[0],b.z-CITY.HEAD[1])})).sort((p,q)=>p.dH-q.dH);
+ // the Arena (Travis: the old Citadel model, copied) on the nearest neighbourhood block with room for it (not one marked
+ // for a reclaimed Ancient), its gate to the head, the block lined with the market's shops and taverns
+ if(HYK.defs.hyk_arena){for(const b of NB){if(b.landHost)continue;const d=[CITY.HEAD[0]-b.x,CITY.HEAD[1]-b.z],l=Math.hypot(d[0],d[1])||1;
+   const t=ysPlTry('hyk_arena',b.x,b.z,ysPlFacing(d[0]/l,d[1]/l),{margin:3,ground:{slope:6}});if(typeof t==='string'){ysPlRefuse(t);continue;}
+   // it wants flat ground: its block's middle is levelled to the mean (a flat stamp, graded over 10 m), paved
+   CITY_STAMPS.push({kind:'flat',poly:ysPlBoxPoly(ysPlBox(t.B.cx,t.B.cz,t.B.hw+6,t.B.hd+6,t.B.ry)),y:t.y,soft:10,paint:'pave'});
+   ysPlBld('hyk_arena',t.B,t.y,'landmark',b,null,{x:b.x,z:b.z});b.use='arena';b.tag='Ar';LAYOUT.landmarks.arena=b;b.hostPlaced=true;   /* no lanes, no neighbourhood frontage */
+   ysPlFront(b,{pool:PL_POOL.market,kind:'market',why:'arena',sides:4});break;}}
  // the reclaimed Ancients take half the neighbourhood blocks (the layout marks them, b.landHost, the first two as skyscraper
  // stumps; 87-city-layout.js), before any civic piece or frontage: each block anywhere a clear spot fits the host's
  // footprint; a marked block that cannot take one hands its turn to the next block in the hash order, and is laned instead
@@ -344,7 +349,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   civic[sec].forEach((k,i)=>{if(!ysPlSeek(k,ysPlCands(b,i?40:-40,0,72),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood civic',b))civLeft.push(k);});}
  // a sector the span left without neighbourhoods hands its market and shrine to the nearest other neighbourhood block
  for(const k of civLeft){if(PL_COUNT[k]&&/shrine/.test(k))continue;for(const b of NB)if(ysPlSeek(k,ysPlCands(b,0,40,72),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood civic',b))break;}
- for(const b of NB){const st=ysPlStream('land host',b);
+ for(const b of NB){if(b.use==='arena')continue;const st=ysPlStream('land host',b);
   const sides=b.dH<750*LAYOUT.K?4:3;   /* every street of a neighbourhood built, but the outermost's back */ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
   // the lanes' frontages (a block without a reclaimed Ancient is quartered by two lanes, 87c): the small houses and
   // corner shops line both sides of each lane, in each quarter facing its two lane sides

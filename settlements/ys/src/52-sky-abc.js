@@ -41,7 +41,7 @@ function toppleBreak(G,U,ang,s,r0,hc,partFn){const B=TOPPLE_BREAK,ux=s*Math.cos(
  useGroupXF(U2);partFn(U2,hc+t,null);endGroupXF();
  rubbleRing(bx,0,bz,r0*.3,r0*1.3,70,3);
  B.out={x:U2.position.x,z:U2.position.z,ux:u2x,uz:u2z,bx,bz};}
-function skyPlinth(G,d,R){const R0=R;R=ysPodiumR(R);mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
+function skyPlinth(G,d,R){const R0=R;R=ysPodiumR(R);if(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.noPlinth)return;   /* Ys: a host with a stair or a low bridge stands without its restand (Travis, Oct 5 2026) */mesh(lathe({rFn:()=>R,H:5,nu:96,nv:1}),SHELL(d),G);kput('slab',[0,5,0],null,[R,.6,R],new THREE.Color(d>0?0x5a4a40:0xd8d4cc));
  for(let k=0;k<48;k++){const th=k/48*TAU,r=R*.93;if(d>0&&rng()<.2)continue;kput(d>0?'colR':'colW',[r*Math.cos(th),5,r*Math.sin(th)],null,[1.8,12,1.8],null);}
  kput(d>0?'ringR':'ringW',[0,17.3,0],qEuler(Math.PI/2,0,0),[R*.94,R*.94,8],null);
  if(R===R0)apron(G,0,0,R*1.02,R*1.5,d,1.4);   // graded skirt: the plinth met the ground on a hard line

@@ -12,6 +12,7 @@ BUDGET.type.roads='env';BUDGET.type['mole quay']='env';   // the city's own grou
 function ysCityChecks(){const R=[];const C=ysPlaceCensus();
  {const spanKey={bridge:null,drawbridge:'hyk_drawbridge',walkway:'hyk_walkway',pontoon:'hyk_pontoon'};const used=new Set(SPANS.list.filter(s=>s.drawn).map(s=>s.kind==='bridge'?(s.level==='L2'?'hyk_span_l2':'hyk_span_l1'):spanKey[s.kind]));
   if(SPANS.list.some(s=>s.drawn&&s.kind==='bridge'&&s.b.pad))used.add('hyk_lilypad');
+  R.push({name:'stairs-to-the-water',ok:SPANS.stairs>0,detail:SPANS.stairs+' spiral stairs down a tower\'s face to a wet landing (their plinths left out)'});
   C.zero=C.zero.filter(k=>!used.has(k));   /* a span def is in the city when its helper is (the defs are the sheet's showcases) */
   const zero=C.zero.filter(k=>YS_PL_LATER.indexOf(k)<0),later=C.zero.filter(k=>YS_PL_LATER.indexOf(k)>=0);
   R.push({name:'kit-audit-every-def-placed',ok:!zero.length,detail:(zero.length?zero.length+' never placed: '+zero.join(' '):(HYK.order.length-later.length)+' defs placed')+(later.length?'; waiting on the bridge graph: '+later.join(' '):'')});}
