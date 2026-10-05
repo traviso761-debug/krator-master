@@ -8,10 +8,9 @@ Adds three fragments to build.py's list (hero/README.md); the first is generated
   89-talk.js        hero/89-talk.js: the controls, the people to talk to (Phil), name tags, the dialogue box
 
 Usage:  python3 build_hero.py [--no-checks]
-        python3 build_hero.py --models-url girder- --out <dir>/<page.html>
-          for a host with a per-file size limit: the page fetches each model from <prefix><name>.glb.txt beside it
-          (base64 text, which a host serving only web types accepts) instead of carrying it, about 8 MB lighter.
-          The build writes those files into <dir> too. Not committed.
+        python3 build_hero.py --slim --out <page.html>
+          for a host with a per-file size limit (the gallery: 16 MB): the models go in slimmed by hero/slim_glb.py
+          (about 2 MB for both instead of 6; smaller textures, no normal maps), the page about 15.7 MB. Not committed.
 """
 import base64, os, sys
 import build            # build.py: its port lint and open-issue list run on import, as when it is run itself
@@ -24,20 +23,16 @@ def arg(name):
     return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
 
 
-MODELS_URL = arg('--models-url')
-
-
 def hero_bodies():
     glbs = sorted(f for f in os.listdir(HERO) if f.endswith('.glb'))
-    if MODELS_URL is None:
-        rows = [" %s: '%s'" % (f[:-4], base64.b64encode(open(os.path.join(HERO, f), 'rb').read()).decode()) for f in glbs]
+    if '--slim' in sys.argv:
+        sys.path.insert(0, HERO)
+        from slim_glb import slim
     else:
-        rows = [" %s: 'url:%s%s.txt'" % (f[:-4], MODELS_URL, f) for f in glbs]
-        for f in glbs:
-            with open(os.path.join(os.path.dirname(build.OUT), MODELS_URL + f + '.txt'), 'w', encoding='ascii', newline='') as fh:
-                fh.write(base64.b64encode(open(os.path.join(HERO, f), 'rb').read()).decode())
+        slim = lambda b: b
+    rows = [" %s: '%s'" % (f[:-4], base64.b64encode(slim(open(os.path.join(HERO, f), 'rb').read())).decode()) for f in glbs]
     model = ('/* ============================== 30. HERO MODELS (generated) ==============================\n'
-             '   hero/*.glb as base64 (or, built with --models-url, where to fetch it), by file name: build_hero.py\n'
+             '   hero/*.glb as base64, by file name (slimmed by hero/slim_glb.py in a --slim build): build_hero.py\n'
              '   writes it, hero/prep_model.py makes the GLBs. Do not edit. */\n'
              'var HERO_GLB = {\n' + ',\n'.join(rows) + '\n};\n')
     out = {'88-hero-model.js': model}

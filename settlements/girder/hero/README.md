@@ -30,6 +30,7 @@ python3 build_hero.py                      # writes girder-hero.html
 | `89-talk.js` | the controls, the cast (`TALK_PEOPLE`), name tags, the dialogue box and its portrait. Read its header |
 | `styv.glb`, `phil.glb` | the models (~3 MB each): one skinned mesh, JPEG textures, clips. Embedded as base64 by name (`HERO_GLB`, generated) |
 | `prep_model.py` | makes a GLB from a Meshy export zip (one ~25 MB GLB per clip) |
+| `slim_glb.py` | shrinks a GLB to about a third for a size-limited host (`build_hero.py --slim`) |
 
 The models were made with:
 
@@ -55,8 +56,8 @@ the hearth, facing the south door.
 - **The portrait** is the scene drawn from a camera in front of the speaker's face, once, when the box opens.
 - **GLTFLoader** comes from the jsDelivr CDN (three r128's), loaded after the page builds, as three.js itself is.
 - The page is 20.5 MB (Girder alone is 12.5 MB). **The gallery** (https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,
-  `worlds/girder.html`) takes at most 16 MB a file, so it gets a page that fetches the models from beside itself:
-  `python3 build_hero.py --models-url girder- --out <dir>/girder.html` writes the page and, beside it,
-  `girder-styv.glb.txt` and `girder-phil.glb.txt` (the GLBs as base64 text: the gallery serves only web types, not
-  `.glb`); publish all three (12.4 MB + 2 × 4 MB). Fetching needs a web server: that page does not work opened from disk.
+  its own card, `worlds/girder-hero.html`) takes at most 16 MB a file (the artifact host's limit, not a setting), so it
+  gets `python3 build_hero.py --slim --out <dir>/girder-hero.html`: the models slimmed by `slim_glb.py` (1024 px colour
+  maps, no normal maps, quantized normals, UVs and weights; about 2 MB for both), the page about 15.7 MB. The models
+  must stay in the page: the gallery's frame cannot fetch files published beside it.
 - Not done: riding the lifts, Styv using his gesture or talking clips in conversation, branching dialogue.

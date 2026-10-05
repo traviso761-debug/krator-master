@@ -37,19 +37,10 @@ function heroLoader(cb){
   s.onerror = function(){ ERR('hero: could not load GLTFLoader from the CDN'); };
   document.head.appendChild(s);
 }
-/* cb({ root, mixer, acts:{clip name: action}, head }) once the named model (HERO_GLB[name]) is in the scene, idling.
-   HERO_GLB[name] is the GLB as base64, or 'url:<path>' for a page built with --models-url: a file beside the page
-   holding the GLB as base64 text (a host that serves only web types takes .txt where it refuses .glb) */
+/* cb({ root, mixer, acts:{clip name: action}, head }) once the named model (HERO_GLB[name], the GLB as base64) is in
+   the scene, idling. The models are always in the page: the gallery's frame cannot fetch files published beside it */
 function heroRig(name, cb){
-  heroLoader(function(){
-    var src = HERO_GLB[name];
-    if(/^url:/.test(src)){
-      fetch(src.slice(4)).then(function(r){ if(!r.ok) throw new Error(r.status+' '+src.slice(4)); return r.text(); })
-        .then(function(t){ heroParse(name, heroB64(t.trim()), cb); }).catch(function(e){ ERR('hero: '+name+': '+(e&&e.message||e)); });
-      return;
-    }
-    heroParse(name, heroB64(src), cb);
-  });
+  heroLoader(function(){ heroParse(name, heroB64(HERO_GLB[name]), cb); });
 }
 function heroB64(s){
   var bin = atob(s), buf = new Uint8Array(bin.length);
