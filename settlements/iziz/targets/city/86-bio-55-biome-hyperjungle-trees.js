@@ -130,14 +130,19 @@ function buildHero(T,ti,q,st){
    (R,ang)=>R.r*trunkMul(R.yy,ang),
    (R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.50+.50*clamp(lobeSum(ang)*1.4,0,1),f):1;});
   i0=i1;}
- // ---- surface roots, one off each buttress: the bole's own bucket and base tint (band and moss), so a root reads as the trunk running into the ground ----
- const rootCol=trunkPt(1.5).col;   // a root takes the trunk's tint at its height above the ground: it matches the trunk where it leaves it and the mossy base on the ground
+ // ---- surface roots, one off each buttress ----
+ // A root takes the trunk's colour at its height above the ground (band and moss): it matches the trunk where it leaves it and the mossy base on the
+ // ground. Roots stay in the 'limb' bucket (the floor reads the bark bucket as the bole's profile), so the bole colour is carried into limb space:
+ // the limb tint of a band renders as that band's bole colour, and the same per-channel ratio carries the moss.
+ const toLimb=(c,h)=>{const k=(Math.floor(h/22)+ti)%3,b=boleCol(sp,k).clone().convertSRGBToLinear(),l=limbCol(sp,k).clone().convertSRGBToLinear(),x=c.clone().convertSRGBToLinear();
+  return x.setRGB(x.r*l.r/Math.max(.02,b.r),x.g*l.g/Math.max(.02,b.g),x.b*l.b/Math.max(.02,b.b)).convertLinearToSRGB();};
+ const rootAt=h=>toLimb(trunkPt(h).col,h),rootCol=rootAt(1.5);
  lobes.forEach(L=>{if(sp===3&&rng()<.45)return;
   const ang=L.a,R0=trunkR(T,T.y0+7)*(1+Hb.butA*.35*L.amp),len=rr(26,70)*(sp===3?.6:1)*(.6+.4*L.amp),rr0=clamp(T.rb*.17*L.amp,1,3.2),pts=[],wob=rr(0,TAU);
   for(let j=0;j<=9;j++){const t=j/9,d=R0*.72+len*t,a=ang+.32*Math.sin(wob+t*5.2)*t+.10*Math.sin(wob*2+t*11);
    const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
-   const r=mix(rr0,.22,Math.pow(t,.75));pts.push({x:x,y:BIO.terrainH(x,z)+r*(j===0?1.6:.22)+(j===0?3:0),z:z,r:r,col:trunkPt(r*(j===0?1.6:.22)+(j===0?3:0)).col});}
-  if(pts.length>3){st.root+=BIO.tube(fam,pts,rootCol,{seg:6});st.roots++;}});
+   const r=mix(rr0,.22,Math.pow(t,.75));pts.push({x:x,y:BIO.terrainH(x,z)+r*(j===0?1.6:.22)+(j===0?3:0),z:z,r:r,col:rootAt(r*(j===0?1.6:.22)+(j===0?3:0))});}
+  if(pts.length>3){st.root+=BIO.tube('limb',pts,rootCol,{seg:6});st.roots++;}});
  // ---- boughs of my own: top tuft, crown fillers, and the lower tier ----
  const mine=[],nTop=ri(Hb.topN[0],Hb.topN[1]),a0=rr(0,TAU);
  function ownBough(u,ang,len,el,curve,rScale,rMin,rMax){

@@ -8,7 +8,7 @@ Read before changing anything here. `build.py` prints the open count.
       58-biome-hyperjungle-fauna.js maps fur on the sloth, hide on the striders, skin on the sky rays and a wing cut-out on the butterflies. Unset, the fauna is
       exactly the vertex-coloured one. The dart/flitter material takes no texture (wing and body share UVs). Each part's UV repeats once over the part, so the
       fur is set to repeat 2x.
-- [ ] (2026-10-05) Tree tints (55-biome-hyperjungle-trees.js): roots now draw in the species bark bucket with the trunk's tint at their height above the ground (band and moss), and limbs, boughs
+- [ ] (2026-10-05) Tree tints (55-biome-hyperjungle-trees.js): roots now take the trunk's tint at their height above the ground (band and moss), carried into limb space because they stay in the `limb` bucket (60-floor's `boleProfile` reads the bark bucket, so roots there would push the floor dress away), and limbs, boughs
       and twigs use the limb tint of the trunk's colour band at the attachment height. The limbs still use the shared pale `limb` texture; only their colour is
       matched to the trunk. Iziz carries a hand-patched copy.
 
