@@ -1148,6 +1148,7 @@ BIO.download=function(name,opt){const o=BIO.export(opt),blob=new Blob([JSON.stri
 //     lights: { directional: [{ dir (unit vector the light TRAVELS along), colour, intensity, shadow }],
 //               hemisphere: [{ sky, ground, intensity }], ambient: [{ colour, intensity }], points: n },
 //     fog: { type: 'exp2', colour, density } | { type: 'linear', colour, near, far } | null,
+//     environment: { specular, diffuse, source } | null (the page lights standard materials from its sky: scene.environment),
 //     background: colour | 'texture' | null,
 //     sky: { png (equirectangular, sRGB, the page's sky and far scenery from `at`, nearer than skyNear clipped), size, at, near } | null,
 //       skyNear defaults to half the box's shorter side, so the panorama holds exactly what the export leaves out (the page's
@@ -1280,6 +1281,10 @@ var KSTAGE = (function(){
    lights: K.lights(P.scenes),
    fog: sc && sc.fog ? (sc.fog.isFogExp2 ? { type: 'exp2', colour: hex(sc.fog.color), density: sc.fog.density } : { type: 'linear', colour: hex(sc.fog.color), near: sc.fog.near, far: sc.fog.far }) : null,
    background: sc && sc.background ? (sc.background.isColor ? hex(sc.background) : 'texture') : null,
+   // scene.environment: the page's sky as the light on its standard materials (core/atmos/89-atmos-b-skylight.js). Godot
+   // reflects its own Sky; specular and diffuse are the shares the page gives the map (PRESETS.skylight), 1 and 0 by default
+   environment: sc && sc.environment ? (function(){ var P = typeof ATMOS !== 'undefined' && ATMOS.PRESETS && ATMOS.PRESETS.skylight;
+     return { specular: P ? P.specular : 1, diffuse: P ? P.diffuse : 0, source: P ? 'atmos skylight' : 'envMap' }; })() : null,
    scenes: P.scenes.length, sky: null, ground: null };
   if(r && o.sky !== 0 && o.at) try{ out.sky = K.sky(P.scenes, r, o.at, o.sky || 1024, o.skyNear || (o.box ? Math.min(o.box[2] - o.box[0], o.box[3] - o.box[1]) / 2 : 1500)); }catch(e){ out.skyError = String(e.message || e); }
   if(o.box) try{ out.ground = K.ground(P.scenes, o.box, o.step || 4, o.ground); }catch(e){ out.groundError = String(e.message || e); }

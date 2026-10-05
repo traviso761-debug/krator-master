@@ -25,7 +25,13 @@ static func apply(st: Dictionary, env: Environment, sun: DirectionalLight3D, par
 			# takes three's 1/0.6 in place of Godot's 1.8
 			env.tonemap_white = 16.0
 			env.tonemap_exposure = float(r.get("exposure", 1.0)) / (0.6 * 1.8)
-	env.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED   # three's materials here have no envMap: no sky in their specular
+	var envm = st.get("environment")
+	if envm is Dictionary:   # the page lights its standard materials from its sky (core/atmos skylight): Godot reflects the panorama
+		env.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+		env.ambient_light_sky_contribution = clampf(float(envm.get("diffuse", 0.0)), 0.0, 1.0)
+		out["report"]["environment"] = "reflections from the sky panorama (the page's %s: specular %s, diffuse %s)" % [str(envm.get("source")), str(envm.get("specular")), str(envm.get("diffuse"))]
+	else:
+		env.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED   # no envMap on the page's materials: no sky in their specular
 	env.glow_enabled = false   # three's pages draw no bloom (none uses a composer): glow blurs and whitens the panorama
 	var sky = st.get("sky")
 	if sky is Dictionary and sky.has("png"):
