@@ -119,8 +119,8 @@
   {
    "name": "The Great Plateau",
    "at": [
-    -0.005039,
-    -0.020841
+    -0.005759,
+    -0.019404
    ],
    "model": "plateau",
    "info": "A table of land walled by cliffs, the cradle of the kingdom: the Temple of Time stands on it in ruins, and a wall runs round its rim. The Shrine of Resurrection is here, where Link wakes, and the old man's cabin by the woods."
@@ -137,8 +137,8 @@
   {
    "name": "Hateno Village",
    "at": [
-    -0.022316,
-    0.034495
+    -0.022172,
+    0.035789
    ],
    "model": "hateno",
    "info": "A village of white walls in the east, out past Fort Hateno, where the Guardians' advance was stopped a hundred years ago. Up the hill is the Ancient Tech Lab, with its blue flame."
@@ -155,8 +155,8 @@
   {
    "name": "Zora's Domain",
    "at": [
-    0.00252,
-    0.03198
+    0.004175,
+    0.033417
    ],
    "model": "zora",
    "info": "The Zora's city of pale, glowing stone on the heights by the East Reservoir, with the palace's tower in the middle."
@@ -164,8 +164,8 @@
   {
    "name": "Goron City",
    "at": [
-    0.020876,
-    0.020122
+    0.02318,
+    0.017248
    ],
    "model": "goron",
    "info": "The Gorons live and mine on the slopes of Death Mountain, where nobody else can stand the heat."
@@ -195,7 +195,7 @@
    ],
    "at": [
     0.019796,
-    0.003234
+    0.004312
    ],
    "model": "korok",
    "info": "In the heart of the Lost Woods, inside the Great Hyrule Forest's ring of water: the Great Deku Tree, and before him the Master Sword in its pedestal."
@@ -221,8 +221,8 @@
   {
    "name": "Hylia Bridge",
    "at": [
-    -0.024331,
-    -0.002731
+    -0.026491,
+    0.000719
    ],
    "model": "bridge",
    "info": "The long bridge over Lake Hylia, on the road south to Faron."
@@ -466,6 +466,15 @@
    ],
    "model": "falls",
    "info": "Wherever a river comes down off high ground - off Zora's Domain, out of the hills - it falls, white, with mist at its foot."
+  },
+  {
+   "name": "Tarrey Town",
+   "at": [
+    0.014037,
+    0.040819
+   ],
+   "model": "tarrey",
+   "info": "A new town on a rock in Lake Akkala, built by people from all over Hyrule: round houses under bright domed roofs, a tall golden-roofed hall, a walkway out across the water."
   }
  ],
  "views": {

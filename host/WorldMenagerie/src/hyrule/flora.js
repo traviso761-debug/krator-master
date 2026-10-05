@@ -14,7 +14,9 @@ export function flora(api){
   const R=mkRng(1987),RG=PL.regions||{};
   const inR=(k,x,z)=>{const r=RG[k];if(!r)return 0;const dx=(x-r[0][0])/r[1],dz=(z-r[0][1])/r[2],d=Math.sqrt(dx*dx+dz*dz);return d>=1?0:1-d*d;};
   const inLake=(x,z)=>{for(const L of (PL.lakes||[])){let c=false;const p=L.poly;for(let i=0,j=p.length-1;i<p.length;j=i++){if((p[i][1]>z)!==(p[j][1]>z)&&x<(p[j][0]-p[i][0])*(z-p[i][1])/(p[j][1]-p[i][1])+p[i][0])c=!c;}if(c)return true;}
-    for(const M of (PL.moats||[])){const d=Math.hypot(x-M.x,z-M.z);if(d>M.r0-6&&d<M.r1+6)return true;}return false;};
+    for(const M of (PL.moats||[])){const d=Math.hypot(x-M.x,z-M.z);if(d>M.r0-6&&d<M.r1+6)return true;}
+    for(const [px,pz,r] of (PL.pads||[]))if(Math.hypot(x-px,z-pz)<r)return true;   // and nothing grows in the towns
+    return false;};
   const slope=(x,z)=>{const a=groundH(x+6,z)-groundH(x-6,z),b=groundH(x,z+6)-groundH(x,z-6);return Math.hypot(a,b)/12;};
   const dm=new THREE.Object3D(),col=new THREE.Color();
   // a kit of instanced parts, filled as we go and built at the end

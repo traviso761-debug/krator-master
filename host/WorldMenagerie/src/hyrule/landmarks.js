@@ -2,14 +2,15 @@
 // is this project's own low-poly geometry and nothing from the game is used.
 //
 // The plan (data/cities/hyrule-plan.json, from tools/make-hyrule.py) says where each thing stands; the landmarks in
-// the city file say what each is called. Hyrule Castle in the middle; the fifteen Sheikah towers and the shrines; the
-// stables with their horse heads; the Great Plateau with the Temple of Time, its wall, the Shrine of Resurrection and
-// the old man's cabin; the villages - Kakariko, Hateno and its laboratory, Rito Village on its pillar of rock, Zora's
-// Domain, Goron City, Gerudo Town, Lurelin; the Great Deku Tree; the Lomei Labyrinths; Akkala's citadel and its
-// spiral; Hylia Bridge; Fort Hateno; and the decayed Guardians lying in the fields. The Divine Beasts and Calamity
-// Ganon are beasts.js.
+// the city file say what each is called. Here: the fifteen Sheikah towers; Rito Village on its pillar of rock; the
+// Great Deku Tree and the Master Sword; the Lomei Labyrinths; the Akkala Citadel and its spiral; Hylia Bridge and the
+// Tabantha Great Bridge; the waterfalls; the decayed Guardians lying in the fields. Elsewhere: Hyrule Castle, Castle
+// Town and the Great Plateau (castle.js); Kakariko, Hateno, Lurelin, Tarrey Town (villages.js); Zora's Domain, Goron
+// City, Gerudo Town (peoples.js); the shrines and stables (wayside.js); the Divine Beasts (divine.js); Calamity Ganon
+// and Death Mountain's fire (beasts.js). The shared solids and roofs are kit.js.
 
 import { guardianKit } from './guardian.js';
+import { kit } from './kit.js';
 
 export function landmarks(api){
   const {THREE,ctx,group,gh,animHooks}=api;
@@ -41,55 +42,10 @@ export function landmarks(api){
 
   // a decayed Guardian (guardian.js): sunk to its drum, the head tipped or fallen off, legs folded or gone, moss on it
   const GK=guardianKit(THREE);
+  const KT=kit(api),windows=KT.windows,lathe_=(prof,m,x,y,z)=>KT.lathe(prof,m,x,y,z,16);
   function deadGuardian(parts,x,z,s,yaw){GK.fallen(parts,x,gh(x,z),z,yaw||0,Math.floor(Math.abs(x*7.3+z*3.1))%997);}
 
   return {
-  // ================================================================ Hyrule Castle
-  // On its hill inside the moat: an outer wall with round towers, terraces climbing to the main keep, the Sanctum's
-  // tall tower in the middle with a spire, slim towers round it under blue-slate cones. Malice on the walls.
-  castle(L,x,z){
-    const C=S.castle,cx=C.x,cz=C.z,y0=gh(cx,cz),parts=[];
-    // the outer wall, an irregular ring, with round towers at its corners and a gate to the south
-    const ring=[];for(let k=0;k<10;k++){const a=k/10*Math.PI*2,r=330+hz(k)*30;ring.push([cx+Math.cos(a)*r,cz+Math.sin(a)*r*0.85]);}
-    for(let k=0;k<ring.length;k++){const [ax,az]=ring[k],[bx,bz]=ring[(k+1)%ring.length],L_=Math.hypot(bx-ax,bz-az),y=Math.min(gh(ax,az),gh(bx,bz));
-      if(k===2)continue;   // the south gate
-      parts.push(blk((ax+bx)/2,y-2,(az+bz)/2,L_,20,7,M.stone2,-Math.atan2(bz-az,bx-ax)));
-      parts.push(cyl(ax,gh(ax,az)-2,az,9,8,32,M.stone),cone(ax,gh(ax,az)+30,az,10,14,M.slate));}
-    // the terraces, one on another: built round the centre and then scaled up together, so the castle stands as
-    // big in its moat as it does in the game
-    const core=[],P_=parts;{const parts=core;
-    parts.push(blk(cx,y0-4,cz,250,22,200,M.stone2,0.1),blk(cx+5,y0+18,cz-5,180,24,140,M.stone,0.1),blk(cx+5,y0+42,cz-10,110,20,85,M.stone2,0.1));
-    // the main keep: a long hall under a slate roof, buttressed
-    parts.push(blk(cx+5,y0+62,cz-12,90,34,46,M.stone,0.1));
-    {const r=new THREE.Mesh(new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4),M.slate);r.scale.set(70,26,36);r.position.set(cx+5,y0+96+13,cz-12);r.rotation.y=0.1;parts.push(r);}
-    // the Sanctum's tower, rising out of the keep, and its spire
-    parts.push(blk(cx+5,y0+62,cz-12,26,120,26,M.stone,0.1),blk(cx+5,y0+182,cz-12,30,8,30,M.stone2,0.1));
-    parts.push(cone(cx+5,y0+190,cz-12,18,70,M.slate2,8),cone(cx+5,y0+258,cz-12,1.2,12,M.gold,6));
-    for(const [a,b] of [[-14,-14],[14,-14],[-14,14],[14,14]]){parts.push(cyl(cx+5+a,y0+150,cz-12+b,4.5,4,38,M.stone),cone(cx+5+a,y0+188,cz-12+b,5.5,16,M.slate,8));}
-    // the slim towers round it
-    for(let k=0;k<7;k++){const a=k/7*Math.PI*2+0.4,r=95+hz(k+3)*40,tx=cx+Math.cos(a)*r,tz=cz+Math.sin(a)*r*0.8,ty=gh(tx,tz),h=55+hz(k+9)*55;
-      parts.push(cyl(tx,ty-2,tz,7,6,h,M.stone),cone(tx,ty+h-2,tz,8,22,M.slate,8),cyl(tx,ty+h*0.6,tz,7.6,7.6,2,M.stone2));}
-    }
-    const K=1.55;for(const p of core){p.position.x=cx+(p.position.x-cx)*K;p.position.z=cz+(p.position.z-cz)*K;p.position.y=y0+(p.position.y-y0)*K;p.scale.multiplyScalar(K);P_.push(p);}
-    // bridges over the moat, and the road in
-    for(const a of [Math.PI/2,-0.3,Math.PI+0.5]){const r0=(PL.moats&&PL.moats[0])?PL.moats[0].r0-10:360,r1=(PL.moats&&PL.moats[0])?PL.moats[0].r1+10:470,
-        ax=cx+Math.cos(a)*r0,az=cz+Math.sin(a)*r0,bx=cx+Math.cos(a)*r1,bz=cz+Math.sin(a)*r1,y=Math.max(gh(ax,az),gh(bx,bz))+1;
-      parts.push(blk((ax+bx)/2,y-3,(az+bz)/2,Math.hypot(bx-ax,bz-az),3,12,M.stone2,-a));}
-    // malice: the red-black goo on the walls and terraces, with its eyes
-    for(let k=0;k<18;k++){const a=hz(k*3.1)*Math.PI*2,r=60+hz(k*7.7)*230,mx=cx+Math.cos(a)*r,mz=cz+Math.sin(a)*r*0.85,my=gh(mx,mz)+(r<140?20+hz(k)*40:0);
-      const b=sph(mx,my,mz,8+hz(k*2.3)*10,malice,1.4,0.35,1.1);b.userData.noMerge=true;parts.push(b);if(k%3===0){parts.push(sph(mx,my+3,mz,2.2,M.white),sph(mx+1.6,my+3.2,mz,1.1,eyeM));}}
-    return build(L,parts);
-  },
-
-  // ================================================================ Castle Town, in ruins
-  castletown(L,x,z){
-    const C=S.castletown,parts=[];
-    for(let k=0;k<70;k++){const a=hz(k*1.7)*Math.PI*2,r=40+hz(k*5.3)*200,bx=C.x+Math.cos(a)*r,bz=C.z+Math.sin(a)*r*0.7,y=gh(bx,bz),w=8+hz(k)*10,d=6+hz(k+1)*8,h=3+hz(k+2)*9;
-      parts.push(blk(bx,y-1,bz,w,h,1.4,M.stone2,a),blk(bx+Math.sin(a)*d/2,y-1,bz-Math.cos(a)*d/2,1.4,h*0.7,d,M.stone3,a));
-      if(k%9===0)deadGuardian(parts,bx+12,bz+8,1,a);}
-    return build(L,parts);
-  },
-
   // ================================================================ the Sheikah towers
   // A hundred metres of dark stone frame on a mound of roots and rock, braced, glowing along its legs, a platform at
   // the top with the pedestal. They glow orange until they are activated, and blue after (events.js: the towers).
@@ -112,89 +68,6 @@ export function landmarks(api){
     parts.push(blk(tx,y0+H-4,tz,17,2.4,17,M.sheikah2),cyl(tx,y0+H-1.6,tz,1.2,1.4,2.2,M.sheikah));
     const eye=mesh(new THREE.CylinderGeometry(1.6,1.6,0.3,16),glow,tx,y0+H+0.8,tz);eye.userData.noMerge=true;parts.push(eye);
     for(const [a,b] of corner)parts.push(blk(tx+a*7.6,y0+H-1.6,tz+b*7.6,1.6,4,1.6,M.sheikah));
-    return build(L,parts);
-  },
-
-  // ================================================================ the shrines, all of them
-  // A small dark dome on a raised octagon, its lines glowing - orange if it has not been done, blue if it has
-  shrines(L,x,z){
-    const parts=[],orange=glowM(0xff8a2a,1),blue=glowM(0x4ad8ff,1);
-    for(const s of (PL.shrines||[])){const y=gh(s.x,s.z),g=s.blue?blue:orange;
-      parts.push(cyl(s.x,y-1,s.z,6,5.5,2.5,M.sheikah2,8),cyl(s.x,y+1.5,s.z,3.4,3.2,3.5,M.sheikah,8),sph(s.x,y+5,s.z,3.3,M.sheikah,1,0.75,1));
-      parts.push(mesh(new THREE.TorusGeometry(3.45,0.18,4,16).rotateX(Math.PI/2),g,s.x,y+3.2,s.z),mesh(new THREE.TorusGeometry(2.4,0.15,4,16).rotateX(Math.PI/2),g,s.x,y+6.6,s.z),
-                 cyl(s.x,y+1.4,s.z,0.5,0.5,2.2,g,6));}
-    return build(L,parts);
-  },
-
-  // ================================================================ the stables
-  // A big canvas tent with a horse's head over the door, a paddock beside it
-  stables(L,x,z){
-    const parts=[],tan=mat(0xc89a62),mane=mat(0x8a3a2a);
-    for(const s of (PL.stables||[])){const y=gh(s.x,s.z),a=hz(s.x)*Math.PI;
-      const c=Math.cos(a),sn=Math.sin(a),P=(u,w)=>[s.x+c*u-sn*w,s.z+sn*u+c*w];
-      const tent=new THREE.Mesh(new THREE.CylinderGeometry(9,9,22,10,1,false,0,Math.PI).rotateZ(Math.PI/2),M.cloth);tent.position.set(s.x,y+1,s.z);tent.rotation.y=-a;parts.push(tent);
-      const [hx,hz_]=P(11.5,0);parts.push(blk(hx,y,hz_,2,6,3,M.wood2,-a));
-      const head=new THREE.Mesh(new THREE.BoxGeometry(3,8,4),tan);head.position.set(hx+c*1.5,y+11,hz_+sn*1.5);head.rotation.set(0,-a,0.45);parts.push(head);
-      const muzzle=new THREE.Mesh(new THREE.BoxGeometry(5,3,3.2),tan);muzzle.position.set(hx+c*3.8,y+13,hz_+sn*3.8);muzzle.rotation.y=-a;parts.push(muzzle);
-      parts.push(blk(hx-c*0.4,y+14,hz_-sn*0.4,1.2,4,4.4,mane,-a));
-      for(const w of [-1.2,1.2]){const [ex,ez]=P(12.5,w);parts.push(cone(ex,y+15,ez,0.6,2.2,tan,5));}
-      // the paddock
-      const [px,pz]=P(-2,22);for(let k=0;k<12;k++){const u=-12+k*2.4;for(const w of [-8,8]){const [fx,fz]=P(u-2,22+w);parts.push(blk(fx,gh(fx,fz),fz,0.3,1.4,0.3,M.wood));}}
-      for(const w of [-8,8]){const [fx,fz]=P(-2,22+w);parts.push(blk(fx,y+1.1,fz,28,0.2,0.2,M.wood,-a));}}
-    return build(L,parts);
-  },
-
-  // ================================================================ the Great Plateau
-  // The Temple of Time, a broken church with its tower; a ruined wall along the plateau's rim with gates; the cave
-  // of the Shrine of Resurrection; the old man's cabin
-  plateau(L,x,z){
-    const parts=[],T=S.temple_of_time,ty=gh(T.x,T.z);
-    // the nave: walls with the tall windows open, one end fallen, buttresses, and the tower with its broken spire
-    for(const s of [-1,1]){for(let k=0;k<6;k++){if(s>0&&k===4)continue;parts.push(blk(T.x-25+k*10,ty-1,T.z+s*12,9,20+(k%2)*3,2.4,M.stone));
-        parts.push(blk(T.x-25+k*10+4.5,ty-1,T.z+s*13.6,2,14,2.4,M.stone2));}}
-    parts.push(blk(T.x-31,ty-1,T.z,2.4,26,24,M.stone),blk(T.x+30,ty-1,T.z+5,2.4,12,10,M.stone2));
-    parts.push(blk(T.x-40,ty-1,T.z,14,48,14,M.stone),cone(T.x-40,ty+47,T.z,10,12,M.slate,4),blk(T.x-40,ty+20,T.z-7.2,4,8,0.5,M.black));
-    parts.push(cyl(T.x+18,ty,T.z,2.2,2,3,M.stone2),sph(T.x+18,ty+5.5,T.z,1.4,M.stone),blk(T.x+18,ty+3,T.z,2.2,4,1.4,M.stone));   // the goddess
-    for(let k=0;k<20;k++)parts.push(blk(T.x-30+hz(k)*60,ty-0.5,T.z-25+hz(k+5)*50,2+hz(k+1)*3,1+hz(k+2)*2,2+hz(k+3)*3,M.stone2,hz(k+4)*3));
-    // the wall round the rim of the plateau, with gaps where it has fallen and gates
-    const P0=S.plateau;for(let k=0;k<64;k++){if(k%9===4||k%13===0)continue;const a=k/64*Math.PI*2,a2=(k+1)/64*Math.PI*2,r=640,rz=530;
-      const ax=P0.x+Math.cos(a)*r,az=P0.z+Math.sin(a)*rz,bx=P0.x+Math.cos(a2)*r,bz=P0.z+Math.sin(a2)*rz,y=Math.min(gh(ax,az),gh(bx,bz));
-      parts.push(blk((ax+bx)/2,y-2,(az+bz)/2,Math.hypot(bx-ax,bz-az)+1,9+hz(k)*4,3,M.stone2,-Math.atan2(bz-az,bx-ax)));
-      if(k%8===0)parts.push(cyl(ax,y-2,az,4,3.6,16,M.stone));}
-    // the Shrine of Resurrection: a doorway into the hillside, blue inside
-    const R_=S.resurrection,ry=gh(R_.x,R_.z),blueGlow=glowM(0x4ad8ff,1.2);
-    parts.push(sph(R_.x,ry,R_.z,16,M.rock2,1.2,0.6,1),blk(R_.x,ry,R_.z+12,8,8,4,M.sheikah),blk(R_.x,ry+0.5,R_.z+14.1,5,6,0.2,blueGlow));
-    // the old man's cabin, with its chimney
-    const O=S.oldman,oy=gh(O.x,O.z);parts.push(blk(O.x,oy,O.z,8,4,6,M.wood),blk(O.x,oy+4,O.z,9,0.6,7,M.thatch),blk(O.x+3,oy+4,O.z-2,1.2,3,1.2,M.stone2));
-    {const r=new THREE.Mesh(new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4),M.thatch);r.scale.set(7,3,5.5);r.position.set(O.x,oy+5.6,O.z);parts.push(r);}
-    return build(L,parts);
-  },
-
-  // ================================================================ Kakariko Village
-  // In its valley: Impa's house, big, under curved roofs; the gate; lanterns; the Great Fairy's bud
-  kakariko(L,x,z){
-    const K=S.kakariko,ky=gh(K.x,K.z),parts=[],lamp=glowM(0xffc070,1.2);
-    const roof=(x0,y,z0,w,d,h,m)=>{const r=new THREE.Mesh(new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4),m);r.scale.set(w*0.78,h,d*0.78);r.position.set(x0,y+h/2,z0);return r;};
-    parts.push(blk(K.x,ky,K.z-30,26,7,18,M.wood),roof(K.x,ky+7,K.z-30,34,24,7,M.slate2),blk(K.x,ky+10,K.z-30,18,5,12,M.wood),roof(K.x,ky+15,K.z-30,24,17,6,M.slate2));
-    parts.push(blk(K.x,ky,K.z-42,20,2,4,M.stone2));
-    for(const s of [-1,1])parts.push(blk(K.x+s*8,ky,K.z+40,1.6,9,1.6,M.wood2));
-    parts.push(blk(K.x,ky+8,K.z+40,22,1.4,2,M.wood2),blk(K.x,ky+9.4,K.z+40,25,0.8,2.6,M.slate2));
-    for(let k=0;k<26;k++){const a=k/26*Math.PI*2,r=60+hz(k)*70,lx=K.x+Math.cos(a)*r,lz=K.z+Math.sin(a)*r,ly=gh(lx,lz);
-      parts.push(blk(lx,ly,lz,0.3,2.4,0.3,M.wood2));const l=blk(lx,ly+2.4,lz,0.9,1.1,0.9,lamp);l.userData.noMerge=true;parts.push(l);}
-    const F=[K.x+110,K.z-90],fy=gh(F[0],F[1]);parts.push(sph(F[0],fy+6,F[1],8,M.pink,1,1.3,1),sph(F[0],fy+2,F[1],10,M.leaf,1.3,0.4,1.3));
-    return build(L,parts);
-  },
-
-  // ================================================================ Hateno, its laboratory, Fort Hateno
-  hateno(L,x,z){
-    const parts=[],T=S.techlab,ty=gh(T.x,T.z),blueFlame=glowM(0x4adfff,1.6);
-    parts.push(blk(T.x,ty,T.z,14,7,10,M.plaster),blk(T.x,ty+7,T.z,15,0.6,11,M.slate2));
-    {const r=new THREE.Mesh(new THREE.ConeGeometry(1,1,4).rotateY(Math.PI/4),M.slate2);r.scale.set(11,5,8);r.position.set(T.x,ty+9.8,T.z);parts.push(r);}
-    parts.push(limb([T.x+3,ty+11,T.z],[T.x+12,ty+17,T.z-2],1.2,1.6,M.stone2),cyl(T.x-9,ty,T.z+6,0.5,0.5,5,M.stone2));
-    const f=sph(T.x-9,ty+6,T.z+6,1.4,blueFlame,1,1.6,1);f.userData.noMerge=true;parts.push(f);
-    // Fort Hateno: the long wall across the way in, and the Guardians that died against it
-    const F=S.fort_hateno;for(let k=-8;k<=8;k++){const fx=F.x+k*12,fz=F.z+k*6,fy=gh(fx,fz);parts.push(blk(fx,fy-2,fz,13,12,5,M.stone2,-0.46));if(k%4===0)parts.push(cyl(fx,fy-2,fz,5,4.6,18,M.stone),cone(fx,fy+16,fz,5.5,6,M.slate2,8));}
-    for(let k=0;k<9;k++)deadGuardian(parts,F.x-60+hz(k)*120-40,F.z+30+hz(k+3)*60,1,hz(k+7)*6);
     return build(L,parts);
   },
 
@@ -227,62 +100,34 @@ export function landmarks(api){
     return build(L,parts);
   },
 
-  // ================================================================ Zora's Domain
-  // On its height by the reservoir: a round plaza of pale stone, the palace's tower in layered discs, glowing blue,
-  // curved bridges
-  zora(L,x,z){
-    const Z=S.zora,zy=gh(Z.x,Z.z),parts=[],lum=glowM(0x9ae8ff,1.1);
-    parts.push(cyl(Z.x,zy-2,Z.z,60,58,4,M.pale,24),cyl(Z.x,zy+2,Z.z,30,30,1.2,M.blue,24));
-    for(let k=0;k<6;k++){const r=24-k*3.4,h=10;parts.push(cyl(Z.x,zy+2+k*h,Z.z,r,r*0.9,h,k%2?M.pale:M.blue,16));}
-    parts.push(cone(Z.x,zy+62,Z.z,8,34,M.pale,12));
-    const sp=mesh(new THREE.SphereGeometry(3.4,12,8),lum,Z.x,zy+98,Z.z);sp.userData.noMerge=true;parts.push(sp);
-    for(let k=0;k<10;k++){const a=k/10*Math.PI*2,lx=Z.x+Math.cos(a)*55,lz=Z.z+Math.sin(a)*55;parts.push(cyl(lx,zy,lz,1.2,1,10,M.pale,6));const g=sph(lx,zy+11,lz,1.6,lum);g.userData.noMerge=true;parts.push(g);}
-    for(const a of [0.3,2.2,4.1]){const pts=[];for(let k=0;k<=12;k++){const t=k/12;pts.push(new THREE.Vector3(Z.x+Math.cos(a)*(60+t*90),zy+6+Math.sin(t*Math.PI)*14,Z.z+Math.sin(a)*(60+t*90)));}
-      parts.push(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,2.4,5),M.pale));}
-    return build(L,parts);
-  },
-
-  // ================================================================ Goron City, on Death Mountain
-  goron(L,x,z){
-    const G=S.goron,parts=[],lamp=glowM(0xff8a3a,1.3);
-    for(let k=0;k<22;k++){const a=hz(k)*Math.PI*2,r=20+hz(k+4)*90,gx=G.x+Math.cos(a)*r,gz=G.z+Math.sin(a)*r,gy=gh(gx,gz);
-      parts.push(sph(gx,gy+2,gz,6+hz(k+2)*4,M.rock2,1.1,0.7,1),blk(gx+5,gy,gz,2.2,3,0.3,M.black));
-      if(k%2===0){const l=sph(gx,gy+8,gz,0.9,lamp);l.userData.noMerge=true;parts.push(l);}}
-    for(let k=0;k<6;k++){const a=k*1.1,mx=G.x+Math.cos(a)*120,mz=G.z+Math.sin(a)*120;parts.push(blk(mx,gh(mx,mz),mz,3,2,2,M.wood2,a));}
-    return build(L,parts);
-  },
-
-  // ================================================================ Gerudo Town
-  // A walled town of sandstone in the desert, the palace in the middle, palms at the gate
-  gerudo(L,x,z){
-    const G=S.gerudo_town,gy=gh(G.x,G.z),parts=[];
-    for(let k=0;k<32;k++){if(k===8)continue;const a=k/32*Math.PI*2,a2=(k+1)/32*Math.PI*2,r=160;
-      const ax=G.x+Math.cos(a)*r,az=G.z+Math.sin(a)*r,bx=G.x+Math.cos(a2)*r,bz=G.z+Math.sin(a2)*r;parts.push(blk((ax+bx)/2,gh(ax,az)-2,(az+bz)/2,Math.hypot(bx-ax,bz-az)+1,16,4,M.sand2,-Math.atan2(bz-az,bx-ax)));
-      if(k%4===0)parts.push(cyl(ax,gh(ax,az)-2,az,5,4.4,22,M.sand));}
-    parts.push(blk(G.x,gy,G.z,40,18,30,M.sand),blk(G.x,gy+18,G.z,26,10,20,M.sand2),sph(G.x,gy+30,G.z,9,M.gold,1,0.8,1));
-    for(let k=0;k<10;k++){const px=G.x+Math.cos(1.57)*180+(k-5)*8,pz=G.z+Math.sin(1.57)*180+hz(k)*20,py=gh(px,pz);
-      parts.push(limb([px,py,pz],[px+1.5,py+10,pz],0.4,0.3,M.trunk,5));for(let f=0;f<5;f++){const a=f/5*Math.PI*2;parts.push(limb([px+1.5,py+10,pz],[px+1.5+Math.cos(a)*4,py+8.5,pz+Math.sin(a)*4],0.5,0.1,M.leaf,4));}}
-    return build(L,parts);
-  },
-
-  // ================================================================ Lurelin, on the coast
-  lurelin(L,x,z){
-    const V=S.lurelin,parts=[];
-    for(let k=0;k<14;k++){const a=hz(k)*Math.PI*2,r=30+hz(k+1)*80,px=V.x+Math.cos(a)*r,pz=V.z+Math.sin(a)*r,py=gh(px,pz);
-      parts.push(limb([px,py,pz],[px+1.5,py+11,pz+0.5],0.4,0.3,M.trunk,5));for(let f=0;f<5;f++){const b=f/5*Math.PI*2;parts.push(limb([px+1.5,py+11,pz+0.5],[px+1.5+Math.cos(b)*4.4,py+9.5,pz+0.5+Math.sin(b)*4.4],0.5,0.1,M.leaf2,4));}}
-    return build(L,parts);
-  },
-
   // ================================================================ the Great Deku Tree, and the Master Sword
+  // A vast old tree in the middle of the forest: a flared trunk on a spread of roots, a face in the bark under heavy
+  // brows with a beard of moss, thick limbs holding up a broad dome of leaves; before him, in the clearing, the
+  // Master Sword in its pedestal on a round stone dais
   korok(L,x,z){
-    const K=S.korok,ky=gh(K.x,K.z),parts=[],swordGlow=glowM(0x9ad8ff,1.4);
-    parts.push(cyl(K.x,ky-2,K.z,26,16,70,M.trunk,12));
-    for(let k=0;k<8;k++){const a=k/8*Math.PI*2;parts.push(limb([K.x+Math.cos(a)*14,ky+8,K.z+Math.sin(a)*14],[K.x+Math.cos(a)*34,ky-2,K.z+Math.sin(a)*34],6,3,M.trunk,6));}
-    for(let k=0;k<9;k++){const a=k/9*Math.PI*2;parts.push(sph(K.x+Math.cos(a)*30,ky+78+hz(k)*12,K.z+Math.sin(a)*30,22,k%2?M.leaf:M.leaf2,1,0.7,1));}
-    parts.push(sph(K.x,ky+96,K.z,30,M.leaf,1,0.7,1));
-    parts.push(blk(K.x+8,ky+30,K.z+20,2,2,1,M.black),blk(K.x-8,ky+30,K.z+20,2,2,1,M.black),blk(K.x,ky+22,K.z+21,5,1.4,1,M.black));   // the face in the bark
-    const S2=[K.x,K.z+60],sy=gh(S2[0],S2[1]);parts.push(cyl(S2[0],sy,S2[1],2.2,2.2,0.8,M.stone2,8),blk(S2[0],sy+0.8,S2[1],0.3,2.6,0.1,M.pale),blk(S2[0],sy+3.4,S2[1],1.2,0.3,0.3,M.blue));
-    const sw=sph(S2[0],sy+2,S2[1],1.6,swordGlow,1,1.6,1);sw.userData.noMerge=true;parts.push(sw);
+    const K=S.korok,ky=gh(K.x,K.z)-1,parts=[],swordGlow=glowM(0x9ad8ff,1.4),bark=mat(0x5e4a36),bark2=mat(0x4a3a2a);
+    const leafs=[M.leaf,M.leaf2,mat(0x6a9a46),mat(0x3e6a2e)];
+    parts.push(mesh(new THREE.LatheGeometry([[36,0],[27,6],[20,15],[17,32],[16,52],[19,66],[24,74],[0.1,76]].map(([r,h])=>new THREE.Vector2(r,h)),18),bark,K.x,ky,K.z));
+    for(let k=0;k<11;k++){const a=k/11*Math.PI*2+0.2,r1=34+hz(k)*10;
+      parts.push(limb([K.x+Math.cos(a)*16,ky+12,K.z+Math.sin(a)*16],[K.x+Math.cos(a)*30,ky+2,K.z+Math.sin(a)*30],6.5,4.5,bark2,7),
+        limb([K.x+Math.cos(a)*30,ky+2,K.z+Math.sin(a)*30],[K.x+Math.cos(a+0.12)*r1*1.5,ky-3,K.z+Math.sin(a+0.12)*r1*1.5],4.5,1.6,bark2,6));}
+    // the limbs, and the dome of leaves they hold up
+    for(let k=0;k<8;k++){const a=k/8*Math.PI*2+0.4,ex=K.x+Math.cos(a)*(40+hz(k+3)*14),ez=K.z+Math.sin(a)*(40+hz(k+3)*14),ey=ky+88+hz(k+5)*12;
+      parts.push(limb([K.x+Math.cos(a)*12,ky+64,K.z+Math.sin(a)*12],[ex,ey,ez],6,2.6,bark,7));
+      parts.push(sph(ex,ey+6,ez,18+hz(k+7)*6,leafs[k%4],1.15,0.7,1.15));}
+    for(let k=0;k<14;k++){const a=k/14*Math.PI*2,r=18+hz(k+20)*30;parts.push(sph(K.x+Math.cos(a)*r,ky+100+hz(k+30)*16,K.z+Math.sin(a)*r,16+hz(k+40)*8,leafs[(k+1)%4],1.1,0.75,1.1));}
+    parts.push(sph(K.x,ky+114,K.z,30,M.leaf,1.25,0.6,1.25));
+    // the face, toward the clearing (+z): brows, hollow eyes, a nose, the mouth, the beard of moss hanging below
+    const fz=K.z+16.4;for(const s of [-1,1]){parts.push(limb([K.x+s*2,ky+40,fz+1.5],[K.x+s*11,ky+44,fz-1],2.2,1.4,bark2,6),sph(K.x+s*6.4,ky+36,fz,2.6,M.black,1,0.7,0.5));}
+    parts.push(sph(K.x,ky+31,fz+1.4,2.6,bark,0.8,1.3,1),blk(K.x,ky+24,fz+0.6,9,1.2,1.2,M.black));
+    for(let k=0;k<7;k++){const u=(k-3)*2.6;parts.push(sph(K.x+u,ky+18-Math.abs(u)*0.4,fz+0.8,2.6+hz(k)*1.2,M.moss,0.8,2.2,0.7));}
+    // the Master Sword in the clearing: the dais, the pedestal, the blade, the guard's wings, the grip
+    const Sx=K.x,Sz=K.z+60,sy=gh(Sx,Sz);
+    parts.push(lathe_([[7,0],[7,0.6],[5.6,0.6],[5.6,1.2],[4.2,1.2],[4.2,1.8],[0.1,1.8]],M.stone2,Sx,sy-0.3,Sz),blk(Sx,sy+1.5,Sz,1.6,0.9,1.2,M.stone));
+    parts.push(blk(Sx,sy+2.4,Sz,0.24,2.4,0.08,M.white),blk(Sx,sy+4.8,Sz,0.1,1.2,0.1,M.blue),blk(Sx,sy+4.8,Sz,1.6,0.22,0.22,M.blue));
+    for(const s of [-1,1]){const w=mesh(new THREE.BoxGeometry(0.7,0.5,0.12),M.blue,Sx+s*0.95,sy+5,Sz);w.rotation.z=s*0.5;parts.push(w);}
+    parts.push(sph(Sx,sy+6.1,Sz,0.22,M.gold));
+    const sw=sph(Sx,sy+3.6,Sz,1.4,swordGlow,1,2.2,1);sw.userData.noMerge=true;parts.push(sw);
     return build(L,parts);
   },
 
@@ -304,11 +149,25 @@ export function landmarks(api){
 
   // ================================================================ Akkala: the citadel's ruins, the spiral, Tarrey Town
   akkala(L,x,z){
-    const parts=[],A=S.akkala_citadel,ay=gh(A.x,A.z);
-    for(let k=0;k<12;k++){const a=k/12*Math.PI*2,r=70;const tx=A.x+Math.cos(a)*r,tz=A.z+Math.sin(a)*r*0.8,ty=gh(tx,tz);
-      parts.push(blk(tx,ty-1,tz,30,10+hz(k)*12,5,M.stone2,-a-Math.PI/2));if(k%3===0)parts.push(cyl(tx,ty-1,tz,6,5.4,18+hz(k+1)*16,M.stone));}
-    parts.push(blk(A.x,ay,A.z,30,24,26,M.stone2),blk(A.x+6,ay+24,A.z,12,10,12,M.stone3));
-    for(let k=0;k<6;k++)deadGuardian(parts,A.x-60+hz(k)*120,A.z+60+hz(k+2)*50,1,hz(k+9)*6);
+    const parts=[],A=S.akkala_citadel,ay=gh(A.x,A.z)-0.5;
+    // the citadel: an outer wall of eight lengths with gaps where it fell, round towers at its turns (their tops
+    // broken off), the gatehouse; the keep, square, its top broken into steps; the hall against it, roofless; the
+    // tall round watchtower, broken; rubble, and the Guardians that took it
+    const ring=[];for(let k=0;k<8;k++){const a=k/8*Math.PI*2+0.2,r=88+hz(k+1)*16;ring.push([A.x+Math.cos(a)*r,A.z+Math.sin(a)*r*0.85]);}
+    for(let k=0;k<8;k++){const a=ring[k],b=ring[(k+1)%8],L_=Math.hypot(b[0]-a[0],b[1]-a[1]),yaw=-Math.atan2(b[1]-a[1],b[0]-a[0]);
+      for(let i=0;i<6;i++){if(hz(k*7+i)<0.18)continue;const t0=i/6,t1=(i+1)/6,h=10+hz(k*3+i)*10,mx=a[0]+(b[0]-a[0])*(t0+t1)/2,mz=a[1]+(b[1]-a[1])*(t0+t1)/2;
+        parts.push(blk(mx,gh(mx,mz)-2,mz,L_/6+0.6,h,5,M.stone2,yaw));if(hz(k+i*5)<0.6)parts.push(blk(mx,gh(mx,mz)-2+h,mz,1.8,1.6,5.2,M.stone2,yaw));}
+      const th=18+hz(k+9)*16;parts.push(cyl(a[0],gh(...a)-2,a[1],7,6.4,th,M.stone,12));
+      for(let i=0;i<5;i++){const b2=i/5*Math.PI*2;parts.push(blk(a[0]+Math.cos(b2)*5.6,gh(...a)-2+th,a[1]+Math.sin(b2)*5.6,2,1+hz(k+i)*3,2,M.stone,-b2));}}
+    // the keep, the hall, the watchtower
+    parts.push(blk(A.x,ay,A.z,34,34,34,M.stone2));
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++){const h=hz(i*4+j+50)*14;if(h>2)parts.push(blk(A.x-12.75+i*8.5,ay+34,A.z-12.75+j*8.5,8.5,h,8.5,M.stone2));}
+    for(const s of [-1,1]){windows(parts,[A.x-14,A.z+s*17.1],[A.x+14,A.z+s*17.1],ay+12,4,2,5,0);windows(parts,[A.x+s*17.1,A.z-14],[A.x+s*17.1,A.z+14],ay+22,4,2,4,0);}
+    for(const s of [-1,1])parts.push(blk(A.x+40,ay,A.z+s*11,46,16+hz(s+3)*6,2.4,M.stone,0));
+    parts.push(blk(A.x+63,ay,A.z,2.4,18,22,M.stone,0));
+    parts.push(cyl(A.x-30,ay,A.z-34,8,7,56,M.stone,14));for(let i=0;i<6;i++){const b2=i/6*Math.PI*2;parts.push(blk(A.x-30+Math.cos(b2)*6.4,ay+56,A.z-34+Math.sin(b2)*6.4,2.4,1+hz(i+70)*5,2.4,M.stone,-b2));}
+    for(let k=0;k<40;k++){const rx=A.x+(hz(k+100)-0.5)*170,rz=A.z+(hz(k+200)-0.5)*150;parts.push(blk(rx,gh(rx,rz)-0.5,rz,2+hz(k+300)*4,1+hz(k+400)*2.4,2+hz(k+500)*4,hz(k)<0.5?M.stone2:M.stone,hz(k+600)*3));}
+    for(let k=0;k<9;k++)deadGuardian(parts,A.x-80+hz(k)*160,A.z-70+hz(k+2)*140,1,hz(k+9)*6);
     // the spiral: a curl of rock out in the sea, as on the map
     const Sp=S.spiral;for(let k=0;k<90;k++){const t=k/90,a=t*Math.PI*2*2.6,r=10+t*95,sx=Sp.x+Math.cos(a)*r,sz=Sp.z+Math.sin(a)*r;
       parts.push(blk(sx,-4,sz,10,10-t*3,8,M.rock,-a));}

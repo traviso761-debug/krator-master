@@ -508,6 +508,31 @@ def main():
     S["tabantha_bridge"] = site(578, 306)
     S["zora_falls"] = site(1163, 634)
 
+    # ---------- level ground for the places: a pad at each, eased into the slope round it ----------
+    # (site, flat radius m, blend m, lowest it may be). The page builds every town on its own; on a slope a town, a
+    # maze or a shrine would hang off the hill.
+    PADS = [("castletown", 200, 120, None), ("kakariko", 110, 90, None), ("hateno", 150, 110, None), ("lurelin", 70, 60, 3.0),
+            ("tarrey", 42, 30, None), ("gerudo_town", 175, 80, None), ("goron", 110, 80, None), ("zora", 75, 40, None),
+            ("lomei_north", 100, 50, None), ("lomei_south", 100, 50, None), ("lomei_island", 95, 30, 4.0),
+            ("akkala_citadel", 115, 70, None), ("temple_of_time", 55, 40, None), ("oldman", 12, 14, None), ("techlab", 16, 16, None)]
+    pads = [(S[k]["x"], S[k]["z"], r, b, lo) for k, r, b, lo in PADS]
+    pads += [(t["x"], t["z"], 22, 16, None) for t in towers] + [(t["x"], t["z"], 30, 22, None) for t in stables]
+    pads += [(t["x"], t["z"], 9, 9, None) for t in shrines]
+    for px_, pz_, r, b, lo in pads:
+        target = height(px_, pz_)
+        if lo is not None:
+            target = max(target, lo)
+        for j in range(max(0, int((pz_ - r - b - Z0) / STEP)), min(nz, int((pz_ + r + b - Z0) / STEP) + 2)):
+            for i in range(max(0, int((px_ - r - b - X0) / STEP)), min(nx, int((px_ + r + b - X0) / STEP) + 2)):
+                d = math.hypot(X0 + i * STEP - px_, Z0 + j * STEP - pz_)
+                w = 1.0 - smoothstep(r, r + b, d)
+                if w > 0 and lake_mask(X0 + i * STEP, Z0 + j * STEP) is None:
+                    H[j][i] = H[j][i] + (target - H[j][i]) * w
+    out["terrain"]["h"] = [int(round(H[j][i] * 10)) for j in range(nz) for i in range(nx)]
+    for group_ in [list(S.values()), towers, stables, shrines, camps]:
+        for d_ in group_:
+            d_["y"] = round(height(d_["x"], d_["z"]), 1)
+
     # ---------- roads: the paths across the country, as the map draws them ----------
     roads = []
     def road(pts_px, name, cls="track", w=6.0):
@@ -553,13 +578,13 @@ def main():
 
     # ---------- the villages' houses: small, steep-roofed, close together; the page dresses the towns ----------
     buildings = []
-    def village(key, n, r, roofc, wallc, floors=(1, 2), size=(7, 11)):
+    def village(key, n, r, roofc, wallc, floors=(1, 2), size=(7, 11), r0=0.0):
         c = S[key]
         placed = []
         for _ in range(n * 6):
             if len(placed) >= n:
                 break
-            a, d = R.uniform(0, math.tau), r * math.sqrt(R.random())
+            a, d = R.uniform(0, math.tau), r0 + (r - r0) * math.sqrt(R.random())
             x, z = c["x"] + math.cos(a) * d, c["z"] + math.sin(a) * d
             if lake_mask(x, z) is not None or height(x, z) < 2 or any(math.hypot(x - u, z - v) < 15 for u, v in placed):
                 continue
@@ -569,11 +594,9 @@ def main():
             placed.append((x, z))
     WOOD = ["#a8865a", "#9a7a50", "#b8956a", "#8a6a44"]
     WHITE = ["#ece4d2", "#e2d8c4", "#f2ead8"]
-    village("kakariko", 26, 150, None, WOOD)
-    village("hateno", 32, 190, None, WHITE + WOOD)
-    village("lurelin", 16, 110, None, ["#d8c8a0", "#c8b088"])
-    village("tarrey", 12, 70, None, ["#e8e0d0", "#d8c098"])
-    village("gerudo_town", 30, 120, None, ["#e8c898", "#dcb882", "#f0d6a8"], (1, 2, 3), (8, 14))
+    # the villages themselves the page builds, each in its own style (villages.js, peoples.js); the engine draws only
+    # the farmsteads out round Hateno, beyond its fields
+    village("hateno", 10, 300, None, WHITE + WOOD, r0=190)
     for st in stables:
         pass
     out["buildings"] = buildings
@@ -588,8 +611,8 @@ def main():
     for _ in range(110000):
         x, z = R.uniform(X0 + 50, X1 - 50), R.uniform(Z0 + 50, Z1 - 50)
         h = height(x, z)
-        if h < 3 or h > 900 or lake_mask(x, z) is not None:
-            continue
+        if h < 3 or h > 900 or lake_mask(x, z) is not None or any(math.hypot(x - px_, z - pz_) < r * 0.9 for px_, pz_, r, b, lo in pads):
+            continue                                                 # no trees in the towns, on the pads
         p_ = 0.09
         for (px, py), r, dens in WOODS:
             c = P(px, py)
@@ -615,7 +638,7 @@ def main():
                "akkala": [P(1290, 300), 120 * PX, 190 * PX], "faron": [P(930, 1060), 150 * PX, 90 * PX],
                "hebra": [P(330, 230), 240 * PX, 170 * PX], "gerudo_high": [P(230, 760), 230 * PX, 130 * PX]}
     plan = {"_": "written by tools/make-hyrule.py: metres east (x) and south (z) of the origin; y is the ground",
-            "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
+            "pads": [[round(x_, 1), round(z_, 1), r] for x_, z_, r, b, lo in pads], "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
             "rivers": rivers, "regions": REGIONS, "coast": [[round(x, 1), round(z, 1)] for x, z in COAST]}
     json.dump(plan, open(PLAN, "w"), indent=1)
     lo, hi = min(hs) / 10, max(hs) / 10

@@ -56,7 +56,10 @@ export function beasts(api){
       if(pts.length>3){const tube=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,6,5),flowM);tube.scale.y=1;parts.push(tube);}}
     // the western lava field: pools of it lying in the hollows
     const LF=(PL.regions||{}).lavafield;if(LF){for(let k=0;k<9;k++){const a=k*2.3,r=hz(k+3)*0.8,px=LF[0][0]+Math.cos(a)*LF[1]*r,pz=LF[0][1]+Math.sin(a)*LF[2]*r;
-      parts.push(mesh(new THREE.CircleGeometry(30+hz(k)*40,16).rotateX(-Math.PI/2),lavaM,px,gh(px,pz)+0.8,pz));}}
+      // each pool laid over the ground under it, not a flat disc floating off a slope
+      const g=new THREE.CircleGeometry(30+hz(k)*40,16,0,Math.PI*2).rotateX(-Math.PI/2),pa=g.attributes.position;
+      for(let i=0;i<pa.count;i++)pa.setY(i,gh(px+pa.getX(i),pz+pa.getZ(i))+0.8);g.computeVertexNormals();
+      parts.push(mesh(g,lavaM,px,0,pz));}}
     const grp=group(L,parts);
     // smoke from the crater, rising and leaning with the wind
     const tex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);

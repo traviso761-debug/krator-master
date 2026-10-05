@@ -954,13 +954,33 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
   Faron, autumn in Akkala, sand in the desert, ash and lava-red on Death Mountain, snow on the cold heights (lower in
   the north and west), grey rock on anything steep. The water - sea, lakes, the castle's and the forest's moats,
   rivers - is clear and rippled, each at its own level.
-- **Built** (`landmarks.js`): Hyrule Castle in its moat (an outer wall with round towers, terraces up to the keep,
-  the Sanctum's tower and spire, slim towers under blue-slate cones, malice and its eyes); Castle Town's ruins; the
-  fifteen Sheikah towers (orange until activated, then blue); forty-odd shrines, orange or blue; the stables with
-  their horse heads; the Great Plateau (the Temple of Time, the rim wall, the Shrine of Resurrection, the old man's
-  cabin); Kakariko, Hateno and its laboratory and Fort Hateno, Rito Village on its pillar, Zora's Domain, Goron City,
-  Gerudo Town, Lurelin; the Great Deku Tree and the Master Sword; the three Lomei Labyrinths (seeded mazes); Akkala
-  Citadel and the spiral in the sea; Hylia Bridge; and decayed Guardians in the fields.
+- **Built**, from one kit of solids and roofs (`kit.js`: gable, hip and Kakariko's hipped-and-gabled roofs, walls
+  with merlons, extruded slabs, houses; everything still merged by material, a few draw calls a town). Each place
+  stands on a pad of level ground the generator eases into the slope, and nothing grows on it.
+  - `castle.js`: **Hyrule Castle**: the curtain wall with round towers, merlons and a gatehouse; two walled terraces
+    with turrets; the great hall, two wings and the library under steep slate, rows of tall windows, buttresses; the
+    Sanctum's banded keep with its crown of turrets and the great spire; the observation tower and its bridge; slim
+    towers everywhere; bridges on piers over the moat; malice. **Castle Town**: its broken ring wall, streets of
+    roofless houses (a gable end, a chimney), the plaza and fountain, the church's shell. **The Great Plateau**: the
+    Temple of Time (bays of tall open windows, buttresses, half the roof and the rafters of the rest, the west front's
+    rose window, the round east end, the bell tower, the goddess); the rim wall; the old man's cabin.
+  - `villages.js`: **Kakariko** (houses on stone terraces under thatch, lanterns along the path, the gate, Impa's
+    house on its platform, the Great Fairy's bud), **Hateno** (white walls, dark timbers, red and blue roofs and
+    chimneys along the street, fields in rows; the Tech Lab with its telescope and blue flame; Fort Hateno),
+    **Lurelin** (stilt huts, piers, boats, nets, palms), **Tarrey Town** (bright round houses on its rock in Lake
+    Akkala, the golden-roofed hall, the walkway across the water).
+  - `peoples.js`: **Zora's Domain** (the plaza with its ring of water, the finned spire and its orb, domed houses,
+    lamps, the princess's statue, the arched bridges), **Goron City** (rock domes, the lava channel, red-cloth
+    shops, fire bowls, mine rails, the hero's statue), **Gerudo Town** (the merloned wall and domed towers, packed
+    flat-roofed houses with awnings, the palace's tiers, dome and minarets, palms at the gate).
+  - `wayside.js`: the **shrines** (dark stone bells on stepped platforms, rings and lines of light, the lit doorway,
+    the pedestal) and the **stables** (the banded canvas tent, the great horse's head, lamps, the sign, a corral with
+    horses, the cooking pot).
+  - `landmarks.js`: the fifteen Sheikah towers; Rito Village on its pillar; the **Great Deku Tree** (flared trunk on
+    its roots, the face with brows and a beard of moss, limbs holding a dome of leaves) and the Master Sword on its
+    dais; the three Lomei Labyrinths; the **Akkala Citadel** (broken wall and towers, the stepped-ruin keep, the
+    roofless hall, the watchtower, Guardians) and the spiral in the sea; Hylia Bridge, the Tabantha Great Bridge,
+    waterfalls; decayed Guardians in the fields.
 - **The Divine Beasts** (`divine.js`), each moving, at twice the first size since in the game they tower over the
   land. Each is carved stone: a turned hull banded with seams, jointed limbs, plates, and glowing lines and spirals.
   Vah Ruta stands in the East Reservoir on pillar legs with knee rings and toed feet, fanning great round ears, a
@@ -1841,7 +1861,7 @@ src/
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
-  hyrule/   main.js paint.js flora.js alive.js landmarks.js guardian.js divine.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
+  hyrule/   main.js paint.js flora.js alive.js kit.js landmarks.js castle.js villages.js peoples.js wayside.js guardian.js divine.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)
