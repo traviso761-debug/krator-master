@@ -73,13 +73,19 @@ function buildTower(T){
                x:T.x, z:T.z, y:yb, h:TOWER_FH, r:T.half*1.45, hx:T.half, hz:T.half, lvl:F.k });
   });
   /* --- X-bracing in the middle bay of every face, two storeys at a time, with gaps where it has fallen --- */
+  /* each brace is a built-up I-section: a web into the tower and two broad flanges, so it keeps its width seen head on
+     (a BEAM's w is horizontal and normal to this face, its d lies in the face) */
+  function xBrace(ax,ay,az,bx,by,bz,f,col){
+    BEAM(ax,ay,az,bx,by,bz, 0.95, 0.34, col, 'rust');                                            /* web */
+    [0.42,-0.42].forEach(function(o){ BEAM(ax+f[0]*o,ay,az+f[1]*o,bx+f[0]*o,by,bz+f[1]*o, 0.14, 1.05, shade(col,o>0?0.06:-0.1), 'rust'); });   /* flanges */
+  }
   [[0,-1],[0,1],[-1,0],[1,0]].forEach(function(f, fi){
     for(var k=0;k<TOWER_N;k+=2){
       if(chance(0.22)) continue;
       var ya=T.floors[k].y, yb2=T.floors[Math.min(TOWER_N,k+2)].y-SLAB, px=T.x+f[0]*(T.half-0.4), pz=T.z+f[1]*(T.half-0.4);
       var ax=f[0]?0:-8, az=f[1]?0:-8;
-      BEAM(px+ax, ya, pz+az, px-ax, yb2, pz-az, 0.55, 0.55, shade(rustA,-0.08), 'rust');
-      if(!chance(0.25)) BEAM(px-ax, ya, pz-az, px+ax, yb2, pz+az, 0.55, 0.55, shade(rustA,-0.2), 'rust');
+      xBrace(px+ax, ya, pz+az, px-ax, yb2, pz-az, f, shade(rustA,-0.08));
+      if(!chance(0.25)) xBrace(px-ax, ya, pz-az, px+ax, yb2, pz+az, f, shade(rustA,-0.2));
     }
   });
   /* --- the unfinished crown: two more storeys of bare frame over part of the plan, a fallen girder or two --- */
@@ -113,7 +119,7 @@ function buildDeck(P){
     BOX(T.x+f[0]*H, y-th-0.5, T.z+f[1]*H, f[0]?0.5:2*H, 0.9, f[0]?2*H:0.5, 0, TIMBERC[2], 'timber');
     for(var t=-H+4; t<=H-4; t+=8.5){
       var ex=f[0]?f[0]*(H-1.5):t, ez=f[1]?f[1]*(H-1.5):t, sx=f[0]?f[0]*T.half:clamp(t,-T.half,T.half), sz=f[1]?f[1]*T.half:clamp(t,-T.half,T.half);
-      BEAM(T.x+sx, y-15, T.z+sz, T.x+ex, y-th, T.z+ez, 0.75, 0.75, TIMBERC[(Math.round(t)&3)], 'timber');
+      BEAM(T.x+sx, y-15, T.z+sz, T.x+ex, y-th, T.z+ez, 1.0, 1.0, TIMBERC[(Math.round(t)&3)], 'timber');
     }
   });
   /* stall frames: posts, partitions, a lean-to shingle roof and a perch beam per roost */
