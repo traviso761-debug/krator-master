@@ -1061,6 +1061,103 @@ function luceShells(parent,xc,zc,Wb,Hs,Dd,d,seed,skin){[-1,1].forEach(side=>{con
  kput('archOpen',[xc,3,zc-Dd*.05],qFacing([0,0,1]),[.45,.45,1],null);}
 function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],0))),28,r,8,false);}
 
+// ================================================================= CORE FURNISH — the placement pass ([G data])
+// One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
+// A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
+// writes the placement RECORD, counts missing keys, applies the catalog's recentring table, assigns a deterministic
+// id, and hands the record to the build's draw adapter. No THREE, no DOM: the records are what crosses to Godot.
+//
+//   const R = KFURN.create(cfg)
+//   R.place(key, x, y, z, ry, o, loc, ctx)   -> the record, or null (a key the catalog lacks: counted in R.missing)
+//        x y z ry  the world transform (three.js rotation.y: the piece's front, +z, turns to (sin ry, cos ry))
+//        o         the builder's options: { v, seed, setting, ... } (the adapter's own keys pass through)
+//        loc       [lx, ly, lz, lry] in the builder's frame, or null (a piece placed in world space)
+//        ctx       { building, list, wealth, part, room, dry }: list receives the record (the building's own list;
+//                  listOf() instead makes it only when a record lands, for a build whose owners start without one);
+//                  dry places nothing anywhere else (a throwaway build: Post-Apoc's frontOf)
+//   R.frm(f, lx, lz, lry)                    -> [x, z, ry] in a FRM frame {x, z, fx, fz} (55-arch): +z its front,
+//                                               +x its right (-fz, fx); lry 0 faces the front
+//   R.interior(item, x, z, ry, adapter, opt) -> the interiors kit's rooms planned and furnished at a placement,
+//                                               summarised as data ({ item, rooms, pieces, residence }); pushed on R.buildings
+//   R.summary()                              -> counts for a probe: placed, byKey, missing, interiors, interiorPieces
+//   KFURN.SRGB_LIN                           -> Float32Array(256): an sRGB byte to linear (the catalog's colours are sRGB)
+//
+// cfg: {
+//   catalog:   { has(key), entry(key), dims(entry, variant) }   (KFURN.catalogOf(KratorFurniture) makes it)
+//   interiors: KratorInteriors (for R.interior), optional
+//   on, interiorsOn: the page's switches (?furniture=0, ?interiors=: 53-core-furnish-host.js reads them)
+//   seed(o, ctx, R, x, y, z, loc) -> the seed when o.seed is not given. Each build keeps the rule its pieces were
+//              placed with, so moving onto this module moves nothing (README.md, "Seeds")
+//   shift:     { key: [dx, dz] | function(variant) -> [dx, dz] | null }: pieces the catalog recentred on their
+//              footprint; the placement undoes it (Mav's Refuge's BRF_SHIFT)
+//   finish(rec): rounds or wraps the record's numbers the way the build always has (Girder: 3 decimals)
+//   onRecord(rec, ctx, o, entry, dims) -> false to place nothing more (deferred to the interiors); collision,
+//              inspector entries and the like go here
+//   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
+//   idPrefix:  'furn' (ids: furn_00001 in placement order) }
+//
+// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
+// job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
+var KFURN = (function(){
+'use strict';
+ const K = {};
+ K.SRGB_LIN = (function(){ const t = new Float32Array(256);
+   for(let i=0;i<256;i++){ const v = i/255; t[i] = v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); } return t; })();
+ K.catalogOf = function(KF){ return {
+   has: function(key){ return KF.has(key); },
+   entry: function(key){ return KF.FURN_BY_KEY[key]; },
+   dims: function(A, v){ return KF.entryDims(A, v); } }; };
+ function pad(n){ const s = String(n); return s.length >= 5 ? s : '00000'.slice(s.length) + s; }
+ K.create = function(cfg){
+   const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
+     lights: 0, group: null, batch: null, adapter: null, cfg: cfg };
+   const prefix = cfg.idPrefix || 'furn';
+   R.place = function(key, x, y, z, ry, o, loc, ctx){
+     o = o || {}; ctx = ctx || {};
+     if(!C.has(key)){ if(!ctx.dry) R.missing[key] = (R.missing[key]||0) + 1; return null; }
+     const v = o.v|0;
+     if(cfg.shift && cfg.shift[key]){
+       let sh = cfg.shift[key]; if(typeof sh === 'function') sh = sh(v);
+       if(sh){ const c = Math.cos(ry), s = Math.sin(ry); x -= sh[0]*c + sh[1]*s; z -= -sh[0]*s + sh[1]*c; }
+     }
+     const A = C.entry(key);
+     const rec = { key: key, variant: v, seed: o.seed || cfg.seed(o, ctx, R, x, y, z, loc),
+       lx: loc ? loc[0] : null, ly: loc ? loc[1] : null, lz: loc ? loc[2] : null, lry: loc ? loc[3] : null,
+       x: x, y: y, z: z, ry: ry, building: ctx.building == null ? null : ctx.building };
+     if(ctx.part != null) rec.part = ctx.part;
+     rec.setting = o.setting || 'outdoor';
+     if(cfg.finish) cfg.finish(rec);
+     const L = ctx.list || (ctx.listOf && ctx.listOf()); if(L) L.push(rec);
+     if(!ctx.dry){ R.placed.push(rec); rec.id = prefix + '_' + pad(R.placed.length); }
+     rec.room = ctx.room || o.room || null;
+     rec.job = (A && A.job) || null;
+     const dm = A ? C.dims(A, v) : null;
+     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;
+     if(ctx.dry || !R.on || !cfg.draw) return rec;
+     cfg.draw(rec, ctx, o, A);
+     return rec;
+   };
+   R.frm = function(f, lx, lz, lry){
+     return [f.x - f.fz*lx + f.fx*lz, f.z + f.fx*lx + f.fz*lz, Math.atan2(f.fx, f.fz) + (lry||0)];
+   };
+   R.interior = function(item, x, z, ry, adapter, opt){
+     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, opt);
+     const sum = { item: item.key, rooms: r.inst.rooms.length,
+       pieces: Object.keys(r.plans).reduce(function(a, k){ return a + r.plans[k].placements.length; }, 0), residence: r.residence };
+     R.buildings.push({ key: item.key, x: x, z: z, ry: ry||0, baseY: (opt && opt.baseY) || 0, interior: sum });
+     return { summary: sum, result: r };
+   };
+   R.summary = function(){
+     const byKey = {}; R.placed.forEach(function(r){ byKey[r.key] = (byKey[r.key]||0) + 1; });
+     return { on: R.on, placed: R.placed.length, keys: Object.keys(byKey).length, byKey: byKey, missing: R.missing,
+       lights: R.lights, interiors: R.buildings.length,
+       interiorPieces: R.buildings.reduce(function(a, b){ return a + b.interior.pieces; }, 0) };
+   };
+   return R;
+ };
+ if(typeof module !== 'undefined' && module.exports) module.exports = K;
+ return K;
+})();
 // ---------------------------------------------------------------- v3: inspector registry + group transforms
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
 function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
@@ -1070,6 +1167,57 @@ kdef('boxD',new THREE.BoxGeometry(1,1,1),MAT.dark);
 kdef('boxW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('boxR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
 
+// ================================================================= CORE FURNISH — the draw adapter's helpers ([draw])
+// The three.js side of core/furnish: a placement record into the catalog's batch (KratorFurniture), and the one
+// colour step every build needs when the batch becomes meshes. The catalog writes its colours as sRGB bytes; a
+// build that renders in linear light converts them once, either in the vertex shader or into a float attribute.
+// Each build keeps its own flush (it ties the meshes to its night lights and shadows); these are the parts the
+// six copies shared.
+//
+//   KFURN.useBatch(R, KF, KI)            -> R.batch (a KratorFurniture batch) and R.adapter (KratorInteriors' runtime
+//                                           adapter over it, for the interiors hook); call again for a fresh batch
+//   KFURN.drawRec(R, rec, wealth, opt)   -> the batch's result for one record ({ lights, error, ... }); opt.detail
+//                                           sets KratorFurniture's detail for this piece and restores it
+//   KFURN.srgbHook(shader)               -> an onBeforeCompile body: linearise vColor in the vertex shader
+//   KFURN.linearColours(geometry)        -> the colour attribute's sRGB bytes as linear floats (KFURN.SRGB_LIN)
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('52-core-furnish-draw: load 50-core-furnish.js first');
+KFURN.useBatch = function(R, KF, KI){ R.batch = KF.batch(); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
+KFURN.drawRec = function(R, rec, wealth, opt){
+  const KF = R.KF, d = opt && opt.detail;
+  if(d != null) KF.setDetail(d);
+  const r = R.batch.place(rec.key, rec.x, rec.y, rec.z, rec.ry, { variant: rec.variant, seed: rec.seed, wealth: wealth,
+    building: rec.building, setting: rec.setting });
+  if(d != null) KF.setDetail(opt.after == null ? .5 : opt.after);
+  return r;
+};
+KFURN.srgbHook = function(sh){
+  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
+    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
+};
+KFURN.linearColours = function(geo){
+  const a = geo.getAttribute('color'); if(!a || a.array instanceof Float32Array) return;
+  const src = a.array, out = new Float32Array(src.length), L = KFURN.SRGB_LIN;
+  for(let i=0;i<src.length;i++) out[i] = L[src[i]];
+  geo.setAttribute('color', new THREE.BufferAttribute(out, a.itemSize || 3));
+};
+})();
+// ================================================================= CORE FURNISH — the page's switches ([web])
+// The one browser read in core/furnish: the query string. ?furniture=0 places nothing (the records are still
+// kept); the interiors are ?interiors=1 to turn on (most builds: roofs hide them) or ?interiors=0 to turn off
+// (Girder, whose interiors are on by default).
+//
+//   KFURN.flags(interiorsByDefault)   -> { on, interiorsOn }: pass it straight into KFURN.create
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('53-core-furnish-host: load 50-core-furnish.js first');
+KFURN.flags = function(interiorsByDefault){
+  const q = location.search;
+  return { on: !/[?&]furniture=0\b/.test(q),
+    interiorsOn: interiorsByDefault ? !/[?&]interiors=0\b/.test(q) : /[?&]interiors=1\b/.test(q) };
+};
+})();
 // ---------------------------------------------------------------- v4: concrete, brick, glass panes
 // Board-formed concrete: horizontal boards ~0.65 m deep, each poured a shade
 // different, with the joint standing proud, a form-tie hole grid, a rust weep
@@ -21406,48 +21554,45 @@ const STREETS={made:0,tries:0};
 // structure and outbuildings) is FURNITURE: a master-catalog piece (kits/catalog), placed as data and built by
 // the catalog's own code through KratorFurniture (69d, generated: kits/catalog/furniture_bundle.py), merged
 // into one mesh per render family for the whole page. A builder calls, in its own local frame:
-//   FURNISH(key, lx, ly, lz, lry, {v, seed, setting})   -> the placement record (also on G.userData.furniture)
+//   FURNISH(key, lx, ly, lz, lry, {v, seed, setting})   -> the placement record (core/furnish; also on G.userData.furniture)
 // Indoors, the rooms of every top-level building are the interiors kit's: its set (kits/interiors/sets/
 // highlands.js) is planned and furnished through the same catalog (?interiors=1; off by default, as the roofs
 // hide it and it adds millions of triangles). ?furniture=0 places nothing (the records are still kept).
 KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round furniture parts
-const HLF={on:!/[?&]furniture=0\b/.test(location.search),interiors:/[?&]interiors=1\b/.test(location.search),
- batch:KratorFurniture.batch(),placed:[],missing:{},buildings:[]};
-HLF.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,HLF.batch);
-function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
- if(!KratorFurniture.has(key)){HLF.missing[key]=(HLF.missing[key]||0)+1;return null;}
- if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
- const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
- const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx,ly,lz,lry:lry||0,x:p[0],y:(c.o.y||0)+ly*s,z:p[1],ry:c.ry+(lry||0),
-  building:c.D.key,setting:o.setting||'outdoor'};
- (c.G.userData.furniture||(c.G.userData.furniture=[])).push(rec);HLF.placed.push(rec);
- const dm=KratorFurniture.entryDims(KratorFurniture.FURN_BY_KEY[key],rec.variant);   // murals fitted after the builder (hlFlush) keep clear of the piece
- if(!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[lx,ly+dm.h/2,lz],qEuler(0,lry||0,0),[dm.w,dm.h,dm.d]]);
+// the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is the Highlands
+// adapter onto it: its seed rule (the record's place in the list), the murals' keep-clear boxes, full detail outside
+const HLF=KFURN.create(Object.assign(KFURN.flags(false),{
+ catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ seed:(o,ctx,R)=>R.placed.length+1,
+ onRecord:(rec,ctx,o,A,dm)=>{const c=ctx.vern;   // murals fitted after the builder (hlFlush) keep clear of the piece
+  if(c&&!c.noRec)(c.inst||(c.inst=[])).push(['vWood',[rec.lx,rec.ly+dm.h/2,rec.lz],qEuler(0,rec.lry,0),[dm.w,dm.h,dm.d]]);},
  // a builder's pieces stand outside, seen whole: full detail (at half, a disc drawn as a rod, a shield or a target face,
  // is a 4-sided diamond); the interiors' many pieces keep the half detail set above
- if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,rec.x,rec.y,rec.z,rec.ry,{variant:rec.variant,seed:rec.seed,wealth:hlfWealth(c.D),building:c.D.key,setting:rec.setting});KratorFurniture.setDetail(.5);}
- return rec;}
+ draw:(rec,ctx)=>{KFURN.drawRec(HLF,rec,ctx.wealth,{detail:1,after:.5});}}));
+KFURN.useBatch(HLF,KratorFurniture,KratorInteriors);
+function FURNISH(key,lx,ly,lz,lry,o){const c=VERN.cur;o=o||{};if(!c&&!o.world){reportErr('FURNISH '+key+' outside a builder');return null;}
+ if(!c)return hlfWorld(key,lx,ly,lz,lry||0,o);
+ const s=c.o.scale||1,p=loc(c.x,c.z,lx*s,lz*s,c.ry);
+ return HLF.place(key,p[0],(c.o.y||0)+ly*s,p[1],c.ry+(lry||0),o,[lx,ly,lz,lry||0],
+  {building:c.D.key,wealth:hlfWealth(c.D),vern:c,listOf:()=>c.G.userData.furniture||(c.G.userData.furniture=[])});}
 // outside any builder (a town's own furniture, placed by its layout: Roketstad's market stalls), with {world: a name for
 // the record's `building`}: (x, y, z, ry) are world coordinates; the record goes on HLF.placed only
-function hlfWorld(key,x,y,z,ry,o){const rec={key,variant:o.v|0,seed:o.seed||(HLF.placed.length+1),lx:x,ly:y,lz:z,lry:ry,x,y,z,ry,building:o.world,setting:o.setting||'outdoor'};
- HLF.placed.push(rec);
- if(HLF.on){KratorFurniture.setDetail(1);HLF.batch.place(key,x,y,z,ry,{variant:rec.variant,seed:rec.seed,wealth:o.wealth!=null?o.wealth:.5,building:o.world,setting:rec.setting});KratorFurniture.setDetail(.5);}
- return rec;}
+function hlfWorld(key,x,y,z,ry,o){return HLF.place(key,x,y,z,ry,o,[x,y,z,ry],{building:o.world,wealth:o.wealth!=null?o.wealth:.5});}
 function hlfWealth(D){const w=D.tags&&D.tags.wealth;return w==='poor'?.2:w==='rich'?.8:w==='civic'?.65:.5;}
 // the interiors hook: a TOP-LEVEL placement (not a sub-building a compound places) with an interior set item
 // gets its rooms planned and furnished at its placement; the plan is data on the group (userData.interior)
 const hlfPlace=VERN.place;
 VERN.place=function(sc,key,x,z,ry,o){const top=!VERN.cur;const G=hlfPlace.call(VERN,sc,key,x,z,ry,o);
  if(top&&G&&HLF.interiors){const it=KratorInteriors.sets.find(key);
-  if(it&&!it.skip){const r=KratorInteriors.sets.furnish(it,x,z,ry||0,HLF.adapter,{baseY:(o&&o.y)||0,prefix:'hl.'+HLF.buildings.length+'.'});
-   G.userData.interior={rooms:r.inst.rooms.length,pieces:Object.keys(r.plans).reduce((a,k)=>a+r.plans[k].placements.length,0),residence:r.residence};
-   HLF.buildings.push({key,x,z,ry:ry||0,interior:G.userData.interior});}}
+  if(it&&!it.skip){const r=HLF.interior(it,x,z,ry||0,HLF.adapter,{baseY:(o&&o.y)||0,prefix:'hl.'+HLF.buildings.length+'.'}).summary;
+   G.userData.interior={rooms:r.rooms,pieces:r.pieces,residence:r.residence};
+   Object.assign(HLF.buildings[HLF.buildings.length-1],{key,interior:G.userData.interior});}}
  return G;};
 // the batch becomes meshes once, when the kit bakes its instances
 const hlfBake=kbake;
 // the catalog's colours are sRGB values taken as they are; this kit's materials are linear (hC converts every colour), so
 // the furniture keeps its 8-bit vertex colours and linearises them in the vertex shader (as Girder and Locus do)
-function hlfSRGB(sh){sh.vertexShader=sh.vertexShader.replace('#include <color_vertex>','#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');}
+const hlfSRGB=KFURN.srgbHook;
 kbake=function(sc){const g=HLF.batch.flush(sc);g.userData.probeSkip=false;HLF.group=g;g.children.forEach(m=>{m.material.onBeforeCompile=hlfSRGB;});return hlfBake(sc);};
 // TARGET: roketstad — the town. No showcase rows: 90a/90b place everything from the layout (the showcase block in
 // 90-scene is skipped because window.CITY). TITLE is read by build.py for the page <title>.

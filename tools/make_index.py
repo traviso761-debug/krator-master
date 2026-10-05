@@ -189,8 +189,9 @@ def main():
              '| Build | Fragments | src KB | Largest KB | What |', '|---|---|---|---|---|'] + rows + [
              '', '## Not builds', '',
              '| Path | What |', '|---|---|',
-             '| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example) |',
+             '| `core/` | shared code (see `core/README.md`): `core/materials/`, `core/biome/` (the biome core every kit reads), `core/terrain/` (carve patches), `core/atmos/` (atmosphere), `core/sockets/` (cultural sockets, banners and awnings, with a runnable example), `core/furnish/` (the furniture placement pass six builds share), `core/rand/`, `core/clock/` |',
              '| `kits/furniture/` | spec only |',
+             '| `godot/` | the Godot project: the port spike\'s importers, shaders and test exports (`godot/README.md`, GODOT-PLAN.md Phase 7) |',
              '| `gallery/` | the shareable gallery of every built world |',
              '| `host/` | the LAN site server: Krator Worlds plus the World Menagerie pages (`host/README.md`) |',
              '| `tools/` | repo-wide scripts: this index |',

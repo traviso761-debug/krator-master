@@ -11,11 +11,21 @@
 // the roofs hide it). ?furniture=0 places nothing (the records are still kept). A key the catalog lacks is counted, not thrown
 // (PAF.missing, _api.furniture().missing).
 KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round furniture parts
-const PAF={on:!/[?&]furniture=0\b/.test(location.search),interiors:/[?&]interiors=1\b/.test(location.search),
- batch:null,adapter:null,group:null,placed:[],missing:{},buildings:[],cur:null,dry:0,
+// the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Post-Apoc's adapter
+// onto it: its seed rule (the building's seed and the record's place in its list), the colliders, and the lights as halos
+const PAF=KFURN.create(Object.assign(KFURN.flags(false),{
+ catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
+ seed:(o,ctx)=>ctx.pa.seed*100+ctx.pa.list.length+1,
+ onRecord:(rec,ctx,o,A,d)=>{if(!PAF.NOCOLL[rec.key]&&d.h>=.3){const L=ctx.local;collSolid(L[0],L[1],L[2],d.w,d.h,d.d,L[3],'furniture');}},
+ draw:(rec,ctx)=>{const r=KFURN.drawRec(PAF,rec,ctx.pa.wealth);
+  if(r.error)reportErr('furniture '+rec.key+': '+r.error);
+  /* the piece's lights become HALO records (glow sprites, the night light pool, the lamp cones: 91n-night.js, 93-anim.js) as the kit's own glow did */
+  const fireK=!!PAF.FIRE[rec.key];for(const L of r.lights){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
+   const cc=hc(fireK?0xff9a3a:0xffd890);HALOS.push({x:L.x,y:L.y+(fireK?0:.06),z:L.z,r:cc.r,g:cc.g,b:cc.b,big:fireK,kind:fireK?'ConeGeometry':'SphereGeometry'});}}}));
+Object.assign(PAF,{cur:null,dry:0,
  FIRE:{pa_camp_fire:1,pa_forge:1,pa_brick_grill:1,pa_box_stove:1},   // their lights are fires (big halos), the rest lamps
- NOCOLL:{pa_lamp_post:1,pa_hanging_lamp:1,pa_goods_rail:1,pa_gibbet:1}};   // thin or hung: no collider
-function pafNewBatch(){PAF.batch=KratorFurniture.batch();PAF.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,PAF.batch);PAF.placed=[];PAF.missing={};PAF.buildings=[];}
+ NOCOLL:{pa_lamp_post:1,pa_hanging_lamp:1,pa_goods_rail:1,pa_gibbet:1}});   // thin or hung: no collider
+function pafNewBatch(){KFURN.useBatch(PAF,KratorFurniture,KratorInteriors);PAF.placed=[];PAF.missing={};PAF.buildings=[];}
 pafNewBatch();
 function pafWealth(key){const it=KratorInteriors.sets.find(key);return it&&it.wealth!=null?it.wealth:.3;}
 function FURNISH(key,lx,ly,lz,lry,o){o=o||{};const c=PAF.cur;if(!c||!CURKEY){reportErr('FURNISH '+key+' outside a builder');return null;}
@@ -23,18 +33,8 @@ function FURNISH(key,lx,ly,lz,lry,o){o=o||{};const c=PAF.cur;if(!c||!CURKEY){rep
  if(o.ax||o.az){const ax=o.ax||0,az=o.az||0,cs=Math.cos(lry),sn=Math.sin(lry);lx-=ax*cs+az*sn;lz-=-ax*sn+az*cs;}
  const w=new THREE.Vector3(lx,ly,lz).applyMatrix4(CM),e=CM.elements,wry=Math.atan2(e[8],e[10])+lry;
  const b=w.clone().applyMatrix4(c.M0inv);   // the building's own frame (origin = plot centre on the ground, +z the front)
- const v=o.v|0,seed=o.seed||(c.seed*100+c.list.length+1);
- const rec={key,variant:v,seed,lx:+b.x.toFixed(3),ly:+b.y.toFixed(3),lz:+b.z.toFixed(3),lry:+(wry-c.ry).toFixed(4),x:w.x,y:w.y,z:w.z,ry:wry,building:CURKEY,setting:o.setting||'outdoor'};
- c.list.push(rec);
- if(!PAF.NOCOLL[key]){const A=KratorFurniture.FURN_BY_KEY[key],d=KratorFurniture.entryDims(A,v);if(d.h>=.3)collSolid(lx,ly,lz,d.w,d.h,d.d,lry,'furniture');}
- if(PAF.dry)return rec;
- PAF.placed.push(rec);
- if(PAF.on){const r=PAF.batch.place(key,w.x,w.y,w.z,wry,{variant:v,seed:seed,wealth:c.wealth,building:CURKEY,setting:rec.setting});
-  if(r.error)reportErr('furniture '+key+': '+r.error);
-  /* the piece's lights become HALO records (glow sprites, the night light pool, the lamp cones: 91n-night.js, 93-anim.js) as the kit's own glow did */
-  const fireK=!!PAF.FIRE[key];for(const L of r.lights){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
-   const cc=hc(fireK?0xff9a3a:0xffd890);HALOS.push({x:L.x,y:L.y+(fireK?0:.06),z:L.z,r:cc.r,g:cc.g,b:cc.b,big:fireK,kind:fireK?'ConeGeometry':'SphereGeometry'});}}
- return rec;}
+ return PAF.place(key,w.x,w.y,w.z,wry,o,[+b.x.toFixed(3),+b.y.toFixed(3),+b.z.toFixed(3),+(wry-c.ry).toFixed(4)],
+  {building:CURKEY,list:c.list,pa:c,local:[lx,ly,lz,lry],dry:!!PAF.dry});}
 // ---- the registry hook: every place() gets its own record list (nested placements, the compound's slots, keep theirs) and the
 // interiors hook runs after a TOP-LEVEL placement (not a sub-building a compound places); frontOf()'s throwaway builds batch nothing
 const pafPlace=place,pafFrontOf=frontOf;
@@ -44,16 +44,14 @@ place=function(key,x,z,ry,o){const d=DEFS[key];if(!d)return pafPlace.apply(this,
  let rec;try{rec=pafPlace.apply(this,arguments);}finally{PAF.cur=keep;}
  if(!rec)return rec;rec.furniture=c.list;
  if(top&&!PAF.dry&&PAF.interiors&&PAF.on){const it=KratorInteriors.sets.find(key);
-  if(it&&!it.skip){try{const r=KratorInteriors.sets.furnish(it,x,z,ry||0,PAF.adapter,{baseY:y,prefix:'pa.'+PAF.buildings.length+'.'});
-    rec.interior={rooms:r.inst.rooms.length,pieces:Object.keys(r.plans).reduce((a,k)=>a+r.plans[k].placements.length,0),residence:r.residence};
-    PAF.buildings.push({key,x,z,ry:ry||0,interior:rec.interior});}catch(err){reportErr('interiors '+key+': '+(err.stack||err));}}}
+  if(it&&!it.skip){try{const r=PAF.interior(it,x,z,ry||0,PAF.adapter,{baseY:y,prefix:'pa.'+PAF.buildings.length+'.'}).summary;
+    rec.interior={rooms:r.rooms,pieces:r.pieces,residence:r.residence};
+    Object.assign(PAF.buildings[PAF.buildings.length-1],{key,interior:rec.interior});}catch(err){reportErr('interiors '+key+': '+(err.stack||err));}}}
  return rec;};
 frontOf=function(key){PAF.dry++;try{return pafFrontOf(key);}finally{PAF.dry--;}};
 // the catalog's colours are sRGB values; this renderer works in linear light (outputEncoding sRGB, every kit colour through SRGB2LIN), so the
 // batch's vertex colours are converted once (to floats: linear uint8 would band the darks)
-const PAF_LIN=new Float32Array(256).map((_,i)=>{const c=i/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);});
-function pafLinear(geo){const a=geo.getAttribute('color');if(!a||a.array instanceof Float32Array)return;const src=a.array,out=new Float32Array(src.length);
- for(let i=0;i<src.length;i++)out[i]=PAF_LIN[src[i]];geo.setAttribute('color',new THREE.BufferAttribute(out,3));}
+const pafLinear=KFURN.linearColours;
 // ---- the batch becomes meshes ONCE per world build, after every building is placed
 const pafBuildWorld=buildWorld;
 buildWorld=function(cultureKey){pafNewBatch();const t0=performance.now();const W0=pafBuildWorld(cultureKey);

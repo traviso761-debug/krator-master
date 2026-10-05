@@ -197,6 +197,20 @@ draw calls and triangles with it off and on. Read `lod/README.md`.
 fragment list next to its `CORE_FILES`/`CORE_OPT_FILES` (a `src/` copy with the same name overrides) and lists both in
 `DETERMINISTIC`. A build passes options through `window.LOD_OPTIONS` (port, screamers, voth, highlands, dalab).
 
+## `furnish/`
+
+The furniture glue, once (GODOT-PLAN.md Phase 2 item 4): a builder's `FURNISH(...)` becomes a placement record here,
+and the build's own adapter draws it. Girder, Mav's Refuge, Locus, Highlands (and Roketstad) and Post-Apoc take it;
+each lists the three fragments the way it lists `lod/`. `furnish/README.md` has the record, the adapters and the proof.
+
+| File | What |
+|---|---|
+| `50-core-furnish.js` | [G data] `KFURN.create(cfg)`: the registry and the placement pass (records with ids, room and job; missing keys; the recentring table; the interiors hook; the summary). No THREE, no DOM |
+| `52-core-furnish-draw.js` | [draw] a record into the catalog batch, and the sRGB-to-linear colour step |
+| `53-core-furnish-host.js` | [web] `KFURN.flags()`: `?furniture=0`, `?interiors=` |
+| `test-furnish.js` | `node core/furnish/test-furnish.js` |
+| `fingerprint.py` | every furnished page's records and furniture meshes, compared with `fingerprint.json`: a change to this module must leave them `same` |
+
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 
 Three small modules with no THREE and no DOM in their data side, each with a node test (each check has a negative).

@@ -23,7 +23,7 @@ What already crosses over, or is scaffolded to:
 | `kits/interiors/` core (`src/10-49`) | no THREE, no DOM, runs in node | the room graph, walls, openings and the furniture grid are plain objects |
 | `settlements/yuni` fixtures | buildings, doors, windows, lights, interiors as tagged records with stable ids | `KRATOR_EXPORT.building()`, `.fixtures()`; glTF extras carry tags, `-col` names carry collision |
 | `kits/catalog/` | 1503 furniture pieces as SPEC entries: family string plus colour, tags, size, anchor, role, `job` (`FURN_JOBS`) | no exporter yet; the entry shape is the data |
-| Catalog furniture placements | six builds place every piece of furniture as a record `{key, variant, seed, local and world transform, building, room, setting}`: Highlands (`89y-hl-furnish.js`), Locus (`66-locus-furnish.js`), Girder and Mav's Refuge (`53-furnish.js`), Post-Apoc (`91f-furnish.js`), the catalog's buildings (`F.furn`) | no exporter; six near-copies of the same glue, each mixing the record pass with the three.js batch (Girder's two are noted "split" in its `PORT.md`) |
+| Catalog furniture placements | six builds place every piece of furniture as a record `{key, variant, seed, local and world transform, building, room, setting}`: Highlands (`89y-hl-furnish.js`), Locus (`66-locus-furnish.js`), Girder and Mav's Refuge (`53-furnish.js`), Post-Apoc (`91f-furnish.js`), the catalog's buildings (`F.furn`) | no exporter yet; since 2026-10-05 one placement pass, `core/furnish/` (`KFURN`), with ids, room and job on every record; each build keeps a draw adapter |
 | `core/sockets/` | a building declares sockets, a culture pack fills them | data side is the socket list; the packs draw with 2D canvas |
 | `core/terrain/36-core-carve.js` | floor and blocker lists as the carve builds | node test exists; no exporter |
 | `core/lod/` | runtime LOD over a finished scene | Godot-native; nothing to port |
@@ -259,7 +259,7 @@ twin) checked against the same golden vectors. Each ships with its **first consu
 | `core/rand/` | Ys's city placement pass; then one biome kit in the reseeding event | **written 2026-10-02**: node test, golden vectors, `krand.gd` (arithmetic proven in Python; passing in Godot 4.5 since 2026-10-05); Ys's city takes it |
 | `core/terrain/` field | one biome kit's stage (its `terrainH` closure baked) | not started |
 | `core/tags/` | Yuni's `FIX.*` records or Voth's `PLACED` (both exist; map one) | not started |
-| `core/furnish/` | Girder (the material pilot is there too) | not started |
+| `core/furnish/` | Girder (the material pilot is there too) | **written 2026-10-05**: placement pass, draw helpers, host switches, node test; Girder, Mav's Refuge, Locus, Highlands and Post-Apoc on it with their furniture fingerprints unchanged (`core/furnish/README.md`). The catalog's own `F.furn` keeps its code |
 | `core/mask/` | Iziz's city (M5) | not started |
 
 1. **`core/rand/`**: one PRNG (a 32-bit integer generator, `mulberry32` or `sfc32`, so the arithmetic is

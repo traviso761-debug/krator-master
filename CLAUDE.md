@@ -21,6 +21,7 @@ says which build holds what.
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
+| `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
 | `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
@@ -96,6 +97,8 @@ A fix to one settlement or biome republishes only that build's files. A wider ch
 - `core/materials/` holds one copy of the material fragments the Ancients-lineage
   builds share. Those builds' `build.py` read them from there. Edit them there,
   and rebuild every build that lists them.
+- `core/furnish/` is one shared copy too: after changing it, run `node core/furnish/test-furnish.js`, rebuild the five
+  builds that take it, and `python3 core/furnish/fingerprint.py` (every page must read `same`).
 - `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
   Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and

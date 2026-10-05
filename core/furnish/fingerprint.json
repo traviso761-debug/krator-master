@@ -1,0 +1,210 @@
+{
+ "abyss-kit": {
+  "interiors-off": {
+   "batchTris": 164900,
+   "geometry": "8835c3ce",
+   "groupTris": 164900,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 17,
+   "missing": {},
+   "placed": 521,
+   "records": "b20be4e7"
+  },
+  "interiors-on": {
+   "batchTris": 707583,
+   "geometry": "897cc213",
+   "groupTris": 707583,
+   "interiorPieces": 1219,
+   "interiors": 49,
+   "lights": 0,
+   "meshes": 89,
+   "missing": {},
+   "placed": 521,
+   "records": "a9ea04ed"
+  }
+ },
+ "girder": {
+  "interiors-off": {
+   "batchTris": 107158,
+   "geometry": "3c7e9a37",
+   "groupTris": 107158,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 13,
+   "missing": {},
+   "placed": 1331,
+   "records": "84eaf4a0"
+  },
+  "interiors-on": {
+   "batchTris": 107158,
+   "geometry": "3c7e9a37",
+   "groupTris": 107158,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 13,
+   "missing": {},
+   "placed": 1331,
+   "records": "84eaf4a0"
+  }
+ },
+ "highlands": {
+  "interiors-off": {
+   "batchTris": 1022986,
+   "geometry": "cb9697ec",
+   "groupTris": 1022986,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 19,
+   "missing": {},
+   "placed": 1126,
+   "records": "c56e9bdd"
+  },
+  "interiors-on": {
+   "batchTris": 5506280,
+   "geometry": "4232392a",
+   "groupTris": 5506280,
+   "interiorPieces": 5297,
+   "interiors": 146,
+   "lights": 0,
+   "meshes": 456,
+   "missing": {},
+   "placed": 1126,
+   "records": "c56e9bdd"
+  }
+ },
+ "locus": {
+  "interiors-off": {
+   "batchTris": 195124,
+   "geometry": "2b64de15",
+   "groupTris": 195124,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 14,
+   "missing": {},
+   "placed": 750,
+   "records": "92859cea"
+  },
+  "interiors-on": {
+   "batchTris": 1033006,
+   "geometry": "e8b09fad",
+   "groupTris": 1033006,
+   "interiorPieces": 2450,
+   "interiors": 151,
+   "lights": 0,
+   "meshes": 146,
+   "missing": {},
+   "placed": 750,
+   "records": "92859cea"
+  }
+ },
+ "locus-kit": {
+  "interiors-off": {
+   "batchTris": 33204,
+   "geometry": "cda5115a",
+   "groupTris": 33204,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 14,
+   "missing": {},
+   "placed": 148,
+   "records": "96cbfc60"
+  },
+  "interiors-on": {
+   "batchTris": 104541,
+   "geometry": "e3f0d356",
+   "groupTris": 104541,
+   "interiorPieces": 218,
+   "interiors": 16,
+   "lights": 0,
+   "meshes": 46,
+   "missing": {},
+   "placed": 148,
+   "records": "214c0f12"
+  }
+ },
+ "mavs-refuge": {
+  "interiors-off": {
+   "batchTris": 1278216,
+   "geometry": "6f90d386",
+   "groupTris": 1278216,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 2612,
+   "meshes": 17,
+   "missing": {},
+   "placed": 10991,
+   "records": "d91ead26"
+  },
+  "interiors-on": {
+   "batchTris": 1303831,
+   "geometry": "fc9356a6",
+   "groupTris": 1303831,
+   "interiorPieces": 78,
+   "interiors": 3,
+   "lights": 2612,
+   "meshes": 36,
+   "missing": {},
+   "placed": 10991,
+   "records": "d91ead26"
+  }
+ },
+ "post-apoc": {
+  "interiors-off": {
+   "batchTris": 321357,
+   "geometry": "28b6acd5",
+   "groupTris": 321357,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 17,
+   "missing": {},
+   "placed": 903,
+   "records": "c79a17d0"
+  },
+  "interiors-on": {
+   "batchTris": 452409,
+   "geometry": "91cacc81",
+   "groupTris": 452409,
+   "interiorPieces": 585,
+   "interiors": 31,
+   "lights": 0,
+   "meshes": 43,
+   "missing": {},
+   "placed": 903,
+   "records": "c79a17d0"
+  }
+ },
+ "roketstad": {
+  "interiors-off": {
+   "batchTris": 3189006,
+   "geometry": "d04d49e0",
+   "groupTris": 3189006,
+   "interiorPieces": 0,
+   "interiors": 0,
+   "lights": 0,
+   "meshes": 16,
+   "missing": {},
+   "placed": 5513,
+   "records": "b936160d"
+  },
+  "interiors-on": {
+   "batchTris": 19336330,
+   "geometry": "db68cea0",
+   "groupTris": 19336330,
+   "interiorPieces": 41184,
+   "interiors": 1548,
+   "lights": 0,
+   "meshes": 3181,
+   "missing": {},
+   "placed": 5513,
+   "records": "b936160d"
+  }
+ }
+}

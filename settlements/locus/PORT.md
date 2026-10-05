@@ -48,7 +48,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/65-abyss-70-palace.js` | 8.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-abyss-80-military.js` | 13.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 32 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/65-abyss-90-farm.js` | 12.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/66-locus-furnish.js` | 8.1 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/66-locus-furnish.js` | 7.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (frame seed and spot), the frame stack round every ASSET build, the open rooms deferred to the interiors, the interior-set item per variant, night lamps, inspector entries, the linear colours at the flush |
 | `src/68-place.js` | 16.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/68c-locus-crossings.js` | 10.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/69a1-bio-core-head.js` | 5.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
