@@ -19,6 +19,7 @@ static func apply(st: Dictionary, env: Environment, sun: DirectionalLight3D, par
 	if r is Dictionary:
 		env.tonemap_mode = TONE.get(str(r.get("toneMapping")), Environment.TONE_MAPPER_FILMIC)
 		env.tonemap_exposure = float(r.get("exposure", 1.0))
+	env.glow_enabled = false   # three's pages draw no bloom (none uses a composer): glow blurs and whitens the panorama
 	var sky = st.get("sky")
 	if sky is Dictionary and sky.has("png"):
 		var tex := KData.texture_from_data_url(sky["png"])
