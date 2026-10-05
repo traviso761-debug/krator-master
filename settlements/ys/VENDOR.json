@@ -2,7 +2,7 @@
  "10-core.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "e3edbbeee86a"
+  "sha1": "ea36e1d844e8"
  },
  "12-stats.js": {
   "adapted": false,
@@ -17,52 +17,57 @@
  "32-surfaces.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "f41847f87f7c"
+  "sha1": "260f318aa045"
  },
  "34-kitdefs.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "7347254ffed9"
+  "sha1": "426932435c82"
  },
  "36-decor.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "ed924131e430"
+  "sha1": "4f0f2d66851b"
  },
  "38-helpers2.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "97d25c565adf"
+  "sha1": "9498fec642c8"
+ },
+ "42-offices.js": {
+  "adapted": false,
+  "from": "kits/ancients/src",
+  "sha1": "7672279e14a8"
  },
  "50-registry.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "d0f77add9a31"
+  "sha1": "2dbe98a3a5b6"
  },
  "52-sky-abc.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "3143ffd0d872"
+  "sha1": "5bc7036e1cf3"
  },
  "54-mat-concrete.js": {
-  "adapted": false,
+  "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "29e42e7083f5"
+  "sha1": "11135f6c34d9"
  },
  "69-mat-salvage.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "c3955fecff77"
+  "sha1": "346781f9e5cd"
  },
  "69b-vern-mat.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "ce0c96e91940"
+  "sha1": "4bc1d2ce639f"
  },
  "69c-vern-helpers.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "310adda27c42"
+  "sha1": "160cad10b9a2"
  },
  "70-port-core.js": {
   "adapted": false,
@@ -102,7 +107,7 @@
  "93-labels.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "99c2c595e0f4"
+  "sha1": "d78e5d807c2d"
  },
  "99-tail.html": {
   "adapted": false,

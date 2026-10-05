@@ -75,7 +75,7 @@ for(const h of LAYOUT.highways)for(let i=1;i<h.pts.length;i++)ysPlTake(ysPlStrip
 // Stack, the Bole, and the mid-rise types for the canals and the land) waits on re-vendoring the Ancients chain
 // (KNOWN_ISSUES.md). The table is the place they go.
 const YS_HOST_TYPES={
- skyA:{name:'Skyscraper A — the Conocylinder',builder:'buildSkyA',key:'skyA',H:420,Y0:64,podium:64,cap:80,
+ skyA:{name:'Skyscraper A — the Conocylinder',builder:'buildSkyA',key:'skyA',H:420,Y0:64,podium:64,cap:66,
   floors:{y0:64,pitch:8,top:.35,first:2.5},k0:2,           // pods from plate 2 up: plates 0 and 1 stand among the strut heads
   plate:k=>64+(k?k*8+.35:2.5),
   rAt:(yl)=>{if(yl<5)return 64;if(yl<64)return 22-4*(yl-5)/64;const t=clamp((yl-64)/356,0,1);return 40+26*Math.pow(Math.abs(t-.42)/.58,1.7)*(t<.42?1:1.15);},

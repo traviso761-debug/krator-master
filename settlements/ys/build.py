@@ -53,6 +53,8 @@ TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
 CORE = os.path.join(ROOT, 'core', 'materials')
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
+CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook the vendored Iziz vernacular uses (core/README.md)
 
 TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<name>.html
 
@@ -65,12 +67,14 @@ TARGET_CORE = {'city': ['rand']}
 def srcpath(f, base=None):
     """Path of fragment f in base (default src/), falling back to core/materials/."""
     p = os.path.join(base or SRC, f)
-    return p if os.path.exists(p) or f not in CORE_FILES else os.path.join(CORE, f)
+    if os.path.exists(p) or f not in CORE_FILES + CORE_OPT_FILES:
+        return p
+    return os.path.join(CORE if f in CORE_FILES else CORE_OPT, f)
 
 
 # fragment -> upstream directory (relative to the repo root)
 VENDORED = {}
-for _f in ['10-core.js', '12-stats.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
+for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
            '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html']:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
@@ -78,11 +82,11 @@ for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-e
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
-ADAPTED = {'52-sky-abc.js', '71-port-terrain.js', '92-camera.js'}
+ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '71-port-terrain.js', '92-camera.js'}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '00-head.html', '08-core-rand.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
+    '00-head.html', '08-core-rand.js', '10-core.js', '69a-world-uv.js', '42-offices.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',
@@ -184,6 +188,7 @@ def build_one(target, do_checks):
         sys.exit('no such target: %s' % target)
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
+    src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     for mod in TARGET_CORE.get(target, []):
         mdir = os.path.join(ROOT, 'core', mod)
         src.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js') and f not in src})

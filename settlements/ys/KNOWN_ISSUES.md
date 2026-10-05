@@ -3,6 +3,8 @@ build.py prints every unticked item on each build. Claude: when Travis asks for 
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
 ## Deliberate drift in vendored fragments (`build.py --vendor-check` reports these as "adapted")
+- `54-mat-concrete.js` (from `kits/ancients/src`, Oct 5 2026): `bodyGroup` passes `ysCutY(d)` to a standing body, so
+  every tower that builds through it (D, E, F, H) is cut at a storey when the city names a height. One line.
 - `71-port-terrain.js` (from `settlements/port/src`): `portNatH` delegates to `YS_NAT` when the city target
   defines it, and the port's nature scatter is skipped in that case (the biome plants the ground). Two lines.
 - `52-sky-abc.js` (from `kits/ancients/src`): `ysCutY(d)` is the `y1` of a ruined (decay 1) body when
@@ -31,6 +33,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] `ysHostMembers` mirrors the kit's strut and leg constants for Skyscrapers A and B (positions, counts,
       which are gone when ruined). Re-read `kits/ancients/src/52-sky-abc.js` whenever the kit is re-vendored,
       and add C, D–K as hosts of those kinds are placed.
+      *Re-read Oct 5 2026* at the re-vendor (the RESTAND: A's strut feet at r 60, B's legs raked from r 42 to the lobe
+      tips); the caps came in to 66 (A) and 56 (B).
 - [x] (Oct 1 2026) The rich pod's door lamp floated beside the lip: a pearl on nothing. Lamps take a `bracket` anchor
       on the shell now, and the accreted pod's lamp sits on its own surface beside the door.
 - [x] (Oct 1 2026) The drips under an accreted pod did not meet the shell (an approximate underside). They are read

@@ -32,17 +32,19 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
   host.floors.push({k,y,H:F.pitch-.4,kind:y<-.6?'drowned':y<1.4?'tide':'wild',use:0});}}
  host.members=ysHostMembers(host,d);ysHost(host);return host;}
 // The host's members in world space, {n,a,b,r} capsules: the struts and legs a runner can reach for. They mirror the
-// kit's own constants (52-sky-abc.js: A's 24 struts from r 98 at y 5 to r rFn(64)*.96 at y 70, three gone when ruined;
-// B's 12 legs at r 70 from y 5 to 32 with struts in to r rFn(30)*1.15, two gone) and must be re-read if the kit changes.
+// kit's own constants (52-sky-abc.js after the RESTAND: A's 24 struts from r 60 at y 5 to r rFn(64)*.96 at y 70, three
+// gone when ruined; B's 12 legs raked straight from r 42 at the podium to the lobe tips at r rFn(30)*1.15, y 32, two
+// gone) and must be re-read if the kit changes.
 function ysHostMembers(h,d){const M=[];const W=(lx,ly,lz)=>{const p=loc(h.x,h.z,lx,lz,h.ry);return [p[0],ly+h.y,p[1]];};const V=(lx,lz)=>{const p=loc(0,0,lx,lz,h.ry);return [p[0],0,p[1]];};
  const seg=(n,a,b,r,extra)=>M.push(Object.assign({n,a:W(a[0],a[1],a[2]),b:W(b[0],b[1],b[2]),r},extra||{}));
  // a strut's shaft is a 5.5 x 4 beam, modelled as a capsule of r 2.75 (its corners stand .65 m proud of that); a strut
  // head is the kit's 7 x 9 x 6 box at the strut's top, 3 m down from the beam's end, its long axis radial
  if(h.key==='skyA'){const rT=(40+26*Math.pow(.42/.58,1.7))*.96;for(let k=0;k<24;k++){if(d>0&&(k===5||k===13||k===19))continue;const th=(k+.5)/24*TAU;const c=Math.cos(th),s=Math.sin(th);
-   seg('strut '+k,[c*98,5,s*98],[c*rT,70,s*rT],2.75);
+   seg('strut '+k,[c*60,5,s*60],[c*rT,70,s*rT],2.75);
    M.push({n:'strut head '+k,c:W(c*rT,67,s*rT),u:V(c,s),v:[0,1,0],w:V(-s,c),he:[3.5,4.5,3],head:true});}}
- else if(h.key==='skyB'){const r30=(26+10*Math.pow(.1,1.4))*1.15;for(let k=0;k<12;k++){if(d>0&&(k===3||k===8))continue;const th=k/12*TAU;const c=Math.cos(th),s=Math.sin(th);
-   seg('leg '+k,[c*70,5,s*70],[c*70,32,s*70],2.25);seg('leg strut '+k,[c*70,31,s*70],[c*r30,32,s*r30],2.5);}}
+ else if(h.key==='skyB'){const rb=(26+10*Math.pow(30/300,1.4))*1.15,LR=42;const ux=rb-LR,uy=27,ul=Math.hypot(ux,uy),ex=ux/ul,ey=uy/ul;
+  for(let k=0;k<12;k++){if(d>0&&(k===3||k===8))continue;const th=k/12*TAU;const c=Math.cos(th),s=Math.sin(th);
+   seg('leg '+k,[c*(LR-ex*7),5-ey*7,s*(LR-ex*7)],[c*(rb+ex*6),32+ey*6,s*(rb+ex*6)],1.7);}}
  return M;}
 // a host floor is inhabited once something is grown at it
 function ysHostInhabit(host,y,use){let best=null;for(const f of host.floors)if(Math.abs(f.y-y)<4.5&&(!best||Math.abs(f.y-y)<Math.abs(best.y-y)))best=f;if(best){best.kind='inhabited';best.use=Math.max(best.use,use||.5);}return best;}

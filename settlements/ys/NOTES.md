@@ -215,3 +215,16 @@ budget, 142 draw calls; `--assert` green on all three targets.
   the three full towers clear above them, the Amphitriton on its island, the temples and the Citadel on their stacks),
   but every host is the same Conocylinder; the market hall stands over its highways' junction with the shops round the
   block; the civilian harbour, the fishing docks and the pens stand on the real waterline.
+
+## The Ancients chain re-vendored (Oct 5 2026, Travis: "bring it up to date")
+Eleven vendored fragments had drifted from upstream. Taken as they stand upstream: `10-core.js` (the vnoise cache, same
+values bit for bit; `tick()`), `32-surfaces.js`, `34-kitdefs.js` (near-black openings, the stone-block rubble),
+`36-decor.js`, `38-helpers2.js`, `50-registry.js`, `69-mat-salvage.js` (the firelight now animates through `tick()`), and
+from Iziz `69b-vern-mat.js`, `69c-vern-helpers.js` and `93-labels.js` (one label per building, decluttered on screen).
+New: `42-offices.js` (the civic helpers the towers' shards and rooms need, and the offices), and the opt-in
+`core/materials/opt/69a-world-uv.js` (`vWorldUV` moved there; Ys's `build.py` takes `CORE_OPT_FILES` as Iziz's does).
+`52-sky-abc.js` is upstream plus Ys's hooks re-applied (the podium, the cut, the way-in holes on A, B and C), and
+`54-mat-concrete.js` is adapted now too: `bodyGroup` takes the cut, so D, E, F and H can be hosts. The scene runs the
+kit's `TICKS` each frame with `NIGHT` mirrored from the clock. Upstream's RESTAND moved A's strut feet in from r 98 to
+r 60 and made B's legs single raked columns from r 42; `ysHostMembers` and the caps follow it. `--vendor-check`: no
+drift. Kit, mock and city pass `--assert`; the kit's and the mock's hosts look different (plumber struts, raked legs).
