@@ -325,6 +325,27 @@ path, and a GPU and a CPU load give the same placement hash.
 - **The shader library.** `core/godot/shaders/`: `atmos.gdshaderinc` (already specified), foliage card, bark,
   animated fauna body, world-unit UV (triplanar or world-space UV: `vWorldUV` is [G native] in Godot), the
   flag, the glass Fresnel, the water. Each three.js hook in `core/` names the shader it corresponds to.
+  Rules for writing it (checked against the godot-shaders-basics skill, thedivergentai/gd-agentic-skills, Oct 2026):
+  - **`alphaTest` becomes alpha scissor, never alpha blending.** A cut-out (leaf card, frond, fence, wicker)
+    maps to `ALPHA_SCISSOR_THRESHOLD` (or alpha hash for far cards that shimmer), so it keeps casting shadows and
+    stays in the depth prepass. Blending a forest's cards loses both and sorts badly. `transparent` is for glass,
+    water and smoke only.
+  - **Per-instance values on a MultiMesh go in `COLOR` and `INSTANCE_CUSTOM`** (the packing in `biomes/GODOT.md`).
+    Godot's `instance uniform` is per node and does not reach MultiMesh instances; use it only for things that
+    are their own node (a hero tree, a landmark). Never clone a material to change one value.
+  - **Variants share a texture array.** Bark or tile variants of one family are layers of one `sampler2DArray`,
+    the layer picked by a per-instance value, so the variants stay one MultiMesh and one draw call.
+  - **Colour hints follow the export.** Mark texture samplers `source_color` (the PNGs are sRGB). Colour uniforms
+    fed from the linear biome export are **not** `source_color`, or the gamma is applied twice and the colours
+    wash out; atmosphere colours (sRGB) are. Read `convention.colour` and decide once, in the importer.
+  - **Options are uniforms, not `#define`s.** Each define is a separate shader to compile (rule 7 already keeps
+    hooks to presets and global uniforms). Pre-compile the library at load (one hidden draw per shader and
+    material kind) so a tile streaming in does not stutter the first time it shows a new material.
+  - **Depth is reversed-Z (Godot 4.3+).** Water (shore foam, depth tint), fog volumes and any effect that rebuilds
+    world position from the depth texture use the reversed-Z form, and a full-screen pass writes
+    `POSITION = vec4(VERTEX.xy, 1.0, 1.0)`.
+  - **Clamp what feeds `pow`, `sqrt`, `acos`, `asin` or a divide,** as in three.js: real GPUs return NaN where
+    SwiftShader forgave it.
 
 - **Catalog furniture in the pilot.** Girder's furniture is catalog furniture, so the Girder pilot also maps the
   catalog's family strings (`wood plank bark stone plaster concrete metal rust glass cloth rope thatch ...`, about

@@ -198,6 +198,25 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
   plant in every kit once: baselines and gallery shots change with it. Do it in the same
   event as the integer hash, the level-free records and the heightmap terrain (Order, step 6),
   so the plants move once, not four times.
+  Three rules make cell seeding actually hold (from the procedural-world skill, n1ckyb/skills, MIT):
+  - **Key on positions only.** A seed key that mentions a side, a direction, a winding, an ordering or a
+    loop counter is not global, however global the rest looks: a lamp keyed on `(segment, side)`, bank
+    planting keyed on a river segment's index, a window keyed on which way a wall was drawn. Describe the
+    same road from its other end and the draw changes, so features flip at exactly one tile seam with no
+    error anywhere. Key on the feature's own world position (a lamp post's point, a cell's coordinates).
+  - **One owner per feature, never split at a seam.** A feature that crosses a tile edge (a road, a river,
+    a wall, a hero tree's crown) belongs to the tile holding its anchor (the lower-index endpoint, the trunk's
+    base) and overhangs its neighbour. Splitting it at the edge puts a joint in the middle of it; emitting it
+    from both tiles doubles it.
+  - **Repairs only add, never remove.** Rejecting, deleting or pushing things apart in visit order (the
+    occupancy check in the ecotone, settlement lot relaxation, a "too close, drop it" pass) makes the result
+    depend on which side was built first: blocker 6 again, through the back door, even with the right seeds.
+    A repair either decides from position alone (the lower id keeps the spot), stays inside one owner tile,
+    or adds. Never delete elsewhere to fix here.
+  **Test it against the global functions, not against itself:** build a tile alone, inside a full build,
+  and in two visit orders, and require identical records; reverse a road or river's segment order and
+  require the same features. "Each feature appears exactly once" passes with ownership shifted by one cell,
+  so it proves nothing on its own.
 - **Placement records, then drawing.** Placement writes one record per plant (species,
   position, seed, size, tags, a deterministic id) and no LOD level; the draw pass reads the
   records and picks the level. This is `GODOT-PLAN.md`'s rule 5, and the records, not the
@@ -227,6 +246,15 @@ Items 1, 2, 3 and 7 are done (Oct 2026); 8 to 11 came from reading the kits agai
   Chromium) builds each tile with every kit whose weight reaches it and writes the files. One
   terrain: the heightfield the kits plant on must be the one Godot draws, so the world's
   terrain and its ground paint need one source both read.
+- **Residency is one decision, derived from the fog.** The tile load radius, the camera's far plane and
+  the fog density are one choice: fog that erases everything past 600 m makes any tile beyond that pure
+  cost. Change one and re-derive the other two (a heavier storm can shrink the radius). Then:
+  hysteresis between the load and unload radius, so standing on a tile edge does not load and drop it every
+  frame; one residency plan, computed once, that meshes, collision and life all follow (a tile you can see
+  but walk through, or the reverse, comes from two policies drifting apart), with collision radius <= load
+  radius < unload radius asserted; and a leak test that bounds the **peak** resident tiles and instances
+  during a long walk, not only the count after unloading everything (a planner that never drops anything
+  passes the second test).
 
 ## Against the port plan (`GODOT-PLAN.md`, re-assessed Oct 2026)
 
