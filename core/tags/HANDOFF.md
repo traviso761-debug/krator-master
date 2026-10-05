@@ -1,8 +1,8 @@
 # core/tags: handoff for the session that builds it
 
 Written 2026-10-05 at the end of the Godot spike session. Everything below is on `main` (`b52969b8` or later).
-Nothing in `core/tags/` is built yet: this folder holds `PROPOSAL.md` (the design, with Travis's decisions) and
-this file.
+**Status 2026-10-05 (later the same day): steps 1 and 2 are done** (`README.md` here is what was built; GODOT-PLAN.md
+Phase 2's table has the summary). Steps 3 to 5 are open. The text below is the brief as it was written.
 
 ## Read first, in this order
 

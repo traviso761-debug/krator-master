@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 129 (41%) | 42 (13%) | 52 (16%) | 15 (5%) | 81 (25%) |
+| KB | 146 (43%) | 42 (12%) | 52 (15%) | 17 (5%) | 82 (24%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -32,7 +32,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `biome/40-core-place.js` | 8.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | placement: ports to GDScript, tested tile for tile |
 | `biome/42-core-export.js` | 10.1 | [G data] | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 4 | 0 | 0 | 0 | pure data now: the one browser line, download(), moved to 43-core-export-host.js (2026-10-03); folds into core/export/ |
 | `biome/43-core-export-host.js` | 2.9 | [web] | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | BIO.download(): a Blob and a link click, no caller yet; moves to core/host/ (Phase 1) |
-| `biome/44-core-stage.js` | 13.4 | [draw] | 1 | 2 | 0 | 0 | 0 | 2 | 4 | 1 | 2 | 0 | 0 |  |
+| `biome/44-core-stage.js` | 14.0 | [draw] | 1 | 2 | 0 | 0 | 0 | 2 | 4 | 1 | 2 | 0 | 0 |  |
 | `clock/20-core-clock.js` | 2.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `furnish/50-core-furnish.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `furnish/52-core-furnish-draw.js` | 2.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
@@ -53,6 +53,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `sockets/37-sockets.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | socket declarations and the pack registry |
 | `sockets/38-symbols.js` | 9.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas 2D symbol painters: bake to PNG |
 | `sockets/80-cultures.js` | 14.3 | [draw] | 2 | 1 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 | split: the packs are data; the drawing kit bakes |
+| `tags/50-core-tags.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the tag registry: ids, the KRAND uid (GDScript twin ktags.gd, passing in Godot 4.5), norm, query, audit, export; test-tags.js. Used by Yuni |
+| `tags/52-core-tags-vocab.js` | 5.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the one vocabulary; the catalog's lists copied, test-tags.js fails on drift |
+| `tags/53-core-tags-host.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the inspector's label text; the inspector hook goes to core/host (Phase 1) |
 | `terrain/36-core-carve.js` | 13.7 | [G data] | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | split: a timing helper reads performance.now (line 103); floors and blockers export (Godot order 1) |
 | `terrain/38-core-relief.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `walk/20-core-walk.js` | 7.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | floors and blockers; export() is navigation-mesh source and collision boxes |

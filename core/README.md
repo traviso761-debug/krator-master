@@ -5,7 +5,8 @@ Code shared by more than one build, kept here once instead of copied into each:
 runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
 dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
-(the one generator, hash and noise a Godot port can reproduce) and `clock/` (the world clock).
+(the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock) and `tags/` (what a placed
+thing is: ids, class, tags).
 
 ## `materials/`
 
@@ -267,19 +268,28 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 Rules: lattice coordinates and hash inputs are int32; floats are floored. No `Math.sin`, `pow`, `exp`, `log` or
 `random` in the module (the test greps for them). A new build takes `core/rand` from the start (`GODOT-PLAN.md` rule 2).
 **Used by** `settlements/ys` (city target, `TARGET_CORE`: the P3 placement pass draws from it; nothing placed yet,
-so nothing moved).
+so nothing moved), and `settlements/yuni` (only `core/tags`' uid hash: no draws).
 
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
 builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
 
-## `tags/`: planned, designed, not built
+## `tags/`
 
-One engine-neutral registry of what every build places (ids, class, kind, tags), for the inspector, the minimap,
-the exporters and Godot node metadata. `core/tags/PROPOSAL.md` is the design with Travis's decisions;
-`core/tags/HANDOFF.md` is the brief for the session that builds it (the module and its node test first, then Yuni
-on it). Shaped like `furnish/`: a `[G data]` registry, a `[G data]` vocabulary table, a `[web]` label fragment.
+One engine-neutral registry of what every build places (an order id, a position-hash `uid`, class, kind, tags from one
+vocabulary), for the inspector, the minimap, the exporters and Godot node metadata (GODOT-PLAN.md Phase 2 item 3).
+`tags/README.md` has the record, the ids, the uid recipe Godot reproduces, the vocabulary and the adopters;
+`tags/PROPOSAL.md` is the design with Travis's decisions. Needs `rand/` loaded first. **Used by** `settlements/yuni`
+(its fixtures registry forwards into it; `KRATOR_EXPORT.tags()`).
+
+| File | What |
+|---|---|
+| `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
+| `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
+| `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
+| `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
+| `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
 
 ## Planned: a material registry
 
