@@ -52,6 +52,11 @@ and then open the few you need, not a folder. Never read every `meta.json`; read
 **A build adopts the library** through `<build>/materials.json` and `python3 tools/textures/pack.py <build>`, which writes
 `<build>/tex/` (commit it); the code is `core/materials/record/` (`KMAT`, `TEX`). Girder is the worked example.
 
+**The images are in Git LFS** (`core/materials/**/*.png` and `*.jpg`, about 570 MB). A clone for non-graphics work can skip them:
+`GIT_LFS_SKIP_SMUDGE=1 git clone <url>` leaves small pointer files, and `git lfs pull --include="core/materials/library/<set>/*"` fetches only the sets a task needs.
+History was cleaned on 2026-10-05 (old built pages, screenshots and past image versions were dropped); the pre-cleanup history lives in the
+owner's `krator-before-cleanup.bundle` and in the other branches on the remote, which were left on the old history.
+
 **If a surface has no good texture, ask the owner to find one or generate one.** Name the gap and, for a generated image, give the prompt
 (`core/materials/PLAN.md`, "Prompts for generated sources" has the template and per-culture rows). Do not paper over a missing texture with a
 procedural stand-in without saying so.
