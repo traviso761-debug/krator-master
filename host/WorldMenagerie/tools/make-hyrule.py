@@ -49,7 +49,9 @@ def Pl(pts):
 COAST = Pl([(-80, -80), (1290, -80), (1300, 100), (1330, 170), (1395, 240), (1420, 330), (1425, 450), (1405, 560),
             (1395, 650), (1390, 720), (1405, 800), (1380, 870), (1330, 910), (1325, 990), (1270, 1050), (1210, 1095),
             (1100, 1112), (980, 1132), (880, 1162), (800, 1182), (720, 1196), (680, 1232), (650, 1330), (-80, 1330)])
-ISLANDS = [(P(1395, 1112), 26 * PX, "Eventide Island", 160.0)]
+ISLANDS = [(P(1395, 1112), 26 * PX, "Eventide Island", 160.0)] + [(P(px, py), r * PX, "an islet", top) for px, py, r, top in
+           [(1405, 440, 7, 26), (1413, 470, 5, 18), (1409, 506, 7, 30), (1416, 540, 5, 16), (1402, 590, 4, 14)]]
+LAKE_LEVEL = {}                                 # the levels worked out for lakes given as None (main fills it in)
 
 
 def in_poly(x, z, poly):
@@ -82,15 +84,15 @@ FEATURES = [
     # the north and the west: Hebra, Tabantha, the Gerudo Highlands, and the mountains at the edge of the world
     ("peak", 330, 230, 210, 140, 1250, "Hebra Mountains"), ("peak", 250, 170, 90, 70, 1350, "Hebra Peak"),
     ("peak", 440, 200, 110, 80, 1050, "North Tabantha"), ("hill", 520, 300, 130, 90, 480, "Tabantha Tundra"),
-    ("hill", 300, 470, 120, 110, 420, "Tabantha Frontier"), ("hill", 600, 210, 70, 60, 300, "Tabantha Hills"),
+    ("hill", 300, 470, 120, 110, 420, "Tabantha Frontier"), ("plateau", 282, 384, 78, 66, 490, "the Rito highland"), ("hill", 600, 210, 70, 60, 300, "Tabantha Hills"),
     ("range", 0, 0, 0, 0, 1400, "the edge of the world"),
     ("peak", 210, 740, 200, 110, 1150, "Gerudo Highlands"), ("peak", 160, 720, 80, 60, 1300, "Gerudo Summit"),
     ("peak", 330, 760, 90, 60, 900, "Gerudo Highlands east"),
     ("desert", 220, 1060, 330, 200, 70, "Gerudo Desert"),
     ("hill", 520, 980, 90, 140, 320, "Gerudo Canyon"), ("hill", 560, 1150, 80, 80, 360, "Gerudo Canyon south"),
-    # the middle: the Great Plateau, Mount Hylia, Hyrule Ridge, the castle's hill
-    ("plateau", 470, 690, 95, 78, 240, "Great Plateau"), ("peak", 430, 778, 55, 40, 470, "Mount Hylia"),
-    ("hill", 430, 560, 125, 90, 330, "Hyrule Ridge"), ("hill", 380, 600, 60, 50, 420, "Satori Mountain"),
+    # the middle: the Great Plateau, Mount Hylia, Hyrule Ridge (a table of land with its lake on top), the castle's hill
+    ("plateau", 470, 690, 95, 78, 240, "Great Plateau"), ("peak", 415, 845, 46, 36, 520, "Mount Hylia"),
+    ("plateau", 470, 548, 92, 76, 290, "Hyrule Ridge"), ("hill", 380, 600, 60, 50, 420, "Satori Mountain"),
     ("hill", 730, 505, 45, 38, 70, "Hyrule Castle's hill"),
     ("hill", 640, 860, 60, 50, 120, "Ruined hills"), ("hill", 600, 990, 70, 60, 180, "Faron Grasslands hills"),
     # the north-east: the Great Hyrule Forest, Death Mountain, Akkala
@@ -102,8 +104,11 @@ FEATURES = [
     ("plateau", 1215, 580, 110, 82, 290, "Zora's Domain"), ("peak", 1300, 560, 50, 50, 520, "Ploymus Mountain"),
     ("peak", 1300, 820, 115, 95, 950, "Mount Lanayru"),
     ("hill", 1040, 760, 110, 70, 260, "West Necluda highlands"), ("hill", 1130, 990, 120, 80, 240, "East Necluda"),
-    ("peak", 900, 795, 32, 34, 430, "Dueling Peaks west"), ("peak", 942, 812, 32, 34, 420, "Dueling Peaks east"),
+    ("peak", 936, 872, 24, 26, 440, "Dueling Peaks west"), ("peak", 966, 918, 24, 26, 430, "Dueling Peaks east"),   # split by the Squabble River
     ("hill", 960, 1050, 120, 70, 140, "Faron jungle"), ("hill", 1110, 1060, 60, 40, 160, "Lurelin hills"),
+    # more of the map: Death Mountain's western lava field, the mesa south of the Gerudo canyon, Akkala's hills
+    ("hill", 1000, 255, 70, 55, 640, "Eldin lava field"), ("plateau", 560, 1212, 82, 36, 200, "the southern mesa"),
+    ("hill", 1210, 175, 50, 40, 330, "Skull Lake's rim"), ("hill", 1140, 780, 70, 30, 280, "Necluda ridge"),
 ]
 
 
@@ -160,34 +165,55 @@ def feature_height(x, z):
 
 # ---------------------------------------------------------------- water: lakes and rivers
 # lakes: (name, pixel polygon or (centre, rx, ry), water level m)
-def ellipse(cx, cy, rx, ry, n=28):
-    return [P(cx + rx * math.cos(a), cy + ry * math.sin(a)) for a in [i / n * math.tau for i in range(n)]]
+def ellipse(cx, cy, rx, ry, n=28, rot=0.0):
+    c, s_ = math.cos(rot), math.sin(rot)
+    return [P(cx + (rx * math.cos(a)) * c - (ry * math.sin(a)) * s_, cy + (rx * math.cos(a)) * s_ + (ry * math.sin(a)) * c)
+            for a in [i / n * math.tau for i in range(n)]]
 
 
+# level None: worked out from the ground round the lake (the lowest point of its shore, less a metre), so a lake up in
+# the hills sits where the hills put it. hot: a hot spring - teal and steaming (the page draws it so).
 LAKES = [
     ("Lake Hylia", ellipse(735, 955, 62, 46), 12.0),
     ("Lanayru Wetlands", ellipse(975, 650, 62, 28), 26.0),
     ("East Reservoir Lake", ellipse(1255, 600, 30, 42), 300.0),
     ("Lake Kolomo", ellipse(810, 205, 32, 26), 60.0),
-    ("Rito Village's lake", ellipse(275, 378, 34, 28), 470.0),
-    ("Lake Totori", ellipse(600, 640, 18, 14), 52.0),
+    ("Rito Village's lake", ellipse(275, 378, 34, 28), None),   # up on the Rito highland
+    ("Hyrule Ridge's lake", ellipse(482, 538, 20, 32, rot=0.3), None),
+    ("Skull Lake", ellipse(1212, 168, 20, 15), None),
+    ("Lake Akkala", ellipse(1290, 392, 26, 30), None),
+    ("the Lanayru Great Spring", ellipse(1177, 669, 9, 9), None),
+    ("Necluda's long lake", ellipse(1132, 784, 30, 6, rot=-0.45), None),
+    ("the lake by the plateau", ellipse(604, 905, 28, 14), None),
+    ("Hebra's long lake", ellipse(215, 310, 12, 38, rot=0.35), None),
+    ("Hebra's north lake", ellipse(352, 350, 15, 20), None),
+    ("Hebra's east lake", ellipse(384, 376, 20, 10, rot=0.4), None),
+    ("Tabantha's lake", ellipse(313, 437, 26, 15), None),
+    ("a pond in the field", ellipse(700, 792, 14, 8, rot=0.3), None),
+    ("a pond by the woods", ellipse(852, 716, 8, 8), None),
+    ("a pond on the plain", ellipse(618, 690, 7, 6), None),
+    ("the Goron hot springs", ellipse(1084, 440, 24, 8, rot=-0.6), None, True),
+    ("the hot crater lake", ellipse(1130, 160, 13, 13), None, True),
 ]
+LAKES = [l if len(l) == 4 else l + (False,) for l in LAKES]
 # moats: (name, centre px, inner radius px, outer radius px, level)
 MOATS = [("Hyrule Castle's moat", (730, 505), 46, 58, 34.0), ("the moat of the Great Hyrule Forest", (805, 345), 92, 104, 42.0)]
+# the two rivers that frame Hyrule Field, from the castle's water down to Lake Hylia, and the one round the plateau
 RIVERS = [
-    ("Hylia River", [(735, 562), (760, 620), (800, 700), (815, 790), (792, 880), (760, 930)], 34),
-    ("the western river", [(600, 470), (566, 560), (546, 660), (536, 760), (546, 850), (600, 900), (690, 930), (720, 945)], 26),
-    ("Lanayru River", [(1170, 640), (1080, 612), (1035, 640), (990, 600), (900, 532), (820, 486), (778, 482)], 30),
+    ("Hylia River", [(792, 470), (833, 468), (876, 539), (881, 635), (857, 730), (824, 802), (800, 897), (772, 930)], 32),
+    ("the western river", [(668, 470), (647, 530), (618, 601), (585, 644), (576, 687), (595, 754), (585, 816), (600, 880), (690, 925), (715, 940)], 26),
+    ("the plateau's river", [(560, 600), (452, 630), (382, 672), (370, 742), (410, 808), (500, 830), (560, 852), (600, 882)], 22),
+    ("Lanayru River", [(1170, 640), (1080, 612), (1035, 640), (990, 600), (930, 575), (882, 590)], 30),   # into the Hylia River
     ("Faron River", [(750, 1000), (760, 1080), (768, 1180)], 26),
-    ("Squabble River", [(1060, 820), (980, 840), (921, 803), (870, 860), (815, 900)], 22),
+    ("Squabble River", [(1062, 962), (1010, 925), (951, 895), (905, 882), (860, 870), (824, 850)], 22),   # between the Dueling Peaks
     ("Zora River", [(1255, 640), (1210, 650), (1170, 640)], 26),
 ]
 
 
 def lake_mask(x, z):
-    for name, poly, lv in LAKES:
+    for name, poly, lv, hot in LAKES:
         if in_poly(x, z, poly):
-            return lv
+            return lv if lv is not None else LAKE_LEVEL.get(name, 30.0)
     for name, (px, py), r0, r1, lv in MOATS:
         c = P(px, py)
         d = math.hypot(x - c[0], z - c[1]) / PX
@@ -263,6 +289,16 @@ def main():
         river.append([round(pts[-1][0], 1), round(pts[-1][1], 1), round(levels[-1] - 1.0, 1)])
         return river
 
+    # the lakes given without a level: the lowest ground round the shore, less a metre
+    for name, poly, lv, hot in LAKES:
+        if lv is None:
+            rim = []
+            for x, z in poly:
+                i, j = int((x - X0) / STEP), int((z - Z0) / STEP)
+                rim.append(H[max(0, min(nz - 1, j))][max(0, min(nx - 1, i))])
+            LAKE_LEVEL[name] = round(min(rim) - 1.0, 1)
+    # the Tabantha canyon: a deep cut running north-east across the tundra, spanned by the great bridge
+    carve([(530, 360), (565, 318), (600, 285), (628, 262)], 45.0, 110.0)
     rivers = []
     for name, pts, wpx in RIVERS:
         rivers.append({"name": name, "width": wpx * 1.0, "pts": carve(pts, wpx * 1.0, 3.0)})
@@ -304,11 +340,11 @@ def main():
         "plateau": site(470, 690), "temple_of_time": site(488, 680), "resurrection": site(455, 655), "oldman": site(500, 706),
         "kakariko": site(1015, 782), "hateno": site(1240, 930), "techlab": site(1290, 912),
         "rito": site(275, 378), "zora": site(1205, 585), "goron": site(1040, 330), "gerudo_town": site(245, 1035),
-        "lurelin": site(1150, 1092), "tarrey": site(1290, 410), "korok": site(805, 345), "akkala_citadel": site(1262, 318),
-        "spiral": site(1360, 350), "eventide": site(1395, 1112),
+        "lurelin": site(1150, 1092), "tarrey": site(1320, 420), "korok": site(805, 345), "akkala_citadel": site(1262, 318),
+        "spiral": site(1392, 338), "eventide": site(1395, 1112),
         "lomei_north": site(660, 150), "lomei_south": site(520, 1095), "lomei_island": site(1415, 135),
         "ruta": site(1255, 600), "rudania": site(1080, 330), "medoh": site(275, 378), "naboris": site(190, 1010),
-        "dueling": site(921, 803), "deathmountain": site(1110, 290),
+        "dueling": site(951, 895), "deathmountain": site(1110, 290),
         "hylia_bridge": site(722, 958), "fort_hateno": site(1170, 900),
     }
     # the Sheikah towers, and the shrines: a few dozen, so every region has its lights
@@ -335,6 +371,21 @@ def main():
                "Highland Stable": (620, 1000), "Lakeside Stable": (880, 1100), "Foothill Stable": (1060, 520),
                "East Akkala Stable": (1300, 480), "South Akkala Stable": (1170, 520), "Kara Kara Bazaar": (300, 1000)}
     stables = [dict(site(px, py), name=n) for n, (px, py) in STABLES.items()]
+    # Bokoblin camps: out in the field, on the hills, by the roads but not on them, never in a village
+    camps = []
+    towns = [S[k] for k in ("kakariko", "hateno", "rito", "zora", "goron", "gerudo_town", "lurelin", "tarrey", "castle", "plateau")]
+    for _ in range(400):
+        if len(camps) >= 26:
+            break
+        px, py = R.uniform(300, 1300), R.uniform(250, 1100)
+        x, z = P(px, py)
+        h = height(x, z) if 'height' in dir() else 0
+        if lake_mask(x, z) is not None or any(math.hypot(x - t["x"], z - t["z"]) < 700 for t in towns) or any(math.hypot(x - c["x"], z - c["z"]) < 600 for c in camps):
+            continue
+        camps.append(site(px, py))
+    camps = [c for c in camps if 3 < c["y"] < 600]
+    S["tabantha_bridge"] = site(578, 306)
+    S["zora_falls"] = site(1163, 634)
 
     # ---------- roads: the paths across the country, as the map draws them ----------
     roads = []
@@ -362,6 +413,18 @@ def main():
         ("The road to the woods", [(720, 600), (770, 480), (885, 430), (900, 455)]),
         ("The road to Goron City", [(1060, 520), (1050, 420), (1040, 330)]),
         ("The Tabantha road", [(420, 420), (500, 330), (560, 260)]),
+    ]
+    # and the field's own network, as the map draws it: the paths that cross Hyrule Field between the castle's
+    # roads, round the Central Tower and down to the stables
+    ROADS += [
+        ("The field road", [(638, 606), (676, 611), (735, 620), (776, 611), (809, 577)]),
+        ("The west field road", [(628, 625), (623, 687), (647, 754), (652, 802), (647, 840)]),
+        ("The middle road", [(735, 620), (747, 677), (714, 725), (666, 754)]),
+        ("The east field road", [(776, 635), (790, 687), (776, 725), (762, 763), (771, 802), (800, 840)]),
+        ("The south field road", [(714, 725), (704, 782), (714, 830), (781, 840)]),
+        ("The road to the wetlands", [(790, 687), (809, 668), (857, 644), (930, 625)]),
+        ("The ridge road", [(560, 520), (500, 560), (470, 600), (452, 640)]),
+        ("The Tundra road", [(500, 330), (580, 300), (640, 250), (700, 230)]),
     ]
     for name, pts in ROADS:
         road(pts, name)
@@ -424,13 +487,14 @@ def main():
     json.dump(out, open(OUT, "w"), separators=(",", ":"))
 
     # ---------- the plan ----------
-    lakes = [{"name": n, "level": lv, "poly": [[round(x, 1), round(z, 1)] for x, z in poly]} for n, poly, lv in LAKES]
+    lakes = [{"name": n, "level": lv if lv is not None else LAKE_LEVEL[n], "hot": hot, "poly": [[round(x, 1), round(z, 1)] for x, z in poly]} for n, poly, lv, hot in LAKES]
     moats = [{"name": n, "x": P(px, py)[0], "z": P(px, py)[1], "r0": r0 * PX, "r1": r1 * PX, "level": lv} for n, (px, py), r0, r1, lv in MOATS]
-    REGIONS = {"desert": [P(220, 1060), 330 * PX, 200 * PX], "deathmountain": [P(1110, 290), 190 * PX, 170 * PX],
+    REGIONS = {"desert": [P(220, 1060), 330 * PX, 200 * PX], "deathmountain": [P(1080, 280), 200 * PX, 170 * PX],
+               "lavafield": [P(1000, 255), 72 * PX, 55 * PX],
                "akkala": [P(1260, 360), 140 * PX, 150 * PX], "faron": [P(930, 1060), 150 * PX, 90 * PX],
                "hebra": [P(330, 230), 240 * PX, 170 * PX], "gerudo_high": [P(210, 740), 220 * PX, 130 * PX]}
     plan = {"_": "written by tools/make-hyrule.py: metres east (x) and south (z) of the origin; y is the ground",
-            "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "lakes": lakes, "moats": moats,
+            "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
             "rivers": rivers, "regions": REGIONS, "coast": [[round(x, 1), round(z, 1)] for x, z in COAST]}
     json.dump(plan, open(PLAN, "w"), indent=1)
     lo, hi = min(hs) / 10, max(hs) / 10

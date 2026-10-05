@@ -11,6 +11,7 @@ import {landmarks} from './landmarks.js';
 import {beasts} from './beasts.js';
 import {paint} from './paint.js';
 import {flora} from './flora.js';
+import {alive} from './alive.js';
 import {life} from './life.js';
 import {events} from './events.js';
 installErrorHandlers();window.LOAD=LOAD;
@@ -28,7 +29,7 @@ configureLoading({
     'Every now and then the moon turns red.',
   ],
   prefix:'',labels:{'map-data':'reading the map',ground:'raising the land',buildings:'building the villages',details:'',
-    landmarks:'raising the castle',el:'',traffic:'',ui:'opening the Sheikah Slate',paint:'painting the fields',flora:'planting the woods',life:'waking the guardians',events:'watching the sky'}});
+    landmarks:'raising the castle',el:'',traffic:'',ui:'opening the Sheikah Slate',paint:'painting the fields',flora:'planting the woods',alive:'lighting the campfires',life:'waking the guardians',events:'watching the sky'}});
 
 function fingerprint(api){
   const {THREE,ctx,scene}=api;
@@ -39,6 +40,6 @@ function fingerprint(api){
   const C0=await fetch('data/cities/hyrule.json').then(r=>r.json()).catch(()=>({}));
   const plan=await fetch(C0.plan||'data/cities/hyrule-plan.json').then(r=>r.json()).catch(e=>{report('the plan',e);return null;});
   const ctx=window._iz={defaultCity:'hyrule',plan,models:[landmarks,beasts],
-    extras:[{name:'paint',fn:paint},{name:'flora',fn:flora},{name:'life',fn:life},{name:'events',fn:events},{name:'fingerprint',fn:fingerprint}]};
+    extras:[{name:'paint',fn:paint},{name:'flora',fn:flora},{name:'life',fn:life},{name:'alive',fn:alive},{name:'events',fn:events},{name:'fingerprint',fn:fingerprint}]};
   boot(()=>build(ctx));
 })();

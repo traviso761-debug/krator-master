@@ -327,6 +327,33 @@ export function landmarks(api){
     return build(L,parts);
   },
 
+  // ================================================================ the Tabantha Great Bridge, over the canyon
+  tabantha(L,x,z){
+    const B=S.tabantha_bridge,parts=[],u=[0.707,0.707],half=170;   // across the canyon, which runs north-east
+    const a0=[B.x-u[0]*half,B.z-u[1]*half],a1=[B.x+u[0]*half,B.z+u[1]*half],y=Math.max(gh(...a0),gh(...a1))+2,yaw=-Math.atan2(a1[1]-a0[1],a1[0]-a0[0]);
+    parts.push(blk(B.x,y-1,B.z,half*2,1.6,8,M.wood,yaw));
+    for(const s_ of [-1,1]){const nx=-u[1]*s_*4,nz=u[0]*s_*4;parts.push(blk(B.x+nx,y+0.6,B.z+nz,half*2,1.2,0.3,M.wood2,yaw));
+      for(let k=0;k<=12;k++){const t=k/12,px=a0[0]+(a1[0]-a0[0])*t+nx,pz=a0[1]+(a1[1]-a0[1])*t+nz,gy=gh(px,pz);
+        if(y-gy>6)parts.push(limb([px,gy,pz],[px,y-1,pz],1.2,0.9,M.wood2,6));}}
+    for(const e of [a0,a1])parts.push(blk(e[0],gh(...e),e[1],10,y-gh(...e)+6,10,M.stone2,yaw));
+    return build(L,parts);
+  },
+
+  // ================================================================ waterfalls
+  // Wherever a river comes down off high ground in a short way - off Zora's Domain, out of the hills - a fall of
+  // water, white, with mist at its foot. Found from the rivers' own levels, so they are where the land puts them.
+  falls(L,x,z){
+    const parts=[],sheetM=new THREE.MeshLambertMaterial({color:0xeaf6ff,transparent:true,opacity:0.85,side:THREE.DoubleSide,emissive:0x203038});
+    const found=[];
+    for(const Rv of (PL.rivers||[])){for(let k=0;k+1<Rv.pts.length;k++){const [ax,az,ay]=Rv.pts[k],[bx,bz,by]=Rv.pts[k+1],L_=Math.hypot(bx-ax,bz-az),drop=ay-by;
+        if(drop>25&&drop/L_>0.06)found.push({ax,az,ay,bx,bz,by,w:Rv.width*0.9});}}
+    for(const f of found){const mx=(f.ax+f.bx)/2,mz=(f.az+f.bz)/2,top=Math.max(f.ay,gh(f.ax,f.az)),bot=Math.min(f.by,gh(f.bx,f.bz)),yaw=-Math.atan2(f.bz-f.az,f.bx-f.ax)+Math.PI/2;
+      const sh=new THREE.Mesh(new THREE.PlaneGeometry(f.w,top-bot+4).translate(0,(top-bot)/2,0),sheetM);sh.position.set(mx,bot,mz);sh.rotation.y=yaw;sh.rotation.x=-0.25;sh.userData.noMerge=true;parts.push(sh);
+      parts.push(sph(f.bx,bot+2,f.bz,f.w*0.5,M.white,1,0.25,1));}
+    ctx.falls=found;
+    return build(L,parts);
+  },
+
   // ================================================================ the Guardians that fell in the fields
   guardians(L,x,z){
     const parts=[],C=S.castle;

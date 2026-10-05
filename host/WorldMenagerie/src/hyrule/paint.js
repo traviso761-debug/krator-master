@@ -28,7 +28,7 @@ export function paint(api){
       // grass by default, varied, paler on the high meadows
       c.copy(COL.grass).lerp(COL.grass2,0.35+0.3*v);if(y>180)c.lerp(COL.meadow,Math.min(1,(y-180)/300)*0.6);
       // regions
-      const de=inR('desert',x,z),dm=inR('deathmountain',x,z),ak=inR('akkala',x,z),fa=inR('faron',x,z);
+      const de=inR('desert',x,z),dm=inR('deathmountain',x,z),ak=inR('akkala',x,z),fa=inR('faron',x,z),lf=inR('lavafield',x,z);
       if(fa>0)c.lerp(COL.jungle,Math.min(1,fa*1.6));
       if(ak>0)c.lerp(v>0?COL.autumn:COL.autumn2,Math.min(1,ak*1.4)*0.75);
       if(de>0&&y<260)c.lerp(v>0.2?COL.dune:COL.sand,Math.min(1,de*2.5));
@@ -36,6 +36,7 @@ export function paint(api){
       const steep=Math.max(0,Math.min(1,(0.86-ny)/0.22));
       if(steep>0)c.lerp(v>0?COL.rock:COL.rock2,steep);
       if(dm>0){c.lerp(COL.ash,Math.min(1,dm*1.8));if(y>650)c.lerp(COL.lava,Math.min(1,(y-650)/300)*0.35*dm);}
+      if(lf>0&&v>0.1)c.lerp(COL.lava,Math.min(1,lf*1.6)*0.6);   // the western lava field: red where it is still running
       // snow: the cold north and west lie lower than the rest
       const cold=Math.max(inR('hebra',x,z),inR('gerudo_high',x,z)),line=dm>0.1?99999:(cold>0.05?560:z<-3800||x<-5000?650:760);
       if(y>line)c.lerp(COL.snow,Math.min(1,(y-line)/90)*(steep>0.6?0.55:1));
@@ -55,13 +56,14 @@ export function paint(api){
     g.putImageData(img,0,0);const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;})();
   const waterM=(col,op)=>new THREE.MeshPhongMaterial({color:col,specular:0xd8f0ff,shininess:90,transparent:true,opacity:op,normalMap:ripple,
     normalScale:new THREE.Vector2(0.45,0.45),polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
-  const seaM=waterM(0x2a7fae,0.82),lakeM=waterM(0x3a90b0,0.8),riverM=waterM(0x4a9cb8,0.78);riverM.side=THREE.DoubleSide;
+  const seaM=waterM(0x2a7fae,0.82),lakeM=waterM(0x3a90b0,0.8),riverM=waterM(0x4a9cb8,0.78),hotM=waterM(0x4ad8c8,0.85);riverM.side=THREE.DoubleSide;
+  hotM.emissive=new THREE.Color(0x0a4a44);   // the hot springs: teal, a little lit from within
   const uvWorld=(g,s)=>{const P=g.attributes.position,uv=new Float32Array(P.count*2);for(let k=0;k<P.count;k++){uv[2*k]=P.getX(k)/s;uv[2*k+1]=P.getZ(k)/s;}g.setAttribute('uv',new THREE.BufferAttribute(uv,2));};
   scene.traverse(o=>{if(o.isMesh&&o.name==='river'&&o.geometry&&o.geometry.attributes.position){uvWorld(o.geometry,160);o.material=seaM;o.renderOrder=1;}});
   // the lakes, each flat at its own level
   for(const L of (PL.lakes||[])){const sh=new THREE.Shape(L.poly.map(([x,z])=>new THREE.Vector2(x,-z)));
     const g=new THREE.ShapeGeometry(sh,4).rotateX(-Math.PI/2);uvWorld(g,120);
-    const m=new THREE.Mesh(g,lakeM);m.position.y=L.level;m.renderOrder=1;m.receiveShadow=true;m.userData.wireCat='water';m.userData.noFingerprint=true;scene.add(m);}
+    const m=new THREE.Mesh(g,L.hot?hotM:lakeM);m.position.y=L.level;m.renderOrder=1;m.receiveShadow=true;m.userData.wireCat='water';m.userData.noFingerprint=true;scene.add(m);}
   for(const M of (PL.moats||[])){const g=new THREE.RingGeometry(M.r0,M.r1,64,1).rotateX(-Math.PI/2);g.translate(M.x,0,M.z);uvWorld(g,120);
     const m=new THREE.Mesh(g,lakeM);m.position.y=M.level;m.renderOrder=1;m.userData.wireCat='water';m.userData.noFingerprint=true;scene.add(m);}
   // the rivers: a ribbon down each, at the level the generator gave it, falling downstream

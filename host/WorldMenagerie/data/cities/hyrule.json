@@ -448,6 +448,24 @@
    "model": "tower",
    "index": 14,
    "info": "A Sheikah tower: a hundred metres of dark stone frame rising out of the ground. Climb it and activate it with the Sheikah Slate, and the map of the region fills in. It glows orange until then, and blue after."
+  },
+  {
+   "name": "The Tabantha Great Bridge",
+   "at": [
+    0.022604,
+    -0.013079
+   ],
+   "model": "tabantha",
+   "info": "A long wooden bridge on trestles across the canyon that cuts through the Tabantha Tundra, on the way to Rito Village."
+  },
+  {
+   "name": "Waterfalls",
+   "at": [
+    -0.001008,
+    0.028962
+   ],
+   "model": "falls",
+   "info": "Wherever a river comes down off high ground - off Zora's Domain, out of the hills - it falls, white, with mist at its foot."
   }
  ],
  "views": {
