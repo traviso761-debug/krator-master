@@ -556,7 +556,10 @@ own `GLTFExporter`, the likely route of section 1's field report), Iziz's `krato
     drops them; the exporter should), instanced primitives tile their maps in world units (three's `applyWorldUV`,
     now a `library.gdshader` mode), no tangents in the glTF (a derivative frame), Godot's ACES scaling, the
     Compatibility renderer's colour space (`godot/README.md`). Open: the spike's shadows and specular are Godot's,
-    not three's; Yuni's records case has no meshes to compare.
+    not three's; Yuni's records case has no meshes to compare. *After main's atmos work (2026-10-05):* a page's
+    `scene.environment` (the skylight) is in the record and Godot reflects the panorama for it; Girder's braziers
+    burn on the page and sit dark in Godot (an unlit glow family not crossing: to find); Iziz's library pack holds
+    only the two fauna sheets and its materials carry no `userData.lib`, so its export case takes no pack yet.
 
 What M4 needs first, on this evidence: ids and tags on biome records, the terrain bake, the kit hooks as core
 material kinds with `swayW` as data, then fauna animation. (After the 2026-10-05 compensations: ids and tags, the
