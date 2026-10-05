@@ -55,7 +55,9 @@ Hykkousoi fragment the same way; the `PORT.md` Ys gets at the merge needs those 
    target takes it (`TARGET_CORE` in `build.py`); the page is the old page plus `KRAND`, byte for byte, so nothing
    moved. **The P3 placement pass draws only from `KRAND`**: a stream per pass (`KRAND.stream(KRAND.child(seed,
    'blocks'))`), cell seeds for anything placed by area (`KRAND.cell`), and `KRAND.fbm` for any field it reads.
-   It does not call `rng()`, `h3`, `vnoise` or `fbm` from `10-core.js`. The kit and the mock keep the lineage's
+   It does not call `rng()`, `h3`, `vnoise` or `fbm` from `10-core.js`. *Done 2026-10-05:* `targets/city/88-city-place.js`
+   (records, KRAND streams seeded per block) and `88b-city-draw.js` (the draw pass; only the builders' own scatter uses
+   the lineage stream, reseeded per host). The kit and the mock keep the lineage's
    stream and noise (their look is gated by Travis; moving it is a separate choice), and `10-core.js` stays
    vendored unchanged.
 5. **Placement inside draw code.** `hykAccrete` decides where satellites, drips and way-in pods go while drawing

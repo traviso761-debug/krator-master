@@ -91,7 +91,7 @@ DETERMINISTIC = {
     '35-furn-frame.js', '84-kit-geo.js', '87-city-layout.js', '84b-city-shore.js', '87b-city-nav.js', '87c-city-paint.js',
     '81-sky.js', '91-ys-probe.js', '92-camera.js', '93-labels.js', '93-ys-ui.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',
-    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js',
+    '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js',
 }
 
 # IIFE-scoped by contract (the biome core and biome fragments): their column-0

@@ -175,3 +175,43 @@ spans a doorway with its corners outside it. (3) Pods on one host stand at diffe
 plate or two apart; they stay on plates, because the hosts' projecting plate rings cross a door set between two.
 (4) and (5) are P3 requirements now (PLAN P3 step 5, DESIGN §5): at least three refurbished full-height towers, one
 the Pharos; land-side reclaimed Ancients that are hosts too, with pods and roof growth at ground scale.
+
+## Phase 3 (Oct 5 2026): the placement pass and the first draw
+P3 step 5 as GODOT.md item 4 asks it: a data pass and a draw pass. `targets/city/88-city-place.js` writes the city as
+records and builds nothing: `PLACE.blds` (a def at a point, its yaw, ground, variant and the pass that put it there),
+`PLACE.hosts` (type, cut snapped to a storey, sink, plates in world y, ways in, pods with bearing and plate),
+`PLACE.slots` (plots for what this build cannot draw yet) and `PLACE.moles` (fill stamps pushed onto `CITY_STAMPS`
+before the terrain is built). Every draw is KRAND: a stream per pass, seeded per block by `KRAND.cell`. Occupancy is
+oriented boxes on a 50 m hash: the streets, canals and highways are reserved first, then the landmarks by name (each with
+one freedom, its facing), the hosts, the precincts, the shore runs, the land quarter and the home-grown moles, in that
+order; a named piece that cannot stand at its spot tries a list of candidates (`ysPlSeek`), and every refusal is counted
+by reason (`_api.city.place().refused`). `targets/city/88b-city-draw.js` reads the records and calls `HYK.place`,
+`ysPlaceHost` (and the tideline) and `HYK.placeOn`; `93z-city-api.js` adds `_api.city.place()`, `_api.city.records()`
+and the city's invariants to `--assert`.
+What stands: 323 kit buildings, 31 hosts with 85 pods, 74 slots (60 foreign plots, the chapterhouse, 4 reclaimed land
+hosts, 3 awash hosts), 18 moles; every def but the eight spans placed at least once; 11.85 M triangles of the 12 M
+budget, 142 draw calls; `--assert` green on all three targets.
+- **Hosts are Skyscraper A only.** B is off Travis's list, C carries its body 150 m up on legs, and D–K, the Pierced
+  Stack, the Bole and the mid-rise types need the Ancients chain re-vendored (Ys's copies of eleven kit fragments have
+  drifted; upstream's D needs `skyRooms`, `skyShards`, `skyHoist`, which Ys's `52-sky-abc.js` predates). The type table
+  (`YS_HOST_TYPES`) is where they go. A is sunk so its plate 2 stands near the L2 datum (about −50 m); its cut is
+  snapped to its 8 m storeys, 168–240 in open water and 128–160 in the canals. The Pharos and two more (farthest-point
+  picks among the tall hosts) are Project A (decay 4): full height, 356 m to the crown ring. Pods start at plate 2 (plates
+  0 and 1 stand among the strut heads) and step over the plates (poor 2 pods, middle 3, rich 4, full 6, every host on
+  2–6 plates). An `into` def is always a way in: the Urchin pod's other layout puts its store in its door swing.
+- **The awash blocks and a quarter of the land neighbourhoods are slots.** A on an awash block stands its struts on
+  the beach beside the rich quarter; DESIGN wants a mid-rise there, and the land hosts are the small reclaimed types.
+- **The land wealth rings moved** from 520/900 m to 740/1000 m (87): the nearest land block is 600 m from the
+  Amphitriton, so the land quarter had no rich block and the rich houses were never placed.
+- **Streets take their kind from the old plane at their own midpoint** (87c): a street between a land block and a canal
+  block lay in the water but was classed dry, reserved as a street, and blocked every harbour piece along the shore.
+- **The shore run** finds the natural waterline by marching in from the water (a low beach can stay under +0.3 m for
+  60 m) and decides the water side from ±40 m: `shoreAt`'s ±9 m test flips on the flat beach at the fishing docks.
+- **The budget is per placement now** (91-ys-probe `typeStats`): a type the city places many times is checked once per
+  copy against its class, as hosts already were. The kit and the mock are unchanged by it.
+- Densities were set by the 12 M budget, not by the look: the core land blocks are built on three sides, the rest on
+  one, a third of each frontage is gardens, farms beyond 620 m have a farmhouse and no field, the home-grown moles
+  are 88 m squares built on two sides. The look-round: the drowned quarter reads at city scale (stumps on the grid,
+  the three full towers clear above them, the Amphitriton on its island, the temples and the Citadel on their stacks),
+  but every host is the same Conocylinder; the market hall stands over its highways' junction with the shops round the
+  block; the civilian harbour, the fishing docks and the pens stand on the real waterline.

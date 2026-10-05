@@ -41,7 +41,9 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
    field with one kit as its first consumer. Needs the spike's findings on terrain.
-6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass.
+6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass. **First pass
+   DONE 2026-10-05** (`88-city-place.js` records, `88b-city-draw.js`): open are the bridge graph, the host types (needs
+   the Ancients chain re-vendored into Ys) and the foreign sets (settlements/ys/KNOWN_ISSUES.md).
 7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
    `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
    four texture gaps (leafy, web, ghostwood, prism gum), the owner's look review, and `core/furnish` with Girder as its

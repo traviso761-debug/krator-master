@@ -81,6 +81,28 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
       let `F.pick('coral')` read true on cushions and slings.
 - [ ] The karst stacks are a heightfield: no overhangs or undercut bases, and the "knobbed top" is a noisy plateau.
+- [ ] (Oct 5 2026) **Every drowned host is Skyscraper A** (`88-city-place.js`, `YS_HOST_TYPES`). The rest of Travis's
+      list (D, E, G, H, K, the Pierced Stack, the Bole) and the mid-rise types need the Ancients chain re-vendored first:
+      eleven of Ys's vendored fragments have drifted from upstream, and upstream's towers call helpers Ys's
+      `52-sky-abc.js` predates. Until then the 3 awash host blocks and 4 land-quarter plots are slots (`PLACE.slots`,
+      kinds `low host` and `land host`) that draw nothing. Re-vendoring changes the kit sheet's and the mock's hosts too
+      (and `ysHostMembers` must be re-read).
+- [ ] (Oct 5 2026) The spans are not placed: the bridge graph (PLAN.md P3 step 3: which blocks link at L1, which towers
+      at L2, the drawbridge to the Amphitriton, the Citadel's span) is the next pass. The kit audit names the eight span
+      defs apart; NAV's L1 and L2 layers are empty until it lands.
+- [ ] (Oct 5 2026) The foreign quarter is 60 reserved plots and the chapterhouse's square, with their swap lists; none
+      of the foreign sets is vendored, so the quarter reads empty. The caravanserai stands on its nearest block.
+- [ ] (Oct 5 2026) The moles (home-grown blocks, the Tides and the Library, the headland, the military harbour, the quay
+      aprons) are fill stamps with soft edges: no quay walls yet, the terrain's slope shows on the water sides.
+- [ ] (Oct 5 2026) The Citadel stack carries the arena model (`hyk_citadel`) under the Citadel's name and the Treasury in
+      its precinct; the fortress Travis asked for is still to design (see his note below).
+- [ ] (Oct 5 2026) The city stands at 11.85 M of the 12 M triangle budget with the densities cut to fit (NOTES.md,
+      phase 3): the bridges and the biome need room. Either a coarser host (the Conocylinder is 70 k at decay 1) or a
+      distance cut-off in the preview; Godot is the showroom, so do not tune the look to the budget.
+- [ ] (Oct 5 2026) `shoreAt` (84b) chooses the water side from ±9 m and flips on a flat beach (the fishing docks); the
+      shore run decides it from ±40 m itself. Fix it at the source before anything else squares itself to a loop.
+- [ ] (Oct 5 2026) The Urchin pod (`hyk_pod_rich_1`) placed without a way puts its store in its door swing; the city
+      only ever places it as a way in (the sheet's case).
 - [ ] (Travis, Oct 2 2026) **The Archon's Citadel reads as an arena, not a citadel** (`74b-hyk-citadel.js`, the
       terraced arena-fortress on its stack). Keep the model as the city's arena with small tweaks (its name, a games
       floor, the tiers as they are) and build the Citadel proper as a fortress when the city is placed.

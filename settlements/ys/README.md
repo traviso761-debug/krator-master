@@ -3,7 +3,8 @@
 The half-drowned capital of the Hykkousoi, on the ruins of an Ancient city at the head of the
 north-west bay of the Ring Sea. **Phases 0–2 are built: the harness, the mockup and the Hykkousoi
 kit (89 pieces and 14 furniture pieces on `dist/kit.html`, `--assert` green). Phase 3 (the city) follows `PLAN.md`;
-its layout, shore and nav are in `targets/city`.**
+its layout, shore and nav are in `targets/city`, and the placement pass stands the city up (`88-city-place.js` records,
+`88b-city-draw.js` draws them; Skyscraper A is the only host type until the Ancients chain is re-vendored).**
 
 ```
 python3 build.py                                    # every target under targets/ -> dist/<name>.html (city -> dist/ys.html)

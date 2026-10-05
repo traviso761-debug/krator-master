@@ -219,6 +219,15 @@ water or the ground, `ysKarst(x,z)` the 0..1 field for the painter), then the ri
 `ysRiverY`: the bed follows `ysRiverProfile()`, the centre-line ground smoothed over ±100 m, taken as the running
 minimum from upstream, `depth` under it and quantised to `rise` m terraces, each pool with a rimstone lip at its
 downstream edge; the valley is 2.2 widths wide). Every stack and the Amphitriton island are shore loops.
+**The placement** (`88-city-place.js`, pass 1, records only, KRAND): `PLACE.blds` `{key,x,z,ry,y,v,why,block,wealth,box}`
+(x,z the def's origin: on the quay line for a harbour piece), `PLACE.hosts` `{n,block,type,x,z,ry,sink,d,cutY,full,top,
+plates:[y],ways:[{a,y,R}],pods:[{key,a,y,level,into}]}`, `PLACE.slots` `{kind:'foreign'|'chapterhouse'|'land host'|'low host',
+swap|wish,x,z,ry,w,d,y}`, `PLACE.moles` `{name,poly,y}` (pushed onto `CITY_STAMPS` as `fill`). Host types live in
+`YS_HOST_TYPES` (storey table, face radius by local y, cut ranges, the plate sunk to L2). Helpers: `ysPlBox`/`ysPlHit`
+(oriented boxes), `ysPlClash(B,skip)`, `ysPlTry`/`ysPlByName`/`ysPlSeek` (a def by name, quietly, counted, or over
+candidates), `ysPlFront(b,{pool,kind,sides,h})` (the frontage walker), `ysPlShoreRun(uses,seq)` (pieces squared to the
+real waterline). The draw pass (`88b-city-draw.js`) reads only `PLACE`. `_api.city.place()` (counts, refusals by reason,
+the zero list, plates per host) and `_api.city.records()` (the records as plain JSON).
 **Paint** (`87c-city-paint.js`): `LAYOUT.streets` (every shared edge of two blocks: `street | awash | canal`),
 `LAYOUT.highways` (three), and `CITY_STAMPS` of `kind:'paint'` (the adapted terrain: colour only, no reshaping, no
 `y`) for the dry streets, the highways and the paved or soiled precincts. The placer never puts a footprint on a street.
