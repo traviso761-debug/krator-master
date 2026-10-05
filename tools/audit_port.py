@@ -164,7 +164,7 @@ def fragments(build):
 
 def builds():
     out = []
-    for top in ('settlements', 'kits', 'biomes'):
+    for top in ('settlements', 'kits', 'biomes', 'openworld'):
         d = os.path.join(ROOT, top)
         for name in sorted(os.listdir(d)):
             if os.path.isfile(os.path.join(d, name, 'build.py')):

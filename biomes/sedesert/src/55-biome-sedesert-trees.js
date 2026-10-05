@@ -368,4 +368,14 @@ SEDESERT.PASSES=[
  // the twist-candles: in the shallows of the river and the pond (their depth band is on the species record)
  {sp:12,cell:16,accept:(Z)=>(Z.bank+Z.oasis*Z.flow)*.45,opt:{pad:1.5,lodK:.5,patch:.5,patchScale:.02,small:true,water:true}},
 ];
+
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed drawn from the kit's stream: reseed first for a
+// repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,
+// 0 the far impostor; null when the species has none) and nothing else: no keep-clear entry, no TREES record. An open
+// world grows each species' variants once with these and instances them (openworld/README.md). buildTrees never calls them.
+SEDESERT.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999)};};
+SEDESERT.grow=function(T,lv){means();
+ const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,fronds:0,cols:0,spikes:0,candles:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){const S=SP[T.sp];if(!(S.far&&(!S.farIf||S.farIf(T))))return null;buildFar(T,T.seed%7,st);}else B[T.sp](T,st,lv);return st;};
 })();

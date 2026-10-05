@@ -101,3 +101,7 @@ A plant is never part of a building: `dress()` places plants ON geometry the hos
 
 To port: copy 10–70 (and 00-head/99-tail if starting fresh), write `BIO.init({...})`, call
 `HYPERJUNGLE.build`, then `BIO.bake()`. Read KNOWN_ISSUES.md first.
+
+## One tree alone (open worlds)
+
+`HYPERJUNGLE.make(sp,x,y,z,sapling) / grow(T,lv)`: one tree alone (an open world's variants): a hypertree at lv 2/1 (its own detail curve) or 0 (the far impostor), or a sapling. Additive: `build()` never calls them, and the kit builds exactly what it built before (checked by `verify.py --baseline`). `openworld/little-demo/src/84-world-nursery.js` is the user.

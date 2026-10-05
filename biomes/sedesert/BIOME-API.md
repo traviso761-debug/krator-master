@@ -173,3 +173,7 @@ This kit is `tropic`, `abyssal:false` throughout. A plant is never part of a bui
 
 To port: copy 10–75 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields, waterH})`,
 set `SEDESERT_WATER`, call `SEDESERT.build`, then `BIO.bake()`. Read KNOWN_ISSUES.md first.
+
+## One tree alone (open worlds)
+
+`SEDESERT.make(sp,x,y,z) / grow(T,lv)`: one tree alone (an open world's variants): the pass's record, then the builder at level lv (2,1,0). Additive: `build()` never calls them, and the kit builds exactly what it built before (checked by `verify.py --baseline`). `openworld/little-demo/src/84-world-nursery.js` is the user.

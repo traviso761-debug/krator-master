@@ -100,7 +100,7 @@ def main(argv):
     builds = [os.path.relpath(os.path.abspath(b), ROOT) if os.path.isabs(b) else b for b in builds]
     if not builds:
         builds = ['core']
-        for top in ('settlements', 'kits', 'biomes'):
+        for top in ('settlements', 'kits', 'biomes', 'openworld'):
             d = os.path.join(ROOT, top)
             builds += ['%s/%s' % (top, n) for n in sorted(os.listdir(d))
                        if os.path.isfile(os.path.join(d, n, 'build.py'))]

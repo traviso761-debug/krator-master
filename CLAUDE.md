@@ -19,6 +19,7 @@ says which build holds what.
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
+| `openworld/<region>/` | a region of the scale model at 1:1, streamed, with the biome kits' flora: `little-demo` (the eastern desert). Its data comes from `tools/scale-model/extract_region.py` |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
 | `gallery/` | the shareable gallery page and the script that publishes it |

@@ -40,13 +40,17 @@ A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build
 ## The terrain and the fields: the scale model (Travis, Oct 2026)
 
 The world's terrain comes from the **Krator Scale Model** artifact's heightmap
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.14), with a couple of polishing
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q, version 4.19), with a couple of polishing
 passes before it goes to Godot. 4.10 and 4.11 softened the Inner Wall's outer flank (the ledge down to the
 highland shelf and basin floor is now a slope reaching about 50 km either side of the 'Inner
 Crater' region's outline; the crater-facing rim is unchanged); 4.12 weathered the four mesas in regions 37 and 38, carved the Bay of Voth off the
 Ring Sea and raised geyser islands over a fifth of the West Ring isles; 4.13 turned region 42 to shallow sea, lowered region 41's plateaus, eased the
 cliff along Crag Men's northern border and joined Spice isle into one landmass; 4.14 bridged Spice isle to the central volcano and added five
-geysers on the western crater floor. Textures are re-shaded
+geysers on the western crater floor; 4.15 made the eastern abyss's rim an escarpment like the Inner Wall's inner rim,
+raised the ranges of the valley of Yuni (4.16 filled its south-eastern head), lowered five lakes that stood above their shores, and (4.17) kept the east rim gentle, raised a saddle across the abyss's floor and cut a
+salt basin east of Verge; 4.18 levelled 'passage' and recomputed rain and climate where the heights changed; 4.19
+set each recomputed cell's class from its own climate, ran the Yuni river from the valley's head into the lake at
+Locus (`DATA.rivers`) and fixed the region tool's point dragging (`tools/scale-model/edit_heights.py`). Textures are re-shaded
 and temperatures lapse-corrected to match: the scripts are in `tools/scale-model/`. The regions
 collection now carries a `kind` (political, geographic or biome), one map layer each. What the artifact holds, as PNG rasters on one grid
 (`fullW` x `fullH` = 1549 x 1393 at 2 km a pixel: 3,098 x 2,786 km):
@@ -74,6 +78,23 @@ What follows for the kits:
   tile at run time from the same rules, so the generators must stay deterministic per cell
   and driven by data (species tables, zone thresholds) to be portable, and what the three.js
   kits export becomes the reference a Godot generator is tested against, tile for tile.
+
+## The first open world: `openworld/little-demo` (Oct 2026)
+
+The owner's "little demo" region of the scale model (the eastern desert, ~1,080 x 1,370 km) at 1:1, in three.js as
+the preview of what Godot will stream. What it settles of the plan above:
+
+- **One host binding** for three kits (sedesert, eastabyss, hyperjungle) on one core: one set of world fields from the
+  rasters (`openworld/little-demo/src/41-world-fields.js`), one per-kit remap (the abyss kit's `upland`), the kit's
+  weight from the biome overlays blended over a few km (the gradual border).
+- **Placement seeded by cell** (blocker 6), **level-free records** (blocker 8) and **trees as variants** (blocker 10):
+  the world reads each kit's pass table and zones, seeds each cell with `KRAND.hash`, and draws each species as four
+  variants the kit grew alone (`KIT.make`, `KIT.grow`, new in each kit's trees fragment), at the kit's own levels.
+  The probe proves a tile is the same built alone or in any order.
+- **The floor as patches**: each kit's `buildFloor` run on a 32 m patch under a zone's field profile, tiled on the
+  near ground by the zones there.
+- **Not yet:** a keep-clear that is order-free, the steep border (it has none: the abyss's edge is soft at 4 km),
+  hero zones, rivers with water, the shared ground shader. `openworld/little-demo/KNOWN_ISSUES.md` has the list.
 
 ## Two kinds of border
 

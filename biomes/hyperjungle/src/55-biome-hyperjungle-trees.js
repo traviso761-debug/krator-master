@@ -335,5 +335,16 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
   tris:{trunk:st.trunk,limbs:st.limb,boughs:st.bough,twigs:st.twig,roots:st.root,bark:bark,leaves:leaves,hang:hang,far:st.far,saplings:sap,total:bark+leaves+hang+st.far+sap}};};
 
 // approximate canopy top near (x,z): the highest crown within 200 m, else 60
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// make(sp,x,y,z,sapling): the pass's own record, a hypertree or (sapling) an immature one, its size and seed drawn from
+// the kit's stream (reseed first for a repeatable variant). grow(T,lv): build that one tree into this kit's buckets and
+// items: a sapling as the pass builds it, else lv 0 the far impostor and lv 1 or 2 the hero (its own detail curve reads
+// BIO.lod at the tree, so a world wanting a lighter hero grows it far from the host's origin). Nothing else: no TREES
+// record, no keep-clear. An open world grows each species' variants once with these and instances them (openworld/README.md).
+HYPERJUNGLE.make=function(sp,x,y,z,sapling){if(sapling){const H=20+40*Math.pow(rng(),1.4);return{x:x,z:z,y0:y-1,H:H,sp:sp,cr:H*SAP_CR[sp]+2,ring:false,sapling:true,seed:ri(0,999999)};}
+ const S=SP[sp];return{x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:true};};
+HYPERJUNGLE.grow=function(T,lv){tints();
+ const st={trunk:0,limb:0,bough:0,twig:0,root:0,far:0,sapTris:0,roots:0,topBoughs:0,boughs:0,twigs:0,spots:0,clumps:0,racemes:0,pods:0,capsules:0,flowers:0,sapClumps:0};
+ T.lv=lv;if(T.sapling)buildSapling(T,T.seed%3,1,st);else if(lv===0)buildFar(T,T.seed%7,st);else buildHero(T,T.seed%97,1,st);return st;};
 HYPERJUNGLE._canopyH=function(x,z){let h=0;for(const T of HYPERJUNGLE.TREES){if(Math.hypot(x-T.x,z-T.z)<200)h=Math.max(h,T.y0+T.H);}return h||60;};
 })();
