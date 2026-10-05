@@ -14,9 +14,21 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
    floors:h.floors,ways:h.ways,ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
   if(!host){fail++;return;}
   // the floors table runs to the top of what stands, not on into the sky over a full tower
-  host.floors=host.floors.filter(f=>f.y<h.top+2);host.full=h.full;host.rec=h;h.drawn=true;
+  h.G=host.G;host.floors=host.floors.filter(f=>f.y<h.top+2);host.full=h.full;host.shaped=h.shaped;host.rec=h;h.drawn=true;
   reseed(32100+i);hykTideline(host);
   for(const p of h.pods){once(p.key);const G=HYK.placeOn(scene,p.key,host,{y:p.y,a:p.a,level:p.level,into:p.into});if(G)p.drawn=true;else fail++;}
   TSTAT.cur=null;});
+ // the Ancients builders draw a host as a dozen plain meshes (skin, lining, ribbons, plinth...), so thirty hosts were two
+ // hundred draw calls: every host's static opaque meshes are merged across the city, one mesh per material and layout
+ window._cityMerge=ysMergeHostMeshes(scene,PLACE.hosts.filter(h=>h.G).map(h=>h.G));
  window._city={blds:PLACE.blds.length,hosts:HOSTS.length,pods:PLACE.hosts.reduce((s,h)=>s+h.pods.length,0),slots:PLACE.slots.length,fail,ms:Math.round(performance.now()-t0)};
 });
+// merge the plain meshes under the given groups by material (and attribute layout) into world-space meshes on the scene;
+// instanced kit items, transparent and multi-material meshes stay as they are. The accounting is untouched (TSTAT.cur is
+// null: the triangles were counted when the builders drew them). Returns {before, after}.
+function ysMergeHostMeshes(scene,groups){const by=new Map();let before=0;const cur=TSTAT.cur;TSTAT.cur=null;
+ for(const G of groups){G.updateMatrixWorld(true);G.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||!o.geometry||Array.isArray(o.material)||o.material.transparent||o.userData.probeSkip)return;
+  const sig=o.material.uuid+'|'+Object.keys(o.geometry.attributes).sort().join(',');if(!by.has(sig))by.set(sig,{mat:o.material,list:[]});by.get(sig).list.push(o);before++;});}
+ let after=0;for(const {mat,list} of by.values()){const geos=[];for(const o of list){const g=o.geometry.clone();g.applyMatrix4(o.matrixWorld);geos.push(g);o.parent.remove(o);}
+  const m=meshMerged(geos,mat,scene);if(m){m.userData.own='hosts';after++;}}
+ TSTAT.cur=cur;return {before,after};}

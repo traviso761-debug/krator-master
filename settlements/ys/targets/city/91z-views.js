@@ -17,6 +17,8 @@ const VIEWS={
  V['The Amphitriton across the water']=[A.x-N[0]*230+T[0]*90,34,A.z-N[1]*230+T[1]*90,A.x,30,A.z];
  const h=PLACE.hosts.find(h=>!h.full&&h.cls==='tall'&&h.pods.length>1)||PLACE.hosts[0];
  if(h){const p=h.pods[0];const c=Math.cos(p.a+.5),s=Math.sin(p.a+.5);const r=h.rAt(p.y,p.a);V['A stump and its pods']=[h.x+c*(r+75),p.y+22,h.z+s*(r+75),h.x,p.y+4,h.z];}
+ for(const t in YS_HOST_TYPES){const g=PLACE.hosts.find(h=>h.type===t&&!h.full&&h.pods.length>1);if(!g)continue;const p=g.pods[0];const c=Math.cos(p.a+.45),sn=Math.sin(p.a+.45);const r=g.rAt(p.y,p.a);
+  V['A '+YS_HOST_TYPES[t].name.replace('the ','')+' stump']=[g.x+c*(r+95),Math.max(p.y,g.top*.5)+30,g.z+sn*(r+95),g.x,Math.max(p.y,g.top*.4),g.z];}
  V['The main market']=[H[0]+N[0]*150-T[0]*110,55,H[1]+N[1]*150-T[1]*110,H[0],4,H[1]];
  {const r=PLACE.blds.find(r=>/^hyk_house_rich/.test(r.key));if(r){const f=[Math.sin(r.ry),Math.cos(r.ry)],x=[Math.cos(r.ry),-Math.sin(r.ry)];V['A rich house']=[r.x+f[0]*34+x[0]*14,r.y+13,r.z+f[1]*34+x[1]*14,r.x,r.y+4,r.z];}}
  const ph=PLACE.hosts.find(h=>/Pharos/.test(h.n));if(ph)V['The Pharos']=[ph.x-N[0]*260+T[0]*120,ph.top-10,ph.z-N[1]*260+T[1]*120,ph.x,ph.top-40,ph.z];

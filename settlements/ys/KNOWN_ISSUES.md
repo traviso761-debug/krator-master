@@ -85,12 +85,13 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
       let `F.pick('coral')` read true on cushions and slings.
 - [ ] The karst stacks are a heightfield: no overhangs or undercut bases, and the "knobbed top" is a noisy plateau.
-- [ ] (Oct 5 2026) **Every drowned host is Skyscraper A** (`88-city-place.js`, `YS_HOST_TYPES`). The rest of Travis's
-      list (D, E, G, H, K, the Pierced Stack, the Bole) and the mid-rise types need the Ancients chain re-vendored first:
-      eleven of Ys's vendored fragments have drifted from upstream, and upstream's towers call helpers Ys's
-      `52-sky-abc.js` predates. Until then the 3 awash host blocks and 4 land-quarter plots are slots (`PLACE.slots`,
-      kinds `low host` and `land host`) that draw nothing. Re-vendoring changes the kit sheet's and the mock's hosts too
-      (and `ysHostMembers` must be re-read).
+- [x] (Oct 5 2026) **Every drowned host was Skyscraper A.** The chain is re-vendored and the hosts are A, D (the
+      Monolith) and H (the Warden), D and H standing on the bed with pods on their faces; the awash blocks carry short
+      Wardens and Monoliths. Still open: the Pierced Stack and the Bole (the alternates' helpers and kdefs in
+      `8aj-alt-a-bole.js`, and their own cut and breach in place of `bodyGroup`'s), and the 4 land-quarter plots
+      (`PLACE.slots`, kind `land host`) that wait on the mid-rise types.
+- [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
+      their faces and ledges instead.
 - [ ] (Oct 5 2026) The spans are not placed: the bridge graph (PLAN.md P3 step 3: which blocks link at L1, which towers
       at L2, the drawbridge to the Amphitriton, the Citadel's span) is the next pass. The kit audit names the eight span
       defs apart; NAV's L1 and L2 layers are empty until it lands.

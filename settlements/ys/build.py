@@ -74,7 +74,7 @@ def srcpath(f, base=None):
 
 # fragment -> upstream directory (relative to the repo root)
 VENDORED = {}
-for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
+for _f in ['10-core.js', '12-stats.js', '30-kit.js', '42-offices.js', '56-sky-d.js', '71-sky-h.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js',
            '38-helpers2.js', '50-registry.js', '52-sky-abc.js', '54-mat-concrete.js', '69-mat-salvage.js', '99-tail.html']:
     VENDORED[_f] = 'kits/ancients/src'
 for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-edges.js', '74-port-dress.js']:
@@ -82,7 +82,7 @@ for _f in ['70-port-core.js', '71-port-terrain.js', '72-port-kit.js', '73-port-e
 for _f in ['69b-vern-mat.js', '69c-vern-helpers.js', '81-sky.js', '92-camera.js', '93-labels.js']:
     VENDORED[_f] = 'settlements/iziz/src'
 # vendored with deliberate edits: drift expected, recorded in KNOWN_ISSUES.md
-ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '71-port-terrain.js', '92-camera.js'}
+ADAPTED = {'52-sky-abc.js', '54-mat-concrete.js', '56-sky-d.js', '71-sky-h.js', '71-port-terrain.js', '92-camera.js'}
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {

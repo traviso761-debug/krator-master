@@ -11,38 +11,41 @@ Built output (never open it; edit `src/` and rebuild): `dist/kit.html`, `dist/mo
 Build: `cd settlements/ys && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`
+From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-materials.js`, `68-mat-v5.js`, `opt/69a-world-uv.js`
 
 ## src/
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 3 |  |
-| `10-core.js` | 2 | error panel (1); rng + noise (7) |
+| `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `35-furn-frame.js` | 7 |  |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
+| `42-offices.js` | 15 |  |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
-| `52-sky-abc.js` | 20 |  |
+| `52-sky-abc.js` | 30 **big** |  |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
+| `56-sky-d.js` | 6 |  |
 | `60-hyk-mat.js` | 10 | textures (256 px = 4 m) (25); materials (67); kit items (instanced; colour per instance) (99) |
 | `60-ys-registries.js` | 4 | the Hykkousoi kit registry (the kit sheet lays o (26) |
 | `61-hyk-shell.js` | 14 | the surface builder (26); lathe: the shell body (38); pod: a superellipsoid with real openings (55); conch: a tapering tube along a log spiral (74); tube along a polyline (parallel-transport frames (90); fillet: roots a shell into a face or the ground (104); disc: floors, landings, lily pads (normal up unl (111) |
 | `62-hyk-helpers.js` | 23 | openings: a hole in a shell gets a lip and a rev (60); rooms and the spots the later placer fills (kits (85); landings, stairs, ladders (world frame unless in (96) |
-| `64-hyk-accrete.js` | 14 | the tideline: crust, weed, barnacle specks, foam (49); accretion: pods grown onto a host's face (60) |
+| `64-hyk-accrete.js` | 15 | the tideline: crust, weed, barnacle specks, foam (51); accretion: pods grown onto a host's face (65) |
 | `65-hyk-spans.js` | 27 | shared bits (18); the rib bridges (51); the drawbridge (built DOWN: closed) (77); stairs (109); the ladder (140); the lily-pad landing (150); the grown walkway (152); the pontoon walkway (163) |
 | `66-hyk-furniture.js` | 25 | the helpers (all through F) (10); the pieces (63) |
-| `69-mat-salvage.js` | 12 | salvage (decay level 3) (1); FIRELIGHT (44) |
-| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (116); geometry (133); kit items (153) |
-| `69c-vern-helpers.js` | 19 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (87); openings (108); porches, stairs, yards (134) |
+| `69-mat-salvage.js` | 16 | salvage (decay level 3) (1); FIRELIGHT (44) |
+| `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (114); kit items (139) |
+| `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
 | `70-hyk-housing.js` | 69 **big** | shared helpers (prefix hykHouse…) (7); POOR 1: the clam house. A low ribbed body, a rib (128); POOR 2: the stilt pod. A small pod carried 2.6 m (146); POOR 3: the limpet house. One ringed limpet cone (166); MIDDLE 1: the barnacle tower. One tall twisted b (183); MIDDLE 2: the pod cluster. Three pods of graded  (206); MIDDLE 3: the stair drum. A lobed drum with a st (232); RICH 1: the conch stair house. A nacre conch who (246); RICH 2: the urchin house. A lobed nacre dome rin (311); RICH 3: the scallop court. A ribbed scallop valv (346) |
 | `70-port-core.js` | 38 **big** | registry (24); layout (53); vessels (272); stats keys (308); geometry batching (316); inspector tags (434); the salvage pass, port edition (469) |
 | `71-hyk-shops.js` | 51 **big** | helpers (12); the free-standing base (61); the grown-on base (the G frame: origin on the ho (108); the trade dressings (F from a base: at(th,y,out) (135); the free-standing stores (row 'Shops') (296); the grown-on stores (row 'Grown-on shops', the G (367) |
 | `71-port-terrain.js` | 22 | the natural coast (7); stamps (24); materials (103); the terrain grid (196) |
+| `71-sky-h.js` | 5 |  |
 | `72-hyk-hospitality.js` | 34 **big** | shared helpers (7) |
 | `72-port-kit.js` | 9 | materials (11); geometry (56) |
 | `73-hyk-sacred.js` | 14 | shared bits (7) |
@@ -60,10 +63,10 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `78-hyk-agri.js` | 15 | the farm field (18); farmhouse 1: fused barnacle cones with a byre (48); farmhouse 2: a long pod with a drying-rack yard (86) |
 | `79-hyk-markets.js` | 18 | shared bits (7) |
 | `81-sky.js` | 10 |  |
-| `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (32) |
+| `90-ys-scene.js` | 6 | the sky and the clock (16); the port: stamps, terrain, sea, builders, bake (34) |
 | `91-ys-probe.js` | 8 | probe (window._api) (1) |
 | `92-camera.js` | 15 | camera, inspector, polygon tool, walk mode, comp (1) |
-| `93-labels.js` | 4 | floating building labels (standard new-world pac (1) |
+| `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `93-ys-ui.js` | 4 |  |
 | `99-tail.html` | <1 |  |
 
@@ -73,6 +76,6 @@ Each target adds its own fragments to `src/` and builds one output.
 
 | Target | Fragments | KB |
 |---|---|---|
-| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `88-city-place.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 76 |
+| `city` | `84-city-geo.js`, `84b-city-shore.js`, `87-city-layout.js`, `87b-city-nav.js`, `87c-city-paint.js`, `88-city-place.js`, `88b-city-draw.js`, `89z-rows.js`, `91z-views.js`, `93z-city-api.js` | 81 |
 | `kit` | `84-kit-geo.js`, `89z-rows.js`, `91z-views.js` | 7 |
 | `mock` | `84-mock-geo.js`, `86-mock-houses.js`, `88-mock-build.js`, `89z-rows.js`, `91z-views.js` | 22 |

@@ -68,20 +68,45 @@ for(const s of LAYOUT.streets)ysPlTake(ysPlStrip(s.a,s.b,s.w,'street:'+s.kind));
 for(const h of LAYOUT.highways)for(let i=1;i<h.pts.length;i++)ysPlTake(ysPlStrip(h.pts[i-1],h.pts[i],h.w,'highway'));
 
 // ---------------------------------------------------------------- host types (the drowned quarter's Ancients)
-// What the records need to know about a builder before it runs: its storey table, its face radius at a local height,
-// where it may be cut, how deep it sinks. Mirrored from the vendored kit (52-sky-abc.js) like ysHostMembers; re-read them
-// if the kit changes. Only Skyscraper A is here: the Scallop Stack (B) is off the list (Travis, Oct 2 2026: lobes fight
-// every pod), the Tripod (C) carries its body 150 m up on legs, and the rest of the list (D, E, G, H, K, the Pierced
-// Stack, the Bole, and the mid-rise types for the canals and the land) waits on re-vendoring the Ancients chain
-// (KNOWN_ISSUES.md). The table is the place they go.
+// What the records need to know about a builder before it runs: its storey table, its face radius at a local height and
+// bearing, where it may be cut, how it stands, where pods may go. Mirrored from the vendored kit (52-sky-abc, 56-sky-d,
+// 71-sky-h) like ysHostMembers; re-read them if the kit changes. Travis's list (Oct 2 2026) leaves out B (lobes), F, I, J
+// and the arcologies but the Pierced Stack and the Bole; C carries its body 150 m up on legs, E is a glass lens behind a
+// diagrid with no wall to root a pod in. A, D and H are here; the Pierced Stack and the Bole wait on the alternates'
+// helpers (KNOWN_ISSUES.md).
+//  plate(k)  the top of plate k, builder y        rAt(yl,th)  the face radius at builder y, local bearing (null: a mean)
+//  sink      'plate': sunk so plate k0 is near the L2 datum (A's plates start 64 m up); 'seabed': it stands on the bed
+//  bearings  local bearings for n pods            avoid(yl,h)  true where a pod of height h at plate yl hits the host's own
+//  crownY    a full tower's last pod-free height   minY        the lowest pod floor, world (the L1 datum)
 const YS_HOST_TYPES={
- skyA:{name:'Skyscraper A — the Conocylinder',builder:'buildSkyA',key:'skyA',H:420,Y0:64,podium:64,cap:66,
+ skyA:{name:'the Conocylinder',builder:'buildSkyA',key:'skyA',H:420,Y0:64,podium:64,cap:66,
   floors:{y0:64,pitch:8,top:.35,first:2.5},k0:2,           // pods from plate 2 up: plates 0 and 1 stand among the strut heads
   plate:k=>64+(k?k*8+.35:2.5),
   rAt:(yl)=>{if(yl<5)return 64;if(yl<64)return 22-4*(yl-5)/64;const t=clamp((yl-64)/356,0,1);return 40+26*Math.pow(Math.abs(t-.42)/.58,1.7)*(t<.42?1:1.15);},
   cuts:{tall:[168,240],mid:[128,160],low:[104,120]},crownY:408,   // a full tower's crown strut ring starts at 414
-  plateAt:28}                                                 // plate k0 is sunk to about the L2 datum
+  sink:'plate',plateAt:28,                                    // plate k0 is sunk to about the L2 datum
+  bearings:(st,n)=>{const a0=st.range(0,TAU);return [...Array(n)].map((_,i)=>a0+i*TAU/n+st.range(-.12,.12));}},
+ // the Monolith: a rounded square (se 3.2) of bare concrete, plates every 6 m, the lift-core spine on local +x
+ skyD:{name:'the Monolith',builder:'buildSkyD',key:'skyD',H:340,Y0:14,podium:44,cap:46,shaped:true,square:true,
+  floors:{y0:20,pitch:6,top:.3,first:.3},k0:0,plate:k=>20+6*k+.3,
+  rAt:(yl,th)=>{if(yl<14)return 44;const t=clamp(yl/340,0,1);const r=30*(1-.12*t)+(t>.84?9*Math.pow((t-.84)/.16,.7):0);return r*(th==null?1.08:se(th,3.2));},
+  cuts:{tall:[170,260],mid:[110,164],low:[62,98]},crownY:262,sink:'seabed',minY:9,
+  bearings:(st,n)=>ysPlFaces([Math.PI/2,Math.PI,3*Math.PI/2],st,n)},   // never on the spine's face
+ // the Warden: a square keep (se 7), plates every 6 m, setback ledges with corner turrets every 66 m
+ skyH:{name:'the Warden',builder:'buildSkyH',key:'skyH',H:330,Y0:8,podium:52,cap:50,shaped:true,square:true,
+  floors:{y0:14,pitch:6,top:.3,first:.3},k0:0,plate:k=>14+6*k+.3,
+  rAt:(yl,th)=>{if(yl<8)return 52;const t=clamp(yl/330,0,1);const step=Math.floor(t*5)/5;const h=34*(1-.45*step)-2*(t*5-step*5)*.3;
+   const g=th!=null&&Math.abs(Math.sin(2*th))>.995?.9:1;return h*(th==null?1.1:se(th,7))*g;},
+  cuts:{tall:[170,250],mid:[110,164],low:[62,98]},crownY:318,sink:'seabed',minY:9,
+  avoid:(yl,h)=>[66,132,198,264].some(ys=>yl-1.5<ys+9&&yl+h+1.5>ys-1),   // a ledge and the turrets on it
+  bearings:(st,n)=>ysPlFaces([0,Math.PI/2,Math.PI,3*Math.PI/2],st,n)}
 };
+// bearings on a square host's faces: the face centres in a random order, then the faces again either side of centre
+function ysPlFaces(F,st,n){const f=F.slice();for(let i=f.length-1;i>0;i--){const j=st.int(0,i);[f[i],f[j]]=[f[j],f[i]];}
+ const out=[];for(let i=0;i<n;i++){const k=i%f.length,lap=Math.floor(i/f.length);out.push(f[k]+(lap?(lap%2?.32:-.32):0)+st.range(-.04,.04));}return out;}
+// the host type for a block by its class (the Pharos and the plaza name theirs)
+const PL_TYPES={tall:[['skyA',1],['skyD',1],['skyH',1]],mid:[['skyA',.8],['skyD',1],['skyH',1]],low:[['skyD',1],['skyH',1]],full:[['skyA',1],['skyD',1],['skyH',1]]};
+function ysPlType(st,cls){const L=PL_TYPES[cls]||PL_TYPES.mid;let t=L.reduce((s,e)=>s+e[1],0)*st.next();for(const [k,w] of L){t-=w;if(t<=0)return k;}return L[L.length-1][0];}
 // the grown pools: [key, weight]; the way-in pods per wealth (a host needs one: every-host-has-a-way-in)
 const PL_PODS={
  poor:[['hyk_pod_poor_2',3],['hyk_pod_poor_1',1],['hyk_pod_shop_food',.5],['hyk_pod_shop_general',.4],['hyk_pod_shop_salt',.3],['hyk_pod_shrine_tides',.3]],
@@ -90,30 +115,32 @@ const PL_PODS={
  rich:[['hyk_pod_rich_2',2.5],['hyk_pod_rich_1',1],['hyk_pod_shop_pearl',.6],['hyk_pod_shrine_seagods',.35],['hyk_pod_shop_alchemy',.3]]};
 const PL_WAYS={poor:[['hyk_pod_poor_1',1]],middle:[['hyk_pod_mid_1',2],['hyk_pod_shop_food',1],['hyk_pod_shop_general',1],['hyk_pod_tavern_1',1]],rich:[['hyk_pod_rich_1',1]]};
 const PL_PODN={poor:2,middle:3,rich:4,full:6};
-// one host record: the type, the cut snapped to a storey, the sink that puts plate k0 near the L2 datum, its plates
+// one host record: the type, the cut snapped to a storey, how it stands (sunk for A, on the bed for D and H), its plates
 // (world y) and its pods spread over them (different plates, a few apart, every pod's floor a plate's top)
-function ysPlHost(b,o){const T=YS_HOST_TYPES[o.type||'skyA'];const st=ysPlStream('host',b);
- const cls=o.full?'full':b.host||'mid';const sink=-(T.plate(T.k0)-T.plateAt)+st.range(-2.5,2.5);
+function ysPlHost(b,o){const st=ysPlStream('host',b);const cls=o.full?'full':b.host||'mid';const T=YS_HOST_TYPES[o.type||ysPlType(st,cls)];
+ const sink=T.sink==='seabed'?Math.min(terrainH(b.x,b.z),b.y)-1.5:-(T.plate(T.k0)-T.plateAt)+st.range(-2.5,2.5);
  let cutY=null;if(!o.full){const r=T.cuts[cls]||T.cuts.mid;const n0=Math.ceil((r[0]-T.Y0)/T.floors.pitch),n1=Math.floor((r[1]-T.Y0)/T.floors.pitch);cutY=T.Y0+st.int(n0,n1)*T.floors.pitch;}
- const top=(o.full?T.crownY:cutY)+sink;const ry=st.range(0,TAU);
- const rec={n:o.name||(o.full?'Project A tower ('+b.i+','+b.j+')':'The Conocylinder stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
+ const top=(o.full?T.crownY:cutY)+sink;const ry=T.square?PL_RY+st.int(0,3)*Math.PI/2:st.range(0,TAU);
+ const P='Project '+T.key.slice(3);const nm=T.name.replace('the ','');
+ const rec={n:o.name||(o.full?P+' tower ('+b.i+','+b.j+')':'The '+nm+' stump ('+b.i+','+b.j+')'),block:b.i+','+b.j,use:b.use,type:T.key,builder:T.builder,
   x:b.x,z:b.z,ry,sink:+sink.toFixed(2),d:o.full?4:1,cutY,full:!!o.full,cls,podium:T.podium,cap:{hw:T.cap},floors:T.floors,top:+top.toFixed(2),
-  wealth:b.wealth,plates:[],pods:[],ways:[]};
- rec.rAt=(y,a)=>T.rAt(y-rec.sink,a);
- for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;rec.plates.push(+y.toFixed(2));}
- // the pods: the way in first, then the wealth pool; bearings spread round the face, plates stepped about a base
+  shaped:!!T.shaped,wealth:b.wealth,plates:[],pods:[],ways:[]};
+ rec.rAt=(y,a)=>T.rAt(y-rec.sink,a==null?null:a+rec.ry);   // a world bearing a is the local bearing a + ry
+ for(let k=T.k0;k<400;k++){const y=T.plate(k)+sink;if(y>top-4)break;if(T.minY!=null&&y<T.minY)continue;rec.plates.push(+y.toFixed(2));}
+ // the pods: the way in first, then the wealth pool; bearings from the type, plates stepped about a base
  const n=o.pods!=null?o.pods:PL_PODN[o.full?'full':b.wealth];const keys=[o.way||ysPlPick(st,PL_WAYS[b.wealth])];for(const k of (o.must||[]))keys.push(k);
  while(keys.length<n)keys.push(ysPlPick(st,PL_PODS[b.wealth]));
- const a0=st.range(0,TAU),P=rec.plates;const STEP=[0,2,-1,3,1,-2,4,-3];const base=Math.min(P.length-1,Math.max(0,Math.round(P.length*(o.full?.18:.35))));
- keys.forEach((key,i)=>{const D=HYK.defs[key];if(!D)return;let k=clamp(base+STEP[i%STEP.length]*(o.full?3:1),0,P.length-1);
-  while(k>0&&P[k]+D.h+2>top)k--;   // the pod clears the cut
-  if(o.crown&&key===o.crown)k=P.length-1-3;
-  const y=P[clamp(k,0,P.length-1)];const a=a0+i*TAU/keys.length+st.range(-.12,.12);const into=!!D.into;   // an into def is drawn only as a way in (the kit sheet tests it so: the Urchin pod's other layout puts its store in the door swing)
+ const TH=T.bearings(st,keys.length),Pl=rec.plates;const STEP=[0,2,-1,3,1,-2,4,-3];const base=Math.min(Pl.length-1,Math.max(0,Math.round(Pl.length*(o.full?.18:.35))));
+ const ok=(k,D)=>Pl[k]+D.h+2<=top&&!(T.avoid&&T.avoid(Pl[k]-sink,D.h));
+ keys.forEach((key,i)=>{const D=HYK.defs[key];if(!D||!Pl.length)return;let k=clamp(base+STEP[i%STEP.length]*(o.full?3:1),0,Pl.length-1);
+  if(o.crown&&key===o.crown)k=Math.max(0,Pl.length-4);
+  if(!ok(k,D)){let best=-1;for(let d=1;d<Pl.length;d++){for(const q of [k-d,k+d])if(q>=0&&q<Pl.length&&ok(q,D)){best=q;break;}if(best>=0)break;}if(best<0)return;k=best;}   // the pod clears the cut and the host's own ledges
+  const y=Pl[k];const a=TH[i]-ry;const into=!!D.into;   // an into def is drawn only as a way in (the kit sheet tests it so: the Urchin pod's other layout puts its store in the door swing)
   rec.pods.push({key,a:+a.toFixed(4),y,level:y>=20?'L2':'L1',into,wealth:D.tags.wealth});if(into)rec.ways.push({a:+a.toFixed(4),y,R:D.w/2});ysPlCount(key);});
- // pods round one host stand on different plates (Travis, Oct 2026): if the cut squeezed them onto one, move the lowest
- // pod that fits on to the next plate down, or up
- if(rec.pods.length>1&&new Set(rec.pods.map(p=>p.y)).size<2){const y0=rec.pods[0].y;const alt=P.filter(y=>y!==y0).sort((p,q)=>Math.abs(p-y0)-Math.abs(q-y0));
-  for(const p of rec.pods.slice(1)){const D=HYK.defs[p.key];const y=alt.find(y=>y+D.h+2<=top);if(y==null)continue;p.y=y;p.level=y>=20?'L2':'L1';const w=rec.ways.find(w=>w.a===p.a);if(w)w.y=y;break;}}
+ // pods round one host stand on different plates (Travis, Oct 2026): if the cut squeezed them onto one, move a pod that
+ // fits to the nearest other plate
+ if(rec.pods.length>1&&new Set(rec.pods.map(p=>p.y)).size<2){const y0=rec.pods[0].y;const alt=Pl.filter(y=>y!==y0).sort((p,q)=>Math.abs(p-y0)-Math.abs(q-y0));
+  for(const p of rec.pods.slice(1)){const D=HYK.defs[p.key];const y=alt.find(y=>y+D.h+2<=top&&!(T.avoid&&T.avoid(y-sink,D.h)));if(y==null)continue;p.y=y;p.level=y>=20?'L2':'L1';const w=rec.ways.find(w=>w.a===p.a);if(w)w.y=y;break;}}
  ysPlTake(ysPlBox(b.x,b.z,T.cap,T.cap,PL_RY,'host '+rec.n));PLACE.hosts.push(rec);return rec;}
 
 // ---------------------------------------------------------------- the frontage walker: a block's streets lined with buildings
@@ -196,18 +223,15 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
  if(LM.wet_cells){const b=LM.wet_cells;ysPlByName('hyk_wet_cells',b.x,b.z,ysPlFacing(PL_N[0],PL_N[1]),'landmark',b,{y:0});}
  // ---- 2. the hosts: the Pharos and two more full-height towers, the grown plaza's host, then every host block
  const hostBlocks=LAYOUT.blocks.filter(b=>b.use==='host');
- if(LM.pharos)ysPlHost(LM.pharos,{full:true,name:'The Pharos',crown:'hyk_pharos_crown',must:['hyk_pharos_crown'],way:'hyk_pod_rich_1',pods:4});
+ if(LM.pharos)ysPlHost(LM.pharos,{type:'skyA',full:true,name:'The Pharos',crown:'hyk_pharos_crown',must:['hyk_pharos_crown'],way:'hyk_pod_rich_1',pods:4});
  // the full towers: farthest-point picks among the tall hosts in open water, away from the Pharos and the Amphitriton
  {const tall=hostBlocks.filter(b=>b.host==='tall');const chosen=[LM.pharos||A,A];const full=[];
   for(let n=0;n<2&&tall.length;n++){let best=null;for(const b of tall){if(full.indexOf(b)>=0)continue;const d=Math.min(...chosen.map(c=>Math.hypot(c.x-b.x,c.z-b.z)));if(!best||d>best.d)best={b,d};}
    full.push(best.b);chosen.push(best.b);}
   for(const b of full){b.full=true;ysPlHost(b,{full:true});}}
  if(LM.grown_plaza){const b=LM.grown_plaza;ysPlHost(Object.assign(b,{host:'mid'}),{name:'The grown plaza',must:['hyk_market_plaza'],pods:3});}
- // an awash block's host is a low type (a mid-rise: DESIGN §5); Skyscraper A there stands its struts on the beach, so the
- // block is a slot until the mid-rise types are vendored
- for(const b of hostBlocks){if(b.full)continue;if(b.host==='low'){const B=ysPlBox(b.x,b.z,60,60,PL_RY,'low host');ysPlTake(B);
-   PLACE.slots.push({kind:'low host',decay:1,wish:['apartments','offices','hotel','hospital','government','flatiron'],builder:null,x:b.x,z:b.z,ry:PL_RY,w:120,d:120,y:b.y,block:b.i+','+b.j,wealth:b.wealth,box:B});continue;}
-  ysPlHost(b,{});}
+ // the hosts of every other block: an awash block's is a low one (D or H, cut short, standing on the bed)
+ for(const b of hostBlocks)if(!b.full)ysPlHost(b,{});
  // ---- 3. the precincts on land and in the shallows
  // the main market: the hall at the centre, its front to the docks; the block lined with shops
  {const b=ysBlock(0,0);if(b){ysPlSeek('hyk_market_main',[12,4,-4,-12,-20].map(k=>[b.x+PL_N[0]*k,b.z+PL_N[1]*k]),ysPlFacing(PL_N[0],PL_N[1]),'main market',b,{margin:3,skip:/^highway/,extra:{over:/^highway/}});ysPlFront(b,{pool:PL_POOL.market,kind:'market',why:'main market',sides:4});}}
@@ -253,7 +277,7 @@ function ysPlShoreRun(uses,seq,o){o=o||{};const L=SHORE_LOOPS[0];const st=ysPlSt
   const sides=b.dH<450?3:1;ysPlFront(b,{pool:PL_POOL[b.wealth],kind:b.wealth,why:'neighbourhood',sides});
   if(st.chance(.3)){const k=st.chance(.5)?'hyk_shrine_tides':'hyk_shrine_seagods';ysPlSeek(k,ysPlCands(b,st.range(-30,30),st.range(-30,30),60).slice(0,30),ysPlFacing(PL_V[0],PL_V[1]),'neighbourhood shrine',b);}}
  for(const b of LAYOUT.blocks.filter(b=>b.use==='industry'))ysPlFront(b,{pool:PL_POOL.industry,kind:'industry',why:'industry',sides:1});
- for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);const fr=ysPlFacing(PL_V[0],PL_V[1]);
+ for(const b of LAYOUT.blocks.filter(b=>b.use==='farm')){const st=ysPlStream('farm',b);if(b.s>800)continue;/* the outer farms are soil paint only: the budget */const fr=ysPlFacing(PL_V[0],PL_V[1]);
   const p=ysPlAt(b,st.range(-20,20),-50);ysPlByName(st.chance(.5)?'hyk_farmhouse_1':'hyk_farmhouse_2',p[0],p[1],fr,'farm',b);
   const nf=b.s<620?1:0;for(let k=0;k<nf;k++){const q=ysPlAt(b,k?28:-28,10);ysPlByName('hyk_farm_field',q[0],q[1],PL_RY,'farm',b);}}
  // ---- 5. the drowned home-grown blocks: a mole at the quay datum, the Hykkousoi round its edge facing the water

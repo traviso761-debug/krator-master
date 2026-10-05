@@ -228,3 +228,16 @@ New: `42-offices.js` (the civic helpers the towers' shards and rooms need, and t
 kit's `TICKS` each frame with `NIGHT` mirrored from the clock. Upstream's RESTAND moved A's strut feet in from r 98 to
 r 60 and made B's legs single raked columns from r 42; `ysHostMembers` and the caps follow it. `--vendor-check`: no
 drift. Kit, mock and city pass `--assert`; the kit's and the mock's hosts look different (plumber struts, raked legs).
+
+## Three host types (Oct 5 2026)
+`YS_HOST_TYPES` holds A, D and H with what the records need: the storey table, the face radius by local height and
+bearing (`se` superellipses for D's rounded square and H's keep), the cut ranges, how the host stands (A sunk 50 m so
+its plate 2 meets L2; D and H on the bed, their plates from 14 and 20 m up, pods from the L1 datum), the bearings pods
+may take (A anywhere; D's three faces off its lift-core spine; H's four face centres) and what to avoid (H's setback
+ledges and their turrets). Square hosts are squared to the old grid. The type is a KRAND pick per block by class (tall
+and mid: A, D, H; awash: D or H, cut at 62–98 m); the Pharos stays A, the two other full towers came out D. The
+tideline follows a shaped host's face (`host.shaped`; a round host keeps its lathe, so the kit and the mock do not move).
+The Ancients builders draw a host as a dozen plain meshes and thirty hosts were two hundred draw calls at the overview:
+`ysMergeHostMeshes` merges every host's static opaque meshes city-wide by material (139 meshes to 5), 236 calls to 102.
+E (a glass lens behind a diagrid at decay 1, nothing to root a pod in) is left out; the Pierced Stack and the Bole wait
+on the alternates' helpers.
