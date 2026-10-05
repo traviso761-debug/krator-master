@@ -22,7 +22,7 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
   m.map=T.map;if(T.normalMap){m.normalMap=T.normalMap;m.normalScale=new THREE.Vector2(L.normalScale||1,L.normalScale||1);}
   if(T.roughnessMap){m.roughnessMap=T.roughnessMap;m.roughness=1;}m.metalnessMap=null;m.metalness=L.metal||0;
   hook(m,fam,L);m.needsUpdate=true;YS_MATLIB.bound[fam]=L.lib;};
- for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkNacre','hkCrust','hkVerd']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
+ for(const k of ['hkShell','hkFloor','hkIn','hkBarn','hkBone','hkMosaic','hkNacre','hkCrust','hkVerd','hkWet']){const L=P(k);if(!L)continue;bind(MAT[k],k,L,4);bind(MAT[k+'I'],k,L,4);}
  {const L=P('ground');if(L&&MAT.pkGround)bind(MAT.pkGround,'ground',L,18);}   /* no ground family yet: the karst wall's drips read as stripes on the flat (KNOWN_ISSUES) */
  {const L=P('sand');if(L&&typeof HAC_MAT!=='undefined'){bind(HAC_MAT.sand,'sand',L,null);bind(HAC_MAT.sandR,'sand',L,null);}}
  {const L=P('trav');if(L&&typeof HBH_MAT!=='undefined'){bind(HBH_MAT.trav,'trav',L,null);bind(HBH_MAT.travR,'trav',L,null);}}
@@ -34,7 +34,7 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
 })();
 // the records table for the export: every family as one record (GODOT-PLAN.md Phase 3)
 (function(){if(typeof KMAT==='undefined')return;const recs={};const P=f=>KMAT.packed('ys',f);
- const uv={hkShell:[4,4],hkFloor:[4,4],hkIn:[4,4],hkBarn:[4,4],hkBone:[4,4],hkMosaic:[4,4],hkNacre:[4,4],hkCrust:[4,4],hkVerd:[4,4],hkWeed:[1,1],ground:[18,18],sand:[20,20],trav:[20,20],verdigris:[12,12]};
+ const uv={hkShell:[4,4],hkFloor:[4,4],hkIn:[4,4],hkBarn:[4,4],hkBone:[4,4],hkMosaic:[4,4],hkNacre:[4,4],hkCrust:[4,4],hkVerd:[4,4],hkWet:[4,4],hkWeed:[1,1],ground:[18,18],sand:[20,20],trav:[20,20],verdigris:[12,12]};
  for(const fam in uv){const L=YS_MATLIB.on?P(fam):null;recs[fam]={id:'ys.'+fam,family:fam,scale:L?L.scale:uv[fam],tint:true,roughness:1,metal:L?(L.metal||0):0,specular:L?L.specular:0.5,
    breakup:L?(L.breakup||null):null,lib:L?L.lib:null,bake:!L,hook:fam==='hkNacre'?'nacre':fam==='ground'?'planar-uv':'metre-uv',note:L?'library set, tint keep '+L.tint:'procedural canvas map, vertex-coloured'};}
  for(const [kind,n] of [['kelp',3],['vine',3],['clump',4]])for(let i=0;i<n;i++){const L=YS_MATLIB.on?P(kind+i):null;if(L)recs[kind+i]={id:'ys.'+kind+i,family:'card',scale:[1,1],tint:false,roughness:.9,alphaTest:.42,doubleSided:true,lib:L.lib,note:'card'};}

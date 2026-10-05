@@ -205,9 +205,9 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       middle band, and the lobes turn .14 rad a storey, so a pod far from the stump's middle sits up to .6 rad off a crest.
 - [ ] (Oct 5 2026) The Pharos's mast is a plain nacre pole, 50–60 m from the crown's finial to over the Warden's spire; it
       wants stays or a cage. The beam's cone still clips the spire's finial when the crown stands on the spire's own side.
-- [ ] (Oct 5 2026) The Wet Cells' rock is a plain lathe to the bed (28 m at the Needle's foot): no ledges, no weed below
-      the crust band; its library barnacle set reads paler than the tint asks (Travis: ominous). A darker barnacle or
-      wet-rock set would do it.
+- [x] (Oct 5 2026) The Wet Cells' rock read pale on the barnacle set. Travis's `rock.wet.dark` set is bound to a new pair
+      `hkWet` (the Wet Cells' rock, cap, cones and landing, keep .85); the rock is still a plain lathe to the bed (28 m at
+      the Needle's foot), no ledges, no weed below the crust band.
 - [ ] (Oct 5 2026) The new hosts' blemishes: the bridge graph's pods ignore a type's bearings (`fits` consults
       `avoid(yl,h)` only: on K a pod can land on the porch arch, on the Attraction beside a great spire; `avoid` wants
       the bearing); the tideline crust on C and the Stack is a ring round the axis, not round each leg or piloti; Sky J

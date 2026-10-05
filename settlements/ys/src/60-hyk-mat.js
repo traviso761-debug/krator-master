@@ -72,6 +72,7 @@ function hkMatPair(key,map,opt){opt=opt||{};const base={map,roughness:opt.rough!
  MAT[key+'I']=new THREE.MeshStandardMaterial(Object.assign({},base));}
 hkMatPair('hkShell',TEX.hkShell,{rough:.62});
 hkMatPair('hkBarn',TEX.hkBarn,{rough:.88});
+hkMatPair('hkWet',TEX.hkBarn,{rough:.9});   // the Wet Cells' dark wet rock: the library's rock.wet.dark, else the barnacle map under its dark tint
 hkMatPair('hkBone',TEX.hkBone,{rough:.48,metal:.02});
 hkMatPair('hkMosaic',TEX.hkMosaic,{rough:.32,metal:.06});
 hkMatPair('hkCrust',TEX.hkCrust,{rough:.96});

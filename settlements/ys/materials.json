@@ -350,6 +350,25 @@
    },
    "roughLift": 0,
    "specular": 0.2
+  },
+  "hkWet": {
+   "lib": "rock.wet.dark",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.3
+   },
+   "roughLift": 0.1,
+   "specular": 0.12,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.08,
+    "cell": 5
+   },
+   "_note": "the Wet Cells' rock and cones (Travis: ominous): dark wet sea rock, the colour the set's own (keep .85); hkBarn stays for every other barnacle surface"
   }
  }
 }

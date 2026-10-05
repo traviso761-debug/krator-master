@@ -518,3 +518,6 @@ the offset goes through the nested group transform. **The river** is a Catmull-R
 meander across it (22 m, two sines of the arc length, fading in over the first 300 m so the mouth stays put), sampled every
 20 m; every reader walks `seg`. The valley is 2.6 widths wide, and the strip starts 3 m under the sea's sheet so it emerges
 from under it. **The editor** (an agent): see API.md "The editor" and the round below it.
+**The wet rock** (Travis's `rock.wet.dark`, `tools/textures/batches/ys-2026-10b.json`): a new shell pair `hkWet` bound to
+it (keep .85: the set carries the darkness, the builder's tints are light), used by the Wet Cells alone; every other
+barnacle surface keeps `hkBarn`.
