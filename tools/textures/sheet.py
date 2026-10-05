@@ -18,11 +18,14 @@ def key(a, tol):
     # the key: strong red and blue, weak green; distance in a plane that ignores overall brightness
     d = np.sqrt(((r - 1) ** 2 + g ** 2 + (b - 1) ** 2) / 3.0)
     alpha = np.clip((d - tol * .35) / (tol * .65), 0, 1)
-    # despill: an edge pixel's red and blue are pulled down toward its green where they exceed it
+    # despill: wherever red or blue exceed green by a margin the key is showing through (a fringe, a thin stem, the
+    # gaps in foliage): red and blue are clamped to the green, so nothing magenta survives for the bleed to spread
     m = np.maximum(r, b) - g
-    k = (1 - alpha)[..., None] * .9 + alpha[..., None] * .35
-    spill = np.clip(m, 0, 1)[..., None] * k
-    rgb = np.stack([r - spill[..., 0] * (r > g), g, b - spill[..., 0] * (b > g)], -1)
+    sp = (m > 0.08) | (alpha < 0.98)
+    r2 = np.where(sp, np.minimum(r, g), r); b2 = np.where(sp, np.minimum(b, g), b)
+    rgb = np.stack([r2, g, b2], -1)
+    # a fringe pixel that is mostly key is dropped outright
+    alpha = np.where(m > 0.45, 0.0, alpha)
     out = np.concatenate([np.clip(rgb, 0, 1), alpha[..., None]], -1)
     return (out * 255 + .5).astype(np.uint8)
 
