@@ -147,6 +147,7 @@ DETERMINISTIC = {
     '91-probe.js', '92-camera.js', '93-labels.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
+    '86-bio-57-fauna-pack.js',            # generated: the library's fauna sheets as data URLs (fauna_pack)
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -251,6 +252,34 @@ def check(order, bodies):
     return errs
 
 
+TEX_DIR = os.path.join(HERE, 'tex')
+FAUNA_FAMILIES = {'fauna_wing': 'wing', 'fauna_fur': 'fur', 'fauna_hide': 'hide', 'fauna_ray': 'ray'}   # materials.json family -> HYPERJUNGLE.FAUNATEX key
+FAUNA_PACK = '86-bio-57-fauna-pack.js'   # sorts between the biome's species/trees (50, 55) and its fauna (58), inside the biome closure
+
+
+def fauna_pack():
+    """GENERATED fragment: HYPERJUNGLE.FAUNATEX, the library sheets for the biome fauna (materials.json families fauna_*, packed by
+    tools/textures/pack.py into tex/) as data URLs. None until at least one sheet is delivered: then the build is exactly as it was.
+    It reads the committed tex/ files only, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return None
+    fams = json.load(open(pj)).get('families', {})
+    out = []
+    for fam, key in sorted(FAUNA_FAMILIES.items(), key=lambda kv: kv[1]):
+        e = fams.get(fam)
+        if e and e['files'].get('map'):
+            data = open(os.path.join(TEX_DIR, e['files']['map']), 'rb').read()
+            out.append(' %s: %s' % (key, json.dumps('data:image/webp;base64,' + base64.b64encode(data).decode())))
+    if not out:
+        return None
+    head = ('/* ============================== 86-bio-57. FAUNA SHEETS (generated) ==============================',
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */',
+            'HYPERJUNGLE.FAUNATEX={')
+    return '\n'.join(head) + '\n' + ',\n'.join(out) + '\n};\n'
+
+
 def build_one(target, do_checks, assert_origin):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
@@ -274,6 +303,10 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    fp = fauna_pack() if target == 'city' else None
+    if fp:
+        bodies[FAUNA_PACK] = fp
+        order = sorted(order + [FAUNA_PACK])
 
     if do_checks:
         errs = check(order, bodies)
@@ -296,7 +329,7 @@ def build_one(target, do_checks, assert_origin):
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -367,12 +400,12 @@ def vendor_manifest():
     out = {}
     for f in VENDORED:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     for f in BIO_VENDORED:
         p = os.path.join(TARGETS, 'city', '86-bio-%s.js' % f)
         if os.path.exists(p):
             with open(p, 'rb') as fh:
-                out['targets/city/86-bio-%s.js' % f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+                out['targets/city/86-bio-%s.js' % f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out

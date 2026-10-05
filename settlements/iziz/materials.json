@@ -1,0 +1,63 @@
+{
+ "build": "iziz",
+ "note": "Iziz's adapter for the biome fauna sheets (the city target's hyperjungle). Each family is a near-colourless sheet that the per-instance tint colours, or the wing's alpha cut-out. All are optional until the sheets are generated (core/materials/PROMPTS-ready.md). build.py's fauna_pack() turns the packed maps into HYPERJUNGLE.FAUNATEX.",
+ "size": 512,
+ "families": {
+  "fauna_wing": {
+   "lib": "wing.butterfly",
+   "optional": true,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "roughLift": 0,
+   "mapOnly": true
+  },
+  "fauna_fur": {
+   "lib": "fur.sloth",
+   "optional": true,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "roughLift": 0,
+   "mapOnly": true
+  },
+  "fauna_hide": {
+   "lib": "hide.strider",
+   "optional": true,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "roughLift": 0,
+   "mapOnly": true
+  },
+  "fauna_ray": {
+   "lib": "skin.sky-ray",
+   "optional": true,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "roughLift": 0,
+   "mapOnly": true
+  }
+ }
+}

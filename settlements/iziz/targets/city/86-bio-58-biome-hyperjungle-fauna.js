@@ -71,13 +71,18 @@ HYPERJUNGLE.WINGTEX=BIO.alphaTex(256,(g,S)=>{   // one wing on a transparent can
  g.strokeStyle=BIO.tex.grey(60);g.lineWidth=12;g.stroke();
  g.strokeStyle=BIO.tex.grey(120);g.lineWidth=2;for(let k=0;k<7;k++){g.beginPath();g.moveTo(8,S*.5);g.quadraticCurveTo(S*.5,S*(.15+.1*k),S*.9,S*(.12+.1*k));g.stroke();}
  [[.62,.32,22],[.55,.68,16],[.80,.50,12]].forEach(e=>{g.fillStyle=BIO.tex.grey(40);g.beginPath();g.arc(S*e[0],S*e[1],e[2],0,TAU);g.fill();g.fillStyle=BIO.tex.grey(230);g.beginPath();g.arc(S*e[0],S*e[1],e[2]*.45,0,TAU);g.fill();});},[150,150,150]);
+// Optional library sheets: a build sets HYPERJUNGLE.FAUNATEX = {wing, fur, hide, ray} (THREE.Texture or an image URL) BEFORE this fragment. `wing` is an alpha cut-out of ONE butterfly wing, root at the left edge; fur, hide and ray are near-colourless, so the instance tint decides
+// the colour. Absent: the look is exactly the vertex-coloured one.
+const FT=HYPERJUNGLE.FAUNATEX||{};
+function ftex(name,rep){const v=FT[name];if(!v)return null;const T=T3(),t=(typeof v==='string')?new T.TextureLoader().load(v):v;
+ t.wrapS=t.wrapT=T.RepeatWrapping;if(rep)t.repeat.set(rep,rep);t.anisotropy=8;t.encoding=T.sRGBEncoding;return t;}
 HYPERJUNGLE.FAUNAMAT={
- ray:BIO.animMat('ray',{mode:'orbit',flap:{rate:1.1,amp:.09,root:.14},vertexColors:true}),
+ ray:BIO.animMat('ray',{mode:'orbit',flap:{rate:1.1,amp:.09,root:.14},vertexColors:true,tex:ftex('ray',2)}),
  dart:BIO.animMat('dart',{mode:'flit',flap:{rate:11,amp:.32,root:.06},vertexColors:true}),
- fly:BIO.animMat('fly',{mode:'flit',flap:{rate:7,amp:.6,root:.02},vertexColors:true,tex:HYPERJUNGLE.WINGTEX,alphaTest:.4}),
+ fly:BIO.animMat('fly',{mode:'flit',flap:{rate:7,amp:.6,root:.02},vertexColors:true,tex:ftex('wing')||HYPERJUNGLE.WINGTEX,alphaTest:.4}),
  mote:BIO.animMat('mote',{mode:'flit',billboard:true,basic:true,additive:true}),
- strider:BIO.animMat('strider',{mode:'walk',legs:{top:.62,amp:.16},vertexColors:true}),
- sloth:BIO.solidMat(null,0xffffff),
+ strider:BIO.animMat('strider',{mode:'walk',legs:{top:.62,amp:.16},vertexColors:true,tex:ftex('hide',2)}),
+ sloth:BIO.solidMat(ftex('fur',2),0xffffff),
 };
 BIO.def('ray',rayGeo(),HYPERJUNGLE.FAUNAMAT.ray,{attrs:['aP0','aP1'],label:'Sky rays'});
 BIO.def('dart',dartGeo(),HYPERJUNGLE.FAUNAMAT.dart,{attrs:['aP0','aP1'],label:'Canopy darts'});

@@ -27,19 +27,19 @@ var FLY_CAP = 140, FLY_RCAP = 140;
 var flyTmpC = new THREE.Color();
 function flyCol(hex, f){ flyTmpC.set(f ? shade(hex, f) : hex).convertSRGBToLinear(); return [flyTmpC.r, flyTmpC.g, flyTmpC.b]; }
 
-function FlyGeo(centre){ this.p = []; this.n = []; this.c = []; this.b = []; this.mx = 1; this.tris = 0; this.cb = centre || {}; }
-FlyGeo.prototype.tri = function(a, b, c, col, bone){
-  var m = this.mx; if(m < 0){ var t = b; b = c; c = t; }
+function FlyGeo(centre){ this.p = []; this.n = []; this.c = []; this.b = []; this.uv = []; this.mx = 1; this.tris = 0; this.cb = centre || {}; }
+FlyGeo.prototype.tri = function(a, b, c, col, bone, uv){   /* uv: optional [[u,v],[u,v],[u,v]] for a, b, c */
+  var m = this.mx; if(m < 0){ var t = b; b = c; c = t; if(uv){ t = uv[1]; uv = [uv[0], uv[2], t]; } }
   var ax = a[0]*m, bx = b[0]*m, cx = c[0]*m;
   var ux = bx-ax, uy = b[1]-a[1], uz = b[2]-a[2], vx = cx-ax, vy = c[1]-a[1], vz = c[2]-a[2];
   var nx = uy*vz-uz*vy, ny = uz*vx-ux*vz, nz = ux*vy-uy*vx, L = Math.sqrt(nx*nx+ny*ny+nz*nz) || 1;
   nx /= L; ny /= L; nz /= L;
   this.p.push(ax, a[1], a[2], bx, b[1], b[2], cx, c[1], c[2]);
-  for(var i=0;i<3;i++){ this.n.push(nx, ny, nz); this.c.push(col[0], col[1], col[2]); this.b.push(bone+1, this.cb[bone] ? 1 : m); }
+  for(var i=0;i<3;i++){ this.uv.push(uv ? uv[i][0] : 0, uv ? uv[i][1] : 0); this.n.push(nx, ny, nz); this.c.push(col[0], col[1], col[2]); this.b.push(bone+1, this.cb[bone] ? 1 : m); }
   this.tris++;
 };
 FlyGeo.prototype.quad = function(a, b, c, d, col, bone){ this.tri(a, b, c, col, bone); this.tri(a, c, d, col, bone); };
-FlyGeo.prototype.plate = function(pts, col, bone){ for(var i=1;i<pts.length-1;i++) this.tri(pts[0], pts[i], pts[i+1], col, bone); };
+FlyGeo.prototype.plate = function(pts, col, bone, uvs){ for(var i=1;i<pts.length-1;i++) this.tri(pts[0], pts[i], pts[i+1], col, bone, uvs ? [uvs[0], uvs[i], uvs[i+1]] : null); };
 /* tapered prism from a to b */
 FlyGeo.prototype.limb = function(a, b, r0, r1, col, bone, ns, cap){
   ns = ns || 3;
@@ -75,8 +75,9 @@ FlyGeo.prototype.box = function(c, s, col, bone){
   this.quad([x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[x0,y1,z0], col, bone); this.quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1], col, bone);
 };
 FlyGeo.prototype.both = function(fn){ this.mx = 1; fn(this); this.mx = -1; fn(this); this.mx = 1; };
-FlyGeo.prototype.build = function(){
+FlyGeo.prototype.build = function(withUV){
   var g = new THREE.BufferGeometry();
+  if(withUV) g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
   g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3));
   g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3));
   g.setAttribute('color', new THREE.Float32BufferAttribute(this.c, 3));
@@ -239,6 +240,18 @@ var flyBones = [], flyFold = [], flyGeoms = [], flyTris = [];
   flyGeoms[FLY_A] = g.build(); flyTris[FLY_A] = g.tris;
 })();
 
+/* Optional library sheet for the dragonfly wings: a build sets FLYTEX = { wing: THREE.Texture | image URL } before this fragment. An alpha cut-out of ONE wing,
+   root at the left edge, leading edge at the top, stretched over each wing's bounding box (the fore and hind wings share it). Absent: the vertex-coloured wings. */
+var FLY_WINGTEX = null;
+(function(){   /* the library's wing sheet (materials.json family 'flywing', optional): a card, so it keeps its alpha */
+  var L = (typeof KMAT !== 'undefined' && KMAT.mode === 'lib') ? KMAT.packed('girder', 'flywing') : null;
+  if(L){ FLY_WINGTEX = KMAT.textures(L, { aniso: FAST ? 1 : 4 }).map; FLY_WINGTEX.generateMipmaps = true;
+    FLY_WINGTEX.minFilter = THREE.LinearMipmapLinearFilter; FLY_WINGTEX.magFilter = THREE.LinearFilter; }
+})();
+if(!FLY_WINGTEX && typeof FLYTEX !== 'undefined' && FLYTEX && FLYTEX.wing){
+  FLY_WINGTEX = (typeof FLYTEX.wing === 'string') ? new THREE.TextureLoader().load(FLYTEX.wing) : FLYTEX.wing;
+  FLY_WINGTEX.anisotropy = 8; FLY_WINGTEX.encoding = THREE.sRGBEncoding;
+}
 /* --- GIANT DRAGONFLY: 6 m body, 4 wings (separate translucent mesh) --- */
 var flyWingGeom, flyWingTris;
 (function(){
@@ -266,12 +279,17 @@ var flyWingGeom, flyWingTris;
   var w = new FlyGeo();
   function oneWing(w, root, len, sweep, bone, y){
     var z = root[2], dx = function(u){ return root[0]+len*u; }, dz = function(u, o){ return z + sweep*u + o; };
-    w.plate([[root[0],y,z+0.05], [dx(0.35),y,dz(0.35,0.40)], [dx(0.85),y,dz(0.85,0.36)], [dx(1.0),y,dz(1.0,0.05)], [dx(0.88),y,dz(0.88,-0.36)], [dx(0.30),y,dz(0.30,-0.30)], [root[0],y,z-0.08]], wing, bone);
+    var pts = [[root[0],y,z+0.05], [dx(0.35),y,dz(0.35,0.40)], [dx(0.85),y,dz(0.85,0.36)], [dx(1.0),y,dz(1.0,0.05)], [dx(0.88),y,dz(0.88,-0.36)], [dx(0.30),y,dz(0.30,-0.30)], [root[0],y,z-0.08]];
+    var x0 = root[0], x1 = dx(1.0), z0 = 1e9, z1 = -1e9, uvs = [];
+    for(var i=0;i<pts.length;i++){ z0 = Math.min(z0, pts[i][2]); z1 = Math.max(z1, pts[i][2]); }
+    for(i=0;i<pts.length;i++) uvs.push([(pts[i][0]-x0)/(x1-x0), (pts[i][2]-z0)/(z1-z0)]);   /* u root to tip, v trailing to leading edge */
+    w.plate(pts, wing, bone, uvs);
   }
   w.both(function(w){
     oneWing(w, FW, 3.35, 0.35, 3, 0.50); oneWing(w, HW, 3.15, -0.45, 4, 0.50);
     oneWing(w, FW, 3.35, 0.35, 5, 0.50); oneWing(w, HW, 3.15, -0.45, 6, 0.50);
-    /* veins + pterostigma on the real wings */
+    /* veins + pterostigma on the real wings (a library sheet draws its own) */
+    if(FLY_WINGTEX) return;
     w.quad([0.28,0.52,0.86], [3.2,0.52,1.42], [3.2,0.52,1.34], [0.28,0.52,0.78], vein, 3);
     w.quad([2.75,0.52,1.36], [3.15,0.52,1.42], [3.15,0.52,1.24], [2.75,0.52,1.18], vein, 3);
     w.quad([0.28,0.52,0.74], [3.3,0.52,0.92], [3.3,0.52,0.86], [0.28,0.52,0.68], vein, 3);
@@ -279,7 +297,7 @@ var flyWingGeom, flyWingTris;
     w.quad([2.6,0.52,0.02], [3.0,0.52,-0.04], [3.0,0.52,-0.22], [2.6,0.52,-0.16], vein, 4);
     w.quad([0.28,0.52,0.06], [3.1,0.52,-0.42], [3.1,0.52,-0.48], [0.28,0.52,0.0], vein, 4);
   });
-  flyWingGeom = w.build(); flyWingTris = w.tris;
+  flyWingGeom = w.build(!!FLY_WINGTEX); flyWingTris = w.tris;
 })();
 
 /* --- BEAST-RIDER + SADDLE. Origin = top of the seat. --- */
@@ -589,7 +607,7 @@ for(var flyI=0; flyI<5; flyI++){
     nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide }), 'fly'+flyI, flySkinHook(flyBones[flyI])));
 }
 flyWingMesh = flyMakeMesh(FLY_D, flyWingGeom, FLY_CAP,
-  nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide, transparent:true, opacity:0.55, depthWrite:false }), 'flyWing', flySkinHook(flyBones[FLY_D])), FLY_D);
+  nlMaterial(new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:true, side:THREE.DoubleSide, transparent:true, opacity:FLY_WINGTEX ? 0.9 : 0.55, depthWrite:false, map:FLY_WINGTEX }), 'flyWing' + (FLY_WINGTEX ? 'Tex' : ''), flySkinHook(flyBones[FLY_D])), FLY_D);
 flyWingMesh.renderOrder = 3;
 
 function flySlotGet(sp, owner){
