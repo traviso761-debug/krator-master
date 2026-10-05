@@ -153,6 +153,27 @@ function ysPlHost(b,o){const st=ysPlStream(o.land?'land host record':'host',b);c
   for(const p of rec.pods.slice(1)){const D=HYK.defs[p.key];const y=alt.find(y=>y+D.h+2<=top&&!(T.avoid&&T.avoid(y-sink,D.h)));if(y==null)continue;p.y=y;p.level=y>=20?'L2':'L1';const w=rec.ways.find(w=>w.a===p.a);if(w)w.y=y;break;}}
  // a type whose faces leave pods one usable plate (the Capsule Stalks' smooth band) keeps only its way in
  if(rec.pods.length>1&&new Set(rec.pods.map(p=>p.y)).size<2){for(const p of rec.pods.slice(1))PL_COUNT[p.key]--;rec.pods.length=1;rec.ways=rec.ways.filter(w=>w.a===rec.pods[0].a);}
+ // SOCKETS (the Capsule Stalks): pods plug into the capsule sockets on all three cores, each on the row just above a
+ // plate, framed on its own core's axis (the draw pass gives HYK.placeOn a proxy host per core). Not into a face that
+ // looks at another core, not across a bridge or the disc, clear of each other and of the centre stalk's pods; the
+ // tubes a pod covers are left out by the builder (ysSocketTaken).
+ if(T.sockets&&typeof HST!=='undefined'){const S=T.sockets(rec.d),cy=ry,cs=Math.cos(cy),sn=Math.sin(cy);rec.sockets=[];
+  const pool=PL_PODS[b.wealth].filter(e=>!HYK.defs[e[0]].into),core=n=>HST.CORES.find(c=>c.n===n);
+  const placed=rec.pods.map(p=>({c:'A',th:p.a+ry,y0:p.y-sink,y1:p.y-sink+HYK.defs[p.key].h,R:HYK.defs[p.key].w/2}));
+  const cand=[];for(const s of S){const yl=Pl.map(y=>y-sink).find(y=>s.y-y>=.4&&s.y-y<=1.7);if(yl!=null)cand.push({s,yl,u:st.next()});}
+  cand.sort((p,q)=>p.u-q.u);let got=0;const want=PL_PODN[b.wealth];
+  for(const {s,yl} of cand){if(got>=want)break;const C=core(s.core);const key=ysPlPick(st,pool),D=HYK.defs[key],R=D.w/2;
+   const capT=Math.min(C.top,whole?C.top:cutY);if(yl+D.h+1>capT)continue;
+   const th=Math.atan2(s.nz,s.nx);
+   if(HST.CORES.some(o=>o!==C&&o.top>yl&&Math.abs(Math.atan2(Math.sin(Math.atan2(o.z-C.z,o.x-C.x)-th),Math.cos(Math.atan2(o.z-C.z,o.x-C.x)-th)))<.8))continue;
+   if(C.n===HST.DISC.core&&yl<HST.DISC.y+1.5&&yl+D.h>HST.DISC.y-1.5)continue;
+   if(HST.BRIDGES.some(([a,bb,y])=>(a===C.n||bb===C.n)&&yl<y+2&&yl+D.h>y-2))continue;
+   const clash=placed.some(t=>{if(yl>=t.y1+1||yl+D.h<=t.y0-1)return false;if(t.c===C.n){let d=Math.abs(th-t.th);d=Math.min(d,TAU-d);return d*C.r<R+t.R+1.2;}
+    const T2=core(t.c);const ax=C.x+Math.cos(th)*(C.r+R),az=C.z+Math.sin(th)*(C.r+R),bx=T2.x+Math.cos(t.th)*(T2.r+t.R),bz=T2.z+Math.sin(t.th)*(T2.r+t.R);return Math.hypot(ax-bx,az-bz)<R+t.R+2;});
+   if(clash)continue;
+   placed.push({c:C.n,th,y0:yl,y1:yl+D.h,R});rec.sockets.push({core:C.n,cx:C.x,cz:C.z,th,y0:yl-.5,y1:yl+D.h+.5,r:C.r,half:R+.9});
+   const wy=yl+sink;rec.pods.push({key,a:+(th-ry).toFixed(4),y:+wy.toFixed(2),level:wy>=20?'L2':'L1',into:false,wealth:D.tags.wealth,core:C.n,cr:C.r,
+    cx:+(rec.x+C.x*cs+C.z*sn).toFixed(2),cz:+(rec.z-C.x*sn+C.z*cs).toFixed(2)});ysPlCount(key);got++;}}
  ysPlTake(ysPlBox(rec.x,rec.z,T.cap,T.cap,PL_RY,'host '+rec.n));PLACE.hosts.push(rec);return rec;}
 
 // ---------------------------------------------------------------- the frontage walker: a block's streets lined with buildings

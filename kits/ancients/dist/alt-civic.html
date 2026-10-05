@@ -31448,7 +31448,7 @@ function buildHostStalks(scene,gx,gz,d){reseed(12030+d);KOFF=[gx,0,gz];const G=n
    if(C.n==='C')kput(dd?'strutR':'strutW',[0,L+1.6+7,0],null,[.4,14,.4],null);}
   anhFlush(BP,P);endGroupXF();
   // the sockets on this stalk: a capsule tube from inside the wall out to the mouth, a porthole on its end
-  for(const S of socks){if(S.core!==C.n||S.y>top-1.5)continue;const q=qFacing([S.nx,0,S.nz]),r0=C.r-.25,len=HST.TUBE.len+.25;
+  for(const S of socks){if(S.core!==C.n||S.y>top-1.5)continue;if(typeof ysSocketTaken==='function'&&ysSocketTaken(S))continue;/* YS: a pod plugs in here */const q=qFacing([S.nx,0,S.nz]),r0=C.r-.25,len=HST.TUBE.len+.25;
    kput(dd?'hstTubeR':'hstTube',[S.x-S.nx*len,S.y,S.z-S.nz*len],q,[S.r,S.r,len],null);
    kput(dd?'hstPortD':'hstPort',[S.x+S.nx*.02,S.y,S.z+S.nz*.02],q,[S.r*.72,S.r*.72,1],null);}}
  // THE BRIDGES (centre to each lesser stalk) and THE DISC round the centre stalk, where the stalks still reach

@@ -13,7 +13,7 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  // (52-sky-abc ysWallHole); hykAccrete then grows the pod bedded into that hole with a back door onto the plate.
  const ways=(o.ways||[]).map(w=>{const R=w.R||4;const rs=rAt(w.y,w.a);const u=((((w.a+ry)/TAU)%1)+1)%1;return {a:w.a,y:w.y,R,u,yb:w.y-sink+R*.447,uw:R*.9/(TAU*rs),hh:R*.88,door:null,room:null};});
  const r0=REG.length;KOFF=[0,0,0];useGroupXF(G);TSTAT.cur=o.key+'/'+d;{const t=tcur();t.host=true;t.n=(t.n||0)+1;}const lush=BIOME.lush;BIOME.lush=0;
- YS_CUT=(o.cutY!=null||o.podium!=null||ways.length)?{cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;
+ YS_CUT=(o.cutY!=null||o.podium!=null||ways.length||o.sockets)?{sockets:o.sockets||null,cutY:o.cutY!=null?o.cutY:null,podium:o.podium!=null?o.podium:null,ways:ways.map(w=>({u:w.u,y:w.yb,uw:w.uw,hh:w.hh}))}:null;
  HOLES=o.holes!=null?o.holes:.4;   // the kit's full decay eats 83 % of a tower's skin; a reclaimed host keeps most of its wall
  const snap={};for(const n in KIT.items)snap[n]=KIT.items[n].length;
  let H=null;try{H=withFlatGround(()=>o.builder(G,0,0,d));}catch(e){reportErr('host '+o.key+' '+e.stack);}
@@ -31,6 +31,10 @@ function ysPlaceHost(scene,o){const d=o.d==null?1:o.d;const G=new THREE.Group();
  if(o.floors){const top=host.cutY!=null?host.cutY-2:1e9;const F=o.floors;for(let k=0;k<400&&F.pitch>0;k++){const y=sink+F.y0+(k?k*F.pitch+(F.top||0):(F.first!=null?F.first:(F.top||0)));if(y>=top)break;
   host.floors.push({k,y,H:F.pitch-.4,kind:y<-.6?'drowned':y<1.4?'tide':'wild',use:0});}}
  host.members=ysHostMembers(host,d);ysHost(host);return host;}
+// A socketed host (the Capsule Stalks) leaves out the capsule tubes a pod plugs into: YS_CUT.sockets lists, per pod,
+// its core, the core's centre (builder frame), the pod's bearing about it, its height span and its half-width on the face.
+function ysSocketTaken(S){const L=(typeof YS_CUT!=='undefined'&&YS_CUT&&YS_CUT.sockets)||null;if(!L)return false;
+ for(const t of L){if(t.core!==S.core||S.y<t.y0||S.y>t.y1)continue;let d=Math.abs(Math.atan2(S.z-t.cz,S.x-t.cx)-t.th);d=Math.min(d,TAU-d);if(d*t.r<t.half)return true;}return false;}
 // The host's members in world space, {n,a,b,r} capsules: the struts and legs a runner can reach for. They mirror the
 // kit's own constants (52-sky-abc.js after the RESTAND: A's 24 struts from r 60 at y 5 to r rFn(64)*.96 at y 70, three
 // gone when ruined; B's 12 legs raked straight from r 42 at the podium to the lobe tips at r rFn(30)*1.15, y 32, two

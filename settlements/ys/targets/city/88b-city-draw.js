@@ -11,12 +11,13 @@ YS_BUILD.push(function(scene){const t0=performance.now();let fail=0;
  PLACE.hosts.forEach((h,i)=>{const T=YS_HOST_TYPES[h.type];const builder=typeof window[T.builder]==='function'?window[T.builder]:null;
   if(!builder){reportErr('host type '+h.type+' has no builder '+T.builder);return;}
   const host=ysPlaceHost(scene,{key:T.key,builder,x:h.x,z:h.z,y:h.sink,ry:h.ry,d:h.d,cutY:h.cutY,podium:h.podium,cap:h.cap,rAt:h.rAt,name:h.n,
-   floors:h.floors,ways:h.ways,ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
+   floors:h.floors,ways:h.ways,sockets:h.sockets||null,ring:h.wealth==='rich'?1:h.wealth==='middle'?2:3});
   if(!host){fail++;return;}
   // the floors table runs to the top of what stands, not on into the sky over a full tower
   h.G=host.G;host.floors=host.floors.filter(f=>f.y<h.top+2);host.full=h.full;host.shaped=h.shaped;host.rec=h;h.drawn=true;
   reseed(32100+i);hykTideline(host);
-  for(const p of h.pods){once(p.key);const G=HYK.placeOn(scene,p.key,host,{y:p.y,a:p.a,level:p.level,into:p.into});if(G)p.drawn=true;else fail++;}
+  for(const p of h.pods){once(p.key);const hp=p.core?Object.create(host,{x:{value:p.cx},z:{value:p.cz},rAt:{value:()=>p.cr}}):host;   /* a socket pod is framed on its own core */
+   const G=HYK.placeOn(scene,p.key,hp,{y:p.y,a:p.a,level:p.level,into:p.into});if(G)p.drawn=true;else fail++;}
   TSTAT.cur=null;});
  // the Ancients builders draw a host as a dozen plain meshes (skin, lining, ribbons, plinth...), so thirty hosts were two
  // hundred draw calls: every host's static opaque meshes are merged across the city, one mesh per material and layout
