@@ -1,0 +1,40 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.moss",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Lush Moss Cushion on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Lush Moss Cushion on Magenta.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.moss). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "moss clumps and cushions on stones, trunks and ruin tops in any biome",
+  "sha1": "630aa1dce4cedf7e411e027edcb10ce0e3aefe2d"
+ }
+}

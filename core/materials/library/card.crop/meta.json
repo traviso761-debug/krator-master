@@ -1,0 +1,39 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.02,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.crop",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card-crop.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Nine long maize-like leaves (#5c8a3a, #7a9a3e, #4e7a32), arching in different directions with pale central ribs and slightly torn tips, on a solid flat bright magenta (#ff00ff) background. (Row card.crop of core/materials/PROMPTS-ready.md.) Pasted into the chat 2026-10-05 as a 1254 px image; the original file name was not kept, so the source is that image converted to PNG.",
+  "reuse": "maize, sugar cane, reeds, canna and any broad strap-leaf crop or marsh plant in any biome or market",
+  "sha1": "e97cbb6cd024c15e422d51e17bd1e9a78097025f"
+ }
+}

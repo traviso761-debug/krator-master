@@ -1,0 +1,40 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "feather",
+  "id": "card.feather.archae",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Eight Raptor Feathers on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Eight Raptor Feathers on Magenta.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.feather.archae). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "any large bird or archaeopteryx; blue and rust flight feathers, tintable by cloth dyes",
+  "sha1": "514076710bc7daca31fb21c2fd228b76e88cfe5f"
+ }
+}

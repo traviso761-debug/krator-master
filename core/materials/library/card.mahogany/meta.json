@@ -1,0 +1,40 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.mahogany",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Glossy Pinnate Leaves on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Glossy Pinnate Leaves on Magenta.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.mahogany). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "pinnate-leaf trees: mahogany, ash, walnut, rowan; any biome kit",
+  "sha1": "261388cc35ecda1d7f56861478e5dedee1a25e18"
+ }
+}

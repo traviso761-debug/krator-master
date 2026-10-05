@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1197
+   ],
+   "seam_after": [
+    0.811,
+    0.91
+   ],
+   "seam_before": [
+    1.24,
+    1.932
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.9,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.cut",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2,
+   1.92
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Seamless Pale Gray Ashlar Stone Wall Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Seamless Pale Gray Ashlar Stone Wall Texture.png",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dressed sandstone ashlar wall: rectangular blocks in even courses, about 0.5 m by 0.3 m, with thin crisp mortar joints, fine tool marks on the faces, small chips at the arrises, faint weathering streaks, a few blocks slightly paler or darker. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+  "sha1": "4ba65ff590eb48323474657d3fad3e291c7b12f9"
+ }
+}

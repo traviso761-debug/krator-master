@@ -1,0 +1,788 @@
+[
+ {
+  "src": "Polished Mahogany Wood Grain Texture.png",
+  "out": "core/materials/library/wood.mahogany",
+  "record": {
+   "id": "wood.mahogany",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wood.mahogany). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Polished Mahogany Wood Grain Texture.png",
+    "reuse": "every culture's polished furniture (the plan's wood.furniture.polished)"
+   }
+  },
+  "options": {
+   "lift": 0.05,
+   "rough_var": 0.2,
+   "rough": 0.35,
+   "dark_gloss": 0.3,
+   "delight": 0.3
+  }
+ },
+ {
+  "src": "Weathered Hammered Iron Texture.png",
+  "out": "core/materials/library/metal.iron.pitted",
+  "record": {
+   "id": "metal.iron.pitted",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.7,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id metal.iron.pitted). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Hammered Iron Texture.png",
+    "reuse": "pots, hinges, brackets, forged work in any culture; a rougher twin of metal.iron"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.6,
+   "normal_strength": 1.3
+  }
+ },
+ {
+  "src": "Weathered Ivory Suture Texture.png",
+  "out": "core/materials/library/bone.skull",
+  "record": {
+   "id": "bone.skull",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bone.skull). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Ivory Suture Texture.png",
+    "reuse": "any skull or bone crest; a bone ground for Reed Lake, Dalab, Highlands"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6
+  }
+ },
+ {
+  "src": "Polished Amber Hornstone Texture.png",
+  "out": "core/materials/library/bone.horn",
+  "record": {
+   "id": "bone.horn",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bone.horn). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Polished Amber Hornstone Texture.png",
+    "reuse": "horn handles and inlays anywhere; amber glassware stand-in"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.35,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "Weathered Antler Bone Texture.png",
+  "out": "core/materials/library/bone.antler",
+  "record": {
+   "id": "bone.antler",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.65,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bone.antler). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Antler Bone Texture.png",
+    "reuse": "antler, driftwood, bleached bark (any biome)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.65
+  }
+ },
+ {
+  "src": "Realistic Golden Leopard Fur Texture.png",
+  "out": "core/materials/library/hide.pelt.cat",
+  "record": {
+   "id": "hide.pelt.cat",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id hide.pelt.cat). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Realistic Golden Leopard Fur Texture.png",
+    "reuse": "rugs and cloaks for Reed Lake, Dalab, Highlands, Xanadu; big-cat fauna"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Brown Furry Hide Texture.png",
+  "out": "core/materials/library/hide.fur.brown",
+  "record": {
+   "id": "hide.fur.brown",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id hide.fur.brown). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Brown Furry Hide Texture.png",
+    "reuse": "sloth, strider and any furred animal (hyperjungle fauna); rugs, hide cloaks"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Seamless Rustic Herringbone Reed Weave.png",
+  "out": "core/materials/library/fibre.reedmat",
+  "record": {
+   "id": "fibre.reedmat",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fibre.reedmat). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Rustic Herringbone Reed Weave.png",
+    "reuse": "the plan's fibre.reedmat (Reed Lake, Dalab, Highlands) and Beast Rider floor mats"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "Subtle Gray Striped Linen Texture.png",
+  "out": "core/materials/library/cloth.silk",
+  "record": {
+   "id": "cloth.silk",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id cloth.silk). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Subtle Gray Striped Linen Texture.png",
+    "reuse": "silk, fine linen and valances in every culture (Xanadu, Iziz, Voth); tint it"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Cracked Ivory Wax Texture.png",
+  "out": "core/materials/library/wax.tallow",
+  "record": {
+   "id": "wax.tallow",
+   "family": "wax",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wax.tallow). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cracked Ivory Wax Texture.png",
+    "reuse": "tallow, wax and cheese; with a tint also plain marble or ivory resin"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Three-Tone Gourd Rind Texture.png",
+  "out": "core/materials/library/organic.gourd",
+  "record": {
+   "id": "organic.gourd",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id organic.gourd). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Three-Tone Gourd Rind Texture.png",
+    "reuse": "gourds and squash for any settlement or biome; three finishes in one sheet"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.55,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Earth Texture with Fine Cracks.png",
+  "out": "core/materials/library/earth.floor.packed",
+  "record": {
+   "id": "earth.floor.packed",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id earth.floor.packed). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Earth Texture with Fine Cracks.png",
+    "reuse": "interior earth floors and dirt paths for Yuni, Locus, Shade, Reed Lake, Dalab"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.95,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Seamless Orange Citrus Peel Texture.png",
+  "out": "core/materials/library/fruit.skin.orange",
+  "record": {
+   "id": "fruit.skin.orange",
+   "family": "fruit",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.skin.orange). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Orange Citrus Peel Texture.png",
+    "reuse": "every citrus and orange fruit (kits/catalog fruit, all biomes)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6
+  }
+ },
+ {
+  "src": "Seamless Golden Citrus Peel Texture.png",
+  "out": "core/materials/library/fruit.skin.amber",
+  "record": {
+   "id": "fruit.skin.amber",
+   "family": "fruit",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.skin.amber). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Golden Citrus Peel Texture.png",
+    "reuse": "every golden or amber fruit (kits/catalog fruit, all biomes)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.55
+  }
+ },
+ {
+  "src": "Seamless Mahogany Seed Pod Texture.png",
+  "out": "core/materials/library/fruit.capsule",
+  "record": {
+   "id": "fruit.capsule",
+   "family": "fruit",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.capsule). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Mahogany Seed Pod Texture.png",
+    "reuse": "seed pods, nuts and dry capsules in any biome"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "Antique Ivory Inlay on Mahogany.png",
+  "out": "core/materials/patterns/beast-riders/bone-inlay",
+  "record": {
+   "id": "beast-riders/bone-inlay",
+   "family": "trim",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    2,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/bone-inlay). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Antique Ivory Inlay on Mahogany.png",
+    "reuse": "bone or ivory inlay trim; as shell inlay for the nacre culture when tinted"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.4,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Handwoven Green Textile with Cream Claw Motifs.png",
+  "out": "core/materials/patterns/beast-riders/claw-tapestry",
+  "record": {
+   "id": "beast-riders/claw-tapestry",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/claw-tapestry). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Handwoven Green Textile with Cream Claw Motifs.png",
+    "reuse": "Beast Rider hangings only"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.9,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Weathered Green Claw Emblem Banner.png",
+  "out": "core/materials/patterns/beast-riders/emblem",
+  "record": {
+   "id": "beast-riders/emblem",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/emblem). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Green Claw Emblem Banner.png",
+    "reuse": "Beast Rider banners only"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.9,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Weathered Skull and Talon Totem Panel.png",
+  "out": "core/materials/patterns/beast-riders/totem",
+  "record": {
+   "id": "beast-riders/totem",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/totem). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Skull and Talon Totem Panel.png",
+    "reuse": "skullpoles in Beast Rider and Screamers settlements"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.6,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Weathered Earth-Tone Pennant Banner.png",
+  "out": "core/materials/patterns/beast-riders/pennant",
+  "record": {
+   "id": "beast-riders/pennant",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/pennant). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Earth-Tone Pennant Banner.png",
+    "reuse": "prayer-flag strings; recolour for other cultures"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.9,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Weathered Crimson and Gold Beast Crest.png",
+  "out": "core/materials/patterns/beast-riders/plaque",
+  "record": {
+   "id": "beast-riders/plaque",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/plaque). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Crimson and Gold Beast Crest.png",
+    "reuse": "council and gallery plaques"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.5,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "Rustic Woven Tribal Rug Pattern.png",
+  "out": "core/materials/patterns/beast-riders/saddle",
+  "record": {
+   "id": "beast-riders/saddle",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/saddle). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Rustic Woven Tribal Rug Pattern.png",
+    "reuse": "saddle blankets, rugs and hangings; swap the claw for another motif"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.9,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Aged Stitched Hide Texture.png",
+  "out": "core/materials/patterns/common/rawhide",
+  "record": {
+   "id": "common/rawhide",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id common/rawhide). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Aged Stitched Hide Texture.png",
+    "reuse": "drying frames, drums, shields, tents in Reed Lake, Dalab, Highlands, Beast Riders"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.7,
+   "normal_strength": 0.6
+  }
+ },
+ {
+  "src": "Spiral-Woven Natural Fiber Basket Texture.png",
+  "out": "core/materials/patterns/common/basket-coil",
+  "record": {
+   "id": "common/basket-coil",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id common/basket-coil). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Spiral-Woven Natural Fiber Basket Texture.png",
+    "reuse": "basket lids, mats and hat tops for Reed Lake, Dalab, Shade and any culture"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.85,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Glowing Amber Fiber Panel.png",
+  "out": "core/materials/patterns/common/lantern-horn",
+  "record": {
+   "id": "common/lantern-horn",
+   "family": "glow",
+   "colour": "#ffffff",
+   "roughness": 0.4,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id common/lantern-horn). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Glowing Amber Fiber Panel.png",
+    "reuse": "any lit lantern or window panel; Highlands, Xanadu, Port"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.4,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "Aged Amber Handmade Paper Panel.png",
+  "out": "core/materials/patterns/common/lantern-paper",
+  "record": {
+   "id": "common/lantern-paper",
+   "family": "glow",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id common/lantern-paper). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Aged Amber Handmade Paper Panel.png",
+    "reuse": "paper lanterns and screens (Highlands, Xanadu, Dalab)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough_var": 0.1,
+   "rough": 0.7,
+   "normal_strength": 0.3
+  }
+ }
+]

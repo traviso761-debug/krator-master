@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.014,
+    1.126
+   ],
+   "seam_before": [
+    1.82,
+    0.767
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.9,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.silk",
+  "metal": 0,
+  "roughness": 0.5,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Subtle Gray Striped Linen Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Subtle Gray Striped Linen Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id cloth.silk). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "silk, fine linen and valances in every culture (Xanadu, Iziz, Voth); tint it",
+  "sha1": "67fcfb7664af9fe86d4a624d41be9533beb71bf8"
+ }
+}

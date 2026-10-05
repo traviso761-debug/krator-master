@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.366,
+    1.103
+   ],
+   "seam_before": [
+    1.232,
+    1.426
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.2,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.chitin.iridescent",
+  "metal": 0,
+  "roughness": 0.35,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Iridescent Beetle Shell Scale Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Iridescent Beetle Shell Scale Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id organic.chitin.iridescent). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "dragonfly and beetle bodies, jewel armour, nacre-culture trim; needs the iridescence hook (PLAN.md, Shader hooks)",
+  "sha1": "8c2d1a8a40c702a279e7cc8a48e1270dd8328e44"
+ }
+}

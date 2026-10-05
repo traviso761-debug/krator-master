@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1239,
+    1247
+   ],
+   "seam_after": [
+    1.563,
+    2.214
+   ],
+   "seam_before": [
+    3.326,
+    2.983
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.3,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "glow",
+  "id": "common/lantern-paper",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Aged Amber Handmade Paper Panel.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Aged Amber Handmade Paper Panel.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id common/lantern-paper). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "paper lanterns and screens (Highlands, Xanadu, Dalab)",
+  "sha1": "7db2134b75787308ee2edd4fc37d4fe9d12c6de6"
+ }
+}

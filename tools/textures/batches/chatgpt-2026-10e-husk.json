@@ -1,0 +1,29 @@
+[
+ {
+  "src": "fruit-husk.png",
+  "out": "core/materials/library/fruit.husk",
+  "record": {
+   "id": "fruit.husk",
+   "family": "fruit",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Husk of a baobab pod: thick velvety fur in grey-brown (#8a7a66) with short dense hairs lying one way, ridges, a few pale patches where it has rubbed away, tiny dry cracks. (Row fruit.husk of core/materials/PROMPTS-ready.md.) Pasted into the chat 2026-10-05 as a 1254 px image; the original file name was not kept, so the source is that image converted to PNG.",
+    "reuse": "baobab pods, fuzzy seed husks, felted hide, moss-bark and velvet-skinned fruit in any biome; a short-fur twin of hide.strider"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9
+  }
+ }
+]

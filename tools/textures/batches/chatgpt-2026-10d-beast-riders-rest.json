@@ -1,0 +1,379 @@
+[
+ {
+  "src": "Cracked Terracotta Reptile Scale Texture.png",
+  "out": "core/materials/library/organic.scale.terracotta",
+  "record": {
+   "id": "organic.scale.terracotta",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id organic.scale.terracotta). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Cracked Terracotta Reptile Scale Texture.png",
+    "reuse": "reptile legs, lizards, armour and roofing scales in any biome (third of the organic.scale family)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.6,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Iridescent Beetle Shell Scale Texture.png",
+  "out": "core/materials/library/organic.chitin.iridescent",
+  "record": {
+   "id": "organic.chitin.iridescent",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id organic.chitin.iridescent). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Beetle Shell Scale Texture.png",
+    "reuse": "dragonfly and beetle bodies, jewel armour, nacre-culture trim; needs the iridescence hook (PLAN.md, Shader hooks)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.35,
+   "dark_gloss": 0.2,
+   "normal_strength": 1.2
+  }
+ },
+ {
+  "src": "Organic Leathery Wing Membrane Texture.png",
+  "out": "core/materials/library/membrane.pterosaur",
+  "record": {
+   "id": "membrane.pterosaur",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id membrane.pterosaur). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Organic Leathery Wing Membrane Texture.png",
+    "reuse": "any leathery wing, sail or tent hide: pterosaurs, wyverns, dragon sails; tint it"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Weathered Leathery Membrane Texture.png",
+  "out": "core/materials/library/membrane.bat",
+  "record": {
+   "id": "membrane.bat",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id membrane.bat). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Leathery Membrane Texture.png",
+    "reuse": "bat wings and dark leathery hide in any culture; also tent and sail hide"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.75,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Moss-Tinted Shaggy Fur Texture.png",
+  "out": "core/materials/library/fur.sloth",
+  "record": {
+   "id": "fur.sloth",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fur.sloth). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Moss-Tinted Shaggy Fur Texture.png",
+    "reuse": "sloths, moss-furred beasts, shaggy rugs; hyperjungle fauna (Iziz fauna_fur)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.95,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Sandy Beige Fine Fur Texture.png",
+  "out": "core/materials/library/hide.strider",
+  "record": {
+   "id": "hide.strider",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id hide.strider). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Sandy Beige Fine Fur Texture.png",
+    "reuse": "short pale fur: striders, deer, antelope, camels, rugs; any grazer (Iziz fauna_hide)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Seamless Dark Brown Fur Texture.png",
+  "out": "core/materials/library/fur.bat",
+  "record": {
+   "id": "fur.bat",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fur.bat). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Dark Brown Fur Texture.png",
+    "reuse": "bats and any dark short fur; pelts, cloaks, saddle blankets"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Seamless Bristled Insect Armor Texture.png",
+  "out": "core/materials/library/chitin.spider",
+  "record": {
+   "id": "chitin.spider",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id chitin.spider). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Bristled Insect Armor Texture.png",
+    "reuse": "spiders, beetles and dark insect armour; ruined-plate dressing"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5,
+   "mute": 0.4,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "Seamless Millipede Armor Texture.png",
+  "out": "core/materials/library/chitin.millipede",
+  "record": {
+   "id": "chitin.millipede",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id chitin.millipede). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Millipede Armor Texture.png",
+    "reuse": "millipedes, centipedes and segmented armour; banded wood trim"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.45,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Cracked Reddish Tree Bark Texture.png",
+  "out": "core/materials/library/bark.mahogany",
+  "record": {
+   "id": "bark.mahogany",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.mahogany). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Cracked Reddish Tree Bark Texture.png",
+    "reuse": "pine, red cedar, redwood-like trunks in any biome (nhighlands, nwlowlands)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "Seamless Elephant-Skin Bark Texture.png",
+  "out": "core/materials/library/bark.baobab",
+  "record": {
+   "id": "bark.baobab",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.baobab). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Elephant-Skin Bark Texture.png",
+    "reuse": "baobab, smooth wrinkled trunks, elephant-hide rock; sedesert and savanna"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85
+  }
+ },
+ {
+  "src": "Seamless Rugged Braided Bark Texture.png",
+  "out": "core/materials/library/bark.ironbark",
+  "record": {
+   "id": "bark.ironbark",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.ironbark). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Rugged Braided Bark Texture.png",
+    "reuse": "ironbark and any deeply furrowed, braided trunk; ancient roots"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8
+  }
+ },
+ {
+  "src": "lamppost.png",
+  "out": "core/materials/library/wood.lamppost",
+  "record": {
+   "id": "wood.lamppost",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.8,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Weathered hardwood post about 20 cm square: vertical grain, deep checks along the length, tar-dark brown with a silvered lighter weathered surface in places, a few old lashing grooves and nail holes, darker at the base from damp. (Pasted in chat 2026-10-05; the original file name was not kept.)",
+    "licence": "generated for this project by its owner",
+    "original_title": "lamppost.png",
+    "reuse": "weathered posts, pilings, fence rails and old timber in any culture"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.3
+  }
+ }
+]

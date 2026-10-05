@@ -1,0 +1,328 @@
+[
+ {
+  "src": "Seamless Pale Gray Ashlar Stone Wall Texture.png",
+  "out": "core/materials/library/stone.cut",
+  "record": {
+   "id": "stone.cut",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    1.92
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dressed sandstone ashlar wall: rectangular blocks in even courses, about 0.5 m by 0.3 m, with thin crisp mortar joints, fine tool marks on the faces, small chips at the arrises, faint weathering streaks, a few blocks slightly paler or darker. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Pale Gray Ashlar Stone Wall Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Seamless Weathered Gray Ashlar Wall Texture.png",
+  "out": "core/materials/library/stone.cut.b",
+  "record": {
+   "id": "stone.cut.b",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.5,
+    2.07
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dressed sandstone ashlar wall: rectangular blocks in even courses, about 0.5 m by 0.3 m, with thin crisp mortar joints, fine tool marks on the faces, small chips at the arrises, faint weathering streaks, a few blocks slightly paler or darker. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Seamless Weathered Gray Ashlar Wall Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.85,
+   "mute": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Gray Plaster Texture.png",
+  "out": "core/materials/library/plaster",
+  "record": {
+   "id": "plaster",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Lime plaster render over rubble: smooth chalky finish with soft trowel sweeps, hairline cracks, a few patched repairs in a slightly different finish, small flaking areas showing the coarser coat beneath, faint water streaks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Gray Plaster Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.9
+  }
+ },
+ {
+  "src": "Monochrome Weathered Brick Wall Texture.png",
+  "out": "core/materials/library/brick",
+  "record": {
+   "id": "brick",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.8,
+    2.55
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fired clay brick wall in running bond, bricks about 22 by 7 cm, slightly irregular edges and sizes, pale lime mortar joints, a few over-fired darker bricks and chipped corners, light efflorescence. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monochrome Weathered Brick Wall Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.9,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Corrugated Metal Texture.png",
+  "out": "core/materials/library/metal.corrugated",
+  "record": {
+   "id": "metal.corrugated",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0.7,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Corrugated sheet-metal roofing seen from above, ribs running vertically, about 7 cm pitch, overlapped sheets with a visible lap seam and round-head fixings along the ribs, dents, scratches and light rust bleeding from the fixings. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Corrugated Metal Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.55,
+   "mute": 0.9,
+   "normal_strength": 1.3,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Gray Barrel Tile Texture.png",
+  "out": "core/materials/library/roof.tile",
+  "record": {
+   "id": "roof.tile",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Curved clay roof tiles in overlapping courses (Spanish barrel tiles: alternating concave and convex rows), slightly irregular, chipped edges, light lichen staining in a few tiles. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Gray Barrel Tile Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.9,
+   "normal_strength": 1.2,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Riveted Iron Plate Texture.png",
+  "out": "core/materials/library/metal.iron",
+  "record": {
+   "id": "metal.iron",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0.8,
+   "scale": [
+    1.5,
+    1.25
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Wrought and cast iron plate for gates, grilles and bands: dark graphite grey with worn lighter highlights, hammer facets, small pits, a thin brown rust film in the hollows, a row of rivets. Near-colourless: pale grey only, so it can be tinted. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Riveted Iron Plate Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.55,
+   "normal_strength": 1.3,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Weathered Verdigris Bronze Panel.png",
+  "out": "core/materials/library/metal.bronze",
+  "record": {
+   "id": "metal.bronze",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.8,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cast bronze sheet with a green-brown patina: warm bronze showing through at the raised edges, verdigris in the recesses, fine casting pits, a hairline seam and a few rivets. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Verdigris Bronze Panel.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5,
+   "normal_strength": 1.1,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "Hammered Gold Bronze Texture.png",
+  "out": "core/materials/library/metal.gold",
+  "record": {
+   "id": "metal.gold",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 1.0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hammered gold leaf over a metal plate for trim: warm gold (#d0a53c) with small hammer facets and faint scratches, darker (#8a6a2a) in the recesses, brighter (#e4c46a) on the raised edges, tiny worn spots showing brown beneath. [Prompt from core/materials/PROMPTS-ready.md; the delivered image is 1254 px under ChatGPT's own title, so it is not confirmed to be the output of this exact text.]",
+    "licence": "generated for this project by its owner",
+    "original_title": "Hammered Gold Bronze Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.35,
+   "normal_strength": 1.3
+  }
+ },
+ {
+  "src": "Ornate Turquoise and Cobalt Islamic Tile Mosaic.png",
+  "out": "core/materials/patterns/iziz/mosaic-b",
+  "record": {
+   "id": "iziz/mosaic-b",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Flat decorative panel of glazed star-and-diamond mosaic in cobalt, turquoise, cream and gold-orange (the owner's second Iziz mosaic; the prompt is not recorded).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Ornate Turquoise and Cobalt Islamic Tile Mosaic.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.3,
+   "lift": 0.0,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "Frosted Glass Scratch Texture.png",
+  "out": "core/materials/library/glass.frosted.b",
+  "record": {
+   "id": "glass.frosted.b",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Frosted glass with fine scratches (the prompt is not recorded).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Frosted Glass Scratch Texture.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5
+  }
+ }
+]

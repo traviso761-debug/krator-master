@@ -1,0 +1,39 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "pad": 0.03,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.flower.bloom",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.7,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Six Vibrant Trumpet Flowers on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.flower.bloom). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "six blooms on one card: cut cells for any biome, Xanadu gardens, market dressing",
+  "sha1": "bc191039b0ece57f3c3e81a4927c77a8c6d99176"
+ }
+}

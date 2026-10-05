@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1236,
+    1193
+   ],
+   "seam_after": [
+    2.221,
+    0.697
+   ],
+   "seam_before": [
+    2.587,
+    7.67
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true,
+   "rough": 0.5,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "beast-riders/plaque",
+  "metal": 0,
+  "roughness": 0.5,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Crimson and Gold Beast Crest.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Crimson and Gold Beast Crest.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/plaque). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "council and gallery plaques",
+  "sha1": "6aa0ea80f2fbd0a8fd4788c7033ee9798dfdaf81"
+ }
+}

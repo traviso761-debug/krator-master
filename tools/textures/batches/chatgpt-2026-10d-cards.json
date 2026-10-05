@@ -1,0 +1,263 @@
+[
+ {
+  "src": "Eight Raptor Feathers on Magenta.png",
+  "out": "core/materials/library/card.feather.archae",
+  "record": {
+   "id": "card.feather.archae",
+   "family": "feather",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.feather.archae). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Eight Raptor Feathers on Magenta.png",
+    "reuse": "any large bird or archaeopteryx; blue and rust flight feathers, tintable by cloth dyes"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Fan of Vivid Ornamental Feathers.png",
+  "out": "core/materials/library/card.feather.crest",
+  "record": {
+   "id": "card.feather.crest",
+   "family": "feather",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.feather.crest). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Fan of Vivid Ornamental Feathers.png",
+    "reuse": "quetzal and parrot crests, headdresses, banners and fans in any culture"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Four Variegated Bromeliad Rosettes.png",
+  "out": "core/materials/library/card.bromeliad",
+  "record": {
+   "id": "card.bromeliad",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.bromeliad). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Four Variegated Bromeliad Rosettes.png",
+    "reuse": "epiphytes and jungle floor in any wet biome"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Glossy Pinnate Leaves on Magenta.png",
+  "out": "core/materials/library/card.mahogany",
+  "record": {
+   "id": "card.mahogany",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.mahogany). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Glossy Pinnate Leaves on Magenta.png",
+    "reuse": "pinnate-leaf trees: mahogany, ash, walnut, rowan; any biome kit"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Hanging Variegated Ivy Vine Curtain.png",
+  "out": "core/materials/library/card.vine",
+  "record": {
+   "id": "card.vine",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.vine). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Hanging Variegated Ivy Vine Curtain.png",
+    "reuse": "hanging vines, ivy and creepers for ruins, jungles, Girder, Voth"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "top",
+   "pad": 0.02,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Lush Moss Cushion on Magenta.png",
+  "out": "core/materials/library/card.moss",
+  "record": {
+   "id": "card.moss",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.moss). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Lush Moss Cushion on Magenta.png",
+    "reuse": "moss clumps and cushions on stones, trunks and ruin tops in any biome"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Three Spiky Green Rosettes on Magenta(1).png",
+  "out": "core/materials/library/card.screwpine",
+  "record": {
+   "id": "card.screwpine",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.screwpine). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Three Spiky Green Rosettes on Magenta(1).png",
+    "reuse": "screwpine, agave, yucca and aloe rosettes in any dry or tropical biome"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Three Spiky Green Rosettes on Magenta.png",
+  "out": "core/materials/library/card.screwpine.b",
+  "record": {
+   "id": "card.screwpine.b",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.screwpine.b). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Three Spiky Green Rosettes on Magenta.png",
+    "reuse": "second layout of the spiky rosettes; same uses"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Iridescent Dragonfly Wing on Magenta.png",
+  "out": "core/materials/library/wing.dragonfly",
+  "record": {
+   "id": "wing.dragonfly",
+   "family": "wing",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wing.dragonfly). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "original_title": "Iridescent Dragonfly Wing on Magenta.png",
+    "reuse": "any large insect wing: dragonflies, damselflies, fairy wings; a tight crop for bounding-box mapping"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "tight",
+   "pad": 0.0,
+   "key": "#ff00ff"
+  }
+ }
+]

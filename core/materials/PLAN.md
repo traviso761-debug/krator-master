@@ -844,6 +844,73 @@ their white margins, 4.5:1); Reed Lake `chakana`, `fringe` and two chakana texti
 `wax.candle`, `bone.ivory`, `fibre.wicker` (magenta key still to be cut), `cloth.rug.wool`, `ground.road.ruts`, `ground.asphalt`. Still missing from section 8: `wood.furniture.polished`.
 Wide or tall sheets keep their shape (`process.py --keep-aspect`); painted sheets are not de-lit.
 
+#### Delivered 2026-10-05 and processed: Beast Rider furniture, goods and interiors (28 images)
+
+From `PROMPTS-ready.md` (batches `chatgpt-2026-10c-beast-riders.json` and `chatgpt-2026-10c-cards.json`; the sheets on a magenta key go through
+`cards.py`, which now has a chroma-key step: option `key`). Where a set is not Beast-Rider-specific it has a **generic id** so another culture takes it
+without a copy; the third column says who else can use it.
+
+| Set | Prompt row | Reuse (do not regenerate these) |
+|---|---|---|
+| `library/wood.mahogany` | `wood.mahogany` | the plan's `wood.furniture.polished` (section 8) for every culture's furniture; tint to taste |
+| `library/metal.iron.pitted` | `metal.iron.pitted` | a rougher twin of Iziz's `metal.iron`; pots, hinges, brackets anywhere |
+| `library/bone.skull`, `bone.horn`, `bone.antler` | same | Reed Lake, Dalab, Highlands bone and horn trim; `bone.horn` also reads as amber glass or resin; `bone.antler` as bleached driftwood or bark in any biome |
+| `library/hide.pelt.cat` | `hide.pelt.cat` | rugs and cloaks in Reed Lake, Dalab, Highlands, Xanadu; big-cat fauna. Full colour (leopard), not tintable |
+| `library/hide.fur.brown` | not in the list (an extra) | **the fauna fur**: sloths and striders (Iziz's `fauna_fur`, `fauna_hide`), rugs, cloaks. Tintable |
+| `library/fibre.reedmat` | `fibre.mat.floor` | **also the plan's `fibre.reedmat`** (Reed Lake, Dalab, Highlands). A herringbone, where the row asked for a twill: fine |
+| `library/cloth.silk` | `cloth.silk` | silk, fine linen and valances for Xanadu, Iziz, Voth, the nacre culture. Neutral: tint it |
+| `library/wax.tallow` | `wax.tallow` | tallow, wax, cheese; tinted, plain marble or ivory resin. (`wax.candle` stays for candles) |
+| `library/organic.gourd` | `organic.gourd` | gourds and squash in any settlement or biome |
+| `library/earth.floor.packed` | `earth.floor.packed` | interior earth floors and dirt paths: Yuni, Locus, Shade, Reed Lake, Dalab |
+| `library/fruit.skin.orange`, `fruit.skin.amber`, `fruit.capsule` | same | `kits/catalog` fruit in every biome (`biomes/FRUIT.md`); the capsule serves any dry pod or nut |
+| `library/card.flower.bloom` | `card.flower.bloom` | six trumpet blooms on one card (cut cells for the butterflies' flowers, Xanadu gardens, market stalls) |
+| `library/fibre.net` | `fibre.net` | a card: cargo nets, fishing nets and hammocks for Port, Ring Sea, Reed Lake, Girder |
+| `patterns/common/rawhide` | `hide.rawhide` | drying frames, drums, shields, tents: Reed Lake, Dalab, Highlands. Single panel |
+| `patterns/common/basket-coil` | `fibre.basket.coiled` | basket lids, mats, hat tops: Reed Lake, Dalab, Shade. A single spiral, not a tile |
+| `patterns/common/lantern-horn`, `lantern-paper` | `lantern.horn`, `lantern.paper` | any lit lantern or window panel: Highlands, Xanadu, Port, Dalab. Single panels |
+| `patterns/beast-riders/bone-inlay` | `bone-inlay` | also shell inlay for the nacre culture when tinted |
+| `patterns/beast-riders/claw-tapestry`, `emblem`, `totem`, `pennant`, `plaque`, `saddle` | same (`saddle` is the `rider.saddle` row) | Beast Rider only; `pennant` and `saddle` can be recoloured for other cultures |
+
+**Not in this batch:** `wood.lamppost`; every flora row (the mahogany and ironbark and baobab barks, the mahogany, vine, screwpine, bromeliad, moss and crop cards)
+except the flower card; every mount and fauna row (membranes, feathers, wings, chitin, sloth, strider and ray skins) except `hide.fur.brown`.
+
+**Look first:** `bone.horn` shows a mirrored zigzag when tiled (its bands curve); `wood.mahogany` and `fruit.skin.*` tile cleanly; `common/rawhide`, `lantern-*`
+and `beast-riders/plaque` are single panels (their seam scores are high on purpose).
+
+**Iziz delivery (same day, `iziz-2026-10-materials.json`, 11 images):** `stone.cut`, `stone.cut.b`, `plaster`, `brick`, `metal.corrugated`, `roof.tile` (all near-grey
+and tintable, so they serve the other Iziz-style builds: Voth, Xanadu, Highlands, Port), `metal.iron`, `metal.bronze`, `metal.gold`, `patterns/iziz/mosaic-b`
+(cobalt, turquoise, cream; the Iziz source's own mosaic colours), `glass.frosted.b`. Their tile sizes follow the cropped period (the scale's second number
+is the width times the crop's height over its width). The corrugated sheet shows its lap seam as a horizontal line every tile.
+
+
+#### Delivered 2026-10-05 (second part, `br.zip`) and processed: the rest of the Beast Rider set (22 images, one a duplicate)
+
+Batches `chatgpt-2026-10d-beast-riders-rest.json` (13 surfaces) and `chatgpt-2026-10d-cards.json` (9 cut-outs, keyed from magenta).
+`wood.lamppost` was pasted into the chat, not saved: its source is the 1254 px image from the session, converted to PNG. The sixth trumpet-flower image
+(`... (1).png`) is byte-identical to the one already processed, so it was skipped.
+
+| Set | Prompt row | Reuse |
+|---|---|---|
+| `organic.scale.terracotta` | `skin.scale.archae` | reptile scales anywhere (third of the `organic.scale` family) |
+| `organic.chitin.iridescent` | `chitin.dragonfly` | any beetle, dragonfly or jewel surface; wants the iridescence hook |
+| `membrane.pterosaur`, `membrane.bat` | same | leathery wings, sails, tent hide, dragon hide in any culture |
+| `fur.sloth`, `hide.strider`, `fur.bat` | same | the Iziz sloths and striders (`fauna_fur`, `fauna_hide`); any furred animal, pelts, saddle blankets |
+| `chitin.spider`, `chitin.millipede` | same | insect and segmented armour; the millipede also as banded wood trim |
+| `bark.mahogany`, `bark.baobab`, `bark.ironbark` | same | the three hyperjungle barks; also pine, baobab-like and furrowed trunks in other biomes |
+| `wood.lamppost` | `wood.lamppost` | posts, pilings and fence rails in any culture |
+| `card.feather.archae`, `card.feather.crest` | `feather.archae`, `feather.quetzal-crest` | feathers for any bird, headdress, banner or fan |
+| `card.bromeliad`, `card.mahogany`, `card.vine`, `card.moss`, `card.screwpine` (+ `.b`) | same | jungle and ruin dressing in any biome |
+| `wing.dragonfly` | `wing.dragonfly` | a tight-cropped wing for bounding-box mapping (Girder `flywing`); any insect wing |
+| `card.crop` | `card.crop` | nine maize-like strap leaves (a card): maize, cane, reeds, canna, any crop or marsh plant (pasted into the chat, batch `chatgpt-2026-10e-crop.json`) |
+| `fruit.husk` | `fruit.husk` | velvet pod husk: baobab pods, felted hide, moss-bark and fuzzy fruit; a short-fur twin of `hide.strider` (pasted into the chat, batch `chatgpt-2026-10e-husk.json`) |
+
+Still not delivered: `wing.butterfly`, `skin.sky-ray`. Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
+(`bark0`, `bark3` in materials.json; 2026-10-05); `wood.lamppost` is ready for the `timber` family or a lamp-post family of its own.
+
+**Known issues of this delivery:** `card.vine` is anchored at the top and its cut is clean but the stem colour is purple-brown; `wing.dragonfly` is stretched
+square (it loses vertical resolution); `bone.horn`, `common/rawhide`, `lantern-*` and `beast-riders/plaque` are not tileable (see above); nothing in this
+delivery has been judged in a render yet.
+
 ## Built so far (2026-10-02)
 
 Nine ChatGPT-generated sources from the Beast Rider prompts above, processed by `tools/textures/process.py`
@@ -906,6 +973,8 @@ What the first delivery taught:
   *2026-10-03, the owner's generated sets:* `bark.ghostwood` (12 x 12 m), `bark.prismgum` (24 x 30 m, full colour, the
   strips must stay about 2 m wide to read at a distance), `leaf.understorey` on the `leafy` family, and every bark
   with the break-up. The spider web stays procedural (it reads fine).
+  *2026-10-05:* the generated `bark.ironbark` (12 x 18 m) and `bark.baobab` (8 x 8 m) replace the willow and the blue gum,
+  and the dragonfly wing is the optional `flywing` card (`wing.dragonfly`, mapped by each wing's bounding box).
 - **Cards** (alpha cut-outs: `record.kind 'card'`, written by `tools/textures/cards.py`, batch
   `girder-cards-2026-10.json`): `card.ironbark`, `card.ghostwood`, `card.prismgum`, `card.baobab` (the four species'
   leaf clumps), `card.ghostwood-flower` (the racemes, full colour), `card.fern` and `card.broadleaf` (two cells of the

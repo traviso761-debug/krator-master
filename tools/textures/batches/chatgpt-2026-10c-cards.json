@@ -1,0 +1,58 @@
+[
+ {
+  "src": "Six Vibrant Trumpet Flowers on Magenta.png",
+  "out": "core/materials/library/card.flower.bloom",
+  "record": {
+   "id": "card.flower.bloom",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.flower.bloom). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "reuse": "six blooms on one card: cut cells for any biome, Xanadu gardens, market dressing"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.03,
+   "key": "#ff00ff"
+  }
+ },
+ {
+  "src": "Frayed Hemp Net on Magenta.png",
+  "out": "core/materials/library/fibre.net",
+  "record": {
+   "id": "fibre.net",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fibre.net). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+    "licence": "generated for this project by its owner",
+    "reuse": "nets, cargo nets and hammocks for Port, Ring Sea, Reed Lake and Girder"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff"
+  }
+ }
+]

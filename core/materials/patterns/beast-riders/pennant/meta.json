@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1767,
+    867
+   ],
+   "seam_after": [
+    0.834,
+    0.102
+   ],
+   "seam_before": [
+    0.373,
+    0.233
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "beast-riders/pennant",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   4,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Earth-Tone Pennant Banner.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Earth-Tone Pennant Banner.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id beast-riders/pennant). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "prayer-flag strings; recolour for other cultures",
+  "sha1": "e4431bb7995bfb3843810f61a4394fc77d6adeaa"
+ }
+}

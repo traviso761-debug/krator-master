@@ -1,0 +1,40 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "tight",
+   "pad": 0.0,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wing",
+  "id": "wing.dragonfly",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Iridescent Dragonfly Wing on Magenta.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "original_title": "Iridescent Dragonfly Wing on Magenta.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id wing.dragonfly). The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "any large insect wing: dragonflies, damselflies, fairy wings; a tight crop for bounding-box mapping",
+  "sha1": "e5b3d2a5a982c9c8ed153025aec81478488036ce"
+ }
+}
