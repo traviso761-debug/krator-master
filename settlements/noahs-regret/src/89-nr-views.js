@@ -17,7 +17,7 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  V['The stern: funnels and garden']=nrV(nrHP(PH-90,-70,L.TOP+40),nrHP(PH,0,L.TOP+6));
  V['The atrium: the grand stair']=nrV(nrHP(PQ-17,-1,L.D[0]+1.7),nrHP(PQ+6,0,L.D[1]+3));
  V['The atrium from the dome gallery']=nrV(nrHP(PQ-15,-14.9,L.TOP+2.0),nrHP(PQ+12,5,L.D[1]));
- V['The bow: the forecastle and the stem']=nrV(nrHP(-70,70,L.D[0]+10),nrHP(0,26,L.D[1]));
+ V['The bow: the forecastle and the stem']=nrV(nrHP(-30,95,L.D[0]+14),nrHP(3,24,L.D[1]+1));
  {const M=NR.PIERS.find(p=>p.kind==='mole'),e=nrPierPt(M,M.len+40,-34,L.D[0]+16),a=nrPierPt(M,M.len*.45,0,L.D[0]);
   V['The liner mole']=nrV(nrH2W(e[0],e[1],e[2]),nrH2W(a[0],a[1],a[2]));}
  {const A=NR.PIERS.filter(p=>p.kind==='arm'),m=[(A[0].head[0]+A[1].head[0])/2,(A[0].head[1]+A[1].head[1])/2];
