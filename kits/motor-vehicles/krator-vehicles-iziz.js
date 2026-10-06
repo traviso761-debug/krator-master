@@ -17,6 +17,12 @@
 VEHICLE_CULTURE('iziz', {
   name: 'Empire of Iziz', sign: 'sun',
   lore: 'hyperjungle empire; the Forgemasters keep Ancient machines running',
+  /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
+  detail: {
+    ochreOrange: 'paint', ochreOrangeDark: 'paint', creamPaint: 'paint', creamDark: 'paint', tealPaint: 'paint',
+    rocket: 'paint', rocketTip: 'paint', underbody: 'metal', stripeCream: 'tarp', crate: 'wood', canvas: 'canvas',
+    tealGlass: null
+  },
   /* PALETTE (sRGB; the runtime converts to linear). Vehicle keys only: the catalog's own iziz keys are
      not in this bundle (vehicle_bundle.py carries only the catalog core) */
   palette: {
@@ -149,9 +155,9 @@ VEHICLE({
       for (let i = 0; i < stripes; i++) {
         const x0 = -1.06 + i * 2.12 / stripes, x1 = x0 + 2.12 / stripes, sag = function (x) { return 2.99 - 0.05 * (1 - Math.pow(x / 1.06, 2)); };
         const col = c(i % 2 ? 'stripeCream' : 'ochreOrange');
-        F.tri([x0, sag(x0), -1.4], [x1, sag(x1), -1.4], [x1, sag(x1), -3.1], col);
-        F.tri([x0, sag(x0), -1.4], [x1, sag(x1), -3.1], [x0, sag(x0), -3.1], col);
-        F.tri([x0, sag(x0), -3.1], [x1, sag(x1), -3.1], [(x0 + x1) / 2, 2.84, -3.15], col);              /* the scalloped valance */
+        F.tri([x0, sag(x0), -1.4], [x1, sag(x1), -1.4], [x1, sag(x1), -3.1], col, 'tarp');
+        F.tri([x0, sag(x0), -1.4], [x1, sag(x1), -3.1], [x0, sag(x0), -3.1], col, 'tarp');
+        F.tri([x0, sag(x0), -3.1], [x1, sag(x1), -3.1], [(x0 + x1) / 2, 2.84, -3.15], col, 'tarp');              /* the scalloped valance */
       }
       F.rod(0.75, 2.62, -0.2, 0.75, 3.2, -0.2, 0.02, c('gold'), 'metal');
       F.knob(0.75, 3.25, -0.2, 0.08, c('gold'), 'metal');

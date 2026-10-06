@@ -14,12 +14,15 @@ global THREE (r128). The catalog core is read from kits/catalog at bundle time, 
 vehicle build on its next build.
 
 A name in `cultures` is a FILE SUFFIX: 'geomancer' picks krator-vehicles-geomancer.js.
+tex=False leaves the detail maps out (KV_TEX null: vertex colours only, as before 2026-10-06).
 """
-import os
+import base64, json, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG = os.path.join(os.path.dirname(HERE), 'catalog')
-CORE = [(CATALOG, 'krator-furniture-core.js'), (HERE, 'vehicles-core.js')]
+CORE = [(CATALOG, 'krator-furniture-core.js'), (HERE, 'vehicles-core.js'), (HERE, 'vehicles-detail.js')]
+TEX = os.path.join(HERE, 'tex')                 # tools/textures/pack.py kits/motor-vehicles (materials.json)
+DEFAULT_SLOTS = ('paint', 'metal', 'rubber')    # vehicles-detail.js falls back to these for any culture
 RUNTIME = (HERE, 'krator-vehicles-runtime.js')
 PREFIX = 'krator-vehicles-'
 
@@ -53,9 +56,37 @@ def label(d, f):
     return ('kits/catalog/' if d == CATALOG else 'kits/motor-vehicles/') + f
 
 
-def bundle(cultures=None):
+def textures(fs, on=True):
+    """KV_TEX: the packed detail maps (tex/, committed) as data URLs, only the families the culture files name
+    (a quoted slot name: a palette key's detail, or a family passed to a primitive) plus the defaults. No image
+    library: the files are read as bytes, so the bundle is deterministic."""
+    pj = os.path.join(TEX, 'pack.json')
+    if not on or not os.path.isfile(pj):
+        return 'const KV_TEX = null;\n'
+    pack = json.load(open(pj, encoding='utf-8'))
+    slots = json.load(open(os.path.join(HERE, 'materials.json'), encoding='utf-8'))['slots']
+    text = ''.join(read(d, f) for d, f in fs if f.startswith(PREFIX))
+    used = [s for s in slots if s in DEFAULT_SLOTS or ("'%s'" % s) in text]
+    fam = {}
+    for s in used:
+        e = pack['families'].get(s)
+        if not e:
+            continue
+        m = (e.get('tint') or {}).get('mean') or 0.5
+        f = {'tile': e['scale'][0], 'gain': round(1 / max(0.05, m ** 2.2), 5), 'ns': e.get('normalScale', 1.0), 'lib': e['lib']}
+        for k, name in sorted(e['files'].items()):
+            raw = open(os.path.join(TEX, name), 'rb').read()
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(raw).decode('ascii')
+        fam[s] = f
+    top = max([slots.index(s) for s in fam] or [0])          # the atlas grows to 4 rows only when a slot past 8 is packed
+    return 'const KV_TEX = %s;\n' % json.dumps({'size': pack['size'], 'cols': 4, 'rows': 2 if top < 8 else 4, 'slots': slots, 'fam': fam},
+                                                sort_keys=True, separators=(',', ':'))
+
+
+def bundle(cultures=None, tex=True):
     fs = files(cultures)
     body = ''.join('/* ---- %s ---- */\n%s\n' % (label(d, f), read(d, f)) for d, f in fs)
+    body = '/* ---- kits/motor-vehicles/tex (generated: the detail maps, materials.json) ---- */\n' + textures(fs, tex) + body
     return safe('/* kits/motor-vehicles bundle (vehicle_bundle.py): %s. GENERATED; edit the kit files. */\n'
                 'var KratorVehicles = (function () {\n%s\nreturn KV_API;\n})();\n'
                 % (', '.join(label(d, f) for d, f in fs), body))

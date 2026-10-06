@@ -50,7 +50,9 @@ const VEHICLE_TERRAIN = ['sand', 'salt flat', 'track', 'road', 'mud', 'rock', 's
    so F.col('paint') resolves against the vehicle's own culture as furniture does */
 const VEHICLE_CULTURES = {};
 function VEHICLE_CULTURE(key, info) {
-  VEHICLE_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '' };
+  VEHICLE_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '',
+    palette: Object.assign({}, info.palette || {}),
+    detail: Object.assign({}, info.detail || {}) };      /* palette key -> detail family (vehicles-detail.js); null: none */
   FPAL[key] = Object.assign(FPAL[key] || {}, info.palette || {});
 }
 
@@ -64,10 +66,12 @@ function VEHICLE(o) {
   o.data = o.data || {};
   VEHICLES.push(o); VEHICLE_BY_KEY[o.key] = o;
 }
-/* the draw-call and triangle budget verify.py holds a vehicle to: two body meshes plus one per wheel, and
+/* the draw-call and triangle budget verify.py holds a vehicle to: two body meshes plus one per wheel (and one for
+   a tracked vehicle's belts), and
    6 000 triangles unless the entry declares more (budget: { tris }): a big crawler is one per world, not a fleet */
 function vehicleBudget(A) {
-  return { meshes: 2 + ((A.data && A.data.wheels) || []).length, tris: (A.budget && A.budget.tris) || 6000 };
+  const tracked = A.tags && (A.tags.drive === 'tracked' || A.tags.drive === 'half-track');   /* + the belts mesh */
+  return { meshes: 2 + ((A.data && A.data.wheels) || []).length + (tracked ? 1 : 0), tris: (A.budget && A.budget.tris) || 6000 };
 }
 /* the data of one variant: the entry's data with that variant's overrides merged on top (wheels copied) */
 function vehicleData(A, v) {
@@ -92,6 +96,7 @@ const VEHICLE_LAMP_FAMILIES = { lamp: 1, lampTail: 2, lampAmber: 3, lampBlue: 4 
 function vehicleFrame(opt) {
   const F = makeFrame(0, 0, 0, opt);
   F.lamps = [];
+  F.belts = [];
   /* the vehicle frame always sits at the origin, unturned (the host moves the finished group), so local = world here.
      F.rod is replaced by a leaner one: a vehicle is mostly tube, and the catalog's 8-sided rods would spend half the
      triangle budget on it. Sides by radius: under 2 cm 4, under 6 cm 6, else 8; end caps only from 3.5 cm up (a thin
@@ -224,8 +229,9 @@ function vehicleFrame(opt) {
   };
   /* a track belt round a set of wheels: circles [[z, y, r], ...] in the side plane at x, the belt of width w and
      thickness t running round their convex hull; shoes every `pitch` metres (each a block, a small gap between).
-     The lowest run sits on y = 0 when the lowest wheels' bottoms are at y = t. Static: the road wheels turn, the
-     belt does not (KNOWN_ISSUES.md). */
+     The lowest run sits on y = 0 when the lowest wheels' bottoms are at y = t. The belt is RECORDED, not drawn
+     here (F.belts): the runtime makes every belt of a vehicle one mesh, `belts`, whose shoes roll() runs round
+     the loop (vehicleBeltShoe), the bottom run backward as the vehicle goes forward. */
   F.track = function (x, w, t, circles, pitch, color, family) {
     const pts = [];
     for (const c of circles) for (let i = 0; i < 32; i++) {
@@ -244,16 +250,7 @@ function vehicleFrame(opt) {
     let tot = 0;
     for (let i = 0; i < hull.length; i++) { const a = hull[i], b = hull[(i + 1) % hull.length], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); L.push(tot); tot += l; }
     const n = Math.max(8, Math.round(tot / pitch)), step = tot / n;
-    const at = function (s) {
-      s = ((s % tot) + tot) % tot;
-      let k = 0; while (k + 1 < seg.length && L[k + 1] <= s) k++;
-      const q = seg[k], f = q[2] > 0 ? (s - L[k]) / q[2] : 0;
-      return [q[0][0] + (q[1][0] - q[0][0]) * f, q[0][1] + (q[1][1] - q[0][1]) * f];
-    };
-    for (let i = 0; i < n; i++) {
-      const s = i * step, a = at(s - step * 0.38), b = at(s + step * 0.38);
-      F.beam(x, a[1], a[0], x, b[1], b[0], w, t, color, family);
-    }
+    F.belts.push({ x: x, w: w, t: t, n: n, step: step, tot: tot, seg: seg, L: L, color: color, family: family || '' });
     return n;
   };
   /* a wheel of this vehicle built INTO the body (a spare), hub at (x, y, z), axle along (ax, ay, az) */
@@ -266,6 +263,20 @@ function vehicleFrame(opt) {
     return _add(g);
   };
   return F;
+}
+
+/* a point at arc length s round a recorded belt's loop, in (z, y) */
+function vehicleBeltAt(B, s) {
+  s = ((s % B.tot) + B.tot) % B.tot;
+  let k = 0; while (k + 1 < B.seg.length && B.L[k + 1] <= s) k++;
+  const q = B.seg[k], f = q[2] > 0 ? (s - B.L[k]) / q[2] : 0;
+  return [q[0][0] + (q[1][0] - q[0][0]) * f, q[0][1] + (q[1][1] - q[0][1]) * f];
+}
+/* one shoe at arc length s: centre (z, y) and its tilt (cos, sin) in the side plane, the chord of 0.76 of a step */
+function vehicleBeltShoe(B, s) {
+  const a = vehicleBeltAt(B, s - B.step * 0.38), b = vehicleBeltAt(B, s + B.step * 0.38);
+  const dz = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dz, dy) || 1;
+  return { z: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2, c: dy / l, s: dz / l };
 }
 
 /* ---------------------------------------------------------------- shared wheel builder

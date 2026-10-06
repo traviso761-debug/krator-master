@@ -18,13 +18,18 @@ What it does (cut down from kits/catalog/verify.py):
                          z in [-d/2, d/2] (within TOL_M); more than UNDER_FRAC smaller on an axis is a WARN
        budget            at most 2 + one per wheel meshes (draw calls), and MAX_TRIS triangles unless the entry
                          declares more (budget.tris, never over BIG_TRIS)
-       moving-parts      wheel_* children at their declared hubs (x, r, z); steer_* pivots for the steered
+       moving-parts      wheel_* children at their declared hubs (x, r + lift, z); a tracked vehicle's belts mesh
+                         runs on roll(), stays on the ground and comes back on roll(-d); steer_* pivots for the steered
                          wheels; roll() turns a wheel by metres / r; steer() turns and clamps the front pair;
                          lights() switches the lamp material's emissive; lamps listed and inside the box
        tags              class, type, drive, seats, fuel, terrain from the kit's vocabularies; the data a
                          host reads (speed, seats, cargo, fuel, tank, wheels, maxSteer)
        colour            the body's vertex colours hold the LINEAR value of the variant's paint (sRGB in the
                          palette): the conversion the runtime promises
+       textures          every mesh has a detail slot per vertex (aDetS: -1 or a slot of the atlas); with the
+                         bundle's maps on, every material carries the atlas hook (vehicles-detail.js)
+       clearance         at full lock both ways (and straight), no steered wheel's vertex falls within 2 cm of the
+                         body's surfaces (sampled into 2 cm cells)
        deterministic     two builds with the same seed are identical, vertex for vertex
      plus, in a BLANK page with only three.min.js:
        bundle-alone      dist/krator-vehicles.js loads, adds exactly one global (KratorVehicles), and builds
@@ -76,6 +81,24 @@ function measure(g){
   });
   return {box,meshes,tris:Math.round(tris),nan,wheelMin};
 }
+/* full-lock clearance: the body's surfaces sampled into 2 cm cells; a steered wheel's vertices at +-maxSteer (and
+   straight ahead) must fall in none of them */
+function lockHits(g){
+  const C=0.02,key=(x,y,z)=>Math.round(x/C)+','+Math.round(y/C)+','+Math.round(z/C),occ=new Set();
+  const A=new THREE.Vector3(),B=new THREE.Vector3(),D=new THREE.Vector3(),P=new THREE.Vector3();
+  g.updateMatrixWorld(true);
+  g.traverse(o=>{if(!o.isMesh||!/^body/.test(o.name))return;const p=o.geometry.attributes.position;
+    for(let i=0;i<p.count;i+=3){A.fromBufferAttribute(p,i);B.fromBufferAttribute(p,i+1);D.fromBufferAttribute(p,i+2);
+      const n=Math.min(60,Math.ceil(Math.max(A.distanceTo(B),A.distanceTo(D),B.distanceTo(D))/(C*0.7)));
+      for(let u=0;u<=n;u++)for(let v=0;v<=n-u;v++){P.copy(A).multiplyScalar(1-(u+v)/n).addScaledVector(B,u/n).addScaledVector(D,v/n);occ.add(key(P.x,P.y,P.z));}}});
+  const out=[];
+  for(const sg of [1,-1,0]){KV.steer(g,sg*10);g.updateMatrixWorld(true);
+    for(const W of (g.userData.wheels||[]).filter(w=>w.steer)){const m=g.getObjectByName(W.name),p=m.geometry.attributes.position;let h=0;
+      for(let i=0;i<p.count;i++){P.fromBufferAttribute(p,i).applyMatrix4(m.matrixWorld);if(occ.has(key(P.x,P.y,P.z)))h++;}
+      if(h)out.push(W.name+(sg>0?' at +lock':sg<0?' at -lock':' straight')+': '+h+' vertices in the body');}}
+  KV.steer(g,0);
+  return out;
+}
 function sig(g){let h=0;g.updateMatrixWorld(true);g.traverse(o=>{if(!o.isMesh)return;const a=o.geometry.attributes.position.array;
   for(let i=0;i<a.length;i+=7)h=(h*31+Math.round(a[i]*1e4))|0;h=(h*31+a.length)|0;});return h;}
 const C=KV, inList=(v,L)=>L.indexOf(v)>=0;
@@ -121,6 +144,21 @@ for(const E of KV.list()){
       if(Math.abs(da-1/w.r)>1e-6)r.fail.push('moving: roll(1 m) turned '+w.name+' by '+da);
     }
     if(!(u.wheels||[]).length)r.fail.push('moving: no wheels listed');
+    const bm=g.getObjectByName('belts'), trk=(E.tags||{}).drive==='tracked'||(E.tags||{}).drive==='half-track';
+    if(trk&&!bm)r.fail.push('moving: tracked, but no belts mesh');
+    if(bm){const P=bm.geometry.attributes.position.array, a0=Array.from(P);KV.roll(g,0.07);
+      let mv=false,mn=1e9;for(let i=0;i<P.length;i++){if(Math.abs(P[i]-a0[i])>1e-4)mv=true;if(i%3===1&&P[i]<mn)mn=P[i];}
+      KV.roll(g,-0.07);let err=0;for(let i=0;i<P.length;i++)err=Math.max(err,Math.abs(P[i]-a0[i]));
+      if(!mv)r.fail.push('moving: roll() does not run the belts');
+      if(Math.abs(mn)>cfg.ground)r.fail.push('moving: a rolled belt leaves the ground (lowest y '+f2(mn)+')');
+      if(err>1e-4)r.fail.push('moving: roll(+d) then roll(-d) leaves the belts '+err+' off');}
+    /* textures: every mesh carries a detail slot per vertex; on the sheet (the bundle has maps) every material takes the atlas */
+    const nS=KV.textures().slots.length;
+    g.traverse(o=>{if(!o.isMesh)return;const a=o.geometry.attributes.aDetS;
+      if(!a||a.count!==o.geometry.attributes.position.count)r.fail.push('textures: '+o.name+' has no aDetS per vertex');
+      else for(let i=0;i<a.count;i++){const x=a.array[i];if(!(x===-1||(x>=0&&x<nS&&x===Math.floor(x)))){r.fail.push('textures: '+o.name+' slot '+x);break;}}
+      if(cfg.tex&&!(o.material.userData&&o.material.userData.detail))r.fail.push('textures: '+o.name+' material has no detail hook');});
+    if(cfg.tex&&!u.textured)r.fail.push('textures: userData.textured is false');
     const a=KV.steer(g,10), lim=D.maxSteer;
     if(Math.abs(a-lim)>1e-9)r.fail.push('moving: steer(10) gave '+a+', maxSteer '+lim);
     for(const w of (u.wheels||[]).filter(w=>w.steer)){const p=g.getObjectByName('steer_'+w.name.replace(/^wheel_/,''));
@@ -156,6 +194,8 @@ for(const E of KV.list()){
         if(col)for(let i=0;i<col.length&&!hit;i+=3)hit=Math.abs(col[i]-want[0])<1e-5&&Math.abs(col[i+1]-want[1])<1e-5&&Math.abs(col[i+2]-want[2])<1e-5;
         if(!hit)r.fail.push('colour: no linear '+paintKey+' in body:matte');}
     }
+    /* clearance at full lock (seed 1: the running gear does not vary by seed) */
+    if(seed===1)for(const h of lockHits(g))r.fail.push('clearance: '+h);
     /* deterministic */
     const g2=KV.build(E.key,{variant:v,seed});
     if(sig(g)!==sig(g2))r.fail.push('deterministic: two builds with seed '+seed+' differ');
@@ -224,7 +264,8 @@ async def run(a):
                          'iz_six_wheeler': ['ochreOrange', 'creamPaint'], 'ab_caravan_truck': ['sandPaint', 'tealPaint'],
                          'pa_crawler_hab': ['rust', 'fadedTeal']}
                 res = await pg.evaluate(ASSERT_JS, {'tol': TOL_M, 'under': UNDER_FRAC, 'ground': GROUND_TOL, 'seeds': a.seeds,
-                                                    'maxMeshes': MAX_MESHES, 'maxTris': MAX_TRIS, 'bigTris': BIG_TRIS, 'paint': paint})
+                                                    'maxMeshes': MAX_MESHES, 'maxTris': MAX_TRIS, 'bigTris': BIG_TRIS, 'paint': paint,
+                                                    'tex': await pg.evaluate("()=>KratorVehicles.textures().on")})
                 per = res['per']
                 print('\n--- %d vehicles, %d builds (every variant, seeds 1..%d) ---' % (len(res['list']), len(per), a.seeds))
                 for r in per:
@@ -238,6 +279,8 @@ async def run(a):
                           ('moving-parts', lambda f: f.startswith('moving:')),
                           ('tags', lambda f: f.startswith('tags:')),
                           ('colour', lambda f: f.startswith('colour:')),
+                          ('textures', lambda f: f.startswith('textures:')),
+                          ('clearance', lambda f: f.startswith('clearance:')),
                           ('deterministic', lambda f: f.startswith('deterministic:'))]
                 print('\n--- invariants ---')
                 for name, sel in checks:

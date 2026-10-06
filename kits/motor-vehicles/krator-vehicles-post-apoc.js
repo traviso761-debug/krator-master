@@ -17,6 +17,13 @@
 VEHICLE_CULTURE('post-apoc', {
   name: 'Post-Apoc settlers', sign: 'gear',
   lore: 'culture-neutral salvage society of the reclaimed arcologies and wreck towns',
+  /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
+  detail: {
+    rust: 'rust', rustDark: 'rust', rustLight: 'rust', rustBrown: 'rust', trackIron: 'rust',
+    olive: 'paintWorn', oliveDark: 'paintWorn', khaki: 'paintWorn', fadedTeal: 'paintWorn', fadedTealDark: 'paintWorn',
+    mustard: 'paintWorn', fadedRed: 'paintWorn', cream: 'paintWorn', jerryRed: 'paintWorn', jerryYellow: 'paintWorn',
+    canvas: 'canvas', crate: 'wood', rubber: 'rubber', glass: null, domeGlass: null
+  },
   /* PALETTE (sRGB; the runtime converts to linear) */
   palette: {
     rust: 0x8a4a2a, rustDark: 0x5e3220, rustLight: 0xa8643a, rustBrown: 0x6e4630,
@@ -177,8 +184,8 @@ VEHICLE({
     /* ---- the upper level: container A (forward, under the dome), container B (aft, cantilevered right on struts) */
     const container = function (x0, x1, z0, z1, y0, h, col, dark) {
       const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = x1 - x0, d = z1 - z0;
-      F.box(cx, y0, cz, w, h, d, 0, col);
-      for (let z = z0 + 0.2; z < z1 - 0.1; z += 0.28) for (const x of [x0 - 0.012, x1 + 0.012]) F.box(x, y0 + 0.08, z, 0.025, h - 0.16, 0.06, 0, dark);
+      F.box(cx, y0, cz, w, h, d, 0, col, 'corrugated');
+      for (let z = z0 + 0.2; z < z1 - 0.1; z += 0.28) for (const x of [x0 - 0.012, x1 + 0.012]) F.box(x, y0 + 0.08, z, 0.025, h - 0.16, 0.06, 0, dark, 'corrugated');
       for (const x of [x0, x1]) for (const z of [z0, z1]) F.box(x, y0, z, 0.1, h, 0.1, 0, dark, 'metal');   /* corner posts */
     };
     const colA = c(trader ? 'fadedTeal' : 'rustBrown'), colB = c(trader ? 'mustard' : 'rust');

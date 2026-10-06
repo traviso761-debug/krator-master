@@ -3,7 +3,19 @@
 Procedural motor vehicles that any Krator world can take as ONE bundle, the way the catalog's furniture reaches
 other worlds. Each vehicle is tagged by culture, carries the data a simulation reads (top speed, seats, cargo, fuel,
 wheel layout), and is built as two merged body meshes plus one mesh per wheel (a host spins them and steers the
-steered ones), with lamps it can switch at night.
+steered ones), with lamps it can switch at night, and textured from the shared material library (detail maps
+from one kit atlas: no extra draw calls).
+
+**Textures.** The vehicles have no UVs (merged vertex-coloured meshes), so the library reaches them as DETAIL maps,
+as on Girder's catalog furniture: the shader samples each set by triplanar projection of the mesh's own position and
+divides the set's mean brightness back out, so every palette keeps its colour and gains the set's grain. Eight
+families from `core/materials/library` in one atlas: `paint` (Metal003, clean paint: the Izani hull, lacquer),
+`paintWorn` (Metal062C, chipped paint: the buggy, the crawler's cream, the caravan truck, the hab's cab and drums),
+`metal` (Metal038: tube, engine, frames), `rust` (rusty_metal_04: the hab), `corrugated` (worn_corrugated_iron: the
+hab's containers), `canvas` (canvas.tent), `tarp` (cloth.tarp: the caravan tarps, canopy, awnings) and `wood`
+(weathered planks: crates). Which surface takes which is each culture's `detail` table (palette key -> family) or a
+family named on the primitive (`'corrugated'`, `'tarp'`); glass, lenses, hoses and ropes take none. Tyres wait on a
+rubber set (`KNOWN_ISSUES.md`). `?mat=proc` on the sheet shows the old vertex-colour look.
 
 | Key | Name | Culture | Wheels | Variants |
 |---|---|---|---|---|
@@ -45,7 +57,7 @@ The other four came from reference pictures (2026-10-06), each given to the cult
   railed roof deck lined with red jerry cans, a rust-plated hab with corrugation, patch plates and grille windows, two
   containers stacked on top (one cantilevered on struts), a ribbed glass dome, a dish, three TV aerials, a big exhaust
   run with a U-bend, a balcony and a ladder at the back, the mustard gear on both flanks. Tracked: the twelve road
-  wheels turn (they ride the belt: `lift` 0.08), the belts, sprockets and idlers are static; skid steer, `maxSteer` 0.
+  wheels turn (they ride the belt: `lift` 0.08) and the belts run round their loops (`roll()`); skid steer, `maxSteer` 0.
 
 ## Files
 
@@ -53,7 +65,9 @@ The other four came from reference pictures (2026-10-06), each given to the cult
 |---|---|
 | `vehicles-core.js` | the `VEHICLE({...})` registry, its vocabularies, `VEHICLE_CULTURE()` (palette into the core's FPAL), the vehicle frame (catalog `makeFrame()` plus disc, face, taper, ring, tube, tri, knob, lamp, spareWheel) and `vehicleBalloonTyre()` |
 | `krator-vehicles-<culture>.js` | one file per culture (as the catalog does): its palette and its vehicles. Now: `eastabyss`, `geomancer`, `iziz`, `post-apoc`, `republic` |
-| `krator-vehicles-runtime.js` | the API (`KratorVehicles`): assembly, the per-material merge, wheels, roll, steer, lights |
+| `vehicles-detail.js` | the detail maps: the slot each vertex takes, the kit atlas (colour, normal, roughness) composed from the packed maps, the triplanar shader hook |
+| `materials.json`, `tex/` | the families and their library sets (Girder's adapter shape); `tex/` is what `tools/textures/pack.py kits/motor-vehicles` wrote from them (commit it). `vehicle_bundle.py` inlines the families the bundled cultures name |
+| `krator-vehicles-runtime.js` | the API (`KratorVehicles`): assembly, the per-material merge (with the detail slot per vertex), wheels, belts, roll, steer, lights, textures |
 | `vehicle_bundle.py` | `bundle(cultures=None) -> str`: one closure, one global |
 | `build.py`, `src/` | the kit sheet `dist/motor-vehicles.html`, and `dist/krator-vehicles.js` (the bundle alone) |
 | `verify.py` | headless checks and screenshots |
@@ -72,12 +86,15 @@ cd kits/motor-vehicles && python3 build.py                 # -> dist/motor-vehic
 python3 verify.py dist/motor-vehicles.html --assert         # every vehicle x variant x seeds 1..3, plus the bundle alone
 python3 verify.py dist/motor-vehicles.html --out shots --views front34,side,rear34,top --night
 python3 build.py --vendor-check                             # 80-sky-hash.js, 81-sky.js against their upstreams
+python3 ../../tools/textures/pack.py kits/motor-vehicles     # after materials.json changes (numpy, Pillow; the sets via git lfs pull)
 ```
 
 `--assert` checks: builds, no NaN, wheels on y = 0 (a road wheel on its belt), fits the declared box, at most two
 meshes plus one per wheel and 6 000 triangles (or the entry's own `budget.tris`, never over 20 000),
-moving parts (wheel origins at their hubs, steer pivots, roll/steer/lights do what they say), tags and data from the
-vocabularies, the paint's LINEAR value in the vertex colours, determinism, and `bundle-alone` (a blank page with only
+moving parts (wheel origins at their hubs, steer pivots, roll/steer/lights do what they say, a tracked vehicle's belts
+run and stay on the ground), tags and data from the vocabularies, the paint's LINEAR value in the vertex colours,
+textures (a detail slot per vertex, the atlas hook on every material), clearance (no steered wheel inside the body at
+full lock either way), determinism, and `bundle-alone` (a blank page with only
 three.min.js: the bundle adds exactly one global, `KratorVehicles`, and builds every vehicle). verify.py serves
 `three.min.js` from this folder: copy `kits/catalog/three.min.js` here first in a fresh checkout (without it the
 page never loads and the run waits out its timeout).

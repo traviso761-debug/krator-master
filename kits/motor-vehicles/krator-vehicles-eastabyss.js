@@ -19,6 +19,14 @@
 VEHICLE_CULTURE('eastabyss', {
   name: 'Abyssal people', sign: 'star',
   lore: 'salt-marsh scavengers and recyclers of the eastern Abyss; shade first, pride and colour; nothing electric',
+  /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
+  detail: {
+    sandPaint: 'paintWorn', sandPaintDark: 'paintWorn', tealPaint: 'paintWorn', tealPaintDark: 'paintWorn',
+    jerryRed: 'paintWorn', jerryYellow: 'paintWorn', lacquer: 'paint',
+    pastelTeal: 'tarp', pastelMint: 'tarp', pastelPink: 'tarp', pastelRose: 'tarp', pastelPeach: 'tarp', pastelYellow: 'tarp',
+    saffron: 'tarp', canopyRed: 'tarp', canopyOrange: 'tarp', canvas: 'canvas', canvasDark: 'canvas', crate: 'wood',
+    glass: null, tin: null, hose: null, hoseDark: null, leather: null
+  },
   /* PALETTE (sRGB; the runtime converts to linear) */
   palette: {
     sandPaint: 0xc8ae84, sandPaintDark: 0x9c845e, tealPaint: 0x3f8a86, tealPaintDark: 0x2c625f,
@@ -68,7 +76,7 @@ VEHICLE({
     const frame = c('frame'), glass = c('glass'), steel = c('steel');
 
     /* ---- chassis: rails, the engine between the front wheels (narrow: clear of them at full lock), axle housings */
-    for (const s of [-1, 1]) F.box(s * 0.5, 0.74, 0, 0.16, 0.24, 6.4, 0, frame, 'metal');
+    for (const s of [-1, 1]) F.box(s * 0.45, 0.74, 0, 0.16, 0.24, 6.4, 0, frame, 'metal');
     F.box(0, 0.7, 2.15, 0.9, 0.9, 1.2, 0, steel, 'metal');
     for (const z of [2.15, -2.05]) F.rod(-0.92, 0.78, z, 0.92, 0.78, z, 0.09, frame, 'metal');
     F.box(0, 0.78, 0.2, 1.3, 0.82, 2.6, 0, paintDark);                                              /* the tank and battery boxes */
@@ -150,8 +158,8 @@ VEHICLE({
         const col = c(bands[b]);
         const yb = 2.12 + 0.18 * Math.sin(i * 1.7) - F.rr(0, 0.22) - (i % 3 === 1 ? 0.12 : 0);   /* the drip line */
         const bx = s * (1.235 + 0.02 * Math.sin(i * 0.9));
-        F.box(bx, yb, z, 0.025, 3.07 - yb, sw * 1.04, 0, col);
-        F.box(s * 0.98, 3.05, z, 0.5, 0.025, sw * 1.04, 0, col);
+        F.box(bx, yb, z, 0.025, 3.07 - yb, sw * 1.04, 0, col, 'tarp');
+        F.box(s * 0.98, 3.05, z, 0.5, 0.025, sw * 1.04, 0, col, 'tarp');
       }
     }
 
@@ -163,11 +171,11 @@ VEHICLE({
     pane([[-0.7, 3.15, 0.758], [-0.7, 3.5, 0.758], [0.7, 3.5, 0.758], [0.7, 3.15, 0.758]]);
     for (const s of [-1, 1]) for (const z of [0.9, -1.3]) F.rod(s * 1.1, 3.05, z, s * 1.1, 3.62, z, 0.03, frame, 'metal');
     const canopy = c(head ? 'lacquer' : 'canopyOrange');
-    F.pyrRoof(0, 3.6, -0.2, 2.5, 0.62, 2.6, 0, canopy);
+    F.pyrRoof(0, 3.6, -0.2, 2.5, 0.62, 2.6, 0, canopy, 'tarp');
     /* the drape off the canopy's eaves, hanging in swags */
     for (const s of [-1, 1]) for (let i = 0; i < 6; i++) {
       const za = 1.1 - i * 0.433, zb = za - 0.433;
-      F.tri([s * 1.25, 3.6, za], [s * 1.25, 3.6, zb], [s * 1.27, 3.28 - (i % 2) * 0.1, (za + zb) / 2], c(head ? 'gold' : 'canopyRed'));
+      F.tri([s * 1.25, 3.6, za], [s * 1.25, 3.6, zb], [s * 1.27, 3.28 - (i % 2) * 0.1, (za + zb) / 2], c(head ? 'gold' : 'canopyRed'), 'tarp');
     }
     if (head) for (const s of [-1, 1]) {
       /* gilded horns at the canopy's ends: swoop-and-horn, for the noble */

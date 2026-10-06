@@ -17,6 +17,12 @@
 VEHICLE_CULTURE('republic', {
   name: 'Iron Republic', sign: 'triskelion of three sword-arms, red',
   lore: 'highland forge state; capital Roketstad, once an Ancient spaceport; Salvagers strip the ruins',
+  /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
+  detail: {
+    hullCream: 'paintWorn', hullCreamDark: 'paintWorn', hullOchre: 'paintWorn', hullOchreDark: 'paintWorn', deck: 'paintWorn',
+    red: 'paintWorn', redDark: 'paintWorn', drum: 'paintWorn', drumRed: 'paintWorn',
+    canvas: 'canvas', crate: 'wood', panel: null, panelGrid: null, glass: null, glowBlue: null, rope: null
+  },
   /* PALETTE (sRGB; the runtime converts to linear) */
   palette: {
     hullCream: 0xd8ccae, hullCreamDark: 0xb3a587, hullOchre: 0xc29a58, hullOchreDark: 0x9a7740,

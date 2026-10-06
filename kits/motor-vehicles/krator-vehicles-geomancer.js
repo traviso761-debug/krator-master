@@ -19,6 +19,13 @@
 VEHICLE_CULTURE('geomancer', {
   name: 'Geomancers', sign: 'brass flame on a brown disc',
   lore: 'oil-drilling guild of the Eastern Abyss (Locus, Yuni); electricity, salvaged Ancient engines',
+  /* DETAIL: palette key -> library detail family (vehicles-detail.js; materials.json); null: none (glass, lenses) */
+  detail: {
+    paintBrown: 'paintWorn', paintBrownDark: 'paintWorn', paintBlack: 'paintWorn', paintSand: 'paintWorn',
+    jerryRed: 'paintWorn', jerryOlive: 'paintWorn', jerryBlack: 'paintWorn',
+    canvas: 'canvas', canvasDark: 'canvas', canvasOlive: 'canvas', seat: 'canvas', pennantBrass: 'canvas', pennantBrown: 'canvas',
+    wood: 'wood', leather: null, rope: null, hose: null, core: null, lensWarm: null
+  },
   /* PALETTE (sRGB; the runtime converts to linear) */
   palette: {
     paintBrown: 0x6a4a2c, paintBrownDark: 0x4e3620, paintBlack: 0x24211d, paintSand: 0xb49a6c,
@@ -74,20 +81,24 @@ VEHICLE({
     const T = 0.032;                                   /* cage tube radius */
     const crew = v === 1, rig = v === 2;
 
-    /* ---- chassis: floor pan, tub sides, bulkhead, nose, hood, skid plate */
-    F.box(0, 0.38, 0.02, 1.20, 0.06, 1.96, 0, paint);
+    /* ---- chassis: floor pan, tub sides, bulkhead, nose, hood, skid plate. The tub stops at z 0.74 and a narrow
+       footwell (x +-0.40) runs on to the front bulkhead: the steered wheels sweep in to x 0.49 at full lock */
+    F.box(0, 0.38, -0.105, 1.20, 0.06, 1.71, 0, paint);
+    F.box(0, 0.38, 0.86, 0.80, 0.06, 0.26, 0, paint);
     for (const s of [-1, 1]) {
-      F.box(s * 0.62, 0.40, 0.02, 0.05, 0.42, 1.94, 0, paint);
-      F.box(s * 0.62, 0.80, 0.02, 0.07, 0.04, 1.94, 0, trim, 'metal');          /* the tub's capping rail */
-      if (crew) F.box(s * 0.648, 0.56, 0.02, 0.01, 0.06, 1.90, 0, c('brass'), 'metal');   /* the Crew's brass stripe */
+      F.box(s * 0.62, 0.40, -0.105, 0.05, 0.42, 1.69, 0, paint);
+      F.box(s * 0.62, 0.80, -0.105, 0.07, 0.04, 1.69, 0, trim, 'metal');        /* the tub's capping rail */
+      F.box(s * 0.52, 0.40, 0.745, 0.25, 0.44, 0.04, 0, paint);                 /* the step in to the footwell */
+      F.box(s * 0.40, 0.40, 0.86, 0.04, 0.46, 0.25, 0, paint);                  /* the footwell's side */
+      if (crew) F.box(s * 0.648, 0.56, -0.105, 0.01, 0.06, 1.65, 0, c('brass'), 'metal');   /* the Crew's brass stripe */
     }
     F.box(0, 0.40, -0.94, 1.24, 0.42, 0.05, 0, paint);                          /* rear bulkhead */
-    F.box(0, 0.40, 0.97, 1.24, 0.46, 0.05, 0, paint);                           /* front bulkhead */
-    F.box(0, 0.36, 1.30, 1.00, 0.26, 0.64, 0, paint);                           /* nose box */
+    F.box(0, 0.40, 0.97, 0.84, 0.46, 0.05, 0, paint);                           /* front bulkhead */
+    F.box(0, 0.36, 1.30, 0.80, 0.26, 0.64, 0, paint);                           /* nose box */
     F.beam(0, 0.86, 0.98, 0, 0.62, 1.66, 1.04, 0.04, rig ? c('paintBrown') : paint);   /* hood */
     for (const s of [-1, 1]) {
-      F.box(s * 0.50, 0.60, 1.12, 0.04, 0.21, 0.28, 0, trim);
-      F.box(s * 0.50, 0.60, 1.40, 0.04, 0.12, 0.28, 0, trim);
+      F.box(s * 0.42, 0.60, 1.12, 0.04, 0.21, 0.28, 0, trim);
+      F.box(s * 0.42, 0.60, 1.40, 0.04, 0.12, 0.28, 0, trim);
     }
     F.box(0, 0.30, 1.18, 0.86, 0.06, 0.56, 0, c('steelDark'), 'metal');         /* skid plate */
     /* bumpers and the tow bar */
@@ -117,14 +128,15 @@ VEHICLE({
 
     /* ---- front suspension: A-arms, uprights, long coilovers to the cage */
     for (const s of [-1, 1]) {
-      F.rod(s * 0.50, 0.40, 1.02, s * 0.64, 0.38, 1.22, 0.022, c('oilBlack'), 'metal');
-      F.rod(s * 0.50, 0.40, 1.42, s * 0.64, 0.38, 1.22, 0.022, c('oilBlack'), 'metal');
-      F.rod(s * 0.50, 0.62, 1.10, s * 0.63, 0.56, 1.22, 0.02, c('oilBlack'), 'metal');
-      F.rod(s * 0.50, 0.62, 1.34, s * 0.63, 0.56, 1.22, 0.02, c('oilBlack'), 'metal');
-      F.box(s * 0.63, 0.32, 1.22, 0.04, 0.28, 0.08, 0, c('steelDark'), 'metal');   /* upright */
-      F.rod(s * 0.60, 0.46, 1.20, s * 0.58, 1.02, 1.00, 0.045, c('brass'), 'metal');   /* coilover (spring) */
-      F.rod(s * 0.60, 0.46, 1.20, s * 0.59, 0.80, 1.09, 0.03, c('steel'), 'metal');    /* damper body */
-      F.rod(s * 0.58, 1.02, 1.00, s * 0.60, 1.02, 0.84, 0.025, cage, 'metal');          /* shock tower gusset to the pillar */
+      /* (inboard of the tyre's sweep: at full lock its inner sidewall comes in to x 0.54) */
+      F.rod(s * 0.40, 0.40, 1.02, s * 0.56, 0.38, 1.22, 0.022, c('oilBlack'), 'metal');
+      F.rod(s * 0.40, 0.40, 1.42, s * 0.56, 0.38, 1.22, 0.022, c('oilBlack'), 'metal');
+      F.rod(s * 0.42, 0.62, 1.10, s * 0.55, 0.56, 1.22, 0.02, c('oilBlack'), 'metal');
+      F.rod(s * 0.42, 0.62, 1.34, s * 0.55, 0.56, 1.22, 0.02, c('oilBlack'), 'metal');
+      F.box(s * 0.555, 0.32, 1.22, 0.04, 0.28, 0.08, 0, c('steelDark'), 'metal');  /* upright */
+      F.rod(s * 0.50, 0.44, 1.18, s * 0.50, 1.02, 1.00, 0.045, c('brass'), 'metal');   /* coilover (spring) */
+      F.rod(s * 0.50, 0.44, 1.18, s * 0.50, 0.80, 1.07, 0.03, c('steel'), 'metal');    /* damper body */
+      F.rod(s * 0.50, 1.02, 1.00, s * 0.59, 1.02, 0.66, 0.025, cage, 'metal');          /* shock tower gusset to the pillar */
     }
     /* ---- rear suspension: trailing arms, half-shafts, coilovers */
     for (const s of [-1, 1]) {
@@ -163,8 +175,8 @@ VEHICLE({
       F.beam(s * 0.32, 0.56, 0.10, s * 0.32, 1.16, -0.02, 0.46, 0.10, seatCol);
       F.box(s * 0.32, 0.40, 0.36, 0.40, 0.04, 0.44, 0, c('oilBlack'), 'metal');
     }
-    F.box(0, 0.70, 0.90, 1.12, 0.14, 0.10, 0, c('oilBlack'));
-    for (const x of [0.20, 0.42]) {
+    F.box(0, 0.70, 0.90, 0.80, 0.14, 0.10, 0, c('oilBlack'));
+    for (const x of [0.08, 0.28]) {
       F.disc(x, 0.78, 0.848, 0, 0, -1, 0.048, 0.01, c('brass'), 'metal', 8);
       F.face(x, 0.78, 0.842, 0, 0, -1, 0.038, c('lensWarm'), '', 8);
     }
@@ -173,7 +185,7 @@ VEHICLE({
     F.ring(0.32, 0.93, 0.69, sx, sy, sz, 0.17, 0.016, c('oilBlack'), 'metal', 12);
     F.rod(0.15, 0.93, 0.69, 0.49, 0.93, 0.69, 0.012, c('brass'), 'metal');
     F.rod(0.02, 0.44, 0.58, 0.04, 0.74, 0.52, 0.014, c('steel'), 'metal');
-    F.knob(0.04, 0.75, 0.52, 0.03, c('brass'), 'metal');
+    F.box(0.04, 0.73, 0.52, 0.05, 0.05, 0.05, 0, c('brass'), 'metal');                 /* the knob */
 
     /* ---- behind the seats: the fuel tank; the Crew's bench on it, the Rig's cargo bed, the Scout's tray */
     F.rod(-0.46, 0.60, -0.68, 0.46, 0.60, -0.68, 0.14, c('oilBlack'), 'metal');
@@ -201,9 +213,9 @@ VEHICLE({
     /* ---- the roll cage: main hoop behind the seats, front hoop, top bars, harness bar, rear braces */
     for (const s of [-1, 1]) {
       F.tube([[s * 0.62, 0.82, -0.12], [s * 0.58, 1.62, -0.16], [s * 0.48, 1.76, -0.18]], T, cage, 'metal');
-      F.tube([[s * 0.62, 0.84, 0.95], [s * 0.54, 1.62, 0.48], [s * 0.46, 1.74, 0.40]], T, cage, 'metal');
+      F.tube([[s * 0.62, 0.84, 0.74], [s * 0.54, 1.62, 0.48], [s * 0.46, 1.74, 0.40]], T, cage, 'metal');
       F.rod(s * 0.46, 1.74, 0.40, s * 0.48, 1.76, -0.18, T, cage, 'metal');
-      F.rod(s * 0.64, 0.84, 0.95, s * 0.64, 0.84, -0.12, T, cage, 'metal');             /* door bar */
+      F.rod(s * 0.64, 0.84, 0.74, s * 0.64, 0.84, -0.12, T, cage, 'metal');             /* door bar */
     }
     F.rod(-0.48, 1.76, -0.18, 0.48, 1.76, -0.18, T, cage, 'metal');
     F.rod(-0.46, 1.74, 0.40, 0.46, 1.74, 0.40, T, cage, 'metal');

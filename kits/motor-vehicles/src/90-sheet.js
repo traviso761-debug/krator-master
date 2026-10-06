@@ -14,6 +14,11 @@ const INSTANCES = [];
   'use strict';
   const KV = KratorVehicles;
   const GAP = 2.2;
+  /* the catalog page engine's ground colour is sRGB under an sRGB output (pale, as on the catalog sheet); the
+     vehicles' colours are linear, so the ground is converted here, on this page only */
+  if (typeof ground !== 'undefined' && ground.material && ground.material.color) ground.material.color.convertSRGBToLinear();
+  /* ?mat=proc: the vehicles without the library detail maps (vertex colours only), to compare */
+  if (/[?&]mat=proc\b/.test(location.search)) KV.setTextures(false);
 
   /* --- labels on the ground */
   function label(text, sub, x, z, w, dark) {
@@ -151,5 +156,7 @@ const INSTANCES = [];
 
   window._sheet = { rows: rows, instances: INSTANCES, width: maxW, gotoRow: gotoRow, view: view, showAll: showAll, views: Object.keys(VIEWS),
     setDrive: setDrive, setLights: setLights, setNight: setNight };
-  window._ready = true;
+  /* ready once the detail maps have decoded into the atlas (verify.py and the screenshots wait on it) */
+  window._texPending = function () { return KV.textures().pending; };
+  (function wait() { if (KV.textures().pending > 0) return setTimeout(wait, 50); window._ready = true; })();
 })();

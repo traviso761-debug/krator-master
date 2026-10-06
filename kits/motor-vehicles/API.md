@@ -26,6 +26,9 @@ KratorVehicles.steer(group, radians)       // turns the steered wheels; clamped 
                                            // (each steered wheel turns by angle x its steerRatio; maxSteer 0: skid steer, nothing turns)
 KratorVehicles.lights(group, on)           // lamps on/off (the body:metal material's emissive); userData.lightsOn
 KratorVehicles.dispose(group)              // frees its geometry and its own material (the shared ones stay)
+KratorVehicles.setTextures(on)             // the library detail maps for vehicles built after the call (default: on when
+                                           // the bundle carries them); build(key, { textures:false }) for one vehicle
+KratorVehicles.textures()                  // { on, pending (maps still decoding), slots: [{ slot, family, lib, tile }] }
 KratorVehicles.has(key), .get(key), .cultures(), .palette(culture), .setDetail(k)
 KratorVehicles.CLASSES, .TYPES, .DRIVES, .FUELS, .TERRAIN    // the tag vocabularies
 ```
@@ -38,16 +41,19 @@ KratorVehicles.CLASSES, .TYPES, .DRIVES, .FUELS, .TERRAIN    // the tag vocabula
 | `body:metal` | tube, brass, the engine, lamp lenses: one mesh, vertex colours, **its own material** (the lamps) | `lights()` |
 | `steer_<w>` | a pivot at each steered wheel's hub (x, r + lift, z), holding `wheel_<w>` (`steer_fl` holds `wheel_fl`) | `rotation.y` (`steer()`) |
 | `wheel_<w>` | one mesh per wheel, origin at its hub, axle along x | `rotation.x` (`roll()`) |
+| `belts` | a tracked vehicle's belts, every loop in one mesh (body:metal's material) | its vertices, by `roll()` |
 
 Two body meshes plus one per wheel: six draw calls for a four-wheeler, eight for the six-wheeler, ten for the
-eight-wheeled crawler, fourteen for the tracked hab (its twelve road wheels). `castShadow` and `receiveShadow` are on.
+eight-wheeled crawler, fifteen for the tracked hab (its twelve road wheels and the belts). `castShadow` and
+`receiveShadow` are on. Every mesh carries `aDetS`, the detail slot of each vertex (-1 none); with textures on, every
+material samples the kit atlas by it (`vehicles-detail.js`), so the textures add no draw call.
 Wheel names: `wheel_fl/fr/rl/rr` on a four-wheeler; more axles add `wheel_l2/r2`, `wheel_l3/r3`; the hab's are
 `wheel_<bogie><n>` (`lf1..3`, `rf1..3`, `lr1..3`, `rr1..3`). A host should read `userData.wheels`, not assume names.
 
 `group.userData`:
 
 ```js
-{ key, name, culture, tags, kind: 'vehicle', variant, variantName, seed, w, d, h, tris, lightsOn,
+{ key, name, culture, tags, kind: 'vehicle', variant, variantName, seed, w, d, h, tris, lightsOn, textured,
   wheels: [{ name, r, x, y, z, front, steer, drive, lift?, steerRatio? }],   // y = r + lift: the hub
   lamps:  [{ x, y, z, dx, dy, dz, kind }],                  // lens centres and facing; kind head | bar | tail | cell
   data }                                                    // dataOf(key, variant)
@@ -59,7 +65,7 @@ vehicle at their mean; the kit adds no light objects.
 ## The geo_dune_buggy
 
 Key `geo_dune_buggy`, name `Geomancer dune buggy`, culture `geomancer`. Box 2.1 x 3.6 m (w x d), 3.05 m to the
-aerial's tip (the cage top is 1.8 m: `data.cageH`). Built size 2.05 x 3.02 x 3.56. 5 618 / 5 670 / 5 974 triangles.
+aerial's tip (the cage top is 1.8 m: `data.cageH`). Built size 2.05 x 3.02 x 3.56. 5 626 / 5 678 / 5 982 triangles.
 
 | # | Variant | Seats | Cargo | Look |
 |---|---|---|---|---|
@@ -129,7 +135,7 @@ terrain:['sand','salt flat','mud','track'], setting:'outdoor' }`. `data`: `speed
 ## The pa_crawler_hab
 
 Key `pa_crawler_hab`, name `Post-Apoc crawler hab`, culture `post-apoc`. Box 4.6 x 11.6 m, 8.5 m to the tallest aerial
-(the container roofs 5.7 and 5.9). Built size 4.51 x 11.57 x 8.42. 13 868 / 13 940 triangles, fourteen meshes;
+(the container roofs 5.7 and 5.9). Built size 4.51 x 11.57 x 8.42. 13 868 / 13 940 triangles, fifteen meshes;
 `budget.tris` 15 500.
 
 | # | Variant | Look |
@@ -142,11 +148,11 @@ terrain:['sand','salt flat','mud','rock','snow'], setting:'outdoor' }`. `data`: 
 maxSteer 0, steering 'skid', seats 4, berths 8, cargo 6000, mass 34000, tank 1800, range 900, wheelbase 6.3 (bogie
 centres), track 3.4, clearance 0.55, belt 0.08`. Four bogies at x +-1.7, z 3.2 and -3.1, three road wheels each
 (r 0.36, offsets -0.8, 0, 0.8, `lift` 0.08); none steers. A host turns it on the spot by yaw alone and calls
-`roll()` with the distance its centre moved (the belts and sprockets do not animate).
+`roll()` with the distance its centre moved: the road wheels turn and the belts run (the sprockets do not).
 
 ## Adding a vehicle
 
-A culture file `krator-vehicles-<culture>.js`: `VEHICLE_CULTURE(key, { name, sign, lore, palette })` once, then
+A culture file `krator-vehicles-<culture>.js`: `VEHICLE_CULTURE(key, { name, sign, lore, detail, palette })` once, then
 `VEHICLE({ key, name, culture, tags, variants, variantNames, w, d, h, data: { ..., wheels: [...] }, variantData,
 wheel(F, W), build(F) })`. `build` draws the body with the catalog frame (`F.box/cyl/cone/beam/rod/frustum`, `F.col`
 over the culture's palette, `F.rnd/F.pick/F.chance` from the seed) plus the vehicle helpers (`vehicles-core.js`):
@@ -160,7 +166,13 @@ bezel)` (records the lamp), `F.spareWheel(x, y, z, axisX, axisY, axisZ, W)`, and
   (half-width a, half-length b, exponent n: 2 an ellipse, 3 to 4 a rounded rectangle), smooth sides, flat caps
   `'top' | 'bottom' | 'both'` (the crawler's bowl, rim and deck).
 - `F.track(x, w, t, circles, pitch, color, family)`: a belt of shoes round the convex hull of `circles` `[[z, y, r]]`;
-  with the road wheels' hubs at r + t (`lift: t` in their records) its bottom run sits on y = 0.
+  with the road wheels' hubs at r + t (`lift: t` in their records) its bottom run sits on y = 0. It is recorded
+  (`F.belts`) and drawn by the runtime as the `belts` mesh, which `roll()` runs.
+
+**Textures:** a culture's `detail` table maps palette keys to `materials.json` families (`canvas: 'canvas'`,
+`glass: null` for none); a primitive can name a family as its family (`F.box(..., col, 'tarp')`) when one colour
+covers two surfaces. Unmapped keys take `metal` on the metal families and `paint` otherwise; lamps never take one.
+A new family: add it to `materials.json` (append to `slots`), pack, rebuild.
 
 `wheel` draws ONE wheel at the origin, axle along x (`vehicleBalloonTyre()` for a sand tyre; the crawler's wire wheel
 and the hab's road wheel are in their culture files). A wheel record may add `lift` (the hub at r + lift: a road
