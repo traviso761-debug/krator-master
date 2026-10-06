@@ -374,6 +374,12 @@ with no extra mesh.
   No Krator build does this (`src/core/shell.js:31-43`). One place for it is `gallery/krator-bar.js` `tune()`.
 - **[web]** Isolate errors per subsystem in the frame loop. In Voth, `updateLife`, `skyAdvance` and the HUD
   sit outside the try (`settlements/voth/src/80-camera.js:303-319`), so one throw means it never draws again.
+- **[web]** Isolate errors per pass in the build, too (`src/core/diag.js`, `section(name, fn)`: the error goes on
+  screen under the pass's name and the next pass runs). In Krator a throw at the top level of one fragment stops
+  every fragment after it, so a broken flora pass leaves a blank world; Locus's `window.onerror`
+  (`settlements/locus/src/00-head.html:96`) reports it but does not carry on. The fragments share one scope, so
+  wrap each pass's call (terrain, buildings, flora, life, dressing), not each file. Belongs in `core/host/`
+  (`GODOT-PLAN.md`, `92-host-panel.js`) beside the loop's isolation above.
 - **[web]** Input guards: clear held keys and pointers on blur and on hidden tabs; end a pointer when
   `buttons===0`; ignore keys while typing (`src/core/input.js`).
 - **[web]** Leave a cut plane installed and park it at `constant=1e7`, instead of swapping `clippingPlanes`
@@ -433,6 +439,14 @@ These are the best Godot candidates: generators whose output is data.
 - **[G data]** Chunks generated from the seed alone, with doors forced at chunk edges
   (`src/backrooms/level.js`). This is the same tile-by-tile loading `biomes/WORLD.md` plans.
 - **[G data]** Timed set pieces as pure functions of t, publishing signals on a bus (`src/fleshpit/incident.js`).
+- **[G data] + [G shader]** Tides: one sea level that everything at the shore reads (`src/beachcity/details.js`,
+  `ctx.sea`). Beach City's holds the tide (high water, half a metre lower twice a day by the clock, or held low or
+  high by a button, easing rather than jumping), a swell of a few centimetres and the events' drain and surge; the
+  water sheet, the surf lines, the boats and the swimmers all follow it, and ground below the waterline is
+  coloured wet sand and sea bed. For Krator: `seaLevel(t)` as a pure function in `core/atmos` beside the wave
+  field, driven by `core/clock`, with the build's shore lines, moorings and wet-ground mask reading it rather
+  than a constant. Port, Ys and the Ring Sea are the first takers. In Godot it is one global shader parameter
+  plus the same function in GDScript for anything that floats.
 
 ## Lava *(Menagerie: the fire on Kharak, `src/homeworld/kharak.js:15-61`)*
 
