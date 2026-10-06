@@ -50,6 +50,58 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polished petrified wood: agate bands of red, orange, cream and grey following old growth rings, a few glassy crystal flecks. Full colour: keep the colours exactly as described; this texture is not tinted.
 ```
 
+## 3. Found by the 2026-10-06 sweep (nothing in the library covers them)
+
+**`roof.turf`** (for: Highlands sod roofs (70-hl-tex turf), Dalab dTurf)
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cropped sod roof seen from above: short dense grass over a lumpy earth mat, a few bare earth patches and small mole-hill mounds, low moss in the hollows. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`tile.bath.lens`** (for: Xanadu grand bath (84-xa-grandbath xBTile))
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Glazed bath tiles in a square grid: each tile carries half-circles at its edges that close into full circles across the joints, glazed orange (#d8742c) tiles with red (#b0302a) and purple (#5a3a7a) circles in a checker, thin pale grout, glossy. Full colour: keep the colours exactly as described; this texture is not tinted.
+```
+
+**`panel.solar`** (for: the Republic vehicle clam lid (motor-vehicles); post-apoc rooftops)
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Photovoltaic solar panel surface: a grid of dark blue-black square cells (#141c2e) with thin silver busbars across each cell, a slim aluminium frame line every six cells, a little dust and a few scratches. Full colour: keep the colours exactly as described; this texture is not tinted.
+```
+
+**`card.pods`** (for: sedesert pods, any hanging seed or bean pods)
+```
+A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Nine hanging clusters of seed pods: long flat bean pods and round seed capsules on thin stalks, each cluster hung from the top edge of its cell. Draw them in a light, slightly muted neutral grey-green or grey with natural variation in value only, so they can be tinted to different species without looking stained.
+```
+
+**`card.litter`** (for: ebadlands, crater drylands ground litter)
+```
+A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Nine flat scatters of forest litter seen from above: small twigs, pine needles, dry leaf fragments and bark flakes, each scatter roughly round. Draw them in a light, slightly muted neutral grey-green or grey with natural variation in value only, so they can be tinted to different species without looking stained.
+```
+
+**`card.reef`** (for: rift and xanadu anemones, frills and candles; nhighlands fins; lowland pens (alien flora))
+```
+A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Nine alien plant-polyps standing from the bottom of each cell: a spiny urchin ball, a tentacled anemone, a pleated fan, a ruffled frill, a cluster of candle-like tubes, a feathery sea-pen, a ridged fin, a cup polyp and a branching coral stalk. Draw them in a light, slightly muted neutral grey-green or grey with natural variation in value only, so they can be tinted to different species without looking stained.
+```
+
+**`bark.paperbark`** (for: nwlowlands pale paperbark)
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Paperbark trunk seen straight on: many thin papery layers of bark peeling in loose sheets and curls, soft pale cream layers with a few darker under-layers showing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`bark.whorled`** (for: xanadu whorled bark)
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bark with spiral ridges seen straight on: raised ridges twisting diagonally around the trunk, knots and eye-shaped scars where the ridges part. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`organic.fungus.gill`** (for: swbay cap-tree gills; any mushroom underside)
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Underside of a giant mushroom cap: dense thin radial gill lamellae running in parallel, fine edges, a soft papery texture, slight unevenness in spacing. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`skin.alien.banded`** (for: ebadlands bark5 alien skin)
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Leathery alien plant skin seen straight on: smooth horizontal bands of slightly different thickness, fine pores, soft creases between the bands, a waxy sheen. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
 ## Delivered and removed (2026-10-06)
 
 Delivered under the same id (44): `stone.cut`, `plaster`, `brick`, `metal.corrugated`, `roof.tile`, `metal.iron`, `metal.bronze`, `metal.gold`, `patterns/iziz/gilt`, `patterns/iziz/banner`, `wood.mahogany`, `wood.lamppost`, `metal.iron.pitted`, `bone.skull`, `bone.horn`, `bone.antler`, `hide.pelt.cat`, `fibre.net`, `cloth.silk`, `wax.tallow`, `organic.gourd`, `earth.floor.packed`, `bark.mahogany`, `bark.ironbark`, `bark.baobab`, `card.mahogany`, `card.vine`, `card.screwpine`, `card.bromeliad`, `card.moss`, `card.crop`, `card.flower.bloom`, `fruit.skin.orange`, `fruit.skin.amber`, `fruit.husk`, `fruit.capsule`, `membrane.pterosaur`, `membrane.bat`, `fur.bat`, `wing.dragonfly`, `chitin.spider`, `chitin.millipede`, `fur.sloth`, `hide.strider`.

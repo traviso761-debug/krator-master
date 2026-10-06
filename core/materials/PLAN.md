@@ -1028,6 +1028,37 @@ Minor, one biome each: `bark.madrone`, `bark.paperbark`, `bark.cork`, `bark.stra
 joshua), (the hyperjungle `FAUNATEX` hook is now full: `wing.butterfly` and `skin.sky-ray` were delivered 2026-10-06 and are in Iziz's pack). Fauna in every biome is vertex colour; `feather.plumage`,
 `hide.fur.brown`, `organic.scale.*` and `membrane.bat` cover them once a biome adopts the library.
 
+#### Wiring status and the sweep (2026-10-06, evening)
+
+**Connected today** (materials.json + pack + code): settlements girder, yuni, ys (hyk), jimjam, mavs-refuge, locus, voth, iziz
+(vernacular + fauna), xanadu, reedlake, highlands, dalab (the vernacular MAT keys through `core/materials/record/26-matlib-bind.js`,
+`KMAT.bindMat`), shade (nomad kit); every biome kit (`BIO.libSwap` in core/biome 20-core-kit.js; materials.json `cell` shows one plant of
+a nine-plant sheet); the vendored biome copies in iziz (city), dalab, highlands (roketstad), xanadu, ys, shade and locus (the code
+change vended by hand, since those copies already drift; the biome's pack inlined before the biome code). Brightness rule: every grey
+set's `tint.mean` is the measured mean of the procedural map it replaces, so palettes keep their tone.
+
+**Still unwired, sets exist** (a full sweep of src/ found these; most valuable first):
+1. The shared Ancients MAT (core/materials 22-materials.js, kits/ancients 54-mat-concrete.js, 69-mat-salvage.js, 69w-worn.js): `white` ->
+   `metal.ancient.white`, `rust` -> `metal.rust.plate`, `concrete`/`concreteR` -> `concrete.ancient` (+ `.b`), `brick` -> `brick.red`,
+   `corrugate` -> `metal.corrugated_iron_02`, `timber` -> `wood.weathered_brown_planks`, `tarp` -> `cloth.tarp`, `whiteWorn` -> `metal.worn`,
+   `rubbleK` -> `rock.rocks013`, `verdigris` -> `metal.bronze.verdigris`. Every lineage build that already calls `KMAT.bindMat` takes these by
+   adding the keys to its materials.json (check each tower's UV tile first: the panel maps are 8 m atlas tiles, not world-UV'd).
+2. kits/ancients, settlements/port, screamers, ringsea, post-apoc, interiors, verge, mungo: no materials.json yet.
+3. The vernacular's own families: Highlands (logs -> `wood.log.carved`, scale -> `roof.scale.slate`, rubbleW, bamboo, bmat, rock,
+   meadow, the h* pattern sheets), Reed Lake (rl* -> the reed sets and Reed Lake patterns), Xanadu (x* -> the Xanadu patterns,
+   `plaster.white_stucco_02`, `paving.tiles144`), Dalab (dRelief, dChecker, dDecoPanel, dBanner -> the Dalab patterns), the port embassy
+   (vpTile, vpBanco, vpMosaic, vpBanner), Ys's vernacular and port kit.
+4. Biome slots left procedural: the ground detail layers (`TEX_DETAIL`, `TEX_CRACK`), hyperjungle limb and wood, nhighlands' bark buckets
+   (built outside NHL.MAT, so libSwap misses them), the iridescent/derived bark buckets built from raw canvases, the tower hosts' concrete
+   and rust, jetty stone, flowers (`TX.bloom` -> `card.flower.bloom`).
+5. Smaller: Voth's ship hulls and sails, the catalog's painted decals (a cloth or parchment detail under the paint), mechs' leather, wood and
+   rubber riding on the cloth bucket, motor-vehicles' null leather/rope/tin slots, Scyvoi's brass/bone/flag keys.
+
+**New images the sweep found** (PROMPTS-ready.md section 3): `roof.turf`, `tile.bath.lens`, `panel.solar`, `card.pods`, `card.litter`,
+`card.reef`, `bark.paperbark`, `bark.whorled`, `organic.fungus.gill`, `skin.alien.banded`. Owed from before: `earth.rammed`,
+`band.xanadu.twig`, `patterns/xanadu/sun-emblem`, the two nacre sheets, `wood.petrified`, `patterns/reedlake/awayo` (`wood.lash` is made, on
+claude/hexahedron-materials).
+
 #### Scan-library metals (AmbientCG, added 2026-10-02)
 
 Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each with a metalness map:
