@@ -27,6 +27,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/ancients`](kits/ancients/PORT.md) | 210 | 2583 | 246 | 34 | 174 | 27 | 2102 | 11 |  | yes | yes |
 | [`kits/catalog`](kits/catalog/PORT.md) | 37 | 1358 | 11 | 0 | 10 | 55 | 1283 | 3 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
+| [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
@@ -41,7 +42,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 156 | 46 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1546 | 20874 | 3166 (15%) | 371 (2%) | 895 (4%) | 2227 (11%) | 14215 (68%) | 223 | | | |
+| **all** | 1553 | 20912 | 3166 (15%) | 371 (2%) | 905 (4%) | 2255 (11%) | 14215 (68%) | 223 | | | |
 
 ## Host-shell copies
 
@@ -51,7 +52,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 |---|---|---|---|
 | `camera` | 18 | 14 | 204 |
 | `probe` | 16 | 13 | 51 |
-| `sky` | 13 | 5 | 350 |
+| `sky` | 14 | 5 | 359 |
 | `stats` | 11 | 1 | 13 |
 | `host-stage` | 11 | 11 | 228 |
 | `host-sky` | 11 | 9 | 163 |
@@ -63,10 +64,10 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `daynight` | 5 | 4 | 72 |
 | `inspect` | 5 | 5 | 31 |
 | `start` | 5 | 3 | 1 |
-| `hover` | 3 | 3 | 11 |
+| `hover` | 4 | 4 | 14 |
+| `polygon` | 3 | 3 | 14 |
 | `sheetui` | 2 | 1 | 8 |
 | `polytool` | 2 | 2 | 10 |
-| `polygon` | 2 | 2 | 9 |
 | `walk` | 1 | 1 | 19 |
 | `underview` | 1 | 1 | 3 |
 | `host-polytool` | 1 | 1 | 6 |

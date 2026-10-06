@@ -1,0 +1,15 @@
+{
+ "build": "mechs",
+ "note": "The Mechs kit's adapter onto the material library (core/materials/PLAN.md). The kit sheet hands these to KratorMechs.useTextures(): each bucket's map is a grey DETAIL map sampled by triplanar projection of the bind-pose position (no UVs), its mean brightness divided back out so the vertex colours (the Iziz livery) keep their brightness, and its luminance used as a bump. scale is metres per tile. plate: bare and grey-painted armour (riveted patchwork); livery: the orange, cream and teal paint (chipped painted plate: where the map is dark the paint gives way to steel); metal: joints, frames and pistons (machined steel with grease); bronze: phalerae, suns and trim; cloth: padding, rope, leather, feathers; hair: the horsehair crests; banner: the vexilla (the orb device); sunbanner: the sun flags (a window from one tile: the generated sheet is not quite periodic). The bundle itself carries no images: a host world that wants them passes its own. Run python3 tools/textures/pack.py kits/mechs after any change, then python3 build.py.",
+ "size": 512,
+ "families": {
+  "plate": {"lib": "metal.scrap", "mapOnly": true, "scale": [1.7, 1.7], "tint": {"keep": 0.0, "mean": 0.6, "contrast": 1.15}},
+  "livery": {"lib": "metal.painted.chipped", "mapOnly": true, "scale": [1.8, 1.8], "tint": {"keep": 0.0, "mean": 0.6, "contrast": 1.1}},
+  "metal": {"lib": "metal.joint.greasy", "mapOnly": true, "scale": [1.7, 1.7], "tint": {"keep": 0.0, "mean": 0.55}},
+  "bronze": {"lib": "metal.bronze", "mapOnly": true, "scale": [0.7, 0.7], "tint": {"keep": 0.0, "mean": 0.6}},
+  "cloth": {"lib": "cloth.canvas", "mapOnly": true, "scale": [0.6, 0.6], "tint": {"keep": 0.0, "mean": 0.7}},
+  "hair": {"lib": "hair.crest", "mapOnly": true, "scale": [0.6, 0.6], "tint": {"keep": 0.0, "mean": 0.65, "contrast": 1.2}},
+  "banner": {"lib": "patterns/iziz/banner", "mapOnly": true, "scale": [2.7, 2.7], "tint": {"keep": 1.0, "mean": null}},
+  "sunbanner": {"lib": "patterns/iziz/sun-banner", "mapOnly": true, "size": 1024, "scale": [2.0, 1.46], "tint": {"keep": 1.0, "mean": null}}
+ }
+}

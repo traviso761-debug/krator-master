@@ -976,6 +976,17 @@ Still not delivered: `wing.butterfly`, `skin.sky-ray`. Girder now uses `bark.iro
 square (it loses vertical resolution); `bone.horn`, `common/rawhide`, `lantern-*` and `beast-riders/plaque` are not tileable (see above); nothing in this
 delivery has been judged in a render yet.
 
+#### Delivered 2026-10-05 and processed: the Iziz mechs (4 images)
+
+Batch `chatgpt-2026-10g-mechs.json`; sources in the owner's `texture/iziz/`. Prompts in the batch's records.
+
+| Set | Use | Reuse |
+|---|---|---|
+| `metal.painted.chipped` | `kits/mechs` livery (tinted orange, cream, teal; chips shown as steel) | any painted metal: vehicles, ships' plating, shutters, post-apoc containers |
+| `metal.joint.greasy` | `kits/mechs` joints, frames, pistons | machinery, engines, winches, the Ancients' mechanisms |
+| `hair.crest` | `kits/mechs` horsehair crests | plumes, manes, horse tails, wigs, brushes |
+| `patterns/iziz/sun-banner` | `kits/mechs` sun flags | Iziz banners and hangings anywhere (sockets, furniture); not exactly periodic: crop a window, do not wrap |
+
 ## Built so far (2026-10-02)
 
 Nine ChatGPT-generated sources from the Beast Rider prompts above, processed by `tools/textures/process.py`
