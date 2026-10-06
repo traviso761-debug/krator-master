@@ -490,7 +490,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     'painted': ['rustic', 'generic'],
     'reedlake': ['islander', 'eastabyss', 'generic'],
     'post-apoc': ['scrap', 'ancients-salvage', 'generic'],
-    'hykkousoi': ['islander', 'generic']
+    'hykkousoi': ['islander', 'generic'],
+    'scyvoi': ['nomad', 'generic', 'scrap']
   };
 })(KratorInteriors);
 /* ---------- src/40-grid.js ---------- */

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    1.413,
+    0.997
+   ],
+   "seam_before": [
+    1.574,
+    1.657
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ceramic",
+  "id": "common/zellige-lotus-teal",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.55,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "common_zellige-lotus-teal.png",
+  "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi kit",
+  "licence": "supplied for this project by its owner",
+  "prompt": "not recorded: blue, teal, cream and gold leaf mosaic with stepped bands",
+  "reuse": "zellige floors and walls: Scyvoi, Xanadu, Yuni court",
+  "sha1": "e3d10d9dafb0abbcaa5307c0be36b92b83eb5e7d"
+ }
+}

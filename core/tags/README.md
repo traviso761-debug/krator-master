@@ -9,7 +9,7 @@ Travis's decisions; this file is what was built.
 | Fragment | Tag | What |
 |---|---|---|
 | `50-core-tags.js` | [G data] | `KTAGS.create({build})`: the registry (`add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`), the ids, `KTAGS.uid`, `KTAGS.norm` (the input mapping and the checks). No THREE, no DOM: it runs in node. Needs `core/rand` (the uid is a `KRAND.hash`) |
-| `52-core-tags-vocab.js` | [G data] | `KTAGS.VOCAB`: classes, the 18 cultures and their display names, the aliases, types, wealth, states, settings, jobs, Köppen, fixture kinds, the known tag keys, the id prefixes. The catalog's lists are copied, not read |
+| `52-core-tags-vocab.js` | [G data] | `KTAGS.VOCAB`: classes, the 19 cultures and their display names, the aliases, types, wealth, states, settings, jobs, Köppen, fixture kinds, the known tag keys, the id prefixes. The catalog's lists are copied, not read |
 | `53-core-tags-host.js` | [web] | `KTAGS.label(rec, instance)`: the inspector's text, generated from the record |
 | `test-tags.js` | | the node test: the vocabulary against the catalog's source, each check with a negative, a fixed run's ids, the pinned uid and export digest, the proposal's three labels, `golden.json` |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | | the uid in GDScript and its vectors; copied to `godot/tests/tags/` by `godot/tools/sync_core.py` |
@@ -70,7 +70,7 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 
 | Key | Values |
 |---|---|
-| `culture` | the 18 cultures (`VOCAB.cultures`); display names in `VOCAB.cultureNames` |
+| `culture` | the 19 cultures (`VOCAB.cultures`); display names in `VOCAB.cultureNames` |
 | `types` | a list from `BUILDING_TYPES` plus `park`, `military`, `statue`; a single string becomes a list |
 | `wealth` | `poor`, `middle`, `rich` or `null`. A number 0..1 maps `< .35` poor, `< .7` middle, else rich; `common` is middle, `court` rich, `civic` null |
 | `tier` `state` `setting` `job` `koppen` `set` | the catalog's tiers; `intact ruined rehab toppled salvage`; `indoor outdoor both room`; `FURN_JOBS`; the Köppen codes plus `X` and `H`; `generic scrap` |

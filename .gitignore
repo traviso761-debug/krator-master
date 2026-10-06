@@ -54,3 +54,5 @@ core/materials/demo/mockups/*/dist/
 
 # tools/edits: notes queued from the browser (tools/edits/README.md)
 /edits/
+
+kits/scyvoi/three.min.js

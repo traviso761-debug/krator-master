@@ -1042,6 +1042,39 @@ Batch `chatgpt-2026-10g-mechs.json`; sources in the owner's `texture/iziz/`. Pro
 | `hair.crest` | `kits/mechs` horsehair crests | plumes, manes, horse tails, wigs, brushes |
 | `patterns/iziz/sun-banner` | `kits/mechs` sun flags | Iziz banners and hangings anywhere (sockets, furniture); not exactly periodic: crop a window, do not wrap |
 
+#### Delivered 2026-10-05 with the Scyvoi brief: four processed, six waiting for their files
+
+Batch `scyvoi.json` (sources: the owner's chat images; the prompts were not given). The four below are processed and in
+`kits/scyvoi/materials.json`:
+
+| Set | Use | Reuse |
+|---|---|---|
+| `patterns/scyvoi/felt-scroll` | Scyvoi ger bands, door felts, floor felts, pavilion walls, saddle cloths | any steppe culture's shyrdak felt |
+| `patterns/scyvoi/arch-lining` | Scyvoi pavilion and khaima linings, the chief's roof lining | Xanadu or Yuni hangings |
+| `patterns/common/zellige-blue` | the stand-in for the appliqué and cold-flame sheets | zellige floors and fountains: Xanadu, Yuni court |
+| `patterns/common/zellige-black` | the chief's wall bands, the shaman's floor | any court floor |
+
+Twenty more sheets followed as files and are processed (the same batch; tiling sheets cropped to their period, the six
+medallions kept whole as single panels: map each once, `kits/scyvoi/src/30-geo.js` `medallion()`):
+
+| Set | Use in the Scyvoi kit | Reuse |
+|---|---|---|
+| `patterns/common/zellige-rosette`, `zellige-rosette-colour` | `patRose`; `patPoly` the chief's floor | court floors and fountains |
+| `patterns/scyvoi/flame-zellige` | `patFlame`, the chief's foot band | fire temples |
+| `patterns/scyvoi/fire-bloom` | `patBloom`, linings and the pavilion floor | Xanadu court cloth |
+| `patterns/common/kilim-star` | `patKilim`, floors, barding, the divider | every nomad kilim (meets `patterns/nomads/kilim`) |
+| `patterns/scyvoi/kilim-cold-flame` | `patCold`, the appliqué tent's panels | kilims, hangings |
+| `patterns/common/celestial-giant` | `patCelest`, the chief's roof lining | ceilings and temples of any Krator culture |
+| `patterns/common/tile-step-black`, `tile-quatrefoil-black` | the Baelu's gate passage and well apron | thresholds, austere courts |
+| `patterns/common/tile-lotus-cross`, `tile-lattice-blue`, `-red`, `-saffron`, `zellige-lotus-teal` | not yet | floors and dados anywhere |
+| `patterns/scyvoi/medallion-salamander`, `medallion-blades` | the chief's dais; the war tent's floor | the Scyvoi emblem; armouries |
+| `patterns/common/medallion-moon`, `-cloud-blue`, `-star-blue`, `-sun-amber` | the shaman's hut, great ger, bell tent, pavilion | floor and dais medallions anywhere |
+
+Then the two gaps, both processed (same batch): `library/cloth.tent.black` (the goat-hair row above: black-brown plain
+weave with stray hairs; the Scyvoi black tents; reuse for Shade's Eastern Nomads) and `patterns/scyvoi/applique-blue`,
+`applique-blue.b` (indigo felt flowers and leaf sprays hand-stitched on cream; the appliqué tent's panels; any steppe or
+Tibetan-style tent).
+
 ## Built so far (2026-10-02)
 
 Nine ChatGPT-generated sources from the Beast Rider prompts above, processed by `tools/textures/process.py`
