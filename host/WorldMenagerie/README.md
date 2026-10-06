@@ -61,6 +61,7 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/arrakeen` | `/arrakeen.html`, `/arrakis`, `/dune` | `arrakeen.html` | Arrakeen: the city in the basin (fan work) |
 | `/beachcity` | `/beachcity.html`, `/beach-city`, `/stevenuniverse`, `/delmarva` | `beachcity.html` | Beach City (fan work) |
 | `/hyrule` | `/hyrule.html`, `/botw`, `/breathofthewild`, `/zelda` | `hyrule.html` | Hyrule, after Breath of the Wild (fan work) |
+| `/oldesthouse` | `/oldesthouse.html`, `/control`, `/fbc`, `/oldest-house` | `oldesthouse.html` | The Oldest House, after Control (fan work) |
 | `/europa` | `/europa.html`, `/conamara`, `/ice` | `europa.html` | Conamara Station: on the ice of Europa |
 | `/enterprise` | `/enterprise.html`, `/ncc1701d`, `/galaxy` | `enterprise.html` | Enterprise: Galaxy class (fan work) |
 | `/voyager` | `/voyager.html`, `/ncc74656`, `/intrepid` | `voyager.html` | Voyager: Intrepid class (fan work) |
@@ -930,6 +931,29 @@ places, used as references for arrangement only; neither is in the repository. N
 Regenerate with `python3 tools/make-beachcity.py`. It writes the ground, the streets, the houses and the trees for
 the engine (`beachcity-osm.json`) and where each landmark stands and faces, the surf lines and the boardwalk for the
 page (`beachcity-plan.json`). Views and cards are in `beachcity.json`; `#view=<name>` opens one.
+
+### `/oldesthouse`: the Oldest House, after Control
+
+Fan work after Remedy Entertainment's *Control* (2019) and its expansions; nothing of theirs is used. The Federal
+Bureau of Control's headquarters - a windowless brutalist tower in Manhattan, and inside it far more building than
+the outside could hold - built sector by sector in `src/oldesthouse/` and laid out from `data/cities/oldesthouse.json`
+the way the Bureau's blueprints show them: Executive in the middle, Research to the west, Maintenance to the east,
+Containment to the north, Investigations to the south, the Foundation below, the Astral Plane above everything, and
+the tower itself on its street. Like the Infinity Castle it brings its own renderer and camera.
+
+- **The kit** (`kit.js`): one Builder takes every static surface as quads in world metres, one array per material,
+  cut into ~5 m cells. Every light fitting registers itself, and once the sectors are built `bake()` lights each
+  vertex from the fittings near it (and from ambient boxes): pools under the fluorescent panels, the Furnace's gold,
+  the Panopticon's teal, the Astral Plane's white - with no runtime lights. The fabric is unlit and shows its baked
+  colour. Ceilings are their own meshes (`:ceil` keys), so the **cutaway** (X) lifts them and the House reads like
+  its blueprints from above. Furniture and fittings (desks, cubicles, terminals, shelves of files, the Bureau's
+  fluted piers, rails, panels, lamps, pipes, planters) are functions of the builder.
+- **The surfaces** (`mats.js`): board-marked and panelled concrete, the Bureau's red carpet, walnut, terrazzo, tile,
+  grating, black rock, the Ashtray Maze's sunburst paper, the motel's blue, acoustic ceiling tile, filed paper - all
+  painted on canvases when the page opens.
+- **The sectors**: `executive.js`, `research.js`, `maintenance.js`, `containment.js`, `further.js` (the Foundation,
+  Investigations and the Oceanview Motel, the Astral Plane). Each builds its fabric, registers its light, its moving
+  things, its views and cards, its fog zones and its events.
 
 ### `/hyrule`: Hyrule, after Breath of the Wild
 
@@ -1896,6 +1920,7 @@ src/
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
+  oldesthouse/ main.js mats.js kit.js executive.js research.js maintenance.js containment.js further.js   the Oldest House: the kit and its light bake, the surfaces, the sectors
   hyrule/   main.js paint.js flora.js alive.js kit.js biomes.js details.js landmarks.js castle.js villages.js peoples.js wayside.js wonders.js guardian.js divine.js dragons.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
