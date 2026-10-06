@@ -58,6 +58,23 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
    on the `KRATOR_EXPORT` shape (M5).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
 
+**Normal maps after the JPEG switch** *(found 2026-10-06; off the critical path, nothing is broken today)*. The library's
+normal maps became `normal.jpg` (JPEG q95, 4:4:4) in `9b46d9e`. Godot does not read the library yet: `godot/krator/kmat.gd`
+loads each build's `tex/` pack, which is WebP. What is left:
+- **40 sets still on `normal.png`**: the ones added on main after the switch (the eastern badlands' and Ys's sets among them;
+  `git grep -l '"normalMap": "normal.png"' -- 'core/materials/**/meta.json'`). Convert them the same way (Pillow,
+  `quality=95, subsampling=0`) and point their `meta.json` at `normal.jpg`, so the library has one format.
+- **`kmat.gd`'s `_tex()` reads only WebP and PNG** (`load_png_from_buffer` for anything not `.webp`). Add a
+  `load_jpg_from_buffer` branch before Godot reads library sets directly, as `GODOT-PLAN.md` plans.
+- **Packed normals are lossy WebP, which is always 4:2:0** (`tools/textures/pack.py`, `webp(..., 92, 'RGB')`): X and Y
+  live in red and green, so the pack halves their resolution, a bigger loss than the JPEG switch avoided. Write packed
+  normals as lossless WebP or PNG.
+- **Re-packing moves the baseline.** A build that re-runs `pack.py` on a converted set gets very slightly different
+  normals (decoded from the JPEG), so its `PORT-BASELINE.json` hash changes with nothing to see. Re-pack Girder, Iziz,
+  Ys, Yuni, Mechs and Motor Vehicles in one change with one baseline rewrite, after the packed-normal format above.
+- `core/materials/record/23-mat-record.js:59` still names `normal.png` in its convention string; change it in that
+  same change, since it alters Girder's built page.
+
 ## Features
 
 - **DONE (first batch): `core/minimap/88-core-minimap.js` (`KMAP`), in Voth.** **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
