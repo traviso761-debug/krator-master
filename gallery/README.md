@@ -126,3 +126,10 @@ Version 56 (2026-10-06): `worlds/scyvoi.html` added (the Scyvoi kit, 11.8 MB: fi
 and carved vardo, the shaman's lodge, smithy and supply tents, all furnished with a cut-away; salamanders, chariots and carts,
 tethering; the Baelu fire redoubt) and `worlds/krator-catalog.html` replaced (1635 pieces: the Scyvoi furniture culture), from
 `main` at 34d77bca. The live index (version 55) was kept: the Scyvoi card was added and the Master catalog card updated. One publish call.
+Version 57 (2026-10-06): `worlds/crater-drylands.html` replaced with the crater drylands' live fire (F, then click, or the view
+"A wildfire running": the fire runs downwind through the old fuel, burns the scrub away and leaves char and smoke), 3.3 MB, from
+`main` at 843864e1. The live index (version 56) was kept: only the Crater drylands card changed (blurb, size). One publish call.
+Version 58 (2026-10-06): `worlds/fauna.html` added (the Fauna kit, 0.5 MB: 48 species, every animal of Krator gathered and
+tagged by biome, diet, temperament, traits, yields and life), `worlds/scyvoi.html` replaced (goats from the fauna kit, the
+hidemaker's tent) and `worlds/krator-catalog.html` replaced (the Scyvoi tanning pieces), from `main` at the fauna kit merge.
+The live index (version 57) was kept: the Fauna card was added and the Scyvoi card's blurb updated. One publish call.
