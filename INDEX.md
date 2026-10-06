@@ -41,6 +41,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 175 | 57 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 205 | 68 | Biome kit: see `biomes/README.md`. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 193 | 36 | Biome kit: see `biomes/README.md`. |
+| [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 13 | 155 | 43 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 181 | 48 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 196 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 207 | 66 | Biome kit: see `biomes/README.md`. |

@@ -133,3 +133,6 @@ Version 58 (2026-10-06): `worlds/fauna.html` added (the Fauna kit, 0.5 MB: 48 sp
 tagged by biome, diet, temperament, traits, yields and life), `worlds/scyvoi.html` replaced (goats from the fauna kit, the
 hidemaker's tent) and `worlds/krator-catalog.html` replaced (the Scyvoi tanning pieces), from `main` at the fauna kit merge.
 The live index (version 57) was kept: the Fauna card was added and the Scyvoi card's blurb updated. One publish call.
+Version 59 (2026-10-06): `worlds/shighlands.html` added (the southern highlands biome kit, 0.2 MB: the spiral biome, a cloud forest
+above the cloud sea and a paramo of giant rosettes, every plant a spiral turning the same way), from `main` at the southern
+highlands merge (1a34da92). The live index (version 58) was kept: only the Southern highlands card was added. One publish call.

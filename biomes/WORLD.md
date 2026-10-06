@@ -27,7 +27,7 @@ scale Krator map for rough placement, not in this repo.
 | eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
-| *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
+| southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
 | *candidate* the scablands (in "n semiarid") | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |

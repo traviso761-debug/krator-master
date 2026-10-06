@@ -42,11 +42,12 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 175 | 1 | 0 | 13 | 34 | 127 | 5 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 205 | 1 | 0 | 16 | 29 | 159 | 5 | biome | yes | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 193 | 1 | 0 | 14 | 52 | 126 | 6 | biome | yes | yes |
+| [`biomes/shighlands`](biomes/shighlands/PORT.md) | 13 | 155 | 14 | 0 | 13 | 40 | 88 | 2 | biome | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1620 | 21790 | 3231 (15%) | 398 (2%) | 961 (4%) | 2460 (11%) | 14740 (68%) | 232 | | | |
+| **all** | 1633 | 21945 | 3245 (15%) | 398 (2%) | 974 (4%) | 2500 (11%) | 14828 (68%) | 234 | | | |
 
 ## Host-shell copies
 
@@ -57,11 +58,11 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `camera` | 19 | 15 | 216 |
 | `probe` | 17 | 14 | 52 |
 | `sky` | 16 | 5 | 378 |
-| `host-stage` | 13 | 13 | 281 |
-| `host-sky` | 13 | 11 | 189 |
-| `host-build` | 13 | 13 | 16 |
-| `host-camera` | 13 | 13 | 116 |
-| `host-probe` | 13 | 13 | 86 |
+| `host-stage` | 14 | 14 | 294 |
+| `host-sky` | 14 | 12 | 202 |
+| `host-build` | 14 | 14 | 17 |
+| `host-camera` | 14 | 14 | 125 |
+| `host-probe` | 14 | 14 | 95 |
 | `stats` | 11 | 1 | 13 |
 | `host-tower` | 9 | 9 | 42 |
 | `pathviz` | 6 | 5 | 40 |
@@ -70,7 +71,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `start` | 5 | 3 | 1 |
 | `hover` | 5 | 5 | 18 |
 | `polygon` | 4 | 4 | 19 |
-| `host-polytool` | 3 | 1 | 19 |
+| `host-polytool` | 4 | 1 | 25 |
 | `sheetui` | 2 | 1 | 8 |
 | `polytool` | 2 | 2 | 10 |
 | `walk` | 1 | 1 | 19 |
