@@ -114,3 +114,7 @@ Version 53 (2026-10-06): `worlds/nwbay.html` replaced with the north-west bay fi
 turned right way out; a tsingy of knife-edged fins with spinewands and rock bottles, a tiankeng with traveller's fans, two
 cenotes, avenue baobabs; hero trees as six grown variants per species), 0.3 MB, from `main` at cf3e2206. The live index
 (version 52) was kept: only the North-west bay card changed (blurb, "new"). One publish call.
+
+Version 54 (2026-10-06): `worlds/iziz-mechs.html` replaced with the Mechs kit and its eleventh mech, the Talpa (an Ancient
+tunnel borer with a rotary polybolos and crescent vanes, a rider in a saddle on its back), 1.6 MB, from `main` at 389f79c8.
+The live index (version 53) was kept: only the Iziz war-walkers card changed (blurb, size). One publish call.
