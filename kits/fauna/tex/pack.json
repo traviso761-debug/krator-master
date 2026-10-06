@@ -35,26 +35,26 @@
    "files": {
     "map": "coat.albedo.webp"
    },
-   "lib": "hide.fur.brown",
+   "lib": "fur.bat",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
    "scale": [
-    0.18,
-    0.18
+    0.22,
+    0.22
    ],
    "size": 256,
    "source": {
-    "albedo": "1a971400fc0ceef4303238cbee5222f0f4c554e0",
-    "normal": "efd190cfa0ac209d924afeab792da19e0e895586",
-    "roughness": "ade05088e5e94802a5eeda1dbe3e911d9bb2937a"
+    "albedo": "5aa2fae69af7cad12339cae7972fc47aaf8894cc",
+    "normal": "5551e50dd4c0619889f541bcb83277dc6b3aa583",
+    "roughness": "d085c4fbb4ebfe1fe68beb66df75520ffe8c6d26"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.4555
+    "sourceMean": 0.2781
    }
   },
   "hair": {
@@ -113,32 +113,144 @@
     "sourceMean": 0.3776
    }
   },
+  "membrane": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "membrane.albedo.webp"
+   },
+   "lib": "membrane.bat",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.1,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "0871930b9ba0289a968b4423283478d58cc2e02e",
+    "normal": "58d75c32d85b858db512840905f15b44665fa2f2",
+    "roughness": "1a1cbb0e7955cc249873581102eba7d94be4db31"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.3527
+   }
+  },
+  "scale": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "scale.albedo.webp"
+   },
+   "lib": "organic.scale",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    0.12,
+    0.12
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "98bae95159ec77494a80d89446cddca6815b83ce",
+    "normal": "88a0bf37268a0917d5e1ed4f9f16f3b5f1f8c99b",
+    "roughness": "c09d9c3c5566b29d809ab0fcb28cf4b509793364"
+   },
+   "specular": 0.45,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.4103
+   }
+  },
+  "shag": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "shag.albedo.webp"
+   },
+   "lib": "fur.sloth",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "c0c1ea5d76889ab5d0dbf7ee654b1c92dbb98e18",
+    "normal": "d4508929501299d23855d04dd653ab25d5161524",
+    "roughness": "dc4166f696a7cb3e9753e28e4346263da23389b8"
+   },
+   "specular": 0.2,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.4404
+   }
+  },
   "skin": {
    "breakup": null,
    "card": false,
    "files": {
     "map": "skin.albedo.webp"
    },
-   "lib": "hide.leather008",
+   "lib": "hide.leather033c",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.1,
    "scale": [
-    0.45,
-    0.45
+    0.6,
+    0.6
    ],
    "size": 256,
    "source": {
-    "albedo": "593bf2032f9ae82af1e103e9460174610dde7b37",
-    "normal": "9b3dc36ee7c442252f73c22a986eb126d1cafff1",
-    "roughness": "f1f573876936f84b96b10656e9e20b52ddbc87fe"
+    "albedo": "df1b391f372bc2d330ce29cd529696e0832c0fa2",
+    "normal": "b2f490482a1cbc2446cf45efe26e13f24e63e833",
+    "roughness": "10ff0a0838ab957418489175c7ba664a15ecbf2f"
    },
    "specular": 0.4,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.1909
+    "sourceMean": 0.2954
+   }
+  },
+  "sleek": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "sleek.albedo.webp"
+   },
+   "lib": "hide.strider",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "119b0559f6603393128418fb031d09c87f5c79d8",
+    "normal": "63be4a1eee76c62dd186e60c47fee1df7eea8092",
+    "roughness": "a6a1a19934e2ea36e9ec4f895a254d8cbd3d4b34"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5652
    }
   }
  },

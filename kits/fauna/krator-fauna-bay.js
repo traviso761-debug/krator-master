@@ -59,50 +59,105 @@ const faByE = (A, fam, p, r, col, o) => A.ellip(fam, p[0], p[1], p[2], r[0], r[1
 /* ---------------------------------------------------------------- the bird (soarer, darter, glider)
    The biome's unit bird (birdGeo) with its nose turned to +z: [z, y, half-width, half-height] from the tail root to the
    beak tip (its diamond: nose 0.42, tail root -0.30, widest 0.12 at z 0.05, 0.16 deep), rounded into a body, a neck, a
-   head and a beak. The wings keep its stations: root x 0.12 (chord +0.16..-0.14), x 0.55 (+0.20..-0.10), tip x 1.0
-   (+0.14..+0.02), rising 0.05; the tail its fork (root -0.28, tips +-0.14 at -0.50, the notch at -0.40). */
+   head and a beak. The wings keep its stations (root x 0.12 to tip x 1.0, the root chord +0.16..-0.14) but each species
+   has its own planform (FA_BY_WINGS): the soarer's long, narrow and pointed, bent up to the wrist and down to the tip (a
+   sea bird's); the glider's broad, its hand spread in six fingers (a vulture's); the darter's a swift's scythe. Feathered
+   surfaces are `feather` (double-sided), the beak `horn`, the legs and feet `scale`. Wings are thin plates with a
+   rounded leading edge, countershaded (pale below, the flight feathers' trailing edge and the tips dark).
+   The perched darter (any pose but 'fly') is built with its wings closed along its flanks, their tips over the tail,
+   its body tilted up on its legs (the runtime turns a rigid wing back but cannot stand it against the flank); pose
+   'fly' builds it with its wings spread. */
 const FA_BY_BIRD = [[-0.30, 0.02, 0.03, 0.022], [-0.20, 0.016, 0.07, 0.05], [-0.06, 0.006, 0.11, 0.074], [0.05, 0, 0.12, 0.08],
   [0.15, 0.008, 0.085, 0.064], [0.22, 0.018, 0.062, 0.054], [0.29, 0.02, 0.055, 0.048], [0.35, 0.012, 0.03, 0.026], [0.42, 0.002, 0.004, 0.004]];
+/* wing planforms: rows at u = 0, .25, .5, .75, 1 (root to the plate's end) of [leading edge z, trailing edge z, y];
+   x = 0.1 + reach * u; th the plate's thickness at the root; fingers: the glider's spread primaries past the plate */
+const FA_BY_WINGS = {
+  soarer: { reach: 0.9, th: 0.013, fork: 1, rows: [[0.14, -0.14, 0], [0.165, -0.085, 0.03], [0.17, -0.052, 0.046], [0.11, -0.036, 0.03], [0.014, -0.004, 0.002]] },
+  darter: { reach: 0.9, th: 0.014, fork: 1, rows: [[0.15, -0.12, 0], [0.17, -0.07, 0.01], [0.15, -0.042, 0.016], [0.09, -0.03, 0.01], [0.012, -0.004, 0.002]] },
+  glider: { reach: 0.72, th: 0.016, fork: 0.35, fingers: [0.17, 0.19, 0.19, 0.18, 0.16, 0.13],
+    rows: [[0.17, -0.16, 0], [0.19, -0.155, 0.02], [0.19, -0.135, 0.045], [0.18, -0.105, 0.07], [0.165, -0.05, 0.085]] }
+};
 function faByBird(A, o) {
-  const S = o.S, y0 = o.y0, K = faByCurve(FA_BY_BIRD), fam = 'plain', v = A.variant;
+  const S = o.S, y0 = o.y0, K = faByCurve(FA_BY_BIRD), fam = 'feather', v = A.variant, W = FA_BY_WINGS[o.kind];
   const body = o.body[v % o.body.length], wing = o.wing[v % o.wing.length], tip = o.tip, under = faByShade(body, 1.3);
-  const C = t => { const k = K(t); return [0, y0 + k[1] * S, k[0] * S]; }, R = t => { const k = K(t); return [k[2] * S, k[3] * S]; };
+  const perch = !!o.perch && A.pose !== 'fly';
+  /* perched, the whole bird is tilted nose-up about the middle of its body */
+  const pitch = perch ? 0.28 : 0, cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const X = p => pitch ? [p[0], y0 + (p[1] - y0) * cp + p[2] * sp, p[2] * cp - (p[1] - y0) * sp] : p;
+  const C = t => { const k = K(t); return X([0, y0 + k[1] * S, k[0] * S]); }, R = t => { const k = K(t); return [k[2] * S, k[3] * S]; };
   const feather = (t, a) => faByMix(body, under, 0.6 * faBySmooth(0.3, 0.9, -Math.cos(a)));
-  const TB = 0.57, TH = 0.47;   /* the body ends at TB; the head (and neck) starts at TH, inside it, so a turned head leaves no gap */
-  A.tube(fam, t => C(TB * t), t => R(TB * t), 12, 12, null, { caps: true, colf: (t, a) => feather(TB * t, a) });
+  /* the body ends at TB, narrowing under the head; the head (and neck) starts at TH inside it, so a turned head leaves no gap */
+  const TB = 0.57, TH = 0.45;
+  A.tube(fam, t => C(TB * t), t => { const r = R(TB * t), k = 1 - 0.14 * faBySmooth(TH, TB, TB * t); return [r[0] * k, r[1] * k]; }, 14, 14, null,
+    { caps: true, colf: (t, a) => feather(TB * t, a) });
   /* feet: tucked under the tail in flight, or the perch's legs below */
-  if (!o.perch) for (const s of [1, -1]) faByE(A, fam, [s * 0.035 * S, y0 - 0.055 * S, -0.17 * S], [0.022 * S, 0.016 * S, 0.06 * S], o.leg, { seg: 8 });
+  if (!o.perch) for (const s of [1, -1]) faByE(A, 'scale', X([s * 0.035 * S, y0 - 0.05 * S, -0.17 * S]), [0.02 * S, 0.014 * S, 0.06 * S], o.leg, { seg: 8 });
   A.part('head', C(0.5), () => {
-    A.tube(fam, t => C(TH + (1 - TH) * t), t => { const tt = TH + (1 - TH) * t, r = R(tt), k = 1 - 0.08 * faBySmooth(TB, TH, tt); return [r[0] * k, r[1] * k]; }, 10, 12, null,
-      { caps: true, colf: (t, a) => { const tt = TH + (1 - TH) * t; return tt > 0.84 ? (tt > 0.95 ? faByShade(o.beak, 0.7) : o.beak) : feather(tt, a); } });
+    A.tube(fam, t => C(TH + (0.9 - TH) * t), t => { const tt = TH + (0.9 - TH) * t, r = R(tt), k = 1 - 0.16 * faBySmooth(TB, TH, tt); return [r[0] * k, r[1] * k]; }, 12, 14, null,
+      { caps: true, colf: (t, a) => feather(TH + (0.9 - TH) * t, a) });
+    /* the beak: from inside the face to the tip, hooked at the end on the soarer and the glider */
+    const hook = o.kind === 'darter' ? 0 : 0.014;
+    A.tube('horn', t => { const tt = 0.83 + 0.17 * t, c = C(tt); return [c[0], c[1] - hook * S * faBySmooth(0.55, 1, t) * cp, c[2]]; },
+      t => { const r = R(0.83 + 0.17 * t), k = 0.97 - 0.1 * t; return [Math.max(0.002 * S, r[0] * k), Math.max(0.002 * S, r[1] * (k + 0.15 * faBySmooth(0.5, 0.9, t) * (hook ? 1 : 0)))]; }, 8, 10, null,
+      { caps: true, colf: t => t > 0.85 ? faByShade(o.beak, 0.7) : o.beak });
     const ke = K(0.7);
     for (const s of [-1, 1]) {
-      faByE(A, 'eye', [s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S], [0.016 * S, 0.016 * S, 0.016 * S], o.eye || 0x0c0a08, { seg: 8 });
-      faByE(A, 'eye', [s * ke[2] * 0.93 * S, y0 + (ke[1] + ke[3] * 0.42) * S, (ke[0] + 0.006) * S], [0.005 * S, 0.006 * S, 0.005 * S], 0x020202, { seg: 6 });
+      faByE(A, 'eye', X([s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S]), [0.016 * S, 0.016 * S, 0.016 * S], o.eye || 0x0c0a08, { seg: 8 });
+      faByE(A, 'eye', X([s * ke[2] * 0.93 * S, y0 + (ke[1] + ke[3] * 0.42) * S, (ke[0] + 0.006) * S]), [0.005 * S, 0.006 * S, 0.005 * S], 0x020202, { seg: 6 });
     }
   });
   /* the wings: each extends outward from its root along +x (left) or -x (right), and flaps about z there */
-  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.1 * S, y0, 0.02 * S], () => {
-    faByPlate(A, fam, (u, w) => {
-      const lead = faByLag(u, 0.16, 0.2, 0.14), trail = faByLag(u, -0.14, -0.1, 0.02), m = (lead + trail) / 2;
-      const h = (lead - trail) / 2 * (u > 0.8 ? 1 - 0.5 * Math.pow((u - 0.8) / 0.2, 2) : 1);
-      return [s * (0.1 + 0.9 * u) * S, y0 + (faByLag(u, 0, 0.02, 0.05) + 0.014 * Math.sin(Math.PI * w) * (1 - u)) * S, (m + h * (2 * w - 1)) * S];
-    }, 12, 4, (u, w, sd) => { const c = faByMix(wing, tip, faBySmooth(0.5, 0.97, u) + (w < 0.2 ? 0.3 * faBySmooth(0.45, 0.8, u) : 0)); return sd < 0 ? faByShade(c, 1.12) : c; },
-    (u, w) => 0.012 * S * Math.sin(Math.PI * w) * (1 - 0.6 * u) * Math.sqrt(Math.max(0, 1 - u * u)));
+  const wingCol = (u, w, sd, fing) => {
+    const band = Math.floor(u * 11) % 2 ? 0.93 : 1;
+    let c = faByMix(wing, tip, fing ? 0.55 + 0.4 * u : faBySmooth(0.55, 0.98, u) * (W.fingers ? 0.6 : 1));
+    if (sd > 0) { if (w > 0.72 && !fing) c = faByMix(c, body, 0.45 * (1 - u)); if (w < 0.45) c = faByShade(c, band * (0.9 + 0.1 * w / 0.45)); }
+    else { c = faByMix(faByShade(wing, 1.22), tip, fing ? 0.5 + 0.4 * u : faBySmooth(0.6, 1, u) * 0.85); if (w < 0.16 && !fing) c = faByMix(c, tip, 0.5); }
+    return c;
+  };
+  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', X([s * 0.1 * S, y0, 0.02 * S]), () => {
+    if (perch) {
+      /* closed: a curved plate over the flank from the shoulder to past the tail root, narrowing to the tips over the tail */
+      const BT = []; for (let i = 0; i <= 48; i++) BT.push(K(i / 48));
+      const bodyAt = z => { if (z <= BT[0][0]) return [BT[0][1], BT[0][2], BT[0][3]];
+        for (let i = 1; i < BT.length; i++) if (BT[i][0] >= z) { const a = BT[i - 1], b = BT[i], f = (z - a[0]) / ((b[0] - a[0]) || 1); return [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f]; }
+        const L = BT[BT.length - 1]; return [L[1], L[2], L[3]]; };
+      faByPlate(A, fam, (u, w) => {
+        const z = 0.1 - 0.64 * u, b = bodyAt(Math.max(z, -0.24)), tf = faBySmooth(0.5, 1, u), sh = 1 - 0.65 * faBySmooth(0.55, 1, u);
+        const phi = (1.25 - 0.35 * tf) + ((-0.2 + 0.75 * tf) - (1.25 - 0.35 * tf)) * w, g = 0.012;
+        return X([s * (b[1] * 1.1 * sh + g) * Math.cos(phi) * S, y0 + (b[0] + (b[2] * 1.1 * sh + g) * Math.sin(phi)) * S, z * S]);
+      }, 14, 5, (u, w, sd) => { let c = faByMix(wing, tip, faBySmooth(0.5, 1, u)); if (w < 0.3) c = faByMix(c, body, 0.35 * (1 - u));
+        else if (Math.floor(u * 9) % 2) c = faByShade(c, 0.93); return sd > 0 ? c : faByShade(c, 0.8); }, (u, w) => 0.003 * S, [s, 0, 0]);
+      return;
+    }
+    const RW = faByCurve(W.rows), xe = 0.1 + W.reach;
+    faByPlate(A, fam, (u, w) => { const r = RW(u); return [s * (0.1 + W.reach * u) * S, y0 + (r[2] + 0.012 * Math.sin(Math.PI * w) * (1 - u)) * S, (r[1] + (r[0] - r[1]) * w) * S]; }, 20, 6,
+      (u, w, sd) => wingCol(u, w, sd, false), (u, w) => { const q = 1 - w; return S * (0.0015 + W.th * (1 - 0.7 * u) * 2.6 * Math.sqrt(q) * (1 - q)); });
+    /* the glider's fingers: the outer primaries, spread and curled up at their tips */
+    if (W.fingers) {
+      const re = RW(1), n = W.fingers.length;
+      for (let i = 0; i < n; i++) {
+        const zr = re[0] - (i + 0.5) / n * (re[0] - re[1]), ang = 0.28 - 0.74 * i / (n - 1), L = W.fingers[i], wd = 0.034 - 0.003 * i;
+        faByPlate(A, fam, (u, w) => { const x = xe - 0.03 + L * u * Math.cos(ang), zc = zr + L * u * Math.sin(ang), hw = wd * (1 - 0.55 * u) * Math.sqrt(Math.max(0, 1 - Math.pow(Math.max(0, u - 0.85) / 0.15, 2)) || 0.02);
+          return [s * x * S, y0 + (re[2] + 0.03 * u * u + 0.004 * i) * S, (zc + hw * (2 * w - 1)) * S]; }, 6, 2,
+          (u, w, sd) => wingCol(u, w, sd, true), (u, w) => S * (0.0015 + 0.004 * (1 - u) * Math.sin(Math.PI * w)));
+      }
+    }
   });
-  /* the forked tail */
-  A.part('tail', [0, y0 + 0.02 * S, -0.27 * S], () => {
-    faByPlate(A, fam, (u, w) => { const a = 2 * u - 1; return [a * (0.035 + 0.105 * w) * S, y0 + (0.02 - 0.006 * w) * S, (-0.25 - w * (0.13 + 0.1 * Math.abs(a))) * S]; }, 8, 4,
-      (u, w, sd) => faByShade(faByMix(body, tip, 0.55 * w), sd < 0 ? 1.15 : 1), (u, w) => { const a = 2 * u - 1; return 0.011 * S * (1 - a * a) * (1 - 0.9 * w); });
+  /* the forked tail (the glider's fork shallow) */
+  A.part('tail', X([0, y0 + 0.02 * S, -0.27 * S]), () => {
+    faByPlate(A, fam, (u, w) => { const a = 2 * u - 1; return X([a * (0.035 + 0.105 * w) * S, y0 + (0.02 - 0.006 * w) * S, (-0.25 - w * (0.13 + 0.1 * W.fork * Math.abs(a) + 0.04 * (1 - W.fork))) * S]); }, 10, 4,
+      (u, w, sd) => { const a = Math.abs(2 * u - 1); return faByShade(faByMix(body, tip, 0.55 * w), (sd < 0 ? 1.15 : 1) * (Math.floor(a * 4) % 2 ? 0.94 : 1)); },
+      (u, w) => { const a = 2 * u - 1; return S * (0.0012 + 0.011 * (1 - a * a) * (1 - 0.9 * w)); });
   });
-  /* the perch's legs: a bare shank to the ground, three toes forward and one back */
+  /* the perch's legs: a scaled shank to the ground, three toes forward and one back */
   if (o.perch) for (const s of [1, -1]) {
-    const hip = [s * 0.04 * S, y0 - 0.045 * S, 0.0];
+    const hip = X([s * 0.04 * S, y0 - 0.045 * S, -0.01 * S]);
     A.part(s > 0 ? 'leg0' : 'leg1', hip, () => {
-      const ft = [s * 0.05 * S, 0.006, 0.012 * S];
-      A.tube(fam, t => [hip[0] + (ft[0] - hip[0]) * t, hip[1] + (ft[1] - hip[1]) * t, hip[2] + (ft[2] - hip[2]) * t], t => { const r = (0.013 - 0.004 * t) * S; return [r, r]; }, 3, 6, o.leg, { caps: true });
+      const ft = [s * 0.05 * S, 0.006, hip[2] + 0.01 * S];
+      faByE(A, fam, [hip[0], hip[1] + 0.005 * S, hip[2]], [0.022 * S, 0.026 * S, 0.03 * S], faByShade(body, 1.1), { seg: 8 });   /* the feathered thigh */
+      A.tube('scale', t => [hip[0] + (ft[0] - hip[0]) * t, hip[1] + (ft[1] - hip[1]) * t, hip[2] + (ft[2] - hip[2]) * t], t => { const r = (0.012 - 0.004 * t) * S; return [r, r]; }, 3, 6, o.leg, { caps: true });
       for (const a of [-0.5, 0, 0.5, Math.PI]) { const L = (a === Math.PI ? 0.045 : 0.07) * S;
-        A.cone(fam, [ft[0], 0.0045, ft[2]], [ft[0] + Math.sin(a + s * 0.1) * L, 0.0035, ft[2] + Math.cos(a) * L], 0.0075 * S, 0.0035 * S, o.leg, 5); }
+        A.cone('scale', [ft[0], 0.0045, ft[2]], [ft[0] + Math.sin(a + s * 0.1) * L, 0.0035, ft[2] + Math.cos(a) * L], 0.0075 * S, 0.0035 * S, o.leg, 5); }
     });
   }
 }
@@ -110,124 +165,228 @@ function faByBird(A, o) {
 /* ---------------------------------------------------------------- the moth and the glint (insects, hovering) */
 function faByMoth(A, o) {
   const S = o.S, y0 = o.y0, v = A.variant, fur = o.body[v % o.body.length], wing = o.wing[v % o.wing.length], tip = o.tip, P = (x, y, z) => [x * S, y0 + y * S, z * S];
-  /* the biome drew it with the bird's diamond; a moth's body here: a furred thorax and a banded, tapering abdomen */
-  faByE(A, 'coat', P(0, 0, 0.06), [0.075 * S, 0.07 * S, 0.1 * S], fur, { seg: 12 });
-  A.tube('coat', t => P(0, -0.008 - 0.025 * t, 0.0 - 0.33 * t), t => { const r = (0.012 + 0.055 * Math.sin(Math.PI * (0.3 + 0.7 * t))) * S; return [r, r * 0.95]; }, 10, 10, null,
-    { caps: true, colf: t => t > 0.88 ? tip : (Math.sin(t * 36) > 0.55 ? faByShade(fur, 0.74) : fur) });
+  /* the biome drew it with the bird's diamond; a moth's body here: a big furred thorax and a stout, banded, tapering abdomen */
+  faByE(A, 'coat', P(0, 0, 0.06), [0.085 * S, 0.08 * S, 0.11 * S], fur, { seg: 12 });
+  A.tube('coat', t => P(0, -0.012 - 0.03 * t, 0.0 - 0.3 * t), t => { const r = (0.016 + 0.062 * Math.sin(Math.PI * (0.25 + 0.75 * t))) * S; return [r, r * 0.95]; }, 10, 12, null,
+    { caps: true, colf: t => t > 0.9 ? tip : (Math.sin(t * 30) > 0.6 ? faByShade(fur, 0.8) : fur) });
   const fuzz = [];
-  for (let i = 0; i < 26; i++) { const a = A.rr(-1.4, 1.4), z = A.rr(0.0, 0.13); fuzz.push({ at: P(Math.sin(a) * 0.07, Math.cos(a) * 0.065, z), dir: [Math.sin(a) * 0.6, Math.cos(a) * 0.3, -0.7], len: A.rr(0.04, 0.07) * S, w: 0.03 * S, col: faByShade(fur, A.rr(0.9, 1.05)), curl: 0.3 }); }
+  for (let i = 0; i < 30; i++) { const a = A.rr(-1.5, 1.5), z = A.rr(-0.02, 0.15); fuzz.push({ at: P(Math.sin(a) * 0.08, Math.cos(a) * 0.075, z), dir: [Math.sin(a) * 0.6, Math.cos(a) * 0.3, -0.7], len: A.rr(0.04, 0.07) * S, w: 0.035 * S, col: faByShade(fur, A.rr(0.9, 1.05)), curl: 0.3 }); }
   A.locks('hair', fuzz);
-  /* six legs, drawn hanging (it hovers; no leg parts) */
+  /* six legs, drawn hanging (it hovers; no leg parts): a furred femur, a bare tibia */
   for (const s of [-1, 1]) for (const [z, dz] of [[0.11, 0.12], [0.06, 0.02], [0.01, -0.1]]) {
     const a = P(s * 0.03, -0.05, z), b = P(s * 0.1, -0.1, z + dz * 0.5), c = P(s * 0.12, -0.2, z + dz);
-    A.cone('plain', a, b, 0.012 * S, 0.009 * S, faByShade(fur, 0.6), 5); A.cone('plain', b, c, 0.009 * S, 0.004 * S, faByShade(fur, 0.5), 5);
+    A.cone('coat', a, b, 0.014 * S, 0.01 * S, faByShade(fur, 0.8), 5); A.cone('chitin', b, c, 0.008 * S, 0.004 * S, faByShade(fur, 0.5), 5);
   }
   A.part('head', P(0, 0, 0.14), () => {
-    faByE(A, 'coat', P(0, 0.005, 0.185), [0.045 * S, 0.042 * S, 0.04 * S], fur, { seg: 10 });
+    faByE(A, 'coat', P(0, 0.005, 0.185), [0.048 * S, 0.044 * S, 0.042 * S], fur, { seg: 10 });
     for (const s of [-1, 1]) {
-      faByE(A, 'eye', P(s * 0.034, 0.012, 0.205), [0.024 * S, 0.026 * S, 0.022 * S], 0x2a1e14, { seg: 8 });
+      faByE(A, 'eye', P(s * 0.036, 0.012, 0.205), [0.026 * S, 0.028 * S, 0.024 * S], 0x2a1e14, { seg: 8 });
       /* the feathered antennae: a shaft with short barbs either side */
       const a0 = P(s * 0.018, 0.035, 0.215), a1 = P(s * 0.13, 0.13, 0.36);
-      A.cone('plain', a0, a1, 0.006 * S, 0.002 * S, tip, 4);
+      A.cone('chitin', a0, a1, 0.006 * S, 0.002 * S, tip, 4);
       for (let k = 1; k <= 6; k++) { const t = k / 7, p = [a0[0] + (a1[0] - a0[0]) * t, a0[1] + (a1[1] - a0[1]) * t, a0[2] + (a1[2] - a0[2]) * t], L = 0.035 * S * Math.sin(Math.PI * (0.15 + 0.7 * t));
-        for (const q of [-1, 1]) A.cone('plain', p, [p[0] + s * q * L * 0.45, p[1] + q * L * 0.5, p[2] - L * 0.6], 0.0025 * S, 0.001 * S, tip, 3); }
+        for (const q of [-1, 1]) A.cone('chitin', p, [p[0] + s * q * L * 0.45, p[1] + q * L * 0.5, p[2] - L * 0.6], 0.0025 * S, 0.001 * S, tip, 3); }
     }
-    faByE(A, 'mouth', P(0, -0.03, 0.2), [0.012 * S, 0.012 * S, 0.012 * S], 0x3a2a1a, { seg: 6 });
+    faByE(A, 'mouth', P(0, -0.03, 0.2), [0.012, 0.012, 0.012], 0x3a2a1a, { seg: 6 });
   });
-  /* the wings: the forewing on the biome's planform (its tips the darker colour), the hindwing behind, coupled to it
-     (a moth's wings beat as one: they share the part) */
+  /* the wings (membrane): a triangular forewing, its outer margin slanting from the apex back to the tornus, crossed by two
+     darker lines, an eyespot, the margin in the tip colour; behind it a rounded hindwing with a larger eyespot. A moth's
+     wings beat as one: they share the part. Paler beneath. */
+  const lines = (u, c) => (Math.abs(u - 0.36) < 0.022 || Math.abs(u - 0.68) < 0.022) ? faByShade(c, 0.82) : c;
   for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(s * 0.05, 0.02, 0.06), () => {
-    faByPlate(A, 'plain', (u, w) => {
-      const lead = faByLag(u, 0.16, 0.2, 0.14), trail = faByLag(u, -0.14, -0.1, 0.02), m = (lead + trail) / 2, h = (lead - trail) / 2 * (u > 0.8 ? 1 - 0.55 * Math.pow((u - 0.8) / 0.2, 2) : 1);
-      return P(s * (0.05 + 0.92 * u), 0.02 + 0.04 * u, m + h * (2 * w - 1));
-    }, 12, 5, (u, w, sd) => { const d = Math.hypot(u - 0.46, (w - 0.55) * 0.5); let c = faByMix(wing, tip, faBySmooth(0.55, 0.95, u));
-      if (d < 0.05) c = faByShade(tip, 0.7); else if (Math.abs(u - 0.7) < 0.025) c = faByShade(c, 0.88); return sd < 0 ? faByShade(c, 0.94) : c; }, (u, w) => 0.004 * S * Math.sin(Math.PI * w) * (1 - u * u));
-    faByPlate(A, 'plain', (u, w) => {
-      const lead = faByLag(u, -0.04, -0.07, -0.14, 0.5), trail = faByLag(u, -0.2, -0.32, -0.22, 0.5), m = (lead + trail) / 2, h = (lead - trail) / 2 * Math.sqrt(Math.max(0.08, 1 - Math.pow(Math.max(0, u - 0.55) / 0.45, 2)));
-      return P(s * (0.04 + 0.58 * u), 0.008 + 0.02 * u, m + h * (2 * w - 1));
-    }, 10, 5, (u, w, sd) => { const d = Math.hypot(u - 0.5, (w - 0.45) * 0.6); let c = u > 0.82 || w < 0.12 ? faByMix(wing, tip, 0.7) : faByShade(wing, 0.96);
-      if (d < 0.05) c = 0x3a2a1a; else if (d < 0.1) c = tip; return sd < 0 ? faByShade(c, 0.94) : c; }, (u, w) => 0.003 * S * Math.sin(Math.PI * w) * (1 - u * u));
+    faByPlate(A, 'membrane', (u, w) => {
+      const lead = 0.12 + 0.04 * u - 0.06 * Math.pow(u, 4), trail = 0.08 - 0.34 * Math.pow(u, 0.8);
+      return P(s * (0.05 + 0.92 * u * (0.7 + 0.3 * w)), 0.02 + 0.04 * u, trail + (lead - trail) * w);
+    }, 14, 6, (u, w, sd) => { const d = Math.hypot(u - 0.52, (w - 0.55) * 0.6);
+      let c = lines(u, faByMix(wing, tip, faBySmooth(0.82, 0.97, u * (0.7 + 0.3 * w) / 0.85)));
+      if (d < 0.04) c = 0x2a1e14; else if (d < 0.075) c = tip;
+      return sd < 0 ? faByMix(c, wing, 0.5) : c; }, (u, w) => S * (0.0008 + 0.003 * Math.sin(Math.PI * w) * (1 - u * u)));
+    faByPlate(A, 'membrane', (u, w) => {
+      const lead = 0.03 - 0.1 * u, trail = -0.04 - 0.26 * Math.sqrt(u) * (1 - 0.25 * u);
+      return P(s * (0.04 + 0.6 * u * (0.75 + 0.25 * Math.sin(Math.PI * w))), 0.006 + 0.02 * u, trail + (lead - trail) * w);
+    }, 10, 6, (u, w, sd) => { const d = Math.hypot(u - 0.55, (w - 0.45) * 0.7);
+      let c = u > 0.86 ? faByMix(wing, tip, 0.75) : faByShade(wing, 0.97);
+      if (d < 0.06) c = 0x2a1e14; else if (d < 0.11) c = tip; else if (d < 0.135) c = faByShade(wing, 1.05);
+      return sd < 0 ? faByMix(c, wing, 0.5) : c; }, (u, w) => S * (0.0008 + 0.002 * Math.sin(Math.PI * w) * (1 - u * u)));
   });
 }
 function faByGlint(A, o) {
-  const y0 = o.y0, glow = o.col[A.variant % o.col.length], P = (x, y, z) => [x, y0 + y, z], dk = 0x2a2418;
-  /* the biome's points: a glowing abdomen (the glint), a dark thorax and head, two clear wings */
-  faByE(A, 'plain', P(0, 0, 0.004), [0.0065, 0.006, 0.008], dk, { seg: 8 });
+  const y0 = o.y0, glow = o.col[A.variant % o.col.length], P = (x, y, z) => [x, y0 + y, z], dk = 0x2a2418, shield = faByMix(dk, glow, 0.3);
+  /* the biome's points: a glowing abdomen (the glint) under a dark thorax and head, a shield over the head, two clear wings */
+  faByE(A, 'chitin', P(0, 0, 0.004), [0.0065, 0.006, 0.008], dk, { seg: 8 });
   faByE(A, 'glow', P(0, -0.001, -0.014), [0.0075, 0.0068, 0.014], glow, { seg: 10 });
-  for (const s of [-1, 1]) for (const z of [0.008, 0.003, -0.002]) A.cone('plain', P(s * 0.003, -0.004, z), P(s * 0.009, -0.012, z - 0.003), 0.0012, 0.0006, dk, 3);
+  for (const s of [-1, 1]) for (const z of [0.008, 0.003, -0.002]) {
+    const a = P(s * 0.003, -0.004, z), b = P(s * 0.008, -0.007, z - 0.001), c = P(s * 0.01, -0.013, z - 0.003);
+    A.cone('chitin', a, b, 0.0009, 0.0007, dk, 3); A.cone('chitin', b, c, 0.0007, 0.0004, dk, 3);
+  }
   A.part('head', P(0, 0, 0.01), () => {
-    faByE(A, 'plain', P(0, 0.001, 0.015), [0.0045, 0.0042, 0.004], dk, { seg: 8 });
-    for (const s of [-1, 1]) { faByE(A, 'eye', P(s * 0.0032, 0.0015, 0.0165), [0.0022, 0.0026, 0.0022], 0x101010, { seg: 6 });
-      A.cone('plain', P(s * 0.0015, 0.004, 0.018), P(s * 0.006, 0.01, 0.028), 0.0006, 0.0003, dk, 3); }
+    faByE(A, 'chitin', P(0, 0.001, 0.015), [0.0045, 0.0042, 0.004], dk, { seg: 8 });
+    faByE(A, 'chitin', P(0, 0.0035, 0.0135), [0.0058, 0.0022, 0.0058], shield, { seg: 8 });
+    for (const s of [-1, 1]) { faByE(A, 'eye', P(s * 0.0032, 0.0012, 0.0168), [0.0022, 0.0026, 0.0022], 0x101010, { seg: 6 });
+      A.cone('chitin', P(s * 0.0015, 0.003, 0.0185), P(s * 0.006, 0.009, 0.028), 0.0005, 0.0003, dk, 3); }
   });
   for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(s * 0.004, 0.004, 0.006), () => {
-    faByPlate(A, 'plain', (u, w) => { const c = 0.004 - 0.008 * u, h = 0.0085 * Math.sqrt(Math.max(0.05, 1 - Math.pow(Math.max(0, u - 0.5) / 0.5, 2))) * (0.7 + 0.3 * u);
+    /* the wing case, held up and out */
+    faByE(A, 'chitin', P(s * 0.006, 0.0055, -0.002), [0.0035, 0.0012, 0.011], dk, { rz: s * 0.5, ry: s * 0.25, seg: 8 });
+    faByPlate(A, 'membrane', (u, w) => { const c = 0.002 - 0.01 * u, h = 0.0085 * Math.sqrt(Math.max(0.05, 1 - Math.pow(Math.max(0, u - 0.45) / 0.55, 2))) * (0.6 + 0.4 * u);
       return P(s * (0.004 + 0.04 * u), 0.004 + 0.003 * u, c + h * (2 * w - 1)); }, 8, 3,
-      (u, w, sd) => faByMix(0xe6eef0, glow, 0.15 + 0.1 * u), (u, w) => 0.0004 * Math.sin(Math.PI * w));
+      (u, w, sd) => { const vein = Math.abs(w - 0.62) < 0.08 || u < 0.08; return faByMix(0xe6eef0, vein ? dk : glow, vein ? 0.35 : 0.12 + 0.1 * u); }, (u, w) => 0.00008 + 0.0003 * Math.sin(Math.PI * w));
   });
 }
 
 /* ---------------------------------------------------------------- the grazer and the stalker (the biome's grazerGeo)
-   Its unit (height 1 at the shoulder, head to -z; here +z): the barrel 0.46 x 0.44 x 1.1 at y 0.72 (the belly colour
-   on its lower quarter), the neck 0.22 x 0.36 x 0.34 at z 0.62, the head 0.2 x 0.2 x 0.42 at y 1.12, z 0.86 (dark
-   below), a dark tail 0.28 long at y 0.75, four legs 0.52 tall at x +-0.16, z +-0.4 (dark low). Scaled [x, y, z]. */
-const FA_BY_BARREL = [[-0.58, 0.74, 0.1, 0.12], [-0.5, 0.745, 0.19, 0.19], [-0.32, 0.735, 0.23, 0.22], [0, 0.72, 0.235, 0.225], [0.3, 0.73, 0.235, 0.23], [0.47, 0.76, 0.2, 0.21], [0.56, 0.78, 0.11, 0.13]];
-function faByQuad(A, q) {
-  const v = A.variant, Kx = q.K[0], Ky = q.K[1], Kz = q.K[2], hide = q.hide[v % q.hide.length], belly = q.belly, dark = faByShade(hide, 0.6), pred = !!q.pred;
-  const P = (x, y, z) => [x * Kx, y * Ky, z * Kz], B = faByCurve(FA_BY_BARREL);
-  const mott = (x, y, z) => faByShade(hide, 0.92 + 0.16 * faNoise(x * 4 + v * 7, y * 4, z * 4));
-  /* the barrel; a stalker's belly tucked up at the waist */
-  A.tube('coat', t => { const k = B(t); return P(0, k[1] + (pred ? 0.03 * Math.exp(-Math.pow((t - 0.32) / 0.2, 2)) : 0), k[0]); },
-    t => { const k = B(t), w = pred ? 1 - 0.16 * Math.exp(-Math.pow((t - 0.32) / 0.2, 2)) : 1; return [k[2] * Kx * (pred ? 0.94 : 1), k[3] * Ky * w]; }, 16, 14, null,
-    { caps: true, colf: (t, a) => { const k = B(t); return faByMix(mott(Math.sin(a) * 0.2, k[1] + Math.cos(a) * 0.2, k[0]), belly, faBySmooth(0.5, 0.85, -Math.cos(a))); } });
-  /* the head with the neck: it turns about the neck's root to graze */
-  A.part('head', P(0, 0.86, 0.42), () => {
-    const nk = faByCurve([[0.82, 0.36], [0.95, 0.55], [1.07, 0.7]]);
-    A.tube('coat', t => { const k = nk(t); return P(0, k[0], k[1]); }, t => [(0.11 - 0.025 * t) * Kx, (0.18 - 0.075 * t) * Ky], 6, 12, null,
-      { colf: (t, a) => faByMix(mott(Math.sin(a) * 0.1, 1, 0.55), belly, 0.55 * faBySmooth(0.45, 0.85, -Math.cos(a))) });
-    const hd = pred ? faByCurve([[1.17, 0.63], [1.165, 0.86], [1.13, 1.07]]) : faByCurve([[1.15, 0.63], [1.14, 0.86], [1.09, 1.07]]);
-    const hr = pred ? (t => [(0.1 - 0.05 * t * t) * Kx, (0.1 - 0.058 * t) * Ky]) : (t => [(0.095 - 0.042 * t * t) * Kx, (0.105 - 0.05 * t) * Ky]);
-    A.tube('coat', t => { const k = hd(t); return P(0, k[0], k[1]); }, hr, 10, 12, null, { caps: true, colf: (t, a) => {
-      const lo = -Math.cos(a); if (!pred && t > 0.86) return 0x2a2420; if (pred && t > 0.93) return 0x1a1412;
-      return lo > (pred ? 0.3 : 0.6) ? (pred ? faByMix(dark, belly, 0.35) : dark) : faByMix(mott(0, 1.15, 0.86), dark, faBySmooth(0.75, 0.86, t) * 0.6); } });
+   The biome drew both from one box grazer (unit height 1 at the shoulder: a barrel 0.46 x 0.44 x 1.1, a neck block, a
+   head block 0.42 long, a dark tail, four legs dark low), the grazer scaled 1.9 and the stalker 1 : 0.85 : 1.25 of it.
+   Here each is its own animal at those sizes, in metres, in `sleek` hide: the grazer a big plains antelope (withers
+   over the rump, a deep neck rising from the shoulders, a long grazing head with a broad nose, broad drooping ears, a
+   tufted tail); the stalker a heavy savannah cat (deep chest, tucked waist, a short thick neck, a broad short-muzzled
+   head with forward eyes, canines and a jaw that opens, rounded ears, broad paws, a long low tail). */
+/* bodies: [z, y, half-width, half-height] rump to chest */
+const FA_BY_GRAZER_BODY = [[-1.2, 1.54, 0.03, 0.03], [-1.14, 1.52, 0.2, 0.22], [-0.98, 1.48, 0.34, 0.36], [-0.62, 1.43, 0.42, 0.41], [-0.15, 1.41, 0.45, 0.43],
+  [0.35, 1.44, 0.45, 0.46], [0.72, 1.46, 0.38, 0.47], [0.96, 1.5, 0.24, 0.34], [1.06, 1.52, 0.04, 0.05]];
+const FA_BY_STALKER_BODY = [[-1.12, 1.07, 0.03, 0.03], [-1.06, 1.06, 0.18, 0.2], [-0.86, 1.03, 0.28, 0.27], [-0.52, 1.0, 0.25, 0.22], [-0.12, 0.97, 0.29, 0.28],
+  [0.32, 0.96, 0.33, 0.34], [0.7, 1.0, 0.32, 0.36], [0.95, 1.06, 0.23, 0.28], [1.07, 1.09, 0.04, 0.05]];
+/* a limb: a smooth tube through rows [y, z, r] in the plane at x (its frame is fixed by that plane, so it never twists);
+   joints are rows with a larger r; colf(v), v 0 at the top */
+function faByLimb(A, fam, x, rows, colf) {
+  const Cv = faByCurve(rows), e = 1e-3;
+  A.sheet(fam, (u, v) => { const c = Cv(v), c0 = Cv(Math.max(0, v - e)), c1 = Cv(Math.min(1, v + e)); let ty = c1[0] - c0[0], tz = c1[1] - c0[1]; const l = Math.hypot(ty, tz) || 1; ty /= l; tz /= l;
+    const a = u * TAU + Math.PI, r = c[2]; return [x + Math.sin(a) * r, c[0] + tz * Math.cos(a) * r, c[1] - ty * Math.cos(a) * r]; }, 10, rows.length > 7 ? 20 : 16, null, { colf: (u, v) => colf(v) });
+}
+/* a body along z from its rows, mottled above and pale below */
+function faByTrunk(A, rows, mott, belly, lo) {
+  const BR = faByCurve(rows);
+  A.tube('sleek', t => { const k = BR(t); return [0, k[1], k[0]]; }, t => { const k = BR(t); return [k[2], k[3]]; }, 22, 16, null,
+    { caps: true, colf: (t, a) => { const k = BR(t); return faByMix(mott(Math.sin(a) * k[2], k[1] + Math.cos(a) * k[3], k[0]), belly, faBySmooth(lo, 0.9, -Math.cos(a))); } });
+}
+/* a head's frame: s metres along its axis from p0 toward p1, h up off the axis, x to the side */
+function faByHeadFrame(p0, p1) {
+  const dy = p1[1] - p0[1], dz = p1[2] - p0[2], L = Math.hypot(dy, dz), ay = dy / L, az = dz / L;
+  const H = (s, h, x) => [x || 0, p0[1] + ay * s + az * h, p0[2] + az * s - ay * h];
+  H.L = L; return H;
+}
+function faByGrazer(A) {
+  const v = A.variant, sp = FA_BY_SP.grazer, hide = sp.hide[v % sp.hide.length], belly = sp.belly, dark = faByShade(hide, 0.6), F = 'sleek';
+  const mott = (x, y, z) => faByShade(hide, 0.9 + 0.18 * faNoise(x * 2.1 + v * 7, y * 2.1, z * 2.1));
+  faByTrunk(A, FA_BY_GRAZER_BODY, mott, belly, 0.45);
+  /* the shoulder blades under the withers and the haunches: the leg tops' masses */
+  for (const s of [-1, 1]) {
+    faByE(A, F, [s * 0.19, 1.58, 0.6], [0.15, 0.32, 0.24], null, { rx: -0.4, seg: 16, colf: (x, y, z) => mott(s * 0.24 + x, 1.58 + y, 0.6 + z) });
+    faByE(A, F, [s * 0.2, 1.52, -0.8], [0.15, 0.32, 0.28], null, { rx: -0.25, seg: 16, colf: (x, y, z) => mott(s * 0.24 + x, 1.52 + y, -0.8 + z) });
+  }
+  /* the neck and head: they turn about the base of the neck to graze */
+  A.part('head', [0, 1.5, 0.72], () => {
+    const NK = faByCurve([[1.38, 0.5, 0.18, 0.28], [1.72, 0.94, 0.15, 0.23], [2.02, 1.24, 0.115, 0.16], [2.2, 1.42, 0.1, 0.13]]);
+    A.tube(F, t => { const k = NK(t); return [0, k[0], k[1]]; }, t => { const k = NK(t); return [k[2], k[3]]; }, 10, 14, null,
+      { caps: true, colf: (t, a) => faByMix(mott(Math.sin(a) * 0.15, 1.8 + 0.3 * t, 0.9 + 0.4 * t), belly, 0.7 * faBySmooth(0.35, 0.9, -Math.cos(a))) });
+    /* a short upright dark mane along the crest */
+    A.tube('hair', t => { const k = NK(0.14 + 0.84 * t); return [0, k[0] + k[3] * 0.92, k[1] - 0.02]; }, t => [0.022, 0.05 + 0.015 * Math.sin(Math.PI * t)], 10, 8, null,
+      { caps: true, colf: (t, a) => faByShade(dark, Math.cos(a) > 0.3 ? 0.75 : 0.95) });
+    const H = faByHeadFrame([0, 2.3, 1.4], [0, 1.84, 1.94]), L = H.L;
+    const HR = faByCurve([[0.1, 0.12], [0.13, 0.15], [0.125, 0.155], [0.11, 0.145], [0.095, 0.12], [0.083, 0.1], [0.074, 0.088], [0.085, 0.086], [0.05, 0.05]]);
+    A.tube(F, t => H(L * t, 0), HR, 16, 16, null, { caps: true, colf: (t, a) => {
+      if (t > 0.9) return 0x2a2420;
+      const lo = -Math.cos(a), c = faByMix(mott(Math.sin(a) * 0.1, 2.1, 1.6 + t), dark, 0.5 * faBySmooth(0.45, 0.85, t));
+      return lo > 0.55 ? faByMix(c, dark, 0.5) : c; } });
+    /* the lower jaw: deep at the cheek, a clean line to the chin */
+    const JW = faByCurve([[0.12, -0.085, 0.1, 0.07], [0.3, -0.085, 0.082, 0.055], [0.5, -0.05, 0.05, 0.03]]);
+    A.tube(F, t => { const k = JW(t); return H(k[0], k[1]); }, t => { const k = JW(t); return [k[2], k[3]]; }, 8, 12, null,
+      { caps: true, colf: (t, a) => faByMix(mott(0, 1.9, 1.7), dark, 0.25 + 0.25 * faBySmooth(-0.2, 0.6, -Math.cos(a))) });
     for (const s of [-1, 1]) {
-      const e = pred ? P(s * 0.075, 1.19, 0.84) : P(s * 0.088, 1.17, 0.8);
-      faByE(A, 'eye', e, [0.021 * Kx, 0.021 * Ky, 0.018 * Kz], pred ? 0xc89030 : 0x1a120c, { seg: 8 });
-      if (pred) faByE(A, 'eye', [e[0] + s * 0.012 * Kx, e[1], e[2] + 0.004 * Kz], [0.008 * Kx, 0.014 * Ky, 0.008 * Kz], 0x050403, { seg: 6 });
-      faByE(A, 'mouth', pred ? P(s * 0.022, 1.135, 1.075) : P(s * 0.03, 1.105, 1.07), [0.011 * Kx, 0.008 * Ky, 0.006 * Kz], 0x120c0a, { seg: 6 });
+      /* the eye high on the side of the skull under a brow; a horizontal pupil */
+      faByE(A, F, H(0.17, 0.078, s * 0.106), [0.032, 0.016, 0.048], mott(0, 2.2, 1.5), { seg: 10 });
+      faByE(A, 'eye', H(0.175, 0.05, s * 0.118), [0.03, 0.03, 0.032], 0x2a1a0c, { seg: 10 });
+      faByE(A, 'eye', H(0.178, 0.05, s * 0.146), [0.005, 0.009, 0.018], 0x050403, { seg: 6 });
+      /* the nostrils on the broad nose, the line of the mouth */
+      faByE(A, 'mouth', H(0.665, 0.02, s * 0.055), [0.016, 0.03, 0.012], 0x0e0a08, { ry: s * 0.5, seg: 8 });
     }
-    if (pred) for (const s of [-1, 1]) A.cone('horn', P(s * 0.03, 1.105, 1.03), P(s * 0.03, 1.06, 1.036), 0.009 * Kx, 0.002 * Kx, 0xe8e0c8, 5);
   });
-  /* a stalker's lower jaw */
-  if (pred) A.part('jaw', P(0, 1.1, 0.7), () => {
-    A.tube('coat', t => P(0, 1.085 - 0.01 * t, 0.7 + 0.35 * t), t => [(0.07 - 0.035 * t) * Kx, (0.032 - 0.012 * t) * Ky], 6, 10, null, { caps: true, colf: (t, a) => faByMix(dark, belly, 0.45) });
-    A.cone('horn', P(0.026, 1.07, 1.0), P(0.026, 1.1, 1.003), 0.007 * Kx, 0.002 * Kx, 0xe8e0c8, 5); A.cone('horn', P(-0.026, 1.07, 1.0), P(-0.026, 1.1, 1.003), 0.007 * Kx, 0.002 * Kx, 0xe8e0c8, 5);
+  /* the ears: broad and drooping */
+  for (const s of [-1, 1]) A.part(s > 0 ? 'earL' : 'earR', faByHeadFrame([0, 2.3, 1.4], [0, 1.84, 1.94])(0.03, 0.12, s * 0.085), () => {
+    const H = faByHeadFrame([0, 2.3, 1.4], [0, 1.84, 1.94]);
+    faByE(A, F, H(0.02, 0.13, s * 0.18), [0.1, 0.026, 0.055], null, { rz: s * 0.45, ry: -s * 0.3, seg: 12, colf: (x, y, z) => y < 0 ? faByMix(hide, belly, 0.5) : faByShade(hide, 0.95) });
   });
-  /* the ears: a grazer's broad and drooping, a stalker's short and rounded, upright */
-  for (const s of [-1, 1]) A.part(s > 0 ? 'earL' : 'earR', pred ? P(s * 0.06, 1.24, 0.69) : P(s * 0.07, 1.22, 0.7), () => {
-    if (pred) faByE(A, 'coat', P(s * 0.075, 1.27, 0.69), [0.04 * Kx, 0.055 * Ky, 0.016 * Kz], faByShade(hide, 0.8), { rz: -s * 0.35, seg: 10 });
-    else faByE(A, 'coat', P(s * 0.13, 1.23, 0.69), [0.075 * Kx, 0.022 * Ky, 0.036 * Kz], hide, { rz: s * 0.45, ry: -s * 0.3, seg: 10 });
+  /* the tail: drooping to a dark tuft */
+  A.part('tail', [0, 1.68, -1.12], () => {
+    const TL = faByCurve([[1.68, -1.12], [1.58, -1.24], [1.32, -1.3], [1.06, -1.31]]);
+    A.tube(F, t => { const k = TL(t); return [0, k[0], k[1]]; }, t => { const r = 0.055 - 0.027 * t; return [r, r]; }, 8, 8, null, { caps: true, colf: t => t > 0.7 ? dark : mott(0, 1.5, -1.2) });
+    const T = []; for (let i = 0; i < 9; i++) T.push({ at: [A.rr(-0.015, 0.015), 1.1 + A.rr(0, 0.06), -1.31], dir: [A.rr(-0.2, 0.2), -1, A.rr(-0.25, 0.05)], len: A.rr(0.2, 0.3), w: 0.05, col: faByShade(dark, 0.7), curl: 0.1 });
+    A.locks('hair', T);
   });
-  /* the tail: a grazer's droops to a dark tuft; a stalker's is longer and hangs */
-  A.part('tail', P(0, 0.77, -0.54), () => {
-    const tl = pred ? faByCurve([[0.8, -0.54], [0.72, -0.72], [0.56, -0.84]]) : faByCurve([[0.77, -0.54], [0.72, -0.68], [0.62, -0.78]]);
-    A.tube('coat', t => { const k = tl(t); return P(0, k[0], k[1]); }, t => [(0.045 - 0.018 * t) * Kx, (0.045 - 0.018 * t) * Ky], 6, 8, null, { caps: true, colf: t => pred && t < 0.6 ? mott(0, 0.7, -0.7) : dark });
-    if (!pred) { const L = []; for (let i = 0; i < 7; i++) L.push({ at: P(A.rr(-0.012, 0.012), 0.64, -0.775), dir: [A.rr(-0.25, 0.25), -1, -0.35], len: A.rr(0.1, 0.15) * Ky, w: 0.028 * Kx, col: faByShade(dark, 0.7), curl: 0.1 }); A.locks('hair', L); }
+  /* the legs: forearm and gaskin muscled, knees and hocks knobbed, slim cannons, dark socks, hooves */
+  for (const [x, z, front, i] of [[0.27, 0.72, 1, 0], [-0.27, 0.72, 1, 1], [0.27, -0.74, 0, 2], [-0.27, -0.74, 0, 3]]) A.part('leg' + i, [x, 1.22, z], () => {
+    const rows = front ? [[1.3, z, 0.12], [1.0, z + 0.01, 0.105], [0.8, z + 0.015, 0.075], [0.64, z + 0.025, 0.07], [0.5, z + 0.03, 0.05], [0.32, z + 0.04, 0.046], [0.19, z + 0.05, 0.055], [0.12, z + 0.07, 0.045], [0.07, z + 0.1, 0.045]]
+      : [[1.35, z, 0.16], [1.1, z - 0.07, 0.13], [0.88, z - 0.14, 0.09], [0.72, z - 0.2, 0.07], [0.55, z - 0.18, 0.05], [0.33, z - 0.16, 0.046], [0.19, z - 0.14, 0.055], [0.12, z - 0.12, 0.045], [0.07, z - 0.1, 0.045]];
+    faByLimb(A, F, x, rows, vv => { const y = 1.3 - 1.23 * vv; return y < 0.5 ? faByMix(mott(x, y, z), dark, faBySmooth(0.5, 0.3, y)) : mott(x, y, z); });
+    if (!front) faByE(A, F, [x, 0.75, z - 0.25], [0.035, 0.06, 0.04], mott(x, 0.7, z), { seg: 8 });   /* the point of the hock */
+    const hz = rows[8][1];
+    A.cone('hoof', [x, 0, hz + 0.012], [x, 0.1, hz + 0.012], 0.075, 0.058, 0x1e1a16, 10);
   });
-  /* the legs: each turns about its top; a grazer's end in hooves, a stalker's in broad clawed paws */
-  const LEGS = [[0.15, 0.38, 1, 0], [-0.15, 0.38, 1, 1], [0.15, -0.38, 0, 2], [-0.15, -0.38, 0, 3]];
-  for (const [x, z, front, i] of LEGS) A.part('leg' + i, P(x, 0.62, z), () => {
-    const pts = pred ? (front ? [[x, 0.64, z], [x, 0.36, z - 0.02], [x, 0.12, z], [x, 0.05, z + 0.015]] : [[x, 0.66, z], [x, 0.45, z - 0.05], [x, 0.2, z - 0.1], [x, 0.05, z - 0.07]])
-      : (front ? [[x, 0.64, z], [x, 0.36, z + 0.01], [x, 0.12, z + 0.02], [x, 0.03, z + 0.025]] : [[x, 0.66, z], [x, 0.4, z - 0.07], [x, 0.16, z - 0.03], [x, 0.03, z]]);
-    const L = faByCurve(pts.map(p => P(p[0], p[1], p[2]))), r0 = front ? 0.068 : 0.085, r1 = pred ? 0.036 : 0.03;
-    A.tube('coat', L, t => { const r = r0 + (r1 - r0) * Math.min(1, t * 1.5); return [r * Kx, r * Kz]; }, 8, 10, null, { colf: t => t > 0.74 ? dark : mott(x, 0.4, z) });
-    const ft = pts[3];
-    if (pred) {
-      faByE(A, 'coat', P(x, 0.03, ft[2] + 0.03), [0.048 * Kx, 0.03 * Ky, 0.062 * Kz], dark, { seg: 10 });
-      for (const dx of [-0.025, 0, 0.025]) A.cone('horn', P(x + dx, 0.022, ft[2] + 0.08), P(x + dx * 1.2, 0.008, ft[2] + 0.1), 0.007 * Kx, 0.002 * Kx, 0x2a2420, 4);
-    } else A.cone('hoof', P(x, 0, ft[2] + 0.004), P(x, 0.05, ft[2]), 0.04 * (Kx + Kz) / 2, 0.033 * (Kx + Kz) / 2, 0x1e1a16, 8);
+  A.anchor('lead', [0, 2.02, 1.42]); A.anchor('back', [0, 1.86, 0]);
+}
+function faByStalker(A) {
+  const v = A.variant, sp = FA_BY_SP.stalker, hide = sp.hide[v % sp.hide.length], belly = sp.belly, dark = faByShade(hide, 0.6), F = 'sleek', pale = faByMix(hide, belly, 0.7);
+  const mott = (x, y, z) => faByShade(hide, 0.9 + 0.18 * faNoise(x * 2.4 + v * 7, y * 2.4, z * 2.4));
+  faByTrunk(A, FA_BY_STALKER_BODY, mott, belly, 0.4);
+  for (const s of [-1, 1]) {
+    faByE(A, F, [s * 0.17, 1.1, 0.64], [0.11, 0.22, 0.17], null, { rx: -0.35, seg: 12, colf: (x, y, z) => mott(s * 0.17 + x, 1.1 + y, 0.64 + z) });
+    faByE(A, F, [s * 0.16, 1.04, -0.82], [0.12, 0.23, 0.22], null, { rx: -0.2, seg: 12, colf: (x, y, z) => mott(s * 0.17 + x, 1.06 + y, -0.82 + z) });
+  }
+  const H0 = faByHeadFrame([0, 1.46, 1.22], [0, 1.37, 1.68]), L = H0.L, H = (f, h, x) => H0(f * L, h, x), hc = t => 0.02 * Math.sin(Math.PI * t);
+  A.part('head', [0, 1.15, 0.84], () => {
+    const NK = faByCurve([[0.95, 0.62, 0.19, 0.21], [1.19, 1.0, 0.2, 0.24], [1.42, 1.32, 0.14, 0.15]]);
+    A.tube(F, t => { const k = NK(t); return [0, k[0], k[1]]; }, t => { const k = NK(t); return [k[2], k[3]]; }, 8, 14, null,
+      { caps: true, colf: (t, a) => faByMix(mott(Math.sin(a) * 0.15, 1.2 + 0.2 * t, 0.9 + 0.3 * t), belly, 0.75 * faBySmooth(0.35, 0.9, -Math.cos(a))) });
+    /* the skull: broad at the cheekbones, a domed brow, a short broad muzzle */
+    const HR = faByCurve([[0.07, 0.08], [0.17, 0.17], [0.205, 0.19], [0.2, 0.18], [0.165, 0.16], [0.14, 0.14], [0.13, 0.13], [0.115, 0.115], [0.05, 0.05]]);
+    A.tube(F, t => H(t, hc(t)), HR, 16, 18, null, { caps: true, colf: (t, a) => {
+      const lo = -Math.cos(a); if (t > 0.94) return 0x1a1412;
+      const c = mott(Math.sin(a) * 0.15, 1.45, 1.3 + t * 0.5);
+      return lo > 0.2 ? faByMix(c, pale, faBySmooth(0.2, 0.6, lo)) : (t > 0.55 && lo > -0.5 ? faByMix(c, pale, 0.4 * faBySmooth(0.55, 0.8, t)) : c); } });
+    for (const s of [-1, 1]) {
+      /* whisker pads, the nostrils, the upper canines and the line of the lip */
+      faByE(A, F, H(0.8, -0.045, s * 0.06), [0.07, 0.064, 0.075], null, { seg: 10, colf: () => faByMix(hide, pale, 0.6) });
+      faByE(A, 'mouth', H(0.975, 0.014, s * 0.022), [0.012, 0.01, 0.01], 0x0a0806, { seg: 6 });
+      A.cone('horn', H(0.86, -0.06, s * 0.05), H(0.865, -0.15, s * 0.05), 0.014, 0.003, 0xe8e0c8, 6);
+      /* the eyes: set forward under a heavy brow, amber with a slit pupil; a dark tear line under each */
+      faByE(A, F, H(0.47, 0.135, s * 0.1), [0.05, 0.018, 0.055], null, { seg: 10, colf: () => mott(0, 1.5, 1.5) });
+      faByE(A, 'eye', H(0.52, 0.085, s * 0.128), [0.028, 0.026, 0.026], 0xc89030, { seg: 10 });
+      faByE(A, 'eye', H(0.565, 0.085, s * 0.142), [0.006, 0.017, 0.006], 0x050403, { seg: 6 });
+      faByE(A, 'mouth', H(0.6, 0.055, s * 0.122), [0.01, 0.007, 0.032], 0x16100c, { ry: s * 0.5, seg: 6 });
+    }
+    faByE(A, 'mouth', H(0.99, 0.035, 0), [0.05, 0.03, 0.026], 0x1a1412, { seg: 10 });
   });
-  A.anchor('lead', P(0, 1.05, 0.72)); A.anchor('back', P(0, 0.96, 0));
+  /* the lower jaw: it opens when the head is down */
+  A.part('jaw', H(0.2, -0.08), () => {
+    const JW = faByCurve([[0.2, -0.085, 0.11, 0.065], [0.62, -0.105, 0.08, 0.045], [0.94, -0.095, 0.055, 0.032]]);
+    A.tube(F, t => { const k = JW(t); return H(k[0], k[1]); }, t => { const k = JW(t); return [k[2], k[3]]; }, 8, 12, null, { caps: true, colf: (t, a) => faByMix(faByMix(dark, pale, 0.45), pale, 0.4 * faBySmooth(0.3, 0.9, -Math.cos(a))) });
+    for (const s of [-1, 1]) A.cone('horn', H(0.88, -0.09, s * 0.042), H(0.885, -0.035, s * 0.044), 0.011, 0.003, 0xe8e0c8, 6);
+  });
+  /* the ears: short, rounded, upright, dark behind and pale inside */
+  for (const s of [-1, 1]) A.part(s > 0 ? 'earL' : 'earR', H(0.2, 0.16, s * 0.13), () => {
+    faByE(A, F, H(0.2, 0.2, s * 0.15), [0.055, 0.062, 0.022], faByShade(hide, 0.7), { rz: -s * 0.55, seg: 12 });
+    faByE(A, F, H(0.222, 0.196, s * 0.148), [0.038, 0.045, 0.012], pale, { rz: -s * 0.55, seg: 10 });
+  });
+  /* the tail: long and low, curling up at a dark tip */
+  A.part('tail', [0, 1.12, -1.08], () => {
+    const TL = faByCurve([[1.12, -1.08], [1.0, -1.28], [0.8, -1.46], [0.64, -1.66], [0.66, -1.88]]);
+    A.tube(F, t => { const k = TL(t); return [0, k[0], k[1]]; }, t => { const r = 0.065 - 0.025 * t; return [r, r]; }, 12, 10, null, { caps: true, colf: t => t > 0.85 ? dark : mott(0, 1, -1.4) });
+    faByE(A, F, [0, 0.665, -1.9], [0.048, 0.05, 0.09], dark, { rx: 0.3, seg: 10 });
+  });
+  /* the legs: heavy forearms and thighs, broad paws with dark claws */
+  for (const [x, z, front, i] of [[0.21, 0.7, 1, 0], [-0.21, 0.7, 1, 1], [0.21, -0.82, 0, 2], [-0.21, -0.82, 0, 3]]) A.part('leg' + i, [x, 1.0, z], () => {
+    const rows = front ? [[1.15, z, 0.11], [0.85, z, 0.125], [0.65, z, 0.1], [0.45, z + 0.01, 0.08], [0.28, z + 0.025, 0.07], [0.17, z + 0.04, 0.07], [0.1, z + 0.07, 0.066]]
+      : [[1.15, z - 0.03, 0.13], [0.88, z + 0.08, 0.15], [0.7, z + 0.14, 0.11], [0.52, z + 0.02, 0.085], [0.34, z - 0.12, 0.066], [0.22, z - 0.11, 0.058], [0.1, z - 0.08, 0.058]];
+    faByLimb(A, F, x, rows, vv => faByMix(mott(x, 1 - vv, z), pale, 0.25 * vv));
+    const pts = [null, null, null, [x, 0.1, rows[6][1]]];
+    const pz = pts[3][2] + 0.04;
+    faByE(A, F, [x, 0.055, pz], [0.085, 0.055, 0.11], null, { seg: 10, colf: () => faByMix(mott(x, 0.1, z), pale, 0.3) });
+    for (const dx of [-0.045, -0.015, 0.015, 0.045]) {
+      faByE(A, F, [x + dx, 0.035, pz + 0.085], [0.025, 0.033, 0.03], null, { seg: 6, colf: () => faByMix(mott(x, 0.1, z), pale, 0.3) });
+      A.cone('horn', [x + dx * 1.05, 0.03, pz + 0.105], [x + dx * 1.1, 0.006, pz + 0.13], 0.008, 0.002, 0x2a2420, 4);
+    }
+  });
+  A.anchor('lead', [0, 1.3, 1.2]); A.anchor('back', [0, 1.3, 0]);
 }
 
 /* ---------------------------------------------------------------- the swimmer
@@ -239,27 +398,34 @@ const FA_BY_WHALE = [[-3.8, -0.6, 0.1, 0.08], [-3.3, -0.45, 0.25, 0.28], [-2.5, 
 function faBySwimmer(A) {
   const v = A.variant, back = FA_BY_SP.swimmer.back[v % 3], fin = FA_BY_SP.swimmer.fin, belly = faByMix(back, 0x9aa4a8, 0.7), W = faByCurve(FA_BY_WHALE);
   const C = t => { const k = W(t); return [0, k[1] - k[3], k[0]]; }, R = t => { const k = W(t); return [k[2], k[3]]; };
-  const skin = (t, a) => { const k = W(t); return faByMix(faByShade(back, 0.9 + 0.2 * faNoise(t * 16 + v * 3, a * 2.2, 1.3)), belly, faBySmooth(0.15, 0.75, -Math.cos(a))); };
+  const skin = (t, a) => { const k = W(t), lo = -Math.cos(a);
+    const c = faByMix(faByShade(back, 0.9 + 0.2 * faNoise(t * 16 + v * 3, a * 2.2, 1.3)), belly, faBySmooth(0.15, 0.75, lo));
+    /* the throat pleats: grooves along the belly from the chin back past the flippers */
+    return lo > 0.6 && k[0] > 0.6 && k[0] < 3.9 && Math.sin(a * 46) > 0.55 ? faByShade(c, 0.8 + 0.12 * faBySmooth(0.6, 3.9, k[0])) : c; };
   /* a stretch of the body; a part's stretch reaches into its neighbour (shrunk a little) so a turned joint shows no gap */
   const stretch = (t0, t1, nt, shrink) => A.tube('skin', t => C(t0 + (t1 - t0) * t), t => { const tt = t0 + (t1 - t0) * t, r = R(tt), k = shrink ? shrink(tt) : 1; return [r[0] * k, r[1] * k]; },
     nt, 18, null, { caps: true, colf: (t, a) => skin(t0 + (t1 - t0) * t, a) });
   const TT = 3 / 11, THd = 7.4 / 11;   /* the tail turns at z -1.6, the head at z 2.95 */
-  stretch(TT, THd, 18);
+  stretch(TT, THd, 18, tt => 1 - 0.035 * faBySmooth(THd - 0.09, THd, tt) - 0.04 * faBySmooth(TT + 0.06, TT, tt));
   /* the dorsal fin (the biome's: base z -0.9 .. 1.44, apex z 0.18, 2.4 m over the back) */
   faByPlate(A, 'skin', (u, w) => { const z0 = -0.9 + 2.34 * u, top = 0.06 - 0.02 * Math.abs(u - 0.5); return [0, (top - 0.12) * (1 - w) + 2.5 * w, z0 + (0.18 - z0) * w - 0.35 * Math.sin(Math.PI * w) * u]; }, 8, 7,
     (u, w) => faByShade(fin, 1 - 0.15 * w), (u, w) => 0.14 * (1 - w) * Math.sqrt(Math.sin(Math.PI * u)), [1, 0, 0]);
   /* the flippers, and the blowhole */
   for (const s of [-1, 1]) faByPlate(A, 'skin', (u, w) => { const ch = 0.95 - 0.6 * u, zc = 2.1 - 1.0 * u * u; return [s * (1.35 + 1.35 * u), -1.15 - 0.55 * u, zc + ch * (w - 0.5)]; }, 8, 4,
     (u, w, sd) => sd > 0 ? faByShade(back, 0.95) : belly, (u, w) => 0.12 * Math.sin(Math.PI * w) * (1 - 0.7 * u) * Math.sqrt(Math.max(0, 1 - Math.pow(u, 3))));
-  faByE(A, 'mouth', [0, 0.02, 2.75], [0.13, 0.03, 0.07], 0x0c1216, { seg: 8 });
+  /* the blowholes: a pair of slits behind a raised splash guard, on the crown of the back */
+  const topAt = z => { let best = 0, d = 1e9; for (let i = 0; i <= 80; i++) { const k = W(i / 80); if (Math.abs(k[0] - z) < d) { d = Math.abs(k[0] - z); best = k[1]; } } return best; };
+  const yb = topAt(2.45);
+  faByE(A, 'skin', [0, yb - 0.035, 2.62], [0.26, 0.06, 0.2], null, { seg: 10, colf: () => faByShade(back, 0.95) });
+  for (const s of [-1, 1]) faByE(A, 'mouth', [s * 0.07, yb - 0.004, 2.42], [0.035, 0.016, 0.15], 0x0a0e12, { ry: -s * 0.22, seg: 8 });
   A.part('tail', C(TT), () => {
-    stretch(0, TT + 0.06, 12, tt => 1 - 0.06 * faBySmooth(TT, TT + 0.06, tt));
+    stretch(0, TT + 0.07, 12, tt => 1 - 0.045 * faBySmooth(TT, TT + 0.07, tt));
     /* the flukes: 3.2 m across, swept back, notched at the middle */
     faByPlate(A, 'skin', (u, w) => { const a = 2 * u - 1, b = Math.abs(a), lead = -3.66 - 0.62 * Math.pow(b, 1.6), trail = -3.9 - 0.52 * Math.pow(b, 0.7); return [a * 1.6, -0.66 + 0.06 * b, lead + (trail - lead) * w]; }, 12, 4,
       (u, w, sd) => sd > 0 ? faByShade(back, 0.85) : belly, (u, w) => { const b = Math.abs(2 * u - 1); return 0.1 * Math.sin(Math.PI * w) * Math.sqrt(Math.max(0, 1 - b * b)); });
   });
   A.part('head', C(THd), () => {
-    stretch(THd - 0.05, 1, 12, tt => 1 - 0.05 * faBySmooth(THd, THd - 0.05, tt));
+    stretch(THd - 0.1, 1, 14, tt => 1 - 0.035 * faBySmooth(THd, THd - 0.1, tt));
     for (const s of [-1, 1]) {
       const k = W(9.6 / 11), y = k[1] - k[3];
       faByE(A, 'eye', [s * k[2] * 0.93, y - 0.12, k[0]], [0.07, 0.06, 0.08], 0x0a0c0e, { seg: 8 });
@@ -291,7 +457,7 @@ ANIMAL({
     herd: 'flocks of 7 to 12 wheeling in loops over the bay and the shore', fleeDistance: 30, aggression: 0.05,
     schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'FLY', 'FLY', 'FLY', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
   /* never lands in the biome: built gliding, its body 2.4 m up so a full downstroke clears the ground */
-  build: function (A) { const o = FA_BY_SP.soarer; faByBird(A, { S: o.S, y0: 2.4, body: o.body, wing: o.wing, tip: o.tip, beak: 0x4a3c30, leg: 0x3a3028 }); }
+  build: function (A) { const o = FA_BY_SP.soarer; faByBird(A, { kind: 'soarer', S: o.S, y0: 2.4, body: o.body, wing: o.wing, tip: o.tip, beak: 0x4a3c30, leg: 0x3a3028 }); }
 });
 ANIMAL({
   key: 'canopy-darter', name: 'Canopy darter', group: 'bay',
@@ -305,31 +471,31 @@ ANIMAL({
   traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
   yields: { meat: { amount: 0.2, note: 'a mouthful; snared by children' }, feathers: { amount: 0.03, note: 'the teal and blue feathers, prized for ornament' } },
   life: { maturity: 1, lifespan: 8, litter: 3, gestation: 16, note: 'eggs in a hole high in a bole' },
-  variants: 2, variantNames: ['blue', 'teal'],
-  w: 1.12, d: 0.75, h: 0.2,
+  variants: 2, variantNames: ['blue', 'teal'], poses: ['perch', 'fly'],
+  w: 1.12, d: 0.56, h: 0.21,
   data: { mass: 0.45, legs: 2, wings: 1, speed: { walk: 0.3, run: 1, fly: 14 }, gait: { type: 'flyer', freq: 1.43, stride: 0.04 },
-    flap: { freq: 1.43, amp: 0.75, glide: 0, fold: 0.12, sweep: 1.3, tuck: 0.9 },
+    flap: { freq: 1.43, amp: 0.75, glide: 0, tuck: 0.9 },
     herd: 'flocks of 8 to 16 in tight loops round the crowns', fleeDistance: 6, aggression: 0,
     schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'REST', 'REST', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
-  /* perched: standing on its toes; at rest its wings are held up over its back (fold), spread in flight */
-  build: function (A) { const o = FA_BY_SP.darter; faByBird(A, { S: o.S, y0: 0.1, body: o.body, wing: o.wing, tip: o.tip, beak: 0x1a2a30, leg: 0x2a2a2a, perch: true }); }
+  /* perched (the default build): on its toes, tilted up, its wings closed along its flanks; pose 'fly' spreads them */
+  build: function (A) { const o = FA_BY_SP.darter; faByBird(A, { kind: 'darter', S: o.S, y0: 0.11, body: o.body, wing: o.wing, tip: o.tip, beak: 0x1a2a30, leg: 0x2a2a2a, perch: true }); }
 });
 ANIMAL({
   key: 'plains-grazer', name: 'Plains grazer', group: 'bay',
   tags: { biomes: ['swbay'], koppen: ['Aw'], aridity: ['semiarid', 'subhumid'], climate: ['tropic'], riparian: 'non', abyssal: false,
     domestic: false, herdedBy: [], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'wary',
     habitat: ['ground'], locomotion: ['walks', 'runs'] },
-  size: { length: 3.5, height: 2.3 },
+  size: { length: 3.4, height: 2.3 },
   source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '22-23, 58-67, 133-152', note: 'one herd of 14 to 24 wandering the savannah, heads down, turning away from trunks and the tower' }],
   traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
   yields: { meat: { amount: 330, note: 'a cow dressed: lean savannah game' }, hide: { amount: 1, hideM2: 4.5, note: 'a heavy hide: shields, sandals, tent covers' } },
   life: { maturity: 3, lifespan: 20, litter: 1, gestation: 270 },
   variants: 3, variantNames: ['tawny', 'sand', 'umber'],
-  w: 0.9, d: 3.65, h: 2.42,
+  w: 0.93, d: 3.4, h: 2.5,
   data: { mass: 700, legs: 4, speed: { walk: 0.9, run: 14 }, gait: { type: 'quadruped', freq: 1.1, stride: 0.9 }, grazePitch: 1.35,
     herd: 'one herd of 14 to 24 wandering the savannah, a stalker or two trailing it', fleeDistance: 40, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
-  build: function (A) { const o = FA_BY_SP.grazer; faByQuad(A, { K: [1.9, 1.9, 1.9], hide: o.hide, belly: o.belly }); }
+  build: function (A) { faByGrazer(A); }
 });
 ANIMAL({
   key: 'savannah-stalker', name: 'Savannah stalker', group: 'bay',
@@ -342,11 +508,11 @@ ANIMAL({
   yields: { hide: { amount: 1, hideM2: 3.2, note: 'the dark pelt, a hunter\'s trophy' } },
   life: { maturity: 3, lifespan: 16, litter: 2, gestation: 105 },
   variants: 3, variantNames: ['dusk', 'char', 'umber'],
-  w: 0.8, d: 3.9, h: 1.82,
+  w: 0.72, d: 3.75, h: 1.75,
   data: { mass: 320, legs: 4, speed: { walk: 1.3, run: 17 }, gait: { type: 'quadruped', freq: 1.2, stride: 1.1 }, grazePitch: 0.9,
     herd: 'one or two, trailing the grazer herd ninety metres back', fleeDistance: 0, aggression: 0.7,
     schedule: ['REST', 'REST', 'REST', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'PATROL', 'PATROL', 'REST', 'REST', 'REST', 'REST', 'REST', 'PATROL', 'PATROL', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'PATROL', 'REST', 'REST', 'REST'] },
-  build: function (A) { const o = FA_BY_SP.stalker; faByQuad(A, { K: [1.6, 1.36, 2.0], hide: o.hide, belly: o.belly, pred: true }); }
+  build: function (A) { faByStalker(A); }
 });
 ANIMAL({
   key: 'bay-swimmer', name: 'Bay swimmer', group: 'bay',
@@ -380,13 +546,13 @@ ANIMAL({
   yields: { feathers: { amount: 1.5, note: 'the long flight feathers, a chief\'s fan or a cloak\'s fringe' } },
   life: { maturity: 7, lifespan: 50, litter: 1, gestation: 70, note: 'eggs (incubation days); it comes down only to a carcass' },
   variants: 2, variantNames: ['umber', 'buff'],
-  w: 13.1, d: 6.0, h: 5.5,
+  w: 12.8, d: 5.65, h: 5.85,
   data: { mass: 90, legs: 0, wings: 1, speed: { walk: 1, run: 3, fly: 9 }, gait: { type: 'flyer', freq: 0.056, stride: 0 },
     flap: { freq: 0.056, amp: 0.75, glide: 0.8, fold: 0 }, airborne: true,
     herd: 'alone or two to five, circling wide and slow in the thermals', fleeDistance: 50, aggression: 0.1,
     schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
   /* seen only in the thermals: built gliding, 4.9 m up so a full downstroke clears the ground */
-  build: function (A) { const o = FA_BY_SP.glider; faByBird(A, { S: o.S, y0: 4.9, body: o.body, wing: o.wing, tip: o.tip, beak: 0x6a5a48, leg: 0x4a3c30 }); }
+  build: function (A) { const o = FA_BY_SP.glider; faByBird(A, { kind: 'glider', S: o.S, y0: 4.9, body: o.body, wing: o.wing, tip: o.tip, beak: 0x6a5a48, leg: 0x4a3c30 }); }
 });
 ANIMAL({
   key: 'cap-moth', name: 'Cap moth', group: 'bay',

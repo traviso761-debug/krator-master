@@ -29,9 +29,12 @@ but they share it with every other species file: prefix them (`FA_SAL`, `faSalKe
 | `A.anchor(name, [x, y, z])`, `A.profile(fn)` | points and a body profile a host fits tack to |
 | `A.variant`, `A.breed`, `A.S` (the breed's scale), `A.pose`, `A.rnd()`, `A.rr(a, b)` | the build's options and its own seeded stream |
 
-Families: `coat` (short fur), `hair` (long hair, double-sided), `skin`, `horn`, `hoof`, `eye`, `mouth`, `plain`, `chitin` (shells),
-`membrane` (double-sided: wings), `glow` (unlit: its colour is its light). Colours are sRGB hex or `[r, g, b]` 0..1 sRGB; the
-builder writes linear floats.
+Families (the library set each maps is in `materials.json`; `core/materials/PLAN.md`, "The Fauna kit"): `coat` (thick fur, `fur.bat`),
+`sleek` (short sleek hair: horses, deer, cats, cattle; `hide.strider`), `shag` (shaggy fur: the sloth; `fur.sloth`), `hair` (long hair,
+double-sided), `skin` (`hide.leather033c`), `scale` (reptiles, birds' legs; `organic.scale`), `feather` (double-sided, no map yet),
+`membrane` (double-sided: bat, pterosaur and insect wings; `membrane.bat`), `chitin` (`organic.chitin`), `horn`, `hoof`, `eye`, `mouth`,
+`plain`, `glow` (unlit: its colour is its light). Each family's map is mixed in at its own strength (the runtime's `LOOK`). Colours are
+sRGB hex or `[r, g, b]` 0..1 sRGB; the builder writes linear floats.
 
 ## The runtime
 
@@ -48,12 +51,13 @@ Gait data an animal sets (`data`): `gait {type, freq, stride}`, `legs`, `wings`,
 
 | Field | What |
 |---|---|
-| `flap {freq, amp, glide, fold, sweep, tuck, sync}` | fold: the wings' droop when perched (about z); sweep: turned back along the flanks (about y); tuck: the legs swung back in flight; sync: the second pair beats with the first (a moth), not against it (a dragonfly) |
+| `flap {freq, amp, glide, fold, sweep, foldScale, roll, tuck, sync}` | perched: fold droops the wings (about z), sweep turns them back along the flanks (about y), foldScale shortens them along the span (a folded wing is about half its spread), roll turns them about their own span first (so a folded wing hangs down the flank, not across the back: about 0.75); tuck: the legs swung back in flight; sync: the second pair beats with the first (a moth), not against it (a dragonfly) |
 | `swim {freq, amp, axis}` | axis 'x': the tail beats up and down (flukes) |
 | `chain {amp, wave}` | metres: the head, segments, legs and tail ride one travelling side-to-side wave in walk and swim |
 | `idle {headYaw, headPitch, tailYaw}` | radians: how far the head looks about and the tail sways at idle |
 
-A flyer or insect with legs walks by its leg count (2 biped, 4 quadruped, 6 hexapod).
+A flyer or insect with legs walks by its leg count (2 biped, 4 quadruped, 6 hexapod). Gait `climber`: an animal hanging by a `grip`
+anchor walks hand over hand along its bough (the sheet hangs it from one). Every frame starts from the rest pose, so no mode leaves a turn behind.
 
 `KratorFauna.profile(key, breed, pose)` returns `{at(t) -> {z, y, hw, hh}, S, anchors}` or null. `KratorFauna.lifeOf(key)` returns
 the life layer's record (diet, feeding, activity, temperament, habitat, locomotion, fleeDistance, aggression, herd, speed,

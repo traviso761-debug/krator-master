@@ -8,7 +8,7 @@
    ?mode=fly (or any mode) starts in that mode; ?only=key,key lays out just those animals (a species file's own check).
    Exposes window._sheet (rows, instances, view(i, kind), setMode, setNight) and sets window._ready.
    ====================================================================== */
-const INSTANCES = [];
+const INSTANCES = [], FIGS = [];
 (function () {
   'use strict';
   const KF = KratorFauna;
@@ -36,7 +36,7 @@ const INSTANCES = [];
     const skin = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xc89a74).convertSRGBToLinear(), roughness: 0.8 });
     const body = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.2, 1.45, 10), cloth); body.position.y = 0.725; g.add(body);
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), skin); head.position.y = 1.62; g.add(head);
-    g.position.set(x, 0, z); g.name = 'scale-figure'; scene.add(g); return g;
+    g.position.set(x, 0, z); g.name = 'scale-figure'; scene.add(g); FIGS.push(g); return g;
   }
 
   /* --- lay out: rows run along +x; animals stack toward -z */
@@ -57,10 +57,17 @@ const INSTANCES = [];
       g.position.set(cx, 0, z);
       u.x = cx; u.z = z; u.phase = INSTANCES.length * 1.37;
       scene.add(g); INSTANCES.push(g); placed.push(g);
+      /* a swimmer is built at its waterline: the sheet's ground is solid, so lift it to show the whole body */
+      let note = '';
+      if (u.data.gait && u.data.gait.type === 'swimmer') { g.updateMatrixWorld(true); const b = new THREE.Box3().setFromObject(g); g.position.y = -b.min.y; note = ' · lifted from its waterline'; }
+      /* an animal that hangs (a 'grip' anchor) hangs from a bough */
+      if (u.anchors && u.anchors.grip) { const a = u.anchors.grip, L = Math.max(u.w, u.d) * 1.6, r = Math.max(0.04, u.h * 0.06);
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(r, r, L, 10), new THREE.MeshStandardMaterial({ color: new THREE.Color(0x5a4430).convertSRGBToLinear(), roughness: 0.95 }));
+        bar.rotation.z = Math.PI / 2; bar.position.set(cx + a[0], a[1] + r, z + a[2]); bar.name = 'bough'; scene.add(bar); FIGS.push(bar); }
       /* an animal whose wings fold into its perched shape has a 'fly' pose: Fly shows that build in its place */
       if (E.poses && E.poses.indexOf('fly') >= 0) { const f = KF.build(E.key, { variant: k.v, breed: k.breed, seed: 7 + k.v, pose: 'fly' });
         f.position.copy(g.position); f.userData.phase = u.phase; f.visible = false; scene.add(f); u.alt = f; }
-      label(E.name + (k.breed ? ' · ' + k.breed : '') + ' #' + (k.v + 1), (E.variantNames[k.v] || '') + ' · ' + u.tris + ' tris', cx, z + u.d / 2 + 0.5, Math.max(u.w * 1.3, 1.8), false);
+      label(E.name + (k.breed ? ' · ' + k.breed : '') + ' #' + (k.v + 1), (E.variantNames[k.v] || '') + ' · ' + u.tris + ' tris' + note, cx, z + u.d / 2 + 0.5, Math.max(u.w * 1.3, 1.8), false);
       x += u.w + GAP; depth = Math.max(depth, u.d);
     }
     label(E.name, E.group + ' · ' + E.variants + ' variants' + (E.breeds ? ' · ' + E.breeds.length + ' breeds' : ''), -3.6, z, 4, true);
@@ -110,10 +117,10 @@ const INSTANCES = [];
     if (k === 'i') setMode('idle'); else if (k === 'g') setMode('graze'); else if (k === 'k') setMode('walk'); else if (k === 'y') setMode('fly'); else if (k === 'u') setMode('swim'); else if (k === 'n') setNight(!night);
   });
 
-  function showAll() { for (const g of INSTANCES) show(g, true); }
+  function showAll() { for (const g of INSTANCES) show(g, true); for (const f of FIGS) f.visible = true; }
   function gotoRow(i) {
     const r = rows[i]; if (!r) return;
-    showAll(); if (ctl.walk) window._setWalk(false);
+    showAll(); if (ctl.walk) window._setWalk(false); camera.near = 0.1; camera.updateProjectionMatrix();
     ctl.target.set(r.width / 2 - GAP / 2, 0.6, r.z); ctl.dist = Math.max(5, r.width * 0.85); ctl.az = 0.5; ctl.el = 0.3;
     updateCamera();
   }
@@ -123,8 +130,13 @@ const INSTANCES = [];
     const g = INSTANCES[i], V = VIEWS[kind] || VIEWS.front34; if (!g) return null;
     if (ctl.walk) window._setWalk(false);
     for (const o of INSTANCES) show(o, o === g);
-    const k = Math.max(0.5, g.userData.d / 1.3);
-    ctl.target.set(g.position.x, Math.max(0.4, g.userData.h * 0.45), g.position.z); ctl.az = V[0]; ctl.el = V[1]; ctl.dist = V[2] * k;
+    for (const f of FIGS) f.visible = f.name === 'bough' && Math.abs(f.position.z - g.position.z) < 0.01 && Math.abs(f.position.x - g.position.x) < g.userData.w;
+    /* frame the animal as it stands (its measured box), so a 5 cm glint and a 25 m strider both fill the view */
+    const sh = g.userData.alt && g.userData.alt.visible ? g.userData.alt : g;
+    sh.updateMatrixWorld(true); const bx = new THREE.Box3().setFromObject(sh), c = bx.getCenter(new THREE.Vector3()), sz = bx.getSize(new THREE.Vector3());
+    const k = Math.max(0.04, Math.max(sz.x, sz.y, sz.z) / 1.3);
+    ctl.target.copy(c); ctl.az = V[0]; ctl.el = V[1]; ctl.dist = V[2] * k;
+    camera.near = Math.min(0.1, ctl.dist / 20); camera.updateProjectionMatrix();
     updateCamera();
     return g.userData.key + ' #' + (g.userData.variant + 1);
   }

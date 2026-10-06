@@ -58,6 +58,16 @@ function faFlFan(A, fam, pts, col, col2, off) {
     }
   }
 }
+/* a vane of a double-sided family (membrane, feather): the same fan as ONE sheet, its triangles paired into quads
+   (pi, pi+1, p0) and (p0, pi+1, pi+2), half the triangles of faFlFan's two sheets and none of them degenerate but an odd
+   last one; one colour for both faces */
+function faFlVane(A, fam, pts, col) {
+  const p0 = pts[0];
+  for (let i = 1; i < pts.length - 1; i += 2) {
+    const a = pts[i], b = pts[i + 1], c = pts[i + 2] || b;
+    A.sheet(fam, (u, v) => u ? (v ? c : p0) : (v ? b : a), 1, 1, col);
+  }
+}
 function faFlRod(A, fam, a, b, r0, r1, col, seg) { A.cone(fam, a, b, r0, r1, col, seg || 6); }
 
 /* ================================================================ QUETZALCOATLUS: span 12 m
@@ -91,7 +101,7 @@ ANIMAL({
     eggs: { amount: 2, note: 'a clutch of two a year, laid, not eaten: the rookeries hatch every egg' } },
   life: { maturity: 6, lifespan: 45, litter: 2, gestation: 80, note: 'eggs (gestation: days of incubation); a chick is ridden from its sixth year' },
   poses: ['perch', 'fly'],
-  w: 3.0, d: 6.3, h: 5.8,
+  w: 2.3, d: 6.3, h: 5.8,
   data: { mass: 280, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.6, run: 4, fly: [18, 24] }, gait: { type: 'flyer', freq: 0.8, stride: 1.4 },
     flap: { freq: 0.7, amp: 0.62, glide: 0.6, fold: 0 }, grazePitch: 1.0,
     herd: 'a pair in the wild; a rookery keeps 20 to 70 in stalls', fleeDistance: 12, aggression: 0.35,
@@ -122,23 +132,23 @@ ANIMAL({
     const furl = p => {   /* perched: the hand membrane drawn in toward the wing finger */
       if (fly) return p;
       const d = faFlNorm(faFlSub(tipLine[1], tipLine[0])), q = faFlSub(p, tipLine[0]), k = q[0] * d[0] + q[1] * d[1] + q[2] * d[2], f = faFlAdd(tipLine[0], faFlMul(d, k));
-      return faFlAdd(f, faFlMul(faFlSub(p, f), 0.32));
+      return faFlAdd(f, faFlMul(faFlSub(p, f), 0.14));
     };
     for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(Q.S, 5, s), () => {
       const Wp = P(Q.W, 5, s);
       faFlRod(A, 'coat', P(Q.S, 5, s), Wp, 0.13, 0.085, body, 8);
       /* the brachial membrane; perched, its body edge stays on the flank and its trailing edge is furled to the arm */
       const arm = p => { if (fly) return P(p, 5, s); const d = faFlNorm(faFlSub(Q.W, Q.S)), q = faFlSub(p, Q.S), k = q[0] * d[0] + q[1] * d[1] + q[2] * d[2], f = faFlAdd(Q.S, faFlMul(d, k));
-        return P(faFlAdd(f, faFlMul(faFlSub(p, f), 0.3)), 5, s); };
-      faFlFan(A, 'skin', [fly ? P([0.35, 0.06, 0.30], 5, s) : P([0.33, 0.0, 0.25], -1, s), Wp, arm([2.62, 0.06, -0.78]), arm([1.55, 0.06, -0.95]),
-        fly ? P([0.30, 0.02, -1.25], 5, s) : P([0.30, -0.12, -1.15], -1, s)], mem, mem2);
-      faFlFan(A, 'skin', [[0.35, 0.06, 0.30], [0.25, 0.10, 0.65], Q.W].map(p => P(p, 5, s)), mem2, mem2);
+        return P(faFlAdd(f, faFlMul(faFlSub(p, f), 0.14)), 5, s); };
+      faFlVane(A, 'membrane', [fly ? P([0.35, 0.06, 0.30], 5, s) : P([0.33, 0.0, 0.25], -1, s), Wp, arm([2.62, 0.06, -0.78]), arm([1.55, 0.06, -0.95]),
+        fly ? P([0.30, 0.02, -1.25], 5, s) : P([0.36, -0.02, 0.04], -1, s)], mem);
+      faFlVane(A, 'membrane', [[0.35, 0.06, 0.30], [0.25, 0.10, 0.65], Q.W].map(p => P(p, 5, s)), mem2);
       /* the hand: three small clawed fingers (on the ground when perched) */
       if (fly) for (const c of [[2.62, 0.10, 1.12], [2.80, 0.10, 0.78], [2.72, 0.10, 0.95]]) faFlRod(A, 'horn', Wp, P(c, 5, s), 0.035, 0.008, dark, 5);
       else for (const o of [[-0.06, 0.30], [0.05, 0.27], [0.14, 0.18]]) faFlRod(A, 'horn', Wp, [Wp[0] + s * o[0], 0.02, Wp[2] + o[1]], 0.04, 0.012, dark, 5);
       faFlRod(A, 'coat', P(Q.W, 7, s), P(tipLine[1], 7, s), 0.075, 0.015, body, 7);
-      faFlFan(A, 'skin', [Q.W, [4.3, 0.07, 0.18], [4.75, 0.06, -0.72], [3.60, 0.06, -0.88], [2.62, 0.06, -0.78]].map(p => P(furl(p), 7, s)), mem, mem2);
-      faFlFan(A, 'skin', [[4.3, 0.07, 0.18], tipLine[1], [4.75, 0.06, -0.72]].map(p => P(furl(p), 7, s)), mem2, mem2);
+      faFlVane(A, 'membrane', [Q.W, [4.3, 0.07, 0.18], [4.75, 0.06, -0.72], [3.60, 0.06, -0.88], [2.62, 0.06, -0.78]].map(p => P(furl(p), 7, s)), mem);
+      faFlVane(A, 'membrane', [[4.3, 0.07, 0.18], tipLine[1], [4.75, 0.06, -0.72]].map(p => P(furl(p), 7, s)), mem2);
     });
     /* ---- the legs: thigh and shank on one bone; the foot flat on the ground when perched */
     for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', P(Q.H, 8, s), () => {
@@ -163,7 +173,7 @@ const FA_FL_B = (function () {
   return { S: S, E: E, W: W, H: H, HD: HD, T: [[4.5, 0.10, -0.10], [3.95, 0.10, -1.35], [3.05, 0.10, -1.75]], K: [2.72, 0.06, -1.62], J: [1.40, 0.04, -1.50],
     bones: [{ p: HD, a: X, par: -1 }, { p: HD, a: Y, par: 0 }, { p: HD, a: X, par: -1 }, { p: S, a: Y, par: -1 }, { p: S, a: Z, par: 3 }, { p: S, a: X, par: 4 },
       { p: E, a: Z, par: 5 }, { p: W, a: Y, par: 6 }, { p: W, a: Z, par: 7 }, { p: H, a: X, par: -1 }],
-    perch: { F: [0.12, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0.30 },
+    perch: { F: [0.12, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0.15, stand: 0.70 },
     fly: { F: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0, stand: 1.3 } };
 })();
 ANIMAL({
@@ -180,14 +190,14 @@ ANIMAL({
     hair: { amount: 0.4, note: 'the soft underfur, moulted at the end of the rains: felt' } },
   life: { maturity: 3, lifespan: 30, litter: 1, gestation: 160, note: 'one pup a year, carried in flight for its first month' },
   poses: ['perch', 'fly'],
-  w: 3.0, d: 3.4, h: 2.3,
+  w: 2.5, d: 3.4, h: 2.0,
   data: { mass: 140, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.0, run: 2.5, fly: [12, 16] }, gait: { type: 'flyer', freq: 1.2, stride: 0.6 },
     flap: { freq: 2.0, amp: 0.78, glide: 0.1, fold: 0 }, grazePitch: 0.5,
     herd: 'a colony of 30 to 200 in a hollow trunk; the riders keep them on roost beams', fleeDistance: 10, aggression: 0.2,
     schedule: ['HUNT', 'HUNT', 'FLY', 'HUNT', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'FLY', 'HUNT', 'HUNT', 'PATROL', 'HUNT', 'HUNT'] },
   build: function (A) {
     const B = FA_FL_B, fly = A.pose === 'fly', pz = fly ? B.fly : B.perch, F = pz.F, R = faFlRig(B.bones, F, pz.pitch);
-    R.stand = fly ? pz.stand : 0.82;
+    R.stand = pz.stand;
     R.z0 = R.raw([0, 0, -0.10], -1)[2];
     const P = R.P, C = [0x3a2e2a, 0x5a4238, 0x8a6a5a], fur = C[0], fur2 = C[1], mem = faFlShade(C[1], -0.1), mem2 = faFlShade(C[1], -0.3), bone = C[2], ear = faFlShade(C[2], -0.3), eye = 0x0c0a08;
     /* ---- the body: the barrel and the deep chest */
@@ -202,47 +212,51 @@ ANIMAL({
       for (const s of [1, -1]) { const e = P([0.19, 0.25, 1.22], 1, s); A.ellip('eye', e[0], e[1], e[2], 0.04, 0.035, 0.03, eye, { rx: hx, seg: 8 }); }
     });
     for (const s of [1, -1]) A.part(s > 0 ? 'earL' : 'earR', P([0.2, 0.38, 0.95], 1, s), () => {
-      faFlFan(A, 'skin', [[0.10, 0.36, 0.92], [0.46, 1.12, 0.84], [0.32, 0.40, 1.10]].map(p => P(p, 1, s)), ear, faFlShade(ear, -0.3), 0.01);
+      faFlVane(A, 'membrane', [[0.10, 0.36, 0.92], [0.46, 1.12, 0.84], [0.32, 0.40, 1.10]].map(p => P(p, 1, s)), ear);
       faFlFan(A, 'coat', [[0.12, 0.36, 0.90], [0.44, 1.02, 0.82], [0.30, 0.38, 0.86]].map(p => P(p, 1, s)), fur, fur, 0.012);
     });
-    /* ---- the wings */
+    /* ---- the wings (membrane: the wing skin, one double-sided sheet per panel) */
     const Ln = B.T.map(t => faFlLen(faFlSub(t, B.W)));
     for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(B.S, 5, s), () => {
       const M = p => [p[0] * s, p[1], p[2]];
       if (fly) {
         const S = P(B.S, 5, s), E = P(B.E, 6, s), W = P(B.W, 8, s), T = B.T.map(t => P(t, 8, s)), K = P(B.K, 6, s), J = P(B.J, 5, s), F1 = P([1.9, 0.09, 0.42], 5, s);
         faFlRod(A, 'coat', S, E, 0.11, 0.08, fur2, 7);
-        faFlFan(A, 'skin', [P([0.40, 0.06, 0.15], 5, s), E, J, P([0.30, 0.0, -1.15], 5, s)], mem, mem2);
-        faFlFan(A, 'skin', [P([0.40, 0.08, 0.30], 5, s), F1, E], mem2, mem2);
+        faFlVane(A, 'membrane', [P([0.40, 0.06, 0.15], 5, s), E, J, P([0.30, 0.0, -1.15], 5, s)], mem);
+        faFlVane(A, 'membrane', [P([0.40, 0.08, 0.30], 5, s), F1, E], mem2);
         faFlRod(A, 'coat', E, W, 0.08, 0.06, fur2, 7);
-        faFlFan(A, 'skin', [E, W, K, J], mem, mem2);
-        faFlFan(A, 'skin', [E, F1, W], mem2, mem2);
+        faFlVane(A, 'membrane', [E, W, K, J], mem);
+        faFlVane(A, 'membrane', [E, F1, W], mem2);
         faFlRod(A, 'horn', W, P([2.70, 0.13, 0.98], 8, s), 0.045, 0.01, bone, 5);
-        for (let i = 0; i < 3; i++) faFlRod(A, 'horn', W, T[i], 0.045, 0.012, bone, 5);
-        faFlFan(A, 'skin', [W, T[0], P([4.0, 0.07, -0.62], 8, s), T[1]], mem, mem2);
-        faFlFan(A, 'skin', [W, T[1], P([3.38, 0.07, -1.38], 8, s), T[2]], mem2, mem2);
-        faFlFan(A, 'skin', [W, T[2], K], mem, mem2);
+        for (let i = 0; i < 3; i++) faFlRod(A, 'skin', W, T[i], 0.045, 0.012, bone, 5);
+        faFlVane(A, 'membrane', [W, T[0], P([4.0, 0.07, -0.62], 8, s), T[1]], mem);
+        faFlVane(A, 'membrane', [W, T[1], P([3.38, 0.07, -1.38], 8, s), T[2]], mem2);
+        faFlVane(A, 'membrane', [W, T[2], K], mem);
         return;
       }
-      /* perched: the humerus up and back to a high elbow, the forearm down to the wrist on the ground, the thumb claw
-         planted; the fingers back up the forearm to the elbow, then down the flank (two straight runs each) */
-      const S = P(B.S, -1, s), E = faFlAdd(S, M(faFlMul(faFlNorm([0.42, 0.66, -0.62]), 1.14))),
-        Wt = [S[0] + s * 0.50, 0.24, S[2] + 0.42], W = faFlAdd(E, faFlMul(faFlNorm(faFlSub(Wt, E)), 1.30)),
-        up = faFlNorm(faFlSub(E, W)), Jn = [], Tp = [];
+      /* grounded, as a bat crawls: the humerus up and back to an elbow just over the back line, the forearm angled
+         down and forward to the wrist beside the chest, the thumb claw planted ahead of it; each finger folded in a Z
+         tight along the back of the forearm (metacarpal up to the elbow, the phalanges back down toward the wrist), the
+         membrane furled between them; the flank membrane draped from the arm to the knee against the body */
+      const S = P(B.S, -1, s), E = M([0.98, 1.22, -0.36]), W = M([1.02, 0.20, 0.42]),
+        up = faFlNorm(faFlSub(E, W)), out = M([1, 0, 0]), Jn = [], Tp = [];
       faFlRod(A, 'coat', S, E, 0.11, 0.08, fur2, 7);
       faFlRod(A, 'coat', E, W, 0.08, 0.06, fur2, 7);
-      faFlRod(A, 'horn', W, [W[0] + s * 0.06, 0.015, W[2] + 0.24], 0.05, 0.012, bone, 5);
+      faFlRod(A, 'horn', W, M([1.07, 0.015, 0.70]), 0.05, 0.012, bone, 5);
       for (let i = 0; i < 3; i++) {
-        const d = faFlNorm(faFlAdd(up, M([0.07 + 0.035 * i, 0.0, -0.04 * i]))), j = faFlAdd(W, faFlMul(d, 0.6 * Ln[i]));
-        const e = faFlNorm(M([0.10 + 0.03 * i, -0.18 - 0.09 * i, -1])), t = faFlAdd(j, faFlMul(e, 0.4 * Ln[i]));
-        faFlRod(A, 'horn', W, j, 0.045, 0.03, bone, 5); faFlRod(A, 'horn', j, t, 0.03, 0.012, bone, 5);
+        const o = faFlAdd(faFlMul(out, 0.05 + 0.04 * i), [0, -0.015 * i, -0.04 - 0.035 * i]);
+        const j = faFlAdd(faFlAdd(W, faFlMul(up, Math.min(0.55 * Ln[i], 1.18))), o);
+        const t = faFlAdd(faFlAdd(j, faFlMul(up, -0.42 * Ln[i])), faFlAdd(faFlMul(out, 0.035), [0, 0, -0.03]));
+        faFlRod(A, 'skin', W, j, 0.04, 0.028, bone, 5); faFlRod(A, 'skin', j, t, 0.028, 0.01, bone, 5);
         Jn.push(j); Tp.push(t);
       }
-      for (let i = 0; i < 2; i++) { faFlFan(A, 'skin', [W, Jn[i], Jn[i + 1]], i ? mem2 : mem, mem2); faFlFan(A, 'skin', [Jn[i], Tp[i], Tp[i + 1], Jn[i + 1]], i ? mem2 : mem, mem2); }
-      /* the furled flank membrane: from the shoulder along the arm and the last finger to the knee */
-      const kn = FA_FL_B.knee(P, s);
-      faFlFan(A, 'skin', [P([0.40, 0.04, 0.10], -1, s), E, Jn[2], Tp[2], faFlLerp(kn, P([0.36, 0.05, -0.95], -1, s), 0.6), P([0.30, 0.0, -1.0], -1, s)], mem, mem2);
-      faFlFan(A, 'skin', [P([0.40, 0.08, 0.30], -1, s), faFlLerp(S, E, 0.55), E], mem2, mem2);
+      for (let i = 0; i < 2; i++) { faFlVane(A, 'membrane', [W, Jn[i], Jn[i + 1]], i ? mem2 : mem); faFlVane(A, 'membrane', [Jn[i], Tp[i], Tp[i + 1], Jn[i + 1]], i ? mem2 : mem); }
+      faFlVane(A, 'membrane', [W, faFlLerp(W, E, 0.92), Jn[0]], mem2);
+      /* the flank membrane: from the shoulder along the humerus to the elbow, then drawn in against the flank (a slack
+         fold a hand outside the body) and back to the thigh */
+      const kn = FA_FL_B.knee(P, s), an = FA_FL_B.ankle(P, s);
+      faFlVane(A, 'membrane', [P([0.42, 0.04, 0.10], -1, s), E, M([0.50, 0.66, -0.72]), faFlLerp(P(B.H, 9, s), kn, 0.55), P([0.36, 0.0, -0.95], -1, s)], mem);
+      faFlVane(A, 'membrane', [P([0.40, 0.08, 0.30], -1, s), faFlLerp(S, E, 0.55), E], mem2);
     });
     /* ---- the legs: perched, knees up and out, the feet turned back (a bat's are) */
     for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', P(B.H, 9, s), () => {
@@ -259,9 +273,9 @@ ANIMAL({
     });
     /* ---- the tail membrane between the legs */
     for (const s of [1, -1]) {
-      if (fly) faFlFan(A, 'skin', [[0, -0.04, -1.0], [0.30, 0.0, -1.15], [0.32, -0.06, -1.9], [0, -0.06, -1.55]].map(p => P(p, 9, s)), mem2, mem2);
+      if (fly) faFlVane(A, 'membrane', [[0, -0.04, -1.0], [0.30, 0.0, -1.15], [0.32, -0.06, -1.9], [0, -0.06, -1.55]].map(p => P(p, 9, s)), mem2);
       else { const an = FA_FL_B.ankle(P, s), kn = FA_FL_B.knee(P, s), m = P([0, -0.06, -1.15], -1);
-        faFlFan(A, 'skin', [m, P([0.22, -0.06, -1.05], -1, s), faFlLerp(kn, an, 0.4), an, [0, an[1] + 0.22, an[2] - 0.12]], mem2, mem2); }
+        faFlVane(A, 'membrane', [m, P([0.22, -0.06, -1.05], -1, s), faFlLerp(kn, an, 0.4), an, [0, an[1] + 0.22, an[2] - 0.12]], mem2); }
     }
     A.anchor('saddle', P([0, 0.44, -0.15], -1));
   }
@@ -281,7 +295,7 @@ const FA_FL_A = (function () {
       { p: W, a: Y, par: 5 }, { p: W, a: Z, par: 6 }, { p: H, a: X, par: -1 }, { p: TL, a: Y, par: 2 }, { p: HD, a: X, par: 0 }],
     /* bone 10 (not in the original): the head pitched down on the neck when perched, so the snout looks ahead, not up
                        neck headY tailP wSw  wFlap  wTw  oSw   oFlap leg   tailY */
-    perch: { F: [-0.35, 0, 0.30, 1.25, -0.38, 0.15, 0.22, 0.10, -1.07, 0, 0.60], pitch: 0.50 },
+    perch: { F: [-0.05, 0, 0.20, 1.25, -0.38, 0.15, 0.22, 0.10, -1.27, 0, 0.45], pitch: 0.30 },
     fly: { F: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0, stand: 1.2 } };
 })();
 ANIMAL({
@@ -299,7 +313,7 @@ ANIMAL({
     eggs: { amount: 3, note: 'a clutch of three a year, hatched in the rookeries, not eaten' } },
   life: { maturity: 3, lifespan: 22, litter: 3, gestation: 50, note: 'eggs (gestation: days of incubation)' },
   poses: ['perch', 'fly'],
-  w: 2.9, d: 6.7, h: 3.8,
+  w: 2.8, d: 7.2, h: 3.5,
   data: { mass: 160, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.5, run: 7, fly: [14, 20] }, gait: { type: 'flyer', freq: 1.2, stride: 0.9 },
     flap: { freq: 1.4, amp: 0.8, glide: 0.35, fold: 0 }, grazePitch: 0.85,
     herd: 'alone or a mated pair; the rookeries keep them in single stalls, apart', fleeDistance: 6, aggression: 0.55,
@@ -311,49 +325,52 @@ ANIMAL({
     const P = R.P, C = [0x2a4a7a, 0xb8683e, 0xe8d8a0], blue = C[0], blue2 = faFlShade(C[0], 0.22), rust = C[1], rust2 = faFlShade(C[1], -0.22), cream = C[2],
       eye = 0x100c08, skin = faFlShade(C[2], -0.35);
     const bc = P([0, 0, -0.35], -1);
-    A.ellip('coat', bc[0], bc[1], bc[2], 0.40, 0.42, 0.92, null, { rx: -pz.pitch, seg: 16, colf: (x, y) => y < -0.12 ? cream : blue });
-    /* ---- the head and neck: a toothed snout, a rust crest */
+    A.ellip('feather', bc[0], bc[1], bc[2], 0.40, 0.42, 0.92, null, { rx: -pz.pitch, seg: 16, colf: (x, y) => y < -0.12 ? cream : blue });
+    /* ---- the head and neck: a toothed snout, a rust crest. The neck an arc: up from the shoulders, then forward into the
+       head, thicker (the original's straight rod, held near upright perched, read as a long thin stalk) */
     const hx = F[0] + F[10] - pz.pitch;
     A.part('head', P(Q.NK, 0), () => {
-      A.tube('coat', t => P(faFlLerp([0, 0.12, 0.35], [0, 0.58, 1.17], t), 0), t => { const r = 0.22 - 0.09 * t; return [r, r]; }, 4, 10, blue);
-      const h = P([0, 0.64, 1.36], 1); A.ellip('coat', h[0], h[1], h[2], 0.17, 0.17, 0.29, blue2, { rx: hx, seg: 12 });
-      faFlRod(A, 'skin', P([0, 0.64, 1.52], 1), P([0, 0.57, 2.20], 1), 0.11, 0.035, skin, 8);
-      faFlFan(A, 'hair', [[0, 0.78, 1.30], [0, 1.02, 0.95], [0, 0.80, 1.05]].map(p => P(p, 1)), rust, rust, 0.01);
+      A.tube('feather', t => P(faFlLerp(faFlLerp([0, 0.10, 0.30], [0, 0.50, 0.78], t), faFlLerp([0, 0.50, 0.78], [0, 0.62, 1.22], t), t), 0),
+        t => { const r = 0.27 - 0.11 * t; return [r, r * 1.1]; }, 6, 10, blue, { caps: true });
+      const h = P([0, 0.64, 1.36], 1); A.ellip('feather', h[0], h[1], h[2], 0.19, 0.19, 0.31, blue2, { rx: hx, seg: 12 });
+      faFlRod(A, 'scale', P([0, 0.64, 1.52], 1), P([0, 0.57, 2.20], 1), 0.11, 0.035, skin, 8);
+      faFlVane(A, 'feather', [[0, 0.78, 1.30], [0, 1.02, 0.95], [0, 0.80, 1.05]].map(p => P(p, 1)), rust);
       for (const s of [1, -1]) {
         const e = P([0.15, 0.68, 1.46], 1, s); A.ellip('eye', e[0], e[1], e[2], 0.035, 0.035, 0.045, eye, { rx: hx, seg: 8 });
         for (let t = 0; t < 3; t++) { const tz = 1.68 + t * 0.16; faFlRod(A, 'horn', P([0.06, 0.56, tz + 0.05], 1, s), P([0.05, 0.47, tz + 0.05], 1, s), 0.022, 0.003, cream, 4); }
       }
     });
-    A.part('jaw', P([0, 0.53, 1.45], 1), () => faFlRod(A, 'skin', P([0, 0.53, 1.50], 1), P([0, 0.50, 2.10], 1), 0.07, 0.025, skin, 7));
+    A.part('jaw', P([0, 0.53, 1.45], 1), () => faFlRod(A, 'scale', P([0, 0.53, 1.50], 1), P([0, 0.50, 2.10], 1), 0.07, 0.025, skin, 7));
     /* ---- the tail: a bony rod fringed with six pairs of feathers and a fan at the tip */
     A.part('tail', P(Q.TL, 9), () => {
-      faFlRod(A, 'coat', P(Q.TL, 9), P([0, 0, -4.35], 9), 0.13, 0.02, blue, 8);
+      faFlRod(A, 'feather', P(Q.TL, 9), P([0, 0, -4.35], 9), 0.13, 0.02, blue, 8);
+      /* each pair a hair above the one before, so the overlaps do not fight */
       for (const s of [1, -1]) {
-        for (let i = 0; i < 6; i++) { const zb = -1.45 - i * 0.52, w = 0.50 + i * 0.05;
-          faFlFan(A, 'hair', [[0.02, 0.01, zb], [w, 0.01, zb - 0.62], [w - 0.05, 0.01, zb - 0.95], [0.02, 0.01, zb - 0.34]].map(p => P(p, 9, s)), (i % 2) ? rust : blue2, (i % 2) ? rust2 : blue, 0.004 + 0.002 * i); }
-        faFlFan(A, 'hair', [[0.02, 0.01, -4.3], [0.34, 0.01, -5.05], [0.12, 0.01, -5.35], [0, 0.01, -4.6]].map(p => P(p, 9, s)), rust2, rust2, 0.016);
+        for (let i = 0; i < 6; i++) { const zb = -1.45 - i * 0.52, w = 0.50 + i * 0.05, y = 0.004 + 0.008 * i;
+          faFlVane(A, 'feather', [[0.02, y, zb], [w, y, zb - 0.62], [w - 0.05, y, zb - 0.95], [0.02, y, zb - 0.34]].map(p => P(p, 9, s)), (i % 2) ? rust : blue2); }
+        faFlVane(A, 'feather', [[0.02, 0.056, -4.3], [0.34, 0.056, -5.05], [0.12, 0.056, -5.35], [0, 0.056, -4.6]].map(p => P(p, 9, s)), rust2);
       }
     });
     /* ---- the wings: the arm with the secondaries and coverts, the hand with three claws and five primaries */
     for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(Q.S, 5, s), () => {
-      faFlRod(A, 'coat', P(Q.S, 5, s), P(Q.W, 5, s), 0.12, 0.07, blue, 7);
-      faFlFan(A, 'hair', [[0.35, 0.12, 0.22], Q.W, [1.82, 0.12, -0.98], [1.10, 0.12, -1.08], [0.40, 0.10, -1.0]].map(p => P(p, 5, s)), rust, rust2, 0.008);
-      faFlFan(A, 'hair', [[0.35, 0.17, 0.24], [1.70, 0.17, 0.50], [1.74, 0.17, -0.30], [0.40, 0.17, -0.38]].map(p => P(p, 5, s)), blue, blue, 0.008);
-      faFlRod(A, 'coat', P(Q.W, 7, s), P([2.65, 0.15, 0.22], 7, s), 0.06, 0.03, blue, 6);
+      faFlRod(A, 'feather', P(Q.S, 5, s), P(Q.W, 5, s), 0.12, 0.07, blue, 7);
+      faFlVane(A, 'feather', [[0.35, 0.12, 0.22], Q.W, [1.82, 0.12, -0.98], [1.10, 0.12, -1.08], [0.40, 0.10, -1.0]].map(p => P(p, 5, s)), rust);
+      faFlVane(A, 'feather', [[0.35, 0.17, 0.24], [1.70, 0.17, 0.50], [1.74, 0.17, -0.30], [0.40, 0.17, -0.38]].map(p => P(p, 5, s)), blue);
+      faFlRod(A, 'feather', P(Q.W, 7, s), P([2.65, 0.15, 0.22], 7, s), 0.06, 0.03, blue, 6);
       for (let c = 0; c < 3; c++) faFlRod(A, 'horn', P([1.78 + c * 0.12, 0.15, 0.49 - c * 0.03], 7, s), P([1.86 + c * 0.12, 0.13, 0.86 - c * 0.05], 7, s), 0.03, 0.004, cream, 4);
       const tips = [[3.5, 0.15, -0.42], [3.38, 0.14, -1.02], [3.02, 0.13, -1.38], [2.60, 0.12, -1.52], [2.18, 0.11, -1.46]];
       for (let f = 0; f < 5; f++) { const k = f / 5 * 0.72, r0 = [Q.W[0] + (2.65 - Q.W[0]) * k, 0.15 - f * 0.008, Q.W[2] + (0.22 - Q.W[2]) * k], r1 = [r0[0] - 0.22, r0[1], r0[2] - 0.12], tp = tips[f];
-        faFlFan(A, 'hair', [r0, [tp[0] + 0.10, tp[1], tp[2] + 0.16], [tp[0] - 0.12, tp[1], tp[2] - 0.10], r1].map(p => P(p, 7, s)), (f % 2) ? rust2 : rust, rust2, 0.006 + 0.003 * f); }
-      faFlFan(A, 'hair', [[1.70, 0.18, 0.50], [2.65, 0.18, 0.22], [2.45, 0.18, -0.38], [1.74, 0.18, -0.30]].map(p => P(p, 7, s)), blue2, blue2, 0.025);
+        faFlVane(A, 'feather', [r0, [tp[0] + 0.10, tp[1], tp[2] + 0.16], [tp[0] - 0.12, tp[1], tp[2] - 0.10], r1].map(p => P(p, 7, s)), (f % 2) ? rust2 : rust); }
+      faFlVane(A, 'feather', [[1.70, 0.19, 0.50], [2.65, 0.19, 0.22], [2.45, 0.19, -0.38], [1.74, 0.19, -0.30]].map(p => P(p, 7, s)), blue2);
     });
     /* ---- the legs: feathered thighs, scaled shanks; three toes forward and one back on the ground */
     for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', P(Q.H, 8, s), () => {
       const kn = P([0.26, -0.30, -1.48], 8, s), an = P([0.26, -0.30, -2.20], 8, s);
-      A.tube('coat', t => faFlLerp(P(Q.H, 8, s), kn, t), t => { const r = 0.25 - 0.15 * t; return [r * 0.8, r]; }, 3, 10, blue, { caps: true });
-      faFlRod(A, 'skin', kn, an, 0.07, 0.045, cream, 7);
+      A.tube('feather', t => faFlLerp(P(Q.H, 8, s), kn, t), t => { const r = 0.25 - 0.15 * t; return [r * 0.8, r]; }, 3, 10, blue, { caps: true });
+      faFlRod(A, 'scale', kn, an, 0.07, 0.045, cream, 7);
       if (fly) { faFlRod(A, 'horn', an, P([0.26, -0.24, -2.55], 8, s), 0.045, 0.008, cream, 5); return; }
       const g = [an[0], 0.05, an[2]];
-      faFlRod(A, 'skin', an, g, 0.045, 0.04, skin, 6);
+      faFlRod(A, 'scale', an, g, 0.045, 0.04, skin, 6);
       for (const o of [[-0.12, 0.34], [0, 0.42], [0.12, 0.34], [0.02, -0.2]]) faFlRod(A, 'horn', g, [g[0] + s * o[0], 0.012, g[2] + o[1]], 0.035, 0.008, cream, 5);
     });
     A.anchor('saddle', P([0, 0.45, -0.15], -1));
@@ -363,8 +380,8 @@ ANIMAL({
 /* ================================================================ GIANT DRAGONFLY: 6 m body, 4 wings
    The original ("GIANT DRAGONFLY"): a teal and blue thorax and seven-ring abdomen, great compound eyes, six bristled
    legs, and four wings on a separate translucent mesh with veins and a pterostigma (a second, opposite-phase wing set
-   drew the motion blur). Here the wings are opaque (the fauna families have no transparent one) and the blur set is
-   left out; the forewings are wingL/wingR, the hindwings wing2L/wing2R. Perched: wings flat, the legs splayed. */
+   drew the motion blur). Here each wing is one opaque double-sided membrane sheet (the fauna families have no
+   transparent one; membrane takes the library's wing skin) and the blur set is left out; the forewings are wingL/wingR, the hindwings wing2L/wing2R. Perched: wings flat, the legs splayed. */
 const FA_FL_D = (function () {
   const X = [1, 0, 0], Y = [0, 1, 0], Z = [0, 0, 1], AB = [0, 0, -0.45], AB2 = [0, 0, -2.55], LG = [0.30, -0.35, 0.45], FW = [0.28, 0.50, 0.78], HW = [0.28, 0.50, 0.12];
   return { AB: AB, AB2: AB2, LG: LG, FW: FW, HW: HW, HDP: [0, 0, 1.0],
@@ -399,27 +416,27 @@ ANIMAL({
     const P = R.P, C = [0x2f8a7a, 0x3a5a9a, 0xd8f0f0], teal = C[0], teal2 = faFlShade(C[0], -0.3), blu = C[1], blu2 = faFlShade(C[1], 0.3), wing = C[2], vein = faFlShade(C[1], -0.45), legc = 0x1c1a16;
     /* ---- the thorax */
     const th = P([0, 0, 0.30], -1);
-    A.ellip('horn', th[0], th[1], th[2], 0.50, 0.56, 0.82, null, { rx: -pz.pitch, seg: 14, colf: (x, y) => y < -0.18 ? blu : teal });
+    A.ellip('chitin', th[0], th[1], th[2], 0.50, 0.56, 0.82, null, { rx: -pz.pitch, seg: 14, colf: (x, y) => y < -0.18 ? blu : teal });
     /* ---- the head: the great compound eyes meet over it */
     A.part('head', P(D.HDP, 7), () => {
-      const h = P([0, 0.05, 1.28], 7); A.ellip('horn', h[0], h[1], h[2], 0.36, 0.32, 0.30, teal2, { rx: -pz.pitch, seg: 12 });
-      faFlRod(A, 'horn', P([0, -0.10, 1.5], 7), P([0, -0.18, 1.78], 7), 0.16, 0.06, legc, 7);
+      const h = P([0, 0.05, 1.28], 7); A.ellip('chitin', h[0], h[1], h[2], 0.36, 0.32, 0.30, teal2, { rx: -pz.pitch, seg: 12 });
+      faFlRod(A, 'chitin', P([0, -0.10, 1.5], 7), P([0, -0.18, 1.78], 7), 0.16, 0.06, legc, 7);
       for (const s of [1, -1]) { const e = P([0.30, 0.13, 1.38], 7, s); A.ellip('eye', e[0], e[1], e[2], 0.30, 0.29, 0.30, blu2, { rx: -pz.pitch, seg: 12 }); }
     });
     /* ---- the abdomen: seven rings, the claspers at its tip */
     A.part('tail', P(D.AB, 0), () => {
       const zs = [-0.45, -1.2, -1.9, -2.6, -3.3, -4.0, -4.7], rs = [0.30, 0.24, 0.21, 0.19, 0.17, 0.15, 0.11];
       for (let i = 0; i < 6; i++) { const b = i < 3 ? 0 : 1;
-        A.tube('horn', t => P([0, 0, zs[i] + (zs[i + 1] + 0.06 - zs[i]) * t], b), t => { const r = rs[i] + (rs[i + 1] - rs[i]) * t, k = 1 - 0.12 * Math.sin(Math.PI * t); return [r * k, r * k]; }, 3, 8, (i % 2) ? blu : teal, { caps: true }); }
-      for (const s of [1, -1]) faFlRod(A, 'horn', P([0.05, 0, -4.66], 1, s), P([0.12, 0, -5.15], 1, s), 0.04, 0.008, legc, 4);
+        A.tube('chitin', t => P([0, 0, zs[i] + (zs[i + 1] + 0.06 - zs[i]) * t], b), t => { const r = rs[i] + (rs[i + 1] - rs[i]) * t, k = 1 - 0.12 * Math.sin(Math.PI * t); return [r * k, r * k]; }, 3, 8, (i % 2) ? blu : teal, { caps: true }); }
+      for (const s of [1, -1]) faFlRod(A, 'chitin', P([0.05, 0, -4.66], 1, s), P([0.12, 0, -5.15], 1, s), 0.04, 0.008, legc, 4);
     });
     /* ---- the legs: three pairs, femur out and down, tibia down */
     for (let l = 0; l < 3; l++) for (const s of [1, -1]) {
       const z0 = 0.85 - l * 0.4, kx = 0.80 + l * 0.06, root = [0.30, -0.35, z0];
       A.part('leg' + (l * 2 + (s > 0 ? 0 : 1)), P(root, 2, s), () => {
         const kn = P([kx, -0.62, z0 - 0.18], 2, s);
-        faFlRod(A, 'horn', P(root, 2, s), kn, 0.06, 0.04, legc, 5);
-        faFlRod(A, 'horn', kn, P(legTip(l), 2, s), 0.04, 0.015, legc, 5);
+        faFlRod(A, 'chitin', P(root, 2, s), kn, 0.06, 0.04, legc, 5);
+        faFlRod(A, 'chitin', kn, P(legTip(l), 2, s), 0.04, 0.015, legc, 5);
       });
     }
     /* ---- the wings: fore and hind, each a seven-point vane with its veins and the dark pterostigma near the tip */
@@ -431,9 +448,12 @@ ANIMAL({
       4: [[[0.28, 0.52, 0.20], [3.0, 0.52, -0.02], [3.0, 0.52, -0.10], [0.28, 0.52, 0.12]], [[0.28, 0.52, 0.06], [3.1, 0.52, -0.42], [3.1, 0.52, -0.48], [0.28, 0.52, 0.0]]] };
     const stig = { 3: [[2.75, 0.52, 1.36], [3.15, 0.52, 1.42], [3.15, 0.52, 1.24], [2.75, 0.52, 1.18]], 4: [[2.6, 0.52, 0.02], [3.0, 0.52, -0.04], [3.0, 0.52, -0.22], [2.6, 0.52, -0.16]] };
     for (const [b, nm, root, len, sweep] of [[3, 'wing', D.FW, 3.35, 0.35], [4, 'wing2', D.HW, 3.15, -0.45]]) for (const s of [1, -1]) A.part(nm + (s > 0 ? 'L' : 'R'), P(root, b, s), () => {
-      faFlFan(A, 'plain', vane(root, len, sweep, 0.50).map(p => P(p, b, s)), wing, wing, 0.004);
-      for (const v of veins[b]) faFlFan(A, 'plain', v.map(p => P([p[0], 0.50, p[2]], b, s)), vein, vein, 0.01);
-      faFlFan(A, 'plain', stig[b].map(p => P([p[0], 0.50, p[2]], b, s)), 0x2a2420, 0x2a2420, 0.012);
+      /* one double-sided membrane sheet; the veins and the pterostigma laid a hair above it and a hair below */
+      faFlVane(A, 'membrane', vane(root, len, sweep, 0.50).map(p => P(p, b, s)), wing);
+      for (const y of [0.508, 0.492]) {
+        for (const v of veins[b]) faFlVane(A, 'membrane', v.map(p => P([p[0], y, p[2]], b, s)), vein);
+        faFlVane(A, 'membrane', stig[b].map(p => P([p[0], y + (y > 0.5 ? 0.004 : -0.004), p[2]], b, s)), 0x2a2420);
+      }
     });
     A.anchor('saddle', P([0, 0.58, 0.25], -1));
   }
