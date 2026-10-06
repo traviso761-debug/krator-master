@@ -917,6 +917,52 @@ Tintable rows say so; everything else is full colour.
 | `fibre.mat.floor` | Woven floor mat of flat reed strips in a twill weave, strips about 2 cm wide in two shades of straw (#c4a870 and #a88a5e) forming diagonal ribs, darker worn walkways, a few broken reeds and frayed edges. |
 | `earth.floor.packed` | Interior packed-earth floor, seen from above: smooth hard-trodden brown clay (#8a6c48) with faint sweeping marks from brooms, small pebbles pressed flush, hairline drying cracks, and darker greasy patches near a hearth. |
 
+#### Catalog furniture audit (2026-10-06): what the 1526 pieces still need
+
+`node tools/textures/audit_catalog.js` builds every catalog piece and variant headlessly and sums the surface each render family
+(`mat()`'s `family`) and each palette key covers. The family is what a texture can hang on: a host gives catalog furniture a library
+set as a triplanar **detail map per family** (Girder's `f_<family>` rows in its `materials.json`, `48-detail.js`), tinted by the
+palette's vertex colours. So every set below must be **tintable** (near-grey) unless it says otherwise. Totals: wood 808 pieces (31% of
+the area), metal 520, cloth 477, stone 355, rope 221, plaster 171, gold 142, glass 124, bone 124, bronze 118, ceramic 105, rust 102.
+(Stone's area is inflated by the Eastern Abyss builders' yard block stacks; count pieces, not m2.)
+
+**Already covered by the library** (proposed default `f_<family>` picks; Girder's own 17 rows stay as they are): `plank`
+`wood.weathered_brown_planks`, `mahogany` `wood.mahogany`, `bark` `bark.bark_brown_01`, `bamboo` `wood.bamboo001c`, `lacquer`
+`wood.lacquer`, `stone` `stone.cut`, `plaster` `earth.floor.packed`, `concrete` `concrete.board`, `metal` `metal.iron.pitted`, `rust`
+`metal.rusty_metal_04`, `gold` `metal.gold`, `bronze` `metal.metal008` (copper is 89 of its 118 pieces), `glass` `glass.clear`, `cloth`
+`cloth.weave.plain` (`cloth.silk` for court tiers), `rope` `fibre.rope`, `thatch` `roof.thatch`, `wicker` `fibre.wicker`, `hide`
+`hide.leather009`, `bone` `bone.ivory`, `nacre` `shell.nacre`, `ceramic` `ceramic.glaze`, `skin` `organic.scale`, `leafy`/`plant`
+`leaf.understorey`. Try `stone.amazonite` for `jade` (Lizardmen, 37 pieces) and `fibre.reedmat` for `reed` until `roof.reed` arrives.
+`glow` needs no map.
+
+**Still needed**, most pieces first. G rows start with the base template and the muting sentence unless they say full colour.
+
+| id | Src | Pieces | Material line |
+|---|---|---|---|
+| `wood.softwood` | S, else G | 230 (generic 75, rustic 69, republican 52) | Scan first: the `wood_cabinet_worn_long` 4k download (see "Second survey"), or any CC0 knotty pine board. Else: Planed softwood furniture boards (pine and larch) seen straight on, grain running top to bottom: wide soft growth rings, several dark round knots with grain flowing around them, a few resin streaks, a light oil finish worn matte, small dents and scratches. `wood.mahogany` stands in for every culture now, but its close ribbon figure reads as fine hardwood under pale pine, larch and birch tints. |
+| `wood.painted` | G | 71 (painted 28, scrap 20, republican 9, rustic 8) | Painted wooden board seen straight on, grain running top to bottom: one coat of flat paint over planed wood, worn through to bare grain along the edges and in a few scuffed patches, fine cracks following the grain, small flakes lifted at the cracks. Paint in a light neutral grey so it tints to any colour. (Wants its own family: today the paint keys sit on `wood`, `plank` and `metal`.) |
+| `plastic.moulded` | G | 77 (scrap 38, screamer 20, post-apoc 19) | Moulded plastic, the flat side of a crate or chair: fine moulded stipple texture, sun-faded and chalky in patches, scuffs, long scratches and a few grimy fingerprints in the hollows, one hairline stress crack. Light neutral grey so it tints. |
+| `rubber.tyre` | G | 17 (scrap tyres) | The row above in "Prompts for generated sources" (already waited on by `kits/motor-vehicles`). Tyres share `plastic` today: give them a `rubber` family. |
+| `ash.hearth` | G | 108 (every hearth, brazier, forge and stove) | Bed of wood ash in a hearth seen from above: soft pale grey powder ash with a few lumps of black charcoal, half-burnt twig ends, small cracked flakes, darker sooty patches toward one side. Full colour. (For the fire beds now drawn as flat `coal`/`ash` plaster or stone; the embers stay `glow`.) |
+| `metal.pewter` | G | 62 (generic 21, rustic 21) | Hand-made pewter tableware surface: soft dull silver-grey with a satin sheen, faint hammer dimples, fine scratches in every direction, a dark grey oxide film in the scratches. Light, so it tints. (`metal.iron.pitted` is too dark and coarse for cups, plates and candlesticks.) |
+| `metal.steel.brushed` | S | 163 (post-apoc 67, scrap 44, republican 24) | Scan: AmbientCG "brushed metal" or "sheet metal" with fine linear scratches. For the `steel` and `alloyWhite` keys; `metal.metal003` is painted, not bare. |
+| `food.crust` | G | 80 (generic food and drink) | Baked bread crust seen close: a golden-brown crust with fine cracks and splits, a light dusting of flour in the cracks, small blisters and a few darker toasted spots. Muted, so it tints to bread, pie, roast meat and cheese rind. (Girder's `f_food` borrows `fruit.skin.amber`.) |
+| `feather.plumage` | G | 23 (Screamer) | Overlapping feathers seen from above, as on a cloak or fan: rows of contour feathers about 4 cm long lying in one direction, visible central shafts and fine barbs, a few ruffled and split feathers. Light neutral grey so it tints red (#c8342a), yellow (#e0b030) and blue (#2a6aa0). (The `card.feather.*` sets are cut-outs, not a surface. Feathers sit on `hide` today: give them a `feather` family.) |
+| `patterns/islander/tapa` | G | 18 (Islander) | Flat, front-on decorative panel of Polynesian tapa bark cloth: beaten mulberry bark in off-white (#f0e8d4) with visible fibres and faint felted texture, stamped and painted in rows of geometric motifs (triangles, chevrons, small crosses, leaf shapes) in brown (#8a5a32), tan (#c49a5a) and black, the rows divided by thin double lines. The pattern repeats horizontally. Full colour. |
+| `stone.obsidian` | G | 17 (Voth) | Polished obsidian surface: glassy near-black (#1a1a1e) volcanic glass with faint conchoidal ripple marks, a few grey flow bands and tiny white spherulites, very slight smoky depth. Full colour. |
+| `wood.endgrain` | G | 11, and the builders' yard log stock | Sawn end of a log seen straight on: concentric growth rings, darker heartwood, radial drying checks, saw marks across the face. The rings fill the frame edge to edge. Muted, so it tints. |
+| `paper.parchment` | G | 15 books, 11 more with `paper*` keys | Old parchment sheet: cream (#e8dcb8) with uneven thickness, faint fibres, light foxing spots and soft creases. Muted, so it tints. |
+
+**Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces), the Xanadu pattern sheets (Xanadu's 58 pieces
+draw their hangings with procedural decals), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
+
+**No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
+Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
+
+**Family splits the list depends on** (code in `krator-furniture-core.js` and the culture files, not textures): `feather` out of `hide`,
+`rubber` out of `plastic`, a painted-wood family out of `wood`/`plank`, and pottery out of `stone` (the `clay*` keys on `stone`: 29 pieces
+of `clayBlack` alone would take a stone map, not `ceramic.*`). Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
+
 #### Scan-library metals (AmbientCG, added 2026-10-02)
 
 Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each with a metalness map:
