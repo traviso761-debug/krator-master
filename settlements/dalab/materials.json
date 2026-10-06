@@ -392,8 +392,8 @@
   "rubbleW": {
    "lib": "rock.old_stone_wall",
    "scale": [
-    2,
-    2
+    3.5,
+    3.5
    ],
    "tint": {
     "keep": 0,

@@ -344,6 +344,36 @@
     "sourceMean": 0.6634
    }
   },
+  "rlBand": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rlBand.albedo.webp",
+    "normalMap": "rlBand.normal.webp",
+    "roughnessMap": "rlBand.rough.webp"
+   },
+   "lib": "patterns/reedlake/band",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    0.62
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "47fb00bd954c43c6ba71701755d81d1c5269e323",
+    "normal": "b12b9836ba31c6927f15324cb0371a402d890a66",
+    "roughness": "5d00ea3716eb0fbf575fb8c568ee4a775cdd2bd6"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.3450687752817191,
+    "sourceMean": 0.3451
+   }
+  },
   "rlBundleX": {
    "breakup": {
     "cell": 6,
@@ -377,6 +407,36 @@
     "keep": 0.0,
     "mean": 0.57,
     "sourceMean": 0.5323
+   }
+  },
+  "rlCloth": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rlCloth.albedo.webp",
+    "normalMap": "rlCloth.normal.webp",
+    "roughnessMap": "rlCloth.rough.webp"
+   },
+   "lib": "patterns/reedlake/chakana-textile-red",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "bb1dc93a71122b375726cb8e9c4908c7ed9ba3d6",
+    "normal": "08bc3866b12bf39636fc4926bc971c3e399e2d5d",
+    "roughness": "617e4f2632b1d74faf7eaf210da39824c6e4aa86"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.2170599991712383,
+    "sourceMean": 0.2171
    }
   },
   "rlIsland": {
@@ -519,6 +579,36 @@
     "sourceMean": 0.5773
    }
   },
+  "rlShield": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rlShield.albedo.webp",
+    "normalMap": "rlShield.normal.webp",
+    "roughnessMap": "rlShield.rough.webp"
+   },
+   "lib": "patterns/reedlake/chakana",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "59dddbe9b67fb32f8a8ed571fd54787f2ae0c010",
+    "normal": "1fe109caad7f3618a6fc61ef2ff6408b69a5780d",
+    "roughness": "a1a22c0c7a79d5d2b8bd98da78dc74c6a206e0fa"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.35526975236780506,
+    "sourceMean": 0.3553
+   }
+  },
   "rlThatch": {
    "breakup": {
     "cell": 6,
@@ -605,8 +695,8 @@
    "normalScale": 0.8,
    "roughLift": 0.0,
    "scale": [
-    2,
-    2
+    3.5,
+    3.5
    ],
    "size": 512,
    "source": {

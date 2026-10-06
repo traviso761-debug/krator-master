@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 217 (20%) | 19 (2%) | 13 (1%) | 78 (7%) | 767 (70%) |
+| KB | 219 (20%) | 19 (2%) | 13 (1%) | 78 (7%) | 767 (70%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -51,7 +51,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/85-tri-village.js` | 26.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/85b-tri-salvage.js` | 10.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/88-hl-dress.js` | 10.4 | [draw] | 4 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/88y-highlands-matlib.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/88y-highlands-matlib.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89y-hl-furnish.js` | 4.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (place in the list), the VERN frame, the murals' keep-clear boxes, full detail outside, world-placed town furniture (Roketstad), the shader colour step at kbake |
 | `src/90-scene.js` | 6.3 | [web] | 14 | 1 | 1 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 3.1 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |

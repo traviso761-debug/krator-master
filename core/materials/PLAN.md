@@ -1063,6 +1063,9 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
    Dalab: the four murals, relief-squares, relief-tile-teal, checker-harlequin, god-panel-a, mosaic, banner (patterns/dalab).
    The Voth embassy (Iziz, Dalab, Ys): vpTile (`roof.tile`), vpBanco (`earth.banco`), vpMosaic (`patterns/dalab/mosaic`). The Port kit
    (Port, Ys): pkCont (`metal.container`), pkPave (`concrete.slab`).
+   Pattern sheets: Highlands hTileD/S/T/W (`tile-*`, the Temple of the Pantheon), hHarlG (`harlequin`), hMaze (`maze-weathered`);
+   Reed Lake rlBand (`band`), rlShield (`chakana`), rlCloth (`chakana-textile-red`). Not used: the lattices, `fringe`, `chakana` cut-outs
+   (the sets are opaque), the friezes, `crane-floral`, `maze`, the Xanadu motifs (blue ground under cut-out motifs).
    Still to do: Highlands (turf waits for `roof.turf`; rock,
    meadow have mesh UVs, the h* pattern sheets), Reed Lake (rlBundle has separate u and v tiles; the band and chakana patterns), Xanadu (x* -> the Xanadu patterns,
    `plaster.white_stucco_02`, `paving.tiles144`), vpBanner (keeps its device), pkContR and pkPaveR (rust and ruin).

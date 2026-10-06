@@ -19,3 +19,5 @@ Open items are `- [ ]` lines; build.py prints them.
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-reedlake-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
 - [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
       warm ones warm). Reed Lake's own reed surfaces too (rlMat, rlMatM, rlThatch, rlIsland, rlLayer, rlBundleX). ?mat=proc shows the old look.
+- [ ] **The Andean patterns take the material library** (2026-10-06): the band, the shield (chakana) and the hanging (chakana-textile-red, a
+      diamond weave where the painter drew multi-colour stripes). The fringe and chakana cut-outs stay procedural. ?mat=proc shows the old look.
