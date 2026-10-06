@@ -105,3 +105,8 @@ badlands, a Zion canyon with a hanging-garden ruin, pine and spruce-fir to the i
 `worlds/krator-catalog.html` (1526 pieces: the badlands fruit) and `worlds/little-demo.html` (the badlands kit's flora on
 the 'e badlands' overlay), with the index regenerated, from `main` after 8cf1c981. Every other page is as in version 50.
 One publish call.
+
+Version 52 (2026-10-06): `worlds/yuni.html`, `worlds/yuni-kit.html` and `worlds/yuni-plants.html` replaced with Yuni's
+wild valley planted by the eastern badlands kit, its Zion side (oak, maple, cottonwood galleries, pine on the walls, hanging
+gardens on the butte), 7.4 MB each, from `main` at 8ef7ea7d, with the index's Yuni entry updated (blurb, sizes). The live
+index (version 51, published by another session after 1d088377) was merged: every other entry is as it was. One publish call.

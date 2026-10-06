@@ -30,7 +30,7 @@ ENTRIES = [
     ('world', 'voth', 'settlements/voth/voth.html', 'Voth',
      'A city of cantons on an enclosed brackish bay, with barges, ferries, monks and ordinators on the move.'),
     ('world', 'yuni', 'settlements/yuni/yuni.html', 'Yuni',
-     'Rich, middle and poor quarters on canals, with an underground and an Ancients quarter. Every surface from the material library, inside the houses too; Run time for the day, M for the map.'),
+     'Rich, middle and poor quarters on canals, with an underground and an Ancients quarter. Every surface from the material library, inside the houses too; the wild valley planted by the eastern badlands kit, its Zion side (oak, maple, cottonwood galleries, hanging gardens on the butte). Run time for the day, M for the map.'),
     ('world', 'dalab', 'settlements/dalab/dist/dalab.html', 'Dalab',
      'The mound settlement of the southwestern lowlands, under sprawl oaks.'),
     ('world', 'roketstad', 'settlements/highlands/dist/roketstad.html', 'Roketstad',
