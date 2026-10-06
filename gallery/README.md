@@ -139,3 +139,7 @@ highlands merge (1a34da92). The live index (version 58) was kept: only the South
 Version 60 (2026-10-06): `worlds/fauna.html` (0.7 MB) and `worlds/scyvoi.html` (12.1 MB) replaced with the fauna quality pass
 (every species reviewed and refined, surfaces on their own material families, better fur and skin maps), from `main` at ec5eb622.
 The live index (version 59, the southern highlands) was kept: only the Fauna and Scyvoi cards' sizes changed. One publish call.
+Version 61 (2026-10-06): `worlds/ehighlands.html` added (the eastern highlands biome kit, 1.5 MB: the cushion plateau in thin air,
+everything growing toward the giant; poured cushions and the Mother Cushion, woolbacks, thorn cushions, vigil spikes, ragbark gullies, glass
+towers, a cushion bog, a frozen tarn and a geyser field; ten library textures), from `main` at 10e85603. The live index (version 60) was
+kept: only the Eastern highlands card was added. One publish call.
