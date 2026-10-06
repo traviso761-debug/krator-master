@@ -1291,6 +1291,15 @@ Batch `chatgpt-2026-10n-owed.json`. `skin.sky-ray` (Iziz `fauna_ray`; the `FAUNA
 (board-formed with tie holes and weeps, 1.95 m tile; not wired yet: the Ancients kit has no materials.json), `concrete.ancient.b` (an extra:
 board marks without tie holes, a break-up partner), `wood.log.carved` (round-log walls; not wired yet). All tintable.
 
+#### Delivered 2026-10-06: fourteen owed building prompts (pasted into the chat)
+
+Batches `chatgpt-2026-10o-owed.json` and `-cards.json`. Reed Lake: `patterns/reedlake/band`, `ground.reedbed`, `reed.layers`, `reed.bundle`.
+Ancients: `metal.worn` (full colour). Port and Ring Sea: `patterns/port/hazard`, `patterns/port/primer`, `plate.hex`. Post-apoc: `concrete.slab`.
+Voth and Locus: `organic.fungus.stalk`. Highlands: `stone.rendered.ruined`. Dalab: `patterns/dalab/banner` (a single panel on flat grey, keyed
+tight; map once over the banner quad, tinted), `patterns/dalab/mural-god-hero`, `patterns/dalab/mosaic` (the sheet's diamond grid drifts:
+cropped by hand to its best two-period window first). Not wired to any build yet. **Look first:** `reed.layers` keeps a seam score of 3.0
+down (the bottom course is cut through); fine on a contact sheet, judge it on an island side.
+
 ## Built so far (2026-10-02)
 
 Nine ChatGPT-generated sources from the Beast Rider prompts above, processed by `tools/textures/process.py`

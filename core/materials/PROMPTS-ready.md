@@ -21,79 +21,9 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Corrugated steel shipping-container side seen straight on: wide trapezoidal vertical ribs, eight per tile, painted metal with rust streaks running down from the top and rust blotches at the rib bends, dents, scratches and dark specks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
 ```
 
-**`reed.bundle`** (for: Reed Lake bundle walls and boats, reed furniture (37 catalog pieces))
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Tightly bound bundles of dried reed seen straight on, stalks running vertically, bundles side by side with dark gaps between them, darker nodes along the stalks, two rope lashings across every bundle at the same heights. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`reed.layers`** (for: Reed Lake island sides)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Side of a floating reed island seen straight on: five horizontal courses of packed dry reed stalks per tile, ragged stalk ends, darker and damper toward the bottom edge of every course. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`ground.reedbed`** (for: Reed Lake island tops, Mungo)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Top of a floating reed island seen from above: a dense mat of short dry reed straws lying in every direction, a few darker damp patches and a few small sprouting tufts. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`metal.worn`** (for: Ancients white panels, tarnished)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Ancient white metal cladding: a grid of flat rectangular panels, two across and four down, separated by narrow recessed seams, the off-white paint (#e6e2da) washed with orange-brown tarnish (#b07054) bleeding from the seams and round fasteners in downward runs, patchy and streaked. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
-**`patterns/port/hazard`** (for: Port, Ys)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Industrial hazard striping: bold diagonal stripes at 45 degrees alternating safety yellow (#d9a12c) and near-black iron (#2c2e32), each stripe about equal width, painted on steel, slightly chipped and scuffed at the stripe edges with a few specks of rust (#7a4630) and faint grey dirt, flat paint with a faint roller texture. The pattern repeats horizontally. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
-**`patterns/port/primer`** (for: Port, Ys hulls in primer)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Unfinished steel hull plating in primer: overlapping patchy coats of red-oxide primer (#9a5c3e) and grey shop primer (#8d918f), visible roller and spray edges, bare dark-grey steel (#55534e) in scratches, vertical weld seams and rows of round rivets, a few orange rust blooms (#7a4630), matte finish. The pattern repeats in both directions. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
-**`plate.hex`** (for: Ring Sea hex plating)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bevelled hexagonal armour plates in a honeycomb, each plate lighter at its centre and darker toward its bevelled edges, a dark outline between plates, a small round boss at every centre, light scuffs. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`concrete.slab`** (for: post-apoc yards and floors)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Pale poured concrete slab seen from above: saw-cut joint lines dividing the tile into two by two slabs, a small bolt plate at each joint crossing, a few vertical damp stains and hairline cracks, fine trowel texture. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`organic.fungus.stalk`** (for: Voth and Locus giant-mushroom stalks (the cap is organic.fungus.cap))
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Stalk of a giant mushroom seen straight on: pale fibrous flesh with long vertical striations, a few shallow ring scars, fine pores and soft bruise-coloured blotches. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`stone.rendered.ruined`** (for: Highlands ruins)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cream lime render on a wall, flaking away in large patches to show the brick and rubble beneath, hairline cracks across the render, damp streaks darkening the lower part. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`patterns/dalab/banner`** (for: Dalab banners (patterns/common/banner-hung is the plain stand-in))
-```
-A single flat, front-on decorative panel, square, 2048x2048, the design centred and filling the frame with a narrow even margin. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient. No perspective, no text, no border, no watermark. Design: A hanging cloth banner, taller than wide: a pale ring like an eye at its upper middle with short rays around it, two horizontal bars below, a fringed foot, plain-woven grey cloth, faded and creased. Keep colours natural but slightly muted and even, so the banner can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`patterns/dalab/mosaic`** (for: Dalab mosaic floors and dados)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Glazed tile mosaic: blue (#2a6ab0) and cream (#efe4cc) diamonds in a checker, each diamond with a small ochre (#c88a3a) square at its centre, thin dark grout lines (#3a3028). The pattern repeats in both directions. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
-**`patterns/dalab/mural-god-hero`** (for: Dalab mural variant 0)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A painted frieze on cream lime wash (#e6d8b8) between thin red ochre (#a8382a) stripes and black (#2a2420) stepped-fret bands: a seated god avatar with a rayed headdress beside a striding hero holding a red shield and a spear, in gold (#d8a838), turquoise (#2f9a8a), red and black, hand-painted and slightly worn. The pattern repeats horizontally. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
 **`patterns/dalab/mural-lizards`** (for: Dalab mural variant 3)
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A painted frieze on cream lime wash (#e6d8b8) between thin red ochre (#a8382a) stripes and black (#2a2420) stepped-fret bands: two turquoise (#2f9a8a) lizards with gold (#d8a838) stripes facing each other either side of a gold maize sheaf, hand-painted and slightly worn. The pattern repeats horizontally. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
-**`patterns/reedlake/band`** (for: Reed Lake woven bands)
-```
-Seamless tileable texture, four times as wide as tall, 2048x512. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A woven band: madder red field (#a8352a), black selvedges (#221c18) along top and bottom, thin ochre lines (#d19a3a), four stepped diamonds in black, white (#efe4cc) and indigo (#2f4a7a) along the middle, white zigzags above and below them, visible weave. The pattern repeats horizontally. Full colour: keep the colours exactly as described; this texture is not tinted.
 ```
 
 **`patterns/reedlake/awayo`** (for: Reed Lake awayo cloth)
@@ -201,6 +131,6 @@ Delivered under the same id (44): `stone.cut`, `plaster`, `brick`, `metal.corrug
 
 Delivered under another id: `hide.rawhide` as `patterns/common/rawhide`, `fibre.basket.coiled` as `patterns/common/basket-coil`, `fibre.mat.floor` as `library/fibre.reedmat`, `lantern.horn` as `patterns/common/lantern-horn`, `lantern.paper` as `patterns/common/lantern-paper`, `bone-inlay` as `patterns/beast-riders/bone-inlay`, `claw-tapestry` as `patterns/beast-riders/claw-tapestry`, `emblem` as `patterns/beast-riders/emblem`, `totem` as `patterns/beast-riders/totem`, `pennant` as `patterns/beast-riders/pennant`, `plaque` as `patterns/beast-riders/plaque`, `rider.saddle` as `patterns/beast-riders/saddle`, `feather.archae` as `library/card.feather.archae`, `feather.quetzal-crest` as `library/card.feather.crest`, `skin.scale.archae` as `library/organic.scale.terracotta`, `chitin.dragonfly` as `library/organic.chitin.iridescent`.
 
-Delivered later the same day: `wing.butterfly` (in Iziz's pack), `skin.sky-ray` (in Iziz's pack), `hide.fuzz.pterosaur` (Girder's quetzal), `cloth.canvas.striped`, `concrete.ancient` (plus `concrete.ancient.b`), `wood.log.carved`.
+Delivered later the same day: `wing.butterfly` (in Iziz's pack), `skin.sky-ray` (in Iziz's pack), `hide.fuzz.pterosaur` (Girder's quetzal), `cloth.canvas.striped`, `concrete.ancient` (plus `concrete.ancient.b`), `wood.log.carved`; then `patterns/reedlake/band`, `ground.reedbed`, `reed.layers`, `reed.bundle`, `metal.worn`, `patterns/port/hazard`, `plate.hex`, `patterns/port/primer`, `concrete.slab`, `organic.fungus.stalk`, `stone.rendered.ruined`, `patterns/dalab/banner`, `patterns/dalab/mural-god-hero`, `patterns/dalab/mosaic`.
 
 Delivered on a branch not yet merged: `wood.lash` (library/wood.lash on branch claude/hexahedron-materials (not merged yet)).

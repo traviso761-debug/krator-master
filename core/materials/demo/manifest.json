@@ -3068,6 +3068,90 @@
    "row": "Wood",
    "col": "Highlands",
    "status": "new"
+  },
+  {
+   "src": "patterns/reedlake/band",
+   "row": "Pattern sheets",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.reedbed",
+   "row": "Ground",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/reed.layers",
+   "row": "Fibre & organic",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/reed.bundle",
+   "row": "Fibre & organic",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.worn",
+   "row": "Metal",
+   "col": "Ancients",
+   "status": "new"
+  },
+  {
+   "src": "patterns/port/hazard",
+   "row": "Pattern sheets",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "patterns/port/primer",
+   "row": "Pattern sheets",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "library/plate.hex",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "library/concrete.slab",
+   "row": "Concrete",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/organic.fungus.stalk",
+   "row": "Fibre & organic",
+   "col": "Voth",
+   "status": "new"
+  },
+  {
+   "src": "library/stone.rendered.ruined",
+   "row": "Plaster & earth",
+   "col": "Highlands",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/banner",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/mural-god-hero",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/mosaic",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
   }
  ]
 }
