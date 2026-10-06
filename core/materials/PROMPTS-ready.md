@@ -11,21 +11,6 @@ Cut-outs (cards, wings) are always on solid flat bright magenta (#ff00ff), never
 
 From core/materials/PLAN.md, "Buildings, vehicles and biomes audit". `reed.living` is not here: `card.reed` covers it.
 
-**`cloth.canvas.striped`** (for: Iziz, Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge awnings, rugs, bolsters)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Striped woven canvas for awnings, rugs and bolsters: six broad vertical stripes per tile alternating a mid-grey dyed stripe with off-white, each dyed stripe edged by a thin darker line, fine woven canvas grain, slight fading and a few soft creases. The pattern repeats horizontally. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`wood.log.carved`** (for: Highlands, Dalab, Reed Lake, Ys log walls)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Wall of round horizontal logs seen straight on, six log courses filling the frame top to bottom, each log's rounded crown catching the light and curving away above and below, dark clay and moss chinking between the courses, drying checks and a few knots along each log. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`concrete.ancient`** (for: the whole Ancients lineage (54-mat-concrete.js))
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Board-formed concrete of an ancient megastructure: three horizontal board marks per tile, each pour a slightly different shade, a dark groove with a lit lip at every board joint, a regular grid of round recessed form-tie holes with a rust weep streak below each, damp streaks running down from the joints, fine aggregate speckle. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
 **`earth.rammed`** (for: Dalab (earth.rammed.dalab) and Xanadu (stone.rammed): one set for both)
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Rammed earth wall seen straight on: six horizontal lifts per tile, each lift with a thin dark shadow line at its top and a slightly lighter band just below, compacted earth with fine grit and rain pitting, a few form-board end marks and small crumbled patches. No pebbles. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
@@ -210,24 +195,12 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polished petrified wood: agate bands of red, orange, cream and grey following old growth rings, a few glassy crystal flecks. Full colour: keep the colours exactly as described; this texture is not tinted.
 ```
 
-## 3. Fauna (hyperjungle: Girder, Iziz)
-
-**`hide.fuzz.pterosaur`**
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Short dense pycnofibre fuzz of a pterosaur body: soft hair-like filaments lying one way, pale sand (#c8b48a) with darker tips (#8a5a3a), a few lighter strands. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
-**`skin.sky-ray`**
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Underside skin of a broad-winged sky ray: smooth pale grey (#62666a) with faint darker vein-like marbling, a slightly leathery texture, fine ridges along the leading edge. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
 ## Delivered and removed (2026-10-06)
 
 Delivered under the same id (44): `stone.cut`, `plaster`, `brick`, `metal.corrugated`, `roof.tile`, `metal.iron`, `metal.bronze`, `metal.gold`, `patterns/iziz/gilt`, `patterns/iziz/banner`, `wood.mahogany`, `wood.lamppost`, `metal.iron.pitted`, `bone.skull`, `bone.horn`, `bone.antler`, `hide.pelt.cat`, `fibre.net`, `cloth.silk`, `wax.tallow`, `organic.gourd`, `earth.floor.packed`, `bark.mahogany`, `bark.ironbark`, `bark.baobab`, `card.mahogany`, `card.vine`, `card.screwpine`, `card.bromeliad`, `card.moss`, `card.crop`, `card.flower.bloom`, `fruit.skin.orange`, `fruit.skin.amber`, `fruit.husk`, `fruit.capsule`, `membrane.pterosaur`, `membrane.bat`, `fur.bat`, `wing.dragonfly`, `chitin.spider`, `chitin.millipede`, `fur.sloth`, `hide.strider`.
 
 Delivered under another id: `hide.rawhide` as `patterns/common/rawhide`, `fibre.basket.coiled` as `patterns/common/basket-coil`, `fibre.mat.floor` as `library/fibre.reedmat`, `lantern.horn` as `patterns/common/lantern-horn`, `lantern.paper` as `patterns/common/lantern-paper`, `bone-inlay` as `patterns/beast-riders/bone-inlay`, `claw-tapestry` as `patterns/beast-riders/claw-tapestry`, `emblem` as `patterns/beast-riders/emblem`, `totem` as `patterns/beast-riders/totem`, `pennant` as `patterns/beast-riders/pennant`, `plaque` as `patterns/beast-riders/plaque`, `rider.saddle` as `patterns/beast-riders/saddle`, `feather.archae` as `library/card.feather.archae`, `feather.quetzal-crest` as `library/card.feather.crest`, `skin.scale.archae` as `library/organic.scale.terracotta`, `chitin.dragonfly` as `library/organic.chitin.iridescent`.
 
-Delivered later the same day: `wing.butterfly` (library/wing.butterfly, in Iziz's pack).
+Delivered later the same day: `wing.butterfly` (in Iziz's pack), `skin.sky-ray` (in Iziz's pack), `hide.fuzz.pterosaur` (Girder's quetzal), `cloth.canvas.striped`, `concrete.ancient` (plus `concrete.ancient.b`), `wood.log.carved`.
 
 Delivered on a branch not yet merged: `wood.lash` (library/wood.lash on branch claude/hexahedron-materials (not merged yet)).

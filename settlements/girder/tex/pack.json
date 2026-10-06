@@ -1393,7 +1393,7 @@
    "files": {
     "map": "fly_q_fuzz.albedo.webp"
    },
-   "lib": "hide.strider",
+   "lib": "hide.fuzz.pterosaur",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -1403,16 +1403,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "119b0559f6603393128418fb031d09c87f5c79d8",
-    "normal": "2910875daf62cba12177c7a1e5bc852364c7a3cc",
-    "roughness": "a6a1a19934e2ea36e9ec4f895a254d8cbd3d4b34"
+    "albedo": "15c0f713dcce1815ee197505e7373074f20f655a",
+    "normal": "8ed6c9ed207d142803cd4b7e33b53be4bcda2e8e",
+    "roughness": "6c212af3b59254115bcb3ef014ca788fa6105da9"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.3,
     "mean": 0.6,
-    "sourceMean": 0.5652
+    "sourceMean": 0.5371
    }
   },
   "fly_q_horn": {

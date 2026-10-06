@@ -57,6 +57,34 @@
     "sourceMean": 0.5652
    }
   },
+  "fauna_ray": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "fauna_ray.albedo.webp"
+   },
+   "lib": "skin.sky-ray",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "dc7cc86a34f33a87fb8137b8913f3826d67575f2",
+    "normal": "0638c9f7e8568fb25eb4e9c7f68be162adddb382",
+    "roughness": "c6cf8807b275d582b9d934832655f05c8c407304"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.9,
+    "sourceMean": 0.4715
+   }
+  },
   "fauna_wing": {
    "breakup": null,
    "card": true,

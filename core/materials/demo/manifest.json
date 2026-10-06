@@ -3032,6 +3032,42 @@
    "row": "Pattern sheets",
    "col": "Generic",
    "status": "new"
+  },
+  {
+   "src": "library/skin.sky-ray",
+   "row": "Fibre & organic",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/hide.fuzz.pterosaur",
+   "row": "Fibre & organic",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/cloth.canvas.striped",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/concrete.ancient",
+   "row": "Concrete",
+   "col": "Ancients",
+   "status": "new"
+  },
+  {
+   "src": "library/concrete.ancient.b",
+   "row": "Concrete",
+   "col": "Ancients",
+   "status": "new"
+  },
+  {
+   "src": "library/wood.log.carved",
+   "row": "Wood",
+   "col": "Highlands",
+   "status": "new"
   }
  ]
 }

@@ -983,7 +983,7 @@ Locus, Voth, Iziz's vernacular, the shared vernacular (Highlands, Dalab, Reed La
 post-apoc, the Ancients kit, the interiors kit and ten biomes (hyperjungle, nhighlands, nw/swlowlands, nw/swbay, sedesert, eastabyss,
 rift, xanadu) each need a `materials.json` pass; openworld/little-demo needs a terrain splat and the kits' packs.
 
-**Paste-ready versions of everything still owed are in `PROMPTS-ready.md` (sections 1 buildings, 2 biomes, 3 fauna).**
+**Paste-ready versions of everything still owed are in `PROMPTS-ready.md` (section 1 buildings, 2 biomes).**
 
 **Buildings: prompted earlier and still owed** (rows above; most builds first): `cloth.canvas.striped` (the tinted awning: Iziz,
 Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge), `wood.log.carved` (round-log walls: Highlands, Dalab, Reed Lake, Ys), `concrete.ancient`
@@ -1025,7 +1025,7 @@ band and awayo; Xanadu twig band and sun emblem; the three nacre sheets).
 
 Minor, one biome each: `bark.madrone`, `bark.paperbark`, `bark.cork`, `bark.strangler`, `bark.cherry`, `bark.kapok`, `card.samphire`, `card.ginkgo`,
 `card.heath`, `ground.shingle` (xanadu), `skin.marine`, `wood.petrified`. Still owed from earlier rows: `bark.desert` (sedesert, crater yucca and
-joshua), `skin.sky-ray` (the hyperjungle `FAUNATEX` hook; `wing.butterfly` was delivered 2026-10-06 and is in Iziz's pack). Fauna in every biome is vertex colour; `feather.plumage`,
+joshua), (the hyperjungle `FAUNATEX` hook is now full: `wing.butterfly` and `skin.sky-ray` were delivered 2026-10-06 and are in Iziz's pack). Fauna in every biome is vertex colour; `feather.plumage`,
 `hide.fur.brown`, `organic.scale.*` and `membrane.bat` cover them once a biome adopts the library.
 
 #### Scan-library metals (AmbientCG, added 2026-10-02)
@@ -1172,7 +1172,7 @@ Batches `chatgpt-2026-10d-beast-riders-rest.json` (13 surfaces) and `chatgpt-202
 | `card.crop` | `card.crop` | nine maize-like strap leaves (a card): maize, cane, reeds, canna, any crop or marsh plant (pasted into the chat, batch `chatgpt-2026-10e-crop.json`) |
 | `fruit.husk` | `fruit.husk` | velvet pod husk: baobab pods, felted hide, moss-bark and fuzzy fruit; a short-fur twin of `hide.strider` (pasted into the chat, batch `chatgpt-2026-10e-husk.json`) |
 
-Still not delivered: `skin.sky-ray` (`wing.butterfly` delivered 2026-10-06: batch `chatgpt-2026-10m-butterfly.json`, a tight-cropped card like `wing.dragonfly`; Iziz `fauna_wing`). Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
+All delivered now: `skin.sky-ray` (2026-10-06, batch `chatgpt-2026-10n-owed.json`; Iziz `fauna_ray`), `wing.butterfly` (2026-10-06: batch `chatgpt-2026-10m-butterfly.json`, a tight-cropped card like `wing.dragonfly`; Iziz `fauna_wing`). Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
 (`bark0`, `bark3` in materials.json; 2026-10-05); `wood.lamppost` is ready for the `timber` family or a lamp-post family of its own.
 
 **Known issues of this delivery:** `card.vine` is anchored at the top and its cut is clean but the stem colour is purple-brown; `wing.dragonfly` is stretched
@@ -1283,6 +1283,13 @@ chroma key (the meta's `_source.note` says so). Ask for magenta next time: the g
 
 Still owed from the audit after this: `card.palm` (fronds as a card), `card.lichen`, `card.lotus` (single pads), `bark.strangler`, `card.samphire`,
 `card.ginkgo`, `card.heath`, `ground.shingle`, `skin.marine`, `wood.petrified`; and every building row in "prompted earlier and still owed".
+
+#### Delivered 2026-10-06: six owed prompts (pasted into the chat)
+
+Batch `chatgpt-2026-10n-owed.json`. `skin.sky-ray` (Iziz `fauna_ray`; the `FAUNATEX` hook is now full), `hide.fuzz.pterosaur` (Girder
+`fly_q_fuzz`, in place of the borrowed `hide.strider`), `cloth.canvas.striped` (the tinted awning stripe; not wired yet), `concrete.ancient`
+(board-formed with tie holes and weeps, 1.95 m tile; not wired yet: the Ancients kit has no materials.json), `concrete.ancient.b` (an extra:
+board marks without tie holes, a break-up partner), `wood.log.carved` (round-log walls; not wired yet). All tintable.
 
 ## Built so far (2026-10-02)
 
