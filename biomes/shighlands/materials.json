@@ -1,0 +1,16 @@
+{
+ "build": "shigh",
+ "note": "The southern highlands kit's adapter onto the material library (core/materials/PLAN.md, Southern highlands). bark.wrung (the coilbark), bark.skirt (the groundsels' and lobelias' dead-leaf skirts) and ground.sphagnum (the bogs) were generated for this kit by the owner on 2026-10-06; the rest are reused. bark.* replace the bark buckets' canvases: bark.wrung keeps half its own colour (its moss is the point) under the species' vertex colours, the others are grey detail (keep 0); means() in 55 divides out the pack's brightness. leaf.small and leaf.moss replace the crown and moss clump cards (keep 0: the instance colour colours them). stone.granite is the boulders and stones. ground.* are the ground's three library layers (84-host-ground.js), blended per vertex by the zones: moss under the cloud forest, steppe grass on the paramo, sphagnum in the bogs, each half and half with the painted colour so the zone colours still show. Run python3 tools/textures/pack.py biomes/shighlands after any change, then python3 build.py. ?mat=proc shows the procedural textures.",
+ "size": 512,
+ "families": {
+  "leaf.small": {"lib": "card.sage", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0, "specular": 0.2},
+  "leaf.moss": {"lib": "card.moss", "scale": [1.0, 1.0], "tint": {"keep": 0.0, "mean": 0.66}, "roughLift": 0, "specular": 0.2},
+  "bark.wrung": {"lib": "bark.wrung", "scale": [1.6, 1.6], "tint": {"keep": 0.55, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "bark.palm": {"lib": "bark.palm_tree_bark", "scale": [1.0, 1.4], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "bark.skirt": {"lib": "bark.skirt", "scale": [1.0, 1.2], "tint": {"keep": 0.35, "mean": 0.62}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "stone.granite": {"lib": "rock.granite.tor", "scale": [2.5, 2.5], "tint": {"keep": 0.5, "mean": 0.7}, "roughLift": 0.3, "specular": 0.25, "mapOnly": true},
+  "ground.sphagnum": {"lib": "ground.sphagnum", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
+  "ground.moss": {"lib": "ground.moss002", "scale": [2.6, 2.6], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true},
+  "ground.paramo": {"lib": "ground.steppe", "scale": [3.2, 3.2], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.35, "specular": 0.25, "mapOnly": true}
+ }
+}

@@ -113,7 +113,9 @@ ENTRIES = [
     ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
      "Eleven Iziz mechs, Ancient industrial walkers refitted for the legions (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple).", 'new'),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
-     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders and goats, the hidemaker's tent, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+    ('kit', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
+     "Every animal of Krator in one kit, 48 species: farm stock, mounts, the desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts. Each tagged by biome, diet, temperament, traits, yields and life (hover with T); Idle, Graze, Walk, Fly and Swim set what they all do.", 'new'),
     ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
      'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
 
@@ -237,6 +239,7 @@ ENTRIES = [
     ('biome', 'ebadlands', 'biomes/ebadlands/dist/ebadlands.html', 'Eastern badlands', 'Sulphur flats and alien flora, painted badlands, a Zion canyon with a hanging-garden ruin, sagebrush and pinyon-juniper, pine and spruce-fir up to the ice of the outer rim; real textures, trees as variants.', 'new'),
     ('biome', 'nwbay', 'biomes/nwbay/dist/nwbay.html', 'North-west bay', "The bay of Ys: karst stacks, an igneous shore, travertine terraces, mangroves; up the dry slope a tsingy of knife-edged limestone fins with spinewands and rock bottles, a tiankeng with a rainforest of traveller's fans, cenotes to the water table, avenue baobabs; trees as variants.", 'new'),
     ('biome', 'crater-drylands', 'biomes/crater-drylands/dist/crater-drylands.html', 'Crater drylands', "The Throne's rain shadow at 1.9 atm, a mosaic of wildfires of every age from the kit's own fire model: fresh char and ash, the superbloom that follows (fireweed, poppies, lupine, flame plumes, fire lilies), regrowth and old scrub; prism mallees resprouting from their root crowns, pyre pillars, frill-trees burst over their seedlings, granite kopjes where the Scyvoi live; the dense air's light.", 'new'),
+    ('biome', 'shighlands', 'biomes/shighlands/dist/shighlands.html', 'Southern highlands', "The spiral biome: the Inner Wall's flank above the cloud sea, where the hyperjungle's air pools below the Wall and laps against the scarp. Every plant grows in a spiral (whorl, twist, coil or shell), and every spiral turns the same way, but for the rare mirror-handed tree. A cloud forest of coilbarks, spiral trumpets with fluted twisting funnels, volute trees whose limbs end in leafy scrolls, spiral frill trees, tree ferns and screw palms, over a sea of drifting cloud; above it a paramo of ruffle-crowns, giant groundsels, spiral lobelias and spiral aloes, bogs of sphagnum; the Whorl Stone, a tor whose ledge spirals to its top.", 'new'),
 ]
 
 

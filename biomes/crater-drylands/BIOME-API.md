@@ -36,6 +36,12 @@ CRATERDRY.fireHistory({R, cell:20, seed, wind:[dx,dz] /* blowing toward */, old:
 CRATERDRY.ageAt(x,z) / fireAt(x,z) / frontAt(x,z)   // the current history (made with defaults if none)
 CRATERDRY.stages(age) -> {char, bloom, regrow, mature}   // the mosaic's stages as weights
 CRATERDRY.fuelK(age)                                     // the fuel a cell carries `age` years after it burned
+CRATERDRY.fireRun({x, z, wind, maxT, maxCells})          // a LIVE fire lit now through the history's fuel: {ok, arrive
+                                                         // (seconds per cell, Infinity where it never arrives), order
+                                                         // (cells in the order they caught), range(t0,t1), state(x,z,t),
+                                                         // at(x,z), x, z, wind, N, cs, x0, z0, H}; {ok:false} on granite,
+                                                         // sand, water or a fresh burn
+CRATERDRY.FIRE_SEC, FLAME_H                              // model units to seconds (1.6); the flame height (12 m)
 CRATERDRY.NEVER                                          // 60: the age of ground no recorded fire reached
 ```
 
@@ -63,7 +69,7 @@ Every zone is multiplied by `1 - cliff` (steep granite).
 |---|---|---|---|---|---|
 | 0 | prismmallee | Prism mallee | 6-13 | resprouter | BSh BWh Aw |
 | 1 | pillar | Pyre pillar (alien) | 11-26 | survivor | BSh BWh |
-| 2 | frill | Frill-tree (alien) | 5-11 | seeder | BSh Aw |
+| 2 | frill | Frill-tree (alien; the Rift's frill tree in kiln country) | 5-11 | seeder | BSh Aw |
 | 3 | parasolpine | Parasol pine | 16-28 | survivor | BSh Aw |
 | 4 | ghostgum | Ghost gum | 18-32 | survivor | BSh Aw |
 | 5 | treealoe | Tree aloe | 3-7 | avoider | BSh BWh |
@@ -104,6 +110,8 @@ No catalog fruit yet (`KNOWN_ISSUES.md`).
 84-host-ground.js      (host)       the fire history with the showcase's fires; the ground painted by the mosaic; the seep
 88-host-build.js       (host)       build order and bake
 90-host-camera.js      (host)       presets found from the burns and the built trees; the inspector (tags, the burn's age)
+89-host-fire.js        (host)       the live fire: the arrival map as a texture, the plant materials' patch, flames, smoke, the
+                                    fire's light, the controls (F, x1/x10/x60, Put it out), the preset; FIREFX
 91-host-probe.js       (host)       window._api: budgets and the host checks with their negatives
 93-host-polytool.js    (host)       polygon and path tool (from nhighlands)
 ```

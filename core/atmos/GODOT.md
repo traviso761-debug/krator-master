@@ -34,7 +34,8 @@ everything looks washed out.
 | `atm_light` | `A.U.light` | `1 - nightDim * night` |
 | `atm_px` | `A.U.px` | not needed in Godot (it sizes sprites in pixels; size them in metres instead) |
 | `atm_wave_t` | `A.U.waveTime` (GLSL `atmWaveT`) | the module clock wrapped at `presets.waves.period`; every wave runs whole cycles per period, so the wrap is seamless |
-| `atm_wave_amp` | `A.U.waveAmp` (GLSL `atmWaveAmp`) | `presets.waves.amp`, metres |
+| `atm_wave_amp` | `A.U.waveAmp` (GLSL `atmWaveAmp`) | `presets.waves.amp` |
+| `atm_deck_t` | `A.U.deckTime` (GLSL `atmDeckT`) | the module clock wrapped at `presets.clouddeck.period`; every billow runs whole cycles per period |
 
 **The wave field** (`89-atmos-a-waves.js`) is ported. `godot/shaders/atmos_waves.gdshaderinc` is generated:
 `node godot/tools/atmos_waves.js` loads core/atmos, takes `ATMOS.waveGLSL()` (written from `presets.waves`) and swaps
@@ -48,6 +49,39 @@ to 1e-9 by `godot/tests/atmos/atmos_test.gd`; `godot/tests/atmos/waves_gpu_check
 reads it back against the twin. No Godot water surface uses it yet: the spike's water is a flat biome sheet
 (`kdata.gd`) and the glTF regions' water `ShaderMaterial`s arrive as stand-ins. A water shader includes it and adds
 `atm_wave_height(world xz, 0.0)` to `VERTEX.y` (the swell only, on a coarse mesh).
+
+**The cloud deck** (`89-atmos-d-clouddeck.js`) is ported the way the waves are, so a streamed open world draws the same
+cloud in Godot. Its relief is **gradient noise** (Perlin's, quintic fade, with its analytic derivative) written from
+`presets.clouddeck`: octaves of billow noise (`puff`: 2|n| - 0.5, rounded domes with sharp creases) heaped by `heap`, bent
+by a second noise that drifts its own way so the cloud changes shape, finer octaves for shading. The lattice repeats every
+`lattice` cells and each corner's gradient comes from an **integer hash** (lowbias32): `Math.imul` in JavaScript, `uint`
+in GLSL ES 3 and Godot's shading language, a 16-bit-halves multiply in GDScript (no unsigned type there), so every engine
+computes the same gradients bit for bit. No noise texture, no baked mesh. (The first version was a sum of plane waves:
+every crest straight, so the deck showed parallel lines.) drift and evolve move each octave a whole number of lattice
+periods per clock period, so the clock's wrap is seamless.
+
+`godot/tools/atmos_clouddeck.js` writes `godot/shaders/atmos_clouddeck.gdshaderinc` from `ATMOS.deckGLSL()` (the uniform
+`atmDeckT` becomes the global `atm_deck_t`; `atm_deck_height(xz, y)`, `atm_deck_slope(xz, camDist)`,
+`atm_deck_normal(slope)`). **Rerun it after changing `presets.clouddeck`**, then `atmos_golden.js` (the golden keeps a
+copy of the include). The `Atmos` autoload sets `atm_deck_t` (its clock wrapped at `presets.clouddeck.period`) and carries
+the CPU twin, `Atmos.deck_height(x, z, t, y)` and `deck_slope(x, z, t, camDist)` (is a point in the cloud? a flyer
+skimming the tops?), checked against `ATMOS.deckHeight`/`deckSlope` by `atmos_test.gd`. The slope carries the warp's
+Jacobian (the warp bends 230 m: leaving it out tilts the normals badly). Checked on 2026-10-06: `test-atmos.js` (the slope
+against the height's own finite difference, the deck repeating every lattice span, the seamless wrap); the chunk evaluated
+on a GPU (WebGL2) against the JS twin (128 samples: heights within 0.8 mm, slopes within 2e-4, float32 rounding); and a
+line-for-line Python copy of the GDScript twin's integer and float arithmetic against the golden vectors (every height and
+slope exact). Tune the look in the presets only; the shaders carry no unnamed literal that changes it.
+
+The export record is `{type:'clouddeck', y, bounds, sun, preset:'clouddeck'}`. `godot/krator/atmos_import.gd` makes it a
+`krator/clouddeck.gd` node: the same grid as the page (`presets.clouddeck.mesh`: `cells` a side over +-`radius`, denser
+near the middle), moved to the camera in steps of `snap` so the billows never swim, drawn with
+`godot/shaders/clouddeck.gdshader` (blend_mix, depth_draw_never, unshaded: the page's own lambert from the record's `sun`).
+Where the ground rises through the deck it thins by the ground's clearance under the deck's top: the page samples its
+host's `ground(x, z)` round the camera into a one-byte texture (`presets.clouddeck.clear`), and Godot samples the scene's
+heightfield (`KData.height_at`) the same way at each snap. Gaps: it is unshaded, so it misses Godot's sky light and
+shadows; ACES tonemaps it greyer than the page (re-tune `top`/`shade` in the presets if it matters); a depth-fade
+(`hint_depth_texture`) would soften the edge with no heightfield, at the cost of the page and the engine differing.
+Not yet run in Godot: no Godot on the machine that wrote it.
 
 **The sky's light** (`89-atmos-b-skylight.js`) has no port: a `WorldEnvironment` with a `Sky` resource lights every
 `StandardMaterial3D` from that sky, ambient and reflections both (`ambient_light_source = SKY`,

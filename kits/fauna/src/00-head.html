@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krator Fauna</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#d8dccb;font-family:Georgia,serif}
+  #app{position:fixed;inset:0}
+  #bar{position:fixed;left:14px;top:14px;z-index:30;background:rgba(24,21,15,0.88);color:#f3ecd8;
+       border-radius:8px;padding:9px 12px;font-size:12px;max-width:min(560px,calc(100vw - 28px));line-height:1.5}
+  #bar b{color:#e0c98a;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px}
+  #bar select,#bar button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;
+       padding:4px 8px;font:inherit;font-size:11.5px;margin:3px 3px 0 0;cursor:pointer}
+  #bar select option{background:#2a2518}
+  #bar button.on{background:#c9a227;color:#2a2416}
+  #bar .n{opacity:.6;font-size:11px}
+  #hover{position:fixed;z-index:40;pointer-events:none;display:none;background:rgba(24,21,15,0.92);color:#f3ecd8;
+       border-radius:6px;padding:6px 9px;font:12px/1.45 Georgia,serif;max-width:340px;box-shadow:0 3px 12px rgba(0,0,0,.3)}
+  #hover b{font-size:13px}
+  #hover .cls{color:#9fe8ff;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  #hover .tag{display:inline-block;background:rgba(184,232,160,.16);color:#b8e8a0;border-radius:3px;padding:0 5px;margin:2px 3px 0 0;font-size:11px}
+  #poly{position:fixed;right:14px;bottom:112px;z-index:35;display:none;background:rgba(24,21,15,0.9);color:#f3ecd8;
+       border-radius:8px;padding:8px 10px;font:12px/1.45 Georgia,serif;width:min(420px,calc(100vw - 28px))}
+  #poly textarea{width:100%;box-sizing:border-box;height:64px;margin:5px 0;background:rgba(255,255,255,0.08);color:#f3ecd8;
+       border:none;border-radius:4px;font:11px ui-monospace,monospace}
+  #poly button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;padding:3px 8px;
+       font:inherit;font-size:11.5px;margin:0 3px 3px 0;cursor:pointer}
+  #poly .n{opacity:.7;font-size:11px}
+  #errs{position:fixed;right:10px;top:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.88);color:#fff;
+       padding:6px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre-wrap;display:none;z-index:50}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="bar">
+  <b>Krator fauna</b> <span class="n" id="count"></span><br>
+  <select id="rowSel"><option value="">go to animal…</option></select>
+  <button id="idleBtn" class="on" title="I: standing about">Idle (I)</button>
+  <button id="grazeBtn" title="G: grazing or nosing the ground">Graze (G)</button>
+  <button id="walkBtn" title="K: walking in place">Walk (K)</button>
+  <button id="flyBtn" title="Y: flying in place (wings beat)">Fly (Y)</button>
+  <button id="swimBtn" title="U: swimming in place">Swim (U)</button>
+  <button id="nightBtn" title="N: night sky">Night (N)</button>
+  <button id="hoverBtn" title="T: hover inspector (name, tags, traits, yields, life)">Hover tags (T)</button>
+  <button id="polyBtn" title="P: polygon tool (click the ground for world x,z coordinates)">Polygon (P)</button>
+</div>
+<div id="poly"><b>Polygon tool</b> <span class="n">click the ground to add a vertex · right-click removes the last ·
+world x,z in metres</span><textarea id="polyout" readonly></textarea><div class="n" id="polynear"></div>
+<button id="polycopy">Copy</button><button id="polyclose">Close loop</button><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polyfmt">Format: [x,z]</button></div>
+<div id="hover"></div>
+<pre id="errs"></pre>
+<script>
+/* error panel: verify.py fails the run when this has any text */
+(function(){
+  const el=document.getElementById('errs');
+  window.reportErr=function(m){el.style.display='block';el.textContent+=String(m).slice(0,600)+'\n';};
+  window.onerror=function(m,s,l,c,e){reportErr((e&&e.stack)||(m+' @'+l+':'+c));};
+  window.addEventListener('unhandledrejection',function(e){reportErr('promise: '+(e.reason&&e.reason.stack||e.reason));});
+  const ce=console.error.bind(console);
+  console.error=function(){ce.apply(null,arguments);reportErr([].map.call(arguments,function(a){return a&&a.stack?a.stack:String(a);}).join(' '));};
+})();
+document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');
+</script>
+<script>if(!window.THREE)document.write('<script src="../three.min.js"><\/script>');</script>

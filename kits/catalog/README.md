@@ -6,7 +6,7 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 1635 furniture pieces
+furniture entry and every variant, and `verify.py --assert` passes: all 1641 furniture pieces
 (2456 instances over five pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, carry their tags, and sit on exactly one page. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
@@ -314,7 +314,7 @@ its file says how to add them.
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
 (`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke
 pieces of the first pass, 112 hangings of the second, and the 122 harvested ones (the interiors pass; with the
-kit harvests, the trade roles, the tent rug and the jobs file it is 1503; with the Mungo pass's reed tavern pieces, the builders' yard's carpentry pieces and its bricks, lime and reed bundles, 1514; with the six re-harvested Yuni interiors pieces, 1520; with the Scyvoi set, 76 kit and trade pieces and 33 bespoke ones, 1635). The poor tier is the two generic sets:
+kit harvests, the trade roles, the tent rug and the jobs file it is 1503; with the Mungo pass's reed tavern pieces, the builders' yard's carpentry pieces and its bricks, lime and reed bundles, 1514; with the six re-harvested Yuni interiors pieces, 1520; with the Scyvoi set, 76 kit and trade pieces and 33 bespoke ones, 1635; with the Scyvoi tanning pieces, 1641). The poor tier is the two generic sets:
 a culture's poor buildings pull from them through `kits/interiors`' culture chain
 (`IX.CULTURE_FAMILY`), and the placer tries a culture's in-band pieces before its other tiers.
 The sheet, the hover inspector (T) and the interiors adapter all carry the tier.
@@ -380,6 +380,7 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | reedlake | bar, jar_rack, long_bench, long_table (common); sleeping_mat (poor): the Mungo pass, for Reed's Local and the Reed Lake interiors set |
 | eastabyss | abyss_reed_bundles, abyss_brick_stack, abyss_lime_sacks (outdoor): the Mungo pass, for the Builders' yard |
 | scyvoi | the tent furnishings the Scyvoi building kit places by key: floor_cushion, bolster, toshak (wall), pouf, bedding_stack (wall), tray_table, low_round_table, painted_chest, floor_lantern, hanging_lantern and glass_chandelier (ceiling; the chandelier is court), tea_set (surface), samovar, ger_stove (flue 2.6 m or 3.6 m), fire_pit, brazier, smoke_bowl, cauldron (outdoor), saddle_rack, tack_pegs (wall), lance_stand, water_skins, fruit_baskets (fire-fruit, a placeholder until the crater-drylands biome's fruit lands), supply_bales, wall_felt (wall, a painted shyrdak), felt_rug_round, bellows (job smithing), tying_post and tying_boulder (outdoor, type `pen`), spirit_pole (outdoor statue), shaman_drum (type `shrine`), bone_rack (wall art), herb_bundles (ceiling, type `supply`) |
+| scyvoi | the hidemaker's tanning set (2026-10-06, job tanning): hide_frame (a hide laced in a stretching frame; goat or salamander), fleshing_beam, tanning_vat (bark liquor or lime), hide_stack, drying_line, smoking_frame (hides sewn round a smudge, lit). Hides are flat F.pillow ovals |
 
 ### Trades and households (the 2026-10 interiors-sets pass)
 
