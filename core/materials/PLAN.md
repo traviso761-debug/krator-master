@@ -917,19 +917,19 @@ Tintable rows say so; everything else is full colour.
 | `fibre.mat.floor` | Woven floor mat of flat reed strips in a twill weave, strips about 2 cm wide in two shades of straw (#c4a870 and #a88a5e) forming diagonal ribs, darker worn walkways, a few broken reeds and frayed edges. |
 | `earth.floor.packed` | Interior packed-earth floor, seen from above: smooth hard-trodden brown clay (#8a6c48) with faint sweeping marks from brooms, small pebbles pressed flush, hairline drying cracks, and darker greasy patches near a hearth. |
 
-#### Catalog furniture audit (2026-10-06): what the 1526 pieces still need
+#### Catalog furniture audit (2026-10-06): what the 1635 pieces still need
 
 `node tools/textures/audit_catalog.js` builds every catalog piece and variant headlessly and sums the surface each render family
 (`mat()`'s `family`) and each palette key covers. The family is what a texture can hang on: a host gives catalog furniture a library
 set as a triplanar **detail map per family** (Girder's `f_<family>` rows in its `materials.json`, `48-detail.js`), tinted by the
-palette's vertex colours. So every set below must be **tintable** (near-grey) unless it says otherwise. Totals: wood 808 pieces (31% of
-the area), metal 520, cloth 477, stone 355, rope 221, plaster 171, gold 142, glass 124, bone 124, bronze 118, ceramic 105, rust 102.
+palette's vertex colours. So every set below must be **tintable** (near-grey) unless it says otherwise. Totals: wood 863 pieces (31% of
+the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, gold 170, glass 134, bone 129, ceramic 105, rust 102.
 (Stone's area is inflated by the Eastern Abyss builders' yard block stacks; count pieces, not m2.)
 
 **Already covered by the library** (proposed default `f_<family>` picks; Girder's own 17 rows stay as they are): `plank`
 `wood.weathered_brown_planks`, `mahogany` `wood.mahogany`, `bark` `bark.bark_brown_01`, `bamboo` `wood.bamboo001c`, `lacquer`
 `wood.lacquer`, `stone` `stone.cut`, `plaster` `earth.floor.packed`, `concrete` `concrete.board`, `metal` `metal.iron.pitted`, `rust`
-`metal.rusty_metal_04`, `gold` `metal.gold`, `bronze` `metal.metal008` (copper is 89 of its 118 pieces), `glass` `glass.clear`, `cloth`
+`metal.rusty_metal_04`, `gold` `metal.gold`, `bronze` `metal.metal008` (copper is 110 of its 171 pieces), `glass` `glass.clear`, `cloth`
 `cloth.weave.plain` (`cloth.silk` for court tiers), `rope` `fibre.rope`, `thatch` `roof.thatch`, `wicker` `fibre.wicker`, `hide`
 `hide.leather009`, `bone` `bone.ivory`, `nacre` `shell.nacre`, `ceramic` `ceramic.glaze`, `skin` `organic.scale`, `leafy`/`plant`
 `leaf.understorey`. Try `stone.amazonite` for `jade` (Lizardmen, 37 pieces) and `fibre.reedmat` for `reed` until `roof.reed` arrives.
