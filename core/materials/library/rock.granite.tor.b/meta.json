@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.312,
+    1.187
+   ],
+   "seam_before": [
+    1.437,
+    1.328
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.2,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.granite.tor.b",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2.5,
+   2.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock-granite-tor-b.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "A second delivery of row rock.granite.tor (core/materials/PLAN.md, Crater drylands): finer grain, more lichen. Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the kopjes; any granite outcrop, tor or boulder field; dressed granite blocks",
+  "sha1": "edab95993b9e09cb22ea7ca5c8050e69db040c26"
+ }
+}

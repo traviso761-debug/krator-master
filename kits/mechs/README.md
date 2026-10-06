@@ -22,6 +22,7 @@ They stand about three times a man (4.4 to 6.2 m to the top of the hull).
 | `iz_aquilifer` | Aquilifer | mine-ventilation walker | biped, twin fans | chest, barred | harpoon carroballista; carries the legion's sun | 9 |
 | `iz_castra` | Castra | cargo strider | four long legs | cab (the head) | #0 Road Camp: ballista on a roof turntable, over the cab. #1 Supply Train: stores under the awning, a legionary blowing a shofar on the roof; a horn call, then it rears and stamps | 6 |
 | `iz_hoist` | Hoist | walking crane | four splayed legs | caged cab; a rigger on top | slewing crane, four-tined grapple: smash | 1 |
+| `iz_talpa` | Talpa | tunnel borer | four beetle legs | saddle on its back | polybolos: the bore head's seven tubes as a rotary bolt-thrower, a six-bolt volley | 11 (the crescent-finned crawler) |
 | `iz_rota` | Rota | vehicle-recovery frame | biped | open chest cradle; head is a car cab | salvage saw and wheel shield: sweep | 10 |
 
 Every mech has an **idle** (hydraulic breathing, weight shift, torso scan, the cab or head looking round, the pilot's

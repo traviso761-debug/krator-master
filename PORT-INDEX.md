@@ -25,13 +25,14 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/ys`](settlements/ys/PORT.md) | 135 | 1917 | 307 | 52 | 104 | 104 | 1351 | 8 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 50 | 1049 | 114 | 13 | 16 | 153 | 754 | 13 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 210 | 2583 | 246 | 34 | 174 | 27 | 2102 | 11 |  | yes | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 38 | 1440 | 11 | 0 | 10 | 55 | 1364 | 3 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 38 | 1447 | 11 | 0 | 10 | 55 | 1372 | 3 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 121 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 15 | 156 | 0 | 10 | 10 | 20 | 116 | 6 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
-| [`kits/scyvoi`](kits/scyvoi/PORT.md) | 24 | 164 | 13 | 10 | 10 | 31 | 101 | 2 | atmos | yes | yes |
+| [`kits/scyvoi`](kits/scyvoi/PORT.md) | 25 | 180 | 1 | 11 | 10 | 33 | 126 | 2 | atmos | yes | yes |
+| [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 14 | 166 | 24 | 14 | 13 | 37 | 78 | 2 | biome | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 199 | 1 | 0 | 14 | 31 | 153 | 5 | biome | yes | yes |
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 16 | 220 | 28 | 0 | 14 | 69 | 109 | 2 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 138 | 2 | 0 | 12 | 16 | 108 | 6 | biome | yes | yes |
@@ -44,7 +45,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1597 | 21536 | 3216 (15%) | 381 (2%) | 938 (4%) | 2381 (11%) | 14619 (68%) | 229 | | | |
+| **all** | 1612 | 21726 | 3228 (15%) | 396 (2%) | 951 (4%) | 2421 (11%) | 14730 (68%) | 231 | | | |
 
 ## Host-shell copies
 
@@ -55,11 +56,11 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `camera` | 19 | 15 | 216 |
 | `probe` | 17 | 14 | 52 |
 | `sky` | 15 | 5 | 369 |
-| `host-stage` | 12 | 12 | 271 |
-| `host-sky` | 12 | 10 | 177 |
-| `host-build` | 12 | 12 | 15 |
-| `host-camera` | 12 | 12 | 106 |
-| `host-probe` | 12 | 12 | 76 |
+| `host-stage` | 13 | 13 | 281 |
+| `host-sky` | 13 | 11 | 189 |
+| `host-build` | 13 | 13 | 16 |
+| `host-camera` | 13 | 13 | 115 |
+| `host-probe` | 13 | 13 | 85 |
 | `stats` | 11 | 1 | 13 |
 | `host-tower` | 9 | 9 | 42 |
 | `pathviz` | 6 | 5 | 40 |
@@ -68,8 +69,8 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `start` | 5 | 3 | 1 |
 | `hover` | 4 | 4 | 14 |
 | `polygon` | 3 | 3 | 14 |
+| `host-polytool` | 3 | 1 | 19 |
 | `sheetui` | 2 | 1 | 8 |
 | `polytool` | 2 | 2 | 10 |
-| `host-polytool` | 2 | 1 | 12 |
 | `walk` | 1 | 1 | 19 |
 | `underview` | 1 | 1 | 3 |

@@ -25,6 +25,7 @@ scale Krator map for rough placement, not in this repo.
 | northern highlands | `nhighlands` | nwlowlands, hyperjungle (steep), nwbay (steep), korona |
 | *in progress* northwest bay | `nwbay` | nhighlands (steep) |
 | eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
+| crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
@@ -172,6 +173,27 @@ wind. For one world:
   older core (its `KNOWN_ISSUES.md`); the gust fronts (`atmGust`) are not in the leaves yet.
 - **Altitude in the air.** A steep border is also a pressure drop: haze and fog density
   should follow height (thicker below the scarp), which is the weather's business.
+- **Dense air lights the world differently (planned).** The column of air overhead goes as
+  pressure / gravity: at 2 atm and 0.75 g it is about 2.7x Earth's, so it scatters about
+  2.7x as much light. This applies to the low kits: hyperjungle, swbay, nwbay, rift
+  and eastabyss (~1.9 to 2+ atm, `LORE.md` §2; take each kit's pressure from the scale
+  model's pressure raster when the preset is made). Each kit's `82-host-sky.js` already bakes a milky
+  zenith and a thick horizon band, with the same numbers copied in all five. The sky preset they become
+  (`PORT.md`: "becomes a core/atmos sky preset") should take pressure as its one input and
+  also drive what the domes do not do yet:
+  - **The sun is yellow-orange even at noon**, and deeper red-orange near the horizon. The key light's
+    colour should follow sun height and pressure, not only the hour.
+  - **Shadows are soft and blue.** More of the light is skylight, so fill is stronger and
+    bluer, and the key-to-fill ratio is lower than on Earth.
+  - **Distance fades fast.** Ridges a few kilometres off go pale blue-white. Fog density
+    goes up with pressure (and with height across a steep border, above).
+  - **Mirages are about twice as strong.** Denser air bends light about twice as much: a
+    shimmer band and an inferior mirage over hot open ground, and distant ridges that look lifted
+    or stretched. This is the weather's business on hot clear days (the drylands most of all).
+  - **Less UV, more glare at the horizon.** It is a matter of palette: bright white haze at the
+    horizon, not a deep-blue zenith.
+  The highland kits (nhighlands, ~0.8 to 1.3 atm) take the same preset at their own
+  pressure and come out nearly Earth-like, so one preset serves the whole world.
 - **In Godot** the clock and the wind are global shader parameters (`atm_time`, `atm_wind`,
   `atm_gust_amp`, `core/atmos/GODOT.md`), so the ported foliage shader reads them and the
   world has one wind by construction. The three.js change above is for the previews (Iziz).
