@@ -1,0 +1,333 @@
+{
+ "build": "ebadlands",
+ "note": "The eastern badlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern badlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; the open world loads the kit without it and keeps the procedural ones): keep 0 is a grey detail map the kit's per-instance species colour colours, so one card serves every species on that item. leaf.spray and leaf.weep are cut from one cell or column of their sheet in 50-biome-ebadlands-species.js. ground.* are the showcase host's ground layers (45-host-stage.js), blended per vertex by zone: keep 0 multiplies the painted ground colour by the set's relief, keep 1 shows the set's own colour (sulphur, the acid pools). Run python3 tools/textures/pack.py biomes/ebadlands after any change, then python3 build.py. bark.* and wood.silver replace the bark buckets' canvases (keep 0: the species' vertex colours colour them; mean 0.6, which means() divides out); bark.aspen is the hyperjungle's ghostwood, tinted. stone.gem (stone.amazonite) is the ember crown's pods, full colour.",
+ "size": 512,
+ "families": {
+  "leaf.needle": {
+   "lib": "card.pine",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.spray": {
+   "lib": "card.spruce",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.scale": {
+   "lib": "card.juniper",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.round": {
+   "lib": "card.aspen",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.lobed": {
+   "lib": "card.lobed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.small": {
+   "lib": "card.sage",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.flame": {
+   "lib": "card.ember",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.weep": {
+   "lib": "card.weeper",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.mirage": {
+   "lib": "card.mirage",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.8
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.spiral": {
+   "lib": "card.spiral",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "ground.clay": {
+   "lib": "ground.clay.popcorn",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sandstone": {
+   "lib": "rock.sandstone.navajo",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sulphur": {
+   "lib": "ground.sulphur",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.travertine": {
+   "lib": "ground.travertine.acid",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.playa": {
+   "lib": "ground.playa.red",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.steppe": {
+   "lib": "ground.steppe",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.tundra": {
+   "lib": "ground.tundra",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.juniper": {
+   "lib": "bark.juniper",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.ponderosa": {
+   "lib": "bark.ponderosa",
+   "scale": [
+    1.6,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.aspen": {
+   "lib": "bark.ghostwood",
+   "scale": [
+    1.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.spruce": {
+   "lib": "bark.spruce",
+   "scale": [
+    1.0,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "wood.silver": {
+   "lib": "wood.silver",
+   "scale": [
+    1.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.gem": {
+   "lib": "stone.amazonite",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.5,
+   "mapOnly": true
+  }
+ }
+}

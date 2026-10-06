@@ -120,8 +120,9 @@ DETERMINISTIC = {
     '81-sky.js', '86-bio-45-init.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-dalab-light.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '85-city-paint.js', '93-city-ui.js',   # city target: geometry, the painted ground, dev-tool UI
-    '25-core-mask.js',                    # core/mask: the placement raster (no randomness)
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -266,7 +267,7 @@ def build_one(target, do_checks, assert_origin):
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -288,7 +289,7 @@ def vendor_manifest():
     out = {}
     for f in VENDORED + VENDORED_IZIZ + VENDORED_HL + ['86-bio-%s.js' % b for b in BIO_VENDORED]:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out

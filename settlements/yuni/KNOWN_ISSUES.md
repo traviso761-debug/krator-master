@@ -345,6 +345,39 @@ families inlined (Girder's is 12.9 MB).
       `fibre.coil` the new `basket` family (0.35 m). Girder keeps `wood.medieval_wood` for its own timber.
 - The Ancients ruins (`61a`) keep the Ancients kit's own `MAT`/`TEX`.
 
+## The eastern badlands biome (2026-10-06)
+
+The wild valley is planted by the eastern badlands kit (`biomes/ebadlands`), read in place like Locus reads the
+eastern-abyss kit: `build.py`'s `BIO_CANON` puts `core/biome` and the kit's fragments at `69a*` and `69c*`, after the
+placement pass, with the host binding (`69b-yuni-biohost.js`) between them and the planting (`69z-yuni-badlands.js`)
+last. The kit's own BIOME-API.md places "the valley of Yuni" in the region's humid south; the owner's note (a valley,
+so the Zion side of the kit) sets the fields: `cold` .24 on the floor rising with height, `wet` .5 (a slow patchwork
+for drier benches) rising by the river and the canal, `flow` a 90 m band along the river, `rock` on steep ground and the
+butte's talus. So the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose weepers, giant umbels,
+grass and wildflowers), pinyon-juniper on the drier patches, ponderosa and aspen up the walls, a little spruce and fir
+on the crests. The butte is dressed with Zion's hanging gardens (`EBADLANDS.dress`: maidenhair curtains with
+monkeyflower and columbine, grape curtains, moss and lichen, ledge plants).
+
+- **What stays Yuni's own** (`60-flora.js`): what people planted, the cypress avenues, the park trees and the olive
+  groves. Its first-pass stand-ins for the wild flora (pine woods, scrub, riverside cypress and olive, the butte's pine
+  ring) are gone. The kit's mask keeps off the town inside the wall, every street and verge, every building footprint,
+  the planted trees (`TREE_SITES`), the canal corridor, the basin and the butte, and is thin (.12) in the districts'
+  yards and on the farm belt.
+- **Numbers** (quality .9, R 3.9 km; `window._biome`): about 43,500 trees (7,600 built in full near the LOD spine, the
+  rest far impostors), 280 k biome instances, 8 M biome triangles before culling; about 10 s of the page's start-up.
+  The LOD spine is eight points where the views look (the town's edges, the butte, the north approach, the weir, the
+  valley mouth, the basin); a spine across the whole valley built every tree in full (12 M triangles).
+- **The triangle budget is raised 7 M -> 10 M** (`05-palette.js`), as Locus raised its own for its biome. verify.py runs
+  the page in FAST mode (quality .5: about 24,600 trees, 160 k instances); there `--assert` passes at 147 draw calls and
+  7.2 M triangles. The full page draws more (the HUD read 11 to 14 M triangles with the shadow pass, at 60 fps on the
+  owner's GPU). verify.py's `instances` counts Yuni's kit only, not the biome's (`window._biome.totals.inst`).
+- [ ] From high above (the "The valley" view, 1.8 km up) the trees are specks and the floor reads as meadow with the
+      kit's wildflowers; at ground level it reads as woodland. Denser woods cost triangles the budget does not have.
+- [ ] The biome is not in the minimap, and its plants are not registered in `core/tags` (the inspector names them by
+      their meshes' labels, as in Locus).
+- [ ] Trees are kept off footprints and streets by a 2.5 m raster round the trunk; boughs are not tested against roofs
+      (Locus's open item too).
+
 ## Catalog verify-pass sync (2026-10)
 - [x] kits/catalog's verify pass found the plants and furniture it harvested from Yuni built bigger than they
       were declared. Yuni's own entries were measured on yuni-plants.html and yuni-furniture.html over four sheet

@@ -46,16 +46,18 @@ or a library shader.
 ## Files
 
 ```
-core/materials/library/<id>/albedo.jpg  normal.png  roughness.png  meta.json
-core/materials/patterns/<culture>/<sheet>/albedo.jpg  normal.png  roughness.png  meta.json
+core/materials/library/<id>/albedo.jpg  normal.jpg  roughness.png  meta.json
+core/materials/patterns/<culture>/<sheet>/albedo.jpg  normal.jpg  roughness.png  meta.json
 ```
 
 `meta.json` holds the record fields, the source (scan library and asset name, or "generated" with the prompt
 used), the licence, and the processing run that produced the files.
 
 **Size.** Committed sets are 1024 px: the colour map as JPEG quality 92 (the engine recompresses it anyway),
-the normal and roughness maps as lossless PNG (JPEG blocks in a normal map show as faceting). That is about
-3.3 MB a set, so the full library (about 45 sets plus patterns) lands near 180 MB. Sources (the generated or
+the normal map as JPEG quality 95 with **no chroma subsampling** (`subsampling=0`), the roughness map as lossless
+PNG. A normal map keeps X and Y in red and green, so the default 4:2:0 halves their resolution (about 5 degrees
+mean error, 20 at the 99th percentile); 4:4:4 at q95 holds about 1.6 (4.5). Any encoder that writes a normal map,
+including the demo page, must pass `subsampling=0`. That is about 1.6 MB a set. Sources (the generated or
 downloaded originals) stay outside the repo; `meta.json` records each source's sha1 so a set can be traced
 and reprocessed. **Git LFS: decided no (2026-10-02), see "Git LFS" below.**
 
@@ -251,7 +253,7 @@ and roughness are copied unchanged, and the real world size (metres per tile, fr
 Iziz and Voth colour every instance with a tint over a near-grey texture. A set that is tinted again would be
 double-coloured, so a tintable surface gets a **`<id>.neutral` copy**: albedo only, near-grey (process.py's mute at
 0.9, mean luminance 0.65 because a tint multiplies), its `meta.json` pointing `maps.normalMap` and `roughnessMap`
-at the sibling set (`../<id>/normal.png`), so the PNGs are stored once. Make one with
+at the sibling set (`../<id>/normal.jpg`), so those maps are stored once. Make one with
 `python3 tools/textures/adopt.py --neutral <id> <id>.neutral`. Done: `roof.thatch.neutral`, `roof.shingle.neutral`.
 For Poly Haven picks, set `neutral: true` in the batch for every id Iziz or Voth use (stone, plaster, brick,
 earth, paving, ground, wood, metal.corrugated, roof.tile).
@@ -765,6 +767,57 @@ A single sheet of nine different leaves of one species, seen from above on a sol
 | `ground.salt` | Pale salt crust #f1ede6 over flat #e2ddd2, an irregular crack network of dark brown-grey lines; mud #3d3526 and algae #4c5c36 beside it. |
 | `ground.snow`, `ground.ash` *(colour only in the code)* | Snow #e6ecf2 as patches on north faces and in hollows (species tint #eef2f6); ash #5a5452 (lava #36302e, flows #241c1a, summit cap #c8c0b4). |
 
+#### Eastern badlands (`biomes/ebadlands`, 2026-10-05)
+
+Gaps only. Already in the library and reused here, no prompt needed: `ground.snow011`/`snow015` (the crest's ice and
+snow), `rock.rock_face` and `rock.rock_wall_11`/`12` (the range's granite crags), `rock.rock035`/`037` (basalt at the
+vents), `ground.moss001..003` and `card.moss` (boreal floor, tundra), `card.fern`, `ground.sparse_grass` and
+`ground.withered_grass` (steppe and tundra grass), `ground.gravel019`/`042` (canyon floor), `bark.ghostwood` tinted
+greenish white for the aspen (try it before asking for `bark.aspen`), `bark.baobab` tinted pale for the sunspire,
+`bark.bark_brown_01` tinted grey for the cottonwood. Surfaces use the base template plus the tintable sentence; leaf
+cards use the magenta card wording (`card.crop` above). Reuse is listed per row so no set is made twice.
+
+| id | Material line | Reuse |
+|---|---|---|
+| `ground.clay.popcorn` | Weathered bentonite badland clay seen from above: a crust of small puffy "popcorn" clay nodules over dry cracked mudstone, fine rills running one way where rain has washed it, a few pebbles. Neutral pale grey-buff (#c8beb0) with soft lighter and darker patches, so it can be tinted to pink, cream, gold, grey and maroon beds. | sedesert badland patches, Korona, any badland or eroded clay slope |
+| `rock.sandstone.navajo` | Cross-bedded aeolian sandstone cliff face: sweeping inclined cross-beds in sets a metre or two thick, fine parallel laminae, rust-red (#b0583a) grading through salmon (#c87a58) to a bleached cream (#e2d2b4) toward the top, dark desert-varnish streaks (#4a2e24) hanging down from ledges, a few small honeycomb weathering pits. | Zion-type canyon walls here, sedesert mesas, Shade's cliffs |
+| `ground.sulphur` | Volcanic sulphur flat seen from above: lumpy bright sulphur-yellow crust (#e8d040) with paler cream salt (#f0ece0) blisters, rust-orange iron oxide (#c07030) bleeding through in patches, a few small round vent holes ringed in yellow, fine polygonal cracks. Full colour (do not mute). | Korona, Throne/Volcano, any geothermal ground |
+| `ground.travertine.acid` | Rim of an acid hot pool seen from above: thin terraced mineral crust in scalloped ledges, acid lime-green (#9ad030) wet film on white-cream (#e8e4d4) mineral, yellow (#d8b030) and orange-brown (#a86028) stained edges, glossy where damp. Full colour. | the sulphur pools' margins; any hot spring |
+| `ground.playa.red` | Cracked desert playa seen from above: dry pinkish-red clay (#c49a7e) split into polygon plates 20-40 cm across with curled edges, pale dust (#d8b8a0) in the cracks, a few small stones. | the hot waste here, sedesert's pond rim, crater drylands, any dry lake bed |
+| `ground.steppe` | Cold desert steppe soil seen from above: pale grey-tan silty soil (#a8a088) with a dark lumpy biological crust (#5a5444) in patches, scattered small angular gravel, a few dry grass stems and fallen grey sage leaves. | sagebrush steppe here, crater drylands, highland basins |
+| `ground.needles` | Conifer forest floor seen from above: a thick mat of fallen brown pine and spruce needles (#7a5a3e, #8a6a48), a few cones, small twigs and bark flakes, patches of darker damp duff (#3e3226) and a little moss. | spruce-fir and ponderosa floors here, `biomes/nhighlands`, Highlands |
+| `ground.tundra` | Alpine tundra seen from above: low mat of olive and russet cushion plants and moss (#6a6844, #8a5a3a), grey-green and orange crustose lichen on small flat stones, patches of grey gravel (#8a8478), a few tiny white and pink flowers. | the treeline and tundra here, `biomes/nhighlands`, the outer rim |
+| `bark.ponderosa` | Ponderosa pine bark, trunk surface: large flat jigsaw-puzzle plates of cinnamon-orange (#b86a3c, #a85a34) with paler flaking scales, separated by deep black-brown fissures (#2a1e18) two to four centimetres wide, plates longer than wide, vertical. | ponderosa here; any old pine (`biomes/nhighlands`, `swlowlands`) |
+| `bark.spruce` | Spruce bark: thin round grey-brown scales (#5a4e46, #6a5e54) a few centimetres across, loosely overlapping, some flaking to show reddish inner bark (#8a5040), a little grey-green lichen. | Engelmann spruce and fir here; `biomes/nhighlands` spruces |
+| `bark.juniper` | Shaggy juniper bark: long loose fibrous strips peeling vertically, twisted, grey-brown (#7a6a5a) with reddish inner bark (#8a5a44) showing between, frayed ends. | Utah juniper here; cedar and cypress in any biome |
+| `wood.silver` | Ancient wind-polished deadwood: bare trunk wood weathered silver-grey (#b8b0a4) with deep twisting spiral grain, rust and amber resin streaks (#a8643a), fine sand-blasted ridges, a few checks. | the bristlecone here, `wood.driftwood` (Mav's design-only row), dead snags and fallen logs anywhere |
+| `card.pine` | Pine leaf card: nine short twigs of a pine, each a tuft of stiff dark green needles (#4a5e34, #55703a) in bundles radiating from the twig tip, a small brown cone on two of them, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | pinyon, ponderosa, bristlecone here; any pine |
+| `card.spruce` | Spruce leaf card: nine flat spruce branch sprays, each a main stem with side shoots densely covered in short blue-green needles (#3a5444, #46644e), drooping slightly at the tips, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | spruce and fir here; `biomes/nhighlands` spruces and cedars |
+| `card.juniper` | Juniper leaf card: nine sprays of juniper scale foliage, blue-grey-green (#6a7e62) braided twigs with a few powder-blue berries (#8a9ab8), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | Utah juniper here; cypress, cedar, any scale-leaved conifer |
+| `card.aspen` | Aspen leaf card: nine short twigs of round, finely toothed aspen leaves on flat stalks, five twigs bright green (#7a9a40) and four turned gold (#e0b030), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | aspen and cottonwood here; poplar, birch in any temperate biome |
+| `card.lobed` | Lobed leaf card: nine leafy twigs, five of deeply lobed oak leaves in dark green (#5e7a34) and four of five-pointed maple leaves in red and orange (#c84a28, #e08a34), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | gambel oak and bigtooth maple here; any temperate broadleaf |
+| `card.sage` | Sagebrush leaf card: nine sprigs of big sagebrush, many small silvery grey-green three-toothed leaves (#9aa890, #a8b4a0) on woody grey twigs, a few with tiny yellow flower spikes, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | sagebrush and rabbitbrush here; saltbush and creosote in sedesert |
+| `card.ember` *(alien)* | Alien leaf card: nine round pompoms of long curling flame-shaped spikes radiating from a centre, glowing orange (#f06a1a) at the base to yellow (#ffb030) at the tips, seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. | the ember crown; any fiery alien crown |
+| `card.weeper` *(alien)* | Alien leaf card: nine long hanging feathery strands like pink willow fronds, a central stem with soft fine side filaments, rose-pink (#d87888) to pale pink (#e8a0b0), each hung from the top edge of its cell, on a solid flat bright green (#00ff00) background (not magenta: the leaves are pink) so they can be cut out. Square, 2048x2048; no other objects. | the rose weeper; any pink weeping alien tree |
+| `card.mirage` *(alien)* | Alien grass card: nine tall translucent feathery plumes on thin stems, pale pinkish-white (#f0d8e0) with a pearly sheen, the plumes see-through at their edges, standing upright from the bottom of each cell, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. | mirage grass; pampas-like plumes anywhere |
+| `card.spiral` *(alien)* | Alien groundcover card: nine flat rosettes seen from directly above, frilled serrated leaves spiralling out from the centre, each leaf a different hue round the colour wheel (teal, green, gold, orange, magenta, violet) with an iridescent sheen, on a solid flat bright green (#00ff00) background (not magenta: the leaves are pink) so they can be cut out. Square, 2048x2048; no other objects. Full colour. | the spiral mat |
+| `organic.gem.teal` *(alien)* *(answered by `stone.amazonite`)* | Skin of a glossy alien succulent pod: smooth taut waxy surface in deep teal (#2e7a78) with lighter aqua (#4a9a90) streaks running lengthwise, faint shallow ribs, tiny pale freckles. | the ember crown's pods, the stilt pod's head; any alien succulent |
+
+*Delivered 2026-10-05 and processed (19 images pasted into the chat as 1254 and 1125 px WebP):* the eight surfaces
+(`tools/textures/batches/chatgpt-2026-10g-ebadlands.json`: `ground.clay.popcorn`, `rock.sandstone.navajo`, `ground.sulphur`,
+`ground.travertine.acid`, `ground.playa.red`, `ground.steppe`, `ground.needles`, `ground.tundra`) and eleven cards
+(`chatgpt-2026-10g-ebadlands-cards.json`: `card.pine` and a second delivery as `card.pine.b`, `card.spruce`, `card.juniper`,
+`card.aspen`, `card.lobed`, `card.sage`, `card.ember`, `card.weeper`, `card.mirage`, `card.spiral`). `card.ember` came as one
+compound pompom filling the sheet and is used as one card. The fine needles and plumes carried the key colour into their
+opaque anti-aliasing, so `cards.py` grew a `spill` option ('all': take the key's tint out of every pixel, for a sheet with
+no colour of the key's family) and a green-key despill; `card.spruce` is keyed harder (key_lo 90, key_hi 240) and still
+shows a faint lilac at a few tips, which the species tint covers. `biomes/ebadlands` adopts them (`materials.json`, `tex/`).
+*Delivered 2026-10-06 (`ebadlands.zip`, five images) and processed* (`batches/chatgpt-2026-10h-ebadlands-barks.json`):
+`bark.ponderosa`, `bark.spruce`, `bark.juniper`, `wood.silver`, and `stone.amazonite`, a polished teal crystalline stone
+that came for `organic.gem.teal` and is filed as a stone (reuse: gem inlay, polished mineral, crystal outcrops; the ember
+crown's pods). The eastern badlands rows are all delivered. `biomes/ebadlands` uses every one; the aspen takes the
+existing `bark.ghostwood`, tinted.
+
 #### Furniture and city (generic, for every culture)
 
 Gaps the scan libraries do not fill. Start each with the base template; for tintable surfaces add the muting sentence. Rows that need cut-outs
@@ -886,8 +939,10 @@ The owner reviewed the scan candidates in the demo kit ("the picks looked fine")
   parents: choose the one a build uses per id, or alias it.
 - Not committed: `grey_plaster_03` (truncated download), `sandy_gravel_02` and `wood_cabinet_worn_long` (16k files that did not reduce), `Fabric083`
   (alpha-preview checker), `Foliage008` and `SurfaceImperfections017` (not materials).
-- **Size:** `core/materials/library` is now about 350 MB and `patterns` 80 MB, so PLAN's "revisit Git LFS at 250 MB" trigger has passed. Normal maps are
-  2 MB each and do not compress further; storing normals as 2-channel or at 512 px are the options if the repo needs to shrink.
+- **Size:** `core/materials/library` is now about 350 MB and `patterns` 80 MB, so PLAN's "revisit Git LFS at 250 MB" trigger has passed. Normal maps were
+  2 MB PNGs; on 2026-10-05 all 278 became 4:4:4 JPEG q95 (`normal.jpg`, 509 to 243 MB). Storing normals at 512 px is the
+  next option if it needs to shrink further. (`tools/textures/pack.py` still writes its packed normals as lossy WebP, which is
+  always 4:2:0: the same loss, in the packs.)
 
 
 **Delivered 2026-10-03, not yet processed:** 39 ChatGPT images in the texture folder root (Highlands tile-d/s/t/w, harlequin, lattice grid, fret, maze; four wide friezes; Andean chakana textiles and emblem; golden straw fringe; four abalone, three mother-of-pearl, two pink onyx; three reptile scale, two chitin, a mushroom cap; fossil limestone; crimson lacquer, tarred planks, carved wood; golden bamboo lattice).

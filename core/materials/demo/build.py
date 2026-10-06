@@ -23,7 +23,8 @@ An entry whose source folder is missing is skipped with a note. The maps are red
 Needs numpy-free Pillow only. Deterministic. three.js r128 is inlined from a local copy.
 """
 import argparse, base64, io, json, os, sys
-from PIL import Image
+from PIL import Image, ImageFile
+ImageFile.MAXBLOCK = 1 << 24       # optimize=True with subsampling=0 overflows the default buffer when saving to memory
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(HERE)))
@@ -45,7 +46,8 @@ def enc(path, size, kind):
         k = size / max(im.size); im = im.resize((max(1, round(im.size[0] * k)), max(1, round(im.size[1] * k))), Image.LANCZOS)
     b = io.BytesIO()
     q = {'a': 80, 'n': 88, 'r': 78}[kind]
-    im.save(b, 'JPEG', quality=q, optimize=True)
+    # normals keep full chroma: X and Y are in red and green, and 4:2:0 costs them about 7 degrees
+    im.save(b, 'JPEG', quality=q, optimize=True, subsampling=0 if kind == 'n' else -1)
     return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
 
 
@@ -90,7 +92,7 @@ def main():
         meta = json.load(open(meta_p, encoding='utf-8'))
         mp = meta.get('maps', {})
         files = {k: os.path.normpath(os.path.join(d, mp.get(m, f))) for k, m, f in
-                 (('a', 'map', 'albedo.jpg'), ('n', 'normalMap', 'normal.png'), ('r', 'roughnessMap', 'roughness.png'))}
+                 (('a', 'map', 'albedo.jpg'), ('n', 'normalMap', 'normal.jpg'), ('r', 'roughnessMap', 'roughness.png'))}
         rec = meta.get('record', {})
         card = rec.get('kind') == 'card'
         if card and os.path.isfile(files['a']):      # a cut-out: no normal or roughness map; shown on a grey card

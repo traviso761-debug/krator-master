@@ -40,6 +40,10 @@ function factoryExtras(G,d,skin,M){
  const cz=d>0?70:30;kput(d>0?'strutR':'strutW',[148+EX,55.5,cz],null,[6,3,110],null);kput(d>0?'strutR':'strutW',[(d>0?128:160)+EX,53,cz],null,[8,5,8],null);
  factorySilo(G,d,skin,M);
  // twin hypar furnace shells on the south apron
- luceShells(G,-40,96,60,42,24,d,90,skin);
- if(d>0)rubbleRing(-40,6,96,20,27,40,2.5);}
+ // (round 2) They stood 60 x 48 m at z=96, i.e. from z=72, eight metres INSIDE
+ // the hall's south end wall (z=80), filling its great arched opening from every
+ // southern view. Now 44 x 32 m at z=104: 8 m clear of the wall, clear of the
+ // nearest cooling tower (x<-73) and inside the plinth's south edge (123).
+ luceShells(G,-40,104,44,32,16,d,90,skin);
+ if(d>0)rubbleRing(-40,6,104,16,22,40,2.5);}
 

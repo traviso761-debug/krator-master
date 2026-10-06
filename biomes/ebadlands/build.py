@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""Concatenate src/* (filename order) into dist/<target>.html.
+
+  00-head.html      page shell, opens <script>
+  10..49            BIOME CORE  (biome-core: engine-independent kit)
+  50..79            BIOME LEAVES (eastern badlands species, trees, floor)
+  45-host-stage     HOST binding (renderer, terrain, BIO.init) -- must run before 50
+  80..98            HOST (sky, tower, build, camera, probe)
+  99-tail.html      closes <script>
+
+The core and the biome leaf never reference a host global except through
+BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a
+biome fragment cannot quietly grow a dependency on one world's engine.
+"""
+import os, re, subprocess, sys
+
+# Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
+# tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
+import os as _os, subprocess as _sp, sys as _sys
+_cp = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), 'tools', 'check_port.py')
+if _os.path.isfile(_cp) and '--no-checks' not in _sys.argv and \
+        _sp.call([_sys.executable, _cp, '--quiet', _os.path.dirname(_os.path.abspath(__file__))]) != 0:
+    _sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
+
+
+def find_node():
+    """node for the syntax check: $NODE, then PATH, then the usual install places
+    (/opt/node*/bin, /usr/local/bin, ~/.nvm, ~/.volta; the newest first). None when
+    there is none: the build then says plainly that the syntax was NOT checked.
+    Every build.py carries this same function; a fix belongs in all of them."""
+    import glob as _g, shutil as _sh
+    env = os.environ.get('NODE')
+    if env:
+        hit = _sh.which(env) or (env if os.path.isfile(env) else None)
+        if hit:
+            return hit
+        print('NOTE: $NODE=%s is not a node binary; looking elsewhere' % env)
+    hit = _sh.which('node')
+    if hit:
+        return hit
+    ver = lambda p: [int(x) for x in re.findall(r'\d+', p)]
+    for pat in ('/opt/node*/bin/node', '/usr/local/bin/node',
+                os.path.expanduser('~/.nvm/versions/node/*/bin/node'),
+                os.path.expanduser('~/.volta/bin/node')):
+        hits = [h for h in sorted(_g.glob(pat), key=ver, reverse=True) if os.access(h, os.X_OK)]
+        if hits:
+            return hits[0]
+    return None
+
+HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+OUT=sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "ebadlands.html"
+FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
+# shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
+# BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
+CORE_TERRAIN=[]   # no carve patches in this kit's showcase
+CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
+# the biome core from core/biome, the same way (core/README.md): one copy for every kit.
+# A kit that lists nothing keeps its own src/ copies and builds as before.
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
+PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+for f in CORE_TERRAIN:
+    if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+for f in CORE_BIOME:
+    if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+# the syntax check cannot see a core fragment that is simply absent
+miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
+if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
+# the material library (core/materials/record, PLAN.md): the record and its browser half, and the pack of the library
+# textures materials.json names, generated from the committed tex/ (tools/textures/pack.py). Without tex/pack.json the
+# pack is empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).
+CORE_MAT=['23-mat-record.js','25-matlib-host.js']
+CORE_M=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record'))
+for f in CORE_MAT:
+    if f not in PATH: PATH[f]=os.path.join(CORE_M,f)
+TEX_DIR=os.path.join(HERE,'tex')
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
+    tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same)."""
+    import base64, json
+    pj=os.path.join(TEX_DIR,'pack.json')
+    if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack('ebadlands', {});\n"
+    pack=json.load(open(pj,encoding='utf-8'));out=[]
+    for fam in sorted(pack['families']):
+        e=pack['families'][fam]
+        f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
+           'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
+        for k,name in sorted(e['files'].items()):
+            f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(TEX_DIR,name),'rb').read()).decode()
+        out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))
+    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+            "KMAT.pack('ebadlands', {\n" + ',\n'.join(out) + '\n});\n')
+# named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
+for f in VIRTUAL: PATH[f]=None
+frags=sorted(PATH)
+out=[]; bad=[]
+for f in frags:
+    s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
+    n=int(re.match(r'(\d+)',f).group(1))
+    if 10<=n<80 and '-host-' not in f:
+        for w in FORBID:
+            if w in s: bad.append(f'{f}: uses {w}')
+    out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
+if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+os.makedirs(DIST,exist_ok=True)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+# syntax check on the script body
+m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
+js=m.group(1) if m else ''
+chk=os.path.join(HERE,'.syntax.js'); open(chk,'w',encoding='utf8').write(js)
+node=find_node()
+r=subprocess.run([node,'--check',chk],capture_output=True,text=True) if node else None
+print(f'built dist/{OUT}  ({len(frags)} fragments, {len(html)//1024} KB)  '+('syntax NOT CHECKED (no node: set NODE=/path/to/node)' if r is None else 'syntax OK' if r.returncode==0 else 'SYNTAX ERROR\n'+r.stderr[:800]))
+ki=os.path.join(HERE,'KNOWN_ISSUES.md')
+if os.path.exists(ki):
+    op=[l for l in open(ki,encoding='utf8') if l.startswith('- [ ]')]
+    if op: print(f'KNOWN_ISSUES.md: {len(op)} open item(s) -- read it before changing this kit')
+sys.exit(r.returncode if r else 0)

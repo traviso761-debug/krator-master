@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.087,
+    1.168
+   ],
+   "seam_before": [
+    1.511,
+    1.487
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.35,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.playa.red",
+  "metal": 0,
+  "roughness": 0.92,
+  "scale": [
+   2.6,
+   2.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-playa-red.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Cracked desert playa seen from above: dry pinkish-red clay (#c49a7e) split into polygon plates 20-40 cm across with curled edges, pale dust (#d8b8a0) in the cracks, a few small stones. (Row ground.playa.red of core/materials/PLAN.md, Eastern badlands.) Pasted into the chat 2026-10-05 as a 1254 px image; converted to PNG.",
+  "reuse": "the hot waste here, sedesert's pond rim, crater drylands, any dry lake bed",
+  "sha1": "a296f9db046a9b9f9f00df2e6e203946c72f77ce"
+ }
+}

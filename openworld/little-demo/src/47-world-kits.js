@@ -35,6 +35,14 @@ return[
   // the kit scatters its heroes by count round a showcase and has no pass table: its numbers, as data (KNOWN_ISSUES.md)
   passes:[{cell:165,accept:()=>.9,opt:{patch:0,pad:20},far:true,pick:hjSpecies},
           {cell:74,accept:()=>.55,opt:{patch:.5,pad:6},far:false,sapling:true,pick:hjSpecies}],
-  floor:{profiles:{floor:{}},pick:()=>({floor:1})}}];})();
+  floor:{profiles:{floor:{}},pick:()=>({floor:1})}},
+ // the eastern badlands: zoned by cold and wet first (BSh to EF); its 'geo' (sulphur vents) and 'barren' (ice cap, airless
+ // rim) read 0 until the world binds them (biomes/ebadlands/KNOWN_ISSUES.md), so it has no vent profile yet
+ {name:'ebadlands',global:'EBADLANDS',overlay:'e badlands',
+  lod:{hero:[14,90,260],mid:[50,320,1000],far:[200,900,3000]},
+  floor:{profiles:{waste:{wet:.08},steppe:{wet:.3,cold:.35},bad:{rock:.85,slope:.3,wet:.15,cold:.15},vale:{wet:.62,cold:.12},
+    pine:{wet:.38,cold:.45},boreal:{wet:.42,cold:.75},tundra:{wet:.3,cold:.93},rip:{canyon:1,wet:.85,flow:.45,slope:.05,cold:.2},rim:{rim:1,rock:.3,wet:.25,cold:.3}},
+   pick:(x,z)=>{const Z=EBADLANDS.zones(x,z);
+    return{waste:Z.waste*.7,steppe:Z.steppe,bad:Z.bad*.45,vale:Z.vale*1.3,pine:Z.pine*.9,boreal:Z.boreal*.9,tundra:Z.tundra*.75,rip:Z.rip*1.3,rim:(Z.rimZ+Z.bench)*.6};}}}];})();
 // a kit's export object by its global's name (a top-level const is not on window: an indirect eval reaches it)
 WORLD_KITS.api=k=>k._api||(k._api=(0,eval)(k.global));

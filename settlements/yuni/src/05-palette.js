@@ -146,7 +146,7 @@ var FAMMAT = {
   'fl-tile' : { tex:null, scale:[1.0,1.0], proc:'tile' }   /* fired-clay floor tiles */
 };
 
-var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
+var BUDGET = { drawCalls: 190, triangles: 10000000, instances: 460000 };   /* triangles 7 M -> 10 M with the eastern badlands biome (2026-10-06), as Locus took its biome */
 
 var GILDC=PAL.gild, BLUEGREYC=PAL.blueGrey, STONEC=PAL.stoneWarm, THORNC=PAL.thorn;
 var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.bluewashL, BLUEDC=PAL.bluewashD,

@@ -58,6 +58,23 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
    on the `KRATOR_EXPORT` shape (M5).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
 
+**Normal maps after the JPEG switch** *(found 2026-10-06; off the critical path, nothing is broken today)*. The library's
+normal maps became `normal.jpg` (JPEG q95, 4:4:4) in `9b46d9e`. Godot does not read the library yet: `godot/krator/kmat.gd`
+loads each build's `tex/` pack, which is WebP. What is left:
+- **40 sets still on `normal.png`**: the ones added on main after the switch (the eastern badlands' and Ys's sets among them;
+  `git grep -l '"normalMap": "normal.png"' -- 'core/materials/**/meta.json'`). Convert them the same way (Pillow,
+  `quality=95, subsampling=0`) and point their `meta.json` at `normal.jpg`, so the library has one format.
+- **`kmat.gd`'s `_tex()` reads only WebP and PNG** (`load_png_from_buffer` for anything not `.webp`). Add a
+  `load_jpg_from_buffer` branch before Godot reads library sets directly, as `GODOT-PLAN.md` plans.
+- **Packed normals are lossy WebP, which is always 4:2:0** (`tools/textures/pack.py`, `webp(..., 92, 'RGB')`): X and Y
+  live in red and green, so the pack halves their resolution, a bigger loss than the JPEG switch avoided. Write packed
+  normals as lossless WebP or PNG.
+- **Re-packing moves the baseline.** A build that re-runs `pack.py` on a converted set gets very slightly different
+  normals (decoded from the JPEG), so its `PORT-BASELINE.json` hash changes with nothing to see. Re-pack Girder, Iziz,
+  Ys, Yuni, Mechs and Motor Vehicles in one change with one baseline rewrite, after the packed-normal format above.
+- `core/materials/record/23-mat-record.js:59` still names `normal.png` in its convention string; change it in that
+  same change, since it alters Girder's built page.
+
 ## Features
 
 - **DONE (first batch): `core/minimap/88-core-minimap.js` (`KMAP`), in Voth.** **Minimap** *(Menagerie: `src/moria/walk.js:130-149`)* **[G data]**. A 2D canvas panel, drawn from data
@@ -374,6 +391,12 @@ with no extra mesh.
   No Krator build does this (`src/core/shell.js:31-43`). One place for it is `gallery/krator-bar.js` `tune()`.
 - **[web]** Isolate errors per subsystem in the frame loop. In Voth, `updateLife`, `skyAdvance` and the HUD
   sit outside the try (`settlements/voth/src/80-camera.js:303-319`), so one throw means it never draws again.
+- **[web]** Isolate errors per pass in the build, too (`src/core/diag.js`, `section(name, fn)`: the error goes on
+  screen under the pass's name and the next pass runs). In Krator a throw at the top level of one fragment stops
+  every fragment after it, so a broken flora pass leaves a blank world; Locus's `window.onerror`
+  (`settlements/locus/src/00-head.html:96`) reports it but does not carry on. The fragments share one scope, so
+  wrap each pass's call (terrain, buildings, flora, life, dressing), not each file. Belongs in `core/host/`
+  (`GODOT-PLAN.md`, `92-host-panel.js`) beside the loop's isolation above.
 - **[web]** Input guards: clear held keys and pointers on blur and on hidden tabs; end a pointer when
   `buttons===0`; ignore keys while typing (`src/core/input.js`).
 - **[web]** Leave a cut plane installed and park it at `constant=1e7`, instead of swapping `clippingPlanes`
@@ -433,6 +456,14 @@ These are the best Godot candidates: generators whose output is data.
 - **[G data]** Chunks generated from the seed alone, with doors forced at chunk edges
   (`src/backrooms/level.js`). This is the same tile-by-tile loading `biomes/WORLD.md` plans.
 - **[G data]** Timed set pieces as pure functions of t, publishing signals on a bus (`src/fleshpit/incident.js`).
+- **[G data] + [G shader]** Tides: one sea level that everything at the shore reads (`src/beachcity/details.js`,
+  `ctx.sea`). Beach City's holds the tide (high water, half a metre lower twice a day by the clock, or held low or
+  high by a button, easing rather than jumping), a swell of a few centimetres and the events' drain and surge; the
+  water sheet, the surf lines, the boats and the swimmers all follow it, and ground below the waterline is
+  coloured wet sand and sea bed. For Krator: `seaLevel(t)` as a pure function in `core/atmos` beside the wave
+  field, driven by `core/clock`, with the build's shore lines, moorings and wet-ground mask reading it rather
+  than a constant. Port, Ys and the Ring Sea are the first takers. In Godot it is one global shader parameter
+  plus the same function in GDScript for anything that floats.
 
 ## Lava *(Menagerie: the fire on Kharak, `src/homeworld/kharak.js:15-61`)*
 

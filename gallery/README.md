@@ -99,3 +99,14 @@ without its towns, and its own artifact carries them. Every other page is as in 
 Version 50 (2026-10-05): `worlds/iziz-mechs.html` added (Iziz war-walkers: the Mechs kit, ten animated Iziz mechs and the
 Supply Train Castra, 1.6 MB), with the index regenerated, from `main` at 8d8bf38d. Every other page is as in version 49.
 One publish call.
+
+Version 51 (2026-10-06): `worlds/ebadlands.html` added (the eastern badlands biome kit, 3.6 MB: sulphur flats, painted
+badlands, a Zion canyon with a hanging-garden ruin, pine and spruce-fir to the ice; the library textures; trees as variants),
+`worlds/krator-catalog.html` (1526 pieces: the badlands fruit) and `worlds/little-demo.html` (the badlands kit's flora on
+the 'e badlands' overlay), with the index regenerated, from `main` after 8cf1c981. Every other page is as in version 50.
+One publish call.
+
+Version 52 (2026-10-06): `worlds/yuni.html`, `worlds/yuni-kit.html` and `worlds/yuni-plants.html` replaced with Yuni's
+wild valley planted by the eastern badlands kit, its Zion side (oak, maple, cottonwood galleries, pine on the walls, hanging
+gardens on the butte), 7.4 MB each, from `main` at 8ef7ea7d, with the index's Yuni entry updated (blurb, sizes). The live
+index (version 51, published by another session after 1d088377) was merged: every other entry is as it was. One publish call.

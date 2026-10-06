@@ -11,7 +11,7 @@ the world's streaming, sky, camera and probe.
   dist/towns/   each town's tile (bake.py), fetched by the page when the camera comes near
   src/          this world's fragments
   ../../core/   rand, terrain (relief), biome, atmos (the wave field)
-  ../../biomes/ the kits, read in place: sedesert, eastabyss, hyperjungle
+  ../../biomes/ the kits, read in place: sedesert, eastabyss, hyperjungle, ebadlands
 
   python3 build.py            # dist/little-demo.html
   python3 build.py --no-checks
@@ -40,6 +40,8 @@ KITS = {
                   '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js'],
     'hyperjungle': ['50-biome-hyperjungle-species.js', '55-biome-hyperjungle-trees.js', '60-biome-hyperjungle-floor.js',
                     '70-biome-hyperjungle.js'],
+    'ebadlands': ['50-biome-ebadlands-species.js', '55-biome-ebadlands-trees.js', '60-biome-ebadlands-floor.js',
+                  '65-biome-ebadlands-dress.js', '70-biome-ebadlands.js'],
 }
 ORDER = (
     [('src', '00-head.html'), ('gen', '05-world-data.js'),

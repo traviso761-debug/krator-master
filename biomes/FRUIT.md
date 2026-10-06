@@ -36,6 +36,25 @@ fruit. Across all kits that means:
 | Tideheart | `waterpalm` (the fruit head at the water line) | A round head of woody, dark-red carpels, each holding a plug of translucent jelly. The jelly is cut out and set in cubes. | `generic_fruit_tideheart` |
 | Salt-cone kernels | `cycad` (the cone in the crown) | Red kernels from the cycad cone. Poisonous raw: they are steeped a week in the salt lake, then baked. They taste of salt and nut. | `generic_fruit_salt_cone` |
 
+## Eastern Badlands
+
+**Drawn in the kit (2026-10-06).** Every fruit below is drawn on its plant, and every species and small plant carries a
+harvest tag naming its catalog key (`EBADLANDS.HARVEST`, `EBADLANDS.PLANTS`; the inspector shows it, the probe checks
+it). Edible parts with no catalog piece are named in the tags: spruce and fir tips, maple sap, aspen and ponderosa inner
+bark, cottonwood catkins, needle-bloom nectar, sunspire seeds (not catalogued yet).
+
+| Fruit | Borne by | What it is | Catalog key |
+|---|---|---|---|
+| Pinyon nuts | `pinyon` (the brown cones at the branch tips) | Cones roasted open on the fire; the small oily nuts are cracked and eaten roasted. | `generic_fruit_pinyon` |
+| Juniper berries | `juniper` (the dusty blue berries in the sprays) | A resinous spice for meat and brew, dried in a jar. | `generic_fruit_juniper` |
+| Roasted yucca stalk | `yucca` (the flower spike; past flowering, green seed pods up the stalk) | The young stalk pit-roasted like a sweet squash and cut into rounds; the blossoms eaten in baskets. | `generic_fruit_yucca` |
+| Canyon grapes | canyon grape (vines hanging off cottonwood and maple limbs, grape tangles on the canyon floor, the arcade's hanging gardens) | Small dark grapes in clusters among the leaves; dried as raisins. | `generic_fruit_canyon_grape` |
+| Stilt pod | `stiltpod` (the scaled pod head on its stilt roots) | Ripens custard-soft: halved, cream flesh with dark seeds, spooned out. | `generic_fruit_stiltpod` |
+| Umbel seed | `umbel` (a third of the heads gone to tan seed) | A sharp caraway-like spice; the sap burns skin in the sun. | `generic_fruit_umbel_seed` |
+| Acorns | `oak` (gambel oak: acorns at the twig tips) | Shared with nhighlands: leached and ground for meal. | `generic_fruit_mast` |
+| Desert tunas | prickly pear (red tunas along the pads) | Shared with sedesert. | `generic_fruit_tuna` |
+| Moonfruit | moonflower cactus (magenta fruit on the column tops) | Shared with xanadu's pitaya: white flesh, black seeds. | `generic_fruit_pitaya` |
+
 ## Hyperjungle
 
 **In a world: Girder (2026-10-03).** Its Gate baobabs' hanging pods are the gatepods (`SPECIES[3].harvest` in
