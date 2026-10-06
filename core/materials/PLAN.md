@@ -1025,7 +1025,7 @@ band and awayo; Xanadu twig band and sun emblem; the three nacre sheets).
 
 Minor, one biome each: `bark.madrone`, `bark.paperbark`, `bark.cork`, `bark.strangler`, `bark.cherry`, `bark.kapok`, `card.samphire`, `card.ginkgo`,
 `card.heath`, `ground.shingle` (xanadu), `skin.marine`, `wood.petrified`. Still owed from earlier rows: `bark.desert` (sedesert, crater yucca and
-joshua), `wing.butterfly` and `skin.sky-ray` (the hyperjungle `FAUNATEX` hook). Fauna in every biome is vertex colour; `feather.plumage`,
+joshua), `skin.sky-ray` (the hyperjungle `FAUNATEX` hook; `wing.butterfly` was delivered 2026-10-06 and is in Iziz's pack). Fauna in every biome is vertex colour; `feather.plumage`,
 `hide.fur.brown`, `organic.scale.*` and `membrane.bat` cover them once a biome adopts the library.
 
 #### Scan-library metals (AmbientCG, added 2026-10-02)
@@ -1172,7 +1172,7 @@ Batches `chatgpt-2026-10d-beast-riders-rest.json` (13 surfaces) and `chatgpt-202
 | `card.crop` | `card.crop` | nine maize-like strap leaves (a card): maize, cane, reeds, canna, any crop or marsh plant (pasted into the chat, batch `chatgpt-2026-10e-crop.json`) |
 | `fruit.husk` | `fruit.husk` | velvet pod husk: baobab pods, felted hide, moss-bark and fuzzy fruit; a short-fur twin of `hide.strider` (pasted into the chat, batch `chatgpt-2026-10e-husk.json`) |
 
-Still not delivered: `wing.butterfly`, `skin.sky-ray`. Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
+Still not delivered: `skin.sky-ray` (`wing.butterfly` delivered 2026-10-06: batch `chatgpt-2026-10m-butterfly.json`, a tight-cropped card like `wing.dragonfly`; Iziz `fauna_wing`). Girder now uses `bark.ironbark` and `bark.baobab` in place of its borrowed willow and blue gum
 (`bark0`, `bark3` in materials.json; 2026-10-05); `wood.lamppost` is ready for the `timber` family or a lamp-post family of its own.
 
 **Known issues of this delivery:** `card.vine` is anchored at the top and its cut is clean but the stem colour is purple-brown; `wing.dragonfly` is stretched

@@ -7,7 +7,7 @@ saying what fixed it.
 
 - [ ] (2026-10-05) Fauna sheets: `settlements/iziz/materials.json` (families fauna_wing, fauna_fur, fauna_hide, fauna_ray; all optional) and `fauna_pack()` in build.py
       write `HYPERJUNGLE.FAUNATEX` as a generated fragment `86-bio-57-fauna-pack.js` (city target only; nothing is written until a sheet exists). Today the sloth
-      (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` and `skin.sky-ray` are not generated yet, and the darts are not textured by design
+      (`fur.sloth`) and strider (`hide.strider`) sheets are in; `wing.butterfly` is in too (2026-10-06); `skin.sky-ray` is not generated yet, and the darts are not textured by design
       (their wing and body share UVs). Not looked at in a real browser.
 - [ ] (2026-10-05) Tree tints (biome 55-trees, hand-copied into targets/city/86-bio-55-...): roots now take the trunk's tint at their height above the ground (carried into the limb tint, since roots stay in the limb bucket: the floor reads the bark bucket as the bole's profile, and roots there shrank the floor dress by 30k triangles); limbs,
       boughs and twigs take the limb tint of the trunk's colour band where they leave it. The limbs still use the shared pale limb texture, not the species bark

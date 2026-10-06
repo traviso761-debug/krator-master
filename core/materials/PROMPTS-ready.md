@@ -222,15 +222,12 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Underside skin of a broad-winged sky ray: smooth pale grey (#62666a) with faint darker vein-like marbling, a slightly leathery texture, fine ridges along the leading edge. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
 ```
 
-**`wing.butterfly`**
-```
-Cut-out on a solid flat bright magenta (#ff00ff) background (no magenta anywhere in the subject), square, 2048x2048, viewed straight from above, flat even shadowless lighting, no cast shadow, no stem or branch beyond the cluster, the subject filling the middle 70% of the frame, every piece fully visible and well separated. Subject: One butterfly wing of a hyperjungle butterfly, a single wing, the body root at the middle of the left edge and the wing opening to the right,: a dark rim, veins in a lighter tone, two or three eye-spots, a soft dusting of scales, drawn in neutral grey (no hue) so it can be tinted per instance.
-```
-
 ## Delivered and removed (2026-10-06)
 
 Delivered under the same id (44): `stone.cut`, `plaster`, `brick`, `metal.corrugated`, `roof.tile`, `metal.iron`, `metal.bronze`, `metal.gold`, `patterns/iziz/gilt`, `patterns/iziz/banner`, `wood.mahogany`, `wood.lamppost`, `metal.iron.pitted`, `bone.skull`, `bone.horn`, `bone.antler`, `hide.pelt.cat`, `fibre.net`, `cloth.silk`, `wax.tallow`, `organic.gourd`, `earth.floor.packed`, `bark.mahogany`, `bark.ironbark`, `bark.baobab`, `card.mahogany`, `card.vine`, `card.screwpine`, `card.bromeliad`, `card.moss`, `card.crop`, `card.flower.bloom`, `fruit.skin.orange`, `fruit.skin.amber`, `fruit.husk`, `fruit.capsule`, `membrane.pterosaur`, `membrane.bat`, `fur.bat`, `wing.dragonfly`, `chitin.spider`, `chitin.millipede`, `fur.sloth`, `hide.strider`.
 
 Delivered under another id: `hide.rawhide` as `patterns/common/rawhide`, `fibre.basket.coiled` as `patterns/common/basket-coil`, `fibre.mat.floor` as `library/fibre.reedmat`, `lantern.horn` as `patterns/common/lantern-horn`, `lantern.paper` as `patterns/common/lantern-paper`, `bone-inlay` as `patterns/beast-riders/bone-inlay`, `claw-tapestry` as `patterns/beast-riders/claw-tapestry`, `emblem` as `patterns/beast-riders/emblem`, `totem` as `patterns/beast-riders/totem`, `pennant` as `patterns/beast-riders/pennant`, `plaque` as `patterns/beast-riders/plaque`, `rider.saddle` as `patterns/beast-riders/saddle`, `feather.archae` as `library/card.feather.archae`, `feather.quetzal-crest` as `library/card.feather.crest`, `skin.scale.archae` as `library/organic.scale.terracotta`, `chitin.dragonfly` as `library/organic.chitin.iridescent`.
+
+Delivered later the same day: `wing.butterfly` (library/wing.butterfly, in Iziz's pack).
 
 Delivered on a branch not yet merged: `wood.lash` (library/wood.lash on branch claude/hexahedron-materials (not merged yet)).

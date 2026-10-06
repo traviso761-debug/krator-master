@@ -56,6 +56,32 @@
     "mean": 0.9,
     "sourceMean": 0.5652
    }
+  },
+  "fauna_wing": {
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "fauna_wing.albedo.webp"
+   },
+   "lib": "wing.butterfly",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "64c5f71db8c33cf8c9759e48bac27c471b71be44"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.85,
+    "sourceMean": 0.4458
+   }
   }
  },
  "size": 512,
