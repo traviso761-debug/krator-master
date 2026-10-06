@@ -204,10 +204,9 @@ const NR=(function(){
  N.pierAt=function(x,z){for(const Pr of N.PIERS){const Q=Pr.poly;let inside=false;
    for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}
    if(inside)return Pr;}return null;};
- /* the hulls' sterns: a transom cap ENDCAP metres long beyond each end; the beacons on their inboard corners mark the
-    harbour mouth */
- N.ENDCAP=6;
- N.BEACONS=[[N.T1,1],[N.T0,-1]].map(([t,dir])=>{const p=N.at(t+dir*3,-(W.PONT-5));return {x:p[0],z:p[1],t,dir};});
+ /* the hulls' sterns are half-rounds the pontoon's width beyond each end (40-nr-hull.js nrStern); the beacons on their
+    inboard quarters mark the harbour mouth */
+ N.BEACONS=[[N.T1,1],[N.T0,-1]].map(([t,dir])=>{const p=N.at(t+dir*4,-(W.PONT-3));return {x:p[0],z:p[1],t,dir};});
  /* the atrium: its void, the galleries round it, the grand stair (four flights: D1->D2 centre, D2->D3 twin, D3->D4 centre,
     D4->TOP twin) and the descent to the hold mezzanine. tau = t - (the atrium's centre). */
  N.ATRIUM={tc:TA,half:22,voidT:18,voidS:14,galleryS:[14,20],bridgeT:[6,9],flightT:6,centreS:4,twinS:[9,13],holdStair:{tau0:-17,tau1:-9,s:3}};

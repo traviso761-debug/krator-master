@@ -40,7 +40,7 @@ Things come in mirrored pairs by hull (a starboard t, a port -t). `NR.frame(t)` 
 | `NR.cabins` | every cabin `{id, deck, side, i, t0, t1, tm, sIn, sOut, depth, wMin, cls, doorEnd, inhabited, kind, wealth}`; `NR.CABIN_CLASSES` the template widths |
 | `NR.LOTS` | the deck buildings' lots `{id, key, t, face, use, x, z, ry, y}`; use `hq`, `barracks`, `mess` |
 | `NR.FORE`, `NR.foreY(t)` | the forecastle: round the bow (\|t\| < 64) the outboard promenade climbs as a deck from D1 to the D3 floor at the stem under a bulwark (the sheer) |
-| `NR.PIERS` | the Ancients' piers `{id, kind, name, t, side, o, d, q, len, w, poly, head}`: the liner `mole` down the basin's axis from the bow's inner quay, four `finger` piers off the hulls' inner quays; decks at D1. `NR.pierAt(x, z)` the pier under a hull point; `NR.BEACONS` the beacons on the sterns' inboard corners; `NR.FUNNELS` the four funnels' t; `NR.ENDCAP` the transom's length |
+| `NR.PIERS` | the Ancients' piers `{id, kind, name, t, side, o, d, q, len, w, poly, head}`: the liner `mole` down the basin's axis from the bow's inner quay, four `finger` piers off the hulls' inner quays; decks at D1. `NR.pierAt(x, z)` the pier under a hull point; `NR.BEACONS` the beacons on the sterns' inboard corners; `NR.FUNNELS` the four funnels' t |
 | `NR.PARKS`, `NR.TOWERS`, `NR.STEPS`, `NR.FLOATS`, `NR.ATRIUM` | the parks' t ranges; the pirates' stair towers, beach steps and floats; the atrium's layout |
 
 Nothing in 12 or 14 touches THREE or the DOM (PORT.md tags them `[G data]`).
@@ -50,8 +50,9 @@ Nothing in 12 or 14 touches THREE or the DOM (PORT.md tags them `[G data]`).
 `nrBand(mk, t0, t1, s0, s1, y0, y1, col, faces)` a band of the ring (faces `o i t b s e`), `nrLoft(mk, t0, t1, profile, col,
 face)` a wall through a section, `nrRadial(...)` a box across the ring, `nrBox`, `nrCyl`, `nrWallT(mk, t0, t1, s, th, y0, y1,
 col, openings)` a wall along the ring with doors, `nrSlab(mk, tA, tB, sA, sB, y, th, col, holes, faces, under)` a slab with
-rectangular holes (t, s). `nrForecastle()` the bow (bulwark, sheer deck, cutwater, anchors), `nrEndCap(t, dir)` a hull's stern
-(the transom, the screws and rudders), `nrBeacon(x, y, z)`. The piers draw in `41-nr-piers.js` (`nrPierMole`, `nrPierFinger`; a pier's
+rectangular holes (t, s). `nrForecastle()` the bow (bulwark, sheer deck, cutwater, anchors), `nrStern(t, dir)` a hull's
+rounded stern (the half-round pontoon, the glazed shell, the terraces, the screws and rudders; lathes about the hull's end),
+`nrBalconyFront(side, y)` and `nrLoftS(...)` the scalloped balconies and rounded rails (`nrScallop(t)` the bulge), `nrBeacon(x, y, z)`. The piers draw in `41-nr-piers.js` (`nrPierMole`, `nrPierFinger`; a pier's
 own frame `nrPierPt(pier, l, k, y)`: l metres out along it, k across). `nrPart(name, fn)` registers a hull pass, `nrAfter(name, fn)` a pass that places child defs after
 the lots. The geometry engine is `30-geo.js` (vendored from kits/scyvoi: buckets per material key, world-unit UVs).
 

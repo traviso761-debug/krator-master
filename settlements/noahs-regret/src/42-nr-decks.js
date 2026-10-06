@@ -74,11 +74,11 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
   /* the stripped decks: debris where the pirates threw what they took out (heaps of panels and pipe) */
   if(stripped)for(let i=0;i<40;i++){const t=rr(NR.T0+8,NR.T1-8),s=(rng()<.5?-1:1)*rr(8.8,10.7);if(NR.blocked(d,t-1,t+1,Math.min(s,s*.9),Math.max(s,s*.9)))continue;
    const p=NR.at(t,s);box('rust',p[0],y,p[1],rr(.4,1.2),rr(.1,.5),rr(.3,.9),WHITE,rr(0,TAU));}}
- /* the kiosks over the stair cores on the top deck: a white pavilion, a band of glass, a curved roof, doors both ways */
- for(const C of NR.CORES){const y=L.TOP,h=3.3,t0=C.t-4.2,t1=C.t+4.2;
-  for(const side of [1,-1]){const s=side*6.6,k=nrK(C.t,s);nrWallT('white',t0,t1,s,.25,y,y+h,P('white'),[{t0:C.t-3.4/k,t1:C.t-1.4/k,y1:2.4}]);
-   nrBand('glass',t0+.4,t1-.4,s-.14,s+.14,y+2.5,y+3.0,hc(0x5a7a88),side>0?'o':'i');}
-  for(const t of [t0,t1])nrRadial('white',t,-6.6,6.6,y,y+h,.25,P('white'));
-  nrBand('white',t0-.6,t1+.6,-7.2,7.2,y+h,y+h+.35,P('white'));
-  psurf('white',(u,v)=>{const t=lerp(t0-.4,t1+.4,u),s=lerp(-7,7,v);return nrP(t,s,y+h+.35+1.1*Math.sin(PI*v));},6,8,P('white'),{up:true});}}
+ /* the kiosks over the stair cores on the top deck: white drums under shallow domes, a band of glass under the cornice,
+    a doorway each way across the deck */
+ for(const C of NR.CORES){const y=L.TOP,R=7.2,c=NR.at(C.t,0),n=NR.nrm(C.t),an=Math.atan2(n[1],n[0]),g=.27;
+  for(const a0 of [an+g,an+PI+g]){const o={a0,a1:a0+PI-2*g};
+   lathe('white',c[0],c[1],[[R,y],[R,y+2.5]],20,P('white'),o);lathe('glass',c[0],c[1],[[R-.04,y+2.5],[R-.04,y+3.0]],20,hc(0x5a7a88),o);
+   lathe('white',c[0],c[1],[[R,y],[R,y+2.5]],20,P('white'),Object.assign({inward:true},o));}
+  lathe('white',c[0],c[1],[[R+.25,y+3.0],[R+.35,y+3.2],[R+.25,y+3.4],[R-.3,y+3.55],[R*.6,y+4.3],[R*.25,y+4.65],[.01,y+4.72]],40,P('white'));}}
 nrPart('decks',nrDecks);

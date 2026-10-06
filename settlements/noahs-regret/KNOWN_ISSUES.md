@@ -23,8 +23,10 @@
       off the starboard quay) they stand in sand. The mole is a pontoon like the hulls.
 - [ ] The forecastle is a closed void between the bulwark and the main block's D1-D2 walls (stripped decks): those cabins'
       windows look onto its inside.
-- [ ] The sterns are plain transoms with the main block's end walls straight above them; the screws and rudders are simple
-      (a hub, four flat blades, a slab rudder).
+- [ ] The rounded sterns' insides (D1-D4 behind the end walls, the half-round galleries) are empty and closed off by the
+      end walls; the terraces have no door onto them. The screws and rudders are simple (a hub, four flat blades, a slab).
+- [ ] The scalloped balcony fronts are cosmetic: the balcony dividers stand on the frames (where the scallop is nil) and the
+      walk floors still end at the slab's edge (20 m), not at the scallop.
 
 ## Interiors
 
