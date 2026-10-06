@@ -1049,7 +1049,10 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
 2. Ring Sea is wired (2026-10-06, late: `wood.siding`, `cloth.canvas`, `roof.thatch.reed`, `roof.tile`, `plate.hex`, `organic.chitin.scale`,
    the Ancient white and verdigris; its scale is in UV tiles, see kits/ringsea/materials.json). Post-Apoc is wired for planks, earth, concrete, timber and cloth (`wood.reclaimed`, `earth.floor.packed`,
    `concrete.slab`, `wood.timber`, `cloth.weave.burlap`); its rusty metals stay procedural until a rust-streaked tintable corrugate comes
-   (`metal.corrugated.rusty`, prompted): `metal.container` and `metal.tin.patchwork` are too clean for it. Interiors, verge, mungo: no materials.json yet.
+   (`metal.corrugated.rusty`, prompted): `metal.container` and `metal.tin.patchwork` are too clean for it. Verge and Mungo take the packs of the builds they assemble (no materials.json of their own):
+   Verge the Iziz vernacular's seven families, Locus's pack and the sedesert biome's (Iziz's Ancients rows and the eastabyss biome's
+   pack are left out for size: 12.7 MB as it is); Mungo Locus's, the eastabyss biome's and Reed Lake's vernacular rows (15.1 MB).
+   Interiors has nothing to wire: its shells are flat-colour debug views, and the worlds that host its rooms draw their own walls.
 3. The vernacular's own families: Highlands (logs -> `wood.log.carved`, scale -> `roof.scale.slate`, rubbleW, bamboo, bmat, rock,
    meadow, the h* pattern sheets), Reed Lake (rl* -> the reed sets and Reed Lake patterns), Xanadu (x* -> the Xanadu patterns,
    `plaster.white_stucco_02`, `paving.tiles144`), Dalab (dRelief, dChecker, dDecoPanel, dBanner -> the Dalab patterns), the port embassy

@@ -66,3 +66,6 @@ What is still open, as of 2026-10-05. Each item says what it is, where it lives 
 
 `src/81-verge-sky.js` and `src/82-verge-daynight.js` are verbatim copies of `settlements/locus/src/21-sky.js` and
 `82-daynight.js`. Fix them upstream, then copy them again.
+- [ ] **Takes the material library from the builds it assembles** (build.py, no materials.json): the Iziz vernacular's seven
+      families (IZV binds them), Locus's pack (YKIT's 47-texture.js) and the sedesert biome's. Iziz's Ancients rows and the eastabyss
+      biome's pack stay out for size (12.7 MB; all of them would pass 19 MB), so those surfaces are procedural here. ?mat=proc shows the old look.

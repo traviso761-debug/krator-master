@@ -27,3 +27,6 @@ Open items are `- [ ]` lines; `build.py` prints them.
 - [x] Reed's Local (rl_tavern) built in the Reed Lake kit and placed on its island, the pontoon starting at its landing.
 - [x] The six landward shops include a building-materials shop: the Builders' yard, new in the Eastern Abyssal kit.
 - [x] Every building type has an interiors item or a recorded skip: the new Reed Lake and Yuni sets (kits/interiors/sets/reedlake.js, yuni.js); the reed buildings are furnished by `65r`'s finisher with `?interiors=1`.
+- [ ] **Takes the material library from the builds it assembles** (build.py, no materials.json): Locus's pack (47-texture.js),
+      the eastabyss biome's and Reed Lake's vernacular rows (REEDKIT runs Reed Lake's 88y bind; without KMAT and its pack the reed
+      kit would throw). Reed Lake's Ancients rows stay out (REED_ANCIENT, ~2.7 MB). The page is 15.1 MB. ?mat=proc shows the old look.

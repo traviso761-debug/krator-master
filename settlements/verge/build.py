@@ -86,6 +86,9 @@ KITS = [('54', 'sedesert', ['50-biome-sedesert-species.js', '55-biome-sedesert-t
 # a biome fragment must not reach into a host or a building engine
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'VG.', 'TRAIL', 'IZV', 'YKIT', 'VERGE']
 
+MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record
+IZV_LIB = ['wood', 'woodV', 'stone', 'plaster', 'thatch', 'shingle', 'cloth']        # the vernacular's families Verge packs
+
 # the catalog's cultures Verge furnishes from (kits/catalog/furniture_bundle.py; names are file suffixes)
 FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs']
 INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the middle-class houses; yuni-town: civic, trade, poor, rich
@@ -118,7 +121,9 @@ def izv_bundle():
     return safe('/* IZV: the Iziz Vernacular kit and its Ancients core, one closure (settlements/verge/build.py). GENERATED: '
                 'edit settlements/iziz/src, core/materials or kits/ancients/src. */\n'
                 'var IZV = (function(){\n' + body +
-                '\nreturn { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
+                '\n/* the material library: the vernacular\'s own families from Iziz\'s pack (46-matlib-pack-iziz.js) */\n'
+                'if(typeof KMAT !== "undefined" && KMAT.bindMat) KMAT.bindMat("iziz", MAT, {tile: KMAT.ANCIENT_TILES});\n'
+                'return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
                 '  TSTAT: (typeof TSTAT !== "undefined" ? TSTAT : null),\n'
                 '  FUNICULAR: (typeof FUNICULAR !== "undefined" ? FUNICULAR : null),\n'
                 '  setTerrain: function(f){ terrainH = f; } };\n})();\n'), [os.path.relpath(f, ROOT) for f in fs]
@@ -197,6 +202,19 @@ def main():
         print('BIOME FRAGMENT DEPENDS ON A HOST:\n  ' + '\n  '.join(bad)); return 1
     cat, sets = catalog_bundle()
     frags['62-catalog-bundle.js'] = (cat, 'GENERATED: kits/catalog (%s) + kits/interiors (sets %s)' % (', '.join(FURN_CULTURES), ', '.join(sets)))
+    # the material library (core/materials/PLAN.md): the record code (KMAT), then the packs: the Iziz vernacular's own
+    # families (IZV binds them), Locus's (its 47-texture.js binds them inside YKIT) and the sedesert biome's (BIO.libSwap).
+    # Left out for size (the page would pass 19 MB): Iziz's Ancients rows and the eastabyss biome's pack (procedural here).
+    for f in MATLIB_RECORD:
+        frags[f] = (rd(os.path.join(ROOT, 'core', 'materials', 'record', f)), 'core/materials/record/' + f)
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    izp = os.path.join(ROOT, 'settlements', 'iziz')
+    izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+    frags['46-matlib-pack-iziz.js'] = (matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k not in IZV_LIB]),
+                                       'GENERATED: settlements/iziz/tex (' + ', '.join(IZV_LIB) + ')')
+    frags['46-matlib-pack-locus.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus'), 'GENERATED: settlements/locus/tex')
+    frags['53z-bio-matlib-pack.js'] = (matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'sedesert'), 'sedesert'), 'GENERATED: biomes/sedesert/tex')
     izv, izf = izv_bundle()
     frags['64-izv-bundle.js'] = (izv, 'GENERATED: ' + ', '.join(izf))
     yk, ykf = ykit_bundle()
