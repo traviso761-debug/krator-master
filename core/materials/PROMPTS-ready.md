@@ -330,3 +330,58 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 ```
 Cut-out on a solid flat bright magenta (#ff00ff) background (no magenta anywhere in the subject), square, 2048x2048, viewed straight from above, flat even shadowless lighting, no cast shadow, no stem or branch beyond the cluster, the subject filling the middle 70% of the frame, every piece fully visible and well separated. Subject: One butterfly wing of a hyperjungle butterfly, a single wing, the body root at the middle of the left edge and the wing opening to the right,: a dark rim, veins in a lighter tone, two or three eye-spots, a soft dusting of scales, drawn in neutral grey (no hue) so it can be tinted per instance.
 ```
+
+
+## 7. Eastern highlands (`biomes/ehighlands`, 2026-10-06)
+
+The cushion plateau's sets (`core/materials/PLAN.md`, "Eastern highlands"). The `rock.basalt.vesicular`, `surface.cushion`, `surface.fleece` and `bark.ragbark` sets also serve any other volcanic, alpine or Polylepis-like build (their Reuse cells in PLAN.md).
+
+**`ground.puna`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: High cold plateau ground seen from above: bare brown volcanic soil with fine grey pumice grit and small dark angular stones, the bases of golden bunchgrass tussocks spaced a hand apart with bare soil between them, a few dry blades lying flat, small frost-heaved crumbs of soil. Full colour: soil brown (#8a7656, #6e5c44), grass gold (#b8a062, #a88e50), stones dark grey; natural and not tinted.
+```
+
+**`ground.turf.polygon`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Short alpine sedge turf seen from above, a dense felt of tiny blades a few centimetres high, cracked into irregular polygons about a metre across along narrow dark fissures of bare soil, the polygon rims a little browner and drier than their centres. Full colour: olive-brown turf (#6e6a3e, #5e6436), browner rims (#7a6a44), dark soil in the cracks (#2e2418); natural and not tinted.
+```
+
+**`surface.cushion`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The surface of a cushion plant seen close up: thousands of tiny tight rosettes of small stiff leaves, each rosette a few millimetres to a centimetre across, packed edge to edge into one hard continuous skin with no gaps, darker in the narrow crevices between them, a few rosettes yellowed or brown, a faint resinous sheen. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`surface.fleece`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: The surface of a woolly alpine plant seen close up: dense felted fleece of fine dead leaves and hairs curled into small soft tufts, slightly matted, a little darker in the hollows between the tufts, like the fleece of a sheep. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`bark.ragbark`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bark of a gnarled high-mountain tree peeling in many thin papery layers: sheets curling off horizontally and overlapping like the pages of an old book, paler where fresh layers show underneath, dark narrow gaps between the sheets, a twisted vertical grain running through it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
+```
+
+**`rock.basalt.vesicular`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dark volcanic basalt seen close up: fine-grained stone full of small round gas holes a few millimetres across, a rusty brown weathering crust in patches, and scattered patches of crustose lichen in bright orange, sulphur yellow and pale green. Full colour: charcoal-grey stone (#4e4a48, #5e5a56), rust (#7a4a3a), lichen (#e8a020, #d8c040, #a8c060); natural and not tinted.
+```
+
+**`ground.sinter`**
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Geyser sinter seen from above: a pale grey-white silica crust in low scalloped terraces and rims, a thin film of hot water in the shallow pools between them, and bands of microbial mat along the run-off channels, bright orange nearest the hot water grading to green further away. Full colour: sinter white (#e6e2d6), orange mat (#d8782a), green mat (#5a8a3a); natural and not tinted.
+```
+
+**`card.ichu`**
+```
+Grass card: nine tufts of tall stiff high-altitude bunchgrass, each a fountain of fine wiry blades fanning up and out from a tight base, a few thin seed plumes, standing up from the bottom of each cell, in a 3 by 3 grid, pale cream-white only so they can be tinted, on a solid flat bright magenta (#ff00ff) background so they can be cut out, no magenta, pink or purple in the subject, no grey or white background. Square, 2048x2048; no other objects.
+```
+
+**`card.ragleaf`**
+```
+Leaf card: nine short leafy twig ends of a high-mountain tree, small dark green compound leaves (#3a5838, #4a663e) with five to seven rounded leaflets each, crowded into rosettes at the twig tips, a few with a short piece of rust-red papery-barked twig (#a64a28), seen from above, in a 3 by 3 grid, full colour, not tinted, on a solid flat bright magenta (#ff00ff) background so they can be cut out, no magenta, pink or purple in the subject, no grey or white background. Square, 2048x2048; no other objects.
+```
+
+**`card.rheumleaf`**
+```
+Leaf card: nine single broad leaves of a mountain rhubarb seen from above, each a rounded heart-shaped blade with a thick pale midrib and pale branching veins, glossy mid green (#4a7a3a, #568a42), slightly wavy edges, the stalk end at the bottom of each cell, in a 3 by 3 grid, full colour, not tinted, on a solid flat bright magenta (#ff00ff) background so they can be cut out, no magenta, pink or purple in the subject, no grey or white background. Square, 2048x2048; no other objects.
+```

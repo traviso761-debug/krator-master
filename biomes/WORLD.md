@@ -28,7 +28,8 @@ scale Krator map for rough placement, not in this repo.
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
-| *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
+| eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
+| *possible* | `sbadlands`, micro-biomes | |
 | *candidate* the scablands (in "n semiarid") | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
 

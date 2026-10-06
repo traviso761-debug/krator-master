@@ -855,6 +855,33 @@ the kit uses it as a grey detail map (keep 0), which drops it. `ground.burn` and
 (`chatgpt-2026-10j-craterdry-ground.json`). The crater drylands rows are all delivered; `biomes/crater-drylands` uses every
 one (`materials.json`, `tex/`).
 
+#### Eastern highlands (`biomes/ehighlands`, 2026-10-06)
+
+Not asked for yet: the kit runs on procedural textures (`KNOWN_ISSUES.md`). Try these library sets first, no prompt
+needed: `card.grass.dry` tinted gold (the ichu), `card.cupflower` (gentians and the thorn cushion's flowers, tinted).
+The rock here is basalt, not granite, so `rock.granite.tor` does not serve. **The complete paste-ready prompts are
+`PROMPTS-ready.md` section 7**; the rows below are their material lines. Tintable: `surface.cushion`, `surface.fleece`,
+`bark.ragbark`, `card.ichu`; the rest are full colour.
+
+| id | Material line | Reuse |
+|---|---|---|
+| `ground.puna` | High cold plateau ground seen from above: bare brown volcanic soil (#8a7656) with fine grey pumice grit and small dark angular stones, the bases of golden bunchgrass tussocks (#b8a062) spaced a hand apart with bare soil between, a few dry blades lying flat, frost-heaved crumbs. | the puna; any cold steppe or high desert plain; the dry side of the range |
+| `ground.turf.polygon` | Short alpine sedge turf seen from above, a dense olive-brown felt (#6e6a3e) a few centimetres high, cracked into irregular polygons about a metre across along dark bare-soil fissures (#2e2418), the polygon rims a little browner and drier than their centres. | the turf here; tundra, frost-patterned ground anywhere |
+| `surface.cushion` | The surface of a cushion plant seen close up: thousands of tiny tight rosettes of small stiff leaves packed edge to edge into one hard continuous skin, bright lime green (#86b236) with darker green crevices, a few rosettes yellowed or brown, a faint resinous sheen. | the poured cushions and the Mother Cushion; moss cushions, bog cushions (tinted darker), topiary |
+| `surface.fleece` *(alien)* | A woolly plant's surface seen close up: dense felted grey-white fleece (#d8d8d0) of fine dead leaves and hairs curled into small tufts, slightly matted, darker grey in the hollows between tufts. | the woolbacks and snow wool; sheepskin, felt, any woolly plant or animal coat |
+| `bark.ragbark` | Bark of a gnarled high-mountain tree peeling in many thin papery layers: rust-red and orange-brown sheets (#a64a28, #c66c3a) curling off horizontally, paler cinnamon where fresh layers show, dark gaps between the sheets, a twisted grain. | the ragbark; paperbark and birch-like barks (tinted), Polylepis anywhere |
+| `rock.basalt.vesicular` | Dark volcanic basalt seen close up: charcoal-grey stone (#4e4a48) full of small round gas holes, a rusty brown weathering crust in places, patches of bright orange, yellow and pale green crustose lichen (#e8a020, #d8c040, #a8c060). | the tors, the scree, the boulders; any lava field, volcanic outcrop or dressed basalt |
+| `ground.sinter` | Geyser sinter seen from above: pale grey-white silica crust (#e6e2d6) in low scalloped terraces, a thin film of hot water, and bands of microbial mat in bright orange (#d8782a) and green (#5a8a3a) along the run-off channels. Full colour. | the geyser field; hot springs and terraces anywhere |
+| `card.ichu` | Grass card: nine tufts of tall stiff high-altitude bunchgrass, a fountain of fine wiry blades with a few seed plumes, standing up from the bottom of each cell, pale cream-white so they can be tinted, on magenta. | the ichu; any steppe, puna or alpine tussock grass |
+| `card.ragleaf` | Leaf card: nine leafy twig ends, small dark green compound leaves in rosettes at the tips, a few with rust-red papery twig, seen from above, full colour, on magenta. | the ragbark's crown; rowan, Polylepis and other small-leaved mountain trees |
+| `card.rheumleaf` | Leaf card: nine broad heart-shaped mountain rhubarb leaves with pale veins, seen from above, full colour, on magenta. | the glass towers' basal leaves; rhubarb, dock and burdock in gardens and wet ground |
+
+*Delivered 2026-10-06 and processed (nine images pasted into the chat as WebP):* six surfaces
+(`tools/textures/batches/chatgpt-2026-10k-ehighlands.json`: `surface.cushion`, `surface.fleece`, `bark.ragbark`,
+`ground.turf.polygon`, `rock.basalt.vesicular`, `ground.sinter`) and three cards (`chatgpt-2026-10k-ehighlands-cards.json`:
+`card.rheumleaf` and `card.ragleaf` keyed from magenta, `card.ichu`, which came with a real transparent background and is not
+keyed). `biomes/ehighlands` uses all nine (`materials.json`, `tex/`). Still owed: `ground.puna`.
+
 #### Furniture and city (generic, for every culture)
 
 Gaps the scan libraries do not fill. Start each with the base template; for tintable surfaces add the muting sentence. Rows that need cut-outs
