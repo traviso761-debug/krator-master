@@ -60,6 +60,11 @@ export function peoples(api){
   // ================================================================ Goron City
   goron(L,x,z){
     const G=S.goron,gy=gh(G.x,G.z),parts=[],R=rng(G.x+5),F=frame(G.x,G.z,0.6);
+    // the city's rock: warm orange-brown, cut into terraces stepping up the mountain behind, boulders heaped round
+    M.rock2=mat(0xa86a42);M.rock3=mat(0x8a5234);const rockT=mat(0xb87a4a);
+    for(let k=0;k<3;k++){const pts=[];for(let i=0;i<14;i++){const a=i/14*Math.PI-Math.PI*0.05,r=95+k*22+Math.sin(i*1.7)*6;pts.push(F(Math.cos(a)*r*1.1,-Math.sin(a)*r*0.75-20));}
+      for(let i=0;i+1<pts.length;i++)wall(parts,pts[i],pts[i+1],9+k*9,9,k%2?rockT:M.rock2,0,gy-2);}
+    for(let k=0;k<26;k++){const a=R()*Math.PI*2,r=110+R()*40,[bx,bz]=F(Math.cos(a)*r,Math.sin(a)*r*0.8);parts.push(sph(bx,gh(bx,bz)+2,bz,5+R()*7,R()<0.5?rockT:M.rock3,1.2,0.8,1.1,1));}
     // the lava channel: a run of glowing lava down through the city between stone banks
     const ch=[];for(let k=0;k<=10;k++){const t=k/10;ch.push(F(-110+t*220,Math.sin(t*4)*14));}
     for(let k=0;k<10;k++){const a=ch[k],b=ch[k+1],y=Math.min(gh(...a),gh(...b));wall(parts,a,b,0.6,5,M.lava,0,y+0.15);

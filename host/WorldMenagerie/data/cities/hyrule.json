@@ -475,6 +475,69 @@
    ],
    "model": "tarrey",
    "info": "A new town on a rock in Lake Akkala, built by people from all over Hyrule: round houses under bright domed roofs, a tall golden-roofed hall, a walkway out across the water."
+  },
+  {
+   "name": "Kara Kara Bazaar",
+   "at": [
+    -0.027355,
+    -0.033058
+   ],
+   "model": "bazaar",
+   "info": "The oasis market in the Gerudo Desert: a pool under palms, stalls under bright cloths, the inn's striped tent; travellers rest here before Gerudo Town."
+  },
+  {
+   "name": "The Seven Heroines",
+   "at": [
+    -0.039593,
+    -0.043838
+   ],
+   "model": "heroines",
+   "info": "Seven colossal statues of Gerudo warriors standing round a platform in the southern desert, swords and spears raised; two have broken."
+  },
+  {
+   "name": "The Coliseum's ruins",
+   "at": [
+    -0.003743,
+    -0.007043
+   ],
+   "model": "coliseum",
+   "info": "A great ring of arches in Hyrule Field, two storeys high and broken open, its tiers of seats stepping down to the floor."
+  },
+  {
+   "name": "Lon Lon Ranch, in ruins",
+   "at": [
+    0.00072,
+    0.006109
+   ],
+   "model": "lonlon",
+   "info": "What is left of the old ranch east of the field: the barn's walls and a gable end, the roofless silo, the house, the corral's fence half fallen."
+  },
+  {
+   "name": "The goddess's springs",
+   "at": [
+    -0.030234,
+    0.014732
+   ],
+   "model": "springs",
+   "info": "Three springs sacred to the goddess Hylia - Courage in Faron, Wisdom on the summit of Mount Lanayru, Power in Akkala - each a pool in a court of columns with her statue in the water."
+  },
+  {
+   "name": "The Great Fairies' fountains",
+   "at": [
+    -0.033474,
+    -0.028746
+   ],
+   "model": "fairies",
+   "info": "Huge closed flower buds on their ponds, where the Great Fairies sleep: Tera in the desert, Mija in Tabantha, Kaysa in Akkala."
+  },
+  {
+   "name": "The Akkala Ancient Tech Lab",
+   "at": [
+    0.024115,
+    0.042041
+   ],
+   "model": "akkalaLab",
+   "info": "Robbie's laboratory on its knoll by the sea: the house, the great dome of the observatory with the telescope out of it, the furnace's blue flame."
   }
  ],
  "views": {
@@ -716,6 +779,90 @@
     0.00072,
     -0.005031,
     23.6
+   ]
+  ],
+  "Kara Kara Bazaar": [
+   [
+    -0.02868,
+    -0.032294,
+    107.3
+   ],
+   [
+    -0.027355,
+    -0.033058,
+    52.3
+   ]
+  ],
+  "The Seven Heroines": [
+   [
+    -0.038424,
+    -0.043164,
+    69.0
+   ],
+   [
+    -0.039593,
+    -0.043838,
+    47.0
+   ]
+  ],
+  "The Coliseum's ruins": [
+   [
+    -0.004915,
+    -0.008024,
+    93.7
+   ],
+   [
+    -0.003743,
+    -0.007043,
+    29.7
+   ]
+  ],
+  "Lon Lon Ranch": [
+   [
+    -0.000964,
+    0.005812,
+    103.9
+   ],
+   [
+    0.00072,
+    0.006109,
+    38.9
+   ]
+  ],
+  "The Spring of Wisdom": [
+   [
+    -0.016443,
+    0.039482,
+    939.2
+   ],
+   [
+    -0.016197,
+    0.038807,
+    919.2
+   ]
+  ],
+  "A Great Fairy's fountain": [
+   [
+    0.02685,
+    0.035701,
+    210.7
+   ],
+   [
+    0.026635,
+    0.036292,
+    194.7
+   ]
+  ],
+  "The Akkala Ancient Tech Lab": [
+   [
+    0.024632,
+    0.041608,
+    188.9
+   ],
+   [
+    0.024115,
+    0.042041,
+    170.9
    ]
   ]
  },

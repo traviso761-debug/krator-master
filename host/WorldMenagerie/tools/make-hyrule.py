@@ -156,6 +156,47 @@ MASSIFS = [
         (612, 1150), (590, 1168), (560, 1150), (540, 1110), (520, 1062), (490, 1032), (460, 1002), (440, 962), (425, 920)]),
     ("the southern mesa", 230, 18, [(490, 1180), (520, 1170), (600, 1172), (650, 1180), (662, 1260), (500, 1260), (480, 1220)]),
 ]
+# ---------------------------------------------------------------- the biomes
+# What grows and what the ground is, region by region, as outlines read off the map like the highlands: the page
+# paints the ground and plants the flora by them. Later outlines win over earlier ones; outside them all is
+# grassland (Hyrule Field, the plateau, the foothills). Keys: g grassland, H highland evergreens, F temperate woods,
+# L the Lost Woods, J jungle, W wetland marsh, D desert dunes, C red-rock canyon, R arid highland, T tundra,
+# S snowfield, A autumn woods, V volcanic ash.
+BIOMES = [
+    ("H", "the Tabantha Frontier", [(205, 440), (330, 430), (330, 560), (320, 600), (250, 625), (210, 615)]),
+    ("H", "Hyrule Ridge", [(358, 420), (420, 415), (480, 420), (530, 430), (570, 440), (592, 470), (588, 520), (572, 560), (560, 600),
+                           (520, 625), (470, 630), (420, 625), (380, 615), (360, 580), (355, 520)]),
+    ("F", "the Ridgeland's woods", [(560, 330), (640, 262), (700, 240), (745, 280), (725, 330), (690, 400), (600, 425), (545, 400)]),
+    ("F", "the woods west of Hateno", [(1040, 880), (1100, 860), (1180, 880), (1200, 940), (1120, 952), (1050, 932)]),
+    ("F", "East Necluda's woods", [(1030, 960), (1110, 948), (1190, 962), (1215, 1010), (1180, 1060), (1100, 1060), (1040, 1030)]),
+    ("T", "Hebra and the Tabantha Tundra", [(150, 110), (260, 100), (400, 152), (470, 118), (545, 112), (640, 128), (690, 135), (692, 162),
+                                          (645, 195), (650, 240), (628, 262), (565, 318), (500, 380), (440, 410), (370, 410), (330, 430),
+                                          (205, 440), (165, 395), (145, 280), (135, 170)]),
+    ("R", "the Gerudo Highlands' apron", [(0, 620), (130, 612), (330, 640), (362, 690), (372, 738), (420, 765), (470, 800), (490, 840),
+                                        (470, 880), (330, 915), (100, 905), (0, 880)]),
+    ("D", "the Gerudo Desert", [(-80, 890), (150, 900), (300, 912), (420, 905), (440, 960), (470, 1010), (510, 1050), (540, 1110),
+                                (560, 1160), (500, 1180), (480, 1220), (500, 1330), (-80, 1330)]),
+    ("C", "the Gerudo Canyon", [(420, 880), (470, 880), (505, 915), (525, 955), (548, 995), (578, 1028), (608, 1048), (618, 1100),
+                                (612, 1150), (590, 1168), (560, 1150), (540, 1110), (520, 1062), (490, 1032), (460, 1002), (440, 962), (425, 920)]),
+    ("C", "the southern mesa", [(490, 1180), (520, 1170), (600, 1172), (650, 1180), (662, 1260), (500, 1260), (480, 1220)]),
+    ("A", "Akkala", [(1210, 113), (1245, 118), (1285, 140), (1330, 172), (1400, 188), (1425, 245), (1390, 295), (1352, 330), (1374, 420),
+                     (1375, 500), (1300, 505), (1210, 480), (1195, 400), (1205, 300), (1225, 200)]),
+    ("V", "Eldin", [(905, 125), (1210, 113), (1232, 150), (1228, 250), (1218, 350), (1205, 430), (1190, 500), (1150, 540), (1100, 560),
+                    (1050, 560), (1000, 540), (960, 500), (935, 445), (915, 390), (908, 300), (905, 200)]),
+    ("W", "the Lanayru Wetlands", [(925, 610), (990, 600), (1060, 630), (1080, 680), (1060, 740), (1000, 750), (940, 730), (915, 680)]),
+    ("W", "the marsh at Lake Hylia's head", [(690, 905), (740, 895), (790, 910), (800, 935), (760, 945), (700, 945)]),
+    ("J", "Faron", [(830, 1000), (900, 960), (1000, 990), (1040, 1040), (1060, 1100), (1040, 1170), (930, 1160), (830, 1170), (760, 1140),
+                    (740, 1080), (780, 1040)]),
+    ("L", "the Lost Woods", [(745, 268), (800, 258), (870, 270), (898, 320), (895, 395), (850, 415), (780, 412), (742, 380), (735, 320)]),
+    ("S", "the Hebra Mountains", [(250, 118), (300, 113), (340, 138), (390, 163), (425, 168), (455, 148), (485, 130), (520, 135), (560, 150),
+                                  (595, 170), (600, 200), (585, 225), (545, 235), (500, 255), (450, 275), (400, 290), (355, 305), (320, 285),
+                                  (290, 250), (262, 215), (248, 175)]),
+    ("S", "the Gerudo Highlands", [(20, 660), (60, 640), (120, 630), (190, 632), (250, 648), (310, 668), (360, 705), (378, 740), (420, 772),
+                                   (445, 820), (440, 870), (400, 880), (340, 885), (280, 872), (220, 880), (150, 875), (90, 865), (40, 850), (15, 800)]),
+    ("S", "Mount Lanayru's summit", [(1240, 790), (1300, 778), (1360, 795), (1380, 850), (1360, 900), (1300, 915), (1250, 895), (1232, 840)]),
+]
+BIOME_KEYS = "gHFLJWDCRTSAV"
+
 # (kind, pixel x, pixel y, radius x px, radius y px, height m, name)
 FEATURES = [
     ("peak", 300, 150, 70, 45, 1250, "Hebra Peak"), ("peak", 450, 200, 90, 55, 1150, "Hebra's eastern summits"),
@@ -175,6 +216,28 @@ FEATURES = [
     ("peak", 936, 872, 24, 26, 440, "Dueling Peaks west"), ("peak", 966, 918, 24, 26, 430, "Dueling Peaks east"),   # split by the Squabble River
     ("hill", 960, 1050, 120, 70, 140, "Faron jungle"), ("hill", 1110, 1125, 40, 32, 220, "Lurelin hills"),
 ]
+
+
+def biome_grid():
+    """The biomes as a coarse raster for the page: a key per 48 m cell, the last outline containing it."""
+    step = 48.0
+    nx_, nz_ = int((X1 - X0) // step) + 1, int((Z1 - Z0) // step) + 1
+    polys = [(k, Pl(poly)) for k, n, poly in BIOMES]
+    boxes = [(k, poly, min(x for x, z in poly), max(x for x, z in poly), min(z for x, z in poly), max(z for x, z in poly)) for k, poly in polys]
+    rows = []
+    for j in range(nz_):
+        z = Z0 + (j + 0.5) * step
+        row = []
+        for i in range(nx_):
+            x = X0 + (i + 0.5) * step
+            key = "g"
+            for k, poly, a, b, c, d in boxes:
+                if a <= x <= b and c <= z <= d and in_poly(x, z, poly):
+                    key = k
+            row.append(key)
+        rows.append("".join(row))
+    return {"step": step, "x0": X0, "z0": Z0, "nx": nx_, "nz": nz_, "keys": BIOME_KEYS, "rows": rows,
+            "names": [[k, n] for k, n, p in BIOMES]}
 
 
 def massif_grid(xs, zs):
@@ -400,7 +463,12 @@ def main():
                 rim.append(H[max(0, min(nz - 1, j))][max(0, min(nx - 1, i))])
             LAKE_LEVEL[name] = round(min(rim) - 1.0, 1)
     # the Tabantha canyon: a deep cut running north-east across the tundra, spanned by the great bridge
-    carve([(530, 360), (565, 318), (600, 285), (628, 262)], 45.0, 110.0)
+    carve([(530, 360), (565, 318), (600, 285), (628, 262)], 45.0, 70.0)
+    for j in range(nz):                                    # and never down below the sea: its floor stays dry
+        for i in range(nx):
+            x_, z_ = X0 + i * STEP, Z0 + j * STEP
+            if H[j][i] < 8 and -2400 < x_ < -800 and -3200 < z_ < -1600:
+                H[j][i] = 8.0 + (8 - H[j][i]) * 0.05
     rivers = []
     for name, pts, wpx in RIVERS:
         rivers.append({"name": name, "width": wpx * 1.0, "pts": carve(pts, wpx * 1.0, 3.0)})
@@ -430,6 +498,24 @@ def main():
             lv = lake_mask(X0 + i * STEP, z)
             if lv is not None:
                 HA[j][i] = min(HA[j][i], lv - 4.0)
+    # the Lanayru Wetlands are a marsh, not open water: a scatter of low grassy islets stands just out of it
+    WET_ISLETS = []
+    wl_ = [l for l in LAKES if l[0] == "Lanayru Wetlands"][0]
+    Rw = random.Random(1200)
+    for _ in range(400):
+        if len(WET_ISLETS) >= 34:
+            break
+        px_, py_ = Rw.uniform(944, 1062), Rw.uniform(612, 728)
+        x_, z_ = P(px_, py_)
+        if not in_poly(x_, z_, wl_[1]) or any(math.hypot(x_ - a, z_ - b) < 90 for a, b in WET_ISLETS):
+            continue
+        WET_ISLETS.append((x_, z_))
+        r_ = Rw.uniform(26, 60)
+        for j in range(max(0, int((z_ - r_ - Z0) / STEP)), min(nz, int((z_ + r_ - Z0) / STEP) + 2)):
+            for i in range(max(0, int((x_ - r_ - X0) / STEP)), min(nx, int((x_ + r_ - X0) / STEP) + 2)):
+                d = math.hypot(X0 + i * STEP - x_, Z0 + j * STEP - z_) / r_
+                if d < 1:
+                    HA[j][i] = max(HA[j][i], wl_[2] + 2.6 - max(0.0, d * d - 0.4) * 5.0)
     H = HA.tolist()
     hs = [int(round(H[j][i] * 10)) for j in range(nz) for i in range(nx)]
     out["terrain"] = {"step": STEP, "nx": nx, "nz": nz, "x0": q(X0), "z0": q(Z0), "datum": 0.0, "h": hs}
@@ -467,12 +553,17 @@ def main():
         "ruta": site(1270, 612), "rudania": site(1080, 330), "medoh": site(275, 378), "naboris": site(190, 1010),
         "dueling": site(951, 895), "deathmountain": site(1120, 265),
         "hylia_bridge": site(770, 988), "fort_hateno": site(1170, 900),
+        # more of the map: the bazaar at the desert's oasis, the Seven Heroines, the Coliseum's ruins, Lon Lon Ranch's,
+        # the three goddess springs, three of the Great Fairies' fountains, the Akkala laboratory
+        "kara_kara": site(300, 1000), "heroines": site(150, 1170), "coliseum": site(662, 672), "lonlon": site(845, 610),
+        "spring_courage": site(965, 1040), "spring_wisdom": site(1300, 845), "spring_power": site(1365, 240),
+        "fairy_tera": site(360, 1085), "fairy_mija": site(470, 235), "fairy_kaysa": site(1265, 250), "akkala_lab": site(1345, 285),
     }
     # the Sheikah towers, and the shrines: a few dozen, so every region has its lights
     TOWERS = {"Great Plateau Tower": (470, 718), "Central Tower": (705, 640), "Dueling Peaks Tower": (938, 850),
               "Hateno Tower": (1170, 870), "Lanayru Tower": (1012, 642), "Akkala Tower": (1232, 425), "Eldin Tower": (1000, 450),
               "Woodland Tower": (885, 430), "Ridgeland Tower": (450, 520), "Tabantha Tower": (500, 330), "Hebra Tower": (330, 185),
-              "Gerudo Tower": (245, 700), "Wasteland Tower": (300, 980), "Lake Tower": (655, 950), "Faron Tower": (900, 1020)}
+              "Gerudo Tower": (245, 700), "Wasteland Tower": (335, 950), "Lake Tower": (655, 950), "Faron Tower": (900, 1020)}
     towers = [dict(site(px, py), name=n) for n, (px, py) in TOWERS.items()]
     SHRINES = [(462, 645), (512, 712), (430, 700), (500, 760), (690, 610), (600, 720), (760, 700), (650, 810), (880, 600),
                (960, 720), (1000, 800), (1060, 790), (1210, 960), (1120, 920), (1270, 870), (1130, 640), (1250, 520), (1190, 470),
@@ -490,7 +581,7 @@ def main():
                "Riverside Stable": (620, 830), "Woodland Stable": (900, 455), "Serenne Stable": (560, 450),
                "Snowfield Stable": (360, 410), "Rito Stable": (420, 420), "Gerudo Canyon Stable": (480, 900),
                "Highland Stable": (620, 1000), "Lakeside Stable": (880, 1100), "Foothill Stable": (1060, 520),
-               "East Akkala Stable": (1300, 480), "South Akkala Stable": (1170, 520), "Kara Kara Bazaar": (300, 1000)}
+               "East Akkala Stable": (1300, 480), "South Akkala Stable": (1170, 520)}
     stables = [dict(site(px, py), name=n) for n, (px, py) in STABLES.items()]
     # Bokoblin camps: out in the field, on the hills, by the roads but not on them, never in a village
     camps = []
@@ -514,7 +605,10 @@ def main():
     PADS = [("castletown", 200, 120, None), ("kakariko", 110, 90, None), ("hateno", 150, 110, None), ("lurelin", 70, 60, 3.0),
             ("tarrey", 42, 30, None), ("gerudo_town", 175, 80, None), ("goron", 110, 80, None), ("zora", 75, 40, None),
             ("lomei_north", 100, 50, None), ("lomei_south", 100, 50, None), ("lomei_island", 95, 30, 4.0),
-            ("akkala_citadel", 115, 70, None), ("temple_of_time", 55, 40, None), ("oldman", 12, 14, None), ("techlab", 16, 16, None)]
+            ("akkala_citadel", 115, 70, None), ("temple_of_time", 55, 40, None),
+            ("kara_kara", 90, 50, None), ("heroines", 85, 50, None), ("coliseum", 80, 50, None), ("lonlon", 95, 60, None),
+            ("spring_courage", 40, 30, None), ("spring_wisdom", 40, 30, None), ("spring_power", 40, 30, None),
+            ("fairy_tera", 30, 25, None), ("fairy_mija", 30, 25, None), ("fairy_kaysa", 30, 25, None), ("akkala_lab", 30, 25, None), ("oldman", 12, 14, None), ("techlab", 16, 16, None)]
     pads = [(S[k]["x"], S[k]["z"], r, b, lo) for k, r, b, lo in PADS]
     pads += [(t["x"], t["z"], 22, 16, None) for t in towers] + [(t["x"], t["z"], 30, 22, None) for t in stables]
     pads += [(t["x"], t["z"], 9, 9, None) for t in shrines]
@@ -608,11 +702,21 @@ def main():
              ((1250, 380), 110, 0.45), ((560, 700), 60, 0.3), ((350, 300), 140, 0.25), ((860, 900), 80, 0.4),
              ((640, 980), 80, 0.3), ((1150, 700), 90, 0.35)]
     trees, tset = [], []
+    BG = biome_grid()
+    def biome_at(x, z):
+        i, j = int((x - BG["x0"]) / BG["step"]), int((z - BG["z0"]) / BG["step"])
+        return BG["rows"][j][i] if 0 <= i < BG["nx"] and 0 <= j < BG["nz"] else "g"
+    # the engine's round broadleaves belong only where broadleaves grow: none in the desert, the canyon, on the ash,
+    # the snow or the tundra (the page plants those biomes' own plants: flora.js)
+    BIOME_TREES = {"g": 1.0, "H": 0.5, "F": 1.6, "L": 2.0, "J": 1.4, "W": 0.4, "A": 0.6, "R": 0.15, "D": 0.0, "C": 0.0, "V": 0.0, "S": 0.0, "T": 0.0}
     for _ in range(110000):
         x, z = R.uniform(X0 + 50, X1 - 50), R.uniform(Z0 + 50, Z1 - 50)
         h = height(x, z)
         if h < 3 or h > 900 or lake_mask(x, z) is not None or any(math.hypot(x - px_, z - pz_) < r * 0.9 for px_, pz_, r, b, lo in pads):
             continue                                                 # no trees in the towns, on the pads
+        bk = BIOME_TREES[biome_at(x, z)]
+        if bk == 0 or R.random() > min(1.0, bk):
+            continue
         p_ = 0.09
         for (px, py), r, dens in WOODS:
             c = P(px, py)
@@ -624,7 +728,7 @@ def main():
             p_ = 0.004                                             # the desert
         if h > 600:
             p_ *= 0.3                                               # few up in the snow
-        if R.random() < p_:
+        if R.random() < p_ * max(1.0, bk):                        # and more where the woods are thick
             trees += [q(x), q(z)]
     out["trees"] = trees
     out["areas"], out["rail"], out["stations"], out["pois"] = [], [], [], []
@@ -638,7 +742,7 @@ def main():
                "akkala": [P(1290, 300), 120 * PX, 190 * PX], "faron": [P(930, 1060), 150 * PX, 90 * PX],
                "hebra": [P(330, 230), 240 * PX, 170 * PX], "gerudo_high": [P(230, 760), 230 * PX, 130 * PX]}
     plan = {"_": "written by tools/make-hyrule.py: metres east (x) and south (z) of the origin; y is the ground",
-            "pads": [[round(x_, 1), round(z_, 1), r] for x_, z_, r, b, lo in pads], "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
+            "pads": [[round(x_, 1), round(z_, 1), r] for x_, z_, r, b, lo in pads], "biomes": biome_grid(), "wetIslets": [[round(a, 1), round(b, 1)] for a, b in WET_ISLETS], "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
             "rivers": rivers, "regions": REGIONS, "coast": [[round(x, 1), round(z, 1)] for x, z in COAST]}
     json.dump(plan, open(PLAN, "w"), indent=1)
     lo, hi = min(hs) / 10, max(hs) / 10

@@ -12,8 +12,12 @@
 //   glider     someone in green paraglides down from a tower; the camera follows
 //   storm      a thunderstorm: rain, lightning striking the high ground, the sky flashing
 //   korok      a Korok pops up somewhere with a sparkle, and is gone
+//   dinraal    the fire dragon flies its circuit over Akkala, Eldin and Tabantha, shedding embers
+//   naydra     the ice dragon coils round Mount Lanayru, snow falling from it
+//   farosh     the lightning dragon runs from Faron to the Gerudo Highlands, sparks and the odd bolt to the ground
 //   guardian   the camera finds a Guardian Stalker out in the fields and walks alongside it a while
 import { createHappenings } from '../core/happenings.js';
+import { makeDragon } from './dragons.js';
 
 export function events(api){
   const {THREE,ctx,scene,groundH}=api;
@@ -27,7 +31,10 @@ export function events(api){
   // ---- one pool of sparks for embers, flashes and sparkles ----
   const MAXP=5000,ppos=new Float32Array(MAXP*3),pcol=new Float32Array(MAXP*3),pv=new Float32Array(MAXP*3),plife=new Float32Array(MAXP),pgrav=new Float32Array(MAXP);
   const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(ppos,3));pg.setAttribute('color',new THREE.BufferAttribute(pcol,3));
-  const sparks=new THREE.Points(pg,new THREE.PointsMaterial({size:4,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+  // a soft round point, not a square: a white dot fading at its edge, tinted by each spark's colour
+  const dot=(()=>{const c=document.createElement('canvas');c.width=c.height=32;const g=c.getContext('2d'),gr=g.createRadialGradient(16,16,0,16,16,16);
+    gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(0.4,'rgba(255,255,255,0.7)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,32,32);return new THREE.CanvasTexture(c);})();
+  const sparks=new THREE.Points(pg,new THREE.PointsMaterial({size:4,map:dot,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
   sparks.frustumCulled=false;sparks.userData.noFingerprint=true;sparks.userData.noWire=true;scene.add(sparks);
   for(let i=0;i<MAXP;i++)ppos[i*3+1]=-9999;let pnext=0;
   const emit=(x,y,z,vx,vy,vz,col,life,grav)=>{const i=pnext;pnext=(pnext+1)%MAXP;const c=new THREE.Color(col);ppos[i*3]=x;ppos[i*3+1]=y;ppos[i*3+2]=z;pv[i*3]=vx;pv[i*3+1]=vy;pv[i*3+2]=vz;pcol[i*3]=c.r;pcol[i*3+1]=c.g;pcol[i*3+2]=c.b;plife[i]=life;pgrav[i]=grav||0;};
@@ -99,6 +106,14 @@ export function events(api){
   function glider(){if(!ctx.launchGlider)return;const f=ctx.launchGlider();const G=ctx.glider;
     notice('Paragliding','Someone in green has jumped from '+f.T.name+' and is gliding down over the country.',()=>{const p=G.position;return [p.x-40,p.y+15,p.z+50,p.x,p.y,p.z];},()=>G.visible?G.position:null);}
 
+  // ---- the dragons: one comes over, and the camera flies behind its head ----
+  const DRAGONS={dinraal:['Dinraal','The fire dragon is flying over Akkala and Eldin. Embers fall where it passes; a scale from it is worth a great deal.'],
+    naydra:['Naydra','The ice dragon is coiling round the heights of Mount Lanayru, and snow falls out of a clear sky under it.'],
+    farosh:['Farosh','The lightning dragon is running from Faron toward the Gerudo Highlands, crackling, striking the ground now and then.']};
+  function dragon(kind){const D=makeDragon(api,kind,emit);let t=0;D.update(0.016);
+    notice(DRAGONS[kind][0],DRAGONS[kind][1],()=>{const h=D.head,d=D.dir;return [h.x-d.x*150-d.z*60,h.y+55,h.z-d.z*150+d.x*60,h.x+d.x*30,h.y,h.z+d.z*30];},()=>t<80?D.head:null);
+    run((now,dt)=>{t+=dt;D.update(dt);if(t>90){D.remove();return false;}});}
+
   // ---- alongside a Guardian Stalker ----
   function guardian(){const L=ctx.stalkers;if(!L||!L.length)return;const s=L[Math.floor(R()*L.length)],t0=performance.now();
     notice('A Guardian Stalker','One of the Guardians the Calamity turned, still walking the fields round the castle, its eye sweeping the ground.',
@@ -141,6 +156,6 @@ export function events(api){
       if(t>14){burst(x,y+2,z,80,6,0xfff6a0,1.2,2);scene.remove(g);return false;}});}
 
   H=createHappenings(api,{events:{bloodmoon:['The Blood Moon',bloodmoon],beasts:['The Divine Beasts fire',beasts],tower:['A tower activates',tower],
-      glider:['Paraglide',glider],storm:['Thunderstorm',storm],korok:['A Korok',korok],guardian:['A Guardian Stalker',guardian]},
-    order:['tower','glider','guardian','korok','storm','beasts','bloodmoon'],first:25000,every:[55000,100000]});
+      glider:['Paraglide',glider],storm:['Thunderstorm',storm],korok:['A Korok',korok],guardian:['A Guardian Stalker',guardian],dinraal:['Dinraal, the fire dragon',()=>dragon('dinraal')],naydra:['Naydra, the ice dragon',()=>dragon('naydra')],farosh:['Farosh, the lightning dragon',()=>dragon('farosh')]},
+    order:['tower','dinraal','glider','guardian','farosh','korok','storm','naydra','beasts','bloodmoon'],first:25000,every:[55000,100000]});
 }

@@ -14,6 +14,7 @@ import {castle} from './castle.js';
 import {villages} from './villages.js';
 import {peoples} from './peoples.js';
 import {wayside} from './wayside.js';
+import {wonders} from './wonders.js';
 import {paint} from './paint.js';
 import {flora} from './flora.js';
 import {alive} from './alive.js';
@@ -44,7 +45,7 @@ function fingerprint(api){
 (async()=>{
   const C0=await fetch('data/cities/hyrule.json').then(r=>r.json()).catch(()=>({}));
   const plan=await fetch(C0.plan||'data/cities/hyrule-plan.json').then(r=>r.json()).catch(e=>{report('the plan',e);return null;});
-  const ctx=window._iz={defaultCity:'hyrule',plan,models:[landmarks,beasts,divine,castle,villages,peoples,wayside],
+  const ctx=window._iz={defaultCity:'hyrule',plan,models:[landmarks,beasts,divine,castle,villages,peoples,wayside,wonders],
     extras:[{name:'paint',fn:paint},{name:'flora',fn:flora},{name:'life',fn:life},{name:'alive',fn:alive},{name:'events',fn:events},{name:'fingerprint',fn:fingerprint}]};
   boot(()=>build(ctx));
 })();

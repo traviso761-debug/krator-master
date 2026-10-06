@@ -56,18 +56,23 @@ export function landmarks(api){
     ctx.towerGlows=ctx.towerGlows||[];ctx.towerGlows[L.index||0]=glow;
     for(let k=0;k<7;k++){const a=k/7*Math.PI*2,r=12+hz(k+tx)*5;parts.push(sph(tx+Math.cos(a)*r,y0,tz+Math.sin(a)*r,6+hz(k)*4,M.rock2,1,0.7,1));}
     parts.push(cyl(tx,y0-2,tz,16,11,12,M.rock));
-    const corner=[[-1,-1],[1,-1],[1,1],[-1,1]];
-    for(const [a,b] of corner){parts.push(limb([tx+a*10,y0+8,tz+b*10],[tx+a*5,y0+H,tz+b*5],1.6,1.1,M.sheikah,6));
-      const g=limb([tx+a*10.9,y0+12,tz+b*10.9],[tx+a*5.7,y0+H-6,tz+b*5.7],0.4,0.3,glow,4);g.userData.noMerge=true;parts.push(g);}
-    for(let h=20;h<H;h+=18){const s=10-5*h/H;for(let k=0;k<4;k++){const [a,b]=corner[k],[c,d]=corner[(k+1)%4];
-      parts.push(limb([tx+a*s,y0+h,tz+b*s],[tx+c*s,y0+h,tz+d*s],0.7,0.7,M.sheikah2,4));
-      parts.push(limb([tx+a*s,y0+h,tz+b*s],[tx+c*(s-2.6),y0+h+16,tz+d*(s-2.6)],0.45,0.45,M.sheikah2,4));}}
-    // the upper body: a narrower block with glowing panels, then the platform and the pedestal
-    parts.push(blk(tx,y0+H-22,tz,9,18,9,M.sheikah));
-    for(const [a,b] of corner){const p=blk(tx+a*4.6,y0+H-18,tz+b*4.6,0.3,10,0.3,glow);p.userData.noMerge=true;parts.push(p);}
-    parts.push(blk(tx,y0+H-4,tz,17,2.4,17,M.sheikah2),cyl(tx,y0+H-1.6,tz,1.2,1.4,2.2,M.sheikah));
-    const eye=mesh(new THREE.CylinderGeometry(1.6,1.6,0.3,16),glow,tx,y0+H+0.8,tz);eye.userData.noMerge=true;parts.push(eye);
-    for(const [a,b] of corner)parts.push(blk(tx+a*7.6,y0+H-1.6,tz+b*7.6,1.6,4,1.6,M.sheikah));
+    // the shaft: square, of stacked courses that taper as they rise and turn a little each, dark Sheikah stone;
+    // a slit of light across each face of every course and a line of it up the middle of each face
+    const corner=[[-1,-1],[1,-1],[1,1],[-1,1]],NC=7,CH=(H-22)/NC;
+    for(let k=0;k<NC;k++){const sz=11.5-k*0.85,yy=y0+8+k*CH,tw=0;
+      parts.push(blk(tx,yy,tz,sz,CH-0.8,sz,k%2?M.sheikah:M.sheikah2,tw),blk(tx,yy+CH-0.8,tz,sz+1.2,0.8,sz+1.2,M.sheikah2,tw));
+      for(const [du,dw] of [[1,0],[-1,0],[0,1],[0,-1]]){parts.push(blk(tx+du*(sz/2+0.05),yy+CH*0.55,tz+dw*(sz/2+0.05),du?0.2:sz*0.6,0.35,dw?0.2:sz*0.6,glow,tw),
+        blk(tx+du*(sz/2+0.06),yy,tz+dw*(sz/2+0.06),du?0.2:0.3,CH-0.8,dw?0.2:0.3,glow,tw));}}
+    // the four buttresses: slabs leaning in from the rock to two-thirds of the way up, glowing along their edges
+    for(const [a,b] of corner){parts.push(limb([tx+a*12,y0+4,tz+b*12],[tx+a*6.2,y0+H*0.68,tz+b*6.2],2.6,1.4,M.sheikah,4));
+      parts.push(limb([tx+a*13.2,y0+8,tz+b*13.2],[tx+a*7.2,y0+H*0.64,tz+b*7.2],0.35,0.25,glow,4));}
+    // the head of the tower: a flared capital under a round platform, a rim and its ring of light, four posts,
+    // the pedestal with its eye in the middle
+    const hy=y0+H-14;parts.push(blk(tx,hy-4,tz,6,4,6,M.sheikah),mesh(new THREE.CylinderGeometry(9,4,10,8).translate(0,5,0),M.sheikah2,tx,hy,tz));
+    parts.push(cyl(tx,hy+10,tz,10.5,10.5,1.6,M.sheikah,20),mesh(new THREE.TorusGeometry(10.5,0.45,5,32).rotateX(Math.PI/2),M.sheikah2,tx,hy+11.8,tz),
+      mesh(new THREE.TorusGeometry(10.6,0.18,4,32).rotateX(Math.PI/2),glow,tx,hy+10.6,tz));
+    for(let k=0;k<4;k++){const a=k/4*Math.PI*2+Math.PI/4;parts.push(blk(tx+Math.cos(a)*9,hy+11.6,tz+Math.sin(a)*9,1.4,3.4,1.4,M.sheikah));}
+    parts.push(cyl(tx,hy+11.6,tz,1.2,1.4,2.2,M.sheikah),mesh(new THREE.CylinderGeometry(1.6,1.6,0.3,16),glow,tx,hy+13.9,tz));
     return build(L,parts);
   },
 

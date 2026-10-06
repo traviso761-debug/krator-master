@@ -10,6 +10,8 @@
 // The water is the page's too: the sea (the engine's sheet, with a clear rippled material), and the lakes, the
 // moats and the rivers, which are not at sea level and so are drawn here at their own levels.
 
+import { biomeKit } from './biomes.js';
+
 export function paint(api){
   const {THREE,ctx,scene,animHooks}=api;
   const PL=ctx.plan;if(!PL)return;
@@ -18,7 +20,10 @@ export function paint(api){
   const C=h=>new THREE.Color(h);
   const COL={grass:C(0x8fb556),grass2:C(0x6f9a46),meadow:C(0xa8c068),forest:C(0x4e7a38),sand:C(0xe6cf94),dune:C(0xd8b878),
     snow:C(0xf4f6f8),rock:C(0x8a8478),rock2:C(0x6e6a62),ash:C(0x4a403a),lava:C(0xc0442a),autumn:C(0xc8823a),autumn2:C(0xb05a30),
-    jungle:C(0x3e7a3a),beach:C(0xe8dcae),bed:C(0x6a7a72)};
+    jungle:C(0x3e7a3a),jungle2:C(0x2e6a2a),beach:C(0xe8dcae),bed:C(0x6a7a72),
+    hgrass:C(0x6c9450),lost:C(0x2f5232),marsh:C(0x7a9858),marsh2:C(0x8a9a62),tundra:C(0xb4b88a),tundra2:C(0x9aa47a),frost:C(0xd4dcd6),
+    arid:C(0xb8a07a),arid2:C(0xa08a68),canyon:C(0xc0855a),canyon2:C(0xa86a46)};
+  const BK=biomeKit(PL);
   const c=new THREE.Color(),tmp=new THREE.Color();
   // broad, soft variation - hundreds of metres across, like brush strokes; anything finer reads as a checkerboard
   const n=(x,z)=>Math.sin(x/610+Math.cos(z/730)*1.3)*0.55+Math.sin(z/470-x/890+0.7)*0.45;
@@ -27,18 +32,27 @@ export function paint(api){
     for(let k=0;k<P.count;k++){const x=P.getX(k),y=P.getY(k),z=P.getZ(k),ny=N?N.getY(k):1,v=n(x,z);
       // grass by default, varied, paler on the high meadows
       c.copy(COL.grass).lerp(COL.grass2,0.35+0.3*v);if(y>180)c.lerp(COL.meadow,Math.min(1,(y-180)/300)*0.6);
-      // regions
-      const de=inR('desert',x,z),dm=inR('deathmountain',x,z),ak=inR('akkala',x,z),fa=inR('faron',x,z),lf=inR('lavafield',x,z);
-      if(fa>0)c.lerp(COL.jungle,Math.min(1,fa*1.6));
-      if(ak>0)c.lerp(v>0?COL.autumn:COL.autumn2,Math.min(1,ak*1.4)*0.75);
-      if(de>0&&y<260)c.lerp(v>0.2?COL.dune:COL.sand,Math.min(1,de*2.5));
-      // steep ground is rock; Death Mountain is ash and rock, red towards the crater
+      // the biomes (biomes.js): each blends in by how much of it there is here
+      const W=BK.w(x,z),b=k=>W[k]||0,dm=inR('deathmountain',x,z),lf=inR('lavafield',x,z);
+      if(b('H'))c.lerp(COL.hgrass,b('H')*0.85);
+      if(b('F'))c.lerp(COL.forest,b('F')*0.8);
+      if(b('L'))c.lerp(COL.lost,b('L'));
+      if(b('J'))c.lerp(v>0?COL.jungle:COL.jungle2,Math.min(1,b('J')*1.3));
+      if(b('W'))c.lerp(v>0?COL.marsh:COL.marsh2,b('W'));
+      if(b('T'))c.lerp(v>0?COL.tundra:COL.tundra2,b('T'));
+      if(b('R'))c.lerp(v>0?COL.arid:COL.arid2,b('R')*0.9);
+      if(b('A'))c.lerp(v>0?COL.autumn:COL.autumn2,b('A')*0.75);
+      if(b('D')&&y<300)c.lerp(v>0.2?COL.dune:COL.sand,Math.min(1,b('D')*1.4));
+      if(b('C'))c.lerp(v>0?COL.canyon:COL.canyon2,b('C'));
+      if(b('S'))c.lerp(COL.frost,b('S')*0.55);
+      // steep ground is rock - red in the canyon, pale in the snow; Death Mountain is ash, red towards the crater
       const steep=Math.max(0,Math.min(1,(0.86-ny)/0.22));
-      if(steep>0)c.lerp(v>0?COL.rock:COL.rock2,steep);
-      if(dm>0){c.lerp(COL.ash,Math.min(1,dm*1.8));if(y>650)c.lerp(COL.lava,Math.min(1,(y-650)/300)*0.35*dm);}
+      if(steep>0)c.lerp(b('C')>0.5?COL.canyon2:(v>0?COL.rock:COL.rock2),steep);
+      if(b('V'))c.lerp(COL.ash,Math.min(1,b('V')*1.3)*(0.85+0.15*Math.min(1,dm*3)));
+      if(dm>0&&y>650)c.lerp(COL.lava,Math.min(1,(y-650)/300)*0.35*dm);
       if(lf>0&&v>0.1)c.lerp(COL.lava,Math.min(1,lf*1.6)*0.6);   // the western lava field: red where it is still running
-      // snow: the cold north and west lie lower than the rest
-      const cold=Math.max(inR('hebra',x,z),inR('gerudo_high',x,z)),line=dm>0.1?99999:(cold>0.05?560:z<-3800||x<-5000?650:760);
+      // snow: low on the snowfields, a little higher on the tundra, high elsewhere; never on Death Mountain
+      const line=dm>0.1?99999:b('S')>0.3?300:b('T')>0.3?660:b('R')>0.3?620:760;
       if(y>line)c.lerp(COL.snow,Math.min(1,(y-line)/90)*(steep>0.6?0.55:1));
       // the coast's sand, and what is under the water
       if(y<5&&y>0.5)c.lerp(COL.beach,Math.min(1,(5-y)/3));
