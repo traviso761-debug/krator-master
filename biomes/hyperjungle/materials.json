@@ -1,0 +1,294 @@
+{
+ "build": "hyperjungle",
+ "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. The older four species' canvases are painted in colour (55-trees tints() then sets a near-white tint), so their library barks keep their own colour (keep 1, brightness still matched); mahogany and kapok are near-grey, tinted by the species.",
+ "size": 512,
+ "families": {
+  "bark0": {
+   "lib": "bark.ironbark",
+   "scale": [
+    12,
+    18
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.169
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark1": {
+   "lib": "bark.ghostwood",
+   "scale": [
+    12,
+    12
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.804
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark2": {
+   "lib": "bark.prismgum",
+   "scale": [
+    24,
+    30
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark3": {
+   "lib": "bark.baobab",
+   "scale": [
+    8,
+    8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.423
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark4": {
+   "lib": "bark.mahogany",
+   "scale": [
+    12,
+    18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.499
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark5": {
+   "lib": "bark.kapok",
+   "scale": [
+    12,
+    18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.646
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "rock": {
+   "lib": "rock.rock_face",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.418
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "leaf0": {
+   "lib": "card.ironbark",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.675
+   },
+   "size": 512
+  },
+  "leaf1": {
+   "lib": "card.ghostwood",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.734
+   },
+   "size": 512
+  },
+  "leaf2": {
+   "lib": "card.prismgum",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.664
+   },
+   "size": 512
+  },
+  "leaf3": {
+   "lib": "card.baobab",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "size": 512
+  },
+  "leaf4": {
+   "lib": "card.mahogany",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.589
+   },
+   "size": 512
+  },
+  "leaf5": {
+   "lib": "card.lobed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.646
+   },
+   "size": 512
+  },
+  "raceme": {
+   "lib": "card.ghostwood-flower",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.502
+   },
+   "size": 512
+  },
+  "under": {
+   "lib": "card.jungle.clump.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.695
+   },
+   "size": 512
+  },
+  "hang": {
+   "lib": "card.vine.hanging.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.695
+   },
+   "size": 512
+  },
+  "frond": {
+   "lib": "card.fern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.662
+   },
+   "size": 512
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.635
+   },
+   "size": 512
+  },
+  "bract": {
+   "lib": "card.bromeliad",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.678
+   },
+   "size": 512
+  },
+  "fauna.wing": {
+   "lib": "wing.butterfly",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true,
+   "optional": true
+  },
+  "fauna.fur": {
+   "lib": "fur.sloth",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true,
+   "optional": true
+  },
+  "fauna.hide": {
+   "lib": "hide.strider",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true,
+   "optional": true
+  },
+  "fauna.ray": {
+   "lib": "skin.sky-ray",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "mapOnly": true,
+   "optional": true
+  }
+ }
+}

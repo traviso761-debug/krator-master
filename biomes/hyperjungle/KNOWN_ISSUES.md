@@ -66,3 +66,4 @@ Read before changing anything here. `build.py` prints the open count.
       build time and split at the quantiles for the target shares (six species).
 - [x] Fauna (flocks, flitters, butterflies, motes, herds, sloths) as fragment 58
       on the same contract, with 35-core-anim as the one core extension.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; the library block in 50-species): the six barks, the boulders, the six species' leaf cards, the understorey cards, and the fauna sheets when no host sets FAUNATEX. limb and wood stay procedural. A host gets them by inlining the biome's pack; the open world carries none and keeps the procedural maps. verify --assert passes.
