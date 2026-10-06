@@ -503,6 +503,29 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 | `patterns/yuni/paintcol` | Flat, front-on decorative panel of Hausa-style polychrome painted relief on plaster, a grid of square cells outlined in green (#247a4c), on a gold ground (#edcc5c). The cells alternate between a rosette with blue (#2973b8) petals around a red (#b83329) centre, a nested diamond knot in red and teal (#1a9ea8), a spiral in blue, red and cream (#f5f0e0), and a cross-hatched plait in green with a red dot. Slightly uneven hand-painted edges. The pattern repeats in both directions. Full colour. |
 | `patterns/yuni/relief` | Flat, front-on decorative panel of low-relief moulded plaster in one pale warm sand colour (#d8c8a8), lit softly and evenly so only the form shows. Horizontal bands of equal height alternate: a row of circular spiral rosettes, and a row of square interlaced knots made from nested diamond and square raised ridges, each band separated by a plain smooth course and a thin groove. Faintly hand-finished surface. The pattern repeats horizontally. Mostly one colour (pale sand) with soft tonal depth. |
 
+**Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
+"Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
+(neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-10-05 and processed** (`tools/textures/batches/chatgpt-2026-10f-yuni.json`): `patterns/yuni/paintbw`,
+`paintcol` (cropped to 4 x 4 whole cells first), `relief`, and the three rows below. `patterns/yuni/mosaic` (full colour)
+is not needed: the game tints its mosaic per dome, so the neutral `mosaic.trencadis` serves. The rows, all reusable by
+Locus (same painters and palette) and noted per row, with the base template and the tintable sentence:
+
+| id | Material line |
+|---|---|
+| `mosaic.trencadis` *(supersedes the base row below; tinted in game, so neutral)* | Trencadis mosaic of irregular broken glazed ceramic shards, each a different angular polygon about 3 to 6 cm across with slightly rounded broken edges, set in thin recessed grout lines about 4 mm wide in dark warm grey (#3a3632). Every shard is the same pale off-white glazed ceramic (#e8e4da), varying only slightly in tone from shard to shard, with a faint satin glaze; no coloured shards, no larger design, no regular grid. Reuse: Locus, Iziz and Voth inlay and any culture's broken-tile work, tinted per use. |
+| `metal.ancient.white` *(refines the base row below)* | Ancient white metal cladding: a grid of flat rectangular panels, exactly two across and four down, each panel twice as wide as it is tall, separated by narrow recessed seams with a thin dark shadow line. A small round recessed fastener sits near each panel corner. Near-white satin enamel (#e6e4dc), faint horizontal brushed grain, panels differing very slightly in tone, and pale grey tarnish (#b4b0a2) gathering along the seams and in soft streaks below the fasteners. No rust, no rivets, no text. Reuse: every Ancients-lineage build's white metal (`MAT.white`), Locus. |
+| `rock.columnar` *(new: the butte, `FAMMAT.column`, 40 x 64 m)* | Weathered columnar-jointed volcanic rock face seen straight on, like Devil's Tower: tall vertical polygonal columns side by side, about eight columns across the image, each column a flat or slightly rounded facet separated by deep dark vertical joints, with occasional horizontal cross-fractures at irregular heights and a few broken column ends. Grey-brown phonolite (#8c8474, #7e7768, #9a917e) with faint pale lichen patches (#a39a82) and darker water stains running down the joints (#5c574c). The columns run unbroken from the top edge to the bottom edge. Reuse: any basalt or phonolite cliff (Voth's volcano flanks, Highlands gorges, Ys' karst headlands). |
+
+**Yuni's interiors** (2026-10-05; the base template with the tintable sentence): **delivered the same day and processed**
+(`tools/textures/batches/chatgpt-2026-10g-yuni-interiors.json`), and on Yuni (`settlements/yuni/KNOWN_ISSUES.md`):
+
+| id | Material line |
+|---|---|
+| `wood.beam` | Rough-hewn timber beam surface seen straight on, the grain running straight from the top edge to the bottom edge: long tight growth lines, adze facets a hand's width across, a few shallow drying checks along the grain and one or two small knots. One continuous piece of wood: no plank seams, no nails, no bolts, no bark. Warm mid-brown (#6a4e34) with slightly darker grain (#4e3a28). Reuse: every build's `timber` family (beams, posts, toron, furniture legs): Girder, Voth, Locus, Mav's Refuge. |
+| `cloth.rug.pile` | The pile surface of a hand-knotted wool carpet seen straight on: dense short tufts of wool yarn in tight rows of knots, slightly matted and worn flatter in patches, a faint grid of knot rows, a few loose fibres. One plain colour of undyed wool (#cfc4b0) with natural slight variation; no pattern, no border, no fringe. Reuse: every culture's carpets, cushions and saddle-blankets, tinted. |
+| `fibre.coil` | Side wall of a coiled grass basket seen straight on: horizontal coils of bundled dry grass about 1.5 cm thick stacked one above the other, each coil wrapped and stitched to the one below with thin split-palm strips in short slanted stitches, the stitches staggered row to row. Straw colour (#c8b272) with slightly darker stitching (#a08850); no pattern. Reuse: Reed Lake, Beast Rider and Highlands baskets, granary lids, skeps. |
+
 Uncertain, to check when the images come back: Iziz gilt (the build has only a plain gilt material, so its motifs are
 invented); the Iziz banner (the build draws one non-tiling banner, made a repeat here); Port hazard and livery
 (extrapolated); the Hykkousoi inlay and trim (the build has no such painters).

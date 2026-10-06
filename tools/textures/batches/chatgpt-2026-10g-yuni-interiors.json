@@ -1,0 +1,17 @@
+[
+ {"src": "wood.beam.webp", "out": "core/materials/library/wood.beam",
+  "record": {"id": "wood.beam", "family": "wood", "colour": "#ffffff", "roughness": 0.8, "metal": 0, "scale": [1.2, 1.2], "tint": true, "pattern": false,
+   "_source": {"generator": "ChatGPT image generation, Oct 2026", "prompt": "core/materials/PLAN.md, row wood.beam (the full prompt given 2026-10-05)", "licence": "generated for this project by its owner",
+    "reuse": "every build's timber family: beams, posts, toron, furniture legs (Girder, Voth, Locus, Mav's Refuge), tinted"}},
+  "options": {"rough": 0.8, "rough_var": 0.25, "lift": 0.1, "mute": 0.4}},
+ {"src": "cloth.rug.pile.webp", "out": "core/materials/library/cloth.rug.pile",
+  "record": {"id": "cloth.rug.pile", "family": "cloth", "colour": "#ffffff", "roughness": 0.95, "metal": 0, "scale": [0.6, 0.6], "tint": true, "pattern": false,
+   "_source": {"generator": "ChatGPT image generation, Oct 2026", "prompt": "core/materials/PLAN.md, row cloth.rug.pile (the full prompt given 2026-10-05)", "licence": "generated for this project by its owner",
+    "reuse": "every culture's carpets, cushions and saddle-blankets, tinted"}},
+  "options": {"rough": 0.95, "rough_var": 0.1, "lift": 0.1, "mute": 0.3}},
+ {"src": "fibre.coil.webp", "out": "core/materials/library/fibre.coil",
+  "record": {"id": "fibre.coil", "family": "fibre", "colour": "#ffffff", "roughness": 0.85, "metal": 0, "scale": [0.35, 0.35], "tint": true, "pattern": false,
+   "_source": {"generator": "ChatGPT image generation, Oct 2026", "prompt": "core/materials/PLAN.md, row fibre.coil (the full prompt given 2026-10-05)", "licence": "generated for this project by its owner",
+    "reuse": "Reed Lake, Beast Rider and Highlands baskets, granary lids, skeps, tinted"}},
+  "options": {"rough": 0.85, "rough_var": 0.2, "lift": 0.1, "mute": 0.3}}
+]

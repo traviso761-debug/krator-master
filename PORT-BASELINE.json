@@ -201,8 +201,8 @@
    "sha256": "b6e03875715091c342e32963ee1bd1dac011f4eb0452d61d7217fe0ea983b5f8"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1137385,
-   "sha256": "1c6fe209352e70ed91e7d82297920620416ccca8d0ed1304a8558d57742b9695"
+   "bytes": 1143048,
+   "sha256": "eb784019d1cef87cf10b7710ea992390d1102ccf8208660255d701dc2407dc38"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 444959,
@@ -473,16 +473,16 @@
    "sha256": "80268a8074400dde0f1e2ad5ab743314527570fc4b8a31c39757a689a4eb35bd"
   },
   "settlements/yuni/yuni-assets.html": {
-   "bytes": 1109843,
-   "sha256": "3ae16bff84779ac510ae30deacdc74434240d97cbfbf6d619bbb40af909aeadc"
+   "bytes": 7601179,
+   "sha256": "c80b525e7490eff86222ae5b4e9f850f4deab2656017b2f40b39e88358d0f563"
   },
   "settlements/yuni/yuni-plants.html": {
-   "bytes": 1109834,
-   "sha256": "97eb6a799b6f5cd598212da928e3d3bfeb11237cbd7f7731ddbf850c5ac7f758"
+   "bytes": 7601170,
+   "sha256": "e44114ab7cd0069939e54e08e95424b27fdeca160d29e29ef8d409e6d5359f83"
   },
   "settlements/yuni/yuni.html": {
-   "bytes": 1109762,
-   "sha256": "7eab9b199884f2b3f528c4095f7998e346d603b189f8763866075219b26bb28e"
+   "bytes": 7601098,
+   "sha256": "0004f1123fff66c7a4914316620f390d25d4c2ace249b7087e8d9f9c22ec2b32"
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

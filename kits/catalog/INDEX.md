@@ -44,7 +44,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-master-furniture-screamer.js` | 5 |  |
 | `krator-master-furniture-voth.js` | 6 |  |
 | `krator-master-furniture-xanadu.js` | 6 |  |
-| `krator-master-furniture.js` | 238 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1372); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1867); Yuni (58 pieces) (2612); Ancients kit extras (4 pieces) (4340) |
+| `krator-master-furniture.js` | 243 **big** | Voth (35 pieces) (18); Iziz (9 pieces) (1372); Beast-Rider (Mav's Refuge / Girder) (16 pieces) (1867); Yuni (64 pieces) (2612); Ancients kit extras (4 pieces) (4435) |
 | `krator-master-plants.js` | 92 **big** | Voth (21 species) (10); Iziz (7 species) (870); Beast-Rider (Mav's Refuge / Girder) (11 species) (1188); Yuni (9 species) (1700) |
 | `krator-symbols.js` | 9 | CULTURE SYMBOLS (shared: core/sockets/38-symbols (1); symbols: each draws in the box (cx,cy,R) with tw (10) |
 

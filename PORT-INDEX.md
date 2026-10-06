@@ -22,9 +22,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1798 | 411 | 0 | 106 | 107 | 1175 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 64 | 886 | 437 | 19 | 10 | 56 | 365 | 6 |  | yes | yes |
 | [`settlements/ys`](settlements/ys/PORT.md) | 135 | 1917 | 307 | 52 | 104 | 104 | 1351 | 8 |  | yes | yes |
-| [`settlements/yuni`](settlements/yuni/PORT.md) | 47 | 1024 | 105 | 13 | 16 | 142 | 748 | 11 | fixtures | yes | yes |
+| [`settlements/yuni`](settlements/yuni/PORT.md) | 48 | 1039 | 106 | 13 | 16 | 150 | 754 | 11 | fixtures | yes | yes |
 | [`kits/ancients`](kits/ancients/PORT.md) | 207 | 2537 | 244 | 34 | 174 | 27 | 2057 | 11 |  | yes | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 37 | 1353 | 11 | 0 | 10 | 55 | 1277 | 3 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 37 | 1358 | 11 | 0 | 10 | 55 | 1283 | 3 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 120 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/motor-vehicles`](kits/motor-vehicles/PORT.md) | 7 | 30 | 0 | 0 | 10 | 20 | 0 | 0 |  |  | yes |
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
@@ -39,7 +39,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 181 | 1 | 0 | 10 | 37 | 133 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 206 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
-| **all** | 1493 | 20063 | 2969 (15%) | 349 (2%) | 877 (4%) | 1955 (10%) | 13913 (69%) | 213 | | | |
+| **all** | 1494 | 20083 | 2970 (15%) | 349 (2%) | 877 (4%) | 1963 (10%) | 13925 (69%) | 213 | | | |
 
 ## Host-shell copies
 
@@ -49,7 +49,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 |---|---|---|---|
 | `camera` | 18 | 14 | 203 |
 | `probe` | 16 | 13 | 51 |
-| `sky` | 13 | 5 | 349 |
+| `sky` | 13 | 5 | 350 |
 | `stats` | 11 | 1 | 13 |
 | `host-stage` | 11 | 11 | 228 |
 | `host-sky` | 11 | 9 | 161 |
