@@ -104,13 +104,13 @@ PALETTE_FILE = '05-palette.js'
 ROOT = os.path.dirname(os.path.dirname(HERE))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js'}
+VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Locus has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
 TEX_DIR = os.path.join(HERE, 'tex')
-DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}
+DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 
 
 def matlib_pack():
@@ -152,6 +152,10 @@ def virtual_bodies():
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
     vb['46-matlib-pack.js'] = matlib_pack()
+    # the eastern-abyss biome (read in place, BIO_CANON): its library pack, before the biome code (69a1-...)
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack as _mp
+    vb['69a0-bio-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss')
     return vb
 
 

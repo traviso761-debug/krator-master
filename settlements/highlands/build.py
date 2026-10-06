@@ -147,7 +147,7 @@ _OLD_TARGETS = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-highlands-matlib.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-highlands-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -310,6 +310,9 @@ def build_one(target, do_checks, assert_origin):
     import matlib_pack
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'highlands')
     order = sorted(order + [MATLIB_PACK])
+    if any(f.startswith('86-bio-') for f in order):   # the vendored nwlowlands biome: its library pack, before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'nwlowlands'), 'nwlowlands')
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
         errs = check(order, bodies)

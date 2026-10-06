@@ -113,7 +113,7 @@ TARGET_OUT = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-xanadu-matlib.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-xanadu-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -263,6 +263,9 @@ def build_one(target, do_checks):
     import matlib_pack
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'xanadu')
     order = sorted(order + [MATLIB_PACK])
+    if any(f.startswith('86-bio-') for f in order):   # the vendored xanadu biome: its library pack, before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'xanadu'), 'xanadu')
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
         errs = check(order, bodies)

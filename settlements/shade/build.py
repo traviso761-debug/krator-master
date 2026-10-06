@@ -94,12 +94,14 @@ def main():
     for f in ('23-mat-record.js', '25-matlib-host.js'):
         if f not in path: path[f] = os.path.join(REC, f)
     path[MATLIB_FRAG] = None
+    path['44-host-biome-pack.js'] = None   # the vendored sedesert biome's library pack, before the biome code (50-...)
     sys.path.insert(0, os.path.normpath(os.path.join(HERE, '..', '..', 'tools', 'textures')))
     import matlib_pack
     frags = sorted(path)
     out, bad = [], []
     for f in frags:
         s = (world_json() if f == WORLD_FRAG else matlib_pack.fragment(HERE, 'shade') if f == MATLIB_FRAG
+             else matlib_pack.fragment(os.path.normpath(os.path.join(HERE, '..', '..', 'biomes', 'sedesert')), 'sedesert') if f == '44-host-biome-pack.js'
              else open(path[f], encoding='utf8').read())
         n = int(re.match(r'(\d+)', f).group(1))
         if 10 <= n < 80 and '-host-' not in f:

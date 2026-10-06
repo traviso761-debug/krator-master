@@ -157,7 +157,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
     '86-bio-57-fauna-pack.js',            # generated: the library's fauna sheets as data URLs (fauna_pack)
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '69e-iziz-matlib.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '69e-iziz-matlib.js', '86-bio-00-matlib-pack.js',   # the material library (no rnd())
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
 }
@@ -343,6 +343,11 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     bodies[MATLIB_PACK] = matlib_pack()
     order = sorted(order + [MATLIB_PACK])
+    if target == 'city':   # the vendored hyperjungle biome: its library pack, before the biome code (86-bio-*)
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        bodies['86-bio-00-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'hyperjungle'), 'hyperjungle')
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
     fp = fauna_pack() if target == 'city' else None
     if fp:
         bodies[FAUNA_PACK] = fp

@@ -115,7 +115,7 @@ TARGET_OUT = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-dalab-matlib.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '86-bio-00-matlib-pack.js', '88x-matlib-pack.js', '88y-dalab-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
@@ -256,6 +256,9 @@ def build_one(target, do_checks, assert_origin):
     import matlib_pack
     bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'dalab')
     order = sorted(order + [MATLIB_PACK])
+    if any(f.startswith('86-bio-') for f in order):   # the vendored swlowlands biome: its library pack, before the biome code
+        bodies['86-bio-00-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'swlowlands'), 'swlowlands')
+        order = sorted(order + ['86-bio-00-matlib-pack.js'])
 
     if do_checks:
         errs = check(order, bodies)
