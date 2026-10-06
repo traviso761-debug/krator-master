@@ -48,7 +48,8 @@ ENTRIES = [
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
      'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
     ('world', 'mavs-refuge', 'settlements/mavs-refuge/mavs-refuge.html', "Mav's Refuge",
-     'A refuge in the hypertropic jungle on the lee shore of the Ring Sea.'),
+     'A refuge in the hypertropic jungle on the lee shore of the Ring Sea: every apartment, workshop, storehouse, house '
+     'and hut planned into rooms and furnished from the catalog, real windows, and lamps and hearths lit at night.'),
     ('world', 'shade', 'settlements/shade/dist/shade.html', 'Shade',
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
     ('world', 'ys', 'settlements/ys/dist/ys.html', 'Ys',

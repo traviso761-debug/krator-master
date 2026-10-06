@@ -86,3 +86,7 @@ the material library (24 families, the interiors included), the world clock (hel
 each; `worlds/krator-catalog.html` replaced with the catalog's 1520 pieces (Yuni's six interiors pieces re-harvested). From
 `main` at 23ef6be7, with the index regenerated (Yuni's blurb and size, the catalog's count). Every other page is as in
 version 46. One publish call.
+
+Version 48 (2026-10-05): `worlds/mavs-refuge.html` replaced with Mav's Refuge's interiors (every lot, level room and hut
+planned and furnished, kept as data with the bake inlined; real windows; interior lamps and hearths), 3.2 MB, from `main`
+at b64cf395. The index changes only Mav's card (blurb and size). Every other page is as in version 47. One publish call.
