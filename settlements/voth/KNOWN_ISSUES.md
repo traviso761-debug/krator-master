@@ -67,3 +67,4 @@ source in brackets. Pitfalls that are lessons rather than defects stay in
       combined (one draw per level in view) and gives a far version only to sets with 20k triangles or more in all:
       verify's opening view reads 74 calls (73 before LOD) and 2.48 M triangles (4.27 M). `baseline.json` was re-saved
       with LOD on, so `--baseline baseline.json` shows only run-to-run noise (`_highpriest.stateT`).
+- [ ] (2026-10-06) Library adoption, first pass: stone, plaster, roof, wood, dome, fungus, metal and cloth take library sets as grey detail maps (materials.json), normalised to the measured brightness of the procedural maps they replace, so the palette keeps its tone; trunk and leaf (the willows) stay procedural. dome and metal keep a low metalness: there is no environment map. Judged in three views. window._fammat is a dev handle on FAMMAT.

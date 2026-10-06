@@ -1,0 +1,153 @@
+{
+ "build": "voth",
+ "note": "Voth's adapter onto the material library (core/materials/PLAN.md). Every set is a grey detail map (keep 0) that the palette tint colours; tint.mean is the measured mean brightness of the procedural map it replaces (2026-10-06, window._fammat), so Voth's tuned palette keeps its tone. trunk and leaf (the willows) stay procedural. cloth had no map before: its mean (0.9) is an estimate. Run python3 tools/textures/pack.py settlements/voth after any change, then python3 build.py; ?mat=proc shows the procedural look. dome and metal keep a low metalness (0.1, 0.15): Voth has no environment map, and a metallic MeshStandardMaterial without one renders dark (the palace's gold dome went dull at 0.5).",
+ "size": 512,
+ "families": {
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.782
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.873
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "roof": {
+   "lib": "roof.tile",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.811
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "wood": {
+   "lib": "wood.timber",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.904
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "dome": {
+   "lib": "metal.scale",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.966
+   },
+   "roughLift": 0.1,
+   "specular": 0.45,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   },
+   "metal": 0.1
+  },
+  "fungus": {
+   "lib": "organic.fungus.cap",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.944
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "metal": {
+   "lib": "metal.iron",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.945
+   },
+   "roughLift": 0.1,
+   "specular": 0.45,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   },
+   "metal": 0.15
+  },
+  "cloth": {
+   "lib": "cloth.weave.plain",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.9
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  }
+ }
+}

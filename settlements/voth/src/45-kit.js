@@ -433,6 +433,16 @@ function applyNightGlow(sh, wpName){
     ].join('\n'));
 }
 
+/* a library family (47-texture.js, the library block): the set's colour, normal and roughness maps on a
+   MeshStandardMaterial, as Girder's famMaterial(); a procedural family keeps its MeshLambertMaterial (?mat=proc). */
+function vothLibMaterial(fm){
+  var T = fm.libTex, L = fm.lib;
+  var m = new THREE.MeshStandardMaterial({ color:0xffffff, map:T.map, normalMap:T.normalMap, roughnessMap:T.roughnessMap,
+    roughness:1, metalness:L.metal||0 });
+  if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+  m.userData.lib = L.lib;
+  return m;
+}
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
 function emitBuckets(){
   var total=0, meshes=0;
@@ -441,7 +451,7 @@ function emitBuckets(){
     if(!B.list.length) continue;
     var geo = SHAPES[B.shape]();
     var fm  = FAMMAT[B.fam] || {};
-    var mat = new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null });
+    var mat = fm.lib ? vothLibMaterial(fm) : new THREE.MeshLambertMaterial({ color:0xffffff, map: fm.tex || null });
     mat.userData.fam = B.fam;
     /* every bucket now needs a hook (the night-light pool is universal), so
        the old "no UV, no sway -> skip onBeforeCompile entirely" early-out
@@ -450,12 +460,13 @@ function emitBuckets(){
       mat.onBeforeCompile = function(sh){
         if(needsUV) applyWorldUV(sh, sc);
         if(needsSway) applyClothSway(sh);
+        if(fm.lib) KMAT.libHooks(sh, fm.lib);
         applyNightGlow(sh);
       };
       mat.customProgramCacheKey = function(){
-        return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway ? '|sway' : '') + '|nl';
+        return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway ? '|sway' : '') + '|nl' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : '');
       };
-    })(!!fm.tex, B.fam === 'cloth', fm.scale || [4,4]);
+    })(!!fm.tex, B.fam === 'cloth', fm.lib ? fm.lib.scale : (fm.scale || [4,4]));   /* a library map tiles at its own size */
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam;    /* dev inspector (86-inspect.js) reads these */
     im.castShadow = !FAST; im.receiveShadow = !FAST;
