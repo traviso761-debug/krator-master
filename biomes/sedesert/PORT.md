@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 1 (1%) | 0 (0%) | 14 (7%) | 52 (27%) | 127 (66%) |
+| KB | 1 (1%) | 0 (0%) | 14 (7%) | 52 (27%) | 127 (65%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/35-core-strata.js` | 8.7 | [draw] | 1 | 5 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/45-host-stage.js` | 30.1 | [web] | 35 | 5 | 3 | 1 | 0 | 4 | 15 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
+| `src/45-host-stage.js` | 30.7 | [web] | 35 | 5 | 3 | 1 | 0 | 4 | 15 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
 | `src/50-biome-sedesert-species.js` | 29.2 | [draw] | 0 | 3 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-sedesert-trees.js` | 36.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 | placement pass: `SEDESERT.buildTrees` (line 314); `mk` (line 318) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 336) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar` for the far impostor. The two passes share one function but not one loop |
 | `src/60-biome-sedesert-floor.js` | 14.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
@@ -22,7 +22,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/70-biome-sedesert.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-biome-sedesert-fauna.js` | 28.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 18 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build); the deer and coyotes' layout (walkers) is data and their pose a function of the BIO clock (walkAt) |
 | `src/82-host-sky.js` | 13.6 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
-| `src/85-host-tower.js` | 4.9 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
+| `src/85-host-tower.js` | 5.4 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/88-host-build.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/90-host-camera.js` | 10.0 | [web] | 6 | 0 | 4 | 7 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |  |
 | `src/91-host-probe.js` | 8.4 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 |  |

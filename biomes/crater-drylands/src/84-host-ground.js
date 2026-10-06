@@ -1,4 +1,8 @@
 // ================================================================= HOST — the fire history, the ground, the water
+// the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
+// carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
+function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('craterdry',n):null;if(!L)return fb;
+ const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 // The kit's fire model runs first (CRATERDRY.fireHistory, 52-fire) with this showcase's recent fires; then one ground
 // mesh is painted by the mosaic it made, so the burns read from any distance: black char with grey ash, the bloom's
 // green flush and its drifts of pink, orange, violet, yellow and crimson, red soil under young scrub, straw and olive
@@ -65,7 +69,7 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
  const b=P('ground.burn'),s=P('ground.redsoil');if(!b||!s)return null;
  return{burn:KMAT.textures(b,{aniso:8}).map,burnK:1/b.scale[0],soil:KMAT.textures(s,{aniso:8}).map,soilK:1/s.scale[0]};})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};}
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uGran={value:CRATERDRY.GRANITE?CRATERDRY.GRANITE.map:CRATERDRY.ROCKTEX};sh.uniforms.uCarpet={value:TEX_CARPET};if(GLAY){sh.uniforms.uGBurn={value:GLAY.burn};sh.uniforms.uGSoil={value:GLAY.soil};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aBloom,aOld;attribute vec3 aDrift;varying float vBloom,vOld;varying vec3 vDrift;attribute vec2 aGL;varying vec2 vGL;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vBloom=aBloom;vOld=aOld;vDrift=aDrift;vGL=aGL;');
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uCarpet;varying vec3 vGWP;varying float vRock;varying float vBloom,vOld;varying vec3 vDrift;varying vec2 vGL;'+(GLAY?'uniform sampler2D uGBurn,uGSoil;':''))

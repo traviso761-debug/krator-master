@@ -452,15 +452,20 @@ NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;
  M.halo.opacity=.20*k;M.haloV.opacity=.18*k;M.halo.visible=M.haloV.visible=k>0;
  return{bulb:M.bulb.emissiveIntensity,pod:M.pod.emissiveIntensity,halo:M.halo.opacity};};
 const BK=['Plated bark','Fibrous bark','Smooth bark','Birch bark','Furrowed bark','Trumpet stalks','Pine bark','Charred snags'];
-BK.forEach((lab,i)=>{if(i===5)return;BIO.bucket('nbark'+i,BIO.barkMat(NHL.BARKTEX[i]),{label:lab,uvScale:[i===3?3:4,i===3?4:6]});});
+// the bark, fallen-wood and boulder materials are made first and offered to the library as one table (NHL.BKMAT:
+// nbark0..7 but the trumpets, nwood, nrock), so BIO.libSwap binds them before their buckets read the set's tile size
+NHL.BKMAT={nwood:BIO.barkMat(NHL.WOODTEX),nrock:BIO.barkMat(NHL.ROCKTEX)};
+BK.forEach((lab,i)=>{if(i!==5)NHL.BKMAT['nbark'+i]=BIO.barkMat(NHL.BARKTEX[i]);});
+Object.assign(NHL.LIB,BIO.libSwap('nhighlands',NHL.BKMAT));
+BK.forEach((lab,i)=>{if(i===5)return;BIO.bucket('nbark'+i,NHL.BKMAT['nbark'+i],{label:lab,uvScale:[i===3?3:4,i===3?4:6]});});
 // the trumpets: stalk bark into a funnel of leaf, a green that goes violet-blue at grazing angles
 BIO.bucket('nbark5',BIO.iridBarkMat(NHL.BARKTEX[5],'nh-trumpet',[1.0,1.06,0.94],[0.92,0.86,1.22]),{label:'Trumpet stalks and funnels',uvScale:[3,5]});
 // the funnels: leaf, not bark. Lit like a leaf card (the core's foliage hook: the normal bent toward the sky,
 // the back face lit through), so a funnel seen from below glows pale green as a thin leaf does, never the
 // black of an opaque cone in its own shadow
 BIO.bucket('nfunnel',BIO.leafMat(NHL.BARKTEX[5],'nh-funnel',{vertexColors:true,swayW:'0.0',swayA:0,alphaTest:0}),{label:'Trumpet funnels',uvScale:[3,5]});
-BIO.bucket('nwood',BIO.barkMat(NHL.WOODTEX),{label:'Fallen wood',uvScale:[3,4]});
-BIO.bucket('nrock',BIO.barkMat(NHL.ROCKTEX),{label:'Boulders',uvScale:[6,6]});
+BIO.bucket('nwood',NHL.BKMAT.nwood,{label:'Fallen wood',uvScale:[3,4]});
+BIO.bucket('nrock',NHL.BKMAT.nrock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('nfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items

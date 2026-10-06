@@ -1,6 +1,6 @@
 {
  "build": "hyperjungle",
- "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. The older four species' canvases are painted in colour (55-trees tints() then sets a near-white tint), so their library barks keep their own colour (keep 1, brightness still matched); mahogany and kapok are near-grey, tinted by the species.",
+ "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. The older four species' canvases are painted in colour (55-trees tints() then sets a near-white tint), so their library barks keep their own colour (keep 1, brightness still matched); mahogany and kapok are near-grey, tinted by the species. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. limb (bark.smooth) and wood (wood.gnarled: the dead wood and logs), 2026-10-06 late: grey at the procedural maps' brightness and colour.",
  "size": 512,
  "families": {
   "bark0": {
@@ -289,6 +289,62 @@
    },
    "mapOnly": true,
    "optional": true
+  },
+  "towerConcrete": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.508,
+    "colour": "#8a816f"
+   },
+   "metal": 0,
+   "normalScale": 0.7
+  },
+  "towerRust": {
+   "lib": "metal.rust.plate",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.378,
+    "colour": "#7f5b3f"
+   },
+   "metal": 0,
+   "normalScale": 0.7
+  },
+  "limb": {
+   "lib": "bark.smooth",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.21,
+    "colour": "#4a3125"
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "wood": {
+   "lib": "wood.gnarled",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.268,
+    "colour": "#534232"
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
   }
  }
 }

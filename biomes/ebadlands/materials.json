@@ -1,6 +1,6 @@
 {
  "build": "ebadlands",
- "note": "The eastern badlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern badlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; the open world loads the kit without it and keeps the procedural ones): keep 0 is a grey detail map the kit's per-instance species colour colours, so one card serves every species on that item. leaf.spray and leaf.weep are cut from one cell or column of their sheet in 50-biome-ebadlands-species.js. ground.* are the showcase host's ground layers (45-host-stage.js), blended per vertex by zone: keep 0 multiplies the painted ground colour by the set's relief, keep 1 shows the set's own colour (sulphur, the acid pools). Run python3 tools/textures/pack.py biomes/ebadlands after any change, then python3 build.py. bark.* and wood.silver replace the bark buckets' canvases (keep 0: the species' vertex colours colour them; mean 0.6, which means() divides out); bark.aspen is the hyperjungle's ghostwood, tinted. stone.gem (stone.amazonite) is the ember crown's pods, full colour.",
+ "note": "The eastern badlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern badlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; the open world loads the kit without it and keeps the procedural ones): keep 0 is a grey detail map the kit's per-instance species colour colours, so one card serves every species on that item. leaf.spray and leaf.weep are cut from one cell or column of their sheet in 50-biome-ebadlands-species.js. ground.* are the showcase host's ground layers (45-host-stage.js), blended per vertex by zone: keep 0 multiplies the painted ground colour by the set's relief, keep 1 shows the set's own colour (sulphur, the acid pools). Run python3 tools/textures/pack.py biomes/ebadlands after any change, then python3 build.py. bark.* and wood.silver replace the bark buckets' canvases (keep 0: the species' vertex colours colour them; mean 0.6, which means() divides out); bark.aspen is the hyperjungle's ghostwood, tinted. stone.gem (stone.amazonite) is the ember crown's pods, full colour. groundDetail and groundCrack (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9; cracks .95 with contrast 1.8), colour map only.",
  "size": 512,
  "families": {
   "leaf.needle": {
@@ -327,6 +327,38 @@
    },
    "roughLift": 0,
    "specular": 0.5,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    6,
+    6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.3
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "mapOnly": true
+  },
+  "groundCrack": {
+   "lib": "ground.playa.red",
+   "scale": [
+    7,
+    7
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.95,
+    "contrast": 1.8
+   },
+   "metal": 0,
+   "normalScale": 1.0,
    "mapOnly": true
   }
  }

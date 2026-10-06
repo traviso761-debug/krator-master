@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 24 (14%) | 14 (9%) | 13 (8%) | 37 (23%) | 78 (47%) |
+| KB | 24 (14%) | 15 (9%) | 13 (8%) | 37 (22%) | 78 (47%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -20,7 +20,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-biome-craterdry-floor.js` | 15.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-biome-craterdry.js` | 1.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/82-host-sky.js` | 12.7 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset (WORLD.md: dense-air light) |
-| `src/84-host-ground.js` | 14.2 | [G shader] | 12 | 3 | 0 | 0 | 0 | 2 | 10 | 0 | 0 | 0 | 0 |  |
+| `src/84-host-ground.js` | 14.7 | [G shader] | 12 | 3 | 0 | 0 | 0 | 2 | 10 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/90-host-camera.js` | 9.5 | [web] | 5 | 0 | 4 | 7 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |  |
 | `src/91-host-probe.js` | 8.2 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 4 | 0 | 0 | 0 |  |

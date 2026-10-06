@@ -1069,9 +1069,12 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
    Still to do: Highlands (turf waits for `roof.turf`; rock,
    meadow have mesh UVs, the h* pattern sheets), Reed Lake (rlBundle has separate u and v tiles; the band and chakana patterns), Xanadu (x* -> the Xanadu patterns,
    `plaster.white_stucco_02`, `paving.tiles144`), vpBanner (keeps its device), pkContR and pkPaveR (rust and ruin).
-4. Biome slots left procedural: the ground detail layers (`TEX_DETAIL`, `TEX_CRACK`), hyperjungle limb and wood, nhighlands' bark buckets
-   (built outside NHL.MAT, so libSwap misses them), the iridescent/derived bark buckets built from raw canvases, the tower hosts' concrete
-   and rust, jetty stone, flowers (`TX.bloom` -> `card.flower.bloom`).
+4. Biome slots. Done 2026-10-06 (late): flowers (`bloom` -> `card.flower.bloom`, grey, in the eight biomes that have it); the hosts' ground
+   detail and salt-pan cracks (`groundDetail` -> `ground.gravelly_sand`, `groundCrack` -> `ground.playa.red`, colour map only, through a local
+   `hostGroundLib` in each host, so pages without the pack keep the procedural layers); nhighlands' bark, fallen-wood and boulder buckets (now
+   built into `NHL.BKMAT` and swapped before the buckets: ponderosa, juniper, smooth, birch, ironbark, pine scale, char, `wood.gnarled`);
+   hyperjungle's limb (`bark.smooth`) and dead wood (`wood.gnarled`); the girder tower hosts' concrete and iron (`concrete.ancient`,
+   `metal.rust.plate`) and the bay jetties' stone (`stone.cut`). Left procedural: the iridescent trumpet and Rift barks (shader-coloured).
 5. Smaller: Voth's ship hulls and sails, the catalog's painted decals (a cloth or parchment detail under the paint), mechs' leather, wood and
    rubber riding on the cloth bucket, motor-vehicles' null leather/rope/tin slots, Scyvoi's brass/bone/flag keys.
 
