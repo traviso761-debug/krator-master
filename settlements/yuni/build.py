@@ -75,6 +75,21 @@ CORE_MODULES = ['clock', 'sched', 'minimap', os.path.join('materials', 'record')
 CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
 TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
+# The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
+# the kit, read in place under Yuni's slot names, as Locus reads the eastern-abyss kit. They sort after the placement
+# pass (68) so the host binding (69b-yuni-biohost.js, between the core and the kit) knows every footprint, and the
+# planting (69z-yuni-badlands.js) runs last. Each is a unit of its own, with its own PRNG and palettes.
+_ROOT = os.path.dirname(os.path.dirname(HERE))
+BIO_CANON = {'69a1-bio-core-head.js': ('core', 'biome', '10-core-head.js'),
+             '69a2-bio-core-kit.js': ('core', 'biome', '20-core-kit.js'),
+             '69a3-bio-core-foliage.js': ('core', 'biome', '30-core-foliage.js'),
+             '69a4-bio-core-place.js': ('core', 'biome', '40-core-place.js'),
+             '69c1-bio-ebadlands-species.js': ('biomes', 'ebadlands', 'src', '50-biome-ebadlands-species.js'),
+             '69c2-bio-ebadlands-trees.js': ('biomes', 'ebadlands', 'src', '55-biome-ebadlands-trees.js'),
+             '69c3-bio-ebadlands-floor.js': ('biomes', 'ebadlands', 'src', '60-biome-ebadlands-floor.js'),
+             '69c4-bio-ebadlands-dress.js': ('biomes', 'ebadlands', 'src', '65-biome-ebadlands-dress.js'),
+             '69c5-bio-ebadlands.js': ('biomes', 'ebadlands', 'src', '70-biome-ebadlands.js')}
+BIO_CANON = {k: os.path.join(_ROOT, *v) for k, v in BIO_CANON.items()}
 OUT = os.path.join(HERE, 'yuni.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
@@ -82,7 +97,7 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
-                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
@@ -190,6 +205,11 @@ def check(order, bodies):
         head = RE_HEAD_SEED.sub('', strip_head_comments(bodies[f]), 1)
         if strip_head_comments(head).startswith('(function'):
             continue      # whole fragment is one IIFE: nothing leaks
+        if '-bio-' in f:
+            # the biome core and kit (BIO_CANON): one `var` (BIO / EBADLANDS) then IIFEs; everything else is local
+            for m in re.finditer(r'^var\s+([A-Za-z_$][\w$]*)', bodies[f], re.M):
+                decl.setdefault(m.group(1), set()).add(f)
+            continue
         for m in re.finditer(r'^(?:var|function)\s+([A-Za-z_$][\w$]*)', bodies[f], re.M):
             decl.setdefault(m.group(1), set()).add(f)
         for m in re.finditer(r'^var\s+[^;\n(]*?,\s*([A-Za-z_$][\w$]*)\s*=', bodies[f], re.M):
@@ -217,6 +237,10 @@ def main():
                 CORE_FRAGS.add(f)
     paths[PACK_FRAGMENT] = None            # generated below, not read from disk
     CORE_FRAGS.add(PACK_FRAGMENT)
+    for f, p in BIO_CANON.items():         # the biome core and the eastern badlands kit, in place (a src/ copy overrides)
+        if f not in paths:
+            paths[f] = p
+            CORE_FRAGS.add(f)
     order = sorted(paths)
     bodies = {}
     for f in order:

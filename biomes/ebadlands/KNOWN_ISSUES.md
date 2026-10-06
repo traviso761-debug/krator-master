@@ -17,6 +17,18 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 - [ ] **`upland` is not used for zoning**: the region's median height is 4.5 km, so the world's `upland`
   (height and relief) is high almost everywhere. Altitude reaches the kit through `cold`.
 
+## Hosted by Yuni (2026-10-06)
+
+`settlements/yuni` plants its wild valley with this kit, read in place (`BIO_CANON` in its `build.py`). The kit is
+unchanged; Yuni's binding (`src/69b-yuni-biohost.js`) gives `cold`, `wet`, `flow`, `rock`, `slope` and `upland` from its
+own ground, river and canal, and 0 for `canyon`, `rim`, `dune`, `geo` and `barren`. The valley is the kit's humid south
+(BIOME-API.md: "the valley of Yuni"), held to the Zion side by the owner's note: `cold` .24 on the floor and `wet` .5, so
+the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose weepers, umbels) under `pine` on the walls.
+`EBADLANDS.dress()` hangs Zion's gardens on Yuni's butte.
+- [ ] Yuni has no carved channels, so `canyon`, `bench` and `rimZ` never fire there: the canyon flora of the showcase
+  (bench pinyon, rim maples) is absent. A host that bound the valley walls as a canyon would get it.
+- [ ] Yuni's own ground painter draws its terrain; the kit's bedded-rock shader (`35-core-strata.js`) is not used there.
+
 ## The showcase
 
 - The showcase is a compressed transect (6.8 km for a region 300 km wide): the treeline at 1,350 m and the ice at

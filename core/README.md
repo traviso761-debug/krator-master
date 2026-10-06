@@ -132,6 +132,8 @@ their geometry only). Identical means the change moved nothing.
 
 Locus and Mungo read this folder and `biomes/eastabyss/src` in place (since 2026-10-05: `BIO_CANON` in their
 `build.py`, under Locus's old slot names `69a*`, `69c*`; their town trees use `EASTABYSS.make` / `grow`).
+Yuni reads this folder and `biomes/ebadlands/src` the same way (since 2026-10-06, `BIO_CANON` in its `build.py`, `69a*`
+and `69c*`; its host binding is `src/69b-yuni-biohost.js`, the planting `src/69z-yuni-badlands.js`).
 Worlds that vendored a kit (dalab from swlowlands, the Ancients kit from
 eastabyss, iziz, screamers and the Ancients kit from hyperjungle, Shade from sedesert, the
 xanadu settlement) keep their copies. dalab's, iziz's and Shade's `--vendor-check` compare
