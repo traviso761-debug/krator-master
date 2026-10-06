@@ -973,6 +973,9 @@ host without the new row looks exactly as before. Splits: `feather*` (23 pieces)
 
 #### Buildings, vehicles and biomes audit (2026-10-06): what is still missing
 
+*Update, same day:* **Jimjam is wired** (`settlements/jimjam/materials.json`: 17 families, full colour, every JMAT texture
+from the texturepalooza sets; README "Textures").
+
 A read-only sweep of every build's painters (`TEX.*`, FAMMAT) and every biome's species, bark, ground and fauna sections against the
 library, after the texturepalooza delivery. **The main finding: almost every building surface already has a set; what is missing is
 wiring.** Only Girder, Yuni, Ys (hyk), Scyvoi, motor-vehicles, mechs, crater-drylands and ebadlands read the library. Mav's Refuge,

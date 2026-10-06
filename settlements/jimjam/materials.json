@@ -1,0 +1,24 @@
+{
+ "build": "jimjam",
+ "note": "Jimjam's adapter onto the material library (core/materials/PLAN.md). Families are JMAT keys (src/60-jj-mat.js). Jimjam paints in full colour with a white instance tint, so every set keeps its own colour and brightness (tint.keep 1, mean null). scale is world metres per tile [width, height]: the bricks are sized so a stretcher reads about 0.24 m long (the library bricks are chunkier than the procedural 0.24 x 0.08 m ones, so courses read about 0.12 m); the marble keeps the procedural 2.4 m tile (1.2 x 0.6 m blocks), the plaster 4 m. The domes, the sunray and the shaft panels map over their mesh UVs, so their scale is nominal (the dome repeats are in 60-jj-mat.js). Run python3 tools/textures/pack.py settlements/jimjam after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "size": 512,
+ "families": {
+  "brick":          { "lib": "brick.red",             "scale": [2.0, 2.02], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "brickYellow":    { "lib": "brick.ochre",           "scale": [2.1, 2.07], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "brickDeep":      { "lib": "brick.oxblood",         "scale": [1.3, 1.09], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "brickDark":      { "lib": "brick.dark",            "scale": [1.7, 1.7],  "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "bandBrick":      { "lib": "brick.red.band",        "scale": [2.1, 1.71], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "marble":         { "lib": "stone.marble.ashlar",   "scale": [2.4, 2.4],  "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.6 },
+  "ochre":          { "lib": "plaster.ochre",         "scale": [4.0, 4.0],  "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.6 },
+  "domeTerracotta": { "lib": "roof.scale.terracotta", "scale": [1.5, 1.62], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "domeSlate":      { "lib": "roof.scale.slate",      "scale": [1.5, 1.61], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "domeGold":       { "lib": "roof.scale.gilt",       "scale": [1.5, 1.63], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "sunray":         { "lib": "patterns/common/medallion-sunray", "scale": [6, 6], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.5 },
+  "shaft_spiral":   { "lib": "patterns/jimjam/shaft-spiral",  "scale": [1, 1.18], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "shaft_chevron":  { "lib": "patterns/jimjam/shaft-chevron", "scale": [1, 1.09], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "shaft_diamond":  { "lib": "patterns/jimjam/shaft-diamond", "scale": [1, 1.02], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "shaft_ogee":     { "lib": "patterns/jimjam/shaft-ogee",    "scale": [1, 1.08], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "shaft_fleur":    { "lib": "patterns/jimjam/shaft-fleur",   "scale": [1, 0.98], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
+  "shaft_tracery":  { "lib": "patterns/jimjam/shaft-tracery", "scale": [1, 0.85], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 }
+ }
+}

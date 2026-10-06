@@ -188,6 +188,11 @@ async def run(a):
             except Exception:
                 print("timed out waiting for the kit to build")
                 fails.append("build timeout")
+            try:   # the library maps decode asynchronously (core/materials/record 25-matlib-host.js counts them)
+                await pg.wait_for_function("!window._texPending", timeout=120000)
+            except Exception:
+                print("timed out waiting for the library textures to decode")
+                fails.append("texture timeout")
             await pg.wait_for_timeout(2500)
             try:
                 st = await pg.evaluate(STATS_JS)
