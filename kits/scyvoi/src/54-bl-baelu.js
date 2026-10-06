@@ -123,6 +123,7 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
   // the stables: salamanders in the north bays (placed by 56-sa once the beasts exist), stalls, troughs and hay at the gallery foot
   for(let i=0;i<5;i++){const a=PI/2+PI+(i-2)*.22,p=tkAt(ri-2.2,a);FURNISH('scyvoi_trade_stall',p[0],Yc,p[1],tkFace(p[0],p[1])+PI,{setting:'both'});const q=tkAt(ri-4.2,a+.08);FURNISH('scyvoi_trade_trough',q[0],Yc,q[1],tkFace(q[0],q[1]),{setting:'outdoor'});}
   for(const a of [PI/2+PI-.62,PI/2+PI+.62]){const p=tkAt(ri-3.6,a);if(DEFS['salamander-riding'])place('salamander-riding',p[0],p[1],tkFace(p[0],p[1]),{y:Yc,v:a>PI*1.5?1:0,activity:'REST'});}
+  for(const [a,rr2,v] of [[PI/2+PI-1.2,ri-6,1],[PI/2+PI-1.05,ri-6.8,2],[PI/2+PI-1.35,ri-7.2,3],[PI/2+PI-.95,ri-5.6,0]]){const p=tkAt(rr2,a);place('goat',p[0],p[1],a+1.2,{y:Yc,v,seed:Math.round(a*10)});}   /* a few of the flock in the court */
   {const p=tkAt(ri-3,PI/2+.9);FURNISH('scyvoi_tying_boulder',p[0],Yc,p[1],tkFace(p[0],p[1]),{setting:'outdoor'});}
   for(const s of [-1,1]){FURNISH('scyvoi_brazier',s*3.6,Yc,R-8.5,0,{setting:'outdoor'});}
   FURNISH('scyvoi_supply_bales',8,Yc,-11,0,{setting:'outdoor'});FURNISH('scyvoi_fruit_baskets',6.5,Yc,-10.2,.4,{setting:'outdoor'});

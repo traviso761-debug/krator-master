@@ -1,0 +1,12 @@
+{
+ "build": "fauna",
+ "note": "The Fauna kit's detail maps (core/materials/PLAN.md): per material family a library set the runtime projects triplanar in each part's own frame (krator-fauna-runtime.js), its colour kept out (keep 0) so the vertex colours stay the animal's and only the grain shows; mean is divided back out. mapOnly: the colour map alone. Run python3 tools/textures/pack.py kits/fauna after a change, then python3 build.py.",
+ "size": 256,
+ "families": {
+  "coat": {"lib": "hide.fur.brown", "mapOnly": true, "scale": [0.18, 0.18], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.2},
+  "hair": {"lib": "hair.crest", "mapOnly": true, "scale": [0.25, 0.25], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.3, "specular": 0.2},
+  "skin": {"lib": "hide.leather008", "mapOnly": true, "scale": [0.45, 0.45], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.1, "specular": 0.4},
+  "horn": {"lib": "bone.horn", "mapOnly": true, "scale": [0.12, 0.12], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.1, "specular": 0.4},
+  "chitin": {"lib": "organic.chitin", "mapOnly": true, "scale": [0.35, 0.35], "tint": {"keep": 0.0, "mean": 0.6}, "roughLift": 0.0, "specular": 0.5}
+ }
+}

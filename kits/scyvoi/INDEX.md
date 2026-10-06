@@ -25,9 +25,9 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `42-ts-small.js` | 6 |  |
 | `44-tl-large.js` | 7 |  |
 | `46-tc-chief.js` | 7 |  |
-| `48-tt-trade.js` | 6 |  |
+| `48-tt-trade.js` | 8 |  |
 | `54-bl-baelu.js` | 15 |  |
-| `56-sa-beasts.js` | 10 |  |
+| `56-sa-beasts.js` | 11 |  |
 | `58-cv-wheels.js` | 6 |  |
 | `58v-cv-vardo.js` | 10 |  |
 | `59-th-tether.js` | 2 |  |

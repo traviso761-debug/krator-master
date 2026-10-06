@@ -37,11 +37,16 @@ of its fragments. Edit the kit here, then copy across; `iziz/build.py --vendor-c
 picture is identical; tubes and surfaces take about half the GPU memory they did. Builders still write full
 triangles as before.
 
-## To do (future, not started): a fauna kit
+## A fauna kit (started 2026-10-06: `kits/fauna`)
 
 The owner's call (2026-10): all fauna goes to ONE fauna kit (create it if none exists; today fauna is drawn
 inside each biome kit and inside some settlements), the way furniture went to `kits/catalog`. It takes each
 biome kit's fauna, and the settlements' own creatures: Mav's Refuge's spiders, spider egg sacs and webs and
 its other flyers (`settlements/mavs-refuge`, `KNOWN_ISSUES.md`), the flyers of Girder and the other worlds.
 Tag every animal by biome (as the root `README.md` asks of flora and fauna) and place it as data, built by the
-kit's own code. Not part of the 2026-10 furniture work.
+kit's own code. Started 2026-10-06 as `kits/fauna` (`KratorFauna`): the drylands goat and the fire salamander, with traits
+(edible, milkable, tameable, rideable, draught, eggs), yields, life (maturity, lifespan), diet, activity and temperament on
+every animal. The same day every other animal was gathered there: 48 species (each biome kit's fauna, the settlements'
+livestock, mounts and beasts, Mav's and Girder's spiders, flyers and millipedes, Voth's), each with a `source` list of the
+builds that draw it. Spider egg sacs and webs are not animals and stay in Mav's Refuge. The biome kits still draw their own
+copies; pointing them at the bundle is next (`kits/fauna/KNOWN_ISSUES.md`).

@@ -26,8 +26,8 @@
 - [ ] The Baelu's cell doors and windows are dark panels, not openings; its cells have no interiors yet (the kits/interiors
       planner could take a Baelu set: stables, stores, cells, the gatehouse).
 - [ ] Shadows ignore the cut-away (the cut tents stop casting while it is on, so the interiors are lit by the sky).
-- [ ] The salamanders are posed, not rigged: only the tail and the head move. A world that walks them needs a skeleton
-      (kits/mechs has the pattern: skinned walkers with leg IK).
+- [x] The salamanders moved to `kits/fauna` (2026-10-06), with the goats: parts turn there (legs, head, tail; idle, graze, walk,
+      rest). Rigid parts, no skinning: `kits/fauna/KNOWN_ISSUES.md`.
 - [ ] The kit sheet stands on flat ground; the crater drylands' flora (biomes/crater-drylands, not yet on main) is not placed.
 
 ## Shared code touched

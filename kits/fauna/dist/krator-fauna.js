@@ -1,0 +1,4063 @@
+/* kits/fauna bundle (fauna_bundle.py): fauna-core.js, krator-fauna-abyss.js, krator-fauna-bay.js, krator-fauna-crawlers.js, krator-fauna-desert.js, krator-fauna-farm.js, krator-fauna-flyers.js, krator-fauna-hyperjungle.js, krator-fauna-livestock.js, krator-fauna-mounts.js, krator-fauna-voth.js, krator-fauna-runtime.js. GENERATED; edit the kit files. */
+var KratorFauna = (function () {
+/* ---- kits/fauna/fauna-core.js ---- */
+/* ======================================================================
+   Krator Fauna: the kit core (kits/fauna/fauna-core.js)
+
+   ONE kit for every animal of Krator (biomes/README.md, "a fauna kit": the owner's call, 2026-10), the way furniture
+   is one catalog. An animal is an ANIMAL({...}) entry: data first (tags by biome and climate, harvest and edibility,
+   the life layer's numbers), then a build(A) that draws it as PARTS a host can move (body, head, tail, legs), each
+   with its own pivot. fauna_bundle.py wraps this file, the species files (krator-fauna-<group>.js) and
+   krator-fauna-runtime.js in ONE closure exposing only `KratorFauna`; nothing here meets a host's globals.
+   It needs only a global THREE (r128).
+
+   The entry:
+     ANIMAL({
+       key, name, group,                    group: the species file's group (livestock, mounts ...)
+       tags: { biomes:[...], koppen:[...], aridity:[...], climate:[...], riparian:'non'|'riparian'|'both', abyssal:false,
+               domestic:true|false, herdedBy:[cultures],
+               diet:'herbivore'|'carnivore'|'omnivore', feeding:'grazer'|'browser'|'mixed'|'predator'|'scavenger'|'insectivore'|...,
+               activity:'diurnal'|'nocturnal'|'crepuscular'|'cathemeral',
+               temperament:'skittish'|'wary'|'docile'|'defensive'|'aggressive' },   (README: tag by biome, harvest, edibility)
+       traits: { edible, milkable, tameable, rideable, draught, eggs },   booleans: what a people can do with it (eggs: edible eggs)
+       yields: { meat, milk, eggs, hide, hair, wool, feathers, ivory, horn },   amounts per adult, the unit in the key's rule
+               (FAUNA_YIELDS): meat kg dressed; milk L a day in milk; eggs a year; hide count a year (the animal's own: 1
+               when slaughtered) and its area in m2 as hideM2; hair, wool, feathers kg a year (shorn or moulted); ivory,
+               horn kg each animal. 0 or absent: none. A value may be an object { amount, note }.
+       life: { maturity (years to breeding age), lifespan (years), litter (young per birth), gestation (days) },
+       tags.habitat: [ground, rock, canopy, trunks, sky, water, shallows, deep water, marsh, burrow, pen],
+       tags.locomotion: [walks, runs, climbs, flies, glides, swims, wades, burrows, leaps],
+       size: { length, height, span } metres of an adult (span for a flyer); data.sizeRange [min, max] scale a world may vary
+       source: [{ build, file, lines, note }]   where the animal came from (the build that first drew it), for the port
+       data.gait: { type (FAUNA_VOCAB.gait), freq, stride }; data.legs (number of leg parts, default 4); data.wings (pairs);
+       data.flap: { freq, amp, glide }; data.swim: { freq, amp }
+       temperament: also data: fleeDistance (m: a skittish animal bolts at this range), aggression 0..1,
+       variants, variantNames, variantDims: [{w,d,h}],               per variant (a kid is smaller)
+       breeds: { name: { scale, ...data } },                         optional: one build at several sizes (salamanders)
+       w, d, h,                              the overall box (metres) of variant 0 / breed 1.0
+       data: { mass, speed:{walk,run}, gait:{type:'quadruped'|'sprawl', stride, freq}, herd, activity, schedule[24] },
+       build(A)                              A: the animal frame (below); A.variant, A.breed, A.S (scale), A.pose, A.rnd
+     })
+
+   The animal frame: origin on the ground under the middle of the body, +z FORWARD (the snout), y up, x its left
+   (three.js yaw). Metres. Colours are sRGB hex or [r,g,b] 0..1 sRGB; the builder writes LINEAR floats.
+     A.part(name, pivot[x,y,z], fn)     geometry drawn inside fn belongs to part `name`, which turns about `pivot`.
+                                        Names the runtime animates: body, head, tail, jaw, earL, earR; legs leg0..legN
+                                        (pairs front to back, left then right: 0 front left, 1 front right, 2 next left ...);
+                                        wings wingL, wingR (a second pair wing2L, wing2R), flapping about z at their roots;
+                                        body segments seg0..segN (a millipede, a swimmer's tail), weaving about y. Unnamed: body.
+     A.tube(fam, c(t)->[x,y,z], rad(t)->[hw,hh], nt, ns, col, o)   a skin along a curve (o.caps, o.colf(t, angle))
+     A.ellip(fam, x,y,z, rx,ry,rz, col, o)   o.rx/o.ry/o.rz: rotation (YXZ); o.seg
+     A.cone(fam, a, b, r0, r1, col, seg)     a tapered rod from a to b
+     A.locks(fam, list)                      hanging hair: list of {at:[x,y,z], dir:[x,y,z], len, w, col}: each a tapered
+                                             double-sided strip that curls a little at its tip
+     A.sheet(fam, f(u,v)->[x,y,z], nu, nv, col, o)   a free surface (a coat's skirt), o.colf(u,v)
+     A.anchor(name, [x,y,z])                 a point a host fits tack to (saddle, bridle ...), in the animal frame
+     A.profile(fn)                           a body profile function a host reads (the salamander's, for its saddles)
+   Families (materials): coat (short fur), hair (long hair, double-sided), skin, horn, hoof, eye, mouth, plain.
+   ====================================================================== */
+const TAU = Math.PI * 2;
+const FAUNA_FAMILIES = ['coat', 'hair', 'skin', 'horn', 'hoof', 'eye', 'mouth', 'plain', 'chitin', 'membrane', 'glow'];
+/* the vocabularies a tag is checked against (verify.py --assert) */
+const FAUNA_VOCAB = {
+  aridity: ['arid', 'semiarid', 'subhumid', 'humid'],
+  climate: ['hypertropic', 'tropic', 'temperate', 'cold'],
+  riparian: ['non', 'riparian', 'both'],
+  diet: ['herbivore', 'carnivore', 'omnivore'],
+  feeding: ['grazer', 'browser', 'mixed', 'frugivore', 'predator', 'scavenger', 'insectivore', 'filter feeder', 'detritivore'],
+  activity: ['diurnal', 'nocturnal', 'crepuscular', 'cathemeral'],
+  temperament: ['skittish', 'wary', 'docile', 'defensive', 'aggressive'],   /* from bolting first to attacking first */
+  habitat: ['ground', 'rock', 'canopy', 'trunks', 'sky', 'water', 'shallows', 'deep water', 'marsh', 'burrow', 'pen'],
+  locomotion: ['walks', 'runs', 'climbs', 'flies', 'glides', 'swims', 'wades', 'burrows', 'leaps'],
+  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'none'],
+  traits: ['edible', 'milkable', 'tameable', 'rideable', 'draught', 'eggs'],
+  koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H']
+};
+/* the yields and their units (per adult animal) */
+const FAUNA_YIELDS = { meat: 'kg', milk: 'L/day', eggs: '/year', hide: 'count', hair: 'kg/year', wool: 'kg/year', feathers: 'kg/year', ivory: 'kg', horn: 'kg', silk: 'kg/year', chitin: 'kg' };
+const ANIMALS = [], ANIMAL_BY_KEY = {};
+function ANIMAL(o) {
+  if (!o.key || ANIMAL_BY_KEY[o.key]) throw new Error('ANIMAL: a unique key, please (' + o.key + ')');
+  const e = Object.assign({ variants: 1, variantNames: [], tags: {}, traits: {}, yields: {}, life: {}, data: {}, breeds: null, size: {}, source: [] }, o);
+  ANIMALS.push(e); ANIMAL_BY_KEY[e.key] = e; return e;
+}
+
+/* a hash and a value noise in 0..1 for coats and markings (no stream: the same animal gives the same patches) */
+function faHash(x, y, z) { const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453; return s - Math.floor(s); }
+function faNoise(x, y, z) {
+  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf), w = zf * zf * (3 - 2 * zf);
+  const L = (a, b, t) => a + (b - a) * t, h = (i, j, k) => faHash(xi + i, yi + j, zi + k);
+  return L(L(L(h(0, 0, 0), h(1, 0, 0), u), L(h(0, 1, 0), h(1, 1, 0), u), v), L(L(h(0, 0, 1), h(1, 0, 1), u), L(h(0, 1, 1), h(1, 1, 1), u), v), w);
+}
+/* ---------------------------------------------------------------- the builder */
+const _c = new THREE.Color();
+function linCol(c) {
+  if (c && c.isColor) return [c.r, c.g, c.b];
+  if (Array.isArray(c)) { _c.setRGB(c[0], c[1], c[2]).convertSRGBToLinear(); return [_c.r, _c.g, _c.b]; }
+  _c.setHex(c == null ? 0xffffff : c).convertSRGBToLinear(); return [_c.r, _c.g, _c.b];
+}
+function faunaFrame(entry, opt) {
+  opt = opt || {};
+  const parts = {}, anchors = {}, A = { entry: entry, variant: opt.variant | 0, breed: opt.breed || null, pose: opt.pose || 'stand',
+    S: 1, parts: parts, anchors: anchors, profileFn: null };
+  if (entry.breeds && opt.breed && entry.breeds[opt.breed]) A.S = entry.breeds[opt.breed].scale || 1;
+  let st = ((opt.seed || 1) * 2654435761) >>> 0;
+  A.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
+  A.rr = (a, b) => a + (b - a) * A.rnd();
+  let cur = null;
+  function partOf(name, pivot) {
+    if (!parts[name]) parts[name] = { name: name, pivot: pivot || [0, 0, 0], buckets: {} };
+    return parts[name];
+  }
+  cur = partOf('body', [0, 0, 0]);
+  A.part = function (name, pivot, fn) { const keep = cur; cur = partOf(name, pivot); try { fn(); } finally { cur = keep; } };
+  function bucket(fam) {
+    if (FAUNA_FAMILIES.indexOf(fam) < 0) throw new Error('fauna: unknown family ' + fam);
+    return cur.buckets[fam] || (cur.buckets[fam] = { pos: [], col: [], idx: [] });
+  }
+  /* push a grid of points (rows of n+1) with per-point colours; faces wound so their normals point away from `inside`
+     (a point inside the shape) or, for sheets, as given */
+  function grid(fam, P, C, nu, nv, closedU) {
+    const b = bucket(fam), base = b.pos.length / 3, pv = cur.pivot;
+    for (let i = 0; i < P.length; i++) { b.pos.push(P[i][0] - pv[0], P[i][1] - pv[1], P[i][2] - pv[2]); b.col.push(C[i][0], C[i][1], C[i][2]); }
+    const W = nu + 1;
+    for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) {
+      const a = base + j * W + i, c = a + 1, d = a + W, e = d + 1;
+      b.idx.push(a, d, c, c, d, e);
+    }
+    return base;
+  }
+  /* a tube along c(t), t 0..1; section an ellipse rad(t) = [half-width, half-height] in the plane across the curve, with the
+     section's 'up' as near world +y as the curve allows (a near-vertical curve uses +z) */
+  A.tube = function (fam, c, rad, nt, ns, col, o) {
+    o = o || {}; const P = [], C = [], pts = [], T = [], B = [], N = [];
+    for (let i = 0; i <= nt; i++) pts.push(c(i / nt));
+    const up = new THREE.Vector3(), t = new THREE.Vector3(), s = new THREE.Vector3(), n = new THREE.Vector3();
+    for (let i = 0; i <= nt; i++) {
+      const a = pts[Math.max(0, i - 1)], b2 = pts[Math.min(nt, i + 1)];
+      t.set(b2[0] - a[0], b2[1] - a[1], b2[2] - a[2]).normalize();
+      up.set(0, 1, 0); if (Math.abs(t.y) > 0.92) up.set(0, 0, 1);
+      s.crossVectors(up, t).normalize(); n.crossVectors(t, s).normalize();
+      T.push(t.clone()); B.push(s.clone()); N.push(n.clone());
+    }
+    const fixed = o.colf ? null : linCol(col);
+    for (let i = 0; i <= nt; i++) {
+      const p = pts[i], r = rad(i / nt);
+      for (let k = 0; k <= ns; k++) {
+        const ang = k / ns * TAU, sx = Math.sin(ang) * r[0], ny = Math.cos(ang) * r[1];
+        P.push([p[0] + B[i].x * sx + N[i].x * ny, p[1] + B[i].y * sx + N[i].y * ny, p[2] + B[i].z * sx + N[i].z * ny]);
+        C.push(fixed || linCol(o.colf(i / nt, ang)));
+      }
+    }
+    const base = grid(fam, P, C, ns, nt);
+    orient(fam, base, pts, true);
+    if (o.caps) for (const [i, sg] of [[0, -1], [nt, 1]]) {
+      const r = rad(i / nt); if (r[0] < 0.003) continue;
+      const b = bucket(fam), p = pts[i], pv = cur.pivot, cc = fixed || linCol(o.colf(i / nt, Math.PI / 2)), c0 = b.pos.length / 3;
+      b.pos.push(p[0] - pv[0], p[1] - pv[1], p[2] - pv[2]); b.col.push(cc[0], cc[1], cc[2]);
+      for (let k = 0; k < ns; k++) {
+        const ang = k / ns * TAU, sx = Math.sin(ang) * r[0], ny = Math.cos(ang) * r[1];
+        b.pos.push(p[0] + B[i].x * sx + N[i].x * ny - pv[0], p[1] + B[i].y * sx + N[i].y * ny - pv[1], p[2] + B[i].z * sx + N[i].z * ny - pv[2]);
+        b.col.push(cc[0], cc[1], cc[2]);
+      }
+      for (let k = 0; k < ns; k++) { if (sg < 0) b.idx.push(c0, c0 + 1 + k, c0 + 1 + (k + 1) % ns); else b.idx.push(c0, c0 + 1 + (k + 1) % ns, c0 + 1 + k); }
+    }
+  };
+  /* after a tube, turn its faces outward: a face whose normal points toward the curve at its row is flipped */
+  function orient(fam, base, pts, tube) {
+    const b = bucket(fam), pv = cur.pivot, I = b.idx, Pp = b.pos;
+    for (let k = I.length - 1; k >= 0; k -= 3) {
+      const ia = I[k - 2], ib = I[k - 1], ic = I[k];
+      if (ia < base) break;
+      const ax = Pp[ia * 3], ay = Pp[ia * 3 + 1], az = Pp[ia * 3 + 2];
+      const ux = Pp[ib * 3] - ax, uy = Pp[ib * 3 + 1] - ay, uz = Pp[ib * 3 + 2] - az, vx = Pp[ic * 3] - ax, vy = Pp[ic * 3 + 1] - ay, vz = Pp[ic * 3 + 2] - az;
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      /* the nearest centre-line point to this vertex */
+      let best = 1e9, q = pts[0];
+      for (const p of pts) { const d = (p[0] - pv[0] - ax) ** 2 + (p[1] - pv[1] - ay) ** 2 + (p[2] - pv[2] - az) ** 2; if (d < best) { best = d; q = p; } }
+      const ox = ax - (q[0] - pv[0]), oy = ay - (q[1] - pv[1]), oz = az - (q[2] - pv[2]);
+      if (nx * ox + ny * oy + nz * oz < 0) { I[k - 1] = ic; I[k] = ib; }
+    }
+  }
+  A.ellip = function (fam, x, y, z, rx, ry, rz, col, o) {
+    o = o || {}; const nu = o.seg || 12, nv = Math.max(6, (nu * 2 / 3) | 0), P = [], C = [], cc = o.colf ? null : linCol(col);
+    const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(o.rx || 0, o.ry || 0, o.rz || 0, 'YXZ')), v = new THREE.Vector3();
+    for (let j = 0; j <= nv; j++) { const ph = Math.PI * j / nv; for (let i = 0; i <= nu; i++) { const th = TAU * i / nu;
+      v.set(Math.sin(ph) * Math.cos(th) * rx, Math.cos(ph) * ry, Math.sin(ph) * Math.sin(th) * rz).applyMatrix4(m);
+      P.push([x + v.x, y + v.y, z + v.z]); C.push(cc || linCol(o.colf(v.x, v.y, v.z))); } }
+    const base = grid(fam, P, C, nu, nv);
+    orient(fam, base, [[x, y, z]], false);
+  };
+  A.cone = function (fam, a, b, r0, r1, col, seg) {
+    A.tube(fam, t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t], t => { const r = r0 + (r1 - r0) * t; return [r, r]; }, 2, seg || 6, col, { caps: true });
+  };
+  A.sheet = function (fam, f, nu, nv, col, o) {
+    o = o || {}; const P = [], C = [], cc = o.colf ? null : linCol(col);
+    for (let j = 0; j <= nv; j++) for (let i = 0; i <= nu; i++) { P.push(f(i / nu, j / nv)); C.push(cc || linCol(o.colf(i / nu, j / nv))); }
+    grid(fam, P, C, nu, nv);
+  };
+  /* hair: a tapered strip from `at` along `dir` (unit-ish), width w, length len, drooping and curling at its tip; the
+     strip faces across its own sideways vector so it reads from the side (hair is double-sided) */
+  A.locks = function (fam, list) {
+    for (const L of list) {
+      const d = new THREE.Vector3(L.dir[0], L.dir[1], L.dir[2]).normalize(), side = new THREE.Vector3(L.side ? L.side[0] : -d.z, 0, L.side ? L.side[2] : d.x);
+      if (side.lengthSq() < 1e-6) side.set(1, 0, 0); side.normalize();
+      const cc = linCol(L.col), dk = [cc[0] * 0.55, cc[1] * 0.55, cc[2] * 0.55], P = [], C = [];
+      for (let j = 0; j <= 3; j++) {
+        const t = j / 3, w = L.w * (1 - 0.75 * t), droop = t * t * (L.curl || 0.12) * L.len;
+        const cx = L.at[0] + d.x * L.len * t, cy = L.at[1] + d.y * L.len * t - droop, cz = L.at[2] + d.z * L.len * t;
+        P.push([cx - side.x * w / 2, cy, cz - side.z * w / 2], [cx + side.x * w / 2, cy, cz + side.z * w / 2]);
+        C.push(j === 0 ? dk : cc, j === 0 ? dk : cc);
+      }
+      grid(fam, P, C, 1, 3);
+    }
+  };
+  A.anchor = function (name, p) { anchors[name] = p.slice(); };
+  A.profile = function (fn) { A.profileFn = fn; };
+  return A;
+}
+
+/* ---- kits/fauna/krator-fauna-abyss.js ---- */
+/* ======================================================================
+   Krator Fauna: the eastern abyss and its caravan beasts (kits/fauna/krator-fauna-abyss.js)
+   The abyss floor's wild animals (the salt-lake flamingo, the frilled lizard, the marsh emu: biomes/eastabyss and Locus) and
+   the beasts the abyss's and the high desert's peoples keep: the pack lizard (the Locus and Mungo caravans), the riding lizard
+   (Locus, Lower Verge, the Mungo nomads) and the dromedary (Upper Verge's caravans and porters, Yuni's caravanserai). Ported
+   2026-10-06 from each build's own builder (listed in `source`, the richest copy drawn); the tack (saddles, packs, bales,
+   blankets) stays with the cultures, which fit it to the anchors and the lizards' body profiles.
+   ====================================================================== */
+
+/* ---------------------------------------------------------------- helpers (private to this file: the faAb prefix) */
+/* a Catmull-Rom curve through rows of numbers (any width), t 0..1 by row index */
+function faAbCR(P) {
+  const n = P.length - 1;
+  return function (t) {
+    const f = Math.min(n - 1e-6, Math.max(0, t * n)), i = Math.floor(f), u = f - i, out = [];
+    const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(n, i + 2)];
+    for (let k = 0; k < p1.length; k++) {
+      const a = p0[k], b = p1[k], c = p2[k], d = p3[k];
+      out.push(0.5 * (2 * b + (c - a) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (3 * b - a - 3 * c + d) * u * u * u));
+    }
+    return out;
+  };
+}
+/* a tube along part of a curve of rows [x, y, z, hw, hh]: global t0..t1; o.colf(T, angle) gets the global T; o.inset
+   [below, above]: the radius shrinks a little outside that span (so an overlapped seam between parts never z-fights) */
+function faAbSpan(A, fam, f, t0, t1, nt, ns, col, o) {
+  o = o || {};
+  const at = t => f(t0 + (t1 - t0) * t), ins = o.inset, k = T => ins && (T < ins[0] || T > ins[1]) ? 0.965 : 1;
+  A.tube(fam, t => { const q = at(t); return [q[0], q[1], q[2]]; },
+    t => { const q = at(t), T = t0 + (t1 - t0) * t; return [Math.max(0.002, q[3] * k(T)), Math.max(0.002, (q[4] == null ? q[3] : q[4]) * k(T))]; }, nt, ns, col,
+    { caps: o.caps, colf: o.colf ? (t, a) => o.colf(t0 + (t1 - t0) * t, a) : null });
+}
+/* a limb (or a bending neck): straight segments through [x, y, z, r] points, each its own tube so a section never twists
+   where the curve turns steep, with a ball at each inner joint; col(i, joint) a segment's or a joint's colour;
+   o.knob(i) the joint ball's size against the segment's radius */
+function faAbLimb(A, fam, pts, ns, col, o) {
+  o = o || {};
+  const cf = typeof col === 'function' ? col : () => col, kn = typeof o.knob === 'function' ? o.knob : () => (o.knob || 1.02);
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    A.tube(fam, t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t], t => { const r = a[3] + (b[3] - a[3]) * t; return [r, r]; }, 1, ns, cf(i, false),
+      { caps: (i === 0 && !!o.cap0) || (i === pts.length - 2 && o.cap1 !== false) });
+    if (i > 0) { const r = a[3] * kn(i); A.ellip(fam, a[0], a[1], a[2], r, r, r, cf(i, true), { seg: ns }); }
+  }
+}
+/* a sheet seen from both sides (a frill, a web): the same surface twice, wound both ways (hair is already two-sided) */
+function faAbSheet2(A, fam, f, nu, nv, col, colf) {
+  A.sheet(fam, f, nu, nv, col, colf ? { colf: colf } : {});
+  if (fam !== 'hair') A.sheet(fam, (u, v) => f(1 - u, v), nu, nv, col, colf ? { colf: (u, v) => colf(1 - u, v) } : {});
+}
+function faAbRGB(c) { if (Array.isArray(c)) return c; const k = new THREE.Color(c); return [k.r, k.g, k.b]; }
+function faAbShade(c, k) { const p = faAbRGB(c); return [Math.min(1, p[0] * k), Math.min(1, p[1] * k), Math.min(1, p[2] * k)]; }
+function faAbMix(a, b, t, k) {
+  const p = faAbRGB(a), q = faAbRGB(b), m = k == null ? 1 : k;
+  return [Math.min(1, (p[0] + (q[0] - p[0]) * t) * m), Math.min(1, (p[1] + (q[1] - p[1]) * t) * m), Math.min(1, (p[2] + (q[2] - p[2]) * t) * m)];
+}
+function faAbLerp3(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+/* a body table [z, y, hw, hh] (tail tip first) as curve rows [x, y, z, hw, hh] at scale S, lifted by dy */
+function faAbRows(T, S, dy) { return T.map(r => [0, (r[1] + (dy || 0)) * S, r[0] * S, r[2] * S, r[3] * S]); }
+
+/* ================================================================ the salt-lake flamingo
+   biomes/eastabyss (the richer rig: an S-neck in two pieces, the bent bill with its black tip, the ankle band, black
+   flight feathers), first drawn in Locus. Origin under the body; the neck's root at (0, .85, .2). The wings are drawn
+   half-folded (the hand swept back along the flank) so the runtime's fold, a turn about z, lays them on the flank. */
+const FA_AB_FLA = [
+  { body: 0xf2909e, deep: 0xe4687e, black: 0x1c1818, leg: 0xdc7c8a, band: 0xe4687e, bill: 0xe6d6cc, tip: 0x1a1414, eye: 0xf0d060, K: 1 },
+  { body: 0xccc4bc, deep: 0xaaa098, black: 0x3a3430, leg: 0x6e6862, band: 0x5a5450, bill: 0x9a9490, tip: 0x1a1414, eye: 0xb8a878, K: 0.82 }];
+ANIMAL({
+  key: 'flamingo', name: 'Salt-lake flamingo', group: 'abyss',
+  tags: { biomes: ['eastabyss'], koppen: ['X', 'BWh', 'Aw'], aridity: ['humid', 'subhumid'], climate: ['hypertropic', 'tropic'], riparian: 'both', abyssal: true,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'filter feeder', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['shallows', 'water', 'marsh', 'sky'], locomotion: ['walks', 'wades', 'flies', 'swims'] },
+  size: { length: 1.25, height: 1.45, span: 1.5 },
+  source: [{ build: 'biomes/eastabyss', file: 'src/75-biome-eastabyss-fauna.js', lines: '21, 71-87, 102, 169-180', note: 'ported from here (the richer): flocks of 12 to 60 wading the salt lake\'s margin, the channels and the delta, heads down to feed, and skeins in V formation over the lake; Verge (Lower Verge) and openworld/little-demo take it from this kit' },
+    { build: 'settlements/locus', file: 'src/83-locus-fauna.js', lines: '16-17, 35-48', note: 'the first flamingo: static standing, feeding and flying meshes (a taller bird, 1.9 m), flocks at the delta mouths and along the lake shore, two skeins between the lake and the delta' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 1.6, note: 'a bird dressed; dark and salty from the lake' },
+    eggs: { amount: 1, note: 'one egg a year on a mud mound in the colony; taken from the colonies\' edges' },
+    feathers: { amount: 0.05, note: 'moulted: the crimson coverts and black primaries, prized for fans and headdresses' } },
+  life: { maturity: 4, lifespan: 40, litter: 1, gestation: 29, note: 'gestation: the egg\'s incubation in days; the young are grey for two or three years' },
+  variants: 2, variantNames: ['adult', 'juvenile, grey'],
+  w: 0.72, d: 0.92, h: 1.46,
+  variantDims: [{ w: 0.72, d: 0.92, h: 1.46 }, { w: 0.6, d: 0.76, h: 1.2 }],
+  data: { mass: [3.2, 2.4], legs: 2, wings: 1, speed: { walk: 0.6, run: 4, fly: 15 }, gait: { type: 'flyer', freq: 1.1, stride: 0.5 },
+    flap: { freq: 0.9, amp: 0.55, glide: 0.1, fold: 1.2 }, grazePitch: 2.7,
+    herd: 'flocks of 12 to 60 in the shallows; skeins of 10 to 15 in V formation between the lakes', fleeDistance: 30, aggression: 0.02,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'FLY', 'GRAZE', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const C = FA_AB_FLA[A.variant] || FA_AB_FLA[0], K = C.K, P = (x, y, z) => [x * K, y * K, z * K], PR = r => [r[0] * K, r[1] * K, r[2] * K, r[3] * K];
+    /* ---- the body: an egg, the tail end raised a little; the folded scapulars over the back, black at their tips */
+    const bf = faAbCR([[-.34, .87, .02, .02], [-.27, .85, .085, .07], [-.13, .815, .145, .13], [.04, .80, .16, .15], [.17, .80, .14, .135], [.27, .83, .07, .075]].map(r => [0, r[1] * K, r[0] * K, r[2] * K, r[3] * K]));
+    faAbSpan(A, 'coat', bf, 0, 1, 14, 14, null, { caps: true, colf: (t, a) => faAbMix(C.body, C.deep, Math.max(0, Math.cos(a)) * 0.35) });
+    A.ellip('coat', 0, 0.875 * K, -0.15 * K, 0.125 * K, 0.055 * K, 0.19 * K, null, { seg: 12, colf: (x, y, z) => z < -0.09 * K ? C.black : C.deep });
+    /* ---- the head with the neck: the S-neck turns about its root (graze: the head goes down to the water, upside down) */
+    A.part('head', P(0, .85, .2), () => {
+      faAbLimb(A, 'coat', [[0, .84, .2, .056], [0, .95, .29, .048], [0, 1.06, .36, .042], [0, 1.17, .385, .037], [0, 1.27, .35, .034], [0, 1.35, .29, .032], [0, 1.385, .262, .031]].map(PR), 8, C.body, { cap1: false });
+      A.ellip('coat', 0, 1.4 * K, 0.262 * K, 0.04 * K, 0.042 * K, 0.062 * K, C.body, { seg: 10 });
+      /* the bill: pale, thick, bending down at its middle, the black tip */
+      const bl = faAbCR([[0, 1.395, .305, .021, .019], [0, 1.392, .345, .018, .016], [0, 1.38, .375, .014, .013], [0, 1.355, .395, .01, .01], [0, 1.33, .405, .005, .005]].map(r => [r[0], r[1] * K, r[2] * K, r[3] * K, r[4] * K]));
+      faAbSpan(A, 'horn', bl, 0, 1, 8, 8, null, { caps: true, colf: t => t > 0.5 ? C.tip : C.bill });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.033 * K, 1.41 * K, 0.272 * K, 0.009 * K, 0.009 * K, 0.009 * K, C.eye, { seg: 6 });
+        A.ellip('eye', s * 0.039 * K, 1.41 * K, 0.275 * K, 0.004 * K, 0.004 * K, 0.004 * K, 0x050403, { seg: 6 });
+      }
+    });
+    /* ---- the wings (half-folded): from the shoulder out along +x (left) and back; coverts deep pink, flight feathers black */
+    const LE = [[.1, .9, .17], [.34, .93, .08], [.24, .9, -.5]], TE = [[.1, .9, -.14], [.3, .92, -.2], [.24, .9, -.5]];
+    const edge = (E, u) => u < 0.45 ? faAbLerp3(E[0], E[1], u / 0.45) : faAbLerp3(E[1], E[2], (u - 0.45) / 0.55);
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(s * .1, .9, .1), () => {
+      A.sheet('hair', (u, v) => { const a = edge(LE, u), b = edge(TE, u);
+        return [s * (a[0] + (b[0] - a[0]) * v) * K, (a[1] + (b[1] - a[1]) * v + 0.018 * Math.sin(Math.PI * v) * (1 - u)) * K, (a[2] + (b[2] - a[2]) * v) * K]; },
+      9, 4, null, { colf: (u, v) => v < 0.14 && u < 0.5 ? C.body : (u < 0.5 && v < 0.55 ? C.deep : C.black) });
+    });
+    /* ---- the legs: long and thin, the ankle (the 'knee' that bends back) a darker knob; webbed feet, three toes */
+    for (const [s, i] of [[1, 0], [-1, 1]]) A.part('leg' + i, P(s * .06, .69, -.02), () => {
+      const x = s * 0.06;
+      faAbLimb(A, 'skin', [[x, .72, -.02, .022], [x, .36, -.045, .014], [x, .03, -.01, .011]].map(PR), 6, (j, jt) => jt ? C.band : C.leg, { knob: 1.5 });
+      const heel = P(x, .012, -.008), toes = [-1, 0, 1].map(k => P(x + k * 0.034, 0.006, 0.075 - Math.abs(k) * 0.012));
+      for (const tp of toes) A.cone('skin', heel, tp, 0.008 * K, 0.004 * K, C.leg, 5);
+      faAbSheet2(A, 'skin', (u, v) => { const e = u < 0.5 ? faAbLerp3(toes[0], toes[1], u * 2) : faAbLerp3(toes[1], toes[2], u * 2 - 1); const p = faAbLerp3(heel, e, v * 0.92); return [p[0], 0.008 * K, p[2]]; }, 4, 2, C.leg);
+    });
+    A.anchor('perch', P(0, 0, 0)); A.anchor('back', P(0, .95, -.05));
+  }
+});
+
+/* ================================================================ the frilled lizard
+   biomes/eastabyss (shaded back and belly, a banded tail, the frill's two colours), first drawn in Locus; 0.95 m nose to
+   tail. Variant 1 (or pose 'display') has the frill open, the way it faces a threat; otherwise it lies folded on the
+   neck like a pleated cape. The eastern abyss's frill opens with the viewer's distance: a host swaps the variant. */
+const FA_AB_FL = [[-.68, .035, .006, .006], [-.5, .044, .012, .011], [-.32, .054, .02, .018], [-.17, .067, .031, .027], [-.07, .077, .05, .04], [.03, .082, .062, .048],
+  [.12, .085, .056, .045], [.18, .092, .04, .035], [.225, .1, .041, .037], [.27, .1, .036, .031], [.305, .092, .018, .016]];
+const FA_AB_FLC = { liz: 0x7c6444, dark: 0x56442e, belly: 0xb8a482, frill: 0xd2502c, frillC: 0xe8a848 };
+ANIMAL({
+  key: 'frilled-lizard', name: 'Frilled lizard', group: 'abyss',
+  tags: { biomes: ['eastabyss'], koppen: ['X', 'Aw', 'BSh'], aridity: ['semiarid', 'subhumid'], climate: ['hypertropic', 'tropic'], riparian: 'both', abyssal: true,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'insectivore', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['ground', 'trunks', 'rock'], locomotion: ['walks', 'runs', 'climbs'] },
+  size: { length: 0.95, height: 0.12 },
+  source: [{ build: 'biomes/eastabyss', file: 'src/75-biome-eastabyss-fauna.js', lines: '22, 88-94, 143-151, 183-190', note: 'ported from here (the richer): singles on dry ground near the rivers and the salt flats\' damp edges; they bask, dash on the hind legs, and inside ~25 m of the viewer open the frill, rear and turn to face it' },
+    { build: 'settlements/locus', file: 'src/83-locus-fauna.js', lines: '18, 55-58', note: 'singles on dry open ground at the town\'s edge; box body, the frill its own mesh, raised when the camera comes close' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 0.25, note: 'roasted whole; little on it' } },
+  life: { maturity: 1.5, lifespan: 12, litter: 12, gestation: 80, note: 'a clutch of 8 to 20 eggs buried in warm soil; gestation: incubation days' },
+  variants: 2, variantNames: ['basking, frill folded', 'display, frill open'],
+  w: 0.3, d: 1.0, h: 0.16,
+  variantDims: [{ w: 0.3, d: 1.0, h: 0.16 }, { w: 0.42, d: 1.0, h: 0.32 }],
+  data: { mass: 0.6, legs: 4, speed: { walk: 0.5, run: 4 }, gait: { type: 'sprawl', freq: 2.2, stride: 0.12 }, grazePitch: 0.15,
+    herd: 'solitary; a male holds a few trees and the ground between', fleeDistance: 6, aggression: 0.2, display: 'opens the frill, gapes and hisses inside ~25 m, then dashes off upright on its hind legs',
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const F = FA_AB_FLC, open = A.variant === 1 || A.pose === 'display', R = faAbRows(FA_AB_FL, 1, 0), f = faAbCR(R), n = R.length - 1;
+    const skin = (T, a) => { const top = Math.cos(a), q = f(T);
+      if (T < 4.2 / n) return Math.floor(-q[2] * 14) % 2 ? F.dark : (top < -0.5 ? F.belly : F.liz);
+      if (top < -0.45) return F.belly;
+      const sp = faNoise(q[2] * 40, a * 3, 2.3);
+      return top > 0.5 ? (sp > 0.68 ? F.liz : F.dark) : (sp > 0.72 ? F.dark : F.liz); };
+    /* the trunk; the tail sways about the hips; the head (with the frill) turns about the neck */
+    faAbSpan(A, 'skin', f, 3.6 / n, 8.4 / n, 12, 12, null, { colf: skin, inset: [-1, 2] });
+    A.part('tail', [R[4][0], R[4][1], R[4][2]], () => faAbSpan(A, 'skin', f, 0, 4.4 / n, 16, 10, null, { caps: true, colf: skin, inset: [0, 4 / n] }));
+    const hp = f(7.5 / n);
+    A.part('head', [hp[0], hp[1], hp[2]], () => {
+      faAbSpan(A, 'skin', f, 7.5 / n, 1, 8, 12, null, { caps: true, colf: skin, inset: [8 / n, 2] });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.03, 0.112, 0.25, 0.008, 0.008, 0.008, 0x1a1208, { seg: 6 });
+        A.ellip('eye', s * 0.035, 0.113, 0.252, 0.0035, 0.0035, 0.0035, 0xd8a040, { seg: 6 });
+        A.cone('mouth', [s * 0.035, 0.088, 0.215], [s * 0.019, 0.085, 0.3], 0.0025, 0.0025, 0x2a1a12, 4);
+      }
+      /* the frill: a ruff on cartilage spines round the neck, the inner face saffron, the rim red */
+      const NY = 0.1, NZ = 0.17, A0 = -0.4, A1 = Math.PI + 0.8;
+      const fr = open ? (u, v) => { const a = A0 + A1 * u, r = (0.035 + 0.165 * v) * (1 + 0.06 * Math.sin(u * Math.PI * 13) * v * v), y = Math.sin(a) * r;
+          return [Math.cos(a) * r, NY + y * Math.cos(0.15), NZ - y * Math.sin(0.15) - 0.045 * v * v]; }
+        : (u, v) => { const a = A0 + A1 * u, pl = 1 + 0.12 * Math.sin(u * Math.PI * 13) * v;
+          return [Math.cos(a) * (0.042 + 0.03 * v) * pl, NY - 0.015 * v + Math.sin(a) * (0.038 + 0.022 * v) * pl, NZ - 0.1 * v]; };
+      faAbSheet2(A, 'skin', fr, 26, 4, null, (u, v) => { const rib = Math.abs(((u * 13) % 1) - 0.5) > 0.4;
+        if (!open) return faAbMix(F.liz, F.frill, 0.3 + 0.2 * v, rib ? 0.8 : 1);
+        return v > 0.52 ? (rib ? faAbShade(F.frill, 0.78) : F.frill) : (rib ? faAbShade(F.frillC, 0.8) : F.frillC); });
+    });
+    /* the legs: splayed out from the shoulder and the hip, elbow and knee out, five thin toes */
+    const LEGS = [[.1, 1, 1, 0], [.1, 1, -1, 1], [-.1, 0, 1, 2], [-.1, 0, -1, 3]];
+    for (const [z, front, s, i] of LEGS) {
+      const b = [s * (front ? 0.04 : 0.045), 0.072, z];
+      A.part('leg' + i, b, () => {
+        const pts = front ? [[b[0], b[1], z, .014], [s * .1, .068, z + .015, .011], [s * .115, .012, z + .04, .009]] : [[b[0], b[1], z, .016], [s * .11, .066, z + .01, .012], [s * .125, .012, z - .035, .009]];
+        faAbLimb(A, 'skin', pts, 6, F.dark, { knob: 1.1 });
+        const ft = pts[2];
+        for (let k = 0; k < 5; k++) { const a = (k - 2) * 0.35 + s * (front ? 0.3 : 0.6);
+          A.cone('skin', [ft[0], 0.008, ft[2]], [ft[0] + Math.sin(a) * 0.035, 0.006, ft[2] + Math.cos(a) * 0.035], 0.005, 0.0025, F.dark, 4); }
+      });
+    }
+  }
+});
+
+/* ================================================================ the marsh emu
+   Locus (its only drawer): a shaggy grey-brown body, the long neck dark below and blue-grey bare skin above, stout legs.
+   The plumage is drooping locks over a smaller body (the original's 0.76 m-wide ellipsoid, slimmed: the locks make up
+   the bulk); the chick is striped. */
+const FA_AB_EMU = [
+  { body: 0x5e5446, dark: 0x4a4238, skin: 0x6a7a8a, crown: 0x3a3430, leg: 0x6a6050, bill: 0x2a2622, eye: 0x8a4a1a, K: 1, hair: 1 },
+  { body: 0xcdb98e, dark: 0x3e3226, skin: 0xb8a684, crown: 0x3e3226, leg: 0x8a7a68, bill: 0x4a4038, eye: 0x3a2a1a, K: 0.42, hair: 0.45, stripes: true }];
+ANIMAL({
+  key: 'marsh-emu', name: 'Marsh emu', group: 'abyss',
+  tags: { biomes: ['eastabyss'], koppen: ['X', 'Aw', 'BSh'], aridity: ['subhumid', 'semiarid'], climate: ['tropic'], riparian: 'non', abyssal: true,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground', 'marsh'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 1.3, height: 1.95 },
+  source: [{ build: 'settlements/locus', file: 'src/83-locus-fauna.js', lines: '17, 50-53', note: 'small mobs on the dry hummocks and ridges of the marsh, clear of the town; a static mesh (body, rear shag, neck, blue-grey head, two legs)' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 14, note: 'a bird dressed: lean red meat; the fat rendered for oil' },
+    eggs: { amount: 10, note: 'a clutch of 5 to 15 dark green eggs a year, sat by the cock; taken from wild nests' },
+    feathers: { amount: 0.3, note: 'moulted: the double-shafted body feathers, for fletching, brushes and capes' },
+    hide: { amount: 1, hideM2: 0.7, note: 'a thin, pitted leather' } },
+  life: { maturity: 2, lifespan: 15, litter: 9, gestation: 52, note: 'gestation: the clutch\'s incubation in days; the cock rears the striped chicks' },
+  variants: 2, variantNames: ['adult', 'chick, striped'],
+  w: 0.86, d: 1.36, h: 1.98,
+  variantDims: [{ w: 0.86, d: 1.36, h: 1.98 }, { w: 0.36, d: 0.58, h: 0.84 }],
+  data: { mass: [42, 4], legs: 2, speed: { walk: 1.2, run: 13 }, gait: { type: 'biped', freq: 1.4, stride: 0.6 }, grazePitch: 1.0,
+    herd: 'mobs of 3 to 8 on the marsh hummocks; a cock alone with his chicks', fleeDistance: 25, aggression: 0.1,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const C = FA_AB_EMU[A.variant] || FA_AB_EMU[0], K = C.K, H = C.hair, P = (x, y, z) => [x * K, y * K, z * K], PR = r => [r[0] * K, r[1] * K, r[2] * K, r[3] * K];
+    const plume = (a, z) => C.stripes ? (Math.sin(a * 4.5) > 0.15 ? C.body : C.dark) : faAbMix(C.body, C.dark, faHash(a * 7, z * 13, 1.3) * 0.7);
+    /* ---- the body under its plumage */
+    const bf = faAbCR([[-.5, 1.1, .04, .04], [-.42, 1.1, .2, .21], [-.22, 1.12, .29, .3], [.05, 1.13, .3, .31], [.27, 1.16, .24, .27], [.4, 1.22, .13, .15]].map(r => [0, r[1] * K, r[0] * K, r[2] * K, r[3] * K]));
+    faAbSpan(A, 'coat', bf, 0, 1, 12, 14, null, { caps: true, colf: (t, a) => plume(a, t) });
+    const locks = [];
+    for (let i = 0; i < 150; i++) {
+      const t = A.rr(0.12, 0.95), a = A.rr(-1, 1) * 1.75, q = bf(t), at = [Math.sin(a) * q[3] * 1.02, q[1] + Math.cos(a) * q[4] * 1.02, q[2]];
+      locks.push({ at: at, dir: [Math.sin(a) * 0.3, -1, -0.3], len: A.rr(0.16, 0.32) * K * H * (t < 0.4 ? 1.25 : 1), w: A.rr(0.04, 0.06) * K, col: plume(a, at[2] / K), curl: 0.15 });
+    }
+    A.locks('hair', locks);
+    /* ---- the rump's shag: the long feathers that hang off the back end (they sway as the tail does) */
+    A.part('tail', P(0, 1.08, -.42), () => {
+      const rl = [];
+      for (let i = 0; i < 34; i++) { const t = A.rr(0, 0.2), a = A.rr(-1, 1) * 1.9, q = bf(t), at = [Math.sin(a) * q[3], q[1] + Math.cos(a) * q[4], q[2]];
+        rl.push({ at: at, dir: [Math.sin(a) * 0.35, -1, -0.55], len: A.rr(0.24, 0.4) * K * H, w: 0.055 * K, col: plume(a, at[2] / K), curl: 0.18 }); }
+      A.locks('hair', rl);
+    });
+    /* ---- the neck and head: feathered dark below, the bare blue-grey skin above, the dark crown, a flat bill */
+    A.part('head', P(0, 1.22, .36), () => {
+      const nf = faAbCR([[0, 1.18, .3, .1, .11], [0, 1.45, .36, .075, .075], [0, 1.7, .41, .055, .055], [0, 1.86, .44, .048, .048]].map(r => [0, r[1] * K, r[2] * K, r[3] * K, r[4] * K]));
+      faAbSpan(A, 'coat', nf, 0, 1, 10, 10, null, { colf: (t, a) => C.stripes ? (Math.sin(a * 3) > 0.1 ? C.body : C.dark) : (t < 0.45 ? C.dark : faAbMix(C.dark, C.skin, Math.min(1, (t - 0.45) * 4))) });
+      const nl = [];
+      for (let i = 0; i < 30; i++) { const t = A.rr(0, 0.45), a = A.rr(-1, 1) * Math.PI, q = nf(t), at = [Math.sin(a) * q[3], q[1] + Math.cos(a) * q[4], q[2] + Math.cos(a) * 0.01];
+        nl.push({ at: at, dir: [Math.sin(a) * 0.4, -1, -0.1], len: A.rr(0.07, 0.13) * K * H, w: 0.035 * K, col: C.stripes ? plume(a, 0) : C.dark, curl: 0.1 }); }
+      A.locks('hair', nl);
+      A.ellip('coat', 0, 1.9 * K, 0.485 * K, 0.055 * K, 0.058 * K, 0.085 * K, C.skin, { seg: 10 });
+      A.ellip('coat', 0, 1.935 * K, 0.47 * K, 0.046 * K, 0.03 * K, 0.062 * K, C.crown, { seg: 8 });
+      const bl = faAbCR([[0, 1.888, .545, .026, .016], [0, 1.88, .6, .02, .012], [0, 1.866, .64, .01, .007]].map(r => [0, r[1] * K, r[2] * K, r[3] * K, r[4] * K]));
+      faAbSpan(A, 'horn', bl, 0, 1, 5, 8, C.bill, { caps: true });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.047 * K, 1.912 * K, 0.505 * K, 0.011 * K, 0.011 * K, 0.011 * K, C.eye, { seg: 6 });
+        A.ellip('eye', s * 0.054 * K, 1.913 * K, 0.508 * K, 0.005 * K, 0.005 * K, 0.005 * K, 0x050403, { seg: 6 });
+      }
+    });
+    /* ---- the legs: the feathered thigh under the skirt, the long shank, the ankle that bends back, three toes */
+    for (const [s, i] of [[1, 0], [-1, 1]]) A.part('leg' + i, P(s * .12, .95, .02), () => {
+      const x = s * 0.13;
+      A.ellip('coat', x * K, 0.88 * K, 0.03 * K, 0.085 * K, 0.14 * K, 0.12 * K, C.stripes ? C.body : C.dark, { seg: 10 });
+      faAbLimb(A, 'skin', [[x, .82, .07, .05], [x, .46, -.03, .036], [x, .07, .015, .03]].map(PR), 8, C.leg, { knob: 1.2 });
+      for (const k of [-1, 0, 1]) A.cone('skin', P(x, .04, .02), P(x + k * .055, .012, .15 + (k ? -0.02 : 0.02)), 0.02 * K, 0.009 * K, C.leg, 6);
+    });
+    A.anchor('back', P(0, 1.42, 0));
+  }
+});
+
+/* ================================================================ the pack lizard
+   Locus's and Mungo's caravan beast (gBeast): a long heavy body on four splayed legs, a thick tail, a blunt head; olive.
+   Kept by the Locus carters and the caravans that stop at Mungo: it pulls the carts and carries the bales (the pack is
+   tack: not drawn here; fit it to the anchors or the profile). The originals' boxes are rounded into a table body;
+   the tail now droops to the ground (theirs rose). */
+const FA_AB_PL = [[-2.8, .3, .035, .03], [-2.3, .5, .1, .09], [-1.8, .68, .17, .15], [-1.3, .83, .27, .23], [-.85, .93, .40, .32], [-.3, .97, .46, .36], [.3, .98, .46, .36],
+  [.78, .99, .40, .31], [1.08, 1.02, .28, .23], [1.33, 1.08, .275, .225], [1.58, 1.12, .25, .19], [1.8, 1.13, .19, .13]];
+const FA_AB_PLC = [{ back: 0x6a6a4a, tail: 0x5e5e40, leg: 0x55553a, belly: 0x8c8664 }, { back: 0x6e6450, tail: 0x625844, leg: 0x564e3c, belly: 0x9a8e70 }];
+ANIMAL({
+  key: 'pack-lizard', name: 'Pack lizard', group: 'abyss',
+  tags: { biomes: ['eastabyss'], koppen: ['X', 'BWh', 'Aw'], aridity: ['semiarid', 'subhumid', 'arid'], climate: ['tropic', 'hypertropic'], riparian: 'both', abyssal: true,
+    domestic: true, herdedBy: ['locus', 'mungo'], diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'swims'] },
+  size: { length: 4.6, height: 1.33 },
+  source: [{ build: 'settlements/locus', file: 'src/84-life.js', lines: '427-430', note: 'the life layer\'s pack lizard: in the caravans\' columns and before the carts, a load lashed on its back (tack, not ported); kept by the Locus carters and caravans' },
+    { build: 'settlements/mungo', file: 'src/84-mungo-life.js', lines: '34, 38-40', note: 'the caravans\' pack lizards, a little bigger (2.4 m body), bales lashed on: walking in the column, stabled in the caravanserai\'s court while the caravan stays' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: true },
+  yields: { meat: { amount: 300, note: 'an old beast dressed; tough, eaten smoked or stewed' },
+    eggs: { amount: 15, note: 'a clutch a year in a warm sand pit in the yard; most are left to hatch' },
+    hide: { amount: 1, hideM2: 6, note: 'heavy scaled leather: harness, sandals, shields' } },
+  life: { maturity: 6, lifespan: 50, litter: 10, gestation: 90, note: 'gestation: the clutch\'s incubation in days; worked from its eighth year' },
+  variants: 2, variantNames: ['olive', 'dun'],
+  w: 1.45, d: 4.66, h: 1.36,
+  data: { mass: 800, legs: 4, speed: { walk: 1.2, run: 4 }, gait: { type: 'quadruped', freq: 0.75, stride: 0.6 }, grazePitch: 0.4,
+    herd: 'worked singly before a cart or in a string of 2 to 6 in a caravan', fleeDistance: 0, aggression: 0.05, load: 'about 250 kg on its back; a two-wheeled cart',
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const C = FA_AB_PLC[A.variant] || FA_AB_PLC[0], S = A.S, R = faAbRows(FA_AB_PL, S, 0), f = faAbCR(R), n = R.length - 1;
+    const skin = (T, a) => { const top = Math.cos(a), q = f(T), base = T < 3.8 / n ? faAbMix(C.tail, C.back, Math.max(0, (T - 2 / n) / (1.8 / n))) : C.back;
+      const mot = 0.86 + 0.22 * faNoise(q[2] * 3.1, a * 2.2, 5.1), band = top > 0.25 && Math.sin(q[2] / S * 5.2) > 0.72 ? 0.82 : 1;
+      return faAbMix(base, C.belly, Math.max(0, Math.min(1, -top * 1.7 - 0.2)), mot * band); };
+    faAbSpan(A, 'skin', f, 3.6 / n, 8.4 / n, 20, 16, null, { colf: skin, inset: [-1, 2] });
+    A.part('tail', [R[4][0], R[4][1], R[4][2]], () => faAbSpan(A, 'skin', f, 0, 4.4 / n, 16, 12, null, { caps: true, colf: skin, inset: [0, 4 / n] }));
+    const hp = f(7.6 / n);
+    A.part('head', [hp[0], hp[1], hp[2]], () => {
+      faAbSpan(A, 'skin', f, 7.6 / n, 1, 12, 14, null, { caps: true, colf: skin, inset: [8 / n, 2] });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.245 * S, 1.17 * S, 1.38 * S, 0.045 * S, 0.04 * S, 0.045 * S, 0x16100a, { seg: 8 });
+        A.ellip('eye', s * 0.27 * S, 1.175 * S, 1.385 * S, 0.018 * S, 0.018 * S, 0.018 * S, 0xc89a3a, { seg: 6 });
+        const L = [[s * .262, 1.04, 1.2], [s * .225, 1.02, 1.58], [s * .12, 1.015, 1.8]].map(q => [q[0] * S, q[1] * S, q[2] * S]);
+        for (let i = 0; i < L.length - 1; i++) A.cone('mouth', L[i], L[i + 1], 0.012 * S, 0.012 * S, 0x24200e, 5);
+        A.ellip('mouth', s * 0.06 * S, 1.17 * S, 1.88 * S, 0.012 * S, 0.01 * S, 0.008 * S, 0x1a160c, { seg: 6 });
+      }
+    });
+    /* the legs: thick, the elbow and the knee a little out (the originals' four posts), broad clawed feet */
+    const LEGS = [[.72, 1, 1, 0], [.72, 1, -1, 1], [-.72, 0, 1, 2], [-.72, 0, -1, 3]];
+    for (const [z, front, s, i] of LEGS) {
+      const top = [s * 0.36 * S, (front ? 0.86 : 0.9) * S, z * S];
+      A.part('leg' + i, top, () => {
+        const pts = (front ? [[.36, .86, .72, .14], [.55, .52, .68, .12], [.55, .12, .76, .1]] : [[.36, .9, -.72, .16], [.56, .55, -.6, .13], [.56, .12, -.76, .1]]).map(q => [s * q[0] * S, q[1] * S, q[2] * S, q[3] * S]);
+        faAbLimb(A, 'skin', pts, 10, (j, jt) => j === 0 && !jt ? C.back : C.leg, { knob: 1.06 });
+        const ft = pts[2], fz = ft[2] + (front ? 0.07 : 0.09) * S;
+        A.ellip('skin', ft[0], 0.05 * S, fz, 0.16 * S, 0.05 * S, 0.2 * S, C.leg, { seg: 10 });
+        for (let k = 0; k < 4; k++) { const a = (k - 1.5) * 0.32 + s * 0.12;
+          A.cone('horn', [ft[0] + Math.sin(a) * 0.12 * S, 0.035 * S, fz + Math.cos(a) * 0.12 * S], [ft[0] + Math.sin(a) * 0.27 * S, 0.012 * S, fz + Math.cos(a) * 0.27 * S], 0.035 * S, 0.01 * S, 0x2a2a20, 6); }
+      });
+    }
+    A.profile(t => { const q = f(t); return { z: q[2], y: q[1], hw: q[3], hh: q[4] }; });
+    A.anchor('saddle', [0, 1.33 * S, 0]); A.anchor('pack', [0, 1.33 * S, -0.05 * S]); A.anchor('bridle', [0, 1.12 * S, 1.62 * S]);
+    A.anchor('chest', [0, 0.95 * S, 0.95 * S]); A.anchor('tailRoot', [R[4][0], R[4][1], R[4][2]]); A.anchor('headRoot', [hp[0], hp[1], hp[2]]);
+  }
+});
+
+/* ================================================================ the riding lizard
+   Verge's rig (the richer: the trunk, the neck and head, the two-piece tail, the flared frill, the splayed two-joint legs,
+   the pale belly and the mottled back): the abyss's mount, 3 m and 0.9 m at the back. Locus and Mungo draw a much bigger
+   upright beast (6 m, 1.8 m at the back): that is the 'great' breed here. The saddle and blanket are tack (not drawn). */
+const FA_AB_RL = [[-1.68, .13, .012, .012], [-1.35, .30, .06, .055], [-1.0, .45, .105, .09], [-.65, .52, .155, .13], [-.4, .58, .24, .2], [-.15, .60, .36, .26],
+  [.2, .62, .40, .27], [.48, .60, .32, .23], [.7, .62, .2, .165], [.9, .645, .17, .14], [1.08, .635, .155, .12], [1.24, .60, .11, .085], [1.36, .565, .045, .038]];
+const FA_AB_RLC = [{ skin: 0x4a4e44, belly: 0xb8a888, frill: 0xb84a2a }, { skin: 0x3a4048, belly: 0x9a8a6a, frill: 0xd0902a }, { skin: 0x6a5a48, belly: 0xc0b090, frill: 0x3a7a6a }];
+ANIMAL({
+  key: 'riding-lizard', name: 'Riding lizard', group: 'abyss',
+  tags: { biomes: ['eastabyss'], koppen: ['X', 'BWh', 'Aw'], aridity: ['semiarid', 'subhumid', 'arid'], climate: ['tropic', 'hypertropic'], riparian: 'both', abyssal: true,
+    domestic: true, herdedBy: ['locus', 'verge', 'mungo'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'pen', 'marsh'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 3.05, height: 0.9 },
+  source: [{ build: 'settlements/verge', file: 'src/77-verge-rigs.js', lines: '311-364', note: 'ported from here (the richer): ridden by Lower Verge\'s people and the nomad squads below the descent (camels above); four looks (skin, belly, frill), a saddle (tack)' },
+    { build: 'settlements/locus', file: 'src/84-life.js', lines: '431-434', note: 'the life layer\'s riding lizard: a big upright beast (back 1.8 m, 6 m long) with a raised frill and a saddle; ridden by Locus\'s people (the great breed)' },
+    { build: 'settlements/mungo', file: 'src/84-mungo-life.js', lines: '34-37', note: 'the nomads\' riding lizards, the Locus beast again: ridden in, left in the caravanserai\'s court for the night (the great breed)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: false, eggs: true },
+  yields: { meat: { amount: 120, note: 'a riding beast dressed (the great breed about 800); eaten only when old or lamed' },
+    eggs: { amount: 14, note: 'a clutch a year in the stable yard\'s warm sand; most are left to hatch' },
+    hide: { amount: 1, hideM2: 2.4, note: 'supple scaled leather: boots, belts, the saddles themselves' } },
+  life: { maturity: 4, lifespan: 35, litter: 14, gestation: 75, note: 'gestation: the clutch\'s incubation in days; broken to the saddle in its fifth year' },
+  variants: 3, variantNames: ['olive, red frill', 'slate, saffron frill', 'sand, teal frill'],
+  breeds: { riding: { scale: 1, mass: 340, role: 'riding mount (Verge)' }, great: { scale: 1.9, mass: 2300, role: 'the great riding lizard of Locus and Mungo' } },
+  w: 1.5, d: 3.1, h: 1.1,
+  data: { mass: 340, legs: 4, speed: { walk: 1.5, run: 8 }, gait: { type: 'sprawl', freq: 1.2, stride: 0.6 }, grazePitch: 0.3,
+    herd: 'kept singly by its rider; a string in a nomad squad', fleeDistance: 0, aggression: 0.1,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const C = FA_AB_RLC[A.variant] || FA_AB_RLC[0], S = A.S, R = faAbRows(FA_AB_RL, S, 0), f = faAbCR(R), n = R.length - 1, edge = faAbMix(C.frill, 0x1a1410, 0.55);
+    const skin = (T, a) => { const top = Math.cos(a), mot = 0.82 + 0.26 * faHash(Math.floor(T * 90), Math.floor((a + 7) * 3.2), 3.3);
+      return faAbMix(C.skin, C.belly, Math.max(0, Math.min(1, -top * 1.7 - 0.15)), mot); };
+    faAbSpan(A, 'skin', f, 3.6 / n, 8.4 / n, 18, 16, null, { colf: skin, inset: [-1, 2] });
+    A.part('tail', [R[4][0], R[4][1], R[4][2]], () => faAbSpan(A, 'skin', f, 0, 4.4 / n, 18, 12, null, { caps: true, colf: skin, inset: [0, 4 / n] }));
+    const hp = f(7.4 / n);
+    A.part('head', [hp[0], hp[1], hp[2]], () => {
+      faAbSpan(A, 'skin', f, 7.4 / n, 1, 14, 14, null, { caps: true, colf: skin, inset: [8 / n, 2] });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.128 * S, 0.69 * S, 0.97 * S, 0.032 * S, 0.03 * S, 0.032 * S, 0x120c08, { seg: 8 });
+        A.ellip('eye', s * 0.146 * S, 0.695 * S, 0.975 * S, 0.013 * S, 0.013 * S, 0.013 * S, 0xd8a040, { seg: 6 });
+        const L = [[s * .15, .6, .92], [s * .12, .585, 1.18], [s * .05, .56, 1.34]].map(q => [q[0] * S, q[1] * S, q[2] * S]);
+        for (let i = 0; i < L.length - 1; i++) A.cone('mouth', L[i], L[i + 1], 0.008 * S, 0.008 * S, 0x2a1a12, 5);
+        A.ellip('mouth', s * 0.025 * S, 0.588 * S, 1.35 * S, 0.008 * S, 0.006 * S, 0.006 * S, 0x140e0a, { seg: 6 });
+      }
+      /* the frill: a collar flaring back over the shoulders, open underneath, ribbed, its rim dark */
+      faAbSheet2(A, 'skin', (u, v) => { const a = -0.22 * Math.PI + 1.44 * Math.PI * u, sc = 1 + 0.07 * Math.sin(u * Math.PI * 11) * v * v;
+          return [Math.cos(a) * (0.17 + 0.33 * v) * sc * S, (0.63 + 0.04 * v + Math.sin(a) * (0.145 + 0.275 * v) * sc) * S, (0.8 - 0.12 * v) * S]; },
+        22, 4, null, (u, v) => { const rib = Math.abs(((u * 11) % 1) - 0.5) > 0.4; return v > 0.8 ? edge : faAbShade(C.frill, (rib ? 0.72 : 0.9) + 0.1 * (1 - v)); });
+    });
+    /* the legs: out from the shoulder and the hip (the upper limb near level), then straight down to a broad pad, four toes */
+    const LEGS = [[.27, .42, 1, 1, 0], [.27, .42, 1, -1, 1], [.28, -.26, 0, 1, 2], [.28, -.26, 0, -1, 3]];
+    for (const [x, z, front, s, i] of LEGS) {
+      const jt = [s * x * S, 0.55 * S, z * S];
+      A.part('leg' + i, jt, () => {
+        const yaw = s * (front ? -0.12 : 0.18), ox = s * Math.sin(1.25) * Math.cos(yaw), oz = -s * Math.sin(1.25) * Math.sin(yaw);
+        const kn = [jt[0] + 0.38 * ox * S, jt[1] - 0.38 * Math.cos(1.25) * S, jt[2] + 0.38 * oz * S], an = [kn[0], 0.08 * S, kn[2] + 0.03 * S];
+        faAbLimb(A, 'skin', [[jt[0], jt[1], jt[2], 0.12 * S], [kn[0], kn[1], kn[2], 0.085 * S], [an[0], an[1], an[2], 0.058 * S]], 10, (j, jj) => j === 0 && !jj ? faAbShade(C.skin, 0.95) : C.skin, { knob: 1.08 });
+        A.ellip('skin', an[0], 0.035 * S, an[2] + 0.06 * S, 0.12 * S, 0.035 * S, 0.15 * S, faAbMix(C.skin, C.belly, 0.25), { seg: 10 });
+        for (let k = 0; k < 4; k++) { const a = (k - 1.5) * 0.4 + (front ? 0 : s * 0.15);
+          A.cone('skin', [an[0], 0.03 * S, an[2] + 0.08 * S], [an[0] + Math.sin(a) * 0.17 * S, 0.012 * S, an[2] + 0.08 * S + Math.cos(a) * 0.17 * S], 0.03 * S, 0.01 * S, C.skin, 6); }
+      });
+    }
+    A.profile(t => { const q = f(t); return { z: q[2], y: q[1], hw: q[3], hh: q[4] }; });
+    A.anchor('saddle', [0, 0.89 * S, 0.04 * S]); A.anchor('bridle', [0, 0.6 * S, 1.25 * S]); A.anchor('chest', [0, 0.6 * S, 0.6 * S]);
+    A.anchor('tailRoot', [R[4][0], R[4][1], R[4][2]]); A.anchor('headRoot', [hp[0], hp[1], hp[2]]);
+  }
+});
+
+/* ================================================================ the dromedary
+   Verge's camel rig (the richer: the deep barrel and the hump, the arched neck dropping before it rises, the darker
+   muzzle, the callused knees, the broad dark pads, the tail's tuft); Yuni's caravanserai draws a simpler pack camel.
+   Shoulder 1.9 m, hump 2.31 m, 3 m long. The legs bend as a camel's do: the front leg's knee (the wrist) a callused knob
+   with the cannon below it; the hind leg's stifle low under the belly, the gaskin running back to the hock. */
+const FA_AB_DROM = [0xc8a878, 0x9a7048, 0xd8c4a0];
+ANIMAL({
+  key: 'dromedary', name: 'Dromedary', group: 'abyss',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh', 'BWk'], aridity: ['arid', 'semiarid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['iziz', 'verge', 'yuni'], diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
+  size: { length: 2.9, height: 2.31 },
+  source: [{ build: 'settlements/verge', file: 'src/77-verge-rigs.js', lines: '240-309', note: 'ported from here (the richer): Upper Verge\'s caravans (3 to 5 laden camels, each with its driver) and porters, who lead them down the trail to Lower Verge; ridden by the nomads above the descent; bales, crates and a riding saddle (tack)' },
+    { build: 'settlements/yuni', file: 'src/56-mid.js', lines: '452-465, 523', note: 'a static pack camel (swept body, hump, arched neck, a load) at the caravanserai of the desert road' }],
+  traits: { edible: true, milkable: true, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { meat: { amount: 260, note: 'dressed; the hump\'s fat rendered' },
+    milk: { amount: 5, note: 'in milk about a year after each calf' },
+    hide: { amount: 1, hideM2: 4, note: 'thick leather: water bags, saddlery, sandals' },
+    hair: { amount: 2, note: 'shed and combed out each spring: rope, cloth and tent felt' } },
+  life: { maturity: 4, lifespan: 40, litter: 1, gestation: 390 },
+  variants: 3, variantNames: ['sand', 'brown', 'cream'],
+  w: 0.88, d: 2.95, h: 2.34,
+  data: { mass: 520, legs: 4, speed: { walk: 1.4, run: 11 }, gait: { type: 'quadruped', freq: 0.8, stride: 0.75 }, grazePitch: 1.2,
+    herd: 'a caravan string of 3 to 5, each with its driver; a porter leads 1 or 2', fleeDistance: 0, aggression: 0.1, load: 'about 180 kg: bales, crates, or a rider',
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'BROWSE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'WORK', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const coat = FA_AB_DROM[A.variant] || FA_AB_DROM[0], muzzle = faAbMix(coat, 0x3a2a1e, 0.35), pad = faAbShade(coat, 0.45), call = faAbShade(coat, 0.62);
+    const fur = (k) => (t, a) => faAbMix(coat, faAbShade(coat, 1.12), Math.max(0, -Math.cos(a)) * 0.5, k * (0.94 + 0.1 * faNoise(t * 9, a * 1.7, 4.2)));
+    /* ---- the barrel, the chest deep, the belly tucked; the hump; the chest's callus */
+    const bf = faAbCR([[-1.0, 1.48, .04, .04], [-.92, 1.45, .27, .3], [-.72, 1.44, .38, .42], [-.2, 1.43, .41, .44], [.32, 1.45, .39, .46], [.62, 1.5, .3, .41], [.8, 1.55, .06, .06]].map(r => [0, r[1], r[0], r[2], r[3]]));
+    faAbSpan(A, 'coat', bf, 0, 1, 20, 16, null, { caps: true, colf: fur(1) });
+    const hf = faAbCR([[0, 1.7, -.1, .38, .6], [0, 1.9, -.11, .34, .51], [0, 2.08, -.12, .25, .37], [0, 2.22, -.13, .15, .22], [0, 2.31, -.13, .02, .03]]);
+    faAbSpan(A, 'coat', hf, 0, 1, 10, 16, null, { colf: fur(0.95) });
+    A.ellip('skin', 0, 0.99, 0.3, 0.13, 0.06, 0.17, call, { seg: 10 });
+    const hl = [];
+    for (let i = 0; i < 14; i++) { const a = A.rr(-1, 1) * 1.2, z = A.rr(-0.32, 0.08), at = [Math.sin(a) * 0.14, 2.22 + Math.cos(a) * 0.06, z];
+      hl.push({ at: at, dir: [Math.sin(a) * 0.6, -0.4, A.rr(-0.3, 0.3)], len: A.rr(0.07, 0.12), w: 0.04, col: faAbShade(coat, 0.85), curl: 0.3 }); }
+    A.locks('hair', hl);
+    /* ---- the tail, a dark tuft at its end */
+    A.part('tail', [0, 1.6, -.95], () => {
+      faAbLimb(A, 'coat', [[0, 1.62, -.94, .05], [0, 1.25, -1.03, .037], [0, 1.0, -1.035, .025]], 6, coat);
+      const tl = [];
+      for (let i = 0; i < 6; i++) tl.push({ at: [A.rr(-0.015, 0.015), 1.04, -1.035], dir: [A.rr(-0.2, 0.2), -1, A.rr(-0.2, 0.1)], len: A.rr(0.1, 0.16), w: 0.035, col: faAbShade(coat, 0.35), curl: 0.05 });
+      A.locks('hair', tl);
+    });
+    /* ---- the neck (down from the shoulders, then up) and the head, the muzzle darker, the heavy lower lip */
+    A.part('head', [0, 1.6, .62], () => {
+      const nf = faAbCR([[0, 1.7, .46, .19, .25], [0, 1.58, .74, .145, .19], [0, 1.51, .98, .125, .155], [0, 1.6, 1.24, .105, .125], [0, 1.8, 1.37, .1, .11], [0, 1.93, 1.46, .095, .1]]);
+      faAbSpan(A, 'coat', nf, 0, 1, 16, 12, null, { colf: fur(1.02) });
+      const hd = faAbCR([[0, 2.02, 1.28, .04, .05], [0, 2.01, 1.34, .1, .12], [0, 2.0, 1.55, .085, .105], [0, 1.96, 1.74, .064, .084], [0, 1.93, 1.83, .035, .045]]);
+      faAbSpan(A, 'coat', hd, 0, 1, 12, 12, null, { caps: true, colf: (t, a) => t > 0.62 ? muzzle : faAbMix(coat, muzzle, Math.max(0, t - 0.4) * 2) });
+      A.ellip('coat', 0, 1.875, 1.77, 0.05, 0.03, 0.07, muzzle, { seg: 8 });
+      for (const s of [-1, 1]) {
+        A.ellip('coat', s * 0.08, 2.09, 1.42, 0.04, 0.02, 0.05, faAbShade(coat, 0.9), { seg: 8 });
+        A.ellip('eye', s * 0.088, 2.06, 1.42, 0.028, 0.028, 0.028, 0x1a120c, { seg: 8 });
+        A.ellip('mouth', s * 0.03, 1.965, 1.815, 0.008, 0.012, 0.008, 0x1a120c, { seg: 6 });
+      }
+    });
+    for (const s of [-1, 1]) A.part(s > 0 ? 'earL' : 'earR', [s * 0.08, 2.08, 1.36], () => A.cone('coat', [s * 0.075, 2.07, 1.37], [s * 0.12, 2.17, 1.33], 0.03, 0.006, coat, 6));
+    /* ---- the legs: each turns about its top; front: elbow, forearm, the callused knee, the cannon; hind: thigh, the low
+       stifle, the gaskin back to the hock, the cannon; then the fetlock, the pastern, the broad pad and two nails */
+    const LEGS = [[.2, .5, 1, 0], [-.2, .5, 1, 1], [.21, -.66, 0, 2], [-.21, -.66, 0, 3]];
+    for (const [x, z, front, i] of LEGS) A.part('leg' + i, [x, 1.32, z], () => {
+      const s = Math.sign(x), X = q => x + s * q;
+      const pts = front ? [[x, 1.4, z, .13], [X(.01), 1.12, z - .06, .11], [x, .92, z - .01, .082], [x, .72, z + .03, .072], [x, .42, z + .02, .05], [x, .14, z + .02, .054]]
+        : [[x, 1.42, z, .17], [X(.01), 1.14, z + .08, .14], [X(.01), .99, z + .16, .095], [x, .73, z - .12, .066], [x, .42, z - .09, .05], [x, .14, z - .06, .054]];
+      faAbLimb(A, 'coat', pts, 8, (j, jt) => jt && j === 3 ? call : coat, { knob: j => j === 3 ? 1.28 : 1.05 });
+      const fz = pts[5][2];
+      A.ellip('coat', x, 0.085, fz + 0.03, 0.05, 0.05, 0.055, faAbShade(coat, 0.85), { seg: 8 });
+      A.ellip('skin', x, 0.04, fz + 0.06, 0.1, 0.04, 0.13, pad, { seg: 10 });
+      for (const k of [-1, 1]) A.ellip('hoof', x + k * 0.04, 0.03, fz + 0.15, 0.035, 0.025, 0.04, 0x2a2018, { seg: 6 });
+    });
+    A.anchor('saddle', [0, 2.31, -0.13]); A.anchor('pack', [0, 2.27, -0.13]); A.anchor('bridle', [0, 1.98, 1.62]);
+    A.anchor('lead', [0, 1.95, 1.75]); A.anchor('chest', [0, 1.5, 0.7]);
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-bay.js ---- */
+/* ======================================================================
+   Krator Fauna: the bays (kits/fauna/krator-fauna-bay.js)
+   The southwest bay's fauna (biomes/swbay/src/75-biome-swbay-fauna.js), of which the north-west bay (and Ys, which
+   builds the north-west bay) draws the bay-side kinds: bay soarers wheeling over the water, canopy darters round the
+   crowns, the plains grazers' herd and the savannah stalker that trails it, pods of bay swimmers, savannah gliders in
+   the thermals, cap moths under the cap-trees and the bloom glints' swarms.
+   The biome drew them as instanced unit shapes scaled per species: ONE bird (a flattened diamond body, a forked tail,
+   two-panel wings with dark tips) for all four flyers, ONE box-built grazer for the grazer and the stalker (the
+   stalker scaled 1 : 0.85 : 1.25, longer and lower), a hump and a fin for the swimmer, and points for the glints.
+   Here each is drawn at its real size from those shapes, the proportions and palettes kept, rounded into bodies.
+   Sizes: the biome's bird has its wing tips at x = +-1 and is scaled by the species' `span`, so the span seen in the
+   world (and drawn here) is twice that number: the soarer 6.4 m, the darter 1.1 m, the glider 13 m, the cap moth 0.9 m.
+   The flap rates are the biome's (its `flap` is radians a second: freq = flap / 2 pi).
+   ====================================================================== */
+/* the biome's palettes (SWBAY.FAUNA.species), sRGB hex; a variant takes one of each list */
+const FA_BY_SP = {
+  soarer: { S: 3.2, body: [0x3a2e26, 0x4a3a2e], wing: [0x6a5a48, 0x8a7a62], tip: 0x2a2420 },
+  darter: { S: 0.55, body: [0x2a6a8a, 0x3a8a7a], wing: [0x4ab0c8, 0x60c8b0], tip: 0x1a3a4a },
+  glider: { S: 6.5, body: [0x5a4a3a, 0x6a5a48], wing: [0x9a8a70, 0xb0a088], tip: 0x3a2e24 },
+  capmoth: { S: 0.45, body: [0xd8c8a0, 0xc8b890], wing: [0xe8dcc0, 0xf0e0c8], tip: 0xb08a60 },
+  grazer: { hide: [0x8a7048, 0x9a8058, 0x7a6440], belly: 0xc8b898 },
+  stalker: { hide: [0x4a3a30, 0x3e3028, 0x56463a], belly: 0x8a7a68 },
+  swimmer: { back: [0x2a3a44, 0x33434c, 0x1e2e38], fin: 0x18242c },
+  glint: { col: [0xffd070, 0xff9a60, 0xe070ff] }
+};
+/* ---------------------------------------------------------------- helpers */
+function faByRgb(c) { return Array.isArray(c) ? c : [((c >> 16) & 255) / 255, ((c >> 8) & 255) / 255, (c & 255) / 255]; }
+function faByMix(a, b, t) { const p = faByRgb(a), q = faByRgb(b), k = Math.max(0, Math.min(1, t)); return [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k, p[2] + (q[2] - p[2]) * k]; }
+function faByShade(c, k) { const p = faByRgb(c); return [Math.min(1, p[0] * k), Math.min(1, p[1] * k), Math.min(1, p[2] * k)]; }
+function faBySmooth(a, b, x) { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+/* a smooth curve (Catmull-Rom) through rows of numbers, t 0..1 spread evenly over the rows */
+function faByCurve(K) {
+  const n = K.length - 1;
+  return function (t) {
+    const f = Math.min(n - 1e-9, Math.max(0, t * n)), i = Math.floor(f), u = f - i, u2 = u * u, u3 = u2 * u;
+    const p0 = K[Math.max(0, i - 1)], p1 = K[i], p2 = K[i + 1], p3 = K[Math.min(n, i + 2)], o = [];
+    for (let k = 0; k < p1.length; k++) o.push(0.5 * (2 * p1[k] + (p2[k] - p0[k]) * u + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * u2 + (3 * p1[k] - p0[k] - 3 * p2[k] + p3[k]) * u3));
+    return o;
+  };
+}
+/* the quadratic through (0, a), (m, b), (1, c): the biome's wing panels have their stations at root, x 0.55 and tip */
+function faByLag(u, a, b, c, m) { m = m == null ? 0.494 : m; return a * (u - m) * (u - 1) / m + b * u * (u - 1) / (m * (m - 1)) + c * u * (u - m) / (1 - m); }
+/* a thin plate seen from both faces (a wing, a fin, a fluke): f(u, v) the mid surface, th(u, v) its half thickness along
+   nrm (default +y), colf(u, v, side) its colour (side +1 the nrm face); each face is wound to face outward */
+function faByPlate(A, fam, f, nu, nv, colf, th, nrm) {
+  nrm = nrm || [0, 1, 0];
+  const e = 1e-3, p = f(0.5, 0.5), pu = f(0.5 + e, 0.5), pv = f(0.5, 0.5 + e);
+  const du = [pu[0] - p[0], pu[1] - p[1], pu[2] - p[2]], dv = [pv[0] - p[0], pv[1] - p[1], pv[2] - p[2]];
+  const n = [dv[1] * du[2] - dv[2] * du[1], dv[2] * du[0] - dv[0] * du[2], dv[0] * du[1] - dv[1] * du[0]];
+  const up = n[0] * nrm[0] + n[1] * nrm[1] + n[2] * nrm[2] > 0;
+  for (const sd of [1, -1]) {
+    const flip = (sd > 0) !== up;
+    A.sheet(fam, (u, v) => { const uu = flip ? 1 - u : u, q = f(uu, v), h = th ? th(uu, v) * sd : 0; return [q[0] + nrm[0] * h, q[1] + nrm[1] * h, q[2] + nrm[2] * h]; },
+      nu, nv, null, { colf: (u, v) => colf(flip ? 1 - u : u, v, sd) });
+  }
+}
+const faByE = (A, fam, p, r, col, o) => A.ellip(fam, p[0], p[1], p[2], r[0], r[1], r[2], col, o);
+
+/* ---------------------------------------------------------------- the bird (soarer, darter, glider)
+   The biome's unit bird (birdGeo) with its nose turned to +z: [z, y, half-width, half-height] from the tail root to the
+   beak tip (its diamond: nose 0.42, tail root -0.30, widest 0.12 at z 0.05, 0.16 deep), rounded into a body, a neck, a
+   head and a beak. The wings keep its stations: root x 0.12 (chord +0.16..-0.14), x 0.55 (+0.20..-0.10), tip x 1.0
+   (+0.14..+0.02), rising 0.05; the tail its fork (root -0.28, tips +-0.14 at -0.50, the notch at -0.40). */
+const FA_BY_BIRD = [[-0.30, 0.02, 0.03, 0.022], [-0.20, 0.016, 0.07, 0.05], [-0.06, 0.006, 0.11, 0.074], [0.05, 0, 0.12, 0.08],
+  [0.15, 0.008, 0.085, 0.064], [0.22, 0.018, 0.062, 0.054], [0.29, 0.02, 0.055, 0.048], [0.35, 0.012, 0.03, 0.026], [0.42, 0.002, 0.004, 0.004]];
+function faByBird(A, o) {
+  const S = o.S, y0 = o.y0, K = faByCurve(FA_BY_BIRD), fam = 'plain', v = A.variant;
+  const body = o.body[v % o.body.length], wing = o.wing[v % o.wing.length], tip = o.tip, under = faByShade(body, 1.3);
+  const C = t => { const k = K(t); return [0, y0 + k[1] * S, k[0] * S]; }, R = t => { const k = K(t); return [k[2] * S, k[3] * S]; };
+  const feather = (t, a) => faByMix(body, under, 0.6 * faBySmooth(0.3, 0.9, -Math.cos(a)));
+  const TB = 0.57, TH = 0.47;   /* the body ends at TB; the head (and neck) starts at TH, inside it, so a turned head leaves no gap */
+  A.tube(fam, t => C(TB * t), t => R(TB * t), 12, 12, null, { caps: true, colf: (t, a) => feather(TB * t, a) });
+  /* feet: tucked under the tail in flight, or the perch's legs below */
+  if (!o.perch) for (const s of [1, -1]) faByE(A, fam, [s * 0.035 * S, y0 - 0.055 * S, -0.17 * S], [0.022 * S, 0.016 * S, 0.06 * S], o.leg, { seg: 8 });
+  A.part('head', C(0.5), () => {
+    A.tube(fam, t => C(TH + (1 - TH) * t), t => { const tt = TH + (1 - TH) * t, r = R(tt), k = 1 - 0.08 * faBySmooth(TB, TH, tt); return [r[0] * k, r[1] * k]; }, 10, 12, null,
+      { caps: true, colf: (t, a) => { const tt = TH + (1 - TH) * t; return tt > 0.84 ? (tt > 0.95 ? faByShade(o.beak, 0.7) : o.beak) : feather(tt, a); } });
+    const ke = K(0.7);
+    for (const s of [-1, 1]) {
+      faByE(A, 'eye', [s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S], [0.016 * S, 0.016 * S, 0.016 * S], o.eye || 0x0c0a08, { seg: 8 });
+      faByE(A, 'eye', [s * ke[2] * 0.93 * S, y0 + (ke[1] + ke[3] * 0.42) * S, (ke[0] + 0.006) * S], [0.005 * S, 0.006 * S, 0.005 * S], 0x020202, { seg: 6 });
+    }
+  });
+  /* the wings: each extends outward from its root along +x (left) or -x (right), and flaps about z there */
+  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.1 * S, y0, 0.02 * S], () => {
+    faByPlate(A, fam, (u, w) => {
+      const lead = faByLag(u, 0.16, 0.2, 0.14), trail = faByLag(u, -0.14, -0.1, 0.02), m = (lead + trail) / 2;
+      const h = (lead - trail) / 2 * (u > 0.8 ? 1 - 0.5 * Math.pow((u - 0.8) / 0.2, 2) : 1);
+      return [s * (0.1 + 0.9 * u) * S, y0 + (faByLag(u, 0, 0.02, 0.05) + 0.014 * Math.sin(Math.PI * w) * (1 - u)) * S, (m + h * (2 * w - 1)) * S];
+    }, 12, 4, (u, w, sd) => { const c = faByMix(wing, tip, faBySmooth(0.5, 0.97, u) + (w < 0.2 ? 0.3 * faBySmooth(0.45, 0.8, u) : 0)); return sd < 0 ? faByShade(c, 1.12) : c; },
+    (u, w) => 0.012 * S * Math.sin(Math.PI * w) * (1 - 0.6 * u) * Math.sqrt(Math.max(0, 1 - u * u)));
+  });
+  /* the forked tail */
+  A.part('tail', [0, y0 + 0.02 * S, -0.27 * S], () => {
+    faByPlate(A, fam, (u, w) => { const a = 2 * u - 1; return [a * (0.035 + 0.105 * w) * S, y0 + (0.02 - 0.006 * w) * S, (-0.25 - w * (0.13 + 0.1 * Math.abs(a))) * S]; }, 8, 4,
+      (u, w, sd) => faByShade(faByMix(body, tip, 0.55 * w), sd < 0 ? 1.15 : 1), (u, w) => { const a = 2 * u - 1; return 0.011 * S * (1 - a * a) * (1 - 0.9 * w); });
+  });
+  /* the perch's legs: a bare shank to the ground, three toes forward and one back */
+  if (o.perch) for (const s of [1, -1]) {
+    const hip = [s * 0.04 * S, y0 - 0.045 * S, 0.0];
+    A.part(s > 0 ? 'leg0' : 'leg1', hip, () => {
+      const ft = [s * 0.05 * S, 0.006, 0.012 * S];
+      A.tube(fam, t => [hip[0] + (ft[0] - hip[0]) * t, hip[1] + (ft[1] - hip[1]) * t, hip[2] + (ft[2] - hip[2]) * t], t => { const r = (0.013 - 0.004 * t) * S; return [r, r]; }, 3, 6, o.leg, { caps: true });
+      for (const a of [-0.5, 0, 0.5, Math.PI]) { const L = (a === Math.PI ? 0.045 : 0.07) * S;
+        A.cone(fam, [ft[0], 0.0045, ft[2]], [ft[0] + Math.sin(a + s * 0.1) * L, 0.0035, ft[2] + Math.cos(a) * L], 0.0075 * S, 0.0035 * S, o.leg, 5); }
+    });
+  }
+}
+
+/* ---------------------------------------------------------------- the moth and the glint (insects, hovering) */
+function faByMoth(A, o) {
+  const S = o.S, y0 = o.y0, v = A.variant, fur = o.body[v % o.body.length], wing = o.wing[v % o.wing.length], tip = o.tip, P = (x, y, z) => [x * S, y0 + y * S, z * S];
+  /* the biome drew it with the bird's diamond; a moth's body here: a furred thorax and a banded, tapering abdomen */
+  faByE(A, 'coat', P(0, 0, 0.06), [0.075 * S, 0.07 * S, 0.1 * S], fur, { seg: 12 });
+  A.tube('coat', t => P(0, -0.008 - 0.025 * t, 0.0 - 0.33 * t), t => { const r = (0.012 + 0.055 * Math.sin(Math.PI * (0.3 + 0.7 * t))) * S; return [r, r * 0.95]; }, 10, 10, null,
+    { caps: true, colf: t => t > 0.88 ? tip : (Math.sin(t * 36) > 0.55 ? faByShade(fur, 0.74) : fur) });
+  const fuzz = [];
+  for (let i = 0; i < 26; i++) { const a = A.rr(-1.4, 1.4), z = A.rr(0.0, 0.13); fuzz.push({ at: P(Math.sin(a) * 0.07, Math.cos(a) * 0.065, z), dir: [Math.sin(a) * 0.6, Math.cos(a) * 0.3, -0.7], len: A.rr(0.04, 0.07) * S, w: 0.03 * S, col: faByShade(fur, A.rr(0.9, 1.05)), curl: 0.3 }); }
+  A.locks('hair', fuzz);
+  /* six legs, drawn hanging (it hovers; no leg parts) */
+  for (const s of [-1, 1]) for (const [z, dz] of [[0.11, 0.12], [0.06, 0.02], [0.01, -0.1]]) {
+    const a = P(s * 0.03, -0.05, z), b = P(s * 0.1, -0.1, z + dz * 0.5), c = P(s * 0.12, -0.2, z + dz);
+    A.cone('plain', a, b, 0.012 * S, 0.009 * S, faByShade(fur, 0.6), 5); A.cone('plain', b, c, 0.009 * S, 0.004 * S, faByShade(fur, 0.5), 5);
+  }
+  A.part('head', P(0, 0, 0.14), () => {
+    faByE(A, 'coat', P(0, 0.005, 0.185), [0.045 * S, 0.042 * S, 0.04 * S], fur, { seg: 10 });
+    for (const s of [-1, 1]) {
+      faByE(A, 'eye', P(s * 0.034, 0.012, 0.205), [0.024 * S, 0.026 * S, 0.022 * S], 0x2a1e14, { seg: 8 });
+      /* the feathered antennae: a shaft with short barbs either side */
+      const a0 = P(s * 0.018, 0.035, 0.215), a1 = P(s * 0.13, 0.13, 0.36);
+      A.cone('plain', a0, a1, 0.006 * S, 0.002 * S, tip, 4);
+      for (let k = 1; k <= 6; k++) { const t = k / 7, p = [a0[0] + (a1[0] - a0[0]) * t, a0[1] + (a1[1] - a0[1]) * t, a0[2] + (a1[2] - a0[2]) * t], L = 0.035 * S * Math.sin(Math.PI * (0.15 + 0.7 * t));
+        for (const q of [-1, 1]) A.cone('plain', p, [p[0] + s * q * L * 0.45, p[1] + q * L * 0.5, p[2] - L * 0.6], 0.0025 * S, 0.001 * S, tip, 3); }
+    }
+    faByE(A, 'mouth', P(0, -0.03, 0.2), [0.012 * S, 0.012 * S, 0.012 * S], 0x3a2a1a, { seg: 6 });
+  });
+  /* the wings: the forewing on the biome's planform (its tips the darker colour), the hindwing behind, coupled to it
+     (a moth's wings beat as one: they share the part) */
+  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(s * 0.05, 0.02, 0.06), () => {
+    faByPlate(A, 'plain', (u, w) => {
+      const lead = faByLag(u, 0.16, 0.2, 0.14), trail = faByLag(u, -0.14, -0.1, 0.02), m = (lead + trail) / 2, h = (lead - trail) / 2 * (u > 0.8 ? 1 - 0.55 * Math.pow((u - 0.8) / 0.2, 2) : 1);
+      return P(s * (0.05 + 0.92 * u), 0.02 + 0.04 * u, m + h * (2 * w - 1));
+    }, 12, 5, (u, w, sd) => { const d = Math.hypot(u - 0.46, (w - 0.55) * 0.5); let c = faByMix(wing, tip, faBySmooth(0.55, 0.95, u));
+      if (d < 0.05) c = faByShade(tip, 0.7); else if (Math.abs(u - 0.7) < 0.025) c = faByShade(c, 0.88); return sd < 0 ? faByShade(c, 0.94) : c; }, (u, w) => 0.004 * S * Math.sin(Math.PI * w) * (1 - u * u));
+    faByPlate(A, 'plain', (u, w) => {
+      const lead = faByLag(u, -0.04, -0.07, -0.14, 0.5), trail = faByLag(u, -0.2, -0.32, -0.22, 0.5), m = (lead + trail) / 2, h = (lead - trail) / 2 * Math.sqrt(Math.max(0.08, 1 - Math.pow(Math.max(0, u - 0.55) / 0.45, 2)));
+      return P(s * (0.04 + 0.58 * u), 0.008 + 0.02 * u, m + h * (2 * w - 1));
+    }, 10, 5, (u, w, sd) => { const d = Math.hypot(u - 0.5, (w - 0.45) * 0.6); let c = u > 0.82 || w < 0.12 ? faByMix(wing, tip, 0.7) : faByShade(wing, 0.96);
+      if (d < 0.05) c = 0x3a2a1a; else if (d < 0.1) c = tip; return sd < 0 ? faByShade(c, 0.94) : c; }, (u, w) => 0.003 * S * Math.sin(Math.PI * w) * (1 - u * u));
+  });
+}
+function faByGlint(A, o) {
+  const y0 = o.y0, glow = o.col[A.variant % o.col.length], P = (x, y, z) => [x, y0 + y, z], dk = 0x2a2418;
+  /* the biome's points: a glowing abdomen (the glint), a dark thorax and head, two clear wings */
+  faByE(A, 'plain', P(0, 0, 0.004), [0.0065, 0.006, 0.008], dk, { seg: 8 });
+  faByE(A, 'glow', P(0, -0.001, -0.014), [0.0075, 0.0068, 0.014], glow, { seg: 10 });
+  for (const s of [-1, 1]) for (const z of [0.008, 0.003, -0.002]) A.cone('plain', P(s * 0.003, -0.004, z), P(s * 0.009, -0.012, z - 0.003), 0.0012, 0.0006, dk, 3);
+  A.part('head', P(0, 0, 0.01), () => {
+    faByE(A, 'plain', P(0, 0.001, 0.015), [0.0045, 0.0042, 0.004], dk, { seg: 8 });
+    for (const s of [-1, 1]) { faByE(A, 'eye', P(s * 0.0032, 0.0015, 0.0165), [0.0022, 0.0026, 0.0022], 0x101010, { seg: 6 });
+      A.cone('plain', P(s * 0.0015, 0.004, 0.018), P(s * 0.006, 0.01, 0.028), 0.0006, 0.0003, dk, 3); }
+  });
+  for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(s * 0.004, 0.004, 0.006), () => {
+    faByPlate(A, 'plain', (u, w) => { const c = 0.004 - 0.008 * u, h = 0.0085 * Math.sqrt(Math.max(0.05, 1 - Math.pow(Math.max(0, u - 0.5) / 0.5, 2))) * (0.7 + 0.3 * u);
+      return P(s * (0.004 + 0.04 * u), 0.004 + 0.003 * u, c + h * (2 * w - 1)); }, 8, 3,
+      (u, w, sd) => faByMix(0xe6eef0, glow, 0.15 + 0.1 * u), (u, w) => 0.0004 * Math.sin(Math.PI * w));
+  });
+}
+
+/* ---------------------------------------------------------------- the grazer and the stalker (the biome's grazerGeo)
+   Its unit (height 1 at the shoulder, head to -z; here +z): the barrel 0.46 x 0.44 x 1.1 at y 0.72 (the belly colour
+   on its lower quarter), the neck 0.22 x 0.36 x 0.34 at z 0.62, the head 0.2 x 0.2 x 0.42 at y 1.12, z 0.86 (dark
+   below), a dark tail 0.28 long at y 0.75, four legs 0.52 tall at x +-0.16, z +-0.4 (dark low). Scaled [x, y, z]. */
+const FA_BY_BARREL = [[-0.58, 0.74, 0.1, 0.12], [-0.5, 0.745, 0.19, 0.19], [-0.32, 0.735, 0.23, 0.22], [0, 0.72, 0.235, 0.225], [0.3, 0.73, 0.235, 0.23], [0.47, 0.76, 0.2, 0.21], [0.56, 0.78, 0.11, 0.13]];
+function faByQuad(A, q) {
+  const v = A.variant, Kx = q.K[0], Ky = q.K[1], Kz = q.K[2], hide = q.hide[v % q.hide.length], belly = q.belly, dark = faByShade(hide, 0.6), pred = !!q.pred;
+  const P = (x, y, z) => [x * Kx, y * Ky, z * Kz], B = faByCurve(FA_BY_BARREL);
+  const mott = (x, y, z) => faByShade(hide, 0.92 + 0.16 * faNoise(x * 4 + v * 7, y * 4, z * 4));
+  /* the barrel; a stalker's belly tucked up at the waist */
+  A.tube('coat', t => { const k = B(t); return P(0, k[1] + (pred ? 0.03 * Math.exp(-Math.pow((t - 0.32) / 0.2, 2)) : 0), k[0]); },
+    t => { const k = B(t), w = pred ? 1 - 0.16 * Math.exp(-Math.pow((t - 0.32) / 0.2, 2)) : 1; return [k[2] * Kx * (pred ? 0.94 : 1), k[3] * Ky * w]; }, 16, 14, null,
+    { caps: true, colf: (t, a) => { const k = B(t); return faByMix(mott(Math.sin(a) * 0.2, k[1] + Math.cos(a) * 0.2, k[0]), belly, faBySmooth(0.5, 0.85, -Math.cos(a))); } });
+  /* the head with the neck: it turns about the neck's root to graze */
+  A.part('head', P(0, 0.86, 0.42), () => {
+    const nk = faByCurve([[0.82, 0.36], [0.95, 0.55], [1.07, 0.7]]);
+    A.tube('coat', t => { const k = nk(t); return P(0, k[0], k[1]); }, t => [(0.11 - 0.025 * t) * Kx, (0.18 - 0.075 * t) * Ky], 6, 12, null,
+      { colf: (t, a) => faByMix(mott(Math.sin(a) * 0.1, 1, 0.55), belly, 0.55 * faBySmooth(0.45, 0.85, -Math.cos(a))) });
+    const hd = pred ? faByCurve([[1.17, 0.63], [1.165, 0.86], [1.13, 1.07]]) : faByCurve([[1.15, 0.63], [1.14, 0.86], [1.09, 1.07]]);
+    const hr = pred ? (t => [(0.1 - 0.05 * t * t) * Kx, (0.1 - 0.058 * t) * Ky]) : (t => [(0.095 - 0.042 * t * t) * Kx, (0.105 - 0.05 * t) * Ky]);
+    A.tube('coat', t => { const k = hd(t); return P(0, k[0], k[1]); }, hr, 10, 12, null, { caps: true, colf: (t, a) => {
+      const lo = -Math.cos(a); if (!pred && t > 0.86) return 0x2a2420; if (pred && t > 0.93) return 0x1a1412;
+      return lo > (pred ? 0.3 : 0.6) ? (pred ? faByMix(dark, belly, 0.35) : dark) : faByMix(mott(0, 1.15, 0.86), dark, faBySmooth(0.75, 0.86, t) * 0.6); } });
+    for (const s of [-1, 1]) {
+      const e = pred ? P(s * 0.075, 1.19, 0.84) : P(s * 0.088, 1.17, 0.8);
+      faByE(A, 'eye', e, [0.021 * Kx, 0.021 * Ky, 0.018 * Kz], pred ? 0xc89030 : 0x1a120c, { seg: 8 });
+      if (pred) faByE(A, 'eye', [e[0] + s * 0.012 * Kx, e[1], e[2] + 0.004 * Kz], [0.008 * Kx, 0.014 * Ky, 0.008 * Kz], 0x050403, { seg: 6 });
+      faByE(A, 'mouth', pred ? P(s * 0.022, 1.135, 1.075) : P(s * 0.03, 1.105, 1.07), [0.011 * Kx, 0.008 * Ky, 0.006 * Kz], 0x120c0a, { seg: 6 });
+    }
+    if (pred) for (const s of [-1, 1]) A.cone('horn', P(s * 0.03, 1.105, 1.03), P(s * 0.03, 1.06, 1.036), 0.009 * Kx, 0.002 * Kx, 0xe8e0c8, 5);
+  });
+  /* a stalker's lower jaw */
+  if (pred) A.part('jaw', P(0, 1.1, 0.7), () => {
+    A.tube('coat', t => P(0, 1.085 - 0.01 * t, 0.7 + 0.35 * t), t => [(0.07 - 0.035 * t) * Kx, (0.032 - 0.012 * t) * Ky], 6, 10, null, { caps: true, colf: (t, a) => faByMix(dark, belly, 0.45) });
+    A.cone('horn', P(0.026, 1.07, 1.0), P(0.026, 1.1, 1.003), 0.007 * Kx, 0.002 * Kx, 0xe8e0c8, 5); A.cone('horn', P(-0.026, 1.07, 1.0), P(-0.026, 1.1, 1.003), 0.007 * Kx, 0.002 * Kx, 0xe8e0c8, 5);
+  });
+  /* the ears: a grazer's broad and drooping, a stalker's short and rounded, upright */
+  for (const s of [-1, 1]) A.part(s > 0 ? 'earL' : 'earR', pred ? P(s * 0.06, 1.24, 0.69) : P(s * 0.07, 1.22, 0.7), () => {
+    if (pred) faByE(A, 'coat', P(s * 0.075, 1.27, 0.69), [0.04 * Kx, 0.055 * Ky, 0.016 * Kz], faByShade(hide, 0.8), { rz: -s * 0.35, seg: 10 });
+    else faByE(A, 'coat', P(s * 0.13, 1.23, 0.69), [0.075 * Kx, 0.022 * Ky, 0.036 * Kz], hide, { rz: s * 0.45, ry: -s * 0.3, seg: 10 });
+  });
+  /* the tail: a grazer's droops to a dark tuft; a stalker's is longer and hangs */
+  A.part('tail', P(0, 0.77, -0.54), () => {
+    const tl = pred ? faByCurve([[0.8, -0.54], [0.72, -0.72], [0.56, -0.84]]) : faByCurve([[0.77, -0.54], [0.72, -0.68], [0.62, -0.78]]);
+    A.tube('coat', t => { const k = tl(t); return P(0, k[0], k[1]); }, t => [(0.045 - 0.018 * t) * Kx, (0.045 - 0.018 * t) * Ky], 6, 8, null, { caps: true, colf: t => pred && t < 0.6 ? mott(0, 0.7, -0.7) : dark });
+    if (!pred) { const L = []; for (let i = 0; i < 7; i++) L.push({ at: P(A.rr(-0.012, 0.012), 0.64, -0.775), dir: [A.rr(-0.25, 0.25), -1, -0.35], len: A.rr(0.1, 0.15) * Ky, w: 0.028 * Kx, col: faByShade(dark, 0.7), curl: 0.1 }); A.locks('hair', L); }
+  });
+  /* the legs: each turns about its top; a grazer's end in hooves, a stalker's in broad clawed paws */
+  const LEGS = [[0.15, 0.38, 1, 0], [-0.15, 0.38, 1, 1], [0.15, -0.38, 0, 2], [-0.15, -0.38, 0, 3]];
+  for (const [x, z, front, i] of LEGS) A.part('leg' + i, P(x, 0.62, z), () => {
+    const pts = pred ? (front ? [[x, 0.64, z], [x, 0.36, z - 0.02], [x, 0.12, z], [x, 0.05, z + 0.015]] : [[x, 0.66, z], [x, 0.45, z - 0.05], [x, 0.2, z - 0.1], [x, 0.05, z - 0.07]])
+      : (front ? [[x, 0.64, z], [x, 0.36, z + 0.01], [x, 0.12, z + 0.02], [x, 0.03, z + 0.025]] : [[x, 0.66, z], [x, 0.4, z - 0.07], [x, 0.16, z - 0.03], [x, 0.03, z]]);
+    const L = faByCurve(pts.map(p => P(p[0], p[1], p[2]))), r0 = front ? 0.068 : 0.085, r1 = pred ? 0.036 : 0.03;
+    A.tube('coat', L, t => { const r = r0 + (r1 - r0) * Math.min(1, t * 1.5); return [r * Kx, r * Kz]; }, 8, 10, null, { colf: t => t > 0.74 ? dark : mott(x, 0.4, z) });
+    const ft = pts[3];
+    if (pred) {
+      faByE(A, 'coat', P(x, 0.03, ft[2] + 0.03), [0.048 * Kx, 0.03 * Ky, 0.062 * Kz], dark, { seg: 10 });
+      for (const dx of [-0.025, 0, 0.025]) A.cone('horn', P(x + dx, 0.022, ft[2] + 0.08), P(x + dx * 1.2, 0.008, ft[2] + 0.1), 0.007 * Kx, 0.002 * Kx, 0x2a2420, 4);
+    } else A.cone('hoof', P(x, 0, ft[2] + 0.004), P(x, 0.05, ft[2]), 0.04 * (Kx + Kz) / 2, 0.033 * (Kx + Kz) / 2, 0x1e1a16, 8);
+  });
+  A.anchor('lead', P(0, 1.05, 0.72)); A.anchor('back', P(0, 0.96, 0));
+}
+
+/* ---------------------------------------------------------------- the swimmer
+   The biome showed only its back breaking the surface (a hump 9 m long and half as wide, a dorsal fin 2.7 m tall a
+   little ahead of the middle); here the whole animal, its back at the waterline (y 0.1): [z, y of the top, half-width,
+   half-height] from the tail stock to the blunt snout. */
+const FA_BY_WHALE = [[-3.8, -0.6, 0.1, 0.08], [-3.3, -0.45, 0.25, 0.28], [-2.5, -0.24, 0.58, 0.6], [-1.6, -0.04, 1.08, 0.95], [-0.6, 0.07, 1.6, 1.28], [0.5, 0.1, 1.88, 1.42],
+  [1.6, 0.1, 1.85, 1.38], [2.6, 0.05, 1.62, 1.2], [3.5, -0.06, 1.2, 0.96], [4.1, -0.18, 0.76, 0.7], [4.45, -0.3, 0.4, 0.38], [4.6, -0.6, 0.05, 0.06]];
+function faBySwimmer(A) {
+  const v = A.variant, back = FA_BY_SP.swimmer.back[v % 3], fin = FA_BY_SP.swimmer.fin, belly = faByMix(back, 0x9aa4a8, 0.7), W = faByCurve(FA_BY_WHALE);
+  const C = t => { const k = W(t); return [0, k[1] - k[3], k[0]]; }, R = t => { const k = W(t); return [k[2], k[3]]; };
+  const skin = (t, a) => { const k = W(t); return faByMix(faByShade(back, 0.9 + 0.2 * faNoise(t * 16 + v * 3, a * 2.2, 1.3)), belly, faBySmooth(0.15, 0.75, -Math.cos(a))); };
+  /* a stretch of the body; a part's stretch reaches into its neighbour (shrunk a little) so a turned joint shows no gap */
+  const stretch = (t0, t1, nt, shrink) => A.tube('skin', t => C(t0 + (t1 - t0) * t), t => { const tt = t0 + (t1 - t0) * t, r = R(tt), k = shrink ? shrink(tt) : 1; return [r[0] * k, r[1] * k]; },
+    nt, 18, null, { caps: true, colf: (t, a) => skin(t0 + (t1 - t0) * t, a) });
+  const TT = 3 / 11, THd = 7.4 / 11;   /* the tail turns at z -1.6, the head at z 2.95 */
+  stretch(TT, THd, 18);
+  /* the dorsal fin (the biome's: base z -0.9 .. 1.44, apex z 0.18, 2.4 m over the back) */
+  faByPlate(A, 'skin', (u, w) => { const z0 = -0.9 + 2.34 * u, top = 0.06 - 0.02 * Math.abs(u - 0.5); return [0, (top - 0.12) * (1 - w) + 2.5 * w, z0 + (0.18 - z0) * w - 0.35 * Math.sin(Math.PI * w) * u]; }, 8, 7,
+    (u, w) => faByShade(fin, 1 - 0.15 * w), (u, w) => 0.14 * (1 - w) * Math.sqrt(Math.sin(Math.PI * u)), [1, 0, 0]);
+  /* the flippers, and the blowhole */
+  for (const s of [-1, 1]) faByPlate(A, 'skin', (u, w) => { const ch = 0.95 - 0.6 * u, zc = 2.1 - 1.0 * u * u; return [s * (1.35 + 1.35 * u), -1.15 - 0.55 * u, zc + ch * (w - 0.5)]; }, 8, 4,
+    (u, w, sd) => sd > 0 ? faByShade(back, 0.95) : belly, (u, w) => 0.12 * Math.sin(Math.PI * w) * (1 - 0.7 * u) * Math.sqrt(Math.max(0, 1 - Math.pow(u, 3))));
+  faByE(A, 'mouth', [0, 0.02, 2.75], [0.13, 0.03, 0.07], 0x0c1216, { seg: 8 });
+  A.part('tail', C(TT), () => {
+    stretch(0, TT + 0.06, 12, tt => 1 - 0.06 * faBySmooth(TT, TT + 0.06, tt));
+    /* the flukes: 3.2 m across, swept back, notched at the middle */
+    faByPlate(A, 'skin', (u, w) => { const a = 2 * u - 1, b = Math.abs(a), lead = -3.66 - 0.62 * Math.pow(b, 1.6), trail = -3.9 - 0.52 * Math.pow(b, 0.7); return [a * 1.6, -0.66 + 0.06 * b, lead + (trail - lead) * w]; }, 12, 4,
+      (u, w, sd) => sd > 0 ? faByShade(back, 0.85) : belly, (u, w) => { const b = Math.abs(2 * u - 1); return 0.1 * Math.sin(Math.PI * w) * Math.sqrt(Math.max(0, 1 - b * b)); });
+  });
+  A.part('head', C(THd), () => {
+    stretch(THd - 0.05, 1, 12, tt => 1 - 0.05 * faBySmooth(THd, THd - 0.05, tt));
+    for (const s of [-1, 1]) {
+      const k = W(9.6 / 11), y = k[1] - k[3];
+      faByE(A, 'eye', [s * k[2] * 0.93, y - 0.12, k[0]], [0.07, 0.06, 0.08], 0x0a0c0e, { seg: 8 });
+      const ml = []; for (let i = 0; i <= 5; i++) { const kk = W((8.4 + 2.5 * i / 5) / 11), yy = kk[1] - kk[3]; ml.push([s * kk[2] * 0.985, yy - 0.3 * kk[3], kk[0]]); }
+      for (let i = 0; i < 5; i++) A.cone('mouth', ml[i], ml[i + 1], 0.03, 0.03, 0x10161a, 4);
+    }
+  });
+}
+
+/* ---------------------------------------------------------------- the entries */
+ANIMAL({
+  key: 'bay-soarer', name: 'Bay soarer', group: 'bay',
+  tags: { biomes: ['swbay', 'nwbay'], koppen: ['Af', 'Am', 'Aw'], aridity: ['humid', 'subhumid'], climate: ['tropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'wary',
+    habitat: ['sky', 'water', 'rock'], locomotion: ['flies', 'glides'] },
+  size: { length: 2.94, height: 0.5, span: 6.4 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '18-19, 42-55, 110-117', note: 'flocks of 7 to 12 wheeling in loops 90-220 m across, 40-120 m up over the bay and the shore, clear of the canopy and the tower' },
+    { build: 'biomes/nwbay', file: 'src/75-biome-nwbay-fauna.js', lines: '18-19, 34-45, 84-90', note: 'the same flocks over the north-west bay, clear of the karst stacks\' tops' },
+    { build: 'settlements/ys', file: 'src/86-bio-75-biome-nwbay-fauna.js', lines: '18-19, 34-45, 84-90', note: 'vendored nwbay fauna: Ys builds the north-west bay with fauna on (targets/city/89-city-biome.js)' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 14, note: 'dark and fishy, eaten smoked by the bay\'s boat people' },
+    eggs: { amount: 2, note: 'a clutch of one or two on the karst stacks\' ledges, taken by climbers' },
+    feathers: { amount: 0.6, note: 'the moulted flight feathers: fletching and fans' } },
+  life: { maturity: 5, lifespan: 45, litter: 1.5, gestation: 60, note: 'eggs (incubation days), nesting in colonies on the sea stacks' },
+  variants: 2, variantNames: ['umber', 'dun'],
+  w: 6.45, d: 2.95, h: 2.7,
+  data: { mass: 38, legs: 0, wings: 1, speed: { walk: 0, run: 0, fly: 11 }, gait: { type: 'flyer', freq: 0.25, stride: 0 },
+    flap: { freq: 0.25, amp: 0.75, glide: 0.35, fold: 0 }, airborne: true,
+    herd: 'flocks of 7 to 12 wheeling in loops over the bay and the shore', fleeDistance: 30, aggression: 0.05,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'FLY', 'FLY', 'FLY', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  /* never lands in the biome: built gliding, its body 2.4 m up so a full downstroke clears the ground */
+  build: function (A) { const o = FA_BY_SP.soarer; faByBird(A, { S: o.S, y0: 2.4, body: o.body, wing: o.wing, tip: o.tip, beak: 0x4a3c30, leg: 0x3a3028 }); }
+});
+ANIMAL({
+  key: 'canopy-darter', name: 'Canopy darter', group: 'bay',
+  tags: { biomes: ['swbay', 'nwbay'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic', 'tropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'insectivore', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['canopy', 'trunks'], locomotion: ['flies', 'walks'] },
+  size: { length: 0.5, height: 0.16, span: 1.1 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '20-21, 42-55, 118-123', note: 'flocks of 8 to 16 flickering in tight loops beside the crowns of the jungle canopy' },
+    { build: 'biomes/nwbay', file: 'src/75-biome-nwbay-fauna.js', lines: '20-21, 34-45, 92-97', note: 'round the prism gums, fan-crowns, ironbarks and figs' },
+    { build: 'settlements/ys', file: 'src/86-bio-75-biome-nwbay-fauna.js', lines: '20-21, 34-45, 92-97', note: 'vendored nwbay fauna (Ys)' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 0.2, note: 'a mouthful; snared by children' }, feathers: { amount: 0.03, note: 'the teal and blue feathers, prized for ornament' } },
+  life: { maturity: 1, lifespan: 8, litter: 3, gestation: 16, note: 'eggs in a hole high in a bole' },
+  variants: 2, variantNames: ['blue', 'teal'],
+  w: 1.12, d: 0.75, h: 0.2,
+  data: { mass: 0.45, legs: 2, wings: 1, speed: { walk: 0.3, run: 1, fly: 14 }, gait: { type: 'flyer', freq: 1.43, stride: 0.04 },
+    flap: { freq: 1.43, amp: 0.75, glide: 0, fold: 0.12, sweep: 1.3, tuck: 0.9 },
+    herd: 'flocks of 8 to 16 in tight loops round the crowns', fleeDistance: 6, aggression: 0,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'REST', 'REST', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  /* perched: standing on its toes; at rest its wings are held up over its back (fold), spread in flight */
+  build: function (A) { const o = FA_BY_SP.darter; faByBird(A, { S: o.S, y0: 0.1, body: o.body, wing: o.wing, tip: o.tip, beak: 0x1a2a30, leg: 0x2a2a2a, perch: true }); }
+});
+ANIMAL({
+  key: 'plains-grazer', name: 'Plains grazer', group: 'bay',
+  tags: { biomes: ['swbay'], koppen: ['Aw'], aridity: ['semiarid', 'subhumid'], climate: ['tropic'], riparian: 'non', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground'], locomotion: ['walks', 'runs'] },
+  size: { length: 3.5, height: 2.3 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '22-23, 58-67, 133-152', note: 'one herd of 14 to 24 wandering the savannah, heads down, turning away from trunks and the tower' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 330, note: 'a cow dressed: lean savannah game' }, hide: { amount: 1, hideM2: 4.5, note: 'a heavy hide: shields, sandals, tent covers' } },
+  life: { maturity: 3, lifespan: 20, litter: 1, gestation: 270 },
+  variants: 3, variantNames: ['tawny', 'sand', 'umber'],
+  w: 0.9, d: 3.65, h: 2.42,
+  data: { mass: 700, legs: 4, speed: { walk: 0.9, run: 14 }, gait: { type: 'quadruped', freq: 1.1, stride: 0.9 }, grazePitch: 1.35,
+    herd: 'one herd of 14 to 24 wandering the savannah, a stalker or two trailing it', fleeDistance: 40, aggression: 0.1,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) { const o = FA_BY_SP.grazer; faByQuad(A, { K: [1.9, 1.9, 1.9], hide: o.hide, belly: o.belly }); }
+});
+ANIMAL({
+  key: 'savannah-stalker', name: 'Savannah stalker', group: 'bay',
+  tags: { biomes: ['swbay'], koppen: ['Aw'], aridity: ['semiarid', 'subhumid'], climate: ['tropic'], riparian: 'non', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'crepuscular', temperament: 'aggressive',
+    habitat: ['ground'], locomotion: ['walks', 'runs', 'leaps'] },
+  size: { length: 3.7, height: 1.7 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '26-27, 58-67, 141-148', note: 'one or two trailing the grazer herd ninety metres back: the grazer\'s shape scaled 1 : 0.85 : 1.25, longer and lower' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { hide: { amount: 1, hideM2: 3.2, note: 'the dark pelt, a hunter\'s trophy' } },
+  life: { maturity: 3, lifespan: 16, litter: 2, gestation: 105 },
+  variants: 3, variantNames: ['dusk', 'char', 'umber'],
+  w: 0.8, d: 3.9, h: 1.82,
+  data: { mass: 320, legs: 4, speed: { walk: 1.3, run: 17 }, gait: { type: 'quadruped', freq: 1.2, stride: 1.1 }, grazePitch: 0.9,
+    herd: 'one or two, trailing the grazer herd ninety metres back', fleeDistance: 0, aggression: 0.7,
+    schedule: ['REST', 'REST', 'REST', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'PATROL', 'PATROL', 'REST', 'REST', 'REST', 'REST', 'REST', 'PATROL', 'PATROL', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'PATROL', 'REST', 'REST', 'REST'] },
+  build: function (A) { const o = FA_BY_SP.stalker; faByQuad(A, { K: [1.6, 1.36, 2.0], hide: o.hide, belly: o.belly, pred: true }); }
+});
+ANIMAL({
+  key: 'bay-swimmer', name: 'Bay swimmer', group: 'bay',
+  tags: { biomes: ['swbay', 'nwbay'], koppen: ['Af', 'Am'], aridity: ['humid'], climate: ['tropic'], riparian: 'riparian', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'cathemeral', temperament: 'wary',
+    habitat: ['deep water', 'water'], locomotion: ['swims'] },
+  size: { length: 9, height: 2.8 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '28-29, 70-75, 153-167', note: 'pods of 3 to 6 cruising the deep water in slow arcs, backs and fins breaking the surface' },
+    { build: 'biomes/nwbay', file: 'src/75-biome-nwbay-fauna.js', lines: '22-23, 46-55, 98-112', note: 'the same pods in the north-west bay' },
+    { build: 'settlements/ys', file: 'src/86-bio-75-biome-nwbay-fauna.js', lines: '22-23, 46-55, 98-112', note: 'vendored nwbay fauna (Ys)' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 9000, note: 'meat and blubber (lamp oil), taken, if ever, by the bay\'s boldest boats' },
+    hide: { amount: 1, hideM2: 60, note: 'thick skin: boot soles, buckets' } },
+  life: { maturity: 8, lifespan: 70, litter: 1, gestation: 400 },
+  variants: 3, variantNames: ['slate', 'grey', 'dark'],
+  w: 5.5, d: 9.1, h: 2.55,
+  data: { mass: 25000, legs: 0, speed: { walk: 2.2, run: 8 }, gait: { type: 'swimmer', freq: 0.17, stride: 0 }, swim: { freq: 0.17, amp: 0.2, axis: 'x' },
+    herd: 'pods of 3 to 6 cruising the deep water in slow arcs', fleeDistance: 15, aggression: 0.05,
+    schedule: ['SWIM', 'SWIM', 'SWIM', 'REST', 'REST', 'SWIM', 'HUNT', 'HUNT', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'REST', 'SWIM', 'SWIM', 'SWIM', 'HUNT', 'HUNT', 'HUNT', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'SWIM'] },
+  /* built at the waterline: its back at y 0.1, the fin above, the rest below */
+  build: function (A) { faBySwimmer(A); }
+});
+ANIMAL({
+  key: 'savannah-glider', name: 'Savannah glider', group: 'bay',
+  tags: { biomes: ['swbay'], koppen: ['Aw'], aridity: ['semiarid', 'subhumid'], climate: ['tropic'], riparian: 'non', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'scavenger', activity: 'diurnal', temperament: 'wary',
+    habitat: ['sky', 'ground'], locomotion: ['flies', 'glides'] },
+  size: { length: 6.0, height: 1.05, span: 13 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '30-31, 42-55, 124-127', note: 'twos to fives in wide slow circles (150-300 m) in the thermals 130-230 m over the savannah, barely a wingbeat' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { feathers: { amount: 1.5, note: 'the long flight feathers, a chief\'s fan or a cloak\'s fringe' } },
+  life: { maturity: 7, lifespan: 50, litter: 1, gestation: 70, note: 'eggs (incubation days); it comes down only to a carcass' },
+  variants: 2, variantNames: ['umber', 'buff'],
+  w: 13.1, d: 6.0, h: 5.5,
+  data: { mass: 90, legs: 0, wings: 1, speed: { walk: 1, run: 3, fly: 9 }, gait: { type: 'flyer', freq: 0.056, stride: 0 },
+    flap: { freq: 0.056, amp: 0.75, glide: 0.8, fold: 0 }, airborne: true,
+    herd: 'alone or two to five, circling wide and slow in the thermals', fleeDistance: 50, aggression: 0.1,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  /* seen only in the thermals: built gliding, 4.9 m up so a full downstroke clears the ground */
+  build: function (A) { const o = FA_BY_SP.glider; faByBird(A, { S: o.S, y0: 4.9, body: o.body, wing: o.wing, tip: o.tip, beak: 0x6a5a48, leg: 0x4a3c30 }); }
+});
+ANIMAL({
+  key: 'cap-moth', name: 'Cap moth', group: 'bay',
+  tags: { biomes: ['swbay'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'herbivore', feeding: 'frugivore', activity: 'crepuscular', temperament: 'skittish',
+    habitat: ['canopy', 'trunks'], locomotion: ['flies'] },
+  size: { length: 0.42, height: 0.12, span: 0.9 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '32-33, 42-55, 128-132', note: 'clouds of 10 to 18 under the caps of the cap-trees, where the spores fall (the biome drew it with the bird shape)' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 0.08, note: 'the fat abdomen, roasted on a stick' } },
+  life: { maturity: 0.3, lifespan: 1, litter: 200, gestation: 12, note: 'eggs on the cap-tree\'s gills; the larva bores in the cap' },
+  variants: 2, variantNames: ['cream', 'buff'],
+  w: 0.9, d: 0.34, h: 0.42,
+  data: { mass: 0.3, legs: 0, wings: 1, speed: { walk: 0.05, run: 0, fly: 5 }, gait: { type: 'insect', freq: 2.23, stride: 0 },
+    flap: { freq: 2.23, amp: 0.75 }, feeds: 'the cap-trees\' falling spores',
+    herd: 'clouds of 10 to 18 under the caps of the cap-trees', fleeDistance: 2, aggression: 0,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'FLY', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST'] },
+  /* hovering (the biome has it only in its clouds): 0.34 m up so a downstroke clears the ground; its legs hang */
+  build: function (A) { const o = FA_BY_SP.capmoth; faByMoth(A, { S: o.S, y0: 0.34, body: o.body, wing: o.wing, tip: o.tip }); }
+});
+ANIMAL({
+  key: 'bloom-glint', name: 'Bloom glint', group: 'bay',
+  tags: { biomes: ['swbay', 'nwbay'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'herbivore', feeding: 'frugivore', activity: 'crepuscular', temperament: 'skittish',
+    habitat: ['canopy'], locomotion: ['flies'] },
+  size: { length: 0.05, height: 0.02, span: 0.09 },
+  source: [{ build: 'biomes/swbay', file: 'src/75-biome-swbay-fauna.js', lines: '24-25, 168-178', note: 'swarms of 36 glinting points orbiting under the epiphyte-laden crowns' },
+    { build: 'biomes/nwbay', file: 'src/75-biome-nwbay-fauna.js', lines: '24-25, 113-123', note: 'the same swarms in the north-west bay' },
+    { build: 'settlements/ys', file: 'src/86-bio-75-biome-nwbay-fauna.js', lines: '24-25, 113-123', note: 'vendored nwbay fauna (Ys)' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: {},
+  life: { maturity: 0.1, lifespan: 0.5, litter: 60, gestation: 7 },
+  variants: 3, variantNames: ['gold', 'coral', 'violet'],
+  w: 0.09, d: 0.06, h: 0.075,
+  data: { mass: 0.002, legs: 0, wings: 1, speed: { walk: 0, run: 0, fly: 1.5 }, gait: { type: 'insect', freq: 12, stride: 0 },
+    flap: { freq: 12, amp: 0.8 }, feeds: 'the epiphytes\' nectar', glow: true,
+    herd: 'swarms of about 36 orbiting under the flowering crowns', fleeDistance: 0.5, aggression: 0,
+    schedule: ['FLY', 'FLY', 'FLY', 'ROOST', 'ROOST', 'FLY', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY'] },
+  /* hovering: its abdomen is the glint (the runtime has no emissive family: drawn bright) */
+  build: function (A) { faByGlint(A, { y0: 0.06, col: FA_BY_SP.glint.col }); }
+});
+
+/* ---- kits/fauna/krator-fauna-crawlers.js ---- */
+/* ======================================================================
+   Krator Fauna: crawlers (kits/fauna/krator-fauna-crawlers.js)
+   The many-legged beasts of the hyperjungle: the draught millipede that walks the beast lifts' capstans (Girder, Mav's
+   Refuge) and is ranched by the Screamers, and the giant riding spider of Mav's Refuge. Ported 2026-10-06 from the
+   settlements' own builders (the sources below); metres throughout (the source builds are already in metres).
+   ====================================================================== */
+/* a colour lerp the way Girder's and Mav's shade() does it: toward white (f > 0) or toward 0x120f0a (f < 0), sRGB hex */
+function faCrShade(hex, f) {
+  const to = f >= 0 ? 0xffffff : 0x120f0a, k = Math.abs(f);
+  const ch = (h, s) => (h >> s) & 255, mix = s => Math.round(ch(hex, s) + (ch(to, s) - ch(hex, s)) * k);
+  return (mix(16) << 16) | (mix(8) << 8) | mix(0);
+}
+function faCrLerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+
+/* ---------------------------------------------------------------- the draught millipede
+   Girder's builder (78-life.js): 13 segments 0.56 m apart, each a 1.25 x 0.62 m chitin barrel (dark brown) under a wider,
+   paler tergite plate (1.42 m, the paranota), an ochre collar on its front face and one leg pair (an ochre femur angled down
+   and out, a darker tibia to the ground at x 1.12); the first segment carries the antennae and mandibles, the fourth the
+   harness blanket and the capstan-bar block. Mav's Refuge draws the same segment. The Screamers' ranch herd (94-life.js) is
+   a cruder chain of spheres, tapering to both ends, every third segment ochre: variant 1 keeps that taper and banding. */
+const FA_CR_MIL = { body: 0x4a2e22, accent: 0xb8683e, plate: faCrShade(0x4a2e22, 0.10), tibia: faCrShade(0xb8683e, -0.25),
+  mand: faCrShade(0xb8683e, -0.15), leg2: 0x3a241c, cloth: 0x7a2028, timber: 0x4e3a28, eye: 0x120c08 };
+const FA_CR_MIL_N = 13, FA_CR_MIL_D = 0.56;
+ANIMAL({
+  key: 'draught-millipede', name: 'Draught millipede', group: 'crawlers',
+  tags: { biomes: ['hyperjungle'], koppen: ['Af', 'Am'], aridity: ['humid'], climate: ['hypertropic', 'tropic'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders', 'screamers'], diet: 'herbivore', feeding: 'detritivore', activity: 'cathemeral', temperament: 'docile',
+    habitat: ['ground', 'trunks', 'pen'], locomotion: ['walks', 'climbs'] },
+  size: { length: 7.3, height: 1.05 },
+  source: [
+    { build: 'settlements/girder', file: 'src/78-life.js', lines: '221-234', note: 'the segment (body, tergite, collar, leg pair; head and saddle bits): the richer model, ported here. Lines 480-498 and 553-558: one beast of 13 segments (0.56 m) per beast lift, walking the capstan round with a Millipede handler (the Beast Riders of Girder); src/55-arch.js 507-515: the millipede pen (shelter, trough, leaf-litter heaps, wallow)' },
+    { build: 'settlements/mavs-refuge', file: 'src/78-life.js', lines: '188-203', note: 'the same segment (a saddle blanket on segment 4); lines 462-508: the beast lifts\' millipedes of the Refuge, each with a handler' },
+    { build: 'settlements/screamers', file: 'src/94-life.js', lines: '152-207', note: 'the Screamers\' ranch herd: eight beasts of 13 sphere segments (radius to len x 0.085, len 13-25), tapering to both ends, every third segment ochre, box legs 0x3a241c, wandering at 2.2-4.6 m/s inside the stockade (variant 1 here). src/71-village.js 437-458: the millipede ranch (a double stockade, "because they climb"; troughs, shelter) and an unused static builder' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: false },
+  yields: { meat: { amount: 900, note: 'the Screamers ranch them for it: the pale flesh inside the rings, smoked in strips' },
+    hide: { amount: 1, hideM2: 9, note: 'the tergite plates, taken off ring by ring: shields, shingles, bowls and scoops' } },
+  life: { maturity: 3, lifespan: 30, litter: 60, gestation: 40, note: 'eggs in a nest of chewed litter; a young beast adds rings (and legs) at each moult' },
+  variants: 2, variantNames: ['Girder draught beast: harnessed for the capstan, ochre collars', 'Screamer ranch beast: tapering, every third ring ochre'],
+  w: 2.35, d: 8.3, h: 1.4,
+  variantDims: [{ w: 2.35, d: 8.3, h: 1.4 }, { w: 3.55, d: 12.4, h: 1.6 }],
+  data: { mass: [4000, 13000], legs: 26, segs: 12, speed: { walk: 1.0, run: 4.0 }, gait: { type: 'multipede', freq: 1.1, stride: 0.35 }, chain: { amp: 0.22, wave: 7 }, grazePitch: 0.25,
+    budget: 9000,
+    herd: 'Girder and Mav\'s Refuge: one to a beast lift, walked round its capstan by a handler and penned at night; the Screamers ranch herds of eight behind a double stockade',
+    fleeDistance: 0, aggression: 0.05,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, K = (v === 1 ? 1.5 : 1) * A.S, C = FA_CR_MIL, N = FA_CR_MIL_N;
+    for (let k = 0; k < N; k++) {
+      const t = k / (N - 1), f = v === 1 ? 1 - 0.45 * Math.abs(t * 2 - 1) : 1, zk = (6 - k) * FA_CR_MIL_D;
+      /* a point of segment k: x and y shrink with the Screamer taper, z (the ring's depth) does not */
+      const P = (x, y, dz) => [x * f * K, y * f * K, (zk + dz) * K];
+      const band = v === 1 && k % 3 === 0;
+      const bodyC = band ? C.accent : C.body, plateC = band ? faCrShade(C.accent, 0.08) : C.plate, collarC = band ? faCrShade(C.accent, -0.2) : C.accent;
+      const femC = v === 1 ? C.leg2 : C.accent, tibC = v === 1 ? faCrShade(C.leg2, -0.2) : C.tibia;
+      const ring = () => {
+        /* the barrel, slightly swollen at its middle; its rear tucks under the ring behind */
+        A.tube('chitin', u => P(0, 0.62, -0.32 + 0.64 * u), u => { const s = 0.9 + 0.1 * Math.sin(Math.PI * u); return [0.625 * f * K * s, 0.31 * f * K * s]; }, 5, 14, bodyC,
+          { colf: (u, a) => Math.cos(a) < -0.6 ? faCrShade(bodyC, 0.08) : bodyC });
+        /* the collar: the ochre band on the ring's front face, its upper half */
+        A.tube('chitin', u => P(0, 0.63, 0.2 + 0.1 * u), () => [0.655 * f * K, 0.325 * f * K], 1, 14, null,
+          { colf: (u, a) => Math.cos(a) > -0.25 ? collarC : bodyC });
+        /* the tergite: a wide, paler lens of a plate over the back, overhanging the sides */
+        A.tube('chitin', u => P(0, 0.955, -0.25 + 0.5 * u), u => [0.71 * f * K, 0.075 * f * K * (0.75 + 0.25 * Math.sin(Math.PI * u))], 2, 12, plateC, { caps: true });
+      };
+      const name = k === 0 ? 'head' : 'seg' + (k - 1), pivot = k === 0 ? P(0, 0.62, -0.3) : P(0, 0.62, 0);
+      A.part(name, pivot, () => {
+        ring();
+        if (k === 0) {
+          /* the head capsule under the first ring, with its ocelli, and the antennae (Girder: 1.1 m, up, out and forward) */
+          A.ellip('chitin', 0, 0.54 * f * K, (zk + 0.33) * K, 0.44 * f * K, 0.26 * f * K, 0.2 * K, faCrShade(C.body, -0.15), { seg: 14 });
+          for (const s of [-1, 1]) {
+            A.ellip('eye', s * 0.31 * f * K, 0.62 * f * K, (zk + 0.43) * K, 0.045 * f * K, 0.04 * f * K, 0.04 * K, C.eye, { seg: 6 });
+            const a0 = P(s * 0.18, 0.74, 0.4), a1 = P(s * 0.3, 1.08, 0.72), a2 = P(s * 0.47, 1.34, 1.0);
+            A.tube('chitin', u => u < 0.5 ? faCrLerp(a0, a1, u * 2) : faCrLerp(a1, a2, u * 2 - 1), u => { const r = (0.032 - 0.018 * u) * f * K; return [r, r]; }, 6, 6, null,
+              { caps: true, colf: u => (Math.floor(u * 6 + 0.01) % 2) ? C.accent : C.tibia });
+          }
+          /* the mandibles: the jaw, turning with the head */
+          A.part('jaw', P(0, 0.45, 0.3), () => {
+            for (const s of [-1, 1]) A.tube('chitin', u => faCrLerp(P(s * 0.38, 0.45, 0.24), P(s * 0.2, 0.43, 0.62), u), u => [(0.075 - 0.04 * u) * f * K, (0.08 - 0.045 * u) * f * K], 3, 8, C.mand, { caps: true });
+          });
+        }
+        if (k === 3 && v === 0) {
+          /* the harness: a blanket over the fourth ring and the block the capstan bar pegs into */
+          A.tube('plain', u => P(0, 1.06, -0.31 + 0.62 * u), () => [0.42 * K, 0.1 * K], 2, 12, C.cloth, { caps: true, colf: (u, a) => Math.abs(Math.sin(a)) > 0.93 ? 0xc2a24e : C.cloth });
+          A.tube('plain', u => P(-0.25 + 0.5 * u, 1.26, -0.22), () => [0.05 * K, 0.12 * K], 1, 6, C.timber, { caps: true });
+          A.anchor('harness', P(0, 1.26, -0.22));
+        }
+      });
+      if (k === N - 1) A.part('tail', P(0, 0.62, -0.3), () => {
+        /* the last ring's anal valves */
+        A.ellip('chitin', 0, 0.6 * f * K, (zk - 0.36) * K, 0.4 * f * K, 0.24 * f * K, 0.13 * K, faCrShade(bodyC, -0.1), { seg: 12 });
+      });
+      /* the leg pair: each leg its own part, swinging at its hip (the multipede gait's wave runs down them) */
+      for (const s of [1, -1]) {
+        const hip = P(s * 0.58, 0.55, 0), knee = P(s * 1.1, 0.38, 0.03), foot = P(s * 1.14, 0, 0.07);
+        A.part('leg' + (2 * k + (s > 0 ? 0 : 1)), hip, () => {
+          A.tube('chitin', u => faCrLerp(hip, knee, u), u => { const r = (0.065 - 0.012 * u) * f * K; return [r, r]; }, 2, 6, femC, { caps: true });
+          A.tube('chitin', u => faCrLerp(knee, foot, u), u => { const r = (0.055 - 0.028 * u) * f * K; return [r, r]; }, 3, 6, tibC, { caps: true });
+        });
+      }
+    }
+    /* the ventral strip the rings ride on (the body part: what a port binds as the root) */
+    A.tube('chitin', u => [0, 0.36 * K, (-3.5 + 7.0 * u) * K], u => { const f = v === 1 ? 1 - 0.45 * Math.abs(u * 2 - 1) : 1; return [0.3 * f * K, 0.06 * f * K]; }, 12, 8, faCrShade(C.body, 0.15));
+    A.anchor('headRoot', [0, 0.62 * K, 3.06 * K]);
+  }
+});
+
+/* ---------------------------------------------------------------- the giant spider
+   Mav's Refuge (79-spiders.js): the cephalothorax an ellipsoid 1.0 x 0.55 x 1.3 m with a red stripe and paler flanks, the
+   abdomen 1.3 x 1.05 x 1.85 m with a red dorsal stripe, gold chevrons and a spinneret; red chelicerae with gold fangs, eight
+   eyes, pedipalps; eight legs of three segments (femur, patella-tibia, tarsus), each dark with a red band at its far end,
+   laid out by the build's own table (hips on the cephalothorax, home feet on the ground) and bent by its own two-bone IK
+   with the body 1.25 m up. Its frame has the origin at the pedicel; here the origin is under the middle of the body (the
+   pedicel 0.85 m behind it). The rider and the tack (saddle, panniers, reins) stay with the Beast Riders: anchor 'saddle'. */
+const FA_CR_SPI = { dark: 0x2a2622, red: 0x7a2028, gold: 0xc2a24e };
+const FA_CR_SPI_LEG = { hipx: [0.80, 0.92, 0.92, 0.78], hipz: [1.85, 1.35, 0.85, 0.35], homeA: [0.60, 1.22, 1.88, 2.55], homeR: [5.0, 4.6, 4.5, 5.1],
+  l1: [2.9, 2.6, 2.55, 2.95], l2: [3.3, 2.9, 2.85, 3.35] };
+const FA_CR_SPI_H = 1.25, FA_CR_SPI_Z = 0.85;
+/* the build's IK at rest on flat ground (79-spiders.js, 'ankle, then 2-bone IK with the knee lifted along body-up'), in its
+   body frame (origin the pedicel, y up): hip, knee, ankle and foot of leg row r on side s */
+function faCrSpiderLeg(r, s) {
+  const L = FA_CR_SPI_LEG, H = [s * L.hipx[r], 0, L.hipz[r]], F = [s * Math.sin(L.homeA[r]) * L.homeR[r], -FA_CR_SPI_H + 0.02, Math.cos(L.homeA[r]) * L.homeR[r] + 1.0];
+  let tox = H[0] - F[0], toz = H[2] - F[2]; const tl = Math.hypot(tox, toz) || 1;
+  const k = [F[0] + tox / tl * 0.32, F[1] + 0.62, F[2] + toz / tl * 0.32];
+  const l1 = L.l1[r], l2 = L.l2[r]; let dx = k[0] - H[0], dy = k[1] - H[1], dz = k[2] - H[2], D = Math.hypot(dx, dy, dz) || 1e-4;
+  dx /= D; dy /= D; dz /= D; D = Math.min(D, (l1 + l2) * 0.985); D = Math.max(D, Math.abs(l2 - l1) + 0.05);
+  const aa = (l1 * l1 - l2 * l2 + D * D) / (2 * D), hh = Math.sqrt(Math.max(0, l1 * l1 - aa * aa));
+  let px = -dx * dy, py = 1 - dy * dy, pz = -dz * dy; const pl = Math.hypot(px, py, pz) || 1;
+  const K = [H[0] + dx * aa + px / pl * hh, H[1] + dy * aa + py / pl * hh, H[2] + dz * aa + pz / pl * hh];
+  return { hip: H, knee: K, ankle: [H[0] + dx * D, H[1] + dy * D, H[2] + dz * D], foot: F };
+}
+ANIMAL({
+  key: 'giant-spider', name: 'Giant riding spider', group: 'crawlers',
+  tags: { biomes: ['hyperjungle'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders'], diet: 'carnivore', feeding: 'predator', activity: 'cathemeral', temperament: 'defensive',
+    habitat: ['canopy', 'trunks', 'ground'], locomotion: ['walks', 'runs', 'climbs', 'leaps'] },
+  size: { length: 6.6, height: 3.7 },
+  source: [{ build: 'settlements/mavs-refuge', file: 'src/79-spiders.js', lines: '434-508', note: 'the geometry (cephalothorax, abdomen, leg segment, tack); lines 557-560 the leg layout and 764-812 the leg IK. Ridden by the Refuge\'s spider-riders (the Spider tribe of the Beast Riders) on patrols that climb the hypertrees\' trunks, walk the limbs and leap on draglines; nest spiders and juveniles (scale 0.45-0.55) live on and around the Silk Loft, some led by handlers' }],
+  traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: false, eggs: false },
+  yields: { silk: { amount: 2, note: 'dragline silk drawn from a kept nest spider: for the Silk Loft looms' }, hide: { amount: 1, hideM2: 4, note: 'a moulted or dead beast\'s chitin: lamellar plates, bowls, lamp shades; the dragline silk (the Silk Loft\'s, about 2 kg a year a nest spider) has no yield kind yet' } },
+  life: { maturity: 4, lifespan: 25, litter: 300, gestation: 45, note: 'an egg sac of a few hundred in the Silk Loft; the handlers raise a few spiderlings, the rest are let go into the canopy' },
+  variants: 2, variantNames: ['adult (patrol and nest spiders)', 'juvenile (half size, paler)'],
+  w: 8.8, d: 9.4, h: 3.7,
+  variantDims: [{ w: 8.8, d: 9.4, h: 3.7 }, { w: 4.4, d: 4.7, h: 1.85 }],
+  data: { mass: [700, 90], legs: 8, legSpan: 8.7, silk: 'draglines and the Silk Loft\'s looms', speed: { walk: 2.8, run: 5.6 }, gait: { type: 'octopod', freq: 0.8, stride: 3.2 }, grazePitch: 0.12,
+    herd: 'patrols of riders, one rider to a spider; nest spiders in a colony at the Silk Loft', fleeDistance: 0, aggression: 0.4, leap: 'ballistic leaps between limbs at g 7.4 m/s2, trailing a dragline',
+    schedule: ['REST', 'REST', 'REST', 'REST', 'PATROL', 'PATROL', 'PATROL', 'PATROL', 'IDLE', 'PATROL', 'PATROL', 'REST', 'REST', 'PATROL', 'PATROL', 'PATROL', 'IDLE', 'PATROL', 'PATROL', 'HUNT', 'HUNT', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, S = (v === 1 ? 0.5 : 1) * A.S, C = FA_CR_SPI, H0 = FA_CR_SPI_H, Z0 = FA_CR_SPI_Z;
+    /* the build's instance tint: adults darkened a little (0.78-1.0), juveniles full and a touch warmer */
+    const tint = hex => { const r = ((hex >> 16) & 255) / 255, g = ((hex >> 8) & 255) / 255, b = (hex & 255) / 255; return v === 1 ? [r, g, b * 0.9] : [r * 0.9, g * 0.9, b * 0.9]; };
+    const DARK = tint(C.dark), RED = tint(C.red), GOLD = tint(C.gold), DARK2 = tint(faCrShade(C.dark, 0.1)), EYE = tint(faCrShade(C.dark, -0.55));
+    const M = p => [p[0] * S, (p[1] + H0) * S, (p[2] + Z0) * S];   /* the build's body frame (pedicel origin) -> this frame */
+    /* the cephalothorax: the red stripe down the middle, paler flanks */
+    A.ellip('chitin', 0, H0 * S, (1.15 + Z0) * S, 1.0 * S, 0.55 * S, 1.3 * S, null, { seg: 20, colf: (x, y, z) => {
+      x /= S; y /= S; z = z / S + 1.15;
+      return (Math.abs(x) < 0.26 && y > 0.25 && z < 1.9) ? RED : (y > 0.1 && Math.abs(x) > 0.55 && Math.abs(z - 1.15) < 0.8 ? DARK2 : DARK); } });
+    /* eight eyes */
+    for (const e of [[-0.17, 0.30, 2.30, 0.15], [0.17, 0.30, 2.30, 0.15], [-0.42, 0.33, 2.12, 0.10], [0.42, 0.33, 2.12, 0.10], [-0.30, 0.45, 1.95, 0.08], [0.30, 0.45, 1.95, 0.08], [-0.55, 0.36, 1.85, 0.08], [0.55, 0.36, 1.85, 0.08]]) {
+      const p = M(e); A.ellip('eye', p[0], p[1], p[2], e[3] * S, e[3] * S, e[3] * S, EYE, { seg: 6 });
+    }
+    /* the abdomen: red dorsal stripe, gold chevrons along its shoulders, a paler belly; the spinneret behind */
+    A.ellip('chitin', 0, (0.28 + H0) * S, (-1.9 + Z0) * S, 1.3 * S, 1.05 * S, 1.85 * S, null, { seg: 24, colf: (x, y, z) => {
+      x /= S; y = y / S + 0.28; z = z / S - 1.9;
+      if (Math.abs(x) < 0.34 && y > 0.75) return RED;
+      if (y > 0.55 && Math.abs(x) > 0.45 && Math.abs(x) < 1.0 && Math.sin(z * 3.3) > 0.35) return GOLD;
+      return y < -0.2 ? DARK2 : DARK; } });
+    A.cone('chitin', M([0, 0.05, -3.55]), M([0, 0.05, -4.15]), 0.22 * S, 0.03 * S, DARK2, 8);
+    /* the pedicel, the narrow waist between the two */
+    A.tube('chitin', u => M([0, 0.02, -0.3 + 0.4 * u]), () => [0.36 * S, 0.3 * S], 1, 10, DARK2);
+    /* a leg segment as the build draws it: radius r at its root, 0.7 r at its end, the last quarter red (the knee band) */
+    const U = [0, 0.37, 0.73, 0.75, 1], seg = (a, b, r, ns) => A.tube('chitin', u => faCrLerp(a, b, U[Math.round(u * 4)]),
+      u => { const w = r * (1 - 0.3 * U[Math.round(u * 4)]); return [w, w]; }, 4, ns || 8, null, { caps: true, colf: u => U[Math.round(u * 4)] > 0.74 ? RED : DARK });
+    /* the mouthparts (the head part): red chelicerae, the pedipalps; the gold fangs are the jaw */
+    A.part('head', M([0, -0.1, 2.2]), () => {
+      for (const s of [-1, 1]) {
+        A.cone('chitin', M([s * 0.27, -0.069, 2.51]), M([s * 0.27, -0.77, 2.13]), 0.24 * S, 0.13 * S, RED, 8);
+        const b0 = M([s * 0.34, -0.12, 2.2]), m1 = M([s * 0.52, 0.10, 2.95]), t1 = M([s * 0.40, -0.50, 3.35]);
+        seg(b0, m1, 0.15 * S, 6); seg(m1, t1, 0.11 * S, 6);
+      }
+      A.part('jaw', M([0, -0.72, 2.29]), () => {
+        for (const s of [-1, 1]) A.cone('chitin', M([s * 0.24, -0.72, 2.29]), M([s * 0.24, -1.12, 2.43]), 0.08 * S, 0.012 * S, GOLD, 6);
+      });
+    });
+    /* the legs: pairs front to back, left (+x) then right; each turns about its hip */
+    for (let r = 0; r < 4; r++) for (const s of [1, -1]) {
+      const L = faCrSpiderLeg(r, s), hip = M(L.hip), knee = M(L.knee), ankle = M(L.ankle), foot = M(L.foot);
+      A.part('leg' + (2 * r + (s > 0 ? 0 : 1)), hip, () => {
+        A.ellip('chitin', hip[0], hip[1], hip[2], 0.26 * S, 0.24 * S, 0.26 * S, DARK, { seg: 8 });
+        seg(hip, knee, 0.23 * S);
+        A.ellip('chitin', knee[0], knee[1], knee[2], 0.17 * S, 0.17 * S, 0.17 * S, RED, { seg: 8 });
+        seg(knee, ankle, 0.17 * S);
+        seg(ankle, foot, 0.11 * S, 6);
+      });
+    }
+    A.anchor('saddle', M([0, 0.68, 0.78]));
+    A.anchor('bridle', M([0, 0.2, 2.2]));
+    A.anchor('pedicel', M([0, 0, 0]));
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-desert.js ---- */
+/* ======================================================================
+   Krator Fauna: the eastern high desert (kits/fauna/krator-fauna-desert.js)
+   The six kinds of the sedesert biome's fauna layer (biomes/sedesert/src/75-biome-sedesert-fauna.js), moved here
+   2026-10-06: the desert kite and the wadi swift (flyers: perched by default, the wings flap in 'fly'), the sand
+   strider (a flightless walker), the rock lizard (a sprawler on the boulders), the canyon mule deer and the coyote
+   (quadrupeds). The biome drew them as unit instanced meshes (a gliding-bird spindle, rods for legs); here each is
+   at real size in metres with jointed legs (knee, hock, fetlock) that stand bent the way the animal stands, the
+   biome's own palette, sizes and tags (SEDESERT.FAUNA: climate tropic, the aridity and riparian of each).
+   ====================================================================== */
+const FA_DS_SRC = 'src/75-biome-sedesert-fauna.js';
+/* a Catmull-Rom curve through joint points, t 0..1 split evenly between the spans (for limbs, necks, tails) */
+function faDsSpline(pts) {
+  const n = pts.length - 1;
+  return function (t) {
+    const f = Math.min(n - 1e-6, Math.max(0, t * n)), k = Math.floor(f), u = f - k, u2 = u * u, u3 = u2 * u;
+    const p0 = pts[Math.max(0, k - 1)], p1 = pts[k], p2 = pts[k + 1], p3 = pts[Math.min(n, k + 2)], o = [0, 0, 0];
+    for (let i = 0; i < 3; i++) o[i] = 0.5 * (2 * p1[i] + (p2[i] - p0[i]) * u + (2 * p0[i] - 5 * p1[i] + 4 * p2[i] - p3[i]) * u2 + (3 * p1[i] - p0[i] - 3 * p2[i] + p3[i]) * u3);
+    return o;
+  };
+}
+/* the section along the same joints: rs[k] a radius or [half-width, half-height], eased between joints */
+function faDsRad(rs) {
+  const n = rs.length - 1;
+  return function (t) {
+    const f = Math.min(n - 1e-6, Math.max(0, t * n)), k = Math.floor(f), u = f - k, e = u * u * (3 - 2 * u);
+    const a = Array.isArray(rs[k]) ? rs[k] : [rs[k], rs[k]], b = Array.isArray(rs[k + 1]) ? rs[k + 1] : [rs[k + 1], rs[k + 1]];
+    return [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e];
+  };
+}
+/* sRGB hex -> [r,g,b] scaled; and a blend of two hexes */
+function faDsShade(hex, k) { const c = new THREE.Color(hex); return [Math.min(1, c.r * k), Math.min(1, c.g * k), Math.min(1, c.b * k)]; }
+function faDsMix(a, b, t) { const c = new THREE.Color(a), d = new THREE.Color(b); return [c.r + (d.r - c.r) * t, c.g + (d.g - c.g) * t, c.b + (d.b - c.b) * t]; }
+function faDsScale(p, K) { return [p[0] * K, p[1] * K, p[2] * K]; }
+/* A.tube with ROUNDED ends in place of the builder's flat caps (whose discs face into the tube, so an end in view
+   reads as a hole): o.caps closes each end with m rings stepping out along the end's tangent to a point, a dome
+   o.round[0|1] times the end's radius deep (default 0.6). Without o.caps it is A.tube as it stands. */
+function faDsTube(A, fam, c, rad, nt, ns, col, o) {
+  o = o || {};
+  if (!o.caps) return A.tube(fam, c, rad, nt, ns, col, o);
+  const m = 3, N = nt + 2 * m, rd = o.round || [0.6, 0.6], ends = [];
+  for (const [u, v] of [[0, 0.01], [1, 0.99]]) {
+    const p = c(u), q = c(v), d = [p[0] - q[0], p[1] - q[1], p[2] - q[2]], L = Math.hypot(d[0], d[1], d[2]) || 1, r = rad(u);
+    ends.push({ p: p, T: [d[0] / L, d[1] / L, d[2] / L], r: r, D: rd[u ? 1 : 0] * (r[0] + r[1]) / 2 });
+  }
+  /* ring i of N: the dome's rings at either end, the curve's own between */
+  const map = function (x) {
+    const i = Math.round(x * N);
+    if (i > m && i < N - m) return { u: (i - m) / nt };
+    const E = i <= m ? ends[0] : ends[1], j = i <= m ? m - i : i - (N - m), ph = j / m * Math.PI / 2, off = Math.max(1e-4, E.D * Math.sin(ph)) * (j ? 1 : 0.02);
+    return { u: i <= m ? 0 : 1, p: [E.p[0] + E.T[0] * off, E.p[1] + E.T[1] * off, E.p[2] + E.T[2] * off], k: Math.cos(ph) };
+  };
+  const o2 = Object.assign({}, o, { caps: false });
+  if (o.colf) o2.colf = (x, a) => o.colf(map(x).u, a);
+  A.tube(fam, x => { const R = map(x); return R.p || c(R.u); }, x => { const R = map(x), r = rad(R.u), k = R.k == null ? 1 : R.k; return [r[0] * k, r[1] * k]; }, N, ns, col, o2);
+}
+/* A.cone with rounded ends (faDsTube) */
+function faDsCone(A, fam, a, b, r0, r1, col, seg, rd) {
+  faDsTube(A, fam, t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t], t => { const r = r0 + (r1 - r0) * t; return [r, r]; }, 2, seg || 6, col, { caps: true, round: rd || [0.4, 0.4] });
+}
+/* a wing on its own part, extending from the pivot along +x (left, s = 1) or -x (right): a flat tube along the span,
+   its section [half-chord, half-thickness]; W: xs(t) the span, zc(t) the chord's middle, hc(t), dy(t), th(t) (metres
+   from the pivot), top / under colours, fingers: [{x, z, a, len, w}] slotted primaries fanning from the tip */
+function faDsWing(A, s, pv, W) {
+  A.part(s > 0 ? 'wingL' : 'wingR', pv, () => {
+    const colf = (t, a) => Math.cos(a) >= 0 ? (W.topf ? W.topf(t) : W.top) : W.under;
+    faDsTube(A, 'plain', t => [pv[0] + s * W.xs(t), pv[1] + W.dy(t), pv[2] + W.zc(t)], t => [W.hc(t), W.th(t)], W.nt || 12, 8, null, { caps: true, colf: colf });
+    for (const F of (W.fingers || [])) {
+      const b = [pv[0] + s * F.x, pv[1] + F.y, pv[2] + F.z], d = [s * Math.cos(F.a), -0.04, Math.sin(F.a)];
+      faDsTube(A, 'plain', t => [b[0] + d[0] * F.len * t, b[1] + d[1] * F.len * t * t, b[2] + d[2] * F.len * t], t => [F.w * (1 - 0.55 * t), F.th * (1 - 0.5 * t)], 3, 6, null,
+        { caps: true, colf: (t, a) => Math.cos(a) >= 0 ? W.tip : W.under });
+    }
+  });
+}
+/* a bird's foot: three toes forward, one back, each with a dark claw */
+function faDsToes(A, ft, toes, r, col, claw) {
+  for (const T of toes) {
+    const e = [ft[0] + T[0], ft[1] + T[1], ft[2] + T[2]];
+    faDsCone(A, 'skin', ft, e, r, r * 0.6, col, 6);
+    const L = Math.hypot(T[0], T[2]) || 1;
+    faDsCone(A, 'horn', e, [e[0] + T[0] / L * r * 1.6, Math.max(0.001, e[1] - r * 0.9), e[2] + T[2] / L * r * 1.6], r * 0.55, r * 0.12, claw, 5);
+  }
+}
+
+/* ---------------------------------------------------------------- the desert kite */
+/* the biome's kites: big broad-winged raptors circling in the thermals over the mesas, the butte and the canyon, a few
+   to a thermal, span 2.6-3.4 m (the G.bird spindle: dark above, pale beneath, 0x4a3a2c). Here at a 3 m span: the body
+   and tail of the spindle's proportions (1.2 m nose to tail), a hooked bill, feathered legs and taloned feet; perched,
+   its wings let down and half open (a raptor sunning: fold 0.3), in 'fly' they beat slowly and glide */
+const FA_DS_KITE = { top: 0x2a2118, body: 0x433428, under: 0x4d3c2c, head: 0x54422f, tip: 0x1c1712, bill: 0x2e2a26, cere: 0xb09a50, feet: 0xb09a58, claw: 0x161310, eye: 0x9a6a1a };
+ANIMAL({
+  key: 'desert-kite', name: 'Desert kite', group: 'desert',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh'], aridity: ['arid', 'semiarid'], climate: ['tropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'wary',
+    habitat: ['sky', 'rock'], locomotion: ['flies', 'glides', 'walks'] },
+  size: { length: 1.2, height: 0.62, span: 3.0 },
+  source: [{ build: 'biomes/sedesert', file: FA_DS_SRC, lines: '35-46, 182-187, 211-213', note: 'G.bird (the gliding spindle, span 1, scaled 2.6-3.4) circling the thermals over the rim, the badland and the high ground; key kite' },
+    { build: 'settlements/shade', file: FA_DS_SRC, lines: '26-37, 70-75', note: 'the vendored older copy of the biome\'s fauna: kites over the basin rim' },
+    { build: 'settlements/verge', file: 'src/88-verge-build.js', lines: '12-15', note: 'builds the sedesert kit (biomes/sedesert/src) with its fauna round the upper city' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { feathers: { amount: 0.25, note: 'moulted flight feathers gathered under the roost cliffs: fletching and headdresses' } },
+  life: { maturity: 5, lifespan: 30, litter: 1.5, gestation: 55, note: 'a clutch of one or two on a cliff ledge; gestation is the incubation' },
+  w: 3.05, d: 1.95, h: 0.66,
+  data: { mass: 6.5, legs: 2, wings: 1, speed: { walk: 0.6, run: 2, fly: 16 }, gait: { type: 'flyer', freq: 1.2, stride: 0.2 },
+    flap: { freq: 1.1, amp: 0.45, glide: 0.65, fold: 0.12, sweep: 1.3, tuck: 0.9 }, grazePitch: 0.5, sizeRange: [0.87, 1.13],
+    herd: 'pairs; two to five birds share a thermal', fleeDistance: 40, aggression: 0.1,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'IDLE', 'FLY', 'HUNT', 'FLY', 'FLY', 'FLY', 'HUNT', 'FLY', 'FLY', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const C = FA_DS_KITE, yb = 0.36, P = 0.28, sp = Math.sin(P), cp = Math.cos(P);
+    /* a point on the body's pitched axis: zp along it, up across it */
+    const ax = (x, zp, up) => [x, yb + zp * sp + up * cp, zp * cp - up * sp];
+    const under = (a) => Math.cos(a) < -0.25;
+    /* the body: rump to chest along the pitched axis */
+    const bz = [-0.42, -0.26, -0.05, 0.14, 0.3];
+    faDsTube(A, 'coat', faDsSpline(bz.map(z => ax(0, z, 0))), faDsRad([[0.045, 0.05], [0.09, 0.1], [0.115, 0.13], [0.1, 0.12], [0.06, 0.07]]), 12, 12, null,
+      { caps: true, colf: (t, a) => under(a) ? C.under : (Math.cos(a) > 0.6 ? C.top : C.body) });
+    /* the head on its neck, held up; a hooked bill with a yellow cere */
+    A.part('head', ax(0, 0.22, 0.04), () => {
+      faDsTube(A, 'coat', faDsSpline([ax(0, 0.18, 0.02), ax(0, 0.3, 0.06), [0, 0.535, 0.345]]), faDsRad([[0.07, 0.075], [0.066, 0.07], [0.058, 0.06]]), 6, 10, null,
+        { caps: true, colf: (t, a) => under(a) ? C.under : C.head });
+      A.ellip('coat', 0, 0.55, 0.37, 0.062, 0.062, 0.085, C.head, { seg: 12 });
+      faDsCone(A, 'skin', [0, 0.548, 0.43], [0, 0.545, 0.455], 0.028, 0.024, C.cere, 8);
+      faDsTube(A, 'horn', faDsSpline([[0, 0.545, 0.45], [0, 0.545, 0.49], [0, 0.528, 0.515], [0, 0.505, 0.517]]), faDsRad([[0.02, 0.024], [0.014, 0.018], [0.008, 0.01], [0.002, 0.002]]), 8, 8, C.bill, { caps: true });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.05, 0.565, 0.405, 0.012, 0.014, 0.014, C.eye, { seg: 8 });
+        A.ellip('eye', s * 0.058, 0.566, 0.41, 0.005, 0.007, 0.007, 0x050403, { seg: 6 });
+        A.ellip('coat', s * 0.045, 0.585, 0.4, 0.022, 0.01, 0.03, C.top, { seg: 8, rz: -s * 0.3 });   /* the brow */
+      }
+    });
+    /* the wings: broad and long, the hand slotted into five primaries; a slight arch as in the spindle (mid .04, tip 0) */
+    for (const s of [1, -1]) {
+      const pv = [s * 0.07, 0.455, 0.08];
+      faDsWing(A, s, pv, { xs: t => -0.03 + 1.2 * t, zc: t => -0.09 - 0.05 * t, dy: t => 0.06 * Math.sin(Math.PI * t * 0.85) - 0.02 * t,
+        hc: t => (0.2 - 0.04 * t) * (t < 0.8 ? 1 : 1 - (t - 0.8) / 0.2 * 0.45), th: t => 0.034 * (1 - 0.7 * t), nt: 14,
+        top: C.top, under: C.under, tip: C.tip, topf: t => t > 0.85 ? C.tip : C.top,
+        fingers: [0.18, -0.02, -0.22, -0.42, -0.62].map((a, k) => ({ x: 1.08 + 0.02 * k, y: 0.0, z: -0.04 - 0.05 * k, a: a, len: 0.34 - 0.03 * k, w: 0.034, th: 0.006 })) });
+    }
+    /* the tail: a broad fan behind the body, a dark terminal band */
+    A.part('tail', ax(0, -0.38, 0), () => {
+      faDsTube(A, 'plain', faDsSpline([ax(0, -0.36, 0), ax(0, -0.55, -0.01), ax(0, -0.74, -0.02)]), faDsRad([[0.06, 0.016], [0.12, 0.013], [0.17, 0.01]]), 6, 8, null,
+        { caps: true, colf: (t, a) => t > 0.82 ? C.tip : (Math.cos(a) < 0 ? C.under : C.body) });
+    });
+    /* the legs: feathered trousers, a bare yellow tarsus, taloned toes */
+    for (const s of [1, -1]) {
+      const x = s * 0.06;
+      A.part(s > 0 ? 'leg0' : 'leg1', [x, 0.3, 0.0], () => {
+        faDsTube(A, 'coat', faDsSpline([[x, 0.3, 0.0], [x + s * 0.008, 0.2, 0.045], [x, 0.125, 0.02]]), faDsRad([0.048, 0.042, 0.026]), 5, 8, null, { caps: true, colf: () => C.under });
+        faDsTube(A, 'skin', faDsSpline([[x, 0.14, 0.02], [x, 0.07, 0.03], [x, 0.022, 0.04]]), faDsRad([0.017, 0.016, 0.015]), 4, 7, C.feet, { caps: true });
+        faDsToes(A, [x, 0.014, 0.04], [[-0.028 * s, -0.002, 0.07], [0, -0.002, 0.085], [0.028 * s, -0.002, 0.065], [0, -0.002, -0.05]], 0.011, C.feet, C.claw);
+      });
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- the wadi swift */
+/* the biome's swifts: flocks of small fast birds over the pond and the canyon's water, span 0.6-0.8 m (the same G.bird
+   spindle, 0x3a3a3c). Here at 0.7 m: a short body, scythe wings swept back, a forked tail, a pale throat; perched on
+   its tiny legs it holds its wings raised (fold -1.0: a swift barely settles), in 'fly' they beat fast */
+const FA_DS_SWIFT = { top: 0x2a2a2c, body: 0x343436, under: 0x3c3c3e, throat: 0x8e8c84, bill: 0x1a1a1a, feet: 0x3a3430, claw: 0x121212 };
+ANIMAL({
+  key: 'wadi-swift', name: 'Wadi swift', group: 'desert',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh'], aridity: ['semiarid', 'arid'], climate: ['tropic'], riparian: 'riparian', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'insectivore', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['sky', 'water', 'rock'], locomotion: ['flies', 'glides'] },
+  size: { length: 0.31, height: 0.07, span: 0.7 },
+  source: [{ build: 'biomes/sedesert', file: FA_DS_SRC, lines: '35-46, 188-192, 214-216', note: 'G.bird scaled 0.6-0.8, flocks of 14-30 in a Lissajous swarm over the pond and the river; key swift' },
+    { build: 'settlements/shade', file: FA_DS_SRC, lines: '26-37, 76-81', note: 'the vendored older copy: swifts over the basin\'s pool' },
+    { build: 'settlements/verge', file: 'src/88-verge-build.js', lines: '12-15', note: 'builds the sedesert kit with its fauna (over its water)' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: {},
+  life: { maturity: 2, lifespan: 10, litter: 2.5, gestation: 20, note: 'nests in the canyon walls; gestation is the incubation' },
+  w: 0.72, d: 0.47, h: 0.075,
+  data: { mass: 0.18, legs: 2, wings: 1, speed: { walk: 0.1, run: 0.3, fly: 24 }, gait: { type: 'flyer', freq: 2, stride: 0.02 },
+    flap: { freq: 5.5, amp: 0.6, glide: 0.25, fold: 0.12, sweep: 1.3, tuck: 0.9 }, grazePitch: 0.3, sizeRange: [0.86, 1.14],
+    herd: 'flocks of 14 to 30 over the water', fleeDistance: 6, aggression: 0,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const C = FA_DS_SWIFT;
+    faDsTube(A, 'coat', faDsSpline([[0, 0.034, -0.1], [0, 0.034, -0.05], [0, 0.034, 0.02], [0, 0.038, 0.07]]), faDsRad([[0.012, 0.012], [0.024, 0.023], [0.027, 0.026], [0.02, 0.02]]), 9, 10, null,
+      { caps: true, colf: (t, a) => Math.cos(a) < -0.3 ? C.under : C.body });
+    A.part('head', [0, 0.04, 0.07], () => {
+      A.ellip('coat', 0, 0.042, 0.095, 0.022, 0.02, 0.028, C.body, { seg: 10, colf: (x, y, z) => y < -0.004 && z > 0.004 ? C.throat : C.body });
+      faDsCone(A, 'horn', [0, 0.039, 0.12], [0, 0.036, 0.132], 0.006, 0.001, C.bill, 5);
+      for (const s of [-1, 1]) A.ellip('eye', s * 0.016, 0.047, 0.108, 0.005, 0.006, 0.006, 0x060504, { seg: 6 });
+    });
+    /* scythe wings: the arm short, the hand long and swept back to a point */
+    for (const s of [1, -1]) faDsWing(A, s, [s * 0.018, 0.048, 0.025], { xs: t => -0.01 + 0.33 * t, zc: t => -0.012 - 0.11 * t * t, dy: t => 0.01 * Math.sin(Math.PI * t),
+      hc: t => 0.034 * Math.pow(1 - t, 0.8) + 0.004, th: t => 0.006 * (1 - 0.6 * t), nt: 12, top: C.top, under: C.under, tip: C.top });
+    /* the forked tail */
+    A.part('tail', [0, 0.034, -0.095], () => {
+      faDsTube(A, 'plain', t => [0, 0.034, -0.09 - 0.04 * t], t => [0.016 + 0.006 * t, 0.004], 2, 6, C.top, { caps: true });
+      for (const s of [-1, 1]) faDsTube(A, 'plain', t => [s * 0.03 * t, 0.034 - 0.004 * t, -0.12 - 0.055 * t], t => [0.011 * (1 - 0.7 * t), 0.003], 3, 6, C.top, { caps: true });
+    });
+    for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', [s * 0.012, 0.018, 0.0], () => {
+      faDsTube(A, 'skin', t => [s * 0.012, 0.018 - 0.012 * t, 0.004 * t], t => [0.0035, 0.0035], 2, 5, C.feet, { caps: true });
+      faDsToes(A, [s * 0.012, 0.004, 0.004], [[-0.006 * s, -0.001, 0.012], [0.006 * s, -0.001, 0.012], [0, -0.001, 0.014], [0.002 * s, -0.001, -0.01]], 0.0025, C.feet, C.claw);
+    });
+  }
+});
+
+/* ---------------------------------------------------------------- the sand strider */
+/* the biome's striders: long-legged flightless walkers in bands of 4-9 on the canyon floor and at the pond, pacing
+   the river's way and back; sand-coloured (a pick of four tones), 2.0-2.7 (G.striderBody: a plump spindle, a long
+   neck and a small head, scaled .62 H, on two rods). Here at H 2.4 (the spindle's own proportions: body 1.5 m long,
+   the crown at 2.95 m): the neck runs forward up to the head the spindle placed (its neck leaned back, a slip), a
+   ratite's bill, two bird legs (the drumstick under the body, the ankle bending back, three toes), a drooping plume */
+const FA_DS_STRIDER = [{ base: 0xa88858, mott: 0xb09060 }, { base: 0x8a6a40, mott: 0x987848 }];
+ANIMAL({
+  key: 'sand-strider', name: 'Sand strider', group: 'desert',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh'], aridity: ['semiarid', 'arid'], climate: ['tropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground', 'shallows'], locomotion: ['walks', 'runs', 'wades'] },
+  size: { length: 2.9, height: 2.95 },
+  source: [{ build: 'biomes/sedesert', file: FA_DS_SRC, lines: '47-53, 194-198, 217-223', note: 'G.striderBody (scaled .62 H) on two rod legs (BIO.geo.rod), bands pacing the canyon floor and the pond; key strider' },
+    { build: 'settlements/shade', file: FA_DS_SRC, lines: '38-44, 82-86', note: 'the vendored older copy: striders on the basin floor' },
+    { build: 'settlements/verge', file: 'src/88-verge-build.js', lines: '12-15', note: 'builds the sedesert kit with its fauna' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 45, note: 'mostly the thighs; lean and dark' },
+    eggs: { amount: 14, note: 'a clutch laid in a scrape near the water; one egg feeds a family (about 1.4 kg)' },
+    hide: { amount: 1, hideM2: 1.4, note: 'a pebbled leather: bags and sandals' },
+    feathers: { amount: 0.4, note: 'the soft plumes, plucked at the moult: fans and stuffing' } },
+  life: { maturity: 3, lifespan: 35, litter: 12, gestation: 42, note: 'eggs; gestation is the incubation (the cock sits by night)' },
+  variants: 2, variantNames: ['sand', 'dun'],
+  w: 0.9, d: 3.0, h: 3.0,
+  data: { mass: 130, legs: 2, speed: { walk: 1.2, run: 14 }, gait: { type: 'biped', freq: 0.9, stride: 1.3 }, grazePitch: 1.38, sizeRange: [0.83, 1.13],
+    herd: 'bands of 4 to 9, pacing the river', fleeDistance: 30, aggression: 0.2,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'REST', 'REST', 'IDLE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const V = FA_DS_STRIDER[A.variant % 2];
+    const coat = (x, y, z, k) => { const n = faNoise(x * 6 + 1.3, y * 6, z * 6); return faDsShade(n > 0.6 ? V.mott : V.base, k * (0.94 + 0.12 * n)); };
+    /* the body: the spindle (half .41 x .45 x .74 about (0, 1.2, 0)), top .8, belly .98 (the spindle's shades) */
+    const bc = faDsSpline([[0, 1.3, -0.84], [0, 1.24, -0.6], [0, 1.2, -0.2], [0, 1.2, 0.2], [0, 1.24, 0.55], [0, 1.33, 0.75]]);
+    const br = faDsRad([[0.08, 0.1], [0.3, 0.33], [0.41, 0.45], [0.4, 0.44], [0.3, 0.34], [0.1, 0.12]]);
+    faDsTube(A, 'coat', bc, br, 16, 14, null, { caps: true, colf: (t, a) => { const p = bc(t); return coat(Math.sin(a) * 0.4, p[1] + Math.cos(a) * 0.4, p[2], Math.cos(a) < -0.3 ? 0.98 : 0.8); } });
+    /* the neck forward and up to the small head; the bill */
+    A.part('head', [0, 1.25, 0.38], () => {   /* the pivot deep in the breast: the neck's root stays inside when it pecks */
+      const nc = faDsSpline([[0, 1.24, 0.36], [0, 1.75, 0.8], [0, 2.25, 1.1], [0, 2.7, 1.36]]);
+      faDsTube(A, 'coat', nc, faDsRad([[0.18, 0.2], [0.13, 0.14], [0.1, 0.105], [0.09, 0.095]]), 12, 10, null, { caps: true, colf: (t, a) => { const p = nc(t); return coat(0, p[1], p[2], 0.75); } });
+      A.ellip('coat', 0, 2.82, 1.5, 0.13, 0.13, 0.2, null, { seg: 12, colf: (x, y, z) => coat(x, 2.82 + y, 1.5 + z, 0.75) });
+      faDsTube(A, 'horn', t => [0, 2.8 - 0.07 * t * t, 1.6 + 0.3 * t], t => [0.075 - 0.062 * t, 0.055 - 0.045 * t], 6, 8, 0x5a4a38, { caps: true });
+      for (const s of [-1, 1]) { A.ellip('eye', s * 0.105, 2.86, 1.57, 0.022, 0.026, 0.026, 0x2a1a0a, { seg: 8 }); A.ellip('eye', s * 0.118, 2.862, 1.578, 0.009, 0.012, 0.012, 0x050403, { seg: 6 }); }
+    });
+    /* the plume: the tail's feathers drooping over the rump */
+    A.part('tail', [0, 1.3, -0.8], () => {
+      faDsTube(A, 'coat', faDsSpline([[0, 1.32, -0.76], [0, 1.28, -0.92], [0, 1.12, -1.02]]), faDsRad([[0.16, 0.08], [0.17, 0.06], [0.07, 0.03]]), 6, 10, null, { caps: true, colf: () => faDsShade(V.base, 0.62) });
+    });
+    /* the legs: the hip in the body, the knee at its belly, the drumstick down and back to the ankle, the bare tarsus
+       forward to the foot */
+    const bare = faDsShade(V.base, 0.6);
+    for (const s of [1, -1]) {
+      const x = s * 0.2;
+      A.part(s > 0 ? 'leg0' : 'leg1', [x, 1.05, 0.02], () => {
+        faDsTube(A, 'coat', faDsSpline([[x, 1.05, 0.02], [x * 1.05, 0.83, 0.14], [x, 0.53, -0.05]]), faDsRad([0.15, 0.11, 0.065]), 8, 10, null,
+          { caps: true, colf: t => t < 0.62 ? coat(x, 0.9, 0.1, 0.8) : bare });
+        A.ellip('skin', x, 0.53, -0.05, 0.068, 0.072, 0.07, bare, { seg: 8 });
+        faDsTube(A, 'skin', faDsSpline([[x, 0.53, -0.05], [x, 0.3, 0.0], [x, 0.08, 0.06]]), faDsRad([0.058, 0.05, 0.046]), 6, 8, bare, { caps: true });
+        A.ellip('skin', x, 0.06, 0.08, 0.055, 0.04, 0.06, bare, { seg: 8 });
+        faDsToes(A, [x, 0.035, 0.08], [[-0.09 * s, -0.008, 0.2], [0, -0.008, 0.24], [0.08 * s, -0.008, 0.19]], 0.03, bare, 0x2a241c);
+      });
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- the rock lizard */
+/* the biome's lizards: basking on the floor's boulders (SEDESERT.ROCKS), banded, still, 0.25-0.45 m (G.lizard: a flat
+   body, a tapering tail, a wedge head, every third ring dark, four tones). Here at 0.4 m with the profile's widths and
+   heights (a flat, chuckwalla-like lizard), a head, four sprawled legs with toes, a tail that sways */
+const FA_DS_LIZ = [0x8a7a5a, 0x9a8a6a, 0x6a5a4a, 0xa0805a];
+/* the profile along u from the snout (0) to the tail tip (1), unit length: half-width W, height H (G.lizard's) */
+function faDsLizW(u) { return u < 0.35 ? 0.16 * Math.sin(u / 0.35 * Math.PI * 0.5 + 0.4) : u < 0.62 ? 0.16 : Math.max(0.006, 0.16 * (1 - (u - 0.62) / 0.38)); }
+function faDsLizH(u) { return u < 0.62 ? 0.07 : 0.07 * (1 - (u - 0.62) / 0.38) + 0.005; }
+ANIMAL({
+  key: 'rock-lizard', name: 'Rock lizard', group: 'desert',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh'], aridity: ['arid'], climate: ['tropic'], riparian: 'non', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'insectivore', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['rock', 'ground'], locomotion: ['walks', 'runs', 'climbs'] },
+  size: { length: 0.4, height: 0.05 },
+  source: [{ build: 'biomes/sedesert', file: FA_DS_SRC, lines: '54-61, 178-181', note: 'G.lizard (unit length, scaled 0.25-0.45), put static on the boulders the floor left; key lizard' },
+    { build: 'settlements/shade', file: FA_DS_SRC, lines: '45-52, 66-69', note: 'the vendored older copy: lizards on the basin\'s boulders' },
+    { build: 'settlements/verge', file: 'src/88-verge-build.js', lines: '12-15', note: 'builds the sedesert kit with its fauna' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 0.3, note: 'roasted whole in the coals, a herder\'s snack' } },
+  life: { maturity: 2, lifespan: 15, litter: 8, gestation: 60, note: 'a clutch buried in sand under a boulder; gestation is the incubation' },
+  variants: 4, variantNames: ['ochre', 'pale', 'dark', 'rust'],
+  w: 0.27, d: 0.42, h: 0.05,
+  data: { mass: 0.8, legs: 4, speed: { walk: 0.3, run: 3 }, gait: { type: 'sprawl', freq: 2.6, stride: 0.07 }, grazePitch: 0.15, sizeRange: [0.62, 1.13],
+    herd: 'alone; one to a boulder', fleeDistance: 3, aggression: 0,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'IDLE', 'HUNT', 'HUNT', 'REST', 'REST', 'HUNT', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const K = 0.4, base = FA_DS_LIZ[A.variant % 4], cl = 0.006;
+    const zOf = u => (0.45 - u) * K, hh = u => faDsLizH(u) * K * 0.55, yOf = u => cl + hh(u);
+    const span = (u0, u1) => [t => { const u = u0 + (u1 - u0) * t; return [0, yOf(u), zOf(u)]; }, t => { const u = u0 + (u1 - u0) * t; return [faDsLizW(u) * K, hh(u)]; }];
+    /* the bands: every quarter of the length a dark ring (G.lizard: every third of twelve), the ridge lighter, the belly pale */
+    const skin = (u, a) => { const c = Math.cos(a), f = (u * 4 + 0.04) % 1, band = f < 0.12 ? 0.55 : 1; return faDsShade(base, (c < -0.5 ? 1.18 : c > 0.7 ? 1.1 : 1) * (c < -0.5 ? 1 : band)); };
+    { const [c, r] = span(0.2, 0.64); faDsTube(A, 'skin', c, r, 10, 12, null, { colf: (t, a) => skin(0.2 + 0.44 * t, a) }); }
+    A.part('head', [0, yOf(0.22), zOf(0.22)], () => {
+      const [c, r] = span(0, 0.24); faDsTube(A, 'skin', c, r, 7, 12, null, { caps: true, colf: (t, a) => skin(0.24 * t, a) });
+      for (const s of [-1, 1]) A.ellip('eye', s * faDsLizW(0.12) * K * 0.78, yOf(0.12) + hh(0.12) * 0.6, zOf(0.12), 0.0045, 0.004, 0.005, 0x1a1208, { seg: 6 });
+    });
+    A.part('tail', [0, yOf(0.62), zOf(0.62)], () => {
+      const [c, r] = span(0.6, 1); faDsTube(A, 'skin', c, r, 10, 10, null, { caps: true, colf: (t, a) => skin(0.6 + 0.4 * t, a) });
+    });
+    /* the legs: sprawled out from the flanks, the elbow high, the foot flat with four short toes */
+    const LEGS = [[0.25, 1, 1, 0], [0.25, 1, -1, 1], [0.55, 0, 1, 2], [0.55, 0, -1, 3]];
+    for (const [u, front, s, i] of LEGS) {
+      const z = zOf(u), w = faDsLizW(u) * K, y = yOf(u), b = [s * w * 0.6, y, z];
+      A.part('leg' + i, b, () => {
+        const el = [s * (w + 0.06 * K), y + 0.012, z + (front ? 0.01 : -0.02) * K], ft = [s * (w + 0.12 * K), 0.006, z + (front ? 0.06 : -0.05) * K];
+        faDsTube(A, 'skin', faDsSpline([b, el, ft]), faDsRad([[0.022 * K, 0.018 * K], 0.015 * K, 0.011 * K]), 6, 7, null, { caps: true, colf: (t, a) => skin(u, a) });
+        for (let k = 0; k < 4; k++) { const a = (k - 1.5) * 0.45 + (front ? 0.2 : -0.5) * s;
+          faDsCone(A, 'skin', ft, [ft[0] + s * Math.abs(Math.sin(a)) * 0.05 * K + s * 0.01 * K, 0.003, ft[2] + Math.cos(a) * 0.05 * K * (front ? 1 : -1)], 0.006 * K, 0.0025 * K, faDsShade(base, 0.85), 5); }
+      });
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- the canyon mule deer */
+/* the biome's deer: herds of 3-8 in the riparian strip and at the pond, browsing between points in the bosque and the
+   scrub, 1 m at the shoulder; bucks carry forked antlers (G.deerBody, deerHead, deerAntler, deerLeg and the rig DEER:
+   hips, the neck's root at (0, .95, .36); a doe at .86-.97, a buck 1.0-1.1). The colours are the biome's (DEER_C: tan,
+   a pale belly, the white rump and the black-tipped tail, a grey-brown face, a pale muzzle, the big mule ears).
+   The single tapered rod of each leg is now a jointed leg: the forearm, the knee, the cannon, the fetlock, the
+   pastern and the cloven hoof in front; the gaskin, the hock behind the hip, the cannon below. The head browses at
+   the biome's pitch (1.85 rad from the alert pose) */
+const FA_DS_DEER = { tan: 0x8a6c4c, belly: 0xd2c2a2, rump: 0xe4dac6, face: 0x75604a, muz: 0xcfc4b0, dark: 0x18130f, antler: 0xd6cab0, low: 0x6e5840, ear: 0xc8b89a };
+ANIMAL({
+  key: 'mule-deer', name: 'Canyon mule deer', group: 'desert',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh'], aridity: ['semiarid', 'arid'], climate: ['tropic'], riparian: 'riparian', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'herbivore', feeding: 'browser', activity: 'crepuscular', temperament: 'skittish',
+    habitat: ['ground', 'shallows'], locomotion: ['walks', 'runs', 'leaps', 'swims'] },
+  size: { length: 1.55, height: 1.0 },
+  source: [{ build: 'biomes/sedesert', file: FA_DS_SRC, lines: '130-143, 154, 236-252, 270-285', note: 'herds of 3-8 walking their loops between browse points in the bosque (walkers: walkAt, rigPose); key deer' },
+    { build: 'settlements/verge', file: 'src/88-verge-build.js', lines: '12-15', note: 'builds the sedesert kit (with the deer) round the upper city' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 35, note: 'a doe dressed; a buck 48' },
+    hide: { amount: 1, hideM2: 1.6, note: 'buckskin: soft, smoked: shirts, bags, the hunters\' leggings' },
+    horn: { amount: 1.6, note: 'a buck\'s antlers, cast each winter and gathered: handles, flakers for stone' } },
+  life: { maturity: 1.5, lifespan: 12, litter: 1.6, gestation: 200 },
+  variants: 2, variantNames: ['buck', 'doe'],
+  w: 0.6, d: 1.65, h: 2.0,
+  variantDims: [{ w: 0.6, d: 1.65, h: 2.0 }, { w: 0.4, d: 1.45, h: 1.45 }],
+  data: { mass: [90, 60], legs: 4, speed: { walk: 0.7, run: 15 }, gait: { type: 'quadruped', freq: 1.4, stride: 0.55 }, grazePitch: 1.85, sizeRange: [0.86, 1.1],
+    herd: 'herds of 3 to 8 in the riparian strip and at the pond', fleeDistance: 30, aggression: 0.05,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'REST', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const C = FA_DS_DEER, buck = A.variant === 0, K = buck ? 1.05 : 0.92, P = p => faDsScale(p, K), N = [0, 0.95, 0.36];
+    const H = p => P([N[0] + p[0], N[1] + p[1], N[2] + p[2]]);
+    /* the coat by place (DEER_C's rule: the white rump, the pale belly, tan), with a faint grain */
+    const coat = (x, y, z) => { const n = 0.94 + 0.12 * faNoise(x * 9 + 2, y * 9, z * 9); return faDsShade(z < -0.36 && y > 0.66 ? C.rump : y < 0.69 ? C.belly : C.tan, n); };
+    /* the body: the barrel and the chest of the two ellipsoids as one skin */
+    const bc = faDsSpline([[0, 0.87, -0.53], [0, 0.86, -0.4], [0, 0.83, -0.15], [0, 0.84, 0.1], [0, 0.87, 0.3], [0, 0.91, 0.46], [0, 0.93, 0.52]]);
+    const br = faDsRad([[0.07, 0.09], [0.165, 0.19], [0.19, 0.21], [0.185, 0.21], [0.16, 0.195], [0.12, 0.15], [0.05, 0.07]]);
+    faDsTube(A, 'coat', t => P(bc(t)), t => { const r = br(t); return [r[0] * K, r[1] * K]; }, 16, 14, null,
+      { caps: true, colf: (t, a) => { const p = bc(t), r = br(t); return coat(Math.sin(a) * r[0], p[1] + Math.cos(a) * r[1], p[2]); } });
+    /* the tail: white, rope-thin, black-tipped */
+    A.part('tail', P([0, 0.9, -0.47]), () => {
+      faDsTube(A, 'coat', t => P([0, 0.9 - 0.11 * t, -0.47 - 0.13 * t]), t => [0.04 * K * (1 - 0.3 * t), 0.042 * K * (1 - 0.3 * t)], 4, 8, null, { caps: true, colf: t => t > 0.62 ? C.dark : C.rump });
+    });
+    /* the head on its neck, the neck's root its pivot */
+    A.part('head', H([0, -0.12, -0.08]), () => {   /* the pivot low in the chest, so the neck's root stays inside it when the head goes down */
+      const nc = faDsSpline([[0, -0.13, -0.12], [0, 0.17, 0.1], [0, 0.4, 0.27]]);
+      faDsTube(A, 'coat', t => H(nc(t)), t => { const r = faDsRad([[0.085, 0.115], [0.072, 0.09], [0.058, 0.07]])(t); return [r[0] * K, r[1] * K]; }, 8, 12, null,
+        { caps: true, colf: (t, a) => Math.cos(a) < -0.5 ? C.belly : C.tan });
+      const hp = H([0, 0.44, 0.36]);
+      A.ellip('coat', hp[0], hp[1], hp[2], 0.07 * K, 0.08 * K, 0.13 * K, null, { seg: 12, rx: 0.5, colf: (x, y, z) => y > 0.035 * K ? faDsShade(C.face, 0.82) : C.face });
+      const mp = H([0, 0.385, 0.46]); A.ellip('coat', mp[0], mp[1], mp[2], 0.045 * K, 0.05 * K, 0.08 * K, C.muz, { seg: 10, rx: 0.5 });
+      const np = H([0, 0.355, 0.525]); A.ellip('skin', np[0], np[1], np[2], 0.024 * K, 0.02 * K, 0.02 * K, C.dark, { seg: 8 });
+      for (const s of [-1, 1]) { const e = H([s * 0.058, 0.47, 0.38]); A.ellip('eye', e[0], e[1], e[2], 0.013 * K, 0.014 * K, 0.016 * K, 0x0c0806, { seg: 8 }); }
+      if (buck) {
+        /* the antlers (G.deerAntler): a beam that forks, and forks again */
+        for (const s of [1, -1]) {
+          const b = [[s * 0.035, 0.52, 0.33], [s * 0.12, 0.66, 0.3], [s * 0.2, 0.74, 0.37], [s * 0.16, 0.79, 0.24], [s * 0.25, 0.86, 0.43], [s * 0.23, 0.88, 0.33], [s * 0.19, 0.92, 0.21], [s * 0.13, 0.9, 0.27]];
+          A.ellip('horn', ...H(b[0]), 0.024 * K, 0.016 * K, 0.024 * K, faDsShade(C.antler, 0.7), { seg: 8 });
+          for (const [i, j, r0, r1] of [[0, 1, 0.02, 0.016], [1, 2, 0.016, 0.012], [1, 3, 0.016, 0.012], [2, 4, 0.012, 0.005], [2, 5, 0.012, 0.005], [3, 6, 0.012, 0.005], [3, 7, 0.011, 0.005]])
+            faDsCone(A, 'horn', H(b[i]), H(b[j]), r0 * K, r1 * K, C.antler, 6);
+        }
+      }
+    });
+    /* the big mule ears, out to the sides and up (G.deerHead's ear: .17 long, tilted .45) */
+    for (const s of [1, -1]) A.part(s > 0 ? 'earL' : 'earR', H([s * 0.025, 0.495, 0.3]), () => {
+      const c = H([s * 0.1, 0.53, 0.3]);
+      A.ellip('coat', c[0], c[1], c[2], 0.085 * K, 0.045 * K, 0.014 * K, null, { seg: 10, rz: s * 0.45, colf: (x, y, z) => z > 0.004 * K ? C.ear : C.tan });
+    });
+    /* the legs: front from the shoulder (the elbow under the chest, the knee, the cannon), hind from the hip (the
+       stifle at the flank, the hock out behind, the cannon nearly plumb); the cloven hoof */
+    const LEGS = [[0.085, 0.33, 1, 0], [-0.085, 0.33, 1, 1], [0.085, -0.34, 0, 2], [-0.085, -0.34, 0, 3]];
+    for (const [x, z, front, i] of LEGS) {
+      const s = x > 0 ? 1 : -1;
+      const J = front ? [[x, 0.8, z], [x * 1.05, 0.6, z - 0.05], [x, 0.35, z - 0.01], [x, 0.11, z + 0.005], [x, 0.045, z + 0.03]]
+        : [[x, 0.82, z], [x * 1.12, 0.6, z + 0.12], [x, 0.44, z - 0.08], [x, 0.11, z - 0.03], [x, 0.045, z - 0.005]];
+      const R = front ? [0.05, 0.042, 0.027, 0.019, 0.017] : [0.07, 0.052, 0.03, 0.019, 0.017];
+      A.part('leg' + i, P(J[0]), () => {
+        faDsTube(A, 'coat', t => P(faDsSpline(J)(t)), t => { const r = faDsRad(R)(t); return [r[0] * K, r[1] * K * 1.08]; }, 16, 9, null,
+          { caps: true, colf: t => t < 0.44 ? coat(x, 0.72, z) : C.low });
+        const k = J[2], f = J[3];
+        A.ellip('coat', ...P(k), 0.03 * K, 0.034 * K, 0.032 * K, C.low, { seg: 8 });   /* the knee or the hock */
+        A.ellip('coat', ...P(f), 0.022 * K, 0.024 * K, 0.026 * K, C.low, { seg: 8 });  /* the fetlock */
+        for (const c of [-1, 1]) faDsCone(A, 'hoof', P([J[4][0] + c * 0.011, 0.05, J[4][2] - 0.005]), P([J[4][0] + c * 0.012, 0.008, J[4][2] + 0.025]), 0.012 * K, 0.015 * K, C.dark, 7);
+      });
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- the coyote */
+/* the biome's coyotes: singly or in pairs (in file), trotting long loops through the scrub and the canyon floor, pausing
+   to sniff or look round; 0.6 m at the shoulder (G.coyBody, coyHead, coyLeg and the rig COY: hips, the neck's root at
+   (0, .56, .27); COY_C: grey, a darker back, a pale belly and muzzle, the black tail tip). The rod legs are now a
+   dog's: the elbow, the wrist and the pastern in front; the stifle, the hock and the long rear pastern behind; paws.
+   The bushy tail hangs low, the head is carried low (the sniff pitch 1.1) */
+const FA_DS_COY = { grey: 0x8e7e68, back: 0x5c5042, belly: 0xcfc1a6, muz: 0xbcad92, dark: 0x1c1814, low: 0x9a8a72, eye: 0x8a6a20 };
+ANIMAL({
+  key: 'coyote', name: 'Coyote', group: 'desert',
+  tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh'], aridity: ['arid', 'semiarid'], climate: ['tropic'], riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'predator', activity: 'crepuscular', temperament: 'wary',
+    habitat: ['ground', 'rock'], locomotion: ['walks', 'runs', 'leaps', 'swims'] },
+  size: { length: 1.2, height: 0.6 },
+  source: [{ build: 'biomes/sedesert', file: FA_DS_SRC, lines: '144-151, 155, 254-268, 286-288', note: 'singly or a pair in file, trotting loops of 140-1000 m through the scrub (walkers); key coyote' },
+    { build: 'settlements/verge', file: 'src/88-verge-build.js', lines: '12-15', note: 'builds the sedesert kit (with the coyotes) round the upper city' }],
+  traits: { edible: false, milkable: false, tameable: true, rideable: false, draught: false, eggs: false },
+  yields: { hide: { amount: 1, hideM2: 0.55, note: 'a winter pelt: a hood or a collar' } },
+  life: { maturity: 1, lifespan: 12, litter: 6, gestation: 63 },
+  w: 0.3, d: 1.25, h: 0.9,
+  data: { mass: 13, legs: 4, speed: { walk: 2.4, run: 17 }, gait: { type: 'quadruped', freq: 2.1, stride: 0.6 }, grazePitch: 1.1, sizeRange: [0.92, 1.06],
+    herd: 'alone or a pair travelling in file', fleeDistance: 20, aggression: 0.25,
+    schedule: ['HUNT', 'HUNT', 'HUNT', 'HUNT', 'PATROL', 'PATROL', 'PATROL', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'PATROL', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'HUNT'] },
+  build: function (A) {
+    const C = FA_DS_COY, N = [0, 0.56, 0.27], H = p => [N[0] + p[0], N[1] + p[1], N[2] + p[2]];
+    /* the coat by height (COY_C's rule: the darker back, the pale belly, grey), grizzled */
+    const coat = (x, y, z) => { const n = faNoise(x * 30 + 5, y * 30, z * 30); return faDsShade(y > 0.6 ? C.back : y < 0.43 ? C.belly : C.grey, 0.9 + 0.2 * n); };
+    const bc = faDsSpline([[0, 0.53, -0.37], [0, 0.51, -0.28], [0, 0.5, -0.1], [0, 0.505, 0.1], [0, 0.52, 0.24], [0, 0.55, 0.34]]);
+    const br = faDsRad([[0.05, 0.06], [0.105, 0.125], [0.12, 0.14], [0.115, 0.14], [0.11, 0.14], [0.06, 0.08]]);
+    faDsTube(A, 'coat', bc, br, 14, 12, null, { caps: true, colf: (t, a) => { const p = bc(t), r = br(t); return coat(Math.sin(a) * r[0], p[1] + Math.cos(a) * r[1], p[2]); } });
+    /* the bushy tail, hanging low, black-tipped */
+    A.part('tail', [0, 0.54, -0.31], () => {
+      const tc = faDsSpline([[0, 0.54, -0.31], [0, 0.45, -0.39], [0, 0.35, -0.46], [0, 0.27, -0.5]]);
+      faDsTube(A, 'coat', tc, faDsRad([[0.035, 0.035], [0.055, 0.058], [0.066, 0.066], [0.032, 0.03]]), 9, 10, null, { caps: true, colf: (t, a) => t > 0.8 ? C.dark : (Math.cos(a) > 0.3 ? C.back : C.grey) });
+    });
+    /* the head on its neck: the skull, the long muzzle, the black nose, amber eyes */
+    A.part('head', H([0, -0.06, -0.05]), () => {   /* the pivot in the chest: the neck's root stays inside when it sniffs */
+      faDsTube(A, 'coat', faDsSpline([H([0, -0.1, -0.1]), H([0, 0.03, 0.04]), H([0, 0.12, 0.12])]), faDsRad([[0.075, 0.09], [0.068, 0.08], [0.056, 0.062]]), 6, 12, null,
+        { caps: true, colf: (t, a) => Math.cos(a) < -0.4 ? C.belly : C.grey });
+      const sk = H([0, 0.15, 0.16]); A.ellip('coat', sk[0], sk[1], sk[2], 0.07, 0.065, 0.09, null, { seg: 12, colf: (x, y, z) => y < -0.03 ? C.belly : C.grey });
+      faDsTube(A, 'coat', t => H([0, 0.13 - 0.025 * t, 0.22 + 0.125 * t]), t => [0.042 - 0.024 * t, 0.04 - 0.022 * t], 5, 10, null, { caps: true, colf: (t, a) => Math.cos(a) < -0.2 ? C.belly : C.muz });
+      const np = H([0, 0.104, 0.348]); A.ellip('skin', np[0], np[1], np[2], 0.016, 0.014, 0.014, C.dark, { seg: 8 });
+      for (const s of [-1, 1]) { const e = H([s * 0.044, 0.172, 0.215]); A.ellip('eye', e[0], e[1], e[2], 0.01, 0.009, 0.01, C.eye, { seg: 8 }); A.ellip('eye', e[0] + s * 0.004, e[1], e[2] + 0.004, 0.004, 0.006, 0.005, 0x050403, { seg: 6 }); }
+    });
+    /* the ears: tall cones leaning out (G.coyHead's: .085 high, .032 at the base, tilted .25) */
+    for (const s of [1, -1]) A.part(s > 0 ? 'earL' : 'earR', H([s * 0.032, 0.205, 0.13]), () => {
+      faDsCone(A, 'coat', H([s * 0.032, 0.2, 0.13]), H([s * 0.055, 0.29, 0.125]), 0.032, 0.003, C.back, 6);
+    });
+    /* the legs: digitigrade, standing on the toes */
+    const LEGS = [[0.06, 0.22, 1, 0], [-0.06, 0.22, 1, 1], [0.06, -0.24, 0, 2], [-0.06, -0.24, 0, 3]];
+    for (const [x, z, front, i] of LEGS) {
+      const J = front ? [[x, 0.49, z], [x * 1.1, 0.36, z - 0.05], [x, 0.12, z - 0.005], [x, 0.04, z + 0.022]]
+        : [[x, 0.5, z], [x * 1.15, 0.34, z + 0.08], [x, 0.2, z - 0.07], [x, 0.04, z - 0.035]];
+      const R = front ? [0.042, 0.03, 0.018, 0.015] : [0.058, 0.036, 0.02, 0.015];
+      A.part('leg' + i, J[0], () => {
+        faDsTube(A, 'coat', faDsSpline(J), faDsRad(R), 12, 9, null, { caps: true, colf: t => t < 0.42 ? coat(x, 0.45, z) : C.low });
+        A.ellip('coat', ...J[2], R[2] * 1.15, R[2] * 1.2, R[2] * 1.2, C.low, { seg: 8 });   /* the wrist or the hock */
+        /* the muscle of the upper arm or the thigh, below the flank, swinging with the leg */
+        if (front) A.ellip('coat', x * 1.25, 0.41, z - 0.015, 0.04, 0.075, 0.055, null, { seg: 10, rx: 0.25, colf: (px, py, pz) => coat(x, 0.41 + py, z + pz) });
+        else A.ellip('coat', x * 1.3, 0.42, z + 0.01, 0.048, 0.09, 0.075, null, { seg: 10, rx: -0.35, colf: (px, py, pz) => coat(x, 0.42 + py, z + pz) });
+        A.ellip('skin', J[3][0], 0.018, J[3][2] + 0.016, 0.022, 0.017, 0.035, faDsMix(C.low, C.dark, 0.6), { seg: 10 });   /* the paw */
+      });
+    }
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-farm.js ---- */
+/* ======================================================================
+   Krator Fauna: farm (kits/fauna/krator-fauna-farm.js)
+   The farmyard and pasture animals the settled peoples keep, ported from the static box-and-ball props the settlement
+   kits drew (each entry's `source` lists every build that draws it): the water buffalo and ducks of the Reed Lake people,
+   the Highlands' cattle (dairy cow, ox, the Painted Men's shaggy highland cow), sheep, pigs, hens and horses, the yak of
+   Xanadu and the Dalab lizard. Silhouettes and palettes are the originals'; the legs now have elbows, knees, hocks and
+   hooves, and ears, tails and wings are parts the runtime turns. Metres (every source build is in metres).
+   (The goat is in krator-fauna-livestock.js.)
+   ====================================================================== */
+
+/* ---------------------------------------------------------------- shared helpers */
+/* a smooth curve through points P (Catmull-Rom, by chord length) with radii R per point (a number or [half-width,
+   half-height]), eased between points: returns [c(t), r(t)] for A.tube */
+function faFmCurve(P, R) {
+  const n = P.length, cum = [0];
+  for (let i = 1; i < n; i++) cum.push(cum[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1], P[i][2] - P[i - 1][2]));
+  const T = cum[n - 1] || 1;
+  const seg = t => { const d = Math.min(1, Math.max(0, t)) * T; let k = 0; while (k < n - 2 && cum[k + 1] < d) k++;
+    return [k, Math.min(1, Math.max(0, (d - cum[k]) / Math.max(1e-9, cum[k + 1] - cum[k])))]; };
+  const c = t => { const [k, f] = seg(t), p0 = P[Math.max(0, k - 1)], p1 = P[k], p2 = P[k + 1], p3 = P[Math.min(n - 1, k + 2)], f2 = f * f, f3 = f2 * f;
+    const o = []; for (let j = 0; j < 3; j++) o.push(0.5 * (2 * p1[j] + (-p0[j] + p2[j]) * f + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * f2 + (-p0[j] + 3 * p1[j] - 3 * p2[j] + p3[j]) * f3));
+    return o; };
+  const rr = q => Array.isArray(q) ? q : [q, q];
+  const r = t => { const [k, f] = seg(t), e = f * f * (3 - 2 * f), a = rr(R[k]), b = rr(R[k + 1]); return [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e]; };
+  return [c, r];
+}
+/* a tube through points with radii; colf(p, t, angle) gets the centre-line point. Its ends are closed with a rounded
+   cap (an ellipsoid along the curve's end) rather than A.tube's flat caps, whose faces wind inward (KNOWN_ISSUES) */
+function faFmTube(A, fam, P, R, nt, ns, colf, caps) {
+  const [c, r] = faFmCurve(P, R);
+  A.tube(fam, c, r, nt, ns, null, { caps: false, colf: (t, a) => colf(c(t), t, a, r(t)) });
+  if (caps !== false) for (const e of [0, 1]) faFmEnd(A, fam, c(e), c(e ? 0.97 : 0.03), r(e), colf(c(e), e, Math.PI / 2, r(e)));
+  return [c, r];
+}
+/* an ellipsoid closing a tube's end at p (q: a point a little way back along it), its section [hw, hh] */
+function faFmEnd(A, fam, p, q, hr, col) {
+  if (hr[0] < 0.004) return;
+  const tx = p[0] - q[0], ty = p[1] - q[1], tz = p[2] - q[2], L = Math.hypot(tx, ty, tz) || 1;
+  A.ellip(fam, p[0], p[1], p[2], hr[0], hr[1], Math.min(hr[0], hr[1]) * 0.9, col, { rx: -Math.asin(Math.max(-1, Math.min(1, ty / L))), ry: Math.atan2(tx, tz), seg: 10 });
+}
+/* a jointed limb: a straight tapered tube per segment (so the section never twists where A.tube's frame would flip
+   between a sloped and a near-vertical run) and a rounded joint at every point (elbow, knee, hock, fetlock);
+   colf(p, t) with t from the first point (0) to the last (1) */
+function faFmChain(A, fam, P, R, ns, colf, hidden0) {
+  const n = P.length, rr = q => Array.isArray(q) ? q : [q, q];
+  for (let i = 0; i < n; i++) { const q = rr(R[i]), t = i / (n - 1), p = P[i];
+    if (i > 0 || hidden0 === false) A.ellip(fam, p[0], p[1], p[2], q[0], (q[0] + q[1]) / 2, q[1], colf(p, t), { seg: 8 });   /* the first joint is buried in the body */
+    if (i < n - 1) { const a = P[i], b = P[i + 1], qa = q, qb = rr(R[i + 1]);
+      A.tube(fam, u => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u], u => [qa[0] + (qb[0] - qa[0]) * u, qa[1] + (qb[1] - qa[1]) * u], 2, ns, null,
+        { caps: false, colf: (u) => colf([a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u], (i + u) / (n - 1)) }); }
+  }
+}
+/* sRGB [r,g,b] of a hex scaled by k, and a mix of two hexes */
+function faFmShade(hex, k) { const c = new THREE.Color(hex); return [Math.min(1, c.r * k), Math.min(1, c.g * k), Math.min(1, c.b * k)]; }
+function faFmMix(a, b, f) { const A = new THREE.Color(a), B = new THREE.Color(b); return [A.r + (B.r - A.r) * f, A.g + (B.g - A.g) * f, A.b + (B.b - A.b) * f]; }
+/* a hoof on the ground under (x, z): 'cloven' (two claws), 'solid' (a horse's) */
+function faFmHoof(A, x, z, type, r, h, col) {
+  if (type === 'solid') { A.cone('hoof', [x, 0, z + r * 0.12], [x, h, z], r, r * 0.8, col, 10); return; }
+  for (const d of [-1, 1]) A.ellip('hoof', x + d * r * 0.5, h / 2, z + r * 0.3, r * 0.5, h / 2, r * 0.95, col, { seg: 8, ry: d * 0.08 });
+}
+
+/* ---------------------------------------------------------------- the hoofed quadruped (cattle, buffalo, yak, horse,
+   sheep, pig): one builder fed each species' numbers, at scale K (variant x breed). B:
+     body   [[z, y, hw, hh] ...] rump to chest: the barrel, capped
+     coat(x, y, z, a)  colour at a point (a: the section angle, 0 the top)
+     neckPivot, neck {pts, rad}, head {pts, rad, col(p, t, a)}  the head part (neck and head turn together to graze)
+     eyes [x, y, z, r], ears {piv, at, r, rx, ry, rz, col}, horn {pts, rad, col, tip} (left; mirrored)
+     legs {F, FR, H, HR (left fore and hind chains: shoulder, elbow, knee, cannon, fetlock, pastern), hoof, hoofR,
+           hoofH, hoofCol, col(p, t, front)}
+     tail {pts, rad, col, tuft: {n, len, w, col}}
+     extraBody(P), extraHead(P)  species extras (udder, wool, mane, skirt) */
+function faFmHoofed(A, B) {
+  const K = B.K, P = p => [p[0] * K, p[1] * K, p[2] * K], PP = a => a.map(P), RR = a => a.map(q => Array.isArray(q) ? [q[0] * K, q[1] * K] : q * K);
+  const coat = B.coat, mir = a => a.map(p => [-p[0], p[1], p[2]]);
+  /* the barrel */
+  const bc = faFmTube(A, B.bodyFam || 'coat', PP(B.body.map(b => [0, b[1], b[0]])), RR(B.body.map(b => [b[2], b[3]])), B.bodyNt || 16, B.bodyNs || 14,
+    (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+  if (B.extraBody) B.extraBody(P, bc);
+  /* the head with the neck */
+  A.part('head', P(B.neckPivot), () => {
+    const nc = faFmTube(A, 'coat', PP(B.neck.pts), RR(B.neck.rad), B.neck.nt || 6, 12, (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+    faFmTube(A, 'coat', PP(B.head.pts), RR(B.head.rad), B.head.nt || 9, 12, (p, t, a, q) => B.head.col ? B.head.col(p, t, a) : coat(p[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+    if (B.eyes) for (const s of [-1, 1]) { const e = B.eyes;
+      A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K * 0.85, e[3] * K, 0x2a1a0e, { seg: 8 });
+      A.ellip('eye', s * (e[0] + e[3] * 0.45) * K, e[1] * K, (e[2] + e[3] * 0.3) * K, e[3] * 0.5 * K, e[3] * 0.55 * K, e[3] * 0.4 * K, 0x050403, { seg: 6 }); }
+    if (B.horn) for (const s of [-1, 1]) { const h = B.horn;
+      faFmTube(A, 'horn', PP(s > 0 ? h.pts : mir(h.pts)), RR(h.rad), h.nt || 12, 8, (p, t) => h.colf ? h.colf(t) : (t > 0.82 ? h.tip : h.col), true); }
+    if (B.extraHead) B.extraHead(P, nc);
+  });
+  if (B.ears) for (const s of [-1, 1]) { const e = B.ears;
+    A.part(s > 0 ? 'earL' : 'earR', P([s * e.piv[0], e.piv[1], e.piv[2]]), () => {
+      A.ellip('coat', s * e.at[0] * K, e.at[1] * K, e.at[2] * K, e.r[0] * K, e.r[1] * K, e.r[2] * K, e.col, { rx: e.rx || 0, ry: s * (e.ry || 0), rz: s * (e.rz || 0), seg: 10 });
+      if (e.inner) A.ellip('skin', s * (e.at[0] + 0.004) * K, (e.at[1] + e.r[1] * 0.35) * K, e.at[2] * K, e.r[0] * 0.8 * K, e.r[1] * 0.5 * K, e.r[2] * 0.7 * K, e.inner, { rx: e.rx || 0, ry: s * (e.ry || 0), rz: s * (e.rz || 0), seg: 8 });
+    }); }
+  /* the legs: leg0 fore left, leg1 fore right, leg2 hind left, leg3 hind right, each turning about its top */
+  const L = B.legs;
+  [[L.F, L.FR, 1, 0], [mir(L.F), L.FR, 1, 1], [L.H, L.HR, 0, 2], [mir(L.H), L.HR, 0, 3]].forEach(([ch, rad, front, i]) => {
+    A.part('leg' + i, P(ch[0]), () => {
+      faFmChain(A, 'coat', PP(ch), RR(rad), 9, (p, t) => L.col(p, t, front));
+      const f = P(ch[ch.length - 1]);
+      faFmHoof(A, f[0], f[2] + (L.hoofZ || 0) * K, L.hoof, L.hoofR * K, L.hoofH * K, L.hoofCol);
+      if (L.extra) L.extra(P, ch, front, i);
+    });
+  });
+  /* the tail */
+  if (B.tail) A.part('tail', P(B.tail.pts[0]), () => {
+    const T = B.tail, tp = PP(T.pts);
+    if (T.curly) faFmTube(A, 'coat', tp, RR(T.rad), T.nt || 8, 7, () => T.col, true); else faFmChain(A, 'coat', tp, RR(T.rad), 7, (p, t) => T.colf ? T.colf(t) : T.col);
+    if (T.tuft) { const lk = [], e = tp[tp.length - 1], e0 = tp[Math.max(0, tp.length - 2)];
+      for (let k = 0; k < T.tuft.n; k++) { const f = A.rnd() * (T.tuft.spread == null ? 0.5 : T.tuft.spread), sa = A.rnd() * TAU;   /* the hair rises from the last stretch of the tail, each strip turned its own way */
+        lk.push({ at: [e[0] + (e0[0] - e[0]) * f + A.rr(-0.012, 0.012) * K, e[1] + (e0[1] - e[1]) * f, e[2] + (e0[2] - e[2]) * f], dir: T.tuft.dir || [A.rr(-0.25, 0.25), -1, A.rr(-0.3, 0.1)], side: [Math.cos(sa), 0, Math.sin(sa)],
+          len: T.tuft.len * K * A.rr(0.75, 1.15), w: T.tuft.w * K, col: T.tuft.col, curl: T.tuft.curl || 0.1 }); }
+      A.locks('hair', lk); }
+  });
+}
+
+/* ======================================================================
+   CATTLE: four variants. The Iron Republic's dairy cow and plough ox (Highlands 79-rep-land: a 1.85 m box body on
+   0.74 m post legs, a darker head box, a dark muzzle, short cream horns), the Rustic Clansmen's brown cows (80-rus-dwell)
+   and the Painted Men's shaggy red highland cow with its wide horns (84-tri-dwell).
+   ====================================================================== */
+const FA_FM_COW = [[-0.95, 1.2, .16, .18], [-0.82, 1.17, .31, .31], [-0.45, 1.08, .37, .4], [0.05, 1.07, .38, .43], [0.45, 1.1, .34, .4], [0.75, 1.12, .27, .33], [0.9, 1.15, .15, .2]];
+ANIMAL({
+  key: 'cattle', name: 'Cattle', group: 'farm',
+  tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['republic', 'rustic', 'painted-men'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
+  size: { length: 2.6, height: 1.5 },
+  source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '23-30', note: 'hnRCBeast cow and ox: the Iron Republic\'s farms: the ox at the plough (125), the cattle paddock and shelter (156), a cow at the byre door (103)' },
+    { build: 'settlements/highlands', file: 'src/80-rus-dwell.js', lines: '51-61', note: 'hnRUBeast cow: the Rustic Clansmen\'s brown cows: at the farmstead (206), the village byre and paddock (81-rus-village 265, 293), the salvage farm (81b-rus-salvage 56)' },
+    { build: 'settlements/highlands', file: 'src/84-tri-dwell.js', lines: '99-107', note: 'hnTRBeast cow: the Painted Men\'s shaggy highland cow in pens and byres (85-tri-village 179, 222)' }],
+  traits: { edible: true, milkable: true, tameable: true, rideable: false, draught: true, eggs: false },
+  yields: { meat: { amount: 230, note: 'a cow dressed; an ox 330' }, milk: { amount: 9, note: 'a dairy cow in milk, about 280 days a year; a highland cow 4' },
+    hide: { amount: 1, hideM2: 4.2, note: 'leather: boots, harness, belts' }, horn: { amount: 0.8, note: 'an ox\'s or a highland cow\'s: cups, horn panes, combs' },
+    hair: { amount: 0.4, note: 'the highland cow\'s long coat, combed in spring: rope and felt' } },
+  life: { maturity: 1.5, lifespan: 20, litter: 1, gestation: 283 },
+  variants: 4, variantNames: ['dairy cow, piebald (Republic)', 'cow, brown (Rustic)', 'ox (the Republic\'s plough ox)', 'highland cow, shaggy red (Painted Men)'],
+  w: 0.8, d: 2.65, h: 1.65,
+  variantDims: [{ w: 0.8, d: 2.65, h: 1.65 }, { w: 0.8, d: 2.65, h: 1.65 }, { w: 0.95, d: 2.95, h: 2.05 }, { w: 1.3, d: 2.45, h: 1.6 }],
+  data: { mass: [550, 480, 800, 420], legs: 4, speed: { walk: 1.2, run: 7 }, gait: { type: 'quadruped', freq: 1.0, stride: 0.7 }, grazePitch: 1.2,
+    herd: 'a farm\'s few cows and a team of oxen; the Painted Men keep two or three in the byre under the house', fleeDistance: 3, aggression: 0.1,
+    /* an ox WORKs in place of the grazing hours: the plough, the cart */
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'MILK', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, ox = v === 2, hl = v === 3, K = (ox ? 1.1 : hl ? 0.9 : 1) * A.S;
+    const base = [0xe8e0d4, 0x7a5238, 0x6a4a32, 0x8a4a2a][v], dark = [0x2e2622, 0x5a3a28, 0x4a3222, 0x6a3a22][v];
+    const coat = (x, y, z, a) => {
+      if (v === 0) return faNoise(x * 3.2 + 1.7, y * 3.2, z * 3.2) > 0.5 ? dark : base;
+      if (v === 1) return a != null && Math.cos(a) < -0.6 ? 0x9a6a44 : base;
+      if (ox) return z > 0.5 ? faFmMix(base, dark, 0.5) : base;
+      return faFmMix(base, 0xa0602e, faNoise(x * 6, y * 6, z * 6) * 0.6);
+    };
+    const W = ox ? 1.06 : hl ? 1.06 : 1;
+    const horn = ox ? { pts: [[.07, 1.42, 1.1], [.22, 1.46, 1.11], [.34, 1.56, 1.15], [.38, 1.7, 1.2], [.34, 1.8, 1.21]], rad: [.045, .04, .03, .02, .008] }
+      : hl ? { pts: [[.07, 1.42, 1.1], [.25, 1.43, 1.11], [.45, 1.48, 1.12], [.6, 1.58, 1.1], [.66, 1.72, 1.06]], rad: [.046, .04, .03, .02, .008] }
+      : { pts: [[.07, 1.42, 1.1], [.17, 1.45, 1.11], [.25, 1.52, 1.14], [.27, 1.6, 1.16]], rad: [.035, .03, .02, .008] };
+    horn.col = hl ? 0xd8ccb0 : 0xe8e0cc; horn.tip = 0x3a3028;
+    faFmHoofed(A, { K: K, coat: coat,
+      body: FA_FM_COW.map(b => [b[0], b[1], b[2] * W, b[3]]),
+      neckPivot: [0, 1.05, 0.55],
+      neck: { pts: [[0, 1.15, .55], [0, 1.25, .8], [0, 1.3, 1.0], [0, 1.34, 1.1]], rad: [[.26 * W, .32], [.21 * W, .28], [.17, .22], [.15, .19]] },
+      head: { pts: [[0, 1.4, 1.08], [0, 1.33, 1.22], [0, 1.2, 1.37], [0, 1.1, 1.47], [0, 1.07, 1.5]], rad: [[.14, .15], [.13, .145], [.11, .115], [.1, .085], [.08, .06]],
+        col: (p, t) => t > 0.84 ? 0x3a2a24 : v === 0 ? (t < 0.35 ? coat(p[0], p[1], p[2]) : base) : t > 0.5 && !hl ? faFmShade(base, 0.85) : coat(p[0], p[1], p[2]) },
+      eyes: [.12, 1.31, 1.25, .022],
+      ears: { piv: [.12, 1.35, 1.12], at: [.2, 1.34, 1.12], r: [.09, .025, .045], rz: -0.3, col: v === 0 ? dark : base, inner: 0xc89a88 },
+      horn: horn,
+      legs: { F: [[.2, 1.0, .55], [.2, .7, .5], [.19, .38, .53], [.19, .22, .54], [.19, .1, .56], [.19, .065, .59]],
+        FR: [[.12, .15], [.085, .1], [.058, .062], [.045, .05], [.052, .056], [.045, .045]],
+        H: [[.21, 1.08, -.62], [.21, .8, -.5], [.2, .46, -.74], [.2, .28, -.7], [.2, .1, -.66], [.2, .065, -.63]],
+        HR: [[.16, .2], [.12, .14], [.062, .075], [.045, .05], [.052, .056], [.045, .045]],
+        hoof: 'cloven', hoofR: .055, hoofH: .07, hoofCol: 0x2a2420,
+        col: (p, t, front) => v === 0 ? (p[1] < 0.42 * K ? base : coat(p[0], p[1], p[2])) : faFmShade(base, p[1] < 0.4 * K ? 0.8 : 0.92) },
+      tail: { pts: [[0, 1.42, -.95], [0, 1.38, -1.02], [0, 1.15, -1.06], [0, .85, -1.05], [0, .62, -1.03]], rad: [.035, .03, .024, .02, .016], col: v === 0 ? base : faFmShade(base, 0.9),
+        tuft: { n: 8, len: 0.2, w: 0.04, col: faFmShade(dark, 0.8) } },
+      extraBody: (P) => {
+        if (v === 0 || v === 1) {   /* the udder and its four teats; a dairy cow's hip bones */
+          A.ellip('skin', 0, .66 * K, -.5 * K, .15 * K, .13 * K, .17 * K, 0xd8aaa0, { seg: 12 });
+          for (const tx of [-.06, .06]) for (const tz of [-.44, -.56]) A.cone('skin', P([tx, .56, tz]), P([tx, .48, tz]), .018 * K, .012 * K, 0xc8968c, 6);
+        }
+        if (v === 0) for (const s of [-1, 1]) A.ellip('coat', s * .25 * K, 1.4 * K, -.72 * K, .08 * K, .07 * K, .1 * K, coat(s * .25, 1.4, -.72));
+        if (ox) A.ellip('coat', 0, 1.36 * K, .55 * K, .2 * K, .14 * K, .22 * K, faFmMix(base, dark, 0.5));   /* the ox's heavy crest over the shoulders */
+        if (hl) {   /* the highland cow's long coat: locks over back, sides and rump */
+          const lk = [];
+          for (let i = 0; i < 150; i++) { const zf = A.rnd(), a = A.rr(-1, 1) * 1.6, z = (-0.9 + 1.75 * zf) * K;
+            const row = FA_FM_COW[Math.min(FA_FM_COW.length - 1, Math.max(0, Math.round(zf * (FA_FM_COW.length - 1))))];
+            const at = [Math.sin(a) * row[2] * W * K * 0.98, (row[1] + Math.cos(a) * row[3] * 0.98) * K, z];
+            lk.push({ at: at, dir: [Math.sin(a) * 0.5, -1, A.rr(-0.2, 0.05)], len: A.rr(0.16, 0.32) * K, w: A.rr(0.05, 0.08) * K, col: coat(at[0], at[1], at[2]), curl: 0.25 }); }
+          A.locks('hair', lk);
+        }
+      },
+      extraHead: (P) => {
+        A.ellip('coat', 0, 1.0 * K, .82 * K, .05 * K, (ox ? .2 : .15) * K, .17 * K, coat(0, 1.0, .82));   /* the dewlap */
+        for (const s of [-1, 1]) A.ellip('mouth', s * .035 * K, 1.1 * K, 1.535 * K, .016 * K, .012 * K, .008 * K, 0x120c0a, { seg: 6 });
+        if (hl) {   /* the fringe over the eyes and the hairy cheeks */
+          const lk = [];
+          for (let i = 0; i < 26; i++) { const x = A.rr(-0.11, 0.11);
+            lk.push({ at: P([x, 1.43, 1.12 + A.rr(-0.03, 0.04)]), dir: [x * 2, -0.6, 1], len: A.rr(0.14, 0.24) * K, w: 0.05 * K, col: faFmMix(base, 0xa0602e, A.rnd() * 0.6), curl: 0.5 }); }
+          for (let i = 0; i < 30; i++) { const s = A.rnd() < 0.5 ? -1 : 1, t = A.rnd();
+            lk.push({ at: P([s * (0.12 + 0.06 * t), 1.38 - 0.25 * t, 0.62 + 0.45 * t]), dir: [s * 0.4, -1, 0.1], len: A.rr(0.15, 0.28) * K, w: 0.06 * K, col: faFmMix(base, 0xa0602e, A.rnd() * 0.6), curl: 0.3 }); }
+          A.locks('hair', lk);
+        }
+      } });
+    A.anchor('yoke', [0, 1.5 * K, 0.62 * K]); A.anchor('lead', [0, 1.1 * K, 1.5 * K]);
+  }
+});
+
+/* ======================================================================
+   WATER BUFFALO: the Reed Lake people's big dark beast (75-rl-helpers hnRLBeast 'buffalo': a 2.3 m body on 0.72 m legs,
+   the head carried low and forward, sweeping crescent horns of four dark segments). It works the island farms and
+   wallows in the shallows.
+   ====================================================================== */
+const FA_FM_BUF = [[-1.1, 1.24, .2, .24], [-0.9, 1.2, .4, .4], [-0.35, 1.14, .46, .47], [.25, 1.15, .46, .48], [.72, 1.18, .38, .44], [.98, 1.2, .26, .32], [1.08, 1.22, .14, .19]];
+ANIMAL({
+  key: 'water-buffalo', name: 'Water buffalo', group: 'farm',
+  tags: { biomes: ['eastabyss'], koppen: ['Am', 'Aw', 'Af'], aridity: ['subhumid', 'humid'], climate: ['hypertropic', 'tropic'], riparian: 'riparian', abyssal: true,
+    domestic: true, herdedBy: ['lake-people'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'marsh', 'shallows', 'water', 'pen'], locomotion: ['walks', 'runs', 'wades', 'swims'] },
+  size: { length: 3.0, height: 1.65 },
+  source: [{ build: 'settlements/reedlake', file: 'src/75-rl-helpers.js', lines: '212-222', note: 'hnRLBeast buffalo: the Reed Lake people\'s farm island (79-rl-farm 17); LORE 6.10 "water buffalo"' }],
+  traits: { edible: true, milkable: true, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { meat: { amount: 300, note: 'dressed; eaten at feasts, the rest of the year it works' }, milk: { amount: 5, note: 'rich milk, about 250 days a year: curd and ghee' },
+    hide: { amount: 1, hideM2: 5, note: 'thick leather: boat lashings, shields, sandals' }, horn: { amount: 2.5, note: 'a pair: bows, knife grips, the puma prows\' inlay' } },
+  life: { maturity: 2.5, lifespan: 25, litter: 1, gestation: 315 },
+  variants: 2, variantNames: ['cow, slate grey', 'bull, near-black, heavy horns'],
+  w: 1.45, d: 3.05, h: 2.05,
+  variantDims: [{ w: 1.45, d: 3.05, h: 2.05 }, { w: 1.7, d: 3.3, h: 2.3 }],
+  data: { mass: [650, 850], legs: 4, speed: { walk: 1.1, run: 6 }, gait: { type: 'quadruped', freq: 0.9, stride: 0.75 }, grazePitch: 1.15,
+    herd: 'one or two to an island farm; a child rides it down to the water', fleeDistance: 2, aggression: 0.15,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'MILK', 'WORK', 'WORK', 'WORK', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'MILK', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, K = (v ? 1.08 : 1) * A.S, hk = v ? 1.15 : 1;
+    const base = v ? 0x3e3630 : 0x4a4038;
+    const coat = (x, y, z) => faFmMix(base, 0x56483e, faNoise(x * 4, y * 4, z * 4) * 0.5);
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_BUF,
+      neckPivot: [0, 1.12, 0.8],
+      neck: { pts: [[0, 1.2, .8], [0, 1.28, 1.05], [0, 1.33, 1.22]], rad: [[.3, .36], [.24, .3], [.19, .23]] },
+      head: { pts: [[0, 1.42, 1.24], [0, 1.34, 1.42], [0, 1.2, 1.6], [0, 1.1, 1.7], [0, 1.07, 1.73]], rad: [[.18, .18], [.17, .17], [.14, .14], [.125, .095], [.1, .07]],
+        col: (p, t) => t > 0.86 ? 0x2a2420 : coat(p[0], p[1], p[2]) },
+      eyes: [.15, 1.36, 1.46, .024],
+      ears: { piv: [.16, 1.4, 1.3], at: [.25, 1.36, 1.3], r: [.1, .03, .05], rz: -0.25, col: base, inner: 0x6a5a54 },
+      /* the crescent horns: out from the poll, then up and sweeping back (ridged) */
+      horn: { pts: [[.1, 1.5, 1.3], [.36 * hk, 1.58, 1.24], [.58 * hk, 1.72, 1.06], [.66 * hk, 1.88, .84 - 0.05 * v], [.6 * hk, 1.98 + 0.08 * v, .66 - 0.08 * v]], rad: [.075, .065, .048, .03, .012], nt: 16,
+        colf: t => t > 0.86 ? 0x1e1a18 : faFmShade(0x3a3230, 0.85 + 0.25 * (0.5 + 0.5 * Math.sin(t * 60))) },
+      legs: { F: [[.27, 1.0, .75], [.27, .7, .7], [.26, .38, .73], [.26, .22, .74], [.26, .1, .75], [.26, .065, .78]],
+        FR: [[.15, .18], [.1, .12], [.07, .075], [.055, .06], [.06, .065], [.055, .055]],
+        H: [[.27, 1.05, -.78], [.27, .8, -.66], [.26, .46, -.88], [.26, .28, -.84], [.26, .1, -.8], [.26, .065, -.77]],
+        HR: [[.18, .22], [.13, .15], [.07, .085], [.055, .06], [.06, .065], [.055, .055]],
+        hoof: 'cloven', hoofR: .068, hoofH: .07, hoofCol: 0x1e1a18,
+        col: (p) => faFmShade(base, p[1] < 0.45 * K ? 0.8 : 0.92) },
+      tail: { pts: [[0, 1.52, -1.1], [0, 1.45, -1.17], [0, 1.15, -1.2], [0, .85, -1.18], [0, .7, -1.16]], rad: [.04, .035, .028, .022, .018], col: base,
+        tuft: { n: 7, len: 0.2, w: 0.045, col: 0x1e1a18 } },
+      extraHead: (P) => { for (const s of [-1, 1]) A.ellip('mouth', s * .045 * K, 1.1 * K, 1.8 * K, .016 * K, .012 * K, .008 * K, 0x0c0a08, { seg: 6 }); } });
+    A.anchor('yoke', [0, 1.6 * K, 0.85 * K]); A.anchor('saddle', [0, 1.62 * K, 0.1 * K]); A.anchor('lead', [0, 1.1 * K, 1.8 * K]);
+  }
+});
+
+/* ======================================================================
+   YAK: the beast of the Vale of Xanadu (72-xa-helpers xnYak: a shaggy 1.9 m box on 0.6 m legs, a low head, pale horns
+   flung out sideways). Long skirt hair, the hump at the withers, a bushy tail.
+   ====================================================================== */
+const FA_FM_YAK = [[-0.95, 1.0, .2, .22], [-0.78, .98, .36, .38], [-0.3, 1.0, .41, .43], [.2, 1.05, .42, .47], [.55, 1.1, .37, .5], [.82, 1.02, .27, .38], [.95, .96, .15, .22]];
+ANIMAL({
+  key: 'yak', name: 'Yak', group: 'farm',
+  tags: { biomes: ['xanadu'], koppen: ['Cfb', 'Dfb', 'ET'], aridity: ['semiarid', 'subhumid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['xanadu'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'climbs'] },
+  size: { length: 2.6, height: 1.6 },
+  source: [{ build: 'settlements/xanadu', file: 'src/72-xa-helpers.js', lines: '283-288', note: 'xnYak: the valley\'s beast at the farmhouse (74-xa-dwell 30), the farm and its yard (76-xa-farm 32, 59), the Farmers\' guild yard (79-xa-guild 34) and the hill terraces (82-xa-hill 26)' }],
+  traits: { edible: true, milkable: true, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { meat: { amount: 160, note: 'dressed, dried in strips for winter' }, milk: { amount: 1.6, note: 'very rich: butter for the temple lamps and the tea' },
+    hide: { amount: 1, hideM2: 3.6, note: 'boots, boat skins, the herders\' tents' }, hair: { amount: 1.5, note: 'the long skirt hair, cut each summer: tent cloth, rope, slings' },
+    wool: { amount: 0.6, note: 'the soft down combed out in spring: the finest shawls of the valley' }, horn: { amount: 1.5, note: 'a pair' } },
+  life: { maturity: 3, lifespan: 22, litter: 1, gestation: 258 },
+  variants: 3, variantNames: ['black', 'brown', 'dun'],
+  w: 1.5, d: 2.65, h: 1.65,
+  data: { mass: [450, 420, 400], legs: 4, speed: { walk: 1.1, run: 7 }, gait: { type: 'quadruped', freq: 1.0, stride: 0.6 }, grazePitch: 0.9,
+    herd: 'a family\'s few in the yard; the herds go up to the high pastures in summer', fleeDistance: 5, aggression: 0.2,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'MILK', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, K = A.S, base = [0x2a221c, 0x4a3a2c, 0x6a5040][v], lite = [0x3a2c22, 0x6a5040, 0x8a6a50][v];
+    const coat = (x, y, z) => faFmMix(base, lite, faNoise(x * 5 + v, y * 5, z * 5) * 0.55);
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_YAK,
+      neckPivot: [0, 0.95, 0.75],
+      neck: { pts: [[0, 1.0, .75], [0, .98, .95], [0, .96, 1.08]], rad: [[.26, .32], [.2, .26], [.16, .2]] },
+      head: { pts: [[0, 1.02, 1.1], [0, .94, 1.24], [0, .8, 1.38], [0, .7, 1.46]], rad: [[.15, .16], [.14, .15], [.1, .11], [.09, .08]],
+        col: (p, t) => t > 0.84 ? faFmShade(base, 0.7) : coat(p[0], p[1], p[2]) },
+      eyes: [.125, .98, 1.24, .02],
+      ears: { piv: [.14, 1.03, 1.12], at: [.2, 1.0, 1.13], r: [.07, .02, .04], rz: -0.3, col: base },
+      horn: { pts: [[.08, 1.1, 1.12], [.28, 1.12, 1.12], [.45, 1.18, 1.14], [.55, 1.3, 1.18], [.56, 1.42, 1.2]], rad: [.045, .04, .03, .018, .008], col: 0xd8d0c0, tip: 0x4a4038 },
+      legs: { F: [[.25, .95, .6], [.25, .68, .55], [.24, .38, .57], [.24, .22, .58], [.24, .1, .59], [.24, .065, .61]],
+        FR: [[.13, .16], [.09, .11], [.06, .065], [.048, .052], [.055, .058], [.048, .048]],
+        H: [[.25, 1.0, -.62], [.25, .75, -.52], [.24, .44, -.72], [.24, .27, -.69], [.24, .1, -.65], [.24, .065, -.62]],
+        HR: [[.16, .2], [.12, .14], [.062, .075], [.048, .052], [.055, .058], [.048, .048]],
+        hoof: 'cloven', hoofR: .055, hoofH: .07, hoofCol: 0x1a1612,
+        col: (p) => faFmShade(base, p[1] < 0.4 * K ? 0.85 : 1) },
+      /* the bushy tail: a short dock and a broom of long hair */
+      tail: { pts: [[0, 1.3, -.95], [0, 1.25, -1.0], [0, 1.05, -1.04], [0, .9, -1.04]], rad: [.05, .045, .035, .03], col: base,
+        tuft: { n: 24, len: 0.45, w: 0.07, col: faFmShade(base, 0.9), dir: [0, -1, -0.15], spread: 1 } },
+      extraBody: (P, bc) => {
+        /* the skirt: a ragged sheet of long hair down each side, and locks over it, the hump and the belly */
+        const [c, r] = bc;
+        for (const s of [-1, 1]) A.sheet('hair', (u, w) => { const t = 0.08 + 0.82 * u, p = c(t), q = r(t), hem = (0.3 + 0.04 * Math.sin(u * 17 + s) + 0.03 * Math.sin(u * 43)) * K;
+          return [s * (q[0] * 0.97 + 0.05 * w * K), p[1] + (hem - p[1]) * w, p[2]]; }, 16, 4, null, { colf: (u, w) => faFmShade(base, 1 - 0.25 * w) });
+        const lk = [];
+        for (let i = 0; i < 150; i++) { const t = 0.06 + 0.88 * A.rnd(), p = c(t), q = r(t), a = A.rr(-1, 1) * 1.7;
+          const at = [Math.sin(a) * q[0] * 1.01, p[1] + Math.cos(a) * q[1] * 1.01, p[2]];
+          lk.push({ at: at, dir: [Math.sin(a) * 0.4, -1, A.rr(-0.15, 0.1)], len: A.rr(0.18, 0.4) * K * (Math.abs(a) > 1.1 ? 1.3 : 1), w: A.rr(0.05, 0.08) * K, col: coat(at[0], at[1], at[2]), curl: 0.18 }); }
+        A.locks('hair', lk);
+      },
+      extraHead: (P) => {
+        const lk = [];   /* the throat fringe and the forelock */
+        for (let i = 0; i < 22; i++) { const t = A.rnd(), x = A.rr(-0.15, 0.15);
+          lk.push({ at: P([x, 0.78 + 0.12 * t, 0.8 + 0.35 * t]), dir: [x, -1, -0.1], len: A.rr(0.2, 0.36) * K, w: 0.07 * K, col: coat(x, 0.8, 0.9), curl: 0.15 }); }
+        for (let i = 0; i < 10; i++) lk.push({ at: P([A.rr(-0.1, 0.1), 1.12, 1.13]), dir: [0, -0.5, 1], len: A.rr(0.12, 0.2) * K, w: 0.05 * K, col: lite, curl: 0.5 });
+        A.locks('hair', lk);
+        for (const s of [-1, 1]) A.ellip('mouth', s * .035 * K, .72 * K, 1.53 * K, .014 * K, .01 * K, .008 * K, 0x0c0a08, { seg: 6 });
+      } });
+    A.anchor('pack', [0, 1.6 * K, 0.1 * K]); A.anchor('saddle', [0, 1.55 * K, -0.1 * K]); A.anchor('lead', [0, 0.8 * K, 1.5 * K]);
+  }
+});
+
+/* ======================================================================
+   HORSE: the Iron Republic's horse (75-rep-trade hnRAHorse: an ellipsoid barrel at 1.28 m on 1.12 m legs, a raised neck,
+   a long head angled down, a dark mane and tail, dark hooves; HRA_HORSE its six coats) and the Rustic Clansmen's box
+   horse (80-rus-dwell hnRUBeast 'horse').
+   ====================================================================== */
+const FA_FM_HORSE = [[-0.86, 1.34, .14, .17], [-0.7, 1.33, .27, .29], [-0.35, 1.3, .3, .31], [0.1, 1.29, .3, .33], [0.45, 1.32, .27, .32], [0.68, 1.32, .19, .25], [0.78, 1.32, .1, .14]];
+ANIMAL({
+  key: 'horse', name: 'Horse', group: 'farm',
+  tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['republic', 'rustic'], diet: 'herbivore', feeding: 'grazer', activity: 'cathemeral', temperament: 'wary',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
+  size: { length: 2.5, height: 1.62 },
+  source: [{ build: 'settlements/highlands', file: 'src/75-rep-trade.js', lines: '39-45', note: 'hnRAHorse: the Iron Republic\'s horses at the inn\'s hitching rail (142), the coaching yard (194), the stables (383, 393) and before the wagons (440)' },
+    { build: 'settlements/highlands', file: 'src/80-rus-dwell.js', lines: '51-61', note: 'hnRUBeast horse: the Rustic Clansmen\'s stable lean-to (81-rus-village 153), the paddock (81-rus-village 293), the salvage farm (81b-rus-salvage 117)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { meat: { amount: 200, note: 'eaten only in hard winters, or an old horse at the end' }, hide: { amount: 1, hideM2: 3.6, note: 'strong leather: harness, belts' },
+    hair: { amount: 0.3, note: 'mane and tail hair: bowstrings, fiddle bows, brushes, the Republic\'s horsehair upholstery' } },
+  life: { maturity: 3, lifespan: 28, litter: 1, gestation: 340 },
+  variants: 4, variantNames: ['bay, black points', 'black', 'dun', 'grey'],
+  w: 0.7, d: 2.5, h: 2.15,
+  data: { mass: 520, legs: 4, speed: { walk: 1.6, run: 13 }, gait: { type: 'quadruped', freq: 1.1, stride: 0.9 }, grazePitch: 1.5,
+    herd: 'a team of two to a cart, four to a coach; the coaching inns stable a dozen', fleeDistance: 8, aggression: 0.1,
+    schedule: ['REST', 'REST', 'REST', 'GRAZE', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'REST'] },
+  build: function (A) {
+    const v = A.variant, K = A.S, base = [0x6a4a30, 0x2a2420, 0x8a6a4a, 0xa89880][v], mane = [0x1e1a16, 0x161210, 0x3a2a1e, 0x6a645a][v];
+    const coat = (x, y, z) => v === 3 ? faFmMix(base, 0xd0c8b8, faNoise(x * 8, y * 8, z * 8) > 0.6 ? 0.5 : 0.1) : base;
+    const points = v === 0 || v === 2;
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_HORSE, bodyNt: 18,
+      neckPivot: [0, 1.32, 0.48],
+      neck: { pts: [[0, 1.42, .5], [0, 1.62, .74], [0, 1.82, .9], [0, 1.96, 1.0]], rad: [[.17, .27], [.12, .2], [.1, .15], [.085, .11]], nt: 8 },
+      head: { pts: [[0, 1.99, 1.0], [0, 1.9, 1.1], [0, 1.72, 1.24], [0, 1.56, 1.34], [0, 1.5, 1.37]], rad: [[.08, .1], [.085, .11], [.075, .09], [.065, .075], [.055, .055]], nt: 10,
+        col: (p, t) => t > 0.8 ? faFmShade(base, 0.55) : coat(p[0], p[1], p[2]) },
+      eyes: [.075, 1.9, 1.12, .022],
+      ears: { piv: [.045, 2.0, 1.0], at: [.05, 2.07, .99], r: [.025, .07, .032], rz: -0.15, col: base, inner: faFmShade(base, 0.6) },
+      legs: { F: [[.15, 1.15, .48], [.15, .98, .42], [.14, .56, .47], [.14, .36, .47], [.14, .16, .48], [.14, .09, .52]],
+        FR: [[.1, .13], [.075, .09], [.048, .055], [.034, .04], [.045, .05], [.035, .04]],
+        H: [[.16, 1.25, -.55], [.16, .95, -.43], [.15, .6, -.68], [.15, .36, -.64], [.15, .16, -.62], [.15, .09, -.58]],
+        HR: [[.13, .19], [.1, .13], [.052, .07], [.034, .04], [.045, .05], [.035, .04]],
+        hoof: 'solid', hoofR: .058, hoofH: .09, hoofCol: 0x2a2420, hoofZ: .02,
+        col: (p) => points && p[1] < 0.55 * K ? mane : coat(p[0], p[1], p[2]) },
+      /* the tail: a short dock and long hair to the hocks */
+      tail: { pts: [[0, 1.58, -.86], [0, 1.55, -.94], [0, 1.42, -1.0]], rad: [.045, .04, .035], nt: 5, col: mane,
+        tuft: { n: 34, len: 0.62, w: 0.07, col: mane, dir: [0, -1, -0.12], curl: 0.05, spread: 1 } },
+      extraHead: (P, nc) => {
+        /* the mane down the crest of the neck (falling to the left) and the forelock */
+        const [c, r] = nc, lk = [];
+        for (let i = 0; i < 34; i++) { const t = 0.12 + 0.88 * (i / 33), p = c(t), q = r(t), s = A.rnd() < 0.8 ? 1 : -1;
+          lk.push({ at: [s * 0.01 * K, p[1] + q[1] * 0.92, p[2]], dir: [s * 0.9, -1, 0.15], len: A.rr(0.16, 0.26) * K, w: 0.06 * K, col: mane, curl: 0.15 }); }
+        for (let i = 0; i < 6; i++) lk.push({ at: P([A.rr(-0.02, 0.02), 2.02, 1.02]), dir: [0, -0.7, 1], len: A.rr(0.12, 0.18) * K, w: 0.04 * K, col: mane, curl: 0.3 });
+        A.locks('hair', lk);
+        for (const s of [-1, 1]) A.ellip('mouth', s * .03 * K, 1.52 * K, 1.405 * K, .012 * K, .016 * K, .008 * K, 0x0c0a08, { seg: 6 });
+      } });
+    A.anchor('saddle', [0, 1.66 * K, 0.05 * K]); A.anchor('bridle', [0, 1.75 * K, 1.25 * K]); A.anchor('harness', [0, 1.5 * K, 0.6 * K]);
+  }
+});
+
+/* ======================================================================
+   SHEEP: the Republic's sheepfold (79-rep-land hnRCBeast 'sheep': a woolly ball on four thin dark legs, a dark face) and
+   the Rustic Clansmen's wattle fold (80-rus-dwell hnRUBeast 'sheep'). Fleece as lumps of wool over the barrel.
+   ====================================================================== */
+const FA_FM_SHEEP = [[-0.5, .66, .14, .15], [-0.42, .66, .27, .26], [-0.1, .65, .31, .29], [.2, .66, .3, .28], [.4, .68, .24, .24], [.5, .7, .13, .15]];
+ANIMAL({
+  key: 'sheep', name: 'Sheep', group: 'farm',
+  tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['republic', 'rustic'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
+  size: { length: 1.3, height: 0.95 },
+  source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '31-32', note: 'hnRCBeast sheep: the Iron Republic\'s sheepfold (157)' },
+    { build: 'settlements/highlands', file: 'src/80-rus-dwell.js', lines: '51-61', note: 'hnRUBeast sheep: the Rustic Clansmen\'s wattle fold, with goats (81-rus-village 301)' }],
+  traits: { edible: true, milkable: true, tameable: true, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 25, note: 'a ewe dressed; mutton and the winter\'s salt lamb' }, milk: { amount: 0.6, note: 'the Rustic Clansmen milk their ewes for cheese, about 150 days' },
+    wool: { amount: 3, note: 'shorn each summer: the Republic\'s broadcloth, the clansmen\'s homespun' }, hide: { amount: 1, hideM2: 0.8, note: 'sheepskin coats, parchment' } },
+  life: { maturity: 1, lifespan: 11, litter: 1.4, gestation: 150 },
+  variants: 3, variantNames: ['ewe, white', 'ewe, black', 'lamb'],
+  w: 0.75, d: 1.3, h: 0.98,
+  variantDims: [{ w: 0.75, d: 1.3, h: 0.98 }, { w: 0.75, d: 1.3, h: 0.98 }, { w: 0.45, d: 0.8, h: 0.6 }],
+  data: { mass: [65, 65, 18], legs: 4, speed: { walk: 1.0, run: 7 }, gait: { type: 'quadruped', freq: 1.6, stride: 0.4 }, grazePitch: 0.95,
+    herd: 'a fold of 7 to 40 with a shepherd and a dog', fleeDistance: 6, aggression: 0.02,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, K = (v === 2 ? 0.6 : 1) * A.S, wool = v === 1 ? 0x4a4038 : 0xeae4d6, wool2 = v === 1 ? 0x3a322c : 0xdcd4c2, face = v === 1 ? 0x221e1a : 0x2e2a26;
+    const coat = (x, y, z) => faFmMix(wool, wool2, faNoise(x * 9, y * 9, z * 9));
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_SHEEP,
+      neckPivot: [0, 0.68, 0.36],
+      neck: { pts: [[0, .7, .36], [0, .78, .48], [0, .83, .54]], rad: [[.13, .15], [.09, .1], [.07, .08]] },
+      head: { pts: [[0, .86, .52], [0, .82, .6], [0, .74, .69], [0, .7, .72]], rad: [[.065, .075], [.06, .07], [.045, .05], [.035, .035]], col: () => face },
+      eyes: [.052, .82, .6, .014],
+      ears: { piv: [.07, .84, .55], at: [.11, .83, .55], r: [.06, .015, .028], rz: 0.35, col: face },
+      legs: { F: [[.12, .55, .3], [.12, .4, .28], [.115, .24, .3], [.115, .12, .3], [.115, .05, .31], [.115, .04, .32]],
+        FR: [[.07, .08], [.045, .05], [.03, .03], [.022, .024], [.026, .028], [.022, .022]],
+        H: [[.12, .58, -.3], [.12, .42, -.24], [.115, .25, -.35], [.115, .13, -.33], [.115, .05, -.31], [.115, .04, -.3]],
+        HR: [[.085, .1], [.06, .07], [.03, .035], [.022, .024], [.026, .028], [.022, .022]],
+        hoof: 'cloven', hoofR: .026, hoofH: .04, hoofCol: 0x1a1612,
+        col: (p, t) => t < 0.28 ? coat(p[0], p[1], p[2]) : face },
+      tail: { pts: [[0, .76, -.5], [0, .7, -.56], [0, .58, -.58]], rad: [.05, .045, .035], col: wool },
+      extraBody: (P, bc) => {
+        /* the fleece: lumps of wool over back, sides and rump */
+        const [c, r] = bc;
+        for (let i = 0; i < 34; i++) { const t = 0.06 + 0.88 * A.rnd(), p = c(t), q = r(t), a = A.rr(-1, 1) * 2.0;
+          const x = Math.sin(a) * q[0] * 0.88, y = p[1] + Math.cos(a) * q[1] * 0.88, s = A.rr(0.07, 0.11) * K;
+          A.ellip('coat', x, y, p[2], s, s * 0.85, s * 1.1, null, { seg: 7, colf: (dx, dy, dz) => coat(x + dx, y + dy, p[2] + dz) }); }
+      },
+      extraHead: (P) => { A.ellip('coat', 0, .875 * K, .5 * K, .075 * K, .055 * K, .08 * K, null, { seg: 8, colf: (x, y, z) => coat(x, y + 0.87, z + 0.5) }); } });
+    A.anchor('lead', [0, 0.75 * K, 0.5 * K]);
+  }
+});
+
+/* ======================================================================
+   PIG: the Republic's pigsty (79-rep-land hnRCBeast 'pig': a pink box on short posts, a snout box), the Rustic and
+   Painted Men's dark hill pigs (80-rus-dwell, 84-tri-dwell) and the post-apoc pen's pink pigs (kits/post-apoc 50-farm).
+   ====================================================================== */
+const FA_FM_PIG = [[-0.58, .54, .13, .15], [-0.48, .55, .24, .24], [-0.2, .55, .27, .26], [.15, .55, .27, .26], [.4, .56, .23, .24], [.55, .56, .15, .18]];
+ANIMAL({
+  key: 'pig', name: 'Pig', group: 'farm',
+  tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Cfa'], aridity: ['subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['republic', 'rustic', 'painted-men', 'post-apoc'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
+  size: { length: 1.4, height: 0.82 },
+  source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '33-34', note: 'hnRCBeast pig: the Iron Republic\'s pigsty yard (157)' },
+    { build: 'settlements/highlands', file: 'src/80-rus-dwell.js', lines: '51-61', note: 'hnRUBeast pig: the Rustic Clansmen\'s pig by the hearth (102) and the village pig pen (81-rus-village 308)' },
+    { build: 'settlements/highlands', file: 'src/84-tri-dwell.js', lines: '99-107', note: 'hnTRBeast pig: the Painted Men\'s pens (85-tri-village 223)' },
+    { build: 'kits/post-apoc', file: 'src/50-farm.js', lines: '53-61', note: 'fmPen: three pink pigs in the goat and pig pen (any settlement that takes the set)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 85, note: 'a baconer dressed: hams, sausage, lard; the autumn slaughter' }, hide: { amount: 1, hideM2: 1.3, note: 'pigskin: gloves, saddle seats' },
+    hair: { amount: 0.2, note: 'the bristles: brushes' } },
+  life: { maturity: 0.8, lifespan: 15, litter: 9, gestation: 114 },
+  variants: 3, variantNames: ['sow, pink', 'hill pig, black (Rustic and Painted Men)', 'piglet'],
+  w: 0.65, d: 1.48, h: 0.86,
+  variantDims: [{ w: 0.65, d: 1.48, h: 0.86 }, { w: 0.65, d: 1.48, h: 0.9 }, { w: 0.3, d: 0.68, h: 0.4 }],
+  data: { mass: [160, 140, 12], legs: 4, speed: { walk: 0.9, run: 5 }, gait: { type: 'quadruped', freq: 1.8, stride: 0.3 }, grazePitch: 0.8,
+    herd: 'three or four in a sty; the Painted Men\'s pigs run loose under the houses', fleeDistance: 3, aggression: 0.12,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, K = (v === 2 ? 0.45 : 1) * A.S, base = [0xe0a898, 0x5a4a44, 0xe0b0a0][v], deep = [0xc88a7a, 0x3e322e, 0xd89888][v];
+    const coat = (x, y, z, a) => a != null && Math.cos(a) < -0.5 ? faFmMix(base, deep, 0.5) : faFmMix(base, deep, faNoise(x * 6, y * 6, z * 6) * 0.35);
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_PIG,
+      neckPivot: [0, 0.55, 0.42],
+      neck: { pts: [[0, .56, .42], [0, .57, .55]], rad: [[.2, .22], [.17, .19]], nt: 3 },
+      head: { pts: [[0, .58, .55], [0, .55, .66], [0, .49, .78], [0, .45, .86]], rad: [[.17, .18], [.13, .14], [.08, .085], [.065, .06]], col: (p, t) => t > 0.9 ? deep : base },
+      eyes: [.08, .6, .68, .013],
+      ears: { piv: [.08, .68, .6], at: [.1, .69, .66], r: [.05, .012, .075], rx: 0.6, ry: 0.3, col: v === 1 ? base : deep },
+      legs: { F: [[.13, .45, .33], [.13, .3, .3], [.125, .16, .32], [.125, .07, .33], [.125, .045, .35]],
+        FR: [[.09, .1], [.06, .065], [.042, .045], [.035, .035], [.032, .032]],
+        H: [[.13, .46, -.38], [.13, .3, -.32], [.125, .17, -.4], [.125, .07, -.38], [.125, .045, -.36]],
+        HR: [[.11, .13], [.07, .08], [.042, .045], [.035, .035], [.032, .032]],
+        hoof: 'cloven', hoofR: .034, hoofH: .045, hoofCol: v === 1 ? 0x1e1a18 : 0x6a4a40,
+        col: () => base },
+      /* the curly tail */
+      tail: { pts: [[0, .68, -.58], [.02, .7, -.62], [0, .73, -.645], [-.025, .7, -.655], [0, .67, -.665], [.02, .69, -.685]], rad: [.014, .012, .011, .01, .009, .007], nt: 12, col: base, curly: true },
+      extraBody: (P) => {
+        if (v === 1) {   /* the hill pig's bristly crest */
+          const lk = [];
+          for (let i = 0; i < 30; i++) { const z = A.rr(-0.4, 0.5); lk.push({ at: P([A.rr(-0.02, 0.02), 0.8, z]), dir: [A.rr(-0.5, 0.5), 1, -0.3], len: A.rr(0.05, 0.09) * K, w: 0.025 * K, col: 0x2a221e, curl: 0.05 }); }
+          A.locks('hair', lk);
+        }
+      },
+      extraHead: (P) => {
+        A.ellip('skin', 0, .45 * K, .865 * K, .066 * K, .06 * K, .022 * K, deep, { seg: 12 });   /* the snout disc */
+        for (const s of [-1, 1]) A.ellip('mouth', s * .022 * K, .45 * K, .885 * K, .01 * K, .014 * K, .006 * K, 0x2a1a16, { seg: 6 });
+        A.cone('mouth', P([-0.04, 0.41, 0.8]), P([0.04, 0.41, 0.8]), 0.006 * K, 0.006 * K, 0x3a2420, 4);
+      } });
+    A.anchor('lead', [0, 0.6 * K, 0.6 * K]);
+  }
+});
+
+/* ---------------------------------------------------------------- the farmyard bird (hen, duck): two legs on the ground,
+   the wings folded on the flanks as parts (wingL, wingR: a hen barely flies, a duck flies, but both walk: gait biped, so
+   the runtime leaves the wings folded), the head with the neck, the tail */
+function faFmBird(A, B) {
+  const K = B.K, P = p => [p[0] * K, p[1] * K, p[2] * K];
+  for (const e of B.body) A.ellip('coat', e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[4] * K, e[5] * K, null, { rx: e[6] || 0, seg: 14, colf: (x, y, z) => B.coat(e[0] * K + x, e[1] * K + y, e[2] * K + z) });
+  A.part('head', P(B.neckPivot), () => {
+    faFmChain(A, 'coat', B.neck.pts.map(P), B.neck.rad.map(q => [q[0] * K, q[1] * K]), 10, (p) => B.neckCol ? B.neckCol(p) : B.coat(p[0], p[1], p[2]), false);
+    const h = B.head; A.ellip('coat', h[0] * K, h[1] * K, h[2] * K, h[3] * K, h[4] * K, h[5] * K, null, { seg: 12, colf: (x, y, z) => B.headCol ? B.headCol(x, y, z) : B.coat(h[0] * K + x, h[1] * K + y, h[2] * K + z) });
+    for (const s of [-1, 1]) { const e = B.eyes;
+      A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K, e[3] * K, B.eyeCol || 0x2a1a0e, { seg: 8 });
+      A.ellip('eye', s * (e[0] + e[3] * 0.5) * K, e[1] * K, e[2] * K, e[3] * 0.5 * K, e[3] * 0.5 * K, e[3] * 0.5 * K, 0x050403, { seg: 6 }); }
+    B.extraHead(P);
+  });
+  for (const s of [-1, 1]) A.part(s > 0 ? 'wingL' : 'wingR', P([s * B.wing.piv[0], B.wing.piv[1], B.wing.piv[2]]), () => {
+    for (const w of B.wing.parts) A.ellip('coat', s * w[0] * K, w[1] * K, w[2] * K, w[3] * K, w[4] * K, w[5] * K, null, { rx: w[6] || 0, ry: s * (w[7] || 0), seg: 12, colf: (x, y, z) => B.wingCol(y / (w[4] * K), z / (w[5] * K), w) });
+  });
+  A.part('tail', P(B.tailPivot), () => B.tail(P));
+  for (const s of [-1, 1]) A.part(s > 0 ? 'leg0' : 'leg1', P([s * B.hip[0], B.hip[1], B.hip[2]]), () => B.leg(P, s));
+}
+
+/* ======================================================================
+   HEN: the Republic's farmyard hens (79-rep-land hnRCBeast 'hen': a ball body, a red head ball) and the post-apoc coop's
+   hens (kits/post-apoc 50-farm fmCoop), white, red-brown, dark brown; and the cock that keeps them.
+   ====================================================================== */
+ANIMAL({
+  key: 'hen', name: 'Hen', group: 'farm',
+  tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Cfa'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['republic', 'post-apoc'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'flies'] },
+  size: { length: 0.48, height: 0.46, span: 0.7 },
+  source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '35', note: 'hnRCBeast hen: the Iron Republic\'s farmyards (64, 103, 158)' },
+    { build: 'kits/post-apoc', file: 'src/50-farm.js', lines: '50-52', note: 'fmCoop: four hens about the coop on wheels (any settlement that takes the set). Voth\'s monastery coops (settlements/voth src/61-monastery.js 79) draw a henhouse but no hens' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 1.2, note: 'a boiling fowl; a cock or a capon 2' }, eggs: { amount: 180, note: 'a laying hen, fewer in winter; none from the cock' },
+    feathers: { amount: 0.1, note: 'pillows, fletching' } },
+  life: { maturity: 0.5, lifespan: 8, litter: 10, gestation: 21, note: 'litter: a clutch; gestation: the days on the eggs' },
+  variants: 4, variantNames: ['hen, white', 'hen, red-brown', 'hen, dark brown', 'cock'],
+  w: 0.28, d: 0.5, h: 0.48,
+  variantDims: [{ w: 0.28, d: 0.5, h: 0.48 }, { w: 0.28, d: 0.5, h: 0.48 }, { w: 0.28, d: 0.5, h: 0.48 }, { w: 0.32, d: 0.66, h: 0.66 }],
+  data: { mass: [2, 2, 2, 3], legs: 2, wings: 1, speed: { walk: 0.5, run: 4 }, gait: { type: 'biped', freq: 2.2, stride: 0.12 }, grazePitch: 1.3,
+    herd: 'a flock of 5 to 20 about a farmyard, with one cock', fleeDistance: 2, aggression: 0.05,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'GRAZE', 'GRAZE', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const v = A.variant, cock = v === 3, K = (cock ? 1.12 : 1) * A.S;
+    const base = [0xf0ece0, 0xa05a30, 0x5a4030, 0xa05a30][v], hackle = cock ? 0xd89040 : base, red = 0xc23a2a, yel = 0xd8b040;
+    const coat = (x, y, z) => v === 2 ? faFmMix(base, 0x8a6a48, faNoise(x * 60, y * 60, z * 60) > 0.6 ? 0.6 : 0) : base;
+    faFmBird(A, { K: K, coat: coat,
+      body: [[0, .25, -.01, .11, .1, .155, 0.28], [0, .23, .07, .095, .095, .09]],
+      neckPivot: [0, .24, .06],
+      neck: { pts: [[0, .27, .08], [0, .34, .11], [0, .39, .13]], rad: [[.05, .055], [.04, .042], [.033, .035]] }, neckCol: () => hackle,
+      head: [0, .41, .145, .033, .034, .042], headCol: () => cock ? hackle : base, eyes: [.028, .418, .158, .007], eyeCol: 0xc08020,
+      extraHead: (P) => {
+        A.cone('horn', P([0, .405, .18]), P([0, .395, .215]), .012 * K, .002 * K, yel, 6);   /* the beak */
+        const n = cock ? 6 : 4;   /* the comb and the wattles */
+        for (let k = 0; k < n; k++) { const f = k / (n - 1), hgt = (cock ? 0.03 : 0.016) * (1 - Math.abs(f - 0.4) * 0.9);
+          A.ellip('skin', 0, (.442 + hgt * 0.5) * K, (.165 - f * (cock ? .07 : .045)) * K, .005 * K, hgt * K, .01 * K, red, { seg: 6 }); }
+        for (const s of [-1, 1]) A.ellip('skin', s * .008 * K, .372 * K, .172 * K, .008 * K, (cock ? .026 : .016) * K, .011 * K, red, { seg: 6 });
+        if (cock) { const lk = []; for (let i = 0; i < 18; i++) { const a = A.rr(-1.6, 1.6); lk.push({ at: P([Math.sin(a) * .035, .37, .12 + Math.cos(a) * .03]), dir: [Math.sin(a) * 0.4, -1, -0.5], len: A.rr(0.07, 0.1) * K, w: 0.02 * K, col: hackle, curl: 0.2 }); } A.locks('hair', lk); }
+      },
+      wing: { piv: [.09, .29, .06], parts: [[.1, .25, -.02, .028, .07, .125, 0.25], [.09, .225, -.11, .02, .04, .07, 0.4, 0.1]] },
+      wingCol: (vy, vz) => cock ? (vz < -0.3 ? 0x1a2420 : faFmShade(base, 0.85)) : faFmShade(base, vy < -0.5 ? 0.78 : 0.9),
+      tailPivot: [0, .3, -.13],
+      tail: (P) => {
+        for (let k = -2; k <= 2; k++) A.ellip('coat', k * .014 * K, .36 * K, -.18 * K, .01 * K, .065 * K, .035 * K, cock ? 0x1a2420 : faFmShade(base, 0.85), { rx: -0.5, rz: k * 0.2, seg: 8 });
+        if (cock) { const lk = []; for (let k = 0; k < 7; k++) lk.push({ at: P([A.rr(-0.02, 0.02), .38, -.17]), dir: [A.rr(-0.15, 0.15), 1.2, -0.7], len: A.rr(0.22, 0.32) * K, w: 0.035 * K, col: 0x1a2420, curl: 1.5 }); A.locks('hair', lk); }
+      },
+      hip: [.045, .18, 0],
+      leg: (P, s) => {
+        A.ellip('coat', s * .05 * K, .16 * K, -.005 * K, .035 * K, .05 * K, .04 * K, faFmShade(base, 0.95), { seg: 10 });   /* the thigh */
+        A.cone('skin', P([s * .045, .125, .005]), P([s * .045, .02, .015]), .011 * K, .009 * K, yel, 6);
+        for (const dx of [-0.025, 0, 0.025]) A.cone('skin', P([s * .045, .008, .015]), P([s * .045 + dx, .006, .075]), .007 * K, .003 * K, yel, 5);
+        A.cone('skin', P([s * .045, .008, .015]), P([s * .045, .006, -.03]), .006 * K, .003 * K, yel, 5);
+        if (cock) A.cone('horn', P([s * .045, .05, .0]), P([s * .045, .045, -.03]), .006 * K, .001 * K, 0xc8b890, 4);   /* the spur */
+      } });
+    A.anchor('roost', [0, 0.01, 0]);
+  }
+});
+
+/* ======================================================================
+   DUCK: the Reed Lake people's ducks on every island (75-rl-helpers hnRLBeast 'duck': a ball body, a ball head, an orange
+   cone bill; white, brown, dun), and Mungo's duck run (its reed village is the Reed Lake kit's).
+   ====================================================================== */
+ANIMAL({
+  key: 'duck', name: 'Duck', group: 'farm',
+  tags: { biomes: ['eastabyss'], koppen: ['Am', 'Aw', 'Af'], aridity: ['subhumid', 'humid'], climate: ['hypertropic', 'tropic'], riparian: 'riparian', abyssal: true,
+    domestic: true, herdedBy: ['lake-people'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['ground', 'water', 'shallows', 'marsh', 'pen'], locomotion: ['walks', 'swims', 'flies'] },
+  size: { length: 0.52, height: 0.44, span: 0.85 },
+  source: [{ build: 'settlements/reedlake', file: 'src/75-rl-helpers.js', lines: '212-216', note: 'hnRLBeast duck: by the lake people\'s houses and island farms (76-rl-dwell 15, 27, 54, 79; 77-rl-village 24; 78-rl-work 48; 79-rl-farm 18, 53)' },
+    { build: 'settlements/mungo', file: 'src/reed/90-mungo-reed-glue.js', lines: '43', note: 'ducks on the water round Mungo\'s floating reed village and its fish weir and duck run (the Reed Lake kit run inside the page)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 1.8, note: 'dressed; smoked over the reed fires' }, eggs: { amount: 150, note: 'laid in the reed nests on the islands' },
+    feathers: { amount: 0.15, note: 'the down: quilts against the lake\'s night damp' } },
+  life: { maturity: 0.6, lifespan: 10, litter: 10, gestation: 28, note: 'litter: a clutch; gestation: the days on the eggs' },
+  variants: 3, variantNames: ['white', 'brown', 'dun'],
+  w: 0.28, d: 0.58, h: 0.45,
+  data: { mass: 2.6, legs: 2, wings: 1, speed: { walk: 0.4, run: 2.5 }, gait: { type: 'biped', freq: 2.0, stride: 0.1 }, grazePitch: 1.2,
+    swim: { freq: 0.8, amp: 0.15 }, herd: 'a dozen to an island, driven out onto the water by day', fleeDistance: 3, aggression: 0.02,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'GRAZE', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'REST', 'REST', 'SWIM', 'SWIM', 'SWIM', 'SWIM', 'GRAZE', 'GRAZE', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const v = A.variant, K = A.S, base = [0xf0ece0, 0x6a5a44, 0x9a8a70][v], belly = [0xe8e0d0, 0x8a7a60, 0xb8a888][v], orange = 0xd88a2a;
+    const coat = (x, y, z) => y < 0.2 * K ? belly : v === 1 ? faFmMix(base, 0x4a3e30, faNoise(x * 50, y * 50, z * 50) > 0.6 ? 0.7 : 0) : base;
+    faFmBird(A, { K: K, coat: coat,
+      body: [[0, .22, -.01, .11, .095, .2, 0.05], [0, .21, .09, .095, .09, .1]],
+      neckPivot: [0, .23, .12],
+      neck: { pts: [[0, .26, .13], [0, .32, .16], [0, .37, .17]], rad: [[.048, .05], [.036, .038], [.032, .034]] },
+      head: [0, .39, .18, .042, .042, .052], headCol: v === 1 ? () => 0x5a4a38 : null, eyes: [.034, .4, .195, .007],
+      extraHead: (P) => {
+        faFmTube(A, 'skin', [P([0, .385, .215]), P([0, .378, .25]), P([0, .372, .278])], [[.024 * K, .012 * K], [.026 * K, .008 * K], [.022 * K, .006 * K]], 5, 8, () => orange, true);   /* the bill */
+      },
+      wing: { piv: [.09, .25, .08], parts: [[.095, .24, -.03, .028, .06, .14, 0.1]] },
+      wingCol: (vy, vz) => v === 1 && vz < -0.1 && vz > -0.55 && vy < -0.2 ? 0x3a4a8a : faFmShade(base, vy < -0.4 ? 0.85 : 0.95),
+      tailPivot: [0, .24, -.18],
+      tail: (P) => { A.ellip('coat', 0, .26 * K, -.225 * K, .05 * K, .025 * K, .065 * K, faFmShade(base, 0.9), { rx: -0.4, seg: 10 }); },
+      hip: [.05, .15, -.05],
+      leg: (P, s) => {
+        A.ellip('coat', s * .055 * K, .15 * K, -.05 * K, .03 * K, .035 * K, .035 * K, belly, { seg: 8 });   /* the thigh, under the flank feathers */
+        A.cone('skin', P([s * .05, .13, -.045]), P([s * .05, .02, -.02]), .011 * K, .01 * K, orange, 6);
+        A.ellip('skin', s * .05 * K, .009 * K, .015 * K, .032 * K, .008 * K, .042 * K, orange, { seg: 8 });   /* the webbed foot */
+      } });
+    A.anchor('roost', [0, 0.01, 0]);
+  }
+});
+
+/* ======================================================================
+   DALAB LIZARD: the fat-bodied, banded ground lizard the Dalab farms keep for meat and hide, 2.4 m nose to tail
+   (69e-dalab-helpers DFAUNA 'lizard': a squat ellipsoid body with four cross bands on the back, a two-cone tail, a
+   round head, splayed box legs on flat feet, a crest of spines on a bull). The ranch's paddocks hold the meat herds
+   (74-dalab-ranch); the travellers' inn tethers bigger, rust-brown riding lizards in its stalls (71c-dalab-town).
+   ====================================================================== */
+/* t from the tail tip (0) to the snout (1): [t, z, y of the centre line, half-width, half-height] */
+const FA_FM_LIZ = [[0, -1.45, .16, .012, .012], [.14, -1.1, .2, .06, .06], [.28, -.72, .26, .14, .13], [.4, -.42, .33, .3, .24], [.52, -.08, .38, .44, .31],
+  [.64, .28, .38, .42, .3], [.72, .52, .38, .3, .23], [.78, .66, .38, .22, .17], [.84, .78, .4, .24, .18], [.92, .98, .38, .21, .14], [1, 1.12, .34, .09, .06]];
+const FA_FM_LIZ_TAIL = 0.4, FA_FM_LIZ_HEAD = 0.76;
+function faFmLizKey(t, i) {
+  for (let k = 0; k < FA_FM_LIZ.length - 1; k++) { const a = FA_FM_LIZ[k], b = FA_FM_LIZ[k + 1];
+    if (t <= b[0]) { const f = (t - a[0]) / (b[0] - a[0]), e = f * f * (3 - 2 * f); return a[i] + (b[i] - a[i]) * (i >= 3 ? e : f); } }
+  return FA_FM_LIZ[FA_FM_LIZ.length - 1][i];
+}
+/* t at a given z along the body (the table's z rises with t) */
+function faFmLizT(z) { for (let k = 0; k < FA_FM_LIZ.length - 1; k++) { const a = FA_FM_LIZ[k], b = FA_FM_LIZ[k + 1]; if (z <= b[1]) return a[0] + (b[0] - a[0]) * Math.max(0, (z - a[1]) / (b[1] - a[1])); } return 1; }
+ANIMAL({
+  key: 'dalab-lizard', name: 'Dalab lizard', group: 'farm',
+  tags: { biomes: ['swlowlands'], koppen: ['Cfa', 'Csa'], aridity: ['semiarid', 'subhumid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['dalab'], diet: 'herbivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 2.55, height: 0.72 },
+  source: [{ build: 'settlements/dalab', file: 'src/69e-dalab-helpers.js', lines: '222-238', note: 'DFAUNA lizard: the ranch\'s paddocks and herds (74-dalab-ranch 9, 23, 29, 36), and the riding lizards tethered in the travellers\' inn stalls (71c-dalab-town 104-106, scale 1.1-1.5)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: true, eggs: true },
+  yields: { meat: { amount: 90, note: 'a meat cow dressed: the lowlands\' common meat' }, eggs: { amount: 24, note: 'one clutch a year, gathered from the paddock nests: a market food' },
+    hide: { amount: 1, hideM2: 2.6, note: 'banded lizard leather: the Dalab boots, belts and saddlery' } },
+  life: { maturity: 2, lifespan: 25, litter: 18, gestation: 70, note: 'litter: a clutch; gestation: the days to hatching; a product of the genepriests\' breeding program (Daranch)' },
+  variants: 4, variantNames: ['cow, olive with ochre bands', 'bull, crested, red bands', 'cow, khaki with teal bands', 'riding lizard, rust-brown'],
+  breeds: { meat: { scale: 1, mass: 240, role: 'the ranch\'s meat herd' }, riding: { scale: 1.3, mass: 520, role: 'the inn\'s riding and pack lizard' } },
+  w: 1.45, d: 2.6, h: 0.75,
+  variantDims: [{ w: 1.45, d: 2.6, h: 0.75 }, { w: 1.45, d: 2.6, h: 0.95 }, { w: 1.45, d: 2.6, h: 0.75 }, { w: 1.45, d: 2.6, h: 0.75 }],
+  data: { mass: 240, legs: 4, speed: { walk: 1.0, run: 5 }, gait: { type: 'sprawl', freq: 0.9, stride: 0.6 }, grazePitch: 0.35, sizeRange: [0.7, 1.5],
+    herd: 'a paddock of 4 to 8 with a crested bull', fleeDistance: 2, aggression: 0.1,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, S = A.S, hide = [0x6a8a3a, 0x7a9a44, 0x9a8a4a, 0x8a4a2a][v], band = [0xd8a838, 0xa8382a, 0x3f9a88, 0xd8a838][v], belly = faFmMix(hide, 0xd8d0a0, 0.45);
+    const BANDS = [-0.37, -0.12, 0.12, 0.37];
+    const skin = (t, a) => { const z = faFmLizKey(t, 1), top = Math.cos(a);
+      if (top < -0.55) return belly;
+      if (top > 0.25 && BANDS.some(b => Math.abs(z - b) < 0.05)) return band;
+      return faFmMix(hide, faFmShade(hide, 0.7), faNoise(t * 40, a * 3, 2.3) * 0.5); };
+    const span = (t0, t1) => [t => { const tt = t0 + (t1 - t0) * t; return [0, faFmLizKey(tt, 2) * S, faFmLizKey(tt, 1) * S]; }, t => { const tt = t0 + (t1 - t0) * t; return [faFmLizKey(tt, 3) * S, faFmLizKey(tt, 4) * S]; }];
+    const at = t => [0, faFmLizKey(t, 2) * S, faFmLizKey(t, 1) * S];
+    { const [c, r] = span(FA_FM_LIZ_TAIL - 0.02, FA_FM_LIZ_HEAD + 0.02); A.tube('skin', c, r, 18, 16, null, { colf: (t, a) => skin(FA_FM_LIZ_TAIL - 0.02 + (FA_FM_LIZ_HEAD - FA_FM_LIZ_TAIL + 0.04) * t, a) }); }
+    if (v === 1) for (let k = 0; k < 5; k++) { const z = 0.55 - k * 0.125, tz = faFmLizT(z), y = (faFmLizKey(tz, 2) + faFmLizKey(tz, 4)) * S;   /* the bull's crest of spines */
+      A.cone('horn', [0, y - 0.04 * S, z * S], [0, y + 0.2 * S * (1 - Math.abs(k - 2) * 0.15), (z - 0.05) * S], 0.04 * S, 0.004 * S, band, 6); }
+    A.part('tail', at(FA_FM_LIZ_TAIL), () => { const [c, r] = span(0, FA_FM_LIZ_TAIL + 0.02); A.tube('skin', c, r, 14, 12, null, { caps: false, colf: (t, a) => skin(t * (FA_FM_LIZ_TAIL + 0.02), a) }); });
+    A.part('head', at(FA_FM_LIZ_HEAD), () => {
+      const [c, r] = span(FA_FM_LIZ_HEAD, 1); A.tube('skin', c, r, 10, 14, null, { caps: false, colf: (t, a) => skin(FA_FM_LIZ_HEAD + (1 - FA_FM_LIZ_HEAD) * t, a) });
+      faFmEnd(A, 'skin', c(1), c(0.95), r(1), hide);
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.17 * S, 0.46 * S, 0.93 * S, 0.045 * S, 0.04 * S, 0.045 * S, 0x1a1a10, { seg: 8 });
+        A.ellip('eye', s * 0.195 * S, 0.47 * S, 0.94 * S, 0.02 * S, 0.02 * S, 0.02 * S, 0xb89040, { seg: 6 });
+        const L = [[s * 0.2, -0.03, 0.82], [s * 0.19, -0.04, 0.98], [s * 0.09, -0.045, 1.1], [0, -0.045, 1.13]].map(q => [q[0] * S, (0.38 + q[1]) * S, q[2] * S]);
+        for (let i = 0; i < L.length - 1; i++) A.cone('mouth', L[i], L[i + 1], 0.01 * S, 0.01 * S, 0x2a1a10, 5);
+        A.ellip('mouth', s * 0.04 * S, 0.385 * S, 1.11 * S, 0.01 * S, 0.008 * S, 0.006 * S, 0x0c0a08, { seg: 6 });
+      }
+    });
+    /* the legs: splayed, each about its shoulder or hip: the upper limb out to the elbow or knee, the forearm down to a
+       flat five-toed foot */
+    const LEGS = [[0.43, 1, 1, 0], [0.43, 1, -1, 1], [-0.43, 0, 1, 2], [-0.43, 0, -1, 3]];
+    for (const [z, front, s, i] of LEGS) {
+      const b = [s * 0.3 * S, 0.32 * S, z * S];
+      A.part('leg' + i, b, () => {
+        const kn = [s * 0.58 * S, 0.3 * S, (z + (front ? 0.05 : -0.08)) * S], ft = [s * 0.64 * S, 0.035 * S, (z + (front ? 0.14 : 0.02)) * S];
+        const lerp3 = (p, q) => t => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t];
+        A.tube('skin', lerp3(b, kn), t => [(0.13 - 0.05 * t) * S, (0.12 - 0.04 * t) * S], 4, 10, null, { colf: (t, a) => Math.cos(a) < -0.5 ? belly : hide });
+        A.ellip('skin', kn[0], kn[1], kn[2], 0.085 * S, 0.085 * S, 0.085 * S, hide, { seg: 10 });
+        A.tube('skin', lerp3(kn, ft), t => [(0.08 - 0.02 * t) * S, (0.08 - 0.025 * t) * S], 4, 8, null, { caps: false, colf: () => hide });
+        A.ellip('skin', ft[0], ft[1], ft[2] + 0.04 * S, 0.11 * S, 0.035 * S, 0.13 * S, faFmShade(hide, 0.85), { seg: 10 });
+        for (let k = 0; k < 5; k++) { const a = (k - 2) * 0.36 + s * 0.15;
+          A.cone('skin', [ft[0], ft[1] - 0.01 * S, ft[2] + 0.06 * S], [ft[0] + Math.sin(a) * 0.15 * S, ft[1] - 0.02 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.15 * S], 0.025 * S, 0.008 * S, faFmShade(hide, 0.8), 5);
+          A.cone('horn', [ft[0] + Math.sin(a) * 0.14 * S, ft[1] - 0.02 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.14 * S], [ft[0] + Math.sin(a) * 0.19 * S, ft[1] - 0.025 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.19 * S], 0.008 * S, 0.002 * S, 0x2a2418, 4); }
+      });
+    }
+    A.profile(t => ({ z: faFmLizKey(t, 1) * S, y: faFmLizKey(t, 2) * S, hw: faFmLizKey(t, 3) * S, hh: faFmLizKey(t, 4) * S }));
+    A.anchor('saddle', [0, (0.38 + 0.31) * S, 0.0]); A.anchor('bridle', [0, 0.4 * S, 0.95 * S]); A.anchor('pack', [0, 0.69 * S, -0.1 * S]);
+    A.anchor('tailRoot', at(FA_FM_LIZ_TAIL)); A.anchor('headRoot', at(FA_FM_LIZ_HEAD));
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-flyers.js ---- */
+/* ======================================================================
+   Krator Fauna: flyers (kits/fauna/krator-fauna-flyers.js)
+   The riding flyers of the Beast Riders (LORE 6.6: the Quetzal, Wingclaw, Dragonfly and Nightwing tribes): the
+   quetzalcoatlus, the giant bat, the giant archaeopteryx and the giant dragonfly. Ported from Mav's Refuge and Girder
+   (src/84-flyers.js, "the models"): the same points, proportions and palette, in metres (the originals were already).
+
+   The originals were one merged mesh each, posed in a vertex shader by a small skeleton (FLY bones: pivot, axis,
+   parent; flyFold, the perched angles). Here the same skeleton poses the points at BUILD time (faFlRig): the default
+   build is perched (pose 'perch' or anything but 'fly'), A.pose 'fly' builds the rest pose of the original, wings spread
+   flat and legs trailing, for a host that flies the animal. The fauna runtime only turns parts, so a perched build
+   flaps its folded wings in mode 'fly' (data.flap.fold is 0: the fold is in the geometry); build pose 'fly' to fly one.
+   Perched stances: the quetzalcoatlus stands as azhdarchids did, on its hind feet and the hands of its folded wings;
+   the bat stands on its wrists and feet with the fingers folded back along the forearm (the original hung it from a
+   perch beam); the archaeopteryx stands on its feet, wings folded back along its flanks; the dragonfly rests on its
+   six legs with its wings flat.
+   ====================================================================== */
+function faFlRot(q, a, th) {   /* q turned about the unit axis a by th (right hand, Rodrigues) */
+  if (!th) return [q[0], q[1], q[2]];
+  const c = Math.cos(th), s = Math.sin(th), d = a[0] * q[0] + a[1] * q[1] + a[2] * q[2];
+  return [q[0] * c + (a[1] * q[2] - a[2] * q[1]) * s + a[0] * d * (1 - c), q[1] * c + (a[2] * q[0] - a[0] * q[2]) * s + a[1] * d * (1 - c),
+    q[2] * c + (a[0] * q[1] - a[1] * q[0]) * s + a[2] * d * (1 - c)];
+}
+const faFlAdd = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], faFlSub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]],
+  faFlMul = (a, k) => [a[0] * k, a[1] * k, a[2] * k], faFlLerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t],
+  faFlCross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]],
+  faFlLen = a => Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]),
+  faFlNorm = a => { const l = faFlLen(a); return l > 1e-9 ? [a[0] / l, a[1] / l, a[2] / l] : null; };
+/* the original's shade(): toward white (f > 0) or toward a warm black (f < 0), in sRGB */
+function faFlShade(hex, f) {
+  const c = new THREE.Color(hex);
+  if (f >= 0) c.lerp(new THREE.Color(0xffffff), f); else c.lerp(new THREE.Color(0x120f0a), -f);
+  return c.getHex();
+}
+/* the skeleton of an original (bones [{p, a, par}], one angle per bone), then the animal's own placing: pitched nose-up
+   by `pitch` about the shoulders (the original's perchPitch), lifted by stand, slid back by z0 (origin under the body).
+   R.P(p, bone, side) poses a LEFT-side point and mirrors it for side -1 (the original's mirrored bones do the same). */
+function faFlRig(bones, F, pitch) {
+  const R = { stand: 0, z0: 0 };
+  const pose = (p, b) => {
+    let q = [p[0], p[1], p[2]];
+    while (b != null && b >= 0) { const B = bones[b], v = faFlRot(faFlSub(q, B.p), B.a, F[b] || 0); q = faFlAdd(B.p, v); b = B.par; }
+    return q;
+  };
+  R.raw = (p, b) => faFlRot(pose(p, b), [1, 0, 0], -pitch);
+  R.P = (p, b, s) => { const q = R.raw(p, b); return [q[0] * (s || 1), q[1] + R.stand, q[2] - R.z0]; };
+  return R;
+}
+/* a membrane or feather vane: the polygon fanned from its first point, as two sheets a hair apart facing away from each
+   other (the families' materials are one-sided; hair is double-sided but carries the hair grain) */
+function faFlFan(A, fam, pts, col, col2, off) {
+  off = off == null ? 0.006 : off; const p0 = pts[0];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1], n = faFlNorm(faFlCross(faFlSub(a, p0), faFlSub(b, p0)));
+    if (!n) continue;
+    for (const sd of [1, -1]) {   /* sd 1: the face toward +n, laid a hair toward +n */
+      const o = faFlMul(n, off * sd), q0 = faFlAdd(p0, o), qa = faFlAdd(a, o), qb = faFlAdd(b, o);
+      A.sheet(fam, (u, v) => { const w = sd > 0 ? 1 - v : v, e = faFlLerp(qa, qb, w); return faFlLerp(q0, e, u); }, 1, 1, sd > 0 ? col : (col2 == null ? col : col2));
+    }
+  }
+}
+function faFlRod(A, fam, a, b, r0, r1, col, seg) { A.cone(fam, a, b, r0, r1, col, seg || 6); }
+
+/* ================================================================ QUETZALCOATLUS: span 12 m
+   The original (84-flyers.js, "QUETZALCOATLUS"): bones neck, headP, headY, wing sweep, flap, twist at the shoulder S,
+   outer sweep and flap at the wrist W, the legs at the hip H. Perched: the original's fold (neck up, head down, the
+   arm down, the wing finger folded back up at the wrist) with the arm swung on down to the ground and the pitch eased
+   from 0.35 to 0.15, so it stands on its feet and the three small fingers of each hand; the hand membrane is furled
+   toward the wing finger. */
+const FA_FL_Q = (function () {
+  const X = [1, 0, 0], Y = [0, 1, 0], Z = [0, 0, 1], NK = [0, 0.12, 0.5], HD = [0, 0.30, 3.3], S = [0.35, 0.10, 0.25], W = [2.55, 0.10, 0.80], H = [0.22, -0.15, -1.05];
+  return { NK: NK, HD: HD, S: S, W: W, H: H,
+    bones: [{ p: NK, a: X, par: -1 }, { p: HD, a: X, par: 0 }, { p: HD, a: Y, par: 1 }, { p: S, a: Y, par: -1 }, { p: S, a: Z, par: 3 }, { p: S, a: X, par: 4 },
+      { p: W, a: Y, par: 5 }, { p: W, a: Z, par: 6 }, { p: H, a: X, par: -1 }],
+    /*                 neck  headP headY wSw  wFlap wTw  oSw  oFlap leg */
+    perch: { F: [-0.85, 1.05, 0, 0.30, -1.50, -0.30, -0.20, 2.60, -1.00], pitch: 0.15 },
+    fly: { F: [0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0, stand: 1.6 } };
+})();
+ANIMAL({
+  key: 'quetzalcoatlus', name: 'Quetzalcoatlus', group: 'flyers',
+  tags: { biomes: ['hyperjungle'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'both', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders'], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['sky', 'canopy', 'ground', 'shallows'], locomotion: ['flies', 'glides', 'walks'] },
+  size: { length: 7.5, height: 5.6, span: 12 },
+  source: [{ build: 'settlements/mavs-refuge', file: 'src/84-flyers.js', lines: '129-162, 335-340', note: 'first drawn here (FLY_Q): the Quetzal tribe\'s mount, kept in the Rookery and the hold roosts; ridden on circuits and patrols, roost traffic in the hypertrees' },
+    { build: 'settlements/girder', file: 'src/84-flyers.js', lines: '133-167, 349-354', note: 'the same model ported 2026-10-01 (plus the detail-atlas slots): 68 roost stalls on the four tower roof decks' },
+    { build: 'kits/ringsea', file: 'src/75-rs-beast-rookery.js', lines: '12-19, 38-39', note: 'rsFlyer, "a great crested flyer" (10 m span, long beak, red crest): a teal-green stand-in for this animal on the Rookery Raft, three folded on the roost tower and one with wings open' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: false, eggs: false },
+  yields: { meat: { amount: 90, note: 'dressed; the riders never eat a flyer, the jungle\'s other peoples do' },
+    hide: { amount: 1, hideM2: 7, note: 'the wing membranes, tanned thin: kite and drum skins' },
+    horn: { amount: 4, note: 'the beak sheath and crest' },
+    eggs: { amount: 2, note: 'a clutch of two a year, laid, not eaten: the rookeries hatch every egg' } },
+  life: { maturity: 6, lifespan: 45, litter: 2, gestation: 80, note: 'eggs (gestation: days of incubation); a chick is ridden from its sixth year' },
+  poses: ['perch', 'fly'],
+  w: 3.0, d: 6.3, h: 5.8,
+  data: { mass: 280, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.6, run: 4, fly: [18, 24] }, gait: { type: 'flyer', freq: 0.8, stride: 1.4 },
+    flap: { freq: 0.7, amp: 0.62, glide: 0.6, fold: 0 }, grazePitch: 1.0,
+    herd: 'a pair in the wild; a rookery keeps 20 to 70 in stalls', fleeDistance: 12, aggression: 0.35,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'FLY', 'HUNT', 'PATROL', 'FLY', 'REST', 'REST', 'REST', 'PATROL', 'FLY', 'HUNT', 'FLY', 'IDLE', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const Q = FA_FL_Q, fly = A.pose === 'fly', pz = fly ? Q.fly : Q.perch, F = pz.F, R = faFlRig(Q.bones, F, pz.pitch);
+    R.stand = fly ? pz.stand : 0.16 - R.raw([0.27, -0.20, -2.92], 8)[1];
+    R.z0 = R.raw([0, -0.05, -0.35], -1)[2];
+    const P = R.P, C = [0xc8b48a, 0x8a5a3a, 0xd86a3a], body = C[0], belly = faFlShade(C[0], 0.25), dark = faFlShade(C[0], -0.35),
+      mem = C[1], mem2 = faFlShade(C[1], -0.18), crest = C[2], beak = faFlShade(C[0], 0.35), eye = 0x181410;
+    /* ---- the body: a fuzzed barrel, its belly paler */
+    const bc = P([0, -0.05, -0.35], -1);
+    A.ellip('coat', bc[0], bc[1], bc[2], 0.42, 0.40, 0.98, null, { rx: -pz.pitch, seg: 16, colf: (x, y) => y < -0.12 ? belly : body });
+    A.part('tail', P([0, -0.05, -1.25], -1), () => faFlRod(A, 'coat', P([0, -0.05, -1.25], -1), P([0, -0.02, -1.75], -1), 0.12, 0.01, body, 8));
+    /* ---- the head with its long neck, the dagger beak and the crest */
+    const hx = F[0] + F[1] - pz.pitch;
+    A.part('head', P(Q.NK, 0), () => {
+      A.tube('coat', t => P(faFlLerp([0, 0.12, 0.40], [0, 0.30, 3.32], t), 0), t => { const r = 0.21 - 0.08 * t; return [r, r * 1.05]; }, 6, 10, body);
+      const hc = P([0, 0.37, 3.62], 2);
+      A.ellip('coat', hc[0], hc[1], hc[2], 0.17, 0.21, 0.45, body, { rx: hx, seg: 12 });
+      faFlRod(A, 'horn', P([0, 0.40, 3.90], 2), P([0, 0.30, 5.75], 2), 0.15, 0.005, beak, 8);
+      faFlFan(A, 'skin', [[0, 0.52, 3.35], [0, 1.12, 3.05], [0, 1.00, 3.80], [0, 0.56, 4.15]].map(p => P(p, 2)), crest, crest, 0.012);
+      for (const s of [1, -1]) { const e = P([0.15, 0.42, 3.72], 2, s); A.ellip('eye', e[0], e[1], e[2], 0.035, 0.035, 0.05, eye, { rx: hx, seg: 8 }); }
+    });
+    A.part('jaw', P([0, 0.26, 3.70], 2), () => faFlRod(A, 'horn', P([0, 0.24, 3.85], 2), P([0, 0.24, 5.55], 2), 0.09, 0.005, beak, 7));
+    /* ---- the wings: the arm (humerus to the hand) with the brachial membrane, then the great wing finger */
+    const tipLine = [Q.W, [6.0, 0.10, -0.50]];
+    const furl = p => {   /* perched: the hand membrane drawn in toward the wing finger */
+      if (fly) return p;
+      const d = faFlNorm(faFlSub(tipLine[1], tipLine[0])), q = faFlSub(p, tipLine[0]), k = q[0] * d[0] + q[1] * d[1] + q[2] * d[2], f = faFlAdd(tipLine[0], faFlMul(d, k));
+      return faFlAdd(f, faFlMul(faFlSub(p, f), 0.32));
+    };
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(Q.S, 5, s), () => {
+      const Wp = P(Q.W, 5, s);
+      faFlRod(A, 'coat', P(Q.S, 5, s), Wp, 0.13, 0.085, body, 8);
+      /* the brachial membrane; perched, its body edge stays on the flank and its trailing edge is furled to the arm */
+      const arm = p => { if (fly) return P(p, 5, s); const d = faFlNorm(faFlSub(Q.W, Q.S)), q = faFlSub(p, Q.S), k = q[0] * d[0] + q[1] * d[1] + q[2] * d[2], f = faFlAdd(Q.S, faFlMul(d, k));
+        return P(faFlAdd(f, faFlMul(faFlSub(p, f), 0.3)), 5, s); };
+      faFlFan(A, 'skin', [fly ? P([0.35, 0.06, 0.30], 5, s) : P([0.33, 0.0, 0.25], -1, s), Wp, arm([2.62, 0.06, -0.78]), arm([1.55, 0.06, -0.95]),
+        fly ? P([0.30, 0.02, -1.25], 5, s) : P([0.30, -0.12, -1.15], -1, s)], mem, mem2);
+      faFlFan(A, 'skin', [[0.35, 0.06, 0.30], [0.25, 0.10, 0.65], Q.W].map(p => P(p, 5, s)), mem2, mem2);
+      /* the hand: three small clawed fingers (on the ground when perched) */
+      if (fly) for (const c of [[2.62, 0.10, 1.12], [2.80, 0.10, 0.78], [2.72, 0.10, 0.95]]) faFlRod(A, 'horn', Wp, P(c, 5, s), 0.035, 0.008, dark, 5);
+      else for (const o of [[-0.06, 0.30], [0.05, 0.27], [0.14, 0.18]]) faFlRod(A, 'horn', Wp, [Wp[0] + s * o[0], 0.02, Wp[2] + o[1]], 0.04, 0.012, dark, 5);
+      faFlRod(A, 'coat', P(Q.W, 7, s), P(tipLine[1], 7, s), 0.075, 0.015, body, 7);
+      faFlFan(A, 'skin', [Q.W, [4.3, 0.07, 0.18], [4.75, 0.06, -0.72], [3.60, 0.06, -0.88], [2.62, 0.06, -0.78]].map(p => P(furl(p), 7, s)), mem, mem2);
+      faFlFan(A, 'skin', [[4.3, 0.07, 0.18], tipLine[1], [4.75, 0.06, -0.72]].map(p => P(furl(p), 7, s)), mem2, mem2);
+    });
+    /* ---- the legs: thigh and shank on one bone; the foot flat on the ground when perched */
+    for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', P(Q.H, 8, s), () => {
+      const kn = P([0.27, -0.18, -2.05], 8, s), an = P([0.27, -0.20, -2.92], 8, s);
+      faFlRod(A, 'coat', P(Q.H, 8, s), kn, 0.12, 0.07, body, 8);
+      faFlRod(A, 'skin', kn, an, 0.07, 0.04, dark, 7);
+      if (fly) faFlRod(A, 'skin', an, P([0.27, -0.12, -3.3], 8, s), 0.05, 0.01, dark, 5);
+      else { faFlRod(A, 'skin', an, [an[0], 0.03, an[2] - 0.05], 0.045, 0.04, dark, 6);
+        for (const o of [[-0.08, 0.32], [0, 0.38], [0.08, 0.32]]) faFlRod(A, 'horn', [an[0], 0.04, an[2] - 0.02], [an[0] + s * o[0], 0.015, an[2] + o[1]], 0.035, 0.01, dark, 5); }
+    });
+    A.anchor('saddle', P([0, 0.40, 0.10], -1)); A.anchor('bridle', P([0, 0.30, 3.3], 0));
+  }
+});
+
+/* ================================================================ GIANT BAT: span 9 m
+   The original ("GIANT BAT"): the arm in three (humerus S-E, forearm E-W, the three long fingers at the wrist W), the
+   leg at H, ears on the head. Flight (pose 'fly'): the original's rest pose. Perched: the original hung it from a beam
+   (perchPitch -90 degrees); here it stands as a bat crawls, on its wrists and feet, the elbows high, the fingers
+   folded back along the forearm and down the flank with the membrane furled between them. */
+const FA_FL_B = (function () {
+  const X = [1, 0, 0], Y = [0, 1, 0], Z = [0, 0, 1], S = [0.40, 0.10, 0.20], E = [1.50, 0.10, -0.10], W = [2.60, 0.10, 0.60], H = [0.20, -0.10, -1.0], HD = [0, 0.10, 0.65];
+  return { S: S, E: E, W: W, H: H, HD: HD, T: [[4.5, 0.10, -0.10], [3.95, 0.10, -1.35], [3.05, 0.10, -1.75]], K: [2.72, 0.06, -1.62], J: [1.40, 0.04, -1.50],
+    bones: [{ p: HD, a: X, par: -1 }, { p: HD, a: Y, par: 0 }, { p: HD, a: X, par: -1 }, { p: S, a: Y, par: -1 }, { p: S, a: Z, par: 3 }, { p: S, a: X, par: 4 },
+      { p: E, a: Z, par: 5 }, { p: W, a: Y, par: 6 }, { p: W, a: Z, par: 7 }, { p: H, a: X, par: -1 }],
+    perch: { F: [0.12, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0.30 },
+    fly: { F: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0, stand: 1.3 } };
+})();
+ANIMAL({
+  key: 'giant-bat', name: 'Giant bat', group: 'flyers',
+  tags: { biomes: ['hyperjungle'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders'], diet: 'carnivore', feeding: 'insectivore', activity: 'nocturnal', temperament: 'wary',
+    habitat: ['sky', 'canopy', 'trunks'], locomotion: ['flies', 'climbs', 'walks'] },
+  size: { length: 2.6, height: 2.2, span: 9 },
+  source: [{ build: 'settlements/mavs-refuge', file: 'src/84-flyers.js', lines: '164-199, 335-340', note: 'first drawn here (FLY_B): the Nightwing tribe\'s mount; hangs from the roost beams by day, hunts through the night on sim-time timers and comes home staggered' },
+    { build: 'settlements/girder', file: 'src/84-flyers.js', lines: '169-205, 349-354', note: 'the same model (plus the detail-atlas slots) on Girder\'s roof-deck roosts' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: false, eggs: false },
+  yields: { meat: { amount: 45, note: 'dressed; not eaten by the riders' },
+    hide: { amount: 1, hideM2: 5, note: 'the dark fur pelt with the wing membranes: night cloaks' },
+    hair: { amount: 0.4, note: 'the soft underfur, moulted at the end of the rains: felt' } },
+  life: { maturity: 3, lifespan: 30, litter: 1, gestation: 160, note: 'one pup a year, carried in flight for its first month' },
+  poses: ['perch', 'fly'],
+  w: 3.0, d: 3.4, h: 2.3,
+  data: { mass: 140, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.0, run: 2.5, fly: [12, 16] }, gait: { type: 'flyer', freq: 1.2, stride: 0.6 },
+    flap: { freq: 2.0, amp: 0.78, glide: 0.1, fold: 0 }, grazePitch: 0.5,
+    herd: 'a colony of 30 to 200 in a hollow trunk; the riders keep them on roost beams', fleeDistance: 10, aggression: 0.2,
+    schedule: ['HUNT', 'HUNT', 'FLY', 'HUNT', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'FLY', 'HUNT', 'HUNT', 'PATROL', 'HUNT', 'HUNT'] },
+  build: function (A) {
+    const B = FA_FL_B, fly = A.pose === 'fly', pz = fly ? B.fly : B.perch, F = pz.F, R = faFlRig(B.bones, F, pz.pitch);
+    R.stand = fly ? pz.stand : 0.82;
+    R.z0 = R.raw([0, 0, -0.10], -1)[2];
+    const P = R.P, C = [0x3a2e2a, 0x5a4238, 0x8a6a5a], fur = C[0], fur2 = C[1], mem = faFlShade(C[1], -0.1), mem2 = faFlShade(C[1], -0.3), bone = C[2], ear = faFlShade(C[2], -0.3), eye = 0x0c0a08;
+    /* ---- the body: the barrel and the deep chest */
+    let c = P([0, 0, -0.30], -1); A.ellip('coat', c[0], c[1], c[2], 0.45, 0.42, 0.88, fur, { rx: -pz.pitch, seg: 14 });
+    c = P([0, 0.06, 0.28], -1); A.ellip('coat', c[0], c[1], c[2], 0.54, 0.47, 0.46, fur2, { rx: -pz.pitch, seg: 14 });
+    /* ---- the head: a fox face, the ears its own parts */
+    const hx = F[0] - pz.pitch;
+    A.part('head', P(B.HD, 0), () => {
+      const h = P([0, 0.20, 0.98], 1); A.ellip('coat', h[0], h[1], h[2], 0.28, 0.27, 0.36, fur, { rx: hx, seg: 12 });
+      faFlRod(A, 'coat', P([0, 0.13, 1.20], 1), P([0, 0.10, 1.55], 1), 0.14, 0.07, fur2, 8);
+      const n = P([0, 0.11, 1.56], 1); A.ellip('skin', n[0], n[1], n[2], 0.06, 0.045, 0.03, 0x1a1412, { rx: hx, seg: 8 });
+      for (const s of [1, -1]) { const e = P([0.19, 0.25, 1.22], 1, s); A.ellip('eye', e[0], e[1], e[2], 0.04, 0.035, 0.03, eye, { rx: hx, seg: 8 }); }
+    });
+    for (const s of [1, -1]) A.part(s > 0 ? 'earL' : 'earR', P([0.2, 0.38, 0.95], 1, s), () => {
+      faFlFan(A, 'skin', [[0.10, 0.36, 0.92], [0.46, 1.12, 0.84], [0.32, 0.40, 1.10]].map(p => P(p, 1, s)), ear, faFlShade(ear, -0.3), 0.01);
+      faFlFan(A, 'coat', [[0.12, 0.36, 0.90], [0.44, 1.02, 0.82], [0.30, 0.38, 0.86]].map(p => P(p, 1, s)), fur, fur, 0.012);
+    });
+    /* ---- the wings */
+    const Ln = B.T.map(t => faFlLen(faFlSub(t, B.W)));
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(B.S, 5, s), () => {
+      const M = p => [p[0] * s, p[1], p[2]];
+      if (fly) {
+        const S = P(B.S, 5, s), E = P(B.E, 6, s), W = P(B.W, 8, s), T = B.T.map(t => P(t, 8, s)), K = P(B.K, 6, s), J = P(B.J, 5, s), F1 = P([1.9, 0.09, 0.42], 5, s);
+        faFlRod(A, 'coat', S, E, 0.11, 0.08, fur2, 7);
+        faFlFan(A, 'skin', [P([0.40, 0.06, 0.15], 5, s), E, J, P([0.30, 0.0, -1.15], 5, s)], mem, mem2);
+        faFlFan(A, 'skin', [P([0.40, 0.08, 0.30], 5, s), F1, E], mem2, mem2);
+        faFlRod(A, 'coat', E, W, 0.08, 0.06, fur2, 7);
+        faFlFan(A, 'skin', [E, W, K, J], mem, mem2);
+        faFlFan(A, 'skin', [E, F1, W], mem2, mem2);
+        faFlRod(A, 'horn', W, P([2.70, 0.13, 0.98], 8, s), 0.045, 0.01, bone, 5);
+        for (let i = 0; i < 3; i++) faFlRod(A, 'horn', W, T[i], 0.045, 0.012, bone, 5);
+        faFlFan(A, 'skin', [W, T[0], P([4.0, 0.07, -0.62], 8, s), T[1]], mem, mem2);
+        faFlFan(A, 'skin', [W, T[1], P([3.38, 0.07, -1.38], 8, s), T[2]], mem2, mem2);
+        faFlFan(A, 'skin', [W, T[2], K], mem, mem2);
+        return;
+      }
+      /* perched: the humerus up and back to a high elbow, the forearm down to the wrist on the ground, the thumb claw
+         planted; the fingers back up the forearm to the elbow, then down the flank (two straight runs each) */
+      const S = P(B.S, -1, s), E = faFlAdd(S, M(faFlMul(faFlNorm([0.42, 0.66, -0.62]), 1.14))),
+        Wt = [S[0] + s * 0.50, 0.24, S[2] + 0.42], W = faFlAdd(E, faFlMul(faFlNorm(faFlSub(Wt, E)), 1.30)),
+        up = faFlNorm(faFlSub(E, W)), Jn = [], Tp = [];
+      faFlRod(A, 'coat', S, E, 0.11, 0.08, fur2, 7);
+      faFlRod(A, 'coat', E, W, 0.08, 0.06, fur2, 7);
+      faFlRod(A, 'horn', W, [W[0] + s * 0.06, 0.015, W[2] + 0.24], 0.05, 0.012, bone, 5);
+      for (let i = 0; i < 3; i++) {
+        const d = faFlNorm(faFlAdd(up, M([0.07 + 0.035 * i, 0.0, -0.04 * i]))), j = faFlAdd(W, faFlMul(d, 0.6 * Ln[i]));
+        const e = faFlNorm(M([0.10 + 0.03 * i, -0.18 - 0.09 * i, -1])), t = faFlAdd(j, faFlMul(e, 0.4 * Ln[i]));
+        faFlRod(A, 'horn', W, j, 0.045, 0.03, bone, 5); faFlRod(A, 'horn', j, t, 0.03, 0.012, bone, 5);
+        Jn.push(j); Tp.push(t);
+      }
+      for (let i = 0; i < 2; i++) { faFlFan(A, 'skin', [W, Jn[i], Jn[i + 1]], i ? mem2 : mem, mem2); faFlFan(A, 'skin', [Jn[i], Tp[i], Tp[i + 1], Jn[i + 1]], i ? mem2 : mem, mem2); }
+      /* the furled flank membrane: from the shoulder along the arm and the last finger to the knee */
+      const kn = FA_FL_B.knee(P, s);
+      faFlFan(A, 'skin', [P([0.40, 0.04, 0.10], -1, s), E, Jn[2], Tp[2], faFlLerp(kn, P([0.36, 0.05, -0.95], -1, s), 0.6), P([0.30, 0.0, -1.0], -1, s)], mem, mem2);
+      faFlFan(A, 'skin', [P([0.40, 0.08, 0.30], -1, s), faFlLerp(S, E, 0.55), E], mem2, mem2);
+    });
+    /* ---- the legs: perched, knees up and out, the feet turned back (a bat's are) */
+    for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', P(B.H, 9, s), () => {
+      const Hp = P(B.H, 9, s);
+      if (fly) {
+        const an = P([0.32, -0.10, -1.95], 9, s);
+        faFlRod(A, 'coat', Hp, an, 0.08, 0.04, fur2, 7);
+        for (const x of [0.25, 0.32, 0.39]) faFlRod(A, 'horn', an, P([x, -0.06, -2.22], 9, s), 0.025, 0.006, bone, 4);
+        return;
+      }
+      const kn = FA_FL_B.knee(P, s), an = FA_FL_B.ankle(P, s);
+      faFlRod(A, 'coat', Hp, kn, 0.09, 0.06, fur2, 7); faFlRod(A, 'coat', kn, an, 0.06, 0.04, fur2, 7);
+      for (const x of [-0.06, 0, 0.06]) faFlRod(A, 'horn', an, [an[0] + s * x, 0.012, an[2] - 0.2], 0.03, 0.008, bone, 4);
+    });
+    /* ---- the tail membrane between the legs */
+    for (const s of [1, -1]) {
+      if (fly) faFlFan(A, 'skin', [[0, -0.04, -1.0], [0.30, 0.0, -1.15], [0.32, -0.06, -1.9], [0, -0.06, -1.55]].map(p => P(p, 9, s)), mem2, mem2);
+      else { const an = FA_FL_B.ankle(P, s), kn = FA_FL_B.knee(P, s), m = P([0, -0.06, -1.15], -1);
+        faFlFan(A, 'skin', [m, P([0.22, -0.06, -1.05], -1, s), faFlLerp(kn, an, 0.4), an, [0, an[1] + 0.22, an[2] - 0.12]], mem2, mem2); }
+    }
+    A.anchor('saddle', P([0, 0.44, -0.15], -1));
+  }
+});
+/* the perched bat's knee and ankle (shared by the leg, the flank membrane and the tail membrane) */
+FA_FL_B.knee = (P, s) => { const h = P(FA_FL_B.H, 9, s); return [h[0] + s * 0.42, h[1] + 0.12, h[2] - 0.30]; };
+FA_FL_B.ankle = (P, s) => { const k = FA_FL_B.knee(P, s); return [k[0] + s * 0.06, 0.07, k[2] - 0.32]; };
+
+/* ================================================================ GIANT ARCHAEOPTERYX: span 7 m
+   The original ("GIANT ARCHAEOPTERYX"): a feathered raptor-bird, blue with rust flight feathers and a cream belly, a
+   toothed snout and the long feathered tail of the real animal; three claws on each wing. Perched: the original's fold
+   (wings swept back along the flanks, the tail raised, pitched up 0.5), standing on bird's feet. */
+const FA_FL_A = (function () {
+  const X = [1, 0, 0], Y = [0, 1, 0], Z = [0, 0, 1], S = [0.35, 0.15, 0.20], W = [1.70, 0.15, 0.52], H = [0.22, -0.20, -0.70], NK = [0, 0.15, 0.40], HD = [0, 0.58, 1.15], TL = [0, 0.0, -1.15];
+  return { S: S, W: W, H: H, NK: NK, HD: HD, TL: TL,
+    bones: [{ p: NK, a: X, par: -1 }, { p: HD, a: Y, par: 10 }, { p: TL, a: X, par: -1 }, { p: S, a: Y, par: -1 }, { p: S, a: Z, par: 3 }, { p: S, a: X, par: 4 },
+      { p: W, a: Y, par: 5 }, { p: W, a: Z, par: 6 }, { p: H, a: X, par: -1 }, { p: TL, a: Y, par: 2 }, { p: HD, a: X, par: 0 }],
+    /* bone 10 (not in the original): the head pitched down on the neck when perched, so the snout looks ahead, not up
+                       neck headY tailP wSw  wFlap  wTw  oSw   oFlap leg   tailY */
+    perch: { F: [-0.35, 0, 0.30, 1.25, -0.38, 0.15, 0.22, 0.10, -1.07, 0, 0.60], pitch: 0.50 },
+    fly: { F: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pitch: 0, stand: 1.2 } };
+})();
+ANIMAL({
+  key: 'giant-archaeopteryx', name: 'Giant archaeopteryx', group: 'flyers',
+  tags: { biomes: ['hyperjungle'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'both', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders'], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'aggressive',
+    habitat: ['sky', 'canopy', 'trunks', 'ground'], locomotion: ['flies', 'glides', 'climbs', 'walks', 'runs'] },
+  size: { length: 7.5, height: 3.7, span: 7 },
+  source: [{ build: 'settlements/mavs-refuge', file: 'src/84-flyers.js', lines: '201-246, 335-340', note: 'first drawn here (FLY_A): the Wingclaw tribe\'s mount; roost traffic and Rookery training circuits' },
+    { build: 'settlements/girder', file: 'src/84-flyers.js', lines: '207-249, 349-354', note: 'the same model (plus the detail-atlas slots: feathers, scaled skin) on Girder\'s roof-deck roosts' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: false, eggs: false },
+  yields: { meat: { amount: 55, note: 'dressed; not eaten by the riders' },
+    hide: { amount: 1, hideM2: 2.5, note: 'the scaled leg and snout skin is the only leather' },
+    feathers: { amount: 1.6, note: 'the moult of flight and tail feathers: fletching, the riders\' plumes (library card.feather.archae)' },
+    eggs: { amount: 3, note: 'a clutch of three a year, hatched in the rookeries, not eaten' } },
+  life: { maturity: 3, lifespan: 22, litter: 3, gestation: 50, note: 'eggs (gestation: days of incubation)' },
+  poses: ['perch', 'fly'],
+  w: 2.9, d: 6.7, h: 3.8,
+  data: { mass: 160, legs: 2, wings: 1, budget: 9000, speed: { walk: 1.5, run: 7, fly: [14, 20] }, gait: { type: 'flyer', freq: 1.2, stride: 0.9 },
+    flap: { freq: 1.4, amp: 0.8, glide: 0.35, fold: 0 }, grazePitch: 0.85,
+    herd: 'alone or a mated pair; the rookeries keep them in single stalls, apart', fleeDistance: 6, aggression: 0.55,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'HUNT', 'FLY', 'PATROL', 'HUNT', 'REST', 'REST', 'IDLE', 'PATROL', 'FLY', 'HUNT', 'HUNT', 'IDLE', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const Q = FA_FL_A, fly = A.pose === 'fly', pz = fly ? Q.fly : Q.perch, F = pz.F, R = faFlRig(Q.bones, F, pz.pitch);
+    R.stand = fly ? pz.stand : 0.12 - R.raw([0.26, -0.30, -2.20], 8)[1];
+    R.z0 = R.raw([0, 0, -0.80], -1)[2];
+    const P = R.P, C = [0x2a4a7a, 0xb8683e, 0xe8d8a0], blue = C[0], blue2 = faFlShade(C[0], 0.22), rust = C[1], rust2 = faFlShade(C[1], -0.22), cream = C[2],
+      eye = 0x100c08, skin = faFlShade(C[2], -0.35);
+    const bc = P([0, 0, -0.35], -1);
+    A.ellip('coat', bc[0], bc[1], bc[2], 0.40, 0.42, 0.92, null, { rx: -pz.pitch, seg: 16, colf: (x, y) => y < -0.12 ? cream : blue });
+    /* ---- the head and neck: a toothed snout, a rust crest */
+    const hx = F[0] + F[10] - pz.pitch;
+    A.part('head', P(Q.NK, 0), () => {
+      A.tube('coat', t => P(faFlLerp([0, 0.12, 0.35], [0, 0.58, 1.17], t), 0), t => { const r = 0.22 - 0.09 * t; return [r, r]; }, 4, 10, blue);
+      const h = P([0, 0.64, 1.36], 1); A.ellip('coat', h[0], h[1], h[2], 0.17, 0.17, 0.29, blue2, { rx: hx, seg: 12 });
+      faFlRod(A, 'skin', P([0, 0.64, 1.52], 1), P([0, 0.57, 2.20], 1), 0.11, 0.035, skin, 8);
+      faFlFan(A, 'hair', [[0, 0.78, 1.30], [0, 1.02, 0.95], [0, 0.80, 1.05]].map(p => P(p, 1)), rust, rust, 0.01);
+      for (const s of [1, -1]) {
+        const e = P([0.15, 0.68, 1.46], 1, s); A.ellip('eye', e[0], e[1], e[2], 0.035, 0.035, 0.045, eye, { rx: hx, seg: 8 });
+        for (let t = 0; t < 3; t++) { const tz = 1.68 + t * 0.16; faFlRod(A, 'horn', P([0.06, 0.56, tz + 0.05], 1, s), P([0.05, 0.47, tz + 0.05], 1, s), 0.022, 0.003, cream, 4); }
+      }
+    });
+    A.part('jaw', P([0, 0.53, 1.45], 1), () => faFlRod(A, 'skin', P([0, 0.53, 1.50], 1), P([0, 0.50, 2.10], 1), 0.07, 0.025, skin, 7));
+    /* ---- the tail: a bony rod fringed with six pairs of feathers and a fan at the tip */
+    A.part('tail', P(Q.TL, 9), () => {
+      faFlRod(A, 'coat', P(Q.TL, 9), P([0, 0, -4.35], 9), 0.13, 0.02, blue, 8);
+      for (const s of [1, -1]) {
+        for (let i = 0; i < 6; i++) { const zb = -1.45 - i * 0.52, w = 0.50 + i * 0.05;
+          faFlFan(A, 'hair', [[0.02, 0.01, zb], [w, 0.01, zb - 0.62], [w - 0.05, 0.01, zb - 0.95], [0.02, 0.01, zb - 0.34]].map(p => P(p, 9, s)), (i % 2) ? rust : blue2, (i % 2) ? rust2 : blue, 0.004 + 0.002 * i); }
+        faFlFan(A, 'hair', [[0.02, 0.01, -4.3], [0.34, 0.01, -5.05], [0.12, 0.01, -5.35], [0, 0.01, -4.6]].map(p => P(p, 9, s)), rust2, rust2, 0.016);
+      }
+    });
+    /* ---- the wings: the arm with the secondaries and coverts, the hand with three claws and five primaries */
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', P(Q.S, 5, s), () => {
+      faFlRod(A, 'coat', P(Q.S, 5, s), P(Q.W, 5, s), 0.12, 0.07, blue, 7);
+      faFlFan(A, 'hair', [[0.35, 0.12, 0.22], Q.W, [1.82, 0.12, -0.98], [1.10, 0.12, -1.08], [0.40, 0.10, -1.0]].map(p => P(p, 5, s)), rust, rust2, 0.008);
+      faFlFan(A, 'hair', [[0.35, 0.17, 0.24], [1.70, 0.17, 0.50], [1.74, 0.17, -0.30], [0.40, 0.17, -0.38]].map(p => P(p, 5, s)), blue, blue, 0.008);
+      faFlRod(A, 'coat', P(Q.W, 7, s), P([2.65, 0.15, 0.22], 7, s), 0.06, 0.03, blue, 6);
+      for (let c = 0; c < 3; c++) faFlRod(A, 'horn', P([1.78 + c * 0.12, 0.15, 0.49 - c * 0.03], 7, s), P([1.86 + c * 0.12, 0.13, 0.86 - c * 0.05], 7, s), 0.03, 0.004, cream, 4);
+      const tips = [[3.5, 0.15, -0.42], [3.38, 0.14, -1.02], [3.02, 0.13, -1.38], [2.60, 0.12, -1.52], [2.18, 0.11, -1.46]];
+      for (let f = 0; f < 5; f++) { const k = f / 5 * 0.72, r0 = [Q.W[0] + (2.65 - Q.W[0]) * k, 0.15 - f * 0.008, Q.W[2] + (0.22 - Q.W[2]) * k], r1 = [r0[0] - 0.22, r0[1], r0[2] - 0.12], tp = tips[f];
+        faFlFan(A, 'hair', [r0, [tp[0] + 0.10, tp[1], tp[2] + 0.16], [tp[0] - 0.12, tp[1], tp[2] - 0.10], r1].map(p => P(p, 7, s)), (f % 2) ? rust2 : rust, rust2, 0.006 + 0.003 * f); }
+      faFlFan(A, 'hair', [[1.70, 0.18, 0.50], [2.65, 0.18, 0.22], [2.45, 0.18, -0.38], [1.74, 0.18, -0.30]].map(p => P(p, 7, s)), blue2, blue2, 0.025);
+    });
+    /* ---- the legs: feathered thighs, scaled shanks; three toes forward and one back on the ground */
+    for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', P(Q.H, 8, s), () => {
+      const kn = P([0.26, -0.30, -1.48], 8, s), an = P([0.26, -0.30, -2.20], 8, s);
+      A.tube('coat', t => faFlLerp(P(Q.H, 8, s), kn, t), t => { const r = 0.25 - 0.15 * t; return [r * 0.8, r]; }, 3, 10, blue, { caps: true });
+      faFlRod(A, 'skin', kn, an, 0.07, 0.045, cream, 7);
+      if (fly) { faFlRod(A, 'horn', an, P([0.26, -0.24, -2.55], 8, s), 0.045, 0.008, cream, 5); return; }
+      const g = [an[0], 0.05, an[2]];
+      faFlRod(A, 'skin', an, g, 0.045, 0.04, skin, 6);
+      for (const o of [[-0.12, 0.34], [0, 0.42], [0.12, 0.34], [0.02, -0.2]]) faFlRod(A, 'horn', g, [g[0] + s * o[0], 0.012, g[2] + o[1]], 0.035, 0.008, cream, 5);
+    });
+    A.anchor('saddle', P([0, 0.45, -0.15], -1));
+  }
+});
+
+/* ================================================================ GIANT DRAGONFLY: 6 m body, 4 wings
+   The original ("GIANT DRAGONFLY"): a teal and blue thorax and seven-ring abdomen, great compound eyes, six bristled
+   legs, and four wings on a separate translucent mesh with veins and a pterostigma (a second, opposite-phase wing set
+   drew the motion blur). Here the wings are opaque (the fauna families have no transparent one) and the blur set is
+   left out; the forewings are wingL/wingR, the hindwings wing2L/wing2R. Perched: wings flat, the legs splayed. */
+const FA_FL_D = (function () {
+  const X = [1, 0, 0], Y = [0, 1, 0], Z = [0, 0, 1], AB = [0, 0, -0.45], AB2 = [0, 0, -2.55], LG = [0.30, -0.35, 0.45], FW = [0.28, 0.50, 0.78], HW = [0.28, 0.50, 0.12];
+  return { AB: AB, AB2: AB2, LG: LG, FW: FW, HW: HW, HDP: [0, 0, 1.0],
+    bones: [{ p: AB, a: X, par: -1 }, { p: AB2, a: X, par: 0 }, { p: LG, a: Z, par: -1 }, { p: FW, a: Z, par: -1 }, { p: HW, a: Z, par: -1 },
+      { p: FW, a: Z, par: -1 }, { p: HW, a: Z, par: -1 }, { p: [0, 0, 1.0], a: Y, par: -1 }],
+    /*                abd   abd2   legs  fw    hw */
+    perch: { F: [-0.12, -0.10, -0.25, 0.04, -0.04, 0, 0, 0], pitch: 0 },
+    fly: { F: [-0.04, -0.04, 0.45, 0, 0, 0, 0, 0], pitch: 0, stand: 1.6 } };
+})();
+ANIMAL({
+  key: 'giant-dragonfly', name: 'Giant dragonfly', group: 'flyers',
+  tags: { biomes: ['hyperjungle'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], riparian: 'riparian', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders'], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['sky', 'marsh', 'shallows', 'canopy'], locomotion: ['flies'] },
+  size: { length: 6.9, height: 1.9, span: 7.3 },
+  source: [{ build: 'settlements/mavs-refuge', file: 'src/84-flyers.js', lines: '248-294, 335-340', note: 'first drawn here (FLY_D, the wings flyWingGeom): the Dragonfly tribe\'s mount, the fastest of the four; patrols and transients over the canopy and the water' },
+    { build: 'settlements/girder', file: 'src/84-flyers.js', lines: '251-307, 349-354', note: 'the same model; Girder adds the library wing sheet (materials.json family flywing, wing.dragonfly) on the wing cards' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: false, eggs: false },
+  yields: { meat: { amount: 22, note: 'the flight muscle of the thorax, roasted in the shell; not eaten by the riders' } },
+  life: { maturity: 2, lifespan: 5, litter: 300, gestation: 25, note: 'eggs laid in still water (gestation: days to hatch); two years a nymph in the marsh pools, then three on the wing' },
+  poses: ['perch', 'fly'],
+  w: 7.3, d: 7.0, h: 1.9,
+  data: { mass: 90, legs: 6, wings: 2, budget: 9000, speed: { walk: 0.5, run: 1, fly: [25, 35] }, gait: { type: 'flyer', freq: 1.5, stride: 0.3 },
+    flap: { freq: 9, amp: 0.5, glide: 0, fold: 0 }, grazePitch: 0.3,
+    herd: 'alone, holding a stretch of water; the riders keep them in open stalls by the pools', fleeDistance: 15, aggression: 0.1,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'REST', 'HUNT', 'FLY', 'HUNT', 'PATROL', 'HUNT', 'FLY', 'PATROL', 'HUNT', 'HUNT', 'REST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const D = FA_FL_D, fly = A.pose === 'fly', pz = fly ? D.fly : D.perch, F = pz.F, R = faFlRig(D.bones, F, pz.pitch);
+    const legTip = l => { const z0 = 0.85 - l * 0.4, kx = 0.80 + l * 0.06; return [kx - 0.1, -1.12, z0 + 0.12 - l * 0.22]; };
+    R.stand = fly ? pz.stand : 0.02 - Math.min(R.raw(legTip(0), 2)[1], R.raw(legTip(1), 2)[1], R.raw(legTip(2), 2)[1]);
+    R.z0 = R.raw([0, 0, -1.2], -1)[2];
+    const P = R.P, C = [0x2f8a7a, 0x3a5a9a, 0xd8f0f0], teal = C[0], teal2 = faFlShade(C[0], -0.3), blu = C[1], blu2 = faFlShade(C[1], 0.3), wing = C[2], vein = faFlShade(C[1], -0.45), legc = 0x1c1a16;
+    /* ---- the thorax */
+    const th = P([0, 0, 0.30], -1);
+    A.ellip('horn', th[0], th[1], th[2], 0.50, 0.56, 0.82, null, { rx: -pz.pitch, seg: 14, colf: (x, y) => y < -0.18 ? blu : teal });
+    /* ---- the head: the great compound eyes meet over it */
+    A.part('head', P(D.HDP, 7), () => {
+      const h = P([0, 0.05, 1.28], 7); A.ellip('horn', h[0], h[1], h[2], 0.36, 0.32, 0.30, teal2, { rx: -pz.pitch, seg: 12 });
+      faFlRod(A, 'horn', P([0, -0.10, 1.5], 7), P([0, -0.18, 1.78], 7), 0.16, 0.06, legc, 7);
+      for (const s of [1, -1]) { const e = P([0.30, 0.13, 1.38], 7, s); A.ellip('eye', e[0], e[1], e[2], 0.30, 0.29, 0.30, blu2, { rx: -pz.pitch, seg: 12 }); }
+    });
+    /* ---- the abdomen: seven rings, the claspers at its tip */
+    A.part('tail', P(D.AB, 0), () => {
+      const zs = [-0.45, -1.2, -1.9, -2.6, -3.3, -4.0, -4.7], rs = [0.30, 0.24, 0.21, 0.19, 0.17, 0.15, 0.11];
+      for (let i = 0; i < 6; i++) { const b = i < 3 ? 0 : 1;
+        A.tube('horn', t => P([0, 0, zs[i] + (zs[i + 1] + 0.06 - zs[i]) * t], b), t => { const r = rs[i] + (rs[i + 1] - rs[i]) * t, k = 1 - 0.12 * Math.sin(Math.PI * t); return [r * k, r * k]; }, 3, 8, (i % 2) ? blu : teal, { caps: true }); }
+      for (const s of [1, -1]) faFlRod(A, 'horn', P([0.05, 0, -4.66], 1, s), P([0.12, 0, -5.15], 1, s), 0.04, 0.008, legc, 4);
+    });
+    /* ---- the legs: three pairs, femur out and down, tibia down */
+    for (let l = 0; l < 3; l++) for (const s of [1, -1]) {
+      const z0 = 0.85 - l * 0.4, kx = 0.80 + l * 0.06, root = [0.30, -0.35, z0];
+      A.part('leg' + (l * 2 + (s > 0 ? 0 : 1)), P(root, 2, s), () => {
+        const kn = P([kx, -0.62, z0 - 0.18], 2, s);
+        faFlRod(A, 'horn', P(root, 2, s), kn, 0.06, 0.04, legc, 5);
+        faFlRod(A, 'horn', kn, P(legTip(l), 2, s), 0.04, 0.015, legc, 5);
+      });
+    }
+    /* ---- the wings: fore and hind, each a seven-point vane with its veins and the dark pterostigma near the tip */
+    const vane = (root, len, sweep, y) => {
+      const z = root[2], dx = u => root[0] + len * u, dz = (u, o) => z + sweep * u + o;
+      return [[root[0], y, z + 0.05], [dx(0.35), y, dz(0.35, 0.40)], [dx(0.85), y, dz(0.85, 0.36)], [dx(1.0), y, dz(1.0, 0.05)], [dx(0.88), y, dz(0.88, -0.36)], [dx(0.30), y, dz(0.30, -0.30)], [root[0], y, z - 0.08]];
+    };
+    const veins = { 3: [[[0.28, 0.52, 0.86], [3.2, 0.52, 1.42], [3.2, 0.52, 1.34], [0.28, 0.52, 0.78]], [[0.28, 0.52, 0.74], [3.3, 0.52, 0.92], [3.3, 0.52, 0.86], [0.28, 0.52, 0.68]]],
+      4: [[[0.28, 0.52, 0.20], [3.0, 0.52, -0.02], [3.0, 0.52, -0.10], [0.28, 0.52, 0.12]], [[0.28, 0.52, 0.06], [3.1, 0.52, -0.42], [3.1, 0.52, -0.48], [0.28, 0.52, 0.0]]] };
+    const stig = { 3: [[2.75, 0.52, 1.36], [3.15, 0.52, 1.42], [3.15, 0.52, 1.24], [2.75, 0.52, 1.18]], 4: [[2.6, 0.52, 0.02], [3.0, 0.52, -0.04], [3.0, 0.52, -0.22], [2.6, 0.52, -0.16]] };
+    for (const [b, nm, root, len, sweep] of [[3, 'wing', D.FW, 3.35, 0.35], [4, 'wing2', D.HW, 3.15, -0.45]]) for (const s of [1, -1]) A.part(nm + (s > 0 ? 'L' : 'R'), P(root, b, s), () => {
+      faFlFan(A, 'plain', vane(root, len, sweep, 0.50).map(p => P(p, b, s)), wing, wing, 0.004);
+      for (const v of veins[b]) faFlFan(A, 'plain', v.map(p => P([p[0], 0.50, p[2]], b, s)), vein, vein, 0.01);
+      faFlFan(A, 'plain', stig[b].map(p => P([p[0], 0.50, p[2]], b, s)), 0x2a2420, 0x2a2420, 0.012);
+    });
+    A.anchor('saddle', P([0, 0.58, 0.25], -1));
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-hyperjungle.js ---- */
+/* ======================================================================
+   Krator Fauna: the hyperjungle (kits/fauna/krator-fauna-hyperjungle.js)
+   The animals of the central hyperjungle belt, ported from biomes/hyperjungle/src/58-biome-hyperjungle-fauna.js
+   (2026-10-06): the sky ray, the canopy dart, the jungle butterfly, the strider and the bough sloth. The kit drew
+   each as one vertex-coloured instanced body in a unit frame (+x forward), scaled per instance (the scale is metres:
+   the kit is in metres) and tinted per instance; here each is drawn at its typical scale, the instance tints are the
+   variants, and the colour is the kit's vertex colour times the tint (both linear, as the kit's shader did).
+   The spore motes of the same pass are not ported: they are additive billboard discs of drifting spores, not animals
+   (no body, no life); they belong with a particle or flora pass, not here.
+   ====================================================================== */
+/* the vertex colour times the instance tint, both sRGB hex, multiplied in linear (as the kit's instanced shader did),
+   times k; a THREE.Color in linear, which the builder takes as it is */
+function faHjLin(hex, tint, k) {
+  const a = new THREE.Color(hex).convertSRGBToLinear();
+  if (tint != null) { const b = new THREE.Color(tint).convertSRGBToLinear(); a.r *= b.r; a.g *= b.g; a.b *= b.b; }
+  if (k) { a.r = Math.min(1, a.r * k); a.g = Math.min(1, a.g * k); a.b = Math.min(1, a.b * k); }
+  return a;
+}
+/* a polyline as a curve t 0..1 */
+function faHjPath(pts) {
+  const n = pts.length - 1;
+  return t => { const f = Math.min(n - 1e-6, Math.max(0, t * n)), k = Math.floor(f), r = f - k, a = pts[k], b = pts[k + 1];
+    return [a[0] + (b[0] - a[0]) * r, a[1] + (b[1] - a[1]) * r, a[2] + (b[2] - a[2]) * r]; };
+}
+/* a flat wing as a lens-section tube from its root out along +x (s = 1, the left) or -x (s = -1): span from rootX to
+   tipX (metres), the chord's centre from z0 to z1, the chord c0 to c1, rising dih, thickness th at the root; the tip
+   rounds off. Drawn inside the current part. */
+function faHjWing(A, fam, s, y0, rootX, tipX, z0, z1, c0, c1, dih, th, col) {
+  A.tube(fam, t => [s * (rootX + (tipX - rootX) * t), y0 + dih * t, z0 + (z1 - z0) * t],
+    t => { const e = Math.sqrt(Math.max(0, 1 - Math.pow(t, 6))); return [Math.max(0.004, (c0 + (c1 - c0) * t) / 2 * e), Math.max(0.0015, th * (1 - 0.7 * t) * Math.max(0.3, e))]; },
+    18, 10, col, { caps: true });
+}
+/* the instance tints of the kit's pass (the variants) */
+const FA_HJ_RAY_TINT = [0x6a6e74, 0x7a7060, 0x5e6672, 0x8a8070];
+const FA_HJ_DART_TINT = [0x6a7a62, 0x7a6a4a, 0x5a7a7a, 0x8a7a5a, 0x4a6a5a];
+const FA_HJ_FLY_TINT = [0xc4566a, 0xc98d2e, 0xa85ab8, 0xbe4632, 0xd0a848, 0x8e5ea0, 0x4a8ae0, 0xe8d040, 0xf0f0e8];   /* PAL.bloom, then blue, yellow, white */
+const FA_HJ_STRIDER_TINT = [0x9a9e86, 0xa8987a, 0x8e9682, 0xb0a48c];
+const FA_HJ_SLOTH_TINT = [0x5a4a38, 0x6a5a44, 0x4a4034];
+const FA_HJ_BIOME = { biomes: ['hyperjungle'], koppen: ['Af'], aridity: ['humid'], climate: ['hypertropic'], abyssal: false };
+const FA_HJ_SRC = { build: 'biomes/hyperjungle', file: 'src/58-biome-hyperjungle-fauna.js' };
+
+/* ---------------------------------------------------------------- the sky ray */
+ANIMAL({
+  key: 'sky-ray', name: 'Sky ray', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HJ_BIOME, { riparian: 'non', domestic: false, herdedBy: [],
+    diet: 'omnivore', feeding: 'filter feeder', activity: 'diurnal', temperament: 'wary',
+    habitat: ['sky'], locomotion: ['flies', 'glides'] }),
+  size: { length: 11.2, height: 1.5, span: 18.9 },
+  source: [Object.assign({}, FA_HJ_SRC, { lines: '28-34, 133-139', note: 'rayGeo (body, head, tail, two wing pairs) and the flocks: 5 to 12 rays wheeling 30-120 m above the canopy of the hero disc on banked orbits, a slow glide-flap; scale 6.5-11.5 per ray (LORE.md: "6-12 m soarers"; the drawn span is 2.1x the scale)' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 150, note: 'only from a ray brought down or found fallen; lean and dark' },
+    hide: { amount: 1, hideM2: 60, note: 'the wing membrane, thin and tough: prized for sails, awnings and roofing' } },
+  life: { maturity: 8, lifespan: 60, litter: 1, gestation: 360, note: 'invented: a single pup born on the wing, as a manta' },
+  variants: 4, variantNames: ['slate', 'dun', 'blue-grey', 'sand'],
+  w: 19.2, d: 11.4, h: 1.6,
+  data: { mass: 380, legs: 0, wings: 2, sizeRange: [0.72, 1.28], speed: { walk: 14, run: 26, fly: 18, note: 'never lands: walk is its slowest soar, run a dive' },
+    gait: { type: 'flyer', freq: 0.18, stride: 0 }, flap: { freq: 0.18, amp: 0.12, glide: 0.4, fold: 0 },
+    herd: 'flocks of 5 to 12 wheeling together over the canopy', fleeDistance: 30, aggression: 0.05, neverLands: true,
+    schedule: ['FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY', 'FLY'],
+    scheduleNote: 'aloft day and night; it sieves the drifting insects and spores over the canopy by day and soars slow and high by night' },
+  build: function (A) {
+    /* in flight pose (it never lands): the kit's unit body at scale 9, lifted so the belly clears y = 0 */
+    const v = A.variant, tint = FA_HJ_RAY_TINT[v], K = 9 * A.S, Y = y => (y + 0.09) * K, col = (h, k) => faHjLin(h, tint, k);
+    const bodyC = col(0x5a5e62), belly = col(0x5a5e62, 1.25), headC = col(0x50545a), tailC = col(0x44484c), wingC = col(0x62666a), finC = col(0x50545a);
+    A.ellip('skin', 0, Y(0), 0.05 * K, 0.105 * K, 0.077 * K, 0.266 * K, null, { seg: 20, colf: (x, y, z) => y < 0 ? belly : bodyC });
+    A.part('head', [0, Y(0.01), 0.27 * K], () => {
+      A.ellip('skin', 0, Y(0.02), 0.36 * K, 0.063 * K, 0.056 * K, 0.112 * K, headC, { seg: 14 });
+      for (const s of [-1, 1]) A.ellip('eye', s * 0.05 * K, Y(0.035), 0.41 * K, 0.011 * K, 0.011 * K, 0.011 * K, 0x0c0c0e, { seg: 8 });
+    });
+    A.part('tail', [0, Y(0.01), -0.215 * K], () => A.tube('skin', t => [0, Y(0.01), (-0.215 - 0.56 * t) * K], t => { const r = (0.03 - 0.02 * t) * K; return [r, r]; }, 6, 8, tailC, { caps: true }));
+    /* the great wings (root chord 0.42, tip chord 0.22 swept back, a little dihedral) and the hind fins at the tail root */
+    for (const s of [1, -1]) {
+      A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.07 * K, Y(0), -0.03 * K], () => faHjWing(A, 'skin', s, Y(0), 0.07 * K, 1.05 * K, -0.03 * K, -0.12 * K, 0.42 * K, 0.22 * K, 0.06 * K, 0.03 * K, wingC));
+      A.part(s > 0 ? 'wing2L' : 'wing2R', [s * 0.01 * K, Y(0.005), -0.28 * K], () => faHjWing(A, 'skin', s, Y(0.005), 0.01 * K, 0.28 * K, -0.28 * K, -0.40 * K, 0.12 * K, 0.10 * K, 0.02 * K, 0.012 * K, finC));
+    }
+  }
+});
+
+/* ---------------------------------------------------------------- the canopy dart */
+ANIMAL({
+  key: 'canopy-dart', name: 'Canopy dart', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HJ_BIOME, { riparian: 'non', domestic: false, herdedBy: [],
+    diet: 'carnivore', feeding: 'insectivore', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['canopy', 'trunks'], locomotion: ['flies', 'leaps'] }),
+  size: { length: 1.0, height: 0.36, span: 1.39 },
+  source: [Object.assign({}, FA_HJ_SRC, { lines: '35-41, 140-146', note: 'dartGeo (body, head, beak, wings, a fanned tail) and the groups: 2 to 6 flitting through the openings 10-45 m up under the canopy; scale 1.2-2.1. The kit never lands them: the legs here are new, for the perch' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 0.6, note: 'netted in the openings; a mouthful' },
+    eggs: { amount: 6, note: 'two clutches of three in a bark hollow; taken by climbers' },
+    feathers: { amount: 0.04, note: 'the green and teal flight feathers, for fletching and finery' } },
+  life: { maturity: 1, lifespan: 8, litter: 3, gestation: 18, note: 'gestation here is the incubation' },
+  variants: 5, variantNames: ['moss', 'umber', 'teal', 'ochre', 'jade'],
+  w: 1.42, d: 1.17, h: 0.38,
+  data: { mass: 1.5, legs: 2, wings: 1, sizeRange: [0.73, 1.27], speed: { walk: 0.3, run: 0.8, fly: 12 },
+    gait: { type: 'flyer', freq: 1.75, stride: 0.1 }, flap: { freq: 1.75, amp: 0.32, glide: 0.15, fold: 0.12, sweep: 1.3, tuck: 0.9 },
+    herd: 'loose groups of 2 to 6', fleeDistance: 6, aggression: 0,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'REST', 'REST', 'FLY', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    /* the kit's unit body at scale 1.65, standing on two new legs (the kit's darts never perch) */
+    const v = A.variant, tint = FA_HJ_DART_TINT[v], K = 1.65 * A.S, Y = y => (y + 0.13) * K, col = (h, k) => faHjLin(h, tint, k);
+    const bodyC = col(0x6a7a62), belly = col(0x6a7a62, 1.3), headC = col(0x5a6a56), beakC = col(0x3a3a30), wingC = col(0x5e6e58), tailC = col(0x4e5e4a);
+    A.ellip('coat', 0, Y(0), 0, 0.072 * K, 0.072 * K, 0.162 * K, null, { seg: 14, colf: (x, y, z) => y < 0 ? belly : bodyC });
+    A.part('head', [0, Y(0.02), 0.12 * K], () => {
+      A.ellip('coat', 0, Y(0.03), 0.17 * K, 0.055 * K, 0.055 * K, 0.055 * K, headC, { seg: 12 });
+      A.cone('horn', [0, Y(0.03), 0.2 * K], [0, Y(0.025), 0.295 * K], 0.02 * K, 0.002 * K, beakC, 6);
+      for (const s of [-1, 1]) A.ellip('eye', s * 0.042 * K, Y(0.045), 0.19 * K, 0.01 * K, 0.01 * K, 0.01 * K, 0x0a0806, { seg: 8 });
+    });
+    A.part('tail', [0, Y(0), -0.12 * K], () => A.tube('coat', t => [0, Y(0.005 * t), (-0.12 - 0.18 * t) * K], t => [(0.03 + 0.07 * t) * K, (0.012 - 0.006 * t) * K], 5, 8, tailC, { caps: true }));
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.04 * K, Y(0.01), 0], () => faHjWing(A, 'coat', s, Y(0.01), 0.04 * K, 0.42 * K, 0, -0.04 * K, 0.16 * K, 0.14 * K, 0.05 * K, 0.012 * K, wingC));
+    /* the legs: a short tarsus, three toes forward and one back */
+    for (const s of [1, -1]) A.part(s > 0 ? 'leg0' : 'leg1', [s * 0.03 * K, Y(-0.05), -0.01 * K], () => {
+      const ank = [s * 0.035 * K, 0.012 * K, 0.01 * K];
+      A.tube('skin', faHjPath([[s * 0.03 * K, Y(-0.05), -0.01 * K], [s * 0.034 * K, 0.05 * K, -0.012 * K], ank]), t => { const r = (0.011 - 0.004 * t) * K; return [r, r]; }, 4, 6, beakC, { caps: true });
+      for (const a of [-0.45, 0, 0.45, Math.PI]) { const L = (a === Math.PI ? 0.035 : 0.05) * K;
+        A.cone('skin', [ank[0], 0.007 * K, ank[2]], [ank[0] + Math.sin(a) * L, 0.004 * K, ank[2] + Math.cos(a) * L], 0.005 * K, 0.002 * K, beakC, 5); }
+    });
+  }
+});
+
+/* ---------------------------------------------------------------- the jungle butterfly */
+/* one wing's outline (the kit's painted wing texture, WINGTEX): four quadratic curves in the wing's (u, v), u 0 the
+   body root to 1 the tip, v 0 the fore edge to 1 the aft; and its eye spots [u, v, radius] */
+const FA_HJ_FLY_OUT = [[[0.016, 0.5], [0.35, 0.02], [0.96, 0.10]], [[0.96, 0.10], [0.98, 0.55], [0.80, 0.72]], [[0.80, 0.72], [0.55, 0.98], [0.20, 0.90]], [[0.20, 0.90], [0.04, 0.75], [0.016, 0.5]]];
+const FA_HJ_FLY_SPOT = [[0.62, 0.32, 0.086], [0.55, 0.68, 0.0625], [0.80, 0.50, 0.047]];
+function faHjFlyOutline(s) {
+  const f = Math.min(3.99999, Math.max(0, s * 4)), k = Math.floor(f), t = f - k, q = FA_HJ_FLY_OUT[k], m = 1 - t;
+  return [m * m * q[0][0] + 2 * m * t * q[1][0] + t * t * q[2][0], m * m * q[0][1] + 2 * m * t * q[1][1] + t * t * q[2][1]];
+}
+ANIMAL({
+  key: 'jungle-butterfly', name: 'Jungle butterfly', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HJ_BIOME, { riparian: 'both', domestic: false, herdedBy: [],
+    diet: 'herbivore', feeding: 'frugivore', activity: 'diurnal', temperament: 'skittish',
+    habitat: ['ground', 'canopy'], locomotion: ['flies', 'walks'] }),
+  size: { length: 0.45, height: 0.4, span: 1.0 },
+  source: [Object.assign({}, FA_HJ_SRC, { lines: '42-45, 69-73, 147-151', note: 'flyGeo (a thread body, two painted wing quads) and WINGTEX (dark rim, veins, three eye spots); 1 to 4 drifting 1-4 m up in the openings and round the blooms of the near floor; scale 0.8-1.6, tinted from the bloom palette. Head, antennae and legs are new' })],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: {},
+  life: { maturity: 0.25, lifespan: 0.6, litter: 200, gestation: 7, note: 'egg, caterpillar and chrysalis in the first quarter year; litter the eggs a female lays; gestation the egg to hatching' },
+  variants: 9, variantNames: ['rose', 'amber', 'violet', 'scarlet', 'gold', 'plum', 'blue', 'yellow', 'white'],
+  w: 0.78, d: 0.64, h: 0.4,
+  data: { mass: 0.4, legs: 6, wings: 1, sizeRange: [0.67, 1.33], speed: { walk: 0.05, run: 0.1, fly: 4 },
+    gait: { type: 'insect', freq: 1.1, stride: 0.03 }, flap: { freq: 1.1, amp: 0.6, glide: 0 },
+    herd: 'alone or 2 to 4 round a bloom', fleeDistance: 3, aggression: 0,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'FLY', 'FLY', 'BROWSE', 'BROWSE', 'FLY', 'BROWSE', 'BROWSE', 'FLY', 'BROWSE', 'BROWSE', 'FLY', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'],
+    scheduleNote: 'BROWSE: at the blooms (nectar) and the fallen fruit' },
+  build: function (A) {
+    /* perched on six new legs, the wings half raised (they beat about this) */
+    const v = A.variant, tint = FA_HJ_FLY_TINT[v], K = 1.2 * A.S, yb = 0.06 * K, RAISE = 0.7;
+    const bodyC = faHjLin(0x2a2420, tint), wingC = faHjLin(0xffffff, tint, 0.68), rimC = faHjLin(0xffffff, tint, 0.045), spotC = faHjLin(0xffffff, tint, 0.021), paleC = faHjLin(0xffffff, tint, 0.79);
+    /* the body: a thread, thicker aft, and the thorax */
+    A.tube('plain', t => [0, yb, (-0.17 + 0.34 * t) * K], t => { const r = (0.02 - 0.005 * t) * K * Math.sqrt(Math.max(0.15, 1 - Math.pow(2 * t - 1, 8))); return [r, r]; }, 8, 6, bodyC, { caps: true });
+    A.ellip('plain', 0, yb, 0.07 * K, 0.022 * K, 0.022 * K, 0.05 * K, bodyC, { seg: 8 });
+    A.part('head', [0, yb, 0.15 * K], () => {
+      A.ellip('plain', 0, yb, 0.185 * K, 0.019 * K, 0.019 * K, 0.019 * K, bodyC, { seg: 8 });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.014 * K, yb + 0.004 * K, 0.195 * K, 0.009 * K, 0.009 * K, 0.009 * K, 0x0a0806, { seg: 6 });
+        const tip = [s * 0.06 * K, yb + 0.09 * K, 0.33 * K];
+        A.cone('plain', [s * 0.008 * K, yb + 0.012 * K, 0.2 * K], tip, 0.003 * K, 0.0025 * K, bodyC, 4);
+        A.ellip('plain', tip[0], tip[1], tip[2], 0.007 * K, 0.007 * K, 0.009 * K, bodyC, { seg: 6 });
+      }
+    });
+    /* the wings: one outline (the kit's painted wing) fanned from a point near its root, both faces drawn, raised by
+       RAISE about the body's long axis; the texture's dark rim in the vertex colour, its eye spots as discs */
+    const C0 = [0.12, 0.5], jr = j => 1 - Math.pow(1 - j, 1.5);
+    const uvAt = (i, j) => { const o = faHjFlyOutline(i), r = jr(j); return [C0[0] + (o[0] - C0[0]) * r, C0[1] + (o[1] - C0[1]) * r]; };
+    const wcol = (i, j) => {
+      if (jr(j) > 0.955) return rimC;
+      return wingC;
+    };
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.012 * K, yb, 0.02 * K], () => {
+      const cw = Math.cos(RAISE), sw = Math.sin(RAISE);
+      const at = (i, j, off) => { const p = uvAt(i, j), u = p[0], w = p[1];
+        const fore = (0.16 - 0.32 * w) * (1 - u) + (0.13 - 0.30 * w) * u, lat = 0.40 * u * K;
+        return [s * (0.012 * K + lat * cw + off * sw), yb + lat * sw - off * cw, (0.02 + fore) * K]; };
+      A.sheet('plain', (i, j) => at(i, j, 0), 40, 12, null, { colf: wcol });
+      A.sheet('plain', (i, j) => at(1 - i, j, 0.0012), 40, 12, null, { colf: (i, j) => wcol(1 - i, j) });
+      /* the eye spots: a dark disc with a pale centre, laid in the wing's plane through both faces */
+      for (const e of FA_HJ_FLY_SPOT) { const lat = 0.40 * e[0] * K, c = [s * (0.012 * K + lat * cw), yb + lat * sw, (0.02 + (0.16 - 0.32 * e[1]) * (1 - e[0]) + (0.13 - 0.30 * e[1]) * e[0]) * K];
+        A.ellip('plain', c[0], c[1], c[2], e[2] * 0.40 * K, 0.0016 * K, e[2] * 0.31 * K, spotC, { seg: 12, rz: s * RAISE });
+        A.ellip('plain', c[0], c[1], c[2], e[2] * 0.18 * K, 0.0024 * K, e[2] * 0.14 * K, paleC, { seg: 10, rz: s * RAISE }); }
+    });
+    /* six legs: pairs front to back, left then right */
+    [[0.10, 0.05], [0.06, 0], [0.02, -0.05]].forEach(([z, dz], k) => { for (const s of [1, -1]) A.part('leg' + (2 * k + (s > 0 ? 0 : 1)), [s * 0.008 * K, yb - 0.01 * K, z * K], () => {
+      A.tube('plain', faHjPath([[s * 0.008 * K, yb - 0.01 * K, z * K], [s * 0.05 * K, yb + 0.015 * K, (z + dz * 0.3) * K], [s * 0.085 * K, 0.0035 * K, (z + dz) * K]]), t => { const r = 0.0035 * K; return [r, r]; }, 6, 4, bodyC, { caps: true });
+    }); });
+  }
+});
+
+/* ---------------------------------------------------------------- the strider */
+ANIMAL({
+  key: 'hyperjungle-strider', name: 'Hyperjungle strider', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HJ_BIOME, { riparian: 'non', domestic: false, herdedBy: [],
+    diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground'], locomotion: ['walks', 'runs'] }),
+  size: { length: 9.0, height: 6.5 },
+  source: [Object.assign({}, FA_HJ_SRC, { lines: '47-59, 103-127, 157-167', note: 'striderGeo (body, rump, neck, head, ears, tail, three dorsal plates, four legs and hooves) and the herds: 4 to 9 walking between waypoints on the open floor between the boles, grazing between legs; scale 4.6-6.4, legs swung in the shader' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 6500, note: 'a living hill: one feeds a village for a season, smoked' },
+    hide: { amount: 1, hideM2: 70, note: 'thick grey-green hide: boots, shields, boat skins' },
+    horn: { amount: 25, note: 'the three dorsal plates: cut for bowls, scrapers and tiles' } },
+  life: { maturity: 6, lifespan: 45, litter: 1, gestation: 480 },
+  variants: 4, variantNames: ['sage', 'fawn', 'grey-green', 'pale'],
+  w: 2.6, d: 9.3, h: 6.6,
+  data: { mass: 15000, legs: 4, sizeRange: [0.84, 1.16], speed: { walk: 1.7, run: 6 }, gait: { type: 'quadruped', freq: 0.3, stride: 2.8 }, grazePitch: 1.0,
+    herd: 'herds of 4 to 9 on the open floor', fleeDistance: 40, aggression: 0.2,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    /* the kit's unit body at scale 5.5: kit x forward is z here, kit z across is x */
+    const v = A.variant, tint = FA_HJ_STRIDER_TINT[v], K = 5.5 * A.S, P = (x, y, z) => [z * K, y * K, x * K], col = (h, k) => faHjLin(h, tint, k);
+    const bodyC = col(0x6a6e5a), belly = col(0x6a6e5a, 1.28), rumpC = col(0x646852), neckC = col(0x62665a), headC = col(0x5c6054), darkC = col(0x4a4e44), plateC = col(0x8a7a58), legC = col(0x4e5246), hoofC = col(0x2e3028);
+    A.ellip('skin', 0, 0.66 * K, 0, 0.22 * K, 0.231 * K, 0.418 * K, null, { seg: 22, colf: (x, y, z) => y < -0.04 * K ? belly : bodyC });
+    A.ellip('skin', 0, 0.64 * K, -0.34 * K, 0.144 * K, 0.144 * K, 0.176 * K, rumpC, { seg: 16 });
+    /* the dorsal ridge: three four-sided horny plates */
+    for (let k = 0; k < 3; k++) A.cone('horn', P(0.14 - k * 0.16, 0.87, 0), P(0.14 - k * 0.16, 1.01, 0), 0.045 * K, 0.003 * K, plateC, 4);
+    A.part('head', P(0.27, 0.70, 0), () => {
+      A.tube('skin', t => P(0.296 + 0.328 * t, 0.729 + 0.262 * t, 0), t => { const r = (0.09 - 0.03 * t) * K; return [r, r]; }, 6, 12, neckC, {});
+      A.ellip('skin', 0, 1.04 * K, 0.66 * K, 0.0675 * K, 0.072 * K, 0.162 * K, headC, { seg: 14 });
+      for (const s of [-1, 1]) A.ellip('eye', s * 0.06 * K, 1.055 * K, 0.70 * K, 0.011 * K, 0.011 * K, 0.011 * K, 0x0a0a08, { seg: 8 });
+    });
+    for (const s of [1, -1]) A.part(s > 0 ? 'earL' : 'earR', P(0.58, 1.08, s * 0.06), () => A.cone('skin', P(0.58, 1.075, s * 0.06), P(0.575, 1.18, s * 0.075), 0.025 * K, 0.002 * K, darkC, 5));
+    A.part('tail', P(-0.434, 0.528, 0), () => A.tube('skin', t => P(-0.434 - 0.372 * t, 0.528 + 0.144 * t, 0), t => { const r = (0.03 - 0.018 * t) * K; return [r, r]; }, 5, 6, darkC, { caps: true }));
+    /* the legs: long columns with a slight knee (front) and hock (hind), a hoof each; they turn at the kit's leg top */
+    for (const [x, z, front, i] of [[0.13, 0.28, 1, 0], [-0.13, 0.28, 1, 1], [0.13, -0.28, 0, 2], [-0.13, -0.28, 0, 3]]) A.part('leg' + i, P(z, 0.64, x), () => {
+      const pts = (front ? [[z, 0.66], [z + 0.015, 0.36], [z + 0.005, 0.08], [z + 0.008, 0.04]] : [[z, 0.66], [z - 0.03, 0.40], [z - 0.005, 0.10], [z, 0.04]]).map(q => P(q[0], q[1], x));
+      A.tube('skin', faHjPath(pts), t => { const r = (t < 0.33 ? 0.058 - 0.048 * t : t < 0.9 ? 0.042 - 0.012 * (t - 0.33) / 0.57 : 0.036) * K; return [r, r]; }, 9, 8, legC, {});
+      const hf = pts[3];
+      A.cone('hoof', [hf[0], 0, hf[2] + 0.004 * K], [hf[0], 0.05 * K, hf[2]], 0.045 * K, 0.04 * K, hoofC, 8);
+    });
+  }
+});
+
+/* ---------------------------------------------------------------- the bough sloth */
+ANIMAL({
+  key: 'bough-sloth', name: 'Bough sloth', group: 'hyperjungle',
+  tags: Object.assign({}, FA_HJ_BIOME, { riparian: 'non', domestic: false, herdedBy: [],
+    diet: 'herbivore', feeding: 'browser', activity: 'cathemeral', temperament: 'docile',
+    habitat: ['canopy', 'trunks'], locomotion: ['climbs'] }),
+  size: { length: 1.5, height: 1.7 },
+  source: [Object.assign({}, FA_HJ_SRC, { lines: '60-65, 168-171', note: 'slothGeo (body, head, four limbs reaching up) hung under the big limbs (r >= 1.5 m, 40 m up or more) of the near hero hypertrees, static; scale 2-3.4; drawn in the instance tint alone (its material took no vertex colour)' })],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 160, note: 'a climber\'s prize, brought down with ropes' },
+    hide: { amount: 1, hideM2: 4, note: 'the long coarse fur: rugs, bedding, rain capes' } },
+  life: { maturity: 3, lifespan: 30, litter: 1, gestation: 300, note: 'the young rides its mother\'s belly for its first year' },
+  variants: 3, variantNames: ['brown', 'tawny', 'dark'], poses: ['hang'],
+  w: 1.12, d: 1.6, h: 1.8,
+  data: { mass: 400, legs: 4, sizeRange: [0.74, 1.26], speed: { walk: 0.1, run: 0.25 }, gait: { type: 'quadruped', freq: 0.2, stride: 0.3 }, grazePitch: 0.5,
+    herd: 'alone; a mother with one young', fleeDistance: 0, aggression: 0.1, hangs: true,
+    schedule: ['REST', 'REST', 'REST', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'REST', 'REST', 'BROWSE', 'BROWSE', 'REST', 'REST', 'REST', 'BROWSE', 'REST', 'REST'] },
+  build: function (A) {
+    /* the one pose, 'hang': as the kit hung it, four limbs straight up into the underside of a bough; built with its
+       back (lowest) on y = 0, so a host hangs it by its 'grip' anchor (the bough's underside) */
+    const v = A.variant, tint = FA_HJ_SLOTH_TINT[v], K = 2.7 * A.S, Y = y => (y + 0.56) * K;
+    const fur = faHjLin(tint), furD = faHjLin(tint, null, 0.7), headC = faHjLin(tint, null, 1.3), faceC = faHjLin(tint, null, 1.9), limbC = faHjLin(tint, null, 0.75), clawC = 0x2a241c;
+    const rx = 0.192 * K, ry = 0.18 * K, rz = 0.24 * K, by = Y(-0.38);
+    A.ellip('coat', 0, by, 0, rx, ry, rz, null, { seg: 18, colf: (x, y, z) => faNoise(x * 6 + 1.3, y * 6, z * 6) > 0.6 ? furD : fur });
+    /* (no hair locks: as strips they read as spines; the coat is the fur grain and the darker noise streaks) */
+    A.part('head', [0, Y(-0.33), 0.15 * K], () => {
+      A.ellip('coat', 0, Y(-0.30), 0.2 * K, 0.11 * K, 0.11 * K, 0.11 * K, headC, { seg: 14 });
+      A.ellip('coat', 0, Y(-0.30), 0.285 * K, 0.075 * K, 0.07 * K, 0.03 * K, faceC, { seg: 12 });
+      for (const s of [-1, 1]) A.ellip('eye', s * 0.035 * K, Y(-0.285), 0.306 * K, 0.012 * K, 0.012 * K, 0.008 * K, 0x0a0806, { seg: 8 });
+      A.ellip('mouth', 0, Y(-0.315), 0.312 * K, 0.016 * K, 0.012 * K, 0.008 * K, 0x1a1410, { seg: 8 });
+    });
+    /* the limbs: leg0/1 the arms (front), leg2/3 the legs, each turning at the body; hooked claws dug into the bark */
+    for (const [x, z, top, i] of [[0.12, 0.1, 0.05, 0], [-0.12, 0.1, 0.05, 1], [0.1, -0.14, -0.02, 2], [-0.1, -0.14, -0.02, 3]]) A.part('leg' + i, [x * K, Y(-0.27), z * K], () => {
+      A.tube('coat', t => [x * K, Y(-0.33 + (top + 0.33) * t), z * K], t => { const r = (0.025 + 0.005 * t) * K; return [r, r]; }, 5, 8, limbC, {});
+      for (const dx of [-0.018, 0, 0.018]) A.tube('horn', faHjPath([[(x + dx) * K, Y(top - 0.01), z * K], [(x + dx) * K, Y(top + 0.03), (z + 0.012) * K], [(x + dx) * K, Y(top + 0.045), (z + 0.04) * K]]), t => { const r = (0.007 - 0.005 * t) * K; return [r, r]; }, 6, 5, clawC, { caps: true });
+    });
+    A.anchor('grip', [0, Y(0.04), 0]);
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-livestock.js ---- */
+/* ======================================================================
+   Krator Fauna: livestock (kits/fauna/krator-fauna-livestock.js)
+   The herd animals the peoples keep. First: the long-haired goat of the crater drylands, whose combed guard hair is the
+   Scyvoi's black tent cloth (core/materials library/cloth.tent.black) and whose undercoat is their felt.
+   ====================================================================== */
+ANIMAL({
+  key: 'goat', name: 'Drylands goat', group: 'livestock',
+  tags: { biomes: ['crater-drylands', 'sedesert', 'ebadlands', 'nhighlands'], koppen: ['BSk', 'BWk', 'BSh', 'Dfb'], aridity: ['arid', 'semiarid'],
+    climate: ['temperate', 'cold'], riparian: 'non', abyssal: false, domestic: true, herdedBy: ['scyvoi', 'nomad'],
+    diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'climbs', 'leaps'] },
+  size: { length: 1.2, height: 0.75 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-livestock.js', note: 'first drawn here for the Scyvoi (2026-10-06)' },
+    { build: 'settlements/reedlake', file: 'src/75-rl-helpers.js', lines: '212-222', note: 'a static goat (L 0.9 m) among the lake farms\' livestock' },
+    { build: 'settlements/highlands', file: 'src/80-rus-dwell.js', lines: '51-61', note: 'rustic and tribal goats, static (also src/84-tri-dwell.js 99-107)' },
+    { build: 'kits/post-apoc', file: 'src/50-farm.js', lines: '53-64', note: 'a goat on a tyre in the pen' }],
+  traits: { edible: true, milkable: true, tameable: true, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 18, note: 'a nanny dressed; a billy 30' }, milk: { amount: 1.5, note: 'in milk, about 200 days a year' },
+    hide: { amount: 1, hideM2: 0.7, note: 'goatskin: water skins, drum heads, saddle covers' },
+    hair: { amount: 0.8, note: 'the long black guard hair, combed and shorn each spring: woven into the tent cloth and rope' },
+    wool: { amount: 0.15, note: 'the fine undercoat, combed out: felt and the best yarn' },
+    horn: { amount: 0.4, note: 'a billy: spoons, bows, handles' } },
+  life: { maturity: 0.7, lifespan: 12, litter: 1.6, gestation: 150 },
+  variants: 4, variantNames: ['billy, black', 'nanny, brown', 'kid', 'nanny, piebald'],
+  w: 0.8, d: 1.3, h: 1.3,
+  variantDims: [{ w: 0.8, d: 1.3, h: 1.3 }, { w: 0.55, d: 1.25, h: 1.15 }, { w: 0.34, d: 0.72, h: 0.66 }, { w: 0.55, d: 1.25, h: 1.15 }],
+  data: { mass: [70, 45, 15, 45], legs: 4, speed: { walk: 1.1, run: 6 }, gait: { type: 'quadruped', freq: 1.7, stride: 0.42 }, grazePitch: 1.0,
+    herd: 'a flock of 10 to 40 with a herder and dogs', fleeDistance: 4, aggression: 0.15,
+    schedule: [ 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'REST', 'REST', 'REST', 'REST', 'REST' ] },
+  build: function (A) {
+    const v = A.variant, K = v === 2 ? 0.56 : v === 0 ? 1.08 : 1, hairLen = v === 2 ? 0.45 : 1;
+    const base = [0x1c1916, 0x3a2a1e, 0x2a211b, 0xe6e0d2][v], patchCol = 0x1a1714, hornC = v === 0 ? 0x4a3c2c : 0x6a5a44;
+    const P = p => [p[0] * K, p[1] * K, p[2] * K];
+    const coat = (x, y, z) => v === 3 ? (faNoise(x * 5.5 + 3.1, y * 5.5, z * 5.5) > 0.55 ? patchCol : base) : base;
+    const shade = (hex, k) => { const c = new THREE.Color(hex); return [c.r * k, c.g * k, c.b * k]; };
+    /* ---- the body: a barrel from rump to chest, its coat colour by position */
+    const bodyC = t => P([0, 0.6 + 0.02 * Math.sin(Math.PI * t), -0.46 + 0.84 * t]);
+    const bodyR = t => { const s = Math.sin(Math.PI * Math.min(1, Math.max(0, t * 1.05 - 0.02))); return [K * (0.07 + 0.12 * Math.pow(s, 0.6)), K * (0.08 + 0.13 * Math.pow(s, 0.55))]; };
+    A.tube('coat', bodyC, bodyR, 10, 12, null, { caps: true, colf: (t, a) => { const p = bodyC(t); return coat(p[0] + Math.sin(a) * 0.2, p[1] + Math.cos(a) * 0.2, p[2]); } });
+    if (v === 1 || v === 3) A.ellip('skin', 0, 0.36 * K, -0.26 * K, 0.07 * K, 0.06 * K, 0.08 * K, 0xb09088);   // the udder
+    /* ---- the long-hair skirt down each side, its hem ragged, and locks over the back, sides and rump */
+    for (const s of [-1, 1]) A.sheet('hair', (u, w) => {
+      const z = (-0.44 + 0.78 * u) * K, top = 0.6 * K, hem = (0.27 + 0.18 * (1 - hairLen) + 0.03 * Math.sin(u * 17 + s) + 0.02 * Math.sin(u * 41)) * K;
+      const xr = (0.19 * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.02 + 0.02)), 0.4) + 0.025) * K;
+      return [s * (xr + 0.025 * w * K), top + (hem - top) * w, z];
+    }, 14, 4, null, { colf: (u, w) => { const c = coat(s * 0.2, 0.62 - 0.32 * w, -0.44 + 0.78 * u); return shade(c, 1 - 0.3 * w); } });
+    const locks = [];
+    for (let i = 0; i < 110; i++) {
+      const zf = A.rnd(), a = (A.rr(-1, 1)) * 1.45, z = (-0.44 + 0.8 * zf) * K, R = bodyR(zf), y0 = (0.61) * K;
+      const at = [Math.sin(a) * R[0] * 1.02, y0 + Math.cos(a) * R[1] * 1.02, z];
+      locks.push({ at: at, dir: [Math.sin(a) * 0.35, -1, A.rr(-0.15, 0.1)], len: A.rr(0.12, 0.3) * K * hairLen, w: A.rr(0.03, 0.05) * K, col: coat(at[0], at[1], at[2]), curl: 0.2 });
+    }
+    A.locks('hair', locks);
+    /* ---- the head (with the neck): it turns about the base of the neck to graze */
+    A.part('head', P([0, 0.74, 0.33]), () => {
+      A.tube('coat', t => P([0, 0.7 + 0.25 * t, 0.3 + 0.15 * t]), t => [K * (0.08 - 0.02 * t), K * (0.09 - 0.02 * t)], 4, 10, null, { colf: () => coat(0, 0.8, 0.4) });
+      A.tube('coat', t => P([0, 0.97 - 0.15 * t * t, 0.44 + 0.25 * t]), t => [K * (0.066 - 0.034 * t), K * (0.078 - 0.04 * t)], 5, 10, null, { caps: true, colf: (t) => t > 0.85 ? 0x3a3530 : coat(0, 0.9, 0.5) });
+      for (const s of [-1, 1]) { A.ellip('eye', s * 0.052 * K, 0.968 * K, 0.545 * K, 0.015 * K, 0.011 * K, 0.013 * K, 0x2a1a08, { seg: 8 }); A.ellip('eye', s * 0.059 * K, 0.97 * K, 0.549 * K, 0.007 * K, 0.009 * K, 0.004 * K, 0x050403, { seg: 6 }); }
+      A.ellip('mouth', 0, 0.81 * K, 0.685 * K, 0.026 * K, 0.008 * K, 0.02 * K, 0x2a1e1a, { seg: 8 });
+      /* the mane down the neck and, on the billy, the beard */
+      const mane = [];
+      for (let i = 0; i < 26; i++) { const t = A.rnd(), s = A.rnd() < 0.5 ? -1 : 1; const at = P([s * 0.05, 0.74 + 0.18 * t, 0.31 + 0.15 * t]); mane.push({ at: at, dir: [s * 0.5, -1, -0.1], len: A.rr(0.08, 0.2) * K * hairLen, w: 0.035 * K, col: coat(at[0], at[1], at[2]) }); }
+      if (v === 0) for (let i = 0; i < 9; i++) mane.push({ at: P([A.rr(-0.02, 0.02), 0.82, 0.63 + A.rr(-0.02, 0.02)]), dir: [0, -1, -0.15], len: A.rr(0.12, 0.18) * K, w: 0.03 * K, col: shade(base, 0.8), curl: 0.05 });
+      A.locks('hair', mane);
+      /* the horns: the billy's corkscrews sweep out and back; a nanny's curve back; a kid's are buds */
+      for (const s of [-1, 1]) {
+        const b = P([s * 0.036, 1.03, 0.5]);
+        if (v === 0) {
+          const ax = new THREE.Vector3(s * 0.62, 0.42, -0.66).normalize(), u = new THREE.Vector3().crossVectors(ax, new THREE.Vector3(0, 1, 0)).normalize(), w2 = new THREE.Vector3().crossVectors(ax, u).normalize();
+          A.tube('horn', t => { const ang = t * TAU * 1.6 * s, r = 0.055 * K * (1 - 0.35 * t), L = 0.46 * K * t;
+            return [b[0] + ax.x * L + (Math.cos(ang) * u.x + Math.sin(ang) * w2.x) * r - u.x * 0.055 * K, b[1] + ax.y * L + (Math.cos(ang) * u.y + Math.sin(ang) * w2.y) * r - u.y * 0.055 * K, b[2] + ax.z * L + (Math.cos(ang) * u.z + Math.sin(ang) * w2.z) * r - u.z * 0.055 * K]; },
+            t => { const r = K * (0.03 - 0.026 * t); return [r, r * 0.8]; }, 18, 8, null, { caps: true, colf: t => t > 0.8 ? 0x241c14 : hornC });
+        } else if (v === 2) A.cone('horn', b, [b[0] + s * 0.01, b[1] + 0.035, b[2] - 0.015], 0.012, 0.004, hornC, 6);
+        else A.tube('horn', t => [b[0] + s * 0.05 * K * t * t, b[1] + 0.13 * K * Math.sin(t * 1.4), b[2] - 0.2 * K * t * t - 0.03 * K * t], t => { const r = K * (0.022 - 0.019 * t); return [r, r]; }, 8, 7, null, { caps: true, colf: t => t > 0.8 ? 0x2a2018 : hornC });
+      }
+    });
+    for (const s of [-1, 1]) A.part(s < 0 ? 'earR' : 'earL', P([s * 0.055, 0.995, 0.49]), () => {
+      A.ellip('coat', s * 0.11 * K, 0.965 * K, 0.475 * K, 0.075 * K, 0.017 * K, 0.032 * K, coat(s * 0.1, 0.92, 0.47), { rz: s * 0.55, ry: s * 0.25 });
+    });
+    /* ---- the legs: each turns about its top; hair feathers the upper leg; dark hooves */
+    const legs = [[0.085, 0.29, 1, 0], [-0.085, 0.29, 1, 1], [0.085, -0.33, 0, 2], [-0.085, -0.33, 0, 3]];
+    for (const [x, z, front, i] of legs) A.part('leg' + i, P([x, 0.52, z]), () => {
+      const pts = front ? [[x, 0.52, z], [x, 0.28, z + 0.01], [x, 0.07, z + 0.02], [x, 0.01, z + 0.025]] : [[x, 0.54, z], [x, 0.33, z - 0.06], [x, 0.16, z - 0.03], [x, 0.01, z + 0.0]];
+      const at = t => { const f = t * 3, k = Math.min(2, Math.floor(f)), r = f - k; const a = pts[k], c = pts[k + 1]; return P([a[0] + (c[0] - a[0]) * r, a[1] + (c[1] - a[1]) * r, a[2] + (c[2] - a[2]) * r]); };
+      A.tube('coat', at, t => { const r = K * (0.044 - 0.024 * Math.min(1, t * 1.3)); return [r, r * 1.1]; }, 6, 8, null, { colf: (t) => t > 0.85 ? 0x2a2420 : coat(x, 0.3, z) });
+      const hf = at(1);
+      A.cone('hoof', [hf[0], 0, hf[2] + 0.005], [hf[0], 0.045 * K, hf[2]], 0.026 * K, 0.021 * K, 0x1a1612, 8);
+      const fl = [];
+      for (let j = 0; j < 7; j++) { const t = A.rr(0.05, 0.4), p = at(t); fl.push({ at: p, dir: [A.rr(-0.3, 0.3), -1, front ? -0.3 : 0.2], len: A.rr(0.06, 0.14) * K * hairLen, w: 0.03 * K, col: coat(p[0], p[1], p[2]) }); }
+      A.locks('hair', fl);
+    });
+    /* ---- the tail: a short upturned tuft */
+    A.part('tail', P([0, 0.7, -0.45]), () => {
+      A.tube('coat', t => P([0, 0.7 + 0.08 * t, -0.45 - 0.06 * t]), t => [K * 0.022, K * 0.026], 3, 6, null, { caps: true, colf: () => coat(0, 0.75, -0.48) });
+      A.locks('hair', [{ at: P([0, 0.78, -0.51]), dir: [0, 0.5, -1], len: 0.1 * K * hairLen, w: 0.05 * K, col: coat(0, 0.78, -0.5), curl: 0.6 }]);
+    });
+    A.anchor('pack', P([0, 0.82, -0.05])); A.anchor('lead', P([0, 0.8, 0.42]));
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-mounts.js ---- */
+/* ======================================================================
+   Krator Fauna: mounts (kits/fauna/krator-fauna-mounts.js)
+   Animals the peoples ride and drive. First: the fire salamander of the crater drylands, the Scyvoi's mount (moved here
+   from kits/scyvoi, 2026-10-06; the Scyvoi kit keeps the tack and fits it with KratorFauna.profile).
+   ====================================================================== */
+/* the salamander's body: t from the tail tip (0) to the snout (1), at scale 1: [t, z along, y of the centre line,
+   half-width, half-height] (a heavy, low beast); the tail is t < FA_SAL_TAIL, the head t > 0.84 */
+const FA_SAL = [[0, -2.55, .24, .015, .015], [.12, -2.05, .32, .1, .11], [.28, -1.35, .48, .24, .25], [.4, -.75, .66, .44, .37], [.5, -.3, .76, .56, .43],
+  [.62, .3, .8, .6, .45], [.72, .85, .79, .53, .42], [.8, 1.25, .77, .39, .33], [.87, 1.62, .77, .46, .26], [.94, 2.0, .73, .43, .2], [1, 2.28, .69, .21, .11]];
+const FA_SAL_TAIL = 0.36;
+function faSalKey(t, i) {
+  for (let k = 0; k < FA_SAL.length - 1; k++) { const a = FA_SAL[k], b = FA_SAL[k + 1];
+    if (t <= b[0]) { const f = (t - a[0]) / (b[0] - a[0]), e = f * f * (3 - 2 * f); return a[i] + (b[i] - a[i]) * (i >= 3 ? e : f); } }
+  return FA_SAL[FA_SAL.length - 1][i];
+}
+/* the markings (sRGB hex): 0 fire-black with ember blotches, 1 dun-red with saffron bands; t along, a round (0 the spine) */
+function faSalSkin(v) {
+  const base = v ? 0x5a2414 : 0x161414, spot = v ? 0xd8a028 : 0xf07418, spot2 = v ? 0xe8c040 : 0xf4a020, belly = v ? 0xc87a3a : 0xd8843a;
+  return function (t, a) {
+    const top = Math.cos(a);
+    if (top < -0.55) return top < -0.75 ? belly : (faHash(t * 30, a, 1) < 0.5 ? belly : base);
+    if (v) return Math.sin(t * 44) > 0.55 && top > -0.3 ? (faHash(Math.floor(t * 20), 1, 2) < 0.5 ? spot : spot2) : base;
+    const n = faNoise(t * 22, a * 2.2, 3.7) * 0.74 + 0.26 * faNoise(t * 50, a * 5, 9.1);
+    return n > 0.62 && top > -0.4 ? (n > 0.7 ? spot2 : spot) : base;
+  };
+}
+ANIMAL({
+  key: 'salamander', name: 'Fire salamander', group: 'mounts',
+  tags: { biomes: ['crater-drylands'], koppen: ['BSk', 'BSh'], aridity: ['semiarid', 'arid'], climate: ['temperate', 'tropic'], riparian: 'both',
+    abyssal: false, domestic: true, herdedBy: ['scyvoi'], diet: 'carnivore', feeding: 'predator', activity: 'crepuscular', temperament: 'defensive',
+    habitat: ['ground', 'marsh', 'shallows'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 4.8, height: 1.5 },
+  source: [{ build: 'kits/scyvoi', file: 'src/56-sa-beasts.js', note: 'first drawn in the Scyvoi kit (2026-10-05), moved here 2026-10-06; the Scyvoi kit keeps the tack' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: true, eggs: true },
+  yields: { meat: { amount: 140, note: 'a riding beast dressed; tough, eaten smoked' },
+    eggs: { amount: 40, note: 'one clutch a year in a seep after the rains; a delicacy' },
+    hide: { amount: 1, hideM2: 3.5, note: 'thick, slick and slow to burn: fire cloaks, shields, bellows; a beast also sheds its skin in strips each spring' } },
+  life: { maturity: 4, lifespan: 40, litter: 40, gestation: 60, note: 'eggs, then an aquatic larva for a year in the seeps; it regrows a lost limb in a season (so, the riders say, do they)' },
+  variants: 2, variantNames: ['ember: fire-black with ember blotches', 'dun: dun-red with saffron bands'],
+  breeds: { riding: { scale: 1, mass: 420, role: 'riding mount' }, war: { scale: 1.08, mass: 540, role: 'war mount' }, draught: { scale: 1.28, mass: 860, role: 'draught' } },
+  w: 2.2, d: 5.0, h: 1.6,
+  data: { mass: 420, speed: { walk: 1.6, run: 9 }, gait: { type: 'sprawl', freq: 0.9, stride: 0.9 }, grazePitch: 0.32,
+    herd: 'kept singly or in a band\'s string; wild ones lie up alone in the seeps', fleeDistance: 0, aggression: 0.35, regrows: true,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, S = A.S, rest = A.pose === 'rest', dy = rest ? -0.42 : 0, skin = faSalSkin(v);
+    const span = (t0, t1, curl) => [t => { const tt = t0 + (t1 - t0) * t; return [Math.sin((1 - tt) * 3) * (curl || 0) * Math.pow(1 - tt, 2) * S, (faSalKey(tt, 2) + dy) * S, faSalKey(tt, 1) * S]; },
+      t => { const tt = t0 + (t1 - t0) * t; return [faSalKey(tt, 3) * S, faSalKey(tt, 4) * S]; }];
+    const at = t => [0, (faSalKey(t, 2) + dy) * S, faSalKey(t, 1) * S];
+    /* the trunk */
+    { const [c, r] = span(FA_SAL_TAIL - 0.02, 0.86); A.tube('skin', c, r, 26, 16, null, { colf: (t, a) => skin(FA_SAL_TAIL - 0.02 + (0.88 - FA_SAL_TAIL) * t, a) }); }
+    /* the tail: it sways about its root */
+    A.part('tail', at(FA_SAL_TAIL), () => { const [c, r] = span(0, FA_SAL_TAIL + 0.02, 0.25 + 0.3 * (v % 2)); A.tube('skin', c, r, 14, 14, null, { caps: true, colf: (t, a) => skin(t * (FA_SAL_TAIL + 0.02), a) }); });
+    /* the head: a broad flat skull, eyes on top, the long mouth line */
+    A.part('head', at(0.84), () => {
+      const [c, r] = span(0.84, 1); A.tube('skin', c, r, 10, 16, null, { caps: true, colf: (t, a) => skin(0.84 + 0.16 * t, a) });
+      const hy = (faSalKey(0.95, 2) + dy) * S, hz = 1.98 * S;
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.22 * S, hy + 0.11 * S, hz - 0.06 * S, 0.075 * S, 0.075 * S, 0.075 * S, 0x120c08, { seg: 10 });
+        A.ellip('eye', s * 0.24 * S, hy + 0.135 * S, hz - 0.03 * S, 0.03 * S, 0.03 * S, 0.03 * S, 0xe8b040, { seg: 6 });
+        const L = [[s * 0.31, -0.05, -0.35], [s * 0.3, -0.06, 0], [s * 0.17, -0.07, 0.28], [0, -0.07, 0.34]].map(q => [q[0] * S, hy + q[1] * S, hz + q[2] * S]);
+        for (let i = 0; i < L.length - 1; i++) A.cone('mouth', L[i], L[i + 1], 0.012 * S, 0.012 * S, 0x2a0e08, 5);
+      }
+    });
+    /* the legs: splayed, each turning about its shoulder or hip; the feet flat with four toes */
+    const LEGS = [[0.92, 1, 1, 0], [0.92, 1, -1, 1], [-0.42, 0, 1, 2], [-0.42, 0, -1, 3]];
+    for (const [z, front, s, i] of LEGS) {
+      const b = [s * 0.42 * S, (0.66 + dy) * S, z * S];
+      A.part('leg' + i, b, () => {
+        const kn = rest ? [s * 0.82 * S, 0.3 * S, (z + (front ? 0.2 : -0.1)) * S] : [s * 0.76 * S, 0.46 * S, (z + (front ? 0.08 : -0.1)) * S];
+        const ft = rest ? [s * 0.98 * S, 0.07 * S, (z + (front ? 0.48 : 0.12)) * S] : [s * 0.74 * S, 0.06 * S, (z + (front ? 0.26 : 0.04)) * S];
+        const lerp3 = (p, q) => t => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t];
+        A.tube('skin', lerp3(b, kn), t => [(0.24 - 0.09 * t) * S, (0.26 - 0.1 * t) * S], 4, 10, null, { colf: (t, a) => skin(0.6, a) });
+        A.ellip('skin', kn[0], kn[1], kn[2], 0.155 * S, 0.155 * S, 0.155 * S, skin(0.6, 0), { seg: 10 });
+        A.tube('skin', lerp3(kn, ft), t => [(0.15 - 0.04 * t) * S, (0.16 - 0.06 * t) * S], 4, 8, null, { caps: true, colf: (t, a) => skin(0.6, a) });
+        A.ellip('skin', ft[0], ft[1], ft[2] + 0.06 * S, 0.17 * S, 0.06 * S, 0.2 * S, skin(0.6, 0), { seg: 10 });
+        for (let k = 0; k < 4; k++) { const a = (k - 1.5) * 0.38 + (front ? 0 : 0.1) * s;
+          A.cone('skin', [ft[0], ft[1] - 0.02 * S, ft[2] + 0.08 * S], [ft[0] + Math.sin(a) * 0.24 * S, ft[1] - 0.025 * S, ft[2] + 0.08 * S + Math.cos(a) * 0.24 * S], 0.04 * S, 0.018 * S, skin(0.6, 0), 6); }
+      });
+    }
+    /* for the tack a people fits: the body's profile (t from tail to snout -> centre line and half sizes) and anchors */
+    A.profile(t => ({ z: faSalKey(t, 1) * S, y: (faSalKey(t, 2) + dy) * S, hw: faSalKey(t, 3) * S, hh: faSalKey(t, 4) * S }));
+    A.anchor('saddle', [0, (faSalKey(0.62, 2) + faSalKey(0.62, 4) + dy) * S, 0.25 * S]);
+    A.anchor('bridle', [0, (faSalKey(0.95, 2) + dy) * S, 1.98 * S]);
+    A.anchor('chest', [0, (faSalKey(0.78, 2) + dy) * S, 1.18 * S]);
+    A.anchor('tailRoot', at(FA_SAL_TAIL)); A.anchor('headRoot', at(0.84));
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-voth.js ---- */
+/* ======================================================================
+   Krator Fauna: Voth (kits/fauna/krator-fauna-voth.js)
+   The animals of the Vothic city on the southwest bay of the Ring Sea (settlements/voth), ported from its own builders:
+   the ambient seagulls and cliff racers (src/84-fauna.js), the silt strider the strider guild rides (src/79c-strider-model.js:
+   the animal only; the howdah, the handler's deck and the hollows carved in the shell are the culture's, left as anchors),
+   the arena's tiger and pit lizard (src/78j-life-arena.js) and the giant beetle the ranches keep (src/65k-granary-mills-ranch.js,
+   also fought in the arena).
+   UNITS: Voth's world units are not metres. A citizen is 2.94 units = 1.75 m, so one unit is 0.595 m (FA_VO_U); every
+   coordinate below is written in the original's units and scaled by it, so a number can be checked against the source.
+   Biome: settlement-only animals take the nearest biome, the southwest bay (biomes/swbay: tropic, semiarid to humid).
+   ====================================================================== */
+const FA_VO_U = 1.75 / 2.94;
+const FA_VO_KOPPEN = ['Aw', 'Cfa'], FA_VO_CLIMATE = ['tropic', 'temperate'];
+/* colour helpers: Voth's own shade() (45-kit.js: toward white, or toward 0x1a1712 for a negative f), and a multiply */
+function faVoShade(hex, f) { const c = new THREE.Color(hex); if (f >= 0) c.lerp(new THREE.Color(0xffffff), f); else c.lerp(new THREE.Color(0x1a1712), -f); return c.getHex(); }
+function faVoMul(hex, k) { const c = new THREE.Color(hex); return [Math.min(1, c.r * k), Math.min(1, c.g * k), Math.min(1, c.b * k)]; }
+function faVoMix(a, b, f) { const c = new THREE.Color(a).lerp(new THREE.Color(b), f); return [c.r, c.g, c.b]; }
+/* a Catmull-Rom curve through points, t 0..1 */
+function faVoSpline(pts) {
+  const n = pts.length - 1;
+  return function (t) {
+    const f = Math.min(n - 1e-6, Math.max(0, t * n)), i = Math.floor(f), u = f - i;
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(n, i + 2)], o = [];
+    for (let k = 0; k < 3; k++) o.push(0.5 * (2 * p1[k] + (-p0[k] + p2[k]) * u + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * u * u + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * u * u * u));
+    return o;
+  };
+}
+/* a profile: keys [[t, a, b ...]] -> f(t) = [a, b ...], smoothstepped between keys */
+function faVoProf(keys) {
+  return function (t) {
+    for (let k = 0; k < keys.length - 1; k++) { const a = keys[k], b = keys[k + 1];
+      if (t <= b[0]) { const f = Math.max(0, (t - a[0]) / (b[0] - a[0])), e = f * f * (3 - 2 * f); return a.slice(1).map((v, i) => v + (b[i + 1] - v) * e); } }
+    return keys[keys.length - 1].slice(1);
+  };
+}
+/* the upper half of an ellipsoid (Voth's DOME shape: a hemisphere on its rim), faces outward: u runs the polar angle,
+   v the azimuth; o.under adds the flat underside (the shell's lining) facing down */
+function faVoDome(A, fam, c, r, col, nu, nv, o) {
+  o = o || {};
+  A.sheet(fam, (u, v) => { const ph = u * Math.PI / 2, th = v * TAU; return [c[0] + Math.sin(ph) * Math.cos(th) * r[0], c[1] + Math.cos(ph) * r[1], c[2] + Math.sin(ph) * Math.sin(th) * r[2]]; },
+    nu, nv, col, o.colf ? { colf: o.colf } : null);
+  if (o.under != null) A.sheet(fam, (u, v) => { const th = u * TAU, k = v * 0.995; return [c[0] + k * Math.cos(th) * r[0], c[1] + 0.002, c[2] + k * Math.sin(th) * r[2]]; }, nv, 3, o.under);
+}
+/* a flying wing from its root, along +x for side 1 (the left), -x for side -1: a flattened tube whose section is the
+   chord; a straight swept leading edge, the chord tapering to a rounded tip; dihedral lifts it, droop bends the hand */
+function faVoWing(A, fam, side, root, o) {
+  const L = o.len, ch = o.chord, cd = Math.cos(o.dihedral), sd = Math.sin(o.dihedral), sw = Math.sin(o.sweep);
+  const cAt = t => ch * (1 - (o.taper == null ? 0.25 : o.taper) * t) * Math.sqrt(Math.max(0.03, 1 - Math.pow(t, o.tipPow || 4)));
+  const c = t => [root[0] + side * L * cd * t, root[1] + L * sd * t - (o.droop || 0) * t * t, root[2] + ch / 2 - L * sw * t - cAt(t) / 2];
+  A.tube(fam, c, t => [cAt(t) / 2, o.thick * (1 - 0.7 * t)], o.nt || 12, o.ns || 8, null, { caps: true, colf: o.colf || (() => o.col) });
+  return c;
+}
+
+/* ====================================================================== the seagull (84-fauna.js 62-73)
+   The original: a box body 0.40 x 0.16 x 1.05 units and two box wings 1.15 long, 0.36 chord, raised 0.34 rad and swept
+   0.22 rad, body 0xdcd7c8, wings 0xb2ab99. Kept: the size (a 0.62 m bird, 1.4 m span), the dihedral and sweep, both colours;
+   added a head and beak, the grey mantle, dark wing tips and the legs it never needed in the air. */
+const FA_VO_GULL = { body: 0xdcd7c8, wing: 0xb2ab99, tip: 0x4a4640, beak: 0xe8c040, leg: 0xd89a84 };
+ANIMAL({
+  key: 'seagull', name: 'Bay seagull', group: 'voth',
+  tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['subhumid', 'humid'], climate: FA_VO_CLIMATE, riparian: 'riparian', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'scavenger', activity: 'diurnal', temperament: 'wary',
+    habitat: ['sky', 'water', 'shallows', 'rock'], locomotion: ['flies', 'glides', 'swims', 'walks'] },
+  size: { length: 0.62, height: 0.34, span: 1.4 },
+  source: [{ build: 'settlements/voth', file: 'src/84-fauna.js', lines: '62-73, 91-163', note: 'ambient: 20 gulls in 5 loose flocks wheeling 16-30 units over the bay\'s open water (WATER\'s three bay circles), an InstancedMesh of boxes' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 0.4, note: 'a lean, fishy bird; eaten by the poor of the cantons' },
+    eggs: { amount: 3, note: 'one clutch a year, gathered from the roost ledges' },
+    feathers: { amount: 0.05, note: 'moulted down for stuffing' } },
+  life: { maturity: 4, lifespan: 20, litter: 3, gestation: 27, note: 'gestation: incubation of the clutch' },
+  w: 1.45, d: 0.99, h: 0.52,
+  data: { mass: 1.1, legs: 2, wings: 1, speed: { walk: 0.8, run: 2.5, fly: 11 }, gait: { type: 'flyer', freq: 1.6, stride: 0.1 },
+    flap: { freq: 2.6, amp: 0.55, glide: 0.45, fold: 0.38, sweep: 1.3, tuck: 0.9 }, grazePitch: 0.6,
+    herd: 'loose flocks of four wheeling over the bay; hundreds at the harbour roosts', fleeDistance: 6, aggression: 0.1,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'HUNT', 'FLY', 'FLY', 'HUNT', 'HUNT', 'FLY', 'IDLE', 'REST', 'REST', 'FLY', 'FLY', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const C = FA_VO_GULL;
+    /* the body: tail root to breast; the mantle (the back between the wings) takes the wing grey */
+    const bc = faVoSpline([[0, 0.228, -0.27], [0, 0.214, -0.13], [0, 0.205, 0.02], [0, 0.215, 0.13], [0, 0.238, 0.19]]);
+    const br = faVoProf([[0, 0.022, 0.018], [0.25, 0.062, 0.052], [0.55, 0.08, 0.07], [0.85, 0.07, 0.066], [1, 0.035, 0.04]]);
+    A.tube('coat', bc, br, 12, 12, null, { caps: true, colf: (t, a) => Math.cos(a) > 0.45 && t > 0.15 && t < 0.85 ? C.wing : C.body });
+    /* the head and neck */
+    A.part('head', [0, 0.235, 0.17], () => {
+      A.tube('coat', faVoSpline([[0, 0.228, 0.15], [0, 0.262, 0.2], [0, 0.295, 0.235]]), t => [0.042 - 0.008 * t, 0.045 - 0.008 * t], 4, 10, C.body);
+      A.ellip('coat', 0, 0.305, 0.248, 0.04, 0.039, 0.05, C.body, { seg: 12 });
+      A.tube('plain', t => [0, 0.299 - 0.012 * t * t, 0.288 + 0.062 * t], t => [0.011 * (1 - 0.65 * t), 0.013 * (1 - 0.45 * t)], 4, 8, C.beak, { caps: true });
+      A.ellip('plain', 0, 0.284, 0.336, 0.005, 0.005, 0.007, 0xc83a28, { seg: 6 });   /* the red spot on the bill */
+      for (const s of [-1, 1]) { A.ellip('eye', s * 0.031, 0.315, 0.264, 0.008, 0.008, 0.008, 0xe8e0a0, { seg: 8 }); A.ellip('eye', s * 0.036, 0.316, 0.266, 0.004, 0.004, 0.004, 0x080605, { seg: 6 }); }
+    });
+    /* the tail: a short white fan */
+    A.part('tail', [0, 0.226, -0.25], () => {
+      A.tube('coat', t => [0, 0.226 - 0.006 * t, -0.25 - 0.1 * t], t => [0.03 + 0.03 * t, 0.012 - 0.008 * t], 4, 8, C.body, { caps: true });
+    });
+    /* the wings: root on the shoulder; 0.68 m from the body's centre as in the original (1.15 units), raised and swept */
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.045, 0.246, 0.05], () => {
+      faVoWing(A, 'coat', s, [s * 0.045, 0.246, 0.05], { len: 0.66, chord: 0.21, thick: 0.014, dihedral: 0.34, sweep: 0.22, droop: 0.05, tipPow: 3,
+        colf: t => t > 0.8 ? C.tip : C.wing });
+    });
+    /* the legs: pink, webbed feet */
+    for (const [s, i] of [[1, 0], [-1, 1]]) A.part('leg' + i, [s * 0.032, 0.165, -0.02], () => {
+      A.tube('coat', t => [s * 0.032, 0.165 - 0.05 * t, -0.02 + 0.01 * t], t => [0.016 - 0.006 * t, 0.018 - 0.006 * t], 3, 6, C.body);
+      A.cone('skin', [s * 0.033, 0.12, -0.012], [s * 0.035, 0.012, 0.0], 0.0065, 0.005, C.leg, 6);
+      for (const a of [-0.45, 0, 0.45]) A.cone('skin', [s * 0.035, 0.008, 0.0], [s * 0.035 + Math.sin(a) * 0.045, 0.006, Math.cos(a) * 0.045], 0.004, 0.0025, C.leg, 4);
+      A.ellip('skin', s * 0.035, 0.005, 0.024, 0.024, 0.004, 0.022, C.leg, { seg: 8 });   /* the web */
+    });
+    A.anchor('perch', [0, 0, 0]);
+  }
+});
+
+/* ====================================================================== the cliff racer (84-fauna.js 75-88)
+   The original: a box body 0.55 x 0.42 x 2.6 units, a tail box 0.16 x 0.14 x 1.3 behind it, wings 2.2 long, 0.85 chord,
+   raised 0.22 and swept 0.30, body 0x5c6a49, wings 0x3e4a34. Kept: its size (2.3 m nose to tail, 2.6 m span), the long
+   tail, the broad swept wings and both colours; given a toothed snout, a paler belly, wing fingers and hind legs to perch on
+   the ridges it hunts over. */
+const FA_VO_RACER = { body: 0x5c6a49, wing: 0x3e4a34, belly: 0x8a9068, dark: 0x2a3222, tooth: 0xd8d0b8 };
+ANIMAL({
+  key: 'cliff-racer', name: 'Cliff racer', group: 'voth',
+  tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['semiarid', 'subhumid'], climate: FA_VO_CLIMATE, riparian: 'non', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'aggressive',
+    habitat: ['sky', 'rock'], locomotion: ['flies', 'glides', 'walks', 'climbs'] },
+  size: { length: 2.35, height: 0.85, span: 2.65 },
+  source: [{ build: 'settlements/voth', file: 'src/84-fauna.js', lines: '75-88, 91-163', note: 'ambient: 12 racers in 3 flocks circling 65-140 units over the inland ridges (RIDGES, the near ranges) on wide predatory circles' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 3, note: 'stringy; hunters eat it to spite it' },
+    hide: { amount: 1, hideM2: 1.6, note: 'the wing leather: thin, tough, for drumheads and kites' } },
+  life: { maturity: 2, lifespan: 18, litter: 2, gestation: 45, note: 'two eggs on a cliff ledge, guarded by both; gestation: incubation' },
+  w: 2.8, d: 2.6, h: 0.92,
+  data: { mass: 14, legs: 2, wings: 1, speed: { walk: 0.6, run: 2, fly: 16 }, gait: { type: 'flyer', freq: 1.2, stride: 0.2 },
+    flap: { freq: 1.3, amp: 0.45, glide: 0.6, fold: 0.12, sweep: 1.3, tuck: 0.9 }, grazePitch: 0.5,
+    herd: 'hunting packs of four over the ridges', fleeDistance: 0, aggression: 0.75,
+    schedule: ['ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'ROOST', 'IDLE', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'HUNT', 'ROOST', 'ROOST', 'ROOST', 'HUNT', 'HUNT', 'FLY', 'HUNT', 'FLY', 'ROOST', 'ROOST', 'ROOST', 'ROOST'] },
+  build: function (A) {
+    const C = FA_VO_RACER, Y = 0.48;
+    const skin = (t, a) => { const top = Math.cos(a); return top < -0.5 ? C.belly : top > 0.7 ? faVoMul(C.body, 0.85) : C.body; };
+    /* the body: rump to the base of the neck (the original box ran -0.77..0.77 m with the head in it) */
+    const bc = faVoSpline([[0, Y - 0.02, -0.76], [0, Y, -0.45], [0, Y + 0.01, -0.05], [0, Y + 0.02, 0.22], [0, Y + 0.04, 0.42]]);
+    const br = faVoProf([[0, 0.05, 0.05], [0.3, 0.12, 0.11], [0.62, 0.165, 0.13], [0.85, 0.12, 0.11], [1, 0.07, 0.07]]);
+    A.tube('skin', bc, br, 14, 12, null, { caps: true, colf: (t, a) => skin(t, a) });
+    /* the head: a long neck and a narrow toothed snout */
+    A.part('head', [0, Y + 0.04, 0.38], () => {
+      A.tube('skin', faVoSpline([[0, Y + 0.03, 0.36], [0, Y + 0.08, 0.48], [0, Y + 0.11, 0.56]]), t => [0.065 - 0.012 * t, 0.07 - 0.01 * t], 5, 10, null, { colf: (t, a) => skin(t, a) });
+      A.ellip('skin', 0, Y + 0.12, 0.6, 0.065, 0.06, 0.08, C.body, { seg: 12 });
+      A.tube('skin', t => [0, Y + 0.115 - 0.03 * t, 0.62 + 0.26 * t], t => [0.042 * (1 - 0.8 * t) + 0.004, 0.035 * (1 - 0.75 * t) + 0.004], 6, 8, null, { caps: true, colf: (t, a) => Math.cos(a) < -0.3 ? C.belly : C.body });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.05, Y + 0.145, 0.625, 0.016, 0.014, 0.018, 0xd8a028, { seg: 8 });
+        A.ellip('eye', s * 0.058, Y + 0.146, 0.628, 0.008, 0.01, 0.008, 0x0a0806, { seg: 6 });
+        for (let k = 0; k < 4; k++) A.cone('horn', [s * 0.028 * (1 - 0.15 * k), Y + 0.095 - 0.006 * k, 0.68 + 0.05 * k], [s * 0.03 * (1 - 0.15 * k), Y + 0.07 - 0.006 * k, 0.685 + 0.05 * k], 0.006, 0.001, C.tooth, 4);
+      }
+    });
+    /* the tail: long and thin (the original's 1.3-unit box), ending in a small diamond vane */
+    A.part('tail', [0, Y - 0.02, -0.74], () => {
+      const tc = faVoSpline([[0, Y - 0.02, -0.74], [0, Y - 0.06, -1.05], [0, Y - 0.1, -1.35], [0, Y - 0.12, -1.55]]);
+      A.tube('skin', tc, t => [0.05 * (1 - 0.8 * t) + 0.006, 0.045 * (1 - 0.8 * t) + 0.006], 10, 8, null, { caps: true, colf: (t, a) => skin(t, a) });
+      A.tube('skin', t => [0, Y - 0.115, -1.43 - 0.16 * t], t => [0.07 * Math.sin(Math.PI * Math.min(1, t * 1.1 + 0.05)) + 0.004, 0.008], 5, 6, C.wing, { caps: true });
+    });
+    /* the wings: 1.31 m from the body's centre (2.2 units), chord 0.5 m; darker fingers run out along the membrane */
+    for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * 0.11, Y + 0.08, 0.1], () => {
+      const W = { len: 1.22, chord: 0.5, thick: 0.022, dihedral: 0.22, sweep: 0.30, droop: 0.06, taper: 0.45, tipPow: 3, nt: 14, ns: 8,
+        colf: (t, a) => (Math.sin(t * 9) > 0.8 ? C.dark : C.wing) };
+      const c = faVoWing(A, 'skin', s, [s * 0.11, Y + 0.08, 0.1], W);
+      /* the arm and its three fingers, along the leading edge and out across the membrane */
+      const le = t => { const p = c(t); return [p[0], p[1] + 0.012, p[2] + 0.5 * (1 - 0.45 * t) * Math.sqrt(Math.max(0.03, 1 - t * t * t)) / 2 - 0.02]; };
+      A.tube('skin', le, t => [0.025 * (1 - 0.6 * t), 0.022 * (1 - 0.6 * t)], 10, 6, C.body, { caps: true });
+      for (const [t0, back] of [[0.45, 0.32], [0.6, 0.26], [0.75, 0.18]]) { const p = le(t0); A.cone('skin', p, [p[0] + s * 0.06, p[1] - 0.004, p[2] - back], 0.012, 0.004, C.dark, 4); }
+    });
+    /* the hind legs, to perch: thigh, shank, and three claws */
+    for (const [s, i] of [[1, 0], [-1, 1]]) A.part('leg' + i, [s * 0.09, Y - 0.07, -0.1], () => {
+      const pts = [[s * 0.09, Y - 0.07, -0.1], [s * 0.13, 0.26, 0.04], [s * 0.12, 0.06, -0.06]];
+      A.tube('skin', faVoSpline(pts), t => [0.05 - 0.03 * t, 0.055 - 0.032 * t], 8, 8, null, { colf: (t, a) => t < 0.4 ? C.body : C.wing });
+      for (const a of [-0.5, 0, 0.5]) A.cone('horn', [s * 0.12, 0.05, -0.06], [s * 0.12 + Math.sin(a) * 0.09, 0.006, -0.06 + Math.cos(a) * 0.09], 0.012, 0.004, C.dark, 5);
+      A.cone('horn', [s * 0.12, 0.05, -0.06], [s * 0.12, 0.006, -0.13], 0.01, 0.004, C.dark, 5);
+    });
+    A.anchor('perch', [0, 0, -0.06]);
+  }
+});
+
+/* ====================================================================== the silt strider (79c-strider-model.js 37-182, 437-574)
+   The original: a 40-unit, six-legged colossus (25 m, 15 m to its crest): a segmented thorax barrel with a keeled belly and
+   five chitin ribs, an abdomen cone, a tall arched carapace with a crest and four ridge spikes, a head with two eyes and
+   swept antennae, a long four-segment proboscis with joint collars, a hip nub per leg, and spindly two-segment legs with
+   a high bent knee (hip, knee pushed 3.6 out and 3.9 up from the hip-foot midpoint, feet splayed to 9.9). Its baked
+   colours are the chitin's (bone, mid, dark, light). Kept: every one of those parts at its own place and radius, the
+   palette (taken 12% darker: the source bakes it light under a per-instance tint) and the leg geometry; the crest and
+   spikes now follow the dome instead of floating off its ends, the ribs stand proud of the barrel all round, the shell gets
+   its lining underneath. LEFT OUT (the culture's, not the animal's): the howdah, the handler's deck and the dark hollows
+   carved into the shell's flanks: anchors 'howdah', 'handler', 'hollowL', 'hollowR' mark where they go. */
+const FA_VO_STR = { chit: 0xd2b888, mid: 0xae9068, dark: 0x866848, lite: 0xf0dcb4, lining: 0x4a3a2c, eye: 0x2a2118, leg: 0x4a3a28 };
+const FA_VO_STR_HIPZ = [6.0, 0.4, -5.6], FA_VO_STR_DOME = { c: [0, 14.6, 0.2], r: [5.9, 9.4, 8.6] };
+function faVoStrCol(hex) { return faVoMul(hex, 0.88); }
+function faVoStrDomeTop(z) { const D = FA_VO_STR_DOME, q = (z - D.c[2]) / D.r[2]; return D.c[1] + D.r[1] * Math.sqrt(Math.max(0, 1 - q * q)); }
+ANIMAL({
+  key: 'silt-strider', name: 'Silt strider', group: 'voth',
+  tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['semiarid', 'subhumid', 'humid'], climate: FA_VO_CLIMATE, riparian: 'both', abyssal: false,
+    domestic: true, herdedBy: ['voth'], diet: 'omnivore', feeding: 'detritivore', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'shallows', 'marsh'], locomotion: ['walks', 'wades'] },
+  size: { length: 25, height: 15.8 },
+  source: [{ build: 'settlements/voth', file: 'src/79c-strider-model.js', lines: '37-182, 437-574', note: 'domestic: the strider guild\'s passenger (jade-tinted) and cargo (grey) convoys walking STRIDER_ROUTES between the stations (src/66-striders.js, routing src/79a-convoys.js, src/79b-strider-nav.js); a howdah on the back, a handler on a deck at the neck' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { meat: { amount: 6000, note: 'only when one dies: the guild sells the flesh in the cantons for a week' },
+    hide: { amount: 1, hideM2: 450, note: 'the carapace chitin: armour plates, roof shells, a shell-house\'s hull' } },
+  life: { maturity: 30, lifespan: 250, litter: 1, gestation: 540, note: 'invented: a strider is older than the guild that drives it' },
+  w: 14.2, d: 25.6, h: 16.6,
+  data: { mass: 30000, legs: 6, speed: { walk: 2.4, run: 4.5 }, gait: { type: 'hexapod', freq: 0.22, stride: 4.5 }, idle: { headYaw: 0.07, headPitch: 0.02 }, grazePitch: 0.3,
+    herd: 'kept singly by the strider guild; walked in convoys of two or three', fleeDistance: 0, aggression: 0.02,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const U = FA_VO_U, P = p => [p[0] * U, p[1] * U, p[2] * U], C = {};
+    for (const k in FA_VO_STR) C[k] = k === 'leg' ? FA_VO_STR[k] : faVoStrCol(FA_VO_STR[k]);
+    const grain = (base, x, y, z, amp) => { const n = faNoise(x * 0.6, y * 0.6, z * 0.6) - 0.5; const c = new THREE.Color().setRGB(base[0], base[1], base[2]); return [c.r * (1 + amp * n), c.g * (1 + amp * n), c.b * (1 + amp * n)]; };
+    /* the thorax barrel: r 5.0 behind to 4.4 in front, z -11.5..5.5, centre 14.2; the keeled underbelly below it */
+    const thR = z => 5.0 + (4.4 - 5.0) * (z + 11.5) / 17;
+    A.tube('horn', t => P([0, 14.2, -11.5 + 17 * t]), t => { const r = thR(-11.5 + 17 * t) * U; return [r, r]; }, 16, 18, null, { caps: true, colf: (t, a) => Math.cos(a) < -0.55 ? C.dark : grain(C.mid, 0, a * 4, t * 17, 0.12) });
+    A.tube('horn', t => P([0, 11.7, -10.5 + 15 * t]), t => { const r = (3.7 + (3.3 - 3.7) * t) * U; return [r * 0.95, r]; }, 10, 14, C.dark, { caps: true });
+    /* five chitin ribs, proud of the barrel all round (the source's rearmost two sat inside it) */
+    for (const [z, r0] of [[5.2, 4.6], [1.6, 5.3], [-2.2, 5.6], [-6.2, 5.3], [-9.8, 4.4]]) {
+      const r = Math.max(r0, thR(z) + 0.3) * U;
+      A.tube('horn', t => P([0, 14.2, z - 0.55 + 1.1 * t]), () => [r, r], 1, 18, C.lite, { caps: true });
+    }
+    /* the abdomen, tapering to a point behind, its segments banded */
+    A.tube('horn', t => P([0, 14.0 + 0.4 * t, -11.2 - 6.65 * t]), t => { const r = 4.3 * U * Math.pow(1 - t, 0.75) + 0.02; return [r, r * 0.95]; }, 12, 16, null,
+      { caps: true, colf: (t, a) => (Math.sin(t * 26) > 0.7 ? C.dark : Math.cos(a) < -0.6 ? C.dark : C.mid) });
+    /* the tall arched carapace: the upper half of an ellipsoid on its rim, lined beneath */
+    const D = FA_VO_STR_DOME;
+    faVoDome(A, 'horn', P(D.c), P(D.r), null, 14, 30, { under: C.lining, colf: (u, v) => { const ph = u * Math.PI / 2; return Math.sin(ph * 22) > 0.88 && u > 0.25 ? C.lite : grain(C.chit, v * 20, u * 8, 0, 0.14); } });
+    /* the crest spine along the dome's top, and four ridge spikes on it */
+    A.tube('horn', t => { const z = -6.55 + 13.5 * t; return P([0, faVoStrDomeTop(z) - 0.2, z]); }, t => [0.55 * U, (0.6 + 0.4 * Math.sin(Math.PI * t)) * U], 12, 8, C.lite, { caps: true });
+    for (const z of [3.8, 0.6, -2.6, -5.6]) { const y = faVoStrDomeTop(z) + 0.2 + 0.4 * Math.sin(Math.PI * (z + 6.55) / 13.5); A.cone('horn', P([0, y, z]), P([0, y + 2.4, z - 0.3]), 0.85 * U, 0.04, C.lite, 8); }
+    /* hip sockets: a nub per leg, so the legs come out of something */
+    for (const hz of FA_VO_STR_HIPZ) for (const s of [1, -1]) A.ellip('horn', s * 4.7 * U, 12.6 * U, hz * U, 1.55 * U, 1.55 * U, 1.55 * U, C.dark, { seg: 10 });
+    /* the head, eyes, antennae and the long segmented proboscis: one part, turning about the back of the head */
+    A.part('head', P([0, 14.6, 5.2]), () => {
+      A.ellip('horn', 0, 14.6 * U, 7.8 * U, 3.4 * U, 3.2 * U, 3.6 * U, null, { seg: 16, colf: (x, y, z) => y < -1.2 ? C.dark : grain(C.chit, x, y, z, 0.12) });
+      for (const s of [1, -1]) {
+        A.ellip('eye', s * 2.2 * U, 16.3 * U, 9.4 * U, 0.95 * U, 0.95 * U, 0.95 * U, C.eye, { seg: 10 });
+        /* the antenna, sweeping up and forward (the source's rotated cylinder: base and tip worked out) */
+        A.tube('horn', faVoSpline([P([s * 1.31, 15.74, 8.74]), P([s * 1.95, 17.6, 11.5]), P([s * 2.49, 19.06, 14.06])]), t => { const r = (0.3 - 0.19 * t) * U; return [r, r]; }, 8, 6, C.dark, { caps: true });
+      }
+      /* four tapering tubes on one line, nose-down, with a collar at each joint (the owner's trimmed proboscis) */
+      const z0 = 10.9, y0 = 13.9, dz = 3.3, dy = -1.07, r = [2.35, 1.92, 1.50, 1.02, 0.38];
+      for (let i = 0; i < 4; i++) {
+        A.tube('horn', t => P([0, y0 + dy * (i + t * 1.02 - 0.01), z0 + dz * (i + t * 1.02 - 0.01)]), t => { const q = (r[i] + (r[i + 1] - r[i]) * t) * U; return [q, q]; }, 3, 12, i % 2 ? C.mid : C.dark, { caps: i === 3 });
+        if (i < 3) { const jz = z0 + dz * (i + 1), jy = y0 + dy * (i + 1), q = r[i + 1] * 1.16 * U, n = 0.45 / Math.hypot(dz, dy);
+          A.tube('horn', t => P([0, jy + dy * n * (2 * t - 1), jz + dz * n * (2 * t - 1)]), () => [q, q], 1, 12, C.lite, { caps: true }); }
+      }
+      A.ellip('mouth', 0, (y0 + dy * 4) * U, (z0 + dz * 4 + 0.15) * U, 0.3 * U, 0.3 * U, 0.2 * U, 0x2a1810, { seg: 8 });
+    });
+    /* the six legs: hip, a high knee pushed out and up from the hip-foot midpoint, a foot splayed wide; femur and tibia taper
+       as the source's bar (0.62 -> 0.42 of its width: femur 1.15, tibia 0.78). Standing, the front feet reach forward and the
+       hind feet back (the source's stride is 7.5 units; this stance takes 1.5 of it) */
+    for (let i = 0; i < 6; i++) {
+      const pair = i >> 1, s = (i & 1) ? -1 : 1, hz = FA_VO_STR_HIPZ[pair], fz = hz + [1.5, 0, -1.5][pair];
+      const hip = [s * 4.7, 12.6, hz], foot = [s * 9.9, 0.25, fz], knee = [(hip[0] + foot[0]) / 2 + s * 3.6, (hip[1] + 0) / 2 + 3.9, (hz + fz) / 2];
+      A.part('leg' + i, P(hip), () => {
+        const lc = (t, a) => faVoMix(C.leg, 0x2a2016, 0.25 * (1 - Math.cos(a)) / 2);
+        A.tube('horn', t => P([hip[0] + (knee[0] - hip[0]) * t, hip[1] + (knee[1] - hip[1]) * t, hip[2] + (knee[2] - hip[2]) * t]), t => { const q = (0.62 - 0.2 * t) * 1.15 * U; return [q, q]; }, 4, 10, null, { colf: lc });
+        A.ellip('horn', knee[0] * U, knee[1] * U, knee[2] * U, 0.62 * U, 0.62 * U, 0.62 * U, C.leg, { seg: 10 });
+        A.tube('horn', t => P([knee[0] + (foot[0] - knee[0]) * t, knee[1] + (foot[1] - knee[1]) * t, knee[2] + (foot[2] - knee[2]) * t]), t => { const q = (0.62 - 0.2 * t) * 0.78 * U; return [q, q]; }, 6, 10, null, { colf: lc });
+        A.cone('horn', P([foot[0], 0.6, foot[2]]), [foot[0] * U, 0.0, foot[2] * U], 0.4 * U, 0.06 * U, 0x2a2016, 8);   /* the foot's point */
+        A.cone('horn', P([knee[0], knee[1] + 0.3, knee[2]]), P([knee[0] + s * 0.6, knee[1] + 1.6, knee[2]]), 0.22 * U, 0.03, C.leg, 5);   /* a knee spur */
+      });
+    }
+    /* where a people's riding gear goes (the source's howdah floor, handler's deck and the hollows in the flanks) */
+    A.anchor('howdah', P([0, 20.2, -7.8])); A.anchor('handler', P([0, 20.4, 7.2]));
+    A.anchor('hollowL', P([5.35, 15.6, -0.6])); A.anchor('hollowR', P([-5.35, 15.6, -0.6]));
+    A.anchor('lead', P([0, 13.9, 10.9]));
+  }
+});
+
+/* ====================================================================== the arena tiger (78j-life-arena.js 187-223, 533-535)
+   The original: one pit-beast silhouette for tiger and lizard, told apart by instance colour and scale: the tiger is
+   0xbe7530 at 1.15. A barrel body (r 0.75 front, 0.90 behind, 3.6 long), a box head with a paler snout, shoulder and haunch
+   masses over four leg posts, paler paws and ears, a tail behind. At 1.15 x 0.595 m it is a big beast: 4.8 m nose to tail
+   tip, 1.6 m at the shoulder. Kept: that size, every mass at its place, the orange and the pale parts; refined into a cat
+   (a tucked waist, a jointed hind leg, a hanging tail where the source's thickened toward the tip) with a tiger's stripes
+   and cream belly and muzzle. */
+const FA_VO_TIGER = { base: 0xbe7530, pale: 0xeee2cc, stripe: 0x24160c, nose: 0x3a2420, eye: 0xd8a830 };
+ANIMAL({
+  key: 'arena-tiger', name: 'Arena tiger', group: 'voth',
+  tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['subhumid', 'humid'], climate: FA_VO_CLIMATE, riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'crepuscular', temperament: 'aggressive',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'leaps', 'swims'] },
+  size: { length: 4.8, height: 1.7 },
+  source: [{ build: 'settlements/voth', file: 'src/78j-life-arena.js', lines: '187-223, 525-536', note: 'captive: caught for the arena\'s afternoon bouts (12:00-18:00), loosed from the gate against the condemned and the armed (ARENA_STR tiger 1.8); drawn at 1.15x the pit-beast mesh, tinted 0xbe7530' }],
+  traits: { edible: false, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { hide: { amount: 1, hideM2: 5, note: 'the striped pelt: a victor\'s cloak, sold at the arena gate' } },
+  life: { maturity: 3.5, lifespan: 18, litter: 3, gestation: 105 },
+  w: 1.8, d: 5.0, h: 1.8,
+  data: { mass: 650, legs: 4, speed: { walk: 1.5, run: 15 }, gait: { type: 'quadruped', freq: 0.9, stride: 1.2 }, grazePitch: 0.6,
+    herd: 'solitary; the arena keeps a few in its pits', fleeDistance: 0, aggression: 0.85,
+    schedule: ['REST', 'REST', 'REST', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'PATROL', 'HUNT', 'HUNT', 'HUNT', 'PATROL', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const K = 1.15 * FA_VO_U, P = p => [p[0] * K, p[1] * K, p[2] * K], C = FA_VO_TIGER;
+    /* stripes: dark bands across the body, broken by noise, kept off the pale belly */
+    const coat = (x, y, z, top) => {
+      if (top < -0.55) return C.pale;
+      const n = faNoise(x * 2.1 + 5, y * 2.1, z * 2.1), b = Math.sin(z * 9.5 + n * 4 + Math.abs(x) * 2.5);
+      return b > 0.72 && top > -0.45 ? C.stripe : (top < -0.3 ? faVoMix(C.base, C.pale, 0.5) : C.base);
+    };
+    /* the body: rump to chest, a tucked waist (the source's barrel, r 0.9 behind and 0.75 in front, z -1.6..2.0) */
+    const bc = faVoSpline([P([0, 1.42, -1.75]), P([0, 1.52, -1.2]), P([0, 1.47, 0.2]), P([0, 1.55, 1.3]), P([0, 1.62, 2.0])]);
+    const br = faVoProf([[0, 0.45, 0.5], [0.13, 0.72, 0.86], [0.45, 0.6, 0.7], [0.78, 0.7, 0.9], [1, 0.52, 0.66]]);
+    A.tube('coat', bc, t => br(t).map(v => v * K), 16, 14, null, { caps: true, colf: (t, a) => { const p = bc(t); return coat(Math.sin(a) * 0.8, p[1] / K, p[2] / K, Math.cos(a)); } });
+    /* the head: the source's box head (1.1 x 1.0 x 1.2) and paler snout, on a short thick neck; ears and jaw ride on it */
+    A.part('head', P([0, 1.6, 1.75]), () => {
+      A.tube('coat', faVoSpline([P([0, 1.55, 1.6]), P([0, 1.66, 1.92]), P([0, 1.74, 2.15])]), t => [(0.5 - 0.06 * t) * K, (0.52 - 0.06 * t) * K], 4, 12, null, { colf: (t, a) => coat(Math.sin(a), 1.6, 1.8 + t * 0.3, Math.cos(a)) });
+      A.ellip('coat', 0, 1.76 * K, 2.25 * K, 0.55 * K, 0.5 * K, 0.58 * K, null, { seg: 14, colf: (x, y, z) => { const top = y / (0.5 * K);
+        if (Math.abs(x) > 0.38 * K && y < 0.05 * K) return C.pale;   /* the cheek ruff */
+        return top > 0.45 && Math.sin(x / K * 22) > 0.55 ? C.stripe : coat(x / K, 1.76 + y / K, 2.25 + z / K, top); } });
+      A.ellip('coat', 0, 1.5 * K, 2.8 * K, 0.4 * K, 0.25 * K, 0.4 * K, C.pale, { seg: 12 });
+      A.ellip('skin', 0, 1.62 * K, 3.17 * K, 0.13 * K, 0.08 * K, 0.06 * K, C.nose, { seg: 8 });
+      for (const s of [-1, 1]) { A.ellip('eye', s * 0.27 * K, 1.9 * K, 2.68 * K, 0.08 * K, 0.06 * K, 0.06 * K, C.eye, { seg: 8 }); A.ellip('eye', s * 0.29 * K, 1.9 * K, 2.71 * K, 0.025 * K, 0.05 * K, 0.03 * K, 0x080605, { seg: 6 }); }
+    });
+    A.part('jaw', P([0, 1.42, 2.4]), () => { A.ellip('coat', 0, 1.33 * K, 2.72 * K, 0.3 * K, 0.12 * K, 0.36 * K, C.pale, { seg: 10 }); A.ellip('mouth', 0, 1.4 * K, 2.95 * K, 0.22 * K, 0.04 * K, 0.18 * K, 0x5a2a24, { seg: 8 }); });
+    for (const s of [1, -1]) A.part(s > 0 ? 'earL' : 'earR', P([s * 0.36, 2.18, 2.0]), () => {
+      A.ellip('coat', s * 0.37 * K, 2.32 * K, 2.0 * K, 0.15 * K, 0.18 * K, 0.06 * K, null, { seg: 10, rz: -s * 0.25, colf: (x, y, z) => z > 0.02 * K ? C.pale : C.stripe });
+    });
+    /* the tail: from the rump it hangs and lifts at the tip, ringed, with a black end */
+    A.part('tail', P([0, 1.58, -1.7]), () => {
+      const tc = faVoSpline([P([0, 1.58, -1.7]), P([0, 1.42, -2.35]), P([0, 1.2, -3.0]), P([0, 1.18, -3.45]), P([0, 1.34, -3.75])]);
+      A.tube('coat', tc, t => { const r = (0.2 - 0.07 * t) * K; return [r, r]; }, 14, 8, null, { caps: true, colf: t => t > 0.9 || (t > 0.4 && Math.sin(t * 40) > 0.4) ? C.stripe : C.base });
+    });
+    /* the legs: the source's shoulder and haunch masses ride on the legs; the forelegs straight, the hind ones bent at the
+       hock; pale paws (the source's 0.52 x 0.24 x 0.66 boxes) */
+    for (const [z, front, s, i] of [[1.2, 1, 1, 0], [1.2, 1, -1, 1], [-1.2, 0, 1, 2], [-1.2, 0, -1, 3]]) A.part('leg' + i, P([s * 0.6, 1.35, z]), () => {
+      const m = (front ? [0.59, 0.56, 0.71] : [0.665, 0.64, 0.8]).map(v => v * 0.88);   /* the source's masses, a little slimmer so the legs read */
+      A.ellip('coat', s * 0.56 * K, (front ? 1.38 : 1.32) * K, z * K, m[0] * K, m[1] * K, m[2] * K, null, { seg: 12, colf: (x, y, zz) => Math.sin((z + zz / K) * 8 + y / K * 3) > 0.82 ? C.stripe : C.base });
+      const pts = front ? [[s * 0.62, 1.2, z + 0.05], [s * 0.62, 0.72, z + 0.02], [s * 0.62, 0.3, z + 0.08], [s * 0.62, 0.14, z + 0.12]]
+        : [[s * 0.62, 1.15, z - 0.1], [s * 0.62, 0.78, z - 0.38], [s * 0.62, 0.42, z - 0.24], [s * 0.62, 0.14, z - 0.04]];
+      const lc = faVoSpline(pts.map(P));
+      A.tube('coat', lc, t => { const r = ((front ? 0.3 : 0.32) - 0.1 * t) * K; return [r, r * 1.08]; }, 8, 10, null, { colf: (t, a) => { const p = lc(t); return Math.sin(a * s) < -0.5 ? faVoMix(C.base, C.pale, 0.6) : coat(s * 0.62, p[1] / K, p[2] / K, 0.2); } });
+      A.ellip('coat', s * 0.62 * K, 0.12 * K, (z + (front ? 0.2 : 0.06)) * K, 0.26 * K, 0.12 * K, 0.33 * K, C.pale, { seg: 10 });
+    });
+  }
+});
+
+/* ====================================================================== the pit lizard (78j-life-arena.js 187-223, 533-535)
+   The original: the same pit-beast silhouette as the tiger at 0.92, tinted 0x6d8a4b (the caravans' draught "lizard" is a
+   data field on a generic quadruped, 78i-life-trade.js). Kept: its length (3.9 m nose to tail at 0.92 x 0.595 m), the barrel
+   body, the boxy head with a paler jaw, the shoulder and haunch masses and the green; refined into a lizard: the legs
+   splay out at the elbow and knee onto clawed feet (a semi-sprawl, so its back is lower than the source's), the tail is
+   thick at the root and tapers (the source's thickened toward the tip), a row of scutes runs down the back and it is banded. */
+const FA_VO_LIZ = { base: 0x6d8a4b, belly: 0xc4c48a, band: 0x3e5228, scute: 0x4a5c32, eye: 0xc89a28, claw: 0x2a2a20 };
+ANIMAL({
+  key: 'pit-lizard', name: 'Pit lizard', group: 'voth',
+  tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['semiarid', 'subhumid'], climate: FA_VO_CLIMATE, riparian: 'both', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'carnivore', feeding: 'predator', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 3.9, height: 1.05 },
+  source: [{ build: 'settlements/voth', file: 'src/78j-life-arena.js', lines: '187-223, 525-536', note: 'captive: an arena beast, hunted by two armed men in the pit (ARENA_STR lizard 1.2); drawn at 0.92x the pit-beast mesh, tinted 0x6d8a4b' },
+    { build: 'settlements/voth', file: 'src/78i-life-trade.js', lines: '195-206, 372', note: 'domestic: a merchant caravan\'s draught animal (ox, lizard or beetle, a data field on one generic quadruped)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: true },
+  yields: { meat: { amount: 70, note: 'white, tail meat the best' }, eggs: { amount: 18, note: 'one clutch a year, buried in warm sand' },
+    hide: { amount: 1, hideM2: 3, note: 'scaled hide: boots, shield facings' } },
+  life: { maturity: 3, lifespan: 30, litter: 18, gestation: 70, note: 'eggs; gestation: incubation in the sand' },
+  w: 1.75, d: 4.2, h: 1.15,
+  data: { mass: 300, legs: 4, speed: { walk: 1.0, run: 6 }, gait: { type: 'sprawl', freq: 1.0, stride: 0.7 }, grazePitch: 0.35,
+    herd: 'solitary wild; caravans keep one to a cart', fleeDistance: 2, aggression: 0.5,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const K = 0.92 * FA_VO_U, P = p => [p[0] * K, p[1] * K, p[2] * K], C = FA_VO_LIZ;
+    const skin = (z, a) => { const top = Math.cos(a); if (top < -0.5) return C.belly;
+      const n = faNoise(z * 3.1, a * 2.0, 4.4); return (Math.sin(z * 4.2) > 0.55 && top > -0.3) || n > 0.72 ? C.band : C.base; };
+    /* the body: low and broad (the source's barrel, r 0.9 behind and 0.75 in front) */
+    const bc = faVoSpline([P([0, 1.22, -1.75]), P([0, 1.3, -1.1]), P([0, 1.32, 0.2]), P([0, 1.34, 1.3]), P([0, 1.38, 1.95])]);
+    const br = faVoProf([[0, 0.55, 0.45], [0.15, 0.82, 0.62], [0.5, 0.9, 0.66], [0.82, 0.78, 0.6], [1, 0.52, 0.44]]);
+    A.tube('skin', bc, t => br(t).map(v => v * K), 16, 14, null, { caps: true, colf: (t, a) => skin(bc(t)[2] / K, a) });
+    /* scutes down the spine */
+    for (let k = 0; k < 9; k++) { const t = 0.08 + k * 0.105, p = bc(t), h = br(t)[1] * K; A.cone('horn', [0, p[1] + h - 0.02, p[2]], [0, p[1] + h + 0.07 * K + 0.04, p[2] - 0.06], 0.07 * K, 0.008, C.scute, 5); }
+    /* the head: a wedge from the neck to the snout, eyes on its sides; the paler jaw beneath it */
+    A.part('head', P([0, 1.38, 1.8]), () => {
+      const hc = t => P([0, 1.42 - 0.12 * t, 1.75 + 1.55 * t]), hr = faVoProf([[0, 0.5, 0.42], [0.35, 0.52, 0.4], [0.8, 0.34, 0.24], [1, 0.2, 0.14]]);
+      A.tube('skin', hc, t => hr(t).map(v => v * K), 10, 12, null, { caps: true, colf: (t, a) => Math.cos(a) < -0.4 ? C.belly : (t > 0.2 && Math.cos(a) > 0.6 && faNoise(t * 9, a * 3, 1) > 0.6 ? C.band : C.base) });
+      for (const s of [-1, 1]) { A.ellip('eye', s * 0.4 * K, 1.58 * K, 2.42 * K, 0.1 * K, 0.08 * K, 0.1 * K, C.eye, { seg: 8 }); A.ellip('eye', s * 0.44 * K, 1.58 * K, 2.44 * K, 0.03 * K, 0.07 * K, 0.04 * K, 0x080605, { seg: 6 });
+        A.ellip('mouth', s * 0.1 * K, 1.4 * K, 3.24 * K, 0.035 * K, 0.025 * K, 0.03 * K, 0x1a1410, { seg: 6 }); }
+    });
+    A.part('jaw', P([0, 1.15, 1.95]), () => {
+      A.tube('skin', t => P([0, 1.12 - 0.03 * t, 1.85 + 1.35 * t]), t => [(0.42 - 0.24 * t) * K, (0.13 - 0.06 * t) * K], 6, 10, C.belly, { caps: true });
+    });
+    /* the tail: thick at the root, tapering to a whip that rests near the ground */
+    A.part('tail', P([0, 1.2, -1.65]), () => {
+      const tc = faVoSpline([P([0, 1.2, -1.65]), P([0, 0.95, -2.5]), P([0.12, 0.6, -3.2]), P([0.32, 0.36, -3.85])]);
+      A.tube('skin', tc, t => { const r = (0.55 * Math.pow(1 - t, 0.9) + 0.04) * K; return [r, r * 0.85]; }, 14, 10, null, { caps: true, colf: (t, a) => skin(-1.65 - t * 2.2, a) });
+    });
+    /* the legs: shoulder and haunch masses at the source's places, the limb splaying out to an elbow (knee) and down onto a
+       clawed foot */
+    for (const [z, front, s, i] of [[1.2, 1, 1, 0], [1.2, 1, -1, 1], [-1.2, 0, 1, 2], [-1.2, 0, -1, 3]]) A.part('leg' + i, P([s * 0.6, 1.2, z]), () => {
+      const m = front ? [0.56, 0.5, 0.68] : [0.64, 0.56, 0.78];
+      A.ellip('skin', s * 0.6 * K, 1.2 * K, z * K, m[0] * K, m[1] * K, m[2] * K, null, { seg: 12, colf: (x, y) => y < -0.25 * K ? C.belly : C.base });
+      const el = [s * 1.12, 0.92, z + (front ? 0.05 : -0.1)], ft = [s * 1.2, 0.12, z + (front ? 0.22 : 0.05)];
+      A.tube('skin', faVoSpline([P([s * 0.75, 1.15, z]), P([(s * 0.75 + el[0]) / 2, 1.08, z]), P(el)]), t => { const r = (0.3 - 0.06 * t) * K; return [r, r]; }, 5, 10, null, { colf: (t, a) => Math.cos(a) < -0.3 ? C.belly : C.base });
+      A.ellip('skin', el[0] * K, el[1] * K, el[2] * K, 0.24 * K, 0.24 * K, 0.24 * K, C.base, { seg: 10 });
+      A.tube('skin', faVoSpline([P(el), P([s * 1.18, 0.5, (el[2] + ft[2]) / 2]), P(ft)]), t => { const r = (0.22 - 0.06 * t) * K; return [r, r]; }, 6, 10, null, { colf: (t, a) => skin(z + t, a) });
+      A.ellip('skin', ft[0] * K, 0.1 * K, (ft[2] + 0.1) * K, 0.24 * K, 0.1 * K, 0.3 * K, C.base, { seg: 10 });
+      for (let k = 0; k < 5; k++) { const a = (k - 2) * 0.38 + s * 0.15;
+        A.cone('horn', [ft[0] * K, 0.06 * K, (ft[2] + 0.2) * K], [(ft[0] + Math.sin(a) * 0.42) * K, 0.02, (ft[2] + 0.2 + Math.cos(a) * 0.42) * K], 0.05 * K, 0.012, C.claw, 4); }
+    });
+  }
+});
+
+/* ====================================================================== the giant beetle (65k-granary-mills-ranch.js 435-476; 78j-life-arena.js 225-251)
+   The ranch's beetleModel() is the richer original (the arena's copy lifts its proportions): an abdomen, thorax and head,
+   each a dome (r 1.5, 1.0, 0.55 units; 0.88, 0.94, 0.86 as tall) on a body raised by its own legs (0.95 of the abdomen's
+   radius); the thorax a shade lighter, the head a shade darker, the legs darker still (shade -0.24); two antennae forward
+   and out; six legs in three pairs. Its shell colour is a bark or a leaf tone shaded -0.22; the arena's is 0x4b4034 at
+   1.15. Kept: every dome at its place and size, the shades, all three shell colours (variants) and both sizes (breeds);
+   refined: the domes get an underside, the elytra a seam, the antennae rise, and the six stub posts become jointed legs
+   (coxa, a knee out past the shell's rim, a shin down to a claw) planted where the posts stood. */
+const FA_VO_BEETLE_SHELL = [faVoShade(0x5d5140, -0.22), faVoShade(0x4e5a34, -0.22), 0x4b4034];
+ANIMAL({
+  key: 'giant-beetle', name: 'Giant beetle', group: 'voth',
+  tags: { biomes: ['swbay'], koppen: FA_VO_KOPPEN, aridity: ['semiarid', 'subhumid', 'humid'], climate: FA_VO_CLIMATE, riparian: 'both', abyssal: false,
+    domestic: true, herdedBy: ['voth'], diet: 'herbivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
+    habitat: ['ground', 'marsh', 'pen'], locomotion: ['walks', 'burrows'] },
+  size: { length: 3.6, height: 1.63 },
+  source: [{ build: 'settlements/voth', file: 'src/65k-granary-mills-ranch.js', lines: '435-476, 556-561', note: 'domestic livestock: a scatter of static beetles in beetleRanch()\'s fenced corral with a byre and feed troughs (defined; not yet placed in the city)' },
+    { build: 'settlements/voth', file: 'src/78j-life-arena.js', lines: '225-251, 525-530', note: 'captive: an arena pit beast ("one blade against a shell", ARENA_STR beetle 1.45), drawn at 1.15, tinted 0x4b4034' },
+    { build: 'settlements/voth', file: 'src/78i-life-trade.js', lines: '195-206, 372', note: 'draught: a merchant caravan\'s beetle (a data field on one generic quadruped)' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: true },
+  yields: { meat: { amount: 150, note: 'pale, sweet; boiled in the shell' }, eggs: { amount: 40, note: 'laid in the byre\'s litter; eaten pickled' },
+    hide: { amount: 1, hideM2: 5, note: 'the shell: chitin plates for armour, bowls and roofing' } },
+  life: { maturity: 1.5, lifespan: 12, litter: 40, gestation: 18, note: 'eggs, then a grub a season in the byre\'s dung; gestation: incubation' },
+  variants: 3, variantNames: ['ranch: bark-brown', 'ranch: moss-green', 'arena: umber'],
+  breeds: { ranch: { scale: 1, mass: 900, role: 'livestock and draught' }, pit: { scale: 1.15, mass: 1370, role: 'arena pit beetle' } },
+  w: 2.2, d: 3.8, h: 1.8,
+  data: { mass: 900, legs: 6, speed: { walk: 0.8, run: 2.5 }, gait: { type: 'hexapod', freq: 1.2, stride: 0.45 }, grazePitch: 0.3,
+    herd: 'a ranch herd of six to twelve in a corral; caravans keep one to a cart', fleeDistance: 1, aggression: 0.1,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const K = FA_VO_U * A.S, P = p => [p[0] * K, p[1] * K, p[2] * K];
+    const shell = FA_VO_BEETLE_SHELL[A.variant] || FA_VO_BEETLE_SHELL[0], leg = faVoShade(shell, -0.24), under = faVoShade(shell, -0.4);
+    const LH = 1.425, bodyLen = 4.6;
+    const sheen = (hex, u, v, k) => { const c = new THREE.Color(hex), n = 1 + 0.18 * (faNoise(u * 6, v * 30, k) - 0.5) + 0.12 * Math.pow(Math.max(0, 1 - u * 1.6), 3); return [c.r * n, c.g * n, c.b * n]; };
+    /* the abdomen, thorax and head domes on the leg-top plane; each has an underside */
+    const abd = [0, LH, -bodyLen * 0.30], thx = [0, LH, bodyLen * 0.06], hd = [0, LH + 0.15, bodyLen * 0.40];
+    faVoDome(A, 'chitin', P(abd), P([1.5, 1.32, 1.5]), null, 10, 24, { colf: (u, v) => Math.abs(Math.cos(v * TAU)) < 0.025 && Math.sin(v * TAU) < 0.3 ? under : sheen(shell, u, v, 1) });
+    A.ellip('chitin', abd[0] * K, LH * K, abd[2] * K, 1.42 * K, 0.34 * K, 1.42 * K, under, { seg: 16 });
+    const thc = faVoShade(shell, 0.05);
+    faVoDome(A, 'chitin', P(thx), P([1.0, 0.94, 1.0]), null, 8, 20, { colf: (u, v) => sheen(thc, u, v, 2) });
+    A.ellip('chitin', thx[0] * K, LH * K, thx[2] * K, 0.94 * K, 0.3 * K, 0.94 * K, under, { seg: 14 });
+    /* the head, with its antennae: it turns about the thorax's front */
+    A.part('head', P([0, LH + 0.1, bodyLen * 0.30]), () => {
+      const hc = faVoShade(shell, -0.05);
+      faVoDome(A, 'chitin', P(hd), P([0.55, 0.473, 0.55]), null, 6, 16, { colf: (u, v) => sheen(hc, u, v, 3) });
+      A.ellip('chitin', hd[0] * K, hd[1] * K, hd[2] * K, 0.5 * K, 0.2 * K, 0.5 * K, under, { seg: 10 });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.4 * K, (hd[1] + 0.18) * K, (hd[2] + 0.22) * K, 0.12 * K, 0.1 * K, 0.12 * K, 0x0e0c0a, { seg: 8 });
+        /* the antenna: from the head's front, forward, out and up (the source's 1.1-unit bar at 0.4 rad out) */
+        A.tube('horn', faVoSpline([P([s * 0.2, hd[1] + 0.3, hd[2] + 0.42]), P([s * 0.42, hd[1] + 0.62, hd[2] + 0.9]), P([s * 0.62, hd[1] + 0.72, hd[2] + 1.38])]),
+          () => [0.05 * K, 0.05 * K], 6, 5, leg, { caps: true });
+        A.cone('horn', P([s * 0.12, hd[1] - 0.1, hd[2] + 0.5]), P([s * 0.05, hd[1] - 0.22, hd[2] + 0.75]), 0.08 * K, 0.01, under, 5);   /* the mandibles */
+      }
+    });
+    /* six legs where the source's posts stood (thorax 0.85 out, abdomen 0.80 and 0.55 of its radius): a coxa under the shell,
+       the knee out past the rim, the shin down to a claw */
+    const LEGS = [[bodyLen * 0.06, 1.0 * 0.85, 1.2, 0.35], [-bodyLen * 0.20, 1.5 * 0.80, 1.55, 0.0], [-bodyLen * 0.44, 1.5 * 0.55, 1.42, -0.35]];
+    for (let i = 0; i < 6; i++) {
+      const pair = i >> 1, s = (i & 1) ? -1 : 1, [lz, lr, kx, fwd] = LEGS[pair];
+      const cox = [s * 0.5, LH - 0.12, lz], knee = [s * kx, LH - 0.05, lz + fwd * 0.4], foot = [s * Math.max(lr, kx - 0.2), 0.04, lz + fwd];
+      A.part('leg' + i, P(cox), () => {
+        A.tube('horn', faVoSpline([P(cox), P([(cox[0] + knee[0]) / 2, LH + 0.05, (cox[2] + knee[2]) / 2]), P(knee)]), t => [(0.19 - 0.04 * t) * K, (0.22 - 0.05 * t) * K], 5, 8, leg);
+        A.ellip('horn', knee[0] * K, knee[1] * K, knee[2] * K, 0.16 * K, 0.16 * K, 0.16 * K, leg, { seg: 8 });
+        A.tube('horn', t => P([knee[0] + (foot[0] - knee[0]) * t, knee[1] + (foot[1] - knee[1]) * t, knee[2] + (foot[2] - knee[2]) * t]), t => { const r = (0.15 - 0.07 * t) * K; return [r, r]; }, 5, 8, leg);
+        A.cone('horn', P([foot[0], 0.12, foot[2]]), [(foot[0] + s * 0.12) * K, 0.0, (foot[2] + 0.18) * K], 0.06 * K, 0.01, under, 5);
+        A.cone('horn', P([foot[0], 0.12, foot[2]]), [(foot[0] - s * 0.04) * K, 0.0, (foot[2] - 0.16) * K], 0.05 * K, 0.01, under, 5);
+      });
+    }
+    A.anchor('pack', P([0, LH + 1.32, abd[2]])); A.anchor('yoke', P([0, LH + 0.6, thx[2]])); A.anchor('lead', P([0, LH, hd[2] + 0.5]));
+  }
+});
+
+/* ---- the packed detail maps (tex/) ---- */
+const FA_TEX = {"chitin": {"lib": "organic.chitin", "map": "data:image/webp;base64,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", "mean": 0.6, "scale": 0.35}, "coat": {"lib": "hide.fur.brown", "map": "data:image/webp;base64,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", "mean": 0.6, "scale": 0.18}, "hair": {"lib": "hair.crest", "map": "data:image/webp;base64,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", "mean": 0.6, "scale": 0.25}, "horn": {"lib": "bone.horn", "map": "data:image/webp;base64,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", "mean": 0.6, "scale": 0.12}, "skin": {"lib": "hide.leather008", "map": "data:image/webp;base64,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", "mean": 0.6, "scale": 0.45}};
+/* ---- kits/fauna/krator-fauna-runtime.js ---- */
+/* ======================================================================
+   Krator Fauna: the runtime (kits/fauna/krator-fauna-runtime.js), the only thing the bundle exposes:
+
+     KratorFauna.list()                      every entry: { key, name, group, variants, variantNames, w, d, h, breeds }
+     KratorFauna.entry(key)                  the entry (data: tags, traits, yields, life, data)
+     KratorFauna.build(key, { variant, breed, pose, seed })   -> a THREE.Group: one child group per PART turned about its
+                                             pivot (userData.parts: { body, head, tail, jaw, earL, earR, legs:[4] }),
+                                             userData { key, name, variant, breed, tags, traits, yields, life, data,
+                                             anchors, tris, w, d, h }. Origin under the body on the ground, +z the snout.
+     KratorFauna.animate(group, t, mode, o)  mode 'idle' | 'graze' | 'walk' | 'rest'; t seconds; o.phase offsets the herd.
+                                             It only turns the part groups (and bobs the body): the geometry never changes.
+     KratorFauna.profile(key, breed, pose)   the body profile a host fits tack to (the salamander's: at(t) -> {z,y,hw,hh})
+     KratorFauna.lifeOf(key)                 the life layer's record: faction-free data a world gives a faction and a job
+     KratorFauna.setTextures(on), textures() the library detail maps (FA_TEX, packed by fauna_bundle.py): { pending, families }
+     KratorFauna.warm()                      start every detail map decoding now
+   Materials are shared per family across every animal on a page (one program each). A family with a packed map gets
+   it as a triplanar DETAIL map in the part's own frame (the pattern rides on a moving leg); the vertex colour keeps
+   the animal's colour and the set's mean brightness is divided back out. Colours are linear (the renderer's sRGB
+   output converts them).
+   ====================================================================== */
+const KratorFaunaAPI = (function () {
+  'use strict';
+  const LOOK = { coat: [0.95, 0], hair: [0.9, 0], skin: [0.45, 0], horn: [0.5, 0], hoof: [0.6, 0], eye: [0.12, 0], mouth: [0.6, 0], plain: [0.8, 0], chitin: [0.35, 0.05], membrane: [0.7, 0], glow: [1, 0] };
+  const MATS = {}, TEXST = { on: typeof FA_TEX !== 'undefined' && !!FA_TEX, pending: 0, families: [] }, TEXC = {};
+  function detail(fam) {
+    if (!TEXST.on || typeof FA_TEX === 'undefined' || !FA_TEX || !FA_TEX[fam]) return null;
+    if (TEXC[fam]) return TEXC[fam];
+    const L = FA_TEX[fam], t = new THREE.Texture(), img = new Image();
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
+    TEXST.pending++; img.onload = function () { t.image = img; t.needsUpdate = true; TEXST.pending--; }; img.onerror = function () { TEXST.pending--; };
+    img.src = L.map; TEXST.families.push(fam);
+    return (TEXC[fam] = { map: t, tile: 1 / (L.scale || 0.3), gain: 1 / Math.max(0.05, Math.pow(L.mean == null ? 0.5 : L.mean, 2.2)) });
+  }
+  function material(fam) {
+    if (MATS[fam]) return MATS[fam];
+    const lk = LOOK[fam] || LOOK.plain;
+    /* glow: unlit, its vertex colour is its light (a glint's abdomen); membrane and hair: seen from both sides (wings, locks) */
+    if (fam === 'glow') return (MATS[fam] = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }));
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: lk[0], metalness: lk[1], side: fam === 'hair' || fam === 'membrane' ? THREE.DoubleSide : THREE.FrontSide });
+    if (fam === 'eye') m.emissive = new THREE.Color(0x050403);
+    const D = detail(fam);
+    if (D) {
+      m.map = D.map;
+      m.onBeforeCompile = function (sh) {
+        sh.uniforms.uDetTile = { value: D.tile }; sh.uniforms.uDetGain = { value: D.gain };
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vFaP;varying vec3 vFaN;')
+          .replace('#include <uv_vertex>', '#include <uv_vertex>\nvFaP=position;vFaN=normal;');
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vFaP;varying vec3 vFaN;uniform float uDetTile;uniform float uDetGain;')
+          .replace('#include <map_fragment>', ['#ifdef USE_MAP', 'vec3 fW=pow(abs(normalize(vFaN))+1e-4,vec3(4.0));fW/=(fW.x+fW.y+fW.z);vec3 fP=vFaP*uDetTile;',
+            'vec4 texelColor=texture2D(map,fP.zy)*fW.x+texture2D(map,fP.xz)*fW.y+texture2D(map,fP.xy)*fW.z;texelColor=mapTexelToLinear(texelColor);',
+            'diffuseColor.rgb*=texelColor.rgb*uDetGain;', '#endif'].join('\n'));
+      };
+      m.customProgramCacheKey = function () { return 'fauna-det-' + fam; };
+    }
+    return (MATS[fam] = m);
+  }
+  function mesh(b, fam) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(b.pos, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(b.col, 3));
+    g.setIndex(b.pos.length / 3 > 65535 ? new THREE.Uint32BufferAttribute(b.idx, 1) : new THREE.Uint16BufferAttribute(b.idx, 1));
+    g.computeVertexNormals(); g.computeBoundingSphere();
+    const m = new THREE.Mesh(g, material(fam)); m.castShadow = fam !== 'eye'; m.receiveShadow = true; m.userData.family = fam;
+    return m;
+  }
+  function build(key, opt) {
+    const E = ANIMAL_BY_KEY[key]; if (!E) throw new Error('KratorFauna.build: no animal ' + key);
+    opt = opt || {};
+    const A = faunaFrame(E, opt);
+    E.build(A);
+    const root = new THREE.Group(); root.name = 'fauna:' + key;
+    const P = { legs: [] }; let tris = 0;
+    const order = Object.keys(A.parts).sort((a, b) => (a === 'body' ? -1 : b === 'body' ? 1 : 0));
+    for (const name of order) {
+      const part = A.parts[name], grp = new THREE.Group();
+      grp.name = name; grp.position.set(part.pivot[0], part.pivot[1], part.pivot[2]); grp.userData.rest = { x: part.pivot[0], y: part.pivot[1], z: part.pivot[2] };
+      for (const fam in part.buckets) { const b = part.buckets[fam]; if (!b.idx.length) continue; grp.add(mesh(b, fam)); tris += b.idx.length / 3; }
+      root.add(grp);
+      const m = /^leg(\d+)$/.exec(name), sg = /^seg(\d+)$/.exec(name);
+      if (m) P.legs[+m[1]] = grp; else if (sg) (P.segs || (P.segs = []))[+sg[1]] = grp; else P[name] = grp;
+    }
+    /* parts that hang off the head (ears, the jaw) turn with it: reparent them into the head, keeping their place */
+    for (const n of ['earL', 'earR', 'jaw', 'beard', 'crest']) if (P[n] && P.head) { const g = P[n]; g.position.sub(P.head.position); P.head.add(g); }
+    const vd = (E.variantDims && E.variantDims[A.variant]) || { w: E.w, d: E.d, h: E.h };
+    root.userData = { key: key, name: E.name, variant: A.variant, variantName: E.variantNames[A.variant] || '', breed: A.breed, S: A.S,
+      tags: E.tags, traits: E.traits, yields: E.yields, life: E.life, data: E.data, size: E.size, source: E.source, anchors: A.anchors, parts: P, tris: Math.round(tris),
+      w: vd.w * A.S, d: vd.d * A.S, h: vd.h * A.S, fauna: true };
+    animate(root, 0, 'idle');   /* a bare build stands in its rest pose (a flyer's wings folded) */
+    return root;
+  }
+  /* ---- animation: turns only, by the animal's gait (data.gait.type):
+       quadruped  diagonal pairs swing about x (front left with hind right)      biped   two legs alternate, the head bobs
+       sprawl     legs swing about y, body and tail weave (salamanders, lizards)  hexapod tripods alternate (0,3,4 / 1,2,5)
+       octopod    alternating fours swing about y (spiders)                       multipede  a wave runs down the legs and segments
+       flyer      wings flap about z (mode 'fly'; folded at 'idle'/'rest'), legs tucked in flight (flap.tuck); a flyer with legs
+                  walks as a biped (2 legs), a quadruped (4) or a hexapod (6), and so does an insect
+       insect     wings beat fast (any mode but 'rest')                            swimmer  tail and segments sweep side to side
+       none       nothing moves
+     modes: idle, graze, walk, rest, fly, swim. The geometry never changes; only the part groups turn (and the body bobs).
+     Opt-in data, read only when an animal sets it:
+       flap.sweep  perched, the wings also turn back about y by this much (left +, right -): a fold along the flanks
+       flap.tuck   in flight the legs swing back about x by this much
+       flap.sync   the second wing pair beats with the first (a moth), not against it (a dragonfly)
+       swim.axis   'x': the tail beats up and down (flukes), not side to side
+       chain       { amp, wave } metres: the head, segments, legs and tail ride one travelling side-to-side wave (a body
+                   that snakes) in 'walk' and 'swim', not each segment yawing in place
+       idle        { headYaw, headPitch, tailYaw } radians: how far the head looks about and the tail sways at idle */
+  function animate(g, t, mode, o) {
+    o = o || {}; const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
+    const ph = (o.phase || 0), f = gait.freq || 1.5, w = TAU * f * t + ph, type = gait.type || 'quadruped';
+    const set = (p, x, y, z) => { if (p) p.rotation.set(x || 0, y || 0, z || 0); };
+    const legs = P.legs.filter(Boolean), body = P.body, segs = P.segs || [];
+    if (body) body.position.y = body.userData.rest ? body.userData.rest.y : 0;
+    legs.forEach(L => set(L)); segs.forEach(S => set(S)); set(body);
+    const CH = D.chain, chained = CH ? [P.head, P.tail, P.jaw && P.jaw.parent === g ? P.jaw : null].concat(segs, legs).filter(Boolean) : null;
+    if (chained) chained.forEach(q => { if (q.userData.rest) q.position.x = q.userData.rest.x; });
+    const snake = (ph2, amp) => { const k = TAU / (CH.wave || 3);
+      for (const q of chained) { const z0 = q.userData.rest ? q.userData.rest.z : 0, a = ph2 + k * z0;
+        q.position.x = (q.userData.rest ? q.userData.rest.x : 0) + amp * Math.sin(a);
+        if (legs.indexOf(q) < 0) q.rotation.y = Math.atan(amp * k * Math.cos(a)); } };
+    /* wings: a flyer flaps in 'fly' (with glides), holds them folded otherwise; an insect beats them unless resting */
+    const fl = D.flap || { freq: 2, amp: 0.7, glide: 0 }, wf = TAU * (fl.freq || 2) * t + ph;
+    const flying = (type === 'flyer' && mode === 'fly') || (type === 'insect' && mode !== 'rest');
+    const glide = fl.glide ? (Math.sin(TAU * 0.07 * t + ph) > 1 - 2 * fl.glide ? 0.15 : 1) : 1;
+    const flapA = flying ? (fl.amp || 0.7) * glide * Math.sin(wf) : (type === 'flyer' ? -(fl.fold || 0) : 0);
+    const sweep = flying || type !== 'flyer' ? 0 : (fl.sweep || 0);
+    for (const [n, s] of [['wingL', 1], ['wingR', -1], ['wing2L', 1], ['wing2R', -1]]) if (P[n]) set(P[n], 0, s * sweep, s * (n.indexOf('2') > 0 && !fl.sync ? -flapA : flapA));
+    if (flying && type === 'flyer' && fl.tuck) legs.forEach(L => set(L, fl.tuck, 0, 0));
+    if (type === 'flyer' && mode === 'fly' && body) body.position.y = 0.04 * (u.S || 1) * Math.sin(wf + 1);
+    const wt = (type === 'flyer' || type === 'insect') ? (legs.length === 2 ? 'biped' : legs.length === 4 ? 'quadruped' : legs.length === 6 ? 'hexapod' : type) : type;
+    if (mode === 'walk' && !(flying && type === 'flyer')) {
+      if (wt === 'sprawl') {
+        const a = 0.45;
+        legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, 0, s * a * Math.sin(w), -(i % 2 ? -1 : 1) * 0.18 * Math.max(0, s * Math.cos(w))); });
+        set(body, 0, 0.06 * Math.sin(w), 0); set(P.tail, 0, -0.32 * Math.sin(w - 0.8), 0); set(P.head, 0, -0.12 * Math.sin(w + 0.4), 0);
+      } else if (wt === 'biped') {
+        legs.forEach((L, i) => set(L, (i % 2 ? -1 : 1) * 0.5 * Math.sin(w), 0, 0));
+        set(P.head, 0.08 * Math.sin(2 * w), 0, 0); set(P.tail, 0.1 * Math.sin(2 * w), 0, 0);
+        if (body) body.position.y = 0.015 * Math.abs(Math.sin(w)) * (u.S || 1);
+      } else if (wt === 'hexapod' || wt === 'octopod') {
+        const group = i => wt === 'hexapod' ? ([0, 3, 4].indexOf(i) >= 0 ? 1 : -1) : ((Math.floor(i / 2) + i) % 2 ? -1 : 1);
+        legs.forEach((L, i) => { const s = group(i); set(L, 0, s * 0.35 * Math.sin(w), (i % 2 ? -1 : 1) * 0.15 * Math.max(0, s * Math.cos(w))); });
+      } else if (type === 'multipede') {
+        legs.forEach((L, i) => { const k = Math.floor(i / 2); set(L, 0.45 * Math.sin(w - k * 0.6 + (i % 2) * Math.PI), 0, 0); });
+        if (chained) snake(w * 0.5, CH.amp || 0.15); else segs.forEach((S, i) => set(S, 0, 0.08 * Math.sin(w * 0.5 - i * 0.5), 0));
+      } else if (wt === 'quadruped') {
+        legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, s * 0.42 * Math.sin(w), 0, 0); });
+        if (body) body.position.y = 0.012 * Math.abs(Math.sin(w)) * (u.S || 1);
+        set(P.head, 0.06 * Math.sin(2 * w), 0, 0); set(P.tail, 0.15 * Math.sin(2 * w), 0, 0);
+      }
+    } else if (mode === 'swim' || type === 'swimmer') {
+      const sw = D.swim || { freq: 0.6, amp: 0.25 }, s = TAU * (sw.freq || 0.6) * t + ph;
+      if (sw.axis === 'x') { set(P.tail, (sw.amp || 0.25) * Math.sin(s), 0, 0); if (body) body.rotation.x = -0.03 * Math.sin(s - 1); set(P.head, 0.04 * Math.sin(s + 0.6), 0, 0); }
+      else if (chained) snake(s, CH.amp || 0.15);
+      else { set(P.tail, 0, (sw.amp || 0.25) * Math.sin(s), 0); segs.forEach((S, i) => set(S, 0, (sw.amp || 0.25) * 0.4 * Math.sin(s - i * 0.7), 0)); set(P.head, 0, -0.05 * Math.sin(s), 0); }
+    } else if (mode === 'graze') {
+      const nod = 0.06 * Math.sin(TAU * 0.7 * t + ph);
+      set(P.head, (D.grazePitch == null ? 0.95 : D.grazePitch) + nod, 0.15 * Math.sin(TAU * 0.11 * t + ph), 0);
+      set(P.tail, 0.25 * Math.max(0, Math.sin(TAU * 0.6 * t + ph * 2)), 0, 0);
+      if (P.jaw) set(P.jaw, 0.12 * Math.max(0, Math.sin(TAU * 1.6 * t + ph)), 0, 0);
+    } else if (mode !== 'fly') {   /* idle and rest: breathing, a slow look about, the tail */
+      const k = mode === 'rest' ? 0.4 : 1, I = D.idle || {};
+      if (type === 'sprawl' || type === 'octopod' || type === 'multipede') { set(P.tail, 0, (I.tailYaw == null ? 0.16 : I.tailYaw) * k * Math.sin(TAU * 0.11 * t + ph), 0); set(P.head, (I.headPitch == null ? 0.03 : I.headPitch) * Math.sin(TAU * 0.09 * t + ph), (I.headYaw == null ? 0.12 : I.headYaw) * k * Math.sin(TAU * 0.05 * t + ph * 1.7), 0); }
+      else if (type !== 'none') { set(P.tail, 0.2 * k * Math.max(0, Math.sin(TAU * 0.5 * t + ph)), (I.tailYaw == null ? 0.1 : I.tailYaw) * Math.sin(TAU * 0.3 * t), 0); set(P.head, -0.05 + (I.headPitch == null ? 0.05 : I.headPitch) * Math.sin(TAU * 0.07 * t + ph), (I.headYaw == null ? 0.35 : I.headYaw) * k * Math.sin(TAU * 0.04 * t + ph * 1.3), 0); }
+    }
+    for (const n of ['earL', 'earR']) if (P[n]) set(P[n], 0, 0, (n === 'earL' ? 1 : -1) * 0.18 * Math.max(0, Math.sin(TAU * 0.23 * t + ph * 3)) ** 8);
+  }
+  function profile(key, breed, pose) {
+    const E = ANIMAL_BY_KEY[key]; if (!E) return null;
+    const A = faunaFrame(E, { breed: breed, pose: pose }); E.build(A);
+    return A.profileFn ? { at: A.profileFn, S: A.S, anchors: A.anchors } : null;
+  }
+  function lifeOf(key) {
+    const E = ANIMAL_BY_KEY[key]; if (!E) return null;
+    return { kind: key, name: E.name, habitat: E.tags.habitat, locomotion: E.tags.locomotion, diet: E.tags.diet, feeding: E.tags.feeding, activity: E.tags.activity, temperament: E.tags.temperament,
+      fleeDistance: E.data.fleeDistance || 0, aggression: E.data.aggression || 0, herd: E.data.herd || null,
+      speed: E.data.speed || null, schedule: (E.data.schedule || new Array(24).fill(E.tags.activity === 'nocturnal' ? 'REST' : 'GRAZE')).slice(),
+      traits: Object.assign({}, E.traits), yields: Object.assign({}, E.yields), life: Object.assign({}, E.life) };
+  }
+  return {
+    version: 1, FAMILIES: FAUNA_FAMILIES, VOCAB: FAUNA_VOCAB, YIELDS: FAUNA_YIELDS,
+    list: function () { return ANIMALS.map(e => ({ key: e.key, name: e.name, group: e.group, variants: e.variants, variantNames: e.variantNames.slice(),
+      w: e.w, d: e.d, h: e.h, breeds: e.breeds ? Object.keys(e.breeds) : null, variantDims: e.variantDims || null, poses: e.poses || null })); },
+    entry: function (key) { return ANIMAL_BY_KEY[key] || null; },
+    has: function (key) { return !!ANIMAL_BY_KEY[key]; },
+    build: build, animate: animate, profile: profile, lifeOf: lifeOf,
+    setTextures: function (on) { TEXST.on = !!on && typeof FA_TEX !== 'undefined' && !!FA_TEX; },
+    textures: function () { return { pending: TEXST.pending, families: TEXST.families.slice(), on: TEXST.on }; },
+    /* start every packed detail map decoding now (a host that will build later, or builds only a few animals) */
+    warm: function () { if (TEXST.on && typeof FA_TEX !== 'undefined' && FA_TEX) for (const f in FA_TEX) detail(f); }
+  };
+})();
+
+
+return KratorFaunaAPI;
+})();
