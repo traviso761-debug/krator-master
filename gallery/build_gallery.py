@@ -113,7 +113,9 @@ ENTRIES = [
     ('kit', 'iziz-mechs', 'kits/mechs/dist/mechs.html', 'Iziz war-walkers',
      "Eleven Iziz mechs, Ancient industrial walkers refitted for the legions (and a supply variant with a horn-blower): leg IK with planted feet, idle, plodding walk, march with U-turns and attacks (ballistae, a rotary polybolos, shears, pile driver, auger, saw, grapple).", 'new'),
     ('kit', 'scyvoi', 'kits/scyvoi/dist/scyvoi.html', 'Scyvoi',
-     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+     "The salamander riders of the crater drylands: gers, bell tents, goat-hair tents, khaimas, a pavilion and an appliqué tent, the chief's great tent and carved vardo, the shaman's lodge, smithy and supply tents, all furnished (C opens them); riding, war and draught salamanders and goats, the hidemaker's tent, chariots and carts; and the Baelu, a fitted-stone fire redoubt on its outcrop.", 'new'),
+    ('kit', 'fauna', 'kits/fauna/dist/fauna.html', 'Fauna',
+     "Every animal of Krator in one kit, 48 species: farm stock, mounts, the desert, bay, abyss and hyperjungle fauna, giant flyers and crawlers, Voth's beasts. Each tagged by biome, diet, temperament, traits, yields and life (hover with T); Idle, Graze, Walk, Fly and Swim set what they all do.", 'new'),
     ('kit', 'ys-kit', 'settlements/ys/dist/kit.html', 'Hykkousoi kit',
      'The grown building kit of Ys: 93 pieces on the sheet, pods on Scallop Stack hosts, spans, harbour, civic landmarks, furniture.'),
 
