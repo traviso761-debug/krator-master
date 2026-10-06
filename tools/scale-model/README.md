@@ -84,6 +84,33 @@ Everything is deterministic (fixed seeds).
 Publish the result to the artifact's URL (strip the document skeleton the read returns: everything before `<title>`
 and the closing `</body></html>`).
 
+## 4.20: `edit_dams.py` (Oct 2026)
+
+`edit_dams.py <4.19 page> <regions.json> <out page>` edits the **4.19** page (not 4.14: it is the next stage, as
+`features2.py` followed `features.py`) and writes `<out>.report.json` and `<out>.heights.npz` (the heights before and
+after, the old lakes, the dams) beside it. It imports `edit_heights.py`'s helpers (relight, reclimate, repaint).
+
+The owner's north basin (the regions 'dam 2', the east lobe, and 'dam', the west lobe, in "n semiarid"): the Ancients
+held two lakes there behind dam arcologies, and in the war that ended them the east dam burst first; its surge
+overtopped the west dam, which burst into the long-lake trough and the NW lowlands. The model is the land today:
+
+- **The notches** (`DAMS`): each dam's pass is cut to its foot (lake level + 50 m freeboard - the dam's 250 m), the
+  floor ~12 km wide over the pass's own floor, the walls eased on the pass's sides only; beyond the crest the flood
+  channel falls until the land falls below it. East dam: lake 1,050 m, pass 1,335 m cut 485 m. West dam: lake 900 m,
+  the southern saddle (1,160 m) cut 460 m.
+- **The rims:** with the dams standing, every other way out of each lake (to Korona's trenches, the other lake, the
+  lowlands) is closed by smooth bumps at the saddle the flood finds. 4.19's east lobe spilled to Korona at 370 m: two
+  ridges on its Korona side (~80 km and ~50 km) now stand at 1,120 m.
+- **Checks** (asserted): each lake holds with its dam standing and drains through its notch to the foot without it;
+  the east lake's breach (~11,500 km³) raises the west lake ~240 m, over its dam's 50 m freeboard.
+- **Data:** `DATA.palaeolakes` (each old lake's level, area, volume), `DATA.dams` (site, crest, foot, the cut),
+  `DATA.floods` (each breach channel's course in map px and its bed). Rain, class and zone are recomputed where the
+  heights changed (4.18's `reclimate`); the channels are tinted as scoured rock on the satellite and relief maps.
+- Everything outside the `DATA` line and the version label is byte-identical to 4.19 (checked).
+
+The scablands' own landforms (coulees, dry falls, potholes, current ripples, gravel bars) are under one 4 km cell:
+they are for the open world to carve along `DATA.floods`, not for the model.
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and
