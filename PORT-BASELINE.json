@@ -221,12 +221,12 @@
    "sha256": "a38c33d041bf6b7f51496f29c35b6ec466626f36f2c6e795cca6e9c71500b851"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 493904,
-   "sha256": "8f7fb47a466a954c9248b17b2c9c46923f501ab6c409b9a8fa3d20d49fd83f11"
+   "bytes": 501725,
+   "sha256": "55ad90eee4bcb4a2d4e073781d46300a5b7954cc1d8cbf43b1e0b18277434337"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 8993403,
-   "sha256": "0a16236cff53ef1ae2698c84962d0b3fd07430685e74fc1937b9ff2f4be3ec1d"
+   "bytes": 9101019,
+   "sha256": "5b79f2a161f129763f5ae649cd1c30789911ad217cddd76b23d23edfadfe41e5"
   },
   "kits/interiors/dist/interiors.html": {
    "bytes": 242399,
@@ -327,6 +327,10 @@
   "settlements/mungo/dist/mungo.html": {
    "bytes": 2921720,
    "sha256": "5e40823d1b348de67a9da876e0aa15cd32a399207f35ef1db6d2312d6bbe8e44"
+  },
+  "settlements/noahs-regret/dist/noahs-regret.html": {
+   "bytes": 6050607,
+   "sha256": "dc1f5255cd9abf2b65e5212b92af9926140cd6953ffce9e4875dc03477eee5e7"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 783155,

@@ -23,6 +23,7 @@ ABOUT = {
     'settlements/locus': 'Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet and plant catalogue.',
     'settlements/verge': 'Verge: twin cities at the top and foot of an 860 m descent into the eastern abyss (Iziz Vernacular above, Yuni and Eastern Abyssal below), joined by a switchback trail; caravans, porters and nomads on a timetable; a Godot twin of its life layer.',
     'settlements/girder': 'Girder: an outlying Beast Rider village in the central-crater hyperjungle.',
+    'settlements/noahs-regret': "Noah's Regret: an Ancient floating harbour city of the Ring Sea, aground on the south shore, Bloody Ruephus's pirate base: the ring hull (holds half full of the sea, four decks, the top deck's parks), the grand atrium, the bridge, the grand dining room, the silent engine room, eleven Ancient mid-rises (barracks, a mess hall, the HQ under his flag), every room furnished from the catalog through the interiors kit (cabins by template), a deck cut to see inside; no life layer yet.",
     'settlements/mavs-refuge': "Mav's Refuge: a refuge in the hypertropic jungle on the lee shore of the Ring Sea.",
     'settlements/ys': 'Ys: the half-drowned Hykkousoi capital on the ruins of an Ancient city at the head of the north-west bay of the Ring Sea (phase 2: the Hykkousoi kit, 89 pieces on the kit sheet; phase 3 prep: the layout, shore and nav).',
     'settlements/xanadu': 'Xanadu: the building kit of the southern Sultanate (Tibetan massing, Indian, Turkish and Persian detail) and the city of Erewhon.',

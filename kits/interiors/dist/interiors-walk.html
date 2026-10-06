@@ -191,6 +191,86 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
 }
+/* SOFT FURNISHINGS (2026-10-05, the Scyvoi cushions). A pillow: two puffed faces meeting at a seam round the edge,
+   with an optional boxed side wall between them; its corners stay sharp and its mid-edges pinch in, as a stuffed
+   cloth does. CENTRED at (x, y, z), like blob and ball; w along x, h its thickness (y), d along z; turned ry, then
+   tipped rx about its own x (a back cushion stood up: rx = -PI/2 + lean). o: { side 0..1 (the boxed wall's share
+   of h), round (the plan's superellipse exponent, default 5), sag (how far the seam drops at the corners, a share of the wall, default 0.45), puff (the dome's exponent: 0.3 a flat-topped quilt or mattress, 0.85 a fat cushion, 1 a bed pillow; low values read as a box), pinch (mid-edge pull-in, a share of the half-width) }.
+   Returns top(lx, lz): the height of the top face above the centre at a point of the unturned pillow, so a builder
+   can lay appliqué on it; top.seamTop and top.seamBottom are the seams as closed loops of [x, y, z] (same frame), for piping. Its segments never drop below 8 a side whatever the detail level: a cushion
+   cut to a box is the defect this exists to fix. */
+function pillowTop(w, h, d, o) {
+  const side = Math.min(0.95, Math.max(0, o.side || 0)), puff = o.puff == null ? 0.35 : o.puff, hs = h * side / 2, hb = h / 2 - hs;
+  return function (lx, lz) {
+    const s = Math.min(1, Math.abs(lx) / (w / 2)), t = Math.min(1, Math.abs(lz) / (d / 2));
+    return hs + hb * Math.pow(Math.max(0, 1 - s * s), puff) * Math.pow(Math.max(0, 1 - t * t), puff);
+  };
+}
+function mkPillow(x, y, z, w, h, d, ry, color, family, o) {
+  o = o || {};
+  const n = _seg(12, 8), side = Math.min(0.95, Math.max(0, o.side || 0)), pinch = o.pinch == null ? 0.05 : o.pinch, hs = h * side / 2;
+  const top = pillowTop(w, h, d, o), pos = [], idx = [];
+  const q = o.round == null ? 5 : o.round, sag = o.sag == null ? 0.45 : o.sag;
+  const at = (i, j, sign) => {
+    const s = -1 + 2 * i / n, t = -1 + 2 * j / n, as = Math.abs(s), at2 = Math.abs(t), mx = Math.max(as, at2);
+    /* the plan: the square grid mapped onto a superellipse (corners rounded, o.round its exponent: 2 a circle, 8 nearly square),
+       then the mid-edges pinched in; the seam sags toward the corners (o.sag), as a stuffed cover does */
+    const k = mx > 0 ? mx / Math.pow(Math.pow(as, q) + Math.pow(at2, q), 1 / q) : 1;
+    const px = s * k * w / 2 * (1 - pinch * (1 - t * t)), pz = t * k * d / 2 * (1 - pinch * (1 - s * s));
+    const y = top(s * w / 2, t * d / 2) - hs * sag * s * s * t * t;
+    return [px, sign * Math.max(0.002, y), pz];
+  };
+  for (const sign of [1, -1]) {
+    const b = pos.length / 3;
+    for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) pos.push(...at(i, j, sign));
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const a = b + j * (n + 1) + i; idx.push(a, a + n + 1, a + 1, a + 1, a + n + 1, a + n + 2); }
+  }
+  if (hs > 0.001) {   // the boxed wall: the boundary of the grid, once round, from the top seam to the bottom seam
+    const ring = [];
+    for (let i = 0; i < n; i++) ring.push([i, 0]);
+    for (let j = 0; j < n; j++) ring.push([n, j]);
+    for (let i = n; i > 0; i--) ring.push([i, n]);
+    for (let j = n; j > 0; j--) ring.push([0, j]);
+    const b = pos.length / 3;
+    for (const [i, j] of ring) { pos.push(...at(i, j, 1)); pos.push(...at(i, j, -1)); }
+    const m = ring.length;
+    for (let k = 0; k < m; k++) { const a = b + 2 * k, c = b + 2 * ((k + 1) % m); idx.push(a, a + 1, c, c, a + 1, c + 1); }
+  }
+  // a pillow is star-shaped about its centre: turn every triangle to face away from it
+  for (let t = 0; t < idx.length; t += 3) {
+    const A = idx[t] * 3, B = idx[t + 1] * 3, C = idx[t + 2] * 3;
+    const ux = pos[B] - pos[A], uy = pos[B + 1] - pos[A + 1], uz = pos[B + 2] - pos[A + 2], vx = pos[C] - pos[A], vy = pos[C + 1] - pos[A + 1], vz = pos[C + 2] - pos[A + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const cx = pos[A] + pos[B] + pos[C], cy = pos[A + 1] + pos[B + 1] + pos[C + 1], cz = pos[A + 2] + pos[B + 2] + pos[C + 2];
+    if (nx * cx + ny * cy + nz * cz < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.set(o.rx || 0, ry || 0, 0, 'YXZ');
+  _add(m);
+  /* the two seams as closed loops of points in the pillow's own frame (centre at 0; untilted, unturned): piping follows them */
+  const loop = sign => { const L = []; for (let i = 0; i < n; i++) L.push(at(i, 0, sign)); for (let j = 0; j < n; j++) L.push(at(n, j, sign));
+    for (let i = n; i > 0; i--) L.push(at(i, n, sign)); for (let j = n; j > 0; j--) L.push(at(0, j, sign)); L.push(L[0]); return L; };
+  top.seamTop = loop(1); top.seamBottom = loop(-1);
+  return top;
+}
+/* A bolster: a round cushion along x, its ends gathered in and tied. CENTRED at (x, y, z), length len, radius r,
+   turned ry. o: { from, to } (0..1 along its length: a section of the same profile, for a coloured band; scale it a
+   hair larger with o.grow), gather (the end radius as a share of r, default 0.45). At least 12 segments round. */
+function mkBolster(x, y, z, len, r, ry, color, family, o) {
+  o = o || {};
+  const from = o.from == null ? 0 : o.from, to = o.to == null ? 1 : o.to, g = o.gather == null ? 0.45 : o.gather, R = r * (o.grow || 1), m = Math.max(1, Math.round(14 * (to - from))), pts = [];   // a band gets profile points for its own length only
+  const rad = u => { const e = Math.abs(2 * u - 1); return R * (g + (1 - g) * Math.pow(Math.max(0, 1 - Math.pow(e, 7)), 0.35)); };
+  if (from <= 0.0001) pts.push(new THREE.Vector2(0.001, -len / 2));
+  for (let k = 0; k <= m; k++) { const u = from + (to - from) * k / m; pts.push(new THREE.Vector2(rad(u), -len / 2 + u * len)); }
+  if (to >= 0.9999) pts.push(new THREE.Vector2(0.001, len / 2));
+  const geo = new THREE.LatheGeometry(pts, _seg(16, 12));
+  geo.rotateZ(-Math.PI / 2);   // the lathe's axis (y) laid along x
+  const mm = new THREE.Mesh(geo, mat(color, family));
+  mm.position.set(x, y, z); mm.rotation.y = ry || 0;
+  return _add(mm);
+}
 /* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
    block spans 2*rBottom across at its base — r reads as a radius/half-width in every
    case. sides=4 is a tapered SQUARE block with its faces square to the frame, sides=8
@@ -700,6 +780,9 @@ function makeFrame(x, z, ry, opt) {
   F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
   F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
   F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
+  /* soft furnishings (mkPillow, mkBolster above): both CENTRED at ly. F.pillow returns top(lx, lz) in the pillow's own frame */
+  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family, o); };
+  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, family, o); };
   F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
   F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
   F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
@@ -17818,12 +17901,13 @@ FURN_CULTURE('scyvoi', { name: 'Scyvoi', pack: null, influences: 'Kazakh, Kyrgyz
     saffron: 0xe0a020, gold: 0xd4a83a, brass: 0xb8913a, copper: 0xb5683a, ironBlack: 0x2a2824,
     timberPoplar: 0xc2a878, timberWalnut: 0x5e3e28, timberWalnutDark: 0x3e281a, timberRed: 0xa02a1e, timberRedDark: 0x6a1a14,
     leatherTan: 0xa87a4a, leatherDark: 0x5a3a22, boneIvory: 0xe6dcc2, horn: 0x6e5638,
-    stoneGrey: 0x6e685e, stoneDark: 0x48443e, ash: 0x3e3a36,
+    stoneGrey: 0x5e5850, stoneDark: 0x403c36, ash: 0x3e3a36,
     glassRuby: 0xd0283c, glassAmber: 0xf0a02a, glassBlue: 0x2a62d0, glassGreen: 0x2aa060, teaAmber: 0xa04812,
     flame: 0xffb04a, ember: 0xe0521e, ropeHemp: 0xb09a6a, wicker: 0xb48a52,
     fruitFire: 0xe2461c, fruitDeep: 0xb02a14, fruitGold: 0xf0b42a, leafGreen: 0x3a5a2a,
     herbGreen: 0x5e7034, herbSage: 0x8a9670, herbDry: 0xa8985a, herbRed: 0x9a3020,
-    ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc
+    ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc,
+    hideRaw: 0xcaa88a, hideFat: 0xe0cdb0, hideTanned: 0x8e5a30, hideSmoked: 0x6a4024, liquor: 0x2e1c10, barkChip: 0x7a5434, goatBlack: 0x221e1a
   } });
 /* END PALETTE */
 
@@ -18042,24 +18126,23 @@ FURN({
   w: 0.7, d: 0.7, h: 0.22, variants: 3, variantNames: ['madder velvet', 'teal velvet', 'felt appliqué with tassels'],
   build: function (F) {
     const v = F.variant, body = F.col(['madder', 'teal', 'feltCream'][v]), pipe = F.col(v === 1 ? 'saffron' : v === 2 ? 'madder' : 'gold');
-    const S = 0.62, H0 = 0.17;
-    F.box(0, 0, 0, S, H0, S, 0, body, 'cloth');
-    F.box(0, H0, 0, S - 0.08, 0.035, S - 0.08, 0, F.shade(body, 0.05), 'cloth');
-    for (const y of [0.012, H0]) for (const s of [-1, 1]) {
-      F.rod(-S / 2, y, s * S / 2, S / 2, y, s * S / 2, 0.01, pipe, 'cloth');
-      F.rod(s * S / 2, y, -S / 2, s * S / 2, y, S / 2, 0.01, pipe, 'cloth');
-    }
+    /* a boxed cushion: puffed top and bottom, a short wall between, piping on both seams */
+    const S = 0.64, H = 0.24, c = H / 2, top = F.pillow(0, c, 0, S, H, S, 0, body, 'cloth', { side: 0.3, puff: 1.0, pinch: 0.05, round: 4 });
+    const ty = (x, z) => c + top(x, z);   // ty: the top face's height
+    for (const L of [top.seamTop, top.seamBottom]) for (let i = 0; i < L.length - 1; i++)   // piping along both seams
+      F.rod(L[i][0], c + L[i][1], L[i][2], L[i + 1][0], c + L[i + 1][1], L[i + 1][2], 0.012, pipe, 'cloth');
     if (v < 2) {
-      F.box(0, H0 + 0.02, 0, 0.18, 0.02, 0.18, Math.PI / 4, F.col('gold'), 'gold');
-      F.box(0, H0 + 0.022, 0, 0.1, 0.02, 0.1, Math.PI / 4, F.col(v ? 'madder' : 'teal'), 'cloth');
+      F.box(0, ty(0, 0) - 0.008, 0, 0.18, 0.012, 0.18, Math.PI / 4, F.col('gold'), 'gold');
+      F.box(0, ty(0, 0) - 0.004, 0, 0.1, 0.012, 0.1, Math.PI / 4, F.col(v ? 'madder' : 'teal'), 'cloth');
+      F.ball(0, ty(0, 0) + 0.004, 0, 0.022, F.col('gold'), 'gold');   // the tufting button
     } else {
       const ap = F.col('madder'), ap2 = F.col('teal');
-      F.box(0, H0 + 0.02, 0, 0.16, 0.02, 0.16, Math.PI / 4, ap2, 'cloth');
+      F.box(0, ty(0, 0) - 0.008, 0, 0.16, 0.012, 0.16, Math.PI / 4, ap2, 'cloth');
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
-        F.box(sx * 0.15, H0 + 0.02, sz * 0.2, 0.12, 0.02, 0.035, 0, ap, 'cloth');
-        F.box(sx * 0.2, H0 + 0.02, sz * 0.15, 0.035, 0.02, 0.12, 0, ap, 'cloth');
-        F.box(sx * 0.1, H0 + 0.02, sz * 0.1, 0.04, 0.02, 0.04, Math.PI / 4, ap, 'cloth');
-        SCYVOI_FX.tassel(F, sx * 0.31, 0.1, sz * 0.31, 0.1, F.col('madder'), F.col('teal'));
+        F.box(sx * 0.15, ty(0.15, 0.2) - 0.008, sz * 0.2, 0.12, 0.012, 0.035, 0, ap, 'cloth');
+        F.box(sx * 0.2, ty(0.2, 0.15) - 0.008, sz * 0.15, 0.035, 0.012, 0.12, 0, ap, 'cloth');
+        F.box(sx * 0.1, ty(0.1, 0.1) - 0.008, sz * 0.1, 0.04, 0.012, 0.04, Math.PI / 4, ap, 'cloth');
+        SCYVOI_FX.tassel(F, sx * 0.265, c, sz * 0.265, 0.1, F.col('madder'), F.col('teal'));   // at the rounded corners
       }
     }
   }
@@ -18070,20 +18153,21 @@ FURN({
   materials: ['cloth', 'gold'],
   w: 1.1, d: 0.3, h: 0.3, variants: 2, variantNames: ['madder with gold bands', 'teal and indigo stripes'],
   build: function (F) {
-    const v = F.variant, R = 0.14, y = R + 0.005, L = 0.44;
-    const gold = F.col('gold');
+    /* a round bolster, its ends gathered and tied with a gold knot; bands are sections of the same profile, a hair proud */
+    const v = F.variant, R = 0.14, y = R + 0.005, len = 0.96, gold = F.col('gold');
+    const band = (x0, x1, col, fam, grow) => F.bolster(0, y, 0, len, R, 0, col, fam || 'cloth', { from: (x0 + len / 2) / len, to: (x1 + len / 2) / len, grow: grow || 1.03 });
     if (!v) {
-      F.rod(-L, y, 0, L, y, 0, R, F.col('madder'), 'cloth');
-      for (const x of [-0.36, -0.3, 0.3, 0.36]) F.rod(x - 0.015, y, 0, x + 0.015, y, 0, R + 0.006, gold, 'gold');
+      F.bolster(0, y, 0, len, R, 0, F.col('madder'), 'cloth');
+      for (const x of [-0.36, -0.3, 0.27, 0.33]) band(x, x + 0.03, gold, 'gold');
     } else {
-      const cols = F.cols(['teal', 'indigo', 'teal', 'indigo', 'teal']), n = cols.length, step = 2 * L / n;
-      for (let i = 0; i < n; i++) F.rod(-L + i * step, y, 0, -L + (i + 1) * step, y, 0, R, cols[i], 'cloth');
-      for (let i = 1; i < n; i++) F.rod(-L + i * step - 0.008, y, 0, -L + i * step + 0.008, y, 0, R + 0.005, F.col('feltCream'), 'cloth');
+      const cols = F.cols(['teal', 'indigo', 'teal', 'indigo', 'teal']), n = cols.length, step = len / n;
+      for (let i = 0; i < n; i++) band(-len / 2 + i * step, -len / 2 + (i + 1) * step, cols[i], 'cloth', 1);
+      for (let i = 1; i < n; i++) band(-len / 2 + i * step - 0.008, -len / 2 + i * step + 0.008, F.col('feltCream'));
     }
     const cap = F.col(v ? 'saffron' : 'teal');
     for (const s of [-1, 1]) {
-      F.rod(s * L, y, 0, s * (L + 0.03), y, 0, R * 0.86, cap, 'cloth');
-      F.rod(s * (L + 0.03), y, 0, s * (L + 0.05), y, 0, 0.03, gold, 'gold');
+      band(s < 0 ? -len / 2 : len / 2 - 0.05, s < 0 ? -len / 2 + 0.05 : len / 2, cap, 'cloth', 1.01);
+      F.ball(s * (len / 2 + 0.01), y, 0, 0.032, gold, 'gold');
       SCYVOI_FX.tassel(F, s * 0.505, y, 0, 0.14, F.col(v ? 'saffron' : 'madder'), gold);
     }
   }
@@ -18097,25 +18181,26 @@ FURN({
     const v = F.variant;
     const base = F.col(v ? 'indigo' : 'madder'), top = F.shade(base, 0.08), cush = F.col(v ? 'crimson' : 'teal');
     const trim = F.col(v ? 'saffron' : 'gold'), band = F.col(v ? 'teal' : 'saffron');
-    /* the mattress (its back to the wall): two quilted layers, piping, a front band and tassels */
-    F.box(0, 0, 0, 1.96, 0.07, 0.78, 0, F.shade(base, -0.1), 'cloth');
-    F.box(0, 0.07, 0, 1.94, 0.07, 0.76, 0, top, 'cloth');
-    for (const z of [-0.18, 0.06, 0.26]) F.box(0, 0.124, z, 1.9, 0.02, 0.02, 0, F.shade(top, -0.2), 'cloth');
-    F.rod(-0.97, 0.14, 0.38, 0.97, 0.14, 0.38, 0.01, trim, 'cloth');
-    F.box(0, 0.025, 0.385, 1.9, 0.09, 0.01, 0, band, 'cloth');
+    /* the mattress (its back to the wall): a tufted, boxed pad, piping on both seams, a front band and tassels */
+    const mt = F.pillow(0, 0.075, 0, 1.96, 0.15, 0.78, 0, top, 'cloth', { side: 0.5, puff: 0.45, pinch: 0.01 });
+    for (const x of [-0.72, -0.36, 0, 0.36, 0.72]) for (const z of [-0.12, 0.16]) F.ball(x, 0.075 + mt(x, z) - 0.004, z, 0.016, F.shade(top, -0.25), 'cloth');   // tufting
+    F.rod(-0.97, 0.117, 0.386, 0.97, 0.117, 0.386, 0.011, trim, 'cloth');
+    F.rod(-0.97, 0.033, 0.386, 0.97, 0.033, 0.386, 0.011, trim, 'cloth');
+    F.box(0, 0.045, 0.39, 1.9, 0.06, 0.01, 0, band, 'cloth');
     for (let i = 0; i < 8; i++) SCYVOI_FX.tassel(F, -0.84 + i * 0.24, 0.07, 0.39, 0.06, trim, F.col('madderDark'));
-    /* back cushions leaning on the wall, each with a centre band */
+    /* back cushions leaning on the wall (stood up and tipped back), each with a centre band and a gold clasp */
     for (const x of [-0.62, 0, 0.62]) {
-      F.beam(x, 0.14, -0.235, x, 0.6, -0.305, 0.58, 0.16, cush, 'cloth');
-      F.beam(x, 0.14, -0.235, x, 0.6, -0.305, 0.14, 0.166, band, 'cloth');
-      F.beam(x, 0.33, -0.27, x, 0.45, -0.287, 0.06, 0.17, F.col('gold'), 'gold');
+      const rx = -Math.PI / 2 - 0.15;
+      F.pillow(x, 0.38, -0.27, 0.58, 0.17, 0.48, 0, cush, 'cloth', { rx: rx, puff: 0.9, pinch: 0.07 });
+      F.pillow(x, 0.38, -0.27, 0.13, 0.178, 0.482, 0, band, 'cloth', { rx: rx, puff: 0.9, pinch: 0 });
+      F.beam(x, 0.33, -0.255, x, 0.45, -0.273, 0.07, 0.18, F.col('gold'), 'gold');
     }
-    /* arm bolsters at the ends */
+    /* arm bolsters at the ends, gathered and banded */
     for (const s of [-1, 1]) {
-      F.rod(s * 0.86, 0.25, -0.3, s * 0.86, 0.25, 0.3, 0.11, cush, 'cloth');
-      for (const z of [-0.3, 0.3]) F.rod(s * 0.86, 0.25, z, s * 0.86, 0.25, z + Math.sign(z) * 0.02, 0.095, band, 'cloth');
-      F.rod(s * 0.86, 0.25, -0.12, s * 0.86, 0.25, -0.1, 0.116, trim, 'cloth');
-      F.rod(s * 0.86, 0.25, 0.1, s * 0.86, 0.25, 0.12, 0.116, trim, 'cloth');
+      const L = 0.62, bz = (z0, z1, col, g) => F.bolster(s * 0.86, 0.25, 0, L, 0.11, Math.PI / 2, col, 'cloth', { from: (z0 + L / 2) / L, to: (z1 + L / 2) / L, grow: g });
+      F.bolster(s * 0.86, 0.25, 0, L, 0.11, Math.PI / 2, cush, 'cloth');
+      bz(-L / 2, -L / 2 + 0.04, band, 1.01); bz(L / 2 - 0.04, L / 2, band, 1.01);
+      bz(-0.12, -0.1, trim, 1.05); bz(0.1, 0.12, trim, 1.05);
     }
   }
 });
@@ -18161,14 +18246,13 @@ FURN({
     let y = 0.44;
     for (let i = 0; i < 7; i++) {
       const th = 0.085 + F.rr(0, 0.015), x = F.rr(-0.01, 0.01), c = F.col(keys[i]);
-      F.box(x, y, 0, 1.26, th, 0.52, 0, c, 'cloth');
+      F.pillow(x, y + th / 2, 0, 1.26, th, 0.52, 0, c, 'cloth', { side: 0.6, puff: 0.35, pinch: 0.01 });   // a folded quilt: soft edges
       F.box(x, y + th * 0.15, 0.262, 1.24, th * 0.7, 0.008, 0, F.col(keys[(i + 3) % 7]), 'cloth');
       y += th;
     }
     /* pillows and the embroidered cover band draped over the front */
     for (const s of [-1, 1]) {
-      F.box(s * 0.4, y, 0, 0.42, 0.09, 0.4, 0, F.col('feltWhite'), 'cloth');
-      F.box(s * 0.4, y + 0.09, 0, 0.36, 0.025, 0.34, 0, F.shade('feltWhite', -0.05), 'cloth');
+      F.pillow(s * 0.4, y + 0.055, 0, 0.44, 0.13, 0.4, s * 0.06, F.col('feltWhite'), 'cloth', { puff: 1.0, pinch: 0.08 });
     }
     const crim = F.col('crimson');
     F.box(0, y, -0.02, 0.34, 0.01, 0.56, 0, crim, 'cloth');
@@ -19018,6 +19102,108 @@ FURN({
       F.blob(x, 0.12, z, 0.075, 0.08, F.rnd() * 3, F.shade(c, 0.08), 'plant');
       for (let k = 0; k < 2; k++) F.box(x + F.rr(-0.05, 0.05), 0.08, z + F.rr(-0.04, 0.04), 0.012, 0.06, 0.012, F.rnd() * 3, F.shade(c, -0.1), 'plant');
     }
+  }
+});
+
+/* ====================================================================== Tanning: the hidemaker's tent (2026-10-06)
+   Goat, salamander and game hides go from the fleshing beam to the lime and bark vats, onto the stretching frames, over
+   the smudge to smoke them, and onto the drying line; tanned hides are stacked folded. job 'tanning'. A hide is a flat
+   F.pillow with a low round exponent: an oval with soft edges. */
+FURN({
+  key: 'scyvoi_hide_frame', name: 'Hide stretching frame', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8 }, materials: ['timber', 'hide', 'rope'],
+  w: 1.9, d: 0.9, h: 2.0, variants: 2, variantNames: ['a fresh goat hide', 'a salamander hide, half scraped'],
+  build: function (F) {
+    F.shift(0, 0.2);   /* the frame leans back: centre its footprint */
+    const wood = F.col('timberPoplar'), cord = F.col('ropeHemp'), v = F.variant, lean = 0.22;
+    const at = (x, y) => [x, y * Math.cos(lean), -y * Math.sin(lean)];   /* the frame's plane, tipped back */
+    const corners = [[-0.85, 0.15], [0.85, 0.15], [0.85, 1.9], [-0.85, 1.9]];
+    for (let i = 0; i < 4; i++) { const a = at(...corners[i]), b = at(...corners[(i + 1) % 4]); F.rod(a[0], a[1], a[2], b[0], b[1], b[2], 0.035, wood, 'wood'); }
+    for (const x of [-0.85, 0.85]) { const t = at(x, 1.95); F.rod(x, 0, 0.02, t[0], t[1], t[2], 0.04, wood, 'wood'); F.rod(x, 0, -0.55, t[0], t[1] * 0.75, t[2] * 0.75, 0.03, wood, 'wood'); }
+    const c = at(0, 1.02), hide = F.col(v ? 'hideSmoked' : 'hideRaw');
+    F.pillow(c[0], c[1], c[2] + 0.01, v ? 1.35 : 1.05, 0.025, 1.45, 0, hide, 'hide', { rx: -Math.PI / 2 + lean, round: 2.6, puff: 0.3, pinch: 0.12 });
+    if (v) F.pillow(c[0] + 0.25, c[1] + 0.15, c[2] + 0.025, 0.5, 0.012, 0.6, 0, F.col('hideFat'), 'hide', { rx: -Math.PI / 2 + lean, round: 2.4, puff: 0.2 });   /* the scraped patch */
+    for (let k = 0; k < 14; k++) {   /* the lacing, hide edge to frame */
+      const a = k / 14 * F.TAU, ex = Math.cos(a) * (v ? 0.62 : 0.5), ey = 1.02 + Math.sin(a) * 0.68;
+      const fx = Math.max(-0.84, Math.min(0.84, Math.cos(a) * 1.2)), fy = Math.max(0.16, Math.min(1.89, 1.02 + Math.sin(a) * 1.1));
+      const p = at(ex, ey), q = at(fx, fy); F.rod(p[0], p[1], p[2] + 0.015, q[0], q[1], q[2], 0.006, cord, 'rope');
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_fleshing_beam', name: 'Fleshing beam', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.9 }, materials: ['timber', 'hide', 'metal', 'bone'],
+  w: 0.8, d: 1.8, h: 1.05, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberWalnut');
+    F.rod(0, 0.06, -0.85, 0, 0.92, 0.65, 0.11, wood, 'wood');   /* the beam: its foot on the ground behind, its head at the hip */
+    for (const s of [-1, 1]) F.rod(s * 0.3, 0, 0.45, -s * 0.05, 0.85, 0.5, 0.04, F.col('timberWalnutDark'), 'wood');
+    const hide = F.col('hideRaw');
+    /* the hide laid along the top of the beam (the beam climbs 0.57 rad), and a flap hanging down each side of it */
+    const slope = Math.atan2(0.86, 1.5), by = z => 0.06 + (z + 0.85) * 0.86 / 1.5;
+    F.pillow(0, by(0.3) + 0.12, 0.3, 0.34, 0.025, 0.8, 0, hide, 'hide', { rx: -slope, round: 2.6, puff: 0.4, pinch: 0.08 });
+    for (const s of [-1, 1]) F.pillow(s * 0.125, by(0.3) - 0.14, 0.3, 0.7, 0.02, 0.48, s * Math.PI / 2, hide, 'hide', { rx: Math.PI / 2, round: 2.6, puff: 0.3, pinch: 0.12 });
+    /* the two-handled fleshing knife lying across the beam */
+    F.box(0, 0.98, 0.25, 0.42, 0.012, 0.05, 0, F.col('ironBlack'), 'metal');
+    for (const s of [-1, 1]) F.rod(s * 0.21, 0.99, 0.25, s * 0.33, 0.99, 0.25, 0.018, F.col('horn'), 'bone');
+  }
+});
+FURN({
+  key: 'scyvoi_tanning_vat', name: 'Tanning vat', culture: 'scyvoi', tier: 'common', type: 'storage', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.6 }, materials: ['timber', 'hide', 'metal', 'stone'],
+  w: 1.2, d: 1.2, h: 1.7, variants: 2, variantNames: ['bark liquor', 'lime'],
+  build: function (F) {
+    const wood = F.col('timberWalnut'), iron = F.col('ironBlack');
+    F.frustum(0, 0, 0, 0.5, 0.56, 0.72, 0, wood, 'wood', 16);
+    for (const y of [0.1, 0.6]) F.frustum(0, y, 0, 0.5 + 0.06 * y / 0.72 + 0.008, 0.5 + 0.06 * (y + 0.05) / 0.72 + 0.008, 0.05, 0, iron, 'metal', 16);
+    F.cyl(0, 0.6, 0, 0.53, 0.02, 0, F.col(F.variant ? 'feltWhite' : 'liquor'), 'stone');
+    F.pillow(0.3, 0.7, 0.3, 0.6, 0.03, 0.4, 0.7, F.col('hideRaw'), 'hide', { rx: 0.4, round: 2.6, puff: 0.3 });   /* a hide over the rim */
+    F.rod(-0.2, 0.55, -0.1, -0.45, 1.65, 0.3, 0.025, F.col('timberPoplar'), 'wood');   /* the stirring pole */
+    if (!F.variant) for (let i = 0; i < 6; i++) F.box(F.rr(-0.6, 0.6), 0, F.rr(0.5, 0.6), 0.08, 0.03, 0.05, F.rr(0, 3), F.col('barkChip'), 'wood');
+  }
+});
+FURN({
+  key: 'scyvoi_hide_stack', name: 'Stack of tanned hides', culture: 'scyvoi', tier: 'common', type: 'stack', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'store', 'shop', 'yard'], anchor: 'floor', clearance: { front: 0.5 }, materials: ['timber', 'hide', 'cloth'],
+  w: 1.2, d: 0.9, h: 0.65, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.1, 0.08, 0.8, 0, F.col('timberWalnutDark'), 'wood');
+    const keys = ['hideTanned', 'hideSmoked', 'goatBlack', 'hideTanned', 'leatherTan', 'hideSmoked', 'goatBlack', 'leatherDark'];
+    let y = 0.08;
+    for (let i = 0; i < 8; i++) {
+      const th = 0.055 + F.rr(0, 0.015);
+      F.pillow(F.rr(-0.04, 0.04), y + th / 2, F.rr(-0.03, 0.03), 1.0 - i * 0.02, th, 0.72, F.rr(-0.06, 0.06), F.col(keys[i]), keys[i] === 'goatBlack' ? 'cloth' : 'hide', { side: 0.5, puff: 0.3, round: 4, pinch: 0.06 });
+      y += th;
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_drying_line', name: 'Hide drying line', culture: 'scyvoi', tier: 'common', type: 'rack', setting: 'outdoor', job: 'tanning',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.6, back: 0.6 }, materials: ['timber', 'hide', 'cloth'],
+  w: 3.0, d: 0.4, h: 1.9, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberPoplar');
+    for (const s of [-1, 1]) { F.rod(s * 1.4, 0, 0, s * 1.4, 1.75, 0, 0.045, wood, 'wood'); F.rod(s * 1.4, 1.62, 0, s * 1.48, 1.84, 0, 0.025, wood, 'wood'); F.rod(s * 1.4, 1.62, 0, s * 1.32, 1.84, 0, 0.025, wood, 'wood'); }
+    F.rod(-1.5, 1.78, 0, 1.5, 1.78, 0, 0.035, wood, 'wood');
+    const keys = ['hideRaw', 'hideTanned', 'goatBlack', 'hideSmoked'];
+    for (let i = 0; i < 4; i++) {   /* each hide over the pole: half down the front, half down the back */
+      const x = -1.0 + i * 0.68, c = F.col(keys[i]), fam = keys[i] === 'goatBlack' ? 'cloth' : 'hide';
+      for (const s of [-1, 1]) F.pillow(x, 1.4, s * 0.06, 0.52, 0.018, 0.72, 0, c, fam, { rx: -Math.PI / 2 + s * 0.12, round: 2.8, puff: 0.3, pinch: 0.12 });
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_smoking_frame', name: 'Hide smoking frame', culture: 'scyvoi', tier: 'common', type: 'stove', setting: 'outdoor', job: 'tanning',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.8, back: 0.6, left: 0.6, right: 0.6 }, materials: ['timber', 'hide', 'stone', 'emissive'],
+  w: 1.5, d: 1.5, h: 2.3, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberWalnutDark');
+    for (let i = 0; i < 6; i++) { const a = i / 6 * F.TAU; F.rod(Math.cos(a) * 0.7, 0, Math.sin(a) * 0.7, Math.cos(a) * 0.08, 2.25, Math.sin(a) * 0.08, 0.025, wood, 'wood'); }
+    F.frustum(0, 0.45, 0, 0.56, 0.16, 1.5, 0, F.col('hideSmoked'), 'hide', 12);   /* the hides sewn into a cone round the smudge */
+    for (let i = 0; i < 7; i++) { const a = i / 7 * F.TAU + 0.2; F.ball(Math.cos(a) * 0.55, 0.06, Math.sin(a) * 0.55, 0.09, F.col('stoneGrey'), 'stone'); }
+    F.cyl(0, 0, 0, 0.36, 0.05, 0, F.col('ash'), 'stone');
+    for (let i = 0; i < 5; i++) F.ball(F.rr(-0.2, 0.2), 0.06, F.rr(-0.2, 0.2), 0.05, F.col('ember'), 'glow');
+    F.lamp(0, 0.2, 0, 0.5, 4);
   }
 });
 
@@ -25274,6 +25460,89 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         'as two stores' },
     { key: 'infra_fishing_dock', name: 'Fishing dock', types: ['infrastructure'], lot: [12, 34],
       skip: 'an open jetty on piles; the net shed at its root is two reed walls under a canvas, open on two sides' }
+  ] });
+})(KratorInteriors);
+/* ---------- sets/noahs-regret.js ---------- */
+/* ======================== Interior set: Noah's Regret (settlements/noahs-regret) ========================
+   The Ancient mid-rises on the top deck of Noah's Regret, the grounded floating arcology of the Ring Sea, as Bloody
+   Ruephus's pirates use them: the apartments and offices are BARRACKS, one office is the crew's MESS HALL, and the
+   small laboratory (a reduced Reliquary) is RUEPHUS'S HEADQUARTERS. One item per def key of the build's deck buildings
+   (settlements/noahs-regret/src/56-nr-anc-apt.js, 58-nr-anc-office.js, 60-nr-anc-lab.js); the mess hall is its own item
+   (`nr-anc-office-lens-mess`, like the barracks office).
+   Local frame = the builders': origin at the plot centre on the top deck, +z the front (the door side), metres. Each body
+   is the GLAZING LINE of the building (the white ribbons, balconies and bookend towers outside it are not planned); the
+   ground floor stands on a 0.3 m plinth and every storey is h + 0.25 (the slab) apart, the floors the builders draw.
+   Furniture: the pirates live in what the Ancients left and what they took: the post-apoc salvage set (its court tier
+   for Ruephus), the scrap set for the crews; the chain ends in generic. The cabins INSIDE the hull are not here: they are
+   ring-shaped rooms the build registers itself (its 70-nr-interiors.js), with the room kinds this file adds.
+
+   ROOM KINDS this set adds (data for IX.PROGRAMS; a page that never loads this file never sees them):
+     crew      a barracks room: three bunks or more, a locker, a weapon rack; benches and a table if there is room
+     bunkroom  a crowded cabin: two bunks and a locker
+     mess      the mess hall's room: a servery, tables and benches for a crew, food stores
+   sets/README.md says how an item is written.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const SH = IX.sets.shape, rect = SH.rect;
+  const SEATS = IX.SEAT_TYPES, ITEM = IX.ITEM_ROLES, FOOD = IX.FOOD_ROLES, SURFACE = IX.SURFACE_GROUP;
+  if (!IX.PROGRAMS.crew) {
+    IX.PROGRAMS.crew = { require: [{ need: 'bunks', types: ['bed'], n: 3 }, { need: 'locker', types: ['storage'], roles: ITEM, n: 1 },
+                                   { need: 'rack', types: ['rack', 'weapon'], n: 1 }],
+      optional: [{ types: ['bed'], max: 5 }, { types: ['storage'], max: 3 }, { types: ['table'], max: 1 }, { types: SEATS, max: 2 },
+                 { types: ['lamp'], max: 1 }, { types: ['banner', 'art'], max: 1 }, SURFACE],
+      extra: 3.5 };
+    IX.PROGRAMS.bunkroom = { require: [{ need: 'bunks', types: ['bed'], n: 2 }, { need: 'locker', types: ['storage'], roles: ITEM, n: 1 }],
+      optional: [{ types: ['storage'], max: 1 }, { types: ['rack', 'weapon'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
+      extra: 4 };
+    IX.PROGRAMS.mess = { require: [{ need: 'servery', types: ['counter'], n: 1 }, { need: 'tables', types: ['table'], n: 2 },
+                                   { need: 'seats', types: SEATS, n: 4 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+      optional: [{ types: ['table'], max: 4 }, { types: SEATS, max: 10 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'stack', 'rack'], max: 3 },
+                 { types: ['banner', 'art'], max: 2 }, SURFACE],
+      extra: 3 };
+    IX.KIND_ALIAS.crew = ['barracks', 'dormitory', 'bedroom'];
+    IX.KIND_ALIAS.bunkroom = ['barracks', 'dormitory', 'bedroom'];
+    IX.KIND_ALIAS.mess = ['tavern', 'hall', 'kitchen', 'barracks'];
+    IX.KIND_WEIGHT.crew = 1.6; IX.KIND_WEIGHT.bunkroom = 1.0; IX.KIND_WEIGHT.mess = 2.6;
+  }
+  const BARRACKS = ['dwelling-multi', 'military'], CIVIC = ['civic', 'military'];
+  const PL = 0.3;   /* the plinth: the ground floor's top above the deck */
+  IX.sets.add({ set: 'noahs-regret', title: "Noah's Regret: the Ancient mid-rises of the top deck, as Ruephus's pirates use them",
+    culture: 'post-apoc', wealth: 0.3, items: [
+    { key: 'nr-anc-apt-ribbon', name: 'Ribbon terrace (apartments; barracks)', culture: 'scrap', wealth: 0.25, types: BARRACKS, lot: [36, 16],
+      bodies: [{ id: 'block', poly: rect(24, 12.4), y: PL, levels: 6, h: 3.1, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 6.2], w: 1.6 }, { at: [-7, -6.2], w: 1.2 }],
+        program: [['crew', 'store', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew']] }],
+      note: 'six storeys of apartments between two solid bookend towers (the Ancients\' stairs and lifts, dead; not planned); ' +
+        'the ribbon balconies outside the glass are open. The pirates sleep a crew to a room; the ground floor holds their stores' },
+    { key: 'nr-anc-apt-drum', name: 'Drum tower (apartments; barracks)', culture: 'scrap', wealth: 0.25, types: BARRACKS, lot: [21, 21],
+      bodies: [{ id: 'drum', poly: SH.circle(8.6, 8), y: PL, levels: 8, h: 3.1, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 7.95], w: 1.4 }],
+        program: [['crew', 'store']].concat([1, 2, 3, 4, 5, 6, 7].map(function () { return ['crew', 'crew']; })) }],
+      note: 'eight storeys inside a glass drum; the plan is the octagon inscribed in it (the slivers between the octagon\'s ' +
+        'flats and the round glass are open floor); the circular ribbon balconies are outside' },
+    { key: 'nr-anc-office-lens', name: 'Lens office (offices; barracks)', culture: 'scrap', wealth: 0.25, types: BARRACKS, lot: [30, 19],
+      bodies: [{ id: 'office', poly: rect(24, 15), y: PL, levels: 5, h: 3.4, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 7.5], w: 2.0 }, { at: [6, -7.5], w: 1.2 }],
+        program: [['crew', 'store', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew']] }],
+      note: 'five office floors behind the bowed glass and the fins (the bows are outside the plan: open floor); a crew to a room' },
+    { key: 'nr-anc-office-lens-mess', name: 'Lens office (the mess hall)', like: 'nr-anc-office-lens', culture: 'post-apoc', wealth: 0.4, types: ['civic', 'tavern', 'military'],
+      bodies: [{ id: 'office', poly: rect(24, 15), y: PL, levels: 5, h: 3.4, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 7.5], w: 2.0 }, { at: [6, -7.5], w: 1.2 }],
+        program: [['mess', 'kitchen'], ['mess', 'store'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'store']] }],
+      residence: true, units: 1,
+      note: 'the crew\'s mess: the two lower floors are the mess (the servery, the long tables, the galley and its stores); the cooks ' +
+        'and the mess hands sleep above' },
+    { key: 'nr-anc-reliquary', name: "The small Reliquary (laboratory; Ruephus's headquarters)", culture: 'post-apoc', wealth: 0.85, types: CIVIC, lot: [44, 30],
+      residence: true, units: 1,
+      bodies: [{ id: 'reliquary', poly: SH.circle(12, 12), y: 0.5, levels: 3, h: 3.4, wall: 0.3, roof: 'flat',
+        stair: { w: 1.0, riser: 0.21, tread: 0.23 },
+        doors: [{ at: [0, 11.59], w: 2.0 }],
+        program: [['hall', 'store', 'crew'], ['study', 'bedroom', 'store'], ['hall', 'bedroom', 'bedroom']] }],
+      note: 'the Ancients\' laboratory, a smaller sister of the Reliquary: three round storeys under a lattice dome and a needle ' +
+        'spire (a steep ship\'s stair between its storeys: the 12-gon\'s walls are short). Ruephus holds court in the ground-floor hall (his throne, the loot), his guard beside it, the armoury behind; his ' +
+        'chart room, his cabin and the treasure room above; his officers on the top floor. The plan is the 12-gon inside the ' +
+        'undulating shell; the dome, the spire and the colonnade are not planned' }
   ] });
 })(KratorInteriors);
 /* ---------- sets/post-apoc.js ---------- */
