@@ -5,8 +5,9 @@
     js = apoc_bundle.bundle(['40-dw-small.js', '42-lg-dwell.js'])
 
 The text defines the single global `KratorPostApoc`: the kit's engine (src/10-36: rng, textures, materials, the
-geometry engine, the cores, the additions, the registry and sockets), the socket and culture system (core/sockets, a
-src/ copy with the same name wins, as in build.py), the building fragments named in `defs`, a host shim that stands
+geometry engine, the cores, the additions, the registry and sockets), the shared fragments the kit's build.py takes
+from core/ (sockets and cultures, the furniture pass core/furnish, the tag registry core/tags and KRAND; a src/ copy
+with the same name wins, as in build.py; KTAGS and KRAND attach themselves to window, as they do in any page), the building fragments named in `defs`, a host shim that stands
 in for 90-scene.js (a scene-free buildWorld over SITES), and the furniture glue (src/91f-furnish.js). Every top-level
 name of those files stays inside the closure, so the kit's MAT, TEX, rng and PI never meet the host's, and the kit
 keeps its own seeded stream: placing a building draws nothing from the host's.
@@ -31,15 +32,25 @@ import os, re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
-CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')
-ENGINE = ['10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '32-cores.js', '34-adds.js', '36-def.js',
-          '37-sockets.js', '38-symbols.js', '80-cultures.js']
+CORE = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core')
+# the shared folders build.py reads (sockets and cultures; the furniture pass and the tag registry it records into,
+# with KRAND): every digit-named .js in them goes in, in the kit's own filename order; a src/ copy with the same name wins
+CORE_DIRS = [os.path.join(CORE, d) for d in ('sockets', 'furnish', 'rand', 'tags')]
+ENGINE = ['10-core.js', '20-tex.js', '22-mat.js', '30-geo.js', '32-cores.js', '34-adds.js', '36-def.js']
 GLUE = '91f-furnish.js'
+
+
+def shared():
+    """{name: path} of every shared fragment the kit's build.py takes from core/."""
+    out = {}
+    for d in CORE_DIRS:
+        out.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
+    return out
 
 
 def path(f):
     p = os.path.join(SRC, f)
-    return p if os.path.isfile(p) else os.path.join(CORE_SOCK, f)
+    return p if os.path.isfile(p) else shared()[f]
 
 
 def read(f):
@@ -93,7 +104,9 @@ return {version:1,DEFS,MAT,TEX,TILE,CULT,PLANTS,ANIMU,declOf,frontOf,
 
 
 def files(defs):
-    return ENGINE[:7] + ENGINE[7:9] + sorted(defs) + ENGINE[9:]
+    """The kit's load order (sorted names, as build.py concatenates them) restricted to the shared core fragments,
+    the engine and the named building fragments; the glue goes in after the scene shim."""
+    return sorted(set(shared()) | set(ENGINE) | set(defs))
 
 
 def bundle(defs=('40-dw-small.js', '42-lg-dwell.js')):
@@ -104,7 +117,7 @@ def bundle(defs=('40-dw-small.js', '42-lg-dwell.js')):
     parts = [SHIM_HEAD]
     for f in files(defs):
         parts.append('/* ---- kits/post-apoc/%s ---- */\n%s\n' % (
-            ('src/' if os.path.isfile(os.path.join(SRC, f)) else '../../core/sockets/') + f,
+            os.path.relpath(path(f), HERE).replace(os.sep, '/'),
             core_body() if f == '10-core.js' else read(f)))
     parts.append(SHIM_SCENE)
     parts.append('/* ---- kits/post-apoc/src/%s ---- */\n%s\n' % (GLUE, read(GLUE)))

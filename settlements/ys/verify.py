@@ -123,7 +123,7 @@ async def run(a):
             await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=300000)
             try:
                 await pg.wait_for_function(
-                    "window._ready===true || (document.getElementById('errs')&&"
+                    "(window._ready===true && !(window._texPending>0)) || (document.getElementById('errs')&&"
                     "document.getElementById('errs').textContent.length>0)", timeout=580000)
             except Exception:
                 print("timed out waiting for the kit to build")

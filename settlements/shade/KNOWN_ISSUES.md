@@ -53,6 +53,15 @@ Read before changing anything here. `build.py` prints the open count.
       with jobs and hourly schedules, the raider convoy routed leg by leg. Moving
       instanced people (Voth's `78f-life-citizens.js` is the model to port) come after
       the buildings, so they have doors to walk to.
+- [x] The life layer is on SIM (core/simulation, Oct 2026) and SIM steps it: the probe
+      decides all 1,060 residents at 2, 8, 13 and 20 h (none stuck, no route failed) and
+      runs the raider convoy minute by minute through its legs (ford, Khan, Khan, out by
+      the switchback), each with a negative. The convoy has its `raider` role; DEPART and
+      IDLE are in `world/activities.json` (so `_life.OUT.activities` is 15, not 13).
+- [ ] Nothing steps SIM per frame yet: the clock is held at noon and only the probe
+      runs `LIFE.run(minutes)`. Stepping it in the frame loop belongs with drawing the
+      people (the item above; PLAN.md Phase 3b), so the CPU is not spent on walkers no
+      one sees.
 - [x] Building navigation shadows are applied before the 1.5 m walkable grid is
       built. The door approaches and Khan court stay open; the probe checks every
       building entrance from the Khan.

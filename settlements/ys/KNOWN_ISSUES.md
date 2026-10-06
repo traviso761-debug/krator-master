@@ -3,6 +3,9 @@ build.py prints every unticked item on each build. Claude: when Travis asks for 
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
 ## Deliberate drift in vendored fragments (`build.py --vendor-check` reports these as "adapted")
+- `71-port-terrain.js` also calls `ysGroundTint` (the karst's colours) when the city defines it (Oct 5 2026).
+- `54-mat-concrete.js` (from `kits/ancients/src`, Oct 5 2026): `bodyGroup` passes `ysCutY(d)` to a standing body, so
+  every tower that builds through it (D, E, F, H) is cut at a storey when the city names a height. One line.
 - `71-port-terrain.js` (from `settlements/port/src`): `portNatH` delegates to `YS_NAT` when the city target
   defines it, and the port's nature scatter is skipped in that case (the biome plants the ground). Two lines.
 - `52-sky-abc.js` (from `kits/ancients/src`): `ysCutY(d)` is the `y1` of a ruined (decay 1) body when
@@ -14,16 +17,39 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
   `n` toggles noon/night, the camera and walker stay above the sea, the inspector names ground and sea, and
   the Compass toggle. Back-port the compass to the standard pack once Ys is on `main`.
 
+- The Highlands kit (`70-hl-tex`, `71-hl-mat`, `71b-hl-motif`, `72-hl-helpers`, `73-hl-carve`, `74-rep-dwell`, from
+  `settlements/highlands/src`, Oct 5 2026) is byte-identical on disk but RENAMED AT BUILD TIME (`VENDOR_SUBST` in
+  build.py, applied to the body only): `HPAL` → `HLPAL` and `const hC=vC` dropped (Ys's `60-hyk-mat.js` declares both
+  names, and 88b reads `HPAL`; the kit's hC is vC, exactly Ys's hC), `MAT.rock` → `MAT.hlRock` and `MAT.turf` →
+  `MAT.hlTurf` (the kit overwrote core's `68-mat-v5` materials that `36-decor` and `64-houses-def` draw with). A
+  re-vendor is a plain copy; a new name clash shows up as the build's duplicate-name error.
+
 ## Open
+- [ ] (Travis, Oct 5 2026) **Infill the empty spaces in the central region**: the open ground between the inner quarter's
+      blocks, the strip and the shore still has gaps where nothing stands (the lanes' quarters that refused a villa, the
+      edges of the land blocks toward the water). A pass with the small pool, as the strip's ring houses are placed.
+- [ ] (Travis, Oct 5 2026) **Every Sky F must be the stump-plus-pods version**: a Trays tower drawn whole or without pods
+      (the tall pool's cut at 178–250 m reads as a whole tower; a stump whose pods failed) is wrong; cut them lower and
+      make sure each carries pods on its trays.
+- [ ] (Travis, Oct 5 2026) **More ruined buildings in the drowned area**: beyond the three civic ruins in the east polygon,
+      the drowned grid between the stumps wants more fully-ruined, un-podded Ancient kit buildings (the hospital, the hotel,
+      the bunker, the smaller civic pieces) standing on the bed with their lower floors under water.
 - [ ] Phase 0 terrain is the port's tensor grid sized for a coast along x: 10 m cells only within ~900 m of the
       origin, 90 m cells beyond. Phase 3 replaces it with the Ys terrain mesh (regular cells over the 3.2 km map,
       a far-country mesh for the volcano and the Inner Wall).
-- [ ] No nature scatter on the natural ground until the NW-bay biome is bound (phase 3).
-- [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) will carry no ROOM records until
-      their own kits register them (DESIGN §7).
+- [x] (Oct 5 2026) No nature scatter on the natural ground until the NW-bay biome is bound (phase 3). Bound: `biomes/nwbay`
+      vendored as `src/86-bio-*.js`, the host binding in `targets/city/86-bio-45-city-init.js` and `89-city-biome.js`
+      (NOTES.md "The biome bound", API.md "The biome").
+- [ ] The foreign quarter's buildings (Iziz, Republic, Voth, the chapterhouse) carry no ROOM records until
+      their own kits register them (DESIGN §7). Built since Oct 5 2026 (88c-city-foreign.js): door marks only, the
+      Highlands houses' and the embassy's estimated at the middle of the front (their helpers record no door).
 - [ ] The Ancients hosts get door marks only at their accreted landings (DESIGN §7).
-- [ ] The ground painter is the port's (red soil in patches, dry grass): re-key it to the bay's lush ground and
-      the karst when the NW-bay biome is bound (phase 3).
+- [x] (Oct 5 2026) The ground painter was the port's (red soil in patches, dry grass). Re-keyed to the bay's jungle floor
+      (`ysGroundLush`, 84-city-geo.js); the farms' soil paint is softened half-way to it. The city's land blocks read as
+      lawn: no worn paths or dust round the houses yet. *Still open after the bind (Oct 5 2026):* the biome's floor
+      (ferns, grass, moss, logs) covers the port's paint near the spine; beyond the floor's LOD bands (1.25 km) the red
+      soil shows between the impostor trees. The painter should read the biome's zones (`NWBAY.zones`) the way the
+      nwbay ideal type paints by zone (its 45-host-stage: litter, rainforest litter, tawny slope, beach, crust).
 - [ ] The nacre material fades underwater only through its own hook (`hkNacreHook` calls `portUWsh` first);
       any new shell material with an `onBeforeCompile` must do the same or it will glow under the sea.
 - [ ] The sea plane shows moiré at the mockup's low grazing presets (the port's sea at a 10 m tensor cell);
@@ -31,6 +57,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] `ysHostMembers` mirrors the kit's strut and leg constants for Skyscrapers A and B (positions, counts,
       which are gone when ruined). Re-read `kits/ancients/src/52-sky-abc.js` whenever the kit is re-vendored,
       and add C, D–K as hosts of those kinds are placed.
+      *Re-read Oct 5 2026* at the re-vendor (the RESTAND: A's strut feet at r 60, B's legs raked from r 42 to the lobe
+      tips); the caps came in to 66 (A) and 56 (B).
 - [x] (Oct 1 2026) The rich pod's door lamp floated beside the lip: a pearl on nothing. Lamps take a `bracket` anchor
       on the shell now, and the accreted pod's lamp sits on its own surface beside the door.
 - [x] (Oct 1 2026) The drips under an accreted pod did not meet the shell (an approximate underside). They are read
@@ -80,7 +108,101 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] The kit sheet draws variant 0 of every furniture piece, so the shell stool's barnacle variant is never seen.
 - [ ] The weed (cloth) material carries the weed map's green cast: coral cloth goes to mud. A neutral cloth map would
       let `F.pick('coral')` read true on cushions and slings.
-- [ ] The karst stacks are a heightfield: no overhangs or undercut bases, and the "knobbed top" is a noisy plateau.
+- [ ] The karst stacks are a heightfield: no overhangs, undercut bases or sea notches (Krabi's towers have all three);
+      `core/terrain`'s carve patches are the way to them. The crowns are domed now, painted jungle; *the jungle is bound
+      (Oct 5 2026)*: cliff figs with root curtains at the rims, the karst forest on the tops, the hanging gardens on the
+      faces (89-city-biome.js); the overhangs and notches are still the open part.
+- [x] (Oct 5 2026) **Every drowned host was Skyscraper A.** The chain is re-vendored and the hosts are A, D (the
+      Monolith) and H (the Warden), D and H standing on the bed with pods on their faces; the awash blocks carry short
+      Wardens and Monoliths. Still open: the Pierced Stack and the Bole (the alternates' helpers and kdefs in
+      `8aj-alt-a-bole.js`, and their own cut and breach in place of `bodyGroup`'s), and the 4 land-quarter plots
+      (`PLACE.slots`, kind `land host`) that wait on the mid-rise types.
+- [ ] (Oct 5 2026) The land quarter's reclaimed Ancients are Warden and Monolith stumps (decay 3), not the apartments and
+      offices DESIGN §5 names: those builders draw several variants in one call and need splitting first. The port's
+      salvage dressing is not applied to any host (`portRepair` does not handle a rotated group).
+- [ ] (Oct 5 2026) A `//` comment inside a one-line vendored function swallows the rest of the line (it cost the city a
+      leaked transform this round). Mark Ys hooks in vendored fragments with `/* */` only.
+- [ ] (Oct 5 2026) The Capsule Stalks' sockets are not used: pods take the centre stalk's smooth band only (one plate,
+      so one pod). Growing into a socket needs `HYK.placeOn` to frame a pod on an off-axis core (a socket's position and
+      normal are in `HOSTSPEC_STALKS.sockets(d)`; drop the ones above the cut).
+- [ ] (Oct 5 2026) The Arcades' sandstone and the Bell Hall's travertine are the board-formed concrete map, tinted: the
+      material library has neither (kits/ancients/KNOWN_ISSUES.md has the prompts).
+- [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
+      their faces and ledges instead.
+- [x] (Oct 5 2026) The spans are not placed. The bridge graph (`88-city-spans.js`) joins every pair of neighbouring
+      drowned hosts pod to pod, and the Amphitriton to land through the Tides mole: 8 spans, NAV L1 35 cells, L2 31.
+- [x] (Oct 5 2026) The bridge graph's gaps: no piers, no link to land but the Amphitriton chain, the Citadel's span and
+      the lily pads and pontoons unplaced. Now: piers under every bridge over 55 m, a spanning tree that puts every
+      node (host, walled mole, the Citadel, the Winds) on a foot path to the shore, two towers bridged straight to it.
+- [ ] (Oct 5 2026) The bridge graph's remaining gaps: the ladder is unplaced (above); the spiral stairs are showcases
+      down a few shafts' faces to a wet landing, not links of the network (a stair down a stack is the next one); the Wet
+      Cells stay an island reached by water (DESIGN); a landmark's span lands on the Winds' stack top beside the temple
+      and on the Citadel's bridge-head pad (the pad `NAV_EXTRA` names 'Citadel bridge head'; without it the record's
+      estimate at the stack's edge is used); the pontoon's flights at each end stand on the mole's plate edge.
+- [ ] (Oct 5 2026) The roads are ribbons 22–30 cm over the heightfield (its 10 m cells made the vertex paint read as a
+      zig-zag): on a hollow between two grid lines the ribbon can float by that much; the canal streets under the water
+      are still not drawn. The lanes' ribbons stop at the streets' edges; no kerbs, no crossings.
+- [x] (Oct 5 2026) The foreign quarter is 60 reserved plots and the chapterhouse's square, with their swap lists; none
+      of the foreign sets is vendored, so the quarter reads empty. The caravanserai stands on its nearest block. *Built
+      (Oct 5 2026, phase 3): the Iziz Vernacular, the Republican dwellings, the Voth embassy and three Voth townhouses, the
+      Historians' chapterhouse, in every slot (NOTES.md "The foreign quarter").* Open after the build:
+- [ ] (Oct 5 2026) The foreign plots (`PL_FOREIGN` in 88) were sized before the sets were vendored and do not match the
+      kits' footprints: of the Republican set only the log izba (13 x 14, turned), the two-room log house (14 x 9) and the
+      Saxon townhouse (9 x 13) fit the 13 x 11 / 15 x 12 / 18 x 10 plots whole, so 88c also admits a builder at scale .92
+      or .86, and none of the Republican trade (75-rep-trade, not vendored) fits at all; of the Iziz set the shop row,
+      the tavern and the rich houses never fit. Resize the plots per culture from the kits' `VERN.defs` w x d (Republic:
+      15 x 15, 20 x 14, 10 x 14; Iziz: 19 x 13 for the shop row) when 88 is next open.
+- [ ] (Oct 5 2026) The Highlands kit's furniture is placed from the master catalog (`FURNISH`, 89y-hl-furnish.js, not
+      vendored): 88c stubs it, so the Republican houses stand without their barrels, woodpiles, racks and sacks, and the
+      kit's 73b-hl-frame (the Fachwerk frames and the harlequin roofs) is left out, since its overrides of `vnWin`,
+      `vnGableRoof` and `vnHipRoof` would redraw the Iziz houses too. The Voth townhouses are new builders in the embassy's
+      idiom (77-voth-townhouses.js): Voth's own house builders are not on the Ancients lineage and were not ported.
+- [ ] (Oct 5 2026) The Voth embassy and the Historians' chapterhouse stand behind a lane of a Voth and a Republic block,
+      facing the lane, where nothing had to be cleared: 88 never reserved the chapterhouse's 44 m square (the lanes cross
+      the block's centre) and no plot takes a 36 x 34 compound. Neither has a square of its own, and the embassy's gate
+      looks at the backs of the lane's small Hykkousoi houses.
+- [x] (Oct 5 2026) The moles were fill stamps with soft edges, no quay walls, and everything on them stood on the fill's
+      own height (Travis: the military harbour z-fought at a distance). Now the fill lies 30 cm under the datum (inset
+      7 m, sharp, under a walled mole), a plate at the datum less 12 cm covers the polygon, and a shell quay wall runs
+      down to the bed round every edge of the big moles (the aprons keep their soft beach side, with the plate).
+- [ ] (Oct 5 2026) The moles' quay walls are plain (coping, batter, the tide crust): no bollards, rings, stairs or
+      ladders down to the water yet, and a mole's plate is one flat colour (the ground library's terrazzo is for it).
+      The home-grown moles are organic and terraced now; the harbour moles (the military harbour, the headland, the
+      Tides, the Library) are still rectangles. An upper terrace is lightly built (a few small houses) and its middle
+      is bare; the flight between terraces has no landing at the top.
+- [ ] (Oct 5 2026) The Citadel's cliff stair hugs the analytic karst wall; the heightfield's 10 m facets put the mesh wall
+      up to a few metres off it, so the stair floats a little in places and its brackets root in air or stone by chance.
+      Its walkway north lands on the home-grown mole's quay edge; the Winds' stack has no stair yet.
+- [x] (Oct 5 2026) The Citadel stack carried the arena model under the Citadel's name. Now `hyk_citadel` is the
+      new Archon's Citadel (74b: a swept ridge-backed mass with a honeycomb of oval windows, a great pointed arch over
+      the audience hall, verdigris spires and dome, a crescent colonnade and a reflecting pool, the west bastion with the
+      bridge door and the bridge-head pad) and the old model is `hyk_arena` (74b2) on the nearest land block with room
+      for it, its ground levelled, ringed with the market's shops. The landmark stacks are fitted: the Citadel's an ellipse 56 × 84 m (its
+      axis away from the bridge door, the Treasury on that side), the Winds' 54 × 57 m, both near flat on top.
+- [x] (Oct 5 2026) The new Citadel's verdigris was sea-green vertex colour on shell: its spires and dome are the `hkVerd`
+      pair now, the library's `metal.bronze.verdigris` (riveted panels: the rivets read at the spires' scale, a
+      plain-patina variant would suit them better). The gold is still a warm hex on nacre.
+- [ ] (Oct 5 2026) The Citadel's oval windows have bone-tube surrounds and a pane, not `hykWin`'s lip (the lip instance
+      per window was a third of the budget); a window near a wing's ridge can show a sliver of the back face through
+      its reveal. The Arena's pod room is still named the tribune.
+- [ ] (Oct 5 2026) The library on Ys, first pass: the terrain keeps its procedural map (the karst limestone tiled over
+      the flat read as vertical stripes: a wall set; a ground needs a slope-and-karst blend); the jungle canopy set is processed but unused (a slope-and-karst blend
+      of limestone and canopy wants a two-map hook); the seaweed weave (`cloth.seaweed`) is unused (the awnings are the
+      Iziz vernacular's `MAT.cloth`, not a hyk material); the Ancient towers' concrete (`MAT.white`, `MAT.rust`) keeps the
+      procedural panel maps (no prompt for them yet); the sandstone and travertine repeat 1:1 over the towers' own UVs
+      (a tile is a bay, about 20 m, so the ashlar's blocks read 3 m). The karst dressing is quads with no wind, no
+      lighting trick for the cards' backs, and the vines hang 2.6 m off the analytic wall (the mesh wall can be a few
+      metres off it). The kit sheet and the mock take the same pack (their pages grew 4 MB).
+- [x] (Oct 5 2026) The restand plinths are gone from every host (`YS_CUT.noPlinth` always: Travis; the Facet's apron
+      overrode a street). The hosts' record caps still measure the old podium, so a host reserves more ground than it
+      covers. The Conocylinder takes no stair (its body skin runs down to the strut ring where the record says core),
+      and the bone ladder (11 m, water to the L1 datum) still has no place: every host's deck at that height is its ring.
+- [x] (Oct 5 2026) The city stood at 11.85 M of a 12 M budget with its densities cut to fit. The budget is 30 M for now
+      (Travis) and the city's span two-thirds; the densities are back and the city is 8.5 M.
+- [ ] (Oct 5 2026) `shoreAt` (84b) chooses the water side from ±9 m and flips on a flat beach (the fishing docks); the
+      shore run decides it from ±40 m itself. Fix it at the source before anything else squares itself to a loop.
+- [ ] (Oct 5 2026) The Urchin pod (`hyk_pod_rich_1`) placed without a way puts its store in its door swing; the city
+      only ever places it as a way in (the sheet's case).
 - [ ] (Travis, Oct 2 2026) **The Archon's Citadel reads as an arena, not a citadel** (`74b-hyk-citadel.js`, the
       terraced arena-fortress on its stack). Keep the model as the city's arena with small tweaks (its name, a games
       floor, the tiers as they are) and build the Citadel proper as a fortress when the city is placed.
@@ -92,3 +214,64 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       and none of the new arcology types except the Pierced Stack and the Bole: lobes, fins and struts fight every pod,
       pad and runner. The P3 host list follows this (PLAN.md P3).
 
+- [ ] (Oct 5 2026) Rust: the Ancients in the water are rust-stained by tint only (`MAT.concreteR`); the vendored
+      Arcades' sandstone and Bell Hall's travertine keep their colours (vendored byte for byte). A library set of
+      board-formed concrete with rust streaks and a salt line (`concrete.rust.streaked`) and a heavy rust
+      (`metal.rust.heavy`) would make them read as the ocean's; Travis offered one.
+- [ ] (Oct 5 2026) The harbour piers face straight out from their mole's edge; none is angled for the tide, and the
+      shore run's piers keep their old spacing. The round warehouse's cart doors face wherever the mole's frame
+      points, not the quay.
+- [x] (Oct 5 2026) The river's pool sheets were flat ribbons at each pool's lip height and did not meet on the bends
+      (Travis: discontinuous). One strip now, 62 % of the valley's width at bed + 55 % of the rise. Still no cascade at
+      a lip: the strip steps where the bed does. The band's half-sunk hosts are all Arcades this seed (the low pool picks per cell).
+- [x] (Oct 5 2026) The foreign slots' stand-ins are Hykkousoi houses of the middle pool (Travis: density); when the
+      Iziz, Republic and Voth sets land, the slot's `standIn` record is the one to drop. The industry blocks' lanes carry
+      small warehouses, smithies and poor houses (`PL_INDUSTRY_SMALL`). *Dropped (Oct 5 2026): 88c splices every filled
+      slot's stand-in out of `PLACE.blds` at load and frees its box; a slot nothing fits would keep its stand-in (none this
+      seed).*
+- [ ] (Oct 5 2026) The sunk office terraces stand whole 100 m (east) and 116 m (north) above the water: the ocean's tallest
+      ruins after the three full towers; their rust is the concrete tint only (`MAT.concreteR`, see above).
+- [ ] (Oct 5 2026) The Comb (`altOfficeC`) is a flat bar in a radial host model: its back wall is 7 m from the axis at the
+      middle, so a pod's satellites sit 40° round and one may land on a horn's end; the lived floors draw a small corridor
+      ring in it. Office B's lobe bands are mostly holes at decay 3 anyway. The Apartments keep tray 6 (the kit drops it in
+      ruin: it would float over the stem).
+- [ ] (Oct 5 2026) The ruins in the east shallows: the polygon takes only the ruins that fit it with their footprint
+      clear (the Vault, 390 m, and the Assembly, 210 × 260, never fit); a ruin's registry volumes are the kit's (`cls:'ruin'`),
+      with no door marks; their meshes are not merged with the hosts' (`ysMergeHostMeshes` could take `YS_RUINS`).
+- [ ] (Oct 5 2026) The river's strip rides 35 cm over the terrain mesh wherever the heightfield has not carved the valley
+      to the bed (the valley is missing over much of the farmland, e.g. at (-300, 330), and the cells are 90 m past 900 m
+      from the origin): there the water lies on the grass as a sheet, not in a valley. The carve (`ysRiverY`) and the
+      heightfield's sampling of it are the thing to look at. Before this round no strip was drawn at all: the loop broke
+      at the first sample under the sea, at the mouth.
+- [ ] (Oct 5 2026) The Trays (`skyF`): a pod that is not a way in is centred on its plate, so its lower half sinks into the
+      tray slab and shows as a bump under the tray, and its lily pad lies inside the slab; bearings are the crests of the
+      middle band, and the lobes turn .14 rad a storey, so a pod far from the stump's middle sits up to .6 rad off a crest.
+- [ ] (Oct 5 2026) The Pharos's mast is a plain nacre pole, 50–60 m from the crown's finial to over the Warden's spire; it
+      wants stays or a cage. The beam's cone still clips the spire's finial when the crown stands on the spire's own side.
+- [x] (Oct 5 2026) The Wet Cells' rock read pale on the barnacle set. Travis's `rock.wet.dark` set is bound to a new pair
+      `hkWet` (the Wet Cells' rock, cap, cones and landing, keep .85); the rock is still a plain lathe to the bed (28 m at
+      the Needle's foot), no ledges, no weed below the crust band.
+- [ ] (Oct 5 2026) The new hosts' blemishes: the bridge graph's pods ignore a type's bearings (`fits` consults
+      `avoid(yl,h)` only: on K a pod can land on the porch arch, on the Attraction beside a great spire; `avoid` wants
+      the bearing); the tideline crust on C and the Stack is a ring round the axis, not round each leg or piloti; Sky J
+      is not a host (its plates reach far past the glazing). The Library's and the office's rust passes are left out.
+- [ ] (Oct 5 2026) The biome, first bind (89-city-biome.js): **no cinder pines** (0 placed: the city map has no lava field
+      and its headlands are karst, so the `cinder` zone is empty; a lava tongue or a `salt` spray band on the headland slopes
+      would bring them) and no mat-reed beds (the kit's beds want still fresh water at y 0 inside the river's `flow` band; the
+      mouth is salt); the kit roots only its cliff figs on the rock (55-trees drops every other species where karst > .02),
+      so the tops' fan-crowns, ferns and shrubs are the city's own pass on the kit's builders (`ysBioKarstForest`), not the
+      kit's zones; the dress pass reads the stacks' faces off the 10 m heightfield, so a root curtain or fern can stand a
+      metre or two off the analytic wall where the facets do; (Travis's karst cards, clumps on the crowns and vines over the
+      rims, were drawn under the biome's and doubled it: dropped the same day, the sets stay in the library); the biome's foliage materials carry
+      no `portUWsh`, so a mangrove's prop roots do not fade under the sea; `window._biome.fauna` reads 0 birds and
+      swimmers though 1766 fauna instances were built (the fauna pass returns its counts under other keys: read
+      `BIO.stats['nwbay/fauna']`); the far impostors beyond the floor's LOD bands stood on the port's red-soil paint (the ground is re-keyed now)
+      (the ground painter item above); `Q` .55 is the density knob (3.0 M triangles; 1 would be ~5.5 M, over the budget).
+- [ ] (Oct 5 2026) The building editor's live view is a preview, not the build: a live building's label is not made
+      (93-labels builds once at load), its ROOM/SPOT records are not in the Rooms overlay until it is rebuilt, and a
+      deleted building keeps its label, its REG volume (the inspector still names it) and its MARKS until the next build.
+      Hosts and grown pods cannot be deleted live or by `YS_EDITS` (they are `PLACE.hosts` records; the hosts' plain meshes
+      are merged across the city without owners by `ysMergeHostMeshes`); the tideline, the bridges and the mole quays carry
+      no owner (built with no frame) and are not selectable. A live placement reseeds the lineage's rng() (the builder's
+      `reseed`), so a later live draw from it (none today) would differ from the build. Raycasting a click against the
+      merged city meshes has no BVH: a selection can take a second.

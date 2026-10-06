@@ -7,8 +7,8 @@
  // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
  A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
   A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
-  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
-  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them)
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.lampGlow.push(A.glow.length);A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
+  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them); A.lampGlow: its halo's index in A.glow
  // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
  // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
  A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}

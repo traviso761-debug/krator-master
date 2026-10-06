@@ -41,7 +41,7 @@ function hnRLIsland(G,x,z,rf,o){o=o||{};const depth=o.depth||1.3,NL=4,n=o.n||Mat
  top.material=hnRLTint(MAT.rlIsland,hC(vPick(RPAL.island)));top.userData.isGround=true;
  // fringe: loose reed hanging over the edge
  const nf=Math.round(n*.8);for(let i=0;i<nf;i++){const a0=i/nf*TAU,a1=(i+1)/nf*TAU,am=(a0+a1)/2;const p0=[x+Math.cos(a0)*rf(a0),z+Math.sin(a0)*rf(a0)],p1=[x+Math.cos(a1)*rf(a1),z+Math.sin(a1)*rf(a1)];
-  const L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]);const yaw=Math.atan2(p1[0]-p0[0],p1[1]-p0[1]);const q=qEuler(0,yaw,0).multiply(qEuler(-.45,0,0));
+  const L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]);const yaw=Math.atan2(p1[0]-p0[0],p1[1]-p0[1])+Math.PI/2;const q=qEuler(0,yaw,0).multiply(qEuler(-.45,0,0));
   const out=[Math.cos(am),Math.sin(am)];kput('hRLFringe',[(p0[0]+p1[0])/2+out[0]*.12,-.2,(p0[1]+p1[1])/2+out[1]*.12],q,[L+.1,.55,1],hC(vPick(RPAL.straw)));}
  return rf;}
 // Reed beds in the water round an outline: clumps of living reed just outside the edge, thicker where o.dense,
@@ -114,8 +114,9 @@ function hnRLHut(x,z,W,D,H,ry,o){o=o||{};const c=o.c||hC(vPick(RPAL.straw)),th=o
   const aw=loc(x,z,o.doorX||0,D/2+.55,ry);kput('hRLMatP',[aw[0],1.95,aw[1]],vQ(ry,-Math.PI/2+.35,0),[1.6,1.1,1],c);
   for(const q of[-1,1]){const p=loc(x,z,(o.doorX||0)+q*.7,D/2+1.05,ry);vPst('hRLBundle',p[0],0,p[1],.04,1.75,old);}}
  return H+rise;}
-// Fringe of loose reed ends hanging below an eave from a to b (points at deck level y), the face's outward ry
-function hnRLEaveFringe(a,b,y,ry,c){const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const yaw=Math.atan2(b[0]-a[0],b[1]-a[1]);const o=loc(0,0,0,.06,ry);
+// Fringe of loose reed ends hanging below an eave from a to b (points at deck level y), the face's outward ry.
+// atan2(dx, dz) points a unit plane's normal along a→b; the +PI/2 lays its width along it.
+function hnRLEaveFringe(a,b,y,ry,c){const L=Math.hypot(b[0]-a[0],b[1]-a[1]);const yaw=Math.atan2(b[0]-a[0],b[1]-a[1])+Math.PI/2;const o=loc(0,0,0,.06,ry);
  kput('hRLFringe',[(a[0]+b[0])/2+o[0],y-.2,(a[1]+b[1])/2+o[1]],qEuler(0,yaw,0).multiply(qEuler(0,0,0)),[L,.45,1],c||null);}
 // Cone hut: tiers of thatch stepping down to the ground with a fringe at every tier, a tied topknot of splayed
 // stalks, a low doorway with a mat leaning beside it. R = footprint radius, H = height to the topknot.

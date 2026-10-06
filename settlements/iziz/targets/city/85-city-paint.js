@@ -1,10 +1,12 @@
 // ================================================================= IZIZ CITY — the painted ground: albedo, buildable mask, street classes, the road list
 // Everything the layout decides is painted here first; placement then READS these canvases (mask/klass) and the ROADS
 // list, and the terrain mesh wears the albedo canvas. 2048 px over WORLD m ≈ 1.08 px/m.
+// The mask and the classes are core/mask grids (KMASK.canvas: the same calls, hard-edged and identical in every browser
+// and in Godot; GODOT-PLAN.md Phase 2 item 5); only the albedo is a real canvas.
 const CS=2048,PXS=CS/CITY.WORLD,px=v=>(v+CITY.WORLD/2)*PXS;
 const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+const mv=KMASK.canvas(CS,CS);const mg=mv.getContext('2d');
+const kv=KMASK.canvas(CS,CS);const kg=kv.getContext('2d');
 const KL={none:0,plaza:1,park:2,boulevard:3,minor:4,ancient:5,settler:6,farm:7,water:8,court:9,building:10,rock:11,field:12};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';
 const ROADS=[];           // {pts,w,cls,id} in world metres — the frontage placer walks these

@@ -22,21 +22,23 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
 | `30-layout.js` | 30 | 5. LAYOUT (1); PLATFORMS (102); SATELLITES + BRIDGES (167); STAIR BAYS (246); DECK LOTS + ROOMS (281); SPIRALS: gate ramps + the council stair (349); ROOSTS (393); NAV GRAPH (415) |
 | `32-branches.js` | 8 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 25 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
+| `45-kit.js` | 32 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 8 | 11. TEXTURES (1) |
 | `50-structure.js` | 18 | 12. STRUCTURE (1) |
 | `53-furnish.js` | 8 | 13a. FURNITURE: PLACED from the catalog, not dra (1) |
-| `55-arch.js` | 60 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (130); 2. FURNITURE + MIDDLE ZONES (355); 3. MAV'S CROWN (508); 4. THE COUNCIL CHAMBER (643); 5. SATELLITES (748) |
-| `56-levels.js` | 67 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (146); GOAL B: THE GATE TREES (555) |
+| `55-arch.js` | 63 **big** | 13. ARCHITECTURE (arch-A) (1); 1. RING BUILDINGS (130); 2. FURNITURE + MIDDLE ZONES (376); 3. MAV'S CROWN (529); 4. THE COUNCIL CHAMBER (664); 5. SATELLITES (785) |
+| `56-levels.js` | 69 **big** | 13b. LEVELS + GATE CARVINGS (1); GOAL A: LEVELS (146); GOAL B: THE GATE TREES (582) |
+| `57a-interiors.js` | 29 | 13c. INTERIORS (DATA): rooms people live and wor (1) |
+| `57c-interiors-draw.js` | 25 | 13c. INTERIORS (DRAWING): the rooms near the cam (1) |
 | `60-trees.js` | 40 **big** | 14. TREES (1) |
 | `62-jungle.js` | 45 **big** | 15. JUNGLE (1) |
 | `63-trails.js` | 3 | 16b. GROUND TRAILS (1) |
 | `72-lights.js` | 3 | 18. FIXED LAMPS (1) |
 | `75-terrain.js` | 6 | 20. EMIT + GROUND + RIVER (1) |
-| `78-life.js` | 50 **big** | 78. LIFE (2) |
+| `78-life.js` | 51 **big** | 78. LIFE (2) |
 | `79-spiders.js` | 60 **big** | 19. SPIDER-RIDERS (1) |
-| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (146) |
-| `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
+| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (150) |
+| `81-glow.js` | 6 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `84-flyers.js` | 81 **big** | 84. FLYERS (1) |
 | `85-probe.js` | <1 | 29. PROBE (1) |

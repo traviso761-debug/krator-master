@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.887,
+    1.307
+   ],
+   "seam_before": [
+    1.313,
+    1.857
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.35,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ceramic",
+  "id": "mosaic.trencadis",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.35,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "mosaic.trencadis.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row mosaic.trencadis (the full prompt given 2026-10-05)",
+  "reuse": "Yuni and Locus domes and trims; Iziz and Voth inlay and any broken-tile work, tinted per use",
+  "sha1": "65b0bc21e5f2113011bdb11c62a197603189793e"
+ }
+}

@@ -1,0 +1,2 @@
+# the town tiles: baked by bake.py towns from the builds (36 MB), not committed
+dist/towns/

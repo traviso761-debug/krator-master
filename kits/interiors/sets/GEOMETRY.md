@@ -22,6 +22,10 @@ item's `skip` or `note` in `sets/<set>.js` says the same in place.
 | highlands | `hl_tri_scrap_forge` | the container behind the trading shelter has no door drawn | a door in the container's front |
 | highlands | `hl_rep_pens`, `hl_rus_pens` | the pigsty hut (1.7 m) and pig hut (1.3 m) are too low for a person | none needed if they are only animal huts |
 | post-apoc | `compound` | the guard cabin over the gate has windows on all four walls and no doorway; its ladders end on the open walkway | a door from the walkway into the cabin |
+| iziz | `vern_alchemist` | the lab tower is a solid stone drum with no door (its glass lantern is not a floor); the still-house's open half is filled by the stills and the bench, its back half a solid plaster block with no door | a door from the house into the tower and floors in it; a door into the still-house's back half |
+| iziz | `vern_caravanserai` | the room over the gate (windows front and back) has no stair and no door | a stair in one gate pier and a door into the room |
+| iziz | `vern_governor_palace` | the front pavilion's third storey under the dome and the flag tower rise above the roof with windows but no stair | a stair up from the upper storey (the pavilion's top room, the tower) |
+| iziz | `vern_palisade_gate` | the two log towers are 2.0 m closets (1.6 m inside) with a door at the foot | none needed if they are guard closets |
 
 ## 2. Rooms planned on an assumption the builder does not draw
 
@@ -38,12 +42,26 @@ item's `skip` or `note` in `sets/<set>.js` says the same in place.
 | abyss | `abyss_tavern` v1 | the raised back deck (H 4.2) leaves about 1.9 m clear over the main deck between its piles (2.7 m apart), so the space under it is not planned; the builder's bar there has a pile standing in its counter (x -4.1, z -6.0), and the kitchen drum (r 1.0) rises 0.15 m through the raised deck (a fixture in `#1`'s upper room) |
 | abyss | `abyss_shop_general` v1, `abyss_shop_sailmaker` v1 | two-storey cabins with no stair drawn (the general store's upper floor shows windows and a balcony, the sail loft a hoist door): the planner fits an inside stair |
 | abyss | `abyss_inn` v1 | the three wings are solid plastered boxes: the 27 rooms (one per door) assume 0.25 m walls, 0.15 m partitions and floors at the doors' sills |
+| abyss | `abyss_guard_tower` | the tower's three storeys (floors 0.4, 3.8, 7.2) have windows but no stair is drawn: the planner fits one inside |
+| yuni | `civic_chapter_house` | the curved gallery wings show two storeys (round windows at 5 m) but no stair: the planner fits one; the dormitories above are assumed |
+| yuni | `mid_round_tower_house` | the drum's upper storey has windows and a door onto the wing's roof, no stair inside: each storey is planned as its own room |
+| yuni | `trade_caravanserai` | the side ranges' upper doors are never cut (the builder's loop steps by 2 and tests `i % 4 === 1`): only the back range's upper rooms are planned; the left range is stables |
+| yuni | `mid_courtyard_house` | the corner tower's ground storey sits inside the front range with no partition: not planned; its upper room opens onto the roof |
 | locus | `stilt_mid` v2 | the right wing (3.3 x 4.6) has windows but no door: its bedroom is assumed to open through the house's right wall |
 | locus | `tent_pavilion` v2 | the bell tent's cone falls to 2.3 m at r 5.7 (the wall is 1.9 high at r 6.0): the hall is kept inside r 5.7 at 2.2 m headroom |
 | highlands | Arsenal ranges, hospital back range, Mechanics' annex, gasholder crown huts, the frame storeys on the crawler house and the stage tenement, a few offices and sheds | an enclosed block with no `vnDoor`: a door is assumed (each item's `note` names it) |
+| yuni | `mid_stacked_cubes` (all) | no stair from the ground floor to the roof terrace is drawn: the plan puts a steep inside stair up to the second cube's rooms (the loggia door onto the terrace is not planned); the tower room of v1/v2 is reached over the roof by the drawn ladder |
+| yuni | `mid_round_tower_house` (all) | the lower wing has no door: it is assumed entered through the drum wall where the two overlap; the drum has no stair drawn: a 1.5 m spiral stair is a fixture in both drum rooms |
+| yuni | `mid_courtyard_house` (both) | the side ranges have no doors (planned as the ends of two L bodies entered from the front and back ranges); no stair to the roof is drawn, though the tower room's only door opens onto it; the tower's lower storey has no door and is left out |
+| yuni | `mid_bluewash_townhouse` (all) | the roof bulkhead implies a stair from the top storey to the terrace: not planned; the first-floor mashrabiya bay is not planned |
 | highlands | `hl_rep_house_tank`, `hl_rus_tank_stue`, `hl_rep_stage_tenement` | tanks and a rocket stage lying on their sides: a floor is assumed 0.7 m above the bottom |
 | highlands | `hl_rep_gasholder` | the four crown huts (3.3 x 2.9 m inside) cannot reliably hold a hearth, a bed and a chest: they are sleeping huts, the five huts round the drum's foot are the households |
 | highlands | Hall of the Republic, fortress, Forgehouse, Salvagers' Guild, shipbreakers' yards, Fallen Arcology, mine, quarry | only the principal enclosed bodies are planned; each note lists what is left out |
+| iziz | stone and plaster storeys stacked on a stepped cornice (`vern_house_rich_a` `_rich_b`, school hall, hospital pavilion, alchemist's house, Farmers' Guild, the frontier's palace, guard tower, watch and toll houses) | the cornice is up to 1.4 m of solid stone between the storeys: the lower level's h is planned taller than its clear height so the next floor lands on the drawn one; a set-back upper storey (0.2 to 1.0 m in) is planned on one footprint with the storey below (the manor on its gallery storey's 11 x 9.4) |
+| iziz | `vern_workshop_a` | the board-walled back half of the carpenter's shed has no door: one is assumed from the open shed |
+| iziz | `vern_hospital` | the ward's front door at x 3.7 opens into the entrance pavilion, which the plan cuts at the ward's face |
+| iziz | `vern_toll_house` | the strongroom annex has no outer door: its door is assumed in the house's -x wall |
+| iziz | `vern_guard_tower` | the roof kiosk shows where the stair comes up, but no stair is drawn inside: the planner fits one per storey |
 
 ## 3. Open by design (no interior, nothing to fix)
 
@@ -51,4 +69,6 @@ Fields, pens and paddocks; mustering grounds; town and abyssal walls and the wal
 circle; open forge sheds (`hl_rep_smithy_small`, `hl_rus_smithy`, `hl_tri_smithy`); open hull vaults
 (`hl_rep_wreck_market`, `hl_tri_hull_hall`); the amphitheatre and the Headman's plaza; the rain
 canopy; the Girder tower shell (its households are the tower-slot dwellings); the sun shade, the
-fishing dock, the windpump, the pumpjack, the oil tank and the props; the two tag demos.
+fishing dock, the windpump, the pumpjack, the oil tank and the props; the two tag demos. Iziz: the scrap smithy, the market
+canopy, the grain silos, the palisade segment and its gate, the mustering ground (and the barracks' drill yard and watch
+tower), the rest stop's benches, cistern and awning.

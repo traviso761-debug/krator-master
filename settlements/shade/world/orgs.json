@@ -1,0 +1,7 @@
+[
+{"id":"aquifer_wardens","name":"Wardens of the Deep Aquifer","faction":"eastern_nomads"},
+{"id":"canyon_guard","name":"The canyon guard","faction":"eastern_nomads"},
+{"id":"caravaneers","name":"Visiting caravaneers","faction":"eastern_nomads","resident":false},
+{"id":"dune_raiders","name":"Dune raiders","faction":"eastern_nomads","resident":false,"hostile":"when provoked"},
+{"id":"shade_clans","name":"The Shade clans","faction":"eastern_nomads"}
+]

@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/nhighlands.html`
 Build: `cd biomes/nhighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 ## src/
 
@@ -17,7 +17,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `45-host-stage.js` | 14 | the map (47); the stream (87); terrain (121); the climate fields (139); the host binding (170) |
-| `50-biome-nhighlands-species.js` | 50 **big** | palettes (24); the tree species (69); leaf and frond textures (176); bark textures (285); geometries local to this biome (321); an iridescent bark (shared hook; the Rift kit's) (385); materials (397); instanced items (461) |
+| `50-biome-nhighlands-species.js` | 51 **big** | palettes (24); the tree species (69); leaf and frond textures (176); bark textures (285); geometries local to this biome (321); an iridescent bark (shared hook; the Rift kit's) (385); materials (398); instanced items (463) |
 | `55-biome-nhighlands-trees.js` | 44 **big** | zones from the fields (26); colour (43); polyline helpers (64); keep-clear between trees (75); foliage and epiphyte helpers (81); the builders (126); impostors (the far canopy) (345); the pass (376) |
 | `60-biome-nhighlands-floor.js` | 19 | small plants (27); the zone planters (91); the pass (171) |
 | `65-biome-nhighlands-dress.js` | 7 |  |

@@ -1,0 +1,450 @@
+{
+ "00-head.html": [
+  "mungo (overrides locus)",
+  "df3b1ef160d4"
+ ],
+ "01-reedkit.html": [
+  "virtual",
+  "bb1b8bd3762d"
+ ],
+ "01b-build-open.html": [
+  "mungo",
+  "b12f04a0c15c"
+ ],
+ "05-palette.js": [
+  "locus",
+  "d8eb42e7be31"
+ ],
+ "05b-mungo-palette.js": [
+  "mungo",
+  "b9246669796c"
+ ],
+ "08-core-rand.js": [
+  "core/rand",
+  "4a3aa47f25da"
+ ],
+ "09-lod.js": [
+  "core/lod",
+  "e1f7db612b83"
+ ],
+ "10-core.js": [
+  "mungo (overrides locus)",
+  "75c9afdd6dc4"
+ ],
+ "20-core-clock.js": [
+  "core/clock",
+  "5616fb106090"
+ ],
+ "20-core-sched.js": [
+  "core/sched",
+  "932d088efbab"
+ ],
+ "20-stage.js": [
+  "mungo (overrides locus)",
+  "8f0b0c3dc8bf"
+ ],
+ "21-sky.js": [
+  "locus",
+  "fe5deb4a5fc2"
+ ],
+ "25-core-mask.js": [
+  "core/mask",
+  "71cc7d2187d3"
+ ],
+ "26-core-mask-xform.js": [
+  "core/mask",
+  "1befd82fe83e"
+ ],
+ "30-layout.js": [
+  "mungo (overrides locus)",
+  "bb63f1e7d2d9"
+ ],
+ "40-ground.js": [
+  "mungo (overrides locus)",
+  "cab2dcdcb811"
+ ],
+ "45-kit.js": [
+  "locus",
+  "ac8c9427d192"
+ ],
+ "47-texture.js": [
+  "locus",
+  "650244963d0a"
+ ],
+ "50-core-furnish.js": [
+  "core/furnish",
+  "7e1532e5f546"
+ ],
+ "50-core-tags.js": [
+  "core/tags",
+  "3e7a77e8f435"
+ ],
+ "50-structure.js": [
+  "locus",
+  "c5bf052f0346"
+ ],
+ "52-core-furnish-draw.js": [
+  "core/furnish",
+  "fc0cf06b5f0e"
+ ],
+ "52-core-tags-vocab.js": [
+  "core/tags",
+  "6fb4ffca3417"
+ ],
+ "53-assets.js": [
+  "locus",
+  "23ae272a1b3f"
+ ],
+ "53-core-furnish-host.js": [
+  "core/furnish",
+  "9ed629d45803"
+ ],
+ "53-core-tags-host.js": [
+  "core/tags",
+  "e2cd8a672016"
+ ],
+ "55-mid-example.js": [
+  "locus",
+  "9d4751b6b7d1"
+ ],
+ "56-mid.js": [
+  "locus",
+  "cc1b5d0f2799"
+ ],
+ "57-poor.js": [
+  "locus",
+  "850979623919"
+ ],
+ "58-rich.js": [
+  "locus",
+  "c73ffba16bd9"
+ ],
+ "59-civic.js": [
+  "locus",
+  "9f72c44a9347"
+ ],
+ "60-flora.js": [
+  "locus",
+  "c4bfb49e329f"
+ ],
+ "62-plants.js": [
+  "locus",
+  "86b61355c9aa"
+ ],
+ "63-furniture.js": [
+  "locus",
+  "bf68cad2a480"
+ ],
+ "64-locus-chapterhouse.js": [
+  "locus",
+  "47e79381a102"
+ ],
+ "64-locus-core.js": [
+  "locus",
+  "78a2b3e723de"
+ ],
+ "64-locus-dwellings.js": [
+  "locus",
+  "619078277bbc"
+ ],
+ "64-locus-farm.js": [
+  "locus",
+  "c07e2388e419"
+ ],
+ "64-locus-infra.js": [
+  "locus",
+  "888fe2d1e510"
+ ],
+ "64-locus-petroleum.js": [
+  "locus",
+  "610bea0a7963"
+ ],
+ "64-locus-plants.js": [
+  "locus",
+  "fc0551ec404f"
+ ],
+ "64-locus-power.js": [
+  "locus",
+  "9b3638af3b70"
+ ],
+ "65-abyss-00-core.js": [
+  "locus",
+  "d37734d5a5f2"
+ ],
+ "65-abyss-20-plants.js": [
+  "locus",
+  "ef9feb9249fe"
+ ],
+ "65-abyss-30-housing.js": [
+  "locus",
+  "535eff8c49ba"
+ ],
+ "65-abyss-40-shops.js": [
+  "locus",
+  "e45e77b4a1cd"
+ ],
+ "65-abyss-50-civic.js": [
+  "locus",
+  "f65f9d5dbfd5"
+ ],
+ "65-abyss-60-temple.js": [
+  "locus",
+  "7e06db023902"
+ ],
+ "65-abyss-70-palace.js": [
+  "locus",
+  "34a95b8ac0a6"
+ ],
+ "65-abyss-80-military.js": [
+  "locus",
+  "2c449f12edfa"
+ ],
+ "65-abyss-90-farm.js": [
+  "locus",
+  "30123e08cdf7"
+ ],
+ "65r-reed-village.js": [
+  "mungo",
+  "ec3f88576ed1"
+ ],
+ "65y-vehicles-bundle.js": [
+  "virtual",
+  "dc331f5cc9b5"
+ ],
+ "65z-furniture-bundle.js": [
+  "virtual",
+  "a9de0a288f75"
+ ],
+ "66-locus-furnish.js": [
+  "locus",
+  "736ffdee524f"
+ ],
+ "68-place.js": [
+  "mungo (overrides locus)",
+  "312f2e0ab84e"
+ ],
+ "69a1-bio-core-head.js": [
+  "core/biome",
+  "79691236dfbd"
+ ],
+ "69a2-bio-core-kit.js": [
+  "core/biome",
+  "8702bbc17f64"
+ ],
+ "69a3-bio-core-foliage.js": [
+  "core/biome",
+  "98b0f4e59ec2"
+ ],
+ "69a4-bio-core-place.js": [
+  "core/biome",
+  "86d05ad00910"
+ ],
+ "69b-locus-biohost.js": [
+  "mungo (overrides locus)",
+  "a0532bed960f"
+ ],
+ "69c1-bio-eastabyss-species.js": [
+  "biomes/eastabyss/src",
+  "8f5efc09860a"
+ ],
+ "69c2-bio-eastabyss-trees.js": [
+  "biomes/eastabyss/src",
+  "2cbafe6c3621"
+ ],
+ "69c3-bio-eastabyss-floor.js": [
+  "biomes/eastabyss/src",
+  "4f07d2de70de"
+ ],
+ "69c4-bio-eastabyss-dress.js": [
+  "biomes/eastabyss/src",
+  "a5fa09de665e"
+ ],
+ "69c5-bio-eastabyss.js": [
+  "biomes/eastabyss/src",
+  "f944bee3662f"
+ ],
+ "69z-locus-flora.js": [
+  "mungo (overrides locus)",
+  "74577e28b989"
+ ],
+ "70-sheet.js": [
+  "locus",
+  "7f98b7c2dbc6"
+ ],
+ "71-catalog.js": [
+  "locus",
+  "8d9438cea120"
+ ],
+ "71g-mungo-grid.js": [
+  "mungo",
+  "52317e10c048"
+ ],
+ "72-lights.js": [
+  "mungo (overrides locus)",
+  "4fd069509a31"
+ ],
+ "75-terrain.js": [
+  "mungo (overrides locus)",
+  "fc3dde168e26"
+ ],
+ "77-sim-0-core.js": [
+  "core/simulation",
+  "b29efa457428"
+ ],
+ "77-sim-1-world.js": [
+  "core/simulation",
+  "79c5fc81d299"
+ ],
+ "77-sim-2-places.js": [
+  "core/simulation",
+  "076fa2694563"
+ ],
+ "77-sim-3-actors.js": [
+  "core/simulation",
+  "4ae598bae761"
+ ],
+ "77-sim-4-nav.js": [
+  "core/simulation",
+  "121c5eb05cb4"
+ ],
+ "77-sim-5-motion.js": [
+  "core/simulation",
+  "d21ceb29b27c"
+ ],
+ "77-sim-6-population.js": [
+  "core/simulation",
+  "1f6c887b3fae"
+ ],
+ "77-sim-8-export.js": [
+  "core/simulation",
+  "9e54bd902b7c"
+ ],
+ "77-sim-9-debug.js": [
+  "core/simulation",
+  "2b5e8422ec05"
+ ],
+ "78a-world-json.js": [
+  "virtual",
+  "cf4accefc6d6"
+ ],
+ "78b-mungo-world.js": [
+  "mungo",
+  "da7ec17e561a"
+ ],
+ "80-camera.js": [
+  "mungo (overrides locus)",
+  "2ed36c756b2e"
+ ],
+ "81-glow.js": [
+  "locus",
+  "2855bbbae09d"
+ ],
+ "82-daynight.js": [
+  "locus",
+  "d229021c54d4"
+ ],
+ "84-mungo-life.js": [
+  "mungo",
+  "93927317e3c6"
+ ],
+ "85-probe.js": [
+  "mungo (overrides locus)",
+  "1273d76261cf"
+ ],
+ "86-inspect.js": [
+  "locus",
+  "691cd805f759"
+ ],
+ "87-pathviz.js": [
+  "locus",
+  "417c2e0dd419"
+ ],
+ "88-core-minimap.js": [
+  "core/minimap",
+  "ca9a91a25500"
+ ],
+ "88a-core-minimap-host.js": [
+  "core/minimap",
+  "1e442710c44f"
+ ],
+ "88b-locus-minimap.js": [
+  "locus",
+  "338f7a535570"
+ ],
+ "88c-mungo-minimap.js": [
+  "mungo",
+  "c6eafeffa678"
+ ],
+ "89-atmos-0-core.js": [
+  "core/atmos",
+  "b1873caed73e"
+ ],
+ "89-atmos-0p-presets.js": [
+  "core/atmos",
+  "14872a1d4c11"
+ ],
+ "89-atmos-1-street.js": [
+  "core/atmos",
+  "dae4bdb0f599"
+ ],
+ "89-atmos-2-lights.js": [
+  "core/atmos",
+  "0e6ab1074f39"
+ ],
+ "89-atmos-3-particles.js": [
+  "core/atmos",
+  "b1e3bdf515f2"
+ ],
+ "89-atmos-4-weather.js": [
+  "core/atmos",
+  "883c626ac543"
+ ],
+ "89-atmos-5-dress.js": [
+  "core/atmos",
+  "2a901c765792"
+ ],
+ "89-atmos-6-sewer.js": [
+  "core/atmos",
+  "f06b2bc3d370"
+ ],
+ "89-atmos-7-cull.js": [
+  "core/atmos",
+  "c5b65de3b9e6"
+ ],
+ "89-atmos-8-export.js": [
+  "core/atmos",
+  "64da0c333c2b"
+ ],
+ "89-atmos-9-host.js": [
+  "core/atmos",
+  "1a4c553b8588"
+ ],
+ "89-atmos-a-waves.js": [
+  "core/atmos",
+  "0dd74e542dd0"
+ ],
+ "89-atmos-b-skylight.js": [
+  "core/atmos",
+  "ef9512dd517b"
+ ],
+ "89-sheetui.js": [
+  "locus",
+  "416fe0e54eea"
+ ],
+ "90-atmos-host.js": [
+  "locus",
+  "ffbcf5dec4fc"
+ ],
+ "97-lod-auto.js": [
+  "core/lod",
+  "88ec9e581127"
+ ],
+ "98-start.js": [
+  "locus",
+  "05665ea7386d"
+ ],
+ "99-tail.html": [
+  "locus",
+  "7501a65f821c"
+ ]
+}

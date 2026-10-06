@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.157,
+    0.994
+   ],
+   "seam_before": [
+    2.682,
+    2.95
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.ancient.white",
+  "metal": 0.3,
+  "pattern": false,
+  "roughness": 0.45,
+  "scale": [
+   4.0,
+   4.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "metal.ancient.white.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row metal.ancient.white (the full prompt given 2026-10-05)",
+  "reuse": "every Ancients-lineage build's white metal (MAT.white), Locus; brass and gilt finials tinted",
+  "sha1": "6414c0aa7b3cf70c0cf9d9c588ff091801ccac0b"
+ }
+}

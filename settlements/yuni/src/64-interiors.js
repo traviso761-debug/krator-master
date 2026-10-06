@@ -81,50 +81,50 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
       F.box(0,2.18,0, 1.66,0.10,2.16, 0, F.pick(CLOTHC), 'cloth'); F.box(0,1.15,-1.06, 1.6,1.05,0.04, 0, F.pick(CLOTHC), 'cloth'); } });
   FURN({ key:'common_cooking_hearth', name:'Raised cooking hearth', culture:'yuni-common', room:'kitchen', type:'hearth', setting:'indoor', w:1.6, d:0.9, h:1.9, variants:1,
     build:function(F){ F.box(0,0,0, 1.6,0.75,0.9, 0, ADOBEC[1], 'adobe'); F.box(-0.35,0.75,0.05, 0.5,0.1,0.5, 0, VOIDC[0], 'dark');
-      F.ball(-0.35,0.86,0.05, 0.12, PAL.glowWarm[0], 'glowmat'); F.lathe('tile', -0.35,0.05, [[0.16,0.86],[0.24,0.98],[0.22,1.12],[0.15,1.18]], TILEC[1], {seg:9});
+      F.ball(-0.35,0.86,0.05, 0.12, PAL.glowWarm[0], 'glowmat'); F.lathe('clay', -0.35,0.05, [[0.16,0.86],[0.24,0.98],[0.22,1.12],[0.15,1.18]], TILEC[1], {seg:9});
       F.fr5(0,0.75,-0.18, 1.2,1.15,0.5, 0, ADOBEC[2], 'adobe'); F.lamp(-0.35, 1.0, 0.1, 0.8, 6, 'hearth'); } });
   FURN({ key:'common_wall_shelves', name:'Plank wall shelves', culture:'yuni-common', room:'store', type:'shelving', setting:'indoor', w:1.8, d:0.4, h:1.9, variants:2, variantNames:['pots','bolts of cloth'],
     build:function(F){ for(var s=0;s<2;s++) F.box(s?0.86:-0.86,0,0, 0.06,1.9,0.38, 0, TIMBERC[2], 'timber');
       for(var k=0;k<4;k++){ var y=0.25+k*0.5; F.box(0,y,0, 1.8,0.04,0.38, 0, PLANKC[1], 'plank');
         for(var j=0;j<3;j++){ var x=-0.55+j*0.55+F.rr(-0.1,0.1);
-          if(F.variant===0) F.lathe('tile', x,0, [[0.07,y+0.04],[0.13,y+0.16],[0.09,y+0.30],[0.06,y+0.34]], F.pick(TILEC), {seg:7});
+          if(F.variant===0) F.lathe('clay', x,0, [[0.07,y+0.04],[0.13,y+0.16],[0.09,y+0.30],[0.06,y+0.34]], F.pick(TILEC), {seg:7});
           else F.cyl(x,y+0.04,0, 0.12,0.30, [Math.PI/2,0,0], F.pick(CLOTHC), 'cloth'); } } } });
   FURN({ key:'common_shop_counter', name:'Shop counter', culture:'yuni-common', room:'shop', type:'counter', setting:'both', w:2.4, d:0.8, h:1.05, variants:2, variantNames:['plain','tiled front'],
     build:function(F){ F.box(0,0,0, 2.4,0.95,0.7, 0, ADOBEC[0], 'adobe'); F.box(0,0.95,0, 2.5,0.08,0.8, 0, PLANKC[0], 'plank');
       if(F.variant===1) F.box(0,0.1,0.36, 2.2,0.7,0.02, 0, F.pick(MOSBLUEC), 'mosaic');
-      for(var j=0;j<3;j++) F.lathe('tile', -0.8+j*0.8,0, [[0.08,1.03],[0.13,1.12],[0.09,1.24]], F.pick(TILEC), {seg:7}); } });
+      for(var j=0;j<3;j++) F.lathe('clay', -0.8+j*0.8,0, [[0.08,1.03],[0.13,1.12],[0.09,1.24]], F.pick(TILEC), {seg:7}); } });
   FURN({ key:'common_tavern_table', name:'Tavern table and benches', culture:'yuni-common', room:'tavern', type:'table', setting:'both', w:1.8, d:1.9, h:0.8, variants:1,
     build:function(F){ F.box(0,0.72,0, 1.8,0.07,0.8, 0, PLANKC[2], 'plank'); legs(F, 1.6,0.6, 0.72, 0.05, TIMBERC[1]);
       [-1,1].forEach(function(s){ F.box(0,0.42,s*0.72, 1.7,0.06,0.3, 0, PLANKC[1], 'plank'); F.box(-0.7,0,s*0.72, 0.08,0.42,0.26, 0, TIMBERC[0], 'timber'); F.box(0.7,0,s*0.72, 0.08,0.42,0.26, 0, TIMBERC[0], 'timber'); });
-      F.lathe('tile', 0.3,0.1, [[0.06,0.79],[0.10,0.86],[0.07,0.98]], TILEC[2], {seg:7}); } });
+      F.lathe('clay', 0.3,0.1, [[0.06,0.79],[0.10,0.86],[0.07,0.98]], TILEC[2], {seg:7}); } });
   FURN({ key:'common_workbench', name:'Workbench with tools', culture:'yuni-common', room:'workshop', type:'table', setting:'both', w:2.2, d:0.9, h:1.0, variants:1,
     build:function(F){ F.box(0,0.82,0, 2.2,0.12,0.85, 0, PLANKC[3], 'plank'); legs(F, 2.1,0.75, 0.82, 0.07, TIMBERC[2]);
       F.box(0,0.12,0, 1.9,0.05,0.6, 0, PLANKC[2], 'plank'); F.box(-0.6,0.94,0.1, 0.5,0.05,0.12, 0.3, METALC[2], 'metal'); F.box(0.4,0.94,-0.1, 0.06,0.05,0.4, 0, TIMBERC[0], 'timber'); } });
   FURN({ key:'common_grain_sacks', name:'Stacked grain sacks', culture:'yuni-common', room:'store', type:'container-food', setting:'both', w:1.4, d:0.9, h:0.9, variants:1,
     build:function(F){ for(var k=0;k<4;k++) F.edome(-0.38+(k%2)*0.76, (k>>1)*0.42, (k>>1)?0:0.1, 0.34,0.42,0.30, F.rr(-0.3,0.3), F.pick(PAL.thatch||THATCHC), 'cloth'); } });
   FURN({ key:'court_carpet', name:'Knotted carpet', culture:'yuni-court', room:'hall', type:'rug', setting:'indoor', w:2.8, d:2.0, h:0.03, variants:2,
-    build:function(F){ F.box(0,0.005,0, 2.8,0.022,2.0, 0, F.pick(CLOTHC), 'cloth'); F.box(0,0.012,0, 2.3,0.022,1.5, 0, F.variant?MOSBLUEC[1]:PAL.paintRed[1], 'cloth'); } });
+    build:function(F){ F.box(0,0.005,0, 2.8,0.022,2.0, 0, F.pick(CLOTHC), 'rug'); F.box(0,0.012,0, 2.3,0.022,1.5, 0, F.variant?MOSBLUEC[1]:PAL.paintRed[1], 'rug'); } });
   FURN({ key:'poor_clay_pots', name:'Clay storage pots', culture:'yuni-poor', room:'store', type:'container-food', setting:'both', w:1.1, d:0.8, h:0.9, variants:1,
     build:function(F){ for(var k=0;k<3;k++){ var x=-0.32+k*0.32, s=F.rr(0.8,1.1);
-      F.lathe('tile', x, F.rr(-0.12,0.12), [[0.08*s,0],[0.17*s,0.25*s],[0.16*s,0.55*s],[0.08*s,0.75*s],[0.10*s,0.82*s]], F.pick(ADOBEREDC), {seg:8}); } } });
+      F.lathe('clay', x, F.rr(-0.12,0.12), [[0.08*s,0],[0.17*s,0.25*s],[0.16*s,0.55*s],[0.08*s,0.75*s],[0.10*s,0.82*s]], F.pick(ADOBEREDC), {seg:8}); } } });
   FURN({ key:'nomad_rug_pile', name:'Pile of rugs and saddle-bags', culture:'nomad', room:'hall', type:'seating', setting:'both', w:2.2, d:1.6, h:0.6, variants:1,
-    build:function(F){ for(var k=0;k<3;k++) F.box(F.rr(-0.1,0.1), k*0.07, F.rr(-0.1,0.1), 2.1-k*0.2, 0.07, 1.5-k*0.15, F.rr(-0.1,0.1), F.pick(CLOTHC), 'cloth');
+    build:function(F){ for(var k=0;k<3;k++) F.box(F.rr(-0.1,0.1), k*0.07, F.rr(-0.1,0.1), 2.1-k*0.2, 0.07, 1.5-k*0.15, F.rr(-0.1,0.1), F.pick(CLOTHC), 'rug');
       F.edome(-0.6,0.21,-0.4, 0.35,0.3,0.25, 0, F.pick(CLOTHC), 'cloth'); F.edome(0.5,0.21,-0.45, 0.3,0.26,0.22, 0, F.pick(CLOTHC), 'cloth'); } });
   /* the minimum kit's small pieces: something a poor house keeps its things in, a big grain store for
      a compound, and the floor coverings every main room gets */
   FURN({ key:'poor_lidded_basket', name:'Lidded storage basket', culture:'yuni-poor', room:'hut', type:'container-item', setting:'indoor', w:0.55, d:0.55, h:0.74, variants:2, variantNames:['plain','bundle on the lid'],
     build:function(F){ var c=F.pick(THATCHC);
-      F.lathe('thatch', 0,0, [[0.15,0],[0.24,0.08],[0.26,0.36],[0.23,0.48]], c, {seg:9});
-      F.lathe('thatch', 0,0, [[0.25,0.47],[0.26,0.52],[0.15,0.58],[0.04,0.61]], shade(c,-0.12), {seg:9});
+      F.lathe('basket', 0,0, [[0.15,0],[0.24,0.08],[0.26,0.36],[0.23,0.48]], c, {seg:9});
+      F.lathe('basket', 0,0, [[0.25,0.47],[0.26,0.52],[0.15,0.58],[0.04,0.61]], shade(c,-0.12), {seg:9});
       F.box(0,0.24,0.25, 0.04,0.05,0.04, 0, TIMBERC[0], 'timber');
       if(F.variant===1) F.edome(0.02,0.58,0, 0.17,0.14,0.13, 0.3, F.pick(CLOTHC), 'cloth'); } });
   /* the smallest of each, for a hut too tight for the usual piece */
   FURN({ key:'poor_food_pot', name:'Covered food pot', culture:'yuni-poor', room:'hut', type:'container-food', setting:'both', w:0.55, d:0.55, h:0.78, variants:1,
     build:function(F){ var c=F.pick(ADOBEREDC);
-      F.lathe('adobe', 0,0, [[0.12,0],[0.25,0.22],[0.24,0.5],[0.14,0.64],[0.17,0.7]], c, {seg:9});
-      F.cyl(0,0.7,0, 0.19,0.05, 0, F.pick(THATCHC), 'thatch'); F.box(0,0,0, 0.5,0.04,0.5, 0, shade(c,-0.2), 'adobe'); } });
+      F.lathe('clay', 0,0, [[0.12,0],[0.25,0.22],[0.24,0.5],[0.14,0.64],[0.17,0.7]], c, {seg:9});
+      F.cyl(0,0.7,0, 0.19,0.05, 0, F.pick(THATCHC), 'basket'); F.box(0,0,0, 0.5,0.04,0.5, 0, shade(c,-0.2), 'adobe'); } });
   FURN({ key:'poor_sleeping_mat', name:'Rolled-out sleeping mat', culture:'yuni-poor', room:'hut', type:'bed', setting:'indoor', w:1.85, d:0.8, h:0.12, variants:1,
-    build:function(F){ var c=F.pick(THATCHC); F.box(0,0,0, 1.85,0.05,0.8, 0, shade(c,0.08), 'thatch');
+    build:function(F){ var c=F.pick(THATCHC); F.box(0,0,0, 1.85,0.05,0.8, 0, shade(c,0.08), 'reedmat');
       F.box(0,0.05,0.05, 1.7,0.04,0.66, 0, F.pick(CLOTHC), 'cloth'); F.cyl(-0.72,0.1,0, 0.08,0.6, [Math.PI/2,0,0], PAL.whitewash[1], 'cloth'); } });
   FURN({ key:'common_grain_bin', name:'Mud-brick grain bin', culture:'yuni-common', room:'store', type:'container-food', setting:'both', w:1.3, d:1.3, h:1.75, variants:1,
     build:function(F){ var c=F.pick(ADOBEC);
@@ -132,14 +132,14 @@ function ROOM_PROGRAM(type, fn){ ROOM_PROGRAMS[type] = fn; }
       F.cone(0,1.5,0, 0.42,0.28, 0, F.pick(THATCHC), 'thatch');
       F.box(0,0.85,0.55, 0.36,0.36,0.1, 0, PLANKC[1], 'plank'); F.box(0,0,0.0, 1.0,0.12,1.0, 0, shade(c,-0.15), 'adobe'); } });
   FURN({ key:'poor_reed_mat', name:'Woven reed floor mat', culture:'yuni-poor', room:'hut', type:'rug', setting:'indoor', w:2.2, d:1.5, h:0.03, variants:2,
-    build:function(F){ var c=F.pick(THATCHC); F.box(0,0.005,0, 2.2,0.018,1.5, 0, shade(c,0.10), 'thatch');
-      for(var k=0;k<5;k++) F.box(0,0.012,-0.6+k*0.3, 2.1,0.016,0.07, 0, shade(c,-0.18), 'thatch');
+    build:function(F){ var c=F.pick(THATCHC); F.box(0,0.005,0, 2.2,0.018,1.5, 0, shade(c,0.10), 'reedmat');
+      for(var k=0;k<5;k++) F.box(0,0.012,-0.6+k*0.3, 2.1,0.016,0.07, 0, shade(c,-0.18), 'reedmat');
       if(F.variant===1) F.box(0,0.014,0, 0.5,0.016,1.4, 0, F.pick(PAL.paintRed), 'cloth'); } });
   FURN({ key:'common_kilim', name:'Flat-woven kilim', culture:'yuni-common', room:'hall', type:'rug', setting:'indoor', w:2.6, d:1.7, h:0.03, variants:2,
     build:function(F){ var c=F.pick(CLOTHC), r0=F.variant ? MOSBLUEC[3] : PAL.paintRed[0];
-      F.box(0,0.005,0, 2.6,0.018,1.7, 0, PAL.whitewash[2], 'cloth'); F.box(0,0.011,0, 2.3,0.018,1.4, 0, c, 'cloth');
-      F.box(0,0.017,0, 0.9,0.016,0.9, Math.PI/4, r0, 'cloth'); F.box(0,0.021,0, 0.42,0.016,0.42, Math.PI/4, PAL.whitewash[0], 'cloth');
-      [-1,1].forEach(function(s){ F.box(s*0.85,0.017,0, 0.3,0.016,0.3, Math.PI/4, r0, 'cloth'); }); } });
+      F.box(0,0.005,0, 2.6,0.018,1.7, 0, PAL.whitewash[2], 'rug'); F.box(0,0.011,0, 2.3,0.018,1.4, 0, c, 'rug');
+      F.box(0,0.017,0, 0.9,0.016,0.9, Math.PI/4, r0, 'rug'); F.box(0,0.021,0, 0.42,0.016,0.42, Math.PI/4, PAL.whitewash[0], 'rug');
+      [-1,1].forEach(function(s){ F.box(s*0.85,0.017,0, 0.3,0.016,0.3, Math.PI/4, r0, 'rug'); }); } });
   var CAP = { common_storage_chest:12, common_water_jars:3, common_grain_sacks:8, poor_clay_pots:6, ancient_cell_wall:24, salvage_locker_press:16,
               order_mat_rack:6, poor_lidded_basket:4, common_grain_bin:24, poor_food_pot:3 };
   FURNS.forEach(function(f){ if(f.type==='container-item' || f.type==='container-food') f.capacity = CAP[f.key] || 6; });

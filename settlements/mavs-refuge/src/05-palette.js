@@ -124,6 +124,9 @@ var BUDGET = { drawCalls: 110, triangles: 4200000, instances: 260000 };
 /* the catalog furniture's OWN budget (53-furnish.js: one merged mesh per render family). verify.py counts it apart:
    BUDGET.triangles is the world without it. Set from the measured total (1.28 M, 2026-10) with ~15% headroom. */
 BUDGET.furnitureTriangles = 1470000;
+/* the interiors near the camera (57-interiors.js: rooms, linings and their furniture, one mesh per family); 57 stops
+   adding units at its own cap (MIX_TRIS, 520k), so this is that cap plus the last unit it lets in */
+BUDGET.interiorTriangles = 600000;
 
 /* aliases */
 var PLANKC = PAL.plank, TIMBERC = PAL.timber, WALLC = PAL.wall, WALLDARKC = PAL.wallDark,

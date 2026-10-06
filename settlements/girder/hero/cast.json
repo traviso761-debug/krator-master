@@ -1,0 +1,13 @@
+{
+  "about": "Girder Hero's cast and dialogue. build_hero.py checks it and embeds it as HERO_CAST; 89-talk.js plays it. The format is in hero/README.md (Cast and dialogue).",
+  "hero": { "id": "styv", "name": "Styv", "model": "styv" },
+  "people": [
+    { "id": "phil", "name": "Phil", "model": "phil", "x": 0, "z": 2.7, "yaw": 0, "talk": "phil",
+      "note": "in the assembly hall, south of the speaker's hearth, facing the south door" }
+  ],
+  "dialogue": {
+    "phil": [
+      { "say": "Buy me a drink and I'll tell you 'bout my time in the Izani secret service. You won't believe how I got this tattoo..." }
+    ]
+  }
+}

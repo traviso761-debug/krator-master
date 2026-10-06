@@ -262,15 +262,22 @@ function lifeAgent(role, meshId){
   AG.push(a); return a;
 }
 
-/* destination tables */
-var LIFE_DEST = { plat:[], top:[], central:[], homes:[], ramps:[], nearSats:[], mains:[] };
+/* destination tables. A resident's home is a door that opens on somewhere people live (57-interiors.js plans those
+   as homes): a house, a shop, tavern, inn or silk house with its family's rooms, an apartment, a workshop's back
+   rooms, a hut. Not a storehouse, a shrine, the barracks, armoury or mess (the soldiers keep their own quarters). */
+function lifeHomeDoor(N){
+  if(N.slot) return /^(home|fancy|shop|tavern|inn|silkhouse)$/.test(N.slot.kind);
+  if(N.room) return N.room.use==='apartment' || N.room.use==='work';
+  return !!N.sub;
+}
+var LIFE_DEST ={ plat:[], top:[], central:[], homes:[], ramps:[], nearSats:[], mains:[] };
 (function(){
   var i;
   PLATS.forEach(function(P){ LIFE_DEST.plat[P.id]=[]; LIFE_DEST.top[P.id]=[]; });
   for(i=0;i<NN;i++){
     var N=nodes[i]; if(N.plat<0) continue;
     var P=PLATS[N.plat], Lv = N.lvl>=0 ? P.levels[N.lvl] : null;
-    if(N.tag==='door'){ LIFE_DEST.plat[P.id].push(i); LIFE_DEST.homes.push(i); }
+    if(N.tag==='door'){ LIFE_DEST.plat[P.id].push(i); if(lifeHomeDoor(N)) LIFE_DEST.homes.push(i); }
     else if(N.tag==='gallery' && Lv){
       if(!P.main){ if(Lv.kind==='apt'){ nDoor[i]=1; LIFE_DEST.plat[P.id].push(i); if(i%2===0) LIFE_DEST.homes.push(i); } else if(i%2===0) LIFE_DEST.plat[P.id].push(i); }
       else if(Lv.kind==='roost'||Lv.kind==='hangar'){ LIFE_DEST.plat[P.id].push(i); if(i%3===0) LIFE_DEST.homes.push(i); }

@@ -6,13 +6,22 @@
 // A surface is built in the CURRENT FRAME (HYK.cur's group, 62-hyk-helpers.js) and moved to world space at the put;
 // with no frame the coordinates are world. Nothing here is a box: that is the rule (DESIGN §4).
 const HYK_BK={out:{},in:{}};const HYK_MESHES=[];const HYK_WHITE=new THREE.Color(1,1,1);
+// who is building now: a HYK_PLACED id (HYK.place, HYK.placeOn) or 'host:<name>' (ysPlaceHost). Stamped on every geometry
+// put and every kit instance drawn meanwhile (userData.owner, KIT.items[].b), so the editor (city 94) can map a baked mesh
+// back to its building. Null outside a build; the stamp changes no geometry.
+let HYK_OWNER=null;
+function hykOwnBegin(owner){HYK_OWNER=owner;const s={};for(const n in KIT.items)s[n]=KIT.items[n].length;return s;}
+function hykOwnEnd(snap){const o=HYK_OWNER;HYK_OWNER=null;if(o==null||!snap)return;for(const n in KIT.items){const L=KIT.items[n];for(let i=snap[n]||0;i<L.length;i++)L[i].b=o;}}
+// the owner of each stretch of a merged mesh, in hykMerge's order: [{o,v0,v1,i0,i1}] (vertex and index bounds; runs of one owner joined)
+function hykOwnRanges(geos){const R=[];let vo=0,io=0;for(const g of geos){const c=g.attributes.position.count,n=g.index?g.index.count:c;const o=g.userData.owner==null?null:g.userData.owner;const last=R[R.length-1];
+ if(last&&last.o===o){last.v1=vo+c;last.i1=io+n;}else R.push({o,v0:vo,v1:vo+c,i0:io,i1:io+n});vo+=c;io+=n;}return R;}
 function hykPut(matKey,geo,inside){if(!geo)return null;if(!MAT[matKey]){reportErr('hykPut: no material '+matKey);return null;}
  const F=HYK.cur;if(F&&F.G){geo.applyMatrix4(F.G.matrix);(F.geos||(F.geos=[])).push(geo);}   // the building's own, for hykCutDoorways
- const t=tcur();if(t)t.tris+=triOf(geo);
+ const t=tcur();if(t)t.tris+=triOf(geo);if(HYK_OWNER!=null)geo.userData.owner=HYK_OWNER;
  const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}
 // the same without the current building's frame: for geometry already in world space (the furniture frame builds there)
 function hykPutRaw(matKey,geo,inside){if(!geo)return null;if(!MAT[matKey]){reportErr('hykPutRaw: no material '+matKey);return null;}
- const t=tcur();if(t)t.tris+=triOf(geo);const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}
+ const t=tcur();if(t)t.tris+=triOf(geo);if(HYK_OWNER!=null)geo.userData.owner=HYK_OWNER;const side=inside?'in':'out';(HYK_BK[side][matKey]||(HYK_BK[side][matKey]=[])).push(geo);return geo;}
 function hykMerge(geos){let nv=0,ni=0;for(const g of geos){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2),C=new Float32Array(nv*3);const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);let vo=0,io=0;
  for(const g of geos){const A=g.attributes,c=A.position.count;P.set(A.position.array,vo*3);if(A.normal)N.set(A.normal.array,vo*3);if(A.uv)U.set(A.uv.array,vo*2);
@@ -21,7 +30,7 @@ function hykMerge(geos){let nv=0,ni=0;for(const g of geos){nv+=g.attributes.posi
  const G=new THREE.BufferGeometry();G.setAttribute('position',new THREE.BufferAttribute(P,3));G.setAttribute('normal',new THREE.BufferAttribute(N,3));G.setAttribute('uv',new THREE.BufferAttribute(U,2));G.setAttribute('color',new THREE.BufferAttribute(C,3));G.setIndex(new THREE.BufferAttribute(I,1));G.computeBoundingSphere();return G;}
 // bake every bucket into one mesh per material and side; `in` meshes are the interiors (floors, inner skins)
 function hykFlush(scene){for(const side of ['out','in'])for(const k in HYK_BK[side]){const L=HYK_BK[side][k];if(!L.length)continue;
- const m=new THREE.Mesh(hykMerge(L),MAT[k]);m.name='hyk-'+side+'-'+k;m.userData.hyk=side;m.userData.interior=side==='in';m.frustumCulled=false;scene.add(m);HYK_MESHES.push(m);
+ const m=new THREE.Mesh(hykMerge(L),MAT[k]);m.name='hyk-'+side+'-'+k;m.userData.hyk=side;m.userData.interior=side==='in';m.userData.ranges=hykOwnRanges(L);m.frustumCulled=false;scene.add(m);HYK_MESHES.push(m);
  const t=tcur();if(t)t.meshes++;L.length=0;}}
 // ---------------------------------------------------------------- the surface builder
 // fn(u,v)->[x,y,z]. o:{hole(u,v,p)->bool drops that quad, col:Color|fn(u,v,p)->Color, uS,vS (tile repeats over the

@@ -148,6 +148,48 @@ function firePit(key,x,y,z,s){
   new THREE.Color().setHSL(rr(.03,.065),1,.50));
  kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
   new THREE.Color().setHSL(rr(.04,.09),1,.19));}
+// FLICKER (towers QA, round 2). The frame hook `tick` (10-core.js) drives one
+// shared time uniform; each fire instance takes its own phase from its own
+// position (instanceMatrix), so no two windows pulse together and nothing is
+// rebuilt. kbake re-attaches onBeforeCompile to its material clones, and the
+// uniform object is shared, so one write per frame reaches every clone.
+const FIRE_T={value:0};
+function fireFlickerOBC(sh){sh.uniforms.uFT=FIRE_T;
+ sh.vertexShader='uniform float uFT;\nvarying float vFl;\n'+sh.vertexShader.replace('#include <begin_vertex>',
+  '#include <begin_vertex>\n#ifdef USE_INSTANCING\n vec3 fP=instanceMatrix[3].xyz;\n#else\n vec3 fP=vec3(0.);\n#endif\n'+
+  ' float fPh=dot(fP,vec3(.131,.217,.173));\n vFl=.80+.13*sin(uFT*6.3+fPh)+.07*sin(uFT*15.7+fPh*2.3);');
+ sh.fragmentShader='varying float vFl;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=vFl;');}
+MAT.flame.onBeforeCompile=fireFlickerOBC;MAT.ember.onBeforeCompile=fireFlickerOBC;
+// FIRELIGHT THAT LIGHTS SOMETHING. One PointLight per territory was the
+// reason this was never done: every lit material recompiles per light. So a
+// Project gets a FEW lights (n, 3 by default), at the centroids of clusters
+// of its own fires — its burning windows and pits, taken from the kit items it
+// placed since `fireLightMark()` — set a few metres off the facade. They are
+// invisible by day, so day views pay nothing; at night the first switch
+// compiles one extra program variant per material and every later switch
+// reuses it. They flicker with the cards. No rng(): the clustering is
+// deterministic and nothing in any builder's stream moves.
+const FIRELIGHTS=[];
+function fireLightMark(){return[KIT.items.fireWin.length,KIT.items.emberB.length,KOFF.slice()];}
+function fireLights(M,n){n=n||3;const P=[];
+ for(let i=M[0];i<KIT.items.fireWin.length;i++)P.push(KIT.items.fireWin[i].p);
+ for(let i=M[1];i<KIT.items.emberB.length;i+=2)P.push(KIT.items.emberB[i].p);
+ if(P.length<n)return;
+ // farthest-point seeds, then a few Lloyd steps
+ const C=[P[0].slice()];while(C.length<n){let bi=0,bd=-1;for(let i=0;i<P.length;i++){let m=1e18;for(const c of C)m=Math.min(m,(P[i][0]-c[0])**2+(P[i][1]-c[1])**2+(P[i][2]-c[2])**2);if(m>bd){bd=m;bi=i;}}C.push(P[bi].slice());}
+ for(let it=0;it<6;it++){const S=C.map(()=>[0,0,0,0]);
+  for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});S[bi][0]+=p[0];S[bi][1]+=p[1];S[bi][2]+=p[2];S[bi][3]++;}
+  S.forEach((s,j)=>{if(s[3])C[j]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]];});}
+ // A cluster's centroid lies INSIDE a round tower (its windows wrap the
+ // shell), so each light goes out along the cluster's mean bearing to the
+ // cluster's mean radius, then 16 m beyond it: outside the skin it lights.
+ const O=M[2],RR=C.map(()=>[0,0]);
+ for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});RR[bi][0]+=Math.hypot(p[0]-O[0],p[2]-O[2]);RR[bi][1]++;}
+ C.forEach((c,j)=>{const dx=c[0]-O[0],dz=c[2]-O[2],l=Math.hypot(dx,dz)||1,rm=(RR[j][1]?RR[j][0]/RR[j][1]:l)+16;
+  const L=new THREE.PointLight(0xff7a32,0,190,2);L.position.set(O[0]+dx/l*rm,c[1]+4,O[2]+dz/l*rm);L.visible=false;scene.add(L);
+  FIRELIGHTS.push({l:L,ph:j*1.9+c[0]*.01});});}
+tick((dt,t)=>{FIRE_T.value=t%1000;const on=!!NIGHT;
+ for(const F of FIRELIGHTS){F.l.visible=on;if(on)F.l.intensity=1.7*(.84+.10*Math.sin(t*5.1+F.ph)+.06*Math.sin(t*13.3+F.ph*1.7));}});
 
 // THE REPAIRED PASS.
 //

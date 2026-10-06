@@ -36,12 +36,13 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
 | `73-hl-carve.js` | 30 | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (30); dougong (painted bracket sets under eaves) (74); bargeboards, gable finials, horns (94); windows, porches, balconies (119); towers (Peles, clocktowers, wall towers) (152); bamboo (tribal and the poorest Republican/Rustic (181); cliff walkways (tribal cliff settlements) (194); yard furniture of the highlands (218); round 4: fitting murals and bracket rows (hlFlus (228) |
 | `74-rl-mat.js` | 17 | textures (22); the painted vocabulary: ANDEAN textile geometry (84); materials (126); geometry (143); kit items (161) |
-| `75-rl-helpers.js` | 27 | meshes with their own UVs (13); the floating island (21); the MUDHIF (the reed arch house) (66); the Uros huts (101); reed boats (131); yard furniture of the lake (172) |
+| `75-rl-helpers.js` | 27 | meshes with their own UVs (13); the floating island (21); the MUDHIF (the reed arch house) (66); the Uros huts (101); reed boats (132); yard furniture of the lake (173) |
 | `76-rl-dwell.js` | 7 |  |
 | `77-rl-village.js` | 13 |  |
 | `78-rl-work.js` | 12 |  |
 | `79-rl-farm.js` | 11 |  |
 | `80-rl-islands.js` | 9 | the floating village (45) |
+| `81-rl-tavern.js` | 13 | the sign (colour-carrying map: never tint it) (11) |
 | `90-rl-scene.js` | 7 | scene (Reed Lake showcase) (1); build every site the target lists (62) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91a-rl-budget.js` | <1 | budgets: the composite village and the great mud (1) |

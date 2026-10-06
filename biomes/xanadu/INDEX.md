@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/xanadu.html`
 Build: `cd biomes/xanadu && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 ## src/
 
@@ -18,7 +18,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `00-head.html` | 2 |  |
 | `45-host-stage.js` | 18 | the map (46); the sacred river (100); terrain (133); the climate fields (151); the field cache (18 m lattice; terrainH stays ex (174); the host binding (182) |
 | `46-host-ground.js` | 11 | the lake (67); the river (93) |
-| `50-biome-xanadu-species.js` | 52 **big** | THE LAKE COLOUR (21); the tree species (74); leaf and flower textures (183); an iridescent bark (shared hook; the Rift kit's) (331); bark textures (343); geometries local to this biome (392); materials (467); instanced items (524) |
+| `50-biome-xanadu-species.js` | 53 **big** | THE LAKE COLOUR (21); the tree species (74); leaf and flower textures (183); an iridescent bark (shared hook; the Rift kit's) (331); bark textures (344); geometries local to this biome (393); materials (468); instanced items (525) |
 | `55-biome-xanadu-trees.js` | 66 **big** | zones from the fields (17); colour (34); polyline helpers (56); keep-clear between trees (72); foliage helpers (79); the builders (109); impostors (the far canopy) (502); the pass (534); one tree at a point (additive, for a world's gar (622) |
 | `60-biome-xanadu-floor.js` | 19 | small plants (34); the zone planters (99); the pass (166) |
 | `65-biome-xanadu-dress.js` | 5 |  |

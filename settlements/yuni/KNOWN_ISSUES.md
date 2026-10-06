@@ -250,6 +250,134 @@ calls and triangles as three.js counts them; sky passes not included):
 
 Draw calls at verify's opening view: 113 with LOD, within the budget.
 
+## Core modules (2026-10-05)
+
+`build.py` reads `core/clock`, `core/sched`, `core/minimap` and `core/materials/record` beside `core/lod`, `core/rand` and `core/tags` (`CORE_MODULES`; a `src/` copy with
+the same name overrides). The core files are upstream and tested there, so the reseed, palette and shared-scope rules
+skip them and none is grouped with a `src/` fragment that shares its number (`20-core-clock.js` with `20-stage.js`).
+
+- **The world clock** (`KCLOCK`, `GODOT-PLAN.md` Phase 1) is `YCLOCK` in `21-sky.js`, in place of the sky's own
+  `SKY_T`. `skyHour()`, `skySetHour()` and `skyDayOfYear()` keep their names, so nothing that reads them changed.
+  **Behaviour change:** the page used to run time from load at 5 real seconds per hour; it now opens HELD at 10:00,
+  as every preview page does. The button is Run time / Hold time (a 72-minute world day); the sky panel's rate row
+  is hold / 1x / 60x / 600x of that day; `#hour=H` and `#time=run` in the URL set it (as in Mungo). `SKY.secPerHour`,
+  `SKY.timeScale` and `SKY.paused` are gone; `_sky.clock()`, `_sky.rate()`, `_sky.setRate(k)` replace them, and
+  `verify.py`, `verify_heavy.py` and `verify_walk.py --hour` hold the clock through `_sky.setRate(0)`.
+- **The volcano's cycle** (`20-stage.js`) is `KSCHED.eruption` (active 9 s in every 45 s) on the clock's motion time,
+  no longer `Math.random()` and `setTimeout`; the texture swaps only when the state changes. `window._volcano`.
+  Both bakes are still the same 'idle' paint, so nothing visible changes until an 'active' bake is made.
+- **The minimap** (`88b-yuni-minimap.js`): the Map button or M. Relief from `terrainH`, the river, canal and basin,
+  the street graph by class, the highways, the wall and gates, the butte, the reserved sites and every
+  `FIX.buildings` footprint by family. Hover names; click looks there (not while walking). Draws nothing in the
+  scene: draw calls unchanged. `window._minimap.export()`. The panel sits bottom left over the lower view buttons
+  while it is open, as Voth's does.
+
+Not taken, and why:
+- `core/rand`: **an exception, by the owner's decision (2026-10-05).** Yuni's `rnd()` is Park-Miller
+  (`seed*16807 % 2147483647`), not the mulberry32 stream `KRAND` reproduces, so moving onto `KRAND.stream` would move
+  every placement in the city, and the noise (`h2`/`vn`/`fbm`, `phash` on `Math.sin`) the ground. Yuni keeps its own;
+  its port carries the generator as it is or bakes the placements (`GODOT-PLAN.md` Phase 2, item 1).
+- [ ] `core/simulation`: the life layer moves onto `SIM` in `core/simulation/PLAN.md` Phase 3b, after Locus (the
+      mobility reference); its `deep` edges become `climb`/`underground` layers, the caravan loop a route's segments.
+- `core/atmos`: the wave field is for open water (the river flows). The sky's light (`ATMOS.skylight`) now has standard
+  materials to reach (the library families below) and is the next step for the library look; not taken in this pass.
+  `core/walk`: the walker collides with captured, turned bodies, which `KWALK`'s axis-aligned blocks would coarsen.
+  `core/terrain`, `core/biome`, `core/sockets` and the Ancients `core/materials` (already in `61a`, cut by
+  `tools/gen_ancients.py`) do not apply or are already in.
+
+## Material library (2026-10-05)
+
+Yuni takes the material library the way Girder does (`core/materials/PLAN.md`, "How a build adopts the library"):
+`materials.json` is the adapter, `python3 tools/textures/pack.py settlements/yuni` writes `tex/` (commit it), and
+`build.py` reads `core/materials/record` and generates `46-matlib-pack.js` from `tex/`. `47-texture.js` turns every
+painter into a `TEX.def` kind (`yuni.<family>`, the same pixels), `45-kit.js famMaterial()` gives a library family a
+`MeshStandardMaterial` with colour, normal and roughness maps (plus the specular and tiling break-up hooks), and the
+valley floor (`75-terrain.js`) takes the `ground` set the same way. `?mat=proc` is the look before, pixel for pixel;
+`window._materials` is the material table. Geometry, draw calls (113) and the invariants are unchanged; the page grows
+from 1.1 MB to 4.3 MB (the maps inlined). Each set's `tint.mean` is the mean brightness of the procedural map it
+replaces (measured in the page), so the palette and lights keep their tuning: no tone mapping was needed.
+
+| Family | Set | Tile (m) | Keep |
+|---|---|---|---|
+| adobe | `earth.banco` | 3 | 0 (palette ochre, red, dark) |
+| plaster | `plaster` | 3 | 0 (whitewash, the blue washes, warm stone) |
+| concrete | `concrete.board` | 3 | 0.15 |
+| tile | `roof.tile` | 1.6 | 0 (terracotta from the palette) |
+| timber, plank, thatch, cloth, rock, rust | Girder's sets (`wood.medieval_wood`, `wood.weathered_brown_planks`, `roof.thatch.neutral`, `cloth.weave.plain`, `rock.rock_face`, `metal.rusty_metal_04`) with Girder's numbers | | |
+| bark | `bark.bark_brown_01` | 1.2 x 1.8 | 0, contrast 1.2 |
+| ground (valley floor) | `earth.floor.packed` | 4 | 0 |
+
+| mosaic | `mosaic.trencadis` (delivered 2026-10-05) | 1.6 | 0 (the domes' blues, warms and greens) |
+| paintbw, paintcol | `patterns/yuni/paintbw`, `patterns/yuni/paintcol` (delivered) | 3.2; 4 x 4.3 | 1 (their own colour) |
+| relief | `patterns/yuni/relief` (delivered) | 3 | 0 |
+| metal | `metal.ancient.white` (delivered) | 4 (2 x 1 m panels) | 0 (white, tarnish, brass and gilt from the palette) |
+| column (the butte, `50-structure.js`) | `rock.columnar` (delivered) | 40 x 64 | 0.15 |
+
+- [x] The six sets the library lacked were generated by the owner on 2026-10-05 and processed with
+      `tools/textures/batches/chatgpt-2026-10f-yuni.json` (sources in the owner's `texture/chatgpt-2026-10f-yuni/`).
+      The Hausa panel was cropped to 4 x 4 whole cells first (its motifs cycle every 4 columns and 2 rows; the
+      period search alone cut a row in half). `glass` (an opaque stand-in), `leafy`, `dark` and `glowmat` stay procedural.
+
+**The interiors (2026-10-05).** `76-doors.js intMat` builds every interior material through `famMaterial`, so walls,
+floors, ceilings and furniture take the library maps with their normal and roughness, the specular and break-up
+hooks; the indoor light dims the sun's specular with its diffuse (no highlight through a wall). New families, each
+with a library set and, under `?mat=proc`, the procedural map and scale of the family it was drawn with before
+(`proc` in `05-palette.js`), so the old look is unchanged:
+
+| Family | Set | Was | Used by |
+|---|---|---|---|
+| clay | `ceramic.terracotta` | tile | pots and jars (`64-interiors.js`: hearth, shelves, counter, tavern, clay pots, food pot; `63-furniture.js`: water jars, three-stone hearth) |
+| rug | `cloth.rug.pile` (delivered 2026-10-05; was `cloth.rug.wool`) | cloth | the knotted carpet, the kilim, the rug pile |
+| reedmat | `fibre.reedmat` | thatch | reed mats, the sleeping mat and platform |
+| basket | `fibre.coil` (delivered 2026-10-05) | thatch | the lidded basket, the food pot's lid |
+| fl-adobe | `earth.floor.packed` | adobe | packed-earth floors (the mud finishes) |
+| fl-tile | `ceramic.terracotta` | tile | the blue-wash houses' terracotta floor tiles |
+
+`intMat` takes `FAMMAT['fl-<fam>']` for a floor when it exists, else `<fam>` as before. The pots and jars used the
+roof-tile family for its colour, which on the library put roof courses on a pot. Draw calls in the city are unchanged
+(112); the furniture pieces placed outdoors (water jars, counters) now draw in `clay`. The page is 7.1 MB with 23
+families inlined (Girder's is 12.9 MB).
+- [ ] `kits/catalog` harvested these pieces with the old family strings: re-harvest after the catalog learns `clay`,
+      `rug` and `reedmat` (it already lacks the interiors pass's pieces: "Open after merging main" below).
+- [x] The interiors' last three sets were generated by the owner on 2026-10-05 and processed with
+      `tools/textures/batches/chatgpt-2026-10g-yuni-interiors.json`: `wood.beam` now carries the `timber` family
+      everywhere (beams, posts, toron, furniture legs, outdoors too; 1.2 x 2.4 m), `cloth.rug.pile` the rugs (0.6 m),
+      `fibre.coil` the new `basket` family (0.35 m). Girder keeps `wood.medieval_wood` for its own timber.
+- The Ancients ruins (`61a`) keep the Ancients kit's own `MAT`/`TEX`.
+
+## The eastern badlands biome (2026-10-06)
+
+The wild valley is planted by the eastern badlands kit (`biomes/ebadlands`), read in place like Locus reads the
+eastern-abyss kit: `build.py`'s `BIO_CANON` puts `core/biome` and the kit's fragments at `69a*` and `69c*`, after the
+placement pass, with the host binding (`69b-yuni-biohost.js`) between them and the planting (`69z-yuni-badlands.js`)
+last. The kit's own BIOME-API.md places "the valley of Yuni" in the region's humid south; the owner's note (a valley,
+so the Zion side of the kit) sets the fields: `cold` .24 on the floor rising with height, `wet` .5 (a slow patchwork
+for drier benches) rising by the river and the canal, `flow` a 90 m band along the river, `rock` on steep ground and the
+butte's talus. So the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose weepers, giant umbels,
+grass and wildflowers), pinyon-juniper on the drier patches, ponderosa and aspen up the walls, a little spruce and fir
+on the crests. The butte is dressed with Zion's hanging gardens (`EBADLANDS.dress`: maidenhair curtains with
+monkeyflower and columbine, grape curtains, moss and lichen, ledge plants).
+
+- **What stays Yuni's own** (`60-flora.js`): what people planted, the cypress avenues, the park trees and the olive
+  groves. Its first-pass stand-ins for the wild flora (pine woods, scrub, riverside cypress and olive, the butte's pine
+  ring) are gone. The kit's mask keeps off the town inside the wall, every street and verge, every building footprint,
+  the planted trees (`TREE_SITES`), the canal corridor, the basin and the butte, and is thin (.12) in the districts'
+  yards and on the farm belt.
+- **Numbers** (quality .9, R 3.9 km; `window._biome`): about 43,500 trees (7,600 built in full near the LOD spine, the
+  rest far impostors), 280 k biome instances, 8 M biome triangles before culling; about 10 s of the page's start-up.
+  The LOD spine is eight points where the views look (the town's edges, the butte, the north approach, the weir, the
+  valley mouth, the basin); a spine across the whole valley built every tree in full (12 M triangles).
+- **The triangle budget is raised 7 M -> 10 M** (`05-palette.js`), as Locus raised its own for its biome. verify.py runs
+  the page in FAST mode (quality .5: about 24,600 trees, 160 k instances); there `--assert` passes at 147 draw calls and
+  7.2 M triangles. The full page draws more (the HUD read 11 to 14 M triangles with the shadow pass, at 60 fps on the
+  owner's GPU). verify.py's `instances` counts Yuni's kit only, not the biome's (`window._biome.totals.inst`).
+- [ ] From high above (the "The valley" view, 1.8 km up) the trees are specks and the floor reads as meadow with the
+      kit's wildflowers; at ground level it reads as woodland. Denser woods cost triangles the budget does not have.
+- [ ] The biome is not in the minimap, and its plants are not registered in `core/tags` (the inspector names them by
+      their meshes' labels, as in Locus).
+- [ ] Trees are kept off footprints and streets by a 2.5 m raster round the trunk; boughs are not tested against roofs
+      (Locus's open item too).
+
 ## Catalog verify-pass sync (2026-10)
 - [x] kits/catalog's verify pass found the plants and furniture it harvested from Yuni built bigger than they
       were declared. Yuni's own entries were measured on yuni-plants.html and yuni-furniture.html over four sheet

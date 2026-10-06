@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.477,
+    1.101
+   ],
+   "seam_before": [
+    1.562,
+    2.105
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.3,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.amazonite",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   0.8,
+   0.8
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Polished Teal Crystal Vein Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Skin of a glossy alien succulent pod: smooth taut waxy surface in deep teal (#2e7a78) with lighter aqua (#4a9a90) streaks running lengthwise, faint shallow ribs, tiny pale freckles. (Row organic.gem.teal of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Polished Teal Crystal Vein Texture.png'. It came as a polished crystalline teal stone (amazonite-like) rather than a waxy pod skin, so it is filed as a stone and also answers organic.gem.teal.",
+  "reuse": "the ember crown and stilt pod skins; gem inlay, polished mineral, crystal outcrops, alien stone in any culture or biome",
+  "sha1": "b48de0aa4c01961e919504f413364ab565b325ab"
+ }
+}

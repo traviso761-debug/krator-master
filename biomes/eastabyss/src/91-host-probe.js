@@ -4,7 +4,7 @@
 const BUDGET={
  showcase:{tris:11000000,calls:130},  // the ceiling the second pass was given (11M); measured ~7.4M before it (KNOWN_ISSUES)
  cls:{pass:8200000,host:900000},
- type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','host':'host'},
+ type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','abyss/fauna':'pass','host':'host'},
 };
 function _probePoints(){
  const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();

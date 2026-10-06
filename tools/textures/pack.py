@@ -6,7 +6,7 @@
 
 A build's `materials.json` is its adapter: per material family the library set it uses and how (scale in world
 metres per tile, how much of the set's own colour survives the build's tint, how much to lift roughness, metal).
-This script reads each set from core/materials/library/<lib>/ (1024 px albedo.jpg, normal.png, roughness.png),
+This script reads each set from core/materials/library/<lib>/ (1024 px albedo.jpg, normal.jpg, roughness.png),
 and writes small processed copies into <build>/tex/ (WebP, `size` px, default 512) plus tex/pack.json.
 
 The build reads only those committed files (build.py inlines them as data URLs), so the build stays
@@ -78,7 +78,7 @@ def process(fam, cfg, size):
     # map paths come from meta.json 'maps' (a neutral copy points at its sibling's normal and roughness)
     mp = meta.get('maps') or {}
     path = lambda k, default: os.path.normpath(os.path.join(d, mp.get(k, default)))
-    pa, pn, pr = path('map', 'albedo.jpg'), path('normalMap', 'normal.png'), path('roughnessMap', 'roughness.png')
+    pa, pn, pr = path('map', 'albedo.jpg'), path('normalMap', 'normal.jpg'), path('roughnessMap', 'roughness.png')
     out, files = {}, {}
     card = rec.get('kind') == 'card'
     # albedo (a card keeps its alpha; its statistics are taken over the opaque pixels only)

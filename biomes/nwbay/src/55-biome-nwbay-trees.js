@@ -1,5 +1,5 @@
 // ================================================================= NORTH-WEST BAY — trees
-// The fifteen tree species of the bay (and the mat reed's beds), each with
+// The nineteen tree species of the bay (and the mat reed's beds), each with
 // its own builder, placed by zone from the host's climate fields (wet / salt /
 // upland / flow / karst) and terrainH. The zone weights are computed HERE
 // from those fields, never from the host's map: a world that binds the same
@@ -18,17 +18,21 @@ NWBAY.TREES=[];
 // jungle, the shore, the tidal rim and the banks. `karst` is the rock: the
 // stack tops (karst > .95) carry the figs, tree ferns and scrub; the rim band
 // (.03 .. .9) is a cliff face and nothing roots there (the host's mask is zero
-// on it too; the probe checks).
+// on it too; the probe checks). `tsingy` is the knife-edged limestone massif (the host's mask is zero
+// in a blade, so a pass there plants the fissures and canyons) and `hollow` a sinkhole's floor.
 const Y=(x,z)=>BIO.terrainH(x,z);
 function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),karst=BIO.field('karst',x,z),h=Y(x,z),land=smooth(.15,1.2,h),rock=smooth(.03,.5,karst),dry=smooth(.5,.2,wet);
- return{up,wet,salt,flow,karst,h,
+ const ts=BIO.field('tsingy',x,z),hol=BIO.field('hollow',x,z),hk=smooth(.2,.7,hol),tk=smooth(.15,.5,ts);
+ return{up,wet,salt,flow,karst,h,ts,hol,
+  tsingy:tk*land*(1-hk),                                                                          // the tsingy: the fissures and the canyons between the blades
+  hollow:hk*land,                                                                                 // a sinkhole's floor: a rainforest in the shade of its walls
   hyper:smooth(.30,.09,up)*smooth(.55,.80,wet)*land*(1-rock),                                   // the tall jungle ringing the bay
   rain:smooth(.08,.26,up)*smooth(.64,.42,up)*smooth(.35,.6,wet)*land*(1-rock),                    // the rainforest on the slope
-  ridge:smooth(.42,.62,up)*(1-rock),                                                              // the dry upper slopes toward the Inner Wall
-  low:smooth(.36,.1,up)*smooth(.2,.4,wet)*smooth(.78,.55,wet)*land*(1-rock)*smooth(.45,.15,salt),   // the open lowland: the terraces, the valley floor, the jungle's edge
+  ridge:smooth(.42,.62,up)*(1-rock)*(1-hk)*(1-.85*tk),                                                              // the dry upper slopes toward the Inner Wall
+  low:smooth(.36,.1,up)*smooth(.2,.4,wet)*smooth(.78,.55,wet)*land*(1-rock)*smooth(.45,.15,salt)*(1-hk),   // the open lowland: the terraces, the valley floor, the jungle's edge
   shore:smooth(2.4,.5,h)*smooth(.14,.03,up)*smooth(.5,.8,wet)*land*(1-rock)*smooth(.25,.08,karst),   // the beach and the delta
   tidal:smooth(.3,.6,salt)*smooth(.45,.7,wet)*smooth(1.4,.3,h)*smooth(-2.2,-1.2,h)*(1-rock),       // the brackish shallows and their rim: lagoons, the delta's mouths
-  cinder:(dry*smooth(.08,.35,salt)+.6*smooth(.1,.3,up)*smooth(.25,.5,salt))*land*(1-rock),        // the lava fields (dry ground by the sea) and the headlands
+  cinder:(dry*smooth(.08,.35,salt)+.6*smooth(.1,.3,up)*smooth(.25,.5,salt))*land*(1-rock)*(1-hk),        // the lava fields (dry ground by the sea) and the headlands
   top:smooth(.85,.97,karst),                                                                      // the stack tops
   bank:smooth(.45,.8,flow)*land*(1-rock)*smooth(.35,.12,up)};}                                    // the river's banks on the lowland and the terrace reach
 NWBAY.zones=zones;
@@ -319,8 +323,17 @@ B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3,ha
   for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.4,.3)*s.s;
    if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('glossy',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}});
  if(!mine){clumpAt('glossy',T.x,T.y0+H*.62,T.z,sz0,.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}
- // the AERIAL ROOTS: from an outward bough to the rim, then straight down the face to the water
- if(hasEdge){const n=lv===2?ri(5,10):lv===1?3:0,px=-out[1],pz=out[0];
+ // the AERIAL ROOTS: from an outward bough to the rim, then straight down the face to the water. A variant grown in
+ // the nursery (T.nursery) has no rim: it keeps where its curtains would hang from, and each placed fig drops its own
+ // to its own stack's waterline (56-variants)
+ if(hasEdge){if(T.nursery)T.hangs=hangs.map(h=>({x:h.x,y:h.y,z:h.z}));else figCurtains(T,st,lv,hangs);}
+ let spread=T.crownR;boughs.forEach(pts=>{const e=pts[pts.length-1];spread=Math.max(spread,Math.hypot(e.x-T.x,e.z-T.z)+6);});T.spread=spread;
+ epiBole(T,rAt,st,lv,1.2,.1,.5);
+ if(lv===2)for(let i=0,q=ri(2,4);i<q;i++){const a=rr(0,TAU),yy=rr(.5,6),R=rAt(yy/H)*(1+butF(yy)*lobeSum(a))+.15;BIO.put('mossmat',[T.x+Math.cos(a)*R,T.y0+yy,T.z+Math.sin(a)*R],qUp([Math.cos(a),rr(-.1,.3),Math.sin(a)]),rr(1,2),bright(vary(pick(PAL.moss),.03,.1,.06),.95));st.moss++;}
+ reg(T,S);};
+// a fig's root curtains: from the hang points (outward boughs) to the rim, then down the face to T.footY
+function figCurtains(T,st,lv,hangs){const H=T.H,out=T.out||[1,0];
+const n=lv===2?ri(5,10):lv===1?3:0,px=-out[1],pz=out[0];
   for(let i=0;i<n;i++){const h0=hangs.length?pick(hangs):{x:T.x+out[0]*T.crownR*.5,y:T.y0+H*.5,z:T.z+out[1]*T.crownR*.5};
    const side=rr(-1,1)*4,ex2=T.x+out[0]*(T.edgeD+rr(.4,1.4))+px*side,ez2=T.z+out[1]*(T.edgeD+rr(.4,1.4))+pz*side;
    const yTop=h0.y-.3,yBot=T.footY+rr(-.4,.4),L=yTop-yBot;if(L<4)continue;
@@ -329,10 +342,7 @@ B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3,ha
    st.limb+=BIO.tube('root',pts,rootCol(),{seg:lv===2?5:4});st.roots++;
    if(lv===2){for(let q=0,m=ri(1,3);q<m;q++)BIO.put('strand',[ex2+px*rr(-1.5,1.5),yTop-rr(3,10),ez2+pz*rr(-1.5,1.5)],qEuler(0,rr(0,TAU),0),[rr(.4,.9),Math.min(L*.6,rr(6,24)),1],bright(vary(pick(PAL.root),.02,.06,.06),1.0));
     if(rng()<.5)BIO.put('mossmat',[ex2,yTop-L*rr(.3,.8),ez2],qUp([out[0],.2,out[1]]),rr(.8,1.6),bright(vary(pick(PAL.moss),.03,.1,.06),.95));}}}
- let spread=T.crownR;boughs.forEach(pts=>{const e=pts[pts.length-1];spread=Math.max(spread,Math.hypot(e.x-T.x,e.z-T.z)+6);});T.spread=spread;
- epiBole(T,rAt,st,lv,1.2,.1,.5);
- if(lv===2)for(let i=0,q=ri(2,4);i<q;i++){const a=rr(0,TAU),yy=rr(.5,6),R=rAt(yy/H)*(1+butF(yy)*lobeSum(a))+.15;BIO.put('mossmat',[T.x+Math.cos(a)*R,T.y0+yy,T.z+Math.sin(a)*R],qUp([Math.cos(a),rr(-.1,.3),Math.sin(a)]),rr(1,2),bright(vary(pick(PAL.moss),.03,.1,.06),.95));st.moss++;}
- reg(T,S);};
+NWBAY._figCurtains=figCurtains;
 // 9 the FLAME-CROWN (new): a short bole, three to five limbs rising and flattening into one wide flat umbrella
 // of fern-fine leaves, and a scarlet flush of bloom on one side of the crown in patches (Delonix): the
 // lowland and farm tree, and the street tree of Ys's land quarter.
@@ -460,12 +470,85 @@ B[14]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,n=ri(6,9),la=rr(0,TAU),lk
   BIO.put('whorl',[p.x,p.y-.05,p.z],qEuler(0,rr(0,TAU),0),[R,R,R],bright(hc,rr(.9,1.1)*1.1));
   if(lv===2&&k<n)BIO.put('whorl',[p.x,p.y+.35,p.z],qEuler(0,rr(0,TAU),0),[R*.7,R*.7,R*.7],bright(shade(hc,.1),1.1));}
  const e=pts[n];BIO.put('cone',[e.x,e.y,e.z],qUp([0,1,0]),[e.r*3.2,rr(1.2,2.4),e.r*3.2],shade(C(0x6a4a3a),-.1));st.whorls+=n;};
+// ---------------------------------------------------------------- the Madagascarene flora (Bemaraha, the Spiny Forest)
+// 16 the SPINEWAND (new; Alluaudia, Didierea, "octopus tree"): from one short foot, four to nine grey-green wands,
+// each curving out and then straight up, a branch or two off the lower ones; tiny round leaves pressed along every
+// wand in short rows (small flat clumps hugging the stem), spines as dark flecks in the bark colour, cream tufts at
+// the tips. Hardly a crown at all: a bundle of green columns on the tsingy and the dry slope.
+B[16]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,lc=C(pick(PAL.wandLeaf)),nW=ri(S.wands[0],S.wands[1]),a0=rr(0,TAU),tips=[];
+ const foot=T.y0+rr(.4,1.2);
+ st.trunk+=BIO.tube(fam,[{x:T.x,y:T.y0-.3,z:T.z,r:rb*1.25},{x:T.x,y:foot,z:T.z,r:rb*1.05}],barkCol(S,ti),{seg:lv===2?8:6});
+ function wand(o,a,len,r0,lean,depth){const pts=[],n=lv===2?7:4;
+  for(let k=0;k<=n;k++){const t=k/n,out=lean*Math.sin(Math.min(1,t*1.6)*Math.PI*.5)*len;   // out first, then straight up
+   pts.push({x:o.x+Math.cos(a)*out,y:o.y+t*len,z:o.z+Math.sin(a)*out,r:mix(r0,r0*.45,t)});}
+  st.limb+=BIO.tube(fam,pts,barkCol(S,(ti+depth)%3),{seg:lv===2?6:4,cap:true});tips.push(pts[n]);
+  // the leaves: short rows pressed to the wand from a third of the way up
+  const nL=Math.round(len*(lv===2?.6:.25));
+  for(let i=0;i<nL;i++){const t=rr(.3,.97),f=t*n,j=Math.min(n-1,Math.floor(f)),u=f-j,p={x:mix(pts[j].x,pts[j+1].x,u),y:mix(pts[j].y,pts[j+1].y,u),z:mix(pts[j].z,pts[j+1].z,u)},r=mix(pts[j].r,pts[j+1].r,u),aa=rr(0,TAU);
+   clumpAt('leaflet',p.x+Math.cos(aa)*r*1.2,p.y,p.z+Math.sin(aa)*r*1.2,rr(.9,1.5)*(lv===2?1:1.5),1.6,lc,T.x,T.y0+H*.6,T.z,T.crownR,H*.5);st.clumps++;}
+  if(depth===0&&lv===2&&rng()<.55){const k=ri(1,2),p=pts[k];wand({x:p.x,y:p.y,z:p.z},a+rr(-.9,.9),len*rr(.35,.55),r0*.55,rr(.15,.35),1);}}
+ for(let k=0;k<nW;k++){const a=a0+k/nW*TAU+rr(-.35,.35),len=(H-(foot-T.y0))*rr(.6,1),lean=rr(.08,.32);
+  wand({x:T.x+Math.cos(a)*rb*.3,y:foot-.2,z:T.z+Math.sin(a)*rb*.3},a,len,rb*rr(.42,.6),lean,0);}
+ if(lv===2)tips.forEach(p=>{if(rng()>.7)return;const col=bright(vary(pick(rng()<.8?PAL.wandBloom.slice(0,2):PAL.wandBloom.slice(2)),.02,.06,.05),1.1);
+  for(let b=0,m=ri(3,6);b<m;b++)BIO.put('bloom',[p.x+rr(-.35,.35),p.y+rr(-.6,.3),p.z+rr(-.35,.35)],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.2,.38),col);st.blooms++;});
+ T.spread=T.crownR;reg(T,S);};
+// 17 the ROCK BOTTLE (new; Pachypodium rosulatum and lamerei): a swollen silver-grey bottle of a trunk, studded with
+// spines (dark flecks in the colour), squat or tall; two to five stubby arms from its shoulder bending up, each ending
+// in a rosette of long dark glossy straps; yellow flowers on long stalks above them. Roots in the cracks of bare rock.
+B[17]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,lc=C(pick(PAL.bottleLeaf)),squat=rng()<.5,hB=H*(squat?rr(.38,.5):rr(.55,.7));
+ const rAt=u=>rb*(squat?(.75+.55*Math.sin(Math.min(1,u*1.15)*Math.PI*.85)):(1+.25*Math.sin(Math.min(1,u)*Math.PI*.6)))*(1-.55*smooth(.6,1,u));
+ const rings=[],sp0=rr(0,9);for(let yy=0;yy<=hB;yy+=hB/(lv===2?9:5))rings.push({x:T.x,y:T.y0-.25+yy,z:T.z,r:rAt(yy/hB),yy:yy,col:barkCol(S,(Math.floor(yy/1.5)+ti)%3)});
+ st.trunk+=BIO.lathe(fam,rings,lv===2?12:8,Math.max(1,Math.round(TAU*rb/1.5)),3,(R,ang)=>R.r*(1+.05*Math.sin(9*ang+R.yy*1.3+sp0)),(R,ang)=>.86+.14*Math.sin(17*ang+R.yy*5+sp0));   // the spines: a fine ring of dark flecks
+ const top={x:T.x,y:T.y0+hB-.3,z:T.z},nA=ri(S.arms[0],S.arms[1]),a0=rr(0,TAU),heads=[];
+ for(let k=0;k<nA;k++){const a=a0+k/nA*TAU+rr(-.3,.3),len=(H-hB)*rr(.6,1.05),r0=rb*rr(.22,.32);
+  const o={x:top.x+Math.cos(a)*rAt(.92)*.5,y:top.y,z:top.z+Math.sin(a)*rAt(.92)*.5},pts=treeGrow(o,[Math.cos(a)*.6,.8,Math.sin(a)*.6],len,r0,r0*.7,3,.15,.05);
+  st.limb+=BIO.tube(fam,pts,barkCol(S,(k+ti)%3),{seg:lv===2?6:4,cap:true});heads.push(pts[3]);}
+ heads.forEach(p=>{const n=lv===2?ri(2,3):1;for(let c=0;c<n;c++){clumpAt('strap',p.x+rr(-.3,.3),p.y+rr(.1,.5),p.z+rr(-.3,.3),rr(1.1,1.7),.55,lc,p.x,p.y-.5,p.z,1.5,1);st.clumps++;}
+  if(lv===2&&rng()<.6){const col=bright(vary(pick(PAL.bottleBloom),.02,.06,.05),1.15);for(let b=0,m=ri(3,7);b<m;b++)BIO.put('bloom',[p.x+rr(-.6,.6),p.y+rr(.8,1.6),p.z+rr(-.6,.6)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.42),col);st.blooms++;}});
+ if(lv===2&&rng()<.5){const a=rr(0,TAU),R=rb*1.5;BIO.put('rosette',[T.x+Math.cos(a)*R,T.y0-.02,T.z+Math.sin(a)*R],qEuler(0,rr(0,TAU),0),[.7,.5,.7],bright(vary(pick(PAL.succulent),.03,.1,.06),1.05));}
+ T.spread=T.crownR;reg(T,S);};
+// 18 the AVENUE BAOBAB (new; Adansonia grandidieri, Morondava): a smooth red-grey column hardly tapering, a slight
+// swell a third of the way up, and at its very top a flat crown of short stout boughs radiating level, sparse palmate
+// leaves on their tips (a dry-season crown), the odd pod. It stands in lines along the lowland and on the dry slope.
+B[18]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,hC=H*rr(.8,.88);
+ const rAt=u=>rb*(1+.14*Math.sin(Math.min(1,u/.7)*Math.PI)-.22*smooth(.55,1,u))*(1+.35*Math.exp(-u*H/3));
+ const rings=[],vs=8;for(let yy=0;yy<hC;yy+=(yy<4?1.2:vs*.5))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/hC),yy:yy,col:barkCol(S,(Math.floor(yy/9)+ti)%3).lerp(C(0x6a6058),smooth(4,0,yy)*.3)});
+ rings.push({x:T.x,y:T.y0+hC+rAt(1)*.5,z:T.z,r:.05,yy:hC+1,col:barkCol(S,1)});
+ const ph=rr(0,TAU);st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.03*Math.sin(5*ang+ph+R.yy*.05)+.15*Math.exp(-R.yy/2.5)*Math.max(0,Math.cos(3*ang+ph))),null);
+ const nB=ri(S.boughs[0],S.boughs[1]),a0=rr(0,TAU),spots=[];
+ for(let k=0;k<nB;k++){const a=a0+k*GOLD+rr(-.25,.25),u=rr(.94,1.02),el=rr(-.05,.35),len=T.crownR*rr(.45,.85),r0=clamp(rAt(1)*rr(.28,.4),.3,1.1);
+  const o={x:T.x+Math.cos(a)*rAt(1)*.5,y:T.y0+hC*u,z:T.z+Math.sin(a)*rAt(1)*.5},pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,r0*.35,4,.1,.06);
+  if(!okPts(pts,1))continue;st.limb+=BIO.tube(fam,pts,barkCol(S,(k+ti)%3),{seg:r0>.6?6:5,cap:true});
+  for(let s=2;s<=4;s++){if(lv===2&&s>2&&rng()<.6){const p=pts[s],a2=a+rr(-1,1),l2=len*rr(.25,.4),e=[p.x+Math.cos(a2)*l2,p.y+rr(.3,1.2),p.z+Math.sin(a2)*l2];BIO.beam('rod',[p.x,p.y,p.z],e,p.r*.6,.06,rodCol(S,k));spots.push({p:{x:e[0],y:e[1],z:e[2]},s:l2*.4});}
+   spots.push({p:pts[s],s:len*.18});}}
+ const cy=T.y0+hC,lc=S.leaf,sz=clamp(T.crownR*.28,2,4);
+ spots.forEach(s=>{if(rng()<.35)return;clumpAt('palmate',s.p.x+rr(-.5,.5),s.p.y+rr(0,.8),s.p.z+rr(-.5,.5),sz*rr(.7,1.1),.45,C(pick(lc)),T.x,cy,T.z,T.crownR,H*.08);st.clumps++;});
+ if(lv===2)spots.forEach(s=>{if(rng()<.85)return;BIO.put('pod',[s.p.x,s.p.y-.3,s.p.z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),rr(1.2,2),bright(pick(PAL.pod),rr(.7,.9)));st.pods++;});
+ T.spread=T.crownR*1.1;reg(T,S);};
+// 19 the TRAVELLER'S FAN (new; Ravenala): a straight ringed grey stem and, at its top, ONE flat fan of long-stalked
+// paddle leaves standing in a single vertical plane like a peacock's tail -- the young ones upright at the centre, the
+// old ones low at the edges, torn and yellowing; dead leaf bases in a skirt; blue arils in the axils. It grows where it
+// is wet and still: the floors of the dolines, the rainforest, the river's banks.
+B[19]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%3,fa=rr(0,TAU),hS=H*rr(.42,.58),stem=[];
+ for(let k=0,n=lv===2?6:3;k<=n;k++){const t=k/n;stem.push({x:T.x+Math.sin(t*2+ti)*.15,y:T.y0-.3+t*(hS+.3),z:T.z,r:rb*(1-.25*t)*(k===0?1.2:1),col:barkCol(S,(k+ti)%3).lerp(C(0x5a564e),k%2?.25:0)});}   // the rings: alternate bands
+ st.trunk+=BIO.tube('bark1',stem,barkCol(S,ti),{seg:lv===2?8:6});
+ const top=stem[stem.length-1],nL=lv===2?ri(S.leaves[0],S.leaves[1]):ri(8,11),px=Math.cos(fa),pz=Math.sin(fa),hc=C(pick(PAL.ravenala));
+ for(let k=0;k<nL;k++){const t=nL>1?k/(nL-1):.5,side=(t-.5)*2,old=Math.abs(side)>.72,th=side*rr(1.15,1.35);   // th: the leaf's angle from vertical, in the fan's plane
+  const pet=(H-hS)*rr(.45,.6)*(old?.85:1),dx=Math.sin(th),dy=Math.cos(th),e=[top.x+px*dx*pet,top.y+dy*pet,top.z+pz*dx*pet];
+  BIO.beam('rod',[top.x,top.y-.3,top.z],e,rb*.32,rb*.14,old?shade(C(pick(PAL.ravenalaOld)),-.2):shade(hc,-.15));st.sapTris+=BIO.defs.rod.tris;
+  // the blade lies IN the fan's plane: local x along the leaf, z across it within the plane, y (its face) the plane's normal
+  const L=(H-hS)*rr(.42,.55),tw=rr(-.12,.12),vd=new T3.Vector3(px*dx,dy,pz*dx).normalize(),vw=new T3.Vector3(px*dy,-dx,pz*dy).normalize(),vn=new T3.Vector3().crossVectors(vw,vd);
+  vw.applyAxisAngle(vd,tw);vn.applyAxisAngle(vd,tw);const q=new T3.Quaternion().setFromRotationMatrix(new T3.Matrix4().makeBasis(vd,vn,vw));
+  BIO.put('paddle',e,q,[L,L*rr(.9,1.05),L*rr(.28,.36)],old?bright(vary(pick(PAL.ravenalaOld),.02,.06,.05),.95):bright(vary(hc,.02,.06,.05),rr(1.0,1.2)));st.fans++;}
+ if(lv===2){for(let k=0,m=ri(4,8);k<m;k++)BIO.put('paddle',[top.x,top.y-rr(.5,1.5),top.z],qEuler(0,-(fa+(k%2?Math.PI:0))+rr(-.2,.2),rr(-1.2,-.7)),[rr(1.2,2.2),rr(1,1.6),rr(.5,.8)],bright(vary(0x6a5a3a,.02,.06,.05),.9));   // the dead skirt
+  const col=bright(pick(PAL.ravenalaSeed),1.2);for(let b=0,m=ri(3,7);b<m;b++)BIO.put('bloom',[top.x+px*rr(-.8,.8),top.y+rr(-.2,.5),top.z+pz*rr(-.8,.8)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.22,.36),col);st.blooms++;}
+ T.spread=(H-hS)*.9;reg(T,S,T.spread);};
 NWBAY.BUILDERS=B;
 
 // ---------------------------------------------------------------- impostors (the far canopy)
 let ICO=null;
 function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;const ip=ICO;
- const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2000,tiny=T.sp===5||T.sp===12||T.sp===14;let tris=0;
+ const S=SP[T.sp],cheap=BIO.lodD(T.x,T.z)>2000,tiny=T.sp===5||T.sp===12||T.sp===14||T.sp===17;let tris=0;
  function vtx(x,y,z,nx,ny,nz,r,g,b){K.pos.push(x,y,z);K.nor.push(nx,ny,nz);K.uv.push(0,0);K.col.push(r,g,b);}
  function blob(x,y,z,rx,ry,colA,colB,sd,under){const ca=C(colA).convertSRGBToLinear(),cb=C(colB).convertSRGBToLinear(),k1=sd*7.3,k2=sd*3.1;
   for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2];
@@ -474,7 +557,7 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
    const ny=dy*.7+.45,nl=Math.hypot(dx,ny,dz)||1;
    vtx(x+dx*rx*m,y+dy*ry*m*(under&&dy<0?under:1),z+dz*rx*m,dx/nl,ny/nl,dz/nl,mix(cb.r,ca.r,t)*sh,mix(cb.g,ca.g,t)*sh,mix(cb.b,ca.b,t)*sh);}
   tris+=ip.length/9;}
- const bc=C(S.bark[fi%S.bark.length]).convertSRGBToLinear(),seg=tiny?3:cheap?4:6,top=T.y0+T.H*[.88,.9,.62,.92,.9,.4,.9,.95,.64,.95,.78,.86,.88,.5,.92,.9][T.sp],rings=[];
+ const bc=C(S.bark[fi%S.bark.length]).convertSRGBToLinear(),seg=tiny?3:cheap?4:6,top=T.y0+T.H*[.88,.9,.62,.92,.9,.4,.9,.95,.64,.95,.78,.86,.88,.5,.92,.9,.9,.6,.95,.6][T.sp],rings=[];
  const yb=T.sp===11?Math.max(T.y0,0)+1:T.y0;
  [0,.06,.5,1].forEach(u=>{const y=yb+(top-yb)*u,r=Math.max(.5,T.rb*(1-.5*u)*(u<.08?1.6:1)*(T.sp===1&&u<.6?1.3:1)),ring=[];for(let s=0;s<=seg;s++){const a=s/seg*TAU;ring.push([T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,Math.cos(a),Math.sin(a)]);}rings.push(ring);});
  for(let r2=0;r2<rings.length-1;r2++)for(let s2=0;s2<seg;s2++){const A=rings[r2][s2],Bq=rings[r2][s2+1],D=rings[r2+1][s2],E=rings[r2+1][s2+1],sh=.7+.3*(r2/rings.length);
@@ -497,8 +580,13 @@ function buildFar(T,fi,st){const K=BIO.bucket('far');if(!ICO)ICO=new T3.Icosahed
  else if(T.sp===5){blob(T.x,T.y0+T.H*.7,T.z,R*.8,T.H*.5,L[fi%4],L[2],fi);}
  else if(T.sp===12){blob(T.x,T.y0+T.H*.85,T.z,R*1.1,T.H*.2,L[fi%4],L[2],fi);}
  else if(T.sp===14){blob(T.x,T.y0+T.H*.6,T.z,R*.9,T.H*.4,L[fi%3],L[2],fi);}
+ else if(T.sp===16){blob(T.x,T.y0+T.H*.62,T.z,R*.7,T.H*.38,L[fi%4],L[2],fi);}
+ else if(T.sp===17){blob(T.x,T.y0+T.H*.72,T.z,R*.9,T.H*.25,L[fi%4],L[2],fi);}
+ else if(T.sp===18){blob(T.x,T.y0+T.H*.93,T.z,R*.85,T.H*.05,L[fi%3],L[2],fi,.4);}
+ else if(T.sp===19){blob(T.x,T.y0+T.H*.78,T.z,R*.8,T.H*.26,L[fi%4],L[2],fi);}
  else{blob(T.x,T.y0+T.H*.9,T.z,R*.9,T.H*.1,L[fi%4],L[2],fi);}
  K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
+NWBAY._buildFar=buildFar;
 
 // ---------------------------------------------------------------- the reed beds
 // The mat reed grows in pure beds, not as scattered tufts: a bed is a disc of
@@ -551,9 +639,9 @@ NWBAY.buildTrees=function(R,q){
   return n;}
  // the bay jungle canopy: prism gums to the ceiling, ironbarks in stands with them, fan-crowns under and among them, baobabs at its edge
  pass(0,104,(Z)=>Z.hyper*.85+Z.rain*.10*(1-Z.up),{hero:700,mid:1250,far:true,pad:9,patch:.3,space:6});
- pass(3,108,(Z)=>Z.hyper*.7+Z.rain*.30,{hero:700,mid:1250,far:true,pad:9,patch:.35,patchScale:.007,space:6});
- pass(2,62,(Z)=>Z.hyper*.6+Z.rain*.55+Z.hyper*Z.flow*.3+Z.top*.25,{hero:700,mid:1200,far:true,pad:5,patch:.45,space:3});
- pass(1,88,(Z)=>Z.hyper*.15+Z.rain*.25+Z.low*.3+Z.ridge*.42*(1-smooth(.75,1,Z.up)*.6),{hero:680,mid:1200,far:true,pad:7,patch:.55,patchScale:.006,space:6});
+ pass(3,108,(Z)=>Z.hyper*.7+Z.rain*.30+Z.hollow*.12,{hero:700,mid:1250,far:true,pad:9,patch:.35,patchScale:.007,space:6});
+ pass(2,62,(Z)=>Z.hyper*.6+Z.rain*.55+Z.hyper*Z.flow*.3+Z.top*.25+Z.hollow*.4,{hero:700,mid:1200,far:true,pad:5,patch:.45,space:3});
+ pass(1,88,(Z)=>Z.hyper*.15+Z.rain*.25+Z.low*.3+Z.ridge*.3*(1-smooth(.75,1,Z.up)*.6),{hero:680,mid:1200,far:true,pad:7,patch:.55,patchScale:.006,space:6});
  // the CLIFF FIGS: on the stack tops, nearly all of them at the rim with the crown over the edge; a few inland on the top
  pass(8,52,(Z,x,z)=>{if(Z.top<.5)return 0;const E=karstEdge(x,z);return E?(E.d<26?1:.18):.12;},{hero:900,mid:1500,far:true,pad:4,patch:0,space:4,
   prep:T=>{const E=karstEdge(T.x,T.z);if(E&&E.d<26){T.out=E.out;T.edgeD=E.d;T.footY=E.footY;st.figsOnEdge++;}}});
@@ -564,20 +652,26 @@ NWBAY.buildTrees=function(R,q){
   prep:T=>{const gx=BIO.field('salt',T.x+8,T.z)-BIO.field('salt',T.x-8,T.z),gz=BIO.field('salt',T.x,T.z+8)-BIO.field('salt',T.x,T.z-8),g=Math.hypot(gx,gz);
    if(g>.004)T.lee=[-gx/g,-gz/g];else{const a=rr(0,TAU);T.lee=[Math.cos(a),Math.sin(a)];}}});
  // the dry upper slopes and the headlands: dragon trees, umbrella thorns
- pass(6,40,(Z)=>Z.ridge*.45+Z.cinder*.2+Z.rain*.06*smooth(.35,.5,Z.up),{hero:520,mid:950,far:true,pad:2,lodK:.6,patch:.45,space:1});
- pass(7,40,(Z)=>Z.ridge*.5*(1-smooth(.8,1,Z.up)*.5)+Z.low*.12,{hero:600,mid:1050,far:true,pad:2.5,lodK:.4,patch:.5,patchScale:.007,space:1.5});
+ pass(6,40,(Z)=>Z.ridge*.36+Z.cinder*.2+Z.rain*.06*smooth(.35,.5,Z.up),{hero:520,mid:950,far:true,pad:2,lodK:.6,patch:.45,space:1});
+ pass(7,40,(Z)=>Z.ridge*.4*(1-smooth(.8,1,Z.up)*.5)+Z.low*.12,{hero:600,mid:1050,far:true,pad:2.5,lodK:.4,patch:.5,patchScale:.007,space:1.5});
  // the understorey trees: tree ferns up the slope, along the river and on the karst tops; splay shrubs in the jungle, on the shore and the tops
- pass(4,34,(Z)=>Z.rain*.55+Z.hyper*.35+Z.flow*.2*(Z.rain+Z.hyper)+Z.top*.6,{hero:520,mid:950,far:true,pad:2.5,lodK:.6,space:1});
- pass(5,30,(Z)=>Z.hyper*.5+Z.rain*.35+Z.shore*.5+Z.top*.5,{hero:560,mid:1000,far:true,pad:1.5,lodK:.7,space:.5});
+ pass(4,34,(Z)=>Z.rain*.55+Z.hyper*.35+Z.flow*.2*(Z.rain+Z.hyper)+Z.top*.6+Z.hollow*.7,{hero:520,mid:950,far:true,pad:2.5,lodK:.6,space:1});
+ pass(5,30,(Z)=>Z.hyper*.5+Z.rain*.35+Z.shore*.5+Z.top*.5+Z.hollow*.45,{hero:560,mid:1000,far:true,pad:1.5,lodK:.7,space:.5});
  // the semi-aquatic fringe: mangroves in the brackish shallows, pandans on the shore and the tidal rim,
  // lotus trumpets on the banks of the terrace reach and the delta, pipe reeds in beds along the water
  pass(11,22,(Z)=>Z.tidal*.95,{hero:600,mid:1100,far:true,pad:1.5,patch:.5,patchScale:.012,space:1,water:[-1.7,.6]});
  pass(12,26,(Z)=>Z.shore*.5+Z.tidal*.5*smooth(-.4,.3,Z.h),{hero:520,mid:950,far:true,pad:1,lodK:.6,patch:.5,patchScale:.015,space:.5,water:[-.4,1e9]});
  pass(13,42,(Z)=>Z.bank*.7*smooth(.2,.5,Z.wet)+Z.shore*Z.flow*.4,{hero:600,mid:1100,far:true,pad:2.5,lodK:.5,patch:.5,patchScale:.011,space:1.5});
  pass(14,22,(Z)=>(Z.flow*.6*smooth(.7,.92,Z.wet)+Z.tidal*.35*smooth(-.4,.2,Z.h)+Z.shore*.2*smooth(.8,.95,Z.wet))*smooth(2.5,.5,Z.h),{hero:520,mid:900,far:true,pad:.8,lodK:.7,patch:.7,patchScale:.02,space:.3,water:[-.4,1e9]});
- // build
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
- return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,fans:st.fans,epiphytes:st.epi,lianas:st.lianas,roots:st.roots,whorls:st.whorls,figsOnEdge:st.figsOnEdge,
+ // THE MADAGASCARENE FLORA: spinewands and rock bottles in the tsingy's fissures and on the dry slope, avenue
+ // baobabs in stands on the lowland and the dry slope, traveller's fans on the dolines' floors, in the rainforest, on the banks
+ pass(16,30,(Z)=>Z.tsingy*.5+Z.ridge*.08+Z.cinder*.03,{hero:600,mid:1050,far:true,pad:2,lodK:.5,patch:.5,patchScale:.012,space:1});
+ pass(17,24,(Z)=>Z.tsingy*.5+Z.ridge*.08+Z.cinder*.15+Z.top*.05,{hero:520,mid:900,far:true,pad:1.2,lodK:.6,patch:.55,patchScale:.016,space:.6});
+ pass(18,70,(Z)=>Z.low*.35+Z.ridge*.22*smooth(.85,.55,Z.up)+Z.tsingy*.12,{hero:700,mid:1200,far:true,pad:4,patch:.5,patchScale:.006,space:3});
+ pass(19,26,(Z)=>Z.hollow*.9+Z.rain*.22+Z.bank*.35+Z.hyper*.08,{hero:560,mid:1000,far:true,pad:2,lodK:.5,patch:.45,patchScale:.012,space:1.2});
+ // build: the impostors one by one, the heroes as variants grown once per species (56-variants)
+ NWBAY.plantTrees(TREES,st);
+ return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,fans:st.fans,epiphytes:st.epi,lianas:st.lianas,roots:st.roots,whorls:st.whorls,figsOnEdge:st.figsOnEdge,variants:st.protos,
   tris:{trunk:st.trunk,limbs:st.limb,cups:st.cups,far:st.far,small:st.sapTris}};};
 NWBAY._canopyH=function(x,z){let h=0;for(const T of NWBAY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 })();

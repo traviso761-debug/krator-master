@@ -407,6 +407,7 @@ NWLOW.barkMat2=function(tex,key,o){o=o||{};
    .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
    .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
+ m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:{alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain:o.gain==null?.52:o.gain,gloss:o.gloss||0}};   // as data (42-core-export)
  const ck='nwlbark|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};return m;};
 const BK={};['smooth','ring','fern','ghost','bluegum','birch','fibre','silver','paper','plate','char'].forEach(k=>BK[k]=barkTex2(k==='ring'?'cane':k==='fibre'?'fibrenw':k));
 NWLOW.BARKTEX=BK;

@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIM Example Sheet</title>
+<style>
+:root{--bg:#14161a;--ink:#d8dce2;--dim:#7c8490;--line:#2c3138;--err:#ff6b5a}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/1.4 ui-monospace,Consolas,monospace;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh}
+#hud{position:fixed;left:12px;top:10px;right:12px;pointer-events:none;white-space:pre-wrap}
+#errs{position:fixed;left:12px;bottom:10px;right:12px;color:var(--err);white-space:pre-wrap;display:none}
+</style></head><body>
+<canvas id="cv"></canvas><div id="hud"></div><div id="errs"></div>
+<script>

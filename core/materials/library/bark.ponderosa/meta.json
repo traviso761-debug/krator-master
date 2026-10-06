@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.19,
+    1.231
+   ],
+   "seam_before": [
+    1.308,
+    1.713
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.ponderosa",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Rugged Conifer Bark Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Ponderosa pine bark, trunk surface: large flat jigsaw-puzzle plates of cinnamon-orange (#b86a3c, #a85a34) with paler flaking scales, separated by deep black-brown fissures (#2a1e18) two to four centimetres wide, plates longer than wide, vertical. (Row bark.ponderosa of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Rugged Conifer Bark Texture.png'.",
+  "reuse": "ponderosa here; any old pine (`biomes/nhighlands`, `swlowlands`)",
+  "sha1": "06dcda276e6b892dda45e3419217f496c09a9fd1"
+ }
+}

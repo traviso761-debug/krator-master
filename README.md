@@ -57,17 +57,38 @@ Jungle region
 
 That is the difference between a procedural scene generator and a procedural world simulator.
 
+**Furniture that is not always drawn is data first.** When a build draws furniture only near the camera (interiors
+streamed in and out, anything planned on demand), the drawing is never the furniture's only home. Always:
+1. **Records apart from the drawing.** Each building's plan and pieces are a record (id, key, variant, seed, pose,
+   room, type, job), computed once by a pure function of the building's inputs, kept whatever is drawn, and read by
+   anything that needs them (the simulation's slots, an export) without waiting for the camera.
+2. **A camera-independent index.** Every record exists without anyone looking: baked headless into a committed JSON
+   file the build inlines (fingerprinted per building, so a stale entry is recomputed instead of trusted), with an
+   idle-time fill for what the bake lacks. The lights the pieces carry come from the records too.
+3. **Edits as an overlay.** Changes (the owner's, later the player's) are kept as deltas keyed by piece id, applied
+   to every read of a record, so they survive a building being dropped and rebuilt; a delta names its piece's key and
+   is skipped, not misapplied, when the catalog has changed under it.
+Mav's Refuge is the worked example (`settlements/mavs-refuge/src/57a-interiors.js`, `bake_interiors.py`).
+
 Give people and creatures a schedule, or at least the scaffolding for one, even if night/day is not implemented yet. A dummy schedule can have 'null' or the same activity for every hour.
 Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tribe) and a job (merchant, farmer, etc)
 
 ## Where things are
+**Building on Windows:** a `build.py` must name `encoding='utf-8'` on every `open()` (and `newline='\n'`); without it
+Python writes the local code page and the page's em dashes become byte 0x97 (Locus shipped so once, Oct 2026). Girder,
+Mav's Refuge, Voth and Yuni's `build.py` still write without it.
+
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
 `GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
 browser-native code and porting the rest to Godot; read it before adding a core module or
 starting a build. `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
-holds the working rules for agents. Settlements are in `settlements/`, building
-kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
+holds the working rules for agents. `VISUAL-BAR.md` is the look every world is judged against:
+the pillars, the banned outcomes, the measured gates, the delta loop and which engine carries
+each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
+kits in `kits/`, biomes in `biomes/`, shared code in `core/`, and open worlds (a region of the scale model at 1:1,
+streamed, with the biome kits' flora, the built settlements placed in it as tiles baked from their own pages, and
+highways between them) in `openworld/` (`openworld/little-demo/README.md`). The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
 **Keep the Krator Worlds gallery current.** Update it automatically only when you

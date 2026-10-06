@@ -293,6 +293,7 @@ BIO.iridBarkMat=function(tex,key){const m=BIO.barkMat(tex);
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
     'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
     'diffuseColor.rgb*=mix(vec3(0.78,1.18,0.92),vec3(1.45,0.82,0.74),k);}');};
+ m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:[0.78,1.18,0.92],b:[1.45,0.82,0.74]}};   // what it is, as data (42-core-export)
  const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
 
 

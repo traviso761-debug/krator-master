@@ -269,7 +269,7 @@ async def run(a):
                 print("timed out waiting for the world to build")
             await pg.wait_for_timeout(2500)
             if a.hour is not None:
-                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
+                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); if(window._sky && _sky.setRate) _sky.setRate(0); }", a.hour)
                 await pg.wait_for_timeout(1200)
             try:
                 st = await pg.evaluate(STATS_JS)

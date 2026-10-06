@@ -1,0 +1,82 @@
+# kits/scyvoi: API
+
+Units are metres; x east, y up, z south (north is -z). A def's local frame: origin on the ground at its centre, **+z its
+front** (a tent's door, a salamander's snout, a cart's shafts), x its right. `ry` is three.js rotation.y: the front (+z)
+turns to (sin ry, cos ry).
+
+## Taking a piece into another world
+
+Everything a world needs to place a Scyvoi asset is in the `src/` fragments named below plus the shared modules the build
+lists (`build.py`: core/rand, core/materials/record, core/tags, core/furnish, core/atmos, the catalog bundle with the
+`scyvoi` furniture culture). A world calls `place(key, x, z, ry, {y, v})` inside its own build pass, after
+`svTagsReset()` and `svfNewBatch()`, then `flushBuckets(GB, group, true)`, `saFlush(group)` and the furniture batch's
+`flush`, exactly as `90-scene.js` and `91f-furnish.js` do. `terrainH(x, z)` (10-core.js) is the one ground hook.
+
+## Fragments
+
+| Fragment | Prefix | What |
+|---|---|---|
+| `10-core.js` | | error panel (and three.js shader errors), the seeded stream (`reseed`, `rng`, `rr`, `pick`), `h3`, `vnoise`, `fbm`, `terrainH`, `FRAME_HOOKS` |
+| `27-mat.js` | | `MAT` per key with the library pack's maps (`SV_LIB`), `TILE` (metres per tile), `matHook` (composable onBeforeCompile hooks with a program key), the cloth flutter and the cut-away hooks, `SVPAL` and `P(k)` |
+| `30-geo.js` | | the merge-by-material engine (forked from kits/post-apoc): `box cyl cone sph ellip ring beam pole plane4 quad poly prism sector`, and for cloth and beasts `psurf` (a parametric sheet with arc-length UVs), `lathe` (faces out, or `inward`), `tube` (a skin along a curve), `cord`, `sagRope`; `withCloth`, `smokeAt`, `haloAt`, `flushBuckets` |
+| `36-def.js` | | `defBuilding`, `place`, `door`, `REG`, the core/tags registration (`SVTAGS`), `svLife` and `SV_LIFE` |
+| `40-tk-tentkit.js` | tk | the tent shapes: `tkYurt`, `tkBell`, `tkPeaked` (+`tkPeakH`), `tkBlack` (+`tkBlackH`), `tkPavilion`, `tkPolygon`; parts `tkGuy`, `tkStake`, `tkValance`, `tkTassels`, `tkFloor` |
+| `41-tk-dress.js` | tk | interiors as FURNISH calls: `tkRingSeats`, `tkRowSeats`, `tkTea`, `tkHonour`; `tkFace`, `tkAt`, `tkNearDoor`; `tkNoCut`, `tkCutFloor` |
+| `42-ts-small.js` | ts | the five small tents |
+| `44-tl-large.js` | tl | the five large tents |
+| `46-tc-chief.js` | tc | the chief's tent |
+| `48-tt-trade.js` | tt | the shaman's hut, the smithy tent, the supply tent |
+| `54-bl-baelu.js` | bl | the Baelu and `blMasonry` (fitted polygonal masonry on any surface `at(u, v, depth)`) |
+| `56-sa-beasts.js` | sa | the salamanders: `saBody`, `saTack`, `saDef`, `SA_LIST`, `saFlush`, the tail and head animation |
+| `58-cv-wheels.js` | cv | `cvWheel`, `cvChariot`; the chariot, the chariot and pair, the supply cart, the ger cart |
+| `58v-cv-vardo.js` | cv | the chief's vardo: `CV_VD` (its dimensions), `cvScroll` (a gilt spiral), `cvBracket` |
+| `59-th-tether.js` | th | the tying post, the carved boulder, the picket line |
+| `81-sky.js` | | KratorSky, the standard sky: VENDORED from `settlements/iziz/src/81-sky.js` (`build.py --vendor-check`) |
+| `89-rows.js` | | `FAMILIES`: the sheet's rows |
+| `90-scene.js` | | renderer, `skyScene` + KratorSky, lights, the ground, the layout (`SITES`, `ROWS`), `buildWorld`, `autoViews`, ATMOS skylight |
+| `91-probe.js` | | `window._api` |
+| `91f-furnish.js` | | the core/furnish adapter: `SVF`, `FURNISH`, `FURNISH_HANG`, `svfH`; `svfDetail`: a library detail map per furniture render family (`f_*` in materials.json), triplanar |
+| `91n-night.js` | | halos and the night light pool: `nightSet` |
+| `92-camera.js` | | views, orbit and WASD, the inspector, cut-away, polygon tool, walk mode, the frame loop |
+| `93-anim.js` | | the clock (`?t=`), smoke, the material records (`window._materials`) |
+
+## The def
+
+```
+defBuilding({key, name, seed, cls, kind?, tags, w, d, h, budget, cut?, front?, note, build(o)})
+```
+
+`cls` is the core/tags class (building, life, prop, feature; `furniture` for a frame round one catalog piece). `tags` takes the
+core/tags vocabulary (types, wealth, style, role, job; culture `scyvoi` is filled in). `w d h` are honest: guy ropes and stakes
+count. `cut: true` marks a tent: its covers carry the cut-away attribute (`aCut` = the tent's centre, base and on), set by
+`place()`; a builder keeps a deck or a porch out of it with `tkNoCut(fn)`, and raises its floor with `tkCutFloor(y)`.
+`place(key, x, z, ry, o)` builds it in the current frame: `o.y` the ground (else `terrainH`), `o.v` a variant (the seed moves
+by 7 per variant); nested placements are children in core/tags.
+
+## Furniture
+
+`FURNISH(key, lx, ly, lz, lry, {v, setting})` in the builder's current frame: the piece's front turned `lry` (use
+`tkFace(x, z)` to face the centre). `FURNISH_HANG(key, lx, topY, lz, lry)` hangs a ceiling piece from `topY`. `svfH(key)` is a
+piece's declared height (a tea set on a tray table). Each record lands on the def's REG record (`rec.furniture`) and in core/tags.
+The Scyvoi pieces are `scyvoi_*` (bespoke) and `scyvoi_common_*`, `scyvoi_court_*`, `scyvoi_trade_*` (the parametric kit's
+roles); the catalog's README lists them.
+
+## Materials
+
+| Key | Library set | Use |
+|---|---|---|
+| `felt` `canvas` `goat` `hide` | cloth.felt, cloth.canvas.tent, cloth.tent.black, hide.leather009 | covers (double-sided) |
+| `patApp` `patApp2` | patterns/scyvoi/applique-blue, applique-blue.b | the appliqué tent's panels, alternating |
+| `patFelt` `patArch` `patBlue` `patBlack` | patterns/scyvoi/felt-scroll, arch-lining; patterns/common/zellige-blue, zellige-black | bands, linings, floor felts, panels |
+| `patRose` `patPoly` `patFlame` `patBloom` `patKilim` `patCold` `patCelest` `patStep` `patQuatre` | the zellige rosettes, flame zellige, fire-bloom, the two kilims, the celestial giant, two black tiles | floors, linings, bands, barding |
+| `medSal` `medBlades` `medMoon` `medCloud` `medStar` `medSun` | single-panel medallions, mapped once by `medallion(mk, x, y, z, size, {round, ry})` (30-geo.js) | daises and floor centres |
+| `wood` `carved` `lacq` | wood.beam, wood.carved, wood.lacquer.crimson | poles, frames, the red roof poles |
+| `stone` `rock` `paving` `earth` | rock.rock_boulder_dry, rock.rock_face, paving.flagstone, earth.floor.packed | the Baelu, the outcrop, floors |
+| `skin` | hide.leather009 (scaled) | the salamanders (their markings are vertex colours) |
+| `rug` `rope` `iron` | cloth.rug.wool, fibre.rope, metal.iron.pitted | floors, ropes, ironwork |
+| `plain` `brass` `bone` `flag` `glass` `glow` `water` | none | small parts, flags and valances (flutter), lamps |
+
+## Probe (`window._api`)
+
+`footprints() doors() kitCoverage() nanSweep() furniture(all) tags() tagExport() materials() life() setNight(v) setCut(v)
+setView(...)`, and `REG DEFS SITES ROWS SV_LIFE`. `window._build` holds the build's counters; `KTAGS.page` the tag registry.

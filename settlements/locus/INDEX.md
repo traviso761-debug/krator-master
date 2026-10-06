@@ -6,7 +6,7 @@ Locus: a fork of the Yuni engine in the eastern abyss, with its own kit sheet an
 
 Docs: `ABYSS-KIT-KNOWN-ISSUES.md`, `ABYSS-KIT-NOTES.md`, `API.md`, `KNOWN_ISSUES.md`, `LOCUS-KIT-KNOWN-ISSUES.md`, `LOCUS-KIT-NOTES.md`, `LOCUS-NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus-plants.html`, `locus.html`
+Built output (never open it; edit `src/` and rebuild): `abyss-kit.html`, `locus-kit.html`, `locus.html`
 
 Build: `cd settlements/locus && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -20,7 +20,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — LOCUS (100); 4. TERRAIN FIELD (220) |
 | `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (228) |
 | `21-sky.js` | 56 **big** | 5b. KRATOR SKY (1) |
-| `30-layout.js` | 39 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (87); THE ROUTE GRID (103); WALK GRAPH (the life layer's network) (489) |
+| `30-layout.js` | 40 **big** | 8. LAYOUT — LOCUS (1); 1-2. THE SITES (32); STREET NETWORK (same contract as Yuni) (91); THE ROUTE GRID (107); WALK GRAPH (the life layer's network) (498) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — LOCUS (1) |
 | `45-kit.js` | 26 | 10. KIT (1); NIGHT LIGHT VOLUME (123) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
@@ -45,40 +45,34 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `65-abyss-00-core.js` | 42 **big** | 16X. ABYSS — the Eastern Abyssal kit: shared hel (1); ABYSS 0. a smooth-shaded grid of the merged buil (25); ABYSS 1. sails (53); ABYSS 2. lanterns, masts, propeller-lanterns (69); ABYSS 3. cone shells (89); ABYSS 4. repurposed vessels as rooms (125); ABYSS 5. the swoop-and-horn roof (178); ABYSS 6. tin-mirror cladding and salvaged trim (217); ABYSS 7. overhead clutter (236); ABYSS 8. the stepped square altar (264) |
 | `65-abyss-20-plants.js` | 3 | 16X-P. ABYSS — plants the abyssal kit needs that (1) |
 | `65-abyss-30-housing.js` | 21 | 16X-H. ABYSS — housing: poor, middle, rich (1) |
-| `65-abyss-40-shops.js` | 21 | 16X-S. ABYSS — shops (1) |
+| `65-abyss-40-shops.js` | 31 **big** | 16X-S. ABYSS — shops (1) |
 | `65-abyss-50-civic.js` | 22 | 16X-C. ABYSS — hospitality and civic (1) |
 | `65-abyss-60-temple.js` | 7 | 16X-T. ABYSS — the temple of the altar (1) |
 | `65-abyss-70-palace.js` | 8 | 16X-K. ABYSS — the Headman's palace and its plaz (1) |
+| `65-abyss-75-verge.js` | 22 | 16X-V. ABYSS — Lower Verge: the mayor's compound (1) |
 | `65-abyss-80-military.js` | 13 | 16X-M. ABYSS — military: the wall system, the fo (1) |
 | `65-abyss-90-farm.js` | 13 | 16X-G. ABYSS — farming and storage (1) |
 | `66-locus-furnish.js` | 8 | 16Y. FURNITURE — placed from the catalog (FURNIS (1) |
-| `68-place.js` | 16 | 18b. THE PLACEMENT PASS — LOCUS (1) |
+| `68-place.js` | 17 | 18b. THE PLACEMENT PASS — LOCUS (1) |
 | `68c-locus-crossings.js` | 10 | 18c. POOL CROSSINGS — LOCUS (2026-10-01) (1) |
-| `69a1-bio-core-head.js` | 6 | PRNG (14); noise (24); host binding (41); accounting (81) |
-| `69a2-bio-core-kit.js` | 13 | merged buckets (46); indexed buckets (121); bake (144) |
-| `69a3-bio-core-foliage.js` | 13 | alpha textures (18); card geometries (48); the foliage hook (110) |
-| `69a4-bio-core-place.js` | 6 | surface sampling (53) |
 | `69b-locus-biohost.js` | 4 | 19H. LOCUS — the biome host binding (1) |
-| `69c1-bio-eastabyss-species.js` | 32 **big** | THE LAKE COLOUR (16); the tree species (57); leaf textures (105); an iridescent bark (218); bark textures (232); geometries local to this biome (269); materials (310); instanced items (351) |
-| `69c2-bio-eastabyss-trees.js` | 35 **big** | zones from the fields (14); colour (27); polyline helpers (Girder's) (48); keep-clear between trees (56); cauliflory (63); beard moss (72); foliage helpers (77); the builders (87); impostors (the far canopy) (275); the pass (298) |
-| `69c3-bio-eastabyss-floor.js` | 14 | fields local to the floor (28); small plants (34); the zone planters (95); the pass (132) |
-| `69c4-bio-eastabyss-dress.js` | 7 |  |
-| `69c5-bio-eastabyss.js` | <1 |  |
-| `69z-locus-flora.js` | 4 | 19Z. LOCUS — planting the biome (1) |
+| `69z-locus-flora.js` | 5 | 19Z. LOCUS — planting the biome (1) |
 | `70-sheet.js` | 4 | 19. THE INSPECTION SHEET (1) |
 | `71-catalog.js` | 4 | 19b. THE FURNITURE + PLANT CATALOGUES (1) |
 | `71g-locus-grid.js` | 9 | 18a. THE TOWN GRID — LOCUS (2026-10-01) (1) |
 | `72-lights.js` | 5 | 18. FIXED LAMPS (1) |
-| `75-terrain.js` | 12 | 20. EMIT + GROUND + WATER — LOCUS (1) |
+| `75-terrain.js` | 13 | 20. EMIT + GROUND + WATER — LOCUS (1) |
 | `76-locus-anim.js` | 9 | 20L. LOCUS — animated machinery (1) |
-| `80-camera.js` | 11 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (149) |
+| `80-camera.js` | 13 | 25. CAMERA, CONTROLS, FRAME LOOP (1); RENDER LOOP (164) |
 | `81-glow.js` | 5 | 26. NIGHT GLOW (1) |
 | `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
 | `83-locus-fauna.js` | 12 | 19F. AMBIENT FAUNA — LOCUS (1) |
-| `84-life.js` | 43 **big** | 20. THE LIFE LAYER — LOCUS (1) |
+| `84-life.js` | 51 **big** | 20. THE LIFE LAYER — LOCUS (1) |
 | `85-probe.js` | 1 | 29. PROBE (1) |
 | `86-inspect.js` | 4 | 27. DEV INSPECTOR (1) |
 | `87-pathviz.js` | 4 | 28. PATH VISUALIZER (1) |
+| `88b-locus-minimap.js` | 3 | MINIMAP (1) |
 | `89-sheetui.js` | 4 | 31. SHEET UI (1) |
+| `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Lo (1) |
 | `98-start.js` | <1 | 99. START (1) |
 | `99-tail.html` | <1 |  |

@@ -413,6 +413,15 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 // being touched. Keep it cheap: it is called per tree and per rubble block.
 function terrainH(x,z){return 0;}
 
+// FRAME HOOK. The one route to animation in this kit: `tick(fn)` registers a
+// function that 92-camera.js calls every frame, after the camera moves and
+// before the render, as fn(dt, t) — dt in seconds (clamped to 0.1, so a slow
+// software-GL frame cannot jump a sweep), t wall-clock seconds. Same order as
+// Screamers' hook, which the biome binding (75-biome-45-bind.js) already
+// expects. Nothing is rebuilt; a tick only moves or shows what is built.
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}
+
 // ---------------------------------------------------------------- per-type accounting
 // One global tally, filled while the builders run. 90-scene.js sets TSTAT.cur
 // to the site key ('skyA/1' = Skyscraper A, ruined) before each builder call
@@ -651,7 +660,14 @@ function lathe(o){const H=o.H,cut=o.cut!=null?o.cut:H,seed=o.seed||0,nu=o.nu||64
 // only part-eaten, and threading that through 33 builders would be 33 edits
 // and 33 chances to miss one. The scene loop sets it per decay level.
 let HOLES=1;
-function holeFn(d,seed,cut,scale){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+// FOOT (optional): {y,h,k}. A ruined shell that thins toward its foot: below
+// y+h the threshold rises linearly to k*d more at y (and below). Without it the
+// predicate is the original one, term for term, so existing callers are
+// unchanged to the vertex.
+function holeFn(d,seed,cut,scale,foot){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+ if(foot){const fy=foot.y||0,fh=foot.h||1,fk=foot.k!=null?foot.k:.4;
+  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;
+   return n<.34*d+.4*near*d+fk*clamp((fy+fh-y)/fh,0,1)*d;};}
  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;return n<.34*d+.4*near*d;};}
 function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undefined)m.position.set(x,y,z);if(parent)parent.add(m);
  const t=tcur();if(t){t.meshes++;t.tris+=triOf(geo);}
@@ -665,6 +681,10 @@ function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undef
 //
 // Only for OPAQUE materials: transparent meshes are depth-sorted per mesh, so
 // merging glass would change the order things blend in.
+//
+// COLOUR. A `color` attribute survives the merge when every input carries one,
+// or when the material draws vertex colours (then a piece without one is
+// painted white, i.e. its texture unchanged). Otherwise it is dropped as before.
 function meshMerged(geos,mat,parent,x,y,z){
  const keep=geos.filter(g=>g&&g.attributes&&g.attributes.position&&g.attributes.position.count);
  if(!keep.length)return null;
@@ -672,12 +692,14 @@ function meshMerged(geos,mat,parent,x,y,z){
  let nv=0,ni=0;
  for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2);
+ const C=(mat&&mat.vertexColors)||keep.every(g=>g.attributes.color&&g.attributes.color.itemSize===3)?new Float32Array(nv*3).fill(1):null;
  const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
  let vo=0,io=0;
  for(const g of keep){const A=g.attributes,c=A.position.count;
   P.set(A.position.array,vo*3);
   if(A.normal)N.set(A.normal.array,vo*3);
   if(A.uv)U.set(A.uv.array,vo*2);
+  if(C&&A.color&&A.color.itemSize===3)C.set(A.color.array,vo*3);
   if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
   else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
   vo+=c;}
@@ -685,6 +707,7 @@ function meshMerged(geos,mat,parent,x,y,z){
  G.setAttribute('position',new THREE.BufferAttribute(P,3));
  G.setAttribute('normal',new THREE.BufferAttribute(N,3));
  G.setAttribute('uv',new THREE.BufferAttribute(U,2));
+ if(C)G.setAttribute('color',new THREE.BufferAttribute(C,3));
  G.setIndex(new THREE.BufferAttribute(I,1));
  return mesh(G,mat,parent,x,y,z);}
 // Bounding box of an object and its children, measured in its PARENT's frame.
@@ -727,12 +750,24 @@ function arcWindowGeo(w,h,dep){const s=new THREE.Shape();s.moveTo(-w/2,-h/2);s.l
 function hyperGeo(r0,h,k){return lathe({rFn:y=>r0*Math.sqrt(1+k*Math.pow((y-h/2)/(h/2),2)),H:h,nu:24,nv:10});}
 
 // ---------------------------------------------------------------- kit definitions (shared geometry)
+// DARK OPENINGS (shared-code round). MAT.dark is what every opening, recess,
+// liner and void behind a hole is made of, and at 0x1a1d22 it read MID-GREY:
+// three.js r128 takes the hex as linear, so the albedo is ~.11, and a sunlit
+// reveal under the full sun plus the hemisphere came back at ~115/255. Openings
+// now take a near-black albedo (~.03 linear): ~50/255 facing the sun, ~20 away
+// from it, and with nothing emissive they follow setNight() to black.
+// The kit's few true SURFACES that were drawn in MAT.dark (conduit tubes, the
+// bunker fins, radar wings, dish backs) keep the old value as MAT.darkSurf, so
+// they stay a painted dark grey rather than going black. Kit-local: the
+// core/materials copy is untouched, other builds keep their MAT.dark.
+MAT.darkSurf=MAT.dark.clone();
+MAT.dark.color.setHex(0x0a0b0d);
 kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
 kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
 kdef('ovalI',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winIntact); kdef('ovalD',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winDead);
 kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.dark);
 kdef('mullW',new THREE.BoxGeometry(.5,1,.5),MAT.white); kdef('mullR',new THREE.BoxGeometry(.5,1,.5),MAT.rust);
-kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.dark);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.darkSurf);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('dot',new THREE.BoxGeometry(1.4,.7,.4),MAT.dot);
 kdef('strip',new THREE.BoxGeometry(1,.18,.18),MAT.strip);
 kdef('colW',hyperGeo(1,1,1.6),MAT.white); kdef('colR',hyperGeo(1,1,1.6),MAT.rust);
@@ -821,7 +856,26 @@ function leafCardGeo(){
  return g;}
 kdef('leafCard',leafCardGeo(),MAT.leafCard);
 kdef('vine',new THREE.CylinderGeometry(.05,.16,1,5).translate(0,-.5,0),MAT.vine);
-kdef('rubble',new THREE.DodecahedronGeometry(1,0),MAT.rubble);
+// RUBBLE (shared-code round, QA arcB). Was a regular dodecahedron on untextured
+// white: twelve identical pentagons have no edge to read, and at any size over
+// ~10 m every talus in the kit was a heap of pale eggs. Now Arcoindian's block
+// (89b `aiBlock`): a hexahedron with its eight corners knocked about, hashed on
+// the corner so the faces stay welded, flat shaded, 12 triangles to the
+// dodecahedron's 36 and the same volume at scale 1. It takes a mottled stone
+// map (fine, non-directional: a bedded or boarded map made crates of it) under
+// the same per-instance tints, which now multiply stone rather than white.
+TEX.rubbleStone=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const v=168+(fbm(x/22,y/22,6.3,3)-.5)*70+(fbm(x/3,y/3,2.9,1)-.5)*34;
+  d[i]=v;d[i+1]=v-4;d[i+2]=v-11;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.rubbleK=new THREE.MeshStandardMaterial({map:TEX.rubbleStone,color:0xd6ccbe,roughness:1,metalness:0});
+function stoneBlockGeo(){const g=new THREE.BoxGeometry(1.45,1.45,1.45),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),
+   k=h3(Math.sign(x)*3.1,Math.sign(y)*5.3,Math.sign(z)*7.7);
+  p.setXYZ(i,x*(1+(k-.5)*.5),y*(1+(h3(k,2.2,1)-.5)*.45),z*(1+(h3(k,4.4,3)-.5)*.5));}
+ const n=g.toNonIndexed();n.computeVertexNormals();return n;}
+kdef('rubble',stoneBlockGeo(),MAT.rubbleK);
 kdef('trunk',new THREE.CylinderGeometry(.18,.4,1,6).translate(0,.5,0),MAT.vine);
 kdef('figB',new THREE.CylinderGeometry(.24,.2,1.5,6).translate(0,.75,0),MAT.fig);
 kdef('figH',new THREE.SphereGeometry(.13,6,5).translate(0,1.62,0),MAT.fig);
@@ -999,12 +1053,14 @@ function trees(gx,gz,rMin,rMax,n){n=biomeN(n);for(let i=0;i<n;i++){const a=rng()
 // APRON. Every structure meets the ground on a hard line without one. This lays
 // a graded skirt from the foot of the mass out to the ground, so the two blend.
 // cx,cz are local to the builder's group, like everything else a builder does.
-function apron(parent,cx,cz,rIn,rOut,d,hIn){
+// `mat` (optional) replaces the default skirt (rock intact, mud in a ruin): a
+// pale rock disc under anything organic reads as paper (QA arcB).
+function apron(parent,cx,cz,rIn,rOut,d,hIn,mat){
  const wx=KOFF[0]+cx,wz=KOFF[2]+cz;
  mesh(gridSurface((u,v)=>{const th=u*TAU,r=lerp(rIn,rOut,v)*(1+.07*fbm(u*7,1.3,17,2));
   const x=r*Math.cos(th),z=r*Math.sin(th);
   return[x,lerp(hIn,0,Math.pow(v,.6))+terrainH(wx+x,wz+z),z];},64,6,{uS:rIn/6,vS:3}),
-  d>0?MAT.mud:MAT.rock,parent,cx,0,cz);}
+  mat||(d>0?MAT.mud:MAT.rock),parent,cx,0,cz);}
 function figures(gx,gz,n,spread){for(let i=0;i<n;i++){const x=gx+rr(-spread,spread),z=gz+rr(-spread,spread);const c=new THREE.Color().setHSL(rr(0,.1),rr(.2,.5),rr(.25,.5));
  kput('figB',[x,0,z],qEuler(0,rng()*TAU,0),1,c);kput('figH',[x,0,z],null,1,new THREE.Color(0xc9a17e));}}
 function stats(){}
@@ -1047,6 +1103,75 @@ kdef('cellD',new THREE.BoxGeometry(1,1,.5),MAT.winDead);
 kdef('winSmI',arcWindowGeo(1.1,2,.4),MAT.winIntact); kdef('winSmD',arcWindowGeo(1.1,2,.4),MAT.winDead);
 function beam(name,a,b,w,dp,color){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.sqrt(dx*dx+dy*dy+dz*dz);
  const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(dx,dy,dz).normalize());kput(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[w,L,dp],color||null);}
+// A beam with its ROLL fixed (from the Forest Ring, QA arcA). beam() leaves roll
+// to setFromUnitVectors, so a near-horizontal strut comes out with its section
+// at whatever angle the shortest arc gives and a 9 x 11 strut reads as a
+// twisted plank. Here local X (`w`, the DEPTH exactly as in beam()) is held in
+// the vertical plane through the beam and local Z (`dp`) is horizontal, so
+// every strut presents the same face to the same light. Same arguments as beam().
+const _rbX=new THREE.Vector3(),_rbY=new THREE.Vector3(),_rbZ=new THREE.Vector3(),_rbM=new THREE.Matrix4();
+function rbeam(name,a,b,w,dp,color){_rbY.set(b[0]-a[0],b[1]-a[1],b[2]-a[2]);const L=_rbY.length();
+ if(!(L>1e-6))return;_rbY.multiplyScalar(1/L);
+ _rbZ.set(-_rbY.z,0,_rbY.x);if(_rbZ.lengthSq()<1e-8)_rbZ.set(0,0,1);_rbZ.normalize();
+ _rbX.crossVectors(_rbY,_rbZ);_rbM.makeBasis(_rbX,_rbY,_rbZ);
+ kput(name,[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5],
+  new THREE.Quaternion().setFromRotationMatrix(_rbM),[w,L,dp],color||null);}
+// ---------------------------------------------------------------- mouldings
+// MOULDING: a profile swept along a path that lies in a wall. One helper for
+// every hood, sill, cornice, string course and bone roll in the kit (it replaced
+// three private ones: the civic hoods and cornices, the domestic `domMould`, the
+// towers' Hotel sills and Cultural bands).
+//   profile  [[n,u],...]: the section, walked CLOCKWISE with n out of the wall
+//            (along `wn`) and u across the path (along wn x tangent: "up" for a
+//            path running left to right on a wall you face). MOULD.* are stock.
+//   path     t -> [x,y,z], t in 0..1, in the frame of the mesh it will join.
+//   opt.wn   the wall's outward normal: [x,y,z], or t -> [x,y,z] on a curved wall.
+//   opt.nu   segments along the path (40). opt.scale: t -> size multiplier
+//            (knuckles, tapers). opt.hole(u,v): drop a quad (v runs round the
+//            section). opt.uS/vS: uv scale. opt.caps: close both ends.
+//   opt.up   [x,y,z]: if given, the section is turned so that u points this way
+//            whichever way the path runs (and the winding is kept outward).
+// Returns a BufferGeometry for the caller to merge or kdef: a moulding costs
+// no draw call of its own.
+const MOULD={
+ // a round roll, n sides (the bone roll's section)
+ round:(n,r)=>{n=n||8;r=r||1;const P=[];for(let j=0;j<=n;j++){const ph=j/n*TAU;P.push([r*Math.cos(ph),-r*Math.sin(ph)]);}return P;},
+ // a flat band w proud, h tall
+ band:(w,h)=>[[0,h],[w,h],[w,0],[0,0]],
+ // a sill: weathered (sloped) top, square nose, a drip under the nose
+ sill:(w,h)=>[[0,h],[w,h*.72],[w,h*.12],[w*.86,0],[0,0]],
+ // a hood (label) mould: flat top, chamfered nose, a throated drip underneath
+ hood:(w,h)=>[[0,h],[w*.7,h],[w,h*.45],[w*.8,0],[0,0]],
+ // a cornice: square crown, then an ogee curving back into the wall
+ cornice:(w,h)=>[[0,h],[w,h],[w,h*.8],[w*.86,h*.62],[w*.6,h*.46],[w*.38,h*.28],[w*.22,h*.08],[0,0]],
+};
+function moulding(profile,path,opt){opt=opt||{};const nu=opt.nu||40,np=profile.length-1;
+ const wnF=typeof opt.wn==='function'?opt.wn:null,W=new THREE.Vector3();
+ if(!wnF){const w=opt.wn||[0,0,1];W.set(w[0],w[1],w[2]).normalize();}
+ const wAt=u=>{if(wnF){const w=wnF(u);W.set(w[0],w[1],w[2]).normalize();}return W;};
+ const T=new THREE.Vector3(),B=new THREE.Vector3();
+ const frame=u=>{const q=path(Math.min(1,u+.002)),o=path(Math.max(0,u-.002));
+  T.set(q[0]-o[0],q[1]-o[1],q[2]-o[2]).normalize();B.crossVectors(T,wAt(u)).normalize();};
+ let sg=1;if(opt.up){frame(.5);sg=-Math.sign(B.x*opt.up[0]+B.y*opt.up[1]+B.z*opt.up[2])||1;}
+ const g=gridSurface((u,v)=>{const p=path(u);frame(u);const s=opt.scale?opt.scale(u):1,P=profile[Math.round(v*np)],pu=P[1]*sg;
+  return[p[0]+s*(P[0]*W.x-pu*B.x),p[1]+s*(P[0]*W.y-pu*B.y),p[2]+s*(P[0]*W.z-pu*B.z)];},nu,np,{hole:opt.hole,uS:opt.uS,vS:opt.vS});
+ if(sg<0){const ix=g.index.array;for(let i=0;i<ix.length;i+=3){const t=ix[i+1];ix[i+1]=ix[i+2];ix[i+2]=t;}g.computeVertexNormals();}
+ if(!opt.caps)return g;
+ // caps: a fan from the section's centroid at each end, on vertices of their own
+ const pos=g.attributes.position.array,cols=nu+1,P=[],N=[],U=[],I=[],nv0=pos.length/3;
+ const f0=profile[0],f1=profile[np],m=Math.hypot(f0[0]-f1[0],f0[1]-f1[1])<1e-9?np:np+1;   // a closed section repeats its first point
+ for(const[e,dir]of[[0,-1],[nu,1]]){const base=nv0+P.length/3;let cx=0,cy=0,cz=0;
+  const vs=[];for(let j=0;j<m;j++){const k=(j*cols+e)*3;vs.push([pos[k],pos[k+1],pos[k+2]]);cx+=pos[k];cy+=pos[k+1];cz+=pos[k+2];}
+  frame(e/nu);const n=T.clone().multiplyScalar(dir);
+  P.push(cx/m,cy/m,cz/m);N.push(n.x,n.y,n.z);U.push(.5,.5);
+  for(const v of vs){P.push(v[0],v[1],v[2]);N.push(n.x,n.y,n.z);U.push(0,0);}
+  for(let j=0;j<m;j++){const a=base+1+j,b=base+1+(j+1)%m;if(dir*sg>0)I.push(base,a,b);else I.push(base,b,a);}}
+ const M=new THREE.BufferGeometry(),A=g.attributes;
+ const cat=(x,y)=>{const o=new Float32Array(x.length+y.length);o.set(x);o.set(y,x.length);return o;};
+ M.setAttribute('position',new THREE.BufferAttribute(cat(A.position.array,P),3));
+ M.setAttribute('normal',new THREE.BufferAttribute(cat(A.normal.array,N),3));
+ M.setAttribute('uv',new THREE.BufferAttribute(cat(A.uv.array,U),2));
+ M.setIndex(Array.from(g.index.array).concat(I));return M;}
 function hexR(R,th){const a=R*Math.cos(Math.PI/6);const f=((th%(Math.PI/3))+Math.PI/3)%(Math.PI/3);return a/Math.cos(f-Math.PI/6);}
 // petal shell: base on +x at radius Rb, rises Hp, tip leans outward by `lean`, cupped by `curl`
 function petalGeo(Rb,Hp,W,lean,curl,hole){return gridSurface((u,v)=>{const s=u*2-1;const w=W*(.3+.7*Math.sin(Math.PI*Math.pow(v,.9)))*.5;
@@ -1064,7 +1189,7 @@ function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCu
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
 function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
 function endGroupXF(){KXF=null;}
-kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.dark);
+kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.darkSurf);
 kdef('boxD',new THREE.BoxGeometry(1,1,1),MAT.dark);
 kdef('boxW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('boxR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';

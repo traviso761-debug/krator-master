@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    676,
+    725
+   ],
+   "seam_after": [
+    0.797,
+    0.906
+   ],
+   "seam_before": [
+    0.85,
+    0.747
+   ],
+   "source_size": [
+    683,
+    732
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.7,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "yuni/paintcol",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   4.0,
+   4.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "yuni_paintcol.crop4x4.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "note": "cropped from yuni_paintcol.webp to 4 x 4 whole cells (x 4..687, y 4..736: grout-line centres), the motif cycle being 4 columns by 2 rows",
+  "prompt": "core/materials/PLAN.md, patterns/yuni/paintcol (the full prompt given 2026-10-05)",
+  "reuse": "Locus; any Hausa-style polychrome relief",
+  "sha1": "b037c6b3bb6ce8357ab1ed48cc6e869a8f30122e"
+ }
+}

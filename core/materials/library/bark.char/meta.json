@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.236,
+    1.132
+   ],
+   "seam_before": [
+    1.601,
+    1.736
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.char",
+  "metal": 0,
+  "roughness": 0.92,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-char.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Charred tree bark after a fire: deep black (#1c1a18) bark cracked into blocky \"alligator\" checks a few centimetres across, a faint silvery sheen on the raised blocks, brown unburnt bark (#5a4434) showing in a few deep fissures, fine grey ash in the cracks. (Row bark.char of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the lower trunks of every survivor in this kit, snags and burnt logs; burnt beams and posts in any settlement",
+  "sha1": "b7121e8458fd92e4c26b2672f65e20982ab361a7"
+ }
+}

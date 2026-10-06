@@ -17,7 +17,14 @@ function lathe(o){const H=o.H,cut=o.cut!=null?o.cut:H,seed=o.seed||0,nu=o.nu||64
 // only part-eaten, and threading that through 33 builders would be 33 edits
 // and 33 chances to miss one. The scene loop sets it per decay level.
 let HOLES=1;
-function holeFn(d,seed,cut,scale){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+// FOOT (optional): {y,h,k}. A ruined shell that thins toward its foot: below
+// y+h the threshold rises linearly to k*d more at y (and below). Without it the
+// predicate is the original one, term for term, so existing callers are
+// unchanged to the vertex.
+function holeFn(d,seed,cut,scale,foot){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+ if(foot){const fy=foot.y||0,fh=foot.h||1,fk=foot.k!=null?foot.k:.4;
+  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;
+   return n<.34*d+.4*near*d+fk*clamp((fy+fh-y)/fh,0,1)*d;};}
  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;return n<.34*d+.4*near*d;};}
 function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undefined)m.position.set(x,y,z);if(parent)parent.add(m);
  const t=tcur();if(t){t.meshes++;t.tris+=triOf(geo);}
@@ -31,6 +38,10 @@ function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undef
 //
 // Only for OPAQUE materials: transparent meshes are depth-sorted per mesh, so
 // merging glass would change the order things blend in.
+//
+// COLOUR. A `color` attribute survives the merge when every input carries one,
+// or when the material draws vertex colours (then a piece without one is
+// painted white, i.e. its texture unchanged). Otherwise it is dropped as before.
 function meshMerged(geos,mat,parent,x,y,z){
  const keep=geos.filter(g=>g&&g.attributes&&g.attributes.position&&g.attributes.position.count);
  if(!keep.length)return null;
@@ -38,12 +49,14 @@ function meshMerged(geos,mat,parent,x,y,z){
  let nv=0,ni=0;
  for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2);
+ const C=(mat&&mat.vertexColors)||keep.every(g=>g.attributes.color&&g.attributes.color.itemSize===3)?new Float32Array(nv*3).fill(1):null;
  const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
  let vo=0,io=0;
  for(const g of keep){const A=g.attributes,c=A.position.count;
   P.set(A.position.array,vo*3);
   if(A.normal)N.set(A.normal.array,vo*3);
   if(A.uv)U.set(A.uv.array,vo*2);
+  if(C&&A.color&&A.color.itemSize===3)C.set(A.color.array,vo*3);
   if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
   else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
   vo+=c;}
@@ -51,6 +64,7 @@ function meshMerged(geos,mat,parent,x,y,z){
  G.setAttribute('position',new THREE.BufferAttribute(P,3));
  G.setAttribute('normal',new THREE.BufferAttribute(N,3));
  G.setAttribute('uv',new THREE.BufferAttribute(U,2));
+ if(C)G.setAttribute('color',new THREE.BufferAttribute(C,3));
  G.setIndex(new THREE.BufferAttribute(I,1));
  return mesh(G,mat,parent,x,y,z);}
 // Bounding box of an object and its children, measured in its PARENT's frame.

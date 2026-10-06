@@ -74,7 +74,7 @@ else{const THREE=require(T3);
  ok('every record has an id and a type; the export says its colour space',E.fx.every(r=>r.id&&r.type)&&E.convention.colour==='srgb',false);
  ok('moths: one per lamp head times n',A.lamps.length>0&&E.fx.find(r=>r.type==='moths').lamps.length===A.lamps.length,false);
  ok('lamps follow the row: the evening running down it',E.lamps.length===A.lamps.length&&E.lamps[E.lamps.length-1].hours[0]>E.lamps[0].hours[0],E.lamps[0].hours[0]>E.lamps[E.lamps.length-1].hours[0]);
- const GOLD='5ff8eab08faee7ea';   // 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms; nothing placed changed
+ const GOLD='7bffa080934e178c';   // 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms (main), and each lamp's halo index and colour (the port spike); nothing placed changed
  ok('export fingerprint '+fp+(fp===GOLD?'':' (golden '+GOLD+'; if the change is meant, take a screenshot diff and update GOLD)'),fp===GOLD,false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

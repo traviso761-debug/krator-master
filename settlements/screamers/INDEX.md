@@ -84,7 +84,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `87-mega.js` | 5 |  |
 | `88-factory.js` | 6 |  |
 | `89-lab.js` | 6 |  |
-| `90-scene.js` | 16 | scene (1) |
+| `90-scene.js` | 17 | scene (1) |
 | `91-probe.js` | 5 | probe (window._api) (1) |
 | `92-camera.js` | 5 | camera control (1) |
 | `93-polytool.js` | 7 |  |

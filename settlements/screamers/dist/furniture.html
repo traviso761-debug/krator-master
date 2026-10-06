@@ -7911,7 +7911,7 @@ const ringMat=new THREE.ShaderMaterial({fog:false,transparent:true,depthWrite:fa
  side:THREE.DoubleSide,uniforms:{uIn:{value:1.30},uOut:{value:2.12},
   uCol:{value:new THREE.Color(0xbcb09a)},uHazeC:GU.uHazeC,uHazeK:GU.uHazeK},
  vertexShader:['varying vec2 vUvR; varying vec3 vSky;',
-  'void main(){vUvR=position.xy;vec4 wp=modelMatrix*vec4(position,1.0);',
+  'void main(){vUvR=position.xy/'+GIANT_R.toFixed(1)+';vec4 wp=modelMatrix*vec4(position,1.0);',
   ' vSky=normalize(wp.xyz-cameraPosition);',
   ' gl_Position=projectionMatrix*viewMatrix*wp;}'].join('\n'),
  fragmentShader:['uniform float uIn,uOut,uHazeK;uniform vec3 uCol,uHazeC;',
@@ -7927,7 +7927,7 @@ const ringMat=new THREE.ShaderMaterial({fog:false,transparent:true,depthWrite:fa
   ' c=mix(c,uHazeC,clamp(0.26+uHazeK*exp(-up/0.16),0.0,0.86));',
   ' gl_FragColor=vec4(c,a);}'].join('\n')});
 const giantRing=new THREE.Mesh(new THREE.RingGeometry(GIANT_R*1.30,GIANT_R*2.12,256,1),ringMat);
-giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS);
+giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS.clone().multiplyScalar(Math.cos(.105)).addScaledVector(giantDir,-Math.sin(.105)).normalize());   // opened 6 degrees toward us: a plane exactly edge-on covers no pixel
 giantRing.renderOrder=-9;giantRing.userData.probeSkip=true;scene.add(giantRing);
 tick(function(dt){GU.uSpin.value+=dt*0.006;});
 

@@ -2,7 +2,7 @@
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:10000000,calls:130},   // the ceiling for this 5 km map at q=1 (KNOWN_ISSUES)
+ showcase:{tris:10000000,calls:300},   // the ceiling for this 5 km map at q=1 (KNOWN_ISSUES). Calls were ~100 at the first view before the trees became variants: each variant part is one InstancedMesh (~140 of them), the shape Godot draws as MultiMeshes
  cls:{pass:7500000,host:900000},
  type:{'nwbay/trees':'pass','nwbay/floor':'pass','nwbay/reeds':'pass','nwbay/dress':'pass','nwbay/fauna':'pass','host':'host'},
 };
@@ -33,6 +33,19 @@ function extra(){const R=[];const T=NWBAY.TREES||[];
  R.push({name:'figs-on-the-karst',ok:figs.length>0&&figsOnKarst===figs.length,detail:figs.length+' cliff figs, '+figsOnKarst+' of them on the karst'});
  const under=T.filter(t=>t.y0<-1.9&&NWBAY.SPECIES[t.sp].key!=='mangrove').length;
  R.push({name:'nothing-rooted-under-water',ok:under===0,detail:under+' non-mangrove trees with their foot below -1.9 m'});
+ // the tsingy and the sinkholes (host geometry the biome cannot see): no tree rooted inside a blade's footprint or
+ // on a sinkhole's wall band, and the Madagascarene flora where the zones say
+ if(typeof pinAt==='function'){let inBlade=0;T.forEach(t=>{if(tsingyK(t.x,t.z)>0&&pinAt(t.x,t.z)<0)inBlade++;});
+  R.push({name:'nothing-in-a-blade',ok:inBlade===0,detail:inBlade+' trees rooted inside a tsingy blade ('+PINS.length+' blades)'});}
+ if(typeof sinkAt==='function'){let onWall=0;T.forEach(t=>{const Q=sinkAt(t.x,t.z);if(Q&&Q.d>-4&&Q.d<4)onWall++;});
+  const floor=T.filter(t=>BIO.field('hollow',t.x,t.z)>.5).length;
+  R.push({name:'nothing-on-a-sinkhole-wall',ok:onWall===0,detail:onWall+' trees within 4 m of a sinkhole rim; '+floor+' on the floors'});}
+ const mada=['spinewand','rockbottle','avenuebaobab','travellerfan'].map(k=>k+':'+T.filter(t=>NWBAY.SPECIES[t.sp].key===k).length);
+ R.push({name:'madagascarene-flora',ok:mada.every(x=>+x.split(':')[1]>0),detail:mada.join(' ')});
+ // every hero is a variant (biomes/WORLD.md: trees as variants), and no species has more than NWBAY.VARIANTS of them
+ {const heroes=T.filter(t=>t.lv>0),byV={};heroes.forEach(t=>{const k=t.sp;(byV[k]=byV[k]||new Set()).add(t.variant);});
+  const most=Math.max(0,...Object.values(byV).map(s=>s.size)),nov=heroes.filter(t=>t.variant==null).length;
+  R.push({name:'heroes-are-variants',ok:nov===0&&most<=NWBAY.VARIANTS,detail:heroes.length+' heroes drawn from '+(NWBAY.PROTOS?NWBAY.PROTOS.size:0)+' prototypes; at most '+most+' variants a species; '+nov+' without one'});}
  return R;}
 window._api={BUDGET,REG,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

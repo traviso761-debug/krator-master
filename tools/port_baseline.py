@@ -23,7 +23,7 @@ OUT = os.path.join(ROOT, 'PORT-BASELINE.json')
 
 def pages():
     out = []
-    for top in ('settlements', 'kits', 'biomes'):
+    for top in ('settlements', 'kits', 'biomes', 'openworld'):
         d = os.path.join(ROOT, top)
         for name in sorted(os.listdir(d)):
             dist = os.path.join(d, name, 'dist')

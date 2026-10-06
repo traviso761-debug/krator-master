@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.185,
+    0.957
+   ],
+   "seam_before": [
+    1.309,
+    5.875
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.5,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.7,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.painted.chipped",
+  "metal": 0.2,
+  "roughness": 0.7,
+  "scale": [
+   1.8,
+   1.8
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "metal_painted-chipped.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Riveted steel armour plate under old paint: large overlapping plates with rows of round domed rivets along the seams, the paint worn through to bare dark grey metal along the plate edges, around each rivet and in long scrapes and chips, a few thin rust runs below the seams, matte paint with faint brush marks. Near-colourless: pale grey paint over darker grey bare metal, so the paint can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "sha1": "17b47819929039778102de0170c906b72070881c"
+ }
+}

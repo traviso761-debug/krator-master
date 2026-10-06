@@ -18,9 +18,14 @@ says which build holds what.
 | `kits/catalog/` | master catalog: asset engine, 1051 furniture pieces in the furniture SPEC shape, one file per culture (plus generic containers, food, drink, supplies and biome fruit). Verified: `build.py`, `verify.py --assert` |
 | `kits/interiors/` | `ROOM()` and the furniture placer (engine-neutral, ported from Yuni), a catalog adapter, outline view and cut-away: a verified demo. Read `API.md` |
 | `kits/furniture/` | scaffolding only: read `SPEC.md` |
+| `kits/motor-vehicles/` | the Motor Vehicles kit: a `VEHICLE` registry on the catalog core, one file per culture (geomancer, republic, iziz, eastabyss, post-apoc: a buggy, an eight-wheeled crawler, a six-wheeler, a caravan truck, a tracked hab), bundled for any world as `KratorVehicles` (`vehicle_bundle.bundle()`), textured from the library as detail maps (`materials.json`, `tex/`). Verified: `build.py`, `verify.py --assert` |
+| `kits/mechs/` | the Mechs kit: skinned, animated walkers (leg IK with planted feet, idle / walk / attack clips with fire and impact events, a z-fighting audit) on the catalog core and the motor-vehicles frame, bundled as `KratorMechs`; one file per mech (now Iziz: eleven war-walkers, the Castra in two variants). Verified: `build.py`, `verify.py --assert`. Read `README.md`, `API.md` |
 | `biomes/<name>/` | flora and fauna kits on the shared biome core |
+| `openworld/<region>/` | a region of the scale model at 1:1, streamed, with the biome kits' flora: `little-demo` (the eastern desert). Its data comes from `tools/scale-model/extract_region.py` |
 | `core/materials/` | material fragments shared by the Ancients-lineage builds (`core/README.md`) |
 | `core/terrain/` | carve patches (overhangs on a heightfield), opt-in by any build through `CORE_TERRAIN` in its `build.py` |
+| `core/furnish/` | the furniture placement pass (`KFURN`) Girder, Mav's Refuge, Locus, Highlands and Post-Apoc share; `fingerprint.py` proves a change moved no piece (`core/furnish/README.md`) |
+| `godot/` | the Godot project (the port spike): importers for each export, shaders, `data/` exports made by `godot/tools/export_spike.py` (`godot/README.md`) |
 | `gallery/` | the shareable gallery page and the script that publishes it |
 | `host/` | the LAN site server: the gallery plus the World Menagerie's pages (`host/README.md`). The Menagerie is embedded at `host/WorldMenagerie/` as a git subtree. Core never references it: `tools/check_insulation.py` |
 | `archive/` | old scratch and exported snippets. Do not build from it |
@@ -31,7 +36,7 @@ says which build holds what.
 These files are big and generated. **Do not open or grep them:**
 `dist/`, `voth.html`, `yuni*.html`, `.syntax*.js`, `.origin.html`,
 `three.min.js`, `*.zip`, `shots/`, `archive/`, `host/site/`, `host/menagerie/`,
-`host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked; `.ignore` keeps it out of repo-wide searches, so name the path to search it).
+`godot/data/` (the spike's exports; `.ignore` keeps it out of searches), `host/WorldMenagerie/` (the Menagerie's own source: work on it only when asked; `.ignore` keeps it out of repo-wide searches, so name the path to search it).
 Pass `--glob '!**/dist/**'` (or search a `src/` folder) when using Grep.
 
 - **Edit only in `src/` and `targets/`.** The HTML is rebuilt from them.
@@ -44,7 +49,7 @@ Pass `--glob '!**/dist/**'` (or search a `src/` folder) when using Grep.
 
 ## Textures (the material library)
 
-`core/materials/library/` and `core/materials/patterns/` hold the shared texture sets (`albedo.jpg`, `normal.png`, `roughness.png`, `meta.json`,
+`core/materials/library/` and `core/materials/patterns/` hold the shared texture sets (`albedo.jpg`, `normal.jpg`, `roughness.png`, `meta.json`,
 about 3 MB each); `core/materials/PLAN.md` says what each is, and `core/materials/demo/` builds the page that shows them. The images are
 binary, so searches skip them. **Open an image only when the task is graphics or performance** (judging a surface, a render run, a texture budget),
 and then open the few you need, not a folder. Never read every `meta.json`; read `PLAN.md` first.
@@ -95,6 +100,8 @@ A fix to one settlement or biome republishes only that build's files. A wider ch
 - `core/materials/` holds one copy of the material fragments the Ancients-lineage
   builds share. Those builds' `build.py` read them from there. Edit them there,
   and rebuild every build that lists them.
+- `core/furnish/` is one shared copy too: after changing it, run `node core/furnish/test-furnish.js`, rebuild the five
+  builds that take it, and `python3 core/furnish/fingerprint.py` (every page must read `same`).
 - `core/terrain/36-core-carve.js` is one shared copy too: a build lists it in `CORE_TERRAIN`.
   Edit it there, run `node core/terrain/test-carve.js`, and rebuild every build that lists it.
 - Other shared fragments are **vendored**: each build keeps its own copy, and

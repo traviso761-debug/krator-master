@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1196
+   ],
+   "seam_after": [
+    0.877,
+    1.294
+   ],
+   "seam_before": [
+    1.259,
+    7.424
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.15,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.55,
+   "pattern": true,
+   "rough": 0.95,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "scyvoi/felt-scroll",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.95,
+  "scale": [
+   1.6,
+   1.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "scyvoi felt scroll.png",
+  "generator": "supplied by the owner in chat (2026-10-05), with the Scyvoi brief",
+  "licence": "supplied for this project by its owner",
+  "prompt": "not recorded: a seamless shyrdak-style felt applique of ram's-horn scrolls in madder red, teal and black on cream",
+  "reuse": "felt applique: Scyvoi yurt bands, door felts, floor felts and cushions; any steppe culture's felt",
+  "sha1": "08a150d654e9a8502219a09ed05c82a6648d8ba2"
+ }
+}

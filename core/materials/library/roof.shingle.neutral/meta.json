@@ -1,7 +1,7 @@
 {
  "maps": {
   "map": "albedo.jpg",
-  "normalMap": "../roof.shingle/normal.png",
+  "normalMap": "../roof.shingle/normal.jpg",
   "roughnessMap": "../roof.shingle/roughness.png"
  },
  "processing": {

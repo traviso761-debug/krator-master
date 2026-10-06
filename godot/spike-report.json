@@ -1,0 +1,263 @@
+{
+  "girder": {
+    "counts": {
+      "extras_keys": {
+        "A": 1,
+        "fam": 16,
+        "furniture": 38,
+        "inspectLabel": 2,
+        "interiors": 28,
+        "kit": 9,
+        "krator_instanced": 11,
+        "krator_spike": 1,
+        "life": 1,
+        "merged": 7,
+        "shape": 9
+      },
+      "images": 48,
+      "instances": 521,
+      "load_ms": 426,
+      "materials": 57,
+      "meshes": 57,
+      "multimeshes": 11,
+      "nodes_with_extras": 58,
+      "triangles": 909813
+    },
+    "file": "res://data/girder/region.glb",
+    "gaps": {
+      "attributes": "custom vertex attributes dropped: { \"aN\": 5.0, \"aC2\": 1.0, \"aAux\": 1.0, \"aFall\": 1.0, \"aPRO\": 4.0, \"aAnim\": 4.0, \"aGarb\": 4.0, \"aSkin\": 4.0, \"aHair\": 4.0, \"aDetS\": 5.0, \"aFlyB\": 6.0, \"aFlyP0\": 6.0, \"aFlyP1\": 6.0, \"aFlyP2\": 6.0, \"aFlyP3\": 6.0 }",
+      "instancing": "11 instanced meshes (521 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
+      "library materials": "16 library surfaces rebuilt from the pack (timber, rope, shingle, totem, awning, lacquer, post, plank, f_stone, life_Cage, inlay, trim, ground) with the break-up; three's other hooks (wind, glow, the night light volume) stay lost",
+      "shader hooks": "55 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 1331 records); no mesh names its record yet: the exporter has to write each record's id into its node's extras",
+      "unlit": "4 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+    },
+    "materials_library": {
+      "families": {
+        "awning": 1,
+        "f_stone": 1,
+        "ground": 1,
+        "inlay": 1,
+        "lacquer": 1,
+        "life_Cage": 1,
+        "plank": 1,
+        "post": 1,
+        "rope": 1,
+        "shingle": 2,
+        "timber": 3,
+        "totem": 1,
+        "trim": 1
+      },
+      "replaced": 16,
+      "unmatched": {},
+      "world_uv": 8
+    },
+    "route": "glTF (three GLTFExporter r128)",
+    "stage": {
+      "environment": "reflections from the sky panorama (the page's envMap: specular 1.0, diffuse 0.0)",
+      "lights": "1 directional, 1 hemisphere, 1 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [0.0, 74.5643702376741, 0.0] (nearer than 30.0 m left out)"
+    },
+    "tags": {
+      "build": "girder",
+      "classes": {
+        "furniture": 1331
+      },
+      "records": 1331
+    }
+  },
+  "girder-lamps": {
+    "counts": {
+      "lamps": 62,
+      "lights": 32
+    },
+    "file": "res://data/girder/lamps.json",
+    "gaps": {
+      "lamp hours": "the page lights its lamps by its night factor (DAYNIGHT_NIGHT_K), the export by hours [17.2, 30.8] (dusk to dawn)",
+      "lamp light": "the page lights its scene through a baked light volume its own shaders read (45-kit.js); here the nearest 32 lamps are OmniLight3D, energy 1.2 x amp, range the lamp's radius: the spike's choice, to tune against the page"
+    },
+    "route": "krator-lamps JSON"
+  },
+  "hyperjungle": {
+    "counts": {
+      "buckets": 3,
+      "instances": 4348,
+      "items": 19,
+      "load_ms": 333,
+      "materials": 32,
+      "textures": 21,
+      "triangles": 10738
+    },
+    "file": "res://data/hyperjungle/biome.json",
+    "gaps": {
+      "anim": "material kind 'anim' (animated fauna: a path in aP0/aP1) drawn with the bark shader, unanimated",
+      "fauna paths": "fauna that fly a path in the shader (aP0, aP1) stand still at their path centre: the anim shader and its second channel are not ported",
+      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
+    },
+    "route": "krator-biome JSON",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [162.0, 14.6507150406976, -747.0] (nearer than 150.0 m left out)"
+    }
+  },
+  "iziz": {
+    "counts": {
+      "extras_keys": {
+        "atmos": 12,
+        "isGround": 1,
+        "krator_instanced": 122,
+        "krator_spike": 1,
+        "probeSkip": 6,
+        "sectorOf": 67
+      },
+      "images": 18,
+      "instances": 6752,
+      "load_ms": 154,
+      "materials": 75,
+      "meshes": 161,
+      "multimeshes": 122,
+      "nodes_with_extras": 129,
+      "triangles": 360183
+    },
+    "file": "res://data/iziz/region.glb",
+    "gaps": {
+      "ShaderMaterial": "5 ShaderMaterials (water, sky, glow) became magenta stand-ins",
+      "attributes": "custom vertex attributes dropped: { \"aN\": 7.0, \"aC2\": 1.0, \"aP0\": 5.0, \"aP1\": 5.0, \"aPos\": 1.0, \"aBig\": 1.0, \"aHide\": 1.0, \"ipos\": 4.0, \"pp\": 3.0, \"lt\": 2.0, \"psize\": 1.0 }",
+      "instancing": "122 instanced meshes (6752 instances) came in as MultiMeshes through EXT_mesh_gpu_instancing (krator/gltf_instancing.gd: Godot 4.5 has no importer for it); instances carry a colour, no tags",
+      "shader hooks": "42 materials carried a three.js onBeforeCompile hook (library break-up, tint, wind, glow): glTF keeps only the base PBR values",
+      "tag nodes": "the core/tags records arrive as data (root meta 'tags', 784 records); no mesh names its record yet: the exporter has to write each record's id into its node's extras",
+      "unlit": "5 materials came through as KHR_materials_unlit (MeshBasicMaterial)"
+    },
+    "route": "glTF (three GLTFExporter r128)",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 4 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [0.0, 59.9951029252427, 0.0] (nearer than 80.0 m left out)"
+    },
+    "tags": {
+      "build": "iziz/Iziz",
+      "classes": {
+        "building": 592,
+        "feature": 113,
+        "flora": 67,
+        "landmark": 1,
+        "life": 6,
+        "prop": 5
+      },
+      "records": 784
+    }
+  },
+  "iziz-atmos": {
+    "counts": {
+      "fx": {
+        "banner": 11,
+        "beacon": 1,
+        "brazier": 4,
+        "drain": 1,
+        "fireflies": 1,
+        "floodlight": 3,
+        "fogbank": 1,
+        "fountain": 4,
+        "mist": 1,
+        "moths": 1,
+        "outfall": 1,
+        "searchlight": 14,
+        "smoke": 1,
+        "spotcone": 8,
+        "weather": 1
+      },
+      "glow": 322,
+      "lamps": 65,
+      "load_ms": 29,
+      "prop_instances": 2339,
+      "prop_sets": 26
+    },
+    "file": "res://data/iziz/atmos.json",
+    "gaps": {
+      "banner": "banner: only its props are drawn (no flag shader, water jet, or flow)",
+      "drain": "drain: only its props are drawn (no flag shader, water jet, or flow)",
+      "fireflies": "fireflies are stateless sprites in three; the MultiMesh + vertex shader port is not written",
+      "flag shader": "banner cloth is a plain box: the flag's downwind swing and ripple shader is not ported",
+      "fogbank": "fog banks are FogVolume ellipsoids (Forward+ with volumetric fog on; invisible on Compatibility): density guessed",
+      "fountain": "fountain: only its props are drawn (no flag shader, water jet, or flow)",
+      "glow gain": "three draws halos with no tonemapper at gain 1.7; under Godot's Filmic tonemapper the spike uses 0.6x: retune and move the number into the preset",
+      "lamp light": "three.js gives a lamp no light, only its halo (the record says so): range and energy are the spike's choice (16 m, 1.6), the colour the halo's",
+      "mist": "mist's 'curve' is a flat number list whose layout the contract does not state (radii round the moat?): not imported",
+      "moths": "moths are stateless sprites in three; the MultiMesh + vertex shader port is not written",
+      "outfall": "outfall: only its props are drawn (no flag shader, water jet, or flow)",
+      "weather": "the weather state machine (rain, fog, storm, lightning) is not ported to the Atmos autoload: rain stays 0"
+    },
+    "route": "krator-atmos JSON"
+  },
+  "rift": {
+    "counts": {
+      "buckets": 9,
+      "instances": 48432,
+      "items": 51,
+      "load_ms": 1241,
+      "materials": 51,
+      "textures": 35,
+      "triangles": 186920
+    },
+    "file": "res://data/rift/biome.json",
+    "gaps": {
+      "lod": "LOD is per chunk box in three and per node point in Godot: ranges widened by the chunk half-diagonal (849 m); stand-ins and impostors are not LOD levels of what they replace",
+      "tags": "no ids, species, class or Köppen tags on items or buckets (biomes/GODOT.md 'Not done yet'): nothing to put in node metadata beyond name and label"
+    },
+    "route": "krator-biome JSON",
+    "stage": {
+      "lights": "2 directional, 1 hemisphere, 0 ambient, 0 point lights (points not carried)",
+      "sky": "the page's sky panorama, from [-300.0, 223.742704022042, 300.0] (nearer than 150.0 m left out)"
+    }
+  },
+  "yuni": {
+    "counts": {
+      "buildings": 1770,
+      "cultures": {
+        "ancient": 18,
+        "nomad": 17,
+        "order": 4,
+        "yuni": 1731
+      },
+      "doors": 1842,
+      "lights": 2591,
+      "load_ms": 458,
+      "windows": 6841
+    },
+    "counts_interior": {
+      "furniture": 32,
+      "levels": 1,
+      "nav_links": 7,
+      "nav_nodes": 21,
+      "rooms": 7,
+      "walls": 28
+    },
+    "file": "res://data/yuni/fixtures.json",
+    "gaps": {
+      "furniture meshes": "furniture arrives as catalog keys (furn, variant, seed): no catalog exporter yet, so markers",
+      "instanced tags": "doors and windows are MultiMesh instances here; their ids and tags sit in a side table (meta 'records') indexed by instance, since a MultiMesh instance has no metadata",
+      "light units": "light amp and radius are three.js PointLight numbers; Godot's energy and range are not the same units (retune, then put the factor in the export)",
+      "meshes": "records carry no geometry: buildings are boxes here; the meshes need a second route (glTF or a builder port)",
+      "wall openings": "walls are solid boxes: openings (u, w, y0, y1) need CSG or a wall builder to cut doors and windows"
+    },
+    "route": "records (KRATOR_EXPORT)",
+    "tags": {
+      "format": "krator-tags",
+      "records": 13044,
+      "version": 1.0
+    }
+  },
+  "verge": {
+    "counts": {
+      "buildings": 1572,
+      "groups": 36,
+      "member_nodes": 647,
+      "nav_nodes": 18205,
+      "places": 1574
+    },
+    "gaps": {
+      "citizens": "the citizens walk by decisions taken at run time (SIM.decide, logged); not replayed here",
+      "rigs": "stand-ins: capsules and boxes, no gait (the page's rigs are three.js; RIGS' API is the contract)"
+    },
+    "route": "krator-sim + krator-verge-place (settlements/verge)"
+  }
+}

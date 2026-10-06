@@ -23,6 +23,10 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -61,6 +65,31 @@ def find_node():
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 LOD_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'lod')   # shared level of detail (core/lod/README.md)
+RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')  # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')  # the tag registry (core/tags/README.md)
+# clock: the world clock (KCLOCK, bound in 21-sky.js as YCLOCK); sched: KSCHED (the volcano's cycle, 20-stage.js);
+# minimap: KMAP and its panel (fed by 88b-yuni-minimap.js); materials/record: KMAT, TEX and the library loader
+# (core/materials/PLAN.md, "How a build adopts the library"). core/rand gives the tags' uid only: Yuni keeps its own
+# Park-Miller rnd() and noise (the exception in GODOT-PLAN.md, Phase 2 item 1).
+CORE_MODULES = ['clock', 'sched', 'minimap', os.path.join('materials', 'record')]
+CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', m) for m in CORE_MODULES)
+TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
+PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
+# The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
+# the kit, read in place under Yuni's slot names, as Locus reads the eastern-abyss kit. They sort after the placement
+# pass (68) so the host binding (69b-yuni-biohost.js, between the core and the kit) knows every footprint, and the
+# planting (69z-yuni-badlands.js) runs last. Each is a unit of its own, with its own PRNG and palettes.
+_ROOT = os.path.dirname(os.path.dirname(HERE))
+BIO_CANON = {'69a1-bio-core-head.js': ('core', 'biome', '10-core-head.js'),
+             '69a2-bio-core-kit.js': ('core', 'biome', '20-core-kit.js'),
+             '69a3-bio-core-foliage.js': ('core', 'biome', '30-core-foliage.js'),
+             '69a4-bio-core-place.js': ('core', 'biome', '40-core-place.js'),
+             '69c1-bio-ebadlands-species.js': ('biomes', 'ebadlands', 'src', '50-biome-ebadlands-species.js'),
+             '69c2-bio-ebadlands-trees.js': ('biomes', 'ebadlands', 'src', '55-biome-ebadlands-trees.js'),
+             '69c3-bio-ebadlands-floor.js': ('biomes', 'ebadlands', 'src', '60-biome-ebadlands-floor.js'),
+             '69c4-bio-ebadlands-dress.js': ('biomes', 'ebadlands', 'src', '65-biome-ebadlands-dress.js'),
+             '69c5-bio-ebadlands.js': ('biomes', 'ebadlands', 'src', '70-biome-ebadlands.js')}
+BIO_CANON = {k: os.path.join(_ROOT, *v) for k, v in BIO_CANON.items()}
 OUT = os.path.join(HERE, 'yuni.html')
 OUT_SHEET = os.path.join(HERE, 'yuni-assets.html')
 OUT_FLORA = os.path.join(HERE, 'yuni-plants.html')
@@ -68,8 +97,34 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
 # fragments that legitimately contain no top-level generation
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
-                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+                 '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html'}
+DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
+CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
+
+
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Girder's build.py
+    does. It reads the committed tex/ files only, never the library or an image encoder, so the build stays
+    deterministic. With no tex/pack.json, Yuni runs on its procedural maps."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return "/* no tex/pack.json: Yuni runs on its procedural textures */\nKMAT.pack('yuni', {});\n"
+    pack = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== 11a. LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
+            '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
+            "KMAT.pack('yuni', {\n" + ',\n'.join(out) + '\n});\n')
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -110,7 +165,7 @@ def units(order, bodies):
     unit's first file) and the unit bodies."""
     groups = {}
     for f in order:
-        groups.setdefault(re.match(r'\d+', f).group(0), []).append(f)
+        groups.setdefault(f if f in CORE_FRAGS else re.match(r'\d+', f).group(0), []).append(f)
     PARTS.clear()
     for g in groups.values():
         start = 0
@@ -128,14 +183,14 @@ def check(order, bodies):
             continue
         body = bodies[f]
 
-        if f not in DETERMINISTIC and not RE_HEAD_SEED.match(strip_head_comments(body)):
+        if f not in DETERMINISTIC and f not in CORE_FRAGS and not RE_HEAD_SEED.match(strip_head_comments(body)):
             errs.append('%s: generative fragment does not open with reseed(N). Add one, '
                         'or list the file in DETERMINISTIC in build.py.' % f)
 
         for m in RE_ANY_SEED.finditer(body):
             seeds.setdefault(m.group(1), set()).add(f)
 
-        if f != PALETTE_FILE:
+        if f != PALETTE_FILE and f not in CORE_FRAGS:
             for m in RE_COLOUR_ARRAY.finditer(body):
                 errs.append('%s: colour array outside the palette. Move it to '
                             '05-palette.js and read it from PAL.'
@@ -150,6 +205,11 @@ def check(order, bodies):
         head = RE_HEAD_SEED.sub('', strip_head_comments(bodies[f]), 1)
         if strip_head_comments(head).startswith('(function'):
             continue      # whole fragment is one IIFE: nothing leaks
+        if '-bio-' in f:
+            # the biome core and kit (BIO_CANON): one `var` (BIO / EBADLANDS) then IIFEs; everything else is local
+            for m in re.finditer(r'^var\s+([A-Za-z_$][\w$]*)', bodies[f], re.M):
+                decl.setdefault(m.group(1), set()).add(f)
+            continue
         for m in re.finditer(r'^(?:var|function)\s+([A-Za-z_$][\w$]*)', bodies[f], re.M):
             decl.setdefault(m.group(1), set()).add(f)
         for m in re.finditer(r'^var\s+[^;\n(]*?,\s*([A-Za-z_$][\w$]*)\s*=', bodies[f], re.M):
@@ -170,13 +230,24 @@ def check(order, bodies):
 def main():
     do_checks = '--no-checks' not in sys.argv
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for f in os.listdir(LOD_DIR):          # a src/ copy with the same name overrides
-        if f[0].isdigit() and f not in paths:
-            paths[f] = os.path.join(LOD_DIR, f)
+    for d in CORE_DIRS:                    # a src/ copy with the same name overrides
+        for f in os.listdir(d):
+            if f[0].isdigit() and f.endswith('.js') and f not in paths:
+                paths[f] = os.path.join(d, f)
+                CORE_FRAGS.add(f)
+    paths[PACK_FRAGMENT] = None            # generated below, not read from disk
+    CORE_FRAGS.add(PACK_FRAGMENT)
+    for f, p in BIO_CANON.items():         # the biome core and the eastern badlands kit, in place (a src/ copy overrides)
+        if f not in paths:
+            paths[f] = p
+            CORE_FRAGS.add(f)
     order = sorted(paths)
     bodies = {}
     for f in order:
-        with open(paths[f]) as fh:
+        if paths[f] is None:
+            bodies[f] = matlib_pack()
+            continue
+        with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
 
     if do_checks:
@@ -188,7 +259,7 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w') as fh:
+    with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
         t = html.replace('<title>Yuni</title>', '<title>%s</title>' % title, 1)
@@ -197,9 +268,9 @@ def main():
 
     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
-    with open(OUT_SHEET, 'w') as fh:
+    with open(OUT_SHEET, 'w', encoding='utf-8') as fh:
         fh.write(sheet)
-    with open(OUT_FLORA, 'w') as fh:
+    with open(OUT_FLORA, 'w', encoding='utf-8') as fh:
         fh.write(flora)
     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
     import re as _re
@@ -208,15 +279,15 @@ def main():
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')
-        with open(os.path.join(HERE,'publish',name),'w') as fh: fh.write(a_.lstrip())
-    with open(MANIFEST, 'w') as fh:
+        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8') as fh: fh.write(a_.lstrip())
+    with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
     body = html.split("function BUILD(){", 1)[1].rsplit("</script>", 1)[0]
     body = body.rsplit('}', 1)[0]
     chk = os.path.join(HERE, '.syntax.js')
-    with open(chk, 'w') as fh:
+    with open(chk, 'w', encoding='utf-8') as fh:
         fh.write("function BUILD(){'use strict';\n" + body + "\n}\n")
     try:
         r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)

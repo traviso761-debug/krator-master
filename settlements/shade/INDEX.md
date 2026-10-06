@@ -37,11 +37,11 @@ From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 | `77d-kit-nomad-khan.js` | 6 |  |
 | `77e-kit-nomad-camp.js` | 5 |  |
 | `80-host-buildings.js` | 7 |  |
-| `82-host-sky.js` | 13 | the Inner Wall painter (8) |
-| `84-host-life.js` | 13 | the walkable grid (47); the checks the probe reads (97) |
+| `82-host-sky.js` | 14 | the Inner Wall painter (8) |
+| `84-host-life.js` | 12 | the walkable grid (18); the world in SIM (64); Shade's own audits, added to SIM.audit() (86); the checks the probe reads (window._life) (111) |
 | `86-host-overlay.js` | 3 |  |
 | `87-host-views.js` | 3 |  |
 | `88-host-build.js` | <1 |  |
 | `90-host-camera.js` | 10 | the panel (12); picking (27); the polygon tool (65); input (71) |
-| `91-host-probe.js` | 25 | the Shade checks (35) |
+| `91-host-probe.js` | 28 | the Shade checks (35) |
 | `99-tail.html` | <1 |  |

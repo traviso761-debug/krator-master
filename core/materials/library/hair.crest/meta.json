@@ -1,0 +1,59 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.182,
+    1.274
+   ],
+   "seam_before": [
+    1.037,
+    4.097
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.4,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.5,
+   "normal_strength": 0.8,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hair",
+  "id": "hair.crest",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "hair_crest.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dense horsehair plume, long coarse straight strands combed parallel and running top to bottom, slight waves and a few stray crossing hairs, natural sheen along the strands. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "sha1": "1d3d25c120d9989dbe20a9d444e3511a38a6e71c"
+ }
+}

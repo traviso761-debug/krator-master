@@ -1,0 +1,17 @@
+{
+ "note": "root: a checkout other than this one to read the town's built page from (Mungo is not committed yet: its session's page in the main checkout). onWater: the town's local 0 is its water's surface (Mungo floats on its salt lake): it is set on the lake's level there, not on the land. anchor: a point of the town's frame (less its centre) whose ground is set on the land's (default its centre); band: the blend outside R (m). The settlements placed in the open world as baked tiles (bake.py towns): which build's page, which part of it, where it stands. centre: the town's middle in its build's own frame (m); R: the footprint (the tile is cut there and the land takes the town's ground inside it); ground: 'canvas' (the build's terrainH and its painted ground, streets and all) or 'flat' (an Ancients site: its landform is its meshes, the land is its plain); rot: the turn from the build's frame to the world's (degrees, about the vertical; both have x east, z south); at: the settlement record it stands on, or 'canyon' for its canyon candidate. site: an Ancients page holds two copies of a site, side by side: the x of the one to keep.",
+ "exKit": ["trunk", "leafCard", "moss", "vine", "stain", "figB", "figH", "hRLReed"],
+ "exFam": ["leafy", "bark"],
+ "towns": {
+  "Yuni":     {"page": "settlements/yuni/yuni.html", "query": "?lod=0", "centre": [0, 0], "R": 1250, "ground": "canvas", "rot": 0, "at": "Yuni"},
+  "Locus":    {"page": "settlements/locus/locus.html", "query": "?lod=0&furniture=0", "centre": [0, 0], "R": 900, "ground": "canvas", "rot": 0, "at": "Locus"},
+  "Mungo":    {"root": "../krator-master", "page": "settlements/mungo/dist/mungo.html", "query": "?lod=0&furniture=0", "centre": [80, 0], "R": 750, "ground": "canvas", "rot": 0, "at": "Mungo", "onWater": true},
+  "Verge":    {"page": "settlements/verge/dist/verge.html", "query": "?lod=0", "centre": [-700, 0], "R": 2300, "ground": "mesh", "rot": 0, "at": "Verge",
+               "anchor": [-1800, 0], "band": 2500,
+               "note": "the twin cities on the escarpment: the upper on the plateau (west), the lower on the abyss floor (east), the trail between. Its own ground mesh is kept (vertex colours, the streets painted in). anchor: its plateau meets the land's; the band is wide because its drop (934 m) is less than the scale model's there"},
+  "Veladiga": {"page": "kits/ancients/dist/veladiga.html", "query": "?lod=0", "site": 5400, "siteR": 1800, "centre": [5400, 270], "R": 1900, "ground": "flat", "rot": 90, "at": "canyon",
+               "note": "the breached dam (decay 2): the ruin. Its canyon runs along the page's z; the scale model's runs east-west, so it is turned 90 degrees"},
+  "Arcbeam":  {"page": "kits/ancients/dist/arcbeam.html", "query": "?lod=0", "site": -1900, "siteR": 1750, "centre": [-1900, 0], "R": 2100, "ground": "flat", "rot": 0, "at": "Arcbeam",
+               "note": "the living bridge-city (decay 0). It brings its own gorge and plateau as meshes; the land under it is its plain"}
+ }
+}

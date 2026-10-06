@@ -6,34 +6,36 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 56 (9%) | 0 (0%) | 14 (2%) | 265 (42%) | 298 (47%) |
+| KB | 56 (8%) | 0 (0%) | 15 (2%) | 319 (46%) | 310 (44%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 5.8 | [web] | 0 | 0 | 4 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/05-palette.js` | 6.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/05-palette.js` | 7.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/10-core.js` | 8.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/20-stage.js` | 14.9 | [web] | 21 | 6 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/21-sky.js` | 54.3 | [web] | 62 | 0 | 19 | 6 | 0 | 9 | 25 | 0 | 0 | 0 | 0 |  |
 | `src/30-layout.js` | 29.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/32-branches.js` | 7.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/45-kit.js` | 25.4 | [draw] | 37 | 0 | 0 | 0 | 0 | 13 | 15 | 2 | 0 | 0 | 0 |  |
+| `src/45-kit.js` | 32.2 | [draw] | 38 | 0 | 0 | 0 | 0 | 13 | 15 | 2 | 0 | 0 | 0 |  |
 | `src/47-texture.js` | 8.4 | [draw] | 4 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/50-structure.js` | 17.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/53-furnish.js` | 8.3 | [draw] | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/55-arch.js` | 59.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/56-levels.js` | 66.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/53-furnish.js` | 7.8 | [draw] | 1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the draw adapter onto core/furnish (2026-10-05): the placement pass is core/furnish/50-core-furnish.js. Kept here: the seed rule (a hash of the spot), BRF_SHIFT (handed to core as its recentring table), brfIn/brfDone and the FRM frame, o.lamp lights, the Lambert tint per family at the flush |
+| `src/55-arch.js` | 62.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/56-levels.js` | 69.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/57a-interiors.js` | 28.8 | [web] | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 1 | 0 | the interiors’ data: units, plans, piece records, the bake’s adoption, the edits overlay, the slots the simulation reads; no THREE (performance.now and TICKS only) |
+| `src/57c-interiors-draw.js` | 25.1 | [web] | 17 | 1 | 0 | 0 | 10 | 12 | 0 | 0 | 0 | 2 | 0 | the interiors near the camera: geometry from 57a’s records, the light pool, the edits’ browser storage |
 | `src/60-trees.js` | 40.4 | [web] | 35 | 2 | 0 | 0 | 2 | 8 | 8 | 5 | 0 | 0 | 0 |  |
 | `src/62-jungle.js` | 45.3 | [draw] | 15 | 4 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/63-trails.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/72-lights.js` | 3.0 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-terrain.js` | 6.1 | [draw] | 16 | 0 | 0 | 0 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/78-life.js` | 50.2 | [web] | 21 | 0 | 0 | 0 | 7 | 42 | 4 | 5 | 0 | 0 | 0 | split: data inside host code |
+| `src/78-life.js` | 50.8 | [web] | 21 | 0 | 0 | 0 | 7 | 42 | 4 | 5 | 0 | 0 | 0 | split: data inside host code |
 | `src/79-spiders.js` | 60.0 | [draw] | 26 | 0 | 0 | 0 | 0 | 39 | 0 | 2 | 0 | 0 | 0 |  |
-| `src/80-camera.js` | 10.8 | [web] | 7 | 0 | 9 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
-| `src/81-glow.js` | 4.7 | [G native] | 12 | 2 | 0 | 0 | 0 | 2 | 3 | 2 | 0 | 0 | 0 | shader hook inside |
+| `src/80-camera.js` | 11.2 | [web] | 7 | 0 | 9 | 16 | 1 | 2 | 0 | 1 | 2 | 0 | 0 |  |
+| `src/81-glow.js` | 5.8 | [G native] | 13 | 2 | 0 | 0 | 0 | 2 | 5 | 2 | 0 | 0 | 0 | shader hook inside |
 | `src/82-daynight.js` | 6.2 | [G native] | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/84-flyers.js` | 80.6 | [web] | 49 | 0 | 0 | 0 | 2 | 8 | 6 | 3 | 0 | 0 | 0 |  |
 | `src/85-probe.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

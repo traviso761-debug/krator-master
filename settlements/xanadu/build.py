@@ -100,6 +100,7 @@ def srcpath(f, base=None):
 
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order.
+TARGET_CORE = {'erewhon': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
 TARGET_OUT = {
     'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
@@ -122,6 +123,8 @@ DETERMINISTIC = {
     '83-er-data.js', '84-er-geo.js', '85-er-paint.js', '86-bio-46-er-init.js', '87-er-layout.js', '88-er-place.js',
     '90a-er-world.js', '90b-er-build.js', '93-er-ui.js',   # the Erewhon city target
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -236,6 +239,9 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
@@ -268,7 +274,7 @@ def build_one(target, do_checks):
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -284,7 +290,7 @@ def vendor_manifest():
     out = {}
     for f in VENDORED + IZIZ_VENDORED:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out

@@ -3,3 +3,6 @@
 #
 # The World Menagerie subtree: its own project, ~84 MB, mostly city map data. Krator never reads it.
 host/WorldMenagerie/
+
+# The Godot spike's exports: base64 meshes and glTF binaries (~90 MB). Re-made by godot/tools/export_spike.py.
+godot/data/

@@ -402,6 +402,13 @@ To be added to `README.md` under "Life/simulation layer" and enforced by a
 9. Everything the simulation knows is in `SIM.export()`, in the `krator-*`
    export shape, before it is drawn; the export's record shapes are the same as
    the hand-edited `world/*.json`, so either can be the source of a value.
+10. Furniture the camera may not be drawing is read from its records, never
+   from what is drawn (the README rule "Furniture that is not always drawn is
+   data first"): records apart from the drawing, a camera-independent index
+   (a committed bake plus an idle fill, fingerprinted per building), and edits
+   as an overlay keyed by piece id. `slotsFromFurniture` takes those records
+   (Mav's Refuge: `MIX.slots(i)`, `settlements/mavs-refuge/src/57a-interiors.js`),
+   so a bed or a counter exists whether or not anyone is looking.
 
 ---
 
@@ -459,6 +466,16 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
 - Acceptance: `core/simulation/example/` builds a 20-actor sheet (like
   `core/sockets/example/`) that runs on the module alone; Shade's `_life.OUT`
   audit numbers are unchanged when read from `_sim`.
+- Shade moved (2026-10-05): `world/*.json` holds its activities, faction, orgs, roles and
+  convoy; `84-host-life.js` registers its grid as the `pedestrian` layer, its places (a
+  place's capacity is SIM's `cap`, shared by its activities) and ports, and populates with
+  `deal:'round'`; its own audits (only way up, convoy, commutes) ride on `SIM.audits`. Every
+  `_life.OUT` number is unchanged, and `_life` is now a view of `_sim.audit()`. Then the
+  convoy got its rider role and DEPART and IDLE their records (`activities` 15), and SIM.fire
+  follows an event's `legs`; Shade's probe steps everyone and the convoy. Still open: stepping
+  per frame, which waits for the people to be drawn (Phase 3b).
+- The example sheet is `core/simulation/example/` (20 townsfolk, a caravan, a 2D canvas):
+  `python3 build.py && python3 check.py` (4 checks and 4 negatives, determinism across loads).
 
 ### Phase 2: translate Voth (Society)
 
@@ -512,6 +529,27 @@ strider `onboard` counts match the previous build over a 120 s day and
 3. `LIFE_DEST` lists → places from node tags **and** slot/room kinds (home,
    tavern, barracks, store) and the catalog furniture now placed by
    `53-furnish.js`; `'res'` platforms get `SLEEP` slots with capacity.
+   Since 2026-10-05 every lot, level room and hut has planned rooms and
+   furniture as camera-independent records (`57a-interiors.js`): places and
+   slots come from `MIX.slots(i)` (rule 10), each home's beds giving its
+   `SLEEP` capacity.
+3a. **The interiors' open issues, to address in this phase** (assessed
+   2026-10-05; details in `settlements/mavs-refuge/KNOWN_ISSUES.md`):
+   - walkers go inside: a resident walks from the door node through its home's
+     rooms to the piece it uses (`IX.life.nav` joined at the street door, the
+     `interior` layer);
+   - the shared kitchens: decide communal cooking (homes without hearths, the
+     level's kitchen the `COOK`/`EAT` place for its homes) or drop them;
+   - the shrines: an offering table, mats, a keeper's store; a shrine keeper
+     role and `WORSHIP` slots;
+   - the council chamber: a dais, petitioners' benches, a records room and a
+     guard post (four quarter-sector bodies between the portals), and the
+     council's sittings as the `Refuge Council`'s schedule;
+   - the market: each stall's goods by trade, stock held in the storehouses
+     next to it, porters between them, opening hours, stalls as `SELL` places;
+   - the spider nests: the handlers' stations, silk reeling into the silk
+     houses and the weavers' loft, the egg nursery, the prey store and the
+     handlers' bunks (after the owner's call on a fauna kit).
 4. Squads, posts, drill and gatherer routes → `Group` objects; the gatherer
    cycle becomes `GATHER` at a place advertising `resource: fruit`, with the
    satellite choice derived from that instead of the 60–420 m literal.
@@ -630,3 +668,121 @@ Locus is already closest to the target. Make it the mobility reference:
 - **Two sources of faction truth.** `LORE.md` is prose and will keep changing.
   `world/factions.js` is generated from it by a script that fails on a polity
   the lore names and the data lacks, so the two cannot drift silently.
+
+---
+
+## 8. Later possibilities (not scheduled)
+
+Ideas noted for a medium-to-long-term pass, after Phase 4 at the earliest.
+None is a commitment; each needs its own plan before work starts.
+
+### 8.1 Personas for notable actors
+
+Source: the `text-adventure-games` skill (GaZmagik, GitHub), whose crew and
+world-gen modules give each generated person a handful of seeded picks. The
+tables there are generic sci-fi and prompt-only; the shape is what carries.
+
+- **Scope: notables only.** Most of a settlement's population stays as tier
+  0/1 counts and role-driven schedules with no identity beyond name, role and
+  home. A persona goes on a bounded set per settlement: leaders of each
+  organization, the one named holder of each trade, guard captains, the
+  foreign-presence contacts, and anyone a future quest or player-faction
+  phase names. Not every peasant has a secret; a budget (perhaps 10–30 per
+  settlement, scaled by size) keeps the loose ends countable.
+- **Shape.** Four picks plus an optional gated secret, every entry pointing at
+  a sim object rather than at prose:
+  ```
+  persona { want    {kind, target: actorId|factionId|placeId},
+            tension {kind, target: actorId|factionId},
+            quirk   id,                      // inspector and animation hint only
+            voice   id,                      // speech register for any later text
+            secret  {kind, threshold} | null } // surfaces only past a trust/loyalty score
+  relationships { otherActorId: wary|neutral|friendly|hostile|bonded }
+  ```
+  Drawn from a sub-seed (`hash(worldSeed, settlementId, 'personas')`) so
+  adding or removing a persona disturbs nothing else. Relationship rolls use
+  the same stream (the source rolled them unseeded, a bug to avoid).
+- **Tables per culture and role,** written from each culture's kit notes and
+  `LORE.md`, about a dozen entries per slot. Generic tables repeat by the
+  third person and read as the same crew everywhere.
+- **What consumes it.** The inspector shows a person instead of a walker. A
+  `want` or `tension` with a faction target is a ready quest hook, derived
+  from relation data the way §4 derives presence. A `protect` want can bias
+  schedule choice. Nothing else is required for the data to be worth having.
+- **Open questions,** to settle before any work: how personas survive a
+  rebuild when the notable set changes; whether `secret` belongs in the sim
+  export at all or only in a player-facing layer; who writes 24 cultures of
+  tables and how they are reviewed.
+
+### 8.2 Scores with bands instead of stored states
+
+Same source. Faction standing there is one number from -100 to 100 and a
+contiguous band table gives the label and its effects (`{label, min, max,
+priceModifier, effect}`). Krator's presence states (§4: tolerated,
+persecuted, expelled ...) and actor trust could sit on the same shape: a
+score per (faction, settlement) or per (actor, faction), bands as data,
+drift as arithmetic. Spillover rule worth keeping: a strong result with one
+actor nudges standing with that actor's whole faction by a small amount.
+
+### 8.3 Needs as three meters with a delta table
+
+Morale, loyalty-to-X and stress, each 0–100, moved by an asymmetric event →
+delta table (kept promise +8, death in the group -15 to everyone, abandoned
+member -20; stress rises by half of every negative morale delta) and
+threshold triggers (morale ≤ 15 → defection check eased by loyalty; stress
+≥ 80 with morale ≤ 30 → breakdown; loyalty ≥ 75 → heroic offers). Roles gate
+tasks, one task per actor, +2 penalty off-role, a shortfall penalty when a
+settlement lacks a role. Maps onto §4.3 `needs` and "roles as capabilities".
+Generalise loyalty from "to the player" to "to an organization or employer".
+
+### 8.4 History as present-tense consequences
+
+Rule from the source's world-history module: every epoch must leave a
+physical artifact and a consequence someone alive still acts on; a famine
+yields hoarding and a black market, not a lore paragraph. For Krator each
+epoch of `LORE.md` should name what it left that a build can render: a
+district in an older kit, ruined lots, a faction's presence state, a custom
+that is a scheduled activity. Decay ladder: 3 generations is living memory,
+7 is myth and institution names, 12 is archaeology. A generator script
+checking that every epoch has at least one such trace in `world/*.json`
+would be the mechanical half.
+
+### 8.5 Faction relations and hooks from them
+
+Pairwise relation rolled over allied / tense / neutral / hostile / at_war
+with weights 1,2,3,2,1, a symmetric pair key, strength 1–5 per faction.
+Quest hooks are templates filled from hostile or tense pairs (`{factionA}`,
+`{factionB}`, `{npcName}`, `{place}`), so hooks come out of relation data
+rather than invention. Krator's relations are already hand-written in
+`world/factions.js`; the hook derivation is the transferable part.
+
+### 8.6 Seed plus mutation log
+
+Persist the seed and a list of deltas (dead or moved actors, changed presence
+states, damage), regenerate the rest on load. Builds are deterministic
+already, so sim state can follow the same rule. Sub-seed per subsystem
+(`hash(worldSeed, settlementId, 'actors')`) so adding an actor never shifts
+a building: the source used one shared stream with a "never reorder stages"
+rule, which is the fragility to avoid.
+
+### 8.7 A deterministic text check in `verify.py`
+
+The source's prose checker is regex and statistics only: banned filter words,
+telling adjectives after "was", a content word three times in 150 words,
+repeated bigrams, three same-length sentences in a row, no sense word in 100
+words, internal ids leaking into player-facing text. Errors block, warnings
+are acknowledged once and keyed to a hash of the text. If Krator ever emits
+signage, barks, rumours or a world bible, this ports to Python as an assert.
+Not for names.
+
+### 8.8 A per-settlement world bible file
+
+The source's `.lore.md`: parseable frontmatter plus named `##` sections
+(World History as epochs with visible traces, Location Atlas, NPC Roster
+with role / motivation / disposition / secret and reveal condition, Faction
+Dynamics with linked shift ratios such as +20 to one gives -10 to its rival).
+Two rules worth keeping: exits bidirectional with no orphan nodes (a graph
+assert on NAV), and authored entries carry `source: authored` and are never
+overwritten by generation. Generated from the registry and `world/*.json`,
+this would be the natural home for 8.1 and 8.4 and a readable export beside
+`dist/<name>.sim.json`.

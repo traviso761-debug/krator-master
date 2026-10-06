@@ -30,24 +30,50 @@ The one ordered list of Godot port work. The plans hold the why: `GODOT-PLAN.md`
 1. **DONE 2026-10-02:** the audit tool sees the shared exporters; Iziz's and Dalab's city build passes retagged;
    the minimap split into data and host (port lint 16 warnings to 2); the Voth lineage in the hash baseline;
    `core/rand` with golden vectors and its GDScript twin; Ys's city takes it.
-2. **The Godot spike** (GODOT-PLAN.md Phase 7, "The spike"), on Travis's machine: `krand_test.gd` headless; one
-   biome kit's `BIO.export()` and Iziz's `ATMOS.export()` in a scene; the Voth kit meshes by the route Travis's
-   friend used (ask him what it was). Write the importer's gap list into GODOT-PLAN.md.
+2. **The Godot spike** (GODOT-PLAN.md Phase 7, "The spike"). **Underway 2026-10-05:** `godot/` holds the project,
+   five exports (hyperjungle and rift tiles, Girder and Iziz as glTF, Iziz's atmosphere, Yuni's records) and their
+   importers; `krand_test.gd` passes in Godot 4.5; the first gap list is in GODOT-PLAN.md ("The spike: first findings").
+   Open: the look on Travis's machine in Forward+ (`godot/CHECKLIST.md`), the editor's glTF import, and the route
+   Travis's friend used for the Voth kit (ask what it was).
 3. **The Ancients re-vendor session** (`settlements/iziz/KNOWN_ISSUES.md`): Ancients to Iziz to Highlands to Xanadu
    and Reed Lake, and Jimjam, with `--assert`, screenshots and a new baseline. It gates Iziz's audit and its
    material work (M5).
-4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). Still to do: Iziz and Ys. Other builds
+4. **The scoped hand pass** (GODOT-PLAN.md 3.3). **DONE 2026-10-03: the ten biome kits** (tags, split notes, Notes paragraphs; `BIO.download()` split into `core/biome/43-core-export-host.js`, port lint 2 warnings to 1), **and Girder and Voth** (their `PORT.md`: tags and notes for every fragment over 10 KB, split notes, the Notes paragraph of PRNG, noise, `terrainH` and palette copies). **Iziz DONE 2026-10-05** (its `PORT.md`: tags corrected by reading the code, split notes on 90a, 90b, 90c, 85 and the mask readers, the own-copies Notes; Voth's `68-props.js` split note added). Still to do: Ys. Other builds
    keep provisional tags until a port session touches them.
 5. **The biome reseeding event** (biomes/WORLD.md, Order 6): `KRAND` hash and noise, cell seeding, level-free
    records and a baked heightmap in one change, one screenshot set, one baseline rewrite. Brings `core/terrain`'s
    field with one kit as its first consumer. Needs the spike's findings on terrain.
-6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass.
+6. **Ys's P3 placement pass** on `KRAND` (settlements/ys/GODOT.md item 4), as two data passes and one draw pass. **First pass
+   DONE 2026-10-05** (`88-city-place.js` records, `88b-city-draw.js`): open are the bridge graph, the host types (needs
+   the Ancients chain re-vendored into Ys) and the foreign sets (settlements/ys/KNOWN_ISSUES.md).
 7. **The Girder pilot** (core/materials/PLAN.md). **Material half DONE 2026-10-03:** `core/materials/record/` (`KMAT`,
    `TEX.def`, adapters), `tools/textures/pack.py`, Girder on the library (`?mat=proc` for the old look). Open: the
-   four texture gaps (leafy, web, ghostwood, prism gum), the owner's look review, and `core/furnish` with Girder as its
-   first consumer.
-8. **`core/mask` with Iziz's city** as its first consumer, then Iziz's export on the `KRATOR_EXPORT` shape (M5).
+   four texture gaps (leafy, web, ghostwood, prism gum) and the owner's look review. **`core/furnish` DONE 2026-10-05:**
+   Girder, Mav's Refuge, Locus, Highlands and Post-Apoc place through it, fingerprints unchanged (`core/furnish/README.md`).
+   **`core/tags` steps 1 and 2 DONE 2026-10-05:** the registry, vocabulary, label, node test and uid twin; Yuni on it,
+   its records arriving in Godot as node metadata (`core/tags/README.md`). Steps 3 and 4 DONE the same day: core/furnish's five
+   builds register their furniture (fingerprints unchanged); Iziz's `REG` and Voth's `PLACED` are read in. Next: the biome kits, with the
+   reseeding event (`core/tags/PROPOSAL.md`).
+8. **`core/mask` DONE 2026-10-05** (Iziz, Dalab, Erewhon, Roketstad place from it; `core/mask/README.md`). Next: Iziz's export
+   on the `KRATOR_EXPORT` shape (M5).
 9. **The host shell, narrowed**: the biome kits and one settlement per lineage; the rest when next touched.
+
+**Normal maps after the JPEG switch** *(found 2026-10-06; off the critical path, nothing is broken today)*. The library's
+normal maps became `normal.jpg` (JPEG q95, 4:4:4) in `9b46d9e`. Godot does not read the library yet: `godot/krator/kmat.gd`
+loads each build's `tex/` pack, which is WebP. What is left:
+- **40 sets still on `normal.png`**: the ones added on main after the switch (the eastern badlands' and Ys's sets among them;
+  `git grep -l '"normalMap": "normal.png"' -- 'core/materials/**/meta.json'`). Convert them the same way (Pillow,
+  `quality=95, subsampling=0`) and point their `meta.json` at `normal.jpg`, so the library has one format.
+- **`kmat.gd`'s `_tex()` reads only WebP and PNG** (`load_png_from_buffer` for anything not `.webp`). Add a
+  `load_jpg_from_buffer` branch before Godot reads library sets directly, as `GODOT-PLAN.md` plans.
+- **Packed normals are lossy WebP, which is always 4:2:0** (`tools/textures/pack.py`, `webp(..., 92, 'RGB')`): X and Y
+  live in red and green, so the pack halves their resolution, a bigger loss than the JPEG switch avoided. Write packed
+  normals as lossless WebP or PNG.
+- **Re-packing moves the baseline.** A build that re-runs `pack.py` on a converted set gets very slightly different
+  normals (decoded from the JPEG), so its `PORT-BASELINE.json` hash changes with nothing to see. Re-pack Girder, Iziz,
+  Ys, Yuni, Mechs and Motor Vehicles in one change with one baseline rewrite, after the packed-normal format above.
+- `core/materials/record/23-mat-record.js:59` still names `normal.png` in its convention string; change it in that
+  same change, since it alters Girder's built page.
 
 ## Features
 
@@ -365,6 +391,12 @@ with no extra mesh.
   No Krator build does this (`src/core/shell.js:31-43`). One place for it is `gallery/krator-bar.js` `tune()`.
 - **[web]** Isolate errors per subsystem in the frame loop. In Voth, `updateLife`, `skyAdvance` and the HUD
   sit outside the try (`settlements/voth/src/80-camera.js:303-319`), so one throw means it never draws again.
+- **[web]** Isolate errors per pass in the build, too (`src/core/diag.js`, `section(name, fn)`: the error goes on
+  screen under the pass's name and the next pass runs). In Krator a throw at the top level of one fragment stops
+  every fragment after it, so a broken flora pass leaves a blank world; Locus's `window.onerror`
+  (`settlements/locus/src/00-head.html:96`) reports it but does not carry on. The fragments share one scope, so
+  wrap each pass's call (terrain, buildings, flora, life, dressing), not each file. Belongs in `core/host/`
+  (`GODOT-PLAN.md`, `92-host-panel.js`) beside the loop's isolation above.
 - **[web]** Input guards: clear held keys and pointers on blur and on hidden tabs; end a pointer when
   `buttons===0`; ignore keys while typing (`src/core/input.js`).
 - **[web]** Leave a cut plane installed and park it at `constant=1e7`, instead of swapping `clippingPlanes`
@@ -391,6 +423,17 @@ with no extra mesh.
 - **[web]** One shared polygon-offset ladder. **[G data]** A shared mitred ribbon helper for roads, rivers and
   walls, whose output is plain geometry.
 
+## Surfaces *(spiderbench, github.com/xikhar/spiderbench, read 2026-10-05; detail in `core/materials/PLAN.md`, "From spiderbench")*
+
+- **[G shader]** Analytic coursing: ashlar and brick joints from UV math and a per-block hash, not a painted
+  canvas. A `coursing` TEX kind, pilot on Voth's canton walls.
+- **[G shader]** `breakup` gains `rough` and `grime`; grime samples one shared streak sheet (8 by 16 masks, each
+  opening picks a cell by hash). One generated image; prompt to write in PLAN.md.
+- **[G native]** A detail normal at close range: record field `detail`, Godot `detail_normal`; one shared
+  `detail.*` library set.
+- **[G data]** Any hash shared between placement code and a shader is written once in `core/` with GDScript and
+  `.gdshader` twins and a comparison test.
+
 ## Worlds *(Menagerie)*
 
 These are the best Godot candidates: generators whose output is data.
@@ -413,6 +456,14 @@ These are the best Godot candidates: generators whose output is data.
 - **[G data]** Chunks generated from the seed alone, with doors forced at chunk edges
   (`src/backrooms/level.js`). This is the same tile-by-tile loading `biomes/WORLD.md` plans.
 - **[G data]** Timed set pieces as pure functions of t, publishing signals on a bus (`src/fleshpit/incident.js`).
+- **[G data] + [G shader]** Tides: one sea level that everything at the shore reads (`src/beachcity/details.js`,
+  `ctx.sea`). Beach City's holds the tide (high water, half a metre lower twice a day by the clock, or held low or
+  high by a button, easing rather than jumping), a swell of a few centimetres and the events' drain and surge; the
+  water sheet, the surf lines, the boats and the swimmers all follow it, and ground below the waterline is
+  coloured wet sand and sea bed. For Krator: `seaLevel(t)` as a pure function in `core/atmos` beside the wave
+  field, driven by `core/clock`, with the build's shore lines, moorings and wet-ground mask reading it rather
+  than a constant. Port, Ys and the Ring Sea are the first takers. In Godot it is one global shader parameter
+  plus the same function in GDScript for anything that floats.
 
 ## Lava *(Menagerie: the fire on Kharak, `src/homeworld/kharak.js:15-61`)*
 

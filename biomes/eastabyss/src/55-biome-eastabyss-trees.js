@@ -501,33 +501,10 @@ EASTABYSS.buildTrees=function(R,q){
     if(T.lv===0&&!opt.far){T.small=true;TREES.push(T);n++;return;}
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!opt.inWater,pad:1});
   return n;}
- // canopy of the jungle (the fork scale-tree and the bell-bark in stands), the sky scale-trees above it
- pass(0,118,(Z)=>Z.jung*.85,{hero:1100,mid:1900,far:true,pad:8,patch:.3});
- // the rope araucarias take the upper slope before the canopy stands claim it (the savannah proper is a sliver inside the disc)
- pass(17,34,(Z)=>Z.sav*.7+Z.jung*smooth(.2,.55,Z.up)*.6,{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.007});
- (function(){let n=0;BIO.grid(44,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.78*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
-   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;})();
- pass(3,30,(Z)=>Z.jung*.55+Z.marsh*.08*smooth(.02,.08,Z.up)+Z.jung*Z.flow*.3,{hero:900,mid:1600,far:false,pad:2.5,lodK:.5});
- pass(4,36,(Z)=>Z.jung*.45+Z.sav*.22*(1-Z.up)+Z.marsh*.04,{hero:800,mid:1400,far:false,pad:2,lodK:.6});
- pass(5,20,(Z)=>(Z.jung+Z.marsh)*(Z.flow*.7+.05)*.8,{hero:900,mid:1400,far:false,pad:1.5,lodK:.7,patch:.5});
- // the marsh: knee-trees (the lusher the wetter -- deltas and the west), stilt-woods at the water, palmettos throughout
- pass(6,52,(Z)=>Z.marsh*smooth(.70,.96,Z.wet)*.56+Z.marsh*Z.flow*.3,{hero:950,mid:1800,far:true,pad:5,patch:.45,patchScale:.006});
- pass(7,36,(Z)=>Z.shore*.32+Z.marsh*Z.flow*.22,{hero:900,mid:1400,far:false,pad:2.5,lodK:.7,inWater:true});
- pass(8,40,(Z)=>Z.marsh*(.2+.25*smooth(.85,.96,Z.wet))+Z.jung*.2*(1-Z.up)+Z.sav*.05+Z.shore*.2,{hero:900,mid:1500,far:false,pad:2,lodK:.6});
- // the savannah: umbrella trees thinning with height; the flats: jade shrubs along the river only
- pass(9,34,(Z)=>Z.sav*(1-smooth(.75,1,Z.up)*.75)*.8,{hero:1000,mid:1800,far:true,pad:3,patch:.5});
- pass(10,13,(Z)=>Z.flat*Z.flow*.85,{hero:1000,mid:1500,far:false,pad:1,lodK:.4,patch:.4});
- // the new Devonian set: tide lycopsids in the shallows and the deltas, Calamophyton on the arid river banks, Sanfordacaulis where it is wet
- pass(11,30,(Z)=>Z.shore*.5+Z.marsh*Z.flow*.3,{hero:900,mid:1500,far:false,pad:2.5,lodK:.6,inWater:true});
- pass(12,14,(Z)=>Z.flat*Z.flow*.75+Z.sav*Z.flow*.5,{hero:1000,mid:1600,far:false,pad:1.5,lodK:.5,patch:.4});
- pass(13,30,(Z)=>Z.marsh*.26+Z.jung*.16*(1-Z.up)+Z.shore*.15,{hero:900,mid:1500,far:false,pad:2,lodK:.6});
- // the coal-swamp set: seal-trees in the wet marsh and the lower jungle, cordaites at the shore and up the rivers,
- // seed ferns under the canopy, rope araucarias on the upper slope, beard oaks on the marsh hummocks, water palms in the shallows
- pass(14,36,(Z,x,z)=>Z.marsh*smooth(.75,.95,Z.wet)*.22*(1-hummock(x,z)*.7)+Z.jung*.2*(1-Z.up)+Z.jung*Z.flow*.2+Z.shore*.1,{hero:950,mid:1700,far:true,pad:3,patch:.5,patchScale:.007});
- pass(15,42,(Z)=>Z.shore*.32+Z.marsh*.16*smooth(.6,.9,Z.wet)+Z.marsh*Z.flow*.25+Z.jung*.16*(1-Z.up),{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.006});
- pass(16,26,(Z)=>Z.jung*.42+Z.marsh*.12*smooth(.7,.95,Z.wet)+Z.jung*Z.flow*.2,{hero:850,mid:1400,far:false,pad:2,lodK:.6});
- pass(18,62,(Z,x,z)=>Z.marsh*.7*hummock(x,z)+Z.shore*.06*(1-Z.flow)*(1-Z.salt),{hero:950,mid:1700,far:true,pad:7,patch:.45,patchScale:.005});
- pass(19,28,(Z)=>Z.shore*.34+Z.marsh*Z.flow*.22+Z.jung*Z.flow*.1,{hero:900,mid:1400,far:false,pad:2,lodK:.6,inWater:true});
+ // the passes, in order, from the data table below (EASTABYSS.PASSES); the canopy stands are the one pass with its own body
+ EASTABYSS.PASSES.forEach(P=>{if(!P.stand){pass(P.sp,P.cell,P.accept,P.opt);return;}
+  let n=0;BIO.grid(P.cell,0,R,(x,z)=>{const Z=zones(x,z);return P.accept(Z,x,z)*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
+   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
  // build
  TREES.forEach((T,i)=>{if(T.lv===0){if(T.small)buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,knees:st.knees,ropes:st.ropes,lianas:st.lianas,
@@ -563,4 +540,49 @@ EASTABYSS.buildReedBeds=function(R,q){reseed(570011);q=q==null?1:q;R=R||3000;
   {patch:.6,patchScale:.012,noMask:true,pad:.5});
  return{beds:BEDS.length,stems:stems,farBeds:far};};
 EASTABYSS._canopyH=function(x,z){let h=0;for(const T of EASTABYSS.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
+
+// ---------------------------------------------------------------- the passes (data: species, cell, acceptance from the zones, options)
+// In buildTrees' order (the order is the kit's random stream: do not reorder). opt: hero/mid the LOD radii, far whether a
+// tree past mid becomes an impostor (false: a small species' far hull), pad keep-clear, lodK thinning with distance, patch /
+// patchScale the stand patchiness, inWater a species that stands in the shallows. stand:true is the canopy stands' pass:
+// its species is the stand's (1 fork scale-tree or 2 bell-bark, BIO.stand(x,z,2,.3,.0022,71)), clear of obstacles by 7 m.
+EASTABYSS.PASSES=[
+ // canopy of the jungle (the fork scale-tree and the bell-bark in stands), the sky scale-trees above it
+ {sp:0,cell:118,accept:(Z)=>Z.jung*.85,opt:{hero:1100,mid:1900,far:true,pad:8,patch:.3}},
+ // the rope araucarias take the upper slope before the canopy stands claim it (the savannah proper is a sliver inside the disc)
+ {sp:17,cell:34,accept:(Z)=>Z.sav*.7+Z.jung*smooth(.2,.55,Z.up)*.6,opt:{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.007}},
+ {sp:[1,2],stand:true,cell:44,accept:(Z)=>Z.jung*.78,opt:{hero:1000,mid:1800,far:true,pad:5,clear:7,patch:.55,patchScale:.008}},
+ {sp:3,cell:30,accept:(Z)=>Z.jung*.55+Z.marsh*.08*smooth(.02,.08,Z.up)+Z.jung*Z.flow*.3,opt:{hero:900,mid:1600,far:false,pad:2.5,lodK:.5}},
+ {sp:4,cell:36,accept:(Z)=>Z.jung*.45+Z.sav*.22*(1-Z.up)+Z.marsh*.04,opt:{hero:800,mid:1400,far:false,pad:2,lodK:.6}},
+ {sp:5,cell:20,accept:(Z)=>(Z.jung+Z.marsh)*(Z.flow*.7+.05)*.8,opt:{hero:900,mid:1400,far:false,pad:1.5,lodK:.7,patch:.5}},
+ // the marsh: knee-trees (the lusher the wetter -- deltas and the west), stilt-woods at the water, palmettos throughout
+ {sp:6,cell:52,accept:(Z)=>Z.marsh*smooth(.70,.96,Z.wet)*.56+Z.marsh*Z.flow*.3,opt:{hero:950,mid:1800,far:true,pad:5,patch:.45,patchScale:.006}},
+ {sp:7,cell:36,accept:(Z)=>Z.shore*.32+Z.marsh*Z.flow*.22,opt:{hero:900,mid:1400,far:false,pad:2.5,lodK:.7,inWater:true}},
+ {sp:8,cell:40,accept:(Z)=>Z.marsh*(.2+.25*smooth(.85,.96,Z.wet))+Z.jung*.2*(1-Z.up)+Z.sav*.05+Z.shore*.2,opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
+ // the savannah: umbrella trees thinning with height; the flats: jade shrubs along the river only
+ {sp:9,cell:34,accept:(Z)=>Z.sav*(1-smooth(.75,1,Z.up)*.75)*.8,opt:{hero:1000,mid:1800,far:true,pad:3,patch:.5}},
+ {sp:10,cell:13,accept:(Z)=>Z.flat*Z.flow*.85,opt:{hero:1000,mid:1500,far:false,pad:1,lodK:.4,patch:.4}},
+ // the new Devonian set: tide lycopsids in the shallows and the deltas, Calamophyton on the arid river banks, Sanfordacaulis where it is wet
+ {sp:11,cell:30,accept:(Z)=>Z.shore*.5+Z.marsh*Z.flow*.3,opt:{hero:900,mid:1500,far:false,pad:2.5,lodK:.6,inWater:true}},
+ {sp:12,cell:14,accept:(Z)=>Z.flat*Z.flow*.75+Z.sav*Z.flow*.5,opt:{hero:1000,mid:1600,far:false,pad:1.5,lodK:.5,patch:.4}},
+ {sp:13,cell:30,accept:(Z)=>Z.marsh*.26+Z.jung*.16*(1-Z.up)+Z.shore*.15,opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
+ // the coal-swamp set: seal-trees in the wet marsh and the lower jungle, cordaites at the shore and up the rivers,
+ // seed ferns under the canopy, rope araucarias on the upper slope, beard oaks on the marsh hummocks, water palms in the shallows
+ {sp:14,cell:36,accept:(Z,x,z)=>Z.marsh*smooth(.75,.95,Z.wet)*.22*(1-hummock(x,z)*.7)+Z.jung*.2*(1-Z.up)+Z.jung*Z.flow*.2+Z.shore*.1,opt:{hero:950,mid:1700,far:true,pad:3,patch:.5,patchScale:.007}},
+ {sp:15,cell:42,accept:(Z)=>Z.shore*.32+Z.marsh*.16*smooth(.6,.9,Z.wet)+Z.marsh*Z.flow*.25+Z.jung*.16*(1-Z.up),opt:{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.006}},
+ {sp:16,cell:26,accept:(Z)=>Z.jung*.42+Z.marsh*.12*smooth(.7,.95,Z.wet)+Z.jung*Z.flow*.2,opt:{hero:850,mid:1400,far:false,pad:2,lodK:.6}},
+ {sp:18,cell:62,accept:(Z,x,z)=>Z.marsh*.7*hummock(x,z)+Z.shore*.06*(1-Z.flow)*(1-Z.salt),opt:{hero:950,mid:1700,far:true,pad:7,patch:.45,patchScale:.005}},
+ {sp:19,cell:28,accept:(Z)=>Z.shore*.34+Z.marsh*Z.flow*.22+Z.jung*Z.flow*.1,opt:{hero:900,mid:1400,far:false,pad:2,lodK:.6,inWater:true}},
+];
+
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// make(sp,x,y,z): the pass's own tree record (H, rb, crownR, seed and wet from the kit's stream and fields: reseed first
+// for a repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,
+// 0 far: the impostor for a species with one, the far hull for a small one) and nothing else: no keep-clear entry, no
+// TREES record. A town's street trees (Locus, Mungo) and an open world's variants are grown with these.
+EASTABYSS.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+EASTABYSS.grow=function(T,lv){means();
+ const st={trunk:0,limb:0,far:0,farSmall:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,whorls:0,knees:0,fans:0,ropes:0,lianas:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){const P=(EASTABYSS.PASSES||[]).find(P=>P.sp===T.sp||(P.stand&&P.sp.indexOf(T.sp)>=0));if(P?P.opt.far:SP[T.sp].H[1]>=20)buildFar(T,T.seed%7,st);else buildFarSmall(T,st);}
+ else B[T.sp](T,st,lv);return st;};
 })();

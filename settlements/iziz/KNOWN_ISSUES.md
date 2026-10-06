@@ -243,7 +243,7 @@ pole with a crossarm, is a rewrite and has no counterpart here. The closest are 
 mean offsetting every call to keep the city where it is, and would gain nothing. The catalog copy is the centred one.
 
 ## Open after merging main (2026-10-01): not addressed
-- [ ] Ancients vendor drift from main. Main's Ancients work (towers restand, Hanging City, shared-code pass, Hexahedron
+- [x] Ancients vendor drift from main. Main's Ancients work (towers restand, Hanging City, shared-code pass, Hexahedron
       polish) changed `kits/ancients/src`, so `--vendor-check` here reports 28 drifted fragments: 10-core, 32-surfaces,
       34-kitdefs, 36-decor, 38-helpers2, 50-registry, 69-mat-salvage, 77z-iziz-style and the kit-type fragments
       (40-factory-extras through 89-lab). The same shared fragments drift in Highlands (10-core, 32-surfaces,
@@ -251,3 +251,7 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
       Xanadu and Reed Lake vendor from Highlands and will follow. Re-vendor the chain together
       (Ancients -> Iziz -> Highlands -> Xanadu / Reed Lake, and Jimjam), rebuild, `--assert` and look: the changes
       alter geometry and looks. Its own session.
+      — 2026-10-06: re-vendored verbatim from `kits/ancients/src` down the chain (Iziz 28, Highlands 7, Dalab 8 incl.
+      54-mat-concrete, Jimjam 6; Xanadu and Reed Lake their 7 Ancients fragments from Highlands). Every copy was the same
+      stale snapshot, no local edits. Brings the `tick()` frame hook, `apron(...,mat)`, `MAT.darkSurf` tubes and the
+      `bodyGroup` fix (decay 3 stands full height). `--vendor-check`: Iziz 35, Highlands 13, Dalab 13 identical.

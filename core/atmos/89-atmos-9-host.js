@@ -2,6 +2,13 @@
 // [web]. Everything here touches the DOM, so it is kept out of the engine-neutral fragments (GODOT-PLAN.md Phase 1:
 // the host owns the DOM). It moves to core/host/ when that exists; a game engine has its own UI and file saving.
 (function(){const A=ATMOS;
+ // the stage (core/biome/44-core-stage.js: KSTAGE, when the page has it): ATMOS.export(opt) also carries the page's light,
+ // fog, tonemapping and sky panorama, taken from opt.at (default: above the first lamp). opt.stage:false leaves it out.
+ const _export=A.export;
+ A.export=opt=>{const o=_export();opt=opt||{};
+  if(opt.stage!==false&&typeof KSTAGE!=='undefined'){const l=A.lamps[0],at=opt.at||(l?[l[0],l[1]+40,l[2]]:[0,60,0]);
+   o.stage=KSTAGE.capture({at,sky:opt.sky==null?1024:opt.sky,box:opt.box,step:opt.step,ground:opt.ground});}
+  return o;};
  // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
  A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
   for(const m of W.MODES){const op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);}sel.value=W.mode;sel.onchange=()=>{W.mode=sel.value;};el.appendChild(sel);return sel;};

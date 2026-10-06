@@ -90,7 +90,8 @@ BIO.init({THREE:THREE,scene:scene,terrainH:terrainH,
  obstacles:OBSTACLES,ticks:tick,seed:7,
  // the LOD spine: a row of origins along z=0 from the west marsh to the shelf
  origin:[[-2900,0],[-2000,0],[-1100,0],[-200,0],[700,0],[1500,0],[2200,0],[2800,0],[3300,0]],center:[0,0],
- fields:FIELD,err:reportErr});
+ fields:FIELD,err:reportErr,
+ register:REGISTER,eye:()=>[camera.position.x,camera.position.y,camera.position.z]});   // the fauna (75) registers its flocks and reads the viewer
 BIO.setSun([-1200,900,-600]);
 // ---------------------------------------------------------------- the ground
 // One mesh. Painted by zone from a coarse cache of the fields (the fields cost

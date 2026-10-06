@@ -1,0 +1,121 @@
+[
+ {
+  "src": "metal_painted-chipped.webp",
+  "out": "core/materials/library/metal.painted.chipped",
+  "record": {
+   "id": "metal.painted.chipped",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0.2,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Riveted steel armour plate under old paint: large overlapping plates with rows of round domed rivets along the seams, the paint worn through to bare dark grey metal along the plate edges, around each rivet and in long scrapes and chips, a few thin rust runs below the seams, matte paint with faint brush marks. Near-colourless: pale grey paint over darker grey bare metal, so the paint can be tinted. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.25,
+   "lift": 0.1,
+   "normal_strength": 1.0,
+   "delight": 0.5,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "metal_joint-greasy.webp",
+  "out": "core/materials/library/metal.joint.greasy",
+  "record": {
+   "id": "metal.joint.greasy",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.6,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Machined dark steel of heavy hydraulic machinery, fine lathe and file marks, smears and drips of old black grease, grit worked into the grease, small dents and bright scratches through the dark finish. Near-colourless: dark grey only, so it can be tinted.",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.5,
+   "rough_var": 0.3,
+   "lift": 0.1,
+   "normal_strength": 0.9,
+   "delight": 0.5,
+   "dark_gloss": 0.3
+  }
+ },
+ {
+  "src": "hair_crest.webp",
+  "out": "core/materials/library/hair.crest",
+  "record": {
+   "id": "hair.crest",
+   "family": "hair",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dense horsehair plume, long coarse straight strands combed parallel and running top to bottom, slight waves and a few stray crossing hairs, natural sheen along the strands. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+    "licence": "generated for this project by its owner"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "normal_strength": 0.8,
+   "delight": 0.4,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "iziz_sun-banner_period.png",
+  "out": "core/materials/patterns/iziz/sun-banner",
+  "record": {
+   "id": "iziz/sun-banner",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    1.46
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md template, pattern form: woven Iziz banner cloth, cream sixteen-rayed suns in a half-drop grid on Iziz orange (#e07a2a), deep red (#9c2d2d) outlines, teal (#2f8f8a) stripes (kits/mechs/KNOWN_ISSUES.md)",
+    "licence": "generated for this project by its owner",
+    "note": "cropped from iziz_sun-banner.webp to two vertical repeats (916 px) and two horizontal (1254 px) before processing"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.0,
+   "pattern": true,
+   "normal_strength": 0.5,
+   "delight": 0.3,
+   "keep_aspect": true
+  }
+ }
+]

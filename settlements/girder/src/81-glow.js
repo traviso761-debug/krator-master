@@ -41,6 +41,20 @@ var haloPts = (function(){
   var p=new THREE.Points(g,haloMat); p.frustumCulled=false; p.renderOrder=5; p.visible=false; scene.add(p); return p;
 })();
 
+/* the lamps as data, for an engine that draws its own halos and lights (godot/tools/export_spike.py writes lamps.json):
+   every lamp in box [x0, z0, x1, z1] (all without one), its halo's colour (sRGB hex) and world size (the point's
+   pixel size at the page's scale, as metres: aSize * 0.58 at a 60 degree view), its light radius and strength. The
+   page lights them by DAYNIGHT_NIGHT_K, not by hours; hours [17.2, 30.8] is that schedule's dusk and dawn (core/atmos's
+   hours run on past midnight from noon: 30.8 is 06:48 the next morning). */
+function glowLamps(box){
+  var out = [], wh = '#'+new THREE.Color(PAL.glowWarm).getHexString(), ch = '#'+new THREE.Color(PAL.glowCool).getHexString();
+  NL_LAMPS.forEach(function(L){
+    if(box && (L[0]<box[0] || L[0]>box[2] || L[2]<box[1] || L[2]>box[3])) return;
+    out.push({ at:[+L[0].toFixed(3), +L[1].toFixed(3), +L[2].toFixed(3)], amp:L[3], radius:L[4], cool:!!L[5], color:L[5]?ch:wh,
+      size:+((2.2+1.8*L[3])*0.58).toFixed(3), hours:[17.2, 30.8] }); });
+  return { format:'krator-lamps', version:1, convention:'metres, +Y up; at is the flame; color sRGB; size the halo\'s world diameter', lamps:out };
+}
+
 /* ---- window panes ---- */
 var NWIN_ON0 = 17.15, NWIN_ONS = 3.9, NWIN_OFF0 = 20.8, NWIN_OFFS = 4.2, NWIN_OFFP = 1.6, NWIN_DAWN = 30.0;
 function nwT(hour){ return hour >= 12 ? hour : hour + 24; }

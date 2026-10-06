@@ -20,7 +20,8 @@ In a kit's page, after it has built (the probe's `window._ready`):
 
 ```js
 BIO.export()                                   // the whole build, one object
-BIO.export({box:[x0,z0,x1,z1]})                // one tile: instances whose origin, triangles whose centroid lie in it
+BIO.export({box:[x0,z0,x1,z1]})                // one tile: instances whose origin lies in it, and whole bucket pieces whose
+                                               // foot does (opt.cut:'triangle' clips by triangle centroid instead)
 BIO.export({kit:'rift', textures:false})       // one kit's meshes; leave the PNGs out
 BIO.download('rift-tile-0-0', {box:[0,0,500,500]})   // saves rift-tile-0-0.biome.json
 ```
@@ -35,10 +36,17 @@ Metres, +Y up, x east, z south, right-handed: glTF's convention and Godot's. Mat
 columns as the basis and the fourth as the origin. Godot's forward is -Z; a plant has no
 forward, a fauna body is modelled with +X forward and +Y up (`35-core-anim.js`).
 
+**Texture rows.** Each PNG is the image as stored. A canvas texture has `flipY:true` (three uploads it flipped:
+the image's top row sits at v=1), a DataTexture (the kits' leaf atlases) has `flipY:false` (row 0 at v=0). Godot puts
+the image's top row at v=0, so an importer flips v (`1 - v`) only for `flipY:true`. Before 2026-10-05 the export wrote
+no image for a DataTexture at all (the spike found it: hyperjungle's leaf cards came out solid).
+
 Colours are **linear** (the core converts every designer's sRGB hex once, at `BIO.put` and
 at every bucket write). In a Godot shader read `COLOR` and the custom data as they are; do
 not mark them `source_color`. Texture PNGs are sRGB images: declare their samplers
-`source_color`.
+`source_color`. **Material colours are linear too**: `colour` is three's working value written as hex (the pages
+render with `outputEncoding = sRGB`, so three treats `material.color` as linear). Read it with `Color.html()` and do
+not convert it. `convention.colours` says this per table (since 2026-10-05).
 
 ## The object
 
@@ -48,10 +56,12 @@ not mark them `source_color`. Texture PNGs are sRGB images: declare their sample
 | `convention` | units, up, axes, handedness, matrix order, colour space (above) |
 | `core`, `kits` | the core's version, the kits resident in the page (`BIO.kit`) |
 | `box` | the tile, or null |
+| `ground` | with a box: the ground under the tile, `{x0, z0, step, nx, nz, heights, water}` (typed arrays; row j is z0 + j*step). The host's `terrainH` and `waterH` sampled on a grid (`opt.ground`: the step, 2 m by default; `false` leaves it out). A stand-in for the `core/terrain` bake (since 2026-10-05) |
+| `stage` | with a box: the page's look (`core/biome/44-core-stage.js`, "The stage" below); `opt.stage: false` leaves it out, `opt.sky` sets the panorama's width (1024) |
 | `items` | one record per instanced mesh (below) |
 | `buckets` | one record per merged mesh (below) |
 | `materials` | one record per material (below) |
-| `textures` | one record per texture: `id`, `wrap`, `repeat`, `size`, `png` (a data URL) |
+| `textures` | one record per texture: `id`, `wrap`, `repeat`, `flipY`, `size`, `png` (a data URL, encoded by the host's `BIO.texPNG`), or `error` saying why there is no image |
 | `stats` | counts: items, instances, buckets, triangles |
 
 Typed arrays are `{type, n, b64}`: the array's bytes, base64. `Float32Array`,
@@ -72,15 +82,22 @@ and only the triangles inside it, so an importer drops unused vertices).
 vertex-coloured textured wood; `anim`: an animated fauna body; `plain`: anything else),
 `key` (the kit's own name for it), `type` (the three.js material type), `colour`, `map` (a
 texture id), `alphaTest`, `doubleSided`, `vertexColours`, `transparent`, `options` (the
-hook's options: sway amplitude, two-tone and so on), `hooked` (a shader hook a port must
+hook's options: sway amplitude, two-tone and so on), `sway` (the foliage sway as data: weight =
+`c + dot(w, position)`, amplitude `a`, `axis`; or `{text}` for a GLSL weight it does not know), `hooked` (a shader hook a port must
 rewrite).
 
-Not every hook has a core `kind` yet. Kits write their own: the iridescent bark
-(`BIO.iridBarkMat`, in eastabyss, nhighlands, rift and xanadu), the two-tone gloss bark
-(`barkMat2`, nwlowlands and swlowlands), the impostor materials (`farMat`, rift and swlowlands),
-nhighlands' hanging sway on bulbs and pods, and swbay's fauna material. They export as
-`hooked:true` with whatever `kind` they inherited (rift's impostor says `bark`). Each is to become
-a core kind (`irid`, `gloss`, `far`, `hang`, `anim`) whose options are data, so that `kind`
+The kits' own hooks are named since 2026-10-05: each sets `userData.bio`, so the export writes its `kind`, `key`
+and options as data (the hook code still lives in the kit):
+
+| `kind` | Kits | Options | Godot (`godot/shaders/`) |
+|---|---|---|---|
+| `irid` | eastabyss, nhighlands, rift, xanadu (`BIO.iridBarkMat`) | `a`, `b`: the tints facing the eye and at grazing angles | `bark.gdshader` mode 1 |
+| `gloss` | nwlowlands, swlowlands (`barkMat2`) | `alt` (linear), `mean`, `gain`, `gloss`: the map is data (red brightness, green a mask) | `bark.gdshader` mode 2 |
+| `far` | rift, swlowlands (`farMat`): the far impostors | `pack` (`c2-rule`: rift, `gloss`: swlowlands) and `uv`: what the impostor packs into its uvs | `bark.gdshader` modes 3, 4 |
+| `hang` | nhighlands' glowing bulbs and pods | `swayA`, `swayW`, `night` (the emissive intensity by day and by night); the material's `emissive` | `bark.gdshader` mode 5 |
+| `anim-phase` | swbay, nwbay fauna (`animMat`) | `mode` (bird, swim, walk), `attribute: 'aPh'` | not yet |
+
+They still export `hooked:true`. Each is to become a core kind whose hook lives once in the core, so that `kind`
 names the library shader (`GODOT-PLAN.md`, rule 7), and the record then moves onto the plan's
 shared material vocabulary (Phase 3: `family`, `colour`, `map`, `roughness`, `metal`,
 `emissive`, `doubleSided`, `alphaTest`, `hook`).
@@ -89,6 +106,26 @@ shared material vocabulary (Phase 3: `family`, `colour`, `map`, `roughness`, `me
 mesh is drawn while the camera is within `range` metres of the chunk (`BIO.LOD.chunk`, 1200 m)
 and at least `minRange` from it. In Godot that is `visibility_range_end` and
 `visibility_range_begin` on the node, with a fade margin.
+
+## The stage
+
+`KSTAGE.capture()` (`core/biome/44-core-stage.js`, [web], export time only) records how the page looks, so a port
+starts from the same light instead of guessing. Every Krator page can call it; `BIO.export` and `ATMOS.export`
+add it as `stage`, and `godot/tools/export_spike.py` writes it as `stage.json` for the glTF cases.
+
+| Key | What | Godot (`godot/krator/stage.gd`) |
+|---|---|---|
+| `renderer` | `toneMapping` (`ACESFilmic`, `Reinhard`, ...), `exposure`, `output` encoding | `Environment.tonemap_mode`, `tonemap_exposure` |
+| `lights` | `directional`: `dir` (light to target, unit), `colour`, `intensity`, `shadow`, brightest first; `hemisphere` `{sky, ground, intensity}`; `ambient`; `points` (a count) | the first is the sun, the rest fill lights; `light_energy` = intensity (three's legacy units). Hemisphere and ambient become a colour ambient |
+| `fog` | `{type:'exp2', colour, density}` or `{type:'linear', colour, near, far}` | exponential fog with density `0.8326 * d` (one exponential matched to three's squared one at the half-way distance); depth fog for linear |
+| `background` | a colour, or `'texture'` / `'cube'` | the clear colour when there is no sky |
+| `environment` | `{specular, diffuse, source}` when the page lights its standard materials from its sky (`scene.environment`: core/atmos's skylight), else null | `reflected_light_source = SKY` on the panorama, `ambient_light_sky_contribution = diffuse`; disabled reflections otherwise |
+| `sky` | `{png, width, height, at, near}`: what the page draws past `near` metres (half the box's shorter side, so the panorama starts where the export stops; `opt.skyNear` overrides, 1500 without a box), rendered from `at` into a cube and unwrapped: u = 0.5 looks down -z, u = 0.75 down +x, v = 0 is straight up | `PanoramaSkyMaterial` |
+| `ground` | on the export's grid (`x0, z0, step, nx, nz`): `uv` (2 a sample) and `colour` (3, or null) read from the mesh under each point, and its `material` (`colour`, `map` as a PNG, `repeat`, `offset`, `flipY`, `vertexColours`, `roughness`, `hooked`); `mesh` names it, `uvFit` says the uvs are an exact affine fit | `shaders/ground.gdshader` on the heightfield |
+
+Colours are three's linear working values, as everywhere in this export: Godot's light, fog and ambient colours are
+sRGB, so `stage.gd` converts them (`linear_to_srgb`). The sky PNG is already sRGB. What it cannot see: shader hooks
+on the ground (`hooked`), fog written in a ShaderMaterial, and anything a page changes per frame (it is one frame).
 
 ## In Godot
 
@@ -141,12 +178,13 @@ Items in `TODO.md` ("Biomes: the port plan's findings"); the order is `WORLD.md`
 - Placement records without an LOD level (today `T.lv` comes from the showcase's LOD spine,
   `BIO.lodD`), in the export beside the meshes.
 - Stand-ins and far impostors as explicit LOD levels of the record they replace.
-- Ground height from the `core/terrain` heightmap, not each host's `terrainH` closure.
+- Ground height from the `core/terrain` heightmap, not each host's `terrainH` closure. *(A sampled stand-in, the
+  export's `ground`, since 2026-10-05.)*
 - Trees as a variant library by default, with hero trees opt-in per record (`hero`, set by a
   site or a hero zone) and baked per tile; a preview switch between all heroes and opt-in only.
 - Tags, Köppen and deterministic ids on the records, items and buckets (for `core/tags`).
-- The kits' shader hooks as core material kinds; materials on the plan's shared vocabulary; a
-  `convention.colour` per table (this export is linear, the atmosphere's sRGB).
+- The kits' shader hooks as core material kinds (named as data since 2026-10-05; the hook code is still each
+  kit's); materials on the plan's shared vocabulary. *(`convention.colours` per table: done 2026-10-05.)*
 - `BIO.download()` moved to the host (`core/host`): the export's one browser line. *(Split out to `core/biome/43-core-export-host.js` [web] 2026-10-03; it joins `core/host/` in Phase 1.)*
 - `BIO.export` folded into `core/export/` (`krator-world`, Phase 4). (`tools/audit_port.py` sees it in every
   build that lists `42-core-export.js` since 2026-10-02.)

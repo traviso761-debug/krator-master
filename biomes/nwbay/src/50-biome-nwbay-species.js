@@ -82,6 +82,14 @@ Object.assign(PAL,{
  pod:[0xe0862a,0xd07a24,0xf09a3a],
  shroom:[0xc8a060,0xb08a50,0xd8b878,0x8a6a4a,0xe0d0a0,0x7a5a3a],
  fungus:[0x7a2a3a,0x5a2a5a,0xb04a3a,0xc89a4a],
+ // the Madagascarene flora of the tsingy and the dolines
+ wandLeaf:[0x5a8a3a,0x6a9a40,0x4e7a34,0x78a448],                 // the spinewand's tiny round leaves, pressed along the wands
+ wandBloom:[0xe8d8a8,0xf0e0b8,0xc83a3a,0xd84a40],                // cream tufts, and the odd crimson one
+ bottleLeaf:[0x2e5a2c,0x36662e,0x284e26,0x426e34],               // the rock bottle's dark glossy straps
+ bottleBloom:[0xf0d040,0xf8e060,0xe8c030],                       // its yellow flowers
+ ravenala:[0x3e7a3a,0x4a8a40,0x356e34,0x5a9446],                 // the traveller's fan's paddles
+ ravenalaOld:[0x8a7a40,0x7a6a3a,0x9a8a4a],                       // its torn, yellowing outer leaves
+ ravenalaSeed:[0x2a6ad0,0x3a7ae0,0x2050b0],                      // the blue arils (canon: iridescence and odd blues in the dolines)
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -140,6 +148,19 @@ NWBAY.SPECIES=[
   H:[2.8,5.2],rb:[.02,.03],crownR:[.3,.5],barkK:4,bark:[0x7a8a4a,0x6a7a3c,0x8a9a52],
   leaf:[0x6a8a3a,0x7a9a44,0x8a9a50,0x9aa058,0x5a7a34],use:'reed mats, thatch, cordage, reed boats',bed:{R:[7,18],spacing:1.35},zone:'still shallow water: the lagoons, the delta, the lowland reach',source:'eastabyss',
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
+ // THE MADAGASCARENE FLORA (Bemaraha and the Spiny Forest): the tsingy, the dry slope, the dolines' floors
+ /*16*/{key:'spinewand',name:'Spinewand',/* the octopus tree (Alluaudia, Didierea): grey-green spiny wands rising from one foot, curving out then up, tiny round leaves pressed along them, cream tufts at the tips */H:[8,16],rb:[.35,.6],crownR:[3,6],barkK:2,bark:[0x8e9a84,0x7e8a74,0x9aa490],
+  leaf:[0x5a8a3a,0x6a9a40,0x4e7a34,0x78a448],wands:[4,9],zone:'the tsingy, the dry upper slopes',source:'new (Madagascar)',
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*17*/{key:'rockbottle',name:'Rock bottle',/* Pachypodium: a swollen silver bottle of a trunk, spined, a few stubby arms each ending in a rosette of dark straps, yellow flowers; it roots in the cracks of bare rock */H:[2.5,7],rb:[.5,1.1],crownR:[1.5,3.5],barkK:2,bark:[0xbcb8ac,0xaaa69a,0xc8c4b8],
+  leaf:[0x2e5a2c,0x36662e,0x284e26,0x426e34],arms:[2,5],zone:'the tsingy, the lava, the dry slopes',source:'new (Madagascar)',
+  tags:{climate:'tropic',aridity:'arid',abyssal:false,riparian:'no'}},
+ /*18*/{key:'avenuebaobab',name:'Avenue baobab',/* Adansonia grandidieri: a smooth red-grey column, hardly tapering, and at its very top a flat crown of short stout boughs, sparse leaves (Morondava's avenue) */H:[24,38],rb:[1.6,2.8],crownR:[8,14],barkK:2,bark:[0xa47c64,0x9a725a,0xb08a70],
+  leaf:[0x4a6a2a,0x567a30,0x3e5e26],boughs:[6,10],zone:'the lowland (in avenues), the dry slope, the edge of the tsingy',source:'new (Madagascar)',
+  tags:{climate:'tropic',aridity:'semiarid',abyssal:false,riparian:'no'}},
+ /*19*/{key:'travellerfan',name:"Traveller's fan",/* Ravenala: a ringed grey palm stem and one flat fan of long-stalked paddle leaves in a single plane, the outer ones torn and yellowing, blue arils at the fan's foot */H:[8,18],rb:[.32,.55],crownR:[5,8],barkK:1,bark:[0x8a8478,0x7a7468,0x968e80],
+  leaf:[0x3e7a3a,0x4a8a40,0x356e34,0x5a9446],leaves:[14,24],zone:'the floors of the dolines, the rainforest, the banks',source:'new (Madagascar)',
+  tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'both'}},
 ];
 
 // ---------------------------------------------------------------- leaf textures

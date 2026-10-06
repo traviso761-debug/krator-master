@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 407 (23%) | 0 (0%) | 106 (6%) | 107 (6%) | 1175 (65%) |
+| KB | 411 (23%) | 0 (0%) | 106 (6%) | 107 (6%) | 1175 (65%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -47,7 +47,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/65k-granary-mills-ranch.js` | 28.3 | [draw] | 6 | 0 | 0 | 0 | 6 | 43 | 0 | 3 | 0 | 0 | 0 | granary, windmill, watermill and beetle ranch models (parameterised, unplaced). registerMillCluster, millRebuild and updateMills run an own rAF loop on an InstancedMesh: that part is [web], and the mill list is data |
 | `src/65l-arena-built.js` | 16.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 3 | 0 | 0 | 0 | the built half of the arena (benches, pit entrance, VIP box); it writes the ARENA_SITE record that 78j reads. No split |
 | `src/66-striders.js` | 11.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | split (small): striderFindStation and striderRegisterStation pick and register the station sites; striderStationBuild draws |
-| `src/68-props.js` | 9.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/68-props.js` | 9.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the street-prop placer. placeStreetFurniture, placeShrines, placeStatues, placeObelisks, placeSiltStrider, placeCanoes and the ferries pick sites on the road graph (REDGE), gates and water with rnd(), claim() and terrainH, and record them in PROPN.at: a [G data] pass. Each site then calls a 65-facade model (shrineTriptych, statue, obelisk, the benches and braziers, siltStriderStation, canoe, ferry) inline: the draw pass reads the records |
 | `src/69-district-content.js` | 69.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 1 | 0 | 0 | 0 | split: the district placer. scatterTownBuildings, scatterNear, placeTavernAtPoint, placeGuildRowHall, the stall and shop loops and the graves each call claim() with a random site, so they place; buildGuildRowHall, funeraryGate, fenceAround draw. Data pass: PLACED records for market, park and funerary content. 105 rnd draws, 17 terrainH reads |
 | `src/70-veg.js` | 35.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 1 | 0 | 0 | 0 | split: plant, floraSample, fgPut, fgFree and shrubAt scatter vegetation (260 rnd draws, 17 terrainH reads, skipping district polygons); birch, monkeyPuzzle, treeFern and the succulents draw. Data pass: flora records. Same shape as the biome kits: placement is portable, the builders cross over as meshes |
 | `src/71-industry.js` | 42.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 | split: siteSlope and mushroomDensityFill choose where things go; mineEntrance, quarryPit and mushroomFarm are hand-sited set pieces that draw from a given (x, z, ry). 39 terrainH reads. Data pass: the three sites and the mushroom density records |
@@ -75,6 +75,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-pathviz.js` | 21.1 | [web] | 9 | 0 | 6 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | path visualizer: overlay, discovery by convention: host shell |
 | `src/88b-voth-minimap.js` | 3.0 | [web] | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/90-atmos-host.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | binds core/atmos (init, the frame hook, the wave uniforms): host shell, moves to core/host/ |
+| `src/97t-voth-tags.js` | 4.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | PLACED and the canton-top footprints into core/tags before the first frame (core/tags/README.md) |
 | `src/98-start.js` | 0.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the first view and the first frame, after every fragment: host shell |
 | `src/99-tail.html` | 0.1 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

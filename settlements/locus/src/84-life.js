@@ -59,6 +59,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
   function openPlace(cat, x, z, r, name){ var e={ cat:cat, x:x, z:z, r:r, name:name, doors:null, entries:0, active:0, cap:999, open:true }; (POI[cat]||(POI[cat]=[])).push(e); return e; }
   openPlace('market', MARKET.x, MARKET.z, MARKET.r*0.7, MARKET.name);
   openPlace('park', PARK.x, PARK.z, PARK.r*0.7, PARK.name);
+  if(PARKING) openPlace('buggypark', PARKING.x, PARKING.z, 12, PARKING.name);
   for(var a8=0;a8<6;a8++){ var aa=a8/6*TAU+0.3; openPlace('ring', Math.cos(aa)*(RING0_R+9), Math.sin(aa)*(RING0_R+9), 7, 'Refinery ring'); }
   function pool(cats){ var out=[]; cats.forEach(function(c){ if(POI[c]) out.push.apply(out, POI[c]); }); return out.length ? out : POI.ring; }
 
@@ -97,7 +98,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
   var G = PAL.people, GEO = GEOBROWNC;
   var KINDS = {
     rambler:  { n:170, speed:1.25, order:['market','park','shop','tavern','civic','ring','caravanserai','home'], dwell:[8,30], hours:[6,21] },
-    geomancer:{ n: 56, speed:1.35, order:['refinery','refinery','tank','pumpjack','generator','geochapter','warehouse','fuel'], dwell:[30,90], hours:[6,18.5], uniform:true },
+    geomancer:{ n: 56, speed:1.35, order:['refinery','refinery','tank','pumpjack','generator','geochapter','warehouse','fuel','buggypark','buggypark'], dwell:[30,90], hours:[6,18.5], uniform:true },
     farmer:   { n: 30, speed:1.15, order:['farm','paddy'], dwell:[20,50], hours:[6,17.5] },
     fisher:   { n: 14, speed:1.2,  order:['dock'], dwell:[4,8],  hours:[5,17] },
     merchant: { n: 34, speed:1.15, order:['market','warehouse','shop','caravanserai'], dwell:[30,80], hours:[7,19] }
@@ -137,7 +138,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
       else if(pth){ a.path=null; a.node=s; arrive(a); }
       else { a.path=null; a.node=s; a.wait=rr(4,10); FAILED++; } } }
   function arrive(a){
-    var w=a.want; a.leg = standPoint(w, a.x, a.z);
+    var w=a.want; a.leg = (w && w.cat==='buggypark') ? bayLeg(a) : standPoint(w, a.x, a.z);
     if(!a.leg) settle(a, w);
   }
   /* what an agent does when it gets there */
@@ -147,6 +148,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     if(w && w===a.home){ a.inside=true; a.wait=rr(40,140); return; }          /* gone indoors: not drawn until he comes out */
     if(a.kind==='fisher' && w && w.cat==='dock' && a.boat && a.boat.state==='moored' && skyHour() < a.cfg.hours[1]-2){ boardBoat(a); return; }
     if(a.kind==='farmer' && w && (w.cat==='farm' || w.cat==='paddy')){ a.inField = 3 + Math.floor(rnd()*4); fieldLeg(a); return; }
+    if(a.kind==='geomancer' && w && w.cat==='buggypark'){ a.bent=1; a.atPark=true; a.afterWait=function(){ a.bent=0; a.atPark=false; }; return; }   /* tending a buggy */
   }
   /* farmers work INTO the paddies: legs to points inside the farm's rectangle, bent over while they wait */
   function fieldLeg(a){ var F=a.farm.rec, lx=rr(-22,10), lz=rr(-12,12); if(F.variant===1) lx=-lx; var p=loc(F.x,F.z,lx,lz,F.ry); a.leg={ x:p[0], z:p[1], field:true }; }
@@ -203,6 +205,62 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     v.leg = w ? standPoint(w, v.x, v.z) : null; if(w) w.entries++; v.wait=rr(v.cfg.dwell[0], v.cfg.dwell[1]);
   }
 
+  /* ============================ 4b. THE GEOMANCERS' DUNE BUGGIES (kits/motor-vehicles) ============================
+     Six buggies stand in the bays of the buggy park behind the chapterhouse (30-layout PARKING). Geomancers come to the
+     park as one of their work stops and tend them: each goes to a parked buggy's bonnet and stands bent over it. Every
+     2-5 minutes (real time, like this layer's caravans and riders), between 8:00 and 17:00, a Geomancer tending one takes
+     it out: he climbs in, it drives the streets to a highway's end and off the map, and comes back 1.5-4 minutes later
+     by a (maybe different) highway to its bay, where he climbs out. Mungo does the same on core/simulation (geo_trip). */
+  var BUGGIES = LIFE.buggies = [], PK = PARKING, BUG = { n:6, speed:9.0, every:[120,300], away:[90,240], hours:[8,17] }, BUG_T = rr(30,70), BUG_TRIPS = 0;
+  var PK_NAV = (PK && PK.node && ST2NAV[PK.node.id]) ? ST2NAV[PK.node.id].id : -1;
+  if(PK && PK_NAV >= 0 && typeof KratorVehicles!=='undefined' && KratorVehicles && KratorVehicles.build){
+    for(var bI=0;bI<BUG.n;bI++){ var bp=loc(PK.x,PK.z,-PK.w/2+4+bI*(PK.w-8)/(BUG.n-1), 3.5, PK.ry), bg=null;
+      try{ bg=KratorVehicles.build('geo_dune_buggy', { variant:bI%3, seed:31+bI }); }catch(e){ ERR('buggy: '+(e&&e.stack||e)); }
+      if(!bg) continue;
+      var BB={ g:bg, id:bI, bay:{ x:bp[0], z:bp[1] }, x:bp[0], z:bp[1], y:terrainH(bp[0],bp[1]), ry:PK.ry+PI, state:'parked', path:null, seg:0, t:0, node:-1,
+               leg:null, legs:null, wait:0, speed:BUG.speed, off:1.3, ox:0, oz:0, prio:3, rad:1.7, driver:null, end:null, dist:0, lit:false };
+      (function(B){ bg.traverse(function(o){ if(o.isMesh) o.userData.inspectFn=function(){ return buggyName(B); }; }); })(BB);
+      bg.position.set(BB.x, BB.y, BB.z); bg.rotation.y=BB.ry; scene.add(bg); BUGGIES.push(BB); }
+    /* at load, the Geomancers whose first stop is the park are already at a buggy's bonnet */
+    AG.forEach(function(a){ if(a.kind!=='geomancer' || !a.at || a.at.cat!=='buggypark') return; var lg=bayLeg(a); if(!lg || !lg.bay) return;
+      a.x=lg.x; a.z=lg.z; a.y=terrainH(a.x,a.z); a.want=a.at; a.ry=Math.atan2(lg.bay.x-a.x, lg.bay.z-a.z); settle(a, a.at); });
+  }
+  function buggyName(B){ return 'Geomancer dune buggy (Motor Vehicles kit) — life layer · vehicle · '+
+    (B.state==='parked'?'parked in its bay at the buggy park':B.state==='away'?'off the map':B.state==='out'?'driving out to the '+((B.end&&B.end.name)||'highway'):'driving back to the park')+
+    (B.driver?' · driven by a Geomancer':''); }
+  function bayLeg(a){ var free=BUGGIES.filter(function(B){ return B.state==='parked'; }), B=free.length ? free[Math.floor(rnd()*free.length)] : null;
+    if(!B) return POI.buggypark ? standPoint(POI.buggypark[0], a.x, a.z) : null;
+    var q=loc(B.bay.x, B.bay.z, rr(-0.6,0.6), -2.7, PK.ry); return { x:q[0], z:q[1], bay:B.bay }; }
+  /* a trip: one Geomancer tending a parked buggy climbs in and drives out by a highway */
+  function buggyTrip(hour){
+    if(hour < BUG.hours[0] || hour >= BUG.hours[1] || !ENDS.length) return false;
+    var crew=AG.filter(function(a){ return a.atPark && !a.aboard && a.wait > 0; }), B=null;
+    for(var i=0;i<crew.length && !B;i++){ var a=crew[i]; BUGGIES.forEach(function(Q){ if(!B && Q.state==='parked' && Math.hypot(Q.bay.x-a.x, Q.bay.z-a.z) < 5) B=Q; }); if(B){ crew=[a]; } }
+    if(!B) return false;
+    var dr=crew[0]; dr.afterWait=null; dr.bent=0; dr.atPark=false; dr.aboard=true; dr.wait=0; dr.path=null; dr.leg=null;
+    B.driver=dr; B.state='out'; B.end=pick(ENDS); B.path=null; B.node=-1;
+    var gq=loc(PK.x,PK.z,PK.w/2+4,0,PK.ry); B.leg={ x:gq[0], z:gq[1] }; B.legs=null; BUG_TRIPS++; return true; }
+  function stepBuggy(B, dt){
+    if(B.state==='parked') return;
+    if(B.state==='away'){ B.wait-=dt; if(B.wait<=0){ B.state='back'; B.x=B.end.x; B.z=B.end.z; B.y=B.end.y||terrainH(B.x,B.z); B.node=B.end.id; B.path=null; B.g.visible=true; } return; }
+    var x0=B.x, z0=B.z;
+    if(B.leg){ moveLeg(B, dt); B.dist+=Math.hypot(B.x-x0, B.z-z0); return; }
+    if(B.state==='parking'){ buggyPark(B); return; }
+    if(!B.path){
+      var goal = B.state==='out' ? B.end.id : PK_NAV, s0 = B.node>=0 ? B.node : navNear(B.x,B.z), pth = navRoute(s0, goal, 0);
+      if(pth && pth.length>1){ B.path=pth; B.seg=0; B.t=0; B.node=-1; remember('buggy', pth); }
+      else { B.node=s0; buggyArrive(B); }
+      return; }
+    walkPath(B, dt, function(){ buggyArrive(B); }); B.dist+=Math.hypot(B.x-x0, B.z-z0);
+  }
+  function buggyArrive(B){
+    if(B.state==='out'){ B.state='away'; B.wait=rr(BUG.away[0], BUG.away[1]); B.g.visible=false; B.end=pick(ENDS)||B.end; return; }   /* off the map; back by a (maybe different) road */
+    if(B.state==='back'){ var gq=loc(PK.x,PK.z,PK.w/2+4,0,PK.ry); B.state='parking'; B.leg={ x:gq[0], z:gq[1] }; B.legs=[{ x:B.bay.x, z:B.bay.z+1.5 }, { x:B.bay.x, z:B.bay.z }]; }
+  }
+  function buggyPark(B){ B.state='parked'; B.x=B.bay.x; B.z=B.bay.z; B.y=terrainH(B.x,B.z); B.ry=PK.ry+PI; B.moving=false; B.node=-1; B.path=null;
+    var a=B.driver; B.driver=null; if(!a) return;
+    var q=loc(B.bay.x, B.bay.z, 1.8, 0, PK.ry); a.aboard=false; a.x=q[0]; a.z=q[1]; a.y=terrainH(a.x,a.z); a.node=-1; a.path=null; a.leg=null; a.pathPending=false; a.wait=rr(15,40); }
+
   /* ============================ 5. SHARED MOVEMENT ============================ */
   function walkPath(a, dt, onEnd){
     var A=NAV.nodes[a.path[a.seg]], B=NAV.nodes[a.path[a.seg+1]];
@@ -224,6 +282,7 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
   function onLegEnd(a, lg){
     if(lg.field){ a.bent=1; a.wait=rr(8,22); a.inField--; if(a.inField>0 && skyHour() < a.cfg.hours[1]){ a.afterWait=function(){ a.bent=0; fieldLeg(a); }; } else a.afterWait=function(){ a.bent=0; }; return; }
     if(lg.board){ return; }
+    if(lg.bay) a.ry=Math.atan2(lg.bay.x-a.x, lg.bay.z-a.z);   /* face the buggy he tends */
     settle(a, a.want);
   }
   function stepAgent(a, dt, hour){
@@ -394,16 +453,17 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
 
   /* ============================ 10. THE TICK ============================ */
   var VIS=560, statT=0;
-  TICKS.push(function(dt, hour){
+  TICKS.push(function(dt, hour, nk){
     if(!(dt>0)) return; dt=Math.min(dt, 0.1);
     serve();
     for(var i=0;i<AG.length;i++) stepAgent(AG[i], dt, hour);
     for(i=0;i<VEH.length;i++) stepVeh(VEH[i], dt, hour);
     for(i=0;i<BOATS.length;i++) stepBoat(BOATS[i], dt, hour);
+    if(BUGGIES.length){ BUG_T-=dt; if(BUG_T<=0){ BUG_T = buggyTrip(hour) ? rr(BUG.every[0], BUG.every[1]) : rr(10,25); } for(i=0;i<BUGGIES.length;i++) stepBuggy(BUGGIES[i], dt); }
     /* once a minute a squad of lizard riders comes in off a random edge of the map */
     SQ_CLOCK += dt; if(SQ_CLOCK >= 60){ SQ_CLOCK=0; newSquad(null); }
     for(i=SQUADS.length-1;i>=0;i--){ stepSquad(SQUADS[i], dt); if(SQUADS[i].dead) SQUADS.splice(i,1); }
-    avoidAll(AG.concat(VEH).concat(SQUADS.map(function(Q){ var r=Q.riders[0]; Q.x=r.x; Q.z=r.z; Q.moving=r.moving; return Q; })), dt);
+    avoidAll(AG.concat(VEH).concat(BUGGIES.filter(function(B){ return B.state!=='parked' && B.state!=='away'; })).concat(SQUADS.map(function(Q){ var r=Q.riders[0]; Q.x=r.x; Q.z=r.z; Q.moving=r.moving; return Q; })), dt);
     avoidAll(BOATS.map(function(B){ B.moving=!!B.route; B.dirx=Math.sin(B.ry); B.dirz=Math.cos(B.ry); return B; }), dt);
     /* draw */
     var cx=camera.position.x, cz=camera.position.z, far=VIS*VIS, nb=0, np=0, nh=0, nc=0, nbe=0, nm=0, nbo=0;
@@ -427,6 +487,10 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
     for(i=0;i<BOATS.length;i++){ var B=BOATS[i], bdx=B.x-cx, bdz=B.z-cz; if(bdx*bdx+bdz*bdz > far*3 || nbo>=40) continue;
       var rock=Math.sin(performance.now()*0.0011+B.id)*0.03; put(mBoat, nbo, B.x+B.ox, 0.05, B.z+B.oz, B.ry, 1,1,1, B.hull, rock); WHO.boat[nbo]=B; nbo++;
       if(B.crew && B.crew.aboard) person(B.crew, B.x+B.ox-Math.sin(B.ry)*1.6, 0.35, B.z+B.oz-Math.cos(B.ry)*1.6, B.ry, B.crew.garb, B.crew.skin, 0, B.state==='fishing', false, B.crew.hat); }
+    /* the buggies: the kit's groups, wheels rolled by the distance driven, lamps on after dark while driven */
+    for(i=0;i<BUGGIES.length;i++){ var Bq=BUGGIES[i]; if(Bq.state==='away') continue; Bq.g.position.set(Bq.x, Bq.y, Bq.z); Bq.g.rotation.y=Bq.ry;
+      if(Bq.dist>0 && Bq.dist<40){ try{ KratorVehicles.roll(Bq.g, Bq.dist); }catch(e){} } Bq.dist=0;
+      var lampsOn = (nk||0) > 0.35 && Bq.state!=='parked'; if(Bq.lit!==lampsOn){ try{ KratorVehicles.lights(Bq.g, lampsOn); }catch(e){} Bq.lit=lampsOn; } }
     mBody.count=nb; mHead.count=nb; mPack.count=np; mHat.count=nh; mCart.count=nc; mBeast.count=nbe; mMount.count=nm; mBoat.count=nbo;
     [mBody,mHead,mPack,mHat,mCart,mBeast,mMount,mBoat].forEach(function(m){ m.instanceMatrix.needsUpdate=true; if(m.instanceColor) m.instanceColor.needsUpdate=true; });
     statT+=dt; if(statT>1){ statT=0; LIFE.stats.drawn=nb; LIFE.stats.boatsOut=BOATS.filter(function(B){ return B.state!=='moored'; }).length; LIFE.stats.squads=SQUADS.length; }
@@ -438,12 +502,23 @@ var LIFE = { agents:[], veh:[], boats:[], squads:[], poi:{}, stats:{}, doors:[] 
   function polys(list, y){ return list.map(function(P){ return P.map(function(p){ return [p[0], y==null?Math.max(terrainH(p[0],p[1]),0)+0.6:y, p[1]]; }); }); }
   [ ['rambler','Life: townspeople',0], ['merchant','Life: merchants',1], ['geomancer','Life: Geomancers',2], ['farmer','Life: salt-rice farmers',5], ['fisher','Life: fishermen (on foot)',3], ['cart','Life: carts',4], ['caravan','Life: caravans',4] ]
     .forEach(function(V){ PATHVIZ.push({ key:'life_'+V[0], label:V[1], color:PAL.pathlife[V[2]], width:2.8, paths:function(){ return routesOf(V[0]); } }); });
+  PATHVIZ.push({ key:'life_buggies', label:'Life: the Geomancers\u2019 buggies', color:0xff40c0, width:3.0, paths:function(){ return routesOf('buggy'); } });
   PATHVIZ.push({ key:'life_boats', label:'Life: fishing boats (water nav-grid)', color:0x35e0ff, width:3.2, paths:function(){ return polys(BOATPATHS, 0.5); } });
   PATHVIZ.push({ key:'life_riders', label:'Life: lizard riders (cross-country)', color:0xff4f2a, width:3.6, paths:function(){ return polys(RIDERPATHS); } });
 
   window._life = { agents:AG.length, vehicles:VEH.length, boats:BOATS.length, byKind:byKind, poi:(function(){ var o={}; for(var c in POI) o[c]=POI[c].length; return o; })(),
     squads:function(){ return SQUADS.map(function(Q){ return { tribe:Q.tribe.name, phase:Q.phase, s:+Q.s.toFixed(0), len:+Q.route.len.toFixed(0), lead:[+Q.riders[0].x.toFixed(0), +Q.riders[0].z.toFixed(0)] }; }); },
-    boatsState:function(){ return BOATS.map(function(B){ return B.state; }); }, routeFailures:function(){ return FAILED; }, stats:LIFE.stats,
+    boatsState:function(){ return BOATS.map(function(B){ return B.state; }); },
+    buggies:function(){ var st={}; BUGGIES.forEach(function(B){ st[B.state]=(st[B.state]||0)+1; });
+      var ok=ENDS.filter(function(E){ return PK_NAV>=0 && !!navRoute(PK_NAV, E.id, 0); }).length;
+      return { n:BUGGIES.length, states:st, trips:BUG_TRIPS, crew:AG.filter(function(a){ return a.atPark; }).map(function(a){ return [Math.round(a.x*10)/10, Math.round(a.z*10)/10, +a.y.toFixed(1), +a.wait.toFixed(0), !!a.inside, !!a.aboard]; }), moving:BUGGIES.filter(function(B){ return B.state!=='parked'; }).map(function(B){ return [B.state, Math.round(B.x), Math.round(B.z), B.path?B.seg+'/'+B.path.length:(B.leg?'leg':'-'), B.state==='away'?Math.round(B.wait):null]; }), tending:AG.filter(function(a){ return a.atPark; }).length, ends:ENDS.length, endsRoutable:ok }; },
+    lookBuggy:function(i){ var B=BUGGIES.filter(function(q){ return q.state==='out'||q.state==='back'; })[i||0] || BUGGIES[0]; if(!B) return null; _dbg.setView(B.x+14, B.y+7, B.z+14, B.x, B.y+1, B.z); return [B.state, B.x, B.z]; },
+    tripNow:function(){ BUG_T=0; return BUG_TRIPS; },
+    /* debug: step only the buggies (and their trip clock) by `sec` simulated seconds, logging each change of state */
+    simBuggies:function(sec, hour){ var log=[], last=BUGGIES.map(function(B){ return B.state; });
+      for(var tt=0; tt<sec; tt+=0.1){ BUG_T-=0.1; if(BUG_T<=0) BUG_T = buggyTrip(hour==null?10:hour) ? rr(BUG.every[0], BUG.every[1]) : rr(10,25);
+        BUGGIES.forEach(function(B,i){ stepBuggy(B, 0.1); if(B.state!==last[i]){ log.push([+tt.toFixed(1), i, last[i]+'>'+B.state, Math.round(B.x), Math.round(B.z)]); last[i]=B.state; } }); }
+      return log; }, routeFailures:function(){ return FAILED; }, stats:LIFE.stats,
     corridors:function(){ var o={}; for(var k2 in USED) o[k2]=Object.keys(USED[k2]).length; return o; },
     doorEntries:function(){ return LIFE.doors.filter(function(d){ return d.entries>0; }).length; },
     /* debug: a sample of agents, the instanced meshes' counts, and a helper to put the camera on someone */

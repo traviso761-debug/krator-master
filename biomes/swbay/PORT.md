@@ -19,8 +19,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/60-biome-swbay-floor.js` | 14.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-swbay-dress.js` | 8.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-swbay.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/75-biome-swbay-fauna.js` | 18.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 3 | 11 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
-| `src/82-host-sky.js` | 10.0 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
+| `src/75-biome-swbay-fauna.js` | 18.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 3 | 11 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
+| `src/82-host-sky.js` | 10.2 | [G native] | 19 | 1 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | becomes a core/atmos sky preset |
 | `src/85-host-tower.js` | 4.6 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/86-host-jetty.js` | 4.6 | [draw] | 4 | 1 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-host-build.js` | 1.2 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |

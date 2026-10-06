@@ -79,7 +79,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-mega.js` | 4.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-factory.js` | 5.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-lab.js` | 5.9 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-scene.js` | 16.4 | [web] | 27 | 2 | 1 | 0 | 0 | 6 | 6 | 0 | 0 | 0 | 0 |  |
+| `src/90-scene.js` | 16.6 | [web] | 27 | 2 | 1 | 0 | 0 | 6 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 4.5 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 5.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |
 | `src/93-polytool.js` | 6.9 | [web] | 10 | 0 | 12 | 6 | 0 | 3 | 0 | 1 | 1 | 0 | 0 |  |

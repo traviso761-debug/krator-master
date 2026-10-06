@@ -31,6 +31,10 @@ var VIEWS = [
   ['Council Chamber',  function(){ viewPlat(P_CC, 2.6, 150, 26, 6); }],
   ['Residential hold', function(){ viewPlat(P_R2, 0.9, 230, 30, -10); }],
   ['Hold cross-section', function(){ viewPlat(P_R1, 2.4, 170, -14, -12); }],
+  /* in a doorway, looking in (57-interiors.js builds the rooms round the camera at once) */
+  ['Inside an apartment',  function(){ if(window._interiors && _interiors.view) _interiors.view('apartment', 12); }],
+  ['Inside a workshop home', function(){ if(window._interiors && _interiors.view) _interiors.view('workhome', 3); }],
+  ['Inside a shop',        function(){ if(window._interiors && _interiors.view) _interiors.view('shop', 2); }],
   ['Rookery',          function(){ viewPlat(P_RK, -0.6, 220, 12, -12); }],
   ['Silk Loft',        function(){ viewPlat(P_SP, 0.7, 210, 6, -10); }],
   ['Gate tree',        function(){ var P=P_G2, a=P.spiral.a0; setView(P.x+Math.cos(a)*260, gnd(P.x+Math.cos(a)*260,P.z+Math.sin(a)*260,40), P.z+Math.sin(a)*260, P.x, 95, P.z); }],

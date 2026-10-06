@@ -1,0 +1,60 @@
+# kits/scyvoi: the Scyvoi kit
+
+The Scyvoi (the Baer-San, as they call themselves) are a semi-nomadic people of the drylands of the central crater: salamander
+riders who follow the wildfires, harvest the fruit that blooms after them, and raid the Hykkousoi and the Voth. They live in
+tents, richly decorated inside and out, and retreat in the fire season to the **Baelu**: round fortresses of fitted stone on
+the rocky outcrops of the western drylands. This kit is both halves of that life: the lavish tents and the austere redoubt.
+
+```
+cd kits/scyvoi && python3 build.py                       # dist/scyvoi.html
+python3 verify.py dist/scyvoi.html --assert              # invariants (headless Chromium, minutes under software GL)
+python3 verify.py dist/scyvoi.html --cut --views "Great ger - inside (cut-away)"
+python3 ../../tools/textures/pack.py kits/scyvoi        # (from the repo root) after a change to materials.json
+```
+
+The page is a kit sheet: rows of every asset on flat placeholder ground, the standard Krator sky. Its tools: the view list,
+**Inspector** (T, on by default: the core/tags label of whatever is under the cursor, buildings, furniture and salamanders
+alike), **Cut-away** (C: the near half of every tent opens, so the furnished interiors show from wherever you stand),
+**Night** (N: 21:30, lanterns, braziers and fires lit, a pool of real lights near the eye), **Polygon** (P: click to drop
+vertices, copy world x,z), **Walk** (F: eye height, WASD, drag to look). `?only=key,key` builds just those defs; `?t=` pins the
+clock; `?mat=proc` draws without the library maps; `?furniture=0` draws no furniture (the records are still kept).
+
+## What is in it
+
+| Row | Defs | Class |
+|---|---|---|
+| Small tents | `tent-hunter-ger` (felt ger), `tent-bell` (saffron bell tent), `tent-black-small` (goat-hair, a hearth outside), `tent-khaima-small` (peaked khaima), `tent-hide-wedge` (a hunter's ridge tent of laced hides) | building, dwelling-single |
+| Large tents | `tent-great-ger` (on two centre posts), `tent-black-great` (majlis, divider, household, fire ring), `tent-pavilion` (square Saharan marquee, arch-printed lining), `tent-applique` (eight-sided, appliquéd panels), `tent-khaima-twin` (two masts) | building, dwelling-multi |
+| Chief, shaman and trades | `tent-chief` (the great round tent on its deck: civic + dwelling, rich), `wagon-chief` (the chief's carved vardo: red lacquer and gilt, a barrel roof, a porch and ladder, furnished inside), `hut-shaman` (a hide lodge: religious), `tent-smithy` (industry, shop), `tent-supply` (market, shop) | building |
+| Salamanders and wheels | `salamander-riding` (two markings), `salamander-war` (barding, crest, lance), `salamander-draught`; `chariot`, `chariot-team` (a yoked pair), `cart-supply`, `cart-ger` (a ger carried on a bed behind two draught salamanders) | life (kind salamander), prop |
+| Tethering | `tether-post`, `tether-boulder` (catalog furniture, outdoor), `tether-line` (a picket line with three salamanders) | furniture, feature |
+| The Baelu | `baelu`: the redoubt on its outcrop, with two tents pitched, two salamanders stabled | building: military, infrastructure, dwelling-multi |
+
+**The Baelu** is about the diameter of a Dalab mound (outer wall r 30 m: Dalab's outlying mounds are r 30). Fitted
+polygonal masonry in the Sacsayhuaman manner (`blMasonry`: courses of pillowed blocks whose joints lean and whose beds wander,
+every block fitted to its neighbours, huge below and smaller above) on a red rock outcrop; a trapezoidal gate under a
+monolith lintel at the head of a paved ramp; like a Fujian tulou, a ring of cells round a court, three storeys behind stone
+galleries on corbels, stables in the north half of the ground floor, a flat stone roof walk behind merlons. Nothing in it
+burns but the doors. The court has a cistern well (the water lies below the surface), a corbelled smokehouse, a cistern house,
+and five raised stone platforms where the bands pitch their tents: two are pitched, three stand empty (it is half empty until
+the fire season).
+
+## Design rules this kit follows
+
+- **Structure vs furniture.** Covers, poles, lattice, linings, floors felts, decks, the Baelu's stone are the kit's geometry.
+  Everything loose (cushions, toshaks, rugs on the floor felt, tray tables, tea sets, lanterns, chandeliers, stoves, chests,
+  bedding, saddle racks, the forge and anvil, the tying post and boulder) is a master-catalog piece placed through
+  **core/furnish** (`FURNISH`, 91f-furnish.js) from the Scyvoi culture file `kits/catalog/krator-master-furniture-scyvoi.js`.
+- **core/tags from the start.** Every def placement is a record in `KTAGS.page` (class, kind, culture `scyvoi`, types, wealth,
+  style, its parent when nested), registered before it is drawn; core/furnish registers each piece as class furniture with its
+  tent as parent. `_api.tags().audit` must read zero unknowns (verify.py asserts it).
+- **core/materials from the start.** `materials.json` adopts library sets and pattern sheets (`tex/` is the pack); the
+  material records are `window._materials` (KMAT). The owner's pattern sheets are in `core/materials/patterns/scyvoi/` and
+  `patterns/common/` (zellige).
+- **Life layer data.** Each salamander has an `SV_LIFE` record: faction Scyvoi, a band as sub-faction, a job (mount, war
+  mount, draught), an activity and a 24-hour dummy schedule. Nothing moves yet but the tail and the head.
+- **The biome is a placeholder.** The ground is the library's withered grass; the crater drylands' flora (the pyre pillar
+  and the other pyrophytes) belongs to `biomes/crater-drylands` and is placed by a world, not by this kit. The fire-fruit in
+  the baskets is a placeholder until that biome's fruit is in the catalog.
+
+See `API.md` for the functions and the frame conventions, `KNOWN_ISSUES.md` for what is open.

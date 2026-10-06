@@ -60,6 +60,8 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 - **The Eastern Abyss.** East of the high desert, the plateau ends in a 740 m cliff. The high desert's river pours over it as a cataract onto a basin floor, which holds multiple salt lakes. The basin wall, "the shelf", hides the sun and the giant's ring from Locus. Yuni controls Locus and the southern portion of the Abyss.
 - **The Godthrone.** Massive volcano south of the crater, almost Olympus Mons size. Upper reaches are completely airless.
 - **The Rift.** South of the main crater: a volcanic rift valley, almost as deep as the central crater, forming a long east-west trough of salt lakes (yellow, pink, blue-green), jungle and mesa ridges. As one must climb the Outer wall to get here, it is quite isolated compared to the rest of Krator, but traders covet the riches of the sultans of Xanadu, so they attempt the trek regardless. It is also known for its hostile Lizardmen and strange wildlife deep in its depths.
+- **The scablands (candidate).** In the northern semiarid country a closed basin once held a lake three times the size of Lake Bonneville. When it broke its rim it tore south in one flood, leaving dry falls, coulees and bare scoured rock (`biomes/WORLD.md`). The basin is dry today; when and why the lake filled, and what broke it, is open (§12).
+- **Tuff country (candidate).** The Catch, a dry walled basin SE of the Godthrone and downwind of it, could hold ash plains worn into hoodoos with carved underground cities, if the Godthrone ever erupted explosively. That is a lore decision (`biomes/WORLD.md`).
 - **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls.
 
 ### 3.2 Regions [biomes/WORLD.md]
@@ -72,6 +74,7 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
 | The Rift | Vale of Xanadu | Lizardmen |
 | Southwest bay (central crater) | S highlands (steep) | (Voth's volcanic bay matches its description; see §12) |
 | Southwestern lowlands | NW lowlands, S highlands | Dalab |
+| Crater drylands (two regions: N and W of the Throne; S of it) | SW bay, the savannah south of the hyperjungle | the Scyvoi |
 | East Rift Highlands / Vale of Xanadu | the Rift | the Sultanate of Xanadu (Erewhon) |
 | Northwestern lowlands | SW lowlands, N highlands, Korona | ??? only a sketch at this point |
 | Northern highlands | NW lowlands, hyperjungle, NW bay, Korona | Iron Republic, Rustic Clansmen, Painted Men |
@@ -397,7 +400,7 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Lizardmen**: reptilian, Amerindian. Sign: the **serpent**. Basking slabs instead of beds; jade scale inlay. Live in the deep Rift. Recently united under a warlord according to traveler tales.
 - **The Giant tribes of the SW**: engineered at Dalab (§6.1). Some rebelled and now live independently in Giant Country.
 - **Salvagers**: crews who refloat Ancient hulls.
-- **Scyvoi**: enemies of the Hykkousoi
+- **Scyvoi**: nomadic **human** riders of **theropod-like lizards**, in the crater drylands (`biomes/crater-drylands`). Enemies of the Hykkousoi; some tribes are subjects of Voth (§6.12). They do not overheat easily. They live on the granite kopjes the wildfires go round, come down to reap what blossoms after a burn, and the most daring use the flames to trap game. [the owner, Oct 2026]
 - **Post-Apoc settlers**: a culture-neutral salvage society. Its kit has a "big man's" house, a shaman hut, prisoner cages and a **Thunderdome** arena. Shop signs are pictographs, not writing. Sign: the **gear**. [ed: this is a generic kit to flesh out settlements esp reclaimed arcologies]
 - **Shining Kingdom**: Northwestern lowlands, populous, destination for trade routes over the inner Wall. Control a city on the NE ocean known as Farport: mysterious traders visit from time to time, but no one from Krator has ever crossed this sea. Kingdom is vaguely Chinese inspired [ed: or perhaps Assyrian? Very much in flux, I haven’t fleshed them out yet]
 
@@ -421,6 +424,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Eastern high desert**: a red US-south-west desert with Socotran flora (dragon trees, boojums, quiver trees). One alien note: glowing pastel **twist-candles**. Desert kites, sand striders.
 - **The Rift**: "the jungle Earth's flora never quite reached". Madagascar and Cretaceous forms, coral and anemone shapes; **iridescence is the rule**. Canon colours: **Vain fronds purple**, the purple fan shrub "sweet-potato purple".
 - **SW bay**: a fungoid canopy (cap-trees 30–62 m), prism gums, a volcano 8 km NE.
+- **Crater drylands** ("kiln country, which is also bloom country"): the crater floor in the rain shadow, ~1.9 atm. At that pressure plants lose about half the water an Earth plant would, and ~0.4 atm of oxygen makes dry scrub burn fast and hot, so the land is a **mosaic of burns of every age**. The burns are the places most alive: fire lilies in the char, then drifts of fireweed, poppies, lupine and flame plumes. **Prism mallee** (a small cousin of the prism gum, iridescent green to orange-red, resprouting from its root crown), **pyre pillars** (banded frond columns), the **frill-tree** that bursts in a fire and throws its fireproof seed, long-trunked parasol pines and ghost gums whose crowns stand above the flames, the **sword spire** that flowers once after a fire. Granite kopjes are the refuges.
+- **NW bay** (the biome of Ys): Krabi's green-topped karst stacks in a turquoise bay, with cliff figs dropping root curtains to the waterline, travertine pools, black lava coves and mangroves. Up the dry slope stands a **tsingy** massif: rows of knife-edged limestone fins with spinewands (octopus trees) and silver rock bottles (Pachypodium) in its fissures. At its edge a **tiankeng**, 84 m deep, holds a rainforest of traveller's fans; in the jungle, **cenotes** reach down to the water table. Avenue baobabs stand on the lowland.
 - **SW lowlands**: the US South turning Californian. What makes it alien is width (sprawl oaks ~80 m across) and red or pale bark. Cork groves are stripped red.
 - **NW lowlands**: Asian and Australian forms at ~1.5× Earth heights; Ediacaran **sea pens** as shrubs; self-lit glow-willows.
 - **Northern highlands**: "ancient, gnarled, never unfriendly"; broadleaf low down, bushy conifers.
@@ -489,6 +494,7 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 1. **Yuni's valley mouth.** Faces NE in one comment, NW in the code.
 1. **When the Ancients fell.** "A thousand years" at Yuni and Iziz, "millennia" elsewhere.
 1. **Hypertree heights.** 290–480 m at Mav's, 150–270 m at Girder, and the Krator mahogany (245–305 m) called "the tallest in the belt".
+1. **The drylands' rain shadow.** §6.16 puts the Scyvoi "in the rain shadow of the Inner Wall"; the crater drylands kit (Oct 2026) puts its desert in the Throne's. Both may hold.
 
 **Open questions (nothing on record)**
 
@@ -498,5 +504,6 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
 - What is Korona? Who lives in the NW bay, the badlands and the southern highlands?
+- When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively, laying the tuff of the Catch?
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's prayer-wheel faith, the Altar of the Abyss, the Deep Aquifer, Jimjam's sun, and the Beast Riders' nature shrines.
 - Is there a calendar, a common language, coinage (the Republic has a Mint), or writing (post-apoc signs are pictographs)?

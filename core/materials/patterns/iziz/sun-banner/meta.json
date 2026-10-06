@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1233,
+    897
+   ],
+   "seam_after": [
+    0.696,
+    0.684
+   ],
+   "seam_before": [
+    0.971,
+    1.363
+   ],
+   "source_size": [
+    1254,
+    916
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "iziz/sun-banner",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.9,
+  "scale": [
+   2,
+   1.46
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "iziz_sun-banner_period.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "note": "cropped from iziz_sun-banner.webp to two vertical repeats (916 px) and two horizontal (1254 px) before processing",
+  "prompt": "core/materials/PLAN.md template, pattern form: woven Iziz banner cloth, cream sixteen-rayed suns in a half-drop grid on Iziz orange (#e07a2a), deep red (#9c2d2d) outlines, teal (#2f8f8a) stripes (kits/mechs/KNOWN_ISSUES.md)",
+  "sha1": "29df4e67db064bf3e8f43460f4f5feadcb679775"
+ }
+}

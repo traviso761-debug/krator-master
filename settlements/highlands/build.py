@@ -92,6 +92,11 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+FURNISH_DIR = os.path.join(ROOT, 'core', 'furnish')   # the furniture placement pass (core/furnish/README.md)
+FURNISH_FILES = sorted(f for f in os.listdir(FURNISH_DIR) if f[0].isdigit() and f.endswith('.js'))
+RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its hash
+TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
+TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
@@ -109,6 +114,7 @@ def srcpath(f, base=None):
 # table and view list, merged into the one sorted filename order. Everything
 # else — core, helpers, all 33 builders — is shared, so a fix to a builder lands
 # in every target that shows it and the two cannot drift.
+TARGET_CORE = {'roketstad': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
 TARGET_OUT = {
     'highlands': 'highlands.html',            # the whole kit: Republican, Rustic, Tribal rows + the cliff settlement
     'roketstad': 'roketstad.html',            # the town: Roketstad and its spaceport (reclaimed East Highland Republican)
@@ -146,8 +152,12 @@ DETERMINISTIC = {
     '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-hl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook
+    '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
+    '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '81-rk-sky.js', '84-rk-geo.js', '93-rk-ui.js', '93b-rk-lod.js', '82e-anc-aa.js',   # roketstad: the vendored Krator sky, the geometry (noise only), the dev tools
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -270,7 +280,12 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
+    src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
@@ -306,7 +321,7 @@ def build_one(target, do_checks, assert_origin):
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -322,7 +337,7 @@ def vendor_manifest():
     out = {}
     for f in VENDORED + IZIZ_VENDORED:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out

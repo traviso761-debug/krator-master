@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.171,
+    1.083
+   ],
+   "seam_before": [
+    1.394,
+    1.214
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.92,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.burn",
+  "metal": 0,
+  "roughness": 0.92,
+  "scale": [
+   3.2,
+   3.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-burn.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Freshly burnt scrubland ground seen from above, a few weeks after a wildfire: black char (#1e1b18, #2c2824) over red soil (#8a5c48) that shows through in patches, drifts of fine grey-white ash (#c8c4bc) gathered in hollows and round the charred bases of burnt shrubs, short black twig stubs and a few charred pine-cone-sized seed pods, small stones blackened on one side. Full colour. (Row ground.burn of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+  "reuse": "every burn in this kit; burnt ground after any fire, a battle or a raid; cold hearth and kiln floors",
+  "sha1": "afd676a707bdded8e94c2be2ac1521c2fbca244a"
+ }
+}
