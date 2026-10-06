@@ -38,5 +38,5 @@ Open items are lines starting `- [ ]`; `build.py` prints them on every build.
 - Steel access (`stStairs`, `stLanding`, `stFloor`, `stRail` in `34-adds.js`): channel stringers, checker-plate treads, grating landings, pipe rails. Used by `lg-stack` (all flights and balconies), the tank-tower switchback landings, the bulkhead's side landings, the granary catwalk, and every `stairs(...,{steel:true})`. Timber builds keep `deck`/`stairs`.
 - Compound `size:'large'` (82 x 76, best-fit slots, a 41 x 35 `great` slot): the showcase's large compound takes `lg-stack`, `warehouse` and `dw-silo` with no rejections. The default compound's geometry is unchanged (same hash).
 - [ ] **Takes the material library** (materials.json, src/29y-pa-matlib.js): planks, earth, concrete, timber and cloth. The rusty metals
-      (corr, corrH, cont, sheet, iron) stay procedural: the library metals came out clean and grey at eye level and lost the rust
-      streaks the set reads by; `metal.corrugated.rusty` (PROMPTS-ready.md) is the set to try. steel, bottle and chain too. ?mat=proc shows the old look.
+      (corr, cont) take metal.corrugated.rusty (2026-10-06, late: 85 % of its own rust colour; reads browner than the procedural orange).
+      corrH (horizontal ribs), sheet, iron, steel, bottle and chain stay procedural. ?mat=proc shows the old look.

@@ -1345,7 +1345,9 @@ Batches `chatgpt-2026-10r-owed.json` and `-cards.json`. Tintable: `earth.rammed`
 `bark.paperbark`, `organic.fungus.gill` (the radiating gills meet in a soft band at the repeat), `skin.alien.banded`, `metal.corrugated.rusty`
 (rust streaks kept), `metal.rust.fine` (came out an even pale-grey grain). Full colour: `tile.bath.lens`, `panel.solar`, `wood.petrified`,
 `patterns/xanadu/sun-emblem`, `patterns/nacre/shell-inlay`, `patterns/nacre/pearl-mosaic`, `patterns/reedlake/awayo`. Cards (nine-cell
-sheets, magenta keyed): `card.pods`, `card.litter`, `card.reef`. None is wired yet; each prompt's "for:" line names its slot.
+sheets, magenta keyed): `card.pods`, `card.litter`, `card.reef`. Wired the same evening: `metal.corrugated.rusty` on Post-Apoc's corr and cont. `metal.rust.fine` was tried on the Ancients kit's
+rust and taken back out: it removes the stripes but reads as flat brown paint with no rust patches, and up close the stretched UVs still
+pull its grain into streaks; the Ancients rust stays procedural (the stretch, not the texture, is the problem).
 Two other sheets in Downloads (lotus blossoms, palm fronds) belong to another session and were left alone.
 
 #### Delivered 2026-10-06: an unprompted extra (pasted into the chat)
