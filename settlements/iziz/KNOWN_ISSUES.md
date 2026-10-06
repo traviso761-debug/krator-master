@@ -255,3 +255,4 @@ mean offsetting every call to keep the city where it is, and would gain nothing.
       54-mat-concrete, Jimjam 6; Xanadu and Reed Lake their 7 Ancients fragments from Highlands). Every copy was the same
       stale snapshot, no local edits. Brings the `tick()` frame hook, `apron(...,mat)`, `MAT.darkSurf` tubes and the
       `bodyGroup` fix (decay 3 stands full height). `--vendor-check`: Iziz 35, Highlands 13, Dalab 13 identical.
+- [ ] (2026-10-06) The vernacular takes the material library (materials.json; src/69e-iziz-matlib.js binds it onto MAT through core/materials/record/26-matlib-bind.js): wood, woodV, stone, plaster, thatch, shingle and the awning cloth; the ground (dirt) stays procedural. Tint means are estimates from the painters; judged at eye level on the vernacular sheet. The Ancient salvage, the port embassy and the city's own materials are not bound yet. The one console shader error the vernacular sheet reports is the same before and after.

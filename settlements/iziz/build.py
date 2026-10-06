@@ -99,6 +99,12 @@ CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes 
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 # shared modules a target opts into (core/<module>/, digit-prefixed fragments): the city takes the atmosphere module
 TARGET_CORE = {'city': ['atmos', 'clock', 'mask']}
+# the material library for the vernacular (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js,
+# whose TEX clashes with core/materials 20-textures.js). materials.json's non-fauna families are packed into the GENERATED
+# 69d-matlib-pack.js, and src/69e-iziz-matlib.js binds them onto MAT (KMAT.bindMat). Every target takes them.
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '69d-matlib-pack.js'
 
 
 def srcpath(f, base=None):
@@ -151,6 +157,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
     '86-bio-57-fauna-pack.js',            # generated: the library's fauna sheets as data URLs (fauna_pack)
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '69e-iziz-matlib.js',   # the material library (no rnd())
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
 }
@@ -287,6 +294,28 @@ def fauna_pack():
     return '\n'.join(head) + '\n' + ',\n'.join(out) + '\n};\n'
 
 
+def matlib_pack():
+    """GENERATED fragment: materials.json's architecture families (every one but the fauna_* sheets) as data URLs
+    (KMAT.pack('iziz')), as Girder's build.py. It reads the committed tex/ files only, so the build stays deterministic."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    fams = json.load(open(pj, encoding='utf-8')).get('families', {}) if os.path.isfile(pj) else {}
+    out = []
+    for fam in sorted(fams):
+        if fam in FAUNA_FAMILIES:
+            continue
+        e = fams[fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== 69d. LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+            "KMAT.pack('iziz', {\n" + ',\n'.join(out) + '\n});\n')
+
+
 def build_one(target, do_checks, assert_origin):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
@@ -295,6 +324,7 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(RECORD_DIR, f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
@@ -311,6 +341,8 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    bodies[MATLIB_PACK] = matlib_pack()
+    order = sorted(order + [MATLIB_PACK])
     fp = fauna_pack() if target == 'city' else None
     if fp:
         bodies[FAUNA_PACK] = fp
