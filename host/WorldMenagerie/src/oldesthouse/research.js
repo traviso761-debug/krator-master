@@ -69,8 +69,16 @@ export function buildResearch(K){
   const TREES=[[8,6,2.7],[-11,12,2.3],[13,-13,2.0]];
   for(const [tx,tz,r] of TREES){B.cyl('concreteDark',X(tx),Y(0),Z(tz),r+2.2,r+2.2,0.9,16,{caps:true});
     for(let k=0;k<8;k++){const a=k/8*Math.PI*2;B.blk('leaf',X(tx+Math.cos(a)*(r+1.3)),Y(0.9),Z(tz+Math.sin(a)*(r+1.3)),1.4,0.7+R()*0.6,1.4);}
-    B.cyl('bark',X(tx),Y(0),Z(tz),r*1.25,r*0.55,AH+4,12);
-    for(const [h,cr,ch] of [[25,4.6,5],[28.5,5.4,5],[32,4.8,5],[35.5,3.8,4.5],[38.5,2.6,4]]){const jx=(R()-0.5)*1.6,jz=(R()-0.5)*1.6;B.cyl('leaf',X(tx+jx),Y(h),Z(tz+jz),cr,0.3,ch,9);B.ring('leaf',X(tx+jx),Y(h),Z(tz+jz),0.2,cr,9,true);}}
+    /* the trunk: flared at the foot, buttress roots out into the bed, tapering up through the whole atrium */
+    B.cyl('bark',X(tx),Y(0),Z(tz),r*1.7,r*1.05,3,14);B.cyl('bark',X(tx),Y(3),Z(tz),r*1.05,r*0.42,AH+1,14);
+    for(let k=0;k<6;k++){const a=k/6*Math.PI*2+R();B.beam('bark',[X(tx+Math.cos(a)*r*0.8),Y(2.6),Z(tz+Math.sin(a)*r*0.8)],[X(tx+Math.cos(a)*(r+2)),Y(0.2),Z(tz+Math.sin(a)*(r+2))],0.9,1.2);}
+    /* the crown: tiers of branches from twenty metres up, long below and short at the top, each drooping a little
+       and carrying a flat layer of dark needles - the narrow, layered spire a redwood makes */
+    for(let h=19;h<=AH+3;h+=2.3){const u=(h-19)/(AH+3-19),Lb=7.5*(1-u)+1.6,n=6+Math.floor(R()*3),rr=r*(1.05-0.6*(h/(AH+4)));
+      for(let k=0;k<n;k++){const a=k/n*Math.PI*2+R()*0.8+h,ex=tx+Math.cos(a)*(rr+Lb),ez=tz+Math.sin(a)*(rr+Lb),ey=h-Lb*0.25;
+        B.beam('bark',[X(tx+Math.cos(a)*rr),Y(h),Z(tz+Math.sin(a)*rr)],[X(ex),Y(ey),Z(ez)],0.35,0.35);
+        B.at(X(tx+Math.cos(a)*(rr+Lb*0.55)),Y(ey+0.2),Z(tz+Math.sin(a)*(rr+Lb*0.55)),-a);B.box(k%3?'leafDark':'leaf',-Lb*0.55,0,-1.1,Lb*0.55,0.9,1.1);B.box('leafDark',-Lb*0.4,-0.6,-1.6,Lb*0.4,0.1,1.6);B.pop();}}
+    B.cyl('leafDark',X(tx),Y(AH+3),Z(tz),1.6,0.2,3.5,8);}
   for(let k=0;k<12;k++)F.plant(X(-26+R()*52),Y(0),Z(-26+R()*10+(k%2?40:0)),1.1);
 
   // ================================================================ the labs, west off the atrium
@@ -245,7 +253,7 @@ export function buildResearch(K){
     ['the Ashtray Maze',[X(0),Y(2),Z(-310)],125],['the way into Research',[X(105),Y(2),Z(0)],76]);
   const V=(name,t,d,yaw,pitch,card,cut)=>K.views.push({name,group:'Research',t,d,yaw,pitch,card,cut:!!cut});
   V('Central Research',[X(-4),Y(13),Z(-2)],34,0.8,0.2,'research');
-  V('The redwoods',[X(6),Y(28),Z(4)],24,2.3,-0.55,'redwoods');
+  V('The redwoods',[X(4),Y(24),Z(4)],52,2.3,-0.42,'redwoods');
   V('The balconies',[X(-18),Y(20),Z(-14)],32,0.75,0.12,'balconies');
   V('The labs',[X(-75),Y(2),Z(0)],24,Math.PI/2,0.06,'labs');
   V('Luck and Probability',[X(-80),Y(1.4),Z(-17)],11,0.25,0.18,'luck');

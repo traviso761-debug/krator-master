@@ -50,7 +50,7 @@ export const TEX_M={concrete:[4,4],panel:[3,3],carpet:[2,2],wood:[1.2,2.4],terra
 // the materials: key -> [texture, colour, options]. Builders write geometry under these keys; a key with a
 // ':' suffix (e.g. 'concrete:ceil') shares the look but becomes its own mesh, so ceilings can be lifted away.
 export const MAT_DEF={
-  concrete:['concrete',0xd6d2ca],concreteDark:['concrete',0x8a867e],concreteWarm:['concrete',0xcfc4b4],panel:['panel',0xe2ded6],panelDark:['panel',0x7a7670],
+  concrete:['concrete',0xd6d2ca],concreteDark:['concrete',0x8a867e],concreteWarm:['concrete',0xcfc4b4],brick:['panel',0x9a5a44],brickDark:['panel',0x6a4234],panel:['panel',0xe2ded6],panelDark:['panel',0x7a7670],
   carpet:['carpet',0x8a1a1c],carpetDark:['carpet',0x4a1012],carpetGrey:['carpet',0x5a5654],wood:['wood',0xffffff],woodDark:['wood',0x8a7a70],
   terrazzo:['terrazzo',0xffffff],tile:['tile',0xffffff],tileGreen:['tile',0x9ac8b0],grate:['grate',0xffffff],steel:[null,0x6a6c70],steelDark:[null,0x2e3034],brass:[null,0xb8903a],
   rock:['rock',0xffffff],rockBlack:['rock',0x5a5a60],rockRed:['rock',0xb06a5a],ashtray:['ashtray',0xffffff],motel:['motel',0x2a4a9a],ceiling:['ceiling',0xffffff],paper:['paper',0xffffff],

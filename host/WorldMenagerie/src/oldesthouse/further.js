@@ -118,12 +118,12 @@ export function buildFurther(K){
     const mkC=(list,c)=>{const im=new THREE.InstancedMesh(crystG,new THREE.MeshBasicMaterial({color:c,fog:true}),list.length);list.forEach((m,i)=>im.setMatrixAt(i,m));im.userData.noFingerprint=true;dyn.add(im);return im;};
     const imR=mkC(CR,0xff4a4a),imT=mkC(CT,0x4affe8);
     // the cave's air: near-black with a teal cast, and its own light
-    lights.zone([fx-W,fy-140,fz-W],[fx+W,fy+2,fz+W],0x34403f,0.8);
+    lights.zone([fx-W,fy-140,fz-W],[fx+W,fy+2,fz+W],0x9aaaa6,0.9);   /* dim, but the cave reads */
     /* floodlights on stands round the cave, aimed in */
     for(let k=0;k<12;k++){const a=k/12*6.283+0.2,x=fx+Math.cos(a)*175,z=fz+Math.sin(a)*175;if(x>ch.x0-10&&x<ch.x1+10&&z>ch.z0-10&&z<ch.z1+10)continue;
       B.beam('steelDark',[x,FL,z],[x,FL+9,z],0.15,0.15);B.blk('lightWhite',x,FL+9,z,1.4,0.9,0.6);lights.add([x,FL+9,z],0xf0f4ff,1.5,95);}
     for(const [x,z] of [[fx-160,fz+170],[fx+150,fz-150],[fx+170,fz+60],[fx-60,fz-190]]){B.blk('lightWhite',x,FL+6,z,0.8,0.5,0.5);B.beam('steelDark',[x,FL,z],[x,FL+6,z],0.1,0.1);lights.add([x,FL+6,z],0xfff4e0,1.1,42);}
-    K.zones.push({c:[fx,fy-60,fz],r:230,color:'#0c1c20',density:0.0042});
+    K.zones.push({c:[fx,fy-60,fz],r:230,color:'#1a3034',density:0.0016});
     // the Nail breathes: its seams pulse, the crystals shimmer; the event makes them flare
     const NAIL={flare:0};K.anchors.nail={x:fx,y:FL,z:fz,H:RF-FL};
     K.hooks.push(t=>{const f=NAIL.flare,k=0.55+0.35*Math.sin(t*1.7)+f*1.4;seamM.color.setRGB(Math.min(1,k),0.23*k,0.13*k);
@@ -221,7 +221,7 @@ export function buildFurther(K){
     lights.zone([ax-520,ay-320,az-520],[ax+520,ay+320,az+520],0xf4f4f2,1);
     K.zones.push({c:[ax,ay,az],r:700,color:'#eeeeec',density:0.0007});   /* thin, so the pyramid stays black */
     // the pyramid: black, inverted, hanging in the white, turning slowly; a pale ring shows when the Board speaks
-    const pyr=new THREE.Mesh(new THREE.ConeGeometry(70,120,4).rotateX(Math.PI),new THREE.MeshLambertMaterial({color:0x080809}));
+    const pyr=new THREE.Mesh(new THREE.ConeGeometry(70,120,4).rotateX(Math.PI),new THREE.MeshBasicMaterial({color:0x040405,fog:false}));   /* unlit: black against the white, however far */
     pyr.position.set(ax,ay+80,az);pyr.userData.noFingerprint=true;dyn.add(pyr);
     const ringM=new THREE.MeshBasicMaterial({color:0x111114,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false});
     const ring=new THREE.Mesh(new THREE.RingGeometry(1,1.6,64).rotateX(-Math.PI/2),ringM);ring.position.set(ax,ay+60,az);ring.userData.noFingerprint=true;dyn.add(ring);

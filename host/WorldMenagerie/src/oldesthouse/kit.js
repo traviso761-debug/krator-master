@@ -33,9 +33,10 @@ export class Builder{
     let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const nl=Math.hypot(nx,ny,nz)||1;nx/=nl;ny/=nl;nz/=nl;
     if(out&&nx*out[0]+ny*out[1]+nz*out[2]<0){[b,d]=[d,b];nx=-nx;ny=-ny;nz=-nz;}
     const base=m.split(':')[0],tm=TEX_M[{concreteDark:'concrete',concreteWarm:'concrete',panelDark:'panel',carpetDark:'carpet',carpetGrey:'carpet',woodDark:'wood',
-      rockBlack:'rock',rockRed:'rock',tileGreen:'tile'}[base]||base]||[2,2];
+      rockBlack:'rock',rockRed:'rock',tileGreen:'tile',brick:'panel',brickDark:'panel'}[base]||base]||[2,2];
     const w=Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]),h=Math.hypot(d[0]-a[0],d[1]-a[1],d[2]-a[2]);
-    const nu=Math.max(1,Math.min(40,Math.ceil(w/this.cell))),nv=Math.max(1,Math.min(40,Math.ceil(h/this.cell)));
+    /* coarse: one cell, for long thin things the light need not vary along (window strips, rails) */
+    const nu=this.coarse?1:Math.max(1,Math.min(40,Math.ceil(w/this.cell))),nv=this.coarse?1:Math.max(1,Math.min(40,Math.ceil(h/this.cell)));
     const A=this.arr(m),P=(i,j)=>{const u=i/nu,v=j/nv;return [a[0]+(b[0]-a[0])*u+(d[0]-a[0])*v+(c[0]-b[0]-d[0]+a[0])*u*v,
       a[1]+(b[1]-a[1])*u+(d[1]-a[1])*v+(c[1]-b[1]-d[1]+a[1])*u*v,a[2]+(b[2]-a[2])*u+(d[2]-a[2])*v+(c[2]-b[2]-d[2]+a[2])*u*v];};
     for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){const q=[P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)],uv=[[i,j],[i+1,j],[i+1,j+1],[i,j+1]].map(([x,y])=>[x/nu*w/tm[0],y/nv*h/tm[1]]);
@@ -58,7 +59,8 @@ export class Builder{
       for(const [g0,g1,gh] of g){wallQ(u,g0,y0,y1);wallQ(g0,g1,y0+(gh||y1-y0),y1);u=g1;}wallQ(u,L,y0,y1);};
     side('n',[x0,0,z0],[x1,0,z0],[0,0,1]);side('s',[x0,0,z1],[x1,0,z1],[0,0,-1]);side('w',[x0,0,z0],[x0,0,z1],[1,0,0]);side('e',[x1,0,z0],[x1,0,z1],[-1,0,0]);}
   // a member from p to q, w by h
-  beam(m,p,q,w,h){p=p.slice();q=q.slice();const d=[q[0]-p[0],q[1]-p[1],q[2]-p[2]],L=Math.hypot(...d)||1;d[0]/=L;d[1]/=L;d[2]/=L;
+  beam(m,p,q,w,h){const was=this.coarse;if(w<0.6&&h<0.6)this.coarse=true;this._beam(m,p,q,w,h);this.coarse=was;}   /* thin members: one light cell a face */
+  _beam(m,p,q,w,h){p=p.slice();q=q.slice();const d=[q[0]-p[0],q[1]-p[1],q[2]-p[2]],L=Math.hypot(...d)||1;d[0]/=L;d[1]/=L;d[2]/=L;
     let s=[d[2],0,-d[0]];let sl=Math.hypot(...s);if(sl<1e-6){s=[1,0,0];sl=1;}s=s.map(v=>v/sl);
     const u=[s[1]*d[2]-s[2]*d[1],s[2]*d[0]-s[0]*d[2],s[0]*d[1]-s[1]*d[0]];
     const C=(e,a,b)=>[e[0]+s[0]*a*w/2+u[0]*b*h/2,e[1]+s[1]*a*w/2+u[1]*b*h/2,e[2]+s[2]*a*w/2+u[2]*b*h/2];
@@ -130,7 +132,7 @@ export function furnish(B,lights){
     // a wall of shelving packed with files and boxes
     shelves(x,y,z,yaw=0,w=3,h=2.4){B.at(x,y,z,yaw);B.box('woodDark',-w/2,0,-0.2,w/2,h,-0.18);for(const s of [-1,1])B.box('woodDark',s*w/2-0.03,0,-0.2,s*w/2+0.03,h,0.2);
       for(let k=0;k<=4;k++)B.box('woodDark',-w/2,k*h/4.4,-0.2,w/2,k*h/4.4+0.03,0.2);
-      for(let k=0;k<4;k++){let u=-w/2+0.05;while(u<w/2-0.15){const bw=0.06+((u*97+k*13)%0.13+0.13)*0.5,bh=h/4.4-0.08-((u*31+k)%0.1);B.box(['paper','carpetGrey','woodDark','red','white'][Math.floor(Math.abs(u*53+k*7))%5],u,k*h/4.4+0.03,-0.17,u+bw,k*h/4.4+0.03+bh,0.15);u+=bw+0.01;}}
+      for(let k=0;k<4;k++){let u=-w/2+0.05;while(u<w/2-0.15){const bw=0.13+((u*97+k*13)%0.13+0.13)*0.5,bh=h/4.4-0.08-((u*31+k)%0.1);B.box(['paper','carpetGrey','woodDark','red','white'][Math.floor(Math.abs(u*53+k*7))%5],u,k*h/4.4+0.03,-0.17,u+bw,k*h/4.4+0.03+bh,0.15,['ny','nz']);u+=bw+0.01;}}
       B.pop();},
     // a Bureau cubicle: three low panels round a desk, a chair, a terminal
     cubicle(x,y,z,yaw=0){B.at(x,y,z,yaw);B.box('carpetGrey',-1.2,0,-1.2,1.2,1.4,-1.14);B.box('carpetGrey',-1.2,0,-1.2,-1.14,1.4,1.0);B.box('carpetGrey',1.14,0,-1.2,1.2,1.4,1.0);
@@ -143,7 +145,7 @@ export function furnish(B,lights){
       for(const s of [-1,1])for(let k=0;k<n;k++){const u=-w/2+(k+0.5)*w/n;B.box(m,u-w/n*0.3,0.4,s*d/2,u+w/n*0.3,h-0.4,s*(d/2+0.08));}B.pop();},
     // a rail along a line: posts and a top bar
     rail(p,q,h=1.05,m='steelDark'){const L=Math.hypot(q[0]-p[0],q[2]-p[2]),n=Math.max(1,Math.ceil(L/1.6));
-      for(let k=0;k<=n;k++){const t=k/n,x=p[0]+(q[0]-p[0])*t,y=p[1]+(q[1]-p[1])*t,z=p[2]+(q[2]-p[2])*t;B.blk(m,x,y,z,0.05,h,0.05);}
+      const was=B.coarse;B.coarse=true;for(let k=0;k<=n;k++){const t=k/n,x=p[0]+(q[0]-p[0])*t,y=p[1]+(q[1]-p[1])*t,z=p[2]+(q[2]-p[2])*t;B.blk(m,x,y,z,0.05,h,0.05,['py','ny']);}B.coarse=was;
       B.beam(m,[p[0],p[1]+h,p[2]],[q[0],q[1]+h,q[2]],0.06,0.06);B.beam(m,[p[0],p[1]+h*0.5,p[2]],[q[0],q[1]+h*0.5,q[2]],0.03,0.03);},
     // a ceiling light panel: a glowing rectangle, and the light it gives
     panel(x,y,z,w=1.2,d=0.6,i=0.9,r=14,c=0xfff4e0){B.box('lightPanel',x-w/2,y-0.05,z-d/2,x+w/2,y,z+d/2,['py']);L(x,y-0.3,z,c,i,r);},

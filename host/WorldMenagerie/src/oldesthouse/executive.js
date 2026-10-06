@@ -275,32 +275,46 @@ export function buildExecutive(K){
      B.box('panel',sx(x0),sy(0),sz(z0),sx(x1),sy(0.18),sz(z1),['ny']);
    B.box('panel',sx(-60),sy(0),sz(-50),sx(60),sy(0.18),sz(-42),['ny']);B.box('terrazzo',sx(-45),sy(0),sz(-45),sx(45),sy(0.25),sz(45),['ny']);
    for(let k=-180;k<=180;k+=12){B.box('white',sx(k),sy(0.01),sz(54.6),sx(k+5),sy(0.02),sz(55.4));B.box('white',sx(-55.4),sy(0.01),sz(k),sx(-54.6),sy(0.02),sz(k+5));}
-   // the tower: a windowless slab of concrete, ribbed top to bottom, a band at the crown, the entrance recessed in its south face
-   B.box('concrete',sx(-TW),sy(0),sz(-TW),sx(TW),sy(TH),sz(TW));
-   for(let k=-TW+2.5;k<TW;k+=5){B.box('concrete',sx(k-0.4),sy(14),sz(TW),sx(k+0.4),sy(TH-6),sz(TW+0.9),['ny','py']);B.box('concrete',sx(k-0.4),sy(14),sz(-TW-0.9),sx(k+0.4),sy(TH-6),sz(-TW),['ny','py']);
-     B.box('concrete',sx(TW),sy(14),sz(k-0.4),sx(TW+0.9),sy(TH-6),sz(k+0.4),['ny','py']);B.box('concrete',sx(-TW-0.9),sy(14),sz(k-0.4),sx(-TW),sy(TH-6),sz(k+0.4),['ny','py']);}
-   B.box('concreteDark',sx(-TW-1),sy(TH-6),sz(-TW-1),sx(TW+1),sy(TH-2),sz(TW+1));B.box('concreteDark',sx(-TW-1),sy(10),sz(-TW-1),sx(TW+1),sy(14),sz(TW+1));
-   B.box('black',sx(-8),sy(0.25),sz(TW-0.2),sx(8),sy(9),sz(TW+0.05));B.box('concreteDark',sx(-10),sy(9),sz(TW),sx(10),sy(10),sz(TW+6));
-   for(const x of [-6,6])B.box('concreteDark',sx(x-0.6),sy(0.25),sz(TW+4),sx(x+0.6),sy(9),sz(TW+5.2));
-   for(let k=0;k<4;k++)B.box('panel',sx(-12),sy(0.25),sz(TW+6+k*1.2),sx(12),sy(0.25-k*0.06+0.01),sz(TW+7.2+k*1.2));
-   // the neighbours: plain blocks with rows of windows on their street faces
-   const nb=[[-130,-130,50,50,90],[-130,0,50,50,64],[130,-120,50,60,130],[130,20,50,50,70],[-130,130,50,50,110],[130,130,50,50,82],[0,-130,70,40,58],[0,130,70,40,96]];
-   for(const [cx,cz,w,d,h] of nb){B.box('concreteWarm',sx(cx-w/2),sy(0),sz(cz-d/2),sx(cx+w/2),sy(h),sz(cz+d/2),['ny']);
-     for(let y=6;y<h-3;y+=4){B.quad('steelDark',[sx(cx-w/2+2),sy(y),sz(cz+d/2+0.06)],[sx(cx+w/2-2),sy(y),sz(cz+d/2+0.06)],[sx(cx+w/2-2),sy(y+1.8),sz(cz+d/2+0.06)],[sx(cx-w/2+2),sy(y+1.8),sz(cz+d/2+0.06)],[0,0,1]);
-       B.quad('steelDark',[sx(cx-w/2+2),sy(y),sz(cz-d/2-0.06)],[sx(cx+w/2-2),sy(y),sz(cz-d/2-0.06)],[sx(cx+w/2-2),sy(y+1.8),sz(cz-d/2-0.06)],[sx(cx-w/2+2),sy(y+1.8),sz(cz-d/2-0.06)],[0,0,-1]);
-       B.quad('steelDark',[sx(cx+w/2+0.06),sy(y),sz(cz-d/2+2)],[sx(cx+w/2+0.06),sy(y),sz(cz+d/2-2)],[sx(cx+w/2+0.06),sy(y+1.8),sz(cz+d/2-2)],[sx(cx+w/2+0.06),sy(y+1.8),sz(cz-d/2+2)],[1,0,0]);
-       B.quad('steelDark',[sx(cx-w/2-0.06),sy(y),sz(cz-d/2+2)],[sx(cx-w/2-0.06),sy(y),sz(cz+d/2-2)],[sx(cx-w/2-0.06),sy(y+1.8),sz(cz+d/2-2)],[sx(cx-w/2-0.06),sy(y+1.8),sz(cz-d/2+2)],[-1,0,0]);}}
+   // the tower: taller than anything round it, windowless, its faces deep-finned in concrete from the podium to the
+   // crown; a plain podium with the entrance recessed in its south face; a set-back crown block, no sign anywhere
+   const TT=260,FIN=1.8;
+   B.box('concrete',sx(-TW),sy(0),sz(-TW),sx(TW),sy(TT),sz(TW));
+   for(let k=-TW+2;k<=TW-2;k+=4){for(const [s1,s2] of [[1,0],[-1,0],[0,1],[0,-1]]){
+       if(s1)B.box('concrete',sx(s1*TW+(s1>0?0:-FIN)),sy(16),sz(k-0.5),sx(s1*TW+(s1>0?FIN:0)),sy(TT-12),sz(k+0.5),['ny','py']);
+       else B.box('concrete',sx(k-0.5),sy(16),sz(s2*TW+(s2>0?0:-FIN)),sx(k+0.5),sy(TT-12),sz(s2*TW+(s2>0?FIN:0)),['ny','py']);}}
+   B.box('concreteDark',sx(-TW-2.2),sy(TT-12),sz(-TW-2.2),sx(TW+2.2),sy(TT-6),sz(TW+2.2));B.box('concrete',sx(-TW+6),sy(TT-6),sz(-TW+6),sx(TW-6),sy(TT+8),sz(TW-6));
+   B.box('concreteDark',sx(-TW-3),sy(0),sz(-TW-3),sx(TW+3),sy(16),sz(TW+3));
+   B.box('black',sx(-9),sy(0.25),sz(TW+2.8),sx(9),sy(9),sz(TW+3.05));B.box('lightWarm',sx(-7),sy(0.3),sz(TW+3.06),sx(7),sy(2.8),sz(TW+3.1));
+   B.box('concreteDark',sx(-12),sy(9),sz(TW+3),sx(12),sy(10.2),sz(TW+9));
+   for(const x of [-7,7])B.box('concreteDark',sx(x-0.7),sy(0.25),sz(TW+7),sx(x+0.7),sy(9),sz(TW+8.4));
+   for(let k=0;k<4;k++)B.box('panel',sx(-14),sy(0.25),sz(TW+9+k*1.2),sx(14),sy(0.25-k*0.06+0.01),sz(TW+10.2+k*1.2));
+   LT.add([sx(0),sy(4),sz(TW+8)],0xffd8a0,1.0,18);
+   // the neighbours: Manhattan round it - brick and stone blocks of every height, rows of windows, set close
+   const nb=[[-130,-130,50,50,120],[-130,0,50,50,74],[130,-120,50,60,150],[130,20,50,50,82],[-130,130,50,50,140],[130,130,50,50,96],[0,-130,70,40,68],[0,130,70,40,118],
+     [-190,-60,20,60,60],[190,-60,20,60,110],[-190,70,20,60,88],[190,70,20,60,64],[-60,-190,60,20,100],[60,-190,60,20,72],[-60,190,60,20,84],[60,190,60,20,130]];
+   const BRK=['brick','brickDark','concreteWarm','brick','panelDark'];
+   nb.forEach(([cx,cz,w,d,h],i)=>{const m=BRK[i%BRK.length];B.box(m,sx(cx-w/2),sy(0),sz(cz-d/2),sx(cx+w/2),sy(h),sz(cz+d/2),['ny']);B.box('concreteDark',sx(cx-w/2-0.6),sy(h),sz(cz-d/2-0.6),sx(cx+w/2+0.6),sy(h+1.2),sz(cz+d/2+0.6));
+     B.coarse=true;for(let y=6;y<h-3;y+=4){B.quad('steelDark',[sx(cx-w/2+2),sy(y),sz(cz+d/2+0.06)],[sx(cx+w/2-2),sy(y),sz(cz+d/2+0.06)],[sx(cx+w/2-2),sy(y+2.2),sz(cz+d/2+0.06)],[sx(cx-w/2+2),sy(y+2.2),sz(cz+d/2+0.06)],[0,0,1]);
+       B.quad('steelDark',[sx(cx-w/2+2),sy(y),sz(cz-d/2-0.06)],[sx(cx+w/2-2),sy(y),sz(cz-d/2-0.06)],[sx(cx+w/2-2),sy(y+2.2),sz(cz-d/2-0.06)],[sx(cx-w/2+2),sy(y+2.2),sz(cz-d/2-0.06)],[0,0,-1]);
+       B.quad('steelDark',[sx(cx+w/2+0.06),sy(y),sz(cz-d/2+2)],[sx(cx+w/2+0.06),sy(y),sz(cz+d/2-2)],[sx(cx+w/2+0.06),sy(y+2.2),sz(cz+d/2-2)],[sx(cx+w/2+0.06),sy(y+2.2),sz(cz-d/2+2)],[1,0,0]);
+       B.quad('steelDark',[sx(cx-w/2-0.06),sy(y),sz(cz-d/2+2)],[sx(cx-w/2-0.06),sy(y),sz(cz+d/2-2)],[sx(cx-w/2-0.06),sy(y+2.2),sz(cz+d/2-2)],[sx(cx-w/2-0.06),sy(y+2.2),sz(cz-d/2+2)],[-1,0,0]);}B.coarse=false;});
    // street lamps along the kerbs, and a few cars standing
    for(let k=-170;k<=170;k+=34)for(const [x,z] of [[k,-48],[k,58],[-58,k],[58,k]]){if(Math.abs(x)<50&&Math.abs(z)<50)continue;B.beam('steelDark',[sx(x),sy(0.18),sz(z)],[sx(x),sy(7),sz(z)],0.18,0.18);B.box('lightWarm',sx(x-0.4),sy(7),sz(z-0.4),sx(x+0.4),sy(7.3),sz(z+0.4));}
    for(const [x,z,a,m] of [[-120,52,0,'red'],[-40,50,0,'yellow'],[90,52,0,'steel'],[-52,-120,Math.PI/2,'motel'],[52,100,Math.PI/2,'yellow']]){B.at(sx(x),sy(0),sz(z),a);B.box(m,-2.4,0.3,-0.9,2.4,1.2,0.9);B.box(m,-1.2,1.2,-0.8,1.3,1.8,0.8);B.box('black',-1.15,1.25,-0.82,1.25,1.7,0.82);B.pop();}
    // daylight: everything lit, the sun from the south-west
    LT.zone([sx(-210),sy(-1),sz(-210)],[sx(210),sy(240),sz(210)],0xd6dade,1);
    LT.add([sx(-400),sy(700),sz(500)],0xfff2e0,1.2,1600);
+   /* the sky over the street: a dome closing the city in, so that from out here nothing of the House's inside
+      shows - from the street it is only a tower */
+   {const c=document.createElement('canvas');c.width=4;c.height=256;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,256);
+    gr.addColorStop(0,'#7fa2c8');gr.addColorStop(0.5,'#c4d4e4');gr.addColorStop(1,'#dfe6ec');g.fillStyle=gr;g.fillRect(0,0,4,256);
+    const sky=new THREE.Mesh(new THREE.SphereGeometry(640,32,16),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),side:THREE.BackSide,fog:false}));
+    sky.position.set(sx(0),sy(-60),sz(0));sky.userData.noFingerprint=true;K.dyn.add(sky);}
    K.places.push(['the street outside',[sx(0),sy(20),sz(0)],260]);
-   K.zones.push({c:[sx(0),sy(60),sz(0)],r:420,color:'#c4ccd4',density:0.0016});
+   K.zones.push({c:[sx(0),sy(60),sz(0)],r:900,color:'#cdd6e0',density:0.0007});   /* wide: the whole street and the views of it are daylight */
    K.cards.tower={h:'The tower',p:'The Oldest House from outside: a windowless brutalist tower in Manhattan, ribbed in concrete, with no sign on it. People walk past it every day without seeing it. Inside, there is a great deal more of it than this.',sub:'The street'};
-   K.views.push({name:'The tower on its street',group:'Outside',t:[sx(0),sy(80),sz(0)],d:330,yaw:0.5,pitch:0.16,card:'tower'});
-   K.views.push({name:'The door',group:'Outside',t:[sx(0),sy(6),sz(TW)],d:40,yaw:0.25,pitch:0.08,card:'tower'});}
+   K.views.push({name:'The tower on its street',group:'Outside',t:[sx(0),sy(110),sz(0)],d:430,yaw:0.5,pitch:0.1,card:'tower'});
+   K.views.push({name:'The door',group:'Outside',t:[sx(0),sy(6),sz(TW+4)],d:40,yaw:0.25,pitch:0.08,card:'tower'});}
 
   // ================================================================ the events
   const dotTex=K.T.dot;

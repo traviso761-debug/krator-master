@@ -96,7 +96,9 @@ async function build(){
   // the fingerprint the tests check: the fabric, before anything moves
   ctx.lotList=sceneRows(THREE,fabric);
   let verts=0;for(const m of meshes)verts+=m.geometry.attributes.position.count;
-  ctx.details=Object.assign({seed:C.seed,meshes:meshes.length,ceilings:ceilings.length,lights:lights.list.length,vertices:verts,views:K.views.length,events:K.events.length},
+  /* the heaviest materials, for keeping the budget: [key, vertices] */
+  const topMats=meshes.map(m=>[m.name,m.geometry.attributes.position.count]).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  ctx.details=Object.assign({topMats,seed:C.seed,meshes:meshes.length,ceilings:ceilings.length,lights:lights.list.length,vertices:verts,views:K.views.length,events:K.events.length},
     Object.fromEntries(SECTORS.map(([n])=>[n,!!built[n]])),Object.fromEntries(SECTORS.map(([n])=>['verts_'+n,sverts[n]])));
 
   // ---- the camera: a point you look at, how far away, and from which way ----
