@@ -1,7 +1,7 @@
 # Scale model tools
 
 Scripts that edit the **Krator Scale Model** artifact
-(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.19. The artifact's rasters live inside the page
+(https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q), now version 4.20. The artifact's rasters live inside the page
 (a `DATA` object on one long line); the generator that made them is not in this repo, so these
 scripts edit the decoded rasters directly and write a new page.
 
