@@ -228,7 +228,9 @@ A subfolder, so the Ancients-lineage builds that take every top-level `core/mate
 | `test-record.js` | `node core/materials/record/test-record.js` |
 
 **Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`
-from `tex/`, which `tools/textures/pack.py` writes from `materials.json`).
+from `tex/`, which `tools/textures/pack.py` writes from `materials.json`) and `settlements/screamers` (2026-10-05, the first
+Ancients-lineage build: `23` and `25` only, since `24-tex-def.js`'s global `TEX` would meet the lineage's canvas table;
+`src/72c-matlib.js` puts each family on its `MAT` keys by world-space triplanar projection, the lineage's UVs being in no one unit).
 
 ## `clock/`
 
@@ -257,7 +259,7 @@ so nothing moved).
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
-builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
+builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides; so does `kits/post-apoc/apoc_bundle.py`, the closure `settlements/screamers` loads) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
 
 ## Planned: a material registry
 

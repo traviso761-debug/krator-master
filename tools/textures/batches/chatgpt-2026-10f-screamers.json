@@ -1,0 +1,83 @@
+[
+ {
+  "src": "ground.ruin.webp",
+  "out": "core/materials/library/ground.ruin",
+  "record": {
+   "id": "ground.ruin",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row ground.ruin (Ancients and the kits forked from them) (exact wording not recorded)",
+    "licence": "generated for this project by its owner",
+    "reuse": "every central-crater build on laterite: Screamers, Girder, Mav's Refuge, the Iziz hyperjungle, the Ancients kit's ground"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "delight": 0.3
+  }
+ },
+ {
+  "src": "wood.lash.webp",
+  "out": "core/materials/library/wood.lash",
+  "record": {
+   "id": "wood.lash",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row wood.lash (Screamers) (exact wording not recorded)",
+    "licence": "generated for this project by its owner",
+    "reuse": "lashed post walls and palisades of any tribal culture: Screamers, Beast Riders (Girder, Mav's Refuge), Ring Sea Islanders, the Highlands tribal set"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "delight": 0.3,
+   "pattern": true
+  }
+ },
+ {
+  "src": "metal.ancient.webp",
+  "out": "core/materials/library/metal.ancient",
+  "record": {
+   "id": "metal.ancient",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row metal.ancient (Ancients and the kits forked from them) (exact wording not recorded)",
+    "licence": "generated for this project by its owner",
+    "reuse": "the Ancients' white panel metal in every Ancients-lineage build (kits/ancients, Iziz Ancient style, Highlands, Dalab, Xanadu, Reed Lake) and the Post-Apoc bulkhead (conc); neutral, tint per instance"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "delight": 0.2,
+   "pattern": true
+  }
+ }
+]

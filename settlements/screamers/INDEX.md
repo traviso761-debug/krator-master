@@ -52,9 +52,11 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `70c-furniture.js` | 7 | catalogue (106) |
 | `71-sky-h.js` | 3 |  |
 | `71-village.js` | 45 **big** | - (170) |
+| `71a-apoc-homes.js` | 4 | the salvage quarter: Post-Apoc homes (1) |
 | `71b-flora.js` | 39 **big** |  |
 | `72-datacenter.js` | 3 |  |
 | `72a-wind.js` | 6 |  |
+| `72c-matlib.js` | 7 | the material library (core/materials/record) (1) |
 | `73-police.js` | 3 |  |
 | `74-hospital.js` | 3 |  |
 | `75-biome-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (41); accounting (69) |
@@ -97,4 +99,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `furniture` | `89z-rows.js`, `91z-views.js` | <1 |
-| `screamers` | `89z-rows.js`, `91z-views.js` | 3 |
+| `screamers` | `89z-rows.js`, `91z-views.js` | 4 |

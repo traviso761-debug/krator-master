@@ -11,6 +11,14 @@ const _pn=_S.pen?[_S.pen.x,_S.pen.y,_S.pen.z]:[-40,12,-330];
 const _lb=_S.lobby||[0,12,-240];
 const _gt=(_S.gates&&_S.gates[0])||[540,12,310];
 const HALL=[-60,644,374], PALACE=[-63,620,626], PLZ=[-60,630,374];
+// the salvage homes (71a-apoc-homes.js): SCREAM.homes carries each one's front door [x,y,z,yaw]; yaw 0 faces +z
+const _hm=_S.homes||[];
+const _home=k=>_hm.find(h=>h.key===k)||_hm[0]||{x:0,y:12,z:0,ry:0,door:null};
+const _hd=h=>h.door||[h.x,h.y,h.z,h.ry];
+const FRONT=(h,d,ht)=>{const D=_hd(h);return[D[0]+Math.sin(D[3])*d,h.y+ht,D[2]+Math.cos(D[3])*d,D[0],h.y+2,D[2]];};
+// just inside the front door, looking across the room toward the plot's centre and beyond
+const INSIDE=h=>{const D=_hd(h),ix=-Math.sin(D[3]),iz=-Math.cos(D[3]);
+ return[D[0]+ix*1.3,D[1]+1.6,D[2]+iz*1.3,D[0]+ix*9,D[1]+1.0,D[2]+iz*9];};
 const VIEWS={
  // --- the settlement -------------------------------------------------------
  'Hexahedron':[-300,620,-2600,180,470,240],
@@ -27,6 +35,10 @@ const VIEWS={
  'The lobby door':AT(_lb,-1.9,150,40,_lb[1]+14),
  'The lift':[260,180,-520,8,260,-262],
  'Harvest':[-480,44,120,-140,24,300],
+ 'Salvage homes':FRONT(_home('lg-bulkhead'),46,22),
+ 'A salvage home':FRONT(_home('dw-silo'),12,1.7),
+ 'Inside a salvage home':INSIDE(_home('lg-bulkhead')),
+ 'Inside the twin silo hall':INSIDE(_home('lg-twinsilo')),
  // --- the arcology ---------------------------------------------------------
  'The waist':[950,700,-1400,180,620,240],
  'The shear':[-266,470,640,-110,400,215],

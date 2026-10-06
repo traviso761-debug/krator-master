@@ -589,22 +589,26 @@ function stovepipe(x,y,z,h,o){o=o||{};const r=o.r||.09;const c=jc(pick([0x4a4038
 function solar(x,y,z,w,d,ry,tilt,o){o=o||{};W(x,y,z,ry||0,()=>{const t=tilt===undefined?.5:tilt;plane4('glass',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],[-w/2,d*Math.sin(t),d/2*Math.cos(t)],[w/2,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x1a2a4a,.05));
   beam('iron',[-w/2,0,-d/2*Math.cos(t)],[w/2,0,-d/2*Math.cos(t)],.05,jc(0x8a8a86,.05));const n=Math.round(w/1.6);for(let k=0;k<=n;k++){const px=-w/2+k*w/n;beam('iron',[px,-.05,-d/2*Math.cos(t)],[px,d*Math.sin(t),d/2*Math.cos(t)],.05,jc(0x8a8a86,.04));}
   for(const sx of [-1,1])beam('iron',[sx*w/2*.8,-y,d/4],[sx*w/2*.8,d*Math.sin(t)*.6,d/4*.4],.06,jc(0x4a4038,.05));});}
-function barrel(x,y,z,col,o){o=o||{};const c=col===undefined?jc(pick([0x8a3a2c,0x2f5f8f,0x4d6f3c,0x8a6a3a,0x9a9a92,0xc99a2e,0x5a5a56]),.08):(typeof col==='number'?jc(col,.05):col);cyl('sheet',x,y,z,.29,.88,c,10,.29,true);for(const f of [.18,.7])cyl('iron',x,y+f,z,.31,.05,jc(0x3a3430,.05),10);
- if(!o.open)cyl('iron',x,y+.88,z,.27,.02,jc(0x4a4038,.05),10);else cyl('rubber',x,y+.85,z,.26,.02,jc(0x201a12,.05),10);}
-function crate(x,y,z,s,ry,col){s=s||.6;box('plank',x,y,z,s,s,s,col===undefined?P('wood'):jc(col,.05),ry);box('plank',x,y+s*.42,z,s*1.02,.05,s*1.02,jc(0x4a3a2c,.05),ry);}
-function sacks(x,y,z,n,ry){W(x,y,z,ry||0,()=>{for(let k=0;k<n;k++){const r=k<3?k:k-3;const yy=k<3?0:.32;sph('cloth',-.4+r*.4,yy+.16,rr(-.05,.05),.22,jc(pick(PAL.cloth),.06),.7);}});}
-function pallet(x,y,z,w,d,ry){box('plank',x,y,z,w,.12,d,P('woodD'),ry);}
-function lamp(x,y,z,h,o){o=o||{};h=h||3.2;beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
-function fire(x,y,z,r){r=r||.5;for(let k=0;k<7;k++){const a=k/7*TAU;box('plank',x+Math.cos(a)*r*.5,y+.05,z+Math.sin(a)*r*.5,.07,.07,r*.9,jc(0x3a2a1c,.06),a,0,rr(-.3,.3));}
- for(let k=0;k<8;k++){const a=k/8*TAU;box('conc',x+Math.cos(a)*r*1.05,y,z+Math.sin(a)*r*1.05,.16,.14,.16,jc(0x8a8478,.08),a);}cone('glow',x,y+.06,z,r*.42,r*1.1,jc(0xff9a3a,.08),7);cone('glow',x,y+.06,z,r*.22,r*1.5,jc(0xffe28a,.05),6);smokeAt(x,y+r*1.6,z,{r:r*.9,kind:'fire'});}
-function tireStack(x,z,n,o){o=o||{};for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);}
-function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){const a=rng()*TAU,d=Math.sqrt(rng())*r;const px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=(1-d/r)*r*.35;const t=rng();
- if(t<.3)box('sheet',px,py,pz,rr(.4,1.1),rr(.03,.06),rr(.4,1.0),pick([P('rust'),P('galv')]),rng()*TAU,rr(-.5,.5),rr(-.5,.5));
- else if(t<.5)beam('iron',[px,py,pz],[px+rr(-1,1),py+rr(.1,.9),pz+rr(-1,1)],rr(.04,.09),P('rust'),rng()<.5);
- else if(t<.65)tire(px,py+.15,pz,TYR.R,TYR.t,undefined,rng()*TAU,rr(-1,1),rr(-1,1));
- else if(t<.8)box('iron',px,py,pz,rr(.2,.5),rr(.15,.4),rr(.2,.5),P('black'),rng()*TAU);
- else if(t<.9)barrel(px,py,pz,undefined,{open:true});
- else box('plank',px,py,pz,rr(.6,1.4),.05,rr(.1,.2),P('woodD'),rng()*TAU,rr(-.4,.4),rr(-.4,.4));}}
+// YARD FURNITURE: master-catalog pieces placed through FURNISH (91f-furnish.js), not drawn here. Each helper keeps its name and
+// arguments, so no builder changed, and still draws the random numbers its old drawing drew (rngSkip), so the structure a builder
+// draws after it keeps its random stream (colours, patches, jitter). Keys: the pieces harvested from this kit (catalog scrap file).
+function rngSkip(n){for(let i=0;i<n;i++)rng();}
+function barrel(x,y,z,col,o){o=o||{};rngSkip(col===undefined?9:typeof col==='number'?8:6);return FURNISH('pa_drum',x,y,z,0,{v:o.open?1:0});}
+function crate(x,y,z,s,ry,col){s=s||.6;rngSkip(col===undefined?5:4);return FURNISH('pa_crate',x,y,z,ry||0,{v:s>.7?1:0});}   /* the catalog's crates: 0.6 and 0.8 m */
+function sacks(x,y,z,n,ry){rngSkip(4*n);return FURNISH('pa_sacks',x,y,z,ry||0,{v:n>3?1:0});}
+function pallet(x,y,z,w,d,ry){rngSkip(3);return FURNISH('pa_pallet_load',x,y,z,ry||0,{v:0});}
+/* a lamp post: the catalog's (3.2 or 3.8 m, arm toward +x, turned for a negative o.arm). A lamp under 2 m is a bracket light fixed to a
+   structure (a mast, a crane deck, a lookout rail), not a post: it stays drawn here */
+function lamp(x,y,z,h,o){o=o||{};h=h||3.2;if(h>=2){rngSkip(8);return FURNISH('pa_lamp_post',x,y,z,(o.arm||.35)<0?PI:0,{v:h>=3.5?1:0,ax:-.23});}
+ beam('iron',[x,y,z],[x,y+h,z],.05,jc(0x4a4038,.05),true,6);beam('iron',[x,y+h,z],[x+(o.arm||.35),y+h-.05,z],.04,jc(0x4a4038,.05),true,5);cone('iron',x+(o.arm||.35),y+h-.3,z,.16,.2,jc(0x5a4a3c,.05),8);sph('glow',x+(o.arm||.35),y+h-.34,z,.09,jc(0xffd890,.03));}
+/* a camp fire (the catalog's, r 0.5): the smoke stays the kit's (93-anim.js) */
+function fire(x,y,z,r){r=r||.5;rngSkip(41);FURNISH('pa_camp_fire',x,y,z,0,{v:0});smokeAt(x,y+r*1.6,z,{r:r*.9,kind:'fire'});}
+/* a stack of loose tyres (2, 3 or 5 in the catalog). o.fixed: tyres that carry something (a tank's cradle) are structure and stay drawn */
+function tireStack(x,z,n,o){o=o||{};if(o.fixed){for(let k=0;k<n;k++)tire(x+rr(-.03,.03),.12+k*.24,z+rr(-.03,.03),o.R||TYR.R,o.t||TYR.t,undefined,rng()*TAU);return null;}
+ rngSkip(3*n);return FURNISH('pa_tyre_stack',x,o.y||0,z,0,{v:n<=2?0:n===3?1:2});}
+/* a junk pile (the catalog's small r 1.0 or large r 1.4); the skip replays the old draw: three numbers per item, then what its kind drew */
+function junkPile(x,z,r,n,o){o=o||{};for(let k=0;k<n;k++){rng();rng();const t=rng();rngSkip(t<.3?13:t<.5?8:t<.65?3:t<.8?7:t<.9?9:8);}
+ return FURNISH('pa_junk_pile',x,o.y||0,z,0,{v:r>=1.3?1:0});}
 function antenna(x,y,z,h){beam('iron',[x,y,z],[x,y+h,z],.03,jc(0x8a8a86,.05),true,5);for(let k=1;k<4;k++)beam('iron',[x-.5+k*.05,y+h*(.35+k*.14),z],[x+.5-k*.05,y+h*(.35+k*.14),z],.02,jc(0x8a8a86,.05),true,4);}
 function fenceRun(x0,z0,x1,z1,h,o){o=o||{};h=h||1.6;const L=Math.hypot(x1-x0,z1-z0);if(L<.2)return;const n=Math.max(1,Math.round(L/2.4));const ang=Math.atan2(-(z1-z0),x1-x0);
  for(let k=0;k<=n;k++){const t=k/n;const px=x0+(x1-x0)*t,pz=z0+(z1-z0)*t;beam('wood',[px,0,pz],[px,h+.15,pz],.09,jc(0x5c4630,.06),true,6);}
@@ -617,8 +621,8 @@ function bottleString(a,b,n,o){o=o||{};for(let k=0;k<n;k++){const t=(k+.5)/n;con
  beam('plain',[x,y,z],[x,y-len,z],.006,jc(0x6a5a44,.05),true,3);const cl=pick([0x3f9a52,0xc98a2a,0x2f62b8,0xd5ecea,0xa04a2a]);cyl('glass',x,y-len-.26,z,.05,.24,jc(cl,.05),6);cyl('glass',x,y-len-.02,z,.02,.1,jc(cl,.05),6);}
  beam('plain',a,[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],.008,jc(0x6a5a44,.05),true,3);beam('plain',[(a[0]+b[0])/2,(a[1]+b[1])/2-.25,(a[2]+b[2])/2],b,.008,jc(0x6a5a44,.05),true,3);}
 // water butt on stilts: a small tank + legs + downpipe
-function waterButt(x,y,z,r,h,o){o=o||{};const c=o.col===undefined?jc(pick([0x3a6a8a,0x8a4a3a,0x6a7a78,0x4d6f3c]),.06):jc(o.col,.05);for(let k=0;k<4;k++){const a=k*PI/2+PI/4;beam('wood',[x+Math.cos(a)*r*.8,0,z+Math.sin(a)*r*.8],[x+Math.cos(a)*r*.8,y,z+Math.sin(a)*r*.8],.09,jc(0x5c4630,.06));}
- cyl('sheet',x,y,z,r,h,c,12,r,true);cyl('iron',x,y+h,z,r*.9,.05,jc(0x3a3430,.05),12);cone('iron',x,y+h+.05,z,r*.95,r*.3,jc(0x4a4038,.05),12);}
+/* the catalog's (tank on a 1.4 or a 1.1 m stand), standing on the ground (or on o.base: a deck); y was the old stand's height */
+function waterButt(x,y,z,r,h,o){o=o||{};rngSkip(o.col===undefined?15:14);return FURNISH('pa_water_butt',x,o.base||0,z,0,{v:y-(o.base||0)<1.25?1:0});}
 
 // ---------------------------------------------------------------- PLACEHOLDER FLORA
 // Buildings never model plants as part of themselves (README rule: a plant is its own tagged object, placed). Anything green a building wants
@@ -651,25 +655,12 @@ function plant(kind,x,y,z,o){o=o||{};const sl={kind,key:CURKEY,m:CM.clone().mult
 // ---------------------------------------------------------------- TYRE FURNITURE (stools, chairs, tables): stacked tyres, woven cord, timber frames
 // After the reference photos: two tyres stacked make a seat with a lattice of cord over the hole; a chair adds a tyre standing on edge as the backrest
 // (cord net inside it) in a timber frame with arms; a table is a tyre with a round wooden top. Cords stay in muted rope colours (ochre, olive, faded orange, dirty white).
-// All draw in the current frame, facing +z, base on y; pass ry to turn them. o: {n: tyres in the seat stack, wood: hex, cord: hex}
-const TYRE_CORDS=[0xa8892a,0x6a7a3a,0x9a5a2a,0xb8b0a0];
-function tireWeave(cx,cy,cz,r,cord,n,plane){n=n||5;const c=jc(cord,.05);for(let i=-n+1;i<n;i++){const off=i*r/n,h=Math.sqrt(Math.max(0,r*r-off*off));if(h<.03)continue;
- if(plane==='v'){box('plain',cx,cy+off-.008,cz,2*h,.018,.018,c);box('plain',cx+off-.008,cy-h,cz,.018,2*h,.018,c);}
- else{box('plain',cx,cy,cz+off-.008,2*h,.018,.018,c);box('plain',cx+off-.008,cy,cz-h,.018,.018,2*h,c);}}}
-function tireStool(x,y,z,o){o=o||{};const n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS);for(let k=0;k<n;k++)tire(x,y+.12+k*.235,z,R,t,undefined,rng()*TAU);
- cyl('cloth',x,y+.02,z,R-t*1.1,n*.235-.1,jc(0x4a4034,.05),10);tireWeave(x,y+n*.235-.01,z,R-t,cord,5,'h');}   /* a sack-cloth pad in the hole, the cord lattice across the tyre top */
-function tireChair(x,y,z,ry,o){o=o||{};W(x,y,z,ry||0,()=>{const wc=jc(o.wood||pick([0x5a2a24,0xa88a5e,0x7a5236]),.06),n=o.n||2,R=TYR.R,t=TYR.t,cord=o.cord||pick(TYRE_CORDS),sy=n*.235;
-  tireStool(0,0,0,{n:n,cord:cord});
-  /* backrest: a tyre on edge behind the seat, cord net inside, held by two posts that run to the ground */
-  const bz=-.36,by=sy+.42;tire(0,by,bz,R*1.12,t,undefined,0,PI/2,0);tireWeave(0,by,bz,(R*1.12-t)*.98,cord,5,'v');
-  for(const sx of [-1,1]){beam('wood',[sx*.46,0,bz-.02],[sx*.46,by+.62,bz-.02],.06,wc,true,6);   /* back posts */
-   beam('wood',[sx*.46,sy+.04,bz],[sx*.5,sy+.3,.42],.055,wc,true,5);                              /* arm rails, sloping to the front */
-   beam('wood',[sx*.5,0,.4],[sx*.5,sy+.3,.4],.055,wc,true,5);}                                     /* front arm posts */
-  beam('wood',[-.46,by+.6,bz-.02],[.46,by+.6,bz-.02],.035,wc,true,5);beam('wood',[-.46,sy-.02,bz-.02],[.46,sy-.02,bz-.02],.035,wc,true,5);});}
-function tireTable(x,y,z,o){o=o||{};const wc=jc(o.wood||0x7a5236,.06),n=o.n||1,R=TYR.R*1.15,t=TYR.t*1.1,top=n*.24+.25;
- for(const k of [0,1].slice(0,n))tire(x,y+.13+k*.24,z,R,t,undefined,rng()*TAU);
- for(const a of [.6,2.2,3.8,5.4])beam('wood',[x+Math.cos(a)*(R+.02),y,z+Math.sin(a)*(R+.02)],[x+Math.cos(a)*(R+.02),y+top,z+Math.sin(a)*(R+.02)],.05,wc,true,6);
- cyl('wood',x,y+top,z,R+.1,.05,wc,14);}
+// They are the catalog's pieces now (pa_tyre_stool, pa_tyre_chair, pa_tyre_table, harvested from the kit's drawing): placed in the current frame,
+// facing +z, base on y; pass ry to turn a chair. o: {n: tyres in the seat stack, wood, cord: given colours draw no random number}
+/* the skips are the old draws (cord, tyre turns, colours) */
+function tireStool(x,y,z,o){o=o||{};const n=o.n||2;rngSkip(n+4+(o.cord?0:1));return FURNISH('pa_tyre_stool',x,y,z,o.ry||0,{v:n>=3?1:0});}
+function tireChair(x,y,z,ry,o){o=o||{};const n=o.n||2;rngSkip(n+6+(o.wood?2:3)+(o.cord?0:1));return FURNISH('pa_tyre_chair',x,y,z,ry||0);}
+function tireTable(x,y,z,o){o=o||{};const n=o.n||1;rngSkip(2+n);return FURNISH('pa_tyre_table',x,y,z,0,{v:n>=2?1:0});}
 // ---------------------------------------------------------------- registry, placement, cultural sockets
 // A building def: {key, name, seed, tags:{type:[...],...}, w, d, h, build(o)}. The builder draws in its local frame (origin = plot centre on the
 // ground, +z the front, x right, y up) and stays inside w x d (overhangs of ~1 m allowed). It never mentions a culture: it declares SOCKETS,
@@ -1015,10 +1006,10 @@ mkCulture({key:'iziz',name:'Iziz',field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',
 mkCulture({key:'republic',name:'Republic',field:'#7a2028',edge:'#4a3220',band:'#c9963a',disc:'#f0e6cc',ink:'#7a2028',ink2:'#2a8a86',sym:'triskele',pole:0x7a5a38,
  awn:{mode:'stripes',cols:['#7a2028','#f0e6cc','#c9963a','#f0e6cc'],n:8},
  paint:[0x7a2028,0x8a2f2a,0xc9963a,0xf0e6cc,0x5c4028],signBg:'#7a2028',signFg:'#f0e6cc',signFrame:0x4a3220});
-// Voth: deep blue, ash-white glyph, ragged cloth
-mkCulture({key:'voth',name:'Voth',field:'#24487a',edge:'#182e4d',band:'#3a5f8f',disc:null,ink:'#d8cdb4',sym:'diamond',pole:0x3a2a1c,flagStyle:'pennant',
- awn:{mode:'cloth',cols:[0x24487a,0x1f3a5f,0x3a5f8f,0x2a3a4a]},
- paint:[0x24487a,0x1f3a5f,0x3a5f8f,0x2a3a4a,0xd8cdb4],signBg:'#1f3a5f',signFg:'#d8cdb4',signFrame:0x182e4d});
+// Voth: deep purple, ash-white glyph, ragged cloth
+mkCulture({key:'voth',name:'Voth',field:'#4b2a6e',edge:'#2f1a47',band:'#6a4a8f',disc:null,ink:'#d8cdb4',sym:'diamond',pole:0x3a2a1c,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x4b2a6e,0x3a2259,0x6a4a8f,0x3a2a4a]},
+ paint:[0x4b2a6e,0x3a2259,0x6a4a8f,0x3a2a4a,0xd8cdb4],signBg:'#3a2259',signFg:'#d8cdb4',signFrame:0x2f1a47});
 // Yuni: yellow, the hyperboloid
 mkCulture({key:'yuni',name:'Yuni',field:'#dcb42c',edge:'#5a4410',band:'#f4ecc8',disc:'#f6efd0',ink:'#4a3a12',sym:'hyperboloid',pole:0x5a4410,
  awn:{mode:'stripes',cols:['#e0b52a','#f4ecc8','#c99a1e','#f4ecc8'],n:8},
@@ -1041,6 +1032,10 @@ mkCulture({key:'xanadu',name:'Xanadu',field:'#e89a2a',edge:'#7a1a24',band:'#d8a8
 mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge:'#4a2a14',band:'#c49a5a',disc:null,ink:'#f0e8d4',sym:'moon',pole:0x5a3a22,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0x8a5a32,0xb08850,0x7a4a2a,0xc4a468]},
  paint:[0x8a5a32,0x4a2a14,0xc49a5a,0xf0e8d4,0x2a7a7a],signBg:'#4a2a14',signFg:'#f0e8d4',signFrame:0x7a4a2a});
+// Screamers (the Hexahedron): ochre daub on rag, black and bone-white, the skull; ragged cloth, pennants (LORE.md 6.7; PLAN.md, patterns/screamers/daub)
+mkCulture({key:'screamer',name:'Screamers',field:'#b8683e',edge:'#2a1e16',band:'#e8dcc4',disc:null,ink:'#f0e6d0',ink2:'#2a1e16',sym:'skull',pole:0x4a3424,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0xb8683e,0x8a4a2a,0xa08058,0x6a4a30]},
+ paint:[0xb8683e,0x8a3f1c,0xe8dcc4,0x2a1e16,0x6a7a3a],signBg:'#2a1e16',signFg:'#e8dcc4',signFrame:0x4a3424});
 const TITLE='Culture Socket Sheet';
 // one row: the same building in every culture pack. 'key@culture' dresses that site in that culture's marks.
 const FAMILIES=[{name:'Cultures',keys:['sock-demo@generic','sock-demo@iziz','sock-demo@republic','sock-demo@voth','sock-demo@yuni','sock-demo@beast-rider','sock-demo@hykkousoi','sock-demo@xanadu','sock-demo@ringsea-islander']}];
@@ -1087,9 +1082,9 @@ const SITEKEY=k=>{if(typeof k!=='string')return {key:k.key,o:Object.assign({v:0}
  z+=dmax/2;let x=-total/2;keys.forEach((k,i)=>{SITES.push({key:k.key,x:x+ws[i]/2,z,ry:0,o:k.o});x+=ws[i];});
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys:keys.map(k=>k.key)});z+=dmax/2+Math.max(26,hmax*1.3)+8;}})();
 const GROUND_C=ROWS.length?ROWS[ROWS.length-1].z/2:0;groundM.position.set(0,0,GROUND_C);
-/* smoke from the two big stacks built without stovepipe() (which marks its own): the smithy's forge flue and the fuel generator's exhaust, by their tops in
+/* smoke from the big stack built without stovepipe() (which marks its own): the fuel generator's exhaust, by its top in
    the def's local frame. Wrapping the builder keeps the building fragments untouched; smokeAt() reads CM, so the puffs follow any placement (compounds too). */
-const SMOKE_STACKS={smithy:[[-2.2,9.5,-3.55,.6]],'gen-fuel':[[-4.8,CT.H+5.85,-2.6,.55]]};
+const SMOKE_STACKS={'gen-fuel':[[-4.8,CT.H+5.85,-2.6,.55]]};   /* the smithy's forge (and its flue) is the interiors' now: no stack */
 for(const k in SMOKE_STACKS){const d=DEFS[k];if(!d||d._smoke)continue;const b=d.build;d._smoke=true;d.build=o=>{const r=b(o);for(const q of SMOKE_STACKS[k])smokeAt(q[0],q[1],q[2],{r:q[3],kind:'stack'});return r;};}
 // ---------------------------------------------------------------- (re)build the world for a culture
 let WORLD=null;
@@ -1138,6 +1133,75 @@ window._api={REG,DEFS,CULT,SOCK_ALL,SITES,ROWS,
  plants(){const by={};for(const p of PLANTS.list){const k=(p.key||'?')+' '+p.kind;by[k]=(by[k]||0)+1;}return {total:PLANTS.list.length,by};},
  tags(){return REG.map(r=>({key:r.key,cls:r.cls,tags:r.tags}));},
  kitCoverage(){const placed=new Set(REG.map(r=>r.key));return Object.keys(DEFS).filter(k=>!placed.has(k));}};
+// ---------------------------------------------------------------- furniture: PLACED from the catalog, not drawn
+// Everything a Post-Apoc builder puts in or around a building that is not the building itself (its reclaimed core, the additions
+// lashed to it, its yard walls, fences, stairs and outbuildings) is FURNITURE: a master-catalog piece (kits/catalog, the harvested
+// pa_* pieces in krator-master-furniture-scrap.js and -post-apoc.js), placed as data and built by the catalog's own code through
+// KratorFurniture (38-furniture-bundle.js, generated by build.py), merged into one mesh per render family for the whole page.
+// A builder (or a 34-adds helper: barrel, crate, sacks, lamp, fire, tireStack ...) calls, in its CURRENT frame (W() frames included):
+//   FURNISH(key, lx, ly, lz, lry, {v, seed, setting, ax, az})   -> the placement record, also on the building's REG record (rec.furniture)
+// (ax, az): the point of the PIECE (its own frame, metres) that lands on (lx, lz); a piece is centred on its footprint, so a lamp
+// post whose pole is 0.23 m off its centre passes ax:-.23. Indoors, the rooms of every top-level building are the interiors kit's:
+// its set (kits/interiors/sets/post-apoc.js) is planned and furnished through the same catalog with ?interiors=1 (off by default:
+// the roofs hide it). ?furniture=0 places nothing (the records are still kept). A key the catalog lacks is counted, not thrown
+// (PAF.missing, _api.furniture().missing).
+KratorFurniture.setDetail(.5);   // settlement-scale: half the segments on round furniture parts
+const PAF={on:!/[?&]furniture=0\b/.test(location.search),interiors:/[?&]interiors=1\b/.test(location.search),
+ batch:null,adapter:null,group:null,placed:[],missing:{},buildings:[],cur:null,dry:0,
+ FIRE:{pa_camp_fire:1,pa_forge:1,pa_brick_grill:1,pa_box_stove:1},   // their lights are fires (big halos), the rest lamps
+ NOCOLL:{pa_lamp_post:1,pa_hanging_lamp:1,pa_goods_rail:1,pa_gibbet:1}};   // thin or hung: no collider
+function pafNewBatch(){PAF.batch=KratorFurniture.batch();PAF.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,PAF.batch);PAF.placed=[];PAF.missing={};PAF.buildings=[];}
+pafNewBatch();
+function pafWealth(key){const it=KratorInteriors.sets.find(key);return it&&it.wealth!=null?it.wealth:.3;}
+function FURNISH(key,lx,ly,lz,lry,o){o=o||{};const c=PAF.cur;if(!c||!CURKEY){reportErr('FURNISH '+key+' outside a builder');return null;}
+ lry=lry||0;if(!KratorFurniture.has(key)){if(!PAF.dry)PAF.missing[key]=(PAF.missing[key]||0)+1;return null;}
+ if(o.ax||o.az){const ax=o.ax||0,az=o.az||0,cs=Math.cos(lry),sn=Math.sin(lry);lx-=ax*cs+az*sn;lz-=-ax*sn+az*cs;}
+ const w=new THREE.Vector3(lx,ly,lz).applyMatrix4(CM),e=CM.elements,wry=Math.atan2(e[8],e[10])+lry;
+ const b=w.clone().applyMatrix4(c.M0inv);   // the building's own frame (origin = plot centre on the ground, +z the front)
+ const v=o.v|0,seed=o.seed||(c.seed*100+c.list.length+1);
+ const rec={key,variant:v,seed,lx:+b.x.toFixed(3),ly:+b.y.toFixed(3),lz:+b.z.toFixed(3),lry:+(wry-c.ry).toFixed(4),x:w.x,y:w.y,z:w.z,ry:wry,building:CURKEY,setting:o.setting||'outdoor'};
+ c.list.push(rec);
+ if(!PAF.NOCOLL[key]){const A=KratorFurniture.FURN_BY_KEY[key],d=KratorFurniture.entryDims(A,v);if(d.h>=.3)collSolid(lx,ly,lz,d.w,d.h,d.d,lry,'furniture');}
+ if(PAF.dry)return rec;
+ PAF.placed.push(rec);
+ if(PAF.on){const r=PAF.batch.place(key,w.x,w.y,w.z,wry,{variant:v,seed:seed,wealth:c.wealth,building:CURKEY,setting:rec.setting});
+  if(r.error)reportErr('furniture '+key+': '+r.error);
+  /* the piece's lights become HALO records (glow sprites, the night light pool, the lamp cones: 91n-night.js, 93-anim.js) as the kit's own glow did */
+  const fireK=!!PAF.FIRE[key];for(const L of r.lights){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
+   const cc=hc(fireK?0xff9a3a:0xffd890);HALOS.push({x:L.x,y:L.y+(fireK?0:.06),z:L.z,r:cc.r,g:cc.g,b:cc.b,big:fireK,kind:fireK?'ConeGeometry':'SphereGeometry'});}}
+ return rec;}
+// ---- the registry hook: every place() gets its own record list (nested placements, the compound's slots, keep theirs) and the
+// interiors hook runs after a TOP-LEVEL placement (not a sub-building a compound places); frontOf()'s throwaway builds batch nothing
+const pafPlace=place,pafFrontOf=frontOf;
+place=function(key,x,z,ry,o){const d=DEFS[key];if(!d)return pafPlace.apply(this,arguments);o=o||{};const top=!CURKEY,keep=PAF.cur;
+ const y=o.y!==undefined?o.y:terrainH(x,z);const M0=CM.clone().multiply(TF(x,y,z,ry||0)),e=M0.elements;
+ const c=PAF.cur={key,seed:d.seed+(o.v|0)*7+(((Math.round(x*10)*73856093)^(Math.round(z*10)*19349663))>>>0)%9973,M0inv:M0.clone().invert(),ry:Math.atan2(e[8],e[10]),wealth:pafWealth(key),list:[]};
+ let rec;try{rec=pafPlace.apply(this,arguments);}finally{PAF.cur=keep;}
+ if(!rec)return rec;rec.furniture=c.list;
+ if(top&&!PAF.dry&&PAF.interiors&&PAF.on){const it=KratorInteriors.sets.find(key);
+  if(it&&!it.skip){try{const r=KratorInteriors.sets.furnish(it,x,z,ry||0,PAF.adapter,{baseY:y,prefix:'pa.'+PAF.buildings.length+'.'});
+    rec.interior={rooms:r.inst.rooms.length,pieces:Object.keys(r.plans).reduce((a,k)=>a+r.plans[k].placements.length,0),residence:r.residence};
+    PAF.buildings.push({key,x,z,ry:ry||0,interior:rec.interior});}catch(err){reportErr('interiors '+key+': '+(err.stack||err));}}}
+ return rec;};
+frontOf=function(key){PAF.dry++;try{return pafFrontOf(key);}finally{PAF.dry--;}};
+// the catalog's colours are sRGB values; this renderer works in linear light (outputEncoding sRGB, every kit colour through SRGB2LIN), so the
+// batch's vertex colours are converted once (to floats: linear uint8 would band the darks)
+const PAF_LIN=new Float32Array(256).map((_,i)=>{const c=i/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);});
+function pafLinear(geo){const a=geo.getAttribute('color');if(!a||a.array instanceof Float32Array)return;const src=a.array,out=new Float32Array(src.length);
+ for(let i=0;i<src.length;i++)out[i]=PAF_LIN[src[i]];geo.setAttribute('color',new THREE.BufferAttribute(out,3));}
+// ---- the batch becomes meshes ONCE per world build, after every building is placed
+const pafBuildWorld=buildWorld;
+buildWorld=function(cultureKey){pafNewBatch();const t0=performance.now();const W0=pafBuildWorld(cultureKey);
+ const g=PAF.group=PAF.batch.flush(WORLD);g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;pafLinear(m.geometry);}});
+ if(window._build)window._build.furniture={placed:PAF.placed.length,tris:Math.round(PAF.batch.tris),missing:Object.assign({},PAF.missing),interiors:PAF.buildings.length,ms:Math.round(performance.now()-t0)};
+ return W0;};
+// probe: _api.furniture() = counts, missing keys, triangles; _api.furniture(true) adds every record; the interiors summary with ?interiors=1
+window._api.furniture=function(all){const by={};for(const r of PAF.placed)by[r.key]=(by[r.key]||0)+1;
+ const ib=PAF.buildings;const out={on:PAF.on,interiors:PAF.interiors,placed:PAF.placed.length,keys:by,missing:Object.assign({},PAF.missing),tris:Math.round(PAF.batch.tris),
+  buildings:REG.filter(r=>r.furniture&&r.furniture.length).length,
+  interiorBuildings:ib.length,rooms:ib.reduce((a,b)=>a+b.interior.rooms,0),pieces:ib.reduce((a,b)=>a+b.interior.pieces,0),
+  residenceFails:ib.reduce((a,b)=>a.concat((b.interior.residence&&b.interior.residence.fails)||[]),[])};
+ if(all)out.records=PAF.placed;return out;};
 // ---------------------------------------------------------------- NIGHT and dusk, and the invisible front-door markers
 // nightSet(v): v = 0 day, 0.5 dusk, 1 night (any value between). Drives the sky (stars, dusk glow), the sun/moon light, hemisphere and fog, the lit windows,
 // lamp and fire glow, and a small POOL of real point lights that follows the camera to the nearest lamps and fires.
