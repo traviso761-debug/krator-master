@@ -95,3 +95,7 @@ Version 49 (2026-10-05): `worlds/verge.html` added (Verge, the Yuni-culture city
 `worlds/little-demo.html` (the eastern desert at 1:1 with the biome kits' flora and its highways, 4.8 MB), with the index
 regenerated. The Little Demo's six settlement tiles are not in the gallery (the frame blocks fetch): there the world runs
 without its towns, and its own artifact carries them. Every other page is as in version 48. One publish call.
+
+Version 50 (2026-10-05): `worlds/iziz-mechs.html` added (Iziz war-walkers: the Mechs kit, ten animated Iziz mechs and the
+Supply Train Castra, 1.6 MB), with the index regenerated, from `main` at 8d8bf38d. Every other page is as in version 49.
+One publish call.
