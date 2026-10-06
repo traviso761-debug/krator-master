@@ -151,6 +151,36 @@
     "sourceMean": 0.7324
    }
   },
+  "rubber": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "rubber.albedo.webp",
+    "normalMap": "rubber.normal.webp",
+    "roughnessMap": "rubber.rough.webp"
+   },
+   "lib": "rubber.tyre",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "38817552719d54e1147408621ed14fe956b7dc96",
+    "normal": "76dbb92976ee71515f800477cb3206c14995146f",
+    "roughness": "cb8c7122ae9a9749a7ceee4f883930d56903dc6a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.3472
+   }
+  },
   "rust": {
    "breakup": null,
    "card": false,

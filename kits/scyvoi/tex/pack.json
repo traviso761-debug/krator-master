@@ -95,6 +95,36 @@
     "sourceMean": 0.4468
    }
   },
+  "f_ash": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_ash.albedo.webp",
+    "normalMap": "f_ash.normal.webp",
+    "roughnessMap": "f_ash.rough.webp"
+   },
+   "lib": "ash.hearth",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "32d295f1750e2afe2183744a3a3426bd4c61d098",
+    "normal": "badadc121ec1467acb631410ef29b39f2aad2b41",
+    "roughness": "d293807c918e25d3d812e16b9fbf4fd3d621cd1a"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.5,
+    "sourceMean": 0.4704
+   }
+  },
   "f_bone": {
    "breakup": null,
    "card": false,
@@ -193,26 +223,26 @@
     "normalMap": "f_food.normal.webp",
     "roughnessMap": "f_food.rough.webp"
    },
-   "lib": "fruit.skin.amber",
+   "lib": "food.crust",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
    "scale": [
-    0.12,
-    0.12
+    0.15,
+    0.15
    ],
    "size": 256,
    "source": {
-    "albedo": "67968ca30af7ad90f9e62251e1f8fdea265b7527",
-    "normal": "9dfd2a937e6b054d79614ea11cb825b1e031d02f",
-    "roughness": "64db4dbb5032122d862f7a9c0b49465b8db52a42"
+    "albedo": "a5a932116e269a5ed685b252d7419c54549c5783",
+    "normal": "8210ed966a39ac5bd3658fabbe95e9010cdc3148",
+    "roughness": "4dcbbb4dfe3e8c9bdb46f3be593efcbf4069917e"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.5775
+    "sourceMean": 0.5691
    }
   },
   "f_gold": {

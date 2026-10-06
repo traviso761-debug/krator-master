@@ -674,10 +674,10 @@
    "specular": 0.3
   },
   "f_food": {
-   "lib": "fruit.skin.amber",
+   "lib": "food.crust",
    "scale": [
-    0.12,
-    0.12
+    0.15,
+    0.15
    ],
    "size": 256,
    "tint": {
@@ -697,6 +697,20 @@
    "tint": {
     "keep": 0.0,
     "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "f_ash": {
+   "lib": "ash.hearth",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.5
    },
    "roughLift": 0.3,
    "specular": 0.3

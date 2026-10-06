@@ -2693,10 +2693,10 @@ KFURN.linearColours = function(geo){
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
  // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ // FURN_CULTURES (the 25 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -2708,13 +2708,13 @@ KFURN.linearColours = function(geo){
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 19 (Scyvoi added 2026-10-05) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi'
  };
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
@@ -5765,9 +5765,13 @@ const MAT_FAMILY_LOOK = {
   nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
   plastic: [0.5, 0.0], bone: [0.6, 0.0]
 };
+/* `family` may carry a texture split, 'tex/base' (furnFamily below): the material keeps the base family's look and
+   userData.family, and adds userData.texFamily for a host's detail map */
 function mat(color, family) {
   const key = color + '|' + (family || '');
   if (_matCache.has(key)) return _matCache.get(key);
+  let texFamily = null;
+  if (family && family.indexOf('/') > 0) { texFamily = family.slice(0, family.indexOf('/')); family = family.slice(family.indexOf('/') + 1); }
   let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
   const fam = MAT_FAMILY_LOOK[family];
   if (fam) { roughness = fam[0]; metalness = fam[1]; }
@@ -5777,6 +5781,7 @@ function mat(color, family) {
     ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
     : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
   m.userData.family = family || '';
+  if (texFamily) m.userData.texFamily = texFamily;
   _matCache.set(key, m);
   return m;
 }
@@ -5844,6 +5849,86 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
+}
+/* SOFT FURNISHINGS (2026-10-05, the Scyvoi cushions). A pillow: two puffed faces meeting at a seam round the edge,
+   with an optional boxed side wall between them; its corners stay sharp and its mid-edges pinch in, as a stuffed
+   cloth does. CENTRED at (x, y, z), like blob and ball; w along x, h its thickness (y), d along z; turned ry, then
+   tipped rx about its own x (a back cushion stood up: rx = -PI/2 + lean). o: { side 0..1 (the boxed wall's share
+   of h), round (the plan's superellipse exponent, default 5), sag (how far the seam drops at the corners, a share of the wall, default 0.45), puff (the dome's exponent: 0.3 a flat-topped quilt or mattress, 0.85 a fat cushion, 1 a bed pillow; low values read as a box), pinch (mid-edge pull-in, a share of the half-width) }.
+   Returns top(lx, lz): the height of the top face above the centre at a point of the unturned pillow, so a builder
+   can lay appliqué on it; top.seamTop and top.seamBottom are the seams as closed loops of [x, y, z] (same frame), for piping. Its segments never drop below 8 a side whatever the detail level: a cushion
+   cut to a box is the defect this exists to fix. */
+function pillowTop(w, h, d, o) {
+  const side = Math.min(0.95, Math.max(0, o.side || 0)), puff = o.puff == null ? 0.35 : o.puff, hs = h * side / 2, hb = h / 2 - hs;
+  return function (lx, lz) {
+    const s = Math.min(1, Math.abs(lx) / (w / 2)), t = Math.min(1, Math.abs(lz) / (d / 2));
+    return hs + hb * Math.pow(Math.max(0, 1 - s * s), puff) * Math.pow(Math.max(0, 1 - t * t), puff);
+  };
+}
+function mkPillow(x, y, z, w, h, d, ry, color, family, o) {
+  o = o || {};
+  const n = _seg(12, 8), side = Math.min(0.95, Math.max(0, o.side || 0)), pinch = o.pinch == null ? 0.05 : o.pinch, hs = h * side / 2;
+  const top = pillowTop(w, h, d, o), pos = [], idx = [];
+  const q = o.round == null ? 5 : o.round, sag = o.sag == null ? 0.45 : o.sag;
+  const at = (i, j, sign) => {
+    const s = -1 + 2 * i / n, t = -1 + 2 * j / n, as = Math.abs(s), at2 = Math.abs(t), mx = Math.max(as, at2);
+    /* the plan: the square grid mapped onto a superellipse (corners rounded, o.round its exponent: 2 a circle, 8 nearly square),
+       then the mid-edges pinched in; the seam sags toward the corners (o.sag), as a stuffed cover does */
+    const k = mx > 0 ? mx / Math.pow(Math.pow(as, q) + Math.pow(at2, q), 1 / q) : 1;
+    const px = s * k * w / 2 * (1 - pinch * (1 - t * t)), pz = t * k * d / 2 * (1 - pinch * (1 - s * s));
+    const y = top(s * w / 2, t * d / 2) - hs * sag * s * s * t * t;
+    return [px, sign * Math.max(0.002, y), pz];
+  };
+  for (const sign of [1, -1]) {
+    const b = pos.length / 3;
+    for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) pos.push(...at(i, j, sign));
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const a = b + j * (n + 1) + i; idx.push(a, a + n + 1, a + 1, a + 1, a + n + 1, a + n + 2); }
+  }
+  if (hs > 0.001) {   // the boxed wall: the boundary of the grid, once round, from the top seam to the bottom seam
+    const ring = [];
+    for (let i = 0; i < n; i++) ring.push([i, 0]);
+    for (let j = 0; j < n; j++) ring.push([n, j]);
+    for (let i = n; i > 0; i--) ring.push([i, n]);
+    for (let j = n; j > 0; j--) ring.push([0, j]);
+    const b = pos.length / 3;
+    for (const [i, j] of ring) { pos.push(...at(i, j, 1)); pos.push(...at(i, j, -1)); }
+    const m = ring.length;
+    for (let k = 0; k < m; k++) { const a = b + 2 * k, c = b + 2 * ((k + 1) % m); idx.push(a, a + 1, c, c, a + 1, c + 1); }
+  }
+  // a pillow is star-shaped about its centre: turn every triangle to face away from it
+  for (let t = 0; t < idx.length; t += 3) {
+    const A = idx[t] * 3, B = idx[t + 1] * 3, C = idx[t + 2] * 3;
+    const ux = pos[B] - pos[A], uy = pos[B + 1] - pos[A + 1], uz = pos[B + 2] - pos[A + 2], vx = pos[C] - pos[A], vy = pos[C + 1] - pos[A + 1], vz = pos[C + 2] - pos[A + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const cx = pos[A] + pos[B] + pos[C], cy = pos[A + 1] + pos[B + 1] + pos[C + 1], cz = pos[A + 2] + pos[B + 2] + pos[C + 2];
+    if (nx * cx + ny * cy + nz * cz < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.set(o.rx || 0, ry || 0, 0, 'YXZ');
+  _add(m);
+  /* the two seams as closed loops of points in the pillow's own frame (centre at 0; untilted, unturned): piping follows them */
+  const loop = sign => { const L = []; for (let i = 0; i < n; i++) L.push(at(i, 0, sign)); for (let j = 0; j < n; j++) L.push(at(n, j, sign));
+    for (let i = n; i > 0; i--) L.push(at(i, n, sign)); for (let j = n; j > 0; j--) L.push(at(0, j, sign)); L.push(L[0]); return L; };
+  top.seamTop = loop(1); top.seamBottom = loop(-1);
+  return top;
+}
+/* A bolster: a round cushion along x, its ends gathered in and tied. CENTRED at (x, y, z), length len, radius r,
+   turned ry. o: { from, to } (0..1 along its length: a section of the same profile, for a coloured band; scale it a
+   hair larger with o.grow), gather (the end radius as a share of r, default 0.45). At least 12 segments round. */
+function mkBolster(x, y, z, len, r, ry, color, family, o) {
+  o = o || {};
+  const from = o.from == null ? 0 : o.from, to = o.to == null ? 1 : o.to, g = o.gather == null ? 0.45 : o.gather, R = r * (o.grow || 1), m = Math.max(1, Math.round(14 * (to - from))), pts = [];   // a band gets profile points for its own length only
+  const rad = u => { const e = Math.abs(2 * u - 1); return R * (g + (1 - g) * Math.pow(Math.max(0, 1 - Math.pow(e, 7)), 0.35)); };
+  if (from <= 0.0001) pts.push(new THREE.Vector2(0.001, -len / 2));
+  for (let k = 0; k <= m; k++) { const u = from + (to - from) * k / m; pts.push(new THREE.Vector2(rad(u), -len / 2 + u * len)); }
+  if (to >= 0.9999) pts.push(new THREE.Vector2(0.001, len / 2));
+  const geo = new THREE.LatheGeometry(pts, _seg(16, 12));
+  geo.rotateZ(-Math.PI / 2);   // the lathe's axis (y) laid along x
+  const mm = new THREE.Mesh(geo, mat(color, family));
+  mm.position.set(x, y, z); mm.rotation.y = ry || 0;
+  return _add(mm);
 }
 /* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
    block spans 2*rBottom across at its base — r reads as a radius/half-width in every
@@ -5938,7 +6023,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -5954,7 +6039,7 @@ const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
 /* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
 function FURN_CULTURE(key, info) {
   if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
-  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  if (info && info.palette) { FPAL[key] = Object.assign(FPAL[key] || {}, info.palette); delete _famRev[key]; }
   FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
   return FURN_CULTURE_INFO[key];
 }
@@ -6325,6 +6410,37 @@ function furnCol(culture, key) {
   throw new Error('no palette key "' + key + '" for culture ' + culture);
 }
 
+/* texture splits by palette key (core/materials/PLAN.md, "Catalog furniture audit"): a part whose key wants a library
+   set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
+   falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
+   `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+const FAMILY_SPLITS = [
+  [/^feather/, ['hide', 'plant', 'plastic'], 'feather'],
+  [/^tyre/, ['plastic', 'metal'], 'rubber'],
+  [/^clay/, ['stone'], 'clay'],
+  [/^obsidian/, ['lacquer'], 'obsidian'],
+  [/^(pewter|tin|tinMirror)$/, ['metal'], 'pewter'],
+  [/^paint/, ['wood', 'plank'], 'paint'],
+  [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
+  [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
+  [/^tapa/, ['cloth'], 'tapa']
+];
+const _famRev = {};
+function furnFamily(culture, color, family) {
+  if (!family || typeof color !== 'number') return family;
+  let rev = _famRev[culture];
+  if (!rev) {
+    rev = _famRev[culture] = new Map();
+    const p = FPAL[culture] || {};
+    for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
+  }
+  const keys = rev.get(color);
+  if (!keys) return family;
+  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  return family;
+}
+
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
@@ -6332,6 +6448,7 @@ function makeFrame(x, z, ry, opt) {
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
+  const ff = (c, fam) => furnFamily(F.asset ? F.asset.culture : '', c, fam);
   F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
   F.cols = (keys) => keys.map(F.col);
   F.pick = (arr) => {
@@ -6348,15 +6465,18 @@ function makeFrame(x, z, ry, opt) {
   /* move the frame origin to local (lx, lz). A piece authored off-centre calls
      F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
   F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
-  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
-  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
-  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, ff(color, family)); };
+  /* soft furnishings (mkPillow, mkBolster above): both CENTRED at ly. F.pillow returns top(lx, lz) in the pillow's own frame */
+  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, ff(color, family), sides); };
+  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
   /* a beam's roll must come from the LOCAL frame, then turn with the building:
      setFromUnitVectors on the world direction picks the shortest rotation,
      whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
@@ -6364,7 +6484,7 @@ function makeFrame(x, z, ry, opt) {
   const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
   F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
     const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
-    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, ff(color, family));
     if (F.ry && m) {
       _bDir.set(bx - ax, by - ay, bz - az);
       if (_bDir.lengthSq() > 1e-12) {
@@ -6372,7 +6492,7 @@ function makeFrame(x, z, ry, opt) {
       }
     }
   };
-  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, ff(color, family)); };
   F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
   F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
@@ -14095,6 +14215,10 @@ FURN_CULTURE('generic', { palette: {
     fruitLanternViolet: 0xd040e0, fruitLanternTeal: 0x30d0c0, fruitBellDate: 0x857e32,
     fruitMesquite: 0xc8b850, fruitMesquiteCake: 0xb08a4a, fruitDate: 0x8a4a22, fruitDateStrand: 0xc88a3a,
     fruitTuna: 0xe86a20, fruitTunaFlesh: 0xd8402a,
+    fruitPinyonCone: 0x8a5a34, fruitPinyonNut: 0x7a4a2a, fruitPinyonKernel: 0xe8d8b0, fruitJuniper: 0x6a7a9a, fruitJuniperTwig: 0x5e7458,
+    fruitJuniperDry: 0x3e3e52, fruitYuccaStalk: 0xc89a4a, fruitYuccaRoast: 0x8a5a2a, fruitYuccaBloom: 0xf0ecd8, fruitGrape: 0x3a2a4a,
+    fruitGrapeLeaf: 0x5a8a3a, fruitRaisin: 0x4a2a2a, fruitStiltPod: 0x5a9a6a, fruitStiltFlesh: 0xf0e8c8, fruitStiltSeed: 0x3a2a1e,
+    fruitUmbelSeed: 0xa8946a, fruitUmbelStalk: 0x8a7a4a,
     fungusCoralOrange: 0xf08a3a, fungusCoralPink: 0xf090b0, fungusCoralViolet: 0x9a70c8, fungusParasol: 0xc8a882,
     fruitMadrone: 0xc82a1e, drinkCider: 0xd8a050, fruitRattlepod: 0x8a2a1c, fruitRattleBean: 0x4a2a1a,
     fruitTamarindShell: 0x4a3424, fruitTamarindPulp: 0x8a4a22, fruitFig: 0x5a3a5a, fruitFigFlesh: 0xd8586a,
@@ -17747,8 +17871,10 @@ const KF_API = (function () {
     this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
   };
   Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
-  Batch.prototype.bucket = function (family) {
-    return this.buckets[family] || (this.buckets[family] = { family: family, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
+  /* one bucket per render family, and per texture family within it (mat(): userData.texFamily) */
+  Batch.prototype.bucket = function (family, tex) {
+    const k = tex ? tex + '/' + family : family;
+    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -17764,7 +17890,7 @@ const KF_API = (function () {
         self.textured.push(m); self.tris += (idx ? idx.count : pos.count) / 3;
         return;
       }
-      const b = self.bucket(mt.userData.family || '');
+      const b = self.bucket(mt.userData.family || '', mt.userData.texFamily);
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
       const n = idx ? idx.count : pos.count;
       for (let i = 0; i < n; i++) {
@@ -17790,8 +17916,8 @@ const KF_API = (function () {
   Batch.prototype.flush = function (parent) {
     const grp = new THREE.Group();
     grp.name = 'catalog-furniture';
-    for (const f in this.buckets) {
-      const b = this.buckets[f];
+    for (const bk in this.buckets) {
+      const b = this.buckets[bk], f = b.family;
       if (!b.pos.n) continue;
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
@@ -17805,8 +17931,9 @@ const KF_API = (function () {
           transparent: glass, opacity: glass ? 0.55 : 1 });
       }
       mt.userData.family = f;
+      if (b.tex) mt.userData.texFamily = b.tex;
       const m = new THREE.Mesh(geo, mt);
-      m.name = 'furniture:' + (f || 'plain');
+      m.name = 'furniture:' + (f || 'plain') + (b.tex ? '/' + b.tex : '');
       m.userData.furniture = true;
       grp.add(m);
     }
@@ -18315,7 +18442,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     'painted': ['rustic', 'generic'],
     'reedlake': ['islander', 'eastabyss', 'generic'],
     'post-apoc': ['scrap', 'ancients-salvage', 'generic'],
-    'hykkousoi': ['islander', 'generic']
+    'hykkousoi': ['islander', 'generic'],
+    'scyvoi': ['nomad', 'generic', 'scrap']
   };
 })(KratorInteriors);
 
@@ -21737,6 +21865,15 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t, TAU=Math.PI*2;
 // being touched. Keep it cheap: it is called per tree and per rubble block.
 function terrainH(x,z){return 0;}
 
+// FRAME HOOK. The one route to animation in this kit: `tick(fn)` registers a
+// function that 92-camera.js calls every frame, after the camera moves and
+// before the render, as fn(dt, t) — dt in seconds (clamped to 0.1, so a slow
+// software-GL frame cannot jump a sweep), t wall-clock seconds. Same order as
+// Screamers' hook, which the biome binding (75-biome-45-bind.js) already
+// expects. Nothing is rebuilt; a tick only moves or shows what is built.
+const TICKS=[];
+function tick(fn){TICKS.push(fn);}
+
 
 ;
 /* ---- settlements\iziz\src\12-stats.js ---- */
@@ -21990,7 +22127,14 @@ function lathe(o){const H=o.H,cut=o.cut!=null?o.cut:H,seed=o.seed||0,nu=o.nu||64
 // only part-eaten, and threading that through 33 builders would be 33 edits
 // and 33 chances to miss one. The scene loop sets it per decay level.
 let HOLES=1;
-function holeFn(d,seed,cut,scale){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+// FOOT (optional): {y,h,k}. A ruined shell that thins toward its foot: below
+// y+h the threshold rises linearly to k*d more at y (and below). Without it the
+// predicate is the original one, term for term, so existing callers are
+// unchanged to the vertex.
+function holeFn(d,seed,cut,scale,foot){d*=HOLES;if(!(d>0))return null;scale=scale||1;
+ if(foot){const fy=foot.y||0,fh=foot.h||1,fk=foot.k!=null?foot.k:.4;
+  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;
+   return n<.34*d+.4*near*d+fk*clamp((fy+fh-y)/fh,0,1)*d;};}
  return(u,y)=>{const n=fbm(u*4.5*scale+seed*.31,y*.028*scale,seed,3);const near=cut!=null?clamp((y-(cut-45))/45,0,1):0;return n<.34*d+.4*near*d;};}
 function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undefined)m.position.set(x,y,z);if(parent)parent.add(m);
  const t=tcur();if(t){t.meshes++;t.tris+=triOf(geo);}
@@ -22004,6 +22148,10 @@ function mesh(geo,mat,parent,x,y,z){const m=new THREE.Mesh(geo,mat);if(x!==undef
 //
 // Only for OPAQUE materials: transparent meshes are depth-sorted per mesh, so
 // merging glass would change the order things blend in.
+//
+// COLOUR. A `color` attribute survives the merge when every input carries one,
+// or when the material draws vertex colours (then a piece without one is
+// painted white, i.e. its texture unchanged). Otherwise it is dropped as before.
 function meshMerged(geos,mat,parent,x,y,z){
  const keep=geos.filter(g=>g&&g.attributes&&g.attributes.position&&g.attributes.position.count);
  if(!keep.length)return null;
@@ -22011,12 +22159,14 @@ function meshMerged(geos,mat,parent,x,y,z){
  let nv=0,ni=0;
  for(const g of keep){nv+=g.attributes.position.count;ni+=g.index?g.index.count:g.attributes.position.count;}
  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),U=new Float32Array(nv*2);
+ const C=(mat&&mat.vertexColors)||keep.every(g=>g.attributes.color&&g.attributes.color.itemSize===3)?new Float32Array(nv*3).fill(1):null;
  const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
  let vo=0,io=0;
  for(const g of keep){const A=g.attributes,c=A.position.count;
   P.set(A.position.array,vo*3);
   if(A.normal)N.set(A.normal.array,vo*3);
   if(A.uv)U.set(A.uv.array,vo*2);
+  if(C&&A.color&&A.color.itemSize===3)C.set(A.color.array,vo*3);
   if(g.index){const ix=g.index.array;for(let i=0;i<ix.length;i++)I[io+i]=ix[i]+vo;io+=ix.length;}
   else{for(let i=0;i<c;i++)I[io+i]=vo+i;io+=c;}
   vo+=c;}
@@ -22024,6 +22174,7 @@ function meshMerged(geos,mat,parent,x,y,z){
  G.setAttribute('position',new THREE.BufferAttribute(P,3));
  G.setAttribute('normal',new THREE.BufferAttribute(N,3));
  G.setAttribute('uv',new THREE.BufferAttribute(U,2));
+ if(C)G.setAttribute('color',new THREE.BufferAttribute(C,3));
  G.setIndex(new THREE.BufferAttribute(I,1));
  return mesh(G,mat,parent,x,y,z);}
 // Bounding box of an object and its children, measured in its PARENT's frame.
@@ -22069,12 +22220,24 @@ function hyperGeo(r0,h,k){return lathe({rFn:y=>r0*Math.sqrt(1+k*Math.pow((y-h/2)
 ;
 /* ---- settlements\iziz\src\34-kitdefs.js ---- */
 // ---------------------------------------------------------------- kit definitions (shared geometry)
+// DARK OPENINGS (shared-code round). MAT.dark is what every opening, recess,
+// liner and void behind a hole is made of, and at 0x1a1d22 it read MID-GREY:
+// three.js r128 takes the hex as linear, so the albedo is ~.11, and a sunlit
+// reveal under the full sun plus the hemisphere came back at ~115/255. Openings
+// now take a near-black albedo (~.03 linear): ~50/255 facing the sun, ~20 away
+// from it, and with nothing emissive they follow setNight() to black.
+// The kit's few true SURFACES that were drawn in MAT.dark (conduit tubes, the
+// bunker fins, radar wings, dish backs) keep the old value as MAT.darkSurf, so
+// they stay a painted dark grey rather than going black. Kit-local: the
+// core/materials copy is untouched, other builds keep their MAT.dark.
+MAT.darkSurf=MAT.dark.clone();
+MAT.dark.color.setHex(0x0a0b0d);
 kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
 kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
 kdef('ovalI',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winIntact); kdef('ovalD',new THREE.CylinderGeometry(1,1,.6,14).rotateX(Math.PI/2),MAT.winDead);
 kdef('archOpen',arcWindowGeo(6,9,1.2),MAT.dark);
 kdef('mullW',new THREE.BoxGeometry(.5,1,.5),MAT.white); kdef('mullR',new THREE.BoxGeometry(.5,1,.5),MAT.rust);
-kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.dark);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
+kdef('finW',new THREE.BoxGeometry(1,1,1),MAT.darkSurf);kdef('pierW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('pierR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('dot',new THREE.BoxGeometry(1.4,.7,.4),MAT.dot);
 kdef('strip',new THREE.BoxGeometry(1,.18,.18),MAT.strip);
 kdef('colW',hyperGeo(1,1,1.6),MAT.white); kdef('colR',hyperGeo(1,1,1.6),MAT.rust);
@@ -22163,7 +22326,26 @@ function leafCardGeo(){
  return g;}
 kdef('leafCard',leafCardGeo(),MAT.leafCard);
 kdef('vine',new THREE.CylinderGeometry(.05,.16,1,5).translate(0,-.5,0),MAT.vine);
-kdef('rubble',new THREE.DodecahedronGeometry(1,0),MAT.rubble);
+// RUBBLE (shared-code round, QA arcB). Was a regular dodecahedron on untextured
+// white: twelve identical pentagons have no edge to read, and at any size over
+// ~10 m every talus in the kit was a heap of pale eggs. Now Arcoindian's block
+// (89b `aiBlock`): a hexahedron with its eight corners knocked about, hashed on
+// the corner so the faces stay welded, flat shaded, 12 triangles to the
+// dodecahedron's 36 and the same volume at scale 1. It takes a mottled stone
+// map (fine, non-directional: a bedded or boarded map made crates of it) under
+// the same per-instance tints, which now multiply stone rather than white.
+TEX.rubbleStone=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;
+  const v=168+(fbm(x/22,y/22,6.3,3)-.5)*70+(fbm(x/3,y/3,2.9,1)-.5)*34;
+  d[i]=v;d[i+1]=v-4;d[i+2]=v-11;d[i+3]=255;}
+ g.putImageData(id,0,0);});
+MAT.rubbleK=new THREE.MeshStandardMaterial({map:TEX.rubbleStone,color:0xd6ccbe,roughness:1,metalness:0});
+function stoneBlockGeo(){const g=new THREE.BoxGeometry(1.45,1.45,1.45),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),
+   k=h3(Math.sign(x)*3.1,Math.sign(y)*5.3,Math.sign(z)*7.7);
+  p.setXYZ(i,x*(1+(k-.5)*.5),y*(1+(h3(k,2.2,1)-.5)*.45),z*(1+(h3(k,4.4,3)-.5)*.5));}
+ const n=g.toNonIndexed();n.computeVertexNormals();return n;}
+kdef('rubble',stoneBlockGeo(),MAT.rubbleK);
 kdef('trunk',new THREE.CylinderGeometry(.18,.4,1,6).translate(0,.5,0),MAT.vine);
 kdef('figB',new THREE.CylinderGeometry(.24,.2,1.5,6).translate(0,.75,0),MAT.fig);
 kdef('figH',new THREE.SphereGeometry(.13,6,5).translate(0,1.62,0),MAT.fig);
@@ -22186,6 +22368,75 @@ kdef('cellD',new THREE.BoxGeometry(1,1,.5),MAT.winDead);
 kdef('winSmI',arcWindowGeo(1.1,2,.4),MAT.winIntact); kdef('winSmD',arcWindowGeo(1.1,2,.4),MAT.winDead);
 function beam(name,a,b,w,dp,color){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.sqrt(dx*dx+dy*dy+dz*dz);
  const q=new THREE.Quaternion().setFromUnitVectors(_UP,new THREE.Vector3(dx,dy,dz).normalize());kput(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[w,L,dp],color||null);}
+// A beam with its ROLL fixed (from the Forest Ring, QA arcA). beam() leaves roll
+// to setFromUnitVectors, so a near-horizontal strut comes out with its section
+// at whatever angle the shortest arc gives and a 9 x 11 strut reads as a
+// twisted plank. Here local X (`w`, the DEPTH exactly as in beam()) is held in
+// the vertical plane through the beam and local Z (`dp`) is horizontal, so
+// every strut presents the same face to the same light. Same arguments as beam().
+const _rbX=new THREE.Vector3(),_rbY=new THREE.Vector3(),_rbZ=new THREE.Vector3(),_rbM=new THREE.Matrix4();
+function rbeam(name,a,b,w,dp,color){_rbY.set(b[0]-a[0],b[1]-a[1],b[2]-a[2]);const L=_rbY.length();
+ if(!(L>1e-6))return;_rbY.multiplyScalar(1/L);
+ _rbZ.set(-_rbY.z,0,_rbY.x);if(_rbZ.lengthSq()<1e-8)_rbZ.set(0,0,1);_rbZ.normalize();
+ _rbX.crossVectors(_rbY,_rbZ);_rbM.makeBasis(_rbX,_rbY,_rbZ);
+ kput(name,[(a[0]+b[0])*.5,(a[1]+b[1])*.5,(a[2]+b[2])*.5],
+  new THREE.Quaternion().setFromRotationMatrix(_rbM),[w,L,dp],color||null);}
+// ---------------------------------------------------------------- mouldings
+// MOULDING: a profile swept along a path that lies in a wall. One helper for
+// every hood, sill, cornice, string course and bone roll in the kit (it replaced
+// three private ones: the civic hoods and cornices, the domestic `domMould`, the
+// towers' Hotel sills and Cultural bands).
+//   profile  [[n,u],...]: the section, walked CLOCKWISE with n out of the wall
+//            (along `wn`) and u across the path (along wn x tangent: "up" for a
+//            path running left to right on a wall you face). MOULD.* are stock.
+//   path     t -> [x,y,z], t in 0..1, in the frame of the mesh it will join.
+//   opt.wn   the wall's outward normal: [x,y,z], or t -> [x,y,z] on a curved wall.
+//   opt.nu   segments along the path (40). opt.scale: t -> size multiplier
+//            (knuckles, tapers). opt.hole(u,v): drop a quad (v runs round the
+//            section). opt.uS/vS: uv scale. opt.caps: close both ends.
+//   opt.up   [x,y,z]: if given, the section is turned so that u points this way
+//            whichever way the path runs (and the winding is kept outward).
+// Returns a BufferGeometry for the caller to merge or kdef: a moulding costs
+// no draw call of its own.
+const MOULD={
+ // a round roll, n sides (the bone roll's section)
+ round:(n,r)=>{n=n||8;r=r||1;const P=[];for(let j=0;j<=n;j++){const ph=j/n*TAU;P.push([r*Math.cos(ph),-r*Math.sin(ph)]);}return P;},
+ // a flat band w proud, h tall
+ band:(w,h)=>[[0,h],[w,h],[w,0],[0,0]],
+ // a sill: weathered (sloped) top, square nose, a drip under the nose
+ sill:(w,h)=>[[0,h],[w,h*.72],[w,h*.12],[w*.86,0],[0,0]],
+ // a hood (label) mould: flat top, chamfered nose, a throated drip underneath
+ hood:(w,h)=>[[0,h],[w*.7,h],[w,h*.45],[w*.8,0],[0,0]],
+ // a cornice: square crown, then an ogee curving back into the wall
+ cornice:(w,h)=>[[0,h],[w,h],[w,h*.8],[w*.86,h*.62],[w*.6,h*.46],[w*.38,h*.28],[w*.22,h*.08],[0,0]],
+};
+function moulding(profile,path,opt){opt=opt||{};const nu=opt.nu||40,np=profile.length-1;
+ const wnF=typeof opt.wn==='function'?opt.wn:null,W=new THREE.Vector3();
+ if(!wnF){const w=opt.wn||[0,0,1];W.set(w[0],w[1],w[2]).normalize();}
+ const wAt=u=>{if(wnF){const w=wnF(u);W.set(w[0],w[1],w[2]).normalize();}return W;};
+ const T=new THREE.Vector3(),B=new THREE.Vector3();
+ const frame=u=>{const q=path(Math.min(1,u+.002)),o=path(Math.max(0,u-.002));
+  T.set(q[0]-o[0],q[1]-o[1],q[2]-o[2]).normalize();B.crossVectors(T,wAt(u)).normalize();};
+ let sg=1;if(opt.up){frame(.5);sg=-Math.sign(B.x*opt.up[0]+B.y*opt.up[1]+B.z*opt.up[2])||1;}
+ const g=gridSurface((u,v)=>{const p=path(u);frame(u);const s=opt.scale?opt.scale(u):1,P=profile[Math.round(v*np)],pu=P[1]*sg;
+  return[p[0]+s*(P[0]*W.x-pu*B.x),p[1]+s*(P[0]*W.y-pu*B.y),p[2]+s*(P[0]*W.z-pu*B.z)];},nu,np,{hole:opt.hole,uS:opt.uS,vS:opt.vS});
+ if(sg<0){const ix=g.index.array;for(let i=0;i<ix.length;i+=3){const t=ix[i+1];ix[i+1]=ix[i+2];ix[i+2]=t;}g.computeVertexNormals();}
+ if(!opt.caps)return g;
+ // caps: a fan from the section's centroid at each end, on vertices of their own
+ const pos=g.attributes.position.array,cols=nu+1,P=[],N=[],U=[],I=[],nv0=pos.length/3;
+ const f0=profile[0],f1=profile[np],m=Math.hypot(f0[0]-f1[0],f0[1]-f1[1])<1e-9?np:np+1;   // a closed section repeats its first point
+ for(const[e,dir]of[[0,-1],[nu,1]]){const base=nv0+P.length/3;let cx=0,cy=0,cz=0;
+  const vs=[];for(let j=0;j<m;j++){const k=(j*cols+e)*3;vs.push([pos[k],pos[k+1],pos[k+2]]);cx+=pos[k];cy+=pos[k+1];cz+=pos[k+2];}
+  frame(e/nu);const n=T.clone().multiplyScalar(dir);
+  P.push(cx/m,cy/m,cz/m);N.push(n.x,n.y,n.z);U.push(.5,.5);
+  for(const v of vs){P.push(v[0],v[1],v[2]);N.push(n.x,n.y,n.z);U.push(0,0);}
+  for(let j=0;j<m;j++){const a=base+1+j,b=base+1+(j+1)%m;if(dir*sg>0)I.push(base,a,b);else I.push(base,b,a);}}
+ const M=new THREE.BufferGeometry(),A=g.attributes;
+ const cat=(x,y)=>{const o=new Float32Array(x.length+y.length);o.set(x);o.set(y,x.length);return o;};
+ M.setAttribute('position',new THREE.BufferAttribute(cat(A.position.array,P),3));
+ M.setAttribute('normal',new THREE.BufferAttribute(cat(A.normal.array,N),3));
+ M.setAttribute('uv',new THREE.BufferAttribute(cat(A.uv.array,U),2));
+ M.setIndex(Array.from(g.index.array).concat(I));return M;}
 function hexR(R,th){const a=R*Math.cos(Math.PI/6);const f=((th%(Math.PI/3))+Math.PI/3)%(Math.PI/3);return a/Math.cos(f-Math.PI/6);}
 // petal shell: base on +x at radius Rb, rises Hp, tip leans outward by `lean`, cupped by `curl`
 function petalGeo(Rb,Hp,W,lean,curl,hole){return gridSurface((u,v)=>{const s=u*2-1;const w=W*(.3+.7*Math.sin(Math.PI*Math.pow(v,.9)))*.5;
@@ -22206,7 +22457,7 @@ function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCu
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
 function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
 function endGroupXF(){KXF=null;}
-kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.dark);
+kdef('tube',new THREE.CylinderGeometry(1,1,1,8),MAT.darkSurf);
 kdef('boxD',new THREE.BoxGeometry(1,1,1),MAT.dark);
 kdef('boxW',new THREE.BoxGeometry(1,1,1),MAT.white);kdef('boxR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
@@ -22440,6 +22691,48 @@ function firePit(key,x,y,z,s){
   new THREE.Color().setHSL(rr(.03,.065),1,.50));
  kput('emberB',[x,y+s*1.5,z],qEuler(0,rng()*TAU,0),[s*2.8,s*2.3,s*2.8],
   new THREE.Color().setHSL(rr(.04,.09),1,.19));}
+// FLICKER (towers QA, round 2). The frame hook `tick` (10-core.js) drives one
+// shared time uniform; each fire instance takes its own phase from its own
+// position (instanceMatrix), so no two windows pulse together and nothing is
+// rebuilt. kbake re-attaches onBeforeCompile to its material clones, and the
+// uniform object is shared, so one write per frame reaches every clone.
+const FIRE_T={value:0};
+function fireFlickerOBC(sh){sh.uniforms.uFT=FIRE_T;
+ sh.vertexShader='uniform float uFT;\nvarying float vFl;\n'+sh.vertexShader.replace('#include <begin_vertex>',
+  '#include <begin_vertex>\n#ifdef USE_INSTANCING\n vec3 fP=instanceMatrix[3].xyz;\n#else\n vec3 fP=vec3(0.);\n#endif\n'+
+  ' float fPh=dot(fP,vec3(.131,.217,.173));\n vFl=.80+.13*sin(uFT*6.3+fPh)+.07*sin(uFT*15.7+fPh*2.3);');
+ sh.fragmentShader='varying float vFl;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.rgb*=vFl;');}
+MAT.flame.onBeforeCompile=fireFlickerOBC;MAT.ember.onBeforeCompile=fireFlickerOBC;
+// FIRELIGHT THAT LIGHTS SOMETHING. One PointLight per territory was the
+// reason this was never done: every lit material recompiles per light. So a
+// Project gets a FEW lights (n, 3 by default), at the centroids of clusters
+// of its own fires — its burning windows and pits, taken from the kit items it
+// placed since `fireLightMark()` — set a few metres off the facade. They are
+// invisible by day, so day views pay nothing; at night the first switch
+// compiles one extra program variant per material and every later switch
+// reuses it. They flicker with the cards. No rng(): the clustering is
+// deterministic and nothing in any builder's stream moves.
+const FIRELIGHTS=[];
+function fireLightMark(){return[KIT.items.fireWin.length,KIT.items.emberB.length,KOFF.slice()];}
+function fireLights(M,n){n=n||3;const P=[];
+ for(let i=M[0];i<KIT.items.fireWin.length;i++)P.push(KIT.items.fireWin[i].p);
+ for(let i=M[1];i<KIT.items.emberB.length;i+=2)P.push(KIT.items.emberB[i].p);
+ if(P.length<n)return;
+ // farthest-point seeds, then a few Lloyd steps
+ const C=[P[0].slice()];while(C.length<n){let bi=0,bd=-1;for(let i=0;i<P.length;i++){let m=1e18;for(const c of C)m=Math.min(m,(P[i][0]-c[0])**2+(P[i][1]-c[1])**2+(P[i][2]-c[2])**2);if(m>bd){bd=m;bi=i;}}C.push(P[bi].slice());}
+ for(let it=0;it<6;it++){const S=C.map(()=>[0,0,0,0]);
+  for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});S[bi][0]+=p[0];S[bi][1]+=p[1];S[bi][2]+=p[2];S[bi][3]++;}
+  S.forEach((s,j)=>{if(s[3])C[j]=[s[0]/s[3],s[1]/s[3],s[2]/s[3]];});}
+ // A cluster's centroid lies INSIDE a round tower (its windows wrap the
+ // shell), so each light goes out along the cluster's mean bearing to the
+ // cluster's mean radius, then 16 m beyond it: outside the skin it lights.
+ const O=M[2],RR=C.map(()=>[0,0]);
+ for(const p of P){let bi=0,bd=1e18;C.forEach((c,j)=>{const m=(p[0]-c[0])**2+(p[1]-c[1])**2+(p[2]-c[2])**2;if(m<bd){bd=m;bi=j;}});RR[bi][0]+=Math.hypot(p[0]-O[0],p[2]-O[2]);RR[bi][1]++;}
+ C.forEach((c,j)=>{const dx=c[0]-O[0],dz=c[2]-O[2],l=Math.hypot(dx,dz)||1,rm=(RR[j][1]?RR[j][0]/RR[j][1]:l)+16;
+  const L=new THREE.PointLight(0xff7a32,0,190,2);L.position.set(O[0]+dx/l*rm,c[1]+4,O[2]+dz/l*rm);L.visible=false;scene.add(L);
+  FIRELIGHTS.push({l:L,ph:j*1.9+c[0]*.01});});}
+tick((dt,t)=>{FIRE_T.value=t%1000;const on=!!NIGHT;
+ for(const F of FIRELIGHTS){F.l.visible=on;if(on)F.l.intensity=1.7*(.84+.10*Math.sin(t*5.1+F.ph)+.06*Math.sin(t*13.3+F.ph*1.7));}});
 
 // THE REPAIRED PASS.
 //

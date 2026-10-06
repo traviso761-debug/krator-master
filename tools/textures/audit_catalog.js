@@ -57,7 +57,7 @@ const src = 'var scene = { add() {}, remove() {} };\n' + files.map(f => fs.readF
       grp.traverse((o) => {
         if (!o.isMesh) return;
         const mm = Array.isArray(o.material) ? o.material[0] : o.material, col = mm.color ? mm.color.getHex() : 0;
-        const k = ((mm.userData && mm.userData.family) || '') + '|' + (mm.map ? 'DECAL' : (rev[col] || '#' + col.toString(16).padStart(6, '0')));
+        const k = ((mm.userData && (mm.userData.texFamily || mm.userData.family)) || '') + '|' + (mm.map ? 'DECAL' : (rev[col] || '#' + col.toString(16).padStart(6, '0')));
         parts[k] = (parts[k] || 0) + area(o) / nv;
       });
       INSTANCES.length = 0;

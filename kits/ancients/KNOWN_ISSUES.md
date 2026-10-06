@@ -941,9 +941,9 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 
 - [ ] **No stairs between plates**, as on A-K (see "Found by Ys"): a way-in pod opens one storey only.
 - [ ] **Sandstone and travertine are tinted board-formed concrete** (`TEX.concrete`): the Arcades (`HAC_MAT`) and the
-      Bell Hall (`HBH_MAT`) read as coursed stone at a distance and as boards up close. The material library has no
-      ashlar or travertine set; one needs finding or generating (`core/materials/PLAN.md`, "Prompts for generated
-      sources": warm sandstone ashlar, 0.6 m courses; pale travertine with open pores, 1.2 x 0.6 m slabs).
+      Bell Hall (`HBH_MAT`) read as coursed stone at a distance and as boards up close. The library now has both sets,
+      `stone.sandstone.ashlar` and `stone.travertine` (Ys wires them on its hosts); the kit itself has no `materials.json`
+      yet, so its own pages still draw the tinted concrete (2026-10-06).
 - [ ] **The kit's `skyPlinth` ignores `ysPodiumR`**, so in the `hosts` target the Facet's podium does not shrink in the
       "as a host" row (Ys's adapted copy does). The Bastion's base and the three mid-rise podiums shrink there.
 - [ ] **The Arcades' arcade walls are instanced** (`hacArcade`): decay holes and `ysWallHole` do not open them. They are

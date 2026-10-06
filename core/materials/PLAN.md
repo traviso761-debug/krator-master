@@ -961,9 +961,67 @@ serve the reed family until then), `patterns/tribal/formline` (Painted's formlin
 **No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
 Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
 
-**Family splits the list depends on** (code in `krator-furniture-core.js` and the culture files, not textures): `feather` out of `hide`,
-`rubber` out of `plastic`, a painted-wood family out of `wood`/`plank`, and pottery out of `stone` (the `clay*` keys on `stone`: 29 pieces
-of `clayBlack` alone would take a stone map, not `ceramic.*`). Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
+**Family splits, done 2026-10-06, as texture families** (`kits/catalog/krator-furniture-core.js`, `FAMILY_SPLITS`, `furnFamily()`):
+a part keeps its render family (its look, the batch's grouping, the declared `materials` and every check stay as they were) and gains
+`userData.texFamily` by its palette key, so no culture file changed. A host maps `f_<texFamily>` and falls back to `f_<family>`, so a
+host without the new row looks exactly as before. Splits: `feather*` (23 pieces), `tyre*` to `rubber` (17), `clay*` on `stone` to `clay`
+(113: pots, but also clay hearths, counters and brick stacks, hence not "pottery"), `obsidian*` on `lacquer` (17), `pewter`/`tin` to
+`pewter` (59), `paint*` on `wood`/`plank` to `paint` (14; the paint keys on `cloth` are painted cloth), the ash and coal keys on
+`stone`/`plaster` to `ash` (15), `paper*` (10), `tapa*` (16). A part splits only when every key sharing its colour matches. The batch
+(`krator-furniture-runtime.js`) buckets by family and texture family. Rows added: Girder `f_pewter`, `f_ash`, `f_clay`
+(`ceramic.terracotta`), `f_paper`, and `f_food` is now `food.crust`; Scyvoi `f_ash`, `f_food` on `food.crust`. Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
+
+#### Buildings, vehicles and biomes audit (2026-10-06): what is still missing
+
+A read-only sweep of every build's painters (`TEX.*`, FAMMAT) and every biome's species, bark, ground and fauna sections against the
+library, after the texturepalooza delivery. **The main finding: almost every building surface already has a set; what is missing is
+wiring.** Only Girder, Yuni, Ys (hyk), Scyvoi, motor-vehicles, mechs, crater-drylands and ebadlands read the library. Mav's Refuge,
+Locus, Voth, Iziz's vernacular, the shared vernacular (Highlands, Dalab, Reed Lake, Xanadu, Ys), Jimjam, Shade, Port, Ring Sea,
+post-apoc, the Ancients kit, the interiors kit and ten biomes (hyperjungle, nhighlands, nw/swlowlands, nw/swbay, sedesert, eastabyss,
+rift, xanadu) each need a `materials.json` pass; openworld/little-demo needs a terrain splat and the kits' packs.
+
+**Buildings: prompted earlier and still owed** (rows above; most builds first): `cloth.canvas.striped` (the tinted awning: Iziz,
+Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge), `wood.log.carved` (round-log walls: Highlands, Dalab, Reed Lake, Ys), `concrete.ancient`
+(board-formed with tie holes: the whole Ancients lineage; `concrete.board` stands in), one rammed-earth set with lifts (merges
+`earth.rammed.dalab` and Xanadu's `stone.rammed`), `metal.container` (the neutral rib: Port, Ys, post-apoc), the reed set (`reed.bundle`,
+`reed.layers`, `ground.reedbed`, `reed.living`), `metal.worn`, `patterns/port/hazard` and `primer`, `plate.hex` (Ring Sea), `concrete.slab`,
+`wood.lash`, the stalk of `organic.fungus`, `stone.rendered.ruined`, and the culture sheets (Dalab banner, mosaic and two murals; Reed Lake
+band and awayo; Xanadu twig band and sun emblem; the three nacre sheets).
+
+**Buildings: new rows** (no set, no earlier prompt):
+
+| id | Builds | Material line |
+|---|---|---|
+| `metal.tin.patchwork` | Locus (Abyss `tinmirror`) | Flattened tin cans and foil nailed edge to edge, embossed rims and ribs, crimped seams, a few mirror shards, dents, light rust at the nails. Near-colourless grey, so it tints. |
+| `cloth.banner.hung` | Iziz and Dalab `vpBanner`, generic banners | Plain-woven banner cloth seen flat, a sewn hem at the top and a fringed foot, faded and creased. Neutral grey, so it tints. (Could absorb `cloth.banner.dalab`.) |
+| `patterns/common/sail-band` | Locus `pattern` | Flat, front-on woven band of zigzags and stepped triangles, the motif a darker shade of the ground, greyscale so it tints. The pattern repeats horizontally. |
+| `card.chainlink` | post-apoc, Port fences | Diamond chain-link mesh of galvanised wire, flat and front-on, on solid flat bright magenta (#ff00ff) so the gaps cut out. |
+
+**Biomes: new rows** (every one confirmed in a kit's `src/`; cards on magenta #ff00ff, nine per sheet, near-grey green so they tint):
+
+| id | Biomes | Material line |
+|---|---|---|
+| `card.reed` | crater, ebadlands, sedesert, eastabyss, rift, nw/swbay, nw/swlowlands, xanadu | Nine clumps of marsh reed, cattail and sedge: thin upright blades, two with brown cigar heads and two with feathery plumes, each standing from the bottom of its cell. (`card.crop` is broad strap leaves.) |
+| `card.acacia` | sedesert, eastabyss, rift, nw/swbay, nw/swlowlands, xanadu | Nine flat sprays of bipinnate leaves (mesquite, acacia, flame tree): a central stem with paired pinnae of tiny oval leaflets, seen from above. |
+| `card.beard` | eastabyss, rift, nhighlands, nw/swlowlands, nw/swbay, xanadu | Nine hanging tangles of beard lichen and Spanish moss, fine stringy grey-green strands, each hung from the top edge of its cell. |
+| `card.palm` | sedesert, eastabyss, rift, nw/swlowlands, xanadu | Five pinnate date-palm fronds laid diagonally and four pleated fan-palm (palmetto) fans. |
+| `card.sword` | sedesert, eastabyss, rift, nw/swbay, nw/swlowlands | Nine stiff sword-leaf rosettes seen from above (dragon tree, yucca, agave): rigid tapering blades radiating from a centre. (Try `card.screwpine` first.) |
+| `bark.smooth` | nhighlands, xanadu, eastabyss, rift, nw/swbay, nw/swlowlands | Smooth thin bark (beech, alder): pale grey with faint horizontal rings, short dark lenticel dashes, a few soft algae blotches. Tintable. |
+| `skin.cactus` | sedesert, ebadlands, xanadu | Cactus skin seen close: shallow vertical ribs, areoles in a lattice every few cm with pale wool tufts and fine spines, a matte waxy bloom. Neutral grey-green, tintable. |
+| `bark.treefern` | nwlowlands, eastabyss, rift, nw/swbay | Tree-fern trunk: dark fibrous matted roots over a lattice of oval frond-base scars. Tintable. |
+| `card.paddle` | nhighlands, nw/swlowlands, nw/swbay, xanadu | Nine big single leaves: banana with torn split edges, elephant-ear hearts; midrib and parallel veins. |
+| `card.blossom` | nw/swlowlands, xanadu | Nine twigs dense with small five-petalled blossoms (cherry), three with hanging wisteria-like racemes; petals pale cream so they tint. |
+| `card.araucaria`, `bark.araucaria` | swbay, rift, eastabyss | Monkey-puzzle branch ropes clothed in stiff overlapping triangular scale-leaves; the bark grey-brown with diamond scale scars. |
+| `bark.lepido` | eastabyss, rift | Lepidodendron trunk: a diamond lattice of raised leaf cushions, each with a small scar. Near-grey, tintable. |
+| `bark.birch` | nhighlands, nwlowlands | White birch bark with black horizontal lenticels, dark chevron scars at branch stubs, papery curls. |
+| `card.lichen` | sedesert, ebadlands, crater | Nine ragged lichen patches, crustose and foliose rosettes, orange, grey-green and yellow. Full colour. |
+| `card.lotus` | nwbay, xanadu | Lotus flowers and notched lily pads seen from above; pads near-grey green, petals pale so they tint. |
+| `ground.cinder` | nw/swbay | Black volcanic beach sand and cinder grit seen from above, a few vesicular clasts and grey ash drifts. Tintable. |
+
+Minor, one biome each: `bark.madrone`, `bark.paperbark`, `bark.cork`, `bark.strangler`, `bark.cherry`, `bark.kapok`, `card.samphire`, `card.ginkgo`,
+`card.heath`, `ground.shingle` (xanadu), `skin.marine`, `wood.petrified`. Still owed from earlier rows: `bark.desert` (sedesert, crater yucca and
+joshua), `wing.butterfly` and `skin.sky-ray` (the hyperjungle `FAUNATEX` hook). Fauna in every biome is vertex colour; `feather.plumage`,
+`hide.fur.brown`, `organic.scale.*` and `membrane.bat` cover them once a biome adopts the library.
 
 #### Scan-library metals (AmbientCG, added 2026-10-02)
 

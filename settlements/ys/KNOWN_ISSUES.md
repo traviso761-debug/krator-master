@@ -125,8 +125,8 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
 - [ ] (Oct 5 2026) The Capsule Stalks' sockets are not used: pods take the centre stalk's smooth band only (one plate,
       so one pod). Growing into a socket needs `HYK.placeOn` to frame a pod on an off-axis core (a socket's position and
       normal are in `HOSTSPEC_STALKS.sockets(d)`; drop the ones above the cut).
-- [ ] (Oct 5 2026) The Arcades' sandstone and the Bell Hall's travertine are the board-formed concrete map, tinted: the
-      material library has neither (kits/ancients/KNOWN_ISSUES.md has the prompts).
+- [x] (Oct 5 2026) The Arcades' sandstone and the Bell Hall's travertine were the board-formed concrete map, tinted. Done: the
+      library has `stone.sandstone.ashlar` and `stone.travertine`, wired here (see "The library on Ys" below; noted 2026-10-06).
 - [ ] (Oct 5 2026) D and H have no `ysHostMembers` (no struts or legs to reach for): the bridge graph's runners will need
       their faces and ledges instead.
 - [x] (Oct 5 2026) The spans are not placed. The bridge graph (`88-city-spans.js`) joins every pair of neighbouring

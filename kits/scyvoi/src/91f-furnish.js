@@ -35,7 +35,7 @@ function svfH(key,v,dflt){const A=KratorFurniture.FURN_BY_KEY[key];return A?Krat
    maps blended by the normal): no UVs, no shear. materials.json f_<family> names the set per render family; its brightness is
    normalised to `mean` by the packer and divided back out here, so the vertex colour keeps the piece's colour and the set adds its
    weave, grain, tooling or patina. ?mat=proc attaches nothing. Godot: StandardMaterial3D's triplanar does the same. */
-function svfDetail(mt){const fam=mt.userData.family,L=KMAT.mode==='lib'&&fam?KMAT.packed('scyvoi','f_'+fam):null;if(!L||!L.map||mt.isMeshBasicMaterial)return false;
+function svfDetail(mt){const tf=mt.userData.texFamily,Lt=KMAT.mode==='lib'&&tf?KMAT.packed('scyvoi','f_'+tf):null,fam=Lt&&Lt.map?tf:mt.userData.family,L=Lt&&Lt.map?Lt:KMAT.mode==='lib'&&fam?KMAT.packed('scyvoi','f_'+fam):null;if(!L||!L.map||mt.isMeshBasicMaterial)return false;
  const T=KMAT.textures(L,{aniso:TEXANISO}),gain=1/Math.max(.05,Math.pow(L.mean==null?.5:L.mean,2.2)),tile=1/((L.scale&&L.scale[0])||1);
  mt.map=T.map;if(T.normalMap&&!mt.transparent){mt.normalMap=null;}
  matHook(mt,'fdet|'+fam,sh=>{sh.uniforms.uDetTile={value:tile};sh.uniforms.uDetGain={value:gain};
