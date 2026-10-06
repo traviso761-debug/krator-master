@@ -9,10 +9,22 @@
       is still to write (the stair cores, the atrium's flights and the corridors are where it goes: `NR.CORES`, `NR.ATRIUM`).
 - [ ] **The beach settlement is not built.** The shanties, lean-tos and grog halls that spill down onto the beach come
       with the settlement; the pirates' stair towers, the steps down the dune and the floats are where it will attach.
-- [ ] **No ships in the harbour.** The basin is empty water. The Ring Sea kit's vessels (`kits/ringsea`) could lie at the
+- [ ] **No ships in the harbour.** The basin is empty water: the liner mole's two berths, the finger piers and the inner
+      quay are ready for them. The Ring Sea kit's vessels (`kits/ringsea`) could lie at the
       inner quay and the floats once that kit has a bundle for other worlds.
 - [ ] **The park trees are placeholders** (two species, tagged as such): no biome kit is named for the Ring Sea's south
       shore. Replace them with that kit's flora, placed by the parks' beds (`NR.PARKS`).
+
+## The hull and the piers
+
+- [ ] From high up the ring still reads broad (505 x 296 m): a harbour ring 52 m thick cannot bend tighter than about 38 m
+      at the bow without its inboard skin folding over, so the fine entry is the cutwater and the forecastle's sheer, not the
+      plan. A longer, narrower ring is one constant pair in `14-nr-plan.js` (A, B; keep the length or re-place the t's).
+- [ ] The finger piers' columns go down to the keel's depth, not to the sea floor; where the basin is shallow (the sand bar
+      off the starboard quay) they stand in sand. The breakwater piers and the mole are pontoons like the hull, so at the
+      list the sea stands higher on the port-side arms (about 2 m of freeboard).
+- [ ] The forecastle is a closed void between the bulwark and the main block's D1-D2 walls (stripped decks): those cabins'
+      windows look onto its inside.
 
 ## Interiors
 

@@ -1,7 +1,7 @@
 // prefix: nr
 // ================================================================= THE HULL: ring primitives, the pontoon, the decks' slabs, the skins, the mouth
 // Everything here draws in the HULL frame (the arcology def pushes NR_HULL before calling it): x, z from NR.at(t, s), y up
-// from the keel. Bands along the ring are psurf sheets (30-geo.js), so they follow the ellipse exactly and carry arc-length
+// from the keel. Bands along the ring are psurf sheets (30-geo.js), so they follow the ring's curve exactly and carry arc-length
 // UVs; radial pieces (partitions, ribs) are boxes turned to the normal.
 /* the hull's drawing passes, in order: each fragment registers its own with nrPart; nrAfter passes place child defs
    after the deck buildings (49-nr-arcology.js runs both) */
@@ -146,11 +146,14 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
  for(let t=-F.t+1;t<F.t;t+=2.6){const y=top(t);nrBox('paint',t,nrForeS(y)-.15,y,.06,.5,.06,hc(0x6a7076));}
  {const y=NR.foreY(0),p=nrP(0,nrForeS(y)-1.2,y);cyl('white',p[0],y,p[2],.09,8,P('white'),6,.06);}
  /* the cutwater: two faces from the skin to a raked stem edge, antifouling below the old waterline, white above */
- const yT=top(0),ext=y=>.6+6.4*Math.pow(clamp(y/yT,0,1),1.4),half=y=>2.2+.55*ext(y);
+ const yT=top(0),SW=.2,ext=y=>.6+6.4*Math.pow(clamp(y/yT,0,1),1.4),half=y=>2.2+.55*ext(y);
  const skinS=y=>y<2.6?WD.PONT-3.4+3.4*Math.sqrt(y/2.6):y<6.95?WD.PONT:y<L.D[0]?WD.PONT+NR_FLARE*(y-6.95)/2.05:nrForeS(y);
  for(const sg of [1,-1])for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]]){
-  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),a=NR.at(sg*half(y),skinS(y)),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],u),y,lerp(a[1],b[1],u)];},2,6,col,{flip:sg<0});}
- psurf('white',(u,v)=>{const y=yT,a=NR.at(lerp(-1,1,u)*half(y),skinS(y)-.3),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,1,P('white'),{up:true});
+  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),a=NR.at(sg*half(y),skinS(y)),b=NR.at(sg*SW,skinS(y)+ext(y));return [lerp(a[0],b[0],u),y,lerp(a[1],b[1],u)];},2,6,col,{flip:sg<0});}
+ /* the stem's face: a narrow strip along the raked edge (a knife edge would leave its normals undefined, and black) */
+ for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]])
+  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),b=NR.at(lerp(-SW,SW,u),skinS(y)+ext(y));return [b[0],y,b[1]];},1,6,col,{flip:true});
+ psurf('white',(u,v)=>{const y=yT,k=lerp(-1,1,u),a=NR.at(k*half(y),skinS(y)-.3),b=NR.at(k*SW,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,2,P('white'),{up:true});
  /* the anchors: a dark hawse plate, the anchor drawn up in it, its chain run down to the sea floor (it was let go when she
     struck) */
  for(const sg of [1,-1]){const t=sg*15,y=NR.foreY(t)-2.4,sk=nrForeS(Math.max(y,L.D[0]))+.05,c=NR.at(t,sk),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);

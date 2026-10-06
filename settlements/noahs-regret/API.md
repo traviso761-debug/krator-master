@@ -18,7 +18,10 @@ with `nr` (build.py checks it), every `defBuilding` has its own `seed`.
 
 ## The plan (`14-nr-plan.js`, `NR`): positions first, drawing after
 
-The ring is an ellipse (centreline semi-axes `NR.A` 214 along x, `NR.B` 144 along z). **t** is arc length along the
+The ring is a ship's plan: a closed centreline `NR.curve(th)` = (A cos th, +-B sqrt(1 - |cos th|^m) (1 - 0.3 cos+^3)), `NR.A`
+226.6 along x and `NR.B` 121.9 along z, fine at the bow (m 2.4, the tightest bend 38.6 m), full and round at the stern
+(m 3.4), its sides near straight. It is tabulated (8,192 samples: positions, arc length, normals, curvature) and is the
+old ellipse's length (1,135 m), so every t in the plan kept its place when the shape changed. **t** is arc length along the
 centreline (t 0 the bow, increasing to starboard: the stern at `NR.PH`, the mouth at `NR.TM`); **s** is the offset
 across it along the outward normal (+s outboard). The ring runs `t` in `[NR.T0, NR.T1]` (a 76 m mouth on the port beam).
 
@@ -27,13 +30,15 @@ across it along the outward normal (+s outboard). The ring runs `t` in `[NR.T0, 
 | `NR.at(t, s)` | hull (x, z) |
 | `NR.nrm(t)`, `NR.tan(t)` | the outward normal, the tangent (increasing t) |
 | `NR.rho(t)` | the centreline's radius of curvature |
-| `NR.ringST(x, z)` | the nearest centreline point: `{t, s, th, inRing}` |
+| `NR.ringST(x, z)` | the nearest centreline point: `{t, s, inRing}` (a coarse pass over every 32nd sample, a fine pass, the foot on the tangent) |
 | `NR.L` | `KEEL 0, HOLD 0.6, MEZZ 4.8, D [9, 12.6, 16.2, 19.8], TOP 23.4, SLAB 0.35, DH 3.6, CLEAR 3.25, PARAPET 1.15` |
 | `NR.W` | `PONT 26` (the pontoon's skin), `SKIN 25.3` (the hold's), `MAIN 20` (the main block), `GLASS 18.5` (D3-D4 cabins' glass), `CAB 11` (the cabin wall), `COR 8.5` (the core's wall), `MEZZ 19.2`, `LOT 15` |
 | `NR.ZONES` | `{id, kind, name, t0, t1, decks, s0, s1}`: bridge (D4, the bow), atrium (all decks, starboard midships), dining (D3-D4, the stern), engine (D1-D2, the stern). `NR.blocked(d, t0, t1, s0, s1)` |
 | `NR.CORES` | eleven stair cores `{id, t, t0, t1, down}` (two go down to the holds' mezzanine) |
 | `NR.cabins` | every cabin `{id, deck, side, i, t0, t1, tm, sIn, sOut, depth, wMin, cls, doorEnd, inhabited, kind, wealth}`; `NR.CABIN_CLASSES` the template widths |
 | `NR.LOTS` | the deck buildings' lots `{id, key, t, face, use, x, z, ry, y}`; use `hq`, `barracks`, `mess` |
+| `NR.FORE`, `NR.foreY(t)` | the forecastle: round the bow (\|t\| < 64) the outboard promenade climbs as a deck from D1 to the D3 floor at the stem under a bulwark (the sheer) |
+| `NR.PIERS` | the Ancients' piers `{id, kind, name, t, side, o, d, q, len, w, poly, head}`: two breakwater `arm`s out to sea at the mouth, the liner `mole` down the basin from the stern quay, four `finger` piers off the inner quay; decks at D1. `NR.pierAt(x, z)` the pier under a hull point; `NR.BEACONS` the beacons on the arms' heads |
 | `NR.PARKS`, `NR.TOWERS`, `NR.STEPS`, `NR.FLOATS`, `NR.ATRIUM` | the parks' t ranges; the pirates' stair towers, beach steps and floats; the atrium's layout |
 
 Nothing in 12 or 14 touches THREE or the DOM (PORT.md tags them `[G data]`).
@@ -43,7 +48,9 @@ Nothing in 12 or 14 touches THREE or the DOM (PORT.md tags them `[G data]`).
 `nrBand(mk, t0, t1, s0, s1, y0, y1, col, faces)` a band of the ring (faces `o i t b s e`), `nrLoft(mk, t0, t1, profile, col,
 face)` a wall through a section, `nrRadial(...)` a box across the ring, `nrBox`, `nrCyl`, `nrWallT(mk, t0, t1, s, th, y0, y1,
 col, openings)` a wall along the ring with doors, `nrSlab(mk, tA, tB, sA, sB, y, th, col, holes, faces, under)` a slab with
-rectangular holes (t, s). `nrPart(name, fn)` registers a hull pass, `nrAfter(name, fn)` a pass that places child defs after
+rectangular holes (t, s). `nrForecastle()` the bow (bulwark, sheer deck, cutwater, anchors), `nrEndCap(t, dir)` the pontoon's
+ends at the mouth, `nrBeacon(x, y, z)`. The piers draw in `41-nr-piers.js` (`nrPierArm`, `nrPierMole`, `nrPierFinger`; a pier's
+own frame `nrPierPt(pier, l, k, y)`: l metres out along it, k across). `nrPart(name, fn)` registers a hull pass, `nrAfter(name, fn)` a pass that places child defs after
 the lots. The geometry engine is `30-geo.js` (vendored from kits/scyvoi: buckets per material key, world-unit UVs).
 
 ## Defs

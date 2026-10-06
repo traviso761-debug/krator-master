@@ -14479,11 +14479,14 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
  for(let t=-F.t+1;t<F.t;t+=2.6){const y=top(t);nrBox('paint',t,nrForeS(y)-.15,y,.06,.5,.06,hc(0x6a7076));}
  {const y=NR.foreY(0),p=nrP(0,nrForeS(y)-1.2,y);cyl('white',p[0],y,p[2],.09,8,P('white'),6,.06);}
  /* the cutwater: two faces from the skin to a raked stem edge, antifouling below the old waterline, white above */
- const yT=top(0),ext=y=>.6+6.4*Math.pow(clamp(y/yT,0,1),1.4),half=y=>2.2+.55*ext(y);
+ const yT=top(0),SW=.2,ext=y=>.6+6.4*Math.pow(clamp(y/yT,0,1),1.4),half=y=>2.2+.55*ext(y);
  const skinS=y=>y<2.6?WD.PONT-3.4+3.4*Math.sqrt(y/2.6):y<6.95?WD.PONT:y<L.D[0]?WD.PONT+NR_FLARE*(y-6.95)/2.05:nrForeS(y);
  for(const sg of [1,-1])for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]]){
-  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),a=NR.at(sg*half(y),skinS(y)),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],u),y,lerp(a[1],b[1],u)];},2,6,col,{flip:sg<0});}
- psurf('white',(u,v)=>{const y=yT,a=NR.at(lerp(-1,1,u)*half(y),skinS(y)-.3),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,1,P('white'),{up:true});
+  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),a=NR.at(sg*half(y),skinS(y)),b=NR.at(sg*SW,skinS(y)+ext(y));return [lerp(a[0],b[0],u),y,lerp(a[1],b[1],u)];},2,6,col,{flip:sg<0});}
+ /* the stem's face: a narrow strip along the raked edge (a knife edge would leave its normals undefined, and black) */
+ for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]])
+  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),b=NR.at(lerp(-SW,SW,u),skinS(y)+ext(y));return [b[0],y,b[1]];},1,6,col,{flip:true});
+ psurf('white',(u,v)=>{const y=yT,k=lerp(-1,1,u),a=NR.at(k*half(y),skinS(y)-.3),b=NR.at(k*SW,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,2,P('white'),{up:true});
  /* the anchors: a dark hawse plate, the anchor drawn up in it, its chain run down to the sea floor (it was let go when she
     struck) */
  for(const sg of [1,-1]){const t=sg*15,y=NR.foreY(t)-2.4,sk=nrForeS(Math.max(y,L.D[0]))+.05,c=NR.at(t,sk),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);
@@ -16949,7 +16952,7 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  V['The stern: funnels and garden']=nrV(nrHP(PH-90,-70,L.TOP+40),nrHP(PH,0,L.TOP+6));
  V['The atrium: the grand stair']=nrV(nrHP(PQ-17,-1,L.D[0]+1.7),nrHP(PQ+6,0,L.D[1]+3));
  V['The atrium from the dome gallery']=nrV(nrHP(PQ-15,-14.9,L.TOP+2.0),nrHP(PQ+12,5,L.D[1]));
- V['The bow: the forecastle and the stem']=nrV(nrHP(-70,70,L.D[0]+10),nrHP(0,26,L.D[1]));
+ V['The bow: the forecastle and the stem']=nrV(nrHP(-30,95,L.D[0]+14),nrHP(3,24,L.D[1]+1));
  {const M=NR.PIERS.find(p=>p.kind==='mole'),e=nrPierPt(M,M.len+40,-34,L.D[0]+16),a=nrPierPt(M,M.len*.45,0,L.D[0]);
   V['The liner mole']=nrV(nrH2W(e[0],e[1],e[2]),nrH2W(a[0],a[1],a[2]));}
  {const A=NR.PIERS.filter(p=>p.kind==='arm'),m=[(A[0].head[0]+A[1].head[0])/2,(A[0].head[1]+A[1].head[1])/2];
