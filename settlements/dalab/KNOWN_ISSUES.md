@@ -110,3 +110,5 @@ saying what fixed it.
       hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
       Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.
 - [ ] (2026-10-06) The vernacular MAT keys and dMosaic take the material library (materials.json; src/88y-dalab-matlib.js through core/materials/record/26-matlib-bind.js). The murals, banner and rammed earth keep their painters. verify --assert passes, as before.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). ?mat=proc shows the old look.

@@ -16,3 +16,5 @@ Open items are `- [ ]` lines; build.py prints them.
       placement went from 3348 to 3482 records (soft road edges no longer block plots), the same on GPU and CPU
       canvas loads; checked with a screenshot pair from the opening view.
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-highlands-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). ?mat=proc shows the old look.

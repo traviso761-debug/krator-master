@@ -1,6 +1,6 @@
 {
  "build": "dalab",
- "note": "Dalab's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys take Iziz's rows, bound in place by src/88y-dalab-matlib.js (KMAT.bindMat); dMosaic takes the delivered Dalab mosaic in full colour. The murals, the banner and the rammed earth keep their procedural painters for now (the library murals are single-scene friezes; dRammed waits on earth.rammed). Run python3 tools/textures/pack.py settlements/dalab after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it.",
+ "note": "Dalab's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys take Iziz's rows, bound in place by src/88y-dalab-matlib.js (KMAT.bindMat); dMosaic takes the delivered Dalab mosaic in full colour. The murals, the banner and the rammed earth keep their procedural painters for now (the library murals are single-scene friezes; dRammed waits on earth.rammed). Run python3 tools/textures/pack.py settlements/dalab after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. tint.colour on the warm families (logs, bamboo, bmat): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py).",
  "size": 512,
  "families": {
   "wood": {
@@ -346,6 +346,99 @@
    "metal": 0.3,
    "roughLift": 0.1,
    "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "logs": {
+   "lib": "wood.log.carved",
+   "scale": [
+    2.0,
+    1.77
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.588,
+    "colour": "#a49480"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "scale": {
+   "lib": "roof.scale.slate",
+   "scale": [
+    1.5,
+    1.61
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.591
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleW": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "bamboo": {
+   "lib": "wood.bamboo_wall",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.678,
+    "colour": "#b5af7c"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "bmat": {
+   "lib": "fibre.reedmat",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.685,
+    "colour": "#c1ae80"
+   },
+   "metal": 0,
+   "normalScale": 0.6,
    "breakup": {
     "mix": 0.45,
     "macro": 0.1,

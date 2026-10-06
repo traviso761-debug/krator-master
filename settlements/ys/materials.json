@@ -1,6 +1,6 @@
 {
  "build": "ys",
- "note": "Ys's adapter onto the material library (core/materials/PLAN.md; settlements/ys/MATERIAL-PROMPTS.md has every set's prompt). The families are Ys's material keys: the hyk shell kit's MAT pairs (hkShell..hkVerd: hykSurf lays metre UVs, a tile is 4 m, so the adapter repeats each set 4/scale times), the terrain (ground: 71-port-terrain lays x/18, z/18), the Ancient hosts' own tables (sand: the Arcades HAC_MAT, trav: the Bell Hall HBH_MAT, verdigris: core MAT.verdigris; their UVs are the towers' own, so scale is nominal and the map replaces the procedural one 1:1). scale is world metres per tile. tint.keep is how much of the set's colour survives the vertex colour (the hyk buckets are vertex-coloured cream, teal, coral: a low keep), tint.mean the brightness the procedural greys had. Cards (kelp0-2, the weed ribbons on the tidelines) keep their own colour; the vine and clump cards left when the biome took the karst's dressing. Run python3 tools/textures/pack.py settlements/ys after any change, then python3 build.py; ?mat=proc shows the procedural look. Since 2026-10-06 also the shared vernacular (Iziz's rows) and the Ancients MAT (KMAT.bindMat at the end of 79z). rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it.",
+ "note": "Ys's adapter onto the material library (core/materials/PLAN.md; settlements/ys/MATERIAL-PROMPTS.md has every set's prompt). The families are Ys's material keys: the hyk shell kit's MAT pairs (hkShell..hkVerd: hykSurf lays metre UVs, a tile is 4 m, so the adapter repeats each set 4/scale times), the terrain (ground: 71-port-terrain lays x/18, z/18), the Ancient hosts' own tables (sand: the Arcades HAC_MAT, trav: the Bell Hall HBH_MAT, verdigris: core MAT.verdigris; their UVs are the towers' own, so scale is nominal and the map replaces the procedural one 1:1). scale is world metres per tile. tint.keep is how much of the set's colour survives the vertex colour (the hyk buckets are vertex-coloured cream, teal, coral: a low keep), tint.mean the brightness the procedural greys had. Cards (kelp0-2, the weed ribbons on the tidelines) keep their own colour; the vine and clump cards left when the biome took the karst's dressing. Run python3 tools/textures/pack.py settlements/ys after any change, then python3 build.py; ?mat=proc shows the procedural look. Since 2026-10-06 also the shared vernacular (Iziz's rows) and the Ancients MAT (KMAT.bindMat at the end of 79z). rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. tint.colour on the warm families (logs, bamboo, bmat): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py).",
  "size": 512,
  "families": {
   "hkShell": {
@@ -590,6 +590,99 @@
    "metal": 0.3,
    "roughLift": 0.1,
    "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "logs": {
+   "lib": "wood.log.carved",
+   "scale": [
+    2.0,
+    1.77
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.588,
+    "colour": "#a49480"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "scale": {
+   "lib": "roof.scale.slate",
+   "scale": [
+    1.5,
+    1.61
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.591
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleW": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "bamboo": {
+   "lib": "wood.bamboo_wall",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.678,
+    "colour": "#b5af7c"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "bmat": {
+   "lib": "fibre.reedmat",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.685,
+    "colour": "#c1ae80"
+   },
+   "metal": 0,
+   "normalScale": 0.6,
    "breakup": {
     "mix": 0.45,
     "macro": 0.1,

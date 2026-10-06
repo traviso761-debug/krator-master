@@ -4,7 +4,9 @@
 // (88x-matlib-pack.js). KMAT.bindMat (core/materials/record/26-matlib-bind.js) swaps the maps in place before the rows
 // build anything, so one tile of each procedural map (its world-UV K) becomes one tile of the set. ?mat=proc binds
 // nothing: the look before the library. [web]: three.js materials.
-const MATLIB_BOUND=KMAT.bindMat('reedlake',MAT,{tile:KMAT.ANCIENT_TILES});
+// Reed Lake's own reed surfaces have mesh UVs in metres (75-rl-helpers.js): island tops x/3 (3 m), layered sides and
+// bundles 2 m, mat skins 1.5 m; rlMat and rlThatch carry a world-UV K.
+const MATLIB_BOUND=KMAT.bindMat('reedlake',MAT,{tile:Object.assign({},KMAT.ANCIENT_TILES,{rlIsland:3,rlLayer:2,rlBundleX:2,rlMatM:1.5})});
 (function(){const recs={};for(const k in MAT){const m=MAT[k];if(!m||!m.isMeshStandardMaterial)continue;const L=KMAT.packed('reedlake',k);
  recs[k]={id:'reedlake.'+k,family:k,scale:L?L.scale:(m.userData.uvK?[1/m.userData.uvK,1/m.userData.uvK]:[1,1]),tint:true,roughness:1,
   metal:L?(L.metal||0):0,lib:MATLIB_BOUND[k]?L.lib:null,bake:!MATLIB_BOUND[k]&&!!m.map,hook:m.userData.uvK?'world-uv':null,

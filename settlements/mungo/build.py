@@ -72,7 +72,7 @@ for _slot, _rel in (('69a1-bio-core-head.js', 'core/biome/10-core-head.js'), ('6
 # shared core modules, by folder; every digit-named .js in each (core/<m>/README.md says what each is)
 CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation']
 
-REED_ANCIENT = ('white', 'whiteWorn', 'verdigris', 'concrete', 'concreteR', 'paving', 'brick', 'corrugate', 'timber', 'tarp', 'rubbleK')
+SIDE = {}   # the library packs' maps, written to dist/mungo.tex.<key>.js (tools/textures/matlib_pack.py write_sidecar)
 MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record (virtual_bodies)
 
 # fragments with no generation in them (no reseed needed)
@@ -194,10 +194,10 @@ def virtual_bodies():
         vb[f] = read(os.path.join(ROOT, 'core', 'materials', 'record', f))
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
-    vb['46-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus')
-    vb['46r-reed-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'reedlake'), 'reedlake',   # the vernacular only:
-        exclude=REED_ANCIENT)   # the village has none of the Ancients' panels or salvage, and their maps would add ~2.7 MB
-    vb['69a0-bio-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss')
+    # The maps go in dist/mungo.tex.<key>.js beside the page (SIDE), not in it: the gallery takes 16 MB a file.
+    vb['46-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus', side=SIDE)
+    vb['46r-reed-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'reedlake'), 'reedlake', side=SIDE)
+    vb['69a0-bio-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss', side=SIDE)
     rk, rk_order = reed_kit()
     vb['01-reedkit.html'] = rk
     vb['78a-world-json.js'] = world_json()
@@ -321,6 +321,8 @@ def main():
             sys.exit(1)
     html = ''.join(bodies[f] for f in order)
     os.makedirs(DIST, exist_ok=True)
+    import matlib_pack
+    html = matlib_pack.write_sidecar(SIDE, html, DIST, 'mungo.tex.js')
     with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(MANIFEST, 'w', encoding='utf-8', newline='\n') as fh:

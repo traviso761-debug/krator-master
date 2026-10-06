@@ -1050,11 +1050,17 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
    the Ancient white and verdigris; its scale is in UV tiles, see kits/ringsea/materials.json). Post-Apoc is wired for planks, earth, concrete, timber and cloth (`wood.reclaimed`, `earth.floor.packed`,
    `concrete.slab`, `wood.timber`, `cloth.weave.burlap`); its rusty metals stay procedural until a rust-streaked tintable corrugate comes
    (`metal.corrugated.rusty`, prompted): `metal.container` and `metal.tin.patchwork` are too clean for it. Verge and Mungo take the packs of the builds they assemble (no materials.json of their own):
-   Verge the Iziz vernacular's seven families, Locus's pack and the sedesert biome's (Iziz's Ancients rows and the eastabyss biome's
-   pack are left out for size: 12.7 MB as it is); Mungo Locus's, the eastabyss biome's and Reed Lake's vernacular rows (15.1 MB).
+   Verge Iziz's (not the fauna), Locus's and both biomes'; Mungo Locus's, Reed Lake's and the eastabyss biome's.
    Interiors has nothing to wire: its shells are flat-colour debug views, and the worlds that host its rooms draw their own walls.
-3. The vernacular's own families: Highlands (logs -> `wood.log.carved`, scale -> `roof.scale.slate`, rubbleW, bamboo, bmat, rock,
-   meadow, the h* pattern sheets), Reed Lake (rl* -> the reed sets and Reed Lake patterns), Xanadu (x* -> the Xanadu patterns,
+**Sidecar packs (2026-10-06, late).** A page that carries several packs or nears the gallery's 16 MB a file keeps its maps beside it,
+   one `<page>.tex.<key>.js` per pack loaded by `<script src>` (`tools/textures/matlib_pack.py`: `fragment(..., side=)`,
+   `write_sidecar`); `gallery/build_gallery.py` copies them beside the page. Verge, Mungo and Ys do this.
+   `tint.colour` (pack.py): a grey set takes a hue at the same brightness, for builds whose procedural maps carry their colour.
+3. The vernacular's own families. Done 2026-10-06 (late): Highlands' logs (`wood.log.carved`), scale (`roof.scale.slate`), rubbleW
+   (`rock.old_stone_wall`), bamboo (`wood.bamboo_wall`), bmat (`fibre.reedmat`), in Highlands, Dalab, Reed Lake and Ys; Reed Lake's rlMat,
+   rlMatM (`fibre.reedmat`), rlThatch (`roof.thatch.reed`), rlIsland (`ground.reedbed`), rlLayer (`reed.layers`), rlBundleX (`reed.bundle`).
+   Still to do: Highlands (turf waits for `roof.turf`; rock,
+   meadow have mesh UVs, the h* pattern sheets), Reed Lake (rlBundle has separate u and v tiles; the band and chakana patterns), Xanadu (x* -> the Xanadu patterns,
    `plaster.white_stucco_02`, `paving.tiles144`), Dalab (dRelief, dChecker, dDecoPanel, dBanner -> the Dalab patterns), the port embassy
    (vpTile, vpBanco, vpMosaic, vpBanner), Ys's vernacular and port kit.
 4. Biome slots left procedural: the ground detail layers (`TEX_DETAIL`, `TEX_CRACK`), hyperjungle limb and wood, nhighlands' bark buckets

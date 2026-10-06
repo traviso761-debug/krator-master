@@ -17,3 +17,5 @@ Open items are `- [ ]` lines; build.py prints them.
 - [x] No LOD: `core/lod` now takes over both pages (README, "Level of detail"). The village is small: the overview
       drops from 223k to 78k triangles, close views by about 4%.
 - [ ] (2026-10-06) The vernacular MAT keys take the material library (materials.json, Iziz's rows; src/88y-reedlake-matlib.js binds them through core/materials/record/26-matlib-bind.js). The build's own families (its patterns, bands and tiles) are not wired yet. verify --assert passes, as before.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). Reed Lake's own reed surfaces too (rlMat, rlMatM, rlThatch, rlIsland, rlLayer, rlBundleX). ?mat=proc shows the old look.

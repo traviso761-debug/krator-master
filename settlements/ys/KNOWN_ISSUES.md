@@ -277,3 +277,5 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       merged city meshes has no BVH: a selection can take a second.
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+- [ ] **The Highlands families take the material library** (2026-10-06): logs, scale, rubbleW, bamboo, bmat (materials.json; tint.colour keeps the
+      warm ones warm). The maps are in dist/ys.tex.<key>.js beside the pages (the city page would pass 16 MB). ?mat=proc shows the old look.

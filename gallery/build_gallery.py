@@ -243,9 +243,11 @@ ENTRIES = [
 THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 
 
-def bundle(path, three=THREE_CDN):
+def bundle(path, three=THREE_CDN, worlds=None):
     """The page as one self-contained file: a page that loads local scripts (the Voth catalog) gets each one
-    inlined, and a local three.min.js becomes the same r128 build from cdnjs. Built worlds pass through as is."""
+    inlined, and a local three.min.js becomes the same r128 build from cdnjs. Built worlds pass through as is.
+    A library-pack sidecar (<page>.tex.<key>.js, tools/textures/matlib_pack.py) is NOT inlined: it is copied into
+    `worlds` beside the page and keeps its tag, so no gallery file passes the artifact's 16 MB a file."""
     html = open(path, encoding='utf-8').read()
     here = os.path.dirname(path)
     def inline(m):
@@ -254,6 +256,9 @@ def bundle(path, three=THREE_CDN):
             return m.group(0)
         if os.path.basename(src) == 'three.min.js':
             return '<script src="%s"></script>' % three
+        if worlds and re.search(r'\.tex\.[\w-]+\.js$', src):
+            shutil.copy(os.path.join(here, src), os.path.join(worlds, os.path.basename(src)))
+            return '<script src="%s"></script>' % os.path.basename(src)
         body = open(os.path.join(here, src.replace('%20', ' ')), encoding='utf-8').read()
         return '<script>\n' + body.replace('</script', '<\\/script') + '\n</script>'
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
@@ -313,7 +318,7 @@ def main():
     items = []
     for section, slug, path, name, blurb, *rest in ENTRIES:
         src = os.path.join(ROOT, path)
-        page = bundle(src, three)
+        page = bundle(src, three, os.path.join(site, 'worlds'))
         if lod is not None:
             page = page.replace('<head>', '<head>\n' + bar_head(lod, slug), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:

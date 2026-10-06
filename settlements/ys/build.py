@@ -63,6 +63,11 @@ TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pa
 PACK_FRAGMENT = '26-matlib-pack.js'        # GENERATED at build time from tex/, never written to src/
 
 
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+import matlib_pack as _mp
+SIDE = {}   # the library packs' maps, written to dist/ys.tex.<key>.js and shared by every target's page
+
+
 def matlib_pack():
     """The library textures materials.json names, as data URLs (KMAT.pack). It reads the committed tex/ files only,
     never the library or an image encoder, so the build stays deterministic."""
@@ -79,10 +84,10 @@ def matlib_pack():
         for k, name in sorted(e['files'].items()):
             f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
         out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
-    return ('/* ================================================================= THE LIBRARY PACK (generated)\n'
-            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
-            '   and its processed maps as data URLs. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('ys', {\n" + ',\n'.join(out) + '\n});\n')
+    # the maps go in dist/ys.tex.ys.js beside the pages (SIDE; tools/textures/matlib_pack.py): ys.html would pass the
+    # gallery's 16 MB a file with them inlined
+    SIDE['ys'] = '{\n' + ',\n'.join(out) + '\n}'
+    return _mp.loader('ys')
 
 
 TARGET_OUT = {'city': 'ys.html'}          # every other target builds to dist/<name>.html
@@ -295,6 +300,7 @@ def build_one(target, do_checks):
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))
     paths = dict(src); paths.update(tgt)
     order = sorted(list(paths) + [PACK_FRAGMENT])
+    SIDE.clear()   # this target's packs only (each target writes its own sidecars; they share names, so no pruning)
     bodies = {PACK_FRAGMENT: matlib_pack()}
     for f in order:
         if f == PACK_FRAGMENT:
@@ -302,9 +308,7 @@ def build_one(target, do_checks):
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = subst(f, fh.read())   # VENDOR_SUBST: the recorded renames, on the body only
     if any(f.startswith('86-bio-') for f in order):   # the vendored nwbay biome: its library pack, before the biome code
-        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
-        import matlib_pack as _mp
-        bodies['86-bio-00-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'nwbay'), 'nwbay')
+        bodies['86-bio-00-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'nwbay'), 'nwbay', side=SIDE)
         order = sorted(order + ['86-bio-00-matlib-pack.js'])
     if do_checks:
         errs = check(order, bodies)
@@ -319,6 +323,7 @@ def build_one(target, do_checks):
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1), html, count=1)
     out = os.path.join(DIST, TARGET_OUT.get(target, target + '.html'))
     os.makedirs(DIST, exist_ok=True)
+    html = _mp.write_sidecar(SIDE, html, DIST, 'ys.tex.js', prune=False)
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
