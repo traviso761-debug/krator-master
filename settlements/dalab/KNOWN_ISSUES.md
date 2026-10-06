@@ -109,3 +109,4 @@ saying what fixed it.
       for every kit) and the kit gained `BIO.kit` hooks, so `--vendor-check` reports the core and the
       hooked fragments as drift. The kit's geometry is unchanged (mesh fingerprints, `core/README.md`).
       Re-vendor, or read `core/biome` through a `CORE_BIOME` list, when Dalab is next rebuilt and verified.
+- [ ] (2026-10-06) The vernacular MAT keys and dMosaic take the material library (materials.json; src/88y-dalab-matlib.js through core/materials/record/26-matlib-bind.js). The murals, banner and rammed earth keep their painters. verify --assert passes, as before.
