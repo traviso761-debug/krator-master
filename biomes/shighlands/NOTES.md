@@ -10,7 +10,7 @@ of the world, and chose (in the chat of 2026-10-06):
   the Afroalpine), above a **cloud sea**: the hyperjungle's dense air pools below the Wall as a permanent white deck.
 - **The spiral biome.** Everything must have some kind of spiral growth habit. The owner's folder of spiraloid plants
   (29 references, `refs/`) is the source.
-- Two named trees: a **spiral frill-tree** whose frills grow in a rosette pattern, and a **spiral trumpet tree** with
+- Two named trees: a **spiral frill tree** whose frills grow in a rosette pattern, and a **spiral trumpet tree** with
   long, fluted trumpets.
 - **Every spiral turns the same way** (right-handed); a mirror-handed plant is rare and valued.
 
@@ -20,7 +20,7 @@ Every species and floor plant carries `tags.spiral`, one of:
 
 | kind | what it is | who shows it |
 |---|---|---|
-| whorl | leaves set round a centre at a fixed angle (the golden angle, 137.5 degrees, or near it) | whorl frill-tree, giant groundsel, spiral lobelia, spiral aloe (five ranks: 144 degrees less a little), silver rosettes, star moss, spiral-eye daisies |
+| whorl | leaves set round a centre at a fixed angle (the golden angle, 137.5 degrees, or near it) | spiral frill tree, ruffle-crown, giant groundsel, spiral lobelia, spiral aloe (five ranks: 144 degrees less a little), silver rosettes, star moss, spiral-eye daisies |
 | twist | a helix | coilbark, spiral trumpet, screw palm, corkscrew cereus, spiral ginger, braid spears, swirl tussock, corkscrew bells |
 | coil | a fiddlehead's curl | crozier tree fern, fiddlehead fern, sundew coils, corkscrew rush, corkscrew albuca, coral coil-shrub |
 | shell | a flat logarithmic spiral | volute tree, escargot begonia, rosette lichen |
@@ -49,12 +49,13 @@ take no hand.
 | 04, 10 boards of spiral plants | the mood; the trumpet's fluting; the coral shrubs |
 | 05, 21 corkscrew albuca | the **corkscrew albuca** on the crags and the dry side |
 | 06 hanging bulbs | **corkscrew bells**: bells on a helical thread (made a spiral, so not a copy of the north's bell-bulbs) |
-| 07 frilled leaf edges, 08 spiral fan palm | the **whorl frill-tree**'s leaves and its crown |
+| 07 frilled leaf edges, 08 spiral fan palm | the **ruffle-crown**'s leaves and its crown |
 | 09 spiral cereus | the **corkscrew cereus** |
 | 11, 12 spiral aloe | the **spiral aloe** (Aloe polyphylla: a real mountain plant, Lesotho, 2000-2500 m) |
 | 13, 18, 20 begonias | the **escargot begonia** on the forest floor (full-colour texture) |
 | 15 helix fruiting | the bells' helix |
-| 16 spiral rosette tree | the frill-tree's habit (a rosette held up on a trunk) |
+| 16 spiral rosette tree | the ruffle-crown's habit (a rosette held up on a trunk) |
+| biomes/rift's frill tree | the **spiral frill tree** (2026-10-06, the owner: "a real frill tree"): the Rift's ribbed, finned, iridescent column, its fins set at the golden angle so they climb in spirals, a whorl of long fins round the bud. The first version of the frill tree, a rosette on a trunk, stayed as the ruffle-crown |
 | 17 spiral trunk from below, 19 malachite moss bark | the **coilbark**: a wrung trunk, moss streaks |
 | 22 giant groundsels | the **giant groundsel** |
 | 23 twisted sansevieria | **braid spears** |
@@ -74,10 +75,13 @@ The host's `fog` field (how often the ground stands in cloud) zones the kit: hig
 up the ravines, pooled a little in the bogs. Nothing roots under the deck (`rootMask`: that ground is the
 hyperjungle's).
 
-The cloud sea (`84-host-ground.js`): a deck of heaped billows (a displaced grid of ~100 m cells, up to ~40 m over
-`CLOUD_Y` and ~25 m under it) shaded from its own normals, blue-grey in the hollows, with a seamless drifting detail; its alpha is a baked
-mask that thins it to nothing over the last ~45 m where the ground rises through it, with mist sprites along that edge
-and up the ravines. A second, darker deck 55 m below it fills any hole.
+The cloud sea is **core/atmos's cloud deck** (`89-atmos-d-clouddeck.js`, bound in `89z-host-atmos.js`; the owner asked
+on 2026-10-06 for a cloud that survives the move to Godot). Its relief is billow noise on a repeating lattice with an
+integer hash, written from `PRESETS.clouddeck` (heaped billows up to 44 m over `CLOUD_Y` and 26 m under it, warped by a
+second noise so they change shape, with finer detail for the shading; the first version, a sum of plane waves, drew
+parallel lines), so the generated Godot include draws the same cloud (`core/atmos/GODOT.md`, "The cloud deck"). It is a grid
+that follows the camera, thinning where the ground (the stage's cached height) rises through it; the mist sprites along
+its edge and up the ravines are this host's own (`84-host-ground.js`) and are not exported.
 
 The paramo's tussocks are printed into the ground (`TEX_TUFT`, laid by the vertex weight `aPar`) and modelled only in
 the near band, so the field of small whirlpools reads at every distance for no triangles.
@@ -97,5 +101,5 @@ falling away south into haze.
 
 - **No trees on cliff faces** (Oct 2026): `zones()` multiplies every zone by `1 - cliff`; the probe checks it with a
   negative control.
-- **Ask for textures** rather than papering over a gap: every surface here is procedural for now; `KNOWN_ISSUES.md`
-  lists what the library would need.
+- **Ask for textures** rather than papering over a gap: the owner generated `bark.wrung`, `bark.skirt` and
+  `ground.sphagnum` for this kit on 2026-10-06 (`materials.json`); `KNOWN_ISSUES.md` lists the surfaces still procedural.

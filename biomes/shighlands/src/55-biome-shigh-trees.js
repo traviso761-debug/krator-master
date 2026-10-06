@@ -34,11 +34,17 @@ SHIGH.zones=zones;
 // ---------------------------------------------------------------- colour (the maths is the core's, BIO.col)
 const {shade,bright,vary,texMean,tint}=BIO.col;
 let MEAN=null;
-function means(){if(MEAN)return MEAN;MEAN={bark:SHIGH.BARKTEX.map(t=>texMean(t)),wood:texMean(SHIGH.WOODTEX),rock:texMean(SHIGH.ROCKTEX)};return MEAN;}
+function means(){if(MEAN)return MEAN;MEAN={bark:SHIGH.BARKTEX.map(t=>texMean(t)),wood:texMean(SHIGH.WOODTEX),rock:texMean(SHIGH.ROCKTEX)};
+ // a library map's mean is the pack's (an sRGB grey: its linear value per channel)
+ const lm=SHIGH.LIBMEAN||{},lin=v=>{const c=Math.pow(v,2.2);return[c,c,c];};MEAN.bark=MEAN.bark.map((m,k)=>lm['bark'+k]!=null?lin(lm['bark'+k]):m);
+ if(lm.rock!=null)MEAN.rock=lin(lm.rock);
+ return MEAN;}
 Object.assign(SHIGH,{means,tint,bright,shade,vary});
 const BARKC={};
 const barkCol=(S,k)=>{const key=S.key+(k%S.bark.length);return BARKC[key]||(BARKC[key]=tint(S.bark[k%S.bark.length],means().bark[S.barkK]));};
 const mossCol=(S)=>tint(pick(PAL.mossStreak),means().bark[S.barkK],rr(.9,1.1));
+// the library's wrung bark carries its own moss in the creases: the procedural moss rings are only for the canvas bark
+const LIBWRUNG=SHIGH.LIB&&SHIGH.LIB.has('bark.wrung');
 const rodCol=(hex,f)=>shade(C(hex),f==null?-.25:f);
 const leafCol=(set,k,dh,ds,dl)=>bright(vary(pick(set),dh==null?.05:dh,ds==null?.14:ds,dl==null?.07:dl),k==null?1.3:k);
 const nearW=(k)=>bright(vary(C(0xffffff),.02,.05,.05),k==null?1:k);
@@ -66,7 +72,9 @@ function twistTrunk(T,S,fam,H,rAt,lobes,amp,pitch,lv,colAt,o){o=o||{};const st=o
  for(let u=0;u<=1.0001;u+=du){const w=(w1*Math.sin(u*Math.PI)+w2*Math.sin(u*TAU))*H,x=T.x+Math.cos(la)*lean*H*u*u+Math.cos(ph)*w,z=T.z+Math.sin(la)*lean*H*u*u+Math.sin(ph)*w,y=T.y0-.3+(H+.3)*u;
   rings.push({x,y,z,r:rAt(u),yy:u*H,u,col:colAt?colAt(u,y):barkCol(S,Math.floor(u*7))});}
  const seg=lv===2?(o.seg||12):7;
- st.trunk+=BIO.lathe(fam,rings,seg,Math.max(1,Math.round(TAU*rAt(.3)/2.5)),3,(Rg,a)=>Rg.r*(1+amp*Math.sin(lobes*a-T.hand*Rg.yy/pitch*TAU+ph)),(Rg,a)=>.82+.18*Math.sin(lobes*a-T.hand*Rg.yy/pitch*TAU+ph));
+ // the texture's tile is the bucket's (a library set's own size in metres, or the canvas's)
+ const uvs=BIO.bucket(fam).uvScale;
+ st.trunk+=BIO.lathe(fam,rings,seg,Math.max(1,Math.round(TAU*rAt(.3)/uvs[0])),uvs[1],(Rg,a)=>Rg.r*(1+amp*Math.sin(lobes*a-T.hand*Rg.yy/pitch*TAU+ph)),(Rg,a)=>.82+.18*Math.sin(lobes*a-T.hand*Rg.yy/pitch*TAU+ph));
  return rings.map(R=>({x:R.x,y:R.y,z:R.z,r:R.r}));}
 
 // ---------------------------------------------------------------- keep-clear between trees
@@ -100,7 +108,7 @@ const B=[];
 // leaf, moss, tank bromeliads and corkscrew bells. In the elfin band it stays low and the moss takes over.
 B[0]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,elfin=T.fog<.6;
  const rAt=u=>rb*(1-.62*u)*(1+.55*smooth(.1,0,u));
- const C0=twistTrunk(T,S,'bark0',H*.82,rAt,5,.17,rr(5,8),lv,(u,y)=>u<.45&&rng()<(.12+.22*T.fog)*(1-u*1.6)?mossCol(S):barkCol(S,Math.floor(u*7)),{st,lean:elfin?rr(.05,.14):rr(0,.05),du:.065,seg:10});
+ const C0=twistTrunk(T,S,'bark0',H*.82,rAt,5,.17,rr(5,8),lv,(u,y)=>!LIBWRUNG&&u<.45&&rng()<(.12+.22*T.fog)*(1-u*1.6)?mossCol(S):barkCol(S,Math.floor(u*7)),{st,lean:elfin?rr(.05,.14):rr(0,.05),du:.065,seg:10});
  const nL=lv===2?ri(5,8):3,a0=rr(0,TAU),hc=C(pick(S.leaf)),spots=[];let reach=R*.5,top=T.y0+H*.82;
  for(let k=0;k<nL;k++){const u=rr(.45,.9),p=along(C0,u),la=a0+k*GOLD*T.hand,L=R*rr(.75,1.1)*(1.1-u*.4);
   const lp=corkscrew(p,dirOf(la,rr(.35,.8)),L,p.r*.55,.05,lv===2?6:3,L*.12,rr(.6,1.1),T.hand,-.04);
@@ -188,9 +196,9 @@ B[4]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
   if(lv===2&&rng()<.3){BIO.put('cone',[p.x+rr(-.3,.3),p.y-.6,p.z+rr(-.3,.3)],qEuler(Math.PI+rr(-.3,.3),rr(0,TAU),0),[.35,.5,.35],leafCol(PAL.palmFruit,1.1,.02));}}
  regTree(T,S,R+1,H+R*.4);};
 
-// 5 the WHORL FRILL-TREE: a banded trunk, a helical scar winding up it; on top one great rosette of ruffled leaves,
+// 5 the RUFFLE-CROWN: a banded trunk, a helical scar winding up it; on top one great rosette of ruffled leaves,
 // coral and gold at their frills, set at the golden angle, the outer ones drooping, the inner ones upright: an aloe held
-// up on a trunk (refs/07, 08). A high cousin of the drylands' frill-tree.
+// up on a trunk (refs/07, 08).
 B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
  const C0=twistTrunk(T,S,'bark5',H*.78,u=>rb*(1-.35*u)*(1+.25*Math.sin(u*Math.PI))*(1+.4*smooth(.06,0,u)),2,.08,rr(2.5,4),lv,null,{st,lean:rr(0,.06),wig:.05,seg:9});
  const t=C0[C0.length-1],n=lv===2?ri(26,34):10,a0=rr(0,TAU);
@@ -243,6 +251,26 @@ B[9]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,n=ri(1,H>4?6:3);let reach=
   reach=Math.max(reach,d+w);}
  regTree(T,S,reach+.5,H+.5);};
 
+// 10 the SPIRAL FRILL TREE: the Rift's frill tree come up into the cloud (biomes/rift, species 0 and the cloud frill). A
+// tapering ribbed column, iridescent teal to violet, its twelve ribs winding a turn every 10-16 m; its toothed fins set a
+// golden angle apart as they climb, so they stand in crossing spirals (the parastichies of a pine cone) instead of the
+// Rift's level rows, longest low and shortening upward; at the summit a whorl of long fins round a pale bud.
+B[10]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,c2s=S.irid,hc=vary(pick(S.leaf),.03,.08,.05);
+ const rAt=u=>rb*(1-.55*u)*(1+.5*Math.exp(-u*H/3));
+ const C0=twistTrunk(T,S,'barkF',H*.9,rAt,12,.1,rr(10,16),lv,null,{st,lean:rr(0,.03),wig:.02,seg:lv===2?20:10});
+ const fk=H/18,N=lv===2?Math.round(H*9):Math.round(H*3),a0=rr(0,TAU);
+ for(let k=0;k<N;k++){const u=mix(.07,.86,k/(N-1)),a=a0+k*GOLD*T.hand,p=along(C0,u/.9),R=rAt(u)*1.06,L=mix(1.0,2.1,smooth(.05,.6,u))*mix(1.3,.75,u)*fk*rr(.88,1.1);
+  BIO.put('frillfin',[p.x+Math.cos(a)*R,p.y,p.z+Math.sin(a)*R],qEuler(rr(-.08,.08),-a,mix(1.0,.8,u)+rr(-.1,.1)),[L,L*.9,L*.9],bright(vary(hc,.02,.06,.05),rr(1.25,1.5)),
+   {c2:bright(C(pick(c2s)),1.2),n:[Math.cos(a)*.85,.5,Math.sin(a)*.85]});st.fins++;}
+ // the crown: a whorl of long fins at the golden angle, the outer ones spreading, the inner rising; a pale bud
+ const top=C0[C0.length-1],n=lv===2?21:9,rT=rAt(.9);
+ for(let k=0;k<n;k++){const u=k/(n-1),a=a0+k*GOLD*T.hand,L=H*mix(.2,.12,u)*rr(.9,1.1);
+  BIO.put('frillfin',[top.x+Math.cos(a)*rT*.7,top.y+u*.4,top.z+Math.sin(a)*rT*.7],qEuler(rr(-.1,.1),-a,mix(.35,1.25,u)),[L,L,L*.95],bright(vary(hc,.02,.06,.05),1.4),
+   {c2:bright(C(pick(c2s)),1.2),n:[Math.cos(a)*.7,.7,Math.sin(a)*.7]});st.fins++;}
+ BIO.put('cone',[top.x,top.y-.2,top.z],qUp([0,1,0]),[rT*2.2,rT*3.6,rT*2.2],leafCol(PAL.spiralBud,1.1,.02));
+ if(lv===2)for(let k=0,m=ri(1,3);k<m;k++){const p=along(C0,rr(.03,.2));mossAt(p.x,p.y,p.z,rr(.5,.9));}
+ regTree(T,S,H*.2+rT+1,H+1);};
+
 // ---------------------------------------------------------------- impostors (the far canopy)
 // far.blobs: icosahedral blobs on a pole (sedesert's recipe)
 let ICO=null;
@@ -270,7 +298,7 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
 
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('shigh: no builder for species '+i+' '+S.key);});
-const newStats=()=>({trunk:0,limb:0,far:0,clumps:0,trumpets:0,scrolls:0,fronds:0,croziers:0,straps:0,stilts:0,frills:0,cabbages:0,columns:0,aloes:0,epi:0,bells:0,heroes:0,fars:0,mirrors:0,byS:SP.map(()=>0)});
+const newStats=()=>({fins:0,trunk:0,limb:0,far:0,clumps:0,trumpets:0,scrolls:0,fronds:0,croziers:0,straps:0,stilts:0,frills:0,cabbages:0,columns:0,aloes:0,epi:0,bells:0,heroes:0,fars:0,mirrors:0,byS:SP.map(()=>0)});
 // MIRROR-HANDED trees: about one in MIRROR_EVERY, and the host may ask for one at a point (SHIGH.mirrorAt: the nearest
 // hero of a species there turns mirror-handed), so a camera can find one
 SHIGH.MIRROR_EVERY=320;SHIGH.mirrorAt=[];
@@ -309,12 +337,14 @@ SHIGH.PASSES=[
  {sp:0,cell:15,accept:(Z)=>Z.forest*.55+Z.elfin*.3,opt:{pad:2.5,patch:.45,patchScale:.012,lodK:.3}},
  {sp:1,cell:24,accept:(Z)=>Z.forest*.26+Z.elfin*.3+Z.ravine*.12,opt:{pad:3,patch:.55,patchScale:.009}},
  {sp:4,cell:20,accept:(Z)=>(Z.ravine*.38+Z.stream*.45)*(Z.forest+Z.elfin+.25)+Z.forest*.04,opt:{pad:2,patch:.4}},
- {sp:3,cell:12,accept:(Z)=>Z.forest*.3+Z.ravine*Z.forest*.4+Z.elfin*.1,opt:{pad:1.2,patch:.55,patchScale:.014,small:true,lodK:.3}},
+ {sp:3,cell:13,accept:(Z)=>Z.forest*.3+Z.ravine*Z.forest*.4+Z.elfin*.1,opt:{pad:1.2,patch:.55,patchScale:.014,small:true,lodK:.3}},
  {sp:5,cell:50,accept:(Z)=>Z.paramo*.16+Z.elfin*.16+Z.dry*.08,opt:{pad:4,patch:.5,patchScale:.008}},
  {sp:6,cell:19,accept:(Z)=>Z.paramo*.26+Z.bog*.3+Z.elfin*.05,opt:{pad:1.5,patch:.75,patchScale:.008,lodK:.4}},
  {sp:7,cell:15,accept:(Z)=>Z.paramo*.12+Z.bog*.38+Z.crag*.04,opt:{pad:1,patch:.7,patchScale:.012,small:true,lodK:.5}},
  {sp:8,cell:11,accept:(Z)=>Z.dry*.36+Z.crag*.26+Z.paramo*.015,opt:{pad:.8,patch:.6,patchScale:.014,small:true,lodK:.6}},
  {sp:9,cell:16,accept:(Z)=>Z.dry*.3+Z.crag*.12*(1-Z.fog),opt:{pad:1.4,patch:.55,patchScale:.01,small:true}},
+ // the spiral frill tree: the cloud forest and its elfin edge, in loose stands (the Rift's cloud frill's place)
+ {sp:10,cell:34,accept:(Z)=>Z.forest*.2+Z.elfin*.22+Z.ravine*Z.forest*.1,opt:{pad:2.5,patch:.6,patchScale:.008}},
 ];
 
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)

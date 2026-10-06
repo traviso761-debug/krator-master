@@ -17,14 +17,15 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `45-host-stage.js` | 13 | the land (48); the climate fields (cached below; these are the  (101); the host binding (134) |
-| `50-biome-shigh-species.js` | 43 **big** | palettes (26); the tree species (48); harvest (biomes/FRUIT.md) (88); the small plants (the floor), tagged (106); leaf textures (128); bark textures (181); geometries local to this biome (206); materials (373); instanced items (398) |
-| `55-biome-shigh-trees.js` | 29 | zones from the fields (12); colour (the maths is the core's, BIO.col) (34); spiral helpers (47); keep-clear between trees (72); foliage helpers (79); the builders (94); impostors (the far canopy) (246); the pass (271); the passes (data: species, cell, acceptance from (304); one tree alone (biomes/WORLD.md: trees as varian (320) |
+| `50-biome-shigh-species.js` | 48 **big** | palettes (26); the tree species (49); harvest (biomes/FRUIT.md) (92); the small plants (the floor), tagged (111); leaf textures (133); bark textures (191); geometries local to this biome (216); materials (383); the library (materials.json; core/materials/PLAN (405); instanced items (445) |
+| `55-biome-shigh-trees.js` | 32 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (34); spiral helpers (53); keep-clear between trees (80); foliage helpers (87); the builders (102); impostors (the far canopy) (274); the pass (299); the passes (data: species, cell, acceptance from (332); one tree alone (biomes/WORLD.md: trees as varian (350) |
 | `60-biome-shigh-floor.js` | 13 | small plants (23); the zone planters (66); the pass (126) |
 | `70-biome-shigh.js` | <1 |  |
 | `82-host-sky.js` | 13 |  |
-| `84-host-ground.js` | 16 | the ground (11); the water (the tarn, the bog pools) (68); THE CLOUD SEA (89); the mist (134) |
+| `84-host-ground.js` | 17 | the ground (9); the water (the tarn, the bog pools) (107); THE CLOUD SEA (128); the mist (132) |
 | `88-host-build.js` | 1 |  |
+| `89z-host-atmos.js` | 1 |  |
 | `90-host-camera.js` | 9 |  |
-| `91-host-probe.js` | 8 |  |
+| `91-host-probe.js` | 10 |  |
 | `93-host-polytool.js` | 6 |  |
 | `99-tail.html` | <1 |  |

@@ -432,8 +432,9 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - **Great trumpets** (30–50 m) hold clean water all summer, and travellers drink from them.
   - Glowing bell-bulbs and lantern pods.
 - **Southern highlands**: the spiral biome (the owner, Oct 2026). The Inner Wall's flank above the hyperjungle, where the cloud sea (the jungle's dense air, pooled below the Wall) laps against the scarp every day. Every plant grows in a spiral, and **every spiral turns the same way**: right-handed. A mirror-handed tree is rare, and the people of the Wall count it a sign.
-  - Cloud forest: coilbarks wrung like cloth, **spiral trumpets** (long fluted funnels whose ribs twist; some climb the trunk in a corkscrew of funnels), **volute trees** whose limbs end in leafy scrolls, crozier tree ferns, screw palms; escargot begonias and corkscrew bells.
-  - Above the cloud, a paramo of giant rosettes: the **whorl frill-tree** (a high cousin of the drylands' frill-tree that never burns), giant groundsels, spiral lobelias, spiral aloes; the **Whorl Stone**, a tor whose ledges spiral to its top.
+  - Cloud forest: coilbarks wrung like cloth, **spiral trumpets** (long fluted funnels whose ribs twist; some climb the trunk in a corkscrew of funnels), **volute trees** whose limbs end in leafy scrolls, **spiral frill trees** (the Rift's frill tree come up into the
+    cloud, its fins climbing the column in spirals), crozier tree ferns, screw palms; escargot begonias and corkscrew bells.
+  - Above the cloud, a paramo of giant rosettes: the **ruffle-crown** (one great rosette of coral-edged leaves on a trunk), giant groundsels, spiral lobelias, spiral aloes; the **Whorl Stone**, a tor whose ledges spiral to its top.
 - **Vale of Xanadu**: "as if somebody kept it". Untrimmed-bonsai habits, petrified-wood colours, fairy rings, cacao, lotus.
 - **Fauna in towns**: millipedes (draught), giant beetles (Voth), silt striders, cliff racers, the Dalab lizard, salt-lake flamingos and marsh emus (Locus), riding flyers and spiders. All fauna will go to one fauna kit, tagged by biome.
 

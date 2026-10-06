@@ -3,7 +3,7 @@
 // the Wall every day, and above the cloud a paramo of giant rosettes, bogs and tors, drying to the south-east.
 // THE SPIRAL BIOME (the owner, Oct 2026): every plant here grows in a spiral. Each species shows one of four kinds:
 //   whorl  leaves set round a centre at a fixed angle (137.5 degrees, the golden angle, or near it): the rosettes,
-//          the spiral aloe, the groundsels' cabbages, the frill-tree's crown
+//          the spiral aloe, the groundsels' cabbages, the ruffle-crown, the spiral frill tree's fins
 //   twist  a helix: twisted trunks and limbs, braided blades, a column's ribs turning as they rise
 //   coil   a fiddlehead's curl, wound tight and unrolling: croziers, sundews, corkscrew leaves
 //   shell  a flat logarithmic spiral: the volute tree's scrolls, the escargot begonia's leaf, the lichen rosettes
@@ -34,6 +34,7 @@ const PAL=SHIGH.PAL={
  fernBark:[0x4a3a2e,0x3e3228,0x564436],fern:[0x4e8a3a,0x5a9a40,0x468034,0x62a048],crozier:[0x8aa83a,0x9ab444],
  palmBark:[0x8a7e68,0x7a705c,0x968a72],strap:[0x5a8a5a,0x6a9a66,0x7a9a8a,0x4e7e52],strapOld:[0xa8984a,0x9a8440],palmFruit:[0xe0782a,0xd86a2a],
  frillBark:[0x7a6a58,0x6a5c4c,0x86765e],frillHeart:[0xfff4e8,0xfffcf0],
+ spiralBark:[0x2e4a4a,0x263e42,0x385654],spiralFin:[0x2a7a6a,0x3a8a60,0x1e6a70,0x4a9a5a,0x2a8a80],spiralIrid:[0x3a8ab8,0x4a7ac8,0x3a9aa8,0x5a78c0],spiralBud:[0xf0e8d0,0xe8e0c8],
  groundselSkirt:[0xa89a70,0x9a8a62,0xb8a87e,0x8a7a58],cabbage:[0xb8ccaa,0xc4d4b4,0xb0c4a2],
  lobelia:[0xe8ece8,0xf0f2f0,0xdce4e4],aloe:[0x9cc4b4,0x8cb8a8,0xa8ccb8],cereus:[0x5a8a5a,0x6a9a62,0x4e7e52],
  coral:[0xe0583a,0xe86a4a,0xd04a3a,0xf07a5a],rose:[0xd86a9a,0xe07aa8,0xc85a8a],
@@ -47,7 +48,7 @@ const PAL=SHIGH.PAL={
 
 // ---------------------------------------------------------------- the tree species
 // H height band, rb bole radius, crownR (metres); barkK the bark texture (0 coilbark: wrung, moss-streaked; 1 the trumpet
-// tree's ribbing; 2 the volute's dark rind; 3 tree-fern scars; 4 screw-palm rings; 5 frill-tree bands; 6 the groundsel's
+// tree's ribbing; 2 the volute's dark rind; 3 tree-fern scars; 4 screw-palm rings; 5 the ruffle-crown's bands; 6 the groundsel's
 // skirt of dead leaves); far the impostor recipe (sedesert's: blobs [y of H, rx of crownR, ry of H, colour A, colour B,
 // options]); `spiral` the kind of spiral it shows, `how` the words for it. Bark colours are written a stop DARK.
 const K=(c,a,r,kp,spiral)=>({climate:c,aridity:a,abyssal:false,riparian:r,koppen:kp,spiral});
@@ -67,8 +68,8 @@ SHIGH.SPECIES=[
  /*4*/{key:'screwpine',name:'Screw palm',H:[5,14],rb:[.14,.26],crownR:[2.4,4.2],barkK:4,bark:PAL.palmBark,leaf:PAL.strap,
   how:'its strap leaves rise in three ranks that wind round the stem (a screwpine\'s spiral); stilt roots brace it in the ravines (refs/28)',
   far:{poleU:.75,taper:.25,blobs:[[.9,.8,.14,'L0','L2']]},tags:K('montane','humid','yes',['Cfb','Cwb'],'twist')},
- /*5*/{key:'frill',name:'Whorl frill-tree',alien:true,H:[5,11],rb:[.35,.6],crownR:[3.4,6],barkK:5,bark:PAL.frillBark,leaf:[0x5a8a4a,0x6a9a50],
-  how:'one great rosette of ruffled, coral-edged leaves held up on a trunk, set at the golden angle like an aloe\'s; a high cousin of the drylands\' frill-tree, which bursts in fire: this one never burns',
+ /*5*/{key:'ruffle',name:'Ruffle-crown',alien:true,H:[5,11],rb:[.35,.6],crownR:[3.4,6],barkK:5,bark:PAL.frillBark,leaf:[0x5a8a4a,0x6a9a50],
+  how:'one great rosette of ruffled, coral-edged leaves held up on a trunk, set at the golden angle like an aloe\'s',
   far:{poleU:.85,taper:.3,blobs:[[.94,1.0,.1,0x6a9a50,0xe8704a]]},tags:K('montane','subhumid','no',['Cfb','Cwb','ET'],'whorl')},
  /*6*/{key:'groundsel',name:'Giant groundsel',H:[2.5,8],rb:[.16,.3],crownR:[.9,2.2],barkK:6,bark:PAL.groundselSkirt,leaf:[0x7a946a,0x8aa070],
   how:'a candelabra of shaggy stems, each ending in a cabbage of leaves set at the golden angle; it closes them over its bud at night',
@@ -82,6 +83,9 @@ SHIGH.SPECIES=[
  /*9*/{key:'cereus',name:'Corkscrew cereus',H:[1.5,7],rb:[.22,.45],crownR:[.6,1.6],barkK:5,bark:PAL.cereus,leaf:PAL.cereus,
   how:'columns whose ribs wind round them as they grow, a turn and a quarter to the column (refs/09)',
   far:{poleU:.95,taper:.1,blobs:[]},tags:K('montane','semiarid','no',['BSk','Cwb'],'twist')},
+ /*10*/{key:'frill',name:'Spiral frill tree',alien:true,H:[12,26],rb:[.55,.95],crownR:[2.6,4.4],barkK:1,bark:PAL.spiralBark,leaf:PAL.spiralFin,irid:PAL.spiralIrid,
+  how:'the Rift\'s frill tree in the cloud: a ribbed iridescent column whose ribs wind as it rises, its toothed fins set a golden angle apart up it, so they climb in crossing spirals like a pine cone\'s scales, and a whorl of long fins round a pale bud at the top',
+  far:{poleU:.9,taper:.55,blobs:[[.55,.55,.5,'L0','L2'],[.95,.75,.1,'L1','L3']]},tags:K('montane','humid','both',['Cfb','Cwb'],'whorl')},
 ];
 SHIGH.byKey={};SHIGH.SPECIES.forEach((S,i)=>{S.i=i;SHIGH.byKey[S.key]=S;S.spiral=S.tags.spiral;});
 
@@ -95,7 +99,8 @@ SHIGH.HARVEST={
  volute:HV('timber',['young scroll tips (boiled)'],false,'The tips of the scrolls are cut and boiled like fiddleheads; the old scrolls are left: they are a hundred years in the winding.'),
  crozier:HV('none',['croziers (boiled)','trunk starch (famine)'],true,'The croziers are the season\'s first green food; the hairs are a wound packing.'),
  screwpine:HV('thatch, matting',['fruit (roasted)'],false,'The leaves are plaited into mats, always in the plant\'s own sense of turn.'),
- frill:HV('fuel',['leaf hearts'],false,'Never burns, unlike its lowland cousin: the frills hold water like a sponge.'),
+ ruffle:HV('fuel',['leaf hearts'],false,'The ruffled leaves hold water like a sponge.'),
+ frill:HV('poles',['bud (boiled)'],true,'Kin to the Rift\'s frill tree. The fins are cut for their sap, a bitter tonic; the pale bud is eaten.'),
  groundsel:HV('none',[],true,'The dead-leaf skirts stuff bedding; the pith is a fever bitter.'),
  lobelia:HV('none',['nectar'],true,'The column stands for years before it flowers once and dies.'),
  aloe:HV('none',[],true,'The gel dresses burns and cracked hands; it is never cut against its spiral.'),
@@ -176,6 +181,11 @@ TX.shell=BIO.alphaTex(256,(g,S)=>{const id=g.createImageData(S,S),d=id.data,cx=S
 /* ROSETTE LICHEN: lobes growing out in rings that wind into a spiral */
 TX.lichen=BIO.alphaTex(128,(g,S)=>{const cx=S/2,cy=S/2;for(let i=0;i<260;i++){const t=i/260,a=t*TAU*4.2,r=S*.05+S*.4*t;
  g.fillStyle=G2(lerp(130,235,rng()));g.beginPath();g.arc(cx+Math.cos(a)*r+rr(-3,3),cy+Math.sin(a)*r+rr(-3,3),rr(3,7)*(1-.3*t),0,TAU);g.fill();}},[170,170,170]);
+/* a FRILL FIN (the Rift frill tree's): a rib along +x with dense straight teeth both sides, longest near the base */
+TX.frill=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=G2(90);g.lineWidth=3.4;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y);g.stroke();
+  for(let x=6;x<S-4;x+=3.6){const t=x/S,L=lerp(36,6,Math.pow(t,1.1))*rr(.9,1.06);for(let sd=-1;sd<=1;sd+=2){
+   g.strokeStyle=G2(lerp(120,235,rng()));g.lineWidth=2.2;g.beginPath();g.moveTo(x,y);g.lineTo(x+L*.18,y+sd*L);g.stroke();}}}},[140,140,140]);
 SHIGH.TEX=TX;
 
 // ---------------------------------------------------------------- bark textures
@@ -265,7 +275,7 @@ G.whorl=function(o){const M=Mesh();const n=o.n;
   const cB=o.cB,cM=t>.7&&o.cI?o.cI:o.cM,cT=o.cT;
   M.tri(b0,mk_,b1,cB,cM,cB);M.tri(b0,m0,mk_,cB,cM,cM);M.tri(b1,mk_,m1,cB,cM,cM);M.tri(m0,T,mk_,cM,cT,cM);M.tri(mk_,T,m1,cM,cT,cM);}
  return M.out(true);};
-// the WHORL FRILL leaf: a long blade along +x, its margins ruffled in waves that grow toward the tip (refs/07, 08),
+// the RUFFLE-CROWN leaf: a long blade along +x, its margins ruffled in waves that grow toward the tip (refs/07, 08),
 // vertex-coloured green at the midrib to coral and gold at the frill; unit length
 G.frillLeaf=function(){const M=Mesh(),nu=7,nv=3,P=[];
  for(let i=0;i<=nu;i++){const t=i/nu,row=[],W=.3*Math.sin(Math.PI*Math.min(1,t*.95+.05))*(1-.2*t)+.02;
@@ -386,12 +396,49 @@ SHIGH.MAT={
  vcol:BIO.leafMat(null,'vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'vsway',{swayW:'(position.y)',swayA:.035,alphaTest:0,vertexColors:true}),
  vhang:BIO.leafMat(null,'vhang',{swayW:'(-position.y)',swayA:.06,alphaTest:0,vertexColors:true}),
+ frillfin:BIO.leafMat(TX.frill,'frillfin',{aN:true,irid:true,swayW:'(position.x)',swayA:.07}),
  solid:BIO.solidMat(null,0xffffff),
  rock:BIO.solidMat(SHIGH.ROCKTEX),
 };
 const M=SHIGH.MAT;
-['Coilbark (wrung, moss-streaked)','Spiral-trumpet ribbing','Volute rind','Tree-fern leaf scars','Screw-palm rings','Banded bark','Dead-leaf skirts'].forEach((lab,i)=>
- BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===3?2:3,i===4?2:i===0?5:4]}));
+
+// ---------------------------------------------------------------- the library (materials.json; core/materials/PLAN.md, Southern highlands)
+// When the page carries this kit's pack (KMAT.pack('shigh'): the showcase), the procedural textures give way to the
+// library's: the coilbark's wrung bark, the dead-leaf skirts and the screw palm's rings, the crown and moss cards, the
+// granite. The painters above still ran, so the random stream, and every plant's place and shape, are unchanged. A page
+// without the pack (an open world) keeps the procedural ones; ?mat=proc shows them here.
+const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('shigh',n):null;
+SHIGH.LIB={has:n=>!!LIBP(n)};
+function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
+ t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
+{const use=(k,t,at)=>{if(t){M[k].map=t;M[k].alphaTest=at==null?.4:at;}};
+ // the moss card on the limbs' clumps; the floor's moss mats keep the procedural clusters (the card laid flat read as a square)
+ use('small',libCard('leaf.small'));use('moss',libCard('leaf.moss'),.38);}
+// the barks: bark.wrung keeps half its own colour (its moss), the others are grey detail under the species' vertex colours.
+// The bucket's uvScale becomes the set's tile size (the trunk lathes read it), and means() (55) divides out the pack's
+// brightness instead of the canvas's, so a species' bark colour renders the same on either map
+const LIBBARK=['bark.wrung',null,null,null,'bark.palm',null,'bark.skirt'];
+SHIGH.LIBMEAN={};
+const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;SHIGH.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
+['Coilbark (wrung, moss-streaked)','Spiral-trumpet ribbing','Volute rind','Tree-fern leaf scars','Screw-palm rings','Banded bark','Dead-leaf skirts'].forEach((lab,i)=>{
+ const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L)M.bark[i].map=L.t;
+ BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===3?2:3,i===4?2:i===0?5:4]});});
+// the granite (stone.granite): the boulders and stones
+{const L=libMap('stone.granite','rock');if(L)M.rock.map=L.t;}
+// an iridescent bark (the Rift kit's hook, shared the way biomes/nhighlands shares it): teal facing the eye, violet at
+// grazing angles; the spiral frill tree's column
+BIO.iridBarkMat=BIO.iridBarkMat||function(tex,key,colA,colB){const m=BIO.barkMat(tex);
+ const A=colA||[0.78,1.18,0.92],B=colB||[1.45,0.82,0.74];
+ m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vIWP;varying vec3 vIWN;')
+   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvIWP=(modelMatrix*vec4(transformed,1.0)).xyz;vIWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uWindT;varying vec3 vIWP;varying vec3 vIWN;')
+   .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 V=normalize(cameraPosition-vIWP);vec3 N=normalize(vIWN);float fr=1.0-abs(dot(N,V));'+
+    'float sh=0.5+0.5*sin(dot(vIWP,vec3(0.21,0.37,0.29))+uWindT*0.35);float k=smoothstep(0.12,0.82,fr*0.85+sh*0.3);'+
+    'diffuseColor.rgb*=mix(vec3('+A.map(v=>v.toFixed(3)).join(',')+'),vec3('+B.map(v=>v.toFixed(3)).join(',')+'),k);}');};
+ m.userData.bio={kind:'irid',key:BIO.kitKey(key||'x'),opts:{a:A,b:B}};
+ const ck='bioiridbark|'+BIO.kitKey(key||'x');m.customProgramCacheKey=function(){return ck;};BIO._tickWind();return m;};
+BIO.bucket('barkF',BIO.iridBarkMat(SHIGH.BARKTEX[1],'shigh-frill',[0.80,1.16,1.06],[1.22,0.86,1.30]),{label:'Spiral frill tree column (iridescent)',uvScale:[3,5]});
 BIO.bucket('wood',M.wood,{label:'Fallen wood'});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
@@ -413,7 +460,8 @@ BIO.def('cabbage',G.whorl({n:24,div:GOLD,len:t=>1-.55*t,wid:t=>.36,wid0:.5,el:t=
 BIO.def('cabbagelo',G.whorl({n:8,div:GOLD,len:t=>1-.55*t,wid:t=>.5,wid0:.5,el:t=>mix(.35,1.35,Math.pow(t,1.1)),curl:-.25,cB:[.62,.7,.52],cM:[.6,.74,.52],cI:[.78,.86,.66],cT:[.72,.82,.6]}),M.vsway,{label:'Groundsel cabbages (mid distance)'});
 BIO.def('rosette',G.whorl({n:24,div:GOLD,len:t=>1-.6*t,wid:t=>.18,wid0:.6,el:t=>mix(.2,1.2,t),curl:.2,cB:[.7,.74,.68],cM:[.86,.9,.84],cT:[.95,.97,.92]}),M.vcol,{label:'Silver rosettes and tank bromeliads'});
 BIO.def('rosettelo',G.whorl({n:10,div:GOLD,len:t=>1-.6*t,wid:t=>.28,wid0:.6,el:t=>mix(.2,1.2,t),curl:.2,cB:[.7,.74,.68],cM:[.86,.9,.84],cT:[.95,.97,.92]}),M.vcol,{label:'Silver rosettes and tank bromeliads (mid distance)'});
-BIO.def('frillleaf',G.frillLeaf(),M.vsway,{label:'Whorl frill leaves'});
+BIO.def('frillleaf',G.frillLeaf(),M.vsway,{label:'Ruffle-crown leaves'});
+BIO.def('frillfin',BIO.geo.frond(3),M.frillfin,{attrs:['aN','aC2'],label:'Spiral frill fins'});
 BIO.def('trumpet',G.trumpet(10,18),M.vsway,{label:'Spiral trumpets'});
 BIO.def('trumpetlo',G.trumpet(5,12),M.vsway,{label:'Spiral trumpets (mid distance)'});
 BIO.def('crozier',G.crozier(12,3),M.vsway,{label:'Croziers, sundews and coral coils'});
