@@ -340,6 +340,7 @@ For shell, replace the lighting sentence with "soft even lighting that shows the
 | `shell.abalone` | Polished abalone shell interior, swirling bands of teal, deep blue, green and violet with silver highlights, organic ridged growth pattern. |
 | `shell.conch` | Smooth conch shell surface, polished pale pink to peach with faint cream banding, glossy porcelain-like finish. |
 | `stone.coral` | Coral stone building block, porous pale cream limestone full of fossil coral and small shell fragments, weathered by sea air. |
+| `rubber.tyre` | Worn black rubber of an off-road tyre, the flat of the tread and sidewall: fine moulded rubber grain, faint mould lines and moulded lettering ribs, scuffs, small cuts and pits, fine sand packed into the pores. Tintable. For `kits/motor-vehicles` (every tyre and road wheel; slot `rubber` in its `materials.json`, waiting). |
 
 Pattern sheets use the same template with "a flat, front-on decorative panel" in place of "perfectly flat
 surface", the culture's palette as hex colours, and "the pattern repeats horizontally". Example (Beast Rider

@@ -1,0 +1,17 @@
+{
+ "build": "kits/motor-vehicles",
+ "note": "Detail maps for the vehicles (no UVs: triplanar on each mesh's own position, a per-vertex slot into one 4x2 atlas; krator-vehicles-detail.js). Every family is a grey detail (keep 0, or a little of the rust's and the wood's own colour) that the vehicle's vertex colours colour; tint.mean is divided back out in the shader, so the palettes keep their brightness. Slot order is the atlas order: do not reorder, append. Pack: python3 tools/textures/pack.py kits/motor-vehicles. rubber (slot 9) waits on a generated set, `rubber.tyre` (core/materials/PLAN.md has the prompt; KNOWN_ISSUES.md): optional, so pack.py skips it and the tyres stay plain until it is delivered; then the atlas grows to 4 x 4 by itself.",
+ "size": 256,
+ "slots": ["paint", "paintWorn", "metal", "rust", "corrugated", "canvas", "tarp", "wood", "rubber"],
+ "families": {
+  "paint":      { "lib": "metal.metal003", "scale": [2.0, 2.0], "tint": { "keep": 0.0, "mean": 0.75, "contrast": 0.8 }, "normalScale": 0.35 },
+  "paintWorn":  { "lib": "metal.metal062c", "scale": [1.4, 1.4], "tint": { "keep": 0.0, "mean": 0.72, "contrast": 0.5 }, "normalScale": 0.6 },
+  "metal":      { "lib": "metal.metal038", "scale": [0.8, 0.8], "tint": { "keep": 0.0, "mean": 0.75, "contrast": 1.2 }, "normalScale": 0.5 },
+  "rust":       { "lib": "metal.rusty_metal_04", "scale": [1.5, 1.5], "tint": { "keep": 0.12, "mean": 0.7, "contrast": 0.75 }, "normalScale": 0.7 },
+  "corrugated": { "lib": "metal.worn_corrugated_iron", "scale": [1.2, 1.2], "tint": { "keep": 0.15, "mean": 0.72, "contrast": 1.0 }, "normalScale": 1.0 },
+  "canvas":     { "lib": "cloth.canvas.tent", "scale": [1.2, 1.2], "tint": { "keep": 0.0, "mean": 0.75, "contrast": 1.2 }, "normalScale": 0.8 },
+  "tarp":       { "lib": "cloth.tarp", "scale": [1.6, 1.6], "tint": { "keep": 0.0, "mean": 0.75, "contrast": 1.1 }, "normalScale": 0.8 },
+  "wood":       { "lib": "wood.weathered_brown_planks", "scale": [1.0, 1.0], "tint": { "keep": 0.25, "mean": 0.7, "contrast": 1.0 }, "normalScale": 0.8 },
+  "rubber":     { "lib": "rubber.tyre", "optional": true, "scale": [0.5, 0.5], "tint": { "keep": 0.0, "mean": 0.6, "contrast": 1.0 }, "normalScale": 0.8 }
+ }
+}

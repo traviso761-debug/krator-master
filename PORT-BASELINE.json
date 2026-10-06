@@ -221,8 +221,8 @@
    "sha256": "e5a826dd35a5c4acbd0000d436c93be31a03bd66f5fd888c37da1997bb6804c3"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
-   "bytes": 136663,
-   "sha256": "2f30f8d0f67159d828e2265091a63cc4943c4357822b025153671e4e8b990831"
+   "bytes": 593567,
+   "sha256": "1c82f1dca57644c8a65f82e44cfbead0816276aebe96eb82b5cb3755483349f3"
   },
   "kits/post-apoc/dist/post-apoc.html": {
    "bytes": 959656,
@@ -289,28 +289,28 @@
    "sha256": "6c68b3d3227bd7c7c0d172f449de55e982a1470a76da7031bf3022e0b0a0e33a"
   },
   "settlements/locus/abyss-kit.html": {
-   "bytes": 2306319,
-   "sha256": "88e68d5391af9c893e4380369635912b34606fba6197a02484e7e60124edb621"
+   "bytes": 2509477,
+   "sha256": "65b73e37c93d40f0013e9c538b98761c5626312c7e65c222b19beb58c3115def"
   },
   "settlements/locus/locus-kit.html": {
-   "bytes": 2306307,
-   "sha256": "ee3b5947eeaa296e0c6c082b8f0cd2fe6a57235c53549e3932648a4a8d9a4449"
+   "bytes": 2509465,
+   "sha256": "61822738eb17718d61be799838a81a2a0582766b629eda8c2f2bef7b910febea"
   },
   "settlements/locus/locus-plants.html": {
-   "bytes": 2306292,
-   "sha256": "f5a3068e22488923eeaa6c0f4b7f6300c0f6faa4a1820b4458bac685ce02fad7"
+   "bytes": 2509450,
+   "sha256": "a59d9dc8b15e6e22680098d58725858929da06b033545a505c1d0dae2e94142b"
   },
   "settlements/locus/locus.html": {
-   "bytes": 2306221,
-   "sha256": "c021656b4f690490211ab4d0194e5311f27855704053040814367b8ffc38a206"
+   "bytes": 2509379,
+   "sha256": "0cde02a63116863816d41f9b9cfd272979a39c11405e93b8df1ca0f63da0b16e"
   },
   "settlements/mavs-refuge/mavs-refuge.html": {
    "bytes": 3340377,
    "sha256": "6958cc15647e2be1bd0ef944d3a7a66382ae87caaf49ab0da20d29b2a7b52448"
   },
   "settlements/mungo/dist/mungo.html": {
-   "bytes": 2712798,
-   "sha256": "ff07660609d587295595b4ab37594a01e88f2b0b685a4b15db04f5706f96f7ea"
+   "bytes": 2921720,
+   "sha256": "5e40823d1b348de67a9da876e0aa15cd32a399207f35ef1db6d2312d6bbe8e44"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 783155,

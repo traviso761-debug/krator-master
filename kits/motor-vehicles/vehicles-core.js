@@ -25,7 +25,10 @@
        w, d, h,                            overall box in metres (x across, z along, y up), aerials included
        data: { speed, accel, turnRadius, maxSteer, seats, cargo, mass, fuel, tank, range,
                wheelbase, track, clearance, cageH, drive,
-               wheels: [{ name, x, z, r, w, front, steer, drive }] },     (data, not code: a sim reads it)
+               wheels: [{ name, x, z, r, w, front, steer, drive, lift, steerRatio }] },   (data, not code: a sim reads it)
+                                           lift: hub at r + lift (road wheels on a track belt of thickness lift);
+                                           steerRatio: a steered wheel turns by steer() x this (default 1, - for a rear axle)
+       budget: { tris },                   optional: more than 6 000 triangles (a big vehicle; vehicleBudget())
        variantData: [ {overrides}, ... ],  per variant, merged over data
        lamps: (built, see F.lamp below)
        build(F)                            the body, in the vehicle frame
@@ -47,7 +50,9 @@ const VEHICLE_TERRAIN = ['sand', 'salt flat', 'track', 'road', 'mud', 'rock', 's
    so F.col('paint') resolves against the vehicle's own culture as furniture does */
 const VEHICLE_CULTURES = {};
 function VEHICLE_CULTURE(key, info) {
-  VEHICLE_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '' };
+  VEHICLE_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '',
+    palette: Object.assign({}, info.palette || {}),
+    detail: Object.assign({}, info.detail || {}) };      /* palette key -> detail family (vehicles-detail.js); null: none */
   FPAL[key] = Object.assign(FPAL[key] || {}, info.palette || {});
 }
 
@@ -60,6 +65,13 @@ function VEHICLE(o) {
   o.variantData = o.variantData || [];
   o.data = o.data || {};
   VEHICLES.push(o); VEHICLE_BY_KEY[o.key] = o;
+}
+/* the draw-call and triangle budget verify.py holds a vehicle to: two body meshes plus one per wheel (and one for
+   a tracked vehicle's belts), and
+   6 000 triangles unless the entry declares more (budget: { tris }): a big crawler is one per world, not a fleet */
+function vehicleBudget(A) {
+  const tracked = A.tags && (A.tags.drive === 'tracked' || A.tags.drive === 'half-track');   /* + the belts mesh */
+  return { meshes: 2 + ((A.data && A.data.wheels) || []).length + (tracked ? 1 : 0), tris: (A.budget && A.budget.tris) || 6000 };
 }
 /* the data of one variant: the entry's data with that variant's overrides merged on top (wheels copied) */
 function vehicleData(A, v) {
@@ -84,6 +96,7 @@ const VEHICLE_LAMP_FAMILIES = { lamp: 1, lampTail: 2, lampAmber: 3, lampBlue: 4 
 function vehicleFrame(opt) {
   const F = makeFrame(0, 0, 0, opt);
   F.lamps = [];
+  F.belts = [];
   /* the vehicle frame always sits at the origin, unturned (the host moves the finished group), so local = world here.
      F.rod is replaced by a leaner one: a vehicle is mostly tube, and the catalog's 8-sided rods would spend half the
      triangle budget on it. Sides by radius: under 2 cm 4, under 6 cm 6, else 8; end caps only from 3.5 cm up (a thin
@@ -156,6 +169,90 @@ function vehicleFrame(opt) {
     F.face(x + ux * r * 0.04, y + uy * r * 0.04, z + uz * r * 0.04, ux, uy, uz, r, F.col(lens), fam, 10);
     F.lamps.push({ x: x + ux * r * 0.1, y: y + uy * r * 0.1, z: z + uz * r * 0.1, dx: ux, dy: uy, dz: uz, kind: kind || 'head' });
   };
+  /* a slab from a SIDE PROFILE: pts [[z, y, hx], ...] is a closed polygon in the z-y plane (any winding, may be
+     concave), each vertex with its own half-width hx, extruded to x = +hx and -hx. A cab, a hull, a wedge nose:
+     a narrower hx at the top gives sloped sides. Flat-shaded (each face its own normals). */
+  F.slab = function (pts, color, family) {
+    const n = pts.length, P = [];
+    const tris = THREE.ShapeUtils.triangulateShape(pts.map(function (p) { return new THREE.Vector2(p[0], p[1]); }), []);
+    let area = 0;
+    for (let i = 0; i < n; i++) { const a = pts[i], b = pts[(i + 1) % n]; area += a[0] * b[1] - b[0] * a[1]; }
+    const sg = area >= 0 ? 1 : -1;
+    const V = function (p, s) { return [s * p[2], p[1], p[0]]; };
+    /* push a triangle, flipped if its normal faces away from `want` */
+    const tri = function (a, b, c, want) {
+      const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      if (nx * want[0] + ny * want[1] + nz * want[2] < 0) { const t = b; b = c; c = t; }
+      P.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    };
+    for (const t of tris) for (const s of [1, -1]) tri(V(pts[t[0]], s), V(pts[t[1]], s), V(pts[t[2]], s), [s, 0, 0]);
+    for (let i = 0; i < n; i++) {
+      const a = pts[i], b = pts[(i + 1) % n], du = b[0] - a[0], dv = b[1] - a[1];
+      const want = [0, -du * sg, dv * sg];                  /* the edge's outward normal in (x, y, z) */
+      if (Math.abs(du) + Math.abs(dv) < 1e-9) continue;
+      tri(V(a, 1), V(b, 1), V(b, -1), want); tri(V(a, 1), V(b, -1), V(a, -1), want);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+    g.computeVertexNormals();
+    return _add(new THREE.Mesh(g, mat(color, family)));
+  };
+  /* a tub: a stack of horizontal superellipse sections, bottom to top, [{ y, a, b, n, z }]: half-width a (x),
+     half-length b (z), exponent n (2 an ellipse, 4+ a rounded rectangle), centre offset z (default 0); smooth-shaded
+     sides, flat caps where asked (caps: 'top', 'bottom', 'both'). A rover's bowl, a cupola, a fuel tank on its side. */
+  F.tub = function (secs, segs, color, family, caps) {
+    const S = _seg(segs || 20, 8), pos = [], idx = [];
+    const pt = function (s, i) {
+      const th = i * TAU / S, c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n || 2);
+      return [s.a * Math.sign(c) * Math.pow(Math.abs(c), e), s.y, (s.z || 0) + s.b * Math.sign(sn) * Math.pow(Math.abs(sn), e)];
+    };
+    for (const s of secs) for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
+    for (let j = 0; j + 1 < secs.length; j++) for (let i = 0; i < S; i++) {
+      const a = j * S + i, b = j * S + (i + 1) % S, c = a + S, d = b + S;
+      idx.push(a, c, b, b, c, d);
+    }
+    const capAt = function (s, up) {
+      const base = pos.length / 3;
+      for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
+      pos.push(0, s.y, s.z || 0);
+      const c = base + S;
+      for (let i = 0; i < S; i++) { const a = base + i, b = base + (i + 1) % S; if (up) idx.push(c, b, a); else idx.push(c, a, b); }
+    };
+    const g = new THREE.BufferGeometry();
+    if (caps === 'bottom' || caps === 'both') capAt(secs[0], false);
+    if (caps === 'top' || caps === 'both') capAt(secs[secs.length - 1], true);
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    return _add(new THREE.Mesh(g, mat(color, family)));
+  };
+  /* a track belt round a set of wheels: circles [[z, y, r], ...] in the side plane at x, the belt of width w and
+     thickness t running round their convex hull; shoes every `pitch` metres (each a block, a small gap between).
+     The lowest run sits on y = 0 when the lowest wheels' bottoms are at y = t. The belt is RECORDED, not drawn
+     here (F.belts): the runtime makes every belt of a vehicle one mesh, `belts`, whose shoes roll() runs round
+     the loop (vehicleBeltShoe), the bottom run backward as the vehicle goes forward. */
+  F.track = function (x, w, t, circles, pitch, color, family) {
+    const pts = [];
+    for (const c of circles) for (let i = 0; i < 32; i++) {
+      const a = i * TAU / 32, R = c[2] + t / 2;
+      pts.push([c[0] + Math.cos(a) * R, c[1] + Math.sin(a) * R]);
+    }
+    /* convex hull (monotone chain) of the sampled circles, in (z, y) */
+    pts.sort(function (p, q) { return p[0] - q[0] || p[1] - q[1]; });
+    const cross = function (o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); };
+    const lo = [], hi = [];
+    for (const p of pts) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+    for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (hi.length >= 2 && cross(hi[hi.length - 2], hi[hi.length - 1], p) <= 0) hi.pop(); hi.push(p); }
+    const hull = lo.slice(0, -1).concat(hi.slice(0, -1));
+    /* walk the hull at even steps: one shoe per step, laid along the local tangent */
+    const seg = [], L = [];
+    let tot = 0;
+    for (let i = 0; i < hull.length; i++) { const a = hull[i], b = hull[(i + 1) % hull.length], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); L.push(tot); tot += l; }
+    const n = Math.max(8, Math.round(tot / pitch)), step = tot / n;
+    F.belts.push({ x: x, w: w, t: t, n: n, step: step, tot: tot, seg: seg, L: L, color: color, family: family || '' });
+    return n;
+  };
   /* a wheel of this vehicle built INTO the body (a spare), hub at (x, y, z), axle along (ax, ay, az) */
   F.spareWheel = function (x, y, z, ax, ay, az, W) {
     const g = new THREE.Group(), prev = _target;
@@ -166,6 +263,20 @@ function vehicleFrame(opt) {
     return _add(g);
   };
   return F;
+}
+
+/* a point at arc length s round a recorded belt's loop, in (z, y) */
+function vehicleBeltAt(B, s) {
+  s = ((s % B.tot) + B.tot) % B.tot;
+  let k = 0; while (k + 1 < B.seg.length && B.L[k + 1] <= s) k++;
+  const q = B.seg[k], f = q[2] > 0 ? (s - B.L[k]) / q[2] : 0;
+  return [q[0][0] + (q[1][0] - q[0][0]) * f, q[0][1] + (q[1][1] - q[0][1]) * f];
+}
+/* one shoe at arc length s: centre (z, y) and its tilt (cos, sin) in the side plane, the chord of 0.76 of a step */
+function vehicleBeltShoe(B, s) {
+  const a = vehicleBeltAt(B, s - B.step * 0.38), b = vehicleBeltAt(B, s + B.step * 0.38);
+  const dz = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dz, dy) || 1;
+  return { z: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2, c: dy / l, s: dz / l };
 }
 
 /* ---------------------------------------------------------------- shared wheel builder
