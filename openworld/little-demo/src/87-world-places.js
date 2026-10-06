@@ -1,12 +1,11 @@
 // ================================================================= OPEN WORLD — places: the scale model's settlements, marked where they stand
 // [G data] the list (WORLD_DATA.meta.settlements, from the scale model's settlement layer, and the canyon candidates the
 // extractor found for each ruin); [web] the markers: a pole on the ground at each settlement's map position and a label.
-// Nothing is built here yet. A settlement is placed in the next step from the same record (its x, z, and for a ruin the
-// canyon it is to sit in): PLACES.list is what that step reads.
+// A built one stands here as a tile (88-world-towns.js, data/towns.json); the others keep only their marker.
 var PLACES;LATE.push(()=>{PLACES=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,M=WORLD_DATA.meta;
 // the builds that exist (or are being built) for a settlement in this region
-const BUILT={'Locus':'settlements/locus','Shade':'settlements/shade','Yuni':'settlements/yuni','Veladiga':'kits/ancients (the ruin)','Verge':'(in progress)','Mungo':'(planned)'};
+const BUILT={'Locus':'settlements/locus','Shade':'settlements/shade','Yuni':'settlements/yuni','Veladiga':'kits/ancients (the ruin)','Verge':'settlements/verge','Mungo':'settlements/mungo','Arcbeam':'kits/ancients (arcbeam)'};
 const list=M.settlements.map(s=>({name:s.name,type:s.type,x:s.x,z:s.z,px:s.px,py:s.py,biome:s.biome,build:BUILT[s.name]||null}));
 for(const nm in M.canyon_candidates){const c=M.canyon_candidates[nm][0];if(!c)continue;
  list.push({name:nm+' canyon',type:'canyon candidate',x:c.x,z:c.z,px:WORLD.px(c.x),py:WORLD.py(c.z),biome:'',build:null,

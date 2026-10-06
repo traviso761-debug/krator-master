@@ -93,6 +93,10 @@ async def run(a):
             shots.append(('cam%d' % i, '_api.view(%r,%r,%r,%r,%r)' % (x, z, agl, yaw, pitch)))
         for label, js in shots:
             await pg.evaluate(js)
+            tw = await pg.evaluate('_api.towns ? _api.towns() : null')
+            if tw and (tw['failed'] or tw['loaded']):
+                print('   towns: %d loaded, %d meshes, %.2f M triangles%s' % (tw['loaded'], tw['meshes'], tw['tris'] / 1e6,
+                      ('; FAILED ' + '; '.join(tw['failed'])) if tw['failed'] else ''))
             s = await pg.evaluate('_api.settle(240000)')
             r = await pg.evaluate('_api.render()')
             out = os.path.join(a.out, label + '.png')

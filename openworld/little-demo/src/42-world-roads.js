@@ -29,7 +29,8 @@ Heap.prototype.pop=function(){const k=this.k,v=this.v,top=v[0],tc=k[0],lc=k.pop(
 Object.defineProperty(Heap.prototype,'size',{get(){return this.k.length;}});
 const NB16=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1],[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]];
 // the step's cost per metre for grade g; steep: the fine pass's sharper rise over G (switchbacks)
-const gradeCost=(g,steep)=>{const r=g/G;return steep?1+.6*r*r+(r>1?Math.pow(r-1,2)*40:0):1+r*r+r*r*r*r/8;};
+// (coarse: over 2 G a step is a cliff to the route, worth any detour to a ramp)
+const gradeCost=(g,steep)=>{const r=g/G;return steep?1+.6*r*r+(r>1?Math.pow(r-1,2)*40:0):1+r*r+r*r*r*r/8+(r>2?Math.pow(r-2,4)*20:0);};
 
 // a least-cost search over cells: cellXZ(id) -> [x,z], heightOf(id), wetOf(id), neighbours via (i,j); A* with the
 // straight distance (every step costs at least its length)
@@ -53,7 +54,7 @@ function search(nx,ny,cs,x0,z0,ok,hOf,wOf,a,b,steep){
 let CO=null;
 function coarseGrid(){if(CO)return CO;const B=WORLD.box(),cs=2000,nx=Math.ceil((B[2]-B[0])/cs)+1,ny=Math.ceil((B[3]-B[1])/cs)+1;
  const h=new Float32Array(nx*ny),w=new Uint8Array(nx*ny);
- for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const x=B[0]+i*cs,z=B[1]+j*cs,k=j*nx+i;h[k]=WORLD.Hbare(x,z,4000);w[k]=WORLD.water(x,z)>h[k]+1?1:0;}
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const x=B[0]+i*cs,z=B[1]+j*cs,k=j*nx+i;h[k]=WORLD.Hland(x,z,4000);w[k]=WORLD.water(x,z)>h[k]+1?1:0;}
  CO={B,cs,nx,ny,h,w};return CO;}
 
 function chaikin(P,n){for(let it=0;it<n;it++){if(P.length<3)break;const Q=[P[0]];
@@ -80,7 +81,7 @@ function route(a,b,opts){opts=opts||{};const t0=Date.now();
  for(const p of dense){const ci=Math.round((p[0]-bx0)/cs),cj=Math.round((p[1]-bz0)/cs);
   for(let dj=-rr;dj<=rr;dj++)for(let di=-rr;di<=rr;di++){if(di*di+dj*dj>rr*rr)continue;const i=ci+di,j=cj+dj;if(i>=0&&j>=0&&i<nx&&j<ny)ok[j*nx+i]=1;}}
  const hC=new Map(),wC=new Map();
- const hOf=k=>{let v=hC.get(k);if(v===undefined){const i=k%nx,j=(k-i)/nx,x=bx0+i*cs,z=bz0+j*cs;v=WORLD.Hbare(x,z,300);hC.set(k,v);wC.set(k,WORLD.water(x,z)>v+.5?1:0);}return v;};
+ const hOf=k=>{let v=hC.get(k);if(v===undefined){const i=k%nx,j=(k-i)/nx,x=bx0+i*cs,z=bz0+j*cs;v=WORLD.Hland(x,z,300);hC.set(k,v);wC.set(k,WORLD.water(x,z)>v+.5?1:0);}return v;};
  const wOf=k=>{hOf(k);return wC.get(k);};
  const c2=search(nx,ny,cs,bx0,bz0,k=>ok[k]===1,hOf,wOf,a,b,true);
  if(!c2)return {from:a.name,to:b.name,error:'no fine route'};
@@ -88,22 +89,35 @@ function route(a,b,opts){opts=opts||{};const t0=Date.now();
  let L=chaikin(c2.cells,4);L=trim(L,a,b);L=resample(L,20);
  // 4. the finished height: the land smoothed along the road (Gaussian, sigma 150 m), then held to the grade both ways
  const n=L.length,raw=new Float64Array(n),e=new Float64Array(n);
- for(let i=0;i<n;i++)raw[i]=WORLD.Hbare(L[i][0],L[i][1],60);
+ for(let i=0;i<n;i++)raw[i]=WORLD.Hland(L[i][0],L[i][1],60);
  const sg=7.5,K=Math.ceil(sg*3);
  for(let i=0;i<n;i++){let s=0,w=0;for(let k=-K;k<=K;k++){const j=clamp(i+k,0,n-1),q=Math.exp(-k*k/(2*sg*sg));s+=raw[j]*q;w+=q;}e[i]=s/w;}
- const dmax=G*20;
- for(let it=0;it<60;it++){let ch=0;
-  for(let i=1;i<n;i++){const lo=e[i-1]-dmax,hi=e[i-1]+dmax;if(e[i]<lo){e[i]=lo;ch++;}else if(e[i]>hi){e[i]=hi;ch++;}}
-  for(let i=n-2;i>=0;i--){const lo=e[i+1]-dmax,hi=e[i+1]+dmax;if(e[i]<lo){e[i]=lo;ch++;}else if(e[i]>hi){e[i]=hi;ch++;}}
+ // the road never runs under standing water: over a lake or a river it rides 2 m above the surface (a causeway). That
+ // floor is held inside the grade passes, so the approaches rise to it at the ruling grade (no step at the water)
+ const lb=new Float64Array(n).fill(-1e9),seg=new Float64Array(n);
+ for(let i=0;i<n;i++){const wl=WORLD.water(L[i][0],L[i][1]);if(wl>-1e8)lb[i]=wl+2;if(i)seg[i]=Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1]);}
+ for(let i=0;i<n;i++)if(e[i]<lb[i])e[i]=lb[i];
+ // both ends are pinned to the land there (a town's edge, a waystation), so roads that meet at a town meet at its level
+ e[0]=Math.max(raw[0],lb[0]);e[n-1]=Math.max(raw[n-1],lb[n-1]);
+ for(let it=0;it<200;it++){let ch=0;
+  for(let i=1;i<n-1;i++){const d=G*seg[i],lo=Math.max(e[i-1]-d,lb[i]),hi=e[i-1]+d;if(e[i]<lo-1e-6){e[i]=lo;ch++;}else if(e[i]>hi+1e-6){e[i]=Math.max(hi,lb[i]);ch++;}}
+  for(let i=n-2;i>0;i--){const d=G*seg[i+1],lo=Math.max(e[i+1]-d,lb[i]),hi=e[i+1]+d;if(e[i]<lo-1e-6){e[i]=lo;ch++;}else if(e[i]>hi+1e-6){e[i]=Math.max(hi,lb[i]);ch++;}}
   if(!ch)break;}
- // the road never runs under standing water: over a lake or a river it rides 2 m above the surface (a causeway)
- let climb=0,mg=0,cutMax=0,fillMax=0;
- for(let i=0;i<n;i++){const wl=WORLD.water(L[i][0],L[i][1]);if(wl>-1e8&&e[i]<wl+2)e[i]=wl+2;
-  if(i){const d=e[i]-e[i-1];if(d>0)climb+=d;mg=Math.max(mg,Math.abs(d)/20);}
-  cutMax=Math.max(cutMax,raw[i]-e[i]);fillMax=Math.max(fillMax,e[i]-raw[i]);}
- return {from:a.name,to:b.name,hw:HW,pts:L.map((p,i)=>[Math.round(p[0]*10)/10,Math.round(p[1]*10)/10,Math.round(e[i]*100)/100]),
-  length_m:Math.round((n-1)*20),climb_m:Math.round(climb),maxGrade:Math.round(mg*1000)/1000,cutMax_m:Math.round(cutMax),fillMax_m:Math.round(fillMax),
-  cells:{coarse:c1.cells.length,fine:c2.cells.length,expanded:c2.expanded},ms:Date.now()-t0};}
+ let climb=0,mg=0,cutMax=0,fillMax=0,cutAt=null,fillAt=null;
+ for(let i=0;i<n;i++){if(i){const d=e[i]-e[i-1];if(d>0)climb+=d;if(seg[i]>1)mg=Math.max(mg,Math.abs(d)/seg[i]);}
+  if(raw[i]-e[i]>cutMax){cutMax=raw[i]-e[i];cutAt=L[i];}if(e[i]-raw[i]>fillMax){fillMax=e[i]-raw[i];fillAt=L[i];}}
+ // 5. the stored line: Douglas-Peucker over (x, z, 5e), within 0.25 m across and 5 cm in height, no piece over 200 m
+ const keep=new Uint8Array(n);keep[0]=keep[n-1]=1;const stack=[[0,n-1]];
+ while(stack.length){const [a0,b0]=stack.pop();if(b0-a0<2)continue;const A=L[a0],B=L[b0],ea=e[a0],eb=e[b0];
+  const dx=B[0]-A[0],dz=B[1]-A[1],l2=dx*dx+dz*dz||1;let worst=0,wi=-1;
+  for(let i=a0+1;i<b0;i++){const t=((L[i][0]-A[0])*dx+(L[i][1]-A[1])*dz)/l2,px=A[0]+dx*t-L[i][0],pz=A[1]+dz*t-L[i][1],pe=(ea+(eb-ea)*t-e[i])*5;
+   const d=Math.max(Math.hypot(px,pz),Math.abs(pe));if(d>worst){worst=d;wi=i;}}
+  if(worst>.25||Math.sqrt(l2)>200){const m=wi>0?wi:(a0+b0)>>1;keep[m]=1;stack.push([a0,m],[m,b0]);}}
+ const pts=[];for(let i=0;i<n;i++)if(keep[i])pts.push([Math.round(L[i][0]*10)/10,Math.round(L[i][1]*10)/10,Math.round(e[i]*100)/100]);
+ return {from:a.name,to:b.name,hw:HW,pts,
+  length_m:Math.round(seg.reduce((s,v)=>s+v,0)),climb_m:Math.round(climb),maxGrade:Math.round(mg*1000)/1000,cutMax_m:Math.round(cutMax),fillMax_m:Math.round(fillMax),
+  cutAt:cutAt&&cutAt.map(Math.round),fillAt:fillAt&&fillAt.map(Math.round),
+  cells:{coarse:c1.cells.length,fine:c2.cells.length,expanded:c2.expanded,stored:pts.length,sampled:n},ms:Date.now()-t0};}
 
 function routeAll(pairs,places,opts){const seen=new Set(),out=[],errors=[];
  for(const [a,b] of pairs){const k=[a,b].sort().join('|');if(seen.has(k))continue;seen.add(k);

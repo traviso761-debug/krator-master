@@ -1,8 +1,25 @@
 # Little Demo: known issues
 
-- [ ] **No settlements yet.** They are marked (`PLACES.list`), not built. Next: a footprint carve in `WORLD.H`, a
-      keep-out the flora placement reads (decided from position alone, so tiles stay order-free), and each
-      settlement's content loaded as a tile set (README.md, "Settlements: the next step").
+- [ ] **Settlements and highways are a trial** (README.md, "Settlements and highways"). Open:
+  - [ ] **Two escarpment crossings are badly engineered.** Mungo-Verge comes down the abyss's escarpment about 25 km
+        south of Verge (near 205300, 157400) through a 715 m cut, and the legs of its switchbacks there are close
+        enough for their cut banks to clash: the probe finds 3 stations up to 7 m off the road (its one failing check).
+        Veladiga-Mungo crosses a gorge near 295700, -16200 on an 816 m fill. Both want a viaduct or a route to a
+        gentler ramp (a wider corridor, or the routing told about banks).
+  - [ ] **Mungo's three roads end on a 126 m causeway**: at the scale model's 4 km the world's salt lake covers the
+        whole of Mungo's site, so every approach crosses it. Its town floats on the lake as its build does.
+  - [ ] **No highway meets a town's streets.** A road stops 30 m outside the footprint, on the land at the town's
+        ground level; the town's own highway stubs and gates are not read yet (its `ST` graph has them).
+  - [ ] **Unbuilt places**: Talia, Mantis, Reed, Furrow and Pinnacle Rock have no build: the roads end 150 m short of
+        their markers. Reed may be the reedlake kit's village; nothing in the repo says so.
+  - [ ] **Mungo is baked from its session's uncommitted page** (`source/towns.json` "root": the main checkout).
+  - [ ] **A town's disc shows**: its photographed ground (with that page's lighting baked in) meets the world's ground
+        colours at R; the land's band blends the heights, not the colours.
+  - [ ] **Veladiga's landform meshes** (its own canyon walls and rock plateaux, built for a flat plain) sit in the
+        scale model's canyon as slabs; Arcbeam's plateau and gorge stand on the plain as a butte.
+  - [ ] **What the tiles lose**: custom shaders (the builds' strata, detail and window glows become plain materials),
+        the LOD the builds had (a tile draws whole within 30 km: Yuni is 2.7 M triangles), door animation.
+  - [ ] **The tiles are not committed** (`dist/towns/`, 36 MB): `python3 bake.py towns` writes them from the builds.
 - [ ] **Five overlays have no kit** and are bare ground in their style: e badlands and e highlands (named by the owner
       as biomes to make; `HANDOFF-EBADLANDS.md`), Korona / NE, the Throne, the crater drylands. The Ring Sea is water.
 - [x] **Lakes floating over the abyss.** Fixed in the scale model itself (4.15, `tools/scale-model/edit_heights.py`);

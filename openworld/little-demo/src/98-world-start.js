@@ -39,7 +39,7 @@ function frame(){requestAnimationFrame(frame);
   // the haze thins with height above the ground: thick at the ground (the dust), clear from orbit
   {const agl=Math.max(0,P.y-WORLD.H(P.x,P.z,400));scene.fog.density=1/(90000+agl*12);}
   for(const f of HOST.TICKS)f(dt,now/1000);
-  SKY.follow();WATER.frame();PLACES.update();if(START.frames%8===0)CAM.drawMap();
+  SKY.follow();WATER.frame();PLACES.update();TOWNS_DRAW.update();if(START.frames%8===0)CAM.drawMap();
   renderer.render(scene,camera);}
  catch(e){reportErr('frame: '+(e.stack||e));throw e;}
  fpsN++;if(now-fpsT>1000){fps=fpsN*1000/(now-fpsT);fpsN=0;fpsT=now;hud();}

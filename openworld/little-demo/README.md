@@ -113,15 +113,46 @@ else names a kit. A field it reads its own way goes in its entry's `fields` (the
 The "overlay" switch tints the ground with the scale model's Köppen classes or its biome overlays (each vertex carries
 both colours) and turns the minimap and its legend to the same; the legend lists the classes in the region by area.
 
-## Settlements: the next step
+## Settlements and highways (the trial run, Oct 2026)
 
-`PLACES.list` (from the scale model's settlement layer) holds each settlement's position in world metres and its
-biome; the five the owner named are marked in gold: **Shade** (sedesert plateau), **Verge** (the abyss rim), **Locus**
-(the abyss), **Yuni** (the badlands' edge), **Veladiga** (badlands), with **Veladiga canyon** in blue at the nearest
-trough; **Mungo** (the abyss, planned) is marked the same way. Scale model 4.17 cut a salt basin with a lake just east
-of Verge (the owner's Region 63) and made the escarpment at Verge a cliff, which its design needs. Placing a settlement means: flatten or carve the ground under its footprint (a carve patch in `WORLD.H`,
-`core/terrain`), clear the flora records inside it (a keep-out the placement reads before it accepts a cell, so the
-records stay order-free), and load the settlement's own page content as a tile set. That is not built yet.
+`PLACES.list` (from the scale model's settlement layer) marks every settlement. Six built ones now **stand** in the
+world as tiles baked from their own builds (`source/towns.json`): **Yuni**, **Locus**, **Verge**, **Mungo**,
+**Veladiga** (the breached dam, turned 90 degrees into its canyon candidate) and **Arcbeam** (the living bridge-city).
+Exteriors and streets only: no flora, life, fauna, furniture or interiors.
+
+**A town tile** (`python3 bake.py towns [Name ...]`, `bake/bake_town.js`): the town's build page is opened headless
+and its scene cut out: the kit's buckets and merged families, the Ancients sites' meshes, named kit items, water
+surfaces, all clipped to the footprint (R round its centre); left out by tag are the biome flora, the 'leafy' and
+'bark' families, figures, life and fauna, interiors, furniture, the build's own highways and terrain mesh. Its ground
+is the build's `terrainH` on a 4 m grid with the terrain photographed from straight above (its own shader: streets,
+plazas, fields), or the build's own ground mesh (Verge, vertex-coloured), or nothing (an Ancients site brings its
+landform as meshes). Geometry is quantised (Int16 positions and uvs, Uint8 colours), instances keep their matrices,
+the file is gzip: `dist/towns/<name>.ktile`, 1 to 14 MB. `88-world-towns.js` fetches a tile when the camera comes
+within 30 km and frees it beyond 38.
+
+**The land under a town** (`WORLD.H`, `data/towns.json`): inside R the land is the town's own ground (3 m under the
+tile's ground mesh, which covers it), easing back to the land over a band (400 m; Verge 2.5 km, its 934 m drop being
+less than the scale model's). The town is lifted so its ground meets the land at its centre or a named anchor (Verge:
+its plateau), or set on the lake's surface (Mungo floats on its salt lake). No flora or ground cover inside R + 60 m.
+
+**Highways** (`source/highways.json`, the owner's list; `python3 bake.py roads`, `src/42-world-roads.js`): each pair
+routed once, by least cost over the land with the towns' ground in it: a 2 km pass over the whole region (a step's
+cost rises with the fourth power of its grade, and a cliff's far more, so the route hunts for ramps), then a 200 m
+pass in a 6 km corridor where the grade's cost rises steeply past 8 % (so a slope too steep zigzags). The line is
+smoothed, stopped 30 m outside each town's footprint (150 m short of an unbuilt settlement's marker), given a finished
+height (the land smoothed, held to 8 % both ways, both ends pinned to the land, 2 m over any water) and simplified
+(Douglas-Peucker, 0.25 m across, 5 cm in height) into `data/roads.json`. `WORLD.H` holds the ground between two
+envelopes round every road (a cut bank no steeper than 0.8 m a metre above it, a fill bank below), so the 8 m
+carriageway is level and exact; the terrain draws its packed gravel from a per-vertex coverage prefiltered for the
+chunk's spacing (a far road is a faint band, not lost); flora and ground cover keep off it. Rebake the roads after a
+town moves: `python3 bake.py roads`.
+
+The probe checks that each road lies on the land within 0.3 m and keeps its grade (junctions, within 12 m of another
+road, are counted apart), and that nothing grows on a road or in a town, each with a negative control.
+
+**Publishing with the towns**: the Artifact service serves no binary type, so `python3 publish.py <dir>` stages the
+page with each tile as base64 text in parts under 15 MB (`towns/<name>.ktile.<i>.txt`); `88-world-towns.js` fetches
+the plain tile first and falls back to the parts. Publish the staged page with its `towns/*.txt` as supporting files.
 
 ## Controls
 

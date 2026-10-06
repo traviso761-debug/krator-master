@@ -37,7 +37,7 @@ KITS = {
     'sedesert': ['50-biome-sedesert-species.js', '55-biome-sedesert-trees.js', '60-biome-sedesert-floor.js',
                  '70-biome-sedesert.js', '75-biome-sedesert-fauna.js'],
     'eastabyss': ['50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
-                  '70-biome-eastabyss.js'],
+                  '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js'],
     'hyperjungle': ['50-biome-hyperjungle-species.js', '55-biome-hyperjungle-trees.js', '60-biome-hyperjungle-floor.js',
                     '70-biome-hyperjungle.js'],
 }
@@ -52,7 +52,7 @@ ORDER = (
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('biomes/%s/src' % k, f) for k, fs in KITS.items() for f in fs]
     + [('src', f) for f in ('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '84-world-nursery.js',
-                            '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '90-world-camera.js',
+                            '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '90-world-camera.js',
                             '91-world-probe.js', '98-world-start.js', '99-tail.html')]
 )
 # names a biome fragment must not use (a host engine's kit): the same list every kit's build.py checks
@@ -98,6 +98,12 @@ def main():
         out.append(s)
     if bad:
         sys.exit('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  ' + '\n  '.join(bad))
+    # a kit's registry closes with BIO.kitEnd in its LAST fragment: if a kit moves it to a new fragment (eastabyss's
+    # fauna, Oct 2026) and the list here misses that fragment, every later kit's items land in its registry
+    for k, fs in KITS.items():
+        last = open(os.path.join(ROOT, 'biomes', k, 'src', fs[-1]), encoding='utf8').read()
+        if not re.search(r'^[^/\n]*BIO\.kitEnd\(', last, re.M):
+            sys.exit('KIT %s: its last listed fragment (%s) does not call BIO.kitEnd: list the fragment that does' % (k, fs[-1]))
     html = ''.join(out)
     os.makedirs(DIST, exist_ok=True)
     dst = os.path.join(DIST, OUT)

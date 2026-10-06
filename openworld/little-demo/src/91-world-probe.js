@@ -36,6 +36,27 @@ function rivers(waterF){waterF=waterF||WORLD.water;const R=WORLD_DATA.meta.river
   n++;let ok=false;for(let s=-500;s<=500&&!ok;s+=8){const px=x+nx*s,pz=z+nz*s;if(waterF(px,pz)>WORLD.H(px,pz)+.5)ok=true;}
   if(ok)wet++;else first=first||[Math.round(x),Math.round(z)];}
  return{ok:R.length>0&&wet===n,detail:R.length+' rivers, '+n+' stations, '+wet+' with water in the channel'+(first?' (first dry at '+first+')':'')};}
+// highways: the ground under each road's centre line is the road's finished height (within 0.3 m) and no step of the
+// line is steeper than the ruling grade (+ 0.5 % for the rounding); eF: the road's height as the check reads it
+// A station within 12 m of another road is a junction (two carriageways share the ground there): counted, not judged
+function highways(eF){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],G=(WORLD_DATA.roads&&WORLD_DATA.roads.grade)||.08;eF=eF||(p=>p[2]);
+ const C=256,B=new Map();
+ R.forEach((r,ri)=>{for(let i=0;i<r.pts.length-1;i++){const a=r.pts[i],b=r.pts[i+1];
+  for(let j=Math.floor((Math.min(a[1],b[1])-12)/C);j<=Math.floor((Math.max(a[1],b[1])+12)/C);j++)for(let k=Math.floor((Math.min(a[0],b[0])-12)/C);k<=Math.floor((Math.max(a[0],b[0])+12)/C);k++){
+   const key=k*100003+j;let L=B.get(key);if(!L){L=[];B.set(key,L);}L.push([ri,a,b]);}}});
+ const nearOther=(ri,x,z)=>{const L=B.get(Math.floor(x/C)*100003+Math.floor(z/C));if(!L)return false;
+  for(const [rj,a,b] of L){if(rj===ri)continue;const dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1;let t=((x-a[0])*dx+(z-a[1])*dz)/l2;t=t<0?0:t>1?1:t;
+   if(Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z)<12)return true;}return false;};
+ let n=0,off=0,steep=0,worst=0,at=null,mg=0,junc=0;
+ for(let ri=0;ri<R.length;ri++){const r=R[ri];for(let i=0;i<r.pts.length;i+=5){const p=r.pts[i];
+  if(nearOther(ri,p[0],p[1])){junc++;continue;}
+  const h=WORLD.H(p[0],p[1]),d=Math.abs(h-eF(p));n++;if(d>worst){worst=d;at=[Math.round(p[0]),Math.round(p[1])];}if(d>.3)off++;
+  if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}}}
+ return{ok:R.length>0&&off===0&&steep===0,detail:R.length+' roads, '+n+' stations (+'+junc+' at junctions); '+off+' off the ground by over 0.3 m (worst '+worst.toFixed(2)+' m at '+JSON.stringify(at)+'), '+steep+' steeper than '+(G*100)+' % (steepest '+(mg*100).toFixed(1)+' %)'};}
+// nothing grows on a carriageway or on a town's ground
+function clearOf(recs){let road=0,town=0,first=null;
+ for(const r of recs){if(WORLD.roadD(r.x,r.z)<.5){road++;first=first||r;}if(WORLD.townW(r.x,r.z)>0){town++;first=first||r;}}
+ return{ok:road===0&&town===0&&recs.length>0,detail:recs.length+' records; '+road+' on a road, '+town+' in a town'+(first?' (first '+Math.round(first.x)+','+Math.round(first.z)+')':'')};}
 const allRecs=()=>{const o=[];for(const t of FLORA.tiles.values())for(const r of t.recs)o.push(r);return o;};
 // lines across the region: through each built settlement, and the box's two diagonals' middle 200 km
 function lines(){const L=[];for(const p of PLACES.list.filter(p=>p.build||p.cand))L.push([p.x-3000,p.z-1700,p.x+3000,p.z+1700]);L.push([-100000,-100000,100000,100000],[-90000,80000,90000,-80000]);return L;}
@@ -51,6 +72,8 @@ function hostChecks(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z
   out.push(Object.assign({name:'trees keep their spacing, across tile edges'},spaced(T)));}
  let nan=0;for(const m of TERRAIN.meshes()){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){nan++;break;}}
  out.push(Object.assign({name:'the named rivers carry water to their mouths'},rivers()));
+ out.push(Object.assign({name:'the highways lie on the land and keep their grade'},highways()));
+ out.push(Object.assign({name:'nothing grows on a highway or in a town'},clearOf(allRecs())));
  out.push({name:'no NaN in the drawn terrain',ok:nan===0&&TERRAIN.meshes().length>0,detail:TERRAIN.meshes().length+' chunks drawn, '+nan+' with NaN'});
  return out;}
 function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,P.z);
@@ -64,6 +87,10 @@ function hostNegatives(){const out=[],P=HOST.camera.position,[tx,tz]=tileOf(P.x,
  {const T=FLORA.buildTile(tx,tz).slice(0,40);if(T.length){const a=T[0];T.push(Object.assign({},a,{x:a.x+.5,Ht:a.Ht-1}));}
   out.push(Object.assign({name:'negative: a tree put at the foot of another'},spaced(T)));}
  out.push(Object.assign({name:'negative: a river with its water taken away'},rivers((x,z)=>-1e9)));
+ out.push(Object.assign({name:'negative: a highway read 2 m high, rising 1 m a step'},highways(p=>p[2]+2+(Math.round(p[0])%2?1:0))));
+ {const r=((WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[])[0],T=WORLD.towns&&WORLD.towns[0],F=allRecs().slice(0,20),o=F[0]||{k:0,sp:0,x:0,y:0,z:0,Ht:5};
+  if(r)F.push(Object.assign({},o,{x:r.pts[0][0],z:r.pts[0][1]}));if(T)F.push(Object.assign({},o,{x:T.x,z:T.z}));
+  out.push(Object.assign({name:'negative: a tree put on a highway and one in a town'},clearOf(F)));}
  const L0=lines()[0],xs=(L0[0]+L0[2])/2;   // the step crosses the first test line at its middle
  out.push(Object.assign({name:'negative: a 3 m step put in the land'},continuity(lines(),(x,z)=>WORLD.H(x,z)+(x>xs?3:0))));
  return out;}
@@ -71,6 +98,8 @@ return{ready:()=>START.ready,hostChecks,hostNegatives,
  stats:()=>({terrain:TERRAIN.stats,flora:FLORA.stats,floor:FLOOR.stats,nursery:Object.assign({},NURSERY.stats,{queued:NURSERY.queued()}),
   render:{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles},channels:WORLD.channelCount}),
  views:()=>CAM.GO.map((g,i)=>i+': '+g.label),
+ // the towns near the camera, loaded (a promise: verify.py awaits it before a screenshot)
+ towns:()=>TOWNS_DRAW.ready().then(()=>Object.assign({},TOWNS_DRAW.stats)),
  go:i=>{CAM.GO[i].fn();},
  view:(x,z,agl,yaw,pitch)=>CAM.setView(x,z,agl,yaw,pitch),
  // draw one frame now (a screenshot after settle): the sky, the labels, the map, then the scene

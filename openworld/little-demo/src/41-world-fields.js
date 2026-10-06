@@ -201,11 +201,13 @@ function scarpOf(v,o){const rise=o.U-o.L,t=clamp((v-o.L)/rise,0,1),ts=smooth(o.c
 // ---------------------------------------------------------------- the roads: highways between the settlements
 // WORLD_DATA.roads (data/roads.json, routed by 42-world-roads.js and baked by bake.py): each road a centre line every
 // ~20 m with its finished height (the grade held to 8 %, so it cuts and fills), and a half-width. Near a road the
-// ground is brought to the road's height: level across the carriageway and a shoulder, then easing back to the land
-// over a bank that widens with the cut or the fill (1:1.5, at most RREACH). Every road segment near a point is weighted
-// in (a junction, a bend), so the ground stays continuous. A settlement's own ground is its build's: a road stops at
-// the settlement's edge (the routing trims it there).
-const RDC=1024,RREACH=150;let RSEG=null,RHASH=null;const RD={w:0,d:1e9,hw:0,e:0};
+// ground is held between two envelopes: above a road the land may rise no faster than its bank (BANK m a metre from
+// the shoulder's edge: a cut), below it fall no faster (a fill); on the carriageway and its shoulder both are the road's
+// height, so the ground is exactly it. Every segment near a point bounds it (the lowest cut, the highest fill), so the
+// legs of a switchback and the roads at a junction each keep their level unless their banks truly clash (then the
+// middle). Min and max of continuous bounds stay continuous; the bounds fade out between RREACH-20 and RREACH. A
+// settlement's own ground is its build's: a road stops just outside the settlement's footprint (the routing trims it).
+const RDC=1024,RREACH=150,BANK=.8;let RSEG=null,RHASH=null;const RD={w:0,d:1e9,hw:0,e:0,lo:0,hi:0};
 function buildRoads(){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],S=[];
  for(const r of R){const P=r.pts;for(let i=0;i<P.length-1;i++)S.push(P[i][0],P[i][1],P[i+1][0],P[i+1][1],P[i][2],P[i+1][2],r.hw);}
  RSEG=new Float64Array(S);RHASH=new Map();const n=RSEG.length/7;
@@ -213,19 +215,18 @@ function buildRoads(){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],S=[
   for(let iz=Math.floor(z0/RDC);iz<=Math.floor(z1/RDC);iz++)for(let ix=Math.floor(x0/RDC);ix<=Math.floor(x1/RDC);ix++){const k=(ix+32768)*65536+(iz+32768);
    let a=RHASH.get(k);if(!a){a=[];RHASH.set(k,a);}a.push(s);}}
  W.roadCount=R.length;W.roadSegments=n;}
-// the road's pull on the ground at (x,z) over ground h: fills RD {w: 0..1 the weight, e: the road's height, d and hw
-// of the nearest segment}
-function roadAt(x,z,h,o){o.w=0;o.d=1e9;o.hw=0;o.e=h;if(!RHASH)return o;
+// the roads' bounds at (x,z): fills RD {lo, hi: the envelopes, w: how much they apply (0 beyond reach), d, hw and e of
+// the nearest segment}. bound(h) is the ground h held between them
+function roadAt(x,z,h,o){o.w=0;o.d=1e9;o.hw=0;o.e=h;o.lo=-1e9;o.hi=1e9;if(!RHASH)return o;
  const L=RHASH.get((Math.floor(x/RDC)+32768)*65536+(Math.floor(z/RDC)+32768));if(!L)return o;
- let Wt=0,E=0;
  for(let i=0;i<L.length;i++){const s=L[i]*7,ax=RSEG[s],az=RSEG[s+1],dx=RSEG[s+2]-ax,dz=RSEG[s+3]-az,l2=dx*dx+dz*dz;
   let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;const ex=ax+dx*t-x,ez=az+dz*t-z,d=Math.sqrt(ex*ex+ez*ez);
-  if(d>RREACH)continue;const hw=RSEG[s+6],e=lerp(RSEG[s+4],RSEG[s+5],t);
-  if(d<o.d){o.d=d;o.hw=hw;}
-  const inner=hw+1.5,outer=Math.min(RREACH,inner+2+Math.abs(h-e)*1.5),w=d<=inner?1:1-smooth(inner,outer,d);
-  if(w>0){Wt+=w;E+=w*e;}}
- if(Wt>0){o.e=E/Wt;o.w=Math.min(1,Wt);}
+  if(d>RREACH)continue;const hw=RSEG[s+6],e=lerp(RSEG[s+4],RSEG[s+5],t),b=Math.max(0,d-hw-1.5)*BANK;
+  if(d<o.d){o.d=d;o.hw=hw;o.e=e;}
+  if(e+b<o.hi)o.hi=e+b;if(e-b>o.lo)o.lo=e-b;}
+ if(o.d<1e9)o.w=1-smooth(RREACH-20,RREACH,o.d);
  return o;}
+function bound(h,o){const c=o.lo>o.hi?(o.lo+o.hi)/2:h<o.lo?o.lo:h>o.hi?o.hi:h;return lerp(h,c,o.w);}
 // the distance (m) from (x,z) to the nearest road's edge (1e9 with none near): what the flora and the floor keep off
 W.roadD=(x,z)=>{roadAt(x,z,0,RD);return RD.d<1e9?RD.d-RD.hw:1e9;};
 W.road=(x,z)=>{const h=H(x,z,0,null,true);roadAt(x,z,h,RD);return RD.d<1e9?{d:RD.d,hw:RD.hw,w:RD.w,e:RD.e}:null;};
@@ -237,7 +238,7 @@ W.roadCover=(x,z,sp)=>{if(!RHASH)return 0;roadAt(x,z,0,RD);if(RD.d>RREACH)return
 // ---------------------------------------------------------------- the towns: a built settlement's own ground
 // WORLD_DATA.towns (data/towns.json, written by bake.py from each settlement's build): where each town stands (x, z),
 // its turn (rot, radians: world = turn(local - centre) + (x, z)), its footprint radius R and a blend band, and its own
-// ground: a height grid in its local frame ('grid': the build's terrainH every step m, as Int16 cm round h0) or flat
+// ground: a height grid in its local frame ('grid': the build's terrainH every step m, as Int16 steps of s m round h0) or flat
 // at its local 0 (an Ancients site, whose landform is its own meshes). y0 lifts the town's local heights onto the land:
 // the land's height at the town's centre less the town's own ground there, found once at init.
 // Inside R the land takes the town's ground: 3 m under it where the town draws its own ground mesh (the tile covers
@@ -245,15 +246,20 @@ W.roadCover=(x,z,sp)=>{if(!RHASH)return 0;roadAt(x,z,0,RD);if(RD.d>RREACH)return
 let TOWNS=[];
 function townGround(t,lx,lz){const g=t.grid;if(!g)return 0;
  const u=clamp((lx-g.x0)/g.step,0,g.n-1.0001),v=clamp((lz-g.z0)/g.step,0,g.n-1.0001),i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*g.n+i,A=g.h;
- return g.h0+((A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+g.n]*(1-fu)+A[o+g.n+1]*fu)*fv)/100;}
+ return g.h0+((A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+g.n]*(1-fu)+A[o+g.n+1]*fu)*fv)*g.s;}
 function townLocal(t,x,z){const dx=x-t.x,dz=z-t.z,c=Math.cos(t.rot),s=Math.sin(t.rot);
  return [t.cx+dx*c-dz*s,t.cz+dx*s+dz*c];}   // the inverse of world = Ry(rot)(local - centre) + (x, z) (three.js's rotation.y)
 function buildTowns(){const D=(WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[];
  TOWNS=D.map(t=>{const o={name:t.name,x:t.x,z:t.z,rot:t.rot||0,cx:t.centre?t.centre[0]:0,cz:t.centre?t.centre[1]:0,R:t.R,band:t.band||400,
   own:!!t.grid,grid:null,y0:0};
   if(t.grid){const b=atob(t.grid.h),a=new Int16Array(b.length/2);for(let i=0;i<a.length;i++)a[i]=(b.charCodeAt(2*i)|b.charCodeAt(2*i+1)<<8)<<16>>16;
-   o.grid={n:t.grid.n,step:t.grid.step,x0:t.grid.x0,z0:t.grid.z0,h0:t.grid.h0,h:a};}
-  o.y0=H(o.x,o.z,0,null,true,true)-townGround(o,o.cx,o.cz);if(t.y0!=null)o.y0=t.y0;   // a fixed lift, where the bake set one
+   o.grid={n:t.grid.n,step:t.grid.step,x0:t.grid.x0,z0:t.grid.z0,h0:t.grid.h0,s:t.grid.s||.01,h:a};}
+  // the lift: the land's height at the anchor (the town's centre unless the bake names a point of its frame) less the
+  // town's own ground there
+  const A=t.anchor||[o.cx,o.cz],c=Math.cos(o.rot),s=Math.sin(o.rot),ax=o.x+(A[0]-o.cx)*c+(A[1]-o.cz)*s,az=o.z-(A[0]-o.cx)*s+(A[1]-o.cz)*c;
+  o.y0=H(ax,az,0,null,true,true)-townGround(o,A[0],A[1]);
+  if(t.onWater){const wl=W.lakeWater(o.x,o.z);if(wl>-1e8)o.y0=wl;}   // a town on its water: its local 0 on the lake's surface
+  if(t.y0!=null)o.y0=t.y0;   // a fixed lift, where the bake set one
   return o;});
  W.towns=TOWNS;}
 // the town's pull at (x,z): returns the town or null, and fills TW {w, h}: w 1 inside R easing to 0 at R+band
@@ -291,13 +297,16 @@ function H(x,z,minWave,P,nr,nt){minWave=minWave||0;
  if(minWave<400){carveAt(x,z,h,S.wallK,CH,SC);h-=CH.k;cd=CH.d;cut=CH.cut;cw=CH.hw;co=CH.co;}
  if(minWave<13)h+=(N5.vn(x/13,z/13)-.5)*1.1+(N5.vn(x/3.1+50,z/3.1)-.5)*.3;
  // the roads, last: the carriageway is level at the road's height whatever the detail did
- let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=lerp(h,RD.e,RD.w);rw=RD.d<=RD.hw+1.5?1:0;}}
- // a town's own ground over all of it: inside its footprint the land is the town's
- if(!nt&&TOWNS.length){townAt(x,z);if(TW.w>0){h=lerp(h,TW.h,TW.w);if(TW.w>=1)rw=0;}}
+ // a town's own ground: inside its footprint the land is the town's, easing back over its band
+ if(!nt&&TOWNS.length){townAt(x,z);if(TW.w>0)h=lerp(h,TW.h,TW.w);}
+ // the roads, last: the carriageway is level at the road's height whatever the detail did (a road stops outside a
+ // town's footprint, and was routed over the land with the towns in it, so it meets the town's ground at its edge)
+ let rw=0;if(!nr&&RHASH){roadAt(x,z,h,RD);if(RD.w>0){h=bound(h,RD);rw=RD.d<=RD.hw+1.5?1:0;}}
  if(P){P.base=b;P.rel=rel;P.cd=cd;P.cut=cut;P.cw=cw;P.co=co;P.road=rw;SKEYS.forEach(k=>P[k]=S[k]);}
  return h;}
 W.H=(x,z,minWave)=>H(x,z,minWave||0,null);
-W.Hbare=(x,z,minWave)=>H(x,z,minWave||0,null,true,true);   // without the roads: what the routing reads
+W.Hbare=(x,z,minWave)=>H(x,z,minWave||0,null,true,true);   // the land alone: no roads, no towns
+W.Hland=(x,z,minWave)=>H(x,z,minWave||0,null,true,false);  // the land with the towns' ground, no roads: what the routing reads
 W.baseH=baseH;
 
 // ---------------------------------------------------------------- the water: the sea and the lakes from the scale model, and its named rivers

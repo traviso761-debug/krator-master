@@ -16,8 +16,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 5 |  |
-| `41-world-fields.js` | 31 **big** | the styles: how each biome's land is shaped (35); the rasters (66); sampling (91); the drainage network (133); the escarpments: cliffs at 1:1 (189); the roads: highways between the settlements (201); the towns: a built settlement's own ground (237); the height (271); the water: the sea and the lakes from the scale  (303); the whole sample (315) |
-| `42-world-roads.js` | 9 |  |
+| `41-world-fields.js` | 32 **big** | the styles: how each biome's land is shaped (35); the rasters (66); sampling (91); the drainage network (133); the escarpments: cliffs at 1:1 (189); the roads: highways between the settlements (201); the towns: a built settlement's own ground (238); the height (277); the water: the sea and the lakes from the scale  (312); the whole sample (324) |
+| `42-world-roads.js` | 10 |  |
 | `45-world-host.js` | 4 | the field sources (32) |
 | `47-world-kits.js` | 4 |  |
 | `80-world-sky.js` | 9 |  |
@@ -27,7 +27,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `85-world-flora.js` | 13 | the kits' pass tables, as data (47-world-kits.js (23); a tile's field grid (34); placing one tile: records (48); residency (98); drawing: pools of instances per prototype (113) |
 | `86-world-floor.js` | 6 |  |
 | `87-world-places.js` | 3 |  |
+| `88-world-towns.js` | 9 |  |
 | `90-world-camera.js` | 13 | picking the ground (58); the polygon tool (75); go to (81); the minimap (97) |
-| `91-world-probe.js` | 9 |  |
+| `91-world-probe.js` | 12 |  |
 | `98-world-start.js` | 5 |  |
 | `99-tail.html` | <1 |  |
