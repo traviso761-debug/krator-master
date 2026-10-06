@@ -1,24 +1,312 @@
 {
  "build": "jimjam",
- "note": "Jimjam's adapter onto the material library (core/materials/PLAN.md). Families are JMAT keys (src/60-jj-mat.js). Jimjam paints in full colour with a white instance tint, so every set keeps its own colour and brightness (tint.keep 1, mean null). scale is world metres per tile [width, height]: the bricks are sized so a stretcher reads about 0.24 m long (the library bricks are chunkier than the procedural 0.24 x 0.08 m ones, so courses read about 0.12 m); the marble keeps the procedural 2.4 m tile (1.2 x 0.6 m blocks), the plaster 4 m. The domes, the sunray and the shaft panels map over their mesh UVs, so their scale is nominal (the dome repeats are in 60-jj-mat.js). Run python3 tools/textures/pack.py settlements/jimjam after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "note": "Jimjam's adapter onto the material library (core/materials/PLAN.md). Families are JMAT keys (src/60-jj-mat.js). Jimjam paints in full colour with a white instance tint, so every set keeps its own colour and brightness (tint.keep 1, mean null). scale is world metres per tile [width, height]: the bricks are sized so a stretcher reads about 0.24 m long (the library bricks are chunkier than the procedural 0.24 x 0.08 m ones, so courses read about 0.12 m); the marble keeps the procedural 2.4 m tile (1.2 x 0.6 m blocks), the plaster 4 m. The domes, the sunray and the shaft panels map over their mesh UVs, so their scale is nominal (the dome repeats are in 60-jj-mat.js). Run python3 tools/textures/pack.py settlements/jimjam after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white, rust, verdigris, concrete) takes library sets too (KMAT.bindMat at the end of 60-jj-mat.js); MAT.brick shares the brick row. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it.",
  "size": 512,
  "families": {
-  "brick":          { "lib": "brick.red",             "scale": [2.0, 2.02], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "brickYellow":    { "lib": "brick.ochre",           "scale": [2.1, 2.07], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "brickDeep":      { "lib": "brick.oxblood",         "scale": [1.3, 1.09], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "brickDark":      { "lib": "brick.dark",            "scale": [1.7, 1.7],  "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "bandBrick":      { "lib": "brick.red.band",        "scale": [2.1, 1.71], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "marble":         { "lib": "stone.marble.ashlar",   "scale": [2.4, 2.4],  "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.6 },
-  "ochre":          { "lib": "plaster.ochre",         "scale": [4.0, 4.0],  "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.6 },
-  "domeTerracotta": { "lib": "roof.scale.terracotta", "scale": [1.5, 1.62], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "domeSlate":      { "lib": "roof.scale.slate",      "scale": [1.5, 1.61], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "domeGold":       { "lib": "roof.scale.gilt",       "scale": [1.5, 1.63], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "sunray":         { "lib": "patterns/common/medallion-sunray", "scale": [6, 6], "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.5 },
-  "shaft_spiral":   { "lib": "patterns/jimjam/shaft-spiral",  "scale": [1, 1.18], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "shaft_chevron":  { "lib": "patterns/jimjam/shaft-chevron", "scale": [1, 1.09], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "shaft_diamond":  { "lib": "patterns/jimjam/shaft-diamond", "scale": [1, 1.02], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "shaft_ogee":     { "lib": "patterns/jimjam/shaft-ogee",    "scale": [1, 1.08], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "shaft_fleur":    { "lib": "patterns/jimjam/shaft-fleur",   "scale": [1, 0.98], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 },
-  "shaft_tracery":  { "lib": "patterns/jimjam/shaft-tracery", "scale": [1, 0.85], "size": 256, "tint": { "keep": 1.0, "mean": null }, "normalScale": 0.8 }
+  "brick": {
+   "lib": "brick.red",
+   "scale": [
+    2.0,
+    2.02
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "brickYellow": {
+   "lib": "brick.ochre",
+   "scale": [
+    2.1,
+    2.07
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "brickDeep": {
+   "lib": "brick.oxblood",
+   "scale": [
+    1.3,
+    1.09
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "brickDark": {
+   "lib": "brick.dark",
+   "scale": [
+    1.7,
+    1.7
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "bandBrick": {
+   "lib": "brick.red.band",
+   "scale": [
+    2.1,
+    1.71
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "marble": {
+   "lib": "stone.marble.ashlar",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.6
+  },
+  "ochre": {
+   "lib": "plaster.ochre",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.6
+  },
+  "domeTerracotta": {
+   "lib": "roof.scale.terracotta",
+   "scale": [
+    1.5,
+    1.62
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "domeSlate": {
+   "lib": "roof.scale.slate",
+   "scale": [
+    1.5,
+    1.61
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "domeGold": {
+   "lib": "roof.scale.gilt",
+   "scale": [
+    1.5,
+    1.63
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "sunray": {
+   "lib": "patterns/common/medallion-sunray",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.5
+  },
+  "shaft_spiral": {
+   "lib": "patterns/jimjam/shaft-spiral",
+   "scale": [
+    1,
+    1.18
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "shaft_chevron": {
+   "lib": "patterns/jimjam/shaft-chevron",
+   "scale": [
+    1,
+    1.09
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "shaft_diamond": {
+   "lib": "patterns/jimjam/shaft-diamond",
+   "scale": [
+    1,
+    1.02
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "shaft_ogee": {
+   "lib": "patterns/jimjam/shaft-ogee",
+   "scale": [
+    1,
+    1.08
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "shaft_fleur": {
+   "lib": "patterns/jimjam/shaft-fleur",
+   "scale": [
+    1,
+    0.98
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "shaft_tracery": {
+   "lib": "patterns/jimjam/shaft-tracery",
+   "scale": [
+    1,
+    0.85
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "normalScale": 0.8
+  },
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.875
+   },
+   "metal": 0.35,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concrete": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "concreteR": {
+   "lib": "concrete.ancient",
+   "scale": [
+    1.95,
+    1.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "rubbleK": {
+   "lib": "rock.rocks013",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.642
+   },
+   "metal": 0,
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  }
  }
 }

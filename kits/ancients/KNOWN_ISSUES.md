@@ -955,3 +955,5 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] Rooms behind the openings (`skyRooms`) use each plan's inscribed radius, so in the Facet's corners and the
       Bastion's chamfers the fittings stand well inside the lining.
 - [ ] Looked at only at the kit's `HOLES` (1 at decay 1); Ys builds hosts at .4, so its stumps keep far more wall.
+- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
+      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.

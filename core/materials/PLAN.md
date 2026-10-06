@@ -1038,12 +1038,15 @@ change vended by hand, since those copies already drift; the biome's pack inline
 set's `tint.mean` is the measured mean of the procedural map it replaces, so palettes keep their tone.
 
 **Still unwired, sets exist** (a full sweep of src/ found these; most valuable first):
-1. The shared Ancients MAT (core/materials 22-materials.js, kits/ancients 54-mat-concrete.js, 69-mat-salvage.js, 69w-worn.js): `white` ->
-   `metal.ancient.white`, `rust` -> `metal.rust.plate`, `concrete`/`concreteR` -> `concrete.ancient` (+ `.b`), `brick` -> `brick.red`,
-   `corrugate` -> `metal.corrugated_iron_02`, `timber` -> `wood.weathered_brown_planks`, `tarp` -> `cloth.tarp`, `whiteWorn` -> `metal.worn`,
-   `rubbleK` -> `rock.rocks013`, `verdigris` -> `metal.bronze.verdigris`. Every lineage build that already calls `KMAT.bindMat` takes these by
-   adding the keys to its materials.json (check each tower's UV tile first: the panel maps are 8 m atlas tiles, not world-UV'd).
-2. kits/ancients, settlements/port, screamers, ringsea, post-apoc, interiors, verge, mungo: no materials.json yet.
+**Wired 2026-10-06 (late): the shared Ancients MAT.** `KMAT.bindMat(build, MAT, {tile: KMAT.ANCIENT_TILES})` binds `white` ->
+   `metal.ancient.white`, `verdigris` -> `metal.bronze.verdigris`, `concrete`/`concreteR` -> `concrete.ancient`, `paving` -> `concrete.ancient.b`,
+   `brick` -> `brick.red`, `corrugate` -> `metal.corrugated_iron_02`, `timber` -> `wood.weathered_brown_planks`, `tarp` -> `cloth.tarp`,
+   `whiteWorn` -> `metal.worn`, `rubbleK` -> `rock.rocks013` in kits/ancients, port, screamers, iziz, dalab, highlands, reedlake, xanadu, ys and
+   jimjam (each its own rows in materials.json). `KMAT.ANCIENT_TILES` (26-matlib-bind.js) holds each key's procedural tile in metres for
+   meshes with no world UV. **`rust` stays procedural:** the kit's beams, tanks and spheres stretch their UVs, and both `metal.rust.plate`
+   and `metal.rusty_metal_04` smeared into stripes on the Rehabilitated factory. A rust set for stretched UVs (a fine, isotropic
+   rust with no plate or streak direction) would fix it: `metal.rust.fine` in PROMPTS-ready.md.
+2. ringsea, post-apoc, interiors, verge, mungo: no materials.json yet.
 3. The vernacular's own families: Highlands (logs -> `wood.log.carved`, scale -> `roof.scale.slate`, rubbleW, bamboo, bmat, rock,
    meadow, the h* pattern sheets), Reed Lake (rl* -> the reed sets and Reed Lake patterns), Xanadu (x* -> the Xanadu patterns,
    `plaster.white_stucco_02`, `paving.tiles144`), Dalab (dRelief, dChecker, dDecoPanel, dBanner -> the Dalab patterns), the port embassy

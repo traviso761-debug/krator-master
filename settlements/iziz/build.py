@@ -101,7 +101,7 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/
 TARGET_CORE = {'city': ['atmos', 'clock', 'mask']}
 # the material library for the vernacular (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js,
 # whose TEX clashes with core/materials 20-textures.js). materials.json's non-fauna families are packed into the GENERATED
-# 69d-matlib-pack.js, and src/69e-iziz-matlib.js binds them onto MAT (KMAT.bindMat). Every target takes them.
+# 69d-matlib-pack.js, and src/88y-iziz-matlib.js binds them onto MAT (KMAT.bindMat). Every target takes them.
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 MATLIB_PACK = '69d-matlib-pack.js'
@@ -157,7 +157,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '84-city-geo.js', '93-city-ui.js',    # city target: geometry constants, dev-tool UI
     '86-bio-57-fauna-pack.js',            # generated: the library's fauna sheets as data URLs (fauna_pack)
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '69e-iziz-matlib.js', '86-bio-00-matlib-pack.js',   # the material library (no rnd())
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '69d-matlib-pack.js', '88y-iziz-matlib.js', '86-bio-00-matlib-pack.js',   # the material library (no rnd())
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
 }

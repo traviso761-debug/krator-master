@@ -181,3 +181,5 @@ const JJ_DOME_REPEAT={domeTerracotta:[20,12],domeSlate:[21,9],domeGold:[20,12]};
    note:jjL?'library set, full colour':(jjM.map?'procedural canvas map':'untextured')};}
  KMAT.adapter('jimjam',jjRecs);window._materials=KMAT.table('jimjam');
 })();
+// the shared Ancients MAT (core/materials 22, 54): the generic in-place bind, KMAT.ANCIENT_TILES keeping the procedural feature size
+if(typeof KMAT!=='undefined'&&KMAT.bindMat)KMAT.bindMat('jimjam',MAT,{tile:KMAT.ANCIENT_TILES});

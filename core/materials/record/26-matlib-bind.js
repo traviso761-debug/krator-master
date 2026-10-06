@@ -8,7 +8,8 @@
                                      (1/K metres, K from vWorldUV's userData.uvK, or opt.tile[key] in metres) becomes
                                      the set's own tile; add the library hooks (specular, tiling break-up) after the
                                      material's own hook (vWorldUV). opt.alias = {matKey: packFamily} binds a key to
-                                     another key's family (woodV takes wood). Returns {key: lib} for the bound ones.
+                                     another key's family (woodV takes wood). opt.tile = KMAT.ANCIENT_TILES for the Ancients lineage.
+                                     A material bound already is skipped. Returns {key: lib} for the bound ones.
 
    THE PROGRAM KEY. three.js keys a compiled program on onBeforeCompile.toString(), and kbake's Material.clone() keeps
    onBeforeCompile but drops customProgramCacheKey (core/materials/opt/69a-world-uv.js). So the wrapper is built with
@@ -19,13 +20,18 @@
   'use strict';
   if(typeof KMAT === 'undefined') throw new Error('26-matlib-bind: load 23-mat-record.js and 25-matlib-host.js first');
   var BOUND = KMAT.bound = KMAT.bound || {};
+  /* the Ancients lineage's MAT (core/materials 22-materials.js, kits/ancients 54, 69, 69w, 34): metres per UV unit, so a set
+     keeps the procedural map's feature size (the panel sheet is 4 x 8 panels of 2 x 1 m, the concrete 12 boards of 0.65 m).
+     A material with a world-UV K (vWorldUV) uses that instead. */
+  KMAT.ANCIENT_TILES = { white: 8, rust: 8, verdigris: 4, whiteWorn: 4.8, concrete: 7.8, concreteR: 7.8, paving: 7.8, ringPave: 7.8,
+    brick: 1.2, corrugate: 2, timber: 2, tarp: 2, rubbleK: 2 };
   KMAT.bindMat = function(build, MAT, opt){
     opt = opt || {};
     var out = {};
     if(KMAT.mode !== 'lib' || !MAT) return out;
     Object.keys(MAT).forEach(function(key){
       var m = MAT[key];
-      if(!m || !m.isMeshStandardMaterial) return;
+      if(!m || !m.isMeshStandardMaterial || m.userData.lib) return;   /* bound already (a second call binds only what is new) */
       var fam = (opt.alias && opt.alias[key]) || key, L = KMAT.packed(build, fam);
       if(!L) return;
       var tile = m.userData.uvK ? 1 / m.userData.uvK : (opt.tile && opt.tile[key]) || null;

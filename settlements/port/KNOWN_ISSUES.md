@@ -23,3 +23,5 @@ Open items start with `- [ ]` (build.py prints them after every build).
       calls with LOD (693 without), the overview 777 (879).
 - [ ] The first zoom-out builds the terrain's proxies, one strip per frame (tens of ms each on a normal machine, about
       10 s in all on the shared SwiftShader box). A verify count should call `LOD.flush()` first.
+- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
+      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.

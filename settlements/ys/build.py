@@ -58,7 +58,7 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook the ve
 # the material records (core/materials/record: KMAT and the browser loader; GODOT-PLAN.md Phase 3). Not 24-tex-def.js:
 # its TEX would clash with the lineage's TEX texture table (core/materials/20-textures.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
-RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
 TEX_DIR = os.path.join(HERE, 'tex')        # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '26-matlib-pack.js'        # GENERATED at build time from tex/, never written to src/
 
@@ -184,7 +184,7 @@ DETERMINISTIC = {
     '89z-rows.js', '91z-views.js',
     '84-city-geo.js', '84-mock-geo.js', '90-ys-scene.js', '88-city-place.js', '93z-city-api.js', '87d-city-karst.js', '69h-host-0-lib.js', '88a-city-floors.js', '88-city-spans.js',
     '86-city-edits.js', '94-city-editor.js',   # the edits as data, and the live editor (no builder, no reseed)
-    '23-mat-record.js', '25-matlib-host.js', '26-matlib-pack.js', '79z-ys-matlib.js', '86-bio-00-matlib-pack.js',   # the material records, the pack, the adapter
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '26-matlib-pack.js', '79z-ys-matlib.js', '86-bio-00-matlib-pack.js',   # the material records, the pack, the adapter
     '69i-host-ancients.js', '69w-worn.js', '8al-alt-00-lib.js',
     '69j-host-offices.js', '64b-ys-ruins.js', '80-aa-battery.js',   # the office/apartment host specs, the ruin placer, the bunker's AA battery
     '89-city-biome.js',   # the biome's host binding and build: the biome keeps its own PRNG, the lineage's rng() is never drawn

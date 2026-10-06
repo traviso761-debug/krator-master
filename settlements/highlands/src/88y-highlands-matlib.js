@@ -4,7 +4,7 @@
 // (88x-matlib-pack.js). KMAT.bindMat (core/materials/record/26-matlib-bind.js) swaps the maps in place before the rows
 // build anything, so one tile of each procedural map (its world-UV K) becomes one tile of the set. ?mat=proc binds
 // nothing: the look before the library. [web]: three.js materials.
-const MATLIB_BOUND=KMAT.bindMat('highlands',MAT);
+const MATLIB_BOUND=KMAT.bindMat('highlands',MAT,{tile:KMAT.ANCIENT_TILES});
 (function(){const recs={};for(const k in MAT){const m=MAT[k];if(!m||!m.isMeshStandardMaterial)continue;const L=KMAT.packed('highlands',k);
  recs[k]={id:'highlands.'+k,family:k,scale:L?L.scale:(m.userData.uvK?[1/m.userData.uvK,1/m.userData.uvK]:[1,1]),tint:true,roughness:1,
   metal:L?(L.metal||0):0,lib:MATLIB_BOUND[k]?L.lib:null,bake:!MATLIB_BOUND[k]&&!!m.map,hook:m.userData.uvK?'world-uv':null,

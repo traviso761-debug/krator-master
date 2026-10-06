@@ -53,7 +53,7 @@ LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (cor
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[:1].isdigit())
 # the material records (core/materials/record: KMAT, TEX and the browser loader) and the library pack
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
-RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']   # not 24-tex-def.js: its TEX clashes with core/materials 20-textures.js (as in Ys)
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # not 24-tex-def.js: its TEX clashes with core/materials 20-textures.js (as in Ys)
 TEX_DIR = os.path.join(HERE, 'tex')        # tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'        # GENERATED from tex/ (never written to src/)
 MANIFEST_FILES = [

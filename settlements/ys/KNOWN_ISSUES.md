@@ -275,3 +275,5 @@ remind him of this list first. Tick `[x]` and date an item when it is fixed.
       no owner (built with no frame) and are not selectable. A live placement reseeds the lineage's rng() (the builder's
       `reseed`), so a later live draw from it (none today) would differ from the build. Raycasting a click against the
       merged city meshes has no BVH: a selection can take a second.
+- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
+      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
