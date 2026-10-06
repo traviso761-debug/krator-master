@@ -32,7 +32,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 26 | 389 | 1 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 37 | 230 | 0 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 25 | 180 | 1 | 11 | 10 | 33 | 126 | 2 | atmos | yes | yes |
-| [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 14 | 166 | 24 | 14 | 13 | 37 | 78 | 2 | biome | yes | yes |
+| [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 15 | 187 | 27 | 16 | 13 | 53 | 78 | 2 | biome | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 199 | 1 | 0 | 14 | 31 | 153 | 5 | biome | yes | yes |
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 16 | 220 | 28 | 0 | 14 | 69 | 109 | 2 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 138 | 2 | 0 | 12 | 16 | 108 | 6 | biome | yes | yes |
@@ -45,7 +45,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1612 | 21726 | 3228 (15%) | 396 (2%) | 951 (4%) | 2421 (11%) | 14730 (68%) | 231 | | | |
+| **all** | 1613 | 21747 | 3231 (15%) | 398 (2%) | 951 (4%) | 2437 (11%) | 14730 (68%) | 231 | | | |
 
 ## Host-shell copies
 
@@ -59,8 +59,8 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `host-stage` | 13 | 13 | 281 |
 | `host-sky` | 13 | 11 | 189 |
 | `host-build` | 13 | 13 | 16 |
-| `host-camera` | 13 | 13 | 115 |
-| `host-probe` | 13 | 13 | 85 |
+| `host-camera` | 13 | 13 | 116 |
+| `host-probe` | 13 | 13 | 86 |
 | `stats` | 11 | 1 | 13 |
 | `host-tower` | 9 | 9 | 42 |
 | `pathviz` | 6 | 5 | 40 |

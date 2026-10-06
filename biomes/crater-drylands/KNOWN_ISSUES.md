@@ -18,11 +18,16 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 
 ## The fire
 
-- The mosaic is static: the fires are history, computed at load. A live fire front (an atmosphere effect that leaves
-  char behind it) is planned, not built: `NOTES.md`, "A live fire".
+- **The live fire** (89, `NOTES.md`): one fire at a time; lighting another replaces it. The burnt plants stay burnt
+  only while the fire is lit ("Put it out" restores them): the trail is the shader reading the map, not a change to
+  the world. A live fire does not feed back into the history (`CRATERDRY.FIRE.last`), so the ground it burns does not
+  turn to bloom on a later visit, and a second fire can run through the first one's char.
+- The flames are camera-facing quads (cylindrical: upright); seen from straight above they are thin. The smoke is
+  sprites, not a volume. The fire's light is one point light at the head.
+- Not yet lifted into `core/atmos` (`NOTES.md`, "The live fire").
 - The fire model's grid is 20 m. A burn's edge is the cell edge warped by noise (sharp, not a staircase), but a
   plant within about 10 m of an edge may read the neighbour's age.
-- No smoke rises from the three-week-old burn yet (ATMOS smoke on smouldering logs would do it).
+- No smoke rises from the static three-week-old burn yet (the live fire's smoke pool could seed it).
 
 ## Textures
 
