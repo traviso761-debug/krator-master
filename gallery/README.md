@@ -118,3 +118,7 @@ cenotes, avenue baobabs; hero trees as six grown variants per species), 0.3 MB, 
 Version 54 (2026-10-06): `worlds/iziz-mechs.html` replaced with the Mechs kit and its eleventh mech, the Talpa (an Ancient
 tunnel borer with a rotary polybolos and crescent vanes, a rider in a saddle on its back), 1.6 MB, from `main` at 389f79c8.
 The live index (version 53) was kept: only the Iziz war-walkers card changed (blurb, size). One publish call.
+Version 55 (2026-10-06): `worlds/crater-drylands.html` added (the crater drylands biome kit, 3.2 MB: the fire mosaic in the
+Throne's rain shadow, char, the superbloom, regrowth and old scrub from the kit's own fire model; prism mallees, pyre pillars,
+frill-trees; granite kopjes; the library textures), from `main` at a2547d72. The live index (version 54) was kept: only the
+Crater drylands card was added. One publish call.
