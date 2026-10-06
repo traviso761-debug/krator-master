@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2165,
+    648
+   ],
+   "seam_after": [
+    1.342,
+    0.749
+   ],
+   "seam_before": [
+    2.031,
+    1.306
+   ],
+   "source_size": [
+    2172,
+    724
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.4,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "xanadu/lozenge",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   3,
+   0.9
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Hand-Painted Turquoise Diamond Folk Pattern.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Hand-Painted Turquoise Diamond Folk Pattern.png",
+  "prompt": "Prompt row patterns/xanadu/lozenge in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Xanadu Palopo bands",
+  "sha1": "6cce3cd09649a39d84fc75782ef293d55fe2d1e6"
+ }
+}

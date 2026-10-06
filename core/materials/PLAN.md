@@ -936,6 +936,8 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 `glow` needs no map.
 
 **Still needed**, most pieces first. G rows start with the base template and the muting sentence unless they say full colour.
+**Delivered 2026-10-06** (`tex.zip`, see "Delivered 2026-10-06: texturepalooza" below): every G row in this table. Only `metal.steel.brushed`
+(a scan) is still open here. The family splits below are still needed before the new sets can hang on `feather`, `rubber` and painted wood.
 
 | id | Src | Pieces | Material line |
 |---|---|---|---|
@@ -953,8 +955,8 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 | `wood.endgrain` | G | 11, and the builders' yard log stock | Sawn end of a log seen straight on: concentric growth rings, darker heartwood, radial drying checks, saw marks across the face. The rings fill the frame edge to edge. Muted, so it tints. |
 | `paper.parchment` | G | 15 books, 11 more with `paper*` keys | Old parchment sheet: cream (#e8dcb8) with uneven thickness, faint fibres, light foxing spots and soft creases. Muted, so it tints. |
 
-**Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces), the Xanadu pattern sheets (Xanadu's 58 pieces
-draw their hangings with procedural decals), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
+**Prompted earlier and still owed:** `roof.reed` / `reed.bundle` (Reed Lake reed furniture, 37 pieces; `roof.thatch.reed`, delivered 2026-10-06, may
+serve the reed family until then), `patterns/tribal/formline` (Painted's formline colours; `patterns/republic/folk-formline-*` may already serve).
 
 **No pattern sheet at all** (hangings drawn by the kit's canvas painters, which work, so this is the last priority): Eastern Abyss, Lizardmen,
 Nomad, Screamer. Each needs a style read of its culture file before a prompt is written.
@@ -1157,6 +1159,38 @@ Then the two gaps, both processed (same batch): `library/cloth.tent.black` (the 
 weave with stray hairs; the Scyvoi black tents; reuse for Shade's Eastern Nomads) and `patterns/scyvoi/applique-blue`,
 `applique-blue.b` (indigo felt flowers and leaf sprays hand-stitched on cream; the appliqué tent's panels; any steppe or
 Tibetan-style tent).
+
+#### Delivered 2026-10-06: texturepalooza (`tex.zip`, 48 images, 55 sets)
+
+Batch `chatgpt-2026-10k-texturepalooza.json`. The images keep ChatGPT's titles; each was matched to an open prompt row by eye (the second
+column). Two sheets came as several panels on one image and were cut apart before processing (the source names carry `__<panel>`):
+the scallop tiles (three colourways) and the Jimjam brick reliefs (3 x 2). Ids are generic where the surface is (per "Reuse"); Jimjam's
+`brick.jimjam.*` rows became `brick.*`. Tiling sheets are cropped to their own period and their `scale` follows the crop's aspect.
+Not yet in any build's `materials.json`; all 55 are on the demo wall (`core/materials/demo`, status new until judged).
+
+| Set | Prompt row | Reuse |
+|---|---|---|
+| `wood.softwood`, `wood.painted`, `plastic.moulded`, `rubber.tyre`, `metal.pewter`, `food.crust`, `feather.plumage`, `wood.endgrain`, `paper.parchment` (tintable) | the catalog audit rows of the same ids | catalog furniture per family (`f_<family>`); `rubber.tyre` is the motor-vehicles `rubber` slot |
+| `ash.hearth`, `stone.obsidian`, `patterns/islander/tapa` (full colour) | same | hearths and fire rings anywhere; Voth and volcanic biomes; Islander cloth |
+| `ground.salt`, `bark.mangrove` | Biomes rows | salt pans in any desert; mangroves and figs on any coast (tintable to the SW lowlands red) |
+| `wood.siding` | `wood.hull` (Ring Sea) | hull strakes, clapboard and plank walls anywhere (tintable) |
+| `patterns/common/container-red`, `hull-paint` | `patterns/port/livery`, `hull-paint` | Port, post-apoc, Ring Sea steel |
+| `patterns/xanadu/zigzag`, `lozenge`, `bird`, `deer`, `star` | the Xanadu rows | Xanadu's Palopo bands |
+| `patterns/common/jali-diamond`, `frieze-star-maroon`, `mosaic-star-lapis`, `mosaic-arabesque-lapis`, `valance-scallop` | `xanadu/jali`, `frieze`, `mosaic-star`, `mosaic-arabesque`, `valance` | screens, friezes and glazed tile in any court culture; the valance is greyscale and tinted |
+| `brick.red`, `brick.ochre`, `brick.oxblood`, `brick.dark`, `brick.red.band` | `brick.jimjam.red`, `yellow`, `deep`, `dark`, `band` | Jimjam; brick walls in Port, Highlands, post-apoc, city streets (full colour) |
+| `stone.marble.ashlar`, `plaster.ochre` | `stone.marble.trim`, `plaster.jimjam.ochre` | marble ashlar in Voth, Iziz, Xanadu, Ys; ochre wash in Dalab, Iziz, Yuni |
+| `roof.scale.terracotta`, `roof.scale.slate`, `roof.scale.gilt` | `roof.dome.tile` (three colourways) | fish-scale roofs and domes: Highlands, Xanadu (`roof.gilt`), Voth, Republic |
+| `patterns/common/medallion-sunray` | `inlay.jimjam.sunray` | plaza and floor medallions. A single panel: map once |
+| `patterns/jimjam/shaft-spiral`, `-chevron`, `-diamond`, `-ogee`, `-fleur`, `-tracery` | `patterns/jimjam/shaft-*` | carved brick for any brick culture |
+| `rock.sandstone`, `rock.sandstone.red` (full colour), `stone.chiselled`, `earth.adobe.pale`, `wood.timber` (tintable) | Shade's `rock.sandstone`, `.boulder`, `.carved`, `earth.pueblo`, `wood.timber.pueblo` | desert cliffs and boulders (sedesert, ebadlands, crater drylands); tooled stone; adobe in Yuni, Locus, Iziz, Dalab; plain timber anywhere |
+| `roof.thatch.reed`, `fibre.rattan`, `roof.shingle.cedar`, `fibre.rope.twist`, `metal.rust.plate` (tintable) | Mav's `thatch.reed.mavs`, `cane.woven`, `roof.shingle.shakes`, `rope.twist`, `metal.rust.plate` | thatch also for Ring Sea `thatch.reed` and Reed Lake reed roofs; the rest in any culture |
+| `patterns/common/frieze-palmette-red` | Mav's `trim.council` | lacquered friezes in Xanadu, Highlands, Iziz |
+
+**Look first:** `wood.endgrain` has one ring centre per tile (map it per log face, not across a wall); `plastic.moulded` reads as much like
+scuffed render as plastic; `wood.timber` came out grey-brown after muting (it is tinted in use); `roof.shingle.cedar` (seam score 2.3 across)
+and `brick.red` (2.9 down) have the highest seam scores, though neither seam showed on the contact sheet; `common/valance-scallop` and
+`common/jali-diamond` cut out on their black; `xanadu/bird` and `xanadu/deer` were cropped to their period (motifs whole, margins narrower).
+Nothing in this delivery has been judged in a render yet.
 
 ## Built so far (2026-10-02)
 

@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    637,
+    684
+   ],
+   "seam_after": [
+    1.342,
+    1.242
+   ],
+   "seam_before": [
+    7.39,
+    5.148
+   ],
+   "source_size": [
+    715,
+    714
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.scale.slate",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1.5,
+   1.61
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Terracotta, Slate, and Gilded Scallop Tiles__slate.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "cut from a multi-panel sheet (slate), a few px inset from the panel edges",
+  "original_title": "Terracotta, Slate, and Gilded Scallop Tiles.png",
+  "prompt": "Prompt row roof.dome.tile in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "Jimjam domes; slate fish-scale roofs anywhere (Highlands roof.scale.tinted)",
+  "sha1": "81a26f14bd1521a95a64053f375e3107f62ab5a1"
+ }
+}
