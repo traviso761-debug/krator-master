@@ -983,7 +983,7 @@ Locus, Voth, Iziz's vernacular, the shared vernacular (Highlands, Dalab, Reed La
 post-apoc, the Ancients kit, the interiors kit and ten biomes (hyperjungle, nhighlands, nw/swlowlands, nw/swbay, sedesert, eastabyss,
 rift, xanadu) each need a `materials.json` pass; openworld/little-demo needs a terrain splat and the kits' packs.
 
-**Paste-ready versions of everything still owed are in `PROMPTS-ready.md`, sections 5 (buildings) and 6 (biomes).**
+**Paste-ready versions of everything still owed are in `PROMPTS-ready.md` (sections 1 buildings, 2 biomes, 3 fauna).**
 
 **Buildings: prompted earlier and still owed** (rows above; most builds first): `cloth.canvas.striped` (the tinted awning: Iziz,
 Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge), `wood.log.carved` (round-log walls: Highlands, Dalab, Reed Lake, Ys), `concrete.ancient`
@@ -1467,6 +1467,9 @@ For every generated image, write the exact prompt into the batch file's `_source
 - Every prompt handed to the owner is complete and paste-ready (`PROMPTS-ready.md`): the template, the material line and
   the tint sentence written out in each block (near-colourless "so it can be tinted", or "full colour: not tinted"), never
   "add the muting sentence". Tintable rows leave out the code's tint hexes, which only invite colour into a grey image.
+- `PROMPTS-ready.md` holds only what is still owed: when a delivery is processed, its blocks are deleted there and listed under
+  "Delivered and removed" (with the id it landed as). Before handing prompts to the owner, check them against the library and every
+  local worktree; never append without pruning.
 - Every cut-out (card, wing, sprite) is asked for on solid flat bright magenta (#ff00ff), and the prompt says so in full:
   "no magenta, pink or purple anywhere in the subject; no grey or white background". (2026-10-06: four sheets came on grey and
   had to be keyed by hand.)
