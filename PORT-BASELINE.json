@@ -4,6 +4,10 @@
    "bytes": 288834,
    "sha256": "7aa23cdff0f8c75430883a499185a846a43e62c8aacf16dfeb34840dec219f5b"
   },
+  "biomes/ebadlands/dist/ebadlands.html": {
+   "bytes": 3761690,
+   "sha256": "f0161579b1166cd275fbdf246449c8eca112c4e6785dfb41ecb7dde5e0db0dcb"
+  },
   "biomes/hyperjungle/dist/hyperjungle.html": {
    "bytes": 234485,
    "sha256": "e1c624c9c77a2cdde29ceeceabe7a5153b9e7b36d2eb0f6a161fb4f522a563aa"
@@ -205,8 +209,8 @@
    "sha256": "d9c57f310bd9e4efc51480b3cd5b673d9c7d81644cac7aeaca8759a5ff41227b"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1143048,
-   "sha256": "eb784019d1cef87cf10b7710ea992390d1102ccf8208660255d701dc2407dc38"
+   "bytes": 1150919,
+   "sha256": "a38c33d041bf6b7f51496f29c35b6ec466626f36f2c6e795cca6e9c71500b851"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 493904,
@@ -219,6 +223,10 @@
   "kits/interiors/dist/interiors.html": {
    "bytes": 242399,
    "sha256": "e5a826dd35a5c4acbd0000d436c93be31a03bd66f5fd888c37da1997bb6804c3"
+  },
+  "kits/mechs/dist/mechs.html": {
+   "bytes": 1599946,
+   "sha256": "2cf8339983fbba485500df0384b4eeae69035f6d4f3652116a9b15f50974d66a"
   },
   "kits/motor-vehicles/dist/motor-vehicles.html": {
    "bytes": 593567,
@@ -233,12 +241,12 @@
    "sha256": "30fea9b7f3b741296f1ab122a7bcabfc014a76ebe49338b8f3cb57c5f113e92b"
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
-   "bytes": 4808367,
-   "sha256": "a54fd193292d186434ba546ac8af8f15fab705351b78a33d8892b50fc6edc235"
+   "bytes": 4936074,
+   "sha256": "c4fbe83f02c9f077fb163a84ed07294bcf308ab6c15f8ecaf1ffede4fa963ccf"
   },
   "openworld/little-demo/dist/little-demo.html": {
-   "bytes": 4808625,
-   "sha256": "d763d63c187630848b632ded517bc4f341b7b3b7d1cd5236993a21ebefb3d2d9"
+   "bytes": 4936332,
+   "sha256": "15f1b552b9feaeb7fb50a3835b7447cbda3244cebe93f64e85e17d5f1b49cc14"
   },
   "settlements/dalab/dist/dalab-set.html": {
    "bytes": 699309,

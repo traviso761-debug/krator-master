@@ -1,0 +1,142 @@
+[
+ {
+  "src": "Rugged Conifer Bark Texture.png",
+  "out": "core/materials/library/bark.ponderosa",
+  "record": {
+   "id": "bark.ponderosa",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Ponderosa pine bark, trunk surface: large flat jigsaw-puzzle plates of cinnamon-orange (#b86a3c, #a85a34) with paler flaking scales, separated by deep black-brown fissures (#2a1e18) two to four centimetres wide, plates longer than wide, vertical. (Row bark.ponderosa of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Rugged Conifer Bark Texture.png'.",
+    "reuse": "ponderosa here; any old pine (`biomes/nhighlands`, `swlowlands`)"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Layered Lichen-Covered Tree Bark Texture.png",
+  "out": "core/materials/library/bark.spruce",
+  "record": {
+   "id": "bark.spruce",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Spruce bark: thin round grey-brown scales (#5a4e46, #6a5e54) a few centimetres across, loosely overlapping, some flaking to show reddish inner bark (#8a5040), a little grey-green lichen. (Row bark.spruce of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Layered Lichen-Covered Tree Bark Texture.png'.",
+    "reuse": "Engelmann spruce and fir here; `biomes/nhighlands` spruces"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Weathered Juniper Bark Texture.png",
+  "out": "core/materials/library/bark.juniper",
+  "record": {
+   "id": "bark.juniper",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Shaggy juniper bark: long loose fibrous strips peeling vertically, twisted, grey-brown (#7a6a5a) with reddish inner bark (#8a5a44) showing between, frayed ends. (Row bark.juniper of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Weathered Juniper Bark Texture.png'.",
+    "reuse": "Utah juniper here; cedar and cypress in any biome"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Weathered Driftwood Grain Texture.png",
+  "out": "core/materials/library/wood.silver",
+  "record": {
+   "id": "wood.silver",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Ancient wind-polished deadwood: bare trunk wood weathered silver-grey (#b8b0a4) with deep twisting spiral grain, rust and amber resin streaks (#a8643a), fine sand-blasted ridges, a few checks. (Row wood.silver of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Weathered Driftwood Grain Texture.png'.",
+    "reuse": "the bristlecone here, `wood.driftwood` (Mav's design-only row), dead snags and fallen logs anywhere"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "Polished Teal Crystal Vein Texture.png",
+  "out": "core/materials/library/stone.amazonite",
+  "record": {
+   "id": "stone.amazonite",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Skin of a glossy alien succulent pod: smooth taut waxy surface in deep teal (#2e7a78) with lighter aqua (#4a9a90) streaks running lengthwise, faint shallow ribs, tiny pale freckles. (Row organic.gem.teal of core/materials/PLAN.md, Eastern badlands.) Delivered 2026-10-06 in ebadlands.zip as 'Polished Teal Crystal Vein Texture.png'. It came as a polished crystalline teal stone (amazonite-like) rather than a waxy pod skin, so it is filed as a stone and also answers organic.gem.teal.",
+    "reuse": "the ember crown and stilt pod skins; gem inlay, polished mineral, crystal outcrops, alien stone in any culture or biome"
+   }
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.3,
+   "lift": 0.08,
+   "delight": 0.4
+  }
+ }
+]

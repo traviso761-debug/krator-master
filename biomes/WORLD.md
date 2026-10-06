@@ -24,7 +24,7 @@ scale Krator map for rough placement, not in this repo.
 | northwestern lowlands | `nwlowlands` | swlowlands, nhighlands, korona |
 | northern highlands | `nhighlands` | nwlowlands, hyperjungle (steep), nwbay (steep), korona |
 | *in progress* northwest bay | `nwbay` | nhighlands (steep) |
-| *planned* eastern badlands | `ebadlands` | sedesert |
+| eastern badlands | `ebadlands` | sedesert, eastabyss (its gentle east rim), the outer rim (airless: nothing grows) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |

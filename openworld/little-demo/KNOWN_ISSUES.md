@@ -33,8 +33,11 @@
   - [ ] **What the tiles lose**: custom shaders (the builds' strata, detail and window glows become plain materials),
         the LOD the builds had (a tile draws whole within 30 km: Yuni is 2.7 M triangles), door animation.
   - [ ] **The tiles are not committed** (`dist/towns/`, 36 MB): `python3 bake.py towns` writes them from the builds.
-- [ ] **Five overlays have no kit** and are bare ground in their style: e badlands and e highlands (named by the owner
-      as biomes to make; `HANDOFF-EBADLANDS.md`), Korona / NE, the Throne, the crater drylands. The Ring Sea is water.
+- [ ] **Four overlays have no kit** and are bare ground in their style: e highlands (named by the owner as a biome to
+      make), Korona / NE, the Throne, the crater drylands. The Ring Sea is water. (e badlands has `biomes/ebadlands`.)
+- [ ] **The eastern badlands kit wants two more fields**: `geo` (geothermal ground: its sulphur vents) and `barren`
+      (EF, O, HF: the ice cap and the airless rim, where nothing grows). Both read 0 today, so the kit grows no vents and
+      its tundra flora reaches the ice. They belong in `WORLD.at` for every kit (`biomes/ebadlands/KNOWN_ISSUES.md`).
 - [x] **Lakes floating over the abyss.** Fixed in the scale model itself (4.15, `tools/scale-model/edit_heights.py`);
       the extractor keeps the same rule as a guard and now lowers nothing.
 - [x] **The water takes the shared wave field** (`core/atmos`, as Voth's bay). Not yet: the sky's reflection as an

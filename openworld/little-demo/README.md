@@ -97,7 +97,9 @@ the abyss); each tree takes its level by distance (hero within ~14x its height, 
 impostor beyond, nothing past reach); the floor exists only on the 128 m chunks within ~380 m. Prototypes are grown
 lazily, nearest first, a few milliseconds a frame.
 
-**The biomes without a kit** (e badlands, e highlands, Korona, the Throne,
+**The eastern badlands** have their kit (`biomes/ebadlands`, Oct 2026), joined as "Adding a kit" says. It reads two fields
+the world does not give yet, `geo` (the sulphur vents) and `barren` (the ice cap and the airless rim): both read 0 here
+until `WORLD.at` binds them (`KNOWN_ISSUES.md`). **The biomes without a kit** (e highlands, Korona, the Throne,
 the crater drylands) are bare ground in their own style and palette for now, as asked. A new kit joins as "Adding a
 kit" says.
 

@@ -232,6 +232,7 @@ ENTRIES = [
     ('biome', 'nwlowlands', 'biomes/nwlowlands/dist/nwlowlands.html', 'Northwestern lowlands', 'Lake shore, Mediterranean foothills, bamboo groves, glow-willows.'),
     ('biome', 'xanadu', 'biomes/xanadu/dist/xanadu.html', 'Xanadu', 'An enclosed mountain lake and a sacred river; ornamental wildwood.'),
     ('biome', 'nhighlands', 'biomes/nhighlands/dist/nhighlands.html', 'Northern highlands', 'Old-growth temperate to boreal forest, trumpet trees, glowing bell-bulbs, a stream from its tarn.'),
+    ('biome', 'ebadlands', 'biomes/ebadlands/dist/ebadlands.html', 'Eastern badlands', 'Sulphur flats and alien flora, painted badlands, a Zion canyon with a hanging-garden ruin, sagebrush and pinyon-juniper, pine and spruce-fir up to the ice of the outer rim; real textures, trees as variants.'),
     ('biome', 'nwbay', 'biomes/nwbay/dist/nwbay.html', 'North-west bay', 'The bay of Ys: karst stacks, an igneous shore, travertine terraces, a semi-aquatic flora zone; a fork of the south-west bay (in progress).'),
 ]
 
