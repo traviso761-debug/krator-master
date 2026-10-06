@@ -141,9 +141,9 @@ function nrBalconyFront(side,y){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1,n=Math.cei
    twin screws and rudders, out of the water now (she lies trimmed by the bow). The decks inside the half-rounds are
    empty galleries behind the end walls. */
 const NR_STERN={d3:17.5,d4:15,top:15};
-function nrStern(t,dir){const L=NR.L,W=NR.W,c=NR.at(t,0),T=NR.tan(t),ax=dir*T[0],az=dir*T[1],aA=Math.atan2(az,ax),a0=aA-PI/2,a1=aA+PI/2,seg=40;
+function nrStern(t,dir){const L=NR.L,WD=NR.W,c=NR.at(t,0),T=NR.tan(t),ax=dir*T[0],az=dir*T[1],aA=Math.atan2(az,ax),a0=aA-PI/2,a1=aA+PI/2,seg=40;
  const lw=(mk,prof,col,o)=>lathe(mk,c[0],c[1],prof,seg,col,Object.assign({a0,a1},o||{}));
- const R=W.PONT,F=R+NR_FLARE;
+ const R=WD.PONT,F=R+NR_FLARE;
  /* the pontoon */
  lw('paint',[[R-3.4,0],[R-1.6,.35],[R-.55,1.2],[R,2.6],[R,5.6]],hc(NR_ANTIFOUL));lw('barn',[[R+.02,5.6],[R+.02,7.0]],WHITE);
  lw('white',[[R,6.95],[R+.3,8.0],[F,9.0]],P('whiteS'));lw('paint',[[R+.38,7.55],[R+.62,7.65],[R+.64,7.95],[R+.42,8.05]],hc(0x2c3034));
@@ -152,11 +152,11 @@ function nrStern(t,dir){const L=NR.L,W=NR.W,c=NR.at(t,0),T=NR.tan(t),ax=dir*T[0]
  lw('white',[[F-.35,L.D[0]],[F-.35,L.D[0]+.3],[F+.02,L.D[0]+.3],[F+.02,L.D[0]]],P('white'));
  /* D1, D2: the glazed shell at radius 20, sill, glass, head, mullions; the D2 floor inside */
  const mull=(r,y0,y1)=>{for(let k=1;k<12;k++){const a=a0+(a1-a0)*k/12;box('white',c[0]+Math.cos(a)*r,y0,c[1]+Math.sin(a)*r,.18,y1-y0,.22,P('white'),-a);}};
- for(let d=0;d<2;d++){const y=L.D[d];lw('white',[[W.MAIN,y],[W.MAIN,y+.95]],P('white'));lw('glass',[[W.MAIN-.08,y+.95],[W.MAIN-.08,y+2.75]],hc(0x24343c));
-  lw('white',[[W.MAIN,y+2.75],[W.MAIN,y+L.DH-L.SLAB]],P('white'));mull(W.MAIN,y+.95,y+2.75);}
- lw('conc',[[.01,L.D[1]],[W.MAIN,L.D[1]]],P('conc'));lw('plaster',[[W.MAIN,L.D[1]-L.SLAB],[.01,L.D[1]-L.SLAB]],hc(0xe4ded2),{flip:true});
+ for(let d=0;d<2;d++){const y=L.D[d];lw('white',[[WD.MAIN,y],[WD.MAIN,y+.95]],P('white'));lw('glass',[[WD.MAIN-.08,y+.95],[WD.MAIN-.08,y+2.75]],hc(0x24343c));
+  lw('white',[[WD.MAIN,y+2.75],[WD.MAIN,y+L.DH-L.SLAB]],P('white'));mull(WD.MAIN,y+.95,y+2.75);}
+ lw('conc',[[.01,L.D[1]],[WD.MAIN,L.D[1]]],P('conc'));lw('plaster',[[WD.MAIN,L.D[1]-L.SLAB],[.01,L.D[1]-L.SLAB]],hc(0xe4ded2),{flip:true});
  /* the terraces: D3 (floor to 20, glass at d3), D4 (floor to d3, glass at d4), the top deck (to d4) */
- const ter=[[L.D[2],W.MAIN,NR_STERN.d3],[L.D[3],NR_STERN.d3,NR_STERN.d4]];
+ const ter=[[L.D[2],WD.MAIN,NR_STERN.d3],[L.D[3],NR_STERN.d3,NR_STERN.d4]];
  for(const [y,rf,rg] of ter){lw('deck',[[.01,y],[rf,y]],hc(0xd6d0c2));lw('plaster',[[rf,y-L.SLAB],[.01,y-L.SLAB]],hc(0xe4ded2),{flip:true});
   lw('white',NR_RIBBON_PROF.map(([ds,dy])=>[rf+ds,y+dy]),P('white'));
   lw('glass',[[rg,y],[rg,y+L.CLEAR]],hc(0x6a8a98));mull(rg,y,y+L.CLEAR);lw('white',[[rg+.12,y+L.CLEAR-.18],[rg+.12,y+L.CLEAR]],P('white'));}

@@ -185,7 +185,8 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
  //     lanterns, the crews' banners
  for(const Z of NR.ZONES.filter(z=>z.kind==='mess')){const y=L.D[2]+.02,top=y+L.CLEAR,room=Z.id,gal=NR.ROOMS.find(r=>r.kind==='kitchen'&&r.deck===2&&(Math.abs(r.t0-Z.t1)<.5||Math.abs(r.t1-Z.t0)<.5));
   const gEnd=gal?(Math.abs(gal.t0-Z.t1)<.5?Z.t1:Z.t0):Z.t1,gDir=gEnd===Z.t1?'aft':'fwd',farEnd=gEnd===Z.t1?Z.t0:Z.t1,fd=farEnd===Z.t0?1:-1;
-  for(let t=Z.t0+4;t<Z.t1-5;t+=4.2)for(const s of [-15.5,-4.5,4.5,15.5]){put(room,'pa_long_table',t,s,y,'out');put(room,'pa_bench',t-.95,s,y,'out',{v:0});put(room,'pa_bench',t+.95,s,y,'out',{v:0});}
+  /* the long tables run along the hull (3 m), a bench either side */
+  for(let t=Z.t0+4;t<Z.t1-5;t+=4.2)for(const s of [-15.5,-4.5,4.5,15.5]){put(room,'pa_long_table',t,s,y,'out');put(room,'pa_bench',t,s-.7,y,'out',{v:0});put(room,'pa_bench',t,s+.7,y,'in',{v:0});}
   for(const s of [-14,-9.75,9.75,14])put(room,'pa_servery',gEnd-(gDir==='aft'?1:-1)*.7,s,y,gDir==='aft'?'aft':'fwd');
   for(const s of [-17,17])for(let j=0;j<3;j++)put(room,j%2?'generic_keg':'generic_barrel',farEnd+fd*(.8+j*.9),s,y,fd>0?'fwd':'aft');
   for(let t=Z.t0+6;t<Z.t1-2;t+=8)for(const s of [-10,10])hang(room,'pa_hanging_lamp',t,s,top,'fwd',{v:nrMod(t|0,3)});
@@ -193,7 +194,6 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
  // --- the GREENHOUSE (D4, under its glass vault): planters on the beds, cold frames down the walk, water butts, potting
  //     benches and seed sacks at the ends, the harvest in baskets, a scarecrow for the gulls
  {const Z=NR.zone('greenhouse'),y=L.D[3]+.02,room='greenhouse';
-  for(let t=Z.t0+2.4;t<Z.t1-2;t+=3.4)for(const s of [-14,-9,-4.5,4.5,9,14])put(room,'pa_planter',t+.8,s,y+.56,'out',{v:nrMod((t*7|0)+(s|0),3)});
   for(let t=Z.t0+4;t<Z.t1-4;t+=6.8)put(room,'pa_cold_frame',t,0,y,'out');
   for(const s of [-17.2,17.2]){put(room,'pa_water_butt',Z.t0+1,s,y,'fwd');put(room,'pa_water_butt',Z.t1-1,s,y,'aft');}
   for(const s of [-12,12]){put(room,'generic_poor_workbench',Z.t0+.75,s,y,'fwd');put(room,'generic_sack',Z.t0+.6,s+(s>0?-2.2:2.2),y,'fwd');put(room,'generic_poor_workbench',Z.t1-.75,s,y,'aft');}
@@ -250,7 +250,7 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
   if(T.audit&&!T.audit.ok)for(const f of T.audit.fails.slice(0,3))auditFails.push(k+': '+(typeof f==='string'?f:(f.check||'')+' '+(f.detail||f.msg||JSON.stringify(f)).slice(0,120)));}
  window._interiors={rooms:cab.rooms.length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
   cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
-  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',40],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
+  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
   shipRooms:shp.rooms.map(r=>({id:r.id,name:r.name,kind:r.kind,deck:r.deck,pieces:r.pieces})),
   cabins:cab.rooms,buildingRooms:bld.rooms,items:Object.keys(bld.items).map(k=>({item:k,rooms:bld.items[k].tpls.length,residence:bld.items[k].residence})),
   ms:Math.round(performance.now()-t0)};

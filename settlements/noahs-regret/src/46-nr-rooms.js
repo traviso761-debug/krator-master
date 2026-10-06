@@ -86,7 +86,8 @@ function nrGreenhouse(Z){const L=NR.L,W=NR.W,y=L.D[3],R=6.5;
  for(const sg of [1,-1])nrCurtain(Z.t0,Z.t1,sg*W.GLASS,y,L.TOP-L.SLAB,NR.DT/2,0x7a9aa0);
  /* the beds: rows across the hull either side of the middle walk, white kerbs, earth */
  for(let t=Z.t0+2.4;t<Z.t1-2;t+=3.4)for(const [s0,s1] of [[-W.GLASS+1.2,-1.6],[1.6,W.GLASS-1.2]]){
-  nrBand('white',t,t+1.6,s0,s1,y,y+.55,P('white'),'oitse');nrBand('turf',t+.08,t+1.52,s0+.08,s1-.08,y+.5,y+.56,hc(0x4a3a2a),'t');}
+  nrBand('white',t,t+1.6,s0,s1,y,y+.55,P('white'),'oitse');nrBand('turf',t+.08,t+1.52,s0+.08,s1-.08,y+.5,y+.56,hc(0x4a3a2a),'t');
+  nrCrops(t,s0,s1,y+.56);}
  /* the vault: a glass barrel over the open slab, from parapet to parapet, its ribs every frame, end walls glazed */
  const yb=L.TOP,sA=Z.s0+.3,sB=Z.s1-.3,half=(sB-sA)/2,vy=(u)=>yb+R*Math.sin(PI*u);
  psurf('glass',(u,v)=>nrP(lerp(Z.t0,Z.t1,u),lerp(sA,sB,v),vy(v)),Math.max(4,Math.round((Z.t1-Z.t0)/2)),16,hc(0x9ab8c0),{up:true});
@@ -96,5 +97,13 @@ function nrGreenhouse(Z){const L=NR.L,W=NR.W,y=L.D[3],R=6.5;
  for(const t of [Z.t0,Z.t1])psurf('glass',(u,v)=>{const s=lerp(sA,sB,u),w=(s-sA)/(sB-sA);return nrP(t,s,lerp(yb,vy(w),v));},16,1,hc(0x9ab8c0),{flip:t===Z.t0});
  /* the kerb the vault stands on */
  for(const s of [sA,sB])nrBand('white',Z.t0,Z.t1,s-.3,s+.3,yb,yb+.35,P('white'),'oitse');}
-function nrHalls(){for(const Z of NR.ZONES){if(Z.kind==='mess')nrMess(Z);else if(Z.kind==='greenhouse')nrGreenhouse(Z);}}
+/* what grows in a bed (t..t+1.6, s0..s1, its earth at y): by bed, low greens in two rows, or vines on stakes with their
+   fruit, or a row of leeks and roots */
+function nrCrops(t,s0,s1,y){const k=nrMod(Math.round(t*3.1+s0),3),G=[0x4e7a34,0x5f8a3c,0x3f6a30,0x6a9440];
+ for(const tt of [t+.42,t+1.18])for(let s=s0+.35;s<s1-.2;s+=.5){const p=nrP(tt,s+rr(-.06,.06),y),g=hc(G[(rng()*G.length)|0]);
+  if(k===0)sph('turf',p[0],y,p[2],rr(.18,.27),g,.7,6);
+  else if(k===1){if(tt>t+1)continue;cyl('timber',p[0],y,p[2],.025,1.3,P('timber'),5);sph('turf',p[0],y+.75,p[2],.22,g,1.6,6);
+   if(rng()<.6)sph('turf',p[0]+.12,y+rr(.5,1.0),p[2],.06,hc(0xb83224),1,6);}
+  else cone('turf',p[0],y,p[2],.09,rr(.35,.6),g,5);}}
+function nrHalls(){reseed(4630);for(const Z of NR.ZONES){if(Z.kind==='mess')nrMess(Z);else if(Z.kind==='greenhouse')nrGreenhouse(Z);}}
 nrPart('bridge',nrBridge);nrPart('dining',nrDining);nrPart('engine',nrEngineRooms);nrPart('halls',nrHalls);
