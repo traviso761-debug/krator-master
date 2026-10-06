@@ -1318,6 +1318,11 @@ chroma key (the meta's `_source.note` says so). Ask for magenta next time: the g
 Still owed from the audit after this: `card.palm` (fronds as a card), `card.lichen`, `card.lotus` (single pads), `bark.strangler`, `card.samphire`,
 `card.ginkgo`, `card.heath`, `ground.shingle`, `skin.marine`, `wood.petrified`; and every building row in "prompted earlier and still owed".
 
+#### Delivered 2026-10-06: an unprompted extra (pasted into the chat)
+
+Batch `chatgpt-2026-10p-gnarled.json`. `wood.gnarled`: weathered, wind-twisted wood with flowing grain and knots, full colour, 1 m tile.
+Not wired; it is there for driftwood, burl furniture (carved tabletops, bowls, handles), old posts and stumps.
+
 #### Delivered 2026-10-06: six owed prompts (pasted into the chat)
 
 Batch `chatgpt-2026-10n-owed.json`. `skin.sky-ray` (Iziz `fauna_ray`; the `FAUNATEX` hook is now full), `hide.fuzz.pterosaur` (Girder
