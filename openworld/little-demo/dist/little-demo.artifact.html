@@ -6220,7 +6220,10 @@ const ORIGIN=new THREE.Vector3();const _m=new THREE.Matrix4(),_q=new THREE.Quate
 function pool(key,proto){let p=POOLS.get(key);if(!p){p={key,proto,n:0,cap:0,arr:null,attr:null,meshes:[]};POOLS.set(key,p);}return p;}
 function ensure(p,n){if(n<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<n)cap*=2;
  for(const m of p.meshes){scene.remove(m);m.dispose&&m.dispose();}p.meshes=[];const old=p.arr;p.arr=new Float32Array(cap*16);if(old)p.arr.set(old);p.attr=new THREE.InstancedBufferAttribute(p.arr,16);p.attr.setUsage(THREE.DynamicDrawUsage);p.cap=cap;
- for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);m.instanceMatrix=p.attr;m.frustumCulled=false;m.count=0;m.userData.flora=p.key;m.userData.inspectLabel='flora';scene.add(m);p.meshes.push(m);}}
+ // white per-instance colours: three.js r128 leaves instanceColor out of its program cache key, so an instanced mesh
+ // without them can be handed a program built for one with them (a town tile's) and throw every frame
+ const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3);
+ for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;m.userData.flora=p.key;m.userData.inspectLabel='flora';scene.add(m);p.meshes.push(m);}}
 const spec=(r,lv)=>({kit:KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap});
 const pkey=(r,lv)=>r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
 let on=true;
@@ -6420,10 +6423,13 @@ function build(rec,town,T){const t0=performance.now(),head=T.head,tex=textures(h
  const label=rec.name+' (baked from '+rec.build+')';
  if(head.ground)grp.add(ground(T,head.ground,rec.R));
  const m4=new THREE.Matrix4();
+ // three.js r128 leaves per-instance colour out of its program cache key: an instanced mesh without colours can be
+ // handed a program built for one with them, read a null instanceColor and throw every frame (Mungo's reed-kit items).
+ // So every instanced mesh of a tile carries colours: white (no change) where the bake has none
  for(const r of head.meshes){const G=geometry(T,r.g),M=r.water?waterMat(r.wcol||0x3a6a7a):mats[r.mat];let o;
   if(r.inst){const e=view(T,r.inst);o=new THREE.InstancedMesh(G,M,r.count);
    for(let i=0;i<r.count;i++){const b=i*12;m4.set(e[b],e[b+3],e[b+6],e[b+9],e[b+1],e[b+4],e[b+7],e[b+10],e[b+2],e[b+5],e[b+8],e[b+11],0,0,0,1);o.setMatrixAt(i,m4);}
-   if(r.icol){const c=view(T,r.icol),f=new Float32Array(r.count*3);for(let i=0;i<f.length;i++)f[i]=c[i]/255;o.instanceColor=new THREE.InstancedBufferAttribute(f,3);}
+   {const f=new Float32Array(r.count*3);if(r.icol){const c=view(T,r.icol);for(let i=0;i<f.length;i++)f[i]=c[i]/255;}else f.fill(1);o.instanceColor=new THREE.InstancedBufferAttribute(f,3);}
    o.frustumCulled=false;S.instances+=r.count;}
   else o=new THREE.Mesh(G,M);
   o.renderOrder=r.water?1:(r.ro||0);o.userData.inspectLabel=label+' · '+r.name;o.userData.town=rec.name;o.matrixAutoUpdate=true;
@@ -6708,6 +6714,12 @@ async function start(){
  // the escarpments, on the height grid: the floor's and the plateau's levels (16 bits in R,G) and the weight
  const d16=img=>{const p=pixels(img),a=new Float32Array(nh);for(let i=0;i<nh;i++)a[i]=lo+((p[i*4]<<8)|p[i*4+1])/65535*(hi-lo);return a;};
  R.scarpL=d16(im.scarpl);R.scarpU=d16(im.scarpu);R.scarpW=new Float32Array(ch(pixels(im.scarpw),nh));
+ // the towns' tiles are files beside the page: where the page cannot fetch them (the gallery's frame blocks fetch) the
+ // towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints
+ const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns;
+ if(T&&T.length){msg('looking for the towns');const u=T[0].tile;
+  const ok=await fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)||await fetch(u+'.0.txt',{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+  if(!ok){WORLD_DATA.towns=null;console.warn('town tiles cannot be fetched here: the world runs without its towns');}}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);

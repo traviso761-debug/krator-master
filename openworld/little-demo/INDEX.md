@@ -30,5 +30,5 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `88-world-towns.js` | 9 |  |
 | `90-world-camera.js` | 13 | picking the ground (58); the polygon tool (75); go to (81); the minimap (97) |
 | `91-world-probe.js` | 12 |  |
-| `98-world-start.js` | 5 |  |
+| `98-world-start.js` | 6 |  |
 | `99-tail.html` | <1 |  |

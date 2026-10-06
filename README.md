@@ -69,7 +69,9 @@ starting a build. `INDEX.md` lists every build and links to each build's own ind
 holds the working rules for agents. `VISUAL-BAR.md` is the look every world is judged against:
 the pillars, the banned outcomes, the measured gates, the delta loop and which engine carries
 each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
-kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
+kits in `kits/`, biomes in `biomes/`, shared code in `core/`, and open worlds (a region of the scale model at 1:1,
+streamed, with the biome kits' flora, the built settlements placed in it as tiles baked from their own pages, and
+highways between them) in `openworld/` (`openworld/little-demo/README.md`). The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 
 **Keep the Krator Worlds gallery current.** Update it automatically only when you

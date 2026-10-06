@@ -70,10 +70,13 @@ function build(rec,town,T){const t0=performance.now(),head=T.head,tex=textures(h
  const label=rec.name+' (baked from '+rec.build+')';
  if(head.ground)grp.add(ground(T,head.ground,rec.R));
  const m4=new THREE.Matrix4();
+ // three.js r128 leaves per-instance colour out of its program cache key: an instanced mesh without colours can be
+ // handed a program built for one with them, read a null instanceColor and throw every frame (Mungo's reed-kit items).
+ // So every instanced mesh of a tile carries colours: white (no change) where the bake has none
  for(const r of head.meshes){const G=geometry(T,r.g),M=r.water?waterMat(r.wcol||0x3a6a7a):mats[r.mat];let o;
   if(r.inst){const e=view(T,r.inst);o=new THREE.InstancedMesh(G,M,r.count);
    for(let i=0;i<r.count;i++){const b=i*12;m4.set(e[b],e[b+3],e[b+6],e[b+9],e[b+1],e[b+4],e[b+7],e[b+10],e[b+2],e[b+5],e[b+8],e[b+11],0,0,0,1);o.setMatrixAt(i,m4);}
-   if(r.icol){const c=view(T,r.icol),f=new Float32Array(r.count*3);for(let i=0;i<f.length;i++)f[i]=c[i]/255;o.instanceColor=new THREE.InstancedBufferAttribute(f,3);}
+   {const f=new Float32Array(r.count*3);if(r.icol){const c=view(T,r.icol);for(let i=0;i<f.length;i++)f[i]=c[i]/255;}else f.fill(1);o.instanceColor=new THREE.InstancedBufferAttribute(f,3);}
    o.frustumCulled=false;S.instances+=r.count;}
   else o=new THREE.Mesh(G,M);
   o.renderOrder=r.water?1:(r.ro||0);o.userData.inspectLabel=label+' · '+r.name;o.userData.town=rec.name;o.matrixAutoUpdate=true;

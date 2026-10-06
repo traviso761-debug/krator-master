@@ -1,5 +1,18 @@
 # Little Demo: known issues
 
+- [ ] **The owner's todo list (2026-10-05, after the trial)**:
+  - [ ] Shade needs to be added (a tile from `settlements/shade`).
+  - [ ] The cliff near Verge looks horrible at full render (its ground mesh lost the strata shader; the band round it
+        blends a 934 m drop into the scale model's 1.7 km).
+  - [ ] Locus: move it closer to the lake and turn it so its river runs into the lake; its own highways end at its
+        border and join nothing.
+  - [ ] Highways ending at a town's border is a problem for most settlements: join them to each town's own highway
+        stubs and gates (its `ST` graph). The highways are also too big for the settlements (8 m carriageway).
+  - [ ] Veladiga is turned the wrong way and needs a canyon of its own size dug behind and in front of it.
+  - [ ] Arcbeam: find a canyon candidate for it, modifying the terrain round it if needed, so its gorge fits.
+  - [ ] Mungo: move it somewhere near where its lake shore makes sense.
+  - [x] A render error ("reading 'isInterleavedBufferAttribute'") after visiting Mungo: three.js r128 leaves per-instance
+        colour out of its program cache key; every instanced mesh (tiles, flora pools) now carries `instanceColor`.
 - [ ] **Settlements and highways are a trial** (README.md, "Settlements and highways"). Open:
   - [ ] **Two escarpment crossings are badly engineered.** Mungo-Verge comes down the abyss's escarpment about 25 km
         south of Verge (near 205300, 157400) through a 715 m cut, and the legs of its switchbacks there are close

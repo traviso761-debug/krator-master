@@ -19,6 +19,12 @@ async function start(){
  // the escarpments, on the height grid: the floor's and the plateau's levels (16 bits in R,G) and the weight
  const d16=img=>{const p=pixels(img),a=new Float32Array(nh);for(let i=0;i<nh;i++)a[i]=lo+((p[i*4]<<8)|p[i*4+1])/65535*(hi-lo);return a;};
  R.scarpL=d16(im.scarpl);R.scarpU=d16(im.scarpu);R.scarpW=new Float32Array(ch(pixels(im.scarpw),nh));
+ // the towns' tiles are files beside the page: where the page cannot fetch them (the gallery's frame blocks fetch) the
+ // towns are dropped before the land is laid out, so it keeps its own ground instead of empty town footprints
+ const T=WORLD_DATA.towns&&WORLD_DATA.towns.towns;
+ if(T&&T.length){msg('looking for the towns');const u=T[0].tile;
+  const ok=await fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)||await fetch(u+'.0.txt',{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
+  if(!ok){WORLD_DATA.towns=null;console.warn('town tiles cannot be fetched here: the world runs without its towns');}}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
  CAM.paintBase(R);

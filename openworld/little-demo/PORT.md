@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 46 (30%) | 0 (0%) | 9 (6%) | 93 (60%) | 6 (4%) |
+| KB | 46 (30%) | 0 (0%) | 9 (6%) | 95 (61%) | 6 (4%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,13 +21,13 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/81-world-terrain.js` | 11.4 | [web] | 10 | 1 | 0 | 0 | 3 | 2 | 5 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/83-world-water.js` | 6.1 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 |  |
 | `src/84-world-nursery.js` | 12.8 | [web] | 8 | 0 | 0 | 0 | 6 | 1 | 10 | 0 | 0 | 0 | 0 |  |
-| `src/85-world-flora.js` | 12.5 | [web] | 3 | 0 | 0 | 0 | 5 | 2 | 0 | 3 | 0 | 0 | 0 |  |
+| `src/85-world-flora.js` | 12.8 | [web] | 4 | 0 | 0 | 0 | 5 | 2 | 0 | 4 | 0 | 0 | 0 |  |
 | `src/86-world-floor.js` | 6.0 | [web] | 5 | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87-world-places.js` | 2.9 | [web] | 6 | 0 | 5 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/88-world-towns.js` | 8.6 | [web] | 20 | 0 | 0 | 0 | 2 | 2 | 0 | 3 | 0 | 0 | 2 |  |
+| `src/88-world-towns.js` | 9.0 | [web] | 20 | 0 | 0 | 0 | 2 | 2 | 0 | 3 | 0 | 0 | 2 |  |
 | `src/90-world-camera.js` | 12.6 | [web] | 3 | 3 | 6 | 14 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/91-world-probe.js` | 12.1 | [web] | 0 | 0 | 1 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/98-world-start.js` | 5.1 | [web] | 0 | 1 | 2 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/98-world-start.js` | 5.7 | [web] | 0 | 1 | 2 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 1 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

@@ -469,12 +469,12 @@
    "sha256": "7eab9b199884f2b3f528c4095f7998e346d603b189f8763866075219b26bb28e"
   },
   "openworld/little-demo/dist/little-demo.html": {
-   "sha256": "2c89e1d282296e7628993d6c0fbe56d8e45fdee62d94f66eb82cc59bd8fa47d0",
-   "bytes": 4807320
+   "sha256": "14b3c17185e37d2f10c7fbd6efb262ce6717bd55921fd9d183953327f71ba6d3",
+   "bytes": 4808615
   },
   "openworld/little-demo/dist/little-demo.artifact.html": {
-   "sha256": "90e5b5dc73bacf3b2e751e600b4919aec685450b85b82474e402b8642d881c2d",
-   "bytes": 4807062
+   "sha256": "dd45242d4992a6eff278971fa932635802e03f3def90e2bb41368155e2d100ac",
+   "bytes": 4808357
   }
  },
  "what": "SHA-256 of every built page; tools/port_baseline.py"

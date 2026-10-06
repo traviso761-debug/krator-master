@@ -51,6 +51,10 @@ ENTRIES = [
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea.'),
     ('world', 'shade', 'settlements/shade/dist/shade.html', 'Shade',
      'The Eastern Nomads\' sunken basin in the high desert: a waterfall into a turquoise pool, a carved Petra face, pueblos round the rim and cliff dwellings under alcoves.', 'new'),
+    ('world', 'verge', 'settlements/verge/dist/verge.html', 'Verge',
+     'Twin cities on the abyss escarpment: the upper on the plateau, the lower on the floor beneath the cataracts, joined by a switchback trail and a funicular; caravans on the trail.', 'new'),
+    ('world', 'little-demo', 'openworld/little-demo/dist/little-demo.html', 'Little Demo (open world)',
+     'The scale model's eastern desert at 1:1, 1,080 by 1,370 km, streamed: the abyss escarpment, the Yuni river, the desert, abyss and jungle flora by climate, and twelve highways. Its six built towns load only in the standalone artifact (https://claude.ai/artifact/Y3GKfn8fuaDPmtJnHW62RJ): the gallery's frame cannot fetch their tiles.', 'new'),
     ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
      'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 
