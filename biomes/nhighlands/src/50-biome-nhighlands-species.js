@@ -436,6 +436,9 @@ const M=NHL.MAT={
  halo:new T3.MeshBasicMaterial({map:TX.glow,color:0xffd8a0,transparent:true,opacity:0,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide,fog:false}),
  haloV:new T3.MeshBasicMaterial({map:TX.glow,color:0xc090ff,transparent:true,opacity:0,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide,fog:false}),
 };
+// the material library (core/materials/PLAN.md): with a 'nhighlands' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+NHL.LIB=BIO.libSwap('nhighlands',NHL.MAT);
 M.halo.visible=M.haloV.visible=false;
 // the bulbs sway on their threads like the pods of the core
 [M.bulb,M.pod].forEach((m,i)=>{m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')

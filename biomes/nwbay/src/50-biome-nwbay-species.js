@@ -448,6 +448,9 @@ NWBAY.MAT={
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'nwbay' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+NWBAY.LIB=BIO.libSwap('nwbay',NWBAY.MAT);
 const M=NWBAY.MAT;
 ['Prism gum bark','Fibrous bark','Pale bark','Wrinkled bark','Jointed stems (pipe reed)','Strangler lattice (cliff fig)','Ironbark bark','Cinder-pine bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:i===4?3:4,i===0?9:i===4?8:6]}));
 BIO.bucket('root',M.root,{label:'Aerial roots and prop roots',uvScale:[2,5]});

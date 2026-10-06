@@ -79,3 +79,4 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] The brain-coral tree replaced by the trumpet tree; a wide-canopy
       parasol tree; the savannah's purple (Vain fronds, heath, pinecone succulents).
 - [x] Every bole lathe ends in a dome ring (inherited lesson, kept).
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

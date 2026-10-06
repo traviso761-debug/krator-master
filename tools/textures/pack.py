@@ -26,6 +26,8 @@ Processing, per family:
   mapOnly  `"mapOnly": true` writes the colour map only (a sheet the build uses as a plain texture, not a lit material)
   optional a family with `"optional": true` is skipped (with a note) while its library set does not exist yet: the build
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
+  cell     `"cell": [x0, y0, x1, y1]` (fractions from the sheet's top left): the host shows one cell of a card sheet (a
+           single plant from a nine-plant sheet); passed through to the pack entry
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
@@ -124,6 +126,8 @@ def process(fam, cfg, size):
         'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
         'files': {},
     }
+    if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
+        entry['cell'] = cfg['cell']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name

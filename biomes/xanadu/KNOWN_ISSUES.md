@@ -50,3 +50,4 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] Fairy rings and hornbeam arches as placements, with the rings' lawns on the floor.
 - [x] Runtime LOD (chunked bake, BIO.lodTick) with stand-in impostors for the hero trees.
 - [x] Groves round glades on the vale (a grove field in the zones, flowers thick in the glades).
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

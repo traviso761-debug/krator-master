@@ -507,6 +507,9 @@ const M=SWLOW.MAT={
  pad:BIO.leafMat(null,'swl-pad',{swayW:'1.0',swayA:.02,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'swlowlands' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SWLOW.LIB=BIO.libSwap('swlowlands',SWLOW.MAT);
 [['ember','Ember bark (manzanita)',[.9,2.4]],['lacquer','Lacquered bark (mangrove, stripped cork)',[2,4]],['flay','Flayed bark (madrone, gum)',[2.2,4.5]],
  ['mottle','Mottled bark (sycamore)',[3,5]],['ring','Ringbark',[1.4,2.4]],['furrow','Furrowed bark (oaks, willow)',[2.4,3.4]],['stringy','Stringy bark (cypress)',[2.4,5]],
  ['pale','Pale bark (kapok, fig)',[3,5]],['strip','Ribbon bark (gum)',[2.4,6]],['ocelli','Eyed bark',[2.2,2.6]],['crack','Cracked ghost bark',[2.2,3.2]],['plate','Plated bark (pine)',[1.8,3.4]],['cork','Cork',[1.8,2.4]],['cane','Cane-palm stems',[.5,.9]],['fibre','Palm trunks',[2,3]]]

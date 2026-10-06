@@ -551,6 +551,9 @@ RIFT.MAT={
  pinecone:BIO.leafMat(null,'pinecone',{aN:true,irid:true,vertexColors:true,alphaTest:0,swayW:'0.0',swayA:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'rift' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+RIFT.LIB=BIO.libSwap('rift',RIFT.MAT);
 const M=RIFT.MAT;
 ['Scale bark','Fibrous bark','Pale bark','Stringy bark','Ribbed stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:4,i===0?9:6]}));
 BIO.bucket('barkF',M.barkFrill,{label:'Frill tree column (iridescent)',uvScale:[5,8]});

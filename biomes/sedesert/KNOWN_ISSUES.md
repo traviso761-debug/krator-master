@@ -128,3 +128,4 @@ Read before changing anything here. `build.py` prints the open count.
       6.8 km disc no longer pay two terrain calls per rejected cell.
 - [x] The water-bound passes (palms, candles, reeds in the shallows, the near floor
       band) are windowed to the river strip and the pond.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

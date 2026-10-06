@@ -1,0 +1,492 @@
+{
+ "build": "nwlowlands",
+ "note": "The nwlowlands kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nwlowlands after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet.",
+ "size": 512,
+ "families": {
+  "bk.smooth": {
+   "lib": "bark.smooth",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.206
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.ring": {
+   "lib": "bark.cherry",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.182
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.fern": {
+   "lib": "bark.palm",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.273
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.ghost": {
+   "lib": "bark.ghostwood",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.286
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.bluegum": {
+   "lib": "bark.bark_bluegum",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.434
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.birch": {
+   "lib": "bark.birch",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.252
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.fibre": {
+   "lib": "bark.juniper",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.173
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.plate": {
+   "lib": "bark.ponderosa",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.161
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "bk.char": {
+   "lib": "bark.char",
+   "scale": [
+    4,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.156
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "wood": {
+   "lib": "wood.silver",
+   "scale": [
+    3,
+    4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.46
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "rock": {
+   "lib": "rock.rock_face",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.457
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
+  },
+  "oakleaf": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.682
+   },
+   "size": 512
+  },
+  "glossy": {
+   "lib": "card.mahogany",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.684
+   },
+   "size": 512
+  },
+  "broad": {
+   "lib": "card.broadleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.689
+   },
+   "size": 512
+  },
+  "lance": {
+   "lib": "card.prismgum",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.685
+   },
+   "size": 512
+  },
+  "needle": {
+   "lib": "card.pine",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.666
+   },
+   "size": 512
+  },
+  "feather": {
+   "lib": "card.acacia",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.649
+   },
+   "size": 512
+  },
+  "ginkgo": {
+   "lib": "card.ginkgo",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.719
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "blossom": {
+   "lib": "card.blossom",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.803
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "veil": {
+   "lib": "card.weeper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.667
+   },
+   "size": 512
+  },
+  "drape": {
+   "lib": "card.weeper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.667
+   },
+   "size": 512
+  },
+  "palmfrond": {
+   "lib": "card.palm",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.678
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "bigfrond": {
+   "lib": "card.treefern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.656
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "frond": {
+   "lib": "card.fern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.644
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "forkfern": {
+   "lib": "card.fern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.678
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "heart": {
+   "lib": "card.paddle",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.681
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "spike": {
+   "lib": "card.flowerspike",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.704
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "reed": {
+   "lib": "card.reed",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.65
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "grass": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.693
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "under": {
+   "lib": "card.jungle.clump.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512
+  },
+  "beard": {
+   "lib": "card.beard",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.664
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "hang": {
+   "lib": "card.vine.hanging.0",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.718
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.658
+   },
+   "size": 512,
+   "cell": [
+    0.34,
+    0.34,
+    0.66,
+    0.66
+   ]
+  }
+ }
+}

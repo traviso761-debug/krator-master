@@ -534,6 +534,9 @@ const M=NWLOW.MAT={
  halo:new T3.MeshBasicMaterial({map:TX.glow,color:0xffffff,transparent:true,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide,fog:false}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'nwlowlands' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+NWLOW.LIB=BIO.libSwap('nwlowlands',NWLOW.MAT);
 [['smooth','Smooth bark (meranti, ginkgo, poplar, wattle, banksia)',[3,5]],['ring','Ringed stems (mist palm, pandan)',[1,1.6]],['fern','Tree-fern trunks',[1.2,1.6]],
  ['ghost','Ghost bark (ghost gum, tower ash)',[3,5]],['bluegum','Ribbon bark (blue gum)',[2.4,6]],['birch','Birch bark',[1.2,2.2]],['fibre','Fibrous bark (spire cedar, cypress, she-oak)',[2.4,5]],
  ['silver','Silver bark (glow-willow)',[2.4,4]],['paper','Paperbark',[2,2.4]],['plate','Plated bark (kauri, crag pine)',[2,3.4]],['char','Grass-tree trunks',[1,1.4]]]

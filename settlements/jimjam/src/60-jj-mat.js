@@ -156,7 +156,7 @@ for(const jjK in JMAT){const jjM=JMAT[jjK];if(!jjM.map)jjM.color.convertSRGBToLi
 // full colour (tint keep 1). ?mat=proc keeps the procedural look. The world-UV'd walls tile at the set's own size in
 // metres (u and v apart: a set's tile need not be square); the domes keep their UV-around-the-dome mapping with
 // repeats that keep about the procedural scale count; the shaft panels and the sunray map once over their UVs. ----
-const JJ_LIB_FAMILY={tile:'brickDeep'};                                  // JMAT key -> pack family, where they differ
+const JJ_LIB_FAMILY={tile:'brickDeep',slate:'domeSlate',terracotta:'domeTerracotta'};   // the dome materials' JMAT keys differ from their families                                  // JMAT key -> pack family, where they differ
 const JJ_DOME_REPEAT={domeTerracotta:[20,12],domeSlate:[21,9],domeGold:[20,12]};
 (function(){
  if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return;
@@ -166,7 +166,7 @@ const JJ_DOME_REPEAT={domeTerracotta:[20,12],domeSlate:[21,9],domeGold:[20,12]};
   if(jjT.normalMap){jjM.normalMap=jjT.normalMap;jjM.normalScale.set(jjL.normalScale,jjL.normalScale);}
   if(jjT.roughnessMap){jjM.roughnessMap=jjT.roughnessMap;jjM.roughness=1;}
   if(jjM.userData.uvK!==undefined)jjWorldUV(jjM,1/jjL.scale[0],1/jjL.scale[1]);
-  else{const jjR=JJ_DOME_REPEAT[jjK]||(jjK.startsWith('shaft_')?[1,jjL.scale[0]/jjL.scale[1]]:null);
+  else{const jjR=JJ_DOME_REPEAT[JJ_LIB_FAMILY[jjK]||jjK]||(jjK.startsWith('shaft_')?[1,jjL.scale[0]/jjL.scale[1]]:null);
    if(jjR)for(const jjX of [jjT.map,jjT.normalMap,jjT.roughnessMap])if(jjX)jjX.repeat.set(jjR[0],jjR[1]);}
   jjM.userData.lib=jjL;jjM.needsUpdate=true;}
 })();

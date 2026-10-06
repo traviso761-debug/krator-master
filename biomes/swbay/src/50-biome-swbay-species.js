@@ -367,6 +367,9 @@ SWBAY.MAT={
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'swbay' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SWBAY.LIB=BIO.libSwap('swbay',SWBAY.MAT);
 const M=SWBAY.MAT;
 ['Prism gum bark','Fibrous bark','Pale bark','Baobab bark','Monkey-puzzle bark','Cap-tree stipes','Ironbark bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:4,i===0?9:6]}));
 BIO.bucket('cap',M.cap,{label:'Cap-tree caps',uvScale:[8,8]});
