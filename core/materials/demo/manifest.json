@@ -3152,6 +3152,36 @@
    "row": "Pattern sheets",
    "col": "Dalab",
    "status": "new"
+  },
+  {
+   "src": "patterns/dalab/mural-lizards",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.mesquite",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.boojum",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.marine",
+   "row": "Fibre & organic",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.strangler",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
   }
  ]
 }

@@ -104,7 +104,36 @@ PALETTE_FILE = '05-palette.js'
 ROOT = os.path.dirname(os.path.dirname(HERE))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js'}
+VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js'}
+# the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Locus has no TEX.def
+# painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
+RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
+TEX_DIR = os.path.join(HERE, 'tex')
+DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}
+
+
+def matlib_pack():
+    """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack), as Yuni's build.py.
+    It reads the committed tex/ files only, so the build stays deterministic. With no tex/pack.json, Locus runs on its
+    procedural textures."""
+    import base64
+    pj = os.path.join(TEX_DIR, 'pack.json')
+    if not os.path.isfile(pj):
+        return "/* no tex/pack.json: Locus runs on its procedural textures */\nKMAT.pack('locus', {});\n"
+    pack = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(pack['families']):
+        e = pack['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
+             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
+             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
+            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
+            "KMAT.pack('locus', {\n" + ',\n'.join(out) + '\n});\n')
 
 
 def virtual_bodies():
@@ -122,6 +151,7 @@ def virtual_bodies():
         except Exception as e:
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
+    vb['46-matlib-pack.js'] = matlib_pack()
     return vb
 
 
@@ -209,6 +239,8 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
+    for f in RECORD_FILES:
+        paths.setdefault(f, os.path.join(RECORD_DIR, f))
     for d in (LOD_DIR, FURNISH_DIR, RAND_DIR, TAGS_DIR, MASK_DIR, ATMOS_DIR, CLOCK_DIR, MINIMAP_DIR):       # a src/ copy with the same name overrides
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:

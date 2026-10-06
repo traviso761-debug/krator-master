@@ -21,11 +21,6 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfec
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Corrugated steel shipping-container side seen straight on: wide trapezoidal vertical ribs, eight per tile, painted metal with rust streaks running down from the top and rust blotches at the rib bends, dents, scratches and dark specks. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
 ```
 
-**`patterns/dalab/mural-lizards`** (for: Dalab mural variant 3)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A painted frieze on cream lime wash (#e6d8b8) between thin red ochre (#a8382a) stripes and black (#2a2420) stepped-fret bands: two turquoise (#2f9a8a) lizards with gold (#d8a838) stripes facing each other either side of a gold maize sheaf, hand-painted and slightly worn. The pattern repeats horizontally. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
 **`patterns/reedlake/awayo`** (for: Reed Lake awayo cloth)
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Andean awayo carrying cloth: horizontal stripes in red, ochre, black, white, indigo, green (#3f7a5a) and plum (#6a2a4a), with black-edged bands of stepped diamonds and zigzags, visible warp-faced weave. The pattern repeats in both directions. Full colour: keep the colours exactly as described; this texture is not tinted.
@@ -65,39 +60,9 @@ Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat
 A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Five pinnate date-palm fronds laid diagonally and four pleated fan-palm (palmetto) fans, each a single frond with its stalk. Draw the plant material in a light, slightly muted neutral grey-green with natural variation in value only, so it can be tinted to different species without looking stained.
 ```
 
-**`card.lotus`** (for: xanadu and nwbay ponds (ground.lilypond is the pond surface))
-```
-A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Nine floating lily pads seen from above, round with one notch, five of them carrying an open lotus flower; petals pale cream. Draw the plant material in a light, slightly muted neutral grey-green with natural variation in value only, so it can be tinted to different species without looking stained.
-```
-
-**`card.lichen`** (for: sedesert, ebadlands, crater rocks)
-```
-A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Nine ragged lichen patches seen from above, crustose and leafy rosettes of different shapes, in orange, grey-green and yellow. Full colour: keep the colours exactly as described; this texture is not tinted.
-```
-
 **`bark.dragon`** (for: sedesert dragon tree and quiver tree (the bark.desert row))
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dragon-tree bark seen straight on: smooth grey-brown skin banded by horizontal rings of old leaf scars, fine vertical cracks between the bands. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`bark.mesquite`** (for: sedesert and ebadlands mesquite (the bark.desert row))
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Mesquite bark seen straight on: dark, deeply furrowed bark in long twisting ridges, stringy fibres peeling at the ridge edges. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`bark.boojum`** (for: sedesert bottle tree and boojum (the bark.desert row))
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bottle-tree bark seen straight on: smooth pale trunk skin with thin papery flakes peeling in places, small scattered short spines. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`bark.strangler`** (for: nwbay strangler figs)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Strangler-fig trunk seen straight on: smooth grey aerial roots fused into a net of thick and thin strands running mostly vertically, dark gaps between them, a few branching joins. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
-**`card.samphire`** (for: eastabyss salt flats, rift)
-```
-A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff) background, square, 2048x2048, in a three-by-three grid, each fully visible and well separated with magenta all round it, no overlap. No magenta, pink or purple anywhere in the subject. Viewed straight on, flat even shadowless lighting, no cast shadow, no ground under them, no grey or white background. Subject: Nine sprigs of samphire (glasswort): jointed fleshy succulent stems branching like tiny cacti, each standing from the bottom of its cell. Draw the plant material in a light, slightly muted neutral grey-green with natural variation in value only, so it can be tinted to different species without looking stained.
 ```
 
 **`card.ginkgo`** (for: nwlowlands, xanadu)
@@ -115,11 +80,6 @@ A single sheet of nine separate cut-outs on a solid flat bright magenta (#ff00ff
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Beach shingle seen from above: rounded flat pebbles of two to six centimetres packed together, a few shell fragments between them. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
 ```
 
-**`skin.marine`** (for: nw/swbay swimmers; any whale or dolphin)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Smooth marine-animal hide like a dolphin's: fine stretch wrinkles, faint pale scars, soft blotchy countershading. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted.
-```
-
 **`wood.petrified`** (for: xanadu agate bark kind)
 ```
 Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polished petrified wood: agate bands of red, orange, cream and grey following old growth rings, a few glassy crystal flecks. Full colour: keep the colours exactly as described; this texture is not tinted.
@@ -131,6 +91,6 @@ Delivered under the same id (44): `stone.cut`, `plaster`, `brick`, `metal.corrug
 
 Delivered under another id: `hide.rawhide` as `patterns/common/rawhide`, `fibre.basket.coiled` as `patterns/common/basket-coil`, `fibre.mat.floor` as `library/fibre.reedmat`, `lantern.horn` as `patterns/common/lantern-horn`, `lantern.paper` as `patterns/common/lantern-paper`, `bone-inlay` as `patterns/beast-riders/bone-inlay`, `claw-tapestry` as `patterns/beast-riders/claw-tapestry`, `emblem` as `patterns/beast-riders/emblem`, `totem` as `patterns/beast-riders/totem`, `pennant` as `patterns/beast-riders/pennant`, `plaque` as `patterns/beast-riders/plaque`, `rider.saddle` as `patterns/beast-riders/saddle`, `feather.archae` as `library/card.feather.archae`, `feather.quetzal-crest` as `library/card.feather.crest`, `skin.scale.archae` as `library/organic.scale.terracotta`, `chitin.dragonfly` as `library/organic.chitin.iridescent`.
 
-Delivered later the same day: `wing.butterfly` (in Iziz's pack), `skin.sky-ray` (in Iziz's pack), `hide.fuzz.pterosaur` (Girder's quetzal), `cloth.canvas.striped`, `concrete.ancient` (plus `concrete.ancient.b`), `wood.log.carved`; then `patterns/reedlake/band`, `ground.reedbed`, `reed.layers`, `reed.bundle`, `metal.worn`, `patterns/port/hazard`, `plate.hex`, `patterns/port/primer`, `concrete.slab`, `organic.fungus.stalk`, `stone.rendered.ruined`, `patterns/dalab/banner`, `patterns/dalab/mural-god-hero`, `patterns/dalab/mosaic`.
+Delivered later the same day: `wing.butterfly` (in Iziz's pack), `skin.sky-ray` (in Iziz's pack), `hide.fuzz.pterosaur` (Girder's quetzal), `cloth.canvas.striped`, `concrete.ancient` (plus `concrete.ancient.b`), `wood.log.carved`; then `patterns/reedlake/band`, `ground.reedbed`, `reed.layers`, `reed.bundle`, `metal.worn`, `patterns/port/hazard`, `plate.hex`, `patterns/port/primer`, `concrete.slab`, `organic.fungus.stalk`, `stone.rendered.ruined`, `patterns/dalab/banner`, `patterns/dalab/mural-god-hero`, `patterns/dalab/mosaic`; then `patterns/dalab/mural-lizards`, `card.lichen`, `card.lotus`, `card.samphire`, `bark.mesquite`, `bark.boojum`, `skin.marine`, `bark.strangler`.
 
 Delivered on a branch not yet merged: `wood.lash` (library/wood.lash on branch claude/hexahedron-materials (not merged yet)).
