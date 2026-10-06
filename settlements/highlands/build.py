@@ -98,6 +98,11 @@ RAND_DIR = os.path.join(ROOT, 'core', 'rand')     # KRAND: the tags' uid is its 
 TAGS_DIR = os.path.join(ROOT, 'core', 'tags')     # the tag registry the furniture is registered in (core/tags/README.md)
 TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')}
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
+# the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
+# clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
+# 88x-matlib-pack.js (tools/textures/matlib_pack.py); src/88y-highlands-matlib.js binds it onto MAT (KMAT.bindMat)
+RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']
+MATLIB_PACK = '88x-matlib-pack.js'
 CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/README.md)
 
 
@@ -142,6 +147,7 @@ _OLD_TARGETS = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-highlands-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -279,6 +285,7 @@ def build_one(target, do_checks, assert_origin):
     src = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
+    src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     src.update({f: os.path.join(FURNISH_DIR, f) for f in FURNISH_FILES if f not in src})
     src.update({f: p for f, p in TAGS_FILES.items() if f not in src})
@@ -299,6 +306,10 @@ def build_one(target, do_checks, assert_origin):
             continue
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'highlands')
+    order = sorted(order + [MATLIB_PACK])
 
     if do_checks:
         errs = check(order, bodies)

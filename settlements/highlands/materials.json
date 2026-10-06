@@ -1,0 +1,134 @@
+{
+ "build": "highlands",
+ "note": "highlands's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-highlands-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/highlands after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "size": 512,
+ "families": {
+  "wood": {
+   "lib": "wood.siding",
+   "scale": [
+    2.0,
+    1.7
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "woodV": {
+   "lib": "wood.lamppost",
+   "scale": [
+    0.8,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [
+    2.0,
+    1.92
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "plaster": {
+   "lib": "plaster",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "thatch": {
+   "lib": "roof.thatch.neutral",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.57
+   },
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "shingle": {
+   "lib": "roof.shingle.neutral",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "cloth": {
+   "lib": "cloth.canvas.striped",
+   "scale": [
+    1.2,
+    1.18
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.73,
+    "contrast": 2.2
+   },
+   "roughLift": 0.2,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 5
+   }
+  }
+ }
+}
