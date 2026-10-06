@@ -122,3 +122,7 @@ Version 55 (2026-10-06): `worlds/crater-drylands.html` added (the crater dryland
 Throne's rain shadow, char, the superbloom, regrowth and old scrub from the kit's own fire model; prism mallees, pyre pillars,
 frill-trees; granite kopjes; the library textures), from `main` at a2547d72. The live index (version 54) was kept: only the
 Crater drylands card was added. One publish call.
+Version 56 (2026-10-06): `worlds/scyvoi.html` added (the Scyvoi kit, 11.8 MB: five small and five large tents, the chief's great tent
+and carved vardo, the shaman's lodge, smithy and supply tents, all furnished with a cut-away; salamanders, chariots and carts,
+tethering; the Baelu fire redoubt) and `worlds/krator-catalog.html` replaced (1635 pieces: the Scyvoi furniture culture), from
+`main` at 34d77bca. The live index (version 55) was kept: the Scyvoi card was added and the Master catalog card updated. One publish call.
