@@ -3182,6 +3182,36 @@
    "row": "Bark & leaf",
    "col": "Bays & coast",
    "status": "new"
+  },
+  {
+   "src": "patterns/nacre/banded-trim",
+   "row": "Pattern sheets",
+   "col": "Hykkousoi (Ys)",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.dragon",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.shingle",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.marine.b",
+   "row": "Fibre & organic",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.container",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
   }
  ]
 }
