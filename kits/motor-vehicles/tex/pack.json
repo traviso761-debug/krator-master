@@ -20,7 +20,7 @@
    "size": 256,
    "source": {
     "albedo": "968387b8aead36d1bb391ff9125f2bf9f8ea3524",
-    "normal": "40e21031d7b82a4b6219dc933c1074d373681ddc",
+    "normal": "edce2f9048f57de7ce91acbd5cf4c3f9a4a589f0",
     "roughness": "924121b2ac5c08481350df373c13e523f3f2f29f"
    },
    "specular": 0.5,
@@ -50,7 +50,7 @@
    "size": 256,
    "source": {
     "albedo": "4e4360eca62f55e1c7c1825008a115d228563382",
-    "normal": "63bfae6347e474c66d9a75534b33f3483c0b04d0",
+    "normal": "5bab74d87d11a9bf1500c4c366f2b41a398c52b1",
     "roughness": "d1bd012e86a0edc6a21bc97daad1cec458394b5b"
    },
    "specular": 0.5,
@@ -80,7 +80,7 @@
    "size": 256,
    "source": {
     "albedo": "faf661fa3fc8a76d7cef183fa6a541435ce313ee",
-    "normal": "234eb9a480b4f7037145e9d16aef8403a6bf1024",
+    "normal": "653386213e9be0f7b4266a8618880233220a79ce",
     "roughness": "6dade9ca30ffee8e828812ebc3e98c6fd7368fff"
    },
    "specular": 0.5,
@@ -110,7 +110,7 @@
    "size": 256,
    "source": {
     "albedo": "e6d8106adbfc98d4a8ceacb6a8e42c46845c6aa4",
-    "normal": "5d1e5d57e8e3b6ab6f0b7f443c2d8e2c08bf4d3c",
+    "normal": "bb1c3ff2f9d9cebbc5374524d08ff7443f320db9",
     "roughness": "365526be69490b0a42723bde032fc66d5c8efb58"
    },
    "specular": 0.5,
@@ -140,7 +140,7 @@
    "size": 256,
    "source": {
     "albedo": "4dc6042a75d9e41951855dbe242388674444d694",
-    "normal": "d4572b3db8643df8d01ff7c6ca935670beb1bfe7",
+    "normal": "13225640173eda8b70066e6f02b38d5b3d195d36",
     "roughness": "e297572a2f8779494815a47cf99cd84cf3a6e5f1"
    },
    "specular": 0.5,
@@ -200,7 +200,7 @@
    "size": 256,
    "source": {
     "albedo": "2b0c99df23c12979c6fc333791d61885d75cdf8f",
-    "normal": "6aff6c92275e99507c2d256bfd9b2dabfc69a1e5",
+    "normal": "20f0aaa5279c25e849dda80c5980443d4c95c8f2",
     "roughness": "68e3830fab99ded97293d7ddaf9dbaa5e3fb0009"
    },
    "specular": 0.5,
@@ -209,6 +209,36 @@
     "keep": 0.12,
     "mean": 0.7,
     "sourceMean": 0.2726
+   }
+  },
+  "solar": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "solar.albedo.webp",
+    "normalMap": "solar.normal.webp",
+    "roughnessMap": "solar.rough.webp"
+   },
+   "lib": "panel.solar",
+   "metal": 0.3,
+   "normalScale": 0.35,
+   "roughLift": 0.0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "4957f7247c3854cd43be363e377745cc23d0e48d",
+    "normal": "48d7b6dc45cbc285a4479ef013e8bf0484c1a9fe",
+    "roughness": "389ff7749c73e377e069a278d90d3b581878c82c"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.5,
+    "sourceMean": 0.1798
    }
   },
   "tarp": {
@@ -230,7 +260,7 @@
    "size": 256,
    "source": {
     "albedo": "3db040199bb13a594cc0cf551011f024ad8bae8c",
-    "normal": "f9dd476790554704952285aa3a5c606ed10b5f12",
+    "normal": "82161e0233fd0fb47a0a6f29e0e0a066d88ac078",
     "roughness": "76aa09165cbff0f3066a0f3d0cbe943fe1b29a10"
    },
    "specular": 0.5,
@@ -260,7 +290,7 @@
    "size": 256,
    "source": {
     "albedo": "6e19e1672d2c547d9bd3f41c6d477ded91f76bf2",
-    "normal": "785c60a38572c3b3c66986276c12a0db8db633a3",
+    "normal": "408eecf4ba1f27f1fbf1bd160fa88d5842e8a626",
     "roughness": "5c384eb918f588bae25fca9d573cf415b59cbc62"
    },
    "specular": 0.5,

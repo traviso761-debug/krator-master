@@ -233,6 +233,34 @@
     "sourceMean": 0.7076
    }
   },
+  "bk.paper": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bk.paper.albedo.webp"
+   },
+   "lib": "bark.paperbark",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    2,
+    2.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "70547b9d231d9b9a4e0dd1bde4af27f83d12a025",
+    "normal": "c045d71f6724115c4b065e3193950d21dd6bf20f",
+    "roughness": "67d9ff1809ad5e67f4f5acc8d73fdcaddcab5ccb"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.7,
+    "sourceMean": 0.636
+   }
+  },
   "bk.plate": {
    "breakup": null,
    "card": false,
@@ -839,6 +867,38 @@
     "keep": 0.0,
     "mean": 0.678,
     "sourceMean": 0.4482
+   }
+  },
+  "pen": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.6667,
+    0.3333,
+    1.0,
+    0.6667
+   ],
+   "files": {
+    "map": "pen.albedo.webp"
+   },
+   "lib": "card.reef",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fb34129cb9d91b4354c2af2a8c4a32ee25f6147e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.82,
+    "sourceMean": 0.5453
    }
   },
   "reed": {

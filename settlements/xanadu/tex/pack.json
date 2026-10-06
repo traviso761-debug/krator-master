@@ -613,6 +613,36 @@
     "sourceMean": 0.3331
    }
   },
+  "xBTile": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "xBTile.albedo.webp",
+    "normalMap": "xBTile.normal.webp",
+    "roughnessMap": "xBTile.rough.webp"
+   },
+   "lib": "tile.bath.lens",
+   "metal": 0.05,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    1.43,
+    1.43
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "c4e50572c107f7c3399ad2d4dbf8cf92254dfd1c",
+    "normal": "7137f7490662c562556d4e02724fe13f6757f96e",
+    "roughness": "fd7b8b8111e513d4184849c120627aa819b48c2e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.42546480565089806,
+    "sourceMean": 0.4255
+   }
+  },
   "xEarth": {
    "breakup": {
     "cell": 6,
@@ -625,19 +655,19 @@
     "normalMap": "xEarth.normal.webp",
     "roughnessMap": "xEarth.rough.webp"
    },
-   "lib": "earth.adobe",
+   "lib": "earth.rammed",
    "metal": 0,
    "normalScale": 0.8,
    "roughLift": 0.0,
    "scale": [
-    2,
-    2
+    3,
+    3
    ],
    "size": 512,
    "source": {
-    "albedo": "59a91a5c7d0552f6993bcd189ccf5570719f1d4f",
-    "normal": "fba924fa24671c3653acb4e2494347f72af41aaa",
-    "roughness": "4cc20d73979fe6809c94a5c02db126b70beeeb2e"
+    "albedo": "f5a475298c9d73ae4975763764c0ab7007de11c6",
+    "normal": "fa5b6f47f339978d28943c688ed186f39bb997af",
+    "roughness": "1027bebff6000ad62b31b34c57acff9747ef44c1"
    },
    "specular": 0.5,
    "tint": {
@@ -645,7 +675,42 @@
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.655,
-    "sourceMean": 0.6264
+    "sourceMean": 0.5917
+   }
+  },
+  "xPenbey": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "xPenbey.albedo.webp",
+    "normalMap": "xPenbey.normal.webp",
+    "roughnessMap": "xPenbey.rough.webp"
+   },
+   "lib": "band.xanadu.twig",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "521c3add9f403508e64d3ca050bf00dd93a3c709",
+    "normal": "6a47a9c0daf9c067777dc5255505dfe1adc2456b",
+    "roughness": "a2722d06a16ad402573aee898ded4c51d953e37f"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#958680",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.536,
+    "sourceMean": 0.5769
    }
   },
   "xRock": {

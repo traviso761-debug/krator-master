@@ -369,6 +369,8 @@ window._tex = { size:TEXSZ, families:Object.keys(FAMMAT).filter(function(k){ ret
     fm.tex = T.map; fm.lib = L; fm.libTex = T;
   });
 })();
+/* a piece in a colour-carrying pattern family (tapestry, kilim) is drawn white over the pattern; without the pack, in c */
+function vothPatCol(fam, c){ return FAMMAT[fam] && FAMMAT[fam].lib ? 0xffffff : c; }
 /* the adapter: every family as a material record, for the export (window._materials) */
 (function(){
   if(typeof KMAT === 'undefined') return;

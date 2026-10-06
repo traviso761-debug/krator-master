@@ -1,0 +1,68 @@
+[
+ {
+  "src": "voth-kilim-star.png",
+  "out": "core/materials/patterns/voth/kilim-star",
+  "record": {
+   "id": "voth/kilim-star",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "(offered by the owner: Voth cultural textures)",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 1)",
+    "reuse": "Voth tapestries and door banners: a stepped star medallion in purple, orange and gold on black (full colour)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "voth-kilim-tri.png",
+  "out": "core/materials/patterns/voth/kilim-tri",
+  "record": {
+   "id": "voth/kilim-tri",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "(offered by the owner: Voth cultural textures)",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image 2)",
+    "reuse": "Voth kilim bands: rows of stepped triangles with flame motifs; awnings, rugs, saddle cloths (full colour)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ }
+]

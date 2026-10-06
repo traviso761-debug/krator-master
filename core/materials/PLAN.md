@@ -1348,6 +1348,18 @@ Batches `chatgpt-2026-10r-owed.json` and `-cards.json`. Tintable: `earth.rammed`
 sheets, magenta keyed): `card.pods`, `card.litter`, `card.reef`. Wired the same evening: `metal.corrugated.rusty` on Post-Apoc's corr and cont. `metal.rust.fine` was tried on the Ancients kit's
 rust and taken back out: it removes the stripes but reads as flat brown paint with no rust patches, and up close the stretched UVs still
 pull its grain into streaks; the Ancients rust stays procedural (the stretch, not the texture, is the problem).
+Also wired that evening: `earth.rammed` (Dalab dRammed; Xanadu xEarth, in place of earth.adobe), `roof.turf` (the vendored Highlands turf in
+Highlands, Dalab, Reed Lake, Ys; Dalab dTurf), `band.xanadu.twig` (xPenbey), `tile.bath.lens` (xBTile, full colour), `patterns/nacre/pearl-mosaic`
+(Ys hkMosaic, in place of paving.shell.terrazzo), `panel.solar` (motor-vehicles slot 10 `solar`: the Republic tractor's clam lid), and in the
+biomes `card.pods` (sedesert), `card.litter` (ebadlands), `card.reef` cells (rift frill, candle, anemone; xanadu anemone, frill; nhighlands
+fin; nwlowlands pen), `bark.whorled` and `wood.petrified` (xanadu bark0, bark1), `bark.paperbark` (nwlowlands bk.paper), `organic.fungus.gill`
+(swbay gill), `skin.alien.banded` (ebadlands bark.alien, LIBBARK slot 5). Not wired: `patterns/xanadu/sun-emblem` (its slot is a cut-out),
+`patterns/nacre/shell-inlay`, `patterns/reedlake/awayo` (the procedural stripe was kept by choice), crater drylands' litter (its own card
+loader has no litter entry), `card.lotus.bloom` and `card.palm.coconut` (added 2026-10-06 late; no slot asks for them yet).
+Voth (same evening): the owner's two Voth patterns, `patterns/voth/kilim-star` and `patterns/voth/kilim-tri`, as two new FAMMAT
+families, `tapestry` (hanging banners: the guild hall's door banners, the weavers' loom cloth, the bridges' drop banners, banner panels,
+the coastguard pennant) and `kilim` (canopies and stall awnings); full colour, the pieces drawn white over them (vothPatCol in
+47-texture.js), their banner colours without the pack; they sway like cloth. 76 draw calls, within budget.
 Two other sheets in Downloads (lotus blossoms, palm fronds) belong to another session and were left alone.
 
 #### Delivered 2026-10-06: an unprompted extra (pasted into the chat)

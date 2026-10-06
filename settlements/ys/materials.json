@@ -1,6 +1,6 @@
 {
  "build": "ys",
- "note": "Ys's adapter onto the material library (core/materials/PLAN.md; settlements/ys/MATERIAL-PROMPTS.md has every set's prompt). The families are Ys's material keys: the hyk shell kit's MAT pairs (hkShell..hkVerd: hykSurf lays metre UVs, a tile is 4 m, so the adapter repeats each set 4/scale times), the terrain (ground: 71-port-terrain lays x/18, z/18), the Ancient hosts' own tables (sand: the Arcades HAC_MAT, trav: the Bell Hall HBH_MAT, verdigris: core MAT.verdigris; their UVs are the towers' own, so scale is nominal and the map replaces the procedural one 1:1). scale is world metres per tile. tint.keep is how much of the set's colour survives the vertex colour (the hyk buckets are vertex-coloured cream, teal, coral: a low keep), tint.mean the brightness the procedural greys had. Cards (kelp0-2, the weed ribbons on the tidelines) keep their own colour; the vine and clump cards left when the biome took the karst's dressing. Run python3 tools/textures/pack.py settlements/ys after any change, then python3 build.py; ?mat=proc shows the procedural look. Since 2026-10-06 also the shared vernacular (Iziz's rows) and the Ancients MAT (KMAT.bindMat at the end of 79z). rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. tint.colour on the warm families (logs, bamboo, bmat): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py). The Port kit (72-port-kit.js, 2026-10-06): container sides (pkCont, metal.container at 2.4 m a tile: its ribs then match the procedural 0.3 m) and paving (pkPave, concrete.slab); their UVs are in metres per unit (boxUV tile 3, paving tile 16), passed to bindMat as tiles. The rusting containers and ruined paving (pkContR, pkPaveR) stay procedural. The Voth embassy's pantile, mud plaster and mosaic take the same rows as settlements/iziz/materials.json.",
+ "note": "Ys's adapter onto the material library (core/materials/PLAN.md; settlements/ys/MATERIAL-PROMPTS.md has every set's prompt). The families are Ys's material keys: the hyk shell kit's MAT pairs (hkShell..hkVerd: hykSurf lays metre UVs, a tile is 4 m, so the adapter repeats each set 4/scale times), the terrain (ground: 71-port-terrain lays x/18, z/18), the Ancient hosts' own tables (sand: the Arcades HAC_MAT, trav: the Bell Hall HBH_MAT, verdigris: core MAT.verdigris; their UVs are the towers' own, so scale is nominal and the map replaces the procedural one 1:1). scale is world metres per tile. tint.keep is how much of the set's colour survives the vertex colour (the hyk buckets are vertex-coloured cream, teal, coral: a low keep), tint.mean the brightness the procedural greys had. Cards (kelp0-2, the weed ribbons on the tidelines) keep their own colour; the vine and clump cards left when the biome took the karst's dressing. Run python3 tools/textures/pack.py settlements/ys after any change, then python3 build.py; ?mat=proc shows the procedural look. Since 2026-10-06 also the shared vernacular (Iziz's rows) and the Ancients MAT (KMAT.bindMat at the end of 79z). rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. tint.colour on the warm families (logs, bamboo, bmat): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py). The Port kit (72-port-kit.js, 2026-10-06): container sides (pkCont, metal.container at 2.4 m a tile: its ribs then match the procedural 0.3 m) and paving (pkPave, concrete.slab); their UVs are in metres per unit (boxUV tile 3, paving tile 16), passed to bindMat as tiles. The rusting containers and ruined paving (pkContR, pkPaveR) stay procedural. The Voth embassy's pantile, mud plaster and mosaic take the same rows as settlements/iziz/materials.json. (2026-10-06, late) The sod roofs take roof.turf; hkMosaic (the fish-scale tiles) takes patterns/nacre/pearl-mosaic in place of paving.shell.terrazzo.",
  "size": 512,
  "families": {
   "hkShell": {
@@ -94,10 +94,10 @@
    }
   },
   "hkMosaic": {
-   "lib": "paving.shell.terrazzo",
+   "lib": "patterns/nacre/pearl-mosaic",
    "scale": [
-    2.5,
-    2.5
+    4,
+    4
    ],
    "tint": {
     "keep": 0.55,
@@ -775,6 +775,25 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "turf": {
+   "lib": "roof.turf",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.581,
+    "colour": "#83a146"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
   }
  }
 }

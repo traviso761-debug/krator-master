@@ -20,7 +20,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/screamers`](settlements/screamers/PORT.md) | 77 | 570 | 20 | 19 | 27 | 44 | 460 | 6 |  | yes | yes |
 | [`settlements/shade`](settlements/shade/PORT.md) | 29 | 323 | 76 | 15 | 14 | 74 | 144 | 3 |  | yes | yes |
 | [`settlements/verge`](settlements/verge/PORT.md) | 19 | 287 | 108 | 12 | 6 | 111 | 49 | 1 | biome | yes | yes |
-| [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1801 | 411 | 0 | 106 | 107 | 1177 | 38 | atmos | yes | yes |
+| [`settlements/voth`](settlements/voth/PORT.md) | 66 | 1802 | 412 | 0 | 106 | 107 | 1178 | 38 | atmos | yes | yes |
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 65 | 902 | 438 | 19 | 10 | 56 | 379 | 6 |  | yes | yes |
 | [`settlements/ys`](settlements/ys/PORT.md) | 135 | 1919 | 307 | 52 | 104 | 104 | 1353 | 8 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 50 | 1049 | 114 | 13 | 16 | 153 | 754 | 13 | fixtures | yes | yes |
@@ -34,7 +34,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 25 | 180 | 1 | 11 | 10 | 33 | 126 | 2 | atmos | yes | yes |
 | [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 14 | 167 | 24 | 15 | 13 | 37 | 78 | 2 | biome | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 200 | 1 | 0 | 14 | 31 | 154 | 5 | biome | yes | yes |
-| [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 16 | 220 | 28 | 0 | 14 | 69 | 109 | 2 | biome | yes | yes |
+| [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 16 | 221 | 28 | 0 | 14 | 69 | 109 | 2 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 141 | 2 | 0 | 12 | 16 | 110 | 6 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 224 | 0 | 0 | 34 | 44 | 147 | 6 | biome | yes | yes |
 | [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 272 | 1 | 0 | 10 | 81 | 180 | 7 | biome | yes | yes |
@@ -45,7 +45,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 198 | 1 | 0 | 13 | 34 | 149 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 161 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1624 | 21791 | 3243 (15%) | 404 (2%) | 951 (4%) | 2425 (11%) | 14768 (68%) | 231 | | | |
+| **all** | 1624 | 21792 | 3243 (15%) | 404 (2%) | 951 (4%) | 2425 (11%) | 14768 (68%) | 231 | | | |
 
 ## Host-shell copies
 

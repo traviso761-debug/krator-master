@@ -175,6 +175,38 @@
     "sourceMean": 0.6288
    }
   },
+  "fin": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.0,
+    0.6667,
+    0.3333,
+    1.0
+   ],
+   "files": {
+    "map": "fin.albedo.webp"
+   },
+   "lib": "card.reef",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fb34129cb9d91b4354c2af2a8c4a32ee25f6147e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.788,
+    "sourceMean": 0.5453
+   }
+  },
   "frond": {
    "breakup": null,
    "card": true,

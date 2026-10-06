@@ -1,6 +1,6 @@
 {
  "build": "reedlake",
- "note": "reedlake's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-reedlake-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/reedlake after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. Reed Lake's own reed surfaces (2026-10-06, late): the woven mat (rlMat, and rlMatM on the mudhif skins), the reed thatch, the island tops (ground.reedbed), the layered island sides (reed.layers) and the horizontal bundles (reed.bundle), grey at the measured means of their procedural maps; src/88y-reedlake-matlib.js passes the mesh-UV tiles (75-rl-helpers.js). The vertical bundles (rlBundle: separate u and v tiles), the alpha cut-outs (lattice, fringe, reeds, net) and the Andean painted vocabulary (band, cloth, cone, shield, head, chakana) stay procedural. tint.colour on the warm families (logs, bamboo, bmat, the rl* reed surfaces): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py). The Andean painted vocabulary (2026-10-06, late): the woven band (rlBand: patterns/reedlake/band), the shield (rlShield: chakana, a red disc with a black ring and the stepped cross, as the painter drew it) and the awayo hanging (rlCloth: chakana-textile-red, a diamond weave where the painter drew stripes), full colour over their mesh UVs. The fringe and the chakana cut-outs stay procedural (the sets are opaque), and so do the shaman's cone and the head.",
+ "note": "reedlake's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-reedlake-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/reedlake after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. Reed Lake's own reed surfaces (2026-10-06, late): the woven mat (rlMat, and rlMatM on the mudhif skins), the reed thatch, the island tops (ground.reedbed), the layered island sides (reed.layers) and the horizontal bundles (reed.bundle), grey at the measured means of their procedural maps; src/88y-reedlake-matlib.js passes the mesh-UV tiles (75-rl-helpers.js). The vertical bundles (rlBundle: separate u and v tiles), the alpha cut-outs (lattice, fringe, reeds, net) and the Andean painted vocabulary (band, cloth, cone, shield, head, chakana) stay procedural. tint.colour on the warm families (logs, bamboo, bmat, the rl* reed surfaces): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py). The Andean painted vocabulary (2026-10-06, late): the woven band (rlBand: patterns/reedlake/band), the shield (rlShield: chakana, a red disc with a black ring and the stepped cross, as the painter drew it) and the awayo hanging (rlCloth: chakana-textile-red, a diamond weave where the painter drew stripes), full colour over their mesh UVs. The fringe and the chakana cut-outs stay procedural (the sets are opaque), and so do the shaman's cone and the head. (2026-10-06, late) The sod roofs (turf) take roof.turf, green at the procedural map's brightness and colour.",
  "size": 512,
  "families": {
   "wood": {
@@ -584,6 +584,25 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "turf": {
+   "lib": "roof.turf",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.581,
+    "colour": "#83a146"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
   }
  }
 }

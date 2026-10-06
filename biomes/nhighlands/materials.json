@@ -1,6 +1,6 @@
 {
  "build": "nhighlands",
- "note": "The nhighlands kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nhighlands after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The bark, fallen-wood and boulder buckets (2026-10-06, late; NHL.BKMAT in 50-biome-nhighlands-species.js): plated (bark.ponderosa), fibrous (bark.juniper), smooth, birch, furrowed (bark.ironbark), pine (bark.pine.scale), charred snags (bark.char), fallen wood (wood.gnarled) and boulders (as rock), grey at the measured means of the procedural maps; the trumpet stalks keep their iridescent procedural bark. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters.",
+ "note": "The nhighlands kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/nhighlands after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The bark, fallen-wood and boulder buckets (2026-10-06, late; NHL.BKMAT in 50-biome-nhighlands-species.js): plated (bark.ponderosa), fibrous (bark.juniper), smooth, birch, furrowed (bark.ironbark), pine (bark.pine.scale), charred snags (bark.char), fallen wood (wood.gnarled) and boulders (as rock), grey at the measured means of the procedural maps; the trumpet stalks keep their iridescent procedural bark. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. (2026-10-06, late) fin: card.reef, the ridged-fin cell.",
  "size": 512,
  "families": {
   "needle": {
@@ -458,6 +458,26 @@
    },
    "metal": 0,
    "normalScale": 0.7
+  },
+  "fin": {
+   "lib": "card.reef",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.788
+   },
+   "metal": 0,
+   "normalScale": 1.0,
+   "cell": [
+    0.0,
+    0.6667,
+    0.3333,
+    1.0
+   ],
+   "size": 512
   }
  }
 }

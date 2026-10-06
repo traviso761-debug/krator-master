@@ -379,6 +379,34 @@
     "sourceMean": 0.4091
    }
   },
+  "gill": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "gill.albedo.webp"
+   },
+   "lib": "organic.fungus.gill",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0bbe7924b35e0460a35821f54cd113ddc3f3e2e4",
+    "normal": "2c29d972bf197391957edee22f7eeeed2439fdb1",
+    "roughness": "e705e51147b4288ac54464b965040534ff1db851"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.712,
+    "sourceMean": 0.6455
+   }
+  },
   "grass": {
    "breakup": null,
    "card": true,

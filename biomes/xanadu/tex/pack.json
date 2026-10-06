@@ -1,6 +1,38 @@
 {
  "build": "xanadu",
  "families": {
+  "anemone": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.3333,
+    0.0,
+    0.6667,
+    0.3333
+   ],
+   "files": {
+    "map": "anemone.albedo.webp"
+   },
+   "lib": "card.reef",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fb34129cb9d91b4354c2af2a8c4a32ee25f6147e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.738,
+    "sourceMean": 0.5453
+   }
+  },
   "banana": {
    "breakup": null,
    "card": true,
@@ -31,6 +63,62 @@
     "keep": 0.0,
     "mean": 0.744,
     "sourceMean": 0.3806
+   }
+  },
+  "bark0": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bark0.albedo.webp"
+   },
+   "lib": "bark.whorled",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "da5e9af0acb681ebc5a404039a865a7fc069646c",
+    "normal": "eb5e267aaf8e8db20844a2bdc2ee2a2f2bf067f0",
+    "roughness": "f1dc810a4dcfe386ca0b63ab00a5b79429e049bf"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.609,
+    "sourceMean": 0.5486
+   }
+  },
+  "bark1": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "bark1.albedo.webp"
+   },
+   "lib": "wood.petrified",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "876727f8335ceed7c6479ee04ed8d3ec580c4017",
+    "normal": "8eb71f075506c84865724d1203290c7e13fa59d4",
+    "roughness": "90615425d747d60c05a11601cfdd2e8e2a0594e5"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.4798322004011566,
+    "sourceMean": 0.4798
    }
   },
   "bark2": {
@@ -441,6 +529,38 @@
     "keep": 0.0,
     "mean": 0.658,
     "sourceMean": 0.4059
+   }
+  },
+  "frill": {
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.0,
+    0.3333,
+    0.3333,
+    0.6667
+   ],
+   "files": {
+    "map": "frill.albedo.webp"
+   },
+   "lib": "card.reef",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "fb34129cb9d91b4354c2af2a8c4a32ee25f6147e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.672,
+    "sourceMean": 0.5453
    }
   },
   "frond": {

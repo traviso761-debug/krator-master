@@ -1,6 +1,6 @@
 {
  "build": "voth",
- "note": "Voth's adapter onto the material library (core/materials/PLAN.md). Every set is a grey detail map (keep 0) that the palette tint colours; tint.mean is the measured mean brightness of the procedural map it replaces (2026-10-06, window._fammat), so Voth's tuned palette keeps its tone. trunk and leaf (the willows) stay procedural. cloth had no map before: its mean (0.9) is an estimate. Run python3 tools/textures/pack.py settlements/voth after any change, then python3 build.py; ?mat=proc shows the procedural look. dome and metal keep a low metalness (0.1, 0.15): Voth has no environment map, and a metallic MeshStandardMaterial without one renders dark (the palace's gold dome went dull at 0.5).",
+ "note": "Voth's adapter onto the material library (core/materials/PLAN.md). Every set is a grey detail map (keep 0) that the palette tint colours; tint.mean is the measured mean brightness of the procedural map it replaces (2026-10-06, window._fammat), so Voth's tuned palette keeps its tone. trunk and leaf (the willows) stay procedural. cloth had no map before: its mean (0.9) is an estimate. Run python3 tools/textures/pack.py settlements/voth after any change, then python3 build.py; ?mat=proc shows the procedural look. dome and metal keep a low metalness (0.1, 0.15): Voth has no environment map, and a metallic MeshStandardMaterial without one renders dark (the palace's gold dome went dull at 0.5). tapestry (the guild halls' door banners) and kilim (the market stall awnings), 2026-10-06 late: the owner's two Voth patterns in full colour; the pieces are drawn white over them (vothPatCol).",
  "size": 512,
  "families": {
   "stone": {
@@ -148,6 +148,32 @@
     "macro": 0.1,
     "cell": 5
    }
+  },
+  "tapestry": {
+   "lib": "patterns/voth/kilim-star",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
+  },
+  "kilim": {
+   "lib": "patterns/voth/kilim-tri",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0,
+   "normalScale": 0.5
   }
  }
 }

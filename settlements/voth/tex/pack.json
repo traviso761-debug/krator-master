@@ -103,6 +103,36 @@
     "sourceMean": 0.5674
    }
   },
+  "kilim": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "kilim.albedo.webp",
+    "normalMap": "kilim.normal.webp",
+    "roughnessMap": "kilim.rough.webp"
+   },
+   "lib": "patterns/voth/kilim-tri",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "49e5157baec4055ada39c6f3911748ee8e491ae1",
+    "normal": "ac4ce27d7504cdda0fcc032d10996c3cc4e3a626",
+    "roughness": "c33865bc787b5c28124971eafc520152cc583460"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.27639193840774834,
+    "sourceMean": 0.2764
+   }
+  },
   "metal": {
    "breakup": {
     "cell": 5,
@@ -237,6 +267,36 @@
     "keep": 0.0,
     "mean": 0.782,
     "sourceMean": 0.6318
+   }
+  },
+  "tapestry": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "tapestry.albedo.webp",
+    "normalMap": "tapestry.normal.webp",
+    "roughnessMap": "tapestry.rough.webp"
+   },
+   "lib": "patterns/voth/kilim-star",
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.0,
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8e6a77efef195857e4473e7516c7af782f8002b6",
+    "normal": "c594554ef058accb8b7fe7cc41fcb5f51c4d26ac",
+    "roughness": "db6d1525805aa8215c10ca1132da720d7ae834dc"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.2443756220110725,
+    "sourceMean": 0.2444
    }
   },
   "wood": {

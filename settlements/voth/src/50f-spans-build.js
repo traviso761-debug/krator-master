@@ -134,7 +134,7 @@ function span(ax,az,ay, bx,bz,by, w, col, arch, parapet){
     [-1,1].forEach(function(side){
       var ep = loc(xm,zm, side*(w*0.5+1.6), 0, ry);
       var mountY = ym + 0.6, dropH = rr(9,14);
-      BOX(ep[0], mountY-dropH, ep[1], 0.16, dropH, rr(4.5,6.5), ry, pick(BANNERC), 'cloth');
+      BOX(ep[0], mountY-dropH, ep[1], 0.16, dropH, rr(4.5,6.5), ry, vothPatCol('tapestry', pick(BANNERC)), 'tapestry');
       window._bridgeBanners = window._bridgeBanners || [];
       window._bridgeBanners.push([Math.round(ep[0]), Math.round(mountY), Math.round(ep[1])]);
     });

@@ -1,6 +1,6 @@
 {
  "build": "swbay",
- "note": "The swbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/swbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters.",
+ "note": "The swbay kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's MAT slots (50-*-species.js; BIO.libSwap names an array entry by index, a nested table's entry as key.name). Grey detail maps (keep 0) normalised to the measured mean of the procedural map each replaces (2026-10-06), so the species tints keep their tone; prism gum keeps its own colour. Slots not listed stay procedural. Hosts that vendor the kit get these by inlining the kit's pack (tools/textures/matlib_pack.py). Run python3 tools/textures/pack.py biomes/swbay after any change, then python3 build.py. Slots drawn as a single plant (grass, reeds, fronds, palms, rosettes, paddles, moss) show one cell of their nine-plant sheet (`cell`, the middle one); crown and canopy cards keep the whole sheet. bloom (2026-10-06, late): card.flower.bloom, grey at the procedural map's mean, so each species' instance colour colours its flowers. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only. The host's girder tower and jetty (stone.cut, 86-host-jetty.js) (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. (2026-10-06, late) gill: organic.fungus.gill.",
  "size": 512,
  "families": {
   "bark0": {
@@ -450,6 +450,19 @@
    },
    "metal": 0,
    "normalScale": 0.7
+  },
+  "gill": {
+   "lib": "organic.fungus.gill",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.712
+   },
+   "mapOnly": true,
+   "roughLift": 0.3
   }
  }
 }

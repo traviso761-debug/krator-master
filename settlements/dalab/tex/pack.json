@@ -481,6 +481,41 @@
     "sourceMean": 0.6041
    }
   },
+  "dRammed": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "dRammed.albedo.webp",
+    "normalMap": "dRammed.normal.webp",
+    "roughnessMap": "dRammed.rough.webp"
+   },
+   "lib": "earth.rammed",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    3,
+    3
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f5a475298c9d73ae4975763764c0ab7007de11c6",
+    "normal": "fa5b6f47f339978d28943c688ed186f39bb997af",
+    "roughness": "1027bebff6000ad62b31b34c57acff9747ef44c1"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#b7ac9d",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.678,
+    "sourceMean": 0.5917
+   }
+  },
   "dRelief": {
    "breakup": {
     "cell": 6,
@@ -544,6 +579,41 @@
     "keep": 1.0,
     "mean": 0.5531434025124942,
     "sourceMean": 0.5531
+   }
+  },
+  "dTurf": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "dTurf.albedo.webp",
+    "normalMap": "dTurf.normal.webp",
+    "roughnessMap": "dTurf.rough.webp"
+   },
+   "lib": "roof.turf",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e5405e2c91125d534c1ac98f9b5af08636a163fe",
+    "normal": "59c4e05ed5ad95ad6e4fc6e692eee72d1fd83c83",
+    "roughness": "018fe1a6ca71a2c15adf9665d7d8e9443a34bc50"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#a9ac84",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.662,
+    "sourceMean": 0.4699
    }
   },
   "logs": {
@@ -919,6 +989,41 @@
     "keep": 1.0,
     "mean": 0.428,
     "sourceMean": 0.3061
+   }
+  },
+  "turf": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "turf.albedo.webp",
+    "normalMap": "turf.normal.webp",
+    "roughnessMap": "turf.rough.webp"
+   },
+   "lib": "roof.turf",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e5405e2c91125d534c1ac98f9b5af08636a163fe",
+    "normal": "59c4e05ed5ad95ad6e4fc6e692eee72d1fd83c83",
+    "roughness": "018fe1a6ca71a2c15adf9665d7d8e9443a34bc50"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#83a146",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.581,
+    "sourceMean": 0.4699
    }
   },
   "verdigris": {

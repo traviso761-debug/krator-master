@@ -2453,7 +2453,7 @@ VEHICLE_CULTURE('republic', {
   detail: {
     hullCream: 'paintWorn', hullCreamDark: 'paintWorn', hullOchre: 'paintWorn', hullOchreDark: 'paintWorn', deck: 'paintWorn',
     red: 'paintWorn', redDark: 'paintWorn', drum: 'paintWorn', drumRed: 'paintWorn',
-    canvas: 'canvas', crate: 'wood', panel: null, panelGrid: null, glass: null, glowBlue: null, rope: null
+    canvas: 'canvas', crate: 'wood', panel: 'solar', panelGrid: null, glass: null, glowBlue: null, rope: null
   },
   /* PALETTE (sRGB; the runtime converts to linear) */
   palette: {

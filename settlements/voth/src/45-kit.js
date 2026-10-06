@@ -466,7 +466,7 @@ function emitBuckets(){
       mat.customProgramCacheKey = function(){
         return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway ? '|sway' : '') + '|nl' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : '');
       };
-    })(!!fm.tex, B.fam === 'cloth', fm.lib ? fm.lib.scale : (fm.scale || [4,4]));   /* a library map tiles at its own size */
+    })(!!fm.tex, B.fam === 'cloth' || B.fam === 'tapestry' || B.fam === 'kilim', fm.lib ? fm.lib.scale : (fm.scale || [4,4]));   /* a library map tiles at its own size */
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam;    /* dev inspector (86-inspect.js) reads these */
     im.castShadow = !FAST; im.receiveShadow = !FAST;

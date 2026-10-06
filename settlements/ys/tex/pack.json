@@ -423,26 +423,26 @@
     "normalMap": "hkMosaic.normal.webp",
     "roughnessMap": "hkMosaic.rough.webp"
    },
-   "lib": "paving.shell.terrazzo",
+   "lib": "patterns/nacre/pearl-mosaic",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0,
    "scale": [
-    2.5,
-    2.5
+    4,
+    4
    ],
    "size": 512,
    "source": {
-    "albedo": "e750ae5142d2878357816ba02314cbe1ca6b2626",
-    "normal": "9e9337bb9cad2c9c22a74de070f410e39ae2c4e2",
-    "roughness": "f95f7cee7754ca43a88d498b3ef01e31264a8205"
+    "albedo": "20fb9bfaa40604d0c9842f8ce4c7d263d0202147",
+    "normal": "640215a990c27bf6a22cc8bb57bb31ae9ae3772d",
+    "roughness": "695ac17d8db7ea27a5bfa85e12113e7e870684e1"
    },
    "specular": 0.45,
    "tint": {
     "contrast": 1.0,
     "keep": 0.55,
     "mean": 0.78,
-    "sourceMean": 0.8262
+    "sourceMean": 0.7553
    }
   },
   "hkNacre": {
@@ -1168,6 +1168,41 @@
     "keep": 0.3,
     "mean": 0.78,
     "sourceMean": 0.8022
+   }
+  },
+  "turf": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "turf.albedo.webp",
+    "normalMap": "turf.normal.webp",
+    "roughnessMap": "turf.rough.webp"
+   },
+   "lib": "roof.turf",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e5405e2c91125d534c1ac98f9b5af08636a163fe",
+    "normal": "59c4e05ed5ad95ad6e4fc6e692eee72d1fd83c83",
+    "roughness": "018fe1a6ca71a2c15adf9665d7d8e9443a34bc50"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#83a146",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.581,
+    "sourceMean": 0.4699
    }
   },
   "verdigris": {
