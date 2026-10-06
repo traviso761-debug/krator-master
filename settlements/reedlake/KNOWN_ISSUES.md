@@ -21,3 +21,5 @@ Open items are `- [ ]` lines; build.py prints them.
       warm ones warm). Reed Lake's own reed surfaces too (rlMat, rlMatM, rlThatch, rlIsland, rlLayer, rlBundleX). ?mat=proc shows the old look.
 - [ ] **The Andean patterns take the material library** (2026-10-06): the band, the shield (chakana) and the hanging (chakana-textile-red, a
       diamond weave where the painter drew multi-colour stripes). The fringe and chakana cut-outs stay procedural. ?mat=proc shows the old look.
+- [ ] **Two hanging styles** (2026-10-06): hRLStyle.hanging (74-rl-mat.js) is 'chakana' (the library's red chakana weave, the default here)
+      or 'stripe' (the procedural striped awayo, MAT.rlClothS, never bound). Mungo's reed village sets 'stripe'.
