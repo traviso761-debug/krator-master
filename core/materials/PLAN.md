@@ -46,16 +46,18 @@ or a library shader.
 ## Files
 
 ```
-core/materials/library/<id>/albedo.jpg  normal.png  roughness.png  meta.json
-core/materials/patterns/<culture>/<sheet>/albedo.jpg  normal.png  roughness.png  meta.json
+core/materials/library/<id>/albedo.jpg  normal.jpg  roughness.png  meta.json
+core/materials/patterns/<culture>/<sheet>/albedo.jpg  normal.jpg  roughness.png  meta.json
 ```
 
 `meta.json` holds the record fields, the source (scan library and asset name, or "generated" with the prompt
 used), the licence, and the processing run that produced the files.
 
 **Size.** Committed sets are 1024 px: the colour map as JPEG quality 92 (the engine recompresses it anyway),
-the normal and roughness maps as lossless PNG (JPEG blocks in a normal map show as faceting). That is about
-3.3 MB a set, so the full library (about 45 sets plus patterns) lands near 180 MB. Sources (the generated or
+the normal map as JPEG quality 95 with **no chroma subsampling** (`subsampling=0`), the roughness map as lossless
+PNG. A normal map keeps X and Y in red and green, so the default 4:2:0 halves their resolution (about 5 degrees
+mean error, 20 at the 99th percentile); 4:4:4 at q95 holds about 1.6 (4.5). Any encoder that writes a normal map,
+including the demo page, must pass `subsampling=0`. That is about 1.6 MB a set. Sources (the generated or
 downloaded originals) stay outside the repo; `meta.json` records each source's sha1 so a set can be traced
 and reprocessed. **Git LFS: decided no (2026-10-02), see "Git LFS" below.**
 
@@ -251,7 +253,7 @@ and roughness are copied unchanged, and the real world size (metres per tile, fr
 Iziz and Voth colour every instance with a tint over a near-grey texture. A set that is tinted again would be
 double-coloured, so a tintable surface gets a **`<id>.neutral` copy**: albedo only, near-grey (process.py's mute at
 0.9, mean luminance 0.65 because a tint multiplies), its `meta.json` pointing `maps.normalMap` and `roughnessMap`
-at the sibling set (`../<id>/normal.png`), so the PNGs are stored once. Make one with
+at the sibling set (`../<id>/normal.jpg`), so those maps are stored once. Make one with
 `python3 tools/textures/adopt.py --neutral <id> <id>.neutral`. Done: `roof.thatch.neutral`, `roof.shingle.neutral`.
 For Poly Haven picks, set `neutral: true` in the batch for every id Iziz or Voth use (stone, plaster, brick,
 earth, paving, ground, wood, metal.corrugated, roof.tile).
@@ -937,8 +939,10 @@ The owner reviewed the scan candidates in the demo kit ("the picks looked fine")
   parents: choose the one a build uses per id, or alias it.
 - Not committed: `grey_plaster_03` (truncated download), `sandy_gravel_02` and `wood_cabinet_worn_long` (16k files that did not reduce), `Fabric083`
   (alpha-preview checker), `Foliage008` and `SurfaceImperfections017` (not materials).
-- **Size:** `core/materials/library` is now about 350 MB and `patterns` 80 MB, so PLAN's "revisit Git LFS at 250 MB" trigger has passed. Normal maps are
-  2 MB each and do not compress further; storing normals as 2-channel or at 512 px are the options if the repo needs to shrink.
+- **Size:** `core/materials/library` is now about 350 MB and `patterns` 80 MB, so PLAN's "revisit Git LFS at 250 MB" trigger has passed. Normal maps were
+  2 MB PNGs; on 2026-10-05 all 278 became 4:4:4 JPEG q95 (`normal.jpg`, 509 to 243 MB). Storing normals at 512 px is the
+  next option if it needs to shrink further. (`tools/textures/pack.py` still writes its packed normals as lossy WebP, which is
+  always 4:2:0: the same loss, in the packs.)
 
 
 **Delivered 2026-10-03, not yet processed:** 39 ChatGPT images in the texture folder root (Highlands tile-d/s/t/w, harlequin, lattice grid, fret, maze; four wide friezes; Andean chakana textiles and emblem; golden straw fringe; four abalone, three mother-of-pearl, two pink onyx; three reptile scale, two chitin, a mushroom cap; fossil limestone; crimson lacquer, tarred planks, carved wood; golden bamboo lattice).

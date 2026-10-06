@@ -24,7 +24,7 @@ def load_set(d):
         p = os.path.normpath(os.path.join(d, rel))
         return p
     alb = np.asarray(Image.open(get('map', 'albedo.jpg')).convert('RGB')).astype(np.float32) / 255
-    nor = np.asarray(Image.open(get('normalMap', 'normal.png')).convert('RGB')).astype(np.float32) / 255
+    nor = np.asarray(Image.open(get('normalMap', 'normal.jpg')).convert('RGB')).astype(np.float32) / 255
     rg = np.asarray(Image.open(get('roughnessMap', 'roughness.png')).convert('L')).astype(np.float32) / 255
     return meta, alb, nor, rg
 
