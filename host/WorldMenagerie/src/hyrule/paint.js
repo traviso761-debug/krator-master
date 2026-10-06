@@ -22,7 +22,7 @@ export function paint(api){
     snow:C(0xf4f6f8),rock:C(0x8a8478),rock2:C(0x6e6a62),ash:C(0x4a403a),lava:C(0xc0442a),autumn:C(0xc8823a),autumn2:C(0xb05a30),
     jungle:C(0x3e7a3a),jungle2:C(0x2e6a2a),beach:C(0xe8dcae),bed:C(0x6a7a72),
     hgrass:C(0x6c9450),lost:C(0x2f5232),marsh:C(0x7a9858),marsh2:C(0x8a9a62),tundra:C(0xb4b88a),tundra2:C(0x9aa47a),frost:C(0xd4dcd6),
-    arid:C(0xb8a07a),arid2:C(0xa08a68),canyon:C(0xc0855a),canyon2:C(0xa86a46)};
+    arid:C(0xb8a07a),arid2:C(0xa08a68),canyon:C(0xc8885a),canyon2:C(0x9a5a3a),strataA:C(0xa89c88),strataB:C(0x625a52),gravel:C(0x9a9284)};
   const BK=biomeKit(PL);
   const c=new THREE.Color(),tmp=new THREE.Color();
   // broad, soft variation - hundreds of metres across, like brush strokes; anything finer reads as a checkerboard
@@ -47,13 +47,19 @@ export function paint(api){
       if(b('S'))c.lerp(COL.frost,b('S')*0.55);
       // steep ground is rock - red in the canyon, pale in the snow; Death Mountain is ash, red towards the crater
       const steep=Math.max(0,Math.min(1,(0.86-ny)/0.22));
-      if(steep>0)c.lerp(b('C')>0.5?COL.canyon2:(v>0?COL.rock:COL.rock2),steep);
+      // and cliffs are layered: bands of paler and darker rock by height, red-brown and buff in the canyon country
+      if(steep>0){const band=0.5+0.5*Math.sin(y/6.5+Math.sin(x/90)*0.6),red=Math.max(b('C'),b('R')*0.6,b('D')*0.8);
+        tmp.copy(COL.strataA).lerp(COL.strataB,band);if(red>0.2)tmp.lerp(band>0.5?COL.canyon2:COL.canyon,Math.min(1,red*1.4));c.lerp(tmp,steep);}
       if(b('V'))c.lerp(COL.ash,Math.min(1,b('V')*1.3)*(0.85+0.15*Math.min(1,dm*3)));
       if(dm>0&&y>650)c.lerp(COL.lava,Math.min(1,(y-650)/300)*0.35*dm);
       if(lf>0&&v>0.1)c.lerp(COL.lava,Math.min(1,lf*1.6)*0.6);   // the western lava field: red where it is still running
       // snow: low on the snowfields, a little higher on the tundra, high elsewhere; never on Death Mountain
       const line=dm>0.1?99999:b('S')>0.3?300:b('T')>0.3?660:b('R')>0.3?620:760;
       if(y>line)c.lerp(COL.snow,Math.min(1,(y-line)/90)*(steep>0.6?0.55:1));
+      // the canyons' floors: gravel and scree, the grass gone; their walls bare rock, layered
+      for(const cy of (PL.canyons||[])){const P=cy.pts;let d=1e9;for(let i=0;i+1<P.length;i++){const [ax,az]=P[i],[bx,bz]=P[i+1],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l)):0;d=Math.min(d,Math.hypot(x-ax-t*dx,z-az-t*dz));}
+        if(d<cy.floor+cy.wall){const f=1-Math.max(0,(d-cy.floor*0.5)/(cy.floor*0.5+cy.wall));const red=Math.max(b('C'),b('D'),b('R'));
+          c.lerp(red>0.2?(v>0?COL.canyon:COL.arid2):(v>0?COL.gravel:COL.strataB),Math.min(1,f*1.3));}}
       // the coast's sand, and what is under the water
       if(y<5&&y>0.5)c.lerp(COL.beach,Math.min(1,(5-y)/3));
       if(y<=0.5)c.copy(COL.bed).lerp(tmp.set(0x2c4a5a),Math.min(1,(0.5-y)/20));
@@ -71,13 +77,16 @@ export function paint(api){
   const waterM=(col,op)=>new THREE.MeshPhongMaterial({color:col,specular:0xd8f0ff,shininess:90,transparent:true,opacity:op,normalMap:ripple,
     normalScale:new THREE.Vector2(0.45,0.45),polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});
   const seaM=waterM(0x2a7fae,0.82),lakeM=waterM(0x3a90b0,0.8),riverM=waterM(0x4a9cb8,0.78),hotM=waterM(0x4ad8c8,0.85);riverM.side=THREE.DoubleSide;
-  hotM.emissive=new THREE.Color(0x0a4a44);   // the hot springs: teal, a little lit from within
+  hotM.emissive=new THREE.Color(0x0a4a44);
+  // the lakes up in the snow are frozen: pale, glassy, no ripple
+  const iceM=new THREE.MeshPhongMaterial({color:0xd8ecf4,specular:0xffffff,shininess:120,transparent:true,opacity:0.95,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-6});   // the hot springs: teal, a little lit from within
   const uvWorld=(g,s)=>{const P=g.attributes.position,uv=new Float32Array(P.count*2);for(let k=0;k<P.count;k++){uv[2*k]=P.getX(k)/s;uv[2*k+1]=P.getZ(k)/s;}g.setAttribute('uv',new THREE.BufferAttribute(uv,2));};
   scene.traverse(o=>{if(o.isMesh&&o.name==='river'&&o.geometry&&o.geometry.attributes.position){uvWorld(o.geometry,160);o.material=seaM;o.renderOrder=1;}});
   // the lakes, each flat at its own level
   for(const L of (PL.lakes||[])){const sh=new THREE.Shape(L.poly.map(([x,z])=>new THREE.Vector2(x,-z)));
     const g=new THREE.ShapeGeometry(sh,4).rotateX(-Math.PI/2);uvWorld(g,120);
-    const m=new THREE.Mesh(g,L.hot?hotM:lakeM);m.position.y=L.level;m.renderOrder=1;m.receiveShadow=true;m.userData.wireCat='water';m.userData.noFingerprint=true;scene.add(m);}
+    const cx=L.poly.reduce((s,q)=>s+q[0],0)/L.poly.length,cz=L.poly.reduce((s,q)=>s+q[1],0)/L.poly.length,bk=BK.at(cx,cz),frozen=!L.hot&&(bk==='S'||(bk==='T'&&L.level>250));
+    const m=new THREE.Mesh(g,L.hot?hotM:frozen?iceM:lakeM);m.position.y=L.level;m.renderOrder=1;m.receiveShadow=true;m.userData.wireCat='water';m.userData.noFingerprint=true;scene.add(m);}
   for(const M of (PL.moats||[])){const g=new THREE.RingGeometry(M.r0,M.r1,64,1).rotateX(-Math.PI/2);g.translate(M.x,0,M.z);uvWorld(g,120);
     const m=new THREE.Mesh(g,lakeM);m.position.y=M.level;m.renderOrder=1;m.userData.wireCat='water';m.userData.noFingerprint=true;scene.add(m);}
   // the rivers: a ribbon down each, at the level the generator gave it, falling downstream

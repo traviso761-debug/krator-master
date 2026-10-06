@@ -24,6 +24,9 @@ export function flora(api){
     for(const M of (PL.moats||[])){const d=Math.hypot(x-M.x,z-M.z);if(d>M.r0-6&&d<M.r1+6)return true;}
     for(const [px,pz,r] of (PL.pads||[]))if(Math.hypot(x-px,z-pz)<r)return true;   // and nothing grows in the towns
     return false;};
+  // nothing grows on a canyon's floor or up its walls
+  const inCanyon=(x,z)=>{for(const cy of (PL.canyons||[])){const P=cy.pts;for(let i=0;i+1<P.length;i++){const [ax,az]=P[i],[bx,bz]=P[i+1],dx=bx-ax,dz=bz-az,l=dx*dx+dz*dz,t=l?Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/l)):0;
+      if(Math.hypot(x-ax-t*dx,z-az-t*dz)<cy.floor+cy.wall)return true;}}return false;};
   const slope=(x,z)=>{const a=groundH(x+6,z)-groundH(x-6,z),b=groundH(x,z+6)-groundH(x,z-6);return Math.hypot(a,b)/12;};
   const dm=new THREE.Object3D(),col=new THREE.Color();
   // a kit of instanced parts, filled as we go and built at the end
@@ -51,7 +54,7 @@ export function flora(api){
   const count={};const n=k=>count[k]=(count[k]||0)+1;
 
   // ---- the woods and the plants of each biome: sample the country, plant what belongs where it lands ----
-  for(let k=0;k<90000;k++){const x=rx(),z=rz(),y=groundH(x,z);if(y<2||inLake(x,z))continue;const sl=slope(x,z);if(sl>1.1)continue;
+  for(let k=0;k<90000;k++){const x=rx(),z=rz(),y=groundH(x,z);if(y<2||inLake(x,z)||inCanyon(x,z))continue;const sl=slope(x,z);if(sl>1.1)continue;
     const b=BK.at(x,z),r=R();
     if(b==='T'||b==='S'||b==='H'){const p=b==='H'?0.32:b==='T'?0.14:(y<700?0.12:0);if(r<p&&sl<0.9){fir(x,y,z,7+R()*9,y>560&&R()<0.7);n('firs');}}
     else if(b==='F'){if(r<0.34){if(R()<0.2)fir(x,y,z,8+R()*8,false);else broad(x,y,z,3.5+R()*3,BROAD);n('woods');}}

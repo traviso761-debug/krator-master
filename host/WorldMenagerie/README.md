@@ -965,17 +965,22 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
     roofless houses (a gable end, a chimney), the plaza and fountain, the church's shell. **The Great Plateau**: the
     Temple of Time (bays of tall open windows, buttresses, half the roof and the rafters of the rest, the west front's
     rose window under its central bell tower and a second spire, the round east end, the goddess, ivy); the rim wall; the old man's cabin.
-  - `villages.js`: **Kakariko** (houses on stone terraces under thick thatch with crossed boards at the ridge, trees and gardens,
+  - `villages.js`: **Kakariko** (in its valley between walls of rock: houses raised on wooden floors with verandas and lanterns
+    under the eaves, on stone terraces under thick thatch with crossed boards at the ridge, trees and gardens, the pond
+    and its red-railed arched bridge, the stair up to Impa's, the goddess's statue under its roof, stone lanterns,
     the waterfall coming over the cliff behind, lanterns along the path, the gate, Impa's
     house on its platform, the Great Fairy's bud), **Hateno** (cream walls, red and blue tiled roofs, tall tapering chimney stacks against the gable
-    ends, a few round houses along the street, fields in rows; the Tech Lab with its telescope and blue flame; Fort Hateno),
+    ends, a few round houses along the street, the dye shop's cloths drying on lines, the pasture and its
+    cows, trees, Link's house at the east end over the stream and its stone bridge, fields in rows; the Tech Lab with its telescope and blue flame; Fort Hateno),
     **Lurelin** (stilt huts, piers, boats, nets, palms), **Tarrey Town** (white two-storey houses with green trim and red hipped roofs round
     a square on its rock in Lake Akkala, the tall monument, golden trees, the walkway across the water).
   - `peoples.js`: **Zora's Domain** (the plaza with its ring of water and colonnade of luminous arches, the finned spire
     and the cup of glowing petals on its stalk, domed houses,
-    lamps, the princess's statue, the arched bridges), **Goron City** (rock domes, the lava channel, red-cloth
+    lamps, the princess's statue - great, with her trident - in its fountain, the arched bridges), **Goron City** (warm orange rock terraces, rock domes with lit doorways, the lava channel and its stone
+    bridges, red-cloth
     shops, fire bowls, mine rails, the hero's statue), **Gerudo Town** (the merloned wall and domed towers, packed
-    flat-roofed houses with awnings, the palace's tiers, dome and minarets, palms at the gate, the mushroom-shaped rock stacks to the north with water falling from one).
+    flat-roofed houses with awnings, the palace's tiers, dome and minarets, palms at the gate, the plaza fountain, pennants across the streets, torch-lit guard posts at the
+    gate, the mushroom-shaped rock stacks to the north with water falling from one).
   - `wayside.js`: the **shrines** (tall rounded monoliths on stepped platforms, a swirl of light on the face and lines
     running from it, the lit doorway, the pedestal) and the **stables** (the banded canvas tent with its green crown, the great horse's head high on a
     lattice neck hung with banners, bunting, the sign, a corral with
@@ -1002,6 +1007,15 @@ the repository. North is up, about twelve kilometres across at eight metres a pi
 - **Life** (`life.js`): Guardian Stalkers walking loops on dry ground with a tripod gait, the head turning and the
   eye's red line sweeping the ground to a red point; wild horses grazing (kept out of the lakes, rivers and moats),
   hawks, and someone in green paragliding down from a tower now and then.
+- **The canyons** are cut sheer (`gorge()` in the generator: a flat floor, walls rising over a cell or so, the floor
+  stepping down along the way and never below the sea): Tabantha's under its bridge, Tanagar between the Frontier
+  and Hyrule Ridge, the western canyon, the Gerudo Canyon's slot down to the desert, the gorge south of Death
+  Mountain. Every cliff is painted in strata, red and buff in the canyon country, and the canyon floors are gravel.
+- **The biomes' small things** (`details.js`, instanced): skeletons, broken columns and rolling tumbleweeds in the
+  desert; hoodoos and natural arches in the canyons; drifts on the snowfields, their lakes frozen, snow falling when
+  you are up there; steam vents and lava cracks on the ash; giant red flowers in the jungle; lily pads on the marsh;
+  glowing mushrooms and Korok lanterns in the Lost Woods; toadstools in the woods; tufts of tall grass; old snow in
+  the tundra; fallen leaves in Akkala.
 - **The biomes** (`BIOMES` in the generator, read by `biomes.js`): thirteen, as outlines off the map, baked into a
   48 m raster in the plan and read with soft edges: grassland, highland evergreens (the Frontier, Hyrule Ridge),
   temperate woods, the Lost Woods round the Korok Forest, Faron's jungle, the Lanayru Wetlands' marsh (grassy islets
@@ -1882,7 +1896,7 @@ src/
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
-  hyrule/   main.js paint.js flora.js alive.js kit.js biomes.js landmarks.js castle.js villages.js peoples.js wayside.js wonders.js guardian.js divine.js dragons.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
+  hyrule/   main.js paint.js flora.js alive.js kit.js biomes.js details.js landmarks.js castle.js villages.js peoples.js wayside.js wonders.js guardian.js divine.js dragons.js beasts.js life.js events.js   Hyrule: the ground's colours and the water; the castle, towers, shrines, stables, plateau, villages; the Divine Beasts, Ganon and Death Mountain's fire; Guardians, horses, hawks, the glider; what happens
   shire/    main.js ground.js water.js country.js holes.js buildings.js fields.js life.js party.js   the Shire: fields and lanes, the Water, hedges and trees, the holes, the mill, farms and the rest, the work in the fields, what moves, Bilbo's party
   voth/     imports.js stages/*.js build.js   Voth: 51 recovered stages, assembled into build.js (voth.html runs it)
 vendor/three/three.min.js     three.js r128 (pinned)

@@ -47,8 +47,10 @@ export function peoples(api){
       parts.push(cyl(hx,zy+0.6,hz_,5,5,5,M.zora2,12),dome(hx,zy+5.6,hz_,5.6,M.zora,1.1,12),blk(hx-Math.cos(a)*5,zy+0.6,hz_-Math.sin(a)*5,0.3,3,2,M.dark,-a+Math.PI/2));}
     for(let k=0;k<16;k++){const a=k/16*Math.PI*2,lx=Z.x+Math.cos(a)*55,lz=Z.z+Math.sin(a)*55;parts.push(cyl(lx,zy+1.6,lz,0.8,0.6,5,M.zora,6),sph(lx,zy+7,lz,1.2,lum,1,1.4,1));}
     // the princess's statue on the plaza, facing the bridge in
-    {const a=2*Math.PI/8+0.2,sx=Z.x+Math.cos(a)*34,sz=Z.z+Math.sin(a)*34;parts.push(cyl(sx,zy+1,sz,3.4,3,3,M.zora2,10));
-      parts.push(lathe([[0.1,0],[1.6,0],[1.2,2.4],[1.6,3.6],[1.3,5.2],[0.8,6],[0.9,6.8],[0.5,7.6],[0.1,7.8]],M.zora,sx,zy+4,sz,10),limb([sx+1.4,zy+4,sz],[sx+1.8,zy+13,sz],0.12,0.12,M.zora2,5));}
+    {const a=2*Math.PI/8+0.2,sx=Z.x+Math.cos(a)*32,sz=Z.z+Math.sin(a)*32,k=2.2;parts.push(cyl(sx,zy+0.6,sz,9,9,1.2,M.zora2,20),cyl(sx,zy+1.2,sz,8,8,0.4,water,20),cyl(sx,zy+1,sz,3.6,3.2,4,M.zora,12));
+      parts.push(lathe([[0.1,0],[1.6,0],[1.2,2.4],[1.6,3.6],[1.3,5.2],[0.8,6],[0.9,6.8],[0.5,7.6],[0.1,7.8]].map(([r,h])=>[r*k,h*k]),M.zora,sx,zy+5,sz,12),
+        limb([sx+1.6*k,zy+5,sz],[sx+2*k,zy+5+10*k,sz],0.16*k,0.16*k,M.zora2,6),cone(sx+2*k,zy+5+10*k,sz,0.6*k,1.6*k,lum,5));
+      for(const sd of [-0.6,0.6])parts.push(cone(sx+2*k+sd*k,zy+5+9.6*k,sz,0.25*k,1.2*k,lum,4));}
     // the bridges: long arcs out from the plaza's rim over the drop, a rail of lamps along each
     for(const a of [0.3,2.0,3.9]){const pts=[];for(let k=0;k<=16;k++){const t=k/16;pts.push(new THREE.Vector3(Z.x+Math.cos(a)*(56+t*130),zy-1+Math.sin(t*Math.PI)*18-t*6,Z.z+Math.sin(a)*(56+t*130)));}
       const c=new THREE.CatmullRomCurve3(pts);parts.push(new THREE.Mesh(new THREE.TubeGeometry(c,32,2.2,6),M.zora));
@@ -73,8 +75,11 @@ export function peoples(api){
     for(let k=0;k<20;k++){const u=-90+R()*180,w=(R()<0.5?-1:1)*(14+R()*60),[hx,hz_]=F(u,w),hy=gh(hx,hz_),r=5+R()*4,a=Math.atan2(G.z-hz_,G.x-hx);
       if(k%4===3){house(parts,hx,hy,hz_,9,8,4.4,-a+Math.PI/2,{kind:'flat',wall:M.rock2,roof:M.iron,winM:fire});continue;}
       parts.push(sph(hx,hy,hz_,r,k%2?M.rock2:M.rock3,1.2,0.8,1.1,1));
-      const dx=hx+Math.cos(a)*r*1.1,dz=hz_+Math.sin(a)*r*1.1;parts.push(blk(dx,hy,dz,2.6,3.6,0.6,M.dark,-a+Math.PI/2),blk(dx+Math.cos(a)*1.2,hy+3.8,dz+Math.sin(a)*1.2,5,0.25,3,M.iron,-a+Math.PI/2));
+      const dx=hx+Math.cos(a)*r*1.1,dz=hz_+Math.sin(a)*r*1.1;parts.push(blk(dx,hy,dz,2.6,3.6,0.6,fire,-a+Math.PI/2),blk(dx+Math.cos(a)*1.2,hy+3.8,dz+Math.sin(a)*1.2,5,0.25,3,M.iron,-a+Math.PI/2));
       if(R()<0.4)parts.push(cyl(hx-Math.cos(a)*r*0.4,hy+r*0.6,hz_-Math.sin(a)*r*0.4,0.9,0.9,6,M.iron,8));}
+    // stone bridges over the lava channel
+    for(const k of [2,5,8]){const a=ch[k],b=ch[k+1],mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2,yaw=-Math.atan2(b[1]-a[1],b[0]-a[0])+Math.PI/2,y=gh(mx,mz);
+      parts.push(blk(mx,y+0.4,mz,12,0.8,4,M.rock3,yaw));for(const sd of [-1,1])parts.push(blk(mx+Math.cos(-yaw+Math.PI/2)*sd*1.8,y+1.2,mz+Math.sin(-yaw+Math.PI/2)*sd*1.8,12,0.8,0.4,M.rock2,yaw));}
     // the shops: red cloth on poles over counters
     const redCloth=mat(0xc8402a);for(let k=0;k<4;k++){const [sx,sz]=F(-40+k*26,-8),sy=gh(sx,sz);
       for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1]])parts.push(blk(sx+a*2.6,sy,sz+b*2.2,0.25,3.4,0.25,M.wood2));
@@ -120,6 +125,13 @@ export function peoples(api){
       const a2=F(s*26-t*22,t*24+s*22),b2=F(s*26+t*22,t*24-s*22);windows(parts,a2,b2,gy+12,7,2.4,5,0);}
     parts.push(cyl(G.x,gy+28,G.z,13,13,6,M.sand,20),dome(G.x,gy+34,G.z,13.6,tileD,1.15,20),cone(G.x,gy+49,G.z,1,6,M.gold,8));
     for(const [s,t] of [[-1,-1],[1,-1],[1,1],[-1,1]]){const [mx,mz]=F(s*31,t*28);parts.push(cyl(mx,gy,mz,3,2.6,46,M.sand,10),cyl(mx,gy+40,mz,3.6,3.6,2,M.sand2,10),dome(mx,gy+46,mz,2.8,tileD,1.3,10),cone(mx,gy+49.6,mz,0.4,4,M.gold,6));}
+    // the plaza before the palace: a fountain in a round basin, a column in it spilling water
+    {const [fx,fz]=F(0,58),fy=gh(fx,fz);parts.push(cyl(fx,fy,fz,9,9,1,M.sand2,20),cyl(fx,fy+0.6,fz,8,8,0.6,mat(0x4ab0d0),20),cyl(fx,fy,fz,1.2,1,5,M.sand,10),cyl(fx,fy+5,fz,2.6,1.2,1,M.sand2,12));}
+    // pennants strung across the streets, between the rooftops
+    const pen=awn;for(let k=0;k<26;k++){const u=(R()-0.5)*220,w=(R()-0.5)*230,[ax,az]=F(u,w),[bx,bz]=F(u+(R()<0.5?18:0),w+(R()<0.5?0:20)),y=gh(ax,az)+8+R()*4;
+      for(let i=0;i<8;i++){const t=(i+0.5)/8,px_=ax+(bx-ax)*t,pz_=az+(bz-az)*t,py_=y-Math.sin(t*Math.PI)*1.2;const f=mesh(new THREE.ConeGeometry(0.4,1,3).rotateX(Math.PI),pen[i%pen.length],px_,py_-0.5,pz_);f.scale.z=0.25;f.rotation.y=-Math.atan2(bz-az,bx-ax);parts.push(f);}}
+    // the guard posts either side of the gate, torches on them
+    for(const sd of [-1,1]){const [gx,gz]=F(158,sd*16),gy2=gh(gx,gz);parts.push(blk(gx,gy2,gz,3,8,3,M.sand,ry),blk(gx,gy2+8,gz,4,0.6,4,M.sand2,ry),cyl(gx,gy2+8.6,gz,0.4,0.9,0.8,M.iron,8),sph(gx,gy2+9.7,gz,0.8,fire,1,1.4,1));}
     // the rock formations north of the town: two great mushroom-shaped stacks, water falling from the top of one
     // into a pool at its foot
     const rockS=mat(0xc89a6a),rockS2=mat(0xb0845a),fallM=mat(0xeaf6ff,{transparent:true,opacity:0.85,emissive:0x203038});

@@ -462,12 +462,47 @@ def main():
                 i, j = int((x - X0) / STEP), int((z - Z0) / STEP)
                 rim.append(H[max(0, min(nz - 1, j))][max(0, min(nx - 1, i))])
             LAKE_LEVEL[name] = round(min(rim) - 1.0, 1)
-    # the Tabantha canyon: a deep cut running north-east across the tundra, spanned by the great bridge
-    carve([(530, 360), (565, 318), (600, 285), (628, 262)], 45.0, 70.0)
+    CANYONS = []
+    def gorge(poly_pts, floor_w, wall_w, depth, floor_min=8.0):
+        """A canyon, not a valley: a flat floor floor_w across, walls rising sheer over wall_w either side, the floor
+        depth metres under the lowest rim along the way (and never under floor_min), stepping down as it goes."""
+        pts = Pl(poly_pts)
+        CANYONS.append({"pts": [[round(x, 1), round(z, 1)] for x, z in pts], "floor": floor_w, "wall": wall_w})
+        rims = []
+        for x, z in pts:
+            i, j = int((x - X0) / STEP), int((z - Z0) / STEP)
+            rims.append(min(H[max(0, min(nz - 1, jj))][max(0, min(nx - 1, ii))] for ii in range(i - 3, i + 4) for jj in range(j - 3, j + 4)))
+        beds = [max(floor_min, r - depth) for r in rims]
+        for k in range(1, len(beds)):
+            beds[k] = min(beds[k], beds[k - 1] + 2)        # the floor runs on level or down, not up a cliff
+        for k in range(len(pts) - 1):
+            a, b = pts[k], pts[k + 1]
+            r = floor_w + wall_w
+            for j in range(max(0, int((min(a[1], b[1]) - r - Z0) / STEP)), min(nz, int((max(a[1], b[1]) + r - Z0) / STEP) + 2)):
+                for i in range(max(0, int((min(a[0], b[0]) - r - X0) / STEP)), min(nx, int((max(a[0], b[0]) + r - X0) / STEP) + 2)):
+                    x, z = X0 + i * STEP, Z0 + j * STEP
+                    dx, dz = b[0] - a[0], b[1] - a[1]
+                    L = dx * dx + dz * dz
+                    t = 0 if L == 0 else max(0.0, min(1.0, ((x - a[0]) * dx + (z - a[1]) * dz) / L))
+                    d = math.hypot(x - a[0] - t * dx, z - a[1] - t * dz)
+                    if d > r:
+                        continue
+                    bed = beds[k] + (beds[k + 1] - beds[k]) * t + 3 * math.sin(x / 37.0 + z / 53.0)
+                    u = smoothstep(floor_w * 0.5, r, d)                  # 0 on the floor, 1 at the rim
+                    wall = bed + (H[j][i] - bed) * (u ** 0.35 if u < 1 else 1)   # steep: most of the height in the last stretch
+                    H[j][i] = min(H[j][i], wall)
+    # the canyons, cut sheer: Tabantha's across the tundra under its great bridge; Tanagar between the Frontier and
+    # Hyrule Ridge; the western canyon below the Frontier's wall; the Gerudo Canyon's pass down to the desert; the
+    # gorge south of Death Mountain
+    gorge([(500, 385), (530, 360), (565, 318), (600, 285), (628, 262), (650, 240)], 40.0, 34.0, 170.0)
+    gorge([(342, 420), (338, 470), (343, 520), (338, 570), (330, 615)], 30.0, 30.0, 150.0)
+    gorge([(178, 395), (182, 450), (178, 510), (172, 570), (160, 625)], 36.0, 34.0, 130.0)
+    gorge([(535, 862), (505, 890), (472, 915), (445, 940), (420, 962)], 26.0, 30.0, 160.0)
+    gorge([(1030, 470), (1060, 505), (1095, 540), (1130, 575)], 24.0, 30.0, 120.0)
     for j in range(nz):                                    # and never down below the sea: its floor stays dry
         for i in range(nx):
             x_, z_ = X0 + i * STEP, Z0 + j * STEP
-            if H[j][i] < 8 and -2400 < x_ < -800 and -3200 < z_ < -1600:
+            if H[j][i] < 8 and -2600 < x_ < -800 and -3400 < z_ < -1400:
                 H[j][i] = 8.0 + (8 - H[j][i]) * 0.05
     rivers = []
     for name, pts, wpx in RIVERS:
@@ -714,6 +749,8 @@ def main():
         h = height(x, z)
         if h < 3 or h > 900 or lake_mask(x, z) is not None or any(math.hypot(x - px_, z - pz_) < r * 0.9 for px_, pz_, r, b, lo in pads):
             continue                                                 # no trees in the towns, on the pads
+        if any(min(seg_dist(x, z, c_["pts"][k], c_["pts"][k + 1]) for k in range(len(c_["pts"]) - 1)) < c_["floor"] + c_["wall"] for c_ in CANYONS):
+            continue                                                 # nor in the canyons
         bk = BIOME_TREES[biome_at(x, z)]
         if bk == 0 or R.random() > min(1.0, bk):
             continue
@@ -742,7 +779,7 @@ def main():
                "akkala": [P(1290, 300), 120 * PX, 190 * PX], "faron": [P(930, 1060), 150 * PX, 90 * PX],
                "hebra": [P(330, 230), 240 * PX, 170 * PX], "gerudo_high": [P(230, 760), 230 * PX, 130 * PX]}
     plan = {"_": "written by tools/make-hyrule.py: metres east (x) and south (z) of the origin; y is the ground",
-            "pads": [[round(x_, 1), round(z_, 1), r] for x_, z_, r, b, lo in pads], "biomes": biome_grid(), "wetIslets": [[round(a, 1), round(b, 1)] for a, b in WET_ISLETS], "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
+            "pads": [[round(x_, 1), round(z_, 1), r] for x_, z_, r, b, lo in pads], "biomes": biome_grid(), "wetIslets": [[round(a, 1), round(b, 1)] for a, b in WET_ISLETS], "canyons": CANYONS, "sites": S, "towers": towers, "shrines": shrines, "stables": stables, "camps": camps, "lakes": lakes, "moats": moats,
             "rivers": rivers, "regions": REGIONS, "coast": [[round(x, 1), round(z, 1)] for x, z in COAST]}
     json.dump(plan, open(PLAN, "w"), indent=1)
     lo, hi = min(hs) / 10, max(hs) / 10

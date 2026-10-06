@@ -19,6 +19,7 @@ export function villages(api){
   const K=kit(api),{THREE,M,mat,glowM,mesh,blk,cyl,cone,sph,dome,limb,lathe,gable,hip,irimoya,frame,wall,windows,house,build,hz,rng,gh}=K;
   const PL=api.ctx.plan||{sites:{}},S=PL.sites,GK=guardianKit(THREE);
   const lamp=glowM(0xffc070,1.2);
+  const irimoya_=(x,y,z)=>{const p=[];irimoya(p,x,y,z,6,6,3,M.thatch2,0);return api.mergeParts(p,M.thatch2);};
   const palm=(parts,x,z,h,lean)=>{const y=gh(x,z),tx=x+lean*h*0.3;parts.push(limb([x,y,z],[tx,y+h,z+lean*0.6],0.45,0.3,M.trunk,6));
     for(let f=0;f<7;f++){const a=f/7*Math.PI*2+lean;parts.push(limb([tx,y+h,z+lean*0.6],[tx+Math.cos(a)*4.6,y+h-1.6,z+lean*0.6+Math.sin(a)*4.6],0.55,0.1,M.leaf2,4));}};
   const fence=(parts,a,b,h,m)=>{const L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.floor(L/2.4));
@@ -33,7 +34,12 @@ export function villages(api){
     const rows=[];for(let k=0;k<8;k++){const w=60-k*17;for(const s of [-1,1]){rows.push([s*(17+R()*4),w+R()*4,s]);if(R()<0.75)rows.push([s*(40+R()*8),w+R()*6,s]);}}
     for(const [u,w,s] of rows){const [hx,hz_]=F(u,w),hy=gh(hx,hz_),tall=Math.abs(u)>30?1.6:0.6,bw=9+R()*3,bd=7+R()*2;
       parts.push(blk(hx,hy-1,hz_,bw+4,1+tall,bd+4,M.stone2,ry));
-      house(parts,hx,hy+tall,hz_,bw,bd,3.4,yaw+(s>0?-Math.PI/2:Math.PI/2),{kind:'irimoya',wall:M.wood3,roof:R()<0.5?M.thatch:M.thatch2,rh:6.4,over:1.6,winM:M.paper,doorM:M.paper,chigi:true});
+      const hyaw=yaw+(s>0?-Math.PI/2:Math.PI/2),G=frame(hx,hz_,hyaw);
+      house(parts,hx,hy+tall+0.8,hz_,bw,bd,3.4,hyaw,{kind:'irimoya',wall:M.wood3,roof:R()<0.5?M.thatch:M.thatch2,rh:6.4,over:1.6,winM:M.paper,doorM:M.paper,chigi:true});
+      // raised on a wooden floor, a veranda along the front on posts, a lantern under the eaves
+      parts.push(blk(hx,hy+tall,hz_,bw+0.6,0.8,bd+0.6,M.wood2,-hyaw));
+      {const [vx,vz]=G(0,bd/2+1.4);parts.push(blk(vx,hy+tall+0.5,vz,bw,0.3,2.6,M.wood,-hyaw));for(const u of [-bw/2+0.4,bw/2-0.4]){const [px_,pz_]=G(u,bd/2+2.5);parts.push(blk(px_,hy+tall,pz_,0.3,0.8,0.3,M.wood2,-hyaw));}}
+      {const [lx,lz]=G(bw/3,bd/2+0.9);parts.push(blk(lx,hy+tall+3.2,lz,0.7,0.9,0.7,lamp,-hyaw));}
       if(R()<0.5){const [fx,fz]=F(u+s*7,w+4);fence(parts,[fx,fz],F(u+s*7,w-6),1.4,M.bark);}}
     // lanterns along the path, both sides, every ten metres; stepping stones
     for(let w=-70;w<=78;w+=10)for(const s of [-1,1]){const [lx,lz]=F(s*6.5,w),ly=gh(lx,lz);parts.push(blk(lx,ly,lz,0.3,2.6,0.3,M.wood2),blk(lx,ly+2.6,lz,1.3,0.25,1.3,M.wood2,ry));
@@ -61,6 +67,21 @@ export function villages(api){
       for(let k=0;k<6;k++){const [rx,rz]=F(-40+k*16,-136);parts.push(sph(rx,cy+52+R()*10,rz,1,M.rock2,10,18,9,1));}
       const [wx,wz]=F(-12,-109.6);const fall=mesh(new THREE.PlaneGeometry(5,60).translate(0,30,0),fallM,wx,cy,wz,ry);fall.userData.noMerge=true;parts.push(fall);
       const [px_,pz_]=F(-12,-102);parts.push(cyl(px_,cy-0.4,pz_,7,7,0.6,M.blue2,16),sph(px_,cy+0.5,pz_,4,M.white,1.4,0.4,1.4));}
+    // the cliffs that close the valley in on either side
+    // (low walls of rock, broken and layered, longer than they are tall)
+    for(const sd of [-1,1])for(let k=0;k<12;k++){const [cx2,cz2]=F(sd*(98+R()*10),-100+k*16),cy2=gh(cx2,cz2);
+      const rk=sph(cx2,cy2+3,cz2,1,k%2?M.rock:M.rock2,16+R()*6,9+R()*7,8+R()*3,1);rk.rotation.y=-yaw+(R()-0.5)*0.4;parts.push(rk);
+      if(R()<0.6)parts.push(sph(cx2+sd*6,cy2+11+R()*4,cz2,1,M.rock2,10+R()*4,6+R()*4,7,1));}
+    // the pond in the middle of the village, its arched wooden bridge, the path crossing it
+    {const [px_,pz_]=F(-26,6),py_=gh(px_,pz_);parts.push(cyl(px_,py_-0.3,pz_,11,11,0.5,M.blue2,18),cyl(px_,py_-0.4,pz_,12,12,0.4,M.stone2,18));
+      const pts=[];for(let k=0;k<=10;k++){const t=k/10;const [bx,bz]=F(-26+(t-0.5)*24,6);pts.push(new THREE.Vector3(bx,py_+0.4+Math.sin(t*Math.PI)*2.2,bz));}
+      const c_=new THREE.CatmullRomCurve3(pts);for(let k=0;k<10;k++){const p=c_.getPoint((k+0.5)/10);parts.push(blk(p.x,p.y,p.z,0.9,0.25,2.6,M.wood,-yaw-Math.PI/2));}
+      for(const sd of [-1.3,1.3])parts.push(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>p.clone().add(new THREE.Vector3(-Math.sin(yaw)*sd,1,Math.cos(yaw)*sd)))),12,0.1,4),M.red));}
+    // the stair up to Impa's house, torches either side at the top; the goddess's statue under its little roof
+    for(let k=0;k<8;k++){const [sx,sz]=F(0,-62-k*1.4);parts.push(blk(sx,gh(sx,sz)-0.4+k*0.35,sz,7,0.6,1.5,M.stone2,ry));}
+    {const [gx,gz]=F(30,-40),gy2=gh(gx,gz);parts.push(blk(gx,gy2,gz,3,1,3,M.stone2,ry),lathe([[0.1,0],[0.8,0],[0.7,1.4],[0.45,2.6],[0.5,3],[0.35,3.4],[0.1,3.5]],M.stone,gx,gy2+1,gz,10));
+      for(const [u,w] of [[-2,-2],[2,-2],[2,2],[-2,2]]){const [px_,pz_]=F(30+u,-40+w);parts.push(blk(px_,gy2,pz_,0.3,5,0.3,M.wood2));}parts.push(irimoya_(gx,gy2+5,gz));}
+    for(const w of [-30,20,60])for(const sd of [-1,1]){const [lx,lz]=F(sd*11,w),ly=gh(lx,lz);parts.push(blk(lx,ly,lz,1,1.2,1,M.stone2,ry),blk(lx,ly+1.2,lz,0.6,0.8,0.6,M.stone2,ry),blk(lx,ly+2,lz,1.2,0.7,1.2,lamp,ry),hip(lx,ly+2.7,lz,1.8,1.8,0.9,M.stone2,ry));}
     // the Great Fairy's bud, closed, by its pond in the trees east of the village
     {const [fx,fz]=F(95,-30),fy=gh(fx,fz);parts.push(cyl(fx,fy-0.4,fz,14,14,0.6,M.blue2,20));
       parts.push(lathe([[0.1,0],[5,1],[8,5],[7.6,10],[5,14],[2,16.5],[0.1,17]],M.pink,fx,fy,fz,10),sph(fx,fy+1,fz,9,M.leaf,1.5,0.35,1.5));}
@@ -81,6 +102,22 @@ export function villages(api){
     // the street itself, and lamps along it
     for(let k=0;k<12;k++){const [ax,az]=street[k],[bx,bz]=street[k+1];wall(parts,[ax,az],[bx,bz],0.3,4.5,M.sand3,0,Math.min(gh(ax,az),gh(bx,bz))-0.1);
       if(k%2===0){const ly=gh(ax,az);parts.push(blk(ax+3,ly,az+3,0.3,3.4,0.3,M.iron),blk(ax+3,ly+3,az+3,0.8,0.9,0.8,lamp));}}
+    // the dye shop's cloths, drying on lines in every colour
+    const dyes=[mat(0xd83a3a),mat(0x3a6ad8),mat(0xe8c030),mat(0x8a3ab8),mat(0x3ab86a),mat(0xe8783a)];
+    {const [ax,az]=street[5],G=frame(ax,az+30,0.2);for(let l=0;l<3;l++){const a=G(-12,l*4),b=G(12,l*4),y=gh(...a);for(const e of [a,b])parts.push(blk(e[0],gh(...e),e[1],0.25,3.4,0.25,M.wood2));
+        for(let k=0;k<6;k++){const t=(k+0.5)/6,px_=a[0]+(b[0]-a[0])*t,pz_=a[1]+(b[1]-a[1])*t;parts.push(blk(px_,y+0.9,pz_,3,2.4,0.06,dyes[(k+l)%dyes.length],-0.2));}}}
+    // trees along the street
+    for(let k=0;k<14;k++){const [ax,az]=street[k%12],tx=ax+(R()-0.5)*60,tz=az+(R()<0.5?-1:1)*(30+R()*20),ty=gh(tx,tz);parts.push(limb([tx,ty,tz],[tx,ty+5,tz],0.4,0.3,M.trunk,5),sph(tx,ty+7,tz,3.4,R()<0.5?M.leaf:M.leaf2,1.2,1,1.2));}
+    // the pasture north of the village, its cows
+    {const G=frame(V.x+40,V.z-80,0.1),c=[G(-45,-25),G(45,-25),G(45,25),G(-45,25)];for(let k=0;k<4;k++)fence(parts,c[k],c[(k+1)%4],1.3);
+      const cow=mat(0xf2f0ea),spot=mat(0x2a2624);for(let k=0;k<7;k++){const [cx2,cz2]=G((R()-0.5)*80,(R()-0.5)*40),cy2=gh(cx2,cz2),a=R()*6;
+        parts.push(blk(cx2,cy2+0.9,cz2,2.4,1.2,1.1,cow,a),blk(cx2+Math.cos(-a)*1.4,cy2+1.4,cz2+Math.sin(-a)*1.4,0.8,0.7,0.7,cow,a),blk(cx2,cy2+1.6,cz2,1,0.1,0.8,spot,a));
+        for(const [u,w] of [[0.9,0.4],[0.9,-0.4],[-0.9,0.4],[-0.9,-0.4]]){const c_=Math.cos(-a),s_=Math.sin(-a);parts.push(blk(cx2+c_*u-s_*w,cy2,cz2+s_*u+c_*w,0.25,0.9,0.25,cow,a));}}}
+    // Link's house, out at the east end over the stream: a small house with its tall chimney, the stone bridge
+    {const [ex,ez]=street[12],hx=ex+70,hz_=ez+10,hy2=gh(hx,hz_);house(parts,hx,hy2,hz_,9,8,6,0.3,{kind:'gable',wall:mat(0xe8d6a4),roof:M.tile,stack:true,stackM:mat(0xe8d6a4),plinth:0.8,rh:4.6});
+      const sa=[ex+30,ez-60],sb=[ex+36,ez+70];wall(parts,sa,sb,0.4,7,M.blue2,0,gh(ex+33,ez)-0.6);
+      const by=gh(ex+33,ez)+0.2,pts=[];for(let k=0;k<=8;k++){const t=k/8;pts.push(new THREE.Vector3(ex+20+t*26,by+Math.sin(t*Math.PI)*2,ez+4));}
+      const c_=new THREE.CatmullRomCurve3(pts);for(let k=0;k<8;k++){const p=c_.getPoint((k+0.5)/8);parts.push(blk(p.x,p.y-0.4,p.z,3.4,0.8,4,M.stone2));}}
     // fields: fenced plots of rows south of the street, wheat and greens
     const wheat=mat(0xd8c060),greens=mat(0x5a9a3a);
     for(let f=0;f<6;f++){const fx=V.x-120+f*48+R()*10,fz=V.z+70+R()*30,fyaw=R()*0.4,G=frame(fx,fz,fyaw);
