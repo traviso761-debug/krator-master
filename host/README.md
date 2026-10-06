@@ -40,6 +40,7 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `sitectl` | yes | adapted from the Menagerie's: the systemd user service `krator` (Linux) |
 | `sitectl.py` | yes | the same commands without systemd, for any system: `setup`, `serve`, `update`, … |
 | `sitectl.bat` | yes | Windows: finds Python 3.11+ and runs `sitectl.py`. Kept CRLF by `.gitattributes` |
+| `desktop/` | yes | the Krator Worlds desktop app: a window that keeps its own copy of `main` from GitHub, builds the gallery with `sitectl.py update` and serves it on this computer only (port 8011); see `desktop/README.md` |
 | `HOSTING.md` | yes | the setup guide for every system (`START-HERE.md` at the top is the non-technical one) |
 | `share.html` | yes | the `/share` page: reads `address.json`, draws the QR codes with `vendor/qrcode.js` |
 | `vendor/` | yes | third-party code the site serves (`qrcode.js`, MIT); see its README |
