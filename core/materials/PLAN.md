@@ -1047,7 +1047,9 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
    and `metal.rusty_metal_04` smeared into stripes on the Rehabilitated factory. A rust set for stretched UVs (a fine, isotropic
    rust with no plate or streak direction) would fix it: `metal.rust.fine` in PROMPTS-ready.md.
 2. Ring Sea is wired (2026-10-06, late: `wood.siding`, `cloth.canvas`, `roof.thatch.reed`, `roof.tile`, `plate.hex`, `organic.chitin.scale`,
-   the Ancient white and verdigris; its scale is in UV tiles, see kits/ringsea/materials.json). Post-apoc, interiors, verge, mungo: no materials.json yet.
+   the Ancient white and verdigris; its scale is in UV tiles, see kits/ringsea/materials.json). Post-Apoc is wired for planks, earth, concrete, timber and cloth (`wood.reclaimed`, `earth.floor.packed`,
+   `concrete.slab`, `wood.timber`, `cloth.weave.burlap`); its rusty metals stay procedural until a rust-streaked tintable corrugate comes
+   (`metal.corrugated.rusty`, prompted): `metal.container` and `metal.tin.patchwork` are too clean for it. Interiors, verge, mungo: no materials.json yet.
 3. The vernacular's own families: Highlands (logs -> `wood.log.carved`, scale -> `roof.scale.slate`, rubbleW, bamboo, bmat, rock,
    meadow, the h* pattern sheets), Reed Lake (rl* -> the reed sets and Reed Lake patterns), Xanadu (x* -> the Xanadu patterns,
    `plaster.white_stucco_02`, `paving.tiles144`), Dalab (dRelief, dChecker, dDecoPanel, dBanner -> the Dalab patterns), the port embassy
