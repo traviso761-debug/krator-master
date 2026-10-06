@@ -402,6 +402,13 @@ To be added to `README.md` under "Life/simulation layer" and enforced by a
 9. Everything the simulation knows is in `SIM.export()`, in the `krator-*`
    export shape, before it is drawn; the export's record shapes are the same as
    the hand-edited `world/*.json`, so either can be the source of a value.
+10. Furniture the camera may not be drawing is read from its records, never
+   from what is drawn (the README rule "Furniture that is not always drawn is
+   data first"): records apart from the drawing, a camera-independent index
+   (a committed bake plus an idle fill, fingerprinted per building), and edits
+   as an overlay keyed by piece id. `slotsFromFurniture` takes those records
+   (Mav's Refuge: `MIX.slots(i)`, `settlements/mavs-refuge/src/57a-interiors.js`),
+   so a bed or a counter exists whether or not anyone is looking.
 
 ---
 
@@ -512,6 +519,27 @@ strider `onboard` counts match the previous build over a 120 s day and
 3. `LIFE_DEST` lists → places from node tags **and** slot/room kinds (home,
    tavern, barracks, store) and the catalog furniture now placed by
    `53-furnish.js`; `'res'` platforms get `SLEEP` slots with capacity.
+   Since 2026-10-05 every lot, level room and hut has planned rooms and
+   furniture as camera-independent records (`57a-interiors.js`): places and
+   slots come from `MIX.slots(i)` (rule 10), each home's beds giving its
+   `SLEEP` capacity.
+3a. **The interiors' open issues, to address in this phase** (assessed
+   2026-10-05; details in `settlements/mavs-refuge/KNOWN_ISSUES.md`):
+   - walkers go inside: a resident walks from the door node through its home's
+     rooms to the piece it uses (`IX.life.nav` joined at the street door, the
+     `interior` layer);
+   - the shared kitchens: decide communal cooking (homes without hearths, the
+     level's kitchen the `COOK`/`EAT` place for its homes) or drop them;
+   - the shrines: an offering table, mats, a keeper's store; a shrine keeper
+     role and `WORSHIP` slots;
+   - the council chamber: a dais, petitioners' benches, a records room and a
+     guard post (four quarter-sector bodies between the portals), and the
+     council's sittings as the `Refuge Council`'s schedule;
+   - the market: each stall's goods by trade, stock held in the storehouses
+     next to it, porters between them, opening hours, stalls as `SELL` places;
+   - the spider nests: the handlers' stations, silk reeling into the silk
+     houses and the weavers' loft, the egg nursery, the prey store and the
+     handlers' bunks (after the owner's call on a fauna kit).
 4. Squads, posts, drill and gatherer routes → `Group` objects; the gatherer
    cycle becomes `GATHER` at a place advertising `resource: fruit`, with the
    satellite choice derived from that instead of the 60–420 m literal.

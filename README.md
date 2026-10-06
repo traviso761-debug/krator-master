@@ -57,6 +57,19 @@ Jungle region
 
 That is the difference between a procedural scene generator and a procedural world simulator.
 
+**Furniture that is not always drawn is data first.** When a build draws furniture only near the camera (interiors
+streamed in and out, anything planned on demand), the drawing is never the furniture's only home. Always:
+1. **Records apart from the drawing.** Each building's plan and pieces are a record (id, key, variant, seed, pose,
+   room, type, job), computed once by a pure function of the building's inputs, kept whatever is drawn, and read by
+   anything that needs them (the simulation's slots, an export) without waiting for the camera.
+2. **A camera-independent index.** Every record exists without anyone looking: baked headless into a committed JSON
+   file the build inlines (fingerprinted per building, so a stale entry is recomputed instead of trusted), with an
+   idle-time fill for what the bake lacks. The lights the pieces carry come from the records too.
+3. **Edits as an overlay.** Changes (the owner's, later the player's) are kept as deltas keyed by piece id, applied
+   to every read of a record, so they survive a building being dropped and rebuilt; a delta names its piece's key and
+   is skipped, not misapplied, when the catalog has changed under it.
+Mav's Refuge is the worked example (`settlements/mavs-refuge/src/57a-interiors.js`, `bake_interiors.py`).
+
 Give people and creatures a schedule, or at least the scaffolding for one, even if night/day is not implemented yet. A dummy schedule can have 'null' or the same activity for every hour.
 Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tribe) and a job (merchant, farmer, etc)
 
