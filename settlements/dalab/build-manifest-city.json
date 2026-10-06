@@ -6,6 +6,7 @@
  "20-textures.js": "bf2447777724",
  "22-materials.js": "c044d8ebde78",
  "25-core-mask.js": "71cc7d2187d3",
+ "26-core-mask-xform.js": "1befd82fe83e",
  "30-kit.js": "4592dfcb03bb",
  "32-surfaces.js": "f41847f87f7c",
  "34-kitdefs.js": "7347254ffed9",

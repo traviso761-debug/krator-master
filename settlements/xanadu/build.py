@@ -108,7 +108,6 @@ TARGET_OUT = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
-    '25-core-mask.js',                    # core/mask: the placement raster (no randomness)
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -124,6 +123,8 @@ DETERMINISTIC = {
     '83-er-data.js', '84-er-geo.js', '85-er-paint.js', '86-bio-46-er-init.js', '87-er-layout.js', '88-er-place.js',
     '90a-er-world.js', '90b-er-build.js', '93-er-ui.js',   # the Erewhon city target
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
@@ -273,7 +274,7 @@ def build_one(target, do_checks):
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
-        json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
+        json.dump({f: hashlib.sha1(bodies[f].replace('\r\n', '\n').encode()).hexdigest()[:12] for f in order},   # LF-normalised: one hash on every platform
                   fh, indent=1, sort_keys=True)
     return order, html, out
 
@@ -289,7 +290,7 @@ def vendor_manifest():
     out = {}
     for f in VENDORED + IZIZ_VENDORED:
         with open(srcpath(f), 'rb') as fh:
-            out[f] = hashlib.sha1(fh.read()).hexdigest()[:12]
+            out[f] = hashlib.sha1(fh.read().replace(b'\r\n', b'\n')).hexdigest()[:12]   # LF-normalised, as the build manifest
     with open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8') as fh:
         json.dump(out, fh, indent=1, sort_keys=True)
     return out

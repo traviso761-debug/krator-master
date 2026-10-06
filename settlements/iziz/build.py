@@ -142,7 +142,6 @@ DETERMINISTIC = {
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '20-core-clock.js',                                # core/clock: the world clock (no randomness)
-    '25-core-mask.js',                                 # core/mask: the placement raster (no randomness)
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
@@ -155,6 +154,8 @@ DETERMINISTIC = {
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
     '91t-iziz-tags.js',                   # REG into core/tags (reads only)
 }
+# core/mask: the placement raster and its transforms (no randomness); every fragment the module ships
+DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'mask')) if f[0].isdigit() and f.endswith('.js')}
 
 # Seed ranges known to collide, kept here so the build stays green while the
 # collision is tracked in KNOWN_ISSUES.md. Remove an entry when it is fixed;
