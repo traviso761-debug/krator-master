@@ -182,6 +182,12 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
   R.push({name:'two-wild-per-occupied', ok:ratio>=1.7&&ratio<=2.6, detail:(n-occ)+' unoccupied : '+occ+' occupied = '+ratio.toFixed(2)}); }
 { let bad=[]; A.TREES.forEach(T=>{ if(A.riverDist(T.x,T.z) < T.rb*1.6) bad.push(T.id); });
   R.push({name:'trees-out-of-river', ok:!bad.length, detail: bad.length? JSON.stringify(bad):'no trunk stands in the channel'}); }
+// 57-interiors.js: every 12th unit planned and furnished (not drawn). Every unit has rooms, keeps its programme, and
+// every home holds a bed, a food container and an item container.
+{ const I=window._interiors; if(!I||!I.audit) R.push({name:'interiors-coherent', ok:true, detail:'interiors off'});
+  else { const a=I.audit(12), ok=a.checked>0 && !a.noRooms.length && !a.dropped.length && a.homesOk===a.dwellings;
+    R.push({name:'interiors-coherent', ok, detail: ok ? a.checked+' of '+I.units+' units checked ('+JSON.stringify(a.byKind)+'), '+a.homesOk+' homes each with a bed, food and a chest; rooms '+JSON.stringify(a.rooms)+'; '+a.windows+' windows, '+a.lights+' lights; bake '+I.bake+' ('+a.fromBake+' of the checked from it, '+I.stale+' units stale: rerun bake_interiors.py if not 0); '+a.ms+' ms'
+      : JSON.stringify({noRooms:a.noRooms.slice(0,6), dropped:a.dropped, residenceFails:a.residenceFails, missing:a.missing})}); } }
 return R;}"""
 
 # The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has
@@ -189,12 +195,15 @@ return R;}"""
 # moved into the catalog, so its count EXCLUDES the furniture the camera draws. The furniture's own line counts it at
 # full detail: core/lod keeps each original on layer 30 (unseen; mask bit 0x40000000) and draws copies (userData.lodCopy,
 # carrying the original's userData), so the originals give a figure that does not move with the view.
+# The interiors (57-interiors.js, userData.interiors: the rooms near the camera) have a line of their own too.
 BUDGET_JS = """()=>{const B=(typeof BUDGET!=='undefined')?BUDGET:(window._api&&window._api.BUDGET); if(!B) return null;
 const L30=0x40000000, tri=g=>{ const n=g.index?g.index.count:g.attributes.position.count, dr=g.drawRange; return Math.floor(Math.min(n, dr.count===Infinity?n:dr.count)/3); };
-let ft=0, fd=0, fc=0; scene.traverseVisible(o=>{ if(!o.isMesh||!o.userData.furniture) return;
+let ft=0, fd=0, fc=0, it=0; scene.traverseVisible(o=>{ if(!o.isMesh) return;
+  if(o.userData.interiors){ it+=tri(o.geometry); fd+=tri(o.geometry); return; }
+  if(!o.userData.furniture) return;
   if(!o.userData.lodCopy) ft+=tri(o.geometry);                  /* the furniture at full detail: its budget */
   if(!(o.layers.mask&L30)){ fd+=tri(o.geometry); fc++; } });    /* what the camera draws of it: taken off the world's count */
-return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-fd, furnTris:ft, furnCalls:fc,
+return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.triangles-fd, furnTris:ft, furnCalls:fc, interiorTris:it,
         instances:(window._stats&&window._stats.instances)||0};}"""
 
 
@@ -257,7 +266,9 @@ async def run(a):
                     rows = [("drawCalls", bg["calls"]), ("triangles", bg["tris"]), ("instances", bg["instances"])]
                     if "furnitureTriangles" in bg["budget"]:
                         rows.append(("furnitureTriangles", bg["furnTris"]))
-                    print("  (triangles = the world without the catalog furniture; drawCalls include its %d meshes)" % bg["furnCalls"])
+                    if "interiorTriangles" in bg["budget"]:
+                        rows.append(("interiorTriangles", bg["interiorTris"]))
+                    print("  (triangles = the world without the catalog furniture and the interiors; drawCalls include their %d + interiors' meshes)" % bg["furnCalls"])
                     for k, cur in rows:
                         lim = bg["budget"][k]
                         ok = cur <= lim

@@ -234,7 +234,9 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 `src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons), `settlements/locus` and `settlements/mungo`
 (`88b-locus-minimap.js`: the ground, the streets by class, `PLACED`; Mungo adds its reed islands in `MINIMAP_EXTRA`) and `settlements/mungo` (`sched/`:
 its `CORE_MODULES`; the simulation's group formations follow `KSCHED.formation`'s offsets) and `settlements/shade`
-(`sched/` and `clock/` in its `CORE_MODULES`, with the simulation). `walk/` has no user yet.
+(`sched/` and `clock/` in its `CORE_MODULES`, with the simulation) and `settlements/yuni` (`minimap/` and `sched/`, its
+`CORE_MODULES`: `src/88b-yuni-minimap.js` feeds the minimap the terrain, the river and canal, the street graph, the wall
+and `FIX.buildings`; the volcano's cycle is `KSCHED.eruption`). `walk/` has no user yet.
 
 ## `materials/record/`: material records and the library loader
 
@@ -249,7 +251,9 @@ A subfolder, so the Ancients-lineage builds that take every top-level `core/mate
 | `test-record.js` | `node core/materials/record/test-record.js` |
 
 **Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`
-from `tex/`, which `tools/textures/pack.py` writes from `materials.json`).
+from `tex/`, which `tools/textures/pack.py` writes from `materials.json`) and `settlements/yuni` (the same way, since
+2026-10-05: 24 families on library sets, the interiors included; the rest procedural `TEX.def` kinds; `?mat=proc` is
+the old look).
 
 ## `clock/`
 
@@ -259,7 +263,9 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 `node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`), `settlements/mungo`
 (the whole page: `MCLOCK` drives the sky, the lights and the simulation; the Run time button), `settlements/locus`
 (`LCLOCK` drives the sky and everything that reads its hour; the sky panel's slider and speed row feed the clock),
-`settlements/shade` (held at noon; its probe steps the simulation with it) and `simulation/example/`.
+`settlements/shade` (held at noon; its probe steps the simulation with it), `settlements/yuni` (`YCLOCK` in `21-sky.js`
+replaces the sky's own `SKY_T`, so `skyHour()` is the world clock everywhere it is read; held at 10:00, Run time, the sky
+panel's rate row) and `simulation/example/`.
 
 ## `rand/`
 
@@ -276,7 +282,8 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 Rules: lattice coordinates and hash inputs are int32; floats are floored. No `Math.sin`, `pow`, `exp`, `log` or
 `random` in the module (the test greps for them). A new build takes `core/rand` from the start (`GODOT-PLAN.md` rule 2).
 **Used by** `settlements/ys` (city target, `TARGET_CORE`: the P3 placement pass draws from it; nothing placed yet,
-so nothing moved), `settlements/yuni` (only `core/tags`' uid hash: no draws) and `core/simulation` (SIM's decision stream is
+so nothing moved), `settlements/yuni` (only `core/tags`' uid hash: no draws; Yuni keeps its own Park-Miller `rnd()` and
+`Math.sin` noise by the owner's decision, `GODOT-PLAN.md` Phase 2 item 1) and `core/simulation` (SIM's decision stream is
 `KRAND.stream` when the module is loaded).
 
 ## `sockets/`

@@ -270,6 +270,10 @@ twin) checked against the same golden vectors. Each ships with its **first consu
    so moving a build's draws onto `KRAND.stream` moves nothing; only the hash and the noise move rubble, and only
    when a build switches to them. Golden file `core/rand/golden.json` (digests plus first values). Note that Math-library noise (`Math.sin` based hashes) is not portable
    bit for bit; the port replaces it, so this is the one phase that is expected to move rubble.
+   *Exception (Travis, 2026-10-05):* `settlements/yuni` keeps its own PRNG and noise. Its `rnd()` is Park-Miller
+   (`seed*16807 % 2147483647`), not mulberry32, so `KRAND.stream` would move every placement in the city; it takes
+   `core/rand` for `core/tags`' uid hash only, and its port carries Yuni's generator as it is (or bakes its
+   placements) instead (`settlements/yuni/KNOWN_ISSUES.md`).
 2. **`core/terrain/`** grows a `TERRAIN` field: a heightmap (Float32, metres, a grid at a fixed step) plus
    named carve patches and water levels, with `terrainH(x,z)` as bilinear sampling of it. A world either
    paints its heightmap from its present closure once (the 39 `terrainH` closures become bakes) or, for the

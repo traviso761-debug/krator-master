@@ -57,7 +57,7 @@ function pod(x,y,z,r,col){
 }
 function podPile(x,y,z,n){ for(var i=0;i<n;i++){ var a=i*2.4, r=i<5?0.42:0.18; pod(x+Math.cos(a)*r*(i%5?1:0), y+(i<5?0:0.42), z+Math.sin(a)*r*(i%5?1:0), 0.24, FRUITC[i%3]); } }
 function lamp(x,y,z,amp,rad,cool,hang){ LANTERN(x,y,z,amp,rad,cool,hang); ARCH.lamps++; }
-function pane(x,y,z,nx,nz,w,h,cool){ WINPANE(x,y,z,nx,nz,w,h,cool); ARCH.windows++; }
+function pane(x,y,z,nx,nz,w,h,cool,open){ WINPANE(x,y,z,nx,nz,w,h,cool,open); ARCH.windows++; }
 /* FURNITURE (53-furnish): the barrel and the crate are catalog pieces now; each still draws the random number its
    drawing drew (its colour), so nothing placed after it moves. s no longer scales them. */
 function barrel(x,y,z,s){ brfSkip(1); FURNISH_AT('br_h_water_butt',x,y,z,0,{v:0}); }
@@ -134,9 +134,36 @@ function doorAt(P,r,a,y,sgn,w,h,colDoor,colFrame){
   faceBox(P,r+sgn*0.10,a,y+0.12,w,h,0.22,colDoor,'wall');
   faceBox(P,r+sgn*0.75,a,y,w+0.9,0.14,1.3,PLANKC[3],'plank');
 }
-function winAt(P,r,a,y,sgn,w,h,cool,frameCol){
-  var f=faceBox(P,r,a,y-h/2-0.12,w+0.26,h+0.24,0.26,frameCol,'timber');
-  pane(f.x+f.ox*sgn*0.14, y, f.z+f.oz*sgn*0.14, f.ox*sgn, f.oz*sgn, w, h, cool);
+/* a window centred at height y. With `holes` it is a real opening: the frame is a ring round it and the hole
+   { a, hw, y0, y1 } goes on the list for the wall drawn after it (lotWalls) to cut; without, the frame is a solid
+   plate as before (the council chamber's and the Crown's tiers, whose walls stay whole) */
+function winAt(P,r,a,y,sgn,w,h,cool,frameCol,holes){
+  var f;
+  if(holes){
+    var ww=w+0.26, b=0.13;
+    f=faceBox(P,r,a,y-h/2-b,ww,b,0.26,frameCol,'timber'); faceBox(P,r,a,y+h/2,ww,b,0.26,frameCol,'timber');
+    faceBox(P,r,a-(w/2+b/2)/r,y-h/2,b,h,0.26,frameCol,'timber'); faceBox(P,r,a+(w/2+b/2)/r,y-h/2,b,h,0.26,frameCol,'timber');
+    holes.push({ a:a, hw:w/2, y0:y-h/2, y1:y+h/2 });
+  } else f=faceBox(P,r,a,y-h/2-0.12,w+0.26,h+0.24,0.26,frameCol,'timber');
+  pane(f.x+f.ox*sgn*0.14, y, f.z+f.oz*sgn*0.14, f.ox*sgn, f.oz*sgn, w, h, cool, !!holes);
+}
+/* a lot's walls, a floor at a time, drawn after its windows: the outer and inner faces with the openings cut, the
+   ends, and a lining LT inside (plaster, the openings cut, a reveal round each), so a window looks into a room
+   whether or not 57-interiors has furnished it */
+function lotWalls(P,a0,a1,rI,rO,yb,yt,col,hO,hI){
+  var LT=0.15, li=shade(col,0.12), rv=shade(col,-0.05);
+  ARC_WALL('wall',P,rO,a0,a1,yb,yt,col,1,hO,4.5);
+  ARC_WALL('wall',P,rI,a0,a1,yb,yt,col,-1,hI,4.5);
+  SECTOR('wall',P,rI,rO,a0,a1,yb,yt,col,{faces:'s'});
+  var lo=rO-LT, lI=rI+LT;
+  ARC_WALL('wall',P,lo,a0+LT/lo,a1-LT/lo,yb,yt,li,-1,hO,4.5);
+  ARC_WALL('wall',P,lI,a0+LT/lI,a1-LT/lI,yb,yt,li,1,hI,4.5);
+  var c=platXZ(P,(lo+lI)/2,(a0+a1)/2), ref=[c[0],(yb+yt)/2,c[1]];
+  [[a0,1],[a1,-1]].forEach(function(e){
+    var p0=platXZ(P,lI,e[0]+e[1]*LT/lI), p1=platXZ(P,lo,e[0]+e[1]*LT/lo);
+    MQUAD_TO('wall',[p0[0],yb,p0[1]],[p1[0],yb,p1[1]],[p1[0],yt,p1[1]],[p0[0],yt,p0[1]],li,ref); });
+  hO.forEach(function(h){ ARC_REVEAL('wall',P,lo,rO,h,rv); });
+  hI.forEach(function(h){ ARC_REVEAL('wall',P,rI,lI,h,rv); });
 }
 function ridgeAndFinials(P,rm,aA,aB,yR,col,big){
   SECTOR('timber',P,rm-0.14,rm+0.14,aA,aB,yR-0.12,yR+0.16,col,{faces:'tio',step:4.5});
@@ -191,10 +218,7 @@ function buildLot(P,S,bias){
   var wcol = kind==='silkhouse' ? shade(WALLC[4],0.28) : dark ? pick(WALLDARKC) : pick(WALLC);
   if(kind==='fancy') wcol=shade(pick(WALLC),0.08);
   var tcol = dark ? shade(TIMBERC[2],-0.2) : pick(TIMBERC), trim = kind==='fancy' ? ORNATEC[0] : tcol;
-  if(wr0>r0 || wr1<r1){
-    SECTOR('wall',P,wr0,wr1,a0,a1,y,y+FH,wcol,{faces:'ios'});
-    if(fl>1) SECTOR('wall',P,r0,r1,a0,a1,y+FH,y+H,shade(wcol,0.04),{faces:'iosb'});
-  }else SECTOR('wall',P,r0,r1,a0,a1,y,y+H,wcol,{faces:'ios'});
+  var holesO=[[],[]], holesI=[[],[]];          /* the walls are drawn after the windows, their openings cut (lotWalls) */
   /* sill, floor and wall-plate bands */
   SECTOR('timber',P,wr0-0.1,wr1+0.1,a0-0.1/rm,a1+0.1/rm,y,y+0.34,tcol,{faces:'ios'});
   SECTOR('timber',P,r0-0.12,r1+0.12,a0-0.12/rm,a1+0.12/rm,y+H-0.32,y+H,tcol,{faces:'ios'});
@@ -219,18 +243,25 @@ function buildLot(P,S,bias){
       if(f2===0 && (mid || shopfront)) continue;
       if(f2===1 && mid && (kind==='tavern'||kind==='inn')) continue;
       if(military && f2===0 && w2%2) continue;
-      winAt(P,(f2===0?wr1:r1),wa,wy,1,military?0.7:1.05,military?0.9:1.3,cool,frameCol);
+      winAt(P,(f2===0?wr1:r1),wa,wy,1,military?0.7:1.05,military?0.9:1.3,cool,frameCol,holesO[f2]);
     }
     for(var w3=0;w3<nI;w3++){
       if(f2===0 && w3===1) continue;
       if(kind==='store' && f2===0) continue;
-      winAt(P,(f2===0?wr0:r0),a0+(a1-a0)*(w3+0.5)/nI,wy,-1,1.0,1.25,cool,frameCol);
+      winAt(P,(f2===0?wr0:r0),a0+(a1-a0)*(w3+0.5)/nI,wy,-1,1.0,1.25,cool,frameCol,holesI[f2]);
     }
   }
   /* doors on both faces */
   var dcol=shade(WALLDARKC[1],-0.45), bigDoor=(kind==='store'||kind==='armoury');
   doorAt(P,wr0,am,y,-1,bigDoor?2.2:1.25,bigDoor?2.9:2.3,dcol,trim);
   if(!shopfront) doorAt(P,wr1,am,y,1,bigDoor?2.2:1.25,bigDoor?2.9:2.3,dcol,trim);
+  /* the walls: a floor at a time; an upper floor that overhangs a veranda or a shopfront has a soffit under the overhang */
+  for(var fw=0; fw<fl; fw++)
+    lotWalls(P,a0,a1,fw===0?wr0:r0,fw===0?wr1:r1,y+fw*FH,y+(fw+1)*FH,fw?shade(wcol,0.04):wcol,holesO[fw],holesI[fw]);
+  if(fl>1){
+    if(wr0>r0) SECTOR('wall',P,r0,wr0,a0,a1,y+FH,y+H,shade(wcol,0.04),{faces:'b'});
+    if(wr1<r1) SECTOR('wall',P,wr1,r1,a0,a1,y+FH,y+H,shade(wcol,0.04),{faces:'b'});
+  }
 
   /* ---------- roof ---------- */
   var style = kind==='fancy' ? 'joglo' : military ? (chance(0.6)?'stave':'hip') : kind==='silkhouse' ? (chance(0.5)?'joglo':'hip')
@@ -330,19 +361,9 @@ function buildLot(P,S,bias){
     if(chance(0.35)){ var ph=fr(P,r0-0.85,am-(a1-a0)*0.3); brfSkip(2); FURNISH_AT('br_h_planter_box',ph.x,y,ph.z,ph.ry,{v:1}); }   /* and a planter */
   }
   var site=brfDone(REGISTER({name:nameFor(kind,P),kind:kind,label:KIND_LABEL[kind]+(fl>1?' (two floors)':''),plat:P.id,x:C.x,y:y,z:C.z,r:Math.hypot(dep,arcO)*0.5,h:yTop-y}));
-  lotInterior(P,S,kind,wr0,wr1,site);
-}
-/* INTERIORS (?interiors=1): the beast-rider set's deck-lot item is the catalog's 14 x 10 m rewrite of this
-   builder (br_bldg_deck_lot; #2 the tavern/inn), not this builder's walls: a lot is furnished from it only
-   where that rectangle fits INSIDE the walls (wr0..wr1 x a0..a1), its front door on the lot's door
-   (outer face; a shop's only door is on the inner face). Most lots are narrower: they stay unplanned. */
-function lotInterior(P,S,kind,wr0,wr1,site){
-  var hw=7, dp=10, ha=(S.a1-S.a0)/2-0.3/wr1, am=(S.a0+S.a1)/2, inward=(kind==='shop'), dF, dB;
-  if(inward){ dF=wr0+0.3; dB=dF+dp; if(Math.hypot(dB,hw) > wr1-0.3) return null; }
-  else { dF=Math.sqrt(wr1*wr1-hw*hw)-0.3; dB=dF-dp; if(dB < wr0+0.3) return null; }
-  if(Math.atan(hw/Math.min(dF,dB)) > ha) return null;
-  var c=platXZ(P,(dF+dB)/2,am), o=platOutDir(P,am), fx=inward?-o[0]:o[0], fz=inward?-o[1]:o[1];
-  return brfInterior((kind==='tavern'||kind==='inn')?'br_bldg_deck_lot#2':'br_bldg_deck_lot',c[0],c[1],brfHead(fx,fz),S.y-0.22,site);
+  /* the shell as drawn, for the interiors (57-interiors.js): ground floor wr0..wr1, upper floor r0..r1, doors at am */
+  S.shell = { kind:kind, y:y, FH:FH, fl:fl, r0:r0, r1:r1, wr0:wr0, wr1:wr1, a0:a0, a1:a1, wcol:wcol, tcol:tcol,
+              doorOut:!shopfront, doorW:bigDoor?2.2:1.25, site:site, holesO:holesO, holesI:holesI };
 }
 
 MAINS.forEach(function(P){
@@ -745,6 +766,22 @@ MAINS.forEach(function(P){
   ARCH.buildings++;
 })();
 
+/* a hut's walls: seg flat faces (face i centred on angle rot+(i+0.5)/seg*TAU), a lining 0.1 m inside, the windows'
+   openings (holes[i] = { y0, y1, hw } on face i, centred on it) cut through both with a reveal between */
+function hutWalls(x,y,z,circ,seg,rot,WH,col,holes){
+  var LT=0.1, ci=circ-LT/Math.cos(Math.PI/seg), ctr=[x,y+WH/2,z], li=shade(col,0.12);
+  for(var i=0;i<seg;i++){
+    var A=rot+i/seg*TAU, B=rot+(i+1)/seg*TAU, h=holes[i];
+    var o0=[x+Math.cos(A)*circ,z+Math.sin(A)*circ], o1=[x+Math.cos(B)*circ,z+Math.sin(B)*circ];
+    var i0=[x+Math.cos(A)*ci,z+Math.sin(A)*ci], i1=[x+Math.cos(B)*ci,z+Math.sin(B)*ci];
+    var Lo=Math.hypot(o1[0]-o0[0],o1[1]-o0[1]), Li=Math.hypot(i1[0]-i0[0],i1[1]-i0[1]);
+    var ho = h ? [{ u:Lo/2, hw:h.hw, y0:h.y0, y1:h.y1 }] : null, hi = h ? [{ u:Li/2, hw:h.hw, y0:h.y0, y1:h.y1 }] : null;
+    PLANE_WALL('wall',o0,o1,y,y+WH,(i%2)?col:shade(col,-0.10),ctr,true,ho);
+    PLANE_WALL('wall',i0,i1,y,y+WH,li,ctr,false,hi);
+    if(h){ var m=(A+B)/2; PLANE_REVEAL('wall',i0,i1,[Math.cos(m),Math.sin(m)],LT,hi[0],shade(col,-0.05)); }
+  }
+}
+
 /* ================================================================== 5. SATELLITES */
 SATS.forEach(function(P){
   var y=P.y, blocked=[], msc=Math.min(P.sx,P.sz), low=(P.support==='over');
@@ -768,7 +805,7 @@ SATS.forEach(function(P){
     var WH=2.5, wcol=pick(WALLC), tcol=pick(THATCHC), f=FRM(x,z,dx,dz), cool=!!(P.leafOf&&P.leafOf.kind==='spider');
     brfIn(P.name+' hut '+si);
     blocked.push({x:x,z:z,ext:circ+0.5});
-    mCone('wall',x,y,z,circ,circ,WH,wcol,seg,rot);
+    var hutHoles = {};                       /* the walls are drawn after the windows, their openings cut (hutWalls) */
     mCone('timber',x,y,z,circ+0.06,circ+0.06,0.3,TIMBERC[2],seg,rot);
     for(var v=0;v<seg;v++){ var va=rot+v/seg*TAU; if(sq||v%2===0) BOX(x+Math.cos(va)*circ,y,z+Math.sin(va)*circ,0.2,WH,0.2,-va,TIMBERC[1],'timber'); }
     var rh=sq?R*0.95+0.9:R*1.05+0.7; if(low) rh=Math.min(rh,4.2);
@@ -783,8 +820,13 @@ SATS.forEach(function(P){
     var lp=LP(f,0.95,ap+0.35); lamp(lp[0],y+2.0,lp[1],0.7,10,cool,0);
     /* windows */
     [ (sq?1:2), -(sq?1:2) ].forEach(function(k,ix){ if(ix===1 && chance(0.4)) return;
-      var wa=dA+k*TAU/seg, wx=Math.cos(wa), wz=Math.sin(wa), wf=FRM(x+wx*ap,z+wz*ap,wx,wz);
-      fBOX(wf,0,0,y+1.0,1.1,1.1,0.24,shade(TIMBERC[2],-0.2),'timber'); pane(wf.x+wx*0.13,y+1.55,wf.z+wz*0.13,wx,wz,0.85,0.85,cool); });
+      var wa=dA+k*TAU/seg, wx=Math.cos(wa), wz=Math.sin(wa), wf=FRM(x+wx*ap,z+wz*ap,wx,wz), fc=shade(TIMBERC[2],-0.2);
+      /* a real opening, 0.85 m square: the frame is a ring round it */
+      fBOX(wf,0,0,y+1.0,1.1,0.125,0.24,fc,'timber'); fBOX(wf,0,0,y+1.975,1.1,0.125,0.24,fc,'timber');
+      fBOX(wf,-0.4875,0,y+1.125,0.125,0.85,0.24,fc,'timber'); fBOX(wf,0.4875,0,y+1.125,0.125,0.85,0.24,fc,'timber');
+      hutHoles[((k%seg)+seg)%seg] = { y0:y+1.125, y1:y+1.975, hw:0.425 };
+      pane(wf.x+wx*0.13,y+1.55,wf.z+wz*0.13,wx,wz,0.85,0.85,cool,true); });
+    hutWalls(x,y,z,circ,seg,rot,WH,wcol,hutHoles);
     /* barrel + washing line */
     var bp=LP(f,-(sq?ap:ap*0.75)-0.5,ap*0.55); if(clearAt(bp[0],bp[1],0.2)||true) barrel(bp[0],y,bp[1],0.95);
     var w0=LP(f,circ+0.3,0), w1=LP(f,circ+3.6,0.4), q=Math.hypot(w1[0]-P.x,w1[1]-P.z);
@@ -792,7 +834,8 @@ SATS.forEach(function(P){
       brfSkip(3); FURNISH_AT('br_h_cloth_line',(w0[0]+w1[0])/2,y,(w0[1]+w1[1])/2,brfAlong(w1[0]-w0[0],w1[1]-w0[1]),{v:0});
       blocked.push({x:(w0[0]+w1[0])/2,z:(w0[1]+w1[1])/2,ext:1.7}); }
     ARCH.huts++;
-    brfDone(REGISTER({name:pick(N_FAM)+' bough hut',kind:'hut',label:sq?'Thatched hut':'Round thatched hut',plat:P.id,x:x,y:y,z:z,r:circ+1,h:WH+rh}));
+    S.shell = { x:x, y:y, z:z, circ:circ, seg:seg, rot:rot, WH:WH, door:LP(f,0,ap), wcol:wcol, holes:hutHoles };     /* for the interiors (57) */
+    S.shell.site = brfDone(REGISTER({name:pick(N_FAM)+' bough hut',kind:'hut',label:sq?'Thatched hut':'Round thatched hut',plat:P.id,x:x,y:y,z:z,r:circ+1,h:WH+rh}));
   });
   brfIn(P.name);
   if(P.use==='homes'||P.use==='mixed'){

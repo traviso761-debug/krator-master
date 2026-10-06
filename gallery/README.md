@@ -80,3 +80,13 @@ Version 46 (2026-10-05): `worlds/mungo.html` added (Mungo, the reed-lake trade v
 `main` at 199cfdfe. Every other page is as in version 45: Locus (now on the shared core, with its buggy park), the
 Locus and Eastern Abyssal kits, Reed Lake (Reed's Local), Shade (its life on `core/simulation`), the catalog, the
 interiors and the eastern-abyss biome changed on `main` too and were not republished. One publish call.
+
+Version 47 (2026-10-05): `worlds/yuni.html`, `worlds/yuni-kit.html` and `worlds/yuni-plants.html` replaced with Yuni on
+the material library (24 families, the interiors included), the world clock (held; Run time) and the minimap (M), 7.3 MB
+each; `worlds/krator-catalog.html` replaced with the catalog's 1520 pieces (Yuni's six interiors pieces re-harvested). From
+`main` at 23ef6be7, with the index regenerated (Yuni's blurb and size, the catalog's count). Every other page is as in
+version 46. One publish call.
+
+Version 48 (2026-10-05): `worlds/mavs-refuge.html` replaced with Mav's Refuge's interiors (every lot, level room and hut
+planned and furnished, kept as data with the bake inlined; real windows; interior lamps and hearths), 3.2 MB, from `main`
+at b64cf395. The index changes only Mav's card (blurb and size). Every other page is as in version 47. One publish call.

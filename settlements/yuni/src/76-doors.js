@@ -94,14 +94,16 @@ var INT = { live:{}, order:[], occupied:null, cutaway:false, portals:[], matCach
   var CLIP = new THREE.Plane(new THREE.Vector3(0,-1,0), 1e6);
   function intMat(fam, inst, mode){
     var key=(inst?'i':'m')+'|'+fam+'|'+mode; if(INT.matCache[key]) return INT.matCache[key];
-    var floor = fam.indexOf('fl-')===0, fm=FAMMAT[floor ? fam.slice(3) : fam]||{}, m;
+    var floor = fam.indexOf('fl-')===0, fm=FAMMAT[fam] || FAMMAT[floor ? fam.slice(3) : fam] || {}, m;   /* a floor family of its own ('fl-adobe') wins */
     if(fm.basic) m=new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:!inst });
-    else { m=new THREE.MeshLambertMaterial({ color:0xffffff, vertexColors:!inst, map:fm.tex||null });
-      (function(needsUV, sc, floor){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc);
+    /* a library family gets the city's library material (45-kit.js famMaterial: colour, normal and roughness maps) with
+       its hooks; the indoor light below dims the sun's specular with its diffuse, so no highlight comes through a wall */
+    else { m=famMaterial(fm, { vertexColors:!inst });
+      (function(needsUV, sc, floor, L){ m.onBeforeCompile=function(sh){ if(needsUV) applyWorldUV(sh, sc); if(L) KMAT.libHooks(sh, L);
           sh.uniforms.uIndoorSun=IND.uIndoorSun; sh.uniforms.uIndoorWarm=IND.uIndoorWarm; sh.uniforms.uFloorLift=IND.uFloorLift;
           sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform float uIndoorSun;\nuniform vec3 uIndoorWarm;\nuniform float uFloorLift;')
-            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\nreflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm'+(floor?' + diffuseColor.rgb*uFloorLift':'')+';\n#include <aomap_fragment>'); };
-        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:'')+(floor?'|floor':''); }; })(inst && !!fm.tex, fm.scale||[3,3], floor); }
+            .replace('#include <aomap_fragment>','reflectedLight.directDiffuse *= uIndoorSun;\n'+(L?'reflectedLight.directSpecular *= uIndoorSun;\n':'')+'reflectedLight.indirectDiffuse = reflectedLight.indirectDiffuse*0.75 + diffuseColor.rgb*uIndoorWarm'+(floor?' + diffuseColor.rgb*uFloorLift':'')+';\n#include <aomap_fragment>'); };
+        m.customProgramCacheKey=function(){ return 'interior|'+(needsUV?'wuv'+sc[0]+'_'+sc[1]:'')+(floor?'|floor':'')+(L?'|std'+KMAT.libKey(L):''); }; })(inst && !!fm.tex, fm.lib ? fm.lib.scale : (fm.scale||[3,3]), floor, fm.lib || null); }
     if(mode==='portal'){ m.stencilWrite=true; m.stencilFunc=THREE.EqualStencilFunc; m.stencilRef=1; m.stencilFail=THREE.KeepStencilOp; m.stencilZFail=THREE.KeepStencilOp; m.stencilZPass=THREE.KeepStencilOp; }
     m.userData.intMode = mode; if(INT.cutaway) m.clippingPlanes=[CLIP];
     INT.matCache[key]=m; return m;

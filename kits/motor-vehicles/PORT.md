@@ -13,17 +13,17 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `krator-vehicles-eastabyss.js` | 13.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 57 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
-| `krator-vehicles-geomancer.js` | 19.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 130 | 0 | 0 | 0 | 0 | 0 | split: each entry's `tags`, `data`, `variantData` and the palette are [G data] (a sim reads them with no drawing); `build`/`wheel` draw |
+| `krator-vehicles-geomancer.js` | 19.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 129 | 0 | 0 | 0 | 0 | 0 | split: each entry's `tags`, `data`, `variantData` and the palette are [G data] (a sim reads them with no drawing); `build`/`wheel` draw |
 | `krator-vehicles-iziz.js` | 11.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
-| `krator-vehicles-post-apoc.js` | 16.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 79 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw; the bogie table `PA_BOGIES` is data too |
+| `krator-vehicles-post-apoc.js` | 16.4 | [draw] | 1 | 0 | 0 | 0 | 0 | 79 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw; the bogie table `PA_BOGIES` is data too |
 | `krator-vehicles-republic.js` | 18.9 | [draw] | 1 | 0 | 0 | 0 | 0 | 78 | 0 | 0 | 0 | 0 | 0 | split: palette, detail table, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
 | `krator-vehicles-runtime.js` | 15.4 | [draw] | 30 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | assembly: merges per material with a detail slot per vertex, hangs the wheels, lays the belts; `list()`/`dataOf()` are the data face, `roll`/`steer`/`lights` act on three.js nodes |
 | `vehicles-core.js` | 20.6 | [draw] | 30 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | split: the VEHICLE registry, vocabularies, `vehicleData()` and `vehicleBudget()` are [G data]; the vehicle frame helpers (`F.slab`, `F.tub`, `F.track` ...) and `vehicleBalloonTyre()` draw |
-| `vehicles-detail.js` | 9.5 | [G shader] | 3 | 3 | 0 | 0 | 0 | 1 | 8 | 0 | 0 | 0 | 0 | the detail maps: slot resolution is [G data]; the triplanar atlas hook is one .gdshader (or StandardMaterial3D triplanar + a CUSTOM0 slot); the atlas canvas is [web] |
+| `vehicles-detail.js` | 9.7 | [G shader] | 4 | 3 | 0 | 0 | 0 | 1 | 8 | 0 | 0 | 0 | 0 | the detail maps: slot resolution is [G data]; the triplanar atlas hook is one .gdshader (or StandardMaterial3D triplanar + a CUSTOM0 slot); the atlas canvas is [web] |
 | `src/00-head.html` | 4.3 | [web] | 0 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/80-sky-hash.js` | 0.5 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/90-sheet.js` | 8.2 | [web] | 8 | 3 | 9 | 4 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/90-sheet.js` | 8.5 | [web] | 8 | 3 | 9 | 4 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-hover.js` | 2.9 | [web] | 2 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `src/93-polygon.js` | 4.8 | [web] | 6 | 0 | 9 | 9 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
