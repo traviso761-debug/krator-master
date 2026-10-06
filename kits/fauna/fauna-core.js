@@ -54,7 +54,7 @@
    Families (materials): coat (short fur), hair (long hair, double-sided), skin, horn, hoof, eye, mouth, plain.
    ====================================================================== */
 const TAU = Math.PI * 2;
-const FAUNA_FAMILIES = ['coat', 'hair', 'skin', 'horn', 'hoof', 'eye', 'mouth', 'plain', 'chitin', 'membrane', 'glow'];
+const FAUNA_FAMILIES = ['coat', 'hair', 'skin', 'horn', 'hoof', 'eye', 'mouth', 'plain', 'chitin', 'membrane', 'glow', 'scale', 'sleek', 'feather', 'shag'];
 /* the vocabularies a tag is checked against (verify.py --assert) */
 const FAUNA_VOCAB = {
   aridity: ['arid', 'semiarid', 'subhumid', 'humid'],
@@ -66,7 +66,7 @@ const FAUNA_VOCAB = {
   temperament: ['skittish', 'wary', 'docile', 'defensive', 'aggressive'],   /* from bolting first to attacking first */
   habitat: ['ground', 'rock', 'canopy', 'trunks', 'sky', 'water', 'shallows', 'deep water', 'marsh', 'burrow', 'pen'],
   locomotion: ['walks', 'runs', 'climbs', 'flies', 'glides', 'swims', 'wades', 'burrows', 'leaps'],
-  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'none'],
+  gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'climber', 'none'],
   traits: ['edible', 'milkable', 'tameable', 'rideable', 'draught', 'eggs'],
   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H']
 };

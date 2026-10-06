@@ -20,7 +20,9 @@
    ====================================================================== */
 const KratorFaunaAPI = (function () {
   'use strict';
-  const LOOK = { coat: [0.95, 0], hair: [0.9, 0], skin: [0.45, 0], horn: [0.5, 0], hoof: [0.6, 0], eye: [0.12, 0], mouth: [0.6, 0], plain: [0.8, 0], chitin: [0.35, 0.05], membrane: [0.7, 0], glow: [1, 0] };
+  /* per family: [roughness, metalness, detail strength (0 the vertex colour alone, 1 the full map)] */
+  const LOOK = { coat: [0.95, 0, 0.6], hair: [0.9, 0, 0.8], skin: [0.45, 0, 0.75], horn: [0.5, 0, 0.8], hoof: [0.6, 0, 1], eye: [0.12, 0, 1], mouth: [0.6, 0, 1], plain: [0.8, 0, 1],
+    chitin: [0.35, 0.05, 0.8], membrane: [0.88, 0, 0.7], glow: [1, 0, 0], scale: [0.55, 0, 0.85], sleek: [0.7, 0, 0.55], feather: [0.85, 0, 0.7], shag: [0.95, 0, 0.75] };
   const MATS = {}, TEXST = { on: typeof FA_TEX !== 'undefined' && !!FA_TEX, pending: 0, families: [] }, TEXC = {};
   function detail(fam) {
     if (!TEXST.on || typeof FA_TEX === 'undefined' || !FA_TEX || !FA_TEX[fam]) return null;
@@ -36,19 +38,19 @@ const KratorFaunaAPI = (function () {
     const lk = LOOK[fam] || LOOK.plain;
     /* glow: unlit, its vertex colour is its light (a glint's abdomen); membrane and hair: seen from both sides (wings, locks) */
     if (fam === 'glow') return (MATS[fam] = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false }));
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: lk[0], metalness: lk[1], side: fam === 'hair' || fam === 'membrane' ? THREE.DoubleSide : THREE.FrontSide });
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: lk[0], metalness: lk[1], side: fam === 'hair' || fam === 'membrane' || fam === 'feather' ? THREE.DoubleSide : THREE.FrontSide });
     if (fam === 'eye') m.emissive = new THREE.Color(0x050403);
     const D = detail(fam);
     if (D) {
       m.map = D.map;
       m.onBeforeCompile = function (sh) {
-        sh.uniforms.uDetTile = { value: D.tile }; sh.uniforms.uDetGain = { value: D.gain };
+        sh.uniforms.uDetTile = { value: D.tile }; sh.uniforms.uDetGain = { value: D.gain }; sh.uniforms.uDetMix = { value: lk[2] == null ? 1 : lk[2] };
         sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vFaP;varying vec3 vFaN;')
           .replace('#include <uv_vertex>', '#include <uv_vertex>\nvFaP=position;vFaN=normal;');
-        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vFaP;varying vec3 vFaN;uniform float uDetTile;uniform float uDetGain;')
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vFaP;varying vec3 vFaN;uniform float uDetTile;uniform float uDetGain;uniform float uDetMix;')
           .replace('#include <map_fragment>', ['#ifdef USE_MAP', 'vec3 fW=pow(abs(normalize(vFaN))+1e-4,vec3(4.0));fW/=(fW.x+fW.y+fW.z);vec3 fP=vFaP*uDetTile;',
             'vec4 texelColor=texture2D(map,fP.zy)*fW.x+texture2D(map,fP.xz)*fW.y+texture2D(map,fP.xy)*fW.z;texelColor=mapTexelToLinear(texelColor);',
-            'diffuseColor.rgb*=texelColor.rgb*uDetGain;', '#endif'].join('\n'));
+            'diffuseColor.rgb*=mix(vec3(1.0),texelColor.rgb*uDetGain,uDetMix);', '#endif'].join('\n'));
       };
       m.customProgramCacheKey = function () { return 'fauna-det-' + fam; };
     }
@@ -95,10 +97,13 @@ const KratorFaunaAPI = (function () {
        flyer      wings flap about z (mode 'fly'; folded at 'idle'/'rest'), legs tucked in flight (flap.tuck); a flyer with legs
                   walks as a biped (2 legs), a quadruped (4) or a hexapod (6), and so does an insect
        insect     wings beat fast (any mode but 'rest')                            swimmer  tail and segments sweep side to side
+       climber    hangs from a bough (a 'grip' anchor); walks hand over hand along it (limbs swing about z)
        none       nothing moves
      modes: idle, graze, walk, rest, fly, swim. The geometry never changes; only the part groups turn (and the body bobs).
      Opt-in data, read only when an animal sets it:
        flap.sweep  perched, the wings also turn back about y by this much (left +, right -): a fold along the flanks
+       flap.foldScale  perched, the wing is shortened along its span to this fraction (a folded wing is about half its spread)
+       flap.roll   perched, the wing turns about its own span first (radians; ~1.3 hangs it down the flank, not across the back)
        flap.tuck   in flight the legs swing back about x by this much
        flap.sync   the second wing pair beats with the first (a moth), not against it (a dragonfly)
        swim.axis   'x': the tail beats up and down (flukes), not side to side
@@ -111,7 +116,7 @@ const KratorFaunaAPI = (function () {
     const set = (p, x, y, z) => { if (p) p.rotation.set(x || 0, y || 0, z || 0); };
     const legs = P.legs.filter(Boolean), body = P.body, segs = P.segs || [];
     if (body) body.position.y = body.userData.rest ? body.userData.rest.y : 0;
-    legs.forEach(L => set(L)); segs.forEach(S => set(S)); set(body);
+    legs.forEach(L => set(L)); segs.forEach(S => set(S)); set(body); set(P.head); set(P.tail); set(P.jaw);   /* every frame starts from rest (a mode leaves nothing behind) */
     const CH = D.chain, chained = CH ? [P.head, P.tail, P.jaw && P.jaw.parent === g ? P.jaw : null].concat(segs, legs).filter(Boolean) : null;
     if (chained) chained.forEach(q => { if (q.userData.rest) q.position.x = q.userData.rest.x; });
     const snake = (ph2, amp) => { const k = TAU / (CH.wave || 3);
@@ -123,15 +128,20 @@ const KratorFaunaAPI = (function () {
     const flying = (type === 'flyer' && mode === 'fly') || (type === 'insect' && mode !== 'rest');
     const glide = fl.glide ? (Math.sin(TAU * 0.07 * t + ph) > 1 - 2 * fl.glide ? 0.15 : 1) : 1;
     const flapA = flying ? (fl.amp || 0.7) * glide * Math.sin(wf) : (type === 'flyer' ? -(fl.fold || 0) : 0);
-    const sweep = flying || type !== 'flyer' ? 0 : (fl.sweep || 0);
-    for (const [n, s] of [['wingL', 1], ['wingR', -1], ['wing2L', 1], ['wing2R', -1]]) if (P[n]) set(P[n], 0, s * sweep, s * (n.indexOf('2') > 0 && !fl.sync ? -flapA : flapA));
+    const sweep = flying || type !== 'flyer' ? 0 : (fl.sweep || 0), fsc = flying || type !== 'flyer' ? 1 : (fl.foldScale || 1);
+    for (const n of ['wingL', 'wingR', 'wing2L', 'wing2R']) if (P[n]) P[n].scale.x = fsc;
+    /* roll (perched): the wing turns about its own span first (rotation order YZX), so a folded wing hangs down the flank */
+    const roll = flying || type !== 'flyer' ? 0 : (fl.roll || 0);
+    for (const [n, s] of [['wingL', 1], ['wingR', -1], ['wing2L', 1], ['wing2R', -1]]) if (P[n]) {
+      if (fl.roll && P[n].rotation.order !== 'YZX') P[n].rotation.order = 'YZX';
+      set(P[n], -roll, s * sweep, s * (n.indexOf('2') > 0 && !fl.sync ? -flapA : flapA)); }
     if (flying && type === 'flyer' && fl.tuck) legs.forEach(L => set(L, fl.tuck, 0, 0));
     if (type === 'flyer' && mode === 'fly' && body) body.position.y = 0.04 * (u.S || 1) * Math.sin(wf + 1);
     const wt = (type === 'flyer' || type === 'insect') ? (legs.length === 2 ? 'biped' : legs.length === 4 ? 'quadruped' : legs.length === 6 ? 'hexapod' : type) : type;
     if (mode === 'walk' && !(flying && type === 'flyer')) {
       if (wt === 'sprawl') {
         const a = 0.45;
-        legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, 0, s * a * Math.sin(w), -(i % 2 ? -1 : 1) * 0.18 * Math.max(0, s * Math.cos(w))); });
+        legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, 0, s * a * Math.sin(w), (i % 2 ? -1 : 1) * 0.18 * Math.max(0, s * Math.cos(w))); });
         set(body, 0, 0.06 * Math.sin(w), 0); set(P.tail, 0, -0.32 * Math.sin(w - 0.8), 0); set(P.head, 0, -0.12 * Math.sin(w + 0.4), 0);
       } else if (wt === 'biped') {
         legs.forEach((L, i) => set(L, (i % 2 ? -1 : 1) * 0.5 * Math.sin(w), 0, 0));
@@ -143,6 +153,9 @@ const KratorFaunaAPI = (function () {
       } else if (type === 'multipede') {
         legs.forEach((L, i) => { const k = Math.floor(i / 2); set(L, 0.45 * Math.sin(w - k * 0.6 + (i % 2) * Math.PI), 0, 0); });
         if (chained) snake(w * 0.5, CH.amp || 0.15); else segs.forEach((S, i) => set(S, 0, 0.08 * Math.sin(w * 0.5 - i * 0.5), 0));
+      } else if (wt === 'climber') {   /* hanging hand over hand along a bough (along x): diagonal pairs swing about z */
+        legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, 0, 0, s * 0.35 * Math.sin(w)); });
+        set(P.head, 0, 0.1 * Math.sin(w), 0);
       } else if (wt === 'quadruped') {
         legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, s * 0.42 * Math.sin(w), 0, 0); });
         if (body) body.position.y = 0.012 * Math.abs(Math.sin(w)) * (u.S || 1);

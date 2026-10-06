@@ -981,6 +981,27 @@ Nomad, Screamer. Each needs a style read of its culture file before a prompt is 
 `rubber` out of `plastic`, a painted-wood family out of `wood`/`plank`, and pottery out of `stone` (the `clay*` keys on `stone`: 29 pieces
 of `clayBlack` alone would take a stone map, not `ceramic.*`). Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
 
+#### The Fauna kit (`kits/fauna`, 2026-10-06)
+
+48 species, 136 builds. Each surface is a material family carrying a library set as a triplanar detail map (`kits/fauna/materials.json`;
+the vertex colours keep each animal's markings, so every set must be **tintable**). Now: `coat` (thick fur) `fur.bat`, `sleek` (short hair)
+`hide.strider` (a stand-in: it is lighter and streakier than a sleek coat), `skin` `hide.leather033c`, `scale` `organic.scale`, `membrane`
+`membrane.bat`, `chitin` `organic.chitin`, `horn` `bone.horn`, `hair` `hair.crest`. `hide.fur.brown` was the coat until 2026-10-06: its pale
+bald blotches read as spots on every deer, dog and grazer; `hide.leather008`, the old skin, is a black crocodile crackle. `feather` has no map:
+17 birds and the emu's plumage wait on it.
+
+**Still needed for fauna**, most animals first. All G rows start with the base template and the muting sentence.
+
+| id | Animals | Material line | Reuse |
+|---|---|---|---|
+| `feather.plumage` | 17 birds (hen, duck, gull, kite, swift, darters, flamingo, emu, sand strider, archaeopteryx ...) | The row in the catalog audit above. | feather cloaks, fans, headdresses, fletching (Screamer furniture) |
+| `feather.flight` | every bird's folded and spread wings | Folded bird flight feathers seen from above, as on a closed wing: long primary and secondary feathers about 25 cm long lying parallel and overlapping like roof shingles, each with a visible pale central shaft, smooth vanes and a slightly ragged tip, narrow dark gaps between them. Light neutral grey so it can be tinted. | wings on banners and crests, arrow fletching, feather fans |
+| `hide.sleek` | horse, mule deer, cattle, water buffalo, dromedary, coyote, arena tiger, grazer, stalker, strider | Short sleek animal coat seen close up, as on a horse or a deer: very short dense glossy hairs all lying in one direction, faint swirls where the hair changes direction, a soft sheen along the hair, no spots, stripes or markings. Light neutral warm grey-tan so it can be tinted. | hair-on hide: saddle skirts, drum skins, quivers, upholstery, pelts on any culture's furniture |
+| `wool.fleece` | sheep, yak (undercoat), goat kids | Sheep's fleece on the living animal seen close up: dense crimped wool staples about 5 cm long packed side by side, each a twisted lock with a slightly darker weathered tip, small dark gaps between the locks, a few bits of dry grass caught in it. Off-white, evenly muted. | fleece rugs, saddle pads, felt (the Scyvoi gers' felt walls), sheepskin cloaks and bedding |
+| `skin.smooth` | fire salamander, bay swimmer, sky ray, pig (tinted pink), frilled and pit lizards' bellies | Smooth moist animal skin as on a salamander, a frog or a whale: fine pores, soft wrinkles and creases in loose bands, a few tiny raised bumps, slightly glossy, no scales and no hair. Neutral mid grey so it can be tinted. | eels, frogs, cave creatures, fish without scales, any smooth-skinned alien beast; oiled leather |
+| `wing.butterfly` | jungle butterfly, cap moth (owed since the Girder flyers) | Full colour, not tintable: one butterfly forewing and hindwing pair seen flat from above, filling the square, on a solid flat bright green (#00ff00) background so it can be cut out: dark veins branching from the base, scale texture visible up close, a broad dark rim with pale spots, two large eye-spots on the hindwing, in warm rose and cream. Square, 2048x2048; no body, no other objects. | any butterfly or moth (tinted per species), fairy wings, banners |
+| `skin.sky-ray` | sky ray (owed since the Girder flyers) | Skin of a giant flying ray seen from above: smooth leathery hide, fine sandpaper-like dermal denticles, faint darker mottling in soft rings, a few pale scars. Neutral slate grey so it can be tinted. | rays and skates, shark-skin grips (shagreen), any gliding membrane beast |
+
 #### Scan-library metals (AmbientCG, added 2026-10-02)
 
 Provisional, to be judged in the demo kit. In the owner's AmbientCG folder, each with a metalness map:

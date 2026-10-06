@@ -136,3 +136,6 @@ The live index (version 57) was kept: the Fauna card was added and the Scyvoi ca
 Version 59 (2026-10-06): `worlds/shighlands.html` added (the southern highlands biome kit, 0.2 MB: the spiral biome, a cloud forest
 above the cloud sea and a paramo of giant rosettes, every plant a spiral turning the same way), from `main` at the southern
 highlands merge (1a34da92). The live index (version 58) was kept: only the Southern highlands card was added. One publish call.
+Version 60 (2026-10-06): `worlds/fauna.html` (0.7 MB) and `worlds/scyvoi.html` (12.1 MB) replaced with the fauna quality pass
+(every species reviewed and refined, surfaces on their own material families, better fur and skin maps), from `main` at ec5eb622.
+The live index (version 59, the southern highlands) was kept: only the Fauna and Scyvoi cards' sizes changed. One publish call.

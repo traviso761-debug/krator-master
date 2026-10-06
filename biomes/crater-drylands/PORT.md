@@ -24,7 +24,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/88-host-build.js` | 0.9 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89-host-fire.js` | 14.0 | [web] | 13 | 0 | 5 | 2 | 0 | 1 | 11 | 2 | 2 | 0 | 0 | split: the live fire's controls and sprite pool [web]; its shader text is [G shader]; the arrival map is 52's [G data] |
 | `src/90-host-camera.js` | 9.8 | [web] | 5 | 0 | 4 | 7 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |  |
-| `src/91-host-probe.js` | 9.6 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 4 | 0 | 0 | 0 |  |
+| `src/91-host-probe.js` | 9.7 | [web] | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 4 | 0 | 0 | 0 |  |
 | `src/93-host-polytool.js` | 6.2 | [web] | 9 | 0 | 12 | 6 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

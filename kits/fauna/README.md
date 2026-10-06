@@ -58,9 +58,10 @@ As PARTS, each turning about its own pivot: `body`, `head` (with the neck; the e
 (pairs front to back, left then right), `wingL`/`wingR` (and `wing2L`/`wing2R`), `seg0..segN`. `KratorFauna.animate(group, t,
 mode)` turns only those, by the animal's gait (quadruped, sprawl, biped, hexapod, octopod, multipede, flyer, insect, swimmer),
 so the geometry never changes and a Godot port can take each part as a bone. Colours are vertex colours (markings, patches);
-five library sets add grain as triplanar detail maps in each part's own frame (`materials.json`: coat `hide.fur.brown`, hair
-`hair.crest`, skin `hide.leather008`, horn `bone.horn`, chitin `organic.chitin`); `membrane` is double-sided (wings) and `glow`
-unlit (a glint's light).
+library sets add grain as triplanar detail maps in each part's own frame (`materials.json`: coat `fur.bat`, sleek `hide.strider`,
+shag `fur.sloth`, hair `hair.crest`, skin `hide.leather033c`, scale `organic.scale`, membrane `membrane.bat`, horn `bone.horn`,
+chitin `organic.chitin`); `feather` waits on a set, and `glow` is unlit (a glint's light). The wanted sets are in
+`core/materials/PLAN.md`, "The Fauna kit".
 
 **For tack**, an animal can publish a body profile and anchors (`KratorFauna.profile`: the salamander's centre line and
 half-sizes along its length; saddle, bridle, chest): the Scyvoi kit draws its saddles, barding and collars against it, so the

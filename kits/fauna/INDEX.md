@@ -18,17 +18,17 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | File | KB | Sections (line) |
 |---|---|---|
 | `fauna-core.js` | 15 |  |
-| `krator-fauna-abyss.js` | 44 **big** | the salt-lake flamingo (61); the frilled lizard (126); the marsh emu (193); the pack lizard (266); the riding lizard (329); the dromedary (396) |
-| `krator-fauna-bay.js` | 40 **big** |  |
+| `krator-fauna-abyss.js` | 52 **big** | the salt-lake flamingo (114); the frilled lizard (202); the marsh emu (273); the pack lizard (358); the riding lizard (419); the dromedary (484) |
+| `krator-fauna-bay.js` | 53 **big** |  |
 | `krator-fauna-crawlers.js` | 18 |  |
-| `krator-fauna-desert.js` | 41 **big** |  |
-| `krator-fauna-farm.js` | 63 **big** |  |
-| `krator-fauna-flyers.js` | 38 **big** | QUETZALCOATLUS: span 12 m (63); GIANT BAT: span 9 m (156); GIANT ARCHAEOPTERYX: span 7 m (273); GIANT DRAGONFLY: 6 m body, 4 wings (363) |
-| `krator-fauna-hyperjungle.js` | 25 |  |
+| `krator-fauna-desert.js` | 50 **big** |  |
+| `krator-fauna-farm.js` | 68 **big** |  |
+| `krator-fauna-flyers.js` | 39 **big** | QUETZALCOATLUS: span 12 m (73); GIANT BAT: span 9 m (166); GIANT ARCHAEOPTERYX: span 7 m (287); GIANT DRAGONFLY: 6 m body, 4 wings (380) |
+| `krator-fauna-hyperjungle.js` | 44 **big** |  |
 | `krator-fauna-livestock.js` | 10 |  |
 | `krator-fauna-mounts.js` | 8 |  |
-| `krator-fauna-runtime.js` | 16 |  |
-| `krator-fauna-voth.js` | 45 **big** | the seagull (84-fauna.js 62-73) (54); the cliff racer (84-fauna.js 75-88) (110); the silt strider (79c-strider-model.js 37-182, 4 (177); the arena tiger (78j-life-arena.js 187-223, 533- (269); the pit lizard (78j-life-arena.js 187-223, 533-5 (336); the giant beetle (65k-granary-mills-ranch.js 435 (400) |
+| `krator-fauna-runtime.js` | 18 |  |
+| `krator-fauna-voth.js` | 53 **big** | the seagull (84-fauna.js 62-73) (54); the cliff racer (84-fauna.js 75-88) (110); the silt strider (79c-strider-model.js 37-182, 4 (181); the arena tiger (78j-life-arena.js 187-223, 533- (273); the pit lizard (78j-life-arena.js 187-223, 533-5 (409); the giant beetle (65k-granary-mills-ranch.js 435 (473) |
 
 ## src/
 
@@ -37,7 +37,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `00-head.html` | 4 |  |
 | `80-sky-hash.js` | <1 | h3 hash for KratorSky (1) |
 | `81-sky.js` | 10 |  |
-| `90-sheet.js` | 9 | Fauna kit sheet (1) |
+| `90-sheet.js` | 11 | Fauna kit sheet (1) |
 | `92-hover.js` | 3 | Hover inspector (1) |
 | `93-polygon.js` | 5 | Polygon tool (1) |
 | `99-tail.html` | <1 |  |

@@ -44,7 +44,7 @@ function faFmEnd(A, fam, p, q, hr, col) {
 function faFmChain(A, fam, P, R, ns, colf, hidden0) {
   const n = P.length, rr = q => Array.isArray(q) ? q : [q, q];
   for (let i = 0; i < n; i++) { const q = rr(R[i]), t = i / (n - 1), p = P[i];
-    if (i > 0 || hidden0 === false) A.ellip(fam, p[0], p[1], p[2], q[0], (q[0] + q[1]) / 2, q[1], colf(p, t), { seg: 8 });   /* the first joint is buried in the body */
+    if (i > 0 || hidden0 === false) A.ellip(fam, p[0], p[1], p[2], q[0], (q[0] + q[1]) / 2, q[1], colf(p, t), { seg: Math.max(q[0], q[1]) > 0.07 ? 8 : 6 });   /* the first joint is buried in the body; a slim joint needs fewer sides */
     if (i < n - 1) { const a = P[i], b = P[i + 1], qa = q, qb = rr(R[i + 1]);
       A.tube(fam, u => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u], u => [qa[0] + (qb[0] - qa[0]) * u, qa[1] + (qb[1] - qa[1]) * u], 2, ns, null,
         { caps: false, colf: (u) => colf([a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u], (i + u) / (n - 1)) }); }
@@ -67,19 +67,22 @@ function faFmHoof(A, x, z, type, r, h, col) {
      eyes [x, y, z, r], ears {piv, at, r, rx, ry, rz, col}, horn {pts, rad, col, tip} (left; mirrored)
      legs {F, FR, H, HR (left fore and hind chains: shoulder, elbow, knee, cannon, fetlock, pastern), hoof, hoofR,
            hoofH, hoofCol, col(p, t, front)}
-     tail {pts, rad, col, tuft: {n, len, w, col}}
+     tail {pts, rad, col, tuft: {n, len, w, col}, smooth (one tube, not a jointed chain), fam}
+     fam   the material family of the body, neck, head, ears and legs (default 'coat'); bodyFam, headFam, legFam, earFam
+           override it part by part (a sheep's fleece is coat, its face and legs sleek)
      extraBody(P), extraHead(P)  species extras (udder, wool, mane, skirt) */
 function faFmHoofed(A, B) {
   const K = B.K, P = p => [p[0] * K, p[1] * K, p[2] * K], PP = a => a.map(P), RR = a => a.map(q => Array.isArray(q) ? [q[0] * K, q[1] * K] : q * K);
-  const coat = B.coat, mir = a => a.map(p => [-p[0], p[1], p[2]]);
+  const coat = B.coat, mir = a => a.map(p => [-p[0], p[1], p[2]]), F0 = B.fam || 'coat';
+  const FB = B.bodyFam || F0, FH = B.headFam || F0, FL = B.legFam || F0, FE = B.earFam || FH;
   /* the barrel */
-  const bc = faFmTube(A, B.bodyFam || 'coat', PP(B.body.map(b => [0, b[1], b[0]])), RR(B.body.map(b => [b[2], b[3]])), B.bodyNt || 16, B.bodyNs || 14,
+  const bc = faFmTube(A, FB, PP(B.body.map(b => [0, b[1], b[0]])), RR(B.body.map(b => [b[2], b[3]])), B.bodyNt || 16, B.bodyNs || 14,
     (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
   if (B.extraBody) B.extraBody(P, bc);
   /* the head with the neck */
   A.part('head', P(B.neckPivot), () => {
-    const nc = faFmTube(A, 'coat', PP(B.neck.pts), RR(B.neck.rad), B.neck.nt || 6, 12, (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
-    faFmTube(A, 'coat', PP(B.head.pts), RR(B.head.rad), B.head.nt || 9, 12, (p, t, a, q) => B.head.col ? B.head.col(p, t, a) : coat(p[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+    const nc = faFmTube(A, B.neckFam || FB, PP(B.neck.pts), RR(B.neck.rad), B.neck.nt || 6, 12, (p, t, a, q) => coat(p[0] + Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
+    faFmTube(A, FH, PP(B.head.pts), RR(B.head.rad), B.head.nt || 9, 12, (p, t, a, q) => B.head.col ? B.head.col(p, t, a) : coat(p[0], p[1] + Math.cos(a) * q[1], p[2], a), true);
     if (B.eyes) for (const s of [-1, 1]) { const e = B.eyes;
       A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K * 0.85, e[3] * K, 0x2a1a0e, { seg: 8 });
       A.ellip('eye', s * (e[0] + e[3] * 0.45) * K, e[1] * K, (e[2] + e[3] * 0.3) * K, e[3] * 0.5 * K, e[3] * 0.55 * K, e[3] * 0.4 * K, 0x050403, { seg: 6 }); }
@@ -89,14 +92,14 @@ function faFmHoofed(A, B) {
   });
   if (B.ears) for (const s of [-1, 1]) { const e = B.ears;
     A.part(s > 0 ? 'earL' : 'earR', P([s * e.piv[0], e.piv[1], e.piv[2]]), () => {
-      A.ellip('coat', s * e.at[0] * K, e.at[1] * K, e.at[2] * K, e.r[0] * K, e.r[1] * K, e.r[2] * K, e.col, { rx: e.rx || 0, ry: s * (e.ry || 0), rz: s * (e.rz || 0), seg: 10 });
+      A.ellip(FE, s * e.at[0] * K, e.at[1] * K, e.at[2] * K, e.r[0] * K, e.r[1] * K, e.r[2] * K, e.col, { rx: e.rx || 0, ry: s * (e.ry || 0), rz: s * (e.rz || 0), seg: 10 });
       if (e.inner) A.ellip('skin', s * (e.at[0] + 0.004) * K, (e.at[1] + e.r[1] * 0.35) * K, e.at[2] * K, e.r[0] * 0.8 * K, e.r[1] * 0.5 * K, e.r[2] * 0.7 * K, e.inner, { rx: e.rx || 0, ry: s * (e.ry || 0), rz: s * (e.rz || 0), seg: 8 });
     }); }
   /* the legs: leg0 fore left, leg1 fore right, leg2 hind left, leg3 hind right, each turning about its top */
   const L = B.legs;
   [[L.F, L.FR, 1, 0], [mir(L.F), L.FR, 1, 1], [L.H, L.HR, 0, 2], [mir(L.H), L.HR, 0, 3]].forEach(([ch, rad, front, i]) => {
     A.part('leg' + i, P(ch[0]), () => {
-      faFmChain(A, 'coat', PP(ch), RR(rad), 9, (p, t) => L.col(p, t, front));
+      faFmChain(A, FL, PP(ch), RR(rad), 9, (p, t) => L.col(p, t, front));
       const f = P(ch[ch.length - 1]);
       faFmHoof(A, f[0], f[2] + (L.hoofZ || 0) * K, L.hoof, L.hoofR * K, L.hoofH * K, L.hoofCol);
       if (L.extra) L.extra(P, ch, front, i);
@@ -105,7 +108,7 @@ function faFmHoofed(A, B) {
   /* the tail */
   if (B.tail) A.part('tail', P(B.tail.pts[0]), () => {
     const T = B.tail, tp = PP(T.pts);
-    if (T.curly) faFmTube(A, 'coat', tp, RR(T.rad), T.nt || 8, 7, () => T.col, true); else faFmChain(A, 'coat', tp, RR(T.rad), 7, (p, t) => T.colf ? T.colf(t) : T.col);
+    if (T.curly || T.smooth) faFmTube(A, T.fam || FB, tp, RR(T.rad), T.nt || 8, T.ns || 7, (p, t) => T.colf ? T.colf(t) : T.col, true); else faFmChain(A, T.fam || FB, tp, RR(T.rad), 7, (p, t) => T.colf ? T.colf(t) : T.col);
     if (T.tuft) { const lk = [], e = tp[tp.length - 1], e0 = tp[Math.max(0, tp.length - 2)];
       for (let k = 0; k < T.tuft.n; k++) { const f = A.rnd() * (T.tuft.spread == null ? 0.5 : T.tuft.spread), sa = A.rnd() * TAU;   /* the hair rises from the last stretch of the tail, each strip turned its own way */
         lk.push({ at: [e[0] + (e0[0] - e[0]) * f + A.rr(-0.012, 0.012) * K, e[1] + (e0[1] - e[1]) * f, e[2] + (e0[2] - e[2]) * f], dir: T.tuft.dir || [A.rr(-0.25, 0.25), -1, A.rr(-0.3, 0.1)], side: [Math.cos(sa), 0, Math.sin(sa)],
@@ -155,7 +158,7 @@ ANIMAL({
       : hl ? { pts: [[.07, 1.42, 1.1], [.25, 1.43, 1.11], [.45, 1.48, 1.12], [.6, 1.58, 1.1], [.66, 1.72, 1.06]], rad: [.046, .04, .03, .02, .008] }
       : { pts: [[.07, 1.42, 1.1], [.17, 1.45, 1.11], [.25, 1.52, 1.14], [.27, 1.6, 1.16]], rad: [.035, .03, .02, .008] };
     horn.col = hl ? 0xd8ccb0 : 0xe8e0cc; horn.tip = 0x3a3028;
-    faFmHoofed(A, { K: K, coat: coat,
+    faFmHoofed(A, { K: K, coat: coat, fam: hl ? 'coat' : 'sleek',   /* short sleek hair; the highland cow's thick shaggy coat */
       body: FA_FM_COW.map(b => [b[0], b[1], b[2] * W, b[3]]),
       neckPivot: [0, 1.05, 0.55],
       neck: { pts: [[0, 1.15, .55], [0, 1.25, .8], [0, 1.3, 1.0], [0, 1.34, 1.1]], rad: [[.26 * W, .32], [.21 * W, .28], [.17, .22], [.15, .19]] },
@@ -164,32 +167,35 @@ ANIMAL({
       eyes: [.12, 1.31, 1.25, .022],
       ears: { piv: [.12, 1.35, 1.12], at: [.2, 1.34, 1.12], r: [.09, .025, .045], rz: -0.3, col: v === 0 ? dark : base, inner: 0xc89a88 },
       horn: horn,
-      legs: { F: [[.2, 1.0, .55], [.2, .7, .5], [.19, .38, .53], [.19, .22, .54], [.19, .1, .56], [.19, .065, .59]],
-        FR: [[.12, .15], [.085, .1], [.058, .062], [.045, .05], [.052, .056], [.045, .045]],
-        H: [[.21, 1.08, -.62], [.21, .8, -.5], [.2, .46, -.74], [.2, .28, -.7], [.2, .1, -.66], [.2, .065, -.63]],
-        HR: [[.16, .2], [.12, .14], [.062, .075], [.045, .05], [.052, .056], [.045, .045]],
-        hoof: 'cloven', hoofR: .055, hoofH: .07, hoofCol: 0x2a2420,
+      legs: { F: [[.2, 1.0, .55], [.2, .7, .5], [.195, .55, .51], [.19, .38, .53], [.19, .22, .54], [.19, .1, .56], [.19, .065, .59]],
+        FR: [[.13, .16], [.1, .115], [.08, .09], [.064, .07], [.05, .056], [.058, .062], [.05, .05]],
+        H: [[.21, 1.08, -.62], [.215, .8, -.5], [.205, .62, -.64], [.2, .46, -.74], [.2, .28, -.7], [.2, .1, -.66], [.2, .065, -.63]],
+        HR: [[.17, .21], [.13, .15], [.09, .11], [.064, .085], [.05, .056], [.058, .062], [.05, .05]],
+        hoof: 'cloven', hoofR: .06, hoofH: .07, hoofCol: 0x2a2420,
         col: (p, t, front) => v === 0 ? (p[1] < 0.42 * K ? base : coat(p[0], p[1], p[2])) : faFmShade(base, p[1] < 0.4 * K ? 0.8 : 0.92) },
       tail: { pts: [[0, 1.42, -.95], [0, 1.38, -1.02], [0, 1.15, -1.06], [0, .85, -1.05], [0, .62, -1.03]], rad: [.035, .03, .024, .02, .016], col: v === 0 ? base : faFmShade(base, 0.9),
         tuft: { n: 8, len: 0.2, w: 0.04, col: faFmShade(dark, 0.8) } },
       extraBody: (P) => {
-        if (v === 0 || v === 1) {   /* the udder and its four teats; a dairy cow's hip bones */
-          A.ellip('skin', 0, .66 * K, -.5 * K, .15 * K, .13 * K, .17 * K, 0xd8aaa0, { seg: 12 });
-          for (const tx of [-.06, .06]) for (const tz of [-.44, -.56]) A.cone('skin', P([tx, .56, tz]), P([tx, .48, tz]), .018 * K, .012 * K, 0xc8968c, 6);
+        if (v === 0 || v === 1) {   /* the udder between the hind legs: four quarters, a teat under each (the dairy cow's the fuller) */
+          const u = v === 0 ? 1 : 0.8, uc = 0xd8aaa0;
+          A.ellip('skin', 0, .7 * K, -.52 * K, .15 * u * K, .1 * K, .18 * u * K, uc, { seg: 14 });
+          for (const tx of [-.065, .065]) for (const tz of [-.45, -.6]) {
+            A.ellip('skin', tx * u * K, (.66 - .02 * (1 - u)) * K, tz * K, .085 * u * K, .085 * u * K, .085 * u * K, uc, { seg: 10 });
+            A.cone('skin', P([tx * u, .6 + .04 * (1 - u), tz]), P([tx * u, .52 + .06 * (1 - u), tz + .01]), .017 * K, .013 * K, 0xc8968c, 7); }
         }
-        if (v === 0) for (const s of [-1, 1]) A.ellip('coat', s * .25 * K, 1.4 * K, -.72 * K, .08 * K, .07 * K, .1 * K, coat(s * .25, 1.4, -.72));
-        if (ox) A.ellip('coat', 0, 1.36 * K, .55 * K, .2 * K, .14 * K, .22 * K, faFmMix(base, dark, 0.5));   /* the ox's heavy crest over the shoulders */
+        if (v === 0) for (const s of [-1, 1]) A.ellip('sleek', s * .24 * K, 1.38 * K, -.72 * K, .06 * K, .05 * K, .08 * K, coat(s * .25, 1.4, -.72));   /* the hip bones */
+        if (ox) A.ellip('sleek', 0, 1.36 * K, .55 * K, .2 * K, .14 * K, .22 * K, faFmMix(base, dark, 0.5));   /* the ox's heavy crest over the shoulders */
         if (hl) {   /* the highland cow's long coat: locks over back, sides and rump */
           const lk = [];
-          for (let i = 0; i < 150; i++) { const zf = A.rnd(), a = A.rr(-1, 1) * 1.6, z = (-0.9 + 1.75 * zf) * K;
+          for (let i = 0; i < 150; i++) { const zf = A.rnd(), a = (A.rnd() < 0.5 ? -1 : 1) * A.rr(0.5, 1.6), z = (-0.9 + 1.75 * zf) * K;   /* flanks and sides, not the spine */
             const row = FA_FM_COW[Math.min(FA_FM_COW.length - 1, Math.max(0, Math.round(zf * (FA_FM_COW.length - 1))))];
             const at = [Math.sin(a) * row[2] * W * K * 0.98, (row[1] + Math.cos(a) * row[3] * 0.98) * K, z];
-            lk.push({ at: at, dir: [Math.sin(a) * 0.5, -1, A.rr(-0.2, 0.05)], len: A.rr(0.16, 0.32) * K, w: A.rr(0.05, 0.08) * K, col: coat(at[0], at[1], at[2]), curl: 0.25 }); }
+            lk.push({ at: at, dir: [Math.sin(a) * 0.7, -1, A.rr(-0.2, 0.05)], len: A.rr(0.16, 0.32) * K, w: A.rr(0.05, 0.08) * K, col: coat(at[0], at[1], at[2]), curl: 0.25 }); }
           A.locks('hair', lk);
         }
       },
       extraHead: (P) => {
-        A.ellip('coat', 0, 1.0 * K, .82 * K, .05 * K, (ox ? .2 : .15) * K, .17 * K, coat(0, 1.0, .82));   /* the dewlap */
+        A.ellip(hl ? 'coat' : 'sleek', 0, 1.0 * K, .78 * K, .045 * K, (ox ? .17 : .13) * K, .26 * K, coat(0, 1.0, .82), { rx: -0.45, seg: 10 });   /* the dewlap: a fold from the throat to the brisket */
         for (const s of [-1, 1]) A.ellip('mouth', s * .035 * K, 1.1 * K, 1.535 * K, .016 * K, .012 * K, .008 * K, 0x120c0a, { seg: 6 });
         if (hl) {   /* the fringe over the eyes and the hairy cheeks */
           const lk = [];
@@ -231,7 +237,7 @@ ANIMAL({
     const v = A.variant, K = (v ? 1.08 : 1) * A.S, hk = v ? 1.15 : 1;
     const base = v ? 0x3e3630 : 0x4a4038;
     const coat = (x, y, z) => faFmMix(base, 0x56483e, faNoise(x * 4, y * 4, z * 4) * 0.5);
-    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_BUF,
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_BUF, fam: 'sleek',   /* near-hairless grey hide under a sparse sleek coat */
       neckPivot: [0, 1.12, 0.8],
       neck: { pts: [[0, 1.2, .8], [0, 1.28, 1.05], [0, 1.33, 1.22]], rad: [[.3, .36], [.24, .3], [.19, .23]] },
       head: { pts: [[0, 1.42, 1.24], [0, 1.34, 1.42], [0, 1.2, 1.6], [0, 1.1, 1.7], [0, 1.07, 1.73]], rad: [[.18, .18], [.17, .17], [.14, .14], [.125, .095], [.1, .07]],
@@ -241,10 +247,10 @@ ANIMAL({
       /* the crescent horns: out from the poll, then up and sweeping back (ridged) */
       horn: { pts: [[.1, 1.5, 1.3], [.36 * hk, 1.58, 1.24], [.58 * hk, 1.72, 1.06], [.66 * hk, 1.88, .84 - 0.05 * v], [.6 * hk, 1.98 + 0.08 * v, .66 - 0.08 * v]], rad: [.075, .065, .048, .03, .012], nt: 16,
         colf: t => t > 0.86 ? 0x1e1a18 : faFmShade(0x3a3230, 0.85 + 0.25 * (0.5 + 0.5 * Math.sin(t * 60))) },
-      legs: { F: [[.27, 1.0, .75], [.27, .7, .7], [.26, .38, .73], [.26, .22, .74], [.26, .1, .75], [.26, .065, .78]],
-        FR: [[.15, .18], [.1, .12], [.07, .075], [.055, .06], [.06, .065], [.055, .055]],
-        H: [[.27, 1.05, -.78], [.27, .8, -.66], [.26, .46, -.88], [.26, .28, -.84], [.26, .1, -.8], [.26, .065, -.77]],
-        HR: [[.18, .22], [.13, .15], [.07, .085], [.055, .06], [.06, .065], [.055, .055]],
+      legs: { F: [[.27, 1.0, .75], [.27, .7, .7], [.265, .55, .71], [.26, .38, .73], [.26, .22, .74], [.26, .1, .75], [.26, .065, .78]],
+        FR: [[.16, .19], [.12, .135], [.095, .105], [.075, .08], [.06, .066], [.066, .07], [.06, .06]],
+        H: [[.27, 1.05, -.78], [.275, .8, -.66], [.265, .63, -.78], [.26, .46, -.88], [.26, .28, -.84], [.26, .1, -.8], [.26, .065, -.77]],
+        HR: [[.19, .23], [.15, .17], [.105, .125], [.075, .095], [.06, .066], [.066, .07], [.06, .06]],
         hoof: 'cloven', hoofR: .068, hoofH: .07, hoofCol: 0x1e1a18,
         col: (p) => faFmShade(base, p[1] < 0.45 * K ? 0.8 : 0.92) },
       tail: { pts: [[0, 1.52, -1.1], [0, 1.45, -1.17], [0, 1.15, -1.2], [0, .85, -1.18], [0, .7, -1.16]], rad: [.04, .035, .028, .022, .018], col: base,
@@ -294,17 +300,18 @@ ANIMAL({
         hoof: 'cloven', hoofR: .055, hoofH: .07, hoofCol: 0x1a1612,
         col: (p) => faFmShade(base, p[1] < 0.4 * K ? 0.85 : 1) },
       /* the bushy tail: a short dock and a broom of long hair */
-      tail: { pts: [[0, 1.3, -.95], [0, 1.25, -1.0], [0, 1.05, -1.04], [0, .9, -1.04]], rad: [.05, .045, .035, .03], col: base,
-        tuft: { n: 24, len: 0.45, w: 0.07, col: faFmShade(base, 0.9), dir: [0, -1, -0.15], spread: 1 } },
+      tail: { pts: [[0, 1.3, -.95], [0, 1.25, -1.0], [0, 1.08, -1.05], [0, .86, -1.06], [0, .66, -1.04], [0, .5, -1.0]],
+        rad: [[.05, .05], [.05, .05], [.065, .06], [.085, .075], [.08, .07], [.03, .03]], nt: 12, ns: 9, col: faFmShade(base, 0.9), smooth: true, fam: 'hair',
+        tuft: { n: 22, len: 0.28, w: 0.07, col: faFmShade(base, 0.9), dir: [0, -1, -0.1], spread: 1 } },
       extraBody: (P, bc) => {
         /* the skirt: a ragged sheet of long hair down each side, and locks over it, the hump and the belly */
         const [c, r] = bc;
         for (const s of [-1, 1]) A.sheet('hair', (u, w) => { const t = 0.08 + 0.82 * u, p = c(t), q = r(t), hem = (0.3 + 0.04 * Math.sin(u * 17 + s) + 0.03 * Math.sin(u * 43)) * K;
           return [s * (q[0] * 0.97 + 0.05 * w * K), p[1] + (hem - p[1]) * w, p[2]]; }, 16, 4, null, { colf: (u, w) => faFmShade(base, 1 - 0.25 * w) });
         const lk = [];
-        for (let i = 0; i < 150; i++) { const t = 0.06 + 0.88 * A.rnd(), p = c(t), q = r(t), a = A.rr(-1, 1) * 1.7;
+        for (let i = 0; i < 150; i++) { const t = 0.06 + 0.88 * A.rnd(), p = c(t), q = r(t), a = (A.rnd() < 0.5 ? -1 : 1) * A.rr(0.55, 1.7);   /* not on the spine, where a hanging lock would stand into the back and show only its root */
           const at = [Math.sin(a) * q[0] * 1.01, p[1] + Math.cos(a) * q[1] * 1.01, p[2]];
-          lk.push({ at: at, dir: [Math.sin(a) * 0.4, -1, A.rr(-0.15, 0.1)], len: A.rr(0.18, 0.4) * K * (Math.abs(a) > 1.1 ? 1.3 : 1), w: A.rr(0.05, 0.08) * K, col: coat(at[0], at[1], at[2]), curl: 0.18 }); }
+          lk.push({ at: at, dir: [Math.sin(a) * 0.7, -1, A.rr(-0.15, 0.1)], len: A.rr(0.18, 0.4) * K * (Math.abs(a) > 1.1 ? 1.3 : 1), w: A.rr(0.05, 0.08) * K, col: coat(at[0], at[1], at[2]), curl: 0.18 }); }
         A.locks('hair', lk);
       },
       extraHead: (P) => {
@@ -324,7 +331,8 @@ ANIMAL({
    a long head angled down, a dark mane and tail, dark hooves; HRA_HORSE its six coats) and the Rustic Clansmen's box
    horse (80-rus-dwell hnRUBeast 'horse').
    ====================================================================== */
-const FA_FM_HORSE = [[-0.86, 1.34, .14, .17], [-0.7, 1.33, .27, .29], [-0.35, 1.3, .3, .31], [0.1, 1.29, .3, .33], [0.45, 1.32, .27, .32], [0.68, 1.32, .19, .25], [0.78, 1.32, .1, .14]];
+/* a full barrel, the croup and withers level at about 1.65 m, the belly under 1 m, rounded hindquarters */
+const FA_FM_HORSE = [[-0.86, 1.33, .12, .16], [-0.78, 1.35, .25, .28], [-0.56, 1.33, .3, .32], [-0.2, 1.29, .31, .35], [0.15, 1.3, .3, .35], [0.45, 1.34, .27, .32], [0.64, 1.37, .21, .26], [0.76, 1.39, .11, .15]];
 ANIMAL({
   key: 'horse', name: 'Horse', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
@@ -338,7 +346,7 @@ ANIMAL({
     hair: { amount: 0.3, note: 'mane and tail hair: bowstrings, fiddle bows, brushes, the Republic\'s horsehair upholstery' } },
   life: { maturity: 3, lifespan: 28, litter: 1, gestation: 340 },
   variants: 4, variantNames: ['bay, black points', 'black', 'dun', 'grey'],
-  w: 0.7, d: 2.5, h: 2.15,
+  w: 0.7, d: 2.56, h: 2.2,
   data: { mass: 520, legs: 4, speed: { walk: 1.6, run: 13 }, gait: { type: 'quadruped', freq: 1.1, stride: 0.9 }, grazePitch: 1.5,
     herd: 'a team of two to a cart, four to a coach; the coaching inns stable a dozen', fleeDistance: 8, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'GRAZE', 'REST', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'REST'] },
@@ -346,30 +354,42 @@ ANIMAL({
     const v = A.variant, K = A.S, base = [0x6a4a30, 0x2a2420, 0x8a6a4a, 0xa89880][v], mane = [0x1e1a16, 0x161210, 0x3a2a1e, 0x6a645a][v];
     const coat = (x, y, z) => v === 3 ? faFmMix(base, 0xd0c8b8, faNoise(x * 8, y * 8, z * 8) > 0.6 ? 0.5 : 0.1) : base;
     const points = v === 0 || v === 2;
-    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_HORSE, bodyNt: 18,
-      neckPivot: [0, 1.32, 0.48],
-      neck: { pts: [[0, 1.42, .5], [0, 1.62, .74], [0, 1.82, .9], [0, 1.96, 1.0]], rad: [[.17, .27], [.12, .2], [.1, .15], [.085, .11]], nt: 8 },
-      head: { pts: [[0, 1.99, 1.0], [0, 1.9, 1.1], [0, 1.72, 1.24], [0, 1.56, 1.34], [0, 1.5, 1.37]], rad: [[.08, .1], [.085, .11], [.075, .09], [.065, .075], [.055, .055]], nt: 10,
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_HORSE, bodyNt: 18, fam: 'sleek',
+      /* the neck: deep where it springs from the shoulder and chest, thinning to the throat */
+      neckPivot: [0, 1.36, 0.5],
+      neck: { pts: [[0, 1.4, .52], [0, 1.58, .74], [0, 1.78, .9], [0, 1.94, 1.0]], rad: [[.22, .34], [.16, .26], [.12, .19], [.1, .14]], nt: 10 },
+      /* the head: broad at the jowls, a straight face to a soft muzzle */
+      head: { pts: [[0, 1.99, 1.0], [0, 1.9, 1.1], [0, 1.74, 1.23], [0, 1.58, 1.34], [0, 1.51, 1.38]], rad: [[.085, .11], [.1, .14], [.085, .1], [.065, .075], [.06, .062]], nt: 10,
         col: (p, t) => t > 0.8 ? faFmShade(base, 0.55) : coat(p[0], p[1], p[2]) },
-      eyes: [.075, 1.9, 1.12, .022],
-      ears: { piv: [.045, 2.0, 1.0], at: [.05, 2.07, .99], r: [.025, .07, .032], rz: -0.15, col: base, inner: faFmShade(base, 0.6) },
-      legs: { F: [[.15, 1.15, .48], [.15, .98, .42], [.14, .56, .47], [.14, .36, .47], [.14, .16, .48], [.14, .09, .52]],
-        FR: [[.1, .13], [.075, .09], [.048, .055], [.034, .04], [.045, .05], [.035, .04]],
-        H: [[.16, 1.25, -.55], [.16, .95, -.43], [.15, .6, -.68], [.15, .36, -.64], [.15, .16, -.62], [.15, .09, -.58]],
-        HR: [[.13, .19], [.1, .13], [.052, .07], [.034, .04], [.045, .05], [.035, .04]],
-        hoof: 'solid', hoofR: .058, hoofH: .09, hoofCol: 0x2a2420, hoofZ: .02,
+      eyes: [.092, 1.9, 1.1, .024],
+      ears: { piv: [.05, 2.04, 1.0], at: [.055, 2.11, .99], r: [.025, .07, .032], rz: -0.15, col: base, inner: faFmShade(base, 0.6) },
+      /* equine legs: (fore) point of shoulder, elbow, the muscled forearm, knee, the flat cannon, fetlock, sloped pastern;
+         (hind) hip, stifle, the gaskin, hock, cannon, fetlock, pastern */
+      legs: { F: [[.14, 1.22, .56], [.15, 1.0, .42], [.152, .84, .44], [.15, .53, .46], [.15, .46, .46], [.15, .2, .46], [.15, .16, .47], [.15, .07, .52]],
+        FR: [[.1, .14], [.08, .1], [.068, .088], [.052, .064], [.038, .05], [.035, .047], [.05, .058], [.038, .042]],
+        H: [[.14, 1.38, -.5], [.17, 1.02, -.36], [.165, .8, -.52], [.155, .56, -.7], [.15, .5, -.69], [.15, .2, -.67], [.15, .16, -.665], [.15, .07, -.61]],
+        HR: [[.13, .2], [.09, .13], [.08, .11], [.05, .08], [.04, .055], [.036, .048], [.05, .058], [.038, .042]],
+        hoof: 'solid', hoofR: .062, hoofH: .09, hoofCol: 0x2a2420, hoofZ: .02,
         col: (p) => points && p[1] < 0.55 * K ? mane : coat(p[0], p[1], p[2]) },
-      /* the tail: a short dock and long hair to the hocks */
-      tail: { pts: [[0, 1.58, -.86], [0, 1.55, -.94], [0, 1.42, -1.0]], rad: [.045, .04, .035], nt: 5, col: mane,
-        tuft: { n: 34, len: 0.62, w: 0.07, col: mane, dir: [0, -1, -0.12], curl: 0.05, spread: 1 } },
+      /* the tail: the dock and a full fall of hair to the hocks */
+      tail: { pts: [[0, 1.52, -.9], [0, 1.47, -.97], [0, 1.36, -1.02], [0, 1.15, -1.05], [0, .9, -1.04], [0, .7, -1.01]],
+        rad: [[.05, .055], [.055, .058], [.062, .062], [.078, .066], [.072, .06], [.03, .03]], nt: 14, ns: 9, col: mane, smooth: true, fam: 'hair',
+        tuft: { n: 30, len: 0.32, w: 0.07, col: mane, dir: [0, -1, -0.08], curl: 0.05, spread: 1 } },
       extraHead: (P, nc) => {
-        /* the mane down the crest of the neck (falling to the left) and the forelock */
-        const [c, r] = nc, lk = [];
-        for (let i = 0; i < 34; i++) { const t = 0.12 + 0.88 * (i / 33), p = c(t), q = r(t), s = A.rnd() < 0.8 ? 1 : -1;
-          lk.push({ at: [s * 0.01 * K, p[1] + q[1] * 0.92, p[2]], dir: [s * 0.9, -1, 0.15], len: A.rr(0.16, 0.26) * K, w: 0.06 * K, col: mane, curl: 0.15 }); }
-        for (let i = 0; i < 6; i++) lk.push({ at: P([A.rr(-0.02, 0.02), 2.02, 1.02]), dir: [0, -0.7, 1], len: A.rr(0.12, 0.18) * K, w: 0.04 * K, col: mane, curl: 0.3 });
+        /* the mane: a crest of hair along the top of the neck, falling to the left, and the forelock */
+        const [c, r] = nc, lk = [], crest = [], cr = [];
+        const top = t => { const p = c(t), a = c(Math.max(0, t - 0.01)), b = c(Math.min(1, t + 0.01)), dy = b[1] - a[1], dz = b[2] - a[2], L = Math.hypot(dy, dz) || 1, q = r(t)[1] * 0.93;
+          return [0, p[1] + dz / L * q, p[2] - dy / L * q]; };
+        for (const t of [0.1, 0.35, 0.6, 0.85, 1]) { crest.push(top(t)); cr.push([0.03 * K, 0.045 * K]); }
+        faFmTube(A, 'hair', crest, cr, 10, 7, () => mane, true);
+        for (let i = 0; i < 56; i++) { const t = 0.1 + 0.9 * (i / 55), p = top(t), s = A.rnd() < 0.8 ? 1 : -1;
+          lk.push({ at: [s * 0.015 * K, p[1], p[2]], dir: [s * 0.9, -1, 0.15], len: A.rr(0.16, 0.26) * K, w: 0.075 * K, col: mane, curl: 0.15 }); }
+        for (let i = 0; i < 8; i++) lk.push({ at: P([A.rr(-0.02, 0.02), 2.06, 1.02]), dir: [0, -0.7, 1], len: A.rr(0.12, 0.18) * K, w: 0.04 * K, col: mane, curl: 0.3 });
         A.locks('hair', lk);
-        for (const s of [-1, 1]) A.ellip('mouth', s * .03 * K, 1.52 * K, 1.405 * K, .012 * K, .016 * K, .008 * K, 0x0c0a08, { seg: 6 });
+        /* the round cheeks (the jowls) and the nostrils, the mouth line */
+        for (const s of [-1, 1]) A.ellip('sleek', s * .068 * K, 1.83 * K, 1.1 * K, .045 * K, .1 * K, .1 * K, coat(0, 1.83, 1.1), { rx: 0.9, seg: 10 });
+        for (const s of [-1, 1]) A.ellip('mouth', s * .036 * K, 1.54 * K, 1.405 * K, .012 * K, .018 * K, .008 * K, 0x0c0a08, { seg: 6 });
+        for (const s of [-1, 1]) A.cone('mouth', P([s * .045, 1.47, 1.39]), P([s * .06, 1.5, 1.3]), .005 * K, .005 * K, 0x1a1210, 4);
       } });
     A.anchor('saddle', [0, 1.66 * K, 0.05 * K]); A.anchor('bridle', [0, 1.75 * K, 1.25 * K]); A.anchor('harness', [0, 1.5 * K, 0.6 * K]);
   }
@@ -393,15 +413,15 @@ ANIMAL({
     wool: { amount: 3, note: 'shorn each summer: the Republic\'s broadcloth, the clansmen\'s homespun' }, hide: { amount: 1, hideM2: 0.8, note: 'sheepskin coats, parchment' } },
   life: { maturity: 1, lifespan: 11, litter: 1.4, gestation: 150 },
   variants: 3, variantNames: ['ewe, white', 'ewe, black', 'lamb'],
-  w: 0.75, d: 1.3, h: 0.98,
-  variantDims: [{ w: 0.75, d: 1.3, h: 0.98 }, { w: 0.75, d: 1.3, h: 0.98 }, { w: 0.45, d: 0.8, h: 0.6 }],
+  w: 0.75, d: 1.37, h: 0.98,
+  variantDims: [{ w: 0.75, d: 1.37, h: 0.98 }, { w: 0.75, d: 1.37, h: 0.98 }, { w: 0.45, d: 0.82, h: 0.6 }],
   data: { mass: [65, 65, 18], legs: 4, speed: { walk: 1.0, run: 7 }, gait: { type: 'quadruped', freq: 1.6, stride: 0.4 }, grazePitch: 0.95,
     herd: 'a fold of 7 to 40 with a shepherd and a dog', fleeDistance: 6, aggression: 0.02,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'MILK', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
     const v = A.variant, K = (v === 2 ? 0.6 : 1) * A.S, wool = v === 1 ? 0x4a4038 : 0xeae4d6, wool2 = v === 1 ? 0x3a322c : 0xdcd4c2, face = v === 1 ? 0x221e1a : 0x2e2a26;
     const coat = (x, y, z) => faFmMix(wool, wool2, faNoise(x * 9, y * 9, z * 9));
-    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_SHEEP,
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_SHEEP, fam: 'coat', headFam: 'sleek', legFam: 'sleek',   /* the fleece thick wool; the bare face and legs short sleek hair */
       neckPivot: [0, 0.68, 0.36],
       neck: { pts: [[0, .7, .36], [0, .78, .48], [0, .83, .54]], rad: [[.13, .15], [.09, .1], [.07, .08]] },
       head: { pts: [[0, .86, .52], [0, .82, .6], [0, .74, .69], [0, .7, .72]], rad: [[.065, .075], [.06, .07], [.045, .05], [.035, .035]], col: () => face },
@@ -412,14 +432,18 @@ ANIMAL({
         H: [[.12, .58, -.3], [.12, .42, -.24], [.115, .25, -.35], [.115, .13, -.33], [.115, .05, -.31], [.115, .04, -.3]],
         HR: [[.085, .1], [.06, .07], [.03, .035], [.022, .024], [.026, .028], [.022, .022]],
         hoof: 'cloven', hoofR: .026, hoofH: .04, hoofCol: 0x1a1612,
-        col: (p, t) => t < 0.28 ? coat(p[0], p[1], p[2]) : face },
+        col: (p, t) => t < 0.28 ? coat(p[0], p[1], p[2]) : face,
+        extra: (P, ch, front) => { const q = P(ch[1]), q0 = P(ch[0]);   /* the fleece down over the forearm or the thigh */
+          A.ellip('coat', (q[0] + q0[0]) / 2, (q[1] + q0[1]) / 2, (q[2] + q0[2]) / 2, (front ? .072 : .088) * K, .1 * K, (front ? .08 : .1) * K, null, { seg: 7, colf: (x, y, z) => coat(x, y, z) }); } },
       tail: { pts: [[0, .76, -.5], [0, .7, -.56], [0, .58, -.58]], rad: [.05, .045, .035], col: wool },
       extraBody: (P, bc) => {
-        /* the fleece: lumps of wool over back, sides and rump */
+        /* the fleece: low, close-set locks of wool over back, sides and rump, sunk so only their crowns show (a dense
+           fleece with a crimped surface, not loose balls of cotton) */
         const [c, r] = bc;
-        for (let i = 0; i < 34; i++) { const t = 0.06 + 0.88 * A.rnd(), p = c(t), q = r(t), a = A.rr(-1, 1) * 2.0;
-          const x = Math.sin(a) * q[0] * 0.88, y = p[1] + Math.cos(a) * q[1] * 0.88, s = A.rr(0.07, 0.11) * K;
-          A.ellip('coat', x, y, p[2], s, s * 0.85, s * 1.1, null, { seg: 7, colf: (dx, dy, dz) => coat(x + dx, y + dy, p[2] + dz) }); }
+        for (let i = 0; i < 44; i++) { const t = 0.05 + 0.9 * (i + A.rnd()) / 44, p = c(t), q = r(t), a = A.rr(-1, 1) * 2.1, s = A.rr(0.075, 0.1) * K;
+          const nx = Math.sin(a) / q[0], ny = Math.cos(a) / q[1], nl = Math.hypot(nx, ny), dn = s * 0.2;   /* each a flat cushion lying on the barrel, turned to its normal */
+          const x = Math.sin(a) * q[0] - nx / nl * dn, y = p[1] + Math.cos(a) * q[1] - ny / nl * dn;
+          A.ellip('coat', x, y, p[2], s * 1.1, s * 0.55, s * 1.25, null, { seg: 6, rz: -Math.atan2(nx, ny), colf: (dx, dy, dz) => coat(x + dx, y + dy, p[2] + dz) }); }
       },
       extraHead: (P) => { A.ellip('coat', 0, .875 * K, .5 * K, .075 * K, .055 * K, .08 * K, null, { seg: 8, colf: (x, y, z) => coat(x, y + 0.87, z + 0.5) }); } });
     A.anchor('lead', [0, 0.75 * K, 0.5 * K]);
@@ -430,7 +454,8 @@ ANIMAL({
    PIG: the Republic's pigsty (79-rep-land hnRCBeast 'pig': a pink box on short posts, a snout box), the Rustic and
    Painted Men's dark hill pigs (80-rus-dwell, 84-tri-dwell) and the post-apoc pen's pink pigs (kits/post-apoc 50-farm).
    ====================================================================== */
-const FA_FM_PIG = [[-0.58, .54, .13, .15], [-0.48, .55, .24, .24], [-0.2, .55, .27, .26], [.15, .55, .27, .26], [.4, .56, .23, .24], [.55, .56, .15, .18]];
+/* a deep rounded barrel: full hams and shoulders, the back gently arched, the belly about 0.2 m off the ground */
+const FA_FM_PIG = [[-0.55, .5, .1, .12], [-0.49, .5, .21, .23], [-0.36, .5, .28, .3], [-0.12, .5, .3, .32], [.12, .5, .3, .32], [.28, .5, .28, .31], [.4, .51, .22, .26], [.47, .52, .12, .16]];
 ANIMAL({
   key: 'pig', name: 'Pig', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Cfa'], aridity: ['subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
@@ -446,39 +471,48 @@ ANIMAL({
     hair: { amount: 0.2, note: 'the bristles: brushes' } },
   life: { maturity: 0.8, lifespan: 15, litter: 9, gestation: 114 },
   variants: 3, variantNames: ['sow, pink', 'hill pig, black (Rustic and Painted Men)', 'piglet'],
-  w: 0.65, d: 1.48, h: 0.86,
-  variantDims: [{ w: 0.65, d: 1.48, h: 0.86 }, { w: 0.65, d: 1.48, h: 0.9 }, { w: 0.3, d: 0.68, h: 0.4 }],
+  w: 0.65, d: 1.56, h: 0.86,
+  variantDims: [{ w: 0.65, d: 1.56, h: 0.86 }, { w: 0.65, d: 1.56, h: 0.9 }, { w: 0.3, d: 0.7, h: 0.4 }],
   data: { mass: [160, 140, 12], legs: 4, speed: { walk: 0.9, run: 5 }, gait: { type: 'quadruped', freq: 1.8, stride: 0.3 }, grazePitch: 0.8,
     herd: 'three or four in a sty; the Painted Men\'s pigs run loose under the houses', fleeDistance: 3, aggression: 0.12,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST'] },
   build: function (A) {
     const v = A.variant, K = (v === 2 ? 0.45 : 1) * A.S, base = [0xe0a898, 0x5a4a44, 0xe0b0a0][v], deep = [0xc88a7a, 0x3e322e, 0xd89888][v];
-    const coat = (x, y, z, a) => a != null && Math.cos(a) < -0.5 ? faFmMix(base, deep, 0.5) : faFmMix(base, deep, faNoise(x * 6, y * 6, z * 6) * 0.35);
-    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_PIG,
-      neckPivot: [0, 0.55, 0.42],
-      neck: { pts: [[0, .56, .42], [0, .57, .55]], rad: [[.2, .22], [.17, .19]], nt: 3 },
-      head: { pts: [[0, .58, .55], [0, .55, .66], [0, .49, .78], [0, .45, .86]], rad: [[.17, .18], [.13, .14], [.08, .085], [.065, .06]], col: (p, t) => t > 0.9 ? deep : base },
-      eyes: [.08, .6, .68, .013],
-      ears: { piv: [.08, .68, .6], at: [.1, .69, .66], r: [.05, .012, .075], rx: 0.6, ry: 0.3, col: v === 1 ? base : deep },
-      legs: { F: [[.13, .45, .33], [.13, .3, .3], [.125, .16, .32], [.125, .07, .33], [.125, .045, .35]],
-        FR: [[.09, .1], [.06, .065], [.042, .045], [.035, .035], [.032, .032]],
-        H: [[.13, .46, -.38], [.13, .3, -.32], [.125, .17, -.4], [.125, .07, -.38], [.125, .045, -.36]],
-        HR: [[.11, .13], [.07, .08], [.042, .045], [.035, .035], [.032, .032]],
-        hoof: 'cloven', hoofR: .034, hoofH: .045, hoofCol: v === 1 ? 0x1e1a18 : 0x6a4a40,
-        col: () => base },
-      /* the curly tail */
-      tail: { pts: [[0, .68, -.58], [.02, .7, -.62], [0, .73, -.645], [-.025, .7, -.655], [0, .67, -.665], [.02, .69, -.685]], rad: [.014, .012, .011, .01, .009, .007], nt: 12, col: base, curly: true },
+    const coat = (x, y, z, a) => a != null && Math.cos(a) < -0.5 ? faFmMix(base, deep, 0.35) : faFmMix(base, deep, faNoise(x * 6, y * 6, z * 6) * 0.2);
+    const fam = v === 1 ? 'sleek' : 'skin', hoofCol = v === 1 ? 0x1e1a18 : 0x6a4a40;   /* the pink pigs: bare skin; the hill pig: a bristly coat */
+    faFmHoofed(A, { K: K, coat: coat, body: FA_FM_PIG, fam: fam,
+      /* no neck to speak of: the shoulders run straight into a heavy head */
+      neckPivot: [0, 0.52, 0.36],
+      neck: { pts: [[0, .52, .34], [0, .54, .45]], rad: [[.26, .28], [.22, .24]], nt: 3 },
+      head: { pts: [[0, .56, .44], [0, .52, .55], [0, .47, .66], [0, .43, .75], [0, .415, .8]], rad: [[.18, .18], [.155, .16], [.11, .115], [.08, .08], [.072, .07]],
+        col: (p, t) => t > 0.92 ? deep : faFmMix(base, deep, 0.15) },
+      eyes: [.112, .6, .58, .014],
+      ears: { piv: [.08, .68, .47], at: [.11, .69, .54], r: [.06, .012, .09], rx: 0.5, ry: 0.35, col: v === 1 ? base : deep },
+      /* short sturdy legs, straight under the body, on small trotters */
+      legs: { F: [[.14, .42, .26], [.14, .27, .22], [.135, .14, .25], [.135, .065, .26], [.135, .04, .28]],
+        FR: [[.1, .11], [.075, .08], [.056, .06], [.046, .046], [.04, .04]],
+        H: [[.14, .44, -.36], [.145, .29, -.28], [.135, .15, -.38], [.135, .065, -.36], [.135, .04, -.34]],
+        HR: [[.13, .15], [.09, .1], [.056, .06], [.046, .046], [.04, .04]],
+        hoof: 'cloven', hoofR: .036, hoofH: .045, hoofCol: hoofCol,
+        col: (p) => p[1] < 0.1 * K ? faFmShade(base, 0.9) : base,
+        extra: (P, ch) => { const f = P(ch[ch.length - 2]);   /* the dewclaws behind the pastern */
+          for (const d of [-1, 1]) A.ellip('hoof', f[0] + d * .024 * K, .07 * K, f[2] - .04 * K, .012 * K, .018 * K, .012 * K, hoofCol, { seg: 6 }); } },
+      /* the curly tail, high on the rump */
+      tail: { pts: [[0, .6, -.56], [.02, .62, -.6], [0, .65, -.625], [-.025, .62, -.635], [0, .59, -.645], [.02, .61, -.665]], rad: [.014, .012, .011, .01, .009, .007], nt: 12, col: base, curly: true },
       extraBody: (P) => {
+        if (v === 0) for (let k = 0; k < 6; k++) for (const s of [-1, 1]) {   /* the sow's two rows of teats */
+          const z = -0.25 + k * 0.09; A.cone(fam, P([s * .07, .21, z]), P([s * .07, .17, z]), .012 * K, .008 * K, deep, 6); }
         if (v === 1) {   /* the hill pig's bristly crest */
           const lk = [];
-          for (let i = 0; i < 30; i++) { const z = A.rr(-0.4, 0.5); lk.push({ at: P([A.rr(-0.02, 0.02), 0.8, z]), dir: [A.rr(-0.5, 0.5), 1, -0.3], len: A.rr(0.05, 0.09) * K, w: 0.025 * K, col: 0x2a221e, curl: 0.05 }); }
+          for (let i = 0; i < 30; i++) { const z = A.rr(-0.4, 0.4); lk.push({ at: P([A.rr(-0.02, 0.02), 0.8, z]), dir: [A.rr(-0.5, 0.5), 1, -0.3], len: A.rr(0.05, 0.09) * K, w: 0.025 * K, col: 0x2a221e, curl: 0.05 }); }
           A.locks('hair', lk);
         }
       },
       extraHead: (P) => {
-        A.ellip('skin', 0, .45 * K, .865 * K, .066 * K, .06 * K, .022 * K, deep, { seg: 12 });   /* the snout disc */
-        for (const s of [-1, 1]) A.ellip('mouth', s * .022 * K, .45 * K, .885 * K, .01 * K, .014 * K, .006 * K, 0x2a1a16, { seg: 6 });
-        A.cone('mouth', P([-0.04, 0.41, 0.8]), P([0.04, 0.41, 0.8]), 0.006 * K, 0.006 * K, 0x3a2420, 4);
+        for (const s of [-1, 1]) A.ellip(fam, s * .08 * K, .42 * K, .52 * K, .08 * K, .08 * K, .11 * K, faFmMix(base, deep, 0.2), { seg: 10 });   /* the heavy jowls */
+        A.ellip(fam, 0, .415 * K, .858 * K, .074 * K, .068 * K, .018 * K, deep, { seg: 14 });   /* the snout disc */
+        for (const s of [-1, 1]) A.ellip('mouth', s * .024 * K, .418 * K, .874 * K, .011 * K, .016 * K, .006 * K, 0x2a1a16, { seg: 6 });
+        for (const s of [-1, 1]) A.cone('mouth', P([s * .062, .375, .79]), P([s * .082, .39, .65]), 0.006 * K, 0.006 * K, 0x3a2420, 4);   /* the mouth line */
       } });
     A.anchor('lead', [0, 0.6 * K, 0.6 * K]);
   }
@@ -489,17 +523,17 @@ ANIMAL({
    the runtime leaves the wings folded), the head with the neck, the tail */
 function faFmBird(A, B) {
   const K = B.K, P = p => [p[0] * K, p[1] * K, p[2] * K];
-  for (const e of B.body) A.ellip('coat', e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[4] * K, e[5] * K, null, { rx: e[6] || 0, seg: 14, colf: (x, y, z) => B.coat(e[0] * K + x, e[1] * K + y, e[2] * K + z) });
+  for (const e of B.body) A.ellip('feather', e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[4] * K, e[5] * K, null, { rx: e[6] || 0, seg: 14, colf: (x, y, z) => B.coat(e[0] * K + x, e[1] * K + y, e[2] * K + z) });
   A.part('head', P(B.neckPivot), () => {
-    faFmChain(A, 'coat', B.neck.pts.map(P), B.neck.rad.map(q => [q[0] * K, q[1] * K]), 10, (p) => B.neckCol ? B.neckCol(p) : B.coat(p[0], p[1], p[2]), false);
-    const h = B.head; A.ellip('coat', h[0] * K, h[1] * K, h[2] * K, h[3] * K, h[4] * K, h[5] * K, null, { seg: 12, colf: (x, y, z) => B.headCol ? B.headCol(x, y, z) : B.coat(h[0] * K + x, h[1] * K + y, h[2] * K + z) });
+    faFmChain(A, 'feather', B.neck.pts.map(P), B.neck.rad.map(q => [q[0] * K, q[1] * K]), 10, (p) => B.neckCol ? B.neckCol(p) : B.coat(p[0], p[1], p[2]), false);
+    const h = B.head; A.ellip('feather', h[0] * K, h[1] * K, h[2] * K, h[3] * K, h[4] * K, h[5] * K, null, { seg: 12, colf: (x, y, z) => B.headCol ? B.headCol(x, y, z) : B.coat(h[0] * K + x, h[1] * K + y, h[2] * K + z) });
     for (const s of [-1, 1]) { const e = B.eyes;
       A.ellip('eye', s * e[0] * K, e[1] * K, e[2] * K, e[3] * K, e[3] * K, e[3] * K, B.eyeCol || 0x2a1a0e, { seg: 8 });
       A.ellip('eye', s * (e[0] + e[3] * 0.5) * K, e[1] * K, e[2] * K, e[3] * 0.5 * K, e[3] * 0.5 * K, e[3] * 0.5 * K, 0x050403, { seg: 6 }); }
     B.extraHead(P);
   });
   for (const s of [-1, 1]) A.part(s > 0 ? 'wingL' : 'wingR', P([s * B.wing.piv[0], B.wing.piv[1], B.wing.piv[2]]), () => {
-    for (const w of B.wing.parts) A.ellip('coat', s * w[0] * K, w[1] * K, w[2] * K, w[3] * K, w[4] * K, w[5] * K, null, { rx: w[6] || 0, ry: s * (w[7] || 0), seg: 12, colf: (x, y, z) => B.wingCol(y / (w[4] * K), z / (w[5] * K), w) });
+    for (const w of B.wing.parts) A.ellip('feather', s * w[0] * K, w[1] * K, w[2] * K, w[3] * K, w[4] * K, w[5] * K, null, { rx: w[6] || 0, ry: s * (w[7] || 0), seg: 12, colf: (x, y, z) => B.wingCol(y / (w[4] * K), z / (w[5] * K), w) });
   });
   A.part('tail', P(B.tailPivot), () => B.tail(P));
   for (const s of [-1, 1]) A.part(s > 0 ? 'leg0' : 'leg1', P([s * B.hip[0], B.hip[1], B.hip[2]]), () => B.leg(P, s));
@@ -542,21 +576,21 @@ ANIMAL({
         for (let k = 0; k < n; k++) { const f = k / (n - 1), hgt = (cock ? 0.03 : 0.016) * (1 - Math.abs(f - 0.4) * 0.9);
           A.ellip('skin', 0, (.442 + hgt * 0.5) * K, (.165 - f * (cock ? .07 : .045)) * K, .005 * K, hgt * K, .01 * K, red, { seg: 6 }); }
         for (const s of [-1, 1]) A.ellip('skin', s * .008 * K, .372 * K, .172 * K, .008 * K, (cock ? .026 : .016) * K, .011 * K, red, { seg: 6 });
-        if (cock) { const lk = []; for (let i = 0; i < 18; i++) { const a = A.rr(-1.6, 1.6); lk.push({ at: P([Math.sin(a) * .035, .37, .12 + Math.cos(a) * .03]), dir: [Math.sin(a) * 0.4, -1, -0.5], len: A.rr(0.07, 0.1) * K, w: 0.02 * K, col: hackle, curl: 0.2 }); } A.locks('hair', lk); }
+        if (cock) { const lk = []; for (let i = 0; i < 18; i++) { const a = A.rr(-1.6, 1.6); lk.push({ at: P([Math.sin(a) * .035, .37, .12 + Math.cos(a) * .03]), dir: [Math.sin(a) * 0.4, -1, -0.5], len: A.rr(0.07, 0.1) * K, w: 0.02 * K, col: hackle, curl: 0.2 }); } A.locks('feather', lk); }
       },
       wing: { piv: [.09, .29, .06], parts: [[.1, .25, -.02, .028, .07, .125, 0.25], [.09, .225, -.11, .02, .04, .07, 0.4, 0.1]] },
       wingCol: (vy, vz) => cock ? (vz < -0.3 ? 0x1a2420 : faFmShade(base, 0.85)) : faFmShade(base, vy < -0.5 ? 0.78 : 0.9),
       tailPivot: [0, .3, -.13],
       tail: (P) => {
-        for (let k = -2; k <= 2; k++) A.ellip('coat', k * .014 * K, .36 * K, -.18 * K, .01 * K, .065 * K, .035 * K, cock ? 0x1a2420 : faFmShade(base, 0.85), { rx: -0.5, rz: k * 0.2, seg: 8 });
-        if (cock) { const lk = []; for (let k = 0; k < 7; k++) lk.push({ at: P([A.rr(-0.02, 0.02), .38, -.17]), dir: [A.rr(-0.15, 0.15), 1.2, -0.7], len: A.rr(0.22, 0.32) * K, w: 0.035 * K, col: 0x1a2420, curl: 1.5 }); A.locks('hair', lk); }
+        for (let k = -2; k <= 2; k++) A.ellip('feather', k * .014 * K, .36 * K, -.18 * K, .01 * K, .065 * K, .035 * K, cock ? 0x1a2420 : faFmShade(base, 0.85), { rx: -0.5, rz: k * 0.2, seg: 8 });
+        if (cock) { const lk = []; for (let k = 0; k < 7; k++) lk.push({ at: P([A.rr(-0.02, 0.02), .38, -.17]), dir: [A.rr(-0.15, 0.15), 1.2, -0.7], len: A.rr(0.22, 0.32) * K, w: 0.035 * K, col: 0x1a2420, curl: 1.5 }); A.locks('feather', lk); }
       },
       hip: [.045, .18, 0],
       leg: (P, s) => {
-        A.ellip('coat', s * .05 * K, .16 * K, -.005 * K, .035 * K, .05 * K, .04 * K, faFmShade(base, 0.95), { seg: 10 });   /* the thigh */
-        A.cone('skin', P([s * .045, .125, .005]), P([s * .045, .02, .015]), .011 * K, .009 * K, yel, 6);
-        for (const dx of [-0.025, 0, 0.025]) A.cone('skin', P([s * .045, .008, .015]), P([s * .045 + dx, .006, .075]), .007 * K, .003 * K, yel, 5);
-        A.cone('skin', P([s * .045, .008, .015]), P([s * .045, .006, -.03]), .006 * K, .003 * K, yel, 5);
+        A.ellip('feather', s * .05 * K, .16 * K, -.005 * K, .035 * K, .05 * K, .04 * K, faFmShade(base, 0.95), { seg: 10 });   /* the thigh */
+        A.cone('scale', P([s * .045, .125, .005]), P([s * .045, .02, .015]), .011 * K, .009 * K, yel, 6);
+        for (const dx of [-0.025, 0, 0.025]) A.cone('scale', P([s * .045, .008, .015]), P([s * .045 + dx, .006, .075]), .007 * K, .003 * K, yel, 5);
+        A.cone('scale', P([s * .045, .008, .015]), P([s * .045, .006, -.03]), .006 * K, .003 * K, yel, 5);
         if (cock) A.cone('horn', P([s * .045, .05, .0]), P([s * .045, .045, -.03]), .006 * K, .001 * K, 0xc8b890, 4);   /* the spur */
       } });
     A.anchor('roost', [0, 0.01, 0]);
@@ -598,12 +632,12 @@ ANIMAL({
       wing: { piv: [.09, .25, .08], parts: [[.095, .24, -.03, .028, .06, .14, 0.1]] },
       wingCol: (vy, vz) => v === 1 && vz < -0.1 && vz > -0.55 && vy < -0.2 ? 0x3a4a8a : faFmShade(base, vy < -0.4 ? 0.85 : 0.95),
       tailPivot: [0, .24, -.18],
-      tail: (P) => { A.ellip('coat', 0, .26 * K, -.225 * K, .05 * K, .025 * K, .065 * K, faFmShade(base, 0.9), { rx: -0.4, seg: 10 }); },
+      tail: (P) => { A.ellip('feather', 0, .26 * K, -.225 * K, .05 * K, .025 * K, .065 * K, faFmShade(base, 0.9), { rx: -0.4, seg: 10 }); },
       hip: [.05, .15, -.05],
       leg: (P, s) => {
-        A.ellip('coat', s * .055 * K, .15 * K, -.05 * K, .03 * K, .035 * K, .035 * K, belly, { seg: 8 });   /* the thigh, under the flank feathers */
-        A.cone('skin', P([s * .05, .13, -.045]), P([s * .05, .02, -.02]), .011 * K, .01 * K, orange, 6);
-        A.ellip('skin', s * .05 * K, .009 * K, .015 * K, .032 * K, .008 * K, .042 * K, orange, { seg: 8 });   /* the webbed foot */
+        A.ellip('feather', s * .055 * K, .15 * K, -.05 * K, .03 * K, .035 * K, .035 * K, belly, { seg: 8 });   /* the thigh, under the flank feathers */
+        A.cone('scale', P([s * .05, .13, -.045]), P([s * .05, .02, -.02]), .011 * K, .01 * K, orange, 6);
+        A.ellip('scale', s * .05 * K, .009 * K, .015 * K, .032 * K, .008 * K, .042 * K, orange, { seg: 8 });   /* the webbed foot */
       } });
     A.anchor('roost', [0, 0.01, 0]);
   }
@@ -639,8 +673,8 @@ ANIMAL({
   life: { maturity: 2, lifespan: 25, litter: 18, gestation: 70, note: 'litter: a clutch; gestation: the days to hatching; a product of the genepriests\' breeding program (Daranch)' },
   variants: 4, variantNames: ['cow, olive with ochre bands', 'bull, crested, red bands', 'cow, khaki with teal bands', 'riding lizard, rust-brown'],
   breeds: { meat: { scale: 1, mass: 240, role: 'the ranch\'s meat herd' }, riding: { scale: 1.3, mass: 520, role: 'the inn\'s riding and pack lizard' } },
-  w: 1.45, d: 2.6, h: 0.75,
-  variantDims: [{ w: 1.45, d: 2.6, h: 0.75 }, { w: 1.45, d: 2.6, h: 0.95 }, { w: 1.45, d: 2.6, h: 0.75 }, { w: 1.45, d: 2.6, h: 0.75 }],
+  w: 1.57, d: 2.62, h: 0.75,
+  variantDims: [{ w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.95 }, { w: 1.57, d: 2.62, h: 0.75 }, { w: 1.57, d: 2.62, h: 0.75 }],
   data: { mass: 240, legs: 4, speed: { walk: 1.0, run: 5 }, gait: { type: 'sprawl', freq: 0.9, stride: 0.6 }, grazePitch: 0.35, sizeRange: [0.7, 1.5],
     herd: 'a paddock of 4 to 8 with a crested bull', fleeDistance: 2, aggression: 0.1,
     schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'IDLE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'IDLE', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
@@ -653,13 +687,13 @@ ANIMAL({
       return faFmMix(hide, faFmShade(hide, 0.7), faNoise(t * 40, a * 3, 2.3) * 0.5); };
     const span = (t0, t1) => [t => { const tt = t0 + (t1 - t0) * t; return [0, faFmLizKey(tt, 2) * S, faFmLizKey(tt, 1) * S]; }, t => { const tt = t0 + (t1 - t0) * t; return [faFmLizKey(tt, 3) * S, faFmLizKey(tt, 4) * S]; }];
     const at = t => [0, faFmLizKey(t, 2) * S, faFmLizKey(t, 1) * S];
-    { const [c, r] = span(FA_FM_LIZ_TAIL - 0.02, FA_FM_LIZ_HEAD + 0.02); A.tube('skin', c, r, 18, 16, null, { colf: (t, a) => skin(FA_FM_LIZ_TAIL - 0.02 + (FA_FM_LIZ_HEAD - FA_FM_LIZ_TAIL + 0.04) * t, a) }); }
+    { const [c, r] = span(FA_FM_LIZ_TAIL - 0.02, FA_FM_LIZ_HEAD + 0.02); A.tube('scale', c, r, 18, 16, null, { colf: (t, a) => skin(FA_FM_LIZ_TAIL - 0.02 + (FA_FM_LIZ_HEAD - FA_FM_LIZ_TAIL + 0.04) * t, a) }); }
     if (v === 1) for (let k = 0; k < 5; k++) { const z = 0.55 - k * 0.125, tz = faFmLizT(z), y = (faFmLizKey(tz, 2) + faFmLizKey(tz, 4)) * S;   /* the bull's crest of spines */
       A.cone('horn', [0, y - 0.04 * S, z * S], [0, y + 0.2 * S * (1 - Math.abs(k - 2) * 0.15), (z - 0.05) * S], 0.04 * S, 0.004 * S, band, 6); }
-    A.part('tail', at(FA_FM_LIZ_TAIL), () => { const [c, r] = span(0, FA_FM_LIZ_TAIL + 0.02); A.tube('skin', c, r, 14, 12, null, { caps: false, colf: (t, a) => skin(t * (FA_FM_LIZ_TAIL + 0.02), a) }); });
+    A.part('tail', at(FA_FM_LIZ_TAIL), () => { const [c, r] = span(0, FA_FM_LIZ_TAIL + 0.02); A.tube('scale', c, r, 14, 12, null, { caps: false, colf: (t, a) => skin(t * (FA_FM_LIZ_TAIL + 0.02), a) }); });
     A.part('head', at(FA_FM_LIZ_HEAD), () => {
-      const [c, r] = span(FA_FM_LIZ_HEAD, 1); A.tube('skin', c, r, 10, 14, null, { caps: false, colf: (t, a) => skin(FA_FM_LIZ_HEAD + (1 - FA_FM_LIZ_HEAD) * t, a) });
-      faFmEnd(A, 'skin', c(1), c(0.95), r(1), hide);
+      const [c, r] = span(FA_FM_LIZ_HEAD, 1); A.tube('scale', c, r, 10, 14, null, { caps: false, colf: (t, a) => skin(FA_FM_LIZ_HEAD + (1 - FA_FM_LIZ_HEAD) * t, a) });
+      faFmEnd(A, 'scale', c(1), c(0.95), r(1), hide);
       for (const s of [-1, 1]) {
         A.ellip('eye', s * 0.17 * S, 0.46 * S, 0.93 * S, 0.045 * S, 0.04 * S, 0.045 * S, 0x1a1a10, { seg: 8 });
         A.ellip('eye', s * 0.195 * S, 0.47 * S, 0.94 * S, 0.02 * S, 0.02 * S, 0.02 * S, 0xb89040, { seg: 6 });
@@ -676,12 +710,12 @@ ANIMAL({
       A.part('leg' + i, b, () => {
         const kn = [s * 0.58 * S, 0.3 * S, (z + (front ? 0.05 : -0.08)) * S], ft = [s * 0.64 * S, 0.035 * S, (z + (front ? 0.14 : 0.02)) * S];
         const lerp3 = (p, q) => t => [p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t];
-        A.tube('skin', lerp3(b, kn), t => [(0.13 - 0.05 * t) * S, (0.12 - 0.04 * t) * S], 4, 10, null, { colf: (t, a) => Math.cos(a) < -0.5 ? belly : hide });
-        A.ellip('skin', kn[0], kn[1], kn[2], 0.085 * S, 0.085 * S, 0.085 * S, hide, { seg: 10 });
-        A.tube('skin', lerp3(kn, ft), t => [(0.08 - 0.02 * t) * S, (0.08 - 0.025 * t) * S], 4, 8, null, { caps: false, colf: () => hide });
-        A.ellip('skin', ft[0], ft[1], ft[2] + 0.04 * S, 0.11 * S, 0.035 * S, 0.13 * S, faFmShade(hide, 0.85), { seg: 10 });
+        A.tube('scale', lerp3(b, kn), t => [(0.13 - 0.05 * t) * S, (0.12 - 0.04 * t) * S], 4, 10, null, { colf: (t, a) => Math.cos(a) < -0.5 ? belly : hide });
+        A.ellip('scale', kn[0], kn[1], kn[2], 0.085 * S, 0.085 * S, 0.085 * S, hide, { seg: 10 });
+        A.tube('scale', lerp3(kn, ft), t => [(0.08 - 0.02 * t) * S, (0.08 - 0.025 * t) * S], 4, 8, null, { caps: false, colf: () => hide });
+        A.ellip('scale', ft[0], ft[1], ft[2] + 0.04 * S, 0.11 * S, 0.035 * S, 0.13 * S, faFmShade(hide, 0.85), { seg: 10 });
         for (let k = 0; k < 5; k++) { const a = (k - 2) * 0.36 + s * 0.15;
-          A.cone('skin', [ft[0], ft[1] - 0.01 * S, ft[2] + 0.06 * S], [ft[0] + Math.sin(a) * 0.15 * S, ft[1] - 0.02 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.15 * S], 0.025 * S, 0.008 * S, faFmShade(hide, 0.8), 5);
+          A.cone('scale', [ft[0], ft[1] - 0.01 * S, ft[2] + 0.06 * S], [ft[0] + Math.sin(a) * 0.15 * S, ft[1] - 0.02 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.15 * S], 0.025 * S, 0.008 * S, faFmShade(hide, 0.8), 5);
           A.cone('horn', [ft[0] + Math.sin(a) * 0.14 * S, ft[1] - 0.02 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.14 * S], [ft[0] + Math.sin(a) * 0.19 * S, ft[1] - 0.025 * S, ft[2] + 0.06 * S + Math.cos(a) * 0.19 * S], 0.008 * S, 0.002 * S, 0x2a2418, 4); }
       });
     }
