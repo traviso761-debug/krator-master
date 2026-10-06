@@ -2906,6 +2906,132 @@
    "row": "Metal",
    "col": "Hyperjungle",
    "status": "new"
+  },
+  {
+   "src": "library/bark.birch",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.birch.b",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.smooth",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.araucaria",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.lepido",
+   "row": "Bark & leaf",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.cork",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.madrone",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.kapok",
+   "row": "Bark & leaf",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.cherry",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.mosaic",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.palm",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/leaf.araucaria",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/leaf.palm.thatch",
+   "row": "Bark & leaf",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.cactus",
+   "row": "Fibre & organic",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.cinder",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.lilypond",
+   "row": "Ground",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "library/feather.plumage.b",
+   "row": "Fibre & organic",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/organic.scale.olive.b",
+   "row": "Fibre & organic",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.tin.patchwork",
+   "row": "Metal",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/sail-band",
+   "row": "Pattern sheets",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/banner-hung",
+   "row": "Pattern sheets",
+   "col": "Generic",
+   "status": "new"
   }
  ]
 }

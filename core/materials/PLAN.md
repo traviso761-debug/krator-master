@@ -1253,6 +1253,35 @@ and `brick.red` (2.9 down) have the highest seam scores, though neither seam sho
 `common/jali-diamond` cut out on their black; `xanadu/bird` and `xanadu/deer` were cropped to their period (motifs whole, margins narrower).
 Nothing in this delivery has been judged in a render yet.
 
+#### Delivered 2026-10-06: texturepalooza 2 (`tex (2).zip`, 28 images: 21 surfaces, 7 cards)
+
+Batches `chatgpt-2026-10l-texturepalooza2.json` (process.py) and `chatgpt-2026-10l-texturepalooza2-cards.json` (cards.py). They answer the
+"Buildings, vehicles and biomes audit" rows above. Four card sheets came on flat grey, not magenta (`card.beard`, `card.reed`, `card.paddle`,
+`card.blossom`): each was keyed first by a flood from the sheet's border through background-grey pixels (so the grey-green moss and the
+cream petals survive), with the soft contact shadows under the reed clumps and leaves keyed too, then run through cards.py with no
+chroma key (the meta's `_source.note` says so). Ask for magenta next time: the grey key is a workaround.
+
+| Set | Prompt row | Reuse |
+|---|---|---|
+| `bark.birch`, `bark.birch.b` | `bark.birch` | nhighlands and nwlowlands birches; two variants for alternate trunks |
+| `bark.smooth` | `bark.smooth` | beech, alder, rowan: the "pale"/k2 smooth kind in nine biomes |
+| `bark.araucaria`, `bark.lepido` | same | monkey puzzles (swbay, rift); scale trees (eastabyss, rift k0) |
+| `bark.cork`, `bark.madrone`, `bark.kapok`, `bark.cherry`, `bark.mosaic` | the minor bark rows | swlowlands cork, madrone, ringbark, crimson ghost and ribbon gum (`bark.mosaic`), nwlowlands paperbark, hyperjungle kapok (thorn bosses stay geometry). Madrone, cherry and mosaic are full colour |
+| `bark.palm` | `bark.palm` (and `bark.treefern`) | wadi and water palms; the tree-fern trunks too (frond-base scars in fibre) |
+| `leaf.araucaria` | `card.araucaria` (came as a surface) | a surface for the monkey puzzle's rope branches, which are geometry, so a surface suits them better than a card |
+| `leaf.palm.thatch` | `card.palm` (came as a surface) | palm thatch and screens (Mav's design row `leaf.palm.thatch`); **`card.palm` is still owed** for frond cards |
+| `skin.cactus` | `skin.cactus` | columnar cactus, prickly pear, barrel, pitaya |
+| `ground.cinder` | `ground.cinder` | black sand and lava in the bays; volcanic ground in rift and eastabyss |
+| `ground.lilypond` | `card.lotus` (came as a surface) | a still-water pond surface (xanadu, nwbay); full colour. A lotus card is still owed if single floating pads are wanted |
+| `feather.plumage.b`, `organic.scale.olive.b` | extras | second plumage; lizard scales (sedesert, eastabyss) |
+| `metal.tin.patchwork` | `metal.tin.patchwork` | Locus tinmirror; scrap and shanty walls |
+| `patterns/common/sail-band` | same | Locus sail band; woven borders anywhere; greyscale, tinted |
+| `patterns/common/banner-hung` | `cloth.banner.hung` | banners; a single panel, fringe at the foot: map once |
+| `card.chainlink`, `card.acacia`, `card.sword`, `card.beard`, `card.reed`, `card.paddle`, `card.blossom` | same | fences; the biome cards of the audit |
+
+Still owed from the audit after this: `card.palm` (fronds as a card), `card.lichen`, `card.lotus` (single pads), `bark.strangler`, `card.samphire`,
+`card.ginkgo`, `card.heath`, `ground.shingle`, `skin.marine`, `wood.petrified`; and every building row in "prompted earlier and still owed".
+
 ## Built so far (2026-10-02)
 
 Nine ChatGPT-generated sources from the Beast Rider prompts above, processed by `tools/textures/process.py`
