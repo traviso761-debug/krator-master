@@ -41,4 +41,4 @@ const YS_MATLIB={on:typeof KMAT!=='undefined'&&KMAT.mode==='lib',bound:{},cards:
  KMAT.adapter('ys',recs);window._materials=KMAT.table('ys');})();
 // the shared vernacular and Ancients MAT (69b, 22, 54, 69, 69w, 34): the generic in-place bind (core/materials/record/26-matlib-bind.js),
 // for every MAT key materials.json names that the hyk binder above did not take; KMAT.ANCIENT_TILES keeps the procedural feature size
-YS_MATLIB.shared=KMAT.bindMat('ys',MAT,{tile:KMAT.ANCIENT_TILES});
+YS_MATLIB.shared=KMAT.bindMat('ys',MAT,{tile:Object.assign({},KMAT.ANCIENT_TILES,{pkCont:3,pkPave:16})});   // the Port kit's UVs: metres per unit (72-port-kit.js)

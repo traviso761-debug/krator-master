@@ -1,6 +1,6 @@
 {
  "build": "dalab",
- "note": "Dalab's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys take Iziz's rows, bound in place by src/88y-dalab-matlib.js (KMAT.bindMat); dMosaic takes the delivered Dalab mosaic in full colour. The murals, the banner and the rammed earth keep their procedural painters for now (the library murals are single-scene friezes; dRammed waits on earth.rammed). Run python3 tools/textures/pack.py settlements/dalab after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. tint.colour on the warm families (logs, bamboo, bmat): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py). Dalab's own patterns (2026-10-06, late): the four murals (patterns/dalab/mural-god-hero, -soldiers, -eye-god, -lizards; colour, full brightness; on boxes a 2 m world-UV tile shows half a 4 m frieze, on planes (dMuralP*, bound to the same families by an alias in 88y) one whole mural), the grey stepped-fret relief (relief-squares, 1 m cells), the turquoise inlay (relief-tile-teal), the harlequin checker, the deco pier panel (god-panel-a), the Historians' mosaic and the banner (a card: 88y gives dBanner its alpha test). dRammed waits for a rammed-earth set, dTurf for roof.turf, dTile (the Vothic pantile) stays procedural.",
+ "note": "Dalab's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys take Iziz's rows, bound in place by src/88y-dalab-matlib.js (KMAT.bindMat); dMosaic takes the delivered Dalab mosaic in full colour. The murals, the banner and the rammed earth keep their procedural painters for now (the library murals are single-scene friezes; dRammed waits on earth.rammed). Run python3 tools/textures/pack.py settlements/dalab after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. The vendored Highlands families (71-hl-mat.js: logs, scale, rubbleW, bamboo, bmat) take the same rows as settlements/highlands/materials.json. tint.colour on the warm families (logs, bamboo, bmat): their procedural maps carry a straw or timber hue, so the grey set takes the map's measured mean colour (tools/textures/pack.py). Dalab's own patterns (2026-10-06, late): the four murals (patterns/dalab/mural-god-hero, -soldiers, -eye-god, -lizards; colour, full brightness; on boxes a 2 m world-UV tile shows half a 4 m frieze, on planes (dMuralP*, bound to the same families by an alias in 88y) one whole mural), the grey stepped-fret relief (relief-squares, 1 m cells), the turquoise inlay (relief-tile-teal), the harlequin checker, the deco pier panel (god-panel-a), the Historians' mosaic and the banner (a card: 88y gives dBanner its alpha test). dRammed waits for a rammed-earth set, dTurf for roof.turf, dTile (the Vothic pantile) stays procedural. The Voth embassy (75-port-embassy.js, 2026-10-06): the pantile (vpTile, roof.tile), the mud plaster (vpBanco, earth.banco), both warm-tinted, and the blue-and-white mosaic (vpMosaic: in Dalab an alias of dMosaic, the same set). vpBanner stays procedural: banner-hung is plain cloth and the banner's device would go.",
  "size": 512,
  "families": {
   "wood": {
@@ -572,6 +572,44 @@
    },
    "metal": 0,
    "normalScale": 0.5
+  },
+  "vpTile": {
+   "lib": "roof.tile",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.609,
+    "colour": "#a6998f"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "vpBanco": {
+   "lib": "earth.banco",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.746,
+    "colour": "#c7bdaf"
+   },
+   "metal": 0,
+   "normalScale": 0.6,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
   }
  }
 }

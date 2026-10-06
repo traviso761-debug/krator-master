@@ -115,3 +115,5 @@ saying what fixed it.
 - [ ] **Dalab's own patterns take the material library** (2026-10-06): the four murals (planes alias the box families), relief-squares,
       relief-tile-teal, the harlequin checker, god-panel-a, the mosaic and the banner card (88y gives it its alpha test). The lizard mural
       set stacks three lizard bands where the procedural frieze had one. dRammed, dTurf and dTile stay procedural. ?mat=proc shows the old look.
+- [ ] **The Voth embassy takes the material library** (2026-10-06): vpTile (roof.tile), vpBanco (earth.banco), vpMosaic (patterns/dalab/mosaic).
+      vpBanner stays procedural (banner-hung is plain cloth: the device would go). ?mat=proc shows the old look.

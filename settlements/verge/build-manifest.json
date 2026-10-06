@@ -77,11 +77,11 @@
  ],
  "46-matlib-pack-iziz.js": [
   "GENERATED: settlements/iziz/tex (maps in verge.tex.js)",
-  "f34cfe75ab86"
+  "938639d5064d"
  ],
  "46-matlib-pack-locus.js": [
   "GENERATED: settlements/locus/tex (maps in verge.tex.js)",
-  "74c9e7e9067a"
+  "3722f3ca8df9"
  ],
  "46-verge-ground.js": [
   "settlements/verge/src/46-verge-ground.js",
@@ -117,7 +117,7 @@
  ],
  "53z-bio-matlib-pack.js": [
   "GENERATED: biomes/sedesert/tex (maps in verge.tex.js)",
-  "6dab5c36fc6e"
+  "f847ca42c2f9"
  ],
  "54a-bio-biome-sedesert-species.js": [
   "biomes\\sedesert\\src\\50-biome-sedesert-species.js",
@@ -145,7 +145,7 @@
  ],
  "55z-bio-matlib-pack.js": [
   "GENERATED: biomes/eastabyss/tex (maps in verge.tex.js)",
-  "c44ce6e85cd9"
+  "cf96790311d0"
  ],
  "56a-bio-biome-eastabyss-species.js": [
   "biomes\\eastabyss\\src\\50-biome-eastabyss-species.js",

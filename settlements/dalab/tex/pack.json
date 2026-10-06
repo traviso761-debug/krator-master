@@ -955,6 +955,76 @@
     "sourceMean": 0.4838
    }
   },
+  "vpBanco": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "vpBanco.albedo.webp",
+    "normalMap": "vpBanco.normal.webp",
+    "roughnessMap": "vpBanco.rough.webp"
+   },
+   "lib": "earth.banco",
+   "metal": 0,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    2,
+    2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "be0ca9abf96302b0212fc6a9222feedeca13e663",
+    "normal": "af8e55a84bcfa38ea9e84ad86794abbd01e4a31c",
+    "roughness": "df172b558a26ce875a3ddb45ac27cf40f072eb16"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#c7bdaf",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.746,
+    "sourceMean": 0.6164
+   }
+  },
+  "vpTile": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "vpTile.albedo.webp",
+    "normalMap": "vpTile.normal.webp",
+    "roughnessMap": "vpTile.rough.webp"
+   },
+   "lib": "roof.tile",
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "3fe97591a097a60c76a30b462b8d59a12bf1b18d",
+    "normal": "0cdf7b26e3e3e08651e0290f498e85cf1abad1a4",
+    "roughness": "5aa83257cab4d5f10257a72ed30508a218a0deca"
+   },
+   "specular": 0.5,
+   "tint": {
+    "colour": "#a6998f",
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.609,
+    "sourceMean": 0.5324
+   }
+  },
   "white": {
    "breakup": {
     "cell": 6,

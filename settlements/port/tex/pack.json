@@ -171,6 +171,74 @@
     "sourceMean": 0.5897
    }
   },
+  "pkCont": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "pkCont.albedo.webp",
+    "normalMap": "pkCont.normal.webp",
+    "roughnessMap": "pkCont.rough.webp"
+   },
+   "lib": "metal.container",
+   "metal": 0.28,
+   "normalScale": 0.8,
+   "roughLift": 0.0,
+   "scale": [
+    2.4,
+    2.38
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "bd7cb5c0f2a4f6c08b5f6f300c8fa941dd722934",
+    "normal": "72e9e492f133d5488dd1f55cb01aab9322e401f9",
+    "roughness": "7f1213cbe227b832b04144f392ec8df335debd60"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.795,
+    "sourceMean": 0.6028
+   }
+  },
+  "pkPave": {
+   "breakup": {
+    "cell": 6,
+    "macro": 0.1,
+    "mix": 0.45
+   },
+   "card": false,
+   "files": {
+    "map": "pkPave.albedo.webp",
+    "normalMap": "pkPave.normal.webp",
+    "roughnessMap": "pkPave.rough.webp"
+   },
+   "lib": "concrete.slab",
+   "metal": 0,
+   "normalScale": 0.6,
+   "roughLift": 0.0,
+   "scale": [
+    4,
+    4.32
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "a773046abd2a2faa82e95aba78d5faa78c96a7c9",
+    "normal": "971292eef83587d6d7fc2748153c214ab667586d",
+    "roughness": "9f16f6c1ea8f962bc931e09a535690d24aedfabf"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.726,
+    "sourceMean": 0.6407
+   }
+  },
   "rubbleK": {
    "breakup": {
     "cell": 6,
