@@ -1,5 +1,5 @@
 // prefix: nr
-// ================================================================= THE PUBLIC ROOMS AND THE MACHINERY: the bridge, the grand dining room, the twin engine
+// ================================================================= THE PUBLIC ROOMS AND THE MACHINERY: the grand dining room, the twin engine
 // rooms, the crew messes, the greenhouse
 // Structure only (walls, glazing, columns, daises, the built-in consoles, the engines); their furniture is catalog pieces
 // placed by the furnishing pass (70-nr-interiors.js). Each zone is NR.ZONES (14-nr-plan.js).
@@ -12,21 +12,6 @@ function nrZoneEnds(Z,d,y,top,mk,col,s0,s1){s0=s0==null?-NR.W.MAIN:s0;s1=s1==nul
 function nrCurtain(t0,t1,s,y0,y1,every,tint){nrBand('glass',t0,t1,s-.04,s+.04,y0,y1,hc(tint||0x6a8a98),s>0?'o':'i');
  for(let t=t0;t<=t1+.01;t+=every)nrBox('white',t,s,y0,.16,y1-y0,.22,P('white'));
  nrBand('white',t0,t1,s-.12,s+.12,y1-.18,y1,P('white'),'oib');}
-// ---------------------------------------------------------------- THE BRIDGE (D4, the bow)
-function nrBridge(){const Z=NR.zone('bridge'),L=NR.L,W=NR.W,y=L.D[3],top=y+L.CLEAR;reseed(4600);
- nrBand('floor',Z.t0,Z.t1,Z.s0+.15,W.MAIN-.3,y,y+.02,hc(0x6a5a4a),'t');
- nrZoneEnds(Z,3,y,top,'plaster',P('plaster'),Z.s0,W.MAIN);
- /* the forward glazing, raked outward, over the white ribbon */
- psurf('glass',(u,v)=>nrP(lerp(Z.t0,Z.t1,u),lerp(W.MAIN-.25,W.MAIN+.35,v),lerp(y+1.05,top,v)),24,1,hc(0x4a6a78),{flip:true});
- for(let t=Z.t0;t<=Z.t1+.01;t+=3){const a=nrP(t,W.MAIN-.25,y+1.05),b=nrP(t,W.MAIN+.35,top);beam('white',a,b,.18,P('white'));}
- /* the Ancients' console: a long curved desk under the glass, dark dead screens on it; the helm on a dais behind */
- nrBand('white',Z.t0+3,Z.t1-3,W.MAIN-2.6,W.MAIN-1.4,y,y+.95,P('white'),'oitse');
- nrBand('dark',Z.t0+3.4,Z.t1-3.4,W.MAIN-2.45,W.MAIN-1.5,y+.95,y+.98,hc(0x1a2428),'t');
- for(let t=Z.t0+4;t<Z.t1-3;t+=2.4){const p=nrP(t,W.MAIN-1.6,y+.98),n=NR.nrm(t);box('dark',p[0],p[1],p[2],1.4,.55,.06,hc(0x14202a),Math.atan2(n[0],n[1]));}
- nrBand('white',-5,5,9,14,y,y+.35,P('white'));                                 // the helm dais
- {const p=nrP(0,13,y+.35);cyl('white',p[0],p[1],p[2],.55,1.0,P('white'),16,.4);cyl('dark',p[0],p[1]+1,p[2],.7,.08,hc(0x202a30),20);}
- /* the chart room behind: a low wall, a doorway */
- nrBand('plaster',-12,-4,5.8,6.0,y,y+1.2,P('plaster'),'oitse');nrBand('plaster',4,12,5.8,6.0,y,y+1.2,P('plaster'),'oitse');}
 // ---------------------------------------------------------------- THE GRAND DINING ROOM (D3-D4, double height, the port hull's midships)
 function nrDining(){const Z=NR.zone('dining'),L=NR.L,W=NR.W,y=L.D[2],top=L.D[3]+L.CLEAR;reseed(4610);
  nrBand('marble',Z.t0,Z.t1,-W.MAIN+.25,W.MAIN-.25,y,y+.02,P('marble'),'t');
@@ -106,4 +91,4 @@ function nrCrops(t,s0,s1,y){const k=nrMod(Math.round(t*3.1+s0),3),G=[0x4e7a34,0x
    if(rng()<.6)sph('turf',p[0]+.12,y+rr(.5,1.0),p[2],.06,hc(0xb83224),1,6);}
   else cone('turf',p[0],y,p[2],.09,rr(.35,.6),g,5);}}
 function nrHalls(){reseed(4630);for(const Z of NR.ZONES){if(Z.kind==='mess')nrMess(Z);else if(Z.kind==='greenhouse')nrGreenhouse(Z);}}
-nrPart('bridge',nrBridge);nrPart('dining',nrDining);nrPart('engine',nrEngineRooms);nrPart('halls',nrHalls);
+nrPart('dining',nrDining);nrPart('engine',nrEngineRooms);nrPart('halls',nrHalls);

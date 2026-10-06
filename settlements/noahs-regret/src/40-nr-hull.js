@@ -95,7 +95,8 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   /* the balconies of D3 and D4 swell out between the frames (scalloped fronts, nrScallop) under a rounded parapet ribbon;
      the top deck's parapet is a rounded rail. Lofted along the whole hull. */
   for(let d=2;d<4;d++)nrBalconyFront(side,L.D[d]);
-  nrLoftS('white',T0,T1,side,()=>W.MAIN,L.TOP,NR_PARAPET_PROF,P('white'));}
+  /* (on the inboard side the terraces' top deck runs on across the bow: no rail there) */
+  const tk=NR.TIERS[2].tk;for(const [a,b] of side>0?[[T0,T1]]:[[T0,-tk],[tk,T1]])nrLoftS('white',a,b,side,()=>W.MAIN,L.TOP,NR_PARAPET_PROF,P('white'));}
  // the ledge kerbs: the outer promenade's rail, the inner quay's kerb and bollards
  for(const side of [1,-1]){const S=W.PONT*side;
   nrBand('white',T0,T1,side>0?S-.35:S,side>0?S+NR_FLARE:S+.35,L.D[0],L.D[0]+.3,P('white'),'oit');

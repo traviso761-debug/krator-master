@@ -17,6 +17,12 @@
 
 ## The hull and the piers
 
+- [ ] The bridge house's four storeys and the terraces' insides are closed volumes: glass bands on white, no rooms yet; only
+      the bridge is a room. The cabins on the inboard side of the bow (D1-D4) now look into the terraces' solid.
+- [ ] The stair cores do not reach the bridge: it has no stair drawn up from the top deck (the walk floors stack it).
+- [ ] Ruephus's headquarters moved from the top deck to the head of the forecourt plaza (quay level) when the bridge house
+      took the bow; one Lens office was dropped and a Drum tower moved aft for the same reason.
+
 - [ ] The two hulls meet at the bow in a tight V: the inboard skin bends at about 10 m there, and the liner mole's root
       follows that curve. Cabins on the inboard side of the bow are too narrow for a template and are stores.
 - [ ] The finger piers' columns go down to the keel's depth, not to the sea floor; where the basin is shallow (the sand bar

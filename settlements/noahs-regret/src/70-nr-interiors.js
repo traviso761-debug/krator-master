@@ -150,16 +150,19 @@ function nrHang(key,t,s,y,f,o,ctx){const A=KratorFurniture.FURN_BY_KEY[key];cons
 function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:arc.tid,wealth:.5,seed:7};
  const put=(room,key,t,s,y,f,o)=>{const r=nrPut(key,t,s,y,f,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+t.toFixed(1)+s.toFixed(1))}));if(r)count[room]=(count[room]||0)+1;return r;};
  const hang=(room,key,t,s,y,f,o)=>{const r=nrHang(key,t,s,y,f,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+t.toFixed(1)+s.toFixed(1))}));if(r)count[room]=(count[room]||0)+1;return r;};
- // --- the BRIDGE (D4, the bow): the Ancients' consoles, the pirates' helm seat, the chart table
- {const Z=NR.zone('bridge'),y=L.D[3]+.02,top=L.D[3]+L.CLEAR;
-  for(let t=-12;t<=12.1;t+=3)put('bridge','post-apoc_common_chair',t,W.MAIN-3.3,y,'out');
-  put('bridge','post-apoc_court_throne',0,11.8,y+.35,'out',{v:0});
-  for(const t of [-14,-10,10,14])put('bridge','yuni_ancient_glass_console',t,Z.s0+.15+.36,y,'out');
-  for(const t of [-8,8])put('bridge','ancients_workstation',t,5.8-.43,y,'in');
-  put('bridge','post-apoc_court_carpet',0,2.5,y,'out');put('bridge','post-apoc_court_table',0,2.5,y,'out');
-  put('bridge','post-apoc_common_books',-.6,2.5,y+.8,'out');for(const s of [1.5,3.5])put('bridge','post-apoc_common_chair',0,s,y,s<2.5?'out':'in');
-  for(const t of [-8,0,8])hang('bridge','post-apoc_court_hanging',t,12,top,'out');
-  put('bridge','pa_drum',16,17.6,y,'in');put('bridge','pa_drum',15.2,18.2,y,'in');put('bridge','pa_crate',-16,17.8,y,'in');put('bridge','scrap_trade_barrel',-15.5,-.9,y,'out');}
+ // --- the BRIDGE (atop the bridge house, 43-nr-fore.js): the Ancients' consoles in an arc along the forward glass, the
+ //     pirates' helm seat on a carpet in the middle, the chart table behind it, the crews' hangings, loot in the corners
+ {const br=NR.BRIDGEHOUSE.bridge,y=br.y0+.06,top=br.y0+3.85,room='bridge';
+  const putH=(key,x,yy,z,ry,o)=>{const r=FURNISH_H(key,x,yy,z,ry,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+x.toFixed(1)+z.toFixed(1))}));if(r)count[room]=(count[room]||0)+1;return r;};
+  /* +x forward: a piece facing forward has ry = PI/2 (its +z turned to +x) */
+  const fwd=PI/2;
+  for(let i=0;i<7;i++){const a=(i-3)*.32,x=br.xc+(br.a-2.4)*Math.cos(a),z=(br.b-3.2)*Math.sin(a);putH(i%2?'ancients_workstation':'yuni_ancient_glass_console',x,y,z,fwd-a*.9);}
+  for(let i=0;i<5;i++){const a=(i-2)*.32,x=br.xc+(br.a-4.6)*Math.cos(a),z=(br.b-6.5)*Math.sin(a);putH('post-apoc_common_chair',x,y,z,fwd-a*.9);}
+  putH('post-apoc_court_carpet',br.xc+1,y,0,fwd);putH('post-apoc_court_throne',br.xc+1,y,0,fwd,{v:0});
+  putH('post-apoc_court_table',br.xc-6,y,0,fwd,{v:1});putH('post-apoc_common_books',br.xc-6.3,y+.8,0,fwd);
+  for(const z of [-1,1])putH('post-apoc_common_chair',br.xc-6,y,z*1.2,z>0?PI:0);
+  for(const z of [-8,0,8]){const A=KratorFurniture.FURN_BY_KEY['post-apoc_court_hanging'],h=A?KratorFurniture.entryDims(A,0).h:1;putH('post-apoc_court_hanging',br.xc-br.a+2.4,top-h,z,fwd);}
+  putH('pa_drum',br.xc-br.a+3.2,y,-10,fwd);putH('pa_crate',br.xc-br.a+3.4,y,10,fwd);putH('scrap_trade_barrel',br.xc-br.a+4.4,y,-12,fwd);}
  // --- the GRAND DINING ROOM (D3-D4, the port hull): refectory runs and benches, the captain's table on the dais, the
  //     servery, chandeliers from the coffers, the crews' banners on the end walls
  {const Z=NR.zone('dining'),y=L.D[2]+.02,top=L.D[3]+L.CLEAR,PH=Z.tc;
@@ -202,6 +205,18 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
  // --- the BRIG (D3): the pirates' cages along its outboard wall, the stocks by the door
  {const R=NR.room('brig'),y=L.D[R.deck]+.02,sG=R.side>0?R.s1-1.2:R.s0+1.2;
   for(let t=R.t0+2;t<R.t1-1.5;t+=3.2)put('brig',nrMod(t|0,2)?'pa_drum_cage':'pa_prisoner_cage',t,sG,y,R.side>0?'in':'out',{v:1});}
+ // --- the FORECOURT PLAZA (quay level, 43-nr-fore.js): benches along the walks, lamp posts, the pirates' stalls and grog
+ //     tables by the quay, and Ruephus's justice before his door (a gibbet, stocks, a cage)
+ {const room='plaza',y=L.D[0]+.02,Pz=NR.PLAZA,hq=NR.LOTS.find(l=>l.use==='hq');
+  const putH=(key,x,yy,z,ry,o)=>{const r=FURNISH_H(key,x,yy,z,ry,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+x.toFixed(1)+z.toFixed(1))}));if(r)count[room]=(count[room]||0)+1;return r;};
+  for(const sg of [1,-1]){
+   for(let x=Pz.XP+8;x<NR.FORE_STAIR.x0-4;x+=12)putH('pa_lamp_post',x,y,sg*6,0,{v:nrMod(x|0,2)});
+   for(const [x,z] of [[96,24],[126,24],[146,48],[166,22]])putH('pa_bench',x,y,sg*z,sg>0?PI:0,{v:0});
+   /* the stalls and grog tables by the quay */
+   for(let k=0;k<3;k++){const z=sg*(22+k*14);putH('pa_lean_to_stall',Pz.XP+5,y,z,-PI/2,{v:k%2});putH('pa_tyre_table',Pz.XP+10,y,z+sg*3,0);
+    putH('pa_tyre_stool',Pz.XP+10,y,z+sg*1.8,0);putH('generic_keg',Pz.XP+3.5,y,z-sg*4,0);}
+   /* justice before the headquarters' door (it faces aft, -x) */
+   putH('pa_stocks',hq.x-20,y,sg*9,-PI/2);putH(sg>0?'pa_gibbet':'pa_prisoner_cage',hq.x-23,y,sg*15,-PI/2,{v:1});putH('pa_spear_drum',hq.x-17,y,sg*5.5,-PI/2);}}
  // --- the GRAND ATRIUM: lamp standards round the stair's foot, benches along the galleries, planters, statues at the doors,
  //     lanterns under the bridges
  {const A=NR.ATRIUM,tau=t=>A.tc+t,y1=L.D[0]+.02;
@@ -225,13 +240,11 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
  // --- the TOP DECK: the pirates' lamp posts along the promenades, benches by the beds, fires, the AA batteries Ruephus
  //     turned on the sea, his justice by his door (stocks, cages, a gibbet), the mess hall's tables in front of it
  {const y=L.TOP+.01;const free=t=>!NR.LOTS.some(l=>Math.abs(l.t-t)<(l.key==='nr-anc-reliquary'?24:l.key==='nr-anc-apt-ribbon'?21:l.key==='nr-anc-apt-drum'?13:18))&&!NR.CORES.some(c=>Math.abs(c.t-t)<6)&&Math.abs(t-NR.ATRIUM.tc)>24&&!NR.FUNNELS.some(f=>Math.abs(t-f)<7)&&!NR.ZONES.some(z=>z.roof==='glass'&&t>z.t0-2&&t<z.t1+2);
-  for(let t=NR.T0+14;t<NR.T1-8;t+=24)for(const s of [-15.2,15.2])if(free(t))put('top','pa_lamp_post',t,s,y,s>0?'in':'out',{v:nrMod(t|0,2)});
+  for(let t=NR.T0+14;t<NR.T1-8;t+=24)for(const s of [-15.2,15.2])if(free(t)&&!nrUnderFore(t,s))put('top','pa_lamp_post',t,s,y,s>0?'in':'out',{v:nrMod(t|0,2)});
   for(const K of NR.PARKS){if(K.garden)continue;const m=(K.t0+K.t1)/2;for(const s of [-13.6,13.6])put('top','pa_bench',m,s,y,s>0?'in':'out',{v:0});}
   {const K=NR.PARKS.find(k=>k.garden),m=(K.t0+K.t1)/2;for(const t of [m-12,m+12])for(const s of [-14.2,14.2])put('top','pa_bench',t,s,y,s>0?'in':'out',{v:1});}
   for(const Lt of NR.LOTS){if(Lt.use!=='barracks')continue;const sg=Lt.face==='in'?-1:1;put('top','pa_camp_fire',Lt.t+(Lt.key==='nr-anc-apt-drum'?13:18),sg*8,y,'out',{v:nrMod(Lt.t|0,3)});}
-  for(const [t,s] of [[NR.T0+9,-14],[NR.T0+9,14],[NR.T1-9,-14],[NR.T1-9,14],[-90,15],[90,15]])put('top','ancients_aa_battery',t,s,y,s>0?'out':'in',{v:0});
-  {const hq=NR.LOTS.find(l=>l.use==='hq');const t0=hq.t+27;put('top','pa_gibbet',t0,-9,y,'fwd');put('top','pa_stocks',t0+3,-10,y,'fwd');put('top','pa_stocks',t0+3,10,y,'fwd');
-   put('top','pa_prisoner_cage',t0+1,12,y,'fwd',{v:1});put('top','pa_spear_drum',t0-2,5.5,y,'fwd');put('top','pa_spear_drum',t0-2,-5.5,y,'fwd');}
+  for(const [t,s] of [[NR.T0+9,-14],[NR.T0+9,14],[NR.T1-9,-14],[NR.T1-9,14],[-104,15],[104,15]])if(!nrUnderFore(t,s))put('top','ancients_aa_battery',t,s,y,s>0?'out':'in',{v:0});
   {const mh=NR.LOTS.find(l=>l.use==='mess');const sg=mh.face==='in'?-1:1;
    for(const dt of [-6,-2,2,6]){put('top','pa_long_table',mh.t+dt,sg*13.2,y,'fwd');put('top','pa_bench',mh.t+dt-.95,sg*13.2,y,'fwd');put('top','pa_bench',mh.t+dt+.95,sg*13.2,y,'aft');}
    put('top','pa_water_butt',mh.t+12,sg*12,y,'in');put('top','pa_brick_grill',mh.t-12,sg*12.5,y,'in');}}
@@ -250,7 +263,7 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
   if(T.audit&&!T.audit.ok)for(const f of T.audit.fails.slice(0,3))auditFails.push(k+': '+(typeof f==='string'?f:(f.check||'')+' '+(f.detail||f.msg||JSON.stringify(f)).slice(0,120)));}
  window._interiors={rooms:cab.rooms.length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
   cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
-  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
+  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['plaza',30],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
   shipRooms:shp.rooms.map(r=>({id:r.id,name:r.name,kind:r.kind,deck:r.deck,pieces:r.pieces})),
   cabins:cab.rooms,buildingRooms:bld.rooms,items:Object.keys(bld.items).map(k=>({item:k,rooms:bld.items[k].tpls.length,residence:bld.items[k].residence})),
   ms:Math.round(performance.now()-t0)};

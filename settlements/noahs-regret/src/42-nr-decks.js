@@ -5,7 +5,7 @@
 // white ribbon of 40-nr-hull.js), the service core between the corridors (dark shafts and tanks, solid in the cut), the
 // stair cores (a switchback of two 1.8 m flights per deck in a hall across the core, doors onto both corridors, a kiosk on
 // the top deck). D1 and D2 are stripped: partitions stand, the doors are gone, the cabins are empty. Zones (the atrium,
-// the bridge, the dining room, the engine rooms, the crew messes, the greenhouse) draw themselves (44-46); the ship's rooms
+// the dining room, the engine rooms, the crew messes, the greenhouse) draw themselves (44-46); the ship's rooms
 // (NR.ROOMS) are runs of cabin band with a door, their partitions on the frames, drawn here.
 /* the scale of a length at offset s from the centreline: a metre of centreline t is (1 + s/rho) metres there */
 function nrK(t,s){return 1+s/NR.rho(t);}
@@ -34,11 +34,10 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
  for(let d=0;d<4;d++){const y=L.D[d],top=y+L.CLEAR,stripped=d<2;
   /* --- the service core: dark shafts and tanks, broken at the stair cores and the zones */
   {const gaps=nrZoneCuts(d,-W.COR,W.COR).concat(NR.CORES.map(C=>({t0:C.t-3.7,t1:C.t+3.7})));
-   const B=d===3?NR.zone('bridge'):null;
    gaps.sort((a,b)=>a.t0-b.t0);let c=NR.T0+.3;
    const fill=(a,b)=>{if(b-a<.5)return;nrBand('dark',a,b,-W.COR+.12,W.COR-.12,y+.03,top-.02,hc(0x34363a),'tbse');};
    for(const g of gaps){if(g.t0>c)fill(c,g.t0);c=Math.max(c,g.t1);}if(NR.T1-.3>c)fill(c,NR.T1-.3);
-   if(B)nrBand('dark',B.t0,B.t1,-W.COR+.12,B.s0-.12,y+.03,top-.02,hc(0x34363a),'tbse');}
+}
   /* --- floor finishes on the inhabited decks: boards in the cabins, tiles in the corridors (D1-D2 are bare concrete) */
   if(!stripped)for(const side of [1,-1]){const cuts=nrZoneCuts(d,-W.MAIN,W.MAIN).concat(NR.CORES.map(C=>({t0:C.t-3.6,t1:C.t+3.6,cor:1}))).sort((a,b)=>a.t0-b.t0);
    const lay=(a,b)=>{if(b-a<.3)return;const cA=side>0?W.CAB+.1:-(W.GLASS-.05),cB=side>0?W.GLASS-.05:-(W.CAB+.1);nrBand('floor',a,b,cA,cB,y,y+.02,P('floor'),'t');
@@ -47,7 +46,6 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
   /* --- the corridor walls on the core side (|s| = 8.5): doors into each stair core hall */
   for(const side of [1,-1]){const s=side*W.COR,open=NR.CORES.map(C=>{const k=nrK(C.t,s);return {t0:C.t-3.2/k,t1:C.t-1.6/k,y1:2.3};});
    nrWallGaps('plaster',s,W.WALL,y,top,P('plaster'),open,nrZoneCuts(d,Math.min(s,s+side*.1),Math.max(s,s+side*.1)));}
-  if(d===3){const B=NR.zone('bridge');nrWallT('plaster',B.t0,B.t1,B.s0,W.WALL,y,top,P('plaster'),[{t0:-1.2,t1:1.2,y1:2.3}]);}
   /* --- the stair core halls: end walls across the core, the flights, the arrival landings */
   for(const C of NR.CORES){for(const t of [C.t-3.7,C.t+3.7])nrRadial('plaster',t,-W.COR,W.COR,y,top,.2,P('plaster'));
    nrFlights(C.t,y,d<3?L.D[d+1]:L.TOP,true,P('conc'));}
@@ -76,7 +74,7 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
    const p=NR.at(t,s);box('rust',p[0],y,p[1],rr(.4,1.2),rr(.1,.5),rr(.3,.9),WHITE,rr(0,TAU));}}
  /* the kiosks over the stair cores on the top deck: white drums under shallow domes, a band of glass under the cornice,
     a doorway each way across the deck */
- for(const C of NR.CORES){const y=L.TOP,R=7.2,c=NR.at(C.t,0),n=NR.nrm(C.t),an=Math.atan2(n[1],n[0]),g=.27;
+ for(const C of NR.CORES){if(nrUnderFore(C.t,0))continue;const y=L.TOP,R=7.2,c=NR.at(C.t,0),n=NR.nrm(C.t),an=Math.atan2(n[1],n[0]),g=.27;
   for(const a0 of [an+g,an+PI+g]){const o={a0,a1:a0+PI-2*g};
    lathe('white',c[0],c[1],[[R,y],[R,y+2.5]],20,P('white'),o);lathe('glass',c[0],c[1],[[R-.04,y+2.5],[R-.04,y+3.0]],20,hc(0x5a7a88),o);
    lathe('white',c[0],c[1],[[R,y],[R,y+2.5]],20,P('white'),Object.assign({inward:true},o));}

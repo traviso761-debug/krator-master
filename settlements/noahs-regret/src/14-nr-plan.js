@@ -77,7 +77,6 @@ const NR=(function(){
  // ---------------------------------------------------------------- ZONES: the public rooms and the machinery
  // decks: indices into L.D (0 = D1). s0..s1: the band across the ring a zone takes on those decks.
  N.ZONES=[
-  {id:'bridge',kind:'bridge',name:'The bridge',t0:-18,t1:18,decks:[3],s0:-2,s1:W.MAIN},
   {id:'atrium',kind:'atrium',name:'The grand atrium',t0:TA-22,t1:TA+22,decks:[0,1,2,3],s0:-W.MAIN,s1:W.MAIN,tc:TA},
   {id:'dining',kind:'dining',name:'The grand dining room',t0:-TA-26,t1:-TA+26,decks:[2,3],s0:-W.MAIN,s1:W.MAIN,tc:-TA},
   /* the twin engine rooms, one at the stern of each hull (aft: the direction of the stern along t) */
@@ -102,7 +101,7 @@ const NR=(function(){
    const s0=side>0?W.CAB+.15:-(W.GLASS-.1),s1=side>0?W.GLASS-.1:-(W.CAB+.15);
    N.ROOMS.push({id,kind,name,deck,decks:[deck],side,t0,t1,tc:(t0+t1)/2,s0,s1,door:t0+Math.min(2.4,(t1-t0)/2),culture,wealth});};
   /* D4: the officers' end, near the bridge; the chapel, the sail loft, a sick bay */
-  room('chartroom','chartroom',"The chart room",3,-1,20,32,'post-apoc',.55);
+  room('chartroom','chartroom',"The chart room",3,-1,20,32,'post-apoc',.55);   /* below the bridge house */
   room('wardroom','mess',"The officers' wardroom",3,1,22,42,'post-apoc',.6);
   room('strongroom','strongroom',"The purser's strongroom",3,-1,-34,-22,'post-apoc',.7);
   room('chapel','shrine',"The chapel",3,1,300,314,'post-apoc',.5);
@@ -154,21 +153,22 @@ const NR=(function(){
  // A lot: {key (the deck building def), t (centre), face: 'in' (front +z toward the harbour) | 'out' | 'fwd' (along the ring)}.
  // The defs' footprints along t: lab 44, aptA 36, aptB 20, offA 30 (the builders' declared w, 50-58).
  N.LOTS=[
-  {id:'lot-hq',key:'nr-anc-reliquary',t:-4,face:'fwd',use:'hq'},
-  {id:'lot-b3',key:'nr-anc-apt-drum',t:47,face:'out',use:'barracks'},
-  {id:'lot-a2',key:'nr-anc-apt-ribbon',t:110,face:'out',use:'barracks'},
+  /* Ruephus's headquarters stands at the head of the forecourt plaza (N.PLAZA), on the axis from the bridge house down the
+     liner mole, its door toward the harbour: placed by x, z, not t */
+  {id:'lot-hq',key:'nr-anc-reliquary',t:null,x:120,z:0,ry:-PI/2,y:L.D[0],use:'hq',plaza:true},
+  {id:'lot-b3',key:'nr-anc-apt-drum',t:444,face:'in',use:'barracks'},
+  {id:'lot-a2',key:'nr-anc-apt-ribbon',t:116,face:'out',use:'barracks'},
   {id:'lot-o1',key:'nr-anc-office-lens',t:190,face:'in',use:'barracks'},
   {id:'lot-b2',key:'nr-anc-apt-drum',t:296,face:'in',use:'barracks'},
   {id:'lot-a3',key:'nr-anc-apt-ribbon',t:378,face:'in',use:'barracks'},
-  {id:'lot-o3',key:'nr-anc-office-lens',t:-47,face:'out',use:'barracks'},
   {id:'lot-a1',key:'nr-anc-apt-ribbon',t:-190,face:'in',use:'barracks'},
   {id:'lot-b1',key:'nr-anc-apt-drum',t:-296,face:'in',use:'barracks'},
   {id:'lot-o2',key:'nr-anc-office-lens',t:-378,face:'in',use:'mess'}];
  /* face: 'in' the front (+z) toward the harbour, 'out' toward the sea or the beach, 'fwd' along the ring (increasing t) */
- for(const Lt of N.LOTS){const p=N.at(Lt.t,0),n=Lt.face==='fwd'?N.tan(Lt.t):N.nrm(Lt.t),dz=Lt.face==='in'?-1:1;Lt.x=p[0];Lt.z=p[1];Lt.ry=Math.atan2(n[0]*dz,n[1]*dz);Lt.y=L.TOP;}
+ for(const Lt of N.LOTS){if(Lt.plaza)continue;const p=N.at(Lt.t,0),n=Lt.face==='fwd'?N.tan(Lt.t):N.nrm(Lt.t),dz=Lt.face==='in'?-1:1;Lt.x=p[0];Lt.z=p[1];Lt.ry=Math.atan2(n[0]*dz,n[1]*dz);Lt.y=L.TOP;}
  /* parks: lawn beds between the lots; over the grand dining room the garden with its dry fountain (garden: true) */
  N.PARKS=[{id:'park-a',t0:133,t1:145},{id:'park-b',t0:-145,t1:-133},{id:'park-c',t0:312,t1:324},{id:'park-d',t0:-324,t1:-312},
-  {id:'park-e',t0:401,t1:418},{id:'park-f',t0:-418,t1:-401},{id:'park-g',t0:-94,t1:-77},{id:'park-h',t0:76,t1:88},
+  {id:'park-e',t0:401,t1:418},{id:'park-f',t0:-418,t1:-401},
   {id:'park-i',t0:-222,t1:-209},{id:'park-garden',t0:-TA-22,t1:-TA+22,garden:true}];
  /* the twin funnels of each hull, over its engine room */
  N.FUNNELS=[N.T1-46,N.T1-22,N.T0+22,N.T0+46];
@@ -177,12 +177,45 @@ const NR=(function(){
  // flights of STEPS from the ledge down to the dune; FLOATS (timber pontoons at the water) off the inner quay for boats.
  N.TOWERS=[{t:200},{t:350},{t:452}];
  N.STEPS=[{t:175},{t:280},{t:320},{t:395},{t:470}];
- N.FLOATS=[{t:-420},{t:-240},{t:-90},{t:90},{t:240},{t:420}];
+ N.FLOATS=[{t:-440},{t:-300},{t:300},{t:440}];
  // ---------------------------------------------------------------- the FORECASTLE: the bow's sheer
  // Round the bow the outer skin rises above the promenade to a bulwark, and the promenade inside it climbs as a deck from
  // D1 (|t| = FORE.t) to the D3 floor at the stem: a ship's sheer line. foreY(t): that deck's height (hull y) at t.
  N.FORE={t:64,y0:L.D[0],y1:L.D[2],bulwark:1.1};
  N.foreY=function(t){const u=Math.abs(t)/N.FORE.t;return u>=1?L.D[0]:L.D[0]+(N.FORE.y1-L.D[0])*Math.pow(1-u,1.6);};
+ // ---------------------------------------------------------------- the FORE: the forecourt plaza, the terraces, the bridge house
+ // The forward third of the basin is decked over at quay level (D1) between the hulls' inner skins: the FORECOURT PLAZA,
+ // its aft edge a straight quay at x = XP where the liner mole starts. At its head the inner bow is built up solid to the top
+ // deck in three TERRACES (the fore block) whose curved faces step back from the plaza, a grand stair up their middle; on
+ // the bow above them stands the BRIDGE HOUSE, four storeys in the shape of the bow itself, each set in from the one below,
+ // and on top the BRIDGE with its wings and mast. Polygons are hull (x, z), anticlockwise in (x, z) for prism.
+ const ccw=P=>{const a=P.reduce((s,p,i)=>{const q=P[(i+1)%P.length];return s+p[0]*q[1]-q[0]*p[1];},0);return a<0?P.slice().reverse():P;};
+ const tAtX=(X,s)=>{let lo=0,hi=N.T1;for(let k=0;k<50;k++){const m=(lo+hi)/2;if(N.at(m,s)[0]>X)lo=m;else hi=m;}return lo;};
+ N.tAtX=tAtX;
+ {const XP=90,tP=tAtX(XP,-W.PONT),poly=[];
+  for(let t=-tP;t<=tP+1e-6;t+=Math.min(2,(2*tP)/200))poly.push(N.at(t,-W.PONT));
+  poly.push(N.at(tP,-W.PONT));
+  N.PLAZA={XP,tP,poly:ccw(poly),y:L.D[0],name:'the forecourt plaza'};}
+ /* the terraces: a face at X (its apex BULGE m further aft on the centreline), up to y1; the inner bow from the main block's
+    inner wall (s = -20.3) forward of it */
+ {const BULGE=10,tiers=[[190,L.D[0],L.D[2]],[196,L.D[2],L.D[3]],[202,L.D[3],L.TOP]];
+  N.TIERS=tiers.map(([X,y0,y1],k)=>{const s=-(W.MAIN+.3),tk=tAtX(X,s),pts=[];
+   for(let t=-tk;t<=tk+1e-6;t+=Math.min(1.5,2*tk/120))pts.push(N.at(t,s));
+   const zk=N.at(tk,s)[1],face=[];for(let i=1;i<24;i++){const z=lerp(zk,-zk,i/24);face.push([X-BULGE*(1-(z/zk)*(z/zk)),z]);}
+   return {k,X,apex:X-BULGE,y0,y1,zk,tk,face:[N.at(tk,s)].concat(face,[N.at(-tk,s)]),poly:ccw(pts.concat(face))};});
+  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))};}
+ /* the bridge house: storey k a scaled copy of the bow's plan (fine forward, round aft), centre xc, half-length a, half-
+    width b; the bridge on top, its wings across */
+ {const plan=(xc,a,b,n)=>{const P=[];for(let i=0;i<n;i++){const th=i/n*TAU,c=Math.cos(th),sn=Math.sin(th),m=c>0?MB:2.2;
+    const w=Math.sqrt(Math.max(0,1-Math.pow(Math.abs(c),m)))*(1-KB*Math.pow(Math.max(0,c),3));P.push([xc+a*c,(sn<0?-1:1)*b*w]);}return ccw(P);};
+  const st=[];for(let k=0;k<4;k++){const y0=L.TOP+k*L.DH,xc=237.5+1.6*k,a=32.5-3.6*k,b=46-6.5*k;st.push({k,y0,y1:y0+L.DH,xc,a,b,poly:plan(xc,a,b,96)});}
+  const yb=L.TOP+4*L.DH,br={y0:yb,y1:yb+3.9,xc:246,a:17,b:21,poly:plan(246,17,21,72),wings:{x:252,z:31,d:5.5}};
+  N.BRIDGEHOUSE={storeys:st,bridge:br,mast:{x:243,y:br.y1,h:16},name:'the bridge house'};}
+ /* point tests (hull x, z): in a polygon; the floors of the fore under a point (hull y) */
+ N.inPoly=function(Q,x,z){let inside=false;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
+ N.foreFloors=function(x,z){const F=[];if(N.inPoly(N.PLAZA.poly,x,z)){let top=L.D[0];for(const T of N.TIERS)if(N.inPoly(T.poly,x,z))top=T.y1;F.push(top);}
+  const B=N.BRIDGEHOUSE;let top=null;for(const S of B.storeys)if(N.inPoly(S.poly,x,z))top=S.y1;if(top!==null)F.push(top);
+  if(N.inPoly(B.bridge.poly,x,z))F.push(B.bridge.y0,B.bridge.y1);return F;};
  // ---------------------------------------------------------------- the PIERS the Ancients built in (drawn by 41-nr-piers.js)
  // Every pier's deck is level with the quays (D1, hull y 9). kind 'mole': the liner pier, a pontoon down the basin's long
  // axis from the bow's inner quay toward the open stern, a berth either side. 'finger': an open deck on columns off a hull's
@@ -198,8 +231,12 @@ const NR=(function(){
    const L2=len-w/2,c=[o[0]+d[0]*L2,o[1]+d[1]*L2];
    for(let k=0;k<=12;k++){const a=-PI/2+k/12*PI;poly.push([c[0]+(d[0]*Math.cos(a)+q[0]*Math.sin(a))*w/2,c[1]+(d[1]*Math.cos(a)+q[1]*Math.sin(a))*w/2]);}
    N.PIERS.push({id,kind,name,t,side,o,d,q,len,w,poly,head:c});};
-  pier('pier-mole','mole','the liner mole',0,-1,200,18,0);
-  for(const [i,t] of [-330,-160,160,330].entries())pier('pier-finger'+i,'finger','a finger pier',t,-1,34,7,0);}
+  for(const [i,t] of [-380,-240,240,380].entries())pier('pier-finger'+i,'finger','a finger pier',t,-1,34,7,0);
+  /* the liner mole: from the middle of the plaza's quay (N.PLAZA, below) toward the open stern, its root square to it */
+  {const w=18,len=150,o=[N.PLAZA.XP,0],d=[-1,0],q=[-d[1],d[0]],L2=len-w/2,c=[o[0]+d[0]*L2,o[1]+d[1]*L2];
+   const poly=[[o[0]+q[0]*w/2,o[1]+q[1]*w/2],[o[0]-q[0]*w/2,o[1]-q[1]*w/2]];
+   for(let k=0;k<=12;k++){const a=-PI/2+k/12*PI;poly.push([c[0]+(d[0]*Math.cos(a)+q[0]*Math.sin(a))*w/2,c[1]+(d[1]*Math.cos(a)+q[1]*Math.sin(a))*w/2]);}
+   N.PIERS.push({id:'pier-mole',kind:'mole',name:'the liner mole',t:null,side:-1,o,d,q,len,w,poly,head:c});}}
  /* is hull (x, z) on a pier's deck? (even-odd test on its outline) */
  N.pierAt=function(x,z){for(const Pr of N.PIERS){const Q=Pr.poly;let inside=false;
    for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}

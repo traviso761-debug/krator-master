@@ -23,8 +23,8 @@ function nrTop(){const L=NR.L,W=NR.W,y=L.TOP;reseed(4800);
   psurf('dark',(u,v)=>{const p=fp(u,1,1-v*.9);return [p[0],y+H-.6,p[2]];},32,2,hc(0x161616),{up:true});
   smokeAt(...((p)=>[p[0],p[1]+.5,p[2]])(fp(0,1,0)),{r:.6,kind:'soot'});}
  /* the Ancient lamp standards along both promenades: slim white stems, round heads (dead; the pirates hang lanterns) */
- for(let t=NR.T0+8;t<NR.T1-6;t+=16)for(const s of [-16.8,16.8]){if(Math.abs(t-NR.ATRIUM.tc)<23)continue;const p=nrP(t,s,y);cyl('white',p[0],y,p[2],.12,4.2,P('white'),8,.07);sph('white',p[0],y+4.4,p[2],.32,P('white'),1,12);}
+ for(let t=NR.T0+8;t<NR.T1-6;t+=16)for(const s of [-16.8,16.8]){if(Math.abs(t-NR.ATRIUM.tc)<23||nrUnderFore(t,s))continue;const p=nrP(t,s,y);cyl('white',p[0],y,p[2],.12,4.2,P('white'),8,.07);sph('white',p[0],y+4.4,p[2],.32,P('white'),1,12);}
  /* ventilators: mushroom vents over the service core, between the lots */
- for(let t=NR.T0+20;t<NR.T1-10;t+=27){if(NR.LOTS.some(l=>Math.abs(l.t-t)<26)||NR.CORES.some(c=>Math.abs(c.t-t)<6)||Math.abs(t-NR.ATRIUM.tc)<26||NR.FUNNELS.some(f=>Math.abs(t-f)<9)||NR.PARKS.some(k=>k.garden&&t>k.t0-4&&t<k.t1+4)||NR.ZONES.some(z=>z.roof==='glass'&&t>z.t0-3&&t<z.t1+3))continue;
+ for(let t=NR.T0+20;t<NR.T1-10;t+=27){if(NR.LOTS.some(l=>Math.abs(l.t-t)<26)||NR.CORES.some(c=>Math.abs(c.t-t)<6)||Math.abs(t-NR.ATRIUM.tc)<26||NR.FUNNELS.some(f=>Math.abs(t-f)<9)||NR.PARKS.some(k=>k.garden&&t>k.t0-4&&t<k.t1+4)||NR.ZONES.some(z=>z.roof==='glass'&&t>z.t0-3&&t<z.t1+3)||nrUnderFore(t,0))continue;
   const p=nrP(t,0,y);cyl('white',p[0],y,p[2],.7,1.4,P('white'),16);sph('white',p[0],y+1.4,p[2],1.0,P('white'),.45,16);}}
 nrPart('top',nrTop);
