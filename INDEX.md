@@ -41,6 +41,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 181 | 48 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 196 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 207 | 66 | Biome kit: see `biomes/README.md`. |
+| [`biomes/crater-drylands`](biomes/crater-drylands/INDEX.md) | 14 | 166 | 43 | Biome kit: see `biomes/README.md`. |
 | [`openworld/little-demo`](openworld/little-demo/INDEX.md) | 17 | 157 | 32 | Little Demo: the scale model's eastern desert region at 1:1 (1.3 million km2), streamed: terrain from the scale model's heights, the sedesert, eastabyss, hyperjungle and ebadlands kits' flora placed by climate as cell-seeded instances, settlements marked. |
 
 ## Not builds

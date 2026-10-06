@@ -818,6 +818,43 @@ that came for `organic.gem.teal` and is filed as a stone (reuse: gem inlay, poli
 crown's pods). The eastern badlands rows are all delivered. `biomes/ebadlands` uses every one; the aspen takes the
 existing `bark.ghostwood`, tinted.
 
+#### Crater drylands (`biomes/crater-drylands`, 2026-10-05)
+
+Gaps only. Try these library sets first, no prompt needed: `card.prismgum` (the prism mallee's and the ghost gum's lance
+leaves, tinted), `bark.prismgum` (the mallee's strips, tinted), `bark.bark_bluegum` tinted pale (the ghost gum),
+`bark.ponderosa` and `card.pine` (the parasol pine), `card.ember` (the pincushion's heads, tinted orange), `card.sage`
+(chaparral), `wood.silver` (grey snags and old logs), `ground.playa.red`, `ground.steppe`, `ground.withered_grass` (old
+scrub), `ground.gravelly_sand` (the washes), `rock.rock_boulder_dry` (the kopjes' granite: ask for `rock.granite.tor` only
+if it does not read as granite), `card.fern` (the prism fern's fallback). Surfaces use the base template (plus the tintable
+sentence unless marked full colour); cards use the keyed-card wording above.
+
+| id | Material line | Reuse |
+|---|---|---|
+| `ground.burn` | Freshly burnt scrubland ground seen from above, a few weeks after a wildfire: black char (#1e1b18, #2c2824) over red soil (#8a5c48) that shows through in patches, drifts of fine grey-white ash (#c8c4bc) gathered in hollows and round the charred bases of burnt shrubs, short black twig stubs and a few charred pine-cone-sized seed pods, small stones blackened on one side. Full colour. | every burn in this kit; burnt ground after any fire, a battle or a raid; cold hearth and kiln floors |
+| `ground.redsoil` | Dry red tropical soil seen from above: fine Tharnish red-brown earth (#9c6a54, #8a5c48), slightly crusted, with scattered small angular gravel and quartz grit, a few dry leaves and fine roots, faint wind ripples. | the drylands plain; the hyperjungle's red soil (`LORE.md`), Girder, Iziz, SW bay, any laterite ground |
+| `rock.granite.tor` | Weathered granite boulder surface: coarse-grained pink-grey granite (#b4a89c) with white feldspar and black biotite flecks, rounded by weathering, shallow pits and a few joint cracks, patches of orange and grey-green crustose lichen (#d88a3a, #9aa090). | the kopjes; any granite outcrop, tor or boulder field; dressed granite blocks |
+| `bark.char` | Charred tree bark after a fire: deep black (#1c1a18) bark cracked into blocky "alligator" checks a few centimetres across, a faint silvery sheen on the raised blocks, brown unburnt bark (#5a4434) showing in a few deep fissures, fine grey ash in the cracks. | the lower trunks of every survivor in this kit, snags and burnt logs; burnt beams and posts in any settlement |
+| `bark.pillar` *(alien)* | Bark of a fire-proof alien column tree: tough fibrous skin in horizontal raised rings a few centimetres apart, each ring slightly scalloped like overlapping leaf bases, fine vertical fibres between the rings, a waxy sheen. Neutral grey-green so it can be tinted to teal and pale gold bands. | the pyre pillar; any ringed palm-like or cycad-like trunk |
+| `card.pillar` *(alien)* | Alien frond card: nine stiff feather-like fronds, each a straight midrib with closely packed narrow leaflets angled toward the tip like a feather, teal-blue (#2e6a6a) at the tips grading to yellow-green (#8aa848) at the base, laid diagonally from the bottom-left to the top-right of its cell, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | the pyre pillar; any feather-frond alien plant, cycad or tree-fern variant |
+| `card.irisfern` *(alien)* | Iridescent fern card: nine lacy fronds of a spikemoss, tiny scale-like leaflets on forking branches, an oily metallic sheen: deep blue (#3a6aa8) and violet (#6a4ab8) shading to copper-orange (#e89a3a) at the tips, no green anywhere, seen from above on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. | the prism fern; the Rift ("iridescence is the rule"), hyperjungle understorey |
+| `card.firelily` | Flower card: nine single fire lilies seen from the side, each a scarlet (#d82a2a) six-petalled trumpet with recurved petal tips and a yellow-green throat on a bare green stalk, standing upright from the bottom of its cell, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. | the fire lilies; any red lily or amaryllis in a garden or a bloom |
+| `card.flowerspike` | Flower card: nine upright flower spikes seen from the side, three shaped like fireweed (loose open florets up a tall stem), three like lupine (dense pea-flower whorls), three like plumed celosia (a soft feathery flame-shaped plume), all in pale cream-white so they can be tinted, on short green stems standing up from the bottom of each cell, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. | fireweed, lupine and flame plume here; any meadow, garden border or bloom |
+| `card.cupflower` | Flower card: nine open cup-shaped flowers seen from above, four like poppies (four broad crinkled petals, a dark centre), five like small daisies (many narrow petals round a raised centre), all pale cream-white so they can be tinted, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. | poppies and goldfields here; any wildflower carpet or garden |
+| `card.charred` | Burnt shrub card: nine black charred shrub skeletons after a wildfire, bare forking twigs (#1e1b18) with a faint grey ash coating on their upper sides, a few curled brown scorched leaves on two of them, standing up from the bottom of each cell, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | the char and the bloom here; burnt hedges and gardens anywhere; bare winter shrubs (tinted grey-brown) |
+| `card.grass.dry` | Grass card: nine tufts of dry bunchgrass standing up from the bottom of each cell, fine straw-coloured blades (#c8b47a, #b8a46a) with a few green ones at the base and slender seed heads, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | the old scrub here; savannah, steppe, every dry grassland kit |
+| `card.broom` | Shrub card: nine sprigs of flowering broom, thin green rush-like twigs (#5a6a34) crowded with small bright yellow pea flowers (#f0d020), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. | the ash broom here; gorse and broom in Mediterranean and highland scrub |
+| `card.jade` | Succulent card: nine short branched sprigs of a jade plant, thick round glossy leaves orange-red (#e0602a) with deeper red rims and a few green-gold (#a0a040) ones near the stems, seen from above on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. | the ember jade; any succulent shrub or windowsill plant |
+
+*Delivered 2026-10-05 and processed (14 images pasted into the chat as 1254 px WebP):* four surfaces
+(`tools/textures/batches/chatgpt-2026-10i-craterdry.json`: `bark.char`, `bark.pillar`, `rock.granite.tor` and a second
+`rock.granite.tor.b`) plus one not asked for, a scaly pine bark with lichen filed as `bark.pine.scale` (reuse: the parasol
+pine, stone and Scots pine, any old scaly conifer); and nine cards (`chatgpt-2026-10i-craterdry-cards.json`: `card.charred`,
+`card.cupflower`, `card.flowerspike`, `card.firelily`, `card.grass.dry`, `card.irisfern`, `card.jade`, `card.pillar`,
+`card.broom`). `card.grass.dry` is keyed hard (key_lo 100, key_hi 250) and still keeps a faint pink in the finest blades;
+the kit uses it as a grey detail map (keep 0), which drops it. `ground.burn` and `ground.redsoil` followed the same day
+(`chatgpt-2026-10j-craterdry-ground.json`). The crater drylands rows are all delivered; `biomes/crater-drylands` uses every
+one (`materials.json`, `tex/`).
+
 #### Furniture and city (generic, for every culture)
 
 Gaps the scan libraries do not fill. Start each with the base template; for tintable surfaces add the muting sentence. Rows that need cut-outs

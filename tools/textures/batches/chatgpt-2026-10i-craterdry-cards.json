@@ -1,0 +1,281 @@
+[
+ {
+  "src": "card-charred.png",
+  "out": "core/materials/library/card.charred",
+  "record": {
+   "id": "card.charred",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Burnt shrub card: nine black charred shrub skeletons after a wildfire, bare forking twigs (#1e1b18) with a faint grey ash coating on their upper sides, a few curled brown scorched leaves on two of them, standing up from the bottom of each cell, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.charred of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the char and the bloom here; burnt hedges and gardens anywhere; bare winter shrubs (tinted grey-brown)"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-cupflower.png",
+  "out": "core/materials/library/card.cupflower",
+  "record": {
+   "id": "card.cupflower",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flower card: nine open cup-shaped flowers seen from above, four like poppies (four broad crinkled petals, a dark centre), five like small daisies (many narrow petals round a raised centre), all pale cream-white so they can be tinted, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.cupflower of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "poppies and goldfields here; any wildflower carpet or garden"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flowerspike.png",
+  "out": "core/materials/library/card.flowerspike",
+  "record": {
+   "id": "card.flowerspike",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flower card: nine upright flower spikes seen from the side, three shaped like fireweed (loose open florets up a tall stem), three like lupine (dense pea-flower whorls), three like plumed celosia (a soft feathery flame-shaped plume), all in pale cream-white so they can be tinted, on short green stems standing up from the bottom of each cell, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.flowerspike of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "fireweed, lupine and flame plume here; any meadow, garden border or bloom"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-firelily.png",
+  "out": "core/materials/library/card.firelily",
+  "record": {
+   "id": "card.firelily",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Flower card: nine single fire lilies seen from the side, each a scarlet (#d82a2a) six-petalled trumpet with recurved petal tips and a yellow-green throat on a bare green stalk, standing upright from the bottom of its cell, on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. (Row card.firelily of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the fire lilies; any red lily or amaryllis in a garden or a bloom"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-grass-dry.png",
+  "out": "core/materials/library/card.grass.dry",
+  "record": {
+   "id": "card.grass.dry",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Grass card: nine tufts of dry bunchgrass standing up from the bottom of each cell, fine straw-coloured blades (#c8b47a, #b8a46a) with a few green ones at the base and slender seed heads, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.grass.dry of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the old scrub here; savannah, steppe, every dry grassland kit"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 100,
+   "key_hi": 250
+  }
+ },
+ {
+  "src": "card-irisfern.png",
+  "out": "core/materials/library/card.irisfern",
+  "record": {
+   "id": "card.irisfern",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Iridescent fern card: nine lacy fronds of a spikemoss, tiny scale-like leaflets on forking branches, an oily metallic sheen: deep blue (#3a6aa8) and violet (#6a4ab8) shading to copper-orange (#e89a3a) at the tips, no green anywhere, seen from above on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. (Row card.irisfern of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the prism fern; the Rift (\"iridescence is the rule\"), hyperjungle understorey"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-jade.png",
+  "out": "core/materials/library/card.jade",
+  "record": {
+   "id": "card.jade",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Succulent card: nine short branched sprigs of a jade plant, thick round glossy leaves orange-red (#e0602a) with deeper red rims and a few green-gold (#a0a040) ones near the stems, seen from above on a solid flat bright green (#00ff00) background so they can be cut out. Square, 2048x2048; no other objects. Full colour. (Row card.jade of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the ember jade; any succulent shrub or windowsill plant"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#00ff00",
+   "spill": "edge",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-pillar.png",
+  "out": "core/materials/library/card.pillar",
+  "record": {
+   "id": "card.pillar",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Alien frond card: nine stiff feather-like fronds, each a straight midrib with closely packed narrow leaflets angled toward the tip like a feather, teal-blue (#2e6a6a) at the tips grading to yellow-green (#8aa848) at the base, laid diagonally from the bottom-left to the top-right of its cell, on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.pillar of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the pyre pillar; any feather-frond alien plant, cycad or tree-fern variant"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-broom.png",
+  "out": "core/materials/library/card.broom",
+  "record": {
+   "id": "card.broom",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "Shrub card: nine sprigs of flowering broom, thin green rush-like twigs (#5a6a34) crowded with small bright yellow pea flowers (#f0d020), seen from above on a solid flat bright magenta (#ff00ff) background so they can be cut out. Square, 2048x2048; no other objects. (Row card.broom of core/materials/PLAN.md, Crater drylands.) Pasted into the chat 2026-10-05 as a 1254 px WebP; converted to PNG.",
+    "reuse": "the ash broom here; gorse and broom in Mediterranean and highland scrub"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

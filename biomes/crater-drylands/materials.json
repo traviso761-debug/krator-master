@@ -1,0 +1,288 @@
+{
+ "build": "craterdry",
+ "note": "The crater drylands kit's adapter onto the material library (core/materials/PLAN.md, Crater drylands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones). keep 0 is a grey detail map the instance colour colours; keep 1 keeps the card's own colour (the flower cards are white, so the drift's colour tints the petals and darkens the leaves; the lily, the prism fern, the jade and the broom are full colour on near-white instances). Cards on a tuft, a bloom or a frond strip are cut from one cell of their sheet in 50-biome-craterdry-species.js. bark.* and wood.char replace the bark buckets' canvases (keep 0 under the species' vertex colours; means() in 55 divides out the pack's brightness). stone.granite is the boulders and the kopjes' ground speckle. Run python3 tools/textures/pack.py biomes/crater-drylands after any change, then python3 build.py. ground.burn and ground.redsoil are the ground's two library layers (84-host-ground.js), blended per vertex by the burn's stage: char and ash on the fresh burns fading through the early bloom, red soil under the bloom, the regrowth and the old scrub.",
+ "size": 512,
+ "families": {
+  "leaf.needle": {
+   "lib": "card.pine",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.lance": {
+   "lib": "card.prismgum",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.small": {
+   "lib": "card.sage",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.flame": {
+   "lib": "card.ember",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.twigs": {
+   "lib": "card.charred",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.bunch": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.spike": {
+   "lib": "card.flowerspike",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.bloom": {
+   "lib": "card.cupflower",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.lily": {
+   "lib": "card.firelily",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.frond": {
+   "lib": "card.pillar",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.fern": {
+   "lib": "card.irisfern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.jade": {
+   "lib": "card.jade",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.broom": {
+   "lib": "card.broom",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "bark.pine": {
+   "lib": "bark.pine.scale",
+   "scale": [
+    1.2,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.pillar": {
+   "lib": "bark.pillar",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.mallee": {
+   "lib": "bark.prismgum",
+   "scale": [
+    1.0,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.gum": {
+   "lib": "bark.bark_bluegum",
+   "scale": [
+    1.6,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "wood.char": {
+   "lib": "bark.char",
+   "scale": [
+    1.0,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.granite": {
+   "lib": "rock.granite.tor",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.7
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.burn": {
+   "lib": "ground.burn",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.redsoil": {
+   "lib": "ground.redsoil",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}
