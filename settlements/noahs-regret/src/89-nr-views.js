@@ -17,6 +17,11 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  V['The stern: funnels and garden']=nrV(nrHP(PH-90,-70,L.TOP+40),nrHP(PH,0,L.TOP+6));
  V['The atrium: the grand stair']=nrV(nrHP(PQ-17,-1,L.D[0]+1.7),nrHP(PQ+6,0,L.D[1]+3));
  V['The atrium from the dome gallery']=nrV(nrHP(PQ-15,-14.9,L.TOP+2.0),nrHP(PQ+12,5,L.D[1]));
+ V['The bow: the forecastle and the stem']=nrV(nrHP(-70,70,L.D[0]+10),nrHP(0,26,L.D[1]));
+ {const M=NR.PIERS.find(p=>p.kind==='mole'),e=nrPierPt(M,M.len+40,-34,L.D[0]+16),a=nrPierPt(M,M.len*.45,0,L.D[0]);
+  V['The liner mole']=nrV(nrH2W(e[0],e[1],e[2]),nrH2W(a[0],a[1],a[2]));}
+ {const A=NR.PIERS.filter(p=>p.kind==='arm'),m=[(A[0].head[0]+A[1].head[0])/2,(A[0].head[1]+A[1].head[1])/2];
+  V['The mouth: the breakwater piers']=nrV(nrH2W(m[0]-30,34,m[1]-110),nrH2W(m[0],L.D[0],m[1]+40));}
  V['The inner quay and a float']=nrV(nrHP(42,-60,L.D[0]+6),nrHP(62,-26,L.D[0]));
  V['Plan: the bridge (D4)']=nrV(nrHP(-26,-30,L.D[3]+34),nrHP(0,6,L.D[3]),{cut:cutAt('D4')});
  V['Plan: the grand dining room']=nrV(nrHP(PH+44,30,L.D[2]+38),nrHP(PH,0,L.D[2]),{cut:cutAt('Dining')});
@@ -34,19 +39,24 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  return V;}
 // ---------------------------------------------------------------- where a point is (the inspector, the HUD)
 function nrDeckOf(y){const L=NR.L;if(y<L.D[0])return y<L.MEZZ?'the holds':'the hold mezzanine';if(y>=L.TOP-.05)return 'the top deck';for(let d=3;d>=0;d--)if(y>=L.D[d]-.05)return 'D'+(d+1);return '?';}
-function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);if(!q.inRing||Math.abs(q.s)>NR.W.PONT+.5)return 'outside the hull';
+function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);
+ if(!q.inRing||Math.abs(q.s)>NR.W.PONT+.5){const Pr=NR.pierAt(h[0],h[2]);return Pr?Pr.name+'  (pier '+Pr.id.replace('pier-','')+')':'outside the hull';}
  const deck=nrDeckOf(h[1]+.3),a=Math.abs(q.s);let what='';
  for(const Z of NR.ZONES){const d=NR.L.D.findIndex((y,i)=>h[1]+.3>=y&&(i===3||h[1]+.3<NR.L.D[i+1]));if(q.t>=Z.t0&&q.t<=Z.t1&&Z.decks.indexOf(d)>=0&&q.s>=Z.s0&&q.s<=Z.s1)what=Z.name;}
- if(!what&&h[1]<NR.L.TOP&&h[1]>=NR.L.D[0]-.1){if(a>NR.W.MAIN)what=q.s>0?'the outer promenade':'the inner quay';else if(a>=NR.W.CAB){const C=NR.cabins.find(c=>q.t>=c.t0&&q.t<c.t1&&c.side===(q.s>0?1:-1)&&NR.L.D[c.deck]<=h[1]+.3&&h[1]+.3<NR.L.D[c.deck]+NR.L.DH);what=C?'cabin '+C.id+(C.kind?' ('+C.kind+')':' (empty)'):'cabins';}
+ if(!what&&h[1]<NR.L.TOP&&h[1]>=NR.L.D[0]-.1){if(a>NR.W.MAIN)what=q.s>0?(Math.abs(q.t)<NR.FORE.t?'the forecastle':'the outer promenade'):'the inner quay';else if(a>=NR.W.CAB){const C=NR.cabins.find(c=>q.t>=c.t0&&q.t<c.t1&&c.side===(q.s>0?1:-1)&&NR.L.D[c.deck]<=h[1]+.3&&h[1]+.3<NR.L.D[c.deck]+NR.L.DH);what=C?'cabin '+C.id+(C.kind?' ('+C.kind+')':' (empty)'):'cabins';}
   else if(a>=NR.W.COR)what='the corridor';else{const C=NR.CORES.find(c=>Math.abs(q.t-c.t)<4);what=C?'stair core '+C.id:'the service core';}}
  return deck+(what?' · '+what:'')+'  (t '+q.t.toFixed(0)+', s '+q.s.toFixed(1)+')';}
 function nrHudWhere(){const p=WALK.on?camera.position:ctl.target;return nrWhere(p);}
 function nrInsideHull(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);return q.inRing&&Math.abs(q.s)<NR.W.PONT+1&&h[1]>-1&&h[1]<NR.L.TOP+2;}
 // ---------------------------------------------------------------- the walk floors: every level under a point (hull y), as world y
 function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR.W,F=[];
+ /* the piers (41): one deck, level with the quays */
+ if(!(q.inRing&&Math.abs(q.s)<=W.PONT)&&NR.pierAt(h[0],h[2]))F.push(L.D[0]);
+ /* the forecastle's deck climbs over the outer promenade round the bow */
+ if(q.inRing&&q.s>W.MAIN&&q.s<=W.PONT+1.2&&Math.abs(q.t)<NR.FORE.t)F.push(NR.foreY(q.t));
  if(q.inRing&&Math.abs(q.s)<=W.PONT){const a=Math.abs(q.s),A=NR.ATRIUM,inVoid=Math.abs(q.t-A.tc)<A.voidT&&a<A.voidS;
   if(a<W.SKIN)F.push(L.HOLD);if(a>=W.MEZZ&&a<W.SKIN)F.push(L.MEZZ);
-  F.push(L.D[0]);
+  if(!(q.s>W.MAIN&&Math.abs(q.t)<NR.FORE.t))F.push(L.D[0]);
   if(a<=W.MAIN){for(let d=1;d<=4;d++){const y=d<4?L.D[d]:L.TOP;if(inVoid)continue;
     if(NR.CORES.some(c=>Math.abs(q.t-c.t)<3.5&&a<6))continue;
     if(d===1&&q.t>NR.zone('engine').t0&&q.t<NR.zone('engine').t1)continue;

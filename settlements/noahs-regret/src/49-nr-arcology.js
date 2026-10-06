@@ -7,7 +7,8 @@
 // world is built (70-nr-interiors.js, called from 91f-furnish.js's buildWorld).
 defBuilding({key:'nr-arcology',name:"Noah's Regret (the grounded arcology)",seed:4000,cls:'building',kind:'arcology',
  tags:{types:['infrastructure','dwelling-multi','military'],wealth:'middle',style:'floating harbour',role:"Bloody Ruephus's pirate base"},
- w:2*(NR.A+NR.W.PONT),d:2*(NR.B+NR.W.PONT),h:NR.L.TOP+70,budget:6e6,
+ w:2*(NR.A+NR.W.PONT)+16,d:2*(NR.B+NR.W.PONT)+140,   /* the stem's rake; the breakwater piers out to sea (41) */
+ h:NR.L.TOP+70,budget:6e6,
  front:{x:0,z:0,yaw:0},
  note:'a ring of pontoon hull round a harbour basin, four decks of cabins and public rooms, a top deck of parks and Ancient mid-rises; aground on the south shore, listing 0.8 degrees to port',
  build(){const R=NR_HULL.R;

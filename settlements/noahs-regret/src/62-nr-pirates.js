@@ -69,5 +69,5 @@ nrAfter('pirates',function(){const L=NR.L,W=NR.W;
   place('nr-pirate-steps',q.x,q.z,q.ry,{y:L.D[0],v:i,drop:clamp(L.D[0]-gh,.6,8)});}
  for(const F of NR.FLOATS){const q=at(F.t,-W.PONT,'in'),sea=nrSeaHullY(q.x,q.z);place('nr-pirate-float',q.x,q.z,q.ry,{y:L.D[0],drop:L.D[0]-sea-.45});}
  let v=0;for(const Lt of NR.LOTS){if(Lt.use!=='barracks')continue;const q=at(Lt.t+(Lt.key==='nr-anc-apt-drum'?-14:-21),Lt.face==='in'?-16.5:16.5,Lt.face==='in'?'in':'out');place('nr-pirate-awning',q.x,q.z,q.ry,{y:L.TOP,v:v++,L:8});}
- /* flags on the mouth's beacons */
- for(const [t,dir] of [[NR.T0,-1],[NR.T1,1]]){const c=NR.at(t,0),T=NR.tan(t);nrPirateFlag(c[0]+T[0]*dir*16,L.D[0]+17.5,c[1]+T[1]*dir*16,4.5,3.2,2.1,0);}});
+ /* flags on the beacons at the breakwater piers' heads (41) */
+ for(const B of NR.BEACONS)nrPirateFlag(B.x,L.D[0]+17.5,B.z,4.5,3.2,2.1,0);});

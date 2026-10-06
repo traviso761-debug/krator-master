@@ -66,7 +66,11 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   const bilge=[[S-k*3.4,0],[S-k*1.6,.35],[S-k*.55,1.2],[S,2.6],[S,5.7]];
   nrLoft('paint',T0,T1,bilge,hc(NR_ANTIFOUL),side);
   nrLoft('barn',T0,T1,[[S+k*.02,5.6],[S+k*.02,7.0]],WHITE,side);
-  nrLoft('white',T0,T1,[[S,6.95],[S,9.0]],P('whiteS'),side);
+  /* above the boot-top the outboard side flares out (NR_FLARE at the gunwale), a dark rubbing strake along it; the inner
+     quay's wall stays plumb */
+  if(side>0){nrLoft('white',T0,T1,[[S,6.95],[S+.3,8.0],[S+NR_FLARE,9.0]],P('whiteS'),side);
+   nrLoft('paint',T0,T1,[[S+.38,7.55],[S+.62,7.65],[S+.64,7.95],[S+.42,8.05]],hc(0x2c3034),side);}
+  else nrLoft('white',T0,T1,[[S,6.95],[S,9.0]],P('whiteS'),side);
   /* the inner skin of the double hull, facing the hold */
   nrBand('cracked',T0,T1,side>0?W.SKIN-.2:-W.SKIN,side>0?W.SKIN:-W.SKIN+.2,L.HOLD,L.D[0]-L.SLAB,hc(0x9a958a),side>0?'i':'o');}
  // the keel plate and the tank top (the hold floor)
@@ -94,9 +98,10 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   nrBand('white',T0,T1,side>0?S-.3:S,side>0?S:S+.3,L.TOP,L.TOP+L.PARAPET,P('white'),'oit');}
  // the ledge kerbs: the outer promenade's rail, the inner quay's kerb and bollards
  for(const side of [1,-1]){const S=W.PONT*side;
-  nrBand('white',T0,T1,side>0?S-.35:S,side>0?S:S+.35,L.D[0],L.D[0]+.3,P('white'),'oit');
-  if(side>0){/* the rail along the outer promenade, open where the pirates' steps go down to the beach (62) */
-   const gaps=NR.STEPS.map(q=>[q.t-1.4,q.t+1.4]).sort((a,b)=>a[0]-b[0]);let c=T0;
+  nrBand('white',T0,T1,side>0?S-.35:S,side>0?S+NR_FLARE:S+.35,L.D[0],L.D[0]+.3,P('white'),'oit');
+  if(side>0){/* the rail along the outer promenade, open where the pirates' steps go down to the beach (62); round the bow
+   the forecastle's bulwark takes over (nrForecastle) */
+   const gaps=NR.STEPS.map(q=>[q.t-1.4,q.t+1.4]).concat([[-NR.FORE.t,NR.FORE.t]]).sort((a,b)=>a[0]-b[0]);let c=T0;
    for(const g of gaps.concat([[T1,T1]])){if(g[0]>c){nrBand('paint',c,g[0],S-.2,S-.14,L.D[0]+.98,L.D[0]+1.05,hc(0x6a7076),'oitbse');
      for(let t=c+.6;t<g[0]-.2;t+=2.4)nrBox('paint',t,S-.17,L.D[0]+.3,.06,.7,.06,hc(0x6a7076));}c=g[1];}}
   else for(let t=T0+6;t<T1-4;t+=14){nrCyl('paint',t,S+.7,L.D[0],.32,.75,hc(0x3a3c3e),12,.26);nrCyl('paint',t,S+.7,L.D[0]+.75,.42,.12,hc(0x3a3c3e),12);}}
@@ -106,23 +111,54 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
    nrRadial('white',t,-W.MAIN,W.MAIN,y,y+.95,.3,P('white'));nrRadial('glass',t+dir*.06,-W.MAIN+1,W.MAIN-1,y+.95,y+2.75,.12,hc(0x24343c));
    nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2)nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}
   nrRadial('white',t,-W.MAIN,W.MAIN,L.TOP,L.TOP+L.PARAPET,.3,P('white'));
-  nrPierHead(t,dir);}
- nrMouthBridge();}
-/* a semicircular pier head on the pontoon beyond the ring's end at t (dir: +1 beyond T1, -1 before T0), with a beacon */
-function nrPierHead(t,dir){const W=NR.W,L=NR.L,c=NR.at(t,0),T=NR.tan(t),n=NR.nrm(t),R=W.PONT,pts=[],pb=[];
- for(let i=0;i<=24;i++){const a=i/24*PI,u=Math.cos(a)*R,v=Math.sin(a)*R*dir;   // u along the normal, v beyond the end along the tangent
-  pts.push([c[0]+n[0]*u+T[0]*v,c[1]+n[1]*u+T[1]*v]);}
- if(dir<0)pts.reverse();
+  nrEndCap(t,dir);}
+ nrMouthBridge();nrForecastle();}
+/* the pontoon's end at the mouth (t, dir: +1 beyond T1, -1 before T0): a rounded stub 4 m long closing the hull's end; the
+   piers that run out to sea from here are 41-nr-piers.js */
+function nrEndCap(t,dir){const L=NR.L,R=NR.W.PONT,e=4,pts=[];
+ const P2=(u,s)=>NR.at(t+dir*u,s);
+ pts.push(P2(0,-R));for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.sin(a),-R+e*(1-Math.cos(a))));}
+ for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.cos(a),R-e*(1-Math.sin(a))));}pts.push(P2(0,R));
  /* prism wants a positive signed area in (x, z) (its side normals are the edges turned -90 degrees) */
  const ar=pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1];},0);if(ar<0)pts.reverse();
- prism('paint',pts,0,5.6,hc(NR_ANTIFOUL));prism('barn',pts.map(p=>[p[0],p[1]]),5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
- prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));
- // the beacon: a slim Ancient lantern tower on the pier head's tip
- const b=[c[0]+T[0]*dir*16,c[1]+T[1]*dir*16];
- cyl('white',b[0],L.D[0],b[1],2.4,12,P('white'),20,1.8);cyl('white',b[0],L.D[0]+12,b[1],2.6,.5,P('white'),20);
- cyl('glass',b[0],L.D[0]+12.5,b[1],1.6,2.4,hc(0x8aa0a8),16);sph('white',b[0],L.D[0]+14.9,b[1],1.9,P('white'),.55,16);
- cyl('white',b[0],L.D[0]+15.6,b[1],.12,4.5,P('white'),6,.05);
- for(let i=0;i<8;i++){const a=i/8*TAU;beam('white',[b[0]+Math.cos(a)*1.65,L.D[0]+12.5,b[1]+Math.sin(a)*1.65],[b[0]+Math.cos(a)*1.65,L.D[0]+14.9,b[1]+Math.sin(a)*1.65],.1,P('white'));}}
+ prism('paint',pts,0,5.6,hc(NR_ANTIFOUL));prism('barn',pts,5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
+ prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));}
+/* the beacon: a slim Ancient lantern tower (on the breakwater piers' heads, 41-nr-piers.js), base at hull (x, y, z) */
+function nrBeacon(x,y,z){cyl('white',x,y,z,2.4,12,P('white'),20,1.8);cyl('white',x,y+12,z,2.6,.5,P('white'),20);
+ cyl('glass',x,y+12.5,z,1.6,2.4,hc(0x8aa0a8),16);sph('white',x,y+14.9,z,1.9,P('white'),.55,16);
+ cyl('white',x,y+15.6,z,.12,4.5,P('white'),6,.05);
+ for(let i=0;i<8;i++){const a=i/8*TAU;beam('white',[x+Math.cos(a)*1.65,y+12.5,z+Math.sin(a)*1.65],[x+Math.cos(a)*1.65,y+14.9,z+Math.sin(a)*1.65],.1,P('white'));}}
+// ---------------------------------------------------------------- the bow: the forecastle, the stem, the anchors
+// Round the bow (|t| < FORE.t) the outboard skin rises past the promenade to a bulwark that follows the sheer (NR.foreY +
+// the bulwark), flaring a little more as it rises; inside it the promenade becomes a deck climbing to the D3 floor at the
+// stem. A raked cutwater stands proud of the bow's curve from the forefoot to the bulwark. Two anchors hang in their hawses.
+const NR_FLARE=.7;
+function nrForeS(y){return NR.W.PONT+NR_FLARE+Math.max(0,y-NR.L.D[0])*.14;}   /* the outboard skin's s at height y, forward */
+function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
+ const top=t=>NR.foreY(t)+F.bulwark;
+ /* the skin above the gunwale, outside; the bulwark's inner face; its cap */
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=lerp(L.D[0],top(t),v);return nrP(t,nrForeS(y),y);},n,4,P('whiteS'),{flip:true});
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=lerp(NR.foreY(t),top(t),v);return nrP(t,nrForeS(y)-.3,y);},n,1,P('white'));
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=top(t);return nrP(t,lerp(nrForeS(y)-.3,nrForeS(y)+.02,v),y);},n,1,P('white'),{up:true});
+ /* the deck: from the main block's wall to the bulwark, at the sheer */
+ psurf('deck',(u,v)=>{const t=lerp(-F.t,F.t,u),y=NR.foreY(t);return nrP(t,lerp(WD.MAIN,nrForeS(y)-.3,v),y+.005);},n,2,hc(0xcfc9bb),{up:true});
+ /* a white rail along the bulwark's cap, and the bow's jack staff */
+ for(let t=-F.t+1;t<F.t;t+=2.6){const y=top(t);nrBox('paint',t,nrForeS(y)-.15,y,.06,.5,.06,hc(0x6a7076));}
+ {const y=NR.foreY(0),p=nrP(0,nrForeS(y)-1.2,y);cyl('white',p[0],y,p[2],.09,8,P('white'),6,.06);}
+ /* the cutwater: two faces from the skin to a raked stem edge, antifouling below the old waterline, white above */
+ const yT=top(0),ext=y=>.6+6.4*Math.pow(clamp(y/yT,0,1),1.4),half=y=>2.2+.55*ext(y);
+ const skinS=y=>y<2.6?WD.PONT-3.4+3.4*Math.sqrt(y/2.6):y<6.95?WD.PONT:y<L.D[0]?WD.PONT+NR_FLARE*(y-6.95)/2.05:nrForeS(y);
+ for(const sg of [1,-1])for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]]){
+  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),a=NR.at(sg*half(y),skinS(y)),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],u),y,lerp(a[1],b[1],u)];},2,6,col,{flip:sg<0});}
+ psurf('white',(u,v)=>{const y=yT,a=NR.at(lerp(-1,1,u)*half(y),skinS(y)-.3),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,1,P('white'),{up:true});
+ /* the anchors: a dark hawse plate, the anchor drawn up in it, its chain run down to the sea floor (it was let go when she
+    struck) */
+ for(const sg of [1,-1]){const t=sg*15,y=NR.foreY(t)-2.4,sk=nrForeS(Math.max(y,L.D[0]))+.05,c=NR.at(t,sk),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);
+  box('dark',c[0],y-1.6,c[1],3.2,3.2,.12,hc(0x1c1e20),ry);
+  W(c[0]+n[0]*.35,y,c[1]+n[1]*.35,ry,()=>{box('rust',0,-3.2,0,.35,3.0,.35,hc(0x5a3a28));box('rust',0,-3.4,0,2.6,.4,.4,hc(0x5a3a28));
+   for(const k of [-1,1])box('rust',k*1.25,-3.4,0,.45,.9,.4,hc(0x5a3a28),0,0,k*.5);});
+  const a=[c[0]+n[0]*.4,y-.3,c[1]+n[1]*.4],T=NR.tan(t),b=[a[0]+n[0]*7+T[0]*sg*3,-1.5,a[2]+n[1]*7+T[1]*sg*3];
+  for(let i=0;i<18;i++){const f0=i/18,f1=(i+1)/18,p=f=>[lerp(a[0],b[0],f),lerp(a[1],b[1],f)-2.2*Math.sin(PI*f),lerp(a[2],b[2],f)];beam('rust',p(f0),p(f1),.16,hc(0x4a3424));}}}
 /* the mouth's bascule bridge: two leaves hinged at the top deck of each end wall, raised (they jammed open when the hull
    stuck, and the harbour has stayed open since) */
 function nrMouthBridge(){const L=NR.L,W=NR.W,a=NR.at(NR.T1,0),b=NR.at(NR.T0,0),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];

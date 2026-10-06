@@ -195,8 +195,9 @@ function terrainH(x,z){let h=nrGround0(x,z);
 // Every position the arcology owns is decided here, before anything is drawn: the drawing passes (4x) and the furnishing
 // pass (70) read NR, never the other way round. No THREE, no DOM: this is what a port takes as data.
 //
-// THE RING. The hull is a C: an ellipse (centreline semi-axes A along the bow-stern x axis, B across) with a 76 m gap, the
-// HARBOUR MOUTH, on the port beam (-z, the open sea). Positions along it are by ARC LENGTH t on the centreline: t = 0 at
+// THE RING. The hull is a C on a SHIP'S PLAN: a closed centreline A along the bow-stern x axis and B across, fine at the
+// bow (+x), full and round at the stern, its sides near straight (the parallel midbody), with a 76 m gap, the HARBOUR
+// MOUTH, on the port beam (-z, the open sea). Positions along it are by ARC LENGTH t on the centreline: t = 0 at
 // the bow, increasing toward starboard (the beach), the stern at P/2, the mouth at 3P/4. The ring runs t in [T0, T1]
 // (T0 < 0: the port bow quarter). Across it, s is the offset from the centreline along the outward normal (+s outboard,
 // the sea or the beach; -s inboard, the harbour basin).
@@ -212,28 +213,42 @@ function terrainH(x,z){let h=nrGround0(x,z);
 // the engine room (D1-D2, stern) has been silent for a thousand years; the holds are half full of the sea.
 const NR=(function(){
  const N={ready:false};
- const A=214,B=144;N.A=A;N.B=B;
- /* arc-length table over theta (x = A cos th, z = B sin th) */
- const NT=8192,TL=new Float64Array(NT+1);{let L=0,px=A,pz=0;for(let i=1;i<=NT;i++){const th=i/NT*TAU,x=A*Math.cos(th),z=B*Math.sin(th);L+=Math.hypot(x-px,z-pz);TL[i]=L;px=x;pz=z;}}
+ /* the centreline as a curve of an angle th: x = A cos th, z = +-B sqrt(1 - |cos th|^m) (1 - KB cos+^3). m is MB toward the
+    bow and MS toward the stern (above 2: fuller, the sides flatter than an ellipse's); KB fines the bow. Its length is the
+    old ellipse's (214 x 144), so every t in this plan (zones, cores, lots, cabins) keeps its place along the ring. The
+    tightest bend is the bow's, about 38 m on the centreline (the inboard skin at s = -26 stays a curve, 12 m). */
+ const A=226.6,B=121.9,MB=2.4,MS=3.4,KB=.30;N.A=A;N.B=B;
+ function cpt(th){const c=Math.cos(th),sn=Math.sin(th),m=c>0?MB:MS;const w=Math.sqrt(Math.max(0,1-Math.pow(Math.abs(c),m)))*(1-KB*Math.pow(Math.max(0,c),3));return [A*c,(sn<0?-1:1)*B*w];}
+ N.curve=cpt;
+ /* a table of NT samples, even in th: positions, arc length, outward normals, radius of curvature */
+ const NT=8192,PX=new Float64Array(NT+1),PZ=new Float64Array(NT+1),TL=new Float64Array(NT+1),NX=new Float64Array(NT+1),NZ=new Float64Array(NT+1),RH=new Float64Array(NT+1);
+ for(let i=0;i<=NT;i++){const p=cpt(i/NT*TAU);PX[i]=p[0];PZ[i]=p[1];if(i)TL[i]=TL[i-1]+Math.hypot(PX[i]-PX[i-1],PZ[i]-PZ[i-1]);}
  const P=TL[NT];N.P=P;
- function thetaOf(t){t=((t%P)+P)%P;let lo=0,hi=NT;while(hi-lo>1){const m=(lo+hi)>>1;if(TL[m]<=t)lo=m;else hi=m;}const f=(t-TL[lo])/Math.max(1e-9,TL[hi]-TL[lo]);return (lo+f)/NT*TAU;}
- function tOf(th){th=((th%TAU)+TAU)%TAU;const u=th/TAU*NT,i=Math.min(NT-1,Math.floor(u)),f=u-i;return TL[i]+(TL[i+1]-TL[i])*f;}
- N.thetaOf=thetaOf;N.tOf=tOf;
- function nrm(th){const nx=Math.cos(th)/A,nz=Math.sin(th)/B,L=Math.hypot(nx,nz);return [nx/L,nz/L];}
+ const wrap=i=>((i%NT)+NT)%NT;
+ for(let i=0;i<NT;i++){const a=wrap(i-1),b=wrap(i+1),dx=PX[b]-PX[a],dz=PZ[b]-PZ[a],l=Math.hypot(dx,dz);NX[i]=dz/l;NZ[i]=-dx/l;}
+ NX[NT]=NX[0];NZ[NT]=NZ[0];
+ /* the radius of curvature from the turning of the normal over 8 samples either side (the curve is convex everywhere) */
+ for(let i=0;i<NT;i++){const a=wrap(i-8),b=wrap(i+8);let d=Math.atan2(NZ[b],NX[b])-Math.atan2(NZ[a],NX[a]);d=((d+PI)%TAU+TAU)%TAU-PI;
+  const ds=b>a?TL[b]-TL[a]:P-TL[a]+TL[b];RH[i]=Math.min(1e5,ds/Math.max(1e-9,d));}
+ RH[NT]=RH[0];
+ /* the sample interval holding t, and the fraction across it */
+ function seg(t){t=((t%P)+P)%P;let lo=0,hi=NT;while(hi-lo>1){const m=(lo+hi)>>1;if(TL[m]<=t)lo=m;else hi=m;}return [lo,(t-TL[lo])/Math.max(1e-9,TL[lo+1]-TL[lo])];}
+ function nrmAt(t){const [i,f]=seg(t),x=NX[i]+(NX[i+1]-NX[i])*f,z=NZ[i]+(NZ[i+1]-NZ[i])*f,l=Math.hypot(x,z);return [x/l,z/l];}
  /* the point at (t, s), the outward normal and the tangent (direction of increasing t) at t, in the hull frame's x, z */
- N.at=function(t,s){const th=thetaOf(t),n=nrm(th);return [A*Math.cos(th)+s*n[0],B*Math.sin(th)+s*n[1]];};
- N.nrm=function(t){return nrm(thetaOf(t));};
- N.tan=function(t){const n=nrm(thetaOf(t));return [-n[1],n[0]];};   // increasing theta: (-sin, cos) scaled, i.e. the normal turned +90 deg
- /* the radius of curvature of the centreline at t (an ellipse: (A2 sin2 + B2 cos2)^1.5 / AB) */
- N.rho=function(t){const th=thetaOf(t),s=Math.sin(th),c=Math.cos(th);return Math.pow(A*A*s*s+B*B*c*c,1.5)/(A*B);};
+ N.at=function(t,s){const [i,f]=seg(t),n=nrmAt(t);return [PX[i]+(PX[i+1]-PX[i])*f+s*n[0],PZ[i]+(PZ[i+1]-PZ[i])*f+s*n[1]];};
+ N.nrm=nrmAt;
+ N.tan=function(t){const n=nrmAt(t);return [-n[1],n[0]];};   // the normal turned +90 deg
+ /* the radius of curvature of the centreline at t */
+ N.rho=function(t){const [i,f]=seg(t);return RH[i]+(RH[i+1]-RH[i])*f;};
  /* a heading (three.js rotation.y) whose local +z points along (dx, dz) */
  N.ryOf=function(dx,dz){return Math.atan2(dx,dz);};
- /* the nearest centreline point to hull (x, z): {t, s, th, inRing} (Newton on the ellipse's angle; s > 0 outboard) */
- N.ringST=function(x,z){let th=Math.atan2(z/B,x/A);
-  for(let i=0;i<6;i++){const c=Math.cos(th),s=Math.sin(th),px=A*c,pz=B*s,dx=-A*s,dz=B*c,ddx=-A*c,ddz=-B*s;
-   const f=(px-x)*dx+(pz-z)*dz,fp=dx*dx+dz*dz+(px-x)*ddx+(pz-z)*ddz;if(Math.abs(fp)<1e-9)break;th-=f/fp;}
-  const px=A*Math.cos(th),pz=B*Math.sin(th),n=nrm(th),s=(x-px)*n[0]+(z-pz)*n[1];
-  let t=tOf(th);const tt=((t-N.T0)%P+P)%P+N.T0;return {t:tt,s,th,inRing:tt<=N.T1};};
+ /* the nearest centreline point to hull (x, z): {t, s, inRing} (s > 0 outboard): a coarse pass over every 32nd sample,
+    a fine pass round the best, then the foot on that sample's tangent */
+ N.ringST=function(x,z){let bi=0,bd=1e18;
+  for(let i=0;i<NT;i+=32){const dx=x-PX[i],dz=z-PZ[i],d=dx*dx+dz*dz;if(d<bd){bd=d;bi=i;}}
+  const c=bi;for(let k=-40;k<=40;k++){const i=wrap(c+k),dx=x-PX[i],dz=z-PZ[i],d=dx*dx+dz*dz;if(d<bd){bd=d;bi=i;}}
+  const dx=x-PX[bi],dz=z-PZ[bi],u=dx*(-NZ[bi])+dz*NX[bi],s=dx*NX[bi]+dz*NZ[bi];
+  const t=TL[bi]+u;const tt=((t-N.T0)%P+P)%P+N.T0;return {t:tt,s,inRing:tt<=N.T1};};
  // ---------------------------------------------------------------- levels and widths
  const L={KEEL:0,HOLD:.6,MEZZ:4.8,D:[9.0,12.6,16.2,19.8],TOP:23.4,SLAB:.35,DH:3.6,PARAPET:1.15};
  L.CLEAR=L.DH-L.SLAB;   // 3.25 m from a deck to the slab above
@@ -313,6 +328,38 @@ const NR=(function(){
  N.TOWERS=[{t:PQ-58},{t:PQ+64},{t:PQ+150}];
  N.STEPS=[{t:PQ-36},{t:PQ},{t:PQ+40},{t:PQ+120},{t:PQ-110}];
  N.FLOATS=[{t:-120},{t:60},{t:330},{t:420},{t:650}];
+ // ---------------------------------------------------------------- the FORECASTLE: the bow's sheer
+ // Round the bow the outer skin rises above the promenade to a bulwark, and the promenade inside it climbs as a deck from
+ // D1 (|t| = FORE.t) to the D3 floor at the stem: a ship's sheer line. foreY(t): that deck's height (hull y) at t.
+ N.FORE={t:64,y0:L.D[0],y1:L.D[2],bulwark:1.1};
+ N.foreY=function(t){const u=Math.abs(t)/N.FORE.t;return u>=1?L.D[0]:L.D[0]+(N.FORE.y1-L.D[0])*Math.pow(1-u,1.6);};
+ // ---------------------------------------------------------------- the PIERS the Ancients built in (drawn by 41-nr-piers.js)
+ // Every pier's deck is level with the quays (D1, hull y 9). kind 'arm': a pontoon breakwater out to sea from each end of the
+ // ring at the mouth, splayed so the channel widens seaward, a beacon on its head. 'mole': the liner pier, a pontoon down the
+ // basin's long axis from the stern quay, a berth either side. 'finger': an open deck on columns off the inner quay, for
+ // smaller craft. {id, kind, name, t, side (+1 off the outer skin, -1 off the inner), o: the root's centre [x, z], d: the
+ // unit direction along it, len, w, poly: the deck's outline [[x, z] ...] (its root follows the skin's curve)}
+ N.PIERS=[];
+ {const pier=(id,kind,name,t,side,len,w,splay)=>{const n=N.nrm(t),T=N.tan(t),ca=Math.cos(splay||0),sa=Math.sin(splay||0);
+   const d=[side*(n[0]*ca+T[0]*sa),side*(n[1]*ca+T[1]*sa)],q=[-d[1],d[0]],o=N.at(t,side*W.PONT);
+   /* the root: along the skin between the two corners' feet; then the sides, and a round head */
+   const ta=N.ringST(o[0]+q[0]*w/2,o[1]+q[1]*w/2).t,tb=N.ringST(o[0]-q[0]*w/2,o[1]-q[1]*w/2).t,poly=[];
+   const t0=Math.min(ta,tb),t1=Math.max(ta,tb);for(let k=0;k<=6;k++)poly.push(N.at(lerp(t0,t1,k/6),side*W.PONT));
+   if(ta>tb)poly.reverse();   /* now from the +q corner to the -q corner */
+   const L2=len-w/2,c=[o[0]+d[0]*L2,o[1]+d[1]*L2];
+   for(let k=0;k<=12;k++){const a=-PI/2+k/12*PI;poly.push([c[0]+(d[0]*Math.cos(a)+q[0]*Math.sin(a))*w/2,c[1]+(d[1]*Math.cos(a)+q[1]*Math.sin(a))*w/2]);}
+   N.PIERS.push({id,kind,name,t,side,o,d,q,len,w,poly,head:c});};
+  const sp=12*PI/180;
+  pier('pier-arm-w','arm','the west breakwater pier',N.T1-7,1,70,14,-sp);
+  pier('pier-arm-e','arm','the east breakwater pier',N.T0+7,1,70,14,sp);
+  pier('pier-mole','mole','the liner mole',PH,-1,170,16,0);
+  for(const [i,t] of [-170,-60,230,375].entries())pier('pier-finger'+i,'finger','a finger pier',t,-1,34,7,0);}
+ /* is hull (x, z) on a pier's deck? (even-odd test on its outline) */
+ N.pierAt=function(x,z){for(const Pr of N.PIERS){const Q=Pr.poly;let inside=false;
+   for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}
+   if(inside)return Pr;}return null;};
+ /* the beacons on the arms' heads, and the mouth's end caps */
+ N.BEACONS=N.PIERS.filter(p=>p.kind==='arm').map(p=>({x:p.head[0]+p.d[0]*(p.w/2-3.2),z:p.head[1]+p.d[1]*(p.w/2-3.2)}));
  /* the atrium: its void, the galleries round it, the grand stair (four flights: D1->D2 centre, D2->D3 twin, D3->D4 centre,
     D4->TOP twin) and the descent to the hold mezzanine. tau = t - (the atrium's centre). */
  N.ATRIUM={tc:PQ,half:22,voidT:18,voidS:14,galleryS:[14,20],bridgeT:[6,9],flightT:6,centreS:4,twinS:[9,13],holdStair:{tau0:-17,tau1:-9,s:3}};
@@ -14352,7 +14399,11 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   const bilge=[[S-k*3.4,0],[S-k*1.6,.35],[S-k*.55,1.2],[S,2.6],[S,5.7]];
   nrLoft('paint',T0,T1,bilge,hc(NR_ANTIFOUL),side);
   nrLoft('barn',T0,T1,[[S+k*.02,5.6],[S+k*.02,7.0]],WHITE,side);
-  nrLoft('white',T0,T1,[[S,6.95],[S,9.0]],P('whiteS'),side);
+  /* above the boot-top the outboard side flares out (NR_FLARE at the gunwale), a dark rubbing strake along it; the inner
+     quay's wall stays plumb */
+  if(side>0){nrLoft('white',T0,T1,[[S,6.95],[S+.3,8.0],[S+NR_FLARE,9.0]],P('whiteS'),side);
+   nrLoft('paint',T0,T1,[[S+.38,7.55],[S+.62,7.65],[S+.64,7.95],[S+.42,8.05]],hc(0x2c3034),side);}
+  else nrLoft('white',T0,T1,[[S,6.95],[S,9.0]],P('whiteS'),side);
   /* the inner skin of the double hull, facing the hold */
   nrBand('cracked',T0,T1,side>0?W.SKIN-.2:-W.SKIN,side>0?W.SKIN:-W.SKIN+.2,L.HOLD,L.D[0]-L.SLAB,hc(0x9a958a),side>0?'i':'o');}
  // the keel plate and the tank top (the hold floor)
@@ -14380,9 +14431,10 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   nrBand('white',T0,T1,side>0?S-.3:S,side>0?S:S+.3,L.TOP,L.TOP+L.PARAPET,P('white'),'oit');}
  // the ledge kerbs: the outer promenade's rail, the inner quay's kerb and bollards
  for(const side of [1,-1]){const S=W.PONT*side;
-  nrBand('white',T0,T1,side>0?S-.35:S,side>0?S:S+.35,L.D[0],L.D[0]+.3,P('white'),'oit');
-  if(side>0){/* the rail along the outer promenade, open where the pirates' steps go down to the beach (62) */
-   const gaps=NR.STEPS.map(q=>[q.t-1.4,q.t+1.4]).sort((a,b)=>a[0]-b[0]);let c=T0;
+  nrBand('white',T0,T1,side>0?S-.35:S,side>0?S+NR_FLARE:S+.35,L.D[0],L.D[0]+.3,P('white'),'oit');
+  if(side>0){/* the rail along the outer promenade, open where the pirates' steps go down to the beach (62); round the bow
+   the forecastle's bulwark takes over (nrForecastle) */
+   const gaps=NR.STEPS.map(q=>[q.t-1.4,q.t+1.4]).concat([[-NR.FORE.t,NR.FORE.t]]).sort((a,b)=>a[0]-b[0]);let c=T0;
    for(const g of gaps.concat([[T1,T1]])){if(g[0]>c){nrBand('paint',c,g[0],S-.2,S-.14,L.D[0]+.98,L.D[0]+1.05,hc(0x6a7076),'oitbse');
      for(let t=c+.6;t<g[0]-.2;t+=2.4)nrBox('paint',t,S-.17,L.D[0]+.3,.06,.7,.06,hc(0x6a7076));}c=g[1];}}
   else for(let t=T0+6;t<T1-4;t+=14){nrCyl('paint',t,S+.7,L.D[0],.32,.75,hc(0x3a3c3e),12,.26);nrCyl('paint',t,S+.7,L.D[0]+.75,.42,.12,hc(0x3a3c3e),12);}}
@@ -14392,23 +14444,54 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
    nrRadial('white',t,-W.MAIN,W.MAIN,y,y+.95,.3,P('white'));nrRadial('glass',t+dir*.06,-W.MAIN+1,W.MAIN-1,y+.95,y+2.75,.12,hc(0x24343c));
    nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2)nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}
   nrRadial('white',t,-W.MAIN,W.MAIN,L.TOP,L.TOP+L.PARAPET,.3,P('white'));
-  nrPierHead(t,dir);}
- nrMouthBridge();}
-/* a semicircular pier head on the pontoon beyond the ring's end at t (dir: +1 beyond T1, -1 before T0), with a beacon */
-function nrPierHead(t,dir){const W=NR.W,L=NR.L,c=NR.at(t,0),T=NR.tan(t),n=NR.nrm(t),R=W.PONT,pts=[],pb=[];
- for(let i=0;i<=24;i++){const a=i/24*PI,u=Math.cos(a)*R,v=Math.sin(a)*R*dir;   // u along the normal, v beyond the end along the tangent
-  pts.push([c[0]+n[0]*u+T[0]*v,c[1]+n[1]*u+T[1]*v]);}
- if(dir<0)pts.reverse();
+  nrEndCap(t,dir);}
+ nrMouthBridge();nrForecastle();}
+/* the pontoon's end at the mouth (t, dir: +1 beyond T1, -1 before T0): a rounded stub 4 m long closing the hull's end; the
+   piers that run out to sea from here are 41-nr-piers.js */
+function nrEndCap(t,dir){const L=NR.L,R=NR.W.PONT,e=4,pts=[];
+ const P2=(u,s)=>NR.at(t+dir*u,s);
+ pts.push(P2(0,-R));for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.sin(a),-R+e*(1-Math.cos(a))));}
+ for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.cos(a),R-e*(1-Math.sin(a))));}pts.push(P2(0,R));
  /* prism wants a positive signed area in (x, z) (its side normals are the edges turned -90 degrees) */
  const ar=pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1];},0);if(ar<0)pts.reverse();
- prism('paint',pts,0,5.6,hc(NR_ANTIFOUL));prism('barn',pts.map(p=>[p[0],p[1]]),5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
- prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));
- // the beacon: a slim Ancient lantern tower on the pier head's tip
- const b=[c[0]+T[0]*dir*16,c[1]+T[1]*dir*16];
- cyl('white',b[0],L.D[0],b[1],2.4,12,P('white'),20,1.8);cyl('white',b[0],L.D[0]+12,b[1],2.6,.5,P('white'),20);
- cyl('glass',b[0],L.D[0]+12.5,b[1],1.6,2.4,hc(0x8aa0a8),16);sph('white',b[0],L.D[0]+14.9,b[1],1.9,P('white'),.55,16);
- cyl('white',b[0],L.D[0]+15.6,b[1],.12,4.5,P('white'),6,.05);
- for(let i=0;i<8;i++){const a=i/8*TAU;beam('white',[b[0]+Math.cos(a)*1.65,L.D[0]+12.5,b[1]+Math.sin(a)*1.65],[b[0]+Math.cos(a)*1.65,L.D[0]+14.9,b[1]+Math.sin(a)*1.65],.1,P('white'));}}
+ prism('paint',pts,0,5.6,hc(NR_ANTIFOUL));prism('barn',pts,5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
+ prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));}
+/* the beacon: a slim Ancient lantern tower (on the breakwater piers' heads, 41-nr-piers.js), base at hull (x, y, z) */
+function nrBeacon(x,y,z){cyl('white',x,y,z,2.4,12,P('white'),20,1.8);cyl('white',x,y+12,z,2.6,.5,P('white'),20);
+ cyl('glass',x,y+12.5,z,1.6,2.4,hc(0x8aa0a8),16);sph('white',x,y+14.9,z,1.9,P('white'),.55,16);
+ cyl('white',x,y+15.6,z,.12,4.5,P('white'),6,.05);
+ for(let i=0;i<8;i++){const a=i/8*TAU;beam('white',[x+Math.cos(a)*1.65,y+12.5,z+Math.sin(a)*1.65],[x+Math.cos(a)*1.65,y+14.9,z+Math.sin(a)*1.65],.1,P('white'));}}
+// ---------------------------------------------------------------- the bow: the forecastle, the stem, the anchors
+// Round the bow (|t| < FORE.t) the outboard skin rises past the promenade to a bulwark that follows the sheer (NR.foreY +
+// the bulwark), flaring a little more as it rises; inside it the promenade becomes a deck climbing to the D3 floor at the
+// stem. A raked cutwater stands proud of the bow's curve from the forefoot to the bulwark. Two anchors hang in their hawses.
+const NR_FLARE=.7;
+function nrForeS(y){return NR.W.PONT+NR_FLARE+Math.max(0,y-NR.L.D[0])*.14;}   /* the outboard skin's s at height y, forward */
+function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
+ const top=t=>NR.foreY(t)+F.bulwark;
+ /* the skin above the gunwale, outside; the bulwark's inner face; its cap */
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=lerp(L.D[0],top(t),v);return nrP(t,nrForeS(y),y);},n,4,P('whiteS'),{flip:true});
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=lerp(NR.foreY(t),top(t),v);return nrP(t,nrForeS(y)-.3,y);},n,1,P('white'));
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=top(t);return nrP(t,lerp(nrForeS(y)-.3,nrForeS(y)+.02,v),y);},n,1,P('white'),{up:true});
+ /* the deck: from the main block's wall to the bulwark, at the sheer */
+ psurf('deck',(u,v)=>{const t=lerp(-F.t,F.t,u),y=NR.foreY(t);return nrP(t,lerp(WD.MAIN,nrForeS(y)-.3,v),y+.005);},n,2,hc(0xcfc9bb),{up:true});
+ /* a white rail along the bulwark's cap, and the bow's jack staff */
+ for(let t=-F.t+1;t<F.t;t+=2.6){const y=top(t);nrBox('paint',t,nrForeS(y)-.15,y,.06,.5,.06,hc(0x6a7076));}
+ {const y=NR.foreY(0),p=nrP(0,nrForeS(y)-1.2,y);cyl('white',p[0],y,p[2],.09,8,P('white'),6,.06);}
+ /* the cutwater: two faces from the skin to a raked stem edge, antifouling below the old waterline, white above */
+ const yT=top(0),ext=y=>.6+6.4*Math.pow(clamp(y/yT,0,1),1.4),half=y=>2.2+.55*ext(y);
+ const skinS=y=>y<2.6?WD.PONT-3.4+3.4*Math.sqrt(y/2.6):y<6.95?WD.PONT:y<L.D[0]?WD.PONT+NR_FLARE*(y-6.95)/2.05:nrForeS(y);
+ for(const sg of [1,-1])for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]]){
+  psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),a=NR.at(sg*half(y),skinS(y)),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],u),y,lerp(a[1],b[1],u)];},2,6,col,{flip:sg<0});}
+ psurf('white',(u,v)=>{const y=yT,a=NR.at(lerp(-1,1,u)*half(y),skinS(y)-.3),b=NR.at(0,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,1,P('white'),{up:true});
+ /* the anchors: a dark hawse plate, the anchor drawn up in it, its chain run down to the sea floor (it was let go when she
+    struck) */
+ for(const sg of [1,-1]){const t=sg*15,y=NR.foreY(t)-2.4,sk=nrForeS(Math.max(y,L.D[0]))+.05,c=NR.at(t,sk),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);
+  box('dark',c[0],y-1.6,c[1],3.2,3.2,.12,hc(0x1c1e20),ry);
+  W(c[0]+n[0]*.35,y,c[1]+n[1]*.35,ry,()=>{box('rust',0,-3.2,0,.35,3.0,.35,hc(0x5a3a28));box('rust',0,-3.4,0,2.6,.4,.4,hc(0x5a3a28));
+   for(const k of [-1,1])box('rust',k*1.25,-3.4,0,.45,.9,.4,hc(0x5a3a28),0,0,k*.5);});
+  const a=[c[0]+n[0]*.4,y-.3,c[1]+n[1]*.4],T=NR.tan(t),b=[a[0]+n[0]*7+T[0]*sg*3,-1.5,a[2]+n[1]*7+T[1]*sg*3];
+  for(let i=0;i<18;i++){const f0=i/18,f1=(i+1)/18,p=f=>[lerp(a[0],b[0],f),lerp(a[1],b[1],f)-2.2*Math.sin(PI*f),lerp(a[2],b[2],f)];beam('rust',p(f0),p(f1),.16,hc(0x4a3424));}}}
 /* the mouth's bascule bridge: two leaves hinged at the top deck of each end wall, raised (they jammed open when the hull
    stuck, and the harbour has stayed open since) */
 function nrMouthBridge(){const L=NR.L,W=NR.W,a=NR.at(NR.T1,0),b=NR.at(NR.T0,0),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
@@ -14420,6 +14503,71 @@ function nrMouthBridge(){const L=NR.L,W=NR.W,a=NR.at(NR.T1,0),b=NR.at(NR.T0,0),m
    box('rust',0,-1.6,1.5,10,1.2,3,WHITE);});   // the counterweight housing at the heel
   for(const s of [-8,8]){const p=NR.at(t,s);cyl('white',p[0],L.TOP,p[1],1.1,5.5,P('white'),14,.9);}}}
 nrPart('shell',nrHullShell);
+// prefix: nr
+// ================================================================= THE PIERS: what the Ancients built into the harbour (the plan: NR.PIERS)
+// Drawn in the hull frame, decks level with the quays (D1). The two BREAKWATER ARMS run out to sea from the ends of the ring
+// at the mouth, pontoons like the hull (antifouling, the barnacle band, white), splayed so the channel widens seaward, a
+// parapet on the sea side, bollards and fenders on the channel side, a beacon on each head. The LINER MOLE runs down the
+// basin's long axis from the stern quay, a berth either side: fenders, bollards, lamp standards, two boarding towers with
+// their gangways folded. The FINGER PIERS are open decks on columns off the inner quay, for smaller craft.
+// A pier's local frame: o its root on the skin, d along it, q across (+q is the pier's left looking out), l metres out.
+function nrPierPt(Pr,l,k,y){return [Pr.o[0]+Pr.d[0]*l+Pr.q[0]*k,y,Pr.o[1]+Pr.d[1]*l+Pr.q[1]*k];}
+function nrPierRy(Pr){return Math.atan2(Pr.d[0],Pr.d[1]);}
+/* a box in the pier's frame: centred at (l, k) on the plan, bottom y, `len` along d, `wid` across */
+function nrPierBox(mk,Pr,l,k,y,len,h,wid,col){const p=nrPierPt(Pr,l,k,y);box(mk,p[0],y,p[2],wid,h,len,col,nrPierRy(Pr));}
+function nrBollard(x,y,z){cyl('paint',x,y,z,.3,.7,hc(0x3a3c3e),12,.24);cyl('paint',x,y+.7,z,.4,.12,hc(0x3a3c3e),12);}
+function nrLampStd(x,y,z){cyl('white',x,y,z,.12,4.2,P('white'),8,.07);sph('white',x,y+4.4,z,.32,P('white'),1,12);}
+/* the outline turned anticlockwise for prism (a positive signed area in x, z) */
+function nrPierPoly(Pr,grow){const c=[Pr.o[0]+Pr.d[0]*Pr.len/2,Pr.o[1]+Pr.d[1]*Pr.len/2];let pts=Pr.poly.map(p=>{if(!grow)return p;const dx=p[0]-c[0],dz=p[1]-c[1],l=Math.hypot(dx,dz)||1;return [p[0]+dx/l*grow,p[1]+dz/l*grow];});
+ const ar=pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1];},0);if(ar<0)pts=pts.slice().reverse();return pts;}
+/* a pontoon pier: the hull's bands, a deck, fenders and bollards along a side (side: +1 the +q side, -1 the -q side) */
+function nrPontoon(Pr,y0){const L=NR.L,pts=nrPierPoly(Pr);
+ prism('paint',pts,y0,5.6,hc(NR_ANTIFOUL));prism('barn',pts,5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
+ prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));
+ /* a white kerb round the deck's edge, set in from the outline */
+ const kp=nrPierPoly(Pr,-.02);for(let i=0;i<kp.length-1;i++){const a=kp[i],b=kp[i+1];if(Math.hypot(b[0]-a[0],b[1]-a[1])<.05)continue;
+  /* the root (along the skin) has no kerb: the deck runs on to the quay */
+  const onSkin=p=>Math.abs(Math.abs(NR.ringST(p[0],p[1]).s)-NR.W.PONT)<.3;if(onSkin(a)&&onSkin(b))continue;
+  beam('white',[a[0],L.D[0]+.12,a[1]],[b[0],L.D[0]+.12,b[1]],.25,P('white'));}}
+function nrFenders(Pr,side,l0,l1){const L=NR.L,k=side*(Pr.w/2+.18);
+ for(let l=l0;l<l1;l+=6.5)nrPierBox('dark',Pr,l,k,6.3,1.4,2.4,.36,hc(0x1e2022));}
+function nrBollards(Pr,side,l0,l1,step){const k=side*(Pr.w/2-.8);for(let l=l0;l<l1;l+=step){const p=nrPierPt(Pr,l,k,NR.L.D[0]);nrBollard(p[0],p[1],p[2]);}}
+function nrPierArm(Pr){const L=NR.L,y=L.D[0],cs=Pr.t>NR.PQ?1:-1;   /* cs: the channel's side (+q or -q) */
+ nrPontoon(Pr,1.2);
+ /* the channel side: fenders, bollards; the sea side: a parapet with a wave-return lip */
+ nrFenders(Pr,cs,4,Pr.len-6);nrBollards(Pr,cs,6,Pr.len-8,11);
+ const k=-cs*(Pr.w/2-.35);nrPierBox('white',Pr,(Pr.len-Pr.w/2)/2+1,k,y,Pr.len-Pr.w/2-2,1.25,.7,P('white'));
+ nrPierBox('white',Pr,(Pr.len-Pr.w/2)/2+1,k-cs*.15,y+1.25,Pr.len-Pr.w/2-2,.18,1.0,P('white'));
+ for(let l=10;l<Pr.len-10;l+=20){const p=nrPierPt(Pr,l,-cs*(Pr.w/2-1.6),y);nrLampStd(p[0],y,p[2]);}
+ /* the beacon on the head */
+ const B=NR.BEACONS.find(b=>Math.hypot(b.x-Pr.head[0],b.z-Pr.head[1])<Pr.w);if(B)nrBeacon(B.x,y,B.z);}
+function nrPierMole(Pr){const L=NR.L,y=L.D[0];
+ nrPontoon(Pr,1.2);
+ for(const sd of [1,-1]){nrFenders(Pr,sd,3,Pr.len-6);nrBollards(Pr,sd,5,Pr.len-6,12);}
+ for(let l=14;l<Pr.len-8;l+=22){const p=nrPierPt(Pr,l,0,y);nrLampStd(p[0],y,p[2]);}
+ /* a light on the head: a short white column with a lens */
+ {const p=nrPierPt(Pr,Pr.len-3.2,0,y);cyl('white',p[0],y,p[2],.9,5,P('white'),16,.7);cyl('glass',p[0],y+5,p[2],.7,1.1,hc(0x8aa0a8),12);sph('white',p[0],y+6.1,p[2],.8,P('white'),.5,12);}
+ /* the boarding towers: a white drum with a glazed head, its gangway (an enclosed tube) folded along the pier, one per berth */
+ for(const [l,sd] of [[58,1],[112,-1]]){const k=sd*(Pr.w/2-2.6),p=nrPierPt(Pr,l,k,y),ry=nrPierRy(Pr);
+  cyl('white',p[0],y,p[2],2.1,11,P('white'),20);cyl('glass',p[0],y+11,p[2],2.2,2.4,hc(0x24343c),20);cyl('white',p[0],y+13.4,p[2],2.4,.6,P('white'),20,2.0);
+  W(p[0],y+11.2,p[2],ry,()=>{box('white',0,0,-9.5,2.8,2.6,17,P('white'));box('glass',sd*1.42,.8,-9.5,.06,1.0,16,hc(0x24343c));box('glass',-sd*1.42,.8,-9.5,.06,1.0,16,hc(0x24343c));
+   box('white',0,-11.2,-15.5,.5,11.2-1.3,.5,P('white'));});}
+ /* two capstans by the head */
+ for(const sd of [1,-1]){const p=nrPierPt(Pr,Pr.len-14,sd*(Pr.w/2-2.2),y);cyl('paint',p[0],y,p[2],.55,.9,hc(0x3a3c3e),14,.45);cyl('paint',p[0],y+.9,p[2],.7,.18,hc(0x3a3c3e),14);}}
+function nrPierFinger(Pr){const L=NR.L,y=L.D[0],pts=nrPierPoly(Pr);
+ prism('deck',pts,y-.45,y,hc(0xcfc9bb));
+ /* the edge beam under the deck, white, and the columns down to the sea floor */
+ const kp=nrPierPoly(Pr,-.05);for(let i=0;i<kp.length-1;i++){const a=kp[i],b=kp[i+1];if(Math.hypot(b[0]-a[0],b[1]-a[1])<.05)continue;
+  beam('white',[a[0],y-.95,a[1]],[b[0],y-.95,b[1]],.5,P('white'));}
+ for(let l=4;l<Pr.len-1;l+=7)for(const sd of [1,-1]){const p=nrPierPt(Pr,Math.min(l,Pr.len-Pr.w/2),sd*(Pr.w/2-.9),0);cyl('white',p[0],0,p[2],.42,y-.95,P('whiteS'),12);}
+ nrBollards(Pr,1,4,Pr.len-3,8);nrBollards(Pr,-1,8,Pr.len-3,8);
+ /* a ladder down to the water at the head */
+ {const p=nrPierPt(Pr,Pr.len-.15,0,y);for(const sd of [-.35,.35]){const a=nrPierPt(Pr,Pr.len-.12,sd,y-.45),b=nrPierPt(Pr,Pr.len-.12,sd,3.6);beam('rust',a,b,.06,hc(0x4a4a48));}
+  for(let yy=4;yy<y-.6;yy+=.32){const a=nrPierPt(Pr,Pr.len-.12,-.35,yy),b=nrPierPt(Pr,Pr.len-.12,.35,yy);beam('rust',a,b,.04,hc(0x4a4a48));}}
+ const p=nrPierPt(Pr,Pr.len-Pr.w/2,0,y);nrLampStd(p[0],y,p[2]);}
+function nrPiers(){reseed(4150);
+ for(const Pr of NR.PIERS){if(Pr.kind==='arm')nrPierArm(Pr);else if(Pr.kind==='mole')nrPierMole(Pr);else nrPierFinger(Pr);}}
+nrPart('piers',nrPiers);
 // prefix: nr
 // ================================================================= THE DECKS: corridors, cabins, the service core, the stair cores
 // Per deck D1..D4 (NR.L.D), in the hull frame: the corridor walls (|s| = 8.5 the core side, 11 the cabin side, a door per
@@ -14718,7 +14866,8 @@ nrPart('top',nrTop);
 // world is built (70-nr-interiors.js, called from 91f-furnish.js's buildWorld).
 defBuilding({key:'nr-arcology',name:"Noah's Regret (the grounded arcology)",seed:4000,cls:'building',kind:'arcology',
  tags:{types:['infrastructure','dwelling-multi','military'],wealth:'middle',style:'floating harbour',role:"Bloody Ruephus's pirate base"},
- w:2*(NR.A+NR.W.PONT),d:2*(NR.B+NR.W.PONT),h:NR.L.TOP+70,budget:6e6,
+ w:2*(NR.A+NR.W.PONT)+16,d:2*(NR.B+NR.W.PONT)+140,   /* the stem's rake; the breakwater piers out to sea (41) */
+ h:NR.L.TOP+70,budget:6e6,
  front:{x:0,z:0,yaw:0},
  note:'a ring of pontoon hull round a harbour basin, four decks of cabins and public rooms, a top deck of parks and Ancient mid-rises; aground on the south shore, listing 0.8 degrees to port',
  build(){const R=NR_HULL.R;
@@ -15632,8 +15781,8 @@ nrAfter('pirates',function(){const L=NR.L,W=NR.W;
   place('nr-pirate-steps',q.x,q.z,q.ry,{y:L.D[0],v:i,drop:clamp(L.D[0]-gh,.6,8)});}
  for(const F of NR.FLOATS){const q=at(F.t,-W.PONT,'in'),sea=nrSeaHullY(q.x,q.z);place('nr-pirate-float',q.x,q.z,q.ry,{y:L.D[0],drop:L.D[0]-sea-.45});}
  let v=0;for(const Lt of NR.LOTS){if(Lt.use!=='barracks')continue;const q=at(Lt.t+(Lt.key==='nr-anc-apt-drum'?-14:-21),Lt.face==='in'?-16.5:16.5,Lt.face==='in'?'in':'out');place('nr-pirate-awning',q.x,q.z,q.ry,{y:L.TOP,v:v++,L:8});}
- /* flags on the mouth's beacons */
- for(const [t,dir] of [[NR.T0,-1],[NR.T1,1]]){const c=NR.at(t,0),T=NR.tan(t);nrPirateFlag(c[0]+T[0]*dir*16,L.D[0]+17.5,c[1]+T[1]*dir*16,4.5,3.2,2.1,0);}});
+ /* flags on the beacons at the breakwater piers' heads (41) */
+ for(const B of NR.BEACONS)nrPirateFlag(B.x,L.D[0]+17.5,B.z,4.5,3.2,2.1,0);});
 // prefix: nr
 // ================================================================= PARK FLORA: PLACEHOLDERS (to be replaced by the shore's biome kit)
 // The top deck's beds went to meadow and scrub in a thousand years; a few trees seeded themselves. No biome kit is named
@@ -16800,6 +16949,11 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  V['The stern: funnels and garden']=nrV(nrHP(PH-90,-70,L.TOP+40),nrHP(PH,0,L.TOP+6));
  V['The atrium: the grand stair']=nrV(nrHP(PQ-17,-1,L.D[0]+1.7),nrHP(PQ+6,0,L.D[1]+3));
  V['The atrium from the dome gallery']=nrV(nrHP(PQ-15,-14.9,L.TOP+2.0),nrHP(PQ+12,5,L.D[1]));
+ V['The bow: the forecastle and the stem']=nrV(nrHP(-70,70,L.D[0]+10),nrHP(0,26,L.D[1]));
+ {const M=NR.PIERS.find(p=>p.kind==='mole'),e=nrPierPt(M,M.len+40,-34,L.D[0]+16),a=nrPierPt(M,M.len*.45,0,L.D[0]);
+  V['The liner mole']=nrV(nrH2W(e[0],e[1],e[2]),nrH2W(a[0],a[1],a[2]));}
+ {const A=NR.PIERS.filter(p=>p.kind==='arm'),m=[(A[0].head[0]+A[1].head[0])/2,(A[0].head[1]+A[1].head[1])/2];
+  V['The mouth: the breakwater piers']=nrV(nrH2W(m[0]-30,34,m[1]-110),nrH2W(m[0],L.D[0],m[1]+40));}
  V['The inner quay and a float']=nrV(nrHP(42,-60,L.D[0]+6),nrHP(62,-26,L.D[0]));
  V['Plan: the bridge (D4)']=nrV(nrHP(-26,-30,L.D[3]+34),nrHP(0,6,L.D[3]),{cut:cutAt('D4')});
  V['Plan: the grand dining room']=nrV(nrHP(PH+44,30,L.D[2]+38),nrHP(PH,0,L.D[2]),{cut:cutAt('Dining')});
@@ -16817,19 +16971,24 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  return V;}
 // ---------------------------------------------------------------- where a point is (the inspector, the HUD)
 function nrDeckOf(y){const L=NR.L;if(y<L.D[0])return y<L.MEZZ?'the holds':'the hold mezzanine';if(y>=L.TOP-.05)return 'the top deck';for(let d=3;d>=0;d--)if(y>=L.D[d]-.05)return 'D'+(d+1);return '?';}
-function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);if(!q.inRing||Math.abs(q.s)>NR.W.PONT+.5)return 'outside the hull';
+function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);
+ if(!q.inRing||Math.abs(q.s)>NR.W.PONT+.5){const Pr=NR.pierAt(h[0],h[2]);return Pr?Pr.name+'  (pier '+Pr.id.replace('pier-','')+')':'outside the hull';}
  const deck=nrDeckOf(h[1]+.3),a=Math.abs(q.s);let what='';
  for(const Z of NR.ZONES){const d=NR.L.D.findIndex((y,i)=>h[1]+.3>=y&&(i===3||h[1]+.3<NR.L.D[i+1]));if(q.t>=Z.t0&&q.t<=Z.t1&&Z.decks.indexOf(d)>=0&&q.s>=Z.s0&&q.s<=Z.s1)what=Z.name;}
- if(!what&&h[1]<NR.L.TOP&&h[1]>=NR.L.D[0]-.1){if(a>NR.W.MAIN)what=q.s>0?'the outer promenade':'the inner quay';else if(a>=NR.W.CAB){const C=NR.cabins.find(c=>q.t>=c.t0&&q.t<c.t1&&c.side===(q.s>0?1:-1)&&NR.L.D[c.deck]<=h[1]+.3&&h[1]+.3<NR.L.D[c.deck]+NR.L.DH);what=C?'cabin '+C.id+(C.kind?' ('+C.kind+')':' (empty)'):'cabins';}
+ if(!what&&h[1]<NR.L.TOP&&h[1]>=NR.L.D[0]-.1){if(a>NR.W.MAIN)what=q.s>0?(Math.abs(q.t)<NR.FORE.t?'the forecastle':'the outer promenade'):'the inner quay';else if(a>=NR.W.CAB){const C=NR.cabins.find(c=>q.t>=c.t0&&q.t<c.t1&&c.side===(q.s>0?1:-1)&&NR.L.D[c.deck]<=h[1]+.3&&h[1]+.3<NR.L.D[c.deck]+NR.L.DH);what=C?'cabin '+C.id+(C.kind?' ('+C.kind+')':' (empty)'):'cabins';}
   else if(a>=NR.W.COR)what='the corridor';else{const C=NR.CORES.find(c=>Math.abs(q.t-c.t)<4);what=C?'stair core '+C.id:'the service core';}}
  return deck+(what?' · '+what:'')+'  (t '+q.t.toFixed(0)+', s '+q.s.toFixed(1)+')';}
 function nrHudWhere(){const p=WALK.on?camera.position:ctl.target;return nrWhere(p);}
 function nrInsideHull(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);return q.inRing&&Math.abs(q.s)<NR.W.PONT+1&&h[1]>-1&&h[1]<NR.L.TOP+2;}
 // ---------------------------------------------------------------- the walk floors: every level under a point (hull y), as world y
 function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR.W,F=[];
+ /* the piers (41): one deck, level with the quays */
+ if(!(q.inRing&&Math.abs(q.s)<=W.PONT)&&NR.pierAt(h[0],h[2]))F.push(L.D[0]);
+ /* the forecastle's deck climbs over the outer promenade round the bow */
+ if(q.inRing&&q.s>W.MAIN&&q.s<=W.PONT+1.2&&Math.abs(q.t)<NR.FORE.t)F.push(NR.foreY(q.t));
  if(q.inRing&&Math.abs(q.s)<=W.PONT){const a=Math.abs(q.s),A=NR.ATRIUM,inVoid=Math.abs(q.t-A.tc)<A.voidT&&a<A.voidS;
   if(a<W.SKIN)F.push(L.HOLD);if(a>=W.MEZZ&&a<W.SKIN)F.push(L.MEZZ);
-  F.push(L.D[0]);
+  if(!(q.s>W.MAIN&&Math.abs(q.t)<NR.FORE.t))F.push(L.D[0]);
   if(a<=W.MAIN){for(let d=1;d<=4;d++){const y=d<4?L.D[d]:L.TOP;if(inVoid)continue;
     if(NR.CORES.some(c=>Math.abs(q.t-c.t)<3.5&&a<6))continue;
     if(d===1&&q.t>NR.zone('engine').t0&&q.t<NR.zone('engine').t1)continue;
