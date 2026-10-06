@@ -1,9 +1,11 @@
 # Ys
 
 The half-drowned capital of the Hykkousoi, on the ruins of an Ancient city at the head of the
-north-west bay of the Ring Sea. **Phases 0–2 are built: the harness, the mockup and the Hykkousoi
-kit (89 pieces and 14 furniture pieces on `dist/kit.html`, `--assert` green). Phase 3 (the city) follows `PLAN.md`;
-its layout, shore and nav are in `targets/city`.**
+north-west bay of the Ring Sea. **Phases 0–3 are built: the harness, the mockup, the Hykkousoi kit (`dist/kit.html`, `--assert` green)
+and the city (`dist/ys.html`): the layout, shore and nav in `targets/city`, the placement pass (`88-city-place.js` records,
+`88b-city-draw.js` draws them), twenty Ancient host types with grown pods, the bridge graph, the harbours and moles, the
+river, the north-west bay biome on the land and the karst, and the building editor (the Edit button). Phase 4 (the record
+and the gallery) is in `NOTES.md`'s last rounds; the foreign quarter's own kits are the last phase 3 piece.**
 
 ```
 python3 build.py                                    # every target under targets/ -> dist/<name>.html (city -> dist/ys.html)

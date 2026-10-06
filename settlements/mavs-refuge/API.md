@@ -46,6 +46,9 @@ no AA) — do not branch generation on it.
 | 50-structure.js | planner | decks, floors, stairs, rails, struts, bridges, ramps |
 | 55-arch.js | arch-A | deck buildings, satellite huts/farms, plaza, council hall |
 | 56-levels.js | arch-B | lower-level room fronts + dressing, gate-tree carvings, gate yards |
+| 57a-interiors.js | interiors | the rooms inside every lot, level room and hut, as DATA: plans, piece records, the bake, edits, slots |
+| 57b-interiors-bake.js | GENERATED | build.py, from interiors-bake.json (bake_interiors.py) |
+| 57c-interiors-draw.js | interiors | draws the records near the camera; the interior light pool |
 | 60-trees.js | trees | trunks, limbs, foliage, flowers/fruit, saplings, far forest |
 | 62-jungle.js | jungle | understorey, fallen logs + log bridge, rocks, cataract dressing |
 | 72-lights.js | planner | `LANTERN`, `LAMPPOST`, fixed lamps |
@@ -207,20 +210,71 @@ brfSkip(n)                                                              // draw 
 - The batch is flushed ONCE into the scene when the kit is emitted (`emitBuckets`, 75-terrain): one mesh per render
   family (`userData.furniture`), wrapped with `nlMaterial` so the lamps light it. `window._furniture` has the counts.
 - A key the catalog lacks is counted in `BRF.missing` (`_furniture.missing`), never thrown.
-- `?furniture=0` places nothing (the records are still kept). `?interiors=1` plans and furnishes rooms from the
-  `beast-rider` interior set at a TOP-LEVEL building (`brfInterior(setKey, x, z, ry, baseY, site)`; the result is
-  `site.interior`, and `_furniture.interiors / interiorPieces`).
-- **Which builders have interiors.** The set's items are the catalog's rewrites of Mav's buildings (fixed
-  rectangles and rings), not Mav's polar sectors. Only the deck lot matches, and only where its 14 x 10 m body
-  fits inside the lot's walls with its door on the lot's door (`lotInterior` in 55-arch: 3 lots, one of them an
-  inn -> `br_bldg_deck_lot#2`). The nature shrine (9 posts on r 4 vs a 12-17 m sector pavilion), the council
-  chamber (a 12 m ring vs an annular hall round the trunk), the room fronts (12 x 3 m vs 9-17 m deep sector rooms)
-  and the roost gallery (17 x 13 m vs open roost levels) do not match: those builders keep their furniture as
-  FURNISH placements.
+- `?furniture=0` places nothing (the records are still kept), and turns the interiors off with it.
+- `brfMaterial(fam)` is the furniture material for a render family (Lambert, vertex colour, the night light volume),
+  one per family; the interiors draw with the same ones.
+
 - **RNG.** Every rerouted helper still draws what its drawing drew, so the stream after it is unchanged: the
   SITES list (names and positions) is identical to the pre-furniture build.
 - **Budget.** `verify.py` counts `BUDGET.triangles` WITHOUT the furniture meshes and checks them against their own
-  line, `BUDGET.furnitureTriangles` (05-palette.js).
+  line, `BUDGET.furnitureTriangles` (05-palette.js); the interiors have theirs, `BUDGET.interiorTriangles`.
+
+## Interiors (57a data, 57b bake, 57c drawing)
+
+Every enclosed space has rooms people live and work in, planned from the builder's OWN shell by the interiors kit
+(`KratorInteriors.planBuilding`: partitions with doors, a stair to an upper floor) and furnished from the catalog
+(`furnishRoom`, culture `beast-rider`) under the kit's programmes. A home holds a bed, a food container and an item
+container (the kit's residence rule; a home that fails is furnished again with another seed, twice at most).
+
+| unit | the builder records | plan |
+|---|---|---|
+| apartment | 56 `lvlApt`: `R.use='apartment'`, `R.wcol`, `R.wins` | living room + bedroom (+ store when big); a cottage when small |
+| workhome | 56 `lvlWork`: `R.use='work'`, `R.trade`, `R.LD` | live/work: the family's living room + bedroom in the back `R.LD` m, its door onto the trade floor. The trade floor's pieces are drawn into the front: `F.us` scales their depths (`lvlAt`) |
+| store | 56 `lvlStore`: `R.use='store'`, `R.open`, `R.wins` | store rooms + the tally clerk's office; an open store keeps its loading floor in front |
+| lodging | 56 `lvlSatApt`: `R.use='lodgings'`, `R.doorAngs`, `R.wins` | the bough-platform ring cut half-way between its doors: one home per door |
+| lot | 55 `buildLot`: `S.shell` (`holesO`, `holesI` per floor) | by kind and floor (`LOT_PROG`): house; grand house; shop below, family above; tavern; inn with guest rooms; barracks with dormitories; armoury, mess, store, silk house |
+| hut | 55 huts: `S.shell` (`holes` per face) | a one-room cottage |
+
+The shared kitchens (`R.use='kitchen'`), roosts, hangars, nests, shrines, the council and the market keep what their
+builders drew (KNOWN_ISSUES.md says what each would need).
+
+**Windows are real openings.** `lvlWindow` (56) and `winAt(..., holes)` (55) draw the frame as a ring and record the
+opening; the wall is drawn after the windows, its openings cut through both faces with a reveal (`lvlFront`,
+`lotWalls`, `hutWalls`; `ARC_WALL`, `ARC_REVEAL`, `PLANE_WALL`, `PLANE_REVEAL` in 45-kit). A lot and a hut have a
+plastered lining 0.15 / 0.1 m inside, so a window shows a room whether or not it is furnished. The openings are the
+planned rooms' windows (the planner is asked for none), so furniture keeps off their sills. A pane over an opening is
+glass (`WINPANE(..., open)`: 81-glow draws it nearly clear by day and glowing when lit); one over a whole wall (the
+council, the Crown's tiers, the gate carvings) stays opaque.
+
+**The data is apart from the drawing** (README, "Furniture that is not always drawn is data first"):
+- `MIX.record(i)`: unit i's plan and pieces (`{ id, key, v, seed, x, y, z, ry, level, room, type, ... }`), computed
+  once and kept; `MIX.slots(i)`: the pieces after the edits, the rooms, the activities they offer (core/simulation's
+  `FURN_ACT`, or `SIM.slotsFromFurniture` when SIM is loaded) and the residence count. Camera-independent.
+- **The bake**: `python3 bake_interiors.py` loads the built page headless and writes `interiors-bake.json` (every
+  unit's pieces; ~1.8 MB); `build.py` inlines it as `57b-interiors-bake.js` when its `kit` hash (the furniture and
+  interiors bundle + `57a-interiors.js`) still matches, else says it is stale. Each unit carries a fingerprint (its
+  shell, windows, programme); a unit whose fingerprint moved is recomputed, not trusted (`_interiors.stale`).
+  Rebake after changing a builder's shells or windows, `57a`, or the catalog: `python3 build.py && python3
+  bake_interiors.py && python3 build.py`. What the bake lacks is computed in idle frames (`MIX.fillOn`).
+- **Edits**: `MIX.edit.remove(pieceId)`, `.move(pieceId, {x,y,z,ry})`, `.add(unitIndex, {key, v, x, y, z, ry, level})`,
+  `.clear()`, `.export()` / `.import(json)`, `.list()`. Deltas by piece id, applied to every read of a record, kept in
+  this browser's storage (57c); an edit whose piece's key changed is skipped and listed.
+
+**Lights.** Every record's lamps and hearths (the catalog's lights per key and variant) are in the night light volume's
+window channel, registered before the bake from the baked records (`nlIxAdd`) and after it for computed ones
+(`nlvAddIx`): a room's light follows the evening's lit-window schedule and shows through its windows. The nearest 8
+in the units drawn also light their rooms per fragment (`NL_POOL`; `uIxP/uIxC/uIxF` in `applyNightGlow`), each kept
+to its storey's floor and ceiling: a lamp on its unit's evening schedule (`nwLit`), a hearth always, flickering.
+
+**Drawing (57c), near the camera only:** within 46 m (nearest first, a slice of each frame), dropped beyond 66 m; at most
+40 units and 520k triangles. One lit mesh, one glow mesh and the 4 commonest painted panels (`userData.interiors`).
+Partitions, upper floors, stairs and doors are plain boxes; the planner's exterior walls are drawn only where the
+builder drew no inner face (the levels' side and core walls, a workshop's or open store's back rooms).
+`?interiors=0` turns it off. `window._interiors` reports (`near`, `bake`, `stale`, `records`, `lights`, `pool`,
+`edits`); `_interiors.view(kind, n)` stands in a unit's doorway; `_interiors.audit(step)` checks every step-th
+unit's record; `_interiors.plan(i)` is a plan as plain data. The view buttons "Inside an apartment / a workshop home /
+a shop" use it. A lot's and a hut's REGISTER site carries `site.interior` once its record exists. Residents' homes
+(78-life `lifeHomeDoor`) are the doors of these homes, not stores, shrines or the barracks.
 
 ## Budget (whole build: 110 draw calls, 4.2 M triangles, 260k instances)
 

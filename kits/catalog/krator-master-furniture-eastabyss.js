@@ -807,3 +807,87 @@ FURN({
     }
   }
 });
+
+/* ======== The builders' yard (2026-10): building stock for the Locus kit's abyss_shop_builder ========
+   (settlements/locus/src/65-abyss-40-shops.js, Mungo's builders' merchant). Bundled mat reed for thatch, clay bricks
+   and lime: the yard's goods besides its timber (the catalog's Jobs file: job_pole_rack, job_plank_stack,
+   job_saw_bench). Outdoor only: the interiors never pick them for a room. */
+FURN({
+  key: 'abyss_reed_bundles', name: 'Bundled thatching reed', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['reed', 'rope'],
+  w: 2.8, d: 1.5, h: 1.0, variants: 2, variantNames: ['bundles stacked lying, 4-3-2', 'bundles stood in two stooks'],
+  variantDims: [{ w: 2.8, d: 1.5, h: 1.0 }, { w: 2.4, d: 1.2, h: 2.3 }],
+  build: function (F) {
+    const reed = ['reedMat', 'reedMatDark', 'reedMatLight', 'reedMatOld'], cord = F.col('ropeCoir');
+    if (F.variant === 0) {
+      [[4, 0.17], [3, 0.464], [2, 0.758]].forEach(function (row) {
+        for (let i = 0; i < row[0]; i++) {
+          const z = (i - (row[0] - 1) / 2) * 0.34, dx = F.rr(-0.08, 0.08);
+          F.rod(-1.25 + dx, row[1], z, 1.25 + dx, row[1], z, 0.17, F.pick(reed), 'reed');
+          for (const s of [-0.7, 0.7]) F.rod(s + dx - 0.03, row[1], z, s + dx + 0.03, row[1], z, 0.18, cord, 'rope');
+        }
+      });
+    } else {
+      /* six bundles leaning together into a stook, two stooks side by side */
+      for (const cx of [-0.6, 0.6]) for (let k = 0; k < 6; k++) {
+        const a = k * Math.PI / 3 + F.rr(-0.15, 0.15);
+        F.rod(cx + Math.cos(a) * 0.4, 0.05, Math.sin(a) * 0.4, cx + Math.cos(a) * 0.07, 2.18, Math.sin(a) * 0.07, 0.1, F.pick(reed), 'reed');
+      }
+      for (const cx of [-0.6, 0.6]) F.cyl(cx, 1.5, 0, 0.28, 0.08, 0, cord, 'rope');   /* the cord round each stook */
+    }
+  }
+});
+FURN({
+  key: 'abyss_brick_stack', name: 'Clay bricks', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['stone', 'timber'],
+  w: 1.3, d: 1.0, h: 1.05, variants: 2, variantNames: ['fired bricks on a pallet', 'mud bricks drying in an open stack'],
+  variantDims: [{ w: 1.3, d: 1.0, h: 1.05 }, { w: 1.6, d: 1.0, h: 0.55 }],
+  build: function (F) {
+    if (F.variant === 0) {
+      /* a plank pallet, nine courses of fired brick (each course a tone of its own), three loose bricks on top */
+      const pk = F.pick(['plankOak', 'plankTan', 'plankDusk']);
+      for (const z of [-0.4, 0, 0.4]) F.box(0, 0, z, 1.2, 0.08, 0.12, 0, F.shade(pk, -0.15), 'plank');
+      F.box(0, 0.08, 0, 1.2, 0.04, 1.0, 0, pk, 'plank');
+      const brick = ['clayLaterite', 'clayRust', 'clayRed', 'clayDarkRed'];
+      for (let c = 0; c < 9; c++) F.box(0, 0.12 + c * 0.085, 0, 1.12, 0.077, 0.92, 0, F.shade(F.pick(brick), F.rr(-0.06, 0.06)), 'stone');
+      for (let k = 0; k < 3; k++) F.box(-0.3 + k * 0.3, 0.885, F.rr(-0.2, 0.2), 0.23, 0.075, 0.11, F.rr(-0.4, 0.4), F.pick(brick), 'stone');
+    } else {
+      /* sun-dried mud bricks stacked crosswise with gaps so the wind dries them: courses alternate along x and along z */
+      const mud = ['clayOchre', 'clayMud', 'clayStraw', 'clayBrown'];
+      for (let c = 0; c < 5; c++) {
+        const y = c * 0.105;
+        if (c % 2 === 0) { for (const z of [-0.35, 0, 0.35]) for (const x of [-0.55, 0, 0.55]) F.box(x, y, z, 0.42, 0.1, 0.2, 0, F.pick(mud), 'stone'); }
+        else { for (const x of [-0.6, -0.2, 0.2, 0.6]) for (const z of [-0.24, 0.24]) F.box(x, y, z, 0.2, 0.1, 0.42, 0, F.pick(mud), 'stone'); }
+      }
+    }
+  }
+});
+FURN({
+  key: 'abyss_lime_sacks', name: 'Lime sacks', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['cloth', 'timber', 'plaster', 'rustSteel'],
+  w: 1.3, d: 1.1, h: 0.9, variants: 2, variantNames: ['sacks on a pallet', 'slaking tub and sacks'],
+  variantDims: [{ w: 1.3, d: 1.1, h: 0.9 }, { w: 2.1, d: 1.2, h: 1.0 }],
+  build: function (F) {
+    const sack = ['canvasPale', 'canvasRaw', 'clothCream'], lime = F.col('plasterLime');
+    if (F.variant === 0) {
+      const pk = F.pick(['plankOak', 'plankTan', 'plankDusk']);
+      for (const z of [-0.4, 0, 0.4]) F.box(0, 0, z, 1.2, 0.08, 0.12, 0, F.shade(pk, -0.15), 'plank');
+      F.box(0, 0.08, 0, 1.2, 0.04, 1.0, 0, pk, 'plank');
+      for (const y of [0.23, 0.45]) for (const x of [-0.3, 0.3]) for (const z of [-0.25, 0.25]) F.blob(x, y, z, 0.28, 0.22, F.rr(-0.3, 0.3), F.pick(sack), 'cloth');
+      F.blob(0, 0.67, 0, 0.28, 0.22, 0.4, F.pick(sack), 'cloth');
+      F.dome(0.42, 0.12, 0.4, 0.14, 0.07, 0, lime, 'plaster');                      /* lime spilt from a split sack */
+    } else {
+      /* a cut drum as the slaking tub, white with lime putty, a paddle in it; three sacks beside it */
+      F.cyl(-0.5, 0, 0, 0.45, 0.55, 0, F.col('rustDeep'), 'rust');
+      F.cyl(-0.5, 0.5, 0, 0.42, 0.04, 0, lime, 'plaster');
+      F.rod(-0.55, 0.3, 0.05, -0.2, 0.95, 0.3, 0.025, F.col('timberSmoke'), 'wood');
+      F.blob(0.35, 0.11, -0.25, 0.28, 0.22, 0.3, F.pick(sack), 'cloth');
+      F.blob(0.75, 0.11, 0.2, 0.28, 0.22, -0.2, F.pick(sack), 'cloth');
+      F.blob(0.55, 0.32, -0.02, 0.28, 0.22, 0.6, F.pick(sack), 'cloth');
+      F.dome(0.0, 0, 0.35, 0.18, 0.05, 0, lime, 'plaster');
+    }
+  }
+});

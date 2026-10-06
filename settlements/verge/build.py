@@ -88,7 +88,7 @@ FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'VG.', 'TRAI
 
 # the catalog's cultures Verge furnishes from (kits/catalog/furniture_bundle.py; names are file suffixes)
 FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs']
-INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni']
+INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the middle-class houses; yuni-town: civic, trade, poor, rich
 
 # ---------------------------------------------------------------- the Iziz Vernacular bundle (IZV)
 IZIZ = os.path.join(ROOT, 'settlements', 'iziz', 'src')

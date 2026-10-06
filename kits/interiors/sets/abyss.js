@@ -258,6 +258,26 @@
       note: 'the plank loft 8 x 4.4 x 5.8 (x -6.5..1.5, z -5.4..-1.0) on the deck at H 0.8: the shop behind the 3.6 m front, the ' +
         'canvas loft above (its front door is a hoist door: the planner fits an inside stair). The drying lines and the bolts on ' +
         'the deck are outside' },
+    { key: 'abyss_shop_builder', name: "Builders' yard", culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [18, 14],
+      rooms: [
+        { id: 'shop', kind: 'shop', poly: rect(7.15, 3.8, -4.675, -1.55), y: 0.6, h: 2.6,
+          doors: [{ at: [-4.675, 0.35], w: 6.0, swing: 'none' }, { at: [-1.1, -1.55], w: 3.0, swing: 'none' }] },
+        { id: 'store', kind: 'store', poly: rect(C6, CW, -4.7, -5.0), y: 0.7, h: 2.4, doors: [{ at: [-3.3, -3.86], w: 0.9 }],
+          windows: [{ at: [-6.5, -3.86], w: 1.1, sill: 1.1, h: 0.8 }] }],
+      note: 'variant 0 (added 2026-10 for Mungo): the plank deck (x -8.6..-0.8, z -6.6..0.6, H 0.6) under a swooping sail on four ' +
+        'corner poles, open to the street and to the yard, a plank wall on its left: the shop; the 6.1 m container at its back (x ' +
+        '-7.75..-1.65, z -6.22..-3.78), side door at x -3.3: the store. The timber yard (racks, plank stacks, saw bench, logs, ' +
+        'bricks, lime, reed, sheet) is open ground, not planned. Variant 1 (a plank shop-front on a container) is abyss_shop_builder#1' },
+    { key: 'abyss_shop_builder#1', name: "Builders' yard (variant 2: plank shop-front on a container, a hoist derrick over the log landing)",
+      culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [18, 14],
+      rooms: [
+        { id: 'shop', kind: 'shop', poly: rect(7.4, 4.0, 4.8, -2.25), y: 0.8, h: 2.9, doors: [{ at: [4.8, -0.25], w: 6.8, swing: 'none' }] },
+        { id: 'store', kind: 'store', poly: rect(C6, CW, 4.8, -5.6), y: 0.9, h: 2.4, doors: [{ at: [3.6, -4.46], w: 0.9 }],
+          windows: [{ at: [6.8, -4.46], w: 1.1, sill: 1.1, h: 0.8 }] }],
+      note: 'the deck (x 0.8..8.8, z -6.9..-0.2, H 0.8): the 6.1 m container at its back (x 1.75..7.85, z -6.82..-4.38, side door ' +
+        'at x 3.6) is the store; the plank shop-front built onto its front (plank walls at x 1.0 and 8.6, a corrugated roof ' +
+        'falling to 3.0 over the deck at the street) is the shop, open along its front. The derrick, the log landing, the saw ' +
+        'pit under its sail and the stacks are the open yard, not planned' },
 
     /* ---------- Hospitality and civic (65-abyss-50-civic.js) */
     { key: 'abyss_inn', name: 'Courtyard inn', culture: 'eastabyss', wealth: 0.5, types: ['tavern/inn', 'multi-family dwelling'], lot: [24, 23],

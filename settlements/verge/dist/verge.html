@@ -2848,7 +2848,7 @@ KFURN.flags = function(interiorsByDefault){
  };
 })();
 
-// ==================== 54a-bio-biome-sedesert-species.js   (biomes/sedesert/src/50-biome-sedesert-species.js)
+// ==================== 54a-bio-biome-sedesert-species.js   (biomes\sedesert\src\50-biome-sedesert-species.js)
 // ================================================================= EASTERN HIGH DESERT — species (data + kit items)
 // The eastern high desert of Krator: red desert like the American south-west,
 // with Socotran flora. Dragon trees where the water table allows, a diverse
@@ -3212,7 +3212,7 @@ BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(SEDESERT.ROCKTEX)
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),BIO.solidMat(SEDESERT.ROCKTEX),{label:'Stones'});
 })();
 
-// ==================== 54b-bio-biome-sedesert-trees.js   (biomes/sedesert/src/55-biome-sedesert-trees.js)
+// ==================== 54b-bio-biome-sedesert-trees.js   (biomes\sedesert\src\55-biome-sedesert-trees.js)
 // ================================================================= EASTERN HIGH DESERT — trees
 // The thirteen tree-scale species of the eastern high desert, each with its
 // own builder, placed by zone from the host's climate fields (wet / flow /
@@ -3583,9 +3583,19 @@ SEDESERT.PASSES=[
  // the twist-candles: in the shallows of the river and the pond (their depth band is on the species record)
  {sp:12,cell:16,accept:(Z)=>(Z.bank+Z.oasis*Z.flow)*.45,opt:{pad:1.5,lodK:.5,patch:.5,patchScale:.02,small:true,water:true}},
 ];
+
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed drawn from the kit's stream: reseed first for a
+// repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,
+// 0 the far impostor; null when the species has none) and nothing else: no keep-clear entry, no TREES record. An open
+// world grows each species' variants once with these and instances them (openworld/README.md). buildTrees never calls them.
+SEDESERT.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999)};};
+SEDESERT.grow=function(T,lv){means();
+ const st={trunk:0,limb:0,far:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,fronds:0,cols:0,spikes:0,candles:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){const S=SP[T.sp];if(!(S.far&&(!S.farIf||S.farIf(T))))return null;buildFar(T,T.seed%7,st);}else B[T.sp](T,st,lv);return st;};
 })();
 
-// ==================== 54c-bio-biome-sedesert-floor.js   (biomes/sedesert/src/60-biome-sedesert-floor.js)
+// ==================== 54c-bio-biome-sedesert-floor.js   (biomes\sedesert\src\60-biome-sedesert-floor.js)
 // ================================================================= EASTERN HIGH DESERT — floor
 // Everything under the trees, by zone, from the same climate fields the tree
 // pass reads (SEDESERT.zones):
@@ -3758,7 +3768,7 @@ SEDESERT.buildFloor=function(R,q){
  return{under:st};};
 })();
 
-// ==================== 54d-bio-biome-sedesert-dress.js   (biomes/sedesert/src/65-biome-sedesert-dress.js)
+// ==================== 54d-bio-biome-sedesert-dress.js   (biomes\sedesert\src\65-biome-sedesert-dress.js)
 // ================================================================= EASTERN HIGH DESERT — growth on structures
 // What the high desert does to a building left in it: not much, and slowly.
 // Lichen crusts on every sunlit ledge and down the wall under each drip,
@@ -3822,7 +3832,7 @@ SEDESERT.dressGeos=function(geos,opt){opt=opt||{};reseed(650021+(opt.seed||0));
  SEDESERT.dressLedges(geos,opt.ledges||{});SEDESERT.dressSoffits(geos,opt.soffits||{});SEDESERT.dressWalls(geos,opt.walls||{});};
 })();
 
-// ==================== 54e-bio-biome-sedesert.js   (biomes/sedesert/src/70-biome-sedesert.js)
+// ==================== 54e-bio-biome-sedesert.js   (biomes\sedesert\src\70-biome-sedesert.js)
 // ================================================================= EASTERN HIGH DESERT — build / dress / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
 // 60 (floor) and 65 (dress); this file only orders them and reports.
@@ -3837,7 +3847,7 @@ SEDESERT.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==null
 SEDESERT.dress=function(geos,opt){if(SEDESERT.dressGeos){BIO.cur='desert/dress';SEDESERT.dressGeos(geos,opt||{});BIO.cur=null;}};
 SEDESERT.canopyH=function(x,z){return SEDESERT._canopyH?SEDESERT._canopyH(x,z):6;};
 
-// ==================== 54f-bio-biome-sedesert-fauna.js   (biomes/sedesert/src/75-biome-sedesert-fauna.js)
+// ==================== 54f-bio-biome-sedesert-fauna.js   (biomes\sedesert\src\75-biome-sedesert-fauna.js)
 // ================================================================= EASTERN HIGH DESERT — fauna
 // The first fauna layer on the biome contract. Four kinds, each placed from
 // the same climate fields the flora reads, and animated by the biome itself
@@ -4141,7 +4151,7 @@ SEDESERT.buildFauna=function(R,q,keep){
 })();
 BIO.kitEnd(SEDESERT);   // its exports run in its registry; the default kit is current again
 
-// ==================== 56a-bio-biome-eastabyss-species.js   (biomes/eastabyss/src/50-biome-eastabyss-species.js)
+// ==================== 56a-bio-biome-eastabyss-species.js   (biomes\eastabyss\src\50-biome-eastabyss-species.js)
 // ================================================================= EASTERN ABYSS — species (data + kit items)
 // The eastern abyss of Krator: a salt lake on the floor of the basin, salt
 // flats and salt marsh round it, and on the slope up to the shelf a
@@ -4642,7 +4652,7 @@ BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(EASTABYSS.ROCKTEX),{label:'Boulders (small)'});
 })();
 
-// ==================== 56b-bio-biome-eastabyss-trees.js   (biomes/eastabyss/src/55-biome-eastabyss-trees.js)
+// ==================== 56b-bio-biome-eastabyss-trees.js   (biomes\eastabyss\src\55-biome-eastabyss-trees.js)
 // ================================================================= EASTERN ABYSS — trees
 // The twenty tree species of the eastern abyss, each with its own builder,
 // placed by zone from the host's climate fields (wet / salt / upland / flow)
@@ -5146,33 +5156,10 @@ EASTABYSS.buildTrees=function(R,q){
     if(T.lv===0&&!opt.far){T.small=true;TREES.push(T);n++;return;}
     TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,noMask:!!opt.inWater,pad:1});
   return n;}
- // canopy of the jungle (the fork scale-tree and the bell-bark in stands), the sky scale-trees above it
- pass(0,118,(Z)=>Z.jung*.85,{hero:1100,mid:1900,far:true,pad:8,patch:.3});
- // the rope araucarias take the upper slope before the canopy stands claim it (the savannah proper is a sliver inside the disc)
- pass(17,34,(Z)=>Z.sav*.7+Z.jung*smooth(.2,.55,Z.up)*.6,{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.007});
- (function(){let n=0;BIO.grid(44,0,R,(x,z)=>{const Z=zones(x,z);return Z.jung*.78*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
-   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;})();
- pass(3,30,(Z)=>Z.jung*.55+Z.marsh*.08*smooth(.02,.08,Z.up)+Z.jung*Z.flow*.3,{hero:900,mid:1600,far:false,pad:2.5,lodK:.5});
- pass(4,36,(Z)=>Z.jung*.45+Z.sav*.22*(1-Z.up)+Z.marsh*.04,{hero:800,mid:1400,far:false,pad:2,lodK:.6});
- pass(5,20,(Z)=>(Z.jung+Z.marsh)*(Z.flow*.7+.05)*.8,{hero:900,mid:1400,far:false,pad:1.5,lodK:.7,patch:.5});
- // the marsh: knee-trees (the lusher the wetter -- deltas and the west), stilt-woods at the water, palmettos throughout
- pass(6,52,(Z)=>Z.marsh*smooth(.70,.96,Z.wet)*.56+Z.marsh*Z.flow*.3,{hero:950,mid:1800,far:true,pad:5,patch:.45,patchScale:.006});
- pass(7,36,(Z)=>Z.shore*.32+Z.marsh*Z.flow*.22,{hero:900,mid:1400,far:false,pad:2.5,lodK:.7,inWater:true});
- pass(8,40,(Z)=>Z.marsh*(.2+.25*smooth(.85,.96,Z.wet))+Z.jung*.2*(1-Z.up)+Z.sav*.05+Z.shore*.2,{hero:900,mid:1500,far:false,pad:2,lodK:.6});
- // the savannah: umbrella trees thinning with height; the flats: jade shrubs along the river only
- pass(9,34,(Z)=>Z.sav*(1-smooth(.75,1,Z.up)*.75)*.8,{hero:1000,mid:1800,far:true,pad:3,patch:.5});
- pass(10,13,(Z)=>Z.flat*Z.flow*.85,{hero:1000,mid:1500,far:false,pad:1,lodK:.4,patch:.4});
- // the new Devonian set: tide lycopsids in the shallows and the deltas, Calamophyton on the arid river banks, Sanfordacaulis where it is wet
- pass(11,30,(Z)=>Z.shore*.5+Z.marsh*Z.flow*.3,{hero:900,mid:1500,far:false,pad:2.5,lodK:.6,inWater:true});
- pass(12,14,(Z)=>Z.flat*Z.flow*.75+Z.sav*Z.flow*.5,{hero:1000,mid:1600,far:false,pad:1.5,lodK:.5,patch:.4});
- pass(13,30,(Z)=>Z.marsh*.26+Z.jung*.16*(1-Z.up)+Z.shore*.15,{hero:900,mid:1500,far:false,pad:2,lodK:.6});
- // the coal-swamp set: seal-trees in the wet marsh and the lower jungle, cordaites at the shore and up the rivers,
- // seed ferns under the canopy, rope araucarias on the upper slope, beard oaks on the marsh hummocks, water palms in the shallows
- pass(14,36,(Z,x,z)=>Z.marsh*smooth(.75,.95,Z.wet)*.22*(1-hummock(x,z)*.7)+Z.jung*.2*(1-Z.up)+Z.jung*Z.flow*.2+Z.shore*.1,{hero:950,mid:1700,far:true,pad:3,patch:.5,patchScale:.007});
- pass(15,42,(Z)=>Z.shore*.32+Z.marsh*.16*smooth(.6,.9,Z.wet)+Z.marsh*Z.flow*.25+Z.jung*.16*(1-Z.up),{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.006});
- pass(16,26,(Z)=>Z.jung*.42+Z.marsh*.12*smooth(.7,.95,Z.wet)+Z.jung*Z.flow*.2,{hero:850,mid:1400,far:false,pad:2,lodK:.6});
- pass(18,62,(Z,x,z)=>Z.marsh*.7*hummock(x,z)+Z.shore*.06*(1-Z.flow)*(1-Z.salt),{hero:950,mid:1700,far:true,pad:7,patch:.45,patchScale:.005});
- pass(19,28,(Z)=>Z.shore*.34+Z.marsh*Z.flow*.22+Z.jung*Z.flow*.1,{hero:900,mid:1400,far:false,pad:2,lodK:.6,inWater:true});
+ // the passes, in order, from the data table below (EASTABYSS.PASSES); the canopy stands are the one pass with its own body
+ EASTABYSS.PASSES.forEach(P=>{if(!P.stand){pass(P.sp,P.cell,P.accept,P.opt);return;}
+  let n=0;BIO.grid(P.cell,0,R,(x,z)=>{const Z=zones(x,z);return P.accept(Z,x,z)*q;},(x,y,z)=>{if(y-BIO.waterH(x,z)<.3||blocked(x,z,5)||!BIO.clearOf(x,z,7))return;
+   const sp=BIO.stand(x,z,2,.3,.0022,71)===0?1:2,T=mk(x,y,z,sp),ld=BIO.lodD(x,z);T.lv=ld<1000?2:(ld<1800?1:0);TREES.push(T);hadd({x:x,z:z,r:T.rb*1.4+1});n++;},{patch:.55,patchScale:.008,pad:1});st.canopy=n;});
  // build
  TREES.forEach((T,i)=>{if(T.lv===0){if(T.small)buildFarSmall(T,st);else buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,knees:st.knees,ropes:st.ropes,lianas:st.lianas,
@@ -5208,9 +5195,54 @@ EASTABYSS.buildReedBeds=function(R,q){reseed(570011);q=q==null?1:q;R=R||3000;
   {patch:.6,patchScale:.012,noMask:true,pad:.5});
  return{beds:BEDS.length,stems:stems,farBeds:far};};
 EASTABYSS._canopyH=function(x,z){let h=0;for(const T of EASTABYSS.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
+
+// ---------------------------------------------------------------- the passes (data: species, cell, acceptance from the zones, options)
+// In buildTrees' order (the order is the kit's random stream: do not reorder). opt: hero/mid the LOD radii, far whether a
+// tree past mid becomes an impostor (false: a small species' far hull), pad keep-clear, lodK thinning with distance, patch /
+// patchScale the stand patchiness, inWater a species that stands in the shallows. stand:true is the canopy stands' pass:
+// its species is the stand's (1 fork scale-tree or 2 bell-bark, BIO.stand(x,z,2,.3,.0022,71)), clear of obstacles by 7 m.
+EASTABYSS.PASSES=[
+ // canopy of the jungle (the fork scale-tree and the bell-bark in stands), the sky scale-trees above it
+ {sp:0,cell:118,accept:(Z)=>Z.jung*.85,opt:{hero:1100,mid:1900,far:true,pad:8,patch:.3}},
+ // the rope araucarias take the upper slope before the canopy stands claim it (the savannah proper is a sliver inside the disc)
+ {sp:17,cell:34,accept:(Z)=>Z.sav*.7+Z.jung*smooth(.2,.55,Z.up)*.6,opt:{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.007}},
+ {sp:[1,2],stand:true,cell:44,accept:(Z)=>Z.jung*.78,opt:{hero:1000,mid:1800,far:true,pad:5,clear:7,patch:.55,patchScale:.008}},
+ {sp:3,cell:30,accept:(Z)=>Z.jung*.55+Z.marsh*.08*smooth(.02,.08,Z.up)+Z.jung*Z.flow*.3,opt:{hero:900,mid:1600,far:false,pad:2.5,lodK:.5}},
+ {sp:4,cell:36,accept:(Z)=>Z.jung*.45+Z.sav*.22*(1-Z.up)+Z.marsh*.04,opt:{hero:800,mid:1400,far:false,pad:2,lodK:.6}},
+ {sp:5,cell:20,accept:(Z)=>(Z.jung+Z.marsh)*(Z.flow*.7+.05)*.8,opt:{hero:900,mid:1400,far:false,pad:1.5,lodK:.7,patch:.5}},
+ // the marsh: knee-trees (the lusher the wetter -- deltas and the west), stilt-woods at the water, palmettos throughout
+ {sp:6,cell:52,accept:(Z)=>Z.marsh*smooth(.70,.96,Z.wet)*.56+Z.marsh*Z.flow*.3,opt:{hero:950,mid:1800,far:true,pad:5,patch:.45,patchScale:.006}},
+ {sp:7,cell:36,accept:(Z)=>Z.shore*.32+Z.marsh*Z.flow*.22,opt:{hero:900,mid:1400,far:false,pad:2.5,lodK:.7,inWater:true}},
+ {sp:8,cell:40,accept:(Z)=>Z.marsh*(.2+.25*smooth(.85,.96,Z.wet))+Z.jung*.2*(1-Z.up)+Z.sav*.05+Z.shore*.2,opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
+ // the savannah: umbrella trees thinning with height; the flats: jade shrubs along the river only
+ {sp:9,cell:34,accept:(Z)=>Z.sav*(1-smooth(.75,1,Z.up)*.75)*.8,opt:{hero:1000,mid:1800,far:true,pad:3,patch:.5}},
+ {sp:10,cell:13,accept:(Z)=>Z.flat*Z.flow*.85,opt:{hero:1000,mid:1500,far:false,pad:1,lodK:.4,patch:.4}},
+ // the new Devonian set: tide lycopsids in the shallows and the deltas, Calamophyton on the arid river banks, Sanfordacaulis where it is wet
+ {sp:11,cell:30,accept:(Z)=>Z.shore*.5+Z.marsh*Z.flow*.3,opt:{hero:900,mid:1500,far:false,pad:2.5,lodK:.6,inWater:true}},
+ {sp:12,cell:14,accept:(Z)=>Z.flat*Z.flow*.75+Z.sav*Z.flow*.5,opt:{hero:1000,mid:1600,far:false,pad:1.5,lodK:.5,patch:.4}},
+ {sp:13,cell:30,accept:(Z)=>Z.marsh*.26+Z.jung*.16*(1-Z.up)+Z.shore*.15,opt:{hero:900,mid:1500,far:false,pad:2,lodK:.6}},
+ // the coal-swamp set: seal-trees in the wet marsh and the lower jungle, cordaites at the shore and up the rivers,
+ // seed ferns under the canopy, rope araucarias on the upper slope, beard oaks on the marsh hummocks, water palms in the shallows
+ {sp:14,cell:36,accept:(Z,x,z)=>Z.marsh*smooth(.75,.95,Z.wet)*.22*(1-hummock(x,z)*.7)+Z.jung*.2*(1-Z.up)+Z.jung*Z.flow*.2+Z.shore*.1,opt:{hero:950,mid:1700,far:true,pad:3,patch:.5,patchScale:.007}},
+ {sp:15,cell:42,accept:(Z)=>Z.shore*.32+Z.marsh*.16*smooth(.6,.9,Z.wet)+Z.marsh*Z.flow*.25+Z.jung*.16*(1-Z.up),opt:{hero:1000,mid:1800,far:true,pad:4,patch:.5,patchScale:.006}},
+ {sp:16,cell:26,accept:(Z)=>Z.jung*.42+Z.marsh*.12*smooth(.7,.95,Z.wet)+Z.jung*Z.flow*.2,opt:{hero:850,mid:1400,far:false,pad:2,lodK:.6}},
+ {sp:18,cell:62,accept:(Z,x,z)=>Z.marsh*.7*hummock(x,z)+Z.shore*.06*(1-Z.flow)*(1-Z.salt),opt:{hero:950,mid:1700,far:true,pad:7,patch:.45,patchScale:.005}},
+ {sp:19,cell:28,accept:(Z)=>Z.shore*.34+Z.marsh*Z.flow*.22+Z.jung*Z.flow*.1,opt:{hero:900,mid:1400,far:false,pad:2,lodK:.6,inWater:true}},
+];
+
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// make(sp,x,y,z): the pass's own tree record (H, rb, crownR, seed and wet from the kit's stream and fields: reseed first
+// for a repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,
+// 0 far: the impostor for a species with one, the far hull for a small one) and nothing else: no keep-clear entry, no
+// TREES record. A town's street trees (Locus, Mungo) and an open world's variants are grown with these.
+EASTABYSS.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+EASTABYSS.grow=function(T,lv){means();
+ const st={trunk:0,limb:0,far:0,farSmall:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,whorls:0,knees:0,fans:0,ropes:0,lianas:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){const P=(EASTABYSS.PASSES||[]).find(P=>P.sp===T.sp||(P.stand&&P.sp.indexOf(T.sp)>=0));if(P?P.opt.far:SP[T.sp].H[1]>=20)buildFar(T,T.seed%7,st);else buildFarSmall(T,st);}
+ else B[T.sp](T,st,lv);return st;};
 })();
 
-// ==================== 56c-bio-biome-eastabyss-floor.js   (biomes/eastabyss/src/60-biome-eastabyss-floor.js)
+// ==================== 56c-bio-biome-eastabyss-floor.js   (biomes\eastabyss\src\60-biome-eastabyss-floor.js)
 // ================================================================= EASTERN ABYSS — floor
 // Everything under the trees, by zone, from the same climate fields the tree
 // pass reads (EASTABYSS.zones):
@@ -5381,7 +5413,7 @@ EASTABYSS.buildFloor=function(R,q){
  return{under:st};};
 })();
 
-// ==================== 56d-bio-biome-eastabyss-dress.js   (biomes/eastabyss/src/65-biome-eastabyss-dress.js)
+// ==================== 56d-bio-biome-eastabyss-dress.js   (biomes\eastabyss\src\65-biome-eastabyss-dress.js)
 // ================================================================= EASTERN ABYSS — growth on structures
 // What the abyssal jungle does to a building left in it (the hyperjungle
 // kit's pass, in this biome's palette: the mosses carry the lake's tinge, the
@@ -5466,7 +5498,7 @@ EASTABYSS.dressGeos=function(geos,opt){opt=opt||{};reseed(650001+(opt.seed||0));
  EASTABYSS.dressLedges(geos,opt.ledges||{});EASTABYSS.dressSoffits(geos,opt.soffits||{});EASTABYSS.dressWalls(geos,opt.walls||{});};
 })();
 
-// ==================== 56e-bio-biome-eastabyss.js   (biomes/eastabyss/src/70-biome-eastabyss.js)
+// ==================== 56e-bio-biome-eastabyss.js   (biomes\eastabyss\src\70-biome-eastabyss.js)
 // ================================================================= EASTERN ABYSS — build / dress / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
 // 60 (floor), 65 (dress) and 75 (fauna); this file only orders them and reports.
@@ -5483,7 +5515,7 @@ EASTABYSS.dress=function(geos,opt){if(EASTABYSS.dressGeos){BIO.cur='abyss/dress'
 EASTABYSS.canopyH=function(x,z){return EASTABYSS._canopyH?EASTABYSS._canopyH(x,z):12;};
 // BIO.kitEnd(EASTABYSS) is at the end of 75 (the fauna), the kit's last fragment
 
-// ==================== 56f-bio-biome-eastabyss-fauna.js   (biomes/eastabyss/src/75-biome-eastabyss-fauna.js)
+// ==================== 56f-bio-biome-eastabyss-fauna.js   (biomes\eastabyss\src\75-biome-eastabyss-fauna.js)
 // ================================================================= EASTERN ABYSS — fauna
 // The abyss floor's animals on the biome contract (2026-10), ported from Locus's ambient fauna
 // (settlements/locus/src/83-locus-fauna.js: its flamingos and frilled lizards, there on Locus's own
@@ -5686,7 +5718,7 @@ EASTABYSS.buildFauna=function(R,q,keep){
 })();
 BIO.kitEnd(EASTABYSS);   // its exports run in its registry; the default kit is current again (moved here from 70 with the fauna)
 
-// ==================== 62-catalog-bundle.js   (GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni))
+// ==================== 62-catalog-bundle.js   (GENERATED: kits/catalog (iziz, eastabyss, nomad, generic, generic-goods, scrap, jobs) + kits/interiors (sets iziz, locus, abyss, yuni, yuni-town))
 /* kits/catalog furniture bundle (furniture_bundle.py): krator-furniture-core.js, krator-symbols.js, krator-furniture-kit.js, krator-master-furniture.js, krator-master-furniture-eastabyss.js, krator-master-furniture-generic-goods.js, krator-master-furniture-generic.js, krator-master-furniture-iziz.js, krator-master-furniture-jobs.js, krator-master-furniture-nomad.js, krator-master-furniture-scrap.js, krator-furniture-runtime.js. GENERATED; edit the catalog files. */
 var KratorFurniture = (function () {
 /* ---- kits/catalog/krator-furniture-core.js ---- */
@@ -6165,6 +6197,7 @@ const FPAL = {
     stoneBlack: 0x14161a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0, stoneLaterite: 0xa85832,
     stoneCobalt: 0x2a6ab0, stoneClay: 0xb8633a, stoneAzure: 0x3a86c8, stoneClayLight: 0xc47044,
     stoneSky: 0x58a8d8, stoneIvory: 0xf0ece0,
+    thatchFlax: 0xb8a262, thatchStraw: 0xc8b272,   /* the grain bin's lid (re-harvest 2026-10-05) */
     timberWalnut: 0x5c432c, timberChestnutDark: 0x6a4e34, timberChestnut: 0x7a5a3c, timberOak: 0x8a6a4e,
     timberTeak: 0x9a7a4e, timberPine: 0xa8865c
   },
@@ -8482,7 +8515,7 @@ const FK = (function () {
 
 /* ---- kits/catalog/krator-master-furniture.js ---- */
 /* ======================================================================
-   Krator Master Furniture Registry — 122 pieces
+   Krator Master Furniture Registry — 128 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
@@ -11092,7 +11125,7 @@ FURN({
   }
 });
 
-/* ================= Yuni (58 pieces) ================= */
+/* ================= Yuni (64 pieces) ================= */
 
 FURN({
   key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', type: 'table', setting: 'indoor',
@@ -12820,6 +12853,101 @@ FURN({
   }
 });
 
+/* ---------- re-harvest (2026-10-05): the six pieces Yuni's interiors pass added (src/64-interiors.js, the
+   minimum kit), with the material-library pass's families: fired clay ('ceramic'), reed mats ('reed'), coiled
+   baskets ('wicker'). Yuni's container-item / container-food types are the catalog's 'storage' plus a role
+   (kits/interiors 30-programs.js FOOD_ROLES / ITEM_ROLES); Yuni turns pots and baskets on a lathe, which is
+   a stack of frustum rings here, one ring per profile segment. ---------- */
+/* a lathe profile [[r, y], ...] as frustum rings about the piece's origin */
+function yuniLathe(F, x, z, pts, color, family, sides) {
+  for (let i = 0; i + 1 < pts.length; i++) {
+    F.frustum(x, pts[i][1], z, pts[i][0], pts[i + 1][0], pts[i + 1][1] - pts[i][1], 0, color, family, sides || 10);
+  }
+}
+
+FURN({
+  key: 'yuni_poor_lidded_basket', name: 'Lidded storage basket', culture: 'yuni-poor', type: 'storage', role: 'trunk', setting: 'indoor',
+  rooms: ['bedroom', 'store', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['wicker', 'timber', 'cloth'],
+  w: 0.55, d: 0.55, h: 0.74, variants: 2, variantNames: ['plain', 'bundle on the lid'],
+  build: function (F) {
+    /* a lidded basket kept as a trunk (belongings), as Yuni's huts use it: role 'trunk', an item container */
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    yuniLathe(F, 0, 0, [[0.15, 0], [0.24, 0.08], [0.26, 0.36], [0.23, 0.48]], c, 'wicker');
+    yuniLathe(F, 0, 0, [[0.25, 0.47], [0.26, 0.52], [0.15, 0.58], [0.04, 0.61]], F.shade(c, -0.12), 'wicker');
+    F.box(0, 0.24, 0.25, 0.04, 0.05, 0.04, 0, F.col('timberWalnut'), 'wood');   /* the toggle */
+    if (F.variant === 1) F.blob(0.02, 0.58, 0, 0.17, 0.14, 0.3, F.pick(['clothIndigo', 'clothMadder', 'clothSaffron']), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_poor_food_pot', name: 'Covered food pot', culture: 'yuni-poor', type: 'storage', role: 'pots', setting: 'both',
+  rooms: ['kitchen', 'store', 'bedroom'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['ceramic', 'wicker', 'plaster'],
+  w: 0.55, d: 0.55, h: 0.78, variants: 1,
+  build: function (F) {
+    const c = F.pick(['stoneClay', 'stoneLaterite', 'stoneClayLight']);
+    F.box(0, 0, 0, 0.5, 0.04, 0.5, 0, F.shade(F.col('plasterTan'), -0.2), 'plaster');   /* the mud stand */
+    yuniLathe(F, 0, 0, [[0.12, 0.04], [0.25, 0.22], [0.24, 0.5], [0.14, 0.64], [0.17, 0.7]], c, 'ceramic');
+    F.cyl(0, 0.7, 0, 0.19, 0.05, 0, F.pick(['thatchStraw', 'thatchFlax']), 'wicker');   /* the coiled lid */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_sleeping_mat', name: 'Rolled-out sleeping mat', culture: 'yuni-poor', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['reed', 'cloth'],
+  w: 1.85, d: 0.8, h: 0.18, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.85, 0.05, 0.8, 0, F.shade(F.col('thatchStraw'), 0.08), 'reed');
+    F.box(0, 0.05, 0.05, 1.7, 0.04, 0.66, 0, F.pick(['clothIndigo', 'clothMadder', 'clothOrange', 'clothSaffron']), 'cloth');
+    F.rod(-0.72, 0.1, -0.3, -0.72, 0.1, 0.3, 0.08, F.col('clothIvory'), 'cloth');   /* the rolled headcloth */
+  }
+});
+
+FURN({
+  key: 'yuni_common_grain_bin', name: 'Mud-brick grain bin', culture: 'yuni-common', type: 'storage', role: 'bin', setting: 'both',
+  rooms: ['store', 'yard', 'kitchen'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['plaster', 'thatch', 'timber'],
+  w: 1.3, d: 1.3, h: 1.8, variants: 1,
+  build: function (F) {
+    const c = F.pick(['plasterTan', 'plasterTanLight', 'plasterBirch']);
+    F.box(0, 0, 0, 1.0, 0.12, 1.0, 0, F.shade(c, -0.15), 'plaster');
+    yuniLathe(F, 0, 0, [[0.48, 0.12], [0.62, 0.25], [0.62, 1.15], [0.46, 1.45], [0.2, 1.55]], c, 'plaster');
+    F.cone(0, 1.5, 0, 0.42, 0.28, 0, F.pick(['thatchStraw', 'thatchFlax']), 'thatch');
+    F.box(0, 0.85, 0.57, 0.36, 0.36, 0.1, 0, F.col('timberPine'), 'wood');   /* the draw hatch */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_reed_mat', name: 'Woven reed floor mat', culture: 'yuni-poor', type: 'rug', setting: 'indoor',
+  rooms: ['bedroom', 'hall', 'kitchen'], anchor: 'floor', clearance: {},
+  materials: ['reed', 'cloth'],
+  w: 2.2, d: 1.5, h: 0.03, variants: 2, variantNames: ['plain', 'red runner'],
+  build: function (F) {
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    F.box(0, 0, 0, 2.2, 0.018, 1.5, 0, F.shade(c, 0.1), 'reed');
+    for (let k = 0; k < 5; k++) F.box(0, 0.006, -0.6 + k * 0.3, 2.1, 0.016, 0.07, 0, F.shade(c, -0.18), 'reed');   /* binding cords */
+    if (F.variant === 1) F.box(0, 0.01, 0, 0.5, 0.016, 1.4, 0, F.col('clothMadder'), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_common_kilim', name: 'Flat-woven kilim', culture: 'yuni-common', type: 'rug', setting: 'indoor',
+  rooms: ['hall', 'bedroom', 'court'], anchor: 'floor', clearance: {},
+  materials: ['cloth'],
+  w: 2.6, d: 1.7, h: 0.03, variants: 2, variantNames: ['red lozenges', 'blue lozenges'],
+  build: function (F) {
+    const field = F.pick(['clothIndigo', 'clothMadder', 'clothSaffron', 'clothJade', 'clothViolet', 'clothOrange']);
+    const lozenge = F.variant ? F.col('stoneSky') : F.col('clothMadder'), ivory = F.col('clothIvory');
+    F.box(0, 0, 0, 2.6, 0.012, 1.7, 0, F.shade(ivory, -0.05), 'cloth');
+    F.box(0, 0.006, 0, 2.3, 0.012, 1.4, 0, field, 'cloth');
+    F.box(0, 0.012, 0, 0.9, 0.01, 0.9, Math.PI / 4, lozenge, 'cloth');
+    F.box(0, 0.016, 0, 0.42, 0.01, 0.42, Math.PI / 4, ivory, 'cloth');
+    for (const s of [-1, 1]) F.box(s * 0.85, 0.012, 0, 0.3, 0.01, 0.3, Math.PI / 4, lozenge, 'cloth');
+  }
+});
+
 /* ================= Ancients kit extras (4 pieces) ================= */
 
 FURN({
@@ -13815,6 +13943,90 @@ FURN({
         }
         F.box(x, L2, z, 0.16 * m, T, 0.16 * m, Math.PI / 4, red, 'cloth');
       }
+    }
+  }
+});
+
+/* ======== The builders' yard (2026-10): building stock for the Locus kit's abyss_shop_builder ========
+   (settlements/locus/src/65-abyss-40-shops.js, Mungo's builders' merchant). Bundled mat reed for thatch, clay bricks
+   and lime: the yard's goods besides its timber (the catalog's Jobs file: job_pole_rack, job_plank_stack,
+   job_saw_bench). Outdoor only: the interiors never pick them for a room. */
+FURN({
+  key: 'abyss_reed_bundles', name: 'Bundled thatching reed', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['reed', 'rope'],
+  w: 2.8, d: 1.5, h: 1.0, variants: 2, variantNames: ['bundles stacked lying, 4-3-2', 'bundles stood in two stooks'],
+  variantDims: [{ w: 2.8, d: 1.5, h: 1.0 }, { w: 2.4, d: 1.2, h: 2.3 }],
+  build: function (F) {
+    const reed = ['reedMat', 'reedMatDark', 'reedMatLight', 'reedMatOld'], cord = F.col('ropeCoir');
+    if (F.variant === 0) {
+      [[4, 0.17], [3, 0.464], [2, 0.758]].forEach(function (row) {
+        for (let i = 0; i < row[0]; i++) {
+          const z = (i - (row[0] - 1) / 2) * 0.34, dx = F.rr(-0.08, 0.08);
+          F.rod(-1.25 + dx, row[1], z, 1.25 + dx, row[1], z, 0.17, F.pick(reed), 'reed');
+          for (const s of [-0.7, 0.7]) F.rod(s + dx - 0.03, row[1], z, s + dx + 0.03, row[1], z, 0.18, cord, 'rope');
+        }
+      });
+    } else {
+      /* six bundles leaning together into a stook, two stooks side by side */
+      for (const cx of [-0.6, 0.6]) for (let k = 0; k < 6; k++) {
+        const a = k * Math.PI / 3 + F.rr(-0.15, 0.15);
+        F.rod(cx + Math.cos(a) * 0.4, 0.05, Math.sin(a) * 0.4, cx + Math.cos(a) * 0.07, 2.18, Math.sin(a) * 0.07, 0.1, F.pick(reed), 'reed');
+      }
+      for (const cx of [-0.6, 0.6]) F.cyl(cx, 1.5, 0, 0.28, 0.08, 0, cord, 'rope');   /* the cord round each stook */
+    }
+  }
+});
+FURN({
+  key: 'abyss_brick_stack', name: 'Clay bricks', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['stone', 'timber'],
+  w: 1.3, d: 1.0, h: 1.05, variants: 2, variantNames: ['fired bricks on a pallet', 'mud bricks drying in an open stack'],
+  variantDims: [{ w: 1.3, d: 1.0, h: 1.05 }, { w: 1.6, d: 1.0, h: 0.55 }],
+  build: function (F) {
+    if (F.variant === 0) {
+      /* a plank pallet, nine courses of fired brick (each course a tone of its own), three loose bricks on top */
+      const pk = F.pick(['plankOak', 'plankTan', 'plankDusk']);
+      for (const z of [-0.4, 0, 0.4]) F.box(0, 0, z, 1.2, 0.08, 0.12, 0, F.shade(pk, -0.15), 'plank');
+      F.box(0, 0.08, 0, 1.2, 0.04, 1.0, 0, pk, 'plank');
+      const brick = ['clayLaterite', 'clayRust', 'clayRed', 'clayDarkRed'];
+      for (let c = 0; c < 9; c++) F.box(0, 0.12 + c * 0.085, 0, 1.12, 0.077, 0.92, 0, F.shade(F.pick(brick), F.rr(-0.06, 0.06)), 'stone');
+      for (let k = 0; k < 3; k++) F.box(-0.3 + k * 0.3, 0.885, F.rr(-0.2, 0.2), 0.23, 0.075, 0.11, F.rr(-0.4, 0.4), F.pick(brick), 'stone');
+    } else {
+      /* sun-dried mud bricks stacked crosswise with gaps so the wind dries them: courses alternate along x and along z */
+      const mud = ['clayOchre', 'clayMud', 'clayStraw', 'clayBrown'];
+      for (let c = 0; c < 5; c++) {
+        const y = c * 0.105;
+        if (c % 2 === 0) { for (const z of [-0.35, 0, 0.35]) for (const x of [-0.55, 0, 0.55]) F.box(x, y, z, 0.42, 0.1, 0.2, 0, F.pick(mud), 'stone'); }
+        else { for (const x of [-0.6, -0.2, 0.2, 0.6]) for (const z of [-0.24, 0.24]) F.box(x, y, z, 0.2, 0.1, 0.42, 0, F.pick(mud), 'stone'); }
+      }
+    }
+  }
+});
+FURN({
+  key: 'abyss_lime_sacks', name: 'Lime sacks', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['cloth', 'timber', 'plaster', 'rustSteel'],
+  w: 1.3, d: 1.1, h: 0.9, variants: 2, variantNames: ['sacks on a pallet', 'slaking tub and sacks'],
+  variantDims: [{ w: 1.3, d: 1.1, h: 0.9 }, { w: 2.1, d: 1.2, h: 1.0 }],
+  build: function (F) {
+    const sack = ['canvasPale', 'canvasRaw', 'clothCream'], lime = F.col('plasterLime');
+    if (F.variant === 0) {
+      const pk = F.pick(['plankOak', 'plankTan', 'plankDusk']);
+      for (const z of [-0.4, 0, 0.4]) F.box(0, 0, z, 1.2, 0.08, 0.12, 0, F.shade(pk, -0.15), 'plank');
+      F.box(0, 0.08, 0, 1.2, 0.04, 1.0, 0, pk, 'plank');
+      for (const y of [0.23, 0.45]) for (const x of [-0.3, 0.3]) for (const z of [-0.25, 0.25]) F.blob(x, y, z, 0.28, 0.22, F.rr(-0.3, 0.3), F.pick(sack), 'cloth');
+      F.blob(0, 0.67, 0, 0.28, 0.22, 0.4, F.pick(sack), 'cloth');
+      F.dome(0.42, 0.12, 0.4, 0.14, 0.07, 0, lime, 'plaster');                      /* lime spilt from a split sack */
+    } else {
+      /* a cut drum as the slaking tub, white with lime putty, a paddle in it; three sacks beside it */
+      F.cyl(-0.5, 0, 0, 0.45, 0.55, 0, F.col('rustDeep'), 'rust');
+      F.cyl(-0.5, 0.5, 0, 0.42, 0.04, 0, lime, 'plaster');
+      F.rod(-0.55, 0.3, 0.05, -0.2, 0.95, 0.3, 0.025, F.col('timberSmoke'), 'wood');
+      F.blob(0.35, 0.11, -0.25, 0.28, 0.22, 0.3, F.pick(sack), 'cloth');
+      F.blob(0.75, 0.11, 0.2, 0.28, 0.22, -0.2, F.pick(sack), 'cloth');
+      F.blob(0.55, 0.32, -0.02, 0.28, 0.22, 0.6, F.pick(sack), 'cloth');
+      F.dome(0.0, 0, 0.35, 0.18, 0.05, 0, lime, 'plaster');
     }
   }
 });
@@ -15640,7 +15852,11 @@ FURN_CULTURE('eastabyss', { palette: Object.assign({
   timberWalnut: 0x6a4e34, timberSmoke: 0x5c432c, plankOak: 0x9a7a52, plankTan: 0x8a6c48, plankHoney: 0xa8865c, plankDusk: 0x7c6040,
   thatchGold: 0xc8b272, saltWhite: 0xe9e4d6, brass: 0xb08432, riceGreen: 0xb0c46c, fishSilver: 0x9aa8b0, fishPale: 0xc0a888,
   /* new: the Locus kit's PADDYC[1] (the greener sheaf), the dock's hung net, SALTCRUSTC[1] (the salt in a tub) */
-  riceSheaf: 0x9cbc5e, netGreen: 0x6a7a6c, saltBright: 0xf2ede2
+  riceSheaf: 0x9cbc5e, netGreen: 0x6a7a6c, saltBright: 0xf2ede2,
+  /* new (2026-10, the builders' yard): the eastern-abyss biome's timber (biomes/eastabyss/src/50-biome-eastabyss-species.js:
+     the seal-tree's and the scale-tree's bark), the pale sawn wood, sawdust and a salvaged saw blade */
+  sealBark: 0x4e5646, sealBarkDark: 0x444c3c, sealBarkPale: 0x5e6654, scaleBark: 0x505c48, scaleBarkDark: 0x46523e, scaleBarkPale: 0x5a6652,
+  sawnPale: 0xd6bf94, sawnFresh: 0xc9a974, sawnOld: 0xa89068, sawdust: 0xdcc8a0, sawBlade: 0x8c9094
 }, FPAL['eastabyss'] || {}) });
 FURN_CULTURE('yuni-common', { palette: Object.assign({
   /* new: the Locus kit's THATCHC (the warehouse's thatch bales); ropeMustard is the core's */
@@ -15798,6 +16014,146 @@ FURN({
       const x = -0.36 + i * 0.36, z = (r ? 0.15 : -0.15), s = (i + r) % 2 ? 1 : -1, c = F.pick(['fishSilver', 'fishPale']);
       F.rod(x - s * 0.13, 0.095, z, x + s * 0.1, 0.095, z, 0.045, c, 'food');              /* the body, head to s */
       F.box(x - s * 0.16, 0.07, z, 0.06, 0.02, 0.09, 0, F.shade(c, -0.15), 'food');        /* the tail */
+    }
+  }
+});
+
+/* ======== The builders' yard (2026-10): timber for the Eastern Abyssal kit's abyss_shop_builder ========
+   (settlements/locus/src/65-abyss-40-shops.js, Mungo's timber yard). The eastern-abyss biome's two timber trees:
+   the seal-tree's fluted grey-green pole and the scale-tree's green-grey bark; sawn, both are pale. Outdoor only: the
+   interiors never pick them for a room. */
+const JOB_BARK = ['sealBark', 'sealBarkDark', 'sealBarkPale', 'scaleBark', 'scaleBarkDark', 'scaleBarkPale'];
+const JOB_SAWN = ['sawnPale', 'sawnFresh', 'sawnOld'];
+/* a pole or log from a to b ([x, y, z], its axis), radius r, in bark colour c, with a pale sawn disc on each end */
+function JOB_pole(F, a, b, r, c) {
+  F.rod(a[0], a[1], a[2], b[0], b[1], b[2], r, c, 'bark');
+  const L = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) || 1, u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L, (b[2] - a[2]) / L], cut = F.col('sawnFresh');
+  for (const e of [[a, -1], [b, 1]]) {
+    const p = e[0], s = e[1];
+    F.rod(p[0] - s * u[0] * 0.006, p[1] - s * u[1] * 0.006, p[2] - s * u[2] * 0.006, p[0] + s * u[0] * 0.012, p[1] + s * u[1] * 0.012, p[2] + s * u[2] * 0.012, r * 0.9, cut, 'wood');
+  }
+}
+/* a spoked wheel standing in the local x-y plane (its axle along z) at (x, y, z), radius R: an octagonal rim of beams
+   (a rod's round section drops to four sides at the runtime's detail, a beam's square does not) */
+function JOB_wheel(F, x, y, z, R, c) {
+  for (let k = 0; k < 8; k++) {
+    const a0 = k * Math.PI / 4 + Math.PI / 8, a1 = a0 + Math.PI / 4;
+    F.beam(x + Math.cos(a0) * R, y + Math.sin(a0) * R, z, x + Math.cos(a1) * R, y + Math.sin(a1) * R, z, 0.07, 0.07, c, 'rust');
+  }
+  for (let k = 0; k < 2; k++) {
+    const a = k * Math.PI / 2 + Math.PI / 4;
+    F.beam(x - Math.cos(a) * R, y - Math.sin(a) * R, z, x + Math.cos(a) * R, y + Math.sin(a) * R, z, 0.04, 0.04, c, 'rust');
+  }
+}
+
+/* ---------- carpentry ---------- */
+FURN({
+  key: 'job_pole_rack', name: 'Timber poles', culture: 'eastabyss', tier: 'common', job: 'carpentry', type: 'rack', setting: 'outdoor',
+  rooms: ['yard', 'dock'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['bark', 'timber'],
+  w: 6.4, d: 1.6, h: 1.4, variants: 3, variantNames: ['seal-tree and scale-tree poles on trestles', 'felled logs on skids', 'poles leaning on a rail'],
+  variantDims: [{ w: 6.4, d: 1.6, h: 1.4 }, { w: 6.2, d: 2.2, h: 1.25 }, { w: 4.4, d: 2.1, h: 4.6 }],
+  build: function (F) {
+    const v = F.variant, tc = F.col('timberSmoke');
+    if (v === 0) {
+      /* three trestles (two legs, two bearers), six poles on the low bearers and four on the high */
+      for (const x of [-2.6, 0, 2.6]) {
+        for (const z of [-0.7, 0.7]) F.box(x, 0, z, 0.12, 1.3, 0.12, 0, tc, 'wood');
+        F.box(x, 0.36, 0, 0.14, 0.12, 1.56, 0, tc, 'wood');
+        F.box(x, 0.86, 0, 0.14, 0.12, 1.56, 0, tc, 'wood');
+      }
+      for (let i = 0; i < 6; i++) {
+        const r = F.rr(0.07, 0.1), z = -0.6 + i * 0.24;
+        JOB_pole(F, [-3.1 + F.rr(0, 0.2), 0.48 + r, z], [3.1 - F.rr(0, 0.2), 0.48 + r, z], r, F.pick(JOB_BARK));
+      }
+      for (let i = 0; i < 4; i++) {
+        const r = F.rr(0.06, 0.09), z = -0.45 + i * 0.3;
+        JOB_pole(F, [-3.0 + F.rr(0, 0.3), 0.98 + r, z], [3.0 - F.rr(0, 0.3), 0.98 + r, z], r, F.pick(JOB_BARK));
+      }
+    } else if (v === 1) {
+      /* the felled logs as the lumberjacks deliver them: three on skids, two in the grooves on top, bark on */
+      for (const x of [-2.0, 0.2, 2.2]) F.box(x, 0, 0, 0.22, 0.16, 2.1, 0, tc, 'wood');
+      const R = [0.3, 0.27, 0.32];
+      [-0.68, 0, 0.68].forEach(function (z, i) {
+        JOB_pole(F, [-3.05 + F.rr(0, 0.15), 0.16 + R[i], z], [3.05 - F.rr(0, 0.15), 0.16 + R[i], z], R[i], F.pick(JOB_BARK));
+      });
+      [-0.34, 0.34].forEach(function (z) {
+        const r = F.rr(0.22, 0.26);
+        JOB_pole(F, [-2.8 + F.rr(0, 0.3), 0.92, z], [2.8 - F.rr(0, 0.3), 0.92, z], r, F.pick(JOB_BARK));
+      });
+    } else {
+      /* poles stood on end, leaning back on a rail between two posts: the seal-tree's long unbranched shafts */
+      for (const x of [-2.0, 2.0]) F.box(x, 0, -0.6, 0.14, 3.4, 0.14, 0, tc, 'wood');
+      F.box(0, 3.1, -0.6, 4.3, 0.12, 0.14, 0, tc, 'wood');
+      for (let i = 0; i < 11; i++) {
+        const x = -1.8 + i * 0.36 + F.rr(-0.05, 0.05), r = F.rr(0.06, 0.09), top = F.rr(4.0, 4.45);
+        const fz = 0.72, rz = -0.53 + r, t = top / 3.16;           /* foot at z 0.72, touching the rail's front face at y 3.16 */
+        F.rod(x, 0.03, fz, x, top, fz + (rz - fz) * t, r, F.pick(JOB_BARK), 'bark');
+      }
+    }
+  }
+});
+FURN({
+  key: 'job_plank_stack', name: 'Sawn planks', culture: 'eastabyss', tier: 'common', job: 'carpentry', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber'],
+  w: 4.2, d: 1.3, h: 1.1, variants: 2, variantNames: ['stickered stack, drying', 'boards on squared beams'],
+  variantDims: [{ w: 4.2, d: 1.3, h: 1.1 }, { w: 3.8, d: 1.2, h: 0.62 }],
+  build: function (F) {
+    const tc = F.col('timberSmoke');
+    if (F.variant === 0) {
+      /* three sleepers, seven layers of four boards, the layers held apart by thin stickers so the air dries them */
+      for (const x of [-1.7, 0, 1.7]) F.box(x, 0, 0, 0.16, 0.14, 1.3, 0, tc, 'wood');
+      for (let l = 0; l < 7; l++) {
+        const y = 0.14 + l * 0.13;
+        for (let b = 0; b < 4; b++) F.box(F.rr(-0.06, 0.06), y, -0.465 + b * 0.31, F.rr(3.9, 4.0), 0.08, 0.27, 0, F.shade(F.pick(JOB_SAWN), F.rr(-0.05, 0.05)), 'plank');
+        if (l < 6) for (const x of [-1.7, 0, 1.7]) F.box(x, y + 0.08, 0, 0.05, 0.05, 1.24, 0, F.col('sawnOld'), 'wood');
+      }
+    } else {
+      /* three squared beams on two sleepers, a layer of boards across them, a beam on top */
+      for (const x of [-1.4, 1.4]) F.box(x, 0, 0, 0.16, 0.12, 1.2, 0, tc, 'wood');
+      for (const z of [-0.4, 0, 0.4]) F.box(F.rr(-0.05, 0.05), 0.12, z, 3.6, 0.2, 0.2, 0, F.pick(JOB_SAWN), 'plank');
+      for (let b = 0; b < 4; b++) F.box(F.rr(-0.08, 0.08), 0.32, -0.42 + b * 0.28, 3.5, 0.06, 0.24, 0, F.shade(F.pick(JOB_SAWN), F.rr(-0.05, 0.05)), 'plank');
+      F.box(0, 0.38, 0.05, 3.4, 0.2, 0.2, 0.03, F.pick(JOB_SAWN), 'plank');
+    }
+  }
+});
+FURN({
+  key: 'job_saw_bench', name: 'Saw bench', culture: 'eastabyss', tier: 'common', job: 'carpentry', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.9, back: 0.6 },
+  materials: ['timber', 'bark', 'metal', 'rustSteel'],
+  w: 3.0, d: 1.6, h: 1.9, variants: 2, variantNames: ['hand-cranked saw bench', 'saw-pit trestles with a pit saw'],
+  variantDims: [{ w: 3.0, d: 1.6, h: 1.9 }, { w: 4.6, d: 1.6, h: 2.6 }],
+  build: function (F) {
+    const tc = F.col('timberSmoke'), blade = F.col('sawBlade'), dust = F.col('sawdust');
+    if (F.variant === 0) {
+      /* a plank bench with a slot at x 0.4; a pole on it, a frame saw rising and falling in the slot between two posts,
+         worked by a crank wheel (a salvaged cart wheel) on the front through a connecting rod */
+      for (const x of [-1.2, 1.2]) for (const z of [-0.28, 0.28]) F.box(x, 0, z, 0.1, 0.8, 0.1, 0, tc, 'wood');
+      F.box(-0.475, 0.8, 0, 1.65, 0.08, 0.7, 0, F.col('sawnOld'), 'plank');
+      F.box(0.875, 0.8, 0, 0.85, 0.08, 0.7, 0, F.col('sawnOld'), 'plank');
+      JOB_pole(F, [-1.4, 1.0, 0], [1.25, 1.0, 0], 0.12, F.pick(JOB_BARK));
+      for (const z of [-0.42, 0.42]) F.box(0.4, 0, z, 0.1, 1.8, 0.1, 0, tc, 'wood');
+      F.box(0.4, 1.72, 0, 0.12, 0.08, 0.96, 0, tc, 'wood');
+      F.box(0.4, 0.45, 0, 0.02, 1.25, 0.28, 0, blade, 'metal');                     /* the blade, through the pole */
+      F.box(0.4, 1.66, 0, 0.08, 0.06, 0.4, 0, tc, 'wood');                          /* its upper yoke */
+      JOB_wheel(F, 1.0, 0.55, 0.62, 0.45, F.col('rustDeep'));
+      F.rod(1.0, 0.55, 0.5, 1.0, 0.55, 0.72, 0.05, tc, 'wood');                      /* the axle */
+      F.rod(1.0, 0.55, 0.7, 1.25, 0.8, 0.7, 0.03, F.col('rustDeep'), 'rust');        /* the crank and its handle */
+      F.rod(1.25, 0.8, 0.7, 1.25, 0.8, 0.78, 0.03, tc, 'wood');
+      F.rod(1.0, 0.95, 0.58, 0.42, 0.5, 0.12, 0.025, F.col('rustDeep'), 'rust');     /* the connecting rod to the blade's foot */
+      F.dome(0.4, 0, 0, 0.38, 0.12, 0, dust, 'wood');
+    } else {
+      /* two tall A-trestles, a log on them, a two-man pit saw through it (the top sawyer's tiller, the pitman's box) */
+      for (const x of [-1.3, 1.3]) {
+        for (const s of [-1, 1]) F.beam(x, 0, s * 0.7, x, 1.52, s * 0.1, 0.12, 0.12, tc, 'wood');
+        F.box(x, 1.44, 0, 0.16, 0.14, 0.5, 0, tc, 'wood');
+      }
+      JOB_pole(F, [-2.25, 1.86, 0], [2.25, 1.86, 0], 0.28, F.pick(JOB_BARK));
+      F.box(0.6, 0.9, 0, 0.03, 1.6, 0.2, 0, blade, 'metal');
+      F.box(0.6, 2.5, 0, 0.06, 0.06, 0.6, 0, tc, 'wood');
+      F.box(0.6, 0.84, 0, 0.08, 0.1, 0.36, 0, tc, 'wood');
+      F.dome(0.6, 0, 0, 0.5, 0.15, 0, dust, 'wood');
     }
   }
 });
@@ -17466,7 +17822,7 @@ const KF_API = (function () {
 
 return KF_API;
 })();
-/* kits/interiors bundle (kit_bundle.py): the core, the runtime adapter, sets iziz, locus, abyss, yuni. GENERATED; edit kits/interiors. */
+/* kits/interiors bundle (kit_bundle.py): the core, the runtime adapter, sets iziz, locus, abyss, yuni, yuni-town. GENERATED; edit kits/interiors. */
 /* ---- kits/interiors/src/10-core.js ---- */
 /* ======================== Interiors core: namespace, rng, geometry ========================
    ENGINE-NEUTRAL. Fragments 10-49 use no THREE, no DOM and no host global: they run in a
@@ -20249,6 +20605,26 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       note: 'the plank loft 8 x 4.4 x 5.8 (x -6.5..1.5, z -5.4..-1.0) on the deck at H 0.8: the shop behind the 3.6 m front, the ' +
         'canvas loft above (its front door is a hoist door: the planner fits an inside stair). The drying lines and the bolts on ' +
         'the deck are outside' },
+    { key: 'abyss_shop_builder', name: "Builders' yard", culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [18, 14],
+      rooms: [
+        { id: 'shop', kind: 'shop', poly: rect(7.15, 3.8, -4.675, -1.55), y: 0.6, h: 2.6,
+          doors: [{ at: [-4.675, 0.35], w: 6.0, swing: 'none' }, { at: [-1.1, -1.55], w: 3.0, swing: 'none' }] },
+        { id: 'store', kind: 'store', poly: rect(C6, CW, -4.7, -5.0), y: 0.7, h: 2.4, doors: [{ at: [-3.3, -3.86], w: 0.9 }],
+          windows: [{ at: [-6.5, -3.86], w: 1.1, sill: 1.1, h: 0.8 }] }],
+      note: 'variant 0 (added 2026-10 for Mungo): the plank deck (x -8.6..-0.8, z -6.6..0.6, H 0.6) under a swooping sail on four ' +
+        'corner poles, open to the street and to the yard, a plank wall on its left: the shop; the 6.1 m container at its back (x ' +
+        '-7.75..-1.65, z -6.22..-3.78), side door at x -3.3: the store. The timber yard (racks, plank stacks, saw bench, logs, ' +
+        'bricks, lime, reed, sheet) is open ground, not planned. Variant 1 (a plank shop-front on a container) is abyss_shop_builder#1' },
+    { key: 'abyss_shop_builder#1', name: "Builders' yard (variant 2: plank shop-front on a container, a hoist derrick over the log landing)",
+      culture: 'eastabyss', wealth: 0.45, types: ['market/shop', 'industry'], lot: [18, 14],
+      rooms: [
+        { id: 'shop', kind: 'shop', poly: rect(7.4, 4.0, 4.8, -2.25), y: 0.8, h: 2.9, doors: [{ at: [4.8, -0.25], w: 6.8, swing: 'none' }] },
+        { id: 'store', kind: 'store', poly: rect(C6, CW, 4.8, -5.6), y: 0.9, h: 2.4, doors: [{ at: [3.6, -4.46], w: 0.9 }],
+          windows: [{ at: [6.8, -4.46], w: 1.1, sill: 1.1, h: 0.8 }] }],
+      note: 'the deck (x 0.8..8.8, z -6.9..-0.2, H 0.8): the 6.1 m container at its back (x 1.75..7.85, z -6.82..-4.38, side door ' +
+        'at x 3.6) is the store; the plank shop-front built onto its front (plank walls at x 1.0 and 8.6, a corrugated roof ' +
+        'falling to 3.0 over the deck at the street) is the shop, open along its front. The derrick, the log landing, the saw ' +
+        'pit under its sail and the stacks are the open yard, not planned' },
 
     /* ---------- Hospitality and civic (65-abyss-50-civic.js) */
     { key: 'abyss_inn', name: 'Courtyard inn', culture: 'eastabyss', wealth: 0.5, types: ['tavern/inn', 'multi-family dwelling'], lot: [24, 23],
@@ -20802,8 +21178,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   ] });
 })(KratorInteriors);
 
-/* ---- kits/interiors/sets/yuni.js ---- */
-/* ======================== Interior set: Yuni (the Yuni base kit: settlements/yuni, settlements/locus 56-59) ========================
+/* ---- kits/interiors/sets/yuni-town.js ---- */
+/* ======================== Interior set: Yuni town keys (the Yuni base kit: settlements/yuni, settlements/locus 56-59) ========
+   Split from Verge's yuni.js when main's yuni.js (Mungo: the six middle-class houses, in detail) met it in a merge
+   (2026-10-05): this set keeps the keys that set lacks; the middle-class houses are there. Lookups search every set.
    The interiors of the Yuni BASE building kit, for the keys a Yuni-built town places (Lower Verge places exactly these):
    civic_chapter_house, trade_market_hall, trade_shop_house, trade_tavern, trade_caravanserai, mid_djenne_house,
    mid_courtyard_house, mid_bluewash_townhouse, mid_round_tower_house, poor_mud_house, rich_merchant_palace.
@@ -20972,7 +21350,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   /* ---- the flat-roofed mud house (57-poor.js mudRoom: fr8 battered 0.16, the door in the front face) */
   const mudL = [[-4.6, 3.9], [-0.6, 3.9], [-0.6, 0.5], [4.6, 0.5], [4.6, -4.1], [-4.0, -4.1], [-4.0, -0.1], [-4.6, -0.1]];
 
-  IX.sets.add({ set: 'yuni', title: 'Yuni: the base kit (the keys a Yuni town places)', culture: 'yuni-common', items: [
+  IX.sets.add({ set: 'yuni-town', title: 'Yuni base kit: the town keys (civic, trade, poor, rich; Lower Verge)', culture: 'yuni-common', items: [
     /* ---------- Civic (59-civic.js) */
     { key: 'civic_chapter_house', name: 'Chapter house of the Historians', culture: 'order', wealth: 0.78, types: ['civic', 'religious'], lot: [56, 48],
       rooms: [
@@ -21022,41 +21400,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         'of the gate. The left range is the stables (mangers in the gallery, no room doors); the court, the galleries, the gate tower (solid) ' +
         'and the corner towers (no door) are not planned. Yuni\'s own tag is nomad; furnished as yuni-common' },
 
-    /* ---------- Middle-class houses (56-mid.js) */
-    { key: 'mid_djenne_house', name: 'Djenne-front town house', culture: 'yuni-common', wealth: 0.5, types: ['single-family dwelling'], lot: [11, 9],
-      bodies: djenne(6.4),
-      note: 'variant 0: two storeys in the battered banco block (9.4 x 7.0, H 6.4), the door in the potige at x 0; the upper storey is ' +
-        'drawn in by the batter (the 0.5 m walls absorb it). Yuni\'s own tag is sahelian; furnished as yuni-common (its fallback reaches sahelian)' },
-    { key: 'mid_djenne_house#1', name: 'Djenne-front town house (variant 2)', culture: 'yuni-common', wealth: 0.5, types: ['single-family dwelling'], lot: [11, 9],
-      bodies: djenne(7.4), note: 'variant 1: H 7.4, two taller storeys' },
-    { key: 'mid_djenne_house#2', name: 'Djenne-front town house (variant 3: one storey)', culture: 'yuni-common', wealth: 0.5, types: ['single-family dwelling'], lot: [11, 9],
-      bodies: djenne(4.3), note: 'variant 2: H 4.3, one storey: living room and bedroom' },
-
-    { key: 'mid_courtyard_house', name: 'Courtyard house with corner tower', culture: 'yuni-common', wealth: 0.58, types: ['single-family dwelling'], lot: [12, 12],
-      rooms: courtyard(1),
-      note: 'four ranges round a 4 m court on the 0.7 m base slab: the front range (living room, the street door and a doorway to the court), ' +
-        'the back range and the far side range as one L bedroom, the tower-side range a kitchen open to the court; the tower\'s upper room ' +
-        '(a study) opens onto the roof. The tower\'s ground storey is inside the front range\'s corner (not planned)' },
-    { key: 'mid_courtyard_house#1', name: 'Courtyard house with corner tower (variant 2)', culture: 'yuni-common', wealth: 0.58, types: ['single-family dwelling'], lot: [12, 12],
-      rooms: courtyard(-1), note: 'variant 1: mirrored (the tower on the left)' },
-
-    { key: 'mid_bluewash_townhouse', name: 'Blue-wash townhouse', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [10, 10],
-      bodies: bluewash(2),
-      note: 'variant 0: two storeys of 3.2 in the battered body (8.6 x 7.2), the door at x -1.89; the mashrabiya bay and the roof terrace ' +
-        'with its stair bulkhead are not planned' },
-    { key: 'mid_bluewash_townhouse#1', name: 'Blue-wash townhouse (variant 2: three storeys)', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [10, 10],
-      bodies: bluewash(3), note: 'variant 1: three storeys, 7.8 wide, the door at x +1.72' },
-    { key: 'mid_bluewash_townhouse#2', name: 'Blue-wash townhouse (variant 3)', like: 'mid_bluewash_townhouse', note: 'variant 2: the plan of variant 0' },
-    { key: 'mid_bluewash_townhouse#3', name: 'Blue-wash townhouse (variant 4)', like: 'mid_bluewash_townhouse#1', note: 'variant 3: the plan of variant 1' },
-
-    { key: 'mid_round_tower_house', name: 'Round-tower house', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [13, 10],
-      rooms: roundTower(1, 3.5),
-      note: 'variant 0: the drum\'s ground storey (living room, the street door) and its upper storey (a bedroom opening onto the wing\'s roof ' +
-        'terrace), the lower wing (a kitchen) entered from the drum; no stair is drawn in the drum' },
-    { key: 'mid_round_tower_house#1', name: 'Round-tower house (variant 2)', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [13, 10],
-      rooms: roundTower(-1, 3.5), note: 'variant 1: mirrored (the drum on the right)' },
-    { key: 'mid_round_tower_house#2', name: 'Round-tower house (variant 3)', culture: 'yuni-common', wealth: 0.55, types: ['single-family dwelling'], lot: [13, 10],
-      rooms: roundTower(1, 3.9), note: 'variant 2: as variant 0, the wing 3.9 m high (the drum\'s upper floor at 3.9)' },
+    /* ---------- Middle-class houses: in sets/yuni.js (the detailed set, as Locus and Mungo build them) */
 
     /* ---------- Poor (57-poor.js) */
     { key: 'poor_mud_house', name: 'Flat-roofed mud house', culture: 'yuni-poor', wealth: 0.22, types: ['single-family dwelling'], lot: [11, 9],
@@ -21086,11 +21430,278 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   ] });
 })(KratorInteriors);
 
+/* ---- kits/interiors/sets/yuni.js ---- */
+/* ======================== Interior set: Yuni (base kit, as built by Locus and Mungo) ========================
+   The interiors of Yuni's middle-class houses (family 'mid') as the Locus engine builds them:
+   settlements/locus/src/55-mid-example.js (mid_washed_house) and 56-mid.js "16b" (the other five), both
+   forked from Yuni. One item per ASSET key for variant 0 and one `<key>#n` item for EVERY variant n > 0,
+   so a world looks a placed house up as byKey[v ? key + '#' + v : key]. A variant whose rooms are the same
+   as another's (only its colours, wash or roof dressing differ) is `like` that one.
+   Local frame = the builder's F: origin at the plot centre on the ground, +x right, +z the front, metres.
+   The walls are battered mud: `fr8` leans every face in to 84 % at its top, `rbody` (rounded corners rc)
+   to k at its parapet top. A body is planned on ONE outline (the planner fits its stair along an exterior
+   wall of every storey, so the storeys share it): the OUTER face at the house's mid-height, so the inner
+   face stays inside the leaning shell from the ground floor to the top ceiling; the rounded bodies are
+   octagons chamfered half way to the arcs (the inner corner stays 0.18 m inside the arc). Floor-to-floor 3.2 m (the windows' storeys) unless a note says otherwise.
+   Furniture culture yuni-common (falls back through yuni-court, yuni-poor, sahelian, nomad, order,
+   generic). Wealth = the middle of the ASSET's wealth band. Types = settlements/locus/src/64-locus-infra.js
+   section 3 ('single-family dwelling'; Yuni's own tag is dwelling-single). sets/README.md says how an item
+   is written.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const SH = IX.sets.shape, rect = SH.rect;
+  const R3 = function (v) { return Math.round(v * 1000) / 1000; };
+  const PI = Math.PI;
+  const CULT = 'yuni-common', DW = ['single-family dwelling'];
+  const WALL = 0.45;                                   /* the mud walls (the Locus still-house reads 0.5) */
+  /* a steep mud-house stair (0.2 risers on 0.22 treads, 0.9 wide): 3.2 m rises in 3.3 m of run, so it fits along a
+     house's side wall and the storey's cut does not have to run round it */
+  const STEEP = { w: 0.9, riser: 0.2, tread: 0.22 };
 
-// ==================== 64-izv-bundle.js   (GENERATED: settlements/iziz/src/10-core.js, settlements/iziz/src/12-stats.js, core/materials/20-textures.js, core/materials/22-materials.js, settlements/iziz/src/30-kit.js, settlements/iziz/src/32-surfaces.js, settlements/iziz/src/34-kitdefs.js, settlements/iziz/src/38-helpers2.js, settlements/iziz/src/50-registry.js, settlements/iziz/src/54-mat-concrete.js, core/materials/68-mat-v5.js, settlements/iziz/src/69-mat-salvage.js, core/materials/opt/69a-world-uv.js, settlements/iziz/src/69b-vern-mat.js, settlements/iziz/src/69c-vern-helpers.js, settlements/iziz/src/70-vern-dwellings.js, settlements/iziz/src/71-vern-trade.js, settlements/iziz/src/72-vern-civic.js, settlements/iziz/src/73-vern-infra.js, settlements/iziz/src/74-vern-guilds.js, settlements/iziz/src/74b-vern-frontier.js, kits/ancients/src/8ap-funicular.js)
+  /* ---- the builders' bodies, read back as outlines ---------------------------------------------- */
+  /* fr8(cx, 0, cz, W, H, D): the block leans in to 84 % at its top H; the outer face at height y */
+  function fr8(W, D, cx, cz, H, y) { const s = 1 - 0.16 * y / H; return rect(R3(W * s), R3(D * s), cx, cz); }
+  /* an octagon: half sizes a x b, corners chamfered by c */
+  function oct(a, b, c, cx, cz) {
+    return [[cx - a + c, cz - b], [cx + a - c, cz - b], [cx + a, cz - b + c], [cx + a, cz + b - c],
+      [cx + a - c, cz + b], [cx - a + c, cz + b], [cx - a, cz + b - c], [cx - a, cz - b + c]].map(function (p) { return [R3(p[0]), R3(p[1])]; });
+  }
+  /* rbody({ x, z, W, D, H, par, rc, k }): rounded corners rc, leaning in to k at yt = H + par; the outer face at
+     height y (chamfered half way to the arc: c = (2 - sqrt 2) rc / 2, which keeps the straight walls long enough
+     for a stair while the inner corner stays inside the arc) */
+  function rbody(W, D, cx, cz, rc, k, yt, y) {
+    const s = 1 - (1 - k) * y / yt;
+    return oct(W / 2 * s, D / 2 * s, (2 - Math.SQRT2) * rc * s / 2, cx, cz);
+  }
+  const frontZ = function (poly) { let z = -1e9; poly.forEach(function (p) { if (p[1] > z) z = p[1]; }); return R3(z); };
+  /* a point on the edge of SH.circle(r, n, cx, cz) in direction a (radians from +z toward +x: the shape's own) */
+  function onRing(r, n, cx, cz, a) {
+    const step = 2 * PI / n, mid = Math.round(a / step) * step, d = r * Math.cos(PI / n) / Math.cos(a - mid);
+    return [R3(cx + d * Math.sin(a)), R3(cz + d * Math.cos(a))];
+  }
+  /* mirror an outline in x (the builders' m = -1 variants), keeping its winding */
+  function mirror(poly) { return poly.map(function (p) { return [R3(0 - p[0]), p[1]]; }).reverse(); }
+
+  const items = [];
+
+  /* =================================================================== 1. BLUE-WASH TOWNHOUSE (56-mid.js) */
+  /* rbody x 0, z -0.7, D 7.2, rc 1.25, k 0.93, par 0.95; st = 3 on variants 1 and 3 (W 7.8), else 2 (W 8.6);
+     H = st * 3.2 + 0.3; door at x = (v%2 ? 1 : -1) * W * 0.22 on the front (B.zf(1.4)) */
+  function bluewash(v) {
+    const st = (v === 1 || v === 3) ? 3 : 2, H = st * 3.2 + 0.3, W = st === 3 ? 7.8 : 8.6, D = 7.2, cz = -0.7, yt = H + 0.95;
+    const dx = R3((v % 2 ? 1 : -1) * W * 0.22);
+    const lv = [];
+    for (let s = 0; s < st; s++) lv.push({ h: 2.95 });
+    const foot = rbody(W, D, 0, cz, 1.25, 0.93, yt, H / 2);
+    return {
+      bodies: [{ id: 'house', poly: foot, y: 0, levels: lv, wall: WALL, roof: 'flat',
+        doors: [{ at: [dx, frontZ(foot)], w: 1.3 }],
+        stair: STEEP, program: st === 3 ? [['living', 'kitchen'], ['hall', 'bedroom'], ['bedroom', 'bedroom']] : [['living', 'kitchen'], ['bedroom', 'bedroom']] }]
+    };
+  }
+  items.push(Object.assign({ key: 'mid_bluewash_townhouse', name: 'Blue-wash townhouse', culture: CULT, wealth: 0.55, types: DW, lot: [10, 10],
+    note: 'variant 0: the rounded, battered body 8.6 x 7.2 (centre z -0.7), two storeys of 3.2 m under a roof terrace, the parabolic ' +
+      'door at x -1.89 on the front. The mashrabiya bay on the first floor (2.3 x 1.1 on brackets) is not planned; the stair bulkhead on ' +
+      'the terrace implies a stair from the top storey to the roof that the plan leaves out. Variant 2 (blue-grey, the wide bulkhead) is ' +
+      'like variant 0; variants 1 and 3 (three storeys, W 7.8, door at x +1.72) are #1 and #3' }, bluewash(0)));
+  items.push(Object.assign({ key: 'mid_bluewash_townhouse#1', name: 'Blue-wash townhouse (variant 2: three storeys, door right)', culture: CULT,
+    wealth: 0.55, types: DW, lot: [10, 10],
+    note: 'the body 7.8 x 7.2, three storeys of 3.2 m (H 9.9) under the roof terrace, the door at x +1.72; the first floor holds the ' +
+      'reception room (hall) behind the mashrabiya bay (the bay itself is not planned)' }, bluewash(1)));
+  items.push({ key: 'mid_bluewash_townhouse#2', name: 'Blue-wash townhouse (variant 3: blue-grey wash, wide stair bulkhead)', like: 'mid_bluewash_townhouse',
+    note: 'variant 0\'s body and rooms; only the wash, the framed windows and the bigger roof bulkhead differ' });
+  items.push({ key: 'mid_bluewash_townhouse#3', name: 'Blue-wash townhouse (variant 4: three storeys in adobe)', like: 'mid_bluewash_townhouse#1',
+    note: '#1\'s body and rooms (three storeys, door right) in adobe with white trim' });
+
+  /* =================================================================== 2. DJENNE-FRONT TOWN HOUSE (56-mid.js) */
+  /* fr8(0, 0, -0.4, 9.4, H, 7.0), H = [6.4, 7.4, 4.3][v]; the potige panel stands 0.25 proud of the front with the
+     door in it at x 0. H > 5: two storeys (windows at 2.0 and H - 2.2), else one */
+  function djenne(v) {
+    const H = [6.4, 7.4, 4.3][v], W = 9.4, D = 7.0, cz = -0.4;
+    if (v === 2) {
+      const foot = fr8(W, D, 0, cz, H, H / 2);
+      return { bodies: [{ id: 'house', poly: foot, y: 0, levels: [{ h: 3.8 }], wall: WALL, roof: 'flat',
+        doors: [{ at: [0, frontZ(foot)], w: 1.3 }], program: ['living', 'bedroom'] }] };
+    }
+    const ff = v === 1 ? 3.7 : 3.2, h0 = ff - 0.25, h1 = R3(H - ff - 0.3);
+    const p0 = fr8(W, D, 0, cz, H, H / 2);
+    return { bodies: [{ id: 'house', poly: p0, y: 0, levels: [{ h: h0 }, { h: h1 }], wall: WALL, roof: 'flat',
+      doors: [{ at: [0, frontZ(p0)], w: 1.3 }], stair: STEEP, program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }] };
+  }
+  items.push(Object.assign({ key: 'mid_djenne_house', name: 'Djenne-front town house', culture: CULT, wealth: 0.5, types: DW, lot: [11, 9],
+    note: 'variant 0: the battered adobe block 9.4 x 7.0 (centre z -0.4, H 6.4), two storeys of 3.2 m under a parapeted roof terrace, ' +
+      'the door at x 0 in the potige panel (the panel and the pinnacled pilasters stand outside the wall). Variant 1 (red adobe, H 7.4, ' +
+      'storeys of 3.7) is #1; variant 2 (one storey, H 4.3, white wash on a black base) is #2' }, djenne(0)));
+  items.push(Object.assign({ key: 'mid_djenne_house#1', name: 'Djenne-front town house (variant 2: red adobe, tall storeys)', culture: CULT,
+    wealth: 0.5, types: DW, lot: [11, 9],
+    note: 'variant 0\'s block at H 7.4: the upper floor at 3.7 (windows at 2.0 and 5.2), the wide potige with five pinnacles' }, djenne(1)));
+  items.push(Object.assign({ key: 'mid_djenne_house#2', name: 'Djenne-front town house (variant 3: one storey, white wash)', culture: CULT,
+    wealth: 0.5, types: DW, lot: [11, 9],
+    note: 'one storey (H 4.3, the roof deck at 4.26): a living room with the hearth and a bedroom (a third room does not fit beside them); the black base band is paint, not a plinth' }, djenne(2)));
+
+  /* =================================================================== 3. STACKED-CUBE HOUSE, M'zab (56-mid.js) */
+  /* ground cube fr8(0, 0, -0.6, 10.4, 3.7, 9.0), door at x = m * 2.6 (m = -1 on variant 1); the second cube (W1 6.6, or
+     7.6 on variant 2) on its back corner at y 3.7: rooms 4.0 deep behind a 1.6 m arcaded loggia, the loggia's door at
+     x1 - m; variants 1 and 2 add a small tower room fr8(x2, 7.0, z2, 3.6, H2, 3.6) on the second cube's roof, its door
+     on its +-x side (x2 + m * 1.68). The builder draws a ladder from the ground roof to the second cube's roof; no stair
+     from the ground floor to the terrace is drawn */
+  function stacked(v) {
+    const m = v === 1 ? -1 : 1, W0 = 10.4, D0 = 9.0, H0 = 3.7, z0 = -0.6, w0 = W0 * 0.84, d0 = D0 * 0.84;
+    const W1 = v === 2 ? 7.6 : 6.6, D1 = 5.6, x1 = R3(-m * (w0 / 2 - W1 / 2 - 0.05)), z1 = z0 - d0 / 2 + D1 / 2 + 0.05;
+    /* the ground storey on the cube's TOP face (84 %): the second cube's back and outer side stand on it (to 0.05 m), so
+       the upper storey shares those two walls with it and the inside stair can rise along them */
+    const foot = fr8(W0, D0, 0, z0, H0, H0);
+    const fx = R3(-m * w0 / 2), ix = R3(x1 + m * W1 / 2), zb = R3(z0 - d0 / 2);
+    const up = m > 0 ? [[fx, zb], [ix, zb], [ix, R3(z1 + D1 / 2 - 1.6)], [fx, R3(z1 + D1 / 2 - 1.6)]]
+      : [[ix, zb], [fx, zb], [fx, R3(z1 + D1 / 2 - 1.6)], [ix, R3(z1 + D1 / 2 - 1.6)]];
+    const out = { bodies: [{ id: 'house', poly: foot, y: 0, levels: [{ h: 3.45 }, { h: 2.95, poly: up }], wall: WALL, roof: 'flat',
+      doors: [{ at: [R3(m * 2.6), frontZ(foot)], w: 1.3 }], stair: STEEP, program: [['living', 'kitchen'], ['bedroom']] }] };
+    if (v > 0) {
+      const W2 = 3.6, H2 = v === 2 ? 3.6 : 2.9, x2 = R3(x1 - m * (W1 / 2 - W2 / 2)), z2 = R3(z1 - D1 / 2 + W2 / 2);
+      const tp = fr8(W2, W2, x2, z2, H2, H2 / 2);
+      const half = (tp[1][0] - tp[0][0]) / 2;
+      out.bodies.push({ id: 'tower-room', poly: tp, y: 7.0, levels: [{ h: R3(H2 - 0.3) }], wall: 0.3, roof: 'flat',
+        doors: [{ at: [R3(x2 + m * half), z2], w: 0.8 }], program: ['study'] });
+    }
+    return out;
+  }
+  items.push(Object.assign({ key: 'mid_stacked_cubes', name: 'Stacked-cube house (M\'zab)', culture: CULT, wealth: 0.48, types: DW, lot: [12, 11],
+    note: 'variant 0: the battered ground cube 10.4 x 9.0 (centre z -0.6, H 3.7), door at x +2.6; the second cube (6.6 wide) on the back ' +
+      'left corner of its roof at 3.7, its rooms 6.6 x 4.0 behind the loggia (one bedroom), reached by the steep inside stair the planner fits along the walls the two cubes share; the ground storey is planned on the cube\'s top face (the door at z 3.18, in the wall), as living room and kitchen. ' +
+      'The loggia, its door onto the terrace and the terrace are open; the little dome on the upper roof is solid. ASSUMED: the builder ' +
+      'draws no stair from the ground floor to the terrace. Variant 1 (mirrored, a tower room) is #1; variant 2 (wider second cube, a ' +
+      'taller tower room) is #2' }, stacked(0)));
+  items.push(Object.assign({ key: 'mid_stacked_cubes#1', name: 'Stacked-cube house (variant 2: mirrored, a tower room on top)', culture: CULT,
+    wealth: 0.48, types: DW, lot: [12, 11],
+    note: 'variant 0 mirrored (door at x -2.6, the second cube on the back right) in adobe, plus the third cube: a 3.6 m tower room ' +
+      '(H 2.9) on the second cube\'s roof at 7.0, its door on its -x side onto that roof (reached by the drawn ladder from the ground ' +
+      'roof terrace): planned as a study' }, stacked(1)));
+  items.push(Object.assign({ key: 'mid_stacked_cubes#2', name: 'Stacked-cube house (variant 3: wide upper cube, tall tower room)', culture: CULT,
+    wealth: 0.48, types: DW, lot: [12, 11],
+    note: 'variant 0\'s plan with the second cube 7.6 wide and a tower room (3.6 m, H 3.6) on its roof at 7.0, its door on its +x side' }, stacked(2)));
+
+  /* =================================================================== 4. ROUND-TOWER HOUSE (56-mid.js) */
+  /* the drum: lathe R 3.7 at (tx, tz) = (-m * 2.6, -0.5) leaning to 90 % at H (6.8, or 7.6 on variant 2), its door at the
+     front; the lower wing rbody(x m * 2.9, z -0.9, 6.6 x 6.4, rc 0.9, k 0.95, H Hw 3.5 or 3.9, par 0.8) overlaps the drum
+     by 1.5 m and has no door of its own; the terrace door from the drum onto the wing roof at height Hw. A round drum
+     cannot take the planner's straight stair, so the rooms are explicit: the drum's two storeys joined by a spiral stair
+     (a fixture), and the wing */
+  function roundTower(v) {
+    const m = v === 1 ? -1 : 1, R = 3.7, tx = R3(-m * 2.6), tz = -0.5, H = v === 2 ? 7.6 : 6.8, Hw = v === 2 ? 3.9 : 3.5, n = 16;
+    const rr0 = function (y) { return R * (1 - 0.10 * y / H); };
+    const r0 = R3(rr0(Hw) - WALL), r1 = R3(rr0(H) - WALL), h0 = R3(Hw - 0.3), h1 = R3(H - Hw - 0.3);
+    /* the spiral stair, 1.5 m square, at m * 2.6 rad (back, wing side: clear of every door and window), facing the drum centre */
+    const sa = m * 2.6, sd = 1.85, sx = R3(tx + sd * Math.sin(sa)), sz = R3(tz + sd * Math.cos(sa)), sry = R3(sa + PI);
+    const win = function (r, a, sill) { return { at: onRing(r, n, tx, tz, a), w: 0.65, sill: sill, h: 0.95 }; };
+    /* the wing's room: its inner face at the top of the storey, less the drum (its base radius 3.72) */
+    const ws = 1 - 0.05 * Hw / (Hw + 0.8), wa = R3(3.3 * ws - WALL), wb = R3(3.2 * ws - WALL), wx = 2.9, wz = -0.9;
+    const Rb = 3.72, ax = 2.6, xl = wx - wa, zb = wz - wb, zt = wz + wb;          /* built for m = 1, mirrored after */
+    const phiT = Math.asin((zt - tz) / Rb), phiB = -Math.acos((xl + ax) / Rb);
+    let wing = [[R3(xl), R3(zb)], [R3(wx + wa), R3(zb)], [R3(wx + wa), R3(zt)]];
+    for (let i = 0; i <= 8; i++) { const ph = phiT + (phiB - phiT) * i / 8; wing.push([R3(-ax + Rb * Math.cos(ph)), R3(tz + Rb * Math.sin(ph))]); }
+    wing = wing.filter(function (p, i, A) { return i === 0 || Math.hypot(p[0] - A[i - 1][0], p[1] - A[i - 1][1]) > 1e-3; });
+    /* the arc passes phi 0 (the door) only when 8 steps land on it: put the door at the arc's own point nearest phi 0 */
+    const wdoor = [R3(m * (-ax + Rb)), tz];
+    const wwin = [[R3(m * (wx + 0.6)), R3(zt)], [R3(m * (wx + wa)), wz]];
+    if (m < 0) wing = mirror(wing);
+    return {
+      rooms: [
+        { id: 'drum', kind: 'living', poly: SH.circle(r0, n, tx, tz), y: 0, h: h0,
+          doors: [{ at: onRing(r0, n, tx, tz, 0), w: 1.3 }, { at: onRing(r0, n, tx, tz, m * PI / 2), w: 0.9, swing: 'none' }],
+          windows: [win(r0, -m * 0.85, 1.5), win(r0, -m * 2.9, 1.7)],
+          fixtures: [{ id: 'spiral', kind: 'stair', x: sx, z: sz, ry: sry, w: 1.5, d: 1.5, h: h0, clearance: { front: 0.7 } }] },
+        { id: 'drum-upper', kind: 'bedroom', level: 1, poly: SH.circle(r1, n, tx, tz), y: Hw, h: h1,
+          doors: [{ at: onRing(r1, n, tx, tz, m * (PI / 2 - 0.18)), w: 0.95 }],
+          windows: [win(r1, -0.55, 1.0), win(r1, 0.6, 1.0), win(r1, -m * 1.9, 1.0)],
+          fixtures: [{ id: 'spiral-well', kind: 'stairwell', x: sx, z: sz, ry: sry, w: 1.5, d: 1.5, h: h1, clearance: { front: 0.7 } }] },
+        { id: 'wing', kind: 'kitchen', poly: wing, y: 0, h: h0,
+          doors: [{ at: wdoor, w: 0.9, swing: 'none' }],
+          windows: [{ at: wwin[0], w: 0.7, sill: 1.55, h: 0.85 }, { at: wwin[1], w: 0.7, sill: 1.55, h: 0.85 }] }]
+    };
+  }
+  items.push(Object.assign({ key: 'mid_round_tower_house', name: 'Round-tower house', culture: CULT, wealth: 0.55, types: DW, lot: [13, 10],
+    note: 'variant 0: the domed drum (R 3.7, H 6.8) at x -2.6, two storeys: the living room on the ground (the street door at its front) ' +
+      'and a bedroom at 3.5 whose door opens onto the wing\'s roof terrace; the lower wing (6.6 x 6.4, H 3.5) on the right is the ' +
+      'kitchen. ASSUMED: the wing has no door of its own (it is entered through the drum wall, where the two overlap) and the drum ' +
+      'has no stair drawn (a 1.5 m spiral stair is a fixture in both drum rooms). Variant 1 (mirrored, flat-capped with merlons) is #1; ' +
+      'variant 2 (adobe, H 7.6, the wing 3.9) is #2' }, roundTower(0)));
+  items.push(Object.assign({ key: 'mid_round_tower_house#1', name: 'Round-tower house (variant 2: mirrored, flat cap with merlons)', culture: CULT,
+    wealth: 0.55, types: DW, lot: [13, 10],
+    note: 'variant 0 mirrored: the drum at x +2.6 with a flat roof terrace inside merlons, the wing on the left' }, roundTower(1)));
+  items.push(Object.assign({ key: 'mid_round_tower_house#2', name: 'Round-tower house (variant 3: adobe, tall drum)', culture: CULT,
+    wealth: 0.55, types: DW, lot: [13, 10],
+    note: 'variant 0\'s plan with the drum at H 7.6 (the upper floor at 3.9) and the wing 3.9 high' }, roundTower(2)));
+
+  /* =================================================================== 5. COURTYARD HOUSE WITH CORNER TOWER (56-mid.js) */
+  /* four ranges 3.5 deep round a 4 x 4 court (S 11, H 3.9) on the 0.7 m base band that also floors the court; the
+     street door at x -m * 1.2 in the front range, dark doorways from the court into the front and back ranges at
+     x 0; the side ranges show only windows. The corner tower (R 2.35 at (m * 3.5, 3.5), TH 7.6) stands on the front
+     corner on the m side; its room above the roof has its door onto the roof at its back */
+  function courtyard(v) {
+    const m = v ? -1 : 1, H = 3.9, TH = 7.6, R = 2.35, tx = R3(m * 3.5), tz = 3.5, n = 14;
+    /* built for m = 1, mirrored after: A = the front range up to the tower + the left range; B = the back range + the right range */
+    let A = [[-5.5, -2], [-2, -2], [-2, 2], [1.15, 2], [1.15, 5.5], [-5.5, 5.5]];
+    let B = [[-5.5, -5.5], [5.5, -5.5], [5.5, 1.15], [2, 1.15], [2, -2], [-5.5, -2]];
+    if (m < 0) { A = mirror(A); B = mirror(B); }
+    const rt = R3(R * (1 - 0.08 * TH / TH) - 0.35);
+    return {
+      bodies: [
+        { id: 'front', poly: A, y: 0.7, levels: [{ h: 2.9 }], wall: 0.4, roof: 'flat',
+          doors: [{ at: [R3(-m * 1.2), 5.5], w: 1.3 }, { at: [0, 2], w: 1.0 }], program: ['living', 'bedroom'] },
+        { id: 'back', poly: B, y: 0.7, levels: [{ h: 2.9 }], wall: 0.4, roof: 'flat',
+          doors: [{ at: [0, -2], w: 1.0 }], program: ['kitchen', 'store', 'bedroom'] }],
+      rooms: [
+        { id: 'tower-room', kind: 'study', poly: SH.circle(rt, n, tx, tz), y: H, h: R3(TH - H - 0.3), level: 1,
+          doors: [{ at: onRing(rt, n, tx, tz, PI), w: 0.8 }],
+          windows: [{ at: onRing(rt, n, tx, tz, 0), w: 0.65, sill: 1.0, h: 1.0 }, { at: onRing(rt, n, tx, tz, m * PI / 2), w: 0.65, sill: 1.0, h: 1.0 }] }]
+    };
+  }
+  items.push(Object.assign({ key: 'mid_courtyard_house', name: 'Courtyard house with corner tower', culture: CULT, wealth: 0.58, types: DW, lot: [12, 12],
+    note: 'variant 0: four ranges 3.5 deep round the 4 m court, floors at 0.7 (the base band), one storey to the walkable roof at 3.9. ' +
+      'Planned as two L bodies: the front range (street door at x -1.2, the court doorway at x 0) with the left range, and the back ' +
+      'range (its court doorway at x 0) with the right range; the corner tower\'s room above the roof (r 2.2, to 7.6) is a study, its ' +
+      'door onto the roof. ASSUMED: the side ranges have no doors (entered from the front and back ranges), the tower\'s lower storey ' +
+      '(inside the front-right corner) has no door and is left out, and no stair to the roof is drawn. Variant 1 (mirrored, adobe, the ' +
+      'flat-topped tower) is #1' }, courtyard(0)));
+  items.push(Object.assign({ key: 'mid_courtyard_house#1', name: 'Courtyard house with corner tower (variant 2: mirrored, adobe)', culture: CULT,
+    wealth: 0.58, types: DW, lot: [12, 12],
+    note: 'variant 0 mirrored: the street door at x +1.2, the tower on the front-left corner, crowned with merlons' }, courtyard(1)));
+
+  /* =================================================================== 6. WASHED PINNACLE HOUSE (55-mid-example.js) */
+  /* fr8(0, 0, 0, 10, H, 8): one storey (H 3.6) on variants 0 and 2, two (H 6.4) on 1 and 3; door at x = v%2 ? -0.5 : 0.5
+     on the front; the buttress-pilasters and their pinnacles stand outside the wall */
+  function washed(v) {
+    const two = v % 2 === 1, H = two ? 6.4 : 3.6, W = 10, D = 8, dx = v % 2 ? -0.5 : 0.5;
+    if (!two) {
+      const foot = fr8(W, D, 0, 0, H, H / 2);
+      return { bodies: [{ id: 'house', poly: foot, y: 0, levels: [{ h: 3.3 }], wall: WALL, roof: 'flat',
+        doors: [{ at: [dx, frontZ(foot)], w: 1.1 }], program: ['living', 'kitchen', 'bedroom'] }] };
+    }
+    const p0 = fr8(W, D, 0, 0, H, H / 2);
+    return { bodies: [{ id: 'house', poly: p0, y: 0, levels: [{ h: 2.95 }, { h: 2.9 }], wall: WALL, roof: 'flat',
+      doors: [{ at: [dx, frontZ(p0)], w: 1.1 }], stair: STEEP, program: [['living', 'kitchen'], ['bedroom', 'bedroom']] }] };
+  }
+  items.push(Object.assign({ key: 'mid_washed_house', name: 'Washed pinnacle house', culture: CULT, wealth: 0.5, types: DW, lot: [11, 9],
+    note: 'variant 0: the battered, lime-washed block 10 x 8 (H 3.6), one storey under the roof deck, the door at x +0.5; the ' +
+      'buttress-pilasters and their pinnacles stand outside the wall. Variants 1 and 3 (two storeys, H 6.4, door at x -0.5) are #1 ' +
+      'and #3; variant 2 (light blue wash) is like variant 0' }, washed(0)));
+  items.push(Object.assign({ key: 'mid_washed_house#1', name: 'Washed pinnacle house (variant 2: two storeys)', culture: CULT,
+    wealth: 0.5, types: DW, lot: [11, 9],
+    note: 'two storeys (H 6.4, the upper floor at 3.2), the door at x -0.5' }, washed(1)));
+  items.push({ key: 'mid_washed_house#2', name: 'Washed pinnacle house (variant 3: light blue wash)', like: 'mid_washed_house',
+    note: 'variant 0\'s body and rooms in a light blue wash' });
+  items.push({ key: 'mid_washed_house#3', name: 'Washed pinnacle house (variant 4: two storeys, dark blue wash)', like: 'mid_washed_house#1',
+    note: '#1\'s body and rooms (two storeys) in a dark blue wash' });
+
+  IX.sets.add({ set: 'yuni', title: 'Yuni (base kit, as built by Locus and Mungo)', culture: CULT, wealth: 0.5, items: items });
+})(KratorInteriors);
+
+
+// ==================== 64-izv-bundle.js   (GENERATED: settlements\iziz\src\10-core.js, settlements\iziz\src\12-stats.js, core\materials\20-textures.js, core\materials\22-materials.js, settlements\iziz\src\30-kit.js, settlements\iziz\src\32-surfaces.js, settlements\iziz\src\34-kitdefs.js, settlements\iziz\src\38-helpers2.js, settlements\iziz\src\50-registry.js, settlements\iziz\src\54-mat-concrete.js, core\materials\68-mat-v5.js, settlements\iziz\src\69-mat-salvage.js, core\materials\opt\69a-world-uv.js, settlements\iziz\src\69b-vern-mat.js, settlements\iziz\src\69c-vern-helpers.js, settlements\iziz\src\70-vern-dwellings.js, settlements\iziz\src\71-vern-trade.js, settlements\iziz\src\72-vern-civic.js, settlements\iziz\src\73-vern-infra.js, settlements\iziz\src\74-vern-guilds.js, settlements\iziz\src\74b-vern-frontier.js, kits\ancients\src\8ap-funicular.js)
 /* IZV: the Iziz Vernacular kit and its Ancients core, one closure (settlements/verge/build.py). GENERATED: edit settlements/iziz/src, core/materials or kits/ancients/src. */
 var IZV = (function(){
-/* ---- settlements/iziz/src/10-core.js ---- */
+/* ---- settlements\iziz\src\10-core.js ---- */
 // ---------------------------------------------------------------- error panel
 const ERRS=document.getElementById('errs');
 function reportErr(m){ERRS.style.display='block';ERRS.textContent+=m+'\n';}
@@ -21128,7 +21739,7 @@ function terrainH(x,z){return 0;}
 
 
 ;
-/* ---- settlements/iziz/src/12-stats.js ---- */
+/* ---- settlements\iziz\src\12-stats.js ---- */
 // ---------------------------------------------------------------- per-type accounting
 // One global tally, filled while the builders run. 90-scene.js sets TSTAT.cur
 // to the site key ('skyA/1' = Skyscraper A, ruined) before each builder call
@@ -21148,7 +21759,7 @@ function ktri(name){if(_KTRI[name]===undefined){const def=KIT.defs[name];_KTRI[n
 function finite3(a){return !!a&&isFinite(a[0])&&isFinite(a[1])&&isFinite(a[2]);}
 
 ;
-/* ---- core/materials/20-textures.js ---- */
+/* ---- core\materials\20-textures.js ---- */
 // ---------------------------------------------------------------- textures
 // All procedural, all generated once at load, all in world-ish units: a texture
 // tile is about 8 m across, because `lathe` sets uS = rFn(0)*TAU/8 and vS = cut/8.
@@ -21268,7 +21879,7 @@ TEX.ground=canvasTex(1024,1024,(g,w,h)=>{ // painted later, once the sites are k
  g.fillStyle='#8a4a34';g.fillRect(0,0,w,h);});
 
 ;
-/* ---- core/materials/22-materials.js ---- */
+/* ---- core\materials\22-materials.js ---- */
 // ---------------------------------------------------------------- materials
 const DS=THREE.DoubleSide;
 const MAT={
@@ -21319,7 +21930,7 @@ const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new T
 
 
 ;
-/* ---- settlements/iziz/src/30-kit.js ---- */
+/* ---- settlements\iziz\src\30-kit.js ---- */
 // ---------------------------------------------------------------- instancing kit
 // `meshes` is filled by kbake: name -> the one InstancedMesh that item baked
 // into. One kdef is one InstancedMesh, so anything that wants to switch a whole
@@ -21359,7 +21970,7 @@ function qAxis(ax,ay,az,a){return new THREE.Quaternion().setFromAxisAngle(new TH
 
 
 ;
-/* ---- settlements/iziz/src/32-surfaces.js ---- */
+/* ---- settlements\iziz\src\32-surfaces.js ---- */
 // ---------------------------------------------------------------- surfaces
 // fn(u,v)->[x,y,z]; opt.hole(u,v)->bool drops that quad. UVs scaled by opt.uS/vS (world-ish units).
 function gridSurface(fn,nu,nv,opt){opt=opt||{};const pos=[],uv=[],idx=[];const cols=nu+1;
@@ -21456,7 +22067,7 @@ function hyperGeo(r0,h,k){return lathe({rFn:y=>r0*Math.sqrt(1+k*Math.pow((y-h/2)
 
 
 ;
-/* ---- settlements/iziz/src/34-kitdefs.js ---- */
+/* ---- settlements\iziz\src\34-kitdefs.js ---- */
 // ---------------------------------------------------------------- kit definitions (shared geometry)
 kdef('winI',arcWindowGeo(2.2,4.2,.7),MAT.winIntact); kdef('winD',arcWindowGeo(2.2,4.2,.7),MAT.winDead);
 kdef('winBigI',arcWindowGeo(3,3.6,.7),MAT.winIntact); kdef('winBigD',arcWindowGeo(3,3.6,.7),MAT.winDead);
@@ -21560,7 +22171,7 @@ kdef('finial',new THREE.IcosahedronGeometry(1,0),MAT.glass);
 
 
 ;
-/* ---- settlements/iziz/src/38-helpers2.js ---- */
+/* ---- settlements\iziz\src\38-helpers2.js ---- */
 // ---------------------------------------------------------------- v2 helpers
 kdef('strutW',new THREE.BoxGeometry(1,1,1),MAT.white); kdef('strutR',new THREE.BoxGeometry(1,1,1),MAT.rust);
 kdef('cell',new THREE.BoxGeometry(1,1,.5),MAT.dot);
@@ -21590,7 +22201,7 @@ function ribCurveGeo(pts,r){return new THREE.TubeGeometry(new THREE.CatmullRomCu
 
 
 ;
-/* ---- settlements/iziz/src/50-registry.js ---- */
+/* ---- settlements\iziz\src\50-registry.js ---- */
 // ---------------------------------------------------------------- v3: inspector registry + group transforms
 const REG=[];function REGISTER(o){REG.push({name:o.name,x:o.x+KOFF[0],y:o.y||0,z:o.z+KOFF[2],r:o.r,h:o.h});}
 function useGroupXF(P){P.updateMatrix();KXF={m:P.matrix.clone(),q:P.quaternion.clone()};}
@@ -21602,7 +22213,7 @@ const STATE=d=>d===3?'repaired':d>0?'ruined':'intact';
 
 
 ;
-/* ---- settlements/iziz/src/54-mat-concrete.js ---- */
+/* ---- settlements\iziz\src\54-mat-concrete.js ---- */
 // ---------------------------------------------------------------- v4: concrete, brick, glass panes
 // Board-formed concrete: horizontal boards ~0.65 m deep, each poured a shade
 // different, with the joint standing proud, a form-tie hole grid, a rust weep
@@ -21661,7 +22272,7 @@ function bodyGroup(G,y0,d,dd,build,cutY,topR,stand){const P=new THREE.Group();P.
 
 
 ;
-/* ---- core/materials/68-mat-v5.js ---- */
+/* ---- core\materials\68-mat-v5.js ---- */
 // ---------------------------------------------------------------- v5 materials
 MAT.rock=new THREE.MeshStandardMaterial({map:TEX.concrete,color:0x8a5a42,roughness:1,side:DS});
 MAT.lawn=new THREE.MeshStandardMaterial({color:0x4f7a30,roughness:1,side:DS});
@@ -21678,7 +22289,7 @@ const PLATE=d=>d>0?'plateR':'plateW';
 
 
 ;
-/* ---- settlements/iziz/src/69-mat-salvage.js ---- */
+/* ---- settlements\iziz\src\69-mat-salvage.js ---- */
 // ---------------------------------------------------------------- salvage (decay level 3)
 // Everything a later people could cut, carry and nail up. It must never be
 // mistaken for ancient fabric: the ancients built in panelled white metal,
@@ -21872,7 +22483,7 @@ function repairPass(G,d){
   else if(rng()<.5)kput('dot',[p[0],p[1]+1.7,p[2]],qEuler(0,rng()*TAU,0),[1.2,1.2,1],WARM);}}
 
 ;
-/* ---- core/materials/opt/69a-world-uv.js ---- */
+/* ---- core\materials\opt\69a-world-uv.js ---- */
 // ---------------------------------------------------------------- world-unit UVs (core/materials/opt: the one shared copy)
 // Instances share one geometry, so a box's 0..1 UVs would stretch one texture
 // tile over a 20 m wall and squash it on a 0.2 m beam. This hook reads the
@@ -21897,7 +22508,7 @@ function vWorldUV(mat,K,Kv){mat.userData.uvK=K;
  const key='wuv|'+k;mat.customProgramCacheKey=()=>key;return mat;}
 
 ;
-/* ---- settlements/iziz/src/69b-vern-mat.js ---- */
+/* ---- settlements\iziz\src\69b-vern-mat.js ---- */
 // ================================================================= IZIZ VERNACULAR — materials + kit items
 // What the Izani build today, in timber, reclaimed metal and (for the rich)
 // stone. Every texture here is painted NEAR-GREY and WARM so that the per-
@@ -22056,7 +22667,7 @@ kdef('vFlag',VBOX,MAT.stone);   // paving slabs, tinted
 kdef('vRock',VBALL,MAT.stone);kdef('vFinial',VBALL,MAT.verdigris);kdef('vBallW',VBALL,MAT.slab);
 
 ;
-/* ---- settlements/iziz/src/69c-vern-helpers.js ---- */
+/* ---- settlements\iziz\src\69c-vern-helpers.js ---- */
 // ================================================================= IZIZ VERNACULAR — registry + building blocks
 // Every vernacular building is a named function build*(G,o) registered with
 // VERN.def(). It builds in a LOCAL frame: origin at the plot centre on the
@@ -22256,7 +22867,7 @@ function vnFolk(x,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spread)
 function vnPaving(x,y,z,w,d,ry,c,n){n=n||Math.round(w*d/4);for(let i=0;i<n;i++){const p=loc(x,z,rr(-w/2,w/2),rr(-d/2,d/2),ry);vB('vFlag',p[0],y-.06,p[1],rr(1.1,2.2),.1,rr(.9,1.8),ry+rr(-.1,.1),c||vC(vPick(VPAL.stoneDark)));}}
 
 ;
-/* ---- settlements/iziz/src/70-vern-dwellings.js ---- */
+/* ---- settlements\iziz\src\70-vern-dwellings.js ---- */
 // ================================================================= IZIZ VERNACULAR — dwellings
 // Three wealth tiers, front toward +z. Poor: stilts, boards, salvage, thatch,
 // no light. Middle: timber frame, plaster, wooden stepped cornice, shutter
@@ -22459,7 +23070,7 @@ VERN.def({key:'vern_house_rich_a',name:'Stone manor',family:'dwelling',tags:Obje
 VERN.def({key:'vern_house_rich_b',name:'Domed house',family:'dwelling',tags:Object.assign({wealth:'rich',lit:true},VTAG_SF),w:26,d:23,h:16,build:buildVernRichB});
 
 ;
-/* ---- settlements/iziz/src/71-vern-trade.js ---- */
+/* ---- settlements\iziz\src\71-vern-trade.js ---- */
 // ================================================================= IZIZ VERNACULAR — trade and industry
 // Shops, the tavern, workshops, the scrap smithy, the market canopy, the
 // warehouse. None of these are civic, so none carry electric light; the
@@ -22645,7 +23256,7 @@ VERN.def({key:'vern_market',name:'Market canopy',family:'trade',tags:{type:['mar
 VERN.def({key:'vern_warehouse',name:'Warehouse',family:'industry',tags:{type:['industry'],wealth:'middle',lit:false},w:30,d:20,h:11,build:buildVernWarehouse});
 
 ;
-/* ---- settlements/iziz/src/72-vern-civic.js ---- */
+/* ---- settlements\iziz\src\72-vern-civic.js ---- */
 // ================================================================= IZIZ VERNACULAR — civic
 // School, hospital, barracks + drill yard, the alchemist's compound. Civic
 // buildings are built in stone with copper roofs where the Empire still can,
@@ -22793,7 +23404,7 @@ VERN.def({key:'vern_barracks',name:'Barracks and drill yard',family:'civic',tags
 VERN.def({key:'vern_alchemist',name:'Alchemist\'s compound',family:'civic',tags:{type:['civic','industry'],wealth:'civic',lit:true},w:32,d:28,h:19,build:buildVernAlchemist});
 
 ;
-/* ---- settlements/iziz/src/73-vern-infra.js ---- */
+/* ---- settlements\iziz\src\73-vern-infra.js ---- */
 // ================================================================= IZIZ VERNACULAR — infrastructure
 // Grain silos (farm), the reclaimed storage tank, the electric generator.
 // The generator is civic infrastructure and lit; the silos and tank are not.
@@ -22875,7 +23486,7 @@ VERN.def({key:'vern_tank',name:'Storage tank',family:'infrastructure',tags:{type
 VERN.def({key:'vern_generator',name:'Electric generator',family:'infrastructure',tags:{type:['infrastructure','civic'],wealth:'civic',lit:true},w:24,d:18,h:12,build:buildVernGenerator});
 
 ;
-/* ---- settlements/iziz/src/74-vern-guilds.js ---- */
+/* ---- settlements\iziz\src\74-vern-guilds.js ---- */
 // ================================================================= IZIZ VERNACULAR — guilds
 // The Farmers' Guild, the Beast Hunters' Guild, the caravanserai and the
 // Forgemaster's Hall where the Empire's surviving Ancient mechs are kept
@@ -23165,7 +23776,7 @@ VERN.def({key:'vern_caravanserai',name:'Caravanserai',family:'trade',tags:{type:
 VERN.def({key:'vern_forgemasters_hall',name:"Forgemaster's Hall",family:'civic',tags:{type:['civic','industry'],wealth:'civic',lit:true},w:40,d:32,h:18,build:buildVernForgemasters});
 
 ;
-/* ---- settlements/iziz/src/74b-vern-frontier.js ---- */
+/* ---- settlements\iziz\src\74b-vern-frontier.js ---- */
 // ================================================================= IZIZ VERNACULAR — the frontier (Verge's upper city)
 // The buildings an Iziz governor puts up in a desert caravan town at the head of a cliff trail: his palace, the
 // guard tower and barracks the city watch patrols from, a watch post, the toll house at the trailhead, the
@@ -23503,7 +24114,7 @@ VERN.def({key:'vern_mustering_ground',name:'Mustering ground',family:'civic',tag
 VERN.def({key:'vern_rest_stop',name:'Rest stop',family:'infrastructure',tags:{type:['infrastructure'],wealth:'middle',lit:false},w:18,d:12,h:9,build:buildVernRestStop});
 
 ;
-/* ---- kits/ancients/src/8ap-funicular.js ---- */
+/* ---- kits\ancients\src\8ap-funicular.js ---- */
 // ================================================================ THE FUNICULAR
 // The rusted, broken remnants of a MASSIVE Ancient funicular: one straight inclined railway from an UPPER
 // STATION (a concrete winding house with giant sheave wheels) on a cliff top to a LOWER STATION (a platform
@@ -24041,10 +24652,10 @@ return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, resee
   setTerrain: function(f){ terrainH = f; } };
 })();
 
-// ==================== 65-ykit-bundle.js   (GENERATED: settlements/locus/src/05-palette.js, settlements/locus/src/10-core.js, settlements/locus/src/45-kit.js, settlements/locus/src/47-texture.js, settlements/locus/src/50-structure.js, settlements/locus/src/53-assets.js, settlements/locus/src/56-mid.js, settlements/locus/src/57-poor.js, settlements/locus/src/58-rich.js, settlements/locus/src/59-civic.js, settlements/locus/src/64-locus-chapterhouse.js, settlements/locus/src/64-locus-core.js, settlements/locus/src/64-locus-dwellings.js, settlements/locus/src/64-locus-farm.js, settlements/locus/src/64-locus-infra.js, settlements/locus/src/64-locus-petroleum.js, settlements/locus/src/64-locus-plants.js, settlements/locus/src/64-locus-power.js, settlements/locus/src/65-abyss-00-core.js, settlements/locus/src/65-abyss-20-plants.js, settlements/locus/src/65-abyss-30-housing.js, settlements/locus/src/65-abyss-40-shops.js, settlements/locus/src/65-abyss-50-civic.js, settlements/locus/src/65-abyss-60-temple.js, settlements/locus/src/65-abyss-70-palace.js, settlements/locus/src/65-abyss-75-verge.js, settlements/locus/src/65-abyss-80-military.js, settlements/locus/src/65-abyss-90-farm.js, settlements/locus/src/72-lights.js, settlements/locus/src/81-glow.js)
+// ==================== 65-ykit-bundle.js   (GENERATED: settlements\locus\src\05-palette.js, settlements\locus\src\10-core.js, settlements\locus\src\45-kit.js, settlements\locus\src\47-texture.js, settlements\locus\src\50-structure.js, settlements\locus\src\53-assets.js, settlements\locus\src\56-mid.js, settlements\locus\src\57-poor.js, settlements\locus\src\58-rich.js, settlements\locus\src\59-civic.js, settlements\locus\src\64-locus-chapterhouse.js, settlements\locus\src\64-locus-core.js, settlements\locus\src\64-locus-dwellings.js, settlements\locus\src\64-locus-farm.js, settlements\locus\src\64-locus-infra.js, settlements\locus\src\64-locus-petroleum.js, settlements\locus\src\64-locus-plants.js, settlements\locus\src\64-locus-power.js, settlements\locus\src\65-abyss-00-core.js, settlements\locus\src\65-abyss-20-plants.js, settlements\locus\src\65-abyss-30-housing.js, settlements\locus\src\65-abyss-40-shops.js, settlements\locus\src\65-abyss-50-civic.js, settlements\locus\src\65-abyss-60-temple.js, settlements\locus\src\65-abyss-70-palace.js, settlements\locus\src\65-abyss-75-verge.js, settlements\locus\src\65-abyss-80-military.js, settlements\locus\src\65-abyss-90-farm.js, settlements\locus\src\72-lights.js, settlements/locus/src/81-glow.js)
 /* YKIT: the Yuni base assets, the Locus kit and the Eastern Abyssal kit with the Yuni engine they draw through, one closure (settlements/verge/build.py). GENERATED: edit settlements/locus/src. */
 var YKIT = (function(){
-/* ---- settlements/locus/src/05-palette.js ---- */
+/* ---- settlements\locus\src\05-palette.js ---- */
 /* ============================== 0. PALETTE ==============================
    FROZEN, planner-owned. All colour, material families and budgets for Yuni.
    build.py rejects colour arrays declared anywhere else. sRGB hexes.
@@ -24221,7 +24832,9 @@ var FAMMAT = {
   glowmat: { tex:null, scale:[1,1], basic:true }
 };
 
-var BUDGET = { drawCalls: 190, triangles: 7000000, instances: 460000 };
+/* triangles 7 M -> 10 M (2026-10-05): the canonical eastern-abyss biome (core/biome + biomes/eastabyss) has six species the old
+   port lacked (seal-tree, cordaite, seed fern, araucaria, beard oak, water palm): about +3 M headless (KNOWN_ISSUES.md). */
+var BUDGET = { drawCalls: 190, triangles: 10000000, instances: 460000 };
 
 var PASTELC=PAL.pastel, PASTELDC=PAL.pastelDeep, CANVASC=PAL.canvas, CANVASDYEC=PAL.canvasDye, REEDMATC=PAL.reedMat, PILEC=PAL.pile,
     MUDBROWNC=PAL.mudBrown, UMBERC=PAL.umber, SIENNAC=PAL.sienna, STEELDC=PAL.steelDark, PIPEC=PAL.pipeC, OILC=PAL.oil,
@@ -24234,7 +24847,7 @@ var ADOBEC=PAL.adobe, ADOBEREDC=PAL.adobeRed, WHITEC=PAL.whitewash, BLUELC=PAL.b
     TORONC=PAL.toron, PLANKC=PAL.plank, THATCHC=PAL.thatch, TILEC=PAL.tile, CLOTHC=PAL.cloth, AWNINGC=PAL.awning, BRASSC=PAL.brass;
 
 ;
-/* ---- settlements/locus/src/10-core.js ---- */
+/* ---- settlements\locus\src\10-core.js ---- */
 /* ============================== 1. CORE ==============================
    LOCUS (forked from Yuni's core). Units are METRES. x runs east, z runs SOUTH (north is -z), y up.
    A person is 1.75 tall. The origin is the centre of the walled circle.
@@ -24511,7 +25124,7 @@ var TICKS = [];
 var PATHVIZ = [];
 
 ;
-/* ---- settlements/locus/src/45-kit.js ---- */
+/* ---- settlements\locus\src\45-kit.js ---- */
 /* ============================== 10. KIT ==============================
    Two ways to make geometry, both bucketed by material FAMILY so the whole
    city folds into a handful of draw calls:
@@ -24967,7 +25580,7 @@ var SITES = [];
 function REGISTER(o){ SITES.push(o); return o; }
 
 ;
-/* ---- settlements/locus/src/47-texture.js ---- */
+/* ---- settlements\locus\src\47-texture.js ---- */
 /* ============================== 11. TEXTURES ==============================
    Procedural, seamless-tiling canvases. GRAYSCALE is the rule (the vertex /
    instance colour does the tinting) — the one exception is bark2, the Prism
@@ -25181,7 +25794,7 @@ function texFill(S, fn){
 })();
 
 ;
-/* ---- settlements/locus/src/50-structure.js ---- */
+/* ---- settlements\locus\src\50-structure.js ---- */
 /* ============================== 12. STRUCTURE (massing) ==============================
    PLANNER-OWNED. The butte, the city wall with its sentry towers and five
    gates, and the highway bridge. Shared shape helpers used by later passes
@@ -25301,7 +25914,7 @@ function LOCUS_BRIDGE(B){
 }
 
 ;
-/* ---- settlements/locus/src/53-assets.js ---- */
+/* ---- settlements\locus\src\53-assets.js ---- */
 /* ============================== 13b. ASSET REGISTRY + BUILD FRAME ==============================
    PLANNER-OWNED. Every building type in Yuni is an ASSET: metadata + a build(F)
    function that draws ONE instance through a local frame F, so no builder ever
@@ -25502,7 +26115,7 @@ function buildFurn(key,x,z,ry,opt){ return buildFrom(FURN_BY_KEY,'furniture',key
 function buildPlant(key,x,z,ry,opt){ return buildFrom(PLANT_BY_KEY,'plant',key,x,z,ry,opt); }
 
 ;
-/* ---- settlements/locus/src/56-mid.js ---- */
+/* ---- settlements\locus\src\56-mid.js ---- */
 /* ============================== 16b. ASSETS: middle-class houses + trade ==============================
    Agent "mid". Families 'mid' (dwellings), 'trade' (shops, taverns, workshops, caravanserai, market), 'prop'.
    One IIFE; colours only from PAL; geometry only through F (local frame, +z = front). */
@@ -26106,7 +26719,7 @@ reseed(560001);
 })();
 
 ;
-/* ---- settlements/locus/src/57-poor.js ---- */
+/* ---- settlements\locus\src\57-poor.js ---- */
 /* ============================== 16c. ASSETS: POOR QUARTERS — mud and thatch ==============================
    Agent "poor". Musgum shell houses, painted egg huts, Mandara thatched-cone clusters, flat-roofed banco houses,
    poor family compounds, and the small things: granary, shade hangar, animal pen, well, lean-to shack.
@@ -26408,7 +27021,7 @@ reseed(570001);
 })();
 
 ;
-/* ---- settlements/locus/src/58-rich.js ---- */
+/* ---- settlements\locus\src\58-rich.js ---- */
 /* ============================== 16d. ASSETS: WEALTHY COMPOUNDS + THE EMIR'S PALACE ==============================
    Agent "rich". Gaudi x Burmecia x Sahel: parabolic portals, undulating parapets, trencadis caps, Hausa polychrome
    relief, Tiebele painted drums, horn pinnacles (zanko), toron posts, cloisters. Geometry only through F (+ push for
@@ -26889,7 +27502,7 @@ reseed(580001);
 })();
 
 ;
-/* ---- settlements/locus/src/59-civic.js ---- */
+/* ---- settlements\locus\src\59-civic.js ---- */
 /* ============================== 16e. ASSETS: CIVIC, NEO-AFRICAN AND PARK PIECES ==============================
    Agent "civic". Families 'civic' (the Order's public buildings, Djenne/Sankore types, bathhouse, bell tower)
    and 'park' (the Parc-Guell-like kit). Geometry only through F (+ push/beamQuat for a wall-facing disc).  */
@@ -27780,7 +28393,7 @@ reseed(590001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-chapterhouse.js ---- */
+/* ---- settlements\locus\src\64-locus-chapterhouse.js ---- */
 /* ============================== 16Q. LOCUS — the Geomancers' Chapterhouse ==============================
    Yuni civic style in EARTH: raw umber drum, burnt-sienna dome, ochre bands, laterite pinnacles — the
    polychrome and the blue kept to a single frieze and the archivolts. The hall is one cavernous dome
@@ -27890,7 +28503,7 @@ reseed(645001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-core.js ---- */
+/* ---- settlements\locus\src\64-locus-core.js ---- */
 /* ============================== 16L. LOCUS — shared helpers ==============================
    The abyssal-desert style (stilt houses, canvas, reed, pastel washes) and the petroleum works
    share a small vocabulary that no Yuni fragment has: piles and decks, sagging canvas canopies,
@@ -28037,7 +28650,7 @@ var LOCUS = {}, LOCUS_ANIM = [];
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-dwellings.js ---- */
+/* ---- settlements\locus\src\64-locus-dwellings.js ---- */
 /* ============================== 16M. LOCUS — abyssal-desert dwellings, tents and shades ==============================
    The new style: Moorish / Berber / Persian by way of a salt marsh. Houses stand on piles above the flood, walls
    are reed mat or a pastel lime-wash over mud, openings are parabolic like Yuni's, and the real architecture is
@@ -28222,7 +28835,7 @@ reseed(641001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-farm.js ---- */
+/* ---- settlements\locus\src\64-locus-farm.js ---- */
 /* ============================== 16O. LOCUS — the salt-rice farm ==============================
    Six flooded paddies behind mud bunds, fed from an irrigation channel along the back through timber sluices;
    a farmstead on piles to one side with a granary, a threshing floor, a shadoof and the drying racks. The
@@ -28321,7 +28934,7 @@ reseed(643001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-infra.js ---- */
+/* ---- settlements\locus\src\64-locus-infra.js ---- */
 /* ============================== 16R. LOCUS — the warehouse, the fishing dock, and Yuni's tags ==============================
    Two buildings the city needs that neither kit had: the salt-and-oil warehouse on the ring and the fishing
    jetty on the river. And the project's tag rule applied to every Yuni asset the Locus world places, so the
@@ -28403,7 +29016,7 @@ reseed(646001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-petroleum.js ---- */
+/* ---- settlements\locus\src\64-locus-petroleum.js ---- */
 /* ============================== 16P. LOCUS — the petroleum works ==============================
    The Geomancers' oil: a pumpjack (an Ancient steel skid and gear re-set on a mud plinth, animated by
    76-locus-anim.js), riveted storage tanks inside mud bunds, a pipe rack, and the refinery — a walled
@@ -28587,7 +29200,7 @@ reseed(644001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-plants.js ---- */
+/* ---- settlements\locus\src\64-locus-plants.js ---- */
 /* ============================== 16N. LOCUS — crops and marsh-edge plants ==============================
    Registered as PLANTs (never built into a building), tagged for the biome: Locus is HYPERTROPIC / HUMID,
    ABYSSAL (the salt-lake floor), RIPARIAN. The farm places the rice through buildPlant.            */
@@ -28634,7 +29247,7 @@ reseed(642001);
 })();
 
 ;
-/* ---- settlements/locus/src/64-locus-power.js ---- */
+/* ---- settlements\locus\src\64-locus-power.js ---- */
 /* ============================== 16W. LOCUS — power and fuel ==============================
    Two Yuni-style works for the Geomancers, whitewashed with blue mosaic bands, parabolic arches,
    toron and cone pinnacles (the caravanserai's vocabulary rather than the refinery's mud-brown):
@@ -28804,7 +29417,7 @@ reseed(647001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-00-core.js ---- */
+/* ---- settlements\locus\src\65-abyss-00-core.js ---- */
 /* ============================== 16X. ABYSS — the Eastern Abyssal kit: shared helpers ==============================
    The buildings of the abyssal-desert culture on the salt marshes and deltas at the edge of the eastern abyss,
    laid out on their own sheet (TARGET 'abyss', abyss-kit.html). Every helper here takes an asset frame F and
@@ -29199,7 +29812,7 @@ KIT_ROWS.abyss = ['Housing — poor','Housing — middle','Housing — rich','Sh
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-20-plants.js ---- */
+/* ---- settlements\locus\src\65-abyss-20-plants.js ---- */
 /* ============================== 16X-P. ABYSS — plants the abyssal kit needs that no catalogue had ==============================
    Registered as PLANTs and placed by the buildings through ABYSS.plant (never drawn inside a build). Tagged for the
    eastern-abyss biome (hypertropic · humid · wet · abyssal) plus `use` — the README's edibility / harvestability tag. */
@@ -29225,7 +29838,7 @@ reseed(652001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-30-housing.js ---- */
+/* ---- settlements\locus\src\65-abyss-30-housing.js ---- */
 /* ============================== 16X-H. ABYSS — housing: poor, middle, rich ==============================
    Poor: salvage on piles — a drum, a container, a reed-and-sheet lean-to; little paint, mostly rust and reed, no lamps.
    Middle: stacked containers, a silo joined to a cabin by a tarp, a painted townhouse under a sail.
@@ -29427,7 +30040,7 @@ reseed(653001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-40-shops.js ---- */
+/* ---- settlements\locus\src\65-abyss-40-shops.js ---- */
 /* ============================== 16X-S. ABYSS — shops ==============================
    Eight trades, two designs each. Open fronts (+z) onto the street, a counter, goods, and a board sign with a
    pictograph (ABYSS.sign). Shops are middle-class: lanterns are UNLIT oil lanterns. Everything that stands in a shop
@@ -29627,10 +30240,117 @@ reseed(654001);
         ABYSS.furn(F, 'abyss_canvas_bolts', -2.5,0.6, 0, { ly:H }); ABYSS.furn(F, 'abyss_crates', 5.6,-3.8, 0, { ly:H, variant:1 });
         LOCUS.stair(F, -5.2, 2.0+H*1.15, 0,-1, H, 1.2); ABYSS.sign(F, -2.5,H+2.95,-0.9, 0,1, 1.6,0.7, 'sail'); ABYSS.lantern(F, 0.2,H+2.5,-0.6, false); }
     } });
+
+  /* -------------------------------------------------- builders' merchant and timber yard (2026-10, for Mungo) */
+  /* The abyssal builders' merchant: a container office with a counter on a plank deck, and a yard of the eastern-abyss
+     biome's timber (seal-tree and scale-tree poles, sawn planks, the felled logs the lumberjacks deliver), bundled mat reed
+     for thatch, salvaged corrugated sheet, drums, clay bricks and lime, a saw bench or a saw pit. Every loose thing is a
+     catalog piece (kits/catalog: job_pole_rack, job_plank_stack, job_saw_bench in the Jobs file; abyss_reed_bundles,
+     abyss_brick_stack, abyss_lime_sacks, abyss_scrap_stock, abyss_crates in the eastabyss file; pa_drum). The yard is
+     open ground; the shop (the deck under the sail, or the plank shop-front) and the container store are the rooms the
+     interior set plans (abyss_shop_builder, abyss_shop_builder#1). Seeds from 654901. */
+  reseed(654901);
+  /* the board's pictograph: a frame-saw blade with its teeth and handle over a sawn plank (ABYSS.sign has no saw) */
+  function sawSign(F, x,y,z, nx,nz, w,h){ ABYSS.sign(F, x,y,z, nx,nz, w,h, 'saw'); var yaw=Math.atan2(nx,nz), px=-nz, pz=nx, o=0.08, s=Math.min(w,h)*0.8;
+    function bx(u,v,ww,hh,c,r,fam){ F.box(x+px*u+nx*o, y+v-hh/2, z+pz*u+nz*o, ww,hh,0.04, r==null?yaw:[0,yaw,r], c, fam||'metal'); }
+    bx(0.08*s, 0.12*s, 0.62*s, 0.16*s, PAL.abTin);                                                     /* the blade */
+    for(var k=0;k<6;k++) bx(-0.18*s+k*0.1*s, 0.03*s, 0.06*s, 0.06*s, PAL.abTin, PI/4);                  /* its teeth */
+    bx(-0.34*s, 0.14*s, 0.14*s, 0.26*s, PAL.abSailRed, 0, 'timber');                                    /* the handle */
+    bx(0, -0.24*s, 0.8*s, 0.1*s, 0xc9a974, 0, 'plank'); }                                               /* the plank */
+  /* a yard fence of corrugated sheets on the line a..b (the salvage dealer's), open where the caller leaves a gap */
+  function sheetFence(F, a, b){ var L=Math.hypot(b[0]-a[0],b[1]-a[1]), n=Math.max(1,Math.round(L/1.8));
+    for(var i=0;i<n;i++){ var t0=i/n, t1=(i+1)/n, x0=mix(a[0],b[0],t0), z0=mix(a[1],b[1],t0), x1=mix(a[0],b[0],t1), z1=mix(a[1],b[1],t1);
+      F.box((x0+x1)/2,0,(z0+z1)/2, L/n+0.05,F.rr(1.6,2.1),0.06, Math.atan2(x1-x0,z1-z0)+PI/2, ABYSS.rust(F), 'corrugate'); } }
+  /* the yard gate on the street: two posts, a beam, the sign hung under it (a cart passes under the board, 2.8 m) */
+  function yardGate(F, x0,x1, z){ var tc=F.pick(TIMBERC), xm=(x0+x1)/2;
+    LOCUS.pole(F, x0,z, 4.0, 0.12, tc); LOCUS.pole(F, x1,z, 4.0, 0.12, tc); F.box(xm,3.8,z, x1-x0+0.5,0.2,0.22, 0, tc, 'timber');
+    [-0.8,0.8].forEach(function(u){ F.rod(xm+u,3.8,z, xm+u,3.55,z, 0.015, PAL.people.hair[2], 'timber'); });
+    sawSign(F, xm,3.15,z+0.02, 0,1, 2.2,0.8); }
+  ASSET({ key:'abyss_shop_builder', name:"Builders' yard", family:'trade', kit:'abyss', group:G, culture:'abyssal-desert', types:['market/shop','industry'],
+    wealth:[0.3,0.6], w:18, d:14, h:8, variants:2, variantNames:['container office under a sail, timber racks and a saw bench','plank shop-front on a container, a hoist derrick over the log landing'],
+    sim:{ activity:'TRADE', capacity:6 },
+    build:function(F){ var v=F.variant;
+      if(v===0){ var H=0.6;
+        F.box(0,0,0, 17.6,0.08,13.6, 0, PAL.abRubble, 'rubble');
+        /* the office: a 6.1 m container (the store) at the back of a plank deck, the counter in front under a swooping sail,
+           a plank wall closing the deck's left side */
+        ABYSS.platform(F, -8.6,-0.8, -6.6,0.6, H);
+        ABYSS.vessel(F, 'container', -4.7,H,-5.0, { len:6.1, col:ABYSS.cont(F), win:[[-1.8,1.5]], door:'side', doorAt:1.4 });
+        F.box(-8.54,H,-1.55, 0.12,2.6,4.3, 0, F.pick(PLANKC), 'plank');
+        var C=[[-8.38,4.7,-3.6],[-0.95,5.1,-3.6],[-0.95,4.1,0.5],[-8.38,3.9,0.5]];
+        C.forEach(function(c){ LOCUS.pole(F, c[0],c[2], c[1], 0.09); });
+        LOCUS.guy(F, -0.95,3.9,0.5, -0.3,1.4); LOCUS.guy(F, -8.38,3.7,0.5, -8.7,1.5);
+        ABYSS.sail(F, C, PAL.abSailOrange, { swoop:0.7, band:PAL.abSailOrange, bandW:0.6 });
+        ABYSS.furn(F, 'abyss_counter', -4.7,-1.0, 0, { ly:H, setting:'room' });
+        ABYSS.furn(F, 'abyss_hanging_goods', -7.9,-1.6, PI/2, { ly:H, setting:'room' });             /* tools and rope on a rail by the plank wall */
+        LOCUS.stair(F, -2.6, 0.6+H*1.15, 0,-1, H, 1.6);
+        ABYSS.lantern(F, -6.2,H+2.3,-3.55, false); ABYSS.lantern(F, -2.2,H+2.3,-3.55, false);
+        /* the street side: salvaged sheet, reed for thatch, bricks, lime and drums laid out for the buyers */
+        ABYSS.furn(F, 'abyss_scrap_stock', -6.6,2.4, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_reed_bundles', -6.8,5.6, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_brick_stack', -3.8,2.6, 0.1, { variant:0 }); ABYSS.furn(F, 'abyss_brick_stack', -3.6,4.2, 0, { variant:1 });
+        ABYSS.furn(F, 'abyss_lime_sacks', -1.8,4.0, -0.2, { variant:0 });
+        ABYSS.furn(F, 'abyss_crates', -3.2,6.0, 0, { variant:2 });
+        ABYSS.furn(F, 'pa_drum', -1.4,2.3, 0); ABYSS.furn(F, 'pa_drum', -0.8,2.8, 0, { variant:1 });
+        /* the timber yard, fenced on its back and right side, open to the street through the gate */
+        sheetFence(F, [-0.6,-6.9], [8.9,-6.9]); sheetFence(F, [8.9,-6.9], [8.9,6.7]);
+        LOCUS.rail(F, 3.95,6.8, 8.85,6.8, 0, F.pick(TIMBERC), 1.1);
+        yardGate(F, -0.5, 3.7, 6.6);
+        ABYSS.furn(F, 'job_pole_rack', 2.2,-5.75, 0, { variant:2 });                                    /* poles stood on end against the back fence */
+        ABYSS.furn(F, 'job_plank_stack', 6.7,-5.6, 0, { variant:1 });
+        ABYSS.furn(F, 'job_pole_rack', 5.6,-3.3, 0, { variant:0 });                                     /* the trestle rack */
+        ABYSS.furn(F, 'job_plank_stack', 2.6,-1.3, 0, { variant:0 });
+        ABYSS.furn(F, 'job_pole_rack', 7.6,1.7, PI/2, { variant:1 });                                   /* felled logs as delivered */
+        ABYSS.furn(F, 'job_saw_bench', 3.4,1.6, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_reed_bundles', 5.4,5.6, 0, { variant:1 });
+        ABYSS.lantern(F, -0.15,3.4,6.85, false); }
+      else { var H1=0.8;
+        F.box(0,0,0, 17.6,0.08,13.6, 0, PAL.abSalt, 'plaster');
+        /* the office: a container (the store) on a deck, a plank shop-front built onto its front (two plank walls, a
+           corrugated roof falling to the street), the counter across the front */
+        ABYSS.platform(F, 0.8,8.8, -6.9,-0.2, H1);
+        ABYSS.vessel(F, 'container', 4.8,H1,-5.6, { len:6.1, col:ABYSS.cont(F), win:[[2.0,1.5]], door:'side', doorAt:-1.2 });
+        var pk=F.pick(PLANKC);
+        [1.0,8.6].forEach(function(x){ F.box(x,H1,-2.35, 0.15,3.0,3.9, 0, pk, 'plank'); F.box(x,H1,-0.45, 0.24,3.0,0.24, 0, F.pick(TIMBERC), 'timber'); });
+        ABYSS.corrRoof(F, 4.8,H1+3.0,-2.3, 8.4,4.1, 0.45, ABYSS.rust(F));
+        ABYSS.furn(F, 'abyss_counter', 4.8,-1.2, 0, { ly:H1, setting:'room' });
+        ABYSS.furn(F, 'abyss_hanging_goods', 1.55,-2.6, PI/2, { ly:H1, setting:'room' });
+        LOCUS.stair(F, 4.8, -0.2+H1*1.15, 0,-1, H1, 1.8);
+        sawSign(F, 4.8,H1+3.45,-0.12, 0,1, 2.6,0.8); ABYSS.lantern(F, 2.2,H1+2.5,-0.6, false); ABYSS.lantern(F, 7.4,H1+2.5,-0.6, false);
+        /* the street side of the office: sheet, bricks, lime, reed stooks and drums */
+        ABYSS.furn(F, 'abyss_scrap_stock', 6.6,2.2, 0, { variant:0 });
+        ABYSS.furn(F, 'abyss_brick_stack', 2.4,2.4, 0, { variant:0 }); ABYSS.furn(F, 'abyss_brick_stack', 2.4,4.2, -0.1, { variant:1 });
+        ABYSS.furn(F, 'abyss_lime_sacks', 6.4,4.6, 0, { variant:1 });
+        ABYSS.furn(F, 'abyss_reed_bundles', 6.6,6.2, 0, { variant:1 });
+        ABYSS.furn(F, 'pa_drum', 4.4,5.8, 0); ABYSS.furn(F, 'pa_drum', 3.9,6.4, 0);
+        /* the timber yard on the left: the log landing at the back under a hoist derrick, the saw pit under a sail */
+        sheetFence(F, [-8.9,-6.95], [0.7,-6.95]); sheetFence(F, [-8.9,-6.95], [-8.9,6.7]);
+        ABYSS.furn(F, 'job_pole_rack', -4.6,-5.4, 0, { variant:1 });                                    /* the felled logs the lumberjacks deliver */
+        /* the derrick: two seal-tree legs and a back stay to the head, a boom out over the cart lane, a hand winch on the
+           right leg, the rope over the head to a hook with a log in its sling */
+        var tc=F.pick(TIMBERC), hd=[-4.6,7.0,-4.4], bt=[-4.6,6.0,-1.4];
+        [[-7.2,-3.0],[-2.0,-3.0]].forEach(function(p){ F.rod(p[0],0,p[1], hd[0],hd[1],hd[2], 0.13, tc, 'timber'); });
+        F.rod(-4.6,0,-6.85, hd[0],hd[1],hd[2], 0.11, tc, 'timber');
+        F.rod(-4.6,4.6,-3.9, bt[0],bt[1],bt[2], 0.1, tc, 'timber'); F.rod(hd[0],hd[1],hd[2], bt[0],bt[1],bt[2], 0.03, PAL.people.hair[2], 'timber');
+        F.cyl(hd[0],hd[1]-0.1,hd[2], 0.2,0.25, 0, STEELDC[0], 'rust');                                  /* the head block */
+        F.rod(-3.4,0.95,-3.0, -2.8,0.95,-3.0, 0.2, ABYSS.rust(F), 'rust'); F.rod(-2.75,0.95,-3.0, -2.75,1.35,-2.75, 0.03, STEELDC[1], 'rust');   /* the winch drum and its crank */
+        [-3.45,-2.75].forEach(function(x){ F.box(x,0,-3.0, 0.1,1.0,0.3, 0, tc, 'timber'); });
+        F.rod(-3.1,1.15,-3.0, hd[0],hd[1]-0.1,hd[2], 0.015, PAL.people.hair[2], 'timber');
+        F.rod(bt[0],bt[1],bt[2], bt[0],2.6,bt[2], 0.015, PAL.people.hair[2], 'timber'); F.box(bt[0],2.4,bt[2], 0.12,0.2,0.08, 0, STEELDC[2], 'rust');
+        F.rod(bt[0]-0.5,2.4,bt[2], bt[0],2.6,bt[2], 0.012, PAL.people.hair[2], 'timber'); F.rod(bt[0]+0.5,2.4,bt[2], bt[0],2.6,bt[2], 0.012, PAL.people.hair[2], 'timber');
+        F.rod(bt[0]-1.6,2.2,bt[2], bt[0]+1.6,2.2,bt[2], 0.22, 0x505c48, 'bark');                         /* a scale-tree log in the sling */
+        var S=[[-7.2,4.8,-0.4],[-1.6,4.4,-0.4],[-1.6,4.8,2.2],[-7.2,4.4,2.2]];
+        S.forEach(function(c){ LOCUS.pole(F, c[0],c[2], c[1], 0.09); });
+        ABYSS.sail(F, S, PAL.abSailOrange, { swoop:0.6, band:PAL.abSailRed, bandW:0.5 });
+        ABYSS.furn(F, 'job_saw_bench', -4.4,0.9, 0, { variant:1 });                                     /* the saw pit's trestles under the sail */
+        ABYSS.furn(F, 'job_pole_rack', -7.9,4.8, PI/2, { variant:2 });                                  /* poles stood against the left fence */
+        ABYSS.furn(F, 'job_plank_stack', -3.4,4.6, 0, { variant:0 }); ABYSS.furn(F, 'job_plank_stack', -3.0,6.3, 0, { variant:1 });
+        yardGate(F, -1.0, 0.6, 6.7); }
+    } });
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-50-civic.js ---- */
+/* ---- settlements\locus\src\65-abyss-50-civic.js ---- */
 /* ============================== 16X-C. ABYSS — hospitality and civic ==============================
    The inn (stacked rooms round a deck court under a sail), the tavern (a sail-roofed platform on piles), the
    caravanserai (a walled square court with rooms on all four sides and a swoop-roofed gate), the library (a great
@@ -29838,7 +30558,7 @@ reseed(655001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-60-temple.js ---- */
+/* ---- settlements\locus\src\65-abyss-60-temple.js ---- */
 /* ============================== 16X-T. ABYSS — the temple of the altar ==============================
    A square sacred precinct (~70 x 70 m). At its centre the great stepped ALTAR (ABYSS.altar: 14 x 14 m, four steps,
    stairs in the middle of every side, salt-white top with a tin-mirror border, the fire bowl and the ring of blue
@@ -29905,7 +30625,7 @@ reseed(656001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-70-palace.js ---- */
+/* ---- settlements\locus\src\65-abyss-70-palace.js ---- */
 /* ============================== 16X-K. ABYSS — the Headman's palace and its plaza ==============================
    ("the Headman" stands in for the ruler's title until the brief names it.)
    PALACE: the largest building in the kit. A raised deck compound on piles over the water; a central great hall on a
@@ -29989,7 +30709,7 @@ reseed(657001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-75-verge.js ---- */
+/* ---- settlements\locus\src\65-abyss-75-verge.js ---- */
 /* ============================== 16X-V. ABYSS — Lower Verge: the mayor's compound, the guard tower, the toll house, the palisade ==============================
    Lower Verge stands on the abyssal floor by the plunge pool of the Verge cataracts: a Yuni-controlled town in a mix of Yuni and
    eastern-abyssal building, run by a MAYOR ELECTED BY ITS RESIDENTS. These five assets are ADDITIONS to the Eastern Abyssal kit
@@ -30227,7 +30947,7 @@ reseed(657501);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-80-military.js ---- */
+/* ---- settlements\locus\src\65-abyss-80-military.js ---- */
 /* ============================== 16X-M. ABYSS — military: the wall system, the fortress, the barracks ==============================
    THE WALL SYSTEM (modular; documented in ABYSS-KIT-NOTES.md):
      abyss_wall_seg     one segment, exactly ABYSS.WALL.L = 12 m long (local x -6..+6), 8 m high, 3 m thick (z -1.5..+1.5),
@@ -30363,7 +31083,7 @@ reseed(658001);
 })();
 
 ;
-/* ---- settlements/locus/src/65-abyss-90-farm.js ---- */
+/* ---- settlements\locus\src\65-abyss-90-farm.js ---- */
 /* ============================== 16X-G. ABYSS — farming and storage ==============================
    The rural stilt farmhouse (pen, drying racks, threshing deck), the granary (domed silos on a raised deck), the
    WINDPUMP (a lattice tower with a multi-blade salvaged wheel and a tail vane, lifting brine-free water into a tank on
@@ -30489,7 +31209,7 @@ reseed(659001);
 })();
 
 ;
-/* ---- settlements/locus/src/72-lights.js ---- */
+/* ---- settlements\locus\src\72-lights.js ---- */
 /* ============================== 18. FIXED LAMPS ==============================
    PLANNER-OWNED. Two lighting systems, and the boundary between them is the
    point of the fragment.
@@ -30548,6 +31268,9 @@ var FIXED_LAMPS = 0, ELECTRIC_LAMPS = 0;
   /* the refinery ring's inner verge: the Geomancers' arc standards, cool white */
   for(var m=0;m<12;m++){ var a=m/12*TAU+0.13, x=Math.cos(a)*(RING0_R-RING_W/2-1.2), z=Math.sin(a)*(RING0_R-RING_W/2-1.2);
     if(placedAt(x,z,0.5)) continue; ARCPOST(x, terrainH(x,z), z, 6.2, 1.8, 26); FIXED_LAMPS++; ELECTRIC_LAMPS++; }
+  /* the buggy park: four arc standards at its corners, cool white (it is on the Geomancers' grid) */
+  if(PARKING){ [[-15,-8],[15,-8],[-15,8],[15,8]].forEach(function(p){ var q=loc(PARKING.x,PARKING.z,p[0],p[1],PARKING.ry); if(placedAt(q[0],q[1],0.4)) return;
+      ARCPOST(q[0], terrainH(q[0],q[1]), q[1], 5.6, 1.6, 24); FIXED_LAMPS++; ELECTRIC_LAMPS++; }); }
   /* the market square: oil lanterns on posts round the rim */
   for(m=0;m<10;m++){ var a2=m/10*TAU, x2=MARKET.x+Math.cos(a2)*(MARKET.r-2), z2=MARKET.z+Math.sin(a2)*(MARKET.r-2);
     if(placedAt(x2,z2,0.5)) continue; LAMPPOST(x2, terrainH(x2,z2), z2, 3.8, 1.2, 18, false); FIXED_LAMPS++; }

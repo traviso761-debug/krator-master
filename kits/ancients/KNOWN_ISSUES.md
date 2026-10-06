@@ -937,3 +937,21 @@ volumes; the beam's `rotation.y` advances frame to frame. Details in
 - [ ] Funicular: no sand drift, scree or plants on the ruin yet; no night state (nothing burns in it); the stairs mesh is one
       merged mesh per draw() call and is not chunked for LOD.
 - [x] The deck is not in `blocks`: a host walks it through `walk` (or `deckY`). Blocks are vertical solids only.
+## Ancient hosts (`--target hosts`, `src/8ap-host-*`)
+
+- [ ] **No stairs between plates**, as on A-K (see "Found by Ys"): a way-in pod opens one storey only.
+- [ ] **Sandstone and travertine are tinted board-formed concrete** (`TEX.concrete`): the Arcades (`HAC_MAT`) and the
+      Bell Hall (`HBH_MAT`) read as coursed stone at a distance and as boards up close. The material library has no
+      ashlar or travertine set; one needs finding or generating (`core/materials/PLAN.md`, "Prompts for generated
+      sources": warm sandstone ashlar, 0.6 m courses; pale travertine with open pores, 1.2 x 0.6 m slabs).
+- [ ] **The kit's `skyPlinth` ignores `ysPodiumR`**, so in the `hosts` target the Facet's podium does not shrink in the
+      "as a host" row (Ys's adapted copy does). The Bastion's base and the three mid-rise podiums shrink there.
+- [ ] **The Arcades' arcade walls are instanced** (`hacArcade`): decay holes and `ysWallHole` do not open them. They are
+      open arches already; a way-in at a pier is bedded against the pier. A cut level shows pier stubs instead.
+- [ ] **The Bell Hall's pods stop under the great drum's roof** (26 m): `avoid()` knows only the height, and the
+      bearings that reach the great drum would find nothing above it. The tall drum's upper 10 m takes no pod.
+- [ ] **The Capsule Stalks' generic pods** root only on the centre stalk's smooth bands (its studded bands, the two
+      bridges and the disc are avoided). `sockets(d)` does not know the cut: Ys drops sockets above the stump's top.
+- [ ] Rooms behind the openings (`skyRooms`) use each plan's inscribed radius, so in the Facet's corners and the
+      Bastion's chamfers the fittings stand well inside the lining.
+- [ ] Looked at only at the kit's `HOLES` (1 at decay 1); Ys builds hosts at .4, so its stumps keep far more wall.

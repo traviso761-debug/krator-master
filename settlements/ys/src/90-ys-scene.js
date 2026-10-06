@@ -29,6 +29,8 @@ function setHour(h){YSCLOCK.hour=((h%24)+24)%24;ysSkyTick();}
 FRAME_HOOKS.push(ysSkyTick);
 // builders animate (a beacon's beam, a windmill's sails) by pushing fn(dt,t) onto window.YS_TICKS; the same loop runs them
 window.YS_TICKS=window.YS_TICKS||[];FRAME_HOOKS.push((dt,t)=>{for(const f of window.YS_TICKS)f(dt,t);});
+// the vendored kit's own frame hook (10-core.js tick(); the firelight in 69-mat-salvage reads NIGHT, the kit camera's flag)
+FRAME_HOOKS.push((dt,t)=>{window.NIGHT=!!YS_NIGHT;for(const f of TICKS)f(Math.min(dt,.1),t);});
 // ---------------------------------------------------------------- the port: stamps, terrain, sea, builders, bake
 portUnderwaterPatch();
 const PORT_LAYOUT=(typeof PORT_LAYOUT_DEF!=='undefined'&&PORT_LAYOUT_DEF)||{items:[],stamps:[],runs:[]};

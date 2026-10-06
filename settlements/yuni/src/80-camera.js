@@ -146,15 +146,22 @@ camEl.addEventListener('click', function(e){
   else probe = 'probe  ' + hit.point.x.toFixed(1) + ', ' + hit.point.z.toFixed(1) + '   y ' + hit.point.y.toFixed(1);
 });
 
-/* --- day/night slider --- */
+/* --- day/night slider: the world clock (YCLOCK, core/clock, bound in 21-sky.js). The hour is HELD by default;
+       Run time runs it at the 72-minute world day (the sky panel's 60x / 600x run it faster). #hour=H and
+       #time=run in the URL set it, as in Mungo. --- */
 (function(){
-  var sl=document.getElementById('dnSlider'), out=document.getElementById('dnHourOut'), pb=document.getElementById('dnPause'), dragging=false;
+  var q=new URLSearchParams((location.hash||'').replace(/^#/,'')), qh=parseFloat(q.get('hour'));
+  if(isFinite(qh)) skySetHour(qh);
+  if(q.get('time')==='run') skySetRate(1);
+  var sl=document.getElementById('dnSlider'), out=document.getElementById('dnHourOut'), pb=document.getElementById('dnPause'), dragging=false, shown=null;
   if(!sl) return;
   function fmt(h){ var hh=Math.floor(h)%24, mm=Math.floor((h-Math.floor(h))*60); return (hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm; }
+  function sync(){ shown=YCLOCK.running; pb.textContent = shown ? 'Hold time' : 'Run time'; pb.classList.toggle('on', shown); }
   sl.addEventListener('input', function(){ dragging=true; skySetHour(parseFloat(sl.value)); });
   sl.addEventListener('change', function(){ dragging=false; });
-  pb.onclick = function(){ SKY.paused=!SKY.paused; pb.textContent = SKY.paused?'Resume':'Pause'; pb.classList.toggle('on',SKY.paused); };
-  TICKS.push(function(dt,hour){ if(!dragging) sl.value=hour.toFixed(2); out.textContent=fmt(hour); });
+  pb.onclick = function(){ if(YCLOCK.running) skySetRate(0); else skySetRate(1); sync(); }; sync();
+  TICKS.push(function(dt,hour){ if(!dragging) sl.value=hour.toFixed(2); out.textContent=fmt(hour)+(YCLOCK.running?'  day '+(YCLOCK.day+1):'');
+    if(shown!==YCLOCK.running) sync(); });     /* the sky panel's rate row can start or hold it too */
 })();
 
 /* ============================== RENDER LOOP ============================== */

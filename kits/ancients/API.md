@@ -22,6 +22,7 @@ its own site table and view list, merged into one sorted filename order:
 |---|---|---|
 | `kit` | `dist/ancients-kit.html` | the 32-type showcase, rows along +z |
 | `theodiga` | `dist/theodiga.html` | the dam arcology alone, at the origin |
+| `hosts` | `dist/hosts.html` | the five Ancient host types (`src/8ap-host-*`), each also cut and holed as Ys hosts it |
 
 Everything else — core, helpers, all 33 builders — is shared, so a fix to
 `buildDam` or to `lathe()` lands in both and the two cannot drift. A target

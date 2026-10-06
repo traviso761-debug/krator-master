@@ -26,6 +26,7 @@ Views are generated (`hlAutoViews`): `Opening`, `Overview`, `Reed Lake — overv
 | `74-rl-mat.js` | `RPAL`, `RAND` (the Andean dye palette), reed textures, the woven maps, kit items (prefix `hRL`) |
 | `75-rl-helpers.js` | `RL` registry, islands, pads, reed beds, anchors, the mudhif, huts, boats, pontoons, posts, cloths, beasts, yard pieces (prefix `hnRL`) |
 | `76-rl-dwell.js` `77-rl-village.js` `78-rl-work.js` `79-rl-farm.js` `80-rl-islands.js` | the builders |
+| `81-rl-tavern.js` | Reed's Local (`rl_tavern`, family Hospitality): the sign texture and item `hRLTavSign`, `RLTAV` (the plan's numbers, which `kits/interiors/sets/reedlake.js` reads), `hnRLTavPad`, the builder |
 | `90-rl-scene.js` | showcase: rows by family over water, `hlAutoViews`, the lake |
 | `91a-rl-budget.js` | per-def triangle classes (`rl_village` is `mega`) |
 | `94-rl-anim.js` | the water map scrolls |
@@ -39,6 +40,16 @@ VERN.place(scene, key, x, z, ry, o)      // o = {v, pad:false (on a shared islan
 hnSub(key, lx, ly, lz, lry, {pad:false}) // place a def on the island the running builder is making
 RL.WATER                                  // −0.45: the lake surface below the island top (y = 0)
 ```
+
+A def whose landing reaches out over the water past its +z edge says how far: `landing: <metres>` (`rl_tavern`: 6.5).
+Everything that needs dry island stays inside `w x d`.
+
+**Reed's Local** (`rl_tavern`, w 26 x d 36, h 12, `landing: 6.5`), local frame: the hall mudhif centred (−3, −2)
+(x −8.75..2.75, z −16..12), its door at (−3, 12), 1.7 wide; the kitchen-and-store mudhif centred (6.55, 4) (x 3.35..9.75,
+z −2..10), its door at (6.55, 10), 1.66 wide, the doorway to the store at (6.55, 3.5); the terrace z 12..17.4; the landing
+deck x −7..1, z 17.4..24.5 at y ≈ 0 (the island edge is z = 18), boarded at its front (−3, 24.5). Placed on a shared island
+(`{pad:false}`) it builds no pad; alone it builds its own (`hnRLTavPad`, a superellipse so the corners are on reed).
+Budget class `small` (≤ 60 k; about 55 k alone with its pad and four boats).
 
 A builder is `function buildRL<Thing>(G,o){reseed(N+(o.v|0)); …}` in the local frame (origin at the plot centre on
 the island top, **+z the front / landing side**), calls `vnReg(name,lx,lz,r,h)`, and opens with

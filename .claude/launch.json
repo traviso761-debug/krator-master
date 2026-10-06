@@ -4,8 +4,24 @@
     {
       "name": "edit-queue",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["tools/edits/serve.py", "--port", "8765"],
+      "runtimeArgs": [
+        "tools/edits/serve.py",
+        "--port",
+        "8765"
+      ],
       "port": 8765
+    },
+    {
+      "name": "mungo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8791",
+        "--directory",
+        "settlements/mungo"
+      ],
+      "port": 8791
     }
   ]
 }

@@ -135,15 +135,30 @@ camEl.addEventListener('click', function(e){
   else probe = 'probe  ' + hit.point.x.toFixed(1) + ', ' + hit.point.z.toFixed(1) + '   y ' + hit.point.y.toFixed(1);
 });
 
-/* --- day/night slider --- */
+/* --- the world clock (core/clock: KCLOCK) and the day/night slider ---
+   LCLOCK is the one clock: the sky, the lights, the life layer read its hour (skyHour() follows it every frame). Held
+   by default, a 72-minute day when it runs (the project's rule since Oct 2026; Locus's sky ran a 2-minute day of its
+   own before). #hour=9 and #time=run in the URL; an hour set from the sky panel's own slider (skySetHour) is taken
+   back into the clock. */
+var LCLOCK = KCLOCK.make({ hour:10, running:false }), LCLOCK_SET = null;
+(function(){
+  var q=new URLSearchParams((location.hash||'').replace(/^#/,'')); var h=parseFloat(q.get('hour')); if(isFinite(h)) LCLOCK.set(h); if(q.get('time')==='run') LCLOCK.run(true);
+  skySetHour(LCLOCK.hour); LCLOCK_SET = skyHour();
+})();
+function clockStep(dt){   /* the frame's first step: an outside skySetHour moves the clock, then the clock sets the sky */
+  if(LCLOCK_SET!=null && Math.abs(skyHour()-LCLOCK_SET) > 1e-6) LCLOCK.set(skyHour());
+  LCLOCK.dayLength = SKY.timeScale > 0 ? KCLOCK.DAY_SECONDS/SKY.timeScale : 1e12;   /* the sky panel's 0x/1x/60x/600x: the day's speed */
+  LCLOCK.step(dt); skySetHour(LCLOCK.hour); LCLOCK_SET = skyHour();
+}
 (function(){
   var sl=document.getElementById('dnSlider'), out=document.getElementById('dnHourOut'), pb=document.getElementById('dnPause'), dragging=false;
   if(!sl) return;
   function fmt(h){ var hh=Math.floor(h)%24, mm=Math.floor((h-Math.floor(h))*60); return (hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm; }
-  sl.addEventListener('input', function(){ dragging=true; skySetHour(parseFloat(sl.value)); });
+  function sync(){ pb.textContent = LCLOCK.running ? 'Hold time' : 'Run time'; pb.classList.toggle('on', LCLOCK.running); }
+  sl.addEventListener('input', function(){ dragging=true; LCLOCK.set(parseFloat(sl.value)); skySetHour(LCLOCK.hour); LCLOCK_SET = skyHour(); });
   sl.addEventListener('change', function(){ dragging=false; });
-  pb.onclick = function(){ SKY.paused=!SKY.paused; pb.textContent = SKY.paused?'Resume':'Pause'; pb.classList.toggle('on',SKY.paused); };
-  TICKS.push(function(dt,hour){ if(!dragging) sl.value=hour.toFixed(2); out.textContent=fmt(hour); });
+  pb.onclick = function(){ LCLOCK.run(); sync(); }; sync();
+  TICKS.push(function(dt,hour){ if(!dragging) sl.value=hour.toFixed(2); out.textContent=fmt(hour)+(LCLOCK.running?'  day '+(LCLOCK.day+1):''); });
 })();
 
 /* ============================== RENDER LOOP ============================== */
@@ -153,7 +168,7 @@ function frame(){
   requestAnimationFrame(frame);
   var dt = Math.min(0.06, clock.getDelta());
   panStep(dt);
-  skyAdvance(dt); updateSky(); updateDayNight();
+  clockStep(dt); updateSky(); updateDayNight();
   var hour = skyHour(), nk = DAYNIGHT_NIGHT_K;
   CLOTH_TIME.value += dt;
   waterUni.uTime.value += dt; waterUni.uCam.value.copy(camera.position);
@@ -172,6 +187,7 @@ function frame(){
     renderer.info.autoReset=false; renderer.info.reset();
     renderer.autoClear=true; skyRender();
     if(typeof SKY_STUB==='undefined'){ renderer.autoClear=false; renderer.clearDepth(); }
+    atmosFrame(dt);   /* core/atmos last, just before the draw (its wave clock) */
     renderer.render(scene, camera); renderer.autoClear=true;
   }catch(err){ ERR('render: '+(err&&err.stack||err)); }
   hud.textContent = 'cam   '+(camera.position.x|0)+', '+(camera.position.z|0)+'   y '+(camera.position.y|0)+'\n'+
@@ -181,4 +197,6 @@ function frame(){
 }
 addEventListener('resize', function(){ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
 
-window._dbg = { setView:setView, viewPlat:viewPlat, ctl:ctl, camera:camera, applyCam:applyCam, polyPts:polyPts, VIEWS:VIEWS };
+window._dbg = { setView:setView, viewPlat:viewPlat, ctl:ctl, camera:camera, applyCam:applyCam, polyPts:polyPts, VIEWS:VIEWS, clock:function(){ return LCLOCK.state(); },
+  setHour:function(h){ LCLOCK.set(h); skySetHour(LCLOCK.hour); LCLOCK_SET = skyHour(); return LCLOCK.hour; },
+  runTime:function(on){ var r=LCLOCK.run(on).running, b=document.getElementById('dnPause'); if(b){ b.textContent=r?'Hold time':'Run time'; b.classList.toggle('on', r); } return r; } };

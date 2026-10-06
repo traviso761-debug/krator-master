@@ -6,11 +6,14 @@
 // industry, aquaculture, farms, neighbourhoods, or a drowned block's host or home-grown mole), a wealth ring about the
 // Amphitriton, and the drowned 75/25 split. The placer (88) reads this and nothing else decides where things go.
 // Prototyped in Python first (NOTES.md phase 3) and ported here number for number.
-const LAYOUT={P:200,TH:12*Math.PI/180,HEAD:CITY.HEAD,blocks:[],by:{},A:null,N:null,T:null,U:null,V:null,landmarks:{}};
+// K: the city's span (Travis, Oct 5 2026: two-thirds of the first layout's, inland, offshore and along the coast; the
+// blocks stay 200 m because the hosts need them). Every distance of the layout below is the first layout's times K.
+const LAYOUT={K:2/3,P:200,HOST_SEED:32000,TH:12*Math.PI/180,HEAD:CITY.HEAD,blocks:[],by:{},A:null,N:null,T:null,U:null,V:null,landmarks:{}};
 LAYOUT.U=[Math.cos(LAYOUT.TH),Math.sin(LAYOUT.TH)];LAYOUT.V=[-Math.sin(LAYOUT.TH),Math.cos(LAYOUT.TH)];
-// the old city plane by signed shore distance: the natural land inland, the sink at sea (1.5 degrees plus a 4 m step)
+// the old city plane by signed shore distance: the natural land inland, the sink at sea (1.5 degrees plus a 4 m step);
+// at sea the profile is the first layout's squeezed into the span K (the same depths at K times the distance)
 function ysPlaneY(s){if(s>=0){if(s<60){const t=s/60;return .5+3.2*t*t*(3-2*t);}return 3.7+(s-60)*.018;}
- const d=-s;const st=clamp((d-260)/80,0,1);return 1-d*.026-4*st*st*(3-2*st);}
+ const d=-s/LAYOUT.K;const st=clamp((d-260)/80,0,1);return 1-d*.026-4*st*st*(3-2*st);}
 function ysKindOf(y){return y>1?'land':y>-1.2?'awash':y>-6?'canal':'open';}
 function ysBlockXZ(i,j){const U=LAYOUT.U,V=LAYOUT.V,P=LAYOUT.P;return [LAYOUT.HEAD[0]+U[0]*i*P+V[0]*j*P,LAYOUT.HEAD[1]+U[1]*i*P+V[1]*j*P];}
 function ysBlockIJ(x,z){const U=LAYOUT.U,V=LAYOUT.V,P=LAYOUT.P;const dx=x-LAYOUT.HEAD[0],dz=z-LAYOUT.HEAD[1];return [(dx*U[0]+dz*U[1])/P,(dx*V[0]+dz*V[1])/P];}
@@ -23,31 +26,66 @@ function ysHash(i,j){let h=2166136261;const s=i+','+j;for(let k=0;k<s.length;k++
  const T=best.t;let N=[-T[1],T[0]];if(ysShoreDist(LAYOUT.HEAD[0]+N[0]*200,LAYOUT.HEAD[1]+N[1]*200)>0)N=[T[1],-T[0]];LAYOUT.T=T;LAYOUT.N=N;
  const gstep=v=>{const du=v[0]*LAYOUT.U[0]+v[1]*LAYOUT.U[1],dv=v[0]*LAYOUT.V[0]+v[1]*LAYOUT.V[1];return Math.abs(du)>Math.abs(dv)?[du>0?1:-1,0]:[0,dv>0?1:-1];};
  const sN=gstep(N),sT=gstep(T);LAYOUT.sN=sN;LAYOUT.sT=sT;
- for(let i=-9;i<=9;i++)for(let j=-9;j<=9;j++){const c=ysBlockXZ(i,j);if(Math.abs(c[0])>1500||Math.abs(c[1])>1500)continue;const s=ysShoreDist(c[0],c[1]);if(s>820||s<-800)continue;
+ for(let i=-9;i<=9;i++)for(let j=-9;j<=9;j++){const c=ysBlockXZ(i,j);if(Math.abs(c[0])>1500||Math.abs(c[1])>1500)continue;const s=ysShoreDist(c[0],c[1]);const K=LAYOUT.K;if(s>820*K||s<-800*K)continue;if(Math.abs((c[0]-LAYOUT.HEAD[0])*T[0]+(c[1]-LAYOUT.HEAD[1])*T[1])>1650*K&&!(i===1&&j===6))continue;   /* (1,6): one block past the span, for the Facet stump (Travis, below) */
   const y=ysPlaneY(s);const b={i,j,x:c[0],z:c[1],s,y,kind:ysKindOf(y),use:null,tag:null};LAYOUT.blocks.push(b);LAYOUT.by[i+','+j]=b;}
  const lineDist=(x,z)=>Math.abs((x-LAYOUT.HEAD[0])*N[1]-(z-LAYOUT.HEAD[1])*N[0]);
  const drowned=LAYOUT.blocks.filter(b=>b.kind==='canal'||b.kind==='open');
- const A=drowned.reduce((m,b)=>{const sc=Math.abs(b.s+450)+.5*lineDist(b.x,b.z);return (!m||sc<m.sc)?{b,sc}:m;},null).b;A.use='amphitriton';A.tag='A';LAYOUT.A=A;
+ const A=drowned.reduce((m,b)=>{const sc=Math.abs(b.s+450*LAYOUT.K)+.5*lineDist(b.x,b.z);return (!m||sc<m.sc)?{b,sc}:m;},null).b;A.use='amphitriton';A.tag='A';LAYOUT.A=A;
  const set=(i,j,use,tag)=>{const b=ysBlock(i,j);if(b&&!b.use){b.use=use;b.tag=tag;return b;}return null;};
+ // a drowned landmark takes its block if it is free and under water, else the nearest free drowned block to it (the
+ // span K brings the Amphitriton nearer the shore, and its rule-placed neighbours would land on the land quarter)
+ const setWet=(i,j,use,tag)=>{const b0=ysBlock(i,j);if(b0&&!b0.use&&b0.kind!=='land')return set(i,j,use,tag);
+  const c=drowned.filter(b=>!b.use).sort((p,q)=>Math.hypot(p.i-i,p.j-j)-Math.hypot(q.i-i,q.j-j))[0];return c?set(c.i,c.j,use,tag):null;};
  const ai=A.i,aj=A.j;
- set(ai-sN[0],aj-sN[1],'temple_tides','B');set(ai+sT[0],aj+sT[1],'grown_plaza','Pl');set(ai-sN[0]+sT[0],aj-sN[1]+sT[1],'library','Lib');
+ setWet(ai-sN[0],aj-sN[1],'temple_tides','B');setWet(ai+sT[0],aj+sT[1],'grown_plaza','Pl');setWet(ai-sN[0]+sT[0],aj-sN[1]+sT[1],'library','Lib');
  // the seaward edge: drowned blocks with nothing drowned beyond them; the Winds on the +T side of A's line, the Pharos on the -T side
  const edge=LAYOUT.blocks.filter(b=>b.kind!=='land'&&!ysBlock(b.i+sN[0],b.j+sN[1]));const tside=b=>(b.x-A.x)*T[0]+(b.z-A.z)*T[1];
  const Db=edge.filter(b=>tside(b)>60).sort((a,b)=>tside(a)-tside(b))[0];if(Db)set(Db.i,Db.j,'temple_winds','D');
  const Pb=edge.filter(b=>tside(b)<-60).sort((a,b)=>tside(b)-tside(a))[0];if(Pb)set(Pb.i,Pb.j,'pharos','Ph');
- set(ai-sT[0]*3,aj-sT[1]*3,'citadel','E');
- for(const m of [1,2])set(ai-sN[0]*m-sT[0],aj-sN[1]*m-sT[1],'military_harbour','MH');set(ai-sN[0]*2-sT[0]*2,aj-sN[1]*2-sT[1]*2,'wet_cells','WC');
+ // Travis (Oct 5 2026): the Pharos stands at the bay's south end on the Project H tower's block (1,5) and that tower takes
+ // the Pharos's old block; the Facet stump that stood off the harbour (1,4), in the way of the harbour approach, moves
+ // south of the Project H to (1,6); (1,4) is left to the water
+ {const PH=ysBlock(1,5),old=Pb,ap=ysBlock(1,4),sx=ysBlock(1,6);
+  if(PH&&PH.kind!=='land'&&old){old.use=null;old.tag=null;PH.use='pharos';PH.tag='Ph';old.use='host';old.tag='H';old.host='tall';old.full='skyA';}   /* Travis: A and H swapped back; the Pharos is built on the Project H (88) */
+  if(ap&&ap.kind!=='land'){ap.use='water';ap.tag='~';}
+  if(sx&&sx.kind!=='land'){sx.use='host';sx.tag='H';sx.host='tall';sx.type='skyL';}}
+ setWet(ai-sT[0]*3,aj-sT[1]*3,'citadel','E');
+ for(const m of [1,2])setWet(ai-sN[0]*m-sT[0],aj-sN[1]*m-sT[1],'military_harbour','MH');setWet(ai-sN[0]*2-sT[0]*2,aj-sN[1]*2-sT[1]*2,'wet_cells','WC');
  set(0,0,'main_market','M');for(const m of [1,2])set(-sT[0]*m,-sT[1]*m,'civilian_harbour','CH');set(-sT[0]*3,-sT[1]*3,'fishing_docks','FD');
  set(-sT[0]*4,-sT[1]*4,'river_mouth','R');set(-sT[0]*5,-sT[1]*5,'headland_military','Bk');
  for(const m of [1,2])for(const q of [-1,0,1])set(-sN[0]*m+sT[0]*q,-sN[1]*m+sT[1]*q,'foreign','FQ');
  for(const m of [1,2,3]){set(-sN[0]-sT[0]*m,-sN[1]-sT[1]*m,'industry','I');set(-sN[0]+sT[0]*m,-sN[1]+sT[1]*m,'industry','I');}
- for(const m of [3,4,5,6])for(let n=0;n<4;n++){const b=ysBlock(sT[0]*m+sN[0]*n,sT[1]*m+sN[1]*n);if(b&&b.kind!=='land'){set(b.i,b.j,'aquaculture','Aq');break;}}
+ for(const m of [2,3,4,5])for(let n=0;n<4;n++){const b=ysBlock(sT[0]*m+sN[0]*n,sT[1]*m+sN[1]*n);if(b&&b.kind!=='land'){set(b.i,b.j,'aquaculture','Aq');break;}}
  // the rest: wealth by distance from A (wider rings on land), neighbourhoods and farms, hosts and home-grown moles (75/25)
- for(const b of LAYOUT.blocks){const d=Math.hypot(b.x-A.x,b.z-A.z);b.dA=d;const L=b.kind==='land';b.wealth=d<(L?520:300)?'rich':d<(L?900:620)?'middle':'poor';
+ for(const b of LAYOUT.blocks){const d=Math.hypot(b.x-A.x,b.z-A.z);b.dA=d;const L=b.kind==='land';const K=LAYOUT.K;b.wealth=d<(L?740:300)*K?'rich':d<(L?1000:620)*K?'middle':'poor';   // land rings wider: the nearest land is the span's 600 m off
   if(b.use)continue;
-  if(L){b.use=b.s>560?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
+  if(L){b.use=b.s>560*LAYOUT.K?'farm':'neighbourhood';b.tag=b.use==='farm'?'f':'n';}
   else{const r=ysHash(b.i,b.j);b.use=r<.75?'host':'homegrown';b.tag=r<.75?'H':'g';if(b.use==='host')b.host=b.kind==='open'?'tall':b.kind==='canal'?'mid':'low';}}
  for(const b of LAYOUT.blocks)if(b.use&&!/^(host|homegrown|neighbourhood|farm|foreign|industry|aquaculture)$/.test(b.use))LAYOUT.landmarks[b.use]=b;
+ // Travis (Oct 5 2026): the Wet Cells stand at the foot of the Needle (1294, 228), not on a block; their block is a host's
+ if(LAYOUT.landmarks.wet_cells){const old=LAYOUT.landmarks.wet_cells;old.use='host';old.tag='H';old.host=old.kind==='open'?'tall':old.kind==='canal'?'mid':'low';
+  const w={i:71,j:71,x:1294.1,z:228.1,s:ysShoreDist(1294.1,228.1),y:0,kind:'open',use:'wet_cells',tag:'WC',wealth:'poor',dA:0,synthetic:true};LAYOUT.blocks.push(w);LAYOUT.by['71,71']=w;LAYOUT.landmarks.wet_cells=w;}
+ // Travis (Oct 5 2026): the Citadel stands on the Sentinel, the big stack south of the harbour (620, 930), not on a block
+ // of the grid; its block is freed to the water (the harbour approach), and the Sentinel is its stack (STACKS[0] moves there)
+ if(LAYOUT.landmarks.citadel){const old=LAYOUT.landmarks.citadel;old.use='water';old.tag='~';
+  const c={i:70,j:70,x:620,z:930,s:ysShoreDist(620,930),y:0,kind:'open',use:'citadel',tag:'E',wealth:'civic',dA:0,synthetic:true};LAYOUT.blocks.push(c);LAYOUT.by['70,70']=c;LAYOUT.landmarks.citadel=c;}
+ // the Citadel's and the Winds' karst stacks stand under their blocks wherever the layout puts them (their shore loops move
+ // too), sized to their landmark's footprint (Travis, Oct 5 2026: smaller, footprint-fitting): an ellipse whose axis runs
+ // along the building's local x (the citadel's axis points away from its bridge door, the Winds' is its width), with
+ // room for the Treasury on the far side of the Citadel. The placer reads the stack's top through the natural ground.
+ const mv=(st,b,r,e)=>{if(!st||!b)return;st.x=b.x;st.z=b.z;st.r=r;st.e=e;const d=toA(b),l=Math.hypot(d[0],d[1]);st.a=Math.atan2(-d[1]/l,-d[0]/l);ysStacksDirty();
+  const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopStack(st);};
+ const toA=b=>[A.x-b.x,A.z-b.z];
+ mv(CITY.STACKS[0],LAYOUT.landmarks.citadel,70,1.25);mv(CITY.STACKS[1],LAYOUT.landmarks.temple_winds,54,1.05);
+ // the Citadel's axis: along its local x, which faces the Pharos square-on (the gate, +z, faces the Pharos; 88 sets ry so)
+ {const st=CITY.STACKS[0],c=LAYOUT.landmarks.citadel,p=LAYOUT.landmarks.pharos;if(p){const fx=p.x-c.x,fz=p.z-c.z;st.a=Math.atan2(-fx,fz);ysStacksDirty();const k=SHORE_LOOPS.findIndex(L=>L.stack===st);if(k>=0)SHORE_LOOPS.splice(k,1);ysLoopStack(st);}}
+ // the land quarter's reclaimed Ancients: half the neighbourhood blocks off the head (at least four), in the order of a
+ // hash of their cell; the first two are skyscraper stumps (Travis: at least two podded stumps on land). A host block
+ // has no lanes (the host takes its middle); every other neighbourhood block is quartered by lanes (87c).
+ {const NB=LAYOUT.blocks.filter(b=>b.use==='neighbourhood'&&Math.hypot(b.x-CITY.HEAD[0],b.z-CITY.HEAD[1])>150*LAYOUT.K);const want=Math.max(4,Math.round(NB.length/2));
+  NB.map(b=>[b,KRAND.unit(KRAND.hash(KRAND.child(LAYOUT.HOST_SEED,'land hosts'),b.i,b.j))]).sort((p,q)=>p[1]-q[1]).slice(0,want).forEach(([b],i)=>{b.landHost=i<2?'tall':'mid';});}
+ // (the Arena takes the nearest neighbourhood block that has room for it: the placer decides, since the highways
+ // are laid after the layout)
  if(typeof ysLoopCircle==='function')ysLoopCircle('the Amphitriton island',A.x,A.z,80,32,{island:true});
 })();
 // the sink under the drowned grid: the old city plane where the grid lies, blended into the natural seabed over the
@@ -63,9 +101,9 @@ function ysLayoutCensus(){const c={blocks:LAYOUT.blocks.length,kinds:{},uses:{},
  c.A=LAYOUT.A?[Math.round(LAYOUT.A.x),Math.round(LAYOUT.A.z),Math.round(LAYOUT.A.s)]:null;return c;}
 
 // ---------------------------------------------------------------- the layout overlay (CITY.LAYOUT_DEBUG): a quad per block, named blocks labelled
-const LAYOUT_COL={land:0xd9c9a1,awash:0xbfe3e8,canal:0x6fb7cf,open:0x2f6f9a,amphitriton:0xffd700,temple_tides:0xff9ad5,library:0xffb347,grown_plaza:0xc3f7a3,temple_winds:0xff9ad5,pharos:0xffffff,
- citadel:0xe07b39,military_harbour:0x9aaaaa,wet_cells:0x555555,main_market:0xff6b6b,civilian_harbour:0x8888aa,fishing_docks:0x8888aa,river_mouth:0x44aadd,headland_military:0xbb5555,foreign:0xd9b3ff,industry:0xaa6688,aquaculture:0x77ffdd,farm:0x99cc66};
-const LAYOUT_NAMES={amphitriton:'The Amphitriton',temple_tides:'Temple of the Tides',library:'Library of Ys',grown_plaza:'The grown plaza',temple_winds:'Temple of the Winds',pharos:'The Pharos',citadel:"The Archon's Citadel",military_harbour:'Military harbour',wet_cells:'The Wet Cells',main_market:'Main market',civilian_harbour:'Civilian harbour',fishing_docks:'Fishing docks',river_mouth:'River mouth',headland_military:'The headland: barracks',foreign:'Foreign quarter',industry:'Industry',aquaculture:'Aquaculture pens'};
+const LAYOUT_COL={water:0x2a5a80,land:0xd9c9a1,awash:0xbfe3e8,canal:0x6fb7cf,open:0x2f6f9a,amphitriton:0xffd700,temple_tides:0xff9ad5,library:0xffb347,grown_plaza:0xc3f7a3,temple_winds:0xff9ad5,pharos:0xffffff,
+ citadel:0xe07b39,arena:0xd2a24c,military_harbour:0x9aaaaa,wet_cells:0x555555,main_market:0xff6b6b,civilian_harbour:0x8888aa,fishing_docks:0x8888aa,river_mouth:0x44aadd,headland_military:0xbb5555,foreign:0xd9b3ff,industry:0xaa6688,aquaculture:0x77ffdd,farm:0x99cc66};
+const LAYOUT_NAMES={amphitriton:'The Amphitriton',temple_tides:'Temple of the Tides',library:'Library of Ys',grown_plaza:'The grown plaza',temple_winds:'Temple of the Winds',pharos:'The Pharos',citadel:"The Archon's Citadel",arena:'The Arena',military_harbour:'Military harbour',wet_cells:'The Wet Cells',main_market:'Main market',civilian_harbour:'Civilian harbour',fishing_docks:'Fishing docks',river_mouth:'River mouth',headland_military:'The headland: barracks',foreign:'Foreign quarter',industry:'Industry',aquaculture:'Aquaculture pens'};
 const YS_BUILD=[];   // the city's build hooks (the scene runs them after the terrain, before the bake); 88 pushes the placer
 YS_BUILD.push(function(scene){if(!CITY.LAYOUT_DEBUG)return;
  const pos=[],col=[],idx=[];const U=LAYOUT.U,V=LAYOUT.V,h=LAYOUT.P*.46;let n=0;

@@ -1,0 +1,2319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Krator Motor Vehicles</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#d8dccb;font-family:Georgia,serif}
+  #app{position:fixed;inset:0}
+  #bar{position:fixed;left:14px;top:14px;z-index:30;background:rgba(24,21,15,0.88);color:#f3ecd8;
+       border-radius:8px;padding:9px 12px;font-size:12px;max-width:min(560px,calc(100vw - 28px));line-height:1.5}
+  #bar b{color:#e0c98a;letter-spacing:.06em;text-transform:uppercase;font-size:11.5px}
+  #bar select,#bar button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;
+       padding:4px 8px;font:inherit;font-size:11.5px;margin:3px 3px 0 0;cursor:pointer}
+  #bar select option{background:#2a2518}
+  #bar button.on{background:#c9a227;color:#2a2416}
+  #bar .n{opacity:.6;font-size:11px}
+  #hover{position:fixed;z-index:40;pointer-events:none;display:none;background:rgba(24,21,15,0.92);color:#f3ecd8;
+       border-radius:6px;padding:6px 9px;font:12px/1.45 Georgia,serif;max-width:340px;box-shadow:0 3px 12px rgba(0,0,0,.3)}
+  #hover b{font-size:13px}
+  #hover .cls{color:#9fe8ff;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  #hover .tag{display:inline-block;background:rgba(184,232,160,.16);color:#b8e8a0;border-radius:3px;padding:0 5px;margin:2px 3px 0 0;font-size:11px}
+  #poly{position:fixed;right:14px;bottom:112px;z-index:35;display:none;background:rgba(24,21,15,0.9);color:#f3ecd8;
+       border-radius:8px;padding:8px 10px;font:12px/1.45 Georgia,serif;width:min(420px,calc(100vw - 28px))}
+  #poly textarea{width:100%;box-sizing:border-box;height:64px;margin:5px 0;background:rgba(255,255,255,0.08);color:#f3ecd8;
+       border:none;border-radius:4px;font:11px ui-monospace,monospace}
+  #poly button{background:rgba(255,255,255,0.1);color:#f3ecd8;border:none;border-radius:5px;padding:3px 8px;
+       font:inherit;font-size:11.5px;margin:0 3px 3px 0;cursor:pointer}
+  #poly .n{opacity:.7;font-size:11px}
+  #errs{position:fixed;right:10px;top:10px;max-width:60vw;max-height:30vh;overflow:auto;background:rgba(120,0,0,.88);color:#fff;
+       padding:6px 9px;border-radius:4px;font:12px ui-monospace,monospace;white-space:pre-wrap;display:none;z-index:50}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="bar">
+  <b>Krator motor vehicles</b> <span class="n" id="count"></span><br>
+  <select id="rowSel"><option value="">go to vehicle…</option></select>
+  <button id="driveBtn" title="R: drive (the wheels roll, the front pair steers)">Drive (R)</button>
+  <button id="lightsBtn" title="L: headlamps, lamp bar and tail lamps">Lights (L)</button>
+  <button id="nightBtn" title="N: night sky, to judge the lamps">Night (N)</button>
+  <button id="hoverBtn" title="T: hover inspector (name, culture, tags, data)">Hover tags (T)</button>
+  <button id="polyBtn" title="P: polygon tool (click the ground for world x,z coordinates)">Polygon (P)</button>
+</div>
+<div id="poly"><b>Polygon tool</b> <span class="n">click the ground to add a vertex · right-click removes the last ·
+world x,z in metres</span><textarea id="polyout" readonly></textarea><div class="n" id="polynear"></div>
+<button id="polycopy">Copy</button><button id="polyclose">Close loop</button><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polyfmt">Format: [x,z]</button></div>
+<div id="hover"></div>
+<pre id="errs"></pre>
+<script>
+/* error panel: verify.py fails the run when this has any text */
+(function(){
+  const el=document.getElementById('errs');
+  window.reportErr=function(m){el.style.display='block';el.textContent+=String(m).slice(0,600)+'\n';};
+  window.onerror=function(m,s,l,c,e){reportErr((e&&e.stack)||(m+' @'+l+':'+c));};
+  window.addEventListener('unhandledrejection',function(e){reportErr('promise: '+(e.reason&&e.reason.stack||e.reason));});
+  const ce=console.error.bind(console);
+  console.error=function(){ce.apply(null,arguments);reportErr([].map.call(arguments,function(a){return a&&a.stack?a.stack:String(a);}).join(' '));};
+})();
+document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');
+</script>
+<script>if(!window.THREE)document.write('<script src="../three.min.js"><\/script>');</script>
+<script>
+/* ---------- krator-asset-engine.js ---------- */
+/* ======================================================================
+   Krator Asset Engine
+   Shared contract + geometry kit for the ASSET (building) / FURN / PLANT
+   registries harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the
+   Ancients kit. Include this file (or the equivalent globals from your own
+   build) before krator-master-furniture.js, krator-master-plants.js and/or
+   krator-master-buildings-*.js.
+
+   (2026-10: the registries, palettes, frame and geometry kit are in
+   krator-furniture-core.js, loaded BEFORE this file; this file is the page:
+   scene, camera, renderer, controls, ground, labels and the frame loop.)
+
+   Provides: scene/camera/renderer, orbit + WASD/walk camera control, a
+   geometry kit (box/cyl/cone/dome/blob/ball/beam/rod/frustum/pyrRoof, and
+   decal: a painted canvas panel for emblems and hangings), a
+   procedural F.tree() helper, the three registries with per-variant
+   variantDims support, buildAsset/buildFurn/buildPlant (each returning a
+   selectable THREE.Group), rebuildInstance() and measureInstance(), the
+   per-culture furniture palette FPAL (F.col / F.cols / key-aware F.pick and
+   F.shade) and the building type vocabulary BUILDING_TYPES.
+
+   Conventions that matter:
+     - box/cyl/cone/dome sit with their BOTTOM at y; blob/ball are CENTRED at y.
+     - The build frame's origin is the footprint centre on the ground, +z FRONT.
+     - F.frustum's r is a HALF-WIDTH: the block spans 2*r. With sides:4 the flat
+       faces are square to the frame, so the front face sits at local z = +r.
+       It is square in plan and cannot make a rectangular trough — use boxes.
+     - F.pyrRoof covers EXACTLY w by d at the eaves and meets at one point;
+       F.hipRoof covers the same w by d but rises to a RIDGE along the longer
+       side — use it for any roof that is not square.
+     - A vertical-axis F.cyl cannot be tilted; use F.rod/F.beam between two
+       points for anything leaning, arching or horizontal.
+     - For a block placed at (cos a, sin a) * r, ry = -a points its long axis
+       RADIALLY; for a tangential ring segment you want ry = -a - PI/2.
+     - measureInstance() measures transformed vertices, not Box3.expandByObject,
+       which takes the AABB of an AABB and overstates anything rotated off-axis.
+   ====================================================================== */
+
+/* ---------------------------------------------------------------- scene */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xd8dccb);
+scene.fog = new THREE.Fog(0xc9cdbb, 700, 2800);
+
+const camera = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.1, 5000);
+camera.position.set(0, 70, 130);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+document.getElementById('app').appendChild(renderer.domElement);
+
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.86;
+
+scene.add(new THREE.HemisphereLight(0xcfd9f2, 0x3d3a2c, 0.42));
+const sun = new THREE.DirectionalLight(0xffeccb, 1.55);
+sun.position.set(160, 260, 90);
+scene.add(sun);
+/* low cool fill from the opposite side so unlit faces read as form, not flat white */
+const fill = new THREE.DirectionalLight(0x8ea6cc, 0.28);
+fill.position.set(-140, 90, -120);
+scene.add(fill);
+
+/* subdivided: one 8 km quad interpolates depth badly in software GL (SwiftShader), and
+   hid anything within ~3 cm of the ground (labels, rugs, mats) a few metres off the origin */
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(8000, 8000, 100, 100),
+  new THREE.MeshLambertMaterial({ color: 0x9b9472 })
+);
+ground.rotation.x = -Math.PI / 2;
+scene.add(ground);
+
+const grid = new THREE.GridHelper(8000, 400, 0x333333, 0x333333);
+grid.material.opacity = 0.05;
+grid.material.transparent = true;
+scene.add(grid);
+
+/* ------------------------------------------------------- camera control
+   Minimal self-contained orbit/pan/zoom + WASD fly/walk, no external dependency.
+   Two modes share one anchor (ctl.target) and one heading (az/el):
+     orbit  — camera sits ctl.dist away, orbiting the anchor
+     walk   — camera sits AT the anchor looking along the heading (first person)
+   WASD moves the anchor in both, so it pans the sheet in orbit and walks in walk. */
+const ctl = {
+  target: new THREE.Vector3(0, 6, 0), dist: 150, az: 0.9, el: 0.55,
+  dragging: false, panning: false, lastX: 0, lastY: 0,
+  walk: false, eyeHeight: 1.7, speed: 1,
+  keys: Object.create(null)
+};
+function _headingVecs() {
+  /* fwd = the way the camera faces, flattened to the ground; right = the camera's right hand
+     (fwd turned clockwise seen from above: facing -z, right is +x) */
+  const fwd = new THREE.Vector3(-Math.sin(ctl.az), 0, -Math.cos(ctl.az));
+  const right = new THREE.Vector3(Math.cos(ctl.az), 0, -Math.sin(ctl.az));
+  return { fwd, right };
+}
+function updateCamera() {
+  if (ctl.walk) {
+    const el = Math.max(-1.35, Math.min(1.35, ctl.el));
+    camera.position.copy(ctl.target);
+    const dir = new THREE.Vector3(-Math.cos(el) * Math.sin(ctl.az), -Math.sin(el), -Math.cos(el) * Math.cos(ctl.az));
+    camera.lookAt(camera.position.clone().add(dir));
+  } else {
+    const el = Math.max(0.05, Math.min(1.45, ctl.el));
+    const x = ctl.target.x + ctl.dist * Math.cos(el) * Math.sin(ctl.az);
+    const y = ctl.target.y + ctl.dist * Math.sin(el);
+    const z = ctl.target.z + ctl.dist * Math.cos(el) * Math.cos(ctl.az);
+    camera.position.set(x, y, z);
+    camera.lookAt(ctl.target);
+  }
+}
+updateCamera();
+renderer.domElement.addEventListener('mousedown', (e) => {
+  if (e.button === 2) ctl.panning = true; else ctl.dragging = true;
+  ctl.lastX = e.clientX; ctl.lastY = e.clientY;
+});
+window.addEventListener('mouseup', () => { ctl.dragging = false; ctl.panning = false; });
+window.addEventListener('mousemove', (e) => {
+  const dx = e.clientX - ctl.lastX, dy = e.clientY - ctl.lastY;
+  ctl.lastX = e.clientX; ctl.lastY = e.clientY;
+  if (ctl.dragging) {
+    ctl.az -= dx * 0.006;
+    ctl.el += (ctl.walk ? dy * 0.005 : dy * 0.006);     /* walk: drag down to look down, as drag right looks right */
+    updateCamera();
+  } else if (ctl.panning) {
+    const { fwd, right } = _headingVecs();
+    const k = ctl.walk ? 0.05 : ctl.dist * 0.0015;
+    ctl.target.addScaledVector(right, -dx * k);          /* right-drag pans: the ground follows the pointer */
+    ctl.target.addScaledVector(fwd, -dy * k);
+    updateCamera();
+  }
+});
+renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+renderer.domElement.addEventListener('wheel', (e) => {
+  if (ctl.walk) { ctl.speed = Math.max(0.15, Math.min(8, ctl.speed * (1 - e.deltaY * 0.001))); }
+  else { ctl.dist = Math.max(3, Math.min(2000, ctl.dist * (1 + e.deltaY * 0.001))); }
+  updateCamera(); e.preventDefault();
+}, { passive: false });
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+/* --------------------------------------------------------- WASD movement */
+const _MOVE_KEYS = { w: 1, a: 1, s: 1, d: 1, q: 1, e: 1, ' ': 1, shift: 1, control: 1 };
+function _isTyping(e) {
+  const t = e.target;
+  return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+}
+window.addEventListener('keydown', (e) => {
+  if (_isTyping(e)) return;
+  const k = e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase();
+  ctl.keys[k] = true;
+  if (_MOVE_KEYS[k]) e.preventDefault();
+  if (k === 'f') { window._setWalk(!ctl.walk); }
+});
+window.addEventListener('keyup', (e) => { ctl.keys[e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase()] = false; });
+window.addEventListener('blur', () => { ctl.keys = Object.create(null); });
+
+window._setWalk = function (on) {
+  if (on === ctl.walk) return;
+  const { fwd } = _headingVecs();
+  if (on) {
+    /* step into the scene: stand where the camera was looking, at eye height */
+    ctl.target.copy(camera.position);
+    ctl.target.y = ctl.eyeHeight;
+    ctl.walk = true;
+    ctl.el = Math.max(-0.2, Math.min(0.35, ctl.el * 0.3));
+  } else {
+    ctl.walk = false;
+    ctl.dist = Math.max(30, ctl.dist);
+    ctl.target.addScaledVector(fwd, ctl.dist * 0.35);
+    ctl.target.y = 6;
+    ctl.el = 0.55;
+  }
+  updateCamera();
+  if (window._onWalkChange) window._onWalkChange(ctl.walk);
+};
+
+let _lastT = performance.now();
+function _moveStep(now) {
+  const dt = Math.min((now - _lastT) / 1000, 0.1);
+  _lastT = now;
+  const k = ctl.keys;
+  let mx = 0, mz = 0, my = 0;
+  if (k['w']) mz += 1;
+  if (k['s']) mz -= 1;
+  if (k['d']) mx += 1;
+  if (k['a']) mx -= 1;
+  if (k['e'] || k[' ']) my += 1;
+  if (k['q']) my -= 1;
+  if (!mx && !mz && !my) return;
+  /* base speed: metres/sec. In orbit it scales with how far out you are, so it
+     feels the same whether you're reading a whole row or one doorway. */
+  let base = ctl.walk ? 9 * ctl.speed : Math.max(12, ctl.dist * 0.55);
+  if (k['shift']) base *= 3.4;
+  if (k['control'] || k['alt']) base *= 0.28;
+  const step = base * dt;
+  const { fwd, right } = _headingVecs();
+  if (mz) ctl.target.addScaledVector(fwd, mz * step);
+  if (mx) ctl.target.addScaledVector(right, mx * step);
+  if (my) ctl.target.y += my * step;
+  if (ctl.walk) ctl.target.y = Math.max(0.4, ctl.target.y);
+  updateCamera();
+}
+
+window._gotoRow = function (z, width) {
+  ctl.walk = false;
+  ctl.target.set(width ? width / 2 - 20 : 0, 6, z);
+  ctl.dist = Math.max(70, (width || 140) * 0.7);
+  ctl.az = 0.75; ctl.el = 0.55;
+  updateCamera();
+  if (window._onWalkChange) window._onWalkChange(false);
+};
+
+/* --------------------------------------------------------------- labels */
+function groundLabel(text, x, z, big) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024; canvas.height = big ? 160 : 128;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = big ? 'rgba(30,26,18,0.92)' : 'rgba(255,255,255,0.88)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = big ? '#f5efdd' : '#20201a';
+  ctx.font = (big ? 'bold 64px' : '40px') + ' Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, 512, big ? 100 : 82);
+  const tex = new THREE.CanvasTexture(canvas);
+  const geo = new THREE.PlaneGeometry(big ? 34 : 15, big ? 5.3 : 1.9);
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+  m.rotation.x = -Math.PI / 2;
+  m.position.set(x, big ? 0.08 : 0.06, z);
+  scene.add(m);
+  return m;
+}
+function scaleFigure(x, z) {
+  mkCyl(x, 0, z, 0.22, 1.5, 0, 0x3a5a7a, 'cloth');
+  mkBall(x, 1.68, z, 0.22, 0xe0b090, 'skin');
+}
+
+function animate(now) {
+  requestAnimationFrame(animate);
+  _moveStep(now || performance.now());
+  if (window._inspectorTick) window._inspectorTick();
+  if (window._frameHooks) for (const fh of window._frameHooks) fh(now || performance.now());
+  renderer.render(scene, camera);
+}
+animate();
+/* ---------- 50-vehicles-bundle.js ---------- */
+/* kits/motor-vehicles bundle (vehicle_bundle.py): kits/catalog/krator-furniture-core.js, kits/motor-vehicles/vehicles-core.js, kits/motor-vehicles/krator-vehicles-geomancer.js, kits/motor-vehicles/krator-vehicles-runtime.js. GENERATED; edit the kit files. */
+var KratorVehicles = (function () {
+/* ---- kits/catalog/krator-furniture-core.js ---- */
+/* ======================================================================
+   Krator Furniture Core: the half of the catalog engine with no page in it
+   (split out of krator-asset-engine.js, 2026-10, so any build can carry the
+   catalog's furniture). It needs only THREE. It holds TAU and shade(), the
+   material cache mat() and its family looks, the geometry kit mk* (mkDecal included: a painted canvas panel; all add
+   to _target, else to a global `scene` when one exists), the FURN / PLANT /
+   ASSET registries and their vocabularies, CATALOG_MATERIALS, the furniture
+   palettes FPAL and furnCol(), the build frame makeFrame(), the instantiation
+   helpers buildFurn / buildPlant / buildAsset (which add to the global
+   `scene`), rebuildInstance() and measureInstance().
+   A catalog page loads this file, then krator-asset-engine.js (the scene,
+   camera, controls, labels and frame loop). Another build carries it inside a
+   closure with the furniture files (kits/catalog/furniture_bundle.py), so its
+   names never meet the host's: kits/catalog/README.md "Furniture in a kit".
+   ====================================================================== */
+/* ======================================================================
+   Krator Master Catalog Engine
+   Shared by the master furniture and master plant catalog viewers.
+   Provides: scene/camera/renderer setup, a small geometry kit, the
+   FURN/PLANT registry contract (same shape as Yuni's own src/53-assets.js),
+   and label/layout helpers. Culture-specific FURN(...)/PLANT(...) calls are
+   loaded as separate <\x73cript> files after this one.
+   ====================================================================== */
+
+const TAU = Math.PI * 2;
+
+function shade(hex, amt) {
+  let r = (hex >> 16) & 255, g = (hex >> 8) & 255, b = hex & 255;
+  const f = (c) => Math.max(0, Math.min(255, Math.round(c + (amt >= 0 ? (255 - c) * amt : c * amt))));
+  return (f(r) << 16) | (f(g) << 8) | f(b);
+}
+
+
+/* ------------------------------------------------------------ material */
+const _matCache = new Map();
+/* per-family [roughness, metalness]; anything not listed is matte (0.85, 0).
+   The furniture kit's cultural materials (nacre, gold, lacquer, glazed ceramic, obsidian, jade)
+   read as what they are only through these: CATALOG_MATERIALS below names each. */
+const MAT_FAMILY_LOOK = {
+  metal: [0.4, 0.7], gold: [0.22, 0.9], bronze: [0.42, 0.75], rust: [0.85, 0.35],
+  nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
+  plastic: [0.5, 0.0], bone: [0.6, 0.0]
+};
+function mat(color, family) {
+  const key = color + '|' + (family || '');
+  if (_matCache.has(key)) return _matCache.get(key);
+  let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
+  const fam = MAT_FAMILY_LOOK[family];
+  if (fam) { roughness = fam[0]; metalness = fam[1]; }
+  else if (family === 'glass') { roughness = 0.05; metalness = 0.1; transparent = true; opacity = 0.55; }
+  else if (family === 'glow') { roughness = 1; }
+  const m = family === 'glow'
+    ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
+    : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
+  m.userData.family = family || '';
+  _matCache.set(key, m);
+  return m;
+}
+
+/* ----------------------------------------------------------- geo kit
+   All *world*-space; the frame wrapper (F.*) below resolves local -> world.
+   Convention: box/cyl/cone/dome sit with their BOTTOM at y; blob/ball are
+   CENTRED at y.
+   Every primitive goes into _target when one is set, so buildAsset/buildFurn/
+   buildPlant can collect an instance's meshes into a single selectable group.
+   _target stays null for scenery (ground, labels), which lands straight in the scene. */
+let _target = null;
+/* level of detail for round primitives: 1 = the catalog's own (every page); a build that places thousands
+   of pieces (krator-furniture-runtime.js: KF.setDetail) lowers it, so cylinders, cones, domes, balls and rods
+   get fewer segments. Boxes, and frustums of 8 sides or fewer (square and hexagonal blocks), never change. */
+let _LOD = 1;
+function _seg(n, min) { return _LOD === 1 ? n : Math.max(min, Math.round(n * _LOD)); }
+function _add(m) { (_target || scene).add(m); return m; }
+function mkBox(x, y, z, w, h, d, ry, color, family) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, 0.02), Math.max(h, 0.02), Math.max(d, 0.02)), mat(color, family));
+  m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkCyl(x, y, z, r, h, ry, color, family) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.01), Math.max(r, 0.01), Math.max(h, 0.02), _seg(16, 6)), mat(color, family));
+  m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkCone(x, y, z, r, h, ry, color, family) {
+  const m = new THREE.Mesh(new THREE.ConeGeometry(Math.max(r, 0.01), Math.max(h, 0.02), _seg(14, 6)), mat(color, family));
+  m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkDome(x, y, z, r, h, ry, color, family) {
+  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(16, 6), _seg(10, 3), 0, TAU, 0, Math.PI / 2);
+  geo.scale(1, Math.max(h, 0.02) / Math.max(r, 0.02), 1);
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkBlob(x, y, z, r, h, ry, color, family) {
+  const geo = new THREE.SphereGeometry(Math.max(r, 0.02), _seg(10, 6), _seg(8, 4));
+  geo.scale(1, Math.max(h, 0.02) / (2 * Math.max(r, 0.02)), 1);
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkBall(x, y, z, r, color, family) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(Math.max(r, 0.02), _seg(14, 6), _seg(10, 4)), mat(color, family));
+  m.position.set(x, y, z);
+  return _add(m);
+}
+function mkBeam(ax, ay, az, bx, by, bz, w, d, color, family) {
+  const dx = bx - ax, dy = by - ay, dz = bz - az;
+  const len = Math.max(Math.hypot(dx, dy, dz), 0.02);
+  const m = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, 0.02), len, Math.max(d, 0.02)), mat(color, family));
+  m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
+  return _add(m);
+}
+function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
+  const dx = bx - ax, dy = by - ay, dz = bz - az;
+  const len = Math.max(Math.hypot(dx, dy, dz), 0.02);
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.005), Math.max(r, 0.005), len, _seg(8, 4)), mat(color, family));
+  m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
+  return _add(m);
+}
+/* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
+   block spans 2*rBottom across at its base — r reads as a radius/half-width in every
+   case. sides=4 is a tapered SQUARE block with its faces square to the frame, sides=8
+   a tapered octagonal mass, higher for a rounder tower drum.
+   (For sides=4 the geometry is a diamond in plan, so it is over-sized by sqrt(2) and
+   turned 45 deg to put the faces — not the corners — on the axes.) */
+function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
+  const n = (sides || 8) > 8 ? _seg(sides, 8) : (sides || 8);
+  const k = (n === 4) ? Math.SQRT2 : 1;
+  const geo = new THREE.CylinderGeometry(Math.max(rTop, 0.02) * k, Math.max(rBottom, 0.02) * k, Math.max(h, 0.02), n);
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y + h / 2, z);
+  m.rotation.y = (ry || 0) + (n === 4 ? Math.PI / 4 : 0);
+  return _add(m);
+}
+/* a pyramidal / hip roof covering EXACTLY w (x) by d (z) at its eaves, peak h above y.
+   The 4-sided cone is a diamond in plan, so the geometry is turned 45 deg first and
+   then scaled, which makes the covered footprint exactly w by d rather than w+d over
+   root two — and keeps a non-square roof square to its building. */
+/* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
+   canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
+   (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+const _texCache = new Map();
+function mkDecal(x, y, z, w, h, ry, key, paint, family) {
+  let m = _texCache.get(key);
+  if (!m) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(32, Math.min(512, Math.round(w * 128)));
+    c.height = Math.max(32, Math.min(512, Math.round(h * 128)));
+    paint(c.getContext('2d'), c.width, c.height);
+    const t = new THREE.CanvasTexture(c);
+    t.anisotropy = 4;
+    const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
+    m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
+    m.userData.family = family || '';
+    _texCache.set(key, m);
+  }
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  mesh.position.set(x, y + h / 2, z); mesh.rotation.y = ry || 0;
+  return _add(mesh);
+}
+/* a colour number as a CSS colour, for canvas painting */
+function cssCol(c) { return '#' + ('000000' + (c >>> 0 & 0xffffff).toString(16)).slice(-6); }
+function mkPyrRoof(x, y, z, w, h, d, ry, color, family) {
+  const geo = new THREE.ConeGeometry(0.5, Math.max(h, 0.02), 4);
+  geo.rotateY(Math.PI / 4);
+  const k = Math.SQRT2; /* plan extent after the turn is 1/sqrt(2) */
+  geo.scale(Math.max(w, 0.02) * k, 1, Math.max(d, 0.02) * k);
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y + h / 2, z);
+  m.rotation.y = ry || 0;
+  return _add(m);
+}
+
+/* a true hip roof: covers EXACTLY w (x) by d (z) at the eaves, rises h to a
+   RIDGE along the longer side (ridge length |w - d|), with triangular hipped
+   ends. pyrRoof always meets at one point, which reads as a stretched pyramid
+   on any long building; use this instead. w == d gives a pyramid. */
+function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
+  w = Math.max(w, 0.02); d = Math.max(d, 0.02); h = Math.max(h, 0.02);
+  const hw = w / 2, hd = d / 2, along = w >= d;
+  const r = along ? (w - d) / 2 : (d - w) / 2;
+  const A = [-hw, 0, -hd], B = [hw, 0, -hd], C = [hw, 0, hd], D = [-hw, 0, hd];
+  const P = along ? [-r, h, 0] : [0, h, -r], Q = along ? [r, h, 0] : [0, h, r];
+  const tris = along
+    ? [[A, P, Q], [A, Q, B], [D, C, Q], [D, Q, P], [A, D, P], [B, Q, C], [A, B, C], [A, C, D]]
+    : [[A, P, B], [B, P, Q], [B, Q, C], [D, Q, P], [D, C, Q], [A, D, P], [A, B, C], [A, C, D]];
+  const pos = [];
+  tris.forEach((t) => t.forEach((v) => pos.push(v[0], v[1], v[2])));
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  /* wind every face outward (normal away from the roof's centre line) */
+  const p = geo.attributes.position, a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < p.count; i += 3) {
+    a.fromBufferAttribute(p, i); b.fromBufferAttribute(p, i + 1); c.fromBufferAttribute(p, i + 2);
+    const n = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a));
+    const m = new THREE.Vector3().addVectors(a, b).add(c).divideScalar(3);
+    const out = m.y < 1e-6 ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(along ? (Math.abs(m.x) > r ? m.x : 0) : m.x, 0.001, along ? m.z : (Math.abs(m.z) > r ? m.z : 0));
+    if (n.dot(out) < 0) { p.setXYZ(i + 1, c.x, c.y, c.z); p.setXYZ(i + 2, b.x, b.y, b.z); }
+  }
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+
+/* ------------------------------------------------------------ registry */
+/* furniture cultures, in sheet order. The first eleven are the harvested ones; the rest are the
+   interiors-phase sets (kits/catalog/krator-master-furniture-<culture>.js), each registered by its
+   own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
+   'scrap' are the poor-tier sets any culture's poor buildings pull from. */
+const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+/* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
+   culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
+   tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
+const FURN_CULTURE_INFO = {
+  'ancient': { name: 'Ancients', pack: null }, 'ancients-salvage': { name: 'Ancients salvage', pack: null },
+  'yuni-court': { name: 'Yuni court', pack: 'yuni' }, 'yuni-common': { name: 'Yuni', pack: 'yuni' }, 'yuni-poor': { name: 'Yuni poor', pack: 'yuni' },
+  'sahelian': { name: 'Sahelian', pack: 'yuni' }, 'order': { name: 'The Order', pack: 'yuni' }, 'nomad': { name: 'Eastern Nomads', pack: null },
+  'voth': { name: 'Voth', pack: 'voth' }, 'iziz': { name: 'Iziz', pack: 'iziz' }, 'beast-rider': { name: 'Beast Riders', pack: 'beast-rider' }
+};
+/* wealth tiers (kits/furniture/SPEC.md): a piece's wealth band, the ROOM wealth (0-1) it suits.
+   poor sets are the generic ones; common uses a culture's regional materials; court is bespoke. */
+const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+/* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
+function FURN_CULTURE(key, info) {
+  if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
+  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
+  return FURN_CULTURE_INFO[key];
+}
+const PLANT_CLIMATES = ['hypertropic', 'tropic', 'temperate', 'cold'];
+const PLANT_ARIDITY = ['arid', 'semiarid', 'subhumid', 'humid'];
+const ASSET_CULTURES = ['voth', 'beast-rider'];
+/* building types (repo README): civic, market/shop, tavern/inn, industry, farm,
+   single-family dwelling, multi-family dwelling, infrastructure, religious, funerary.
+   Same slugs as Yuni's BUILDING_TAGS. A building carries several in types: [...];
+   `family` stays as its one-word grouping (housing civic religious industrial defensive trade guild). */
+const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single',
+  'dwelling-multi', 'infrastructure', 'religious', 'funerary'];
+
+/* The furniture entry (kits/furniture/SPEC.md "The entry"):
+     FURN({ key, name, culture, type, setting, rooms: [...], w, d, h, variants, variantNames,
+            variantDims, anchor, clearance: {front, back, left, right}, materials: [...], build(F) })
+   setting: indoor | outdoor | both.  anchor: floor | wall | ceiling | surface.
+   Every piece is authored in the FLOOR frame (origin = footprint centre at the
+   bottom of the piece, +z front); anchor tells a placer where it mounts:
+     floor   — stands on the floor at y = floorY
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+               a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
+     ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
+     surface — stands on a table, shelf or counter top at y = surfaceY
+   materials are canonical names from CATALOG_MATERIALS below.
+   Back-compat: an old entry with room: 'x' is normalised to rooms: ['x'], and
+   room always holds rooms[0] for code that still reads it. */
+const FURN_SETTINGS = ['indoor', 'outdoor', 'both'];
+const FURN_ANCHORS = ['floor', 'wall', 'ceiling', 'surface'];
+const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'shelf', 'desk', 'lamp', 'stove',
+  'altar', 'shrine', 'fountain', 'statue', 'monument', 'planter', 'rug', 'screen', 'banner', 'counter',
+  'stall', 'rack', 'workstation', 'loom', 'well', 'pen', 'tomb', 'vessel', 'shelter', 'weapon', 'debris',
+  'ladder', 'board', 'stack', 'brazier', 'book', 'tool', 'art', 'food', 'drink', 'supply'];
+/* 'art' is wall-mounted art (a mask, a plate, a painted panel, a mounted skull): anchor wall,
+   no walk-up access. Tapestries and hangings are 'banner'. */
+/* the trade or occupation a work item serves (2026-10): every entry of krator-master-furniture-jobs.js
+   carries `job: '<one of these>'` next to its type, and the sheet's Jobs page has a row per job. The trade
+   roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
+   by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
+const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+const FURNS = [], FURN_BY_KEY = {};
+function FURN(o) {
+  if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
+  if (!o.culture || FURN_CULTURES.indexOf(o.culture) < 0) { console.error('furniture ' + o.key + ': bad culture ' + o.culture); return; }
+  o.variants = o.variants || 1;
+  if (!o.rooms) o.rooms = o.room ? [o.room] : ['hall'];
+  else if (typeof o.rooms === 'string') o.rooms = [o.rooms];
+  o.room = o.rooms[0];
+  /* tier and wealth band: given, or read off the culture name (yuni-court, yuni-poor), else common */
+  if (!o.tier) o.tier = /-court$/.test(o.culture) ? 'court' : /-poor$/.test(o.culture) || o.culture === 'generic' || o.culture === 'scrap' ? 'poor' : 'common';
+  if (!o.wealth) o.wealth = (FURN_TIERS[o.tier] || [0, 1]).slice();
+  FURNS.push(o); FURN_BY_KEY[o.key] = o;
+}
+/* the y at which to build a furniture piece so it sits on its anchor:
+   at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+/* wall pieces that hang rather than stand: wall art (a mask, a skull, antlers, a plate) centred at eye height,
+   friezes and pennant strings near the top of the wall. Everything else on a wall stands on the floor. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top' };
+function furnWallHung(A) {
+  if (!A || A.anchor !== 'wall') return null;
+  if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
+  return A.type === 'art' ? 'eye' : null;
+}
+function furnAnchorY(A, variant, at) {
+  at = at || {};
+  const floorY = at.floorY || 0;
+  if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  const hung = furnWallHung(A);
+  if (hung) {
+    const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
+    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    return Math.max(floorY, Math.min(y, top - h));
+  }
+  if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
+  return floorY;
+}
+
+/* Canonical material names (the seed of the planned registry in core/README.md
+   "Planned: a material registry"). Each catalog family string maps onto one
+   canonical name; a piece's `materials` lists the canonical names it uses. */
+const CATALOG_MATERIALS = {
+  timber:    { tags: ['wood'], families: ['wood', 'plank'] },
+  bark:      { tags: ['wood', 'organic'], families: ['bark'] },
+  stone:     { tags: ['stone'], families: ['stone'] },
+  plaster:   { tags: ['stone'], families: ['plaster'] },
+  concrete:  { tags: ['stone'], families: ['concrete'] },
+  roofTile:  { tags: ['stone'], families: ['roof', 'dome'] },
+  metal:     { tags: ['metal'], families: ['metal'] },
+  rustSteel: { tags: ['metal', 'weathered'], families: ['rust'] },
+  glass:     { tags: ['glass'], families: ['glass'] },
+  cloth:     { tags: ['fabric'], families: ['cloth'] },
+  rope:      { tags: ['fabric', 'organic'], families: ['rope'] },
+  thatch:    { tags: ['organic'], families: ['thatch'] },
+  foliage:   { tags: ['organic'], families: ['leafy', 'plant'] },
+  skin:      { tags: ['organic'], families: ['skin'] },
+  emissive:  { tags: ['glow'], families: ['glow'] },
+  food:      { tags: ['organic'], families: ['food'] },
+  /* the interiors-phase regional materials (kits/furniture/README.md "Materials by culture") */
+  bamboo:    { tags: ['wood', 'organic'], families: ['bamboo'] },
+  reed:      { tags: ['organic', 'fabric'], families: ['reed'] },
+  hyperMahogany: { tags: ['wood'], families: ['mahogany'] },
+  nacre:     { tags: ['organic', 'glossy'], families: ['nacre'] },
+  gold:      { tags: ['metal', 'precious'], families: ['gold'] },
+  bronze:    { tags: ['metal'], families: ['bronze'] },
+  lacquer:   { tags: ['wood', 'glossy'], families: ['lacquer'] },
+  ceramic:   { tags: ['stone', 'glossy'], families: ['ceramic', 'tile'] },
+  obsidian:  { tags: ['stone', 'glossy'], families: ['obsidian'] },
+  jade:      { tags: ['stone'], families: ['jade'] },
+  bone:      { tags: ['organic'], families: ['bone', 'antler', 'shell'] },
+  hide:      { tags: ['organic', 'fabric'], families: ['hide', 'fur', 'leather'] },
+  wicker:    { tags: ['organic', 'wood'], families: ['wicker'] },
+  plastic:   { tags: ['weathered'], families: ['plastic'] },
+  unassigned:{ tags: [], families: [''] }
+};
+/* How the canonical names land in the two other material systems (core/README.md "Planned: a
+   material registry" step 2). Ancients-lineage builds have MAT.* (core/materials/22-materials.js,
+   68-mat-v5.js); Voth/Yuni-lineage builds have FAMMAT families. A host exporting a catalog piece
+   maps each name here; a name with no entry on a side falls back to that side's generic surface. */
+const CORE_MATERIAL_MAP = {
+  timber: { ancients: 'MAT.slab', fammat: 'wood' }, bark: { ancients: 'MAT.slab', fammat: 'trunk' },
+  stone: { ancients: 'MAT.rock', fammat: 'stone' }, plaster: { ancients: 'MAT.white', fammat: 'plaster' },
+  concrete: { ancients: 'MAT.rock', fammat: 'stone' }, roofTile: { ancients: 'MAT.slab', fammat: 'roof' },
+  metal: { ancients: 'MAT.pipe', fammat: 'metal' }, rustSteel: { ancients: 'MAT.rust', fammat: 'metal' },
+  glass: { ancients: 'MAT.glass', fammat: 'glass' }, cloth: { ancients: null, fammat: 'cloth' },
+  foliage: { ancients: 'MAT.vine', fammat: 'leaf' }, emissive: { ancients: 'MAT.strip', fammat: null },
+  bronze: { ancients: 'MAT.pipe', fammat: 'metal' }, gold: { ancients: 'MAT.pipe', fammat: 'metal' },
+  obsidian: { ancients: 'MAT.darkGlass', fammat: 'stone' }, plastic: { ancients: 'MAT.white', fammat: null },
+  ceramic: { ancients: 'MAT.slab', fammat: 'stone' }, hyperMahogany: { ancients: 'MAT.slab', fammat: 'wood' },
+  bamboo: { ancients: null, fammat: 'wood' }, reed: { ancients: null, fammat: 'trunk' }
+};
+const FAMILY_TO_MATERIAL = {};
+for (const k in CATALOG_MATERIALS) for (const f of CATALOG_MATERIALS[k].families) FAMILY_TO_MATERIAL[f] = k;
+const PLANTS = [], PLANT_BY_KEY = {};
+function PLANT(o) {
+  if (PLANT_BY_KEY[o.key]) { console.error('duplicate plant key', o.key); return; }
+  if (PLANT_CLIMATES.indexOf(o.climate) < 0) { console.error('plant ' + o.key + ': bad climate ' + o.climate); return; }
+  if (PLANT_ARIDITY.indexOf(o.aridity) < 0) { console.error('plant ' + o.key + ': bad aridity ' + o.aridity); return; }
+  o.variants = o.variants || 1;
+  PLANTS.push(o); PLANT_BY_KEY[o.key] = o;
+}
+/* ASSET({key,name,culture,family,districts,wealth,w,d,h,variants,variantDims,build})
+   — a building. w/d/h are the overall footprint and height in metres. When variants
+   differ a lot in size (a 20 m tower and an 8 m hovel under one key), give
+   variantDims: [{w,d,h}, ...] with one entry per variant and w/d/h as the largest. */
+const ASSETS = [], ASSET_BY_KEY = {};
+function ASSET(o) {
+  if (ASSET_BY_KEY[o.key]) { console.error('duplicate asset key', o.key); return; }
+  if (!o.culture || ASSET_CULTURES.indexOf(o.culture) < 0) { console.error('asset ' + o.key + ': bad culture ' + o.culture); return; }
+  o.variants = o.variants || 1; o.family = o.family || 'other'; o.districts = o.districts || []; o.wealth = o.wealth || [0, 1];
+  o.types = o.types || [];
+  ASSETS.push(o); ASSET_BY_KEY[o.key] = o;
+}
+/* declared size of one variant: its own entry if given, else the entry's overall box.
+   Works for ASSET, FURN and PLANT alike — any of them may carry variantDims. */
+function entryDims(A, v) {
+  const vd = A.variantDims && A.variantDims[v || 0];
+  return { w: (vd && vd.w) || A.w, d: (vd && vd.d) || A.d, h: (vd && vd.h) || A.h };
+}
+const assetDims = entryDims;
+
+/* ------------------------------------------------- furniture palette
+   kits/furniture/SPEC.md "Colour": a piece names its colours, the host owns them.
+   FPAL[culture] maps a named key to a colour; a piece asks for F.col('timber') and
+   gets its own culture's timber. F.cols([...keys]) resolves a list, and F.pick() of
+   an array of palette keys returns the picked key's colour (one draw from the seed,
+   like any pick). F.shade(keyOrColour, amt) takes either. A host that wants another
+   look for a culture replaces FPAL[culture] (or single keys) before building.
+   Keys are role + hue + tone: timber, timberDark, ironDeep, clothRed, flameLight ...
+   Tone bands by lightness: Black < Deep < Dark < (none) < Light < Pale < White.
+   Generated from the harvested pieces' literals (nearest-colour clustering per
+   culture, so a key may stand for a few near-identical originals); edit freely. */
+const FPAL = {
+  'ancient': {
+    alloy: 0xe6e4dc,
+    amber: 0xffb755,
+    blackIron: 0x1c1c1c, blackIronLight: 0x2a2a2a,
+    clothMadder: 0xb5432f, clothTurquoise: 0x4a7a9c, clothOchre: 0xc9a24a, clothBirch: 0xc9a878,
+    clothBone: 0xe8dcc0,
+    electric: 0x6fd0ff,
+    glassBlack: 0x14161a, glassSky: 0x5a9ec9,
+    ice: 0xbfe8ff,
+    pewter: 0x8a8f92,
+    redCopper: 0xa0522d,
+    silver: 0xb4b0a2,
+    steel: 0x5a5f62, steelLight: 0x6e7376,
+    stoneGraphite: 0x3a3f3e, stoneGranite: 0x6e6a5e, stoneClay: 0xb56a42, stoneTaupe: 0x8a8478,
+    timberOak: 0x8a6a4e,
+    unlit: 0x2a2f2e,
+    verdigris: 0x6fe8e0,
+    whiteHot: 0xfff2c9
+  },
+  'ancients-salvage': {
+    blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
+    clothTan: 0xb08a5a, clothOchre: 0xc9a24a, clothBone: 0xe8dcc0,
+    fire: 0xff6a2e,
+    gilt: 0xc9a227,
+    pewter: 0x8a8f92,
+    plasterTan: 0xb08250, plasterTanLight: 0xbc8e58, plasterTanLight2: 0xc89a62, plasterBirch: 0xd4a66e,
+    redCopper: 0x8a3a2a,
+    rustRusset: 0x7a3b22,
+    silver: 0xb4b0a2, silverLight: 0xc0bcae,
+    steel: 0x6e7376,
+    stoneClay: 0xb56a42, stoneBirch: 0xc9a878, stoneGrey: 0xb0aaa0,
+    timberOak: 0x8a6a4e,
+    whiteHot: 0xfff2c9
+  },
+  'yuni-court': {
+    amber: 0xffb755,
+    blackIron: 0x1c1c1c,
+    brass: 0xc29a44,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothCrimson: 0x9c3024,
+    clothMadder: 0xb5432f, clothSaffron: 0xd8a030, clothIvory: 0xf0ece0,
+    copper: 0xc8642a,
+    ember: 0xd9762c,
+    fire: 0xff8a3a,
+    gilt: 0xc9a227,
+    iron: 0x4a4038,
+    plasterIvory: 0xf2eee2,
+    stoneBlack: 0x14161a, stoneMoss: 0x3a6a3a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0,
+    stoneCobalt: 0x2a6ab0, stoneTurquoiseLight: 0x4a7a9c, stoneAzure: 0x3a86c8, stoneOchre: 0xc9a24a,
+    stoneSky: 0x58a8d8, stoneBone: 0xe8dcc0,
+    timberWalnut: 0x5c432c, timberTeak: 0x9a7a4e,
+    whiteHot: 0xfff2c9
+  },
+  'yuni-common': {
+    amber: 0xffb755,
+    brass: 0xb08432,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothMustard: 0x94824a,
+    clothMadder: 0xb83a2e, clothTurquoise: 0x4a7a9c, clothOrange: 0xc8642a, clothFlax: 0xa89256,
+    clothSaffron: 0xd8a030, clothTan: 0xb08a5a, clothOchre: 0xc9a24a, clothStraw: 0xc8b272,
+    clothIvory: 0xf2eee2,
+    ember: 0xd9762c,
+    gilt: 0xc9a227,
+    plasterMadder: 0xb5432f, plasterTan: 0xbc8e58, plasterTanLight: 0xc89a62, plasterBirch: 0xd4a66e,
+    plasterBone: 0xe8dcc0,
+    produceLeaf: 0x7a9a3e,
+    ropeMustard: 0x85743e, ropeFlax: 0xb8a262,
+    silver: 0xb4b0a2,
+    stoneBlack: 0x14161a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0, stoneLaterite: 0xa85832,
+    stoneCobalt: 0x2a6ab0, stoneClay: 0xb8633a, stoneAzure: 0x3a86c8, stoneClayLight: 0xc47044,
+    stoneSky: 0x58a8d8, stoneIvory: 0xf0ece0,
+    timberWalnut: 0x5c432c, timberChestnutDark: 0x6a4e34, timberChestnut: 0x7a5a3c, timberOak: 0x8a6a4e,
+    timberTeak: 0x9a7a4e, timberPine: 0xa8865c
+  },
+  'yuni-poor': {
+    clothIndigo: 0x2e5a8a, clothMadder: 0xb83a2e, clothOrange: 0xc8642a, clothSaffron: 0xd8a030,
+    clothIvory: 0xf0ece0,
+    ember: 0xd9762c,
+    plasterTan: 0xb08250,
+    stoneBlack: 0x14161a, stoneLaterite: 0xa85832, stoneGranite: 0x7e7a72, stoneClay: 0xb4683e,
+    stoneClayLight: 0xc07448,
+    thatchFlax: 0xb8a262, thatchStraw: 0xc8b272,
+    timberWalnut: 0x5c432c
+  },
+  'sahelian': {
+    clothIndigo: 0x2e5a8a, clothBone: 0xe8dcc0, clothIvory: 0xf0ece0,
+    ember: 0xd9762c,
+    plasterSoot: 0x1c1c1c, plasterLaterite: 0xa85c36, plasterMadder: 0xb5432f, plasterClayDark: 0xb4683e,
+    plasterClay: 0xc07448,
+    stoneBlack: 0x14161a, stoneTaupe: 0x8a8172,
+    thatchStraw: 0xc8b272,
+    timberSepia: 0x4a3624, timberOak: 0x8a6a4e, timberTeak: 0x9a7a4e
+  },
+  'order': {
+    blackIron: 0x2a2622,
+    brass: 0xb08432,
+    clothGraphite: 0x3c362c, clothForest: 0x2e4a3a, clothWine: 0x5a2a2a, clothDusk: 0x3a3a5a,
+    clothWalnut: 0x6a3a2a, clothMoss: 0x3a6a3a, clothTeak: 0x7a5a2a, clothRusset: 0x8a3a2a,
+    clothGranite: 0x7a7466, clothMadder: 0xb5432f, clothTurquoise: 0x4a7a9c, clothBone: 0xe8dcc0,
+    clothIvory: 0xe8e4d6,
+    ember: 0xd9762c,
+    gilt: 0xc9a227,
+    stoneSoot: 0x1c1c1c, stoneOchre: 0xc9a24a, stoneGrey: 0x9a9080, stoneChalk: 0xe8e8e8,
+    timberWalnut: 0x5c432c, timberOak: 0x8a6a4e, timberTeak: 0x9a7a4e, timberStraw: 0xd8c48a,
+    whiteHot: 0xfff2c9
+  },
+  'nomad': {
+    amber: 0xffb755,
+    blackIron: 0x2a2622,
+    clothViolet: 0x6a3a7a, clothIndigo: 0x2e5a8a, clothJade: 0x2f8a6a, clothMud: 0x8a7a54,
+    clothMadder: 0xb83a2e, clothOrange: 0xc8642a, clothSaffron: 0xd8a030,
+    ember: 0xd9762c,
+    hideWalnut: 0x4e3222, hideChestnut: 0x6a4630, hideOak: 0x8a5c3c,
+    ropeMustard: 0x85743e,
+    stoneBlack: 0x14161a, stoneGranite: 0x7a7264,
+    timberSepia: 0x4e3a28, timberUmber: 0x5e5236
+  },
+  'voth': {
+    amber: 0xe89a3c, amberLight: 0xffb04a,
+    blackIron: 0x2a2a2a,
+    brass: 0xa88a3c,
+    candle: 0xffe0a0,
+    clothPlum: 0x8a2d6a, clothIndigo: 0x2d6a8a, clothTeal: 0x2f8f8a, clothJade: 0x2f8f6a,
+    clothCrimson: 0x9c2d2d, clothMud: 0x8a7a5c, clothGold: 0xc9a227, clothTaupe: 0x8a8a78,
+    clothKhaki: 0x9a8a6c, clothOrange: 0xe07a2a, clothPine: 0xa88868, clothGreyDark: 0x9a8a78,
+    clothGrey: 0x9a9a88, clothBirch: 0xc0a878, clothSand: 0xc9b58a, clothLinenDark: 0xd8c9a0,
+    clothLinen: 0xd8cdb0, clothLinenLight: 0xdad0b8, clothBone: 0xe8e0c8,
+    coal: 0xb8461f,
+    copper: 0xb5723a,
+    ember: 0xd9762c,
+    fireDark: 0xff6a2e, fire: 0xff8a3c,
+    flameDark: 0xffd23c, flame: 0xffc861,
+    gilt: 0xd8b34a,
+    glassCharcoal: 0x1a2028, glassSlate: 0x3a5a68, glassCrimson: 0x8a2020, glassGranite: 0x6a6a52,
+    glassMud: 0x7a6a4a, glassMist: 0x8fb8c4, glassChalk: 0xcfe3e8,
+    ironDark: 0x3a3630, iron: 0x4a443c,
+    leafMoss: 0x54632f, leafMossLight: 0x5e6b3a, leafOlive: 0x6a7a3a, leafOliveLight: 0x7a8a42,
+    leaf: 0x7a9a3a, leafMustard: 0x8a7a4a, leafMadder: 0xb23a2a, leafOchreDark: 0xc9a24a,
+    leafOchre: 0xd8c060,
+    pewter: 0x8a8a8a,
+    plasterBone: 0xe6dcc0,
+    steel: 0x6b6258, steelLight: 0x7a6f5c,
+    stoneSoot: 0x1a1512, stoneEbony: 0x2a2620, stoneGraphite: 0x3c362c, stoneUmber: 0x4a443a,
+    stoneWine: 0x6b1f1f, stoneUmberLight: 0x6a5248, stoneMud: 0x8a7454, stoneGranite: 0x7a7466,
+    stoneJade: 0x5a8a7a, stoneTaupe: 0x8a8474, stoneKhaki: 0x9a8464, stoneKhakiLight: 0x9d9278,
+    stoneGrey: 0x9a9484, stoneMist: 0x6ecbe0, stoneLinen: 0xc8bfa6, stoneLinenLight: 0xd8d0be,
+    timberWalnut: 0x5a4028, timberUmber: 0x5a4a38, timberUmberLight: 0x6a5c48, timberChestnut: 0x7a5a3a,
+    timberTeak: 0x8a6a3a, timberMud: 0x7a6a52, timberMudLight: 0x877558, timberTeakLight: 0x9a7a4a,
+    timberTaupe: 0x8b8069, timberKhaki: 0x9a8a68, timberTaupeLight: 0x8c8579, timberGrey: 0x958e80,
+    timberBirch: 0xc8a878, timberSand: 0xd8cca0
+  },
+  'iziz': {
+    amber: 0xffb04a,
+    blackIron: 0x2a2018,
+    bronzeDark: 0x6e5428, bronze: 0x8a6a3a, bronzeLight: 0x9a7a3c,
+    candleDark: 0xffd28a, candle: 0xffe9a8,
+    clothTeal: 0x2f8f8a, clothCrimson: 0x9c2d2d, clothCobalt: 0x3a6fb0, clothViolet: 0x7a4fa0,
+    clothOrange: 0xe07a2a, clothGold: 0xd4af37, clothBone: 0xe8dcc4,
+    electricDark: 0x5cc4ff, electric: 0x8fd4ff,
+    flame: 0xffd34a,
+    gilt: 0xd9b23c, giltLight: 0xe8c14a,
+    glassChalk: 0xd8ecf0,
+    iceDark: 0x9fdfff, ice: 0xbfe8ff,
+    leaf: 0x3a8a46, leafOlive: 0x4a8a50, leafVermilion: 0xc9442a,
+    stoneGranite: 0x6a6052, stoneMud: 0x8c8068, stoneKhaki: 0x9a8e74, stoneLinen: 0xc8bfa6,
+    timberSepia: 0x4a3a2a, timberChestnut: 0x6a4a2a, timberFlax: 0xc2a165,
+    whiteHot: 0xfff0c0
+  },
+  'beast-rider': {
+    amber: 0xffb066,
+    barkUmber: 0x5a4a38,
+    brass: 0xa88a3c,
+    candle: 0xffd28a,
+    clothTeal: 0x2f8f8a, clothVermilion: 0xc9442a, clothSaffron: 0xd8a23a, clothTaupe: 0x9a8878,
+    clothGrey: 0xa89a86, clothSand: 0xc9b58a, clothIvory: 0xe8ded0,
+    glassLeaf: 0x6a8a3a,
+    hideOak: 0x8a6a48,
+    ice: 0x4ac8b0,
+    iron: 0x3a362e,
+    leafMoss: 0x3a6a2c, leafOlive: 0x4a7a32, leaf: 0x8a9a46, leafMadder: 0xb8342a,
+    leafMadderLight: 0xb84a2a, leafVermilion: 0xd2542a, leafOchre: 0xc9a24a,
+    pewter: 0x8a8f92,
+    plasterSlate: 0x3a5a68,
+    redCopper: 0x9c2d2d,
+    steel: 0x5a5a5a,
+    stoneCharcoal: 0x2a2f38, stoneTaupe: 0x8a8478,
+    timberEbony: 0x2a2620, timberSepia: 0x4a3f30, timberWalnut: 0x6a3a2a, timberUmber: 0x6a5c48,
+    timberMudDark: 0x7a6a4e, timberMud: 0x8a7558, timberStraw: 0xc9a86a
+  }
+};
+/* the colour a palette key names for a culture; throws on an unknown key so a typo fails the build */
+function furnCol(culture, key) {
+  if (typeof key === 'number') return key;
+  const p = FPAL[culture];
+  if (p && p[key] != null) return p[key];
+  throw new Error('no palette key "' + key + '" for culture ' + culture);
+}
+
+/* local frame: origin at footprint centre on the ground; +z is FRONT */
+function makeFrame(x, z, ry, opt) {
+  opt = opt || {};
+  const F = { x, z, ry: ry || 0, y: opt.y || 0, seed: opt.seed || 1, variant: opt.variant || 0, wealth: opt.wealth == null ? 0.5 : opt.wealth };
+  let st = (F.seed * 2654435761) >>> 0;
+  F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
+  F.rr = (a, b) => a + (b - a) * F.rnd();
+  F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
+  F.cols = (keys) => keys.map(F.col);
+  F.pick = (arr) => {
+    const v = arr[Math.floor(F.rnd() * arr.length) % arr.length];
+    return (typeof v === 'string' && F.asset && FPAL[F.asset.culture] && FPAL[F.asset.culture][v] != null) ? F.col(v) : v;
+  };
+  F.chance = (p) => F.rnd() < p;
+  /* engine helpers on the frame, so a piece need not reach for host globals */
+  F.shade = (c, amt) => shade(typeof c === 'string' ? F.col(c) : c, amt); F.TAU = TAU;
+  const toWorld = (lx, lz) => {
+    const c = Math.cos(F.ry), s = Math.sin(F.ry);
+    return [F.x + lx * c + lz * s, F.z - lx * s + lz * c];
+  };
+  /* move the frame origin to local (lx, lz). A piece authored off-centre calls
+     F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
+  F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
+  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
+  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
+  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
+  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
+  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
+  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
+  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  /* a beam's roll must come from the LOCAL frame, then turn with the building:
+     setFromUnitVectors on the world direction picks the shortest rotation,
+     whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
+     built at ry = 0 twisted about its own axis at any other ry. Identical at ry = 0. */
+  const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
+  F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
+    const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    if (F.ry && m) {
+      _bDir.set(bx - ax, by - ay, bz - az);
+      if (_bDir.lengthSq() > 1e-12) {
+        m.quaternion.setFromUnitVectors(_bUp, _bDir.normalize()).premultiply(_bQy.setFromAxisAngle(_bAxY, F.ry));
+      }
+    }
+  };
+  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
+  F.css = cssCol;
+  F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
+  F.tree = (lx, lz, kind, h, ly) => treeHelper(F, lx, lz, kind, h, ly || 0);
+  /* furniture a BUILDING places (an ASSET's build): a catalog piece at local (lx, ly, lz) turned lry, built
+     into the same group with its own frame, and recorded as data (F.furniture; buildAsset copies it to the
+     instance's userData.furniture). Everything a building puts in or around itself that is not its structure
+     goes through here, so it is the catalog's piece, tagged, and visible to the life layer. o: { v, seed, setting } */
+  F.furn = (key, lx, ly, lz, lry, o) => {
+    o = o || {};
+    const A = FURN_BY_KEY[key];
+    if (!A) { (F.missing || (F.missing = [])).push(key); return null; }
+    const [x2, z2] = toWorld(lx, lz), list = F.furniture || (F.furniture = []);
+    const rec = { key: key, variant: o.v || 0, seed: o.seed || (F.seed * 31 + list.length + 1), lx: lx, ly: ly || 0, lz: lz, lry: lry || 0,
+      x: x2, y: F.y + (ly || 0), z: z2, ry: F.ry + (lry || 0), setting: o.setting || 'outdoor' };
+    const F2 = makeFrame(x2, z2, rec.ry, { y: rec.y, seed: rec.seed, variant: rec.variant, wealth: F.wealth });
+    F2.asset = A;
+    A.build(F2);
+    list.push(rec);
+    return rec;
+  };
+  return F;
+}
+
+const PAL = {
+  pine: [0x1f3d24, 0x254a2a], olive: [0x6f7d42, 0x7d8a4a], palm: [0x2c8a5e, 0x3a9a68],
+  cypress: [0x1e4a28, 0x2a5a34], shrub: [0x556b2f, 0x4a5e28], trunk: [0x5d5140, 0x6a5c48, 0x4e4536, 0x5a4028]
+};
+/* A generic tree. Builds an actual woody structure — tapered bole in stacked segments,
+   primary limbs, branchlets, and foliage clustered at the limb ends — rather than a
+   stick with a ball on it, and tops out at very close to h so the declared height is
+   the real height. kind: pine | olive | palm | shrub | cypress (default). */
+function treeHelper(F, lx, lz, kind, h, ly) {
+  h = Math.max(h || 6, 0.5);
+  ly = ly || 0;
+  const bark = F.pick(PAL.trunk);
+  /* a tapering bole in n segments, each leaning a little off the last */
+  function bole(baseR, topR, top, n, lean) {
+    let x = lx, z = lz, y = ly;
+    const segH = top / n;
+    for (let i = 0; i < n; i++) {
+      const t = i / n, r = baseR + (topR - baseR) * t;
+      const nx = x + F.rr(-lean, lean) * h * 0.02, nz = z + F.rr(-lean, lean) * h * 0.02;
+      F.rod(x, y, z, nx, y + segH, nz, r, i % 2 ? shade(bark, 0.04) : bark, 'bark');
+      x = nx; z = nz; y += segH;
+    }
+    return { x: x, z: z, y: y, r: topR };
+  }
+  /* a leafy cluster: a few overlapping blobs, jittered, so the crown has a silhouette */
+  function cluster(cx, cy, cz, R, c, n) {
+    for (let i = 0; i < (n || 3); i++) {
+      const s = i === 0 ? 1 : F.rr(0.5, 0.82);
+      F.blob(cx + F.rr(-R, R) * 0.4, cy + F.rr(-R, R) * 0.3, cz + F.rr(-R, R) * 0.4,
+        R * s, R * s * F.rr(0.75, 1.0), F.rnd() * TAU, i % 2 ? c : shade(c, F.rr(-0.06, 0.1)), 'leafy');
+    }
+  }
+
+  if (kind === 'pine') {
+    const c = F.pick(PAL.pine);
+    const clear = h * 0.40;                         /* bare trunk before the first whorl */
+    const top = bole(0.18 + h * 0.020, 0.07 + h * 0.006, h * 0.94, 4, 1);
+    /* whorls of limbs, longest low down, carrying needle masses */
+    const whorls = 5;
+    for (let wi = 0; wi < whorls; wi++) {
+      const t = wi / (whorls - 1);
+      const y = ly + clear + (h * 0.92 - clear) * t;
+      const len = h * (0.30 - 0.20 * t);
+      const n = 4 + (wi % 2);
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * TAU + wi * 0.7 + F.rr(-0.2, 0.2);
+        const ex = lx + Math.cos(a) * len, ez = lz + Math.sin(a) * len;
+        const ey = y + len * F.rr(0.10, 0.28);
+        F.rod(lx, y, lz, ex, ey, ez, 0.05 + h * 0.006, bark, 'bark');
+        cluster(ex * 0.96 + lx * 0.04, ey, ez * 0.96 + lz * 0.04, len * 0.42, c, 2);
+      }
+    }
+    F.cone(lx, ly + h * 0.86, lz, h * 0.055 + 0.2, h * 0.16, 0, shade(c, 0.1), 'leafy');
+    if (F.chance(0.6)) F.cone(lx + F.rr(-0.3, 0.3), ly, lz + F.rr(-0.3, 0.3), h * 0.05, h * 0.06, 0, shade(bark, -0.1), 'bark');
+
+  } else if (kind === 'olive') {
+    const c = F.pick(PAL.olive);
+    /* short gnarled bole that forks low into a vase of limbs */
+    const top = bole(0.16 + h * 0.055, 0.10 + h * 0.030, h * 0.34, 3, 3);
+    const n = 4 + (F.chance(0.5) ? 1 : 0);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU + F.rr(-0.3, 0.3);
+      const len = h * F.rr(0.30, 0.44);
+      const ex = top.x + Math.cos(a) * len * 0.8, ez = top.z + Math.sin(a) * len * 0.8;
+      const ey = top.y + len * F.rr(0.55, 0.95);
+      F.rod(top.x, top.y, top.z, ex, ey, ez, 0.06 + h * 0.022, shade(bark, 0.05), 'bark');
+      /* two branchlets off each limb, then leaf mass at the tips */
+      for (let b = 0; b < 2; b++) {
+        const a2 = a + F.rr(-0.8, 0.8);
+        const l2 = len * F.rr(0.3, 0.5);
+        const bx = ex + Math.cos(a2) * l2, bz = ez + Math.sin(a2) * l2, by = ey + l2 * F.rr(0.1, 0.6);
+        F.rod(ex, ey, ez, bx, by, bz, 0.04 + h * 0.010, bark, 'bark');
+        cluster(bx, by, bz, h * F.rr(0.13, 0.19), c, 3);
+      }
+      cluster(ex, ey, ez, h * 0.15, c, 2);
+    }
+    /* a couple of suckers at the base, as olives do */
+    for (let s = 0; s < 2; s++) if (F.chance(0.7)) {
+      const a = F.rnd() * TAU;
+      F.rod(lx, ly, lz, lx + Math.cos(a) * h * 0.12, ly + h * 0.2, lz + Math.sin(a) * h * 0.12, 0.03 + h * 0.008, bark, 'bark');
+    }
+
+  } else if (kind === 'palm') {
+    const c = F.pick(PAL.palm);
+    /* curving segmented stipe with leaf-scar rings */
+    const segs = 6, tilt = F.rr(-0.06, 0.06), top = h * 0.80;
+    let x = lx, z = lz, y = ly;
+    for (let i = 0; i < segs; i++) {
+      const t = i / segs;
+      const r = (0.17 + h * 0.012) * (1 - t * 0.35);
+      const nx = x + tilt * h * 0.06 * (1 + t), nz = z + tilt * h * 0.03;
+      F.rod(x, y, z, nx, y + top / segs, nz, r, i % 2 ? shade(bark, 0.06) : bark, 'bark');
+      F.cyl(nx, y + top / segs - h * 0.006, nz, r * 1.18, h * 0.012, 0, shade(bark, -0.12), 'bark');
+      x = nx; z = nz; y += top / segs;
+    }
+    /* fronds: each an arching chain that droops at the tip */
+    const nf = 9;
+    for (let f = 0; f < nf; f++) {
+      const a = (f / nf) * TAU + F.rr(-0.15, 0.15);
+      const len = h * F.rr(0.30, 0.40), lift = F.rr(0.10, 0.30) * len;
+      const c1x = x + Math.cos(a) * len * 0.38, c1z = z + Math.sin(a) * len * 0.38, c1y = y + lift;
+      const c2x = x + Math.cos(a) * len * 0.75, c2z = z + Math.sin(a) * len * 0.75, c2y = y + lift * 1.05;
+      const tx = x + Math.cos(a) * len, tz = z + Math.sin(a) * len, ty = y + lift * 0.35;
+      const fc = f % 2 ? c : shade(c, 0.08);
+      F.beam(x, y, z, c1x, c1y, c1z, h * 0.035, 0.05, fc, 'leafy');
+      F.beam(c1x, c1y, c1z, c2x, c2y, c2z, h * 0.055, 0.05, fc, 'leafy');
+      F.beam(c2x, c2y, c2z, tx, ty, tz, h * 0.040, 0.04, shade(fc, -0.05), 'leafy');
+    }
+    /* spent fronds hanging under the crown, and a nut cluster */
+    for (let f = 0; f < 3; f++) {
+      const a = F.rnd() * TAU, len = h * 0.2;
+      F.beam(x, y - h * 0.01, z, x + Math.cos(a) * len * 0.5, y - len * 0.8, z + Math.sin(a) * len * 0.5, h * 0.03, 0.04, shade(bark, 0.12), 'leafy');
+    }
+    F.ball(x, y - h * 0.03, z, h * 0.045, shade(c, -0.15), 'leafy');
+    for (let k = 0; k < 4; k++) F.ball(x + F.rr(-0.4, 0.4) * h * 0.1, y - h * 0.05, z + F.rr(-0.4, 0.4) * h * 0.1, h * 0.022, 0xb8893c, 'leafy');
+
+  } else if (kind === 'shrub') {
+    const c = F.pick(PAL.shrub);
+    /* a mound built from many stems and tufts rather than one blob */
+    const n = 9 + Math.floor(F.rnd() * 5);
+    for (let i = 0; i < n; i++) {
+      const a = F.rnd() * TAU, rr = F.rr(0.1, 0.95) * h;
+      const ex = lx + Math.cos(a) * rr, ez = lz + Math.sin(a) * rr;
+      const ey = ly + F.rr(0.35, 1.0) * h * 0.95;
+      F.rod(lx + F.rr(-0.1, 0.1) * h, ly, lz + F.rr(-0.1, 0.1) * h, ex, ey, ez, h * 0.035, shade(bark, 0.08), 'bark');
+      F.blob(ex, ey, ez, h * F.rr(0.28, 0.45), h * F.rr(0.22, 0.36), F.rnd() * TAU, shade(c, F.rr(-0.08, 0.12)), 'leafy');
+    }
+    F.blob(lx, ly + h * 0.30, lz, h * 0.62, h * 0.5, 0, shade(c, -0.06), 'leafy');
+
+  } else {
+    /* cypress: dense columnar spire, built from stacked tapering tiers */
+    const c = F.pick(PAL.cypress), R = h * 0.105 + 0.28;
+    F.rod(lx, ly, lz, lx, ly + h * 0.22, lz, 0.12 + h * 0.008, bark, 'bark');
+    const tiers = 6;
+    for (let i = 0; i < tiers; i++) {
+      const t = i / tiers;
+      const y = ly + h * (0.08 + 0.80 * t);
+      const r = R * (1.05 - 0.75 * t) * F.rr(0.92, 1.08);
+      const hh = h * 0.26 * (1 - t * 0.35);
+      F.cone(lx + F.rr(-0.06, 0.06) * R, y, lz + F.rr(-0.06, 0.06) * R, r, hh, F.rnd() * TAU,
+        i % 2 ? c : shade(c, 0.07), 'leafy');
+      /* a few sprigs breaking the outline so it isn't a smooth cone */
+      if (F.chance(0.7)) {
+        const a = F.rnd() * TAU;
+        F.blob(lx + Math.cos(a) * r * 0.9, y + hh * 0.4, lz + Math.sin(a) * r * 0.9, r * 0.3, r * 0.4, 0, shade(c, 0.1), 'leafy');
+      }
+    }
+    F.cone(lx, ly + h * 0.86, lz, R * 0.30, h * 0.16, 0, shade(c, 0.12), 'leafy');
+  }
+}
+
+/* ---------------------------------------------------------- instantiation
+   Each build goes into its own Group so the inspector can pick it, measure it,
+   isolate it and rebuild it in place. Groups sit at the origin with an identity
+   transform, so the world-space maths in the geo kit is unaffected. */
+const INSTANCES = [];
+function _buildInstance(kind, registry, key, x, z, ry, opt) {
+  const A = registry[key];
+  if (!A) { console.error('no such ' + kind, key); return null; }
+  opt = opt || {};
+  const g = new THREE.Group();
+  g.name = kind + ':' + key;
+  const prev = _target;
+  _target = g;
+  const F = makeFrame(x, z, ry, opt);
+  F.asset = A;
+  let failed = null;
+  try { A.build(F); } catch (e) { failed = e; console.error(kind + ' build error', key, e); }
+  _target = prev;
+  g.userData = {
+    kind: kind, key: key, asset: A, x: x, z: z, ry: ry || 0,
+    opt: { variant: opt.variant || 0, seed: opt.seed || 1, wealth: opt.wealth == null ? 0.5 : opt.wealth, y: opt.y || 0 },
+    error: failed ? String(failed && failed.message || failed) : null,
+    furniture: F.furniture || [], missingFurniture: F.missing || []
+  };
+  scene.add(g);
+  INSTANCES.push(g);
+  return g;
+}
+function buildFurn(key, x, z, ry, opt) { return _buildInstance('furniture', FURN_BY_KEY, key, x, z, ry, opt); }
+function buildPlant(key, x, z, ry, opt) { return _buildInstance('plant', PLANT_BY_KEY, key, x, z, ry, opt); }
+function buildAsset(key, x, z, ry, opt) { return _buildInstance('building', ASSET_BY_KEY, key, x, z, ry, opt); }
+
+/* rebuild an existing instance in place with changed options (variant/seed/wealth) */
+function rebuildInstance(g, changes) {
+  const u = g.userData;
+  const registry = u.kind === 'building' ? ASSET_BY_KEY : (u.kind === 'plant' ? PLANT_BY_KEY : FURN_BY_KEY);
+  const opt = Object.assign({}, u.opt, changes || {});
+  const i = INSTANCES.indexOf(g);
+  if (i >= 0) INSTANCES.splice(i, 1);
+  scene.remove(g);
+  g.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
+  return _buildInstance(u.kind, registry, u.key, u.x, u.z, u.ry, opt);
+}
+
+/* measured world-space size of an instance, and how much of it got built.
+   Measures actual transformed VERTICES, not Box3.expandByObject — that takes the
+   AABB of each mesh's own AABB, which inflates anything rotated off-axis by up to
+   sqrt(2) and would quietly overstate every tapered tower and turned roof here. */
+const _mv = new THREE.Vector3();
+function measureInstance(g) {
+  g.updateMatrixWorld(true);
+  const box = new THREE.Box3();
+  let meshes = 0, tris = 0;
+  g.traverse((o) => {
+    const geo = o.geometry;
+    if (!geo || !geo.attributes || !geo.attributes.position) return;
+    meshes++;
+    const idx = geo.index, pos = geo.attributes.position;
+    tris += idx ? idx.count / 3 : pos.count / 3;
+    for (let i = 0; i < pos.count; i++) {
+      _mv.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld);
+      box.expandByPoint(_mv);
+    }
+  });
+  if (!meshes || box.isEmpty()) return { empty: true, meshes: 0, tris: 0, w: 0, d: 0, h: 0, box: box };
+  const size = box.getSize(new THREE.Vector3());
+  return { empty: false, meshes: meshes, tris: Math.round(tris), w: size.x, d: size.z, h: size.y, box: box, min: box.min.clone(), max: box.max.clone() };
+}
+
+
+/* ---- kits/motor-vehicles/vehicles-core.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the kit core (kits/motor-vehicles/vehicles-core.js)
+
+   A VEHICLE({...}) registry on top of the master catalog's engine-neutral core
+   (kits/catalog/krator-furniture-core.js: makeFrame(), F.box/cyl/cone/dome/blob/
+   ball/beam/rod/frustum, F.col over FPAL, mat(), _target). vehicle_bundle.py
+   wraps that core, this file, the culture files (krator-vehicles-<culture>.js)
+   and krator-vehicles-runtime.js in ONE closure exposing only `KratorVehicles`,
+   so every name here (VEHICLE, VEHICLES, vehicleFrame ...) stays private.
+
+   Why a registry of its own, not the catalog's ASSET: an ASSET is a building
+   (its cultures are checked against ASSET_CULTURES, it has districts and
+   building types) and is drawn as one static group. A vehicle has MOVING PARTS
+   (wheels a host spins and steers, lamps it switches) and SIMULATION DATA (top
+   speed, seats, cargo, fuel, wheel layout) that a host reads without drawing
+   anything. So: the catalog's frame and primitives for the body, this registry
+   for the entry, and the runtime for assembly (body merged per material, each
+   wheel its own named child).
+
+   The entry (data first; only build and wheel draw):
+     VEHICLE({
+       key, name, culture,                 culture: a key of VEHICLE_CULTURES (register with VEHICLE_CULTURE)
+       tags: { class:'motor vehicle', type:[...], drive, seats, fuel, terrain:[...] },
+       variants, variantNames: [...],
+       w, d, h,                            overall box in metres (x across, z along, y up), aerials included
+       data: { speed, accel, turnRadius, maxSteer, seats, cargo, mass, fuel, tank, range,
+               wheelbase, track, clearance, cageH, drive,
+               wheels: [{ name, x, z, r, w, front, steer, drive }] },     (data, not code: a sim reads it)
+       variantData: [ {overrides}, ... ],  per variant, merged over data
+       lamps: (built, see F.lamp below)
+       build(F)                            the body, in the vehicle frame
+       wheel(F, W)                         ONE wheel at the origin, axle along x, W = the wheel record + side (+1/-1)
+     })
+   The vehicle frame: origin at the footprint centre on the ground, +z FORWARD
+   (the front), y up, +x the driver's left (three.js yaw: rotation.y > 0 turns +z
+   toward +x). Wheels touch y = 0; a wheel's hub is at (W.x, W.r, W.z).
+   ====================================================================== */
+
+/* the classes and vocabularies a vehicle's tags are checked against (verify.py --assert) */
+const VEHICLE_CLASSES = ['motor vehicle'];
+const VEHICLE_TYPES = ['vehicle', 'transport', 'cargo', 'utility', 'patrol', 'survey'];
+const VEHICLE_DRIVES = ['wheeled', 'tracked', 'half-track'];
+const VEHICLE_FUELS = ['refined oil', 'crude oil', 'battery', 'wood gas', 'alcohol'];
+const VEHICLE_TERRAIN = ['sand', 'salt flat', 'track', 'road', 'mud', 'rock', 'snow'];
+
+/* a culture: its palette goes into the catalog core's FPAL (inside this closure only),
+   so F.col('paint') resolves against the vehicle's own culture as furniture does */
+const VEHICLE_CULTURES = {};
+function VEHICLE_CULTURE(key, info) {
+  VEHICLE_CULTURES[key] = { name: info.name || key, lore: info.lore || '', sign: info.sign || '' };
+  FPAL[key] = Object.assign(FPAL[key] || {}, info.palette || {});
+}
+
+const VEHICLES = [], VEHICLE_BY_KEY = {};
+function VEHICLE(o) {
+  if (VEHICLE_BY_KEY[o.key]) { console.error('duplicate vehicle key', o.key); return; }
+  if (!VEHICLE_CULTURES[o.culture]) { console.error('vehicle ' + o.key + ': unregistered culture ' + o.culture); return; }
+  o.variants = o.variants || 1;
+  o.variantNames = o.variantNames || [];
+  o.variantData = o.variantData || [];
+  o.data = o.data || {};
+  VEHICLES.push(o); VEHICLE_BY_KEY[o.key] = o;
+}
+/* the data of one variant: the entry's data with that variant's overrides merged on top (wheels copied) */
+function vehicleData(A, v) {
+  const d = Object.assign({}, A.data, A.variantData[v || 0] || {});
+  d.wheels = (d.wheels || []).map(function (w) { return Object.assign({}, w); });
+  return d;
+}
+
+/* ---------------------------------------------------------------- the vehicle frame
+   makeFrame() at the origin plus the helpers a vehicle needs that the furniture frame
+   lacks: discs and rings on any axis, bent tube, a triangle (a pennant), a lamp lens
+   (recorded as data), and a wheel built into the body (the spare). Everything goes,
+   like every catalog primitive, into the core's _target. */
+const _vUp = new THREE.Vector3(0, 1, 0), _vDir = new THREE.Vector3();
+function _orient(m, ax, ay, az) {
+  _vDir.set(ax, ay, az);
+  if (_vDir.lengthSq() < 1e-12) _vDir.set(0, 1, 0);
+  m.quaternion.setFromUnitVectors(_vUp, _vDir.normalize());
+}
+/* lamp families: the runtime gives each its own texel of the emissive map (krator-vehicles-runtime.js) */
+const VEHICLE_LAMP_FAMILIES = { lamp: 1, lampTail: 2, lampAmber: 3, lampBlue: 4 };
+function vehicleFrame(opt) {
+  const F = makeFrame(0, 0, 0, opt);
+  F.lamps = [];
+  /* the vehicle frame always sits at the origin, unturned (the host moves the finished group), so local = world here.
+     F.rod is replaced by a leaner one: a vehicle is mostly tube, and the catalog's 8-sided rods would spend half the
+     triangle budget on it. Sides by radius: under 2 cm 4, under 6 cm 6, else 8; end caps only from 3.5 cm up (a thin
+     tube's ends are buried in the joint it meets, and the caps would be a third of its triangles). */
+  F.rod = function (ax, ay, az, bx, by, bz, r, color, family) {
+    const dx = bx - ax, dy = by - ay, dz = bz - az, len = Math.max(Math.hypot(dx, dy, dz), 0.01);
+    const n = r < 0.02 ? 4 : r < 0.06 ? 6 : 8;
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.004), Math.max(r, 0.004), len, n, 1, r < 0.035), mat(color, family));
+    m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2); _orient(m, dx, dy, dz);
+    return _add(m);
+  };
+  /* a small low-poly ball (a knob, a flame's body): the catalog's ball is 240 triangles */
+  F.knob = function (x, y, z, r, color, family) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r, 8, 5), mat(color, family));
+    m.position.set(x, y, z);
+    return _add(m);
+  };
+  /* a solid disc (a short cylinder) of radius r and thickness t, centred at (x, y, z), its axis along (ax, ay, az) */
+  F.disc = function (x, y, z, ax, ay, az, r, t, color, family, segs) {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, Math.max(t, 0.005), _seg(segs || 12, 5)), mat(color, family));
+    m.position.set(x, y, z); _orient(m, ax, ay, az);
+    return _add(m);
+  };
+  /* a flat one-sided circle of radius r at (x, y, z), facing (ax, ay, az): a lens, a gauge face */
+  F.face = function (x, y, z, ax, ay, az, r, color, family, segs) {
+    const g = new THREE.CircleGeometry(r, segs || 10);
+    g.rotateX(-Math.PI / 2);                              /* the circle faces +z; now +y, then oriented */
+    const m = new THREE.Mesh(g, mat(color, family));
+    m.position.set(x, y, z); _orient(m, ax, ay, az);
+    return _add(m);
+  };
+  /* a frustum on any axis: radius r0 at the start, r1 at the end, length len from (x, y, z) along the axis */
+  F.taper = function (x, y, z, ax, ay, az, r0, r1, len, color, family, segs) {
+    const g = new THREE.CylinderGeometry(Math.max(r1, 0.003), Math.max(r0, 0.003), len, _seg(segs || 10, 5));
+    g.translate(0, len / 2, 0);
+    const m = new THREE.Mesh(g, mat(color, family));
+    m.position.set(x, y, z); _orient(m, ax, ay, az);
+    return _add(m);
+  };
+  /* a ring (torus) of radius r and tube radius tube, centred at (x, y, z), its axis along (ax, ay, az) */
+  F.ring = function (x, y, z, ax, ay, az, r, tube, color, family, segs) {
+    const g = new THREE.TorusGeometry(r, tube, 3, _seg(segs || 10, 6));
+    g.rotateX(Math.PI / 2);                               /* torus axis: z -> y, then oriented */
+    const m = new THREE.Mesh(g, mat(color, family));
+    m.position.set(x, y, z); _orient(m, ax, ay, az);
+    return _add(m);
+  };
+  /* bent tube: a rod between each pair of points (the rods' end caps close the joints) */
+  F.tube = function (pts, r, color, family) {
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i];
+      F.rod(a[0], a[1], a[2], b[0], b[1], b[2], r, color, family);
+    }
+  };
+  /* a flat triangle, both faces (a pennant): corners a, b, c */
+  F.tri = function (a, b, c, color, family) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute([].concat(a, b, c, a, c, b), 3));
+    g.computeVertexNormals();
+    return _add(new THREE.Mesh(g, mat(color, family)));
+  };
+  /* a lamp: a housing and a lens facing (dx, dy, dz) at (x, y, z), the lens centre recorded in F.lamps.
+     kind: 'head' (family lamp), 'tail' (lampTail), 'bar' (lamp), 'amber' (lampAmber), 'cell' (lampBlue) */
+  F.lamp = function (x, y, z, dx, dy, dz, r, kind, housing, bezel) {
+    const fam = kind === 'tail' ? 'lampTail' : kind === 'amber' ? 'lampAmber' : kind === 'cell' ? 'lampBlue' : 'lamp';
+    const lens = kind === 'tail' ? 'lensRed' : kind === 'amber' ? 'lensAmber' : kind === 'cell' ? 'glowBlue' : 'lensWarm';
+    const n = Math.hypot(dx, dy, dz) || 1, ux = dx / n, uy = dy / n, uz = dz / n;
+    if (housing != null) F.taper(x - ux * r * 1.6, y - uy * r * 1.6, z - uz * r * 1.6, ux, uy, uz, r * 0.7, r * 1.15, r * 1.6, housing, 'metal', 8);
+    if (bezel != null) F.disc(x - ux * r * 0.02, y - uy * r * 0.02, z - uz * r * 0.02, ux, uy, uz, r * 1.2, r * 0.1, bezel, 'metal', 8);
+    F.face(x + ux * r * 0.04, y + uy * r * 0.04, z + uz * r * 0.04, ux, uy, uz, r, F.col(lens), fam, 10);
+    F.lamps.push({ x: x + ux * r * 0.1, y: y + uy * r * 0.1, z: z + uz * r * 0.1, dx: ux, dy: uy, dz: uz, kind: kind || 'head' });
+  };
+  /* a wheel of this vehicle built INTO the body (a spare), hub at (x, y, z), axle along (ax, ay, az) */
+  F.spareWheel = function (x, y, z, ax, ay, az, W) {
+    const g = new THREE.Group(), prev = _target;
+    _target = g;
+    try { F.asset.wheel(F, Object.assign({ side: 1, spare: true }, W)); } finally { _target = prev; }
+    g.position.set(x, y, z);
+    g.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(ax, ay, az).normalize());
+    return _add(g);
+  };
+  return F;
+}
+
+/* ---------------------------------------------------------------- shared wheel builder
+   A balloon sand tyre with chunky chevron lugs, a dished rim and hub, axle along x, hub at the
+   origin. Culture files call it from their wheel(F, W) with their own colours and counts.
+   o: { r (overall, lugs included), w (tread width), lugs (per row), lugH, rim (radius), side (+1 left / -1 right),
+        tyre, rimCol, hubCol, nutCol: colours; nuts (count, default none); segs (around the tyre) }                                         */
+function vehicleBalloonTyre(o) {
+  const r = o.r, w = o.w, lh = o.lugs ? o.lugH : 0, rt = r - lh, hw = w / 2, side = o.side || 1;
+  const segs = _seg(o.segs || 16, 8);
+  /* the tyre: a lathe profile (radius, axial position), round-shouldered like a low-pressure sand tyre */
+  const P = [], rb = o.rim * 1.04;
+  const prof = [[rb, -hw * 0.86], [rt - w * 0.28, -hw * 1.0], [rt - w * 0.06, -hw * 0.9],
+    [rt, -hw * 0.45], [rt, hw * 0.45], [rt - w * 0.06, hw * 0.9], [rt - w * 0.28, hw * 1.0], [rb, hw * 0.86]];
+  for (const p of prof) P.push(new THREE.Vector2(p[0], p[1]));
+  const tg = new THREE.LatheGeometry(P, segs);
+  tg.rotateZ(-Math.PI / 2);                            /* lathe axis y -> x */
+  _add(new THREE.Mesh(tg, mat(o.tyre, 'rubber')));
+  /* chunky lugs: two staggered rows of blocks, angled into a chevron; one lug sits at the bottom, so the wheel touches y = -r */
+  if (o.lugs) {
+    const n = o.lugs, lw = w * 0.44, lt = (TAU * rt / n) * 0.42;
+    for (let i = 0; i < n; i++) {
+      const a = Math.PI + i * TAU / n;                 /* i = 0 straight down */
+      for (const s of [-1, 1]) {
+        const a2 = a + (s > 0 ? TAU / n / 2 : 0);
+        const m = new THREE.Mesh(new THREE.BoxGeometry(lw, lh * 2, lt), mat(o.tyre, 'rubber'));
+        /* radial at angle a2: Rx(a2) takes the box's y (its height) to (0, cos a2, sin a2); Ry, applied first,
+           yaws the block about that radial axis, opposite ways in the two rows: the chevron */
+        m.position.set(s * w * 0.24, Math.cos(a2) * rt, Math.sin(a2) * rt);
+        m.rotation.order = 'XYZ'; m.rotation.x = a2; m.rotation.y = s * 0.32;
+        _add(m);
+      }
+    }
+  }
+  /* the rim: an open drum, a dished face toward the outside (side), a hub cone; nuts only when asked */
+  const rimW = w * 0.80;
+  const drum = new THREE.Mesh(new THREE.CylinderGeometry(o.rim, o.rim, rimW, _seg(12, 8), 1, true), mat(o.rimCol, 'metal'));
+  drum.rotation.z = Math.PI / 2; _add(drum);
+  /* the dish: one face, looking outward (a circle faces +z; turned to face +x or -x) */
+  const face = new THREE.Mesh(new THREE.CircleGeometry(o.rim, _seg(12, 8)), mat(o.rimCol, 'metal'));
+  face.rotation.y = side * Math.PI / 2; face.position.x = side * rimW * 0.12; _add(face);
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(o.rim * 0.30, o.rim * 0.42, rimW * 0.5, 6), mat(o.hubCol, 'metal'));
+  hub.rotation.z = -side * Math.PI / 2; hub.position.x = side * rimW * 0.34; _add(hub);
+  if (o.nutCol != null) for (let i = 0; i < (o.nuts || 0); i++) {
+    const a = i * TAU / o.nuts, nut = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.03, 0.03), mat(o.nutCol, 'metal'));
+    nut.position.set(side * (rimW * 0.12 + 0.02), Math.cos(a) * o.rim * 0.56, Math.sin(a) * o.rim * 0.56); _add(nut);
+  }
+}
+
+/* ---- kits/motor-vehicles/krator-vehicles-geomancer.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the Geomancers (kits/motor-vehicles/krator-vehicles-geomancer.js)
+
+   The Geomancers: the oil-drilling guild of the Eastern Abyss (LORE.md 6.9; their town is
+   Locus, settlements/locus/LOCUS-KIT-NOTES.md). They have electricity, batteries and
+   salvaged Ancient engines; brown uniforms, canvas packs, brass. Their sign (the Locus
+   fuel-station pole sign) is a brass flame on a brown disc with a brass rim; there is no
+   Geomancer entry in core/sockets/38-symbols.js, so the sign here is modelled, not painted.
+
+   One vehicle: geo_dune_buggy, the guild's sand buggy, built in the refinery workshops: a welded
+   tube roll cage, a low tub of salvaged plate, a big exposed Ancient-salvage flat-four at the rear
+   with exhaust stacks and a radiator, four balloon sand tyres, long-travel arms, a jerry can rack,
+   the spare on the hood, a roof rack, a whip aerial with a pennant, headlamps and a lamp bar.
+   Variants: 0 Scout (earth brown, two seats, rolled tarp), 1 Crew (oil black, a second seat row
+   under a longer cage), 2 Drill rig (sand and brown, a folded auger mast on the rack, a cargo bed of
+   drill pipe). Frame: kits/motor-vehicles/vehicles-core.js (+z forward, wheels on y = 0).
+   ====================================================================== */
+
+VEHICLE_CULTURE('geomancer', {
+  name: 'Geomancers', sign: 'brass flame on a brown disc',
+  lore: 'oil-drilling guild of the Eastern Abyss (Locus, Yuni); electricity, salvaged Ancient engines',
+  /* PALETTE (sRGB; the runtime converts to linear) */
+  palette: {
+    paintBrown: 0x6a4a2c, paintBrownDark: 0x4e3620, paintBlack: 0x24211d, paintSand: 0xb49a6c,
+    oilBlack: 0x1d1b19, tube: 0x2b2825,
+    brass: 0xb08432, brassLight: 0xc29a44, brassDark: 0x8a6626,
+    steel: 0x565250, steelDark: 0x3e3a36, alloy: 0xc9c4b6, alloyDark: 0x8f8b80,
+    rubber: 0x1f1d1b, hose: 0x2a2724,
+    canvas: 0xa8936c, canvasDark: 0x7d6a4c, canvasOlive: 0x6c6a48, leather: 0x5a3a22, seat: 0x4b3a2a,
+    lensWarm: 0xfff1c8, lensRed: 0xa8180e, lensAmber: 0xe09020, glowBlue: 0x5ab8ff,
+    jerryRed: 0x8a2a1c, jerryOlive: 0x5a5a32, jerryBlack: 0x2a2a26,
+    wood: 0x7a5a3a, rope: 0x9a8458, pennantBrass: 0xc9963a, pennantBrown: 0x7a5434, core: 0x8a7458
+  }
+});
+
+VEHICLE({
+  key: 'geo_dune_buggy', name: 'Geomancer dune buggy', culture: 'geomancer',
+  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'refined oil',
+    terrain: ['sand', 'salt flat', 'track'], setting: 'outdoor', guild: 'Geomancers' },
+  variants: 3, variantNames: ['Scout', 'Crew', 'Drill rig'],
+  /* overall box: 2.1 wide, 3.6 long; the cage top is 1.8 (data.cageH), the whip aerial reaches 3.05 */
+  w: 2.1, d: 3.6, h: 3.05,
+  /* data, not code: what a simulation reads (units: m, m/s, m/s^2, kg, L, km, rad) */
+  data: {
+    speed: 22, accel: 2.8, turnRadius: 5.2, maxSteer: 0.45, seats: 2, cargo: 150, mass: 880,
+    fuel: 'refined oil', tank: 55, range: 260, drive: 'rear', wheelbase: 2.44, track: 1.68,
+    clearance: 0.3, cageH: 1.8, engine: 'Ancient-salvage flat-four, air-cooled',
+    wheels: [
+      { name: 'wheel_fl', x: 0.84, z: 1.22, r: 0.425, w: 0.36, front: true, steer: true, drive: false },
+      { name: 'wheel_fr', x: -0.84, z: 1.22, r: 0.425, w: 0.36, front: true, steer: true, drive: false },
+      { name: 'wheel_rl', x: 0.84, z: -1.22, r: 0.425, w: 0.36, front: false, steer: false, drive: true },
+      { name: 'wheel_rr', x: -0.84, z: -1.22, r: 0.425, w: 0.36, front: false, steer: false, drive: true }
+    ]
+  },
+  variantData: [
+    {},
+    { seats: 4, cargo: 60, mass: 960, accel: 2.5 },
+    { seats: 2, cargo: 320, mass: 1120, speed: 17, accel: 2.0, rig: 'auger mast, 2.2 m, folds onto the roof rack' }
+  ],
+
+  /* ONE wheel at the origin, axle along x (W.side: +1 the +x side, -1 the -x side) */
+  wheel: function (F, W) {
+    const v = F.variant;
+    vehicleBalloonTyre({ r: W.r, w: W.w, lugs: W.spare ? 5 : 8, lugH: 0.026, rim: 0.215, side: W.side, segs: W.spare ? 10 : 13,
+      tyre: F.col('rubber'), rimCol: F.col(['brass', 'oilBlack', 'paintBrown'][v]), hubCol: F.col('oilBlack'),
+      nutCol: F.col(v === 0 ? 'oilBlack' : 'brass'), nuts: W.spare ? 0 : 3 });
+  },
+
+  build: function (F) {
+    const v = F.variant, c = F.col;
+    const paint = c(['paintBrown', 'paintBlack', 'paintSand'][v]);
+    const trim = c(['paintBrownDark', 'brass', 'paintBrown'][v]);
+    const cage = c(['tube', 'paintBrownDark', 'tube'][v]);
+    const T = 0.032;                                   /* cage tube radius */
+    const crew = v === 1, rig = v === 2;
+
+    /* ---- chassis: floor pan, tub sides, bulkhead, nose, hood, skid plate */
+    F.box(0, 0.38, 0.02, 1.20, 0.06, 1.96, 0, paint);
+    for (const s of [-1, 1]) {
+      F.box(s * 0.62, 0.40, 0.02, 0.05, 0.42, 1.94, 0, paint);
+      F.box(s * 0.62, 0.80, 0.02, 0.07, 0.04, 1.94, 0, trim, 'metal');          /* the tub's capping rail */
+      if (crew) F.box(s * 0.648, 0.56, 0.02, 0.01, 0.06, 1.90, 0, c('brass'), 'metal');   /* the Crew's brass stripe */
+    }
+    F.box(0, 0.40, -0.94, 1.24, 0.42, 0.05, 0, paint);                          /* rear bulkhead */
+    F.box(0, 0.40, 0.97, 1.24, 0.46, 0.05, 0, paint);                           /* front bulkhead */
+    F.box(0, 0.36, 1.30, 1.00, 0.26, 0.64, 0, paint);                           /* nose box */
+    F.beam(0, 0.86, 0.98, 0, 0.62, 1.66, 1.04, 0.04, rig ? c('paintBrown') : paint);   /* hood */
+    for (const s of [-1, 1]) {
+      F.box(s * 0.50, 0.60, 1.12, 0.04, 0.21, 0.28, 0, trim);
+      F.box(s * 0.50, 0.60, 1.40, 0.04, 0.12, 0.28, 0, trim);
+    }
+    F.box(0, 0.30, 1.18, 0.86, 0.06, 0.56, 0, c('steelDark'), 'metal');         /* skid plate */
+    /* bumpers and the tow bar */
+    F.rod(-0.72, 0.40, 1.72, 0.72, 0.40, 1.72, 0.04, c('oilBlack'), 'metal');
+    for (const s of [-1, 1]) F.rod(s * 0.40, 0.40, 1.58, s * 0.40, 0.40, 1.72, 0.03, c('oilBlack'), 'metal');
+    F.rod(-0.66, 0.52, -1.74, 0.66, 0.52, -1.74, 0.035, c('oilBlack'), 'metal');
+    F.box(0, 0.44, -1.72, 0.10, 0.10, 0.10, 0, c('steelDark'), 'metal');        /* tow hitch */
+    for (const s of [-1, 1]) F.rod(s * 0.58, 0.44, -0.90, s * 0.58, 0.52, -1.74, 0.035, c('oilBlack'), 'metal');   /* rear rails */
+
+    /* ---- the Geomancers' sign: a brass flame on a brown disc, brass rim (both flanks and the nose) */
+    const sign = function (x, y, z, ax, az) {
+      F.disc(x, y, z, ax, 0, az, 0.12, 0.012, c('paintBrownDark'), '', 10);
+      F.ring(x + ax * 0.006, y, z + az * 0.006, ax, 0, az, 0.12, 0.012, c('brassLight'), 'metal', 9);
+      F.taper(x + ax * 0.012, y - 0.07, z + az * 0.012, 0, 1, 0, 0.022, 0.042, 0.05, c('brassLight'), 'metal', 6);   /* the flame: a bowl */
+      F.taper(x + ax * 0.012, y - 0.02, z + az * 0.012, 0, 1, 0, 0.042, 0.004, 0.10, c('brassLight'), 'metal', 6);   /* and its tongue */
+    };
+    sign(0.645, 0.60, 0.42, 1, 0); sign(-0.645, 0.60, 0.42, -1, 0); sign(0, 0.50, 1.625, 0, 1);
+
+    /* ---- headlamps on the nose face, the spare on the hood */
+    for (const s of [-1, 1]) F.lamp(s * 0.34, 0.52, 1.68, 0, 0, 1, 0.075, 'head', c('oilBlack'), c('brass'));
+    const hoodA = Math.atan2(0.24, 0.68);             /* the hood falls 0.24 over 0.68 */
+    const sn = Math.sin(hoodA), cs = Math.cos(hoodA), sw = 0.36;
+    /* the spare lies on the hood: hub over hood point z = 1.27, half a tyre width up the hood's normal (0, cs, sn) */
+    const hz = 1.27, hy = 0.86 - (hz - 0.98) * 0.24 / 0.68 + 0.025;
+    F.spareWheel(0, hy + cs * sw / 2, hz + sn * sw / 2, 0, cs, sn, { r: 0.425, w: sw, side: 1 });
+    F.rod(0, hy, hz, 0, hy + cs * (sw + 0.06), hz + sn * (sw + 0.06), 0.02, c('brass'), 'metal');   /* clamp stud */
+
+    /* ---- front suspension: A-arms, uprights, long coilovers to the cage */
+    for (const s of [-1, 1]) {
+      F.rod(s * 0.50, 0.40, 1.02, s * 0.64, 0.38, 1.22, 0.022, c('oilBlack'), 'metal');
+      F.rod(s * 0.50, 0.40, 1.42, s * 0.64, 0.38, 1.22, 0.022, c('oilBlack'), 'metal');
+      F.rod(s * 0.50, 0.62, 1.10, s * 0.63, 0.56, 1.22, 0.02, c('oilBlack'), 'metal');
+      F.rod(s * 0.50, 0.62, 1.34, s * 0.63, 0.56, 1.22, 0.02, c('oilBlack'), 'metal');
+      F.box(s * 0.63, 0.32, 1.22, 0.04, 0.28, 0.08, 0, c('steelDark'), 'metal');   /* upright */
+      F.rod(s * 0.60, 0.46, 1.20, s * 0.58, 1.02, 1.00, 0.045, c('brass'), 'metal');   /* coilover (spring) */
+      F.rod(s * 0.60, 0.46, 1.20, s * 0.59, 0.80, 1.09, 0.03, c('steel'), 'metal');    /* damper body */
+      F.rod(s * 0.58, 1.02, 1.00, s * 0.60, 1.02, 0.84, 0.025, cage, 'metal');          /* shock tower gusset to the pillar */
+    }
+    /* ---- rear suspension: trailing arms, half-shafts, coilovers */
+    for (const s of [-1, 1]) {
+      F.beam(s * 0.60, 0.48, -0.46, s * 0.64, 0.42, -1.22, 0.06, 0.08, c('oilBlack'), 'metal');
+      F.rod(s * 0.20, 0.42, -1.22, s * 0.64, 0.425, -1.22, 0.03, c('steelDark'), 'metal');
+      F.rod(s * 0.63, 0.46, -1.12, s * 0.56, 1.10, -0.96, 0.045, c('brass'), 'metal');
+    }
+    F.box(0, 0.30, -1.22, 0.44, 0.24, 0.32, 0, c('steelDark'), 'metal');         /* transaxle */
+
+    /* ---- the engine: an Ancient-salvage flat-four, tarnished white metal, exposed at the rear */
+    F.box(0, 0.46, -1.50, 0.50, 0.36, 0.40, 0, c('alloy'), 'metal');            /* block */
+    for (const s of [-1, 1]) {
+      for (const z of [-1.41, -1.59]) F.rod(s * 0.24, 0.62, z, s * 0.46, 0.62, z, 0.08, c('alloyDark'), 'metal');   /* cylinders */
+      for (const x of [0.32, 0.38, 0.44]) F.box(s * x, 0.50, -1.50, 0.016, 0.24, 0.40, 0, c('alloyDark'), 'metal');   /* fins */
+      F.box(s * 0.52, 0.50, -1.50, 0.06, 0.24, 0.38, 0, c('steelDark'), 'metal');  /* heads */
+      /* headers to the stacks */
+      F.rod(s * 0.52, 0.56, -1.60, s * 0.42, 0.60, -1.73, 0.04, c('steelDark'), 'metal');
+      F.rod(s * 0.42, 0.58, -1.73, s * 0.42, 1.52, -1.73, 0.045, c('oilBlack'), 'metal');   /* exhaust stack */
+      F.taper(s * 0.42, 1.52, -1.73, 0, 1, 0, 0.045, 0.062, 0.07, c('brass'), 'metal', 8);  /* flared tip */
+    }
+    F.disc(0, 0.87, -1.56, 0, 1, 0, 0.13, 0.10, c('brass'), 'metal', 10);           /* air cleaner */
+    F.disc(0, 0.935, -1.56, 0, 1, 0, 0.06, 0.03, c('brassDark'), 'metal', 8);
+    F.lamp(0.12, 0.83, -1.36, 0, 1, 0, 0.035, 'cell', null, c('alloyDark'));      /* the Ancient cell's blue window */
+    /* the radiator, upright behind the seats, with a fan shroud and hoses */
+    F.box(0, 0.84, -0.99, 0.74, 0.54, 0.07, 0, c('brass'), 'metal');
+    F.box(0, 0.88, -0.99, 0.64, 0.44, 0.09, 0, c('steelDark'), 'metal');
+    F.disc(0, 1.10, -1.06, 0, 0, 1, 0.19, 0.06, c('oilBlack'), 'metal', 12);
+    F.rod(-0.32, 1.42, -0.99, 0.32, 1.42, -0.99, 0.045, c('brass'), 'metal');   /* header tank */
+    F.rod(0.24, 0.88, -1.02, 0.20, 0.78, -1.30, 0.03, c('hose'));
+    F.rod(-0.24, 0.88, -1.02, -0.20, 0.78, -1.30, 0.03, c('hose'));
+
+    /* ---- the cockpit: seats, dash and gauges, steering (driver on the +x side), gear lever */
+    const seatCol = c(['seat', 'leather', 'canvasOlive'][v]);
+    for (const s of [-1, 1]) {
+      F.box(s * 0.32, 0.44, 0.36, 0.46, 0.14, 0.50, 0, seatCol);
+      F.beam(s * 0.32, 0.56, 0.10, s * 0.32, 1.16, -0.02, 0.46, 0.10, seatCol);
+      F.box(s * 0.32, 0.40, 0.36, 0.40, 0.04, 0.44, 0, c('oilBlack'), 'metal');
+    }
+    F.box(0, 0.70, 0.90, 1.12, 0.14, 0.10, 0, c('oilBlack'));
+    for (const x of [0.20, 0.42]) {
+      F.disc(x, 0.78, 0.848, 0, 0, -1, 0.048, 0.01, c('brass'), 'metal', 8);
+      F.face(x, 0.78, 0.842, 0, 0, -1, 0.038, c('lensWarm'), '', 8);
+    }
+    F.rod(0.32, 0.62, 0.92, 0.32, 0.92, 0.70, 0.022, c('oilBlack'), 'metal');
+    const sx = 0, sy = 0.30, sz = -0.22;               /* the column's direction */
+    F.ring(0.32, 0.93, 0.69, sx, sy, sz, 0.17, 0.016, c('oilBlack'), 'metal', 12);
+    F.rod(0.15, 0.93, 0.69, 0.49, 0.93, 0.69, 0.012, c('brass'), 'metal');
+    F.rod(0.02, 0.44, 0.58, 0.04, 0.74, 0.52, 0.014, c('steel'), 'metal');
+    F.knob(0.04, 0.75, 0.52, 0.03, c('brass'), 'metal');
+
+    /* ---- behind the seats: the fuel tank; the Crew's bench on it, the Rig's cargo bed, the Scout's tray */
+    F.rod(-0.46, 0.60, -0.68, 0.46, 0.60, -0.68, 0.14, c('oilBlack'), 'metal');
+    F.disc(0.30, 0.755, -0.68, 0, 1, 0, 0.04, 0.05, c('brass'), 'metal', 8);
+    if (crew) {
+      F.box(0, 0.74, -0.58, 1.12, 0.12, 0.42, 0, seatCol);
+      F.beam(0, 0.84, -0.78, 0, 1.30, -0.86, 1.12, 0.08, seatCol);
+    } else if (rig) {
+      F.box(0, 0.74, -0.56, 1.14, 0.04, 0.70, 0, c('steelDark'), 'metal');
+      for (const s of [-1, 1]) F.box(s * 0.56, 0.78, -0.56, 0.03, 0.10, 0.70, 0, c('steelDark'), 'metal');
+      /* drill pipe, stacked across the bed, and a crate of drill cores */
+      for (let i = 0; i < 5; i++) {
+        const row = i < 3 ? 0 : 1, k = row ? i - 3 : i, z0 = -0.38 - k * 0.11 - row * 0.055;
+        F.rod(-0.50, 0.82 + row * 0.085, z0, 0.50, 0.82 + row * 0.085, z0, 0.042, c('steel'), 'metal');
+      }
+      F.box(0.20, 0.78, -0.78, 0.40, 0.18, 0.22, 0, c('wood'));
+      F.box(-0.30, 0.78, -0.80, 0.30, 0.10, 0.20, 0, c('core'));
+    } else {
+      F.box(0, 0.74, -0.58, 1.10, 0.03, 0.54, 0, c('steelDark'), 'metal');
+      F.box(-0.18, 0.77, -0.60, 0.44, 0.26, 0.34, 0, c('wood'));                 /* a crate */
+      F.ring(0.26, 0.80, -0.60, 0, 1, 0, 0.13, 0.035, c('rope'), '', 12);       /* a coil of rope */
+      if (F.chance(0.6)) F.box(0.26, 0.77, -0.82, 0.30, 0.16, 0.14, 0, c('canvasDark'));   /* a canvas pack */
+    }
+
+    /* ---- the roll cage: main hoop behind the seats, front hoop, top bars, harness bar, rear braces */
+    for (const s of [-1, 1]) {
+      F.tube([[s * 0.62, 0.82, -0.12], [s * 0.58, 1.62, -0.16], [s * 0.48, 1.76, -0.18]], T, cage, 'metal');
+      F.tube([[s * 0.62, 0.84, 0.95], [s * 0.54, 1.62, 0.48], [s * 0.46, 1.74, 0.40]], T, cage, 'metal');
+      F.rod(s * 0.46, 1.74, 0.40, s * 0.48, 1.76, -0.18, T, cage, 'metal');
+      F.rod(s * 0.64, 0.84, 0.95, s * 0.64, 0.84, -0.12, T, cage, 'metal');             /* door bar */
+    }
+    F.rod(-0.48, 1.76, -0.18, 0.48, 1.76, -0.18, T, cage, 'metal');
+    F.rod(-0.46, 1.74, 0.40, 0.46, 1.74, 0.40, T, cage, 'metal');
+    F.rod(-0.60, 1.10, -0.13, 0.60, 1.10, -0.13, T, cage, 'metal');
+    if (crew) {
+      for (const s of [-1, 1]) {
+        F.tube([[s * 0.60, 0.84, -0.93], [s * 0.54, 1.62, -0.96], [s * 0.46, 1.72, -0.98]], T, cage, 'metal');
+        F.rod(s * 0.48, 1.76, -0.18, s * 0.46, 1.72, -0.98, T, cage, 'metal');
+        F.rod(s * 0.46, 1.72, -0.98, s * 0.58, 0.52, -1.70, T, cage, 'metal');
+      }
+      F.rod(-0.46, 1.72, -0.98, 0.46, 1.72, -0.98, T, cage, 'metal');
+    } else {
+      for (const s of [-1, 1]) F.rod(s * 0.48, 1.76, -0.18, s * 0.58, 0.52, -1.70, T, cage, 'metal');
+    }
+    /* the lamp bar along the front hoop's top */
+    F.rod(-0.42, 1.80, 0.40, 0.42, 1.80, 0.40, 0.022, c('oilBlack'), 'metal');
+    for (const x of [-0.33, -0.11, 0.11, 0.33]) F.lamp(x, 1.80, 0.44, 0, 0, 1, 0.055, 'bar', c('oilBlack'), null);
+    /* tail lamps on the rear bumper's ends */
+    for (const s of [-1, 1]) F.lamp(s * 0.60, 0.62, -1.765, 0, 0, -1, 0.04, 'tail', null, c('oilBlack'));
+
+    /* ---- the roof rack, and on it a rolled tarp (Scout, Crew) or the folded auger mast (Drill rig) */
+    const rz1 = crew ? -0.96 : -0.18;
+    for (const s of [-1, 1]) {
+      F.rod(s * 0.44, 1.82, 0.36, s * 0.44, 1.82, rz1, 0.018, c('oilBlack'), 'metal');
+      F.rod(s * 0.44, 1.76, 0.36, s * 0.44, 1.82, 0.36, 0.015, c('oilBlack'), 'metal');
+      F.rod(s * 0.44, 1.76, rz1, s * 0.44, 1.82, rz1, 0.015, c('oilBlack'), 'metal');
+    }
+    for (let z = 0.36; z >= rz1 - 0.01; z -= crew ? 0.264 : 0.18) F.rod(-0.44, 1.82, z, 0.44, 1.82, z, 0.014, c('oilBlack'), 'metal');
+    if (!rig) {
+      const tarp = c(F.pick(['canvas', 'canvasOlive', 'canvasDark']));
+      const tz = crew ? -0.30 : 0.10;
+      F.rod(-0.40, 1.96, tz, 0.40, 1.96, tz, 0.12, tarp);
+      for (const x of [-0.24, 0.24]) F.ring(x, 1.96, tz, 1, 0, 0, 0.123, 0.01, c('leather'), '', 12);
+      if (crew) F.box(0.10, 1.83, 0.18, 0.50, 0.14, 0.28, 0, c('canvasDark'));         /* packs */
+    } else {
+      /* the auger mast, folded back along the rack: a three-rail truss, the auger stem and bit, the gear head at its
+         foot on a rear A-frame, and the brass ram that raises it */
+      const z0 = 0.62, z1 = -1.58;
+      for (const s of [-1, 1]) F.rod(s * 0.13, 1.88, z0, s * 0.13, 1.88, z1, 0.022, c('oilBlack'), 'metal');
+      F.rod(0, 2.06, z0, 0, 2.06, z1, 0.022, c('oilBlack'), 'metal');
+      for (let z = z0; z >= z1 - 0.01; z -= 0.55) {
+        F.rod(-0.13, 1.88, z, 0.13, 1.88, z, 0.014, c('oilBlack'), 'metal');
+        for (const s of [-1, 1]) F.rod(s * 0.13, 1.88, z, 0, 2.06, z, 0.014, c('oilBlack'), 'metal');
+      }
+      F.rod(0, 1.95, z0 - 0.05, 0, 1.95, z1 + 0.30, 0.03, c('steel'), 'metal');          /* stem */
+      for (let z = z0 - 0.15; z > z0 - 0.6; z -= 0.14) F.disc(0, 1.95, z, 0, 0.25, 1, 0.075, 0.012, c('steel'), 'metal', 8);   /* flights */
+      F.taper(0, 1.95, z0 - 0.05, 0, 0, 1, 0.06, 0.006, 0.22, c('brassDark'), 'metal', 8);  /* bit */
+      F.box(0, 1.80, -1.48, 0.32, 0.26, 0.26, 0, c('brass'), 'metal');                    /* gear head */
+      for (const s of [-1, 1]) F.rod(s * 0.50, 0.52, -1.70, s * 0.10, 1.80, -1.50, 0.026, c('oilBlack'), 'metal');   /* A-frame */
+      F.rod(0.18, 0.82, -1.66, 0.14, 1.86, -1.06, 0.035, c('brass'), 'metal');              /* ram */
+    }
+
+    /* ---- the jerry can rack on the step between the wheels (which slots are full is the seed's) */
+    const can = function (x, z, col) {
+      F.box(x, 0.45, z, 0.15, 0.44, 0.32, 0, col);
+      F.box(x, 0.89, z + 0.05, 0.05, 0.04, 0.18, 0, col);                         /* handle */
+      F.disc(x, 0.91, z - 0.11, 0, 1, 0, 0.025, 0.04, c('brass'), 'metal', 6);       /* cap */
+      F.beam(x + Math.sign(x) * 0.077, 0.50, z - 0.12, x + Math.sign(x) * 0.077, 0.84, z + 0.12, 0.01, 0.03, col);   /* the X stamp */
+      F.beam(x + Math.sign(x) * 0.077, 0.50, z + 0.12, x + Math.sign(x) * 0.077, 0.84, z - 0.12, 0.01, 0.03, col);
+    };
+    const canCols = ['jerryRed', 'jerryOlive', 'jerryBlack'];
+    for (const s of [-1, 1]) {
+      F.box(s * 0.80, 0.41, -0.36, 0.28, 0.04, 0.80, 0, c('steelDark'), 'metal');     /* step */
+      F.rod(s * 0.93, 0.45, 0.04, s * 0.93, 0.80, 0.04, 0.016, c('oilBlack'), 'metal');
+      F.rod(s * 0.93, 0.45, -0.76, s * 0.93, 0.80, -0.76, 0.016, c('oilBlack'), 'metal');
+      F.rod(s * 0.93, 0.80, 0.04, s * 0.93, 0.80, -0.76, 0.016, c('oilBlack'), 'metal');
+      F.rod(s * 0.93, 0.62, 0.04, s * 0.93, 0.62, -0.76, 0.012, c('leather'));       /* strap */
+      const n = s > 0 ? 2 : (crew ? 1 : (F.chance(0.5) ? 2 : 1));
+      for (let i = 0; i < n; i++) can(s * 0.80, -0.20 - i * 0.36, c(F.pick(canCols)));
+    }
+
+    /* ---- the whip aerial on the rear brace (-x side), with the guild pennant */
+    const ax = -0.53, ay = 1.20, az = -0.92;
+    F.taper(ax, ay - 0.06, az, 0, 1, 0, 0.03, 0.015, 0.12, c('brass'), 'metal', 8);   /* base spring */
+    F.rod(ax, ay, az, ax, 2.40, az - 0.03, 0.008, c('oilBlack'), 'metal');
+    F.rod(ax, 2.40, az - 0.03, ax, 3.02, az - 0.12, 0.006, c('oilBlack'), 'metal');
+    const pen = c(v === 1 ? 'pennantBrass' : 'pennantBrown');
+    F.tri([ax, 2.98, az - 0.11], [ax, 2.80, az - 0.085], [ax, 2.90, az - 0.52], pen);
+  }
+});
+
+/* ---- kits/motor-vehicles/krator-vehicles-runtime.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the runtime (kits/motor-vehicles/krator-vehicles-runtime.js)
+
+   The API the bundle returns as the single global `KratorVehicles` (KV below).
+   vehicle_bundle.py wraps the catalog core, vehicles-core.js, the culture files
+   and this file in ONE closure; nothing else leaks. It needs only THREE (r128).
+
+     KV.list()                        -> [{ key, name, culture, tags, variants, variantNames, w, d, h, data }]
+     KV.build(key, { variant, seed, linear })  -> THREE.Group, or null for an unknown key
+     KV.roll(group, metres)           spins every wheel for that distance travelled (+ = forward, +z)
+     KV.steer(group, radians)         turns the front pair (clamped to data.maxSteer; + turns toward +x)
+     KV.lights(group, on)             headlamps, lamp bar, tail lamps (emissive) on or off
+     KV.has(key), KV.get(key), KV.cultures(), KV.dataOf(key, variant), KV.setDetail(k), KV.dispose(group)
+
+   The group (origin at the footprint centre on the ground, +z forward, wheels on y = 0):
+     body:matte   painted plate, seats, canvas, tyres of the spare: one mesh, vertex colours
+     body:metal   tube, brass, engine, lamp lenses: one mesh, vertex colours, its own material
+                  (the lamps glow through an emissive map: lights() sets that material's emissive)
+     steer_fl, steer_fr   pivots at the front hubs (rotation.y steers); each holds wheel_fl / wheel_fr
+     wheel_rl, wheel_rr   the rear wheels, origin at the hub (rotation.x spins)
+   Six meshes, so six draw calls. group.userData = { key, name, culture, tags, kind:'vehicle', variant, seed,
+   wheels:[{ name, r, x, y, z, front, steer, drive }], lamps:[{ x, y, z, dx, dy, dz, kind }], data, tris, lightsOn }.
+
+   Colours: the palettes are sRGB (as every Krator palette); the merged vertex colours are converted
+   to LINEAR for a renderer with outputEncoding = sRGBEncoding (every Krator page). { linear:false }
+   keeps the sRGB values, for a host that renders without an output encoding.
+   ====================================================================== */
+const KV_API = (function () {
+  const API = {};
+  const _m = new THREE.Matrix4(), _n = new THREE.Matrix3(), _v = new THREE.Vector3(), _w = new THREE.Vector3();
+  function lin(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  const METAL_FAMILIES = { metal: 1, gold: 1, bronze: 1, rust: 1, brass: 1, steel: 1, chrome: 1 };
+
+  /* the emissive map: texel 0 black (no glow), then one texel per lamp family (VEHICLE_LAMP_FAMILIES) */
+  const LAMP_TEXELS = [[0, 0, 0], [255, 236, 196], [255, 26, 12], [255, 150, 30], [90, 190, 255]];
+  const NTEX = 8;
+  let _lampTex = null;
+  function lampTex() {
+    if (_lampTex) return _lampTex;
+    const a = new Uint8Array(NTEX * 4);
+    for (let i = 0; i < NTEX; i++) { const t = LAMP_TEXELS[i] || LAMP_TEXELS[0]; a.set([t[0], t[1], t[2], 255], i * 4); }
+    _lampTex = new THREE.DataTexture(a, NTEX, 1, THREE.RGBAFormat);
+    _lampTex.magFilter = _lampTex.minFilter = THREE.NearestFilter;
+    _lampTex.generateMipmaps = false;
+    _lampTex.needsUpdate = true;
+    return _lampTex;
+  }
+  /* shared looks: the painted body and the wheels need no per-instance state */
+  let _matte = null, _wheel = null;
+  function matteMat() { return _matte || (_matte = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.82, metalness: 0.05 })); }
+  function wheelMat() { return _wheel || (_wheel = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0.08 })); }
+  function metalMat() {
+    return new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.48, metalness: 0.55,
+      emissive: new THREE.Color(0, 0, 0), emissiveMap: lampTex(), emissiveIntensity: 1.6 });
+  }
+
+  /* merge every mesh under g (world matrices; g at the identity) into buckets keyed by sel(family) */
+  function merge(g, sel, linear) {
+    const B = {};
+    g.updateMatrixWorld(true);
+    g.traverse(function (o) {
+      if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
+      const geo = o.geometry, pos = geo.attributes.position, nor = geo.attributes.normal, idx = geo.index;
+      const fam = (o.material.userData && o.material.userData.family) || '', c = o.material.color;
+      const k = sel(fam), b = B[k] || (B[k] = { pos: [], nor: [], col: [], uv: [] });
+      const cr = linear ? lin(c.r) : c.r, cg = linear ? lin(c.g) : c.g, cb = linear ? lin(c.b) : c.b;
+      const tex = VEHICLE_LAMP_FAMILIES[fam] || 0, u = (tex + 0.5) / NTEX;
+      _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
+      const n = idx ? idx.count : pos.count;
+      for (let i = 0; i < n; i++) {
+        const j = idx ? idx.getX(i) : i;
+        _v.fromBufferAttribute(pos, j).applyMatrix4(_m);
+        b.pos.push(_v.x, _v.y, _v.z);
+        if (nor) { _w.fromBufferAttribute(nor, j).applyMatrix3(_n).normalize(); b.nor.push(_w.x, _w.y, _w.z); } else b.nor.push(0, 1, 0);
+        b.col.push(cr, cg, cb);
+        b.uv.push(u, 0.5);
+      }
+    });
+    return B;
+  }
+  function meshOf(b, material, name, withUV) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(b.pos, 3));
+    geo.setAttribute('normal', new THREE.Float32BufferAttribute(b.nor, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(b.col, 3));
+    if (withUV) geo.setAttribute('uv', new THREE.Float32BufferAttribute(b.uv, 2));
+    geo.computeBoundingSphere();
+    const m = new THREE.Mesh(geo, material);
+    m.name = name; m.castShadow = true; m.receiveShadow = true;
+    return m;
+  }
+  function disposeTree(g) { g.traverse(function (o) { if (o.geometry) o.geometry.dispose(); }); }
+
+  API.list = function () {
+    return VEHICLES.map(function (A) {
+      return { key: A.key, name: A.name, culture: A.culture, tags: JSON.parse(JSON.stringify(A.tags || {})),
+        variants: A.variants, variantNames: A.variantNames.slice(), w: A.w, d: A.d, h: A.h, data: vehicleData(A, 0) };
+    });
+  };
+  API.has = function (key) { return !!VEHICLE_BY_KEY[key]; };
+  API.get = function (key) { return VEHICLE_BY_KEY[key] || null; };
+  API.dataOf = function (key, v) { const A = VEHICLE_BY_KEY[key]; return A ? vehicleData(A, v) : null; };
+  API.cultures = function () { return Object.keys(VEHICLE_CULTURES); };
+  /* a culture's palette (sRGB numbers), a copy: what the colour keys of its vehicles resolve to */
+  API.palette = function (culture) { return VEHICLE_CULTURES[culture] ? Object.assign({}, FPAL[culture]) : null; };
+  API.CLASSES = VEHICLE_CLASSES; API.TYPES = VEHICLE_TYPES; API.DRIVES = VEHICLE_DRIVES; API.FUELS = VEHICLE_FUELS; API.TERRAIN = VEHICLE_TERRAIN;
+  /* round primitives' detail for everything built after the call (1 = full; a crowded world may halve it) */
+  API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
+
+  API.build = function (key, o) {
+    o = o || {};
+    const A = VEHICLE_BY_KEY[key];
+    if (!A) { console.error('KratorVehicles: no such vehicle', key); return null; }
+    const v = Math.max(0, Math.min(A.variants - 1, (o.variant | 0))), seed = o.seed || 1, linear = o.linear !== false;
+    const data = vehicleData(A, v);
+    const F = vehicleFrame({ seed: seed, variant: v });
+    F.asset = A; F.data = data;
+    /* the body */
+    const body = new THREE.Group(), prev = _target;
+    _target = body;
+    try { A.build(F); } finally { _target = prev; }
+    const B = merge(body, function (f) { return METAL_FAMILIES[f] || VEHICLE_LAMP_FAMILIES[f] ? 'metal' : 'matte'; }, linear);
+    disposeTree(body);
+    const g = new THREE.Group();
+    g.name = 'vehicle:' + key;
+    let tris = 0;
+    const metal = metalMat();
+    if (B.matte) { g.add(meshOf(B.matte, matteMat(), 'body:matte', false)); tris += B.matte.pos.length / 9; }
+    if (B.metal) { g.add(meshOf(B.metal, metal, 'body:metal', true)); tris += B.metal.pos.length / 9; }
+    /* the wheels: each one built at the origin by the entry's wheel(), merged into one mesh, hung at its hub */
+    const wheels = [];
+    for (const W of data.wheels) {
+      const wg = new THREE.Group(), side = W.x >= 0 ? 1 : -1;
+      _target = wg;
+      try { A.wheel(F, Object.assign({ side: side }, W)); } finally { _target = prev; }
+      const WB = merge(wg, function () { return 'wheel'; }, linear);
+      disposeTree(wg);
+      const wm = meshOf(WB.wheel, wheelMat(), W.name, false);
+      tris += WB.wheel.pos.length / 9;
+      if (W.steer) {
+        const pivot = new THREE.Group();
+        pivot.name = 'steer_' + W.name.replace(/^wheel_/, '');
+        pivot.position.set(W.x, W.r, W.z);
+        pivot.add(wm); g.add(pivot);
+      } else {
+        wm.position.set(W.x, W.r, W.z); g.add(wm);
+      }
+      wheels.push({ name: W.name, r: W.r, x: W.x, y: W.r, z: W.z, front: !!W.front, steer: !!W.steer, drive: !!W.drive });
+    }
+    g.userData = { key: key, name: A.name, culture: A.culture, tags: JSON.parse(JSON.stringify(A.tags || {})), kind: 'vehicle',
+      variant: v, variantName: A.variantNames[v] || '', seed: seed, wheels: wheels, lamps: F.lamps.slice(), data: data,
+      tris: Math.round(tris), lightsOn: false, w: A.w, d: A.d, h: A.h };
+    Object.defineProperty(g.userData, '_metal', { value: metal, enumerable: false });   /* not cloned with userData */
+    return g;
+  };
+
+  function wheelMeshes(g) {
+    const out = [];
+    for (const W of g.userData.wheels || []) { const m = g.getObjectByName(W.name); if (m) out.push([m, W]); }
+    return out;
+  }
+  API.roll = function (g, metres) {
+    for (const p of wheelMeshes(g)) { p[0].rotation.x = (p[0].rotation.x + metres / p[1].r) % TAU; }
+    return g;
+  };
+  API.steer = function (g, rad) {
+    const lim = (g.userData.data && g.userData.data.maxSteer) || 0.6;
+    const a = Math.max(-lim, Math.min(lim, +rad || 0));
+    for (const W of g.userData.wheels || []) {
+      if (!W.steer) continue;
+      const p = g.getObjectByName('steer_' + W.name.replace(/^wheel_/, ''));
+      if (p) p.rotation.y = a;
+    }
+    return a;
+  };
+  API.lights = function (g, on) {
+    const m = g.userData._metal;
+    if (m) m.emissive.setRGB(on ? 1 : 0, on ? 1 : 0, on ? 1 : 0);
+    g.userData.lightsOn = !!on;
+    return !!on;
+  };
+  API.dispose = function (g) {
+    disposeTree(g);
+    if (g.userData._metal) g.userData._metal.dispose();
+  };
+  return API;
+})();
+
+
+return KV_API;
+})();
+/* ---------- 80-sky-hash.js ---------- */
+/* ======================== h3 hash for KratorSky ========================
+   h3: the hash KratorSky (81-sky.js, vendored from settlements/iziz/src)
+   reads for its star field and gas-giant bands. In the Ancients-lineage
+   builds it lives in 10-core.js; the catalog has no core, so it is here.
+   ====================================================================== */
+function h3(x, y, z) { const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453; return s - Math.floor(s); }
+/* ---------- 81-sky.js ---------- */
+// ================================================================= KratorSky — the Krator skybox module (from claude/krator-sky.html, verbatim logic)
+// Canon (krator-notes): tidally-locked moon of a Neptune–Saturn-class giant, 24 h day, ~40° S, giant fixed at
+// altitude 25° azimuth 66° (NE, over Korona), obliquity ~23°, eclipse seasons round each equinox.
+// Coordinates: x = east, y = up, z = south (north is −z). Azimuth clockwise from north.
+// A target that wants it calls KratorSky.attach(scene,R) once and KratorSky.update(camPos,hour,day,dens) per frame,
+// then applies KratorSky.lighting() to its sun / hemi / fog. A target that does not call attach pays nothing.
+const KratorSky=(function(){
+ const D=Math.PI/180;const LAT=-40*D,OBL=23*D,YEAR=360;
+ const GIANT_ALT=25*D,GIANT_AZ=66*D,GIANT_ANG=14*D;
+ const giantDir=new THREE.Vector3(Math.sin(GIANT_AZ)*Math.cos(GIANT_ALT),Math.sin(GIANT_ALT),-Math.cos(GIANT_AZ)*Math.cos(GIANT_ALT));
+ function sunDir(hour,day){const dec=OBL*Math.sin(2*Math.PI*(day-80)/YEAR);const H=(hour-12)*15*D;
+  const e=-Math.cos(dec)*Math.sin(H),n=Math.sin(dec)*Math.cos(LAT)-Math.cos(dec)*Math.sin(LAT)*Math.cos(H),u=Math.sin(dec)*Math.sin(LAT)+Math.cos(dec)*Math.cos(LAT)*Math.cos(H);
+  return new THREE.Vector3(e,u,-n).normalize();}
+ function altAz(v){return{alt:Math.asin(v.y)/D,az:((Math.atan2(v.x,-v.z)/D)+360)%360};}
+ const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,fog:false,
+  uniforms:{sun:{value:new THREE.Vector3(0,1,0)},giant:{value:giantDir.clone()},dens:{value:1.6},ecl:{value:0},night:{value:0}},
+  vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:`varying vec3 vP;uniform vec3 sun,giant;uniform float dens,ecl,night;
+  void main(){vec3 d=normalize(vP);float h=clamp(d.y,-0.1,1.0);float sh=sun.y;
+   float dayF=smoothstep(-0.12,0.18,sh);float dusk=exp(-pow((sh-0.02)/0.16,2.0));
+   float thick=clamp(dens/1.6,0.3,1.6);
+   vec3 zenDay=mix(vec3(0.20,0.36,0.62),vec3(0.36,0.46,0.66),clamp((thick-0.7)*1.2,0.,1.));
+   vec3 horDay=mix(vec3(0.78,0.84,0.90),vec3(0.86,0.70,0.52),clamp(thick-0.5,0.,1.));
+   vec3 zenNight=vec3(0.015,0.02,0.045);vec3 horNight=vec3(0.06,0.05,0.09)*thick;
+   float hp=pow(1.0-h,2.2+1.2*thick);
+   vec3 day=mix(zenDay,horDay,hp);vec3 nite=mix(zenNight,horNight,hp);
+   vec3 c=mix(nite,day,dayF);
+   float sd=max(dot(d,normalize(sun)),0.0);
+   vec3 duskCol=vec3(1.0,0.45,0.18);c+=duskCol*dusk*pow(sd,3.0)*(0.55+0.5*hp)*(1.0-0.6*ecl);
+   c+=vec3(1.0,0.9,0.75)*pow(sd,64.0)*dayF*0.9*(1.0-ecl);c+=vec3(1.0,0.85,0.6)*pow(sd,8.0)*dayF*0.18*thick;
+   float gd=max(dot(d,giant),0.0);c+=vec3(0.55,0.5,0.7)*pow(gd,10.0)*(1.0-dayF)*0.12;
+   c*=1.0-0.75*ecl*smoothstep(-0.05,0.3,h);
+   c=mix(c,c*0.6+vec3(0.12,0.08,0.06)*thick,(1.0-dayF)*0.4*(1.0-h));
+   gl_FragColor=vec4(c,1.0);}`});
+ const giantTex=(function(){const c=document.createElement('canvas');c.width=64;c.height=512;const g=c.getContext('2d');
+  const bands=[[0.00,'#7d8fb0'],[0.08,'#9aa8c4'],[0.15,'#c7c2b6'],[0.22,'#8a98b8'],[0.30,'#dcd4c2'],[0.36,'#7e8db0'],[0.45,'#b9b2a6'],[0.52,'#6f80a6'],[0.60,'#d8cfbb'],[0.68,'#8896b6'],[0.76,'#c4bdb0'],[0.84,'#7688aa'],[0.92,'#a9b0c2'],[1.0,'#6f80a2']];
+  const grd=g.createLinearGradient(0,0,0,512);bands.forEach(b=>grd.addColorStop(b[0],b[1]));g.fillStyle=grd;g.fillRect(0,0,64,512);
+  for(let i=0;i<200;i++){g.fillStyle='rgba(255,255,255,'+(h3(i,1,2)*.08)+')';g.fillRect(h3(i,2,3)*64,h3(i,3,4)*512,h3(i,4,5)*30+4,h3(i,5,6)*3+1);}
+  g.fillStyle='rgba(230,225,215,.35)';g.beginPath();g.ellipse(40,300,9,4,0,0,6.28);g.fill();
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
+ const giantMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,fog:false,
+  uniforms:{map:{value:giantTex},L:{value:new THREE.Vector3(0,0,1)},haze:{value:0.3},ring:{value:1},tilt:{value:0.35},t:{value:0}},
+  vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:`varying vec2 vUv;uniform sampler2D map;uniform vec3 L;uniform float haze,ring,tilt,t;
+  void main(){vec2 p=(vUv-0.5)*2.0;
+   float R=0.62;vec2 q=p/R;float r2=dot(q,q);vec3 col=vec3(0.);float a=0.;
+   float cs=cos(tilt),sn=sin(tilt);vec2 rp=vec2(q.x,q.y/max(sn,0.08));float rr=length(rp);
+   float inRing=ring*smoothstep(1.35,1.4,rr)*(1.0-smoothstep(2.1,2.2,rr))*(0.55+0.45*sin(rr*40.0));
+   float behind=step(0.0,q.y)*step(rr,1.0);
+   if(r2<1.0){vec3 n=vec3(q.x,q.y,sqrt(max(0.0,1.0-r2)));
+    float lat=asin(clamp(n.y,-1.,1.));float lon=atan(n.x,n.z);
+    vec3 base=texture2D(map,vec2(lon/6.2832+t*0.02,lat/3.1416+0.5)).rgb;
+    float lit=clamp(dot(n,normalize(L)),-1.0,1.0);float day=smoothstep(-0.08,0.25,lit);
+    float limb=pow(max(0.0,n.z),0.45);
+    col=base*(0.05+0.95*day)*limb+vec3(0.35,0.3,0.4)*0.05*(1.0-day);
+    a=1.0;}
+   else{a=0.0;}
+   vec3 ringCol=vec3(0.85,0.82,0.78);float ringA=inRing*(1.0-behind)*(r2<1.0?0.0:1.0);
+   float ringLit=clamp(dot(vec3(0.,1.,0.),normalize(L))*0.5+0.6,0.15,1.0);
+   col=mix(col,ringCol*ringLit,ringA*0.7);a=max(a,ringA*0.7);
+   float front=step(q.y,0.0)*step(rr,1.0)*inRing;col=mix(col,ringCol*ringLit,front*0.6);
+   a*=1.0-haze;
+   gl_FragColor=vec4(col,a);}`});
+ const giant=new THREE.Mesh(new THREE.PlaneGeometry(1,1),giantMat);
+ const sunTex=(function(){const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,250,235,1)');gr.addColorStop(0.18,'rgba(255,240,200,1)');gr.addColorStop(0.3,'rgba(255,200,120,0.35)');gr.addColorStop(1,'rgba(255,160,80,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);})();
+ const sun=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending}));
+ const starGeo=new THREE.BufferGeometry();{const p=[],c=[];for(let i=0;i<2600;i++){const u=h3(i,7,1)*2-1,th=h3(i,8,2)*6.2832;const r=Math.sqrt(1-u*u);p.push(r*Math.cos(th),u,r*Math.sin(th));const k=h3(i,9,3);c.push(0.7+0.3*k,0.75+0.2*k,0.9);}
+  starGeo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));starGeo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));}
+ const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({size:2.2,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false}));
+ const moon=new THREE.Sprite(new THREE.SpriteMaterial({map:(function(){const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.fillStyle='#cfc8bc';g.beginPath();g.arc(32,32,28,0,6.28);g.fill();g.fillStyle='rgba(90,80,80,.35)';for(let i=0;i<8;i++){g.beginPath();g.arc(20+h3(i,1,9)*24,20+h3(i,2,9)*24,2+h3(i,3,9)*4,0,6.28);g.fill();}return new THREE.CanvasTexture(c);})(),fog:false,depthWrite:false,transparent:true}));
+ const group=new THREE.Group();const dome=new THREE.Mesh(new THREE.SphereGeometry(1,48,24),skyMat);group.add(dome,giant,sun,stars,moon);group.traverse(o=>{o.userData.probeSkip=true;});
+ const state={hour:12,day:200,dens:1.6,sun:new THREE.Vector3(),eclipse:0,ring:true};
+ function attach(scene,R){group.scale.setScalar(R);group.userData.R=R;scene.add(group);return group;}
+ function update(camPos,hour,day,dens){state.hour=hour;state.day=day;state.dens=dens;group.position.copy(camPos);
+  const s=sunDir(hour,day);state.sun.copy(s);skyMat.uniforms.sun.value.copy(s);skyMat.uniforms.dens.value=dens;
+  const ang=Math.acos(Math.max(-1,Math.min(1,s.dot(giantDir))));const ecl=s.y>0?Math.max(0,1-ang/GIANT_ANG):0;const eclF=ecl>0?Math.min(1,ecl*1.6):0;state.eclipse=eclF;skyMat.uniforms.ecl.value=eclF*0.9;
+  giant.position.copy(giantDir).multiplyScalar(0.96);giant.lookAt(new THREE.Vector3(0,0,0));const size=2*0.96*Math.tan(GIANT_ANG)/0.62;giant.scale.set(size,size,1);
+  const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),giantDir).normalize();const upB=new THREE.Vector3().crossVectors(giantDir,right).normalize();
+  giantMat.uniforms.L.value.set(s.dot(right),s.dot(upB),-s.dot(giantDir));giantMat.uniforms.haze.value=0.15+0.35*Math.max(0,dens-1)*0.7;giantMat.uniforms.ring.value=state.ring?1:0;giantMat.uniforms.t.value=hour/24;
+  sun.position.copy(s).multiplyScalar(0.95);const ss=0.11*(1+0.5*Math.max(0,0.15-s.y)*6);sun.scale.set(ss,ss,1);sun.material.opacity=s.y>-0.08?1-eclF*0.85:0;
+  const night=1-Math.min(1,Math.max(0,(s.y+0.1)/0.28));stars.material.opacity=night*0.9;stars.rotation.set(0,0,0);stars.rotateOnAxis(new THREE.Vector3(0,Math.sin(-LAT),Math.cos(-LAT)).normalize(),hour/24*6.2832);
+  const ma=hour/6*6.2832;const md=new THREE.Vector3(Math.cos(ma)*0.9,0.25+0.2*Math.sin(ma*0.5),Math.sin(ma)*0.9).normalize();moon.position.copy(md).multiplyScalar(0.93);moon.scale.set(0.02,0.02,1);moon.material.opacity=md.y>0.05?0.9:0;
+  return state;}
+ function lighting(){const s=state.sun;const dayF=Math.min(1,Math.max(0,(s.y+0.12)/0.3));const dusk=Math.exp(-Math.pow((s.y-0.02)/0.16,2));const e=state.eclipse;
+  const sunCol=new THREE.Color(1,0.96,0.9).lerp(new THREE.Color(1,0.55,0.3),dusk).multiplyScalar(1-0.85*e);
+  const thick=Math.min(1.6,Math.max(0.3,state.dens/1.6));const hor=new THREE.Color(0.78,0.84,0.90).lerp(new THREE.Color(0.86,0.70,0.52),Math.min(1,Math.max(0,thick-0.5)));
+  const fog=new THREE.Color(0.06,0.05,0.09).lerp(hor,dayF).lerp(new THREE.Color(1,0.5,0.25),dusk*0.5).multiplyScalar(1-0.6*e*dayF);
+  return{sunDir:s.clone(),sunIntensity:1.7*dayF*(1-0.85*e),sunColor:sunCol,ambient:0.18+0.55*dayF*(1-0.6*e)+0.08*(1-dayF),fog,giantDir:giantDir.clone(),eclipse:e,isNight:dayF<0.05,dayF,dusk};}
+ return{attach,update,lighting,sunDir,altAz,giantDir,state,GIANT_ANG};})();
+window.KratorSky=KratorSky;
+/* ---------- 90-sheet.js ---------- */
+/* ======================== Motor vehicles kit sheet ========================
+   Lays out every registered vehicle, every variant, in labelled rows on the catalog
+   engine's scene (kits/catalog/krator-asset-engine.js), built ONLY through the bundle's
+   public API (KratorVehicles.build), exactly as a host world builds them. Each row is
+   one vehicle; each variant stands at ry = 0 (+z forward), wheels on y = 0, with a
+   1.75 m figure beside the row for scale.
+   Toolbar: Drive (R) rolls every wheel and swings the front pair; Lights (L) switches
+   the lamps; Night (N) darkens the sky to judge them.
+   Exposes window._sheet (rows, instances, view(i, kind), setDrive, setLights, setNight)
+   and sets window._ready.
+   ====================================================================== */
+const INSTANCES = [];
+(function () {
+  'use strict';
+  const KV = KratorVehicles;
+  const GAP = 2.2;
+
+  /* --- labels on the ground */
+  function label(text, sub, x, z, w, dark) {
+    const c = document.createElement('canvas');
+    c.width = 512; c.height = sub ? 112 : 72;
+    const g = c.getContext('2d');
+    g.fillStyle = dark ? 'rgba(30,26,18,0.94)' : 'rgba(58,52,40,0.86)';
+    g.fillRect(0, 0, c.width, c.height);
+    g.fillStyle = dark ? '#e0c98a' : '#f5efdd';
+    g.textAlign = 'center';
+    let fs = 40;
+    g.font = (dark ? 'bold ' : '') + fs + 'px Georgia, serif';
+    while (g.measureText(text).width > 490 && fs > 14) { fs -= 2; g.font = (dark ? 'bold ' : '') + fs + 'px Georgia, serif'; }
+    g.fillText(text, 256, 50);
+    if (sub) { g.font = '26px Georgia, serif'; g.globalAlpha = 0.7; g.fillText(sub, 256, 92); }
+    const t = new THREE.CanvasTexture(c);
+    t.encoding = THREE.sRGBEncoding;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w * c.height / c.width), new THREE.MeshBasicMaterial({ map: t, transparent: true }));
+    m.rotation.x = -Math.PI / 2;
+    m.position.set(x, 0.03, z);
+    scene.add(m);
+    return m;
+  }
+  /* a 1.75 m figure for scale (plain THREE: the page has no catalog core of its own) */
+  function figure(x, z) {
+    const g = new THREE.Group(), cloth = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x6a4a2c).convertSRGBToLinear(), roughness: 0.9 });
+    const skin = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xc89a74).convertSRGBToLinear(), roughness: 0.8 });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.2, 1.45, 10), cloth); body.position.y = 0.725; g.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), skin); head.position.y = 1.62; g.add(head);
+    g.position.set(x, 0, z); g.name = 'scale-figure';
+    scene.add(g);
+    return g;
+  }
+
+  /* --- lay out: rows run along +x; vehicles stack toward -z */
+  const rows = [];
+  let z = 0, maxW = 0;
+  for (const E of KV.list()) {
+    let x = 0, depth = E.d;
+    const placed = [];
+    figure(-1.2, z);
+    for (let v = 0; v < E.variants; v++) {
+      const cx = x + E.w / 2;
+      const g = KV.build(E.key, { variant: v, seed: 1 });
+      g.position.set(cx, 0, z);
+      g.userData.x = cx; g.userData.z = z; g.userData.ry = 0;
+      scene.add(g); INSTANCES.push(g); placed.push(g);
+      label(E.name + ' #' + (v + 1) + (E.variantNames[v] ? ' ' + E.variantNames[v] : ''),
+        E.culture + ' · ' + KV.dataOf(E.key, v).seats + ' seats · ' + g.userData.tris + ' tris', cx, z + E.d / 2 + 0.7, Math.max(E.w * 1.4, 2.6), false);
+      x += E.w + GAP;
+    }
+    label(E.name, E.culture + ' · ' + E.variants + ' variants', -5.5, z, 5, true);
+    rows.push({ key: E.key, title: E.name, z: z, width: x, depth: depth, instances: placed });
+    maxW = Math.max(maxW, x);
+    z -= depth + 4;
+  }
+
+  /* --- the standard Krator sky (vendored 81-sky.js), fixed at mid-morning; Night drops it to 21:30 */
+  let hour = 10.5;
+  const hemi = scene.children.filter(function (o) { return o.isHemisphereLight; })[0];
+  const base = { sun: sun.intensity, fill: fill.intensity, hemi: hemi ? hemi.intensity : 0, exp: renderer.toneMappingExposure };
+  if (window.KratorSky) {
+    KratorSky.attach(scene, 4200);
+    KratorSky.update(camera.position, hour, 200, 1.6);
+    scene.fog.color.copy(KratorSky.lighting().fog);
+  }
+  let night = false;
+  function setNight(on) {
+    night = !!on; hour = night ? 21.5 : 10.5;
+    sun.intensity = night ? 0.03 : base.sun; fill.intensity = night ? 0.05 : base.fill;
+    if (hemi) hemi.intensity = night ? 0.12 : base.hemi;
+    scene.background = new THREE.Color(night ? 0x0c0f18 : 0xd8dccb);
+    if (window.KratorSky) { KratorSky.update(camera.position, hour, 200, 1.6); scene.fog.color.copy(KratorSky.lighting().fog); }
+    document.getElementById('nightBtn').classList.toggle('on', night);
+  }
+
+  /* --- drive and lights */
+  let drive = false, lightsOn = false, t0 = 0;
+  function setDrive(on) { drive = !!on; document.getElementById('driveBtn').classList.toggle('on', drive); }
+  function setLights(on) {
+    lightsOn = !!on;
+    for (const g of INSTANCES) KV.lights(g, lightsOn);
+    document.getElementById('lightsBtn').classList.toggle('on', lightsOn);
+  }
+  (window._frameHooks = window._frameHooks || []).push(function (now) {
+    if (window.KratorSky) KratorSky.update(camera.position, hour, 200, 1.6);
+    if (!drive) { t0 = now; return; }
+    const dt = Math.min((now - t0) / 1000, 0.1); t0 = now;
+    for (const g of INSTANCES) { KV.roll(g, 4 * dt); KV.steer(g, 0.45 * Math.sin(now / 900)); }
+  });
+
+  /* --- toolbar */
+  document.getElementById('count').textContent = KV.list().length + ' vehicles · ' + INSTANCES.length + ' instances · cultures: ' + KV.cultures().join(', ');
+  const rs = document.getElementById('rowSel');
+  rows.forEach(function (r, i) { const o = document.createElement('option'); o.value = String(i); o.textContent = r.title; rs.appendChild(o); });
+  rs.onchange = function () { gotoRow(+rs.value); };
+  document.getElementById('driveBtn').onclick = function () { setDrive(!drive); };
+  document.getElementById('lightsBtn').onclick = function () { setLights(!lightsOn); };
+  document.getElementById('nightBtn').onclick = function () { setNight(!night); };
+  window.addEventListener('keydown', function (e) {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const k = e.key.toLowerCase();
+    if (k === 'r') setDrive(!drive); else if (k === 'l') setLights(!lightsOn); else if (k === 'n') setNight(!night);
+  });
+
+  function showAll() { for (const g of INSTANCES) g.visible = true; }
+  function gotoRow(i) {
+    const r = rows[i];
+    if (!r) return;
+    showAll();
+    if (ctl.walk) window._setWalk(false);
+    ctl.target.set(r.width / 2 - GAP / 2, 0.9, r.z);
+    ctl.dist = Math.max(8, r.width * 0.9);
+    ctl.az = 0.5; ctl.el = 0.32;
+    updateCamera();
+  }
+  /* one vehicle, close and alone (its neighbours hidden until the next gotoRow or showAll):
+     kind = front34 | side | rear34 | front | top */
+  const VIEWS = { front34: [0.75, 0.22, 6.4], side: [Math.PI / 2, 0.08, 6.8], rear34: [Math.PI - 0.75, 0.25, 6.4],
+    front: [0, 0.12, 6.4], top: [0.3, 1.3, 7] };
+  function view(i, kind) {
+    const g = INSTANCES[i], V = VIEWS[kind] || VIEWS.front34;
+    if (!g) return null;
+    if (ctl.walk) window._setWalk(false);
+    for (const o of INSTANCES) o.visible = o === g;
+    ctl.target.set(g.position.x, 1.0, g.position.z);
+    ctl.az = V[0]; ctl.el = V[1]; ctl.dist = V[2];
+    updateCamera();
+    return g.userData.key + ' #' + (g.userData.variant + 1);
+  }
+  if (rows.length) gotoRow(0);
+
+  window._sheet = { rows: rows, instances: INSTANCES, width: maxW, gotoRow: gotoRow, view: view, showAll: showAll, views: Object.keys(VIEWS),
+    setDrive: setDrive, setLights: setLights, setNight: setNight };
+  window._ready = true;
+})();
+/* ---------- 92-hover.js ---------- */
+/* ======================== Hover inspector ========================
+   Hover inspector (repo README "DEV TOOLS"): toggle with T or the toolbar button.
+   When on, the pointer names the vehicle under it: name, variant, class, culture,
+   its tags, and the simulation data a host reads (speed, seats, cargo, fuel, wheels).
+   Adapted from kits/catalog/src/92-hover.js for vehicle groups (userData from
+   KratorVehicles.build). Off by default.
+   ====================================================================== */
+(function () {
+  'use strict';
+  const tip = document.getElementById('hover');
+  const btn = document.getElementById('hoverBtn');
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  let on = false, pending = null;
+
+  function tagsOf(u) {
+    const T = u.tags || {}, D = u.data || {}, t = ['culture: ' + u.culture];
+    for (const k of Object.keys(T)) t.push(k + ': ' + (Array.isArray(T[k]) ? T[k].join(', ') : T[k]));
+    t.push('top speed ' + D.speed + ' m/s', 'seats ' + D.seats, 'cargo ' + D.cargo + ' kg', 'tank ' + D.tank + ' L',
+      'wheels ' + (u.wheels || []).length + ' (' + (D.drive || '?') + ' drive)', u.tris + ' tris');
+    return t;
+  }
+  function describe(g) {
+    const u = g.userData;
+    return '<div class="cls">' + ((u.tags && u.tags.class) || 'vehicle') + '</div><b>' + u.name + '</b>' +
+      ' <span style="opacity:.6">#' + (u.variant + 1) + (u.variantName ? ' ' + u.variantName : '') + '</span>' +
+      '<br>' + tagsOf(u).map(s => '<span class="tag">' + s + '</span>').join('');
+  }
+  function pick(cx, cy) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.x = ((cx - r.left) / r.width) * 2 - 1;
+    ndc.y = -((cy - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    const hits = ray.intersectObjects(INSTANCES, true);
+    if (!hits.length) return null;
+    let o = hits[0].object;
+    while (o && INSTANCES.indexOf(o) < 0) o = o.parent;
+    return o;
+  }
+  function setOn(v) {
+    on = v; btn.classList.toggle('on', on);
+    if (!on) tip.style.display = 'none';
+  }
+  renderer.domElement.addEventListener('mousemove', function (e) {
+    if (!on) return;
+    pending = [e.clientX, e.clientY];
+  });
+  (window._frameHooks = window._frameHooks || []).push(function () {
+    if (!on || !pending) return;
+    const [x, y] = pending; pending = null;
+    const g = pick(x, y);
+    if (!g) { tip.style.display = 'none'; return; }
+    tip.innerHTML = describe(g);
+    tip.style.display = 'block';
+    tip.style.left = Math.min(x + 16, innerWidth - 360) + 'px';
+    tip.style.top = (y + 16) + 'px';
+  });
+  btn.onclick = function () { setOn(!on); };
+  window.addEventListener('keydown', function (e) {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key.toLowerCase() === 't') setOn(!on);
+  });
+  window._hover = { setOn: setOn, describe: describe, tagsOf: tagsOf };
+})();
+/* ---------- 93-polygon.js ---------- */
+/* ======================== Polygon tool ========================
+   Polygon tool (repo README "DEV TOOLS"), the mechanism of the settlements'
+   92-camera.js: toggle with P or the toolbar button, click the ground to lay
+   a vertex, right-click to drop the last one. The panel holds copy-pasteable
+   world coordinates ([x,z] or {x:,z:}), the format kits/interiors ROOM() takes
+   for `poly`. It also names the nearest vehicle and the last vertex in that
+   vehicle's local frame (+z forward), for placing things against it.
+   (Copied from kits/catalog/src/93-polygon.js; only the nearest-instance line differs.)
+   While it is on, a click adds a vertex instead of selecting in the inspector.
+   ====================================================================== */
+(function () {
+  'use strict';
+  const POLY = { on: false, pts: [], fmt: 0, grp: new THREE.Group() };
+  scene.add(POLY.grp);
+  const panel = document.getElementById('poly'), out = document.getElementById('polyout');
+  const near = document.getElementById('polynear'), btn = document.getElementById('polyBtn');
+  const dotMat = new THREE.MeshBasicMaterial({ color: 0xff5060 }), lineMat = new THREE.LineBasicMaterial({ color: 0xffe060 });
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit = new THREE.Vector3();
+  const r2 = (t) => Math.round(t * 100) / 100;
+
+  function nearest(x, z) {
+    let best = null, bd = 1e9;
+    for (const g of INSTANCES) {
+      const u = g.userData, dd = Math.hypot(u.x - x, u.z - z);
+      if (dd < bd) { bd = dd; best = g; }
+    }
+    return best;
+  }
+  function redraw() {
+    while (POLY.grp.children.length) POLY.grp.remove(POLY.grp.children[0]);
+    for (const p of POLY.pts) {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6, 8), dotMat);
+      m.position.set(p[0], 0.3, p[1]); POLY.grp.add(m);
+    }
+    if (POLY.pts.length > 1) {
+      const geo = new THREE.BufferGeometry().setFromPoints(POLY.pts.map(p => new THREE.Vector3(p[0], 0.05, p[1])));
+      POLY.grp.add(new THREE.Line(geo, lineMat));
+    }
+    const f = p => POLY.fmt ? '{x:' + r2(p[0]) + ',z:' + r2(p[1]) + '}' : '[' + r2(p[0]) + ',' + r2(p[1]) + ']';
+    out.value = '[' + POLY.pts.map(f).join(',') + ']';
+    const last = POLY.pts[POLY.pts.length - 1], g = last && nearest(last[0], last[1]);
+    if (g) {
+      const u = g.userData, c = Math.cos(u.ry), s = Math.sin(u.ry), dx = last[0] - u.x, dz = last[1] - u.z;
+      /* inverse of the frame's toWorld: lx = dx cos - dz sin, lz = dx sin + dz cos */
+      near.textContent = 'nearest: ' + u.key + ' #' + (u.variant + 1) + ' — last vertex in its frame: [' +
+        r2(dx * c - dz * s) + ',' + r2(dx * s + dz * c) + ']';
+    } else near.textContent = '';
+    window._poly = POLY.pts.slice();
+  }
+  function add(cx, cy) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    if (ray.ray.intersectPlane(plane, hit)) { POLY.pts.push([hit.x, hit.z]); redraw(); }
+  }
+  function setOn(v) {
+    POLY.on = v; btn.classList.toggle('on', v); panel.style.display = v ? 'block' : 'none'; POLY.grp.visible = v;
+  }
+  /* a click (not a drag) adds or removes a vertex; captured before the inspector's own mouseup */
+  let down = null;
+  renderer.domElement.addEventListener('mousedown', (e) => { down = [e.clientX, e.clientY, e.button]; }, true);
+  renderer.domElement.addEventListener('mouseup', (e) => {
+    if (!POLY.on || !down) return;
+    const click = Math.abs(e.clientX - down[0]) < 4 && Math.abs(e.clientY - down[1]) < 4;
+    down = null;
+    if (!click) return;
+    if (e.button === 0) add(e.clientX, e.clientY);
+    else if (e.button === 2) { POLY.pts.pop(); redraw(); }
+    e.stopImmediatePropagation();
+    ctl.dragging = false; ctl.panning = false;
+  }, true);
+  btn.onclick = () => setOn(!POLY.on);
+  window.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key.toLowerCase() === 'p') setOn(!POLY.on);
+  });
+  document.getElementById('polyundo').onclick = () => { POLY.pts.pop(); redraw(); };
+  document.getElementById('polyclear').onclick = () => { POLY.pts = []; redraw(); };
+  document.getElementById('polyclose').onclick = () => { if (POLY.pts.length > 2) { POLY.pts.push(POLY.pts[0].slice()); redraw(); } };
+  document.getElementById('polyfmt').onclick = (e) => { POLY.fmt ^= 1; e.target.textContent = POLY.fmt ? 'Format: {x,z}' : 'Format: [x,z]'; redraw(); };
+  document.getElementById('polycopy').onclick = () => {
+    out.select();
+    try { navigator.clipboard.writeText(out.value); } catch (err) { document.execCommand('copy'); }
+  };
+  window._polyTool = { setOn: setOn, add: add, state: POLY };
+})();
+</script>
+</body>
+</html>

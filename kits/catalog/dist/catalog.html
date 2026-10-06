@@ -314,7 +314,8 @@ const BUILDING_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 
    Every piece is authored in the FLOOR frame (origin = footprint centre at the
    bottom of the piece, +z front); anchor tells a placer where it mounts:
      floor   — stands on the floor at y = floorY
-     wall    — stands at floor level, back face (local z = -d/2) flush to a wall
+     wall    — stands at floor level, back face (local z = -d/2) flush to a wall; a HUNG wall piece (wall art,
+               a frieze, a pennant string: furnWallHung) is lifted to its mounting height, see furnAnchorY()
      ceiling — hangs: its top (local y = h) meets the ceiling, see furnAnchorY()
      surface — stands on a table, shelf or counter top at y = surfaceY
    materials are canonical names from CATALOG_MATERIALS below.
@@ -349,10 +350,24 @@ function FURN(o) {
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
    at = { floorY, surfaceY, ceilingY }; variant picks variantDims. */
+/* wall pieces that hang rather than stand: wall art (a mask, a skull, antlers, a plate) centred at eye height,
+   friezes and pennant strings near the top of the wall. Everything else on a wall stands on the floor. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top' };
+function furnWallHung(A) {
+  if (!A || A.anchor !== 'wall') return null;
+  if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
+  return A.type === 'art' ? 'eye' : null;
+}
 function furnAnchorY(A, variant, at) {
   at = at || {};
   const floorY = at.floorY || 0;
   if (A.anchor === 'surface') return at.surfaceY != null ? at.surfaceY : floorY;
+  const hung = furnWallHung(A);
+  if (hung) {
+    const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
+    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    return Math.max(floorY, Math.min(y, top - h));
+  }
   if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
   return floorY;
 }
@@ -521,6 +536,7 @@ const FPAL = {
     stoneBlack: 0x14161a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0, stoneLaterite: 0xa85832,
     stoneCobalt: 0x2a6ab0, stoneClay: 0xb8633a, stoneAzure: 0x3a86c8, stoneClayLight: 0xc47044,
     stoneSky: 0x58a8d8, stoneIvory: 0xf0ece0,
+    thatchFlax: 0xb8a262, thatchStraw: 0xc8b272,   /* the grain bin's lid (re-harvest 2026-10-05) */
     timberWalnut: 0x5c432c, timberChestnutDark: 0x6a4e34, timberChestnut: 0x7a5a3c, timberOak: 0x8a6a4e,
     timberTeak: 0x9a7a4e, timberPine: 0xa8865c
   },
@@ -3085,7 +3101,7 @@ const FK = (function () {
 })();
 /* ---------- krator-master-furniture.js ---------- */
 /* ======================================================================
-   Krator Master Furniture Registry — 122 pieces
+   Krator Master Furniture Registry — 128 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
@@ -5695,7 +5711,7 @@ FURN({
   }
 });
 
-/* ================= Yuni (58 pieces) ================= */
+/* ================= Yuni (64 pieces) ================= */
 
 FURN({
   key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', type: 'table', setting: 'indoor',
@@ -7420,6 +7436,101 @@ FURN({
     F.cyl(0, 0.28, 0, 0.022, 0.14, 0, F.col('plasterIvory'), 'plaster');
     F.cone(0, 0.42, 0, 0.012, 0.05, 0, F.col('amber'), 'glow');
     F.lamp(0, 0.45, 0, 0.3, 3);
+  }
+});
+
+/* ---------- re-harvest (2026-10-05): the six pieces Yuni's interiors pass added (src/64-interiors.js, the
+   minimum kit), with the material-library pass's families: fired clay ('ceramic'), reed mats ('reed'), coiled
+   baskets ('wicker'). Yuni's container-item / container-food types are the catalog's 'storage' plus a role
+   (kits/interiors 30-programs.js FOOD_ROLES / ITEM_ROLES); Yuni turns pots and baskets on a lathe, which is
+   a stack of frustum rings here, one ring per profile segment. ---------- */
+/* a lathe profile [[r, y], ...] as frustum rings about the piece's origin */
+function yuniLathe(F, x, z, pts, color, family, sides) {
+  for (let i = 0; i + 1 < pts.length; i++) {
+    F.frustum(x, pts[i][1], z, pts[i][0], pts[i + 1][0], pts[i + 1][1] - pts[i][1], 0, color, family, sides || 10);
+  }
+}
+
+FURN({
+  key: 'yuni_poor_lidded_basket', name: 'Lidded storage basket', culture: 'yuni-poor', type: 'storage', role: 'trunk', setting: 'indoor',
+  rooms: ['bedroom', 'store', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['wicker', 'timber', 'cloth'],
+  w: 0.55, d: 0.55, h: 0.74, variants: 2, variantNames: ['plain', 'bundle on the lid'],
+  build: function (F) {
+    /* a lidded basket kept as a trunk (belongings), as Yuni's huts use it: role 'trunk', an item container */
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    yuniLathe(F, 0, 0, [[0.15, 0], [0.24, 0.08], [0.26, 0.36], [0.23, 0.48]], c, 'wicker');
+    yuniLathe(F, 0, 0, [[0.25, 0.47], [0.26, 0.52], [0.15, 0.58], [0.04, 0.61]], F.shade(c, -0.12), 'wicker');
+    F.box(0, 0.24, 0.25, 0.04, 0.05, 0.04, 0, F.col('timberWalnut'), 'wood');   /* the toggle */
+    if (F.variant === 1) F.blob(0.02, 0.58, 0, 0.17, 0.14, 0.3, F.pick(['clothIndigo', 'clothMadder', 'clothSaffron']), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_poor_food_pot', name: 'Covered food pot', culture: 'yuni-poor', type: 'storage', role: 'pots', setting: 'both',
+  rooms: ['kitchen', 'store', 'bedroom'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['ceramic', 'wicker', 'plaster'],
+  w: 0.55, d: 0.55, h: 0.78, variants: 1,
+  build: function (F) {
+    const c = F.pick(['stoneClay', 'stoneLaterite', 'stoneClayLight']);
+    F.box(0, 0, 0, 0.5, 0.04, 0.5, 0, F.shade(F.col('plasterTan'), -0.2), 'plaster');   /* the mud stand */
+    yuniLathe(F, 0, 0, [[0.12, 0.04], [0.25, 0.22], [0.24, 0.5], [0.14, 0.64], [0.17, 0.7]], c, 'ceramic');
+    F.cyl(0, 0.7, 0, 0.19, 0.05, 0, F.pick(['thatchStraw', 'thatchFlax']), 'wicker');   /* the coiled lid */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_sleeping_mat', name: 'Rolled-out sleeping mat', culture: 'yuni-poor', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['reed', 'cloth'],
+  w: 1.85, d: 0.8, h: 0.18, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.85, 0.05, 0.8, 0, F.shade(F.col('thatchStraw'), 0.08), 'reed');
+    F.box(0, 0.05, 0.05, 1.7, 0.04, 0.66, 0, F.pick(['clothIndigo', 'clothMadder', 'clothOrange', 'clothSaffron']), 'cloth');
+    F.rod(-0.72, 0.1, -0.3, -0.72, 0.1, 0.3, 0.08, F.col('clothIvory'), 'cloth');   /* the rolled headcloth */
+  }
+});
+
+FURN({
+  key: 'yuni_common_grain_bin', name: 'Mud-brick grain bin', culture: 'yuni-common', type: 'storage', role: 'bin', setting: 'both',
+  rooms: ['store', 'yard', 'kitchen'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['plaster', 'thatch', 'timber'],
+  w: 1.3, d: 1.3, h: 1.8, variants: 1,
+  build: function (F) {
+    const c = F.pick(['plasterTan', 'plasterTanLight', 'plasterBirch']);
+    F.box(0, 0, 0, 1.0, 0.12, 1.0, 0, F.shade(c, -0.15), 'plaster');
+    yuniLathe(F, 0, 0, [[0.48, 0.12], [0.62, 0.25], [0.62, 1.15], [0.46, 1.45], [0.2, 1.55]], c, 'plaster');
+    F.cone(0, 1.5, 0, 0.42, 0.28, 0, F.pick(['thatchStraw', 'thatchFlax']), 'thatch');
+    F.box(0, 0.85, 0.57, 0.36, 0.36, 0.1, 0, F.col('timberPine'), 'wood');   /* the draw hatch */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_reed_mat', name: 'Woven reed floor mat', culture: 'yuni-poor', type: 'rug', setting: 'indoor',
+  rooms: ['bedroom', 'hall', 'kitchen'], anchor: 'floor', clearance: {},
+  materials: ['reed', 'cloth'],
+  w: 2.2, d: 1.5, h: 0.03, variants: 2, variantNames: ['plain', 'red runner'],
+  build: function (F) {
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    F.box(0, 0, 0, 2.2, 0.018, 1.5, 0, F.shade(c, 0.1), 'reed');
+    for (let k = 0; k < 5; k++) F.box(0, 0.006, -0.6 + k * 0.3, 2.1, 0.016, 0.07, 0, F.shade(c, -0.18), 'reed');   /* binding cords */
+    if (F.variant === 1) F.box(0, 0.01, 0, 0.5, 0.016, 1.4, 0, F.col('clothMadder'), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_common_kilim', name: 'Flat-woven kilim', culture: 'yuni-common', type: 'rug', setting: 'indoor',
+  rooms: ['hall', 'bedroom', 'court'], anchor: 'floor', clearance: {},
+  materials: ['cloth'],
+  w: 2.6, d: 1.7, h: 0.03, variants: 2, variantNames: ['red lozenges', 'blue lozenges'],
+  build: function (F) {
+    const field = F.pick(['clothIndigo', 'clothMadder', 'clothSaffron', 'clothJade', 'clothViolet', 'clothOrange']);
+    const lozenge = F.variant ? F.col('stoneSky') : F.col('clothMadder'), ivory = F.col('clothIvory');
+    F.box(0, 0, 0, 2.6, 0.012, 1.7, 0, F.shade(ivory, -0.05), 'cloth');
+    F.box(0, 0.006, 0, 2.3, 0.012, 1.4, 0, field, 'cloth');
+    F.box(0, 0.012, 0, 0.9, 0.01, 0.9, Math.PI / 4, lozenge, 'cloth');
+    F.box(0, 0.016, 0, 0.42, 0.01, 0.42, Math.PI / 4, ivory, 'cloth');
+    for (const s of [-1, 1]) F.box(s * 0.85, 0.012, 0, 0.3, 0.01, 0.3, Math.PI / 4, lozenge, 'cloth');
   }
 });
 
@@ -9660,6 +9771,90 @@ FURN({
         }
         F.box(x, L2, z, 0.16 * m, T, 0.16 * m, Math.PI / 4, red, 'cloth');
       }
+    }
+  }
+});
+
+/* ======== The builders' yard (2026-10): building stock for the Locus kit's abyss_shop_builder ========
+   (settlements/locus/src/65-abyss-40-shops.js, Mungo's builders' merchant). Bundled mat reed for thatch, clay bricks
+   and lime: the yard's goods besides its timber (the catalog's Jobs file: job_pole_rack, job_plank_stack,
+   job_saw_bench). Outdoor only: the interiors never pick them for a room. */
+FURN({
+  key: 'abyss_reed_bundles', name: 'Bundled thatching reed', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['reed', 'rope'],
+  w: 2.8, d: 1.5, h: 1.0, variants: 2, variantNames: ['bundles stacked lying, 4-3-2', 'bundles stood in two stooks'],
+  variantDims: [{ w: 2.8, d: 1.5, h: 1.0 }, { w: 2.4, d: 1.2, h: 2.3 }],
+  build: function (F) {
+    const reed = ['reedMat', 'reedMatDark', 'reedMatLight', 'reedMatOld'], cord = F.col('ropeCoir');
+    if (F.variant === 0) {
+      [[4, 0.17], [3, 0.464], [2, 0.758]].forEach(function (row) {
+        for (let i = 0; i < row[0]; i++) {
+          const z = (i - (row[0] - 1) / 2) * 0.34, dx = F.rr(-0.08, 0.08);
+          F.rod(-1.25 + dx, row[1], z, 1.25 + dx, row[1], z, 0.17, F.pick(reed), 'reed');
+          for (const s of [-0.7, 0.7]) F.rod(s + dx - 0.03, row[1], z, s + dx + 0.03, row[1], z, 0.18, cord, 'rope');
+        }
+      });
+    } else {
+      /* six bundles leaning together into a stook, two stooks side by side */
+      for (const cx of [-0.6, 0.6]) for (let k = 0; k < 6; k++) {
+        const a = k * Math.PI / 3 + F.rr(-0.15, 0.15);
+        F.rod(cx + Math.cos(a) * 0.4, 0.05, Math.sin(a) * 0.4, cx + Math.cos(a) * 0.07, 2.18, Math.sin(a) * 0.07, 0.1, F.pick(reed), 'reed');
+      }
+      for (const cx of [-0.6, 0.6]) F.cyl(cx, 1.5, 0, 0.28, 0.08, 0, cord, 'rope');   /* the cord round each stook */
+    }
+  }
+});
+FURN({
+  key: 'abyss_brick_stack', name: 'Clay bricks', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['stone', 'timber'],
+  w: 1.3, d: 1.0, h: 1.05, variants: 2, variantNames: ['fired bricks on a pallet', 'mud bricks drying in an open stack'],
+  variantDims: [{ w: 1.3, d: 1.0, h: 1.05 }, { w: 1.6, d: 1.0, h: 0.55 }],
+  build: function (F) {
+    if (F.variant === 0) {
+      /* a plank pallet, nine courses of fired brick (each course a tone of its own), three loose bricks on top */
+      const pk = F.pick(['plankOak', 'plankTan', 'plankDusk']);
+      for (const z of [-0.4, 0, 0.4]) F.box(0, 0, z, 1.2, 0.08, 0.12, 0, F.shade(pk, -0.15), 'plank');
+      F.box(0, 0.08, 0, 1.2, 0.04, 1.0, 0, pk, 'plank');
+      const brick = ['clayLaterite', 'clayRust', 'clayRed', 'clayDarkRed'];
+      for (let c = 0; c < 9; c++) F.box(0, 0.12 + c * 0.085, 0, 1.12, 0.077, 0.92, 0, F.shade(F.pick(brick), F.rr(-0.06, 0.06)), 'stone');
+      for (let k = 0; k < 3; k++) F.box(-0.3 + k * 0.3, 0.885, F.rr(-0.2, 0.2), 0.23, 0.075, 0.11, F.rr(-0.4, 0.4), F.pick(brick), 'stone');
+    } else {
+      /* sun-dried mud bricks stacked crosswise with gaps so the wind dries them: courses alternate along x and along z */
+      const mud = ['clayOchre', 'clayMud', 'clayStraw', 'clayBrown'];
+      for (let c = 0; c < 5; c++) {
+        const y = c * 0.105;
+        if (c % 2 === 0) { for (const z of [-0.35, 0, 0.35]) for (const x of [-0.55, 0, 0.55]) F.box(x, y, z, 0.42, 0.1, 0.2, 0, F.pick(mud), 'stone'); }
+        else { for (const x of [-0.6, -0.2, 0.2, 0.6]) for (const z of [-0.24, 0.24]) F.box(x, y, z, 0.2, 0.1, 0.42, 0, F.pick(mud), 'stone'); }
+      }
+    }
+  }
+});
+FURN({
+  key: 'abyss_lime_sacks', name: 'Lime sacks', culture: 'eastabyss', tier: 'common', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'market', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['cloth', 'timber', 'plaster', 'rustSteel'],
+  w: 1.3, d: 1.1, h: 0.9, variants: 2, variantNames: ['sacks on a pallet', 'slaking tub and sacks'],
+  variantDims: [{ w: 1.3, d: 1.1, h: 0.9 }, { w: 2.1, d: 1.2, h: 1.0 }],
+  build: function (F) {
+    const sack = ['canvasPale', 'canvasRaw', 'clothCream'], lime = F.col('plasterLime');
+    if (F.variant === 0) {
+      const pk = F.pick(['plankOak', 'plankTan', 'plankDusk']);
+      for (const z of [-0.4, 0, 0.4]) F.box(0, 0, z, 1.2, 0.08, 0.12, 0, F.shade(pk, -0.15), 'plank');
+      F.box(0, 0.08, 0, 1.2, 0.04, 1.0, 0, pk, 'plank');
+      for (const y of [0.23, 0.45]) for (const x of [-0.3, 0.3]) for (const z of [-0.25, 0.25]) F.blob(x, y, z, 0.28, 0.22, F.rr(-0.3, 0.3), F.pick(sack), 'cloth');
+      F.blob(0, 0.67, 0, 0.28, 0.22, 0.4, F.pick(sack), 'cloth');
+      F.dome(0.42, 0.12, 0.4, 0.14, 0.07, 0, lime, 'plaster');                      /* lime spilt from a split sack */
+    } else {
+      /* a cut drum as the slaking tub, white with lime putty, a paddle in it; three sacks beside it */
+      F.cyl(-0.5, 0, 0, 0.45, 0.55, 0, F.col('rustDeep'), 'rust');
+      F.cyl(-0.5, 0.5, 0, 0.42, 0.04, 0, lime, 'plaster');
+      F.rod(-0.55, 0.3, 0.05, -0.2, 0.95, 0.3, 0.025, F.col('timberSmoke'), 'wood');
+      F.blob(0.35, 0.11, -0.25, 0.28, 0.22, 0.3, F.pick(sack), 'cloth');
+      F.blob(0.75, 0.11, 0.2, 0.28, 0.22, -0.2, F.pick(sack), 'cloth');
+      F.blob(0.55, 0.32, -0.02, 0.28, 0.22, 0.6, F.pick(sack), 'cloth');
+      F.dome(0.0, 0, 0.35, 0.18, 0.05, 0, lime, 'plaster');
     }
   }
 });
@@ -12311,7 +12506,11 @@ FURN_CULTURE('eastabyss', { palette: Object.assign({
   timberWalnut: 0x6a4e34, timberSmoke: 0x5c432c, plankOak: 0x9a7a52, plankTan: 0x8a6c48, plankHoney: 0xa8865c, plankDusk: 0x7c6040,
   thatchGold: 0xc8b272, saltWhite: 0xe9e4d6, brass: 0xb08432, riceGreen: 0xb0c46c, fishSilver: 0x9aa8b0, fishPale: 0xc0a888,
   /* new: the Locus kit's PADDYC[1] (the greener sheaf), the dock's hung net, SALTCRUSTC[1] (the salt in a tub) */
-  riceSheaf: 0x9cbc5e, netGreen: 0x6a7a6c, saltBright: 0xf2ede2
+  riceSheaf: 0x9cbc5e, netGreen: 0x6a7a6c, saltBright: 0xf2ede2,
+  /* new (2026-10, the builders' yard): the eastern-abyss biome's timber (biomes/eastabyss/src/50-biome-eastabyss-species.js:
+     the seal-tree's and the scale-tree's bark), the pale sawn wood, sawdust and a salvaged saw blade */
+  sealBark: 0x4e5646, sealBarkDark: 0x444c3c, sealBarkPale: 0x5e6654, scaleBark: 0x505c48, scaleBarkDark: 0x46523e, scaleBarkPale: 0x5a6652,
+  sawnPale: 0xd6bf94, sawnFresh: 0xc9a974, sawnOld: 0xa89068, sawdust: 0xdcc8a0, sawBlade: 0x8c9094
 }, FPAL['eastabyss'] || {}) });
 FURN_CULTURE('yuni-common', { palette: Object.assign({
   /* new: the Locus kit's THATCHC (the warehouse's thatch bales); ropeMustard is the core's */
@@ -12469,6 +12668,146 @@ FURN({
       const x = -0.36 + i * 0.36, z = (r ? 0.15 : -0.15), s = (i + r) % 2 ? 1 : -1, c = F.pick(['fishSilver', 'fishPale']);
       F.rod(x - s * 0.13, 0.095, z, x + s * 0.1, 0.095, z, 0.045, c, 'food');              /* the body, head to s */
       F.box(x - s * 0.16, 0.07, z, 0.06, 0.02, 0.09, 0, F.shade(c, -0.15), 'food');        /* the tail */
+    }
+  }
+});
+
+/* ======== The builders' yard (2026-10): timber for the Eastern Abyssal kit's abyss_shop_builder ========
+   (settlements/locus/src/65-abyss-40-shops.js, Mungo's timber yard). The eastern-abyss biome's two timber trees:
+   the seal-tree's fluted grey-green pole and the scale-tree's green-grey bark; sawn, both are pale. Outdoor only: the
+   interiors never pick them for a room. */
+const JOB_BARK = ['sealBark', 'sealBarkDark', 'sealBarkPale', 'scaleBark', 'scaleBarkDark', 'scaleBarkPale'];
+const JOB_SAWN = ['sawnPale', 'sawnFresh', 'sawnOld'];
+/* a pole or log from a to b ([x, y, z], its axis), radius r, in bark colour c, with a pale sawn disc on each end */
+function JOB_pole(F, a, b, r, c) {
+  F.rod(a[0], a[1], a[2], b[0], b[1], b[2], r, c, 'bark');
+  const L = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) || 1, u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L, (b[2] - a[2]) / L], cut = F.col('sawnFresh');
+  for (const e of [[a, -1], [b, 1]]) {
+    const p = e[0], s = e[1];
+    F.rod(p[0] - s * u[0] * 0.006, p[1] - s * u[1] * 0.006, p[2] - s * u[2] * 0.006, p[0] + s * u[0] * 0.012, p[1] + s * u[1] * 0.012, p[2] + s * u[2] * 0.012, r * 0.9, cut, 'wood');
+  }
+}
+/* a spoked wheel standing in the local x-y plane (its axle along z) at (x, y, z), radius R: an octagonal rim of beams
+   (a rod's round section drops to four sides at the runtime's detail, a beam's square does not) */
+function JOB_wheel(F, x, y, z, R, c) {
+  for (let k = 0; k < 8; k++) {
+    const a0 = k * Math.PI / 4 + Math.PI / 8, a1 = a0 + Math.PI / 4;
+    F.beam(x + Math.cos(a0) * R, y + Math.sin(a0) * R, z, x + Math.cos(a1) * R, y + Math.sin(a1) * R, z, 0.07, 0.07, c, 'rust');
+  }
+  for (let k = 0; k < 2; k++) {
+    const a = k * Math.PI / 2 + Math.PI / 4;
+    F.beam(x - Math.cos(a) * R, y - Math.sin(a) * R, z, x + Math.cos(a) * R, y + Math.sin(a) * R, z, 0.04, 0.04, c, 'rust');
+  }
+}
+
+/* ---------- carpentry ---------- */
+FURN({
+  key: 'job_pole_rack', name: 'Timber poles', culture: 'eastabyss', tier: 'common', job: 'carpentry', type: 'rack', setting: 'outdoor',
+  rooms: ['yard', 'dock'], anchor: 'floor', clearance: { front: 0.8 },
+  materials: ['bark', 'timber'],
+  w: 6.4, d: 1.6, h: 1.4, variants: 3, variantNames: ['seal-tree and scale-tree poles on trestles', 'felled logs on skids', 'poles leaning on a rail'],
+  variantDims: [{ w: 6.4, d: 1.6, h: 1.4 }, { w: 6.2, d: 2.2, h: 1.25 }, { w: 4.4, d: 2.1, h: 4.6 }],
+  build: function (F) {
+    const v = F.variant, tc = F.col('timberSmoke');
+    if (v === 0) {
+      /* three trestles (two legs, two bearers), six poles on the low bearers and four on the high */
+      for (const x of [-2.6, 0, 2.6]) {
+        for (const z of [-0.7, 0.7]) F.box(x, 0, z, 0.12, 1.3, 0.12, 0, tc, 'wood');
+        F.box(x, 0.36, 0, 0.14, 0.12, 1.56, 0, tc, 'wood');
+        F.box(x, 0.86, 0, 0.14, 0.12, 1.56, 0, tc, 'wood');
+      }
+      for (let i = 0; i < 6; i++) {
+        const r = F.rr(0.07, 0.1), z = -0.6 + i * 0.24;
+        JOB_pole(F, [-3.1 + F.rr(0, 0.2), 0.48 + r, z], [3.1 - F.rr(0, 0.2), 0.48 + r, z], r, F.pick(JOB_BARK));
+      }
+      for (let i = 0; i < 4; i++) {
+        const r = F.rr(0.06, 0.09), z = -0.45 + i * 0.3;
+        JOB_pole(F, [-3.0 + F.rr(0, 0.3), 0.98 + r, z], [3.0 - F.rr(0, 0.3), 0.98 + r, z], r, F.pick(JOB_BARK));
+      }
+    } else if (v === 1) {
+      /* the felled logs as the lumberjacks deliver them: three on skids, two in the grooves on top, bark on */
+      for (const x of [-2.0, 0.2, 2.2]) F.box(x, 0, 0, 0.22, 0.16, 2.1, 0, tc, 'wood');
+      const R = [0.3, 0.27, 0.32];
+      [-0.68, 0, 0.68].forEach(function (z, i) {
+        JOB_pole(F, [-3.05 + F.rr(0, 0.15), 0.16 + R[i], z], [3.05 - F.rr(0, 0.15), 0.16 + R[i], z], R[i], F.pick(JOB_BARK));
+      });
+      [-0.34, 0.34].forEach(function (z) {
+        const r = F.rr(0.22, 0.26);
+        JOB_pole(F, [-2.8 + F.rr(0, 0.3), 0.92, z], [2.8 - F.rr(0, 0.3), 0.92, z], r, F.pick(JOB_BARK));
+      });
+    } else {
+      /* poles stood on end, leaning back on a rail between two posts: the seal-tree's long unbranched shafts */
+      for (const x of [-2.0, 2.0]) F.box(x, 0, -0.6, 0.14, 3.4, 0.14, 0, tc, 'wood');
+      F.box(0, 3.1, -0.6, 4.3, 0.12, 0.14, 0, tc, 'wood');
+      for (let i = 0; i < 11; i++) {
+        const x = -1.8 + i * 0.36 + F.rr(-0.05, 0.05), r = F.rr(0.06, 0.09), top = F.rr(4.0, 4.45);
+        const fz = 0.72, rz = -0.53 + r, t = top / 3.16;           /* foot at z 0.72, touching the rail's front face at y 3.16 */
+        F.rod(x, 0.03, fz, x, top, fz + (rz - fz) * t, r, F.pick(JOB_BARK), 'bark');
+      }
+    }
+  }
+});
+FURN({
+  key: 'job_plank_stack', name: 'Sawn planks', culture: 'eastabyss', tier: 'common', job: 'carpentry', type: 'stack', setting: 'outdoor',
+  rooms: ['yard', 'dock'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['timber'],
+  w: 4.2, d: 1.3, h: 1.1, variants: 2, variantNames: ['stickered stack, drying', 'boards on squared beams'],
+  variantDims: [{ w: 4.2, d: 1.3, h: 1.1 }, { w: 3.8, d: 1.2, h: 0.62 }],
+  build: function (F) {
+    const tc = F.col('timberSmoke');
+    if (F.variant === 0) {
+      /* three sleepers, seven layers of four boards, the layers held apart by thin stickers so the air dries them */
+      for (const x of [-1.7, 0, 1.7]) F.box(x, 0, 0, 0.16, 0.14, 1.3, 0, tc, 'wood');
+      for (let l = 0; l < 7; l++) {
+        const y = 0.14 + l * 0.13;
+        for (let b = 0; b < 4; b++) F.box(F.rr(-0.06, 0.06), y, -0.465 + b * 0.31, F.rr(3.9, 4.0), 0.08, 0.27, 0, F.shade(F.pick(JOB_SAWN), F.rr(-0.05, 0.05)), 'plank');
+        if (l < 6) for (const x of [-1.7, 0, 1.7]) F.box(x, y + 0.08, 0, 0.05, 0.05, 1.24, 0, F.col('sawnOld'), 'wood');
+      }
+    } else {
+      /* three squared beams on two sleepers, a layer of boards across them, a beam on top */
+      for (const x of [-1.4, 1.4]) F.box(x, 0, 0, 0.16, 0.12, 1.2, 0, tc, 'wood');
+      for (const z of [-0.4, 0, 0.4]) F.box(F.rr(-0.05, 0.05), 0.12, z, 3.6, 0.2, 0.2, 0, F.pick(JOB_SAWN), 'plank');
+      for (let b = 0; b < 4; b++) F.box(F.rr(-0.08, 0.08), 0.32, -0.42 + b * 0.28, 3.5, 0.06, 0.24, 0, F.shade(F.pick(JOB_SAWN), F.rr(-0.05, 0.05)), 'plank');
+      F.box(0, 0.38, 0.05, 3.4, 0.2, 0.2, 0.03, F.pick(JOB_SAWN), 'plank');
+    }
+  }
+});
+FURN({
+  key: 'job_saw_bench', name: 'Saw bench', culture: 'eastabyss', tier: 'common', job: 'carpentry', type: 'workstation', setting: 'outdoor',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.9, back: 0.6 },
+  materials: ['timber', 'bark', 'metal', 'rustSteel'],
+  w: 3.0, d: 1.6, h: 1.9, variants: 2, variantNames: ['hand-cranked saw bench', 'saw-pit trestles with a pit saw'],
+  variantDims: [{ w: 3.0, d: 1.6, h: 1.9 }, { w: 4.6, d: 1.6, h: 2.6 }],
+  build: function (F) {
+    const tc = F.col('timberSmoke'), blade = F.col('sawBlade'), dust = F.col('sawdust');
+    if (F.variant === 0) {
+      /* a plank bench with a slot at x 0.4; a pole on it, a frame saw rising and falling in the slot between two posts,
+         worked by a crank wheel (a salvaged cart wheel) on the front through a connecting rod */
+      for (const x of [-1.2, 1.2]) for (const z of [-0.28, 0.28]) F.box(x, 0, z, 0.1, 0.8, 0.1, 0, tc, 'wood');
+      F.box(-0.475, 0.8, 0, 1.65, 0.08, 0.7, 0, F.col('sawnOld'), 'plank');
+      F.box(0.875, 0.8, 0, 0.85, 0.08, 0.7, 0, F.col('sawnOld'), 'plank');
+      JOB_pole(F, [-1.4, 1.0, 0], [1.25, 1.0, 0], 0.12, F.pick(JOB_BARK));
+      for (const z of [-0.42, 0.42]) F.box(0.4, 0, z, 0.1, 1.8, 0.1, 0, tc, 'wood');
+      F.box(0.4, 1.72, 0, 0.12, 0.08, 0.96, 0, tc, 'wood');
+      F.box(0.4, 0.45, 0, 0.02, 1.25, 0.28, 0, blade, 'metal');                     /* the blade, through the pole */
+      F.box(0.4, 1.66, 0, 0.08, 0.06, 0.4, 0, tc, 'wood');                          /* its upper yoke */
+      JOB_wheel(F, 1.0, 0.55, 0.62, 0.45, F.col('rustDeep'));
+      F.rod(1.0, 0.55, 0.5, 1.0, 0.55, 0.72, 0.05, tc, 'wood');                      /* the axle */
+      F.rod(1.0, 0.55, 0.7, 1.25, 0.8, 0.7, 0.03, F.col('rustDeep'), 'rust');        /* the crank and its handle */
+      F.rod(1.25, 0.8, 0.7, 1.25, 0.8, 0.78, 0.03, tc, 'wood');
+      F.rod(1.0, 0.95, 0.58, 0.42, 0.5, 0.12, 0.025, F.col('rustDeep'), 'rust');     /* the connecting rod to the blade's foot */
+      F.dome(0.4, 0, 0, 0.38, 0.12, 0, dust, 'wood');
+    } else {
+      /* two tall A-trestles, a log on them, a two-man pit saw through it (the top sawyer's tiller, the pitman's box) */
+      for (const x of [-1.3, 1.3]) {
+        for (const s of [-1, 1]) F.beam(x, 0, s * 0.7, x, 1.52, s * 0.1, 0.12, 0.12, tc, 'wood');
+        F.box(x, 1.44, 0, 0.16, 0.14, 0.5, 0, tc, 'wood');
+      }
+      JOB_pole(F, [-2.25, 1.86, 0], [2.25, 1.86, 0], 0.28, F.pick(JOB_BARK));
+      F.box(0.6, 0.9, 0, 0.03, 1.6, 0.2, 0, blade, 'metal');
+      F.box(0.6, 2.5, 0, 0.06, 0.06, 0.6, 0, tc, 'wood');
+      F.box(0.6, 0.84, 0, 0.08, 0.1, 0.36, 0, tc, 'wood');
+      F.dome(0.6, 0, 0, 0.5, 0.15, 0, dust, 'wood');
     }
   }
 });
@@ -13521,6 +13860,7 @@ FURN_CULTURE('reedlake', { name: 'Reed Lake', pack: null, influences: 'floating 
     reedGold: 0xc8b060, reedPale: 0xd8c888, reedDark: 0x8a7a40, timberDrift: 0x9a8a70, timberDriftDark: 0x6a5a44, timberDriftLight: 0xb8a890,
     clothLakeBlue: 0x3a6a8a, clothRush: 0xb8a060, clothMadder: 0xa83a2a, clothWhite: 0xe8e4d4, clothTeal: 0x2a7a7a,
     clayGrey: 0x8a8070, stoneGrey: 0x6a6a62, fishSilver: 0xb0b8c0, ropeRush: 0xb8a868, boneIvory: 0xe8e0cc, shellWhite: 0xe8e4d8,
+    clayRed: 0x9a5a38, gourdOchre: 0xb08a4a, gourdOlive: 0x9a8a3a,
     flame: 0xffb04a, ember: 0xd9762c
   } });
 /* END PALETTE */
@@ -13568,6 +13908,106 @@ FURN({
       F.rod(x, y, 0, x, y - 0.3, 0.02, 0.004, F.col('ropeRush'), 'rope');
       F.blob(x, y - 0.42, 0.02, 0.035, 0.26, F.rr(-0.3, 0.3), F.shade(fish, F.rr(-0.1, 0.1)), 'metal');
     }
+  }
+});
+
+/* ======== Hospitality and households (2026-10: the Reed Lake interiors set, kits/interiors/sets/reedlake.js) ========
+   Reed's Local (settlements/reedlake rl_tavern) wanted a bar, a rack for the beer jars, long benches and long tables
+   for a full hall; the island huts wanted the lake's own bed: a sleeping mat on a low platform of bundles. */
+FURN({
+  key: 'reedlake_common_bar', name: 'Reed bar', culture: 'reedlake', tier: 'common', type: 'counter', setting: 'indoor',
+  rooms: ['tavern', 'hall', 'market', 'shop'], anchor: 'floor', clearance: { front: 1.0, back: 0.8 },
+  materials: ['reed', 'timber', 'rope', 'cloth'],
+  w: 3.2, d: 0.8, h: 1.05, variants: 2, variantNames: ['plain', 'woven front'],
+  build: function (F) {
+    const W = 3.2, D = 0.8, n = 17, reed = F.col('reedGold'), dark = F.col('reedDark'), rope = F.col('ropeRush');
+    F.box(0, 0, -0.06, W - 0.2, 0.9, D - 0.3, 0, F.shade('reedPale', -0.1), 'reed');                     /* the mat-walled body */
+    for (let i = 0; i < n; i++) {                                                                          /* the front: standing bundles */
+      const x = -W / 2 + 0.1 + (W - 0.2) * i / (n - 1);
+      F.cyl(x, 0, D / 2 - 0.1, 0.085, 0.92, 0, F.shade(reed, F.rr(-0.06, 0.06)), 'reed');
+    }
+    for (const s of [-1, 1]) F.cyl(s * (W / 2 - 0.1), 0, -D / 2 + 0.1, 0.09, 0.92, 0, dark, 'reed');     /* the back corner bundles */
+    for (const y of [0.16, 0.7]) F.box(0, y, D / 2 - 0.1, W - 0.1, 0.05, 0.19, 0, rope, 'rope');          /* lashings round the front */
+    F.box(0, 0.92, 0, W, 0.13, D, 0, F.col('timberDrift'), 'wood');                                       /* the driftwood top */
+    F.box(0, 0.86, 0, W - 0.1, 0.06, D - 0.1, 0, F.col('timberDriftDark'), 'wood');
+    if (F.variant) {                                                                                       /* a woven band across the front */
+      F.box(0, 0.32, D / 2 - 0.012, W - 0.3, 0.28, 0.02, 0, F.col('clothMadder'), 'cloth');
+      for (let k = 0; k < 13; k++) {
+        const x = -W / 2 + 0.35 + (W - 0.7) * k / 12;
+        F.box(x, 0.4, D / 2 - 0.006, 0.11, 0.11, 0.01, 0, F.col(k % 2 ? 'clothWhite' : 'clothRush'), 'cloth');
+      }
+    }
+  }
+});
+FURN({
+  key: 'reedlake_common_jar_rack', name: 'Beer jar rack', culture: 'reedlake', tier: 'common', type: 'storage', role: 'store', setting: 'indoor',
+  rooms: ['tavern', 'kitchen', 'store', 'shop'], anchor: 'wall', clearance: { front: 0.7 },
+  materials: ['reed', 'stone', 'cloth', 'rope', 'foliage'],
+  w: 1.8, d: 0.6, h: 1.5, variants: 2, variantNames: ['beer jars', 'jars and gourds'],
+  build: function (F) {
+    const W = 1.8, D = 0.6, H = 1.5, reed = F.col('reedDark'), mat = F.col('reedPale'), rope = F.col('ropeRush');
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) F.cyl(sx * (W / 2 - 0.06), 0, sz * (D / 2 - 0.06), 0.06, H - 0.08, 0, reed, 'reed');
+    for (const y of [0.08, 0.78]) F.box(0, y, 0, W - 0.04, 0.06, D - 0.04, 0, mat, 'reed');               /* two mat decks */
+    for (const z of [-D / 2 + 0.06, D / 2 - 0.06]) F.rod(-W / 2 + 0.04, H - 0.06, z, W / 2 - 0.04, H - 0.06, z, 0.05, reed, 'reed');
+    for (const s of [-1, 1]) F.rod(s * (W / 2 - 0.06), H - 0.06, -D / 2 + 0.04, s * (W / 2 - 0.06), H - 0.06, D / 2 - 0.04, 0.05, reed, 'reed');
+    for (const s of [-1, 1]) for (const y of [0.1, 0.8]) F.cyl(s * (W / 2 - 0.06), y - 0.02, D / 2 - 0.06, 0.07, 0.1, 0, rope, 'rope');
+    const jar = function (x, y, r, h) {                                                                    /* a beer jar with a cloth stopper */
+      const c = F.shade(F.pick(['clayGrey', 'clayRed']), F.rr(-0.06, 0.05));
+      F.blob(x, y + h / 2, 0, r, h, 0, c, 'stone');
+      F.cyl(x, y + h - 0.04, 0, r * 0.38, 0.08, 0, c, 'stone');
+      F.cyl(x, y + h + 0.03, 0, r * 0.42, 0.03, 0, F.pick(['clothMadder', 'clothLakeBlue', 'clothRush']), 'cloth');
+    };
+    for (let i = 0; i < 3; i++) jar(-0.55 + i * 0.55, 0.14, 0.24, 0.52);                                   /* the big jars below */
+    if (!F.variant) for (let i = 0; i < 4; i++) jar(-0.6 + i * 0.4, 0.84, 0.16, 0.42);                     /* four smaller jars above */
+    else {
+      for (let i = 0; i < 2; i++) jar(-0.5 + i * 0.4, 0.84, 0.16, 0.42);
+      for (let k = 0; k < 4; k++) F.ball(0.32 + (k % 2) * 0.26, 0.97 + (k > 1 ? 0.16 : 0), (k % 2 ? 0.08 : -0.08), 0.13, F.pick(['gourdOchre', 'gourdOlive']), 'plant');
+    }
+  }
+});
+FURN({
+  key: 'reedlake_common_long_bench', name: 'Long bundle bench', culture: 'reedlake', tier: 'common', type: 'bench', setting: 'both',
+  rooms: ['tavern', 'hall', 'kitchen', 'court', 'yard'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['reed', 'rope'],
+  w: 3.0, d: 0.45, h: 0.46, variants: 1,
+  build: function (F) {
+    const reed = F.col('reedGold'), dark = F.col('reedDark'), rope = F.col('ropeRush');
+    for (const x of [-1.2, 0, 1.2]) for (const k of [-1, 1]) F.rod(x + k * 0.09, 0.13, -0.2, x + k * 0.09, 0.13, 0.2, 0.12, dark, 'reed');   /* trestles of short bundles */
+    for (const z of [-0.105, 0.105]) F.rod(-1.5, 0.36, z, 1.5, 0.36, z, 0.1, F.shade(reed, F.rr(-0.05, 0.05)), 'reed');                      /* the seat: two long bundles */
+    for (const x of [-1.38, -0.6, 0.6, 1.38]) F.box(x, 0.26, 0, 0.05, 0.2, 0.42, 0, rope, 'rope');                                            /* lashings */
+  }
+});
+FURN({
+  key: 'reedlake_common_long_table', name: 'Long reed table', culture: 'reedlake', tier: 'common', type: 'table', setting: 'both',
+  rooms: ['tavern', 'hall', 'kitchen'], anchor: 'floor', clearance: { front: 0.6, back: 0.6, left: 0.6, right: 0.6 },
+  materials: ['reed', 'timber', 'rope', 'cloth'],
+  w: 3.0, d: 0.9, h: 0.74, variants: 2, variantNames: ['bare', 'with a woven runner'],
+  build: function (F) {
+    const reed = F.col('reedDark'), rope = F.col('ropeRush');
+    for (const x of [-1.15, 1.15]) {                                                                       /* bundle trestles at each end */
+      for (const z of [-0.3, 0.3]) F.cyl(x, 0, z, 0.075, 0.66, 0, reed, 'reed');
+      F.rod(x, 0.16, -0.36, x, 0.16, 0.36, 0.06, reed, 'reed');
+      F.rod(x, 0.6, -0.42, x, 0.6, 0.42, 0.06, reed, 'reed');
+      for (const z of [-0.3, 0.3]) F.box(x, 0.55, z, 0.17, 0.08, 0.17, 0, rope, 'rope');
+    }
+    F.rod(-1.15, 0.16, 0, 1.15, 0.16, 0, 0.05, reed, 'reed');                                                /* the stretcher */
+    for (const z of [-0.3, 0, 0.3]) F.box(0, 0.66, z, 3.0, 0.07, 0.29, 0, F.shade('timberDrift', F.rr(-0.06, 0.06)), 'wood');   /* driftwood boards */
+    if (F.variant) F.box(0, 0.73, 0, 2.4, 0.008, 0.34, 0, F.col('clothMadder'), 'cloth');
+  }
+});
+FURN({
+  key: 'reedlake_poor_sleeping_mat', name: 'Sleeping mat on a bundle platform', culture: 'reedlake', tier: 'poor', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'barracks', 'dormitory'], anchor: 'floor', clearance: { front: 0.5 },
+  materials: ['reed', 'cloth'],
+  w: 1.0, d: 2.0, h: 0.4, variants: 2, variantNames: ['blanket', 'blanket and a rolled spare'],
+  build: function (F) {
+    const reed = F.col('reedGold');
+    for (let i = 0; i < 5; i++) { const x = -0.4 + i * 0.2; F.rod(x, 0.09, -1.0, x, 0.09, 1.0, 0.09, F.shade(reed, F.rr(-0.06, 0.04)), 'reed'); }   /* the platform */
+    F.box(0, 0.17, 0, 0.98, 0.04, 1.96, 0, F.col('reedPale'), 'reed');                                    /* the sleeping mat */
+    F.box(0, 0.21, 0.22, 0.9, 0.05, 1.3, 0, F.pick(['clothLakeBlue', 'clothMadder', 'clothTeal']), 'cloth');   /* the blanket, a woven stripe */
+    F.box(0, 0.26, 0.22, 0.9, 0.006, 0.12, 0, F.col('clothWhite'), 'cloth');
+    F.rod(-0.4, 0.3, -0.78, 0.4, 0.3, -0.78, 0.08, F.col('clothWhite'), 'cloth');                         /* the bolster */
+    if (F.variant) F.rod(-0.42, 0.3, 0.86, 0.42, 0.3, 0.86, 0.08, F.col('clothRush'), 'cloth');            /* a rolled spare blanket at the foot */
   }
 });
 /* ---------- krator-master-furniture-republican.js ---------- */

@@ -141,7 +141,12 @@ Girder carry no size declarations, so there is nothing there to sync. The catalo
   rest on a corner instead of burying it.
 
 ## Open (2026-10-01): not addressed
-- [ ] Yuni's interiors pass (settlements/yuni, 64-interiors) added six furniture pieces (`poor_lidded_basket`,
+- [x] Yuni's interiors pass (settlements/yuni, 64-interiors) added six furniture pieces (`poor_lidded_basket`,
       `poor_food_pot`, `poor_sleeping_mat`, `common_grain_bin`, `poor_reed_mat`, `common_kilim`) and replaced the
-      `storage` type with `container-item` / `container-food` plus `capacity`. The harvested Yuni set in
-      `krator-master-furniture.js` predates both. Re-harvest Yuni. See settlements/yuni/KNOWN_ISSUES.md.
+      `storage` type with `container-item` / `container-food` plus `capacity`. **Re-harvested 2026-10-05** into
+      `krator-master-furniture.js` (end of the Yuni section) as `yuni_<culture>_<name>`, with the material-library
+      pass's families (fired clay `ceramic`, reed mats `reed`, coiled baskets `wicker`). Yuni's container types are the
+      catalog's `storage` plus a `role` the interiors kit reads (`pots` and `bin`: food; `trunk`, the lidded basket
+      Yuni keeps belongings in: items). The catalog has no `capacity` field; Yuni keeps its numbers. Yuni turns pots
+      and baskets on a lathe: here a stack of frustum rings (`yuniLathe`). `yuni-common` gained `thatchStraw` and
+      `thatchFlax` (the grain bin's lid).

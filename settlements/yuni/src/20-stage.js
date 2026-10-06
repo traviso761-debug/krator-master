@@ -221,14 +221,22 @@ var moon2 = makeDisc(new THREE.Vector3(-0.80,0.19,0.30).normalize(), 76,
    Simplified from Voth: the volcano is too far away for drama. It always
    smokes; now and then (about a fifth of the time) the plume thickens and
    the summit glows faintly. A texture-pointer swap between two bakes —
-   free at render time. Runtime behaviour, so Math.random(), not rnd(). */
+   free at render time. (Both bakes are the same 'idle' paint today, so
+   nothing visible changes yet.)
+   The cycle is core/sched's KSCHED.eruption, a pure function of the world
+   clock's MOTION time (YCLOCK.t, 21-sky.js): active 9 s in every 45 s (a
+   fifth of the time), opening idle. It used to be Math.random() and
+   setTimeout, which no export or port could replay. VOLCANO_FORCE
+   ('idle' | 'active') pins it. */
 var VOLCANO_FORCE = null;
-(function volcanoCycle(){
-  function tick(){
-    var st = VOLCANO_FORCE || (Math.random() < 0.22 ? 'active' : 'idle');
-    skyMesh.material.map = volcTex[st] || volcTex.idle;
-    skyMesh.material.needsUpdate = true;
-    setTimeout(tick, st === 'active' ? 6000 + Math.random()*6000 : 12000 + Math.random()*20000);
-  }
-  tick();
-})();
+var VOLCANO_CYCLE = KSCHED.eruption({ interval:45, duration:9, phase:9 });
+var VOLCANO_STATE = null;
+TICKS.push(function(){
+  var st = VOLCANO_FORCE || (VOLCANO_CYCLE.at(YCLOCK.t).on ? 'active' : 'idle');
+  if(st === VOLCANO_STATE) return;
+  VOLCANO_STATE = st;
+  skyMesh.material.map = volcTex[st] || volcTex.idle;
+  skyMesh.material.needsUpdate = true;
+});
+window._volcano = { state:function(){ return VOLCANO_STATE; }, at:function(t){ return VOLCANO_CYCLE.at(t); },
+                    force:function(s){ VOLCANO_FORCE = s || null; }, export:VOLCANO_CYCLE.export };

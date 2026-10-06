@@ -402,6 +402,13 @@ To be added to `README.md` under "Life/simulation layer" and enforced by a
 9. Everything the simulation knows is in `SIM.export()`, in the `krator-*`
    export shape, before it is drawn; the export's record shapes are the same as
    the hand-edited `world/*.json`, so either can be the source of a value.
+10. Furniture the camera may not be drawing is read from its records, never
+   from what is drawn (the README rule "Furniture that is not always drawn is
+   data first"): records apart from the drawing, a camera-independent index
+   (a committed bake plus an idle fill, fingerprinted per building), and edits
+   as an overlay keyed by piece id. `slotsFromFurniture` takes those records
+   (Mav's Refuge: `MIX.slots(i)`, `settlements/mavs-refuge/src/57a-interiors.js`),
+   so a bed or a counter exists whether or not anyone is looking.
 
 ---
 
@@ -459,6 +466,16 @@ Deliverables: `SCHEMA.md`, `77-sim-0-core.js`, `77-sim-2-places.js`,
 - Acceptance: `core/simulation/example/` builds a 20-actor sheet (like
   `core/sockets/example/`) that runs on the module alone; Shade's `_life.OUT`
   audit numbers are unchanged when read from `_sim`.
+- Shade moved (2026-10-05): `world/*.json` holds its activities, faction, orgs, roles and
+  convoy; `84-host-life.js` registers its grid as the `pedestrian` layer, its places (a
+  place's capacity is SIM's `cap`, shared by its activities) and ports, and populates with
+  `deal:'round'`; its own audits (only way up, convoy, commutes) ride on `SIM.audits`. Every
+  `_life.OUT` number is unchanged, and `_life` is now a view of `_sim.audit()`. Then the
+  convoy got its rider role and DEPART and IDLE their records (`activities` 15), and SIM.fire
+  follows an event's `legs`; Shade's probe steps everyone and the convoy. Still open: stepping
+  per frame, which waits for the people to be drawn (Phase 3b).
+- The example sheet is `core/simulation/example/` (20 townsfolk, a caravan, a 2D canvas):
+  `python3 build.py && python3 check.py` (4 checks and 4 negatives, determinism across loads).
 
 ### Phase 2: translate Voth (Society)
 
@@ -512,6 +529,27 @@ strider `onboard` counts match the previous build over a 120 s day and
 3. `LIFE_DEST` lists → places from node tags **and** slot/room kinds (home,
    tavern, barracks, store) and the catalog furniture now placed by
    `53-furnish.js`; `'res'` platforms get `SLEEP` slots with capacity.
+   Since 2026-10-05 every lot, level room and hut has planned rooms and
+   furniture as camera-independent records (`57a-interiors.js`): places and
+   slots come from `MIX.slots(i)` (rule 10), each home's beds giving its
+   `SLEEP` capacity.
+3a. **The interiors' open issues, to address in this phase** (assessed
+   2026-10-05; details in `settlements/mavs-refuge/KNOWN_ISSUES.md`):
+   - walkers go inside: a resident walks from the door node through its home's
+     rooms to the piece it uses (`IX.life.nav` joined at the street door, the
+     `interior` layer);
+   - the shared kitchens: decide communal cooking (homes without hearths, the
+     level's kitchen the `COOK`/`EAT` place for its homes) or drop them;
+   - the shrines: an offering table, mats, a keeper's store; a shrine keeper
+     role and `WORSHIP` slots;
+   - the council chamber: a dais, petitioners' benches, a records room and a
+     guard post (four quarter-sector bodies between the portals), and the
+     council's sittings as the `Refuge Council`'s schedule;
+   - the market: each stall's goods by trade, stock held in the storehouses
+     next to it, porters between them, opening hours, stalls as `SELL` places;
+   - the spider nests: the handlers' stations, silk reeling into the silk
+     houses and the weavers' loft, the egg nursery, the prey store and the
+     handlers' bunks (after the owner's call on a fauna kit).
 4. Squads, posts, drill and gatherer routes → `Group` objects; the gatherer
    cycle becomes `GATHER` at a place advertising `resource: fruit`, with the
    satellite choice derived from that instead of the 60–420 m literal.

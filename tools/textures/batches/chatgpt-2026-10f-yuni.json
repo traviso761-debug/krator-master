@@ -1,0 +1,184 @@
+[
+ {
+  "src": "yuni_paintbw.webp",
+  "out": "core/materials/patterns/yuni/paintbw",
+  "record": {
+   "id": "yuni/paintbw",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/yuni/paintbw (the full prompt given 2026-10-05)",
+    "licence": "generated for this project by its owner",
+    "reuse": "Locus (same painters and palette); any Sahel or Kassena-style painted wall"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "normal_strength": 0.5,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "yuni_paintcol.crop4x4.png",
+  "out": "core/materials/patterns/yuni/paintcol",
+  "record": {
+   "id": "yuni/paintcol",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/yuni/paintcol (the full prompt given 2026-10-05)",
+    "licence": "generated for this project by its owner",
+    "reuse": "Locus; any Hausa-style polychrome relief",
+    "note": "cropped from yuni_paintcol.webp to 4 x 4 whole cells (x 4..687, y 4..736: grout-line centres), the motif cycle being 4 columns by 2 rows"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "normal_strength": 0.7,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "yuni_relief.webp",
+  "out": "core/materials/patterns/yuni/relief",
+  "record": {
+   "id": "yuni/relief",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, patterns/yuni/relief (the full prompt given 2026-10-05)",
+    "licence": "generated for this project by its owner",
+    "reuse": "Locus; any moulded plaster or carved stone band, tinted per use"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 1.0,
+   "delight": 0.0,
+   "lift": 0.0,
+   "keep_aspect": true
+  }
+ },
+ {
+  "src": "mosaic.trencadis.webp",
+  "out": "core/materials/library/mosaic.trencadis",
+  "record": {
+   "id": "mosaic.trencadis",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row mosaic.trencadis (the full prompt given 2026-10-05)",
+    "licence": "generated for this project by its owner",
+    "reuse": "Yuni and Locus domes and trims; Iziz and Voth inlay and any broken-tile work, tinted per use"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.35,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "metal.ancient.white.webp",
+  "out": "core/materials/library/metal.ancient.white",
+  "record": {
+   "id": "metal.ancient.white",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0.3,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row metal.ancient.white (the full prompt given 2026-10-05)",
+    "licence": "generated for this project by its owner",
+    "reuse": "every Ancients-lineage build's white metal (MAT.white), Locus; brass and gilt finials tinted"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "lift": 0.1
+  }
+ },
+ {
+  "src": "rock.columnar.webp",
+  "out": "core/materials/library/rock.columnar",
+  "record": {
+   "id": "rock.columnar",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    40,
+    40
+   ],
+   "tint": true,
+   "pattern": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026",
+    "prompt": "core/materials/PLAN.md, row rock.columnar (the full prompt given 2026-10-05)",
+    "licence": "generated for this project by its owner",
+    "reuse": "Yuni's butte; any basalt or phonolite cliff (Voth's volcano flanks, Highlands gorges, Ys headlands)"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "mute": 0.4
+  }
+ }
+]

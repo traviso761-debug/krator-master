@@ -2310,11 +2310,11 @@ EASTABYSS.PASSES=[
 // make(sp,x,y,z): the pass's own tree record (H, rb, crownR, seed and wet from the kit's stream and fields: reseed first
 // for a repeatable variant). grow(T,lv): build that one tree into this kit's buckets and items at level lv (2 hero, 1 mid,
 // 0 far: the impostor for a species with one, the far hull for a small one) and nothing else: no keep-clear entry, no
-// TREES record. An open world grows each species' variants once with these and instances them (openworld/README.md).
+// TREES record. A town's street trees (Locus, Mungo) and an open world's variants are grown with these.
 EASTABYSS.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
 EASTABYSS.grow=function(T,lv){means();
  const st={trunk:0,limb:0,far:0,farSmall:0,sapTris:0,forks:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,whorls:0,knees:0,fans:0,ropes:0,lianas:0,heroes:0,fars:0,byS:SP.map(()=>0)};
- T.lv=lv;if(lv===0){const P=EASTABYSS.PASSES.find(P=>P.sp===T.sp||(P.stand&&P.sp.indexOf(T.sp)>=0));if(P&&P.opt.far)buildFar(T,T.seed%7,st);else buildFarSmall(T,st);}
+ T.lv=lv;if(lv===0){const P=(EASTABYSS.PASSES||[]).find(P=>P.sp===T.sp||(P.stand&&P.sp.indexOf(T.sp)>=0));if(P?P.opt.far:SP[T.sp].H[1]>=20)buildFar(T,T.seed%7,st);else buildFarSmall(T,st);}
  else B[T.sp](T,st,lv);return st;};
 })();
 

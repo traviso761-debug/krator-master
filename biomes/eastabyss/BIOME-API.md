@@ -73,6 +73,9 @@ EASTABYSS.SPECIES                    // the 21 species (tagged; the mat reed car
 EASTABYSS.REEDBEDS                   // after build: the mat-reed beds [{x,z,r,n,depth,h}] -- a resource a world can harvest
                                      // (within 1.9 km of the LOD spine; past it a bed is a far hull, counted in farBeds, not listed)
 EASTABYSS.hummock(x,z)               // the marsh's drier hummocks (beard oaks), a noise field
+EASTABYSS.make(sp,x,y,z) -> T        // one tree record as the passes make it (H, rb, crownR, seed from the kit's stream)
+EASTABYSS.grow(T,lv)                 // build that one tree at level lv (2 hero, 1 mid, 0 far) into the kit's buckets:
+                                     // no keep-clear entry, no TREES record. Town trees (Locus, Mungo: cap T.H / T.crownR first)
 EASTABYSS.zones(x,z)                 // the zone weights a world can reuse for its own placement
 EASTABYSS.FAUNA                      // the fauna kinds (tagged): flamingo, frilled_lizard
 EASTABYSS.FAUNA_LAYOUT               // after build: flocks, birds (walkers), skeins, flyers, lizards (walkers) -- data

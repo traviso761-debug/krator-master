@@ -1100,3 +1100,41 @@ never reads `terrainH`; `carveY` hands the cuttings back to the host. The target
 synthetic escarpment (221 m drop): 35 k triangles; a 1.7 km track is about 124 k. Verified: `--assert` all
 six invariants pass; shots read (overview, a broken span, the winding house, the car, down the incline,
 the platform hall).
+## Ancient hosts — five types drawn as Hykkousoi hosts (2026-10-05)
+
+Five new types for Ys (`settlements/ys`), each designed from the start to carry the Hykkousoi's pods, landings and
+bridges: `src/8ap-host-0-lib.js` (shared helpers, no builder) and one fragment per type, shown by the new `hosts`
+target (`dist/hosts.html`). Ys vendors the fragments byte for byte: every Ys hook is behind a `typeof` guard.
+
+| fragment | builder | type key | seeds | spec |
+|---|---|---|---|---|
+| `8ap-host-a-facet.js` | `buildHostFacet` | `skyL` Skyscraper L, the Facet | 12000-12004 | `HOSTSPEC_FACET` |
+| `8ap-host-b-bastion.js` | `buildHostBastion` | `skyM` Skyscraper M, the Bastion | 12010-12014 | `HOSTSPEC_BASTION` |
+| `8ap-host-c-arcades.js` | `buildHostArcades` | `midArcades` the Arcades | 12020-12024 | `HOSTSPEC_ARCADES` |
+| `8ap-host-d-stalks.js` | `buildHostStalks` | `midStalks` the Capsule Stalks | 12030-12034 | `HOSTSPEC_STALKS` |
+| `8ap-host-e-bellhall.js` | `buildHostBellHall` | `midBell` the Bell Hall | 12040-12044 | `HOSTSPEC_BELLHALL` |
+
+**What every one keeps** (the lib's header says it in full): plain faces at pod heights, with projections only where
+the spec's `avoid()` and `bearings()` keep pods off them; a regular storey table with plates drawn behind any open
+skin (pale plate, dark soffit); a cut at any storey through `ysCutY` (decay 1 and 3), with a ragged top, the lining
+and the plates stopping under it, and no collapse scar when the cut is the host's; way-in holes through the skin and
+the lining (`ysWallHole`, wrapped exactly as the vendored D and H do); a podium that shrinks through `ysPodiumR`, with
+the apron and ground planting skipped then. Off-axis volumes (the stalks, the drums, the slab) ask their hole
+predicate the HOST's bearing, so a way-in hole lands where Ys put it.
+
+**Plans are data.** Each plan is a polygon (`anhPrism`, one strip per edge so corners stay crisp) or a set of circles,
+and `HOSTSPEC_*.rAt` calls the same plan function the builder draws with. This was checked by ray-casting each
+built type along its spec's own bearings at every plate (`verify.py --eval`). The Facet, the Bastion, the Stalks and
+the Bell Hall agree to 0.03 m. The Arcades' front reads 4 m deep only because its arcade is instanced: the ray
+passes through the arch to the loggia glass, and the spec's face is the arcade's.
+
+**Decay.** 0 intact; 1 ruined (towers cut at about .7 H with the collapse scar; the mid-rise types lose their top:
+the Arcades' vault, the Stalks' heads, the Bell Hall's campanile top and bells); 2 toppled (towers, via `bodyGroup`)
+or collapsed (mid-rise: a low cut and rubble); 3 reclaimed (full height unless Ys cuts it); 4 the Project, for the
+two towers only (firelit, `fireMask` 'L' and 'M'). The `hosts` target shows each type at 0, 1 and 3 (the towers also
+at 2 and 4). Behind each type, a second row shows it "as Ys hosts it": cut at a storey from the spec's `cuts`, the
+podium shrunk and one way-in hole, through the same three hooks, mocked in `targets/hosts/89z-rows.js` exactly as Ys
+defines them.
+
+Scene triangles (budget classes `hostSky` 100 k and `hostMid` 50 k, added by the target): Facet 63/69/80/88/76 k
+(d0/1/2/3/4), Bastion 59/55/75/78/70 k, Arcades 31/27/38 k (d0/1/3), Stalks 25/33/40 k, Bell Hall 19/27/32 k.
