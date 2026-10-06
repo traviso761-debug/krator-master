@@ -58,6 +58,8 @@ ENTRIES = [
      "The scale model's eastern desert at 1:1, 1,080 by 1,370 km, streamed: the abyss escarpment, the Yuni river, the desert, abyss and jungle flora by climate, and twelve highways. Its six built towns load only in the standalone artifact (https://claude.ai/artifact/Y3GKfn8fuaDPmtJnHW62RJ): the gallery's frame cannot fetch their tiles.", 'new'),
     ('world', 'ys', 'settlements/ys/dist/ys.html', 'Ys',
      'The half-drowned capital of the Hykkousoi on the ruins of an Ancient city: grown shell houses on reclaimed and drowned skyscrapers, a bridge network over the bay, the Pharos, the Citadel on its karst stack, a river in travertine pools and the north-west bay jungle on the stacks.', 'new'),
+    ('world', 'noahs-regret', 'settlements/noahs-regret/dist/noahs-regret.html', "Noah's Regret",
+     "An Ancient floating harbour city that once sailed the Ring Sea, aground on the south shore: Bloody Ruephus's pirate base. A ring of pontoon hull round a harbour, holds half full of the sea, four decks of cabins, the grand atrium, the bridge, the dining room and the silent engine room, Ancient mid-rises on top (barracks, a mess hall, his headquarters under his flag), every room furnished; pick a level to cut the decks open.", 'new'),
     ('world', 'ys-mock', 'settlements/ys/dist/mock.html', 'Ys (mockup)',
      'Two drowned Ancient towers with grown-on Hykkousoi houses, a bridge and its runners: the phase 1 gate of the half-drowned capital.'),
 

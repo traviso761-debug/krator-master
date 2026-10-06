@@ -143,3 +143,7 @@ Version 61 (2026-10-06): `worlds/ehighlands.html` added (the eastern highlands b
 everything growing toward the giant; poured cushions and the Mother Cushion, woolbacks, thorn cushions, vigil spikes, ragbark gullies, glass
 towers, a cushion bog, a frozen tarn and a geyser field; ten library textures), from `main` at 10e85603. The live index (version 60) was
 kept: only the Eastern highlands card was added. One publish call.
+Version 62 (2026-10-06): `worlds/noahs-regret.html` added (Noah's Regret, 5.8 MB: the Ancient floating harbour aground on the
+Ring Sea's south shore, Bloody Ruephus's pirate base; ring hull, flooded holds, four decks of cabins, the atrium, bridge, dining and engine
+rooms, the Ancient deck buildings, all furnished, with a deck cut-away), from `main` at the Noah's Regret merge. The live index (version 61)
+was kept: only the Noah's Regret card was added, after Ys. One publish call.
