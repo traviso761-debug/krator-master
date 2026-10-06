@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.litter",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Forest Floor Debris Atlas.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)",
+  "original_title": "Forest Floor Debris Atlas.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id card.litter).",
+  "reuse": "ebadlands and crater drylands ground litter (nine-cell sheet)",
+  "sha1": "bd21609a86f2aba6bf3437b080bcb2b3d495ac1b"
+ }
+}

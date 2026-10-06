@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1133,
+    1110
+   ],
+   "seam_after": [
+    0.291,
+    0.269
+   ],
+   "seam_before": [
+    1.213,
+    2.467
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "panel.solar",
+  "metal": 0.3,
+  "roughness": 0.3,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Weathered Blue Solar Panel Grid.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Blue Solar Panel Grid.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id panel.solar).",
+  "reuse": "the Republic vehicle clam lid; post-apoc rooftops; any solar panel (full colour)",
+  "sha1": "6c4831653022aa7fbe480f393c31da9461a7a2ca"
+ }
+}
