@@ -18,7 +18,7 @@ defBuilding({key:'nr-flora-fan-palm',name:'Fan palm (placeholder)',seed:6600,cls
  tags:Object.assign({harvest:{edible:false,fibre:true}},NR_FLORA_TAGS),w:6,d:6,h:9,budget:3000,
  note:'a placeholder palm for the stern garden: replace with the south shore biome kit\'s',build(o){nrFanPalm(o);}});
 nrAfter('flora',function(){const L=NR.L;reseed(6700);let v=0;
- for(const K of NR.PARKS){const stern=!!K.stern,n=stern?6:Math.max(1,Math.round((K.t1-K.t0)/12));
+ for(const K of NR.PARKS){const stern=!!K.garden,n=stern?6:Math.max(1,Math.round((K.t1-K.t0)/12));
   for(let i=0;i<n;i++){const t=lerp(K.t0+4,K.t1-4,n>1?i/(n-1):.5),s=(i%2?1:-1)*rr(5,10);
-   if(stern&&Math.abs(t-NR.PH)<8)continue;
+   if(stern&&Math.abs(t-(K.t0+K.t1)/2)<8)continue;
    const p=NR.at(t,s);place(stern?'nr-flora-fan-palm':'nr-flora-shade-tree',p[0],p[1],rr(0,TAU),{y:L.TOP+.38,v:v++});}}});

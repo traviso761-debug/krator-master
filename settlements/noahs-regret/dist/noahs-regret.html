@@ -195,12 +195,13 @@ function terrainH(x,z){let h=nrGround0(x,z);
 // Every position the arcology owns is decided here, before anything is drawn: the drawing passes (4x) and the furnishing
 // pass (70) read NR, never the other way round. No THREE, no DOM: this is what a port takes as data.
 //
-// THE RING. The hull is a C on a SHIP'S PLAN: a closed centreline A along the bow-stern x axis and B across, fine at the
-// bow (+x), full and round at the stern, its sides near straight (the parallel midbody), with a 76 m gap, the HARBOUR
-// MOUTH, on the port beam (-z, the open sea). Positions along it are by ARC LENGTH t on the centreline: t = 0 at
-// the bow, increasing toward starboard (the beach), the stern at P/2, the mouth at 3P/4. The ring runs t in [T0, T1]
-// (T0 < 0: the port bow quarter). Across it, s is the offset from the centreline along the outward normal (+s outboard,
-// the sea or the beach; -s inboard, the harbour basin).
+// THE HULLS. Noah's Regret is a CATAMARAN: two long hulls joined at the bow, the harbour basin between them, open to the
+// sea at the stern. Its plan is one centreline curve (A along the bow-stern x axis, B across), fine at the bow (+x), the
+// hulls' sides near straight and parallel, cut away at the stern (x = XS): the cut is the HARBOUR MOUTH, the full width of
+// the basin. Positions along it are by ARC LENGTH t on the centreline: t = 0 at the stem, increasing along the STARBOARD
+// hull (+z, the beach) to its stern at T1; negative along the PORT hull (-z, the open sea) to its stern at T0 = -T1.
+// Across it, s is the offset from the centreline along the outward normal (+s outboard, the sea or the beach; -s inboard,
+// the harbour basin). Everything is placed symmetrically by hull: a starboard t has its port twin at -t.
 //
 // THE SECTION (s, hull y):
 //   pontoon   |s| <= 26, y 0 -> 9: the holds (a double-height hold with a mezzanine gallery at 4.8; flooded to the sea)
@@ -209,15 +210,15 @@ function terrainH(x,z){let h=nrGround0(x,z);
 //             cabins 11 <= |s| <= 18.4 (D3, D4: a glazed wall at 18.5 and a balcony to 20; D1, D2: a window wall at 20)
 //             corridors 8.5 <= |s| <= 11; the service core |s| <= 8.5 (solid: shafts and tanks), pierced by stair cores
 //   top       parks, promenades and the Ancient buildings, |s| <= 15 for lots, parapets at 20
-// Inhabited: D3 and D4 (cabins, the atrium galleries, the bridge, the grand dining room). D1 and D2 are stripped and empty;
-// the engine room (D1-D2, stern) has been silent for a thousand years; the holds are half full of the sea.
+// Inhabited: D3 and D4 (cabins, the ship's rooms, the crew messes and their galleys, the greenhouse, the atrium galleries,
+// the bridge, the grand dining room). D1 and D2 are stripped and empty, but for the twin ENGINE ROOMS at the stern of each
+// hull, silent a thousand years; the holds are half full of the sea.
 const NR=(function(){
  const N={ready:false};
  /* the centreline as a curve of an angle th: x = A cos th, z = +-B sqrt(1 - |cos th|^m) (1 - KB cos+^3). m is MB toward the
-    bow and MS toward the stern (above 2: fuller, the sides flatter than an ellipse's); KB fines the bow. Its length is the
-    old ellipse's (214 x 144), so every t in this plan (zones, cores, lots, cabins) keeps its place along the ring. The
-    tightest bend is the bow's, about 38 m on the centreline (the inboard skin at s = -26 stays a curve, 12 m). */
- const A=226.6,B=121.9,MB=2.4,MS=3.4,KB=.30;N.A=A;N.B=B;
+    bow (the tightest bend is the stem's, about 36 m on the centreline: the inboard skin at s = -26 stays a curve) and MS
+    toward the stern, high, so the hulls run straight and parallel until the cut at XS (the stern turn is cut away). */
+ const A=262,B=118,MB=2.4,MS=20,KB=.25,XS=-205;N.A=A;N.B=B;N.XS=XS;
  function cpt(th){const c=Math.cos(th),sn=Math.sin(th),m=c>0?MB:MS;const w=Math.sqrt(Math.max(0,1-Math.pow(Math.abs(c),m)))*(1-KB*Math.pow(Math.max(0,c),3));return [A*c,(sn<0?-1:1)*B*w];}
  N.curve=cpt;
  /* a table of NT samples, even in th: positions, arc length, outward normals, radius of curvature */
@@ -256,28 +257,69 @@ const NR=(function(){
  const W={PONT:26,SKIN:25.3,MAIN:20,BALC:20,GLASS:18.5,CAB:11,COR:8.5,MEZZ:19.2,LOT:15,PART:.16,WALL:.2};
  N.W=W;
  // ---------------------------------------------------------------- the ring's extent and the mouth
- const MOUTH=76;N.MOUTH=MOUTH;N.TM=.75*P;
- N.T0=N.TM+MOUTH/2-P;N.T1=N.TM-MOUTH/2;
- const PQ=P/4,PH=P/2;N.PQ=PQ;N.PH=PH;
+ /* the hulls' sterns: T1 where the starboard centreline reaches x = XS; the port hull is its mirror */
+ {let i=0;while(i<NT/2&&PX[i]>XS)i++;N.T1=TL[i-1]+(TL[i]-TL[i-1])*(PX[i-1]-XS)/(PX[i-1]-PX[i]);}
+ N.T0=-N.T1;
+ const PH=P/2;N.PH=PH;N.TM=PH;                     /* the mouth's middle (on the cut-away stern of the curve) */
+ {const a=N.at(N.T1,-W.PONT),b=N.at(N.T0,-W.PONT);N.MOUTH=Math.hypot(a[0]-b[0],a[1]-b[1]);}
+ /* the cabins' frames: every DT from T0 + 6 (rooms snap their ends to them) */
+ const DT=4.2;N.DT=DT;
+ N.frame=t=>N.T0+6+Math.round((t-N.T0-6)/DT)*DT;
+ /* the middles of the hulls' runs: the atrium (starboard) and the grand dining room (port) */
+ const TA=245;N.TA=TA;
  // ---------------------------------------------------------------- ZONES: the public rooms and the machinery
  // decks: indices into L.D (0 = D1). s0..s1: the band across the ring a zone takes on those decks.
  N.ZONES=[
   {id:'bridge',kind:'bridge',name:'The bridge',t0:-18,t1:18,decks:[3],s0:-2,s1:W.MAIN},
-  {id:'atrium',kind:'atrium',name:'The grand atrium',t0:PQ-22,t1:PQ+22,decks:[0,1,2,3],s0:-W.MAIN,s1:W.MAIN},
-  {id:'dining',kind:'dining',name:'The grand dining room',t0:PH-26,t1:PH+26,decks:[2,3],s0:-W.MAIN,s1:W.MAIN},
-  {id:'engine',kind:'engine',name:'The engine room',t0:PH-30,t1:PH+30,decks:[0,1],s0:-W.MAIN,s1:W.MAIN}];
+  {id:'atrium',kind:'atrium',name:'The grand atrium',t0:TA-22,t1:TA+22,decks:[0,1,2,3],s0:-W.MAIN,s1:W.MAIN,tc:TA},
+  {id:'dining',kind:'dining',name:'The grand dining room',t0:-TA-26,t1:-TA+26,decks:[2,3],s0:-W.MAIN,s1:W.MAIN,tc:-TA},
+  /* the twin engine rooms, one at the stern of each hull (aft: the direction of the stern along t) */
+  {id:'engine-s',kind:'engine',name:'The starboard engine room',t0:N.T1-66,t1:N.T1-6,decks:[0,1],s0:-W.MAIN,s1:W.MAIN,tc:N.T1-36,aft:1},
+  {id:'engine-p',kind:'engine',name:'The port engine room',t0:N.T0+6,t1:N.T0+66,decks:[0,1],s0:-W.MAIN,s1:W.MAIN,tc:N.T0+36,aft:-1},
+  /* the crew messes (D3, the whole width: the corridors run through them), a galley beside each (N.ROOMS) */
+  {id:'mess-s',kind:'mess',name:'The starboard crew mess',t0:N.frame(98),t1:N.frame(128),decks:[2],s0:-W.MAIN,s1:W.MAIN},
+  {id:'mess-p',kind:'mess',name:'The port crew mess',t0:N.frame(-128),t1:N.frame(-98),decks:[2],s0:-W.MAIN,s1:W.MAIN},
+  /* the greenhouse (D4, the whole width) under a glass roof that stands on the top deck */
+  {id:'greenhouse',kind:'greenhouse',name:'The greenhouse',t0:N.frame(-130),t1:N.frame(-96),decks:[3],s0:-W.MAIN,s1:W.MAIN,roof:'glass'}];
+ for(const Z of N.ZONES)if(Z.tc==null)Z.tc=(Z.t0+Z.t1)/2;
  N.zone=id=>N.ZONES.find(z=>z.id===id);
  /* does a zone take the band [s0, s1] at t in [t0, t1] on deck d? */
- N.blocked=function(d,t0,t1,s0,s1){for(const Z of N.ZONES){if(Z.decks.indexOf(d)<0)continue;if(t1<=Z.t0||t0>=Z.t1)continue;if(s1<=Z.s0||s0>=Z.s1)continue;return Z;}return null;};
+ N.blocked=function(d,t0,t1,s0,s1){for(const Z of N.ZONES.concat(N.ROOMS)){if(Z.decks.indexOf(d)<0)continue;if(t1<=Z.t0||t0>=Z.t1)continue;if(s1<=Z.s0||s0>=Z.s1)continue;return Z;}return null;};
+ // ---------------------------------------------------------------- the SHIP'S ROOMS: in the cabin band of one side
+ // What a great ship carries besides berths, each taking a run of cabins between two frames on D3 or D4, on one side
+ // (side +1 outboard, -1 inboard): its corridor wall keeps a door, its glass wall and balcony stay. kind is the interiors
+ // kit's room kind (70-nr-interiors.js adds the ship's kinds to its programmes). {id, kind, name, deck, side, t0, t1, s0, s1,
+ // decks, door (the door's t), culture, wealth}
+ N.ROOMS=[];
+ {const room=(id,kind,name,deck,side,ta,tb,culture,wealth)=>{const t0=N.frame(Math.min(ta,tb)),t1=N.frame(Math.max(ta,tb));
+   const s0=side>0?W.CAB+.15:-(W.GLASS-.1),s1=side>0?W.GLASS-.1:-(W.CAB+.15);
+   N.ROOMS.push({id,kind,name,deck,decks:[deck],side,t0,t1,tc:(t0+t1)/2,s0,s1,door:t0+Math.min(2.4,(t1-t0)/2),culture,wealth});};
+  /* D4: the officers' end, near the bridge; the chapel, the sail loft, a sick bay */
+  room('chartroom','chartroom',"The chart room",3,-1,20,32,'post-apoc',.55);
+  room('wardroom','mess',"The officers' wardroom",3,1,22,42,'post-apoc',.6);
+  room('strongroom','strongroom',"The purser's strongroom",3,-1,-34,-22,'post-apoc',.7);
+  room('chapel','shrine',"The chapel",3,1,300,314,'post-apoc',.5);
+  room('sailloft','sailloft',"The sail loft",3,1,-404,-372,'scrap',.3);
+  room('sickbay-p','sickbay',"The port sick bay",3,-1,-196,-176,'post-apoc',.4);
+  /* D3: the working rooms */
+  room('galley-s','kitchen',"The starboard galley",2,-1,128,142,'scrap',.3);
+  room('galley-p','kitchen',"The port galley",2,-1,-142,-128,'scrap',.3);
+  room('sickbay-s','sickbay',"The starboard sick bay",2,1,170,190,'post-apoc',.4);
+  room('armoury','armoury',"The armoury",2,-1,300,316,'scrap',.35);
+  room('carpenter','workshop',"The carpenter's shop",2,1,360,384,'scrap',.3);
+  room('brig','brig',"The brig",2,-1,380,392,'scrap',.2);
+  room('bosun','store',"The bosun's store",2,1,-62,-46,'scrap',.3);
+  room('laundry','laundry',"The laundry",2,-1,-300,-284,'scrap',.25);
+  room('cooper','workshop',"The cooper's shop",2,1,-360,-344,'scrap',.3);}
+ N.room=id=>N.ROOMS.find(r=>r.id===id);
  // ---------------------------------------------------------------- STAIR CORES: switchback stairs in the service core, D1 -> TOP
  // Each takes t in [t-5, t+5] of the core (|s| <= 6) and opens onto both corridors on every deck; a kiosk covers it on top.
- N.CORES=[-228,-150,-70,70,150,225,380,470,650,730,800].map((t,i)=>({id:'core'+i,t,t0:t-5,t1:t+5,down:i===0||i===10}));
+ N.CORES=[-425,-330,-150,-70,70,150,330,425].map((t,i)=>({id:'core'+i,t,t0:t-5,t1:t+5,down:Math.abs(t)===425}));
  // ---------------------------------------------------------------- CABINS: frames every DT along the centreline
  // A cabin is the band between two frames, 11.1 <= |s| <= 18.4 on D3-D4 (behind the glass, a balcony beyond) or 19.9 on
  // D1-D2, on either side of the ring. Partitions stand on the frames (radial lines), so a cabin is a slight trapezoid:
  // wider outboard on the outer side. CLASS: the widest of the template widths that fits its narrow end (70-nr-interiors.js
  // furnishes one template per class and door side and stands it in every cabin of that class, as data per cabin).
- const DT=4.2;N.DT=DT;
  N.CABIN_CLASSES=[3.2,3.6,4.0,4.4];
  N.cabins=[];
  {const ks=Math.ceil((N.T1-N.T0-12)/DT);let k=0;
@@ -306,38 +348,38 @@ const NR=(function(){
  // The defs' footprints along t: lab 44, aptA 36, aptB 20, offA 30 (the builders' declared w, 50-58).
  N.LOTS=[
   {id:'lot-hq',key:'nr-anc-reliquary',t:-4,face:'fwd',use:'hq'},
-  {id:'lot-a1',key:'nr-anc-apt-ribbon',t:-110,face:'in',use:'barracks'},
-  {id:'lot-b1',key:'nr-anc-apt-drum',t:-200,face:'in',use:'barracks'},
+  {id:'lot-b3',key:'nr-anc-apt-drum',t:47,face:'out',use:'barracks'},
   {id:'lot-a2',key:'nr-anc-apt-ribbon',t:110,face:'out',use:'barracks'},
-  {id:'lot-o1',key:'nr-anc-office-lens',t:188,face:'in',use:'barracks'},
-  {id:'lot-b2',key:'nr-anc-apt-drum',t:332,face:'in',use:'barracks'},
-  {id:'lot-a3',key:'nr-anc-apt-ribbon',t:420,face:'in',use:'barracks'},
-  {id:'lot-o2',key:'nr-anc-office-lens',t:506,face:'in',use:'mess'},
-  {id:'lot-b3',key:'nr-anc-apt-drum',t:618,face:'out',use:'barracks'},
-  {id:'lot-a4',key:'nr-anc-apt-ribbon',t:690,face:'in',use:'barracks'},
-  {id:'lot-o3',key:'nr-anc-office-lens',t:765,face:'out',use:'barracks'}];
+  {id:'lot-o1',key:'nr-anc-office-lens',t:190,face:'in',use:'barracks'},
+  {id:'lot-b2',key:'nr-anc-apt-drum',t:296,face:'in',use:'barracks'},
+  {id:'lot-a3',key:'nr-anc-apt-ribbon',t:378,face:'in',use:'barracks'},
+  {id:'lot-o3',key:'nr-anc-office-lens',t:-47,face:'out',use:'barracks'},
+  {id:'lot-a1',key:'nr-anc-apt-ribbon',t:-190,face:'in',use:'barracks'},
+  {id:'lot-b1',key:'nr-anc-apt-drum',t:-296,face:'in',use:'barracks'},
+  {id:'lot-o2',key:'nr-anc-office-lens',t:-378,face:'in',use:'mess'}];
  /* face: 'in' the front (+z) toward the harbour, 'out' toward the sea or the beach, 'fwd' along the ring (increasing t) */
  for(const Lt of N.LOTS){const p=N.at(Lt.t,0),n=Lt.face==='fwd'?N.tan(Lt.t):N.nrm(Lt.t),dz=Lt.face==='in'?-1:1;Lt.x=p[0];Lt.z=p[1];Lt.ry=Math.atan2(n[0]*dz,n[1]*dz);Lt.y=L.TOP;}
- /* parks: lawn beds between the lots, the bow garden, the stern garden over the dining room (its skylights) */
- N.PARKS=[{id:'park-bowS',t0:-62,t1:-28},{id:'park-bowN',t0:28,t1:58},{id:'park-a',t0:-180,t1:-160},{id:'park-b',t0:-90,t1:-78},
-  {id:'park-c',t0:130,t1:142},{id:'park-d',t0:236,t1:256},{id:'park-e',t0:350,t1:372},{id:'park-f',t0:440,t1:462},
-  {id:'park-stern',t0:PH-30,t1:PH+30,stern:true},{id:'park-g',t0:632,t1:642},{id:'park-h',t0:708,t1:722},{id:'park-i',t0:778,t1:792}];
+ /* parks: lawn beds between the lots; over the grand dining room the garden with its dry fountain (garden: true) */
+ N.PARKS=[{id:'park-a',t0:133,t1:145},{id:'park-b',t0:-145,t1:-133},{id:'park-c',t0:312,t1:324},{id:'park-d',t0:-324,t1:-312},
+  {id:'park-e',t0:401,t1:418},{id:'park-f',t0:-418,t1:-401},{id:'park-g',t0:-94,t1:-77},{id:'park-h',t0:76,t1:88},
+  {id:'park-i',t0:-222,t1:-209},{id:'park-garden',t0:-TA-22,t1:-TA+22,garden:true}];
+ /* the twin funnels of each hull, over its engine room */
+ N.FUNNELS=[N.T1-46,N.T1-22,N.T0+22,N.T0+46];
  // ---------------------------------------------------------------- the ways down to the beach and to the water
  // Pirate-built timber: switchback TOWERS from the outer ledge (D1 level) to the top deck against the starboard hull, and
  // flights of STEPS from the ledge down to the dune; FLOATS (timber pontoons at the water) off the inner quay for boats.
- N.TOWERS=[{t:PQ-58},{t:PQ+64},{t:PQ+150}];
- N.STEPS=[{t:PQ-36},{t:PQ},{t:PQ+40},{t:PQ+120},{t:PQ-110}];
- N.FLOATS=[{t:-120},{t:60},{t:330},{t:420},{t:650}];
+ N.TOWERS=[{t:200},{t:350},{t:452}];
+ N.STEPS=[{t:175},{t:280},{t:320},{t:395},{t:470}];
+ N.FLOATS=[{t:-420},{t:-240},{t:-90},{t:90},{t:240},{t:420}];
  // ---------------------------------------------------------------- the FORECASTLE: the bow's sheer
  // Round the bow the outer skin rises above the promenade to a bulwark, and the promenade inside it climbs as a deck from
  // D1 (|t| = FORE.t) to the D3 floor at the stem: a ship's sheer line. foreY(t): that deck's height (hull y) at t.
  N.FORE={t:64,y0:L.D[0],y1:L.D[2],bulwark:1.1};
  N.foreY=function(t){const u=Math.abs(t)/N.FORE.t;return u>=1?L.D[0]:L.D[0]+(N.FORE.y1-L.D[0])*Math.pow(1-u,1.6);};
  // ---------------------------------------------------------------- the PIERS the Ancients built in (drawn by 41-nr-piers.js)
- // Every pier's deck is level with the quays (D1, hull y 9). kind 'arm': a pontoon breakwater out to sea from each end of the
- // ring at the mouth, splayed so the channel widens seaward, a beacon on its head. 'mole': the liner pier, a pontoon down the
- // basin's long axis from the stern quay, a berth either side. 'finger': an open deck on columns off the inner quay, for
- // smaller craft. {id, kind, name, t, side (+1 off the outer skin, -1 off the inner), o: the root's centre [x, z], d: the
+ // Every pier's deck is level with the quays (D1, hull y 9). kind 'mole': the liner pier, a pontoon down the basin's long
+ // axis from the bow's inner quay toward the open stern, a berth either side. 'finger': an open deck on columns off a hull's
+ // inner quay, for smaller craft. {id, kind, name, t, side (+1 off the outer skin, -1 off the inner), o: the root's centre [x, z], d: the
  // unit direction along it, len, w, poly: the deck's outline [[x, z] ...] (its root follows the skin's curve)}
  N.PIERS=[];
  {const pier=(id,kind,name,t,side,len,w,splay)=>{const n=N.nrm(t),T=N.tan(t),ca=Math.cos(splay||0),sa=Math.sin(splay||0);
@@ -349,20 +391,19 @@ const NR=(function(){
    const L2=len-w/2,c=[o[0]+d[0]*L2,o[1]+d[1]*L2];
    for(let k=0;k<=12;k++){const a=-PI/2+k/12*PI;poly.push([c[0]+(d[0]*Math.cos(a)+q[0]*Math.sin(a))*w/2,c[1]+(d[1]*Math.cos(a)+q[1]*Math.sin(a))*w/2]);}
    N.PIERS.push({id,kind,name,t,side,o,d,q,len,w,poly,head:c});};
-  const sp=12*PI/180;
-  pier('pier-arm-w','arm','the west breakwater pier',N.T1-7,1,70,14,-sp);
-  pier('pier-arm-e','arm','the east breakwater pier',N.T0+7,1,70,14,sp);
-  pier('pier-mole','mole','the liner mole',PH,-1,170,16,0);
-  for(const [i,t] of [-170,-60,230,375].entries())pier('pier-finger'+i,'finger','a finger pier',t,-1,34,7,0);}
+  pier('pier-mole','mole','the liner mole',0,-1,200,18,0);
+  for(const [i,t] of [-330,-160,160,330].entries())pier('pier-finger'+i,'finger','a finger pier',t,-1,34,7,0);}
  /* is hull (x, z) on a pier's deck? (even-odd test on its outline) */
  N.pierAt=function(x,z){for(const Pr of N.PIERS){const Q=Pr.poly;let inside=false;
    for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}
    if(inside)return Pr;}return null;};
- /* the beacons on the arms' heads, and the mouth's end caps */
- N.BEACONS=N.PIERS.filter(p=>p.kind==='arm').map(p=>({x:p.head[0]+p.d[0]*(p.w/2-3.2),z:p.head[1]+p.d[1]*(p.w/2-3.2)}));
+ /* the hulls' sterns: a transom cap ENDCAP metres long beyond each end; the beacons on their inboard corners mark the
+    harbour mouth */
+ N.ENDCAP=6;
+ N.BEACONS=[[N.T1,1],[N.T0,-1]].map(([t,dir])=>{const p=N.at(t+dir*3,-(W.PONT-5));return {x:p[0],z:p[1],t,dir};});
  /* the atrium: its void, the galleries round it, the grand stair (four flights: D1->D2 centre, D2->D3 twin, D3->D4 centre,
     D4->TOP twin) and the descent to the hold mezzanine. tau = t - (the atrium's centre). */
- N.ATRIUM={tc:PQ,half:22,voidT:18,voidS:14,galleryS:[14,20],bridgeT:[6,9],flightT:6,centreS:4,twinS:[9,13],holdStair:{tau0:-17,tau1:-9,s:3}};
+ N.ATRIUM={tc:TA,half:22,voidT:18,voidS:14,galleryS:[14,20],bridgeT:[6,9],flightT:6,centreS:4,twinS:[9,13],holdStair:{tau0:-17,tau1:-9,s:3}};
  N.ready=true;
  return N;})();
 /* ============================== MATERIAL RECORDS (core/materials/record) ==============================
@@ -14334,7 +14375,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
 // prefix: nr
 // ================================================================= THE HULL: ring primitives, the pontoon, the decks' slabs, the skins, the mouth
 // Everything here draws in the HULL frame (the arcology def pushes NR_HULL before calling it): x, z from NR.at(t, s), y up
-// from the keel. Bands along the ring are psurf sheets (30-geo.js), so they follow the ellipse exactly and carry arc-length
+// from the keel. Bands along the ring are psurf sheets (30-geo.js), so they follow the ring's curve exactly and carry arc-length
 // UVs; radial pieces (partitions, ribs) are boxes turned to the normal.
 /* the hull's drawing passes, in order: each fragment registers its own with nrPart; nrAfter passes place child defs
    after the deck buildings (49-nr-arcology.js runs both) */
@@ -14385,9 +14426,10 @@ function nrSlabHoles(d){const L=NR.L,H=[],A=NR.ATRIUM;
  H.push({t0:A.tc-A.voidT,t1:A.tc+A.voidT,s0:-A.voidS,s1:A.voidS});
  /* the stair cores' wells */
  for(const C of NR.CORES)H.push({t0:C.t-3.5,t1:C.t+3.5,s0:-6,s1:6});
- /* the double-height rooms: the engine room (no D2 floor), the dining room (no D4 floor) */
- if(d===1){const Z=NR.zone('engine');H.push({t0:Z.t0,t1:Z.t1,s0:-NR.W.MAIN,s1:NR.W.MAIN});}
- if(d===3){const Z=NR.zone('dining');H.push({t0:Z.t0,t1:Z.t1,s0:-NR.W.MAIN,s1:NR.W.MAIN});}
+ /* the double-height rooms (a zone on decks d-1 and d has no floor at d: the engine rooms, the dining room), and the
+    greenhouse's glass roof (no top-deck slab over it) */
+ for(const Z of NR.ZONES){if(Z.kind==='atrium')continue;
+  if((d<4&&Z.decks.indexOf(d-1)>=0&&Z.decks.indexOf(d)>=0)||(d===4&&Z.roof==='glass'&&Z.decks.indexOf(3)>=0))H.push({t0:Z.t0,t1:Z.t1,s0:Z.s0,s1:Z.s1});}
  return H;}
 // ---------------------------------------------------------------- the hull shell
 const NR_ANTIFOUL=0x6e3428;
@@ -14445,17 +14487,28 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
    nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2)nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}
   nrRadial('white',t,-W.MAIN,W.MAIN,L.TOP,L.TOP+L.PARAPET,.3,P('white'));
   nrEndCap(t,dir);}
- nrMouthBridge();nrForecastle();}
-/* the pontoon's end at the mouth (t, dir: +1 beyond T1, -1 before T0): a rounded stub 4 m long closing the hull's end; the
-   piers that run out to sea from here are 41-nr-piers.js */
-function nrEndCap(t,dir){const L=NR.L,R=NR.W.PONT,e=4,pts=[];
+ for(const B of NR.BEACONS)nrBeacon(B.x,L.D[0],B.z);
+ nrForecastle();}
+/* a hull's stern (t, dir: +1 beyond T1, -1 before T0): a transom cap NR.ENDCAP long, its corners rounded, closing the
+   pontoon's end; under it the twin screws and a rudder behind each, their tops out of the water now the stern rides high
+   (she lies trimmed by the bow) */
+function nrEndCap(t,dir){const L=NR.L,R=NR.W.PONT,e=NR.ENDCAP,pts=[];
  const P2=(u,s)=>NR.at(t+dir*u,s);
  pts.push(P2(0,-R));for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.sin(a),-R+e*(1-Math.cos(a))));}
  for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.cos(a),R-e*(1-Math.sin(a))));}pts.push(P2(0,R));
  /* prism wants a positive signed area in (x, z) (its side normals are the edges turned -90 degrees) */
  const ar=pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1];},0);if(ar<0)pts.reverse();
  prism('paint',pts,0,5.6,hc(NR_ANTIFOUL));prism('barn',pts,5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
- prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));}
+ prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));
+ /* a kerb and rail round the transom's deck */
+ for(let i=1;i<pts.length-2;i++){const a=pts[i],b=pts[i+1];beam('white',[a[0],L.D[0]+.15,a[1]],[b[0],L.D[0]+.15,b[1]],.3,P('white'));}
+ /* the screws (four blades on a hub, bronze gone green) on their shafts out of the hull, the rudders behind them */
+ const T=NR.tan(t),ry=Math.atan2(T[0]*dir,T[1]*dir);
+ for(const s of [-12,12]){const c=P2(e+2.2,s),hub=[c[0],2.8,c[1]],sh=P2(-3,s);
+  beam('paint',[sh[0],2.8,sh[1]],hub,.35,hc(0x4a5048),true,10);
+  W(hub[0],hub[1],hub[2],ry,()=>{sph('brass',0,0,0,.75,hc(0x5a7a5c),1.4,12);
+   for(let k=0;k<4;k++){const a=k/4*TAU+.4;box('brass',Math.cos(a)*1.45,Math.sin(a)*1.45-.4,0,.9,.8,.12,hc(0x5a7a5c),.3,0,a);}});
+  const r0=P2(e+5.2,s);W(r0[0],0,r0[1],ry,()=>{box('paint',0,.6,0,.5,5.4,3.2,hc(NR_ANTIFOUL));box('paint',0,6,-.6,.3,1.6,.3,hc(0x4a5048));});}}
 /* the beacon: a slim Ancient lantern tower (on the breakwater piers' heads, 41-nr-piers.js), base at hull (x, y, z) */
 function nrBeacon(x,y,z){cyl('white',x,y,z,2.4,12,P('white'),20,1.8);cyl('white',x,y+12,z,2.6,.5,P('white'),20);
  cyl('glass',x,y+12.5,z,1.6,2.4,hc(0x8aa0a8),16);sph('white',x,y+14.9,z,1.9,P('white'),.55,16);
@@ -14495,24 +14548,12 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
    for(const k of [-1,1])box('rust',k*1.25,-3.4,0,.45,.9,.4,hc(0x5a3a28),0,0,k*.5);});
   const a=[c[0]+n[0]*.4,y-.3,c[1]+n[1]*.4],T=NR.tan(t),b=[a[0]+n[0]*7+T[0]*sg*3,-1.5,a[2]+n[1]*7+T[1]*sg*3];
   for(let i=0;i<18;i++){const f0=i/18,f1=(i+1)/18,p=f=>[lerp(a[0],b[0],f),lerp(a[1],b[1],f)-2.2*Math.sin(PI*f),lerp(a[2],b[2],f)];beam('rust',p(f0),p(f1),.16,hc(0x4a3424));}}}
-/* the mouth's bascule bridge: two leaves hinged at the top deck of each end wall, raised (they jammed open when the hull
-   stuck, and the harbour has stayed open since) */
-function nrMouthBridge(){const L=NR.L,W=NR.W,a=NR.at(NR.T1,0),b=NR.at(NR.T0,0),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
- for(const [t,o] of [[NR.T1,a],[NR.T0,b]]){const dx=mid[0]-o[0],dz=mid[1]-o[1],len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len;
-  const ry=Math.atan2(ux,uz),lift=72*PI/180,Lf=len-1.2;
-  WX(o[0]+ux*.3,L.TOP-.2,o[1]+uz*.3,ry,-lift,0,()=>{   // local +z along the leaf, tilted up about local x
-   box('paint',0,-.9,Lf/2,14,1.1,Lf,hc(0x7a8288));box('deck',0,.2,Lf/2,13.4,.12,Lf,hc(0xbfb8a8));
-   for(const sx of [-6.8,6.8]){box('paint',sx,.32,Lf/2,.14,1.0,Lf,hc(0x7a8288));for(let z=1;z<Lf;z+=2.2)box('paint',sx,.32,z,.1,1,.1,hc(0x7a8288));}
-   box('rust',0,-1.6,1.5,10,1.2,3,WHITE);});   // the counterweight housing at the heel
-  for(const s of [-8,8]){const p=NR.at(t,s);cyl('white',p[0],L.TOP,p[1],1.1,5.5,P('white'),14,.9);}}}
 nrPart('shell',nrHullShell);
 // prefix: nr
 // ================================================================= THE PIERS: what the Ancients built into the harbour (the plan: NR.PIERS)
-// Drawn in the hull frame, decks level with the quays (D1). The two BREAKWATER ARMS run out to sea from the ends of the ring
-// at the mouth, pontoons like the hull (antifouling, the barnacle band, white), splayed so the channel widens seaward, a
-// parapet on the sea side, bollards and fenders on the channel side, a beacon on each head. The LINER MOLE runs down the
-// basin's long axis from the stern quay, a berth either side: fenders, bollards, lamp standards, two boarding towers with
-// their gangways folded. The FINGER PIERS are open decks on columns off the inner quay, for smaller craft.
+// Drawn in the hull frame, decks level with the quays (D1). The LINER MOLE runs down the basin's long axis from the bow's
+// inner quay toward the open stern, a pontoon like the hulls (antifouling, the barnacle band, white), a berth either side:
+// fenders, bollards, lamp standards, two boarding towers with their gangways folded. The FINGER PIERS are open decks on columns off the inner quay, for smaller craft.
 // A pier's local frame: o its root on the skin, d along it, q across (+q is the pier's left looking out), l metres out.
 function nrPierPt(Pr,l,k,y){return [Pr.o[0]+Pr.d[0]*l+Pr.q[0]*k,y,Pr.o[1]+Pr.d[1]*l+Pr.q[1]*k];}
 function nrPierRy(Pr){return Math.atan2(Pr.d[0],Pr.d[1]);}
@@ -14535,15 +14576,6 @@ function nrPontoon(Pr,y0){const L=NR.L,pts=nrPierPoly(Pr);
 function nrFenders(Pr,side,l0,l1){const L=NR.L,k=side*(Pr.w/2+.18);
  for(let l=l0;l<l1;l+=6.5)nrPierBox('dark',Pr,l,k,6.3,1.4,2.4,.36,hc(0x1e2022));}
 function nrBollards(Pr,side,l0,l1,step){const k=side*(Pr.w/2-.8);for(let l=l0;l<l1;l+=step){const p=nrPierPt(Pr,l,k,NR.L.D[0]);nrBollard(p[0],p[1],p[2]);}}
-function nrPierArm(Pr){const L=NR.L,y=L.D[0],cs=Pr.t>NR.PQ?1:-1;   /* cs: the channel's side (+q or -q) */
- nrPontoon(Pr,1.2);
- /* the channel side: fenders, bollards; the sea side: a parapet with a wave-return lip */
- nrFenders(Pr,cs,4,Pr.len-6);nrBollards(Pr,cs,6,Pr.len-8,11);
- const k=-cs*(Pr.w/2-.35);nrPierBox('white',Pr,(Pr.len-Pr.w/2)/2+1,k,y,Pr.len-Pr.w/2-2,1.25,.7,P('white'));
- nrPierBox('white',Pr,(Pr.len-Pr.w/2)/2+1,k-cs*.15,y+1.25,Pr.len-Pr.w/2-2,.18,1.0,P('white'));
- for(let l=10;l<Pr.len-10;l+=20){const p=nrPierPt(Pr,l,-cs*(Pr.w/2-1.6),y);nrLampStd(p[0],y,p[2]);}
- /* the beacon on the head */
- const B=NR.BEACONS.find(b=>Math.hypot(b.x-Pr.head[0],b.z-Pr.head[1])<Pr.w);if(B)nrBeacon(B.x,y,B.z);}
 function nrPierMole(Pr){const L=NR.L,y=L.D[0];
  nrPontoon(Pr,1.2);
  for(const sd of [1,-1]){nrFenders(Pr,sd,3,Pr.len-6);nrBollards(Pr,sd,5,Pr.len-6,12);}
@@ -14551,7 +14583,7 @@ function nrPierMole(Pr){const L=NR.L,y=L.D[0];
  /* a light on the head: a short white column with a lens */
  {const p=nrPierPt(Pr,Pr.len-3.2,0,y);cyl('white',p[0],y,p[2],.9,5,P('white'),16,.7);cyl('glass',p[0],y+5,p[2],.7,1.1,hc(0x8aa0a8),12);sph('white',p[0],y+6.1,p[2],.8,P('white'),.5,12);}
  /* the boarding towers: a white drum with a glazed head, its gangway (an enclosed tube) folded along the pier, one per berth */
- for(const [l,sd] of [[58,1],[112,-1]]){const k=sd*(Pr.w/2-2.6),p=nrPierPt(Pr,l,k,y),ry=nrPierRy(Pr);
+ for(const [l,sd] of [[70,1],[140,-1]]){const k=sd*(Pr.w/2-2.6),p=nrPierPt(Pr,l,k,y),ry=nrPierRy(Pr);
   cyl('white',p[0],y,p[2],2.1,11,P('white'),20);cyl('glass',p[0],y+11,p[2],2.2,2.4,hc(0x24343c),20);cyl('white',p[0],y+13.4,p[2],2.4,.6,P('white'),20,2.0);
   W(p[0],y+11.2,p[2],ry,()=>{box('white',0,0,-9.5,2.8,2.6,17,P('white'));box('glass',sd*1.42,.8,-9.5,.06,1.0,16,hc(0x24343c));box('glass',-sd*1.42,.8,-9.5,.06,1.0,16,hc(0x24343c));
    box('white',0,-11.2,-15.5,.5,11.2-1.3,.5,P('white'));});}
@@ -14569,7 +14601,7 @@ function nrPierFinger(Pr){const L=NR.L,y=L.D[0],pts=nrPierPoly(Pr);
   for(let yy=4;yy<y-.6;yy+=.32){const a=nrPierPt(Pr,Pr.len-.12,-.35,yy),b=nrPierPt(Pr,Pr.len-.12,.35,yy);beam('rust',a,b,.04,hc(0x4a4a48));}}
  const p=nrPierPt(Pr,Pr.len-Pr.w/2,0,y);nrLampStd(p[0],y,p[2]);}
 function nrPiers(){reseed(4150);
- for(const Pr of NR.PIERS){if(Pr.kind==='arm')nrPierArm(Pr);else if(Pr.kind==='mole')nrPierMole(Pr);else nrPierFinger(Pr);}}
+ for(const Pr of NR.PIERS){if(Pr.kind==='mole')nrPierMole(Pr);else nrPierFinger(Pr);}}
 nrPart('piers',nrPiers);
 // prefix: nr
 // ================================================================= THE DECKS: corridors, cabins, the service core, the stair cores
@@ -14578,7 +14610,8 @@ nrPart('piers',nrPiers);
 // white ribbon of 40-nr-hull.js), the service core between the corridors (dark shafts and tanks, solid in the cut), the
 // stair cores (a switchback of two 1.8 m flights per deck in a hall across the core, doors onto both corridors, a kiosk on
 // the top deck). D1 and D2 are stripped: partitions stand, the doors are gone, the cabins are empty. Zones (the atrium,
-// the bridge, the dining room, the engine room) draw themselves (44-46).
+// the bridge, the dining room, the engine rooms, the crew messes, the greenhouse) draw themselves (44-46); the ship's rooms
+// (NR.ROOMS) are runs of cabin band with a door, their partitions on the frames, drawn here.
 /* the scale of a length at offset s from the centreline: a metre of centreline t is (1 + s/rho) metres there */
 function nrK(t,s){return 1+s/NR.rho(t);}
 /* the t ranges a deck's band [s0, s1] loses to zones */
@@ -14624,9 +14657,11 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
   for(const C of NR.CORES){for(const t of [C.t-3.7,C.t+3.7])nrRadial('plaster',t,-W.COR,W.COR,y,top,.2,P('plaster'));
    nrFlights(C.t,y,d<3?L.D[d+1]:L.TOP,true,P('conc'));}
   /* --- the cabins: the cabin walls with a door each, the partitions on the frames, the glazing (D3-D4) */
-  for(const side of [1,-1]){const sW=side*W.CAB,mine=NR.cabins.filter(C=>C.deck===d&&C.side===side);
-   nrWallGaps('plaster',sW,W.WALL,y,top,P('plaster'),mine.map(nrCabinDoor),nrZoneCuts(d,Math.min(sW,sW+side*.1),Math.max(sW,sW+side*.1)));
-   const frames=new Set();for(const C of mine){frames.add(C.t0.toFixed(3));frames.add(C.t1.toFixed(3));}
+  for(const side of [1,-1]){const sW=side*W.CAB,mine=NR.cabins.filter(C=>C.deck===d&&C.side===side),rooms=NR.ROOMS.filter(R=>R.deck===d&&R.side===side);
+   /* the ship's rooms (14-nr-plan.js NR.ROOMS) keep a door in the cabin wall; their ends stand on frames like the cabins' */
+   const roomDoors=rooms.map(R=>{const k=nrK(R.door,sW),hw=.55/k;return {t0:R.door-hw,t1:R.door+hw,y1:2.3};});
+   nrWallGaps('plaster',sW,W.WALL,y,top,P('plaster'),mine.map(nrCabinDoor).concat(roomDoors),nrZoneCuts(d,Math.min(sW,sW+side*.1),Math.max(sW,sW+side*.1)));
+   const frames=new Set();for(const C of mine.concat(rooms)){frames.add(C.t0.toFixed(3));frames.add(C.t1.toFixed(3));}
    const sOut=side*(d>=2?W.GLASS:W.MAIN-.25);
    for(const f of frames){const t=+f;nrRadial('plaster',t,Math.min(sW,sOut),Math.max(sW,sOut),y,top,W.PART,P('plaster'));
     if(d>=2)nrRadial('white',t,Math.min(sOut,side*W.BALC),Math.max(sOut,side*W.BALC),y,y+2.2,.1,P('white'));}   // balcony dividers
@@ -14731,7 +14766,8 @@ function nrAtrium(){const L=NR.L,W=NR.W,A=NR_ATR,vT=A.voidT,vS=A.voidS,H=A.half;
  {const q=dp(0,1);cyl('white',q[0],q[1]-.2,q[2],1.4,.6,P('white'),16);cyl('white',q[0],q[1]+.4,q[2],.15,5,P('white'),8,.05);}}
 nrPart('atrium',nrAtrium);
 // prefix: nr
-// ================================================================= THE PUBLIC ROOMS AND THE MACHINERY: the bridge, the grand dining room, the engine room
+// ================================================================= THE PUBLIC ROOMS AND THE MACHINERY: the bridge, the grand dining room, the twin engine
+// rooms, the crew messes, the greenhouse
 // Structure only (walls, glazing, columns, daises, the built-in consoles, the engines); their furniture is catalog pieces
 // placed by the furnishing pass (70-nr-interiors.js). Each zone is NR.ZONES (14-nr-plan.js).
 /* a zone's end walls on deck d: radial walls at t0 and t1, open to the corridors (|s| 8.5-11) */
@@ -14758,7 +14794,7 @@ function nrBridge(){const Z=NR.zone('bridge'),L=NR.L,W=NR.W,y=L.D[3],top=y+L.CLE
  {const p=nrP(0,13,y+.35);cyl('white',p[0],p[1],p[2],.55,1.0,P('white'),16,.4);cyl('dark',p[0],p[1]+1,p[2],.7,.08,hc(0x202a30),20);}
  /* the chart room behind: a low wall, a doorway */
  nrBand('plaster',-12,-4,5.8,6.0,y,y+1.2,P('plaster'),'oitse');nrBand('plaster',4,12,5.8,6.0,y,y+1.2,P('plaster'),'oitse');}
-// ---------------------------------------------------------------- THE GRAND DINING ROOM (D3-D4, double height, the stern)
+// ---------------------------------------------------------------- THE GRAND DINING ROOM (D3-D4, double height, the port hull's midships)
 function nrDining(){const Z=NR.zone('dining'),L=NR.L,W=NR.W,y=L.D[2],top=L.D[3]+L.CLEAR;reseed(4610);
  nrBand('marble',Z.t0,Z.t1,-W.MAIN+.25,W.MAIN-.25,y,y+.02,P('marble'),'t');
  nrZoneEnds(Z,2,y,y+L.DH,'plaster',P('plaster'));nrZoneEnds(Z,3,L.D[3]-L.SLAB,top,'plaster',P('plaster'));
@@ -14773,39 +14809,69 @@ function nrDining(){const Z=NR.zone('dining'),L=NR.L,W=NR.W,y=L.D[2],top=L.D[3]+
  /* a coffered ceiling: deep white beams across the ring under the top deck */
  for(let t=Z.t0+2;t<Z.t1;t+=4.2)nrRadial('white',t,-W.MAIN+.3,W.MAIN-.3,top-.55,top,.35,P('white'));
  for(const s of [-14,-7,0,7,14])nrBand('white',Z.t0,Z.t1,s-.17,s+.17,top-.55,top,P('white'),'oib');}
-// ---------------------------------------------------------------- THE ENGINE ROOM (D1-D2, double height, the stern): silent a thousand years
-function nrEngineRoom(){const Z=NR.zone('engine'),L=NR.L,W=NR.W,y=L.D[0],top=L.D[1]+L.CLEAR,mid=L.D[1];reseed(4620);
+// ---------------------------------------------------------------- THE ENGINE ROOMS (D1-D2, double height, the stern of each hull): silent a thousand years
+function nrEngineRooms(){for(const Z of NR.ZONES)if(Z.kind==='engine')nrEngineRoom(Z);}
+function nrEngineRoom(Z){const L=NR.L,W=NR.W,y=L.D[0],top=L.D[1]+L.CLEAR,mid=L.D[1],tc=Z.tc,aft=Z.aft;reseed(4620+(aft>0?0:1));
  nrZoneEnds(Z,0,y,y+L.DH,'cracked',hc(0xa8a296));nrZoneEnds(Z,1,mid-L.SLAB,top,'cracked',hc(0xa8a296));
  nrBand('grate',Z.t0+.3,Z.t1-.3,-W.MAIN+.3,W.MAIN-.3,y,y+.03,WHITE,'t');
  /* the four engines: great drums along the ring on cradles, banded, a turbine housing at one end, the manifolds rising
-    to the ceiling, the shafts going down through the floor to the propulsors under the stern */
- for(const tc of [NR.PH-13,NR.PH+13])for(const s of [-9.5,9.5]){const len=19,r=2.5,cy=y+r+.9;
+    to the ceiling, the shafts going down through the floor to the screws under the stern */
+ for(const ec of [tc-13,tc+13])for(const s of [-9.5,9.5]){const tc=ec,len=19,r=2.5,cy=y+r+.9;
   const a=nrP(tc-len/2,s,cy),b=nrP(tc+len/2,s,cy);beam('paint',a,b,r,hc(0x5c6e66),true,24);
   for(let k=0;k<=6;k++){const t=tc-len/2+k*len/6,p=nrP(t,s,cy),q=nrP(t+.01,s,cy);beam('rust',[p[0],p[1],p[2]],[q[0]+(q[0]-p[0])*30,q[1],q[2]+(q[2]-p[2])*30],r+.12,WHITE,true,24);}
   for(const e of [-1,1]){const p=nrP(tc+e*len/2,s,cy),n=NR.tan(tc);sph('paint',p[0],p[1],p[2],r,hc(0x5c6e66),1,16);}
   for(const t of [tc-6,tc+6]){const p=nrP(t,s,y);box('conc',p[0],y,p[2],2.2,1.0,5.2,P('concD'),Math.atan2(NR.tan(t)[0],NR.tan(t)[1]));}
   /* the turbine housing: a flared drum at the stern end */
-  {const t=tc+len/2+1.5,p=nrP(t,s,cy),q=nrP(t+3,s,cy);beam('paint',p,q,r+.9,hc(0x4e5e58),true,24,r+.4);}
+  {const t=tc+aft*(len/2+1.5),p=nrP(t,s,cy),q=nrP(t+aft*3,s,cy);beam('paint',p,q,r+.9,hc(0x4e5e58),true,24,r+.4);}
   /* manifolds to the ceiling */
   for(let k=-2;k<=2;k++){const p=nrP(tc+k*3.2,s+(k%2?1:-1)*.8,cy+r*.8);beam('rust',p,[p[0],top-.3,p[2]],.28,WHITE,true,10);}
   /* the shaft down through the floor */
-  {const p=nrP(tc+len/2+5,s,cy);beam('paint',p,[p[0],y-6,p[2]],.6,hc(0x4e5e58),true,12);}}
+  {const p=nrP(tc+aft*(len/2+5),s,cy);beam('paint',p,[p[0],y-6,p[2]],.6,hc(0x4e5e58),true,12);}}
  /* the catwalk at the D2 level round the engines and across the middle, railed, on posts */
  for(const s0 of [-1.2,-W.MAIN+.3,W.MAIN-2.3]){const s1=s0+(s0===-1.2?2.4:2.0);nrBand('grate',Z.t0,Z.t1,s0,s1,mid-.12,mid,WHITE);
   for(const s of [s0+.05,s1-.05])if(Math.abs(s)<W.MAIN-.6)nrBand('paint',Z.t0,Z.t1,s-.03,s+.03,mid+1.0,mid+1.06,hc(0x6a7a72),'oit');
   for(let t=Z.t0+2;t<Z.t1;t+=4){const p=nrP(t,(s0+s1)/2,y);box('paint',p[0],y,p[2],.12,mid-y-.12,.12,hc(0x6a7a72));}}
- for(const t of [NR.PH-24,NR.PH,NR.PH+24])nrBand('grate',t-1,t+1,-W.MAIN+.3,W.MAIN-.3,mid-.12,mid,WHITE);
+ for(const t of [tc-24,tc,tc+24])nrBand('grate',t-1,t+1,-W.MAIN+.3,W.MAIN-.3,mid-.12,mid,WHITE);
  /* control stands along the walls, dead; ladders from the floor to the catwalk */
  for(let t=Z.t0+4;t<Z.t1-4;t+=7)for(const sg of [1,-1]){const p=nrP(t,sg*(W.MAIN-1.2),y),n=NR.nrm(t);box('paint',p[0],y,p[2],1.6,1.3,.7,hc(0x6a7a72),Math.atan2(n[0],n[1]));
   box('dark',p[0]-n[0]*sg*.36,y+.8,p[2]-n[1]*sg*.36,1.2,.4,.04,hc(0x10181c),Math.atan2(n[0],n[1]));}}
-nrPart('bridge',nrBridge);nrPart('dining',nrDining);nrPart('engine',nrEngineRoom);
+// ---------------------------------------------------------------- THE CREW MESSES (D3, the whole width; a galley beside each)
+// The corridors run through: an open hall between the hull's glass walls, a row of white columns down each corridor line,
+// a tiled floor. Tables, benches, the servery and the barrels are catalog pieces (70-nr-interiors.js).
+function nrMess(Z){const L=NR.L,W=NR.W,y=L.D[2],top=y+L.CLEAR;
+ nrBand('floor',Z.t0,Z.t1,-W.MAIN+.25,W.MAIN-.25,y,y+.02,P('floor'),'t');
+ nrZoneEnds(Z,2,y,top,'plaster',P('plaster'));
+ for(const sg of [1,-1])nrCurtain(Z.t0,Z.t1,sg*W.GLASS,y,top,NR.DT/2);
+ for(const s of [-W.COR-1.2,W.COR+1.2])for(let t=Z.t0+4.2;t<Z.t1-1;t+=4.2){const p=nrP(t,s,y);cyl('white',p[0],y,p[2],.3,top-y,P('white'),14);}}
+// ---------------------------------------------------------------- THE GREENHOUSE (D4, the whole width, under a glass vault on the top deck)
+// The Ancients grew the ship's greens here and the pirates still do: raised beds in rows across the hull, a walk down the
+// middle, the hull's glass walls, and no ceiling: the top deck's slab is open (40-nr-hull.js) under a glass barrel vault on
+// white ribs that stands proud of the deck. The pots, frames, butts and benches are catalog pieces (70).
+function nrGreenhouse(Z){const L=NR.L,W=NR.W,y=L.D[3],R=6.5;
+ nrBand('deck',Z.t0,Z.t1,-W.MAIN+.25,W.MAIN-.25,y,y+.02,hc(0xb8b0a0),'t');
+ nrZoneEnds(Z,3,y,L.TOP,'white',P('white'));
+ for(const sg of [1,-1])nrCurtain(Z.t0,Z.t1,sg*W.GLASS,y,L.TOP-L.SLAB,NR.DT/2,0x7a9aa0);
+ /* the beds: rows across the hull either side of the middle walk, white kerbs, earth */
+ for(let t=Z.t0+2.4;t<Z.t1-2;t+=3.4)for(const [s0,s1] of [[-W.GLASS+1.2,-1.6],[1.6,W.GLASS-1.2]]){
+  nrBand('white',t,t+1.6,s0,s1,y,y+.55,P('white'),'oitse');nrBand('turf',t+.08,t+1.52,s0+.08,s1-.08,y+.5,y+.56,hc(0x4a3a2a),'t');}
+ /* the vault: a glass barrel over the open slab, from parapet to parapet, its ribs every frame, end walls glazed */
+ const yb=L.TOP,sA=Z.s0+.3,sB=Z.s1-.3,half=(sB-sA)/2,vy=(u)=>yb+R*Math.sin(PI*u);
+ psurf('glass',(u,v)=>nrP(lerp(Z.t0,Z.t1,u),lerp(sA,sB,v),vy(v)),Math.max(4,Math.round((Z.t1-Z.t0)/2)),16,hc(0x9ab8c0),{up:true});
+ psurf('glass',(u,v)=>nrP(lerp(Z.t0,Z.t1,u),lerp(sA,sB,v),vy(v)-.02),Math.max(4,Math.round((Z.t1-Z.t0)/2)),16,hc(0x9ab8c0),{flip:true});   /* seen from inside */
+ for(let t=Z.t0;t<=Z.t1+.01;t+=NR.DT){const pts=[];for(let i=0;i<=16;i++){const u=i/16;pts.push(nrP(t,lerp(sA,sB,u),vy(u)));}cord('white',pts,.12,P('white'));}
+ for(const s of [sA+half*.5,sA+half,sA+half*1.5])psurf('white',(u,v)=>{const t=lerp(Z.t0,Z.t1,u),w=(s-sA)/(sB-sA);return nrP(t,s+(v-.5)*.25,vy(w)+.06);},Math.round(Z.t1-Z.t0),1,P('white'),{up:true});
+ for(const t of [Z.t0,Z.t1])psurf('glass',(u,v)=>{const s=lerp(sA,sB,u),w=(s-sA)/(sB-sA);return nrP(t,s,lerp(yb,vy(w),v));},16,1,hc(0x9ab8c0),{flip:t===Z.t0});
+ /* the kerb the vault stands on */
+ for(const s of [sA,sB])nrBand('white',Z.t0,Z.t1,s-.3,s+.3,yb,yb+.35,P('white'),'oitse');}
+function nrHalls(){for(const Z of NR.ZONES){if(Z.kind==='mess')nrMess(Z);else if(Z.kind==='greenhouse')nrGreenhouse(Z);}}
+nrPart('bridge',nrBridge);nrPart('dining',nrDining);nrPart('engine',nrEngineRooms);nrPart('halls',nrHalls);
 // prefix: nr
 // ================================================================= THE HOLDS: the pontoon's cargo holds, empty and half full of the sea
 // The whole pontoon under D1 (|s| < 25.3, y 0.6 -> 8.65) is one ring of holds: concrete columns on a grid, watertight
 // bulkheads with great doorways, a mezzanine gallery of grating along both skins at y 4.8, catwalks across where the
 // stairs come down (the atrium's descent, the two end cores). The sea stands in them at its own level (the hull is holed
 // and aground): about 2 m deep on the starboard side, 6 on the port side. The water is the sea's own mesh (82).
-const NR_BULKHEADS=[-232,-130,-40,60,170,236,330,430,500,640,740].map(t=>({t}));
+const NR_BULKHEADS=[-460,-370,-290,-200,-115,-40,40,115,200,290,370,460].map(t=>({t}));
 function nrHolds(){const L=NR.L,W=NR.W,y0=L.HOLD,y1=L.D[0]-L.SLAB,M=L.MEZZ,A=NR.ATRIUM;reseed(4700);
  /* the columns: four rows, every 8.4 m (skipped where a catwalk or a bulkhead stands) */
  const busy=t=>NR_BULKHEADS.some(b=>Math.abs(b.t-t)<1.2)||Math.abs(t-(A.tc-18))<3||NR.CORES.some(c=>c.down&&Math.abs(c.t-t)<4);
@@ -14832,32 +14898,33 @@ function nrHolds(){const L=NR.L,W=NR.W,y0=L.HOLD,y1=L.D[0]-L.SLAB,M=L.MEZZ,A=NR.
   if(onMezz&&rng()<.5)continue;box('rust',p[0],yb,p[1],2.4,2.5,6,WHITE,Math.atan2(n[0],n[1])+rr(-.25,.25),onMezz?0:rr(-.12,.12),onMezz?0:rr(-.1,.1));}}
 nrPart('holds',nrHolds);
 // prefix: nr
-// ================================================================= THE TOP DECK: parks, the stern funnels, the Ancient lamp standards
+// ================================================================= THE TOP DECK: parks, the twin funnels, the Ancient lamp standards
 // The platform on the ring: promenades along both parapets, the deck buildings on their lots (5x), lawns in raised white
 // beds between them (gone to meadow in a thousand years; the trees are placeholder flora placed as their own records, 64),
-// the stair kiosks (42), the atrium's dome (44), and at the stern the two great raked funnels over the engine room with the
-// stern garden between them, over the dining room.
+// the stair kiosks (42), the atrium's dome (44), the greenhouse's glass vault (46), the garden with its dry fountain over
+// the grand dining room, and at the stern of each hull its twin raked funnels over its engine room.
 function nrBed(t0,t1,s0,s1,y,h){nrBand('white',t0,t1,s0,s1,y,y+h,P('white'),'oise');
  nrBand('turf',t0+.25,t1-.25,s0+.25,s1-.25,y+h-.12,y+h-.02,P('turf'),'t');}
 function nrTop(){const L=NR.L,W=NR.W,y=L.TOP;reseed(4800);
  /* the parks: two beds either side of a central path, a path across the middle */
- for(const K of NR.PARKS){if(K.stern)continue;const m=(K.t0+K.t1)/2;
+ for(const K of NR.PARKS){if(K.garden)continue;const m=(K.t0+K.t1)/2;
   for(const [s0,s1] of [[-12.5,-1.6],[1.6,12.5]]){if(K.t1-K.t0>16){nrBed(K.t0+1,m-1.2,s0,s1,y,.5);nrBed(m+1.2,K.t1-1,s0,s1,y,.5);}else nrBed(K.t0+1,K.t1-1,s0,s1,y,.5);}}
- /* the stern garden over the dining room: a long lawn, a dry Ancient fountain (a ring of white, rainwater in it) */
- {const K=NR.PARKS.find(k=>k.stern),m=NR.PH;
+ /* the garden over the dining room: a long lawn, a dry Ancient fountain (a ring of white, rainwater in it) */
+ {const K=NR.PARKS.find(k=>k.garden),m=(K.t0+K.t1)/2;
   for(const [a,b] of [[K.t0+8,m-6],[m+6,K.t1-8]])for(const [s0,s1] of [[-13,-2],[2,13]])nrBed(a,b,s0,s1,y,.45);
   const c=NR.at(m,0);lathe('white',c[0],c[1],[[5,y],[5.3,y+.2],[5.3,y+.7],[4.9,y+.75],[4.7,y+.3]],40,P('white'));
   cyl('water',c[0],y+.3,c[1],4.75,.18,hc(0x4a5a4a),40);cyl('white',c[0],y,c[1],.6,2.2,P('white'),16,.3);sph('white',c[0],y+2.3,c[1],.55,P('white'),.6,16);}
  /* the funnels: elliptical, raked aft, white with a dark crown, soot down their lee side */
- for(const tf of [NR.PH-23,NR.PH+23]){const C=NR.at(tf,0),T=NR.tan(tf),N=NR.nrm(tf),H=15,ra=4.4,rb=2.7;
-  const fp=(u,v,k)=>{const a=u*TAU,rk=k||1,r=1-.12*v,rake=v*H*.22;return [C[0]+T[0]*Math.cos(a)*ra*r*rk+N[0]*(Math.sin(a)*rb*r*rk+rake),y+v*H,C[1]+T[1]*Math.cos(a)*ra*r*rk+N[1]*(Math.sin(a)*rb*r*rk+rake)];};
+ for(const tf of NR.FUNNELS){const C=NR.at(tf,0),T=NR.tan(tf),N=NR.nrm(tf),H=15,ra=4.4,rb=2.7;
+  /* raked aft: toward the hull's stern, +t on the starboard hull, -t on the port */
+  const ag=tf>0?1:-1,fp=(u,v,k)=>{const a=u*TAU,rk=k||1,r=1-.12*v,rake=v*H*.22*ag;return [C[0]+T[0]*(Math.cos(a)*ra*r*rk+rake)+N[0]*Math.sin(a)*rb*r*rk,y+v*H,C[1]+T[1]*(Math.cos(a)*ra*r*rk+rake)+N[1]*Math.sin(a)*rb*r*rk];};
   psurf('white',(u,v)=>fp(u,v*.82),32,6,P('white'));psurf('dark',(u,v)=>fp(u,.82+v*.18),32,2,hc(0x2a2c2e));
   psurf('dark',(u,v)=>{const p=fp(u,1,1-v*.9);return [p[0],y+H-.6,p[2]];},32,2,hc(0x161616),{up:true});
   smokeAt(...((p)=>[p[0],p[1]+.5,p[2]])(fp(0,1,0)),{r:.6,kind:'soot'});}
  /* the Ancient lamp standards along both promenades: slim white stems, round heads (dead; the pirates hang lanterns) */
- for(let t=NR.T0+8;t<NR.T1-6;t+=16)for(const s of [-16.8,16.8]){if(Math.abs(t-NR.PQ)<23)continue;const p=nrP(t,s,y);cyl('white',p[0],y,p[2],.12,4.2,P('white'),8,.07);sph('white',p[0],y+4.4,p[2],.32,P('white'),1,12);}
+ for(let t=NR.T0+8;t<NR.T1-6;t+=16)for(const s of [-16.8,16.8]){if(Math.abs(t-NR.ATRIUM.tc)<23)continue;const p=nrP(t,s,y);cyl('white',p[0],y,p[2],.12,4.2,P('white'),8,.07);sph('white',p[0],y+4.4,p[2],.32,P('white'),1,12);}
  /* ventilators: mushroom vents over the service core, between the lots */
- for(let t=NR.T0+20;t<NR.T1-10;t+=27){if(NR.LOTS.some(l=>Math.abs(l.t-t)<26)||NR.CORES.some(c=>Math.abs(c.t-t)<6)||Math.abs(t-NR.PQ)<26||Math.abs(t-NR.PH)<34)continue;
+ for(let t=NR.T0+20;t<NR.T1-10;t+=27){if(NR.LOTS.some(l=>Math.abs(l.t-t)<26)||NR.CORES.some(c=>Math.abs(c.t-t)<6)||Math.abs(t-NR.ATRIUM.tc)<26||NR.FUNNELS.some(f=>Math.abs(t-f)<9)||NR.PARKS.some(k=>k.garden&&t>k.t0-4&&t<k.t1+4)||NR.ZONES.some(z=>z.roof==='glass'&&t>z.t0-3&&t<z.t1+3))continue;
   const p=nrP(t,0,y);cyl('white',p[0],y,p[2],.7,1.4,P('white'),16);sph('white',p[0],y+1.4,p[2],1.0,P('white'),.45,16);}}
 nrPart('top',nrTop);
 // prefix: nr
@@ -14869,7 +14936,7 @@ nrPart('top',nrTop);
 // world is built (70-nr-interiors.js, called from 91f-furnish.js's buildWorld).
 defBuilding({key:'nr-arcology',name:"Noah's Regret (the grounded arcology)",seed:4000,cls:'building',kind:'arcology',
  tags:{types:['infrastructure','dwelling-multi','military'],wealth:'middle',style:'floating harbour',role:"Bloody Ruephus's pirate base"},
- w:2*(NR.A+NR.W.PONT)+16,d:2*(NR.B+NR.W.PONT)+140,   /* the stem's rake; the breakwater piers out to sea (41) */
+ w:2*(NR.A+NR.W.PONT)+16,d:2*(NR.B+NR.W.PONT)+4,   /* the stem's rake */
  h:NR.L.TOP+70,budget:6e6,
  front:{x:0,z:0,yaw:0},
  note:'a ring of pontoon hull round a harbour basin, four decks of cabins and public rooms, a top deck of parks and Ancient mid-rises; aground on the south shore, listing 0.8 degrees to port',
@@ -15806,9 +15873,9 @@ defBuilding({key:'nr-flora-fan-palm',name:'Fan palm (placeholder)',seed:6600,cls
  tags:Object.assign({harvest:{edible:false,fibre:true}},NR_FLORA_TAGS),w:6,d:6,h:9,budget:3000,
  note:'a placeholder palm for the stern garden: replace with the south shore biome kit\'s',build(o){nrFanPalm(o);}});
 nrAfter('flora',function(){const L=NR.L;reseed(6700);let v=0;
- for(const K of NR.PARKS){const stern=!!K.stern,n=stern?6:Math.max(1,Math.round((K.t1-K.t0)/12));
+ for(const K of NR.PARKS){const stern=!!K.garden,n=stern?6:Math.max(1,Math.round((K.t1-K.t0)/12));
   for(let i=0;i<n;i++){const t=lerp(K.t0+4,K.t1-4,n>1?i/(n-1):.5),s=(i%2?1:-1)*rr(5,10);
-   if(stern&&Math.abs(t-NR.PH)<8)continue;
+   if(stern&&Math.abs(t-(K.t0+K.t1)/2)<8)continue;
    const p=NR.at(t,s);place(stern?'nr-flora-fan-palm':'nr-flora-shade-tree',p[0],p[1],rr(0,TAU),{y:L.TOP+.38,v:v++});}}});
 // prefix: nr
 // ================================================================= THE FURNISHING PASS: every room of the arcology and its deck buildings
@@ -15822,8 +15889,12 @@ nrAfter('flora',function(){const L=NR.L;reseed(6700);let v=0;
 //     template's placements become a core/furnish RECORD in every cabin of that template, in the hull frame.
 //   DECK BUILDINGS. Each building's rooms are its interior set item's (kits/interiors/sets/noahs-regret.js), planned at
 //     the origin (nrPlanOf) and furnished once per item; every building of the item gets the records, moved to its lot.
-//   PUBLIC ROOMS (the bridge, the grand dining room, the engine room, the atrium, the corridors, the holds, the quay, the
-//     top deck): placed piece by piece below (FURNISH_H), drawn with the rest of the world's furniture.
+//   SHIP'S ROOMS (NR.ROOMS: the galleys, the wardroom, the chart room, the sick bays, the armoury, the brig, the carpenter's
+//     and cooper's shops, the sail loft, the bosun's store, the laundry, the strongroom, the chapel). Each is furnished once
+//     by the placer on its own template room, with the ship's room kinds added to the kit's programmes below.
+//   PUBLIC ROOMS (the bridge, the grand dining room, the crew messes, the greenhouse, the engine rooms, the atrium, the
+//     corridors, the holds, the quay, the top deck): placed piece by piece below (FURNISH_H), drawn with the rest of the
+//     world's furniture.
 // DRAWING: a template's pieces are built once into a batch in the template's frame and drawn as InstancedMeshes, one
 //   instance per room that uses it; only the rooms near the camera (and on the cut deck) are written into the instance
 //   buffers (nrStreamTick, every 0.4 s). Every record exists whatever is drawn (SVF.placed, core/tags).
@@ -15888,6 +15959,49 @@ function nrFurnishCabins(arc){const L=NR.L,out={furnished:0,bare:0,empty:0,rooms
   out.rooms.push({id:C.id,kind,deck:'D'+(C.deck+1),culture:NR_CABIN_CULTURE[kind],wealth:C.wealth,template:key,poly:pc.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:L.D[C.deck],h:L.CLEAR,
    door:{at:[+dp[0].toFixed(3),+dp[1].toFixed(3)],w:.9,to:'corridor'},pieces});}
  return out;}
+// ---------------------------------------------------------------- the SHIP'S ROOMS
+/* the ship's room kinds, as programmes of the interiors kit (data: what each needs; KIND_ALIAS lets catalog pieces that
+   list a kindred room qualify). Added once, before the first furnishing. */
+function nrShipKinds(){const IX=KratorInteriors;if(IX.PROGRAMS.sickbay)return;const SURF=IX.SURFACE_GROUP,ITEM=IX.ITEM_ROLES;
+ IX.PROGRAMS.sickbay={require:[{need:'cots',types:['bed'],n:3},{need:'medicine chest',types:['storage','shelf'],n:1}],
+  optional:[{types:['bed'],max:2},{types:['desk','table'],max:1},{types:['chair','bench'],max:1},{types:['shelf','storage'],max:2},{types:['lamp'],max:1},SURF],extra:4};
+ IX.KIND_ALIAS.sickbay=['bedroom','barracks','study','store'];
+ IX.PROGRAMS.chartroom={require:[{need:'chart table',types:['table','desk'],n:1},{need:'chart shelves',types:['shelf'],n:1}],
+  optional:[{types:['chair'],max:2},{types:['shelf','storage'],max:2},{types:['board'],max:1},{types:['lamp'],max:1},SURF],extra:5};
+ IX.KIND_ALIAS.chartroom=['study','library'];
+ IX.PROGRAMS.strongroom={require:[{need:'strongboxes',types:['storage'],roles:ITEM,n:3}],
+  optional:[{types:['storage','shelf','stack'],max:4},{types:['desk'],max:1},{types:['chair'],max:1},SURF],extra:3};
+ IX.KIND_ALIAS.strongroom=['store','study','court'];
+ IX.PROGRAMS.armoury={require:[{need:'racks',types:['weapon','rack'],n:3}],
+  optional:[{types:['weapon','rack'],max:3},{types:['storage','stack'],max:2},{types:['workstation'],max:1},SURF],extra:4};
+ IX.KIND_ALIAS.armoury=['barracks','smithy','shop'];
+ /* the brig's cells are the pirates' cages, placed by hand (nrFurnishPublic): the placer gives it the guard's bench and lamp */
+ IX.PROGRAMS.brig={require:[{need:'guard bench',types:['bench','chair'],n:1}],optional:[{types:['lamp'],max:1},{types:['rack','weapon'],max:1}],extra:8};
+ IX.KIND_ALIAS.brig=['barracks','yard','plaza'];
+ IX.PROGRAMS.sailloft={require:[{need:'cutting tables',types:['table','loom'],n:2}],
+  optional:[{types:['stack','storage'],max:3},{types:['rack','shelf'],max:2},{types:['bench','chair'],max:2},SURF],extra:5};
+ IX.KIND_ALIAS.sailloft=['workshop','store','market','dock'];
+ IX.PROGRAMS.laundry={require:[{need:'tubs',types:['vessel'],n:2},{need:'drying racks',types:['rack'],n:1}],
+  optional:[{types:['stove'],max:1},{types:['storage','stack'],max:2},{types:['bench','table'],max:1},SURF],extra:4};
+ IX.KIND_ALIAS.laundry=['workshop','kitchen','store','yard','stable'];
+ for(const k of ['sickbay','chartroom','strongroom','armoury','brig','sailloft','laundry'])IX.KIND_WEIGHT[k]=1.2;}
+function nrFurnishShipRooms(arc){nrShipKinds();const L=NR.L,out={rooms:[]};
+ for(const R of NR.ROOMS){const y=L.D[R.deck]+.02,sm=(R.s0+R.s1)/2,sC=R.side>0?R.s0:R.s1,sG=R.side>0?R.s1:R.s0;
+  /* the template room: as wide as the room's narrow end (the frames are radial), as deep as the band; +z to the corridor */
+  const kC=nrK(R.tc,sC),kG=nrK(R.tc,sG),w=(R.t1-R.t0)*Math.min(kC,kG)-NR_ROOM_TRIM,d=Math.abs(R.s1-R.s0)-.1;
+  const dx=R.side*(R.door-R.tc)*kC,dxC=clamp(dx,-w/2+.6,w/2-.6);
+  const T=nrTemplate('room|'+R.id,{kind:R.kind,culture:R.culture,wealth:R.wealth,y:0,h:L.CLEAR-.04,
+   poly:[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]],
+   doors:[{at:[dxC,d/2],w:1.1,swing:'in',hinge:'left'}],
+   windows:[{at:[0,-d/2],w:Math.max(.8,w-1.2),sill:.55,h:2.3}]});
+  const o=NR.at(R.tc,sm),n=NR.nrm(R.tc),ry=Math.atan2(-R.side*n[0],-R.side*n[1]);
+  const pieces=nrInstRecords(T,o[0],y,o[1],ry,{building:arc.tid,wealth:R.wealth,seed:nrHash(R.id)},R.id);
+  T.inst.push({m:nrInstMatrix(o[0],y,o[1],ry),p:[o[0],y,o[1]],deck:R.deck,floor:L.D[R.deck],id:R.id});
+  const pc=[NR.at(R.t0,R.s0),NR.at(R.t1,R.s0),NR.at(R.t1,R.s1),NR.at(R.t0,R.s1)],dp=NR.at(R.door,sC);
+  out.rooms.push({id:R.id,name:R.name,kind:R.kind,deck:'D'+(R.deck+1),culture:R.culture,wealth:R.wealth,template:T.key,poly:pc.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:L.D[R.deck],h:L.CLEAR,
+   door:{at:[+dp[0].toFixed(3),+dp[1].toFixed(3)],w:1.1,to:'corridor'},pieces});}
+ return out;}
+const NR_ROOM_TRIM=.3;   /* the partitions' thickness taken off a ship's room's width, with a margin */
 // ---------------------------------------------------------------- the DECK BUILDINGS
 function nrFurnishBuildings(){const out={rooms:[],residences:0,residenceFails:[],items:{}};const IX=KratorInteriors,cat=nrCatalog();
  for(const Bt of NR_BUILT){const inst=nrPlanOf(Bt.item);if(!inst)continue;
@@ -15925,9 +16039,9 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
   put('bridge','post-apoc_common_books',-.6,2.5,y+.8,'out');for(const s of [1.5,3.5])put('bridge','post-apoc_common_chair',0,s,y,s<2.5?'out':'in');
   for(const t of [-8,0,8])hang('bridge','post-apoc_court_hanging',t,12,top,'out');
   put('bridge','pa_drum',16,17.6,y,'in');put('bridge','pa_drum',15.2,18.2,y,'in');put('bridge','pa_crate',-16,17.8,y,'in');put('bridge','scrap_trade_barrel',-15.5,-.9,y,'out');}
- // --- the GRAND DINING ROOM (D3-D4, the stern): refectory runs and benches, the captain's table on the dais, the servery,
- //     chandeliers from the coffers, the crews' banners on the end walls
- {const Z=NR.zone('dining'),y=L.D[2]+.02,top=L.D[3]+L.CLEAR,PH=NR.PH;
+ // --- the GRAND DINING ROOM (D3-D4, the port hull): refectory runs and benches, the captain's table on the dais, the
+ //     servery, chandeliers from the coffers, the crews' banners on the end walls
+ {const Z=NR.zone('dining'),y=L.D[2]+.02,top=L.D[3]+L.CLEAR,PH=Z.tc;
   for(const s of [-15.5,-11,-3,3])for(let t=Z.t0+4.5;t<Z.t1-3;t+=4.6){if(s>9&&Math.abs(t-PH)<12)continue;
    put('dining','yuni_ancient_refectory_run',t,s,y,'out',{v:0});
    put('dining','yuni_ancient_moulded_bench',t,s-1.45,y,'out',{v:0});put('dining','yuni_ancient_moulded_bench',t,s+1.45,y,'in',{v:0});}
@@ -15938,13 +16052,35 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
   for(const t of [Z.t0+2.2,Z.t1-2.2])put('dining','scrap_trade_barrel',t,-W.MAIN+.2+.35,y,'out');
   for(const s of [-11,0,11])for(let t=Z.t0+8.6;t<Z.t1-4;t+=8.4)hang('dining','ancients_light_strip_ring',t,s,top-.6,'out');
   for(const [t,f] of [[Z.t0+.3+.06,'fwd'],[Z.t1-.3-.06,'aft']])for(const s of [-15,-9,9,15])put('dining','post-apoc_court_banner',t,s,y+2.6,f);}
- // --- the ENGINE ROOM (D1-D2, the stern): what the pirates use it for (a workshop in one corner, a dump in another)
- {const Z=NR.zone('engine'),y=L.D[0]+.03;
+ // --- the ENGINE ROOMS (D1-D2, the stern of each hull): what the pirates use them for (a workshop in one corner, a dump
+ //     in another)
+ for(const Z of NR.ZONES.filter(z=>z.kind==='engine')){const y=L.D[0]+.03;
   put('engine','pa_vice_bench',Z.t0+4,-W.MAIN+1.2,y,'out');put('engine','pa_vice_bench',Z.t0+8,-W.MAIN+1.2,y,'out');
   put('engine','pa_tool_rack',Z.t0+.3+.18+.1,-14,y,'fwd');put('engine','pa_tool_rack',Z.t0+.3+.18+.1,14,y,'fwd');
   for(let i=0;i<4;i++)put('engine','scrap_trade_locker',Z.t0+.6+.25,-5+i*1,y,'fwd');
   for(let i=0;i<7;i++){const t=Z.t1-3-(i%3)*1.4,s=8+Math.floor(i/3)*1.4;put('engine',i%2?'pa_drum':'pa_crate',t,s,y,'aft',{v:i%2});}
   put('engine','pa_drum_store',Z.t1-6,-16,y,'aft');put('engine','pa_hanging_lamp',Z.t0+6,-17,y,'out');}
+ // --- the CREW MESSES (D3): long tables and benches in rows across the hall, the servery along the galley's end, barrels,
+ //     lanterns, the crews' banners
+ for(const Z of NR.ZONES.filter(z=>z.kind==='mess')){const y=L.D[2]+.02,top=y+L.CLEAR,room=Z.id,gal=NR.ROOMS.find(r=>r.kind==='kitchen'&&r.deck===2&&(Math.abs(r.t0-Z.t1)<.5||Math.abs(r.t1-Z.t0)<.5));
+  const gEnd=gal?(Math.abs(gal.t0-Z.t1)<.5?Z.t1:Z.t0):Z.t1,gDir=gEnd===Z.t1?'aft':'fwd',farEnd=gEnd===Z.t1?Z.t0:Z.t1,fd=farEnd===Z.t0?1:-1;
+  for(let t=Z.t0+4;t<Z.t1-5;t+=4.2)for(const s of [-15.5,-4.5,4.5,15.5]){put(room,'pa_long_table',t,s,y,'out');put(room,'pa_bench',t-.95,s,y,'out',{v:0});put(room,'pa_bench',t+.95,s,y,'out',{v:0});}
+  for(const s of [-14,-9.75,9.75,14])put(room,'pa_servery',gEnd-(gDir==='aft'?1:-1)*.7,s,y,gDir==='aft'?'aft':'fwd');
+  for(const s of [-17,17])for(let j=0;j<3;j++)put(room,j%2?'generic_keg':'generic_barrel',farEnd+fd*(.8+j*.9),s,y,fd>0?'fwd':'aft');
+  for(let t=Z.t0+6;t<Z.t1-2;t+=8)for(const s of [-10,10])hang(room,'pa_hanging_lamp',t,s,top,'fwd',{v:nrMod(t|0,3)});
+  for(const s of [-15,-5,5,15])put(room,'post-apoc_common_banner',farEnd+fd*.36,s,y+2.2,fd>0?'fwd':'aft');}
+ // --- the GREENHOUSE (D4, under its glass vault): planters on the beds, cold frames down the walk, water butts, potting
+ //     benches and seed sacks at the ends, the harvest in baskets, a scarecrow for the gulls
+ {const Z=NR.zone('greenhouse'),y=L.D[3]+.02,room='greenhouse';
+  for(let t=Z.t0+2.4;t<Z.t1-2;t+=3.4)for(const s of [-14,-9,-4.5,4.5,9,14])put(room,'pa_planter',t+.8,s,y+.56,'out',{v:nrMod((t*7|0)+(s|0),3)});
+  for(let t=Z.t0+4;t<Z.t1-4;t+=6.8)put(room,'pa_cold_frame',t,0,y,'out');
+  for(const s of [-17.2,17.2]){put(room,'pa_water_butt',Z.t0+1,s,y,'fwd');put(room,'pa_water_butt',Z.t1-1,s,y,'aft');}
+  for(const s of [-12,12]){put(room,'generic_poor_workbench',Z.t0+.75,s,y,'fwd');put(room,'generic_sack',Z.t0+.6,s+(s>0?-2.2:2.2),y,'fwd');put(room,'generic_poor_workbench',Z.t1-.75,s,y,'aft');}
+  for(const s of [-6,6]){put(room,'generic_veg_basket',Z.t1-1,s,y,'aft');put(room,'generic_produce',Z.t0+1,s,y,'fwd');}
+  put(room,'pa_scarecrow',(Z.t0+Z.t1)/2,1.2,y,'out');}
+ // --- the BRIG (D3): the pirates' cages along its outboard wall, the stocks by the door
+ {const R=NR.room('brig'),y=L.D[R.deck]+.02,sG=R.side>0?R.s1-1.2:R.s0+1.2;
+  for(let t=R.t0+2;t<R.t1-1.5;t+=3.2)put('brig',nrMod(t|0,2)?'pa_drum_cage':'pa_prisoner_cage',t,sG,y,R.side>0?'in':'out',{v:1});}
  // --- the GRAND ATRIUM: lamp standards round the stair's foot, benches along the galleries, planters, statues at the doors,
  //     lanterns under the bridges
  {const A=NR.ATRIUM,tau=t=>A.tc+t,y1=L.D[0]+.02;
@@ -15967,12 +16103,12 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
   put('quay','pa_lamp_post',F.t-1,-(W.PONT-1.2),y,'in');}
  // --- the TOP DECK: the pirates' lamp posts along the promenades, benches by the beds, fires, the AA batteries Ruephus
  //     turned on the sea, his justice by his door (stocks, cages, a gibbet), the mess hall's tables in front of it
- {const y=L.TOP+.01;const free=t=>!NR.LOTS.some(l=>Math.abs(l.t-t)<(l.key==='nr-anc-reliquary'?24:l.key==='nr-anc-apt-ribbon'?21:l.key==='nr-anc-apt-drum'?13:18))&&!NR.CORES.some(c=>Math.abs(c.t-t)<6)&&Math.abs(t-NR.PQ)>24;
+ {const y=L.TOP+.01;const free=t=>!NR.LOTS.some(l=>Math.abs(l.t-t)<(l.key==='nr-anc-reliquary'?24:l.key==='nr-anc-apt-ribbon'?21:l.key==='nr-anc-apt-drum'?13:18))&&!NR.CORES.some(c=>Math.abs(c.t-t)<6)&&Math.abs(t-NR.ATRIUM.tc)>24&&!NR.FUNNELS.some(f=>Math.abs(t-f)<7)&&!NR.ZONES.some(z=>z.roof==='glass'&&t>z.t0-2&&t<z.t1+2);
   for(let t=NR.T0+14;t<NR.T1-8;t+=24)for(const s of [-15.2,15.2])if(free(t))put('top','pa_lamp_post',t,s,y,s>0?'in':'out',{v:nrMod(t|0,2)});
-  for(const K of NR.PARKS){if(K.stern)continue;const m=(K.t0+K.t1)/2;for(const s of [-13.6,13.6])put('top','pa_bench',m,s,y,s>0?'in':'out',{v:0});}
-  {const m=NR.PH;for(const t of [m-12,m+12])for(const s of [-14.2,14.2])put('top','pa_bench',t,s,y,s>0?'in':'out',{v:1});}
+  for(const K of NR.PARKS){if(K.garden)continue;const m=(K.t0+K.t1)/2;for(const s of [-13.6,13.6])put('top','pa_bench',m,s,y,s>0?'in':'out',{v:0});}
+  {const K=NR.PARKS.find(k=>k.garden),m=(K.t0+K.t1)/2;for(const t of [m-12,m+12])for(const s of [-14.2,14.2])put('top','pa_bench',t,s,y,s>0?'in':'out',{v:1});}
   for(const Lt of NR.LOTS){if(Lt.use!=='barracks')continue;const sg=Lt.face==='in'?-1:1;put('top','pa_camp_fire',Lt.t+(Lt.key==='nr-anc-apt-drum'?13:18),sg*8,y,'out',{v:nrMod(Lt.t|0,3)});}
-  for(const [t,s] of [[NR.T0+9,-14],[NR.T1-9,-14],[34,15],[34,-15],[NR.PH-42,15],[NR.PH+42,-15]])put('top','ancients_aa_battery',t,s,y,s>0?'out':'in',{v:0});
+  for(const [t,s] of [[NR.T0+9,-14],[NR.T0+9,14],[NR.T1-9,-14],[NR.T1-9,14],[-90,15],[90,15]])put('top','ancients_aa_battery',t,s,y,s>0?'out':'in',{v:0});
   {const hq=NR.LOTS.find(l=>l.use==='hq');const t0=hq.t+27;put('top','pa_gibbet',t0,-9,y,'fwd');put('top','pa_stocks',t0+3,-10,y,'fwd');put('top','pa_stocks',t0+3,10,y,'fwd');
    put('top','pa_prisoner_cage',t0+1,12,y,'fwd',{v:1});put('top','pa_spear_drum',t0-2,5.5,y,'fwd');put('top','pa_spear_drum',t0-2,-5.5,y,'fwd');}
   {const mh=NR.LOTS.find(l=>l.use==='mess');const sg=mh.face==='in'?-1:1;
@@ -15984,16 +16120,17 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
  for(const k in NR_TPL)delete NR_TPL[k];NR_INST.length=0;
  if(NR_FURNG){NR_FURNG.parent&&NR_FURNG.parent.remove(NR_FURNG);}
  NR_FURNG=new THREE.Group();NR_FURNG.name='furniture:instanced';NR_FURNG.matrixAutoUpdate=false;NR_FURNG.matrix.fromArray(NR_HULL.m16);NR_FURNG.userData.furniture=true;HULLG.add(NR_FURNG);
- const cab=nrFurnishCabins(arc),bld=nrFurnishBuildings(),pub=nrFurnishPublic(arc);
+ const cab=nrFurnishCabins(arc),shp=nrFurnishShipRooms(arc),bld=nrFurnishBuildings(),pub=nrFurnishPublic(arc);
  for(const k in NR_TPL)nrTemplateDraw(NR_TPL[k]);
  /* the report the verifier reads */
  const missingRequired=[],auditFails=[],byKind={};let audited=0;
  for(const k in NR_TPL){const T=NR_TPL[k];if(!T.inst.length)continue;audited++;byKind[T.kind]=(byKind[T.kind]||0)+T.inst.length;
   for(const m of (T.plan.report.missing||[]))missingRequired.push(k+': '+m.need+' ('+m.reason+')');
   if(T.audit&&!T.audit.ok)for(const f of T.audit.fails.slice(0,3))auditFails.push(k+': '+(typeof f==='string'?f:(f.check||'')+' '+(f.detail||f.msg||JSON.stringify(f)).slice(0,120)));}
- window._interiors={rooms:cab.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
+ window._interiors={rooms:cab.rooms.length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
   cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
-  publicRooms:[['bridge',14],['dining',60],['engine',12],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
+  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',40],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
+  shipRooms:shp.rooms.map(r=>({id:r.id,name:r.name,kind:r.kind,deck:r.deck,pieces:r.pieces})),
   cabins:cab.rooms,buildingRooms:bld.rooms,items:Object.keys(bld.items).map(k=>({item:k,rooms:bld.items[k].tpls.length,residence:bld.items[k].residence})),
   ms:Math.round(performance.now()-t0)};
  nrStreamTick(true);}
@@ -16942,29 +17079,36 @@ const NR_LEVELS=[['off',null],['Holds (mezzanine)',NR.L.MEZZ+3.0],['D1 - strippe
 for(let k=1;k<=5;k++)NR_LEVELS.push(['Top deck: storey '+(k+1),NR.L.TOP+.25+k*NR_STOREY+2.2]);
 function nrHP(t,s,y){const p=NR.at(t,s);return nrH2W(p[0],y,p[1]);}
 function nrV(eye,at,opt){return eye.concat(at,[opt||{}]);}
-function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id===id),V={};
+function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===id),zone=NR.zone,room=NR.room,V={};
  const cutAt=name=>{const q=NR_LEVELS.find(l=>l[0].startsWith(name));return q?q[1]:null;};
  V["Opening: the harbour from the north-east"]=nrV([420,250,-470],[-10,8,10]);
- V['From the sea: the harbour mouth']=nrV([-40,22,-560],[-5,14,-150]);
+ V['From the sea: the port hull']=nrV([-60,22,-600],[-20,14,-150]);
+ {const a=NR.at(NR.T1,0),b=NR.at(NR.T0,0),m=nrH2W((a[0]+b[0])/2,0,(a[1]+b[1])/2);
+  V['Astern: the harbour mouth between the hulls']=nrV([m[0]-330,40,m[2]-40],[m[0]+60,10,m[2]]);}
  V['The beach: the starboard hull']=nrV(nrHP(PQ-30,92,L.TOP-12),nrHP(PQ+10,20,L.D[0]+6));
  V["The bow: Ruephus's headquarters"]=nrV(nrHP(-40,90,L.TOP+38),nrHP(4,0,L.TOP+16));
  V['The top deck: the promenade']=nrV(nrHP(52,-16.5,L.TOP+1.7),nrHP(96,-6,L.TOP+5));
- V['The stern: funnels and garden']=nrV(nrHP(PH-90,-70,L.TOP+40),nrHP(PH,0,L.TOP+6));
+ V['The stern of the starboard hull: the twin funnels']=nrV(nrHP(NR.T1-110,-70,L.TOP+40),nrHP(NR.T1-34,0,L.TOP+6));
+ {const G=zone('greenhouse');V['The greenhouse under its glass']=nrV(nrHP(G.t0+3,-12,L.D[3]+2.2),nrHP(G.t1-4,6,L.D[3]+1.2));
+  V['The greenhouse vault on the top deck']=nrV(nrHP(G.t0-40,-46,L.TOP+22),nrHP(G.tc,0,L.TOP+3));}
+ {const Z=zone('dining');V['The garden over the dining room']=nrV(nrHP(Z.tc-40,-40,L.TOP+18),nrHP(Z.tc,0,L.TOP+2));}
  V['The atrium: the grand stair']=nrV(nrHP(PQ-17,-1,L.D[0]+1.7),nrHP(PQ+6,0,L.D[1]+3));
  V['The atrium from the dome gallery']=nrV(nrHP(PQ-15,-14.9,L.TOP+2.0),nrHP(PQ+12,5,L.D[1]));
  V['The bow: the forecastle and the stem']=nrV(nrHP(-30,95,L.D[0]+14),nrHP(3,24,L.D[1]+1));
  {const M=NR.PIERS.find(p=>p.kind==='mole'),e=nrPierPt(M,M.len+40,-34,L.D[0]+16),a=nrPierPt(M,M.len*.45,0,L.D[0]);
   V['The liner mole']=nrV(nrH2W(e[0],e[1],e[2]),nrH2W(a[0],a[1],a[2]));}
- {const A=NR.PIERS.filter(p=>p.kind==='arm'),m=[(A[0].head[0]+A[1].head[0])/2,(A[0].head[1]+A[1].head[1])/2];
-  V['The mouth: the breakwater piers']=nrV(nrH2W(m[0]-30,34,m[1]-110),nrH2W(m[0],L.D[0],m[1]+40));}
- V['The inner quay and a float']=nrV(nrHP(42,-60,L.D[0]+6),nrHP(62,-26,L.D[0]));
+ V['The inner quay and a float']=nrV(nrHP(70,-62,L.D[0]+6),nrHP(90,-26,L.D[0]));
  V['Plan: the bridge (D4)']=nrV(nrHP(-26,-30,L.D[3]+34),nrHP(0,6,L.D[3]),{cut:cutAt('D4')});
- V['Plan: the grand dining room']=nrV(nrHP(PH+44,30,L.D[2]+38),nrHP(PH,0,L.D[2]),{cut:cutAt('Dining')});
- V['Plan: the engine room']=nrV(nrHP(PH-50,-30,L.D[0]+36),nrHP(PH,0,L.D[0]),{cut:cutAt('D2')});
+ {const Z=zone('dining');V['Plan: the grand dining room']=nrV(nrHP(Z.tc-44,30,L.D[2]+38),nrHP(Z.tc,0,L.D[2]),{cut:cutAt('Dining')});}
+ for(const [id,nm] of [['engine-s','starboard'],['engine-p','port']]){const Z=zone(id);V['Plan: the '+nm+' engine room']=nrV(nrHP(Z.tc-Z.aft*50,-30,L.D[0]+36),nrHP(Z.tc,0,L.D[0]),{cut:cutAt('D2')});}
+ {const Z=zone('mess-s');V['Plan: the starboard crew mess and galley']=nrV(nrHP(Z.tc-30,-34,L.D[2]+30),nrHP(Z.t1,0,L.D[2]),{cut:cutAt('D3')});}
+ {const Z=zone('greenhouse');V['Plan: the greenhouse']=nrV(nrHP(Z.tc-36,-30,L.D[3]+34),nrHP(Z.tc,0,L.D[3]),{cut:cutAt('D4')});}
+ {const R=room('carpenter'),B=room('brig');V["Plan: the ship's rooms (the carpenter's shop, the brig)"]=nrV(nrHP(R.tc-26,-30,L.D[2]+30),nrHP((R.tc+B.tc)/2,0,L.D[2]),{cut:cutAt('D3')});}
+ {const R=room('wardroom'),C=room('chartroom');V["Plan: the wardroom and the chart room (D4)"]=nrV(nrHP(R.tc+30,-28,L.D[3]+28),nrHP((R.tc+C.tc)/2,0,L.D[3]),{cut:cutAt('D4')});}
  V['Plan: the holds']=nrV(nrHP(PQ+90,-40,L.MEZZ+30),nrHP(PQ+60,0,L.HOLD),{cut:cutAt('Holds')});
- V['Plan: D3 crew cabins']=nrV(nrHP(150,-34,L.D[2]+26),nrHP(176,6,L.D[2]),{cut:cutAt('D3')});
+ V['Plan: D3 crew cabins']=nrV(nrHP(-200,-34,L.D[2]+26),nrHP(-176,6,L.D[2]),{cut:cutAt('D3')});
  V["Plan: D4 officers' cabins"]=nrV(nrHP(-110,30,L.D[3]+26),nrHP(-84,-6,L.D[3]),{cut:cutAt('D4')});
- V['Plan: D1, stripped']=nrV(nrHP(380,-30,L.D[0]+24),nrHP(400,4,L.D[0]),{cut:cutAt('D1')});
+ V['Plan: D1, stripped']=nrV(nrHP(380,-30,L.D[0]+24),nrHP(360,4,L.D[0]),{cut:cutAt('D1')});
  V['Inside: a D3 cabin']=nrV(nrHP(201.6,14,L.D[2]+1.6),nrHP(202.2,18.2,L.D[2]+.9));
  const a2=lot('lot-a2'),o2=lot('lot-o2'),hq=lot('lot-hq');
  V['Plan: a barracks (storey 2)']=nrV(nrHP(a2.t-26,24,L.TOP+30),nrHP(a2.t,0,L.TOP+NR_STOREY),{cut:cutAt('Top deck: storey 2')});
@@ -16977,7 +17121,7 @@ function nrDeckOf(y){const L=NR.L;if(y<L.D[0])return y<L.MEZZ?'the holds':'the h
 function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);
  if(!q.inRing||Math.abs(q.s)>NR.W.PONT+.5){const Pr=NR.pierAt(h[0],h[2]);return Pr?Pr.name+'  (pier '+Pr.id.replace('pier-','')+')':'outside the hull';}
  const deck=nrDeckOf(h[1]+.3),a=Math.abs(q.s);let what='';
- for(const Z of NR.ZONES){const d=NR.L.D.findIndex((y,i)=>h[1]+.3>=y&&(i===3||h[1]+.3<NR.L.D[i+1]));if(q.t>=Z.t0&&q.t<=Z.t1&&Z.decks.indexOf(d)>=0&&q.s>=Z.s0&&q.s<=Z.s1)what=Z.name;}
+ for(const Z of NR.ZONES.concat(NR.ROOMS)){const d=NR.L.D.findIndex((y,i)=>h[1]+.3>=y&&(i===3||h[1]+.3<NR.L.D[i+1]));if(q.t>=Z.t0&&q.t<=Z.t1&&Z.decks.indexOf(d)>=0&&q.s>=Z.s0&&q.s<=Z.s1)what=Z.name;}
  if(!what&&h[1]<NR.L.TOP&&h[1]>=NR.L.D[0]-.1){if(a>NR.W.MAIN)what=q.s>0?(Math.abs(q.t)<NR.FORE.t?'the forecastle':'the outer promenade'):'the inner quay';else if(a>=NR.W.CAB){const C=NR.cabins.find(c=>q.t>=c.t0&&q.t<c.t1&&c.side===(q.s>0?1:-1)&&NR.L.D[c.deck]<=h[1]+.3&&h[1]+.3<NR.L.D[c.deck]+NR.L.DH);what=C?'cabin '+C.id+(C.kind?' ('+C.kind+')':' (empty)'):'cabins';}
   else if(a>=NR.W.COR)what='the corridor';else{const C=NR.CORES.find(c=>Math.abs(q.t-c.t)<4);what=C?'stair core '+C.id:'the service core';}}
  return deck+(what?' · '+what:'')+'  (t '+q.t.toFixed(0)+', s '+q.s.toFixed(1)+')';}
@@ -16994,8 +17138,8 @@ function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR
   if(!(q.s>W.MAIN&&Math.abs(q.t)<NR.FORE.t))F.push(L.D[0]);
   if(a<=W.MAIN){for(let d=1;d<=4;d++){const y=d<4?L.D[d]:L.TOP;if(inVoid)continue;
     if(NR.CORES.some(c=>Math.abs(q.t-c.t)<3.5&&a<6))continue;
-    if(d===1&&q.t>NR.zone('engine').t0&&q.t<NR.zone('engine').t1)continue;
-    if(d===3&&q.t>NR.zone('dining').t0&&q.t<NR.zone('dining').t1)continue;F.push(y);}
+    /* no floor where a room is double height (its decks d-1 and d), nor on the top deck over the greenhouse's glass */
+    if(NR.ZONES.some(Z=>Z.kind!=='atrium'&&q.t>Z.t0&&q.t<Z.t1&&q.s>Z.s0&&q.s<Z.s1&&((d<4&&Z.decks.indexOf(d-1)>=0&&Z.decks.indexOf(d)>=0)||(d===4&&Z.roof==='glass'))))continue;F.push(y);}
    for(const B of NR_BUILT){const lx=(h[0]-B.x)*Math.cos(B.ry)-(h[2]-B.z)*Math.sin(B.ry),lz=(h[0]-B.x)*Math.sin(B.ry)+(h[2]-B.z)*Math.cos(B.ry);
     if(Math.abs(lx)<B.w/2&&Math.abs(lz)<B.d/2)for(const fy of B.floors)F.push(fy);}}}
  return F.map(y=>nrH2W(h[0],y,h[2])[1]);}

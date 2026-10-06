@@ -17,14 +17,14 @@
 
 ## The hull and the piers
 
-- [ ] From high up the ring still reads broad (505 x 296 m): a harbour ring 52 m thick cannot bend tighter than about 38 m
-      at the bow without its inboard skin folding over, so the fine entry is the cutwater and the forecastle's sheer, not the
-      plan. A longer, narrower ring is one constant pair in `14-nr-plan.js` (A, B; keep the length or re-place the t's).
+- [ ] The two hulls meet at the bow in a tight V: the inboard skin bends at about 10 m there, and the liner mole's root
+      follows that curve. Cabins on the inboard side of the bow are too narrow for a template and are stores.
 - [ ] The finger piers' columns go down to the keel's depth, not to the sea floor; where the basin is shallow (the sand bar
-      off the starboard quay) they stand in sand. The breakwater piers and the mole are pontoons like the hull, so at the
-      list the sea stands higher on the port-side arms (about 2 m of freeboard).
+      off the starboard quay) they stand in sand. The mole is a pontoon like the hulls.
 - [ ] The forecastle is a closed void between the bulwark and the main block's D1-D2 walls (stripped decks): those cabins'
       windows look onto its inside.
+- [ ] The sterns are plain transoms with the main block's end walls straight above them; the screws and rudders are simple
+      (a hub, four flat blades, a slab rudder).
 
 ## Interiors
 
@@ -32,8 +32,14 @@
       furniture. The template room is the class width x the cabin depth, inside the real (slightly trapezoidal) cabin, so the
       outboard few centimetres of the wider cabins stay empty. Records exist per cabin.
 - [ ] Deck buildings of one type (four Ribbon terraces, three Drum towers, two barracks offices) are furnished alike.
-- [ ] The grand dining room, the bridge, the engine room and the atrium are furnished piece by piece, not by the placer
-      (a 2,000 m2 hall is not a room the placer's programmes fit); they are registered as zones, not as ROOM()s.
+- [ ] The grand dining room, the bridge, the engine rooms, the crew messes, the greenhouse and the atrium are furnished
+      piece by piece, not by the placer (a 2,000 m2 hall is not a room the placer's programmes fit); they are registered as
+      zones, not as ROOM()s. The brig's cages are placed by hand too (the catalog's cages are yard pieces).
+- [ ] The ship's rooms are furnished on a rectangle the width of the room's narrow end: on the bow's curves (the chart room,
+      the wardroom, the strongroom) the wide end of the room stays bare. The ship's room kinds (sick bay, chart room,
+      strongroom, armoury, brig, sail loft, laundry) are programmes added by this page (70-nr-interiors.js), not by the
+      interiors kit: the sail loft gets looms and benches, the laundry quench tubs and goods rails (no laundry pieces in the
+      catalog yet).
 - [ ] The small Reliquary's stairs are steep (0.21 m risers on 0.23 m treads: a ship's stair). Its 12-gon walls are short.
 - [ ] The cabins on D1 and D2 are stripped and empty by the brief; their doors are gone. They are not rooms in the data yet.
 

@@ -93,7 +93,8 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];
   R.push({name:'interiors-audit',ok:I.auditFails.length===0,detail:I.auditFails.length?I.auditFails.slice(0,10).join(' | '):I.audited+' template rooms audited (inside, overlap, doors, clearance, reach)'});
   R.push({name:'cabins-inhabited',ok:I.cabinsBare===0&&I.cabinsFurnished>0,detail:I.cabinsFurnished+' inhabited cabins furnished on D3-D4, '+I.cabinsBare+' bare; D1-D2 stripped: '+I.cabinsEmpty});
   R.push({name:'residences',ok:I.residenceFails.length===0,detail:I.residenceFails.length?I.residenceFails.join(' | '):I.residences+' deck buildings pass the residence rule (bed, food and item containers per unit)'});
-  R.push({name:'public-rooms',ok:I.publicRooms.every(r=>r.pieces>=r.min),detail:I.publicRooms.map(r=>r.id+' '+r.pieces+(r.pieces<r.min?' < '+r.min:'')).join(', ')});}
+  R.push({name:'public-rooms',ok:I.publicRooms.every(r=>r.pieces>=r.min),detail:I.publicRooms.map(r=>r.id+' '+r.pieces+(r.pieces<r.min?' < '+r.min:'')).join(', ')});
+  const SR=I.shipRooms||[];R.push({name:'ship-rooms',ok:SR.length>=12&&SR.every(r=>r.pieces>=3),detail:SR.length+" ship's rooms: "+SR.map(r=>r.id+' '+r.pieces).join(', ')});}
  else R.push({name:'interiors',ok:false,detail:'window._interiors missing'});
  R.push({name:'no-life-layer',ok:A.faction().life.length===0,detail:'the brief: furniture, no life layer yet (faction data kept for it)'});
  const M=A.materials();R.push({name:'material-records',ok:!!(M&&M.records&&M.records.length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'});

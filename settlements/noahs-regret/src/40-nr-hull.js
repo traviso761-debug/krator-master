@@ -52,9 +52,10 @@ function nrSlabHoles(d){const L=NR.L,H=[],A=NR.ATRIUM;
  H.push({t0:A.tc-A.voidT,t1:A.tc+A.voidT,s0:-A.voidS,s1:A.voidS});
  /* the stair cores' wells */
  for(const C of NR.CORES)H.push({t0:C.t-3.5,t1:C.t+3.5,s0:-6,s1:6});
- /* the double-height rooms: the engine room (no D2 floor), the dining room (no D4 floor) */
- if(d===1){const Z=NR.zone('engine');H.push({t0:Z.t0,t1:Z.t1,s0:-NR.W.MAIN,s1:NR.W.MAIN});}
- if(d===3){const Z=NR.zone('dining');H.push({t0:Z.t0,t1:Z.t1,s0:-NR.W.MAIN,s1:NR.W.MAIN});}
+ /* the double-height rooms (a zone on decks d-1 and d has no floor at d: the engine rooms, the dining room), and the
+    greenhouse's glass roof (no top-deck slab over it) */
+ for(const Z of NR.ZONES){if(Z.kind==='atrium')continue;
+  if((d<4&&Z.decks.indexOf(d-1)>=0&&Z.decks.indexOf(d)>=0)||(d===4&&Z.roof==='glass'&&Z.decks.indexOf(3)>=0))H.push({t0:Z.t0,t1:Z.t1,s0:Z.s0,s1:Z.s1});}
  return H;}
 // ---------------------------------------------------------------- the hull shell
 const NR_ANTIFOUL=0x6e3428;
@@ -112,17 +113,28 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
    nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2)nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}
   nrRadial('white',t,-W.MAIN,W.MAIN,L.TOP,L.TOP+L.PARAPET,.3,P('white'));
   nrEndCap(t,dir);}
- nrMouthBridge();nrForecastle();}
-/* the pontoon's end at the mouth (t, dir: +1 beyond T1, -1 before T0): a rounded stub 4 m long closing the hull's end; the
-   piers that run out to sea from here are 41-nr-piers.js */
-function nrEndCap(t,dir){const L=NR.L,R=NR.W.PONT,e=4,pts=[];
+ for(const B of NR.BEACONS)nrBeacon(B.x,L.D[0],B.z);
+ nrForecastle();}
+/* a hull's stern (t, dir: +1 beyond T1, -1 before T0): a transom cap NR.ENDCAP long, its corners rounded, closing the
+   pontoon's end; under it the twin screws and a rudder behind each, their tops out of the water now the stern rides high
+   (she lies trimmed by the bow) */
+function nrEndCap(t,dir){const L=NR.L,R=NR.W.PONT,e=NR.ENDCAP,pts=[];
  const P2=(u,s)=>NR.at(t+dir*u,s);
  pts.push(P2(0,-R));for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.sin(a),-R+e*(1-Math.cos(a))));}
  for(let i=0;i<=6;i++){const a=i/6*PI/2;pts.push(P2(e*Math.cos(a),R-e*(1-Math.sin(a))));}pts.push(P2(0,R));
  /* prism wants a positive signed area in (x, z) (its side normals are the edges turned -90 degrees) */
  const ar=pts.reduce((a,p,i)=>{const q=pts[(i+1)%pts.length];return a+p[0]*q[1]-q[0]*p[1];},0);if(ar<0)pts.reverse();
  prism('paint',pts,0,5.6,hc(NR_ANTIFOUL));prism('barn',pts,5.6,7.0,WHITE);prism('white',pts,7.0,L.D[0]-L.SLAB,P('whiteS'));
- prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));}
+ prism('deck',pts,L.D[0]-L.SLAB,L.D[0],hc(0xcfc9bb));
+ /* a kerb and rail round the transom's deck */
+ for(let i=1;i<pts.length-2;i++){const a=pts[i],b=pts[i+1];beam('white',[a[0],L.D[0]+.15,a[1]],[b[0],L.D[0]+.15,b[1]],.3,P('white'));}
+ /* the screws (four blades on a hub, bronze gone green) on their shafts out of the hull, the rudders behind them */
+ const T=NR.tan(t),ry=Math.atan2(T[0]*dir,T[1]*dir);
+ for(const s of [-12,12]){const c=P2(e+2.2,s),hub=[c[0],2.8,c[1]],sh=P2(-3,s);
+  beam('paint',[sh[0],2.8,sh[1]],hub,.35,hc(0x4a5048),true,10);
+  W(hub[0],hub[1],hub[2],ry,()=>{sph('brass',0,0,0,.75,hc(0x5a7a5c),1.4,12);
+   for(let k=0;k<4;k++){const a=k/4*TAU+.4;box('brass',Math.cos(a)*1.45,Math.sin(a)*1.45-.4,0,.9,.8,.12,hc(0x5a7a5c),.3,0,a);}});
+  const r0=P2(e+5.2,s);W(r0[0],0,r0[1],ry,()=>{box('paint',0,.6,0,.5,5.4,3.2,hc(NR_ANTIFOUL));box('paint',0,6,-.6,.3,1.6,.3,hc(0x4a5048));});}}
 /* the beacon: a slim Ancient lantern tower (on the breakwater piers' heads, 41-nr-piers.js), base at hull (x, y, z) */
 function nrBeacon(x,y,z){cyl('white',x,y,z,2.4,12,P('white'),20,1.8);cyl('white',x,y+12,z,2.6,.5,P('white'),20);
  cyl('glass',x,y+12.5,z,1.6,2.4,hc(0x8aa0a8),16);sph('white',x,y+14.9,z,1.9,P('white'),.55,16);
@@ -162,14 +174,4 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
    for(const k of [-1,1])box('rust',k*1.25,-3.4,0,.45,.9,.4,hc(0x5a3a28),0,0,k*.5);});
   const a=[c[0]+n[0]*.4,y-.3,c[1]+n[1]*.4],T=NR.tan(t),b=[a[0]+n[0]*7+T[0]*sg*3,-1.5,a[2]+n[1]*7+T[1]*sg*3];
   for(let i=0;i<18;i++){const f0=i/18,f1=(i+1)/18,p=f=>[lerp(a[0],b[0],f),lerp(a[1],b[1],f)-2.2*Math.sin(PI*f),lerp(a[2],b[2],f)];beam('rust',p(f0),p(f1),.16,hc(0x4a3424));}}}
-/* the mouth's bascule bridge: two leaves hinged at the top deck of each end wall, raised (they jammed open when the hull
-   stuck, and the harbour has stayed open since) */
-function nrMouthBridge(){const L=NR.L,W=NR.W,a=NR.at(NR.T1,0),b=NR.at(NR.T0,0),mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
- for(const [t,o] of [[NR.T1,a],[NR.T0,b]]){const dx=mid[0]-o[0],dz=mid[1]-o[1],len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len;
-  const ry=Math.atan2(ux,uz),lift=72*PI/180,Lf=len-1.2;
-  WX(o[0]+ux*.3,L.TOP-.2,o[1]+uz*.3,ry,-lift,0,()=>{   // local +z along the leaf, tilted up about local x
-   box('paint',0,-.9,Lf/2,14,1.1,Lf,hc(0x7a8288));box('deck',0,.2,Lf/2,13.4,.12,Lf,hc(0xbfb8a8));
-   for(const sx of [-6.8,6.8]){box('paint',sx,.32,Lf/2,.14,1.0,Lf,hc(0x7a8288));for(let z=1;z<Lf;z+=2.2)box('paint',sx,.32,z,.1,1,.1,hc(0x7a8288));}
-   box('rust',0,-1.6,1.5,10,1.2,3,WHITE);});   // the counterweight housing at the heel
-  for(const s of [-8,8]){const p=NR.at(t,s);cyl('white',p[0],L.TOP,p[1],1.1,5.5,P('white'),14,.9);}}}
 nrPart('shell',nrHullShell);

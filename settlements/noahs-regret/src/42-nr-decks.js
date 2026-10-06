@@ -5,7 +5,8 @@
 // white ribbon of 40-nr-hull.js), the service core between the corridors (dark shafts and tanks, solid in the cut), the
 // stair cores (a switchback of two 1.8 m flights per deck in a hall across the core, doors onto both corridors, a kiosk on
 // the top deck). D1 and D2 are stripped: partitions stand, the doors are gone, the cabins are empty. Zones (the atrium,
-// the bridge, the dining room, the engine room) draw themselves (44-46).
+// the bridge, the dining room, the engine rooms, the crew messes, the greenhouse) draw themselves (44-46); the ship's rooms
+// (NR.ROOMS) are runs of cabin band with a door, their partitions on the frames, drawn here.
 /* the scale of a length at offset s from the centreline: a metre of centreline t is (1 + s/rho) metres there */
 function nrK(t,s){return 1+s/NR.rho(t);}
 /* the t ranges a deck's band [s0, s1] loses to zones */
@@ -51,9 +52,11 @@ function nrDecks(){const L=NR.L,W=NR.W;reseed(4200);
   for(const C of NR.CORES){for(const t of [C.t-3.7,C.t+3.7])nrRadial('plaster',t,-W.COR,W.COR,y,top,.2,P('plaster'));
    nrFlights(C.t,y,d<3?L.D[d+1]:L.TOP,true,P('conc'));}
   /* --- the cabins: the cabin walls with a door each, the partitions on the frames, the glazing (D3-D4) */
-  for(const side of [1,-1]){const sW=side*W.CAB,mine=NR.cabins.filter(C=>C.deck===d&&C.side===side);
-   nrWallGaps('plaster',sW,W.WALL,y,top,P('plaster'),mine.map(nrCabinDoor),nrZoneCuts(d,Math.min(sW,sW+side*.1),Math.max(sW,sW+side*.1)));
-   const frames=new Set();for(const C of mine){frames.add(C.t0.toFixed(3));frames.add(C.t1.toFixed(3));}
+  for(const side of [1,-1]){const sW=side*W.CAB,mine=NR.cabins.filter(C=>C.deck===d&&C.side===side),rooms=NR.ROOMS.filter(R=>R.deck===d&&R.side===side);
+   /* the ship's rooms (14-nr-plan.js NR.ROOMS) keep a door in the cabin wall; their ends stand on frames like the cabins' */
+   const roomDoors=rooms.map(R=>{const k=nrK(R.door,sW),hw=.55/k;return {t0:R.door-hw,t1:R.door+hw,y1:2.3};});
+   nrWallGaps('plaster',sW,W.WALL,y,top,P('plaster'),mine.map(nrCabinDoor).concat(roomDoors),nrZoneCuts(d,Math.min(sW,sW+side*.1),Math.max(sW,sW+side*.1)));
+   const frames=new Set();for(const C of mine.concat(rooms)){frames.add(C.t0.toFixed(3));frames.add(C.t1.toFixed(3));}
    const sOut=side*(d>=2?W.GLASS:W.MAIN-.25);
    for(const f of frames){const t=+f;nrRadial('plaster',t,Math.min(sW,sOut),Math.max(sW,sOut),y,top,W.PART,P('plaster'));
     if(d>=2)nrRadial('white',t,Math.min(sOut,side*W.BALC),Math.max(sOut,side*W.BALC),y,y+2.2,.1,P('white'));}   // balcony dividers

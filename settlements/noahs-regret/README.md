@@ -1,10 +1,10 @@
 # Noah's Regret
 
-A floating harbour city of the Ancients that once sailed the Ring Sea: a ring of pontoon hull on a ship's plan (a fine bow,
-a full round stern, 505 x 296 m), round a
-basin big enough for two liners, four decks of cabins and public rooms inside the ring, and on top a platform of
-parks and white Ancient mid-rises. It ran aground on the south shore over a thousand years ago and lies there broadside,
-listing 0.8 degrees to port and 0.4 by the bow, its starboard pontoon on the sand. Today it is **Noah's Regret**, the base
+A floating harbour city of the Ancients that once sailed the Ring Sea: a **catamaran** of two pontoon hulls, each 52 m
+wide, joined at a fine bow and open at the stern (506 x 288 m overall), the harbour basin between them big enough for two
+liners and open to the sea astern; four decks of cabins, public rooms and the ship's working rooms in the hulls, and on top a
+platform of parks and white Ancient mid-rises. It ran aground on the south shore over a thousand years ago and lies there
+broadside, listing 0.8 degrees to port and 0.4 by the bow, its starboard hull on the sand. Today it is **Noah's Regret**, the base
 of **Bloody Ruephus**, dread pirate of the Ring Sea. Apart from some minor damage to the mid-rises it still works as a
 harbour; the pirates live in it, and a rowdy port will spill down its timber stairs onto the beach (that settlement
 comes later).
@@ -13,15 +13,15 @@ This build is the arcology itself, reclaimed, with its interiors furnished as a 
 
 | What | Where |
 |---|---|
-| **The hull**: the pontoon (antifouling red below the old waterline, a band of barnacles across it, white above, the outboard side flared with a rubbing strake), the outer promenade and the inner quay on its top, the main block of four decks, the top deck; at the bow a **forecastle**: the bulwark rises along the sheer and the promenade climbs inside it to the D3 floor at the stem, a raked cutwater, two anchors let go when she struck; the harbour mouth on the port beam (76 m) with the bascule bridge's leaves jammed open | `src/40-nr-hull.js` |
-| **The piers the Ancients built in**: two **breakwater piers** 70 m out to sea from the mouth, splayed, a sea wall, fenders and bollards, a beacon on each head; the **liner mole**, 170 m down the basin from the stern quay, a berth either side, two boarding towers, capstans and a light on its head; four **finger piers** on columns off the inner quay for small craft | `src/41-nr-piers.js` |
-| **The decks**: corridors, cabins (a door each, the partitions on the frames, glazed walls and balconies on D3-D4), the service core, eleven switchback stair cores with kiosks on top. Only **D3 and D4 are inhabited**; D1 and D2 are stripped and empty | `src/42-nr-decks.js` |
-| **The grand atrium**: starboard midships, a void through all four decks under a glass dome, galleries round it, a grand stair of four flights on bridges across the void, a descent to the holds | `src/44-nr-atrium.js` |
-| **The bridge** (D4, the bow), **the grand dining room** (D3-D4, double height, the stern), **the engine room** (D1-D2, the stern: four great engines, silent a thousand years) | `src/46-nr-rooms.js` |
+| **The hull**: the pontoon (antifouling red below the old waterline, a band of barnacles across it, white above, the outboard side flared with a rubbing strake), the outer promenade and the inner quay on its top, the main block of four decks, the top deck; at the bow a **forecastle**: the bulwark rises along the sheer and the promenade climbs inside it to the D3 floor at the stem, a raked cutwater, two anchors let go when she struck; at each hull's stern a transom, its twin screws and rudders out of the water (she is trimmed by the bow), a beacon on its inboard corner marking the harbour mouth (183 m, the whole basin open astern) | `src/40-nr-hull.js` |
+| **The piers the Ancients built in**: the **liner mole**, 200 m down the basin's axis from the bow's inner quay toward the open stern, a berth either side, fenders, bollards, lamp standards, two boarding towers, capstans and a light on its head; four **finger piers** on columns off the hulls' inner quays for small craft | `src/41-nr-piers.js` |
+| **The decks**: corridors, cabins (a door each, the partitions on the frames, glazed walls and balconies on D3-D4), the service core, eight switchback stair cores (four a hull) with kiosks on top; the **ship's rooms** in the cabin band (a door each): the chart room, the officers' wardroom, the purser's strongroom, the chapel, the sail loft and a sick bay on D4; two galleys, a sick bay, the armoury, the carpenter's and cooper's shops, the brig, the bosun's store and the laundry on D3. Only **D3 and D4 are inhabited**; D1 and D2 are stripped and empty | `src/42-nr-decks.js` |
+| **The grand atrium**: the starboard hull's midships, a void through all four decks under a glass dome, galleries round it, a grand stair of four flights on bridges across the void, a descent to the holds | `src/44-nr-atrium.js` |
+| **The bridge** (D4, the bow), **the grand dining room** (D3-D4, double height, the port hull's midships), **the twin engine rooms** (D1-D2, the stern of each hull: four great engines in each, silent a thousand years), **the two crew messes** (D3, one a hull, the whole width, a galley beside each), **the greenhouse** (D4, the port hull: raised beds under a glass barrel vault that stands on the top deck) | `src/46-nr-rooms.js` |
 | **The holds**: the pontoon's cargo holds, empty, half full of the sea (its own water: the hull is holed), columns, bulkheads, a mezzanine gallery | `src/47-nr-holds.js` |
-| **The top deck**: parks gone to meadow, the stern garden and its dry fountain, the raked funnels, lamp standards, vents | `src/48-nr-top.js` |
-| **Ancient deck buildings** (11): four Ribbon terraces and three Drum towers (apartments), three Lens offices, and the **small Reliquary** (a laboratory) | `src/54-60` |
-| **Ruephus's use of them**: the Reliquary is his **headquarters** flying his flag (a blood-red jack, a skull over crossed bones) from its needle; the apartments and offices are **barracks**; one office is the crews' **mess hall** | interiors: `kits/interiors/sets/noahs-regret.js` |
+| **The top deck**: parks gone to meadow, the garden and its dry fountain over the dining room, twin raked funnels at the stern of each hull, lamp standards, vents | `src/48-nr-top.js` |
+| **Ancient deck buildings** (10): three Ribbon terraces and three Drum towers (apartments), three Lens offices, and the **small Reliquary** (a laboratory) | `src/54-60` |
+| **Ruephus's use of them**: the Reliquary is his **headquarters** flying his flag (a blood-red jack, a skull over crossed bones) from its needle; the apartments and offices are **barracks**; one office is the crews' **mess hall** (with the two crew messes and the wardroom inside the hulls, four places to eat) | interiors: `kits/interiors/sets/noahs-regret.js` |
 | **The pirates' timber**: stair towers up the starboard hull, steps down the dune to the beach, floats for boats off the inner quay, sailcloth awnings, flags on the beacons | `src/62-nr-pirates.js` |
 | **Furniture** (no life layer yet): every inhabited cabin, every deck-building room, the public rooms, the quay and the top deck, from the master catalog | `src/70-nr-interiors.js` |
 
@@ -29,10 +29,10 @@ This build is the arcology itself, reclaimed, with its interiors furnished as a 
 
 Everything is **data first** (repo `README.md`, "Furniture that is not always drawn is data first"):
 
-- **The plan** (`14-nr-plan.js`, no THREE) owns every position: the ring as a ship's plan with arc-length coordinates
+- **The plan** (`14-nr-plan.js`, no THREE) owns every position: the two hulls as one centreline with arc-length coordinates
   (t along, s across), the deck heights, the zones, the stair cores, every cabin (deck, side, frames, class, door, kind),
   the lots, parks, towers, steps and floats. Every drawing pass and the furnishing pass read it.
-- **Cabins** are rooms (the interiors kit's `normRoom`): ~600 inhabited ones on D3 and D4. Cabins with the same template
+- **Cabins** are rooms (the interiors kit's `normRoom`): 737 inhabited ones on D3 and D4; the ship's rooms beside them (NR.ROOMS) are furnished the same way, one template each. Cabins with the same template
   (width class, door side, kind, deck) are furnished **once** by the interiors kit's placer (`furnishRoom`, the master
   catalog) and the result becomes core/furnish **records** in each of them. Kinds: `bedroom` (the officers on D4, the
   crew below: a bed and a chest, salvaged Ancient fittings), `bunkroom` (two bunks and a locker), `store` (loot).

@@ -4,7 +4,7 @@
 // bulkheads with great doorways, a mezzanine gallery of grating along both skins at y 4.8, catwalks across where the
 // stairs come down (the atrium's descent, the two end cores). The sea stands in them at its own level (the hull is holed
 // and aground): about 2 m deep on the starboard side, 6 on the port side. The water is the sea's own mesh (82).
-const NR_BULKHEADS=[-232,-130,-40,60,170,236,330,430,500,640,740].map(t=>({t}));
+const NR_BULKHEADS=[-460,-370,-290,-200,-115,-40,40,115,200,290,370,460].map(t=>({t}));
 function nrHolds(){const L=NR.L,W=NR.W,y0=L.HOLD,y1=L.D[0]-L.SLAB,M=L.MEZZ,A=NR.ATRIUM;reseed(4700);
  /* the columns: four rows, every 8.4 m (skipped where a catwalk or a bulkhead stands) */
  const busy=t=>NR_BULKHEADS.some(b=>Math.abs(b.t-t)<1.2)||Math.abs(t-(A.tc-18))<3||NR.CORES.some(c=>c.down&&Math.abs(c.t-t)<4);

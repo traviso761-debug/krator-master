@@ -1,10 +1,8 @@
 // prefix: nr
 // ================================================================= THE PIERS: what the Ancients built into the harbour (the plan: NR.PIERS)
-// Drawn in the hull frame, decks level with the quays (D1). The two BREAKWATER ARMS run out to sea from the ends of the ring
-// at the mouth, pontoons like the hull (antifouling, the barnacle band, white), splayed so the channel widens seaward, a
-// parapet on the sea side, bollards and fenders on the channel side, a beacon on each head. The LINER MOLE runs down the
-// basin's long axis from the stern quay, a berth either side: fenders, bollards, lamp standards, two boarding towers with
-// their gangways folded. The FINGER PIERS are open decks on columns off the inner quay, for smaller craft.
+// Drawn in the hull frame, decks level with the quays (D1). The LINER MOLE runs down the basin's long axis from the bow's
+// inner quay toward the open stern, a pontoon like the hulls (antifouling, the barnacle band, white), a berth either side:
+// fenders, bollards, lamp standards, two boarding towers with their gangways folded. The FINGER PIERS are open decks on columns off the inner quay, for smaller craft.
 // A pier's local frame: o its root on the skin, d along it, q across (+q is the pier's left looking out), l metres out.
 function nrPierPt(Pr,l,k,y){return [Pr.o[0]+Pr.d[0]*l+Pr.q[0]*k,y,Pr.o[1]+Pr.d[1]*l+Pr.q[1]*k];}
 function nrPierRy(Pr){return Math.atan2(Pr.d[0],Pr.d[1]);}
@@ -27,15 +25,6 @@ function nrPontoon(Pr,y0){const L=NR.L,pts=nrPierPoly(Pr);
 function nrFenders(Pr,side,l0,l1){const L=NR.L,k=side*(Pr.w/2+.18);
  for(let l=l0;l<l1;l+=6.5)nrPierBox('dark',Pr,l,k,6.3,1.4,2.4,.36,hc(0x1e2022));}
 function nrBollards(Pr,side,l0,l1,step){const k=side*(Pr.w/2-.8);for(let l=l0;l<l1;l+=step){const p=nrPierPt(Pr,l,k,NR.L.D[0]);nrBollard(p[0],p[1],p[2]);}}
-function nrPierArm(Pr){const L=NR.L,y=L.D[0],cs=Pr.t>NR.PQ?1:-1;   /* cs: the channel's side (+q or -q) */
- nrPontoon(Pr,1.2);
- /* the channel side: fenders, bollards; the sea side: a parapet with a wave-return lip */
- nrFenders(Pr,cs,4,Pr.len-6);nrBollards(Pr,cs,6,Pr.len-8,11);
- const k=-cs*(Pr.w/2-.35);nrPierBox('white',Pr,(Pr.len-Pr.w/2)/2+1,k,y,Pr.len-Pr.w/2-2,1.25,.7,P('white'));
- nrPierBox('white',Pr,(Pr.len-Pr.w/2)/2+1,k-cs*.15,y+1.25,Pr.len-Pr.w/2-2,.18,1.0,P('white'));
- for(let l=10;l<Pr.len-10;l+=20){const p=nrPierPt(Pr,l,-cs*(Pr.w/2-1.6),y);nrLampStd(p[0],y,p[2]);}
- /* the beacon on the head */
- const B=NR.BEACONS.find(b=>Math.hypot(b.x-Pr.head[0],b.z-Pr.head[1])<Pr.w);if(B)nrBeacon(B.x,y,B.z);}
 function nrPierMole(Pr){const L=NR.L,y=L.D[0];
  nrPontoon(Pr,1.2);
  for(const sd of [1,-1]){nrFenders(Pr,sd,3,Pr.len-6);nrBollards(Pr,sd,5,Pr.len-6,12);}
@@ -43,7 +32,7 @@ function nrPierMole(Pr){const L=NR.L,y=L.D[0];
  /* a light on the head: a short white column with a lens */
  {const p=nrPierPt(Pr,Pr.len-3.2,0,y);cyl('white',p[0],y,p[2],.9,5,P('white'),16,.7);cyl('glass',p[0],y+5,p[2],.7,1.1,hc(0x8aa0a8),12);sph('white',p[0],y+6.1,p[2],.8,P('white'),.5,12);}
  /* the boarding towers: a white drum with a glazed head, its gangway (an enclosed tube) folded along the pier, one per berth */
- for(const [l,sd] of [[58,1],[112,-1]]){const k=sd*(Pr.w/2-2.6),p=nrPierPt(Pr,l,k,y),ry=nrPierRy(Pr);
+ for(const [l,sd] of [[70,1],[140,-1]]){const k=sd*(Pr.w/2-2.6),p=nrPierPt(Pr,l,k,y),ry=nrPierRy(Pr);
   cyl('white',p[0],y,p[2],2.1,11,P('white'),20);cyl('glass',p[0],y+11,p[2],2.2,2.4,hc(0x24343c),20);cyl('white',p[0],y+13.4,p[2],2.4,.6,P('white'),20,2.0);
   W(p[0],y+11.2,p[2],ry,()=>{box('white',0,0,-9.5,2.8,2.6,17,P('white'));box('glass',sd*1.42,.8,-9.5,.06,1.0,16,hc(0x24343c));box('glass',-sd*1.42,.8,-9.5,.06,1.0,16,hc(0x24343c));
    box('white',0,-11.2,-15.5,.5,11.2-1.3,.5,P('white'));});}
@@ -61,5 +50,5 @@ function nrPierFinger(Pr){const L=NR.L,y=L.D[0],pts=nrPierPoly(Pr);
   for(let yy=4;yy<y-.6;yy+=.32){const a=nrPierPt(Pr,Pr.len-.12,-.35,yy),b=nrPierPt(Pr,Pr.len-.12,.35,yy);beam('rust',a,b,.04,hc(0x4a4a48));}}
  const p=nrPierPt(Pr,Pr.len-Pr.w/2,0,y);nrLampStd(p[0],y,p[2]);}
 function nrPiers(){reseed(4150);
- for(const Pr of NR.PIERS){if(Pr.kind==='arm')nrPierArm(Pr);else if(Pr.kind==='mole')nrPierMole(Pr);else nrPierFinger(Pr);}}
+ for(const Pr of NR.PIERS){if(Pr.kind==='mole')nrPierMole(Pr);else nrPierFinger(Pr);}}
 nrPart('piers',nrPiers);
