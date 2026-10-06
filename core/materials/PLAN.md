@@ -1060,9 +1060,10 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
    (`rock.old_stone_wall`), bamboo (`wood.bamboo_wall`), bmat (`fibre.reedmat`), in Highlands, Dalab, Reed Lake and Ys; Reed Lake's rlMat,
    rlMatM (`fibre.reedmat`), rlThatch (`roof.thatch.reed`), rlIsland (`ground.reedbed`), rlLayer (`reed.layers`), rlBundleX (`reed.bundle`).
    Xanadu: xEarth (`earth.adobe`), xWash (`plaster.white_stucco_02`), xTiles (`paving.tiles144`), xRubble, xRock (`rock.rock_face`).
+   Dalab: the four murals, relief-squares, relief-tile-teal, checker-harlequin, god-panel-a, mosaic, banner (patterns/dalab).
    Still to do: Highlands (turf waits for `roof.turf`; rock,
    meadow have mesh UVs, the h* pattern sheets), Reed Lake (rlBundle has separate u and v tiles; the band and chakana patterns), Xanadu (x* -> the Xanadu patterns,
-   `plaster.white_stucco_02`, `paving.tiles144`), Dalab (dRelief, dChecker, dDecoPanel, dBanner -> the Dalab patterns), the port embassy
+   `plaster.white_stucco_02`, `paving.tiles144`), the port embassy
    (vpTile, vpBanco, vpMosaic, vpBanner), Ys's vernacular and port kit.
 4. Biome slots left procedural: the ground detail layers (`TEX_DETAIL`, `TEX_CRACK`), hyperjungle limb and wood, nhighlands' bark buckets
    (built outside NHL.MAT, so libSwap misses them), the iridescent/derived bark buckets built from raw canvases, the tower hosts' concrete
