@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/terrain/` (shared; see `core/README.md`): `36-core-carve.js`
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 ## src/
 

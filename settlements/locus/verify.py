@@ -199,8 +199,12 @@ R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A
                   (inRoad.length?' (worst '+worst.toFixed(1)+'m: '+JSON.stringify(inRoad.slice(0,4))+')':'')+
                   ' · '+trees+' standing trees inside a building'}); }
 { /* every site in the schedule (30-layout.js SITES_L) was built */
-  const miss=(A.SITES_L||[]).filter(s=>!s.rec).map(s=>s.name);
+  const miss=(A.SITES_L||[]).filter(s=>!s.rec && !s.yard).map(s=>s.name);
   R.push({name:'site-schedule-built', ok:A.SITES_L.length>0&&!miss.length, detail: miss.length?JSON.stringify(miss):A.SITES_L.length+' scheduled sites, all built ('+((window._place||{}).scheduled)+' placed by the schedule)'}); }
+{ /* the Geomancers' buggy park: six buggies of the Motor Vehicles kit, and a way from the park to every highway's end */
+  const L = window._life, B = L && L.buggies ? L.buggies() : null;
+  R.push({name:'geomancer-buggy-park', ok:!!B && B.n===6 && B.endsRoutable===B.ends && B.ends>0,
+    detail: B ? B.n+' buggies ('+JSON.stringify(B.states)+'), the park reaches '+B.endsRoutable+' of '+B.ends+' highway ends, '+B.trips+' trips so far' : 'window._life.buggies missing'}); }
 { /* the life layer: everyone routed, every kind present, the key places found */
   const L = window._life;
   if(!L) R.push({name:'life-layer-alive', ok:false, detail:'window._life missing'});
@@ -257,7 +261,7 @@ async def run(a):
                 print("timed out waiting for the world to build")
             await pg.wait_for_timeout(2500)
             if a.hour is not None:
-                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
+                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && /Hold time/.test(p.textContent)) p.click(); }", a.hour)
                 await pg.wait_for_timeout(1200)
             try:
                 st = await pg.evaluate(STATS_JS)
@@ -386,7 +390,7 @@ if __name__ == "__main__":
     ap.add_argument("--baseline", default="")
     ap.add_argument("--save-baseline", default="")
     ap.add_argument("--out", default="./shots")
-    ap.add_argument("--hour", type=float, default=None, help="set the sky clock (and pause it) before the screenshots")
+    ap.add_argument("--hour", type=float, default=None, help="set the world clock (LCLOCK; held) before the screenshots")
     ap.add_argument("--cam", action="append", help="custom shot: cx,cy,cz,tx,ty,tz (repeatable)")
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--shot-eval", action="append", help="JS arrow function to run, then screenshot evN.png (repeatable)")

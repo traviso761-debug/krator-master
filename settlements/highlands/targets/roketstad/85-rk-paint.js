@@ -3,8 +3,10 @@
 // these canvases and the ROADS list, and the terrain mesh wears the albedo. 3072 px over 3400 m ≈ .9 px/m.
 const CS=3072,PXS=CS/RK.WORLD,px=v=>(v+RK.WORLD/2)*PXS;
 const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+// the mask and the classes are core/mask grids (KMASK.canvas: the same calls, hard-edged, identical in every browser and
+// in Godot; GODOT-PLAN.md Phase 2 item 5), so placement no longer depends on the canvas; only the albedo is one
+const mv=KMASK.canvas(CS,CS);const mg=mv.getContext('2d');
+const kv=KMASK.canvas(CS,CS);const kg=kv.getContext('2d');
 // mask: R = buildable (255) or not; G = 'green' (the biome may put understorey here even where R is 0)
 const KL={none:0,plaza:1,park:2,highway:3,main:4,street:5,lane:6,farm:7,water:8,court:9,building:10,rock:11,field:12,port:13,wall:14};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';

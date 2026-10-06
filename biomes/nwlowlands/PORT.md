@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 18.8 | [web] | 27 | 3 | 3 | 1 | 0 | 5 | 9 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-nwlowlands-species.js` | 56.4 | [draw] | 0 | 11 | 0 | 0 | 0 | 10 | 8 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-nwlowlands-species.js` | 56.6 | [draw] | 0 | 11 | 0 | 0 | 0 | 10 | 8 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-nwlowlands-trees.js` | 41.8 | [draw] | 0 | 1 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | placement pass: `NWLOW.buildTrees` (line 366); `mk` (line 370) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 413) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar`/`buildFarSmall` for the far impostor. The two passes share one function but not one loop; `groves` (line 314, bamboo) places and draws in one pass |
 | `src/60-biome-nwlowlands-floor.js` | 16.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-nwlowlands-dress.js` | 7.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |

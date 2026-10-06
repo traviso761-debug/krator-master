@@ -133,6 +133,7 @@ derived from them in processing; no hand-made normal maps.
 | Voth (voth) | stone inlay band, banner cloth; the rest is base library, near-colourless (see "Iziz and Voth") |
 | Ancient Port (port; for Hook) | hazard stripes, hull paint and primer, container livery |
 | The nacre culture (WIP) | shell inlay, pearl mosaic, nacre-banded trim |
+| Shared (every culture) | **grime streak sheet**: a grid of 8 by 16 vertical streak masks (soot, damp, rust run-off), grey on transparent, no colour. Each opening, sill or cornice picks one cell by hash, so one small sheet gives every window its own run-off and no two neighbours match. Spiderbench (see "Shader hooks") does this as layer 16 of its wall array; here it is one generated sheet, applied by the breakup hook below or baked into a wall's vertex colours |
 
 ## Shader hooks
 
@@ -144,6 +145,43 @@ derived from them in processing; no hand-made normal maps.
 - **World-space UVs** stay as today in the previews; in Godot they are the material's built-in triplanar
   option.
 - Glass Fresnel, water and glow are already in the Phase 3 shader list.
+
+### From spiderbench (reviewed 2026-10-05)
+
+Spiderbench (github.com/xikhar/spiderbench, a Claude-written web-swinging city, non-commercial) bakes its surfaces
+offline into texture arrays and puts all the variety in one facade shader of about 3,500 lines. That whole is the
+opposite of this plan (every hook here is a hand rewrite into Godot), but four of its pieces are small, portable and
+fix things Voth's `47-texture.js` history records fighting:
+
+- **[G shader] Analytic coursing instead of painted joints.** Its ashlar is pure UV math: a per-course random slide,
+  a per-block tone from a hash of (course, block), joints as box-filtered step functions (`boxAA`), sills and belt
+  courses the same way. No texture repeat, and no mip smear of the joints at distance, which is what Voth's 256 px
+  ashlar canvas loses first. Shape here: a `TEX.kind('coursing')` whose pixel function and whose `.gdshader` are the
+  same formula, parameters `{courseH, blockW, slide, joint, tone}`; the base map (`stone.cut`) stays underneath as
+  the surface and the kind only draws the joints and the per-block tone. The lattice helper is already pure
+  (`noiseP`, Voth 47-texture.js).
+- **[G shader] Variety as world-space macro noise, extended.** `breakup` (done 2026-10-03) already blends a shifted
+  copy and varies brightness. Spiderbench also varies **roughness** and **grime** from the same macro field, and
+  offsets each building's UV by a hash of its seed (`gOff`), so sixteen wall layers read as hundreds: building-scale
+  patches of peeling, re-pointing and stains, not per-tile ones. Add `rough` and `grime` to `breakup`'s parameters
+  (`{mix, macro, cell, rough, grime}`), grime sampling the shared streak sheet above. Voth's per-instance UV offset
+  in `45-kit.js` is the CPU half of the same idea; keep one hash and name it in both places.
+- **[G native] A detail normal at close range.** A tiling micro-relief normal blended over the base normal, fading
+  with distance (spiderbench derives the tangent frame from `dFdx`/`dFdy` so it needs no UV tangents). Godot has it
+  built in (`detail_normal`, `detail_mask`, `detail_uv_layer` on `StandardMaterial3D`), so in this plan it is a
+  **record field**, not a hook: `detail:{normal, scale, strength}` on the record in `23-mat-record.js`, and the
+  three.js preview applies it in the world-UV hook only for the near LOD. One shared `detail.*` set in the library
+  (plaster grain, stone grain, metal brush) serves every culture.
+- **[G data] One hash, bit-exact on both sides.** Its window occupancy is hashed identically in JavaScript and GLSL
+  (`nh3`), so the CPU-side light list agrees with what the shader draws. Rule for the port: any hash a shader shares
+  with placement code (lit windows, per-block tone, streak cell) is one integer hash written once in `core/`, with its
+  GDScript and `.gdshader` twins beside it, and a test that compares the three on a fixed input set.
+
+Smaller notes from the same read: colour maps sRGB and every data map explicitly no colour space (the library's
+`meta.json` already says which is which; the Girder adapter should set `colorSpace` from it, not by file name);
+its image loader retries with backoff because Chromium drops decodes under load (`ERR_INSUFFICIENT_RESOURCES`), which
+matters once a build loads `tex/` as files instead of data URLs; and a 4096 px ad atlas costs it 85 MB with mips,
+the number to remember when a pattern sheet is tempted past 1024.
 
 ## Processing pipeline
 
@@ -309,6 +347,9 @@ cloth): "Hand-woven heavy cotton cloth with a tribal geometric pattern of stripe
 dyed in deep red (#7a2028) with ochre (#c2a24e) and dark green (#2f5a3a) accents, visible weave, slightly
 faded and uneven dye."
 
+The Ys prompts (the Hykkousoi shell family, the tideline, the karst and its cards, the new Ancient hosts' travertine,
+sandstone and bronze) are in `settlements/ys/MATERIAL-PROMPTS.md`, with their tints, tile sizes and the code each replaces.
+
 ### Pattern-sheet prompts by culture
 
 Prepend the base template (pattern form: "a flat, front-on decorative panel" in place of "perfectly flat surface",
@@ -461,6 +502,29 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 | `patterns/yuni/paintbw` | Flat, front-on decorative panel of Kassena-style geometric wall painting on plaster, in horizontal bands of equal height separated by thin black lines: zigzag chevrons, concentric diamonds, diagonal net or lattice, and rows of triangles. Colours are black (#1a1714), off-white (#f2eddb), earth red (#9e3321) and ochre (#c78f52) only, hand-painted with slight unevenness and fine grain. The pattern repeats horizontally. Full colour. |
 | `patterns/yuni/paintcol` | Flat, front-on decorative panel of Hausa-style polychrome painted relief on plaster, a grid of square cells outlined in green (#247a4c), on a gold ground (#edcc5c). The cells alternate between a rosette with blue (#2973b8) petals around a red (#b83329) centre, a nested diamond knot in red and teal (#1a9ea8), a spiral in blue, red and cream (#f5f0e0), and a cross-hatched plait in green with a red dot. Slightly uneven hand-painted edges. The pattern repeats in both directions. Full colour. |
 | `patterns/yuni/relief` | Flat, front-on decorative panel of low-relief moulded plaster in one pale warm sand colour (#d8c8a8), lit softly and evenly so only the form shows. Horizontal bands of equal height alternate: a row of circular spiral rosettes, and a row of square interlaced knots made from nested diamond and square raised ridges, each band separated by a plain smooth course and a thin groove. Faintly hand-finished surface. The pattern repeats horizontally. Mostly one colour (pale sand) with soft tonal depth. |
+
+**Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
+"Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
+(neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-10-05 and processed** (`tools/textures/batches/chatgpt-2026-10f-yuni.json`): `patterns/yuni/paintbw`,
+`paintcol` (cropped to 4 x 4 whole cells first), `relief`, and the three rows below. `patterns/yuni/mosaic` (full colour)
+is not needed: the game tints its mosaic per dome, so the neutral `mosaic.trencadis` serves. The rows, all reusable by
+Locus (same painters and palette) and noted per row, with the base template and the tintable sentence:
+
+| id | Material line |
+|---|---|
+| `mosaic.trencadis` *(supersedes the base row below; tinted in game, so neutral)* | Trencadis mosaic of irregular broken glazed ceramic shards, each a different angular polygon about 3 to 6 cm across with slightly rounded broken edges, set in thin recessed grout lines about 4 mm wide in dark warm grey (#3a3632). Every shard is the same pale off-white glazed ceramic (#e8e4da), varying only slightly in tone from shard to shard, with a faint satin glaze; no coloured shards, no larger design, no regular grid. Reuse: Locus, Iziz and Voth inlay and any culture's broken-tile work, tinted per use. |
+| `metal.ancient.white` *(refines the base row below)* | Ancient white metal cladding: a grid of flat rectangular panels, exactly two across and four down, each panel twice as wide as it is tall, separated by narrow recessed seams with a thin dark shadow line. A small round recessed fastener sits near each panel corner. Near-white satin enamel (#e6e4dc), faint horizontal brushed grain, panels differing very slightly in tone, and pale grey tarnish (#b4b0a2) gathering along the seams and in soft streaks below the fasteners. No rust, no rivets, no text. Reuse: every Ancients-lineage build's white metal (`MAT.white`), Locus. |
+| `rock.columnar` *(new: the butte, `FAMMAT.column`, 40 x 64 m)* | Weathered columnar-jointed volcanic rock face seen straight on, like Devil's Tower: tall vertical polygonal columns side by side, about eight columns across the image, each column a flat or slightly rounded facet separated by deep dark vertical joints, with occasional horizontal cross-fractures at irregular heights and a few broken column ends. Grey-brown phonolite (#8c8474, #7e7768, #9a917e) with faint pale lichen patches (#a39a82) and darker water stains running down the joints (#5c574c). The columns run unbroken from the top edge to the bottom edge. Reuse: any basalt or phonolite cliff (Voth's volcano flanks, Highlands gorges, Ys' karst headlands). |
+
+**Yuni's interiors** (2026-10-05; the base template with the tintable sentence): **delivered the same day and processed**
+(`tools/textures/batches/chatgpt-2026-10g-yuni-interiors.json`), and on Yuni (`settlements/yuni/KNOWN_ISSUES.md`):
+
+| id | Material line |
+|---|---|
+| `wood.beam` | Rough-hewn timber beam surface seen straight on, the grain running straight from the top edge to the bottom edge: long tight growth lines, adze facets a hand's width across, a few shallow drying checks along the grain and one or two small knots. One continuous piece of wood: no plank seams, no nails, no bolts, no bark. Warm mid-brown (#6a4e34) with slightly darker grain (#4e3a28). Reuse: every build's `timber` family (beams, posts, toron, furniture legs): Girder, Voth, Locus, Mav's Refuge. |
+| `cloth.rug.pile` | The pile surface of a hand-knotted wool carpet seen straight on: dense short tufts of wool yarn in tight rows of knots, slightly matted and worn flatter in patches, a faint grid of knot rows, a few loose fibres. One plain colour of undyed wool (#cfc4b0) with natural slight variation; no pattern, no border, no fringe. Reuse: every culture's carpets, cushions and saddle-blankets, tinted. |
+| `fibre.coil` | Side wall of a coiled grass basket seen straight on: horizontal coils of bundled dry grass about 1.5 cm thick stacked one above the other, each coil wrapped and stitched to the one below with thin split-palm strips in short slanted stitches, the stitches staggered row to row. Straw colour (#c8b272) with slightly darker stitching (#a08850); no pattern. Reuse: Reed Lake, Beast Rider and Highlands baskets, granary lids, skeps. |
 
 Uncertain, to check when the images come back: Iziz gilt (the build has only a plain gilt material, so its motifs are
 invented); the Iziz banner (the build draws one non-tiling banner, made a repeat here); Port hazard and livery
@@ -1013,6 +1077,9 @@ What the first delivery taught:
    parameters.
 4. **Iziz**, then the nacre culture (Ys's Hykkousoi), as the plan's order of work says.
 5. ~~Decide Git LFS~~ Decided no; revisit at 250 MB (see "Git LFS").
+6. **From the spiderbench read (2026-10-05, "Shader hooks"):** the `detail` record field and one shared `detail.*`
+   set; `rough` and `grime` on `breakup` with the shared grime streak sheet (one generated image, prompt to write);
+   a `coursing` TEX kind for ashlar and brick, piloted on Voth's canton walls, where the painted-joint history is.
 
 ## Available, not committed
 

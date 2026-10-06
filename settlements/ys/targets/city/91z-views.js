@@ -7,8 +7,73 @@ const VIEWS={
  'The shore at eye level':_ysEye(120,-380,600,-100,3),
  'Night on the water':[1000,60,500,200,8,-200,22.2],
  'The river terraces':[-330,30,380,-620,8,110],
- 'The Citadel stack from the water':[1150,30,950,842,40,652],
- 'The layout from above':[820,1500,101,820,0,100],
- 'The drowned grid from the south-east':[1500,260,900,850,0,100],
+ 'The Citadel stack from the water':[CITY.STACKS[0].x-330,60,CITY.STACKS[0].z-120,CITY.STACKS[0].x,50,CITY.STACKS[0].z],
+ 'The layout from above':[(CITY.HEAD[0]+LAYOUT.A.x)/2,1100,(CITY.HEAD[1]+LAYOUT.A.z)/2+1,(CITY.HEAD[0]+LAYOUT.A.x)/2,0,(CITY.HEAD[1]+LAYOUT.A.z)/2],
+ 'The drowned grid from the south-east':[LAYOUT.A.x+420,200,LAYOUT.A.z+620,LAYOUT.A.x-120,0,LAYOUT.A.z+35],
  'The head of the bay — compass':[CITY.HEAD[0]+260,140,CITY.HEAD[1]+260,CITY.HEAD[0],4,CITY.HEAD[1],null,true],
 };
+// the placed city (88): presets found from the records, so they follow the placement
+(function(){const N=LAYOUT.N,T=LAYOUT.T,A=LAYOUT.A,H=CITY.HEAD;const V=VIEWS;
+ V['The Amphitriton across the water']=[A.x-N[0]*230+T[0]*90,34,A.z-N[1]*230+T[1]*90,A.x,30,A.z];
+ const h=PLACE.hosts.find(h=>!h.full&&h.cls==='tall'&&h.pods.length>1)||PLACE.hosts[0];
+ if(h){const p=h.pods[0];const c=Math.cos(p.a+.5),s=Math.sin(p.a+.5);const r=h.rAt(p.y,p.a);V['A stump and its pods']=[h.x+c*(r+75),p.y+22,h.z+s*(r+75),h.x,p.y+4,h.z];}
+ for(const t in YS_HOST_TYPES){const g=PLACE.hosts.find(h=>h.type===t&&!h.full&&h.pods.length>1);if(!g)continue;const p=g.pods[0];const c=Math.cos(p.a+.45),sn=Math.sin(p.a+.45);const r=g.rAt(p.y,p.a);
+  V['A '+YS_HOST_TYPES[t].name.replace('the ','')+' stump']=[g.x+c*(r+95),Math.max(p.y,g.top*.5)+30,g.z+sn*(r+95),g.x,Math.max(p.y,g.top*.4),g.z];}
+ {const g=PLACE.hosts.find(h=>h.land);if(g){const p=g.pods[0];const c=Math.cos(p.a+.5),sn=Math.sin(p.a+.5);V['A reclaimed Ancient on land']=[g.x+c*130,g.sink+45,g.z+sn*130,g.x,g.sink+25,g.z];}}
+ V['The karst from the bay']=[CITY.HEAD[0]+N[0]*700+T[0]*500,170,CITY.HEAD[1]+N[1]*700+T[1]*500,CITY.HEAD[0]-N[0]*700,40,CITY.HEAD[1]-N[1]*700];
+ {const hd=KARST.made.find(s=>/north-east headland/.test(s.n));if(hd)V['The north-east headland']=[hd.x+N[0]*420-T[0]*260,120,hd.z+N[1]*420-T[1]*260,hd.x,40,hd.z];}
+ {const g=PLACE.hosts.find(h=>h.type==='midStalks');if(g){const c=Math.cos(g.ry+.9),sn=Math.sin(g.ry+.9);V['The Capsule Stalks and their pods']=[g.x+c*85,g.sink+48,g.z+sn*85,g.x,g.sink+26,g.z];V['The Capsule Stalks from the other side']=[g.x-c*85,g.sink+40,g.z-sn*85,g.x,g.sink+26,g.z];}}
+ {let best=null;for(const P of FLOORS.plans){const h=PLACE.hosts.find(x=>x.n===P.host);if(!h||h.full||h.cutY==null||h.land)continue;const gap=h.top-P.y;if(!best||gap<best.gap)best={P,h,gap};}
+  if(best){const h=best.h;V['Into a stump: its lived floors']=[h.x+18,h.top+70,h.z+30,h.x,best.P.y,h.z];}}
+ {const S=SPANS.list.find(s=>s.kind==='bridge');if(S){const ha=PLACE.hosts.find(x=>x.n===S.a.host),hb=PLACE.hosts.find(x=>x.n===S.b.host);const mx=(ha.x+hb.x)/2,mz=(ha.z+hb.z)/2,y=ha.pods[S.a.pod].y;const dx=hb.x-ha.x,dz=hb.z-ha.z,l=Math.hypot(dx,dz);
+   V['A bridge between two hosts']=[mx-dz/l*110,y+30,mz+dx/l*110,mx,y,mz];}
+  const D=SPANS.list.find(s=>s.kind==='drawbridge');if(D)V['The drawbridge to the Amphitriton']=[(D.A.x+D.B.x)/2-(D.B.z-D.A.z)*.9,40,(D.A.z+D.B.z)/2+(D.B.x-D.A.x)*.9,(D.A.x+D.B.x)/2,8,(D.A.z+D.B.z)/2];
+  V['The L2 walk grid']=[LAYOUT.A.x+300,260,LAYOUT.A.z+380,LAYOUT.A.x,20,LAYOUT.A.z];
+  // the network's links to the shore and its piers (Travis, Oct 5 2026)
+  const sh=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='shore');if(sh){const h=PLACE.hosts.find(x=>x.n===sh.a.host);const mx=(h.x+sh.b.x)/2,mz=(h.z+sh.b.z)/2;const dx=sh.b.x-h.x,dz=sh.b.z-h.z,l=Math.hypot(dx,dz)||1;
+   V['A tower bridged to the shore']=[mx-dz/l*150,46,mz+dx/l*150,mx,10,mz];}
+  const pm=SPANS.list.find(s=>s.kind==='pontoon'||s.kind==='walkway'&&/mole/.test(s.na)&&!/Tides/.test(s.na));if(pm){const mx=(pm.A.x+pm.B.x)/2,mz=(pm.A.z+pm.B.z)/2;const dx=pm.B.x-pm.A.x,dz=pm.B.z-pm.A.z,l=Math.hypot(dx,dz)||1;
+   V['A mole\'s '+pm.kind+' to the shore']=[pm.A.x-dx/l*30-dz/l*22,16,pm.A.z-dz/l*30+dx/l*22,mx,2.5,mz];}
+  const lp=SPANS.list.filter(s=>s.kind==='bridge'&&(s.piers||0)>0).sort((a,b)=>b.piers-a.piers)[0];if(lp){const E=lp.b.host?PLACE.hosts.find(x=>x.n===lp.b.host):lp.b;const h=PLACE.hosts.find(x=>x.n===lp.a.host);const mx=(h.x+E.x)/2,mz=(h.z+E.z)/2;const dx=E.x-h.x,dz=E.z-h.z,l=Math.hypot(dx,dz)||1;
+   V['The longest bridge and its piers']=[mx-dz/l*120,14,mz+dx/l*120,mx,12,mz];}
+  const cs=SPANS.list.find(s=>s.kind==='cliffstair');if(cs){const a=cs.a0+cs.dir*.9;const r=ysStackEdge(CITY.STACKS[0],a)+70;V['The Citadel\'s cliff stair']=[cs.cx+Math.cos(a)*r,38,cs.cz+Math.sin(a)*r,cs.cx+Math.cos(a)*(r-60),28,cs.cz+Math.sin(a)*(r-60)];}
+  const ct=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='citadel');if(ct){const h=PLACE.hosts.find(x=>x.n===ct.a.host);const mx=(h.x+ct.b.x)/2,mz=(h.z+ct.b.z)/2;const dx=ct.b.x-h.x,dz=ct.b.z-h.z,l=Math.hypot(dx,dz)||1;
+   V['The Citadel\'s span']=[mx-dz/l*220,90,mz+dx/l*220,mx,50,mz];}}
+ // the land quarter: a laned block, a skyscraper stump on land, the military harbour's quay (Travis, Oct 5 2026)
+ {const b=LAYOUT.blocks.find(b=>b.use==='neighbourhood'&&!b.hostPlaced);if(b)V['A laned block from above']=[b.x-N[0]*60,250,b.z-N[1]*60+1,b.x,2,b.z];
+  const t=PLACE.hosts.find(h=>h.land&&h.tall);if(t)V['A skyscraper stump on land']=[t.x-N[0]*230+T[0]*140,t.top*.7,t.z-N[1]*230+T[1]*140,t.x,t.top*.45,t.z];
+  const m=PLACE.moles.find(m=>/military harbour mole 1/.test(m.name));if(m){const cx=(m.x0+m.x1)/2,cz=(m.z0+m.z1)/2;V['The military harbour quay']=[cx-N[0]*90+T[0]*140,40,cz-N[1]*90+T[1]*140,cx,3,cz];}
+  const sh=PLACE.hosts.find(h=>h.pods.some(p=>p.stair));if(sh){const p=sh.pods.find(p=>p.stair);const r=sh.rAt(p.y,p.a)+34;V['A spiral stair down a tower']=[sh.x+Math.cos(p.a+.5)*r,p.y+8,sh.z+Math.sin(p.a+.5)*r,sh.x+Math.cos(p.a)*(r-30),p.y-5,sh.z+Math.sin(p.a)*(r-30)];}
+  {const B=YS_BAND;const mx=(B[1][0]+B[3][0]+B[0][0]+B[4][0])/4,mz=(B[1][1]+B[3][1]+B[0][1]+B[4][1])/4;V['The half-sunk Ancients']=[mx-N[0]*60-T[0]*330,120,mz-N[1]*60-T[1]*330,mx,10,mz];}
+  {const P=YS_RUINS_POLY;const mx=P.reduce((s,p)=>s+p[0],0)/P.length,mz=P.reduce((s,p)=>s+p[1],0)/P.length;V['The ruined shallows']=[mx+330,150,mz+420,mx,0,mz];
+   const r=(PLACE.ruins||[])[0];if(r)V['A ruin in the shallows']=[r.x+Math.max(r.w,r.dd)*.9,45,r.z+Math.max(r.w,r.dd)*.9,r.x,8,r.z];}
+  {const P=CITY.RIVER.pts;const a=P[2],b=P[4];V['The river']=[a[0]+120,140,a[1]+160,b[0],0,b[1]];}
+  {const w=PLACE.blds.find(r=>r.key==='hyk_wet_cells');if(w){const fx=Math.sin(w.ry),fz=Math.cos(w.ry);V['The Wet Cells at the Needle']=[w.x+fx*70-fz*30,22,w.z+fz*70+fx*30,w.x,4,w.z];}}
+  {const h=PLACE.hosts.find(h=>/sunk Terrace Wedge \(east\)/.test(h.n));if(h)V['The sunk office']=[h.x-220,90,h.z+160,h.x,30,h.z];}
+  {const h=PLACE.hosts.find(h=>/Trays stump at the head/.test(h.n));if(h)V['The inner quarter']=[h.x-N[0]*320+T[0]*140,170,h.z-N[1]*320+T[1]*140,h.x,20,h.z];}
+  {const m=PLACE.moles.find(m=>/military harbour mole 1/.test(m.name));if(m){const c=m.star;V['The harbour piers']=[c[0]-N[0]*40+T[0]*260,150,c[1]-N[1]*40+T[1]*260,c[0]+N[0]*60,2,c[1]+N[1]*60];}}
+  const ar=LAYOUT.landmarks.arena;if(ar)V['The Arena']=[ar.x-N[0]*210+T[0]*120,110,ar.z-N[1]*210+T[1]*120,ar.x,16,ar.z];}
+ V['The main market']=[H[0]+N[0]*150-T[0]*110,55,H[1]+N[1]*150-T[1]*110,H[0],4,H[1]];
+ {const r=PLACE.blds.find(r=>/^hyk_house_rich/.test(r.key));if(r){const f=[Math.sin(r.ry),Math.cos(r.ry)],x=[Math.cos(r.ry),-Math.sin(r.ry)];V['A rich house']=[r.x+f[0]*34+x[0]*14,r.y+13,r.z+f[1]*34+x[1]*14,r.x,r.y+4,r.z];}}
+ const ph=PLACE.hosts.find(h=>/Pharos/.test(h.n));if(ph)V['The Pharos']=[ph.x-N[0]*260+T[0]*120,ph.top-10,ph.z-N[1]*260+T[1]*120,ph.x,ph.top-40,ph.z];
+ {const r=PLACE.blds.find(r=>r.key==='hyk_navigators_guild')||PLACE.blds.find(r=>r.why==='civilian harbour');if(r)V['The civilian harbour']=[r.x+N[0]*140+T[0]*90,38,r.z+N[1]*140+T[1]*90,r.x,4,r.z];}
+ {const r=PLACE.blds.find(r=>r.why==='home-grown mole');if(r){const m=PLACE.moles.find(m=>/home-grown/.test(m.name)&&ysPlInPoly(m.poly,r.x,r.z));const cx=m?(m.x0+m.x1)/2:r.x,cz=m?(m.z0+m.z1)/2:r.z;V['A home-grown mole']=[cx+N[0]*150+T[0]*100,70,cz+N[1]*150+T[1]*100,cx,3,cz];}}
+ {const am=SPANS.list.find(s=>s.kind==='bridge'&&s.b.kind==='amph');if(am){const h=PLACE.hosts.find(x=>x.n===am.a.host);const mx=(h.x+am.b.x)/2,mz=(h.z+am.b.z)/2;const dx=am.b.x-h.x,dz=am.b.z-h.z,l=Math.hypot(dx,dz)||1;V['The Amphitriton\'s coastal span']=[mx-dz/l*160,60,mz+dx/l*160,mx,28,mz];}}
+})();
+// the biome (89-city-biome.js): a field stack's forested top with its cliff figs, and the river's bank
+(function(){const V=VIEWS,H=CITY.HEAD;
+ {let best=null;for(const s of CITY.STACKS){if(s.flat||/far karst/.test(s.n||''))continue;const d=Math.hypot(s.x-H[0],s.z-H[1]);if(d>1300||s.r<40)continue;const sc=s.r*(s.e||1)-d*.04;if(!best||sc>best.sc)best={s,sc};}
+  if(best){const s=best.s,e=s.e||1,R=s.r*e+90,top=terrainH(s.x,s.z);const a=Math.atan2(H[1]-s.z,H[0]-s.x);   /* from the city's side, above the rim, across the top */
+   V['The karst forest']=[s.x+Math.cos(a)*R,top+42,s.z+Math.sin(a)*R,s.x-Math.cos(a)*s.r*.3,top+6,s.z-Math.sin(a)*s.r*.3];}}
+ {const P=CITY.RIVER.pts,a=P[2],b=P[3];const mx=(a[0]+b[0])/2,mz=(a[1]+b[1])/2;const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1;const y=Math.max(terrainH(mx,mz),0);
+  V['The river bank']=[mx-dz/l*120+dx/l*40,y+38,mz+dx/l*120+dz/l*40,mx,y+4,mz];}
+})();
+// the foreign quarter (88c-city-foreign.js): the Iziz plots nearest the market, seen from the market's side; the Voth embassy from its gate
+(function(){const V=VIEWS,H=CITY.HEAD;if(typeof YS_FQ==='undefined')return;
+ {const F=PLACE.slots.filter(s=>s.fill&&s.fill.culture==='iziz');if(F.length){const cx=F.reduce((a,s)=>a+s.x,0)/F.length,cz=F.reduce((a,s)=>a+s.z,0)/F.length,cy=F.reduce((a,s)=>a+s.y,0)/F.length;
+   const dx=H[0]-cx,dz=H[1]-cz,l=Math.hypot(dx,dz)||1;V['The foreign quarter']=[cx+dx/l*125-dz/l*40,cy+52,cz+dz/l*125+dx/l*40,cx,cy+4,cz];}}
+ {const E=YS_FQ.embassy;if(E){const fx=Math.sin(E.ry),fz=Math.cos(E.ry),sx=Math.cos(E.ry),sz=-Math.sin(E.ry);V['The Voth embassy']=[E.x+fx*64+sx*28,E.y+26,E.z+fz*64+sz*28,E.x,E.y+8,E.z];}}
+ {const C=YS_FQ.chapterhouse;if(C){const fx=Math.sin(C.ry),fz=Math.cos(C.ry),sx=Math.cos(C.ry),sz=-Math.sin(C.ry);V['The Historians\' chapterhouse']=[C.x+fx*66-sx*30,C.y+28,C.z+fz*66-sz*30,C.x,C.y+8,C.z];}}
+ {const R=PLACE.slots.filter(s=>s.fill&&s.fill.culture==='republic');if(R.length){const s=R[Math.floor(R.length/2)];const fx=Math.sin(s.ry),fz=Math.cos(s.ry),sx=Math.cos(s.ry),sz=-Math.sin(s.ry);
+   V['The Republican plots']=[s.x+fx*30+sx*34,s.y+14,s.z+fz*30+sz*34,s.x,s.y+4,s.z];}}
+})();

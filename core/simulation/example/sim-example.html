@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIM Example Sheet</title>
+<style>
+:root{--bg:#14161a;--ink:#d8dce2;--dim:#7c8490;--line:#2c3138;--err:#ff6b5a}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/1.4 ui-monospace,Consolas,monospace;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh}
+#hud{position:fixed;left:12px;top:10px;right:12px;pointer-events:none;white-space:pre-wrap}
+#errs{position:fixed;left:12px;bottom:10px;right:12px;color:var(--err);white-space:pre-wrap;display:none}
+</style></head><body>
+<canvas id="cv"></canvas><div id="hud"></div><div id="errs"></div>
+<script>
+
+// ==================== rand/08-core-rand.js
+// ================================================================= CORE — rand: one generator, one hash, one noise
+// GODOT-PLAN.md Phase 2, item 1. Every number here is reproducible bit for bit in GDScript (krand.gd beside this
+// file) because nothing in it calls Math.sin, Math.pow or any other library function whose last bits differ by
+// engine: the stream and the hash are 32-bit integer arithmetic, and the noise is +, -, *, / and floor on doubles,
+// in a fixed order. golden.json holds the vectors both engines are tested against (test-rand.js, test_rand.py).
+//
+//   KRAND.stream(seed)             a mulberry32 stream: the SAME numbers as the rng()/reseed() every Krator lineage
+//                                  already uses (kits/ancients 10-core.js, core/biome 10-core-head.js), so a build
+//                                  that moves its draws onto a stream moves no rubble
+//     s.next()  [0,1)   s.u32()  integer   s.range(a,b)   s.int(a,b) inclusive   s.pick(arr)   s.chance(p)
+//     s.state() / s.setState(u32)          for saving and resuming a stream
+//   KRAND.hash(seed, a, b, c...)   u32 from a seed and any number of int32 values (floats are floored first)
+//   KRAND.unit(u32)                [0,1)
+//   KRAND.h3(x,y,z, seed)          [0,1) at an integer lattice point: the portable replacement for the lineages'
+//                                  sin-based h3 (which a GDScript port cannot reproduce). Floats are floored.
+//   KRAND.vnoise(x,y,z, seed)      value noise in [0,1]: the lineages' vnoise (smoothstep trilinear) on h3 above
+//   KRAND.fbm(x,y,z, octaves, seed)  the lineages' fbm (octaves default 3, frequency x2.03, amplitude 1/f)
+//   KRAND.cell(seed, ix, iz)       a seed for one placement cell, so a tile built alone draws what it draws in a
+//                                  full build (biomes/WORLD.md: placement seeded by cell)
+//   KRAND.child(seed, name)        a seed for a named sub-stream ('trees', 'rubble'...), no collisions to manage
+//
+// Ranges: lattice coordinates and hash inputs are int32 (|x| < 2^31). Seeds are taken as u32 (seed>>>0).
+// The noise of a NEW seed is not the old sin-based noise: moving a build's terrain or textures onto it moves them
+// (GODOT-PLAN.md section 7, "Moving rubble": one build at a time, with a screenshot set).
+(function(root){
+  'use strict';
+  var imul=Math.imul;
+  // murmur3's 32-bit finalizer: full avalanche
+  function mix32(h){h^=h>>>16;h=imul(h,0x85ebca6b);h^=h>>>13;h=imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0;}
+  function step(h,v){h=imul(h^(v|0),0x9E3779B1);return (h<<13|h>>>19);}
+  function hash(seed){var h=(seed>>>0)^0x2545F491,n=arguments.length-1;
+    for(var i=1;i<=n;i++)h=step(h,Math.floor(arguments[i]));
+    return mix32(h^n);}
+  function hash3(seed,a,b,c){return mix32(step(step(step((seed>>>0)^0x2545F491,a),b),c)^3);}  // hash(seed,a,b,c), unrolled
+  var INV=1/4294967296;
+  function unit(u){return (u>>>0)*INV;}
+  function h3(x,y,z,seed){return hash3(seed||0,Math.floor(x),Math.floor(y),Math.floor(z))*INV;}
+  function vnoise(x,y,z,seed){seed=seed||0;
+    var xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+    var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+    var a0=hash3(seed,xi,yi,zi)*INV,a1=hash3(seed,xi+1,yi,zi)*INV,b0=hash3(seed,xi,yi+1,zi)*INV,b1=hash3(seed,xi+1,yi+1,zi)*INV,
+        c0=hash3(seed,xi,yi,zi+1)*INV,c1=hash3(seed,xi+1,yi,zi+1)*INV,d0=hash3(seed,xi,yi+1,zi+1)*INV,d1=hash3(seed,xi+1,yi+1,zi+1)*INV;
+    var a=a0+(a1-a0)*u,b=b0+(b1-b0)*u,c=c0+(c1-c0)*u,d=d0+(d1-d0)*u;
+    var e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
+  function fbm(x,y,z,o,seed){o=o||3;var a=0,f=1,s=0;for(var i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f,seed)/f;s+=1/f;f*=2.03;}return a/s;}
+  function cell(seed,ix,iz){return hash3(seed,ix,iz,0x51ED);}
+  function child(seed,name){var h=0x811C9DC5;name=String(name);   // FNV-1a over UTF-16 code units, then mixed with the seed
+    for(var i=0;i<name.length;i++)h=imul(h^name.charCodeAt(i),0x01000193);
+    return hash(seed,h|0);}
+  function stream(seed){
+    var s=seed>>>0;
+    function u32(){s|=0;s=s+0x6D2B79F5|0;var t=imul(s^s>>>15,1|s);t=t+imul(t^t>>>7,61|t)^t;return (t^t>>>14)>>>0;}
+    function next(){return u32()*INV;}
+    return {next:next,u32:u32,
+      range:function(a,b){return a+(b-a)*next();},
+      int:function(a,b){return a+Math.floor(next()*(b-a+1));},
+      pick:function(arr){return arr[Math.floor(next()*arr.length)%arr.length];},
+      chance:function(p){return next()<p;},
+      state:function(){return s>>>0;},setState:function(v){s=v>>>0;}};
+  }
+  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,cell:cell,child:child,mix32:mix32};
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== clock/20-core-clock.js
+// ================================================================= CORE — the world clock: motion time and world time
+// One clock for a whole world (GODOT-PLAN.md, Phase 1, "The world clock"). The host's frame loop owns it and steps
+// it with the real seconds since its last frame; everything else reads it. Two axes, kept apart on purpose:
+//   t     MOTION time, seconds since load: wind, particles, flags, walking, KSCHED timelines. A fast day never
+//         makes anything move faster.
+//   hour  WORLD time, 0..24, with a day count: the sky and sun, light schedules, weather's auto mode, SIM.step()
+//         once per simulated minute, life schedules.
+// One world day is 72 real minutes (Travis, Oct 2026): 20 world hours per real hour, a world hour every 3 minutes.
+// The preview pages hold the hour still by default (running:false); the viewer can run time and set the hour.
+// No THREE, no DOM, no wall clock. One shared object, KCLOCK. Godot: WorldClock.gd, the same fields and step().
+//
+//   KCLOCK.DAY_SECONDS                      4320: real seconds in one world day
+//   KCLOCK.make({hour:12, day:0, dayLength:DAY_SECONDS, running:false, scale:1}) -> C
+//   C.step(dt)      dt real seconds (negative or NaN count as 0; capped at 0.1). t += dt*scale; if running, the hour
+//                   advances 24*dt*scale/dayLength and wraps into the next day. Returns C.
+//   C.set(hour)     jump to an hour (wrapped into 0..24); the day is kept
+//   C.run(on)       start or hold world time; motion time runs either way
+//   C.fixed         a number pins t there and makes dt 0 (repeatable shots); null runs
+//   C.t, C.dt, C.hour, C.day, C.running, C.scale, C.dayLength   read them directly
+//   C.rate()        world hours per real hour (20 for a 72-minute day)
+//   C.state() / C.load(s)   the clock as plain data (a saved game, the export) and back
+(function(root){
+  var DAY=72*60;
+  function wrap(h){h=h%24;return h<0?h+24:h;}
+  function make(o){
+    o=o||{};
+    var C={t:0,dt:0,hour:wrap(o.hour!=null?o.hour:12),day:o.day|0,dayLength:o.dayLength>0?o.dayLength:DAY,
+      running:!!o.running,scale:o.scale!=null?o.scale:1,fixed:null};
+    C.step=function(dt){
+      var real=+dt;if(!(real>0))real=0;if(real>.1)real=.1;
+      if(C.fixed!=null){C.dt=0;C.t=C.fixed;return C;}
+      C.dt=real*C.scale;C.t+=C.dt;
+      if(C.running&&C.dt>0){var h=C.hour+24*C.dt/C.dayLength;while(h>=24){h-=24;C.day++;}C.hour=h;}
+      return C;};
+    C.set=function(h){C.hour=wrap(+h||0);return C;};
+    C.run=function(on){C.running=on===undefined?!C.running:!!on;return C;};
+    C.rate=function(){return 24*3600/C.dayLength;};
+    C.state=function(){return{t:C.t,hour:C.hour,day:C.day,dayLength:C.dayLength,running:C.running,scale:C.scale};};
+    C.load=function(s){for(var k in s)if(k in C&&typeof C[k]!=='function')C[k]=s[k];C.hour=wrap(C.hour);return C;};
+    return C;}
+  root.KCLOCK={DAY_SECONDS:DAY,make:make};
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-0-core.js
+// ================================================================= CORE — simulation 0: SIM, the host binding, the registries
+// core/simulation/PLAN.md, Phase 1 (first consumer: settlements/mungo). The world as DATA: factions, organisations,
+// relations, places that offer activities in slots, roles with hour-by-hour schedules, actors, groups, events, and
+// the navigation layers they move on. Decisions are STEPPED once per simulated minute from SIM's own seeded stream;
+// motion between decisions is a pure function of time (77-sim-5-motion.js). No THREE, no DOM: the build's own
+// fragments (its "embodiment") read SIM and draw. Record shapes are SCHEMA.md's; SIM.export() writes them back out.
+//
+//   SIM.init({ seed, hour:()=>0..24, day:()=>int, t:()=>motion seconds, err:(msg)=>{} })     the host binding
+//   SIM.rng                       the stream decisions draw from (KRAND.stream when core/rand is loaded)
+//   SIM.minute()                  the world minute: day*1440 + floor(hour*60)
+//   SIM.sched([[h, ACT], ...])    a schedule as spans -> 24 hourly activities (Shade's form); 24-arrays pass through
+//   SIM.add(kind, rec)            register a record of a kind (activity faction org relation place role actor group
+//                                 event port); a duplicate id throws. The typed helpers below call it.
+//   SIM.get(kind, id) / SIM.all(kind)
+//   SIM.load(json)                the hand-edited overlay (PLAN.md 4.2): a record with a known id overrides it field by
+//                                 field, a new id is added, {id, remove:true} deletes; then every reference is checked
+//   SIM.check()                   unknown references -> SIM.problems (and the host's err), returns the list
+//   SIM.logEvent(kind, data)      the decision log (a ring of SIM.LOG_MAX), what the export carries
+(function(root){
+  'use strict';
+  var KINDS = ['activity','faction','org','relation','presence','place','role','actor','group','event','port'];
+  var SIM = { version:1, R:{}, order:{}, problems:[], LOG:[], LOG_MAX:6000, host:null, rng:null, routeFail:[] };
+  KINDS.forEach(function(k){ SIM.R[k] = {}; SIM.order[k] = []; });
+
+  function mulberry(seed){ var s=seed>>>0; return { next:function(){ s=(s+0x6D2B79F5)|0; var t=Math.imul(s^(s>>>15),1|s); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; },
+    state:function(){ return s>>>0; }, setState:function(v){ s=v>>>0; } }; }
+  function stream(seed){ var K=root.KRAND; var s = K && K.stream ? K.stream(seed) : mulberry(seed);
+    if(!s.range) s.range=function(a,b){ return a+(b-a)*s.next(); };
+    if(!s.int) s.int=function(a,b){ return a+Math.floor(s.next()*(b-a+1)); };
+    if(!s.pick) s.pick=function(arr){ return arr[Math.floor(s.next()*arr.length)%arr.length]; };
+    if(!s.chance) s.chance=function(p){ return s.next()<p; };
+    return s; }
+  SIM.stream = stream;
+
+  SIM.init = function(o){
+    o = o || {};
+    SIM.host = { hour:o.hour||function(){ return 12; }, day:o.day||function(){ return 0; }, t:o.t||function(){ return 0; },
+                 err:o.err||function(m){ if(typeof console!=='undefined') console.warn('SIM: '+m); } };
+    SIM.seed = (o.seed==null ? 1 : o.seed)>>>0;
+    SIM.rng = stream(SIM.seed);
+    return SIM;
+  };
+  SIM.init({});
+  SIM.err = function(m){ SIM.problems.push(m); SIM.host.err(m); };
+  SIM.hour = function(){ return SIM.host.hour(); };
+  SIM.minute = function(){ return SIM.host.day()*1440 + Math.floor(SIM.host.hour()*60); };
+  SIM.time = function(){ return SIM.host.t(); };
+
+  SIM.sched = function(spans){
+    if(spans && spans.length===24 && typeof spans[0]==='string') return spans.slice();
+    if(!spans || !spans.length) throw new Error('SIM.sched: empty schedule');
+    var out=new Array(24), a=spans[spans.length-1][1];
+    for(var h=0;h<24;h++){ for(var i=0;i<spans.length;i++) if(spans[i][0]===h) a=spans[i][1]; out[h]=a; }
+    return out;
+  };
+
+  SIM.add = function(kind, rec){
+    if(!SIM.R[kind]) throw new Error('SIM.add: unknown kind '+kind);
+    if(!rec || rec.id==null) throw new Error('SIM.add('+kind+'): a record needs an id');
+    if(SIM.R[kind][rec.id]) throw new Error('SIM.add('+kind+'): duplicate id '+rec.id);
+    SIM.R[kind][rec.id] = rec; SIM.order[kind].push(rec.id); return rec;
+  };
+  SIM.get = function(kind, id){ return SIM.R[kind] ? SIM.R[kind][id] : undefined; };
+  SIM.all = function(kind){ var R=SIM.R[kind]; return SIM.order[kind].filter(function(id){ return R[id]; }).map(function(id){ return R[id]; }); };
+  SIM.remove = function(kind, id){ delete SIM.R[kind][id]; };
+
+  /* the overlay: what a hand-edited world/*.json says wins over what the geometry registered */
+  var PLURAL = { activities:'activity', factions:'faction', orgs:'org', organizations:'org', relations:'relation', presence:'presence',
+                 places:'place', roles:'role', actors:'actor', population:'role', groups:'group', events:'event', ports:'port' };
+  SIM.load = function(json){
+    var n={ added:0, overridden:0, removed:0 };
+    Object.keys(json||{}).forEach(function(file){
+      var kind = PLURAL[file] || file; if(!SIM.R[kind]){ SIM.err('load: unknown record kind "'+file+'"'); return; }
+      (json[file]||[]).forEach(function(r){
+        if(r.id==null && kind==='relation' && r.a!=null && r.b!=null) r.id = r.a+'>'+r.b;            /* SCHEMA.md: the id defaults */
+        if(r.id==null && kind==='presence' && r.faction!=null && r.settlement!=null) r.id = r.faction+'@'+r.settlement;
+        if(r.id==null){ SIM.err('load: a '+kind+' record without an id ('+(r._src||'?')+')'); return; }
+        var cur = SIM.R[kind][r.id];
+        if(r.remove){ if(cur){ SIM.remove(kind, r.id); n.removed++; } else SIM.err('load: remove of unknown '+kind+' '+r.id+' ('+(r._src||'?')+')'); return; }
+        if(cur){ for(var k in r) if(k!=='id') cur[k]=r[k]; if(cur.sched && !Array.isArray(cur.sched[0]) && cur.sched.length!==24) cur.sched=SIM.sched(cur.sched); n.overridden++; }
+        else { var rec={}; for(var k2 in r) rec[k2]=r[k2];
+          var mk={ activity:SIM.activity, faction:SIM.faction, org:SIM.org, relation:SIM.relation, presence:SIM.presence, place:SIM.place, role:SIM.role, actor:SIM.actor, group:SIM.group, event:SIM.event, port:SIM.port }[kind];
+          (mk || function(o){ return SIM.add(kind, o); })(rec); n.added++; }
+      });
+    });
+    SIM.normalize();
+    SIM.lastLoad = n; return n;
+  };
+  /* schedules given as spans become 24-arrays; places' activities become {ACT: slots} */
+  SIM.normalize = function(){
+    SIM.all('role').forEach(function(R){ if(R.sched && R.sched.length && Array.isArray(R.sched[0])) R.sched = SIM.sched(R.sched); });
+    SIM.all('actor').forEach(function(A){ if(A.sched && A.sched.length && Array.isArray(A.sched[0])) A.sched = SIM.sched(A.sched); });
+    SIM.all('place').forEach(function(P){ if(Array.isArray(P.activities)){ var o={}; P.activities.forEach(function(a){ o[a]=P.capacity||1; }); P.activities=o; } });
+  };
+  /* every reference resolves, or it is a problem with a name */
+  SIM.check = function(){
+    var out=[], A=SIM.R.activity, F=SIM.R.faction, O=SIM.R.org, P=SIM.R.place, Ro=SIM.R.role;
+    function need(ok, msg){ if(!ok) out.push(msg); }
+    SIM.all('org').forEach(function(o){ need(!o.faction || F[o.faction], 'org '+o.id+': unknown faction '+o.faction); });
+    SIM.all('relation').forEach(function(r){ need(F[r.a]||O[r.a], 'relation: unknown party '+r.a); need(F[r.b]||O[r.b], 'relation: unknown party '+r.b); });
+    SIM.all('place').forEach(function(p){ Object.keys(p.activities||{}).forEach(function(a){ need(A[a], 'place '+p.id+': unknown activity '+a); }); need(!p.org || O[p.org], 'place '+p.id+': unknown org '+p.org); });
+    SIM.all('role').forEach(function(r){ need(!r.org || O[r.org], 'role '+r.id+': unknown org '+r.org); (r.sched||[]).forEach(function(a,h){ need(A[a], 'role '+r.id+' at '+h+':00: unknown activity '+a); }); });
+    SIM.all('actor').forEach(function(a){ need(Ro[a.role], 'actor '+a.id+': unknown role '+a.role); need(!a.home || P[a.home], 'actor '+a.id+': unknown home '+a.home); need(!a.work || P[a.work], 'actor '+a.id+': unknown work place '+a.work); });
+    SIM.all('event').forEach(function(e){ (e.from||[]).concat(Array.isArray(e.to)?e.to:[]).forEach(function(p){ need(SIM.R.port[p], 'event '+e.id+': unknown port '+p); }); need(!e.to || Array.isArray(e.to) || e.to==='other', 'event '+e.id+': to must be a port list or "other"'); (e.legs||[]).forEach(function(l){ need(A[l.activity], 'event '+e.id+': unknown activity '+l.activity); }); });
+    out.forEach(function(m){ SIM.err(m); });
+    return out;
+  };
+
+  SIM.logEvent = function(kind, data){
+    var e = { m:SIM.minute(), kind:kind }; if(data) for(var k in data) e[k]=data[k];
+    SIM.LOG.push(e); if(SIM.LOG.length > SIM.LOG_MAX) SIM.LOG.splice(0, SIM.LOG.length-SIM.LOG_MAX);
+    return e;
+  };
+  root.SIM = SIM;
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-1-world.js
+// ================================================================= CORE — simulation 1: factions, organisations, relations, presence
+// PLAN.md 4.3. A faction is a polity or a people (LORE.md section 6); an organisation belongs to one (a guild chapter,
+// a watch, a household, a caravan company); a relation is DIRECTIONAL, a's stance toward b, and an org-level relation
+// overrides its faction's. Presence says how a foreign faction stands in a settlement.
+//
+//   SIM.faction({id, name, parent?, culture?, colours?, sign?})
+//   SIM.org({id, name, faction, kind?, resident?:bool, hostile?})
+//   SIM.relation({a, b, stance:'allied'|'friendly'|'cordial'|'neutral'|'wary'|'hostile', trade?, travel?, settle?, trust?})
+//   SIM.presence({id, faction, settlement, status:'NONE'|'VISITING'|'TRADING'|'RESIDENT'|'ESTABLISHED'|'PERSECUTED'|'EXPELLED'})
+//   SIM.stance(a, b)              a's stance toward b (org ids or faction ids), falling back org -> faction -> 'neutral'
+//   SIM.welcome(actorOrOrg, place) true when the place lets them in: place.access 'public' (default) | 'org' (its own
+//                                 org only) | 'friendly' (orgs whose stance from the place's org is friendly or better)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  var RANK = { hostile:0, wary:1, neutral:2, cordial:3, friendly:4, allied:5 };
+  SIM.STANCES = Object.keys(RANK);
+  SIM.faction = function(o){ return SIM.add('faction', o); };
+  SIM.org = function(o){ if(o.resident==null) o.resident=true; return SIM.add('org', o); };
+  SIM.relation = function(o){ if(RANK[o.stance]==null) throw new Error('SIM.relation: unknown stance '+o.stance);
+    if(o.id==null) o.id = o.a+'>'+o.b; return SIM.add('relation', o); };
+  SIM.presence = function(o){ if(o.id==null) o.id = o.faction+'@'+o.settlement; return SIM.add('presence', o); };
+  function factionOf(x){ var O=SIM.R.org[x]; return O ? O.faction : x; }
+  function rel(a,b){ var R=SIM.R.relation[a+'>'+b]; return R ? R.stance : null; }
+  SIM.stance = function(a, b){
+    if(a===b) return 'allied';
+    var fa=factionOf(a), fb=factionOf(b);
+    if(fa===fb) return 'allied';
+    return rel(a,b) || rel(a,fb) || rel(fa,b) || rel(fa,fb) || 'neutral';
+  };
+  SIM.rank = function(stance){ return RANK[stance]; };
+  SIM.welcome = function(who, place){
+    var org = typeof who==='string' ? who : who.org, acc = place.access || 'public';
+    if(acc==='public') return SIM.rank(SIM.stance(place.org||place.faction||org, org)) >= RANK.wary;
+    if(acc==='org') return org===place.org;
+    if(acc==='friendly') return org===place.org || SIM.rank(SIM.stance(place.org, org)) >= RANK.friendly;
+    return false;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-2-places.js
+// ================================================================= CORE — simulation 2: places, activities, slots
+// A PLACE advertises the activities it offers and how many people each can hold at once (its SLOTS), never a
+// coordinate a population is told to walk to. Derived from placed geometry by the build (a house's beds, a shop's
+// counter, a dock's net frames), then overridden by the hand-edited JSON.
+//
+//   SIM.activity({id, indoor?:bool, group?:bool, note?})          the vocabulary (ROADMAP section 26 plus a build's own)
+//   SIM.place({id, name, kind, x, z, y?, ry?, door?:{x,z,y?}, layer?:'pedestrian', activities:{ACT:slots},
+//              hours?:{ACT:[open,close]}, open?:[h0,h1], indoor?:{ACT:true}|true, org?, faction?, access?, tags?,
+//              spots?:[[x,z,y?],...] (where people stand: tables, stalls, the counter), r?:metres (an open place's reach),
+//              cap?:n (people present at once over ALL its activities, Shade's quarters: a bed and a seat at the hearth
+//              are one person's room. Without it each activity's slots stand alone)})
+//   SIM.offers(P, act) -> slots (0 if not offered)            SIM.isOpen(P, act, hour)
+//   SIM.free(P, act) -> slots left (within cap)               SIM.reserve(actor, P, act) / SIM.release(actor)
+//   SIM.placesFor(act, actor, hour, {near:[x,z], kinds:[...], ids:[...]}) -> candidates, nearest first, open, free and
+//                                 letting the actor in (SIM.welcome)
+//   SIM.slotsFromFurniture(pieces) -> {ACT: n}: a placed piece's job / type / role read as activity slots (PLAN 4.3)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.activity = function(o){ if(typeof o==='string') o={ id:o }; return SIM.add('activity', o); };
+  SIM.place = function(o){
+    if(o.x==null || o.z==null) throw new Error('SIM.place '+o.id+': needs x, z');
+    o.layer = o.layer || 'pedestrian'; o.activities = o.activities || {}; o.occ = {}; o.who = {};
+    if(!o.door) o.door = { x:o.x, z:o.z, y:o.y||0 };
+    return SIM.add('place', o);
+  };
+  SIM.offers = function(P, act){ return (P.activities && P.activities[act]) || 0; };
+  function inHours(h, w){ if(!w) return true; var a=w[0], b=w[1]; return a<=b ? (h>=a && h<b) : (h>=a || h<b); }
+  SIM.isOpen = function(P, act, hour){ if(P.closed) return false; var w=(P.hours && P.hours[act]) || P.open; return inHours(hour, w); };
+  SIM.free = function(P, act){ var f=SIM.offers(P, act) - (P.occ[act]||0);
+    if(P.cap!=null){ var n=0; for(var k in P.occ) n+=P.occ[k]; f=Math.min(f, P.cap-n); } return f; };
+  SIM.indoor = function(P, act){ if(P.indoor===true) return true; if(P.indoor && P.indoor[act]!=null) return !!P.indoor[act];
+    var A=SIM.R.activity[act]; return !!(A && A.indoor && P.roof!==false); };
+  SIM.reserve = function(a, P, act){
+    SIM.release(a);
+    P.occ[act] = (P.occ[act]||0) + 1; P.who[a.id] = act; a.slot = { place:P.id, act:act, k:P.occ[act]-1 };
+  };
+  SIM.release = function(a){
+    var s=a.slot; if(!s) return; var P=SIM.R.place[s.place]; a.slot=null; if(!P) return;
+    P.occ[s.act] = Math.max(0, (P.occ[s.act]||0) - 1); delete P.who[a.id];
+  };
+  SIM.placesFor = function(act, actor, hour, opt){
+    opt = opt || {}; var out=[], near=opt.near, kinds=opt.kinds, ids=opt.ids;
+    var list = ids ? ids.map(function(id){ return SIM.R.place[id]; }).filter(Boolean) : SIM.all('place');
+    for(var i=0;i<list.length;i++){ var P=list[i];
+      if(!SIM.offers(P, act)) continue;
+      if(kinds && kinds.indexOf(P.kind)<0) continue;
+      if(opt.exclude && opt.exclude[P.id]) continue;
+      if(hour!=null && !SIM.isOpen(P, act, hour)) continue;
+      if(!opt.ignoreSlots && SIM.free(P, act) <= 0) continue;
+      if(actor && SIM.welcome && !SIM.welcome(actor, P)) continue;
+      out.push(P); }
+    if(near) out.sort(function(p,q){ return (Math.hypot(p.x-near[0],p.z-near[1]) + (p.bias||0)) - (Math.hypot(q.x-near[0],q.z-near[1]) + (q.bias||0)) || (p.id<q.id?-1:1); });
+    return out;
+  };
+  /* furniture -> slots. A catalog piece carries `job` (FURN_JOBS) or a `type` / interiors walker target type */
+  SIM.FURN_ACT = { bed:'SLEEP', mat:'SLEEP', bunk:'SLEEP', seat:'EAT', chair:'EAT', bench:'SOCIALIZE', stool:'DRINK', table:'EAT',
+    counter:'KEEP_SHOP', stall:'SELL', stove:'COOK', hearth:'COOK', desk:'STUDY', altar:'WORSHIP', shrine:'WORSHIP',
+    forge:'CRAFT', anvil:'CRAFT', loom:'WEAVE', smithing:'CRAFT', fishing:'MEND_NETS', farming:'FARM', carpentry:'CRAFT', milling:'CRAFT' };
+  SIM.slotsFromFurniture = function(pieces){
+    var out={}; (pieces||[]).forEach(function(p){ var a = SIM.FURN_ACT[p.job] || SIM.FURN_ACT[p.type] || SIM.FURN_ACT[p.role]; if(a) out[a]=(out[a]||0)+(p.seats||1); });
+    return out;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-3-actors.js
+// ================================================================= CORE — simulation 3: roles, actors, groups, events, the resolver
+// PLAN.md 4.4 and 4.5. Every actor has a faction, an org, a role and a schedule (sched[24] of activities). Once per
+// SIMULATED MINUTE, SIM.step() asks each actor what its schedule (or its event's itinerary) wants now; when that changes
+// it RESOLVES a place (its pinned home or work place, the place it used for this activity last, else the nearest place
+// of the role's preferred kinds with a free slot, else any place offering it), reserves a slot, and bakes the MOTION to
+// get there: a list of legs, each a route on one navigation layer at one speed and mode (walk, ride, drive, boat). Pose
+// is then a pure function of time (77-sim-5-motion.js). Decisions draw only from SIM.rng; the order is the actor order.
+//
+//   SIM.role({id, org, name, sched, prefers?:{ACT:{pin?:'home'|'work', kinds?:[..], ids?:[..], via?:'boat'|'buggy'}},
+//             speed?, layer?, mode?, fallback?:{ACT:ACT}})
+//   SIM.actor({id, role, org?, faction?, home, work?, sched?, transient?, group?, boat?:{dock}, speed?})
+//   SIM.group({id, kind, org, members:[actor ids], beasts?, mount?, vehicle?})
+//   SIM.event({id, kind, org, every:[minH,maxH] (world hours between firings), window?:[h0,h1], from:[ports], to:[ports]|'other',
+//              size:[a,b] (units), unit:[{role, n}], arrive:{kinds:[..]}, stay:{untilHour, nights}, layer, mode, speed, beasts?, mount?,
+//              legs?:[{activity, mins, kinds?}] (an itinerary instead of arrive and stay: stop to stop together, then out)})
+//   SIM.port({id, x, z, layer, kind})                   a map-edge entry
+//   SIM.step()                                          one simulated minute (the host calls it as the world minute advances)
+//   SIM.jump()                                          the clock jumped: everyone is re-placed from the schedule (a share mid-trip)
+//   SIM.desire(actor) -> activity now                   SIM.decide(actor) -> the place it chose (or null)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.STEP_MAX = 260;           /* decisions per simulated minute; the rest wait a minute (rotating start) */
+  SIM.FALLBACK = ['SOCIALIZE','REST','IDLE'];
+  SIM.SPEED = { walk:1.3, ride:3.6, drive:9.5, boat:2.4, cart:1.3 };
+  SIM.role = function(o){ if(o.sched) o.sched=SIM.sched(o.sched); o.prefers=o.prefers||{}; return SIM.add('role', o); };
+  SIM.port = function(o){ o.layer=o.layer||'pedestrian'; return SIM.add('port', o); };
+  SIM.group = function(o){ o.members=o.members||[]; return SIM.add('group', o); };
+  SIM.event = function(o){ o.fired=0; o.next=null; return SIM.add('event', o); };
+  SIM.actor = function(o){
+    var R=SIM.R.role[o.role]; if(!R) throw new Error('SIM.actor '+o.id+': unknown role '+o.role);
+    o.org = o.org || R.org; var O=SIM.R.org[o.org]; o.faction = o.faction || (O && O.faction);
+    if(o.sched) o.sched=SIM.sched(o.sched);
+    o.present = o.present!==false; o.activity=null; o.place=null; o.task=null; o.slot=null; o.mem={}; o.plan=null;
+    o.speed = o.speed || R.speed || SIM.SPEED.walk;
+    o.k = SIM.order.actor.length;
+    return SIM.add('actor', o);
+  };
+  function schedOf(a){ return a.sched || SIM.R.role[a.role].sched; }
+  function hourOf(m){ return Math.floor((m%1440)/60); }
+
+  /* ---------------------------------------------------------------- what the actor wants now */
+  SIM.desire = function(a, minute){
+    if(a.plan){ var L=a.plan[a.planI]; if(L && L.activity) return L.activity; }
+    var s=schedOf(a); return s ? s[hourOf(minute==null?SIM.minute():minute)] : 'IDLE';
+  };
+  function placeXZ(P){ return [P.x, P.z]; }
+  function anchor(a){ var H=SIM.R.place[a.home]; return H ? placeXZ(H) : (a.at || [0,0]); }
+  /* the place for an activity: pinned, remembered, preferred kinds, anything; then the role's fallback */
+  function choose(a, act, hour){
+    var R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, near=anchor(a), P;
+    if(pref.pin==='home' && a.home){ P=SIM.R.place[a.home]; if(P && SIM.offers(P,act)) return P; }
+    if(pref.pin==='work' && a.work){ P=SIM.R.place[a.work]; if(P && SIM.offers(P,act)) return P; }
+    if(a.plan && a.plan[a.planI] && a.plan[a.planI].place){ P=SIM.R.place[a.plan[a.planI].place]; if(P) return P; }
+    var m=a.mem[act]; if(m){ P=SIM.R.place[m]; if(P && SIM.isOpen(P,act,hour) && (SIM.free(P,act)>0 || P.who[a.id]===act)) return P; }
+    var c = SIM.placesFor(act, a, hour, { near:near, kinds:pref.kinds, ids:pref.ids, exclude:a.bad });
+    if(c.length){ /* the nearest few, one picked from SIM.rng so a crowd spreads over a district's taverns and shops */
+      var k=Math.min(c.length, pref.spread||3); return c[Math.floor(SIM.rng.next()*k)]; }
+    return null;
+  }
+  SIM.choose = choose;
+
+  /* ---------------------------------------------------------------- the decision */
+  SIM.decide = function(a, minute, t){
+    minute = minute==null ? SIM.minute() : minute; t = t==null ? SIM.time() : t;
+    var hour=hourOf(minute), want=SIM.desire(a, minute), R=SIM.R.role[a.role];
+    var chain=[want].concat((R.fallback&&R.fallback[want]) ? [R.fallback[want]] : []).concat(SIM.FALLBACK);
+    var from=SIM.pose(a, t), P=null, act=want, task=null;
+    a.bad = a.bad || {};
+    for(var i=0; i<chain.length && !task; i++){ act=chain[i];
+      /* a place the actor cannot reach is struck off for it and the next one tried (three at most per activity) */
+      for(var tries=0; tries<3; tries++){
+        P=choose(a, act, hour);
+        if(!P && (act==='REST'||act==='IDLE') && a.home) P=SIM.R.place[a.home];
+        if(!P) break;
+        if(a.place===P.id && a.task && !a.task.failed){ if(!a.slot || a.slot.act!==act || a.slot.place!==P.id) SIM.reserve(a, P, act); task=a.task; task.act=act; task.indoor=SIM.indoor(P, act); break; }
+        SIM.reserve(a, P, act);
+        var T=SIM.plan(a, P, act, from, t);
+        if(!T.failed){ task=T; break; }
+        SIM.release(a); a.bad[P.id]=1; a.mem[act]=null; P=null; } }
+    a.wanted = want;
+    if(!task){ a.activity=act; a.task=a.task||null; SIM.logEvent('stuck', { actor:a.id, wanted:want }); return null; }
+    a.mem[act]=P.id; a.activity=act; a.place=P.id; a.task=task; a.since=minute;
+    SIM.logEvent('decide', { actor:a.id, act:act, place:P.id });
+    return P;
+  };
+
+  /* ---------------------------------------------------------------- the motion, baked at decision time */
+  function spotOf(a, P){
+    var k = (a.slot && a.slot.k) || 0;
+    if(P.spots && P.spots.length){ var s=P.spots[k % P.spots.length]; return { x:s[0], z:s[1], y:s[2]==null?P.y:s[2] }; }
+    var r = P.r || 0; if(!r) return { x:P.door.x, z:P.door.z, y:P.door.y };
+    var u=((a.k*2654435761)>>>0)/4294967296, v=((a.k*40503+k*977)>>>0)%1000/1000, ang=u*Math.PI*2, rr=r*Math.sqrt(0.15+0.85*v);
+    return { x:P.x+Math.cos(ang)*rr, z:P.z+Math.sin(ang)*rr, y:P.y };
+  }
+  function leg(layer, from, to, speed, mode, minW){
+    var r=SIM.nav.route(layer, from, to, { minW:minW||0 }); if(!r) return null;
+    return { route:r, speed:speed, mode:mode, layer:layer, dur:r.len/speed };
+  }
+  /* the legs to a place: walk (or ride / drive) on the actor's layer; a place on another layer is reached through a
+     boarding place (a fisher's dock, the buggy park): walk there, then go on in the boat or the buggy */
+  SIM.plan = function(a, P, act, from, t){
+    var legs=[], R=SIM.R.role[a.role], pref=(R.prefers&&R.prefers[act])||{}, mode=a.mode||R.mode||'walk', layer=a.layer||R.layer||'pedestrian';
+    var spot=spotOf(a, P), cur=from, inVeh = a.inVehicle;           /* a.inVehicle: 'boat' | 'buggy' while out on the water / the road */
+    var via = pref.via || P.via;
+    if(via && !inVeh){ var B=SIM.R.place[via==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)];
+      if(B){ var l1=leg(layer, cur, B.door, a.speed, mode, 0); if(l1){ legs.push(l1); cur=B.door; }
+        var vm = via==='boat'?'boat':'drive', vl = via==='boat'?'water':'road', vs = SIM.SPEED[vm==='boat'?'boat':'drive'];
+        var board = via==='boat' && a.boat && a.boat.pier ? a.boat.pier : B.door;
+        var l2=leg(vl, board, P.layer===vl?spot:P.door, vs, vm, vm==='drive'?5:0); if(l2){ legs.push(l2); } a.inVehicle = vm==='boat'?'boat':'buggy'; } }
+    else if(inVeh && P.layer!==(inVeh==='boat'?'water':'road')){                   /* back from the water / the road: to the base, then walk */
+      var base=SIM.R.place[inVeh==='boat' ? (a.boat&&a.boat.dock) : (a.vehicle&&a.vehicle.base)], vl2=inVeh==='boat'?'water':'road';
+      if(base){ var land = inVeh==='boat' && a.boat && a.boat.pier ? a.boat.pier : base.door;
+        var l3=leg(vl2, cur, land, SIM.SPEED[inVeh==='boat'?'boat':'drive'], inVeh==='boat'?'boat':'drive', inVeh==='boat'?0:5); if(l3){ legs.push(l3); cur=base.door; } }
+      a.inVehicle = null;
+      var l4=leg(layer, cur, spot, a.speed, mode, 0); if(l4) legs.push(l4); }
+    else {
+      var lay = inVeh ? (inVeh==='boat'?'water':'road') : (P.layer && P.layer!=='pedestrian' && SIM.nav.layers[P.layer] && layer!=='animal' ? P.layer : layer);
+      var l5=leg(lay, cur, spot, inVeh?SIM.SPEED[inVeh==='boat'?'boat':'drive']:a.speed, inVeh?(inVeh==='boat'?'boat':'drive'):mode, a.minW||0); if(l5) legs.push(l5); }
+    var T={ act:act, place:P.id, t0:t, legs:legs, spot:spot, dur:0, indoor:SIM.indoor(P, act), wander:P.wander||0, failed:!legs.length && Math.hypot(cur.x-spot.x,cur.z-spot.z)>3 };
+    legs.forEach(function(L){ T.dur+=L.dur; }); T.arrive=t+T.dur;
+    if(T.failed) SIM.logEvent('nopath', { actor:a.id, place:P.id });
+    return T;
+  };
+
+  /* ---------------------------------------------------------------- events: caravans, riders, excursions */
+  function nextFiring(E, minute){ var e=E.every||[6,12]; return minute + Math.round(SIM.rng.range(e[0], e[1])*60); }
+  function pickPort(list, not){ var L=(list||[]).filter(function(p){ return p!==not && SIM.R.port[p]; }); return L.length ? L[Math.floor(SIM.rng.next()*L.length)] : null; }
+  SIM.fire = function(E, minute, t){
+    var from=pickPort(E.from), to = E.to==='other' || !E.to ? pickPort(E.from, from) || from : pickPort(E.to, from);
+    if(!from){ SIM.err('event '+E.id+': no port'); return null; }
+    if(E.kind==='excursion') return excursion(E, minute, t, from);
+    var P0=SIM.R.port[from], units=SIM.rng.int(E.size?E.size[0]:1, E.size?E.size[1]:1), gid=E.id+'#'+(++E.fired), members=[];
+    var G=SIM.group({ id:gid, kind:E.kind, org:E.org, event:E.id, members:members, beasts:E.beasts?units*(E.beasts||1):0, mount:E.mount||null, from:from, to:to, units:units, mode:E.mode||'walk', layer:E.layer||'pedestrian', speed:E.speed||SIM.SPEED.walk });
+    for(var u=0;u<units;u++) (E.unit||[]).forEach(function(U){ for(var n=0;n<U.n;n++){
+      var id=gid+'.'+members.length, a=SIM.actor({ id:id, role:U.role, org:E.org, transient:true, group:gid, home:null });
+      a.at=[P0.x, P0.z]; a.pos={ x:P0.x, y:0, z:P0.z }; a.inVehicle=null; members.push(id); } });
+    if(!members.length){ SIM.err('event '+E.id+': its unit makes no one (unit:[{role, n}])'); SIM.remove('group', gid); return null; }
+    if(E.legs && E.legs.length) return itinerary(E, G, members, P0, to, minute, t);
+    /* the itinerary: arrive together, stay to the depart hour (the members' own schedules meanwhile), leave together */
+    var stayUntil = minute - (minute%1440) + 1440*(E.stay&&E.stay.nights!=null?E.stay.nights:1) + 60*((E.stay&&E.stay.untilHour)||7);
+    G.plan = { arriveKinds:(E.arrive&&E.arrive.kinds)||[], stayUntil:stayUntil, phase:'arrive' };
+    var dest = SIM.placesFor(E.arrive && E.arrive.activity || 'STABLE', null, null, { near:[P0.x,P0.z], kinds:G.plan.arriveKinds, ignoreSlots:true })[0];
+    members.forEach(function(id, i){ var a=SIM.R.actor[id];
+      a.plan=[{ activity:(E.arrive&&E.arrive.activity)||'STABLE', place:dest&&dest.id, together:true },{ stay:true, until:stayUntil },{ activity:'DEPART', port:to, together:true }];
+      a.planI=0; a.fi=i; });
+    G.leader = members[0]; G.dest = dest && dest.id;
+    SIM.logEvent('event', { event:E.id, group:gid, from:from, to:to, units:units, people:members.length, dest:G.dest });
+    groupLeg(G, minute, t);
+    return G;
+  };
+  /* an event with `legs` ([{activity, mins, kinds?}]): the group goes together from stop to stop, each the nearest place
+     offering the leg's activity to the stop before (the first from the port), stays `mins` world minutes there doing
+     it, and leaves by its port after the last (Shade's convoy: water, trade, rest, out by the switchback) */
+  function itinerary(E, G, members, P0, to, minute, t){
+    var at=[P0.x, P0.z], plan=[];
+    E.legs.forEach(function(L){ var P=SIM.placesFor(L.activity, null, null, { near:at, kinds:L.kinds, ignoreSlots:true })[0];
+      if(!P){ SIM.err('event '+E.id+': no place offers '+L.activity); return; }
+      plan.push({ activity:L.activity, place:P.id, together:true, mins:L.mins||0 }); at=[P.x, P.z]; });
+    plan.push({ activity:'DEPART', port:to, together:true });
+    G.plan = { legs:true, phase:'arrive' };
+    members.forEach(function(id, i){ var a=SIM.R.actor[id]; a.plan=plan.map(function(L){ var o={}; for(var k in L) o[k]=L[k]; return o; }); a.planI=0; a.fi=i; });
+    G.leader = members[0]; G.dest = plan[0].place || null;
+    SIM.logEvent('event', { event:E.id, group:G.id, from:G.from, to:to, units:G.units, people:members.length, legs:plan.length-1 });
+    groupLeg(G, minute, t);
+    return G;
+  }
+  /* a group's TOGETHER leg: the leader's route, the others behind and beside it (KSCHED.formation's offsets) */
+  function groupLeg(G, minute, t){
+    var lead=SIM.R.actor[G.leader], L=lead.plan[lead.planI], P;
+    if(L.port){ var Pt=SIM.R.port[L.port]; P={ id:'port:'+L.port, x:Pt.x, z:Pt.z, y:0, door:{ x:Pt.x, z:Pt.z, y:0 }, layer:Pt.layer }; }
+    else P=SIM.R.place[L.place];
+    if(!P) return;
+    var from=SIM.pose(lead, t), layer=G.layer||'pedestrian', mode=G.mode||'walk', spd=G.speed||lead.speed;
+    var to = L.port ? P.door : (P.spots && P.spots.length ? { x:P.spots[0][0], z:P.spots[0][1], y:P.y } : P.door);
+    var r=SIM.nav.route(layer, from, to, { minW:G.kind==='caravan'?5:0 });
+    G.members.forEach(function(id, i){ var a=SIM.R.actor[id]; if(L.place && P.occ!=null) SIM.reserve(a, P, L.activity);
+      a.activity=L.activity; a.place=L.place||null;
+      var row=Math.floor(i/2), side=(i%2?1:-1)*(G.kind==='caravan'?1.1:1.6);
+      a.task={ act:L.activity, place:a.place, t0:t, legs:r?[{ route:r, speed:spd, mode:mode, layer:layer, dur:r.len/spd, back:row*(G.kind==='caravan'?3.2:3.0), side:i?side:0 }]:[], spot:to, dur:r?r.len/spd:0, indoor:false, together:G.id };
+      a.task.arrive=t+a.task.dur; });
+    G.legAt=t; G.legArrive=t+(r?r.len/spd:0); G.route=r; G.phase=L.port?'depart':'arrive';
+    if(!r) SIM.logEvent('nopath', { group:G.id, layer:layer, to:L.port||L.place });
+  }
+  function excursion(E, minute, t, port){
+    /* one of the org's people on duty at the base takes a vehicle out to a port, stays away, and drives back */
+    var base=SIM.R.place[E.base], pool=SIM.all('actor').filter(function(a){ return a.present && !a.plan && a.org===E.org && a.vehicle && a.place && (a.place===E.base || SIM.R.place[a.place] && SIM.R.place[a.place].kind===E.fromKind) && a.task && !a.task.failed && SIM.time() >= a.task.arrive; });
+    if(!pool.length || !base) return null;
+    var a=pool[Math.floor(SIM.rng.next()*pool.length)], away=Math.round(SIM.rng.range(E.away[0], E.away[1])*60);
+    a.plan=[{ activity:'DRIVE', port:port },{ away:true, until:minute+away },{ activity:'DRIVE_BACK', place:E.base }]; a.planI=0;
+    var Pt=SIM.R.port[port]; SIM.release(a);
+    var legs=[], b=leg('pedestrian', SIM.pose(a,t), base.door, a.speed, 'walk', 0); if(b) legs.push(b);
+    var d=leg('road', base.door, { x:Pt.x, z:Pt.z, y:0 }, SIM.SPEED.drive, 'drive', 5); if(d) legs.push(d);
+    a.activity='DRIVE'; a.place=null; a.inVehicle='buggy';
+    a.task={ act:'DRIVE', place:null, t0:t, legs:legs, spot:{ x:Pt.x, z:Pt.z, y:0 }, dur:legs.reduce(function(s,L){ return s+L.dur; },0), indoor:false };
+    a.task.arrive=t+a.task.dur; E.fired++;
+    SIM.logEvent('event', { event:E.id, actor:a.id, to:port, awayMinutes:away });
+    return a;
+  }
+
+  /* ---------------------------------------------------------------- the stepper */
+  var rot=0;
+  SIM.step = function(){
+    var minute=SIM.minute(), t=SIM.time(), hour=hourOf(minute), budget=SIM.STEP_MAX;
+    SIM.lastStep = minute;
+    SIM.all('event').forEach(function(E){
+      if(E.next==null) E.next = minute + Math.round(SIM.rng.range(0, (E.every?E.every[0]:2)*60));
+      if(minute >= E.next){ var ok=!E.window || (hour>=E.window[0] && hour<E.window[1]); var live=SIM.all('group').filter(function(G){ return G.event===E.id && !G.done; }).length;
+        if(ok && live < (E.maxLive||3)) SIM.fire(E, minute, t); E.next = nextFiring(E, minute); } });
+    /* groups: advance their itineraries */
+    SIM.all('group').forEach(function(G){ if(G.done || !G.plan) return; var lead=SIM.R.actor[G.leader]; if(!lead) return;
+      if(G.phase==='arrive' && t >= G.legArrive && G.plan.legs){ var Lc=lead.plan[lead.planI];      /* an itinerary stop: stay its minutes */
+        G.members.forEach(function(id){ var a=SIM.R.actor[id]; a.pos=SIM.pose(a, t); }); G.phase='dwell'; G.until=minute+(Lc.mins||0);
+        SIM.logEvent('arrived', { group:G.id, place:Lc.place, act:Lc.activity }); }
+      else if(G.phase==='dwell' && minute >= G.until){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI++; }); groupLeg(G, minute, t); }
+      else if(G.phase==='arrive' && t >= G.legArrive){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; a.pos=SIM.pose(a, t); a.planI=1; a.task=null; a.wanted=null; }); G.phase='stay'; SIM.logEvent('arrived', { group:G.id, place:G.dest }); }
+      else if(G.phase==='stay' && minute >= G.plan.stayUntil){ G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.planI=2; }); groupLeg(G, minute, t); }
+      else if(G.phase==='depart' && t >= G.legArrive){ G.done=true; G.members.forEach(function(id){ var a=SIM.R.actor[id]; SIM.release(a); a.present=false; SIM.remove('actor', id); });
+        SIM.logEvent('left', { group:G.id, port:G.to }); SIM.remove('group', G.id); } });
+    /* actors */
+    var A=SIM.all('actor'), n=A.length; if(!n) return 0; rot=(rot+37)%n; var made=0;
+    for(var q=0;q<n && budget>0;q++){ var a=A[(q+rot)%n];
+      if(a.plan){ var L=a.plan[a.planI];
+        if(L && L.away){ if(minute >= L.until){ a.planI++; a.present=true; var Pt=null, Bp=SIM.R.place[a.plan[a.planI].place]; var prev=a.plan[0].port; Pt=SIM.R.port[prev];
+            var d=leg('road', { x:Pt.x, z:Pt.z, y:0 }, Bp.door, SIM.SPEED.drive, 'drive', 5); a.inVehicle='buggy';
+            a.task={ act:'DRIVE_BACK', place:Bp.id, t0:t, legs:d?[d]:[], spot:Bp.door, dur:d?d.dur:0, indoor:false }; a.task.arrive=t+a.task.dur; a.activity='DRIVE_BACK'; }
+          continue; }
+        if(L && L.activity==='DRIVE' && a.task && t >= a.task.arrive){ a.planI++; a.present=false; a.task=null; continue; }
+        if(L && L.activity==='DRIVE_BACK' && a.task && t >= a.task.arrive){ a.pos=SIM.pose(a, t); a.plan=null; a.inVehicle=null; a.task=null; a.activity=null; a.wanted=null; }
+        if(L && (L.together || L.away)) continue;                                  /* the group (or the trip) moves it */
+      }
+      if(!a.present) continue;
+      var want=SIM.desire(a, minute), Rr=SIM.R.role[a.role], cyc=Rr.cycle && Rr.cycle[a.activity];
+      if(want!==a.wanted || !a.task || (a.task.failed && (minute%15===0))){ SIM.decide(a, minute, t); budget--; made++; }
+      else if(cyc && a.since!=null && minute-a.since >= cyc && t >= a.task.arrive && a.activity===want){   /* a role that moves on (the watch, a merchant doing the rounds) */
+        var here=a.place; a.mem[want]=null; a.bad=a.bad||{}; var had=a.bad[here]; a.bad[here]=1; SIM.decide(a, minute, t); if(!had) delete a.bad[here]; budget--; made++; }
+    }
+    return made;
+  };
+  /* the clock jumped: decide everyone afresh and put most of them where they are going (a share stays mid-trip) */
+  SIM.jump = function(){
+    var minute=SIM.minute(), t=SIM.time();
+    SIM.all('actor').forEach(function(a){ if(!a.present || a.plan) return; a.wanted=null; SIM.decide(a, minute, t);
+      if(a.task && SIM.rng.next() > 0.12){ var d=a.task.dur; a.task.t0 -= d; a.task.arrive -= d; } });
+    SIM.logEvent('jump', { minute:minute });
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-4-nav.js
+// ================================================================= CORE — simulation 4: navigation layers (the NAV contract)
+// PLAN.md 4.3: NAV = {nodes:[{id,x,y,z,tag}], edges:[{id,a,b,kind,len,w}]}, the Mav / Locus / GAME_EXPORT contract, one
+// per LAYER ('pedestrian' 'road' 'water' 'climb' 'animal' 'air' 'interior'). A graph layer is searched here (A* on a
+// binary heap, a cost and a speed factor per edge kind, `w` per edge so a caravan keeps to roads wide enough for it).
+// A GRID layer (a host's own water or cross-country grid) registers a route function instead and answers the same call.
+//
+//   SIM.nav.layer(name, {nodes, edges, cost?:{kind:k}, speed?:{kind:k}})       a graph layer
+//   SIM.nav.layer(name, {route:(ax,az,bx,bz,opt)=>{pts:[[x,y,z]...]}|null})      a grid (host) layer
+//   SIM.nav.nearest(layer, x, z, {minW}) -> node index (graph layers)
+//   SIM.nav.route(layer, from:{x,z,y?,node?}, to:{x,z,y?,node?}, {minW}) -> {pts, cum, len} or null (SIM.routeFail)
+//   The path between two NODES is cached (node pair + width), so a thousand people commuting cost a few hundred searches.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  var NAVS = {}, CELL = 24;
+  function Heap(){ this.k=[]; this.f=[]; }
+  Heap.prototype.push=function(k,f){ var K=this.k,F=this.f,i=K.length; K.push(k); F.push(f); while(i>0){ var p=(i-1)>>1; if(F[p]<=F[i]) break; var t=K[p];K[p]=K[i];K[i]=t; t=F[p];F[p]=F[i];F[i]=t; i=p; } };
+  Heap.prototype.pop=function(){ var K=this.k,F=this.f,top=K[0],lk=K.pop(),lf=F.pop(); if(K.length){ K[0]=lk; F[0]=lf; var i=0,n=K.length;
+    for(;;){ var l=2*i+1,r=l+1,m=i; if(l<n&&F[l]<F[m]) m=l; if(r<n&&F[r]<F[m]) m=r; if(m===i) break; var t=K[m];K[m]=K[i];K[i]=t; t=F[m];F[m]=F[i];F[i]=t; i=m; } } return top; };
+  function graphLayer(name, o){
+    var N=o.nodes, E=o.edges, n=N.length, adjStart=new Int32Array(n+1), deg=new Int32Array(n);
+    var idx={}; N.forEach(function(nd,i){ idx[nd.id]=i; });
+    E.forEach(function(e){ deg[idx[e.a]]++; deg[idx[e.b]]++; });
+    for(var i=0;i<n;i++) adjStart[i+1]=adjStart[i]+deg[i];
+    var adjTo=new Int32Array(adjStart[n]), adjE=new Int32Array(adjStart[n]), fill=new Int32Array(n);
+    E.forEach(function(e,ei){ var a=idx[e.a], b=idx[e.b]; adjTo[adjStart[a]+fill[a]]=b; adjE[adjStart[a]+fill[a]++]=ei; adjTo[adjStart[b]+fill[b]]=a; adjE[adjStart[b]+fill[b]++]=ei; });
+    var hash={}; N.forEach(function(nd,i){ var k=Math.floor(nd.x/CELL)+','+Math.floor(nd.z/CELL); (hash[k]||(hash[k]=[])).push(i); });
+    var L={ name:name, kind:'graph', nodes:N, edges:E, idx:idx, adjStart:adjStart, adjTo:adjTo, adjE:adjE, hash:hash, cost:o.cost||{}, speed:o.speed||{}, cache:{}, searches:0, hits:0 };
+    /* the widest edge at each node: a wheeled mover may only start or stop where it fits */
+    L.nodeW = new Float32Array(n); E.forEach(function(e){ var w=e.w==null?99:e.w; [idx[e.a],idx[e.b]].forEach(function(j){ if(w>L.nodeW[j]) L.nodeW[j]=w; }); });
+    return L;
+  }
+  SIM.nav = {
+    layers: NAVS,
+    layer: function(name, o){ NAVS[name] = o.route ? { name:name, kind:'grid', route:o.route, nearest:o.nearest||null, searches:0 } : graphLayer(name, o); return NAVS[name]; },
+    nearest: function(layer, x, z, opt){
+      var L=NAVS[layer]; if(!L || L.kind!=='graph') return -1; var minW=(opt&&opt.minW)||0, best=-1, bd=1e18;
+      /* rings of hash cells outward; once something is found, a ring further out cannot hold anything nearer
+         than r*CELL, so stop when the best is inside that */
+      var ci=Math.floor(x/CELL), cj=Math.floor(z/CELL);
+      for(var r=0;r<14;r++){
+        for(var i=ci-r;i<=ci+r;i++) for(var j=cj-r;j<=cj+r;j++){ if(r && i>ci-r && i<ci+r && j>cj-r && j<cj+r) continue; var cell=L.hash[i+','+j]; if(!cell) continue;
+          for(var q=0;q<cell.length;q++){ var k=cell[q], nd=L.nodes[k]; if(L.nodeW[k] < minW) continue; var d=(nd.x-x)*(nd.x-x)+(nd.z-z)*(nd.z-z); if(d<bd){ bd=d; best=k; } } }
+        if(best>=0 && Math.sqrt(bd) <= r*CELL) break; }
+      if(best<0){ for(var m=0;m<L.nodes.length;m++){ if(L.nodeW[m] < minW) continue; var nd2=L.nodes[m], d2=(nd2.x-x)*(nd2.x-x)+(nd2.z-z)*(nd2.z-z); if(d2<bd){ bd=d2; best=m; } } }
+      return best;
+    },
+    /* the node path between two node indices, cached */
+    path: function(layer, s, t, minW){
+      var L=NAVS[layer], key=s+'|'+t+'|'+(minW||0); if(L.cache[key]){ L.hits++; return L.cache[key]; }
+      L.searches++;
+      var N=L.nodes, n=N.length, g=new Float64Array(n).fill(Infinity), from=new Int32Array(n).fill(-1), closed=new Uint8Array(n), h=new Heap();
+      var T=N[t]; g[s]=0; h.push(s, Math.hypot(N[s].x-T.x, N[s].z-T.z)); var found=false;
+      while(h.k.length){ var c=h.pop(); if(closed[c]) continue; closed[c]=1; if(c===t){ found=true; break; }
+        for(var q=L.adjStart[c]; q<L.adjStart[c+1]; q++){ var o=L.adjTo[q], e=L.edges[L.adjE[q]]; if(closed[o]) continue;
+          if(minW && e.w!=null && e.w < minW) continue;
+          var len=e.len!=null?e.len:Math.hypot(N[o].x-N[c].x,N[o].z-N[c].z), cst=g[c]+len*(L.cost[e.kind]||1)*(e.cost||1);
+          if(cst<g[o]){ g[o]=cst; from[o]=c; h.push(o, cst+Math.hypot(N[o].x-T.x, N[o].z-T.z)); } } }
+      var out = null;
+      if(found){ out=[]; for(var k=t;k>=0;k=from[k]){ out.push(k); if(k===s) break; } out.reverse(); }
+      L.cache[key] = out; return out;
+    },
+    route: function(layer, from, to, opt){
+      var L=NAVS[layer]; opt=opt||{};
+      if(!L){ SIM.routeFail.push({ layer:layer, why:'no layer' }); return null; }
+      var pts;
+      if(L.kind==='grid'){ L.searches++; var r=L.route(from.x, from.z, to.x, to.z, opt); if(!r){ SIM.routeFail.push({ layer:layer, from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; } pts=r.pts; }
+      else {
+        var s = from.node!=null ? L.idx[from.node] : SIM.nav.nearest(layer, from.x, from.z, opt), t = to.node!=null ? L.idx[to.node] : SIM.nav.nearest(layer, to.x, to.z, opt);
+        if(s==null || t==null || s<0 || t<0){ SIM.routeFail.push({ layer:layer, why:'no node', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
+        var p = SIM.nav.path(layer, s, t, opt.minW);
+        if(!p){ SIM.routeFail.push({ layer:layer, why:'no path', from:[from.x|0,from.z|0], to:[to.x|0,to.z|0] }); return null; }
+        pts = [[from.x, from.y==null?L.nodes[s].y:from.y, from.z]];
+        for(var i=0;i<p.length;i++){ var nd=L.nodes[p[i]]; pts.push([nd.x, nd.y, nd.z]); }
+        pts.push([to.x, to.y==null?L.nodes[t].y:to.y, to.z]);
+      }
+      /* drop repeated points, measure */
+      var clean=[pts[0]]; for(var j=1;j<pts.length;j++){ var a=clean[clean.length-1], b=pts[j]; if(Math.hypot(b[0]-a[0],b[2]-a[2]) > 0.05) clean.push(b); }
+      if(clean.length===1) clean.push(clean[0].slice());
+      var cum=[0]; for(var m=1;m<clean.length;m++) cum.push(cum[m-1]+Math.hypot(clean[m][0]-clean[m-1][0], clean[m][2]-clean[m-1][2]));
+      return { pts:clean, cum:cum, len:cum[cum.length-1], layer:layer };
+    },
+    stats: function(){ var o={}; for(var k in NAVS){ var L=NAVS[k]; o[k]={ kind:L.kind, nodes:L.nodes?L.nodes.length:0, edges:L.edges?L.edges.length:0, searches:L.searches, cacheHits:L.hits||0 }; } return o; }
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-5-motion.js
+// ================================================================= CORE — simulation 5: motion as a function of time
+// PLAN.md 4.5: "decisions step, motion is a function of time". A decision bakes an actor's task: legs of routes with a
+// speed and a start time. Its pose at any motion time t is then a pure function: along the current leg, or at its spot
+// (an open activity wanders a little round it, on a hashed loop of waypoints, also a pure function of t). Nothing here
+// integrates, so a port (Godot) or a test evaluates the same pose from the same task at the same t.
+//
+//   SIM.pose(actor, t) -> {x, y, z, h (heading, radians, atan2(dx,dz)), moving, hidden, mode, act, leg}
+//   SIM.at(route, s) -> {x, y, z, tx, tz}       the point s metres along a route (binary search on its cum)
+//   SIM.WANDER                                   {period, reach}: the idle loop (seconds per waypoint, metres)
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.WANDER = { period:14, reach:1.6 };
+  SIM.at = function(R, s){
+    var P=R.pts, C=R.cum, n=P.length; if(s<=0) return seg(P,0,0); if(s>=R.len) return seg(P,n-2,1);
+    var lo=0, hi=n-1; while(lo<hi-1){ var m=(lo+hi)>>1; if(C[m]<=s) lo=m; else hi=m; }
+    var L=C[lo+1]-C[lo]; return seg(P, lo, L>0 ? (s-C[lo])/L : 0);
+  };
+  function seg(P, i, u){ var a=P[Math.max(0,Math.min(i,P.length-1))], b=P[Math.max(0,Math.min(i+1,P.length-1))], dx=b[0]-a[0], dz=b[2]-a[2], L=Math.hypot(dx,dz)||1;
+    return { x:a[0]+dx*u, y:a[1]+(b[1]-a[1])*u, z:a[2]+dz*u, tx:dx/L, tz:dz/L }; }
+  function h32(a,b){ var h=Math.imul((a|0)^0x9E3779B1, 0x85ebca6b) ^ Math.imul(b|0, 0xc2b2ae35); h^=h>>>15; h=Math.imul(h,0x27d4eb2d); h^=h>>>13; return (h>>>0)/4294967296; }
+  SIM.pose = function(a, t){
+    var o={ x:0, y:0, z:0, h:a.h0||0, moving:false, hidden:false, mode:'walk', act:a.activity, leg:-1 };
+    var T=a.task;
+    if(!T){ var p=a.pos; if(!p){ var H=SIM.R.place[a.home]; p = H ? H.door : { x:(a.at||[0,0])[0], y:0, z:(a.at||[0,0])[1] }; o.hidden = !!H; }
+      o.x=p.x; o.y=p.y||0; o.z=p.z; if(!a.present) o.hidden=true; return o; }
+    var dt=t-T.t0;
+    for(var i=0;i<T.legs.length;i++){ var L=T.legs[i];
+      if(dt < L.dur){                    /* a group member trails `back` metres behind its leader, and stops there */
+        var s=Math.max(0, Math.min(dt*L.speed, L.route.len) - (L.back||0)), q=SIM.at(L.route, s);
+        o.x=q.x - q.tz*(L.side||0); o.z=q.z + q.tx*(L.side||0); o.y=q.y; o.h=Math.atan2(q.tx, q.tz); o.moving = s>0 && s<L.route.len; o.mode=L.mode; o.leg=i;
+        if(!a.present) o.hidden=true; return o; }
+      dt -= L.dur; }
+    /* arrived: at the spot (behind the leader for a group, so a caravan does not stand in one place) */
+    var sp=T.spot, lastL=T.legs[T.legs.length-1], back=lastL?(lastL.back||0):0, side=lastL?(lastL.side||0):0, tx=0, tz=1;
+    if(lastL){ var e=SIM.at(lastL.route, lastL.route.len); tx=e.tx; tz=e.tz; o.h=Math.atan2(tx,tz); o.mode = lastL.mode; }
+    o.x = sp.x - tx*back - tz*side; o.z = sp.z - tz*back + tx*side; o.y = sp.y||0;
+    var W=T.wander; if(W>0 && !T.indoor){ var P=SIM.WANDER.period, k=a.k||0, c=Math.floor((t+k*3.7)/P), u=((t+k*3.7)/P)-c;
+      var ax=(h32(k,c)-0.5)*2*W, az=(h32(k+7919,c)-0.5)*2*W, bx=(h32(k,c+1)-0.5)*2*W, bz=(h32(k+7919,c+1)-0.5)*2*W, f=u<0.55?0:(u-0.55)/0.45, sm=f*f*(3-2*f);
+      o.x += ax+(bx-ax)*sm; o.z += az+(bz-az)*sm; if(sm>0 && sm<1){ o.moving=true; o.h=Math.atan2(bx-ax, bz-az); } }
+    o.hidden = !!T.indoor || !a.present;
+    if(a.inVehicle==='boat' && T.legs.length && lastL && lastL.mode==='boat'){ o.mode='boat'; o.hidden=!a.present; }
+    return o;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-6-population.js
+// ================================================================= CORE — simulation 6: the population, from the roles' data
+// A settlement's residents are not typed one by one: each ROLE says how many (`count`), which kinds of home it lives in
+// (`homes`, in order of preference), the work place it is pinned to (`work: {kinds, act}`, dealt round-robin over the
+// places of those kinds that offer `act`), and whether it keeps a boat at a dock (`boat`) or a vehicle at a base
+// (`vehicle: {base}`). A role marked `fill` takes every bed the others leave. Beds are a home's SLEEP slots.
+// A `homes` entry is a place kind or, when no place has that kind, a place id. A role with `deal:'round'` deals its
+// actors round-robin over its homes list (the i-th to homes[i % n]) whatever the beds say: Shade's rule, where a
+// quarter holds `cap` people across all its activities and the hourly capacity audit, not a bed count, says they fit.
+//
+//   SIM.populate({ prefix:'p', boatOf:(actor, homePlace)=>{dock, pier}|null }) -> {actors, byRole, beds, bedsLeft, homeless}
+//   Roles that may live in fewer kinds of home are housed first. A role's `variants` (a list of schedules) are dealt
+//   round-robin to its actors, so a crowd of one role does not all move at the same hour.
+//   Every actor gets id prefix+n, its role's org, a home (place id) and, as the role asks, work / boat / vehicle.
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.populate = function(opt){
+    opt = opt || {}; var pre = opt.prefix || 'p', n = 0, out = { actors:0, byRole:{}, beds:0, bedsLeft:0, homeless:[] };
+    var homes = SIM.all('place').filter(function(P){ return SIM.offers(P, 'SLEEP') > 0 && !P.transient; });
+    var beds = {}; homes.forEach(function(P){ beds[P.id] = P.activities.SLEEP; out.beds += P.activities.SLEEP; });
+    var byKind = {}; homes.forEach(function(P){ (byKind[P.kind]||(byKind[P.kind]=[])).push(P); });
+    var workLoad = {};
+    function homesOf(k){ return byKind[k] || (beds[k]!=null ? [SIM.R.place[k]] : []); }
+    function homeFor(R){
+      var kinds = R.homes || Object.keys(byKind);
+      if(R.deal==='round' && R.homes && R.homes.length){ var i=out.byRole[R.id]||0, L0=homesOf(kinds[i % kinds.length]); if(!L0.length) return null;
+        var P0=L0[Math.floor(i / kinds.length) % L0.length]; if(beds[P0.id] > 0) beds[P0.id]--; return P0; }
+      for(var k=0;k<kinds.length;k++){ var L=homesOf(kinds[k]).filter(function(P){ return beds[P.id] > 0; });
+        if(L.length){ var P=L[Math.floor(SIM.rng.next()*Math.min(L.length, 6))]; beds[P.id]--; return P; } }
+      return null;
+    }
+    function workFor(R){
+      var W=R.work; if(!W) return null;
+      var L=SIM.all('place').filter(function(P){ return W.kinds.indexOf(P.kind)>=0 && SIM.offers(P, W.act) > 0; });
+      if(!L.length) return null;
+      L.sort(function(p,q){ return ((workLoad[p.id]||0)/SIM.offers(p,W.act)) - ((workLoad[q.id]||0)/SIM.offers(q,W.act)) || (p.id<q.id?-1:1); });
+      workLoad[L[0].id] = (workLoad[L[0].id]||0) + 1; return L[0];
+    }
+    function make(R){
+      var H=homeFor(R); if(!H){ out.homeless.push(R.id); return null; }
+      var W=workFor(R);
+      var made=out.byRole[R.id]||0, V=R.variants, a=SIM.actor({ id:pre+(n++), role:R.id, home:H.id, work:W?W.id:undefined, sched:V && V.length ? V[made % V.length] : undefined });
+      if(R.boat && opt.boatOf){ var b=opt.boatOf(a, H); if(b) a.boat=b; }
+      if(R.vehicle) a.vehicle = { base:R.vehicle.base, n:out.byRole[R.id]||0 };
+      out.byRole[R.id]=(out.byRole[R.id]||0)+1; out.actors++; return a;
+    }
+    /* the most particular first: a role that can live in fewer kinds of home chooses before a broad one */
+    var roles = SIM.all('role').filter(function(R){ return !R.transient; }).sort(function(p,q){ return ((p.homes||[]).length||99) - ((q.homes||[]).length||99) || (p.id<q.id?-1:1); });
+    roles.forEach(function(R){ if(R.fill) return; for(var i=0;i<(R.count||0);i++) if(!make(R)) break; });
+    roles.forEach(function(R){ if(!R.fill) return; var guard=0; while(guard++ < 5000){ if(!make(R)) break; } });
+    out.homeless = out.homeless.filter(function(r){ var R=SIM.R.role[r]; return R && !R.fill; });
+    for(var k in beds) out.bedsLeft += beds[k];
+    return out;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-8-export.js
+// ================================================================= CORE — simulation 8: the export ('krator-sim')
+// PLAN.md Phase 7: everything the simulation knows, as data, in the same record shapes world/*.json uses, so an export
+// can be edited and dropped back in as the overlay. The convention block is the atmos / biome / Yuni exports' own.
+//
+//   SIM.export({log:n, nav:true}) -> {format:'krator-sim', version, convention, clock, activities, factions, orgs,
+//        relations, presence, places, roles, actors, groups, events, ports, nav, log}
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  var RUNTIME = { occ:1, who:1, fired:0, next:1, task:1, slot:1, mem:1, pos:1, wanted:1, plan:1, planI:1, k:1, at:1, inVehicle:1, h0:1, fi:1 };
+  function clean(r){ var o={}; for(var k in r){ if(RUNTIME[k] || typeof r[k]==='function') continue; o[k]=r[k]; } return o; }
+  SIM.export = function(opt){
+    opt = opt || {};
+    var out = { format:'krator-sim', version:1,
+      convention:{ units:'metres', up:'+Y', x:'east', z:'south', handedness:'right', angles:'radians about +Y (atan2(dx,dz))', time:'world minutes (day*1440+minute) for decisions, motion seconds for poses' },
+      clock:{ minute:SIM.minute(), hour:SIM.hour(), seed:SIM.seed } };
+    ['activity','faction','org','relation','presence','place','role','event','port'].forEach(function(k){ out[k==='activity'?'activities':k==='presence'?'presence':k+'s'] = SIM.all(k).map(clean); });
+    out.actors = SIM.all('actor').filter(function(a){ return !a.transient; }).map(function(a){ return { id:a.id, role:a.role, org:a.org, faction:a.faction, home:a.home||null, work:a.work||null }; });
+    out.groups = SIM.all('group').map(function(G){ return { id:G.id, kind:G.kind, org:G.org, event:G.event, members:G.members.slice(), from:G.from, to:G.to, beasts:G.beasts, phase:G.phase }; });
+    out.nav = {};
+    Object.keys(SIM.nav.layers).forEach(function(k){ var L=SIM.nav.layers[k];
+      out.nav[k] = L.kind==='graph' && opt.nav!==false ? { kind:'graph', nodes:L.nodes.map(function(n){ return { id:n.id, x:+n.x.toFixed(2), y:+(n.y||0).toFixed(2), z:+n.z.toFixed(2), tag:n.tag }; }),
+        edges:L.edges.map(function(e){ return { a:e.a, b:e.b, kind:e.kind, len:+(e.len||0).toFixed(2), w:e.w==null?null:e.w }; }) } : { kind:L.kind }; });
+    out.log = SIM.LOG.slice(-(opt.log==null?500:opt.log));
+    return out;
+  };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/77-sim-9-debug.js
+// ================================================================= CORE — simulation 9: audits and the census (window._sim)
+// Shade's audits, lifted (PLAN.md Phase 1): every activity a schedule asks for is offered somewhere; for each hour, the
+// residents who want each activity fit the slots that offer it; every place is reachable on its layer from the host's
+// reference point; plus the live census (who is doing what, how many moving, how many indoors).
+//
+//   SIM.REF = {layer, x, z, ports?}  the host's reference point for reachability (its market, its hub); ports:true also
+//                                  routes to every port on its layer ('port:<id>' in unroutable when it cannot)
+//   SIM.audit() -> {people, places, roles, transients, unknownActivities, capacity:[{hour, activity, want, slots, short}], unroutable, routeFail}
+//                                  capacity fills each hour's wants into the open slots, the activity fewest places offer
+//                                  first (Shade's order), a place's `cap` shared by all its activities; without caps that
+//                                  is want > slots. SOCIALIZE, REST, IDLE fill last and are not reported (they fall back),
+//                                  so a tie never lets them take a quarter's room before a meal or a bed
+//   SIM.audits.push(fn(out))       a build's own checks (Shade's only way up, its convoy, its commutes) add their fields to
+//                                  the same report
+//   SIM.census(t) -> {byActivity, byRole, moving, hidden, present, groups, decisionsLogged}
+//   window._sim = {audit, census, export, problems, log}
+(function(root){
+  'use strict';
+  var SIM = root.SIM;
+  SIM.REF = null;
+  SIM.audits = [];
+  SIM.audit = function(){
+    var A=SIM.R.activity, places=SIM.all('place'), res=SIM.all('actor').filter(function(a){ return !a.transient; });
+    var out={ people:res.length, transients:SIM.all('actor').length-res.length, places:places.length, roles:SIM.all('role').length, unknownActivities:[], capacity:[], unroutable:[], routeFail:SIM.routeFail.length };
+    var offered={}; places.forEach(function(P){ Object.keys(P.activities).forEach(function(k){ offered[k]=(offered[k]||0)+P.activities[k]; if(!A[k]) out.unknownActivities.push(P.id+':'+k); }); });
+    SIM.all('role').forEach(function(R){ var seen={}; (R.sched||[]).forEach(function(a){ if(seen[a]) return; seen[a]=1;
+      if(!A[a]) out.unknownActivities.push(R.id+':'+a+' (no such activity)');
+      else if(!offered[a] && SIM.FALLBACK.indexOf(a)<0 && !(R.fallback&&R.fallback[a])) out.unknownActivities.push(R.id+':'+a+' (offered nowhere)'); }); });
+    for(var h=0;h<24;h++){ var want={}; res.forEach(function(a){ var s=a.sched||SIM.R.role[a.role].sched; if(!s) return; want[s[h]]=(want[s[h]]||0)+1; });
+      var acts=Object.keys(want), open={}, room={}, short={}, slots={};
+      acts.forEach(function(k){ open[k]=places.filter(function(P){ return SIM.offers(P,k) && SIM.isOpen(P,k,h); }); slots[k]=0; open[k].forEach(function(P){ slots[k]+=P.activities[k]; }); });
+      places.forEach(function(P){ if(P.cap!=null) room[P.id]=P.cap; });
+      var fb=function(k){ return SIM.FALLBACK.indexOf(k)>=0 ? 1 : 0; };
+      acts.slice().sort(function(a,b){ return fb(a)-fb(b) || open[a].length-open[b].length || (a<b?-1:1); }).forEach(function(k){ var need=want[k];
+        open[k].forEach(function(P){ if(need<=0) return; var t=Math.min(need, P.activities[k], P.cap!=null ? room[P.id] : Infinity); if(P.cap!=null) room[P.id]-=t; need-=t; });
+        short[k]=need; });
+      acts.forEach(function(k){ if(short[k] > 0 && SIM.FALLBACK.indexOf(k)<0) out.capacity.push({ hour:h, activity:k, want:want[k], slots:slots[k], short:short[k] }); }); }
+    if(SIM.REF){ places.forEach(function(P){ var lay = P.layer==='water' ? null : (P.layer||'pedestrian'); if(!lay || !SIM.nav.layers[lay]) return;
+      var r=SIM.nav.route(lay, SIM.REF, P.door, {}); if(!r) out.unroutable.push(P.id); });
+      if(SIM.REF.ports) SIM.all('port').forEach(function(Pt){ if(!SIM.nav.layers[Pt.layer]) return;
+        if(!SIM.nav.route(Pt.layer, SIM.REF, { x:Pt.x, z:Pt.z }, {})) out.unroutable.push('port:'+Pt.id); }); }
+    SIM.audits.forEach(function(f){ f(out); });
+    return out;
+  };
+  SIM.census = function(t){
+    t = t==null ? SIM.time() : t;
+    var o={ byActivity:{}, byRole:{}, moving:0, hidden:0, present:0, groups:SIM.all('group').length, decisionsLogged:SIM.LOG.length, problems:SIM.problems.length };
+    SIM.all('actor').forEach(function(a){ if(!a.present) return; o.present++; var p=SIM.pose(a, t);
+      o.byActivity[a.activity||'?']=(o.byActivity[a.activity||'?']||0)+1; o.byRole[a.role]=(o.byRole[a.role]||0)+1; if(p.moving) o.moving++; if(p.hidden) o.hidden++; });
+    return o;
+  };
+  root._sim = { audit:function(){ return SIM.audit(); }, census:function(){ return SIM.census(); }, export:function(o){ return SIM.export(o); },
+    problems:SIM.problems, log:function(n){ return SIM.LOG.slice(-(n||40)); }, nav:function(){ return SIM.nav.stats(); }, routeFail:SIM.routeFail };
+})(typeof window!=='undefined'?window:globalThis);
+
+// ==================== simulation/example/40-world.js
+// ================================================================= EXAMPLE — a 20-actor town declared into SIM
+// core/simulation/PLAN.md Phase 1's acceptance sheet: the smallest world that runs on the module alone (core/rand,
+// core/clock, core/simulation; no THREE). Declared in a settlement's order (SCHEMA.md, "How a world is declared"):
+//   1. the host binding (the world clock), 2. the navigation layer (a street grid), 3. the places a build would read
+//   from its geometry, then the ports, 4. the hand-edited records (what a world/*.json holds) through SIM.load,
+//   5. the population from the roles, SIM.REF and SIM.check.
+// To start a settlement's life layer: copy this, replace the streets and places with what your build placed, and move
+// WORLD into world/*.json (one file per kind, one record per line, sorted by id).
+const Q=new URLSearchParams(location.search);
+// the standard 72-minute day, run 10 times fast (a day in about 7 minutes): scale speeds world AND motion time, so a
+// walk takes as many world minutes as it would at 1x (a shorter dayLength would make every walk take hours)
+const CLOCK=KCLOCK.make({hour:Q.has('hour')?+Q.get('hour'):6,scale:10,running:!Q.has('hold')});
+let QUIET=false;   // the negative controls (90) feed SIM broken input on purpose: their errors are expected
+function ERR(m){if(QUIET)return;const e=document.getElementById('errs');e.style.display='block';e.textContent+=m+'\n';}
+SIM.init({seed:Q.has('seed')?+Q.get('seed'):20261005,hour:()=>CLOCK.hour,day:()=>CLOCK.day,t:()=>CLOCK.t,err:m=>ERR('sim: '+m)});
+
+// ---------------------------------------------------------------- 2. the streets: a 5 x 4 grid, 40 m apart, and two roads out
+const NODES=[],EDGES=[],S=40;
+for(let j=0;j<4;j++)for(let i=0;i<5;i++)NODES.push({id:'n'+i+'_'+j,x:i*S,y:0,z:j*S,tag:'street'});
+for(let j=0;j<4;j++)for(let i=0;i<5;i++){if(i<4)EDGES.push({a:'n'+i+'_'+j,b:'n'+(i+1)+'_'+j});if(j<3)EDGES.push({a:'n'+i+'_'+j,b:'n'+i+'_'+(j+1)});}
+NODES.push({id:'east',x:200,y:0,z:40,tag:'road'},{id:'west',x:-40,y:0,z:80,tag:'road'});
+EDGES.push({a:'n4_1',b:'east',kind:'road'},{a:'n0_2',b:'west',kind:'road'});
+EDGES.forEach((e,k)=>{const A=NODES.find(n=>n.id===e.a),B=NODES.find(n=>n.id===e.b);e.id=k;e.kind=e.kind||'street';e.w=6;e.len=Math.hypot(A.x-B.x,A.z-B.z);});
+SIM.nav.layer('pedestrian',{nodes:NODES,edges:EDGES});
+
+// ---------------------------------------------------------------- 3. the places (a build derives these from what it placed)
+const PLACES=[
+ {id:'home_a',kind:'home',x:0,z:0,activities:{SLEEP:5,EAT:5,REST:5}},
+ {id:'home_b',kind:'home',x:160,z:0,activities:{SLEEP:5,EAT:5,REST:5}},
+ {id:'home_c',kind:'home',x:0,z:120,activities:{SLEEP:5,EAT:5,REST:5}},
+ {id:'home_d',kind:'home',x:160,z:120,activities:{SLEEP:5,EAT:5,REST:5}},
+ {id:'workshop',kind:'workshop',x:40,z:0,activities:{CRAFT:4},indoor:{CRAFT:true}},
+ {id:'yard',kind:'yard',x:80,z:0,r:8,wander:2,activities:{PLAY:6}},
+ {id:'tavern',kind:'tavern',x:120,z:0,activities:{EAT:12,SOCIALIZE:12},open:[11,24],indoor:{EAT:true}},
+ {id:'market',kind:'market',x:80,z:40,r:10,wander:1.5,activities:{TRADE:8,SOCIALIZE:10},open:[6,20]},
+ {id:'shrine',kind:'shrine',x:40,z:120,activities:{WORSHIP:6}},
+ {id:'well',kind:'well',x:80,z:120,r:4,wander:.8,activities:{FETCH_WATER:4,WATER_BEASTS:6}},
+ {id:'field',kind:'field',x:120,z:120,r:12,wander:2.5,activities:{FARM:8}},
+];
+PLACES.forEach(p=>SIM.place(Object.assign({name:p.id.replace('_',' '),y:0},p)));
+SIM.port({id:'east',x:200,z:40});SIM.port({id:'west',x:-40,z:80});
+
+// ---------------------------------------------------------------- 4. the hand-edited records (world/*.json in a settlement)
+const WORLD={
+ activities:['CRAFT','DEPART','EAT','FARM','FETCH_WATER','IDLE','PLAY','REST','SLEEP','SOCIALIZE','TRADE','WATER_BEASTS','WORSHIP']
+  .map(id=>id==='SLEEP'||id==='REST'?{id,indoor:true}:{id}),
+ factions:[{id:'nomads',name:'The caravan folk'},{id:'town',name:'The town'}],
+ orgs:[{id:'caravan',faction:'nomads',name:'A caravan company',resident:false},{id:'townsfolk',faction:'town',name:'The townsfolk'}],
+ relations:[{a:'town',b:'nomads',stance:'friendly'}],
+ roles:[
+  {id:'artisan',org:'townsfolk',count:4,homes:['home'],sched:[[0,'SLEEP'],[6,'WORSHIP'],[7,'CRAFT'],[12,'EAT'],[13,'CRAFT'],[17,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{kinds:['tavern']}}},
+  {id:'child',org:'townsfolk',count:4,homes:['home'],sched:[[0,'SLEEP'],[7,'FETCH_WATER'],[8,'PLAY'],[12,'EAT'],[13,'PLAY'],[18,'EAT'],[19,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}},speed:1.5},
+  {id:'farmer',org:'townsfolk',count:8,homes:['home'],sched:[[0,'SLEEP'],[5,'EAT'],[6,'FARM'],[12,'EAT'],[13,'FARM'],[18,'SOCIALIZE'],[21,'SLEEP']],prefers:{SLEEP:{pin:'home'},EAT:{pin:'home'}}},
+  {id:'rider',org:'caravan',transient:true,sched:[[0,'REST']],_note:'made only by the caravan event; its itinerary moves it'},
+  {id:'trader',org:'townsfolk',count:4,homes:['home'],sched:[[0,'SLEEP'],[6,'TRADE'],[12,'EAT'],[13,'TRADE'],[19,'SOCIALIZE'],[22,'SLEEP']],prefers:{SLEEP:{pin:'home'},TRADE:{kinds:['market']}}}],
+ events:[{id:'caravan',name:'A caravan',kind:'riders',org:'caravan',every:[3,6],window:[7,17],from:['east'],to:['west'],size:[1,2],unit:[{role:'rider',n:2}],beasts:1,mount:'camel',
+  legs:[{activity:'WATER_BEASTS',mins:20},{activity:'TRADE',mins:60}],layer:'pedestrian',mode:'ride',speed:2.2,maxLive:1}],
+};
+const LOADED=SIM.load(WORLD);
+
+// ---------------------------------------------------------------- 5. the people, the reference point, the check
+const POP=SIM.populate({prefix:'a'});
+SIM.REF={layer:'pedestrian',x:80,z:40,ports:true};
+const PROBLEMS=SIM.check();
+SIM.jump();
+
+// ==================== simulation/example/80-draw.js
+// ================================================================= EXAMPLE — the embodiment: draws SIM, decides nothing
+// The frame loop steps the clock with the real seconds; SIM.step() runs once per world minute that passed, and every
+// actor is drawn at SIM.pose(actor, t), a pure function of motion time. A filled dot is out in the open, a ring is
+// indoors (hidden); riders are diamonds. Space holds or runs time, [ and ] halve and double its speed.
+// ?hold starts held, ?hour=8 at 8:00, ?seed=2 another decision stream, ?test leaves time to _example.run (check.py).
+const CV=document.getElementById('cv'),G2=CV.getContext('2d'),HUD=document.getElementById('hud');
+const ROLE_COL={farmer:'#8fc46a',artisan:'#e0a24a',trader:'#5fb3e6',child:'#e57ab0',rider:'#ff6b4a'};
+let LAST=SIM.minute();
+function advance(){while(LAST<SIM.minute()){LAST++;SIM.step();}}   // once per world minute, never twice
+function frame(){const W=CV.clientWidth,H=CV.clientHeight,d=window.devicePixelRatio||1;
+ if(CV.width!==Math.round(W*d)||CV.height!==Math.round(H*d)){CV.width=Math.round(W*d);CV.height=Math.round(H*d);}
+ const s=Math.min(W/300,(H-150)/190),ox=W/2-80*s,oz=(H+90)/2-60*s,X=x=>ox+x*s,Z=z=>oz+z*s;
+ G2.setTransform(d,0,0,d,0,0);G2.fillStyle='#14161a';G2.fillRect(0,0,W,H);
+ G2.strokeStyle='#2c3138';G2.lineWidth=Math.max(2,s*3);G2.lineCap='round';
+ for(const e of EDGES){const A=NODES.find(n=>n.id===e.a),B=NODES.find(n=>n.id===e.b);G2.beginPath();G2.moveTo(X(A.x),Z(A.z));G2.lineTo(X(B.x),Z(B.z));G2.stroke();}
+ G2.font='11px ui-monospace,Consolas,monospace';G2.textAlign='center';
+ for(const P of SIM.all('place')){const r=Math.max(5,(P.r||4)*s);G2.strokeStyle='#4a525c';G2.lineWidth=1;G2.strokeRect(X(P.x)-r,Z(P.z)-r,2*r,2*r);
+  G2.fillStyle='#7c8490';G2.fillText(P.id.replace('_',' '),X(P.x),Z(P.z)-r-4);}
+ for(const Pt of SIM.all('port')){G2.fillStyle='#7c8490';G2.fillText(Pt.id+' road',X(Pt.x),Z(Pt.z)+16);}
+ const t=SIM.time();
+ for(const a of SIM.all('actor')){if(!a.present)continue;const p=SIM.pose(a,t),c=ROLE_COL[a.role]||'#d8dce2',x=X(p.x),z=Z(p.z);
+  G2.fillStyle=c;G2.strokeStyle=c;G2.lineWidth=1.5;G2.beginPath();
+  if(a.role==='rider'){G2.moveTo(x,z-5);G2.lineTo(x+5,z);G2.lineTo(x,z+5);G2.lineTo(x-5,z);G2.closePath();G2.fill();}
+  else{G2.arc(x,z,4,0,Math.PI*2);p.hidden?G2.stroke():G2.fill();}}
+ const c=SIM.census(t),hm=Math.floor(CLOCK.hour)+':'+String(Math.floor(CLOCK.hour%1*60)).padStart(2,'0');
+ const ev=SIM.LOG.filter(e=>e.kind==='event'||e.kind==='arrived'||e.kind==='left').slice(-3).map(e=>'  '+e.kind+' '+(e.group||'')+' '+(e.place||e.port||e.to||''));
+ HUD.textContent='SIM example: 20 townsfolk on core/simulation alone.   day '+CLOCK.day+'  '+hm+'  '+(CLOCK.running?'running x'+CLOCK.scale:'held')+'   (space: run/hold, [ ]: speed)\n'+
+  Object.keys(c.byActivity).sort().map(k=>k+' '+c.byActivity[k]).join('  ')+'   moving '+c.moving+', indoors '+c.hidden+', groups '+c.groups+'\n'+
+  'farmer green, artisan amber, trader blue, child pink, rider (diamond) red\n'+ev.join('\n');}
+let PREV=performance.now();
+function loop(now){if(!Q.has('test'))CLOCK.step((now-PREV)/1000);PREV=now;   // ?test: only _example.run moves time
+ advance();frame();requestAnimationFrame(loop);}
+addEventListener('keydown',e=>{if(e.key===' '){CLOCK.run();e.preventDefault();}if(e.key==='[')CLOCK.scale/=2;if(e.key===']')CLOCK.scale*=2;});
+requestAnimationFrame(loop);
+
+// ==================== simulation/example/90-checks.js
+// ================================================================= EXAMPLE — the checks (window._example), each with a negative
+// check.py loads the sheet held (?hold) and reads these. A check is fed a broken input in negatives() and must fail
+// there, or it cannot fail at all. The negatives run last and put back what they broke.
+//   _example.run(minutes)   step SIM a world minute at a time (the clock set mid-minute, motion 1/1440 of a day each)
+//   _example.checks()       [{name, ok, detail}]          _example.negatives()  [{name, failed, detail}]
+//   _example.hash()         the decision log as one number: two loads with one seed must agree, two seeds must not
+function run(minutes){let M=SIM.minute();for(let m=0;m<minutes;m++){M++;CLOCK.day=Math.floor(M/1440);CLOCK.hour=(M%1440+.5)/60;CLOCK.t+=CLOCK.dayLength/1440;SIM.step();}LAST=SIM.minute();}
+const residents=()=>SIM.all('actor').filter(a=>a.present&&!a.transient);
+const CHK={
+ // every reference resolves (SIM.check)
+ resolves(){const p=SIM.check();return{ok:!p.length,detail:p.length?p.slice(0,3).join('; '):SIM.all('activity').length+' activities, '+SIM.all('role').length+' roles, '+SIM.all('place').length+' places: every reference resolves'};},
+ // the audit: everyone housed, every place and port reachable from the market, no unknown activity, no hour short
+ audit(){const A=SIM.audit(),bad=[];if(A.people!==20)bad.push(A.people+' people');if(POP.homeless.length)bad.push('homeless: '+POP.homeless.join(','));
+  if(A.unroutable.length)bad.push('unreachable: '+A.unroutable.join(','));if(A.unknownActivities.length)bad.push('unknown: '+A.unknownActivities.join(','));
+  if(A.capacity.length)bad.push('short: '+A.capacity.map(c=>c.hour+'h '+c.activity+' '+c.short).join(','));
+  return{ok:!bad.length,detail:bad.join('; ')||A.people+' people in '+POP.beds+' beds, '+A.places+' places and '+SIM.all('port').length+' ports reachable, 24 hours without a shortfall'};},
+ // a day stepped minute by minute: no one stuck, no route failed, and at every half hour each resident is doing what its
+ // schedule says or a fallback, at a place that offers it
+ day(minutes){const n0=SIM.LOG.length,f0=SIM.routeFail.length;let wrong=0,fell=0,dec=0;const first=[];
+  for(let m=0;m<minutes;m++){run(1);if(SIM.minute()%60!==30)continue;
+   for(const a of residents()){const want=SIM.desire(a);if(a.activity!==want)fell++;const P=SIM.get('place',a.place);
+    if(!a.task||!P||!SIM.offers(P,a.activity)&&!(a.activity==='IDLE'&&a.place===a.home)){wrong++;if(first.length<2)first.push(a.id+' '+a.activity+' at '+a.place);}}}
+  const L=SIM.LOG.slice(n0),stuck=L.filter(e=>e.kind==='stuck').length,nop=L.filter(e=>e.kind==='nopath').length,rf=SIM.routeFail.length-f0;dec=L.filter(e=>e.kind==='decide').length;
+  const fired=L.filter(e=>e.kind==='event').length;
+  return{ok:!stuck&&!nop&&!rf&&!wrong,detail:dec+' decisions, '+fired+' caravans; at the half hours '+fell+' fallbacks'+(stuck?', '+stuck+' STUCK':'')+(nop||rf?', '+(nop+rf)+' NO PATH':'')+(wrong?', '+wrong+' NOWHERE (first '+first.join(', ')+')':'')};},
+ // an event with legs, fired now and stepped: its stops in order (want), then out by its port
+ caravan(E,want){const f0=SIM.routeFail.length,G=SIM.fire(E,SIM.minute(),SIM.time());if(!G)return{ok:false,detail:E.id+' did not fire'};
+  const stops=[];let ph=G.phase,m=0;for(;m<1440&&SIM.get('group',G.id);m++){run(1);if(G.phase!==ph){ph=G.phase;if(ph==='dwell'){const A=SIM.get('actor',G.leader),L=A.plan[A.planI];stops.push(L.activity+' at '+L.place);}}}
+  const left=!SIM.get('group',G.id),rf=SIM.routeFail.length-f0,same=stops.join()===want.join();
+  return{ok:left&&same&&!rf,detail:G.members.length+' riders: '+(stops.join(' -> ')||'no stops')+(left?', out by '+G.to+' after '+m+' min':', STILL IN')+(rf?', '+rf+' NO PATH':'')+(same?'':'; WANTED '+want.join(' -> '))};},
+};
+const WANT=['WATER_BEASTS at well','TRADE at market'];
+function checks(){return[
+ Object.assign({name:'the world resolves'},CHK.resolves()),
+ Object.assign({name:'the audit: housed, reachable, enough room every hour'},CHK.audit()),
+ Object.assign({name:'two days stepped minute by minute'},CHK.day(2880)),
+ Object.assign({name:'the caravan: well, then market, then out west'},CHK.caravan(SIM.get('event','caravan'),WANT))];}
+function negatives(){QUIET=true;const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),p0=SIM.problems.length,L0=SIM.nav.layers.pedestrian;
+ SIM.role({id:'ghost',org:'nobody',sched:[[0,'FLY']]});add('a role in an unknown org asking for FLY',CHK.resolves());SIM.remove('role','ghost');
+ SIM.nav.layer('pedestrian',{nodes:NODES,edges:EDGES.filter(e=>e.b!=='east')});add('the east road cut',CHK.audit());SIM.nav.layers.pedestrian=L0;
+ SIM.nav.layer('pedestrian',{nodes:NODES,edges:[]});add('a town with no streets (a whole day)',CHK.day(1440));SIM.nav.layers.pedestrian=L0;
+ SIM.all('actor').forEach(a=>{a.bad={};a.mem={};});
+ const X=SIM.event(Object.assign({},SIM.get('event','caravan'),{id:'lost_caravan',legs:[{activity:'SING',mins:10}]}));
+ add('a caravan whose stop nothing offers',CHK.caravan(X,WANT));SIM.remove('event',X.id);
+ SIM.problems.length=p0;SIM.routeFail.length=0;QUIET=false;return R;}
+function hash(){let h=2166136261;const s=JSON.stringify(SIM.LOG.map(e=>[e.m,e.kind,e.actor,e.place,e.group]));for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+window._example={run,checks,negatives,hash,problems:()=>SIM.problems.slice(),census:()=>SIM.census(),audit:()=>SIM.audit(),export:o=>SIM.export(o)};
+window._ready=true;
+</script>
+</body></html>

@@ -60,14 +60,14 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/63-anc-dalab.js` | 11.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/84-city-geo.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/85-city-paint.js` | 5.9 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `targets/city/85-city-paint.js` | 6.1 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `targets/city/87-city-layout.js` | 11.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/88-city-place.js` | 8.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/89z-rows.js` | 0.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/city/90a-city-world.js` | 8.1 | [web] | 12 | 3 | 0 | 0 | 1 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/90b-city-build.js` | 12.0 | [draw] | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | split: the city's placement and build passes in one (markets and civic, nobles, frontage, farms, the biome): a [G data] pass that writes placement records, then the [draw] pass and bakes; timing reads go to the host. Was provisionally [web] |
 | `targets/city/91z-views.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/93-city-ui.js` | 1.8 | [web] | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/93-city-ui.js` | 2.0 | [web] | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/95-city-life.js` | 8.6 | [draw] | 6 | 0 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | split: data candidate that also draws |
 | `targets/set/89z-rows.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/set/91z-views.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

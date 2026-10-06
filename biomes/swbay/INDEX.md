@@ -9,7 +9,7 @@ Built output (never open it; edit `src/` and rebuild): `dist/swbay.html`
 Build: `cd biomes/swbay && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
-From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`
+From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-kit.js`, `30-core-foliage.js`, `40-core-place.js`, `42-core-export.js`, `43-core-export-host.js`, `44-core-stage.js`
 
 ## src/
 
@@ -22,7 +22,7 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `60-biome-swbay-floor.js` | 14 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127) |
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |
-| `75-biome-swbay-fauna.js` | 19 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (91) |
+| `75-biome-swbay-fauna.js` | 19 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (93) |
 | `82-host-sky.js` | 10 |  |
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 5 |  |

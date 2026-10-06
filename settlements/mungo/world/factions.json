@@ -1,0 +1,8 @@
+[
+{"id":"eastern_nomads","name":"The Eastern Nomads","culture":"nomad","sign":"horns","_note":"LORE 6.8; lizard-riding clans of the eastern high desert come down into the abyss to trade"},
+{"id":"geomancers","name":"The Geomancers","culture":"geomancer","_note":"LORE 6.9: the oil guild; culturally mostly Yuni"},
+{"id":"iziz","name":"The Empire of Iziz","culture":"iziz-vernacular","_note":"LORE 6.2"},
+{"id":"monks_of_history","name":"The Monks of History","culture":"order","colours":["saffron"],"_note":"LORE 6.15 (the History Monks)"},
+{"id":"mungo","name":"Mungo","culture":"abyssal-desert","_note":"the free trade town at the river mouth: abyssal shore folk and the reed people of the lake under one headman (the brief); not yet in LORE.md"},
+{"id":"yuni","name":"Yuni","culture":"yuni","sign":"hyperboloid","_note":"LORE 6.11"}
+]

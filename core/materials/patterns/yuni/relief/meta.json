@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1003,
+    1013
+   ],
+   "seam_after": [
+    0.621,
+    2.898
+   ],
+   "seam_before": [
+    2.873,
+    0.809
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plaster",
+  "id": "yuni/relief",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "yuni_relief.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, patterns/yuni/relief (the full prompt given 2026-10-05)",
+  "reuse": "Locus; any moulded plaster or carved stone band, tinted per use",
+  "sha1": "054ec141bbaee98211e64e0c0278415a0404372e"
+ }
+}

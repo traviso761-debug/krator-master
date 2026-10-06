@@ -5,7 +5,8 @@ Code shared by more than one build, kept here once instead of copied into each:
 runs on), `terrain/` (carve patches and relief functions for any heightfield world), `atmos/` (atmosphere and street
 dressing), `sockets/` (cultural sockets), and three engine-neutral modules for the Godot port: `walk/` (floors and
 blockers), `sched/` (motion and events as functions of time) and `minimap/` (a plan drawn from data), plus `rand/`
-(the one generator, hash and noise a Godot port can reproduce) and `clock/` (the world clock).
+(the one generator, hash and noise a Godot port can reproduce), `clock/` (the world clock) and `tags/` (what a placed
+thing is: ids, class, tags).
 
 ## `materials/`
 
@@ -104,7 +105,8 @@ additions are in it, each marked with the kit it came from:
 | `40-core-place.js` | stands, `BIO.grid` (accept first, `depth`, `box`), `BIO.scatter`, keep-clear, surface sampling for `dress()` (`BIO.faceSamples` takes shells: `{geos, share}`) |
 | `test-place.js` | `node core/biome/test-place.js`: the surface sampler's contract, each check with a negative |
 | `42-core-export.js` | `BIO.export()`: what a page placed, as data for Godot (`biomes/GODOT.md`) |
-| `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME` |
+| `43-core-export-host.js` | `BIO.download(name, opt)` ([web], moves to `core/host/` in Phase 1): saves `BIO.export(opt)` as a `.biome.json`; no build calls it. List it after `42-core-export.js` in `CORE_BIOME`. With a box it also adds `stage` to `BIO.export` |
+| `44-core-stage.js` | `KSTAGE` ([web], export time only): the page's look as data, so Godot can match it: lights, fog, tonemapping, the sky (a cube render saved as a panorama) and the ground's material, uvs and colours on the export's grid (`biomes/GODOT.md`, "The stage"). Also used by `core/atmos/89-atmos-9-host.js`. List it after `43-core-export-host.js` |
 
 **Used by** all nine kits in `biomes/`: each lists the files in `CORE_BIOME` in its
 `build.py`, read from here unless its `src/` has a copy of the same name (none does).
@@ -128,7 +130,9 @@ Compare the baked geometry instead: every biome mesh's attributes and instance b
 hashed per mesh name, before and after (fauna moved every frame by a script are hashed by
 their geometry only). Identical means the change moved nothing.
 
-Worlds that vendored a kit (dalab from swlowlands, locus and the Ancients kit from
+Locus and Mungo read this folder and `biomes/eastabyss/src` in place (since 2026-10-05: `BIO_CANON` in their
+`build.py`, under Locus's old slot names `69a*`, `69c*`; their town trees use `EASTABYSS.make` / `grow`).
+Worlds that vendored a kit (dalab from swlowlands, the Ancients kit from
 eastabyss, iziz, screamers and the Ancients kit from hyperjungle, Shade from sedesert, the
 xanadu settlement) keep their copies. dalab's, iziz's and Shade's `--vendor-check` compare
 their core with this folder and report the drift; each records it in its `KNOWN_ISSUES.md`.
@@ -180,8 +184,9 @@ The atmosphere and street-dressing module: evening lights and a glow layer, part
 sewer grates, lamps and fountains, InstancedMesh culling, the open-water wave field (`#include <atmos_waves>`) and the
 sky's light on standard materials (`ATMOS.skylight`). One global (`ATMOS`) behind a five-item host binding, so any
 three.js r128 build can take it. Read `atmos/README.md`. **Used by** `settlements/iziz` (city target; its `build.py`
-reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves) and `settlements/girder` (the sky's light); both
-add `core/atmos` to their `build.py` core loop and bind it in `src/90-atmos-host.js`.
+reads it through `TARGET_CORE`), `settlements/voth` (the bay's waves), `settlements/girder` (the sky's light) and
+`settlements/locus` with `settlements/mungo` (the lake's waves, shading only); they add `core/atmos` to their `build.py` core
+loop and bind it in `src/90-atmos-host.js`.
 
 ## `lod/`
 
@@ -196,6 +201,20 @@ draw calls and triangles with it off and on. Read `lod/README.md`.
 `iziz`, `highlands`, `xanadu`, `dalab`, `mavs-refuge`, `girder`. Each `build.py` adds the `core/lod/` files to its
 fragment list next to its `CORE_FILES`/`CORE_OPT_FILES` (a `src/` copy with the same name overrides) and lists both in
 `DETERMINISTIC`. A build passes options through `window.LOD_OPTIONS` (port, screamers, voth, highlands, dalab).
+
+## `furnish/`
+
+The furniture glue, once (GODOT-PLAN.md Phase 2 item 4): a builder's `FURNISH(...)` becomes a placement record here,
+and the build's own adapter draws it. Girder, Mav's Refuge, Locus, Highlands (and Roketstad) and Post-Apoc take it;
+each lists the three fragments the way it lists `lod/`. `furnish/README.md` has the record, the adapters and the proof.
+
+| File | What |
+|---|---|
+| `50-core-furnish.js` | [G data] `KFURN.create(cfg)`: the registry and the placement pass (records with ids, room and job; missing keys; the recentring table; the interiors hook; the summary). No THREE, no DOM |
+| `52-core-furnish-draw.js` | [draw] a record into the catalog batch, and the sRGB-to-linear colour step |
+| `53-core-furnish-host.js` | [web] `KFURN.flags()`: `?furniture=0`, `?interiors=` |
+| `test-furnish.js` | `node core/furnish/test-furnish.js` |
+| `fingerprint.py` | every furnished page's records and furniture meshes, compared with `fingerprint.json`: a change to this module must leave them `same` |
 
 ## `walk/`, `sched/`, `minimap/`: engine-neutral, for the Godot port
 
@@ -212,8 +231,12 @@ and to `DETERMINISTIC` (none of them draws from the seeded stream).
 | `walk/test-walk.js`, `sched/test-sched.js`, `minimap/test-minimap.js` | `node core/<dir>/test-*.js` |
 
 **Used by** `settlements/voth` (the minimap: its `build.py` reads `core/minimap/` like `core/lod/`, and
-`src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons). `walk/` and `sched/` have no
-user yet.
+`src/88b-voth-minimap.js` feeds it the terrain, the roads, `PLACED` and the cantons), `settlements/locus` and `settlements/mungo`
+(`88b-locus-minimap.js`: the ground, the streets by class, `PLACED`; Mungo adds its reed islands in `MINIMAP_EXTRA`) and `settlements/mungo` (`sched/`:
+its `CORE_MODULES`; the simulation's group formations follow `KSCHED.formation`'s offsets) and `settlements/shade`
+(`sched/` and `clock/` in its `CORE_MODULES`, with the simulation) and `settlements/yuni` (`minimap/` and `sched/`, its
+`CORE_MODULES`: `src/88b-yuni-minimap.js` feeds the minimap the terrain, the river and canal, the street graph, the wall
+and `FIX.buildings`; the volcano's cycle is `KSCHED.eruption`). `walk/` has no user yet.
 
 ## `materials/record/`: material records and the library loader
 
@@ -228,14 +251,21 @@ A subfolder, so the Ancients-lineage builds that take every top-level `core/mate
 | `test-record.js` | `node core/materials/record/test-record.js` |
 
 **Used by** `settlements/girder` (its `build.py` reads this folder like `core/lod/`, and generates `46-matlib-pack.js`
-from `tex/`, which `tools/textures/pack.py` writes from `materials.json`).
+from `tex/`, which `tools/textures/pack.py` writes from `materials.json`) and `settlements/yuni` (the same way, since
+2026-10-05: 24 families on library sets, the interiors included; the rest procedural `TEX.def` kinds; `?mat=proc` is
+the old look).
 
 ## `clock/`
 
 The world clock, `KCLOCK` (`GODOT-PLAN.md`, Phase 1, "The world clock"): motion time `t` in seconds, and world time
 (`hour`, `day`) that runs at one world day per 72 real minutes when it runs. The preview holds the hour by default; the
 viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the host steps it with its frame's `dt`.
-`node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`).
+`node core/clock/test-clock.js`. **Used by** `settlements/iziz` (city target, `TARGET_CORE`), `settlements/mungo`
+(the whole page: `MCLOCK` drives the sky, the lights and the simulation; the Run time button), `settlements/locus`
+(`LCLOCK` drives the sky and everything that reads its hour; the sky panel's slider and speed row feed the clock),
+`settlements/shade` (held at noon; its probe steps the simulation with it), `settlements/yuni` (`YCLOCK` in `21-sky.js`
+replaces the sky's own `SKY_T`, so `skyHour()` is the world clock everywhere it is read; held at 10:00, Run time, the sky
+panel's rate row) and `simulation/example/`.
 
 ## `rand/`
 
@@ -252,12 +282,47 @@ viewer runs time and sets the hour. Pure (no THREE, no DOM, no wall clock): the 
 Rules: lattice coordinates and hash inputs are int32; floats are floored. No `Math.sin`, `pow`, `exp`, `log` or
 `random` in the module (the test greps for them). A new build takes `core/rand` from the start (`GODOT-PLAN.md` rule 2).
 **Used by** `settlements/ys` (city target, `TARGET_CORE`: the P3 placement pass draws from it; nothing placed yet,
-so nothing moved).
+so nothing moved), `settlements/yuni` (only `core/tags`' uid hash: no draws; Yuni keeps its own Park-Miller `rnd()` and
+`Math.sin` noise by the owner's decision, `GODOT-PLAN.md` Phase 2 item 1) and `core/simulation` (SIM's decision stream is
+`KRAND.stream` when the module is loaded).
 
 ## `sockets/`
 
 The cultural socket and banner/awning system: buildings declare sockets, a culture pack fills them (Iziz, Republic, Voth, Yuni, Beast Riders, generic). A worked example, `sockets/example/`,
 builds a sheet of the same wall in every pack. Read `sockets/README.md`. **Used by** `kits/post-apoc` (its `build.py` reads `37-sockets.js`, `38-symbols.js` and `80-cultures.js` from here; a local copy with the same name overrides) and, for the symbols alone, `kits/catalog` (vendored as `krator-symbols.js`).
+
+## `tags/`
+
+One engine-neutral registry of what every build places (an order id, a position-hash `uid`, class, kind, tags from one
+vocabulary), for the inspector, the minimap, the exporters and Godot node metadata (GODOT-PLAN.md Phase 2 item 3).
+`tags/README.md` has the record, the ids, the uid recipe Godot reproduces, the vocabulary and the adopters;
+`tags/PROPOSAL.md` is the design with Travis's decisions. Needs `rand/` loaded first. **Used by** `settlements/yuni`
+(its fixtures registry forwards into it; `KRATOR_EXPORT.tags()`).
+
+| File | What |
+|---|---|
+| `50-core-tags.js` | [G data] `KTAGS.create({build})`: `add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`; `KTAGS.uid`, `KTAGS.norm`. No THREE, no DOM |
+| `52-core-tags-vocab.js` | [G data] `KTAGS.VOCAB`: the 18 cultures and their aliases, types, wealth, the other tag vocabularies, id prefixes; the catalog's lists copied and checked by the test |
+| `53-core-tags-host.js` | [web] `KTAGS.label(rec, instance)`: the inspector's text, generated |
+| `test-tags.js` | `node core/tags/test-tags.js` (`--write` rewrites `golden.json`) |
+| `ktags.gd`, `ktags_test.gd`, `golden.json` | the uid in GDScript and its vectors (passing in Godot 4.5); copied to `godot/tests/tags/` |
+
+## `mask/`
+
+A city's placement raster (GODOT-PLAN.md Phase 2 item 5): `KMASK.canvas(w, h)` stands in for the canvases the four
+mask-placed cities paint their buildable mask and street classes on, with the same calls, rasterised hard-edged by
+pixel centre so every browser (GPU or CPU canvas) and Godot get the same bytes. `mask/README.md` has the rule.
+**Used by** the city targets of `settlements/iziz`, `dalab`, `xanadu` (Erewhon) and `highlands` (Roketstad), each
+through `TARGET_CORE`, and by `settlements/locus` and `settlements/mungo` (their `MASK_CANVAS`, through the transform layer
+`26-core-mask-xform.js`: `KMASK.xform(cv)` takes the painters' scale/translate/rotate and hands KMASK plain pixel numbers).
+
+| File | What |
+|---|---|
+| `25-core-mask.js` | [G data] `KMASK.canvas`, `hash`, `ops`, `export`; the rasteriser (`disc`, `ring`, `polyline`, `polygons`, `rect`) |
+| `26-core-mask-xform.js` | [G data] `KMASK.xform(cv)`: save/restore, translate/scale/rotate, full ellipses, applied before KMASK sees a point (the ops stay plain numbers, so `kmask.gd` is unchanged); non-portable calls throw |
+| `test-mask.js` | `node core/mask/test-mask.js` (`--write` rewrites `golden.json`) |
+| `test-mask-xform.js` | `node core/mask/test-mask-xform.js`: world-space calls give the same bytes and ops as the shapes in pixels; the negatives throw |
+| `kmask.gd`, `kmask_test.gd`, `golden.json` | the GDScript twin, replaying the ops to the same bytes (passing in Godot 4.5); copied to `godot/tests/mask/` |
 
 ## Planned: a material registry
 
@@ -286,6 +351,32 @@ them against what it builds. Instead:
 
 ## `simulation/`
 
-The World Simulation Layer: documents only for now. `simulation/ROADMAP.md` is the design (factions, activities, schedules,
-routes, events, engine-independent world IR) and `simulation/PLAN.md` is the survey of every current life layer and the
-phased plan to move them onto one shared vocabulary. Read `PLAN.md` before touching any build's life fragment.
+The World Simulation Layer. `simulation/ROADMAP.md` is the design (factions, activities, schedules, routes, events,
+engine-independent world IR) and `simulation/PLAN.md` is the survey of every current life layer and the phased plan to
+move them onto one shared vocabulary. Read `PLAN.md` before touching any build's life fragment, and `SCHEMA.md` before
+writing a settlement's `world/*.json`.
+
+**Phase 1 is built (2026-10-05), with `settlements/mungo` as its first consumer and `settlements/shade` its second.**
+`SIM`, one global, no THREE, no DOM:
+
+| File | What |
+|---|---|
+| `77-sim-0-core.js` | the host binding (`SIM.init`: world hour and day, motion time, seed, error sink), the seeded decision stream, the registries (`SIM.add/get/all`), schedules (`SIM.sched`: spans to 24 hours), the overlay (`SIM.load`: override by id, add, remove; a relation's id defaults to `a>b`) and `SIM.check` (every reference resolves), the decision log |
+| `77-sim-1-world.js` | factions, organisations, directional relations (`SIM.stance`: org over faction, default neutral), presence, `SIM.welcome(actor, place)` |
+| `77-sim-2-places.js` | activities; places offering activities in SLOTS (and a shared `cap`: people present over all of them), hours, indoor flags, spots; `SIM.placesFor`, `reserve`/`release`; `slotsFromFurniture` (furniture jobs and types as slots) |
+| `77-sim-3-actors.js` | roles (`sched`, `prefers`, `cycle`, `fallback`), actors, groups, ports, EVENTS (caravans and rider bands that arrive together, stay on their own schedules, leave together; an itinerary of `legs`, stop to stop together and out; excursions: one resident takes a vehicle out and back); the resolver (`SIM.decide`: pinned, remembered, preferred kinds, any; unreachable places struck off); the motion baked as legs (walk / ride / drive / boat, `via` a boarding place); `SIM.step()` once per simulated minute; `SIM.jump()` when the clock jumps |
+| `77-sim-4-nav.js` | the NAV contract per layer (`pedestrian road water animal ...`): graph layers (A* on a heap, cost per edge kind, width), grid layers by a host route function; node-pair path cache |
+| `77-sim-5-motion.js` | `SIM.pose(actor, t)`: a pure function of motion time (along the legs, or at the spot with a hashed idle wander); group members trail their leader |
+| `77-sim-6-population.js` | `SIM.populate`: residents from the roles' counts and home kinds (or place ids; `deal:'round'` deals them in turn), work dealt round-robin, boats at docks, vehicles at bases; a `fill` role takes the beds left |
+| `77-sim-8-export.js` | `SIM.export()`: `format:'krator-sim'`, the export convention, every record kind in its JSON shape |
+| `77-sim-9-debug.js` | `SIM.audit()` (unknown activities, hourly capacity filled scarcest first with caps shared, unreachable places and ports), a build's own checks on the same report (`SIM.audits`), `SIM.census()`, `window._sim` |
+| `test-sim.js` | `node core/simulation/test-sim.js`: 37 checks on a toy world, each with a negative |
+| `example/` | the smallest world on the module alone (core/rand, core/clock, SIM; a 2D canvas): 20 townsfolk and a caravan. `python3 build.py && python3 check.py` (4 checks and 4 negatives, determinism across loads). The worked example to copy |
+
+A build takes it by listing `simulation` in its core modules (Mungo's `CORE_MODULES`) and putting its own data and
+embodiment after `77-`: Mungo's `78b-mungo-world.js` registers the layers and places from its geometry, `world/*.json`
+(inlined by `build.py` as `78a-world-json.js`) supplies factions, roles and events, `84-mungo-life.js` draws. Shade's
+`84-host-life.js` registers its walkable grid as a grid layer, its places from `44-host-layout.js` and its ports, loads
+`world/*.json` (`83-host-world-json.js`), and adds its own audits (only way up, convoy, commutes) to `SIM.audit()`; its
+`_life.OUT` numbers are the ones it had before SIM. Not yet: tools/sim_scaffold.py and tools/sim_check.py, the
+GDScript twin, LOD tiers, stockpiles.

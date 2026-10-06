@@ -3,8 +3,10 @@
 // reads the canvases (mask / klass) and the ROADS list; the terrain mesh wears the albedo.
 const CS=2048,PXS=CS/ER.W,px=v=>(v+ER.W/2)*PXS,pz=v=>(v+ER.H/2)*PXS;
 const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d');
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d');
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d');
+// the mask and the classes are core/mask grids (KMASK.canvas: the same calls, hard-edged, identical in every browser and
+// in Godot; GODOT-PLAN.md Phase 2 item 5), so placement no longer depends on the canvas; only the albedo is one
+const mv=KMASK.canvas(CS,CS);const mg=mv.getContext('2d');
+const kv=KMASK.canvas(CS,CS);const kg=kv.getContext('2d');
 const KL={none:0,plaza:1,park:2,boulevard:3,minor:4,stair:5,lane:6,farm:7,water:8,court:9,building:10,rock:11,field:12,garden:13};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';
 const ROADS=[];const PRECINCTS=[];

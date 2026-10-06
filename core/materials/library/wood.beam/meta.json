@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.png",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.312,
+    1.121
+   ],
+   "seam_before": [
+    1.214,
+    2.332
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.25,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.beam",
+  "metal": 0,
+  "pattern": false,
+  "roughness": 0.8,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "wood.beam.webp",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PLAN.md, row wood.beam (the full prompt given 2026-10-05)",
+  "reuse": "every build's timber family: beams, posts, toron, furniture legs (Girder, Voth, Locus, Mav's Refuge), tinted",
+  "sha1": "96db7b20a4de650fe973c65b484849e7d810a788"
+ }
+}

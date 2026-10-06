@@ -74,12 +74,18 @@ Give people and creatures a schedule, or at least the scaffolding for one, even 
 Give them a primary faction (eg, Beast Riders) plus sub faction (eg, Quetzal Tribe) and a job (merchant, farmer, etc)
 
 ## Where things are
+**Building on Windows:** a `build.py` must name `encoding='utf-8'` on every `open()` (and `newline='\n'`); without it
+Python writes the local code page and the page's em dashes become byte 0x97 (Locus shipped so once, Oct 2026). Girder,
+Mav's Refuge, Voth and Yuni's `build.py` still write without it.
+
 There is an included skill file, painting-to-3d-world. Read before starting a new settlement or building kit, or when making large change or expansion to existing ones. When pushing changes to the main branch, reread the skill file, and update with any useful lessons from the build, including known pitfalls, ways to overcome them, and ways to better organize and implement builds. If you run into a particularly aggravating or repeat problem and solve it, note it in the file readme so future sessions without context can pick up the trick and note it in the skill file.
 
 `GODOT-PLAN.md` is the repo-wide plan for auditing every module, quarantining the
 browser-native code and porting the rest to Godot; read it before adding a core module or
 starting a build. `INDEX.md` lists every build and links to each build's own index. `CLAUDE.md`
-holds the working rules for agents. Settlements are in `settlements/`, building
+holds the working rules for agents. `VISUAL-BAR.md` is the look every world is judged against:
+the pillars, the banned outcomes, the measured gates, the delta loop and which engine carries
+each part; read it before a new build or a lighting or texture pass. Settlements are in `settlements/`, building
 kits in `kits/`, biomes in `biomes/`, shared code in `core/`. The gallery of every
 built world is published from `gallery/` (see `gallery/README.md`).
 

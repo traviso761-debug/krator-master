@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 156 (20%) | 23 (3%) | 42 (5%) | 47 (6%) | 517 (66%) |
+| KB | 158 (20%) | 23 (3%) | 42 (5%) | 47 (6%) | 517 (66%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -60,11 +60,12 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89-lab.js` | 6.2 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 3.4 | [web] | 14 | 1 | 1 | 0 | 0 | 3 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 2.9 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/91t-iziz-tags.js` | 1.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the first frame (core/tags/README.md) |
 | `src/92-camera.js` | 9.8 | [web] | 12 | 0 | 20 | 14 | 4 | 2 | 0 | 1 | 3 | 0 | 0 |  |
 | `src/93-labels.js` | 6.2 | [G shader] | 7 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/city/84-city-geo.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/85-city-paint.js` | 5.3 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
+| `targets/city/85-city-paint.js` | 5.4 | [draw] | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `targets/city/86-bio-10-core-head.js` | 9.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/city/86-bio-20-core-kit.js` | 21.5 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 8 | 0 | 0 | 0 | split: data candidate that also draws |
 | `targets/city/86-bio-30-core-foliage.js` | 16.5 | [G shader] | 1 | 4 | 0 | 0 | 0 | 5 | 10 | 0 | 0 | 0 | 0 |  |
@@ -84,7 +85,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/city/90b-city-build.js` | 42.6 | [draw] | 9 | 0 | 0 | 0 | 4 | 6 | 3 | 0 | 0 | 0 | 0 | split: the city's placement and build passes in one (clusters, guilds and civic, vernacular fill, farms, jungle): a [G data] pass that writes placement records, then the [draw] pass and bakes; timing reads go to the host. Was provisionally [web] |
 | `targets/city/90c-city-atmos.js` | 10.5 | [web] | 3 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |  |
 | `targets/city/91z-views.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/city/93-city-ui.js` | 4.1 | [web] | 1 | 2 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/93-city-ui.js` | 4.3 | [web] | 1 | 2 | 6 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `targets/vernacular/89z-rows.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/vernacular/91z-views.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/wA/89z-rows.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

@@ -100,6 +100,7 @@ def srcpath(f, base=None):
 
 # A target is a showcase built from the shared src/ fragments plus its own site
 # table and view list, merged into the one sorted filename order.
+TARGET_CORE = {'erewhon': ['mask']}   # core/<module> fragments a target takes (core/mask: the placement raster)
 TARGET_OUT = {
     'erewhon': 'erewhon.html',          # the city of Erewhon, Pearl of Xanadu
     'xanadu': 'xanadu.html',            # the whole kit in rows by family
@@ -107,6 +108,7 @@ TARGET_OUT = {
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
+    '25-core-mask.js',                    # core/mask: the placement raster (no randomness)
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
     '00-head.html', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js',
@@ -236,6 +238,9 @@ def build_one(target, do_checks):
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
+    for mod in TARGET_CORE.get(target, []):
+        mdir = os.path.join(ROOT, 'core', mod)
+        tgt.update({f: os.path.join(mdir, f) for f in os.listdir(mdir) if f[0].isdigit() and f.endswith('.js')})
     clash = set(src) & set(tgt)
     if clash:
         sys.exit('target %s shadows a src fragment: %s' % (target, ', '.join(sorted(clash))))

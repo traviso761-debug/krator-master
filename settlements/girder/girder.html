@@ -275,6 +275,68 @@ var PLANKC = PAL.plank, TIMBERC = PAL.timber, WALLC = PAL.wall, WALLDARKC = PAL.
     ROPEC = PAL.rope, CLOTHC = PAL.cloth, AWNINGC = PAL.awning, WEBC = PAL.web, CROPC = PAL.crop,
     CRATEC = PAL.crate, ROCKC = PAL.rock, UNDERC = PAL.under, FERNC = PAL.fern, PALMC = PAL.palm,
     RUSTC = PAL.rust, CONCRETEC = PAL.concrete, VINEC = PAL.vine, FUNGC = PAL.fungus, DEADWOODC = PAL.deadwood, FLOWERC = PAL.flower, FRUITC = PAL.fruit;
+// ================================================================= CORE — rand: one generator, one hash, one noise
+// GODOT-PLAN.md Phase 2, item 1. Every number here is reproducible bit for bit in GDScript (krand.gd beside this
+// file) because nothing in it calls Math.sin, Math.pow or any other library function whose last bits differ by
+// engine: the stream and the hash are 32-bit integer arithmetic, and the noise is +, -, *, / and floor on doubles,
+// in a fixed order. golden.json holds the vectors both engines are tested against (test-rand.js, test_rand.py).
+//
+//   KRAND.stream(seed)             a mulberry32 stream: the SAME numbers as the rng()/reseed() every Krator lineage
+//                                  already uses (kits/ancients 10-core.js, core/biome 10-core-head.js), so a build
+//                                  that moves its draws onto a stream moves no rubble
+//     s.next()  [0,1)   s.u32()  integer   s.range(a,b)   s.int(a,b) inclusive   s.pick(arr)   s.chance(p)
+//     s.state() / s.setState(u32)          for saving and resuming a stream
+//   KRAND.hash(seed, a, b, c...)   u32 from a seed and any number of int32 values (floats are floored first)
+//   KRAND.unit(u32)                [0,1)
+//   KRAND.h3(x,y,z, seed)          [0,1) at an integer lattice point: the portable replacement for the lineages'
+//                                  sin-based h3 (which a GDScript port cannot reproduce). Floats are floored.
+//   KRAND.vnoise(x,y,z, seed)      value noise in [0,1]: the lineages' vnoise (smoothstep trilinear) on h3 above
+//   KRAND.fbm(x,y,z, octaves, seed)  the lineages' fbm (octaves default 3, frequency x2.03, amplitude 1/f)
+//   KRAND.cell(seed, ix, iz)       a seed for one placement cell, so a tile built alone draws what it draws in a
+//                                  full build (biomes/WORLD.md: placement seeded by cell)
+//   KRAND.child(seed, name)        a seed for a named sub-stream ('trees', 'rubble'...), no collisions to manage
+//
+// Ranges: lattice coordinates and hash inputs are int32 (|x| < 2^31). Seeds are taken as u32 (seed>>>0).
+// The noise of a NEW seed is not the old sin-based noise: moving a build's terrain or textures onto it moves them
+// (GODOT-PLAN.md section 7, "Moving rubble": one build at a time, with a screenshot set).
+(function(root){
+  'use strict';
+  var imul=Math.imul;
+  // murmur3's 32-bit finalizer: full avalanche
+  function mix32(h){h^=h>>>16;h=imul(h,0x85ebca6b);h^=h>>>13;h=imul(h,0xc2b2ae35);h^=h>>>16;return h>>>0;}
+  function step(h,v){h=imul(h^(v|0),0x9E3779B1);return (h<<13|h>>>19);}
+  function hash(seed){var h=(seed>>>0)^0x2545F491,n=arguments.length-1;
+    for(var i=1;i<=n;i++)h=step(h,Math.floor(arguments[i]));
+    return mix32(h^n);}
+  function hash3(seed,a,b,c){return mix32(step(step(step((seed>>>0)^0x2545F491,a),b),c)^3);}  // hash(seed,a,b,c), unrolled
+  var INV=1/4294967296;
+  function unit(u){return (u>>>0)*INV;}
+  function h3(x,y,z,seed){return hash3(seed||0,Math.floor(x),Math.floor(y),Math.floor(z))*INV;}
+  function vnoise(x,y,z,seed){seed=seed||0;
+    var xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi;
+    var u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+    var a0=hash3(seed,xi,yi,zi)*INV,a1=hash3(seed,xi+1,yi,zi)*INV,b0=hash3(seed,xi,yi+1,zi)*INV,b1=hash3(seed,xi+1,yi+1,zi)*INV,
+        c0=hash3(seed,xi,yi,zi+1)*INV,c1=hash3(seed,xi+1,yi,zi+1)*INV,d0=hash3(seed,xi,yi+1,zi+1)*INV,d1=hash3(seed,xi+1,yi+1,zi+1)*INV;
+    var a=a0+(a1-a0)*u,b=b0+(b1-b0)*u,c=c0+(c1-c0)*u,d=d0+(d1-d0)*u;
+    var e=a+(b-a)*v,f=c+(d-c)*v;return e+(f-e)*w;}
+  function fbm(x,y,z,o,seed){o=o||3;var a=0,f=1,s=0;for(var i=0;i<o;i++){a+=vnoise(x*f,y*f,z*f,seed)/f;s+=1/f;f*=2.03;}return a/s;}
+  function cell(seed,ix,iz){return hash3(seed,ix,iz,0x51ED);}
+  function child(seed,name){var h=0x811C9DC5;name=String(name);   // FNV-1a over UTF-16 code units, then mixed with the seed
+    for(var i=0;i<name.length;i++)h=imul(h^name.charCodeAt(i),0x01000193);
+    return hash(seed,h|0);}
+  function stream(seed){
+    var s=seed>>>0;
+    function u32(){s|=0;s=s+0x6D2B79F5|0;var t=imul(s^s>>>15,1|s);t=t+imul(t^t>>>7,61|t)^t;return (t^t>>>14)>>>0;}
+    function next(){return u32()*INV;}
+    return {next:next,u32:u32,
+      range:function(a,b){return a+(b-a)*next();},
+      int:function(a,b){return a+Math.floor(next()*(b-a+1));},
+      pick:function(arr){return arr[Math.floor(next()*arr.length)%arr.length];},
+      chance:function(p){return next()<p;},
+      state:function(){return s>>>0;},setState:function(v){s=v>>>0;}};
+  }
+  root.KRAND={version:1,stream:stream,hash:hash,unit:unit,h3:h3,vnoise:vnoise,fbm:fbm,cell:cell,child:child,mix32:mix32};
+})(typeof window!=='undefined'?window:globalThis);
 // ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
 // One global, `LOD`, declared nothing else at top level. It works on a FINISHED scene, so a build adopts it with three
 // calls and no change to how it makes geometry:
@@ -2369,6 +2431,7 @@ var TOWER_HALF = 24, TOWER_N = 30, TOWER_FH = 5.0, TOWER_OFF = 60;      /* 48 m 
 var COL_LINES = [-24+1.6, -8, 8, 24-1.6];                                 /* 4x4 cyclopean columns, 3.2 m square */
 var CORE_HALF = 8;                                                        /* the centre bay: stairs */
 var GALLERY_IN = 19.6;                                                    /* rooms stop here; the open gallery runs outside it */
+var GALLERY_WALK = GALLERY_IN + 0.6;   /* the gallery's walk loop: between the rooms' fronts and the columns' inner faces (20.8), not on the column line */
 var DECK_W = 15, DECK_K = 29;                                             /* roost deck: width, and the floor it is level with */
 var FLOOR_USE = (function(){
   var d=[]; for(var k=0;k<TOWER_N;k++) d.push(0);
@@ -2580,11 +2643,18 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
   var trunk = NAVROAD.concat(pr);
   PLOTS.forEach(function(p){ p.node=navNode(p.x,NAV_GY,p.z,null,-2,'field'); p.node.plot=p.id;
     var e=navNode(p.x + (Math.abs(p.x)>Math.abs(p.z)? -Math.sign(p.x):0)*p.w/2, NAV_GY, p.z + (Math.abs(p.x)>Math.abs(p.z)?0:-Math.sign(p.z))*p.d/2, null,-2,'field');
-    navEdge(p.node,e,'ground'); navEdge(e,navNearest(trunk,e.x,e.z),'ground'); p.edge=e; });
+    /* the edge node is in the fence's gate gap (55-arch.js); an apron node 1.5 m outside it keeps the link to the
+       road from running back along or through the fence */
+    var ox=(Math.abs(p.x)>Math.abs(p.z)? -Math.sign(p.x):0), oz=(Math.abs(p.x)>Math.abs(p.z)?0:-Math.sign(p.z)),
+        ap=navNode(e.x+ox*1.5, NAV_GY, e.z+oz*1.5, null,-2,'field');
+    navEdge(p.node,e,'ground'); navEdge(e,ap,'ground'); navEdge(ap,navNearest(trunk,ap.x,ap.z),'ground'); p.edge=e; });
   if(HOUSES.length && !HOUSES.some(function(h){ return h.kind==='longhouse'; })) HOUSES.slice().sort(function(a,b){ return b.w*b.d-a.w*a.d; })[0].kind='longhouse';
   HOUSES.forEach(function(h){ var nr=navNearest(NAVROAD,h.x,h.z), dx=nr.x-h.x, dz=nr.z-h.z;
     if(Math.abs(dx)>Math.abs(dz)){ h.ox=Math.sign(dx); h.oz=0; } else { h.ox=0; h.oz=Math.sign(dz); }
-    h.door=navNode(h.x+h.ox*(h.w/2-3), NAV_GY, h.z+h.oz*(h.d/2-3), null,-2,'housedoor'); h.door.house=h.id; navEdge(h.door,nr,'ground'); });
+    h.door=navNode(h.x+h.ox*(h.w/2-3), NAV_GY, h.z+h.oz*(h.d/2-3), null,-2,'housedoor'); h.door.house=h.id;
+    /* out through the yard's gate (the fence gap on the door side, 55-arch.js) before turning for the road */
+    var ap=navNode(h.x+h.ox*(h.w/2+1.2), NAV_GY, h.z+h.oz*(h.d/2+1.2), null,-2,'housedoor');
+    navEdge(h.door,ap,'ground'); navEdge(ap,nr,'ground'); });
   STALLS.forEach(function(s){ s.node=navNode(s.x - Math.sin(s.ry)*0 + (-s.x/Math.hypot(s.x,s.z))*3, NAV_GY, s.z + (-s.z/Math.hypot(s.x,s.z))*3, null,-2,'market'); navEdge(s.node,navNearest(hring,s.x,s.z),'ground'); });
 
   /* --- towers --- */
@@ -2594,17 +2664,19 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
     var prevTop=null;
     for(var k=0;k<TOWER_N;k++){
       var sp=stairPts(T,k), F=T.floors[k];
+      /* the last flight climbs to the ragged roof plate, which has no floor over the core: the graph stops at the
+         top storey's core node */
+      if(k===TOWER_N-1){ var nt=navNode(sp[0][0],sp[0][1],sp[0][2],T.deck,k,'core'); if(prevTop) navEdge(prevTop,nt,'deck'); T.nav.core[k]=nt; break; }
       var n0=navNode(sp[0][0],sp[0][1],sp[0][2],T.deck,k,'core'), n1=navNode(sp[1][0],sp[1][1],sp[1][2],T.deck,k,'stair'),
           n2=navNode(sp[2][0],sp[2][1],sp[2][2],T.deck,k,'stair'), n3=navNode(sp[3][0],sp[3][1],sp[3][2],T.deck,k+1,'stair');
       navEdge(n0,n1,'stair'); navEdge(n1,n2,'deck'); navEdge(n2,n3,'stair');
       if(prevTop) navEdge(prevTop,n0,'deck');
       prevTop=n3; T.nav.core[k]=n0;
-      if(k===TOWER_N-1) T.nav.core[TOWER_N]=n3;
     }
     /* gallery loops on inhabited floors (and the ground floor), reached from the core along the west corridor */
     T.floors.forEach(function(F){
       if(F.kind!=='inhabited') return;
-      var g=22.0, loop=[], per=8;
+      var g=GALLERY_WALK, loop=[], per=8;
       [[-1,-1,1,0],[1,-1,0,1],[1,1,-1,0],[-1,1,0,-1]].forEach(function(c){ for(var i=0;i<per;i++){ var t=i/per*2*g;
         loop.push(navNode(T.x+c[0]*g+c[2]*t, F.y, T.z+c[1]*g+c[3]*t, T.deck, F.k, 'gallery')); } });
       loop.forEach(function(n,i){ navEdge(n,loop[(i+1)%loop.length],'deck'); });
@@ -2622,13 +2694,24 @@ var NAV_GY = SETTLE_Y + 0.05, NAVROAD = [];
     var P=T.deck, dw=P.inner+3.0, walk=[], per2=10;
     [[-1,-1,1,0],[1,-1,0,1],[1,1,-1,0],[-1,1,0,-1]].forEach(function(c){ for(var i=0;i<per2;i++){ var t=i/per2*2*dw;
       walk.push(navNode(T.x+c[0]*dw+c[2]*t, P.y, T.z+c[1]*dw+c[3]*t, P, 0, 'deckwalk')); } });
+    /* the deck is notched 2.6 m round the lift shaft (83-walk.js, 50-structure.js): walk nodes in the notch step out
+       to its outer side, where the deck carries on */
+    var Lw=T.lift, lsx=Math.sign(Lw.x-T.x)||1;
+    walk.forEach(function(n){ if(Math.abs(n.x-Lw.x)<3.3 && Math.abs(n.z-Lw.z)<3.3) n.x=Lw.x+lsx*3.4; });
     walk.forEach(function(n,i){ navEdge(n,walk[(i+1)%walk.length],'deck'); }); P.nav={ walk:walk };
-    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(f){ navEdge(navNearest(walk,T.x+f[0]*dw,T.z+f[1]*dw), navNearest(T.nav.gallery[DECK_K],T.x+f[0]*22,T.z+f[1]*22),'deck'); });
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(function(f){ navEdge(navNearest(walk,T.x+f[0]*dw,T.z+f[1]*dw), navNearest(T.nav.gallery[DECK_K],T.x+f[0]*GALLERY_WALK,T.z+f[1]*GALLERY_WALK),'deck'); });
     P.heads.forEach(function(h){ h.node=navNode(h.x,h.y,h.z,P,0,'bridgehead'); navEdge(h.node,navNearest(walk,h.x,h.z),'deck'); });
-    ROOSTS.forEach(function(R){ if(R.plat!==P) return; R.node=navNode(R.x-R.ox*6.5,P.y,R.z-R.oz*6.5,P,0,'roost'); navEdge(R.node,navNearest(walk,R.node.x,R.node.z),'deck'); });
-    /* the lift */
+    /* a rider tends the beast from the stall's open back, by the deck walk: the bedding, bales, tack rack and trough
+       (55-arch.js) fill the stall between there and the perch */
+    ROOSTS.forEach(function(R){ if(R.plat!==P) return; R.node=navNode(R.x-R.ox*8.4,P.y,R.z-R.oz*8.4,P,0,'roost'); navEdge(R.node,navNearest(walk,R.node.x,R.node.z),'deck'); });
+    /* the lift; its foot reaches the road round the capstan (r 1.1, 11 m out) when the straight line would cross it */
     var Lf=T.lift; Lf.foot=navNode(Lf.x+Lf.ox*2.6,NAV_GY,Lf.z,null,-2,'liftfoot'); Lf.head=navNode(Lf.x-Lf.ox*0,Lf.y1,Lf.z,P,0,'lifthead');
-    navEdge(Lf.foot,navNearest(NAVROAD,Lf.foot.x,Lf.foot.z),'ground'); navEdge(Lf.head,navNearest(walk,Lf.head.x,Lf.head.z),'deck');
+    var fr=navNearest(NAVROAD,Lf.foot.x,Lf.foot.z), C=Lf.capstan, fdx=fr.x-Lf.foot.x, fdz=fr.z-Lf.foot.z, fl2=fdx*fdx+fdz*fdz,
+        ft=clamp(((C.x-Lf.foot.x)*fdx+(C.z-Lf.foot.z)*fdz)/(fl2||1),0,1);
+    if(Math.hypot(Lf.foot.x+fdx*ft-C.x, Lf.foot.z+fdz*ft-C.z) < 1.8){
+      var by=navNode(C.x, NAV_GY, C.z+(Math.sign(fr.z-C.z)||1)*2.8, null,-2,'liftfoot'); navEdge(Lf.foot,by,'ground'); navEdge(by,fr,'ground');
+    } else navEdge(Lf.foot,fr,'ground');
+    navEdge(Lf.head,navNearest(walk,Lf.head.x,Lf.head.z),'deck');
     Lf.edge=navEdge(Lf.foot,Lf.head,'lift',{ lift:Lf.id });
   });
   BRIDGES.forEach(function(br){ br.edge=navEdge(br.a.node,br.b.node,'bridge',{ bridge:br.id }); });
@@ -3672,6 +3755,355 @@ var GDET = (function(){
   return { family:family, hook:hook, atlas:atlas, atlasHook:atlasHook, stats:stats, on:ON };
 })();
 window._detail = GDET.stats;
+// ================================================================= CORE FURNISH — the placement pass ([G data])
+// One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
+// A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
+// writes the placement RECORD, counts missing keys, applies the catalog's recentring table, assigns a deterministic
+// id, and hands the record to the build's draw adapter. No THREE, no DOM: the records are what crosses to Godot.
+//
+//   const R = KFURN.create(cfg)
+//   R.place(key, x, y, z, ry, o, loc, ctx)   -> the record, or null (a key the catalog lacks: counted in R.missing)
+//        x y z ry  the world transform (three.js rotation.y: the piece's front, +z, turns to (sin ry, cos ry))
+//        o         the builder's options: { v, seed, setting, ... } (the adapter's own keys pass through)
+//        loc       [lx, ly, lz, lry] in the builder's frame, or null (a piece placed in world space)
+//        ctx       { building, list, wealth, part, room, dry }: list receives the record (the building's own list;
+//                  listOf() instead makes it only when a record lands, for a build whose owners start without one);
+//                  dry places nothing anywhere else (a throwaway build: Post-Apoc's frontOf)
+//   R.frm(f, lx, lz, lry)                    -> [x, z, ry] in a FRM frame {x, z, fx, fz} (55-arch): +z its front,
+//                                               +x its right (-fz, fx); lry 0 faces the front
+//   R.interior(item, x, z, ry, adapter, opt) -> the interiors kit's rooms planned and furnished at a placement,
+//                                               summarised as data ({ item, rooms, pieces, residence }); pushed on R.buildings
+//   R.summary()                              -> counts for a probe: placed, byKey, missing, interiors, interiorPieces
+//   KFURN.SRGB_LIN                           -> Float32Array(256): an sRGB byte to linear (the catalog's colours are sRGB)
+//
+// cfg: {
+//   catalog:   { has(key), entry(key), dims(entry, variant) }   (KFURN.catalogOf(KratorFurniture) makes it)
+//   interiors: KratorInteriors (for R.interior), optional
+//   on, interiorsOn: the page's switches (?furniture=0, ?interiors=: 53-core-furnish-host.js reads them)
+//   seed(o, ctx, R, x, y, z, loc) -> the seed when o.seed is not given. Each build keeps the rule its pieces were
+//              placed with, so moving onto this module moves nothing (README.md, "Seeds")
+//   shift:     { key: [dx, dz] | function(variant) -> [dx, dz] | null }: pieces the catalog recentred on their
+//              footprint; the placement undoes it (Mav's Refuge's BRF_SHIFT)
+//   finish(rec): rounds or wraps the record's numbers the way the build always has (Girder: 3 decimals)
+//   onRecord(rec, ctx, o, entry, dims) -> false to place nothing more (deferred to the interiors); collision,
+//              inspector entries and the like go here
+//   draw(rec, ctx, o, entry): the draw adapter (52-core-furnish-draw.js helps), called while R.on and not dry
+//   idPrefix:  'furn' (ids: furn_00001 in placement order)
+//   tags:      a core/tags registry (KTAGS.create): every placed record onRecord keeps is registered there too, as
+//              class furniture, before it is drawn (GODOT-PLAN.md rule 4; core/tags/README.md). The furniture record is not changed }
+//
+// A record: { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, room, setting, job }.
+// job is the catalog's (FURN_JOBS, through the entry's job or its trade role); room is ctx.room or o.room or null.
+var KFURN = (function(){
+'use strict';
+ const K = {};
+ K.SRGB_LIN = (function(){ const t = new Float32Array(256);
+   for(let i=0;i<256;i++){ const v = i/255; t[i] = v <= 0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4); } return t; })();
+ K.catalogOf = function(KF){ return {
+   has: function(key){ return KF.has(key); },
+   entry: function(key){ return KF.FURN_BY_KEY[key]; },
+   dims: function(A, v){ return KF.entryDims(A, v); } }; };
+ function pad(n){ const s = String(n); return s.length >= 5 ? s : '00000'.slice(s.length) + s; }
+ // a placed record into core/tags: its id unchanged, the catalog entry's type as kind, its culture, tier and job, the
+ // setting and room, and the placement's 0..1 wealth (core/tags maps it to poor, middle, rich). parent is the building
+ // as the build names it (a key or an id): a build that registers its buildings in core/tags passes their ids.
+ K.tag = function(T, rec, A, dm, ctx){
+   const t = { setting: rec.setting };
+   if(A && A.culture) t.culture = A.culture;
+   if(A && A.tier) t.tier = A.tier;
+   if(rec.job) t.job = rec.job;
+   if(rec.room) t.room = String(rec.room);
+   if(typeof ctx.wealth === 'number') t.wealth = ctx.wealth;
+   if(rec.variant) t.variant = rec.variant;
+   return T.add({ id: rec.id, 'class': 'furniture', kind: (A && A.type) || null, key: rec.key, name: (A && A.name) || null,
+     parent: rec.building == null ? null : String(rec.building), at: [rec.x, rec.y, rec.z], ry: rec.ry,
+     size: dm ? [dm.w, dm.d, dm.h] : undefined, tags: t, frag: 'core/furnish' });
+ };
+ K.create = function(cfg){
+   const C = cfg.catalog, R = { on: cfg.on !== false, interiors: !!cfg.interiorsOn, placed: [], missing: {}, buildings: [],
+     lights: 0, group: null, batch: null, adapter: null, cfg: cfg };
+   const prefix = cfg.idPrefix || 'furn';
+   R.place = function(key, x, y, z, ry, o, loc, ctx){
+     o = o || {}; ctx = ctx || {};
+     if(!C.has(key)){ if(!ctx.dry) R.missing[key] = (R.missing[key]||0) + 1; return null; }
+     const v = o.v|0;
+     if(cfg.shift && cfg.shift[key]){
+       let sh = cfg.shift[key]; if(typeof sh === 'function') sh = sh(v);
+       if(sh){ const c = Math.cos(ry), s = Math.sin(ry); x -= sh[0]*c + sh[1]*s; z -= -sh[0]*s + sh[1]*c; }
+     }
+     const A = C.entry(key);
+     const rec = { key: key, variant: v, seed: o.seed || cfg.seed(o, ctx, R, x, y, z, loc),
+       lx: loc ? loc[0] : null, ly: loc ? loc[1] : null, lz: loc ? loc[2] : null, lry: loc ? loc[3] : null,
+       x: x, y: y, z: z, ry: ry, building: ctx.building == null ? null : ctx.building };
+     if(ctx.part != null) rec.part = ctx.part;
+     rec.setting = o.setting || 'outdoor';
+     if(cfg.finish) cfg.finish(rec);
+     const L = ctx.list || (ctx.listOf && ctx.listOf()); if(L) L.push(rec);
+     if(!ctx.dry){ R.placed.push(rec); rec.id = prefix + '_' + pad(R.placed.length); }
+     rec.room = ctx.room || o.room || null;
+     rec.job = (A && A.job) || null;
+     const dm = A ? C.dims(A, v) : null;
+     if(cfg.onRecord && cfg.onRecord(rec, ctx, o, A, dm) === false) return rec;   // deferred: not registered, not drawn
+     if(cfg.tags && rec.id) K.tag(cfg.tags, rec, A, dm, ctx);
+     if(ctx.dry || !R.on || !cfg.draw) return rec;
+     cfg.draw(rec, ctx, o, A);
+     return rec;
+   };
+   R.frm = function(f, lx, lz, lry){
+     return [f.x - f.fz*lx + f.fx*lz, f.z + f.fx*lx + f.fz*lz, Math.atan2(f.fx, f.fz) + (lry||0)];
+   };
+   R.interior = function(item, x, z, ry, adapter, opt){
+     const r = cfg.interiors.sets.furnish(item, x, z, ry||0, adapter, opt);
+     const sum = { item: item.key, rooms: r.inst.rooms.length,
+       pieces: Object.keys(r.plans).reduce(function(a, k){ return a + r.plans[k].placements.length; }, 0), residence: r.residence };
+     R.buildings.push({ key: item.key, x: x, z: z, ry: ry||0, baseY: (opt && opt.baseY) || 0, interior: sum });
+     return { summary: sum, result: r };
+   };
+   R.summary = function(){
+     const byKey = {}; R.placed.forEach(function(r){ byKey[r.key] = (byKey[r.key]||0) + 1; });
+     return { on: R.on, placed: R.placed.length, keys: Object.keys(byKey).length, byKey: byKey, missing: R.missing,
+       lights: R.lights, interiors: R.buildings.length,
+       interiorPieces: R.buildings.reduce(function(a, b){ return a + b.interior.pieces; }, 0) };
+   };
+   return R;
+ };
+ if(typeof module !== 'undefined' && module.exports) module.exports = K;
+ return K;
+})();
+// ================================================================= CORE TAGS — the registry ([G data])
+// One registry of WHAT a placed thing is, for every build (GODOT-PLAN.md Phase 2 item 3, rule 4; PROPOSAL.md and
+// README.md here). It holds no geometry, collision, draw or live state: only the record. No THREE, no DOM: it runs
+// in node (test-tags.js), and its export is what crosses to Godot as node metadata.
+//
+//   const T = KTAGS.create({ build: 'yuni' })
+//   T.add(rec)               -> the stored record, with its id and uid (defaults filled, tags normalised)
+//   T.child(parentId, rec)   -> a record whose id is a path under its parent: 'bld_00098.room.4'
+//   T.get(id)                -> the record (a removed one too), or null
+//   T.remove(id)             -> the record, marked removed: true. It keeps its id; no id is ever reused
+//   T.query(q)               -> the live records matching q = { class, kind, key, parent, tags: { culture: 'voth',
+//                               types: 'shop' }, box: [x0, z0, x1, z1], removed: true (to include removed ones) }
+//   T.at(x, z, y)            -> the smallest live record whose footprint (and height, when y is given) holds the
+//                               point: the inspector's rule, once
+//   T.audit()                -> { records, removed, byClass, unknownKeys, unknownValues, unknown, missingCulture,
+//                               missingTypes }: unknown vocabulary is counted here, never thrown
+//   T.export()               -> { format: 'krator-tags', version: 1, build, convention, vocab, records }
+//   KTAGS.uid(cls, key, at)  -> the position hash, 8 hex digits (README.md, "The uid": Godot reproduces it)
+//   KTAGS.instanceId(id, i)  -> 'flora_00012#37': an instance of an item's record (an instance has no record)
+//   KTAGS.norm(tags)         -> { tags, problems }: the input mapping (aliases, wealth names) and the checks
+//
+// The record: { id, uid, class, kind, key, name, parent, at: [x,y,z], ry, size: [w,d,h] | r (+ h), tags, note, src }
+//   at   the base centre in world metres (+Y up, x east, z south): y is where it stands. x, y, z on input work too
+//   ry   radians about +Y, three's rotation.y (the front, +z, turns to (sin ry, cos ry)); yaw is an alias on input
+//   size full extents in its own frame; a round thing gives r (and h) instead
+// The vocabulary (KTAGS.VOCAB) is 52-core-tags-vocab.js; the label the inspector shows is 53-core-tags-host.js.
+(function(){
+ 'use strict';
+ var root = typeof globalThis !== 'undefined' ? globalThis : this;
+ var K = { version: 1 };
+
+ function krand(){
+   if (typeof KRAND !== 'undefined') return KRAND;
+   if (root.KRAND) return root.KRAND;
+   throw new Error('core/tags needs core/rand (08-core-rand.js) loaded first: the uid is a KRAND.hash');
+ }
+ function vocab(){
+   if (!K.VOCAB) throw new Error('core/tags: load 52-core-tags-vocab.js before the first add');
+   return K.VOCAB;
+ }
+ function pad5(n){ return ('0000' + n).slice(-5); }
+ function r4(v){ return +(+v).toFixed(4); }
+
+ // ---- the uid: KRAND.hash(0, str(class), str(key), cm10(x), cm10(y), cm10(z)) as 8 lowercase hex digits.
+ // str(s) is FNV-1a over the UTF-16 code units of s ('' for a null key), as int32; cm10(v) = floor(v * 10 + 0.5),
+ // the position in 10 cm steps (KRAND.hash floors its arguments, so it is passed v * 10 + 0.5). README.md, "The uid".
+ function str32(s){
+   var h = 0x811C9DC5; s = s == null ? '' : String(s);
+   for (var i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+   return h | 0;
+ }
+ K.str32 = str32;
+ K.uid = function(cls, key, at){
+   var u = krand().hash(0, str32(cls), str32(key), at[0] * 10 + 0.5, at[1] * 10 + 0.5, at[2] * 10 + 0.5);
+   return ('0000000' + u.toString(16)).slice(-8);
+ };
+ K.instanceId = function(id, i){ return id + '#' + i; };
+
+ // ---- tags: the input mapping and the checks. Known keys take values from the vocabulary; an unknown key or
+ // value stays on the record as given and is reported as a problem, which audit() counts.
+ K.norm = function(tags){
+   var V = vocab(), out = {}, problems = [], k;
+   tags = tags || {};
+   for (k in tags) if (tags[k] !== undefined && (!V.keyAlias || !V.keyAlias[k])) out[k] = tags[k];
+   if (V.keyAlias) for (k in tags) if (tags[k] !== undefined && V.keyAlias[k] && !(V.keyAlias[k] in out)) out[V.keyAlias[k]] = tags[k];
+   // culture first: an old spelling may set wealth, style, state or set (PROPOSAL.md, "The culture list, cleaned")
+   if (typeof out.culture === 'string' && V.cultureAlias[out.culture]) {
+     var al = V.cultureAlias[out.culture];
+     out.culture = al.culture;
+     for (k in al) if (k !== 'culture' && !(k in out)) out[k] = al[k];   // a given value, null too, wins
+   }
+   if (typeof out.wealth === 'number') out.wealth = V.wealthOf(out.wealth);
+   else if (typeof out.wealth === 'string' && V.wealthAlias.hasOwnProperty(out.wealth)) out.wealth = V.wealthAlias[out.wealth];
+   if (typeof out.types === 'string') out.types = [out.types];
+   if (Array.isArray(out.types) && V.typeAlias) {   // older spellings: one may become several; no duplicates
+     var ty = [];
+     for (var ti = 0; ti < out.types.length; ti++) {
+       var tv = V.typeAlias[out.types[ti]] || [out.types[ti]];
+       for (var tj = 0; tj < tv.length; tj++) if (ty.indexOf(tv[tj]) < 0) ty.push(tv[tj]);
+     }
+     out.types = ty;
+   }
+   if (typeof out.state === 'string' && V.stateAlias && V.stateAlias[out.state]) out.state = V.stateAlias[out.state];
+   for (k in out) {
+     var rule = V.keys[k], v = out[k];
+     if (!rule) { problems.push({ key: k }); continue; }
+     if (v === null || rule === 'free') continue;
+     if (rule === 'bool') { if (typeof v !== 'boolean') problems.push({ key: k, value: v }); continue; }
+     if (rule === 'object') { if (typeof v !== 'object' || Array.isArray(v)) problems.push({ key: k, value: v }); continue; }
+     var list = V[rule];
+     if (Array.isArray(v)) { for (var i = 0; i < v.length; i++) if (list.indexOf(v[i]) < 0) problems.push({ key: k, value: v[i] }); }
+     else if (list.indexOf(v) < 0) problems.push({ key: k, value: v });
+   }
+   return { tags: out, problems: problems };
+ };
+
+ K.create = function(cfg){
+   cfg = cfg || {};
+   var V = null, recs = [], byId = {}, counters = {}, childCount = {};
+   var T = { build: cfg.build || null, records: recs };
+
+   function prefixOf(rec){
+     if (rec.prefix) return rec.prefix;
+     if (rec['class'] === 'fixture' && V.fixturePrefix[rec.kind]) return V.fixturePrefix[rec.kind];
+     return V.prefix[rec['class']];
+   }
+   // a passed-through order id moves its prefix's counter past it, so a later made id never collides
+   function claim(id){
+     var m = /^([a-z]+)_(\d+)$/.exec(id);
+     if (m) counters[m[1]] = Math.max(counters[m[1]] || 0, parseInt(m[2], 10) + 1);
+   }
+   function make(rec, parent){
+     V = V || vocab();
+     var cls = rec['class'] != null ? rec['class'] : rec.cls;
+     if (cls === 'fauna') throw new Error('core/tags: fauna is not a class; a placed animal is class "life" with its species as kind');
+     if (V.classes.indexOf(cls) < 0) throw new Error('core/tags: unknown class ' + cls);
+     var at = rec.at ? rec.at : [rec.x || 0, rec.y || 0, rec.z || 0];
+     var o = { id: null, uid: null, 'class': cls, kind: rec.kind != null ? rec.kind : null, key: rec.key != null ? rec.key : null,
+       name: rec.name != null ? rec.name : null, parent: parent || (rec.parent != null ? rec.parent : null),
+       at: [r4(at[0]), r4(at[1]), r4(at[2])], ry: r4(rec.ry != null ? rec.ry : (rec.yaw || 0)) };
+     if (rec.size) o.size = rec.size.map(r4);
+     else if (rec.r != null) { o.r = r4(rec.r); if (rec.h != null) o.h = r4(rec.h); }
+     o.tags = K.norm(rec.tags).tags;
+     if (rec.note != null) o.note = String(rec.note);
+     o.src = { build: T.build, frag: rec.frag || (rec.src && rec.src.frag) || null };
+     if (rec.id != null) {
+       if (byId[rec.id]) throw new Error('core/tags: duplicate id ' + rec.id);
+       o.id = String(rec.id); claim(o.id);
+     } else if (parent) {
+       var seg = rec.kind || cls, ck = parent + '.' + seg;
+       o.id = ck + '.' + (childCount[ck] = (childCount[ck] || 0) + 1, childCount[ck] - 1);
+     } else {
+       var p = prefixOf(o);
+       if (!p) throw new Error('core/tags: no id prefix for class ' + cls);
+       counters[p] = counters[p] || 0;
+       o.id = p + '_' + pad5(counters[p]++);
+     }
+     o.uid = K.uid(cls, o.key, o.at);
+     recs.push(o); byId[o.id] = o;
+     return o;
+   }
+
+   T.add = function(rec){ return make(rec, null); };
+   T.child = function(parentId, rec){
+     if (!byId[parentId]) throw new Error('core/tags: child of an unknown parent ' + parentId);
+     return make(rec, parentId);
+   };
+   T.get = function(id){ return byId[id] || null; };
+   T.remove = function(id){ var r = byId[id]; if (r) r.removed = true; return r || null; };
+
+   function tagMatch(r, want){
+     for (var k in want) {
+       var have = r.tags[k], w = want[k];
+       if (Array.isArray(have) ? have.indexOf(w) < 0 : have !== w) return false;
+     }
+     return true;
+   }
+   T.query = function(q){
+     q = q || {};
+     var out = [];
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed && !q.removed) continue;
+       if (q['class'] != null && r['class'] !== q['class']) continue;
+       if (q.kind != null && r.kind !== q.kind) continue;
+       if (q.key != null && r.key !== q.key) continue;
+       if (q.parent !== undefined && r.parent !== q.parent) continue;
+       if (q.tags && !tagMatch(r, q.tags)) continue;
+       if (q.box && (r.at[0] < q.box[0] || r.at[0] > q.box[2] || r.at[2] < q.box[1] || r.at[2] > q.box[3])) continue;
+       out.push(r);
+     }
+     return out;
+   };
+
+   // the footprint test in the record's own frame: its +z front at (sin ry, cos ry), its +x right at (cos ry, -sin ry)
+   function holds(r, x, z, y){
+     var dx = x - r.at[0], dz = z - r.at[2], h;
+     if (r.size) {
+       var c = Math.cos(r.ry), s = Math.sin(r.ry);
+       var lx = dx * c - dz * s, lz = dx * s + dz * c;
+       if (Math.abs(lx) > r.size[0] / 2 || Math.abs(lz) > r.size[1] / 2) return 0;
+       h = r.size[2];
+       if (y != null && h != null && (y < r.at[1] || y > r.at[1] + h)) return 0;
+       return r.size[0] * r.size[1];
+     }
+     if (r.r != null) {
+       if (dx * dx + dz * dz > r.r * r.r) return 0;
+       if (y != null && r.h != null && (y < r.at[1] || y > r.at[1] + r.h)) return 0;
+       return Math.PI * r.r * r.r;
+     }
+     return 0;
+   }
+   T.at = function(x, z, y){
+     var best = null, ba = Infinity;
+     for (var i = 0; i < recs.length; i++) {
+       if (recs[i].removed) continue;
+       var a = holds(recs[i], x, z, y);
+       if (a > 0 && a < ba) { ba = a; best = recs[i]; }
+     }
+     return best;
+   };
+
+   T.audit = function(){
+     var a = { records: 0, removed: 0, byClass: {}, unknownKeys: {}, unknownValues: {}, unknown: 0, missingCulture: 0, missingTypes: 0 };
+     for (var i = 0; i < recs.length; i++) {
+       var r = recs[i];
+       if (r.removed) { a.removed++; continue; }
+       a.records++;
+       a.byClass[r['class']] = (a.byClass[r['class']] || 0) + 1;
+       var ps = K.norm(r.tags).problems;
+       for (var j = 0; j < ps.length; j++) {
+         a.unknown++;
+         if (!('value' in ps[j])) a.unknownKeys[ps[j].key] = (a.unknownKeys[ps[j].key] || 0) + 1;
+         else { var kv = ps[j].key + ':' + ps[j].value; a.unknownValues[kv] = (a.unknownValues[kv] || 0) + 1; }
+       }
+       if (r['class'] === 'building') {
+         if (!r.tags.culture) a.missingCulture++;
+         if (!r.tags.types || !r.tags.types.length) a.missingTypes++;
+       }
+     }
+     return a;
+   };
+
+   T.export = function(){
+     return { format: 'krator-tags', version: 1, build: T.build,
+       convention: 'metres, +Y up, x east, z south; at is the base centre; ry radians about +Y (the front, +z, turns to (sin ry, cos ry)); size [w, d, h] in the record\'s own frame; uid: core/tags/README.md',
+       vocab: K.VOCAB, records: recs };
+   };
+   return T;
+ };
+
+ if (typeof module !== 'undefined' && module.exports) module.exports = K;
+ root.KTAGS = K;   // a global, so the fragment is one IIFE that leaks nothing into a build's shared scope
+})();
 /* ============================== 12. STRUCTURE — GIRDER ==============================
    PLANNER-OWNED. The ancient ruin and the load-bearing timber the beast-riders
    hung on it: the four towers (cyclopean columns, floor plates, girders,
@@ -13283,6 +13715,206 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   ] });
 })(KratorInteriors);
 
+// ================================================================= CORE FURNISH — the draw adapter's helpers ([draw])
+// The three.js side of core/furnish: a placement record into the catalog's batch (KratorFurniture), and the one
+// colour step every build needs when the batch becomes meshes. The catalog writes its colours as sRGB bytes; a
+// build that renders in linear light converts them once, either in the vertex shader or into a float attribute.
+// Each build keeps its own flush (it ties the meshes to its night lights and shadows); these are the parts the
+// six copies shared.
+//
+//   KFURN.useBatch(R, KF, KI)            -> R.batch (a KratorFurniture batch) and R.adapter (KratorInteriors' runtime
+//                                           adapter over it, for the interiors hook); call again for a fresh batch
+//   KFURN.drawRec(R, rec, wealth, opt)   -> the batch's result for one record ({ lights, error, ... }); opt.detail
+//                                           sets KratorFurniture's detail for this piece and restores it
+//   KFURN.srgbHook(shader)               -> an onBeforeCompile body: linearise vColor in the vertex shader
+//   KFURN.linearColours(geometry)        -> the colour attribute's sRGB bytes as linear floats (KFURN.SRGB_LIN)
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('52-core-furnish-draw: load 50-core-furnish.js first');
+KFURN.useBatch = function(R, KF, KI){ R.batch = KF.batch(); R.adapter = KI ? KI.runtimeAdapter(KF, R.batch) : null; R.KF = KF; return R.batch; };
+KFURN.drawRec = function(R, rec, wealth, opt){
+  const KF = R.KF, d = opt && opt.detail;
+  if(d != null) KF.setDetail(d);
+  const r = R.batch.place(rec.key, rec.x, rec.y, rec.z, rec.ry, { variant: rec.variant, seed: rec.seed, wealth: wealth,
+    building: rec.building, setting: rec.setting });
+  if(d != null) KF.setDetail(opt.after == null ? .5 : opt.after);
+  return r;
+};
+KFURN.srgbHook = function(sh){
+  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
+    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
+};
+KFURN.linearColours = function(geo){
+  const a = geo.getAttribute('color'); if(!a || a.array instanceof Float32Array) return;
+  const src = a.array, out = new Float32Array(src.length), L = KFURN.SRGB_LIN;
+  for(let i=0;i<src.length;i++) out[i] = L[src[i]];
+  geo.setAttribute('color', new THREE.BufferAttribute(out, a.itemSize || 3));
+};
+})();
+// ================================================================= CORE TAGS — the vocabulary ([G data])
+// The one table of the values core/tags knows (PROPOSAL.md, "Vocabularies" and "Decisions"). The catalog's lists
+// are COPIED here, not read at run time: a build need not load kits/catalog to tag what it places. test-tags.js
+// reads kits/catalog/krator-furniture-core.js and fails when a copied list no longer matches its source, so drift
+// is a failing test, not a silent fork.
+//
+//   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
+//               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
+
+ // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
+ // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
+   'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+ // BUILDING_TYPES
+ var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
+   'infrastructure', 'religious', 'funerary'];
+ // FURN_TIERS: a 0..1 wealth band per tier
+ var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
+ // FURN_JOBS
+ var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+ // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
+ var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
+
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
+ var CULTURE_NAMES = {
+   'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
+   'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
+   'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+ };
+ var CULTURES = Object.keys(CULTURE_NAMES);
+ // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
+ var CULTURE_ALIAS = {
+   'ancients-salvage': { culture: 'ancient', state: 'salvage' },
+   'yuni-court': { culture: 'yuni', wealth: 'rich' },
+   'yuni-common': { culture: 'yuni', wealth: 'middle' },
+   'yuni-poor': { culture: 'yuni', wealth: 'poor' },
+   'sahelian': { culture: 'yuni', style: 'sahelian' },
+   'iziz-old': { culture: 'iziz' },
+   // Iziz's REG (2026-10-05): its Ancients groups and its own vernacular
+   'ancients': { culture: 'ancient' },
+   'ancients-transplant': { culture: 'ancient', style: 'transplant' },   // whole Ancients buildings moved into the city
+   'ancients-reclaimed': { culture: 'ancient', state: 'reclaimed' },    // Ancients buildings the Izani live in
+   'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
+   'yuni-order': { culture: 'order' },
+   'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
+   'scrap': { culture: null, set: 'scrap' }
+ };
+
+ // wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
+ var WEALTH = ['poor', 'middle', 'rich'];
+ var WEALTH_ALIAS = { common: 'middle', court: 'rich', civic: null };
+ function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
+
+ K.VOCAB = {
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   cultures: CULTURES, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   // older spellings of a type, on input (Iziz's REG): one becomes one or more
+   typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
+     'multi-family dwelling': ['dwelling-multi'] },
+   // older tag keys, on input: Iziz's type (a list) and place (indoor, outdoor)
+   keyAlias: { type: 'types', place: 'setting' },
+   stateAlias: { rehabilitated: 'rehab', destroyed: 'ruined' },
+   wealth: WEALTH, wealthAlias: WEALTH_ALIAS, wealthOf: wealthOf,
+   tiers: Object.keys(CATALOG_TIERS),
+   states: ['intact', 'ruined', 'rehab', 'toppled', 'salvage', 'reclaimed'],   // reclaimed: lived in again, not rebuilt
+   settings: CATALOG_SETTINGS.concat(['room']),
+   jobs: CATALOG_JOBS,
+   sets: ['generic', 'scrap'],
+   // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine)
+   koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H'],
+   // Yuni's fixture vocabularies (settlements/yuni/src/51-fixtures.js DOOR_STYLES, LIGHT_KINDS)
+   doorStyles: ['plank', 'double', 'carved', 'studded', 'mat', 'hatch', 'gate', 'open'],
+   lightKinds: ['oil-lantern', 'electric-lantern', 'arc-standard', 'hearth', 'brazier', 'electric', 'flame'],
+   // each known tag key and its rule: a list name above, 'free' (any value), 'bool' or 'object'
+   keys: { culture: 'cultures', types: 'types', wealth: 'wealth', tier: 'tiers', state: 'states', setting: 'settings',
+     job: 'jobs', koppen: 'koppen', set: 'sets', door: 'doorStyles', light: 'lightKinds',
+     style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
+     role: 'free', quarter: 'free', part: 'free', finish: 'free', destination: 'free', stalls: 'free', canopies: 'free',
+     lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object' },
+   // the order id's prefix per class; a fixture's per kind
+   prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
+     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+   fixturePrefix: { door: 'door', window: 'window', light: 'light' },
+   // what test-tags.js compares with the catalog
+   catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }
+ };
+})();
+// ================================================================= CORE FURNISH — the page's switches ([web])
+// The one browser read in core/furnish: the query string. ?furniture=0 places nothing (the records are still
+// kept); the interiors are ?interiors=1 to turn on (most builds: roofs hide them) or ?interiors=0 to turn off
+// (Girder, whose interiors are on by default).
+//
+//   KFURN.flags(interiorsByDefault)   -> { on, interiorsOn }: pass it straight into KFURN.create
+(function(){
+'use strict';
+if(typeof KFURN === 'undefined') throw new Error('53-core-furnish-host: load 50-core-furnish.js first');
+KFURN.flags = function(interiorsByDefault){
+  const q = location.search;
+  return { on: !/[?&]furniture=0\b/.test(q),
+    interiorsOn: interiorsByDefault ? !/[?&]interiors=0\b/.test(q) : /[?&]interiors=1\b/.test(q) };
+};
+})();
+// ================================================================= CORE TAGS — the label ([web])
+// The inspector's text, made from the record and never stored (PROPOSAL.md, Decisions 6, "A label, generated").
+// The inspector hook itself belongs to core/host (GODOT-PLAN.md Phase 1); this is only the text.
+//
+//   KTAGS.label(rec, instance)  -> 'Name\nclass · Culture · types or kind · ...\nsize · id' (+ '\n' + note)
+//
+// The parts, in a fixed order, each left out when it has no value:
+//   line 1  the name; else the kind or key; else the class
+//   line 2  class, culture (its display name), types (else kind, when the name is not already it), job, state,
+//           setting, wealth, 'Köppen <code>', 'harvest: ...', the flags (lit), 'in <parent>'
+//   line 3  'w × d m' (or '⌀ d m'), ', h m tall' from 2 m up; then the id ('#<instance>' for an instance)
+//   line 4  the note
+(function(){
+ 'use strict';
+ var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
+ if (!K) throw new Error('53-core-tags-host: load 50-core-tags.js first');
+ function num(v){ return String(+(+v).toFixed(2)); }
+ function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+ K.label = function(rec, instance){
+   var t = rec.tags || {}, V = K.VOCAB || {}, names = V.cultureNames || {}, p = [];
+   var title = rec.name || (rec.kind && cap(String(rec.kind))) || (rec.key && String(rec.key)) || cap(rec['class']);
+   p.push(rec['class']);
+   if (t.culture) p.push(names[t.culture] || t.culture);
+   if (t.types && t.types.length) p.push(t.types.join(', '));
+   else if (rec.kind && rec.name) p.push(rec.kind);
+   if (t.job) p.push(t.job);
+   if (t.state) p.push(t.state);
+   if (t.setting) p.push(t.setting);
+   if (t.wealth) p.push(t.wealth);
+   if (t.koppen) p.push('Köppen ' + (Array.isArray(t.koppen) ? t.koppen.join(', ') : t.koppen));
+   if (t.harvest) {
+     var h = [];
+     if (t.harvest.wood) h.push('wood');
+     if (t.harvest.edible) h = h.concat(t.harvest.edible);
+     if (t.harvest.medicinal) h.push('medicinal');
+     if (h.length) p.push('harvest: ' + h.join(', '));
+   }
+   if (t.lit) p.push('lit');
+   if (rec.parent) p.push('in ' + rec.parent);
+   var s = '', id = instance != null ? K.instanceId(rec.id, instance) : rec.id;
+   if (rec.size) {
+     s = num(rec.size[0]) + ' × ' + num(rec.size[1]) + ' m';
+     if (rec.size[2] >= 2) s += ', ' + num(rec.size[2]) + ' m tall';
+   } else if (rec.r != null) {
+     s = '⌀ ' + num(rec.r * 2) + ' m';
+     if (rec.h >= 2) s += ', ' + num(rec.h) + ' m tall';
+   }
+   var out = title + '\n' + p.join(' · ') + '\n' + (s ? s + ' · ' : '') + id;
+   if (rec.note) out += '\n' + rec.note;
+   return out;
+ };
+})();
 /* ============================== 13b. FURNITURE (CATALOG PIECES AS DATA) ==============================
    Everything Girder's builders put in or round a building that is not the building itself (its structure
    and its outbuildings) is FURNITURE: a master-catalog piece (kits/catalog), placed as DATA and built by the
@@ -13298,17 +13930,28 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
      FURNISHW(key, x, y, z, ry, o)        the same at a WORLD point and heading (helpers that work in world space)
    Headings are the catalog's: ry turns the piece's front (+z) to (sin ry, cos ry); in an FRM frame lry 0 faces
    the frame's front and lry +PI/2 its LEFT (the catalog's x is the mirror of FRM's "right").
-   A record: { key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting }. A key the bundle lacks is
+   A record (core/furnish): { id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, setting, room, job }. A key the bundle lacks is
    COUNTED in GFURN.missing, never thrown. ?furniture=0 builds nothing (the records are still kept).
    The batch becomes meshes ONCE, when the kit emits its buckets (75-terrain.js calls emitBuckets()).
    The interiors (56-interiors.js) furnish the rooms through the same batch: ?interiors=0 turns them off.
    A catalog piece's lights stay data: the glue hands them to the night light volume (nlLampAdd); pieces that
    replace one of Girder's own lamps keep Girder's lamp (noLight: true) so the night is lit as before.     */
 KratorFurniture.setDetail(.5);   /* settlement scale: half the segments on round furniture parts */
-var GFURN = { on: !/[?&]furniture=0\b/.test(location.search), interiors: !/[?&]interiors=0\b/.test(location.search),
-           batch: KratorFurniture.batch(), placed: [], missing: {}, cur: null, group: null, lights: 0,
-           buildings: [], ixPlaced: [], residenceFails: [], ms: 0 };
-GFURN.adapter = KratorInteriors.runtimeAdapter(KratorFurniture, GFURN.batch);
+/* the placement pass is core/furnish (50-core-furnish.js: the record, the missing count, the id); this is Girder's
+   adapter onto it: its seed rule (the record's place in the list), its rounding, its walk solids and its lights */
+var GFURN = KFURN.create(Object.assign(KFURN.flags(true), {
+  catalog: KFURN.catalogOf(KratorFurniture), interiors: KratorInteriors,
+  tags: (KTAGS.page = KTAGS.create({ build:'girder' })),   /* every piece registered in core/tags (core/tags/README.md) */
+  seed: function(o, ctx, R){ return R.placed.length + 1; },
+  finish: function(r){ r.x=+r.x.toFixed(3); r.y=+r.y.toFixed(3); r.z=+r.z.toFixed(3); r.ry=+wrapPi(r.ry).toFixed(4); },
+  onRecord: function(rec, ctx, o, A, dm){   /* the walk mode bumps into it */
+    if(A.anchor!=='ceiling' && A.anchor!=='surface' && A.type!=='lamp' && A.type!=='rug' && dm.h>=0.3) gwBox(rec.x, rec.y, rec.z, dm.w, dm.h, dm.d, rec.ry, 'furniture'); },
+  draw: function(rec, ctx, o){ var b = KFURN.drawRec(GFURN, rec, ctx.wealth);
+    if(b.error) ERR('furniture '+rec.key+': '+b.error);
+    if(!o.noLight) gfLights(b, 0.7); }
+}));
+Object.assign(GFURN, { cur: null, ixPlaced: [], residenceFails: [], ms: 0 });
+KFURN.useBatch(GFURN, KratorFurniture, KratorInteriors);
 if(!GFURN.on) GFURN.adapter.build = function(p, room){   /* ?furniture=0: plan the rooms, keep the data, build nothing */
   return { key:p.key, variant:p.variant, seed:p.seed, x:p.x, y:p.y, z:p.z, ry:p.ry, building:room?room.building:null, room:room?room.id:null, setting:'indoor', lights:[] }; };
 function gfAt(owner, id, f, y, wealth){ GFURN.cur = { owner:owner, id:id, f:f||null, y:y||0, wealth:wealth==null?0.45:wealth }; return GFURN.cur; }
@@ -13316,18 +13959,10 @@ function gfLights(rec, k){            /* a built piece's lights into the night l
   (rec.lights||[]).forEach(function(l){ nlLampAdd(l.x, l.y, l.z, (l.intensity||1)*(k||0.7), Math.min(18, l.distance||12), false); GFURN.lights++; });
 }
 function gfPlace(key, x, y, z, ry, o, loc){
-  var c=GFURN.cur; o=o||{};
+  var c=GFURN.cur;
   if(!c){ ERR('FURNISH '+key+' outside a building (call gfAt first)'); return null; }
-  if(!KratorFurniture.has(key)){ GFURN.missing[key]=(GFURN.missing[key]||0)+1; return null; }
-  var rec={ key:key, variant:o.v|0, seed:o.seed||(GFURN.placed.length+1), lx:loc[0], ly:loc[1], lz:loc[2], lry:loc[3],
-            x:+x.toFixed(3), y:+y.toFixed(3), z:+z.toFixed(3), ry:+wrapPi(ry).toFixed(4), building:c.id, setting:o.setting||'outdoor' };
-  (c.owner.furniture||(c.owner.furniture=[])).push(rec); GFURN.placed.push(rec);
-  var A=KratorFurniture.FURN_BY_KEY[key], dm=KratorFurniture.entryDims(A, rec.variant);   /* the walk mode bumps into it */
-  if(A.anchor!=='ceiling' && A.anchor!=='surface' && A.type!=='lamp' && A.type!=='rug' && dm.h>=0.3) gwBox(rec.x, rec.y, rec.z, dm.w, dm.h, dm.d, rec.ry, 'furniture');
-  if(GFURN.on){ var b=GFURN.batch.place(key, rec.x, rec.y, rec.z, rec.ry, { variant:rec.variant, seed:rec.seed, wealth:c.wealth, building:c.id, setting:rec.setting });
-    if(b.error) ERR('furniture '+key+': '+b.error);
-    if(!o.noLight) gfLights(b, 0.7); }
-  return rec;
+  return GFURN.place(key, x, y, z, ry, o, loc, { building:c.id, wealth:c.wealth,
+    listOf: function(){ return c.owner.furniture||(c.owner.furniture=[]); } });
 }
 function FURNISH(key, lx, ly, lz, lry, o){
   var c=GFURN.cur, f=c&&c.f, x, z, ry;
@@ -13352,10 +13987,7 @@ function gfMatHooks(mt, key){
     if(dh) mt.customProgramCacheKey = function(){ return key + '|det'; };
   } else nlMaterial(mt, key + (dh ? '|det' : ''), dh ? function(sh){ gfSRGBHook(sh); dh(sh); } : gfSRGBHook);   /* + the lamp pools at night */
 }
-function gfSRGBHook(sh){
-  sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>',
-    '#include <color_vertex>\n#ifdef USE_COLOR\n  vColor.rgb = pow(max(vColor.rgb, vec3(0.0)), vec3(2.2));\n#endif');
-}
+var gfSRGBHook = KFURN.srgbHook;   /* the same linearising hook, one copy in core/furnish */
 /* painted panels (the catalog's F.decal: a canvas map) leave a batch as one mesh each; they are merged per
    material, so each painted pattern is one draw call. gfDecal(m) -> its geometry in world space, non-indexed */
 function gfDecal(m){ m.updateMatrix(); var g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); g.applyMatrix4(m.matrix); m.geometry.dispose(); return g; }
@@ -17324,6 +17956,20 @@ var haloPts = (function(){
   var p=new THREE.Points(g,haloMat); p.frustumCulled=false; p.renderOrder=5; p.visible=false; scene.add(p); return p;
 })();
 
+/* the lamps as data, for an engine that draws its own halos and lights (godot/tools/export_spike.py writes lamps.json):
+   every lamp in box [x0, z0, x1, z1] (all without one), its halo's colour (sRGB hex) and world size (the point's
+   pixel size at the page's scale, as metres: aSize * 0.58 at a 60 degree view), its light radius and strength. The
+   page lights them by DAYNIGHT_NIGHT_K, not by hours; hours [17.2, 30.8] is that schedule's dusk and dawn (core/atmos's
+   hours run on past midnight from noon: 30.8 is 06:48 the next morning). */
+function glowLamps(box){
+  var out = [], wh = '#'+new THREE.Color(PAL.glowWarm).getHexString(), ch = '#'+new THREE.Color(PAL.glowCool).getHexString();
+  NL_LAMPS.forEach(function(L){
+    if(box && (L[0]<box[0] || L[0]>box[2] || L[2]<box[1] || L[2]>box[3])) return;
+    out.push({ at:[+L[0].toFixed(3), +L[1].toFixed(3), +L[2].toFixed(3)], amp:L[3], radius:L[4], cool:!!L[5], color:L[5]?ch:wh,
+      size:+((2.2+1.8*L[3])*0.58).toFixed(3), hours:[17.2, 30.8] }); });
+  return { format:'krator-lamps', version:1, convention:'metres, +Y up; at is the flame; color sRGB; size the halo\'s world diameter', lamps:out };
+}
+
 /* ---- window panes ---- */
 var NWIN_ON0 = 17.15, NWIN_ONS = 3.9, NWIN_OFF0 = 20.8, NWIN_OFFS = 4.2, NWIN_OFFP = 1.6, NWIN_DAWN = 30.0;
 function nwT(hour){ return hour >= 12 ? hour : hour + 24; }
@@ -19091,7 +19737,7 @@ window._flyers = flyHooks;
 window._api = { terrainH:terrainH, riverDist:riverDist, riverLevel:riverLevel, trunkR:trunkR,
   TREES:TREES, FARTREES:FARTREES, TOWERS:TOWERS, SLOTS:SLOTS, PLATS:PLATS, BRIDGES:BRIDGES, LIFTS:LIFTS, ROOSTS:ROOSTS,
   PLOTS:PLOTS, HOUSES:HOUSES, STALLS:STALLS, HALL:HALL, GATES:GATES, PALISADE:PALISADE, NAV:NAV, BRANCHES:BRANCHES, SITES:SITES,
-  NL_LAMPS:NL_LAMPS, NL_WINDOWS:NL_WINDOWS, BUDGET:BUDGET, bridgeY:bridgeY, stairPts:stairPts, skyHour:skyHour, skySetHour:skySetHour };
+  NL_LAMPS:NL_LAMPS, NL_WINDOWS:NL_WINDOWS, lamps:glowLamps, BUDGET:BUDGET, bridgeY:bridgeY, stairPts:stairPts, skyHour:skyHour, skySetHour:skySetHour };
 /* ============================== 27. DEV INSPECTOR ==============================
    Toggle on, hover anything: the tooltip names the most specific thing known
    about what is under the cursor. Read-only. Sources, most specific first:
@@ -19201,7 +19847,7 @@ PATHVIZ.unshift({ key:'navgraph', label:'Walk graph (all edges)', color:0xffffff
 const ATMOS={};
 (function(){const A=ATMOS;
  A.init=function(h){A.h=h;const T=A.T=h.THREE,P=A.PRESETS,PW=P.wind,PC=P.clock;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
-  A.sets={};A.glow=[];A.lamps=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
    windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
@@ -19342,8 +19988,8 @@ ATMOS.PRESETS={
  // a boulevard lamp: iron pole, a short arm, a lamp head that glows from its hour on to its hour off
  A.lamp=(x,z,o)=>{o=o||{};const y=o.y!=null?o.y:A.ground(x,z)-.2,h=o.h||6.2,hd=o.heading||0;A.set('lampPole','post',iron());A.set('lampHead','box',headMat());A.set('lampArm','box',iron());
   A.put('lampPole',[x,y,z,.13,h,.13,0]);const ax=x+Math.sin(hd)*.55,az=z+Math.cos(hd)*.55;A.put('lampArm',[(x+ax)/2,y+h-.1,(z+az)/2,.08,.08,1.1,hd]);
-  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
-  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them)
+  A.put('lampHead',[ax,y+h-.45,az,.55,.5,.55,hd]);const on=o.on!=null?o.on:17.6,off=o.off!=null?o.off:29.6;A.lampGlow.push(A.glow.length);A.glowAdd(ax,y+h-.5,az,[1,.85,.45],o.glow||6,on,off);
+  A.lamps.push([ax,y+h-.45,az,on,off]);return[ax,y+h-.45,az];};   // A.lamps: every lamp head and its hours (moths use them); A.lampGlow: its halo's index in A.glow
  // lamps both sides of a polyline every `step` m, `off` m out from its centre line; ok(x,z) vetoes a spot.
  // The evening runs down the row: the far end (fraction 1) lights `spread` hours after the near end.
  A.lampRow=(pts,o)=>{o=o||{};const step=o.step||16,off=o.off||9.5,spread=o.spread==null?.5:o.spread;let L=0;const seg=[];for(let i=0;i<pts.length-1;i++){const l=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);seg.push(l);L+=l;}
@@ -19699,7 +20345,8 @@ ATMOS.PRESETS={
     colors:'hex or [r,g,b] in display (sRGB) space',colour:'srgb',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
    uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
    presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
-   fx:A.fx,lamps:A.lamps.map(l=>({at:[l[0],l[1],l[2]],hours:[l[3],l[4]]})),
+   fx:A.fx,lamps:A.lamps.map((l,i)=>{const g=A.glow[A.lampGlow[i]];return{at:[l[0],l[1],l[2]],hours:[l[3],l[4]],glow:A.lampGlow[i],color:g?[g[3],g[4],g[5]]:null,
+    light:'none in three.js: the lamp is its halo (glow) and its moths; a game engine may give the nearest an OmniLight3D of this colour'};}),
    glow:A.glow.map(g=>({at:[g[0],g[1],g[2]],color:[g[3],g[4],g[5]],size:g[6],hours:[g[7],g[8]]})),
    props,stats:A.stats});};
 })();
@@ -19707,6 +20354,13 @@ ATMOS.PRESETS={
 // [web]. Everything here touches the DOM, so it is kept out of the engine-neutral fragments (GODOT-PLAN.md Phase 1:
 // the host owns the DOM). It moves to core/host/ when that exists; a game engine has its own UI and file saving.
 (function(){const A=ATMOS;
+ // the stage (core/biome/44-core-stage.js: KSTAGE, when the page has it): ATMOS.export(opt) also carries the page's light,
+ // fog, tonemapping and sky panorama, taken from opt.at (default: above the first lamp). opt.stage:false leaves it out.
+ const _export=A.export;
+ A.export=opt=>{const o=_export();opt=opt||{};
+  if(opt.stage!==false&&typeof KSTAGE!=='undefined'){const l=A.lamps[0],at=opt.at||(l?[l[0],l[1]+40,l[2]]:[0,60,0]);
+   o.stage=KSTAGE.capture({at,sky:opt.sky==null?1024:opt.sky,box:opt.box,step:opt.step,ground:opt.ground});}
+  return o;};
  // the Weather selector, appended to any element (a host may call it later, once its own toolbar is laid out)
  A.weatherUI=el=>{const W=A.W;if(!W||!el)return null;const sel=document.createElement('select');sel.id='atmosWeather';sel.title='Weather';sel.setAttribute('aria-label','Weather');
   for(const m of W.MODES){const op=document.createElement('option');op.value=m;op.textContent=m;sel.appendChild(op);}sel.value=W.mode;sel.onchange=()=>{W.mode=sel.value;};el.appendChild(sel);return sel;};

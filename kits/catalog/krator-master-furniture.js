@@ -1,5 +1,5 @@
 /* ======================================================================
-   Krator Master Furniture Registry — 122 pieces
+   Krator Master Furniture Registry — 128 pieces
    Harvested from Voth, Iziz, Mav's Refuge, Girder, Yuni and the Ancients kit.
    Requires krator-asset-engine.js to be loaded first (defines FURN(), F.*, etc).
    Every piece is tagged with culture: one of ancient, ancients-salvage,
@@ -2609,7 +2609,7 @@ FURN({
   }
 });
 
-/* ================= Yuni (58 pieces) ================= */
+/* ================= Yuni (64 pieces) ================= */
 
 FURN({
   key: 'yuni_common_low_table', name: 'Low round table', culture: 'yuni-common', type: 'table', setting: 'indoor',
@@ -4334,6 +4334,101 @@ FURN({
     F.cyl(0, 0.28, 0, 0.022, 0.14, 0, F.col('plasterIvory'), 'plaster');
     F.cone(0, 0.42, 0, 0.012, 0.05, 0, F.col('amber'), 'glow');
     F.lamp(0, 0.45, 0, 0.3, 3);
+  }
+});
+
+/* ---------- re-harvest (2026-10-05): the six pieces Yuni's interiors pass added (src/64-interiors.js, the
+   minimum kit), with the material-library pass's families: fired clay ('ceramic'), reed mats ('reed'), coiled
+   baskets ('wicker'). Yuni's container-item / container-food types are the catalog's 'storage' plus a role
+   (kits/interiors 30-programs.js FOOD_ROLES / ITEM_ROLES); Yuni turns pots and baskets on a lathe, which is
+   a stack of frustum rings here, one ring per profile segment. ---------- */
+/* a lathe profile [[r, y], ...] as frustum rings about the piece's origin */
+function yuniLathe(F, x, z, pts, color, family, sides) {
+  for (let i = 0; i + 1 < pts.length; i++) {
+    F.frustum(x, pts[i][1], z, pts[i][0], pts[i + 1][0], pts[i + 1][1] - pts[i][1], 0, color, family, sides || 10);
+  }
+}
+
+FURN({
+  key: 'yuni_poor_lidded_basket', name: 'Lidded storage basket', culture: 'yuni-poor', type: 'storage', role: 'trunk', setting: 'indoor',
+  rooms: ['bedroom', 'store', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['wicker', 'timber', 'cloth'],
+  w: 0.55, d: 0.55, h: 0.74, variants: 2, variantNames: ['plain', 'bundle on the lid'],
+  build: function (F) {
+    /* a lidded basket kept as a trunk (belongings), as Yuni's huts use it: role 'trunk', an item container */
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    yuniLathe(F, 0, 0, [[0.15, 0], [0.24, 0.08], [0.26, 0.36], [0.23, 0.48]], c, 'wicker');
+    yuniLathe(F, 0, 0, [[0.25, 0.47], [0.26, 0.52], [0.15, 0.58], [0.04, 0.61]], F.shade(c, -0.12), 'wicker');
+    F.box(0, 0.24, 0.25, 0.04, 0.05, 0.04, 0, F.col('timberWalnut'), 'wood');   /* the toggle */
+    if (F.variant === 1) F.blob(0.02, 0.58, 0, 0.17, 0.14, 0.3, F.pick(['clothIndigo', 'clothMadder', 'clothSaffron']), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_poor_food_pot', name: 'Covered food pot', culture: 'yuni-poor', type: 'storage', role: 'pots', setting: 'both',
+  rooms: ['kitchen', 'store', 'bedroom'], anchor: 'floor', clearance: { front: 0.3 },
+  materials: ['ceramic', 'wicker', 'plaster'],
+  w: 0.55, d: 0.55, h: 0.78, variants: 1,
+  build: function (F) {
+    const c = F.pick(['stoneClay', 'stoneLaterite', 'stoneClayLight']);
+    F.box(0, 0, 0, 0.5, 0.04, 0.5, 0, F.shade(F.col('plasterTan'), -0.2), 'plaster');   /* the mud stand */
+    yuniLathe(F, 0, 0, [[0.12, 0.04], [0.25, 0.22], [0.24, 0.5], [0.14, 0.64], [0.17, 0.7]], c, 'ceramic');
+    F.cyl(0, 0.7, 0, 0.19, 0.05, 0, F.pick(['thatchStraw', 'thatchFlax']), 'wicker');   /* the coiled lid */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_sleeping_mat', name: 'Rolled-out sleeping mat', culture: 'yuni-poor', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'hall'], anchor: 'floor', clearance: { front: 0.4 },
+  materials: ['reed', 'cloth'],
+  w: 1.85, d: 0.8, h: 0.18, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.85, 0.05, 0.8, 0, F.shade(F.col('thatchStraw'), 0.08), 'reed');
+    F.box(0, 0.05, 0.05, 1.7, 0.04, 0.66, 0, F.pick(['clothIndigo', 'clothMadder', 'clothOrange', 'clothSaffron']), 'cloth');
+    F.rod(-0.72, 0.1, -0.3, -0.72, 0.1, 0.3, 0.08, F.col('clothIvory'), 'cloth');   /* the rolled headcloth */
+  }
+});
+
+FURN({
+  key: 'yuni_common_grain_bin', name: 'Mud-brick grain bin', culture: 'yuni-common', type: 'storage', role: 'bin', setting: 'both',
+  rooms: ['store', 'yard', 'kitchen'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['plaster', 'thatch', 'timber'],
+  w: 1.3, d: 1.3, h: 1.8, variants: 1,
+  build: function (F) {
+    const c = F.pick(['plasterTan', 'plasterTanLight', 'plasterBirch']);
+    F.box(0, 0, 0, 1.0, 0.12, 1.0, 0, F.shade(c, -0.15), 'plaster');
+    yuniLathe(F, 0, 0, [[0.48, 0.12], [0.62, 0.25], [0.62, 1.15], [0.46, 1.45], [0.2, 1.55]], c, 'plaster');
+    F.cone(0, 1.5, 0, 0.42, 0.28, 0, F.pick(['thatchStraw', 'thatchFlax']), 'thatch');
+    F.box(0, 0.85, 0.57, 0.36, 0.36, 0.1, 0, F.col('timberPine'), 'wood');   /* the draw hatch */
+  }
+});
+
+FURN({
+  key: 'yuni_poor_reed_mat', name: 'Woven reed floor mat', culture: 'yuni-poor', type: 'rug', setting: 'indoor',
+  rooms: ['bedroom', 'hall', 'kitchen'], anchor: 'floor', clearance: {},
+  materials: ['reed', 'cloth'],
+  w: 2.2, d: 1.5, h: 0.03, variants: 2, variantNames: ['plain', 'red runner'],
+  build: function (F) {
+    const c = F.pick(['thatchStraw', 'thatchFlax']);
+    F.box(0, 0, 0, 2.2, 0.018, 1.5, 0, F.shade(c, 0.1), 'reed');
+    for (let k = 0; k < 5; k++) F.box(0, 0.006, -0.6 + k * 0.3, 2.1, 0.016, 0.07, 0, F.shade(c, -0.18), 'reed');   /* binding cords */
+    if (F.variant === 1) F.box(0, 0.01, 0, 0.5, 0.016, 1.4, 0, F.col('clothMadder'), 'cloth');
+  }
+});
+
+FURN({
+  key: 'yuni_common_kilim', name: 'Flat-woven kilim', culture: 'yuni-common', type: 'rug', setting: 'indoor',
+  rooms: ['hall', 'bedroom', 'court'], anchor: 'floor', clearance: {},
+  materials: ['cloth'],
+  w: 2.6, d: 1.7, h: 0.03, variants: 2, variantNames: ['red lozenges', 'blue lozenges'],
+  build: function (F) {
+    const field = F.pick(['clothIndigo', 'clothMadder', 'clothSaffron', 'clothJade', 'clothViolet', 'clothOrange']);
+    const lozenge = F.variant ? F.col('stoneSky') : F.col('clothMadder'), ivory = F.col('clothIvory');
+    F.box(0, 0, 0, 2.6, 0.012, 1.7, 0, F.shade(ivory, -0.05), 'cloth');
+    F.box(0, 0.006, 0, 2.3, 0.012, 1.4, 0, field, 'cloth');
+    F.box(0, 0.012, 0, 0.9, 0.01, 0.9, Math.PI / 4, lozenge, 'cloth');
+    F.box(0, 0.016, 0, 0.42, 0.01, 0.42, Math.PI / 4, ivory, 'cloth');
+    for (const s of [-1, 1]) F.box(s * 0.85, 0.012, 0, 0.3, 0.01, 0.3, Math.PI / 4, lozenge, 'cloth');
   }
 });
 

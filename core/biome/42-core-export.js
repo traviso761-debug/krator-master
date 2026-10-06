@@ -3,7 +3,8 @@
 // the conventions are settlements/yuni/GAME_EXPORT.md's and core/atmos/GODOT.md's:
 // metres, +Y up, x east, z south, right-handed, the same as glTF and Godot).
 //
-//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true}) -> one JSON-able object
+//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true, ground:2}) -> one JSON-able object (ground: a tile's
+//                                                                         heights and water on a 2 m grid)
 //   BIO.download(name, opt)                                     -> in 43-core-export-host.js ([web]): saves it as <name>.biome.json
 //
 // It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
@@ -16,11 +17,12 @@
 //  - buckets:   one record per merged Mesh: indexed positions, normals, uvs, vertex colours.
 //  - materials: one record per material: its kind (leaf, bark, anim, or plain), colour,
 //               alpha test, side, the hook's options, and its texture by id.
-//  - textures:  the procedural canvases, as PNG data URLs (opt.textures:false leaves them out).
+//  - textures:  every map as a PNG data URL (canvases and DataTextures alike) with its flipY; opt.textures:false
+//               leaves the images out.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
 //               which a Godot importer turns into visibility_range_begin / _end.
-// opt.box keeps only instances whose origin, and triangles whose centroid, lie in the box
-// (a tile); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
+// opt.box keeps only instances whose origin lies in the box (a tile), and whole bucket pieces whose foot does
+// (opt.cut:'triangle': triangles by centroid, the rule before 2026-10-05); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
 // ({b64, type, n}) so a whole build is not a list of numbers in text.
 (function(){
 const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength);let s='';const K=0x8000;
@@ -28,6 +30,22 @@ const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLengt
 const pack=(arr)=>({type:arr.constructor.name,n:arr.length,b64:B64(arr)});
 // plain data only: numbers, strings, booleans, arrays and objects of them (a hook's functions
 // and three objects are dropped; a texture becomes its id)
+// a foliage hook's sway weight is GLSL text (30-core-foliage.js: '1.0', '(-position.y)', '(position.x)'...); the export
+// adds it as data, weight = c + dot(w, position), so an importer need not read GLSL. Text it does not know stays text.
+const SWAY={'1.0':[1,[0,0,0]],'1':[1,[0,0,0]],'0.0':[0,[0,0,0]],'0':[0,[0,0,0]],'(-position.y)':[0,[0,-1,0]],'(position.y)':[0,[0,1,0]],
+ '(position.x)':[0,[1,0,0]],'(-position.x)':[0,[-1,0,0]],'(position.z)':[0,[0,0,1]],'(-position.z)':[0,[0,0,-1]]};
+function swayOf(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=SWAY[e];
+ return k?{c:k[0],w:k[1],a:o.swayA==null?.06:o.swayA,axis:o.axis|0}:{text:e,a:o.swayA==null?.06:o.swayA,axis:o.axis|0};}
+// a bucket's PIECES: the connected runs of triangles (a trunk, a limb, a log), each with its foot, the xz of its lowest
+// vertex. A tile keeps a piece whole when its foot lies in the box (opt.cut 'piece', the default), so a hero tree on
+// a tile edge is never sliced, and every piece still lands in exactly one tile. opt.cut 'triangle' is the old rule
+// (each triangle by its centroid).
+function pieceOwner(P,I){const nv=P.length/3,par=new Int32Array(nv);for(let i=0;i<nv;i++)par[i]=i;
+ const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};
+ for(let t=0;t<I.length;t+=3){const a=find(I[t]),b=find(I[t+1]),c=find(I[t+2]);if(a!==b)par[b]=a;const a2=find(a);if(a2!==c)par[c]=a2;}
+ const root=new Int32Array(nv),lowY=new Float32Array(nv).fill(Infinity),x=new Float32Array(nv),z=new Float32Array(nv);
+ for(let i=0;i<nv;i++){const r=find(i);root[i]=r;if(P[i*3+1]<lowY[r]){lowY[r]=P[i*3+1];x[r]=P[i*3];z[r]=P[i*3+2];}}
+ return {root,x,z};}
 function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;const t=typeof v;
  if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
  if(v.isTexture)return texId(v);if(v.isColor)return '#'+v.getHexString();
@@ -36,16 +54,24 @@ function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;con
  return undefined;}
 BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
  const out={format:'krator-biome',version:1,
-  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear'},
+  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear',
+   colours:{instances:'linear',vertices:'linear',materials:'linear (three\'s working values, written as hex: do not convert)',
+    textures:'sRGB images'},ground:'heights in metres on a grid: row j is z0 + j*step, column i x0 + i*step'},
   core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
  const mats=new Map(),texs=new Map();
- const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y]};
-  if(opt.textures!==false&&t.image&&t.image.toDataURL){try{r.png=t.image.toDataURL('image/png');r.size=[t.image.width,t.image.height];}catch(e){r.error=String(e.message||e);}}
+ // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
+ // The PNG is the image as stored, so an importer flips v only where flipY is true. Encoding a PNG is the host's
+ // job (BIO.texPNG, 43-core-export-host.js); without one a record says why it has no image.
+ const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y],flipY:!!t.flipY};
+  if(opt.textures!==false&&t.image){if(!BIO.texPNG)r.error='no PNG encoder (load 43-core-export-host.js)';
+   else{try{const p=BIO.texPNG(t);if(p){r.png=p.png;r.size=p.size;}else r.error='image kind not encodable';}catch(e){r.error=String(e.message||e);}}}
   texs.set(t,r);return id;};
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
+   emissive:m.emissive&&(m.emissive.r||m.emissive.g||m.emissive.b)?'#'+m.emissive.getHexString():null,emissiveIntensity:m.emissiveIntensity==null?null:m.emissiveIntensity,
    map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
-   options:b&&b.opts?plain(b.opts,texId):null,hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
+   options:b&&b.opts?plain(b.opts,texId):null,sway:b?swayOf(b.opts):null,
+   hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
   if(g.index)r.index=pack(g.index.array);return r;};
@@ -63,11 +89,19 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
    for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
    out.items.push(rec);}
   else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
-   if(box){const k=[];for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
-     if(inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3))k.push(I[t],I[t+1],I[t+2]);}
+   if(box){const k=[],own=opt.cut==='triangle'?null:pieceOwner(P,I);   // a whole piece goes to the tile holding its foot
+    for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
+     const keep=own?inBox(own.x[own.root[I[t]]],own.z[own.root[I[t]]]):inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3);
+     if(keep)k.push(I[t],I[t+1],I[t+2]);}
     if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
    const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
    out.buckets.push(Object.assign(base,{triangles:idx.length/3,geometry:geo}));}}
+ // the ground under a tile (opt.ground: the grid step in metres, 2 by default; opt.ground:false leaves it out): the
+ // host's terrainH and waterH sampled on a grid over the box. A stand-in for core/terrain's bake (GODOT-PLAN.md Phase 2)
+ if(box&&opt.ground!==false){const st=+opt.ground>0?+opt.ground:2,nx=Math.floor((box[2]-box[0])/st)+1,nz=Math.floor((box[3]-box[1])/st)+1,
+   H=new Float32Array(nx*nz),W=new Float32Array(nx*nz);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+i*st,z=box[1]+j*st;H[j*nx+i]=BIO.terrainH(x,z);W[j*nx+i]=BIO.waterH(x,z);}
+  out.ground={x0:box[0],z0:box[1],step:st,nx,nz,heights:pack(H),water:pack(W)};}
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  return out;};

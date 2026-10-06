@@ -8,8 +8,10 @@ const CS=2048,PXS=CS/CITY.WORLD,px=v=>(v+CITY.WORLD/2)*PXS;
 // rasteriser, which is the same everywhere; it is also the right hint for canvases read back with getImageData.
 const CANVAS_CPU={willReadFrequently:true};
 const gcv=document.createElement('canvas');gcv.width=gcv.height=CS;const cg=gcv.getContext('2d',CANVAS_CPU);
-const mv=document.createElement('canvas');mv.width=mv.height=CS;const mg=mv.getContext('2d',CANVAS_CPU);
-const kv=document.createElement('canvas');kv.width=kv.height=CS;const kg=kv.getContext('2d',CANVAS_CPU);
+// the mask and the classes are core/mask grids (KMASK.canvas: the same calls, hard-edged, identical in every browser and
+// in Godot; GODOT-PLAN.md Phase 2 item 5), so placement no longer depends on the canvas; only the albedo is one
+const mv=KMASK.canvas(CS,CS);const mg=mv.getContext('2d');
+const kv=KMASK.canvas(CS,CS);const kg=kv.getContext('2d');
 const KL={none:0,plaza:1,park:2,highway:3,street:4,lane:5,avenue:6,farm:7,water:8,court:9,building:10,rock:11,field:12,mound:13};
 const KLCOL=k=>'rgb('+k+','+k+','+k+')';
 const ROADS=[];const PRECINCTS=[];

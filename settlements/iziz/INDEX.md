@@ -65,6 +65,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `89-lab.js` | 6 |  |
 | `90-scene.js` | 3 | scene (1); build every site the target lists (31) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
+| `91t-iziz-tags.js` | 2 | CORE TAGS: IZIZ'S REG (1) |
 | `92-camera.js` | 10 | camera, inspector, polygon tool, walk mode (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
 | `99-tail.html` | <1 |  |

@@ -13,6 +13,8 @@ residence holds, per unit, at least one bed, one food container and one item con
 | `beast-rider.js` | Beast Rider (Mav's Refuge, Girder) | `kits/catalog/krator-master-buildings-beast-rider.js` `ASSET` keys `br_bldg_*` | `beast-rider` |
 | `locus.js` | Locus (the Geomancers' oil town) | `settlements/locus` kit `locus` (`LOCUS-KIT-NOTES.md`) | `yuni-common` / `yuni-court` (geomancer), `eastabyss` (abyssal-desert) |
 | `abyss.js` | Eastern Abyssal | `settlements/locus` kit `abyss` (`ABYSS-KIT-NOTES.md`) | `eastabyss` |
+| `reedlake.js` | Reed Lake (the floating reed village; Reed's Local) | `settlements/reedlake` `RL.def` keys `rl_*` (the mudhif rooms are kept to where the arch is high enough) | `reedlake` |
+| `yuni.js` | Yuni (base kit, as built by Locus and Mungo) | `settlements/locus/src/55-mid-example.js` + `56-mid.js` `ASSET` keys `mid_*` (the six middle-class houses; every variant is an item: `key` for variant 0, `key#n` for n > 0) | `yuni-common` |
 
 A world that places one of these buildings at `(x, z, ry)` calls
 `IX.sets.instantiate(IX.sets.byName[set].byKey[key], x, z, ry, { baseY })` and gets planned buildings

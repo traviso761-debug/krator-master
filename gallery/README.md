@@ -42,8 +42,47 @@ furniture and mounts, the village dressing families, the extra cards; 12.2 MB), 
 with the index's Girder entry updated (size, blurb). Every other page is as in version 39. The Material Demo Kit
 (https://claude.ai/artifact/PiddSxzJWKzfzRu9nycrXL) was republished the same day with the 2026-10-05 sets (version 6).
 
+Version 41 (2026-10-05): `worlds/girder.html` replaced with Girder Hero (play as Styv, talk to Phil in the Assembly Hall;
+`settlements/girder/hero/README.md`), from `main` at 5dc478e2, built with `build_hero.py --models-url girder-` because the
+embedded page (20.5 MB) is over the 16 MB per-file limit: the page (12.4 MB) fetches `worlds/girder-styv.glb.txt` and
+`worlds/girder-phil.glb.txt` (base64; `.glb` is not a served type). The index's Girder entry was updated (blurb, 20.0 MB,
+source). `build_gallery.py` still lists plain `girder.html`; a full rebuild would put the plain page back.
+That version failed in the gallery ("hero: styv: Failed to fetch"): the gallery's frame cannot fetch files published
+beside a page.
+
+Version 42 (2026-10-05): Girder Hero as its own card. `worlds/girder.html` is plain Girder again (the page committed on
+`main`, 12.3 MB); a new "Girder · Hero" entry after it opens `worlds/girder-hero.html`, built from `main` at df74443b with
+`build_hero.py --slim` (the models slimmed and embedded, 15.0 MB). `worlds/girder-styv.glb.txt` and
+`worlds/girder-phil.glb.txt` were removed. The hero entry is not in `build_gallery.py`'s `ENTRIES` (it needs the
+`--slim` build); a full rebuild leaves it out, so republish it by hand as above.
+
+Version 43 (2026-10-05): `worlds/girder-hero.html` replaced (`main` at 0989ccf2). Version 42's page still failed in the
+gallery ("Failed to fetch"): GLTFLoader fetched the models' embedded textures as blob: URLs and the gallery's frame
+blocks fetch. The hero now loads them as data: images through an <img>. Checked headless under `connect-src 'none'`.
+
+Version 44 (2026-10-05): `worlds/girder.html` and `worlds/girder-hero.html` replaced from `main` at 6728d4f6: Girder's walk
+graph corrected against its walk solids (the villagers walk the galleries inside the columns), and the hero's cast and
+dialogue read from `settlements/girder/hero/cast.json`. Index sizes 12.4 and 15.0 MB.
+
 ## Open (2026-10-01) — closed by the 2026-10-02 republish
 
 The published gallery predates the 2026-10-01 known-issues sweep merged to `main` (`ed2e893`): every build changed
 (LOD, night lighting, Locus bridges/paddies/grid, Yuni interiors and caravans, Abyss kit fixes, materials and
 vendoring). `gallery/site/` was rebuilt (98 pages, 118.9 MB) but not republished. Republish it to the URL above.
+
+Version 45 (2026-10-05): `worlds/ys.html` added, the Ys city at the close of phase 3 (the drowned and reclaimed Ancient
+hosts with their grown pods, the bridge graph, the harbours, the river, the north-west bay biome, the foreign quarter,
+the building editor), with `worlds/ys-kit.html` and `worlds/ys-mock.html` replaced by their current builds and the index
+regenerated (Ys 5.9 MB), from `main` at a7f371b6. Every other page is as in version 44. One publish call.
+
+Version 46 (2026-10-05): `worlds/mungo.html` added (Mungo, the reed-lake trade village on `core/simulation`) and
+`worlds/motor-vehicles.html` (the Motor Vehicles kit, the Geomancers' dune buggy), with the index regenerated, from
+`main` at 199cfdfe. Every other page is as in version 45: Locus (now on the shared core, with its buggy park), the
+Locus and Eastern Abyssal kits, Reed Lake (Reed's Local), Shade (its life on `core/simulation`), the catalog, the
+interiors and the eastern-abyss biome changed on `main` too and were not republished. One publish call.
+
+Version 47 (2026-10-05): `worlds/yuni.html`, `worlds/yuni-kit.html` and `worlds/yuni-plants.html` replaced with Yuni on
+the material library (24 families, the interiors included), the world clock (held; Run time) and the minimap (M), 7.3 MB
+each; `worlds/krator-catalog.html` replaced with the catalog's 1520 pieces (Yuni's six interiors pieces re-harvested). From
+`main` at 23ef6be7, with the index regenerated (Yuni's blurb and size, the catalog's count). Every other page is as in
+version 46. One publish call.

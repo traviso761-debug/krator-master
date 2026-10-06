@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.5 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 13.9 | [web] | 7 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-nhighlands-species.js` | 50.5 | [draw] | 0 | 6 | 0 | 0 | 0 | 12 | 7 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-nhighlands-species.js` | 50.8 | [draw] | 0 | 6 | 0 | 0 | 0 | 12 | 7 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-nhighlands-trees.js` | 44.2 | [draw] | 0 | 1 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | placement pass: `NHL.buildTrees` (line 377); `mk` (line 381) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 438) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar` for the far impostor. The two passes share one function but not one loop; `NHL.treeAt` (line 449) places one tree at a point and draws it in one call |
 | `src/60-biome-nhighlands-floor.js` | 18.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-nhighlands-dress.js` | 6.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |

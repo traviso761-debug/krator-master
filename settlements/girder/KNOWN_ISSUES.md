@@ -2,6 +2,23 @@
 build.py prints every unticked item on each build. Claude: when Travis asks for changes to this world,
 remind him of this list first. Tick `[x]` and date an item when it is fixed.
 
+- [x] (2026-10-05) The NAV walk graph against the walk solids (`navAudit()` in Girder Hero, `hero/PORT.md`): 810 of 2,958
+      edges and 184 nodes could not be walked. Fixed in 30-layout.js: the gallery loops ran along the column line (now
+      `GALLERY_WALK`, 20.2 m, inside the columns; 704 edges, 176 nodes), the roost-deck walk crossed the lift notch (its nodes
+      step to the notch's outer side), the last flight climbed to the roof plate's open core (the graph now stops at floor 30's
+      core), roost nodes stood among the stall's furniture (now at the stall's open back), the lift foot ran through the capstan
+      (a node round it), fields and house yards reach the road through an apron node outside the gate. Left: the four below.
+      `verify.py --assert` passes; the villagers now walk the galleries 1.8 m further in and tend the beasts from the stall's back.
+- [ ] (2026-10-05) NAV: 105 gallery edges and 16 gallery nodes run through furniture standing on the gallery lane (20.2 m).
+      The furniture is placed after the graph (53-furnish.js, 56-interiors.js); either keep a lane clear there or repair the
+      graph against the solids after furnishing. Girder Hero detours round them.
+- [ ] (2026-10-05) NAV: 17 field and 2 house links to the road cross a neighbouring plot's fence on the way to a road node up to
+      43 m off (`navNearest`); they want to follow the lanes between the plots.
+- [ ] (2026-10-05) NAV: on each roost deck the walk node moved out of the lift notch sits by a stall partition, so its link back
+      to the walk line clips a post (4 edges).
+- [ ] (2026-10-05) NAV: the lift-head nodes are inside the shaft; the edge to the deck walk is only walkable with the cage up
+      (by design, but `navAudit()` lists it).
+
 - [x] (2026-10-05) Tree tints: roots take the trunk's tint at their height above the ground (colour band and moss) and limbs, boughs and twigs take the trunk's tint
       at the height where the limb leaves it (60-trees.js: `trunkPt(...)`, `lc`); the old lighter-base, darker-outer split along a limb is gone. Looked at in headless
       renders against the committed page (trunk base, root fan, a limb on the ironbark): the limb now reads as the trunk's colour where the old one was darker. Triangles

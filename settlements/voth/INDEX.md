@@ -79,5 +79,6 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `87-pathviz.js` | 21 | 28. PATH VISUALIZER (1) |
 | `88b-voth-minimap.js` | 3 | 27. MINIMAP (1) |
 | `90-atmos-host.js` | 1 | ATMOS: the shared atmosphere module, bound to Vo (1) |
+| `97t-voth-tags.js` | 4 | 97t. CORE TAGS: VOTH'S PLACED (1) |
 | `98-start.js` | <1 | 98. START (1) |
 | `99-tail.html` | <1 |  |

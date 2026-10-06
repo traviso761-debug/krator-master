@@ -736,7 +736,8 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 // the conventions are settlements/yuni/GAME_EXPORT.md's and core/atmos/GODOT.md's:
 // metres, +Y up, x east, z south, right-handed, the same as glTF and Godot).
 //
-//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true}) -> one JSON-able object
+//   BIO.export({box:[x0,z0,x1,z1], kit:'rift', textures:true, ground:2}) -> one JSON-able object (ground: a tile's
+//                                                                         heights and water on a 2 m grid)
 //   BIO.download(name, opt)                                     -> in 43-core-export-host.js ([web]): saves it as <name>.biome.json
 //
 // It reads the BAKED meshes (BIO.baked), so it runs any time after BIO.bake(). Nothing
@@ -749,11 +750,12 @@ BIO.ledgePoints=function(geos,n,gap){gap=gap||2.5;const S=BIO.upFaces(geos,n*4,.
 //  - buckets:   one record per merged Mesh: indexed positions, normals, uvs, vertex colours.
 //  - materials: one record per material: its kind (leaf, bark, anim, or plain), colour,
 //               alpha test, side, the hook's options, and its texture by id.
-//  - textures:  the procedural canvases, as PNG data URLs (opt.textures:false leaves them out).
+//  - textures:  every map as a PNG data URL (canvases and DataTextures alike) with its flipY; opt.textures:false
+//               leaves the images out.
 //  - lod:       a chunked mesh's chunk and the camera range it is drawn in (runtime LOD),
 //               which a Godot importer turns into visibility_range_begin / _end.
-// opt.box keeps only instances whose origin, and triangles whose centroid, lie in the box
-// (a tile); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
+// opt.box keeps only instances whose origin lies in the box (a tile), and whole bucket pieces whose foot does
+// (opt.cut:'triangle': triangles by centroid, the rule before 2026-10-05); opt.kit keeps one kit's meshes. Typed arrays come out as base64 of their bytes
 // ({b64, type, n}) so a whole build is not a list of numbers in text.
 (function(){
 const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength);let s='';const K=0x8000;
@@ -761,6 +763,22 @@ const B64=(arr)=>{const u=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLengt
 const pack=(arr)=>({type:arr.constructor.name,n:arr.length,b64:B64(arr)});
 // plain data only: numbers, strings, booleans, arrays and objects of them (a hook's functions
 // and three objects are dropped; a texture becomes its id)
+// a foliage hook's sway weight is GLSL text (30-core-foliage.js: '1.0', '(-position.y)', '(position.x)'...); the export
+// adds it as data, weight = c + dot(w, position), so an importer need not read GLSL. Text it does not know stays text.
+const SWAY={'1.0':[1,[0,0,0]],'1':[1,[0,0,0]],'0.0':[0,[0,0,0]],'0':[0,[0,0,0]],'(-position.y)':[0,[0,-1,0]],'(position.y)':[0,[0,1,0]],
+ '(position.x)':[0,[1,0,0]],'(-position.x)':[0,[-1,0,0]],'(position.z)':[0,[0,0,1]],'(-position.z)':[0,[0,0,-1]]};
+function swayOf(o){if(!o||!('swayW' in o||'swayA' in o))return null;const e=String(o.swayW==null?'1.0':o.swayW).replace(/\s/g,''),k=SWAY[e];
+ return k?{c:k[0],w:k[1],a:o.swayA==null?.06:o.swayA,axis:o.axis|0}:{text:e,a:o.swayA==null?.06:o.swayA,axis:o.axis|0};}
+// a bucket's PIECES: the connected runs of triangles (a trunk, a limb, a log), each with its foot, the xz of its lowest
+// vertex. A tile keeps a piece whole when its foot lies in the box (opt.cut 'piece', the default), so a hero tree on
+// a tile edge is never sliced, and every piece still lands in exactly one tile. opt.cut 'triangle' is the old rule
+// (each triangle by its centroid).
+function pieceOwner(P,I){const nv=P.length/3,par=new Int32Array(nv);for(let i=0;i<nv;i++)par[i]=i;
+ const find=i=>{while(par[i]!==i){par[i]=par[par[i]];i=par[i];}return i;};
+ for(let t=0;t<I.length;t+=3){const a=find(I[t]),b=find(I[t+1]),c=find(I[t+2]);if(a!==b)par[b]=a;const a2=find(a);if(a2!==c)par[c]=a2;}
+ const root=new Int32Array(nv),lowY=new Float32Array(nv).fill(Infinity),x=new Float32Array(nv),z=new Float32Array(nv);
+ for(let i=0;i<nv;i++){const r=find(i);root[i]=r;if(P[i*3+1]<lowY[r]){lowY[r]=P[i*3+1];x[r]=P[i*3];z[r]=P[i*3+2];}}
+ return {root,x,z};}
 function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;const t=typeof v;
  if(t==='number'||t==='string'||t==='boolean')return v;if(t==='function')return undefined;
  if(v.isTexture)return texId(v);if(v.isColor)return '#'+v.getHexString();
@@ -769,16 +787,24 @@ function plain(v,texId,depth){depth=depth||0;if(v==null||depth>4)return null;con
  return undefined;}
 BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||(x>=box[0]&&z>=box[1]&&x<box[2]&&z<box[3]);
  const out={format:'krator-biome',version:1,
-  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear'},
+  convention:{units:'m',up:'+Y',x:'east',z:'south',handed:'right',matrix:'column-major 4x4',colour:'linear',
+   colours:{instances:'linear',vertices:'linear',materials:'linear (three\'s working values, written as hex: do not convert)',
+    textures:'sRGB images'},ground:'heights in metres on a grid: row j is z0 + j*step, column i x0 + i*step'},
   core:BIO.version,kits:Object.keys(BIO.kits).filter(k=>k),box,items:[],buckets:[],materials:[],textures:[]};
  const mats=new Map(),texs=new Map();
- const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y]};
-  if(opt.textures!==false&&t.image&&t.image.toDataURL){try{r.png=t.image.toDataURL('image/png');r.size=[t.image.width,t.image.height];}catch(e){r.error=String(e.message||e);}}
+ // flipY: true (a canvas) puts the image's top row at v=1; false (a DataTexture: the leaf atlases) puts row 0 at v=0.
+ // The PNG is the image as stored, so an importer flips v only where flipY is true. Encoding a PNG is the host's
+ // job (BIO.texPNG, 43-core-export-host.js); without one a record says why it has no image.
+ const texId=t=>{if(!t)return null;if(texs.has(t))return texs.get(t).id;const id='tex'+texs.size,r={id,name:t.name||'',wrap:[t.wrapS,t.wrapT],repeat:[t.repeat.x,t.repeat.y],flipY:!!t.flipY};
+  if(opt.textures!==false&&t.image){if(!BIO.texPNG)r.error='no PNG encoder (load 43-core-export-host.js)';
+   else{try{const p=BIO.texPNG(t);if(p){r.png=p.png;r.size=p.size;}else r.error='image kind not encodable';}catch(e){r.error=String(e.message||e);}}}
   texs.set(t,r);return id;};
  const matId=m=>{if(mats.has(m))return mats.get(m).id;const id='mat'+mats.size,b=m.userData&&m.userData.bio;
   const r={id,kind:b?b.kind:'plain',key:b&&b.key||null,type:m.type,colour:m.color?'#'+m.color.getHexString():null,
+   emissive:m.emissive&&(m.emissive.r||m.emissive.g||m.emissive.b)?'#'+m.emissive.getHexString():null,emissiveIntensity:m.emissiveIntensity==null?null:m.emissiveIntensity,
    map:texId(m.map),alphaTest:m.alphaTest||0,doubleSided:m.side===2,vertexColours:!!m.vertexColors,transparent:!!m.transparent,
-   options:b&&b.opts?plain(b.opts,texId):null,hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
+   options:b&&b.opts?plain(b.opts,texId):null,sway:b?swayOf(b.opts):null,
+   hooked:m.onBeforeCompile!==BIO.host.THREE.Material.prototype.onBeforeCompile};   // a shader hook a port must rewrite
   mats.set(m,r);return id;};
  const geoRec=g=>{const r={};for(const k of ['position','normal','uv','color']){const a=g.attributes[k];if(a&&!a.isInstancedBufferAttribute)r[k]=pack(a.array);}
   if(g.index)r.index=pack(g.index.array);return r;};
@@ -796,11 +822,19 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
    for(const k in xA)rec.extras[k]={size:extra[k].size,data:pack(xA[k])};
    out.items.push(rec);}
   else if(m.isMesh&&m.geometry.index){const g=m.geometry,P=g.attributes.position.array,I=g.index.array;let idx=I;
-   if(box){const k=[];for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
-     if(inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3))k.push(I[t],I[t+1],I[t+2]);}
+   if(box){const k=[],own=opt.cut==='triangle'?null:pieceOwner(P,I);   // a whole piece goes to the tile holding its foot
+    for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
+     const keep=own?inBox(own.x[own.root[I[t]]],own.z[own.root[I[t]]]):inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3);
+     if(keep)k.push(I[t],I[t+1],I[t+2]);}
     if(!k.length)continue;idx=I.BYTES_PER_ELEMENT===2?Uint16Array.from(k):Uint32Array.from(k);}
    const geo=geoRec(g);geo.index=pack(idx);   // a tile keeps the whole vertex list: an importer drops the unused ones
    out.buckets.push(Object.assign(base,{triangles:idx.length/3,geometry:geo}));}}
+ // the ground under a tile (opt.ground: the grid step in metres, 2 by default; opt.ground:false leaves it out): the
+ // host's terrainH and waterH sampled on a grid over the box. A stand-in for core/terrain's bake (GODOT-PLAN.md Phase 2)
+ if(box&&opt.ground!==false){const st=+opt.ground>0?+opt.ground:2,nx=Math.floor((box[2]-box[0])/st)+1,nz=Math.floor((box[3]-box[1])/st)+1,
+   H=new Float32Array(nx*nz),W=new Float32Array(nx*nz);
+  for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const x=box[0]+i*st,z=box[1]+j*st;H[j*nx+i]=BIO.terrainH(x,z);W[j*nx+i]=BIO.waterH(x,z);}
+  out.ground={x0:box[0],z0:box[1],step:st,nx,nz,heights:pack(H),water:pack(W)};}
  out.materials=[...mats.values()];out.textures=[...texs.values()];
  out.stats={items:out.items.length,instances:out.items.reduce((s,r)=>s+r.count,0),buckets:out.buckets.length,triangles:out.buckets.reduce((s,r)=>s+r.triangles,0)};
  return out;};
@@ -814,12 +848,197 @@ BIO.export=function(opt){opt=opt||{};const box=opt.box||null,inBox=(x,z)=>!box||
 // kit takes both files (list 43-core-export-host.js after 42-core-export.js in CORE_BIOME).
 //
 //   BIO.download(name, opt)   -> saves BIO.export(opt) as <name>.biome.json; returns the export's stats
+//   BIO.export(opt)           -> wrapped: with a box, the export gains `stage` (KSTAGE.capture, 44-core-stage.js)
+//   BIO.texPNG(texture)       -> {png: data URL, size: [w, h]} or null: the export's image encoder. A canvas encodes
+//                                as it is; a DataTexture of 8-bit RGBA (the leaf atlases) goes through a canvas, rows
+//                                as stored; an <img> or ImageBitmap is drawn first. Anything else returns null.
 (function(){
 'use strict';
 if(typeof BIO==='undefined'||!BIO.export)throw new Error('43-core-export-host: load core/biome/42-core-export.js first');
+BIO.texPNG=function(t){const im=t&&t.image;if(!im)return null;
+ if(im.toDataURL)return{png:im.toDataURL('image/png'),size:[im.width,im.height]};
+ const cv=document.createElement('canvas'),w=im.width,h=im.height;if(!w||!h)return null;cv.width=w;cv.height=h;const cx=cv.getContext('2d');
+ if(im.data&&im.data.length===w*h*4&&(im.data instanceof Uint8Array||im.data instanceof Uint8ClampedArray))
+  cx.putImageData(new ImageData(new Uint8ClampedArray(im.data.buffer,im.data.byteOffset,im.data.length),w,h),0,0);
+ else if((typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement)||(typeof ImageBitmap!=='undefined'&&im instanceof ImageBitmap))cx.drawImage(im,0,0);
+ else return null;
+ return{png:cv.toDataURL('image/png'),size:[w,h]};};
+// the stage (44-core-stage.js, when a kit lists it): a tile's export also carries the page's light, fog, tonemapping,
+// sky panorama and the ground's look on the export's own ground grid. opt.stage:false leaves it out; opt.sky: the
+// panorama's width (1024).
+const _export=BIO.export;
+BIO.export=function(opt){const o=_export(opt);opt=opt||{};
+ if(opt.stage!==false&&o.box&&typeof KSTAGE!=='undefined'){const b=o.box,cx=(b[0]+b[2])/2,cz=(b[1]+b[3])/2,g=o.ground;
+  o.stage=KSTAGE.capture({at:[cx,BIO.terrainH(cx,cz)+40,cz],sky:opt.sky==null?1024:opt.sky,box:b,step:g?g.step:4,ground:BIO.terrainH});}
+ return o;};
 BIO.download=function(name,opt){const o=BIO.export(opt),blob=new Blob([JSON.stringify(o)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(name||'biome')+'.biome.json';document.body.appendChild(a);a.click();
  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);return o.stats;};
+})();
+
+// ==================== 44-core-stage.js
+// ================================================================= STAGE — the page's light, air, sky and ground as data
+// [web]: reads the three.js scene and renderer and renders the sky; no build calls it while it draws. The exporters
+// carry what it returns as their `stage` (BIO.export, ATMOS.export, godot/tools/export_spike.py), so a Godot scene can
+// be lit, fogged, tonemapped and skied like the page (godot/krator/stage.gd). Standalone: it needs only THREE.
+//
+//   KSTAGE.capture({ scene, renderer, at: [x, y, z], sky: 1024, box, step, ground: h(x, z) }) -> the stage record
+//     scene, renderer  default: what the page rendered last frame (godot/tools/stage_hook.js records it), else the
+//                      globals `scene` and `renderer`
+//     at               where the sky panorama is taken from (the tile's centre, above the ground)
+//     sky              the panorama's width in pixels (height half); 0 leaves the sky out
+//     box, step, ground  with a box: the ground's look sampled on that grid (below)
+//
+// The record (colours are three's working values, linear, as hex; a Godot importer converts them to sRGB for a
+// light or an Environment colour):
+//   { format: 'krator-stage', version: 1,
+//     renderer: { toneMapping: 'ACESFilmic' | 'Linear' | 'Reinhard' | 'Cineon' | 'None', exposure, output: 'sRGB' | 'linear' },
+//     lights: { directional: [{ dir (unit vector the light TRAVELS along), colour, intensity, shadow }],
+//               hemisphere: [{ sky, ground, intensity }], ambient: [{ colour, intensity }], points: n },
+//     fog: { type: 'exp2', colour, density } | { type: 'linear', colour, near, far } | null,
+//     environment: { specular, diffuse, source } | null (the page lights standard materials from its sky: scene.environment),
+//     background: colour | 'texture' | null,
+//     sky: { png (equirectangular, sRGB, the page's sky and far scenery from `at`, nearer than skyNear clipped), size, at, near } | null,
+//       skyNear defaults to half the box's shorter side, so the panorama holds exactly what the export leaves out (the page's
+//       forest right outside the tile, hazed at its true distance); 1500 m without a box. What rises above `at` + near
+//       (a hero canopy) is in both.
+//     ground: { x0, z0, step, nx, nz, uv (per sample; exact when the ground is planar-mapped: uvFit), colour (per sample,
+//               linear, the nearest vertex's; null without vertex colours), mesh, rays (how many of nine rays found it),
+//               material: { type, colour, map (png), repeat, offset, flipY, vertexColours, roughness, hooked } } | null }
+var KSTAGE = (function(){
+ 'use strict';
+ const K = {};
+ const hex = c => c && c.isColor ? '#' + c.getHexString() : null;
+ const TONE = { 0: 'None', 1: 'Linear', 2: 'Reinhard', 3: 'Cineon', 4: 'ACESFilmic' };
+ function pick(o){
+  const h = window.__kstage, last = h && h.last;
+  const scenes = o.scenes || (last && last.scenes.length ? last.scenes : null) ||
+   [o.scene || (typeof scene !== 'undefined' ? scene : null)].filter(Boolean);
+  const r = o.renderer || (last && last.renderer) || (typeof renderer !== 'undefined' ? renderer : null);
+  return { scenes, renderer: r, main: o.scene || scenes[scenes.length - 1] };
+ }
+ K.lights = function(scenes){
+  const T = THREE, L = { directional: [], hemisphere: [], ambient: [], points: 0 }, a = new T.Vector3(), b = new T.Vector3();
+  scenes.forEach(s => s.traverse(o => {
+   if(!o.isLight || o.visible === false) return;
+   if(o.isDirectionalLight){ o.updateMatrixWorld(); a.setFromMatrixPosition(o.matrixWorld); o.target.updateMatrixWorld(); b.setFromMatrixPosition(o.target.matrixWorld);
+    const d = b.sub(a).normalize(); L.directional.push({ dir: [d.x, d.y, d.z], colour: hex(o.color), intensity: o.intensity, shadow: !!o.castShadow }); }
+   else if(o.isHemisphereLight) L.hemisphere.push({ sky: hex(o.color), ground: hex(o.groundColor), intensity: o.intensity });
+   else if(o.isAmbientLight) L.ambient.push({ colour: hex(o.color), intensity: o.intensity });
+   else L.points++; }));
+  L.directional.sort((p, q) => q.intensity - p.intensity);   // the sun first
+  return L;
+ };
+ // the sky as an equirectangular PNG: a cube camera at `at` renders every scene the page renders (its sky scene
+ // first, as the page does), clipping everything nearer than `near`, and a pass unwraps the cube
+ K.sky = function(scenes, r, at, w, near){
+  const T = THREE, h = w / 2, size = Math.min(1024, w / 2);
+  const crt = new T.WebGLCubeRenderTarget(size, { format: T.RGBAFormat, type: T.UnsignedByteType, generateMipmaps: false });
+  const cam = new T.CubeCamera(near, 40000, crt); cam.position.set(at[0], at[1], at[2]); cam.updateMatrixWorld(true);
+  const ac = r.autoClear, tm = r.toneMapping, cc = r.getClearColor(new T.Color()), ca = r.getClearAlpha(); r.toneMapping = T.NoToneMapping;
+  // one face at a time so several scenes stack like the page's passes
+  const faces = cam.children;
+  for(let f = 0; f < 6; f++){ r.setRenderTarget(crt, f); r.setClearColor(0x000000, 1); r.clear();
+   r.autoClear = false; scenes.forEach(s => r.render(s, faces[f])); }
+  r.autoClear = ac; r.setClearColor(cc, ca);
+  const rt = new T.WebGLRenderTarget(w, h, { type: T.UnsignedByteType });
+  const q = new T.Mesh(new T.PlaneGeometry(2, 2), new T.ShaderMaterial({ uniforms: { cube: { value: crt.texture } }, depthTest: false, depthWrite: false,
+   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+   fragmentShader: 'uniform samplerCube cube; varying vec2 vUv;\n' +
+    'vec3 toSRGB(vec3 c){ return mix(c * 12.92, 1.055 * pow(c, vec3(1.0/2.4)) - 0.055, step(0.0031308, c)); }\n' +
+    'void main(){ float lon = (vUv.x - 0.5) * 6.2831853, lat = (vUv.y - 0.5) * 3.1415927;\n' +
+    '  vec3 d = vec3(sin(lon) * cos(lat), sin(lat), -cos(lon) * cos(lat));\n' +   // u 0.5 looks along -z (Godot's forward)
+    '  vec4 c = textureCube(cube, d); gl_FragColor = vec4(toSRGB(clamp(c.rgb, 0.0, 1.0)), 1.0); }' }));
+  const qs = new T.Scene(); qs.add(q); const qc = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  r.setRenderTarget(rt); r.render(qs, qc);
+  const px = new Uint8Array(w * h * 4); r.readRenderTargetPixels(rt, 0, 0, w, h, px);
+  r.setRenderTarget(null); r.toneMapping = tm;
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'), id = g.createImageData(w, h);
+  for(let y = 0; y < h; y++) id.data.set(px.subarray((h - 1 - y) * w * 4, (h - y) * w * 4), y * w * 4);   // GL rows bottom-up
+  g.putImageData(id, 0, 0);
+  crt.dispose(); rt.dispose(); q.geometry.dispose(); q.material.dispose();
+  return { png: cv.toDataURL('image/png'), size: [w, h], at, near };
+ };
+ // the ground's look on a grid. The ground mesh is chosen by rays: from high above nine points of the box, the
+ // candidate (opaque, not instanced, overlapping the box) hit most often at the ground height h(x, z) wins, so a
+ // world-wide merged bucket of tree limbs never passes for the forest floor. Its uv is an exact affine fit of the
+ // mesh's vertices over (x, z) when the ground is planar-mapped (a PlaneGeometry), else the nearest vertex's; its
+ // colour is the nearest vertex's (a spatial hash).
+ K.ground = function(scenes, box, step, hFn){
+  const T = THREE, cands = [];
+  scenes.forEach(s => s.traverse(o => {
+   if(!o.isMesh || o.isInstancedMesh || o.visible === false || !o.geometry || !o.geometry.attributes.position) return;
+   const m = Array.isArray(o.material) ? o.material[0] : o.material; if(!m || m.transparent) return;
+   if(!o.geometry.boundingBox) o.geometry.computeBoundingBox(); o.updateMatrixWorld();
+   const bb = o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld);
+   if(bb.max.x < box[0] || bb.min.x > box[2] || bb.max.z < box[1] || bb.min.z > box[3]) return;
+   cands.push(o); }));
+  if(!cands.length || !hFn) return null;
+  const rc = new T.Raycaster(), down = new T.Vector3(0, -1, 0), score = new Map();
+  for(let a = 1; a <= 3; a++) for(let b = 1; b <= 3; b++){
+   const x = box[0] + (box[2] - box[0]) * a / 4, z = box[1] + (box[3] - box[1]) * b / 4, y = hFn(x, z);
+   rc.set(new T.Vector3(x, y + 5000, z), down); rc.far = 10000;
+   for(const o of cands){ const h = rc.intersectObject(o, false)[0]; if(h && Math.abs(h.point.y - y) < 2) score.set(o, (score.get(o) || 0) + 1); } }
+  let main = null, best = 0; score.forEach((n, o) => { if(n > best){ best = n; main = o; } });
+  if(!main) return null;
+  const g = main.geometry, P = g.attributes.position, U = g.attributes.uv, Cc = g.attributes.color, v = new T.Vector3(), W = new Float32Array(P.count * 3);
+  for(let i = 0; i < P.count; i++){ v.fromBufferAttribute(P, i).applyMatrix4(main.matrixWorld); W[i * 3] = v.x; W[i * 3 + 1] = v.y; W[i * 3 + 2] = v.z; }
+  // uv as an affine function of (x, z): least squares over the vertices, kept when it fits to 1e-4
+  let fit = null;
+  if(U){ const A = [[0,0,0],[0,0,0],[0,0,0]], bu = [0,0,0], bv = [0,0,0];
+   for(let i = 0; i < P.count; i++){ const r = [W[i * 3], W[i * 3 + 2], 1], u = U.getX(i), w = U.getY(i);
+    for(let p = 0; p < 3; p++){ bu[p] += r[p] * u; bv[p] += r[p] * w; for(let q = 0; q < 3; q++) A[p][q] += r[p] * r[q]; } }
+   const solve = (M, y) => { const m = M.map((row, i) => row.concat([y[i]]));
+    for(let c = 0; c < 3; c++){ let piv = c; for(let r = c + 1; r < 3; r++) if(Math.abs(m[r][c]) > Math.abs(m[piv][c])) piv = r; [m[c], m[piv]] = [m[piv], m[c]];
+     if(Math.abs(m[c][c]) < 1e-12) return null; for(let r = 0; r < 3; r++) if(r !== c){ const f = m[r][c] / m[c][c]; for(let k = c; k < 4; k++) m[r][k] -= f * m[c][k]; } }
+    return [m[0][3] / m[0][0], m[1][3] / m[1][1], m[2][3] / m[2][2]]; };
+   const cu = solve(A, bu), cv = solve(A, bv);
+   if(cu && cv){ let err = 0; for(let i = 0; i < P.count; i += Math.max(1, P.count >> 10)){ const x = W[i * 3], z = W[i * 3 + 2];
+     err = Math.max(err, Math.abs(cu[0] * x + cu[1] * z + cu[2] - U.getX(i)), Math.abs(cv[0] * x + cv[1] * z + cv[2] - U.getY(i))); }
+    if(err < 1e-4) fit = { u: cu, v: cv }; } }
+  const C = 8, map = new Map();
+  for(let i = 0; i < P.count; i++){ const k = Math.floor(W[i * 3] / C) + ',' + Math.floor(W[i * 3 + 2] / C); let a = map.get(k); if(!a) map.set(k, a = []); a.push(i); }
+  const nearest = (x, z) => { let bi = -1, bd = Infinity; for(let r = 1; r < 6 && bi < 0; r++){ const cx = Math.floor(x / C), cz = Math.floor(z / C);
+    for(let dx = -r; dx <= r; dx++) for(let dz = -r; dz <= r; dz++){ const a = map.get((cx + dx) + ',' + (cz + dz)); if(!a) continue;
+     for(const i of a){ const ex = W[i * 3] - x, ez = W[i * 3 + 2] - z, d = ex * ex + ez * ez; if(d < bd){ bd = d; bi = i; } } } }
+   return bi; };
+  const nx = Math.floor((box[2] - box[0]) / step) + 1, nz = Math.floor((box[3] - box[1]) / step) + 1;
+  const UV = new Float32Array(nx * nz * 2), COL = new Float32Array(nx * nz * 3).fill(1);
+  for(let j = 0; j < nz; j++) for(let i = 0; i < nx; i++){ const x = box[0] + i * step, z = box[1] + j * step, s = j * nx + i;
+   const k = (fit && !Cc) ? -1 : nearest(x, z);
+   if(fit){ UV[s * 2] = fit.u[0] * x + fit.u[1] * z + fit.u[2]; UV[s * 2 + 1] = fit.v[0] * x + fit.v[1] * z + fit.v[2]; }
+   else if(U && k >= 0){ UV[s * 2] = U.getX(k); UV[s * 2 + 1] = U.getY(k); }
+   if(Cc && k >= 0){ COL[s * 3] = Cc.getX(k); COL[s * 3 + 1] = Cc.getY(k); COL[s * 3 + 2] = Cc.getZ(k); } }
+  const m = Array.isArray(main.material) ? main.material[0] : main.material, t = m.map;
+  let png = null; if(t && t.image){ try{ const im = t.image;
+   if(im.toDataURL) png = im.toDataURL('image/png');
+   else if(im.width){ const cv = document.createElement('canvas'); cv.width = im.width; cv.height = im.height; cv.getContext('2d').drawImage(im, 0, 0); png = cv.toDataURL('image/png'); } }catch(e){} }
+  const enc = a => { const u = new Uint8Array(a.buffer); let s = ''; for(let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+   return { type: 'Float32Array', n: a.length, b64: btoa(s) }; };
+  return { x0: box[0], z0: box[1], step, nx, nz, uv: enc(UV), colour: Cc ? enc(COL) : null, uvFit: fit, rays: best + '/9',
+   mesh: main.name || main.userData.inspectLabel || '',
+   material: { type: m.type, colour: hex(m.color), map: png, repeat: t ? [t.repeat.x, t.repeat.y] : [1, 1], offset: t ? [t.offset.x, t.offset.y] : [0, 0],
+    flipY: t ? !!t.flipY : true, vertexColours: !!m.vertexColors, roughness: m.roughness == null ? null : m.roughness,
+    hooked: !!(m.onBeforeCompile && m.onBeforeCompile !== T.Material.prototype.onBeforeCompile) } };
+ };
+ K.capture = function(o){
+  o = o || {}; const T = THREE, P = pick(o), r = P.renderer, sc = P.main;
+  const out = { format: 'krator-stage', version: 1,
+   convention: { colours: 'linear (three\'s working values, as hex)', dir: 'the direction a light travels, world, unit', sky: 'equirectangular, sRGB, u=0.5 faces -z' },
+   renderer: r ? { toneMapping: TONE[r.toneMapping] || String(r.toneMapping), exposure: r.toneMappingExposure, output: r.outputEncoding === T.sRGBEncoding ? 'sRGB' : 'linear' } : null,
+   lights: K.lights(P.scenes),
+   fog: sc && sc.fog ? (sc.fog.isFogExp2 ? { type: 'exp2', colour: hex(sc.fog.color), density: sc.fog.density } : { type: 'linear', colour: hex(sc.fog.color), near: sc.fog.near, far: sc.fog.far }) : null,
+   background: sc && sc.background ? (sc.background.isColor ? hex(sc.background) : 'texture') : null,
+   // scene.environment: the page's sky as the light on its standard materials (core/atmos/89-atmos-b-skylight.js). Godot
+   // reflects its own Sky; specular and diffuse are the shares the page gives the map (PRESETS.skylight), 1 and 0 by default
+   environment: sc && sc.environment ? (function(){ var P = typeof ATMOS !== 'undefined' && ATMOS.PRESETS && ATMOS.PRESETS.skylight;
+     return { specular: P ? P.specular : 1, diffuse: P ? P.diffuse : 0, source: P ? 'atmos skylight' : 'envMap' }; })() : null,
+   scenes: P.scenes.length, sky: null, ground: null };
+  if(r && o.sky !== 0 && o.at) try{ out.sky = K.sky(P.scenes, r, o.at, o.sky || 1024, o.skyNear || (o.box ? Math.min(o.box[2] - o.box[0], o.box[3] - o.box[1]) / 2 : 1500)); }catch(e){ out.skyError = String(e.message || e); }
+  if(o.box) try{ out.ground = K.ground(P.scenes, o.box, o.step || 4, o.ground); }catch(e){ out.groundError = String(e.message || e); }
+  return out;
+ };
+ return K;
 })();
 
 // ==================== 45-host-stage.js
@@ -1441,6 +1660,7 @@ SWLOW.barkMat2=function(tex,key,o){o=o||{};
    .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
    .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
+ m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:{alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain:o.gain==null?.52:o.gain,gloss:o.gloss||0}};   // as data (42-core-export)
  const ck='swlbark|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};
  m.barkLook={alt,gloss:o.gloss||0,mask:tex.maskMean||0};return m;};   // what the far impostor's trunk carries (55, buildFar)
 // THE FAR IMPOSTORS' material: vertex colours, plus the bark's sun highlight. buildFar writes the
@@ -1453,7 +1673,8 @@ SWLOW.farMat=function(){const m=BIO.barkMat(null);
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uSunDir;varying vec3 vFWP;varying vec3 vFWN;varying float vFGl;')
    .replace('#include <envmap_fragment>','if(vFGl>0.0){vec3 _V=normalize(cameraPosition-vFWP);vec3 _N=normalize(vFWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
     'outgoingLight+=vFGl*pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir))*vec3(1.0,0.93,0.8);}\n#include <envmap_fragment>');};
- const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};return m;};
+ const ck='swlfar|'+BIO.kitKey('far');m.customProgramCacheKey=function(){return ck;};
+ m.userData.bio={kind:'far',key:BIO.kitKey('far'),opts:{pack:'gloss',uv:'u: the trunk gloss (0 on the blobs)'}};return m;};   // as data (42-core-export)
 const BK={ember:barkTex2('ember'),lacquer:barkTex2('lacquer'),flay:barkTex2('flay'),mottle:barkTex2('mottle'),ring:barkTex2('ring'),
  furrow:barkTex2('furrow'),strip:barkTex2('strip'),ocelli:barkTex2('ocelli'),crack:barkTex2('crack'),plate:barkTex2('plate'),stringy:barkTex2('stringy'),pale:barkTex2('pale'),cork:barkTex2('cork'),cane:barkTex2('cane'),fibre:barkTex2('fibre')};
 SWLOW.BARKTEX=BK;
