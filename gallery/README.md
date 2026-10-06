@@ -90,3 +90,8 @@ version 46. One publish call.
 Version 48 (2026-10-05): `worlds/mavs-refuge.html` replaced with Mav's Refuge's interiors (every lot, level room and hut
 planned and furnished, kept as data with the bake inlined; real windows; interior lamps and hearths), 3.2 MB, from `main`
 at b64cf395. The index changes only Mav's card (blurb and size). Every other page is as in version 47. One publish call.
+
+Version 49 (2026-10-05): `worlds/verge.html` added (Verge, the Yuni-culture city on the abyss's rim, 2.7 MB) and
+`worlds/little-demo.html` (the eastern desert at 1:1 with the biome kits' flora and its highways, 4.8 MB), with the index
+regenerated. The Little Demo's six settlement tiles are not in the gallery (the frame blocks fetch): there the world runs
+without its towns, and its own artifact carries them. Every other page is as in version 48. One publish call.
