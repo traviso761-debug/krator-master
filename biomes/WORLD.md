@@ -28,11 +28,30 @@ scale Krator map for rough placement, not in this repo.
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | *planned* southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
 | *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
+| *candidate* the scablands (in "n semiarid") | `scablands` | its basin's long lake to the south |
+| *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
 structure with no Earth analogue, making a crazy quilt of small plateaus, depressions and
 microclimates. Its neighbours above are as first given; with Korona in the NE, its border with
 the NW lowlands needs checking against the scale model.
+
+**Two candidates read off the scale model (4.19, Travis, Oct 2026).** Both are Earth landforms that are rare
+because their conditions are rare, and Krator has the conditions.
+- **Megaflood scablands in "n semiarid"** (biome region `rmuqm5qn5ek5g`): its west lobe is a closed basin that holds
+  water to 1,160 m (68,000 km^2, ~36,000 km^3 over a 0 m lake level: three Bonnevilles). It spills at map pixel
+  (409,144) and falls 1,160 m south in 95 km into the basin of the long lake on the region's southern edge; the
+  joined basin would spill again SW at (262,292) toward the western lowland sea. The scablands (dry falls, coulees,
+  potholes, giant current ripples, bare basalt channels) go on that 95 km stretch. It is steeper than Washington's
+  (14 m/km), so cataracts and coulees more than braided plains. The basin is semiarid now (~420 mm, BSh), so the
+  flood lake needs a wetter past: a breach in the Ancients' time is a story. The east lobe also closes (at 369 m)
+  and spills into Korona's trenches.
+- **Tuff country in "The Catch"** (geographic region `rmuf346nvpktx`): a dry floor below 1.5 km (31,600 km^2, BSh/BWh,
+  ~300 mm, strong wind) walled by high ground, downwind (SE) of the Godthrone. Distance argues against it: the
+  floor is 300-600 km from the summit, against ~50-100 km for the flows that laid Cappadocia's tuff. An
+  Olympus-Mons shield is also a lava volcano, not an ash one, and its summit is near airless. It works if the
+  Godthrone has had an explosive phase (a lore decision). The two vents just outside the Catch's SW notch, px
+  (716,1128) and (770,1168), are ~180 km off but crosswind of the floor.
 
 A new kit starts on the shared core: list the core in `CORE_BIOME` in its `build.py`
 (`core/biome/`, `core/README.md`) rather than copying a core into its `src/`.

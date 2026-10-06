@@ -34,7 +34,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 199 | 1 | 0 | 14 | 31 | 153 | 5 | biome | yes | yes |
 | [`biomes/hyperjungle`](biomes/hyperjungle/PORT.md) | 15 | 138 | 2 | 0 | 12 | 16 | 108 | 6 | biome | yes | yes |
 | [`biomes/nhighlands`](biomes/nhighlands/PORT.md) | 16 | 223 | 0 | 0 | 34 | 44 | 145 | 6 | biome | yes | yes |
-| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 15 | 225 | 1 | 0 | 10 | 59 | 154 | 6 | biome | yes | yes |
+| [`biomes/nwbay`](biomes/nwbay/PORT.md) | 16 | 271 | 11 | 0 | 10 | 81 | 169 | 6 | biome | yes | yes |
 | [`biomes/nwlowlands`](biomes/nwlowlands/PORT.md) | 13 | 175 | 1 | 0 | 13 | 34 | 127 | 5 | biome | yes | yes |
 | [`biomes/rift`](biomes/rift/PORT.md) | 13 | 205 | 1 | 0 | 16 | 29 | 159 | 5 | biome | yes | yes |
 | [`biomes/sedesert`](biomes/sedesert/PORT.md) | 15 | 193 | 1 | 0 | 14 | 52 | 126 | 6 | biome | yes | yes |
@@ -42,7 +42,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 156 | 46 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1553 | 20912 | 3166 (15%) | 371 (2%) | 905 (4%) | 2255 (11%) | 14215 (68%) | 223 | | | |
+| **all** | 1554 | 20958 | 3176 (15%) | 371 (2%) | 905 (4%) | 2276 (11%) | 14230 (68%) | 223 | | | |
 
 ## Host-shell copies
 
@@ -54,11 +54,11 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | `probe` | 16 | 13 | 51 |
 | `sky` | 14 | 5 | 359 |
 | `stats` | 11 | 1 | 13 |
-| `host-stage` | 11 | 11 | 228 |
+| `host-stage` | 11 | 11 | 246 |
 | `host-sky` | 11 | 9 | 163 |
 | `host-build` | 11 | 11 | 13 |
-| `host-camera` | 11 | 11 | 94 |
-| `host-probe` | 11 | 11 | 64 |
+| `host-camera` | 11 | 11 | 96 |
+| `host-probe` | 11 | 11 | 66 |
 | `host-tower` | 9 | 9 | 42 |
 | `pathviz` | 6 | 5 | 40 |
 | `daynight` | 5 | 4 | 72 |

@@ -159,6 +159,14 @@ function plantTop(x,y,z,Z,lv,st){const t=rng(),damp=dampK(x,z);
  else if(t<.86){if(lv>=1){splaylet(x,y,z,lv);st.splaylets++;}else{fern(x,y,z,lv);st.ferns++;}}
  else if(t<.92){blooms(x,y,z,rr(.6,1.4),ri(2,6),PAL.bloom);st.blooms++;}
  else{boulder(x,y,z,lv,PAL.lime,st);}}
+// the tsingy's fissures and canyons: succulent rosettes (aloe, kalanchoe), wiry grass, limestone rubble, the odd bloom
+function plantTsingy(x,y,z,Z,lv,st){const t=rng();
+ if(t<.32){rosette(x,y,z,lv,rng()<.6?PAL.succulent:PAL.savleaf,rr(.9,1.5));st.rosettes++;if(lv===2&&rng()<.4)rosette(x+rr(-1,1),y,z+rr(-1,1),lv,PAL.succulent,.8);}
+ else if(t<.52){drygrass(x,y,z,lv);st.tufts++;}
+ else if(t<.70){boulder(x,y,z,lv,PAL.lime,st,rr(.5,1.1));}
+ else if(t<.80){frondShrub(x,y,z,lv);st.shrubs++;}
+ else if(t<.90){clubmoss(x,y,z,lv);st.clubmoss++;}
+ else{blooms(x,y,z,rr(.5,1.2),ri(2,5),rng()<.5?PAL.bottleBloom:PAL.bloom);st.blooms++;}}
 function plantCinder(x,y,z,Z,lv,st){const t=rng();
  if(t<.34){boulder(x,y,z,lv,PAL.lava,st,rr(.8,1.4));}
  else if(t<.6){cinderscrub(x,y,z,lv,st);}
@@ -179,10 +187,10 @@ NWBAY.buildFloor=function(R,q){
  const st={ferns:0,shrubs:0,splaylets:0,reeds:0,tufts:0,rosettes:0,dragonlets:0,blooms:0,moss:0,clubmoss:0,boulders:0,shrooms:0,scrub:0,knees:0,lilies:0,lotus:0,logs:0};
  // one plant of the right zone's mix at (x,z); density by zone
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
-  const w=[Z.hyper*1.3,Z.rain*1.2,Z.ridge*1.0,Z.shore*.9,Z.tidal*.9,Z.top*1.1,Z.cinder*.8,Z.low*.9,Z.bank*1.0],n=w.length;let tot=0;for(let i=0;i<n;i++)tot+=w[i];if(tot<=0)return;
+  const w=[Z.hyper*1.3,Z.rain*1.2+Z.hollow*1.4,Z.ridge*1.0,Z.shore*.9,Z.tidal*.9,Z.top*1.1,Z.cinder*.8,Z.low*.9,Z.bank*1.0,Z.tsingy*1.1],n=w.length;let tot=0;for(let i=0;i<n;i++)tot+=w[i];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<n-1;k++){if(r<w[k])break;r-=w[k];}if(k>=n-1&&r>w[n-1])return;
   if(k===0)plantJungle(x,y,z,Z,lv,st,false);else if(k===1)plantJungle(x,y,z,Z,lv,st,true);else if(k===2)plantRidge(x,y,z,Z,lv,st);else if(k===3)plantShore(x,y,z,Z,lv,st);
-  else if(k===4)plantTidal(x,y,z,Z,lv,st);else if(k===5)plantTop(x,y,z,Z,lv,st);else if(k===6)plantCinder(x,y,z,Z,lv,st);else if(k===7)plantLow(x,y,z,Z,lv,st);else plantBank(x,y,z,Z,lv,st);}
+  else if(k===4)plantTidal(x,y,z,Z,lv,st);else if(k===5)plantTop(x,y,z,Z,lv,st);else if(k===6)plantCinder(x,y,z,Z,lv,st);else if(k===7)plantLow(x,y,z,Z,lv,st);else if(k===8)plantBank(x,y,z,Z,lv,st);else plantTsingy(x,y,z,Z,lv,st);}
  // three bands along the LOD spine
  const bands=[[8,450,0],[15,1200,450],[32,1e9,1200]];
  bands.forEach((b,bi)=>{const lv=2-bi;

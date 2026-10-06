@@ -8,6 +8,9 @@ function applyCam(){const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(
 // above the ground). SV looks at a karst stack from a bearing and a range.
 const V=(cu,cv,cy,tu,tv,ty)=>{const c=XZ(cu,cv),t=XZ(tu,tv);return[c[0],terrainH(c[0],c[1])+cy,c[1],t[0],terrainH(t[0],t[1])+ty,t[1]];};
 const SV=(i,az,dist,cy,ty)=>{const S=STACKS[i],cx=S.x+Math.cos(az)*dist,cz=S.z+Math.sin(az)*dist;return[cx,Math.max(cy,groundH(cx,cz)+3),cz,S.x,ty,S.z];};
+const TV=(key,x,z,k)=>{let b=null,bd=1e9;for(const t of NWBAY.TREES){if(t.lv!==2||NWBAY.SPECIES[t.sp].key!==key)continue;const d=Math.hypot(t.x-x,t.z-z);if(d<bd){bd=d;b=t;}}
+ if(!b)return V(1000,-250,14,640,-120,40);const R=Math.max(6,(b.spread||b.crownR)*k+b.H*.6),a=h3a(b.seed),cx=b.x+Math.cos(a)*R,cz=b.z+Math.sin(a)*R;return[cx,Math.max(b.y0+b.H*.45+2,terrainH(cx,cz)+2.5),cz,b.x,b.y0+b.H*.5,b.z];};
+const h3a=s=>(s%628)/100;
 const VIEWS={
  'The bay from the shore':V(1000,-250,14,640,-120,40),
  'Sea stacks':SV(0,2.2,330,36,52),
@@ -17,6 +20,21 @@ const VIEWS={
  'The travertine terraces':(function(){const u=1700;return V(u-110,vR(u-110)+44,30,u+220,vR(u+220),6);})(),
  'A terrace pool':(function(){const u=1560;return V(u-70,vR(u-70)+26,12,u+60,vR(u+60),3);})(),
  'The cascades':(function(){const u=2100;return V(u-90,vR(u-90)+30,24,u+200,vR(u+200),4);})(),
+ 'The tsingy':V(2200,-1150,70,2560,-830,10),
+ // down a canyon: the open canyon point nearest the massif's heart, looking along its joint
+ 'Into the tsingy':(function(){let best=null;for(let i=0;i<4000&&!best;i++){const a=i*2.39996,r=4*Math.sqrt(i),x=TSINGY.x+Math.cos(a)*r,z=TSINGY.z+Math.sin(a)*r;if(canyonK(x,z)>.9&&pinAt(x,z)>2.5&&tsingyK(x,z)>.7)best=[x,z];}
+  if(!best)best=[TSINGY.x,TSINGY.z];const j=TSINGY.joints[0],y=groundH(best[0],best[1]);let jj=j;
+  {const f=d=>{let n=0;for(let t=8;t<=60;t+=8)if(canyonK(best[0]+Math.cos(d)*t,best[1]+Math.sin(d)*t)>.5)n++;return n;};const c=[j,j+Math.PI,TSINGY.joints[1],TSINGY.joints[1]+Math.PI];jj=c.reduce((m,d)=>f(d)>f(m)?d:m,c[0]);}
+  return[best[0]-Math.cos(jj)*4,y+2.6,best[1]-Math.sin(jj)*4,best[0]+Math.cos(jj)*60,y+9,best[1]+Math.sin(jj)*60];})(),
+ 'Over the blades':V(2700,-1000,34,2520,-800,4),
+ 'The tiankeng':(function(){const S=SINKS[0];return[S.x+150,S.top+90,S.z+120,S.x,S.floorY+10,S.z];})(),
+ 'In the tiankeng':(function(){const S=SINKS[0];return[S.x-30,S.floorY+S.talus*.2+6,S.z+20,S.x+60,S.floorY+40,S.z-40];})(),
+ 'A cenote':(function(){const S=SINKS[1];return[S.x+22,S.top+34,S.z+18,S.x,-2,S.z];})(),
+ // the Madagascarene flora: a hero of the species nearest a place, seen from a few crown-widths off
+ 'Spinewands':TV('spinewand',TSINGY.x,TSINGY.z,2.2),
+ 'Rock bottles':TV('rockbottle',TSINGY.x,TSINGY.z,2.6),
+ 'Avenue baobabs':TV('avenuebaobab',CENTER[0],CENTER[1],1.6),
+ "Traveller's fans":TV('travellerfan',SINKS[0].x,SINKS[0].z,1.8),
  'Shelf pools':(function(){const S=SHELVES[0].xz;return[S[0]+42,groundH(S[0]+42,S[1]+30)+9,S[1]+30,S[0],groundH(S[0],S[1])+2.5,S[1]];})(),
  'The mangrove lagoon':V(820,-110,6,960,-60,3),
  'Lotus trumpets':(function(){const u=1290;return V(u-50,vR(u-50)+42,8,u+40,vR(u+40)+16,6);})(),

@@ -31,7 +31,8 @@ across the water (swbay's cone, moved), the INNER WALL as a high ridge (up to 1.
 N and W horizon that drops away toward the sea, and the water the bay opens into.
 
 Everything the biome knows about the map arrives through five climate fields (wet / salt /
-upland / flow / karst) plus terrainH.
+upland / flow / karst) plus terrainH, and since Oct 2026 two more for the karst's other forms
+(tsingy, hollow: see the end of this file).
 
 TWELVE KARST STACKS stand in the bay and on its shore (40–132 m): each a noisy ellipse
 footprint, a face mesh of rings (dense at the waterline notch and the rim) that undercuts
@@ -69,7 +70,7 @@ dragon trees, umbrella thorns). Epiphytes are everywhere and trend to red and pu
 (canon); lianas hang from the boughs where it is wet.
 
 ## The flora (50/55/60)
-Sixteen species (the table is in BIOME-API.md). New to the region:
+Sixteen species at first, twenty since the Madagascarene pass (the table is in BIOME-API.md). New to the region:
 - Cliff fig (30–55 m): a strangler rooted on the karst. A lattice bole (bark kind 5: a
   braid of fused roots) on plate buttresses; the boughs toward the rim are longer, lower
   and droop over the edge (the pass reads the rim's distance and direction from the karst
@@ -127,6 +128,54 @@ karst is .03–.9), `figs-on-the-karst` (every fig on karst > .9), `nothing-root
   the angle gives Delonix.
 - The lee of a wind-sheared tree can be read off any monotone field (the salt gradient
   here) without the biome knowing where the sea is.
+
+## The inverted polygons, the tsingy, the dolines, the Madagascarene flora, trees as variants (Oct 2026)
+The ideal type was made on the way to Ys and two of its host meshes were wound inside out. **The
+karst stacks** were clockwise from outside on the faces and the domes: the near walls were culled,
+so a stack drew as a hollow cup of its own back wall, and `dress()`, which reads facing from the
+winding, took the domes for ceilings (gardens hung under them) and the faces' outsides for the
+rock's inside. **The travertine-reach ground strip** faced down, so it was culled from above. Both
+are flipped; a sweep of every host mesh's winding against its centroid (outward share, up share)
+found no other (everything else is double-sided or right).
+
+**The tsingy** (Bemaraha) stands on the dry upper slope SW of the river (u 2560, v -830 in the
+bay's frame; ~130-230 m up, wet ~.14, the dry deciduous forest's ground). Its blades are FINS in
+rows along the first of two joint sets: serrated knife-edged ridges 7-16 m long, 2.4-4.6 m thick,
+5-30 m tall, 6.4 m apart with 1-3 m fissures, the odd one missing; canyons along both joint sets,
+2-7 m wide, warped and broken by noise, cut the rows. ~2,300 fins, eight prototypes, one
+InstancedMesh each (~0.64 M triangles). The ground rises 7 m on the massif. The first try was
+separate fluted cones on a square grid: it read as a field of termite mounds; Bemaraha's grain
+is the joints, so the rows are what make it tsingy. The canyons are NOT cut into the ground:
+the 11 m ground mesh smeared a 5 m cut into a slope you stand on, and the far country's 70 m cells
+(which copy the ground 2 m down) poked up through the dips; they are the gaps between the fins.
+
+**The sinkholes**: a TIANKENG (Xiaozhai) at the tsingy's NE edge, 82 x 98 m, 84 m sheer, a talus
+cone against its wall and a rainforest on its floor; two CENOTES in the bay jungle, 19-26 m,
+belled under the rim, 18-28 m down to the water table at y=0 (a pool disc each: the bay plane's
+18 m colour grid drew a blocky square in a 20 m shaft). Each is a field (`hollow`), a height
+(`groundH` returns the floor inside the rim; `groundBase` is the open ground the ground mesh draws,
+cut round each rim, with a ground-textured lip over the cut's jagged edge), and a mesh (the wall
+facing the axis, the floor, the lip). The far country is pushed under every sinkhole and under
+the tsingy (its cells bridged the hole as a green dome). The walls are dressed like the stacks.
+
+**The Madagascarene flora**: the SPINEWAND (Alluaudia, Didierea: grey-green wands from one foot,
+tiny leaves pressed along them, cream tufts) and the ROCK BOTTLE (Pachypodium: a swollen silver
+bottle, stubby arms, strap rosettes, yellow flowers) in the tsingy's fissures and on the dry
+slope; the AVENUE BAOBAB (A. grandidieri: a smooth red-grey column, a flat crown of short boughs)
+in stands on the lowland; the TRAVELLER'S FAN (Ravenala: a ringed stem and one flat fan of
+long-stalked paddles in a single plane, torn yellow outer leaves, blue arils) on the dolines'
+floors, in the rainforest and on the banks. The floor adds a tsingy mix (succulent rosettes,
+wiry grass, limestone rubble). The fan's paddles are oriented from an explicit basis (along the
+leaf, across it in the fan's plane, the plane's normal): with Euler angles the blades stood
+edge-on to the fan.
+
+**Trees as variants** (`56-biome-nwbay-variants.js`, BIOME-API.md): every hero is one of six
+variants per species and level, grown once in a nursery and stamped where the pass put it.
+208 prototypes; the build went from ~6.3 s to ~3.5-5 s (fewer builder calls); draw calls from
+~130 to ~210 (one per variant part). Triangles are what the trees draw, so they did not drop:
+the new spine points at the tsingy and the tiankeng put more of the dry slope in hero range,
+and the dry species' acceptance came down (dragon .45 -> .36, thorn .5 -> .4, gate baobab's
+ridge .42 -> .3, the ridge zone x(1 - .85 tsingy)) to keep the showcase at ~9.7 M.
 
 ## Shots looked at, numbers
 (filled in below after each verification run)
