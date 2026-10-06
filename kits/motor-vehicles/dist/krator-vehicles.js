@@ -1,4 +1,4 @@
-/* kits/motor-vehicles bundle (vehicle_bundle.py): kits/catalog/krator-furniture-core.js, kits/motor-vehicles/vehicles-core.js, kits/motor-vehicles/krator-vehicles-geomancer.js, kits/motor-vehicles/krator-vehicles-runtime.js. GENERATED; edit the kit files. */
+/* kits/motor-vehicles bundle (vehicle_bundle.py): kits/catalog/krator-furniture-core.js, kits/motor-vehicles/vehicles-core.js, kits/motor-vehicles/krator-vehicles-eastabyss.js, kits/motor-vehicles/krator-vehicles-geomancer.js, kits/motor-vehicles/krator-vehicles-iziz.js, kits/motor-vehicles/krator-vehicles-post-apoc.js, kits/motor-vehicles/krator-vehicles-republic.js, kits/motor-vehicles/krator-vehicles-runtime.js. GENERATED; edit the kit files. */
 var KratorVehicles = (function () {
 /* ---- kits/catalog/krator-furniture-core.js ---- */
 /* ======================================================================
@@ -924,7 +924,10 @@ function measureInstance(g) {
        w, d, h,                            overall box in metres (x across, z along, y up), aerials included
        data: { speed, accel, turnRadius, maxSteer, seats, cargo, mass, fuel, tank, range,
                wheelbase, track, clearance, cageH, drive,
-               wheels: [{ name, x, z, r, w, front, steer, drive }] },     (data, not code: a sim reads it)
+               wheels: [{ name, x, z, r, w, front, steer, drive, lift, steerRatio }] },   (data, not code: a sim reads it)
+                                           lift: hub at r + lift (road wheels on a track belt of thickness lift);
+                                           steerRatio: a steered wheel turns by steer() x this (default 1, - for a rear axle)
+       budget: { tris },                   optional: more than 6 000 triangles (a big vehicle; vehicleBudget())
        variantData: [ {overrides}, ... ],  per variant, merged over data
        lamps: (built, see F.lamp below)
        build(F)                            the body, in the vehicle frame
@@ -959,6 +962,11 @@ function VEHICLE(o) {
   o.variantData = o.variantData || [];
   o.data = o.data || {};
   VEHICLES.push(o); VEHICLE_BY_KEY[o.key] = o;
+}
+/* the draw-call and triangle budget verify.py holds a vehicle to: two body meshes plus one per wheel, and
+   6 000 triangles unless the entry declares more (budget: { tris }): a big crawler is one per world, not a fleet */
+function vehicleBudget(A) {
+  return { meshes: 2 + ((A.data && A.data.wheels) || []).length, tris: (A.budget && A.budget.tris) || 6000 };
 }
 /* the data of one variant: the entry's data with that variant's overrides merged on top (wheels copied) */
 function vehicleData(A, v) {
@@ -1055,6 +1063,98 @@ function vehicleFrame(opt) {
     F.face(x + ux * r * 0.04, y + uy * r * 0.04, z + uz * r * 0.04, ux, uy, uz, r, F.col(lens), fam, 10);
     F.lamps.push({ x: x + ux * r * 0.1, y: y + uy * r * 0.1, z: z + uz * r * 0.1, dx: ux, dy: uy, dz: uz, kind: kind || 'head' });
   };
+  /* a slab from a SIDE PROFILE: pts [[z, y, hx], ...] is a closed polygon in the z-y plane (any winding, may be
+     concave), each vertex with its own half-width hx, extruded to x = +hx and -hx. A cab, a hull, a wedge nose:
+     a narrower hx at the top gives sloped sides. Flat-shaded (each face its own normals). */
+  F.slab = function (pts, color, family) {
+    const n = pts.length, P = [];
+    const tris = THREE.ShapeUtils.triangulateShape(pts.map(function (p) { return new THREE.Vector2(p[0], p[1]); }), []);
+    let area = 0;
+    for (let i = 0; i < n; i++) { const a = pts[i], b = pts[(i + 1) % n]; area += a[0] * b[1] - b[0] * a[1]; }
+    const sg = area >= 0 ? 1 : -1;
+    const V = function (p, s) { return [s * p[2], p[1], p[0]]; };
+    /* push a triangle, flipped if its normal faces away from `want` */
+    const tri = function (a, b, c, want) {
+      const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+      if (nx * want[0] + ny * want[1] + nz * want[2] < 0) { const t = b; b = c; c = t; }
+      P.push(a[0], a[1], a[2], b[0], b[1], b[2], c[0], c[1], c[2]);
+    };
+    for (const t of tris) for (const s of [1, -1]) tri(V(pts[t[0]], s), V(pts[t[1]], s), V(pts[t[2]], s), [s, 0, 0]);
+    for (let i = 0; i < n; i++) {
+      const a = pts[i], b = pts[(i + 1) % n], du = b[0] - a[0], dv = b[1] - a[1];
+      const want = [0, -du * sg, dv * sg];                  /* the edge's outward normal in (x, y, z) */
+      if (Math.abs(du) + Math.abs(dv) < 1e-9) continue;
+      tri(V(a, 1), V(b, 1), V(b, -1), want); tri(V(a, 1), V(b, -1), V(a, -1), want);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+    g.computeVertexNormals();
+    return _add(new THREE.Mesh(g, mat(color, family)));
+  };
+  /* a tub: a stack of horizontal superellipse sections, bottom to top, [{ y, a, b, n, z }]: half-width a (x),
+     half-length b (z), exponent n (2 an ellipse, 4+ a rounded rectangle), centre offset z (default 0); smooth-shaded
+     sides, flat caps where asked (caps: 'top', 'bottom', 'both'). A rover's bowl, a cupola, a fuel tank on its side. */
+  F.tub = function (secs, segs, color, family, caps) {
+    const S = _seg(segs || 20, 8), pos = [], idx = [];
+    const pt = function (s, i) {
+      const th = i * TAU / S, c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n || 2);
+      return [s.a * Math.sign(c) * Math.pow(Math.abs(c), e), s.y, (s.z || 0) + s.b * Math.sign(sn) * Math.pow(Math.abs(sn), e)];
+    };
+    for (const s of secs) for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
+    for (let j = 0; j + 1 < secs.length; j++) for (let i = 0; i < S; i++) {
+      const a = j * S + i, b = j * S + (i + 1) % S, c = a + S, d = b + S;
+      idx.push(a, c, b, b, c, d);
+    }
+    const capAt = function (s, up) {
+      const base = pos.length / 3;
+      for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
+      pos.push(0, s.y, s.z || 0);
+      const c = base + S;
+      for (let i = 0; i < S; i++) { const a = base + i, b = base + (i + 1) % S; if (up) idx.push(c, b, a); else idx.push(c, a, b); }
+    };
+    const g = new THREE.BufferGeometry();
+    if (caps === 'bottom' || caps === 'both') capAt(secs[0], false);
+    if (caps === 'top' || caps === 'both') capAt(secs[secs.length - 1], true);
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    return _add(new THREE.Mesh(g, mat(color, family)));
+  };
+  /* a track belt round a set of wheels: circles [[z, y, r], ...] in the side plane at x, the belt of width w and
+     thickness t running round their convex hull; shoes every `pitch` metres (each a block, a small gap between).
+     The lowest run sits on y = 0 when the lowest wheels' bottoms are at y = t. Static: the road wheels turn, the
+     belt does not (KNOWN_ISSUES.md). */
+  F.track = function (x, w, t, circles, pitch, color, family) {
+    const pts = [];
+    for (const c of circles) for (let i = 0; i < 32; i++) {
+      const a = i * TAU / 32, R = c[2] + t / 2;
+      pts.push([c[0] + Math.cos(a) * R, c[1] + Math.sin(a) * R]);
+    }
+    /* convex hull (monotone chain) of the sampled circles, in (z, y) */
+    pts.sort(function (p, q) { return p[0] - q[0] || p[1] - q[1]; });
+    const cross = function (o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); };
+    const lo = [], hi = [];
+    for (const p of pts) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+    for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (hi.length >= 2 && cross(hi[hi.length - 2], hi[hi.length - 1], p) <= 0) hi.pop(); hi.push(p); }
+    const hull = lo.slice(0, -1).concat(hi.slice(0, -1));
+    /* walk the hull at even steps: one shoe per step, laid along the local tangent */
+    const seg = [], L = [];
+    let tot = 0;
+    for (let i = 0; i < hull.length; i++) { const a = hull[i], b = hull[(i + 1) % hull.length], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); L.push(tot); tot += l; }
+    const n = Math.max(8, Math.round(tot / pitch)), step = tot / n;
+    const at = function (s) {
+      s = ((s % tot) + tot) % tot;
+      let k = 0; while (k + 1 < seg.length && L[k + 1] <= s) k++;
+      const q = seg[k], f = q[2] > 0 ? (s - L[k]) / q[2] : 0;
+      return [q[0][0] + (q[1][0] - q[0][0]) * f, q[0][1] + (q[1][1] - q[0][1]) * f];
+    };
+    for (let i = 0; i < n; i++) {
+      const s = i * step, a = at(s - step * 0.38), b = at(s + step * 0.38);
+      F.beam(x, a[1], a[0], x, b[1], b[0], w, t, color, family);
+    }
+    return n;
+  };
   /* a wheel of this vehicle built INTO the body (a spare), hub at (x, y, z), axle along (ax, ay, az) */
   F.spareWheel = function (x, y, z, ax, ay, az, W) {
     const g = new THREE.Group(), prev = _target;
@@ -1113,6 +1213,203 @@ function vehicleBalloonTyre(o) {
     nut.position.set(side * (rimW * 0.12 + 0.02), Math.cos(a) * o.rim * 0.56, Math.sin(a) * o.rim * 0.56); _add(nut);
   }
 }
+
+/* ---- kits/motor-vehicles/krator-vehicles-eastabyss.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the abyssal people (kits/motor-vehicles/krator-vehicles-eastabyss.js)
+
+   The abyssal people (LORE.md 6.9) live on the salt marshes and deltas of the eastern Abyss beside the
+   Geomancers' oil works: scavengers and recyclers, proud of it, "with pride and colour, not as squalor".
+   Shade first (sails, umbrellas); bright paint and pastel lime-wash; tin-mirror cladding marks wealth and
+   sanctity; gilded tips for the sacred and noble. Nothing electric. Catalog culture `eastabyss`; sign: the
+   star. Colours: red lacquer, teal and gold for the sacred, pastels for the rest.
+
+   One vehicle: ab_caravan_truck, a salvaged Ancient expedition truck that a caravan family runs on the
+   Geomancers' crude: a high glazed cab over four big sand tyres, snorkels up its cheeks, a box body
+   draped in dripping pastel tarps, packs and lockers slung along its flanks, an observation cupola under a
+   tent canopy, a yellow parasol, tin-mirror shades on a mast (what the Ancients' sun panels became), two
+   salvaged dishes kept for their shine, oil lanterns for lamps.
+   Variants: 0 Caravan (sand, pastel tarps), 1 Headman's (teal paint, red-lacquer and gold tarps, tin-
+   mirror cladding on the cab, gilded horns on the canopy). Frame: vehicles-core.js (+z forward).
+   ====================================================================== */
+
+VEHICLE_CULTURE('eastabyss', {
+  name: 'Abyssal people', sign: 'star',
+  lore: 'salt-marsh scavengers and recyclers of the eastern Abyss; shade first, pride and colour; nothing electric',
+  /* PALETTE (sRGB; the runtime converts to linear) */
+  palette: {
+    sandPaint: 0xc8ae84, sandPaintDark: 0x9c845e, tealPaint: 0x3f8a86, tealPaintDark: 0x2c625f,
+    frame: 0x2e2c2a, glass: 0x3a5462, steel: 0x5e5a54, rubber: 0x2a2724, hubTeal: 0x4f8f8a,
+    hose: 0xc07a3a, hoseDark: 0x8e5426, tin: 0xd6d8d4, gold: 0xc99a3a, lacquer: 0x9c2a1e,
+    pastelTeal: 0x7fbfb0, pastelMint: 0xa8d4b8, pastelPink: 0xe0909a, pastelRose: 0xd06a78, pastelPeach: 0xe8b088,
+    pastelYellow: 0xe8cc68, saffron: 0xe0a028, canopyRed: 0xb8443a, canopyOrange: 0xd88a3a,
+    canvas: 0xb49a6c, canvasDark: 0x8a7450, leather: 0x6a4a2c, crate: 0x7a5a3a,
+    lensWarm: 0xffd9a0, lensRed: 0xa8180e, lensAmber: 0xe09020, jerryRed: 0x9a3020, jerryYellow: 0xc8a02a
+  }
+});
+
+VEHICLE({
+  key: 'ab_caravan_truck', name: 'Abyssal caravan truck', culture: 'eastabyss',
+  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'cargo'], drive: 'wheeled', seats: 3, fuel: 'crude oil',
+    terrain: ['sand', 'salt flat', 'mud', 'track'], setting: 'outdoor' },
+  variants: 2, variantNames: ['Caravan', "Headman's"],
+  /* overall box: 3.2 wide, 7.5 long; the cab roof is 3.05, the mast's shades 4.85 */
+  w: 3.2, d: 7.5, h: 4.9,
+  budget: { tris: 7200 },
+  /* data, not code (units: m, m/s, m/s^2, kg, L, km, rad) */
+  data: {
+    speed: 14, accel: 1.0, turnRadius: 8, maxSteer: 0.5, seats: 3, berths: 4, cargo: 2500, mass: 7800,
+    fuel: 'crude oil', tank: 240, range: 500, drive: 'all four', wheelbase: 4.2, track: 2.44,
+    clearance: 0.55, cabH: 3.05, engine: 'Ancient-salvage diesel, run on the Geomancers’ crude', lamps: 'oil lanterns',
+    wheels: [
+      { name: 'wheel_fl', x: 1.22, z: 2.15, r: 0.78, w: 0.62, front: true, steer: true, drive: true },
+      { name: 'wheel_fr', x: -1.22, z: 2.15, r: 0.78, w: 0.62, front: true, steer: true, drive: true },
+      { name: 'wheel_rl', x: 1.22, z: -2.05, r: 0.78, w: 0.62, front: false, steer: false, drive: true },
+      { name: 'wheel_rr', x: -1.22, z: -2.05, r: 0.78, w: 0.62, front: false, steer: false, drive: true }
+    ]
+  },
+  variantData: [
+    {},
+    { seats: 3, berths: 2, cargo: 1600, mass: 8200, rank: 'the Headman’s household' }
+  ],
+
+  wheel: function (F, W) {
+    vehicleBalloonTyre({ r: W.r, w: W.w, lugs: 14, lugH: 0.034, rim: 0.36, side: W.side, segs: 18,
+      tyre: F.col('rubber'), rimCol: F.col(['steel', 'gold'][F.variant]), hubCol: F.col('hubTeal'), nutCol: F.col('frame'), nuts: 6 });
+    F.disc(W.side * W.w * 0.3, 0, 0, 1, 0, 0, 0.2, 0.06, F.col('hubTeal'), 'metal', 12);
+  },
+
+  build: function (F) {
+    const v = F.variant, c = F.col, head = v === 1;
+    const paint = c(['sandPaint', 'tealPaint'][v]), paintDark = c(['sandPaintDark', 'tealPaintDark'][v]);
+    const frame = c('frame'), glass = c('glass'), steel = c('steel');
+
+    /* ---- chassis: rails, the engine between the front wheels (narrow: clear of them at full lock), axle housings */
+    for (const s of [-1, 1]) F.box(s * 0.5, 0.74, 0, 0.16, 0.24, 6.4, 0, frame, 'metal');
+    F.box(0, 0.7, 2.15, 0.9, 0.9, 1.2, 0, steel, 'metal');
+    for (const z of [2.15, -2.05]) F.rod(-0.92, 0.78, z, 0.92, 0.78, z, 0.09, frame, 'metal');
+    F.box(0, 0.78, 0.2, 1.3, 0.82, 2.6, 0, paintDark);                                              /* the tank and battery boxes */
+
+    /* ---- the front: grille box, bumper, lanterns, the snorkels up the cheeks */
+    F.box(0, 0.62, 3.32, 1.9, 1.0, 0.6, 0, paintDark);
+    F.box(0, 0.5, 3.66, 2.3, 0.28, 0.16, 0, frame, 'metal');                                        /* bumper */
+    F.box(-0.42, 0.86, 3.63, 0.8, 0.62, 0.04, 0, frame, 'metal');                                   /* the radiator grille */
+    for (let i = 0; i < 7; i++) F.box(-0.76 + i * 0.113, 0.86, 3.655, 0.04, 0.6, 0.03, 0, c('hubTeal'), 'metal');
+    for (const s of [-1, 1]) {
+      F.lamp(s * 0.72, 1.2, 3.64, 0, 0, 1, 0.09, 'head', frame, c('gold'));
+      F.lamp(s * 1.1, 1.75, -3.47, 0, 0, -1, 0.06, 'tail', null, frame);
+      /* the snorkel: corrugated hose from under the bumper up the cab's cheek */
+      const pts = [[s * 0.98, 0.7, 3.5], [s * 1.12, 1.05, 3.55], [s * 1.2, 1.7, 3.45], [s * 1.2, 2.5, 3.3], [s * 1.16, 2.95, 3.0]];
+      F.tube(pts, 0.075, c('hose'));
+      for (let i = 1; i < pts.length - 1; i++) F.ring(pts[i][0], pts[i][1], pts[i][2], pts[i + 1][0] - pts[i - 1][0], pts[i + 1][1] - pts[i - 1][1], pts[i + 1][2] - pts[i - 1][2], 0.082, 0.014, c('hoseDark'), '', 8);
+      F.taper(s * 1.16, 2.95, 3.0, 0, 0.3, -1, 0.075, 0.1, 0.16, c('hoseDark'), '', 8);
+    }
+
+    /* ---- the cab: a glazed box over the front wheels */
+    F.slab([[1.25, 1.6, 1.12], [3.5, 1.6, 1.12], [3.62, 2.0, 1.12], [3.5, 2.85, 1.08], [3.22, 3.05, 1.04], [1.25, 3.05, 1.08]], paint, '');
+    const pane = function (P) { F.tri(P[0], P[1], P[2], glass, 'metal'); F.tri(P[0], P[2], P[3], glass, 'metal'); };
+    const fz = function (y) { return 3.62 - (y - 2.0) / 0.85 * 0.12 + 0.012; };
+    pane([[-1.0, 2.08, fz(2.08)], [-1.0, 2.8, fz(2.8)], [1.0, 2.8, fz(2.8)], [1.0, 2.08, fz(2.08)]]);
+    F.box(0, 2.06, fz(2.4) + 0.01, 0.06, 0.76, 0.03, 0, frame, 'metal');                            /* the screen's pillar */
+    for (const s of [-1, 1]) {
+      const x = s * 1.128;
+      pane([[x, 2.05, 1.95], [x, 2.85, 1.95], [x, 2.85, 3.38], [x, 2.05, 3.44]]);
+      pane([[x, 2.15, 1.38], [x, 2.85, 1.38], [x, 2.85, 1.78], [x, 2.15, 1.78]]);
+      for (const z of [1.86, 3.48]) F.rod(x, 1.62, z, x, 3.03, z, 0.05, frame, 'metal');            /* door pillars */
+      F.rod(x, 1.95, 1.3, x, 1.95, 3.5, 0.03, frame, 'metal');
+      /* the star on the door: an eight-pointed star of two squares, red lacquer on a gold disc */
+      const sx = s * 1.135, sy = 1.78, sz = 2.6;
+      F.disc(sx, sy, sz, 1, 0, 0, 0.15, 0.015, c('gold'), 'metal', 12);
+      for (const rot of [0, Math.PI / 4]) {
+        const q = [];
+        for (let i = 0; i < 4; i++) { const a = rot + i * Math.PI / 2; q.push([sx + s * 0.01, sy + Math.sin(a) * 0.13, sz + Math.cos(a) * 0.13]); }
+        F.tri(q[0], q[1], q[2], c('lacquer')); F.tri(q[0], q[2], q[3], c('lacquer'));
+      }
+      if (head) {
+        /* tin-mirror cladding on the cab's lower flank: the Headman's wealth */
+        for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) F.box(s * 1.13, 1.64 + j * 0.13, 1.42 + i * 0.36, 0.015, 0.11, 0.3, 0, c('tin'), 'metal');
+      }
+    }
+    /* a roof rack on the cab, bags on it */
+    for (const s of [-1, 1]) F.rod(s * 0.9, 3.12, 1.35, s * 0.9, 3.12, 3.1, 0.022, frame, 'metal');
+    for (const z of [1.4, 2.2, 3.0]) F.rod(-0.9, 3.12, z, 0.9, 3.12, z, 0.02, frame, 'metal');
+    F.box(-0.35, 3.12, 2.2, 0.8, 0.3, 1.2, 0, c('canvas'));
+    F.blob(0.45, 3.3, 2.5, 0.32, 0.36, 0, c('canvasDark'));
+
+    /* ---- the box body behind the cab, its lockers and slung packs */
+    F.box(0, 1.6, -1.1, 2.4, 1.42, 4.7, 0, paint);
+    F.box(0, 3.02, -1.1, 2.44, 0.05, 4.74, 0, paintDark);
+    F.box(-0.35, 1.66, -3.47, 0.9, 1.25, 0.04, 0, paintDark);                                       /* the rear door */
+    F.rod(-0.75, 2.3, -3.51, -0.75, 2.3, -3.49, 0.02, frame, 'metal');
+    for (const x of [0.45, 1.0]) F.rod(x, 0.9, -3.52, x, 3.05, -3.52, 0.022, frame, 'metal');          /* the roof ladder */
+    for (let i = 0; i < 7; i++) F.rod(0.45, 1.0 + i * 0.3, -3.52, 1.0, 1.0 + i * 0.3, -3.52, 0.016, frame, 'metal');
+    for (const s of [-1, 1]) {
+      /* lockers between the wheels, and packs strapped to the body under the tarp */
+      F.box(s * 1.02, 0.86, 0.1, 0.36, 0.7, 1.9, 0, paintDark);
+      F.box(s * 1.205, 1.0, 0.1, 0.02, 0.4, 0.8, 0, steel, 'metal');
+      F.box(s * 1.22, 1.18, 0.1, 0.02, 0.04, 0.2, 0, frame, 'metal');
+      const packs = [[-0.5, 0.62], [0.25, 0.5], [-1.25, 0.5]];
+      for (const p of packs) {
+        F.box(s * 1.3, 1.66, p[0], 0.2, 0.52, p[1], 0, c(F.pick(['canvas', 'canvasDark', 'canvas'])));
+        F.box(s * 1.41, 1.66, p[0] - p[1] * 0.25, 0.02, 0.52, 0.04, 0, c('leather'));
+        F.box(s * 1.41, 1.66, p[0] + p[1] * 0.25, 0.02, 0.52, 0.04, 0, c('leather'));
+      }
+      /* jerry cans on the rear corner */
+      F.box(s * 1.32, 1.66, -2.95, 0.18, 0.48, 0.34, 0, c(F.pick(['jerryRed', 'jerryYellow'])));
+    }
+
+    /* ---- the tarps: dripping stripes over the body's shoulders, colour bands along its length */
+    const bands = head ? ['lacquer', 'gold', 'lacquer', 'saffron', 'lacquer'] : ['pastelTeal', 'pastelMint', 'pastelPink', 'pastelPeach', 'pastelYellow'];
+    for (const s of [-1, 1]) {
+      const n = 22, z0 = 1.15, z1 = -3.3, sw = (z0 - z1) / n;
+      for (let i = 0; i < n; i++) {
+        const z = z0 - (i + 0.5) * sw, b = Math.min(bands.length - 1, Math.floor(i / n * bands.length));
+        const col = c(bands[b]);
+        const yb = 2.12 + 0.18 * Math.sin(i * 1.7) - F.rr(0, 0.22) - (i % 3 === 1 ? 0.12 : 0);   /* the drip line */
+        const bx = s * (1.235 + 0.02 * Math.sin(i * 0.9));
+        F.box(bx, yb, z, 0.025, 3.07 - yb, sw * 1.04, 0, col);
+        F.box(s * 0.98, 3.05, z, 0.5, 0.025, sw * 1.04, 0, col);
+      }
+    }
+
+    /* ---- the observation cupola, its tent canopy, the parasol, the mast with tin-mirror shades, two dishes */
+    F.box(0, 3.05, -0.2, 1.7, 0.55, 1.9, 0, paintDark);
+    for (const s of [-1, 1]) {
+      pane([[s * 0.858, 3.15, 0.55], [s * 0.858, 3.5, 0.55], [s * 0.858, 3.5, -0.95], [s * 0.858, 3.15, -0.95]]);
+    }
+    pane([[-0.7, 3.15, 0.758], [-0.7, 3.5, 0.758], [0.7, 3.5, 0.758], [0.7, 3.15, 0.758]]);
+    for (const s of [-1, 1]) for (const z of [0.9, -1.3]) F.rod(s * 1.1, 3.05, z, s * 1.1, 3.62, z, 0.03, frame, 'metal');
+    const canopy = c(head ? 'lacquer' : 'canopyOrange');
+    F.pyrRoof(0, 3.6, -0.2, 2.5, 0.62, 2.6, 0, canopy);
+    /* the drape off the canopy's eaves, hanging in swags */
+    for (const s of [-1, 1]) for (let i = 0; i < 6; i++) {
+      const za = 1.1 - i * 0.433, zb = za - 0.433;
+      F.tri([s * 1.25, 3.6, za], [s * 1.25, 3.6, zb], [s * 1.27, 3.28 - (i % 2) * 0.1, (za + zb) / 2], c(head ? 'gold' : 'canopyRed'));
+    }
+    if (head) for (const s of [-1, 1]) {
+      /* gilded horns at the canopy's ends: swoop-and-horn, for the noble */
+      F.tube([[0, 4.18, -0.2], [0, 4.38, s * 0.22 - 0.2], [0, 4.6, s * 0.3 - 0.2]], 0.035, c('gold'), 'metal');
+    }
+    /* the mast and its shades */
+    F.rod(0, 4.0, -0.2, 0, 4.75, -0.2, 0.035, frame, 'metal');
+    F.rod(-0.85, 4.72, -0.2, 0.85, 4.72, -0.2, 0.025, frame, 'metal');
+    for (const s of [-1, 1]) {
+      F.beam(s * 0.08, 4.7, -0.2, s * 0.9, 4.86, -0.2, 0.025, 0.62, c('tin'), 'metal');
+      F.rod(s * 1.15, 3.05, -2.9, s * 1.15, 3.6, -2.9, 0.025, frame, 'metal');
+      F.taper(s * 1.15, 3.62, -2.9, s * 0.5, 0.6, -0.3, 0.03, 0.24, 0.12, c('tin'), 'metal', 12);   /* a salvaged dish */
+    }
+    /* the parasol: a pole, a yellow cone, a fringe */
+    const px = 0.0, pz = -2.55;
+    F.rod(px, 3.05, pz, px, 4.12, pz, 0.025, frame, 'metal');
+    F.cone(px, 3.88, pz, 0.62, 0.28, 0, c(head ? 'gold' : 'pastelYellow'));
+    for (let i = 0; i < 12; i++) {
+      const a = i * TAU / 12, b = a + TAU / 12;
+      F.tri([px + Math.cos(a) * 0.62, 3.88, pz + Math.sin(a) * 0.62], [px + Math.cos(b) * 0.62, 3.88, pz + Math.sin(b) * 0.62],
+        [px + Math.cos((a + b) / 2) * 0.6, 3.78, pz + Math.sin((a + b) / 2) * 0.6], c(head ? 'lacquer' : 'saffron'));
+    }
+    F.lamp(px, 3.62, pz, 0, -0.3, 1, 0.05, 'amber', c('gold'), null);                                   /* a lantern under it */
+  }
+});
 
 /* ---- kits/motor-vehicles/krator-vehicles-geomancer.js ---- */
 /* ======================================================================
@@ -1402,6 +1699,693 @@ VEHICLE({
   }
 });
 
+/* ---- kits/motor-vehicles/krator-vehicles-iziz.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the Empire of Iziz (kits/motor-vehicles/krator-vehicles-iziz.js)
+
+   The Empire of Iziz (LORE.md 6.2): the hyperjungle empire whose Forgemasters keep the last Ancient
+   machines running (the walking mechs). Colours: orange, teal, cream; striped awnings. Sign: the sun
+   (the palace's: an orb).
+
+   One vehicle: iz_six_wheeler, an Ancient armoured six-wheeler recovered from the ruins and kept in the
+   Forgemaster's Hall beside the mechs: a faceted hull over six balloon tyres (one steered axle in front,
+   a tandem behind), a glasshouse cab of teal panes, running-gear housings between the wheels, a roll bar
+   over the open rear bay. The Empire paints it its own orange and puts the sun on its flanks.
+   Variants: 0 Lancer (orange, a four-tube rocket rack on the roof: the Empire's rockets, made at
+   Roketstad when it was the Empire's munitions hub), 1 Courier (cream with an orange stripe, a striped
+   awning over the bay, the palace orb on a mast, crates aboard). Frame: vehicles-core.js (+z forward).
+   ====================================================================== */
+
+VEHICLE_CULTURE('iziz', {
+  name: 'Empire of Iziz', sign: 'sun',
+  lore: 'hyperjungle empire; the Forgemasters keep Ancient machines running',
+  /* PALETTE (sRGB; the runtime converts to linear). Vehicle keys only: the catalog's own iziz keys are
+     not in this bundle (vehicle_bundle.py carries only the catalog core) */
+  palette: {
+    ochreOrange: 0xc0622c, ochreOrangeDark: 0x8e4420, creamPaint: 0xdccdaa, creamDark: 0xb4a482,
+    tealGlass: 0x2f7f92, tealPaint: 0x2e7a72, gunmetal: 0x55534f, gunmetalDark: 0x34322f, underbody: 0x2a2826,
+    tyre: 0x262422, rocket: 0xd0a440, rocketTip: 0xa8281c, gold: 0xc9a040, stripeCream: 0xe6d8b4,
+    lensWarm: 0xfff1c8, lensRed: 0xa8180e, lensAmber: 0xe09020, crate: 0x7a5a3a, canvas: 0xa8936c
+  }
+});
+
+VEHICLE({
+  key: 'iz_six_wheeler', name: 'Izani armoured six-wheeler', culture: 'iziz',
+  tags: { class: 'motor vehicle', type: ['vehicle', 'patrol', 'transport'], drive: 'wheeled', seats: 4, fuel: 'refined oil',
+    terrain: ['road', 'track', 'sand', 'rock'], setting: 'outdoor', guild: 'Forgemasters' },
+  variants: 2, variantNames: ['Lancer', 'Courier'],
+  /* overall box: 2.8 wide, 6.7 long, 3.6 to the rockets' tips (the cab roof is 2.6) */
+  w: 2.8, d: 6.7, h: 3.6,
+  /* data, not code (units: m, m/s, m/s^2, kg, L, km, rad) */
+  data: {
+    speed: 20, accel: 1.6, turnRadius: 7.5, maxSteer: 0.5, seats: 4, cargo: 600, mass: 11200,
+    fuel: 'refined oil', tank: 300, range: 600, drive: 'all six', wheelbase: 4.3, track: 2.24,
+    clearance: 0.5, roofH: 2.6, engine: 'Ancient turbine, rebuilt by the Forgemasters', armament: 'four-tube rocket rack',
+    wheels: [
+      { name: 'wheel_fl', x: 1.12, z: 2.1, r: 0.62, w: 0.46, front: true, steer: true, drive: true },
+      { name: 'wheel_fr', x: -1.12, z: 2.1, r: 0.62, w: 0.46, front: true, steer: true, drive: true },
+      { name: 'wheel_l2', x: 1.12, z: -0.85, r: 0.62, w: 0.46, front: false, steer: false, drive: true },
+      { name: 'wheel_r2', x: -1.12, z: -0.85, r: 0.62, w: 0.46, front: false, steer: false, drive: true },
+      { name: 'wheel_rl', x: 1.12, z: -2.2, r: 0.62, w: 0.46, front: false, steer: false, drive: true },
+      { name: 'wheel_rr', x: -1.12, z: -2.2, r: 0.62, w: 0.46, front: false, steer: false, drive: true }
+    ]
+  },
+  variantData: [
+    {},
+    { seats: 6, cargo: 1400, mass: 10400, armament: 'none', speed: 22 }
+  ],
+
+  wheel: function (F, W) {
+    const v = F.variant;
+    vehicleBalloonTyre({ r: W.r, w: W.w, lugs: 11, lugH: 0.032, rim: 0.36, side: W.side, segs: 16,
+      tyre: F.col('tyre'), rimCol: F.col(['ochreOrange', 'creamPaint'][v]), hubCol: F.col('gunmetalDark'),
+      nutCol: F.col('gunmetal'), nuts: 6 });
+    F.disc(W.side * W.w * 0.37, 0, 0, 1, 0, 0, 0.13, 0.05, F.col(['ochreOrangeDark', 'ochreOrange'][v]), 'metal', 8);   /* hub cap */
+  },
+
+  build: function (F) {
+    const v = F.variant, c = F.col, lancer = v === 0;
+    const paint = c(['ochreOrange', 'creamPaint'][v]), dark = c(['ochreOrangeDark', 'creamDark'][v]);
+    const gm = c('gunmetal'), gmd = c('gunmetalDark'), glass = c('tealGlass');
+
+    /* ---- the underbody: a narrow keel between the wheels (clear of the front wheels at full lock) */
+    F.slab([[-3.0, 0.6, 0.52], [2.75, 0.6, 0.52], [3.2, 1.0, 0.52], [3.2, 1.3, 0.52], [-3.2, 1.3, 0.52], [-3.2, 0.9, 0.52]], c('underbody'), 'metal');
+    /* ---- the hull in three bands, each with planar flanks: a belt flaring out over the wheels (1.18 -> 1.34),
+       the upper hull leaning in (1.34 -> 1.22) with the hood rising to the windscreen, and the glasshouse cab */
+    F.slab([[-3.25, 1.27, 1.18], [3.16, 1.27, 1.18], [3.33, 1.62, 1.34], [-3.3, 1.62, 1.34]], dark, '');
+    F.slab([[-3.3, 1.62, 1.34], [3.33, 1.62, 1.34], [3.24, 1.84, 1.3], [1.85, 2.02, 1.22], [-3.2, 2.0, 1.22]], paint, '');
+    const cabX = function (y) { return 1.08 - (y - 2.0) / 0.6 * 0.22; };
+    const fzc = function (y) { return 1.85 - (y - 2.0) / 0.6 * 0.8; };
+    F.slab([[1.85, 2.0, 1.08], [1.05, 2.6, 0.86], [-1.05, 2.6, 0.86], [-1.3, 2.0, 1.08]], paint, '');
+    F.box(0, 2.6, 0.0, 1.6, 0.05, 2.0, 0, dark);                                                    /* roof plate */
+    /* glazing: panes a hair proud of the cab's faces (double-sided triangles) */
+    const pane = function (P) { F.tri(P[0], P[1], P[2], glass, 'metal'); F.tri(P[0], P[2], P[3], glass, 'metal'); };
+    for (const s of [-1, 1]) {
+      for (const zz of [[1.45, 0.45], [0.3, -0.85]]) {
+        const y0 = 2.08, y1 = 2.5, z1 = zz[1];
+        const zb0 = Math.min(zz[0], fzc(y0) - 0.08), zb1 = Math.min(zz[0], fzc(y1) - 0.08);
+        pane([[s * (cabX(y0) + 0.012), y0, zb0], [s * (cabX(y1) + 0.012), y1, zb1], [s * (cabX(y1) + 0.012), y1, z1], [s * (cabX(y0) + 0.012), y0, z1]]);
+      }
+      const y0 = 2.08, y1 = 2.54;
+      pane([[s * 0.06, y0, fzc(y0) + 0.012], [s * 0.06, y1, fzc(y1) + 0.012], [s * (cabX(y1) - 0.06), y1, fzc(y1) + 0.012], [s * (cabX(y0) - 0.07), y0, fzc(y0) + 0.012]]);
+    }
+    /* the front: hood vents, a grille under the nose, headlamps, tow eyes */
+    for (let i = 0; i < 5; i++) { const z = 2.3 + i * 0.15; F.box(0, 1.84 + (3.24 - z) / 1.39 * 0.18 + 0.005, z, 0.9, 0.03, 0.06, 0, gmd, 'metal'); }
+    F.box(0, 0.98, 3.2, 1.0, 0.3, 0.04, 0, gmd, 'metal');
+    for (let i = 0; i < 6; i++) F.box(-0.4 + i * 0.16, 0.98, 3.22, 0.04, 0.3, 0.03, 0, gm, 'metal');
+    for (const s of [-1, 1]) {
+      F.lamp(s * 0.98, 1.45, 3.26, 0, -0.45, 1, 0.08, 'head', gmd, gm);
+      F.lamp(s * 1.05, 1.45, -3.29, 0, 0, -1, 0.065, 'tail', null, gmd);
+      F.box(s * 0.42, 0.8, 3.16, 0.16, 0.16, 0.2, 0, gmd, 'metal');                                  /* tow eyes */
+    }
+    /* ---- running-gear housings between the front and middle wheels; flank vents, an access panel, a step */
+    for (const s of [-1, 1]) {
+      F.box(s * 0.9, 0.5, 0.62, 0.4, 0.78, 0.84, 0, gm, 'metal');
+      F.disc(s * 1.11, 0.9, 0.62, 1, 0, 0, 0.15, 0.03, gmd, 'metal', 10);
+      F.disc(s * 1.12, 0.9, 0.62, 1, 0, 0, 0.05, 0.03, c('rocketTip'), 'metal', 8);
+      for (let i = 0; i < 4; i++) F.box(s * 1.31, 1.82, -1.45 - i * 0.14, 0.03, 0.22, 0.06, 0, gmd, 'metal');
+      F.box(s * 1.32, 1.72, 1.0, 0.03, 0.2, 0.7, 0, dark);
+      F.box(s * 1.2, 1.3, 0.62, 0.16, 0.04, 0.6, 0, gmd, 'metal');
+    }
+    if (!lancer) for (const s of [-1, 1]) F.box(s * 1.268, 1.9, -0.1, 0.02, 0.07, 6.2, 0, c('ochreOrange'));   /* the Courier's stripe */
+    /* the sun on both flanks: a gold disc with eight rays on the upper hull, behind the front wheel */
+    for (const s of [-1, 1]) {
+      const y = 1.8, z = 0.25, xr = function (yy) { return s * (1.34 - (yy - 1.62) / 0.38 * 0.12 + 0.016); };
+      F.disc(xr(y), y, z, s, 0.12 / 0.38, 0, 0.12, 0.02, c('gold'), 'metal', 12);
+      for (let i = 0; i < 8; i++) {
+        const a = i * TAU / 8, ca = Math.cos(a), sa = Math.sin(a), w0 = 0.035;
+        const p0 = [y + sa * 0.14, z + ca * 0.14], p1 = [y + sa * 0.24, z + ca * 0.24];
+        F.tri([xr(p0[0] - ca * w0), p0[0] - ca * w0, p0[1] + sa * w0], [xr(p0[0] + ca * w0), p0[0] + ca * w0, p0[1] - sa * w0], [xr(p1[0]), p1[0], p1[1]], c('gold'), 'metal');
+      }
+    }
+
+    /* ---- the rear bay: a deck, side rails, a roll bar over it */
+    F.box(0, 2.0, -2.25, 2.3, 0.03, 1.9, 0, gmd, 'metal');
+    for (const s of [-1, 1]) {
+      F.rod(s * 1.12, 2.02, -1.33, s * 1.12, 2.36, -1.33, 0.035, gmd, 'metal');
+      F.tube([[s * 1.12, 2.02, -3.12], [s * 1.04, 2.68, -3.02], [s * 0.92, 2.72, -2.97]], 0.045, gmd, 'metal');
+      F.rod(s * 1.12, 2.36, -1.33, s * 1.12, 2.36, -3.07, 0.03, gmd, 'metal');
+    }
+    F.rod(-0.92, 2.72, -2.97, 0.92, 2.72, -2.97, 0.045, gmd, 'metal');
+    F.lamp(0, 2.66, 0.92, 0, 0.2, 1, 0.07, 'amber', gmd, null);                                       /* the roof beacon */
+    F.rod(-0.75, 2.62, -0.95, -0.75, 3.2, -1.0, 0.012, gmd, 'metal');                                /* whip */
+
+    if (lancer) {
+      /* the rocket rack: a turntable on the roof, a cradle, four tubes raised 22 degrees, red tips */
+      F.disc(0, 2.66, -0.45, 0, 1, 0, 0.42, 0.08, gmd, 'metal', 14);
+      F.box(0, 2.7, -0.45, 0.5, 0.18, 0.6, 0, dark);
+      const el = 22 * Math.PI / 180, dy = Math.sin(el), dz = Math.cos(el);
+      for (const s of [-1, 1]) F.box(s * 0.3, 2.72, -0.45, 0.06, 0.26, 0.5, 0, gm, 'metal');
+      for (const tx of [-0.13, 0.13]) for (const ty of [0, 0.14]) {
+        const x = tx, y = 2.9 + ty, z = -0.95, L = 1.15;
+        F.rod(x, y, z, x, y + dy * L, z + dz * L, 0.058, c('rocket'), 'metal');
+        F.taper(x, y + dy * L, z + dz * L, 0, dy, dz, 0.058, 0.01, 0.16, c('rocketTip'), 'metal', 8);
+      }
+      F.rod(-0.24, 2.92, -0.62, 0.24, 2.92, -0.62, 0.03, gm, 'metal');
+      /* reload crates in the bay */
+      for (const s of [-1, 1]) F.box(s * 0.5, 2.02, -2.45, 0.5, 0.3, 1.2, 0, c('ochreOrangeDark'));
+    } else {
+      /* the Courier: a striped awning on four posts over the bay, the palace orb on a mast, crates */
+      for (const sx of [-1, 1]) for (const z of [-1.45, -3.05]) F.rod(sx * 1.0, 2.36, z, sx * 1.0, 2.95, z, 0.022, gmd, 'metal');
+      const stripes = 7;
+      for (let i = 0; i < stripes; i++) {
+        const x0 = -1.06 + i * 2.12 / stripes, x1 = x0 + 2.12 / stripes, sag = function (x) { return 2.99 - 0.05 * (1 - Math.pow(x / 1.06, 2)); };
+        const col = c(i % 2 ? 'stripeCream' : 'ochreOrange');
+        F.tri([x0, sag(x0), -1.4], [x1, sag(x1), -1.4], [x1, sag(x1), -3.1], col);
+        F.tri([x0, sag(x0), -1.4], [x1, sag(x1), -3.1], [x0, sag(x0), -3.1], col);
+        F.tri([x0, sag(x0), -3.1], [x1, sag(x1), -3.1], [(x0 + x1) / 2, 2.84, -3.15], col);              /* the scalloped valance */
+      }
+      F.rod(0.75, 2.62, -0.2, 0.75, 3.2, -0.2, 0.02, c('gold'), 'metal');
+      F.knob(0.75, 3.25, -0.2, 0.08, c('gold'), 'metal');
+      F.box(-0.45, 2.02, -2.05, 0.7, 0.42, 0.5, 0, c('crate'));
+      F.box(0.4, 2.02, -2.55, 0.6, 0.34, 0.6, 0, c('crate'));
+      if (F.chance(0.6)) F.blob(0.35, 2.48, -1.9, 0.35, 0.4, 0, c('canvas'));
+    }
+  }
+});
+
+/* ---- kits/motor-vehicles/krator-vehicles-post-apoc.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the Post-Apoc settlers (kits/motor-vehicles/krator-vehicles-post-apoc.js)
+
+   The Post-Apoc settlers (LORE.md 6.17): a culture-neutral salvage society that fleshes out reclaimed
+   arcologies and wreck towns. Sign: the gear. Colours: faded rust red, teal, mustard, olive.
+
+   One vehicle: pa_crawler_hab, a moving house on four track bogies: an armoured cab with a wedge nose
+   and a railed roof deck lined with jerry cans, a rust-plated hab behind it, two shipping containers
+   stacked on top (one cantilevered on struts), a glass dome, a dish and a forest of TV aerials, a big
+   exhaust run along its flank, a balcony and a ladder at the back. It goes where a wheel cannot (mud,
+   rock, snow) at a walking pace, and turns on the spot (skid steer: no wheel steers, maxSteer 0).
+   Variants: 0 Hab (rust and olive), 1 Trader (faded teal panels, mustard trim, a striped awning over the
+   balcony, crates on the deck). Frame: vehicles-core.js (+z forward). The road wheels are the moving
+   wheels (lift: they ride the belt, 8 cm above the ground); the belts, sprockets and idlers are static.
+   ====================================================================== */
+
+VEHICLE_CULTURE('post-apoc', {
+  name: 'Post-Apoc settlers', sign: 'gear',
+  lore: 'culture-neutral salvage society of the reclaimed arcologies and wreck towns',
+  /* PALETTE (sRGB; the runtime converts to linear) */
+  palette: {
+    rust: 0x8a4a2a, rustDark: 0x5e3220, rustLight: 0xa8643a, rustBrown: 0x6e4630,
+    olive: 0x5c5a3a, oliveDark: 0x3e3d28, khaki: 0x7a6e4a, fadedTeal: 0x4e8078, fadedTealDark: 0x3a5e58,
+    mustard: 0xc0982e, fadedRed: 0x9a3a2c, steel: 0x5a5650, steelDark: 0x34322e, trackIron: 0x2c2a27,
+    rubber: 0x232120, glass: 0x34404a, domeGlass: 0x6a8a94, jerryRed: 0xa8301e, jerryYellow: 0xc8a82a,
+    canvas: 0x9a8a62, crate: 0x7a5a3a, cream: 0xd6c8a4,
+    lensWarm: 0xfff1c8, lensRed: 0xa8180e, lensAmber: 0xe09020
+  }
+});
+
+/* the four bogies: centre z, and which side; three road wheels each (offsets -0.8, 0, +0.8), lift = belt */
+const PA_BOGIES = [{ k: 'lf', x: 1.7, z: 3.2, front: true }, { k: 'rf', x: -1.7, z: 3.2, front: true },
+  { k: 'lr', x: 1.7, z: -3.1, front: false }, { k: 'rr', x: -1.7, z: -3.1, front: false }];
+const PA_BELT = 0.08;
+
+VEHICLE({
+  key: 'pa_crawler_hab', name: 'Post-Apoc crawler hab', culture: 'post-apoc',
+  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'cargo'], drive: 'tracked', seats: 4, fuel: 'crude oil',
+    terrain: ['sand', 'salt flat', 'mud', 'rock', 'snow'], setting: 'outdoor' },
+  variants: 2, variantNames: ['Hab', 'Trader'],
+  /* overall box: 4.6 wide, 11.6 long; the roofs are 5.9, the tallest aerial 8.45 */
+  w: 4.6, d: 11.6, h: 8.5,
+  budget: { tris: 15500 },
+  /* data, not code (units: m, m/s, m/s^2, kg, L, km, rad) */
+  data: {
+    speed: 6, accel: 0.4, turnRadius: 0, maxSteer: 0, steering: 'skid (tracks), turns on the spot', seats: 4, berths: 8,
+    cargo: 6000, mass: 34000, fuel: 'crude oil', tank: 1800, range: 900, drive: 'tracked, four bogies',
+    wheelbase: 6.3, track: 3.4, clearance: 0.55, belt: PA_BELT, engine: 'twin salvaged diesels under the hab floor',
+    wheels: [].concat.apply([], PA_BOGIES.map(function (B) {
+      return [-0.8, 0, 0.8].map(function (o, i) {
+        return { name: 'wheel_' + B.k + (i + 1), x: B.x, z: B.z + o, r: 0.36, w: 0.62, lift: PA_BELT, front: B.front, steer: false, drive: true };
+      });
+    }))
+  },
+  variantData: [
+    {},
+    { cargo: 9000, berths: 4, mass: 35500, trade: 'scrap, fuel, water' }
+  ],
+
+  /* ONE road wheel at the origin, axle along x: a pair of rubber-tyred steel discs (the track's guide teeth
+     run between them), a hub cap and lightening holes outward */
+  wheel: function (F, W) {
+    const r = W.r, w = W.w, c = F.col, s = W.side;
+    for (const x of [-w * 0.27, w * 0.27]) {
+      F.disc(x, 0, 0, 1, 0, 0, r, w * 0.36, c('rubber'), '', 16);
+      F.disc(x, 0, 0, 1, 0, 0, r * 0.8, w * 0.4, c('steel'), 'metal', 12);
+    }
+    F.disc(s * w * 0.45, 0, 0, 1, 0, 0, 0.11, 0.07, c('steelDark'), 'metal', 8);
+    for (let i = 0; i < 5; i++) {
+      const a = i * TAU / 5;
+      F.disc(s * (w * 0.47 + 0.002), Math.cos(a) * 0.19, Math.sin(a) * 0.19, 1, 0, 0, 0.045, 0.01, c('steelDark'), 'metal', 6);
+    }
+  },
+
+  build: function (F) {
+    const v = F.variant, c = F.col, trader = v === 1;
+    const paint = c(['rust', 'fadedTeal'][v]), paintDark = c(['rustDark', 'fadedTealDark'][v]);
+    const trim = c(['olive', 'mustard'][v]);
+    const steel = c('steel'), steelDark = c('steelDark'), iron = c('trackIron');
+
+    /* ---- the running gear: per bogie a belt round three road wheels, a raised sprocket and idler, a beam, a fender */
+    for (const B of PA_BOGIES) {
+      const circ = [[B.z - 0.8, PA_BELT + 0.36, 0.36], [B.z, PA_BELT + 0.36, 0.36], [B.z + 0.8, PA_BELT + 0.36, 0.36],
+        [B.z + 1.45, 0.7, 0.34], [B.z - 1.45, 0.7, 0.34]];
+      F.track(B.x, 0.8, PA_BELT, circ, 0.2, iron, 'metal');
+      for (const e of [1.45, -1.45]) {
+        F.disc(B.x, 0.7, B.z + e, 1, 0, 0, 0.3, 0.5, steel, 'metal', 12);
+        F.ring(B.x, 0.7, B.z + e, 1, 0, 0, 0.3, 0.04, steelDark, 'metal', 14);
+        F.disc(B.x + Math.sign(B.x) * 0.26, 0.7, B.z + e, 1, 0, 0, 0.1, 0.04, steelDark, 'metal', 8);
+      }
+      const ix = B.x - Math.sign(B.x) * 0.48;
+      F.box(ix, 0.5, B.z, 0.12, 0.3, 3.1, 0, steelDark, 'metal');                                       /* the bogie beam */
+      F.box(ix, 0.8, B.z, 0.16, 0.4, 0.4, 0, steelDark, 'metal');                                       /* its pivot */
+      F.box(B.x, 1.18, B.z, 0.98, 0.05, 3.3, 0, trim, 'metal');                                          /* fender */
+      for (const e of [1, -1]) F.beam(B.x, 1.2, B.z + e * 1.64, B.x, 0.98, B.z + e * 1.98, 0.98, 0.05, trim, 'metal');
+    }
+    /* the deck and the belly between the bogies: tanks, a sump */
+    F.box(0, 1.14, -0.15, 3.9, 0.42, 10.7, 0, c('oliveDark'), 'metal');
+    F.box(0, 0.55, 0.05, 2.4, 0.6, 2.3, 0, steelDark, 'metal');
+    F.rod(-1.1, 0.78, 0.05, 1.1, 0.78, 0.05, 0.3, c('olive'), 'metal');
+
+    /* ---- the cab: a box with a sloped windscreen, and an armoured wedge nose below it */
+    F.slab([[2.6, 1.55, 1.6], [5.15, 1.55, 1.6], [5.15, 2.35, 1.6], [4.6, 3.35, 1.6], [2.6, 3.35, 1.6]], c(['khaki', 'fadedTeal'][v]), '');
+    F.slab([[5.05, 0.95, 1.45], [5.5, 0.95, 1.45], [5.8, 1.45, 1.4], [5.72, 2.05, 1.35], [5.05, 2.45, 1.45]], c(['olive', 'khaki'][v]), 'metal');
+    const pane = function (P) { F.tri(P[0], P[1], P[2], c('glass'), 'metal'); F.tri(P[0], P[2], P[3], c('glass'), 'metal'); };
+    const wz = function (y) { return 5.15 - (y - 2.35) * 0.55 + 0.012; };
+    for (const xr of [[-1.45, -0.55], [-0.45, 0.45], [0.55, 1.45]]) {
+      pane([[xr[0], 2.5, wz(2.5)], [xr[0] + 0.05, 3.22, wz(3.22)], [xr[1] - 0.05, 3.22, wz(3.22)], [xr[1], 2.5, wz(2.5)]]);
+    }
+    for (const s of [-1, 1]) {
+      const x = s * 1.612;
+      pane([[x, 2.45, 3.3], [x, 3.18, 3.3], [x, 3.18, 4.42], [x, 2.45, 4.82]]);
+      F.box(x, 1.7, 3.0, 0.03, 0.6, 1.0, 0, steelDark, 'metal');                                      /* a grille plate */
+      for (let i = 0; i < 6; i++) F.box(s * 1.63, 1.75 + i * 0.09, 3.0, 0.02, 0.025, 0.96, 0, iron, 'metal');
+      F.lamp(s * 1.05, 1.62, 5.785, 0, 0, 1, 0.1, 'head', steelDark, steel);
+    }
+    F.box(0, 1.8, 5.77, 0.7, 0.24, 0.03, 0, c('fadedRed'));                                            /* a red placard */
+    F.box(0, 1.84, 5.785, 0.5, 0.16, 0.02, 0, c('cream'));
+    F.box(0, 0.85, 5.72, 3.7, 0.22, 0.14, 0, steelDark, 'metal');                                        /* the bumper */
+    for (const s of [-1, 1]) F.rod(s * 1.88, 0.96, 5.72, s * 1.88, 0.96, 5.2, 0.05, steelDark, 'metal');
+    /* the roof deck over the cab: a railing and a row of red jerry cans */
+    const rail = function (pts, h) {
+      for (const p of pts) F.rod(p[0], p[1], p[2], p[0], p[1] + h, p[2], 0.022, steel, 'metal');
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1], b = pts[i];
+        F.rod(a[0], a[1] + h, a[2], b[0], b[1] + h, b[2], 0.025, steel, 'metal');
+        F.rod(a[0], a[1] + h * 0.5, a[2], b[0], b[1] + h * 0.5, b[2], 0.018, steel, 'metal');
+      }
+    };
+    rail([[-1.55, 3.35, 2.62], [-1.55, 3.35, 4.55], [1.55, 3.35, 4.55], [1.55, 3.35, 2.62]], 0.85);
+    const can = function (x, y, z, col, ry) { F.box(x, y, z, 0.17, 0.46, 0.34, ry || 0, col); F.box(x, y + 0.46, z + 0.06, 0.06, 0.04, 0.16, ry || 0, col); };
+    for (let i = 0; i < 7; i++) can(-1.2 + i * 0.4, 3.36, 4.28, c(F.chance(0.85) ? 'jerryRed' : 'jerryYellow'), Math.PI / 2);
+    for (const x of [-0.6, 0, 0.6]) F.lamp(x, 4.25, 4.58, 0, 0, 1, 0.06, 'bar', steelDark, null);
+
+    /* ---- the hab: a rust-plated box behind the cab; plates of other rust, corrugation, grille windows */
+    F.box(0, 1.55, -1.4, 3.7, 2.15, 8.0, 0, paint);
+    F.box(0, 3.68, -1.4, 3.76, 0.06, 8.06, 0, trim, 'metal');
+    const plates = ['rust', 'rustDark', 'rustLight', 'rustBrown'];
+    for (const s of [-1, 1]) {
+      for (let i = 0; i < 5; i++) {
+        const z = -5.0 + i * 1.6 + F.rr(-0.1, 0.1), y = F.rr(1.8, 2.8);
+        F.box(s * 1.86, y, z, 0.02, F.rr(0.4, 0.8), F.rr(0.7, 1.3), 0, trader ? c(F.pick(['fadedTeal', 'fadedTealDark', 'rustLight'])) : c(F.pick(plates)));
+      }
+      for (let z = -5.25; z < 2.5; z += 0.32) F.box(s * 1.865, 1.6, z, 0.025, 2.05, 0.05, 0, paintDark);
+      for (const z of [-3.6, -1.3, 1.1]) {
+        F.box(s * 1.88, 2.45, z, 0.04, 0.62, 0.9, 0, c('glass'), 'metal');
+        for (let i = 0; i < 4; i++) F.box(s * 1.9, 2.45, z - 0.33 + i * 0.22, 0.03, 0.62, 0.035, 0, iron, 'metal');
+        F.box(s * 1.89, 3.08, z, 0.05, 0.05, 1.0, 0, trim, 'metal');
+      }
+    }
+    /* the gear on both flanks */
+    for (const s of [-1, 1]) {
+      const gx = s * 1.9, gy = 3.08, gz = 0.05, mustard = c('mustard');
+      F.disc(gx, gy, gz, 1, 0, 0, 0.26, 0.03, mustard, '', 14);
+      F.disc(gx + s * 0.012, gy, gz, 1, 0, 0, 0.09, 0.03, paintDark, '', 10);
+      for (let i = 0; i < 10; i++) {
+        const a = i * TAU / 10, m = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.1, 0.09), mat(mustard, ''));
+        m.position.set(gx, gy + Math.cos(a) * 0.29, gz + Math.sin(a) * 0.29); m.rotation.x = a; _add(m);
+      }
+    }
+    /* the rear: a door, the balcony on the right with its rail, the ladder down past the track, tail lamps */
+    F.box(-0.6, 1.62, -5.42, 1.0, 1.95, 0.04, 0, paintDark);
+    F.box(0.95, 2.2, -4.35, 0.8, 0.06, 2.0, 0, steelDark, 'metal');
+    F.box(1.85 + 0.2, 2.2, -4.35, 0.4, 0.06, 2.0, 0, steelDark, 'metal');
+    rail([[1.86, 2.26, -3.35], [2.25, 2.26, -3.35], [2.25, 2.26, -5.36], [1.4, 2.26, -5.36]], 0.85);
+    for (const x of [1.45, 1.95]) F.rod(x, 2.2, -5.4, x, 0.03, -5.74, 0.03, steel, 'metal');
+    for (let i = 1; i < 8; i++) { const t = i / 8; F.rod(1.45, 2.2 - t * 2.17, -5.4 - t * 0.34, 1.95, 2.2 - t * 2.17, -5.4 - t * 0.34, 0.018, steel, 'metal'); }
+    for (const s of [-1, 1]) F.lamp(s * 1.2, 1.5, -5.42, 0, 0, -1, 0.07, 'tail', null, steelDark);
+    for (let i = 0; i < 3; i++) can(2.0, 2.26, -4.9 + i * 0.4, c(F.pick(['jerryYellow', 'jerryRed', 'jerryYellow'])), 0);
+    /* the exhaust: a big pipe with a U-bend along the left flank, collars, a stack */
+    const ex = [[-1.86, 1.62, 2.3], [-2.08, 1.95, 2.0], [-2.08, 1.95, 0.4], [-2.08, 2.55, 0.1], [-2.08, 2.55, -1.6], [-2.08, 1.95, -1.9], [-2.08, 1.95, -3.2], [-2.0, 3.0, -3.5], [-2.0, 4.6, -3.5]];
+    F.tube(ex, 0.1, steelDark, 'metal');
+    for (let i = 1; i < ex.length - 1; i++) F.ring(ex[i][0], ex[i][1], ex[i][2], ex[i + 1][0] - ex[i - 1][0], ex[i + 1][1] - ex[i - 1][1], ex[i + 1][2] - ex[i - 1][2], 0.11, 0.025, c('rustLight'), 'metal', 10);
+    F.taper(-2.0, 4.6, -3.5, 0, 1, 0, 0.1, 0.14, 0.18, c('rustDark'), 'metal', 10);
+    for (const z of [0.9, -2.5]) F.box(-1.95, 1.9, z, 0.2, 0.08, 0.08, 0, steel, 'metal');            /* pipe brackets */
+
+    /* ---- the upper level: container A (forward, under the dome), container B (aft, cantilevered right on struts) */
+    const container = function (x0, x1, z0, z1, y0, h, col, dark) {
+      const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = x1 - x0, d = z1 - z0;
+      F.box(cx, y0, cz, w, h, d, 0, col);
+      for (let z = z0 + 0.2; z < z1 - 0.1; z += 0.28) for (const x of [x0 - 0.012, x1 + 0.012]) F.box(x, y0 + 0.08, z, 0.025, h - 0.16, 0.06, 0, dark);
+      for (const x of [x0, x1]) for (const z of [z0, z1]) F.box(x, y0, z, 0.1, h, 0.1, 0, dark, 'metal');   /* corner posts */
+    };
+    const colA = c(trader ? 'fadedTeal' : 'rustBrown'), colB = c(trader ? 'mustard' : 'rust');
+    container(-1.5, 1.3, -1.2, 2.4, 3.71, 2.2, colA, c(trader ? 'fadedTealDark' : 'rustDark'));
+    container(-1.3, 2.25, -5.0, -1.45, 3.71, 2.0, colB, c(trader ? 'khaki' : 'rustDark'));
+    for (const z of [-4.6, -1.9]) F.rod(1.86, 2.4, z, 2.2, 3.7, z, 0.05, steelDark, 'metal');           /* the cantilever struts */
+    /* their windows */
+    for (const z of [0.0, 1.5]) { F.box(1.315, 4.5, z, 0.04, 0.55, 0.8, 0, c('glass'), 'metal'); F.box(1.33, 5.07, z, 0.05, 0.05, 0.9, 0, trim, 'metal'); }
+    F.box(-1.515, 4.5, 0.6, 0.04, 0.55, 1.2, 0, c('glass'), 'metal');
+    for (const z of [-4.1, -2.5]) {
+      F.box(2.265, 4.3, z, 0.04, 0.6, 0.7, 0, c('glass'), 'metal');
+      for (let i = 0; i < 3; i++) F.box(2.285, 4.3, z - 0.24 + i * 0.24, 0.03, 0.6, 0.035, 0, iron, 'metal');
+    }
+    F.box(-0.1, 4.4, 2.415, 0.9, 0.7, 0.03, 0, c('glass'), 'metal');
+    /* the dome on container A: glass, a base ring, ribs */
+    const dx = -0.15, dzz = 1.3, dy = 5.91;
+    F.cyl(dx, dy, dzz, 0.92, 0.12, 0, steelDark, 'metal');
+    F.dome(dx, dy + 0.12, dzz, 0.86, 0.72, 0, c('domeGlass'), 'metal');
+    for (let i = 0; i < 8; i++) {
+      const a = i * TAU / 8, pts = [];
+      for (let k = 0; k <= 4; k++) { const t = k / 4 * Math.PI / 2; pts.push([dx + Math.cos(a) * Math.cos(t) * 0.875, dy + 0.12 + Math.sin(t) * 0.735, dzz + Math.sin(a) * Math.cos(t) * 0.875]); }
+      F.tube(pts, 0.018, steelDark, 'metal');
+    }
+    F.knob(dx, dy + 0.87, dzz, 0.07, steelDark, 'metal');
+    /* rails round container B's roof, a beacon */
+    rail([[-1.25, 5.71, -1.5], [-1.25, 5.71, -4.95], [2.2, 5.71, -4.95], [2.2, 5.71, -1.5]], 0.7);
+    F.lamp(1.8, 5.95, -1.7, 0, 0.3, 1, 0.07, 'amber', steelDark, null);
+    F.cyl(1.8, 5.71, -1.8, 0.08, 0.2, 0, steelDark, 'metal');
+
+    /* ---- the dish on container A's aft roof, and the TV aerials */
+    F.rod(0.7, 5.91, -0.6, 0.7, 6.75, -0.6, 0.05, steel, 'metal');
+    F.box(0.7, 6.7, -0.6, 0.18, 0.14, 0.18, 0, steelDark, 'metal');
+    F.taper(0.7, 6.82, -0.56, 0.25, 0.55, 0.8, 0.05, 0.66, 0.26, c('cream'), 'metal', 14);
+    F.rod(0.7, 6.82, -0.56, 0.86, 7.15, -0.07, 0.015, steelDark, 'metal');                               /* the feed */
+    const aerial = function (x, y0, z, top, ry) {
+      F.rod(x, y0, z, x, top, z, 0.025, steel, 'metal');
+      for (let i = 0; i < 4; i++) {
+        const y = top - 0.12 - i * 0.32, L = 0.55 - i * 0.07, a = ry + (i % 2) * Math.PI / 2;
+        F.rod(x - Math.cos(a) * L, y, z - Math.sin(a) * L, x + Math.cos(a) * L, y, z + Math.sin(a) * L, 0.012, steel, 'metal');
+      }
+      F.rod(x, top - 0.2, z, x - 0.45, top - 0.75, z + 0.1, 0.01, steel, 'metal');                     /* a stay wire */
+    };
+    aerial(-1.2, 5.91, 0.0, 8.42, 0.3);
+    aerial(1.9, 5.71, -3.4, 7.9, 0.8);
+    aerial(-0.9, 5.71, -4.6, 7.3, 0.1);
+
+    /* ---- the Trader's awning over the balcony and its crates on the deck; the Hab's spare drums */
+    if (trader) {
+      for (let i = 0; i < 6; i++) {
+        const z0 = -3.3 - i * 0.345, z1 = z0 - 0.345, col = c(i % 2 ? 'mustard' : 'fadedRed');
+        F.tri([1.86, 3.5, z0], [2.28, 3.15, z0], [2.28, 3.15, z1], col); F.tri([1.86, 3.5, z0], [2.28, 3.15, z1], [1.86, 3.5, z1], col);
+      }
+      for (let i = 0; i < 3; i++) F.box(-0.9 + i * 0.9, 3.36, 3.25, 0.6, 0.5, 0.6, F.rr(-0.2, 0.2), c('crate'));
+      F.blob(0.5, 5.95, -3.3, 0.55, 0.5, 0, c('canvas'));
+    } else {
+      for (const z of [-2.4, -3.1]) F.cyl(-0.5, 5.71, z, 0.28, 0.85, 0, c(F.pick(['fadedRed', 'olive', 'rustDark'])), 'metal');
+    }
+  }
+});
+
+/* ---- kits/motor-vehicles/krator-vehicles-republic.js ---- */
+/* ======================================================================
+   Krator Motor Vehicles: the Iron Republic (kits/motor-vehicles/krator-vehicles-republic.js)
+
+   The Iron Republic (LORE.md 6.3): the highland forge state whose capital Roketstad was once an
+   Ancient spaceport. Its Salvagers strip the Ancient ruins; its Rocketeers keep the rockets. Colours:
+   deep red, ochre, cream. Sign: a triskelion of three arms, each fist holding a sword at 90 degrees.
+
+   One vehicle: rep_crawler, the Salvagers' crawler. An Ancient planetary rover dug out of the spaceport
+   aprons (a cream bowl of a hull on eight wire-mesh wheels, each with its own hub motor) that the Republic
+   keeps rolling across the salt flats as a moving salvage camp: a solar lid that opens like a clam to
+   charge the Ancient cell, an instrument head with two camera eyes, a lamp spire and a tiered mast, the
+   Republic's red band and triskelion painted where the Ancients' marks were scraped off.
+   Variants: 0 Survey (cream, the lid open to the sun), 1 Hauler (ochre, the lid shut and loaded with
+   crates and drums). Frame: kits/motor-vehicles/vehicles-core.js (+z forward, wheels on y = 0).
+   ====================================================================== */
+
+VEHICLE_CULTURE('republic', {
+  name: 'Iron Republic', sign: 'triskelion of three sword-arms, red',
+  lore: 'highland forge state; capital Roketstad, once an Ancient spaceport; Salvagers strip the ruins',
+  /* PALETTE (sRGB; the runtime converts to linear) */
+  palette: {
+    hullCream: 0xd8ccae, hullCreamDark: 0xb3a587, hullOchre: 0xc29a58, hullOchreDark: 0x9a7740,
+    deck: 0xc4b896, red: 0xa3261c, redDark: 0x7a1a14,
+    steel: 0x6a665e, steelDark: 0x3e3b37, iron: 0x2a2826, wire: 0x8a867c, brass: 0xb08a3a, copper: 0xa0623a,
+    panel: 0x1a2232, panelGrid: 0x7c7a70, glass: 0x26343e,
+    lensWarm: 0xfff1c8, lensRed: 0xa8180e, lensAmber: 0xe09020, glowBlue: 0x8fd8ff,
+    canvas: 0x8f7d5a, crate: 0x7a5a3a, drum: 0x5e3a28, drumRed: 0x8a2a1c, rope: 0x9a8458
+  }
+});
+
+VEHICLE({
+  key: 'rep_crawler', name: 'Republic salvage crawler', culture: 'republic',
+  tags: { class: 'motor vehicle', type: ['vehicle', 'transport', 'survey'], drive: 'wheeled', seats: 6, fuel: 'battery',
+    terrain: ['sand', 'salt flat', 'rock'], setting: 'outdoor', guild: 'Salvagers' },
+  variants: 2, variantNames: ['Survey', 'Hauler'],
+  /* overall box: 6.0 wide, 11.4 long; the lid's raised edge reaches 8.4, the lamp spire 9.2 */
+  w: 6.0, d: 11.4, h: 9.2,
+  budget: { tris: 15500 },                          /* eight wire-mesh wheels; one crawler to a world */
+  /* data, not code (units: m, m/s, m/s^2, kg, L, km, rad, kWh) */
+  data: {
+    speed: 4.5, accel: 0.3, turnRadius: 12, maxSteer: 0.3, seats: 6, cargo: 4000, mass: 38000,
+    fuel: 'battery', tank: 0, battery: 900, solar: true, range: 400, drive: 'all, a hub motor in every wheel',
+    wheelbase: 7.8, track: 5.0, clearance: 1.0, steering: 'front and rear axles, opposite',
+    engine: 'Ancient hub motors, eight; a salvaged cell charged by the solar lid',
+    wheels: [
+      { name: 'wheel_fl', x: 2.5, z: 3.9, r: 1.2, w: 0.66, front: true, steer: true, drive: true },
+      { name: 'wheel_fr', x: -2.5, z: 3.9, r: 1.2, w: 0.66, front: true, steer: true, drive: true },
+      { name: 'wheel_l2', x: 2.5, z: 1.3, r: 1.2, w: 0.66, front: false, steer: false, drive: true },
+      { name: 'wheel_r2', x: -2.5, z: 1.3, r: 1.2, w: 0.66, front: false, steer: false, drive: true },
+      { name: 'wheel_l3', x: 2.5, z: -1.3, r: 1.2, w: 0.66, front: false, steer: false, drive: true },
+      { name: 'wheel_r3', x: -2.5, z: -1.3, r: 1.2, w: 0.66, front: false, steer: false, drive: true },
+      { name: 'wheel_rl', x: 2.5, z: -3.9, r: 1.2, w: 0.66, front: false, steer: true, steerRatio: -1, drive: true },
+      { name: 'wheel_rr', x: -2.5, z: -3.9, r: 1.2, w: 0.66, front: false, steer: true, steerRatio: -1, drive: true }
+    ]
+  },
+  variantData: [
+    {},
+    { cargo: 9000, mass: 41000, speed: 3.5, lid: 'shut, loaded' }
+  ],
+
+  /* ONE wire-mesh wheel at the origin, axle along x: two rim hoops, a diagonal wire lattice, cleats across
+     the tread (one at the bottom, so the wheel touches y = -r), spokes to a hub motor */
+  wheel: function (F, W) {
+    const r = W.r, w = W.w, hw = w / 2, s = W.side, c = F.col;
+    const N = 18, rm = r - 0.075, wire = c('wire'), steel = c('steel');
+    for (const x of [-hw * 0.94, hw * 0.94]) F.ring(x, 0, 0, 1, 0, 0, rm, 0.035, steel, 'metal', N);
+    for (let i = 0; i < N; i++) {
+      const a0 = Math.PI + i * TAU / N, a1 = a0 + TAU / N;
+      /* the lattice: two diagonals per bay */
+      F.rod(-hw * 0.94, Math.cos(a0) * rm, Math.sin(a0) * rm, hw * 0.94, Math.cos(a1) * rm, Math.sin(a1) * rm, 0.012, wire, 'metal');
+      F.rod(hw * 0.94, Math.cos(a0) * rm, Math.sin(a0) * rm, -hw * 0.94, Math.cos(a1) * rm, Math.sin(a1) * rm, 0.012, wire, 'metal');
+      /* a cleat across the tread: radial height 0.075, its outer face at r */
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w * 0.9, 0.075, 0.07), mat(steel, 'metal'));
+      m.position.set(0, Math.cos(a0) * (r - 0.0375), Math.sin(a0) * (r - 0.0375)); m.rotation.x = a0;
+      _add(m);
+    }
+    /* spokes, both faces, from the hub to the hoops */
+    for (let i = 0; i < 8; i++) {
+      const a = i * TAU / 8 + 0.2;
+      for (const x of [-1, 1]) F.rod(x * hw * 0.32, Math.cos(a) * 0.26, Math.sin(a) * 0.26, x * hw * 0.92, Math.cos(a) * rm, Math.sin(a) * rm, 0.02, steel, 'metal');
+    }
+    F.disc(0, 0, 0, 1, 0, 0, 0.3, w * 0.62, c('steelDark'), 'metal', 12);              /* the hub motor */
+    F.disc(s * w * 0.33, 0, 0, 1, 0, 0, 0.16, 0.05, c('brass'), 'metal', 8);              /* its cap, outward */
+  },
+
+  build: function (F) {
+    const v = F.variant, c = F.col, open = v === 0;
+    const hull = c(['hullCream', 'hullOchre'][v]), hullDark = c(['hullCreamDark', 'hullOchreDark'][v]);
+    const steel = c('steel'), steelDark = c('steelDark'), iron = c('iron'), red = c('red');
+
+    /* ---- the running gear: two frame rails, cross members, a hub-motor drum and a swing arm at every wheel */
+    for (const s of [-1, 1]) {
+      F.box(s * 1.55, 0.98, 0, 0.32, 0.46, 9.2, 0, steelDark, 'metal');
+      F.box(s * 1.62, 2.12, 0, 0.12, 0.12, 9.6, 0, iron, 'metal');                         /* the skirt rail */
+      for (const z of [3.9, 1.3, -1.3, -3.9]) {
+        F.disc(s * 1.86, 1.2, z, 1, 0, 0, 0.3, 0.5, steelDark, 'metal', 10);                /* drive drum */
+        F.rod(s * 1.62, 2.08, z + 0.55, s * 1.95, 1.2, z, 0.07, steel, 'metal');             /* swing arm */
+        F.rod(s * 1.62, 2.08, z - 0.55, s * 1.95, 1.2, z, 0.05, steel, 'metal');
+        F.rod(s * 1.62, 2.1, z, s * 1.62, 1.44, z, 0.09, c('brass'), 'metal');               /* the spring leg */
+      }
+    }
+    for (const z of [-4.4, -2.6, 0, 2.6, 4.4]) F.box(0, 1.05, z, 3.1, 0.26, 0.26, 0, iron, 'metal');
+    /* the equipment bay under the bowl: tanks, boxes, a run of pipe */
+    F.box(0, 1.44, 0, 2.9, 0.86, 7.4, 0, steelDark, 'metal');
+    for (const s of [-1, 1]) {
+      F.rod(s * 1.48, 1.9, -3.4, s * 1.48, 1.9, 3.4, 0.08, c('copper'), 'metal');
+      F.rod(s * 1.5, 1.62, -3.0, s * 1.5, 1.62, 2.8, 0.05, iron, 'metal');
+      for (const z of [-2.6, 0, 2.6]) F.box(s * 1.42, 1.5, z, 0.2, 0.5, 0.7, 0, steel, 'metal');
+    }
+
+    /* ---- the bowl: a superellipse tub flaring from 3.8 x 7.8 at its foot to 5.7 x 9.9 at the rim */
+    const sup = function (a, b, n, th) {
+      const ct = Math.cos(th), st = Math.sin(th), e = 2 / n;
+      return [a * Math.sign(ct) * Math.pow(Math.abs(ct), e), b * Math.sign(st) * Math.pow(Math.abs(st), e)];
+    };
+    const wallA = function (y) { return 2.3 + (y - 2.5) / 2.1 * 0.55; }, wallB = function (y) { return 4.3 + (y - 2.5) / 2.1 * 0.65; };
+    const NB = 3;
+    F.tub([{ y: 2.28, a: 1.9, b: 3.9, n: NB }, { y: 2.5, a: 2.3, b: 4.3, n: NB }, { y: 4.6, a: 2.85, b: 4.95, n: NB }], 28, hull, '', 'bottom');
+    F.tub([{ y: 4.56, a: 2.9, b: 5.0, n: NB }, { y: 4.8, a: 2.92, b: 5.02, n: NB }, { y: 4.84, a: 2.8, b: 4.9, n: NB }], 28, hullDark, 'metal');   /* the rim lip */
+    F.tub([{ y: 4.82, a: 2.82, b: 4.92, n: NB }, { y: 4.98, a: 2.6, b: 4.72, n: NB }, { y: 5.05, a: 2.2, b: 4.3, n: NB }], 24, c('deck'), '', 'top');  /* the deck */
+    /* the Republic's red band below the rim */
+    F.tub([{ y: 4.18, a: wallA(4.18) + 0.018, b: wallB(4.18) + 0.018, n: NB }, { y: 4.36, a: wallA(4.36) + 0.018, b: wallB(4.36) + 0.018, n: NB }], 28, red, '');
+    /* panel seams up the wall */
+    for (let i = 0; i < 26; i++) {
+      const th = (i + 0.5) * TAU / 26, p0 = sup(wallA(2.6) + 0.02, wallB(2.6) + 0.02, NB, th), p1 = sup(wallA(4.5) + 0.02, wallB(4.5) + 0.02, NB, th);
+      F.beam(p0[0], 2.6, p0[1], p1[0], 4.5, p1[1], 0.035, 0.035, hullDark);
+    }
+
+    /* ---- the triskelion on both flanks: three bent arms, each fist holding a sword at 90 degrees, on the
+       sloping wall (a local frame: u along the wall to the viewer's right, v up the wall, n out of it) */
+    const tris = function (s) {
+      const y0 = 3.42, z0 = -1.25, x0 = s * (wallA(y0) * Math.pow(1 - Math.pow(Math.abs(z0) / wallB(y0), NB), 1 / NB) + 0.03);
+      const k = 0.55 / 2.1, nl = Math.hypot(1, k);
+      const n = [s / nl, -k / nl, 0], vv = [s * k / nl, 1 / nl, 0], u = [0, 0, -s];
+      const P = function (a, b) { return [x0 + u[0] * a + vv[0] * b + n[0] * 0.02, y0 + u[1] * a + vv[1] * b + n[1] * 0.02, z0 + u[2] * a + vv[2] * b + n[2] * 0.02]; };
+      const quad = function (a, b, cc, d) { F.tri(P(a[0], a[1]), P(b[0], b[1]), P(cc[0], cc[1]), red); F.tri(P(a[0], a[1]), P(cc[0], cc[1]), P(d[0], d[1]), red); };
+      const bar = function (a, b, wd) {     /* a straight band from a to b, wd wide */
+        const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy), ox = -dy / l * wd / 2, oy = dx / l * wd / 2;
+        quad([a[0] + ox, a[1] + oy], [b[0] + ox, b[1] + oy], [b[0] - ox, b[1] - oy], [a[0] - ox, a[1] - oy]);
+      };
+      const R = 0.62;
+      for (let i = 0; i < 3; i++) {
+        const t = i * TAU / 3 + 0.3, ct = Math.cos(t), st = Math.sin(t), cq = Math.cos(t + Math.PI / 2), sq = Math.sin(t + Math.PI / 2);
+        const e = [ct * R * 0.55, st * R * 0.55], f = [e[0] + cq * R * 0.4, e[1] + sq * R * 0.4];
+        bar([ct * R * 0.08, st * R * 0.08], e, R * 0.16);                       /* upper arm */
+        bar(e, f, R * 0.14);                                                     /* forearm */
+        bar([f[0] - cq * 0.04, f[1] - sq * 0.04], [f[0] + cq * 0.08, f[1] + sq * 0.08], R * 0.22);    /* fist */
+        bar([f[0] - ct * R * 0.12, f[1] - st * R * 0.12], [f[0] + ct * R * 0.5, f[1] + st * R * 0.5], R * 0.05);   /* the sword, at 90 */
+        bar([f[0] - ct * 0.02 + cq * 0.1, f[1] - st * 0.02 + sq * 0.1], [f[0] - ct * 0.02 - cq * 0.1, f[1] - st * 0.02 - sq * 0.1], R * 0.05);   /* its guard */
+      }
+      F.ring(x0, y0, z0, n[0], n[1], n[2], R * 1.05, 0.025, red, '', 20);
+    };
+    tris(1); tris(-1);
+    /* a red star on the nose, as the Ancients' mark was (the one thing left of it) */
+    const star = function (x, y, z, R) {
+      for (let i = 0; i < 5; i++) {
+        const a = Math.PI / 2 + i * TAU / 5, b = a + TAU / 10, b2 = a - TAU / 10;
+        F.tri([x + Math.cos(a) * R, y + Math.sin(a) * R, z], [x + Math.cos(b) * R * 0.4, y + Math.sin(b) * R * 0.4, z], [x, y, z], red);
+        F.tri([x + Math.cos(a) * R, y + Math.sin(a) * R, z], [x, y, z], [x + Math.cos(b2) * R * 0.4, y + Math.sin(b2) * R * 0.4, z], red);
+      }
+    };
+
+    /* ---- the instrument head on the nose: a block with two camera eyes (the headlamps), a tower under it */
+    F.box(0, 3.3, 4.95, 1.9, 1.1, 0.9, 0, hull);
+    F.box(0, 4.4, 4.95, 2.0, 0.08, 1.0, 0, hullDark, 'metal');
+    for (const s of [-1, 1]) {
+      F.lamp(s * 0.48, 3.92, 5.42, 0, 0, 1, 0.2, 'head', steelDark, steel);
+      F.disc(s * 0.48, 3.92, 5.36, 0, 0, 1, 0.3, 0.1, hullDark, 'metal', 14);
+    }
+    star(0, 3.55, 5.405, 0.17);
+    F.box(0, 2.3, 5.0, 1.0, 1.0, 0.7, 0, hullDark);
+    F.disc(0, 2.8, 5.38, 0, 0, 1, 0.26, 0.1, steel, 'metal', 12);
+    F.rod(-1.4, 1.5, 5.36, 1.4, 1.5, 5.36, 0.09, iron, 'metal');                                    /* bumper bar */
+    for (const s of [-1, 1]) F.rod(s * 0.9, 1.5, 5.36, s * 1.0, 1.2, 4.55, 0.06, iron, 'metal');
+    /* the instrument boom out to the front left, with its sensor heads and a slack cable */
+    F.rod(0.9, 3.7, 5.2, 2.85, 3.5, 5.62, 0.045, steel, 'metal');
+    F.box(2.55, 3.38, 5.48, 0.22, 0.22, 0.3, 0, hullDark, 'metal');
+    F.rod(2.2, 3.55, 5.5, 2.25, 2.95, 5.6, 0.02, iron, 'metal');
+    F.knob(2.25, 2.92, 5.6, 0.06, c('brass'), 'metal');
+    F.tube([[0.95, 3.4, 5.4], [1.6, 3.1, 5.55], [2.4, 3.3, 5.6]], 0.015, iron, 'metal');
+
+    /* ---- the lamp spire on the front left: stacked drums and tapers, rings, a blue lamp at the tip */
+    const sx = 0.62, sz = 4.85;
+    F.cyl(sx, 4.48, sz, 0.26, 0.5, 0, hullDark);
+    F.box(sx, 4.98, sz, 0.5, 0.42, 0.5, 0, hull);
+    F.box(sx, 5.1, sz + 0.25, 0.3, 0.12, 0.02, 0, c('glass'), 'metal');                                 /* its little window */
+    F.taper(sx, 5.4, sz, 0, 1, 0, 0.2, 0.13, 1.2, steel, 'metal', 10);
+    for (const y of [5.6, 6.0, 6.4]) F.ring(sx, y, sz, 0, 1, 0, 0.19 - (y - 5.4) * 0.06, 0.03, c('brass'), 'metal', 10);
+    F.box(sx, 6.6, sz, 0.34, 0.36, 0.34, 0, hullDark, 'metal');
+    F.taper(sx, 6.96, sz, 0, 1, 0, 0.11, 0.035, 1.9, steel, 'metal', 8);
+    for (const y of [7.3, 7.7, 8.1, 8.5]) F.disc(sx, y, sz, 0, 1, 0, 0.12 - (y - 7.0) * 0.04, 0.04, c('brass'), 'metal', 8);
+    F.knob(sx, 8.98, sz, 0.09, c('glowBlue'), 'lampBlue');
+    F.lamp(sx, 8.98, sz + 0.09, 0, 0, 1, 0.05, 'cell', null, null);
+    for (const s of [-1, 1]) F.rod(sx, 7.6, sz, sx + s * 0.45, 7.75, sz, 0.012, iron, 'metal');           /* whiskers */
+
+    /* ---- the dome and its tiered mast on the forward deck */
+    const dz = 3.3;
+    F.dome(-0.4, 5.02, dz, 0.85, 0.5, 0, hullDark);
+    F.cyl(-0.4, 5.45, dz, 0.34, 0.4, 0, hull);
+    for (let i = 0; i < 5; i++) F.frustum(-0.4, 5.85 + i * 0.32, dz, 0.3 - i * 0.045, 0.22 - i * 0.04, 0.3, 0, i % 2 ? hullDark : hull, '', 10);
+    F.taper(-0.4, 7.45, dz, 0, 1, 0, 0.06, 0.012, 0.8, c('brass'), 'metal', 6);
+    F.lamp(-0.4, 6.0, dz + 0.31, 0, 0, 1, 0.07, 'amber', steelDark, null);
+
+    /* ---- side ports, rear aerials, a ladder, tail lamps */
+    for (const s of [-1, 1]) {
+      const y = 3.9, z = 3.0, x = s * (wallA(y) * Math.pow(1 - Math.pow(z / wallB(y), NB), 1 / NB));
+      F.disc(x + s * 0.06, y, z, s, -0.26, 0, 0.24, 0.24, hullDark, 'metal', 12);
+      F.face(x + s * 0.185, y - 0.033, z, s, -0.26, 0, 0.15, c('glass'), 'metal', 10);
+      F.rod(s * 2.0, 4.2, -4.3, s * 2.95, 3.4, -5.0, 0.03, steel, 'metal');                         /* rear aerials */
+      F.rod(s * 2.0, 4.5, 4.0, s * 2.9, 4.95, 4.8, 0.02, iron, 'metal');
+      F.lamp(s * 1.1, 1.95, -3.72, 0, 0, -1, 0.09, 'tail', null, steelDark);
+    }
+    /* the crew ladder up the left flank to the rim */
+    for (const z of [-0.15, 0.35]) F.rod(2.32, 2.3, z, 2.98, 4.8, z, 0.025, iron, 'metal');
+    for (let i = 1; i < 8; i++) { const t = i / 8; F.rod(2.32 + t * 0.66, 2.3 + t * 2.5, -0.15, 2.32 + t * 0.66, 2.3 + t * 2.5, 0.35, 0.018, iron, 'metal'); }
+    /* railing posts round the rim */
+    for (let i = 0; i < 20; i++) {
+      const th = i * TAU / 20, p = sup(2.78, 4.88, NB, th);
+      if (Math.abs(p[1]) > 4.4 && p[1] > 0) continue;                                         /* clear of the spire and the head */
+      F.rod(p[0], 4.84, p[1], p[0], 5.4, p[1], 0.02, iron, 'metal');
+    }
+    for (let i = 0; i < 40; i++) {
+      const p = sup(2.78, 4.88, NB, i * TAU / 40), q = sup(2.78, 4.88, NB, (i + 1) * TAU / 40);
+      if (p[1] > 4.0 || q[1] > 4.0) continue;
+      F.rod(p[0], 5.4, p[1], q[0], 5.4, q[1], 0.018, iron, 'metal');
+    }
+
+    /* ---- the solar lid: an elliptical clam, cream rim, dark cells with a grid; the Survey has it open
+       25 degrees to the sun on two struts and a rear hinge, the Hauler shut on the deck under its load */
+    const ang = open ? 25 * Math.PI / 180 : 0, A = 2.7, B = 3.6;
+    const vd = [0, Math.sin(ang), -Math.cos(ang)], nn = [0, Math.cos(ang), Math.sin(ang)];
+    const ctr = open ? [0, 5.3 + B * vd[1], 0.9 + B * vd[2]] : [0, 5.18, -1.3];
+    const L = function (u, s, h) { return [ctr[0] + u, ctr[1] + vd[1] * s + nn[1] * h, ctr[2] + vd[2] * s + nn[2] * h]; };
+    const ell = function (rA, rB, t, h, col, fam) {
+      const p = L(0, 0, h), m = F.disc(p[0], p[1], p[2], nn[0], nn[1], nn[2], 1, t, col, fam, 32);
+      m.scale.set(rA, 1, rB);
+    };
+    ell(A, B, 0.14, 0, hull, '');
+    ell(A - 0.14, B - 0.14, 0.04, 0.075, c('panel'), 'metal');
+    ell(A * 0.9, B * 0.9, 0.06, -0.09, hullDark, 'metal');                                       /* the underside's stiffener */
+    for (let k = -3; k <= 3; k++) {
+      const u = k * 0.66, hs = (B - 0.16) * Math.sqrt(Math.max(0, 1 - Math.pow(u / (A - 0.16), 2)));
+      const a = L(u, -hs, 0.1), b = L(u, hs, 0.1);
+      F.rod(a[0], a[1], a[2], b[0], b[1], b[2], 0.014, c('panelGrid'), 'metal');
+    }
+    for (let k = -4; k <= 4; k++) {
+      const s = k * 0.8, hu = (A - 0.16) * Math.sqrt(Math.max(0, 1 - Math.pow(s / (B - 0.16), 2)));
+      const a = L(-hu, s, 0.1), b = L(hu, s, 0.1);
+      F.rod(a[0], a[1], a[2], b[0], b[1], b[2], 0.014, c('panelGrid'), 'metal');
+    }
+    if (open) {
+      /* an A-frame from the rear rim, a saddle under the front edge, and two rams from the deck */
+      for (const s of [-1, 1]) {
+        const p = L(s * 0.35, 2.8, -0.1);
+        F.rod(s * 1.5, 4.84, -4.6, p[0], p[1], p[2], 0.08, steelDark, 'metal');
+      }
+      const q = L(0, 2.8, -0.1);
+      F.rod(-0.5, q[1], q[2], 0.5, q[1], q[2], 0.09, steelDark, 'metal');
+      F.box(0, 5.02, 0.95, 1.2, 0.2, 0.3, 0, steelDark, 'metal');
+      for (const s of [-1, 1]) {
+        const p = L(s * 1.2, 0.8, -0.1);
+        F.rod(s * 1.0, 5.0, -2.2, p[0], p[1], p[2], 0.07, steel, 'metal');
+        F.rod(s * 1.0, 5.0, -2.2, s * 1.0, 5.4, -2.25, 0.11, c('brass'), 'metal');               /* the ram's cylinder */
+      }
+    } else {
+      /* the load on the shut lid: crates, drums, a lashed canvas, the ropes over them */
+      const top = 5.31;
+      for (let i = 0; i < 3; i++) for (const s of [-1, 1]) {
+        const z = -3.5 + i * 1.0, x = s * 0.9;
+        if (F.chance(0.8)) F.box(x, top, z, 0.9, 0.62, 0.8, F.rr(-0.1, 0.1), c('crate'));
+        else F.cyl(x, top, z, 0.32, 0.86, 0, c(F.pick(['drum', 'drumRed'])), 'metal');
+      }
+      for (const z of [-0.3, 0.4]) for (const x of [-0.4, 0.4]) F.cyl(x, top, z, 0.3, 0.86, 0, c(F.pick(['drum', 'drumRed'])), 'metal');
+      F.blob(0, top + 0.3, 1.25, 0.9, 0.8, 0, c('canvas'));
+      for (const z of [-3.5, -2.5, -1.5, -0.6]) F.tube([[-1.6, top, z], [-1.3, top + 0.7, z], [1.3, top + 0.7, z], [1.6, top, z]], 0.015, c('rope'));
+    }
+  }
+});
+
 /* ---- kits/motor-vehicles/krator-vehicles-runtime.js ---- */
 /* ======================================================================
    Krator Motor Vehicles: the runtime (kits/motor-vehicles/krator-vehicles-runtime.js)
@@ -1421,10 +2405,13 @@ VEHICLE({
      body:matte   painted plate, seats, canvas, tyres of the spare: one mesh, vertex colours
      body:metal   tube, brass, engine, lamp lenses: one mesh, vertex colours, its own material
                   (the lamps glow through an emissive map: lights() sets that material's emissive)
-     steer_fl, steer_fr   pivots at the front hubs (rotation.y steers); each holds wheel_fl / wheel_fr
-     wheel_rl, wheel_rr   the rear wheels, origin at the hub (rotation.x spins)
-   Six meshes, so six draw calls. group.userData = { key, name, culture, tags, kind:'vehicle', variant, seed,
-   wheels:[{ name, r, x, y, z, front, steer, drive }], lamps:[{ x, y, z, dx, dy, dz, kind }], data, tris, lightsOn }.
+     steer_fl, steer_fr   pivots at the steered hubs (rotation.y steers); each holds wheel_fl / wheel_fr
+     wheel_rl, wheel_rr   the other wheels, origin at the hub (rotation.x spins)
+   Two body meshes and one per wheel: six draw calls for a four-wheeler, more for six or eight wheels or a
+   tracked vehicle's road wheels. group.userData = { key, name, culture, tags, kind:'vehicle', variant, seed,
+   wheels:[{ name, r, x, y, z, front, steer, drive, lift?, steerRatio? }], lamps:[{ x, y, z, dx, dy, dz, kind }],
+   data, tris, lightsOn }. A wheel's hub is at y = r + lift (lift: a road wheel riding a track belt); a steered
+   wheel turns by steer() x steerRatio (default 1).
 
    Colours: the palettes are sRGB (as every Krator palette); the merged vertex colours are converted
    to LINEAR for a renderer with outputEncoding = sRGBEncoding (every Krator page). { linear:false }
@@ -1499,7 +2486,8 @@ const KV_API = (function () {
   API.list = function () {
     return VEHICLES.map(function (A) {
       return { key: A.key, name: A.name, culture: A.culture, tags: JSON.parse(JSON.stringify(A.tags || {})),
-        variants: A.variants, variantNames: A.variantNames.slice(), w: A.w, d: A.d, h: A.h, data: vehicleData(A, 0) };
+        variants: A.variants, variantNames: A.variantNames.slice(), w: A.w, d: A.d, h: A.h, data: vehicleData(A, 0),
+        budget: vehicleBudget(A) };
     });
   };
   API.has = function (key) { return !!VEHICLE_BY_KEY[key]; };
@@ -1535,7 +2523,7 @@ const KV_API = (function () {
     /* the wheels: each one built at the origin by the entry's wheel(), merged into one mesh, hung at its hub */
     const wheels = [];
     for (const W of data.wheels) {
-      const wg = new THREE.Group(), side = W.x >= 0 ? 1 : -1;
+      const wg = new THREE.Group(), side = W.x >= 0 ? 1 : -1, hubY = W.r + (W.lift || 0);
       _target = wg;
       try { A.wheel(F, Object.assign({ side: side }, W)); } finally { _target = prev; }
       const WB = merge(wg, function () { return 'wheel'; }, linear);
@@ -1545,12 +2533,15 @@ const KV_API = (function () {
       if (W.steer) {
         const pivot = new THREE.Group();
         pivot.name = 'steer_' + W.name.replace(/^wheel_/, '');
-        pivot.position.set(W.x, W.r, W.z);
+        pivot.position.set(W.x, hubY, W.z);
         pivot.add(wm); g.add(pivot);
       } else {
-        wm.position.set(W.x, W.r, W.z); g.add(wm);
+        wm.position.set(W.x, hubY, W.z); g.add(wm);
       }
-      wheels.push({ name: W.name, r: W.r, x: W.x, y: W.r, z: W.z, front: !!W.front, steer: !!W.steer, drive: !!W.drive });
+      const rec = { name: W.name, r: W.r, x: W.x, y: hubY, z: W.z, front: !!W.front, steer: !!W.steer, drive: !!W.drive };
+      if (W.lift) rec.lift = W.lift;                       /* a road wheel on a track: it rides the belt, t above the ground */
+      if (W.steer && W.steerRatio != null) rec.steerRatio = W.steerRatio;
+      wheels.push(rec);
     }
     g.userData = { key: key, name: A.name, culture: A.culture, tags: JSON.parse(JSON.stringify(A.tags || {})), kind: 'vehicle',
       variant: v, variantName: A.variantNames[v] || '', seed: seed, wheels: wheels, lamps: F.lamps.slice(), data: data,
@@ -1569,12 +2560,12 @@ const KV_API = (function () {
     return g;
   };
   API.steer = function (g, rad) {
-    const lim = (g.userData.data && g.userData.data.maxSteer) || 0.6;
+    const D = g.userData.data || {}, lim = D.maxSteer != null ? D.maxSteer : 0.6;   /* 0: skid steer (tracks), nothing turns */
     const a = Math.max(-lim, Math.min(lim, +rad || 0));
     for (const W of g.userData.wheels || []) {
       if (!W.steer) continue;
       const p = g.getObjectByName('steer_' + W.name.replace(/^wheel_/, ''));
-      if (p) p.rotation.y = a;
+      if (p) p.rotation.y = a * (W.steerRatio != null ? W.steerRatio : 1);   /* a second steered axle turns less, a rear one the other way */
     }
     return a;
   };

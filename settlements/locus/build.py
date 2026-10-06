@@ -118,7 +118,7 @@ def virtual_bodies():
         sys.path.insert(0, vdir)
         try:
             import vehicle_bundle
-            vb['65y-vehicles-bundle.js'] = vehicle_bundle.bundle()
+            vb['65y-vehicles-bundle.js'] = vehicle_bundle.bundle(['geomancer'])   # the buggy only: the other cultures' vehicles are not used here
         except Exception as e:
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')

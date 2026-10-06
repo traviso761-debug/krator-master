@@ -29,12 +29,17 @@ events | loop | geom | shader | inst | ray | store | net):
 
 | File | KB | Tag | Counts | Note |
 |---|---|---|---|---|
-| `vehicles-core.js` | 13.3 | [draw] | 23 0 0 0 0 18 0 0 0 0 0 | split: the VEHICLE registry, vocabularies and `vehicleData()` are [G data]; the vehicle frame helpers and `vehicleBalloonTyre()` draw |
+| `vehicles-core.js` | 19.7 | [draw] | 30 0 0 0 0 21 0 0 0 0 0 | split: the VEHICLE registry, vocabularies, `vehicleData()` and `vehicleBudget()` are [G data]; the vehicle frame helpers (`F.slab`, `F.tub`, `F.track` ...) and `vehicleBalloonTyre()` draw |
 | `krator-vehicles-geomancer.js` | 18.9 | [draw] | 0 0 0 0 0 126 0 0 0 0 0 | split: each entry's `tags`, `data`, `variantData` and the palette are [G data] (a sim reads them with no drawing); `build`/`wheel` draw |
-| `krator-vehicles-runtime.js` | 10.2 | [draw] | 18 0 0 0 0 1 0 0 0 0 0 | assembly: merges per material, hangs the wheels; `list()`/`dataOf()` are the data face, `roll`/`steer`/`lights` act on three.js nodes |
+| `krator-vehicles-republic.js` | 18.4 | [draw] | 1 0 0 0 0 78 0 0 0 0 0 | split, as the Geomancer file: palette, `tags`, `data`, `variantData` are [G data]; `build`/`wheel` draw |
+| `krator-vehicles-iziz.js` | 10.9 | [draw] | 0 0 0 0 0 47 0 0 0 0 0 | split, as above |
+| `krator-vehicles-eastabyss.js` | 12.7 | [draw] | 0 0 0 0 0 57 0 0 0 0 0 | split, as above |
+| `krator-vehicles-post-apoc.js` | 15.8 | [draw] | 1 0 0 0 0 79 0 0 0 0 0 | split, as above; the bogie table `PA_BOGIES` is data too |
+| `krator-vehicles-runtime.js` | 10.9 | [draw] | 18 0 0 0 0 1 0 0 0 0 0 | assembly: merges per material, hangs the wheels; `list()`/`dataOf()` are the data face, `roll`/`steer`/`lights` act on three.js nodes |
 | `vehicle_bundle.py`, `build.py`, `verify.py` | | [web] | | tooling |
 
 For Godot: the data (`KratorVehicles.list()`: tags, data, wheels, lamps) exports as is; the body and wheels cross
 over as meshes (two body meshes per vehicle and one per wheel, wheel origins at the hubs, `steer_*` pivots), so a
-Godot VehicleBody3D can take the wheel records as its VehicleWheel3D nodes. The emissive lamp map (an 8-texel strip
-picked by uv) becomes an emission texture on the metal surface.
+Godot VehicleBody3D can take the wheel records as its VehicleWheel3D nodes (`steerRatio` scales a wheel's steering;
+the tracked hab, `maxSteer` 0, wants a skid-steer controller instead, its road wheels `lift` above the belt). The
+emissive lamp map (an 8-texel strip picked by uv) becomes an emission texture on the metal surface.

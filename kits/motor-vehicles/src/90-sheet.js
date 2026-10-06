@@ -140,8 +140,10 @@ const INSTANCES = [];
     if (!g) return null;
     if (ctl.walk) window._setWalk(false);
     for (const o of INSTANCES) o.visible = o === g;
-    ctl.target.set(g.position.x, 1.0, g.position.z);
-    ctl.az = V[0]; ctl.el = V[1]; ctl.dist = V[2];
+    /* the distances suit the 3.6 m buggy; a bigger vehicle pulls the camera back by its size */
+    const k = Math.max(1, g.userData.d / 3.6, g.userData.h / 3.05);
+    ctl.target.set(g.position.x, Math.max(1.0, g.userData.h * 0.3), g.position.z);
+    ctl.az = V[0]; ctl.el = V[1]; ctl.dist = V[2] * k;
     updateCamera();
     return g.userData.key + ' #' + (g.userData.variant + 1);
   }

@@ -16,10 +16,13 @@
      body:matte   painted plate, seats, canvas, tyres of the spare: one mesh, vertex colours
      body:metal   tube, brass, engine, lamp lenses: one mesh, vertex colours, its own material
                   (the lamps glow through an emissive map: lights() sets that material's emissive)
-     steer_fl, steer_fr   pivots at the front hubs (rotation.y steers); each holds wheel_fl / wheel_fr
-     wheel_rl, wheel_rr   the rear wheels, origin at the hub (rotation.x spins)
-   Six meshes, so six draw calls. group.userData = { key, name, culture, tags, kind:'vehicle', variant, seed,
-   wheels:[{ name, r, x, y, z, front, steer, drive }], lamps:[{ x, y, z, dx, dy, dz, kind }], data, tris, lightsOn }.
+     steer_fl, steer_fr   pivots at the steered hubs (rotation.y steers); each holds wheel_fl / wheel_fr
+     wheel_rl, wheel_rr   the other wheels, origin at the hub (rotation.x spins)
+   Two body meshes and one per wheel: six draw calls for a four-wheeler, more for six or eight wheels or a
+   tracked vehicle's road wheels. group.userData = { key, name, culture, tags, kind:'vehicle', variant, seed,
+   wheels:[{ name, r, x, y, z, front, steer, drive, lift?, steerRatio? }], lamps:[{ x, y, z, dx, dy, dz, kind }],
+   data, tris, lightsOn }. A wheel's hub is at y = r + lift (lift: a road wheel riding a track belt); a steered
+   wheel turns by steer() x steerRatio (default 1).
 
    Colours: the palettes are sRGB (as every Krator palette); the merged vertex colours are converted
    to LINEAR for a renderer with outputEncoding = sRGBEncoding (every Krator page). { linear:false }
@@ -94,7 +97,8 @@ const KV_API = (function () {
   API.list = function () {
     return VEHICLES.map(function (A) {
       return { key: A.key, name: A.name, culture: A.culture, tags: JSON.parse(JSON.stringify(A.tags || {})),
-        variants: A.variants, variantNames: A.variantNames.slice(), w: A.w, d: A.d, h: A.h, data: vehicleData(A, 0) };
+        variants: A.variants, variantNames: A.variantNames.slice(), w: A.w, d: A.d, h: A.h, data: vehicleData(A, 0),
+        budget: vehicleBudget(A) };
     });
   };
   API.has = function (key) { return !!VEHICLE_BY_KEY[key]; };
@@ -130,7 +134,7 @@ const KV_API = (function () {
     /* the wheels: each one built at the origin by the entry's wheel(), merged into one mesh, hung at its hub */
     const wheels = [];
     for (const W of data.wheels) {
-      const wg = new THREE.Group(), side = W.x >= 0 ? 1 : -1;
+      const wg = new THREE.Group(), side = W.x >= 0 ? 1 : -1, hubY = W.r + (W.lift || 0);
       _target = wg;
       try { A.wheel(F, Object.assign({ side: side }, W)); } finally { _target = prev; }
       const WB = merge(wg, function () { return 'wheel'; }, linear);
@@ -140,12 +144,15 @@ const KV_API = (function () {
       if (W.steer) {
         const pivot = new THREE.Group();
         pivot.name = 'steer_' + W.name.replace(/^wheel_/, '');
-        pivot.position.set(W.x, W.r, W.z);
+        pivot.position.set(W.x, hubY, W.z);
         pivot.add(wm); g.add(pivot);
       } else {
-        wm.position.set(W.x, W.r, W.z); g.add(wm);
+        wm.position.set(W.x, hubY, W.z); g.add(wm);
       }
-      wheels.push({ name: W.name, r: W.r, x: W.x, y: W.r, z: W.z, front: !!W.front, steer: !!W.steer, drive: !!W.drive });
+      const rec = { name: W.name, r: W.r, x: W.x, y: hubY, z: W.z, front: !!W.front, steer: !!W.steer, drive: !!W.drive };
+      if (W.lift) rec.lift = W.lift;                       /* a road wheel on a track: it rides the belt, t above the ground */
+      if (W.steer && W.steerRatio != null) rec.steerRatio = W.steerRatio;
+      wheels.push(rec);
     }
     g.userData = { key: key, name: A.name, culture: A.culture, tags: JSON.parse(JSON.stringify(A.tags || {})), kind: 'vehicle',
       variant: v, variantName: A.variantNames[v] || '', seed: seed, wheels: wheels, lamps: F.lamps.slice(), data: data,
@@ -164,12 +171,12 @@ const KV_API = (function () {
     return g;
   };
   API.steer = function (g, rad) {
-    const lim = (g.userData.data && g.userData.data.maxSteer) || 0.6;
+    const D = g.userData.data || {}, lim = D.maxSteer != null ? D.maxSteer : 0.6;   /* 0: skid steer (tracks), nothing turns */
     const a = Math.max(-lim, Math.min(lim, +rad || 0));
     for (const W of g.userData.wheels || []) {
       if (!W.steer) continue;
       const p = g.getObjectByName('steer_' + W.name.replace(/^wheel_/, ''));
-      if (p) p.rotation.y = a;
+      if (p) p.rotation.y = a * (W.steerRatio != null ? W.steerRatio : 1);   /* a second steered axle turns less, a rear one the other way */
     }
     return a;
   };
