@@ -1,6 +1,6 @@
 # kits/mechs: known issues
 
-`verify.py --assert` passes with nothing deferred (10 mechs, 11 variants, seeds 1..2), z-fighting included.
+`verify.py --assert` passes with nothing deferred (11 mechs, 12 builds with the Castra's two variants, seeds 1..2), z-fighting included.
 
 ## Open
 

@@ -56,7 +56,7 @@
 const MECH_CLASSES = ['mech'];
 const MECH_TYPES = ['war machine', 'industrial', 'siege', 'transport', 'utility', 'standard-bearer', 'scout', 'line', 'heavy'];
 const MECH_DRIVES = ['biped', 'digitigrade', 'quadruped'];
-const MECH_PILOTS = ['head', 'chest', 'cab'];
+const MECH_PILOTS = ['head', 'chest', 'cab', 'saddle'];
 const MECH_WEAPONS = ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
   'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket'];
 
