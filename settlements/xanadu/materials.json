@@ -1,6 +1,6 @@
 {
  "build": "xanadu",
- "note": "xanadu's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-xanadu-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/xanadu after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it.",
+ "note": "xanadu's adapter onto the material library (core/materials/PLAN.md). The vernacular MAT keys (69b-vern-mat.js, shared with Iziz) take Iziz's rows: wood, woodV, stone, plaster, thatch, shingle and the awning cloth, bound in place by src/88y-xanadu-matlib.js (KMAT.bindMat). The build's own families are not wired yet. Run python3 tools/textures/pack.py settlements/xanadu after any change, then python3 build.py; ?mat=proc shows the procedural look. The shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels) takes library sets too (2026-10-06): KMAT.bindMat with KMAT.ANCIENT_TILES keeps each procedural map's feature size; means and metalness measured from the procedural maps; rust, verdigris, brick, timber and the worn panels keep their own colour. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it. Xanadu's own families (2026-10-06, late): rammed earth (xEarth), whitewash (xWash), the glazed tiles (xTiles: grey, so the turquoise and lapis instance tints carry), fieldstone (xRubble) and the valley rock (xRock), at the measured means (and, where the map is warm, colours) of their procedural maps. The twig band (xPenbey), the mosaics and garden tiles (colour-carrying), the jali and valance cut-outs and the palace motifs stay procedural: patterns/xanadu/* are painted on a sky-blue ground, while the motifs are alpha cut-outs on the wall.",
  "size": 512,
  "families": {
   "wood": {
@@ -333,6 +333,99 @@
    "metal": 0.3,
    "roughLift": 0.1,
    "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "xEarth": {
+   "lib": "earth.adobe",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.655,
+    "colour": "#b2a692"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "xWash": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.809,
+    "colour": "#d4cec3"
+   },
+   "metal": 0,
+   "normalScale": 0.6,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "xTiles": {
+   "lib": "paving.tiles144",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.664
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "xRubble": {
+   "lib": "rock.old_stone_wall",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.55
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "xRock": {
+   "lib": "rock.rock_face",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.497,
+    "colour": "#887e70"
+   },
+   "metal": 0,
+   "normalScale": 0.8,
    "breakup": {
     "mix": 0.45,
     "macro": 0.1,
