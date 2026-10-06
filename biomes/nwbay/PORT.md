@@ -14,7 +14,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 2.4 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 60.5 | [web] | 72 | 5 | 3 | 1 | 0 | 16 | 14 | 5 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-nwbay-species.js` | 46.7 | [draw] | 0 | 3 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-nwbay-species.js` | 47.0 | [draw] | 0 | 3 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-nwbay-trees.js` | 72.6 | [draw] | 0 | 1 | 0 | 0 | 0 | 35 | 0 | 0 | 0 | 0 | 0 | placement pass: `NWBAY.buildTrees`; `mk` makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: `NWBAY.plantTrees` (56-variants) builds the impostors with `buildFar` and stamps every hero from the six variants per species the per-species builders `B[sp]` grow once; `NWBAY.buildReedBeds` places and draws in one pass |
 | `src/56-biome-nwbay-variants.js` | 9.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the variant choice (by height and wet, the quantiles) and `NWBAY.make` are data; the nursery captures the kit's stores into BufferGeometry and stamps instances (Matrix4 through BIO.host.THREE, which the audit cannot see) |
 | `src/60-biome-nwbay-floor.js` | 19.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |

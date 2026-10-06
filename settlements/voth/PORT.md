@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 411 (23%) | 0 (0%) | 106 (6%) | 107 (6%) | 1175 (65%) |
+| KB | 411 (23%) | 0 (0%) | 106 (6%) | 107 (6%) | 1177 (65%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -23,8 +23,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/30c-roads.js` | 42.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the road graph and the warren block carving: the street network that every placer and the life layer reads. 43 rnd draws; reseeded at its head |
 | `src/30d-wall-stations.js` | 17.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the 17-vertex curtain wall chain and its gates where a major road crosses: layout data |
 | `src/40-ground.js` | 11.3 | [draw] | 0 | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: the ground canvases. maskAt, openAt, inCity and W2P are the land-cover query every placer reads; fillPoly and strokePoly paint the canvas that query reads, so the canvas is placement state. Move the query onto core/mask; the canvas stays as the preview's ground texture |
-| `src/45-kit.js` | 30.0 | [draw] | 18 | 0 | 0 | 0 | 0 | 25 | 18 | 3 | 0 | 0 | 0 | the geometry kit (BOX, FR8, emitBuckets). structure() chooses roof and style per building kind. The night illumination pool (nl*, nlmBake canvas) goes to the host. REGISTER-style tagging goes through core/tags |
-| `src/47-texture.js` | 15.7 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters (grain, periodicLattice, noiseP): become TEX.def records and library sets (core/materials/PLAN.md); keeps its own noise table (see Notes) |
+| `src/45-kit.js` | 30.7 | [draw] | 19 | 0 | 0 | 0 | 0 | 25 | 18 | 3 | 0 | 0 | 0 | the geometry kit (BOX, FR8, emitBuckets). structure() chooses roof and style per building kind. The night illumination pool (nl*, nlmBake canvas) goes to the host. REGISTER-style tagging goes through core/tags |
+| `src/47-texture.js` | 17.5 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters (grain, periodicLattice, noiseP): become TEX.def records and library sets (core/materials/PLAN.md); keeps its own noise table (see Notes) |
 | `src/50a-cantons.js` | 20.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 1 | 0 | 0 | 0 | split: bedAt, tierWeights, faceHwAt, cantonFacesRecord, cantonArrivalLevel and the stair endpoints are canton geometry data that other fragments read: a data pass. The stair and plinth draws follow |
 | `src/50b-palace.js` | 58.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 78 | 0 | 1 | 0 | 0 | 0 | one hero building (buttresses, atria, kiosks, gate). split: palaceLandingShift, palaceGateShift and palFree decide where the landing and gate stand, and 50f-spans-build reads them: move them to the canton records |
 | `src/50c-canton-types.js` | 36.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 28 | 0 | 0 | 0 | 0 | 0 | monoCanton, platCanton, arenaDeck, marketDeck, treeBaseGrass: decks drawn from the canton record by name. rnd() varies detail only; no split |

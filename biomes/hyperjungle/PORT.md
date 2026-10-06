@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 2 (1%) | 0 (0%) | 12 (9%) | 16 (12%) | 108 (78%) |
+| KB | 2 (1%) | 0 (0%) | 12 (9%) | 16 (12%) | 110 (78%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -15,7 +15,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/00-head.html` | 2.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-hyperjungle-globals.js` | 0.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 4.6 | [web] | 14 | 1 | 3 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-hyperjungle-species.js` | 19.5 | [draw] | 2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-hyperjungle-species.js` | 21.5 | [draw] | 3 | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-biome-hyperjungle-trees.js` | 29.6 | [draw] | 2 | 1 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 | placement pass: `HYPERJUNGLE.buildTrees` (line 299) places the hero trees, the far ring and the saplings: `mk` (line 303) makes a record, `BIO.scatter` and `BIO.grid` call it, and the records go to `TREES` and `SAPS`. Draw pass: the `heroes.forEach(buildHero)`, `fars.forEach(buildFar)` and `SAPS.forEach(buildSapling)` loop (line 320) in the same function, which reads the records and draws them. Split in one function, not yet in two |
 | `src/58-biome-hyperjungle-fauna.js` | 14.7 | [draw] | 1 | 0 | 0 | 0 | 0 | 21 | 0 | 1 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
 | `src/60-biome-hyperjungle-floor.js` | 32.8 | [draw] | 1 | 1 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |

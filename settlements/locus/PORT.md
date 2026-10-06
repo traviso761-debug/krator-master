@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 94 (10%) | 0 (0%) | 16 (2%) | 161 (17%) | 676 (71%) |
+| KB | 94 (10%) | 0 (0%) | 16 (2%) | 161 (17%) | 678 (71%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,8 +19,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/21-sky.js` | 56.4 | [web] | 67 | 0 | 19 | 6 | 0 | 9 | 26 | 0 | 0 | 0 | 0 |  |
 | `src/30-layout.js` | 40.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-ground.js` | 7.4 | [draw] | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/45-kit.js` | 25.8 | [draw] | 38 | 0 | 0 | 0 | 0 | 13 | 15 | 2 | 0 | 0 | 0 |  |
-| `src/47-texture.js` | 15.1 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/45-kit.js` | 26.7 | [draw] | 40 | 0 | 0 | 0 | 0 | 13 | 15 | 2 | 0 | 0 | 0 |  |
+| `src/47-texture.js` | 17.0 | [draw] | 4 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/50-structure.js` | 9.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/53-assets.js` | 17.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 53 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/55-mid-example.js` | 3.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
