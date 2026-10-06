@@ -110,3 +110,7 @@ Version 52 (2026-10-06): `worlds/yuni.html`, `worlds/yuni-kit.html` and `worlds/
 wild valley planted by the eastern badlands kit, its Zion side (oak, maple, cottonwood galleries, pine on the walls, hanging
 gardens on the butte), 7.4 MB each, from `main` at 8ef7ea7d, with the index's Yuni entry updated (blurb, sizes). The live
 index (version 51, published by another session after 1d088377) was merged: every other entry is as it was. One publish call.
+Version 53 (2026-10-06): `worlds/nwbay.html` replaced with the north-west bay fixed and extended (the inside-out karst stacks
+turned right way out; a tsingy of knife-edged fins with spinewands and rock bottles, a tiankeng with traveller's fans, two
+cenotes, avenue baobabs; hero trees as six grown variants per species), 0.3 MB, from `main` at cf3e2206. The live index
+(version 52) was kept: only the North-west bay card changed (blurb, "new"). One publish call.
