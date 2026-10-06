@@ -17,9 +17,9 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `45-host-stage.js` | 10 | the land (43); the climate fields (cached below; these are the  (75); the recent fires (the showcase's choice) (97); the host binding (105) |
-| `50-biome-craterdry-species.js` | 43 **big** | palettes (22); the tree species (51); harvest (biomes/FRUIT.md) (85); the small plants (the floor), tagged (104); leaf textures (126); bark, rock, wood textures (207); geometries local to this biome (248); materials (328); the library (core/materials/PLAN.md, Crater dryl (360); instanced items (416) |
+| `50-biome-craterdry-species.js` | 44 **big** | palettes (23); the tree species (53); harvest (biomes/FRUIT.md) (87); the small plants (the floor), tagged (106); leaf textures (128); bark, rock, wood textures (215); geometries local to this biome (256); materials (336); the library (core/materials/PLAN.md, Crater dryl (369); instanced items (425) |
 | `52-biome-craterdry-fire.js` | 11 |  |
-| `55-biome-craterdry-trees.js` | 36 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (32); fire on a tree (49); polyline helpers (Girder's) (55); keep-clear between trees (65); foliage helpers (72); the builders (93); impostors (the far canopy) (315); the pass (342); the passes (data: species, cell, acceptance from (370) |
+| `55-biome-craterdry-trees.js` | 37 **big** | zones from the fields (12); colour (the maths is the core's, BIO.col) (32); fire on a tree (49); polyline helpers (Girder's) (55); keep-clear between trees (65); foliage helpers (72); the builders (93); impostors (the far canopy) (330); the pass (357); the passes (data: species, cell, acceptance from (385) |
 | `60-biome-craterdry-floor.js` | 15 | fields local to the floor (26); small plants (33); the zone planters (86); the pass (140) |
 | `70-biome-craterdry.js` | 1 |  |
 | `82-host-sky.js` | 13 |  |

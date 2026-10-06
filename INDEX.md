@@ -32,7 +32,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`kits/post-apoc`](kits/post-apoc/INDEX.md) | 26 | 389 | 32 | The Post-Apoc set: reclaimed and recycled buildings (containers, silos, tanks, buses, bulkheads, tyre and bottle walls) with sockets for any culture's marks. |
 | [`kits/ringsea`](kits/ringsea/INDEX.md) | 37 | 230 | 18 | Ring Sea watercraft: 21 procedural vessels (warships, cargo ships, barges, canoes, outriggers, rafts) of the cultures round the Ring Sea. |
 | [`kits/scyvoi`](kits/scyvoi/INDEX.md) | 25 | 182 | 22 | The Scyvoi kit: the salamander riders of the crater drylands. Five small and five large tents (gers, bell tents, goat-hair tents, khaimas, a pavilion, an appliqué tent), the chief's great tent, the shaman's hut, smithy and supply tents, all furnished from the catalog's Scyvoi culture (core/furnish) with a cut-away to see inside; salamanders (riding, war, draught) with life data, chariots and carts, tethering; and the Baelu, a fitted-stone fire redoubt on a rock outcrop. core/materials, core/tags and core/furnish from the start; a verified kit sheet. |
-| [`biomes/crater-drylands`](biomes/crater-drylands/INDEX.md) | 15 | 187 | 43 | Biome kit: see `biomes/README.md`. |
+| [`biomes/crater-drylands`](biomes/crater-drylands/INDEX.md) | 15 | 190 | 44 | Biome kit: see `biomes/README.md`. |
 | [`biomes/eastabyss`](biomes/eastabyss/INDEX.md) | 14 | 199 | 62 | Biome kit: see `biomes/README.md`. |
 | [`biomes/ebadlands`](biomes/ebadlands/INDEX.md) | 16 | 220 | 52 | Biome kit: see `biomes/README.md`. |
 | [`biomes/hyperjungle`](biomes/hyperjungle/INDEX.md) | 15 | 138 | 33 | Biome kit: see `biomes/README.md`. |
@@ -41,7 +41,7 @@ Every build is a folder with `src/` fragments and a `build.py`. Open a build's `
 | [`biomes/nwlowlands`](biomes/nwlowlands/INDEX.md) | 13 | 175 | 57 | Biome kit: see `biomes/README.md`. |
 | [`biomes/rift`](biomes/rift/INDEX.md) | 13 | 205 | 68 | Biome kit: see `biomes/README.md`. |
 | [`biomes/sedesert`](biomes/sedesert/INDEX.md) | 15 | 193 | 36 | Biome kit: see `biomes/README.md`. |
-| [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 13 | 155 | 43 | Biome kit: see `biomes/README.md`. |
+| [`biomes/shighlands`](biomes/shighlands/INDEX.md) | 14 | 165 | 48 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swbay`](biomes/swbay/INDEX.md) | 15 | 181 | 48 | Biome kit: see `biomes/README.md`. |
 | [`biomes/swlowlands`](biomes/swlowlands/INDEX.md) | 13 | 196 | 60 | Biome kit: see `biomes/README.md`. |
 | [`biomes/xanadu`](biomes/xanadu/INDEX.md) | 15 | 207 | 66 | Biome kit: see `biomes/README.md`. |

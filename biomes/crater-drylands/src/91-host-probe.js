@@ -1,7 +1,7 @@
 // ================================================================= HOST — probe (window._api)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
- showcase:{tris:18500000,calls:120},   // measured 17.0M at q=1 on this 5.2 km map (KNOWN_ISSUES), not a target
+ showcase:{tris:18500000,calls:120},   // measured 17.9M at q=1 on this 5.2 km map (KNOWN_ISSUES; 17.0M before the frill-tree became a frill tree, 2026-10-06), not a target
  cls:{pass:14000000,host:900000},
  type:{'craterdry/trees':'pass','craterdry/floor':'pass','craterdry/fire':'host','host':'host'},
 };

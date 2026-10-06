@@ -6,7 +6,8 @@
 // fresh char, the bloom that bursts out after a fire, young regrowth, old scrub heavy with fuel; and the granite
 // kopjes and the sandy washes the fires go round. The flora is shaped by fire (the owner, Oct 2026): fire-hardened
 // succulents; plants that sprout and flower in a frenzy after a burn; trees with long bare trunks that keep their
-// crowns above the flames; the frill-tree that bursts in a fire and throws its fireproof seed; the prism mallee, a
+// crowns above the flames; the frill-tree (the Rift's frill tree in kiln country: a ribbed bottle column of stiff waxy
+// fins under a crown pod) that bursts in a fire and throws its fireproof seed; the prism mallee, a
 // small cousin of the hyperjungle's prism gum, that resprouts from its root crown with green-orange-red leaves.
 // Everything here is DATA and kit definitions; no placement. Tags follow the project rule (climate / aridity /
 // abyssal / riparian / Koppen) plus `fire`: how the species meets a burn (biomes/WORLD.md).
@@ -26,6 +27,7 @@ const PAL=CRATERDRY.PAL={
  malleeBark:[0x8aa070,0xd88a40,0xb84a32,0xc8b090,0x6a8a6a,0xe0a050],
  pillar:[0x2e6a6a,0x3a7a74,0x4a8a6a,0x5a9a5a],pillarBand:[0x3a8a7a,0xb8c060,0x4a9a84,0xd8c870,0x2e7a70],
  frillLeaf:[0x4e6e34,0x5a7a3a,0x46642e],frill:[0xd85a28,0xe8782a,0xc8402a,0xf0a040],
+ frillCol:[0x6a6a48,0x5e6040,0x767452],frillFin:[0x8a8a3a,0x9a9440,0x7a7a34,0xa8a048],frillSheen:[0xc8783a,0xd88a40,0xb8682e,0xe0a050],
  parasol:[0x4a6a34,0x557a3a,0x3e5e2e,0x5e8040],
  gum:[0x7a9a6a,0x8aa478,0x6e8e60],gumBark:[0xe8e4dc,0xdcd8cc,0xf0ece4],
  aloe:[0x6a8a5a,0x7a9a62,0x5a7a50,0x88946a],candle:[0xe8642a,0xf07a2a,0xd84a20,0xf09a3a],
@@ -61,8 +63,8 @@ CRATERDRY.SPECIES=[
   far:{poleU:.35,blobs:[[.66,.95,.3,'L0','L2']]},tags:K('tropic','semiarid','both',['BSh','BWh','Aw'],'resprouter')},
  /*1*/{key:'pillar',name:'Pyre pillar',alien:true,H:[11,26],rb:[.7,1.3],crownR:[3.6,6],barkK:5,bark:PAL.pillarBand,leaf:PAL.pillar,
   far:{poleU:.95,taper:.25,blobs:[[.66,.7,.32,'L0','L1'],[.9,.45,.12,'L2','L3']]},tags:K('tropic','arid','no',['BSh','BWh'],'survivor')},
- /*2*/{key:'frill',name:'Frill-tree',alien:true,H:[5,11],rb:[.25,.5],crownR:[2.6,4.6],barkK:0,bark:[0x5a4a3c,0x4e4034,0x665446],leaf:PAL.frillLeaf,
-  far:{poleU:.4,blobs:[[.66,.95,.3,'L0','L2']]},tags:K('tropic','semiarid','no',['BSh','Aw'],'seeder')},
+ /*2*/{key:'frill',name:'Frill-tree',alien:true,H:[5,11],rb:[.3,.52],crownR:[2.2,3.8],barkK:5,bark:PAL.frillCol,leaf:PAL.frillFin,irid:PAL.frillSheen,
+  far:{poleU:.88,taper:.45,blobs:[[.5,.5,.42,'L0','L2'],[.93,.6,.1,'L1',0xe8782a]]},tags:K('tropic','semiarid','no',['BSh','Aw'],'seeder')},
  /*3*/{key:'parasolpine',name:'Parasol pine',H:[16,28],rb:[.35,.65],crownR:[5,8.5],barkK:1,bark:[0x8a5a3e,0x7a4e36,0x966646],leaf:PAL.parasol,
   far:{poleU:.82,taper:.4,blobs:[[.86,1.0,.1,'L0','L2']]},tags:K('tropic','semiarid','no',['BSh','Aw'],'survivor')},
  /*4*/{key:'ghostgum',name:'Ghost gum',H:[18,32],rb:[.4,.8],crownR:[5,9],barkK:7,bark:PAL.gumBark,leaf:PAL.gum,
@@ -144,6 +146,12 @@ TX.frond=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const y0=S/2;
   for(let sd=-1;sd<=1;sd+=2){const a=sd*rr(.55,.75),L=W/Math.sin(Math.abs(a)),lum=lerp(120,240,t*.5+.5*rng())*(sd>0?.86:1);
    g.strokeStyle=G2(lum);g.lineWidth=rr(2.6,3.8);g.beginPath();g.moveTo(x,y0);g.lineTo(x+Math.cos(a)*L,y0+Math.sin(a)*L);g.stroke();}}
  g.strokeStyle=G2(70);g.lineWidth=3.2;g.beginPath();g.moveTo(1,y0);g.lineTo(S-3,y0);g.stroke();},[110,110,110]);
+/* a FRILL FIN (the Rift frill tree's, in kiln country): a rib along +x with dense straight teeth both sides, longest
+   near the base; stiff and waxy here, so the teeth are short */
+TX.frill=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=G2(90);g.lineWidth=3.6;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y);g.stroke();
+  for(let x=6;x<S-4;x+=3.4){const t=x/S,L=lerp(28,5,Math.pow(t,1.1))*rr(.9,1.06);for(let sd=-1;sd<=1;sd+=2){
+   g.strokeStyle=G2(lerp(120,235,rng()));g.lineWidth=2.6;g.beginPath();g.moveTo(x,y);g.lineTo(x+L*.15,y+sd*L);g.stroke();}}}},[140,140,140]);
 /* small round fleshy leaves (the ember jade) */
 TX.round=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,9,.62);g.strokeStyle=G2(90);g.lineWidth=1.5;
  for(let k=0;k<20;k++){const p=BIO.tex.discPt(S,.35),q=BIO.tex.discPt(S,.88);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke();}
@@ -332,6 +340,7 @@ CRATERDRY.MAT={
  needle:BIO.leafMat(TX.needle,'needle',{aN:true,swayW:'1.0',swayA:.06}),
  lance:BIO.leafMat(TX.lance,'lance',{aN:true,irid:true,swayW:'1.0',swayA:.12}),
  frond:BIO.leafMat(TX.frond,'frond',{swayW:'(position.x)',swayA:.06}),
+ frillfin:BIO.leafMat(TX.frill,'frillfin',{aN:true,irid:true,swayW:'(position.x)',swayA:.04}),   // olive-gold facing the sun, a copper sheen away from it
  round:BIO.leafMat(TX.round,'round',{aN:true,swayW:'1.0',swayA:.05}),
  small:BIO.leafMat(TX.small,'small',{aN:true,swayW:'1.0',swayA:.06}),
  twigs:BIO.leafMat(TX.twigs,'twigs',{swayW:'0.0',swayA:0,alphaTest:.4}),
@@ -417,7 +426,8 @@ BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
 BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN','aC2'],label:'Lance leaves (prism mallee, ghost gum)'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Pyre-pillar fronds'});
-BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Fleshy leaves (ember jade, frill-tree)'});
+BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Fleshy leaves (ember jade, seedlings)'});
+BIO.def('frillfin',BIO.geo.frond(3),M.frillfin,{attrs:['aN','aC2'],label:'Frill-tree fins'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 ['twigs','twigs1','twigs2','twigs3'].forEach(k=>BIO.def(k,G.tuft(),M[k],{label:'Charred shrubs'}));
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Pincushion heads'});
@@ -437,7 +447,7 @@ BIO.def('litter',BIO.geo.mat(),M.litter,{label:'Litter and char debris'});
 BIO.def('rosette',G.rosette(),M.vcol,{label:'Rosettes (yucca, Joshua tree, sword spire)'});
 BIO.def('aloe',G.aloe(),M.vcol,{label:'Aloe rosettes'});
 BIO.def('gem',G.gem(),M.vcol,{label:'Pincushion trunk pods'});
-BIO.def('frill',G.frill(),M.vsway,{label:'Frill pods'});
+BIO.def('frill',G.frill(),M.vsway,{label:'Frill-tree crown pods'});
 BIO.def('protea',G.protea(),M.vsway,{label:'Protea heads'});
 BIO.def('crassula',G.crassula(),M.vcol,{label:'Propeller crassula'});
 BIO.def('spire',G.spire(),M.vsway,{label:'Flower spires (sword spire, aloe candles)'});

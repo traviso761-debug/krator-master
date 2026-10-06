@@ -52,7 +52,7 @@ Read before changing this kit. Open items are `- [ ]`; `build.py` counts them.
 
 - The showcase is a 5.2 km disc; the regions are 53,000 and 8,000 km². The kopjes, washes and the seep are the
   showcase's own.
-- **Budget**: 17.0M triangles at q=1 (trees ~12.8M, floor ~4.0M), ~35k trees, 40 draw calls (`91-host-probe.js` BUDGET:
+- **Budget**: 17.9M triangles at q=1 (trees ~13.5M, floor ~4.4M; 17.0M before the frill-tree was rebuilt as a frill tree, 2026-10-06), ~35k trees, 40 draw calls (`91-host-probe.js` BUDGET:
   18.5M, measured, not a target). The first build measured 30.1M: the LOD spine covered the whole map, so 50k of 51k trees
   were heroes. The spine is now the kopjes, three points on wash A, the seep and the recent burns' real centres (84 adds
   them after the fire model runs). `?q=0.5` builds at half density; `?nobake=1` measures without drawing.

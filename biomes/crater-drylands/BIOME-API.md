@@ -69,7 +69,7 @@ Every zone is multiplied by `1 - cliff` (steep granite).
 |---|---|---|---|---|---|
 | 0 | prismmallee | Prism mallee | 6-13 | resprouter | BSh BWh Aw |
 | 1 | pillar | Pyre pillar (alien) | 11-26 | survivor | BSh BWh |
-| 2 | frill | Frill-tree (alien) | 5-11 | seeder | BSh Aw |
+| 2 | frill | Frill-tree (alien; the Rift's frill tree in kiln country) | 5-11 | seeder | BSh Aw |
 | 3 | parasolpine | Parasol pine | 16-28 | survivor | BSh Aw |
 | 4 | ghostgum | Ghost gum | 18-32 | survivor | BSh Aw |
 | 5 | treealoe | Tree aloe | 3-7 | avoider | BSh BWh |

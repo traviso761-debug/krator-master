@@ -1194,7 +1194,8 @@ BIO.setSun([-1000,900,-700]);
 // fresh char, the bloom that bursts out after a fire, young regrowth, old scrub heavy with fuel; and the granite
 // kopjes and the sandy washes the fires go round. The flora is shaped by fire (the owner, Oct 2026): fire-hardened
 // succulents; plants that sprout and flower in a frenzy after a burn; trees with long bare trunks that keep their
-// crowns above the flames; the frill-tree that bursts in a fire and throws its fireproof seed; the prism mallee, a
+// crowns above the flames; the frill-tree (the Rift's frill tree in kiln country: a ribbed bottle column of stiff waxy
+// fins under a crown pod) that bursts in a fire and throws its fireproof seed; the prism mallee, a
 // small cousin of the hyperjungle's prism gum, that resprouts from its root crown with green-orange-red leaves.
 // Everything here is DATA and kit definitions; no placement. Tags follow the project rule (climate / aridity /
 // abyssal / riparian / Koppen) plus `fire`: how the species meets a burn (biomes/WORLD.md).
@@ -1214,6 +1215,7 @@ const PAL=CRATERDRY.PAL={
  malleeBark:[0x8aa070,0xd88a40,0xb84a32,0xc8b090,0x6a8a6a,0xe0a050],
  pillar:[0x2e6a6a,0x3a7a74,0x4a8a6a,0x5a9a5a],pillarBand:[0x3a8a7a,0xb8c060,0x4a9a84,0xd8c870,0x2e7a70],
  frillLeaf:[0x4e6e34,0x5a7a3a,0x46642e],frill:[0xd85a28,0xe8782a,0xc8402a,0xf0a040],
+ frillCol:[0x6a6a48,0x5e6040,0x767452],frillFin:[0x8a8a3a,0x9a9440,0x7a7a34,0xa8a048],frillSheen:[0xc8783a,0xd88a40,0xb8682e,0xe0a050],
  parasol:[0x4a6a34,0x557a3a,0x3e5e2e,0x5e8040],
  gum:[0x7a9a6a,0x8aa478,0x6e8e60],gumBark:[0xe8e4dc,0xdcd8cc,0xf0ece4],
  aloe:[0x6a8a5a,0x7a9a62,0x5a7a50,0x88946a],candle:[0xe8642a,0xf07a2a,0xd84a20,0xf09a3a],
@@ -1249,8 +1251,8 @@ CRATERDRY.SPECIES=[
   far:{poleU:.35,blobs:[[.66,.95,.3,'L0','L2']]},tags:K('tropic','semiarid','both',['BSh','BWh','Aw'],'resprouter')},
  /*1*/{key:'pillar',name:'Pyre pillar',alien:true,H:[11,26],rb:[.7,1.3],crownR:[3.6,6],barkK:5,bark:PAL.pillarBand,leaf:PAL.pillar,
   far:{poleU:.95,taper:.25,blobs:[[.66,.7,.32,'L0','L1'],[.9,.45,.12,'L2','L3']]},tags:K('tropic','arid','no',['BSh','BWh'],'survivor')},
- /*2*/{key:'frill',name:'Frill-tree',alien:true,H:[5,11],rb:[.25,.5],crownR:[2.6,4.6],barkK:0,bark:[0x5a4a3c,0x4e4034,0x665446],leaf:PAL.frillLeaf,
-  far:{poleU:.4,blobs:[[.66,.95,.3,'L0','L2']]},tags:K('tropic','semiarid','no',['BSh','Aw'],'seeder')},
+ /*2*/{key:'frill',name:'Frill-tree',alien:true,H:[5,11],rb:[.3,.52],crownR:[2.2,3.8],barkK:5,bark:PAL.frillCol,leaf:PAL.frillFin,irid:PAL.frillSheen,
+  far:{poleU:.88,taper:.45,blobs:[[.5,.5,.42,'L0','L2'],[.93,.6,.1,'L1',0xe8782a]]},tags:K('tropic','semiarid','no',['BSh','Aw'],'seeder')},
  /*3*/{key:'parasolpine',name:'Parasol pine',H:[16,28],rb:[.35,.65],crownR:[5,8.5],barkK:1,bark:[0x8a5a3e,0x7a4e36,0x966646],leaf:PAL.parasol,
   far:{poleU:.82,taper:.4,blobs:[[.86,1.0,.1,'L0','L2']]},tags:K('tropic','semiarid','no',['BSh','Aw'],'survivor')},
  /*4*/{key:'ghostgum',name:'Ghost gum',H:[18,32],rb:[.4,.8],crownR:[5,9],barkK:7,bark:PAL.gumBark,leaf:PAL.gum,
@@ -1332,6 +1334,12 @@ TX.frond=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const y0=S/2;
   for(let sd=-1;sd<=1;sd+=2){const a=sd*rr(.55,.75),L=W/Math.sin(Math.abs(a)),lum=lerp(120,240,t*.5+.5*rng())*(sd>0?.86:1);
    g.strokeStyle=G2(lum);g.lineWidth=rr(2.6,3.8);g.beginPath();g.moveTo(x,y0);g.lineTo(x+Math.cos(a)*L,y0+Math.sin(a)*L);g.stroke();}}
  g.strokeStyle=G2(70);g.lineWidth=3.2;g.beginPath();g.moveTo(1,y0);g.lineTo(S-3,y0);g.stroke();},[110,110,110]);
+/* a FRILL FIN (the Rift frill tree's, in kiln country): a rib along +x with dense straight teeth both sides, longest
+   near the base; stiff and waxy here, so the teeth are short */
+TX.frill=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=G2(90);g.lineWidth=3.6;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y);g.stroke();
+  for(let x=6;x<S-4;x+=3.4){const t=x/S,L=lerp(28,5,Math.pow(t,1.1))*rr(.9,1.06);for(let sd=-1;sd<=1;sd+=2){
+   g.strokeStyle=G2(lerp(120,235,rng()));g.lineWidth=2.6;g.beginPath();g.moveTo(x,y);g.lineTo(x+L*.15,y+sd*L);g.stroke();}}}},[140,140,140]);
 /* small round fleshy leaves (the ember jade) */
 TX.round=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,9,.62);g.strokeStyle=G2(90);g.lineWidth=1.5;
  for(let k=0;k<20;k++){const p=BIO.tex.discPt(S,.35),q=BIO.tex.discPt(S,.88);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke();}
@@ -1520,6 +1528,7 @@ CRATERDRY.MAT={
  needle:BIO.leafMat(TX.needle,'needle',{aN:true,swayW:'1.0',swayA:.06}),
  lance:BIO.leafMat(TX.lance,'lance',{aN:true,irid:true,swayW:'1.0',swayA:.12}),
  frond:BIO.leafMat(TX.frond,'frond',{swayW:'(position.x)',swayA:.06}),
+ frillfin:BIO.leafMat(TX.frill,'frillfin',{aN:true,irid:true,swayW:'(position.x)',swayA:.04}),   // olive-gold facing the sun, a copper sheen away from it
  round:BIO.leafMat(TX.round,'round',{aN:true,swayW:'1.0',swayA:.05}),
  small:BIO.leafMat(TX.small,'small',{aN:true,swayW:'1.0',swayA:.06}),
  twigs:BIO.leafMat(TX.twigs,'twigs',{swayW:'0.0',swayA:0,alphaTest:.4}),
@@ -1605,7 +1614,8 @@ BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
 BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN','aC2'],label:'Lance leaves (prism mallee, ghost gum)'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Pyre-pillar fronds'});
-BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Fleshy leaves (ember jade, frill-tree)'});
+BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Fleshy leaves (ember jade, seedlings)'});
+BIO.def('frillfin',BIO.geo.frond(3),M.frillfin,{attrs:['aN','aC2'],label:'Frill-tree fins'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 ['twigs','twigs1','twigs2','twigs3'].forEach(k=>BIO.def(k,G.tuft(),M[k],{label:'Charred shrubs'}));
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Pincushion heads'});
@@ -1625,7 +1635,7 @@ BIO.def('litter',BIO.geo.mat(),M.litter,{label:'Litter and char debris'});
 BIO.def('rosette',G.rosette(),M.vcol,{label:'Rosettes (yucca, Joshua tree, sword spire)'});
 BIO.def('aloe',G.aloe(),M.vcol,{label:'Aloe rosettes'});
 BIO.def('gem',G.gem(),M.vcol,{label:'Pincushion trunk pods'});
-BIO.def('frill',G.frill(),M.vsway,{label:'Frill pods'});
+BIO.def('frill',G.frill(),M.vsway,{label:'Frill-tree crown pods'});
 BIO.def('protea',G.protea(),M.vsway,{label:'Protea heads'});
 BIO.def('crassula',G.crassula(),M.vcol,{label:'Propeller crassula'});
 BIO.def('spire',G.spire(),M.vsway,{label:'Flower spires (sword spire, aloe candles)'});
@@ -1913,31 +1923,46 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,ph=rr(0,TAU),ba
  for(let k=0;k<3;k++){const a=rr(0,TAU);frondAt('frond',T.x,T.y0+H-.8,T.z,a,R*.7,1.35+rr(-.1,.1),shade(C(pick(S.leaf)),-.15),.7);}
  regTree(T,S,R*1.25+rb,H+R*.5);};
 
-// 2 the FRILL-TREE: a stout trunk and a few crooked limbs, dark leathery leaves, and at the limb ends its pods:
-// ruffled collars of dark red, orange and gold. A seeder: a fire kills it and the heat bursts the frills, throwing the
-// fireproof seed out over the ash. For four years the black snag stands among a ring of its own seedlings.
-B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,a=T.age,dead=a<4,la0=rr(0,TAU);
- const fh=H*rr(.4,.5),pts=bole(T,S,'bark0',T.x,T.z,fh,rb,rb*.6,rr(0,.08),la0,.08,lv===2?4:2,st,lv===2?6:4,dead?(a>2.5?.6:.1):false),top=pts[pts.length-1];
- const nL=lv===2?ri(3,6):3,spots=[];let reach=R*.6,topY=top.y;
- for(let k=0;k<nL;k++){const la=la0+k*GOLD+rr(-.3,.3),L=(H-fh)*rr(.7,1.05),lp=treeGrow(top,dirOf(la,rr(.55,.95)),L,top.r*.65,.06,3,-.05,.12);
-  if(lv===2)st.limb+=BIO.tube(dead?'wood':'bark0',lp,dead?deadCol(a>2.5?.6:.1):barkCol(S,k+1),{seg:4,cap:true});
-  else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],top.r*1.2,.06,dead?charCol(S):rodCol(S.bark[0]));
-  spots.push({p:lp[3],d:dirOf(la,.5),L});reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+1);topY=Math.max(topY,lp[3].y);}
+// 2 the FRILL-TREE: the Rift's frill tree in kiln country (biomes/rift, the frill tree and its barrel frill). A ribbed
+// bottle column, swollen low with stored water, olive-grey; in rows up every rib, short stiff waxy fins, olive and gold
+// with a copper sheen away from the sun, longest at the middle; at the summit a splay of long fins round the crown pod, a
+// ruffled collar of dark red, orange and gold, and a smaller pod or two below it. A SEEDER: a fire kills it, burns its
+// fins to black stubs and bursts the pods, throwing the fireproof seed over the ash; for four years the charred column
+// stands in a ring of its own seedlings, and then the young trees grow back (a quarter of full height at four years,
+// full at nine).
+B[2]=function(T,st,lv){const S=SP[T.sp],a=T.age,dead=a<4,young=!dead&&a<9,g=young?mix(.3,1,smooth(4,9,a)):1,H=T.H*g,rb=T.rb*mix(.5,1,g),nR=10,ph=rr(0,TAU);
+ const rAt=u=>rb*(1-.5*u)*(1+.35*Math.sin(Math.PI*Math.min(1,u*1.3)))*(1+.4*smooth(.06,0,u));   // a bottle: swollen low, tapering
+ const dcol=a>2.5?deadCol(.6):charCol(S),rings=[],du=lv===2?.05:.12,hc=H*.88;
+ for(let u=0;u<=1.0001;u+=du){const y=T.y0-.3+(hc+.3)*u;rings.push({x:T.x,y,z:T.z,r:rAt(u*.88),yy:u*hc,col:dead?dcol:barkCol(S,Math.floor(u*5))});}
+ rings.push({x:T.x,y:T.y0+hc+rAt(.88)*1.4,z:T.z,r:.04,yy:hc+1,col:dead?dcol:barkCol(S,1)});   // closed: a rounded top, never an open pipe
+ const uvs=BIO.bucket('bark5').uvScale;
+ st.trunk+=BIO.lathe('bark5',rings,lv===2?16:9,Math.max(1,Math.round(TAU*rb/uvs[0])),uvs[1],(Rg,ang)=>Rg.r*(1+.12*Math.cos(nR*ang+ph)),(Rg,ang)=>.76+.24*Math.cos(nR*ang+ph));
+ const c2s=S.irid,hcol=vary(pick(S.leaf),.03,.08,.05),fk=H/5;
+ // the fins in rows on the ribs: alive, olive and gold; the first months after a fire, burnt stubs
+ if(!dead||(lv===2&&a<1.6)){const rows=lv===2?Math.max(3,Math.round(H/.5)):Math.max(2,Math.round(H/1.4)),nf=lv===2?nR:nR/2;
+  for(let r=0;r<rows;r++){const u=mix(.06,.84,r/Math.max(1,rows-1)),yy=T.y0+hc*u,R=rAt(u)*1.06;
+   for(let k=0;k<nf;k++){const ang=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=mix(.38,.9,smooth(.05,.55,u))*mix(1.15,.7,u)*fk*rr(.88,1.1)*(dead?.45:1);
+    BIO.put('frillfin',[T.x+Math.cos(ang)*R,yy,T.z+Math.sin(ang)*R],qEuler(rr(-.08,.08),-ang,mix(.7,.95,u)+rr(-.1,.1)),[L,L*.9,L*.9],
+     dead?leafCol(PAL.ash,.75,.01,.03,.05):bright(vary(hcol,.02,.06,.05),rr(1.15,1.35)),{c2:dead?leafCol([0x5a5650,0x4a4642],.8):bright(C(pick(c2s)),1.15),n:[Math.cos(ang)*.85,.5,Math.sin(ang)*.85]});st.fins++;}}}
+ const top=T.y0+hc,rT=rAt(.88);let reach=rb+1;
  if(dead){
-  // the burst pods: blackened collars torn open wide at the limb ends
-  for(const s of spots){const q=qUp([s.d[0]*.7,.7,s.d[2]*.7]);BIO.put('frill',[s.p.x,s.p.y,s.p.z],q,[rr(.5,.75),rr(.18,.28),rr(.5,.75)],shade(C(pick(PAL.frill)),-.62));st.pods++;}
+  // the burst crown: the pod's collar blackened and torn wide open at the top of the charred column
+  const cw=rr(.9,1.3);BIO.put('frill',[T.x,top+.1,T.z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[cw,cw*.4,cw],C(pick([0x3a2620,0x302018,0x44281e])));st.pods++;   // charred, an ember tinge from the collar's own red
   // the thrown seed, come up as seedlings in a ring round the snag (after the first rains, a third of a year on)
   if(a>.3){const n=lv===2?ri(8,16):4,hs=clamp(.15+a*.32,.15,1.4);
    for(let i=0;i<n;i++){const q=rr(0,TAU),d=rr(4,18),x=T.x+Math.cos(q)*d,z=T.z+Math.sin(q)*d;if(BIO.mask(x,z)<=0)continue;
     BIO.put('round',[x,Y(x,z)+hs*.45,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[hs*.7,hs*.6,hs*.7],leafCol(PAL.seedling,1.2,.03),{n:[0,1,0]});st.seedlings++;}
-   reach=Math.max(reach,18);}
-  regTree(T,S,reach,topY-T.y0+1);return;}
- const hc=C(pick(S.leaf)),cy=T.y0+H*.75;
- for(const s of spots){for(let c=0,n=lv===2?3:1;c<n;c++){const q=rr(0,TAU),d=s.L*.3*Math.sqrt(rng());
-   clumpAt('round',s.p.x+Math.cos(q)*d,s.p.y+rr(-.2,.5),s.p.z+Math.sin(q)*d,R*.42*(lv===2?1:1.5),.7,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
-  // a pod at most limb ends, opening outward and up
-  if(rng()<.8){const q=qUp([s.d[0]*.6,.8,s.d[2]*.6]);BIO.put('frill',[s.p.x+s.d[0]*.4,s.p.y+.35,s.p.z+s.d[2]*.4],q,rr(.35,.55),bright(vary(pick(PAL.frill),.02,.06,.05),1.15));st.pods++;}}
- regTree(T,S,reach,topY-T.y0+R*.4+1);};
+   reach=18;}
+  regTree(T,S,reach,top-T.y0+2);return;}
+ // the crown: a splay of long fins round the pod, the pod opening upward (a young tree flowers from five years on)
+ const n=lv===2?12:6,a0=rr(0,TAU);
+ for(let k=0;k<n;k++){const ang=a0+k/n*TAU+rr(-.15,.15),L=H*rr(.24,.32);
+  BIO.put('frillfin',[T.x+Math.cos(ang)*rT*.6,top+rr(-.2,.3),T.z+Math.sin(ang)*rT*.6],qEuler(rr(-.1,.1),-ang,rr(.45,.95)),[L,L,L*.95],bright(vary(hcol,.02,.06,.05),1.3),
+   {c2:bright(C(pick(c2s)),1.15),n:[Math.cos(ang)*.7,.7,Math.sin(ang)*.7]});st.fins++;reach=Math.max(reach,rT+L);}
+ if(g>.65){BIO.put('frill',[T.x,top+rT*.9,T.z],qUp([rr(-.1,.1),1,rr(-.1,.1)]),[rT*3.2,rT*2.2,rT*3.2],bright(vary(pick(PAL.frill),.02,.06,.05),1.15));st.pods++;
+  if(lv===2)for(let k=0,m=ri(0,2);k<m;k++){const u=rr(.62,.78),ang=rr(0,TAU),R=rAt(u),s=rT*rr(.9,1.3);
+   BIO.put('frill',[T.x+Math.cos(ang)*R*1.1,T.y0+hc*u,T.z+Math.sin(ang)*R*1.1],qUp([Math.cos(ang)*.6,.8,Math.sin(ang)*.6]),s,bright(vary(pick(PAL.frill),.02,.06,.05),1.1));st.pods++;}}
+ regTree(T,S,reach,top-T.y0+H*.22+1);};
 
 // 3 the PARASOL PINE and the long trunks: a clear straight bole with an umbrella of near-level limbs at the top, so the
 // crown stands far above any flame. A survivor: charred below the flame height, its crown green.
@@ -2104,7 +2129,7 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
 
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('craterdry: no builder for species '+i+' '+S.key);});
-const newStats=()=>({trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spikes:0,shoots:0,seedlings:0,heroes:0,fars:0,byS:SP.map(()=>0)});
+const newStats=()=>({fins:0,trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spikes:0,shoots:0,seedlings:0,heroes:0,fars:0,byS:SP.map(()=>0)});
 CRATERDRY.buildTrees=function(R,q){
  reseed(550031);q=q==null?1:q;R=R||2500;means();
  const st=newStats();
@@ -2924,7 +2949,7 @@ frame();window._ready=true;
 // ================================================================= HOST — probe (window._api)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
- showcase:{tris:18500000,calls:120},   // measured 17.0M at q=1 on this 5.2 km map (KNOWN_ISSUES), not a target
+ showcase:{tris:18500000,calls:120},   // measured 17.9M at q=1 on this 5.2 km map (KNOWN_ISSUES; 17.0M before the frill-tree became a frill tree, 2026-10-06), not a target
  cls:{pass:14000000,host:900000},
  type:{'craterdry/trees':'pass','craterdry/floor':'pass','craterdry/fire':'host','host':'host'},
 };
