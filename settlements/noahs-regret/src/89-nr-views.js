@@ -16,7 +16,7 @@ function nrViews(){const L=NR.L,PQ=NR.PQ,PH=NR.PH,lot=id=>NR.LOTS.find(l=>l.id==
  V['The top deck: the promenade']=nrV(nrHP(52,-16.5,L.TOP+1.7),nrHP(96,-6,L.TOP+5));
  V['The stern: funnels and garden']=nrV(nrHP(PH-90,-70,L.TOP+40),nrHP(PH,0,L.TOP+6));
  V['The atrium: the grand stair']=nrV(nrHP(PQ-17,-1,L.D[0]+1.7),nrHP(PQ+6,0,L.D[1]+3));
- V['The atrium from the dome gallery']=nrV(nrHP(PQ-16,-17.5,L.TOP+1.7),nrHP(PQ+6,0,L.D[0]));
+ V['The atrium from the dome gallery']=nrV(nrHP(PQ-15,-14.9,L.TOP+2.0),nrHP(PQ+12,5,L.D[1]));
  V['The inner quay and a float']=nrV(nrHP(42,-60,L.D[0]+6),nrHP(62,-26,L.D[0]));
  V['Plan: the bridge (D4)']=nrV(nrHP(-26,-30,L.D[3]+34),nrHP(0,6,L.D[3]),{cut:cutAt('D4')});
  V['Plan: the grand dining room']=nrV(nrHP(PH+44,30,L.D[2]+38),nrHP(PH,0,L.D[2]),{cut:cutAt('Dining')});

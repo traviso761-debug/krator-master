@@ -33,6 +33,7 @@
       cell's slope can show inside the starboard holds as drifted sand along the wall.
 - [ ] Glass is one flat transparent tint; at grazing angles the interiors behind it are hard to see from outside (the
       deck cut is the way in).
+- [ ] The atrium's glass balustrades read milky when looked through from above (the gallery view): one flat glass tint.
 - [ ] The halos (lamp glows) draw by day at a quarter strength, as in the Scyvoi kit.
 
 ## Performance
