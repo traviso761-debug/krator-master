@@ -311,7 +311,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
                        backed onto this wall faces the room at this heading) }
      doors[]         { at, w, to, swing, hinge, wall, u (metres along the wall from a), n, ry }
      windows[]       { at, w, sill, h, wall, u, n }
-     fixtures[]      { id, kind, x, z, ry, w, d, h, clearance, reach, stair?, end? }
+     fixtures[]      { id, kind, x, z, ry, w, d, h, clearance, reach, stair?, end?, bed (0, or the sleepers a carved bed holds) }
    Registered rooms live in KratorInteriors.rooms / roomById; IX.normRoom() normalises without
    registering (the placer accepts either).
    ====================================================================== */
@@ -367,7 +367,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     (o.fixtures || []).forEach(function (f, k) {
       R.fixtures.push({ i: k, id: f.id || (R.id + '.fx' + k), kind: f.kind || 'fixture', x: +f.x, z: +f.z, ry: +(f.ry || 0),
         w: +f.w, d: +f.d, h: f.h == null ? R.h : +f.h, clearance: f.clearance || {}, reach: f.reach !== false,
-        stair: f.stair || null, end: f.end || null });
+        stair: f.stair || null, end: f.end || null, bed: f.bed || 0 });   /* bed: n, a carved bed shelf sleeping n (sets auditResidence) */
     });
     return R;
   };
@@ -2440,6 +2440,7 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     const door = function (d) {
       const q = Object.assign({}, d); q.at = T(d.at);
       if (q.to == null) q.to = 'street';
+      else if (typeof q.to === 'string' && q.to.charAt(0) === '.') q.to = id + q.to;   /* '.back': the item's own room 'back' */
       return q;
     };
     item.bodies.forEach(function (b, bi) {
@@ -2503,6 +2504,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     if (!item.residence || item.skip) return out;
     const FOOD = IX.FOOD_ROLES || [], ITEM = IX.ITEM_ROLES || [];
     inst.rooms.forEach(function (R) {
+      /* a carved bed shelf (or any fixture marked bed: n) sleeps n: structure, not furniture (kits/zeijani) */
+      (R.fixtures || []).forEach(function (f) { if (f.bed) out.beds += f.bed === true ? 1 : f.bed; });
       const P = plans[R.id]; if (!P) return;
       P.placements.forEach(function (p) {
         if (p.type === 'bed') out.beds += p.catRole === 'bunk' ? 2 : 1;     /* a bunk sleeps two */

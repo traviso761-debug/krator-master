@@ -166,7 +166,8 @@ FURN({
   a plate, a painted panel, a mounted skull. Tapestries and hangings are `banner`. Cups, jugs and
   bowls are `vessel`, candles `lamp`.
 - **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
-  warehousing brewing weaving tanning pottery carpentry mining herding trading`) marks a work item: the piece goes on the
+  warehousing brewing weaving tanning pottery carpentry mining herding trading`, and the Zeijani trades of 2026-10-07:
+  `fungiculture alchemy dyeing masonry lampmaking knapping ropemaking`) marks a work item: the piece goes on the
   sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
   rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host.
 - **Tier.** `tier: 'poor' | 'common' | 'court'` and `wealth: [lo, hi]`; `FURN()` fills them in from
@@ -306,6 +307,7 @@ tapestries (`banner`) and wall art (`art`) for its rich and court rooms. The set
 | `reedlake` | common, court | the floating reed village | bundled reed, rush, driftwood, lake clay, fish silver, shell | – |
 | `post-apoc` | common, court | high-value salvaged Ancients goods | alloy, steel, glass, synthetic cloth, white ceramic; court: gilt | generic |
 | `scyvoi` | common, court | Kazakh; Kyrgyz; Mongol; Bedouin; Moroccan (the Baer-San, salamander riders of the crater drylands) | felt, wool, velvet, leather, poplar and walnut, red lacquer, brass, copper, black iron, mosaic glass, bone and horn; court: crimson velvet, gold, knotted carpets | – |
+| `zeijani` | common, court | Cappadocia; Petra; Ethiopian rock churches; fantasy dwarves; Pueblo and kiva (style only); Ashlander; Varanasi; Babylon (the cave-dwellers of the Throne, `kits/zeijani`) | carved tuff and basalt, polished oxide stone, kipuka hardwood, fleece, hide, felt, terracotta and turquoise glaze, copper, obsidian, bone; court: polished red and purple oxide, bronze | zeijani |
 | `hykkousoi` | (palette only) | Greek; Polynesian; organic | nacre and mother-of-pearl, olive wood, sea-linen, bronze | hykkousoi |
 
 The harvested cultures (`yuni-*`, `sahelian`, `order`, `ancient`, `ancients-salvage`) keep their
@@ -381,6 +383,7 @@ sheet's families and the role's extras (`FK.materialsFor`), keys the pieces `<cu
 | reedlake | bar, jar_rack, long_bench, long_table (common); sleeping_mat (poor): the Mungo pass, for Reed's Local and the Reed Lake interiors set |
 | eastabyss | abyss_reed_bundles, abyss_brick_stack, abyss_lime_sacks (outdoor): the Mungo pass, for the Builders' yard |
 | scyvoi | the tent furnishings the Scyvoi building kit places by key: floor_cushion, bolster, toshak (wall), pouf, bedding_stack (wall), tray_table, low_round_table, painted_chest, floor_lantern, hanging_lantern and glass_chandelier (ceiling; the chandelier is court), tea_set (surface), samovar, ger_stove (flue 2.6 m or 3.6 m), fire_pit, brazier, smoke_bowl, cauldron (outdoor), saddle_rack, tack_pegs (wall), lance_stand, water_skins, fruit_baskets (fire-fruit, a placeholder until the crater-drylands biome's fruit lands), supply_bales, wall_felt (wall, a painted shyrdak), felt_rug_round, bellows (job smithing), tying_post and tying_boulder (outdoor, type `pen`), spirit_pole (outdoor statue), shaman_drum (type `shrine`), bone_rack (wall art), herb_bundles (ceiling, type `supply`) |
+| zeijani | (2026-10-07, `kits/zeijani`) 43 loose pieces besides the three FK sets: home (fleece bed, water olla, jar cradle, tuff stool and bench); brewing and fungi (mash tun, fermenting crocks, alecap spawn rack, drying trays, basket of alecaps); the alchemist (retort bench, specimen shelf, mortar with Ranj resin, glow-culture jar); light (glow-fungus basin, slipper lamp, hanging copper lamp: lights as data); crafts (mealing bins, dye vat, yarn rack, kick wheel, pot stack, knapping bench, obsidian mirror, rope rack and coils, mason's banker, lampwright's and leatherworker's benches); the sacred (spirit masks: a Hidden One, the Lamp Mother, the Serpent; ancestor figurines, prayer sticks, cloud-terrace altar, Ranj censer, drum, kiva ladder, staffs); the dead (ossuary box, mummy bundle, stacked bones, funerary lamp); the scouts' map table; the cistern's dipping sweep. Carved benches, bed shelves, niches and the kiva's great incense burner are the kit's fixtures, not furniture |
 | scyvoi | the hidemaker's tanning set (2026-10-06, job tanning): hide_frame (a hide laced in a stretching frame; goat or salamander), fleshing_beam, tanning_vat (bark liquor or lime), hide_stack, drying_line, smoking_frame (hides sewn round a smudge, lit). Hides are flat F.pillow ovals |
 
 ### Trades and households (the 2026-10 interiors-sets pass)

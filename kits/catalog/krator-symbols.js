@@ -55,9 +55,16 @@ Object.assign(SYMBOLS, {
  // a skull, teeth and all (Screamers)
  skull:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy-R*.15,R*.62,0,SYM_TAU);g.fill();g.fillRect(cx-R*.4,cy+R*.2,R*.8,R*.5);g.fillStyle=c2;for(const s of [-1,1]){g.beginPath();g.ellipse(cx+s*R*.26,cy-R*.15,R*.17,R*.2,0,0,SYM_TAU);g.fill();}
   g.beginPath();g.moveTo(cx,cy+R*.05);g.lineTo(cx-R*.1,cy+R*.28);g.lineTo(cx+R*.1,cy+R*.28);g.closePath();g.fill();for(let k=0;k<5;k++)g.fillRect(cx-R*.36+k*R*.16,cy+R*.42,R*.06,R*.26);},
+ // a spiral sinking into a stepped arch: the way in (Zeijani): c1 the stepped stone and the spiral, c2 the dark of the opening
+ spiralarch:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.95,cy+R*.95);
+  for(const [x,y] of [[-.95,-.35],[-.72,-.35],[-.72,-.6],[-.48,-.6],[-.48,-.85],[.48,-.85],[.48,-.6],[.72,-.6],[.72,-.35],[.95,-.35],[.95,.95]])g.lineTo(cx+x*R,cy+y*R);g.closePath();g.fill();
+  const ow=R*.42,oy=cy-R*.12;g.fillStyle=c2;g.beginPath();g.moveTo(cx-ow,cy+R*.95);g.lineTo(cx-ow,oy);g.arc(cx,oy,ow,SYM_PI,0);g.lineTo(cx+ow,cy+R*.95);g.closePath();g.fill();
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.08);g.beginPath();const sx=cx,sy=cy+R*.3;for(let i=0;i<=60;i++){const t=i/60,a=-SYM_PI/2+t*SYM_TAU*2.1,r=R*.34*(1-t*.92);const x=sx+Math.cos(a)*r,y=sy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  g.fillStyle=c1;g.beginPath();g.arc(sx,sy,R*.05,0,SYM_TAU);g.fill();},
  // a toothed gear (post-apoc salvage and scrap)
  gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
 });
 // the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
 const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'wavesun', xanadu:'wheel',
- 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear' };
+ 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear',
+ zeijani:'spiralarch' };

@@ -25,7 +25,7 @@
                        backed onto this wall faces the room at this heading) }
      doors[]         { at, w, to, swing, hinge, wall, u (metres along the wall from a), n, ry }
      windows[]       { at, w, sill, h, wall, u, n }
-     fixtures[]      { id, kind, x, z, ry, w, d, h, clearance, reach, stair?, end? }
+     fixtures[]      { id, kind, x, z, ry, w, d, h, clearance, reach, stair?, end?, bed (0, or the sleepers a carved bed holds) }
    Registered rooms live in KratorInteriors.rooms / roomById; IX.normRoom() normalises without
    registering (the placer accepts either).
    ====================================================================== */
@@ -81,7 +81,7 @@
     (o.fixtures || []).forEach(function (f, k) {
       R.fixtures.push({ i: k, id: f.id || (R.id + '.fx' + k), kind: f.kind || 'fixture', x: +f.x, z: +f.z, ry: +(f.ry || 0),
         w: +f.w, d: +f.d, h: f.h == null ? R.h : +f.h, clearance: f.clearance || {}, reach: f.reach !== false,
-        stair: f.stair || null, end: f.end || null });
+        stair: f.stair || null, end: f.end || null, bed: f.bed || 0 });   /* bed: n, a carved bed shelf sleeping n (sets auditResidence) */
     });
     return R;
   };

@@ -12,7 +12,7 @@ any future build (a Voth catalog, a Yuni district, a Beast Rider village, a High
 |---|---|
 | `37-sockets.js` | `sock(type,x,y,z,ry,opts)`, `fillSockets()`, the `CULT` registry, `cultDef(pack)`, `PAINT()` (livery colour from the active culture) |
 | `38-symbols.js` | **the culture symbols**, pure 2D canvas: `SYMBOLS[name](g, cx, cy, R, ink, ink2)`, `drawTriskele`, and `SYMBOL_OF` (pack or culture key -> symbol). Shared with the furniture kit (vendored as `kits/catalog/krator-symbols.js`, `build.py --vendor-check` there), so a dressed building and the tapestries inside it carry one emblem |
-| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander screamer` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
+| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander screamer zeijani` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
 | `example/` | a runnable sheet: the same demo wall in every pack. `python3 example/build.py` writes `example/sockets-example.html` |
 
 ## The five-minute version
@@ -23,7 +23,8 @@ sock('awning', -2.4, 2.5, -0.9, 0, {w:2.2, d:1.3, drop:.5, h:2.5});   // top edg
 sock('banner',  3.9, 4.2,  1.25, 0, {w:.8, h:2});                       // hangs from its anchor (the top edge)
 sock('flag',   -4.4, 6.2, -0.7, 0, {w:1.2, h:.7});                      // on a pole top
 sock('emblem',  0.0, 2.6, -0.9, 0, {w:.9, h:.9});                       // a plate on a wall
-sock('sign',    0.0, 3.45,-0.85,0, {w:2.6, h:.95, trade:'FOOD'});       // shop board with a pictograph (FOOD ARMOR WEAPONS TINKER GENERAL MESS)
+sock('sign',    0.0, 3.45,-0.85,0, {w:2.6, h:.95, trade:'FOOD'});       // shop board with a pictograph (FOOD ARMOR WEAPONS TINKER GENERAL HARBOUR TICKETS MESS;
+                                                                         //   2026-10-07: ALCHEMIST LAMP STONE DYE POTTER LEATHER KNAPPER ROPE TAVERN INN)
 // 2. In the scene: pick the culture (or dress one building): CULT.cur = CULT.packs.iziz;   place('shop-food', x, z, 0, {culture:'yuni'});
 ```
 Socket frame: origin at the anchor, **+z out of the surface**, +x along it, y up. `fillSockets()` runs right after each builder (inside `place()`), with the building's
@@ -62,6 +63,7 @@ Shipped palettes: **Iziz** orange and teal, striped awnings. **Republic** Voth's
 **Yuni** yellow with the hyperboloid. **Beast Riders** green with the claw, ragged hide-and-cloth.
 **Hykkousoi** pale sea-linen and slate blue with the gold wave-sun. **Xanadu** saffron bordered in maroon with the gold-hubbed wheel. **Ring Sea Islanders** bark-dyed cloth
 and pandanus with the white moon, pennant streamers. These three take their colours from the sails in `kits/ringsea`, so a culture's ships and buildings match.
+**Zeijani** alecap purple bordered in soot, ochre bands, a bone-white `spiralarch` (a spiral sinking into a stepped arch: the way in), felt and hide awnings, pennants; signs bone on soot.
 **Screamers** ochre daub on rag with black and bone white and the skull, ragged cloth, pennants (the Hexahedron's salvage homes wear it).
 
 Pack keys are the repo's culture tags (`beast-rider`, not `beastriders`), so a building's `culture` tag can pick its pack directly.
