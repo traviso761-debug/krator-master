@@ -18,14 +18,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 3 |  |
 | `10-core.js` | 3 | error panel (5); rng + noise (14) |
 | `12-nr-world.js` | 5 | THE GROUND (world y): the shore, the dune, the s (35) |
-| `14-nr-plan.js` | 22 |  |
+| `14-nr-plan.js` | 23 |  |
 | `27-mat.js` | 8 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
-| `40-nr-hull.js` | 20 | the hull shell (60); the rounded fronts: scalloped balconies, rounded (121); the sterns: rounded, stepping back in terraces (137); the bow: the forecastle, the stem, the anchors (178) |
-| `41-nr-piers.js` | 5 |  |
+| `40-nr-hull.js` | 20 | the hull shell (60); the rounded fronts: scalloped balconies, rounded (126); the sterns: rounded, stepping back in terraces (142); the bow: the forecastle, the stem, the anchors (183) |
+| `41-nr-piers.js` | 6 |  |
 | `42-nr-decks.js` | 8 |  |
-| `43-nr-fore.js` | 10 |  |
+| `43-nr-fore.js` | 12 |  |
 | `44-nr-atrium.js` | 8 |  |
 | `46-nr-rooms.js` | 9 | THE GRAND DINING ROOM (D3-D4, double height, the (15); THE ENGINE ROOMS (D1-D2, double height, the ster (30); THE CREW MESSES (D3, the whole width; a galley b (56); THE GREENHOUSE (D4, the whole width, under a gla (64) |
 | `47-nr-holds.js` | 3 |  |
@@ -37,10 +37,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `60-nr-anc-lab.js` | 9 |  |
 | `62-nr-pirates.js` | 7 |  |
 | `64-nr-flora.js` | 2 |  |
-| `70-nr-interiors.js` | 28 | the CABINS (63); the SHIP'S ROOMS (83); the DECK BUILDINGS (126); the PUBLIC ROOMS: placed piece by piece, in the  (141); the pass (252) |
+| `70-nr-interiors.js` | 33 **big** | the CABINS (63); the SHIP'S ROOMS (87); the DECK BUILDINGS (132); the PUBLIC ROOMS: placed piece by piece, in the  (147); the pass (287) |
 | `81-sky.js` | 10 |  |
 | `82-nr-water.js` | 5 | the sea (25) |
-| `89-nr-views.js` | 9 | where a point is (the inspector, the HUD) (53); the walk floors: every level under a point (hull (68) |
+| `89-nr-views.js` | 10 | where a point is (the inspector, the HUD) (58); the walk floors: every level under a point (hull (73) |
 | `90-scene.js` | 4 | (re)build the world (26) |
 | `91-probe.js` | 2 |  |
 | `91f-furnish.js` | 7 |  |
