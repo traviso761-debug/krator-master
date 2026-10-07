@@ -1,0 +1,12 @@
+{
+ "name": "The glacier and its ice caves (station 9): a valley glacier and its icefall, moraines, a proglacial lake, the braided outwash, the cold belt's gill-coral trees and conifers, a geothermal shelf with ice towers, ice caves and an arch, the snow weather",
+ "out": "throne-glacier.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-4-weather.js",
+  "89-atmos-9-host.js"
+ ]
+}

@@ -13,7 +13,7 @@ const ATMOS={};
   A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
-   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
+   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600},ash:{value:0},snow:{value:0}};   // ash, snow: the opt-in ash and snow weathers (4-weather)
   A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let warned=false;
   // the shared GLSL, written from the presets so JS and shaders agree
   const f=A.glf;

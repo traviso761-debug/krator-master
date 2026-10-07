@@ -61,3 +61,14 @@ the floor is `vale` and `rip` (gambel oak, bigtooth maple, cottonwoods, rose wee
   without its pack, so there it keeps the procedural canvases (KMAT is not in that page); `?mat=proc` shows them here.
 - `card.spruce` keeps a faint lilac at a few needle tips (magenta in the source's anti-aliasing); the species tint covers it.
 - `card.ember` came as one compound pompom, not nine: every ember-crown tuft is the same shape, rotated.
+
+## From other kits
+
+- [ ] **Import the Throne's sulphur layer onto the sulphur flats** (the owner, 2026-10-06). `biomes/throne` station 8
+  (vent country) grows Krator's sulphur extremophiles wherever its host hands in a `sulph` field (`THRONE.buildSulphur`
+  in `src/60-biome-throne-floor.js`, the brimstone candelabra `sp 23` in `55`; `BIOME-API.md`, the `sulph` row). Bring
+  that layer here for the north's Danakil-like flats: bind a `sulph` field from the flats' `geo` ground, and take the
+  **brimstone reeds only round the acid pools** (a narrow band at their shores, not across the flats). Either load the
+  Throne kit as a second kit on the page (as the Throne's kipuka loads the hyperjungle: `station.json` `kits`) or port
+  the reeds' items (`rod` stems in two bands, the `tassel`, `PAL.reedLow/reedHigh/tassel`) into this kit.
+

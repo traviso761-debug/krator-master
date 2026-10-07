@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.167,
+    1.002
+   ],
+   "seam_before": [
+    1.934,
+    1.541
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.mushroom.toxic",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.5,
+   2.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground-mushroom-toxic.png",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: supplied as \"Toxic Mushroom Ground Cover.png\" (volc2.zip), 2026-10-06",
+  "reuse": "the plume's mature ground; fungal swamp edges; ruins overgrown with fungus",
+  "sha1": "3ba397360c55538ffbe5fe1bbd0f530412a2baba"
+ }
+}

@@ -10817,6 +10817,29 @@ FURN({
     }
   }
 });
+
+/* ================= The Throne (1 piece) ================= */
+
+FURN({
+  key: 'generic_fruit_coconut', name: 'Coconut', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'throne', source: ['coconut'],
+  w: 0.26, d: 0.24, h: 0.2, variants: 2, variantNames: ['green nut in its husk', 'husked and split'],
+  variantDims: [{ w: 0.26, d: 0.24, h: 0.2 }, { w: 0.25, d: 0.14, h: 0.05 }],
+  build: function (F) {
+    const husk = F.col('fruitCocoHusk'), shell = F.col('fruitCocoShell'), flesh = F.col('fruitCocoFlesh');
+    if (F.variant === 0) {
+      /* the green nut as it falls: a three-sided husk, blunt at the stalk, pointed at the far end, lying on its side */
+      F.blob(0, 0.1, 0, 0.12, 0.2, 0.3, husk, 'food');
+      for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3 + 0.5; F.rod(-0.09, 0.1 + Math.sin(a) * 0.08, Math.cos(a) * 0.08, 0.09, 0.1 + Math.sin(a) * 0.06, Math.cos(a) * 0.06, 0.012, F.shade(husk, 0.08), 'food'); }
+      F.ball(-0.11, 0.1, 0, 0.025, F.shade(husk, -0.3), 'food');
+    } else {
+      /* the brown nut out of its husk, split: two shell cups with white meat, a third of a nut beside them */
+      for (const [x, z] of [[-0.06, 0], [0.065, 0.02]]) KFRUIT.half(F, x, 0, z, 0.06, shell, flesh);
+      F.cyl(-0.06, 0.022, 0, 0.04, 0.004, 0, F.col('fruitCocoWater'), 'food');
+    }
+  }
+});
 /* ---------- krator-master-furniture-generic-goods.js ---------- */
 /* ======================================================================
    Krator master catalog — generic furniture: containers, food, drink, supplies
@@ -10871,6 +10894,7 @@ FURN_CULTURE('generic', { palette: {
     /* biome fruit (krator-master-furniture-generic-fruit.js): colours taken from the fruiting part each biome draws */
     fruitScaleRed: 0xc0262a, fruitScaleFlesh: 0xf0b8b0, fruitFernEgg: 0x8a6a3a, fruitFernMeal: 0xe8d8a8,
     fruitTideHusk: 0x7e3030, fruitTideJelly: 0xe8e0c8, fruitCycadRed: 0xb83a2a,
+    fruitCocoHusk: 0x6e8a3a, fruitCocoShell: 0x5a3e26, fruitCocoFlesh: 0xf4f0e4, fruitCocoWater: 0xe8eadc,
     fruitGateRind: 0xe0862a, fruitGatePulp: 0xf2ead0, fruitMahogany: 0x5a3a22, fruitMahoganySeed: 0xc89a5a,
     fruitSilkGreen: 0x7a9a4a, fruitSilkFloss: 0xf0e6d0, fruitPandanKey: 0xd87a2a, fruitPandanTip: 0x5a6a2a, fruitPandanPaste: 0xe8a040,
     fruitAril: 0xd0202a, fruitArilSeed: 0x2e3a2a, fruitRowan: 0xd83a2a, fruitRowanJelly: 0xc8502a, fruitBilberry: 0x2a3a6a,

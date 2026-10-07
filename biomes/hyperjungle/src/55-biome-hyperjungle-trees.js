@@ -43,7 +43,8 @@ function texMean(tex){const im=tex&&tex.image;if(!im||!im.getContext)return[1,1,
 // SAME colour the bole does; a far impostor gets that rendered colour flat.
 let TINT=null;
 function tints(){if(TINT)return TINT;
- const boleM=SP.map((S,k)=>texMean(HYPERJUNGLE.BARKTEX[k])),limbM=texMean(HYPERJUNGLE.LIMBTEX);
+ // a library bark's mean is the pack's (an sRGB grey: its linear value per channel)
+ const LIB=HYPERJUNGLE.LIB||{},boleM=SP.map((S,k)=>LIB[k]&&LIB[k].mean>0?[0,1,2].map(()=>Math.pow(LIB[k].mean,2.2)):texMean(HYPERJUNGLE.BARKTEX[k])),limbM=texMean(HYPERJUNGLE.LIMBTEX);
  TINT={bole:[],limb:[],far:[]};
  for(let sp=0;sp<NSP;sp++){const B=SP[sp].bark;TINT.bole[sp]=[];TINT.limb[sp]=[];TINT.far[sp]=[];
   for(let k=0;k<3;k++){
@@ -136,13 +137,15 @@ function buildHero(T,ti,q,st){
  // the limb tint of a band renders as that band's bole colour, and the same per-channel ratio carries the moss.
  const toLimb=(c,h)=>{const k=(Math.floor(h/22)+ti)%3,b=boleCol(sp,k).clone().convertSRGBToLinear(),l=limbCol(sp,k).clone().convertSRGBToLinear(),x=c.clone().convertSRGBToLinear();
   return x.setRGB(x.r*l.r/Math.max(.02,b.r),x.g*l.g/Math.max(.02,b.g),x.b*l.b/Math.max(.02,b.b)).convertLinearToSRGB();};
- const rootAt=h=>toLimb(trunkPt(h).col,h),rootCol=rootAt(1.5);
+ // with a library bark the roots and limbs share the bole's map (their own bucket, 'limb'+sp): the bole's colours as they are
+ const LB=HYPERJUNGLE.LIB&&HYPERJUNGLE.LIB[sp],LF=LB?'limb'+sp:'limb';
+ const rootAt=h=>LB?trunkPt(h).col:toLimb(trunkPt(h).col,h),rootCol=rootAt(1.5);
  lobes.forEach(L=>{if(sp===3&&rng()<.45)return;
   const ang=L.a,R0=trunkR(T,T.y0+7)*(1+Hb.butA*.35*L.amp),len=rr(26,70)*(sp===3?.6:1)*(.6+.4*L.amp),rr0=clamp(T.rb*.17*L.amp,1,3.2),pts=[],wob=rr(0,TAU);
   for(let j=0;j<=9;j++){const t=j/9,d=R0*.72+len*t,a=ang+.32*Math.sin(wob+t*5.2)*t+.10*Math.sin(wob*2+t*11);
    const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
    const r=mix(rr0,.22,Math.pow(t,.75));pts.push({x:x,y:BIO.terrainH(x,z)+r*(j===0?1.6:.22)+(j===0?3:0),z:z,r:r,col:rootAt(r*(j===0?1.6:.22)+(j===0?3:0))});}
-  if(pts.length>3){st.root+=BIO.tube('limb',pts,rootCol,{seg:6});st.roots++;}});
+  if(pts.length>3){st.root+=BIO.tube(LF,pts,rootCol,{seg:6});st.roots++;}});
  // ---- boughs of my own: top tuft, crown fillers, and the lower tier ----
  const mine=[],nTop=ri(Hb.topN[0],Hb.topN[1]),a0=rr(0,TAU);
  function ownBough(u,ang,len,el,curve,rScale,rMin,rMax){
@@ -163,9 +166,9 @@ function buildHero(T,ti,q,st){
  const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[];
  const terGap=Hb.terGap*(farHalf?1.35:1);
  mine.forEach(Lm=>{const pts=Lm.pts,r0=pts[0].r,n=pts.length;
-  const lc=limbCol(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
+  const lc=(LB?boleCol:limbCol)(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
   const cpts=pts.map((p,i)=>({x:p.x,y:p.y,z:p.z,r:p.r,col:lc}));
-  st.limb+=BIO.tube('limb',cpts,lc,{seg:r0>=4.5?10:(r0>=2.6?8:6),cap:true});
+  st.limb+=BIO.tube(LF,cpts,lc,{seg:r0>=4.5?10:(r0>=2.6?8:6),cap:true});
   const cum=treeCum(pts),L=cum[n-1],sStart=L*Hb.secStart;let side=rng()<.5?1:-1;
   for(let s=sStart+rr(0,Hb.secGap*.5);s<L*.985;s+=Hb.secGap*rr(.75,1.3)){
    const at=treePolyAt(pts,cum,s),t=s/L;side=-side;
@@ -175,7 +178,7 @@ function buildHero(T,ti,q,st){
    const sec=treeGrow(at,d1,len1,rS,.14,4,Hb.secCurve+rr(-.05,.05),.07);let ok=true;
    for(let j=1;j<sec.length;j++)if(!clear3(sec[j].x,sec[j].y,sec[j].z,sec[j].r+2.5,sec[j].r+2.5)){ok=false;break;}
    if(!ok)continue;
-   st.bough+=BIO.tube('limb',sec,lc,{seg:rS>.9?5:4});st.boughs++;
+   st.bough+=BIO.tube(LF,sec,lc,{seg:rS>.9?5:4});st.boughs++;
    const sprd=clamp(len1*.26,5,12);
    spots.push({p:sec[2],s:sprd,inner:true},{p:sec[3],s:sprd},{p:sec[4],s:sprd*.9,tip:true});
    if(sp===3&&rng()<.8)hangs.push({x:sec[1].x,y:sec[1].y-sec[1].r*.7,z:sec[1].z});
@@ -190,7 +193,7 @@ function buildHero(T,ti,q,st){
     const d2=treeDir(a2.tx,a2.ty,a2.tz,sd2,rr(.5,.9),rr(.6,1),Hb.secUp*.8+rr(-.15,.25));
     const tw=treeGrow(a2,d2,len2,Math.max(.15,a2.r*.6),.08,2,Hb.secCurve,.05);
     if(!clear3(tw[2].x,tw[2].y,tw[2].z,2.5,2.5)||!clear3(tw[1].x,tw[1].y,tw[1].z,2.5,2.5))continue;
-    st.twig+=BIO.tube('limb',tw,lc,{seg:3});st.twigs++;
+    st.twig+=BIO.tube(LF,tw,lc,{seg:3});st.twigs++;
     spots.push({p:tw[1],s:clamp(len2*.4,3.6,8)},{p:tw[2],s:clamp(len2*.45,3.6,8.5),tip:true});
     if(sp===1&&rng()<.55)hangs.push({x:tw[2].x,y:tw[2].y-.5,z:tw[2].z});
     if(sp===1&&rng()<.30)hangs.push({x:tw[1].x,y:tw[1].y-.5,z:tw[1].z});
@@ -245,15 +248,24 @@ function buildSapling(Sd,si,q,st){
  for(let k=0;k<=7;k++){const u=k/7,r=sp===3?rb*(u<.55?mix(1,1.1,u/.55):mix(1.1,.18,smooth(.55,1,u))):rb*mix(1,.12,Math.pow(u,.85))*(1+.6*Math.exp(-u*H/4));
   pts.push({x:Sd.x+Math.cos(lean)*lk*u*u+Math.sin(u*5+si)*.4,y:Sd.y0+H*u*(sp===3?.9:1),z:Sd.z+Math.sin(lean)*lk*u*u,r:Math.max(.15,r)});}
  const tc=limbCol(sp,si%3),rc=rodCol(sp,si%3);
- BIO.put('trunk',[Sd.x,Sd.y0,Sd.z],qUp([Math.cos(lean)*lk/H*.8,1,Math.sin(lean)*lk/H*.8]),[rb/.4,H*(sp===3?.9:1),rb/.4],tc);
- st.sapTris+=BIO.defs.trunk.tris;
+ // with the library barks (HYPERJUNGLE.LIB) the trunk and boughs are tubes in the species' own limb bucket (its bole's map
+ // and colour); without, the instanced trunk and untextured rods as before (the rods round: BIO.beam's r1 is a THICKNESS,
+ // so a tapered beam came out as a flat board)
+ const LB=HYPERJUNGLE.LIB&&HYPERJUNGLE.LIB[sp],bc=LB?boleCol(sp,si%3):null;
+ // (closed in a rounded knot along its last direction, not a flat disc: the crown's boughs leave below it)
+ if(LB){const K=pts.map(p=>({x:p.x,y:p.y,z:p.z,r:p.r})),L=K[7],P=K[6],dx=L.x-P.x,dy=L.y-P.y,dz=L.z-P.z,dl=Math.hypot(dx,dy,dz)||1;
+  K.push({x:L.x+dx/dl*L.r*.9,y:L.y+dy/dl*L.r*.9,z:L.z+dz/dl*L.r*.9,r:L.r*.8},{x:L.x+dx/dl*L.r*1.7,y:L.y+dy/dl*L.r*1.7,z:L.z+dz/dl*L.r*1.7,r:L.r*.25});
+  st.sapTris+=BIO.tube('limb'+sp,K,bc,{seg:beams?8:5,cap:true});}
+ else{BIO.put('trunk',[Sd.x,Sd.y0,Sd.z],qUp([Math.cos(lean)*lk/H*.8,1,Math.sin(lean)*lk/H*.8]),[rb/.4,H*(sp===3?.9:1),rb/.4],tc);
+  st.sapTris+=BIO.defs.trunk.tris;}
  const nB=Sd.ring?ri(3,5):ri(5,8),spots=[],band=SAP_BAND[sp];let a=rr(0,TAU);
  for(let k=0;k<nB;k++){a+=GOLD+rr(-.3,.3);const u2=mix(band[0],band[1],(k+rr(0,.8))/nB),i2=Math.min(6,Math.floor(u2*7)),bp=pts[i2],bq=pts[i2+1],f=u2*7-i2;
   const o={x:mix(bp.x,bq.x,f),y:mix(bp.y,bq.y,f),z:mix(bp.z,bq.z,f)},tk=(u2-band[0])/(band[1]-band[0]);
   const len=Sd.cr*(sp===0?mix(1,.35,tk):rr(.7,1)),el=rr(SAP_EL[sp][0],SAP_EL[sp][1]);
   const br=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,Math.max(.12,mix(bp.r,bq.r,f)*.5),.06,3,Hb.secCurve,.08);
-  if(beams===2){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[1].x,br[1].y,br[1].z],br[0].r,br[1].r,rc);BIO.beam('rod',[br[1].x,br[1].y,br[1].z],[br[3].x,br[3].y,br[3].z],br[1].r,br[3].r,rc);st.sapTris+=2*BIO.defs.rod.tris;}
-  else if(beams===1){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[2].x,br[2].y,br[2].z],br[0].r,br[2].r,rc);st.sapTris+=BIO.defs.rod.tris;}
+  if(LB&&beams){br[3].r=Math.max(.06,br[3].r);st.sapTris+=BIO.tube('limb'+sp,beams===2?br:[br[0],br[2],br[3]],bc,{seg:beams===2?5:4});}
+  else if(beams===2){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[1].x,br[1].y,br[1].z],br[0].r,br[0].r,rc);BIO.beam('rod',[br[1].x,br[1].y,br[1].z],[br[3].x,br[3].y,br[3].z],br[1].r,br[1].r,rc);st.sapTris+=2*BIO.defs.rod.tris;}
+  else if(beams===1){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[2].x,br[2].y,br[2].z],br[0].r,br[0].r,rc);st.sapTris+=BIO.defs.rod.tris;}
   spots.push(br[1],br[2],br[3],br[3]);if(sp!==3&&sp!==1)spots.push(br[2]);}
  const tp=pts[7];spots.push(tp,tp,{x:tp.x,y:tp.y-H*.07,z:tp.z});if(sp===3)spots.push(tp,tp);
  const cy=Sd.y0+H*mix(band[0],1,.5),size0=clamp(H*.15,3.2,8.5)/Math.sqrt(lodK),sapLeaf=[0x3a6a34,0x2e5a2c];

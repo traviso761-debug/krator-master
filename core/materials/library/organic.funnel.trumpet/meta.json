@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.461,
+    1.642
+   ],
+   "seam_before": [
+    7.674,
+    7.342
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "organic",
+  "id": "organic.funnel.trumpet",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "organic-funnel-trumpet.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "PROMPTS-ready.md section 7 (organic.funnel.trumpet); pasted into the chat 2026-10-06 as a WebP",
+  "reuse": "the inside of a ribbed, frill-rimmed plant funnel seen from above (radial, centred, not a tile): the trumpet trees' funnels (in use); a pitcher plant's mouth, any cup-shaped bloom or fungus mapped from above",
+  "sha1": "ea88fe3fe7db3861fcc3d98a56c744d2cb618484"
+ }
+}

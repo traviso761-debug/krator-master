@@ -855,6 +855,59 @@ the kit uses it as a grey detail map (keep 0), which drops it. `ground.burn` and
 (`chatgpt-2026-10j-craterdry-ground.json`). The crater drylands rows are all delivered; `biomes/crater-drylands` uses every
 one (`materials.json`, `tex/`).
 
+#### The Throne (`biomes/throne`, 2026-10-06)
+
+*Delivered 2026-10-06 by the owner, unprompted (four zips and six pastes, 68 images; prompts not recorded) and processed*
+(`tools/textures/batches/owner-2026-10-throne.json`, `-b.json`, `-c.json`, `owner-2026-10-throne-cards.json`, `-cards-b.json`, `-cards-c.json`, `-cards-d.json`, `owner-2026-10-throne-e.json`, `-f.json`, `-cards-f.json`, `-g.json`, `-cards-g.json`). Each
+set's `meta.json` carries its reuse note. `biomes/throne` uses all but `ground.sand.black`, `ground.olivine` and
+`stone.petrified` (kept for the coast and the lava-cast stumps of later stations).
+
+| id | what | used for |
+|---|---|---|
+| `ground.lava.aa`, `ground.lava.veins` | dark aa lava; black rock with glowing orange veins | every flow; the two-year flow (its veins glow at night) |
+| `ground.ash.gravel`, `ground.ash.ripples`, `ground.ash.mycelium` | grey ash and gravel; wind-rippled ash; ash webbed with glowing mycelium | the plume's ground: gravel, deep ash, the mycelium that lights its nights |
+| `ground.grass.ember`, `ground.mushroom.glow`, `ground.mushroom.toxic`, `ground.mycelium.gold` | red alien grass; a blue glowing mushroom carpet; olive mushroom cover; golden mycelium | the seam; skylights and gullies; (spare); (spare) |
+| `ground.scoria`, `ground.sand.black`, `ground.olivine`, `ground.obsidian` | red and grey scoria; black volcanic sand; green olivine sand; obsidian pebbles | the young cones; (the coast); (the coast); (spare) |
+| `stone.travertine.tufa`, `stone.pumice`, `stone.petrified` | porous tufa; vesicular pumice; petrified wood agate | the acid shores and hot pools; boulders and stones; (lava-cast stumps) |
+| `bark.lava.charcoal`, `bark.lava.charred`, `bark.lava.molten`, `bark.armored`, `wood.sulphur`, `organic.fungus.bracket` | barks | ash pine; trumpet and frill-tree; the pagoda cap (glows at night); star aloe; dead wood; (spare) |
+| `card.shelf.glow`, `card.mushroom.glow`, `card.alienflora.glow` | glowing shelf fungi, mushroom clusters, alien tufts (3 x 3) | wall and wound brackets; dark places; the plume's floor |
+| `card.flower.carnivorous`, `card.fungus.specimens` (4 x 4), `card.fungus.drip`, `card.tendril` | snare flowers; sixteen alien fungi; dripping fungi; tendril rosettes | the plume's floor; hung under caps, tiers and bells; the ash creepers |
+| `card.lavaleaf`, `card.leaf.distressed`, `card.succulent.spotted` | lava-veined leaves; withered leaves; spotted succulents | seam shrubs; Earth's shrubs in the acid; the shoulder's young flows |
+| `card.frond.frill` | nine red-olive spiked fronds in fans (3 x 3) | **in use**: the ruff trees' collars (the ruff tree and the great ruff; four upright cells in a ring round a dark throat) |
+| `card.frond.fractal`, `bark.wavy.slate` | three fractal fronds; blue-grey wave bark | **in use**: the frill tree's fins (the Rift's frill tree, brought to the kipuka) and its ribbed column |
+| `bark.plates.glossy` | glossy red plated bark | **in use**: the hyperjungle's crimson kapok (`biomes/hyperjungle/materials.json`, its opt-in pack) |
+| `bark.scales.hooked`, `bark.amber`, `bark.cratered`, `bark.flesh.red`, `bark.tapestry` | hooked curling scales; amber resin plates; grey cratered; red marbled flesh; carpet-patterned | (in the library, for where they fit: see each `meta.json`'s reuse) |
+| `ground.lichen.crust` | rock crusted with grey-green and orange lichen | (in the library: old lava, kopjes, ruins) |
+| `card.flower.angeltrumpet`, `card.flower.bluebell`, `card.flower.spiderlily`, `card.flower.wilted`, `card.flower.claw` | hanging yellow trumpets; arching teal bells; red spider lilies; wilted flowers; clawed tulip-like flowers (3 x 3) | (in the library: the spice frontier's gardens, the cloud forest, the acid fringe) |
+| `card.fern.green`, `card.moss.hanging` | nine fern fronds; nine hanging moss curtains (3 x 3) | (in the library: the cloud forest station) |
+| `card.leaf.wave`, `card.leaf.redvein`, `card.frond.needle` | three wave-marbled teal leaves; three red-veined spiny leaves; three needled fronds (each 3 across a landscape sheet, squared with padding: the fronds fill 0.18-0.82 of the height) | (in the library) |
+| `organic.cap.orange`, `organic.cap.glossy`, `organic.cap.porous`, `organic.flesh.cells` | an orange cracked radial cap top; a glossy brown radial cap top; a cream porous fungal skin; cells parted by pale veins | the gill-parasol's and stilt parasol's caps; the pagoda's tiers (tinted red); the bone bell's dome (all mapped from above); the drizzle trumpet's pitcher (grey detail under its green) |
+| `card.fungus.trumpets` | nine clusters of trumpet-capped mushrooms (3 x 3) | the plume's floor |
+| `bark.honeycomb`, `bark.twisted.red`, `bark.sulphur.porous` | tan bark eaten into cells; twisted red-brown fibrous bark; sulphur-yellow porous bark | the spice tree; the rope-tree's strands; the bone bells' root curtains (it replaced `organic.fungus.bracket` there, now spare) |
+| `card.carnivore.plants`, `card.flora.coral`, `card.mushroom.alien` | nine carnivorous plants; nine coral-like vent growths; nine alien mushrooms (3 x 3) | the plume's floor and the acid marsh; the vents and hot pools; the plume's floor |
+| `card.succulent.molten`, `card.moss.carnivorous` | dark succulents with ember tips; hanging moss with pitchers and sundews (3 x 3) | cinder and young flows; hung from the parasols' caps |
+| `ground.lava.crust`, `ground.mycelium.crimson`, `ground.mycelium.pale` | an active flow's glowing crust; crimson mycelium; pale mycelium over soil | (spare: a lava lake, the mat's ground, the plume's old soil in later stations) |
+
+Still drawn procedurally (gaps): the mat's veins, the star aloe's star, the trumpet tree's funnels, the lamp caps' dishes,
+the frill pods.
+
+*Station 4, the geyser isle (2026-10-06):* `ground.sand.black` the beaches (and the sea bed), `card.kelp.1`, `.4`, `.7`
+(Ys's kelp) the kelp in the shallows and the wrack on the sand, `bark.palm_tree_bark` the coconut's and the palm frill
+tree's ringed trunks, `bark.ghostwood` the hyper-mangrove's (greyed by its colour) and the drowned trees, `roof.thatch` the
+camp's lean-tos, `ground.jungle.canopy` the forest floor seen from far off, `ground.travertine.acid` the springs' rims and
+the runoff terraces, `ground.brown_mud_02` the mud pots and the lagoon's mud, `ground.moss002` through the forest's litter.
+Delivered the same day (`tools/textures/batches/owner-2026-10-throne-h.json`, `-cards-i.json`): `card.frond.coconut` (three
+fronds across a landscape sheet, base at the top: the coconut palm's crown), `card.seaweed` (nine seaweeds, 3 x 3: the isle's
+shallows and its wrack), `bark.coir` (brown coir-like fibrous bark, full colour: the coconut palm's trunk; reuse: tree-fern
+trunks, coir rope and mats). Gaps, prompted in `PROMPTS-ready.md` section 5: true sinter (`ground.sinter`; the popcorn clay `ground.clay.popcorn` stands in), the runoff's microbial mats
+(`ground.mat.thermal`; the ground's paint stands in).
+
+*Station 5, the cloud forest (2026-10-06):* `card.moss.hanging` (six greener cells: the elfin trees' moss curtains) and
+`card.fern.green` (its floor's ferns) are now in use, as the plan meant; `card.weeper` the veil trees' glowing veils;
+`rock.wet.dark` (the ravine's walls), `ground.gravel042` (its beds), `ground.moss003`
+(moss on its rocks). Delivered the same day: `bark.mossy` (`tools/textures/batches/owner-2026-10-throne-j.json`: scaly bark half under moss
+and lichen, full colour), the elfin trees' bark.
+
 #### Furniture and city (generic, for every culture)
 
 Gaps the scan libraries do not fill. Start each with the base template; for tintable surfaces add the muting sentence. Rows that need cut-outs

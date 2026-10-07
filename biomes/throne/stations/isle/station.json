@@ -1,0 +1,10 @@
+{
+ "name": "The geyser isle (station 4): one of the Throne's inner isles, its crown a geyser basin (geysers, banded hot springs, mud pots, sinter), the warm ground where wild spice bears and the natives tap it, an island's smaller forest, coconut palms and palm frill trees over black-sand beaches, hyper-mangroves in the warm lagoon, kelp in the shallows",
+ "out": "throne-isle.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js"
+ ]
+}

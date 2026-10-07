@@ -66,3 +66,10 @@ Read before changing anything here. `build.py` prints the open count.
       build time and split at the quantiles for the target shares (six species).
 - [x] Fauna (flocks, flitters, butterflies, motes, herds, sloths) as fragment 58
       on the same contract, with 35-core-anim as the one core extension.
+
+- [ ] **Library barks are opt-in** (2026-10-06): `materials.json` and `tex/` hold each hypertree's library bark (Girder's
+      settings; the crimson kapok takes `bark.plates.glossy`). A page that inlines the pack (the Throne's kipuka station)
+      gets library boles and its roots, limbs and twigs on the same map (`HYPERJUNGLE.LIB`, buckets 'limb'+sp). This kit's own
+      page carries no material record, so it still draws the procedural barks and the shared pale limb texture.
+- [x] The screwpine's second-head stem rendered nearly white (an untextured rod given the textured trunk's tint): fixed
+      2026-10-06 (60, `screwpine`).

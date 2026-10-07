@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 11 (1%) | 0 (0%) | 10 (1%) | 55 (4%) | 1372 (95%) |
+| KB | 11 (1%) | 0 (0%) | 10 (1%) | 55 (4%) | 1374 (95%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,8 +21,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-buildings-voth.js` | 74.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 573 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-beast-rider.js` | 71.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 322 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-eastabyss.js` | 56.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 277 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture-generic-fruit.js` | 48.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 232 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `krator-master-furniture-generic-goods.js` | 90.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 586 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-generic-fruit.js` | 49.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 237 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `krator-master-furniture-generic-goods.js` | 90.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 586 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-generic.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-hykkousoi.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `krator-master-furniture-islander.js` | 4.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |

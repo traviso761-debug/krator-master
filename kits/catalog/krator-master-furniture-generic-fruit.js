@@ -873,3 +873,26 @@ FURN({
     }
   }
 });
+
+/* ================= The Throne (1 piece) ================= */
+
+FURN({
+  key: 'generic_fruit_coconut', name: 'Coconut', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'throne', source: ['coconut'],
+  w: 0.26, d: 0.24, h: 0.2, variants: 2, variantNames: ['green nut in its husk', 'husked and split'],
+  variantDims: [{ w: 0.26, d: 0.24, h: 0.2 }, { w: 0.25, d: 0.14, h: 0.05 }],
+  build: function (F) {
+    const husk = F.col('fruitCocoHusk'), shell = F.col('fruitCocoShell'), flesh = F.col('fruitCocoFlesh');
+    if (F.variant === 0) {
+      /* the green nut as it falls: a three-sided husk, blunt at the stalk, pointed at the far end, lying on its side */
+      F.blob(0, 0.1, 0, 0.12, 0.2, 0.3, husk, 'food');
+      for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3 + 0.5; F.rod(-0.09, 0.1 + Math.sin(a) * 0.08, Math.cos(a) * 0.08, 0.09, 0.1 + Math.sin(a) * 0.06, Math.cos(a) * 0.06, 0.012, F.shade(husk, 0.08), 'food'); }
+      F.ball(-0.11, 0.1, 0, 0.025, F.shade(husk, -0.3), 'food');
+    } else {
+      /* the brown nut out of its husk, split: two shell cups with white meat, a third of a nut beside them */
+      for (const [x, z] of [[-0.06, 0], [0.065, 0.02]]) KFRUIT.half(F, x, 0, z, 0.06, shell, flesh);
+      F.cyl(-0.06, 0.022, 0, 0.04, 0.004, 0, F.col('fruitCocoWater'), 'food');
+    }
+  }
+});

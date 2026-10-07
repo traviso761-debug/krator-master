@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.455,
+    1.491
+   ],
+   "seam_before": [
+    1.51,
+    1.578
+   ],
+   "source_size": [
+    1125,
+    1125
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.mossy",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.4,
+   1.4
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-mossy.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "PROMPTS-ready.md section 6 (bark.mossy); pasted into the chat 2026-10-06 as a WebP",
+  "reuse": "scaly grey-brown bark half under moss and lichen: the cloud forest's elfin trees (in use); any old tree in a wet forest, a temperate rainforest, a mossy ruin's timbers",
+  "sha1": "1577e4ad290890135393530072aac364f5e8bb0d"
+ }
+}

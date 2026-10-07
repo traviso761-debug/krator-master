@@ -1,0 +1,281 @@
+[
+ {
+  "src": "card-lavaleaf.png",
+  "out": "core/materials/library/card.lavaleaf",
+  "record": {
+   "id": "card.lavaleaf",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Lava Leaf Botanical Grid.png\" (volcano.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "leaves on the seam (lava-veined), 3 x 3"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-leaf-distressed.png",
+  "out": "core/materials/library/card.leaf.distressed",
+  "record": {
+   "id": "card.leaf.distressed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Nine Distressed Leaves on Magenta.png\" (volc2.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "withered purple-grey leaves, 3 x 3: shrubs under the plume's acid"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-succulent-spotted.png",
+  "out": "core/materials/library/card.succulent.spotted",
+  "record": {
+   "id": "card.succulent.spotted",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Succulent Leaf Sprite Grid.png\" (volc2.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "spotted trifoliate succulent leaves, 3 x 3: groundcover"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-alienflora-glow.png",
+  "out": "core/materials/library/card.alienflora.glow",
+  "record": {
+   "id": "card.alienflora.glow",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Alien Bioluminescent Flora Grid.png\" (volc2.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "glowing alien tufts and flower stalks, 3 x 3: the plume's floor"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-mushroom-glow.png",
+  "out": "core/materials/library/card.mushroom.glow",
+  "record": {
+   "id": "card.mushroom.glow",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Nine Bioluminescent Mushrooms on Magenta.png\" (volc2.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "blue glowing mushroom clusters, 3 x 3: hollows and skylights"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-shelf-glow.png",
+  "out": "core/materials/library/card.shelf.glow",
+  "record": {
+   "id": "card.shelf.glow",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Glowing Shelf Mushrooms Asset Sheet.png\" (volc2.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "orange glowing shelf fungi, 3 x 3: on trunks and dark walls"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-fungus-drip.png",
+  "out": "core/materials/library/card.fungus.drip",
+  "record": {
+   "id": "card.fungus.drip",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Magenta Grid of Dripping Alien Fungi.png\" (volc2.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "dripping hanging fungi, 3 x 3: under caps and tiers"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flower-carnivorous.png",
+  "out": "core/materials/library/card.flower.carnivorous",
+  "record": {
+   "id": "card.flower.carnivorous",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Alien Carnivorous Flower Atlas.png\" (volc3.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "red carnivorous flowers, 3 x 3: the plume's floor"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-fungus-specimens.png",
+  "out": "core/materials/library/card.fungus.specimens",
+  "record": {
+   "id": "card.fungus.specimens",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: supplied as \"Alien Fungus Specimen Grid.png\" (volc3.zip), 2026-10-06; a sheet on flat magenta (#ff00ff)",
+    "reuse": "sixteen alien fungi and flowers, 4 x 4: the plume's floor"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

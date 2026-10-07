@@ -30,6 +30,8 @@ everything looks washed out.
 | `atm_night` | `A.U.night` | `night(hour)`, ramps over `presets.clock.dawn` and `dusk` |
 | `atm_time` | `A.U.time` | the module clock: `A.clock.t += dt * scale`, dt from the host's frame. **Not the wall clock.** Use this, not Godot's `TIME`, so pause, time-lapse and fixed-time screenshots work |
 | `atm_rain`, `atm_fog`, `atm_flash` | `A.U.rain/fog/flash` | the weather state machine (`ATMOS.W`) |
+| `atm_ash` | `A.U.ash` | the opt-in ash weather (`ashfall` .35, the `ash` storm 1); the flecks and the ground veils read it |
+| `atm_snow` | `A.U.snow` | the opt-in snow weather (`snowfall` .4, the `blizzard` 1); the same flakes, streaks and veils as the ash (`flakeWeather`), white |
 | `atm_wind`, `atm_gust_amp`, `atm_wind_off` | `A.U.wind/gustAmp/windOff` | the wind: base x weather scale, slowly veering; `wind_off` is its integral over time (rain rides it) |
 | `atm_light` | `A.U.light` | `1 - nightDim * night` |
 | `atm_px` | `A.U.px` | not needed in Godot (it sizes sprites in pixels; size them in metres instead) |

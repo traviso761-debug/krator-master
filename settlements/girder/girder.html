@@ -4493,6 +4493,86 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
 }
+/* SOFT FURNISHINGS (2026-10-05, the Scyvoi cushions). A pillow: two puffed faces meeting at a seam round the edge,
+   with an optional boxed side wall between them; its corners stay sharp and its mid-edges pinch in, as a stuffed
+   cloth does. CENTRED at (x, y, z), like blob and ball; w along x, h its thickness (y), d along z; turned ry, then
+   tipped rx about its own x (a back cushion stood up: rx = -PI/2 + lean). o: { side 0..1 (the boxed wall's share
+   of h), round (the plan's superellipse exponent, default 5), sag (how far the seam drops at the corners, a share of the wall, default 0.45), puff (the dome's exponent: 0.3 a flat-topped quilt or mattress, 0.85 a fat cushion, 1 a bed pillow; low values read as a box), pinch (mid-edge pull-in, a share of the half-width) }.
+   Returns top(lx, lz): the height of the top face above the centre at a point of the unturned pillow, so a builder
+   can lay appliqué on it; top.seamTop and top.seamBottom are the seams as closed loops of [x, y, z] (same frame), for piping. Its segments never drop below 8 a side whatever the detail level: a cushion
+   cut to a box is the defect this exists to fix. */
+function pillowTop(w, h, d, o) {
+  const side = Math.min(0.95, Math.max(0, o.side || 0)), puff = o.puff == null ? 0.35 : o.puff, hs = h * side / 2, hb = h / 2 - hs;
+  return function (lx, lz) {
+    const s = Math.min(1, Math.abs(lx) / (w / 2)), t = Math.min(1, Math.abs(lz) / (d / 2));
+    return hs + hb * Math.pow(Math.max(0, 1 - s * s), puff) * Math.pow(Math.max(0, 1 - t * t), puff);
+  };
+}
+function mkPillow(x, y, z, w, h, d, ry, color, family, o) {
+  o = o || {};
+  const n = _seg(12, 8), side = Math.min(0.95, Math.max(0, o.side || 0)), pinch = o.pinch == null ? 0.05 : o.pinch, hs = h * side / 2;
+  const top = pillowTop(w, h, d, o), pos = [], idx = [];
+  const q = o.round == null ? 5 : o.round, sag = o.sag == null ? 0.45 : o.sag;
+  const at = (i, j, sign) => {
+    const s = -1 + 2 * i / n, t = -1 + 2 * j / n, as = Math.abs(s), at2 = Math.abs(t), mx = Math.max(as, at2);
+    /* the plan: the square grid mapped onto a superellipse (corners rounded, o.round its exponent: 2 a circle, 8 nearly square),
+       then the mid-edges pinched in; the seam sags toward the corners (o.sag), as a stuffed cover does */
+    const k = mx > 0 ? mx / Math.pow(Math.pow(as, q) + Math.pow(at2, q), 1 / q) : 1;
+    const px = s * k * w / 2 * (1 - pinch * (1 - t * t)), pz = t * k * d / 2 * (1 - pinch * (1 - s * s));
+    const y = top(s * w / 2, t * d / 2) - hs * sag * s * s * t * t;
+    return [px, sign * Math.max(0.002, y), pz];
+  };
+  for (const sign of [1, -1]) {
+    const b = pos.length / 3;
+    for (let j = 0; j <= n; j++) for (let i = 0; i <= n; i++) pos.push(...at(i, j, sign));
+    for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const a = b + j * (n + 1) + i; idx.push(a, a + n + 1, a + 1, a + 1, a + n + 1, a + n + 2); }
+  }
+  if (hs > 0.001) {   // the boxed wall: the boundary of the grid, once round, from the top seam to the bottom seam
+    const ring = [];
+    for (let i = 0; i < n; i++) ring.push([i, 0]);
+    for (let j = 0; j < n; j++) ring.push([n, j]);
+    for (let i = n; i > 0; i--) ring.push([i, n]);
+    for (let j = n; j > 0; j--) ring.push([0, j]);
+    const b = pos.length / 3;
+    for (const [i, j] of ring) { pos.push(...at(i, j, 1)); pos.push(...at(i, j, -1)); }
+    const m = ring.length;
+    for (let k = 0; k < m; k++) { const a = b + 2 * k, c = b + 2 * ((k + 1) % m); idx.push(a, a + 1, c, c, a + 1, c + 1); }
+  }
+  // a pillow is star-shaped about its centre: turn every triangle to face away from it
+  for (let t = 0; t < idx.length; t += 3) {
+    const A = idx[t] * 3, B = idx[t + 1] * 3, C = idx[t + 2] * 3;
+    const ux = pos[B] - pos[A], uy = pos[B + 1] - pos[A + 1], uz = pos[B + 2] - pos[A + 2], vx = pos[C] - pos[A], vy = pos[C + 1] - pos[A + 1], vz = pos[C + 2] - pos[A + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    const cx = pos[A] + pos[B] + pos[C], cy = pos[A + 1] + pos[B + 1] + pos[C + 1], cz = pos[A + 2] + pos[B + 2] + pos[C + 2];
+    if (nx * cx + ny * cy + nz * cz < 0) { const k = idx[t + 1]; idx[t + 1] = idx[t + 2]; idx[t + 2] = k; }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.set(o.rx || 0, ry || 0, 0, 'YXZ');
+  _add(m);
+  /* the two seams as closed loops of points in the pillow's own frame (centre at 0; untilted, unturned): piping follows them */
+  const loop = sign => { const L = []; for (let i = 0; i < n; i++) L.push(at(i, 0, sign)); for (let j = 0; j < n; j++) L.push(at(n, j, sign));
+    for (let i = n; i > 0; i--) L.push(at(i, n, sign)); for (let j = n; j > 0; j--) L.push(at(0, j, sign)); L.push(L[0]); return L; };
+  top.seamTop = loop(1); top.seamBottom = loop(-1);
+  return top;
+}
+/* A bolster: a round cushion along x, its ends gathered in and tied. CENTRED at (x, y, z), length len, radius r,
+   turned ry. o: { from, to } (0..1 along its length: a section of the same profile, for a coloured band; scale it a
+   hair larger with o.grow), gather (the end radius as a share of r, default 0.45). At least 12 segments round. */
+function mkBolster(x, y, z, len, r, ry, color, family, o) {
+  o = o || {};
+  const from = o.from == null ? 0 : o.from, to = o.to == null ? 1 : o.to, g = o.gather == null ? 0.45 : o.gather, R = r * (o.grow || 1), m = Math.max(1, Math.round(14 * (to - from))), pts = [];   // a band gets profile points for its own length only
+  const rad = u => { const e = Math.abs(2 * u - 1); return R * (g + (1 - g) * Math.pow(Math.max(0, 1 - Math.pow(e, 7)), 0.35)); };
+  if (from <= 0.0001) pts.push(new THREE.Vector2(0.001, -len / 2));
+  for (let k = 0; k <= m; k++) { const u = from + (to - from) * k / m; pts.push(new THREE.Vector2(rad(u), -len / 2 + u * len)); }
+  if (to >= 0.9999) pts.push(new THREE.Vector2(0.001, len / 2));
+  const geo = new THREE.LatheGeometry(pts, _seg(16, 12));
+  geo.rotateZ(-Math.PI / 2);   // the lathe's axis (y) laid along x
+  const mm = new THREE.Mesh(geo, mat(color, family));
+  mm.position.set(x, y, z); mm.rotation.y = ry || 0;
+  return _add(mm);
+}
 /* a tapering block/tower segment: HALF-WIDTH rBottom at y, rTop at y+h, i.e. the
    block spans 2*rBottom across at its base — r reads as a radius/half-width in every
    case. sides=4 is a tapered SQUARE block with its faces square to the frame, sides=8
@@ -4586,7 +4666,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    own file through FURN_CULTURE() below, which adds its palette and its socket pack. 'generic' and
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
-  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+  'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -4845,6 +4925,7 @@ const FPAL = {
     stoneBlack: 0x14161a, stoneNavy: 0x1e4e90, stoneTurquoise: 0x2c8aa0, stoneLaterite: 0xa85832,
     stoneCobalt: 0x2a6ab0, stoneClay: 0xb8633a, stoneAzure: 0x3a86c8, stoneClayLight: 0xc47044,
     stoneSky: 0x58a8d8, stoneIvory: 0xf0ece0,
+    thatchFlax: 0xb8a262, thatchStraw: 0xc8b272,   /* the grain bin's lid (re-harvest 2026-10-05) */
     timberWalnut: 0x5c432c, timberChestnutDark: 0x6a4e34, timberChestnut: 0x7a5a3c, timberOak: 0x8a6a4e,
     timberTeak: 0x9a7a4e, timberPine: 0xa8865c
   },
@@ -5001,6 +5082,9 @@ function makeFrame(x, z, ry, opt) {
   F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
   F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
   F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
+  /* soft furnishings (mkPillow, mkBolster above): both CENTRED at ly. F.pillow returns top(lx, lz) in the pillow's own frame */
+  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family, o); };
+  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, family, o); };
   F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
   F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
   F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
@@ -8706,7 +8790,7 @@ FURN({
 FURN({
   key: 'generic_fruit_mast', name: 'Beechmast and Acorns', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
-  biome: 'nhighlands', source: ['bluebeech', 'gnarloak'],
+  biome: 'nhighlands', source: ['bluebeech', 'gnarloak', 'ebadlands:oak'],
   w: 0.22, d: 0.22, h: 0.14, variants: 2, variantNames: ['beechmast in husks', 'acorns'],
   build: function (F) {
     KGEN.bowl(F, 0, 0, 0, 0.11, 0.05, F.col('timberOak'), 'wood');
@@ -8875,7 +8959,7 @@ FURN({
 FURN({
   key: 'generic_fruit_tuna', name: 'Desert Tunas', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'stone'],
-  biome: 'sedesert', source: ['prickly pear', 'xanadu:opuntia'],
+  biome: 'sedesert', source: ['prickly pear', 'xanadu:opuntia', 'ebadlands:prickly pear'],
   w: 0.32, d: 0.24, h: 0.09, variants: 2, variantNames: ['on a cloth', 'peeled and sliced'],
   variantDims: [{ w: 0.32, d: 0.24, h: 0.09 }, { w: 0.24, d: 0.24, h: 0.06 }],
   build: function (F) {
@@ -9028,7 +9112,7 @@ FURN({
 FURN({
   key: 'generic_fruit_pitaya', name: 'Pitaya', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
-  biome: 'xanadu', source: ['pitaya'],
+  biome: 'xanadu', source: ['pitaya', 'ebadlands:moonflower cactus'],
   w: 0.26, d: 0.26, h: 0.14, variants: 2, variantNames: ['whole', 'halved'],
   variantDims: [{ w: 0.16, d: 0.16, h: 0.14 }, { w: 0.26, d: 0.26, h: 0.07 }],
   build: function (F) {
@@ -9151,6 +9235,159 @@ FURN({
   }
 });
 
+/* ================= Eastern Badlands (6 pieces; tunas, acorns and pitaya are shared) ================= */
+
+FURN({
+  key: 'generic_fruit_pinyon', name: 'Pinyon Nuts', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'timber'],
+  biome: 'ebadlands', source: ['pinyon'],
+  w: 0.3, d: 0.22, h: 0.09, variants: 2, variantNames: ['cones on a cloth', 'roasted nuts'],
+  variantDims: [{ w: 0.3, d: 0.22, h: 0.09 }, { w: 0.22, d: 0.22, h: 0.08 }],
+  build: function (F) {
+    const cone = F.col('fruitPinyonCone'), nut = F.col('fruitPinyonNut');
+    if (F.variant === 0) {
+      F.box(0, 0, 0, 0.28, 0.02, 0.2, 0.08, F.col('clothLinen'), 'cloth');
+      for (const [x, z] of [[-0.07, -0.03], [0.04, 0.04], [0.08, -0.05]]) {
+        F.ball(x, 0.045, z, 0.028, F.shade(cone, -0.15), 'food');
+        for (let i = 0; i < 8; i++) { const a = i * 0.785, y = 0.03 + (i % 2) * 0.03; F.frustum(x + Math.cos(a) * 0.03, y, z + Math.sin(a) * 0.03, 0.006, 0.02, 0.012, a, F.shade(cone, (i % 3) * 0.05), 'food', 4); }
+      }
+      for (let i = 0; i < 7; i++) F.blob(-0.1 + i * 0.035, 0.03, 0.07 - (i % 2) * 0.02, 0.008, 0.016, i, nut, 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.045, F.col('timberOak'), 'wood');
+      KGEN.heap(F, 0, 0.03, 0, 0.085, 0.012, [nut, F.shade(nut, 0.12), F.col('fruitPinyonKernel')], 'food',
+        (x, y, z, c) => F.blob(x, y + 0.012, z, 0.009, 0.018, x * 30, c, 'food'));
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_juniper', name: 'Juniper Berries', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'glass', 'metal'],
+  biome: 'ebadlands', source: ['juniper'],
+  w: 0.26, d: 0.16, h: 0.12, variants: 2, variantNames: ['a sprig with berries', 'dried in a jar'],
+  variantDims: [{ w: 0.26, d: 0.16, h: 0.04 }, { w: 0.12, d: 0.12, h: 0.12 }],
+  build: function (F) {
+    const berry = F.col('fruitJuniper'), twig = F.col('fruitJuniperTwig');
+    if (F.variant === 0) {
+      F.rod(-0.12, 0.012, 0, 0.12, 0.012, 0.01, 0.006, F.shade(twig, -0.2), 'food');
+      for (let i = 0; i < 9; i++) {
+        const x = -0.1 + i * 0.025, sd = i % 2 ? 1 : -1;
+        F.rod(x, 0.012, 0, x + 0.02, 0.014, sd * 0.06, 0.008, F.shade(twig, (i % 3) * 0.04), 'food');
+        if (i % 2 === 0) F.ball(x + 0.01, 0.022, sd * 0.03, 0.011, F.shade(berry, (i % 4) * 0.04), 'food');
+      }
+    } else KGEN.jar(F, 0, 0, 0, 0.05, 0.09, F.col('glassClear'), F.col('iron'), 'glass', F.col('fruitJuniperDry'));
+  }
+});
+
+FURN({
+  key: 'generic_fruit_yucca', name: 'Roasted Yucca Stalk', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'thatch'],
+  biome: 'ebadlands', source: ['yucca'],
+  w: 0.26, d: 0.26, h: 0.1, variants: 2, variantNames: ['pit-roasted stalk rounds', 'a basket of blossoms'],
+  variantDims: [{ w: 0.26, d: 0.26, h: 0.06 }, { w: 0.22, d: 0.22, h: 0.1 }],
+  build: function (F) {
+    if (F.variant === 0) {
+      KGEN.plate(F, 0, 0, 0, 0.13, F.col('stoneClay'));
+      for (let i = 0; i < 6; i++) {
+        const a = i * 1.05, x = Math.cos(a) * 0.07, z = Math.sin(a) * 0.07;
+        F.cyl(x, 0.02, z, 0.032, 0.028, 0, F.col('fruitYuccaStalk'), 'food');
+        F.cyl(x, 0.047, z, 0.034, 0.004, 0, F.col('fruitYuccaRoast'), 'food');
+      }
+    } else {
+      F.frustum(0, 0, 0, 0.08, 0.11, 0.06, 0, F.col('wickerStraw'), 'thatch', 14);
+      KGEN.heap(F, 0, 0.045, 0, 0.1, 0.018, [F.col('fruitYuccaBloom'), F.shade('fruitYuccaBloom', -0.08)], 'food',
+        (x, y, z, c) => F.dome(x, y + 0.01, z, 0.02, 0.022, x * 20, c, 'food'));
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_canyon_grape', name: 'Canyon Grapes', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'ebadlands', source: ['canyon grape (floor and dressing; on cottonwood and maple)'],
+  w: 0.24, d: 0.22, h: 0.1, variants: 2, variantNames: ['a cluster on its leaf', 'raisins in a bowl'],
+  variantDims: [{ w: 0.24, d: 0.2, h: 0.06 }, { w: 0.22, d: 0.22, h: 0.08 }],
+  build: function (F) {
+    const grape = F.col('fruitGrape');
+    if (F.variant === 0) {
+      KFRUIT.leaf(F, 0, 0, 0.11, F.col('fruitGrapeLeaf'));
+      for (let i = 0; i < 14; i++) { const t = i / 14, a = i * 2.39996, r = 0.045 * (1 - t) + 0.008; F.ball(-0.06 + t * 0.14 + Math.cos(a) * r * 0.3, 0.025 + (i % 3) * 0.008, Math.sin(a) * r, 0.015, F.shade(grape, (i % 4) * 0.05), 'food'); }
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.045, F.col('timberOak'), 'wood');
+      KGEN.heap(F, 0, 0.03, 0, 0.085, 0.01, [F.col('fruitRaisin'), F.shade('fruitRaisin', 0.1)], 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_stiltpod', name: 'Stilt Pod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'ebadlands', source: ['stiltpod'],
+  w: 0.28, d: 0.28, h: 0.2, variants: 2, variantNames: ['whole', 'halved'],
+  variantDims: [{ w: 0.18, d: 0.18, h: 0.2 }, { w: 0.28, d: 0.28, h: 0.08 }],
+  build: function (F) {
+    const skin = F.col('fruitStiltPod');
+    if (F.variant === 0) {
+      F.blob(0, 0.1, 0, 0.085, 0.2, 0, skin, 'food');
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 7; i++) {
+        const a = i * 0.9 + j * 0.45, y = 0.04 + j * 0.04, r = 0.082 - Math.abs(y - 0.1) * 0.45;
+        F.ball(Math.cos(a) * r, y, Math.sin(a) * r, 0.016, F.shade(skin, j % 2 ? -0.1 : 0.08), 'food');
+      }
+    } else {
+      KGEN.plate(F, 0, 0, 0, 0.14, F.col('stoneCream'));
+      for (const [x, z] of [[-0.055, 0], [0.055, 0.01]]) {
+        KFRUIT.half(F, x, 0.02, z, 0.065, skin, F.col('fruitStiltFlesh'));
+        for (let i = 0; i < 5; i++) { const a = i * 1.26; F.ball(x + Math.cos(a) * 0.022, 0.06, z + Math.sin(a) * 0.022, 0.008, F.col('fruitStiltSeed'), 'food'); }
+      }
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_umbel_seed', name: 'Umbel Seed', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'ebadlands', source: ['umbel'],
+  w: 0.34, d: 0.22, h: 0.07, variants: 2, variantNames: ['a dried head', 'seed in a bowl'],
+  variantDims: [{ w: 0.34, d: 0.22, h: 0.04 }, { w: 0.18, d: 0.18, h: 0.07 }],
+  build: function (F) {
+    const seed = F.col('fruitUmbelSeed'), stalk = F.col('fruitUmbelStalk');
+    if (F.variant === 0) {
+      F.rod(-0.16, 0.01, 0, 0.04, 0.01, 0, 0.008, stalk, 'food');
+      for (let i = 0; i < 9; i++) {
+        const a = -1.1 + i * 0.275, ex = 0.04 + Math.cos(a) * 0.1, ez = Math.sin(a) * 0.1;
+        F.rod(0.04, 0.012, 0, ex, 0.014, ez, 0.003, stalk, 'food');
+        for (let k = 0; k < 4; k++) F.ball(ex + Math.cos(k * 1.57) * 0.012, 0.016, ez + Math.sin(k * 1.57) * 0.012, 0.006, F.shade(seed, (k % 2) * 0.08), 'food');
+      }
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.09, 0.05, F.col('stoneCream'), 'stone', seed);
+      KGEN.heap(F, 0, 0.04, 0, 0.08, 0.008, [seed, F.shade(seed, -0.1)], 'food');
+    }
+  }
+});
+
+/* ================= The Throne (1 piece) ================= */
+
+FURN({
+  key: 'generic_fruit_coconut', name: 'Coconut', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'throne', source: ['coconut'],
+  w: 0.26, d: 0.24, h: 0.2, variants: 2, variantNames: ['green nut in its husk', 'husked and split'],
+  variantDims: [{ w: 0.26, d: 0.24, h: 0.2 }, { w: 0.25, d: 0.14, h: 0.05 }],
+  build: function (F) {
+    const husk = F.col('fruitCocoHusk'), shell = F.col('fruitCocoShell'), flesh = F.col('fruitCocoFlesh');
+    if (F.variant === 0) {
+      /* the green nut as it falls: a three-sided husk, blunt at the stalk, pointed at the far end, lying on its side */
+      F.blob(0, 0.1, 0, 0.12, 0.2, 0.3, husk, 'food');
+      for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3 + 0.5; F.rod(-0.09, 0.1 + Math.sin(a) * 0.08, Math.cos(a) * 0.08, 0.09, 0.1 + Math.sin(a) * 0.06, Math.cos(a) * 0.06, 0.012, F.shade(husk, 0.08), 'food'); }
+      F.ball(-0.11, 0.1, 0, 0.025, F.shade(husk, -0.3), 'food');
+    } else {
+      /* the brown nut out of its husk, split: two shell cups with white meat, a third of a nut beside them */
+      for (const [x, z] of [[-0.06, 0], [0.065, 0.02]]) KFRUIT.half(F, x, 0, z, 0.06, shell, flesh);
+      F.cyl(-0.06, 0.022, 0, 0.04, 0.004, 0, F.col('fruitCocoWater'), 'food');
+    }
+  }
+});
+
 /* ---- kits/catalog/krator-master-furniture-generic-goods.js ---- */
 /* ======================================================================
    Krator master catalog — generic furniture: containers, food, drink, supplies
@@ -9205,6 +9442,7 @@ FURN_CULTURE('generic', { palette: {
     /* biome fruit (krator-master-furniture-generic-fruit.js): colours taken from the fruiting part each biome draws */
     fruitScaleRed: 0xc0262a, fruitScaleFlesh: 0xf0b8b0, fruitFernEgg: 0x8a6a3a, fruitFernMeal: 0xe8d8a8,
     fruitTideHusk: 0x7e3030, fruitTideJelly: 0xe8e0c8, fruitCycadRed: 0xb83a2a,
+    fruitCocoHusk: 0x6e8a3a, fruitCocoShell: 0x5a3e26, fruitCocoFlesh: 0xf4f0e4, fruitCocoWater: 0xe8eadc,
     fruitGateRind: 0xe0862a, fruitGatePulp: 0xf2ead0, fruitMahogany: 0x5a3a22, fruitMahoganySeed: 0xc89a5a,
     fruitSilkGreen: 0x7a9a4a, fruitSilkFloss: 0xf0e6d0, fruitPandanKey: 0xd87a2a, fruitPandanTip: 0x5a6a2a, fruitPandanPaste: 0xe8a040,
     fruitAril: 0xd0202a, fruitArilSeed: 0x2e3a2a, fruitRowan: 0xd83a2a, fruitRowanJelly: 0xc8502a, fruitBilberry: 0x2a3a6a,
@@ -9215,6 +9453,10 @@ FURN_CULTURE('generic', { palette: {
     fruitLanternViolet: 0xd040e0, fruitLanternTeal: 0x30d0c0, fruitBellDate: 0x857e32,
     fruitMesquite: 0xc8b850, fruitMesquiteCake: 0xb08a4a, fruitDate: 0x8a4a22, fruitDateStrand: 0xc88a3a,
     fruitTuna: 0xe86a20, fruitTunaFlesh: 0xd8402a,
+    fruitPinyonCone: 0x8a5a34, fruitPinyonNut: 0x7a4a2a, fruitPinyonKernel: 0xe8d8b0, fruitJuniper: 0x6a7a9a, fruitJuniperTwig: 0x5e7458,
+    fruitJuniperDry: 0x3e3e52, fruitYuccaStalk: 0xc89a4a, fruitYuccaRoast: 0x8a5a2a, fruitYuccaBloom: 0xf0ecd8, fruitGrape: 0x3a2a4a,
+    fruitGrapeLeaf: 0x5a8a3a, fruitRaisin: 0x4a2a2a, fruitStiltPod: 0x5a9a6a, fruitStiltFlesh: 0xf0e8c8, fruitStiltSeed: 0x3a2a1e,
+    fruitUmbelSeed: 0xa8946a, fruitUmbelStalk: 0x8a7a4a,
     fungusCoralOrange: 0xf08a3a, fungusCoralPink: 0xf090b0, fungusCoralViolet: 0x9a70c8, fungusParasol: 0xc8a882,
     fruitMadrone: 0xc82a1e, drinkCider: 0xd8a050, fruitRattlepod: 0x8a2a1c, fruitRattleBean: 0x4a2a1a,
     fruitTamarindShell: 0x4a3424, fruitTamarindPulp: 0x8a4a22, fruitFig: 0x5a3a5a, fruitFigFlesh: 0xd8586a,
@@ -11465,7 +11707,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     'painted': ['rustic', 'generic'],
     'reedlake': ['islander', 'eastabyss', 'generic'],
     'post-apoc': ['scrap', 'ancients-salvage', 'generic'],
-    'hykkousoi': ['islander', 'generic']
+    'hykkousoi': ['islander', 'generic'],
+    'scyvoi': ['nomad', 'generic', 'scrap']
   };
 })(KratorInteriors);
 
@@ -13765,10 +14008,10 @@ KFURN.linearColours = function(geo){
  if (!K) throw new Error('52-core-tags-vocab: load 50-core-tags.js first');
 
  // ---- copied from kits/catalog/krator-furniture-core.js (checked by test-tags.js) ----
- // FURN_CULTURES (the 24 the core file lists before any culture file registers itself)
+ // FURN_CULTURES (the 25 the core file lists before any culture file registers itself)
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
-   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi'];
+   'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -13780,13 +14023,13 @@ KFURN.linearColours = function(geo){
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 
- // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 18 ----
+ // ---- the cultures, cleaned (PROPOSAL.md, "The culture list, cleaned"): 19 (Scyvoi added 2026-10-05) ----
  // Display names are FURN_CULTURE_INFO's (the core file and each culture file's FURN_CULTURE(key, { name })).
  var CULTURE_NAMES = {
    'ancient': 'Ancients', 'yuni': 'Yuni', 'order': 'The Order', 'nomad': 'Eastern Nomads', 'voth': 'Voth', 'iziz': 'Iziz',
    'beast-rider': 'Beast Riders', 'lizardmen': 'Lizardmen', 'eastabyss': 'East Abyss', 'xanadu': 'Xanadu', 'screamer': 'Screamers',
    'islander': 'Ring Sea Islanders', 'republican': 'Republicans', 'rustic': 'Rustic Highlanders', 'painted': 'Painted Men',
-   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi'
+   'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi'
  };
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
@@ -19850,7 +20093,7 @@ const ATMOS={};
   A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
-   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600}};
+   windOff:{value:new T.Vector2()},light:{value:1},px:{value:600},ash:{value:0},snow:{value:0}};   // ash, snow: the opt-in ash and snow weathers (4-weather)
   A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let warned=false;
   // the shared GLSL, written from the presets so JS and shaders agree
   const f=A.glf;
@@ -19949,10 +20192,23 @@ ATMOS.PRESETS={
  fogbank:{size:[30,70],alpha:.16,distFade:.0009,nearFade:[3,25],sway:14,night:[.14,.15,.2],day:[.86,.87,.9],pxMax:220,blend:'normal'},
  glow:{pxMin:2,pxMax:240,distFade:.0022,fogFade:.004,fogSwell:.7,rainSwell:.4,gain:1.7,dayFloor:.15,blend:'add'},
  rain:{drops:7000,box:240,fall:60,streak:2.4,slant:.25,windRide:6,fade:[50,120],alpha:.42,color:[.72,.77,.86]},
+ // ASH (opt-in: ATMOS.weather({ash:true}); from Voth's ash storm, 2026-10-06): flecks tumbling in a box that rides the camera,
+ // falling slowly and driven hard downwind (ashfall: a few; the storm: thick); low veils of ash racing along the ground in
+ // the storm; the storm's lightning warm (a volcano's dirty thunderstorm)
+ ash:{flecks:16000,box:120,fall:5,windRide:2.6,size:[.1,.3],fade:[25,70],alpha:.9,color:[.5,.47,.42],
+  streaks:6000,streakBox:110,streakRide:4.2,streakLen:[1.5,3.5],streakAlpha:.5,streakColor:[.4,.37,.32],
+  veils:180,veilBox:420,veilRide:3.2,veilSize:[40,110],veilY:[1,14],veilAlpha:.42,veilColor:[.68,.62,.52],bolt:0xffc8a0,
+  ashfall:.35,stormFog:.55},
+ // SNOW (opt-in: ATMOS.weather({snow:true}); the Throne's glacier, 2026-10-06): the ash's flakes, white, bigger and slower;
+ // streaks of blown snow and spindrift skimming the ground in the blizzard; a white-out (the host's fog)
+ snow:{flecks:15000,box:110,fall:1.6,windRide:2,size:[.14,.4],fade:[25,75],alpha:.95,color:[.96,.97,1],
+  streaks:5000,streakBox:100,streakRide:4.6,streakLen:[1.2,3],streakAlpha:.45,streakColor:[.92,.94,.98],
+  veils:200,veilBox:420,veilRide:3.6,veilSize:[30,90],veilY:[.5,8],veilAlpha:.5,veilColor:[.9,.92,.96],
+  snowfall:.4,stormFog:.6},
  // the wind every effect shares: a base vector that veers slowly, scaled by the weather, with gust fronts travelling
  // downwind (atmGust in the shaders, ATMOS.gust in JS)
  wind:{base:[.8,.35],gustAmp:.55,frontSpeed:12,veer:[.22,.021,.1,.057],gust:[[.5,.31,0],[.3,.73,1.3],[.2,1.9,4.1]],
-  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5}},
+  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5,ashfall:1.3,ash:2.8,snowfall:1.2,blizzard:2.7}},
  // the evening: night(h) ramps over these hours; a light's own on/off ramps take `ramp` hours
  clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82},
  // THE WAVE FIELD (89-atmos-a-waves.js): open water as three families of travelling waves. A wave is [kx,kz,c,a]: its
@@ -20159,21 +20415,33 @@ ATMOS.PRESETS={
 // (fog density, sun, ground roughness) is the host's. W.wind (1 calm .. 2.4 storm) scales the module's wind.
 // o.apply(W) is called every frame after the state is updated.
 // o.ui: an element to put a Weather selector in. Never flashes when the viewer asks for reduced motion.
+// ASH (opt-in, 2026-10-06, from Voth's ash storm): o.ash adds the modes 'ashfall' (ash sifting down, a little haze) and 'ash'
+// (an ash storm: thick flecks driven by a gale, veils of ash racing along the ground, warm volcanic lightning, heavy haze)
+// and W.ash (0..1, eased like rain); A.U.ash feeds the shaders (atm_ash). Without o.ash nothing changes: the modes, the
+// state's other fields and every older host behave as before (W.ash stays 0).
+// SNOW (opt-in, 2026-10-06, for the Throne's glacier): o.snow adds 'snowfall' (flakes drifting down) and 'blizzard' (thick
+// flakes driven by a gale, streaks of blown snow, spindrift skimming the ground, a white-out), and W.snow (0..1, eased);
+// A.U.snow feeds the shaders (atm_snow). The ash and the snow are drawn by one function (A.flakeWeather), each with its
+// own preset. Without o.snow nothing changes (W.snow stays 0).
 (function(){const A=ATMOS;
  // THE STATE MACHINE, pure: what the weather is heading for at an hour in a mode, one eased step of the state, and
  // the lightning flash e ms after a strike. No THREE, no DOM: test-atmos.js runs these, and Godot's Atmos autoload
  // ports them line for line.
  A.MODES=['auto','clear','rain','storm','fog'];
+ A.ASH_MODES=['ashfall','ash'];   // offered only to a host that asks (o.ash)
+ A.SNOW_MODES=['snowfall','blizzard'];   // offered only to a host that asks (o.snow)
  A.weatherAuto=h=>({rain:A.ss(19.5,19.9,h)*(1-A.ss(21.6,22,h)),fog:.7*A.ss(4.3,5.5,h)*(1-A.ss(8.4,9.6,h))});
- A.weatherTarget=(M,h)=>{const au=A.weatherAuto(h),PW=A.PRESETS.wind.weather;
-  return{rain:M==='rain'?.75:M==='storm'?1:M==='auto'?au.rain:0,fog:M==='fog'?1:M==='auto'?au.fog:M==='storm'?.3:0,
-   wind:M==='storm'?PW.storm:M==='rain'?PW.rain:M==='auto'?1+PW.autoRain*au.rain:PW.clear};};
+ A.weatherTarget=(M,h)=>{const au=A.weatherAuto(h),PW=A.PRESETS.wind.weather,PA=A.PRESETS.ash||{},PS=A.PRESETS.snow||{};
+  return{rain:M==='rain'?.75:M==='storm'?1:M==='auto'?au.rain:0,fog:M==='fog'?1:M==='auto'?au.fog:M==='storm'?.3:M==='ash'?(PA.stormFog||.55):M==='blizzard'?(PS.stormFog||.6):0,
+   wind:M==='storm'?PW.storm:M==='rain'?PW.rain:M==='auto'?1+PW.autoRain*au.rain:M==='ash'?(PW.ash||PW.storm):M==='ashfall'?(PW.ashfall||PW.clear):M==='blizzard'?(PW.blizzard||PW.storm):M==='snowfall'?(PW.snowfall||PW.clear):PW.clear,
+   ash:M==='ash'?1:M==='ashfall'?(PA.ashfall||.35):0,snow:M==='blizzard'?1:M==='snowfall'?(PS.snowfall||.4):0};};
  A.weatherStep=(W,h,dt)=>{const g=A.weatherTarget(W.mode,h);W.rain+=(g.rain-W.rain)*Math.min(1,dt*1.5);W.fog+=(g.fog-W.fog)*Math.min(1,dt*.8);
-  W.wet=Math.min(1,Math.max(0,W.wet+dt*(W.rain>.15?.12*W.rain:-.02)));W.wind+=(g.wind-W.wind)*Math.min(1,dt*.4);return W;};
+  W.wet=Math.min(1,Math.max(0,W.wet+dt*(W.rain>.15?.12*W.rain:-.02)));W.wind+=(g.wind-W.wind)*Math.min(1,dt*.4);
+  W.ash=(W.ash||0)+(g.ash-(W.ash||0))*Math.min(1,dt*.6);W.snow=(W.snow||0)+(g.snow-(W.snow||0))*Math.min(1,dt*.6);return W;};
  A.flashAt=e=>e<80?1:e<150?.25:e<230?.8:e<600?.8*(1-(e-230)/370):0;
- A.weatherState=mode=>({mode:mode||'auto',rain:0,fog:0,wet:0,flash:0,wind:1,MODES:A.MODES});
+ A.weatherState=(mode,modes)=>({mode:mode||'auto',rain:0,fog:0,wet:0,flash:0,wind:1,ash:0,snow:0,MODES:modes||A.MODES});
  // o.reduceMotion (the host reads the viewer's setting): never flash
- A.weather=o=>{o=o||{};const T=A.T,W=A.W=A.weatherState(o.mode);
+ A.weather=o=>{o=o||{};const T=A.T,W=A.W=A.weatherState(o.mode,(o.ash||o.snow)?A.MODES.concat(o.ash?A.ASH_MODES:[],o.snow?A.SNOW_MODES:[]):A.MODES);
   // rain: streaks in a box (240 m) that travels with the camera
   const P=A.PRESETS.rain,F=A.glf,B=P.box/2,N=o.drops||P.drops,pos=new Float32Array(N*6),end=new Float32Array(N*2);for(let i=0;i<N;i++){const x=A.rr(-B,B),y=A.rr(-B,B),z=A.rr(-B,B);pos.set([x,y,z,x,y,z],i*6);end[i*2+1]=1;}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('tip',new T.BufferAttribute(end,1));
@@ -20193,12 +20461,54 @@ ATMOS.PRESETS={
    const sx=-Math.sin(a),sz=Math.cos(a);let x=cx,z=cz;for(let k=0;k<=K;k++){const y=top+(base-top)*k/K;if(k){x+=(A.rnd()-.5)*40;z+=(A.rnd()-.5)*40;}const w=3.2-2.4*k/K;bp.set([x-sx*w,y,z-sz*w,x+sx*w,y,z+sz*w],k*6);}
    bg.attributes.position.needsUpdate=true;bg.computeBoundingSphere();t0=A.clock.t*1000;next=t0+5000+A.rnd()*9000;};
   A.hook((t,h,dt)=>{const now=t*1000;A.weatherStep(W,h,dt);
-   if(W.mode==='storm'&&!reduce&&W.rain>.6&&now>next)strike();W.flash=A.flashAt(now-t0);A.windScale=W.wind;A.U.gustAmp.value=.55+.25*Math.min(1,W.wind-1);
-   A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;rain.visible=W.rain>.01;bolt.visible=W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
+   if(((W.mode==='storm'&&W.rain>.6)||(W.mode==='ash'&&W.ash>.6))&&!reduce&&now>next){strike();bm.color.setHex(W.mode==='ash'?((A.PRESETS.ash||{}).bolt||0xffc8a0):0xe8ecff);}W.flash=A.flashAt(now-t0);A.windScale=W.wind;A.U.gustAmp.value=.55+.25*Math.min(1,W.wind-1);
+   A.U.rain.value=W.rain;A.U.fog.value=W.fog;A.U.flash.value=W.flash;if(A.U.ash)A.U.ash.value=W.ash||0;if(A.U.snow)A.U.snow.value=W.snow||0;rain.visible=W.rain>.01;bolt.visible=W.flash>.01;bm.opacity=Math.min(1,W.flash*1.5);
    if(o.apply)o.apply(W);});
   A.rec('weather',{preset:'rain',modes:W.MODES,mode:W.mode,drops:N,auto:{rain:[19.5,19.9,21.6,22],fog:[.7,4.3,5.5,8.4,9.6]},storm:{fog:.3,strikeEvery:[5,14],strikeDist:[700,1200]},
    note:'auto: rain ramps up over the first pair of hours and down over the second; fog = scale * ramps. W.rain/fog/wet/flash/wind are the state a host reads'});
-  if(o.ui&&A.weatherUI)A.weatherUI(o.ui);A.strike=strike;return W;};   // the selector itself is host code: 89-atmos-9-host.js
+  if(o.ash&&A.ashWeather)A.ashWeather();
+  if(o.snow&&A.snowWeather)A.snowWeather();
+  if(o.ui&&A.weatherUI)A.weatherUI(o.ui);A.strike=strike;return W;};
+ // THE FLAKES' drawing (the ash's, o.ash, and the snow's, o.snow; key 'ash' or 'snow', each its own preset and uniform):
+ // the flecks, a box of tumbling specks riding the camera, slow to fall and driven downwind by the module's wind (which the
+ // storm raises); the streaks; the veils, big soft sprites skimming the ground under the camera (the host's ground),
+ // racing downwind faster still, only in the storm. All read A.U[key] (amt in the shaders); nothing costs anything at 0
+ A.flakeWeather=key=>{const T=A.T,P=A.PRESETS[key],F=A.glf,B=P.box/2,N=P.flecks,pos=[],pp=[],U=A.U[key];
+  for(let i=0;i<N;i++){pos.push(A.rr(-B,B),A.rr(-B,B),A.rr(-B,B));pp.push(A.rnd(),A.rnd(),A.rr(P.size[0],P.size[1]),A.rr(.5,2));}
+  const fm=new T.ShaderMaterial({uniforms:{time:A.U.time,windOff:A.U.windOff,px:A.U.px,light:A.U.light,amt:U},transparent:true,depthWrite:false,fog:false,
+   vertexShader:`uniform float time;uniform vec2 windOff;uniform float light;uniform float amt;attribute vec4 pp;varying float vA;
+    ${A.GLSL_QUAD}
+    void main(){vec3 p=ipos;p.y=mod(p.y-time*${F(P.fall)}*(0.6+0.8*pp.x)+sin(time*0.9+pp.y*9.0)*0.6,${F(P.box)})-${F(B)}+cameraPosition.y;
+     vec2 d=windOff*${F(P.windRide)}*(0.7+0.6*pp.y)+vec2(sin(time*1.3+pp.x*11.0),cos(time*1.1+pp.y*7.0))*0.9;
+     p.xz=mod(p.xz-cameraPosition.xz+${F(B)}+d,${F(P.box)})-${F(B)}+cameraPosition.xz;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,0.3);
+     float tumble=0.45+0.55*abs(sin(time*pp.w*3.0+pp.x*20.0));float ps=clamp(pp.z*tumble*px/dd,1.5,9.0);
+     vA=step(fract(pp.x*7.31),amt)*(1.0-smoothstep(${F(P.fade[0])},${F(P.fade[1])},dd))*${F(P.alpha)};gl_Position=atmQuad(mv,ps);}`,
+   fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.004)discard;gl_FragColor=vec4(vec3(${P.color.map(F).join(',')})*(0.3+0.7*light),vA*smoothstep(0.5,0.38,r));}`});
+  A.sprites(key+'flecks',{ipos:[3,pos],pp:[4,pp]},fm,4);
+  // the streaks: short lines of ash driven nearly flat along the gale (the storm's sense of speed), riding the camera
+  {const SB=P.streakBox/2,NS=P.streaks,sp=new Float32Array(NS*6),tip=new Float32Array(NS*2),sd=new Float32Array(NS*2);
+   for(let i=0;i<NS;i++){const x=A.rr(-SB,SB),y=A.rr(-SB*.4,SB*.6),z=A.rr(-SB,SB),r=A.rnd();sp.set([x,y,z,x,y,z],i*6);tip[i*2+1]=1;sd[i*2]=r;sd[i*2+1]=r;}
+   const g=new T.BufferGeometry();g.setAttribute('position',new T.BufferAttribute(sp,3));g.setAttribute('tip',new T.BufferAttribute(tip,1));g.setAttribute('seed',new T.BufferAttribute(sd,1));
+   const lm=new T.ShaderMaterial({uniforms:{time:A.U.time,wind:A.U.wind,windOff:A.U.windOff,light:A.U.light,amt:U},transparent:true,depthWrite:false,fog:false,
+    vertexShader:`uniform float time;uniform vec2 wind;uniform vec2 windOff;uniform float amt;attribute float tip;attribute float seed;varying float vA;
+     void main(){vec3 p=position;p.y=mod(p.y-time*${F(P.fall)}*1.5,${F(P.streakBox)})-${F(SB)}*0.4+cameraPosition.y-2.0;
+      p.xz=mod(p.xz-cameraPosition.xz+${F(SB)}+windOff*${F(P.streakRide)}*(0.8+0.4*seed),${F(P.streakBox)})-${F(SB)}+cameraPosition.xz;
+      vec3 d=normalize(vec3(wind.x,-0.08,wind.y)+vec3(0.0001));p-=d*tip*mix(${F(P.streakLen[0])},${F(P.streakLen[1])},seed);vec4 mv=viewMatrix*vec4(p,1.0);
+      vA=step(fract(seed*5.13),amt*amt)*(1.0-smoothstep(15.0,${F(SB)},length(mv.xyz)))*(0.3+0.7*(1.0-tip));gl_Position=projectionMatrix*mv;}`,
+    fragmentShader:`uniform float light;varying float vA;void main(){if(vA<0.004)discard;gl_FragColor=vec4(vec3(${P.streakColor.map(F).join(',')})*(0.3+0.7*light),vA*${F(P.streakAlpha)});}`});
+   const ls=new T.LineSegments(g,lm);ls.frustumCulled=false;ls.renderOrder=4;ls.name='atmos:'+key+'streaks';A.add(ls);A.noRay(ls);A.stats[key+'streaks']=NS;}
+  const VB=P.veilBox/2,vpos=[],vpp=[];for(let i=0;i<P.veils;i++){vpos.push(A.rr(-VB,VB),0,A.rr(-VB,VB));vpp.push(A.rnd(),A.rr(P.veilY[0],P.veilY[1]),A.rr(P.veilSize[0],P.veilSize[1]),A.rnd());}
+  const ground={value:0};A.hook(()=>{const c=A.h.camera.position;ground.value=A.h.ground?A.h.ground(c.x,c.z):0;});
+  const vm=new T.ShaderMaterial({uniforms:{time:A.U.time,windOff:A.U.windOff,px:A.U.px,light:A.U.light,amt:U,ground},transparent:true,depthWrite:false,fog:false,
+   vertexShader:`uniform float time;uniform vec2 windOff;uniform float light;uniform float amt;uniform float ground;attribute vec4 pp;varying float vA;
+    ${A.GLSL_QUAD}
+    void main(){vec3 p=ipos;vec2 d=windOff*${F(P.veilRide)}*(0.8+0.4*pp.x);p.xz=mod(p.xz-cameraPosition.xz+${F(VB)}+d,${F(P.veilBox)})-${F(VB)}+cameraPosition.xz;
+     p.y=ground+pp.y+sin(time*0.4+pp.w*6.0)*2.0;vec4 mv=modelViewMatrix*vec4(p,1.0);float dd=max(-mv.z,1.0);float ps=clamp(pp.z*px/dd,2.0,900.0);
+     vA=smoothstep(0.5,1.0,amt)*${F(P.veilAlpha)}*smoothstep(4.0,30.0,dd)*(0.6+0.4*sin(time*0.7+pp.w*9.0));gl_Position=atmQuad(mv,ps);}`,
+   fragmentShader:`uniform float light;varying float vA;varying vec2 vUv;void main(){float r=length(vUv-0.5);if(r>0.5||vA<0.003)discard;gl_FragColor=vec4(vec3(${P.veilColor.map(F).join(',')})*(0.35+0.65*light),vA*smoothstep(0.5,0.0,r));}`});
+  A.sprites(key+'veils',{ipos:[3,vpos],pp:[4,vpp]},vm,4);
+  A.rec(key,key==='ash'?{preset:'ash',modes:A.ASH_MODES,flecks:N,streaks:P.streaks,veils:P.veils,note:'W.ash 0..1 (ashfall '+P.ashfall+', the storm 1); flecks ride the camera and the wind; veils skim the ground under the camera in the storm (ash>0.5); the storm lightning is warm'}:{preset:key,modes:A.SNOW_MODES,flecks:N,streaks:P.streaks,veils:P.veils,note:'W.snow 0..1 (snowfall '+P.snowfall+', the blizzard 1); flakes ride the camera and the wind; streaks of blown snow and spindrift skimming the ground in the blizzard (snow>0.5); no lightning'});};   // the selector itself is host code: 89-atmos-9-host.js
+ A.ashWeather=()=>A.flakeWeather('ash');A.snowWeather=()=>A.flakeWeather('snow');
 })();
 // ================================================================= ATMOS — dressing on buildings: ivy, window boxes, rooftop cisterns
 // A.boxIndex(meshes) indexes every instance of box-geometry InstancedMeshes (walls, slabs, roofs) as an oriented box in an
@@ -20343,7 +20653,7 @@ ATMOS.PRESETS={
    convention:{units:'metres',up:'+y',x:'east',z:'south',handed:'right (glTF)',ry:'radians about +y; local +z turns to (sin ry, cos ry)',bearing:'angle from +x toward +z',
     hours:'0..24; a light [on,off] is lit from on in the evening to off next morning (off may be past 24; on<0 follows the night; on=0 always)',
     colors:'hex or [r,g,b] in display (sRGB) space',colour:'srgb',instance:'[x,y,z, sx,sy,sz, ry | [rx,ry,rz] YXZ euler, color|null]; geometry is unit-sized, posts and cones stand on y=0'},
-   uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
+   uniforms:{atm_hour:'0..24',atm_night:'0 day .. 1 night',atm_time:'module clock, s',atm_rain:'0..1',atm_fog:'0..1',atm_flash:'lightning 0..1',atm_wind:'vec2 m/s-ish, base x weather',atm_gust_amp:'gust depth',atm_wind_off:'vec2, wind integrated over time',atm_light:'1 day .. 0.18 night',atm_ash:'0..1 the opt-in ash weather (ashfall .35, the storm 1)',atm_snow:'0..1 the opt-in snow weather (snowfall .4, the blizzard 1)',atm_px:'pixels per metre at 1 m (sprite sizing)',atm_wave_t:'module clock wrapped at presets.waves.period, s (atmos_waves)',atm_wave_amp:'wave half-height scale, m'},
    presets:A.PRESETS,clock:{t:A.clock.t,scale:A.clock.scale},wind:{base:[A.windBase.x,A.windBase.y]},
    fx:A.fx,lamps:A.lamps.map((l,i)=>{const g=A.glow[A.lampGlow[i]];return{at:[l[0],l[1],l[2]],hours:[l[3],l[4]],glow:A.lampGlow[i],color:g?[g[3],g[4],g[5]]:null,
     light:'none in three.js: the lamp is its halo (glow) and its moths; a game engine may give the nearest an OmniLight3D of this colour'};}),

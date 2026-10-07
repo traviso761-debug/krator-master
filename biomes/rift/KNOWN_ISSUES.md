@@ -79,3 +79,6 @@ Read before changing anything here. `build.py` prints the open count.
 - [x] The brain-coral tree replaced by the trumpet tree; a wide-canopy
       parasol tree; the savannah's purple (Vain fronds, heath, pinecone succulents).
 - [x] Every bole lathe ends in a dome ring (inherited lesson, kept).
+
+- [ ] **Frill-tree fins: use the owner's fractal frond** (`card.frond.fractal`) next pass, for the frill tree, carrot frill,
+      cloud frill and barrel frill (`biomes/README.md`, "To do: frill-tree fins"; the Throne's frill tree is the example).

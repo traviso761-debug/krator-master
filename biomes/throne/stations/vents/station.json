@@ -1,0 +1,12 @@
+{
+ "name": "Vent country (station 8): the east rift under the plume, its graben, the fissure (its crack still glowing), the sulphur marsh, hot pools ringed by their mats, mud pots, the steam valley of bone bells, the CO2 hollows, the acid fog",
+ "out": "throne-vents.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-4-weather.js",
+  "89-atmos-9-host.js"
+ ]
+}

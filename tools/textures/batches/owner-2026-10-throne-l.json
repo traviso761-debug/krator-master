@@ -1,0 +1,30 @@
+[
+ {
+  "src": "organic-funnel-trumpet.webp",
+  "out": "core/materials/library/organic.funnel.trumpet",
+  "record": {
+   "id": "organic.funnel.trumpet",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 7 (organic.funnel.trumpet); pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "the inside of a ribbed, frill-rimmed plant funnel seen from above (radial, centred, not a tile): the trumpet trees' funnels (in use); a pitcher plant's mouth, any cup-shaped bloom or fungus mapped from above"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

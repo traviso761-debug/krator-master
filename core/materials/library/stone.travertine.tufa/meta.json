@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.25,
+    1.202
+   ],
+   "seam_before": [
+    1.388,
+    1.721
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.travertine.tufa",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "stone-travertine-tufa.png",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: supplied as \"Porous Travertine Tufa Texture.png\" (volc3.zip), 2026-10-06",
+  "reuse": "hot-spring rims and terraces; tufa walls; spa architecture",
+  "sha1": "53172c79d75a6a8a28de4491179e5db58222719b"
+ }
+}

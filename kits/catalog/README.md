@@ -6,7 +6,7 @@ furniture sets** (2026-10): a parametric furniture kit and one file per culture.
 It is the furniture source for `kits/interiors/` and the starting point for `kits/furniture/`.
 
 **Status: verified.** `build.py` builds `dist/catalog.html`, a contact sheet of every
-furniture entry and every variant, and `verify.py --assert` passes: all 1635 furniture pieces
+furniture entry and every variant, and `verify.py --assert` passes: all 1636 furniture pieces
 (2456 instances over five pages, every variant, seeds 1–4) build without error, carry no NaN geometry, fit
 their declared size, keep their anchor's geometry, carry their tags, and sit on exactly one page. Every furniture entry carries every field of
 `kits/furniture/SPEC.md` "The entry" and meets its style rules. What is still open is in `KNOWN_ISSUES.md`.
@@ -30,7 +30,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 128 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 64, Ancients 4) |
 | `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
-| `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (39, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
+| `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (40, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
 | `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 13 pieces: 10 harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray) and 3 carpentry pieces for the abyss builders' yard (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`, 2026-10). See "Rugs and Jobs" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
 | `src/` | only the page around them: head, sky, sheet layout, hover inspector, polygon tool, tail |
@@ -272,7 +272,7 @@ and the `generic_basket` flat tray. Floor containers stand beside a 0.8 m table 
 | food | bread, bread_basket, cheese, cured_meat, roast, fish, fruit_bowl, veg_basket, produce, eggs, pie, cake, stew_pot, meal, preserves, dairy, snack_bowl, pastries, condiments, mushrooms (surface); hanging_larder (ceiling) |
 | drink | wine, ale, spirits, tea_set, water (surface) |
 | supply | candle_supply, lamp_oil, soap, medicine, herb_bundles, tobacco, writing_supplies, sewing, rations (surface) |
-| biome fruit | 39 `generic_fruit_*` (surface). Each has `biome` and `source` fields naming the kit and the species: `biomes/FRUIT.md`. Putting the fruit into the biome kits themselves is still open (each kit's `KNOWN_ISSUES.md`) |
+| biome fruit | 40 `generic_fruit_*` (surface). Each has `biome` and `source` fields naming the kit and the species: `biomes/FRUIT.md`. Putting the fruit into the biome kits themselves is still open (each kit's `KNOWN_ISSUES.md`) |
 
 Shared shapes are `KGEN` (bottle, jar, cloth-capped jar, plate, bowl, mug, goblet, crate, heap, fish, capsule,
 fruit) at the top of `-generic-goods.js`, and `KFRUIT` (leaf, half, ridged pod, wedge, studded head) at the

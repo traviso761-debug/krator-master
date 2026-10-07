@@ -23,6 +23,16 @@ const C=A.weatherState('clear');Object.assign(C,{rain:1,fog:1,wet:1,wind:2.4});f
 ok('clearing: rain gone, fog going, wet dries slowly',C.rain<.01&&C.fog<.01&&C.wet>.7&&C.wet<1,C.rain>.5);
 ok('auto mode: the evening shower is on at 20.5 and off at 23',near(A.weatherTarget('auto',20.5).rain,1)&&near(A.weatherTarget('auto',23).rain,0),near(A.weatherTarget('auto',20.5).rain,0));
 ok('auto mode: dawn fog at 6.5',A.weatherTarget('auto',6.5).fog>.6,A.weatherTarget('auto',6.5).fog<.1);
+// ---- the ash (opt-in): older modes never raise it, the ash modes do, and the default mode list is unchanged
+ok('the default modes are unchanged (no ash unless asked)',A.MODES.join()==='auto,clear,rain,storm,fog'&&A.weatherState('auto').MODES===A.MODES,false);
+ok('the older modes never raise the ash',['auto','clear','rain','storm','fog'].every(m=>A.weatherTarget(m,14).ash===0),A.weatherTarget('ash',14).ash===0);
+{const S=A.weatherState('ash');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('the ash storm eases to full ash, a gale and haze',near(S.ash,1,.02)&&S.wind>2&&S.fog>.4,S.ash<.5);}
+{const S=A.weatherState('ashfall');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('ashfall eases to a light ash',S.ash>.25&&S.ash<.45&&S.fog<.05,S.ash>.9);}
+// ---- the snow (opt-in, the Throne's glacier): the same rules as the ash
+ok('the older modes and the ash never raise the snow',['auto','clear','rain','storm','fog','ashfall','ash'].every(m=>A.weatherTarget(m,14).snow===0),A.weatherTarget('blizzard',14).snow===0);
+{const S=A.weatherState('blizzard');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('the blizzard eases to full snow, a gale and a white-out, no ash',near(S.snow,1,.02)&&S.wind>2&&S.fog>.4&&S.ash<.01,S.snow<.5);}
+{const S=A.weatherState('snowfall');for(let i=0;i<900;i++)A.weatherStep(S,14,1/60);ok('snowfall eases to a light snow',S.snow>.3&&S.snow<.5&&S.fog<.05,S.snow>.9);}
+ok('the snow modes are offered apart from the ash',A.SNOW_MODES.join()==='snowfall,blizzard'&&A.ASH_MODES.indexOf('snowfall')<0,false);
 ok('a step of zero time changes nothing (a pinned clock)',(()=>{const S=A.weatherState('rain'),b=JSON.stringify(S);A.weatherStep(S,12,0);return JSON.stringify(S)===b;})(),false);
 ok('the flash: double, then a fade, then dark',A.flashAt(40)===1&&A.flashAt(100)===.25&&A.flashAt(200)===.8&&A.flashAt(400)>0&&A.flashAt(700)===0,A.flashAt(700)>0);
 
@@ -74,7 +84,7 @@ else{const THREE=require(T3);
  ok('every record has an id and a type; the export says its colour space',E.fx.every(r=>r.id&&r.type)&&E.convention.colour==='srgb',false);
  ok('moths: one per lamp head times n',A.lamps.length>0&&E.fx.find(r=>r.type==='moths').lamps.length===A.lamps.length,false);
  ok('lamps follow the row: the evening running down it',E.lamps.length===A.lamps.length&&E.lamps[E.lamps.length-1].hours[0]>E.lamps[0].hours[0],E.lamps[0].hours[0]>E.lamps[E.lamps.length-1].hours[0]);
- const GOLD='7bffa080934e178c';   // 2026-10-05: the export gained presets.waves, presets.skylight and the atm_wave_* uniforms (main), and each lamp's halo index and colour (the port spike); nothing placed changed
+ const GOLD='ff4137190889c79d';   // 2026-10-06: the export gained presets.snow, the wind's snowfall/blizzard scales and the atm_snow uniform (the opt-in snow weather, biomes/throne station 9), after presets.ash and atm_ash (station 7); nothing placed or drawn changed for a host that asks for neither
  ok('export fingerprint '+fp+(fp===GOLD?'':' (golden '+GOLD+'; if the change is meant, take a screenshot diff and update GOLD)'),fp===GOLD,false);}
 
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

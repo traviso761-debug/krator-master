@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.137,
+    1.134
+   ],
+   "seam_before": [
+    1.645,
+    1.636
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.2,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ice.clear",
+  "metal": 0,
+  "roughness": 0.2,
+  "scale": [
+   3.0,
+   3.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ice-clear.webp",
+  "generator": "image generation by the owner, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP with the glacier's set (a second ice)",
+  "reuse": "deep blue clear ice, fractured into plates with white veins: seracs, icebergs, ice-cave walls and ice towers (the Throne's glacier, in use); any blue ice face, a frozen waterfall, a glass-like crystal",
+  "sha1": "df4811d3a1df33579832cce0fd207be169ca6c37"
+ }
+}

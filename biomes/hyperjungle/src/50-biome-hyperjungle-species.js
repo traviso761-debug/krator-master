@@ -197,7 +197,16 @@ HYPERJUNGLE.MAT={
  bloom:BIO.leafMat(null,'bloom',{swayW:'1.0',swayA:.05,alphaTest:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
-HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:[14,18]}));
+// THE LIBRARY BARKS (opt-in, 2026-10-06): when the page carries a 'hyperjungle' pack (biomes/hyperjungle/materials.json ->
+// tex/, inlined by a host's build: the Throne's kipuka station does), each species' bole takes its library bark, and its
+// roots, limbs, boughs and twigs go into a bucket of their own ('limb'+sp) on the SAME map, so a branch is the wood of its
+// trunk. (The bole's own bucket stays the bole alone: the floor reads it as the bole's profile.) Without the pack nothing
+// changes: the procedural barks and the shared pale limb texture, as the kit has always drawn them.
+HYPERJUNGLE.LIB={};
+if(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)HYPERJUNGLE.SPECIES.forEach((S,i)=>{const L=KMAT.packed('hyperjungle','bark.'+S.key);if(!L)return;
+ const t=KMAT.textures(L,{aniso:4}).map;HYPERJUNGLE.MAT.bark[i].map=t;HYPERJUNGLE.LIB[i]={scale:L.scale,mean:L.mean,mat:BIO.barkMat(t)};});
+HYPERJUNGLE.SPECIES.forEach((S,i)=>{const L=HYPERJUNGLE.LIB[i];BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:L?L.scale:[14,18]});
+ if(L)BIO.bucket('limb'+i,L.mat,{label:S.name+' limbs',uvScale:L.scale});});
 BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:[6,9]});
 BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:[3,4]});
 BIO.bucket('rock',HYPERJUNGLE.MAT.rock,{label:'Boulders',uvScale:[6,6]});
