@@ -21,6 +21,9 @@ ramblers (P6) and the Godot case (P7) follow.
 | `src/45-dhelv-bio.js` | the biome host: BIO bound before the kit loads; the kipuka's mask (its floor less the clearing, the stream, the pasture and the cliff's foot), the outpost's buildings as obstacles; `dhbForest` plants it with the world |
 | `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield (`terrainH = DH.groundY`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
+| `src/72-dhelv-nav.js` | the nav graph (`DHN`) and its checks: data |
+| `src/74-dhelv-sim.js` | the ramblers' world declared into core/simulation (`DHS`) and their checks: data |
+| `src/95-dhelv-life.js` | the ramblers drawn: the clock, the bodies, the dots on the minimap, following a walker, the nav overlay (V) |
 | `src/93-dhelv-map.js` | the minimap: the layout drawn small, the ways near the camera's height bright, the camera and the marker; a click flies there; M hides it |
 | `src/94-dhelv-light.js` | the cave's light: underground the sun and the sky's reflections go out; daylight comes down the openings (the sky's light straight down, the sun's beam with shadows, a shaft with motes, a bounce), the lamps nearest the eye light the dark, the tunnels' glow fungus; `[` `]` move the hour |
 | `build.py`, `verify.py` | the page: core, the kit's `src/` less its sheet's host, and `src/` here; the headless check |
@@ -77,6 +80,8 @@ under the ground opens into its void as a doorway, not through the surface). The
 | the nav graph's edges walked both ways every 0.5 m: a floor within a step, no block, 2 m headroom on the carved ways and the doors | an edge through a pillar; a tube walked under a 6 m headroom (a low lintel) |
 | every door reachable from the outpost's gate, the secret ways apart | the south well's tunnel cut |
 | stacked lookups: where two ways cross a level apart, a point on each finds its own | the y swapped |
+| a day's run, stepped a minute at a time and sampled every half hour: every pose out in the world on a floor, out of every block and the rock; no route failed, no one stuck; stairs climbed; every district visited | a walker planted off the floor, one inside a pillar |
+| the rules: no foreign trader's way leaves the outer zone; no way decided while the stone door is shut goes through it (the guard's may) | a foreign way planted through the gate; a way planted through the shut door |
 | the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
 ## The checks (`tests/test-layout.js`)
@@ -175,3 +180,18 @@ head (a 0.7 m lip coming down), so a stair up to a node other ways leave now end
 to clear it; the east stair to the ledge ran up under the ledge's last 20 degrees (now from 15 degrees past its end, as
 the west one); the stairs up the old cone's cliff to its towers were walk strips with nothing drawn, through the rock (now
 built switchbacks of tuff ashlar against the cliff: `dhCliffStairs`).
+
+## The ramblers (P6)
+
+The life layer is core/simulation (with core/clock and core/sched), as Mungo's. `src/74-dhelv-sim.js` declares Dhelv into
+it: the nav graph's layers ('pedestrian', every way but the secret ones; 'outer', the outer zone only, for the ash-nomad
+traders; 'guard' and 'scout', which pass the stone door when it is shut, it being theirs); 118 places from what was built
+(each door's site by its key: homes, shops, taverns, the farms, the temple, kivas and shrines, the catacombs, the cistern,
+the posts, the caravanserai; the pasture and the forest's edge on the kipuka), each door carrying its nav node so a route
+starts and ends on the right level (SIM's own lookup is by plan); the PLAN's roles with hourly schedules; about 650 people
+from the homes (`?pop=2` doubles them). The rolling stone door is shut from 22:00 to 5:00. A day runs in under a second.
+
+`src/95-dhelv-life.js` draws them: the clock (held at the sky's hour; `?time=run` runs it, `?scale=10` ten times fast,
+`?hour=8`; `[` and `]` move it with the sky), SIM stepped once a world minute, the nearest 700 out of doors drawn from an
+instanced pool (a robe in the role's colour, a head; `?walkers=N`), the minimap's dots, a click on a walker follows it and
+draws its way (Esc lets go), V (or `?nav`) the nav graph with any edge the check refused in red. `?nolife` leaves it out.

@@ -75,6 +75,12 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   const t0=performance.now(),c2=DHN.chkEdges(B);add('nav-edges-walkable',!c2.length,c2.length?c2.length+' not walkable, first '+c2.slice(0,4).map(b=>b.e.a+'-'+b.e.b+' ('+b.e.kind+'): '+b.why).join(', '):B.edges.length+' edges walked both ways every 0.5 m, 2 m headroom on the carved ways and the doors ('+Math.round(performance.now()-t0)+' ms)');
   const c3=DHN.chkReach(B);add('nav-places-reachable',B.doors.length>0&&!c3.length,c3.length?c3.length+' unreachable from the gate: '+c3.slice(0,6).join(', '):B.doors.length+' doors reachable from the outpost\'s gate (the secret ways apart)');
   const c4=DHN.chkStacked(B);add('nav-stacked-lookups',c4.n>0&&!c4.bad.length,c4.bad.length?c4.bad.join('; '):c4.n+' crossings of ways a level apart: a point on each finds its own');}
+ /* the ramblers (PLAN.md 8.3, 5 and 6: 74-dhelv-sim.js): a day stepped minute by minute, sampled every half hour */
+ if(DHL.on){const t0=performance.now(),d=DHS.day(DHL.clock,1440),ms=Math.round(performance.now()-t0),nd=DH.DISTRICTS.length;
+  add('day-run',d.poses>0&&!d.bad.length&&!d.routeFail&&!d.stuck&&!d.nopath&&d.stairs>0&&d.districts.length===nd,d.poses+' poses out in the world, '+(d.bad.length?'BAD: '+d.bad.join('; '):'every one on a floor, out of every block and the rock')+'; '+d.decisions+' decisions'+
+   (d.routeFail||d.nopath?', '+(d.routeFail+d.nopath)+' NO PATH '+JSON.stringify(d.rf):'')+(d.stuck?', '+d.stuck+' STUCK':'')+'; '+d.stairs+' ways up or down a stair; districts visited '+d.districts.length+' of '+nd+' ('+ms+' ms)');
+  add('life-rules',d.foreign>0&&!d.fbad.length&&d.shutTasks>0&&!d.crossed.length,d.foreign+' foreigners\' ways on the outer zone'+(d.fbad.length?' BUT '+d.fbad.join('; '):'')+'; '+d.shutTasks+' ways decided while the stone door was shut, '+(d.crossed.length?d.crossed.length+' THROUGH IT: '+d.crossed.join(', '):'none through it (the guard\'s apart)'));}
+ else add('day-run',false,'the life layer is off');
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
  /* sky: the hall's light well forgotten */
@@ -103,6 +109,13 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
   /* one tunnel cut: the south well's ways in (every carved way to its pit) */
   const cut=new Set(B.edges.filter(e=>e.layout&&(e.a==='s2.in'||e.b==='s2.in')).map(e=>e.id)),c3=DHN.chkReach(B,e=>e.zone!=='secret'&&!cut.has(e.id));
   add('nav-places-reachable: the south well\'s tunnel cut',c3.length>0,c3.length+' unreachable: '+c3.slice(0,4).join(', '));
-  const c4=DHN.chkStacked(B,true);add('nav-stacked-lookups: the y swapped',c4.bad.length>0,c4.bad.length+' of '+c4.n*2+' found the other level');}
+  const c4=DHN.chkStacked(B,true);add('nav-stacked-lookups: the y swapped',c4.bad.length>0,c4.bad.length+' of '+c4.n*2+' found the other level');
+  /* the ramblers': a walker planted 3 m over the hall's floor, one inside the pillar */
+  if(DHL.on){const H=DH.HALL,w1=DHS.poseOk({x:H.c[0],y:H.y+3,z:H.c[1]}),k=pil&&pil.box,w2=k?DHS.poseOk({x:(k[0]+k[1])/2,y:H.y,z:(k[2]+k[3])/2}):null;
+   add('day-run: a walker planted off the floor, one inside a pillar',!!w1&&!!w2,(w1||'stood')+', '+(w2||'stood'));
+   /* a foreign trader's way planted through the gate into the city; a way planted through the shut stone door */
+   const car=SIM.all('place').find(P=>P.kind==='caravanserai'),mk=SIM.all('place').find(P=>P.kind==='market'),r1=car&&mk&&SIM.nav.route('pedestrian',car.door,mk.door),r2=car&&mk&&SIM.nav.route('guard',car.door,mk.door);
+   const f=r1?DHS.foreignOk({legs:[{layer:'pedestrian',route:r1}]}):'no route',x=r2?DHS.crossesDoor({legs:[{layer:'pedestrian',route:r2}]}):false;
+   add('life-rules: a foreign way through the gate, a way through the shut door',!!f&&x,(f||'kept to the outer zone')+'; '+(x?'through the door':'not through the door'));}}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;

@@ -21,7 +21,7 @@ DHN.areas=function(){const H=DH.HALL,K=DH.KIPUKA,A=[{id:'hall',zone:'inner',cell
  for(const P of DH.PITS)A.push({id:'pit:'+P.id,zone:'inner',cell:3,y:P.floor,x0:P.c[0]-P.r,x1:P.c[0]+P.r,z0:P.c[1]-P.r,z1:P.c[1]+P.r,floor:new RegExp('^dh\\.'+P.id+'\\.pit')});
  A.push({id:'kipuka',zone:'outer',cell:5,y:null,x0:K.c[0]-K.r,x1:K.c[0]+K.r,z0:K.c[1]-K.r/1.3,z1:K.c[1]+K.r/1.3,floor:/kipuka's floor/});
  return A;};
-DHN.build=function(){const t0=performance.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w||2,len:Math.hypot(b.x-a.x,b.z-a.z)});};
+DHN.build=function(){const t0=Date.now(),N=[],E=[],byId={},add=n=>{byId[n.id]=n;N.push(n);return n;},link=(a,b,kind,zone,w)=>{E.push({id:E.length,a:a.id,b:b.id,kind,zone,w:w||2,len:Math.hypot(b.x-a.x,b.z-a.z)});};
  /* the layout's ways (each node set on the floor built under it: a building's plinth stands a hand over the layout's height) */
  for(const n of DH.NODES){const f=KWALK.floorBelow(n.x,n.z,n.y+.6,1.2);add({id:n.id,x:n.x,y:f&&Math.abs(f[0]-n.y)<.6?f[0]:n.y,z:n.z,tag:'way',area:null});}
  /* a way the scene built to its own shape (DH_REAL: the cliff's switchbacks) is its points, each a node */
@@ -62,7 +62,7 @@ DHN.build=function(){const t0=performance.now(),N=[],E=[],byId={},add=n=>{byId[n
   if(!D){const deg={};E.forEach(e=>{deg[e.a]=1;deg[e.b]=1;});const L=N.filter(q=>q.tag==='way'&&deg[q.id]&&Math.hypot(q.x-F.x,q.z-F.z)<6&&Math.abs(q.y-F.y)<1.5).sort((u,v)=>Math.hypot(u.x-F.x,u.z-F.z)-Math.hypot(v.x-F.x,v.z-F.z))[0];if(L)d.node=L.id;continue;}
   const n=add({id:'door:'+r.tid,x:D.x,y:D.y,z:D.z,tag:'door',area:null,site:r.key});d.node=n.id;let k=0;
   for(const q of near(n,40,1.2,q=>q.tag!=='door')){if(DHN.segOk(n,q).ok&&DHN.segOk(q,n).ok){link(n,q,'door',q.area?G[q.area].A.zone:zoneOf(q.id),2);if(++k>=2)break;}}}
- DHN.built={nodes:N,edges:E,byId,doors,grids:G,realized,ms:Math.round(performance.now()-t0)};return DHN.built;};
+ DHN.built={nodes:N,edges:E,byId,doors,grids:G,realized,ms:Math.round(Date.now()-t0)};return DHN.built;};
 DHN.get=function(){return DHN.built||DHN.build();};
 /* the node for a point, with its height: the floor under it, then the nearest node on that floor's level a walker can
    reach from it in a straight line (else the nearest on the level) */

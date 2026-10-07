@@ -58,7 +58,7 @@ KIT = os.path.join(ROOT, 'kits', 'zeijani')
 KIT_SRC = os.path.join(KIT, 'src')
 KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-probe.js'}   # the kit sheet's host
 TEX_DIR = os.path.join(KIT, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets', 'clock', 'sched', 'simulation')]   # clock, sched, simulation: the ramblers (P6)
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
 # the biome core (BIO: the kits' registry, foliage, placement, the stage) for the kipuka's forest (P5b)
 CORE_FILES += [os.path.join(ROOT, 'core', 'biome', f) for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '44-core-stage.js')]

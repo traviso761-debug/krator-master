@@ -18,6 +18,11 @@
       the open floors' grids (the hall, the pits, the kipuka) are under the hall's dome or the sky.
 - [ ] **The stacked-lookup check has one crossing to try** (the cistern's way under the braid); the ledge stands back in
       the wall, not over the square.
+- [ ] **About 650 people, not 5,000** (PLAN.md 8.2's numbers are to confirm): the modelled homes hold them; about 170 are
+      out at 10:00. `?pop=` scales the homes. The groups that try the hard routes (the scouts' patrol, a funeral, the
+      porters, the guard's change) are P6 (c).
+- [ ] **Door transit into carved apartments** (PLAN.md 8.3, 7): the ramblers stop at a building's door and are indoors;
+      Dhelv's page has no `IX.life` for the rooms inside.
 - [ ] **Only the kipuka's floor is walked on the surface** (and the cliff paths); the flows are not. The forest's plants are
       not walk blocks (a walker passes through a trunk).
 - [x] **The cut-away is not wired** for Dhelv's carved sites. Done (P5c): the 32 carved sites nearest the camera, refreshed

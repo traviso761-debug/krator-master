@@ -3,7 +3,7 @@
 // the rest faded (the levels: the braid crosses under the ledge's tunnels); the camera (its view as a cone) and the marker.
 // It shows the city or the outpost, whichever the camera is in; a click on it brings the orbit there (on the floor below the
 // nearest way's height). M hides it.
-const DHMAP={on:true,W:260,H:230,mode:null,base:{},t:0,
+const DHMAP={on:true,W:260,H:230,mode:null,base:{},t:0,extra:[],
  views:{city:{x0:-620,x1:720,z0:-320,z1:720},outpost:{x0:-2800,x1:-2300,z0:-200,z1:200}},
  COL:{tube:'#8a6a48',braid:'#7a4c96',ramp:'#3f9f98',stair:'#d4aa5a',ledge:'#c24a3a',square:'#b8ab90',street:'#9e8a70',door:'#ffffff',secret:'#4a8fd0'}};
 DHMAP.cv=document.createElement('canvas');DHMAP.cv.width=DHMAP.W;DHMAP.cv.height=DHMAP.H;
@@ -30,6 +30,7 @@ function dhMapBase(mode,cy){const key=mode+':'+Math.round(cy/3),B=DHMAP.base;if(
  B.key=key;B.cv=cv;return cv;}
 function dhMapDraw(){if(!DHMAP.on)return;const p=camera.position,mode=p.x<-1500?'outpost':'city',v=DHMAP.views[mode],F=dhMapFrame(v),g=DHMAP.cv.getContext('2d');DHMAP.mode=mode;
  g.clearRect(0,0,DHMAP.W,DHMAP.H);g.drawImage(dhMapBase(mode,p.y),0,0);
+ for(const f of DHMAP.extra)f(g,F,p,mode);   /* others' layers (95: the walkers as dots) */
  const d=new THREE.Vector3();camera.getWorldDirection(d);const a=Math.atan2(d.z,d.x),cx=F.X(p.x),cz=F.Z(p.z);
  g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.moveTo(cx,cz);g.arc(cx,cz,26,a-.45,a+.45);g.closePath();g.fill();
  g.fillStyle='#ffe060';g.beginPath();g.arc(cx,cz,3.5,0,TAU);g.fill();
