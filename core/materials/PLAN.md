@@ -1071,6 +1071,16 @@ host without the new row looks exactly as before. Splits: `feather*` (23 pieces)
 
 #### Buildings, vehicles and biomes audit (2026-10-06): what is still missing
 
+*Wiring audit, 2026-10-07* (`python3 tools/textures/audit_wiring.py`, static, no image library): all 7 kits that make surfaces
+with an adapter (ancients, fauna, mechs, motor-vehicles, post-apoc, ringsea, scyvoi) and all 14 biomes have a `materials.json` whose
+every family resolves to a delivered set, a `tex/pack.json` entry for it, and a `build.py` or bundle that reads `tex/`. The
+`kits/mechs` pack only carried stale source hashes for four normal maps (the packed WebP bytes were unchanged); re-packed.
+**Still unwired:** `kits/catalog`, `kits/interiors`, `kits/ancients-interiors` have no adapter of their own: catalog furniture
+takes a library set only through a host's `f_<family>` rows, and only Girder (29), Scyvoi (22) and Noah's Regret (8) have them.
+Mav's Refuge, Screamers, Highlands, Locus, Mungo, Verge, the Ancients kit and post-apoc bundle the furniture with vertex colours
+alone. The fix is a shared detail-map pass in the furniture runtime (Girder's `48-detail.js`, Scyvoi's `svfDetail`) and a default
+`f_` adapter from the picks listed under "Catalog furniture audit".
+
 *Update, same day:* **Jimjam is wired** (`settlements/jimjam/materials.json`: 17 families, full colour, every JMAT texture
 from the texturepalooza sets; README "Textures").
 
