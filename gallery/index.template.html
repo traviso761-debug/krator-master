@@ -95,10 +95,17 @@ const SECTIONS = [
   {key:'world', id:'worlds', title:'Settlements', note:'Whole worlds: terrain, buildings, flora and, in several, people moving through them.'},
   {key:'biome', id:'biomes', title:'Biomes', note:'Flora and fauna of each region, independent of any settlement.'},
   {key:'kit', id:'kits', title:'Building kits', note:'Sheets that lay out every building of a culture side by side.'},
+  {key:'ancients', id:'ancients', title:'Ancient city kits', note:'The ruined megastructures of the Ancients, type by type, at every level of decay: the full kit, its worn twins, the alternates, the engines, the spaceport and the Lighthouse.'},
   {key:'objects', id:'objects', title:'Objects', note:'Things placed into a world rather than built in it: furniture, plants and watercraft, each tagged by culture.'},
-  {key:'arcology', id:'arcologies', title:'Arcologies', note:'Whole cities in one structure, each intact beside its ruin. Earlier ones first, then this month\'s group.'},
+  {key:'arcology', id:'arcologies', title:'Arcologies', note:'Whole cities in one structure, each intact beside its ruin. This month\'s group is marked new.'},
   {key:'port', id:'port', title:'Ancient Port', note:'Modular port segments and vessels that tile along a coast, each intact, ruined and reclaimed.'},
 ];
+for (const s of /*SECTIONS*/[]) {   // a new build's own section, after its kind's (build_gallery.py, discover)
+  let i = SECTIONS.findIndex(x => x.key === s.after);
+  if (i < 0) i = SECTIONS.length - 1;
+  while (SECTIONS[i + 1] && SECTIONS[i + 1].after === s.after) i++;
+  SECTIONS.splice(i + 1, 0, s);
+}
 const main = document.getElementById('registers'), jump = document.getElementById('jump');
 for (const s of SECTIONS) {
   const items = ENTRIES.filter(e => e.section === s.key);

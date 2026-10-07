@@ -18,7 +18,7 @@
    "size": 512,
    "source": {
     "albedo": "7497ccf89f8b60050235a2aa66644daceec7e304",
-    "normal": "517c682d5ec6f539bf5614fa4f32a21aef4257f6",
+    "normal": "d96386dc9592470d47e032686e6fdd9dae12ed0a",
     "roughness": "626e444422dd4716b960cef36e4d4c18fd0be0dd"
    },
    "specular": 0.5,
@@ -46,7 +46,7 @@
    "size": 512,
    "source": {
     "albedo": "482fb4dddc6e29d347aa85dcee9926805497d37c",
-    "normal": "84c3d261a3b47a24c6e2eab2c0da0cfd692c1bd6",
+    "normal": "1f62f1572b3bfca3aa2db138f839685530cdef2d",
     "roughness": "88d09d118c255aa8fea494113e59d15593d3d730"
    },
    "specular": 0.5,
@@ -74,7 +74,7 @@
    "size": 512,
    "source": {
     "albedo": "62848a1712c394221c156599ea40f69d36c60f84",
-    "normal": "7b615d7a893b9419c4c7e7c4834ede7bac023986",
+    "normal": "65297ade2d8e1dfbfe8c7c0152fdcafa8799fdc6",
     "roughness": "d41a9a0b0ab9acb273f470409527ed796d992db5"
    },
    "specular": 0.5,
@@ -186,7 +186,7 @@
    "size": 512,
    "source": {
     "albedo": "a27b58bb0d966afa4dfc69657d6f6346a8048b7f",
-    "normal": "a2ba5155d1798f82cec8a7b8fef4c3dedfe7eecd",
+    "normal": "947bd6e444b62eb733e35a7e203b1af72ea789b7",
     "roughness": "5a3625cdeed6001c4e01648ca58a280ee4d17ae8"
    },
    "specular": 0.5,

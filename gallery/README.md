@@ -18,6 +18,16 @@ URL (files a call leaves out are kept, so later calls only need the rest). `gall
 To add a world, add a line to `ENTRIES` in `build_gallery.py`. The page itself
 is `index.template.html`; the script fills in the entry list.
 
+A new build is listed even before it has a line (2026-10-07): a build in `settlements/`, `openworld/`, `biomes/` or
+`kits/` with no page in `ENTRIES` gets its pages listed, tagged new. One page joins its kind's section; several make
+a section of their own after it (the Throne's ten stations, after Biomes), named from the pages' `<title>`s and
+described by the first paragraph of the build's `README.md` or `INDEX.md`. An `ENTRIES` line replaces all of that
+(section, name, blurb); `UNLISTED` keeps a build out; `--no-discover` lists `ENTRIES` only. Builds that already have
+a page listed are never extended, so pages left out of a listed build (Iziz's `w-a`, the Port's `lb*`) stay out.
+
+Each section is in alphabetical order by name, a leading "The" or "A" ignored, whatever the order of `ENTRIES`.
+The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the section `ancients`, "Ancient city kits".
+
 ## Published (2026-10-02)
 
 Rebuilt with the Ys kit sheet, the Ys mockup and the nwbay biome added to `ENTRIES` (102 pages, 135.4 MB) and

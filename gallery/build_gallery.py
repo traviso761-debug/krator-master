@@ -7,6 +7,12 @@ index.template.html. Claude then publishes gallery/site/ as the Artifact named
 in gallery/README.md.
 
 Usage:  python3 gallery/build_gallery.py [--no-build | --build-missing] [--out DIR --local-three URL] [--lod CONFIG]
+                                         [--no-discover]
+
+A build in settlements/, openworld/, biomes/ or kits/ that no ENTRIES line names is listed anyway, tagged new
+(discover): its one page in its kind's section, or its pages in a section of their own after it. --no-discover
+lists ENTRIES only. Give a new build its ENTRIES lines to choose its section, names and blurbs. Each section is
+alphabetical by name (alpha), whatever the order of ENTRIES.
 
 --lod CONFIG (a TOML file: host/lod.toml) puts gallery/krator-bar.js first in every page: a bar to go to the other
 worlds, set the level of detail, or go home, and that world's level of detail; see both files. Without it the pages
@@ -19,7 +25,7 @@ biome builds' node syntax check is usually unavailable.
 --out DIR writes the site somewhere else (host/sitectl writes host/site/), and --local-three URL points every page
 at that copy of three.js instead of cdnjs and puts the copy in DIR/worlds/, so the LAN server needs no internet.
 """
-import html, json, os, re, shutil, subprocess, sys
+import glob, html, json, os, re, shutil, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HERE = os.path.join(ROOT, 'gallery')
@@ -70,23 +76,23 @@ ENTRIES = [
      'The exotic city of red and yellow brick with white marble trim: domes, thick staged spires, raised plazas, ornamental brick chimneys, and a temple whose arch frames the solstice sunset.'),
     ('kit', 'post-apoc-kit', 'kits/post-apoc/dist/post-apoc.html', 'Post-Apoc set',
      'Reclaimed-and-recycled buildings (containers, silos, tanks, buses, tyre and bottle walls) with sockets for any culture\'s marks: switch between eight culture packs. Cloth flutters, stovepipes smoke, and at night the windows go dark one by one.', 'new'),
-    ('kit', 'ancients-kit', 'kits/ancients/dist/ancients-kit.html', 'Ancients',
+    ('ancients', 'ancients-kit', 'kits/ancients/dist/ancients-kit.html', 'Ancients',
      'Ruined megastructures of the ancient civilisation at every level of decay: the 33 original types, the Lighthouse, 29 arco alternates and five Yuni variants, each intact, ruined and rehabilitated.', 'new'),
-    ('kit', 'ancients-worn', 'kits/ancients/dist/worn.html', 'Ancients, worn',
+    ('ancients', 'ancients-worn', 'kits/ancients/dist/worn.html', 'Ancients, worn',
      'Every Ancients type intact beside its worn twin: whole, rust-streaked, the white skin tarnished.'),
-    ('kit', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
+    ('ancients', 'ancient-iziz-style', 'kits/ancients/dist/iziz-style.html', 'Ancient Iziz Style',
      'The Iziz building families built the Ancient way, each intact, destroyed and rehabilitated, with the Iziz variants: cut-out apartments, offices and houses, towers on small plinths, and the tripod market.'),
-    ('kit', 'ancient-engines', 'kits/ancients/dist/engines.html', 'The Engines',
+    ('ancients', 'ancient-engines', 'kits/ancients/dist/engines.html', 'The Engines',
      'Ten ruined cyclopean machines of unclear purpose on a red plain: the Harrow, Strider, Breech, Gyre, Press, Sleeper, Carapace, Retorts, Needle and Ram.', 'new'),
-    ('kit', 'ancient-alt-towers', 'kits/ancients/dist/alt-towers.html', 'Ancients alternates: towers',
+    ('ancients', 'ancient-alt-towers', 'kits/ancients/dist/alt-towers.html', 'Ancients alternates: towers',
      'Six new towers after the arco references, each intact, ruined, reclaimed and rehabilitated: the Bole, the Stack, the Attraction hotel, the Undulant flatiron, the Rig and the Bloom.', 'new'),
-    ('kit', 'ancient-alt-domestic', 'kits/ancients/dist/alt-domestic.html', 'Ancients alternates: domestic',
+    ('ancients', 'ancient-alt-domestic', 'kits/ancients/dist/alt-domestic.html', 'Ancients alternates: domestic',
      'Ten new houses, apartments and works: the Undulant and Bridge houses, Fin apartments, a garden amphitheater, trestle fuel station, rotor radar, flower dish, the Rampart, Pilotis works and the Star laboratory.', 'new'),
-    ('kit', 'ancient-alt-civic', 'kits/ancients/dist/alt-civic.html', 'Ancients alternates: civic',
+    ('ancients', 'ancient-alt-civic', 'kits/ancients/dist/alt-civic.html', 'Ancients alternates: civic',
      'Thirteen new civic buildings: three offices, a saucer starport, bastion bunker, reading-star library, the Horns gate, robotics rig, data center, watch-cup police, linked hospital, garden-bowl campus and the Citadel.', 'new'),
-    ('kit', 'ancient-spaceport', 'kits/ancients/dist/spaceport.html', 'The Iziz spaceport',
+    ('ancients', 'ancient-spaceport', 'kits/ancients/dist/spaceport.html', 'The Iziz spaceport',
      'The Iziz spaceport rebuilt as an Ancients type in all six states: intact, ruined, toppled tower, rehabilitated, reclaimed (fires, gardens, a market) and worn.', 'new'),
-    ('kit', 'ancient-lighthouse', 'kits/ancients/dist/lighthouse.html', 'The Lighthouse',
+    ('ancients', 'ancient-lighthouse', 'kits/ancients/dist/lighthouse.html', 'The Lighthouse',
      'A modified Skyscraper J on its own island with a turning beacon, a cliff stair and a jetty, at every level of decay; the beams sweep at night.', 'new'),
     # objects: things you place in a world rather than build in it (furniture, plants, watercraft)
     ('objects', 'ringsea-craft', 'kits/ringsea/dist/ringsea.html', 'Ring Sea watercraft',
@@ -250,6 +256,114 @@ ENTRIES = [
 
 THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 
+# Builds new to the gallery are listed without an ENTRIES line (discover): a build in one of these folders with no
+# page above. One page joins its kind's section; several make a section of their own after it. Names come from the
+# pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
+KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
+UNLISTED = set()   # build folders ('kits/furniture') never to list, though they have pages
+
+
+def build_dir(path):
+    """The folder of the build.py that makes a page: dist/'s parent, or the page's own (the Voth catalog's parent)."""
+    d = os.path.dirname(path)
+    while not os.path.exists(os.path.join(ROOT, d, 'build.py')):
+        d = os.path.dirname(d)
+    return d
+
+
+def built_pages(d):
+    """A build's pages: dist/*.html, else the .html beside its build.py; its namesake first."""
+    for where in ('dist/*.html', '*.html'):
+        pages = [p for p in sorted(glob.glob(os.path.join(ROOT, d, where)))
+                 if not os.path.basename(p).startswith('.') and not re.search(r'\.(artifact|origin)\.html$', p)]
+        if pages:
+            name = os.path.basename(d)
+            pages.sort(key=lambda p: os.path.splitext(os.path.basename(p))[0] != name)
+            return [os.path.relpath(p, ROOT).replace(os.sep, '/') for p in pages]
+    return []
+
+
+def page_title(path):
+    with open(os.path.join(ROOT, path), encoding='utf-8', errors='replace') as f:
+        m = re.search(r'<title>([^<]*)</title>', f.read(65536), re.I)
+    t = html.unescape(m.group(1)).strip() if m else ''
+    return re.sub(r'^Krator\b[^—–:]*?(?:\s[—–-]\s|:\s)', '', t).strip()   # "Krator biome — the Throne" -> "the Throne"
+
+
+def describe(d, limit=320):
+    """The first paragraph of the build's README.md, else of its INDEX.md, as plain text of about `limit` letters."""
+    for doc in ('README.md', 'INDEX.md'):
+        try:
+            text = open(os.path.join(ROOT, d, doc), encoding='utf-8').read()
+        except OSError:
+            continue
+        for para in re.split(r'\n\s*\n', text):
+            p = ' '.join(para.split())
+            if p and not p.startswith(('#', '*', '|', '`', '>', '-', '<', 'Docs:')):
+                p = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', p).replace('`', '')
+                if len(p) <= limit:
+                    return p
+                cut = p.rfind('. ', 0, limit)
+                return p[:cut + 1] if cut > limit // 4 else p[:limit].rsplit(' ', 1)[0] + '...'
+    return ''
+
+
+def cap(s):
+    return s[:1].upper() + s[1:]
+
+
+def discover(build=False):
+    """Entries and sections for the builds no ENTRIES line names. build: make the pages of one that has none."""
+    listed = {build_dir(e[2]) for e in ENTRIES}
+    used = {e[1] for e in ENTRIES}
+    found, sections = [], []
+    for top, kind in KINDS.items():
+        for script in sorted(glob.glob(os.path.join(ROOT, top, '*', 'build.py'))):
+            d = os.path.relpath(os.path.dirname(script), ROOT).replace(os.sep, '/')
+            if d in listed or d in UNLISTED:
+                continue
+            pages = built_pages(d)
+            if not pages and build:
+                r = subprocess.run([sys.executable, 'build.py'], cwd=os.path.join(ROOT, d), capture_output=True, text=True)
+                print('built' if r.returncode == 0 else 'BUILD FAILED (left out of the gallery)', d)
+                pages = built_pages(d)
+            if not pages:
+                continue
+            folder = os.path.basename(d)
+            titles = [page_title(p) for p in pages]
+            heads = {t.split(': ', 1)[0] for t in titles if t}
+            title = cap(heads.pop()) if len(heads) == 1 else cap(folder.replace('-', ' '))
+            key = kind
+            if len(pages) > 1:   # its own section, after its kind's
+                key = 'new-' + folder
+                sections.append({'key': key, 'id': folder, 'title': title, 'note': describe(d), 'after': kind})
+            for p, t in zip(pages, titles):
+                stem = os.path.splitext(os.path.basename(p))[0]
+                slug = stem if stem not in used else '%s-%s' % (folder, stem)
+                used.add(slug)
+                name = cap(t.split(': ', 1)[1] if ': ' in t else t) or cap(stem.replace('-', ' '))
+                found.append((key, slug, p, name, describe(d) if len(pages) == 1 else '', 'new'))
+            print('new to the gallery: %s (%d page%s)' % (d, len(pages), '' if len(pages) == 1 else 's'))
+    return found, sections
+
+
+def alpha(name):
+    """Where a name sorts within its section: letters only, case and a leading article ignored ("The Wing": W)."""
+    n = re.sub(r'^(the|an?)\s+', '', name.casefold())
+    return re.sub(r'[^\w\s]', '', n).strip(), n
+
+
+def ordered_sections(extra):
+    """The template's sections with the discovered ones after their kind's, as the index page orders them."""
+    tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
+    out = [{'key': k, 'title': t} for k, t in re.findall(r"\{key:'([^']+)',\s*id:'[^']*',\s*title:'([^']+)'", tpl)]
+    for s in extra:
+        i = next((n for n, x in enumerate(out) if x['key'] == s['after']), len(out) - 1)
+        while i + 1 < len(out) and out[i + 1].get('after') == s['after']:
+            i += 1
+        out.insert(i + 1, {'key': s['key'], 'title': s['title'], 'after': s['after']})
+    return [{'key': s['key'], 'title': s['title']} for s in out]
+
 
 def bundle(path, three=THREE_CDN, worlds=None):
     """The page as one self-contained file: a page that loads local scripts (the Voth catalog) gets each one
@@ -272,14 +386,13 @@ def bundle(path, three=THREE_CDN, worlds=None):
     return re.sub(r'<script src="([^"]+)"></script>', inline, html).replace(THREE_CDN, three)
 
 
-def bar_head(cfg, slug):
+def bar_head(cfg, slug, entries=ENTRIES, extra=()):
     """The <script>s that give a world its bar and level of detail: the config for this page, then krator-bar.js."""
-    tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
-    sections = [{'key': k, 'title': t} for k, t in re.findall(r"\{key:'([^']+)',\s*id:'[^']*',\s*title:'([^']+)'", tpl)]
     conf = {'slug': slug, 'level': cfg.get('worlds', {}).get(slug, cfg.get('default', 'high')),
-            'levels': cfg.get('levels', {}), 'home': '/', 'share': cfg.get('share', '/share'), 'sections': sections,
+            'levels': cfg.get('levels', {}), 'home': '/', 'share': cfg.get('share', '/share'),
+            'sections': ordered_sections(extra),
             'scenes': [{'slug': e[1], 'name': e[3], 'section': e[0], 'blurb': e[4], 'href': '/worlds/%s.html' % e[1]}
-                       for e in ENTRIES],
+                       for e in entries],
             'extra': cfg.get('extra', [])}
     js = open(os.path.join(HERE, 'krator-bar.js'), encoding='utf-8').read().replace('</script', '<\\/script')
     return ('<script>window.KRATOR_BAR=%s;</script>\n<script>\n%s\n</script>\n'
@@ -310,6 +423,8 @@ def main():
             print('built' if r.returncode == 0 else 'BUILD FAILED', d)
             if r.returncode:
                 sys.exit(r.stdout + r.stderr)
+    found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv)
+    entries = sorted(ENTRIES + found, key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
     if os.path.isdir(site):
         shutil.rmtree(site)
     os.makedirs(os.path.join(site, 'worlds'))
@@ -320,22 +435,23 @@ def main():
         import tomllib   # Python 3.11+; only the LAN build needs it
         with open(arg('--lod'), 'rb') as f:
             lod = tomllib.load(f)
-        unknown = set(lod.get('worlds', {})) - {e[1] for e in ENTRIES}
+        unknown = set(lod.get('worlds', {})) - {e[1] for e in entries}
         if unknown:
             print('lod: no gallery page named %s (names are the file names under /worlds/)' % ', '.join(sorted(unknown)))
     items = []
-    for section, slug, path, name, blurb, *rest in ENTRIES:
+    for section, slug, path, name, blurb, *rest in entries:
         src = os.path.join(ROOT, path)
         page = bundle(src, three, os.path.join(site, 'worlds'))
         if lod is not None:
-            page = page.replace('<head>', '<head>\n' + bar_head(lod, slug), 1)
+            page = page.replace('<head>', '<head>\n' + bar_head(lod, slug, entries, sections), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
             fh.write(page)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
                       'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
-    page = tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
+    page = (tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))
+               .replace('/*SECTIONS*/[]', json.dumps(sections, ensure_ascii=False).replace('</', '<\\/')))
     if lod is not None:   # the LAN site: a way to bring a phone or tablet in
         share = lod.get('share', '/share')
         page += ('\n<a id="krator-share" href="%s" style="position:fixed;top:12px;right:12px;z-index:10;'

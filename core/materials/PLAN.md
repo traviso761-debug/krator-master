@@ -1045,7 +1045,7 @@ the area), metal 558, cloth 523, stone 367, rope 236, plaster 179, bronze 171, g
 | `rubber.tyre` | G | 17 (scrap tyres) | The row above in "Prompts for generated sources" (already waited on by `kits/motor-vehicles`). Tyres share `plastic` today: give them a `rubber` family. |
 | `ash.hearth` | G | 108 (every hearth, brazier, forge and stove) | Bed of wood ash in a hearth seen from above: soft pale grey powder ash with a few lumps of black charcoal, half-burnt twig ends, small cracked flakes, darker sooty patches toward one side. Full colour. (For the fire beds now drawn as flat `coal`/`ash` plaster or stone; the embers stay `glow`.) |
 | `metal.pewter` | G | 62 (generic 21, rustic 21) | Hand-made pewter tableware surface: soft dull silver-grey with a satin sheen, faint hammer dimples, fine scratches in every direction, a dark grey oxide film in the scratches. Light, so it tints. (`metal.iron.pitted` is too dark and coarse for cups, plates and candlesticks.) |
-| `metal.steel.brushed` | S | 163 (post-apoc 67, scrap 44, republican 24) | Scan: AmbientCG "brushed metal" or "sheet metal" with fine linear scratches. For the `steel` and `alloyWhite` keys; `metal.metal003` is painted, not bare. |
+| `metal.steel.brushed` *(delivered 2026-10-07)* | S | 163 (post-apoc 67, scrap 44, republican 24) | Scan: AmbientCG "brushed metal" or "sheet metal" with fine linear scratches. For the `steel` and `alloyWhite` keys; `metal.metal003` is painted, not bare. |
 | `food.crust` | G | 80 (generic food and drink) | Baked bread crust seen close: a golden-brown crust with fine cracks and splits, a light dusting of flour in the cracks, small blisters and a few darker toasted spots. Muted, so it tints to bread, pie, roast meat and cheese rind. (Girder's `f_food` borrows `fruit.skin.amber`.) |
 | `feather.plumage` | G | 23 (Screamer) | Overlapping feathers seen from above, as on a cloak or fan: rows of contour feathers about 4 cm long lying in one direction, visible central shafts and fine barbs, a few ruffled and split feathers. Light neutral grey so it tints red (#c8342a), yellow (#e0b030) and blue (#2a6aa0). (The `card.feather.*` sets are cut-outs, not a surface. Feathers sit on `hide` today: give them a `feather` family.) |
 | `patterns/islander/tapa` | G | 18 (Islander) | Flat, front-on decorative panel of Polynesian tapa bark cloth: beaten mulberry bark in off-white (#f0e8d4) with visible fibres and faint felted texture, stamped and painted in rows of geometric motifs (triangles, chevrons, small crosses, leaf shapes) in brown (#8a5a32), tan (#c49a5a) and black, the rows divided by thin double lines. The pattern repeats horizontally. Full colour. |
@@ -1070,6 +1070,18 @@ host without the new row looks exactly as before. Splits: `feather*` (23 pieces)
 (`ceramic.terracotta`), `f_paper`, and `f_food` is now `food.crust`; Scyvoi `f_ash`, `f_food` on `food.crust`. Water also rides on `glass` (fountains, troughs); it wants the shader, not a map.
 
 #### Buildings, vehicles and biomes audit (2026-10-06): what is still missing
+
+*Wiring audit, 2026-10-07* (`python3 tools/textures/audit_wiring.py`, static, no image library): all 7 kits that make surfaces
+with an adapter (ancients, fauna, mechs, motor-vehicles, post-apoc, ringsea, scyvoi) and all 14 biomes have a `materials.json` whose
+every family resolves to a delivered set, a `tex/pack.json` entry for it, and a `build.py` or bundle that reads `tex/`. The
+`kits/mechs` pack only carried stale source hashes for four normal maps (the packed WebP bytes were unchanged); re-packed.
+**Still unwired:** `kits/catalog`, `kits/interiors`, `kits/ancients-interiors` have no adapter of their own: catalog furniture
+takes a library set only through a host's `f_<family>` rows, and only Girder (29), Scyvoi (22) and Noah's Regret (8) have them.
+Mav's Refuge, Screamers, Highlands, Locus, Mungo, Verge, the Ancients kit and post-apoc bundle the furniture with vertex colours
+alone. *Fixed the same day:* `kits/catalog` now has the shared pass: `krator-furniture-detail.js`, a default adapter `materials.json` (47
+families: Girder's tuned rows plus the picks under "Catalog furniture audit") and `tex/`. A host opts in with
+`furniture_bundle.bundle(..., tex=True)`; the eight hosts above are not switched over yet, so their pages are unchanged. Not yet
+looked at by eye.
 
 *Update, same day:* **Jimjam is wired** (`settlements/jimjam/materials.json`: 17 families, full colour, every JMAT texture
 from the texturepalooza sets; README "Textures").
@@ -1621,6 +1633,16 @@ both through its first `materials.json` (families `icewall`, `icefloor`), for th
 |---|---|---|
 | `ice.glacier` | delight 0.2, rough 0.35 | milky glacier ice with grit seams: ice-cave floors and crusts, frozen ground, glacier faces, snowfield edges (the Highlands, the Ring Sea's ice shelf) |
 | `ice.clear` | delight 0.2, rough 0.2 | deep blue cracked clear ice: ice-cave walls and vaults, frozen lakes and falls, ice blocks and crystal props |
+
+#### Delivered 2026-10-06 and 07 and processed: the giant groundsel card, brushed steel (2 images)
+
+Batch `tools/textures/batches/rift-groundsel-2026-10.json` (source: one 1254 px WebP the owner pasted, converted to PNG). Keyed from
+magenta with `spill: all` and the new `choke: 2` (`cards.py`): the WebP's colour bleed left a pink rim one or two pixels wide that the
+spill pass could not reach. Not adopted by a build yet.
+| Set | Options | Reuse |
+|---|---|---|
+| `card.groundsel` | key #ff00ff 60/170, choke 2, rough 0.75, tint | nine Dendrosenecio leaves (green, felted silver undersides, two yellowing, one brown-tipped): the giant groundsel in `biomes/rift` and Voth; lobelia and any felted alpine rosette (mullein, lamb's ear, silversword) tinted |
+| `metal.steel.brushed` | seamless (`steel-brushed-2026-10.json`), delight 0.4, normal 0.5, rough 0.4, metal 0.8, tint | neutral grey brushed steel, fine horizontal grain: fills the audit's `metal.steel.brushed` row (the catalog's `steel` and `alloyWhite` keys); appliances, counters, railings, machine housings, vehicle trim |
 
 ## Next steps
 
