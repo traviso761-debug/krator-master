@@ -293,8 +293,8 @@ func _dnoise(x: float, y: float, s: int) -> PackedFloat64Array:
 	var m := int(clouddeck["lattice"]) - 1
 	var ix := int(floor(x))
 	var iy := int(floor(y))
-	var fx := x - floor(x)
-	var fy := y - floor(y)
+	var fx := x - floorf(x)
+	var fy := y - floorf(y)
 	var x0 := ix & m
 	var y0 := iy & m
 	var x1 := (ix + 1) & m
