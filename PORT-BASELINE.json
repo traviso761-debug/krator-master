@@ -57,8 +57,8 @@
    "sha256": "3d7b24099164ac4787d151b8358797beb50a5557e47b49a29749e9f4b2629971"
   },
   "kits/ancients-interiors/dist/ancients-interiors.html": {
-   "bytes": 221509,
-   "sha256": "e14ebcf761292b23cc1b0063b5cf8951d507e63520cf930622fba1bdbf8f14ac"
+   "bytes": 288655,
+   "sha256": "94cd9643265648ed5a1abb211f225b58a9a86b04e125d479cfcb79b98daac45d"
   },
   "kits/ancients/dist/alt-civic.html": {
    "bytes": 2452541,
@@ -139,6 +139,10 @@
   "kits/ancients/dist/hosts.html": {
    "bytes": 2454524,
    "sha256": "aacafe0133b753c50ac8ae01892c81f84f9c30c208570bd36d8ed267d2d85396"
+  },
+  "kits/ancients/dist/interiors.html": {
+   "bytes": 5885835,
+   "sha256": "e26342a374e08b41fa1cabda5feb32b7db37e0ce792aa415eb8cc45426fa1d99"
   },
   "kits/ancients/dist/iziz-style.html": {
    "bytes": 2454723,
@@ -221,8 +225,8 @@
    "sha256": "d9c57f310bd9e4efc51480b3cd5b673d9c7d81644cac7aeaca8759a5ff41227b"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1268827,
-   "sha256": "59ceb771bf6afceb826aee19df2699f200033e05ce5b52ed3b14341c6b97b588"
+   "bytes": 1289008,
+   "sha256": "9782ea2de1584d8f2d9a717cdfdc5fac8545532c5b5aa557b178be737a26d2df"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 501757,

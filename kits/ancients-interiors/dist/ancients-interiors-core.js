@@ -137,7 +137,14 @@ var KratorAncientsInteriors = (function () {
     target: 'pa_archery_target', weaponRack: 'pa_weapon_rack', mannequin: 'pa_armour_mannequin', spears: 'pa_spear_drum'
   };
   AI.DRESS = {
-    ancient: Object.assign({}, BASE),
+    /* the Ancients' own pieces where the catalog has them (kits/catalog "Ancients kit extras", 2026-10: the intact
+       buildings' interiors); the rest stays as BASE */
+    ancient: Object.assign({}, BASE, {
+      chair: 'ancients_chair', desk: 'ancients_desk', bookcase: 'ancients_archive', counter: 'ancients_counter',
+      divan: 'ancients_couch', lowTable: 'ancients_low_table', workbench: 'ancients_lab_bench', weaponRack: 'ancients_weapon_rack',
+      helm: 'ancients_chair', drums: 'ancients_cargo_pods', water: 'ancients_pantry',
+      servery: 'ancients_counter', stove: 'ancients_galley', barrel: 'ancients_pantry', toolRack: 'ancients_shelf', headTable: 'yuni_ancient_glass_console'
+    }),
     occupied: Object.assign({}, BASE, {
       table: 'pa_long_table', bench: 'pa_bench', stove: 'pa_brick_grill', ceilingLamp: 'pa_hanging_lamp', lampStem: 'pa_lamp_post',
       banner: 'post-apoc_common_banner', scarecrow: 'pa_scarecrow', stall: 'pa_lean_to_stall', marketTable: 'pa_market_table'
@@ -461,6 +468,797 @@ var KratorAncientsInteriors = (function () {
     for (const p of res.placements) res.counts[p.role] = (res.counts[p.role] || 0) + 1;
     return res;
   };
+})(KratorAncientsInteriors);
+/* ---------- src/35-ai-plates.js ---------- */
+/* ======================== Ancients interiors: floor plates ========================
+   Rooms inside a building that someone else draws. An Ancient builder draws a shell (a lathe, a hex casemate, a
+   crescent bar); a PLATE is one storey of what is inside it, as data in the builder's own frame (x east, z south,
+   y up, metres; the builder's group has no rotation), cut into rooms of sensible sizes along corridors:
+
+     AI.ringPlate(o)   a round or polygonal storey (a drum, a hex): a central hall or core, a corridor ring, and a
+                       band of rooms between the corridor and the skin, cut radially
+     AI.barPlate(o)    a storey along a path (a straight wing, an arc, a crescent): a corridor down its length and
+                       rooms on one side or both, cut across the path
+     AI.gridPlate(o)   an open floor of bays along aisles, no partitions (a factory vault, a server hall, a concourse)
+     AI.hallPlate(o)   one undivided room (a dome floor, a reading hall, a garage)
+
+   Each returns a STOREY: { id, level, y, h, outline, rooms: [...], walls: [...] }
+     room  { id, kind, poly: [[x,z]...], y, h, level, doors: [{ at, w, to }], windows: [], recipe?, furnish, unit? }
+           kind is a kits/interiors room kind (or 'corridor'); furnish false for corridors and cores; recipe names an
+           ancients-interiors hall recipe for a room the placer should not lay out (a refectory, a reading hall)
+     wall  { id, pts: [[x,z]...] (a polyline), y, h, rooms: [idA, idB|null], door: { at: [x,z], w } | null, broken }
+           the PARTITIONS this plate adds (the exterior skin is the builder's): radial cuts, corridor walls, cross
+           walls; a door is a gap centred on `at`, which lies on the polyline
+   AI.ruinStorey(st, seed, o) marks walls broken (deterministic by wall id) and rooms open; AI.storeyAudit checks it.
+   No THREE, no DOM: the plans run in node.
+   ====================================================================== */
+(function (AI) {
+  'use strict';
+  const TAU = Math.PI * 2;
+  const r3 = v => Math.round(v * 1000) / 1000;
+  const P = (x, z) => [r3(x), r3(z)];
+  /* a stable string hash (FNV-1a) to 0..1: what breaks in a ruin depends on the wall's id, nothing else */
+  function h01(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 100000) / 100000; }
+  AI.h01 = h01;
+  function area(poly) { let a = 0; for (let i = 0; i < poly.length; i++) { const p = poly[i], q = poly[(i + 1) % poly.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; }
+  AI.polyArea = poly => Math.abs(area(poly));
+  function mid(a, b) { return P((a[0] + b[0]) / 2, (a[1] + b[1]) / 2); }
+
+  /* ---------- the ring plate
+     o: { id, level, y, h, cx, cz, rOut(th) (the skin's inner face at angle th), depth (the room band), cw (corridor), sym,
+          core: { r, kind } | null (a hall or stair core in the middle; when the middle is large it is a room),
+          roomW (target room width at the corridor), kinds(i, n, th) -> kind, seg (arc samples per room),
+          a0, a1 (an arc only: the angles the plate spans; default the whole turn), skip(th) -> true to leave a sector out,
+          door: w }
+     The room band is [rOut(th) - depth, rOut(th)]; the corridor ring is cw inside it; inside that, the core. */
+  AI.ringPlate = function (o) {
+    const id = o.id, y = o.y, h = o.h, lv = o.level || 0, cx = o.cx || 0, cz = o.cz || 0, cw = o.cw == null ? 2.4 : o.cw;
+    const full = o.a0 == null, a0 = full ? 0 : o.a0, a1 = full ? TAU : o.a1, span = a1 - a0;
+    const rOut = o.rOut, rIn = th => rOut(th) - o.depth, rCor = th => rIn(th) - cw;
+    const rMean = rIn(a0 + span / 2);
+    /* sym: the shell's symmetry (6 for a hex): the room count is a multiple of it, so like rooms repeat exactly and
+       the furnishing templates are shared (AI.furnishPlan) */
+    const sym = o.sym || 1;
+    const n = o.n || Math.max(full ? 6 : 2, sym * Math.max(1, Math.round(span * rMean / (o.roomW || 6) / sym)));
+    const seg = o.seg || Math.max(2, Math.ceil(span / n * rOut(a0) / 2.5));
+    const at = (r, th) => P(cx + r * Math.cos(th), cz + r * Math.sin(th));
+    const st = { id, level: lv, y, h, rooms: [], walls: [], outline: [] };
+    for (let k = 0; k < 48; k++) { const th = a0 + span * k / (full ? 48 : 47); st.outline.push(at(rOut(th), th)); }
+    const dw = o.door || 1.0;
+    let roomIx = 0;
+    for (let i = 0; i < n; i++) {
+      const t0 = a0 + span * i / n, t1 = a0 + span * (i + 1) / n, tm = (t0 + t1) / 2;
+      if (o.skip && o.skip(tm)) continue;
+      /* the room: the inner arc (the corridor side) out to the skin */
+      const inner = [], outer = [];
+      for (let k = 0; k <= seg; k++) { const th = t0 + (t1 - t0) * k / seg; inner.push(at(rIn(th), th)); outer.push(at(rOut(th) - 0.05, th)); }
+      const poly = inner.concat(outer.reverse());
+      const rid = id + '.r' + (roomIx++);
+      /* the door: the middle of the inner arc, on its middle segment */
+      const k0 = Math.floor(seg / 2), da = mid(inner[k0], inner[Math.min(seg, k0 + 1)]);
+      st.rooms.push({ id: rid, kind: o.kinds(i, n, tm), poly, y, h, level: lv, doors: [{ at: da, w: dw, to: id + '.corr' }], windows: [], furnish: true, th: tm });
+      /* its corridor wall, with the door, and the radial partition at t0 (the next room's t0 closes it) */
+      st.walls.push({ id: rid + '.cw', pts: inner, y, h, rooms: [rid, id + '.corr'], door: { at: da, w: dw }, broken: false });
+      st.walls.push({ id: rid + '.p0', pts: [at(rIn(t0), t0), at(rOut(t0) - 0.05, t0)], y, h, rooms: [rid, null], door: null, broken: false });
+      if (!full && i === n - 1) st.walls.push({ id: rid + '.p1', pts: [at(rIn(t1), t1), at(rOut(t1) - 0.05, t1)], y, h, rooms: [rid, null], door: null, broken: false });
+    }
+    /* the corridor: a ring (or an arc) between rCor and rIn; with a core in the middle it is a room of its own */
+    const cpoly = [], ns = 48;
+    for (let k = 0; k <= ns; k++) { const th = a0 + span * k / ns; cpoly.push(at(rIn(th) - 0.02, th)); }
+    for (let k = ns; k >= 0; k--) { const th = a0 + span * k / ns; cpoly.push(at(rCor(th), th)); }
+    if (full) { cpoly.splice(ns, 1); cpoly.pop(); }
+    st.rooms.push({ id: id + '.corr', kind: 'corridor', poly: full ? null : cpoly, ring: full ? { cx, cz, r0: rCor, r1: rIn } : null, y, h, level: lv, doors: [], windows: [], furnish: false });
+    /* the core: a hall in the middle (furnished) when it is big enough, else a stair and service core */
+    if (o.core) {
+      const cr = o.core.r, cp = [];
+      for (let k = 0; k < 24; k++) { const th = k / 24 * TAU; cp.push(at(Math.min(cr, rCor(th) - 0.05), th)); }
+      const big = cr >= 6 && o.core.kind;
+      st.rooms.push({ id: id + '.core', kind: big ? o.core.kind : 'core', poly: cp, y, h, level: lv,
+        doors: [{ at: mid(cp[6], cp[7]), w: 1.6, to: id + '.corr' }], windows: [], furnish: !!big, recipe: o.core.recipe || null });
+      if (o.core.wall !== false) st.walls.push({ id: id + '.corewall', pts: cp.concat([cp[0]]), y, h, rooms: [id + '.core', id + '.corr'], door: { at: mid(cp[6], cp[7]), w: 1.6 }, broken: false });
+    }
+    return st;
+  };
+
+  /* ---------- the bar plate
+     o: { id, level, y, h, path(u) -> [x, z] for u in 0..1, len (its length), depth (the whole storey, across), side:
+          'both' (rooms either side of a centre corridor) | 'left' | 'right' (rooms on that side, the corridor along
+          the other wall), cw, roomW, kinds(i, n, side) -> kind, ends: [kindA, kindB] (an end room across the
+          corridor at each end: a stair, a lobby) | null, door }
+     left is the path's left looking along it (the normal (-dz, dx)). */
+  AI.barPlate = function (o) {
+    const id = o.id, y = o.y, h = o.h, lv = o.level || 0, cw = o.cw == null ? 2.2 : o.cw, D = o.depth, side = o.side || 'both';
+    const N = 80, pts = [], nrm = [];
+    for (let k = 0; k <= N; k++) pts.push(o.path(k / N));
+    for (let k = 0; k <= N; k++) { const a = pts[Math.max(0, k - 1)], b = pts[Math.min(N, k + 1)], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; nrm.push([-(b[1] - a[1]) / l, (b[0] - a[0]) / l]); }
+    /* arc length table */
+    const L = [0]; for (let k = 1; k <= N; k++) L.push(L[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
+    const len = L[N];
+    const atS = (s, off) => { let k = 0; while (k < N - 1 && L[k + 1] < s) k++; const t = (s - L[k]) / ((L[k + 1] - L[k]) || 1), p = [pts[k][0] + (pts[k + 1][0] - pts[k][0]) * t, pts[k][1] + (pts[k + 1][1] - pts[k][1]) * t], nn = [nrm[k][0] + (nrm[k + 1][0] - nrm[k][0]) * t, nrm[k][1] + (nrm[k + 1][1] - nrm[k][1]) * t], nl = Math.hypot(nn[0], nn[1]) || 1; return P(p[0] + nn[0] / nl * off, p[1] + nn[1] / nl * off); };
+    /* bands across the depth, as offsets from the path (left +): the corridor and the room bands */
+    const half = D / 2, bands = [];
+    if (side === 'both') { bands.push({ s: 1, o0: cw / 2, o1: half - 0.05 }); bands.push({ s: -1, o0: -cw / 2, o1: -half + 0.05 }); }
+    else if (side === 'left') bands.push({ s: 1, o0: -half + cw, o1: half - 0.05 });
+    else bands.push({ s: -1, o0: half - cw, o1: -half + 0.05 });
+    const corr = side === 'both' ? [-cw / 2, cw / 2] : side === 'left' ? [-half + 0.05, -half + cw] : [half - cw, half - 0.05];
+    const endW = o.ends ? Math.min(D, 6) : 0, s0 = endW, s1 = len - endW;
+    const n = Math.max(1, Math.round((s1 - s0) / (o.roomW || 6)));
+    const st = { id, level: lv, y, h, rooms: [], walls: [], outline: [] };
+    for (let k = 0; k <= 24; k++) st.outline.push(atS(len * k / 24, half));
+    for (let k = 24; k >= 0; k--) st.outline.push(atS(len * k / 24, -half));
+    const dw = o.door || 1.0, segs = sa => Math.max(1, Math.ceil(sa / 3));
+    let ri = 0;
+    bands.forEach(function (B, bi) {
+      for (let i = 0; i < n; i++) {
+        const a = s0 + (s1 - s0) * i / n, b = s0 + (s1 - s0) * (i + 1) / n, m = segs(b - a);
+        const inner = [], outer = [];
+        for (let k = 0; k <= m; k++) { const s = a + (b - a) * k / m; inner.push(atS(s, B.o0)); outer.push(atS(s, B.o1)); }
+        const poly = inner.concat(outer.slice().reverse());
+        const rid = id + '.r' + (ri++), k0 = Math.floor(m / 2), da = mid(inner[k0], inner[Math.min(m, k0 + 1)]);
+        const sideName = B.s > 0 ? 'left' : 'right';
+        st.rooms.push({ id: rid, kind: o.kinds(i, n, sideName), poly, y, h, level: lv, doors: [{ at: da, w: dw, to: id + '.corr' }], windows: [], furnish: true, side: sideName });
+        st.walls.push({ id: rid + '.cw', pts: inner, y, h, rooms: [rid, id + '.corr'], door: { at: da, w: dw }, broken: false });
+        if (i > 0) st.walls.push({ id: rid + '.x', pts: [inner[0], outer[m]], y, h, rooms: [rid, id + '.r' + (ri - 2)], door: null, broken: false });
+      }
+    });
+    /* the corridor down the bar, and the end rooms across it */
+    const cp = [], m = segs(s1 - s0);
+    for (let k = 0; k <= m; k++) cp.push(atS(s0 + (s1 - s0) * k / m, corr[0]));
+    for (let k = m; k >= 0; k--) cp.push(atS(s0 + (s1 - s0) * k / m, corr[1]));
+    st.rooms.push({ id: id + '.corr', kind: 'corridor', poly: cp, y, h, level: lv, doors: [], windows: [], furnish: false });
+    if (o.ends) [[0, s0], [s1, len]].forEach(function (E, ei) {
+      if (E[1] - E[0] < 1) return;
+      const k = o.ends[ei]; if (!k) return;
+      const poly = [atS(E[0], -half + 0.05), atS(E[1], -half + 0.05), atS(E[1], half - 0.05), atS(E[0], half - 0.05)];
+      const rid = id + '.end' + ei, wa = atS(ei ? s1 : s0, -half + 0.05), wb = atS(ei ? s1 : s0, half - 0.05);
+      const da = atS(ei ? s1 : s0, (corr[0] + corr[1]) / 2);
+      st.rooms.push({ id: rid, kind: k, poly, y, h, level: lv, doors: [{ at: da, w: 1.4, to: id + '.corr' }], windows: [], furnish: k !== 'core' });
+      st.walls.push({ id: rid + '.w', pts: [wa, wb], y, h, rooms: [rid, id + '.corr'], door: { at: da, w: 1.4 }, broken: false });
+    });
+    return st;
+  };
+
+  /* ---------- an open floor in bays: a big hall (a factory vault, a server hall, a concourse) is not one room to the
+     placer: it is a grid of BAYS along aisles, each bay a room with no walls of its own (its `door` is the opening onto
+     the aisle in front of it), so the furnishing lands in working groups with walkways between.
+     o: { id, level, y, h, x0, x1, z0, z1, bay: [bw, bd] (bay size), aisle (width, default 3), along: 'x' | 'z' (the
+          aisles' direction), kinds(i, n, row) -> kind, skip(x, z) -> true to leave a bay out (a reserved machine bed) }
+     Bays face the aisle beside them; every second aisle is a service strip at the hall's edge. walls: none. */
+  AI.gridPlate = function (o) {
+    const id = o.id, y = o.y, h = o.h, lv = o.level || 0, A = o.aisle == null ? 3 : o.aisle, bw = o.bay[0], bd = o.bay[1];
+    const alongX = (o.along || 'x') === 'x';
+    /* work in (u along the aisles, v across), map back to (x, z) */
+    const u0 = alongX ? o.x0 : o.z0, u1 = alongX ? o.x1 : o.z1, v0 = alongX ? o.z0 : o.x0, v1 = alongX ? o.z1 : o.x1;
+    const XZ = (u, v) => alongX ? P(u, v) : P(v, u);
+    const st = { id, level: lv, y, h, rooms: [], walls: [], outline: [XZ(u0, v0), XZ(u1, v0), XZ(u1, v1), XZ(u0, v1)], open: true };
+    /* across: [bay | aisle | bay] strips, repeated */
+    const strip = 2 * bd + A, nS = Math.max(1, Math.floor((v1 - v0 + 0.01) / strip)), vPad = ((v1 - v0) - nS * strip) / 2;
+    const nU = Math.max(1, Math.floor((u1 - u0 - A) / bw)), uPad = ((u1 - u0) - nU * bw) / 2;
+    let i = 0;
+    const total = nS * 2 * nU;
+    for (let s = 0; s < nS; s++) for (let side = 0; side < 2; side++) for (let k = 0; k < nU; k++) {
+      const va = v0 + vPad + s * strip + (side ? bd + A : 0), vb = va + bd, ua = u0 + uPad + k * bw, ub = ua + bw;
+      const cu = (ua + ub) / 2, cv = (va + vb) / 2, c = XZ(cu, cv);
+      if (o.skip && o.skip(c[0], c[1])) { i++; continue; }
+      const poly = [XZ(ua + 0.3, va + 0.3), XZ(ub - 0.3, va + 0.3), XZ(ub - 0.3, vb - 0.3), XZ(ua + 0.3, vb - 0.3)];
+      const dv = side ? va + 0.3 : vb - 0.3;   /* the edge on the aisle */
+      st.rooms.push({ id: id + '.b' + i, kind: o.kinds(i, total, s * 2 + side), poly, y, h, level: lv,
+        doors: [{ at: XZ(cu, dv), w: Math.min(bw - 1, 3), to: id + '.aisle' + s }], windows: [], furnish: true, bay: true });
+      i++;
+    }
+    return st;
+  };
+
+  /* ---------- one undivided room */
+  AI.hallPlate = function (o) {
+    const st = { id: o.id, level: o.level || 0, y: o.y, h: o.h, rooms: [], walls: [], outline: o.poly };
+    const e = o.doorEdge == null ? 0 : o.doorEdge, a = o.poly[e], b = o.poly[(e + 1) % o.poly.length];
+    st.rooms.push({ id: o.id + '.hall', kind: o.kind, poly: o.poly.map(p => P(p[0], p[1])), y: o.y, h: o.h, level: st.level,
+      doors: o.door === false ? [] : [{ at: mid(a, b), w: o.doorW || 2.0, to: 'street' }], windows: [], furnish: o.furnish !== false, recipe: o.recipe || null });
+    return st;
+  };
+
+  /* ---------- a ruin: some partitions broken (a stub stands, or nothing), the rooms in a collapse left open.
+     seed  the TYPE's seed: which walls a ruin of this type tends to lose (the same in every world)
+     o: { frac (share of walls broken, default .45), collapse(x, z) -> true where the storey has fallen in,
+          place (a placement seed: a world placing this ruin passes its own, e.g. from the site's position),
+          jitter (how far the placement may move a wall's chance, default .15: a little randomness, not a new ruin) }
+     A wall breaks when its type hash is under frac + jitter * (2 * placeHash - 1): with no `place` every copy of a
+     ruin breaks alike; with one, each placed copy loses a slightly different set of partitions, and its stubs stand
+     at different heights. The collapse is the builder's geometry and does not move. */
+  AI.ruinStorey = function (st, seed, o) {
+    o = o || {};
+    const frac = o.frac == null ? 0.45 : o.frac, jit = o.place == null ? 0 : (o.jitter == null ? 0.15 : o.jitter);
+    const ps = o.place == null ? '' : String(o.place);
+    st.walls.forEach(function (W) {
+      const h = h01(seed + '|' + W.id), j = jit ? jit * (2 * h01(ps + '~' + W.id) - 1) : 0;
+      const q = W.pts[W.pts.length >> 1], mx = q[0], mz = q[1];
+      const fallen = o.collapse && o.collapse(mx, mz);
+      W.broken = fallen || h < frac + j;
+      if (W.broken) W.stub = fallen ? 0 : r3(0.3 + 1.4 * h01(seed + '#' + ps + '#' + W.id));   /* the height left standing */
+    });
+    st.rooms.forEach(function (R) {
+      R.furnish = false;
+      if (o.collapse && R.poly) { const c = R.poly.reduce((s, p) => [s[0] + p[0] / R.poly.length, s[1] + p[1] / R.poly.length], [0, 0]); if (o.collapse(c[0], c[1])) R.open = true; }
+    });
+    st.ruined = true;
+    return st;
+  };
+
+  /* ---------- checks: every room polygon has area, a door on its own boundary, and lies inside the storey's bound */
+  AI.storeyAudit = function (st, inside) {
+    const fails = [];
+    st.rooms.forEach(function (R) {
+      if (!R.poly) return;
+      const a = AI.polyArea(R.poly);
+      if (a < 1.5) fails.push(R.id + ': area ' + a.toFixed(2));
+      if (inside) for (const p of R.poly) if (!inside(p[0], p[1], R.y)) { fails.push(R.id + ': point ' + p + ' outside the shell'); break; }
+    });
+    return fails;
+  };
+})(KratorAncientsInteriors);
+/* ---------- src/37-ai-kit.js ---------- */
+/* ======================== Ancients interiors: the Ancients kit's buildings ========================
+   The rooms inside the ORIGINAL Ancients kit's buildings (kits/ancients, the `kit` target's types), as plates
+   (35-ai-plates.js) in each builder's own frame: the builder's group stands at its site with no rotation, x east,
+   z south, y up, front +z. Every number here is the builder's (its fragment and line are named in each entry), so a
+   room stays inside the shell the builder draws.
+
+     AI.KIT[type] = { name, frag, furnish, culture, wealth, types, skip?, buildings(d) -> [building] }
+       building  { id, name, storeys: [storey], floors: true when the builder draws no floor slabs of its own,
+                   hollow: [{ box: [x0, x1, y0, y1, z0, z1] } | { cyl: [cx, cz, r, y0, y1] }] the intact dark mass
+                   the host must clear before the rooms show, collapse(x, z, y) -> true where the ruin fell in }
+     AI.kitPlan(type, d) -> { type, d, state, furnish, culture, buildings }   the plan for one decay level:
+       0 intact      the plan as built, furnished by default (the culture `ancient`)
+       1 ruined, 2 toppled   partitions broken (about half, by wall id) and the rooms under a collapse open
+       3, 4 rehabilitated    the ruined fabric (the builder reuses its ruin), a fifth of the walls broken
+       5 worn        the plan as built
+     Only intact rooms are furnished by default. The others are SOCKETS: every room keeps its kind, so a world can
+     furnish any state in any culture (AI.furnishPlan(plan, cat, { culture })) without a new plan.
+   Skipped: the skyscrapers (rooms later, never furnished), the megastructures (the Unnamed, the Gate, the dam) and
+   the types with no interior (amphitheatre, radar, dish, the fuel station's canopy and spheres).
+   ====================================================================== */
+(function (AI) {
+  'use strict';
+  const TAU = Math.PI * 2;
+  /* the hex of the Ancients' lathes: vertices at multiples of 60 degrees (kits/ancients 38-helpers2.js hexR) */
+  const hexR = (R, th) => { const a = R * Math.cos(Math.PI / 6), f = ((th % (Math.PI / 3)) + Math.PI / 3) % (Math.PI / 3); return a / Math.cos(f - Math.PI / 6); };
+  AI.hexR = hexR;
+  const cyc = list => (i => list[i % list.length]);
+
+  AI.KIT = {};
+  AI.SKIP = {
+    skyA: 'skyscraper: rooms planned later, never furnished', skyB: 'skyscraper', skyC: 'skyscraper', skyD: 'skyscraper', skyE: 'skyscraper',
+    skyF: 'skyscraper', skyG: 'skyscraper', skyH: 'skyscraper', flat: 'skyscraper (the Flatiron)', perch: 'skyscraper hybrid on a solid podium',
+    mega: 'megastructure (the Unnamed)', arc: 'megastructure (the Gate)', dam: 'megastructure (Theodiga)',
+    amph: 'no interior: an open amphitheatre', radar: 'no interior: a lattice mast', dish: 'no interior: a dish on a pylon',
+    fuel: 'no interior worth a room: a canopy, storage spheres and a 5 m kiosk dome'
+  };
+
+  /* ---------------------------------------------------------------- POLICE STATION, the Watch (73-police.js)
+     The block: a battered hex lathe (nu 6), vertex radius 34 at its foot (y .8) to 30 at its top (y 12.8); the intact
+     builder lines it with a dark lathe at .9 of the skin, so the rooms keep inside .88. Two storeys of 6 m (the ruin's
+     civRooms step). Ground: the charge hall in the middle, offices, cells, the armoury and stores round a corridor;
+     upper: the barracks floor. The vehicle bays (a 30 x 10 x 50 box at (42, -10), boxD inside) are one garage hall. */
+  AI.KIT.police = { name: 'Police station (the Watch)', frag: '73-police.js', culture: 'ancient', wealth: 0.55, types: ['military', 'civic'],
+    buildings: function (d) {
+      const R = y => 34 - 4 * (y - 0.8) / 12, rOut = y => th => 0.88 * hexR(R(y), th);
+      /* three rooms to a face: an office, a cell, a store; one face's store is the armoury, the opposite one's the kitchen */
+      const kinds0 = (i, n) => { const f = Math.floor(i * 6 / n), k = i % 3; return k === 0 ? 'study' : k === 1 ? 'brig' : f === 0 ? 'armoury' : f === 3 ? 'kitchen' : 'store'; };
+      const kinds1 = cyc(['barracks', 'barracks', 'study']);
+      const s0 = AI.ringPlate({ id: 'police.g', level: 0, y: 1.1, h: 5.4, rOut: rOut(1.1), depth: 7, cw: 2.4, roomW: 6.5, sym: 6, kinds: kinds0, core: { r: 13, kind: 'hall', recipe: 'crew-mess' } });   /* the charge hall doubles as the mess */
+      const s1 = AI.ringPlate({ id: 'police.u', level: 1, y: 6.9, h: 5.5, rOut: rOut(6.9), depth: 7, cw: 2.4, roomW: 6.5, sym: 6, kinds: kinds1, core: { r: 12, kind: 'hall' } });
+      const bays = d === 0 ? AI.hallPlate({ id: 'police.bays', level: 0, y: 0.8, h: 8.6, kind: 'workshop',
+        poly: [[28, -34.5], [56, -34.5], [56, 14], [28, 14]], doorEdge: 1, doorW: 4 }) : AI.hallPlate({ id: 'police.bays', level: 0, y: 0.8, h: 8.6, kind: 'workshop',
+        poly: [[28, -34.5], [56, -34.5], [56, -2.5], [28, -2.5]], doorEdge: 1, doorW: 4 });   /* the ruin's south bay caved in */
+      return [{ id: 'police', name: 'the Watch', storeys: [s0, s1], floors: true, hollow: [],
+                inside: (x, z) => Math.hypot(x, z) < 34 },
+              { id: 'police-bays', name: 'the vehicle bays', storeys: [bays], floors: false, hollow: [{ box: [27.2, 56.8, 0.6, 9.6, -34.6, d === 0 ? 14.6 : -1.6] }],
+                inside: (x, z) => x > 27 && x < 57 && z > -35 && z < 15 }];
+    } };
+
+  /* the plans' building types onto core/tags' vocabulary (KTAGS.VOCAB.types: civic market shop tavern inn industry farm
+     dwelling-single dwelling-multi infrastructure religious funerary park military statue plaza fountain) */
+  AI.TYPE_MAP = { industrial: 'industry', laboratory: 'industry', research: 'civic', learning: 'civic', culture: 'civic', school: 'civic',
+    hospital: 'civic', office: 'civic', residential: 'dwelling-multi', apartments: 'dwelling-multi', 'multi-family dwelling': 'dwelling-multi',
+    'single-family dwelling': 'dwelling-single', house: 'dwelling-single', hotel: 'inn', transport: 'infrastructure', starport: 'infrastructure',
+    government: 'civic', library: 'civic', police: 'military', bunker: 'military', factory: 'industry', 'data centre': 'industry' };
+  AI.vocabTypes = list => { const out = []; (list || []).forEach(t => { const v = AI.TYPE_MAP[t] || t; if (out.indexOf(v) < 0) out.push(v); }); return out; };
+
+  /* ---------------------------------------------------------------- the plan for one decay level */
+  const STATE = { 0: 'intact', 1: 'ruined', 2: 'toppled', 3: 'rehab', 4: 'rehab', 5: 'intact' };
+  /* o: { place } a placement seed (any number or string: a world passes its site's, e.g. Math.round(x) + ',' +
+     Math.round(z)), so each ruin placed in a build breaks a little differently (AI.ruinStorey); { jitter } how much */
+  AI.kitPlan = function (type, d, o) {
+    o = o || {};
+    const T = AI.KIT[type];
+    if (!T) return { type, d, skip: AI.SKIP[type] || 'no plan', buildings: [] };
+    const bs = T.buildings(d);
+    const ruin = d === 1 || d === 2 ? 0.45 : d === 3 || d === 4 ? 0.2 : 0;
+    bs.forEach(function (B) {
+      B.storeys.forEach(function (st) {
+        if (ruin) AI.ruinStorey(st, type + '|' + d, { frac: ruin, collapse: B.collapse ? (x, z) => B.collapse(x, z, st.y) : null, place: o.place, jitter: o.jitter });
+        st.rooms.forEach(function (R) { R.culture = T.culture; R.wealth = T.wealth; R.building = B.id; });
+      });
+    });
+    return { type, d, place: o.place == null ? null : o.place, state: STATE[d], name: T.name, furnish: d === 0 && T.furnish !== false, culture: T.culture, wealth: T.wealth, types: AI.vocabTypes(T.types), buildings: bs };
+  };
+
+  /* ---------------------------------------------------------------- the SOCKET: furnish a plan in a culture
+     AI.cultureAdapter(cat, cultures) -> the adapter with only those cultures' pieces in list(): an intact Ancient
+     building takes 'ancient' alone, so a slot with no Ancient piece stays empty instead of filling with salvage.
+     AI.furnishPlan(plan, cat, o) -> { rooms: [{ room, R, plan }], pieces, templates }
+       o.culture   the culture to furnish in (default: the plan's, and only when plan.furnish: an intact building);
+                   any catalog culture fills the same rooms (a reclaimed ruin in Iziz: { culture: 'iziz', all: true })
+       o.cultures  the adapter's culture filter (default [culture]); pass null for the culture's whole family chain
+       o.all       furnish rooms a ruin marked unfurnished too (not the open ones, not corridors and cores)
+       o.wealth, o.seed, o.y (the plan's ground in the world: room y is added to it)
+     ROOMS ARE TEMPLATED: rooms of one kind and one shape (to 5 cm, once turned so the door faces +z) are furnished
+     once and the placements copied, turned and moved into each; a ring of 18 like rooms costs one placer call. */
+  AI.cultureAdapter = function (cat, cultures) {
+    if (!cultures) return cat;
+    const keep = {}; cultures.forEach(c => { keep[c] = true; });
+    let L = null;
+    return Object.assign({}, cat, { list: function () { if (!L) L = cat.list().filter(e => keep[e.culture]); return L; } });
+  };
+  AI.furnishPlan = function (plan, cat, o) {
+    o = o || {};
+    const IX = AI.IX || (typeof KratorInteriors !== 'undefined' ? KratorInteriors : null);
+    const culture = o.culture || (plan.furnish ? plan.culture : null), out = { rooms: [], pieces: 0, templates: 0 };
+    if (!culture || !IX) return out;
+    const ad = AI.cultureAdapter(cat, o.cultures === undefined ? [culture] : o.cultures), cache = {}, y0 = o.y || 0;
+    out.adapter = ad; out.catalog = cat;   /* audit a placer template through out.adapter, a recipe (AI.audit(r.recipe, out.catalog)) through the catalog */
+    AI.planRooms(plan).forEach(function (R) {
+      if (!R.poly || R.kind === 'corridor' || R.kind === 'core' || R.open) return;
+      if (!R.furnish && !o.all) return;
+      /* the room's own frame: origin at its centroid, turned so its first door lies toward +z */
+      const n = R.poly.length, c = R.poly.reduce((s, p) => [s[0] + p[0] / n, s[1] + p[1] / n], [0, 0]);
+      const dr = R.doors[0] ? R.doors[0].at : [c[0], c[1] + 1], ang = Math.atan2(dr[0] - c[0], dr[1] - c[1]);
+      const cs = Math.cos(ang), sn = Math.sin(ang);
+      const toL = p => [Math.round(((p[0] - c[0]) * cs - (p[1] - c[1]) * sn) * 20) / 20, Math.round(((p[0] - c[0]) * sn + (p[1] - c[1]) * cs) * 20) / 20];
+      const lp = R.poly.map(toL), ld = R.doors.map(d => ({ at: toL(d.at), w: d.w, to: d.to }));
+      const key = R.kind + '|' + culture + '|' + Math.round((R.h || 3) * 10) + '|' + JSON.stringify(lp) + JSON.stringify(ld.map(d => d.at));
+      let T = cache[key];
+      /* a room with a RECIPE (a big hall): the recipe in the room's inscribed rectangle, in the culture's dress when it
+         has one (AI.DRESS[culture]) else the Ancients', fit-or-skip; the placer fills nothing else */
+      if (!T && R.recipe && AI.RECIPES[R.recipe]) {
+        const xs = lp.map(p => p[0]), zs = lp.map(p => p[1]), hw = Math.min(-Math.min(...xs), Math.max(...xs)), hd = Math.min(-Math.min(...zs), Math.max(...zs));
+        const w = Math.max(4, hw * 2 * 0.86), d = Math.max(4, hd * 2 * 0.86);
+        const res = AI.recipe(R.recipe, { w, d, h: R.h || 3.2, dress: AI.DRESS[culture] ? culture : 'ancient', seed: (o.seed || 1) + out.templates * 7 }, cat);   /* the dress is the culture's choice: the whole catalog */
+        const room = IX.normRoom({ id: 'tpl.' + plan.type + '.' + out.templates, kind: R.kind, culture, y: 0, h: R.h || 3, poly: lp, doors: ld });
+        const placements = res.placements.map(p => ({ key: p.key, variant: p.v, x: p.x, y: p.y, z: p.z, ry: p.ry, anchor: null, type: null, culture, recipe: R.recipe, role: p.role }));
+        T = cache[key] = { room, plan: { placements, report: { missing: [], recipe: R.recipe, skipped: res.skipped.length } }, recipe: res };
+        out.templates++;
+      }
+      if (!T) {
+        const room = IX.normRoom({ id: 'tpl.' + plan.type + '.' + out.templates, kind: R.kind, culture, wealth: o.wealth == null ? (R.wealth == null ? 0.5 : R.wealth) : o.wealth,
+          y: 0, h: R.h || 3, poly: lp, doors: ld, seed: (o.seed || 1) + out.templates * 7 });
+        T = cache[key] = { room, plan: IX.furnishRoom(room, ad, { fallback: 'none' }) };
+        out.templates++;
+      }
+      /* the template's placements back into the plan's frame */
+      const places = T.plan.placements.map(function (p) {
+        const x = p.x * cs + p.z * sn + c[0], z = -p.x * sn + p.z * cs + c[1];
+        return Object.assign({}, p, { x, z, y: y0 + R.y + (p.y || 0), ry: (p.ry || 0) + ang, room: R.id });
+      });
+      out.rooms.push({ R, template: key, room: T.room, plan: T.plan, recipe: T.recipe || null, placements: places });
+      out.pieces += places.length;
+    });
+    return out;
+  };
+
+  /* every room of a plan, flat */
+  AI.planRooms = function (plan) { const out = []; plan.buildings.forEach(B => B.storeys.forEach(st => st.rooms.forEach(R => out.push(R)))); return out; };
+})(KratorAncientsInteriors);
+/* ---------- src/37b-ai-kit-houses.js ---------- */
+/* ======================== Ancients interiors: the houses and the laboratory ========================
+   Plans (37-ai-kit.js shape) for three of the original kit's types, in each builder's own frame (the group at the
+   site, no rotation, x east, z south, y up). Houses are single-family dwellings: a living room, a kitchen and
+   bedrooms as the volume allows. Small custom plates here (rooms cut by chords and partitions, every door listed in
+   both rooms it joins) where a ring or a bar does not fit a 5 m drum.
+   ====================================================================== */
+(function (AI) {
+  'use strict';
+  const TAU = Math.PI * 2;
+  const r3 = v => Math.round(v * 1000) / 1000, P = (x, z) => [r3(x), r3(z)];
+  const cyc = list => (i => list[i % list.length]);
+  /* an arc of n segments from t0 to t1 (n + 1 points) */
+  const arc = (cx, cz, r, t0, t1, n) => { const o = []; for (let k = 0; k <= n; k++) { const t = t0 + (t1 - t0) * k / n; o.push(P(cx + r * Math.cos(t), cz + r * Math.sin(t))); } return o; };
+  const rect = (x0, x1, z0, z1) => [P(x0, z0), P(x1, z0), P(x1, z1), P(x0, z1)];
+  const mid = (a, b) => P((a[0] + b[0]) / 2, (a[1] + b[1]) / 2);
+  const DR = (at, to, w) => ({ at: P(at[0], at[1]), w: w || 0.9, to });
+  const RM = (id, kind, poly, y, h, lv, doors) => ({ id, kind, poly, y, h, level: lv, doors, windows: [], furnish: true });
+  const WL = (id, pts, y, h, rooms, at, w) => ({ id, pts: pts.map(p => P(p[0], p[1])), y, h, rooms, door: at ? { at: P(at[0], at[1]), w: w || 0.9 } : null, broken: false });
+  const ST = (id, lv, y, h, outline, rooms, walls) => ({ id, level: lv, y, h, rooms, walls, outline });
+  const HOUSE = ['single-family dwelling'];
+
+  /* a round floor (centre cx, radius r) cut by a chord at z = cz + zc (zc < 0): the front a living room with the
+     street door at the front of the circle, the back split at x = cx into a bedroom (west) and a kitchen (east), each
+     with a door onto the living room. Used by House A (a drum). */
+  function chordDrum(id, cx, r, zc, y, h, streetW) {
+    const xc = Math.sqrt(r * r - zc * zc), al = Math.asin(-zc / r);
+    const liv = id + '.living', bed = id + '.bed', kit = id + '.kitchen';
+    const dB = [cx - xc / 2, zc], dK = [cx + xc / 2, zc];
+    const rooms = [
+      RM(liv, 'living', arc(cx, 0, r, -al, Math.PI + al, 6).concat([P(cx, zc)]), y, h, 0,
+        [DR([cx, r], 'street', streetW), DR(dB, bed), DR(dK, kit)]),
+      RM(bed, 'bedroom', [P(cx, zc)].concat(arc(cx, 0, r, Math.PI + al, 1.5 * Math.PI, 8)), y, h, 0, [DR(dB, liv)]),
+      RM(kit, 'kitchen', [P(cx, zc)].concat(arc(cx, 0, r, 1.5 * Math.PI, TAU - al, 8)), y, h, 0, [DR(dK, liv)])];
+    const walls = [WL(bed + '.w', [[cx - xc, zc], [cx, zc]], y, h, [bed, liv], dB), WL(kit + '.w', [[cx, zc], [cx + xc, zc]], y, h, [kit, liv], dK),
+      WL(bed + '.p', [[cx, zc], [cx, zc - r]], y, h, [bed, kit], null)];
+    return { rooms, walls };
+  }
+
+  /* ---------------------------------------------------------------- HOUSES A, B, C (81-houses-abc.js buildHouses)
+     The three sit at x = 30 (A, AX), 70 (B) and 110 (C, 140 + CX) on z = 0.
+     A, the petal house: the drum lathe r 5 (nu 32), y 1..6.5, on a slab at y 1 (.4 thick: floor 1.2), the porch door
+       (archOpen) at the front, +z; a glass dome on top when intact. One storey, y 1.2, h 5.2, rooms inside r 4.85:
+       a living room at the front, a bedroom and a kitchen behind a chord at z -.5. The ruin draws a dark liner lathe
+       r 3.4 (y 1..6.5) inside the drum: listed as a hollow cylinder for d > 0.
+     B, the hypar-shell house: the room block boxW 9 x 6 x 7 at (70, 3.5, 0) holding a SOLID boxD 8.6 x 5.6 x 6.6
+       (hollow; the boxW round it is a solid kit box too: the host shows it as a shell), on the plinth slab (top .75),
+       door at the front gable (x 70). Rooms in x 65.75..74.25, z -3.25..3.25, y .75, h 5.5: the living room west
+       (the door), a bedroom and a kitchen east. The ruin drops the front shell; the block stands.
+     C, the lobed cluster house: a central tube r 2.6 (y 0..10; the entry archOpen at its west foot, a stair) and
+       three lobes, lathes r 3.6 (3.42 at the top), y 3..10, centred 4.6 out at angles l/3 TAU + .5, each on a slab at
+       y 3 (.5 thick: floor 3.25) and capped with a dome at y 10. Two rows of windows (y 4.5, 7.1), so two storeys:
+       y 3.25, h 2.6 on the builder's slabs, and y 6.05, h 3.8 under the caps (no slab of the builder's: a second
+       building with floors true). Each lobe room is the lobe's circle (r 3.35) less the tube (r 2.7), its door on the
+       tube. Ground: living, kitchen, study; upper: three bedrooms. The ruin loses lobe 1 entirely (rubble, no slab):
+       its rooms are dropped for d > 0; lobes 0 and 2 get dark liners r 2.3 (y 3..10), hollow for d > 0. */
+  AI.KIT.house = { name: 'Houses A, B, C (petal, hypar-shell, lobed cluster)', frag: '81-houses-abc.js', culture: 'ancient', wealth: 0.65, types: HOUSE,
+    buildings: function (d) {
+      /* A */
+      const A = chordDrum('house.a', 30, 4.85, -0.5, 1.2, 5.2, 1.4);
+      const sA = ST('house.a', 0, 1.2, 5.2, arc(30, 0, 4.99, 0, TAU, 32).slice(0, 32), A.rooms, A.walls);
+      /* B */
+      const yB = 0.75, hB = 5.5, xm = 70.75;
+      const bL = 'house.b.living', bB = 'house.b.bed', bK = 'house.b.kitchen';
+      const sB = ST('house.b', 0, yB, hB, rect(65.5, 74.5, -3.5, 3.5), [
+        RM(bL, 'living', [P(65.75, -3.25), P(xm, -3.25), P(xm, 0.25), P(xm, 3.25), P(70, 3.25), P(65.75, 3.25)], yB, hB, 0,
+          [DR([70, 3.25], 'street', 1.2), DR([xm, -1.5], bB), DR([xm, 1.75], bK)]),
+        RM(bB, 'bedroom', rect(xm, 74.25, -3.25, 0.25), yB, hB, 0, [DR([xm, -1.5], bL)]),
+        RM(bK, 'kitchen', rect(xm, 74.25, 0.25, 3.25), yB, hB, 0, [DR([xm, 1.75], bL)])], [
+        WL(bB + '.w', [[xm, -3.25], [xm, 0.25]], yB, hB, [bB, bL], [xm, -1.5]),
+        WL(bK + '.w', [[xm, 0.25], [xm, 3.25]], yB, hB, [bK, bL], [xm, 1.75]),
+        WL(bB + '.p', [[xm, 0.25], [74.25, 0.25]], yB, hB, [bB, bK], null)]);
+      /* C */
+      const CX = 110, rc = 2.7, rl = 3.35, dl = 4.6;
+      const xi = (dl * dl + rc * rc - rl * rl) / (2 * dl), yi = Math.sqrt(rc * rc - xi * xi);
+      const phC = Math.atan2(yi, xi), phL = Math.atan2(yi, xi - dl);
+      const lobeA = l => l / 3 * TAU + 0.5;
+      const keep = l => !(d > 0 && l === 1);
+      function cStorey(sid, lv, y, h, kinds) {
+        const rooms = [], walls = [], core = sid + '.core', cdoors = [];
+        for (let l = 0; l < 3; l++) {
+          if (!keep(l)) continue;
+          const a = lobeA(l), lx = CX + dl * Math.cos(a), lz = dl * Math.sin(a);
+          const ca = arc(CX, 0, rc, a + phC, a - phC, 4), door = ca[2];
+          const poly = arc(lx, lz, rl, a - phL, a + phL, 6).concat(ca.slice(1, -1));
+          const rid = sid + '.l' + l;
+          rooms.push(RM(rid, kinds[l], poly, y, h, lv, [DR(door, core)]));
+          walls.push(WL(rid + '.w', ca, y, h, [rid, core], door));
+          cdoors.push(DR(door, rid));
+        }
+        rooms.push({ id: core, kind: 'core', poly: arc(CX, 0, 2.6, 0, TAU, 24).slice(0, 24), y, h, level: lv, doors: cdoors, windows: [], furnish: false });
+        return ST(sid, lv, y, h, arc(CX, 0, 7.9, 0, TAU, 24).slice(0, 24), rooms, walls);
+      }
+      const sC0 = cStorey('house.c.g', 0, 3.25, 2.6, ['living', 'kitchen', 'study']);
+      const sC1 = cStorey('house.c.u', 1, 6.05, 3.8, ['bedroom', 'bedroom', 'bedroom']);
+      const insC = (x, z) => Math.hypot(x - CX, z) < 2.75 || [0, 1, 2].some(l => Math.hypot(x - CX - dl * Math.cos(lobeA(l)), z - dl * Math.sin(lobeA(l))) < 3.58);
+      const linerC = (y0, y1) => d > 0 ? [0, 2].map(l => ({ cyl: [r3(CX + dl * Math.cos(lobeA(l))), r3(dl * Math.sin(lobeA(l))), 2.3, y0, y1] })) : [];
+      return [
+        { id: 'house-a', name: 'House A, the petal house', storeys: [sA], floors: false, hollow: d > 0 ? [{ cyl: [30, 0, 3.4, 1, 6.5] }] : [],
+          inside: (x, z) => Math.hypot(x - 30, z) < 4.99 },
+        { id: 'house-b', name: 'House B, the hypar-shell house', storeys: [sB], floors: false, hollow: [{ box: [65.7, 74.3, 0.7, 6.3, -3.3, 3.3] }],
+          inside: (x, z) => x > 65.5 && x < 74.5 && z > -3.5 && z < 3.5 },
+        { id: 'house-c', name: 'House C, the lobed cluster house (lobe floors)', storeys: [sC0], floors: false, hollow: linerC(3, 5.85), inside: insC },
+        { id: 'house-c-up', name: 'House C, the lobed cluster house (upper floor)', storeys: [sC1], floors: true, hollow: linerC(5.85, 10), inside: insC }];
+    } };
+
+  /* ---------------------------------------------------------------- HOUSES D, E, F (64-houses-def.js buildHouses2)
+     D, the apse house, at x 25 (DX): a quarter-sphere lathe R 9 from y .6, kept where sin th <= .05 (z <= 0), open to
+       +z behind a glass front on mullions (.6 thick) at z 0; its dark liner (always drawn) is .94 R sqrt(1 - (y/R)^2),
+       so at r 7.5 it stands 4.2 m above the floor. The floor slab top is .6; the door (archOpen) at x 28 in the front.
+       One storey, y .6, h 3.6, rooms inside r 7.5 and z < -.4: the living room at the front (the glass), a bedroom
+       (west) and a kitchen (east) behind a chord at z -3.5. No ruin collapse (holes only).
+     E, the bridge house, at x 65: the floor box 26 x .7 x 8 at y 8.3 (top 8.65), the roof box at y 12.2 (underside
+       11.85), panes at z +-4 and x 65 +- 12.5. One storey y 8.65, h 3.1, a bar (barPlate) along x 52.6..77.4: a 2 m
+       corridor along the back (-z), five rooms on the front: two bedrooms, the kitchen, two living rooms; the door
+       from the pier stair at (74, z 4.3) opens into the east living room. The ruin's span failed west of x 65 (the
+       floor hinged down, the roof beside the house): collapse x < 65. The ruin's boxD 11 x 3 x 6 at (71, 10.2, 0)
+       is hollow for d > 0.
+     F, the terrace house, at x 105: three trays t, floor box at y 3.6t (top 3.6t + .6), centre z 6 - 5t, width
+       16 - 3t, depth 9; roof underside 3.6t + 3.15; brick sides .5 thick inside x 105 +- (w/2 - .5); glass at
+       z + 3.8. The rock behind is a hex lathe r 16 - 1.4y at (105, -8): its flat face (apothem .866 r) slopes through
+       the back of every tray, so a tray's room starts in front of the face at floor level (z 5.3, .95, -3.45) and ends
+       at z + 3.6. Tray 0: kitchen (west) and living room (east, the entry arch at x 109); tray 1: two bedrooms off the
+       terrace on tray 0's roof (the outside stair arrives at its west end); tray 2: a bedroom. The ruin loses tray 2
+       (its roof slumped onto tray 1): dropped for d > 0; the ruin's boxD in trays 0 and 1 are hollow for d > 0. */
+  AI.KIT.house2 = { name: 'Houses D, E, F (apse, bridge, terrace)', frag: '64-houses-def.js', culture: 'ancient', wealth: 0.65, types: HOUSE,
+    buildings: function (d) {
+      /* D */
+      const cD = 25, rD = 7.5, zf = -0.4, zc = -3.5, yD = 0.6, hD = 3.6;
+      const be = Math.asin(-zf / rD), ga = Math.asin(-zc / rD), xcD = Math.sqrt(rD * rD - zc * zc);
+      const dL = 'house.d.living', dB = 'house.d.bed', dK = 'house.d.kitchen', dbA = [cD - xcD / 2, zc], dkA = [cD + xcD / 2, zc];
+      const sD = ST('house.d', 0, yD, hD, arc(cD, 0, 8.46, Math.PI, TAU, 24), [
+        RM(dL, 'living', arc(cD, 0, rD, -be, -ga, 4).concat([P(cD, zc)], arc(cD, 0, rD, Math.PI + ga, Math.PI + be, 4), [P(28, zf)]), yD, hD, 0,
+          [DR([28, zf], 'street', 1.2), DR(dbA, dB), DR(dkA, dK)]),
+        RM(dB, 'bedroom', [P(cD, zc)].concat(arc(cD, 0, rD, Math.PI + ga, 1.5 * Math.PI, 8)), yD, hD, 0, [DR(dbA, dL)]),
+        RM(dK, 'kitchen', [P(cD, zc)].concat(arc(cD, 0, rD, 1.5 * Math.PI, TAU - ga, 8)), yD, hD, 0, [DR(dkA, dL)])], [
+        WL(dB + '.w', [[cD - xcD, zc], [cD, zc]], yD, hD, [dB, dL], dbA),
+        WL(dK + '.w', [[cD, zc], [cD + xcD, zc]], yD, hD, [dK, dL], dkA),
+        WL(dB + '.p', [[cD, zc], [cD, -rD]], yD, hD, [dB, dK], null)]);
+      /* E */
+      const sE = AI.barPlate({ id: 'house.e', level: 0, y: 8.65, h: 3.1, path: u => [52.6 + 24.8 * u, 0], len: 24.8, depth: 7.8, side: 'left', cw: 2.0,
+        roomW: 4.96, kinds: cyc(['bedroom', 'bedroom', 'kitchen', 'living', 'living']), door: 0.9 });
+      sE.rooms.filter(R => R.id === 'house.e.r4').forEach(R => R.doors.push(DR([74, 3.85], 'street', 1.0)));
+      /* F */
+      const fx = 105, tray = t => ({ y: t * 3.6 + 0.6, zc: 6 - 5 * t, w: 16 - 3 * t }), zBack = [5.3, 0.95, -3.45];
+      const sF = [];
+      for (let t = 0; t < 3; t++) {
+        if (d > 0 && t === 2) continue;
+        const T = tray(t), x0 = fx - (T.w / 2 - 0.55), x1 = fx + (T.w / 2 - 0.55), z0 = zBack[t], z1 = T.zc + 3.6, y = T.y, h = 2.5, sid = 'house.f.t' + t;
+        let rooms, walls;
+        if (t === 0) {
+          const xm = 103, L = sid + '.living', K = sid + '.kitchen', dk = [xm, (z0 + z1) / 2];
+          rooms = [RM(L, 'living', [P(xm, z0), P(x1, z0), P(x1, z1), P(109, z1), P(xm, z1), P(xm, dk[1])], y, h, t, [DR([109, z1], 'street', 1.2), DR(dk, K)]),
+            RM(K, 'kitchen', [P(x0, z0), P(xm, z0), P(xm, dk[1]), P(xm, z1), P(x0, z1)], y, h, t, [DR(dk, L)])];
+          walls = [WL(K + '.w', [[xm, z0], [xm, z1]], y, h, [K, L], dk)];
+        } else if (t === 1) {
+          const W = sid + '.bedW', E = sid + '.bedE', dw = [101.5, z1], de = [108.5, z1];
+          rooms = [RM(W, 'bedroom', [P(x0, z0), P(fx, z0), P(fx, z1), P(dw[0], z1), P(x0, z1)], y, h, t, [DR(dw, 'terrace')]),
+            RM(E, 'bedroom', [P(fx, z0), P(x1, z0), P(x1, z1), P(de[0], z1), P(fx, z1)], y, h, t, [DR(de, 'terrace')])];
+          walls = [WL(W + '.p', [[fx, z0], [fx, z1]], y, h, [W, E], null)];
+        } else {
+          rooms = [RM(sid + '.bed', 'bedroom', [P(x0, z0), P(x1, z0), P(x1, z1), P(fx, z1), P(x0, z1)], y, h, t, [DR([fx, z1], 'terrace')])];
+          walls = [];
+        }
+        sF.push(ST(sid, t, y, h, rect(fx - T.w / 2, fx + T.w / 2, T.zc - 4.5, T.zc + 4.5), rooms, walls));
+      }
+      const insF = (x, z, y) => { const t = Math.max(0, Math.min(2, Math.round((y - 0.6) / 3.6))), T = tray(t); return x > fx - T.w / 2 && x < fx + T.w / 2 && z > T.zc - 4.5 && z < T.zc + 4.5; };
+      return [
+        { id: 'house-d', name: 'House D, the apse house', storeys: [sD], floors: false, hollow: [],
+          inside: (x, z) => z < 0.1 && Math.hypot(x - cD, z) < 8.46 },
+        { id: 'house-e', name: 'House E, the bridge house', storeys: [sE], floors: false, hollow: d > 0 ? [{ box: [65.5, 76.5, 8.7, 11.7, -3, 3] }] : [],
+          inside: (x, z) => x > 52.5 && x < 77.5 && z > -4 && z < 4, collapse: (x, z) => d > 0 && x < 65 },
+        { id: 'house-f', name: 'House F, the terrace house', storeys: sF, floors: false,
+          hollow: d > 0 ? [{ box: [98.5, 111.5, 0.6, 3.2, 4.5, 9.5] }, { box: [100, 110, 4.2, 6.8, -0.5, 4.5] }] : [], inside: insF }];
+    } };
+
+  /* ---------------------------------------------------------------- LABORATORY, the Reliquary (89-lab.js buildLab)
+     The tower: six storeys of SH 4.4, each a skin gridSurface at r = rW(th, s) = 30 + 2.6 sin(7th + .55s) +
+     1.1 sin(3th - .385s), from y 4.4s + .3 to 4.4(s + 1); the balcony annulus outside it at y 4.4s + .3. No floors
+     inside (the ruin adds a band .9..985 rW and a dark liner at .9 rW), the roof slab at 26.7, the dome above it.
+     Plan (floors true): storey s at y 4.4s + .3, h 4.0. The rooms' skin is .88 (28.9 + 2.6 sin(7th + .55s)), the
+     seven-fold part of rW less the 3th term's amplitude, so it stays inside .88 rW everywhere and like rooms repeat
+     every 2 pi / 7 (sym 7: furnishing templates shared). An outer ring of 21 rooms 8 deep (labs, every third a
+     store; the ground floor's room 0, toward the porch at +x, is the lobby) on a 2.6 m corridor; an inner ring of 14
+     sectors 5.5 deep (offices, studies) on a 2.4 m corridor round a stair and lift core (r 4.4), two of its sectors
+     (0 and 7) left as passages between the two corridors. No collapse: the ruin's holes eat the skin, not floors.
+     The reactor hut at x 104: a drum lathe r 10 (nu 40), y 0..5, a dome above to y 16, the door (archOpen) at x 94
+     facing -x. One storey y 0, h 4.8 (floors true): nine rooms 3.6 deep round a 1.6 m corridor and the reactor core
+     (r 4.3, unfurnished); room 4, at the door, the vestibule. */
+  AI.KIT.lab = { name: 'Laboratory (the Reliquary)', frag: '89-lab.js', culture: 'ancient', wealth: 0.6, types: ['laboratory', 'research'],
+    buildings: function () {
+      const SH = 4.4, NS = 6;
+      const rW = (th, s) => 30 + 2.6 * Math.sin(7 * th + 0.55 * s) + 1.1 * Math.sin(3 * th - 0.55 * s * 0.7);
+      const storeys = [];
+      for (let s = 0; s < NS; s++) {
+        const y = r3(s * SH + 0.3), h = 4.0, sid = 'lab.s' + s;
+        const rOut = th => 0.88 * (28.9 + 2.6 * Math.sin(7 * th + 0.55 * s));
+        const outerK = cyc(['workshop', 'workshop', 'store']);
+        const st = AI.ringPlate({ id: sid, level: s, y, h, rOut, depth: 8, cw: 2.6, n: 21, seg: 4, sym: 7,
+          kinds: (i, n) => s === 0 && i === 0 ? 'antechamber' : outerK(i) });
+        const rO2 = th => rOut(th) - 10.65, segI = 3, nI = 14, isPass = th => [0, 7].some(i => Math.abs(th - (i + 0.5) / nI * TAU) < 0.01);
+        const inn = AI.ringPlate({ id: sid + '.in', level: s, y, h, rOut: rO2, depth: 5.5, cw: 2.4, n: nI, seg: segI, sym: 7,
+          kinds: () => 'study', skip: isPass, core: { r: 4.4 } });
+        /* each office's back (the outer arc) is a wall on the outer corridor */
+        inn.rooms.filter(R => R.kind === 'study').forEach(function (R) {
+          inn.walls.push(WL(R.id + '.ow', R.poly.slice(segI + 1).reverse(), y, h, [R.id, sid + '.corr'], null));
+        });
+        /* the two passages, and the wall that closes the office before each (its t1 is the passage's t0) */
+        [0, 7].forEach(function (i) {
+          const t0 = i / nI * TAU, t1 = (i + 1) / nI * TAU, pid = sid + '.in.pass' + i;
+          const rIn = th => rO2(th) - 5.5, inner = [], outer = [];
+          for (let k = 0; k <= segI; k++) { const th = t0 + (t1 - t0) * k / segI; inner.push(P(rIn(th) * Math.cos(th), rIn(th) * Math.sin(th))); outer.push(P((rO2(th) - 0.05) * Math.cos(th), (rO2(th) - 0.05) * Math.sin(th))); }
+          inn.rooms.push({ id: pid, kind: 'corridor', poly: inner.concat(outer.reverse()), y, h, level: s, doors: [], windows: [], furnish: false });
+          const tPrev = ((t0 - 0.5 / nI * TAU) + TAU) % TAU, prev = inn.rooms.find(R => R.th != null && Math.abs(R.th - tPrev) < 0.01);
+          inn.walls.push(WL(pid + '.p', [[rIn(t0) * Math.cos(t0), rIn(t0) * Math.sin(t0)], [(rO2(t0) - 0.05) * Math.cos(t0), (rO2(t0) - 0.05) * Math.sin(t0)]], y, h, [prev ? prev.id : null, pid], null));
+        });
+        st.rooms = st.rooms.concat(inn.rooms); st.walls = st.walls.concat(inn.walls);
+        storeys.push(st);
+      }
+      const hutK = ['workshop', 'study', 'workshop', 'store', 'antechamber', 'store', 'workshop', 'study', 'workshop'];
+      const hut = AI.ringPlate({ id: 'lab.hut', level: 0, y: 0, h: 4.8, cx: 104, cz: 0, rOut: () => 9.55, depth: 3.6, cw: 1.6, n: 9, seg: 3,
+        kinds: i => hutK[i], core: { r: 4.3 } });
+      hut.rooms.filter(R => R.id === 'lab.hut.r4').forEach(function (R) { const o = R.poly.slice(4); R.doors.push(DR(mid(o[1], o[2]), 'street', 1.8)); });
+      return [
+        { id: 'lab', name: 'the Reliquary', storeys, floors: true, hollow: [],
+          inside: (x, z, y) => { const s = Math.max(0, Math.min(NS - 1, Math.floor(y / SH))); return Math.hypot(x, z) < 0.9 * rW(Math.atan2(z, x), s); } },
+        { id: 'lab-hut', name: 'the reactor hut', storeys: [hut], floors: true, hollow: [],
+          inside: (x, z) => Math.hypot(x - 104, z) < 9.97 }];
+    } };
+})(KratorAncientsInteriors);
+/* ---------- src/37c-ai-kit-works.js ---------- */
+/* ======================== Ancients interiors: the works (factory, robotics, data centre, starport) ========================
+   AI.KIT entries (shape: 37-ai-kit.js) for the four big industrial volumes of the original Ancients kit. Their halls
+   are single volumes, so the floors are OPEN BAYS along aisles (AI.gridPlate), with walled offices and stores in
+   AI.barPlate strips along an edge, and stacked office mezzanines where the height allows. Builder frame: x east,
+   z south, y up, no rotation. A ground storey that stands on the builder's own plinth or base is its own building with
+   floors: false; storeys above it (the kit draws their slabs) are a second building with floors: true.
+   ====================================================================== */
+(function (AI) {
+  'use strict';
+  const TAU = Math.PI * 2;
+  const cyc = list => (i => list[i % list.length]);
+  const r3 = v => Math.round(v * 1000) / 1000;
+  /* move every point of a storey through f([x, z]) -> [x, z] (a plate drawn in a local frame, put into the builder's) */
+  function xform(st, f) {
+    const F = p => { const q = f(p); return [r3(q[0]), r3(q[1])]; };
+    st.outline = st.outline.map(F);
+    st.rooms.forEach(function (R) { if (R.poly) R.poly = R.poly.map(F); R.doors.forEach(D => { D.at = F(D.at); }); });
+    st.walls.forEach(function (W) { W.pts = W.pts.map(F); if (W.door) W.door.at = F(W.door.at); });
+    return st;
+  }
+  /* a straight bar plate between two points */
+  const line = (ax, az, bx, bz) => (u => [ax + (bx - ax) * u, az + (bz - az) * u]);
+
+  /* ---------------------------------------------------------------- FACTORY, the Foundry (88-factory.js, 40-factory-extras.js)
+     The catenary vault: W 90, Hh 55, L 160 at hx -40 (z -80..80) on the 6 m plinth (floor y 6). Its skin is
+     x = hx +- 44 sqrt(1 - (y-6)/53.8); the ruin lines it with a guts layer at .97 across and .93 up, so every room keeps
+     inside hw(y) = 42.4 sqrt(1 - (y-6)/50) (the guts, less a margin). End walls at z +-80: rooms keep to |z| < 77.
+     Ground: an office-and-store strip along each long side (rooms against the vault, the corridor on the hall side),
+     between them the shop floor as open workshop bays along two aisles running the hall's length; an office
+     mezzanine over each side strip (y 11). The conveyor tube crosses at y 29.5, above everything. The ruin keeps the
+     plan (ribs 5, 6, 11 gone, the skin holed, no floor fallen): no collapse. The silos, stacks, cooling towers, tank
+     farm, factorySilo and the AA battery have no rooms. */
+  AI.KIT.fac = { name: 'Factory (the Foundry)', frag: '88-factory.js', culture: 'ancient', wealth: 0.5, types: ['industrial'],
+    buildings: function (d) {
+      const hx = -40, Y0 = 6, hw = y => 42.4 * Math.sqrt(Math.max(0, 1 - (y - Y0) / 50));
+      const ZE = 77;
+      /* side strips: 10 m deep at the ground (h 4.5: x within hw(10.5) = 40.45 of hx), 7.8 m on the mezzanine (hw(15)) */
+      const g = hw(Y0 + 4.5), m = hw(11 + 4);
+      const kG = cyc(['study', 'study', 'store']), kM = cyc(['study', 'study', 'store', 'study']);
+      const side = (id, lv, y, h, xo, D, kinds) => AI.barPlate({ id, level: lv, y, h, depth: D, side: 'left', cw: 2.2, roomW: 5.5, kinds,
+        ends: ['core', 'store'],
+        path: xo < 0 ? line(xo, -ZE, xo, ZE) : line(xo, ZE, xo, -ZE) });
+      const wG = hx - g + 0.3, eG = hx + g - 0.3;           /* the ground strips' outer faces */
+      const sW = side('fac.gw', 0, Y0, 4.5, wG + 5, 10, kG), sE = side('fac.ge', 0, Y0, 4.5, eG - 5, 10, kG);
+      const wM = hx - m + 0.3, eM = hx + m - 0.3;
+      /* the mezzanine's inner edge is the ground strip's (x -70.2 / -9.8): its corridor stands over the one below */
+      const DM = (wG + 10) - wM;
+      const mW = side('fac.mw', 1, 11, 4, wM + DM / 2, DM, kM), mE = side('fac.me', 1, 11, 4, eM - DM / 2, DM, kM);
+      /* the shop floor: two aisles down the hall, bays 12 x 12 either side of each (the bay height is the working
+         clear height under the vault: at |x - hx| = 28.4, the outer bays' edge, the guts stand 27 m) */
+      const floor = AI.gridPlate({ id: 'fac.floor', level: 0, y: Y0, h: 12, x0: wG + 10 + 1.8, x1: eG - 10 - 1.8, z0: -ZE, z1: ZE,
+        bay: [12, 12], aisle: 4, along: 'z', kinds: (i, n, row) => (i % 6 === 5 ? 'store' : 'workshop') });
+      const inside = (x, z, y) => Math.abs(x - hx) < hw(y) + 0.2 && Math.abs(z) < 79;
+      return [{ id: 'fac', name: 'the Foundry hall', storeys: [sW, sE, floor], floors: false, hollow: [], inside },
+              { id: 'fac-mezz', name: 'the Foundry mezzanines', storeys: [mW, mE], floors: true, hollow: [], inside }];
+    } };
+
+  /* ---------------------------------------------------------------- ROBOTICS FACTORY, the Assembler (62-robotics.js)
+     The hall: HW 200, HD 90, HH 22 centred x -40 on the base (BOXC 400 x 4 x 300, top y 4): x -140..60, z -45..45,
+     y 4..26. INTACT IT IS A SOLID boxD (198 x 20 x 88 at (-40, 15, 0)): hollow. The ruin is four 1.6 m walls round
+     the assembly floor: three conveyor lines at z -24, 0, 24 (x -128..48) with machines at lz +- 5 every 16 m, gantries
+     at y 21, the dark ceiling at y 25. The plan follows the ruin: an aisle 6 m wide down each line and machine bays
+     9 deep either side, 16 m long and centred on the machines (x -128 + 16k); store rooms along the north and south
+     walls; an office block at the east end, three storeys of 5.5 m (y 4, 9.5, 15: under the ceiling at 25).
+     The tower: a fluted drum r 24 + 3 sin(.3y), H 70 at (110, -40) from y 4, lined by a dark lathe r 20 (nu 24:
+     inscribed 19.83); open bays every 14 m, their bay plates (boxD 6 x .6 x 10 at r 21) at y 18, 32, 46, 60 (top
+     18.3). Five levels of 14 m: a ring of ten bays (one per opening) round a central assembly hall. The ruin cuts
+     the drum at 85% (y 63.5, jag 3) and draws no plate at 60: that level falls in (collapse). */
+  AI.KIT.robo = { name: 'Robotics factory (the Assembler)', frag: '62-robotics.js', culture: 'ancient', wealth: 0.55, types: ['industrial'],
+    buildings: function (d) {
+      const Y = 4;
+      const floor = AI.gridPlate({ id: 'robo.floor', level: 0, y: Y, h: 12, x0: -139, x1: 43, z0: -36, z1: 36, bay: [16, 9], aisle: 6, along: 'x',
+        kinds: (i, n, row) => (i % 11 === 0 || i % 11 === 10 ? 'store' : 'workshop') });
+      const strip = (id, z, sd) => AI.barPlate({ id, level: 0, y: Y, h: 6, depth: 7.8, side: sd, cw: 2.2, roomW: 12, path: line(-138.8, z, 42.5, z),
+        kinds: cyc(['store', 'store', 'store', 'workshop']), ends: null });
+      const sN = strip('robo.n', -40.05, 'right'), sS = strip('robo.s', 40.05, 'left');
+      const office = (lv, y) => AI.barPlate({ id: 'robo.o' + lv, level: lv, y, h: 5, depth: 15, side: 'both', cw: 2.4, roomW: 6,
+        path: line(51.5, -43.8, 51.5, 43.8), ends: ['core', lv ? 'store' : 'antechamber'],
+        kinds: lv === 0 ? cyc(['study', 'study', 'store']) : cyc(['study', 'study', 'study', 'store']) });
+      const o0 = office(0, Y), o1 = office(1, 9.5), o2 = office(2, 15);
+      /* the tower */
+      const tx = 110, tz = -40, TY = [4, 18.4, 32.4, 46.4, 60.4];
+      const ring = (lv, y) => AI.ringPlate({ id: 'robo.t' + lv, level: lv, y, h: 13.2, cx: tx, cz: tz, rOut: () => 19.3, depth: 7, cw: 2.4, n: 10, sym: 10,
+        kinds: cyc(lv % 2 ? ['workshop', 'store'] : ['workshop', 'workshop', 'store', 'workshop', 'workshop']), core: { r: 9.5, kind: 'workshop' } });
+      const T = TY.map((y, lv) => ring(lv, y));
+      const hall = (x, z) => x > -139.6 && x < 59.6 && z > -44.6 && z < 44.6;
+      const tower = (x, z) => Math.hypot(x - tx, z - tz) < 19.85;
+      return [{ id: 'robo', name: 'the Assembler hall', storeys: [floor, sN, sS, o0], floors: false,
+                hollow: d === 0 ? [{ box: [-139, 59, 5, 25, -44, 44] }] : [], inside: hall },
+              { id: 'robo-offices', name: 'the hall office block', storeys: [o1, o2], floors: true, hollow: [], inside: hall },
+              { id: 'robo-tower', name: 'the assembly tower, ground', storeys: [T[0]], floors: false, hollow: [], inside: tower },
+              { id: 'robo-tower-up', name: 'the assembly tower', storeys: T.slice(1), floors: true, hollow: [], inside: tower,
+                collapse: d > 0 ? (x, z, y) => y > 56 : null }];
+    } };
+
+  /* ---------------------------------------------------------------- DATA CENTRE, the Vault (72-datacenter.js)
+     The mass: W 260, Dp 140, H 62 on the 8 m berm, battered 6% (at the roof x +-122.2, z +-65.8): rooms keep to
+     |x| < 121.8, |z| < 65.4. INTACT IT IS A SOLID boxD (W .94 x H x Dp .94 at (0, 39, 0)): hollow. The ruin's bite
+     (the south-east corner, x > 52, z > -18) shows four server floors 15.5 m apart (slabs at 8 + 15.5 j, .8 thick,
+     shrinking upward by lim 1, .75, .57, .39) with rack rows along x every 8.5 m in z; the rest of the ruin is the dark
+     mass in two boxes (hollow). So: four server levels, y 8.8 + 15.5 j, clear 14.7, each an open floor of server bays
+     (18 x 9 on aisles along x: the rack rows' direction), in three blocks that meet the ruin's cut faces (x 52, z -18):
+     the west block, the north-east block, and the bite. On level 0 the west end is an office block: three storeys of
+     5.17 m (offices, stores, a stair core at each end). The entrance slit (boxD 9 x 18 x 16 at (0, 17, 63.8)) keeps
+     clear of bays. The bite is its own building: floors true intact, false in a ruin (the builder's slabs); where a
+     ruined slab ends (x > 52 + 74.1 lim, z > -18 + 85.9 lim) the bays fall in. */
+  AI.KIT.dc = { name: 'Data centre (the Vault)', frag: '72-datacenter.js', culture: 'ancient', wealth: 0.6, types: ['industrial', 'civic'],
+    buildings: function (d) {
+      const XE = 121.8, ZE = 65.4, XI = 52, ZI = -18, FY = 15.5, Y0 = 8.8, H = 14.7;
+      const slit = (x, z, y) => y < 26 && Math.abs(x) < 14.5 && z > 50;   /* a bay's centre within its half-size of the slit */
+      const kinds = (i, n, row) => ((i + row) % 3 === 0 ? 'store' : 'workshop');
+      const grid = (id, lv, x0, x1, z0, z1) => AI.gridPlate({ id, level: lv, y: Y0 + FY * lv, h: H, x0, x1, z0, z1, bay: [18, 9], aisle: 3.5, along: 'x',
+        kinds, skip: (x, z) => slit(x, z, Y0 + FY * lv) });
+      const W = [], B = [], O = [];
+      for (let j = 0; j < 4; j++) {
+        W.push(grid('dc.w' + j, j, j === 0 ? -106 : -XE, XI, -ZE, ZE));
+        W.push(grid('dc.ne' + j, j, XI, XE, -ZE, ZI));
+        B.push(grid('dc.b' + j, j, XI, XE, ZI, ZE));
+      }
+      for (let k = 0; k < 3; k++) O.push(AI.barPlate({ id: 'dc.o' + k, level: k, y: Y0 + k * FY / 3, h: 4.6, depth: 13, side: 'both', cw: 2.4, roomW: 6,
+        path: line(-115.1, -45, -115.1, 45), ends: ['core', 'core'], kinds: k === 0 ? cyc(['study', 'store', 'study']) : cyc(['study', 'study', 'study', 'store']) }));
+      const lim = [1, 0.75, 0.57, 0.39];
+      const box = (x, z) => Math.abs(x) < XE + 0.3 && Math.abs(z) < ZE + 0.3;
+      return [{ id: 'dc', name: 'the Vault server floors', storeys: W, floors: true,
+                hollow: d === 0 ? [{ box: [-122.2, 122.2, 8, 70, -65.8, 65.8] }]
+                                : [{ box: [-122.2, 52, 8, 70, -65.8, 65.8] }, { box: [52, 122.2, 8, 70, -65.8, -18] }], inside: box },
+              { id: 'dc-offices', name: 'the Vault office block', storeys: O, floors: true, hollow: [], inside: box },
+              { id: 'dc-bite', name: 'the Vault, south-east server floors', storeys: B, floors: d === 0, hollow: [],
+                inside: (x, z) => box(x, z) && x > XI - 0.3 && z > ZI - 0.3,
+                collapse: d > 0 ? function (x, z, y) { const j = Math.max(0, Math.min(3, Math.round((y - Y0) / FY))), l = lim[j];
+                  return x > XI + (126.1 - XI) * l || z > ZI + (67.9 - ZI) * l; } : null }];
+    } };
+
+  /* ---------------------------------------------------------------- STARPORT, the Starfish (44-starport.js)
+     The dome: RD 70, HD 40 on a 3 m drum (r 80.5, uncapped: the floor is the ground; rooms at y .3, the kit's slab);
+     the ruin lines it with a dark lathe at .9 r. Five hangar arms, L 210, at th = i 72deg + .3, each starting at
+     RD .6 = 42 from the centre (inside the dome) with a vault of half-width w = 38 (1 - .55 t) and height
+     h = 30 (1 - .6 t) + 6, profile y = h (1 - q^2)^.55; the ruin lines each with guts at .985 (about the origin) and
+     3 + .9 (y - 3) up. The arms' inner ends cut the dome's middle into a pentagon of inradius 42 (41.4 in the ruin):
+     that is the concourse, an open floor of bays (seating halls, shops, waiting rooms) on aisles. Inside the drum the
+     arm vaults cross the dome skin: no rooms there. Each arm outside the drum (from 82 m out to 214, short of the mouth's
+     door apron) is a hangar: a strip of stores along each vault side (h 4, kept under the vault) and open maintenance
+     bays down the middle, narrowing with the arm. In the ruin arm 2 has pancaked beyond its break (v > .5): those
+     rooms fall in. The control needle (from y 38) has no room. */
+  AI.KIT.port = { name: 'Starport (the Starfish)', frag: '44-starport.js', culture: 'ancient', wealth: 0.6, types: ['civic', 'industrial'],
+    buildings: function (d) {
+      const RD = 70, HD = 40, NA = 5, L = 210, U0 = RD * 0.6, Y = 0.3;
+      const TH = i => i / NA * TAU + 0.3;
+      /* the half-width of arm floor under which a room of top yTop fits, at u metres from the centre, intact and ruined */
+      const sect = t => ({ w: 38 * (1 - 0.55 * t), h: HD * 0.75 * (1 - 0.6 * t) + 6 });
+      const half = (t, y) => { if (t < 0 || t > 1) return 0; const s = sect(t), k = y / s.h; return k >= 1 ? 0 : s.w * Math.sqrt(1 - Math.pow(k, 1 / 0.55)); };
+      const avail = (u, yTop) => Math.min(half((u - U0) / L, yTop), 0.985 * half((u / 0.985 - U0) / L, (yTop - 3) / 0.9 + 3));
+      const availOn = (ua, ub, yTop) => { let m = Infinity; for (let k = 0; k <= 8; k++) m = Math.min(m, avail(ua + (ub - ua) * k / 8, yTop)); return m; };
+      /* the concourse: the pentagon left by the arms' inner ends, inradius 40.5 */
+      const pent = (x, z) => { for (let i = 0; i < NA; i++) if (x * Math.cos(TH(i)) + z * Math.sin(TH(i)) > 40.5) return false; return true; };
+      const BW = 10, BD = 8;
+      const conc = AI.gridPlate({ id: 'port.c', level: 0, y: Y, h: 6, x0: -52, x1: 52, z0: -52, z1: 52, bay: [BW, BD], aisle: 4, along: 'x',
+        kinds: cyc(['hall', 'hall', 'shop', 'hall', 'antechamber', 'shop', 'hall', 'store']),
+        skip: (x, z) => !(pent(x - BW / 2, z - BD / 2) && pent(x + BW / 2, z - BD / 2) && pent(x + BW / 2, z + BD / 2) && pent(x - BW / 2, z + BD / 2)) });
+      /* the hangars, drawn along +x (u out from the centre, v across) and turned onto each arm */
+      const UA = U0 + 40, UB = U0 + 172, SD = 6, SH = 4, BH = 9;
+      const arms = [];
+      for (let i = 0; i < NA; i++) {
+        const th = TH(i), cx = Math.cos(th), cz = Math.sin(th), f = p => [p[0] * cx - p[1] * cz, p[0] * cz + p[1] * cx];
+        const edge = u => avail(u, Y + SH + 0.2) - 0.4;   /* the strips' outer face */
+        const strips = [1, -1].map(s => xform(AI.barPlate({ id: 'port.a' + i + (s > 0 ? 'l' : 'r'), level: 0, y: Y, h: SH, depth: SD, side: s > 0 ? 'left' : 'right', cw: 2.2, roomW: 11,
+          path: u => { const uu = UA + (UB - UA) * u; return [uu, s * (edge(uu) - SD / 2)]; },
+          kinds: cyc(['store', 'store', 'workshop', 'store']), ends: null }), f));
+        const bays = xform(AI.gridPlate({ id: 'port.a' + i + 'm', level: 0, y: Y, h: BH, x0: UA, x1: UB, z0: -24.5, z1: 24.5, bay: [12, 9], aisle: 6, along: 'x',
+          kinds: (k, n, row) => (k % 4 === 3 ? 'store' : 'workshop'),
+          skip: (u, v) => { const ua = u - 6, ub = u + 6, o = Math.abs(v) + 4.5;
+            return o > availOn(ua, ub, Y + BH + 0.2) - 0.5 || o > Math.min(edge(ua), edge(ub)) - SD - 0.6; } }), f);
+        arms.push({ id: 'port-arm' + i, name: 'hangar arm ' + (i + 1), storeys: strips.concat([bays]), floors: true, hollow: [],
+          inside: (x, z) => { const u = x * cx + z * cz, v = -x * cz + z * cx; return u > U0 - 1 && u < U0 + L && Math.abs(v) < sect((u - U0) / L).w; },
+          collapse: d > 0 && i === 2 ? (x, z) => x * cx + z * cz > U0 + 0.5 * L - 5 : null });
+      }
+      return [{ id: 'port', name: 'the concourse', storeys: [conc], floors: true, hollow: [], inside: (x, z) => pent(x * 0.98, z * 0.98) }].concat(arms);
+    } };
 })(KratorAncientsInteriors);
 /* ---------- src/40-ai-audit.js ---------- */
 /* ======================== Ancients interiors: the audit ========================

@@ -25,9 +25,9 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`settlements/xanadu`](settlements/xanadu/PORT.md) | 65 | 902 | 438 | 19 | 10 | 56 | 379 | 6 |  | yes | yes |
 | [`settlements/ys`](settlements/ys/PORT.md) | 135 | 1919 | 307 | 52 | 104 | 104 | 1353 | 8 |  | yes | yes |
 | [`settlements/yuni`](settlements/yuni/PORT.md) | 50 | 1049 | 114 | 13 | 16 | 153 | 754 | 13 | fixtures | yes | yes |
-| [`kits/ancients`](kits/ancients/PORT.md) | 211 | 2584 | 247 | 34 | 174 | 27 | 2102 | 11 |  | yes | yes |
-| [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 7 | 45 | 33 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
-| [`kits/catalog`](kits/catalog/PORT.md) | 38 | 1481 | 11 | 0 | 10 | 55 | 1406 | 3 |  |  | yes |
+| [`kits/ancients`](kits/ancients/PORT.md) | 215 | 2603 | 250 | 34 | 174 | 32 | 2113 | 12 |  | yes | yes |
+| [`kits/ancients-interiors`](kits/ancients-interiors/PORT.md) | 11 | 110 | 98 | 0 | 0 | 12 | 0 | 0 |  |  | yes |
+| [`kits/catalog`](kits/catalog/PORT.md) | 38 | 1501 | 11 | 0 | 10 | 55 | 1425 | 3 |  |  | yes |
 | [`kits/fauna`](kits/fauna/PORT.md) | 7 | 33 | 0 | 0 | 10 | 23 | 0 | 0 |  |  | yes |
 | [`kits/interiors`](kits/interiors/PORT.md) | 23 | 230 | 121 | 0 | 10 | 63 | 37 | 1 |  |  | yes |
 | [`kits/mechs`](kits/mechs/PORT.md) | 7 | 38 | 0 | 0 | 10 | 28 | 0 | 0 |  |  | yes |
@@ -50,7 +50,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 207 | 1 | 0 | 13 | 37 | 155 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1701 | 22619 | 3339 (15%) | 451 (2%) | 999 (4%) | 2663 (12%) | 15167 (67%) | 241 | | | |
+| **all** | 1709 | 22724 | 3407 (15%) | 451 (2%) | 999 (4%) | 2668 (12%) | 15198 (67%) | 242 | | | |
 
 ## Host-shell copies
 

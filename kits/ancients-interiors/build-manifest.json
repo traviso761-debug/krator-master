@@ -1,6 +1,6 @@
 {
- "dist/ancients-interiors-core.js": "752f11134727",
- "dist/ancients-interiors.html": "41defb6fa3cd",
+ "dist/ancients-interiors-core.js": "b5a1d1f655fe",
+ "dist/ancients-interiors.html": "1ac5c7b45a76",
  "kits/interiors/adapters/catalog-adapter.js": "0ce42679c06f",
  "kits/interiors/sets/noahs-regret.js": "7a90980a232a",
  "kits/interiors/src/10-core.js": "15d71a0a4549",
@@ -17,8 +17,12 @@
  "kits/interiors/src/55-cutaway.js": "88f659db9960",
  "src/00-head.html": "174acf06754d",
  "src/10-ai-core.js": "ba7851b67021",
- "src/20-ai-dress.js": "8b945b918199",
+ "src/20-ai-dress.js": "2a680c8cfae2",
  "src/30-ai-recipes.js": "5bd6ac3f6a9b",
+ "src/35-ai-plates.js": "5f80edcb6a1e",
+ "src/37-ai-kit.js": "8e3768dd41ac",
+ "src/37b-ai-kit-houses.js": "f321d445cb5b",
+ "src/37c-ai-kit-works.js": "7fb3f3bb060f",
  "src/40-ai-audit.js": "bc4cbcb9f095",
  "src/70-ai-demo.js": "647c75ff9188",
  "src/99-tail.html": "737d92a580d5"

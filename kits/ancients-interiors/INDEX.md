@@ -4,7 +4,7 @@
 
 Ancients interiors: the Ancients' ship interiors backported from Noah's Regret, on kits/interiors: the ship's room kinds as programmes (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry), ship's rooms and cabins as room shapes, and fourteen hall recipes (crew mess, dining hall, greenhouse, engine room, bridge, officers' hall, chart deck, chain locker, store hall, drill hall, gallery, stern lounge, plaza, quay) in two dresses (as built, as the pirates hold them), each audited; a verified demo sheet.
 
-Docs: `API.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
+Docs: `API.md`, `HANDOFF.md`, `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
 Built output (never open it; edit `src/` and rebuild): `dist/ancients-interiors.html`
 
@@ -17,8 +17,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `10-ai-core.js` | 8 | Ancients interiors: the core (1) |
-| `20-ai-dress.js` | 3 | Ancients interiors: the dress (1) |
+| `20-ai-dress.js` | 4 | Ancients interiors: the dress (1) |
 | `30-ai-recipes.js` | 19 | Ancients interiors: the hall recipes (1) |
+| `35-ai-plates.js` | 17 | Ancients interiors: floor plates (1) |
+| `37-ai-kit.js` | 13 | Ancients interiors: the Ancients kit's buildings (1) |
+| `37b-ai-kit-houses.js` | 19 | Ancients interiors: the houses and the laborator (1) |
+| `37c-ai-kit-works.js` | 16 | Ancients interiors: the works (factory, robotics (1) |
 | `40-ai-audit.js` | 2 | Ancients interiors: the audit (1) |
 | `70-ai-demo.js` | 9 | Demo sheet: the Ancients' ship interiors (1) |
 | `99-tail.html` | <1 |  |
