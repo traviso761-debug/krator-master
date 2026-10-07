@@ -317,7 +317,149 @@ calls; a chunk-culled walk keeps most views under 8 M. Verify clean.
 6. The quays and the boat shed open to the lake.
 7. The lake sits at −0.5 m with a polygon offset, off the shore's flat zone at 0.
 
+### Round 9c — the empty slopes (Oct 6 2026)
+The steep central slopes had streets and no houses, and the infill placed none. Probed live in the in-app browser:
+* `planFront` takes the road's outward normal now (the plot set back along it, the front turned back to the road).
+  It had read the normal the other way, so a plot on a real street landed on the road stroke and failed the mask.
+* The frontage walker's arc length counts each segment once (`next=acc+t`); it had subtracted `acc` twice, so after
+  the first segment the walker laid plots along each segment's backward extension, off the roads.
+* Avenues and contour streets bench to their edge plus a 13 m lot (`benchReach`, road option `bench:'lot'`); the
+  highway and the garden ring keep the 10 m bench. `benchH` mixes the two nearest benches across their midline, so
+  overlapping terraces meet in a scarp rather than a seam.
+
+1017 street buildings (0 infill) became 1995 (277 infill, 1157 on the slopes); median footing drop 3.3 m.
+
+Travis's look at it, and the second pass:
+* **Doors at the street.** The floor stood at the plot's highest corner, so a house backing onto the next terrace
+  stood 3–11 m over its street (665 of them). `stanceAtDoor` sets the floor at the street's level at the door and
+  lets the back sink into the rising ground by up to .6 of the def's height (6 m at most); a plot that needs more
+  falls to the narrow def. Every street house's door is now within .5 m of its street.
+* **The stream runs unbroken.** Benches fade out within 4–9 m of the stream's line (`STREAM_KEEP`, `streamDist`), so
+  no terrace fills the channel; every street crossing it gets a stone bridge at the street's grade (`xa_bridge`, a
+  new kit piece in 87c, variants by street width; 26 of them).
+* **No street grid in the parks or on the Pleasure Dome's island**: no contour street or stair within their radius
+  (`PARKS`, `inPark`); the island also takes no houses (`noHouse`).
+* **Houses out of the walls.** The walls are stroked into the build mask in 90a, after the last `erBakeMasks()`, so
+  placement never saw them; the mask is baked again after the walls. The map's wall line also crossed the garden's
+  west end: those segments are left out (the garden's own wall and ring road enclose it).
+* **The garden level.** `GARDEN_G` was relaxed by lowering only, from blocks pinned at their lowest cell, so the
+  garden sank toward its lowest cells (47 m under the hill at its top edge). It is now the midpoint of a lowered and a
+  raised relaxation (cut at the top, fill at the bottom; the deepest cut 35 m), each bath and the teahouse take
+  their cells' mean on that ground, and a two-sided clamp brings their neighbours within a cascade. The blocks plan
+  with `noFlat` (no disc spilling over the tiles). 14 of ~700 steps still exceed 3 m beside the blocks.
+
+Third look ("houses do not align to the street, empty lots, streets don't connect, a blue texture on the island"):
+* **Infill square to its street**: the infill faced the spot-to-road direction, so 164 of its 288 houses stood more
+  than 45° off their street (bends, street ends). It takes the segment's normal now and skips spots past a street's
+  end; 1850 of 1902 street houses are within 10° of square.
+* **Links**: the thinning cut contour runs short and their ends stopped dead; each end now joins the nearest other
+  street within 40 m (a lane, or a stair where the rise passes .3), outside the garden, the palace, the parks and the
+  precincts: 493 links.
+* **Houses along the alleys**: the walker also fronts the stairs and alleys down the fall line (last, after the
+  streets): 272 houses, 127 more on the links. The green left between rows is mostly back gardens and terrace scarps;
+  of the walker's tries in the central slopes, most fail on an occupied plot or another street, 184 on the rise
+  behind the door and 144 on the drop.
+* **The lake bed by depth**: the island's "blue texture" is a lagoon 4–18 m deep inside its rim, its bed painted
+  the class raster's deep blue with the raster's steps. The bed is now shaded by depth (sand to blue) and water-class
+  ground above the lake reads as shore. The lake's polygon offset is positive (pushed back) rather than negative.
+
+Fourth look:
+* **The terrain's uv (an old bug, the cause of much of the above).** The paint maps CS px over the map's WIDTH on both
+  axes (`px`, `pz`), but the terrain plane's default uv stretched the whole canvas over the map's DEPTH, so the paint
+  drifted south of its place, by ~60 m at the island and over 150 m in the south of the town: painted streets beside
+  their benches, the plaza and parks off their sites, lake-bed paint on the island. `erTerrainMesh` sets the uv from
+  `px`/`pz` now.
+* **The island is land** (Travis: "let it be land around the dome"): the land flood-filled from the island's centre,
+  its convex hull raised to 0.8 m (`ISLAND`, wrapping `terrainBase`), grass with a sand shore; the dome's apron 10
+  (was 26); any ground a pad lifts out of the lake is repainted as land (`liftedShores`).
+* **Footings match the ground**: the kit's footing takes `o.footC`; Erewhon passes the ground's colour at the plot
+  (`erGroundCol`, the paint's own colour function, a shade darker).
+* **The citadel** (Travis: a full curtain wall, clear of the garden, following the cliff, not plunging off it): `CIT`
+  in 87-er-layout, rays from the precinct's centre every 4° from the least radius that clears its buildings
+  (`CITADEL_SITES`: the palace, the Pleasure Dome, the Ortaköy temple, the Vizier's palace, the Grand Baths) out to
+  the plateau's rim (ground steeper than .6), the garden's clearance (14 m) or 45 m; smoothed. The Grand Baths' east
+  front closes the wall where it meets the garden; the palace gate stands where the loop faces the plaza. The map's
+  old palace loop is dropped within 75 m of the new one; city wall lines that ran on to it join the loop by a
+  connector. No streets, stairs or houses inside.
+
+Fifth look:
+* **The bank above the garden**: outside the garden's 11 m margin the ground eases from the garden's edge level up to
+  the hill over 60 m wherever the hill stands higher (`GARDEN_RAMP` in `groundLevel`); 30 m south of the garden the
+  rise is now 12–18 m (was up to 35 m in a wall at the margin).
+* **The Grand Baths moved out of the citadel** onto the lot Travis drew south-west of the garden (`GRAND_BATH_LOT`,
+  centred on its centroid, the long axis along its slanting long edge; the building's 44 m depth overhangs the 29–38 m
+  lot by a few metres). Streets keep off the lot (a rect precinct). The Vizier's palace moved 29 m north and the
+  Pleasure Dome 28 m west to let the wall pass.
+* **The citadel's east side closes**: each ray's smoothed radius is capped at its own stop (the garden at 12 m, the
+  Grand Baths' lot, the rim), so smoothing no longer pulled the wall onto the ring road; its own loop is exempt from
+  the garden filter meant for the map's wall lines. The wall runs at 13–15 m from the garden, just outside the ring
+  road, along Travis's line; only the palace gate's opening is unbuilt.
+
+Sixth look:
+* **The citadel rebuilt on a grid** (Travis drew the wall, `CIT_POLY`): the wall is that polygon, resampled every
+  ~8 m; the palace gate on the wall facing the plaza. Inside, a grid of 8 m cells (a garden tile), aligned with the
+  garden's own grid (`CIT_G`): the Pleasure Dome, the Sultan's palace, the temple after Ortaköy, the Vizier's palace,
+  a barracks and three rich houses squared to it on whole cells (`CIT_SITES`: each at the free block nearest its
+  target, a one-cell path round it), every other cell a garden tile (392), retaining walls where cells step. The
+  cells step like the garden (1.5 m levels, a building's block level at its mean); the ground inside the wall takes
+  those levels (`CIT_HFN`, no street bench inside). The band the tiles leave along the wall is painted park, so the
+  biome grows undergrowth and a few trees there; every building and tile is an obstacle to it. The cut-off street
+  block in the west is palace grounds now. The Grand Baths, outside, nudge south until they clear the wall by 3 m.
+* **No streets down cliffs; one network.** Contour streets, links and stairs are painted only once the network is
+  final (`road(...,{defer:true})`, `paintRoad`). A pass in 90b, after the landmarks and the gardens and before the
+  houses, measures the finished ground: a stair or link cuts its own ramp through the terraces' scarps (a bench whose
+  level runs evenly end to end) and goes if that ramp, or any 4 m of it, is steeper than 50°, or if it passes under a
+  landmark's footprint; a contour street is cut there instead. Then the pieces (streets that meet) join the largest by
+  connectors that are no cliff and keep out of the citadel, the garden, the parks, the precincts and the landmarks.
+  The highway's traced pieces join across the 60 m gap at the east gate. The guild halls step back from the avenue
+  (`planLandmark` `clearRoads`). Left: two junctions on the spine where roads benched at different levels meet (the
+  garden ring's south-east corner over the avenue, ~20 m; the gate road and an avenue near the palace gate, ~6 m).
+  A minor street also breaks where it passes under a landmark's footprint (the road ran under the arena); a street on
+  natural ground steeper than 50° would break too (none left).
+
+Seventh look:
+* **Gridded gardens** (`tileGround`, `GRID_GARDENS`; the citadel's grid builder made general): the River garden
+  replaces the river park (162 tiles); the east garden round the old public garden piece (39); the baths garden,
+  where the public bath and garden moved from the temple district, with two shrines (the kit's small temple, no
+  shrine piece exists) on the grid (129 tiles). Tiles are placed after every landmark and skip cells under one; no
+  cell within 10 m of the stream; no streets or houses inside; the ground the tiles leave is park.
+* **Plazas level their discs** to the mean ground under them (the levelled ground), and remember the level; a market's
+  Palopó temple stands at its plaza's level.
+* **Levelled regions** (`LEVEL_REGIONS`, Travis's polygons south of the garden and the ridge beside it): the garden's
+  level carried south, blending in from the outer edges only (blending from the garden's own edge had left a ridge).
+* **The garden's perimeter wall** stands 1.5 m out, between the tiles and the ring road (at 4.5 m it stood on the road).
+* **Houses keep a wider gap** (`houseGap`: 2 m, 3.5 m for the jettied Turkish and Andean houses; was 1 m): eaves and
+  upper floors had clipped. Street buildings fell from ~1860 to 1613.
+* **Highway pieces join** across the 60 m gap at the east gate; the network's spine is its largest piece.
+
+Eighth look:
+* **The stream** is resampled every 3 m and laid at `streamY` (1.4 m over the channel's bed, under its banks by 1.4 m,
+  never under the ground); it had been sampled only at its line's points, so it floated over bridges and sank under
+  the avenue between them. A bridge's deck clears the water by 1.6 m. The levelled regions and the garden's bank
+  leave the channel be (they fade out within 4–9 m of the stream).
+* **The Caves of Ice** moved to Travis's site at the stream's true head (its line rises there; the old cave sat
+  mid-stream at the line's southernmost point), the mouth east down the stream. The model is new: a small ice
+  cavern on a levelled floor, an ice shell seen from inside and a rough rock shell over it, a tall opening, icicles,
+  ice columns, crystal clusters, the spring's pool and the stream running out through the mouth.
+* **The garden's edge**: the ring road is resampled every 4 m, so its bench follows the stepped edge cells rather than
+  a ramp corner to corner, and no street bench reaches inside the garden's rectangle (the last row's tiles had
+  overhung the ramped ground).
+
 ## The variants page folded into the kit page (Sep 30 2026)
 
 `dist/xanadu.html` now shows every def at every variant side by side, v0 first (`XA_VARIANTS` in the xanadu
 target; `xaVs` returns 0 … nv-1). The separate `variants` target and `dist/xanadu-variants.html` are gone.
+* **The Caves of Ice wear library ice** (Travis's two images, processed as `ice.glacier` and `ice.clear`; families
+  `icewall`, `icefloor` in `materials.json`, read by `xaTexMaps` in 87c from the library pack, `KMAT.packed`). The vault
+  is the clear blue ice from within, the floor and the crust over it the glacier ice. The crust is roughened by position
+  (its seam no longer splits) and the mouth's icicles hang from the opening's own edges.
+* **The texturized kit and biome imported from `claude/texturepalooza`** (Travis: "import and reconcile"): the
+  branch's Xanadu library wiring (`build.py`'s `RECORD_FILES` and the generated `88x-matlib-pack.js` /
+  `86-bio-00-matlib-pack.js`, `src/88y-xanadu-matlib.js`, its 25-family `materials.json` with the two ice families
+  merged in, `tex/` repacked: 27 families), its vendored biome fragments, `biomes/xanadu` whole, and what they need
+  outside the build: `core/materials/record/26-matlib-bind.js`, `tools/textures/matlib_pack.py`, the newer
+  `tools/textures/pack.py`, and 23 library sets the branch added. The stopgap `69z-xa-texpack.js` is gone. The pages
+  are ~12 MB (the branch's were the same size).
+* **The dockyard's warehouses** stand on the shore behind the quays, fronts to the water (they had stood in the lake,
+  placed off the dock district's centre, which lies offshore); and no landmark without its own height stands under
+  the lake (its pad raises a wharf).

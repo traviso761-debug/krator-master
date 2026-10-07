@@ -1,0 +1,91 @@
+[
+ {
+  "src": "fruit-seeds.png",
+  "out": "core/materials/library/fruit.seeds",
+  "record": {
+   "id": "fruit.seeds",
+   "family": "food",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.seeds).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "the biome fruit: heaps of seeds, kernels and nuts (f_fruitSeed); grain bins, seed jars, bird seed"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.7,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "fruit-flesh.png",
+  "out": "core/materials/library/fruit.flesh",
+  "record": {
+   "id": "fruit.flesh",
+   "family": "food",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.flesh).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "the biome fruit: every cut face, halved fruit, wedge and sawn round (f_fruitFlesh)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.45,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "fruit-scale.png",
+  "out": "core/materials/library/fruit.scale",
+  "record": {
+   "id": "fruit.scale",
+   "family": "food",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id fruit.scale).",
+    "licence": "generated for this project by its owner",
+    "original_title": "(pasted image)",
+    "reuse": "the biome fruit: scalefruit, the salt cone, pinyon cones (f_fruitScale); any scaled cone or pod"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.6,
+   "pattern": true,
+   "keep_aspect": true
+  }
+ }
+]

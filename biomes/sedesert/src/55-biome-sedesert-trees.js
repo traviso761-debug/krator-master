@@ -79,7 +79,7 @@ function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.co
   BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.4):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 const bloomsAt=blooms;SEDESERT.blooms=blooms;
 // the volume the world's inspector names a tree by
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,x:T.x,z:T.z,y:T.y0,r:r,h:h});
+const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h});
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed} and lv 2 near / 1 mid / 0 far
@@ -218,7 +218,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=rr(0,TAU),lk=rr(0,.14);
  frondCrown('palmfrond',tx,ty,tz,Rf,n,-.15,.35,bright(hc,1.45),1.15);
  if(lv>=1){frondCrown('palmfrond',tx,ty+.5,tz,Rf*.6,lv===2?5:3,.6,1.15,bright(shade(hc,.1),1.45),1);
   for(let k=0,m=lv===2?ri(4,8):3;k<m;k++){const a=rr(0,TAU);BIO.put('strand',[tx+Math.cos(a)*rb*.9,ty-.5,tz+Math.sin(a)*rb*.9],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(1,1.8),Rf*rr(.5,.8),1],bright(vary(0x8a7a4a,.02,.1,.06),1.1));}
-  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('plume',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
+  if(lv===2&&rng()<.6){const a=rr(0,TAU);BIO.put('dates',[tx+Math.cos(a)*rb*1.2,ty-1.2,tz+Math.sin(a)*rb*1.2],qEuler(0,rr(0,TAU),0),[1.2,1.8,1.2],bright(vary(0xc88a3a,.02,.1,.06),1.1),{n:[Math.cos(a),.2,Math.sin(a)]});}}
  st.fronds+=n;if(lv===2)regTree(T,S,Rf,T.H);};
 // 8 the desert rose: a squat swollen caudex on the rock, stubby branches, a head of pink blooms
 B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3,bH=H*.55;

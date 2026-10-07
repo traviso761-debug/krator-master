@@ -230,8 +230,19 @@ function nlMaterial(mat, key, extraHook, wpName){
 }
 
 var _dm = new THREE.Object3D(), _col = new THREE.Color();
-/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections) */
-function kitMaterial(fm, o){ if(!fm.phong) return new THREE.MeshLambertMaterial(o);
+/* a family's material: Lambert, or Phong when FAMMAT[fam].phong = { shininess, specular } (ABYSS tin-mirror: a glint, no reflections).
+   A library family (47-texture.js ltexLibrary) gets the set's colour, normal and roughness maps on a MeshStandardMaterial, as
+   Yuni's famMaterial(); ?mat=proc keeps the old Lambert or Phong look. */
+function kitMaterial(fm, o){
+  if(fm.lib){
+    var T = fm.libTex, L = fm.lib;
+    var m = new THREE.MeshStandardMaterial({ color:0xffffff, vertexColors:!!o.vertexColors, map:T.map, normalMap:T.normalMap,
+      roughnessMap:T.roughnessMap, roughness:1, metalness:L.metal||0, alphaTest:o.alphaTest||0, side:o.side||THREE.FrontSide });
+    if(T.normalMap) m.normalScale.set(L.normalScale||1, L.normalScale||1);
+    m.userData.lib = L.lib;
+    return m;
+  }
+  if(!fm.phong) return new THREE.MeshLambertMaterial(o);
   o.shininess = fm.phong.shininess; o.specular = new THREE.Color(fm.phong.specular); return new THREE.MeshPhongMaterial(o); }
 function emitBuckets(){
   var total=0, meshes=0;
@@ -246,9 +257,9 @@ function emitBuckets(){
     mat.userData.fam = B.fam;
     if(!fm.basic){
       (function(needsUV, needsSway, sc){
-        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); applyNightGlow(sh); };
-        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv'; };
-      })(!!fm.tex, B.fam==='cloth', fm.scale || [3,3]);
+        mat.onBeforeCompile = function(sh){ if(needsUV) applyWorldUV(sh, sc); if(needsSway) applyClothSway(sh); if(fm.lib) KMAT.libHooks(sh, fm.lib); applyNightGlow(sh); };
+        mat.customProgramCacheKey = function(){ return (needsUV ? 'wuv'+sc[0].toFixed(2)+'_'+sc[1].toFixed(2) : '') + (needsSway?'|sway':'') + '|nlv' + (fm.lib ? '|std' + KMAT.libKey(fm.lib) : ''); };
+      })(!!fm.tex, B.fam==='cloth', fm.lib ? fm.lib.scale : (fm.scale || [3,3]));   /* a library map tiles at its own size */
     }
     var im = new THREE.InstancedMesh(geo, mat, B.list.length);
     im.userData.shape = B.shape; im.userData.fam = B.fam; im.userData.kit = true;
@@ -435,7 +446,8 @@ function emitMerged(){
     var mat = fm.basic ? new THREE.MeshBasicMaterial({ color:0xffffff, vertexColors:true })
             : kitMaterial(fm, { color:0xffffff, vertexColors:true, map:fm.tex||null,
                   alphaTest: fm.alpha?0.35:0, side: fm.alpha ? THREE.DoubleSide : THREE.FrontSide });
-    if(!fm.basic) nlMaterial(mat, 'mb'+fam);
+    if(!fm.basic) nlMaterial(mat, 'mb'+fam+(fm.lib ? '|std'+KMAT.libKey(fm.lib) : ''),
+      fm.lib ? (function(L){ return function(sh){ KMAT.libHooks(sh, L); }; })(fm.lib) : null);
     var m = new THREE.Mesh(g, mat);
     m.userData.fam = fam; m.userData.merged = true;
     m.castShadow = !FAST; m.receiveShadow = !FAST; m.frustumCulled = false;

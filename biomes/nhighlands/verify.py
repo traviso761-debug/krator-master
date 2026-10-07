@@ -155,6 +155,11 @@ const R=[];
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
 
+// 5b. the host's own checks, when it has any, and their negatives (each must FAIL)
+if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
+  for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
+    detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT (the check cannot fail): ')+n.detail}); }
+
 // 6. THE BIOME'S OWN INVARIANTS (src/91-host-probe.js, biomeChecks)
 { const B=A.biomeChecks();
   R.push({name:'every-species-placed', ok:B.missing.length===0, detail:B.missing.length?'missing '+B.missing.join(', '):B.bySpecies});

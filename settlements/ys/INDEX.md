@@ -94,15 +94,15 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `78-hyk-agri.js` | 15 | the farm field (18); farmhouse 1: fused barnacle cones with a byre (48); farmhouse 2: a long pod with a drying-rack yard (86) |
 | `79-government.js` | 8 |  |
 | `79-hyk-markets.js` | 18 | shared bits (7) |
-| `79z-ys-matlib.js` | 5 |  |
+| `79z-ys-matlib.js` | 6 |  |
 | `80-aa-battery.js` | 1 |  |
 | `81-sky.js` | 10 |  |
 | `82-apartments.js` | 9 |  |
 | `86-bio-10-core-head.js` | 9 | PRNG (14); noise (24); host binding (41); accounting (124) |
-| `86-bio-20-core-kit.js` | 22 | kits (namespaces) (13); merged buckets (80); runtime LOD (xanadu-1, additive) (154); indexed buckets (181); bake (204); dynamic instances (sedesert-1) (238) |
+| `86-bio-20-core-kit.js` | 23 | kits (namespaces) (13); merged buckets (80); runtime LOD (xanadu-1, additive) (174); indexed buckets (201); bake (224); dynamic instances (sedesert-1) (258) |
 | `86-bio-30-core-foliage.js` | 16 | alpha textures (26); card geometries (56); the foliage hook (118); colour (sedesert-1) (188) |
 | `86-bio-40-core-place.js` | 8 | surface sampling (59) |
-| `86-bio-50-biome-nwbay-species.js` | 44 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (87); leaf textures (145); bark textures (269); geometries local to this biome (326); materials (392); instanced items (438) |
+| `86-bio-50-biome-nwbay-species.js` | 44 **big** | THE CANOPY CEILING (24); THE BAY COLOUR (31); the tree species (87); leaf textures (145); bark textures (269); geometries local to this biome (326); materials (392); instanced items (441) |
 | `86-bio-55-biome-nwbay-trees.js` | 61 **big** | zones from the fields (15); colour (36); polyline helpers (Girder's) (58); keep-clear between trees (67); the karst's edge (74); epiphytes, lianas (86); foliage helpers (105); the builders (118); impostors (the far canopy) (465); the reed beds (503) |
 | `86-bio-60-biome-nwbay-floor.js` | 19 | fields local to the floor (29); small plants (34); the zone planters (112); the pass (176) |
 | `86-bio-65-biome-nwbay-dress.js` | 10 |  |

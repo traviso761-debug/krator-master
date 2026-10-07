@@ -17,6 +17,7 @@ residence holds, per unit, at least one bed, one food container and one item con
 | `reedlake.js` | Reed Lake (the floating reed village; Reed's Local) | `settlements/reedlake` `RL.def` keys `rl_*` (the mudhif rooms are kept to where the arch is high enough) | `reedlake` |
 | `yuni.js` | Yuni (base kit, as built by Locus and Mungo) | `settlements/locus/src/55-mid-example.js` + `56-mid.js` `ASSET` keys `mid_*` (the six middle-class houses; every variant is an item: `key` for variant 0, `key#n` for n > 0) | `yuni-common` |
 | `yuni-town.js` | Yuni base kit, the town keys (civic, trade, poor, rich: Lower Verge; the middle-class houses are in `yuni.js`) | `settlements/locus` `56-mid.js` `57-poor.js` `58-rich.js` `59-civic.js` (the same keys as `settlements/yuni`) | `yuni-poor` / `yuni-common` / `yuni-court` by wealth, `order` (the Historians' chapter house) |
+| `noahs-regret.js` | Noah's Regret's Ancient deck buildings (the grounded floating arcology; Bloody Ruephus's pirates) | `settlements/noahs-regret` defs `nr-anc-*` (`src/56-60`), plus `nr-anc-office-lens-mess` (the mess hall). Adds the room kinds `crew`, `bunkroom`, `mess` | `scrap` (barracks), `post-apoc` (the mess, Ruephus's court tier) |
 
 A world that places one of these buildings at `(x, z, ry)` calls
 `IX.sets.instantiate(IX.sets.byName[set].byKey[key], x, z, ry, { baseY })` and gets planned buildings

@@ -1,7 +1,7 @@
 // ================================================================= HOST — probe (window._api)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
- showcase:{tris:18500000,calls:120},   // measured 17.0M at q=1 on this 5.2 km map (KNOWN_ISSUES), not a target
+ showcase:{tris:18500000,calls:120},   // measured 17.9M at q=1 on this 5.2 km map (KNOWN_ISSUES; 17.0M before the frill-tree became a frill tree, 2026-10-06), not a target
  cls:{pass:14000000,host:900000},
  type:{'craterdry/trees':'pass','craterdry/floor':'pass','craterdry/fire':'host','host':'host'},
 };
@@ -23,6 +23,8 @@ function nanSweep(){const bad=[];let badInst=0;
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// species that yield something edible the kit does not draw as a catalog fruit (nectar, pith, sour leaves): named, not hidden
+const FRUIT_NOT_DRAWN=['prismmallee','pillar','treealoe','pincushion','jade'];
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
 const HCHK={
  // every species of the table is placed somewhere on the stage
@@ -48,6 +50,11 @@ const HCHK={
  // no tree on a sheer rock face (the kopjes' steepest granite)
  cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.rock(t.x,t.z)>.6);
   return{ok:!bad.length,detail:bad.length?bad.length+' trees on sheer rock (first '+CRATERDRY.SPECIES[bad[0].sp].key+' at '+[bad[0].x|0,bad[0].z|0]+')':T.length+' trees, none on a sheer face'};},
+ // fruit: every fruiting species names a catalog piece, every species and plant carries a harvest tag, and the
+ // fruit is drawn (the frill-trees' fireseed, the parasol pines' cones; the yucca and Joshua flowers are drawn as blooms)
+ fruit(SP,PL,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const seeds=P.filter(p=>/(^|:)seed$/.test(p[3])).length,cones=P.filter(p=>/pinecone$/.test(p[3])).length,untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  return{ok:!miss.length&&!untagged.length&&seeds>=50&&cones>=50,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+seeds+' fireseeds and '+cones+' pine cones drawn; catalog keys: '+CRATERDRY.FRUIT_KEYS.join(', ')};},
  // THE LIVE FIRE (89): lit upwind of the spine on old fuel it takes, runs downwind (the back third of its cells lies
  // downwind of the ignition) and never crosses the bare granite
  liveFire(r){if(!r||!r.ok)return{ok:false,detail:'the fire did not take: '+(r&&r.why)};const n=r.order.length,N=r.N;let onRock=0,dx=0,dz=0,m=0;
@@ -65,6 +72,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('each burn stage draws its own life',HCHK.fireLife(window._biome));
  add('nothing rooted under the water',HCHK.dry(P));
  add('no tree on a sheer rock face',HCHK.cliffs(CRATERDRY.TREES));
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(CRATERDRY.SPECIES,CRATERDRY.PLANTS,P));
  add('a live fire runs downwind and stops at the refuges',HCHK.liveFire(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:FIRE_WIND,maxT:900})));
  add('every plant material carries the fire',HCHK.patched(FIREFX.patched()));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
@@ -80,6 +88,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  // the steepest granite on the Scyvoi Rock (found, not typed)
  {let bx=KOP[0].x,bz=KOP[0].z,bs=-1;for(let z=KOP[0].z-260;z<=KOP[0].z+260;z+=4)for(let x=KOP[0].x-260;x<=KOP[0].x+260;x+=4){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}
   add('a tree on the kopje\'s sheer face',HCHK.cliffs([{x:bx,z:bz,sp:0}]));}
+ add('a fruiting species with no catalog fruit',HCHK.fruit(CRATERDRY.SPECIES.map(S=>S.key==='frill'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),CRATERDRY.PLANTS,P));
+ add('no fruit drawn',HCHK.fruit(CRATERDRY.SPECIES,CRATERDRY.PLANTS,P.filter(p=>!/seed$|pinecone$/.test(p[3]))));
  add('a fire lit on the Scyvoi Rock',HCHK.liveFire(CRATERDRY.fireRun({x:KOP[0].x,z:KOP[0].z,wind:FIRE_WIND})));
  add('a fire blown back on itself',HCHK.liveFire(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:[-FIRE_WIND[0],-FIRE_WIND[1]],maxT:900})&&Object.assign(CRATERDRY.fireRun({x:FIREFX.P.x,z:FIREFX.P.z,wind:[-FIRE_WIND[0],-FIRE_WIND[1]],maxT:900}),{wind:FIRE_WIND})));
  add('no plant material patched',HCHK.patched(0));

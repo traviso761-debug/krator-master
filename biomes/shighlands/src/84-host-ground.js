@@ -1,10 +1,8 @@
 // ================================================================= HOST — the ground, the water, the cloud sea, the mist
 // One ground mesh painted by the zones (so they read from any distance): chartreuse star moss and dark loam under the
 // cloud forest, gold and rust tussock on the paramo, sphagnum green, gold and rust in the bogs with black peat at the
-// pools, ochre gravel on the dry side, grey granite on the tors. Then the tarn and the bog pools; then THE CLOUD SEA,
-// a level deck at CLOUD_Y over everything north of the rim, thinning to nothing where it laps against the ground; and
-// the mist that drifts up the ravines and along the deck's edge.
-REGISTER({name:'The cloud sea (the hyperjungle\'s air, pooled below the Wall)',x:0,z:-2600,y:CLOUD_Y-60,r:1400,h:90});
+// pools, ochre gravel on the dry side, grey granite on the tors. Then the tarn and the bog pools, and the mist that
+// drifts up the ravines and along the cloud deck's edge (the deck is core/atmos's: 89z-host-atmos.js).
 TOR.forEach(K=>REGISTER({name:K.name||'A granite tor',x:K.x,z:K.z,y:plateauH(K.x,K.z)-5,r:K.r*1.05,h:K.h+40}));
 RAV.forEach((R,i)=>REGISTER({name:'A ravine of the cloud forest',x:ravX(R,R.head-400),z:R.head-400,y:plateauH(ravX(R,R.head-400),R.head-400)-200,r:R.w*2.2,h:240}));
 
@@ -45,24 +43,65 @@ const TEX_TUFT=BIO.canvasTex(256,256,(g,w,h)=>{const Rr=new Float32Array(w*h),Gg
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,k=y*w+x;d[i]=Rr[k]*255;d[i+1]=Gg[k]*255;d[i+2]=128;d[i+3]=255;}
  g.putImageData(id,0,0);});
 TEX_TUFT.wrapS=TEX_TUFT.wrapT=THREE.RepeatWrapping;TEX_TUFT.encoding=THREE.LinearEncoding;TEX_TUFT.anisotropy=4;
+// THE LIBRARY GROUND (materials.json ground.moss, ground.paramo, ground.sphagnum; core/materials/PLAN.md, Southern
+// highlands): three layers over the painted ground, blended per vertex by the zones (aGL: forest moss, paramo grass, bog
+// sphagnum), each mixed with the painted colour so the zones' tones still show; the sphagnum keeps most of its own colour
+// (green, gold and rust are the point). HEX TILING (Mikkelsen, 'Practical real-time hex-tiling', 2022), so no tile ever
+// repeats: the ground is cut into a triangle grid of cells about half a tile across; each grid vertex takes its own random
+// rotation and offset into the texture, and a point blends the three vertices round it by its barycentric weights
+// (sharpened, so the blend stays crisp). The samples use explicit gradients (textureGrad) so the mip level has no seam at
+// the cell edges. On top, slow macro noise (TEX_MACRO, ~110 m and ~250 m) varies the brightness and drifts the hue between
+// redder and greener stretches. Without the pack (?mat=proc, or an open world) the ground is exactly the painted one.
+// TEX_MACRO: three independent SEAMLESS value noises (r, g, b), periodic on their lattice, so its own tiling never shows
+const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
+ const vn=(x,y,P,o)=>{const i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j,ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy),a=(p,q)=>BIO.fn.h3(((p%P)+P)%P,((q%P)+P)%P,o);
+  return mix(mix(a(i,j),a(i+1,j),ux),mix(a(i,j+1),a(i+1,j+1),ux),uy);};
+ const fb=(x,y,o)=>{let v=0,amp=.5,t=0;for(let k=0;k<4;k++){const P=4<<k;v+=amp*vn(x/w*P,y/h*P,P,o+k);t+=amp;amp*=.5;}return v/t;};
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){const k=(y*w+x)*4;for(let c=0;c<3;c++)d[k+c]=clamp((fb(x,y,31+c*7)-.5)*2.4+.5,0,1)*255;d[k+3]=255;}
+ g.putImageData(id,0,0);});
+TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
+const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=n=>KMAT.packed('shigh',n);
+ const m=P('ground.moss'),p=P('ground.paramo'),b=P('ground.sphagnum');if(!m||!p||!b)return null;
+ return{moss:KMAT.textures(m,{aniso:8}).map,mossK:1/m.scale[0],par:KMAT.textures(p,{aniso:8}).map,parK:1/p.scale[0],bog:KMAT.textures(b,{aniso:8}).map,bogK:1/b.scale[0]};})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xaaa69e});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:SHIGH.ROCKTEX};sh.uniforms.uTuft={value:TEX_TUFT};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aPar;varying float vPar;')
-  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vPar=aPar;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uTuft;varying vec3 vGWP;varying float vRock;varying float vPar;')
+MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uGran={value:SHIGH.ROCKTEX};sh.uniforms.uTuft={value:TEX_TUFT};sh.uniforms.uMacro={value:TEX_MACRO};if(GLAY){sh.uniforms.uGMoss={value:GLAY.moss};sh.uniforms.uGPar={value:GLAY.par};sh.uniforms.uGBog={value:GLAY.bog};}
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock;varying float vRock;attribute float aPar;varying float vPar;attribute vec3 aGL;varying vec3 vGL;')
+  .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vPar=aPar;vGL=aGL;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail,uGran,uTuft;varying vec3 vGWP;varying float vRock;varying float vPar;varying vec3 vGL;uniform sampler2D uMacro;'+(GLAY?'uniform sampler2D uGMoss,uGPar,uGBog;'+
+   // HEX TILING: the triangle grid (skewed space), each vertex's random rotation and offset, three samples with explicit
+   // gradients, blended by sharpened barycentric weights; linear colour out (a custom sampler is not decoded from sRGB)
+   'vec2 gkHash(vec2 v){return fract(sin(vec2(dot(v,vec2(127.1,311.7)),dot(v,vec2(269.5,183.3))))*43758.5453);}'+
+   'vec3 gkSample(sampler2D t,vec2 uv,vec2 dx,vec2 dy,vec2 v){vec2 h=gkHash(v);float a=h.x*6.2831853;mat2 R=mat2(cos(a),sin(a),-sin(a),cos(a));'+
+   // WebGL1 has no textureGrad (it needs WebGL2): plain sampling there, with faint seams at the cell edges far off
+   ' return pow('+(renderer.capabilities.isWebGL2?'textureGrad(t,R*uv+h,R*dx,R*dy)':'texture2D(t,R*uv+h)')+'.rgb,vec3(2.2));}'+
+   'vec3 gkLay(sampler2D t,vec2 p,float k){vec2 uv=p*k,dx=dFdx(uv),dy=dFdy(uv);vec2 sk=mat2(1.0,0.0,-0.57735027,1.15470054)*(uv*1.732);'+
+   ' vec2 b=floor(sk);vec3 f=vec3(fract(sk),0.0);f.z=1.0-f.x-f.y;float s=step(0.0,-f.z),s2=2.0*s-1.0;'+
+   ' vec3 w=vec3(-f.z*s2,s-f.y*s2,s-f.x*s2);w=pow(max(w,0.0),vec3(5.0));w/=(w.x+w.y+w.z);'+
+   ' return gkSample(t,uv,dx,dy,b+vec2(s,s))*w.x+gkSample(t,uv,dx,dy,b+vec2(s,1.0-s))*w.y+gkSample(t,uv,dx,dy,b+vec2(1.0-s,s))*w.z;}':''))
   .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;'+
   'vec3 gr=pow(texture2D(uGran,vGWP.xz*0.11+vGWP.y*0.03).rgb,vec3(2.2));'+
+  // the library layers take the painted colour's place in part (a custom sampler is not decoded from sRGB: pow 2.2 by hand)
+  (GLAY?'{vec3 _pd=diffuseColor.rgb;vec2 p=vGWP.xz;'+
+   'vec3 mc2=texture2D(uMacro,p*0.0039+vec2(0.43,0.19)).rgb;'+
+   // the slow variation: brightness, and a drift between redder and greener stretches (stronger in the bog, as real ones are)
+   'float tone=mix(0.74,1.2,mc2.b);vec3 hue=mix(vec3(1.1,0.94,0.86),vec3(0.9,1.06,0.94),smoothstep(0.3,0.7,mc2.r));'+
+   'vec3 tm=gkLay(uGMoss,p,'+GLAY.mossK.toFixed(4)+')*tone*mix(vec3(1.0),hue,0.6);'+
+   'vec3 tp=gkLay(uGPar,p,'+GLAY.parK.toFixed(4)+')*tone*mix(vec3(1.0),hue,0.5);'+
+   'vec3 tb=gkLay(uGBog,p,'+GLAY.bogK.toFixed(4)+')*mix(0.62,1.25,mc2.b)*mix(vec3(1.22,0.88,0.78),vec3(0.82,1.12,0.86),smoothstep(0.3,0.7,mc2.r));'+
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tm*1.3,0.55),vGL.x);diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tp*1.3,0.5),vGL.y);'+
+   'diffuseColor.rgb=mix(diffuseColor.rgb,mix(_pd,diffuse*tb*1.3,0.85),vGL.z);}':'')+
   'diffuseColor.rgb*=mix(dt*dt2*1.12,gr*2.6,vRock*0.7);'+
   'vec2 t1=texture2D(uTuft,vGWP.xz*0.21).rg,t2=texture2D(uTuft,vGWP.xz*0.083+vec2(0.41,0.17)).rg;float tb=max(t1.r,t2.r*0.8),ts=max(t1.g,t2.g*0.8);'+
   'diffuseColor.rgb*=1.0-ts*0.4*vPar;diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*vec3(0.62,0.5,0.24)*(1.0+0.5*tb),tb*vPar*0.75);}');};
 const GROUND=(function(){const N=480,S=TERR.R*2.2,cs=S/N,nx=N+1;
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),par=new Float32Array(nx*nx);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),par=new Float32Array(nx*nx),gl=new Float32Array(nx*nx*3);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
-  rk[k]=smooth(.3,.65,FC.at(FC.a.rock,x,z));par[k]=(1-smooth(.4,.7,FC.at(FC.a.fog,x,z)))*(1-smooth(.4,.75,FC.at(FC.a.oasis,x,z)))*(1-rk[k]);}
+  rk[k]=smooth(.3,.65,FC.at(FC.a.rock,x,z));par[k]=(1-smooth(.4,.7,FC.at(FC.a.fog,x,z)))*(1-smooth(.4,.75,FC.at(FC.a.oasis,x,z)))*(1-rk[k]);
+  {const fog=FC.at(FC.a.fog,x,z),bog=smooth(.45,.8,FC.at(FC.a.oasis,x,z))*(1-rk[k]),open=(1-bog)*(1-rk[k]),f=smooth(.32,.62,fog);gl[k*3]=f*open;gl[k*3+1]=(1-f)*open;gl[k*3+2]=bog;}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aPar',new THREE.BufferAttribute(par,1));
+ g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aPar',new THREE.BufferAttribute(par,1));g.setAttribute('aGL',new THREE.BufferAttribute(gl,3));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The southern highlands';scene.add(m);return m;})();
 
 // ---------------------------------------------------------------- the water (the tarn, the bog pools)
@@ -87,49 +126,8 @@ REGISTER({name:'The tarn',x:TARN.x,z:TARN.z,y:TARNL-8,r:TARN.r*1.5,h:30});
 POOLS.forEach(P=>waterDisc(P.x,P.z,P.r*1.25,P.l,'A bog pool',0x1a1a14,0x3a3a28));
 
 // ---------------------------------------------------------------- THE CLOUD SEA
-// A level deck at CLOUD_Y north of the rim: billowing white, lit from above, blue-grey in its hollows, drifting
-// slowly. Its alpha is a baked mask that thins it to nothing over the last ~45 m where the ground rises through it,
-// so the cloud laps against the scarp instead of cutting it with a hard line; mist sprites (below) soften the rest.
-const CLOUD=(function(){const N=256,S=TERR.R*2.2,data=new Uint8Array(N*N*4);
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){const x=(i/(N-1)-.5)*S,z=(j/(N-1)-.5)*S,h=FC.at(FC.a.h,x,z),a=smooth(-6,45,CLOUD_Y-h),k=(j*N+i)*4;data[k]=data[k+1]=data[k+2]=255;data[k+3]=a*255;}
- const mask=new THREE.DataTexture(data,N,N,THREE.RGBAFormat);mask.magFilter=THREE.LinearFilter;mask.minFilter=THREE.LinearFilter;mask.wrapS=mask.wrapT=THREE.ClampToEdgeWrapping;mask.needsUpdate=true;
- // a SEAMLESS noise (value noise on a lattice that wraps, four octaves): a tiled texture must not show its tile edges
- const noise=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data,hs=(i,j,o)=>BIO.fn.h3(i,j,o);
-  const vn=(x,y,P,o)=>{const i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j,ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy),a=(p,q)=>hs(((p%P)+P)%P,((q%P)+P)%P,o);
-   return mix(mix(a(i,j),a(i+1,j),ux),mix(a(i,j+1),a(i+1,j+1),ux),uy);};
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0,amp=.5,tot=0;for(let o=0;o<4;o++){const P=4<<o;v+=amp*vn(x/w*P,y/h*P,P,11+o);tot+=amp;amp*=.5;}
-   const k=(y*w+x)*4,c=clamp((v/tot-.5)*2.6+.5,0,1)*255;d[k]=d[k+1]=d[k+2]=c;d[k+3]=255;}g.putImageData(id,0,0);});
- noise.encoding=THREE.LinearEncoding;noise.wrapS=noise.wrapT=THREE.RepeatWrapping;
- const U={uT:{value:0},uMask:{value:mask},uNoise:{value:noise},uS:{value:S},uSun:{value:new THREE.Vector3(-1000,900,-700).normalize()},
-  uTop:{value:new THREE.Color(0xfcfbf8)},uShade:{value:new THREE.Color(0x7e90a8)},uY:{value:0}};
- const mat=new THREE.ShaderMaterial({fog:true,transparent:true,depthWrite:false,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,U]),
-  vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vN;',
-   'void main(){vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vN=normal;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
-  fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uS,uY;uniform sampler2D uMask,uNoise;uniform vec3 uSun,uTop,uShade;varying vec3 vWP;varying vec3 vN;',
-   'float N(vec2 p){return texture2D(uNoise,p).r;}',
-   'void main(){vec2 p=vWP.xz;',
-   // the drifting detail: small billows on the big ones, bending the normal a little
-   ' vec2 q=p*0.0045-vec2(uT*0.004,-uT*0.0015);float d=N(q)*0.65+N(p*0.017+vec2(uT*0.006,0.0))*0.35;',
-   ' float dx=N(q+vec2(0.01,0.0))-N(q-vec2(0.01,0.0)),dz=N(q+vec2(0.0,0.01))-N(q-vec2(0.0,0.01));',
-   ' vec3 n=normalize(normalize(vN)+vec3(-dx*1.6,0.0,-dz*1.6));',
-   // lit from the sun's side, blue-grey in the hollows between the heaps, bright on their tops
-   ' float l=clamp(dot(n,uSun)*0.55+0.5,0.0,1.0),up=smoothstep(uY-28.0,uY+40.0,vWP.y);',
-   ' vec3 col=mix(uShade,uTop,smoothstep(0.15,0.95,l*0.75+up*0.55+d*0.25-0.3));',
-   ' col+=vec3(0.05,0.05,0.04)*pow(1.0-abs(dot(n,normalize(cameraPosition-vWP))),3.0);',
-   ' vec2 mu=p/uS+0.5;float m=(mu.x<0.0||mu.x>1.0||mu.y<0.0||mu.y>1.0)?1.0:texture2D(uMask,vec2(mu.x,mu.y)).a;',
-   ' float a=m*smoothstep(0.0,0.3,d+m*0.7);',
-   ' gl_FragColor=vec4(col,a);','#include <fog_fragment>','}'].join('\n')});
- mat.uniforms.fogColor.value=scene.fog.color;mat.uniforms.fogDensity.value=scene.fog.density*.55;mat.uniforms.uY.value=CLOUD_Y;
- // THE RELIEF: heaped billows a few hundred metres across, up to ~40 m over the deck's mean and ~25 m under it, on a
- // grid of ~100 m cells (the drifting detail in the shader does the rest)
- const geo=new THREE.PlaneGeometry(26000,13000,260,130);geo.rotateX(-Math.PI/2);geo.translate(0,0,-6500+400);
- {const P=geo.attributes.position;for(let i=0;i<P.count;i++){const x=P.getX(i),z=P.getZ(i),b=fbm(x*.0011+3,z*.0011-7,301,3),b2=fbm(x*.0037-2,z*.0037+5,303,2);
-   P.setY(i,CLOUD_Y-24+62*smooth(.36,.74,b)+16*(b2-.5));}geo.computeVertexNormals();}
- const m=new THREE.Mesh(geo,mat);m.userData.probeSkip=true;m.userData.inspectLabel='The cloud sea';m.renderOrder=2;scene.add(m);
- // a second, lower deck a little darker, so a hole in the top one shows more cloud and not the scarp below
- const m2=new THREE.Mesh(new THREE.PlaneGeometry(26000,13000,1,1).rotateX(-Math.PI/2).translate(0,CLOUD_Y-55,-6500+400),new THREE.MeshBasicMaterial({color:0xb8c2cc,fog:true}));m2.userData.probeSkip=true;m2.renderOrder=0;scene.add(m2);
- TICKS.push(dt=>{U.uT.value+=dt;mat.uniforms.uT.value=U.uT.value;});
- return{mat,m,m2};})();
+// The deck itself is core/atmos's (89-atmos-d-clouddeck.js, bound in 89z-host-atmos.js): a field a game engine draws the
+// same way. Only the mist below is this host's own.
 
 // ---------------------------------------------------------------- the mist
 // Soft sprites stand along the cloud deck's edge where it laps against the scarp, and climb the ravines (the cloud

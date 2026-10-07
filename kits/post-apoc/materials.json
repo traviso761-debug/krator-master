@@ -1,0 +1,133 @@
+{
+ "build": "postapoc",
+ "note": "Post-Apoc's adapter onto the material library (core/materials/PLAN.md). Families are MAT keys (src/22-mat.js), bound in place by src/29y-pa-matlib.js at TILE[key] metres per UV unit (src/20-tex.js), so scale is in metres. Vertex colours carry the livery and the weathering (22-mat.js WEATHER), so the sets go grey (keep 0) at the measured mean of the procedural map they replace (2026-10-06); metalness stays low (no environment map). The corrugate and container walls (corr, cont) take metal.corrugated.rusty (2026-10-06, late: rust streaks kept at 85 % of their own colour; the container's ribs at 3x the scale); the patch sheets and iron (sheet, iron) stay procedural: the library corrugate, container rib, tin patchwork and rust plate came out clean and grey at eye level, and the rust streaks are the set's look (2026-10-06 comparison). steel (no brushed-steel set yet), bottle (glass.bottle is swirled glass, not bottle bases), chain and corrH (horizontal ribs) stay procedural. Run python3 tools/textures/pack.py kits/post-apoc after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "size": 512,
+ "families": {
+  "plank": {
+   "lib": "wood.reclaimed",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.729
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "earth": {
+   "lib": "earth.floor.packed",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.792
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "conc": {
+   "lib": "concrete.slab",
+   "scale": [
+    4,
+    4.32
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.844
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "wood": {
+   "lib": "wood.timber",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.738
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "cloth": {
+   "lib": "cloth.weave.burlap",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.812
+   },
+   "metal": 0,
+   "normalScale": 0.6,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "corr": {
+   "lib": "metal.corrugated.rusty",
+   "scale": [
+    1.1,
+    1.1
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.538
+   },
+   "metal": 0.08,
+   "normalScale": 0.9,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "cont": {
+   "lib": "metal.corrugated.rusty",
+   "scale": [
+    3.3,
+    3.3
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.619
+   },
+   "metal": 0.08,
+   "normalScale": 0.9,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  }
+ }
+}

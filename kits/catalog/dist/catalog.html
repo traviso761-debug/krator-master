@@ -104,9 +104,13 @@ const MAT_FAMILY_LOOK = {
   nacre: [0.18, 0.35], lacquer: [0.22, 0.05], ceramic: [0.3, 0.05], obsidian: [0.12, 0.15], jade: [0.35, 0.05],
   plastic: [0.5, 0.0], bone: [0.6, 0.0]
 };
+/* `family` may carry a texture split, 'tex/base' (furnFamily below): the material keeps the base family's look and
+   userData.family, and adds userData.texFamily for a host's detail map */
 function mat(color, family) {
   const key = color + '|' + (family || '');
   if (_matCache.has(key)) return _matCache.get(key);
+  let texFamily = null;
+  if (family && family.indexOf('/') > 0) { texFamily = family.slice(0, family.indexOf('/')); family = family.slice(family.indexOf('/') + 1); }
   let roughness = 0.85, metalness = 0.0, transparent = false, opacity = 1;
   const fam = MAT_FAMILY_LOOK[family];
   if (fam) { roughness = fam[0]; metalness = fam[1]; }
@@ -116,6 +120,7 @@ function mat(color, family) {
     ? new THREE.MeshBasicMaterial({ color, transparent, opacity })
     : new THREE.MeshStandardMaterial({ color, roughness, metalness, transparent, opacity });
   m.userData.family = family || '';
+  if (texFamily) m.userData.texFamily = texFamily;
   _matCache.set(key, m);
   return m;
 }
@@ -182,6 +187,79 @@ function mkRod(ax, ay, az, bx, by, bz, r, color, family) {
   const m = new THREE.Mesh(new THREE.CylinderGeometry(Math.max(r, 0.005), Math.max(r, 0.005), len, _seg(8, 4)), mat(color, family));
   m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
+  return _add(m);
+}
+/* GROWN SURFACES (2026-10, ported from the Ys Hykkousoi set): an ellipsoid, a lathe and a tube. Plain meshes of indexed
+   BufferGeometry like every other primitive here, so the inspector, measureInstance() and the size audit see real vertices.
+   mkEll: a CENTRED ellipsoid, radii rx, ry, rz, turned ry2. mkLathe: a surface of revolution about the vertical axis at
+   (x, y, z), profile [[r, h], ...] (h upward from y, outward-facing normals; o.double also draws the inside), o: { nu (around),
+   nv (rows along the profile), lobes {n, amp, ph}, flute {n, amp, sharp} (r is scaled by 1 + amp cos(n th) and by
+   1 + amp raised-cosine(n th)^sharp) }. mkTube: a tube along the world-space polyline pts, radius r (a number or
+   fn(t, i) with t the fraction along it), o: { seg (sides), double }; parallel-transport frames, open at both ends. */
+const _matDouble = new Map();
+function _matDbl(color, family) {
+  const k = color + '|' + (family || '');
+  if (_matDouble.has(k)) return _matDouble.get(k);
+  const m = mat(color, family).clone(); m.side = THREE.DoubleSide; m.userData.family = family || '';
+  _matDouble.set(k, m); return m;
+}
+function _surfGeo(nu, nv, fn, rev) {
+  const P = new Float32Array((nu + 1) * (nv + 1) * 3), I = [];
+  for (let j = 0; j <= nv; j++) for (let i = 0; i <= nu; i++) { const p = fn(i / nu, j / nv), k = (j * (nu + 1) + i) * 3; P[k] = p[0]; P[k + 1] = p[1]; P[k + 2] = p[2]; }
+  for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) {
+    const a = j * (nu + 1) + i, b = a + 1, c = a + nu + 1, d = c + 1;
+    if (rev) I.push(a, b, c, b, d, c); else I.push(a, c, b, b, c, d);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); geo.setIndex(I); geo.computeVertexNormals();
+  const N = geo.attributes.normal;   /* the seam column is duplicated: share its normal so it does not show */
+  for (let j = 0; j <= nv; j++) {
+    const a = j * (nu + 1), b = a + nu;
+    const x = N.getX(a) + N.getX(b), y = N.getY(a) + N.getY(b), z = N.getZ(a) + N.getZ(b), l = Math.hypot(x, y, z) || 1;
+    N.setXYZ(a, x / l, y / l, z / l); N.setXYZ(b, x / l, y / l, z / l);
+  }
+  return geo;
+}
+function mkEll(x, y, z, rx, ry, rz, ry2, color, family) {
+  const geo = new THREE.SphereGeometry(0.5, _seg(12, 6), _seg(8, 4));
+  geo.scale(Math.max(rx, 0.01) * 2, Math.max(ry, 0.01) * 2, Math.max(rz, 0.01) * 2);
+  const m = new THREE.Mesh(geo, mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry2 || 0;
+  return _add(m);
+}
+function mkLathe(x, y, z, prof, ry, color, family, o) {
+  o = o || {};
+  const n = prof.length, per = Math.max(1, Math.round((o.nv || n * 2) / Math.max(1, n - 1))), rows = [];
+  for (let k = 0; k < n - 1; k++) for (let s = 0; s < per; s++) { const t = s / per, a = prof[k], b = prof[k + 1]; rows.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); }
+  rows.push(prof[n - 1].slice());
+  const nu = _seg(o.nu || 24, 12), nv = rows.length - 1, lb = o.lobes, fl = o.flute;
+  const geo = _surfGeo(nu, nv, (u, v) => {
+    const th = u * TAU, row = rows[Math.round(v * nv)]; let r = row[0];
+    if (lb) r *= 1 + lb.amp * Math.cos(lb.n * th + (lb.ph || 0));
+    if (fl) r *= 1 + fl.amp * Math.pow(0.5 + 0.5 * Math.cos(fl.n * th), fl.sharp || 2);
+    r = Math.max(0, r);
+    return [r * Math.cos(th), row[1], r * Math.sin(th)];
+  }, false);
+  const m = new THREE.Mesh(geo, o.double ? _matDbl(color, family) : mat(color, family));
+  m.position.set(x, y, z); m.rotation.y = ry || 0;
+  return _add(m);
+}
+function mkTube(pts, r, color, family, o) {
+  o = o || {};
+  const n = pts.length; if (n < 2) return null;
+  const P = pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), T = [], N = [], B = [];
+  for (let i = 0; i < n; i++) T.push(new THREE.Vector3().subVectors(P[Math.min(n - 1, i + 1)], P[Math.max(0, i - 1)]).normalize());
+  const n0 = new THREE.Vector3(0, 1, 0); if (Math.abs(n0.dot(T[0])) > 0.9) n0.set(1, 0, 0);
+  n0.sub(T[0].clone().multiplyScalar(n0.dot(T[0]))).normalize(); N.push(n0);
+  for (let i = 1; i < n; i++) { const pv = N[i - 1], nn = pv.clone().sub(T[i].clone().multiplyScalar(pv.dot(T[i]))); if (nn.lengthSq() < 1e-8) nn.copy(pv); N.push(nn.normalize()); }
+  for (let i = 0; i < n; i++) B.push(new THREE.Vector3().crossVectors(T[i], N[i]).normalize());
+  const rf = typeof r === 'function' ? r : () => r, o0 = P[0];
+  const geo = _surfGeo(_seg(o.seg || 8, 4), n - 1, (u, v) => {
+    const i = Math.round(v * (n - 1)), rr = Math.max(0.004, rf(i / (n - 1), i)), ph = u * TAU, c = Math.cos(ph), s = Math.sin(ph);
+    return [P[i].x - o0.x + rr * (N[i].x * c + B[i].x * s), P[i].y - o0.y + rr * (N[i].y * c + B[i].y * s), P[i].z - o0.z + rr * (N[i].z * c + B[i].z * s)];
+  }, true);
+  const m = new THREE.Mesh(geo, o.double ? _matDbl(color, family) : mat(color, family));
+  m.position.copy(o0);
   return _add(m);
 }
 /* SOFT FURNISHINGS (2026-10-05, the Scyvoi cushions). A pillow: two puffed faces meeting at a seam round the edge,
@@ -373,7 +451,7 @@ const FURN_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
 /* register a culture: its palette (FPAL[key]) and info, before its pieces. Idempotent on the key. */
 function FURN_CULTURE(key, info) {
   if (FURN_CULTURES.indexOf(key) < 0) FURN_CULTURES.push(key);
-  if (info && info.palette) FPAL[key] = Object.assign(FPAL[key] || {}, info.palette);
+  if (info && info.palette) { FPAL[key] = Object.assign(FPAL[key] || {}, info.palette); delete _famRev[key]; }
   FURN_CULTURE_INFO[key] = Object.assign(FURN_CULTURE_INFO[key] || {}, info || {}, { palette: undefined });
   return FURN_CULTURE_INFO[key];
 }
@@ -414,7 +492,22 @@ const FURN_TYPES = ['table', 'chair', 'bench', 'seating', 'bed', 'storage', 'she
    roles FK.ROLES.trade registers (forge, anvil, vat ...) are work furniture too: they sit on the Jobs page
    by their roleSet, a row per culture, and carry no job. verify.py rejects a job not listed here. */
 const FURN_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing',
-  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+  'weaving', 'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading', 'alchemy'];
+/* the activity an NPC can do AT a piece (simulation layer, 2026-10): `task: [..]` from FURN_TASKS. A trade (`job`) is
+   what a worker produces; a task is what any NPC does: sleep, eat, read. A building holding a piece with a task is a
+   destination for that task. Derived when an entry leaves task out: FURN_ROLE_TASK[role] first (a kit piece, [] = none),
+   then FURN_TYPE_TASK[type]; set `task: []` on a piece that should have none. verify.py rejects a task not listed here. */
+const FURN_TASKS = ['sleeping', 'resting', 'eating', 'drinking', 'cooking', 'socializing', 'praying', 'reading', 'writing', 'storage', 'feeding',
+  'melee-training', 'ranged-training'];
+const FURN_TYPE_TASK = { bed: ['sleeping'], chair: ['resting'], bench: ['resting', 'socializing'], seating: ['resting', 'socializing'],
+  table: ['eating', 'socializing'], storage: ['storage'], shelf: ['storage'], desk: ['writing'], altar: ['praying'], shrine: ['praying'],
+  brazier: ['socializing'], book: ['reading'], rack: ['storage'], stack: ['storage'], food: ['eating'], drink: ['drinking'] };
+/* a vessel or supply is storage only when it is a container by name (a jug or bowl on a table is a good, not storage) */
+const FURN_STORAGE_NAME = /\b(barrels?|casks?|kegs?|jars?|pots?|crates?|sacks?|baskets?|bins?|chests?|trunks?|hampers?|urns?|buckets?|butts?|vats?|amphorae?|pithos|pithoi|hoppers?|silos?|bales?|cupboards?|cabinets?|lockers?|larders?|wardrobes?|coffers?|boxe?s?|containers?|tubs?|gourds)\b/i;
+/* feeding: where beasts eat and drink (a trough, a manger, a hay rack, a feed basket); added on top of any other task */
+const FURN_FEED_NAME = /\b(troughs?|mangers?|hay ?racks?|hay hecks?|feed|fodder)\b/i;
+const FURN_ROLE_TASK = { bookcase: ['storage', 'reading'], hearth: ['cooking', 'socializing'], low_table: ['eating', 'socializing'],
+  throne: [], forge: [], kiln: [], bunk: ['sleeping'], rack: ['storage'], trough: ['feeding'], training_dummy: ['melee-training'], archery_butt: ['ranged-training'], hayrack: ['feeding'], armour_stand: [], vat: [] };
 const FURNS = [], FURN_BY_KEY = {};
 function FURN(o) {
   if (FURN_BY_KEY[o.key]) { console.error('duplicate furniture key', o.key); return; }
@@ -426,6 +519,12 @@ function FURN(o) {
   /* tier and wealth band: given, or read off the culture name (yuni-court, yuni-poor), else common */
   if (!o.tier) o.tier = /-court$/.test(o.culture) ? 'court' : /-poor$/.test(o.culture) || o.culture === 'generic' || o.culture === 'scrap' ? 'poor' : 'common';
   if (!o.wealth) o.wealth = (FURN_TIERS[o.tier] || [0, 1]).slice();
+  if (typeof o.task === 'string') o.task = [o.task];
+  if (!o.task) {
+    o.task = (FURN_ROLE_TASK[o.role] || FURN_TYPE_TASK[o.type] || []).slice();
+    if (!o.task.length && !FURN_ROLE_TASK[o.role] && /^(vessel|supply|tool)$/.test(o.type) && FURN_STORAGE_NAME.test(o.name || '') && !/archery/i.test(o.name)) o.task = ['storage'];
+    if (FURN_FEED_NAME.test(o.name || '') && o.task.indexOf('feeding') < 0 && !(FURN_ROLE_TASK[o.role] && !FURN_ROLE_TASK[o.role].length)) o.task.push('feeding');
+  }
   FURNS.push(o); FURN_BY_KEY[o.key] = o;
 }
 /* the y at which to build a furniture piece so it sits on its anchor:
@@ -564,7 +663,15 @@ const FPAL = {
     timberOak: 0x8a6a4e,
     unlit: 0x2a2f2e,
     verdigris: 0x6fe8e0,
-    whiteHot: 0xfff2c9
+    whiteHot: 0xfff2c9,
+    /* the arcology's fittings (Noah's Regret, 2026-10): a painted dark grey, the earth and the greens of its beds,
+       ripe fruit, still water */
+    paintGrey: 0x3a3c3e, soil: 0x4a3a2a, leafGreen: 0x4e7a34, leafLight: 0x6a9440, leafDark: 0x3f6a30,
+    fruitRed: 0xb83224, water: 0x4a6a72, rust: 0x5a3a28,
+    /* the intact buildings' interiors (2026-10): upholstery on the moulded seats and beds, the medical and server
+       status lamps, a sample vial's violet */
+    clothSlate: 0x5e6b78, clothDove: 0xd2d5d8, clothTeal: 0x3d7a80,
+    glowGreen: 0x7dffa0, glowRed: 0xff5a48, glowViolet: 0xb48cff
   },
   'ancients-salvage': {
     blackIronDark: 0x1c1c1c, blackIron: 0x2a2a2a,
@@ -744,6 +851,67 @@ function furnCol(culture, key) {
   throw new Error('no palette key "' + key + '" for culture ' + culture);
 }
 
+/* texture splits by palette key (core/materials/PLAN.md, "Catalog furniture audit"): a part whose key wants a library
+   set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
+   falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
+   `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+const FAMILY_SPLITS = [
+  [/^feather/, ['hide', 'plant', 'plastic'], 'feather'],
+  [/^tyre/, ['plastic', 'metal'], 'rubber'],
+  [/^clay/, ['stone'], 'clay'],
+  [/^obsidian/, ['lacquer'], 'obsidian'],
+  [/^(pewter|tin|tinMirror)$/, ['metal'], 'pewter'],
+  [/^paint/, ['wood', 'plank'], 'paint'],
+  [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
+  [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
+  [/^tapa/, ['cloth'], 'tapa'],
+  /* biome fruit (biomes/FRUIT.md; krator-master-furniture-generic-fruit.js): each fruit part by the surface it shows */
+  [/^fruit(Mahogany|Mast|MastHusk|Acorn|Mesquite|PinyonNut|Rattlepod|TamarindShell|FernEgg|CacaoRed|CacaoGold|CacaoOrange|LotusPod|Wingnut|SilkGreen|AvenuePod)$/, ['food'], 'fruitShell'],
+  [/^fruit(GateRind|TideHusk|StiltPod)$/, ['food'], 'fruitHusk'],
+  [/^fruit(ScaleRed|CycadRed|PinyonCone)$/, ['food'], 'fruitScale'],
+  [/^fruit(ScaleFlesh|GatePulp|FernMeal|BallmelonFlesh|StiltFlesh|FigFlesh|TunaFlesh|PitayaFlesh|CacaoPulp|TamarindPulp|PandanPaste|MesquiteCake|YuccaRoast|SilkFloss|WhorlCream)$/, ['food'], 'fruitFlesh'],
+  [/^fruit(TideJelly|RowanJelly)$/, ['food'], 'fruitJelly'],
+  [/^fruit(ArilSeed|StiltSeed|PinyonKernel|LotusSeed|UmbelSeed|MahoganySeed|RattleBean|Raisin)$/, ['food'], 'fruitSeed'],
+  [/^fruit(Apple|AppleGreen|Pear|Orange|Lemon|Grape|Plum|Berry|Banana|Aril|Rowan|Bilberry|Ballmelon|BellDate|Date|Tuna|Juniper|JuniperDry|Madrone|Fig|Pitaya|Plantain|ArbutusRed|ArbutusOrange|WhorlOlive|PandanKey|Banksia)$/, ['food'], 'fruitSkin'],
+  /* new fruit keys split by their name's last word (fruitCocoHusk, fruitCocoShell, fruitCocoFlesh, fruitCocoWater) */
+  [/^fruit\w+(Husk|Rind)$/, ['food'], 'fruitHusk'],
+  [/^fruit\w+(Shell|Nut|Capsule)$/, ['food'], 'fruitShell'],
+  [/^fruit\w+(Scale|Scales|Cone)$/, ['food'], 'fruitScale'],
+  [/^fruit\w+(Flesh|Pulp|Meal|Paste|Cake)$/, ['food'], 'fruitFlesh'],
+  [/^fruit\w+(Jelly|Water|Juice|Syrup)$/, ['food'], 'fruitJelly'],
+  [/^fruit\w+(Seed|Seeds|Kernel|Bean)$/, ['food'], 'fruitSeed'],
+  [/^fungus/, ['food'], 'fungus'],
+  [/^fruit/, ['food'], 'fruitSkin']          /* every other fruit part (tips, stalks, bracts, lantern pods): a skin */
+];
+const _famRev = {};
+/* the fruit pieces shade their colours (F.shade) for ridges and studs; a shaded food colour with no palette key of its
+   own takes the nearest fruit or fungus key's split, when it is within a shade's reach of it (RGB distance 64) */
+function _nearFruitKeys(rev, color) {
+  let best = null, bd = 64 * 64;
+  const r = color >> 16 & 255, g = color >> 8 & 255, b = color & 255;
+  rev.forEach((ks, c) => {
+    if (!ks.every(k => /^(fruit|fungus)/.test(k))) return;
+    const dr = (c >> 16 & 255) - r, dg = (c >> 8 & 255) - g, db = (c & 255) - b, d = dr * dr + dg * dg + db * db;
+    if (d < bd) { bd = d; best = ks; }
+  });
+  return best;
+}
+function furnFamily(culture, color, family) {
+  if (!family || typeof color !== 'number') return family;
+  let rev = _famRev[culture];
+  if (!rev) {
+    rev = _famRev[culture] = new Map();
+    const p = FPAL[culture] || {};
+    for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
+  }
+  let keys = rev.get(color);
+  if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
+  if (!keys) return family;
+  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  return family;
+}
+
 /* local frame: origin at footprint centre on the ground; +z is FRONT */
 function makeFrame(x, z, ry, opt) {
   opt = opt || {};
@@ -751,6 +919,7 @@ function makeFrame(x, z, ry, opt) {
   let st = (F.seed * 2654435761) >>> 0;
   F.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   F.rr = (a, b) => a + (b - a) * F.rnd();
+  const ff = (c, fam) => furnFamily(F.asset ? F.asset.culture : '', c, fam);
   F.col = (key) => furnCol(F.asset ? F.asset.culture : '', key);
   F.cols = (keys) => keys.map(F.col);
   F.pick = (arr) => {
@@ -767,18 +936,18 @@ function makeFrame(x, z, ry, opt) {
   /* move the frame origin to local (lx, lz). A piece authored off-centre calls
      F.shift(-cx, -cz) first, so its footprint centre lands on the origin. */
   F.shift = (lx, lz) => { const [x2, z2] = toWorld(lx, lz); F.x = x2; F.z = z2; };
-  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, family); };
-  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, family); };
+  F.box = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBox(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cyl = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCyl(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.cone = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkCone(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.dome = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkDome(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.blob = (lx, ly, lz, r, h, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBlob(x2, F.y + ly, z2, r, h, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.ball = (lx, ly, lz, r, color, family) => { const [x2, z2] = toWorld(lx, lz); mkBall(x2, F.y + ly, z2, r, color, ff(color, family)); };
   /* soft furnishings (mkPillow, mkBolster above): both CENTRED at ly. F.pillow returns top(lx, lz) in the pillow's own frame */
-  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family, o); };
-  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, family, o); };
-  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, family, sides); };
-  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
-  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, family); };
+  F.pillow = (lx, ly, lz, w, h, d, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); return mkPillow(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.bolster = (lx, ly, lz, len, r, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkBolster(x2, F.y + ly, z2, len, r, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.frustum = (lx, ly, lz, rBottom, rTop, h, ry2, color, family, sides) => { const [x2, z2] = toWorld(lx, lz); mkFrustum(x2, F.y + ly, z2, rBottom, rTop, h, F.ry + (ry2 || 0), color, ff(color, family), sides); };
+  F.pyrRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkPyrRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.hipRoof = (lx, ly, lz, w, h, d, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkHipRoof(x2, F.y + ly, z2, w, h, d, F.ry + (ry2 || 0), color, ff(color, family)); };
   /* a beam's roll must come from the LOCAL frame, then turn with the building:
      setFromUnitVectors on the world direction picks the shortest rotation,
      whose roll depends on heading, so a sloped slab (roof, canopy, tent side)
@@ -786,7 +955,7 @@ function makeFrame(x, z, ry, opt) {
   const _bUp = new THREE.Vector3(0, 1, 0), _bDir = new THREE.Vector3(), _bQy = new THREE.Quaternion(), _bAxY = new THREE.Vector3(0, 1, 0);
   F.beam = (ax, ay, az, bx, by, bz, w, d, color, family) => {
     const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz);
-    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, family);
+    const m = mkBeam(ax2, F.y + ay, az2, bx2, F.y + by, bz2, w, d, color, ff(color, family));
     if (F.ry && m) {
       _bDir.set(bx - ax, by - ay, bz - az);
       if (_bDir.lengthSq() > 1e-12) {
@@ -794,7 +963,12 @@ function makeFrame(x, z, ry, opt) {
       }
     }
   };
-  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, family); };
+  F.rod = (ax, ay, az, bx, by, bz, r, color, family) => { const [ax2, az2] = toWorld(ax, az), [bx2, bz2] = toWorld(bx, bz); mkRod(ax2, F.y + ay, az2, bx2, F.y + by, bz2, r, color, ff(color, family)); };
+  /* grown surfaces (mkEll, mkLathe, mkTube above): F.ell is CENTRED at ly; F.lathe stands on ly (profile heights [[r, h], ...] are added to it);
+     F.tube takes the polyline in the local frame, absolute heights, and closes neither end */
+  F.ell = (lx, ly, lz, rx, ry, rz, ry2, color, family) => { const [x2, z2] = toWorld(lx, lz); mkEll(x2, F.y + ly, z2, rx, ry, rz, F.ry + (ry2 || 0), color, ff(color, family)); };
+  F.lathe = (lx, ly, lz, prof, ry2, color, family, o) => { const [x2, z2] = toWorld(lx, lz); mkLathe(x2, F.y + ly, z2, prof, F.ry + (ry2 || 0), color, ff(color, family), o); };
+  F.tube = (pts, r, color, family, o) => { mkTube(pts.map(p => { const [x2, z2] = toWorld(p[0], p[2]); return [x2, F.y + p[1], z2]; }), r, color, ff(color, family), o); };
   F.decal = (lx, ly, lz, w, h, ry2, key, paint, family) => { const [x2, z2] = toWorld(lx, lz); mkDecal(x2, F.y + ly, z2, w, h, F.ry + (ry2 || 0), key, paint, family); };
   F.css = cssCol;
   F.lamp = (lx, ly, lz, amp, rad) => { const [x2, z2] = toWorld(lx, lz); const l = new THREE.PointLight(0xffb066, amp || 1, rad || 10); l.position.set(x2, F.y + ly, z2); _add(l); };
@@ -2845,6 +3019,29 @@ const FK = (function () {
   };
   /* a weapon rack: the rack builder with weapons on it */
   B.weaponRack = function (F, S, o) { B.rack(F, Object.assign({}, S, { rack: S.rackWeapons || 'weapons' }), o); };
+  /* melee practice post: a planted post with a crossbar, a straw-wrapped body and head, a shield on one arm, a practice sword leaning */
+  B.trainingDummy = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hay = F.shade(P.rope, 0.18);
+    F.box(0, 0, 0, W * 0.9, 0.08, D * 0.8, 0, P.woodD, P.wf);                                  /* base boards */
+    F.box(0, 0.08, 0, 0.12, H * 0.78, 0.12, 0, P.wood, P.wf);                                 /* the post */
+    F.blob(0, H * 0.5, 0, 0.19, H * 0.34, 0, hay, 'plant');                                   /* straw-wrapped body */
+    F.rod(-W * 0.4, H * 0.72, 0, W * 0.4, H * 0.72, 0, 0.035, P.wood, P.wf);                 /* crossbar arms */
+    F.ball(0, H * 0.9, 0, 0.12, hay, 'plant');                                                 /* head */
+    F.box(-W * 0.28, H * 0.48, D * 0.12, 0.26, 0.38, 0.04, 0, P.pick(), P.cf);                /* shield on the left arm */
+    F.rod(W * 0.34, 0.08, D * 0.3, W * 0.26, H * 0.5, D * 0.12, 0.015, P.woodL, P.wf);        /* practice sword against the post */
+    F.rod(W * 0.28, H * 0.6, D * 0.1, W * 0.4, H * 0.58, D * 0.1, 0.012, P.rope, 'rope');    /* strap on the crossbar */
+  };
+  /* ranged practice butt: a straw backstop between two posts, painted rings on its face, an arrow stuck in */
+  B.archeryButt = function (F, S, o) {
+    const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, hay = F.shade(P.rope, 0.18);
+    F.box(0, 0, 0, W * 0.95, 0.06, D * 0.9, 0, P.woodD, P.wf);                                 /* base boards */
+    for (const s of [-1, 1]) F.box(s * (W / 2 - 0.1), 0.06, -0.05, 0.1, H - 0.06, 0.1, 0, P.wood, P.wf);   /* the two posts */
+    F.box(0, H - 0.08, -0.05, W - 0.1, 0.08, 0.1, 0, P.woodD, P.wf);                          /* top beam */
+    F.box(0, 0.5, 0, W - 0.3, 0.9, 0.36, 0, hay, 'plant');                                     /* straw backstop */
+    const rings = [[0.76, P.woodL, P.wf], [0.58, P.pick(), P.cf], [0.4, P.woodL, P.wf], [0.22, P.pick(), P.cf]];
+    rings.forEach(function (r, i) { F.box(0, 0.95 - r[0] / 2, 0.18 + i * 0.008, r[0], r[0], 0.01, 0, r[1], r[2]); });   /* the target face */
+    F.rod(0.1, 0.8, 0.2, 0.1, 0.78, 0.38, 0.01, P.wood, P.wf);                                  /* an arrow in the face */
+  };
   /* a staved vat (brewing, dyeing, tanning) with its paddle */
   B.vat = function (F, S, o) {
     const P = K.pal(F, S), W = o.w, D = o.d, H = o.h, R = Math.min(W, D) / 2 - 0.02;
@@ -3114,6 +3311,12 @@ const FK = (function () {
       { role: 'grindstone', type: 'workstation', rooms: ['smithy', 'workshop', 'yard'], setting: 'both', clear: { front: 0.7 }, w: 0.9, d: 0.6, h: 1.0, uses: ['wood', 'metal', 'stone'], build: 'grindstone' },
       { role: 'altar', type: 'altar', rooms: ['shrine'], clear: { front: 1.0 }, w: 1.4, d: 0.8, h: 1.25, uses: ['stone', 'wood', 'cloth', 'accent', 'clay'], fire: true, build: 'altar' },
       { role: 'barrel', type: 'storage', rooms: ['tavern', 'store', 'kitchen', 'shop'], anchor: 'wall', clear: { front: 0.7 }, w: 1.8, d: 0.7, h: 1.3, uses: ['wood', 'metal', 'accent'], build: 'barrelRack' }
+    ],
+    /* training furniture (2026-10): a melee and a ranged practice piece for every culture, registered with
+       FK.set({ roles: 'training' }) as <culture>_training_<role>; their tasks are melee-training and ranged-training */
+    training: [
+      { role: 'training_dummy', type: 'tool', rooms: ['yard', 'barracks', 'court'], setting: 'both', clear: { front: 1.2, back: 1.0, left: 1.0, right: 1.0 }, w: 0.9, d: 0.7, h: 1.8, uses: ['wood', 'cloth', 'rope'], plant: true, build: 'trainingDummy' },
+      { role: 'archery_butt', type: 'tool', rooms: ['yard', 'barracks', 'court'], setting: 'both', clear: { front: 3.0 }, w: 1.3, d: 0.8, h: 1.6, uses: ['wood', 'cloth', 'rope'], plant: true, build: 'archeryButt' }
     ]
   };
 
@@ -3667,7 +3870,7 @@ FURN({
   key: 'voth_still_cluster', name: "Alchemist's Still Cluster", culture: 'voth', type: 'workstation', setting: 'both',
   rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 1 },
   materials: ['timber', 'stone', 'metal', 'glass', 'cloth', 'emissive'],
-  w: 2.5, d: 1.2, h: 1.45, variants: 1,
+  w: 2.5, d: 1.2, h: 1.45, variants: 1, job: 'alchemy',
   build: function (F) {
     const stone = F.col('stoneGrey'), jade = F.col('stoneJade'), metal = F.col('steel'), glass = F.col('glassMist');
     /* bench: top slab, apron and four stub legs */
@@ -7617,7 +7820,7 @@ FURN({
   }
 });
 
-/* ================= Ancients kit extras (4 pieces) ================= */
+/* ================= Ancients kit extras (32 pieces) ================= */
 
 FURN({
   key: 'ancients_light_strip_ring', name: 'Corridor light-strip ring', culture: 'ancient', type: 'lamp', setting: 'indoor',
@@ -7802,6 +8005,574 @@ FURN({
       F.lamp(0, 1.15, 0, 0.5, 4);
     }
     F.rod(0.62, 0.0, -0.4, 0.62, 0.8, -0.4, 0.03, F.shade(tarn, -0.2), 'metal');   /* cable trunk */
+  }
+});
+
+/* ---------- the arcology's fittings (Noah's Regret, 2026-10) ----------
+   Deck and harbour gear, the greenhouse's beds and the engine rooms' stand, as the ship carries them. Colours are
+   the 'ancient' palette's arcology keys (paintGrey, soil, the leaf greens, fruitRed, water, rust). Mooring and deck
+   gear is type 'tool'. */
+
+FURN({
+  key: 'ancients_bollard', name: 'Mooring bollard', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['quay', 'deck', 'pier'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'rustSteel'],
+  w: 0.9, d: 0.9, h: 0.84, variants: 1,
+  build: function (F) {
+    const PAINT = F.col('paintGrey'), RUST = F.col('rust');
+    /* a bolted foot, the waisted post a line is thrown over, its cap */
+    F.cyl(0, 0, 0, 0.42, 0.06, 0, F.shade(PAINT, -0.15), 'metal');
+    for (let i = 0; i < 6; i++) { const a = i * F.TAU / 6; F.cyl(Math.cos(a) * 0.36, 0.06, Math.sin(a) * 0.36, 0.035, 0.03, 0, F.shade(PAINT, 0.1), 'metal'); }
+    F.frustum(0, 0.06, 0, 0.3, 0.25, 0.32, 0, PAINT, 'metal', 16);
+    F.frustum(0, 0.38, 0, 0.25, 0.3, 0.32, 0, PAINT, 'metal', 16);
+    F.cyl(0, 0.7, 0, 0.4, 0.12, 0, PAINT, 'metal');
+    /* paint worn to rust where the lines run */
+    F.cyl(0, 0.36, 0, 0.255, 0.05, 0, RUST, 'rust');
+    F.blob(F.rr(-0.2, 0.2), 0.8, F.rr(-0.2, 0.2), 0.12, 0.04, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+FURN({
+  key: 'ancients_capstan', name: 'Deck capstan', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['quay', 'deck', 'pier'], anchor: 'floor', clearance: { front: 0.8, back: 0.8, left: 0.8, right: 0.8 },
+  materials: ['metal', 'rustSteel'],
+  w: 1.5, d: 1.5, h: 1.06, variants: 1,
+  build: function (F) {
+    const PAINT = F.col('paintGrey'), DARK = F.col('blackIron'), RUST = F.col('rust');
+    F.cyl(0, 0, 0, 0.72, 0.1, 0, F.shade(PAINT, -0.12), 'metal');
+    /* the waisted drum, its whelps (the ribs the warp grips on) and the cap with bar sockets */
+    F.frustum(0, 0.1, 0, 0.5, 0.4, 0.4, 0, PAINT, 'metal', 16);
+    F.frustum(0, 0.5, 0, 0.4, 0.46, 0.4, 0, PAINT, 'metal', 16);
+    for (let i = 0; i < 8; i++) {
+      const a = i * F.TAU / 8;
+      F.beam(Math.cos(a) * 0.5, 0.12, Math.sin(a) * 0.5, Math.cos(a) * 0.43, 0.88, Math.sin(a) * 0.43, 0.08, 0.06, F.shade(PAINT, 0.08), 'metal');
+    }
+    F.cyl(0, 0.9, 0, 0.62, 0.14, 0, PAINT, 'metal');
+    for (let i = 0; i < 4; i++) { const a = i * F.TAU / 4 + 0.4; F.box(Math.cos(a) * 0.5, 0.94, Math.sin(a) * 0.5, 0.14, 0.1, 0.14, -a, DARK, 'metal'); }
+    F.cyl(0, 1.04, 0, 0.16, 0.02, 0, F.shade(PAINT, 0.15), 'metal');
+    F.blob(F.rr(-0.4, 0.4), 0.12, 0.62, 0.14, 0.04, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+FURN({
+  key: 'ancients_lamp_standard', name: 'Quay lamp standard', culture: 'ancient', tier: 'common', type: 'lamp', setting: 'outdoor',
+  rooms: ['quay', 'pier', 'plaza', 'deck'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'glass', 'emissive'],
+  w: 0.7, d: 0.7, h: 4.8, variants: 2, variantNames: ['dead', 'lit'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), lit = F.variant === 1;
+    /* a white stem on a flared foot, a collar, the round head */
+    F.frustum(0, 0, 0, 0.3, 0.15, 0.5, 0, WHITE, 'metal', 16);
+    F.cyl(0, 0.5, 0, 0.11, 3.7, 0, WHITE, 'metal');
+    F.cyl(0, 4.1, 0, 0.17, 0.08, 0, F.shade(WHITE, -0.12), 'metal');
+    F.ball(0, 4.47, 0, 0.32, lit ? F.col('whiteHot') : F.shade(F.col('glassSky'), -0.3), lit ? 'glow' : 'glass');
+    F.cyl(0, 4.76, 0, 0.08, 0.03, 0, WHITE, 'metal');
+    if (lit) F.lamp(0, 4.47, 0, 0.8, 12);
+  }
+});
+
+FURN({
+  key: 'ancients_deck_vent', name: 'Mushroom deck ventilator', culture: 'ancient', tier: 'common', type: 'tool', setting: 'outdoor',
+  rooms: ['deck', 'rooftop', 'plaza'], anchor: 'floor', clearance: {},
+  materials: ['metal'],
+  w: 1.1, d: 1.1, h: 1.28, variants: 1,
+  build: function (F) {
+    const WHITE = F.col('alloy'), DARK = F.col('steel');
+    /* a coaming on the deck, the trunk, a louvred band under the cap, the mushroom cap */
+    F.cyl(0, 0, 0, 0.36, 0.12, 0, F.shade(WHITE, -0.1), 'metal');
+    F.cyl(0, 0.12, 0, 0.28, 0.72, 0, WHITE, 'metal');
+    F.cyl(0, 0.84, 0, 0.3, 0.1, 0, DARK, 'metal');
+    for (let i = 0; i < 12; i++) { const a = i * F.TAU / 12; F.box(Math.cos(a) * 0.3, 0.84, Math.sin(a) * 0.3, 0.03, 0.1, 0.04, -a, WHITE, 'metal'); }
+    F.cyl(0, 0.94, 0, 0.53, 0.04, 0, F.shade(WHITE, -0.15), 'metal');
+    F.dome(0, 0.98, 0, 0.53, 0.28, 0, WHITE, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_planting_bed', name: 'Greenhouse planting bed', culture: 'ancient', tier: 'common', type: 'planter', setting: 'both',
+  rooms: ['greenhouse', 'garden', 'plaza'], anchor: 'floor', clearance: { front: 0.7, back: 0.7 },
+  materials: ['concrete', 'stone', 'foliage', 'food', 'timber'],
+  w: 2.4, d: 1.2, h: 1.5, variants: 3, variantNames: ['greens', 'staked vines', 'leeks'],
+  build: function (F) {
+    const KERB = F.col('alloy'), SOIL = F.col('soil');
+    const greens = F.cols(['leafGreen', 'leafLight', 'leafDark']);
+    /* a white moulded kerb round a raised bed of earth */
+    F.box(0, 0, 0.56, 2.4, 0.42, 0.08, 0, KERB, 'concrete');
+    F.box(0, 0, -0.56, 2.4, 0.42, 0.08, 0, KERB, 'concrete');
+    for (const s of [-1, 1]) F.box(s * 1.16, 0, 0, 0.08, 0.42, 1.04, 0, KERB, 'concrete');
+    F.box(0, 0, 0, 2.24, 0.36, 1.04, 0, SOIL, 'stone');
+    if (F.variant === 0) {
+      /* low leafy greens, two rows */
+      for (let i = 0; i < 7; i++) for (const z of [-0.26, 0.26]) {
+        const r = F.rr(0.13, 0.18);
+        F.blob(-0.9 + i * 0.3 + F.rr(-0.04, 0.04), 0.4, z + F.rr(-0.04, 0.04), r, F.rr(0.18, 0.28), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+      }
+    } else if (F.variant === 1) {
+      /* staked vines: a stake per plant, leaves up it, ripe fruit hanging */
+      for (let i = 0; i < 5; i++) for (const z of [-0.25, 0.25]) {
+        const x = -0.88 + i * 0.44;
+        F.rod(x, 0.36, z, x, 1.4, z, 0.015, F.col('timberOak'), 'wood');
+        for (let k = 0; k < 4; k++) F.blob(x + F.rr(-0.06, 0.06), 0.55 + k * 0.24, z + F.rr(-0.06, 0.06), F.rr(0.1, 0.14), F.rr(0.14, 0.2), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+        for (let k = 0; k < 2; k++) F.ball(x + F.rr(-0.1, 0.1), F.rr(0.6, 1.1), z + F.rr(-0.1, 0.1), 0.04, F.col('fruitRed'), 'food');
+      }
+    } else {
+      /* leeks: close rows of upright blades */
+      for (let i = 0; i < 9; i++) for (const z of [-0.32, 0, 0.32]) {
+        const x = -0.96 + i * 0.24 + F.rr(-0.03, 0.03);
+        F.cyl(x, 0.36, z, 0.025, 0.2, 0, F.col('clothBone'), 'leafy');
+        F.cone(x, 0.56, z, 0.05, F.rr(0.3, 0.42), F.rnd() * F.TAU, F.pick(greens), 'leafy');
+      }
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_plaza_fountain', name: 'Plaza fountain', culture: 'ancient', tier: 'common', type: 'fountain', setting: 'outdoor',
+  rooms: ['plaza', 'garden', 'atrium'], anchor: 'floor', clearance: { front: 1, back: 1, left: 1, right: 1 },
+  materials: ['concrete', 'glass', 'stone'],
+  w: 3.2, d: 3.2, h: 1.95, variants: 2, variantNames: ['water', 'dry'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), WATER = F.col('water'), wet = F.variant === 0;
+    /* a round basin: its floor, a rim of moulded segments, the pool or a dry silted bottom */
+    F.cyl(0, 0, 0, 1.56, 0.26, 0, F.shade(WHITE, -0.1), 'concrete');
+    const n = 18;
+    for (let i = 0; i < n; i++) {
+      const a0 = i / n * F.TAU, a1 = (i + 1) / n * F.TAU;
+      F.box((Math.cos(a0) + Math.cos(a1)) * 0.74, 0.26, (Math.sin(a0) + Math.sin(a1)) * 0.74, 0.54, 0.26, 0.18, -(a0 + a1) / 2 + Math.PI / 2, WHITE, 'concrete');
+    }
+    if (wet) F.cyl(0, 0.26, 0, 1.4, 0.18, 0, WATER, 'glass');
+    else for (let i = 0; i < 4; i++) { const a = F.rnd() * F.TAU, r = F.rr(0.4, 1.1); F.blob(Math.cos(a) * r, 0.27, Math.sin(a) * r, F.rr(0.2, 0.4), 0.04, F.rnd() * F.TAU, F.col('stoneTaupe'), 'stone'); }
+    /* the column, an upper bowl and a finial */
+    F.frustum(0, 0.26, 0, 0.32, 0.18, 0.95, 0, WHITE, 'concrete', 16);
+    F.frustum(0, 1.21, 0, 0.2, 0.72, 0.26, 0, WHITE, 'concrete', 20);
+    if (wet) F.cyl(0, 1.4, 0, 0.66, 0.04, 0, WATER, 'glass');
+    F.cyl(0, 1.47, 0, 0.1, 0.24, 0, WHITE, 'concrete');
+    F.ball(0, 1.8, 0, 0.13, WHITE, 'concrete');
+    /* water falling from the bowl's lip into the pool */
+    if (wet) for (let i = 0; i < 8; i++) { const a = i * F.TAU / 8; F.rod(Math.cos(a) * 0.72, 1.44, Math.sin(a) * 0.72, Math.cos(a) * 0.86, 0.46, Math.sin(a) * 0.86, 0.025, F.shade(WATER, 0.25), 'glass'); }
+  }
+});
+
+FURN({
+  key: 'ancients_control_stand', name: 'Engine-room control stand', culture: 'ancient', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['engine', 'bridge', 'workshop'], anchor: 'floor', clearance: { front: 1.0 },
+  materials: ['metal', 'glass', 'emissive'],
+  w: 1.4, d: 0.9, h: 1.42, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const WHITE = F.col('alloy'), DARK = F.col('steel'), lit = F.variant === 0;
+    const GLOW = F.cols(['electric', 'amber', 'verdigris']);
+    /* a plinth, the cabinet, a raked instrument face toward the front (+z) */
+    F.box(0, 0, -0.05, 1.2, 0.1, 0.7, 0, DARK, 'metal');
+    F.box(0, 0.1, -0.08, 1.16, 0.84, 0.6, 0, WHITE, 'metal');
+    F.beam(0, 0.94, 0.2, 0, 1.24, -0.36, 1.16, 0.06, F.shade(WHITE, -0.08), 'metal');
+    F.beam(0, 0.97, 0.18, 0, 1.25, -0.34, 1.0, 0.02, F.col('glassBlack'), 'glass');
+    /* dials and lamps along the face */
+    for (let i = 0; i < 5; i++) {
+      const x = -0.4 + i * 0.2, t = (i % 2) * 0.4 + 0.25;
+      F.ball(x, 0.98 + t * 0.3 * 0.9, 0.18 - t * 0.56 * 0.9, 0.045, lit ? F.pick(GLOW) : F.col('unlit'), lit ? 'glow' : 'glass');
+    }
+    /* the two telegraph levers and their quadrants, and a hand rail along the front */
+    for (const s of [-1, 1]) {
+      F.cyl(s * 0.42, 0.94, 0.28, 0.06, 0.06, 0, DARK, 'metal');
+      F.rod(s * 0.42, 1.0, 0.28, s * 0.42, 1.3, 0.3 + F.rr(-0.08, 0.08), 0.02, F.col('pewter'), 'metal');
+      F.ball(s * 0.42, 1.33, 0.3, 0.045, F.col('blackIron'), 'metal');
+    }
+    for (const s of [-1, 1]) F.rod(s * 0.62, 0.1, 0.4, s * 0.62, 0.92, 0.4, 0.02, DARK, 'metal');
+    F.rod(-0.62, 0.92, 0.4, 0.62, 0.92, 0.4, 0.022, F.col('pewter'), 'metal');
+    if (lit) F.lamp(0, 1.2, 0.2, 0.25, 3);
+  }
+});
+
+FURN({
+  key: 'ancients_chain_heap', name: 'Anchor chain heap', culture: 'ancient', tier: 'common', type: 'stack', setting: 'both',
+  rooms: ['chainlocker', 'hold', 'quay', 'deck'], anchor: 'floor', clearance: {},
+  materials: ['metal', 'rustSteel'],
+  w: 1.7, d: 1.7, h: 0.52, variants: 1,
+  build: function (F) {
+    const IRON = F.col('blackIron'), RUST = F.col('rust');
+    /* chain flaked down in a settling coil: alternate links lie flat and stand on edge */
+    let a = F.rnd() * F.TAU, k = 0;
+    for (let layer = 0; layer < 4; layer++) {
+      const r = 0.68 - layer * 0.14, y = 0.06 + layer * 0.11, steps = Math.max(6, Math.round(r * F.TAU / 0.17));
+      for (let i = 0; i < steps; i++, k++) {
+        const a1 = a + F.TAU / steps;
+        const x0 = Math.cos(a) * r, z0 = Math.sin(a) * r, x1 = Math.cos(a1) * r, z1 = Math.sin(a1) * r;
+        const col = F.chance(0.3) ? RUST : F.shade(IRON, F.rr(-0.05, 0.12)), fam = col === RUST ? 'rust' : 'metal';
+        if (k % 2) F.beam(x0, y, z0, x1, y, z1, 0.12, 0.04, col, fam);
+        else F.beam(x0, y - 0.04, z0, x1, y + 0.04, z1, 0.04, 0.12, col, fam);
+        a = a1;
+      }
+    }
+    /* the bitter end trailing off the heap */
+    F.beam(0.66, 0.06, 0, 0.78, 0.03, 0.1, 0.11, 0.04, IRON, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_stowed_anchor', name: 'Stowed bower anchor', culture: 'ancient', tier: 'common', type: 'monument', setting: 'both',
+  rooms: ['plaza', 'quay', 'chainlocker', 'deck'], anchor: 'floor', clearance: { front: 0.6 },
+  materials: ['metal', 'rustSteel', 'concrete'],
+  w: 2.3, d: 0.9, h: 2.5, variants: 1,
+  build: function (F) {
+    const IRON = F.col('blackIron'), RUST = F.col('rust'), WHITE = F.col('alloy');
+    /* a stockless anchor stood on its crown in a white chock, the shackle at the top */
+    F.box(0, 0, 0, 1.7, 0.3, 0.8, 0, WHITE, 'concrete');
+    F.beam(0, 0.3, 0, 0, 2.2, 0, 0.22, 0.18, IRON, 'metal');
+    F.box(0, 0.3, 0, 0.6, 0.3, 0.3, 0, F.shade(IRON, 0.08), 'metal');
+    for (const s of [-1, 1]) {
+      F.beam(s * 0.2, 0.42, 0, s * 0.82, 0.95, 0, 0.18, 0.16, IRON, 'metal');
+      F.beam(s * 0.78, 0.82, 0, s * 0.98, 1.45, 0, 0.36, 0.1, F.shade(IRON, 0.06), 'metal');
+    }
+    /* the shackle: a rough square of bar */
+    F.rod(-0.16, 2.2, 0, -0.16, 2.44, 0, 0.035, IRON, 'metal');
+    F.rod(0.16, 2.2, 0, 0.16, 2.44, 0, 0.035, IRON, 'metal');
+    F.rod(-0.16, 2.44, 0, 0.16, 2.44, 0, 0.035, IRON, 'metal');
+    for (let i = 0; i < 3; i++) F.blob(F.rr(-0.6, 0.6), F.rr(0.5, 1.8) * (i ? 1 : 0.6), 0.1, F.rr(0.08, 0.14), 0.05, F.rnd() * F.TAU, RUST, 'rust');
+  }
+});
+
+/* ---------- the intact buildings' interiors (2026-10) ----------
+   What the Ancients furnished their offices, flats, wards, barracks and labs with, for the Ancients kit's interiors
+   (kits/ancients-interiors 37-ai-kit.js): the house rules of Yuni's Ancient pieces (settlements/yuni/src/61e-ancients-
+   furniture.js, harvested above as yuni_ancient_*): metres, a seat 0.44 m off the floor, a table 0.76, a locker 2.0;
+   white moulded alloy with pewter trim growing out of a flared foot; screens of black glass. Variant 0 is LIT (an intact
+   building has power), variant 1 DEAD. Roles: the pantry is a food container, the locker and wardrobe item containers,
+   the bunk sleeps two. */
+
+FURN({
+  key: 'ancients_chair', name: 'Moulded pod chair', culture: 'ancient', tier: 'common', type: 'chair', setting: 'indoor',
+  rooms: ['study', 'hall', 'school', 'library', 'bedroom', 'living', 'tavern', 'kitchen', 'antechamber', 'brig', 'sickbay', 'chartroom', 'mess'],
+  anchor: 'floor', clearance: { front: 0.5 }, materials: ['metal', 'cloth'],
+  w: 0.56, d: 0.56, h: 0.9, variants: 2, variantNames: ['dove seat', 'slate seat'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), C = F.col(F.variant ? 'clothSlate' : 'clothDove');
+    /* the flared foot and its stem, the moulded pan, a cushion, the back sweeping up from the pan's rear */
+    F.frustum(0, 0, 0, 0.26, 0.07, 0.07, 0, T, 'metal', 14);
+    F.cyl(0, 0.07, 0, 0.05, 0.29, 0, T, 'metal');
+    F.box(0, 0.34, 0, 0.5, 0.06, 0.5, 0, W, 'metal');
+    F.box(0, 0.4, 0.01, 0.46, 0.04, 0.44, 0, C, 'cloth');
+    F.beam(0, 0.38, -0.24, 0, 0.88, -0.27, 0.46, 0.05, W, 'metal');
+    F.beam(0, 0.47, -0.21, 0, 0.8, -0.23, 0.38, 0.03, C, 'cloth');
+  }
+});
+
+FURN({
+  key: 'ancients_desk', name: 'Moulded desk with a glass screen', culture: 'ancient', tier: 'common', type: 'desk', setting: 'indoor',
+  rooms: ['study', 'school', 'library', 'chartroom', 'hall', 'bedroom', 'sickbay', 'antechamber'],
+  anchor: 'wall', clearance: { front: 0.9 }, materials: ['metal', 'glass', 'emissive'],
+  w: 1.5, d: 0.72, h: 1.22, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), G = F.col('glassBlack'), lit = F.variant === 0;
+    /* the top (0.76), a drawer pedestal on the right, a moulded panel leg on the left, the screen standing at the back */
+    F.box(0, 0.7, 0, 1.5, 0.06, 0.72, 0, W, 'metal');
+    F.box(0.46, 0, 0.0, 0.52, 0.7, 0.64, 0, W, 'metal');
+    for (let i = 0; i < 3; i++) F.box(0.46, 0.08 + i * 0.21, 0.325, 0.44, 0.012, 0.01, 0, T, 'metal');
+    F.box(-0.7, 0, 0.0, 0.08, 0.7, 0.64, 0, W, 'metal');
+    F.frustum(-0.7, 0, 0, 0.1, 0.05, 0.05, 0, T, 'metal', 10);
+    F.box(0, 0.76, -0.3, 0.12, 0.08, 0.1, 0, T, 'metal');
+    F.box(0, 0.8, -0.335, 1.1, 0.42, 0.03, 0, G, 'glass');
+    F.box(0, 0.83, -0.318, 1.0, 0.02, 0.006, 0, lit ? F.col('electric') : F.col('unlit'), lit ? 'glow' : 'metal');
+    if (lit) F.box(0, 0.98, -0.318, 0.9, 0.2, 0.004, 0, F.shade(F.col('glassSky'), -0.25), 'glow');
+  }
+});
+
+FURN({
+  key: 'ancients_shelf', name: 'Moulded open shelving', culture: 'ancient', tier: 'common', type: 'shelf', setting: 'indoor',
+  rooms: ['store', 'study', 'library', 'kitchen', 'workshop', 'hall', 'shop', 'sickbay', 'chartroom', 'living', 'school'],
+  anchor: 'wall', clearance: { front: 0.7 }, materials: ['metal', 'glass'],
+  w: 1.6, d: 0.42, h: 2.0, variants: 2, variantNames: ['canisters', 'data slates'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    F.box(0, 0, -0.2, 1.6, 2.0, 0.02, 0, F.shade(W, -0.06), 'metal');
+    for (const s of [-1, 1]) F.box(s * 0.775, 0, 0, 0.05, 2.0, 0.42, 0, W, 'metal');
+    for (let i = 0; i < 5; i++) F.box(0, 0.04 + i * 0.44, 0, 1.5, 0.04, 0.4, 0, W, 'metal');
+    for (let i = 0; i < 4; i++) {
+      const y = 0.08 + i * 0.44;
+      for (let k = 0; k < 6; k++) {
+        if (F.chance(0.25)) continue;
+        const x = -0.6 + k * 0.24 + F.rr(-0.03, 0.03);
+        if (F.variant === 0) F.cyl(x, y, F.rr(-0.06, 0.06), F.rr(0.06, 0.09), F.rr(0.14, 0.3), 0, F.pick([T, W, F.col('steelLight')]), 'metal');
+        else F.box(x, y, 0, 0.03, F.rr(0.22, 0.32), 0.26, F.rr(-0.1, 0.1), F.col('glassBlack'), 'glass');
+      }
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_archive', name: 'Archive wall of data slates', culture: 'ancient', tier: 'court', type: 'shelf', setting: 'indoor',
+  rooms: ['library', 'study', 'chartroom', 'hall'],
+  anchor: 'wall', clearance: { front: 0.9 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.0, d: 0.5, h: 2.4, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), G = F.col('glassBlack'), lit = F.variant === 0;
+    F.box(0, 0, -0.2, 2.0, 2.4, 0.1, 0, F.shade(W, -0.08), 'metal');
+    for (const s of [-1, 1]) F.box(s * 0.97, 0, 0, 0.06, 2.4, 0.5, 0, W, 'metal');
+    F.box(0, 0, 0, 2.0, 0.12, 0.5, 0, W, 'metal');
+    F.box(0, 2.3, 0, 2.0, 0.1, 0.5, 0, W, 'metal');
+    /* five ranks of slates on edge in moulded bays, each bay with its index strip */
+    for (let r = 0; r < 5; r++) {
+      const y = 0.16 + r * 0.42;
+      F.box(0, y - 0.03, 0, 1.9, 0.03, 0.42, 0, W, 'metal');
+      for (let k = 0; k < 18; k++) if (!F.chance(0.12)) F.box(-0.85 + k * 0.1, y, 0.02, 0.025, F.rr(0.28, 0.34), 0.34, 0, G, 'glass');
+      F.box(0, y + 0.36, 0.24, 1.86, 0.018, 0.012, 0, lit ? F.col('verdigris') : F.col('unlit'), lit ? 'glow' : 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_galley', name: 'Galley block with induction rings', culture: 'ancient', tier: 'common', type: 'stove', setting: 'indoor',
+  rooms: ['kitchen', 'living', 'cottage', 'mess'], role: 'hearth',
+  anchor: 'wall', clearance: { front: 1.0 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.0, d: 0.66, h: 1.5, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    /* the block on a recessed toe, the worktop, three rings and a sink, the splash panel behind */
+    F.box(0, 0, 0.0, 1.92, 0.1, 0.56, 0, F.shade(T, -0.2), 'metal');
+    F.box(0, 0.1, 0.0, 2.0, 0.8, 0.66, 0, W, 'metal');
+    F.box(0, 0.9, 0.0, 2.0, 0.05, 0.66, 0, F.shade(W, -0.1), 'metal');
+    for (let i = 0; i < 3; i++) F.cyl(-0.65 + i * 0.32, 0.95, 0.04, 0.12, 0.008, 0, lit ? F.col('amber') : F.col('unlit'), lit ? 'glow' : 'metal');
+    F.box(0.6, 0.93, 0.04, 0.5, 0.025, 0.4, 0, F.col('glassBlack'), 'glass');
+    F.rod(0.6, 0.95, -0.22, 0.6, 1.2, -0.1, 0.015, T, 'metal');
+    F.box(0, 0.95, -0.31, 2.0, 0.55, 0.04, 0, F.shade(W, -0.04), 'metal');
+    for (let i = 0; i < 4; i++) F.box(-0.75 + i * 0.5, 0.2, 0.332, 0.44, 0.6, 0.006, 0, F.shade(W, -0.12), 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_pantry', name: 'Sealed cold pantry', culture: 'ancient', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['kitchen', 'living', 'store', 'cottage', 'mess'], role: 'pantry',
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal', 'glass', 'emissive'],
+  w: 0.9, d: 0.64, h: 2.0, variants: 2, variantNames: ['cold', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.box(0, 0, 0, 0.84, 0.08, 0.58, 0, T, 'metal');
+    F.box(0, 0.08, 0, 0.9, 1.92, 0.64, 0, W, 'metal');
+    F.box(0, 0.12, 0.322, 0.8, 1.06, 0.01, 0, F.shade(W, -0.08), 'metal');
+    F.box(0, 1.22, 0.322, 0.8, 0.72, 0.01, 0, F.col('glassSky'), 'glass');
+    F.box(0.32, 0.6, 0.33, 0.04, 0.5, 0.02, 0, T, 'metal');
+    F.box(-0.3, 1.9, 0.33, 0.12, 0.03, 0.01, 0, lit ? F.col('ice') : F.col('unlit'), lit ? 'glow' : 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_locker', name: 'Pair of personal lockers', culture: 'ancient', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['barracks', 'dormitory', 'bedroom', 'store', 'workshop', 'sickbay', 'school'], role: 'locker',
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal', 'emissive'],
+  w: 1.0, d: 0.55, h: 2.0, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.box(0, 0, 0, 1.0, 0.08, 0.5, 0, F.shade(T, -0.2), 'metal');
+    for (const s of [-1, 1]) {
+      F.box(s * 0.25, 0.08, 0, 0.48, 1.92, 0.55, 0, W, 'metal');
+      F.box(s * 0.25, 0.12, 0.277, 0.42, 1.82, 0.006, 0, F.shade(W, -0.07), 'metal');
+      for (let k = 0; k < 4; k++) F.box(s * 0.25, 1.55 + k * 0.06, 0.282, 0.3, 0.02, 0.006, 0, T, 'metal');
+      F.box(s * 0.25 - s * 0.15, 1.0, 0.285, 0.03, 0.14, 0.01, 0, lit ? F.col('verdigris') : F.col('unlit'), lit ? 'glow' : 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_wardrobe', name: 'Moulded wardrobe', culture: 'ancient', tier: 'common', type: 'storage', setting: 'indoor',
+  rooms: ['bedroom', 'living', 'dormitory'], role: 'wardrobe',
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal'],
+  w: 1.4, d: 0.62, h: 2.1, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    F.box(0, 0, 0, 1.32, 0.08, 0.56, 0, T, 'metal');
+    F.box(0, 0.08, 0, 1.4, 1.84, 0.62, 0, W, 'metal');
+    F.box(0, 1.92, 0, 1.36, 0.18, 0.6, 0, F.shade(W, -0.04), 'metal');
+    for (const s of [-1, 1]) {
+      F.box(s * 0.345, 0.14, 0.312, 0.64, 1.74, 0.006, 0, F.shade(W, -0.06), 'metal');
+      F.box(s * 0.05, 0.85, 0.32, 0.03, 0.4, 0.02, 0, T, 'metal');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_couch', name: 'Curved lounge couch', culture: 'ancient', tier: 'common', type: 'seating', setting: 'indoor',
+  rooms: ['living', 'hall', 'antechamber', 'tavern', 'study'],
+  anchor: 'floor', clearance: { front: 0.8 }, materials: ['metal', 'cloth'],
+  w: 2.2, d: 0.9, h: 0.82, variants: 2, variantNames: ['teal', 'slate'],
+  build: function (F) {
+    const W = F.col('alloy'), C = F.col(F.variant ? 'clothSlate' : 'clothTeal');
+    /* a shallow arc of moulded seat sections on a plinth, the back following it, rounded arms */
+    const n = 5;
+    for (let i = 0; i < n; i++) {
+      const a = (i - (n - 1) / 2) * 0.13, x = Math.sin(a) * 2.6, z = 0.12 - (1 - Math.cos(a)) * 2.6;
+      F.box(x, 0.06, z, 0.4, 0.3, 0.62, a, W, 'metal');
+      F.box(x, 0.36, z + 0.03, 0.4, 0.1, 0.56, a, C, 'cloth');
+      F.box(x - Math.sin(a) * 0.3, 0.36, z - 0.3 * Math.cos(a) - 0.0, 0.42, 0.42, 0.1, a, C, 'cloth');
+    }
+    F.box(0, 0, 0, 2.0, 0.06, 0.6, 0, F.shade(W, -0.2), 'metal');
+    for (const s of [-1, 1]) F.blob(s * 1.0, 0.36, -0.06, 0.13, 0.5, 0, W, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_low_table', name: 'Oval low table', culture: 'ancient', tier: 'common', type: 'table', setting: 'indoor',
+  rooms: ['living', 'hall', 'antechamber', 'study', 'tavern'],
+  anchor: 'floor', clearance: { front: 0.5, back: 0.5 }, materials: ['metal', 'glass'],
+  w: 1.2, d: 0.7, h: 0.42, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    F.frustum(0, 0, 0, 0.3, 0.12, 0.06, 0, T, 'metal', 12);
+    F.cyl(0, 0.06, 0, 0.1, 0.3, 0, T, 'metal');
+    F.box(0, 0.36, 0, 0.5, 0.05, 0.7, 0, W, 'metal');
+    for (const s of [-1, 1]) F.cyl(s * 0.25, 0.36, 0, 0.35, 0.05, 0, W, 'metal');
+    F.box(0, 0.41, 0, 0.9, 0.01, 0.5, 0, F.col('glassBlack'), 'glass');
+  }
+});
+
+FURN({
+  key: 'ancients_bed', name: 'Moulded sleeping platform', culture: 'ancient', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['bedroom', 'cottage'],
+  anchor: 'floor', clearance: { front: 0.6, left: 0.5, right: 0.5 }, materials: ['metal', 'cloth', 'emissive'],
+  w: 1.7, d: 2.2, h: 0.95, variants: 2, variantNames: ['dove', 'slate'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), C = F.col(F.variant ? 'clothSlate' : 'clothDove');
+    /* head at -z: the platform on a recessed plinth, the mattress, two pillows, a curved headboard with a reading strip */
+    F.box(0, 0, 0.04, 1.5, 0.1, 2.0, 0, F.shade(T, -0.2), 'metal');
+    F.box(0, 0.1, 0.04, 1.7, 0.22, 2.1, 0, W, 'metal');
+    F.box(0, 0.32, 0.06, 1.58, 0.16, 2.0, 0, C, 'cloth');
+    for (const s of [-1, 1]) F.box(s * 0.38, 0.48, -0.78, 0.62, 0.1, 0.34, 0, F.shade(C, 0.12), 'cloth');
+    F.box(0, 0.1, -1.04, 1.7, 0.85, 0.1, 0, W, 'metal');
+    F.box(0, 0.78, -0.985, 1.4, 0.03, 0.01, 0, F.col('electric'), 'glow');
+  }
+});
+
+FURN({
+  key: 'ancients_bunk', name: 'Two-tier crew bunk', culture: 'ancient', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['barracks', 'dormitory', 'crew', 'bunkroom'], role: 'bunk',
+  anchor: 'floor', clearance: { front: 0.7 }, materials: ['metal', 'cloth'],
+  w: 1.0, d: 2.1, h: 1.95, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), C = F.col('clothSlate');
+    for (const s of [-1, 1]) F.box(s * 0.47, 0, 0, 0.06, 1.95, 2.1, 0, W, 'metal');
+    for (const y of [0.25, 1.2]) { F.box(0, y, 0, 0.88, 0.08, 2.04, 0, W, 'metal'); F.box(0, y + 0.08, 0.02, 0.84, 0.12, 1.94, 0, C, 'cloth'); }
+    F.box(0, 1.88, 0, 0.88, 0.07, 2.04, 0, F.shade(W, -0.05), 'metal');
+    for (let k = 0; k < 5; k++) F.rod(0.3, 0.3 + k * 0.32, 1.04, 0.42, 0.3 + k * 0.32, 1.04, 0.015, T, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_med_bed', name: 'Ward bed with a monitor arm', culture: 'ancient', tier: 'common', type: 'bed', setting: 'indoor',
+  rooms: ['sickbay'],
+  anchor: 'floor', clearance: { front: 0.6, left: 0.6, right: 0.6 }, materials: ['metal', 'cloth', 'glass', 'emissive'],
+  w: 1.1, d: 2.2, h: 1.7, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.frustum(0, 0, 0.1, 0.32, 0.12, 0.1, 0, T, 'metal', 12);
+    F.cyl(0, 0.1, 0.1, 0.1, 0.4, 0, T, 'metal');
+    F.box(0, 0.5, 0.06, 0.95, 0.1, 2.05, 0, W, 'metal');
+    F.box(0, 0.6, 0.08, 0.86, 0.12, 1.96, 0, F.col('clothDove'), 'cloth');
+    F.beam(0, 0.64, -0.6, 0, 0.82, -0.96, 0.86, 0.1, F.col('clothDove'), 'cloth');
+    F.box(0, 0.5, -1.05, 1.0, 0.7, 0.08, 0, W, 'metal');
+    /* the monitor arm from the head, its screen turned to the bed */
+    F.rod(0.4, 1.2, -1.04, 0.36, 1.5, -0.9, 0.025, T, 'metal');
+    F.box(0.34, 1.42, -0.86, 0.36, 0.26, 0.03, 0.5, F.col('glassBlack'), 'glass');
+    F.box(0.34, 1.46, -0.84, 0.28, 0.02, 0.01, 0.5, lit ? F.col('glowGreen') : F.col('unlit'), lit ? 'glow' : 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_lab_bench', name: 'Laboratory bench under a hood', culture: 'ancient', tier: 'common', type: 'workstation', setting: 'indoor',
+  rooms: ['workshop', 'study', 'sickbay'],
+  anchor: 'wall', clearance: { front: 1.0 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.0, d: 0.8, h: 2.1, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    F.box(0, 0, 0, 2.0, 0.86, 0.8, 0, W, 'metal');
+    F.box(0, 0.86, 0, 2.0, 0.05, 0.8, 0, F.col('glassBlack'), 'glass');
+    F.box(0, 0.91, -0.38, 2.0, 1.19, 0.04, 0, F.shade(W, -0.05), 'metal');
+    F.box(0, 1.9, -0.12, 2.0, 0.2, 0.56, 0, W, 'metal');
+    F.box(0, 1.88, -0.05, 1.8, 0.02, 0.4, 0, lit ? F.col('whiteHot') : F.col('unlit'), lit ? 'glow' : 'metal');
+    for (let i = 0; i < 6; i++) {
+      const x = -0.8 + i * 0.3 + F.rr(-0.05, 0.05);
+      F.cyl(x, 0.91, F.rr(-0.1, 0.15), F.rr(0.03, 0.05), F.rr(0.12, 0.26), 0, F.pick([F.col('glassSky'), F.col('glowViolet'), F.col('ice')]), 'glass');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_server_rack', name: 'Server rack', culture: 'ancient', tier: 'common', type: 'rack', setting: 'indoor',
+  rooms: ['workshop', 'store', 'study'],
+  anchor: 'wall', clearance: { front: 1.0 }, materials: ['metal', 'glass', 'emissive'],
+  w: 0.8, d: 1.0, h: 2.2, variants: 2, variantNames: ['running', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), G = F.col('glassBlack'), lit = F.variant === 0;
+    F.box(0, 0, 0, 0.8, 2.2, 1.0, 0, F.shade(W, -0.1), 'metal');
+    F.box(0, 0.06, 0.502, 0.7, 2.06, 0.01, 0, G, 'glass');
+    for (let r = 0; r < 14; r++) for (let k = 0; k < 4; k++) {
+      if (!lit && !F.chance(0.05)) continue;
+      if (F.chance(0.35)) continue;
+      F.box(-0.24 + k * 0.16, 0.16 + r * 0.14, 0.51, 0.05, 0.02, 0.008, 0, F.pick([F.col('glowGreen'), F.col('electric'), F.col('amber')]), 'glow');
+    }
+  }
+});
+
+FURN({
+  key: 'ancients_weapon_rack', name: 'Stowed rifles and helmets', culture: 'ancient', tier: 'common', type: 'weapon', setting: 'indoor',
+  rooms: ['armoury', 'barracks', 'brig'],
+  anchor: 'wall', clearance: { front: 0.8 }, materials: ['metal'],
+  w: 1.6, d: 0.36, h: 1.95, variants: 1,
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), D = F.col('steel');
+    F.box(0, 0, -0.16, 1.6, 1.95, 0.04, 0, W, 'metal');
+    F.box(0, 0.1, 0.0, 1.6, 0.08, 0.32, 0, W, 'metal');
+    F.box(0, 1.5, 0.0, 1.6, 0.05, 0.32, 0, W, 'metal');
+    for (let i = 0; i < 6; i++) { const x = -0.6 + i * 0.24; F.rod(x, 0.18, 0.06, x, 1.36, 0.02, 0.025, D, 'metal'); F.box(x, 0.7, 0.07, 0.05, 0.22, 0.08, 0, T, 'metal'); }
+    for (let i = 0; i < 4; i++) F.dome(-0.54 + i * 0.36, 1.55, 0.0, 0.13, 0.15, 0, F.pick([W, T]), 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_board', name: 'Wall display screen', culture: 'ancient', tier: 'common', type: 'board', setting: 'indoor',
+  rooms: ['school', 'study', 'hall', 'chartroom', 'antechamber', 'sickbay'],
+  anchor: 'wall', clearance: { front: 1.2 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.4, d: 0.12, h: 2.3, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), lit = F.variant === 0;
+    F.box(0, 0.85, -0.04, 2.4, 1.45, 0.04, 0, W, 'metal');
+    F.box(0, 0.92, -0.01, 2.2, 1.3, 0.03, 0, F.col('glassBlack'), 'glass');
+    if (lit) for (let i = 0; i < 5; i++) F.box(F.rr(-0.4, 0.2), 1.1 + i * 0.2, 0.012, F.rr(0.6, 1.4), 0.05, 0.004, 0, F.pick([F.col('electric'), F.col('verdigris')]), 'glow');
+    F.box(0, 0.8, 0.0, 2.4, 0.05, 0.12, 0, W, 'metal');
+    for (const s of [-1, 1]) F.box(s * 1.15, 0, -0.04, 0.06, 0.85, 0.04, 0, F.col('pewter'), 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_counter', name: 'Curved reception counter', culture: 'ancient', tier: 'common', type: 'counter', setting: 'indoor',
+  rooms: ['hall', 'shop', 'tavern', 'antechamber', 'kitchen', 'sickbay', 'mess'],
+  anchor: 'floor', clearance: { front: 1.0, back: 0.8 }, materials: ['metal', 'glass', 'emissive'],
+  w: 2.6, d: 0.9, h: 1.12, variants: 2, variantNames: ['lit', 'dead'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter'), lit = F.variant === 0;
+    /* a shallow arc of moulded panels bowed to the front, a glass top, the staff shelf behind */
+    const n = 6;
+    for (let i = 0; i < n; i++) {
+      const a = (i - (n - 1) / 2) * 0.16, x = Math.sin(a) * 2.6, z = 0.1 - (1 - Math.cos(a)) * 2.6;
+      F.box(x, 0, z, 0.44, 1.05, 0.14, a, W, 'metal');
+      F.box(x, 1.05, z - 0.08, 0.45, 0.05, 0.42, a, F.col('glassBlack'), 'glass');
+      F.box(x, 0.55, z + 0.072, 0.4, 0.02, 0.006, a, lit ? F.col('electric') : F.col('unlit'), lit ? 'glow' : 'metal');
+    }
+    F.box(0, 0.7, -0.2, 2.0, 0.04, 0.4, 0, T, 'metal');
+  }
+});
+
+FURN({
+  key: 'ancients_cargo_pods', name: 'Stack of cargo pods', culture: 'ancient', tier: 'common', type: 'stack', setting: 'both',
+  rooms: ['store', 'workshop', 'hold', 'quay'], role: 'crates',
+  anchor: 'floor', clearance: { front: 0.6 }, materials: ['metal'],
+  w: 1.7, d: 1.2, h: 1.3, variants: 2, variantNames: ['three', 'five'],
+  build: function (F) {
+    const W = F.col('alloy'), T = F.col('pewter');
+    const spots = F.variant ? [[-0.42, 0, 0], [0.42, 0, 0], [-0.42, 0.62, 0], [0.42, 0.62, 0], [0, 1.24, 0]] : [[-0.42, 0, 0], [0.42, 0, 0], [0, 0.62, 0]];
+    for (const s of spots) {
+      const y = s[1];
+      if (y > 1.1) { F.box(s[0], 0.62, s[2], 0.8, 0.06, 1.1, 0, T, 'metal'); continue; }
+      F.box(s[0], y, s[2], 0.8, 0.58, 1.1, 0, F.pick([W, F.shade(W, -0.08)]), 'metal');
+      F.box(s[0], y + 0.2, s[2] + 0.555, 0.6, 0.06, 0.01, 0, T, 'metal');
+    }
   }
 });
 /* ---------- krator-master-furniture-ashnomad.js ---------- */
@@ -9518,6 +10289,10 @@ FURN({
     for (let k = 0; k < 12; k++) { const a = k * F.TAU / 12, r1 = 0.17, r2 = k % 2 ? 0.23 : 0.26; F.beam(Math.cos(a) * r1, sy + Math.sin(a) * r1, 0, Math.cos(a) * r2, sy + Math.sin(a) * r2, 0, 0.03, 0.02, gold, 'gold'); }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed ashnomad_training_<role> */
+FK.set({ culture: 'ashnomad', tier: 'common', roles: 'training', prefix: 'ashnomad_training_', S: ASHNOMAD_COMMON, names: {
+  training_dummy: 'Chitin-plated practice dummy', archery_butt: 'Painted hide target' } });
 /* ---------- krator-master-furniture-beast-rider.js ---------- */
 /* ======================================================================
    Beast Rider furniture: common and court tiers (the harvested Mav's Refuge
@@ -10074,7 +10849,7 @@ FURN({
 });
 
 FURN({
-  key: 'br_h_training_post', name: 'Training post', culture: 'beast-rider', tier: 'common', type: 'workstation', setting: 'both',
+  key: 'br_h_training_post', name: 'Training post', culture: 'beast-rider', tier: 'common', type: 'workstation', task: ['melee-training'], setting: 'both',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 1.2, back: 1.2, left: 0.8, right: 0.8 },
   materials: ['timber', 'rope'],
   source: 'settlements/mavs-refuge/src/55-arch.js provingGround (training posts: padded pells and a quintain)',
@@ -11311,7 +12086,7 @@ FURN({
   key: 'abyss_bookshelf', name: 'Bookshelf of codices and scroll tins', culture: 'eastabyss', tier: 'common', type: 'shelf', setting: 'indoor',
   rooms: ['library', 'study', 'school', 'hall'], anchor: 'wall', clearance: { front: 0.8 },
   materials: ['timber', 'cloth', 'metal'], source: EAB.src + 'abyss_bookshelf',
-  w: 2.4, d: 0.45, h: 2.4, variants: 1,
+  w: 2.4, d: 0.45, h: 2.4, variants: 1, task: ['storage', 'reading'],
   build: function (F) {
     const tc = F.pick(EAB.wood);
     [-1.15, 1.15].forEach(function (x) { F.box(x, 0, 0, 0.08, 2.35, 0.45, 0, tc, 'wood'); });
@@ -11655,6 +12430,10 @@ FURN({
     }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed eastabyss_training_<role> */
+FK.set({ culture: 'eastabyss', tier: 'common', roles: 'training', prefix: 'eastabyss_training_', S: EA_COMMON, names: {
+  training_dummy: 'Lacquered practice post', archery_butt: 'Reed-bundle archery target' } });
 /* ---------- krator-master-furniture-generic-fruit.js ---------- */
 /* ======================================================================
    Krator master catalog — biome fruit
@@ -11796,7 +12575,7 @@ FURN({
 FURN({
   key: 'generic_fruit_gatepod', name: 'Gatepod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
-  biome: 'hyperjungle', source: ['baobab', 'swbay:baobab'],
+  biome: 'hyperjungle', source: ['baobab', 'swbay:baobab', 'nwbay:baobab'],
   w: 0.37, d: 0.37, h: 0.11, variants: 2, variantNames: ['cut round of pod', 'gatepod chalk'],
   variantDims: [{ w: 0.37, d: 0.37, h: 0.11 }, { w: 0.37, d: 0.22, h: 0.07 }],
   build: function (F) {
@@ -11856,7 +12635,7 @@ FURN({
 FURN({
   key: 'generic_fruit_pandan_keys', name: 'Pandan Keys', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
-  biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine'],
+  biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine', 'nwbay:pandan'],
   w: 0.34, d: 0.28, h: 0.26, variants: 2, variantNames: ['fruit head', 'loose keys and paste'],
   variantDims: [{ w: 0.29, d: 0.28, h: 0.26 }, { w: 0.34, d: 0.23, h: 0.09 }],
   build: function (F) {
@@ -12449,7 +13228,7 @@ FURN({
 FURN({
   key: 'generic_fruit_yucca', name: 'Roasted Yucca Stalk', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'thatch'],
-  biome: 'ebadlands', source: ['yucca'],
+  biome: 'ebadlands', source: ['yucca', 'crater-drylands:yucca', 'crater-drylands:joshua'],
   w: 0.26, d: 0.26, h: 0.1, variants: 2, variantNames: ['pit-roasted stalk rounds', 'a basket of blossoms'],
   variantDims: [{ w: 0.26, d: 0.26, h: 0.06 }, { w: 0.22, d: 0.22, h: 0.1 }],
   build: function (F) {
@@ -12531,6 +13310,146 @@ FURN({
     }
   }
 });
+
+/* ================= The Throne (1 piece) ================= */
+
+FURN({
+  key: 'generic_fruit_coconut', name: 'Coconut', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'throne', source: ['coconut'],
+  w: 0.26, d: 0.24, h: 0.2, variants: 2, variantNames: ['green nut in its husk', 'husked and split'],
+  variantDims: [{ w: 0.26, d: 0.24, h: 0.2 }, { w: 0.25, d: 0.14, h: 0.05 }],
+  build: function (F) {
+    const husk = F.col('fruitCocoHusk'), shell = F.col('fruitCocoShell'), flesh = F.col('fruitCocoFlesh');
+    if (F.variant === 0) {
+      /* the green nut as it falls: a three-sided husk, blunt at the stalk, pointed at the far end, lying on its side */
+      F.blob(0, 0.1, 0, 0.12, 0.2, 0.3, husk, 'food');
+      for (let i = 0; i < 3; i++) { const a = i * F.TAU / 3 + 0.5; F.rod(-0.09, 0.1 + Math.sin(a) * 0.08, Math.cos(a) * 0.08, 0.09, 0.1 + Math.sin(a) * 0.06, Math.cos(a) * 0.06, 0.012, F.shade(husk, 0.08), 'food'); }
+      F.ball(-0.11, 0.1, 0, 0.025, F.shade(husk, -0.3), 'food');
+    } else {
+      /* the brown nut out of its husk, split: two shell cups with white meat, a third of a nut beside them */
+      for (const [x, z] of [[-0.06, 0], [0.065, 0.02]]) KFRUIT.half(F, x, 0, z, 0.06, shell, flesh);
+      F.cyl(-0.06, 0.022, 0, 0.04, 0.004, 0, F.col('fruitCocoWater'), 'food');
+    }
+  }
+});
+
+/* ================= Crater Drylands (2 pieces; the yucca stalk is shared with the Eastern Badlands) ================= */
+
+FURN({
+  key: 'generic_fruit_fireseed', name: 'Frill-tree Fireseed', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'crater-drylands', source: ['frill'],
+  w: 0.35, d: 0.26, h: 0.09, variants: 2, variantNames: ['a burst pod and its seed', 'roasted and ground'],
+  variantDims: [{ w: 0.35, d: 0.26, h: 0.085 }, { w: 0.31, d: 0.2, h: 0.08 }],
+  build: function (F) {
+    const husk = F.col('fruitFireseedHusk'), nut = F.col('fruitFireseedNut'), meal = F.col('fruitFireseedMeal');
+    if (F.variant === 0) {
+      /* the ruffled collar, burst open by the heat, its fireproof seed in the cup and spilled on the ash */
+      F.frustum(0, 0, 0, 0.03, 0.11, 0.07, 0, F.shade(husk, -0.3), 'food', 10);
+      for (let i = 0; i < 10; i++) { const a = i * F.TAU / 10; F.blob(Math.cos(a) * 0.1, 0.07, Math.sin(a) * 0.1, 0.03, 0.025, a, F.shade(husk, i % 2 ? -0.12 : 0.06), 'food'); }
+      for (let i = 0; i < 5; i++) { const a = i * 1.26; F.ball(Math.cos(a) * 0.035, 0.058, Math.sin(a) * 0.035, 0.018, F.shade(nut, (i % 2) * 0.08), 'food'); }
+      for (const [x, z] of [[-0.155, 0.03], [-0.15, -0.035], [0.155, -0.02], [0.15, 0.04]]) F.blob(x, 0.01, z, 0.016, 0.02, x * 20, nut, 'food');
+    } else {
+      F.shift(-0.055, 0);
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('stoneBuff'), 'stone', meal);
+      F.dome(0, 0.05, 0, 0.08, 0.03, 0, F.shade(meal, 0.06), 'food');
+      KFRUIT.leaf(F, 0.15, 0, 0.06, F.col('vegLeaf'));
+      for (const [x, z] of [[0.13, -0.015], [0.16, 0.02], [0.17, -0.02]]) F.ball(x, 0.035, z, 0.015, F.shade(nut, 0.1), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_parasol_pine', name: 'Parasol Pine Nuts', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'stone'],
+  biome: 'crater-drylands', source: ['parasolpine'],
+  w: 0.26, d: 0.18, h: 0.12, variants: 2, variantNames: ['a cone and cracked nuts', 'shelled nuts in a bowl'],
+  variantDims: [{ w: 0.26, d: 0.16, h: 0.12 }, { w: 0.18, d: 0.18, h: 0.075 }],
+  build: function (F) {
+    const cone = F.col('fruitParasolCone'), shell = F.col('fruitParasolShell'), kern = F.col('fruitParasolKernel');
+    if (F.variant === 0) {
+      /* the big glossy cone, rounded like a stone pine's, its scales in rings; beside it the hard nuts and their kernels */
+      F.box(0, 0, 0, 0.26, 0.01, 0.16, 0, F.col('clothLinen'), 'cloth');
+      F.blob(-0.05, 0.065, 0, 0.065, 0.11, 0, F.shade(cone, -0.2), 'food');
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 8; i++) {
+        const y = 0.03 + j * 0.025, e = (y - 0.065) / 0.055, r = 0.065 * Math.sqrt(Math.max(0, 1 - e * e)) * 0.95, a = i * F.TAU / 8 + j * 0.39;
+        F.ball(-0.05 + Math.cos(a) * r, y, Math.sin(a) * r, 0.014, F.shade(cone, (i + j) % 2 ? -0.06 : 0.08), 'food');
+      }
+      for (let i = 0; i < 6; i++) F.blob(0.04 + (i % 3) * 0.035, 0.022, -0.045 + Math.floor(i / 3) * 0.05, 0.014, 0.024, i, F.shade(shell, (i % 2) * 0.08), 'food');
+      for (let i = 0; i < 3; i++) F.blob(0.06 + i * 0.03, 0.02, 0.05, 0.012, 0.02, i * 0.7, kern, 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.09, 0.045, F.col('stoneCream'), 'stone', kern);
+      KGEN.heap(F, 0, 0.03, 0, 0.075, 0.01, [kern, F.shade(kern, -0.06)], 'food',
+        (x, y, z, c) => F.blob(x, y + 0.01, z, 0.01, 0.02, x * 30, c, 'food'));
+    }
+  }
+});
+
+/* ================= North-west Bay (3 pieces; the gatepod and the pandan keys are shared) ================= */
+
+FURN({
+  key: 'generic_fruit_cliff_fig', name: 'Cliff Figs', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food'],
+  biome: 'nwbay', source: ['clifffig'],
+  w: 0.26, d: 0.2, h: 0.045, variants: 2, variantNames: ['a sprig with figs', 'halved on a leaf'],
+  variantDims: [{ w: 0.26, d: 0.14, h: 0.04 }, { w: 0.2, d: 0.2, h: 0.045 }],
+  build: function (F) {
+    const fig = F.col('fruitCliffFig'), ripe = F.col('fruitCliffFigRipe'), flesh = F.col('fruitCliffFigFlesh');
+    if (F.variant === 0) {
+      /* small strangler figs in the leaf axils, orange-red going purple as they ripen */
+      KFRUIT.leaf(F, -0.06, 0, 0.07, F.col('vegLeaf'));
+      F.rod(-0.12, 0.012, 0, 0.11, 0.012, 0, 0.006, F.col('timberWalnut'), 'food');
+      for (let i = 0; i < 7; i++) F.ball(-0.09 + i * 0.03, 0.02, i % 2 ? 0.024 : -0.024, 0.017, i % 3 ? fig : ripe, 'food');
+    } else {
+      KFRUIT.leaf(F, 0, 0, 0.1, F.col('vegLeaf'));
+      for (const [x, z, k] of [[-0.04, -0.035, 0], [0.04, -0.035, 1], [-0.04, 0.035, 1], [0.04, 0.035, 0]]) KFRUIT.half(F, x, 0.015, z, 0.03, k ? ripe : fig, flesh);
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_avenue_baobab', name: 'Avenue Baobab Fruit', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nwbay', source: ['avenuebaobab'],
+  w: 0.28, d: 0.28, h: 0.11, variants: 2, variantNames: ['whole fruit', 'cracked: pulp and seeds'],
+  variantDims: [{ w: 0.27, d: 0.11, h: 0.11 }, { w: 0.28, d: 0.28, h: 0.065 }],
+  build: function (F) {
+    const pod = F.col('fruitAvenuePod'), pulp = F.col('fruitAvenuePulp'), seed = F.col('fruitAvenueSeed');
+    if (F.variant === 0) {
+      /* the velvety ochre egg of the avenue baobab, on its stalk */
+      F.shift(-0.0265, 0);
+      KGEN.capsule(F, -0.05, 0.05, 0, 0, 0.055, pod);
+      F.rod(0.1, 0.06, 0, 0.15, 0.07, 0, 0.008, F.col('timberWalnut'), 'food');
+    } else {
+      /* the shell cracked open: dry cream pulp round dark kidney seeds (the pulp eaten, the seed pressed for oil) */
+      KGEN.plate(F, 0, 0, 0, 0.14, F.col('stoneCream'));
+      KFRUIT.half(F, -0.05, 0.02, 0, 0.06, pod, pulp);
+      for (let i = 0; i < 5; i++) F.box(0.04 + (i % 3) * 0.03, 0.02, -0.04 + Math.floor(i / 3) * 0.05, 0.028, 0.024, 0.028, i * 0.4, F.shade(pulp, -(i % 2) * 0.05), 'food');
+      for (let i = 0; i < 4; i++) F.blob(0.0 + i * 0.03, 0.03, 0.08, 0.012, 0.016, i, seed, 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_traveller_aril', name: 'Traveller\'s Fan Arils', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nwbay', source: ['travellerfan'],
+  w: 0.17, d: 0.17, h: 0.09, variants: 2, variantNames: ['an open capsule', 'arils in a dish'],
+  variantDims: [{ w: 0.17, d: 0.17, h: 0.08 }, { w: 0.16, d: 0.16, h: 0.09 }],
+  build: function (F) {
+    const cap = F.col('fruitTravellerCapsule'), aril = F.col('fruitTravellerAril');
+    if (F.variant === 0) {
+      /* the woody capsule split in three valves, the seeds in their electric-blue arils packed inside */
+      F.frustum(0, 0, 0, 0.03, 0.045, 0.05, 0, F.shade(cap, -0.15), 'food', 6);
+      for (let k = 0; k < 3; k++) { const a = k * F.TAU / 3; F.blob(Math.cos(a) * 0.055, 0.04, Math.sin(a) * 0.055, 0.03, 0.07, a, F.shade(cap, k * 0.05), 'food'); }
+      for (let i = 0; i < 6; i++) { const a = i * F.TAU / 6 + 0.5; F.ball(Math.cos(a) * 0.025, 0.06, Math.sin(a) * 0.025, 0.02, F.shade(aril, (i % 2) * 0.1), 'food'); }
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.08, 0.04, F.col('stoneCream'), 'stone', F.shade(aril, -0.2));
+      KGEN.heap(F, 0, 0.03, 0, 0.065, 0.012, [aril, F.shade(aril, 0.12)], 'food');
+    }
+  }
+});
 /* ---------- krator-master-furniture-generic-goods.js ---------- */
 /* ======================================================================
    Krator master catalog — generic furniture: containers, food, drink, supplies
@@ -12585,6 +13504,7 @@ FURN_CULTURE('generic', { palette: {
     /* biome fruit (krator-master-furniture-generic-fruit.js): colours taken from the fruiting part each biome draws */
     fruitScaleRed: 0xc0262a, fruitScaleFlesh: 0xf0b8b0, fruitFernEgg: 0x8a6a3a, fruitFernMeal: 0xe8d8a8,
     fruitTideHusk: 0x7e3030, fruitTideJelly: 0xe8e0c8, fruitCycadRed: 0xb83a2a,
+    fruitCocoHusk: 0x6e8a3a, fruitCocoShell: 0x5a3e26, fruitCocoFlesh: 0xf4f0e4, fruitCocoWater: 0xe8eadc,
     fruitGateRind: 0xe0862a, fruitGatePulp: 0xf2ead0, fruitMahogany: 0x5a3a22, fruitMahoganySeed: 0xc89a5a,
     fruitSilkGreen: 0x7a9a4a, fruitSilkFloss: 0xf0e6d0, fruitPandanKey: 0xd87a2a, fruitPandanTip: 0x5a6a2a, fruitPandanPaste: 0xe8a040,
     fruitAril: 0xd0202a, fruitArilSeed: 0x2e3a2a, fruitRowan: 0xd83a2a, fruitRowanJelly: 0xc8502a, fruitBilberry: 0x2a3a6a,
@@ -12606,7 +13526,12 @@ FURN_CULTURE('generic', { palette: {
     fruitPitaya: 0xe0206a, fruitPitayaFlame: 0x7ab040, fruitPitayaFlesh: 0xf4f0ec,
     fruitPlantain: 0xf0d040, fruitPlantainBract: 0x6a2a8a, fruitPlantainFried: 0xd89a3a, fruitWingnut: 0x9ac060,
     fruitArbutusRed: 0xe02a20, fruitArbutusOrange: 0xf08a20, fruitWhorlOlive: 0x6a6a3a, fruitWhorlCream: 0xd8c8a0,
-    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0
+    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0,
+    fruitFireseedHusk: 0xc85a2c, fruitFireseedNut: 0x40281e, fruitFireseedMeal: 0x9a6a44,
+    fruitParasolCone: 0x8a5230, fruitParasolShell: 0x5e3c28, fruitParasolKernel: 0xeee2bc,
+    fruitCliffFig: 0xb4482c, fruitCliffFigRipe: 0x5a2a48, fruitCliffFigFlesh: 0xe07a6a,
+    fruitAvenuePod: 0xa86a30, fruitAvenuePulp: 0xf0e6c4, fruitAvenueSeed: 0x4a3022,
+    fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0
 } });
 /* END PALETTE */
 
@@ -14121,28 +15046,278 @@ FURN({
    bins, larder, bunk, locker ... in this culture's style sheet, keyed generic_trade_<role> */
 FK.set({ culture: 'generic', tier: 'poor', roles: 'trade', prefix: 'generic_trade_', S: GENERIC_STYLE, names: {
   forge: 'Fieldstone forge', anvil: 'Anvil on a stump', trough: 'Plank trough', stall: 'Plank stall', hayrack: 'Hay rack and manger', display: 'Plank display steps', armour_stand: 'Armour post', weapon_rack: 'Weapon rack', vat: 'Staved vat', still: 'Pot still', bin: 'Grain bins', larder: 'Larder cupboard', bunk: 'Plank bunk', locker: 'Plank locker', lathe: 'Pole lathe', press: 'Screw press', kiln: 'Clay kiln', grindstone: 'Grindstone', barrel: 'Barrel cradle', altar: 'Household altar' } });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed generic_training_<role> */
+FK.set({ culture: 'generic', tier: 'poor', roles: 'training', prefix: 'generic_training_', S: GENERIC_STYLE, names: {
+  training_dummy: 'Straw practice dummy', archery_butt: 'Straw archery butt' } });
 /* ---------- krator-master-furniture-hykkousoi.js ---------- */
 /* ======================================================================
-   Hykkousoi furniture: PALETTE ONLY. The culture is in progress and its
-   sets are not built yet (owner's call, 2026-10). The palette is here so
-   the first pieces can be written in the catalog's shape when the time
-   comes: nacre and mother-of-pearl throughout, pale sea-linen and slate
-   blue from the Hykkousoi pack (core/sockets/80-cultures.js: linen
-   #e4eff0, slate #3f6a82, gold wave-sun #d8a640), olive wood, bronze.
-   Influences: Greek, Polynesian, organic. To build: define HYK_COMMON /
-   HYK_COURT style sheets (accent 'nacre', accentFam 'nacre', motif 'wave',
-   tapestry 'waves' or 'sun', statue 'figure') and call FK.set() twice.
+   Hykkousoi furniture: the culture's palette and its fourteen shell-grown pieces, ported from the Ys settlement
+   (settlements/ys/src/66-hyk-furniture.js): a cradle bed, two chests, a larder, a net rack, a fish rack, a pearl table,
+   a chart table, a stool, a jar lamp, a tide niche, a hearth basin, a cushion ring and a scroll rack. Nacre and
+   mother-of-pearl throughout, pale sea-linen and slate blue from the Hykkousoi pack (core/sockets/80-cultures.js),
+   olive wood, bronze. Influences: Greek, Polynesian, organic. The bodies are lathes and the ribs, horns and cords are
+   tubes (F.lathe, F.tube, F.ell in krator-furniture-core.js). Still to build: HYK_COMMON / HYK_COURT style sheets
+   (accent 'nacre', accentFam 'nacre', motif 'wave', tapestry 'waves' or 'sun', statue 'figure') and the FK.set() tiers.
    ====================================================================== */
 /* PALETTE */
 FURN_CULTURE('hykkousoi', { name: 'Hykkousoi', pack: 'hykkousoi', influences: 'Greek; Polynesian; organic',
-  materials: 'nacre and mother-of-pearl, olive wood, sea-linen, bronze, white marble', inProgress: true,
+  materials: 'nacre and mother-of-pearl, shell, bone, olive wood, sea-linen, bronze, white marble',
   palette: {
     nacre: 0xe8e4ec, nacreRose: 0xe8d8dc, nacreSea: 0xd0e0e4, timberOlive: 0x9a8a5a, timberOliveDark: 0x6a5e3a, timberOliveLight: 0xb8a878,
     clothLinen: 0xe4eff0, clothSlate: 0x3f6a82, clothSlateDeep: 0x2c5a74, clothGoldSun: 0xd8a640, clothSeaGreen: 0x4a9a8a,
     bronze: 0x8a6a3a, gold: 0xd8a640, marbleWhite: 0xeae6de, stoneSea: 0x6a8a90, clayWhite: 0xe0dcd0, ropeFlax: 0xc8b888,
-    flame: 0xffc861, ember: 0xd9762c
+    flame: 0xffc861, ember: 0xd9762c,
+    /* the Ys kit's shell palette (HPAL in settlements/ys/src/60-hyk-mat.js): the sea-city's white, cream and warm shell, coral, teal, barnacle grey, weed and crust */
+    shellWhite: 0xf3ece0, shellCream: 0xeee5d6, shellWarm: 0xe9d9c2, shellWarmDeep: 0xdcc9ad, coralPink: 0xe8a08c, tealSea: 0x3e9c96, seaGreen: 0x6aa892,
+    barnacle: 0xcdc8bd, barnacleDark: 0xb3aea3, boneIvory: 0xf1e9d8, boneCream: 0xe4dac6, weedGreen: 0x3c5a3a, crustBlack: 0x2a2622, lensTeal: 0x9fe0d8,
+    pearlCool: 0x8ff0e0, coalWarm: 0xffd9a0
   } });
 /* END PALETTE */
+
+/* Hykkousoi's pieces were written for the Ys settlement (settlements/ys/src/66-hyk-furniture.js) against its own F: a lathe
+   and a tube take the Ys material names, an ellipsoid takes three radii. These wrappers map them onto the catalog F
+   (F.lathe, F.tube, F.ell in krator-furniture-core.js): shell -> family 'shell', nacre -> 'nacre', bone -> 'bone', weed ->
+   'cloth' (drawn double-sided), lens -> 'glass', barn and dark -> 'stone'. */
+const HYK_FAM = { shell: 'shell', nacre: 'nacre', bone: 'bone', weed: 'cloth', lens: 'glass', barn: 'stone', dark: 'stone' };
+function hykFurnLathe(F, x, z, prof, col, m, o) { o = o || {}; F.lathe(x, 0, z, prof, 0, col, HYK_FAM[m || 'shell'], { nu: o.nu, nv: o.nv, lobes: o.lobes, flute: o.flute, double: m === 'weed' || m === 'lens' }); }
+function hykFurnTube(F, pts, r, col, m, o) { o = o || {}; F.tube(pts, r, col, HYK_FAM[m || 'shell'], { seg: o.seg || 8 }); }
+function hykFurnEll(F, x, y, z, rx, ry, rz, col, m, rot) { F.ell(x, y, z, rx, ry, rz, rot || 0, col, HYK_FAM[m || 'shell']); }
+/* a lit pearl or coal: a glowing ball (no point light, a sheet of a thousand pieces would not compile), on a bone bracket when o.bracket is given */
+function hykFurnLight(F, x, y, z, o) { o = o || {};
+  if (o.bracket) hykFurnTube(F, [o.bracket, [x, y - o.r * 0.7, z]], 0.012, F.pick(['boneIvory', 'boneCream']), 'bone', { seg: 6 });
+  F.ball(x, y, z, o.r, F.col(o.cool ? 'pearlCool' : 'coalWarm'), 'glow'); }
+
+// ---------------------------------------------------------------- the helpers (all through F)
+// an oval for a lathe or a ring. F.lathe modulates r by `lobes` (cos nθ) and `flute` (a raised cosine; plain cos nθ at
+// sharp 1), and r = R(1 + a cos2θ) alone is not an ellipse: once a > .2 its minor extent bulges past R(1 - a). Fitting
+// both, the flute at n 4, puts r(0) at rx, r(90°) at rz and r(45°) on the ellipse, and the extents then peak on the axes.
+// Returns {R, rx, rz, lobes, flute, at(θ)}: draw the body with radii as multiples of R and pass lobes and flute on.
+function hykFurnOval(rx,rz){const k=rx/rz,p=(k-1)/(k+1),b=rz/rx;const R=rx*b/Math.sqrt(.5*b*b+.5);const A=rx/(R*(1+p))-1;
+ return {R,rx,rz,lobes:{n:2,amp:p},flute:{n:4,amp:A,sharp:1},at:a=>R*(1+p*Math.cos(2*a))*(1+A*.5+A*.5*Math.cos(4*a))};}
+// an ellipsoid of revolution about a vertical axis: r across, ry up, centre (x,yc,z); o:{lobes,flute,n,nu} (an oval's lobes and flute make it an oval)
+function hykFurnBlob(F,x,yc,z,r,ry,col,m,o){o=o||{};const n=o.n||8;const prof=[];
+ for(let i=0;i<=n;i++){const a=-Math.PI/2+Math.PI*i/n;prof.push([Math.max(0,r*Math.cos(a)),yc+ry*Math.sin(a)]);}
+ hykFurnLathe(F,x,z,prof,col,m,{nu:o.nu||18,nv:o.nv||n*2,lobes:o.lobes,flute:o.flute,inside:true});}
+// a body about a vertical axis at (x,z) from a profile [[r,y],...] (y increasing), into the interior bucket
+function hykFurnBody(F,x,z,prof,col,m,o){o=o||{};hykFurnLathe(F,x,z,prof,col,m,{nu:o.nu||24,nv:o.nv||Math.max(6,prof.length*2),lobes:o.lobes,flute:o.flute,inside:true});}
+// a lip: a tube round a horizontal ring at height y, ring radius R modulated like a lathe (o.lobes, o.flute), tube radius r
+function hykFurnRing(F,x,y,z,R,r,col,m,o){o=o||{};const n=o.n||28;const pts=[];
+ for(let i=0;i<=n;i++){const a=i/n*F.TAU;let R1=R;if(o.lobes)R1*=1+o.lobes.amp*Math.cos(o.lobes.n*a+(o.lobes.ph||0));
+  if(o.flute)R1*=1+o.flute.amp*Math.pow(.5+.5*Math.cos(o.flute.n*a),o.flute.sharp||2);
+  pts.push([x+R1*Math.cos(a),y+(o.wave?o.wave*Math.sin(a*(o.waveN||3)):0),z+R1*Math.sin(a)]);}
+ hykFurnTube(F,pts,r,col,m,{seg:o.seg||7});}
+// the same ring stood up about the z axis (a scroll's tie, a loupe's rim seen edge-on)
+function hykFurnRingZ(F,x,y,z,R,r,col,m,o){o=o||{};const n=o.n||16;const pts=[];
+ for(let i=0;i<=n;i++){const a=i/n*F.TAU;pts.push([x+R*Math.cos(a),y+R*Math.sin(a),z]);}hykFurnTube(F,pts,r,col,m,{seg:o.seg||5});}
+// a knuckle: the ball that closes a tube's end
+function hykFurnKnob(F,x,y,z,r,col,m){hykFurnBlob(F,x,y,z,r,r*.92,col,m,{n:5,nu:10});}
+// a stalk from a to b, bowed sideways along o.dir by o.bow, radius r0 at a tapering to r1 at b, knuckled at each end
+// that is not buried (o.noA, o.noB)
+function hykFurnStalk(F,a,b,r0,r1,col,m,o){o=o||{};const n=o.n||6;const pts=[];const bow=o.bow||0;const dir=o.dir||[1,0,0];
+ for(let i=0;i<=n;i++){const t=i/n;const s=Math.sin(t*Math.PI)*bow;pts.push([a[0]+(b[0]-a[0])*t+dir[0]*s,a[1]+(b[1]-a[1])*t+dir[1]*s,a[2]+(b[2]-a[2])*t+dir[2]*s]);}
+ hykFurnTube(F,pts,t=>r0+(r1-r0)*t,col,m,{seg:o.seg||7});
+ if(!o.noA)hykFurnKnob(F,a[0],a[1],a[2],r0*1.25,col,m);if(!o.noB)hykFurnKnob(F,b[0],b[1],b[2],r1*1.25,col,m);}
+// a sealed shell jar: a fluted belly drawn in to a neck, a nacre lid dished over the mouth, a weed binding at the seal
+function hykFurnJar(F,x,y,z,r,h,col,lid,o){o=o||{};
+ hykFurnBody(F,x,z,[[r*.45,y],[r*.8,y+h*.06],[r,y+h*.3],[r*.95,y+h*.55],[r*.6,y+h*.74],[r*.5,y+h*.8],[r*.55,y+h*.84]],col,'shell',{nu:16,nv:14,flute:{n:o.fl||9,amp:.06,sharp:1.5}});
+ hykFurnBody(F,x,z,[[r*.5,y+h*.84],[r*.68,y+h*.86],[r*.6,y+h*.93],[r*.2,y+h*.98],[0,y+h]],lid,'nacre',{nu:14,nv:6});
+ hykFurnRing(F,x,y+h*.845,z,r*.6,r*.05,F.col('weedGreen'),'weed',{n:16,seg:5});}
+// a dish: the wall climbs to the rim at (R, yr) and caps flush over it (F.lathe winds outward only, so a hollow has no
+// visible inside); a dark fill a finger proud inside the lip reads as the shadowed hollow; a lip ring stands on the rim.
+// o.prof replaces the default wall; o.oval (hykFurnOval, with R = oval.R) makes it an oval; o.flute ribs a round one;
+// o.lip the lip's tube radius; o.fill its colour
+function hykFurnDish(F,x,z,R,yr,col,m,o){o=o||{};const y0=o.y0||0;const H=yr-y0;const O=o.oval;const lob=O?O.lobes:o.lobes,fl=O?O.flute:o.flute;
+ const prof=o.prof||[[R*.3,y0],[R*.55,y0+H*.2],[R*.85,y0+H*.55],[R,y0+H*.9],[R*.98,yr],[R*.9,yr+.012],[0,yr+.02]];
+ hykFurnBody(F,x,z,prof,col,m,{nu:o.nu||28,nv:o.nv||16,lobes:lob,flute:fl});
+ const fx=O?O.rx*.9:R*.9*(1+(fl?fl.amp*.5:0)),fz=O?O.rz*.9:fx;
+ hykFurnEll(F,x,yr+.02,z,fx,.012,fz,o.fill||F.col('crustBlack'),'dark');
+ hykFurnRing(F,x,yr+.01,z,R*.97,o.lip||R*.06,o.lipCol||col,o.lipM||m,{lobes:lob,flute:fl,n:O?40:28});}
+// a bone upright for a rack: a flattened shell pad for a foot, the stalk bowed outward, knuckled at the head
+function hykFurnUpright(F,x,z,hx,hy,hz,r,col,o){o=o||{};
+ hykFurnBlob(F,x,.05,z,r*2.6,.05,F.pick(['shellWarm','shellWarmDeep']),'shell',{n:4,nu:12,lobes:{n:3,amp:.06}});
+ hykFurnStalk(F,[x,.03,z],[hx,hy,hz],r,r*.7,col,'bone',{bow:o.bow||.05,dir:o.dir||[1,0,0],noA:true,n:7});}
+// a salt fish hung by the tail: a flat lathe (lobes n 2) from the snout at y up to the tail fan at y+L, flat side to +z
+function hykFurnFish(F,x,y,z,L,col){const r=L*.17;
+ hykFurnBody(F,x,z,[[r*.15,y],[r*.7,y+L*.12],[r,y+L*.4],[r*.8,y+L*.62],[r*.3,y+L*.78],[r*.65,y+L*.92],[0,y+L]],col,'shell',{nu:12,nv:12,lobes:{n:2,amp:.55}});}
+
+// ---------------------------------------------------------------- the pieces
+// the bed: a hammock slung in a half-shell cradle. The cradle is an oval saddle closed over its back; two bone horns
+// rise from its ends and the cloth sling hangs between them, dipping to rest on the shell.
+FURN({key:'hykkousoi_shell_cradle_bed',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_shell_cradle_bed',name:'Shell cradle bed',culture:'hykkousoi',type:'bed',setting:'indoor',rooms:['bedroom'],w:2.1,d:1.0,h:.9,anchor:'floor',tier:'common',clearance:{left:.6,right:.6},materials:['bone','cloth'],
+ build(F){const cs=F.pick(['shellWarm','shellWarmDeep']),cb=F.pick(['boneIvory','boneCream']),cw=F.col('tealSea'),cc=F.pick(['boneIvory','boneCream']),cg=F.col('seaGreen');
+  const O=hykFurnOval(.95,.46),R=O.R;
+  hykFurnBody(F,0,0,[[R*.4,0],[R*.78,.07],[R*.94,.18],[R,.33],[R*.9,.42],[R*.45,.46],[0,.48]],cs,'shell',{nu:44,nv:16,lobes:O.lobes,flute:O.flute});
+  hykFurnRing(F,0,.36,0,R,.03,cs,'shell',{lobes:O.lobes,flute:O.flute,n:44});
+  for(const s of [-1,1])hykFurnStalk(F,[s*.85,.3,0],[s*.70,.84,0],.07,.035,cb,'bone',{bow:.05,dir:[s,0,0],noA:true,n:7});
+  const S=hykFurnOval(.82,.42);
+  hykFurnLathe(F,0,0,[[S.R*.13,.50],[S.R*.68,.555],[S.R*.9,.60],[S.R,.635]],cw,'weed',{nu:30,nv:8,lobes:S.lobes,flute:S.flute,inside:true});   // the sling, open: cloth is two-sided
+  for(const s of [-1,1])hykFurnTube(F,[[s*.78,.635,0],[s*.76,.72,0],[s*.70,.82,0]],.015,cc,'weed',{seg:5});
+  const B=hykFurnOval(.26,.14);hykFurnBlob(F,-.5,.60,0,B.R,.085,F.col('coralPink'),'weed',{n:6,nu:14,lobes:B.lobes,flute:B.flute});   // the bolster
+  hykFurnBlob(F,.35,.585,.05,.22,.045,cg,'weed',{n:5,nu:14,lobes:{n:3,amp:.08}});}});                                           // a folded cover
+
+// the item container: a clam drum on a flared skirt under a nacre lid with a teal seam, a pearl clasp at the front and
+// two bone hinges behind
+FURN({key:'hykkousoi_nacre_chest',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_nacre_chest',name:'Nacre chest',culture:'hykkousoi',type:'storage',setting:'indoor',rooms:['bedroom','hall','store'],w:1.2,d:.7,h:.7,anchor:'floor',tier:'common',clearance:{front:.6},materials:['bone','nacre'],
+ build(F){const cs=F.pick(['shellWhite','shellCream']),cn=F.col('nacre'),cb=F.pick(['boneIvory','boneCream']),ct=F.col('tealSea');
+  const O=hykFurnOval(.565,.325),R=O.R;
+  hykFurnBody(F,0,0,[[R*.86,0],[R*.98,.03],[R*.94,.1],[R*.97,.26],[R,.42],[R*.96,.5],[R*.6,.515],[0,.52]],cs,'shell',{nu:40,nv:18,lobes:O.lobes,flute:O.flute});
+  hykFurnBody(F,0,0,[[R*.98,.5],[R*1.03,.53],[R*.99,.58],[R*.84,.64],[R*.5,.675],[0,.69]],cn,'nacre',{nu:40,nv:12,lobes:O.lobes,flute:O.flute});
+  hykFurnRing(F,0,.515,0,R,.018,ct,'nacre',{lobes:O.lobes,flute:O.flute,n:40});
+  hykFurnKnob(F,0,.55,.30,.03,cn,'nacre');
+  for(const s of [-1,1])hykFurnKnob(F,s*R*.5,.52,-.31,.028,cb,'bone');}});
+
+// the food container: sealed oyster-shell jars on a bone tripod stand, three on the dish and two on the shelf, the
+// stalks drawn in to a crown ring and a nacre finial
+FURN({key:'hykkousoi_oyster_larder',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_oyster_larder',name:'Oyster larder',culture:'hykkousoi',type:'storage',setting:'indoor',rooms:['bedroom','hall','kitchen','store'],w:.8,d:.8,h:1.1,anchor:'floor',tier:'common',clearance:{front:.5},materials:['bone','cloth','nacre'],
+ build(F){const cb=F.pick(['boneIvory','boneCream']),cs=F.pick(['shellWhite','shellCream']),cn=F.col('nacre');
+  hykFurnBody(F,0,0,[[.22,0],[.34,.025],[.36,.05],[.3,.065],[0,.07]],cs,'shell',{nu:30,nv:6,lobes:{n:3,amp:.05}});
+  hykFurnBody(F,0,0,[[.2,.48],[.29,.5],[.28,.53],[0,.54]],cs,'shell',{nu:28,nv:5,lobes:{n:3,amp:.05,ph:Math.PI/3}});
+  for(let k=0;k<3;k++){const a=k/3*F.TAU+.4;const c=Math.cos(a),s=Math.sin(a);
+   hykFurnStalk(F,[.33*c,.04,.33*s],[.2*c,1.0,.2*s],.028,.02,cb,'bone',{bow:.03,dir:[c,0,s],noA:true,n:7});}
+  hykFurnRing(F,0,1.0,0,.2,.016,cb,'bone',{n:20,seg:6});
+  for(let k=0;k<3;k++){const a=k/3*F.TAU+.4+Math.PI/3;hykFurnTube(F,[[.2*Math.cos(a),1.0,.2*Math.sin(a)],[.1*Math.cos(a),1.04,.1*Math.sin(a)],[0,1.06,0]],.012,cb,'bone',{seg:5});}
+  hykFurnKnob(F,0,1.06,0,.03,cn,'nacre');
+  for(let k=0;k<3;k++){const a=k/3*F.TAU+.4+Math.PI/3;hykFurnJar(F,.19*Math.cos(a),.065,.19*Math.sin(a),F.rr(.12,.135),F.rr(.36,.41),F.pick(['shellWarm','shellWarmDeep']),cn,{fl:7+k});}
+  for(const k of [0,1]){const a=k*Math.PI+.4;hykFurnJar(F,.13*Math.cos(a),.535,.13*Math.sin(a),F.rr(.085,.1),F.rr(.26,.3),F.pick(['shellWhite','shellCream']),cn,{fl:9});}}});
+
+// nets and floats on a bone rack: two bowed uprights on pad feet, a sagging top bar and a mid bar, twine draped from
+// bar to bar, two rolled nets bound with cord, glass floats hung from the mid bar
+FURN({key:'hykkousoi_net_rack',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_net_rack',name:'Net rack',culture:'hykkousoi',type:'rack',setting:'both',rooms:['hall','workshop','store'],w:1.8,d:.5,h:2.0,anchor:'floor',tier:'common',task:['storage'],clearance:{front:.6},materials:['bone','cloth','glass'],
+ build(F){const cb=F.pick(['boneIvory','boneCream']),ct=F.pick(['shellWarm','shellWarmDeep']),cl=F.col('lensTeal');
+  for(const s of [-1,1])hykFurnUpright(F,s*.76,0,s*.80,1.9,0,.05,cb,{bow:.04,dir:[s,0,0]});
+  hykFurnTube(F,[[-.80,1.9,0],[-.4,1.87,0],[0,1.86,0],[.4,1.87,0],[.80,1.9,0]],.035,cb,'bone',{seg:7});
+  hykFurnTube(F,[[-.78,1.05,0],[0,1.02,0],[.78,1.05,0]],.03,cb,'bone',{seg:6});
+  const N=9;for(let i=0;i<N;i++){const x0=-.62+1.24*i/(N-1);const x1=x0+F.rr(-.25,.25);const x2=x1+F.rr(-.15,.15);const yb=F.rr(.25,.6);
+   hykFurnTube(F,[[x0,1.88,.03],[x0*.9+x1*.1,1.5,.09],[x1,1.03,.04],[x2,yb,F.rr(-.06,.06)],[x2+F.rr(-.05,.05),yb-.1,0]],.011,F.pick(['boneIvory','boneCream']),'weed',{seg:4});}
+  for(const k of [0,1]){const x=k?.42:-.38;hykFurnBlob(F,x,1.42,.02,.11,.42,F.col('seaGreen'),'weed',{n:7,nu:14,lobes:{n:5,amp:.06}});
+   hykFurnRing(F,x,1.3,.02,.1,.012,ct,'weed',{n:14,seg:5});hykFurnRing(F,x,1.58,.02,.1,.012,ct,'weed',{n:14,seg:5});}
+  for(let i=0;i<4;i++){const x=-.55+1.1*i/3+F.rr(-.05,.05);const y=F.rr(.72,.86);hykFurnTube(F,[[x,1.03,0],[x,y+.06,0]],.009,ct,'weed',{seg:4});hykFurnBlob(F,x,y,0,.065,.065,cl,'lens',{n:6,nu:12});}}});
+
+// the pearl-sorting table: one lathe from the foot through the stem to an oval top with a raised edge; three lipped
+// trays of graded pearls on it, and the sorter's loupe laid at the near edge
+FURN({key:'hykkousoi_pearl_table',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_pearl_table',name:'Pearl table',culture:'hykkousoi',type:'table',setting:'indoor',rooms:['workshop','hall'],w:1.6,d:.9,h:.8,anchor:'floor',tier:'common',task:[],clearance:{front:.7},materials:['bone','glass','nacre','stone'],
+ build(F){const cs=F.pick(['shellWhite','shellCream']),cw=F.pick(['shellWarm','shellWarmDeep']),cb=F.pick(['boneIvory','boneCream']),cl=F.col('lensTeal');
+  const O=hykFurnOval(.74,.42),R=O.R;
+  hykFurnBody(F,0,0,[[.3,0],[.26,.04],[.14,.14],[.11,.36],[.16,.52],[R*.55,.6],[R*.92,.645],[R,.67],[R*.98,.69],[R*.6,.70],[0,.705]],cw,'shell',{nu:44,nv:26,lobes:O.lobes,flute:O.flute});
+  hykFurnRing(F,0,.695,0,R*.99,.02,cs,'shell',{lobes:O.lobes,flute:O.flute,n:44});
+  const T=[[-.4,-.08,.16,.012],[.05,.12,.14,.018],[.4,-.1,.13,.024]];
+  for(const t of T){const x=t[0],z=t[1],r=t[2],pr=t[3];hykFurnBody(F,x,z,[[r*.8,.70],[r,.715],[r*.95,.73],[0,.735]],cs,'shell',{nu:20,nv:4});
+   hykFurnEll(F,x,.735,z,r*.86,.006,r*.86,F.col('crustBlack'),'dark');hykFurnRing(F,x,.73,z,r*.97,.01,cs,'shell',{n:20,seg:5});
+   const n=5+Math.floor(F.rr(0,5));for(let i=0;i<n;i++){const a=F.rr(0,F.TAU),d=F.rr(0,r*.6);hykFurnBlob(F,x+d*Math.cos(a),.742+pr,z+d*Math.sin(a),pr,pr,F.col('nacre'),'nacre',{n:4,nu:8});}}
+  hykFurnBlob(F,.5,.717,.3,.05,.012,cl,'lens',{n:3,nu:14});hykFurnRing(F,.5,.717,.3,.052,.007,cb,'bone',{n:16,seg:5});
+  hykFurnTube(F,[[.55,.717,.33],[.66,.717,.39]],.009,cb,'bone',{seg:5});hykFurnKnob(F,.66,.717,.39,.012,cb,'bone');}});
+
+// the low shell stool, two variants: a waisted limpet with a domed seat, or a barnacle drum in grey with a cushion
+FURN({key:'hykkousoi_shell_stool',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_shell_stool',name:'Shell stool',culture:'hykkousoi',type:'chair',setting:'indoor',rooms:['hall','tavern','bedroom','workshop'],w:.5,d:.5,h:.45,variants:2,variantNames:['limpet','barnacle'],anchor:'floor',tier:'common',clearance:{front:.4},materials:['bone','cloth','stone'],
+ build(F){if(F.variant%2===0){
+   hykFurnBody(F,0,0,[[.2,0],[.21,.02],[.15,.1],[.12,.2],[.14,.3],[.22,.38],[.23,.405],[.2,.43],[.1,.44],[0,.445]],F.pick(['shellWarm','shellWarmDeep']),'shell',{nu:30,nv:16,flute:{n:12,amp:.05,sharp:1.5}});
+   hykFurnRing(F,0,.405,0,.225,.012,F.pick(['shellWhite','shellCream']),'shell',{n:28,seg:5});}
+  else{
+   hykFurnBody(F,0,0,[[.225,0],[.23,.03],[.21,.2],[.195,.35],[.165,.38],[0,.39]],F.pick(['barnacle','barnacleDark']),'barn',{nu:28,nv:10,flute:{n:8,amp:.07,sharp:2.5}});
+   hykFurnBlob(F,0,.40,0,.2,.04,F.col('tealSea'),'weed',{n:5,nu:18,lobes:{n:6,amp:.04}});hykFurnKnob(F,0,.43,0,.015,F.pick(['boneIvory','boneCream']),'bone');}}});
+
+// the bioluminescent jar lamp: a limpet foot drawn up into a stalk, the cool pearl in its socket on a bracket from the
+// stalk's head, a lens-glass jar round it stoppered in shell and corded at the neck
+FURN({key:'hykkousoi_jar_lamp',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_jar_lamp',name:'Jar lamp',culture:'hykkousoi',type:'lamp',setting:'both',rooms:['hall','bedroom','tavern','workshop','library'],w:.4,d:.4,h:.6,anchor:'floor',tier:'common',task:[],clearance:{},materials:['bone','cloth','emissive','glass'],
+ build(F){const cs=F.pick(['shellWhite','shellCream']),cw=F.col('weedGreen');
+  hykFurnBody(F,0,0,[[.17,0],[.18,.015],[.12,.05],[.055,.1],[.04,.2],[.05,.25],[.035,.27]],cs,'shell',{nu:22,nv:12,flute:{n:9,amp:.05,sharp:1.5}});
+  hykFurnLight(F,0,.40,0,{cool:true,r:.085,bracket:[0,.26,0]});   // the bracket is in the piece's frame (F.light transforms it)
+  hykFurnLathe(F,0,0,[[.055,.30],[.12,.33],[.14,.40],[.125,.47],[.08,.52],[.065,.545],[.075,.56]],F.col('lensTeal'),'lens',{nu:20,nv:12,inside:true});
+  hykFurnBody(F,0,0,[[.065,.555],[.075,.565],[.05,.585],[0,.595]],cs,'shell',{nu:14,nv:4});
+  hykFurnRing(F,0,.55,0,.07,.01,cw,'weed',{n:16,seg:5});}});
+
+// the plainer sea chest in barnacle grey: a long oval drum, a shallow lid, a bone seam and hasp, barnacles grown on
+// the lower body, rope handles at the ends
+FURN({key:'hykkousoi_sea_chest',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_sea_chest',name:'Sea chest',culture:'hykkousoi',type:'storage',setting:'indoor',rooms:['bedroom','store','hall'],w:1.4,d:.6,h:.6,anchor:'floor',tier:'common',clearance:{front:.6},materials:['bone','cloth','stone'],
+ build(F){const cg=F.pick(['barnacle','barnacleDark']),cg2=F.pick(['barnacle','barnacleDark']),cb=F.pick(['boneIvory','boneCream']),cw=F.pick(['barnacle','barnacleDark']);
+  const O=hykFurnOval(.66,.285),R=O.R;
+  hykFurnBody(F,0,0,[[R*.8,0],[R*.96,.03],[R*.98,.2],[R,.38],[R*.97,.42],[R*.5,.435],[0,.44]],cg,'barn',{nu:40,nv:14,lobes:O.lobes,flute:O.flute});
+  hykFurnBody(F,0,0,[[R*.97,.43],[R*1.02,.46],[R*.98,.5],[R*.8,.55],[R*.4,.58],[0,.59]],cg2,'barn',{nu:40,nv:10,lobes:O.lobes,flute:O.flute});
+  hykFurnRing(F,0,.445,0,R*.98,.014,cb,'bone',{lobes:O.lobes,flute:O.flute,n:40});
+  for(let i=0;i<10;i++){if(!F.chance(.75))continue;const a=F.rr(0,F.TAU);const rr1=O.at(a)*.97;const s=F.rr(.012,.022);hykFurnBlob(F,rr1*Math.cos(a),F.rr(.04,.3),rr1*Math.sin(a),s,s*.6,F.pick(['barnacle','barnacleDark']),'barn',{n:3,nu:8});}
+  hykFurnKnob(F,0,.45,O.rz*.93,.025,cb,'bone');
+  for(const s of [-1,1]){const x=s*O.rx*.95;hykFurnTube(F,[[x-s*.12,.3,0],[x+s*.03,.33,0],[x+s*.05,.24,0],[x-s*.12,.2,0]],.013,cw,'weed',{seg:5});}}});
+
+// the tide-shrine niche (wall-anchored, its back at -z): a stem rising to an oval basin whose pool is a dark hollow under
+// a lens skin; a fluted nacre crest and two lesser spires grown from the back of the rim, the pearl held before the crest
+// on a bracket, offerings on the rim and weed hanging from it
+FURN({key:'hykkousoi_tide_niche',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_tide_niche',name:'Tide niche',culture:'hykkousoi',type:'shrine',setting:'indoor',rooms:['hall','shrine','bedroom'],w:.9,d:.4,h:1.2,anchor:'wall',tier:'common',clearance:{front:.6},materials:['bone','cloth','emissive','glass','nacre','stone'],
+ build(F){const cs=F.pick(['shellWhite','shellCream']),cn=F.col('nacre'),cw=F.col('weedGreen'),ct=F.col('tealSea');
+  const O=hykFurnOval(.33,.17),R=O.R;
+  hykFurnDish(F,0,0,R,.70,cs,'shell',{oval:O,nu:36,nv:22,lip:.016,lipCol:cn,lipM:'nacre',prof:[[.16,0],[.19,.03],[.1,.1],[.08,.3],[.1,.5],[R*.7,.6],[R*.95,.67],[R,.70],[R*.9,.712],[0,.72]]});
+  hykFurnLathe(F,0,0,[[R*.86,.722],[R*.6,.728],[0,.73]],ct,'lens',{nu:28,nv:3,lobes:O.lobes,flute:O.flute,inside:true});
+  hykFurnBody(F,0,-.085,[[.07,.69],[.1,.78],[.1,.92],[.065,1.06],[.02,1.16],[0,1.18]],cn,'nacre',{nu:20,nv:12,flute:{n:10,amp:.1,sharp:2}});
+  for(const s of [-1,1])hykFurnBody(F,s*.26,-.1,[[.05,.68],[.065,.76],[.055,.86],[.02,.95],[0,.97]],cn,'nacre',{nu:14,nv:8,flute:{n:8,amp:.1,sharp:2}});
+  hykFurnLight(F,0,.94,.03,{cool:true,r:.07,nacre:true,bracket:[0,.9,-.085]});
+  for(let i=0;i<4;i++){const a=F.rr(.3,2.8);const rr1=O.at(a)*.95;hykFurnBlob(F,rr1*Math.cos(a),.735,rr1*Math.sin(a),.014,.014,F.col('nacre'),'nacre',{n:4,nu:8});}
+  hykFurnTube(F,[[.2,.71,.12],[.26,.6,.17],[.24,.45,.15]],.01,cw,'weed',{seg:4});}});
+
+// the salt-fish rack: two bowed uprights, a top bar and a mid bar, flat fish hung by the tail from both, a salt tub at
+// the foot with a drift of salt in it
+FURN({key:'hykkousoi_fish_rack',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_fish_rack',name:'Fish rack',culture:'hykkousoi',type:'rack',setting:'both',rooms:['kitchen','workshop','store'],w:1.6,d:.6,h:2.1,anchor:'floor',tier:'common',task:['storage'],clearance:{front:.6},materials:['bone','cloth','stone'],
+ build(F){const cb=F.pick(['boneIvory','boneCream']),cw=F.pick(['shellWarm','shellWarmDeep']);
+  for(const s of [-1,1])hykFurnUpright(F,s*.66,0,s*.70,2.0,0,.045,cb,{bow:.035,dir:[s,0,0]});
+  hykFurnTube(F,[[-.70,2.0,0],[-.35,1.97,0],[0,1.96,0],[.35,1.97,0],[.70,2.0,0]],.03,cb,'bone',{seg:7});
+  hykFurnTube(F,[[-.69,1.25,0],[0,1.22,0],[.69,1.25,0]],.025,cb,'bone',{seg:6});
+  const hang=(x,yb,z)=>{const L=F.rr(.36,.5);const y0=yb-.06-L;hykFurnTube(F,[[x,yb,z],[x,y0+L-.02,z]],.008,cw,'weed',{seg:4});hykFurnFish(F,x,y0,z,L,(F.chance(.6)?F.col('boneIvory'):F.col('barnacle')));};
+  for(let i=0;i<6;i++)hang(-.55+1.1*i/5+F.rr(-.03,.03),1.95,F.rr(-.1,.1));
+  for(let i=0;i<5;i++)hang(-.5+1.0*i/4+F.rr(-.03,.03),1.22,F.rr(-.08,.08));
+  hykFurnDish(F,.15,.05,.2,.26,F.pick(['barnacle','barnacleDark']),'barn',{nu:24,nv:12,lip:.014,prof:[[.1,0],[.18,.04],[.2,.18],[.2,.26],[.18,.272],[0,.28]]});
+  for(let i=0;i<5;i++){const a=F.rr(0,F.TAU),d=F.rr(0,.1);hykFurnBlob(F,.15+d*Math.cos(a),.29,.05+d*Math.sin(a),F.rr(.02,.035),.012,F.pick(['shellWhite','shellCream']),'shell',{n:3,nu:8});}}});
+
+// the hearth basin: three bone feet carry a ring, the wide fluted basin rests in it, its hollow a bed of ash and charcoal
+// with three coals glowing bare in it (warm lights), and a pot set on the coals
+FURN({key:'hykkousoi_hearth_basin',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_hearth_basin',name:'Hearth basin',culture:'hykkousoi',type:'stove',setting:'indoor',rooms:['hall','kitchen','tavern'],w:1.0,d:1.0,h:.5,anchor:'floor',tier:'common',task:['cooking','socializing'],clearance:{front:.8},materials:['bone','emissive','stone'],
+ build(F){const cs=F.pick(['shellWarm','shellWarmDeep']),cb=F.pick(['boneIvory','boneCream']),cc=F.col('crustBlack');
+  for(let k=0;k<3;k++){const a=k/3*F.TAU+.6;const c=Math.cos(a),s=Math.sin(a);hykFurnBlob(F,.36*c,.035,.36*s,.055,.035,F.pick(['shellWhite','shellCream']),'shell',{n:4,nu:10});
+   hykFurnStalk(F,[.36*c,.03,.36*s],[.3*c,.12,.3*s],.035,.03,cb,'bone',{n:3,noA:true});}
+  hykFurnRing(F,0,.12,0,.3,.025,cb,'bone',{n:30,seg:7});
+  const R=.455;hykFurnDish(F,0,0,R,.37,cs,'shell',{nu:40,nv:14,flute:{n:14,amp:.04,sharp:1.5},lip:.022,fill:cc,prof:[[.12,.08],[.3,.14],[R*.9,.26],[R,.37],[R*.93,.382],[0,.39]]});
+  for(let i=0;i<6;i++){const a=F.rr(0,F.TAU),d=F.rr(.05,.3);hykFurnEll(F,d*Math.cos(a),.395,d*Math.sin(a),F.rr(.03,.05),.02,F.rr(.02,.035),cc,'dark',F.rr(0,3));}
+  for(let i=0;i<3;i++){const a=i/3*F.TAU+F.rr(0,1),d=F.rr(.04,.22);hykFurnLight(F,d*Math.cos(a),.40,d*Math.sin(a),{r:F.rr(.035,.05),bare:true});}
+  hykFurnBody(F,-.16,.08,[[.06,.39],[.1,.41],[.11,.45],[.09,.475],[.1,.485],[.04,.49],[0,.495]],F.pick(['barnacle','barnacleDark']),'barn',{nu:16,nv:8});}});
+
+// the cushion ring: seven cushions in sea colours (teal, undyed, sea-green, pale: the weed cloth's green cast turns
+// coral to mud) round a low nacre-lipped dish with three cups set in its hollow
+FURN({key:'hykkousoi_cushion_ring',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_cushion_ring',name:'Cushion ring',culture:'hykkousoi',type:'bench',setting:'indoor',rooms:['hall','tavern'],w:2.4,d:2.4,h:.4,anchor:'floor',tier:'common',task:['resting','socializing'],clearance:{},materials:['bone','cloth','nacre','stone'],
+ build(F){const cs=F.pick(['shellWhite','shellCream']),cn=F.col('nacre');
+  hykFurnDish(F,0,0,.42,.27,cs,'shell',{nu:36,nv:14,flute:{n:10,amp:.05,sharp:1.6},lip:.02,lipCol:cn,lipM:'nacre',prof:[[.22,0],[.24,.03],[.13,.1],[.12,.17],[.3,.22],[.42,.27],[.39,.282],[0,.29]]});
+  for(let k=0;k<3;k++){const a=k/3*F.TAU+.5;hykFurnBody(F,.2*Math.cos(a),.2*Math.sin(a),[[.03,.29],[.05,.31],[.055,.35],[.045,.37],[0,.375]],F.pick(['shellWarm','shellWarmDeep']),'shell',{nu:12,nv:6});}
+  const n=7,dye=[F.col('tealSea'),F.col('shellWarm'),F.col('seaGreen'),F.col('lensTeal')];for(let k=0;k<n;k++){const a=k/n*F.TAU+F.rr(-.08,.08);const d=F.rr(.80,.84);const x=d*Math.cos(a),z=d*Math.sin(a);const r=F.rr(.28,.32),ry=F.rr(.085,.1);
+   hykFurnBlob(F,x,ry,z,r,ry,dye[k%4],'weed',{n:6,nu:20,lobes:{n:5,amp:.05,ph:F.rr(0,F.TAU)}});
+   hykFurnKnob(F,x,ry*2-.01,z,.018,F.pick(['boneIvory','boneCream']),'bone');}}});
+
+// the Navigator's chart table: two fluted pedestals under an oval top with a nacre chart inlaid in it, a bone rail on
+// posts round the far edge, two lenses on stalks, a loupe laid on the chart, pearl markers and dividers
+FURN({key:'hykkousoi_chart_table',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_chart_table',name:'Chart table',culture:'hykkousoi',type:'table',setting:'indoor',rooms:['hall','library'],w:2.0,d:1.2,h:.9,anchor:'floor',tier:'common',task:['reading','writing'],clearance:{front:.8},materials:['bone','glass','nacre'],
+ build(F){const cs=F.pick(['shellWarm','shellWarmDeep']),cb=F.pick(['boneIvory','boneCream']),cn=F.col('nacre'),cl=F.col('lensTeal');
+  const O=hykFurnOval(.94,.52),R=O.R;
+  for(const s of [-1,1])hykFurnBody(F,s*.48,0,[[.24,0],[.25,.03],[.14,.12],[.1,.4],[.13,.62],[.22,.72],[.26,.745]],cs,'shell',{nu:24,nv:14,flute:{n:10,amp:.05,sharp:1.6},lobes:{n:2,amp:.15}});
+  hykFurnBody(F,0,0,[[R*.5,.74],[R*.9,.755],[R,.78],[R*.99,.8],[R*.6,.812],[0,.815]],cs,'shell',{nu:48,nv:8,lobes:O.lobes,flute:O.flute});
+  const C=hykFurnOval(.65,.36);hykFurnLathe(F,0,0,[[C.R,.815],[C.R*.96,.82],[0,.822]],cn,'nacre',{nu:40,nv:3,lobes:C.lobes,flute:C.flute,inside:true});
+  const posts=10,rp=[];for(let k=0;k<=posts;k++){const a=Math.PI/2+.35+k/posts*(F.TAU-.7);const rr1=O.at(a)*.96;rp.push([rr1*Math.cos(a),rr1*Math.sin(a)]);}
+  hykFurnTube(F,rp.map(p=>[p[0],.875,p[1]]),.014,cb,'bone',{seg:6});
+  for(let k=0;k<=posts;k+=2){const p=rp[k];hykFurnStalk(F,[p[0],.8,p[1]],[p[0],.875,p[1]],.012,.012,cb,'bone',{n:2,noA:true});}
+  for(const s of [-1,1]){hykFurnStalk(F,[s*.55,.81,-.3],[s*.5,.845,-.26],.012,.009,cb,'bone',{n:3,noA:true});hykFurnBlob(F,s*.5,.845,-.26,.042,.042,cl,'lens',{n:5,nu:12});}
+  hykFurnBlob(F,.25,.83,.2,.055,.008,cl,'lens',{n:3,nu:14});hykFurnRing(F,.25,.83,.2,.055,.007,cb,'bone',{n:16,seg:5});
+  for(let i=0;i<5;i++)hykFurnBlob(F,F.rr(-.4,.4),.835,F.rr(-.2,.2),.013,.013,F.col('nacre'),'nacre',{n:4,nu:8});
+  hykFurnTube(F,[[-.3,.83,.25],[-.1,.86,.18],[.08,.83,.1]],.006,cb,'bone',{seg:4});}});
+
+// the Library's scroll-cell rack (wall-anchored, its back at -z): an oval honeycomb of six-sided shell cells, each a short
+// open tube along z, scrolls in most of them capped in bone and tied in nacre, the comb's back dark, a bone rim round
+// it, three pad feet under it
+FURN({key:'hykkousoi_scroll_rack',source:'settlements/ys/src/66-hyk-furniture.js hykkousoi_scroll_rack',name:'Scroll rack',culture:'hykkousoi',type:'shelf',setting:'indoor',rooms:['library','study'],w:2.4,d:.6,h:2.2,anchor:'wall',tier:'common',task:['storage','reading'],clearance:{front:.8},materials:['bone','nacre','stone'],
+ build(F){const cb=F.pick(['boneIvory','boneCream']),cn=F.col('nacre');
+  const RX=1.08,RY=.95,CY=1.13,cr=.128,dx=.225,dy=.195;
+  hykFurnEll(F,0,CY,-.27,RX*1.0,RY*1.0,.02,F.col('crustBlack'),'dark');
+  for(let j=-5;j<=5;j++){const y=CY+j*dy;const off=(j&1)?dx/2:0;for(let i=-5;i<=5;i++){const x=i*dx+off;
+    const ex=x/(RX-cr),ey=(y-CY)/(RY-cr);if(ex*ex+ey*ey>1)continue;
+    hykFurnTube(F,[[x,y,-.24],[x,y,.24]],cr,F.pick(['shellWhite','shellCream']),'shell',{seg:6});
+    if(F.chance(.62)){const r=F.rr(.06,.08);const z1=F.rr(.1,.2);hykFurnTube(F,[[x,y-.02,-.2],[x,y-.02,z1]],r,(F.chance(.5)?F.col('boneIvory'):F.col('shellWarm')),'bone',{seg:9});
+     hykFurnBlob(F,x,y-.02,z1,r,r,cb,'bone',{n:4,nu:9});hykFurnRingZ(F,x,y-.02,z1-.04,r*1.05,.008,cn,'nacre',{n:12,seg:4});}}}
+  const rim=[];for(let k=0;k<=40;k++){const a=k/40*F.TAU;rim.push([RX*1.06*Math.cos(a),CY+RY*1.06*Math.sin(a),-.05]);}hykFurnTube(F,rim,.03,cb,'bone',{seg:7});
+  for(const x of [-.65,0,.65])hykFurnBlob(F,x,.06,-.05,.17,.06,F.pick(['shellWarm','shellWarmDeep']),'shell',{n:4,nu:14,lobes:{n:3,amp:.06}});}});
 /* ---------- krator-master-furniture-islander.js ---------- */
 /* ======================================================================
    Ring Sea Islander furniture: common and court tiers.
@@ -14205,6 +15380,10 @@ FURN({
     F.ball(0.34, 0.07, 0.1, 0.03, F.col('shellWhite'), 'bone');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed islander_training_<role> */
+FK.set({ culture: 'islander', tier: 'common', roles: 'training', prefix: 'islander_training_', S: ISL_COMMON, names: {
+  training_dummy: 'Koa practice post', archery_butt: 'Woven-mat target' } });
 /* ---------- krator-master-furniture-iziz.js ---------- */
 /* ======================================================================
    Iziz furniture: common and court tiers (the harvested Iziz street set
@@ -14416,6 +15595,10 @@ FURN({
     F.lamp(0, h - 0.2, 0, 1.0, 10);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed iziz_training_<role> */
+FK.set({ culture: 'iziz', tier: 'common', roles: 'training', prefix: 'iziz_training_', S: IZIZ_COMMON, names: {
+  training_dummy: 'Mahogany drill post', archery_butt: 'Sandbag archery butt' } });
 /* ---------- krator-master-furniture-jobs.js ---------- */
 /* ======================================================================
    krator-master-furniture-jobs.js — WORK ITEMS, by trade (the Jobs category, 2026-10)
@@ -14819,6 +16002,10 @@ FURN({
     F.lamp(0, 0.5, 0, 0.3, 3);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed lizardmen_training_<role> */
+FK.set({ culture: 'lizardmen', tier: 'common', roles: 'training', prefix: 'lizardmen_training_', S: LIZ_COMMON, names: {
+  training_dummy: 'Basalt practice post', archery_butt: 'Scale-hide target' } });
 /* ---------- krator-master-furniture-nomad.js ---------- */
 /* ======================================================================
    Eastern Nomad furniture: common and court tiers (the three harvested
@@ -16424,6 +17611,9 @@ FURN({
     F.rod(0, cy, cz - 0.02, 0, cy, cz + 0.035, 0.008, dk, 'bronze');
   }
 });
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed nomad_training_<role> */
+FK.set({ culture: 'nomad', tier: 'common', roles: 'training', prefix: 'nomad_training_', S: NOMAD_COMMON, names: {
+  training_dummy: 'Felt practice dummy', archery_butt: 'Horse-archery target' } });
 /* ---------- krator-master-furniture-painted.js ---------- */
 /* ======================================================================
    Painted Men (tribal highlander) furniture: common and court tiers.
@@ -17179,6 +18369,10 @@ FURN({
     }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed painted_training_<role> */
+FK.set({ culture: 'painted', tier: 'common', roles: 'training', prefix: 'painted_training_', S: PNT_COMMON, names: {
+  training_dummy: 'Cedar practice post', archery_butt: 'Cedar-plank target' } });
 /* ---------- krator-master-furniture-post-apoc.js ---------- */
 /* ======================================================================
    Post-Apoc furniture: common and court tiers of high-value salvaged
@@ -17304,6 +18498,10 @@ FURN({
       F.rod(x - 0.06, 0.23, 0.15, x + 0.06, 0.23, 0.15, 0.05, F.col('dialGrey'), 'metal'); }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed post-apoc_training_<role> */
+FK.set({ culture: 'post-apoc', tier: 'common', roles: 'training', prefix: 'post-apoc_training_', S: PA_COMMON, names: {
+  training_dummy: 'Sandbag practice dummy', archery_butt: 'Plate shooting target' } });
 /* ---------- krator-master-furniture-reedlake.js ---------- */
 /* ======================================================================
    Reed Lake furniture: common and court tiers.
@@ -17469,6 +18667,10 @@ FURN({
     if (F.variant) F.rod(-0.42, 0.3, 0.86, 0.42, 0.3, 0.86, 0.08, F.col('clothRush'), 'cloth');            /* a rolled spare blanket at the foot */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed reedlake_training_<role> */
+FK.set({ culture: 'reedlake', tier: 'common', roles: 'training', prefix: 'reedlake_training_', S: RL_COMMON, names: {
+  training_dummy: 'Reed practice dummy', archery_butt: 'Reed-bale archery butt' } });
 /* ---------- krator-master-furniture-republican.js ---------- */
 /* ======================================================================
    Republican furniture: common and court tiers.
@@ -18616,6 +19818,10 @@ FURN({
     for (const x of [-1.6, -0.2]) F.box(x, 0, 0, 0.5, 1.9 - [0.6, 0.9][x < -1 ? 0 : 1], 1.4, 0, F.col('timberAged'), 'wood');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed republican_training_<role> */
+FK.set({ culture: 'republican', tier: 'common', roles: 'training', prefix: 'republican_training_', S: REP_COMMON, names: {
+  training_dummy: 'Bamboo practice dummy', archery_butt: 'Bamboo-frame archery target' } });
 /* ---------- krator-master-furniture-rustic.js ---------- */
 /* ======================================================================
    Rustic Highlander (Clansman) furniture: common and court tiers.
@@ -18957,7 +20163,7 @@ FURN({
 });
 
 FURN({
-  key: 'hl_rus_pell', name: 'Training pell', culture: 'rustic', tier: 'court', type: 'tool', setting: 'outdoor',
+  key: 'hl_rus_pell', name: 'Training pell', culture: 'rustic', tier: 'court', type: 'tool', task: ['melee-training'], setting: 'outdoor',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 1.2, left: 0.6, right: 0.6 },
   materials: ['timber', 'thatch'], source: 'settlements/highlands/src/81-rus-village.js buildHlRusMuster (pells)',
   w: 0.9, d: 0.3, h: 1.8, variants: 1,
@@ -18970,7 +20176,7 @@ FURN({
 });
 
 FURN({
-  key: 'hl_rus_target_butt', name: 'Archery butt', culture: 'rustic', tier: 'court', type: 'tool', setting: 'outdoor',
+  key: 'hl_rus_target_butt', name: 'Archery butt', culture: 'rustic', tier: 'court', type: 'tool', task: ['ranged-training'], setting: 'outdoor',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 3.0 },
   materials: ['thatch', 'timber'], source: 'settlements/highlands/src/81-rus-village.js buildHlRusMuster (target butts)',
   w: 1.6, d: 0.98, h: 1.6, variants: 1,
@@ -19170,6 +20376,10 @@ FURN({
     F.box(0, H - 0.2, D / 2 - 0.04, L - 0.2, 0.14, 0.04, 0, F.shade(c, -0.1), 'wood');    /* the apron */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed rustic_training_<role> */
+FK.set({ culture: 'rustic', tier: 'common', roles: 'training', prefix: 'rustic_training_', S: RUS_COMMON, names: {
+  training_dummy: 'Larch practice post', archery_butt: 'Straw archery butt' } });
 /* ---------- krator-master-furniture-scrap.js ---------- */
 /* ======================================================================
    Generic scrap set: the POOR tier of the post-apocalyptic world. Rusted
@@ -20600,6 +21810,10 @@ FURN({
     for (let k = 0; k < 3; k++) F.rod(-0.6 + k * 0.4, 0.04, 0.3, -0.6 + k * 0.4 + F.rr(-0.15, 0.15), 0.06, 0.6, 0.04, F.col('boneWhite'), 'bone');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scrap_training_<role> */
+FK.set({ culture: 'scrap', tier: 'poor', roles: 'training', prefix: 'scrap_training_', S: SCRAP_STYLE, names: {
+  training_dummy: 'Tyre-wrapped practice dummy', archery_butt: 'Scrap-plate shooting target' } });
 /* ---------- krator-master-furniture-screamer.js ---------- */
 /* ======================================================================
    Screamer furniture: common and court tiers (the chief's).
@@ -20670,6 +21884,10 @@ FURN({
     F.lamp(0, 0.9, 0.2, 0.5, 5);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed screamer_training_<role> */
+FK.set({ culture: 'screamer', tier: 'common', roles: 'training', prefix: 'screamer_training_', S: SCR_COMMON, names: {
+  training_dummy: 'Skull-topped practice post', archery_butt: 'Bone-ring target' } });
 /* ---------- krator-master-furniture-scyvoi.js ---------- */
 /* ======================================================================
    Scyvoi furniture: common and court tiers, the trade roles, and the
@@ -22292,6 +23510,10 @@ FURN({
     for (let i = 0; i < 14; i++) F.blob(F.rr(-1.0, 1.0), 0.012, F.rr(-0.1, 0.32), F.rr(0.025, 0.05), 0.024, F.rr(0, 3), F.shade('shaving', F.rr(-0.12, 0.04)), 'wood');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scyvoi_training_<role> */
+FK.set({ culture: 'scyvoi', tier: 'common', roles: 'training', prefix: 'scyvoi_training_', S: SCYVOI_COMMON, names: {
+  training_dummy: 'Felt practice dummy', archery_butt: 'Felt-ring target' } });
 /* ---------- krator-master-furniture-voth.js ---------- */
 /* ======================================================================
    Voth furniture: common and court tiers (the harvested Voth street and
@@ -22376,6 +23598,10 @@ FURN({
     F.box(0, 0.4, -0.08, 0.5, 0.62, 0.04, 0, F.col('clothVothPurple'), 'cloth');       /* the skirt of the robe */
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed voth_training_<role> */
+FK.set({ culture: 'voth', tier: 'common', roles: 'training', prefix: 'voth_training_', S: VOTH_COMMON, names: {
+  training_dummy: 'Cane-wrapped practice post', archery_butt: 'Reed-bundle archery butt' } });
 /* ---------- krator-master-furniture-xanadu.js ---------- */
 /* ======================================================================
    Xanadu furniture: common and court tiers.
@@ -22463,6 +23689,24 @@ FURN({
     F.cyl(0, 0.34, 0, 0.012, 0.06, 0, F.shade(gold, 0.15), 'gold');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed xanadu_training_<role> */
+FK.set({ culture: 'xanadu', tier: 'common', roles: 'training', prefix: 'xanadu_training_', S: XAN_COMMON, names: {
+  training_dummy: 'Gilt practice post', archery_butt: 'Silk-ringed archery target' } });
+/* ---------- krator-master-furniture-yuni-common.js ---------- */
+/* ======================================================================
+   Yuni common: kit pieces. The hand-built Yuni common pieces live in krator-master-furniture.js;
+   this file holds the ones the furniture kit builds from a style sheet, in the palette FPAL['yuni-common']
+   (krator-furniture-core.js). Training furniture (FK.ROLES.training, 2026-10).
+   ====================================================================== */
+const YUNI_COMMON_STYLE = {
+  wood: 'timberOak', woodDark: 'timberWalnut', woodLight: 'timberPine', woodFam: 'wood',
+  cloth: ['clothMadder', 'clothIndigo', 'clothSaffron', 'clothOchre'], clothFam: 'cloth',
+  accent: 'brass', accentFam: 'metal', metal: 'silver', metalFam: 'metal',
+  clay: 'stoneClay', clayFam: 'stone', stone: 'stoneLaterite', stoneFam: 'stone', rope: 'ropeFlax', ember: 'ember'
+};
+FK.set({ culture: 'yuni-common', tier: 'common', roles: 'training', prefix: 'yuni_common_training_', S: YUNI_COMMON_STYLE, names: {
+  training_dummy: 'Straw-bound practice post', archery_butt: 'Straw archery butt' } });
 /* ---------- inspector.js ---------- */
 /* ======================================================================
    Krator Catalog Inspector

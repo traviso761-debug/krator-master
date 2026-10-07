@@ -1,4 +1,8 @@
 // ================================================================= HOST — stage
+// the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
+// carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
+function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('ebadlands',n):null;if(!L)return fb;
+ const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 // The ideal-type host for the EASTERN BADLANDS: everything a world provides that a biome does not. Renderer,
 // lights, haze, the terrain with terrainH(), the local water surface waterH() (a river that descends, sulphur
 // pools and a tarn each at its own level), the climate fields the kit asks for, the water, the painted ground,
@@ -202,7 +206,7 @@ const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null
  if(L.some(l=>!P(l[0])))return null;
  return L.map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
 const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
-MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uCrack={value:TEX_CRACK};
+MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};sh.uniforms.uCrack={value:hostGroundLib('groundCrack',TEX_CRACK)};
  let lay='';
  if(GL){GL.forEach((l,i)=>{sh.uniforms['uGL'+i]={value:l.tex};});
   // a custom sampler is not decoded from sRGB for us (as the strata note says): pow 2.2 by hand; a keep-0 layer is its

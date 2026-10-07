@@ -1,0 +1,378 @@
+{
+ "build": "noahs-regret",
+ "note": "Noah's Regret's adapter onto the material library (core/materials/PLAN.md). The families are the world's MAT keys (src/27-mat.js): the geometry engine (30-geo.js) writes UVs in world metres over the family's scale. tint.keep is how much of the set's own colour survives the vertex colour: the Ancient white panels and the plaster are low (the palette colours them, stained and weathered), the marble, rust, barnacles and the glyph band keep theirs. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs), projected triplanar per render family by 91f-furnish.js. Run python3 tools/textures/pack.py settlements/noahs-regret after any change, then python3 build.py; ?mat=proc shows the procedural look.",
+ "size": 512,
+ "families": {
+  "white": {
+   "lib": "metal.ancient.white",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.82
+   },
+   "roughLift": 0.2,
+   "specular": 0.35,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.05,
+    "cell": 8
+   }
+  },
+  "conc": {
+   "lib": "concrete.board",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.74
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.06,
+    "cell": 9
+   }
+  },
+  "cracked": {
+   "lib": "concrete.cracked_concrete_wall",
+   "scale": [
+    3.5,
+    3.5
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.66
+   },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "rust": {
+   "lib": "metal.rusty_metal_04",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.5
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
+  },
+  "paint": {
+   "lib": "metal.painted.chipped",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.7
+   },
+   "roughLift": 0.2,
+   "specular": 0.35
+  },
+  "deck": {
+   "lib": "paving.tiles144",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.78
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.06,
+    "cell": 8
+   }
+  },
+  "floor": {
+   "lib": "wood.old_wooden_floor_02",
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.3
+  },
+  "marble": {
+   "lib": "paving.marble_mosaic_tiles",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.8
+   },
+   "roughLift": 0.1,
+   "specular": 0.5
+  },
+  "grate": {
+   "lib": "metal.metal_grate_rusty",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.5
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
+  },
+  "plaster": {
+   "lib": "plaster.white_stucco_02",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.84
+   },
+   "roughLift": 0.35,
+   "specular": 0.2
+  },
+  "turf": {
+   "lib": "ground.grass_ground",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": 0.55
+   },
+   "roughLift": 0.4,
+   "specular": 0.15,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.12,
+    "cell": 10
+   }
+  },
+  "sand": {
+   "lib": "ground.coast_sand_01",
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.74
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.1,
+    "cell": 14
+   }
+  },
+  "timber": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.58
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "tarred": {
+   "lib": "wood.tarred",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.4
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "barn": {
+   "lib": "organic.barnacle",
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": 0.5
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "sail": {
+   "lib": "cloth.canvas.sail",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.8
+   },
+   "roughLift": 0.35,
+   "specular": 0.2
+  },
+  "corr": {
+   "lib": "metal.corrugated_iron_02",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.55
+   },
+   "roughLift": 0.2,
+   "specular": 0.35
+  },
+  "glyph": {
+   "lib": "patterns/ancients/glyph-band",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "f_wood": {
+   "lib": "wood.medieval_wood",
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_cloth": {
+   "lib": "cloth.weave.twill",
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_metal": {
+   "lib": "metal.iron.pitted",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.1,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_stone": {
+   "lib": "rock.rock035",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_rope": {
+   "lib": "fibre.rope",
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_plant": {
+   "lib": "leaf.understorey",
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.55
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_bronze": {
+   "lib": "metal.bronze",
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.1,
+   "specular": 0.3,
+   "size": 256
+  },
+  "f_rust": {
+   "lib": "metal.rusty_metal_04",
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.5
+   },
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "size": 256
+  }
+ }
+}

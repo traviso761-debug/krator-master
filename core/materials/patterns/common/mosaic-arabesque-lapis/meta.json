@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1320,
+    881
+   ],
+   "seam_after": [
+    0.834,
+    0.369
+   ],
+   "seam_before": [
+    9.387,
+    7.834
+   ],
+   "source_size": [
+    1448,
+    1086
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.3,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "common/mosaic-arabesque-lapis",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.35,
+  "scale": [
+   1.2,
+   0.8
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "Cobalt and Turquoise Moorish Tilework.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Cobalt and Turquoise Moorish Tilework.png",
+  "prompt": "Prompt row patterns/xanadu/mosaic-arabesque in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "glazed-tile walls, domes and fountains: Xanadu, Iziz, Scyvoi, Yuni court",
+  "sha1": "177199da2dd63e929f545276b846cca5faf85038"
+ }
+}

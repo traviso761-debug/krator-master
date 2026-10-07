@@ -1,0 +1,142 @@
+[
+ {
+  "src": "ice-glacier.webp",
+  "out": "core/materials/library/ice.glacier",
+  "record": {
+   "id": "ice.glacier",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 9 (ice.glacier); pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "bare glacier ice from above: milky bubbled white-blue ice in plates, clear blue veins, grey dust and grit along the cracks: a glacier's ablation zone (the Throne's glacier, in use), any old lake or river ice, an ice floe's top"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ice-clear.webp",
+  "out": "core/materials/library/ice.clear",
+  "record": {
+   "id": "ice.clear",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.2,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP with the glacier's set (a second ice)",
+    "reuse": "deep blue clear ice, fractured into plates with white veins: seracs, icebergs, ice-cave walls and ice towers (the Throne's glacier, in use); any blue ice face, a frozen waterfall, a glass-like crystal"
+   }
+  },
+  "options": {
+   "rough": 0.2,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-brimstone.webp",
+  "out": "core/materials/library/bark.brimstone",
+  "record": {
+   "id": "bark.brimstone",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 8 (bark.brimstone); pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "pale waxy ochre stem skin banded with crusted yellow sulphur and rust stains: the brimstone candelabra (in use); any sulphur-crusted trunk or post, a vent's encrusted pipe, a yellow lichen-banded stem"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-mat-thermal.webp",
+  "out": "core/materials/library/ground.mat.thermal",
+  "record": {
+   "id": "ground.mat.thermal",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 5 (ground.mat.thermal); pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "microbial mats where hot water runs off: orange, rust and olive streamers along the flow, pale sinter ridges, wet: the runoff round hot pools (vent country, in use); any hot spring's apron, an algae-streaked seep"
+   }
+  },
+  "options": {
+   "rough": 0.3,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-sinter.webp",
+  "out": "core/materials/library/ground.sinter",
+  "record": {
+   "id": "ground.sinter",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 5 (ground.sinter); pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "siliceous sinter (geyserite): pale grey-white crust in scalloped rims and popcorn nodules: the sinter round geysers and hot pools (the geyser isle, vent country); any mineral spring's crust, a salt pan's rim"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

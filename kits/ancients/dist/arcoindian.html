@@ -16,6 +16,7 @@ canvas{display:block}
 <pre id="insp">inspector: click a structure</pre>
 <div id="hud"></div>
 <pre id="errs"></pre>
+<script src="ancients.tex.ancients.js"></script>
 <script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
 <script>
 // ================================================================= LOD: shared level of detail (core/lod, read core/lod/README.md)
@@ -621,6 +622,222 @@ const SHELL=d=>d>0?MAT.rust:MAT.white;      // exterior skin by decay
 const WIN=d=>d>0?MAT.winDead:MAT.winIntact;
 const CYAN=new THREE.Color(0x7ff4ff), WARM=new THREE.Color(0xffd28a), DEAD=new THREE.Color(0x0a0c0e);
 
+/* ============================== MATERIAL RECORDS (core/materials/record) ==============================
+   GODOT-PLAN.md Phase 3 and core/materials/PLAN.md "The record": every build material is one record in one
+   vocabulary, so the exporter writes a table a Godot importer applies without reading JS.
+
+     { id, family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest,
+       scale:[u,v] (world metres per tile), tint (true: the build's vertex or instance colour multiplies the map),
+       normalScale, pattern, hook, lib (library set id), tex (TEX.def id for a procedural map), bake }
+   specular is Godot's StandardMaterial3D `specular` (0..1, 0.5 = the physical default): how much direct light a
+   dielectric reflects. Palette-tinted surfaces under a strong sun want less, or grazing views wash them grey.
+   breakup {mix, macro, cell} hides the tiling of a big surface (a library shader, 'breakup'): a world-space noise of
+   `cell` metres blends the map with a shifted copy of itself (up to `mix`), and a slower one varies the brightness
+   by +-`macro`. Godot: one .gdshader with the same three parameters.
+
+   [G data]: no THREE, no DOM. A build declares an ADAPTER from its own material names (FAMMAT keys, MAT
+   names, catalog family strings) onto records; its old names stay valid (PLAN.md "Order of work" 5).
+
+     KMAT.record(o)                   a checked record (unknown fields throw; defaults filled)
+     KMAT.pack(build, {fam:{...}})    the build's library pack, written by tools/textures/pack.py into a generated
+                                      fragment: per family the library id, its processed maps (data URLs) and fields
+     KMAT.packed(build, fam)          that family's pack entry, or null
+     KMAT.adapter(build, {name:rec})  register a build's records; KMAT.table(build) returns them as one table
+     KMAT.mode                        'lib' (library maps where the pack has them) or 'proc' (the procedural maps
+                                      only: the look before the library); the host sets it from ?mat=proc
+*/
+var KMAT = (function(){
+  'use strict';
+  var FIELDS = ['id','family','colour','map','normalMap','roughnessMap','roughness','metal','specular','emissive','doubleSided',
+                'alphaTest','scale','tint','normalScale','breakup','pattern','hook','lib','tex','bake','note'];
+  var DEF = { colour:'#ffffff', roughness:1, metal:0, specular:0.5, emissive:null, doubleSided:false, alphaTest:0, scale:[1,1],
+              tint:true, normalScale:1, breakup:null, map:null, normalMap:null, roughnessMap:null, pattern:null, hook:null,
+              lib:null, tex:null, bake:false, note:'' };
+  var PACKS = {}, ADAPTERS = {};
+  function record(o){
+    if(!o || typeof o !== 'object') throw new Error('KMAT.record: an object, please');
+    Object.keys(o).forEach(function(k){ if(FIELDS.indexOf(k) < 0) throw new Error('KMAT.record '+(o.id||'?')+': unknown field '+k); });
+    if(!o.id) throw new Error('KMAT.record: every record needs an id');
+    if(!o.family) throw new Error('KMAT.record '+o.id+': every record needs a family');
+    var r = {};
+    FIELDS.forEach(function(k){ r[k] = (k in o) ? o[k] : (k in DEF ? DEF[k] : null); });
+    if(!Array.isArray(r.scale) || r.scale.length !== 2 || !(r.scale[0] > 0 && r.scale[1] > 0))
+      throw new Error('KMAT.record '+o.id+': scale is [u,v] metres per tile, both > 0');
+    if(r.roughness < 0 || r.roughness > 1 || r.metal < 0 || r.metal > 1 || r.specular < 0 || r.specular > 1) throw new Error('KMAT.record '+o.id+': roughness, metal and specular are 0..1');
+    if(r.alphaTest < 0 || r.alphaTest >= 1) throw new Error('KMAT.record '+o.id+': alphaTest is 0..1');
+    return r;
+  }
+  function pack(build, fams){ PACKS[build] = fams || {}; return PACKS[build]; }
+  function packed(build, fam){ var p = PACKS[build]; return (p && p[fam]) || null; }
+  function adapter(build, recs){
+    var out = {};
+    Object.keys(recs).forEach(function(name){ out[name] = record(recs[name]); });
+    ADAPTERS[build] = out; return out;
+  }
+  /* the table an exporter writes: maps are named by the library set or the TEX.def id, never as pixels */
+  function table(build){
+    var A = ADAPTERS[build] || {};
+    return { format:'krator-materials', version:1, build:build, mode:api.mode,
+      convention:{ units:'m', scale:'world metres per tile (u,v)', uv:'world-space planar or triplanar',
+        colour:'map colours sRGB; records with tint:true are multiplied by the vertex or instance colour (sRGB in the palette, linear on the GPU)',
+        normal:'OpenGL (+Y), as Godot expects', library:'core/materials/library/<lib>/ (albedo.jpg, normal.png, roughness.png); a pack holds processed copies' },
+      records:Object.keys(A).map(function(name){ var r = A[name], o = { name:name };
+        Object.keys(r).forEach(function(k){ if(r[k] !== null && k !== 'map' && k !== 'normalMap' && k !== 'roughnessMap') o[k] = r[k]; });
+        o.maps = r.lib ? { from:'library', lib:r.lib } : r.tex ? { from:'procedural', tex:r.tex, bake:true } : null;
+        return o; }) };
+  }
+  var api = { version:1, FIELDS:FIELDS, record:record, pack:pack, packed:packed, adapter:adapter, table:table, mode:'lib',
+              packs:PACKS, adapters:ADAPTERS };
+  return api;
+})();
+if(typeof window !== 'undefined') window.KMAT = KMAT;
+/* ============================== MATERIAL LIBRARY HOST (core/materials/record) ==============================
+   [web]: the browser half of the material records. Sets KMAT.mode from the URL (?mat=proc shows the procedural
+   look the build had before the library), and turns a pack entry's data URLs into three.js textures. Moves into
+   core/host/ with Phase 1 of GODOT-PLAN.md. ?breakup=0 turns the tiling break-up off, to compare.
+
+     KMAT.textures(entry, {aniso})   {map, normalMap, roughnessMap} as THREE textures (repeat-wrapped; the colour
+                                     map sRGB, the others linear). Each loads asynchronously: window._texPending
+                                     counts the images still decoding, so a verifier waits for 0.
+*/
+(function(){
+  'use strict';
+  if(typeof KMAT === 'undefined') throw new Error('25-matlib-host: load 23-mat-record.js first');
+  var q = (typeof location !== 'undefined') ? (location.search + location.hash) : '';
+  KMAT.mode = /[?&#]mat=proc\b/.test(q) ? 'proc' : 'lib';
+  KMAT.breakupOn = !/[?&#]breakup=0\b/.test(q);   /* ?breakup=0: the library maps without the tiling break-up, to compare */
+  if(typeof window !== 'undefined') window._texPending = 0;
+  var cache = {};
+  function tex(url, srgb, aniso, flipY){
+    var key = url.length + ':' + url.slice(-48) + (srgb ? 's' : 'l') + (flipY === false ? 'f' : '');
+    if(cache[key]) return cache[key];
+    var t = new THREE.Texture();
+    if(flipY === false) t.flipY = false;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = aniso || 1;
+    t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ t.image = img; t.needsUpdate = true; window._texPending--; };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed texture failed to decode'); };
+    img.src = url;
+    return (cache[key] = t);
+  }
+  /* Godot's `specular` in three.js r128: scale the direct specular term (0.5 leaves it as it is). A shader hook:
+     call it from the material's onBeforeCompile. */
+  KMAT.specularHook = function(sh, specular){
+    var k = (specular == null ? 0.5 : specular) / 0.5;
+    if(Math.abs(k - 1) < 1e-6) return;
+    sh.fragmentShader = sh.fragmentShader.replace('#include <lights_fragment_end>',
+      '#include <lights_fragment_end>\n  reflectedLight.directSpecular *= ' + k.toFixed(3) + ';');
+  };
+  /* 'breakup' (core/materials/PLAN.md "Repetition break-up"): a world-space value noise blends each map with a copy
+     shifted by a fixed offset (the same scale and direction, so planks stay planks), and a slower noise varies the
+     brightness. Colour, normal and roughness use the same mask, so they stay in register. b = {mix, macro, cell}. */
+  KMAT.breakupHook = function(sh, b){
+    if(!KMAT.breakupOn || !b || !(b.mix > 0 || b.macro > 0)) return;
+    var cell = (b.cell || 8).toFixed(3), mx = (b.mix || 0).toFixed(3), mc = (b.macro || 0).toFixed(3);
+    var noise = [
+      'varying vec3 vKmWP;',
+      'float kmH(vec3 p){ return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }',
+      'float kmN(vec3 p){ vec3 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);',
+      '  return mix(mix(mix(kmH(i), kmH(i+vec3(1.,0.,0.)), f.x), mix(kmH(i+vec3(0.,1.,0.)), kmH(i+vec3(1.,1.,0.)), f.x), f.y),',
+      '             mix(mix(kmH(i+vec3(0.,0.,1.)), kmH(i+vec3(1.,0.,1.)), f.x), mix(kmH(i+vec3(0.,1.,1.)), kmH(i+vec3(1.,1.,1.)), f.x), f.y), f.z); }',
+      'const vec2 KM_OFF = vec2(0.371, 0.613);'].join('\n');
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vKmWP;')
+      .replace('#include <project_vertex>', '#ifdef USE_INSTANCING\n  vKmWP = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;\n' +
+               '#else\n  vKmWP = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#endif\n#include <project_vertex>');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\n' + noise)
+      .replace('#include <map_fragment>', [
+        'float kmM = smoothstep(0.3, 0.7, kmN(vKmWP / ' + cell + ')) * ' + mx + ';',
+        '#ifdef USE_MAP',
+        '  vec4 texelColor = mix(texture2D(map, vUv), texture2D(map, vUv + KM_OFF), kmM);',
+        '  texelColor = mapTexelToLinear(texelColor);',
+        '  diffuseColor *= texelColor;',
+        '#endif',
+        'diffuseColor.rgb *= 1.0 + ' + mc + ' * (kmN(vKmWP / (' + cell + ' * 2.7) + 19.1) * 2.0 - 1.0);'].join('\n'))
+      .replace('#include <roughnessmap_fragment>', THREE.ShaderChunk.roughnessmap_fragment
+        .split('texture2D( roughnessMap, vUv )').join('mix(texture2D( roughnessMap, vUv ), texture2D( roughnessMap, vUv + KM_OFF ), kmM)'))
+      .replace('#include <normal_fragment_maps>', THREE.ShaderChunk.normal_fragment_maps
+        .split('texture2D( normalMap, vUv ).xyz')   /* both branches (object and tangent space) */
+        .join('(normalize(mix(texture2D( normalMap, vUv ).xyz * 2.0 - 1.0, texture2D( normalMap, vUv + KM_OFF ).xyz * 2.0 - 1.0, kmM)) * 0.5 + 0.5)'));
+  };
+  /* every hook a library material takes, in order; and the matching part of its program cache key */
+  KMAT.libHooks = function(sh, L){ KMAT.specularHook(sh, L.specular); KMAT.breakupHook(sh, L.breakup); };
+  KMAT.libKey = function(L){ var b = L.breakup; return '|lib' + (L.specular == null ? '' : L.specular) + (b ? '|bu' + [b.mix, b.macro, b.cell].join('_') : ''); };
+  /* opt.flipY false: row 0 of the image is v = 0, as in a DataTexture or canvas texture a card replaces */
+  KMAT.textures = function(entry, opt){
+    var a = (opt && opt.aniso) || 1, fy = opt && opt.flipY;
+    return { map: entry.map ? tex(entry.map, true, a, fy) : null,
+             normalMap: entry.normalMap ? tex(entry.normalMap, false, a, fy) : null,
+             roughnessMap: entry.roughnessMap ? tex(entry.roughnessMap, false, a, fy) : null };
+  };
+  /* a pack entry's colour map as a decoded Image, for a build that composes it into a canvas (an atlas):
+     cb(img) once it has loaded; counted in window._texPending like the textures */
+  KMAT.image = function(entry, cb){
+    var img = new Image(); window._texPending++;
+    img.onload = function(){ window._texPending--; cb(img); };
+    img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed image failed to decode'); };
+    img.src = entry.map;
+  };
+})();
+/* ============================== MATERIAL LIBRARY BIND (core/materials/record) ==============================
+   [web]: for the builds whose materials already exist as a table of three.js MeshStandardMaterials (the Ancients
+   lineage's MAT, the shared vernacular 69b-vern-mat.js): bind the build's packed library families onto them IN PLACE,
+   before the first frame, as Ys's 79z-ys-matlib.js does by hand. Nothing is rebuilt; ?mat=proc binds nothing.
+
+     KMAT.bindMat(build, MAT, opt)   for every key of MAT that the build's pack has a family of the same name, swap in
+                                     the set's colour, normal and roughness maps, repeated so one tile of the old map
+                                     (1/K metres, K from vWorldUV's userData.uvK, or opt.tile[key] in metres) becomes
+                                     the set's own tile; add the library hooks (specular, tiling break-up) after the
+                                     material's own hook (vWorldUV). opt.alias = {matKey: packFamily} binds a key to
+                                     another key's family (woodV takes wood). opt.tile = KMAT.ANCIENT_TILES for the Ancients lineage.
+                                     A material bound already is skipped. Returns {key: lib} for the bound ones.
+
+   THE PROGRAM KEY. three.js keys a compiled program on onBeforeCompile.toString(), and kbake's Material.clone() keeps
+   onBeforeCompile but drops customProgramCacheKey (core/materials/opt/69a-world-uv.js). So the wrapper is built with
+   Function() and carries the material's id (build, key, world-UV K, library key) in its SOURCE TEXT; it reaches the
+   material's old hook and its pack entry through KMAT.bound[id], which a clone shares (userData would not keep a
+   function: clone() JSON-copies it). */
+(function(){
+  'use strict';
+  if(typeof KMAT === 'undefined') throw new Error('26-matlib-bind: load 23-mat-record.js and 25-matlib-host.js first');
+  var BOUND = KMAT.bound = KMAT.bound || {};
+  /* the Ancients lineage's MAT (core/materials 22-materials.js, kits/ancients 54, 69, 69w, 34): metres per UV unit, so a set
+     keeps the procedural map's feature size (the panel sheet is 4 x 8 panels of 2 x 1 m, the concrete 12 boards of 0.65 m).
+     A material with a world-UV K (vWorldUV) uses that instead. */
+  KMAT.ANCIENT_TILES = { white: 8, rust: 8, verdigris: 4, whiteWorn: 4.8, concrete: 7.8, concreteR: 7.8, paving: 7.8, ringPave: 7.8,
+    brick: 1.2, corrugate: 2, timber: 2, tarp: 2, rubbleK: 2 };
+  KMAT.bindMat = function(build, MAT, opt){
+    opt = opt || {};
+    var out = {};
+    if(KMAT.mode !== 'lib' || !MAT) return out;
+    Object.keys(MAT).forEach(function(key){
+      var m = MAT[key];
+      if(!m || !m.isMeshStandardMaterial || m.userData.lib) return;   /* bound already (a second call binds only what is new) */
+      var fam = (opt.alias && opt.alias[key]) || key, L = KMAT.packed(build, fam);
+      if(!L) return;
+      var tile = m.userData.uvK ? 1 / m.userData.uvK : (opt.tile && opt.tile[key]) || null;
+      var rep = tile ? [tile / L.scale[0], tile / L.scale[1]] : [1, 1];
+      var T = KMAT.textures(L, { aniso: opt.aniso || 8 });
+      [T.map, T.normalMap, T.roughnessMap].forEach(function(t){ if(t) t.repeat.set(rep[0], rep[1]); });
+      m.map = T.map;
+      if(T.normalMap){ m.normalMap = T.normalMap; m.normalScale = new THREE.Vector2(L.normalScale || 1, L.normalScale || 1); }
+      if(T.roughnessMap){ m.roughnessMap = T.roughnessMap; m.roughness = 1; }
+      m.metalnessMap = null; m.metalness = L.metal || 0;
+      var id = build + '|' + key + '|' + (m.userData.uvK || 0).toFixed(4) + KMAT.libKey(L);
+      BOUND[id] = { prev: m.onBeforeCompile || null, lib: L };   /* by id, not on userData: clone() JSON-copies userData */
+      m.onBeforeCompile = new Function('sh', 'r', 'var b = KMAT.bound[' + JSON.stringify(id) + '];\n' +
+        'if(b.prev) b.prev.call(this, sh, r); KMAT.libHooks(sh, b.lib);');
+      var prevKey = m.customProgramCacheKey && m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? m.customProgramCacheKey() : '';
+      m.customProgramCacheKey = function(){ return prevKey + '|km|' + id; };
+      m.userData.lib = L.lib;
+      m.needsUpdate = true;
+      out[key] = L.lib;
+    });
+    return out;
+  };
+})();
 // ---------------------------------------------------------------- instancing kit
 // `meshes` is filled by kbake: name -> the one InstancedMesh that item baked
 // into. One kdef is one InstancedMesh, so anything that wants to switch a whole
@@ -12571,6 +12788,21 @@ function buildPlymouth(scene,gx,gz,d){reseed(9510+d);KOFF=[gx,0,gz];
  if(d>0){scatterMoss(0,0,0,400,520,180,5);trees(0,0,440,700,70);}
  else trees(0,0,450,700,40);
  KOFF=[0,0,0];return G;}
+/* ============================== LIBRARY PACK (generated, sidecar) ==============================
+   The maps are in the page's .tex.<key>.js beside it (tools/textures/matlib_pack.py write_sidecar). Do not edit. */
+KMAT.pack('ancients', (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE["ancients"]) || (console.warn('KMAT: the ancients maps are missing (the page\'s .tex.ancients.js did not load): procedural maps'), {}));
+// ================================================================= 88y. THE MATERIAL LIBRARY (core/materials/PLAN.md)
+// materials.json names, per MAT key (the vernacular's wood, woodV, stone, plaster, thatch, shingle, cloth, dirt and the
+// build's own keys), the library set; tools/textures/pack.py packs them into tex/ and build.py inlines them
+// (88x-matlib-pack.js). KMAT.bindMat (core/materials/record/26-matlib-bind.js) swaps the maps in place before the rows
+// build anything, so one tile of each procedural map (its world-UV K) becomes one tile of the set. ?mat=proc binds
+// nothing: the look before the library. [web]: three.js materials.
+const MATLIB_BOUND=KMAT.bindMat('ancients',MAT,{tile:KMAT.ANCIENT_TILES});
+(function(){const recs={};for(const k in MAT){const m=MAT[k];if(!m||!m.isMeshStandardMaterial)continue;const L=KMAT.packed('ancients',k);
+ recs[k]={id:'ancients.'+k,family:k,scale:L?L.scale:(m.userData.uvK?[1/m.userData.uvK,1/m.userData.uvK]:[1,1]),tint:true,roughness:1,
+  metal:L?(L.metal||0):0,lib:MATLIB_BOUND[k]?L.lib:null,bake:!MATLIB_BOUND[k]&&!!m.map,hook:m.userData.uvK?'world-uv':null,
+  note:MATLIB_BOUND[k]?'library set, tint keep '+L.tint:(m.map?'procedural map':'untextured')};}
+ KMAT.adapter('ancients',recs);window._materials=KMAT.table('ancients');})();
 // ================================================================= ARCBEAM — the bridge city
 // A city thrown across a canyon as a pair of beams.
 //
@@ -32112,6 +32344,125 @@ function buildHostBellHall(scene,gx,gz,d){reseed(12040+d);KOFF=[gx,0,gz];const G
  if(d===2)for(const D of HBH.DRUMS)rubbleRing(D.x,Y0,D.z,D.r*.4,D.r*1.8,50,4);
  if(d>0)skyShards(SM,d===3?.25:.5);
  if(!shrunk)figures(0,pr+8,5,10);KOFF=[0,0,0];return G;}
+// ================================================================= INTERIORS (kits/ancients-interiors)
+// The rooms inside the kit's buildings. The PLAN is data: kits/ancients-interiors (37-ai-kit*.js) holds, per type, every
+// storey's rooms, corridors and partitions in the builder's own frame, at every decay level (a ruin is the intact plan
+// with partitions broken; AI.kitPlan). This pass DRAWS it into the builder's group, after the builder (and the repair
+// dressing) ran, from 90-scene.js:
+//   interiorBegin(k, d, gx, gz)  before the builder: a mark of every kit list, so the intact dark mass the builder put
+//                                inside a shell (a boxD block where the rooms go: B.hollow) can be cleared after it
+//   interiorPass(m, G)           floors where the builder draws none (B.floors), partitions as kit instances (white
+//                                panel: Yuni's Ancient partition, 0.12 m, doors 1.0 x 2.1 with a lintel), a broken
+//                                partition as a stub of the height the plan left and a scatter of rubble; core/tags
+//                                records for the building and its rooms; the furniture RECORDS of an intact building
+// Furniture is data first (core/furnish: KFURN records, tagged in core/tags): an intact building's rooms are furnished
+// by AI.furnishPlan in the culture `ancient` alone (the socket: any culture can be passed instead), and the pieces are
+// DRAWN only for the building opened with the cut-away (92z-interior-ui.js), so a kit of thousands of rooms costs
+// nothing until one is looked into. Only intact buildings are furnished; ruined, toppled and rehabilitated ones keep
+// their rooms empty (sockets). Each placed ruin breaks a little differently: its site position seeds AI.ruinStorey.
+// No rng(): every choice is a hash, so this pass moves no other structure's randomness.
+// Without the bundle (8zy-interiors-bundle.js, INTERIOR_TARGETS in build.py) both functions return at once.
+const AIK={on:false,sites:[],byId:{},T:null,F:null,furnished:0,pieces:0,walls:0,stubs:0,floors:0,cleared:0,errors:[],
+ PART_H:.12,DOOR_H:2.15,DARK:{boxD:1},
+ /* what a ruin's civRooms (42-offices.js) puts in a shell to fake rooms: machinery silhouettes, touch panels, conduit,
+    and floor discs in CIV_FLOOR. Inside a planned building the plan's rooms replace it */
+ FAKE:{boxD:1,cell:1,cellD:1,tube:1,slab:1}};
+function interiorBegin(k,d,gx,gz){
+ if(typeof KratorAncientsInteriors==='undefined')return null;
+ const AI=KratorAncientsInteriors;if(!AI.KIT[k])return null;
+ if(!AIK.T){AIK.on=true;AI.IX=KratorInteriors;AI.install(KratorInteriors);
+  AIK.T=KTAGS.page=KTAGS.create({build:'ancients-kit'});
+  /* core/furnish: the record pass; drawing is deferred to aikDraw (a building's batch, made when it is opened) */
+  AIK.F=KFURN.create({catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,on:true,tags:AIK.T,
+   seed:(o,ctx,R,x,y,z)=>((Math.round(x*10)*73856093)^(Math.round(z*10)*19349663)^(Math.round(y*10)*83492791))>>>0,draw:null});
+  AIK.adapter=KratorInteriors.runtimeAdapter(KratorFurniture,KratorFurniture.batch());}
+ const mark={};for(const n in AIK.DARK)mark[n]=KIT.items[n]?KIT.items[n].length:0;
+ for(const n in AIK.FAKE)mark[n]=KIT.items[n]?KIT.items[n].length:0;
+ return {k,d,gx,gz,mark};}
+/* a polygon (x, z) as a slab from y0 to y0+t, in the group's frame */
+function aikSlab(poly,y0,t,hole){const sh=new THREE.Shape(poly.map(p=>new THREE.Vector2(p[0],-p[1])));
+ if(hole)sh.holes.push(new THREE.Path(hole.map(p=>new THREE.Vector2(p[0],-p[1]))));
+ const g=new THREE.ExtrudeGeometry(sh,{depth:t,bevelEnabled:false,curveSegments:1});g.rotateX(-Math.PI/2);g.translate(0,y0,0);return g;}
+/* one straight piece of partition from a to b (group-local), y0..y1 */
+function aikWall(name,a,b,y0,y1,th){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<.05||y1-y0<.05)return;
+ kput(name,[(a[0]+b[0])/2,(y0+y1)/2,(a[1]+b[1])/2],qEuler(0,Math.atan2(-dz,dx),0),[L,y1-y0,th],null);AIK.walls++;}
+/* a polyline wall with an optional door gap (and lintel) centred on door.at */
+function aikPolyWall(name,W,top){const P=W.pts,y=W.y,D=W.door;let gap=null;
+ if(D){let best=1e9;for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1;
+   const t=Math.max(0,Math.min(1,((D.at[0]-a[0])*dx+(D.at[1]-a[1])*dz)/L2)),qx=a[0]+dx*t-D.at[0],qz=a[1]+dz*t-D.at[1],e=qx*qx+qz*qz;
+   if(e<best){best=e;gap={i,t,L:Math.sqrt(L2)};}}}
+ for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1];
+  if(gap&&gap.i===i){const h=Math.min(.5,(D.w/2)/gap.L),t0=Math.max(0,gap.t-h),t1=Math.min(1,gap.t+h),pa=[a[0]+(b[0]-a[0])*t0,a[1]+(b[1]-a[1])*t0],pb=[a[0]+(b[0]-a[0])*t1,a[1]+(b[1]-a[1])*t1];
+   aikWall(name,a,pa,y,y+top,AIK.PART_H);aikWall(name,pb,b,y,y+top,AIK.PART_H);
+   if(top>AIK.DOOR_H+.1)aikWall(name,pa,pb,y+AIK.DOOR_H,y+top,AIK.PART_H);}
+  else aikWall(name,a,b,y,y+top,AIK.PART_H);}}
+function interiorPass(m,G){
+ const AI=KratorAncientsInteriors,k=m.k,d=m.d;
+ const plan=AI.kitPlan(k,d===5?0:d,{place:Math.round(m.gx)+','+Math.round(m.gz)});
+ if(!plan.buildings.length)return;
+ const ruin=d>=1&&d<=4,partN=civDef(ruin?'aiPartR':'aiPartW',()=>new THREE.BoxGeometry(1,1,1),ruin?MAT.concreteR:MAT.white);
+ const floors=[],state=plan.state,site={id:k+'/'+d,type:k,d,state,name:plan.name,gx:m.gx,gz:m.gz,plan,G,rooms:0,box:null,storeys:[],furniture:null,group:null,recs:[]};
+ for(const B of plan.buildings){
+  /* clear the intact dark mass inside this building (kit boxes the builder put since the mark) */
+  if(B.hollow&&B.hollow.length){const inH=(x,y,z)=>B.hollow.some(H=>H.box?x>=H.box[0]&&x<=H.box[1]&&y>=H.box[2]&&y<=H.box[3]&&z>=H.box[4]&&z<=H.box[5]
+    :H.cyl?Math.hypot(x-H.cyl[0],z-H.cyl[1])<=H.cyl[2]&&y>=H.cyl[3]&&y<=H.cyl[4]:false);
+   for(const nm in m.mark){const it=KIT.items[nm];if(!it)continue;const keep=it.slice(0,m.mark[nm]);
+    for(let i=m.mark[nm];i<it.length;i++){const o=it[i];if(inH(o.p[0]-m.gx,o.p[1],o.p[2]-m.gz)){const t=tcur();if(t){t.inst--;t.tris-=ktri(nm);}AIK.cleared++;}else keep.push(o);}
+    KIT.items[nm]=keep;}}
+  /* a ruin's fake rooms (civRooms) inside the planned storeys go: the plan's rooms stand there now */
+  if(d>=1&&d<=4&&B.inside){const y0=Math.min(...B.storeys.map(q=>q.y))-1,y1=Math.max(...B.storeys.map(q=>q.y+q.h))+.5;
+   for(const nm in AIK.FAKE){const it=KIT.items[nm];if(!it||m.mark[nm]==null)continue;const keep=it.slice(0,m.mark[nm]);
+    for(let i=m.mark[nm];i<it.length;i++){const o=it[i],x=o.p[0]-m.gx,y=o.p[1],z=o.p[2]-m.gz;
+     const fake=y>=y0&&y<=y1&&B.inside(x,z,y)&&(nm!=='slab'||(o.c&&o.c.equals&&o.c.equals(CIV_FLOOR)));
+     if(fake){const t=tcur();if(t){t.inst--;t.tris-=ktri(nm);}AIK.cleared++;}else keep.push(o);}
+    KIT.items[nm]=keep;}}
+  /* core/tags: the building, then its rooms as its children */
+  let bx0=1e9,bx1=-1e9,bz0=1e9,bz1=-1e9,by1=0;
+  for(const st of B.storeys){for(const p of st.outline){bx0=Math.min(bx0,p[0]);bx1=Math.max(bx1,p[0]);bz0=Math.min(bz0,p[1]);bz1=Math.max(bz1,p[1]);}by1=Math.max(by1,st.y+st.h);}
+  const brec=AIK.T.add({'class':'building',key:k+'.'+B.id,name:plan.name+(B.name?' — '+B.name:''),at:[m.gx+(bx0+bx1)/2,0,m.gz+(bz0+bz1)/2],size:[bx1-bx0,bz1-bz0,by1],
+   tags:{culture:'ancient',state:state==='intact'&&d===5?'intact':state,types:plan.types},frag:'8zz-interiors.js'});
+  site.box=site.box?[Math.min(site.box[0],bx0),Math.max(site.box[1],bx1),Math.min(site.box[2],bz0),Math.max(site.box[3],bz1)]:[bx0,bx1,bz0,bz1];
+  for(const st of B.storeys){
+   site.storeys.push({id:st.id,y:st.y,h:st.h,b:B.id});
+   /* the floor: the storey's outline intact; in a ruin only under the rooms still standing */
+   if(B.floors){
+    if(!ruin)floors.push(aikSlab(st.outline,st.y-.3,.3));
+    else for(const R of st.rooms){if(R.open)continue;
+     if(R.poly)floors.push(aikSlab(R.poly,st.y-.3,.3));
+     else if(R.ring){const o=[],h=[];for(let i=0;i<48;i++){const th=i/48*TAU;o.push([R.ring.cx+R.ring.r1(th)*Math.cos(th),R.ring.cz+R.ring.r1(th)*Math.sin(th)]);h.push([R.ring.cx+R.ring.r0(th)*Math.cos(th),R.ring.cz+R.ring.r0(th)*Math.sin(th)]);}floors.push(aikSlab(o,st.y-.3,.3,h.reverse()));}}}
+   /* the partitions: whole, or a stub with rubble where the ruin broke it */
+   for(const W of st.walls){
+    if(!W.broken){aikPolyWall(partN,W,st.h);continue;}
+    if(!(W.stub>0))continue;
+    const S=Object.assign({},W,{door:null});aikPolyWall(partN,S,W.stub);AIK.stubs++;
+    const q=W.pts[W.pts.length>>1],hh=AI.h01(W.id+'r');
+    for(let j=0;j<3;j++){const a=AI.h01(W.id+'a'+j)*TAU,r=.4+1.2*AI.h01(W.id+'d'+j);kput('rubble',[q[0]+Math.cos(a)*r,st.y+.15,q[1]+Math.sin(a)*r],qEuler(0,a,0),.35+.4*hh,null);}}
+   /* the rooms in core/tags */
+   for(const R of st.rooms){if(!R.poly)continue;const n=R.poly.length,c=R.poly.reduce((s,p)=>[s[0]+p[0]/n,s[1]+p[1]/n],[0,0]);
+    AIK.T.child(brec.id,{'class':'part',kind:'room',key:R.kind,name:R.id,at:[m.gx+c[0],R.y,m.gz+c[1]],
+     tags:{room:R.kind,state:brec.tags.state,culture:'ancient'},note:R.open?'open to the sky: the ruin fell in here':null,frag:'8zz-interiors.js'});site.rooms++;}}}
+ if(floors.length){meshMerged(floors,ruin?MAT.concreteR:MAT.concrete,G);AIK.floors+=floors.length;}
+ /* the furniture RECORDS of an intact building (the socket's default: culture `ancient`); drawn on opening */
+ if(plan.furnish){try{const F=AI.furnishPlan(plan,AIK.adapter,{seed:1});site.furniture=F;
+   for(const r of F.rooms)for(const p of r.placements){const rec=AIK.F.place(p.key,m.gx+p.x,p.y,m.gz+p.z,p.ry,{v:p.variant|0,setting:'indoor',room:r.R.id},[p.x,p.y,p.z,p.ry],{building:k+'.'+r.R.building,room:r.R.id});if(rec)site.recs.push(rec);}
+   AIK.furnished++;AIK.pieces+=F.pieces;}catch(e){AIK.errors.push(k+'/'+d+': '+e.message);reportErr('interiors furnish '+k+'/'+d+': '+(e.stack||e));}}
+ AIK.sites.push(site);AIK.byId[site.id]=site;}
+/* draw an opened building's furniture: its records into a fresh batch, flushed once into its own group */
+function aikDraw(site){if(site.group||!site.furniture)return site.group;
+ const B=KratorFurniture.batch();
+ for(const r of site.recs)B.place(r.key,r.x,r.y,r.z,r.ry,{variant:r.variant,seed:r.seed,wealth:.6,building:r.building,setting:'indoor'});
+ const g=site.group=B.flush(scene);g.traverse(o=>{if(o.isMesh){KFURN.linearColours(o.geometry);o.userData.probeSkip=true;}});
+ aikClipAll();return g;}
+/* the SOCKET in the page: furnish any site (a ruin, a rehabilitated building) in a culture, as a world would that
+   reoccupies it. Its records replace the site's; drawn on the next opening. Not called by default: only intact
+   buildings are furnished. The page carries the Ancient pieces and the goods (INTERIOR_FURN in build.py); a world
+   socketing another culture bundles that culture's furniture. -> the number of pieces */
+function aikSocket(id,culture,o){const S=AIK.byId[id];if(!S)return 0;const AI=KratorAncientsInteriors;
+ const F=AI.furnishPlan(S.plan,AIK.adapter,Object.assign({culture,all:true,seed:1},o||{}));
+ if(S.group){S.group.parent&&S.group.parent.remove(S.group);S.group=null;}
+ S.furniture=F;S.recs=[];S.culture=culture;
+ for(const r of F.rooms)for(const p of r.placements){const rec=AIK.F.place(p.key,S.gx+p.x,p.y,S.gz+p.z,p.ry,{v:p.variant|0,setting:'indoor',room:r.R.id},[p.x,p.y,p.z,p.ry],{building:S.type+'.'+r.R.building,room:r.R.id});if(rec)S.recs.push(rec);}
+ return F.pieces;}
 // ---------------------------------------------------------------- scene
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.body.appendChild(renderer.domElement);
@@ -32197,6 +32548,9 @@ for(const k in ROWS){const R=ROWS[k];
  TSTAT.cur=k+'/'+d;const _r0=REG.length,_x=SITEX(R,d),_l0=d===5?wornLens():null;
  HOLES=(d>=3&&d!==5)?.55:1;      // rehabilitated: the fabric is only part-eaten
  let _G=null;
+ // INTERIORS (src/8zz-interiors.js, only in a target that ships the interior bundle): the mark is taken before the
+ // builder, so the pass can clear the intact dark mass it drew; the pass runs after the repair dressing
+ const _im=typeof interiorBegin==='function'?interiorBegin(k,d,_x,R.z):null;
  try{_G=BUILDERS[k](scene,_x,R.z,d===5?0:d);}catch(e){reportErr(k+' d='+d+' '+e.stack);}
  HOLES=1;
  if(d===5&&_G){KOFF=[_x,0,R.z];try{wornPass(_G,_l0,WORN_PLANTS[k]||0);}catch(e){reportErr(k+' worn '+e.stack);}KOFF=[0,0,0];
@@ -32204,6 +32558,7 @@ for(const k in ROWS){const R=ROWS[k];
  // The repaired dressing runs on the group the builder returned, so it reaches
  // every type without a builder knowing level 3 exists.
  if(d>=3&&d!==5&&_G){KOFF=[_x,0,R.z];try{repairPass(_G,d);}catch(e){reportErr(k+' repair '+e.stack);}KOFF=[0,0,0];}
+ if(_im&&_G){KOFF=[_x,0,R.z];try{interiorPass(_im,_G);}catch(e){reportErr(k+' interiors '+e.stack);}KOFF=[0,0,0];}
  for(let i=_r0;i<REG.length;i++)REG[i].type=k;           // so --assert can name the owner of an empty volume
  TSTAT.cur=null;}}
 window._registered=REG.length;
@@ -32496,6 +32851,47 @@ function frame(){const now=performance.now(),dt=Math.min(.1,(now-last)/1000);las
  hud.textContent=`cam ${camera.position.x|0},${camera.position.y|0},${camera.position.z|0}  tgt ${ctl.target.x|0},${ctl.target.y|0},${ctl.target.z|0}\ncalls ${renderer.info.render.calls}  tris ${(renderer.info.render.triangles/1e6).toFixed(2)}M  inst ${window._instances}`;
  requestAnimationFrame(frame);}
 frame();window._ready=true;
+// ================================================================= INTERIORS: the cut-away and the selector
+// Open one building to look inside: everything above a storey's cut height, within that building's footprint, is
+// clipped away (a box of five clipping planes with clipIntersection, set on every material once; no geometry is
+// rebuilt), and the building's furniture is drawn (8zz-interiors.js aikDraw: its records into one batch).
+//   the select "Interior"   a building by type and state; `[` `]` a storey down / up; `x` closes it
+//   a VIEWS preset may carry an EIGHTH element, { site: 'police/0', storey: 1 }, so a view opens a building
+//   _api.interiors()          the summary: sites, rooms, furnished buildings, pieces, walls, the core/tags audit
+//   _api.interiors.open(id, storey), .close(), .site(id)
+// Does nothing in a target without the interior bundle (AIK.on false).
+const AIK_CLIP={planes:null,applied:new WeakSet(),site:null,storey:-1};
+function aikClipAll(){if(!AIK_CLIP.planes)return;renderer.localClippingEnabled=true;
+ scene.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];
+  for(const m of ms){if(!m||AIK_CLIP.applied.has(m))continue;m.clippingPlanes=AIK_CLIP.planes;m.clipIntersection=true;m.needsUpdate=true;AIK_CLIP.applied.add(m);}});}
+function aikOpen(id,storey){const S=AIK.byId[id];if(!S||!S.box)return aikClose();
+ if(!AIK_CLIP.planes){AIK_CLIP.planes=[new THREE.Plane(new THREE.Vector3(0,-1,0),0),new THREE.Plane(new THREE.Vector3(-1,0,0),0),new THREE.Plane(new THREE.Vector3(1,0,0),0),
+  new THREE.Plane(new THREE.Vector3(0,0,-1),0),new THREE.Plane(new THREE.Vector3(0,0,1),0)];}
+ const sts=S.storeys.slice().sort((a,b)=>a.y-b.y),k=Math.max(0,Math.min(sts.length-1,storey==null?0:storey)),st=sts[k];
+ const P=AIK_CLIP.planes,pad=2,x0=S.gx+S.box[0]-pad,x1=S.gx+S.box[1]+pad,z0=S.gz+S.box[2]-pad,z1=S.gz+S.box[3]+pad;
+ /* clipped where ALL hold: y above the cut, x0<x<x1, z0<z<z1 (each plane's negative side is the clipped side) */
+ P[0].constant=st.y+Math.min(2.6,st.h*.6);P[1].constant=x0;P[2].constant=-x1;P[3].constant=z0;P[4].constant=-z1;
+ /* the other storeys of a tall building stay drawn below; a building's storeys of the same height share the cut */
+ AIK_CLIP.site=S;AIK_CLIP.storey=k;
+ for(const T of AIK.sites)if(T.group)T.group.visible=T===S;
+ aikDraw(S);if(S.group)S.group.visible=true;aikClipAll();
+ aikSel.value=id;aikLab.textContent=S.name+' ('+S.state+') — storey '+(k+1)+' of '+sts.length+(S.furniture?' · '+S.furniture.pieces+' pieces':' · not furnished (a socket)');}
+function aikClose(){if(AIK_CLIP.planes){AIK_CLIP.planes[0].constant=1e6;}AIK_CLIP.site=null;for(const T of AIK.sites)if(T.group)T.group.visible=false;
+ if(typeof aikSel!=='undefined'){aikSel.value='';aikLab.textContent='';}}
+const aikSel=document.createElement('select'),aikLab=document.createElement('span');
+if(AIK.on){aikSel.id='aiksel';const o0=document.createElement('option');o0.value='';o0.textContent='Interior: none';aikSel.appendChild(o0);
+ for(const S of AIK.sites){const o=document.createElement('option');o.value=S.id;o.textContent=S.name+' · '+S.state;aikSel.appendChild(o);}
+ aikSel.onchange=()=>{if(!aikSel.value)return aikClose();const S=AIK.byId[aikSel.value];setView(S.gx+S.box[1]*.9+40,Math.max(60,(S.box[1]-S.box[0])*.9),S.gz+S.box[3]*1.4+60,S.gx,6,S.gz);aikOpen(aikSel.value,0);};
+ aikLab.style.cssText='margin-left:8px;font:12px sans-serif;color:#eee';ui.appendChild(aikSel);ui.appendChild(aikLab);
+ addEventListener('keydown',e=>{const k=e.key;if(!AIK_CLIP.site)return;if(k===']')aikOpen(AIK_CLIP.site.id,AIK_CLIP.storey+1);else if(k==='[')aikOpen(AIK_CLIP.site.id,AIK_CLIP.storey-1);else if(k==='x'||k==='X')aikClose();});
+ /* a preset's eighth element opens a building: wrap setView (every route into a view goes through it) */
+ const _aikSV=setView;setView=function(){_aikSV.apply(null,arguments);const c=arguments[7];if(c&&c.site)aikOpen(c.site,c.storey);else if(AIK_CLIP.site&&arguments.length<8)aikClose();};
+ const v0=VIEWS[Object.keys(VIEWS)[0]];if(v0&&v0[7]&&v0[7].site)aikOpen(v0[7].site,v0[7].storey);
+ window._api.interiors=function(){const a=AIK.T.audit();return{sites:AIK.sites.length,rooms:AIK.sites.reduce((n,S)=>n+S.rooms,0),furnished:AIK.furnished,
+  pieces:AIK.pieces,records:AIK.F.placed.length,missing:Object.assign({},AIK.F.missing),walls:AIK.walls,stubs:AIK.stubs,floors:AIK.floors,cleared:AIK.cleared,errors:AIK.errors.slice(),
+  tagUnknown:a.unknown,tagMissingCulture:a.missingCulture,tagMissingTypes:a.missingTypes,records_tags:AIK.T.query({}).length,
+  bySite:AIK.sites.map(S=>({id:S.id,state:S.state,rooms:S.rooms,storeys:S.storeys.length,pieces:S.furniture?S.furniture.pieces:0,templates:S.furniture?S.furniture.templates:0}))};};
+ window._api.interiors.open=aikOpen;window._api.interiors.close=aikClose;window._api.interiors.socket=aikSocket;window._api.interiors.site=id=>AIK.byId[id];}
 // ================================================================= LOD: take over the finished scene (core/lod)
 // Sorts after every build's scene, camera and frame loop, and before 99-tail. It reads the build's `scene`, `camera`
 // and `renderer` (every Krator build names them so) and the build's options from window.LOD_OPTIONS, if it set any.

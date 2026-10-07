@@ -5,7 +5,7 @@
  ],
  "01-reedkit.html": [
   "virtual",
-  "bb1b8bd3762d"
+  "de966d06a105"
  ],
  "01b-build-open.html": [
   "mungo",
@@ -47,13 +47,25 @@
   "locus",
   "fe5deb4a5fc2"
  ],
+ "23-mat-record.js": [
+  "virtual",
+  "ea9d418382b6"
+ ],
  "25-core-mask.js": [
   "core/mask",
   "71cc7d2187d3"
  ],
+ "25-matlib-host.js": [
+  "virtual",
+  "3eb25788798a"
+ ],
  "26-core-mask-xform.js": [
   "core/mask",
   "1befd82fe83e"
+ ],
+ "26-matlib-bind.js": [
+  "virtual",
+  "23240bb0a0cb"
  ],
  "30-layout.js": [
   "mungo (overrides locus)",
@@ -65,11 +77,19 @@
  ],
  "45-kit.js": [
   "locus",
-  "ac8c9427d192"
+  "77eb0628731c"
+ ],
+ "46-matlib-pack.js": [
+  "virtual",
+  "3722f3ca8df9"
+ ],
+ "46r-reed-matlib-pack.js": [
+  "virtual",
+  "ed129d4c9604"
  ],
  "47-texture.js": [
   "locus",
-  "650244963d0a"
+  "bf565286da8f"
  ],
  "50-core-furnish.js": [
   "core/furnish",
@@ -89,7 +109,7 @@
  ],
  "52-core-tags-vocab.js": [
   "core/tags",
-  "6fb4ffca3417"
+  "344dbe75dfa7"
  ],
  "53-assets.js": [
   "locus",
@@ -195,6 +215,10 @@
   "locus",
   "34a95b8ac0a6"
  ],
+ "65-abyss-75-verge.js": [
+  "locus",
+  "da2ab5b03584"
+ ],
  "65-abyss-80-military.js": [
   "locus",
   "2c449f12edfa"
@@ -209,11 +233,11 @@
  ],
  "65y-vehicles-bundle.js": [
   "virtual",
-  "dc331f5cc9b5"
+  "abea6bee17b0"
  ],
  "65z-furniture-bundle.js": [
   "virtual",
-  "a9de0a288f75"
+  "1c862153fc56"
  ],
  "66-locus-furnish.js": [
   "locus",
@@ -223,13 +247,17 @@
   "mungo (overrides locus)",
   "312f2e0ab84e"
  ],
+ "69a0-bio-matlib-pack.js": [
+  "virtual",
+  "cf96790311d0"
+ ],
  "69a1-bio-core-head.js": [
   "core/biome",
   "79691236dfbd"
  ],
  "69a2-bio-core-kit.js": [
   "core/biome",
-  "8702bbc17f64"
+  "a020cb184f85"
  ],
  "69a3-bio-core-foliage.js": [
   "core/biome",
@@ -245,11 +273,11 @@
  ],
  "69c1-bio-eastabyss-species.js": [
   "biomes/eastabyss/src",
-  "8f5efc09860a"
+  "06712e9e527a"
  ],
  "69c2-bio-eastabyss-trees.js": [
   "biomes/eastabyss/src",
-  "2cbafe6c3621"
+  "9ddd0f7dd041"
  ],
  "69c3-bio-eastabyss-floor.js": [
   "biomes/eastabyss/src",
@@ -261,7 +289,7 @@
  ],
  "69c5-bio-eastabyss.js": [
   "biomes/eastabyss/src",
-  "f944bee3662f"
+  "c36e06194359"
  ],
  "69z-locus-flora.js": [
   "mungo (overrides locus)",

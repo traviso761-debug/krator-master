@@ -24,7 +24,7 @@
    ====================================================================== */
 const KF_API = (function () {
   const API = {};
-  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS;
+  API.FURNS = FURNS; API.FURN_BY_KEY = FURN_BY_KEY; API.FPAL = FPAL; API.FURN_TYPES = FURN_TYPES; API.FURN_JOBS = FURN_JOBS; API.FURN_TASKS = FURN_TASKS;
   API.entryDims = entryDims; API.furnAnchorY = furnAnchorY; API.CATALOG_MATERIALS = CATALOG_MATERIALS;
   API.has = function (key) { return !!FURN_BY_KEY[key]; };
   /* round primitives' detail for everything built after the call (1 = the catalog page's; 0.5 halves the
@@ -77,8 +77,10 @@ const KF_API = (function () {
     this.a[this.n++] = x; this.a[this.n++] = y; this.a[this.n++] = z;
   };
   Buf.prototype.view = function () { return this.a.subarray(0, this.n); };
-  Batch.prototype.bucket = function (family) {
-    return this.buckets[family] || (this.buckets[family] = { family: family, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
+  /* one bucket per render family, and per texture family within it (mat(): userData.texFamily) */
+  Batch.prototype.bucket = function (family, tex) {
+    const k = tex ? tex + '/' + family : family;
+    return this.buckets[k] || (this.buckets[k] = { family: family, tex: tex || null, pos: new Buf(Float32Array), nor: new Buf(Float32Array), col: new Buf(Uint8Array) });
   };
   Batch.prototype.absorb = function (g) {
     const self = this;
@@ -94,7 +96,7 @@ const KF_API = (function () {
         self.textured.push(m); self.tris += (idx ? idx.count : pos.count) / 3;
         return;
       }
-      const b = self.bucket(mt.userData.family || '');
+      const b = self.bucket(mt.userData.family || '', mt.userData.texFamily);
       _m.copy(o.matrixWorld); _n.getNormalMatrix(_m);
       const n = idx ? idx.count : pos.count;
       for (let i = 0; i < n; i++) {
@@ -120,8 +122,8 @@ const KF_API = (function () {
   Batch.prototype.flush = function (parent) {
     const grp = new THREE.Group();
     grp.name = 'catalog-furniture';
-    for (const f in this.buckets) {
-      const b = this.buckets[f];
+    for (const bk in this.buckets) {
+      const b = this.buckets[bk], f = b.family;
       if (!b.pos.n) continue;
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(b.pos.view().slice(), 3));
@@ -135,8 +137,9 @@ const KF_API = (function () {
           transparent: glass, opacity: glass ? 0.55 : 1 });
       }
       mt.userData.family = f;
+      if (b.tex) mt.userData.texFamily = b.tex;
       const m = new THREE.Mesh(geo, mt);
-      m.name = 'furniture:' + (f || 'plain');
+      m.name = 'furniture:' + (f || 'plain') + (b.tex ? '/' + b.tex : '');
       m.userData.furniture = true;
       grp.add(m);
     }

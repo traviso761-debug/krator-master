@@ -24,6 +24,16 @@ function nanSweep(){const bad=[];let badInst=0;
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
 // the biome's own invariants: the height ceiling (nothing Girder-sized), the
 // karst mask (nothing rooted on a cliff face), the figs on the karst
+// species that yield something edible the kit does not draw as a catalog fruit (nectar, fiddleheads, gum, propagules,
+// petals, shoots): named in the tags, not hidden
+const FRUIT_NOT_DRAWN=['prismgum','treefern','thorn','mangrove','lotustrumpet','matreed'];
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// fruit: every fruiting species names a catalog piece and every species carries a harvest tag, and the fruit is drawn
+// (the figs on the cliff figs, the pods of both baobabs; the pandan heads and the traveller's-fan arils as before)
+function fruitCheck(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+ const figs=P.filter(p=>/:fig$/.test(p[3])).length,pods=P.filter(p=>/:pod$/.test(p[3])).length,untagged=SP.filter(S=>!S.tags||!S.tags.harvest).map(S=>S.key);
+ return{ok:!miss.length&&!untagged.length&&figs>=100&&pods>=20,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+figs+' figs and '+pods+' baobab pods drawn; catalog keys: '+NWBAY.FRUIT_KEYS.join(', ')};}
 function extra(){const R=[];const T=NWBAY.TREES||[];
  let tallest=0,tallSp='';T.forEach(t=>{if(t.H>tallest){tallest=t.H;tallSp=NWBAY.SPECIES[t.sp].key;}});
  R.push({name:'height-ceiling',ok:tallest<=NWBAY.TEMPLE_H*1.01+.5,detail:'tallest tree '+tallest.toFixed(1)+' m ('+tallSp+') against a ceiling of '+NWBAY.TEMPLE_H+' m'});
@@ -46,6 +56,12 @@ function extra(){const R=[];const T=NWBAY.TREES||[];
  {const heroes=T.filter(t=>t.lv>0),byV={};heroes.forEach(t=>{const k=t.sp;(byV[k]=byV[k]||new Set()).add(t.variant);});
   const most=Math.max(0,...Object.values(byV).map(s=>s.size)),nov=heroes.filter(t=>t.variant==null).length;
   R.push({name:'heroes-are-variants',ok:nov===0&&most<=NWBAY.VARIANTS,detail:heroes.length+' heroes drawn from '+(NWBAY.PROTOS?NWBAY.PROTOS.size:0)+' prototypes; at most '+most+' variants a species; '+nov+' without one'});}
+ // fruit, and its negative controls (a broken input that must fail)
+ {const P=instPoints(),f=fruitCheck(NWBAY.SPECIES,P);R.push({name:'fruit-tagged-catalogued-drawn',ok:f.ok,detail:f.detail});
+  const n1=fruitCheck(NWBAY.SPECIES.map(S=>S.key==='clifffig'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P);
+  R.push({name:'negative: a fruiting species with no catalog fruit',ok:!n1.ok,detail:n1.detail});
+  const n2=fruitCheck(NWBAY.SPECIES,P.filter(p=>!/:fig$/.test(p[3])));
+  R.push({name:'negative: no figs drawn',ok:!n2.ok,detail:n2.detail});}
  return R;}
 window._api={BUDGET,REG,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},

@@ -1,6 +1,6 @@
 {
  "build": "screamers",
- "note": "Hexahedron's adapter for the material library (core/materials/PLAN.md, 'How a build adopts the library'). src/72c-matlib.js puts each family on the MAT keys its 'mat' list names, sampled by WORLD-SPACE triplanar projection at 'scale' metres per tile: the Ancients-lineage UVs are not in one unit (lathe tiles at 8 m, kit boxes stretch 0..1 over each face), so a library map cannot ride on them. tint.mean is the mean luminance of the procedural canvas the family replaces (measured in the page), so the build's palette tints and lights stay tuned; a family whose material had no map ('detail': true) has that mean divided back out in the shader. Families with \"table\": \"apoc\" dress the Post-Apoc set's own materials (KratorPostApoc.MAT: the salvage homes, 71a-apoc-homes.js); their maps are grey and the kit's vertex colours tint them. ?mat=proc shows the procedural look. metal.ancient, wood.lash and ground.ruin are the owner's generated sets of 2026-10-05 (tools/textures/batches/chatgpt-2026-10f-screamers.json).",
+ "note": "Hexahedron's adapter for the material library (core/materials/PLAN.md, 'How a build adopts the library'). src/72c-matlib.js puts each family on the MAT keys its 'mat' list names, sampled by WORLD-SPACE triplanar projection at 'scale' metres per tile: the Ancients-lineage UVs are not in one unit (lathe tiles at 8 m, kit boxes stretch 0..1 over each face), so a library map cannot ride on them. tint.mean is the mean luminance of the procedural canvas the family replaces (measured in the page), so the build's palette tints and lights stay tuned; a family whose material had no map ('detail': true) has that mean divided back out in the shader. Families with \"table\": \"apoc\" dress the Post-Apoc set's own materials (KratorPostApoc.MAT: the salvage homes, 71a-apoc-homes.js); their maps are grey and the kit's vertex colours tint them. ?mat=proc shows the procedural look. metal.ancient, wood.lash and ground.ruin are the owner's generated sets of 2026-10-05 (tools/textures/batches/chatgpt-2026-10f-screamers.json). Merged 2026-10-06 with the texture pass (main): its Ancients-MAT families that this table did not cover (verdigris, brick, paving, rubbleK, whiteWorn) join here, each on its own MAT key, through 72c; the texture pass binding (88y, KMAT.bindMat) is dropped so nothing binds twice.",
  "size": 512,
  "families": {
   "concrete": {
@@ -425,6 +425,116 @@
     "macro": 0.06,
     "cell": 6
    }
+  },
+  "verdigris": {
+   "lib": "metal.bronze.verdigris",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0.6,
+    "mean": 0.453
+   },
+   "metal": 0.25,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "mat": [
+    "verdigris"
+   ]
+  },
+  "brick": {
+   "lib": "brick.red",
+   "scale": [
+    1.2,
+    1.21
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.455
+   },
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "mat": [
+    "brick"
+   ]
+  },
+  "paving": {
+   "lib": "concrete.ancient.b",
+   "scale": [
+    3.25,
+    3.07
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.703
+   },
+   "metal": 0,
+   "roughLift": 0.3,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "mat": [
+    "paving"
+   ]
+  },
+  "rubbleK": {
+   "lib": "rock.rocks013",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.642
+   },
+   "metal": 0,
+   "roughLift": 0.4,
+   "specular": 0.3,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "mat": [
+    "rubbleK"
+   ]
+  },
+  "whiteWorn": {
+   "lib": "metal.worn",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.8
+   },
+   "metal": 0.3,
+   "roughLift": 0.1,
+   "specular": 0.4,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   },
+   "mat": [
+    "whiteWorn"
+   ]
   }
  }
 }

@@ -72,6 +72,9 @@ for _slot, _rel in (('69a1-bio-core-head.js', 'core/biome/10-core-head.js'), ('6
 # shared core modules, by folder; every digit-named .js in each (core/<m>/README.md says what each is)
 CORE_MODULES = ['lod', 'rand', 'mask', 'clock', 'sched', 'furnish', 'tags', 'atmos', 'minimap', 'simulation']
 
+SIDE = {}   # the library packs' maps, written to dist/mungo.tex.<key>.js (tools/textures/matlib_pack.py write_sidecar)
+MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']   # core/materials/record (virtual_bodies)
+
 # fragments with no generation in them (no reseed needed)
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js',
@@ -80,6 +83,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish, core/tags (no rnd())
                  '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '25-core-mask.js', '26-core-mask-xform.js', '90-atmos-host.js',
                  '88-core-minimap.js', '88a-core-minimap-host.js', '88b-locus-minimap.js', '88c-mungo-minimap.js'}
+DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pack.js', '69a0-bio-matlib-pack.js'}
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 PALETTE_FILE = '05-palette.js'
 PALETTE_FILES = {'05-palette.js', '05b-mungo-palette.js'}
@@ -184,6 +188,16 @@ def virtual_bodies():
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     if '65y-vehicles-bundle.js' not in vb:
         vb['65y-vehicles-bundle.js'] = '/* kits/motor-vehicles: not built yet; KratorVehicles absent */\nvar KratorVehicles = null;\n'
+    # the material library (core/materials/PLAN.md): the record code (KMAT, global), Locus's pack (47-texture.js binds it),
+    # the eastern-abyss biome's pack (BIO.libSwap) and Reed Lake's pack (its 88y-reedlake-matlib.js runs inside REEDKIT_MAKE)
+    for f in MATLIB_RECORD:
+        vb[f] = read(os.path.join(ROOT, 'core', 'materials', 'record', f))
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack
+    # The maps go in dist/mungo.tex.<key>.js beside the page (SIDE), not in it: the gallery takes 16 MB a file.
+    vb['46-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus', side=SIDE)
+    vb['46r-reed-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'reedlake'), 'reedlake', side=SIDE)
+    vb['69a0-bio-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss', side=SIDE)
     rk, rk_order = reed_kit()
     vb['01-reedkit.html'] = rk
     vb['78a-world-json.js'] = world_json()
@@ -307,6 +321,8 @@ def main():
             sys.exit(1)
     html = ''.join(bodies[f] for f in order)
     os.makedirs(DIST, exist_ok=True)
+    import matlib_pack
+    html = matlib_pack.write_sidecar(SIDE, html, DIST, 'mungo.tex.js')
     with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(MANIFEST, 'w', encoding='utf-8', newline='\n') as fh:

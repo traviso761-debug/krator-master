@@ -1,0 +1,24 @@
+{
+ "name": "The spice frontier (station 3): Zey'danin's harbour, the colonists' terraced spice plantations cut from the windward jungle, the natives' trails, snares and punji pits",
+ "out": "throne-frontier.html",
+ "core": [
+  "35-core-anim.js"
+ ],
+ "kits": {
+  "41-hyperjungle-globals.js": "../hyperjungle/src/41-hyperjungle-globals.js",
+  "48a-hj-species.js": "../hyperjungle/src/50-biome-hyperjungle-species.js",
+  "48b-hj-trees.js": "../hyperjungle/src/55-biome-hyperjungle-trees.js",
+  "48c-hj-fauna.js": "../hyperjungle/src/58-biome-hyperjungle-fauna.js",
+  "48d-hj-floor.js": "../hyperjungle/src/60-biome-hyperjungle-floor.js",
+  "48e-hj-dress.js": "../hyperjungle/src/65-biome-hyperjungle-dress.js",
+  "48f-hj-build.js": "../hyperjungle/src/70-biome-hyperjungle.js"
+ },
+ "packs": {
+  "hyperjungle": "../hyperjungle"
+ },
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js"
+ ]
+}

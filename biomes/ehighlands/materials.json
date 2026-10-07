@@ -1,0 +1,144 @@
+{
+ "build": "ehigh",
+ "note": "The eastern highlands kit's adapter onto the material library (core/materials/PLAN.md, Eastern highlands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones): leaf.ichu is a grey detail map the instance colour turns gold (keep 0), one tussock cut from its sheet; leaf.rag (the ragbark's crowns, used whole as a clump) and leaf.broad (one glass-tower leaf cut from its sheet) keep their own colour. skin.cushion and skin.fleece replace the cushions' and the woolbacks' canvases (keep 0 under the instance colour; the shaders divide out the pack's mean). bark.ragbark is the ragbark bucket's map. stone.basalt is the boulders, the stones and the tors' ground grain (full colour). ground.puna, ground.turf and ground.sinter are the ground's library layers (84-host-ground.js): the turf where the sedge mat grows (its polygons are the set's own), the sinter on the geyser field. Run python3 tools/textures/pack.py biomes/ehighlands after any change, then python3 build.py. ground.puna is the open puna's layer (the grass weight), under the ichu tussocks.",
+ "size": 512,
+ "families": {
+  "leaf.ichu": {
+   "lib": "card.ichu",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.rag": {
+   "lib": "card.ragleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "leaf.broad": {
+   "lib": "card.rheumleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  },
+  "skin.cushion": {
+   "lib": "surface.cushion",
+   "scale": [
+    0.8,
+    0.8
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "skin.fleece": {
+   "lib": "surface.fleece",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.75
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.ragbark": {
+   "lib": "bark.ragbark",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "stone.basalt": {
+   "lib": "rock.basalt.vesicular",
+   "scale": [
+    1.3,
+    1.3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.turf": {
+   "lib": "ground.turf.polygon",
+   "scale": [
+    3.6,
+    3.6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.sinter": {
+   "lib": "ground.sinter",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.puna": {
+   "lib": "ground.puna",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.25,
+   "mapOnly": true
+  }
+ }
+}

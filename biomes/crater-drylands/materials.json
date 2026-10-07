@@ -1,6 +1,6 @@
 {
  "build": "craterdry",
- "note": "The crater drylands kit's adapter onto the material library (core/materials/PLAN.md, Crater drylands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones). keep 0 is a grey detail map the instance colour colours; keep 1 keeps the card's own colour (the flower cards are white, so the drift's colour tints the petals and darkens the leaves; the lily, the prism fern, the jade and the broom are full colour on near-white instances). Cards on a tuft, a bloom or a frond strip are cut from one cell of their sheet in 50-biome-craterdry-species.js. bark.* and wood.char replace the bark buckets' canvases (keep 0 under the species' vertex colours; means() in 55 divides out the pack's brightness). stone.granite is the boulders and the kopjes' ground speckle. Run python3 tools/textures/pack.py biomes/crater-drylands after any change, then python3 build.py. ground.burn and ground.redsoil are the ground's two library layers (84-host-ground.js), blended per vertex by the burn's stage: char and ash on the fresh burns fading through the early bloom, red soil under the bloom, the regrowth and the old scrub.",
+ "note": "The crater drylands kit's adapter onto the material library (core/materials/PLAN.md, Crater drylands). leaf.* replace the kit's procedural leaf textures when the page carries this pack (the showcase; an open world loads the kit without it and keeps the procedural ones). keep 0 is a grey detail map the instance colour colours; keep 1 keeps the card's own colour (the flower cards are white, so the drift's colour tints the petals and darkens the leaves; the lily, the prism fern, the jade and the broom are full colour on near-white instances). Cards on a tuft, a bloom or a frond strip are cut from one cell of their sheet in 50-biome-craterdry-species.js. bark.* and wood.char replace the bark buckets' canvases (keep 0 under the species' vertex colours; means() in 55 divides out the pack's brightness). stone.granite is the boulders and the kopjes' ground speckle. Run python3 tools/textures/pack.py biomes/crater-drylands after any change, then python3 build.py. ground.burn and ground.redsoil are the ground's two library layers (84-host-ground.js), blended per vertex by the burn's stage: char and ash on the fresh burns fading through the early bloom, red soil under the bloom, the regrowth and the old scrub. groundDetail (2026-10-06, late): the host's ground layers multiplied over the painted ground (45-host-stage.js hostGroundLib), grey and bright (mean .9), colour map only.",
  "size": 512,
  "families": {
   "leaf.needle": {
@@ -282,6 +282,22 @@
    },
    "roughLift": 0.35,
    "specular": 0.25,
+   "mapOnly": true
+  },
+  "groundDetail": {
+   "lib": "ground.gravelly_sand",
+   "scale": [
+    6,
+    6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0,
+    "mean": 0.9,
+    "contrast": 1.3
+   },
+   "metal": 0,
+   "normalScale": 1.0,
    "mapOnly": true
   }
  }

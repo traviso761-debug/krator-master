@@ -56,7 +56,7 @@ From `core/materials/` (shared; see `core/README.md`): `20-textures.js`, `22-mat
 | `71b-flora.js` | 39 **big** |  |
 | `72-datacenter.js` | 3 |  |
 | `72a-wind.js` | 6 |  |
-| `72c-matlib.js` | 7 | the material library (core/materials/record) (1) |
+| `72c-matlib.js` | 8 | the material library (core/materials/record) (1) |
 | `73-police.js` | 3 |  |
 | `74-hospital.js` | 3 |  |
 | `75-biome-10-core-head.js` | 5 | PRNG (14); noise (24); host binding (41); accounting (69) |

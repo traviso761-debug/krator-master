@@ -21,7 +21,12 @@ The owner's additions:
 - Many species of fire-hardened succulents and other plants that bloom and sprout in a frenzy after a wildfire. **The
   post-fire tracts are the ones most bursting with life.**
 - Trees that have evolved long trunks to keep their foliage above the flames.
-- The **frill-tree** explodes in a fire and throws its fireproof seed far and wide.
+- The **frill-tree** explodes in a fire and throws its fireproof seed far and wide. Rebuilt on 2026-10-06 (the owner: make it
+  a proper frill tree that fits its environment) as the Rift's frill tree in kiln country (`biomes/rift`, the frill tree
+  and its barrel frill): a ribbed bottle column swollen low with stored water, short stiff waxy fins in rows up every rib
+  (olive and gold, a copper sheen away from the sun), a splay of long fins round the crown pod (the old ruffled collar,
+  now the frill tree's bud). A fire burns the fins to ash-grey stubs and bursts the pod, charred; the column stands four
+  years in its ring of seedlings, then the young trees grow back, from a quarter of full height at four years to full at nine.
 - A **prism mallee**: a much smaller relative of the hyperjungle's prism gum, iridescent green, orange and red.
 - Fire is an environmental hazard. The **Scyvoi**, human riders of theropod-like lizards, do not overheat easily. They
   live on the rocky outcrops, come down to reap what blossoms after a fire, and the most daring use the flames to trap

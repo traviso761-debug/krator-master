@@ -17,14 +17,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `10-core.js` | 3 | error panel (1); rng + noise (7) |
 | `12-stats.js` | 1 | per-type accounting (1) |
 | `30-kit.js` | 3 | instancing kit (1) |
-| `32-surfaces.js` | 7 | surfaces (1) |
-| `34-kitdefs.js` | 7 | kit definitions (shared geometry) (1); THE LEAF CARD (32) |
+| `32-surfaces.js` | 8 | surfaces (1) |
+| `34-kitdefs.js` | 9 | kit definitions (shared geometry) (1); THE LEAF CARD (44) |
 | `36-decor.js` | 13 | decoration helpers (1); THE BIOME (127) |
 | `37-sockets.js` | 2 | SOCKETS: where a culture's marks go (shared: cor (1) |
-| `38-helpers2.js` | 3 | v2 helpers (1) |
+| `38-helpers2.js` | 8 | v2 helpers (1); mouldings (28) |
 | `50-registry.js` | <1 | v3: inspector registry + group transforms (1) |
 | `54-mat-concrete.js` | 4 | v4: concrete, brick, glass panes (1) |
-| `60-jj-mat.js` | 16 |  |
+| `60-jj-mat.js` | 19 |  |
 | `61-jj-helpers.js` | 24 |  |
 | `62-jj-culture.js` | 15 | JIMJAM CULTURE PACK (sockets: awning, banner, fl (1) |
 | `63-jj-zfix.js` | 7 |  |

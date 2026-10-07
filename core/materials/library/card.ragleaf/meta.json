@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.ragleaf",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card-ragleaf.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Leaf card: nine short leafy twig ends of a high-mountain tree, small dark green compound leaves (#3a5838, #4a663e) with five to seven rounded leaflets each, crowded into rosettes at the twig tips, a few with a short piece of rust-red papery-barked twig (#a64a28), seen from above, in a 3 by 3 grid, full colour, not tinted, on a solid flat bright magenta (#ff00ff) background so they can be cut out, no magenta, pink or purple in the subject, no grey or white background. Square, 2048x2048; no other objects. (Row card.ragleaf of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the ragbark's crown; rowan, Polylepis and other small-leaved mountain trees",
+  "sha1": "f572ebcd6ab8fb6930dc17ae6141d159863a835b"
+ }
+}

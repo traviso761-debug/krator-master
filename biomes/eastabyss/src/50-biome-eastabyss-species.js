@@ -137,6 +137,38 @@ EASTABYSS.SPECIES=[
   leaf:[0x6a8a3a,0x7a9a44,0x8a9a50,0x9aa058,0x5a7a34],use:'reed mats, thatch, cordage, reed boats',bed:{R:[7,18],spacing:1.35},
   tags:{climate:'tropic',aridity:'humid',abyssal:true,riparian:'yes'}},
 ];
+EASTABYSS.byKey={};EASTABYSS.SPECIES.forEach(S=>{EASTABYSS.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws (as ebadlands' HV()).
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+EASTABYSS.HARVEST={
+ skyscale:HV('none (too big to fell)',['scalefruit'],false,'Red scale pods grow straight off the bole; the pink flesh is cut in wedges.','generic_fruit_scalefruit'),
+ forktree:HV('poles from fallen forks',['scalefruit'],false,'The same cauliflory pods as the sky scale-tree, lower down.','generic_fruit_scalefruit'),
+ bellbark:HV('timber',['scalefruit'],true,'Pods on the trunk and the boughs; the pale bark is a fever tea.','generic_fruit_scalefruit'),
+ treefern:HV('fibre (the trunk mat)',['pith (famine)'],false,'The starchy pith is baked in hard years; the fibrous trunk is cut for planters.'),
+ cycad:HV('none',['salt-cone kernels (steeped)'],false,'The cone in the crown. Poisonous raw: the kernels are steeped a week in the salt lake, then baked.','generic_fruit_salt_cone'),
+ horsetail:HV('none',[],false,'The silica-rough stems scour pots.'),
+ kneetree:HV('timber, knees for floats',[],false,'The knees are cut for fishing floats.'),
+ stiltwood:HV('poles',[],false,'Straight poles for platforms.'),
+ fanpalm:HV('thatch',['heart (palm cabbage)'],false,'The fans thatch huts; the heart is eaten, which kills the stem.'),
+ umbrella:HV('light timber, fuel',[],true,'A bark tea for the gut.'),
+ jade:HV('none',['leaves (pickled)'],false,'Salt-rich leaves pickled in brine.'),
+ tidelycopsid:HV('none',[],false,''),
+ calamophyton:HV('none',[],false,''),
+ sanfordacaulis:HV('none',[],false,'The fine twigs are tinder.'),
+ sigillaria:HV('poles (the fluted bole)',[],false,'The cones hang under the crown but nobody eats them.'),
+ cordaite:HV('timber',[],false,'The strap leaves are plaited into baskets.'),
+ seedfern:HV('none',['fern-eggs (roasted)'],false,'Seeds big as eggs under the fronds: roasted in the coals, mealy like chestnut.','generic_fruit_fern_egg'),
+ araucaria:HV('timber',['seeds in the cones'],false,'The cones at the crown shed edible seeds (not in the catalog yet).'),
+ beardoak:HV('fuel, boat ribs',[],true,'The beard moss stuffs mattresses and dresses wounds.'),
+ waterpalm:HV('thatch (the fronds)',['tideheart jelly'],false,'The fruit head at the water line: the jelly in its carpels is cut out and set in cubes.','generic_fruit_tideheart'),
+ matreed:HV('reed mats, thatch, cordage, reed boats',['rhizome, young shoots'],false,'The pale base of the reed is peeled and chewed.'),
+};
+EASTABYSS.SPECIES.forEach(S=>{S.tags.harvest=EASTABYSS.HARVEST[S.key]||HV('none');});
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species names
+EASTABYSS.FRUIT_KEYS=[...new Set(EASTABYSS.SPECIES.map(S=>S.tags.harvest.fruit).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -444,6 +476,9 @@ EASTABYSS.MAT={
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.4,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'eastabyss' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+EASTABYSS.LIB=BIO.libSwap('eastabyss',EASTABYSS.MAT);
 const M=EASTABYSS.MAT;
 ['Scale-tree bark','Fibrous bark','Pale bark','Knee-tree bark','Pipe-reed stems','Seal-tree bark'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===0?6:i===5?5:4,i===0?9:i===5?8:6]}));
 BIO.bucket('bark0i',M.barkIrid,{label:'Sky scale-tree bark (iridescent)',uvScale:[6,9]});

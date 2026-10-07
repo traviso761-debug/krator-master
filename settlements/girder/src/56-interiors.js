@@ -203,7 +203,7 @@ function gixMerge(){
   if(!GIX.group){ GIX.group = new THREE.Group(); GIX.group.name = 'interiors-furniture'; GIX.group.userData.inspectLabel = 'Furniture (interiors)'; scene.add(GIX.group); }
   g.children.slice().forEach(function(m){
     if(m.material.map) gixAccum('decal|'+m.material.uuid, 'uv', m.material, gfDecal(m));
-    else { var fam = m.material.userData.family || '', had = !!GIX.acc[fam]; gixAccum(fam, 'col', m.material, m.geometry); if(had) m.material.dispose(); }
+    else { var fam = (m.material.userData.family || '') + (m.material.userData.texFamily ? '/' + m.material.userData.texFamily : ''), had = !!GIX.acc[fam]; gixAccum(fam, 'col', m.material, m.geometry); if(had) m.material.dispose(); }
   });
 }
 GIX.lastMerge = 0;

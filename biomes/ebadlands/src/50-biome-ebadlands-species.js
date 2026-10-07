@@ -485,7 +485,7 @@ const M=EBADLANDS.MAT;
 // the library barks (materials.json bark.*): keep-0 grey detail under the species' vertex colours. The bucket's
 // uvScale becomes the set's tile size, and means() divides out the pack's brightness instead of the canvas's, so a
 // species' bark colour renders the same on either map. Without the pack the procedural canvases stay.
-const LIBBARK=['bark.juniper','bark.ponderosa','bark.aspen','bark.spruce','wood.silver',null];
+const LIBBARK=['bark.juniper','bark.ponderosa','bark.aspen','bark.spruce','wood.silver','bark.alien'];   // bark.alien: skin.alien.banded (2026-10-06)
 EBADLANDS.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;EBADLANDS.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
 ['Furrowed bark','Ponderosa plates','Aspen bark','Conifer bark','Weathered deadwood','Alien skin'].forEach((lab,i)=>{const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);

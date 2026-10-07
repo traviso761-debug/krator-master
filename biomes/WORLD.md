@@ -28,8 +28,9 @@ scale Krator map for rough placement, not in this repo.
 | crater drylands (two regions) | `crater-drylands` | swbay, the hyperjungle's southern savannah (gentle: the burn mosaic thins into them) |
 | *planned* Korona | `korona` | nwlowlands, nhighlands |
 | southern highlands | `shighlands` | swbay (steep), hyperjungle (steep), swlowlands, sedesert |
-| *possible* | `ehighlands`, `sbadlands`, micro-biomes | |
-| *candidate* the scablands (in "n semiarid") | `scablands` | its basin's long lake to the south |
+| eastern highlands | `ehighlands` | *to be placed on the scale model* (the cushion plateau: an altiplano at ~0.6 atm, BSk/ET) |
+| *possible* | `sbadlands`, micro-biomes | |
+| *planned* the scablands (in "n semiarid": scale model 4.20) | `scablands` | its basin's long lake to the south |
 | *candidate* tuff country (in "The Catch") | `tuff` | the Catch's walls |
 
 **Korona** lies in the north-east, under the gas giant (Travis, Oct 2026): a corona, a volcanic
@@ -47,6 +48,16 @@ because their conditions are rare, and Krator has the conditions.
   (14 m/km), so cataracts and coulees more than braided plains. The basin is semiarid now (~420 mm, BSh), so the
   flood lake needs a wetter past: a breach in the Ancients' time is a story. The east lobe also closes (at 369 m)
   and spills into Korona's trenches.
+
+  **Decided (Travis, Oct 2026; scale model 4.20, `tools/scale-model/edit_dams.py`):** the lakes were the Ancients'
+  own, held behind two dam arcologies, and they broke in a cascade in the war that ended them. The east lobe (region
+  'dam 2') held a lake at 1,050 m (~63,000 km^2) behind the east dam in the pass between the lobes (507,110); the west
+  lobe (region 'dam') a lake at 900 m (~48,000 km^2) behind the west dam in its southern saddle (409,144). The east
+  dam burst first; its ~11,500 km^3 raised the west lake ~240 m and overtopped the west dam, which burst into the
+  long-lake trough. The lakes were kept low so their old shores leave land round them. The 4.19 basin did not allow
+  this, so 4.20 cut both passes (~470 m) and raised two ridges on the east lobe's Korona side (it had spilled there at
+  370 m). The scablands run along the two breach channels (`DATA.floods`), the west one the larger (a Grand Coulee:
+  the pass cut to 700 m, then down into the trough); the old shorelines are `DATA.palaeolakes`.
 - **Tuff country in "The Catch"** (geographic region `rmuf346nvpktx`): a dry floor below 1.5 km (31,600 km^2, BSh/BWh,
   ~300 mm, strong wind) walled by high ground, downwind (SE) of the Godthrone. Distance argues against it: the
   floor is 300-600 km from the summit, against ~50-100 km for the flows that laid Cappadocia's tuff. An

@@ -67,3 +67,7 @@ FURN({
     F.lamp(0, 0.9, 0.2, 0.5, 5);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed screamer_training_<role> */
+FK.set({ culture: 'screamer', tier: 'common', roles: 'training', prefix: 'screamer_training_', S: SCR_COMMON, names: {
+  training_dummy: 'Skull-topped practice post', archery_butt: 'Bone-ring target' } });

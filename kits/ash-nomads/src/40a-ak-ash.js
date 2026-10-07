@@ -64,12 +64,12 @@ function akBandRing(r,y,h,o){o=o||{};const figs=o.figs||['fret','bird','fret','s
    poly('plain',[[-L/2,y,-.004],[L/2,y,-.004],[L/2,y+h,-.004],[-L/2,y+h,-.004]],akC(AK_K),true);
    for(const [y0,y1] of [[y,y+e],[y+h-e,y+h]])poly('plain',[[-L/2,y0,0],[L/2,y0,0],[L/2,y1,0],[-L/2,y1,0]],akC(AK_Y),true);
    akMotif(figs[i%figs.length],0,y+e*1.8,y+h-e*1.8,p*.4,akC(i%2?AK_Y:AK_P),.003);});}}
-/* a roof's vertex colours: black cloth (cloth k), and at each band [v0, v1, kind] a pattern: 'saw' (red teeth on yellow),
+/* a roof's vertex colours: black cloth (cloth k), and at each band [v0, v1, kind] a pattern: 'saw' (black between yellow edges: the teeth are geometry),
    'step' (a stepped fret in yellow on red), 'line' (a yellow stripe). N teeth round the roof. */
 function akRoofColf(bands,N,base){const K=akC(base||AK_K),Yc=akC(AK_Y),Rc=akC(AK_P),O=akC(AK_O);
  return (u,v)=>{for(const b of bands){if(v<b[0]||v>b[1])continue;const t=(v-b[0])/(b[1]-b[0]),f=((u*N)%1+1)%1;
   if(t<.12||t>.88)return Yc;
-  if(b[2]==='saw')return (t-.12)/.76<1-Math.abs(2*f-1)?Rc:Yc;
+  if(b[2]==='saw')return K;   /* the teeth are geometry (akConcave): vertex colour smeared them into a pale wash, so the ground stays black */
   if(b[2]==='step'){const s=Math.floor(f*4),q=Math.floor((t-.12)/.76*4);return (s===q||s===3-q)?Yc:Rc;}
   if(b[2]==='line')return t<.3||t>.7?Yc:akC(AK_T);}   /* a red line edged in yellow */
   return K;};}

@@ -1,7 +1,7 @@
 // ================================================================= HOST — probe (window._api)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
- showcase:{tris:19500000,calls:120},   // measured 18.4M at q=1 on this 5.2 km map (2026-10-06), not a target
+ showcase:{tris:19500000,calls:120},   // measured 18.5M at q=1 on this 5.2 km map (2026-10-06), not a target
  cls:{pass:14000000,host:900000},
  type:{'shigh/trees':'pass','shigh/floor':'pass','host':'host'},
 };
@@ -39,7 +39,7 @@ const HCHK={
   return{ok:!bad&&mir>=1&&share<.02,detail:(bad?bad+' trees with no hand; ':'')+mir+' mirror-handed of '+T.length+' ('+(share*100).toFixed(2)+'%)'};},
  // the cloud forest stands in the cloud: most cloud-forest trees where the fog field is high, the paramo's rosette trees
  // above it
- cloud(T){const cf=['coilbark','trumpet','volute','crozier'].map(SPI),pr=['groundsel','frill'].map(SPI);
+ cloud(T){const cf=['coilbark','trumpet','volute','crozier','frill'].map(SPI),pr=['groundsel','ruffle'].map(SPI);
   const a=T.filter(t=>cf.indexOf(t.sp)>=0),b=T.filter(t=>pr.indexOf(t.sp)>=0),fa=a.filter(t=>t.fog>.3).length/Math.max(1,a.length),fb=b.filter(t=>t.fog<.6).length/Math.max(1,b.length);
   return{ok:a.length>0&&b.length>0&&fa>.85&&fb>.85,detail:'cloud-forest trees in cloud '+(fa*100).toFixed(1)+'%, paramo trees above it '+(fb*100).toFixed(1)+'%'};},
  // nothing roots under the water: no instance's origin more than a metre under the local surface (rush stands in 0.4 m)
@@ -50,6 +50,12 @@ const HCHK={
  // no tree on a sheer rock face (the tors' steepest granite)
  cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.rock(t.x,t.z)>.6);
   return{ok:!bad.length,detail:bad.length?bad.length+' trees on sheer rock (first '+SHIGH.SPECIES[bad[0].sp].key+' at '+[bad[0].x|0,bad[0].z|0]+')':T.length+' trees, none on a sheer face'};},
+ // THE CLOUD DECK is the shared module's and is exported for a game engine: one record, and the field's top inside its
+ // band [y-down, y+up] everywhere
+ clouddeck(R,hf){const P=ATMOS.PRESETS.clouddeck,r=R.filter(f=>f.type==='clouddeck');let lo=1e9,hi=-1e9;
+  for(let i=0;i<400;i++){const x=-2500+(i%20)*263,z=-2500+Math.floor(i/20)*263,t=i*7.3,v=hf(x,z,t);lo=Math.min(lo,v);hi=Math.max(hi,v);}
+  const ok=r.length===1&&lo>=CLOUD_Y-P.down-1e-6&&hi<=CLOUD_Y+P.up+1e-6&&hi-lo>P.up*.5;
+  return{ok,detail:r.length+' deck record(s); the top ranges '+lo.toFixed(1)+' .. '+hi.toFixed(1)+' m (band '+(CLOUD_Y-P.down)+' .. '+(CLOUD_Y+P.up)+')'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('every species placed',HCHK.placed(SHIGH.COUNTS||[]));
@@ -59,6 +65,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing rooted under the water',HCHK.dry(P));
  add('no tree under the cloud deck',HCHK.deck(SHIGH.TREES));
  add('no tree on a sheer rock face',HCHK.cliffs(SHIGH.TREES));
+ add('the cloud deck: shared, exported, inside its band',HCHK.clouddeck(ATMOS.fx,(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
@@ -74,6 +81,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  // the steepest granite on the Whorl Stone (found, not typed)
  {let bx=TOR[0].x,bz=TOR[0].z,bs=-1;for(let z=TOR[0].z-200;z<=TOR[0].z+200;z+=4)for(let x=TOR[0].x-200;x<=TOR[0].x+200;x+=4){const s=FIELD.slope(x,z)*FIELD.rock(x,z);if(s>bs){bs=s;bx=x;bz=z;}}
   add('a tree on the tor\'s sheer face',HCHK.cliffs([{x:bx,z:bz,sp:0}]));}
+ add('a deck not recorded',HCHK.clouddeck([],(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)));
+ add('a deck that rises out of its band',HCHK.clouddeck(ATMOS.fx,(x,z,t)=>ATMOS.deckHeight(x,z,t,CLOUD_Y)+60));
  add('a camera under the tarn',HCHK.camerasOut([{view:'under',x:TARN.x,y:TARNL-5,z:TARN.z}]));
  return R;}
 window._api={BUDGET,REG,hostChecks,hostNegatives,
@@ -81,6 +90,8 @@ window._api={BUDGET,REG,hostChecks,hostNegatives,
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),
  biome:()=>window._biome,
+ // the atmosphere's export (core/atmos/GODOT.md): the cloud deck's record and its presets, for the Godot importer
+ atmos:()=>ATMOS.export(),
  // the climate at a point, for the probe and for --eval: the fields and the kit's zones
  at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=SHIGH.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}};
 window._registered=REG.length;

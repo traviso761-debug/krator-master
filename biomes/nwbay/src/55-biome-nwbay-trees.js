@@ -122,6 +122,8 @@ const reg=(T,S,r)=>{if(typeof REGISTER==='function')REGISTER({name:S.name,kind:'
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,wet} and lv 2 near / 1 mid / 0 far
 const B=[];
+// the fruit (biomes/FRUIT.md) is placed by a hash of the tree, never by rng(): drawing it leaves every other tree as it was
+const fruitH=(T,i,k)=>h3(T.seed*.001+i*1.37,k*.71+T.sp,T.x*.013+T.z*.007);
 // 0 the prism gum: a fluted bole in shed strips of six colours, long near-level boughs, iridescent lance-leaf fans
 B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
  const rAt=u=>rb*(1-.45*u)*(1+.9*Math.exp(-u*H/6));
@@ -323,6 +325,10 @@ B[8]=function(T,st,lv){const S=SP[T.sp],fam='bark5',H=T.H,rb=T.rb,ti=T.seed%3,ha
   for(let c=0;c<cnt;c++){const a=rr(0,TAU),d=s.s*Math.sqrt(rng()),x=s.p.x+Math.cos(a)*d,z=s.p.z+Math.sin(a)*d,y=s.p.y+rr(-.4,.3)*s.s;
    if(!clear3(x,y,z,sz0*.5,sz0*.35))continue;clumpAt('glossy',x,y,z,sz0*rr(.85,1.2)*(s.tip?1.1:1),.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;mine++;}});
  if(!mine){clumpAt('glossy',T.x,T.y0+H*.62,T.z,sz0,.6,C(pick(S.leaf)),T.x,cy,T.z,ex,ey);st.clumps++;}
+ // the FIGS (the catalog's cliff figs): clusters in the leaf axils under the crown's spots, orange-red and ripe purple
+ if(lv===2)spots.forEach((s,j)=>{if(fruitH(T,j,1)>.35)return;
+  for(let c=0,m=3+Math.floor(fruitH(T,j,2)*4);c<m;c++){const i=j*8+c,a=fruitH(T,i,3)*TAU,d=s.s*.35*fruitH(T,i,4),r=.09+fruitH(T,i,5)*.05;
+   BIO.put('fig',[s.p.x+Math.cos(a)*d,s.p.y-s.s*.25-fruitH(T,i,6)*.6,s.p.z+Math.sin(a)*d],qEuler(fruitH(T,i,7),fruitH(T,i,8)*TAU,0),[r,r*1.15,r],bright(C(PAL.fig[fruitH(T,i,9)<.35?1:0]),1.05+fruitH(T,i,10)*.2));st.pods++;}});
  // the AERIAL ROOTS: from an outward bough to the rim, then straight down the face to the water. A variant grown in
  // the nursery (T.nursery) has no rim: it keeps where its curtains would hang from, and each placed fig drops its own
  // to its own stack's waterline (56-variants)

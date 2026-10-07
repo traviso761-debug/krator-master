@@ -1619,3 +1619,7 @@ FURN({
     for (let i = 0; i < 14; i++) F.blob(F.rr(-1.0, 1.0), 0.012, F.rr(-0.1, 0.32), F.rr(0.025, 0.05), 0.024, F.rr(0, 3), F.shade('shaving', F.rr(-0.12, 0.04)), 'wood');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scyvoi_training_<role> */
+FK.set({ culture: 'scyvoi', tier: 'common', roles: 'training', prefix: 'scyvoi_training_', S: SCYVOI_COMMON, names: {
+  training_dummy: 'Felt practice dummy', archery_butt: 'Felt-ring target' } });

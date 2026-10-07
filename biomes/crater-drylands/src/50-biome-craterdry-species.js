@@ -6,7 +6,8 @@
 // fresh char, the bloom that bursts out after a fire, young regrowth, old scrub heavy with fuel; and the granite
 // kopjes and the sandy washes the fires go round. The flora is shaped by fire (the owner, Oct 2026): fire-hardened
 // succulents; plants that sprout and flower in a frenzy after a burn; trees with long bare trunks that keep their
-// crowns above the flames; the frill-tree that bursts in a fire and throws its fireproof seed; the prism mallee, a
+// crowns above the flames; the frill-tree (the Rift's frill tree in kiln country: a ribbed bottle column of stiff waxy
+// fins under a crown pod) that bursts in a fire and throws its fireproof seed; the prism mallee, a
 // small cousin of the hyperjungle's prism gum, that resprouts from its root crown with green-orange-red leaves.
 // Everything here is DATA and kit definitions; no placement. Tags follow the project rule (climate / aridity /
 // abyssal / riparian / Koppen) plus `fire`: how the species meets a burn (biomes/WORLD.md).
@@ -26,6 +27,7 @@ const PAL=CRATERDRY.PAL={
  malleeBark:[0x8aa070,0xd88a40,0xb84a32,0xc8b090,0x6a8a6a,0xe0a050],
  pillar:[0x2e6a6a,0x3a7a74,0x4a8a6a,0x5a9a5a],pillarBand:[0x3a8a7a,0xb8c060,0x4a9a84,0xd8c870,0x2e7a70],
  frillLeaf:[0x4e6e34,0x5a7a3a,0x46642e],frill:[0xd85a28,0xe8782a,0xc8402a,0xf0a040],
+ frillCol:[0x6a6a48,0x5e6040,0x767452],frillFin:[0x8a8a3a,0x9a9440,0x7a7a34,0xa8a048],frillSheen:[0xc8783a,0xd88a40,0xb8682e,0xe0a050],
  parasol:[0x4a6a34,0x557a3a,0x3e5e2e,0x5e8040],
  gum:[0x7a9a6a,0x8aa478,0x6e8e60],gumBark:[0xe8e4dc,0xdcd8cc,0xf0ece4],
  aloe:[0x6a8a5a,0x7a9a62,0x5a7a50,0x88946a],candle:[0xe8642a,0xf07a2a,0xd84a20,0xf09a3a],
@@ -46,6 +48,8 @@ const PAL=CRATERDRY.PAL={
  granite:[0xb0a49a,0xa09488,0xc0b4a8,0x988c84],rockRed:[0xa86048,0x9a5440,0xb87058],lichen:[0xd88a3a,0xe0a048,0xc0c0a0,0x9aa090,0xb8b088],
  deadwood:[0xb8b0a4,0xa8a094,0xc8c0b4,0x989084],
  pod:[0x6a5a3a,0x7a6a44],tuna:[0xd83a48,0xc82a3a],aloeSeed:[0x8a7a4a,0x9a8a52],
+ // the fruit, in the catalog piece's colours (kits/catalog/krator-master-furniture-generic-goods.js, fruit*)
+ fireseed:[0x40281e,0x4a3022],pineCone:[0x8a5230,0x7a4a2a,0x96603a],
 };
 
 // ---------------------------------------------------------------- the tree species
@@ -61,8 +65,8 @@ CRATERDRY.SPECIES=[
   far:{poleU:.35,blobs:[[.66,.95,.3,'L0','L2']]},tags:K('tropic','semiarid','both',['BSh','BWh','Aw'],'resprouter')},
  /*1*/{key:'pillar',name:'Pyre pillar',alien:true,H:[11,26],rb:[.7,1.3],crownR:[3.6,6],barkK:5,bark:PAL.pillarBand,leaf:PAL.pillar,
   far:{poleU:.95,taper:.25,blobs:[[.66,.7,.32,'L0','L1'],[.9,.45,.12,'L2','L3']]},tags:K('tropic','arid','no',['BSh','BWh'],'survivor')},
- /*2*/{key:'frill',name:'Frill-tree',alien:true,H:[5,11],rb:[.25,.5],crownR:[2.6,4.6],barkK:0,bark:[0x5a4a3c,0x4e4034,0x665446],leaf:PAL.frillLeaf,
-  far:{poleU:.4,blobs:[[.66,.95,.3,'L0','L2']]},tags:K('tropic','semiarid','no',['BSh','Aw'],'seeder')},
+ /*2*/{key:'frill',name:'Frill-tree',alien:true,H:[5,11],rb:[.3,.52],crownR:[2.2,3.8],barkK:5,bark:PAL.frillCol,leaf:PAL.frillFin,irid:PAL.frillSheen,
+  far:{poleU:.88,taper:.45,blobs:[[.5,.5,.42,'L0','L2'],[.93,.6,.1,'L1',0xe8782a]]},tags:K('tropic','semiarid','no',['BSh','Aw'],'seeder')},
  /*3*/{key:'parasolpine',name:'Parasol pine',H:[16,28],rb:[.35,.65],crownR:[5,8.5],barkK:1,bark:[0x8a5a3e,0x7a4e36,0x966646],leaf:PAL.parasol,
   far:{poleU:.82,taper:.4,blobs:[[.86,1.0,.1,'L0','L2']]},tags:K('tropic','semiarid','no',['BSh','Aw'],'survivor')},
  /*4*/{key:'ghostgum',name:'Ghost gum',H:[18,32],rb:[.4,.8],crownR:[5,9],barkK:7,bark:PAL.gumBark,leaf:PAL.gum,
@@ -83,20 +87,22 @@ CRATERDRY.SPECIES=[
 CRATERDRY.byKey={};CRATERDRY.SPECIES.forEach((S,i)=>{S.i=i;CRATERDRY.byKey[S.key]=S;S.fire=S.tags.fire;});
 
 // ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
-// What each species yields (wood, edible parts, medicinal, a note) and `fruit`: a catalog piece when the kit draws a
-// fruit the catalog holds. None of these fruits is in the catalog yet (KNOWN_ISSUES), so `fruit` is null throughout.
+// What each species yields (wood, edible parts, medicinal, a note) and `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws: the frill-tree's fireseed
+// (in its pods, and spilled on the ash round a burst snag), the parasol pine's cones (in the crown and fallen under
+// it), the yucca and Joshua tree flowers (the roasted-stalk piece, shared with ebadlands).
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 CRATERDRY.HARVEST={
  prismmallee:HV('fuel, tool handles',['nectar'],true,'The lignotuber burns slow and hot: the Scyvoi dig dead ones for charcoal. The leaf oil is a salve.'),
  pillar:HV('none',['heart pith (famine)'],false,'The banded bark is fireproof; strips of it line Scyvoi hearths and quivers.'),
- frill:HV('fuel',['roasted seed'],false,'The seed is gathered from the ash after a fire, roasted and ground: the first harvest of a burn.'),
- parasolpine:HV('timber',['pine nuts'],false,'The nuts are knocked down from the umbrella crowns in the cool season.'),
+ frill:HV('fuel',['roasted seed'],false,'The seed is gathered from the ash after a fire, roasted and ground: the first harvest of a burn.','generic_fruit_fireseed'),
+ parasolpine:HV('timber',['pine nuts'],false,'The cones are knocked down from the umbrella crowns in the cool season and opened by the fire for their nuts.','generic_fruit_parasol_pine'),
  ghostgum:HV('timber, poles',[],true,'The white powder on the bark is a sunscreen; a gum crack yields a red resin for wounds.'),
  treealoe:HV('none',['nectar'],true,'The leaf gel dresses burns; riders carry a cut leaf for their mounts\' scorched feet.'),
- joshua:HV('fibre',['flower buds (roasted)'],false,'The fibres of the dead skirt make rope and saddle pads.'),
+ joshua:HV('fibre',['flower buds (roasted)','blossoms'],false,'The cream flower clusters are roasted in a pit like the yucca\'s; the fibres of the dead skirt make rope and saddle pads.','generic_fruit_yucca'),
  pincushion:HV('none',['nectar'],false,'The orange heads drip a thin sweet nectar at dawn.'),
  jade:HV('none',['young leaves (sour)'],false,'The leaves are eaten raw for their sour sap on long rides.'),
- yucca:HV('none',['flower stalk (roasted)','blossoms','seed pods'],false,'The young stalk is roasted in a pit; the fibres make cord.'),
+ yucca:HV('none',['flower stalk (roasted)','blossoms','seed pods'],false,'The young stalk is roasted in a pit; the fibres make cord.','generic_fruit_yucca'),
  swordspire:HV('none',[],false,'Flowers once, after a fire, then dies. Never picked: the Scyvoi count the years since a burn by the dead spikes.'),
 };
 CRATERDRY.SPECIES.forEach(S=>{S.tags.harvest=CRATERDRY.HARVEST[S.key]||HV('none');});
@@ -144,6 +150,12 @@ TX.frond=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const y0=S/2;
   for(let sd=-1;sd<=1;sd+=2){const a=sd*rr(.55,.75),L=W/Math.sin(Math.abs(a)),lum=lerp(120,240,t*.5+.5*rng())*(sd>0?.86:1);
    g.strokeStyle=G2(lum);g.lineWidth=rr(2.6,3.8);g.beginPath();g.moveTo(x,y0);g.lineTo(x+Math.cos(a)*L,y0+Math.sin(a)*L);g.stroke();}}
  g.strokeStyle=G2(70);g.lineWidth=3.2;g.beginPath();g.moveTo(1,y0);g.lineTo(S-3,y0);g.stroke();},[110,110,110]);
+/* a FRILL FIN (the Rift frill tree's, in kiln country): a rib along +x with dense straight teeth both sides, longest
+   near the base; stiff and waxy here, so the teeth are short */
+TX.frill=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
+ for(let f=0;f<3;f++){const y=S*(.19+.31*f);g.strokeStyle=G2(90);g.lineWidth=3.6;g.beginPath();g.moveTo(3,y);g.lineTo(S-3,y);g.stroke();
+  for(let x=6;x<S-4;x+=3.4){const t=x/S,L=lerp(28,5,Math.pow(t,1.1))*rr(.9,1.06);for(let sd=-1;sd<=1;sd+=2){
+   g.strokeStyle=G2(lerp(120,235,rng()));g.lineWidth=2.6;g.beginPath();g.moveTo(x,y);g.lineTo(x+L*.15,y+sd*L);g.stroke();}}}},[140,140,140]);
 /* small round fleshy leaves (the ember jade) */
 TX.round=BIO.alphaTex(512,(g,S)=>{BIO.tex.clusters(S,9,.62);g.strokeStyle=G2(90);g.lineWidth=1.5;
  for(let k=0;k<20;k++){const p=BIO.tex.discPt(S,.35),q=BIO.tex.discPt(S,.88);g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke();}
@@ -332,6 +344,7 @@ CRATERDRY.MAT={
  needle:BIO.leafMat(TX.needle,'needle',{aN:true,swayW:'1.0',swayA:.06}),
  lance:BIO.leafMat(TX.lance,'lance',{aN:true,irid:true,swayW:'1.0',swayA:.12}),
  frond:BIO.leafMat(TX.frond,'frond',{swayW:'(position.x)',swayA:.06}),
+ frillfin:BIO.leafMat(TX.frill,'frillfin',{aN:true,irid:true,swayW:'(position.x)',swayA:.04}),   // olive-gold facing the sun, a copper sheen away from it
  round:BIO.leafMat(TX.round,'round',{aN:true,swayW:'1.0',swayA:.05}),
  small:BIO.leafMat(TX.small,'small',{aN:true,swayW:'1.0',swayA:.06}),
  twigs:BIO.leafMat(TX.twigs,'twigs',{swayW:'0.0',swayA:0,alphaTest:.4}),
@@ -417,7 +430,8 @@ BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
 BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN','aC2'],label:'Lance leaves (prism mallee, ghost gum)'});
 BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Pyre-pillar fronds'});
-BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Fleshy leaves (ember jade, frill-tree)'});
+BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Fleshy leaves (ember jade, seedlings)'});
+BIO.def('frillfin',BIO.geo.frond(3),M.frillfin,{attrs:['aN','aC2'],label:'Frill-tree fins'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 ['twigs','twigs1','twigs2','twigs3'].forEach(k=>BIO.def(k,G.tuft(),M[k],{label:'Charred shrubs'}));
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Pincushion heads'});
@@ -437,7 +451,7 @@ BIO.def('litter',BIO.geo.mat(),M.litter,{label:'Litter and char debris'});
 BIO.def('rosette',G.rosette(),M.vcol,{label:'Rosettes (yucca, Joshua tree, sword spire)'});
 BIO.def('aloe',G.aloe(),M.vcol,{label:'Aloe rosettes'});
 BIO.def('gem',G.gem(),M.vcol,{label:'Pincushion trunk pods'});
-BIO.def('frill',G.frill(),M.vsway,{label:'Frill pods'});
+BIO.def('frill',G.frill(),M.vsway,{label:'Frill-tree crown pods'});
 BIO.def('protea',G.protea(),M.vsway,{label:'Protea heads'});
 BIO.def('crassula',G.crassula(),M.vcol,{label:'Propeller crassula'});
 BIO.def('spire',G.spire(),M.vsway,{label:'Flower spires (sword spire, aloe candles)'});
@@ -448,4 +462,6 @@ BIO.def('twig',new T3.CylinderGeometry(.5,.5,1,3,1,true),M.solid,{label:'Twigs'}
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Granite boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Seeds, pods and flower eyes'});
+BIO.def('seed',new T3.OctahedronGeometry(1,0),M.solid,{label:'Fruit: frill-tree fireseed'});
+BIO.def('pinecone',G.cone(),M.solid,{label:'Fruit: parasol-pine cones'});
 })();

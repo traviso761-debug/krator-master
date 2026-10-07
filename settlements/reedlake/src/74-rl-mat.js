@@ -99,6 +99,9 @@ TEX.rlBand=canvasTex(256,64,(g,w,h)=>{g.fillStyle=RAND.red;g.fillRect(0,0,w,h);g
  g.fillStyle=RAND.ochre;g.fillRect(0,h*.1,w,h*.05);g.fillRect(0,h*.85,w,h*.05);
  for(let k=0;k<4;k++){const cx=w*(k+.5)/4;hRLStepDiamond(g,cx,h/2,h*.3,3,RAND.black);hRLStepDiamond(g,cx,h/2,h*.19,2,RAND.white);hRLStepDiamond(g,cx,h/2,h*.08,1,RAND.indigo);}
  hRLZig(g,0,w,h*.22,h*.035,w/16,h*.03,RAND.white);hRLZig(g,0,w,h*.78,h*.035,w/16,h*.03,RAND.white);});
+// A village's style: hRLStyle.hanging 'chakana' (default: rlCloth, which materials.json binds to the library's red chakana
+// weave) or 'stripe' (rlClothS: this striped awayo, never bound). A host sets it before anything builds (Mungo: 'stripe').
+const hRLStyle={hanging:'chakana'};
 // CLOTH: an awayo hanging (1:1) — stripes of every colour with pattern bands between
 TEX.rlCloth=canvasTex(256,256,(g,w,h)=>{const cols=[RAND.red,RAND.ochre,RAND.black,RAND.white,RAND.indigo,RAND.green,RAND.plum,RAND.red,RAND.white,RAND.ochre];
  let y=0;for(let k=0;y<h;k++){const bh=(k%3===1)?h*.16:h*.04+((k*7)%5)*h*.012;g.fillStyle=cols[k%cols.length];g.fillRect(0,y,w,bh);
@@ -136,7 +139,7 @@ MAT.rlFringe=hStd({map:TEX.rlFringe,alphaTest:.4,roughness:1});vWorldUV(MAT.rlFr
 MAT.rlReed=hStd({map:TEX.rlReed,alphaTest:.45,roughness:1});
 MAT.rlNet=hStd({map:TEX.rlNet,alphaTest:.5,roughness:.9});vWorldUV(MAT.rlNet,1);
 MAT.rlCone=hStd({map:TEX.rlCone,roughness:.85});MAT.rlShield=hStd({map:TEX.rlShield,roughness:.75});MAT.rlHead=hStd({map:TEX.rlHead,roughness:.9});
-MAT.rlBand=hStd({map:TEX.rlBand,roughness:.9});MAT.rlCloth=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlChakana=hStd({map:TEX.rlChakana,alphaTest:.5,roughness:.8});
+MAT.rlBand=hStd({map:TEX.rlBand,roughness:.9});MAT.rlCloth=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlClothS=hStd({map:TEX.rlCloth,roughness:.95});MAT.rlChakana=hStd({map:TEX.rlChakana,alphaTest:.5,roughness:.8});
 MAT.rlWater=new THREE.MeshStandardMaterial({map:TEX.rlWater,color:0xd8e0dc,roughness:.32,metalness:.12});
 MAT.rlHide=hStd({color:0x4a4038,roughness:.9});                                        // water buffalo
 
@@ -164,7 +167,7 @@ kdef('hRLSheaf',HRL_SHEAF,MAT.rlBundle);
 kdef('hRLMatB',VBOX,MAT.rlMat);kdef('hRLMatP',VPLANE,MAT.rlMat);kdef('hRLGableM',VGABLE,MAT.rlMat);kdef('hRLRoll',HRL_LOG,MAT.rlMat);
 kdef('hRLLattice',VPLANE,MAT.rlLattice);kdef('hRLFringe',VPLANE,MAT.rlFringe);kdef('hRLReed',hRLCardGeo(),MAT.rlReed);kdef('hRLNet',VPLANE,MAT.rlNet);
 kdef('hRLThatchB',VBOX,MAT.rlThatch);kdef('hRLGableT',VGABLE,MAT.rlThatch);kdef('hRLHipT',VHIP,MAT.rlThatch);kdef('hRLPyrT',VPYR,MAT.rlThatch);kdef('hRLConeT',VCONE,MAT.rlThatch);
-kdef('hRLMatCyl',hRLCylGeo(14,1,true,TAU),MAT.rlMat);kdef('hRLBandCyl',hRLCylGeo(14,1,true,TAU),MAT.rlBand);kdef('hRLBandP',VPLANE,MAT.rlBand);kdef('hRLCloth',VPLANE,MAT.rlCloth);kdef('hRLChakana',VPLANE,MAT.rlChakana);kdef('hRLConeP',hRLCylGeo(10,.06,true,3),MAT.rlCone);
+kdef('hRLMatCyl',hRLCylGeo(14,1,true,TAU),MAT.rlMat);kdef('hRLBandCyl',hRLCylGeo(14,1,true,TAU),MAT.rlBand);kdef('hRLBandP',VPLANE,MAT.rlBand);kdef('hRLCloth',VPLANE,MAT.rlCloth);kdef('hRLClothS',VPLANE,MAT.rlClothS);kdef('hRLChakana',VPLANE,MAT.rlChakana);kdef('hRLConeP',hRLCylGeo(10,.06,true,3),MAT.rlCone);
 kdef('hRLDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);kdef('hRLShield',new THREE.CircleGeometry(1,16),MAT.rlShield);
 kdef('hRLHead',new THREE.SphereGeometry(1,10,8),MAT.rlHead);kdef('hRLHorn',HRL_HORN,MAT.paint);
 kdef('hRLFlame',VCONE,MAT.ember);kdef('hRLLeafB',VBOX,MAT.moss);kdef('hRLStalk',VPOST,MAT.moss);kdef('hRLHide',VBOX,MAT.rlHide);kdef('hRLHideBall',VBALL,MAT.rlHide);

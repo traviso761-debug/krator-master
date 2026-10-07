@@ -16,9 +16,9 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 2 |  |
-| `45-host-stage.js` | 19 | the axis, the sea, the river (40); terrain (72); the climate fields (96); the host binding (112); the ground (121); the water (167); the road (208) |
-| `50-biome-swlowlands-species.js` | 52 **big** | the climate this biome reads (24); palettes (34); the tree species (103); leaf textures (166); TWO-TONE BARK (280); geometries local to this biome (419); materials (459); instanced items (520) |
-| `55-biome-swlowlands-trees.js` | 60 **big** | zones from the fields (26); colour (45); keep-clear between trees (66); the LIMB (77); foliage and epiphytes (94); the crown, ON its branches (115); the builders (152); impostors (the far canopy) (466); the pass (515) |
+| `45-host-stage.js` | 20 | the axis, the sea, the river (44); terrain (76); the climate fields (100); the host binding (116); the ground (125); the water (171); the road (212) |
+| `50-biome-swlowlands-species.js` | 57 **big** | the climate this biome reads (24); palettes (34); the tree species (104); harvest (biomes/FRUIT.md) (168); leaf textures (210); TWO-TONE BARK (324); geometries local to this biome (463); materials (503); instanced items (567) |
+| `55-biome-swlowlands-trees.js` | 61 **big** | zones from the fields (26); colour (45); keep-clear between trees (66); the LIMB (77); foliage and epiphytes (94); the crown, ON its branches (115); the builders (153); impostors (the far canopy) (483); the pass (532) |
 | `60-biome-swlowlands-floor.js` | 24 | small plants (31); the understorey (under the crowns) (108); the zone planters (130); the pass (198) |
 | `65-biome-swlowlands-dress.js` | 8 |  |
 | `70-biome-swlowlands.js` | <1 |  |
@@ -26,5 +26,5 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | `85-host-tower.js` | 5 |  |
 | `88-host-build.js` | 1 |  |
 | `90-host-camera.js` | 8 |  |
-| `91-host-probe.js` | 3 |  |
+| `91-host-probe.js` | 5 | the host's own checks (verify.py runs them when  (29) |
 | `99-tail.html` | <1 |  |

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 246 (10%) | 34 (1%) | 174 (7%) | 27 (1%) | 2102 (81%) |
+| KB | 250 (10%) | 34 (1%) | 174 (7%) | 32 (1%) | 2113 (81%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -81,6 +81,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/87-mega.js` | 10.2 | [draw] | 5 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-factory.js` | 9.1 | [draw] | 5 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/88-plymouth.js` | 58.4 | [draw] | 44 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/88y-ancients-matlib.js` | 1.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/89-arcbeam.js` | 59.3 | [draw] | 37 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89-lab.js` | 6.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 11 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89b-arcoindian.js` | 81.3 | [draw] | 59 | 3 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
@@ -138,9 +139,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/8ap-host-c-arcades.js` | 10.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_ARCADES and hacPlan are data (the Ys host record) |
 | `src/8ap-host-d-stalks.js` | 8.8 | [draw] | 6 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_STALKS, hstSockets and hstRAt are data (the Ys host record and its sockets) |
 | `src/8ap-host-e-bellhall.js` | 12.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: HOSTSPEC_BELLHALL and hbhRAt are data (the Ys host record) |
-| `src/90-scene.js` | 8.5 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
+| `src/8zz-interiors.js` | 11.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/90-scene.js` | 8.9 | [web] | 14 | 2 | 1 | 0 | 0 | 3 | 4 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 5.7 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 6.3 | [web] | 5 | 0 | 6 | 8 | 3 | 0 | 0 | 2 | 2 | 0 | 0 |  |
+| `src/92z-interior-ui.js` | 4.8 | [web] | 2 | 0 | 4 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `targets/alt-civic/89z-rows.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/alt-civic/91z-views.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -180,6 +183,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `targets/hill/91z-views.js` | 11.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hosts/89z-rows.js` | 3.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/hosts/91z-views.js` | 1.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/interiors/89z-rows.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/interiors/91z-views.js` | 1.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/iziz-style/89z-rows.js` | 5.3 | [G shader] | 3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 |  |
 | `targets/iziz-style/91z-views.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/iziz-variants/89z-rows.js` | 2.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

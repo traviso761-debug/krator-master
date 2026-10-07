@@ -198,6 +198,9 @@ HYPERJUNGLE.MAT={
  bloom:BIO.leafMat(null,'bloom',{swayW:'1.0',swayA:.05,alphaTest:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'hyperjungle' pack on the page, the slots it names take library maps
+// (BIO.libSwap; vended back from biomes/hyperjungle, 2026-10-06). No pack: no change.
+HYPERJUNGLE.LIB=BIO.libSwap('hyperjungle',HYPERJUNGLE.MAT);
 HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.bucket('bark'+i,HYPERJUNGLE.MAT.bark[i],{label:S.name+' bark',uvScale:[14,18]}));
 BIO.bucket('limb',HYPERJUNGLE.MAT.limb,{label:'Hypertree limbs',uvScale:[6,9]});
 BIO.bucket('wood',HYPERJUNGLE.MAT.wood,{label:'Dead wood',uvScale:[3,4]});

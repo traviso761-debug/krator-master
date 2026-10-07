@@ -87,6 +87,7 @@ const PAL=SWLOW.PAL={
  hyacinth:[0x9a7ae0,0xaa8ae8,0x8a6ad0],
  cream:[0xf4ecd4,0xf0e4c4,0xe8dcb8],
  berry:[0xc82a1e,0xd8401e,0xb01c18],
+ figFruit:[0x5a3a5a,0x64406a,0x4e3250,0x6e4a5e],   // the catalog's fruitFig (generic_fruit_pillar_fig), ripe to dusky
  // everything else
  moss:[0x4f6a2c,0x5a7a30,0x3f5a26,0x6a8a3a,0x557a3c],
  mossPale:[0x8a9a7a,0x9aa888,0x7a8a6e,0xa4ae92],       // Spanish moss: grey-green
@@ -162,6 +163,49 @@ SWLOW.SPECIES=[
  /*26*/{key:'baylaurel',name:'Bay laurel',H:[14,22],rb:[.8,1.3],crownR:[12,20],bk:'bk_pale',bark:[0x8e948a,0x82887e,0x9aa094],
   leaf:PAL.bay,moss:.1,touch:.08,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'both'}},
 ];
+SWLOW.byKey={};SWLOW.SPECIES.forEach(S=>{SWLOW.byKey[S.key]=S;});
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields, as nhighlands' HV() has it (wood, edible parts, medicinal, a note), plus `fruit`: the
+// catalog piece its fruit is (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws.
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SWLOW.HARVEST={
+ mangrove:HV('poles, fuel',[],true,'The lacquered red bark tans hides and dyes nets.'),
+ cypress:HV('timber (rot-proof)',[],false,'Shingles and boat planks; the knees are carved.'),
+ kapok:HV('light timber, canoes',['seeds (pressed)'],false,'The pod floss stuffs pillows and floats.'),
+ gum:HV('timber',[],true,'The leaves are steamed against chest colds.'),
+ canepalm:HV('canes, furniture',['palm heart (famine)'],false,'The lacquered stems are split for cane-work.'),
+ sprawloak:HV('ship knees, fuel',['acorns (leached)'],true,'Acorns leached and ground (not drawn); the bark tans leather.'),
+ pillarfig:HV('none (one tree is a grove)',['figs'],true,'Purple figs on the limbs and the fused bole, pink inside; the latex is a wart salve.','generic_fruit_pillar_fig'),
+ willow:HV('basketry, withies',[],true,'The bark is a fever and pain tea.'),
+ ringbark:HV('tool handles',[],false,'The copper bark peels in rings for tinder.'),
+ sycamore:HV('furniture, fuel',[],false,'The pale mottled timber turns well.'),
+ manzanita:HV('carving, fuel',['berries','cider'],true,'Red berries pressed into a cider; the leaves a tea.','generic_fruit_madrone'),
+ madrone:HV('fuel, turnery',['berries'],true,'Bumpy red berries, mealy and sweet; the bark a tea for sore throats.','generic_fruit_madrone'),
+ corkoak:HV('cork, fuel',['acorns (leached)'],false,'Stripped for cork every ninth year; acorns not drawn.'),
+ skirtpalm:HV('thatch, fibre',['fruit'],false,'Small hard fruit (not drawn); the skirt fibre makes rope.'),
+ coastoak:HV('fuel, tool handles',['acorns (leached)'],true,'Acorns leached and ground (not drawn).'),
+ pompom:HV('none',[],false,'The red cones are poisonous.'),
+ cedar:HV('timber, chests',[],true,'The scented wood keeps moths from cloth.'),
+ pine:HV('timber, pitch',['pine nuts (small)'],true,'The pitch is tapped for tar and salve.'),
+ crimson:HV('none',[],false,'Ornamental: the crimson crown over a ghost-white bole.'),
+ rattlepod:HV('fuel',['seeds (roasted)'],false,'The pods rattle when ripe; the seeds are roasted dark for "rattle coffee".','generic_fruit_rattlepod'),
+ eyed:HV('furniture',[],false,'The eyed bark is cut for veneer.'),
+ flame:HV('fuel',['pod pulp'],true,'Dark pods round sour-sweet pulp, pressed into cakes.','generic_fruit_ember_tamarind'),
+ jacaranda:HV('turnery',[],false,'Grown for its violet bloom.'),
+ magnolia:HV('light timber',[],true,'The bark is a bitter tonic.'),
+ sunburn:HV('fuel',[],true,'The resin dresses sunburn, hence the name.'),
+ stargum:HV('timber',[],true,'The resin is a cough syrup.'),
+ baylaurel:HV('turnery, fuel',['leaves (as a spice)','berries'],true,'The leaves season stew; the oily berries (not drawn) are roasted.'),
+};
+SWLOW.SPECIES.forEach(S=>{S.tags.harvest=SWLOW.HARVEST[S.key]||HV('none');});
+// the small plants that bear catalogued fruit (60-floor places them); `items` names the instanced items that draw them
+SWLOW.PLANTS={
+ toyon:{name:'Toyon',tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no',
+  harvest:HV('none',['berries (cooked)'],true,'Red berries at the tips, as the madrone has them.','generic_fruit_madrone')},items:['lobe','bloom']},
+};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+SWLOW.FRUIT_KEYS=[...new Set(SWLOW.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(SWLOW.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour tints them.
@@ -507,6 +551,9 @@ const M=SWLOW.MAT={
  pad:BIO.leafMat(null,'swl-pad',{swayW:'1.0',swayA:.02,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'swlowlands' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SWLOW.LIB=BIO.libSwap('swlowlands',SWLOW.MAT);
 [['ember','Ember bark (manzanita)',[.9,2.4]],['lacquer','Lacquered bark (mangrove, stripped cork)',[2,4]],['flay','Flayed bark (madrone, gum)',[2.2,4.5]],
  ['mottle','Mottled bark (sycamore)',[3,5]],['ring','Ringbark',[1.4,2.4]],['furrow','Furrowed bark (oaks, willow)',[2.4,3.4]],['stringy','Stringy bark (cypress)',[2.4,5]],
  ['pale','Pale bark (kapok, fig)',[3,5]],['strip','Ribbon bark (gum)',[2.4,6]],['ocelli','Eyed bark',[2.2,2.6]],['crack','Cracked ghost bark',[2.2,3.2]],['plate','Plated bark (pine)',[1.8,3.4]],['cork','Cork',[1.8,2.4]],['cane','Cane-palm stems',[.5,.9]],['fibre','Palm trunks',[2,3]]]
@@ -529,6 +576,7 @@ BIO.def('forkfern',BIO.geo.frond(3),M.forkfern,{label:'Forking ferns'});
 BIO.def('staghorn',G.fan(),M.staghorn,{label:'Staghorn ferns'});
 BIO.def('pod',BIO.geo.pod(),M.pod,{label:'Seed pods'});
 BIO.def('pompom',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Pompom cones'});
+BIO.def('fig',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Pillar figs'});   // generic_fruit_pillar_fig: 20 triangles a fig
 BIO.def('blossom',BIO.geo.clump(),M.blossom,{attrs:['aN'],label:'Blossom'});
 BIO.def('veil',BIO.geo.ribbon(6,.45,.10),M.veil,{label:'Willow veils'});
 BIO.def('palmfrond',BIO.geo.frond(4),M.palmfrond,{label:'Palm fronds'});

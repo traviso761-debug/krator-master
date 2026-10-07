@@ -1711,3 +1711,7 @@ FURN({
     for (let k = 0; k < 12; k++) { const a = k * F.TAU / 12, r1 = 0.17, r2 = k % 2 ? 0.23 : 0.26; F.beam(Math.cos(a) * r1, sy + Math.sin(a) * r1, 0, Math.cos(a) * r2, sy + Math.sin(a) * r2, 0, 0.03, 0.02, gold, 'gold'); }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed ashnomad_training_<role> */
+FK.set({ culture: 'ashnomad', tier: 'common', roles: 'training', prefix: 'ashnomad_training_', S: ASHNOMAD_COMMON, names: {
+  training_dummy: 'Chitin-plated practice dummy', archery_butt: 'Painted hide target' } });

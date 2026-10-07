@@ -9,8 +9,10 @@
   that only `krator-master-furniture-generic-goods.js` defines (FPAL generic). A build that bundles `generic-fruit`
   without `generic-goods` places the pieces but draws nothing (found in Girder, 2026-10-03; it now bundles both). Move
   the fruit colours into the fruit file, or have `furniture_bundle.py` add `generic-goods` when `generic-fruit` is asked.
-- [ ] **Hykkousoi has a palette and no pieces** (`krator-master-furniture-hykkousoi.js`): the culture is in
-  progress and its sets are deliberately not built yet. The file says what to add.
+- [ ] **Hykkousoi has fourteen pieces and no style sheets** (`krator-master-furniture-hykkousoi.js`): the pieces are the Ys
+  settlement's (ported 2026-10; Ys keeps its own copy in `settlements/ys/src/66-hyk-furniture.js`), drawn with the core's
+  `F.lathe`, `F.tube` and `F.ell`. Their lit pearls and coals are glowing balls with no point light, and `lens` is the
+  catalog's translucent glass. HYK_COMMON / HYK_COURT style sheets and the `FK.set()` tiers are still to write.
 - [ ] **The sheet is heavy.** 853 furniture pieces, 1129 instances and about 33 000 draw calls on the `all`
   sheet; `verify.py --assert` takes about 15 minutes under SwiftShader and a screenshot of the whole sheet
   several minutes each. Partial runs are cheap: `?cultures=xanadu,voth` (verify.py `--query cultures=...`)

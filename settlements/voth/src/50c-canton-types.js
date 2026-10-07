@@ -449,7 +449,7 @@ function marketDeck(c, y, hw){
       var scol = pick(TONES_POOR);
       inspectClaim(sx, sz, sw*0.5, sd*0.5, 0, 'stall', 'Market stall');
       BOX(sx, y, sz, sw, sh, sd, rr(0,Math.PI*2), scol, 'wood');
-      FR8(sx, y+sh, sz, sw*1.5, 0.8, sd*1.5, rr(0,Math.PI*2), pick(BANNERC), 'cloth');
+      FR8(sx, y+sh, sz, sw*1.5, 0.8, sd*1.5, rr(0,Math.PI*2), vothPatCol('kilim', pick(BANNERC)), 'kilim');
     }
   }
   /* two covered halls anchoring the ends, larger and more permanent than a stall row */

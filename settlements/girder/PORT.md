@@ -6,14 +6,14 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 124 (21%) | 7 (1%) | 89 (15%) | 42 (7%) | 340 (56%) |
+| KB | 125 (21%) | 7 (1%) | 89 (15%) | 42 (7%) | 340 (56%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
 | Fragment | KB | Tag | THREE | canvas | DOM | events | loop | geom | shader | inst | ray | store | net | Note |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 6.5 | [web] | 0 | 0 | 4 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `src/05-palette.js` | 10.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/05-palette.js` | 10.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/10-core.js` | 8.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/20-stage.js` | 14.5 | [web] | 21 | 6 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | host: renderer, scene, lights, the canvas sky-dome painter and the eruption timer; the volcano and dome presets belong to core/atmos |
 | `src/21-sky.js` | 54.3 | [G native] | 62 | 0 | 19 | 6 | 0 | 9 | 25 | 0 | 0 | 0 | 0 | the Krator sky (11 copies): a sky preset in core/atmos plus one [G shader] for the star, giant and ring layers; its panel and probe are host (GODOT-PLAN.md section 5) |
@@ -23,9 +23,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/47-texture.js` | 14.3 | [draw] | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Phase 3 pilot (2026-10-03): every painter is a TEX.def kind (pure pixel functions; web and ghostwood are canvas kinds, baked at export); library families take materials.json's sets from the generated pack; the adapter KMAT.adapter('girder') gives window._materials, the table an exporter writes |
 | `src/48-detail.js` | 6.6 | [G shader] | 5 | 3 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 |  |
 | `src/50-structure.js` | 18.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 40 | 0 | 0 | 0 | 0 | 0 | towers, decks, bridges, lifts, palisade and roads drawn from the layout records. rnd() here only varies concrete, rust and missing beams, so no data pass; REGISTER is not called here |
-| `src/53-furnish.js` | 9.7 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | split: the furniture glue. gfAt, FURNISH, FURNISHW, gfPlace write placement records: the placement pass in core/furnish (Phase 2). gfEmitKit, gfMergeGeos, gfFlush, gfDecal are the per-build draw adapter. gwAdd, gwBox, gwSeg, gwDisc (GWALK) collect the walk solids: [G data], export as collision |
+| `src/53-furnish.js` | 9.9 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | split: the furniture glue. gfAt, FURNISH, FURNISHW, gfPlace write placement records: the placement pass in core/furnish (Phase 2). gfEmitKit, gfMergeGeos, gfFlush, gfDecal are the per-build draw adapter. gwAdd, gwBox, gwSeg, gwDisc (GWALK) collect the walk solids: [G data], export as collision |
 | `src/55-arch.js` | 52.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 33 | 0 | 0 | 0 | 0 | 0 | split: buildDwelling, roundHut, the house, plot and stall builders also decide identity: kind, name (N_FAM, N_CRAFT, STALL_GOODS), label and the REGISTER call. Data pass: building records (kind, name, programme, wealth) from SLOTS, HOUSES, PLOTS; draw pass reads them. yardLine and FURNISH calls go with the furnish pass |
-| `src/56-interiors.js` | 16.7 | [G data] | 5 | 0 | 0 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 0 | split: gixPlan, gixPartition and gixFurnish plan the rooms and place the set items from the interiors kit: the per-building placement pass (GODOT-PLAN.md section 5), engine-neutral already. gixTick, gixAccum, gixMerge, gixMaterial queue and merge the meshes a few buildings a frame (performance.now): host, a preview workaround for the placer taking tens of seconds |
+| `src/56-interiors.js` | 16.8 | [G data] | 5 | 0 | 0 | 0 | 8 | 3 | 0 | 0 | 0 | 0 | 0 | split: gixPlan, gixPartition and gixFurnish plan the rooms and place the set items from the interiors kit: the per-building placement pass (GODOT-PLAN.md section 5), engine-neutral already. gixTick, gixAccum, gixMerge, gixMaterial queue and merge the meshes a few buildings a frame (performance.now): host, a preview workaround for the placer taking tens of seconds |
 | `src/58-overgrowth.js` | 14.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 | split: dens(), FACES and liftBlocked decide where curtains, creepers, plants, rim trees, roots and flowers go (133 rnd draws, inline). Data pass: overgrowth records per face and floor; draw pass: ribbon, bloom, cone, bush |
 | `src/60-trees.js` | 40.5 | [draw] | 36 | 2 | 0 | 0 | 2 | 8 | 8 | 5 | 0 | 0 | 0 | a builder, not host code (TODO.md, Phase 2): trunks, bark, buttresses, boughs, leaf clumps; its trees cross over as meshes with the settlement. Split only for TREE_SAPLINGS (70 immature hypertrees by rejection sampling on terrainH): a placement record list. The Mav's Refuge copy is the same builder |
 | `src/62-jungle.js` | 47.1 | [draw] | 19 | 6 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 | split: the understorey, boulders, logs, brook dressing and fireflies are placed inline (342 rnd draws, 15 terrainH reads, 10 Math.random calls for fireflies). Data pass writes LOGS, JUNGLE_ROCKS, JUNGLE_BROOK and scatter records; draw pass builds them. JUNGLE_BROOK is already the record 75-terrain reads |

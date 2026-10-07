@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.281,
+    1.005
+   ],
+   "seam_before": [
+    1.23,
+    1.327
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.pewter",
+  "metal": 0.8,
+  "roughness": 0.45,
+  "scale": [
+   0.6,
+   0.6
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Weathered Hammered Pewter Metal Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (tex.zip, delivered 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Weathered Hammered Pewter Metal Texture.png",
+  "prompt": "Prompt row metal.pewter in core/materials/PLAN.md. The delivered image keeps ChatGPT's own title, so it is not confirmed to be the output of this exact text.",
+  "reuse": "cups, plates, candlesticks and tableware anywhere; dull silver or tin",
+  "sha1": "85124587cc854492f69bfb0ab185700412ea162b"
+ }
+}

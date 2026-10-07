@@ -58,8 +58,27 @@ BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
 // ---------------------------------------------------------------- merged buckets
 BIO.buckets={};
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new Store(1<<16),nor:new Store(1<<16),uv:new Store(1<<15),col:new Store(1<<16),tris:0,label:opt.label||fam,uvScale:opt.uvScale||[3,3]};
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new Store(1<<16),nor:new Store(1<<16),uv:new Store(1<<15),col:new Store(1<<16),tris:0,label:opt.label||fam,uvScale:(mat&&mat.userData&&mat.userData.libScale)||opt.uvScale||[3,3]};
  return BIO.buckets[fam];};
+// THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
+// family in the page's pack (KMAT.pack(kit), from the kit's materials.json) the library map in place of its procedural one:
+// a slot is the table's key (MAT.rock -> 'rock'), an array entry its key and index (MAT.bark[2] -> 'bark2'), a nested
+// table's entry its key and name (MAT.bk.smooth -> 'bk.smooth'). A card (the
+// slot's old map a DataTexture, BIO.alphaTex) loads unflipped and mipmapped and keeps an alpha test; a tiled map records
+// its tile size (userData.libScale) for BIO.bucket. The sets are grey detail maps normalised to the old map's measured
+// brightness, so the species tints keep their tone. No pack (the open world): nothing changes. Returns {slot: lib}.
+BIO.libSwap=function(kit,MAT){const out={};
+ if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
+ const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
+  const card=!!(m.map&&m.map.isDataTexture);const t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
+   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+  else m.userData.libScale=L.scale;
+  m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
+ for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
+  else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);   /* MAT.bk.smooth -> 'bk.smooth' */
+  else one(v,k);}
+ return out;};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
 // the shader untouched, and the renderer encodes its output to sRGB, so a raw

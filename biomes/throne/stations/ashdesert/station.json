@@ -1,0 +1,12 @@
+{
+ "name": "Deep under the plume (station 7): the ash desert, its dunes and yardangs, pagoda caps, the striped rhyolite hills, a CO2 hollow, the ash weather",
+ "out": "throne-ash.html",
+ "core": [],
+ "atmos": [
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-4-weather.js",
+  "89-atmos-9-host.js"
+ ]
+}

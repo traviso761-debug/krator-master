@@ -1427,3 +1427,7 @@ FURN({
     for (let k = 0; k < 3; k++) F.rod(-0.6 + k * 0.4, 0.04, 0.3, -0.6 + k * 0.4 + F.rr(-0.15, 0.15), 0.06, 0.6, 0.04, F.col('boneWhite'), 'bone');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scrap_training_<role> */
+FK.set({ culture: 'scrap', tier: 'poor', roles: 'training', prefix: 'scrap_training_', S: SCRAP_STYLE, names: {
+  training_dummy: 'Tyre-wrapped practice dummy', archery_butt: 'Scrap-plate shooting target' } });

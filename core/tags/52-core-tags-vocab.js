@@ -23,7 +23,7 @@
  var CATALOG_TIERS = { poor: [0, 0.35], common: [0.3, 0.75], court: [0.7, 1] };
  // FURN_JOBS
  var CATALOG_JOBS = ['farming', 'fishing', 'salt', 'oil', 'smithing', 'milling', 'warehousing', 'brewing', 'weaving',
-   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading'];
+   'tanning', 'pottery', 'carpentry', 'mining', 'herding', 'trading', 'alchemy'];
  // FURN_SETTINGS, plus core/furnish's 'room' (a piece the interiors place)
  var CATALOG_SETTINGS = ['indoor', 'outdoor', 'both'];
 

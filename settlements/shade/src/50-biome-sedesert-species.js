@@ -321,6 +321,9 @@ SEDESERT.MAT={
  candle:BIO.leafMat(null,'candle',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'sedesert' pack on the page, the slots it names take library maps
+// (BIO.libSwap; vended back from biomes/sedesert, 2026-10-06). No pack: no change.
+SEDESERT.LIB=BIO.libSwap('sedesert',SEDESERT.MAT);
 const M=SEDESERT.MAT;
 ['Dragon-tree bark','Fibrous bark','Pale peeling bark','Furrowed bark','Succulent stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===4?3:4,6]}));
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});

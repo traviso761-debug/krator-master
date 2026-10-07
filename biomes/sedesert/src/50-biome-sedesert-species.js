@@ -65,6 +65,7 @@ Object.assign(PAL,{
  rockGrey:[0x7a6a5e,0x8a7a6e,0x6a5a50],
  deadwood:[0x9a8a78,0x8a7a68,0xb0a090,0x7a6a5a],
  pod:[0xc8b850,0xd8c860,0xb8a840],
+ tuna:[0xe86a20,0xe0602a,0xd85a22],   // the catalog's fruitTuna (kits/catalog generic-goods), orange-red
 });
 
 // ---------------------------------------------------------------- the tree species
@@ -127,6 +128,46 @@ SEDESERT.SPECIES=[
   tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
 ];
 SEDESERT.byKey={};SEDESERT.SPECIES.forEach(S=>SEDESERT.byKey[S.key]=S);
+
+// ---------------------------------------------------------------- harvest (biomes/FRUIT.md)
+// What each species yields (wood, edible parts, medicinal, a note), plus `fruit`: the catalog piece its fruit is
+// (kits/catalog/krator-master-furniture-generic-fruit.js), when it bears one the kit draws. Ebadlands' HV().
+const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
+SEDESERT.HARVEST={
+ dragon:HV('none',[],true,'The red resin (dragon\'s blood) is a dye, a varnish and a wound powder.'),
+ candelabra:HV('none',[],false,'The milky latex blinds and blisters: a fish poison, never food.'),
+ cardon:HV('ribs (light poles, roofing)',['fruit'],false,'Spiny fruit in early summer, eaten fresh or dried (not in the catalog yet).'),
+ bottle:HV('none',['stored water (famine)'],false,'The swollen trunk holds water; the bark fibre makes rope.'),
+ boojum:HV('none',[],false,''),
+ quiver:HV('hollowed branches (quivers)',[],false,'The soft branches are hollowed out for quivers.'),
+ mesquite:HV('fuel, posts, charcoal',['pods (ground into flour)'],true,'Sweet pods dried and ground for mesquite cakes; the gum is a salve.','generic_fruit_mesquite'),
+ palm:HV('trunks (beams), fronds (thatch)',['dates'],false,'A bunch of dates under the crown; the fronds thatch and weave.','generic_fruit_wadi_date'),
+ rose:HV('none',[],true,'The sap is an arrow poison; a little of it a heart medicine.'),
+ puya:HV('none',[],false,'The dry spike is kindling.'),
+ agave:HV('none',['heart (pit-roasted)','flower stalk'],true,'The heart is pit-roasted sweet; the leaves give fibre (not in the catalog yet).'),
+ yucca:HV('fuel',['flower buds (roasted)','seeds'],false,'The buds are roasted in spring; the leaf fibre makes sandals.'),
+ candle:HV('none',[],false,'Ornamental; the tips glow after dark.'),
+};
+SEDESERT.SPECIES.forEach(S=>{S.tags.harvest=SEDESERT.HARVEST[S.key]||HV('none');});
+// the small plants (the floor and the dressing), tagged: `items` names the instanced items that draw them, so the
+// inspector can name a plant from the item it clicked (the first plant naming an item wins)
+const PK=(name,climate,aridity,riparian,items,hv)=>({name,tags:{climate,aridity,abyssal:false,riparian,harvest:hv||HV('none')},items});
+SEDESERT.PLANTS={
+ pear:PK('Prickly pear','tropic','arid','no',['paddle','fruit'],HV('none',['tunas','young pads'],true,'Orange-red tunas along the pad rims, peeled; young pads fried.','generic_fruit_tuna')),
+ spinifex:PK('Spinifex','tropic','arid','no',['needle'],HV('thatch',[],true,'The resin is a glue for spear heads.')),
+ drygrass:PK('Dry grass','tropic','arid','both',['grass'],HV('thatch',['seed (ground)'],false,'')),
+ reed:PK('Reeds','tropic','humid','yes',['reed'],HV('thatch, mats',['young shoots'],false,'')),
+ creosote:PK('Creosote bush','tropic','arid','no',['small','rod'],HV('fuel',[],true,'A bitter tea for colds; it smells of rain.')),
+ saltbush:PK('Saltbush','tropic','arid','no',['lobe'],HV('fuel',['leaves (salty greens)'],false,'')),
+ echium:PK('Tower of jewels','tropic','semiarid','no',['spire'],HV('none',['nectar'],false,'Bees work the spires.')),
+ barrel:PK('Barrel cactus','tropic','arid','no',['barrel'],HV('none',['flesh (famine water)'],false,'')),
+ cholla:PK('Cholla','tropic','arid','no',['cone'],HV('none',['flower buds'],false,'')),
+ hoodia:PK('Hoodia','tropic','arid','no',['column'],HV('none',['stems'],true,'Chewed against hunger and thirst on a long walk.')),
+ lichen:PK('Lichen','tropic','semiarid','both',['lichen'],HV('none',[],true,'A dye.')),
+};
+SEDESERT.plantOfItem=item=>{for(const k in SEDESERT.PLANTS)if(SEDESERT.PLANTS[k].items.indexOf(item)>=0)return SEDESERT.PLANTS[k];return null;};
+// what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
+SEDESERT.FRUIT_KEYS=[...new Set(SEDESERT.SPECIES.map(S=>S.tags.harvest.fruit).concat(Object.values(SEDESERT.PLANTS).map(P=>P.tags.harvest.fruit)).filter(Boolean))];
 
 // ---------------------------------------------------------------- leaf textures
 // Greyscale on transparent canvases (BIO.alphaTex); the per-instance colour
@@ -323,6 +364,9 @@ SEDESERT.MAT={
  candle:BIO.leafMat(null,'candle',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
+// the material library (core/materials/PLAN.md): with a 'sedesert' pack on the page (materials.json -> KMAT.pack), the slots it names
+// take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
+SEDESERT.LIB=BIO.libSwap('sedesert',SEDESERT.MAT);
 const M=SEDESERT.MAT;
 ['Dragon-tree bark','Fibrous bark','Pale peeling bark','Furrowed bark','Succulent stems'].forEach((lab,i)=>BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:[i===4?3:4,6]}));
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
@@ -345,6 +389,8 @@ BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
 BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
+BIO.def('dates',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Wadi dates'});
+BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Desert tunas'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Hanging growth'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});

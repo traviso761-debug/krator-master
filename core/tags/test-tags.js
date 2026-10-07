@@ -149,7 +149,7 @@ const ex = T.export();
 ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 20, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = 'e17a6622';   // 2026-10-07: the vocabulary took the Ash Nomads (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd)
+const DIGEST = 'ad3297ba';   // 2026-10-07: the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd)
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

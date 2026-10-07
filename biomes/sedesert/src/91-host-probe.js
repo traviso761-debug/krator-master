@@ -42,7 +42,20 @@ const drawnH=(function(){let P=null,X,Z,nx;const at=(A,v)=>{let lo=0,hi=A.length
   return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};})();
 // the twist-candles' far spires, laid out for every clump (SEDESERT.spiresOf: this spine keeps all of them heroes)
 const candleSpires=()=>{const sp=SEDESERT.SPECIES.indexOf(SEDESERT.byKey.candle);return SEDESERT.TREES.filter(T=>T.sp===sp).flatMap(T=>SEDESERT.spiresOf(T));};
+// species that yield something edible the kit does not draw as a catalog fruit (the cardon's fruit, the agave's heart,
+// the Joshua tree's buds, the bottle tree's water): named, not hidden. And the item that draws each catalog fruit.
+const FRUIT_NOT_DRAWN=['cardon','bottle','agave','yucca'];
+const FRUIT_ITEM={generic_fruit_tuna:'fruit',generic_fruit_mesquite:'pods',generic_fruit_wadi_date:'dates'};
+const itemCounts=()=>{const n={};scene.traverse(M=>{if(M.isInstancedMesh&&M.userData.biome)n[M.name.replace(/^biome:/,'')]=(n[M.name.replace(/^biome:/,'')]||0)+M.count;});return n;};
 const HCHK={
+ // fruit: every species and floor plant carries a harvest tag; every edible species names a catalog piece (or is
+ // listed as not drawn); every catalog fruit the kit names is drawn by its item (the tunas at least 200 times)
+ fruit(SP,PL,N){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key).concat(Object.keys(PL).filter(k=>!PL[k].tags.harvest));
+  const keys=[...new Set(SP.map(S=>S.tags.harvest&&S.tags.harvest.fruit).concat(Object.values(PL).map(P=>P.tags.harvest&&P.tags.harvest.fruit)).filter(Boolean))];
+  const undrawn=keys.filter(k=>!FRUIT_ITEM[k]||!(N[FRUIT_ITEM[k]]>=(k==='generic_fruit_tuna'?200:1)));
+  return{ok:!miss.length&&!untagged.length&&!undrawn.length,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+
+   (undrawn.length?'not drawn: '+undrawn.join(', ')+'; ':'')+keys.map(k=>k.replace('generic_fruit_','')+' '+(N[FRUIT_ITEM[k]]||0)).join(', ')+' instances; '+SP.length+' species and '+Object.keys(PL).length+' plants tagged'};},
  // the curtain: no vertex buried in rock, and its top row stands on rock (the river does not run out over air)
  curtain(V,name){const inRock=V.filter(v=>buried(v[0],v[1],v[2],.3)).length,top=Math.max(...V.map(v=>v[1])),T=V.filter(v=>v[1]>top-.01);
   const air=T.filter(v=>rockTop(v[0]-4,v[2])<v[1]-3).length;
@@ -64,6 +77,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r));
  add('carve: nothing grows under the cap',HCHK.noHoodFlora(instPoints().filter(p=>Math.abs(p[0]-LIP.x)<80&&Math.abs(p[2]-LIP.z)<80)));
  add('preset-cameras-out-of-the-rock',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  add('candles: far spires neither float nor sink',HCHK.spires(candleSpires(),'the twist-candles'));
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(SEDESERT.SPECIES,SEDESERT.PLANTS,itemCounts()));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  const V=worldV(FALL.mesh);add('the cataract pushed 12 m back into the promontory',HCHK.curtain(V.map(v=>[v[0]-12,v[1],v[2]]),'curtain-12'));
@@ -73,6 +87,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a camera inside the cap',HCHK.camerasOut([{view:'in-cap',x:Q.c[0]-12,y:BIO.carve.covered(Q.c[0]-12,Q.c[1])+4,z:Q.c[1]}]));
  const S=candleSpires();add('the candle spires footed on the water, not the bed',HCHK.spires(S.map(s=>Object.assign({},s,{foot:Math.max(waterH(s.x,s.z),terrainH(s.x,s.z))})),'spires on the water'));
  add('the candle spires sunk to their tips',HCHK.spires(S.map(s=>Object.assign({},s,{foot:2*s.foot-s.top,top:s.foot})),'spires sunk'));
+ add('a fruiting species with no catalog fruit',HCHK.fruit(SEDESERT.SPECIES.map(S=>S.key==='mesquite'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),SEDESERT.PLANTS,itemCounts()));
+ add('the tunas never drawn',HCHK.fruit(SEDESERT.SPECIES,SEDESERT.PLANTS,Object.assign(itemCounts(),{fruit:0})));
  return R;}
 window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
