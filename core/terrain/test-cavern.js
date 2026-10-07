@@ -179,6 +179,10 @@ ok('the block\'s faces take its tuff, the room its hewn finish', KmMats.has('tuf
 const L2 = KCAVERN.load(JSON.parse(JSON.stringify(A.C.export())), { ground }).build(), L2m = L2.meshAll();
 const exB = JSON.parse(JSON.stringify(A.C.export())); exB.prims.find(P => P.id === 'R2').y += 0.25;
 ok('the export loads back to the same meshes (a room moved: another hash)', KCAVERN.hash(L2m) === KCAVERN.hash(Ameshes), KCAVERN.hash(KCAVERN.load(exB, { ground }).build().meshAll()) === KCAVERN.hash(Ameshes));
+// a big hall whose floor lies on a chunk boundary (y 0, 16 m chunks): the chunk under the floor has its centre 8 m below the
+// hall's box, and must still mesh the floor at its top (the quick refusal once read no void there and refused it: Dhelv's square)
+{const D=KCAVERN.create({ground:()=>40,cell:.5,chunk:16,seed:3});D.hall({id:'big',c:[0,0,0],rx:60,rz:40,h:30,belly:0});D.build();
+ ok('a big hall\'s floor on a chunk boundary is meshed (a chunk deep in the rock under it: empty)',D.meshChunk('1,-1,1').idx.length>0,D.meshChunk('1,-3,1').idx.length>0);}
 // the plan refuses what it cannot carve
 let threw = false; try { KCAVERN.create({ ground }).tube({ id: 'x', pts: [[0, 0, 0]], w: 4, h: 4 }); } catch (e) { threw = true; } ok('a tube of one point is refused', threw, false);
 threw = false; try { const D = KCAVERN.create({ ground }); D.room({ id: 'a', poly: [[0, 0], [1, 0], [1, 1]], y: 0, h: 2 }); D.room({ id: 'a', poly: [[0, 0], [1, 0], [1, 1]], y: 0, h: 2 }); } catch (e) { threw = true; } ok('a duplicate id is refused', threw, false);

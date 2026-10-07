@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Zeijani Kit</title>
+<title>Dhelv</title>
 <style>
 html,body{margin:0;height:100%;overflow:hidden;background:#3a3026;font:13px/1.4 system-ui,sans-serif;color:#eee}
 canvas{display:block}
@@ -20,7 +20,7 @@ canvas{display:block}
 #poly .row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
 @media (max-width:700px){#ui{max-width:92vw}#cap{display:none}#insp{max-width:88vw;top:auto;bottom:60px}}
 </style><div id="ui"></div>
-<div id="cap">Zeijani Kit</div>
+<div id="cap">Dhelv, the capital of the Zeijani</div>
 <pre id="insp"></pre>
 <div id="poly"><b>Polygon tool</b> - click the ground to add a vertex · right-click removes the last · world x,z (metres; x east, z south)<textarea id="polyout" readonly></textarea><div class="row"><button id="polycopy">Copy</button><button id="polyclose">Close loop</button><button id="polyundo">Undo</button><button id="polyclear">Clear</button><button id="polyfmt">Format: [x,z]</button></div></div>
 <div id="hud"></div>
@@ -10707,39 +10707,204 @@ function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish
    const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
  list.filter(e=>e.ph>=2).sort((a,b)=>a.ph-b.ph||a.i-b.i).forEach(e=>doVoid(e.v));
  return n;}
-// prefix: tb
-// ================================================================= THE CAVERN TEST BLOCK (P2): the cavern module's first consumer
-// A block of tuff on the sheet with a carved front, and behind it what a carved def is made of (PLAN.md 6.3): a doorway, a
-// vaulted antechamber (hewn), a domed hall (polished) under a skylight shaft that opens on the block's top, a plastered side
-// room with a carved bed shelf, and a stair down to a basalt lava tube with a flow ledge, running out under the sheet.
-// Local frame: origin at the foot of the front, the rock behind it (-z), +z out of the face. Every floor is walkable in F.
-const TB_HALL=[0,-10.5],TB_HALLR=3.5;
-function tbCircle(cx,cz,r,n){const P=[];for(let i=0;i<n;i++){const a=i*TAU/n;P.push([cx+Math.cos(a)*r,cz+Math.sin(a)*r]);}return P;}
-defBuilding({key:'zj_testblock',name:'Cavern test block: a carved front, rooms, a stair down to a lava tube',seed:4101,cls:'feature',kind:'cavern-test',originFront:true,
- tags:{style:'carved',rock:'tuff'},w:28,d:32,h:12.5,note:'the cavern module (core/terrain/39-core-cavern.js) on the kit sheet: its floors are walkable in F',
- build(o){
-  /* the rock: a block of tuff standing on the sheet, its top domed */
-  cvMass({id:'rock',poly:[[-12,-16],[12,-16],[12,0],[-12,0]],y0:-.5,y1:10,taper:.04,cap:1.5,rock:'tuff',finish:'raw'});
-  /* the way in: a level passage through the front, then a vaulted antechamber */
-  cvStair({id:'door',joins:['ante'],a:[0,0,-1.6],b:[0,0,1.4],w:1.6,h:2.6,finish:'hewn'});
-  cvDoor({id:'front',c:[0,0],y:0,r:1.8});
-  cvRoom({id:'ante',poly:[[-3,-6],[3,-6],[3,-1.2],[-3,-1.2]],y:0,h:2.9,ceil:'vault',rise:.8,r:.4,finish:'hewn'});
-  /* the domed hall, polished, under its skylight */
-  cvStair({id:'ante-hall',joins:['ante','hall'],a:[0,0,-5.6],b:[0,0,-7.4],w:1.4,h:2.4,finish:'polished'});
-  cvRoom({id:'hall',poly:tbCircle(TB_HALL[0],TB_HALL[1],TB_HALLR,20),y:0,h:3,ceil:'dome',rise:1.8,finish:'polished'});
-  cvShaft({id:'sky',joins:['hall'],c:TB_HALL,y0:4.4,y1:12.4,r0:.65,r1:.8,finish:'polished'});
-  cvDoor({id:'skylight',c:TB_HALL,y:11.2,r:1.4});
-  /* a plastered side room off the antechamber, its bed shelf carved */
-  cvStair({id:'ante-side',joins:['ante','side'],a:[2.6,0,-5],b:[4.9,0,-5],w:1.1,h:2.2,finish:'hewn'});
-  cvRoom({id:'side',poly:[[4.5,-9],[9,-9],[9,-4],[4.5,-4]],y:0,h:2.8,finish:'plaster',r:.3});
-  cvFixture({id:'bedshelf',kind:'bedshelf',box:[7.9,8.85,-8.7,-6.5,0,.5]});
-  /* down to the tube: a stair from the hall's west side, under the block, to a basalt lava tube with a flow ledge */
-  cvStair({id:'down',joins:['hall','tube'],a:[-3.1,0,-10.5],b:[-12.6,-8,-10.5],w:1.5,h:2.5,finish:'hewn'});
-  cvTube({id:'tube',joins:['down'],pts:[[-13.6,-8,-10.5],[-13.6,-8.2,4],[0,-8.4,12],[16,-8.7,14]],w:6,h:4.6,ledge:{v:1.6,d:.5},blend:2.5,rock:'basalt'});
-  /* the front's dressing: a stepped lintel in polished tuff over the doorway, two steps of sill */
-  const c=P('white');
-  box('tuffPol',0,2.72,-.1,3.2,.34,.35,c);box('tuffPol',0,3.06,-.12,2.4,.3,.3,c);box('tuffPol',0,3.36,-.14,1.6,.26,.26,c);
-  door(0,0,0,0,1.6);}});
+// prefix: dh
+// ================================================================= DHELV: THE LAYOUT (kits/zeijani/PLAN.md section 12) [G data]
+// The capital of the Zeijani as data: no THREE, no DOM. x east, z south, y up, metres; the hub's square is y 0 and the flank rises
+// east toward the summit. P5's page builds from this; settlements/dhelv/tests/test-layout.js checks it (each check with a negative).
+//
+//   DH.surfaceY(x, z)   the young flow's surface over the city
+//   DH.groundY(x, z)    the ground the page draws: the flow, the kipuka's hollow round the outpost (old ground the flows went
+//                       round, 13 m below their fronts) and the old cone east of it, its west face a cliff (the portal's)
+//   DH.HALL             the hub: a bottle-shaped hall (its square an ellipse), the light well its throat, a ledge round it
+//   DH.PITS             the three satellites: open pits (centre, radius, floor y)
+//   DH.DISTRICTS        id, kind, anchor node, wealth (the rule's, by graph distance from the square), what it must hold
+//   DH.NODES, DH.EDGES  the public ways: tubes, the braid, ramps, stairs, the ledge, the square's lanes, streets, secret ways.
+//                       An edge: {a, b, kind, w (width), zone ('outer' | 'inner' | 'secret'), door ('stonedoor': it closes)}
+//   DH.SITES            every placed def: {key, district, x, z, ry, y, at ('floor' | 'wall' | 'ground')}; a 'wall' site's
+//                       origin is the foot of its front on the pit's or the hall's wall, facing in
+//   DH.FOOT             each key's declared footprint [w, d, origin ('front' | 'centre')], as the kit declares it
+//   DH.RULES            the numbers the checks hold the layout to
+const DH=(function(){
+ 'use strict';
+ const PI=Math.PI,TAU=2*PI;
+ const surfaceY=(x,z)=>42+.04*x+3*Math.sin(z/97)*Math.cos(x/131);
+ const sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t);};
+ const KIPUKA={c:[-2650,20],r:260,floor:-75,edge:.15};   /* the hollow: its floor, and its edge rising to the flows' fronts over 15% of r */
+ const CONE={c:[-2420,0],top:-24,slope:.3,squash:.7,cliffX:-2505,cliffZ:140};   /* the old cone; its west face cut to a cliff at x -2505 */
+ const coneY=(x,z)=>CONE.top-CONE.slope*Math.hypot(x-CONE.c[0],(z-CONE.c[1])*CONE.squash);
+ const cliffX=z=>CONE.cliffX;   /* straight: the outpost's carved fronts stand on it */
+ function groundY(x,z){let y=surfaceY(x,z);const dk=Math.hypot(x-KIPUKA.c[0],(z-KIPUKA.c[1])*1.3)/KIPUKA.r+.03*Math.sin(x/41+z/37);
+  if(dk<1+KIPUKA.edge)y=KIPUKA.floor+(y-KIPUKA.floor)*sm(1,1+KIPUKA.edge,dk);   /* the hollow's floor is level: the walker's */
+  if(x>cliffX(z)||Math.abs(z-CONE.c[1])>CONE.cliffZ)y=Math.max(y,coneY(x,z));return y;}
+ /* the wealth rule: falls with the graph distance from the square (a district's anchor), from the hub's .9 to the outpost's .15 */
+ const wealthAt=d=>+(.15+.75*Math.exp(-d/350)).toFixed(3);
+ const RULES={
+  tube:{grade:[.01,.03],w:[8,12],len:[1800,2200]},   /* the outer tube */
+  braid:{rise:[30,40],len:[400,600],crossings:2,sep:6},   /* the braid; its crossings, each with at least sep m between the tubes */
+  grade:{tube:.04,braid:.15,street:.12,ramp:.15,ledge:.04,square:.02,stair:.75,door:.04,secret:.85},
+  satellite:{dist:[250,450],across:[60,90],depth:[25,40]},
+  catacombs:{dist:[600,1200],depth:[40,80]},
+  cistern:{dist:[0,250]},
+  square:{gap:3,margin:2,free:.5},   /* floor sites 3 m apart, 2 m inside the square's edge, half the square left to walk */
+  wallFit:{off:1.5,face:15*PI/180,gap:2}};
+
+ /* ---- the hub: a bottle. The square is an ellipse (rx across x, rz across z) at y 0 under a dome (the cavern's hall with no
+    belly: its wall rises plumb from the square's edge and curves in to the crown); the throat (the light well) over its middle;
+    the ledge 10 m up, cut 1 m into the dome's wall there so it opens on the hall; four mouths (the braid's at the west) */
+ const HALL={c:[0,0],rx:140,rz:100,y:0,h:34,belly:0,throat:{r0:16,r1:20,top:surfaceY(0,0)},pool:18,ledgeY:10,ledgeIn:1};
+ const onHall=(th,inset)=>{const x=HALL.c[0]+Math.cos(th)*(HALL.rx-(inset||0)),z=HALL.c[1]+Math.sin(th)*(HALL.rz-(inset||0));return [x,z];};
+ const hallK=y=>Math.sqrt(Math.max(0,1-(y/HALL.h)**2));   /* the dome's wall at height y, as a share of the square's half-axes */
+ const onLedge=th=>{const k=hallK(HALL.ledgeY);return [HALL.c[0]+Math.cos(th)*(HALL.rx*k+HALL.ledgeIn),HALL.c[1]+Math.sin(th)*(HALL.rz*k+HALL.ledgeIn)];};
+ /* ---- the satellites: open pits, their floors terraced */
+ const PITS=[
+  {id:'s1',name:'the west well',c:[-290,-170],r:40,floor:-6},
+  {id:'s2',name:'the south well',c:[60,300],r:35,floor:6},
+  {id:'s3',name:'the east well',c:[380,120],r:42,floor:20}];
+ PITS.forEach(P=>{P.depth=+(surfaceY(P.c[0],P.c[1])-P.floor).toFixed(2);});
+ const onPit=(P,th)=>[P.c[0]+Math.cos(th)*P.r,P.c[1]+Math.sin(th)*P.r];
+ const faceIn=(x,z,cx,cz)=>Math.atan2(cx-x,cz-z);   /* ry whose front (+z local) points from (x, z) to (cx, cz) */
+
+ /* ---- the graph */
+ const NODES=[],EDGES=[],byId={};
+ const N=(id,x,z,y,o)=>{const n=Object.assign({id,x:+x.toFixed(2),z:+z.toFixed(2),y:+y.toFixed(2)},o||{});NODES.push(n);byId[id]=n;return n;};
+ const E=(a,b,kind,w,o)=>{const e=Object.assign({a,b,kind,w,zone:'inner'},o||{});EDGES.push(e);return e;};
+ const chain=(ids,kind,w,o)=>{for(let i=1;i<ids.length;i++)E(ids[i-1],ids[i],kind,w,o);};
+ /* the outpost, in the kipuka: the portal in the old cone's cliff (x -2505, facing west), the clearing west of it */
+ const OY=-75;
+ N('o.gate',-2700,0,OY,{place:'the gate'});N('o.c',-2600,0,OY);N('o.portal',-2505,0,OY,{place:'the portal'});
+ N('o.cara',-2600,52,OY,{place:'the caravanserai'});N('o.barr',-2620,-42,OY,{place:'the barracks'});N('o.huts',-2655,28,OY);N('o.huts2',-2650,-28,OY);
+ N('o.galN',-2509,-45,OY,{place:'a gallery'});N('o.galS',-2509,45,OY,{place:'a gallery'});N('o.pasture',-2735,88,OY,{place:'the pasture'});
+ N('o.tw1',-2498,-85,groundY(-2498,-85),{place:'a watchtower'});N('o.tw2',-2498,85,groundY(-2498,85),{place:'a watchtower'});N('o.tw3',-2758,-58,OY,{place:'a watchtower'});
+ N('o.tube0',-2462,0,OY);
+ for(const [a,b] of [['o.gate','o.c'],['o.c','o.portal'],['o.c','o.cara'],['o.c','o.barr'],['o.c','o.huts'],['o.c','o.huts2'],['o.portal','o.galN'],['o.portal','o.galS'],
+  ['o.gate','o.pasture'],['o.gate','o.tw3']])E(a,b,'street',4,{zone:'outer'});
+ E('o.galN','o.tw1','stair',2,{zone:'outer',note:'a path cut up the cliff'});E('o.galS','o.tw2','stair',2,{zone:'outer',note:'a path cut up the cliff'});
+ E('o.portal','o.tube0','tube',10,{zone:'outer',note:'the portal\'s own tunnel'});
+ /* the outer tube: 2 km east, climbing 2%, 10 m wide; side caves for the stores and the stables near the outpost; the rolling
+    stone door at its inner end */
+ const T=[['t1',-2380,15],['t2',-2200,10],['t3',-1900,-20],['t4',-1500,10],['t5',-1100,-15],['t6',-800,10],['t.door',-560,0]];
+ let px=-2462,pz=0,py=OY;for(const [id,x,z] of T){py+=Math.hypot(x-px,z-pz)*.02;N(id,x,z,py,id==='t.door'?{place:'the stone door'}:null);px=x;pz=z;}
+ chain(['o.tube0'].concat(T.map(t=>t[0])),'tube',10,{zone:'outer'});
+ N('t.stores',-2372,48,byId.t1.y,{place:'the stores'});N('t.stables',-2392,-28,byId.t1.y,{place:'the stables'});
+ E('t1','t.stores','tube',6,{zone:'outer'});E('t1','t.stables','tube',6,{zone:'outer'});
+ /* the braid: from the stone door to the hall's west mouth, two strands that part and rejoin, climbing 35 m; an upper way from the
+    hall's ledge crosses over it, and a drip-channel tube to the cistern crosses under the ledge's north tunnel */
+ const BY=byId['t.door'].y;
+ N('b0',-545,0,BY+.3);E('t.door','b0','door',4,{door:'stonedoor',note:'the rolling stone door: the outer zone ends here'});
+ N('a1',-450,-40,BY+7);N('a2',-320,-50,-18);N('b1',-450,45,BY+4);N('b2',-310,55,-26);N('j1',-240,-25,-12);
+ chain(['b0','a1','a2','j1'],'braid',7);chain(['b0','b1','b2','j1'],'braid',5);
+ N('h.w',-HALL.rx,0,0,{place:'the west mouth'});E('j1','h.w','ramp',8);
+ /* the hall: the square's middle, its four mouths, the stairs to the ledge, the ledge (stacked over the north mouth) */
+ N('h.sq',0,0,0,{place:'the square'});N('h.e',HALL.rx,0,0);N('h.n',0,-HALL.rz,0);N('h.s',0,HALL.rz,0);
+ for(const m of ['h.w','h.e','h.n','h.s'])E('h.sq',m,'square',20);
+ /* the ledge follows the wall every 10 degrees from -150 (over the west stair) to 30 (over the east); l1, l2 (stacked over the
+    north mouth) and l4 are where ways leave it */
+ const L=[];for(let deg=-150;deg<=30;deg+=10){const p=onLedge(deg*PI/180),id=deg===-150?'l1':deg===-90?'l2':deg===30?'l4':'l.'+deg;N(id,p[0],p[1],HALL.ledgeY,{level:'ledge'});L.push(id);}
+ chain(L,'ledge',3);
+ N('h.stA',-133,-25,0);N('h.stB',133,25,0);E('h.w','h.stA','square',6);E('h.e','h.stB','square',6);E('h.stA','l1','stair',2.5);E('h.stB','l4','stair',2.5);
+ /* the ledge's west tunnel: over the braid (crossing 1) to an upper junction, down a stair to strand A */
+ N('u.w',-280,-10,6);E('l1','u.w','braid',4);
+ /* the stair down to strand A stands beside the junction (a stair whose foot is in a junction lifts a walker passing through) */
+ N('u.f',-312,-42,-18);E('a2','u.f','braid',3);E('u.f','u.w','stair',3);
+ /* the cistern near the north mouth; a drip-channel tube to it from the braid's junction (crossing 2, under the ledge's north tunnel) */
+ N('cis',40,-165,-6,{place:'the cistern hall'});E('h.n','cis','ramp',6);E('j1','cis','tube',4);
+ N('n.w',-150,-170,12);E('l2','n.w','braid',4);
+ /* the satellites: a node at each pit's floor where its way comes in, its floor's middle */
+ const pitNode=(P,id,th,y)=>{const p=onPit(P,th);return N(id,p[0],p[1],y===undefined?P.floor:y);};
+ const S1=PITS[0],S2=PITS[1],S3=PITS[2];
+ pitNode(S1,'s1.in',PI/2);N('s1.c',S1.c[0],S1.c[1],S1.floor,{place:'the west well'});E('a2','s1.in','ramp',6);E('s1.in','s1.c','street',4);
+ pitNode(S1,'s1.up',-.3,12);E('n.w','s1.up','braid',4);N('s1.mid',-270,-206,(12+S1.floor)/2);N('s1.upf',-300,-208,S1.floor);chain(['s1.up','s1.mid','s1.upf'],'stair',2);E('s1.upf','s1.c','street',4);
+ N('bs1',20,200,3);pitNode(S2,'s2.in',-PI/2);N('s2.c',S2.c[0],S2.c[1],S2.floor,{place:'the south well'});chain(['h.s','bs1','s2.in'],'braid',6);E('s2.in','s2.c','street',4);
+ N('e1',250,40,9);pitNode(S3,'s3.in',PI+.25);N('s3.c',S3.c[0],S3.c[1],S3.floor,{place:'the east well'});chain(['h.e','e1','s3.in'],'ramp',6);E('s3.in','s3.c','street',4);
+ /* the catacombs: down a processional way from the south well, far and deep; the Keepers' rooms at their head */
+ pitNode(S2,'s2.e',0);E('s2.c','s2.e','street',4);
+ N('k1',300,420,-22);N('k2',480,560,-46);N('k.head',560,640,-58,{place:'the catacombs'});chain(['s2.e','k1','k2','k.head'],'ramp',4,{note:'the processional way'});
+ /* the secret ways: scout exits to the surface, in the lava field and in the forest (scouts only) */
+ N('x.lava',-200,-262,surfaceY(-200,-262),{place:'a scout exit',exit:'lava'});E('n.w','x.lava','secret',1.5,{zone:'secret'});
+ N('x.forest',-2300,160,OY+2,{place:'a scout exit',exit:'forest'});E('t2','x.forest','secret',1.5,{zone:'secret'});
+
+ /* ---- the districts: each an anchor (its distance and wealth are the anchor's) and what it must hold */
+ const DISTRICTS=[
+  {id:'hub',kind:'hub',anchor:'h.sq',needs:{zj_council:1,zj_temple:1,zj_guard_hq:1,zj_muster:1,zj_stall_b:4,'zj_shop_*_built':3,zj_brewery:1,zj_lab:1,zj_barracks_carved:1,zj_estate_a:1,zj_estate_b:1}},
+  {id:'s1',kind:'satellite',anchor:'s1.in',pit:'s1'},
+  {id:'s2',kind:'satellite',anchor:'s2.in',pit:'s2'},
+  {id:'s3',kind:'satellite',anchor:'s3.in',pit:'s3'},
+  {id:'cistern',kind:'cistern',anchor:'cis',needs:{zj_cistern:1}},
+  {id:'catacombs',kind:'catacombs',anchor:'k.head',needs:{zj_catacomb:1}},
+  {id:'outpost',kind:'outpost',anchor:'o.c',needs:{zj_portal:1,zj_caravanserai:1,zj_gate:1,zj_palisade:8,zj_watchtower:[2,4],zj_barracks_outpost:1,'zj_gallery_*':2,'dwelling':4}}];
+ const SAT_NEEDS={'zj_gallery_*':1,zj_house_built_mid:1,zj_store_tunnel:1,zj_granary:1,'zj_shop_*':1,'zj_tavern_*|zj_inn_*':1,zj_smithy:1,'zj_farm_yam|zj_farm_veg':2,zj_farm_alecap:1,zj_kiva:1};
+ DISTRICTS.forEach(D=>{if(D.kind==='satellite')D.needs=SAT_NEEDS;});
+
+ /* ---- the sites */
+ const SITES=[];
+ const S=(key,district,x,z,ry,y,at,o)=>{const s=Object.assign({key,district,x:+x.toFixed(2),z:+z.toFixed(2),ry:+(ry||0).toFixed(4),y:+(y||0).toFixed(2),at:at||'floor'},o||{});SITES.push(s);return s;};
+ const hallWall=(key,deg)=>{const th=deg*PI/180,p=onHall(th);return S(key,'hub',p[0],p[1],faceIn(p[0],p[1],HALL.c[0],HALL.c[1]),HALL.y,'wall');};
+ const pitWall=(key,P,deg,o)=>{const th=deg*PI/180,p=onPit(P,th);return S(key,P.id,p[0],p[1],faceIn(p[0],p[1],P.c[0],P.c[1]),P.floor,'wall',o);};
+ /* the hub's square: the council in its trench, the scouts' tower, the shops and the tavern along the south side (a lane left
+    open to the south mouth), the guard headquarters, the muster ground, stalls in the pool of daylight, a kiva */
+ S('zj_council','hub',-56,-36,PI/2);S('zj_scout_hq','hub',14,-62,0);
+ S('zj_tavern_built','hub',-58,60,PI);S('zj_shop_food_built','hub',-40,60,PI);S('zj_shop_general_built','hub',-26,60,PI);
+ S('zj_shop_lampwright_built','hub',26,60,PI);S('zj_shop_potter_built','hub',40,60,PI);S('zj_guard_hq','hub',60,62,PI);S('zj_muster','hub',90,30,-PI/2);
+ for(let i=0;i<4;i++){const a=i*PI/2+PI/4,x=Math.cos(a)*11,z=Math.sin(a)*11;S('zj_stall_b','hub',x,z,faceIn(0,0,x,z),0,'floor',{v:i%2});}
+ S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-100);
+ /* in the hall's wall: the temple's pit, the brewery and the alchemist, the barracks, the estates, two carved shops */
+ hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-115);hallWall('zj_estate_b',-138);
+ hallWall('zj_brewery',115);hallWall('zj_lab',128);hallWall('zj_shop_weapons_carved',155);hallWall('zj_shop_knapper_carved',168);
+ /* the rolling stone door, at the outer tube's inner end, facing the outer zone (west) */
+ S('zj_stonedoor','outpost',byId['t.door'].x,byId['t.door'].z,-PI/2,byId['t.door'].y,'ground');
+ /* the cistern hall; the catacombs */
+ S('zj_cistern','cistern',40,-165,0,-6,'ground');S('zj_catacomb','catacombs',560,640,PI/4,-58+4.5,'ground');
+ /* the satellites: fields on the floor round its middle, a granary and homes on the floor; galleries, the stores, the alecap
+    beds, shops, a tavern and a smithy cut in the wall */
+ const sat=(P,o)=>{const c=P.c,y=P.floor;
+  S('zj_farm_yam',P.id,c[0]-9,c[1]-8,0,y);S('zj_farm_veg',P.id,c[0]+9,c[1]-8,0,y);S('zj_farm_yam',P.id,c[0]-9,c[1]+8,PI,y);
+  S('zj_granary',P.id,c[0]+8,c[1]+10,PI,y);S('zj_house_built_mid',P.id,c[0]+(P.r-14)*Math.cos(o.home),c[1]+(P.r-14)*Math.sin(o.home),faceIn(c[0]+(P.r-14)*Math.cos(o.home),c[1]+(P.r-14)*Math.sin(o.home),c[0],c[1]),y);
+  o.wall.forEach(([k,deg])=>pitWall(k,P,deg));};
+ sat(S1,{home:200*PI/180,wall:[['zj_gallery_a',-120],['zj_store_tunnel',-60],['zj_farm_alecap',-15],['zj_shop_dyer_carved',140],['zj_tavern_carved',175],['zj_kiva',35]]});
+ sat(S2,{home:-30*PI/180,wall:[['zj_gallery_b',200],['zj_store_tunnel',150],['zj_farm_alecap',115],['zj_shop_rope_carved',60],['zj_inn_carved',-145],['zj_kiva',-60]]});
+ sat(S3,{home:60*PI/180,wall:[['zj_gallery_a',-50],['zj_store_tunnel',125],['zj_farm_alecap',155],['zj_shop_stonecutter_carved',95],['zj_tavern_carved',-100],['zj_kiva',30]]});
+ /* the smithies stand on the floors (constructed: a smoke shaft up the pit) */
+ for(const P of PITS){const a=(P.id==='s1'?-150:P.id==='s2'?20:-150)*PI/180,x=P.c[0]+(P.r-12)*Math.cos(a),z=P.c[1]+(P.r-12)*Math.sin(a);S('zj_smithy',P.id,x,z,faceIn(x,z,P.c[0],P.c[1]),P.floor);}
+ /* the outpost: the portal and its galleries in the cliff (facing west), the caravanserai on the stream, the barracks, the gate
+    and a palisade round the clearing's west half, watchtowers on the cliff's shoulders and at the forest's edge, dwellings */
+ S('zj_portal','outpost',-2505,0,-PI/2,OY,'wall');S('zj_gallery_a','outpost',-2505,-45,-PI/2,OY,'wall');S('zj_gallery_b','outpost',-2505,45,-PI/2,OY,'wall');
+ S('zj_caravanserai','outpost',-2600,62,0,OY);S('zj_barracks_outpost','outpost',-2620,-48,0,OY);S('zj_gate','outpost',-2700,0,-PI/2,OY);
+ S('zj_watchtower','outpost',-2498,-85,-PI/2,byId['o.tw1'].y);S('zj_watchtower','outpost',-2498,85,-PI/2,byId['o.tw2'].y);S('zj_watchtower','outpost',-2758,-58,-PI/2,OY);
+ const PAL={c:[-2600,0],r:100};
+ for(let i=0;i<26;i++){const a=PI/2+.06+i*(PI-.12)/25;if(Math.abs(a-PI)<.07)continue;const x=PAL.c[0]+Math.cos(a)*PAL.r,z=PAL.c[1]+Math.sin(a)*PAL.r;S('zj_palisade','outpost',x,z,a+PI/2,OY);}
+ S('zj_hut_a','outpost',-2662,32,PI/2,OY);S('zj_hut_a','outpost',-2652,46,PI,OY);S('zj_hut_b','outpost',-2640,28,PI/2,OY);S('zj_hut_b','outpost',-2665,-30,PI/2,OY);
+ S('zj_house_wood','outpost',-2648,-34,0,OY);S('zj_farmhouse_wood','outpost',-2575,-62,PI,OY);S('zj_hut_c','outpost',-2505.6,-112,-PI/2,OY,'wall');
+ S('zj_farm_veg','outpost',-2560,40,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
+ /* the stores and the stables in the outer tube's side caves */
+ S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,0,byId['t.stores'].y,'ground');
+ const PASTURE=[[-2760,60],[-2700,60],[-2690,130],[-2770,140]];
+ const STREAM=[[-2700,140],[-2640,95],[-2600,80],[-2540,70],[-2500,90]];
+
+ /* ---- each key's footprint, as the kit declares it (kits/zeijani/src: w, d; carved defs stand on the foot of their front) */
+ const FOOT={zj_council:[46,92,'centre'],zj_temple:[48,52,'front'],zj_scout_hq:[12,12,'centre'],zj_tavern_built:[15,12,'centre'],zj_guard_hq:[16,12,'centre'],
+  zj_muster:[22,16,'centre'],zj_stall_b:[4.4,3.6,'centre'],zj_stall_a:[5,2.2,'centre'],zj_kiva:[10,10,'centre'],zj_niche:[3.6,2,'centre'],
+  zj_barracks_carved:[26,25,'front'],zj_estate_a:[36,40,'front'],zj_estate_b:[34,36,'front'],zj_brewery:[25,29,'front'],zj_lab:[21,25,'front'],
+  zj_cistern:[32,34,'front'],zj_catacomb:[32,24,'front'],zj_farm_yam:[16,12,'centre'],zj_farm_veg:[16,12,'centre'],zj_granary:[8,8,'centre'],
+  zj_house_built_mid:[16,11,'centre'],zj_gallery_a:[30,56,'front'],zj_gallery_b:[30,34,'front'],zj_store_tunnel:[20,27,'front'],zj_farm_alecap:[18,30,'front'],
+  zj_tavern_carved:[23,23,'front'],zj_inn_carved:[27,32,'front'],zj_smithy:[11,9,'centre'],zj_portal:[50,40,'front'],zj_caravanserai:[46,36,'centre'],
+  zj_barracks_outpost:[18,10,'centre'],zj_gate:[12,5,'centre'],zj_watchtower:[7,7,'centre'],zj_palisade:[13,4,'centre'],zj_hut_a:[8,8,'centre'],
+  zj_hut_b:[9,10,'centre'],zj_stonedoor:[10,9,'front'],zj_hut_c:[10,12,'centre'],zj_house_wood:[11,11,'centre'],zj_farmhouse_wood:[14,14,'centre']};
+ SITES.forEach(s=>{if(!FOOT[s.key]){if(/^zj_shop_.*_carved$/.test(s.key))FOOT[s.key]=[13,15,'front'];else if(/^zj_shop_.*_built$/.test(s.key))FOOT[s.key]=[11,10,'centre'];}});
+
+ /* ---- the graph's helpers */
+ const adj={};NODES.forEach(n=>adj[n.id]=[]);EDGES.forEach((e,i)=>{adj[e.a].push([e.b,i]);adj[e.b].push([e.a,i]);});
+ const len=e=>{const a=byId[e.a],b=byId[e.b];return Math.hypot(b.x-a.x,b.z-a.z);};
+ const grade=e=>{const a=byId[e.a],b=byId[e.b],h=Math.hypot(b.x-a.x,b.z-a.z);return h>1e-6?Math.abs(b.y-a.y)/h:1e9;};
+ /* distances from a node over the edges a filter allows (Dijkstra on plan length; small graph) */
+ function dist(from,ok){const D={};NODES.forEach(n=>D[n.id]=Infinity);D[from]=0;const done={};
+  for(;;){let u=null,best=Infinity;for(const id in D)if(!done[id]&&D[id]<best){best=D[id];u=id;}if(u===null)break;done[u]=1;
+   for(const [v,i] of adj[u]){const e=EDGES[i];if(ok&&!ok(e))continue;const d=best+len(e);if(d<D[v])D[v]=d;}}return D;}
+ const fromSquare=dist('h.sq',e=>e.zone!=='secret');
+ DISTRICTS.forEach(D=>{D.dist=+fromSquare[D.anchor].toFixed(1);D.wealth=wealthAt(D.dist);});
+
+ return {PI,surfaceY,groundY,coneY,cliffX,KIPUKA,CONE,hallK,onLedge,wealthAt,RULES,HALL,PITS,DISTRICTS,NODES,EDGES,byId,adj,SITES,FOOT,PASTURE,STREAM,PAL,len,grade,dist,onHall,onPit,faceIn};
+})();
+if(typeof module!=='undefined')module.exports=DH;
 // prefix: zf
 // ================================================================= THE ZEIJANI FORMS: the shapes every builder draws with
 // PLAN.md 6.2: dwellings are rounded (domes, drums, round doorways), civic buildings larger and blockier, the rich ornate
@@ -13334,304 +13499,198 @@ ATMOS.PRESETS={
    note:'a level deck at y; its top is y-down+(up+down)*u^heap (presets.clouddeck); follow the camera; thin it where the ground rises through it'});
   return{mesh,mat,record,inCloud:(x,yy,z)=>yy<A.deckHeight(x,z,A.clock.t,y)};};
 })();
-// ================================================================= THE SHOWCASE: rows of the kit, by family (front +z toward the camera)
-// A row entry is a def key, or {key, o} (place() options: a variant v). PLAN.md 6.5 orders the rows; P3 fills them.
-const TITLE='Zeijani Kit';
-const FAMILIES=[
- {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
- {name:'Dwellings: constructed',keys:['zj_house_built_poor','zj_house_built_mid','zj_house_built_rich']},
- {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b','zj_estate_a','zj_estate_b']},
- {name:'Sacred and civic',keys:['zj_kiva','zj_catacomb','zj_temple','zj_council','zj_cistern','zj_portal','zj_townhall','zj_caravanserai']},
- {name:'Shops: carved fronts',keys:ZS_ITEMS.filter(it=>/_carved$/.test(it.key)).map(it=>it.key)},
- {name:'Shops: constructed',keys:ZS_ITEMS.filter(it=>/_built$/.test(it.key)).map(it=>it.key)},
- {name:'Works and farms',keys:['zj_store_tunnel','zj_warehouse','zj_granary','zj_farm_yam','zj_farm_veg','zj_farm_alecap','zj_farmhouse_wood','zj_farmhouse_carved','zj_brewery','zj_lab','zj_smithy']},
- {name:'The guard and the outpost',keys:['zj_guardpost','zj_barracks_carved','zj_guard_hq','zj_barracks_outpost','zj_watchtower','zj_scout_hq','zj_muster','zj_palisade','zj_gate']},
- {name:'Trade and stalls',keys:['zj_tavern_carved','zj_tavern_built','zj_inn_carved','zj_inn_built','zj_stall_a','zj_stall_b',{key:'zj_stall_b',o:{v:1}}]},
- {name:'The additions',keys:['zj_vent','zj_stonedoor','zj_roost','zj_dovecote','zj_bath','zj_mirror','zj_niche','zj_signal']},
- {name:'The cavern test block',keys:['zj_testblock']}
-];
-// ================================================================= SCENE: renderer, the standard Krator sky, ground, layout, (re)building the world
+// ================================================================= DHELV: THE SCENE (P5). Renderer, the standard Krator sky, the ground, the
+// city carved from the layout (41-dhelv-layout.js) and the kit's defs placed on it, the rock meshed near the camera only.
+// The kit's camera, dev tools, furnishing, night and smoke (kits/zeijani/src 92-camera.js, 91f, 91n, 93) run on what this builds.
+const TITLE='Dhelv';
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;
 renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.autoClear=false;document.body.appendChild(renderer.domElement);
 TEXANISO=Math.max(1,Math.min(8,renderer.capabilities.getMaxAnisotropy()||1));for(const k in ZJ_LIBTEX)for(const t of Object.values(ZJ_LIBTEX[k]))if(t)t.anisotropy=TEXANISO;
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0xd8c4a4,.0011);
 const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.15,9000);
-/* the standard Krator sky (81-sky.js, vendored from Iziz) lives in its own scene drawn about the origin, so core/atmos's
-   skylight can capture it into the environment map every standard material reflects (core/atmos/README.md) */
 const skyScene=new THREE.Scene(),skyCam=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,1,9000);
 KratorSky.attach(skyScene,4200);
 const SKY={hour:10.5,day:200,dens:1.6,night:false};
 const qs=new URLSearchParams(location.search);if(qs.get('hour'))SKY.hour=+qs.get('hour');
 const hemi=new THREE.HemisphereLight(0xffe6c8,0x7a5a3e,.75);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xfff0dc,1.7);scene.add(sun);scene.add(sun.target);
-sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const c=sun.shadow.camera;c.left=-60;c.right=60;c.top=60;c.bottom=-60;c.near=10;c.far=700;}sun.shadow.bias=-.0005;sun.shadow.normalBias=.3;
+sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);{const c=sun.shadow.camera;c.left=-80;c.right=80;c.top=80;c.bottom=-80;c.near=10;c.far=900;}sun.shadow.bias=-.0005;sun.shadow.normalBias=.3;
 const LIGHTDIR=new THREE.Vector3(.4,.7,.3).normalize();
 function skyApply(){KratorSky.update(new THREE.Vector3(),SKY.hour,SKY.day,SKY.dens);const L=KratorSky.lighting();
  LIGHTDIR.copy(L.sunDir.y>.02?L.sunDir:new THREE.Vector3(.3,.6,-.4).normalize());sun.color.copy(L.sunColor||new THREE.Color(1,.95,.86));
  sun.intensity=L.sunDir.y>.02?L.sunIntensity*1.05:.05;hemi.intensity=.28+L.ambient*.75;scene.fog.color.copy(L.fog);}
 skyApply();
-// the ground: the library's packed earth, tiled in world metres (a flat placeholder for the kipuka, the lava, a well's floor)
-const GROUND_SIZE=1600;
-const groundMat=new THREE.MeshStandardMaterial({color:0x9a8a74,roughness:1});
+
+// ---------------------------------------------------------------- the ground: the layout's (the flows, the kipuka's hollow, the old cone)
+terrainH=DH.groundY;   /* 10-core.js's flat sheet ground, replaced: place(), the cavern and the camera read this */
+const DH_GROUND={x0:-2960,x1:860,z0:-560,z1:960,step:5};
+const groundMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,vertexColors:true});
 {const L=KMAT.mode==='lib'?KMAT.packed('zeijani','earth'):null;
- if(L){const T=KMAT.textures(L,{aniso:TEXANISO});for(const t of [T.map,T.normalMap,T.roughnessMap])if(t)t.repeat.set(GROUND_SIZE/L.scale[0],GROUND_SIZE/L.scale[1]);
-  groundMat.map=T.map;groundMat.normalMap=T.normalMap;groundMat.roughnessMap=T.roughnessMap;matHook(groundMat,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}
- else groundMat.color.setHex(0xa8916a);}
-/* the cut-away opens the sheet's ground too, over every carved def (its plan runs below the ground), on the camera's side:
-   uCutSites holds each one's footprint [cx, cz, half width, half depth] (filled after the layout, below) */
+ if(L){const T=KMAT.textures(L,{aniso:TEXANISO});const g=DH_GROUND;for(const t of [T.map,T.normalMap,T.roughnessMap])if(t)t.repeat.set((g.x1-g.x0)/L.scale[0],(g.z1-g.z0)/L.scale[1]);
+  groundMat.map=T.map;groundMat.normalMap=T.normalMap;groundMat.roughnessMap=T.roughnessMap;matHook(groundMat,'lib'+KMAT.libKey(L),sh=>KMAT.libHooks(sh,L));}}
+/* the cut-away and the holes, as the kit sheet's ground (its uniforms: 40-zj-cave.js fills the holes and masses) */
 const ZJ_CUTSITES={value:[]};for(let i=0;i<32;i++)ZJ_CUTSITES.value.push(new THREE.Vector4(0,0,0,0));
-/* every mass's footprint [x0, x1, z0, z1]: the ground is never drawn under a block of rock (a carved floor at y 0 would fight it) */
 const ZJ_MASSES={value:[]};for(let i=0;i<32;i++)ZJ_MASSES.value.push(new THREE.Vector4(0,0,0,0));
-/* every well's hole in the ground [cx, cz, r + rim]: the cavern meshes the ground inside it (a hatch, a trench, a light well in open ground) */
 const ZJ_HOLES={value:[]};for(let i=0;i<32;i++)ZJ_HOLES.value.push(new THREE.Vector4(0,0,0,0));
 matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uMasses=ZJ_MASSES;sh.uniforms.uHoles=ZJ_HOLES;
  sh.vertexShader='varying vec3 vGW;\n'+sh.vertexShader.replace('#include <project_vertex>','vGW=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');
  sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform vec4 uMasses[32];uniform vec4 uHoles[32];varying vec3 vGW;\n'+sh.fragmentShader.replace('void main() {',
-  'void main() {\nfor(int i=0;i<32;i++){vec4 m=uMasses[i];if(m.y<=m.x)continue;if(vGW.x>m.x&&vGW.x<m.y&&vGW.z>m.z&&vGW.z<m.w)discard;}\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z)discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
-const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIZE,GROUND_SIZE),groundMat);groundM.rotation.x=-PI/2;groundM.receiveShadow=true;groundM.userData.isGround=true;scene.add(groundM);
-// ---------------------------------------------------------------- layout: rows by family, fronts (+z) toward the camera
-const SITES=[],ROWS=[];
-const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   // ?only=key,key builds just those defs
-const SITEKEY=k=>typeof k==='string'?{key:k,o:{v:0}}:{key:k.key,o:Object.assign({v:0},k.o||{})};
-(function layout(){let z=0;const GAP=7;for(const F of FAMILIES){const keys=F.keys.map(SITEKEY).filter(k=>DEFS[k.key]&&(!ONLYSET||ONLYSET.has(k.key)));
- if(!keys.length)continue;const ws=keys.map(k=>DEFS[k.key].w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DEFS[k.key].d)),hmax=Math.max(...keys.map(k=>DEFS[k.key].h));
- z-=dmax/2;let x=-total/2;keys.forEach((k,i)=>{const D=DEFS[k.key],off=D.originFront?D.d/2:0;SITES.push({key:k.key,x:x+ws[i]/2,z:z+off,ry:0,o:k.o});x+=ws[i];});   /* a carved def's origin is its front's foot */
- ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys:keys.map(k=>k.key)});z-=dmax/2+Math.max(16,hmax*.8)+6;}})();   // rows run north (-z) from the first
-{let n=0;for(const S of SITES){const D=DEFS[S.key];if(!(D.originFront||D.sunk)||n>=32)continue;ZJ_CUTSITES.value[n++].set(S.x,D.sunk?S.z:S.z-D.d/2,D.w/2,D.d/2);}}
+  'void main() {\nfor(int i=0;i<32;i++){vec4 q=uHoles[i];if(q.z<=0.)continue;if(distance(vGW.xz,q.xy)<q.z)discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
+/* a heightfield of the layout's ground; its colour by what it is: the young flow (dark basalt), the kipuka's floor (old soil),
+   the cone (weathered tuff). P5b lays the biomes on it */
+function dhGroundMesh(){const g=DH_GROUND,nx=Math.round((g.x1-g.x0)/g.step),nz=Math.round((g.z1-g.z0)/g.step),pos=new Float32Array((nx+1)*(nz+1)*3),col=new Float32Array((nx+1)*(nz+1)*3),idx=[];
+ const cFlow=hc(0x4e4f55),cKip=hc(0x7a6c4c),cCone=hc(0x8a7a62),c=new THREE.Color();
+ for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const x=g.x0+i*g.step,z=g.z0+j*g.step,y=DH.groundY(x,z),k=(j*(nx+1)+i)*3;pos[k]=x;pos[k+1]=y;pos[k+2]=z;
+  const K=DH.KIPUKA,dk=Math.hypot(x-K.c[0],(z-K.c[1])*1.3)/K.r,cone=y>DH.surfaceY(x,z)+.5&&x>DH.cliffX(z)-4;
+  c.copy(cone?cCone:dk<1.02?cKip:cFlow);if(!cone&&dk>=1.02&&dk<1+K.edge)c.lerp(cKip,.4);col[k]=c.r;col[k+1]=c.g;col[k+2]=c.b;}
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+1,d=a+nx+1,e=d+1;idx.push(a,d,b,b,d,e);}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+ const uv=new Float32Array((nx+1)*(nz+1)*2);for(let j=0;j<=nz;j++)for(let i=0;i<=nx;i++){const k=(j*(nx+1)+i)*2;uv[k]=i/nx;uv[k+1]=j/nz;}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+ geo.setIndex(idx);geo.computeVertexNormals();return geo;}
+const groundM=new THREE.Mesh(dhGroundMesh(),groundMat);groundM.receiveShadow=true;groundM.userData.isGround=true;scene.add(groundM);
+
+// ---------------------------------------------------------------- the sites: the layout's, each the kit's def
+const SITES=DH.SITES.map(s=>({key:s.key,x:s.x,z:s.z,ry:s.ry,o:{v:s.v|0,y:s.y},district:s.district,at:s.at}));
+const ONLY=qs.get('only');const ONLYSET=ONLY?new Set(ONLY.split(',')):null;   /* ?only=key,key places just those defs (the ways are carved still) */
+const ROWS=[];
+
+// ---------------------------------------------------------------- the ways: the layout's public ways carved in the rock
+/* the hall, the satellites' pits, every tube, ramp, stair, the ledge and the scouts' ways; the square's lanes, the pits' floors and
+   the kipuka's streets are floors already (the hall's, the shafts', the ground's). Ids are 'dh.*', owned by 'dhelv' */
+function dhCarve(){const H=DH.HALL,C=CVC,B=DH.byId;
+ C.hall({id:'dh.hall',owner:'dhelv',c:[H.c[0],H.y,H.c[1]],rx:H.rx,rz:H.rz,h:H.h,belly:H.belly,throat:{r0:H.throat.r0,r1:H.throat.r1,top:DH.groundY(H.c[0],H.c[1])+4},blend:6});
+ C.opening({id:'dh.hall.well',c:H.c.slice(),r:H.throat.r1,rim:3,kind:'well'});
+ for(const P of DH.PITS){const top=DH.groundY(P.c[0],P.c[1])+2;C.shaft({id:'dh.'+P.id+'.pit',owner:'dhelv',c:P.c.slice(),y0:P.floor,y1:top,r0:P.r,r1:P.r+2,floor:true,rock:'basalt',finish:'raw'});
+  C.opening({id:'dh.'+P.id+'.well',c:P.c.slice(),r:P.r+2,rim:3,kind:'well'});}
+ const inPit=n=>DH.PITS.some(P=>Math.hypot(n.x-P.c[0],n.z-P.c[1])<P.r-.5);
+ for(const e of DH.EDGES){const a=B[e.a],b=B[e.b];if(e.kind==='square'||e.kind==='street')continue;if(inPit(a)&&inPit(b))continue;
+  const id='dh.'+e.a+'-'+e.b;if(a.x<-2440&&b.x<-2440&&e.kind!=='tube')continue;   /* the kipuka's paths up the cliff are on the ground */
+  if(e.kind==='stair')C.stair({id,owner:'dhelv',a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w:Math.max(1.2,e.w),h:3.2,rock:'basalt',finish:'hewn'});
+  else{const w=e.kind==='secret'?1.6:e.w,h=e.kind==='ledge'?3.4:e.kind==='secret'?2.4:Math.max(3,Math.min(10,w*.9+1.5));
+   /* each way runs on past its ends into what it meets, so its floor overlaps the next one's (an exact abutment leaves a hairline
+      a step lands in): 1.2 m into the hall or a pit (their floors stand 0.3 m in from their walls), else 0.3 m (a stair not at all:
+      a walker keeps to the higher floor across an overlap) */
+   const A=dhRun(b,a,dhOpens(e.a)?1.2:.3),Bp=dhRun(a,b,dhOpens(e.b)?1.2:.3);
+   C.tube({id,owner:'dhelv',pts:[A,Bp],w,h,blend:e.kind==='ledge'?.5:2,rock:'basalt',finish:e.kind==='door'?'hewn':'raw',walkW:Math.max(.8,w-.8)});}}
+ /* where the ways meet the open air: the portal's tunnel is the portal def's; the scouts' exits are holes in the flow */
+ for(const n of DH.NODES)if(n.exit)C.opening({id:'dh.exit.'+n.id,c:[n.x,n.z],y:n.y-6,r:8,h:10,kind:'door'});}
+const dhOpens=id=>/^h\.[wens]$|^s\d\.(in|up)$|^(cis|k\.head)$/.test(id);
+function dhRun(p,q,ext){const dx=q.x-p.x,dy=q.y-p.y,dz=q.z-p.z,L=Math.hypot(dx,dz)||1;return [q.x+dx/L*ext,q.y+dy/L*ext,q.z+dz/L*ext];}
+/* the kipuka's floor and the cliff paths, for the walker (the rest of the surface is not walked in P5a) */
+function dhSurfaceWalk(){const K=DH.KIPUKA,rx=K.r*.97,rz=rx/1.3,cx=DH.CONE.cliffX,t0=Math.acos(Math.max(-1,Math.min(1,(cx-K.c[0])/rx))),pts=[];
+ /* the hollow's floor west of the cliff: the kipuka's ellipse cut by a chord at the cliff's foot (convex; the portal's tunnel starts 1.5 m in front of it) */
+ for(let i=0;i<=40;i++){const a=t0+(TAU-2*t0)*i/40;pts.push([K.c[0]+Math.cos(a)*rx,K.c[1]+Math.sin(a)*rz,K.floor]);}
+ KWALK.poly({pts,name:'the kipuka\'s floor',tag:'ground'});
+ for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b];if(e.kind==='stair'&&a.x<-2440&&b.x<-2440)KWALK.strip({a:[a.x,a.z,a.y],b:[b.x,b.z,b.y],w:e.w,name:'dh.'+e.a+'-'+e.b,tag:'built:stair'});}}
+
+// ---------------------------------------------------------------- the rock, meshed near the camera only (PLAN.md 7: about 2M triangles in all)
+const DH_STREAM={R:120,drop:170,budget:10,on:true,meshes:new Map(),keys:[],cen:null,near:[],tick:0,meshed:0,tris:0};
+function dhStreamReset(){for(const m of DH_STREAM.meshes.values()){CV_GROUP.remove(m);m.geometry.dispose();}DH_STREAM.meshes.clear();DH_STREAM.tris=0;DH_STREAM.meshed=0;
+ const s=CVC.chunk;DH_STREAM.keys=CVC.chunks.slice();DH_STREAM.cen=new Float32Array(DH_STREAM.keys.length*3);
+ DH_STREAM.keys.forEach((k,i)=>{const q=k.split(',').map(Number);DH_STREAM.cen[i*3]=(q[0]+.5)*s;DH_STREAM.cen[i*3+1]=(q[1]+.5)*s;DH_STREAM.cen[i*3+2]=(q[2]+.5)*s;});DH_STREAM.tick=0;}
+function dhStream(at,force){const S=DH_STREAM;if(!S.on||!S.cen)return 0;const p=at||camera.position;
+ if(force||S.tick--<=0){S.tick=12;const c=S.cen,near=[];for(let i=0;i<S.keys.length;i++){const d=Math.hypot(c[i*3]-p.x,(c[i*3+1]-p.y)*1.5,c[i*3+2]-p.z);if(d<S.R&&!S.meshes.has(S.keys[i]))near.push([d,i]);}
+  near.sort((a,b)=>a[0]-b[0]);S.near=near.map(n=>n[1]);
+  for(const [k,m] of S.meshes){const i=m.userData.ci;if(Math.hypot(c[i*3]-p.x,(c[i*3+1]-p.y)*1.5,c[i*3+2]-p.z)>S.drop){CV_GROUP.remove(m);m.geometry.dispose();S.meshes.delete(k);S.tris-=m.userData.tris;}}}
+ const t0=performance.now();let n=0;while(S.near.length&&(force||performance.now()-t0<S.budget)){const i=S.near.shift(),k=S.keys[i];if(S.meshes.has(k))continue;
+  const m=cvChunkMesh(k);S.meshes.set(k,m||{userData:{ci:i,tris:0},geometry:{dispose(){}}});if(m){m.userData.ci=i;CV_GROUP.add(m);S.tris+=m.userData.tris;}n++;S.meshed++;}
+ return n;}
+FRAME_HOOKS.push(()=>dhStream());
+
 // ---------------------------------------------------------------- (re)build the world
 let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
- WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
- KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
+ WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();
+ KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;
+ CV_OPTS.skipMass=true;CV_OPTS.wellDoor=q=>{const c=cvW(q.c[0],0,q.c[1]);return terrainH(c[0],c[2])-c[1]>3;};
  const t0=performance.now();
- for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
+ dhCarve();
+ for(const S of SITES){if(ONLYSET&&!ONLYSET.has(S.key))continue;place(S.key,S.x,S.z,S.ry||0,S.o);}
  flushBuckets(GB,WORLD,true);
- cvFinish(WORLD);cvGroundWalk(-GROUND_SIZE/2,GROUND_SIZE/2,-GROUND_SIZE/2,GROUND_SIZE/2);
- window._build={ms:Math.round(performance.now()-t0),tris:Math.round(GSTAT.tris),sites:SITES.length,records:REG.length,halos:HALOS.length,life:ZJ_LIFE.length,cavern:CV_STATS,walk:{floors:KWALK.floors.length,blocks:KWALK.blocks.length}};return WORLD;}
-// views: an opening, an overview, a shot per row, an eye-level shot per site, and for each tent a look inside (cut-away)
-function autoViews(){const V={};const R=ROWS;if(!R.length)return {Origin:[0,30,60,0,0,0]};const last=R[R.length-1];
- V['Opening']=[R[0].w*.18,14,R[0].z+R[0].d*.5+30,0,3,R[0].z];
- V['Overview']=[-140,120,R[0].z+120,0,0,(R[0].z+last.z)/2];
- for(const r of R){const dist=Math.max(36,Math.min(r.w*.55,170),(r.h||0)*1.8);V[r.family]=[r.w*.1,Math.max(14,dist*.42),r.z+r.d/2+dist,0,Math.min(2+(r.h||0)*.3,12),r.z];}
- for(const S of SITES){const D=DEFS[S.key];const nm=D.name+(S.o.v?' (variant '+S.o.v+')':'');const dist=Math.max(7,Math.max(D.w,D.h)*.8+D.d*.35);
-  const fz=S.z+(D.originFront?0:D.d/2);V[nm+' - eye level']=[S.x+D.w*.18,1.7,fz+dist*.6,S.x,Math.min(D.h,10)*.32,fz-(D.originFront?2:D.d/2)];
-  if(D.cut)V[nm+' - inside (cut-away)']=[S.x+D.w*.12,Math.max(3.5,D.h*.75),S.z+D.d*.62+2,S.x,.6,S.z];}
+ const tc=performance.now();CVC.build();const tb=performance.now()-tc;
+ while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}WORLD.add(CV_GROUP);cvFinishOpenings();dhStreamReset();dhSurfaceWalk();
+ CV_STATS={chunks:CVC.chunks.length,tris:0,ms:Math.round(tb),prims:CVC.prims.length};
+ window._build={ms:Math.round(performance.now()-t0),cavernBuildMs:Math.round(tb),tris:Math.round(GSTAT.tris),sites:SITES.length,records:REG.length,halos:HALOS.length,life:ZJ_LIFE.length,
+  cavern:CV_STATS,walk:{floors:KWALK.floors.length,blocks:KWALK.blocks.length}};return WORLD;}
+
+/* the orbit camera's floor (92-camera.js): the ground, but none while the camera is in a void under it */
+function camGroundY(p){const g=terrainH(p.x,p.z);if(CVC&&p.y<g-.5&&CVC.voidSD(p.x,p.y,p.z)<0)return -1e9;return g;}
+/* underground the sky is not drawn and a dark fog closes the distance (the rock past the streamed chunks is not meshed);
+   the cave's own light (the wells' shafts, the lamps' pool) is P5c's */
+const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.012};
+FRAME_HOOKS.push(()=>{const p=camera.position,u=p.y<terrainH(p.x,p.z)-2;if(u===DH_UNDER.on)return;DH_UNDER.on=u;skyScene.visible=!u;
+ if(u){scene.fog.color.copy(DH_UNDER.fog);scene.fog.density=DH_UNDER.dens;}else{scene.fog.density=.0011;skyApply();}});
+
+// ---------------------------------------------------------------- views
+function autoViews(){const V={},B=DH.byId,H=DH.HALL;
+ const at=(id,dx,dy,dz,ty)=>{const n=B[id];return [n.x+dx,n.y+dy,n.z+dz,n.x,n.y+(ty===undefined?1.5:ty),n.z];};
+ V['The square from the ledge']=[DH.onLedge(-PI/2)[0],H.ledgeY+1.7,DH.onLedge(-PI/2)[1]+2,0,2,10];
+ V['The square']=[30,3,40,0,6,-20];
+ V['Under the light well']=[6,1.7,8,0,30,0];
+ V['The west mouth']=at('h.w',22,4,6,2);
+ V['The braid']=at('j1',-14,3,4,1.5);
+ V['The stone door']=at('t.door',18,2.5,2,1.2);
+ V['The outer tube']=at('t5',-30,4,0,2);
+ V['The outpost']=[-2760,-40,40,-2560,-70,0];
+ V['The portal']=[-2560,-68,10,-2505,-62,0];
+ for(const P of DH.PITS){V[P.name+': from the rim']=[P.c[0]+P.r*.8,DH.groundY(P.c[0],P.c[1])+4,P.c[1]+P.r*.8,P.c[0],P.floor+3,P.c[1]];
+  V[P.name+': its floor']=[P.c[0]+P.r*.5,P.floor+1.7,P.c[1]+P.r*.3,P.c[0],P.floor+4,P.c[1]];}
+ V['The cistern']=at('cis',8,2,8,0);
+ V['The catacombs\' head']=at('k.head',-12,2,-10,0);
+ V['Over the flow (the city below)']=[-150,DH.surfaceY(0,0)+260,520,-80,0,60];
+ V['Over the outpost']=[-2900,40,300,-2580,-70,0];
  return V;}
-/* the sky's light on the library materials: core/atmos's skylight captures skyScene into scene.environment */
 const ATMOS_HOOKS=[];function atmosFrame(dt){for(const f of ATMOS_HOOKS)f(dt);}
 ATMOS.init({THREE,scene,camera,hour:()=>SKY.hour,onFrame:fn=>ATMOS_HOOKS.push(fn),ground:(x,z)=>terrainH(x,z),seed:4401,err:m=>console.warn(m),viewH:()=>innerHeight,pixelRatio:()=>renderer.getPixelRatio()});
 const ATMOS_GROUND=new THREE.Color();
 ATMOS.skylight({renderer,sky:skyScene,scene,ground:()=>ATMOS_GROUND.copy(hemi.groundColor).multiplyScalar(hemi.intensity),key:()=>SKY.night?'n':'d'});
-// ================================================================= PROBE (window._api): everything a headless check needs
-// hostChecks() and hostNegatives(): the kit's own invariants (verify.py --assert runs both). Every check has a negative: a
-// broken copy of its input that the same check must FAIL (PLAN.md section 3).
-window._api={REG,DEFS,SITES,ROWS,ZJ_LIFE,
- // the measured world-space box of each top-level site against its declared w x d x h
- footprints(){return REG.filter(r=>!r.parent).map(r=>{const D=r.decl,b=r.bbox;const bw=b.mx[0]-b.mn[0],bd=b.mx[2]-b.mn[2],bh=b.mx[1]-b.mn[1];
-  return {key:r.key,name:r.name,w:D.w,d:D.d,h:D.h,bw:+bw.toFixed(2),bd:+bd.toFixed(2),bh:+bh.toFixed(2),ex:+Math.max(0,bw-D.w).toFixed(2),ez:+Math.max(0,bd-D.d).toFixed(2),eh:+Math.max(0,bh-D.h).toFixed(2),tris:r.tris,budget:D.budget};});},
- nanSweep(){let bad=0;WORLD.traverse(m=>{if(m.geometry&&m.geometry.attributes.position){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad++;break;}}});return bad;},
+// ================================================================= DHELV: THE PROBE (window._api, hostChecks, hostNegatives). verify.py --assert
+// runs both; every check has a negative: a broken copy of its input the same check must FAIL (kits/zeijani/PLAN.md section 3).
+window._api={REG,DEFS,SITES,ZJ_LIFE,DH,
+ footprints(){return REG.filter(r=>!r.parent).map(r=>{const D=r.decl,b=r.bbox;const bw=b.mx[0]-b.mn[0],bd=b.mx[2]-b.mn[2],bh=b.mx[1]-b.mn[1],c=Math.abs(Math.cos(r.ry)),s=Math.abs(Math.sin(r.ry));
+  /* a turned site's declared box, turned: its world extent in x and z */
+  const W=D.w*c+D.d*s,Dd=D.w*s+D.d*c;
+  return {key:r.key,name:r.name,w:+W.toFixed(2),d:+Dd.toFixed(2),h:D.h,bw:+bw.toFixed(2),bd:+bd.toFixed(2),bh:+bh.toFixed(2),ex:+Math.max(0,bw-W).toFixed(2),ez:+Math.max(0,bd-Dd).toFixed(2),eh:+Math.max(0,bh-D.h).toFixed(2),tris:r.tris,budget:D.budget};});},
+ nanSweep(){let bad=0;WORLD.traverse(m=>{if(m.geometry&&m.geometry.attributes&&m.geometry.attributes.position){const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad++;break;}}});return bad;},
  doors(){return REG.filter(r=>!r.parent).map(r=>({key:r.key,cls:r.cls,front:r.front,doorCount:r.doorCount}));},
- kitCoverage(){const placed=new Set(REG.map(r=>r.key));return Object.keys(DEFS).filter(k=>!placed.has(k));},
- furniture(all){const s=ZJF.summary();const out={placed:s.placed,keys:s.keys,missing:s.missing,tris:Math.round(ZJF.batch.tris),
-  perSite:REG.filter(r=>!r.parent).map(r=>({key:r.key,pieces:r.furniture.length+r.children.reduce((a,c)=>a+c.furniture.length,0)}))};if(all)out.records=ZJF.placed;return out;},
+ furniture(){const s=ZJF.summary();return {placed:s.placed,keys:s.keys,missing:s.missing,tris:Math.round(ZJF.batch.tris)};},
  tags(){return {audit:ZJTAGS.audit(),records:ZJTAGS.export().records.length};},
- tagExport(){return ZJTAGS.export();},
  materials(){return window._materials;},
- life(){return ZJ_LIFE;},
- cavern(){return Object.assign({},CV_STATS,{export:CVC.export(),walk:KWALK.export()});},
- setNight(v){nightSet(v);},
- setCut(v){cutSet(v);},
- setView(...v){setView(...v);}};
+ stream(){return {meshed:DH_STREAM.meshes.size,tris:Math.round(DH_STREAM.tris),chunks:DH_STREAM.keys.length,pending:DH_STREAM.near.length};},
+ /* mesh every chunk near a point now (verify's shots: the rock round the view before the screenshot) */
+ meshAround(x,y,z){DH_STREAM.tick=0;return dhStream(new THREE.Vector3(x,y,z),true);},
+ setNight(v){nightSet(v);},setCut(v){cutSet(v);},setView(...v){setView(...v);}};
 
-// ---------------------------------------------------------------- the cavern and the walk map (P2)
-const PB={
- /* the void plans' rock: every void at least minRock from every other building's voids and from the open air; joined voids
-    (a building's own rooms, a stair into a tube) are exempt by their `joins` */
- thin(C){const out=[];C.prims.forEach(P=>{if(P.kind==='mass'||P.kind==='monolith')return;
-   C.prims.forEach(Q=>{if(P===Q||Q.kind==='mass'||Q.kind==='monolith'||P.owner===Q.owner)return;if((P.joins||[]).includes(Q.id)||(Q.joins||[]).includes(P.id))return;
-    const t=C.thickness(P.id,Q.id);if(t<C.minRock)out.push(P.id+'/'+Q.id+' '+t.toFixed(2));});
-   const r=C.roof(P.id);if(r<C.minRock)out.push(P.id+'/air '+r.toFixed(2));});return out;},
- /* floor samples (the centroid and two more points of every carved floor) against the meshed surface below them */
- floorGaps(W,group){const ray=new THREE.Raycaster(),out=[];group.updateMatrixWorld(true);
-  for(const f of W.floors){if(!/^cavern:/.test(f.tag))continue;let pts=[];
-   if(f.kind==='strip')pts=[.25,.5,.75].map(t=>[f.a[0]+(f.b[0]-f.a[0])*t,f.a[1]+(f.b[1]-f.a[1])*t]);
-   else if(f.kind==='poly'){let x=0,z=0;f.pts.forEach(p=>{x+=p[0];z+=p[1];});x/=f.pts.length;z/=f.pts.length;pts=[[x,z],[(2*x+f.pts[0][0])/3,(2*z+f.pts[0][1])/3]];}
-   for(const [x,z] of pts){const y=W.heightOn(f,x,z);if(y===null)continue;ray.set(new THREE.Vector3(x,y+.3,z),new THREE.Vector3(0,-1,0));ray.far=1;
-    const h=ray.intersectObjects(group.children,false)[0];const onGround=!h&&Math.abs(y-terrainH(x,z))<.15&&!CVC.inMass(x,y+.5,z);
-    out.push({name:f.name,gap:h?Math.abs(h.point.y-y):onGround?0:1e9});}}return out;},
- /* a walker's route through a walk registry: steps of 0.2 m, refused where no floor is within 0.6 m or a block stands */
- route(W,start,way){const R={x:start[0],z:start[1],feet:start[2]},log=[];
-  const tryTo=(nx,nz)=>{const f=W.floorBelow(nx,nz,R.feet,.6);if(!f||R.feet-f[0]>.6)return false;if(W.blocked(nx,f[0],nz,.3,1.7))return false;R.x=nx;R.z=nz;R.feet=f[0];return true;};
-  for(const [name,tx,tz,expect] of way){let ok=true,n=0;while(n++<5000){const dx=tx-R.x,dz=tz-R.z,d=Math.hypot(dx,dz);if(d<.15)break;const st=Math.min(.2,d);if(!tryTo(R.x+dx/d*st,R.z+dz/d*st)){ok=false;break;}}
-   log.push({name,ok,feet:+R.feet.toFixed(2),expect:expect===undefined?true:expect});}return log;},
- /* the test block's route: in at the door, the antechamber, the side room (refused at the carved bed shelf), the domed hall,
-    down the stair to the lava tube and along it to its far end */
- blockRoute(W){const S=SITES.find(s=>s.key==='zj_testblock');if(!S)return null;const P=(x,z)=>[S.x+x,S.z+z];
-  return PB.route(W,[S.x,S.z+6,0],[['the door',...P(0,3)],['the antechamber',...P(0,-3.5)],['the side passage',...P(2.2,-5)],['the side room',...P(6.5,-5)],
-   ['into the bed shelf',...P(8.4,-7.5),false],['the side room again',...P(6.5,-6.2)],['the passage mouth',...P(5.2,-5)],['back to the antechamber',...P(0,-5)],
-   ['the domed hall',...P(0,-10.5)],['the stair head',...P(-3,-10.5)],['the stair foot',...P(-12.6,-10.5)],['the tube',...P(-13.6,-10)],
-   ['the tube\'s bend',...P(-13.6,4)],['the tube\'s second bend',...P(0,12)],['the tube\'s far end',...P(14,13.8)]]);},
- /* gallery B's route: in, down the spiral to the east landing, into a cell and out, on down to the well's floor and the cistern */
- wellRoute(W0){const S=SITES.find(s=>s.key==='zj_gallery_b');if(!S)return null;const W=[S.x,S.z-15],way=[['the tunnel',S.x,S.z-11.2]];
-  for(let i=1;i<=24;i++){const a=PI/2+i*(3*PI)/24;way.push(['the spiral '+i,W[0]+Math.cos(a)*3.8,W[1]+Math.sin(a)*3.8]);
-   if(i===12)way.push(['the east landing',W[0]+7.4,W[1]],['into a cell',W[0]+7.4,W[1]+3.3],['back to the landing',W[0]+7.4,W[1]],['the spiral again',W[0]+3.8,W[1]]);}
-  way.push(['the well floor',W[0],W[1]-1],['the cistern',W[0],W[1]-8]);return PB.route(W0,[S.x,S.z+3,0],way);},
- routeOk(log){return !!log&&log.every(s=>s.ok===s.expect);},
- /* a route in a def's own frame (the sheet places defs unturned): start [x, z], way [[name, x, z, expect]] */
- siteRoute(W0,key,start,way){const S=SITES.find(s=>s.key===key);if(!S)return null;return PB.route(W0,[S.x+start[0],S.z+start[1],0],way.map(w=>[w[0],S.x+w[1],S.z+w[2],w[3]]));},
- /* the estates: A every wing (refused at a pillar), B upstairs (the stair, the landing, the loggia, both bedrooms) and B downstairs */
- estateRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
-  r('estate A',PB.siteRoute(W,'zj_estate_a',[0,3],[['the door',0,1],['the hall',0,-4],['into a pillar',3,-5.6,false],['the hall again',0,-7.5],['the west side',-5,-7.5],
-   ['the west door',-5,-10.5],['the family corridor',-9.6,-10.5],['the living room',-9.6,-4.8],['the corridor',-9.6,-9.3],['a bedroom',-12.2,-9.3],['the corridor again',-9.6,-9.3],
-   ['down the corridor',-9.6,-24],['the shrine',-9.6,-27.5],['back up',-9.6,-10.5],['the hall’s west door',-5,-10.5],['the hall’s back',0,-11],['the court',0,-16.5],
-   ['beside the basin',2.5,-17.5],['past the basin',2.5,-21.5],['the far court',0,-22.8],['past the basin again',2.5,-21.5],['beside it again',2.5,-17.5],['back to the court door',0,-16.5],['the hall',0,-11],['the east door',5,-10.5],
-   ['the service corridor',9.6,-10.5],['the kitchen',9.6,-4.8],['the corridor',9.6,-10.5],['down the corridor',9.6,-24.9],['a servant’s cell',12.2,-24.9],
-   ['the corridor again',9.6,-24.9],['the cistern',9.6,-31.6]]));
-  r('estate B upstairs',PB.siteRoute(W,'zj_estate_b',[0,3],[['the door',0,1],['the hall',0,-6],['the west door',-4.4,-9.6],['up the stair',-12.2,-9.6],
-   ['a bedroom',-12.2,-12.5],['the landing',-12.2,-9.6],['the living room',-12.2,-7.0],['the loggia',-9.6,-2.6],['along the loggia',9.6,-2.6],
-   ['the master bedroom',12.2,-4.0],['the passage',12.2,-9.8],['the second bedroom',12.2,-12.5]]));
-  r('estate B downstairs',PB.siteRoute(W,'zj_estate_b',[0,3],[['the door',0,1],['the hall',0,-6],['beside the basin',2,-8],['past the basin',2,-12],
-   ['the back door',0,-14.2],['down the flight',0,-18.9],['the court',0,-23],['the kitchen',-10,-23],['to the store',-11.7,-25.0],['the store',-11.7,-29.4],
-   ['the kitchen again',-11.7,-25.0],['the kitchen door',-10,-23],['the court again',-4,-23],['the east door',4,-23],['the corridor',10.2,-23],['the shrine',10.2,-16.8],
-   ['the corridor again',10.2,-21.2],['a servant’s cell',12.6,-21.2],['back',10.2,-21.2],['the cistern',10.2,-32.2]]));
-  return out;},
- /* a planned body's route: depth first through the interiors planner's nav graph from the street (its doors, rooms, stair foot
-    and top), back along each edge it took, so every room and the stair both ways */
- plannedRoute(W0,key){const S=SITES.find(s=>s.key===key);if(!S)return null;const rec=REG.find(r=>!r.parent&&r.key===key&&Math.abs(r.x-S.x)<.01&&Math.abs(r.z-S.z)<.01);
-  const inst=KratorInteriors.sets.instantiate(zjItem(key),0,0,0,{register:false,prefix:zwPrefix(rec)}),way=[];let start=null;
-  for(const B of inst.buildings){const G=B.graph,adj={},by={},seen={};G.edges.forEach(e=>{(adj[e.a]=adj[e.a]||[]).push(e.b);(adj[e.b]=adj[e.b]||[]).push(e.a);});G.nodes.forEach(n=>by[n.id]=n);
-   const st=G.nodes.find(n=>n.tag==='street');if(!st)continue;if(!start)start=[S.x+st.x,S.z+st.z,0];
-   /* a stair's top is left by its landing (0.7 m on along the flight), as a walker does: the graph's straight line from the top
-      to the room's centre cuts the stairwell's corner */
-   const land=n=>{const S2=B.stairs.find(s=>s.id===n.ref);if(!S2)return [[S.x+n.x,S.z+n.z]];const L=[S.x+n.x+S2.dir[0]*.7,S.z+n.z+S2.dir[1]*.7],p=[-S2.dir[1],S2.dir[0]];
-     const rm=(adj[n.id]||[]).map(m=>by[m]).find(m=>m.tag==='room'),sg=rm&&((S.x+rm.x-L[0])*p[0]+(S.z+rm.z-L[1])*p[1])<0?-1:1,k=S2.w/2+.5;
-     return [L,[L[0]+p[0]*sg*k,L[1]+p[1]*sg*k]];};
-   /* ...and then stepped off the flight's line toward its room, clear of the well, before the room's centre */
-   const nm=n=>n.tag+' '+n.id.split('.').slice(-2).join('.'),go=n=>{seen[n.id]=1;way.push([nm(n),S.x+n.x,S.z+n.z]);
-    if(n.tag==='stairtop'){const q=land(n);way.push([nm(n)+' landing',...q[0]]);if(q[1])way.push([nm(n)+' clear of the well',...q[1]]);}
-    for(const m of adj[n.id]||[])if(!seen[m]){go(by[m]);
-     if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
-     else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
-  return start?PB.route(W0,start,way):null;},
- /* the sacred: down the kiva's ladder (from the hatch's rim, where the ground stops), off it sideways (a walker on the ladder's
-    foot who turns climbs it: the strip is the higher floor), round its floor, up again; into the
-    catacombs, down to the chapel, the Keeper's cell, both ossuaries */
- sacredRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
-  r('kiva',PB.siteRoute(W,'zj_kiva',[0,-2.5],[['the ladder’s head',0,-1.2],['down the ladder',0,.55],['off the ladder',.7,.5],['the floor',1.4,-1.2],['by the altar',0,-2.0],
-   ['beside the ladder',.7,.5],['back to the ladder',0,.55],['up the ladder',0,-1.05],['out',0,-2.5]]));
-  r('catacombs',PB.siteRoute(W,'zj_catacomb',[0,3],[['the portal',0,.5],['the stair head',0,-2.0],['the chapel',0,-10.5],['the west corridor',-3.5,-12],
-   ['the Keeper’s door',-6.4,-12],['the Keeper’s cell',-6.4,-16.4],['back',-6.4,-12],['the west ossuary',-11.6,-12],['the corridor',-3.5,-12],['the chapel again',0,-11],
-   ['the east corridor',3.5,-12],['the east ossuary',11.6,-12],['the east corridor again',3.5,-12],['the chapel once more',0,-11],['up the stair',0,-2.0],['out',0,2]]));
-  r('temple',PB.siteRoute(W,'zj_temple',[0,3],[['the gate',0,.5],['the pit',0,-9.5],['between the lamp pillars',0,-13],['the stair’s foot',0,-15.2],['the terrace',0,-22.4],
-   ['the sanctum’s door',0,-24.2],['the sanctum',0,-27],['by its altar',1.5,-31],['out of the sanctum',0,-26.6],['the terrace again',0,-22.6],['the terrace’s west side',-7.6,-23.5],
-   ['behind the drum',-7.6,-33],['into the shrine',-6.6,-37,false],['the west side again',-7.6,-24],['the stair’s head',0,-22.4],['down the stair',0,-15.2],
-   ['along the podium',-14,-15.2],['the west cloister',-19.6,-15.2],['along it',-19.6,-43.4],['the back of the pit',-14,-44],['across',14,-44],['the east cloister',19.6,-43.4],
-   ['along it',19.6,-15.2],['the pit again',15.5,-15.2],['past the kiva’s vent',15.5,-30],['the kiva’s hatch',13.2,-30],['its ladder’s head',13.2,-29.15],
-   ['down into the kiva',13.2,-27.45],['off the ladder',13.9,-27.5],['back to the ladder',13.2,-27.45],['up again',13.2,-29.15],['out past the vent',15.5,-30],['the pit’s front',15.5,-15.2],['the gate again',0,-9],['out',0,2]]));
-  r('council',PB.siteRoute(W,'zj_council',[0,44],[['the lane’s head',0,41.3],['down the tunnel',0,13.6],['the pit',0,10],['the pit’s west side',-13,10],
-   ['the west stair’s foot',-11.6,-18],['up into the chamber',-7.6,-23.6],['inside',-7,-24],['among the pillars',-4,-24],['the crossing',0,-24],['by the dais',0,-30.8],['the crossing again',0,-24],
-   ['the chamber’s door',0,-14],['the bridge',0,-7],['the pavilion',0,-.5],['the front bridge',0,8],['the gatehouse’s gallery',0,16],['back over',0,8],['the pavilion again',0,-.5],
-   ['the bridge again',0,-7],['the chamber',0,-14],['its middle',0,-24],['the east stair’s head',7,-24],['its top',7.6,-23.6],['down',11.6,-18],['the pit’s east side',13,10],['the pit again',0,10],
-   ['the tunnel’s foot',0,13.2],['up the tunnel',0,41.3],['the ground',0,44]]));
-  r('cistern',PB.siteRoute(W,'zj_cistern',[0,3],[['the portal',0,.5],['the landing',0,-3.5],['the causeway',0,-10],['the platform',0,-20.6],['by the frame',2.2,-21],['the platform again',0,-20.6],['the causeway again',0,-12],['the landing again',0,-3.5],['out',0,2]]));
-  r('portal',PB.siteRoute(W,'zj_portal',[0,5],[['the gate',0,1],['under the arch',0,-6],['past the stone',-2,-11.8],['the tunnel’s far end',0,-34],['out at the back',0,-38.5],['back in',0,-30],['the gate again',0,1]]));
-  /* the town hall: up the two spirals chord by chord (read from the plan), to the lookout, and all the way down again */
-  {const it=zjItem('zj_townhall');if(it){const ord=s=>s==='in'?-1:s==='out'?99:+s;
-   const ch=k=>it.voids.filter(v=>v.kind==='stair'&&v.id.indexOf(k)===0).sort((a,b)=>ord(a.id.slice(k.length))-ord(b.id.slice(k.length)));
-   const A=ch('stairA'),B=ch('stairB'),up=[];const leg=(n,p)=>up.push([n,p[0],p[2]]);
-   leg('the council’s spiral',A[0].a);A.forEach((v,i)=>leg('council spiral '+i,v.b));if(B.length)leg('the records’ spiral',B[0].a);B.forEach((v,i)=>leg('records spiral '+i,v.b));
-   const down=up.slice(0,-1).reverse().map(w=>['down: '+w[0],w[1],w[2]]);
-   r('town hall',PB.siteRoute(W,'zj_townhall',[0,3],[['the door',0,.5],['the council room',0,-5]].concat(up,[['the lookout’s middle',0,-8.4]],[up[up.length-1]],down,[['the council room again',0,-5],['out',0,2]])));}}
-  r('caravanserai',PB.siteRoute(W,'zj_caravanserai',[0,10],[['the gate',0,6.5],['the court',3,3],['round the pool',3,-4.8],['the tower’s door',0,-5.3],['the taproom',0,-8.5],
-   ['back to the court',0,-5.3],['round the pool again',3,-4.8],['across the court',-4,2.8],['the west rooms’ gallery',-7.8,4.22],['a guest room',-14.43,2.71],['the gallery again',-7.8,4.22],
-   ['the gate again',0,5.4],['out',0,8],['to the stable',3.5,10],['the stable',8,10],['out of the stable',3.5,10]]));
-  return out;},
- /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
-    a constructed one by its planner's graph */
- shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
-   const log=/_carved$/.test(S.key)?PB.siteRoute(W,S.key,[0,3],[['the shopfront',0,.4],['over the counter',-.6,-2.0,false],['the counter’s gap',1.6,-.5],
-     ['the selling room',1.6,-2.6],['the back door',0,-4.8],['the passage',0,-6.8],['the workroom',0,-9.6],['back',0,-4.8],['the selling room again',1.6,-2.6],['out',1.6,-.5],['the street',1.6,2.5]]):PB.plannedRoute(W,S.key);
-   if(log)out.push({name:S.key,log});}return out;},
- /* P3c's works, guard, trade and additions: a carved item's own `route` (its legs from the street, in its frame), a planned
-    body's by its planner's graph (`route: 'planned'`) */
- worksRoutes(W,only){const out=[];for(const S of SITES){if(only&&S.key!==only)continue;const it=zjItem(S.key);if(!it||!it.route)continue;
-   const log=it.route==='planned'?PB.plannedRoute(W,S.key):PB.siteRoute(W,S.key,it.routeFrom||[0,3],it.route);if(log)out.push({name:S.key,log});}return out;},
- /* the constructed houses: the domed hut, the three domes round their yard (hand-written), the planned house (its graph) */
- houseRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
-  r('domed hut',PB.siteRoute(W,'zj_house_built_poor',[0,4.5],[['the door',0,2.6],['inside',0,0],['across',0,-1.6]]));
-  r('three domes',PB.siteRoute(W,'zj_house_built_mid',[0,7.5],[['the gate',0,5.3],['the yard',0,3.5],['the back door',0,-.4],['the living room',0,-2.4],['the yard',0,2.5],
-   ['the west door',-2.9,2.5],['the bedroom',-5.2,2.5],['the yard',0,2.5],['the east door',2.9,2.5],['the kitchen',5.2,2.5],['out',0,2.5],['the street',0,7]]));
-  r('two-storey house',PB.plannedRoute(W,'zj_house_built_rich'));return out;},
- /* every carved passage joins another floor at both its ends: at the end, or up to 0.4 m past it, a floor that is not the
-    passage itself lies within a step of the passage's own height there (a doorway whose strip stops short of a room: impassable) */
- joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^(cavern|built):stair/.test(f.tag))continue;
-   const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz);if(L<.05)continue;const ux=dx/L,uz=dz/L;
-   for(const [e,sg] of [[f.a,-1],[f.b,1]]){let ok=false;
-    for(let s=0;s<=.4+1e-9&&!ok;s+=.1){const x=e[0]+ux*sg*s,z=e[1]+uz*sg*s;ok=W.floorsAt(x,z).some(q=>q[1]!==f&&Math.abs(q[0]-e[2])<=.6);}
-    if(!ok)bad.push(f.name+(sg<0?' (start)':' (end)'));}}return bad;},
- copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}return W;}
-};
+const DHP={
+ /* the shortest way between two layout nodes (as the layout measures it: plan length), over the edges ok() allows: its nodes */
+ path(from,to,ok){const D={},prev={},done={};DH.NODES.forEach(n=>D[n.id]=Infinity);D[from]=0;
+  for(;;){let u=null,b=Infinity;for(const id in D)if(!done[id]&&D[id]<b){b=D[id];u=id;}if(u===null||u===to)break;done[u]=1;
+   for(const [v,i] of DH.adj[u]){const e=DH.EDGES[i];if(ok&&!ok(e))continue;const d=b+DH.len(e);if(d<D[v]){D[v]=d;prev[v]=u;}}}
+  if(D[to]===Infinity)return null;const out=[to];while(out[0]!==from)out.unshift(prev[out[0]]);return out;},
+ /* a walker along a node path through a walk registry: steps of 0.2 m, refused where no floor is within 0.6 m or a block stands */
+ walk(W,ids){const B=DH.byId,s=B[ids[0]],R={x:s.x,z:s.z,feet:s.y},log=[];
+  for(const id of ids.slice(1)){const n=B[id];let ok=true,k=0;while(k++<20000){const dx=n.x-R.x,dz=n.z-R.z,d=Math.hypot(dx,dz);if(d<.15)break;const st=Math.min(.2,d),nx=R.x+dx/d*st,nz=R.z+dz/d*st;
+    const f=W.floorBelow(nx,nz,R.feet,.6);if(!f||R.feet-f[0]>.6||W.blocked(nx,f[0],nz,.3,1.7)){ok=false;break;}R.x=nx;R.z=nz;R.feet=f[0];}
+   log.push({name:id,ok,feet:+R.feet.toFixed(2),at:[+R.x.toFixed(1),+R.z.toFixed(1)]});if(!ok)break;}return log;},
+ /* from the outpost's gate to every district's anchor along the public ways (no secret way) */
+ routes(W){const out=[];for(const D of DH.DISTRICTS){if(D.anchor==='o.c')continue;const p=DHP.path('o.gate',D.anchor,e=>e.zone!=='secret');if(!p){out.push({name:D.id,log:[{name:'no path',ok:false}]});continue;}
+   out.push({name:D.id,log:DHP.walk(W,p)});}return out;},
+ ok(log){return log.length>0&&log.every(s=>s.ok);},
+ copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}for(const b of KWALK.blocks)W.block(b.box,b.tag);return W;}};
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
- const C=CVC;
- add('cavern-meshed',CV_STATS.chunks>0&&CV_STATS.tris>0,CV_STATS.chunks+' chunks, '+CV_STATS.tris+' triangles, '+CV_STATS.prims+' primitives, meshed in '+CV_STATS.ms+' ms');
- const leaks=C.skyLeaks(.5);add('cavern-sky',!leaks.length,leaks.length?leaks.length+' void points in the open air outside every opening, first '+leaks[0].map(v=>typeof v==='number'?v.toFixed(1):v).join(' '):'no void meets the open air but at its declared doors and wells');
- const thin=PB.thin(C);add('cavern-rock',!thin.length,thin.length?thin.join(' | '):'every void at least '+C.minRock+' m from other buildings\' voids and from the open air');
- const gaps=PB.floorGaps(KWALK,CV_GROUP),worst=gaps.reduce((a,b)=>b.gap>a.gap?b:a,{gap:0,name:'-'});
- add('walk-on-mesh',gaps.length>0&&worst.gap<=.15,gaps.length+' samples on the carved floors; the worst '+(worst.gap>1e8?'has no mesh under it':worst.gap.toFixed(3)+' m')+' ('+worst.name+')');
- const rt=PB.blockRoute(KWALK);if(rt)add('walk-route',PB.routeOk(rt),rt.map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
- const wr=PB.wellRoute(KWALK);if(wr)add('walk-route-well',PB.routeOk(wr),wr.filter((s,i)=>!s.ok||i%6===0).map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
- const er=PB.estateRoutes(KWALK);if(er.length)add('walk-route-estates',er.length===3&&er.every(e=>PB.routeOk(e.log)),
-  er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
-  hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===8&&cr.every(e=>PB.routeOk(e.log)),
-  cr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
-  sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');
- const wk=PB.worksRoutes(KWALK),wbad=wk.filter(e=>!PB.routeOk(e.log)),wn=SITES.filter(S=>{const it=zjItem(S.key);return it&&it.route;}).length;
- if(wn)add('walk-route-works',wk.length===wn&&!wbad.length,
-  wbad.length?wbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):wk.length+' buildings, '+wk.reduce((a,e)=>a+e.log.length,0)+' legs');
- const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
- add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
+ const placed=REG.filter(r=>!r.parent).length,want=SITES.filter(s=>!ONLYSET||ONLYSET.has(s.key)).length;
+ add('layout-placed',placed===want,placed+' of the layout\'s '+want+' sites placed');
+ add('cavern-built',CVC.chunks.length>0,CVC.prims.length+' primitives, '+CVC.chunks.length+' chunks, built in '+CV_STATS.ms+' ms; '+DH_STREAM.meshes.size+' meshed near the camera');
+ const t0=performance.now(),leaks=CVC.skyLeaks(2);add('cavern-sky',!leaks.length,(leaks.length?leaks.length+' void points in the open air outside every opening, first '+leaks[0].map(v=>typeof v==='number'?v.toFixed(1):v).join(' '):'no void meets the open air but at its openings')+' ('+Math.round(performance.now()-t0)+' ms at 2 m)');
+ const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
+ add('walk-ways',rt.length===DH.DISTRICTS.length-1&&!bad.length,bad.length?bad.map(r=>r.name+': '+r.log.filter(s=>!s.ok).map(s=>s.name+' REFUSED @'+s.feet+' '+s.at).join(', ')).join(' | '):rt.map(r=>r.name+' '+r.log.length+' legs').join(', '));
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
- const ex=CVC.export(),G=(x,z)=>terrainH(x,z);
- /* sky: the doors forgotten */
- {const e=JSON.parse(JSON.stringify(ex));e.openings=e.openings.filter(q=>q.kind!=='door');const D=KCAVERN.load(e,{ground:G}).build(),L=D.skyLeaks(.5);add('cavern-sky: the doors undeclared',L.length>0,L.length+' leaks');}
- /* rock: a room cut 0.4 m behind a mass's face */
- {const D=KCAVERN.load(JSON.parse(JSON.stringify(ex)),{ground:G}),M=D.prims.find(P=>P.kind==='mass');
-  if(M){const xs=M.poly.map(p=>p[0]),zs=M.poly.map(p=>p[1]),x0=Math.min(...xs)+2,z1=Math.max(...zs)-.4;D.room({id:'probe-thin',owner:'probe',poly:[[x0,z1-2],[x0+2,z1-2],[x0+2,z1],[x0,z1]],y:M.y0+1,h:2});}
-  D.build();const t=PB.thin(D);add('cavern-rock: a room 0.4 m behind a face',t.length>0,t.join(' | ')||'none found');}
- /* floors: one carved floor registered 0.4 m too high */
- {const W=KWALK.create();for(const f of KWALK.floors)if(f.kind==='poly'&&/^cavern:room/.test(f.tag)){W.poly({pts:f.pts.map(p=>[p[0],p[1],p[2]+.4]),name:f.name,tag:f.tag});break;}
-  const g=PB.floorGaps(W,CV_GROUP);add('walk-on-mesh: a floor 0.4 m too high',g.some(s=>s.gap>.15),g.map(s=>s.name+' '+(s.gap>1e8?'none':s.gap.toFixed(2))).join(', '));}
- /* route: the stair down left out of the walk map; then the bed shelf's block forgotten (the walker must be refused there) */
- {const W=PB.copyWalk(f=>/\.down$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const rt=PB.blockRoute(W);
-  if(rt)add('walk-route: the stair down missing',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
- {const W=PB.copyWalk();const rt=PB.blockRoute(W);if(rt)add('walk-route: the bed shelf not a block',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
- /* the well's route with its spiral's middle chord missing */
- {const W=PB.copyWalk(f=>/\.spiral7$/.test(f.name));const wr=PB.wellRoute(W);if(wr)add('walk-route-well: a spiral step missing',!PB.routeOk(wr),wr.filter(s=>!s.ok).map(s=>s.name).slice(0,3).join(', '));}
- /* the estates' routes with estate B's stair up left out of the walk map */
- {const W=PB.copyWalk(f=>/\.up$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const er=PB.estateRoutes(W),up=er.find(e=>/upstairs/.test(e.name));
-  if(up)add('walk-route-estates: the stair up missing',!PB.routeOk(up.log),up.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
- /* the houses' routes with the planned house's stair left out of the walk map */
- {const W=PB.copyWalk(f=>/zj_house_built_rich.*stair/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const hr=PB.houseRoutes(W),h=hr.find(e=>/two-storey/.test(e.name));
-  if(h)add('walk-route-houses: the stair missing',!PB.routeOk(h.log),h.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
- /* the sacred routes with the kiva's ladder left out of the walk map */
- {const R0=REG.find(r=>r.key==='zj_kiva');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.ladder');for(const b of KWALK.blocks)W.block(b.box,b.tag);
-  const e=PB.sacredRoutes(W).find(e=>e.name==='kiva');if(e)add('walk-route-sacred: the ladder missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}
- /* the shops' routes with the weaponsmith's (carved) passage to its workroom left out */
- {const R0=REG.find(r=>r.key==='zj_shop_weapons_carved');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.back');for(const b of KWALK.blocks)W.block(b.box,b.tag);
-  const e=PB.shopRoutes(W,'zj_shop_weapons_carved')[0];if(e)add('walk-route-shops: a passage missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}
- /* the works' routes with the brewery's cellar stair left out of the walk map */
- {const R0=REG.find(r=>r.key==='zj_brewery');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.cellar-stair');for(const b of KWALK.blocks)W.block(b.box,b.tag);
-  const e=PB.worksRoutes(W,'zj_brewery')[0];if(e)add('walk-route-works: the cellar stair missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}
- /* joins: one cell's doorway strip shortened by 1 m at its room end (it runs 0.4 m into the room's floor, whose walk edge is 0.3 m in: 0.8 lands on that edge) */
- {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
-  const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-1)/L;
-   W.strip({a:f.a,b:[f.a[0]+dx*k,f.a[1]+dz*k,f.b[2]],w:f.w,name:f.name,tag:f.tag});}
-  const jn=PB.joins(W);add('walk-joins: a doorway 1 m short',jn.length>0,jn.join(', ')||'none found');}
+ /* sky: the hall's light well forgotten */
+ {const e=CVC.export();e.openings=e.openings.filter(q=>q.id!=='dh.hall.well');const D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build(),L=D.skyLeaks(2);add('cavern-sky: the light well undeclared',L.length>0,L.length+' leaks');}
+ /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
+ {const W=DHP.copyWalk(f=>/t\.door-b0/.test(f.name));const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;
 // ================================================================= FURNITURE: placed from the catalog (core/furnish), not drawn by the kit

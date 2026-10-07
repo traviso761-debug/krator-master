@@ -61,7 +61,7 @@ function crossings(D){const out=[],E=D.EDGES.filter(e=>e.kind!=='square');for(le
 function cover(D){const out=[],H=D.HALL;for(const e of D.EDGES){if(!/^(tube|braid|ramp|stair|door)$/.test(e.kind))continue;const A=D.byId[e.a],B=D.byId[e.b];
   for(let t=0;t<=1;t+=.05){const x=A.x+(B.x-A.x)*t,z=A.z+(B.z-A.z)*t,y=A.y+(B.y-A.y)*t;
    if(inEllipse([x,z],H.rx+6,H.rz+6,H.c)||D.PITS.some(P=>Math.hypot(x-P.c[0],z-P.c[1])<P.r+6)||x<-2440)continue;
-   const c=D.surfaceY(x,z)-(y+8);if(c<4)out.push(e.a+'-'+e.b+' @'+t.toFixed(2)+' '+c.toFixed(1)+' m');}}return out;}
+   const c=D.groundY(x,z)-(y+8);if(c<4)out.push(e.a+'-'+e.b+' @'+t.toFixed(2)+' '+c.toFixed(1)+' m');}}return out;}
 {const c=cover(DH);ok(!c.length,'every way under 4 m of rock or more',c.slice(0,4).join(', '));
  const D=fresh();D.byId.t5.y+=60;neg(!cover(D).length,'the outer tube raised 60 m into the open');}
 

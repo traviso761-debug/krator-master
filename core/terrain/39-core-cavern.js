@@ -196,6 +196,7 @@
 
     // ---- the field
     function within(P,x,y,z,g){var b=P.box;return x>=b[0]-g&&x<=b[1]+g&&y>=b[2]-g&&y<=b[3]+g&&z>=b[4]-g&&z<=b[5]+g;}
+    function boxDist(b,x,y,z){var dx=Math.max(b[0]-x,0,x-b[1]),dy=Math.max(b[2]-y,0,y-b[3]),dz=Math.max(b[4]-z,0,z-b[5]);return Math.sqrt(dx*dx+dy*dy+dz*dz);}
     var OWN=null;
     function voidOf(list,x,y,z){// the voids in the order added, in two unions: the SOFT voids (tubes, halls) by smooth minimum
       // among themselves (a braid's junctions), the HARD ones (rooms, stairs, shafts, trenches) by minimum, so a tube's fillet
@@ -295,8 +296,11 @@
       var g=(1+2)*cell,list=prims.filter(function(P){var b=P.box,m=(P.blend||1)+g;return b[0]-m<=x0+CH&&b[1]+m>=x0-cell&&b[2]-m<=y0+CH&&b[3]+m>=y0-cell&&b[4]-m<=z0+CH&&b[5]+m>=z0-cell;});
       var empty={key:key,cell:cell,origin:[x0,y0,z0],pos:new Float32Array(0),nrm:new Float32Array(0),idx:new Uint32Array(0),occ:new Float32Array(0),w:new Float32Array(0),hue:new Float32Array(0),mat:new Uint8Array(0),ground:new Uint8Array(0),prim:new Uint16Array(0)};
       if(!list.length)return empty;
-      // a quick refusal: far from every surface at the chunk's centre (the fields are bounds, give them a margin)
-      var cx=x0+CH/2,cy=y0+CH/2+YOFF,cz=z0+CH/2,fc=airOf(list,cx,cy,cz);if(Math.abs(fc)>CH*1.8)return empty;
+      // a quick refusal: far from every surface at the chunk's centre (the fields are bounds, give them a margin). A void is
+      // only evaluated inside its box, so a centre outside every box reads no void at all: the box itself is then the bound
+      // (a chunk whose top face is a big hall's floor has its centre below the hall's box, and the floor at its edge)
+      var cx=x0+CH/2,cy=y0+CH/2+YOFF,cz=z0+CH/2,fc=airOf(list,cx,cy,cz);
+      if(Math.abs(fc)>CH*1.8&&!list.some(function(P){return P.kind!=='mass'&&boxDist(P.box,cx,cy,cz)<=CH*1.8;}))return empty;
       var M=N+2,F=new Float64Array(M*M*M),G=new Float64Array(M*M);
       var id=function(i,j,k){return ((k+1)*M+(j+1))*M+(i+1);};
       for(var k=-1;k<=N;k++)for(var i=-1;i<=N;i++)G[(k+1)*M+(i+1)]=ground(x0+i*cell,z0+k*cell);

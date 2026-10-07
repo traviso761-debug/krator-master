@@ -5,8 +5,11 @@ stone door, a braid of tubes climbing to the hub (a bottle-shaped great hall und
 hall and the funeral catacombs. Its buildings are the Zeijani kit's (`kits/zeijani`); the plan is `kits/zeijani/PLAN.md` (section 12
 is this layout; section 14 the phases).
 
-**State (2026-10-07): P4, the layout as data.** The page (P5), the ramblers (P6) and the Godot case (P7) are to come; there is no
-`build.py` yet.
+**State (2026-10-07): P5a, the page's skeleton.** The layout carved and placed: the hall, the three wells, every way (tubes,
+ramps, stairs, the ledge, the scouts' ways), the kit's defs on their sites with their interiors furnished, the ground of the
+flows, the kipuka and the old cone. Next: P5b (the surface: the hyperjungle and the Throne's kit read in place, the stream, the
+flows' basalt), P5c (the cave's light by the hour, drawing only what is seen, the minimap by level, walk mode's start). The
+ramblers (P6) and the Godot case (P7) follow.
 
 | Path | What |
 |---|---|
@@ -14,8 +17,13 @@ is this layout; section 14 the phases).
 | `tests/test-layout.js` | the layout's checks, each with a negative control; a golden digest of every node and site |
 | `tests/plan-svg.js` | draws the layout as a plan: `layout-plan.svg` |
 | `layout-plan.svg` | the plan, for tuning by eye (hover a line or a footprint for its id, height and grade) |
+| `src/00-head.html` | the page shell (the kit's, titled) |
+| `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield (`terrainH = DH.groundY`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
+| `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
+| `build.py`, `verify.py` | the page: core, the kit's `src/` less its sheet's host, and `src/` here; the headless check |
 
 ```
+cd settlements/dhelv && python3 build.py && python3 verify.py dist/dhelv.html --assert --out shots   # the page
 python3 tools/node_in_chromium.py settlements/dhelv/tests/test-layout.js                    # no node on the owner's machine
 python3 tools/node_in_chromium.py settlements/dhelv/tests/test-layout.js --write --write    # rewrite the golden digest
 python3 tools/node_in_chromium.py settlements/dhelv/tests/plan-svg.js --write               # redraw layout-plan.svg
@@ -39,6 +47,25 @@ x east, z south, y up, metres; the hub's square is y 0, and the flank rises east
 - `DISTRICTS`: the hub, the three wells, the cistern, the catacombs and the outpost, each with its anchor node, its graph distance
   from the square, its wealth (`wealthAt(distance)`: 0.9 at the square falling to 0.15 at the outpost) and the list it must hold.
 - `RULES`: the numbers the checks hold the layout to (PLAN.md section 12's ranges).
+
+## The page
+
+The kit's code runs as it is: `build.py` takes `kits/zeijani/src/` (every def, the cavern host, the furnishing, the camera and
+dev tools) less the sheet's host, and adds the layout and Dhelv's host. Two options in the kit's cavern host serve Dhelv
+(`CV_OPTS` in `40-zj-cave.js`): `skipMass` (a def's block of rock is the world's rock here) and `wellDoor` (a kiva's hatch deep
+under the ground opens into its void as a doorway, not through the surface). The orbit camera has no floor inside a void
+(`camGroundY`); underground the sky is hidden and a dark fog closes the distance.
+
+**The rock is meshed near the camera only** (`DH_STREAM`: 16 m chunks within 120 m, about 10 ms of meshing a frame, dropped past
+170 m): the whole cavern is some 5,600 chunks at about 7 ms each. `_api.meshAround(x, y, z)` meshes round a point at once
+(verify does it before each shot).
+
+| Page check (`91-dhelv-probe.js`) | Its negative control |
+|---|---|
+| every layout site placed | |
+| the cavern built | |
+| no void meets the open air but at its openings (sampled every 2 m) | the hall's light well undeclared |
+| the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
 ## The checks (`tests/test-layout.js`)
 

@@ -5,7 +5,8 @@ const ctl={target:new THREE.Vector3(0,4,0),theta:0,phi:1.1,radius:80};
 function setView(cx,cy,cz,tx,ty,tz){WALK.on=false;ctl.target.set(tx,ty,tz);const dx=cx-tx,dy=cy-ty,dz=cz-tz;ctl.radius=Math.max(.5,Math.sqrt(dx*dx+dy*dy+dz*dz));ctl.theta=Math.atan2(dx,dz);ctl.phi=Math.acos(clamp(dy/ctl.radius,-1,1));}
 function applyCam(){if(WALK.on){camera.position.set(WALK.x,WALK.y,WALK.z);camera.rotation.order='YXZ';camera.rotation.set(WALK.pitch,WALK.yaw,0);return;}
  const r=ctl.radius,sp=Math.sin(ctl.phi);camera.position.set(ctl.target.x+r*sp*Math.sin(ctl.theta),ctl.target.y+r*Math.cos(ctl.phi),ctl.target.z+r*sp*Math.cos(ctl.theta));
- const gy=terrainH(camera.position.x,camera.position.z)+.4;if(camera.position.y<gy)camera.position.y=gy;camera.lookAt(ctl.target);}
+ /* kept above the ground; a page with an underground (Dhelv) gives camGroundY(p): no floor while the camera is in a void */
+ const gy=(typeof camGroundY==='function'?camGroundY(camera.position):terrainH(camera.position.x,camera.position.z))+.4;if(camera.position.y<gy)camera.position.y=gy;camera.lookAt(ctl.target);}
 const ui=document.getElementById('ui');
 const sel=document.createElement('select');sel.id='viewsel';for(const k in VIEWS){const o=document.createElement('option');o.textContent=k;sel.appendChild(o);}sel.onchange=()=>setView(...VIEWS[sel.value]);ui.appendChild(sel);
 function uiButton(label,on,fn,title){const b=document.createElement('button');b.textContent=label;if(title)b.title=title;if(on)b.classList.add('on');b.onclick=()=>{const v=fn();if(v!==undefined)b.classList.toggle('on',v);};ui.appendChild(b);return b;}

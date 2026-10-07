@@ -25,7 +25,7 @@ function cvSite(){return CURREC?(CURREC.tid||CURREC.key+'@'+REG.length):'sheet';
 function cvId(id){return cvSite()+'.'+id;}
 function cvAdd(kind,o,Q){Q.id=cvId(o.id);Q.owner=cvSite();if(o.joins)Q.joins=o.joins.map(cvId);const P=CVC[kind](Q);CV_SITE[P.i]=CURREC;return P;}
 function cvCopy(o,skip){const Q={};for(const k in o)if(skip.indexOf(k)<0)Q[k]=o[k];return Q;}
-function cvMass(o){return cvAdd('mass',o,Object.assign(cvCopy(o,['id','poly','y0','y1','joins']),{poly:cvXZ(o.poly),y0:cvY(o.y0),y1:cvY(o.y1)}));}
+function cvMass(o){if(CV_OPTS.skipMass)return null;return cvAdd('mass',o,Object.assign(cvCopy(o,['id','poly','y0','y1','joins']),{poly:cvXZ(o.poly),y0:cvY(o.y0),y1:cvY(o.y1)}));}
 function cvMonolith(o){return cvAdd('monolith',o,Object.assign(cvCopy(o,['id','poly','y0','y1','joins']),{poly:cvXZ(o.poly),y0:cvY(o.y0),y1:cvY(o.y1)}));}
 function cvRoom(o){return cvAdd('room',o,Object.assign(cvCopy(o,['id','poly','y','joins']),{poly:cvXZ(o.poly),y:cvY(o.y||0)}));}
 function cvTrench(o){return cvAdd('trench',o,Object.assign(cvCopy(o,['id','poly','y0','y1','joins']),{poly:cvXZ(o.poly),y0:cvY(o.y0),y1:cvY(o.y1)}));}
@@ -82,10 +82,8 @@ const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,met
    .replace('#include <aomap_fragment>','#include <aomap_fragment>\nreflectedLight.indirectDiffuse*=vM.z;reflectedLight.indirectSpecular*=vM.z;');});})();
 
 // ---------------------------------------------------------------- build: the plan to the walk registry, the chunks to meshes
-function cvFinish(parent){const t0=performance.now();CVC.build();
- while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}
- let tris=0;
- for(const key of CVC.chunks){const ch=CVC.meshChunk(key);if(!ch.idx.length)continue;const nv=ch.pos.length/3;
+/* one chunk's arrays to a mesh (null when the chunk holds no surface): Dhelv meshes its chunks near the camera only */
+function cvChunkMesh(key){const ch=CVC.meshChunk(key);if(!ch.idx.length)return null;const nv=ch.pos.length/3;
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(ch.pos,3));g.setAttribute('normal',new THREE.BufferAttribute(ch.nrm,3));
   g.setAttribute('aW',new THREE.BufferAttribute(ch.w,4));
   const aM=new Float32Array(nv*3),aCut=new Float32Array(nv*4);
@@ -95,15 +93,21 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
    else if(ch.ground&&ch.ground[i]){const x=ch.pos[i*3],z=ch.pos[i*3+2],q=CV_WELLSITE.find(q=>Math.hypot(x-q.c[0],z-q.c[1])<q.r);if(q&&q.rec){aCut[i*4]=q.rec.x;aCut[i*4+1]=q.rec.z;aCut[i*4+2]=q.rec.y-3;aCut[i*4+3]=1;}}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
   g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
-  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
- parent.add(CV_GROUP);
+  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;mesh.userData.tris=ch.idx.length/3;return mesh;}
+function cvFinish(parent){const t0=performance.now();CVC.build();
+ while(CV_GROUP.children.length){const m=CV_GROUP.children.pop();m.geometry.dispose();}
+ let tris=0;
+ for(const key of CVC.chunks){const mesh=cvChunkMesh(key);if(!mesh)continue;CV_GROUP.add(mesh);tris+=mesh.userData.tris;}
+ parent.add(CV_GROUP);cvFinishOpenings();
+ CV_STATS={chunks:CV_GROUP.children.length,tris:Math.round(tris),ms:Math.round(performance.now()-t0),prims:CVC.prims.length};
+ GSTAT.tris+=tris;}
+/* the page's ground learns where the cavern's rock stands on it and where it opens */
+function cvFinishOpenings(){
  /* the masses' footprints to the sheet's ground (90-scene.js): no ground under a block of rock */
  if(typeof ZJ_MASSES!=='undefined'){ZJ_MASSES.value.forEach(v=>v.set(0,0,0,0));let n=0;for(const P of CVC.prims){if(P.kind!=='mass'||n>=32)continue;const xs=P.poly.map(p=>p[0]),zs=P.poly.map(p=>p[1]);
   ZJ_MASSES.value[n++].set(Math.min(...xs)+.05,Math.max(...xs)-.05,Math.min(...zs)+.05,Math.max(...zs)-.05);}}
  /* ...and every well's hole (r + rim: inside it the cavern meshes the ground) */
- if(typeof ZJ_HOLES!=='undefined'){ZJ_HOLES.value.forEach(v=>v.set(0,0,0,0));let n=0;for(const O of CVC.openings){if(O.kind!=='well'||n>=32)continue;ZJ_HOLES.value[n++].set(O.c[0],O.c[1],O.r+O.rim-.05,0);}}
- CV_STATS={chunks:CV_GROUP.children.length,tris:Math.round(tris),ms:Math.round(performance.now()-t0),prims:CVC.prims.length};
- GSTAT.tris+=tris;}
+ if(typeof ZJ_HOLES!=='undefined'){ZJ_HOLES.value.forEach(v=>v.set(0,0,0,0));let n=0;for(const O of CVC.openings){if(O.kind!=='well'||n>=32)continue;ZJ_HOLES.value[n++].set(O.c[0],O.c[1],O.r+O.rim-.05,0);}}}
 /* the sheet's ground for the walker: the sheet's square less every mass's footprint (a block of rock is not walked through:
    its rooms are), as axis-aligned rects */
 function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').map(P=>{const xs=P.poly.map(p=>p[0]),zs=P.poly.map(p=>p[1]);
@@ -120,6 +124,9 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
    fields ceil, rise, round, finish, rock ride along, ignored by the interiors kit) and a `voids` list the interiors kit ignores:
    { kind:'stair'|'tube'|'hall'|'shaft'|'trench'|'monolith'|'mass'|'door'|'well'|'room'|'walk'|'floor'|'block', id, ... } in the def's frame. Carving
    from that one record keeps the rock, the walk floors, the rooms and their furniture in agreement. */
+/* a world that carves the defs into its own rock (Dhelv) sets these: skipMass (a def's block of rock is the world's already),
+   wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground) */
+const CV_OPTS={skipMass:false,wellDoor:null};
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
  /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
     the rooms (carved into a monolith: Kailasa's sanctum), then every other void; `phase` on a void overrides (pillars left
@@ -128,7 +135,8 @@ function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish
  const doVoid=v=>{const k=v.kind,q=Object.assign({},v);delete q.kind;delete q.phase;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
   if(k==='stair')cvStair(q);else if(k==='tube')cvTube(q);else if(k==='hall')cvHall(q);else if(k==='shaft')cvShaft(q);else if(k==='trench')cvTrench(q);
   else if(k==='room')cvRoom(q);   /* a void room that is no interiors room (a kiva's bench terrace: floor:false keeps it off the walk map) */
-  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);
+  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);
+  else if(k==='well'){if(CV_OPTS.wellDoor&&CV_OPTS.wellDoor(q))cvDoor({id:q.id,c:q.c,y:q.y||0,r:(q.r||1)+.6,h:4.5});else cvWell(q);}
   else if(k==='walk'){/* a built stair inside a void (the well's spiral): a floor strip only; the def draws its steps */
    const a=cvW(q.a[0],q.a[1],q.a[2]),b=cvW(q.b[0],q.b[1],q.b[2]);KWALK.strip({a:[a[0],a[2],a[1]],b:[b[0],b[2],b[1]],w:q.w,name:cvId(q.id),tag:'built:stair'});}
   else if(k==='floor'){/* a walk floor on rock left standing (a monolith's top: Kailasa's terrace), less its holes */
