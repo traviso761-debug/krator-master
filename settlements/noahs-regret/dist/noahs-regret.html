@@ -14804,7 +14804,7 @@ function nrPlaza(){const L=NR.L,Pz=NR.PLAZA,y=L.D[0];reseed(4450);
  const hq=NR.LOTS.find(l=>l.use==='hq'),F=[152,0];
  for(const [cx,cz,r0,r1] of [[hq.x,hq.z,15,19],[F[0],F[1],7.5,10.5]])psurf('marble',(u,v)=>{const a=u*TAU,r=lerp(r0,r1,v);return [cx+Math.cos(a)*r,yp+.002,cz+Math.sin(a)*r];},64,1,hc(M),{up:true});
  for(const sg of [1,-1]){const path=t=>{const x=lerp(Pz.XP+4,NR.FORE_STAIR.x0-6,t),z=sg*(zq-14-(zq-26)*t+9*Math.sin(t*PI*2.2));return [x,z];};
-  psurf('marble',(u,v)=>{const a=path(u),b=path(Math.min(1,u+.01)),dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,w=(v-.5)*3.6;return [a[0]-dz/l*w,yp+.004,a[1]+dx/l*w];},60,1,hc(M),{up:true});}
+  psurf('marble',(u,v)=>{const a=path(u),b=path(u+.01),dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,w=(v-.5)*3.6;return [a[0]-dz/l*w,yp+.004,a[1]+dx/l*w];},60,1,hc(M),{up:true});}
  /* the beds */
  for(const [x,z,rx,rz] of NR_PLAZA_BEDS)for(const sg of [1,-1])nrBed2(nrBlob(x,sg*z,rx,rz,.08,28),y);
  /* the fountain: a ring of white, water in it, a shell of white on a stem */
