@@ -12,3 +12,7 @@
       needs adding there (P7).
 - [ ] **The sockets example sheet does not build from today's sources** (`core/sockets/example`: Post-Apoc's geometry now
       calls `KMAT`): pre-existing, not this kit's; its committed page predates it.
+- [ ] **The two-storey house's roof terrace is drawn, not planned.** No stair reaches it and it has no walk floor; the
+      interiors planner has no roof storey. Its pieces stand on the slab (`46-zj-built.js`).
+- [ ] **Windows are open holes** (no shutters, grilles or jali). The library's `jali` set is not on the page yet (it needs
+      the cut-out path); the temple (P3b) is its first use.

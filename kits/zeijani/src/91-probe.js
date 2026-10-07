@@ -71,6 +71,29 @@ const PB={
    ['the kitchen again',-11.7,-25.0],['the kitchen door',-10,-23],['the court again',-4,-23],['the east door',4,-23],['the corridor',10.2,-23],['the shrine',10.2,-16.8],
    ['the corridor again',10.2,-21.2],['a servant’s cell',12.6,-21.2],['back',10.2,-21.2],['the cistern',10.2,-32.2]]));
   return out;},
+ /* a planned body's route: depth first through the interiors planner's nav graph from the street (its doors, rooms, stair foot
+    and top), back along each edge it took, so every room and the stair both ways */
+ plannedRoute(W0,key){const S=SITES.find(s=>s.key===key);if(!S)return null;const inst=KratorInteriors.sets.instantiate(zjItem(key),0,0,0,{register:false,prefix:'route.'}),way=[];let start=null;
+  for(const B of inst.buildings){const G=B.graph,adj={},by={},seen={};G.edges.forEach(e=>{(adj[e.a]=adj[e.a]||[]).push(e.b);(adj[e.b]=adj[e.b]||[]).push(e.a);});G.nodes.forEach(n=>by[n.id]=n);
+   const st=G.nodes.find(n=>n.tag==='street');if(!st)continue;if(!start)start=[S.x+st.x,S.z+st.z,0];
+   /* a stair's top is left by its landing (0.7 m on along the flight), as a walker does: the graph's straight line from the top
+      to the room's centre cuts the stairwell's corner */
+   const land=n=>{const S2=B.stairs.find(s=>s.id===n.ref);if(!S2)return [[S.x+n.x,S.z+n.z]];const L=[S.x+n.x+S2.dir[0]*.7,S.z+n.z+S2.dir[1]*.7],p=[-S2.dir[1],S2.dir[0]];
+     const rm=(adj[n.id]||[]).map(m=>by[m]).find(m=>m.tag==='room'),sg=rm&&((S.x+rm.x-L[0])*p[0]+(S.z+rm.z-L[1])*p[1])<0?-1:1,k=S2.w/2+.5;
+     return [L,[L[0]+p[0]*sg*k,L[1]+p[1]*sg*k]];};
+   /* ...and then stepped off the flight's line toward its room, clear of the well, before the room's centre */
+   const nm=n=>n.tag+' '+n.id.split('.').slice(-2).join('.'),go=n=>{seen[n.id]=1;way.push([nm(n),S.x+n.x,S.z+n.z]);
+    if(n.tag==='stairtop'){const q=land(n);way.push([nm(n)+' landing',...q[0]]);if(q[1])way.push([nm(n)+' clear of the well',...q[1]]);}
+    for(const m of adj[n.id]||[])if(!seen[m]){go(by[m]);
+     if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
+     else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
+  return start?PB.route(W0,start,way):null;},
+ /* the constructed houses: the domed hut, the three domes round their yard (hand-written), the planned house (its graph) */
+ houseRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
+  r('domed hut',PB.siteRoute(W,'zj_house_built_poor',[0,4.5],[['the door',0,2.6],['inside',0,0],['across',0,-1.6]]));
+  r('three domes',PB.siteRoute(W,'zj_house_built_mid',[0,7.5],[['the gate',0,5.3],['the yard',0,3.5],['the back door',0,-.4],['the living room',0,-2.4],['the yard',0,2.5],
+   ['the west door',-2.9,2.5],['the bedroom',-5.2,2.5],['the yard',0,2.5],['the east door',2.9,2.5],['the kitchen',5.2,2.5],['out',0,2.5],['the street',0,7]]));
+  r('two-storey house',PB.plannedRoute(W,'zj_house_built_rich'));return out;},
  /* every carved passage joins another floor at both its ends: at the end, or up to 0.4 m past it, a floor that is not the
     passage itself lies within a step of the passage's own height there (a doorway whose strip stops short of a room: impassable) */
  joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^(cavern|built):stair/.test(f.tag))continue;
@@ -91,6 +114,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  const wr=PB.wellRoute(KWALK);if(wr)add('walk-route-well',PB.routeOk(wr),wr.filter((s,i)=>!s.ok||i%6===0).map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
  const er=PB.estateRoutes(KWALK);if(er.length)add('walk-route-estates',er.length===3&&er.every(e=>PB.routeOk(e.log)),
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
+ const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
+  hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
@@ -114,6 +139,9 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* the estates' routes with estate B's stair up left out of the walk map */
  {const W=PB.copyWalk(f=>/\.up$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const er=PB.estateRoutes(W),up=er.find(e=>/upstairs/.test(e.name));
   if(up)add('walk-route-estates: the stair up missing',!PB.routeOk(up.log),up.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
+ /* the houses' routes with the planned house's stair left out of the walk map */
+ {const W=PB.copyWalk(f=>/zj_house_built_rich.*stair/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const hr=PB.houseRoutes(W),h=hr.find(e=>/two-storey/.test(e.name));
+  if(h)add('walk-route-houses: the stair missing',!PB.routeOk(h.log),h.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
  /* joins: one cell's doorway strip shortened by 1 m at its room end (it runs 0.4 m into the room's floor, whose walk edge is 0.3 m in: 0.8 lands on that edge) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
   const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-1)/L;

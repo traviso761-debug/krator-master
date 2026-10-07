@@ -7,10 +7,10 @@ const ZF_FRONT=PI/2;
 /* the finish key of a carved surface (27-mat.js families) */
 function zfFinish(f){return f==='polished'?'tuffPol':f==='plaster'?'plaster':f==='hewn'?'tuffHewn':f==='basalt'?'basalt':'tuff';}
 /* a dome: a quarter ellipse of radius r and height h from y0, swept round (cx, cz); o.hole: a smoke hole's radius;
-   o.a0, o.a1: a part sweep (a door's gap); o.seg, o.rows */
+   o.a0, o.a1: a part sweep (a door's gap); o.seg, o.rows; o.inward: the inside face */
 function zfDome(mk,cx,y0,cz,r,h,col,o){o=o||{};const rows=o.rows||9,t1=o.hole?Math.acos(Math.min(.99,o.hole/r)):PI/2,P=[];
  for(let i=0;i<=rows;i++){const t=t1*i/rows;P.push([Math.max(.02,r*Math.cos(t)),y0+h*Math.sin(t)]);}
- return lathe(mk,cx,cz,P,o.seg||28,col,{a0:o.a0,a1:o.a1,uv:'arc'});}
+ return lathe(mk,cx,cz,P,o.seg||28,col,{a0:o.a0,a1:o.a1,uv:'arc',inward:o.inward});}
 /* a drum: a vertical round wall (one face: the outside), a door gap from a0..a1 left open */
 function zfDrum(mk,cx,y0,cz,r,h,col,o){o=o||{};return lathe(mk,cx,cz,[[r,y0],[r,y0+h]],o.seg||28,col,{a0:o.a0,a1:o.a1,inward:o.inward});}
 /* a thick round wall with a doorway: two sectors either side of the door at angle da (default the front), width dw */

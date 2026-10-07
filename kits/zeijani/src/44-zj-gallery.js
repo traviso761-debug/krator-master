@@ -21,7 +21,7 @@ function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.05,W.r+.05,a0,a1,y-.32,y,c,2);
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.22,W.rs-W.w/2-.05,a0,a1,y-.32,y+.78,c,2);}}
 defBuilding({key:'zj_gallery_b',name:'Gallery of cells: the well',seed:4302,originFront:true,
- tags:{types:['dwelling-multi'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:30,d:34,h:12,
+ tags:{types:['dwelling-multi'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:30,d:34,h:15.5,
  note:'a round shaft open to the sky with a spiral stair down its wall, twelve cells off its landings and the entrance tunnel, a hearth hall and a cistern at the bottom',
  build(o){const it=zjItem('zj_gallery_b');cvFromItem(it,{finish:'hewn'});zfFixtures(it);zgSpiral(it.well);const c=P('white');
   /* the front: a square door under a stepped lintel, a carved hood over it (the board's mushroom-rock houses), two lamp niches,

@@ -323,6 +323,23 @@
       bodies: [{ id: 'house', poly: circle(4.4, 14), y: 0.5, levels: [{ h: 2.7 }], wall: 0.3, roof: 'flat',
         doors: [{ at: [0, 4.4], w: 1.0 }], program: ['living', 'bedroom'] }],
       note: 'two rooms under a domed thatch; the loft in the dome is storage, not planned' },
+    /* ---------------- the constructed houses (tuff block): the villages', the satellites' */
+    { key: 'zj_house_built_poor', name: 'Domed tuff hut', wealth: 0.2, types: HOME, lot: [8, 8],
+      rooms: [{ id: 'home', kind: 'cottage', poly: circle(2.45, 14), y: 0.15, h: 2.3, doors: [{ at: [0, 2.45], w: 0.9, swing: 'none' }] }],
+      note: 'one round room under a corbelled dome of tuff blocks with a smoke hole' },
+    { key: 'zj_house_built_mid', name: 'Three domes round a yard', wealth: 0.5, types: HOME, lot: [16, 11],
+      rooms: [
+        { id: 'yard', kind: 'court', poly: rrect(-2.8, 2.8, -0.3, 5.3), y: 0.02, h: 1.8,
+          doors: [{ at: [0, 5.3], w: 1.2 }, { id: 'b', at: [0, -0.3], w: 0.9, to: '.back', swing: 'none' },
+                  { id: 'w', at: [-2.8, 2.5], w: 0.9, to: '.west', swing: 'none' }, { id: 'e', at: [2.8, 2.5], w: 0.9, to: '.east', swing: 'none' }] },
+        { id: 'back', kind: 'living', poly: circle(2.35, 14, 0, -2.9), y: 0.15, h: 2.4, doors: [{ id: 'b', at: [0, -0.55], w: 0.9, to: '.yard', swing: 'none' }] },
+        { id: 'west', kind: 'bedroom', poly: circle(2.35, 14, -5.4, 2.5), y: 0.15, h: 2.4, doors: [{ id: 'w', at: [-3.05, 2.5], w: 0.9, to: '.yard', swing: 'none' }] },
+        { id: 'east', kind: 'kitchen', poly: circle(2.35, 14, 5.4, 2.5), y: 0.15, h: 2.4, doors: [{ id: 'e', at: [3.05, 2.5], w: 0.9, to: '.yard', swing: 'none' }] }],
+      note: 'three domed rooms (living, sleeping, cooking) opening on a walled yard; the yard\'s gate on the street' },
+    { key: 'zj_house_built_rich', name: 'Two-storey house with a roof terrace', wealth: 0.8, types: HOME, lot: [12, 10],
+      bodies: [{ id: 'house', poly: rect(10, 8), y: 0.3, levels: [{ h: 3.0 }, { h: 2.8 }], wall: 0.45, roof: 'flat',
+        doors: [{ at: [0, 4], w: 1.2 }], program: [['hall', 'kitchen', 'store'], ['living', 'bedroom', 'bedroom']] }],
+      note: 'tuff ashlar, two storeys planned by the interiors kit; the flat roof is a terrace with a domed pavilion (drawn, not planned)' },
     /* ---------------- the carved galleries of the poor (Cappadocian apartments going deep) */
     { key: 'zj_gallery_a', name: 'Gallery of cells: the spine', carved: true, wealth: 0.18, types: MULTI, units: 12, lot: [30, 56],
       rooms: GA.rooms, voids: GA.voids,

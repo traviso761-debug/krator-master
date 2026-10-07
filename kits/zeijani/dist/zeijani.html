@@ -950,6 +950,18 @@ function zwInset(P,d){return KCAVERN.insetPoly(P,d);}
 function zwWall(a,b,y0,y1,t,gaps,tag){const dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz);if(L<1e-3)return 0;const n=Math.max(1,Math.ceil(L/ZW_STEP));let k=0;
  for(let i=0;i<n;i++){const u=(i+.5)/n,x=a[0]+dx*u,z=a[1]+dz*u;if(gaps.some(g=>Math.hypot(x-g[0],z-g[1])<g[2]))continue;
   const h=Math.max(t,ZW_STEP)/2;KWALK.block([x-h,x+h,z-h,z+h,y0,y1],tag);k++;}return k;}
+/* a floor outline less its stairwells (core/walk polygons have no holes; a level one may be any simple polygon): each convex
+   hole is taken away edge by edge, the part outside each edge kept (a half-plane clip), so it holds at any placement's turn.
+   The hole's own edges are not inset, so a stair's top meets the floor */
+function zwClip(P,a,n){const out=[],s=p=>(p[0]-a[0])*n[0]+(p[1]-a[1])*n[1];for(let i=0;i<P.length;i++){const p=P[i],q=P[(i+1)%P.length],sp=s(p),sq=s(q);
+  if(sp>=0)out.push(p);if((sp>=0)!==(sq>=0)){const t=sp/(sp-sq);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t]);}}return out;}
+function zwArea(P){let s=0;for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length];s+=a[0]*b[1]-b[0]*a[1];}return Math.abs(s/2);}
+function zwMinusHoles(poly,holes){let parts=[poly];
+ for(const H of holes){const cx=H.reduce((s,p)=>s+p[0],0)/H.length,cz=H.reduce((s,p)=>s+p[1],0)/H.length,next=[];
+  for(const P of parts){let rest=P;for(let i=0;i<H.length&&rest.length>=3;i++){const a=H[i],b=H[(i+1)%H.length];let n=[b[1]-a[1],a[0]-b[0]];
+    if((cx-a[0])*n[0]+(cz-a[1])*n[1]>0)n=[-n[0],-n[1]];next.push(zwClip(rest,a,n));rest=zwClip(rest,a,[-n[0],-n[1]]);}}
+  parts=next.filter(P=>P.length>=3&&zwArea(P)>.05);}
+ return parts;}
 function zwItem(item,rec,o){o=o||{};if(!item)return null;const out={floors:0,blocks:0,strips:0};
  const inst=KratorInteriors.sets.instantiate(item,rec.x,rec.z,rec.ry,{baseY:rec.y,register:false,prefix:(rec.tid||rec.key)+'.'});
  const tag='built:'+rec.key,carvedDef=!!item.carved;
@@ -960,7 +972,8 @@ function zwItem(item,rec,o){o=o||{};if(!item)return null;const out={floors:0,blo
   const t=src.wall||item.wall||.22,ring=zwInset(R.poly,-t/2),gaps=R.doors.map(d=>[d.at[0],d.at[1],d.w/2+.15]);
   for(let i=0;i<ring.length;i++)out.blocks+=zwWall(ring[i],ring[(i+1)%ring.length],R.y,R.y+R.h,t,gaps,tag);}
  for(const B of inst.buildings){
-  for(const F of B.floors)KWALK.poly({pts:zwInset(F.poly,.3).map(p=>[p[0],p[1],F.y]),name:B.id+'.floor.'+F.level,tag}),out.floors++;
+  for(const F of B.floors){const parts=zwMinusHoles(zwInset(F.poly,.3),F.holes||[]);
+   parts.forEach((pts,i)=>{KWALK.poly({pts:pts.map(p=>[p[0],p[1],F.y]),name:B.id+'.floor.'+F.level+(parts.length>1?'.'+i:''),tag});out.floors++;});}
   for(const Wl of B.walls){const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz)||1;
    const gaps=(Wl.openings||[]).filter(q=>q.door).map(q=>[Wl.a[0]+dx*(q.u/L),Wl.a[1]+dz*(q.u/L),q.w/2+.1]);
    out.blocks+=zwWall(Wl.a,Wl.b,Wl.y,Wl.y+(Wl.h||2.6),Wl.thick||.22,gaps,tag);}
@@ -9776,6 +9789,23 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       bodies: [{ id: 'house', poly: circle(4.4, 14), y: 0.5, levels: [{ h: 2.7 }], wall: 0.3, roof: 'flat',
         doors: [{ at: [0, 4.4], w: 1.0 }], program: ['living', 'bedroom'] }],
       note: 'two rooms under a domed thatch; the loft in the dome is storage, not planned' },
+    /* ---------------- the constructed houses (tuff block): the villages', the satellites' */
+    { key: 'zj_house_built_poor', name: 'Domed tuff hut', wealth: 0.2, types: HOME, lot: [8, 8],
+      rooms: [{ id: 'home', kind: 'cottage', poly: circle(2.45, 14), y: 0.15, h: 2.3, doors: [{ at: [0, 2.45], w: 0.9, swing: 'none' }] }],
+      note: 'one round room under a corbelled dome of tuff blocks with a smoke hole' },
+    { key: 'zj_house_built_mid', name: 'Three domes round a yard', wealth: 0.5, types: HOME, lot: [16, 11],
+      rooms: [
+        { id: 'yard', kind: 'court', poly: rrect(-2.8, 2.8, -0.3, 5.3), y: 0.02, h: 1.8,
+          doors: [{ at: [0, 5.3], w: 1.2 }, { id: 'b', at: [0, -0.3], w: 0.9, to: '.back', swing: 'none' },
+                  { id: 'w', at: [-2.8, 2.5], w: 0.9, to: '.west', swing: 'none' }, { id: 'e', at: [2.8, 2.5], w: 0.9, to: '.east', swing: 'none' }] },
+        { id: 'back', kind: 'living', poly: circle(2.35, 14, 0, -2.9), y: 0.15, h: 2.4, doors: [{ id: 'b', at: [0, -0.55], w: 0.9, to: '.yard', swing: 'none' }] },
+        { id: 'west', kind: 'bedroom', poly: circle(2.35, 14, -5.4, 2.5), y: 0.15, h: 2.4, doors: [{ id: 'w', at: [-3.05, 2.5], w: 0.9, to: '.yard', swing: 'none' }] },
+        { id: 'east', kind: 'kitchen', poly: circle(2.35, 14, 5.4, 2.5), y: 0.15, h: 2.4, doors: [{ id: 'e', at: [3.05, 2.5], w: 0.9, to: '.yard', swing: 'none' }] }],
+      note: 'three domed rooms (living, sleeping, cooking) opening on a walled yard; the yard\'s gate on the street' },
+    { key: 'zj_house_built_rich', name: 'Two-storey house with a roof terrace', wealth: 0.8, types: HOME, lot: [12, 10],
+      bodies: [{ id: 'house', poly: rect(10, 8), y: 0.3, levels: [{ h: 3.0 }, { h: 2.8 }], wall: 0.45, roof: 'flat',
+        doors: [{ at: [0, 4], w: 1.2 }], program: [['hall', 'kitchen', 'store'], ['living', 'bedroom', 'bedroom']] }],
+      note: 'tuff ashlar, two storeys planned by the interiors kit; the flat roof is a terrace with a domed pavilion (drawn, not planned)' },
     /* ---------------- the carved galleries of the poor (Cappadocian apartments going deep) */
     { key: 'zj_gallery_a', name: 'Gallery of cells: the spine', carved: true, wealth: 0.18, types: MULTI, units: 12, lot: [30, 56],
       rooms: GA.rooms, voids: GA.voids,
@@ -10013,10 +10043,10 @@ const ZF_FRONT=PI/2;
 /* the finish key of a carved surface (27-mat.js families) */
 function zfFinish(f){return f==='polished'?'tuffPol':f==='plaster'?'plaster':f==='hewn'?'tuffHewn':f==='basalt'?'basalt':'tuff';}
 /* a dome: a quarter ellipse of radius r and height h from y0, swept round (cx, cz); o.hole: a smoke hole's radius;
-   o.a0, o.a1: a part sweep (a door's gap); o.seg, o.rows */
+   o.a0, o.a1: a part sweep (a door's gap); o.seg, o.rows; o.inward: the inside face */
 function zfDome(mk,cx,y0,cz,r,h,col,o){o=o||{};const rows=o.rows||9,t1=o.hole?Math.acos(Math.min(.99,o.hole/r)):PI/2,P=[];
  for(let i=0;i<=rows;i++){const t=t1*i/rows;P.push([Math.max(.02,r*Math.cos(t)),y0+h*Math.sin(t)]);}
- return lathe(mk,cx,cz,P,o.seg||28,col,{a0:o.a0,a1:o.a1,uv:'arc'});}
+ return lathe(mk,cx,cz,P,o.seg||28,col,{a0:o.a0,a1:o.a1,uv:'arc',inward:o.inward});}
 /* a drum: a vertical round wall (one face: the outside), a door gap from a0..a1 left open */
 function zfDrum(mk,cx,y0,cz,r,h,col,o){o=o||{};return lathe(mk,cx,cz,[[r,y0],[r,y0+h]],o.seg||28,col,{a0:o.a0,a1:o.a1,inward:o.inward});}
 /* a thick round wall with a doorway: two sectors either side of the door at angle da (default the front), width dw */
@@ -10166,7 +10196,7 @@ function zgSpiral(W){const c=P('white'),A1=PI/2+W.turns*TAU,n=Math.round((A1-PI/
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.05,W.r+.05,a0,a1,y-.32,y,c,2);
   sector('tuffHewn',W.c[0],W.c[1],W.rs-W.w/2-.22,W.rs-W.w/2-.05,a0,a1,y-.32,y+.78,c,2);}}
 defBuilding({key:'zj_gallery_b',name:'Gallery of cells: the well',seed:4302,originFront:true,
- tags:{types:['dwelling-multi'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:30,d:34,h:12,
+ tags:{types:['dwelling-multi'],wealth:'poor',style:'carved',rock:'tuff',finish:'hewn'},w:30,d:34,h:15.5,
  note:'a round shaft open to the sky with a spiral stair down its wall, twelve cells off its landings and the entrance tunnel, a hearth hall and a cistern at the bottom',
  build(o){const it=zjItem('zj_gallery_b');cvFromItem(it,{finish:'hewn'});zfFixtures(it);zgSpiral(it.well);const c=P('white');
   /* the front: a square door under a stepped lintel, a carved hood over it (the board's mushroom-rock houses), two lamp niches,
@@ -10224,6 +10254,85 @@ defBuilding({key:'zj_estate_b',name:'Carved estate: the loggia',seed:4402,origin
   box('tuffPol',0,U+3.8,.3,20,.25,.8,c);zfStepLintel('tuffPol',0,U+4.05,.15,8.0,c,{n:3,h:.35,d:.5});
   door(0,0,0,0,2.0);
   FURNISH('zeijani_stone_bench',-4.2,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_stone_bench',4.2,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',6.4,0,.55,0,{v:0,setting:'outdoor'});}});
+// prefix: zb
+// ================================================================= THE CONSTRUCTED HOUSES (PLAN.md 6.4): tuff block, the villages' and the satellites'
+// Each def's rooms are its interiors item (kits/interiors/sets/zeijani.js): explicit round rooms drawn here round the same
+// outlines, or a body the interiors planner divides (zbBody draws its plan: walls with their openings, slabs, stairs).
+
+/* a planned body (the item's `bodies`), drawn on the kit's buckets: exterior walls inside the footprint with their windows and
+   doors (a sill and a lintel stone at each window), the partitions, the upper floors' slabs round their stairwells, solid
+   stairs. o: {wall, wallCol, part, partCol, slab, stair} */
+function zbBody(key,o){o=o||{};const it=zjItem(key);if(!it||!it.bodies)return null;const inst=KratorInteriors.sets.instantiate(it,0,0,0,{register:false,prefix:'draw.'});
+ const wm=o.wall||'ashlar',wc=o.wallCol||P('tuff'),sm=o.slab||'plank',stc=P('white');
+ for(const B of inst.buildings){
+  for(const Wl of B.walls){if(Wl.kind!=='exterior')continue;const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz);if(L<.1)continue;
+   const ux=dx/L,uz=dz/L,ry=Math.atan2(dx,dz),t=Wl.thick||.4,n=Wl.out||[0,0],ox=-n[0]*t/2,oz=-n[1]*t/2,h=Wl.h,cuts=[[0,L]];
+   const at=(u,off)=>[Wl.a[0]+ux*u+ox+n[0]*(off||0),Wl.a[1]+uz*u+oz+n[1]*(off||0)];
+   for(const q of Wl.openings||[]){const a=q.u-q.w/2,b=q.u+q.w/2;for(let i=cuts.length-1;i>=0;i--){const c=cuts[i];if(b<=c[0]||a>=c[1])continue;cuts.splice(i,1,...[[c[0],a],[b,c[1]]].filter(s=>s[1]-s[0]>.05));}
+    const m=at(q.u);if(q.y0>.02)box(wm,m[0],Wl.y,m[1],t,q.y0,q.w,wc,ry);box(wm,m[0],Wl.y+q.y1,m[1],t,h-q.y1,q.w,wc,ry);
+    if(q.window){const s_=at(q.u,t/2+.06);box('tuffPol',s_[0],Wl.y+q.y0-.1,s_[1],.22,.1,q.w+.3,stc,ry);box('tuffPol',s_[0],Wl.y+q.y1,s_[1],.2,.22,q.w+.4,stc,ry);}}
+   for(const c of cuts){const m=at((c[0]+c[1])/2);box(wm,m[0],Wl.y,m[1],t,h,c[1]-c[0],wc,ry);}}
+  /* the upper floors: a slab 0.25 thick, 5 cm inside the footprint, round each stairwell (rectangular plans) */
+  for(const F of B.floors){if(!F.level)continue;const xs=F.poly.map(p=>p[0]),zs=F.poly.map(p=>p[1]);let R=[[Math.min(...xs)+.05,Math.max(...xs)-.05,Math.min(...zs)+.05,Math.max(...zs)-.05]];
+   for(const H of F.holes||[]){const hx=H.map(p=>p[0]),hz=H.map(p=>p[1]),h0=Math.min(...hx),h1=Math.max(...hx),k0=Math.min(...hz),k1=Math.max(...hz),out=[];
+    for(const r of R){if(h1<=r[0]||h0>=r[1]||k1<=r[2]||k0>=r[3]){out.push(r);continue;}
+     out.push([r[0],r[1],r[2],Math.max(r[2],k0)],[r[0],r[1],Math.min(r[3],k1),r[3]],[r[0],Math.max(r[0],h0),Math.max(r[2],k0),Math.min(r[3],k1)],[Math.min(r[1],h1),r[1],Math.max(r[2],k0),Math.min(r[3],k1)]);}
+    R=out.filter(r=>r[1]-r[0]>.02&&r[3]-r[2]>.02);}
+   for(const r of R)box(sm,(r[0]+r[1])/2,F.y-.25,(r[2]+r[3])/2,r[1]-r[0],.25,r[3]-r[2],P('wood'));}
+  for(const S of B.stairs){if(S.kind!=='stair')continue;const n=S.risers||Math.round((S.y1-S.y0)/.18),tr=S.run/n,rs=(S.y1-S.y0)/n,ry=Math.atan2(S.dir[0],S.dir[1]);
+   for(let i=0;i<n;i++)box(o.stair||'ashlar',S.foot[0]+S.dir[0]*(i+.5)*tr,S.y0,S.foot[1]+S.dir[1]*(i+.5)*tr,S.w,(i+1)*rs,tr+.01,P('tuffDark'),ry);}
+  zwPartitions(key,o.part||'plaster',o.partCol||P('plaster'));}
+ return inst;}
+
+/* a domed room of tuff blocks: plinth, wall to y1 with a doorway at angle da, a corbelled dome (its inside plastered), a stepped
+   lintel over the door; r the room's inner radius */
+function zbDomeRoom(cx,cz,r,da,o){o=o||{};const R=r+.25,g=zwGap(R,o.dw||.9),c=P('tuff'),y1=o.y1||2.15;
+ cyl('ashlar',cx,0,cz,R+.2,.15,P('tuffDark'),24);
+ zfDrum('ashlar',cx,.15,cz,R,y1-.15,c,{a0:da+g,a1:da+TAU-g,seg:26});zfDrum('plaster',cx,.15,cz,r,y1-.15,P('plaster'),{a0:da+g,a1:da+TAU-g,seg:26,inward:true});
+ sector('ashlar',cx,cz,r,R,da+g-.03,da+g,.15,y1,c);sector('ashlar',cx,cz,r,R,da-g,da-g+.03,.15,y1,c);
+ zfDome('ashlar',cx,y1,cz,R,(o.rise||2.0),c,{hole:o.hole,seg:26,rows:8});zfDome('plaster',cx,y1,cz,r,(o.rise||2.0)-.22,P('plaster'),{hole:o.hole,seg:26,rows:8,inward:true});
+ const dx=Math.cos(da),dz=Math.sin(da),ry=Math.atan2(dx,dz),px=cx+dx*(R+.05),pz=cz+dz*(R+.05);
+ W(px,0,pz,ry,()=>{for(const s of [-1,1])box('tuffPol',s*.55,.15,.02,.22,1.95,.34,P('white'));zfStepLintel('tuffPol',0,2.1,.06,1.0,P('white'),{n:2,h:.2,d:.34});});
+ if(o.hole)smokeAt(cx,y1+(o.rise||2)+.1,cz,{r:.12});}
+
+/* 1 poor: one round room under a corbelled dome with a smoke hole; a hide over the door */
+defBuilding({key:'zj_house_built_poor',name:'Domed tuff hut',seed:4501,cut:true,tags:{types:['dwelling-single'],wealth:'poor',style:'constructed',rock:'tuff'},w:8,d:8,h:4.5,
+ build(o){zbDomeRoom(0,0,2.45,ZF_FRONT,{hole:.3,rise:1.9});quad('hide',0,1.05,2.72,.9,1.8,P('hide'));door(0,.15,2.7,0,.9);
+  FURNISH('zeijani_olla',1.6,0,2.9,0,{v:0,setting:'outdoor'});FURNISH('zeijani_drying_trays',-2.6,0,2.2,.5,{setting:'outdoor'});}});
+
+/* 2 middle: three domes round a walled yard, the gate on the street */
+defBuilding({key:'zj_house_built_mid',name:'Three domes round a yard',seed:4502,cut:true,tags:{types:['dwelling-single'],wealth:'middle',style:'constructed',rock:'tuff'},w:16,d:11,h:4.5,
+ build(o){const c=P('tuff'),w=.3,H=1.8;
+  zbDomeRoom(0,-2.9,2.35,ZF_FRONT,{rise:1.8});zbDomeRoom(-5.4,2.5,2.35,0,{rise:1.7});zbDomeRoom(5.4,2.5,2.35,PI,{rise:1.7,hole:.25});
+  box('paving',0,0,2.5,5.6,.02,5.6,P('tuffDark'));
+  /* the yard's walls on its outline, gaps at the gate and the three doors; a coping and a painted band */
+  const seg=(x0,z0,x1,z1)=>{const L=Math.hypot(x1-x0,z1-z0),ry=Math.atan2(x1-x0,z1-z0),mx=(x0+x1)/2,mz=(z0+z1)/2;box('ashlar',mx,0,mz,w,H,L,c,ry);box('tuffPol',mx,H,mz,w+.12,.1,L+.12,P('white'),ry);};
+  seg(-2.8,5.3,-.7,5.3);seg(.7,5.3,2.8,5.3);seg(-2.8,-.3,-.45,-.3);seg(.45,-.3,2.8,-.3);
+  for(const s of [-1,1]){seg(s*2.8,-.3,s*2.8,2.05);seg(s*2.8,2.95,s*2.8,5.3);}
+  for(const s of [-1,1])box('tuffPol',s*.72,0,5.3,.24,2.3,.42,P('white'));zfStepLintel('tuffPol',0,2.3,5.3,1.5,P('white'),{n:2,h:.22,d:.42});
+  box('plain',0,1.5,5.46,4.0,.08,.02,P('turquoise'));zfLeaf(0,.02,5.15,1.2,2.2,P('wood'),.9);door(0,0,5.3,0,1.2);
+  FURNISH('zeijani_olla',3.6,0,6.0,0,{v:1,setting:'outdoor'});FURNISH('zeijani_stone_bench',-4.2,0,6.0,0,{setting:'outdoor'});}});
+
+/* 3 wealthy: two storeys of tuff ashlar (the interiors planner's plan), a frieze at the floor line, a stepped doorway; a flat
+   roof as a terrace: a parapet with stepped merlons, a dome over the middle, an awning, a few pieces */
+defBuilding({key:'zj_house_built_rich',name:'Two-storey house with a roof terrace',seed:4503,cut:true,tags:{types:['dwelling-single'],wealth:'rich',style:'constructed',rock:'tuff'},w:12,d:10,h:9.5,
+ build(o){const c=P('tuff'),wt=P('white'),inst=zbBody('zj_house_built_rich',{wall:'ashlar',wallCol:c});const B=inst&&inst.buildings[0],RY=B?B.roof.y:6.35;
+  box('ashlar',0,0,0,10.4,.3,8.4,P('tuffDark'));box('paving',0,.3,0,9.1,.02,7.1,P('tuffDark'));zfSteps('ashlar',0,.3,4.2,1.6,2,P('tuffDark'),.15,.32);
+  /* the doorway (the planner's street door: 1.2 wide, 2.1 high), the frieze band at the floor line, corner pilasters */
+  for(const s of [-1,1])box('tuffPol',s*.74,.3,4.06,.26,2.1,.16,wt);zfStepLintel('tuffPol',0,2.4,4.1,1.6,wt,{n:3,h:.22,d:.24});zfLeaf(0,.3,3.85,1.2,2.1,P('wood'),-.4);
+  for(const [x,z,ry,L] of [[0,4.04,0,10.16],[0,-4.04,PI,10.16],[5.04,0,PI/2,8.16],[-5.04,0,-PI/2,8.16]]){W(x,0,z,ry,()=>{box('tuffPol',0,3.0,0,L,.62,.1,wt);});}
+  zfBand('patFrieze',0,3.04,4.1,10.0,.54,0,wt);zfBand('patFrieze',0,3.04,-4.1,10.0,.54,PI,wt);
+  for(const sx of [-1,1])for(const sz of [-1,1])box('tuffPol',sx*4.9,.3,sz*3.9,.44,RY-.3,.44,wt);
+  /* the roof: a slab, a parapet with stepped merlons, a dome over the middle on a low drum, an awning on poles over the front */
+  box('ashlar',0,RY,0,9.9,.25,7.9,c);const top=RY+.25;
+  for(const [x,z,w,d] of [[0,3.8,10,.4],[0,-3.8,10,.4],[4.8,0,.4,7.2],[-4.8,0,.4,7.2]])box('ashlar',x,top,z,w,.7,d,c);
+  for(let i=0;i<9;i++){const x=-4.4+i*1.1;for(const z of [-3.8,3.8]){box('tuffPol',x,top+.7,z,.5,.22,.44,wt);box('tuffPol',x,top+.92,z,.26,.18,.44,wt);}}
+  for(let i=0;i<6;i++){const z=-3.0+i*1.2;for(const x of [-4.8,4.8]){box('tuffPol',x,top+.7,z,.44,.22,.5,wt);box('tuffPol',x,top+.92,z,.44,.18,.26,wt);}}
+  zfDrum('ashlar',0,top,-.6,2.3,.6,c,{seg:28});cyl('ashlar',0,top+.6,-.6,2.38,.12,wt,28);zfDome('plaster',0,top+.72,-.6,2.3,1.7,P('plaster'),{seg:28,rows:9});
+  cyl('copper',0,top+2.42,-.6,.12,.35,P('copper'),8);
+  for(const x of [-3.6,3.6])cyl('log',x,top,2.9,.07,2.2,P('woodD'),7);plane4('felt',[-4.2,top+2.2,1.7],[4.2,top+2.2,1.7],[-4.2,top+2.0,3.3],.04,P('alecap'));
+  FURNISH('zeijani_stone_bench',-2.4,top,2.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',3.6,top,-2.9,0,{v:1,setting:'outdoor'});FURNISH('zeijani_drying_trays',-3.4,top,-2.4,PI/2,{setting:'outdoor'});
+  door(0,.3,4,0,1.2);}});
 // ================================================================= CORE FURNISH — the placement pass ([G data])
 // One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
 // A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
@@ -11737,6 +11846,7 @@ ATMOS.PRESETS={
 const TITLE='Zeijani Kit';
 const FAMILIES=[
  {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
+ {name:'Dwellings: constructed',keys:['zj_house_built_poor','zj_house_built_mid','zj_house_built_rich']},
  {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b','zj_estate_a','zj_estate_b']},
  {name:'The cavern test block',keys:['zj_testblock']}
 ];
@@ -11884,6 +11994,29 @@ const PB={
    ['the kitchen again',-11.7,-25.0],['the kitchen door',-10,-23],['the court again',-4,-23],['the east door',4,-23],['the corridor',10.2,-23],['the shrine',10.2,-16.8],
    ['the corridor again',10.2,-21.2],['a servant’s cell',12.6,-21.2],['back',10.2,-21.2],['the cistern',10.2,-32.2]]));
   return out;},
+ /* a planned body's route: depth first through the interiors planner's nav graph from the street (its doors, rooms, stair foot
+    and top), back along each edge it took, so every room and the stair both ways */
+ plannedRoute(W0,key){const S=SITES.find(s=>s.key===key);if(!S)return null;const inst=KratorInteriors.sets.instantiate(zjItem(key),0,0,0,{register:false,prefix:'route.'}),way=[];let start=null;
+  for(const B of inst.buildings){const G=B.graph,adj={},by={},seen={};G.edges.forEach(e=>{(adj[e.a]=adj[e.a]||[]).push(e.b);(adj[e.b]=adj[e.b]||[]).push(e.a);});G.nodes.forEach(n=>by[n.id]=n);
+   const st=G.nodes.find(n=>n.tag==='street');if(!st)continue;if(!start)start=[S.x+st.x,S.z+st.z,0];
+   /* a stair's top is left by its landing (0.7 m on along the flight), as a walker does: the graph's straight line from the top
+      to the room's centre cuts the stairwell's corner */
+   const land=n=>{const S2=B.stairs.find(s=>s.id===n.ref);if(!S2)return [[S.x+n.x,S.z+n.z]];const L=[S.x+n.x+S2.dir[0]*.7,S.z+n.z+S2.dir[1]*.7],p=[-S2.dir[1],S2.dir[0]];
+     const rm=(adj[n.id]||[]).map(m=>by[m]).find(m=>m.tag==='room'),sg=rm&&((S.x+rm.x-L[0])*p[0]+(S.z+rm.z-L[1])*p[1])<0?-1:1,k=S2.w/2+.5;
+     return [L,[L[0]+p[0]*sg*k,L[1]+p[1]*sg*k]];};
+   /* ...and then stepped off the flight's line toward its room, clear of the well, before the room's centre */
+   const nm=n=>n.tag+' '+n.id.split('.').slice(-2).join('.'),go=n=>{seen[n.id]=1;way.push([nm(n),S.x+n.x,S.z+n.z]);
+    if(n.tag==='stairtop'){const q=land(n);way.push([nm(n)+' landing',...q[0]]);if(q[1])way.push([nm(n)+' clear of the well',...q[1]]);}
+    for(const m of adj[n.id]||[])if(!seen[m]){go(by[m]);
+     if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
+     else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
+  return start?PB.route(W0,start,way):null;},
+ /* the constructed houses: the domed hut, the three domes round their yard (hand-written), the planned house (its graph) */
+ houseRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
+  r('domed hut',PB.siteRoute(W,'zj_house_built_poor',[0,4.5],[['the door',0,2.6],['inside',0,0],['across',0,-1.6]]));
+  r('three domes',PB.siteRoute(W,'zj_house_built_mid',[0,7.5],[['the gate',0,5.3],['the yard',0,3.5],['the back door',0,-.4],['the living room',0,-2.4],['the yard',0,2.5],
+   ['the west door',-2.9,2.5],['the bedroom',-5.2,2.5],['the yard',0,2.5],['the east door',2.9,2.5],['the kitchen',5.2,2.5],['out',0,2.5],['the street',0,7]]));
+  r('two-storey house',PB.plannedRoute(W,'zj_house_built_rich'));return out;},
  /* every carved passage joins another floor at both its ends: at the end, or up to 0.4 m past it, a floor that is not the
     passage itself lies within a step of the passage's own height there (a doorway whose strip stops short of a room: impassable) */
  joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^(cavern|built):stair/.test(f.tag))continue;
@@ -11904,6 +12037,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  const wr=PB.wellRoute(KWALK);if(wr)add('walk-route-well',PB.routeOk(wr),wr.filter((s,i)=>!s.ok||i%6===0).map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
  const er=PB.estateRoutes(KWALK);if(er.length)add('walk-route-estates',er.length===3&&er.every(e=>PB.routeOk(e.log)),
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
+ const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
+  hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
@@ -11927,6 +12062,9 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* the estates' routes with estate B's stair up left out of the walk map */
  {const W=PB.copyWalk(f=>/\.up$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const er=PB.estateRoutes(W),up=er.find(e=>/upstairs/.test(e.name));
   if(up)add('walk-route-estates: the stair up missing',!PB.routeOk(up.log),up.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
+ /* the houses' routes with the planned house's stair left out of the walk map */
+ {const W=PB.copyWalk(f=>/zj_house_built_rich.*stair/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const hr=PB.houseRoutes(W),h=hr.find(e=>/two-storey/.test(e.name));
+  if(h)add('walk-route-houses: the stair missing',!PB.routeOk(h.log),h.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
  /* joins: one cell's doorway strip shortened by 1 m at its room end (it runs 0.4 m into the room's floor, whose walk edge is 0.3 m in: 0.8 lands on that edge) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
   const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-1)/L;
