@@ -637,7 +637,10 @@ Commit at the end of each phase, and update the progress log below.
 - **P8 Docs and wrap-up:**
   - README, API, DESIGN, KNOWN_ISSUES; `PORT.md` (`tools/audit_port.py`); INDEX (`tools/make_index.py`);
   - the pages added to `tools/port_baseline.py`;
-  - the gallery: main's `gallery/build_gallery.py` lists a new build by itself, so check that its entry reads well;
+  - the gallery: main's `gallery/build_gallery.py` lists a new build by itself, so check that its entry reads well.
+    The published gallery is one artifact, and an artifact version holds at most 256 MB, with each file under 16 MB.
+    The gallery was about 230 MB on 2026-10-07. If Dhelv's pages are big, give them their own artifact, linked from the
+    gallery's index (as the scale model and the open world's towns are), and keep each page under 16 MB;
   - the lessons, into the skill.
   - The owner decides the push.
 
