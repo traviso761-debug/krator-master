@@ -11,8 +11,9 @@
       would compute those from DH.groundY and the kipuka. The ground the cavern meshes at a rim is still tuff against basalt.
 - [ ] **Only the kipuka's floor is walked on the surface** (and the cliff paths); the flows are not. The forest's plants are
       not walk blocks (a walker passes through a trunk).
-- [ ] **The cut-away is not wired** for Dhelv's carved sites (`ZJ_CUTSITES` stays empty): the kit's 32 slots are too few for
-      Dhelv's ~60 carved sites; the nearest 32 to the camera would do (P5c).
+- [x] **The cut-away is not wired** for Dhelv's carved sites. Done (P5c): the 32 carved sites nearest the camera, refreshed
+      every half second (`dhCutBoxes` in `90-dhelv-scene.js`; the rock's `CV_BOXCUT`). A site farther than the 32nd shows
+      shut; past the cut the rock is not drawn, so the view shows the dark behind it.
 - [ ] **The hall's wall curves; the carved fronts are flat.** A wide front (an estate, the temple) on the dome's foot stands
       up to a metre off the rock at its ends.
 - [ ] **The layout's numbers are a proposal** (PLAN.md section 12); `layout-plan.svg` is drawn for the owner to tune by eye.

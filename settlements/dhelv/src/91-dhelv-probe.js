@@ -35,6 +35,14 @@ const DHP={
  lit(C){const keep=SKY.hour;SKY.hour=12;skyApply();const up=LIGHTDIR.y;SKY.hour=keep;skyApply();const bad=[];
   for(const O of DH_LIGHT.openings)for(const [dx,dz] of [[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5]]){const x=O.c[0]+dx*O.r,z=O.c[1]+dz*O.r;if(C.ceilingAt(x,z,O.floor+1)!==null){bad.push(O.name);break;}}
   return {ok:up>.3&&!bad.length,detail:(up>.3?'the sun '+(Math.asin(Math.min(1,up))*180/PI).toFixed(0)+' degrees up at noon':'the sun is down at noon')+(bad.length?'; no sky over '+bad.join(', '):'; '+DH_LIGHT.openings.length+' floors see the sky')};},
+ /* the cut-away's boxes as the rock's shader reads them (40-zj-cave.js CV_BOXCUT): is (x, z) in box i */
+ inCut(i,x,z,flip){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i];if(B.w<.5)return false;const dx=x-A.x,dz=z-A.y,s=flip?-B.y:B.y,lx=dx*B.x-dz*s,lz=dx*s+dz*B.x;return Math.abs(lx)<A.z&&Math.abs(lz)<A.w;},
+ /* every carved site, with the camera at it: its box is one of the 32, and holds the hall's rock 1.5 m before its front and its
+    own back room (1 m in from its back); flip mirrors the turn (the negative) */
+ cut(flip){const bad=[];let n=0;for(const S of SITES){const D=DEFS[S.key];if(!D.originFront||(ONLYSET&&!ONLYSET.has(S.key)))continue;n++;dhCutBoxes(new THREE.Vector3(S.x,0,S.z));
+   const i=DH_CUT.sites.indexOf(S.key),sx=Math.sin(S.ry||0),cz=Math.cos(S.ry||0);
+   if(i<0||!DHP.inCut(i,S.x+sx*1.5,S.z+cz*1.5,flip)||!DHP.inCut(i,S.x-sx*(D.d-1),S.z-cz*(D.d-1),flip))bad.push(S.key);}
+  dhCutBoxes(camera.position);return {n,bad};},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}for(const b of KWALK.blocks)W.block(b.box,b.tag);return W;}};
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
  const placed=REG.filter(r=>!r.parent).length,want=SITES.filter(s=>!ONLYSET||ONLYSET.has(s.key)).length;
@@ -44,6 +52,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  {const w=DHP.lit(CVC);add('wells-lit-at-noon',w.ok,w.detail);}
  /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling roots on the kipuka's floor */
  {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],bad=dhbTreesOk(T);add('no-trees-on-cliffs-or-in-buildings',T.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor');}
+ {const c=DHP.cut();add('cut-away-sites',c.n>0&&!c.bad.length,c.bad.length?c.bad.length+' carved sites not opened: '+c.bad.slice(0,4).join(', '):c.n+' carved sites open their front and back in the cut-away');}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
  add('walk-ways',rt.length===DH.DISTRICTS.length-1&&!bad.length,bad.length?bad.map(r=>r.name+': '+r.log.filter(s=>!s.ok).map(s=>s.name+' REFUSED @'+s.feet+' '+s.at).join(', ')).join(' | '):rt.map(r=>r.name+' '+r.log.length+' legs').join(', '));
  return R;}
@@ -55,6 +64,8 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* light: a plug of rock left in the light well's throat */
  {const e=CVC.export(),H=DH.HALL,top=DH.groundY(H.c[0],H.c[1]);e.prims.push({kind:'monolith',id:'probe-plug',owner:'probe',poly:[[H.c[0]-25,H.c[1]-25],[H.c[0]+25,H.c[1]-25],[H.c[0]+25,H.c[1]+25],[H.c[0]-25,H.c[1]+25]],y0:top-6,y1:top+3});
   let D=null;try{D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build();}catch(err){}const w=D?DHP.lit(D):{ok:true,detail:'the plugged copy did not load'};add('wells-lit-at-noon: the light well plugged',!w.ok,w.detail);}
+ /* cut-away: every box's turn mirrored */
+ {const c=DHP.cut(true);add('cut-away-sites: the turns mirrored',c.bad.length>0,c.bad.length+' of '+c.n+' not opened');}
  /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
  {const R0=REG.find(r=>r.key==='zj_stonedoor'),W=DHP.copyWalk(f=>R0&&f.name===R0.tid+'.pass');const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
  return R;}

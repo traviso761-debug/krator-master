@@ -10613,21 +10613,26 @@ function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,
   box:[Math.min(...P.map(p=>p[0])),Math.max(...P.map(p=>p[0])),Math.min(...P.map(p=>p[2])),Math.max(...P.map(p=>p[2])),cvY(b[4]),cvY(b[5])]});}
 
 // ---------------------------------------------------------------- the rock material (triplanar library sets, per-vertex weights)
-const CVU={uCut:ANIMU.uCut,uCam:ANIMU.uCam};
+const CVU={uCut:ANIMU.uCut,uCam:ANIMU.uCam,uBoxA:{value:[]},uBoxB:{value:[]}};for(let i=0;i<32;i++){CVU.uBoxA.value.push(new THREE.Vector4());CVU.uBoxB.value.push(new THREE.Vector4());}
 const CV_TEXKEYS=['tuff','tuffHewn','plaster','tuffPol','basalt','basaltPol','lining','oxide'];
 const CV_HAS_LIB=KMAT.mode==='lib'&&CV_TEXKEYS.every(k=>ZJ_LIBTEX[k]&&ZJ_LIBTEX[k].map);
+/* a world's own cut boxes (CV_OPTS.cutBoxes: Dhelv's carved sites, nearest the camera): in the cut-away the rock that is not a
+   site's own (the hall's wall before a front, a way's ceiling) opens too, inside a site's turned box above its floor + 2 m.
+   uBoxA: centre x, z, half width, half depth; uBoxB: cos, sin of its turn, its floor, on */
+const CV_BOXCUT='\nif(uCut>.5&&vCut.w<.5){for(int i=0;i<32;i++){vec4 a=uBoxA[i],b=uBoxB[i];if(b.w<.5)continue;vec2 d=vCWP.xz-a.xy;'+
+ 'float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;if(abs(lx)<a.z&&abs(lz)<a.w&&vCWP.y>b.z+2.)discard;}}';
 const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
 (function(){const lin=h=>new THREE.Color(h).convertSRGBToLinear(),v3=c=>'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
  /* the procedural fallback colours (?mat=proc) and the rare-colour palette, PLAN.md section 10 */
  const C={tuff:lin(0xd9c8a6),hewn:lin(0xcdbb98),plaster:lin(0xe6dcc6),pol:lin(0xc9a28c),basalt:lin(0x5c6672),basPol:lin(0x2b2e34),lining:lin(0x5c6672),
   oxide:lin(0x9a3a3c),mag:lin(0x74406e),vio:lin(0x4a4e8a),teal:lin(0x4a9490),mineral:lin(0xdcd8d0)};
  const K=k=>(1/TILE[k]).toFixed(5);
- matHook(cvRockMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;
+ matHook(cvRockMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;sh.uniforms.uBoxA=CVU.uBoxA;sh.uniforms.uBoxB=CVU.uBoxB;
   if(CV_HAS_LIB)CV_TEXKEYS.forEach(k=>{sh.uniforms['uT_'+k]={value:ZJ_LIBTEX[k].map};});
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aCut;attribute vec3 aM;varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;vCut=aCut;vM=aM;vCWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCWN=normalize(mat3(modelMatrix)*objectNormal);');
   /* aM: x the material (KCAVERN.MATS index), y the rare hue, z the occlusion */
-  let decl='uniform float uCut;uniform vec3 uCam;varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;';
+  let decl='uniform float uCut;uniform vec3 uCam;uniform vec4 uBoxA[32];uniform vec4 uBoxB[32];varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;';
   let body;
   if(CV_HAS_LIB){decl+='uniform sampler2D '+CV_TEXKEYS.map(k=>'uT_'+k).join(',')+';'+
     'vec3 cvTri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(texture2D(t,p.zy*k).rgb*w.x+texture2D(t,p.xz*k).rgb*w.y+texture2D(t,p.xy*k).rgb*w.z,vec3(2.2));}';
@@ -10642,7 +10647,7 @@ const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,met
    /* the library sets are normalised to a mean near 0.75 (tuff) or darker (basalt): lift the basalt, keep the tuff */
    'diffuseColor.rgb*=c*'+(CV_HAS_LIB?'(m<1.5?1.7:1.05)':'1.0')+';';
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
-   .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+2.)discard;')
+   .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+2.)discard;'+(CV_OPTS.cutBoxes?CV_BOXCUT:''))
    .replace('#include <map_fragment>','#include <map_fragment>\n{'+body+'}')
    /* the polished finishes are smooth; the occlusion darkens the indirect light */
    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nif(vM.x>4.5||(vM.x>0.5&&vM.x<1.5))roughnessFactor=0.42;')
@@ -10699,7 +10704,7 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
 /* a world that carves the defs into its own rock (Dhelv) sets these: skipMass (a def's block of rock is the world's already),
    wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground),
    groundKeep(x, z) (cvChunkMesh: the cavern's ground kept only where true; the world draws the rest) */
-const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null};
+const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null,cutBoxes:false};
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
  /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
     the rooms (carved into a monolith: Kailasa's sanctum), then every other void; `phase` on a void overrides (pillars left

@@ -11337,21 +11337,26 @@ function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,
   box:[Math.min(...P.map(p=>p[0])),Math.max(...P.map(p=>p[0])),Math.min(...P.map(p=>p[2])),Math.max(...P.map(p=>p[2])),cvY(b[4]),cvY(b[5])]});}
 
 // ---------------------------------------------------------------- the rock material (triplanar library sets, per-vertex weights)
-const CVU={uCut:ANIMU.uCut,uCam:ANIMU.uCam};
+const CVU={uCut:ANIMU.uCut,uCam:ANIMU.uCam,uBoxA:{value:[]},uBoxB:{value:[]}};for(let i=0;i<32;i++){CVU.uBoxA.value.push(new THREE.Vector4());CVU.uBoxB.value.push(new THREE.Vector4());}
 const CV_TEXKEYS=['tuff','tuffHewn','plaster','tuffPol','basalt','basaltPol','lining','oxide'];
 const CV_HAS_LIB=KMAT.mode==='lib'&&CV_TEXKEYS.every(k=>ZJ_LIBTEX[k]&&ZJ_LIBTEX[k].map);
+/* a world's own cut boxes (CV_OPTS.cutBoxes: Dhelv's carved sites, nearest the camera): in the cut-away the rock that is not a
+   site's own (the hall's wall before a front, a way's ceiling) opens too, inside a site's turned box above its floor + 2 m.
+   uBoxA: centre x, z, half width, half depth; uBoxB: cos, sin of its turn, its floor, on */
+const CV_BOXCUT='\nif(uCut>.5&&vCut.w<.5){for(int i=0;i<32;i++){vec4 a=uBoxA[i],b=uBoxB[i];if(b.w<.5)continue;vec2 d=vCWP.xz-a.xy;'+
+ 'float lx=d.x*b.x-d.y*b.y,lz=d.x*b.y+d.y*b.x;if(abs(lx)<a.z&&abs(lz)<a.w&&vCWP.y>b.z+2.)discard;}}';
 const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
 (function(){const lin=h=>new THREE.Color(h).convertSRGBToLinear(),v3=c=>'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
  /* the procedural fallback colours (?mat=proc) and the rare-colour palette, PLAN.md section 10 */
  const C={tuff:lin(0xd9c8a6),hewn:lin(0xcdbb98),plaster:lin(0xe6dcc6),pol:lin(0xc9a28c),basalt:lin(0x5c6672),basPol:lin(0x2b2e34),lining:lin(0x5c6672),
   oxide:lin(0x9a3a3c),mag:lin(0x74406e),vio:lin(0x4a4e8a),teal:lin(0x4a9490),mineral:lin(0xdcd8d0)};
  const K=k=>(1/TILE[k]).toFixed(5);
- matHook(cvRockMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;
+ matHook(cvRockMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;sh.uniforms.uBoxA=CVU.uBoxA;sh.uniforms.uBoxB=CVU.uBoxB;
   if(CV_HAS_LIB)CV_TEXKEYS.forEach(k=>{sh.uniforms['uT_'+k]={value:ZJ_LIBTEX[k].map};});
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aCut;attribute vec3 aM;varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;vCut=aCut;vM=aM;vCWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCWN=normalize(mat3(modelMatrix)*objectNormal);');
   /* aM: x the material (KCAVERN.MATS index), y the rare hue, z the occlusion */
-  let decl='uniform float uCut;uniform vec3 uCam;varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;';
+  let decl='uniform float uCut;uniform vec3 uCam;uniform vec4 uBoxA[32];uniform vec4 uBoxB[32];varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;';
   let body;
   if(CV_HAS_LIB){decl+='uniform sampler2D '+CV_TEXKEYS.map(k=>'uT_'+k).join(',')+';'+
     'vec3 cvTri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(texture2D(t,p.zy*k).rgb*w.x+texture2D(t,p.xz*k).rgb*w.y+texture2D(t,p.xy*k).rgb*w.z,vec3(2.2));}';
@@ -11366,7 +11371,7 @@ const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,met
    /* the library sets are normalised to a mean near 0.75 (tuff) or darker (basalt): lift the basalt, keep the tuff */
    'diffuseColor.rgb*=c*'+(CV_HAS_LIB?'(m<1.5?1.7:1.05)':'1.0')+';';
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
-   .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+2.)discard;')
+   .replace('void main() {','void main() {\nif(uCut>.5&&vCut.w>.5&&vCWP.y>vCut.z+2.)discard;'+(CV_OPTS.cutBoxes?CV_BOXCUT:''))
    .replace('#include <map_fragment>','#include <map_fragment>\n{'+body+'}')
    /* the polished finishes are smooth; the occlusion darkens the indirect light */
    .replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nif(vM.x>4.5||(vM.x>0.5&&vM.x<1.5))roughnessFactor=0.42;')
@@ -11423,7 +11428,7 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
 /* a world that carves the defs into its own rock (Dhelv) sets these: skipMass (a def's block of rock is the world's already),
    wellDoor(q) (true: this hatch is deep under the ground, so it opens into a void as a doorway, not through the ground),
    groundKeep(x, z) (cvChunkMesh: the cavern's ground kept only where true; the world draws the rest) */
-const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null};
+const CV_OPTS={skipMass:false,wellDoor:null,groundKeep:null,cutBoxes:false};
 function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
  /* the order the cavern composes in: masses and pits (trenches) first, then the rock left standing in them (monoliths), then
     the rooms (carved into a monolith: Kailasa's sanctum), then every other void; `phase` on a void overrides (pillars left
@@ -15878,6 +15883,18 @@ function camGroundY(p){const g=terrainH(p.x,p.z);if(CVC&&p.y<g-.5&&CVC.voidSD(p.
 const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.0055};
 FRAME_HOOKS.push(()=>{const p=camera.position,u=p.y<terrainH(p.x,p.z)-2;if(u===DH_UNDER.on)return;DH_UNDER.on=u;skyScene.visible=!u;
  if(u){scene.fog.color.copy(DH_UNDER.fog);scene.fog.density=DH_UNDER.dens;}else{scene.fog.density=.0011;skyApply();}});
+/* the cut-away (C) at Dhelv's carved sites: each room's own rock opens above its floor (40-zj-cave.js); and the rock that is not
+   the site's (the hall's wall before its front, the ceiling over its bay) opens inside the site's turned box, run 3 m out past
+   its front, above its floor + 2 m; the ground over it opens on the camera's side (the kit sheet's rule). The 32 sites nearest
+   the camera, refreshed every half second while the cut is on */
+CV_OPTS.cutBoxes=true;
+const DH_CUT={t:0,FWD:3,sites:[]};
+function dhCutBoxes(p){const C=SITES.filter(S=>(!ONLYSET||ONLYSET.has(S.key))&&(DEFS[S.key].originFront||DEFS[S.key].sunk)).map(S=>[S,(S.x-p.x)**2+(S.z-p.z)**2]).sort((a,b)=>a[1]-b[1]).slice(0,32);
+ DH_CUT.sites=C.map(c=>c[0].key);
+ for(let i=0;i<32;i++){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i],G=ZJ_CUTSITES.value[i],q=C[i];if(!q){A.set(0,0,0,0);B.set(0,0,0,0);G.set(0,0,0,0);continue;}
+  const S=q[0],D=DEFS[S.key],c=Math.cos(S.ry||0),s=Math.sin(S.ry||0),F=D.sunk?0:DH_CUT.FWD,lz=D.sunk?0:(F-D.d)/2,hd=D.sunk?D.d/2:(D.d+F)/2,cx=S.x+s*lz,cz=S.z+c*lz;
+  A.set(cx,cz,D.w/2+.3,hd);B.set(c,s,S.o.y,1);G.set(cx,cz,Math.abs(c)*D.w/2+Math.abs(s)*hd,Math.abs(s)*D.w/2+Math.abs(c)*hd);}}
+FRAME_HOOKS.push(()=>{if(ANIMU.uCut.value<.5)return;const t=performance.now();if(t-DH_CUT.t<500)return;DH_CUT.t=t;dhCutBoxes(camera.position);});
 
 // ---------------------------------------------------------------- views
 function autoViews(){const V={},B=DH.byId,H=DH.HALL;
@@ -15943,6 +15960,14 @@ const DHP={
  lit(C){const keep=SKY.hour;SKY.hour=12;skyApply();const up=LIGHTDIR.y;SKY.hour=keep;skyApply();const bad=[];
   for(const O of DH_LIGHT.openings)for(const [dx,dz] of [[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5]]){const x=O.c[0]+dx*O.r,z=O.c[1]+dz*O.r;if(C.ceilingAt(x,z,O.floor+1)!==null){bad.push(O.name);break;}}
   return {ok:up>.3&&!bad.length,detail:(up>.3?'the sun '+(Math.asin(Math.min(1,up))*180/PI).toFixed(0)+' degrees up at noon':'the sun is down at noon')+(bad.length?'; no sky over '+bad.join(', '):'; '+DH_LIGHT.openings.length+' floors see the sky')};},
+ /* the cut-away's boxes as the rock's shader reads them (40-zj-cave.js CV_BOXCUT): is (x, z) in box i */
+ inCut(i,x,z,flip){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i];if(B.w<.5)return false;const dx=x-A.x,dz=z-A.y,s=flip?-B.y:B.y,lx=dx*B.x-dz*s,lz=dx*s+dz*B.x;return Math.abs(lx)<A.z&&Math.abs(lz)<A.w;},
+ /* every carved site, with the camera at it: its box is one of the 32, and holds the hall's rock 1.5 m before its front and its
+    own back room (1 m in from its back); flip mirrors the turn (the negative) */
+ cut(flip){const bad=[];let n=0;for(const S of SITES){const D=DEFS[S.key];if(!D.originFront||(ONLYSET&&!ONLYSET.has(S.key)))continue;n++;dhCutBoxes(new THREE.Vector3(S.x,0,S.z));
+   const i=DH_CUT.sites.indexOf(S.key),sx=Math.sin(S.ry||0),cz=Math.cos(S.ry||0);
+   if(i<0||!DHP.inCut(i,S.x+sx*1.5,S.z+cz*1.5,flip)||!DHP.inCut(i,S.x-sx*(D.d-1),S.z-cz*(D.d-1),flip))bad.push(S.key);}
+  dhCutBoxes(camera.position);return {n,bad};},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}for(const b of KWALK.blocks)W.block(b.box,b.tag);return W;}};
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
  const placed=REG.filter(r=>!r.parent).length,want=SITES.filter(s=>!ONLYSET||ONLYSET.has(s.key)).length;
@@ -15952,6 +15977,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  {const w=DHP.lit(CVC);add('wells-lit-at-noon',w.ok,w.detail);}
  /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling roots on the kipuka's floor */
  {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],bad=dhbTreesOk(T);add('no-trees-on-cliffs-or-in-buildings',T.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor');}
+ {const c=DHP.cut();add('cut-away-sites',c.n>0&&!c.bad.length,c.bad.length?c.bad.length+' carved sites not opened: '+c.bad.slice(0,4).join(', '):c.n+' carved sites open their front and back in the cut-away');}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
  add('walk-ways',rt.length===DH.DISTRICTS.length-1&&!bad.length,bad.length?bad.map(r=>r.name+': '+r.log.filter(s=>!s.ok).map(s=>s.name+' REFUSED @'+s.feet+' '+s.at).join(', ')).join(' | '):rt.map(r=>r.name+' '+r.log.length+' legs').join(', '));
  return R;}
@@ -15963,6 +15989,8 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* light: a plug of rock left in the light well's throat */
  {const e=CVC.export(),H=DH.HALL,top=DH.groundY(H.c[0],H.c[1]);e.prims.push({kind:'monolith',id:'probe-plug',owner:'probe',poly:[[H.c[0]-25,H.c[1]-25],[H.c[0]+25,H.c[1]-25],[H.c[0]+25,H.c[1]+25],[H.c[0]-25,H.c[1]+25]],y0:top-6,y1:top+3});
   let D=null;try{D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build();}catch(err){}const w=D?DHP.lit(D):{ok:true,detail:'the plugged copy did not load'};add('wells-lit-at-noon: the light well plugged',!w.ok,w.detail);}
+ /* cut-away: every box's turn mirrored */
+ {const c=DHP.cut(true);add('cut-away-sites: the turns mirrored',c.bad.length>0,c.bad.length+' of '+c.n+' not opened');}
  /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
  {const R0=REG.find(r=>r.key==='zj_stonedoor'),W=DHP.copyWalk(f=>R0&&f.name===R0.tid+'.pass');const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
  return R;}

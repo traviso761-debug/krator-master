@@ -68,6 +68,9 @@ under the ground opens into its void as a doorway, not through the surface). The
 | every layout site placed | |
 | the cavern built | |
 | no void meets the open air but at its openings (sampled every 2 m) | the hall's light well undeclared |
+| the wells' floors lit at noon: the sun up, the sky straight up over each floor | a plug of rock in the light well's throat |
+| no trees on cliffs or in buildings | a tree at the cliff's foot, one in the caravanserai |
+| the cut-away: every carved site, the camera at it, has a box among the 32 that holds the hall's rock 1.5 m before its front and its own back room | every box's turn mirrored |
 | the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
 ## The checks (`tests/test-layout.js`)

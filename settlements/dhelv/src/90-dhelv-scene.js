@@ -144,6 +144,18 @@ function camGroundY(p){const g=terrainH(p.x,p.z);if(CVC&&p.y<g-.5&&CVC.voidSD(p.
 const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.0055};
 FRAME_HOOKS.push(()=>{const p=camera.position,u=p.y<terrainH(p.x,p.z)-2;if(u===DH_UNDER.on)return;DH_UNDER.on=u;skyScene.visible=!u;
  if(u){scene.fog.color.copy(DH_UNDER.fog);scene.fog.density=DH_UNDER.dens;}else{scene.fog.density=.0011;skyApply();}});
+/* the cut-away (C) at Dhelv's carved sites: each room's own rock opens above its floor (40-zj-cave.js); and the rock that is not
+   the site's (the hall's wall before its front, the ceiling over its bay) opens inside the site's turned box, run 3 m out past
+   its front, above its floor + 2 m; the ground over it opens on the camera's side (the kit sheet's rule). The 32 sites nearest
+   the camera, refreshed every half second while the cut is on */
+CV_OPTS.cutBoxes=true;
+const DH_CUT={t:0,FWD:3,sites:[]};
+function dhCutBoxes(p){const C=SITES.filter(S=>(!ONLYSET||ONLYSET.has(S.key))&&(DEFS[S.key].originFront||DEFS[S.key].sunk)).map(S=>[S,(S.x-p.x)**2+(S.z-p.z)**2]).sort((a,b)=>a[1]-b[1]).slice(0,32);
+ DH_CUT.sites=C.map(c=>c[0].key);
+ for(let i=0;i<32;i++){const A=CVU.uBoxA.value[i],B=CVU.uBoxB.value[i],G=ZJ_CUTSITES.value[i],q=C[i];if(!q){A.set(0,0,0,0);B.set(0,0,0,0);G.set(0,0,0,0);continue;}
+  const S=q[0],D=DEFS[S.key],c=Math.cos(S.ry||0),s=Math.sin(S.ry||0),F=D.sunk?0:DH_CUT.FWD,lz=D.sunk?0:(F-D.d)/2,hd=D.sunk?D.d/2:(D.d+F)/2,cx=S.x+s*lz,cz=S.z+c*lz;
+  A.set(cx,cz,D.w/2+.3,hd);B.set(c,s,S.o.y,1);G.set(cx,cz,Math.abs(c)*D.w/2+Math.abs(s)*hd,Math.abs(s)*D.w/2+Math.abs(c)*hd);}}
+FRAME_HOOKS.push(()=>{if(ANIMU.uCut.value<.5)return;const t=performance.now();if(t-DH_CUT.t<500)return;DH_CUT.t=t;dhCutBoxes(camera.position);});
 
 // ---------------------------------------------------------------- views
 function autoViews(){const V={},B=DH.byId,H=DH.HALL;
