@@ -61,7 +61,8 @@ FRAME_HOOKS.push(()=>{if(NR_INST.length)nrStreamTick(false);});
 /* a cabin's template width: the widest class that fits its narrow end */
 function nrCabinW(C){return C.cls>=0?NR.CABIN_CLASSES[C.cls]:Math.max(2.4,C.wMin-.1);}
 // ---------------------------------------------------------------- the CABINS
-const NR_CABIN_CULTURE={bedroom:'ancients-salvage',bunkroom:'scrap',store:'post-apoc'};
+/* who furnishes a cabin of each kind: kits/ancients-interiors (bedroom: the salvage lords' pieces, bunkroom: scrap, store: goods) */
+const NR_CABIN_CULTURE=KratorAncientsInteriors.CABIN_CULTURE;
 function nrFurnishCabins(arc){const L=NR.L,out={furnished:0,bare:0,empty:0,rooms:[]};
  for(const C of NR.cabins){if(!C.inhabited){out.empty++;
    /* the stripped cabins of D1 and D2: rooms in the data (empty, no door leaf), for the life layer to come */
@@ -88,29 +89,9 @@ function nrFurnishCabins(arc){const L=NR.L,out={furnished:0,bare:0,empty:0,rooms
 // ---------------------------------------------------------------- the SHIP'S ROOMS
 /* the ship's room kinds, as programmes of the interiors kit (data: what each needs; KIND_ALIAS lets catalog pieces that
    list a kindred room qualify). Added once, before the first furnishing. */
-function nrShipKinds(){const IX=KratorInteriors;if(IX.PROGRAMS.sickbay)return;const SURF=IX.SURFACE_GROUP,ITEM=IX.ITEM_ROLES;
- IX.PROGRAMS.sickbay={require:[{need:'cots',types:['bed'],n:3},{need:'medicine chest',types:['storage','shelf'],n:1}],
-  optional:[{types:['bed'],max:2},{types:['desk','table'],max:1},{types:['chair','bench'],max:1},{types:['shelf','storage'],max:2},{types:['lamp'],max:1},SURF],extra:4};
- IX.KIND_ALIAS.sickbay=['bedroom','barracks','study','store'];
- IX.PROGRAMS.chartroom={require:[{need:'chart table',types:['table','desk'],n:1},{need:'chart shelves',types:['shelf'],n:1}],
-  optional:[{types:['chair'],max:2},{types:['shelf','storage'],max:2},{types:['board'],max:1},{types:['lamp'],max:1},SURF],extra:5};
- IX.KIND_ALIAS.chartroom=['study','library'];
- IX.PROGRAMS.strongroom={require:[{need:'strongboxes',types:['storage'],roles:ITEM,n:3}],
-  optional:[{types:['storage','shelf','stack'],max:4},{types:['desk'],max:1},{types:['chair'],max:1},SURF],extra:3};
- IX.KIND_ALIAS.strongroom=['store','study','court'];
- IX.PROGRAMS.armoury={require:[{need:'racks',types:['weapon','rack'],n:3}],
-  optional:[{types:['weapon','rack'],max:3},{types:['storage','stack'],max:2},{types:['workstation'],max:1},SURF],extra:4};
- IX.KIND_ALIAS.armoury=['barracks','smithy','shop'];
- /* the brig's cells are the pirates' cages, placed by hand (nrFurnishPublic): the placer gives it the guard's bench and lamp */
- IX.PROGRAMS.brig={require:[{need:'guard bench',types:['bench','chair'],n:1}],optional:[{types:['lamp'],max:1},{types:['rack','weapon'],max:1}],extra:8};
- IX.KIND_ALIAS.brig=['barracks','yard','plaza'];
- IX.PROGRAMS.sailloft={require:[{need:'cutting tables',types:['table','loom'],n:2}],
-  optional:[{types:['stack','storage'],max:3},{types:['rack','shelf'],max:2},{types:['bench','chair'],max:2},SURF],extra:5};
- IX.KIND_ALIAS.sailloft=['workshop','store','market','dock'];
- IX.PROGRAMS.laundry={require:[{need:'tubs',types:['vessel'],n:2},{need:'drying racks',types:['rack'],n:1}],
-  optional:[{types:['stove'],max:1},{types:['storage','stack'],max:2},{types:['bench','table'],max:1},SURF],extra:4};
- IX.KIND_ALIAS.laundry=['workshop','kitchen','store','yard','stable'];
- for(const k of ['sickbay','chartroom','strongroom','armoury','brig','sailloft','laundry'])IX.KIND_WEIGHT[k]=1.2;}
+/* the ship's room kinds (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry) as kits/interiors programmes:
+   kits/ancients-interiors (KratorAncientsInteriors.install; they were written here first, 2026-10) */
+function nrShipKinds(){KratorAncientsInteriors.install(KratorInteriors);}
 function nrFurnishShipRooms(arc){nrShipKinds();const L=NR.L,out={rooms:[]};
  for(const R of NR.ROOMS){const y=L.D[R.deck]+.02,sm=(R.s0+R.s1)/2,sC=R.side>0?R.s0:R.s1,sG=R.side>0?R.s1:R.s0;
   /* the template room: as wide as the room's narrow end (the frames are radial), as deep as the band; +z to the corridor */
@@ -150,10 +131,14 @@ function nrFurnishBuildings(){const out={rooms:[],residences:0,residenceFails:[]
  /* each building is furnished on its own (its own seed), so two buildings of one type differ */
  for(const Bt of NR_BUILT){const inst=nrPlanOf(Bt.item);if(!inst)continue;
   let IT=out.items[Bt.lot];
-  if(!IT){IT=out.items[Bt.lot]={item:Bt.item,tpls:[],plans:{}};
-   for(const R of inst.rooms){const key='bld|'+Bt.lot+'|'+R.id;const plan=furnishRoom(R,cat,{seed:nrHash(Bt.lot)%997});let audit=null;try{audit=IX.audit(R,plan,cat);}catch(e){audit={ok:false,fails:['audit threw: '+e.message]};}
-    const T=NR_TPL[key]={key,room:R,plan,audit,inst:[],kind:R.kind,wealth:R.wealth};IT.tpls.push(T);IT.plans[R.id]=plan;}
-   const ra=IX.sets.auditResidence(inst,IT.plans);IT.residence=ra;
+  if(!IT){
+   /* the building's own seed; if that draw breaks the residence rule (a bed, food and an item store per unit), the next */
+   let plans=null,ra=null,seed=nrHash(Bt.lot)%997;
+   for(let k=0;k<6;k++,seed+=101){plans={};for(const R of inst.rooms)plans[R.id]=furnishRoom(R,cat,{seed});ra=IX.sets.auditResidence(inst,plans);if(!ra.residence||!ra.fails.length)break;}
+   IT=out.items[Bt.lot]={item:Bt.item,tpls:[],plans,seed};
+   for(const R of inst.rooms){const key='bld|'+Bt.lot+'|'+R.id,plan=plans[R.id];let audit=null;try{audit=IX.audit(R,plan,cat);}catch(e){audit={ok:false,fails:['audit threw: '+e.message]};}
+    const T=NR_TPL[key]={key,room:R,plan,audit,inst:[],kind:R.kind,wealth:R.wealth};IT.tpls.push(T);}
+   IT.residence=ra;
    if(ra.residence){if(ra.fails.length)out.residenceFails.push(Bt.lot+' ('+Bt.item+'): '+ra.fails.join('; '));else out.residences++;}}
   const tid=Bt.rec&&Bt.rec.tid;
   for(const T of IT.tpls){const roomId=Bt.lot+'.'+T.room.id.replace(/^tpl\./,'');
@@ -322,7 +307,7 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
    put('top','pa_water_butt',mh.t+12,sg*12,y,'in');put('top','pa_brick_grill',mh.t-12,sg*12.5,y,'in');}}
  return count;}
 // ---------------------------------------------------------------- the pass
-function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-arcology');if(!arc){reportErr('interiors: no arcology record');return;}
+function nrInteriors(){const L=NR.L,W=NR.W,t0=performance.now(),arc=REG.find(r=>r.key==='nr-arcology');if(!arc){reportErr('interiors: no arcology record');return;}
  for(const k in NR_TPL)delete NR_TPL[k];NR_INST.length=0;
  if(NR_FURNG){NR_FURNG.parent&&NR_FURNG.parent.remove(NR_FURNG);}
  NR_FURNG=new THREE.Group();NR_FURNG.name='furniture:instanced';NR_FURNG.matrixAutoUpdate=false;NR_FURNG.matrix.fromArray(NR_HULL.m16);NR_FURNG.userData.furniture=true;HULLG.add(NR_FURNG);

@@ -33,7 +33,7 @@ Everything is **data first** (repo `README.md`, "Furniture that is not always dr
 - **The plan** (`14-nr-plan.js`, no THREE) owns every position: the two hulls as one centreline with arc-length coordinates
   (t along, s across), the deck heights, the zones, the stair cores, every cabin (deck, side, frames, class, door, kind),
   the lots, parks, towers, steps and floats. Every drawing pass and the furnishing pass read it.
-- **Cabins** are rooms (the interiors kit's `normRoom`): 737 inhabited ones on D3 and D4; the ship's rooms beside them (NR.ROOMS) are furnished the same way, one template each. Cabins with the same template
+- **Cabins** are rooms (the interiors kit's `normRoom`): 737 inhabited ones on D3 and D4; the ship's rooms beside them (NR.ROOMS) are furnished the same way, one template each. The ship's room kinds (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry) and the cabins' cultures come from `kits/ancients-interiors` (`KratorAncientsInteriors.install`, `CABIN_CULTURE`), inlined after the interiors bundle; that kit also holds the halls as recipes for the next Ancient ship. Cabins with the same template
   (width class, door side, kind, deck) are furnished **once** by the interiors kit's placer (`furnishRoom`, the master
   catalog) and the result becomes core/furnish **records** in each of them. Kinds: `bedroom` (the officers on D4, the
   crew below: a bed and a chest, salvaged Ancient fittings), `bunkroom` (two bunks and a locker), `store` (loot).

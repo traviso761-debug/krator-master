@@ -56,6 +56,10 @@
    "bytes": 174286,
    "sha256": "3d7b24099164ac4787d151b8358797beb50a5557e47b49a29749e9f4b2629971"
   },
+  "kits/ancients-interiors/dist/ancients-interiors.html": {
+   "bytes": 221509,
+   "sha256": "e14ebcf761292b23cc1b0063b5cf8951d507e63520cf930622fba1bdbf8f14ac"
+  },
   "kits/ancients/dist/alt-civic.html": {
    "bytes": 2452541,
    "sha256": "67602072422469ac159cc6d3ef0d8d3e1b1385d9d6a4912837dd21db392c0aa8"
@@ -217,8 +221,8 @@
    "sha256": "d9c57f310bd9e4efc51480b3cd5b673d9c7d81644cac7aeaca8759a5ff41227b"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1150919,
-   "sha256": "a38c33d041bf6b7f51496f29c35b6ec466626f36f2c6e795cca6e9c71500b851"
+   "bytes": 1255933,
+   "sha256": "f20b81a3658ad8f65892af051213bf91492670383255de418fea572b1c7e4f5c"
   },
   "kits/interiors/dist/interiors-sets.html": {
    "bytes": 501725,
@@ -329,8 +333,8 @@
    "sha256": "5e40823d1b348de67a9da876e0aa15cd32a399207f35ef1db6d2312d6bbe8e44"
   },
   "settlements/noahs-regret/dist/noahs-regret.html": {
-   "bytes": 6111270,
-   "sha256": "bf87c1f1434e016761ecafb0d297636e9d6c4f61af4afc79764d918ee3c20a53"
+   "bytes": 6169418,
+   "sha256": "a735edb02380ee955a10b3e0fa1e45c093e1e5d4ecb6e6b44449a91808211a61"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 783155,

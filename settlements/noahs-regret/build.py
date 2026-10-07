@@ -15,7 +15,8 @@ The page is one <script> made of, in filename order:
   26-matlib-pack.js      GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-interiors-bundle.js GENERATED (kits/interiors/kit_bundle.py): KratorInteriors, ROOM, furnishRoom and the
-                         noahs-regret interior set (kits/interiors/sets/noahs-regret.js)
+                         noahs-regret interior set (kits/interiors/sets/noahs-regret.js); then kits/ancients-interiors'
+                         core (its kit_bundle.py): KratorAncientsInteriors, the ship's room kinds and the cabin cultures
 A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). VENDORED below: --vendor-check reports drift.
 
 Checks (fragments share one JS scope):
@@ -76,7 +77,7 @@ VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sk
 FURN_CULTURES = ['post-apoc', 'scrap', 'generic', 'generic-goods']
 INTERIOR_SETS = ['noahs-regret']
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js'}
-BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
+BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom', 'KratorAncientsInteriors')
 
 
 def matlib_pack():
@@ -104,12 +105,15 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
-    import furniture_bundle, kit_bundle
+    import furniture_bundle, kit_bundle, importlib.util
+    # kits/ancients-interiors: the ship's room kinds, cabins and hall recipes (its kit_bundle.py, loaded under its own name)
+    spec = importlib.util.spec_from_file_location('ai_bundle', os.path.join(ROOT, 'kits', 'ancients-interiors', 'kit_bundle.py'))
+    ai_bundle = importlib.util.module_from_spec(spec); spec.loader.exec_module(ai_bundle)
     # harvested=True: the Ancients' own pieces (berths, refectory runs, consoles, light rings) and the ancients-salvage
     # pieces live in the harvested registry (krator-master-furniture.js)
     return {'26-matlib-pack.js': matlib_pack(),
             '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, harvested=True),
-            '39-interiors-bundle.js': kit_bundle.bundle(INTERIOR_SETS)}
+            '39-interiors-bundle.js': kit_bundle.bundle(INTERIOR_SETS) + ai_bundle.bundle()}
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)

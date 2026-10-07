@@ -30,9 +30,9 @@
       forward halls, the bridge house's open decks, the plaza, the chain locker, the stern lounges) are furnished piece by
       piece, not by the placer (a 2,000 m2 hall is not a room the placer's programmes fit). They are rooms in the data
       (`window._interiors.halls`: outline, deck heights, pieces), not ROOM()s. The brig's cages are placed by hand too.
-- [ ] The ship's room kinds (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry) are programmes added by
-      this page (70-nr-interiors.js), not by the interiors kit: the sail loft gets looms and benches, the laundry quench
-      tubs and goods rails. The master catalog has no sail-making or laundry pieces yet (a change to the shared catalog).
+- [ ] The master catalog has no sail-making or laundry pieces yet: the sail loft gets looms and benches, the laundry quench
+      tubs and goods rails. (The ship's room kinds themselves moved to `kits/ancients-interiors`, 2026-10-07; the
+      arcology's deck and harbour fittings went to the catalog's Ancients block.)
 
 ## Look
 

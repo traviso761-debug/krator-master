@@ -194,6 +194,12 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
  psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=top(t);return nrP(t,lerp(nrForeS(y)-.3,nrForeS(y)+.02,v),y);},n,1,P('white'),{up:true});
  /* the deck: from the main block's wall to the bulwark, at the sheer */
  psurf('deck',(u,v)=>{const t=lerp(-F.t,F.t,u),y=NR.foreY(t);return nrP(t,lerp(WD.MAIN,nrForeS(y)-.3,v),y+.005);},n,2,hc(0xcfc9bb),{up:true});
+ /* the CHAIN LOCKER under it (D1 to the deck): the skin's inner face and the deck's underside, so the locker is closed
+    from inside (the skin and the deck above are drawn facing out and up). The ceiling's facing is tested, not assumed. */
+ psurf('white',(u,v)=>{const t=lerp(-F.t,F.t,u),y=lerp(L.D[0],NR.foreY(t),v);return nrP(t,nrForeS(y)-.3,y);},n,2,P('white'));
+ {const ceil=(u,v)=>{const t=lerp(-F.t,F.t,u),y=NR.foreY(t);return nrP(t,lerp(WD.MAIN,nrForeS(y)-.3,v),y-.03);};
+  const p0=ceil(.5,.5),pu=ceil(.51,.5),pv=ceil(.5,.51),du=[pu[0]-p0[0],pu[1]-p0[1],pu[2]-p0[2]],dv=[pv[0]-p0[0],pv[1]-p0[1],pv[2]-p0[2]];
+  psurf('white',ceil,n,2,P('white'),{flip:du[2]*dv[0]-du[0]*dv[2]>0});}
  /* a white rail along the bulwark's cap, and the bow's jack staff */
  for(let t=-F.t+1;t<F.t;t+=2.6){const y=top(t);nrBox('paint',t,nrForeS(y)-.15,y,.06,.5,.06,hc(0x6a7076));}
  {const y=NR.foreY(0),p=nrP(0,nrForeS(y)-1.2,y);cyl('white',p[0],y,p[2],.09,8,P('white'),6,.06);}
