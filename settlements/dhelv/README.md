@@ -69,9 +69,9 @@ under the ground opens into its void as a doorway, not through the surface). The
 | the cavern built | |
 | no void meets the open air but at its openings (sampled every 2 m) | the hall's light well undeclared |
 | the wells' floors lit at noon: the sun up, the sky straight up over each floor | a plug of rock in the light well's throat |
-| no trees on cliffs or in buildings | a tree at the cliff's foot, one in the caravanserai |
+| no trees on cliffs or in buildings (both kits': each tree where its kit's mask lets it root, on no slope over 0.6, in no building) | a tree at the cliff's foot, one in the caravanserai |
 | the cut-away: every carved site, the camera at it, has a box among the 32 that holds the hall's rock 1.5 m before its front and its own back room | every box's turn mirrored |
-| the budgets: at every view, what is drawn (visible and in the frustum, the streamed rock apart) is at most 450 draws and 1.1M triangles | everything drawn (the switch off, as `?seeall`) |
+| the budgets: at every view, what is drawn (visible and in the frustum, the streamed rock apart) is at most 450 draws and 1.1M triangles underground, 650 and 1.6M on the surface | everything drawn (the switch off, as `?seeall`) |
 | the page's files each under 16 MB (verify.py: the gallery's limit a file) | the same files against 1 MB |
 | the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
@@ -127,15 +127,28 @@ clearing with their saplings and some 2,000 understory plants; the young flows a
 clearing. Checked: no tree on the cliff or in a building (its negative: one planted at the cliff's foot, one in the
 caravanserai). `?noforest` leaves it out, `?q=` scales it.
 
+**The young lava is the Throne kit's** (biomes/throne/src 46, 50, 55, 60, 70, wrapped the same way; its pack less the host's
+ground, roof and sea sets in `dist/dhelv.tex.throne.js`, 8.6 MB). It plants first, as on its kipuka station, and its big
+trees (the great ruffs, the siphons, the frill trees) become obstacles to the hyperjungle's. Its flow model is not run:
+Dhelv binds its own ages (`45-dhelv-bio.js`: `THRONE.FLOWS` from the layout): the kipuka 2,600 years, the old cone 8,000
+(old ground: its forest), the flow over the city sixty ("a bare flow": the pioneers, scattered small trees) with older
+lobes (380: woodland) and fresh tongues (8: bare rock) where a noise says. Its fields (humid, slope, rock, owned, kedge,
+knear, skylight) are cached on an 8 m grid; the skylight ring round each well's pit takes the kit's skylight flora. Its
+mask: the ground's sheet less the cliff's foot and lip, the clearing, the stream, the pasture, the light well, the wells'
+pits and any scarp. About 4,300 of its trees; it plants in 2.9 s. `?nothrone` leaves it out, `?tq=` scales it (0.7).
+
 ## What is drawn
 
 The buildings are drawn in cells of 160 m, carved and surface apart (`DH_CELLS` in `90-dhelv-scene.js`), and the furniture's
 batch is cut by site after it is flushed (`dhSplitFurniture`: each merged mesh keeps its vertices and gets an index a site).
+The plants (both kits' baked meshes, each one for the whole map) are cut into cells of 400 m after the bake
+(`dhSplitBiome`: an instanced mesh by its instances, its rows copied; a merged one by its triangles).
 Every quarter second the camera decides what is drawn (`dhSeen`): a carved cell within 420 m; a surface cell above ground, or
 within 220 m from below (out of the portal, up a well); a carved site's furniture only with the camera inside it or before its
 front (32 m out, at its floor's height), a sunk site's within 45 m, a built site's within 90 m (150 m on the surface), all of
-them in the cut-away; the forest above ground or near the kipuka. The views draw 0.6 to 0.9M triangles and at most 348 draws
-besides the rock (2.5M and up to 1832 with everything drawn). `?seeall` draws everything.
+them in the cut-away; the plants within 1,300 m above ground, underground only up an opening or out of the cliff's mouths.
+Underground the views draw at most 0.83M triangles and 327 draws besides the rock; on the surface, over the kipuka's old
+growth, up to 1.5M and 585 (3.7M and 2,423 with everything drawn). `?seeall` draws everything.
 
 The cut-away (C) at the carved sites: the 32 nearest the camera (`dhCutBoxes`) open the rock that is not their own (the
 hall's wall before a front, the ceiling over its bay) above the site's floor + 2 m, as each room's own rock opens above its

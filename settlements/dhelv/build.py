@@ -68,12 +68,20 @@ CORE_FILES += [os.path.join(ROOT, 'core', 'biome', f) for f in ('10-core-head.js
 HJ = os.path.join(ROOT, 'biomes', 'hyperjungle')
 HJ_FRAGS = ['41-hyperjungle-globals.js', '50-biome-hyperjungle-species.js', '55-biome-hyperjungle-trees.js', '60-biome-hyperjungle-floor.js',
             '65-biome-hyperjungle-dress.js', '70-biome-hyperjungle.js']
+# the THRONE kit (biomes/throne/src: the flows' pioneers, P5b), read in place and wrapped the same way. Its flow model (46)
+# is read but not run: Dhelv binds its own ages (THRONE.FLOWS from the layout, 45-dhelv-bio.js). Its pack less the host's
+# ground and roof sets and the sea's (kelp, seaweed: no shallows here)
+THR = os.path.join(ROOT, 'biomes', 'throne')
+THR_FRAGS = ['46-biome-throne-flows.js', '50-biome-throne-species.js', '55-biome-throne-trees.js', '60-biome-throne-floor.js', '70-biome-throne.js']
+def thr_skip():
+    fams = json.load(open(os.path.join(THR, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
+    return [k for k in fams if k.startswith('ground.') or k.startswith('roof.') or k.startswith('card.kelp') or k == 'card.seaweed']
 CLOSED = {'10-core-head.js'}   # its helpers are declared inside its closure (BIO.fn), not at top level: not scanned for clashes
 SIDE = {}   # the hyperjungle's library maps, written beside the page (dist/dhelv.tex.js: tools/textures/matlib_pack.py)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js', '46z-bio-matlib-pack.js', '47-hyperjungle.js'}
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js', '46y-throne-matlib-pack.js', '46z-bio-matlib-pack.js', '47-hyperjungle.js', '47t-throne.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
 INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans
 
@@ -106,9 +114,12 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import furniture_bundle, kit_bundle, matlib_pack as mp
     hj = ''.join('\n// ---- biomes/hyperjungle/src/%s\n' % f + open(os.path.join(HJ, 'src', f), encoding='utf-8').read() for f in HJ_FRAGS)
+    th = ''.join('\n// ---- biomes/throne/src/%s\n' % f + open(os.path.join(THR, 'src', f), encoding='utf-8').read() for f in THR_FRAGS)
     return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
             '39-interiors-bundle.js': kit_bundle.bundle(INTERIOR_SETS),
+            '46y-throne-matlib-pack.js': mp.fragment(THR, 'throne', exclude=thr_skip(), side=SIDE),
             '46z-bio-matlib-pack.js': mp.fragment(HJ, 'hyperjungle', side=SIDE),
+            '47t-throne.js': '/* GENERATED: the THRONE kit (biomes/throne/src), wrapped */\n(function(){\n' + th + '\nwindow.THRONE=THRONE;})();\n',
             '47-hyperjungle.js': '/* GENERATED: the HYPERJUNGLE kit (biomes/hyperjungle/src), wrapped */\n(function(){\n' + hj + '\nwindow.HYPERJUNGLE=HYPERJUNGLE;})();\n'}
 
 

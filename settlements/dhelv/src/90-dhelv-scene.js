@@ -125,9 +125,11 @@ FRAME_HOOKS.push(()=>dhStream());
    The furniture (most of the page's triangles, and of the draws: a group a material) goes by its site: a carved site's interior
    is behind the rock, so it is drawn only with the camera inside its box or before its front (DH_CELLS.front out, at its
    floor's height), or within DH_CELLS.near of a sunk site (open above), or in the cut-away; a built site's within DH_CELLS.built
-   (its walls hide it farther off). Furniture outside every site's box goes by cell. The forest (the biome core's baked meshes) is the surface's:
-   underground it is drawn only near the kipuka's edge. Frustum culling does the rest. ?seeall draws everything */
-const DH_CELLS={list:[],SIZE:160,under:420,mouth:220,near:45,front:32,built:[90,150],on:!new URLSearchParams(location.search).has('seeall'),t:0,shown:0,tris:0};
+   (its walls hide it farther off). Furniture outside every site's box goes by cell. The plants (the biome core's baked meshes,
+   each one for the whole map) are cut into cells of DH_CELLS.BIO (an instanced mesh by its instances, a merged one by its
+   triangles) and drawn within DH_CELLS.far (the surface's fog), underground only within DH_CELLS.mouth. Frustum culling does
+   the rest. ?seeall draws everything */
+const DH_CELLS={list:[],SIZE:160,BIO:400,under:420,mouth:220,near:45,front:32,built:[90,150],far:1300,on:!new URLSearchParams(location.search).has('seeall'),t:0,shown:0,tris:0};
 function dhCellKey(S){const u=S.o.y<DH.groundY(S.x,S.z)-3;return (u?'u':'s')+Math.floor(S.x/DH_CELLS.SIZE)+','+Math.floor(S.z/DH_CELLS.SIZE);}
 /* whether a group is drawn with the camera at p (under: the camera below the ground) */
 function dhSeenOne(q,p,under,cut){const C=DH_CELLS;if(!C.on)return true;const d=Math.max(0,p.distanceTo(q.c)-q.r);
@@ -135,11 +137,43 @@ function dhSeenOne(q,p,under,cut){const C=DH_CELLS;if(!C.on)return true;const d=
   const dx=p.x-b.S.x,dz=p.z-b.S.z,lx=dx*b.c-dz*b.s,lz=dx*b.s+dz*b.c,dy=p.y-b.S.o.y;
   if(lx>b.x0-3&&lx<b.x1+3&&lz>b.z0-3&&lz<b.z1+3&&p.y>b.y0-2&&p.y<b.y1+2)return true;
   return lz>-1&&lz<C.front&&Math.abs(lx)<b.x1+C.front*.8&&dy>-4&&dy<C.front*.6;}
+ if(q.bio)return d<C.far&&(!under||C.open&&d<C.mouth);
  return q.under?d<C.under:(!under||d<C.mouth);}
-function dhSeen(p,under){const C=DH_CELLS,cut=ANIMU.uCut.value>.5;let n=0,t=0;
- for(const q of C.list){const v=dhSeenOne(q,p,under,cut);q.g.visible=v;if(v){n++;t+=q.tris;}}
- const K=DH.KIPUKA,fv=!C.on||!under||Math.hypot(p.x-K.c[0],p.z-K.c[1])<K.r+C.mouth;if(typeof BIO!=='undefined'&&BIO.baked)for(const m of BIO.baked)m.visible=fv;
- C.shown=n;C.tris=t;C.forest=fv;return n;}
+function dhSeen(p,under){const C=DH_CELLS,cut=ANIMU.uCut.value>.5;let n=0,t=0,f=0;
+ /* underground the plants show only up an opening (the camera under the light well's throat or a well's pit) or out of the
+    cliff's mouths (the portal, the galleries) */
+ C.open=Math.hypot(p.x-DH.HALL.c[0],p.z-DH.HALL.c[1])<DH.HALL.throat.r0+30||DH.PITS.some(P=>Math.hypot(p.x-P.c[0],p.z-P.c[1])<P.r+30)||p.x<DH.CONE.cliffX+150;
+ for(const q of C.list){const v=dhSeenOne(q,p,under,cut);q.g.visible=v;if(v){n++;t+=q.tris;if(q.bio)f++;}}
+ C.shown=n;C.tris=t;C.forest=f;return n;}
+/* a merged mesh cut by key (keyOf(x, y, z) of a triangle's middle; null keeps it out): one mesh a key, its vertices shared, its
+   own index and bounds. An instanced mesh cut by key of each instance's place: one instanced mesh a key, its rows copied (the
+   matrices, the colours, every per-instance attribute), its bounds the instances' spread padded by the shape's own radius */
+function dhSplitIndexed(m,keyOf){const P=m.geometry.attributes.position.array,X=m.geometry.index,I=X?X.array:null,N=X?X.count:m.geometry.attributes.position.count,by={},out={};
+ for(let t=0;t+2<N;t+=3){const i0=I?I[t]:t,i1=I?I[t+1]:t+1,i2=I?I[t+2]:t+2,a=i0*3,b=i1*3,c=i2*3,k=keyOf((P[a]+P[b]+P[c])/3,(P[a+1]+P[b+1]+P[c+1])/3,(P[a+2]+P[b+2]+P[c+2])/3);
+  if(k!==null)(by[k]||(by[k]=[])).push(i0,i1,i2);}
+ for(const k in by){const g=new THREE.BufferGeometry();for(const n in m.geometry.attributes)g.setAttribute(n,m.geometry.attributes[n]);g.setIndex(new THREE.Uint32BufferAttribute(by[k],1));
+  const bx=new THREE.Box3(),v=new THREE.Vector3();for(const i of by[k])bx.expandByPoint(v.set(P[i*3],P[i*3+1],P[i*3+2]));g.boundingBox=bx;g.boundingSphere=bx.getBoundingSphere(new THREE.Sphere());
+  const n=new THREE.Mesh(g,m.material);n.name=m.name;n.castShadow=m.castShadow;n.receiveShadow=m.receiveShadow;n.renderOrder=m.renderOrder;n.userData=Object.assign({},m.userData);n.userData.tris=by[k].length/3;out[k]=n;}
+ return out;}
+function dhSplitInstanced(m,keyOf){const M=m.instanceMatrix.array,by={},out={};for(let i=0;i<m.count;i++){const k=keyOf(M[i*16+12],M[i*16+13],M[i*16+14]);if(k!==null)(by[k]||(by[k]=[])).push(i);}
+ const G=m.geometry;if(!G.boundingSphere)G.computeBoundingSphere();const r0=G.boundingSphere.radius+G.boundingSphere.center.length(),inst=Object.keys(G.attributes).filter(n=>G.attributes[n].isInstancedBufferAttribute);
+ for(const k in by){const L=by[k],n=L.length,g=new THREE.BufferGeometry();for(const a in G.attributes)if(!inst.includes(a))g.setAttribute(a,G.attributes[a]);if(G.index)g.setIndex(G.index);
+  for(const a of inst){const A=G.attributes[a],s=A.itemSize,arr=new A.array.constructor(n*s);L.forEach((i,j)=>{for(let q=0;q<s;q++)arr[j*s+q]=A.array[i*s+q];});const B=new THREE.InstancedBufferAttribute(arr,s,A.normalized,A.meshPerAttribute);g.setAttribute(a,B);}
+  const im=new THREE.InstancedMesh(g,m.material,n),bx=new THREE.Box3(),v=new THREE.Vector3();let sc=0;
+  L.forEach((i,j)=>{for(let q=0;q<16;q++)im.instanceMatrix.array[j*16+q]=M[i*16+q];bx.expandByPoint(v.set(M[i*16+12],M[i*16+13],M[i*16+14]));sc=Math.max(sc,Math.hypot(M[i*16],M[i*16+1],M[i*16+2]),Math.hypot(M[i*16+4],M[i*16+5],M[i*16+6]),Math.hypot(M[i*16+8],M[i*16+9],M[i*16+10]));});
+  if(m.instanceColor){const C=m.instanceColor.array,arr=new Float32Array(n*3);L.forEach((i,j)=>{arr[j*3]=C[i*3];arr[j*3+1]=C[i*3+1];arr[j*3+2]=C[i*3+2];});im.instanceColor=new THREE.InstancedBufferAttribute(arr,3);}
+  const sp=bx.getBoundingSphere(new THREE.Sphere());sp.radius+=r0*sc;g.boundingSphere=sp;g.boundingBox=bx.clone().expandByScalar(r0*sc);
+  im.name=m.name;im.castShadow=m.castShadow;im.receiveShadow=m.receiveShadow;im.renderOrder=m.renderOrder;im.frustumCulled=true;im.userData=Object.assign({},m.userData);im.userData.tris=(G.index?G.index.count:G.attributes.position.count)/3*n;out[k]=im;}
+ return out;}
+/* the plants cut into cells, once after the bake: BIO.baked holds the cut meshes after */
+function dhSplitBiome(){if(typeof BIO==='undefined'||!BIO.baked||!BIO.baked.length||BIO.baked._split)return 0;const t0=performance.now(),S=DH_CELLS.BIO,groups={},keep=[];
+ const keyOf=(x,y,z)=>Math.floor(x/S)+','+Math.floor(z/S);
+ for(const m of BIO.baked){if(!m.parent||!m.matrixWorld.equals(new THREE.Matrix4())){keep.push(m);continue;}
+  const parts=m.isInstancedMesh?dhSplitInstanced(m,keyOf):dhSplitIndexed(m,keyOf);
+  for(const k in parts){(groups[k]||(groups[k]=new THREE.Group())).add(parts[k]);keep.push(parts[k]);}m.parent.remove(m);}
+ for(const k in groups){const g=groups[k];g.userData.cell='bio'+k;scene.add(g);const bx=new THREE.Box3();g.children.forEach(m=>bx.union(m.geometry.boundingBox));const sp=bx.getBoundingSphere(new THREE.Sphere());
+  DH_CELLS.list.push({k:'bio'+k,g,c:sp.center,r:sp.radius,under:false,bio:true,tris:g.children.reduce((a,m)=>a+m.userData.tris,0)});}
+ BIO.baked.length=0;keep.forEach(m=>BIO.baked.push(m));BIO.baked._split=true;DH_CELLS.bioMs=Math.round(performance.now()-t0);return Object.keys(groups).length;}
 /* the sites' boxes for the furniture: each site's declared box, turned (a carved front's runs back from its origin), 1.5 m out,
    from 3 m under its floor to 2 m over its height; a hash of 8 m squares to the boxes over them */
 function dhSiteBoxes(){const B=[],H=new Map(),E=1.5;
@@ -154,18 +188,13 @@ function dhSiteBoxes(){const B=[],H=new Map(),E=1.5;
 function dhSplitFurniture(){const G=typeof ZJF!=='undefined'&&ZJF.group;if(!G||G.userData.split)return 0;G.userData.split=true;const t0=performance.now();
  const S=DH_CELLS.SIZE,SB=dhSiteBoxes(),gy=new Map(),under=(x,y,z)=>{const k=Math.round(x/4)+','+Math.round(z/4);let g=gy.get(k);if(g===undefined){g=DH.groundY(x,z);gy.set(k,g);}return y<g-3;};
  const meshes=[],groups={},info={};G.traverse(m=>{if(m.isMesh&&!m.userData.probeSkip)meshes.push(m);});G.updateMatrixWorld(true);
- for(const m of meshes){if(!m.matrixWorld.equals(new THREE.Matrix4()))continue;const P=m.geometry.attributes.position.array,X=m.geometry.index,I=X?X.array:null,N=X?X.count:m.geometry.attributes.position.count,by={};
-  for(let t=0;t+2<N;t+=3){const i0=I?I[t]:t,i1=I?I[t+1]:t+1,i2=I?I[t+2]:t+2,a=i0*3,b=i1*3,c=i2*3,x=(P[a]+P[b]+P[c])/3,y=(P[a+1]+P[b+1]+P[c+1])/3,z=(P[a+2]+P[b+2]+P[c+2])/3;
-   const sb=SB.at(x,y,z),u=under(x,y,z),k=sb?'f'+sb.si:(u?'u':'s')+Math.floor(x/S)+','+Math.floor(z/S);if(!info[k])info[k]={under:u,site:sb};(by[k]||(by[k]=[])).push(i0,i1,i2);}
-  for(const k in by){const g=new THREE.BufferGeometry();for(const n in m.geometry.attributes)g.setAttribute(n,m.geometry.attributes[n]);g.setIndex(new THREE.Uint32BufferAttribute(by[k],1));
-   const bx=new THREE.Box3(),v=new THREE.Vector3();for(const i of by[k])bx.expandByPoint(v.set(P[i*3],P[i*3+1],P[i*3+2]));g.boundingBox=bx;g.boundingSphere=bx.getBoundingSphere(new THREE.Sphere());
-   const n=new THREE.Mesh(g,m.material);n.name=m.name;n.castShadow=m.castShadow;n.receiveShadow=m.receiveShadow;n.renderOrder=m.renderOrder;n.userData=Object.assign({},m.userData);
-   (groups[k]||(groups[k]=new THREE.Group())).add(n);}
-  m.parent.remove(m);}
+ const keyOf=(x,y,z)=>{const sb=SB.at(x,y,z),u=under(x,y,z),k=sb?'f'+sb.si:(u?'u':'s')+Math.floor(x/S)+','+Math.floor(z/S);if(!info[k])info[k]={under:u,site:sb};return k;};
+ for(const m of meshes){if(!m.matrixWorld.equals(new THREE.Matrix4()))continue;const parts=dhSplitIndexed(m,keyOf);
+  for(const k in parts)(groups[k]||(groups[k]=new THREE.Group())).add(parts[k]);m.parent.remove(m);}
  for(const k in groups){const g=groups[k],I_=info[k];g.userData.cell=k;G.add(g);const bx=new THREE.Box3();g.children.forEach(m=>bx.union(m.geometry.boundingBox));const sp=bx.getBoundingSphere(new THREE.Sphere());
   DH_CELLS.list.push({k,g,c:sp.center,r:sp.radius,under:I_.under,box:I_.site,site:I_.site?I_.site.S.key:null,furniture:true,tris:g.children.reduce((a,m)=>a+m.geometry.index.count/3,0)});}
  DH_CELLS.splitMs=Math.round(performance.now()-t0);return Object.keys(groups).length;}
-FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DH_CELLS.t<250)return;DH_CELLS.t=t;dhSplitFurniture();const p=camera.position;dhSeen(p,p.y<terrainH(p.x,p.z)-2);});
+FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DH_CELLS.t<250)return;DH_CELLS.t=t;dhSplitFurniture();dhSplitBiome();const p=camera.position;dhSeen(p,p.y<terrainH(p.x,p.z)-2);});
 
 // ---------------------------------------------------------------- (re)build the world
 let WORLD=null;

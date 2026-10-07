@@ -44,16 +44,17 @@ const DHP={
    if(i<0||!DHP.inCut(i,S.x+sx*1.5,S.z+cz*1.5,flip)||!DHP.inCut(i,S.x-sx*(D.d-1),S.z-cz*(D.d-1),flip))bad.push(S.key);}
   dhCutBoxes(camera.position);return {n,bad};},
  /* the budgets (PLAN.md P5): at every view, what is drawn (visible, in the frustum; the streamed rock apart, its reach is
-    DH_STREAM's) in draws and triangles, counted on the CPU (the GPU's own count varies with its shadow passes) */
- BUDGET:{calls:450,tris:1.1e6},
- drawn(v){setView(...v);applyCam();camera.updateMatrixWorld();const p=camera.position;dhSeen(p,p.y<terrainH(p.x,p.z)-2);
+    DH_STREAM's) in draws and triangles, counted on the CPU (the GPU's own count varies with its shadow passes). Underground and
+    on the surface apart: over the kipuka the old growth (both kits' plants, the heaviest part of the page) is in view */
+ BUDGET:{under:{calls:450,tris:1.1e6},surface:{calls:650,tris:1.6e6}},
+ drawn(v){setView(...v);applyCam();camera.updateMatrixWorld();const p=camera.position,under=p.y<terrainH(p.x,p.z)-2;dhSeen(p,under);
   const F=new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse));let calls=0,tris=0;
   scene.traverseVisible(o=>{if(!(o.isMesh||o.isPoints)||o.userData.cavern!==undefined)return;if(o.frustumCulled&&!F.intersectsObject(o))return;const g=o.geometry;if(!g||!g.attributes.position)return;
-   calls++;tris+=(g.index?g.index.count:g.attributes.position.count)/3*(o.isInstancedMesh?o.count:1);});return {calls,tris:Math.round(tris)};},
- budgets(){dhSplitFurniture();const B=DHP.BUDGET,out=[];for(const n in VIEWS){const d=DHP.drawn(VIEWS[n]);out.push(Object.assign({n},d));}
+   calls++;tris+=(g.index?g.index.count:g.attributes.position.count)/3*(o.isInstancedMesh?o.count:1);});return {calls,tris:Math.round(tris),under};},
+ budgets(){dhSplitFurniture();dhSplitBiome();const B=DHP.BUDGET,out=[];for(const n in VIEWS){const d=DHP.drawn(VIEWS[n]);out.push(Object.assign({n},d));}
   const v0=VIEWS[Object.keys(VIEWS)[0]];setView(...v0);applyCam();
-  const over=out.filter(d=>d.calls>B.calls||d.tris>B.tris),wc=out.reduce((a,d)=>d.calls>a.calls?d:a,out[0]),wt=out.reduce((a,d)=>d.tris>a.tris?d:a,out[0]);
-  return {ok:out.length>0&&!over.length,detail:(over.length?over.length+' views over ('+B.calls+' draws, '+(B.tris/1e6)+'M triangles): '+over.slice(0,3).map(d=>d.n+' '+d.calls+'/'+(d.tris/1e6).toFixed(2)+'M').join(', ')+'; ':'')+
+  const lim=d=>B[d.under?'under':'surface'],over=out.filter(d=>d.calls>lim(d).calls||d.tris>lim(d).tris),wc=out.reduce((a,d)=>d.calls>a.calls?d:a,out[0]),wt=out.reduce((a,d)=>d.tris>a.tris?d:a,out[0]);
+  return {ok:out.length>0&&!over.length,detail:(over.length?over.length+' views over (underground '+B.under.calls+' draws, '+(B.under.tris/1e6)+'M triangles; on the surface '+B.surface.calls+', '+(B.surface.tris/1e6)+'M): '+over.slice(0,3).map(d=>d.n+' '+d.calls+'/'+(d.tris/1e6).toFixed(2)+'M').join(', ')+'; ':'')+
    out.length+' views; the most draws '+wc.calls+' ('+wc.n+'), the most triangles '+(wt.tris/1e6).toFixed(2)+'M ('+wt.n+')'};},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}for(const b of KWALK.blocks)W.block(b.box,b.tag);return W;}};
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
@@ -63,7 +64,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  const t0=performance.now(),leaks=CVC.skyLeaks(2);add('cavern-sky',!leaks.length,(leaks.length?leaks.length+' void points in the open air outside every opening, first '+leaks[0].map(v=>typeof v==='number'?v.toFixed(1):v).join(' '):'no void meets the open air but at its openings')+' ('+Math.round(performance.now()-t0)+' ms at 2 m)');
  {const w=DHP.lit(CVC);add('wells-lit-at-noon',w.ok,w.detail);}
  /* no trees on cliffs or in buildings (PLAN.md P5): every hyperjungle tree and sapling roots on the kipuka's floor */
- {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],bad=dhbTreesOk(T);add('no-trees-on-cliffs-or-in-buildings',T.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor');}
+ {const T=typeof HYPERJUNGLE!=='undefined'?HYPERJUNGLE.TREES.concat(HYPERJUNGLE.SAPLINGS):[],U=typeof THRONE!=='undefined'?THRONE.TREES:[],bad=dhbTreesOk(T).concat(dhbTreesOk(U,DHB.throneMask));
+  add('no-trees-on-cliffs-or-in-buildings',T.length>0&&U.length>0&&!bad.length,bad.length?bad.length+' misplaced, first '+bad.slice(0,3).join(', '):T.length+' trees and saplings on the kipuka floor, '+U.length+' of the Throne kit\'s on the flows');}
  {const c=DHP.cut();add('cut-away-sites',c.n>0&&!c.bad.length,c.bad.length?c.bad.length+' carved sites not opened: '+c.bad.slice(0,4).join(', '):c.n+' carved sites open their front and back in the cut-away');}
  {const w=DHP.budgets();add('view-budgets',w.ok,w.detail);}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));

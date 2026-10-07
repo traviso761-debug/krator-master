@@ -5,10 +5,11 @@
 - [ ] **The direct sun's beam is shadowed only by the meshed rock.** Its spot through an opening casts shadows from the
       cavern chunks near the camera; far from the camera the throat's rock is not meshed, so a low sun's beam can land on a
       floor the rock would hide. The sky's light (straight down each opening) is the larger share and needs no shadow.
-- [ ] **The Throne kit is not on the flows yet.** The kipuka has the hyperjungle (P5b); the young lava round it should carry
-      the Throne's pioneers (lehua, tree ferns, glassfern), as its kipuka station does. That kit reads a set of ground fields
-      (owned, kedge, knear, rock, slope, humid: biomes/throne/stations/kipuka/47-host-land.js) and its flow history (46): Dhelv
-      would compute those from DH.groundY and the kipuka. The ground the cavern meshes at a rim is still tuff against basalt.
+- [x] **The Throne kit is not on the flows yet.** Done (P5b): its pioneers on the flows, its forest on the old cone, its
+      ruffs on the kipuka's rim (`45-dhelv-bio.js`: Dhelv's own ages and fields, not its flow model).
+- [ ] **The ground the cavern meshes at a well's rim is tuff** against the flow's basalt round it.
+- [ ] **The flows' ages are a noise, not a history.** The Throne's own model (46) lays flows from vents down the fall line;
+      Dhelv's ground is the layout's, so the lobes and tongues are drawn by a noise and do not change the ground's height.
 - [ ] **The ground is one heightfield of 5 m squares (465k triangles), drawn from every view.** Underground it shows only
       up the openings; a coarser grid away from the kipuka and the openings (or chunks) would take most of it off.
 - [ ] **What is drawn is decided by distance and the site's frame, not by occlusion.** A carved interior seen through a long
