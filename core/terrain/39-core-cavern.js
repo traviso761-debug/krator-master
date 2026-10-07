@@ -187,6 +187,8 @@
       var Q={id:P.id,kind:P.kind||'well',c:P.c.slice(),r:num(P.r,'opening r'),rim:P.kind==='door'?0:(P.rim==null?3:P.rim),y:P.y==null?null:num(P.y,'door y'),h:P.h==null?Math.max(2.6,num(P.r,'opening r')*1.6):num(P.h,'door h')};
       if(Q.kind==='door'&&Q.y===null)throw new Error('KCAVERN.opening '+P.id+': a door needs y (its sill)');openings.push(Q);return Q;};
     function wells(){return openings.filter(function(Q){return Q.kind==='well';});}
+    var SINK=o.sink==null?.06:o.sink;
+    function inWellRim(x,z){for(var i=0;i<openings.length;i++){var Q=openings[i];if(Q.kind==='well'&&Math.hypot(x-Q.c[0],z-Q.c[1])<Q.r+Q.rim+cell*2)return true;}return false;}
     function inOpening(x,y,z){for(var i=0;i<openings.length;i++){var Q=openings[i],d=Math.hypot(x-Q.c[0],z-Q.c[1]);
       if(Q.kind==='well'?d<Q.r+Q.rim:(d<Q.r&&y>Q.y-1&&y<Q.y+Q.h+.4))return Q;}return null;}
     C.fixture=function(P){if(!P.box||P.box.length!==6)throw new Error('KCAVERN.fixture: box [x0,x1,z0,z1,y0,y1] required');
@@ -324,7 +326,10 @@
         /* the active term: the void, a mass's face, or the ground (only the ground's own surface is the host's to draw) */
         /* a tie (a doorway's floor flush with the ground outside) goes to the open air's surface: the host draws its ground */
         if(op<=dv2+1e-6){if(dg2>=-ms){own.push(null);gnd.push(1);}else{own.push(OWNM);gnd.push(0);}vv.push(PY-(OWNM?OWNM.y0:0));tops.push(1e3);}
-        else{own.push(ow);gnd.push(0);vv.push(sv);tops.push(st);}}
+        else{own.push(ow);gnd.push(0);vv.push(sv);tops.push(st);}
+        /* the host ground's own surface where a rock face meets it (not in a well's rim, which the cavern draws) sinks SINK
+           under the ground: the host's ground covers that skirt, and no lit seam shows at the foot of the face */
+        if(gnd[gnd.length-1]&&!inWellRim(PX,PZ))pos[pos.length-2]=Math.min(PY,ground(PX,PZ)-SINK);}
       // quads: one per sign-changing lattice edge whose low corner is in this chunk (0..N-1), the four cells round it
       var idx=[],keep=function(a,b,c,d){// a quad of the ground's surface stays only inside an opening's rim (the host draws the rest)
         if(gnd[a]&&gnd[b]&&gnd[c]&&gnd[d]){var mx=(pos[a*3]+pos[c*3])/2,mz=(pos[a*3+2]+pos[c*3+2])/2,hit=false,W2=wells();

@@ -11,25 +11,14 @@ Cut-outs (cards, wings) are always on solid flat bright magenta (#ff00ff), never
 
 New gaps go here as they are found; prune them as they arrive.
 
-### The Zeijani (`kits/zeijani`, 2026-10-07)
-
-These are for the Zeijani kit and their capital, Dhelv. `kits/zeijani/PLAN.md` section 10 has what each is for, its
-tile size, the proposed palette, and the existing sets reused instead of new prompts.
-
-The owner confirmed tuff (volcanic, not tufa). Everything else in this section arrived on 2026-10-07 (below, "Delivered").
-
-**`stone.tuff.hewn`** (tintable: the walls of poor carved rooms and passages)
-```
-Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: A wall hewn by hand into soft pale volcanic tuff (#d9c8a6), as in the rock-cut houses of Cappadocia: the whole surface covered in short shallow pick and adze scoops, each 3 to 6 cm long, laid in overlapping rows and gently curving fans that change direction every 40 to 60 cm, fine grey pumice specks in the stone, a faint soot darkening in some scoops, no plaster. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
-```
-
 ## Delivered and removed (2026-10-06)
 
 Delivered 2026-10-07 (`Downloads/zeijani.zip`; batches `zeijani-2026-10.json`, `zeijani-cards-2026-10.json`): `rock.tuff`, `stone.tuff.polished`,
 `stone.basalt.polished`, `rock.basalt.flowbanded`, `rock.basalt.oxidised`, `bone.ossuary`, `patterns/zeijani/labyrinth-relief`,
 `patterns/zeijani/frieze-spirits`, `patterns/zeijani/kiva-mural`, `patterns/zeijani/textile`, `patterns/zeijani/glazed-frieze`,
 `patterns/zeijani/jali`, `card.mushroom.alecap`, `card.crop.yam`; and eight extras: `frieze-spirits-b`, `-c`, `frieze-skeletons`,
-`kiva-mural-b`, `-c`, `textile-b`, `glazed-frieze-dragonfly`, `glazed-frieze-beetle` (all `patterns/zeijani/`).
+`kiva-mural-b`, `-c`, `textile-b`, `glazed-frieze-dragonfly`, `glazed-frieze-beetle` (all `patterns/zeijani/`). Then, pasted the same day:
+`stone.tuff.hewn` (in the same batch). Nothing of the Zeijani is owed.
 
 Delivered under the same id (44): `stone.cut`, `plaster`, `brick`, `metal.corrugated`, `roof.tile`, `metal.iron`, `metal.bronze`, `metal.gold`, `patterns/iziz/gilt`, `patterns/iziz/banner`, `wood.mahogany`, `wood.lamppost`, `metal.iron.pitted`, `bone.skull`, `bone.horn`, `bone.antler`, `hide.pelt.cat`, `fibre.net`, `cloth.silk`, `wax.tallow`, `organic.gourd`, `earth.floor.packed`, `bark.mahogany`, `bark.ironbark`, `bark.baobab`, `card.mahogany`, `card.vine`, `card.screwpine`, `card.bromeliad`, `card.moss`, `card.crop`, `card.flower.bloom`, `fruit.skin.orange`, `fruit.skin.amber`, `fruit.husk`, `fruit.capsule`, `membrane.pterosaur`, `membrane.bat`, `fur.bat`, `wing.dragonfly`, `chitin.spider`, `chitin.millipede`, `fur.sloth`, `hide.strider`.
 

@@ -1,6 +1,6 @@
 {
  "build": "zeijani",
- "note": "The Zeijani kit's adapter onto the material library (core/materials/PLAN.md). Families are the kit's material keys (src/27-zj-mat.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE). tint.keep is how much of the set's own colour survives the vertex colour: the rocks keep most of theirs (the finish is a material over the rock's colour, PLAN.md 6.1), the pattern sheets all of it. The cavern's surfaces (core/terrain/39-core-cavern.js meshes) read tuff, tuffHewn, tuffPol, plaster, basalt, basaltPol, lining and oxide triplanar (40-zj-cave.js). tuffHewn is a STAND-IN until stone.tuff.hewn arrives. The f_* families are detail maps for the catalog furniture. Run python3 tools/textures/pack.py kits/zeijani after any change, then python3 build.py; ?mat=proc shows vertex colours only.",
+ "note": "The Zeijani kit's adapter onto the material library (core/materials/PLAN.md). Families are the kit's material keys (src/27-zj-mat.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE). tint.keep is how much of the set's own colour survives the vertex colour: the rocks keep most of theirs (the finish is a material over the rock's colour, PLAN.md 6.1), the pattern sheets all of it. The cavern's surfaces (core/terrain/39-core-cavern.js meshes) read tuff, tuffHewn, tuffPol, plaster, basalt, basaltPol, lining and oxide triplanar (40-zj-cave.js). The f_* families are detail maps for the catalog furniture. Run python3 tools/textures/pack.py kits/zeijani after any change, then python3 build.py; ?mat=proc shows vertex colours only.",
  "size": 512,
  "families": {
   "tuff": {
@@ -22,14 +22,14 @@
    }
   },
   "tuffHewn": {
-   "lib": "rock.tuff",
+   "lib": "stone.tuff.hewn",
    "scale": [
     1.5,
     1.5
    ],
    "tint": {
     "keep": 0.7,
-    "mean": 0.7
+    "mean": 0.72
    },
    "roughLift": 0.3,
    "specular": 0.2,
@@ -37,8 +37,7 @@
     "mix": 0.5,
     "macro": 0.08,
     "cell": 6
-   },
-   "_note": "STAND-IN: stone.tuff.hewn is owed (PROMPTS-ready.md); the raw tuff at half the tile until it arrives"
+   }
   },
   "tuffPol": {
    "lib": "stone.tuff.polished",

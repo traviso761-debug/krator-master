@@ -622,5 +622,36 @@
    "dark_gloss": 0.2,
    "size": 1024
   }
+ },
+ {
+  "src": "stone.tuff.hewn.webp",
+  "out": "core/materials/library/stone.tuff.hewn",
+  "record": {
+   "id": "stone.tuff.hewn",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted into the chat, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\", stone.tuff.hewn",
+    "reuse": "tuff hewn by pick and adze in curving fans: the Zeijani poor carved rooms and passages; any rock-cut room in soft stone (Cappadocia, Petra's back rooms, a quarry face)"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.6,
+   "lift": 0.12,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  }
  }
 ]

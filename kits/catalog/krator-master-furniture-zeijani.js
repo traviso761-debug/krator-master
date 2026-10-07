@@ -82,7 +82,7 @@ const ZJ_FX = {
     F.cyl(x, b, z, r * 0.55, h * 0.06, 0, cd, fam);
     F.blob(x, b + h * 0.42, z, r, h * 0.72, 0, c, fam);
     F.frustum(x, b + h * 0.74, z, r * 0.5, r * 0.36, h * 0.16, 0, c, fam, 12);
-    F.cyl(x, b + h * 0.9, z, r * 0.44, h * 0.1, 0, F.shade(c, 0.08), fam);
+    F.cyl(x, b + h * 0.9, z, r * 0.44, h * 0.085, 0, F.shade(c, 0.08), fam);
     if (lid) F.cyl(x, b + h * 0.96, z, r * 0.47, h * 0.04, 0, lid, 'wood');
   },
   /* a clump of alecap mushrooms on a mound of compost, at (x, y0, z); s scales it */

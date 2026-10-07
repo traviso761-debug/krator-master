@@ -1648,7 +1648,8 @@ spill pass could not reach. Not adopted by a build yet.
 
 The prompts of PROMPTS-ready.md "The Zeijani" (`kits/zeijani/PLAN.md` section 10), with eight extras the owner added for
 variety. Batches `tools/textures/batches/zeijani-2026-10.json` (19 surfaces) and `zeijani-cards-2026-10.json` (3 cut-outs).
-Still owed: `stone.tuff.hewn` (its prompt stays in PROMPTS-ready.md). The frieze, mural and glazed sheets keep their aspect;
+`stone.tuff.hewn` followed, pasted into the chat the same day (the same batch; delight .6, tint, 1.5 m: pick and adze scoops
+in curving fans). The frieze, mural and glazed sheets keep their aspect;
 the painted murals are not de-lit. Two sheets lost part of their motif to the pattern-period crop (the salamander's head and
 tail; the horned figures' lower border) and were redone with cross-faded edges instead (`_note` in their records).
 | Set | From | Options | Reuse |

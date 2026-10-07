@@ -1367,7 +1367,7 @@
     "normalMap": "tuffHewn.normal.webp",
     "roughnessMap": "tuffHewn.rough.webp"
    },
-   "lib": "rock.tuff",
+   "lib": "stone.tuff.hewn",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -1377,16 +1377,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "7183aa52bdd834668d8367245902cbc19ff0bb98",
-    "normal": "d2433f653e168d4b48a04af40661324658521237",
-    "roughness": "52974122ab97fb33c3f9ad47dc1236eff165c2f6"
+    "albedo": "3f79eac86c6e322167fa172e6dcbf99d2ec46307",
+    "normal": "b20169e28227704ce47d2e00f15061a641a114f4",
+    "roughness": "1d9fdbb8e01017493e6cee30448e85844354845c"
    },
    "specular": 0.2,
    "tint": {
     "contrast": 1.0,
     "keep": 0.7,
-    "mean": 0.7,
-    "sourceMean": 0.691
+    "mean": 0.72,
+    "sourceMean": 0.7069
    }
   },
   "tuffPol": {

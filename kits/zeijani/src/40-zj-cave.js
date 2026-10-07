@@ -90,6 +90,9 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
   g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
   const mesh=new THREE.Mesh(g,cvMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
  parent.add(CV_GROUP);
+ /* the masses' footprints to the sheet's ground (90-scene.js): no ground under a block of rock */
+ if(typeof ZJ_MASSES!=='undefined'){ZJ_MASSES.value.forEach(v=>v.set(0,0,0,0));let n=0;for(const P of CVC.prims){if(P.kind!=='mass'||n>=32)continue;const xs=P.poly.map(p=>p[0]),zs=P.poly.map(p=>p[1]);
+  ZJ_MASSES.value[n++].set(Math.min(...xs)+.05,Math.max(...xs)-.05,Math.min(...zs)+.05,Math.max(...zs)-.05);}}
  CV_STATS={chunks:CV_GROUP.children.length,tris:Math.round(tris),ms:Math.round(performance.now()-t0),prims:CVC.prims.length};
  GSTAT.tris+=tris;}
 /* the sheet's ground for the walker: the sheet's square less every mass's footprint (a block of rock is not walked through:

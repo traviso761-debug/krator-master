@@ -29,5 +29,5 @@ defBuilding({key:'zj_testblock',name:'Cavern test block: a carved front, rooms, 
   cvTube({id:'tube',joins:['down'],pts:[[-13.6,-8,-10.5],[-13.6,-8.2,4],[0,-8.4,12],[16,-8.7,14]],w:6,h:4.6,ledge:{v:1.6,d:.5},blend:2.5,rock:'basalt'});
   /* the front's dressing: a stepped lintel in polished tuff over the doorway, two steps of sill */
   const c=P('white');
-  box('tuffPol',0,2.62,-.1,3.2,.34,.35,c);box('tuffPol',0,2.96,-.12,2.4,.3,.3,c);box('tuffPol',0,3.26,-.14,1.6,.26,.26,c);
+  box('tuffPol',0,2.72,-.1,3.2,.34,.35,c);box('tuffPol',0,3.06,-.12,2.4,.3,.3,c);box('tuffPol',0,3.36,-.14,1.6,.26,.26,c);
   door(0,0,0,0,1.6);}});

@@ -91,7 +91,7 @@
         doors: [{ at: [dx, cz], w: 1.0, swing: 'none' }],
         fixtures: [fx('bed', 'bedshelf', side > 0 ? x1 - 0.45 : x0 + 0.45, cz - 0.3, 0.8, 1.9, { bed: 1, h: 0.45 }),
                    fx('hearth', 'hearth', (x0 + x1) / 2 - side * 0.3, z0 + 0.3, 0.7, 0.5, { h: 0.9 })] },
-      pass: { kind: 'stair', id: id + '-door', joins: [id], a: [side * (c - 0.2), y, cz], b: [dx + side * 0.35, y, cz], w: 1.0, h: 2.05 } };
+      pass: { kind: 'stair', id: id + '-door', joins: [id], a: [side * (c - 0.6), y, cz], b: [dx + side * 0.7, y, cz], w: 1.0, h: 2.05 } };
   }
   /* GALLERY A, the spine (refs 2da8, b719, 75f7): a corridor descending into the rock in three levels, cells either side,
      a hearth hall, a kiva sunk a metre on the second level (its great burner where Ranj is burned), a cistern at the
@@ -110,7 +110,7 @@
     rooms.push({ id: 'hearth', kind: 'hall', carved: true, poly: rrect(-10.2, -2.2, -18.9, -13.0), round: 0.6, y: 0, h: 3.0, ceil: 'vault', rise: 0.8, finish: 'hewn',
       doors: [{ at: [-2.2, -14.6], w: 1.2, swing: 'none' }],
       fixtures: [fx('hearth', 'hearth', -6.2, -18.55, 1.6, 0.7, { h: 1.0 }), fx('bench', 'bench', -9.75, -16.0, 0.6, 4.5, { h: 0.45 })] });
-    voids.push({ kind: 'stair', id: 'hearth-door', joins: ['hearth'], a: [-0.9, 0, -14.6], b: [-2.6, 0, -14.6], w: 1.2, h: 2.4 });
+    voids.push({ kind: 'stair', id: 'hearth-door', joins: ['hearth'], a: [-0.5, 0, -14.6], b: [-2.9, 0, -14.6], w: 1.2, h: 2.4 });
     voids.push({ kind: 'stair', id: 'down1', a: [0, 0, -15.8], b: [0, -3, -20.4], w: 2.0, h: 2.7 });
     level(1, -3, -20.2, -33.0, [-22.6, -27.0, -31.4], []);
     rooms.push({ id: 'kiva', kind: 'kiva', carved: true, poly: dee(3.4, 2.6, 14, -6.4, -27.4), y: -4, h: 2.6, ceil: 'dome', rise: 0.7, finish: 'plaster',
@@ -118,12 +118,12 @@
       fixtures: [fx('hearth', 'hearth', -6.4, -26.8, 0.9, 0.9, { h: 0.3 }), fx('deflector', 'deflector', -6.4, -25.7, 1.2, 0.25, { h: 1.1 }),
                  fx('ventilator', 'ventilator', -6.4, -24.35, 0.7, 0.45, { h: 1.4 }), fx('burner', 'incense-burner', -8.4, -27.0, 1.1, 1.1, { h: 1.3 }),
                  fx('sipapu', 'sipapu', -5.4, -28.6, 0.3, 0.3, { h: 0.02 })] });
-    voids.push({ kind: 'stair', id: 'kiva-door', joins: ['kiva'], a: [-0.9, -3, -27.4], b: [-3.5, -4, -27.4], w: 1.1, h: 2.2 });
+    voids.push({ kind: 'stair', id: 'kiva-door', joins: ['kiva'], a: [-0.5, -3, -27.4], b: [-3.8, -4, -27.4], w: 1.1, h: 2.2 });
     voids.push({ kind: 'stair', id: 'down2', a: [0, -3, -32.8], b: [0, -6, -37.4], w: 2.0, h: 2.7 });
     level(2, -6, -37.2, -46.0, [-39.6, -44.0], [-39.6, -44.0]);
     rooms.push({ id: 'cistern', kind: 'cistern', carved: true, poly: rrect(-3.4, 3.4, -51.6, -47.6), round: 0.6, y: -6, h: 3.2, ceil: 'vault', rise: 1.0, finish: 'plaster',
       doors: [{ at: [0, -47.6], w: 1.4, swing: 'none' }], fixtures: [fx('pool', 'pool', 0, -50.6, 4.8, 1.4, { h: 0.5 })] });
-    voids.push({ kind: 'stair', id: 'cistern-door', joins: ['cistern'], a: [0, -6, -45.8], b: [0, -6, -48.0], w: 1.4, h: 2.4 });
+    voids.push({ kind: 'stair', id: 'cistern-door', joins: ['cistern'], a: [0, -6, -45.4], b: [0, -6, -48.3], w: 1.4, h: 2.4 });
     voids.push({ kind: 'shaft', id: 'air', joins: ['cistern'], c: [0, -49.8], y0: -3.2, y1: 12.2, r0: 0.45, r1: 0.55 });
     voids.push({ kind: 'door', id: 'air-head', c: [0, -49.8], y: 9.8, r: 1.4, h: 3.0 });
     return { rooms: rooms, voids: voids };
@@ -148,7 +148,7 @@
       /* the void plan (kits/zeijani carves it): the rock face the lean-to stands against, the doorway through it */
       voids: [
         { kind: 'mass', id: 'rock', poly: [[-4.5, -6.2], [4.5, -6.2], [4.5, -0.6], [-4.5, -0.6]], y0: -0.5, y1: 4.6, cap: 1.0, rock: 'tuff', finish: 'raw' },
-        { kind: 'stair', id: 'pass', joins: ['back'], a: [0, 0.1, -1.6], b: [0, 0.1, -0.3], w: 0.9, h: 2.0, finish: 'hewn' },
+        { kind: 'stair', id: 'pass', joins: ['back'], a: [0, 0.1, -1.7], b: [0, 0.1, 0.1], w: 0.9, h: 2.0, finish: 'hewn' },
         { kind: 'door', id: 'backdoor', c: [0, -0.6], y: 0.1, r: 1.1, h: 2.2 }],
       note: 'a timber lean-to against a rock face; behind it one round room cut in the rock, its bed shelf carved (a fixture)' },
     { key: 'zj_house_wood', name: 'Round timber house with a ribbed door', wealth: 0.5, types: HOME, lot: [11, 11],

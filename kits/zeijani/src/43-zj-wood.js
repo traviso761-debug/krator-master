@@ -46,7 +46,7 @@ defBuilding({key:'zj_hut_c',name:'Lean-to with a carved back room',seed:4203,cut
   for(let i=0;i<5;i++){const x=-2.2+i*1.1;beam('log',[x,3.05,-.62],[x,2.12,2.7],.11,wd,true,6);}
   plane4('thatch',[-2.55,3.12,-.62],[2.55,3.12,-.62],[-2.55,2.18,2.85],.16,P('thatch'));
   /* the doorway cut in the face: worn jambs and a stone sill */
-  for(const s of [-1,1])box('tuffHewn',s*.58,.05,-.62,.26,2.1,.22,P('white'));box('tuffHewn',0,2.1,-.62,1.42,.32,.24,P('white'));
+  for(const s of [-1,1])box('tuffHewn',s*.6,.05,-.6,.26,2.12,.2,P('white'));box('tuffHewn',0,2.17,-.6,1.46,.3,.2,P('white'));
   zfLeaf(0,.1,2.5,.9,1.95,P('wood'),-.35);door(0,.1,2.5,0,.9);
   FURNISH('zeijani_stone_stool',1.6,0,3.3,.3,{v:1,setting:'outdoor'});FURNISH('zeijani_jar_cradle',-3.5,0,1.2,PI/2,{setting:'outdoor'});}});
 

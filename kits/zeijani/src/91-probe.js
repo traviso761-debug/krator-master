@@ -48,6 +48,13 @@ const PB={
    ['the domed hall',...P(0,-10.5)],['the stair head',...P(-3,-10.5)],['the stair foot',...P(-12.6,-10.5)],['the tube',...P(-13.6,-10)],
    ['the tube\'s bend',...P(-13.6,4)],['the tube\'s second bend',...P(0,12)],['the tube\'s far end',...P(14,13.8)]]);},
  routeOk(log){return !!log&&log.every(s=>s.ok===s.expect);},
+ /* every carved passage joins the floors at both its ends: its line, from 0.6 m before its start to 0.6 m past its end, in
+    0.1 m steps, has a floor within a step of the last all the way (a doorway whose strip stops short of a room: impassable) */
+ joins(W){const bad=[];for(const f of W.floors){if(f.kind!=='strip'||!/^cavern:stair/.test(f.tag))continue;
+   const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz);if(L<.05)continue;const ux=dx/L,uz=dz/L;
+   let y=null,gap=null;for(let s=-.6;s<=L+.6+1e-9;s+=.1){const x=f.a[0]+ux*s,z=f.a[1]+uz*s,yt=y===null?f.a[2]+.3:y;const q=W.floorBelow(x,z,yt,.6);
+    if(!q||(y!==null&&Math.abs(q[0]-y)>.6)){gap=s;break;}y=q[0];}
+   if(gap!==null)bad.push(f.name+' @'+gap.toFixed(1)+'/'+L.toFixed(1));}return bad;},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}return W;}
 };
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
@@ -58,6 +65,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
  const gaps=PB.floorGaps(KWALK,CV_GROUP),worst=gaps.reduce((a,b)=>b.gap>a.gap?b:a,{gap:0,name:'-'});
  add('walk-on-mesh',gaps.length>0&&worst.gap<=.15,gaps.length+' samples on the carved floors; the worst '+(worst.gap>1e8?'has no mesh under it':worst.gap.toFixed(3)+' m')+' ('+worst.name+')');
  const rt=PB.blockRoute(KWALK);if(rt)add('walk-route',PB.routeOk(rt),rt.map(s=>s.name+(s.ok?'':' REFUSED')+' @'+s.feet).join(' > '));
+ const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^cavern:stair/.test(f.tag)).length;
+ add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
  const ex=CVC.export(),G=(x,z)=>terrainH(x,z);
@@ -74,5 +83,10 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  {const W=PB.copyWalk(f=>/\.down$/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const rt=PB.blockRoute(W);
   if(rt)add('walk-route: the stair down missing',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
  {const W=PB.copyWalk();const rt=PB.blockRoute(W);if(rt)add('walk-route: the bed shelf not a block',!PB.routeOk(rt),rt.filter(s=>s.ok!==s.expect).map(s=>s.name).join(', '));}
+ /* joins: one cell's doorway strip shortened by 0.8 m at its room end (it overlaps the room's floor by 0.4) */
+ {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
+  const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-.8)/L;
+   W.strip({a:f.a,b:[f.a[0]+dx*k,f.a[1]+dz*k,f.b[2]],w:f.w,name:f.name,tag:f.tag});}
+  const jn=PB.joins(W);add('walk-joins: a doorway 0.8 m short',jn.length>0,jn.join(', ')||'none found');}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;

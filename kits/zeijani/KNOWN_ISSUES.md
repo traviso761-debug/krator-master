@@ -1,7 +1,5 @@
 # kits/zeijani: known issues
 
-- [ ] **`stone.tuff.hewn` is owed.** The poor carved rooms' finish draws the raw tuff at half its tile until the owner's
-      image arrives (`materials.json`, family `tuffHewn`, marked STAND-IN; the prompt is in `core/materials/PROMPTS-ready.md`).
 - [ ] **One cell size per cavern (0.5 m).** PLAN.md section 7 asked for 1 m cells in the tubes and 0.5 m near the rooms; two
       sizes meeting at a chunk seam crack it (surface nets has no stitching), so the cavern meshes everything at 0.5 m and Dhelv
       will draw its chunks near the camera only. About 2M triangles is the estimate for Dhelv.

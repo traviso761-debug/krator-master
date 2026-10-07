@@ -8,7 +8,7 @@ defBuilding({key:'zj_gallery_a',name:'Gallery of cells: the spine',seed:4301,ori
  note:'a corridor descending in three levels with twelve cells, a hearth hall, a kiva, a cistern and an air shaft',
  build(o){const it=zjItem('zj_gallery_a');cvFromItem(it,{finish:'hewn'});zfFixtures(it);const c=P('white');
   /* the portal: a round arch cut in the face, a threshold, lamp niches, the dovecote holes and painted bands over it */
-  zfArch('tuffHewn',0,0,.02,2.0,3.05,.42,c,{key:true,keyMk:'tuffPol'});box('tuffHewn',0,0,.25,2.6,.12,.5,c);
+  zfArch('tuffHewn',0,0,.02,1.88,3.05,.42,c,{key:true,keyMk:'tuffPol'});box('tuffHewn',0,0,.29,2.6,.12,.5,c);
   for(const s of [-1,1]){zfNiche(s*2.0,1.45,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.0,1.24,-.06,PI,{setting:'outdoor'});}
   box('plain',0,4.05,.01,8.6,.14,.03,P('ochre'));box('plain',0,4.25,.01,8.6,.08,.03,P('cinnabar'));
   zfDovecote(0,4.8,.02,9,3,{paint:'cinnabar'});
