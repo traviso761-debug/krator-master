@@ -1078,8 +1078,10 @@ every family resolves to a delivered set, a `tex/pack.json` entry for it, and a 
 **Still unwired:** `kits/catalog`, `kits/interiors`, `kits/ancients-interiors` have no adapter of their own: catalog furniture
 takes a library set only through a host's `f_<family>` rows, and only Girder (29), Scyvoi (22) and Noah's Regret (8) have them.
 Mav's Refuge, Screamers, Highlands, Locus, Mungo, Verge, the Ancients kit and post-apoc bundle the furniture with vertex colours
-alone. The fix is a shared detail-map pass in the furniture runtime (Girder's `48-detail.js`, Scyvoi's `svfDetail`) and a default
-`f_` adapter from the picks listed under "Catalog furniture audit".
+alone. *Fixed the same day:* `kits/catalog` now has the shared pass: `krator-furniture-detail.js`, a default adapter `materials.json` (47
+families: Girder's tuned rows plus the picks under "Catalog furniture audit") and `tex/`. A host opts in with
+`furniture_bundle.bundle(..., tex=True)`; the eight hosts above are not switched over yet, so their pages are unchanged. Not yet
+looked at by eye.
 
 *Update, same day:* **Jimjam is wired** (`settlements/jimjam/materials.json`: 17 families, full colour, every JMAT texture
 from the texturepalooza sets; README "Textures").
