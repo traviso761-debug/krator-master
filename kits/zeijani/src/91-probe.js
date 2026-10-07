@@ -103,9 +103,11 @@ const PB={
    ['along the podium',-14,-15.2],['the west cloister',-19.6,-15.2],['along it',-19.6,-43.4],['the back of the pit',-14,-44],['across',14,-44],['the east cloister',19.6,-43.4],
    ['along it',19.6,-15.2],['the pit again',15.5,-15.2],['past the kiva’s vent',15.5,-30],['the kiva’s hatch',13.2,-30],['its ladder’s head',13.2,-29.15],
    ['down into the kiva',13.2,-27.45],['off the ladder',13.9,-27.5],['back to the ladder',13.2,-27.45],['up again',13.2,-29.15],['out past the vent',15.5,-30],['the pit’s front',15.5,-15.2],['the gate again',0,-9],['out',0,2]]));
-  r('council',PB.siteRoute(W,'zj_council',[0,21],[['the stair’s head',0,19.6],['down the tunnel',0,3.8],['the trench',-10.5,2],['the west door',-10.4,-8],
-   ['the council hall',-6,-8],['the crossing',0,-8],['by the dais',5.8,-8],['the crossing again',0,-8],['the west arm',-6,-8],['out',-10.4,-8],['the trench again',-10.5,2],
-   ['the tunnel’s foot',0,3.8],['up the tunnel',0,19.6],['the ground',0,21]]));return out;},
+  r('council',PB.siteRoute(W,'zj_council',[0,44],[['the lane’s head',0,41.3],['down the tunnel',0,13.6],['the pit',0,10],['the pit’s west side',-13,10],
+   ['the west stair’s foot',-11.6,-18],['up into the chamber',-7.6,-23.6],['inside',-7,-24],['among the pillars',-4,-24],['the crossing',0,-24],['by the dais',0,-30.8],['the crossing again',0,-24],
+   ['the chamber’s door',0,-14],['the bridge',0,-7],['the pavilion',0,-.5],['the front bridge',0,8],['the gatehouse’s gallery',0,16],['back over',0,8],['the pavilion again',0,-.5],
+   ['the bridge again',0,-7],['the chamber',0,-14],['its middle',0,-24],['the east stair’s head',7,-24],['its top',7.6,-23.6],['down',11.6,-18],['the pit’s east side',13,10],['the pit again',0,10],
+   ['the tunnel’s foot',0,13.2],['up the tunnel',0,41.3],['the ground',0,44]]));return out;},
  /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
     a constructed one by its planner's graph */
  shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;

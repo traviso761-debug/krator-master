@@ -46,7 +46,7 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 | `46-zj-built.js` | the constructed houses: a domed tuff hut, three domes round a yard, a two-storey house with a roof terrace; `zbBody` draws a planned body (walls with their openings, slabs round the stairwells, stairs, partitions) |
 | `47-zj-shops.js` | the shops: twelve trades, each in a carved front (a cut with a counter, shutters, the sign in a niche; a smithy's smoke shaft) and a constructed one (a planned tuff block, an awning, the sign on the parapet), made from the trades' items; signs and awnings are `core/sockets` (the zeijani pack) |
 | `48-zj-sacred.js` | the kiva (sunk under the ground: `sunk` opens the ground over it in the cut-away; its ladder is a walk strip as steep as a walker climbs) and the funeral catacombs (a stair down to the chapel, corridors lined with bones, ossuaries, the Keeper's cell); the temple cut from one rock (Kailasa: a pit round the podium left standing, the sanctum under a pierced lattice dome, cloisters) |
-| `49-zj-civic.js` | civic: the council (Lalibela: a cross of rock left standing in a trench cut down into the ground, a stair-tunnel down, the council hall inside the cross) |
+| `49-zj-civic.js` | civic: the council (after Kailasa, cut down into the ground: a pit down a sunken lane, the council hall left standing with its pillared chamber and a tiered tower, the pavilion, bridges of rock, lamp pillars, cloisters) |
 | `81-sky.js` | the standard Krator sky, vendored (`--vendor-check`) |
 | `89-rows.js` | the sheet's rows by family |
 | `90-scene.js` | renderer, sky, ground, layout, `buildWorld()` |

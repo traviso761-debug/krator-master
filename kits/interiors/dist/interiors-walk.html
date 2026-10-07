@@ -28458,27 +28458,61 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const TEMPLE = temple();
-  /* THE COUNCIL (Lalibela's Bete Giyorgis; the board's 066f9f): a cross of rock left standing in a trench cut down into the
-     ground, its roof at the ground's level; a stair-tunnel down from a sunken head to the trench's floor; the council hall
-     carved inside the cross (a cross-shaped room: the dais in the east arm, benches along the north and south arms), its door
-     at the west arm's end. SUNK (no rock block). The trench's floor is a walk floor less the cross (no blocks needed: the
-     cross's top is 9 m up) */
+  /* THE COUNCIL, after Ellora's Kailasa, cut down into the ground (the board's 066f9f for its carving): a pit 36 x 58 m and
+     12 m deep, reached down a sunken lane and a tunnel through its front wall (the gatehouse). In the pit the rock left standing:
+     the council hall's monolith (a podium 6 m high, the council chamber carved in it above, entered by two stairs cut into the
+     podium's flanks; a tiered tower drawn on its roof, which is the ground's level), the pavilion before it (the Serpent's
+     shrine), two bridges of rock joining the chamber to the pavilion and the pavilion to a gallery carved in the gatehouse,
+     two lamp pillars; the pit's side walls cut into cloisters behind pillars. SUNK (no rock block). The pit's floor and the
+     bridges are walk floors (less the rock standing on them) */
   function council() {
-    const C = [0, -8], plus = function (a, b, cx, cz) { return [[cx - a, cz - b], [cx - b, cz - b], [cx - b, cz - a], [cx + b, cz - a], [cx + b, cz - b], [cx + a, cz - b], [cx + a, cz + b], [cx + b, cz + b], [cx + b, cz + a], [cx - b, cz + a], [cx - b, cz + b], [cx - a, cz + b]]; };
-    const voids = [
-      { kind: 'trench', id: 'trench', poly: rrect(-12, 12, -20, 4), y0: -9, y1: 1, finish: 'hewn', floor: false },
-      { kind: 'well', id: 'trench-top', c: C, r: 17, rim: 1.0 },
-      { kind: 'monolith', id: 'cross', poly: plus(9, 3, C[0], C[1]), y0: -9, y1: 0.3, block: false, finish: 'polished' },
-      { kind: 'stair', id: 'door', joins: ['council'], a: [-10.6, -9, C[1]], b: [-7.4, -9, C[1]], w: 1.6, h: 3.0 },
-      { kind: 'well', id: 'stair-head', c: [0, 15.5], r: 3.8, rim: 0.5 },
-      { kind: 'stair', id: 'descent', a: [0, 0, 19.2], b: [0, -9, 3.5], w: 2.0, h: 2.8, floor: false },
-      /* its walk strip runs 0.15 m past the opening's edge onto the ground (an exact abutment leaves a hairline a step can land in) */
-      { kind: 'walk', id: 'descent-walk', a: [0, 0.02, 19.45], b: [0, -9, 3.5], w: 1.4 },
-      { kind: 'floor', id: 'trench-floor', poly: rrect(-11.7, 11.7, -19.7, 3.7), y: -9, holes: [rrect(-9.3, 9.3, C[1] - 3.3, C[1] + 3.3), rrect(-3.3, 3.3, C[1] - 9.3, C[1] + 9.3)], tag: 'cavern:floor' }];
-    const rooms = [{ id: 'council', kind: 'hall', carved: true, poly: plus(8, 2, C[0], C[1]), y: -9, h: 4.5, ceil: 'vault', rise: 0.8, finish: 'polished',
-      doors: [{ at: [-8, C[1]], w: 1.6, swing: 'none' }],
-      fixtures: [fx('dais', 'dais', 7.2, C[1], 1.5, 3.6, { h: 0.35 }),
-        fx('benchN', 'bench', 0, C[1] - 7.4, 3.6, 0.6, { h: 0.45 }), fx('benchS', 'bench', 0, C[1] + 7.4, 3.6, 0.6, { h: 0.45 })] }];
+    const Z = function (v) { return v - 12; }, R = function (x0, x1, z0, z1) { return rrect(x0, x1, Z(z0), Z(z1)); }, Y = -12, U = -5.5;
+    const rooms = [], voids = [
+      { kind: 'trench', id: 'pit', poly: R(-18, 18, -32, 26), y0: Y, y1: 1, finish: 'hewn', floor: false },
+      /* the pit opens through the ground: four overlapping wells along it (one circle round it all would hole the ground far past its corners) */
+      { kind: 'well', id: 'pit0', c: [0, Z(-22.5)], r: 21, rim: 1.0 }, { kind: 'well', id: 'pit1', c: [0, Z(-7.5)], r: 21, rim: 1.0 },
+      { kind: 'well', id: 'pit2', c: [0, Z(7.5)], r: 21, rim: 1.0 }, { kind: 'well', id: 'pit3', c: [0, Z(22.5)], r: 21, rim: 1.0 },
+      /* the lane: a sunken cutting (three wells) to the tunnel's head; the tunnel down through the front wall */
+      { kind: 'well', id: 'lane0', c: [0, Z(50)], r: 3, rim: 0.5 }, { kind: 'well', id: 'lane1', c: [0, Z(45)], r: 3, rim: 0.5 }, { kind: 'well', id: 'lane2', c: [0, Z(40)], r: 3, rim: 0.5 },
+      { kind: 'stair', id: 'approach', a: [0, 0, Z(52.5)], b: [0, Y, Z(25.4)], w: 2.4, h: 3.2, floor: false },
+      { kind: 'walk', id: 'approach-walk', a: [0, 0.02, Z(53.15)], b: [0, Y, Z(25.4)], w: 1.8 },
+      /* the rock left standing */
+      { kind: 'monolith', id: 'hall', poly: R(-11, 11, -26, 2), y0: Y, y1: 0, block: false, finish: 'polished' },
+      { kind: 'monolith', id: 'pavilion-rock', poly: R(-4, 4, 8, 15), y0: Y, y1: -1.5, block: false, finish: 'polished' },
+      { kind: 'monolith', id: 'bridge-front', poly: R(-2, 2, 15, 26.2), y0: -7, y1: U, block: false, finish: 'polished' },
+      { kind: 'monolith', id: 'bridge-hall', poly: R(-2, 2, 2, 8), y0: -7, y1: U, block: false, finish: 'polished' }];
+    [-8, 8].forEach(function (x, i) { voids.push({ kind: 'monolith', id: 'stambha' + i, poly: circle(0.8, 12, x, Z(19)), y0: Y, y1: 4, finish: 'polished' }); });
+    /* the chamber in the hall's monolith: a pillared hall, the dais at its back */
+    const pil = [];
+    [-6, -2, 2, 6].forEach(function (x) { [-16, -8].forEach(function (z) { pil.push(fx('pillar' + pil.length, 'pillar', x, Z(z), 0.9, 0.9, { h: 4.0 })); }); });
+    rooms.push({ id: 'chamber', kind: 'hall', carved: true, poly: R(-8, 8, -22, -1), round: 0.4, y: U, h: 4.0, ceil: 'flat', finish: 'polished',
+      doors: [{ at: [0, Z(-1)], w: 1.8, swing: 'none' }, { at: [-8, Z(-12)], w: 1.4, swing: 'none' }, { at: [8, Z(-12)], w: 1.4, swing: 'none' }],
+      fixtures: pil.concat([fx('dais', 'dais', 0, Z(-20.5), 6, 2, { h: 0.4 })]) });
+    rooms.push({ id: 'pavilion', kind: 'shrine', carved: true, poly: R(-2.8, 2.8, 9, 14), round: 0.4, y: U, h: 2.6, ceil: 'vault', rise: 0.3, finish: 'polished',
+      doors: [{ at: [0, Z(9)], w: 1.4, swing: 'none' }, { at: [0, Z(14)], w: 1.4, swing: 'none' }] });
+    rooms.push({ id: 'gallery', kind: 'antechamber', carved: true, poly: R(-5, 5, 26.3, 30), round: 0.4, y: U, h: 3.2, ceil: 'vault', rise: 0.4, finish: 'polished',
+      doors: [{ at: [0, Z(26.3)], w: 1.4, swing: 'none' }] });
+    /* the ways up: a stair cut into each flank of the podium, from the pit's floor into the chamber; doorways through the rock
+       between the chamber, the bridges, the pavilion and the gallery */
+    [-1, 1].forEach(function (s) { voids.push({ kind: 'stair', id: s < 0 ? 'stairW' : 'stairE', joins: ['chamber'], a: [s * 11.45, Y, Z(-6)], b: [s * 7.6, U, Z(-11.6)], w: 1.6, h: 2.8 }); });   /* its top 0.1 m inside the chamber's walk edge: a long overlap on so steep a stair leaves a step down too deep */
+    voids.push({ kind: 'stair', id: 'hall-door', joins: ['chamber'], a: [0, U, Z(-1.6)], b: [0, U, Z(2.4)], w: 1.8, h: 2.8 });
+    voids.push({ kind: 'stair', id: 'pavilion-back', joins: ['pavilion'], a: [0, U, Z(7.6)], b: [0, U, Z(9.6)], w: 1.4, h: 2.4 });
+    voids.push({ kind: 'stair', id: 'pavilion-front', joins: ['pavilion'], a: [0, U, Z(13.4)], b: [0, U, Z(15.4)], w: 1.4, h: 2.4 });
+    voids.push({ kind: 'stair', id: 'gallery-door', joins: ['gallery'], a: [0, U, Z(25.6)], b: [0, U, Z(26.9)], w: 1.4, h: 2.6 });
+    /* the cloisters, west and east, behind pillars left standing */
+    [-1, 1].forEach(function (s) {
+      const C = { id: s < 0 ? 'cloisterW' : 'cloisterE', kind: 'hall', carved: true, poly: s < 0 ? R(-22.5, -17, -28, 22) : R(17, 22.5, -28, 22), round: 0.3, y: Y, h: 4.2, ceil: 'flat', finish: 'hewn', doors: [], fixtures: [] };
+      for (let z = -26; z <= 20; z += 4) {
+        voids.push({ kind: 'monolith', id: 'pillar' + (s < 0 ? 'W' : 'E') + (z + 30), poly: circle(0.45, 10, s * 17.9, Z(z)), y0: Y, y1: Y + 4.4, phase: 3, finish: 'hewn' });
+        C.fixtures.push(fx('pillar' + (z + 30), 'pillar', s * 17.9, Z(z), 0.9, 0.9, { h: 4.2 }));
+      }
+      rooms.push(C);
+    });
+    /* the walk: the pit's floor less the rock standing on it; the bridges' tops */
+    voids.push({ kind: 'floor', id: 'pit-floor', poly: R(-17.7, 17.7, -31.7, 25.7), y: Y, tag: 'cavern:floor',
+      holes: [R(-11.3, 11.3, -26.3, 2.3), R(-4.3, 4.3, 7.7, 15.3), circle(1.2, 12, -8, Z(19)), circle(1.2, 12, 8, Z(19))] });
+    voids.push({ kind: 'floor', id: 'bridge-hall-top', poly: R(-1.7, 1.7, 2.1, 7.9), y: U });
+    voids.push({ kind: 'floor', id: 'bridge-front-top', poly: R(-1.7, 1.7, 15.1, 26.1), y: U });
     return { rooms: rooms, voids: voids };
   }
   const COUNCIL = council();
@@ -28551,9 +28585,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- civic */
-    { key: 'zj_council', name: 'The council: a cross cut in a trench', carved: true, wealth: 0.75, types: ['civic'], residence: false, lot: [30, 44],
+    { key: 'zj_council', name: 'The council: a hall cut from the rock in its pit', carved: true, wealth: 0.85, types: ['civic'], residence: false, lot: [46, 92],
       rooms: COUNCIL.rooms, voids: COUNCIL.voids,
-      note: 'a cross of rock left standing in a trench 9 m deep, its roof at the ground; down a stair-tunnel; the council hall inside the cross, the dais in its east arm' },
+      note: 'after Kailasa, cut down into the ground: a pit 12 m deep down a sunken lane and a tunnel through the gatehouse; the council hall left standing in it ' +
+        '(the pillared chamber above, stairs in its flanks, a tiered tower on its roof), the pavilion, two bridges of rock to a gallery in the gatehouse, two lamp pillars, cloisters' },
     /* ---------------- sacred */
     { key: 'zj_temple', name: 'The temple: cut from one rock', carved: true, wealth: 0.8, types: ['religious'], residence: false, lot: [48, 52],
       rooms: TEMPLE.rooms, voids: TEMPLE.voids,
