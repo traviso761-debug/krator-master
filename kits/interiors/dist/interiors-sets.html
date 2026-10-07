@@ -383,7 +383,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
    The data the placer reads. Swap or extend any table here without touching the placer.
 
    PROGRAMS[kind] = {
-     require: [{ need, types:[...], n }]   placed FIRST, in this order (SPEC "Placement" 2).
+     require: [{ need, types:[...], n, roles?, anchors? }]   placed FIRST, in this order (SPEC "Placement" 2). roles: only
+                                           pieces of those catalog roles; anchors: only pieces with those anchors
                                            need names the slot in reports; types are catalog
                                            FURN types (kits/catalog krator-asset-engine.js FURN_TYPES)
      optional:[{ types:[...], max }]       filled after, while there is room, from the room's
@@ -1232,7 +1233,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
-        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0); }) };
+        /* rq.anchors: only pieces with one of these anchors (a food store that is not a surface piece: the residence rule's) */
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0) && (!rq.anchors || rq.anchors.indexOf(d.anchor || 'floor') >= 0); }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);
@@ -5939,7 +5941,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       optional: [{ types: ['workstation'], max: 2 }, { types: ['rack'], max: 2 }, { types: ['table', 'desk'], max: 1 }, { types: ['storage', 'shelf'], max: 2 },
                  { types: ['chair'], max: 1 }, { types: ['lamp'], max: 2 }, SURFACE],
       extra: 6 };
-    IX.PROGRAMS.cell = { require: [{ need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+    IX.PROGRAMS.cell = { require: [{ need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
       optional: [{ types: ['bed'], max: 1 }, { types: SEATS, max: 2 }, { types: ['workstation'], max: 1 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 },
                  { types: ['rug'], max: 1 }, { types: ['art', 'shrine'], max: 1 }, SURFACE],
       extra: 5 };
@@ -5968,6 +5970,57 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   /* carved fixtures: structure the placer keeps off; reach false unless it is a way in */
   const fx = function (id, kind, x, z, w, d, o) { return Object.assign({ id: id, kind: kind, x: x, z: z, ry: 0, w: w, d: d, reach: false }, o || {}); };
 
+  /* ---------------- CARVED PLANS (kits/zeijani carves them: the void plan is this data). A carved def's frame: the front's foot at
+     the origin, the rock behind it (-z). Rooms carry the cavern's fields (carved, round: the corner radius, ceil, rise, finish);
+     `voids` are its passages, stairs, shafts and doorways, and its block of rock on the kit sheet (mass). */
+  const rrect = function (x0, x1, z0, z1) { return [[x0, z0], [x1, z0], [x1, z1], [x0, z1]]; };
+  /* a cell off a corridor: a rounded room, its doorway on the corridor's side (side +1 east, -1 west; c the corridor's half
+     width; 0.9 m of rock between), a carved bed shelf along its far wall and a hearth niche on its back wall */
+  function cell(id, side, cz, y, c, w, d) {
+    const g = 0.9, x0 = side > 0 ? c + g : -c - g - w, x1 = x0 + w, z0 = cz - d / 2, z1 = cz + d / 2, dx = side > 0 ? x0 : x1;
+    return { room: { id: id, kind: 'cell', carved: true, poly: rrect(x0, x1, z0, z1), round: 0.4, y: y, h: 2.3, ceil: 'vault', rise: 0.45, finish: 'hewn',
+        doors: [{ at: [dx, cz], w: 1.0, swing: 'none' }],
+        fixtures: [fx('bed', 'bedshelf', side > 0 ? x1 - 0.45 : x0 + 0.45, cz - 0.3, 0.8, 1.9, { bed: 1, h: 0.45 }),
+                   fx('hearth', 'hearth', (x0 + x1) / 2 - side * 0.3, z0 + 0.3, 0.7, 0.5, { h: 0.9 })] },
+      pass: { kind: 'stair', id: id + '-door', joins: [id], a: [side * (c - 0.2), y, cz], b: [dx + side * 0.35, y, cz], w: 1.0, h: 2.05 } };
+  }
+  /* GALLERY A, the spine (refs 2da8, b719, 75f7): a corridor descending into the rock in three levels, cells either side,
+     a hearth hall, a kiva sunk a metre on the second level (its great burner where Ranj is burned), a cistern at the
+     bottom with an air shaft to the top of the rock. Twelve households. */
+  function galleryA() {
+    const rooms = [], voids = [], C = 1.1, W = 3.4, D = 3.6;
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-14, 14, -54, 0), y0: -0.5, y1: 10, cap: 1.5, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.7, h: 3.0 });
+    voids.push({ kind: 'stair', id: 'way-in', a: [0, 0, 1.3], b: [0, 0, -2.6], w: 2.0, h: 2.8 });
+    const level = function (n, y, z0, z1, east, west) {
+      voids.push({ kind: 'stair', id: 'corr' + n, a: [0, y, z0], b: [0, y, z1], w: 2 * C, h: 2.8 });
+      east.forEach(function (cz, i) { const c = cell('c' + n + 'e' + i, 1, cz, y, C, W, D); rooms.push(c.room); voids.push(c.pass); });
+      west.forEach(function (cz, i) { const c = cell('c' + n + 'w' + i, -1, cz, y, C, W, D); rooms.push(c.room); voids.push(c.pass); });
+    };
+    level(0, 0, -2.4, -16.0, [-5, -9.4, -13.8], [-5, -9.4]);
+    rooms.push({ id: 'hearth', kind: 'hall', carved: true, poly: rrect(-10.2, -2.2, -18.9, -13.0), round: 0.6, y: 0, h: 3.0, ceil: 'vault', rise: 0.8, finish: 'hewn',
+      doors: [{ at: [-2.2, -14.6], w: 1.2, swing: 'none' }],
+      fixtures: [fx('hearth', 'hearth', -6.2, -18.55, 1.6, 0.7, { h: 1.0 }), fx('bench', 'bench', -9.75, -16.0, 0.6, 4.5, { h: 0.45 })] });
+    voids.push({ kind: 'stair', id: 'hearth-door', joins: ['hearth'], a: [-0.9, 0, -14.6], b: [-2.6, 0, -14.6], w: 1.2, h: 2.4 });
+    voids.push({ kind: 'stair', id: 'down1', a: [0, 0, -15.8], b: [0, -3, -20.4], w: 2.0, h: 2.7 });
+    level(1, -3, -20.2, -33.0, [-22.6, -27.0, -31.4], []);
+    rooms.push({ id: 'kiva', kind: 'kiva', carved: true, poly: dee(3.4, 2.6, 14, -6.4, -27.4), y: -4, h: 2.6, ceil: 'dome', rise: 0.7, finish: 'plaster',
+      doors: [{ at: [-3.0, -27.4], w: 1.1, swing: 'none' }],
+      fixtures: [fx('hearth', 'hearth', -6.4, -26.8, 0.9, 0.9, { h: 0.3 }), fx('deflector', 'deflector', -6.4, -25.7, 1.2, 0.25, { h: 1.1 }),
+                 fx('ventilator', 'ventilator', -6.4, -24.35, 0.7, 0.45, { h: 1.4 }), fx('burner', 'incense-burner', -8.4, -27.0, 1.1, 1.1, { h: 1.3 }),
+                 fx('sipapu', 'sipapu', -5.4, -28.6, 0.3, 0.3, { h: 0.02 })] });
+    voids.push({ kind: 'stair', id: 'kiva-door', joins: ['kiva'], a: [-0.9, -3, -27.4], b: [-3.5, -4, -27.4], w: 1.1, h: 2.2 });
+    voids.push({ kind: 'stair', id: 'down2', a: [0, -3, -32.8], b: [0, -6, -37.4], w: 2.0, h: 2.7 });
+    level(2, -6, -37.2, -46.0, [-39.6, -44.0], [-39.6, -44.0]);
+    rooms.push({ id: 'cistern', kind: 'cistern', carved: true, poly: rrect(-3.4, 3.4, -51.6, -47.6), round: 0.6, y: -6, h: 3.2, ceil: 'vault', rise: 1.0, finish: 'plaster',
+      doors: [{ at: [0, -47.6], w: 1.4, swing: 'none' }], fixtures: [fx('pool', 'pool', 0, -50.6, 4.8, 1.4, { h: 0.5 })] });
+    voids.push({ kind: 'stair', id: 'cistern-door', joins: ['cistern'], a: [0, -6, -45.8], b: [0, -6, -48.0], w: 1.4, h: 2.4 });
+    voids.push({ kind: 'shaft', id: 'air', joins: ['cistern'], c: [0, -49.8], y0: -3.2, y1: 12.2, r0: 0.45, r1: 0.55 });
+    voids.push({ kind: 'door', id: 'air-head', c: [0, -49.8], y: 9.8, r: 1.4, h: 3.0 });
+    return { rooms: rooms, voids: voids };
+  }
+  const GA = galleryA();
+
   IX.sets.add({ set: 'zeijani', title: 'The Zeijani: carved, constructed and wooden (kits/zeijani)', culture: 'zeijani', wealth: 0.3, items: [
     /* ---------------- the wooden dwellings (the outpost, the hamlets, the villages) */
     { key: 'zj_hut_a', name: 'Round wattle hut on stilts', wealth: 0.2, types: HOME, lot: [8, 8],
@@ -5976,18 +6029,28 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_hut_b', name: 'Oval plank hut with a porch', wealth: 0.2, types: HOME, lot: [9, 10],
       rooms: [{ id: 'hut', kind: 'cottage', poly: oval(2.4, 3.1, 14, 0, -0.4), y: 0.4, h: 2.4, doors: [{ at: [0, 2.7], w: 0.9 }] }],
       note: 'the porch (z 2.7 to 4.2) is open: not planned' },
-    { key: 'zj_hut_c', name: 'Lean-to with a carved back room', wealth: 0.15, types: HOME, lot: [8, 9],
+    { key: 'zj_hut_c', name: 'Lean-to with a carved back room', wealth: 0.15, types: HOME, lot: [10, 12],
       rooms: [
         { id: 'front', kind: 'kitchen', poly: rect(4.2, 3.0, 0, 0.9), y: 0.1, h: 2.2,
           doors: [{ at: [0, 2.4], w: 0.9 }, { id: 'back', at: [0, -0.6], w: 0.8, to: '.back', swing: 'out', leaf: false }] },
-        { id: 'back', kind: 'cell', poly: circle(1.8, 12, 0, -2.4), y: 0.1, h: 2.1,
+        { id: 'back', kind: 'cell', carved: true, poly: circle(1.8, 12, 0, -2.9), y: 0.1, h: 2.0, ceil: 'dome', rise: 0.5, finish: 'hewn',
           doors: [{ id: 'back', at: [0, -0.6], w: 0.8, to: '.front', swing: 'in' }],
-          fixtures: [fx('bedshelf', 'bedshelf', -1.05, -2.5, 0.7, 1.6, { bed: 1 })] }],
+          fixtures: [fx('bedshelf', 'bedshelf', -1.0, -3.0, 0.7, 1.6, { bed: 1, h: 0.45 })] }],
+      /* the void plan (kits/zeijani carves it): the rock face the lean-to stands against, the doorway through it */
+      voids: [
+        { kind: 'mass', id: 'rock', poly: [[-4.5, -6.2], [4.5, -6.2], [4.5, -0.6], [-4.5, -0.6]], y0: -0.5, y1: 4.6, cap: 1.0, rock: 'tuff', finish: 'raw' },
+        { kind: 'stair', id: 'pass', joins: ['back'], a: [0, 0.1, -1.6], b: [0, 0.1, -0.3], w: 0.9, h: 2.0, finish: 'hewn' },
+        { kind: 'door', id: 'backdoor', c: [0, -0.6], y: 0.1, r: 1.1, h: 2.2 }],
       note: 'a timber lean-to against a rock face; behind it one round room cut in the rock, its bed shelf carved (a fixture)' },
     { key: 'zj_house_wood', name: 'Round timber house with a ribbed door', wealth: 0.5, types: HOME, lot: [11, 11],
       bodies: [{ id: 'house', poly: circle(4.4, 14), y: 0.5, levels: [{ h: 2.7 }], wall: 0.3, roof: 'flat',
         doors: [{ at: [0, 4.4], w: 1.0 }], program: ['living', 'bedroom'] }],
       note: 'two rooms under a domed thatch; the loft in the dome is storage, not planned' },
+    /* ---------------- the carved galleries of the poor (Cappadocian apartments going deep) */
+    { key: 'zj_gallery_a', name: 'Gallery of cells: the spine', carved: true, wealth: 0.18, types: MULTI, units: 12, lot: [30, 56],
+      rooms: GA.rooms, voids: GA.voids,
+      note: 'a corridor descending in three levels (0, -3, -6 m) with twelve one-room cells (carved bed shelf and hearth niche); ' +
+        'a hearth hall, a kiva sunk a metre with its great incense burner, a cistern at the bottom under an air shaft' },
     /* ---------------- sacred */
     { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],

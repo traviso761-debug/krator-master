@@ -6,7 +6,7 @@
 // Local frame: origin at the foot of the front, the rock behind it (-z), +z out of the face. Every floor is walkable in F.
 const TB_HALL=[0,-10.5],TB_HALLR=3.5;
 function tbCircle(cx,cz,r,n){const P=[];for(let i=0;i<n;i++){const a=i*TAU/n;P.push([cx+Math.cos(a)*r,cz+Math.sin(a)*r]);}return P;}
-defBuilding({key:'zj_testblock',name:'Cavern test block: a carved front, rooms, a stair down to a lava tube',seed:4101,cls:'feature',kind:'cavern-test',
+defBuilding({key:'zj_testblock',name:'Cavern test block: a carved front, rooms, a stair down to a lava tube',seed:4101,cls:'feature',kind:'cavern-test',originFront:true,
  tags:{style:'carved',rock:'tuff'},w:28,d:32,h:12.5,note:'the cavern module (core/terrain/39-core-cavern.js) on the kit sheet: its floors are walkable in F',
  build(o){
   /* the rock: a block of tuff standing on the sheet, its top domed */

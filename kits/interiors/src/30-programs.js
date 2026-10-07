@@ -2,7 +2,8 @@
    The data the placer reads. Swap or extend any table here without touching the placer.
 
    PROGRAMS[kind] = {
-     require: [{ need, types:[...], n }]   placed FIRST, in this order (SPEC "Placement" 2).
+     require: [{ need, types:[...], n, roles?, anchors? }]   placed FIRST, in this order (SPEC "Placement" 2). roles: only
+                                           pieces of those catalog roles; anchors: only pieces with those anchors
                                            need names the slot in reports; types are catalog
                                            FURN types (kits/catalog krator-asset-engine.js FURN_TYPES)
      optional:[{ types:[...], max }]       filled after, while there is room, from the room's

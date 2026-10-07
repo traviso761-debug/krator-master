@@ -47,6 +47,8 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  sbEnd();popM();const doors=DOORS_CUR;
  CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;
  rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=zjFront(d,doors,org,wry);rec.doorCount=doors.length;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
+ /* a built def's floors and walls into core/walk, from its interiors item (37-zj-walk.js; a carved def's come from the cavern) */
+ if(!PLACE_DRY&&!rec.parent){const it=zjItem(key);if(it)rec.walk=zwItem(it,rec);}
  if(!PLACE_DRY)REG.push(rec);return rec;}
 let PLACE_DRY=0;
 /* the life layer's data for what the kit places alive (README.md, "Life/simulation layer"): a beetle or a cow is a creature

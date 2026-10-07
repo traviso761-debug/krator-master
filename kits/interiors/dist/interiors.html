@@ -385,7 +385,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
    The data the placer reads. Swap or extend any table here without touching the placer.
 
    PROGRAMS[kind] = {
-     require: [{ need, types:[...], n }]   placed FIRST, in this order (SPEC "Placement" 2).
+     require: [{ need, types:[...], n, roles?, anchors? }]   placed FIRST, in this order (SPEC "Placement" 2). roles: only
+                                           pieces of those catalog roles; anchors: only pieces with those anchors
                                            need names the slot in reports; types are catalog
                                            FURN types (kits/catalog krator-asset-engine.js FURN_TYPES)
      optional:[{ types:[...], max }]       filled after, while there is room, from the room's
@@ -1234,7 +1235,8 @@ var KratorInteriors = (typeof KratorInteriors !== 'undefined' && KratorInteriors
     let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
-        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0); }) };
+        /* rq.anchors: only pieces with one of these anchors (a food store that is not a surface piece: the residence rule's) */
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0) && (!rq.anchors || rq.anchors.indexOf(d.anchor || 'floor') >= 0); }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);

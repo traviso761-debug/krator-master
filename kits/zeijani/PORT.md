@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 3 (3%) | 10 (9%) | 10 (9%) | 52 (48%) | 33 (31%) |
+| KB | 5 (4%) | 22 (17%) | 10 (7%) | 48 (36%) | 48 (36%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,14 +16,18 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/10-core.js` | 3.6 | [web] | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/27-mat.js` | 9.7 | [G shader] | 14 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/30-geo.js` | 22.2 | [draw] | 44 | 0 | 0 | 0 | 0 | 25 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/36-def.js` | 5.6 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/40-zj-cave.js` | 10.6 | [G shader] | 9 | 0 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | the cave material (per-vertex weights over triplanar library sets) is the .gdshader; the rest is glue (local plans to world through CM; chunk arrays to BufferGeometry: Godot imports the exported meshes) |
+| `src/36-def.js` | 5.8 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/37-zj-walk.js` | 2.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/40-zj-cave.js` | 12.3 | [G shader] | 9 | 0 | 0 | 0 | 2 | 1 | 6 | 0 | 0 | 0 | 0 | the cave material (per-vertex weights over triplanar library sets) is the .gdshader; the rest is glue (local plans to world through CM; chunk arrays to BufferGeometry: Godot imports the exported meshes) |
 | `src/41-zj-block.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: the void plan is data (the cavern carves it, core/walk takes its floors); three box() calls draw the lintel |
+| `src/42-zj-forms.js` | 8.0 | [draw] | 3 | 0 | 0 | 0 | 0 | 24 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/43-zj-wood.js` | 6.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/44-zj-gallery.js` | 1.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
-| `src/89-rows.js` | 0.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/90-scene.js` | 6.4 | [web] | 15 | 0 | 1 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rows.js` | 0.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/90-scene.js` | 7.6 | [web] | 16 | 0 | 1 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 |  |
 | `src/91-probe.js` | 8.3 | [web] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |  |
-| `src/91f-furnish.js` | 5.9 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/91f-furnish.js` | 8.3 | [web] | 1 | 0 | 0 | 0 | 2 | 0 | 3 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/91n-night.js` | 2.6 | [draw] | 6 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/92-camera.js` | 13.8 | [web] | 12 | 0 | 21 | 14 | 4 | 2 | 0 | 0 | 3 | 0 | 0 |  |
 | `src/93-anim.js` | 2.5 | [draw] | 5 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |

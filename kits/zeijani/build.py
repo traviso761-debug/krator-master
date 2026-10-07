@@ -15,6 +15,8 @@ The page is one <script> made of, in filename order:
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
+  39-interiors-bundle.js GENERATED (kits/interiors/kit_bundle.py): the interiors core and sets/zeijani.js (KratorInteriors):
+                        every def's rooms, and the carved defs' void plans, which the kit carves from the same item
 A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). src/81-sky.js is VENDORED from
 settlements/iziz/src/81-sky.js (KratorSky, the standard Krator sky): --vendor-check reports drift.
 
@@ -71,8 +73,9 @@ CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # on
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
-BUNDLE_GLOBALS = ('KratorFurniture',)
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js'}
+BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
+INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans
 
 
 def matlib_pack():
@@ -99,8 +102,10 @@ def matlib_pack():
 
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
-    import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
+    import furniture_bundle, kit_bundle
+    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
+            '39-interiors-bundle.js': kit_bundle.bundle(INTERIOR_SETS)}
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)

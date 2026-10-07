@@ -421,7 +421,8 @@
     let nItem = 0;
     for (const rq of reqs) {
       const L = levels(fallback).map(function (lv) {
-        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0); }) };
+        /* rq.anchors: only pieces with one of these anchors (a food store that is not a surface piece: the residence rule's) */
+        return { culture: lv.culture, list: lv.list.filter(function (d) { return rq.types.indexOf(d.type) >= 0 && (!rq.roles || rq.roles.indexOf(d.role) >= 0) && (!rq.anchors || rq.anchors.indexOf(d.anchor || 'floor') >= 0); }) };
       }).filter(function (lv) { return lv.list.length; });
       const rec = { need: rq.need, types: rq.types, n: rq.n || 1, placed: 0 };
       report.required.push(rec);

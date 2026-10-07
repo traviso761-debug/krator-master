@@ -33,7 +33,7 @@ function cvHall(o){const c=cvW(o.c[0],o.c[1],o.c[2]);const T=o.throat?Object.ass
  return cvAdd('hall',o,Object.assign(cvCopy(o,['id','c','throat','joins']),{c,throat:T}));}
 function cvStair(o){return cvAdd('stair',o,Object.assign(cvCopy(o,['id','a','b','joins']),{a:cvW(o.a[0],o.a[1],o.a[2]),b:cvW(o.b[0],o.b[1],o.b[2])}));}
 function cvShaft(o){const c=cvW(o.c[0],0,o.c[1]);return cvAdd('shaft',o,Object.assign(cvCopy(o,['id','c','y0','y1','joins']),{c:[c[0],c[2]],y0:cvY(o.y0),y1:cvY(o.y1)}));}
-function cvDoor(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'door',c:[c[0],c[2]],y:cvY(o.y||0),r:o.r||1.4});}
+function cvDoor(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'door',c:[c[0],c[2]],y:cvY(o.y||0),r:o.r||1.4,h:o.h});}
 function cvWell(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'well',c:[c[0],c[2]],r:o.r,rim:o.rim});}
 function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,x1,z0,z1,y0,y1] to a world box (quarter turns exact) */
  const b=o.box,P=[[b[0],b[2]],[b[1],b[2]],[b[0],b[3]],[b[1],b[3]]].map(p=>cvW(p[0],0,p[1]));
@@ -101,3 +101,16 @@ function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').
    if(r[0]<m[0])out.push([r[0],m[0],r[2],r[3]]);if(m[1]<r[1])out.push([m[1],r[1],r[2],r[3]]);
    const a=Math.max(r[0],m[0]),b=Math.min(r[1],m[1]);if(r[2]<m[2])out.push([a,b,r[2],m[2]]);if(m[3]<r[3])out.push([a,b,m[3],r[3]]);}rects=out;}
  rects.forEach((r,i)=>KWALK.floor({rect:r,y:0,name:'the sheet\'s ground #'+i,tag:'ground'}));return rects.length;}
+/* ---------------------------------------------------------------- a carved def's void plan from its interiors item
+   kits/interiors/sets/zeijani.js holds, per carved def, its rooms (ROOM() data: poly, y, h, doors, fixtures; the cavern's own
+   fields ceil, rise, round, finish, rock ride along, ignored by the interiors kit) and a `voids` list the interiors kit ignores:
+   { kind:'stair'|'tube'|'hall'|'shaft'|'trench'|'monolith'|'mass'|'door'|'well', id, ... } in the def's frame. Carving
+   from that one record keeps the rock, the walk floors, the rooms and their furniture in agreement. */
+function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish||'hewn';
+ for(const r of item.rooms||[]){if(!(r.carved===true||(item.carved&&r.carved!==false)))continue;cvRoom({id:r.id,poly:r.poly,y:r.y||0,h:r.h||2.6,ceil:r.ceil||'flat',rise:r.rise||0,r:r.round||0,finish:r.finish||fin,rock:r.rock||o.rock||'tuff',joins:r.joins});n++;
+  for(const f of r.fixtures||[]){if(f.kind==='ladder'||f.kind==='sipapu'||f.kind==='stair')continue;const hw=f.w/2,hd=f.d/2,q=Math.abs(Math.round((f.ry||0)/(PI/2)))%2===1;
+   const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
+ for(const v of item.voids||[]){const k=v.kind,q=Object.assign({},v);delete q.kind;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
+  if(k==='stair')cvStair(q);else if(k==='tube')cvTube(q);else if(k==='hall')cvHall(q);else if(k==='shaft')cvShaft(q);else if(k==='trench')cvTrench(q);
+  else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);else{reportErr('cvFromItem '+item.key+': no void kind '+k);continue;}n++;}
+ return n;}

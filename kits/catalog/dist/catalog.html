@@ -19739,7 +19739,8 @@ FURN({
    Carved-in-place benches, bed shelves, niches and the kiva's great incense
    burner are STRUCTURE (the kit's fixtures), never furniture: the pieces here
    are what a household carries in. The fleeces lie on the carved bed shelves.
-   Lights are data (F.lamp; the interiors adapter strips them into records).
+   Lights are data (F.lamp; the interiors adapter strips them into records). The household pieces (the fleeces, the water
+   jars, the stools, the lamps, the masks) take wealth [0, 1]: the poorest Zeijani homes use their own before the generic set.
    kits/zeijani/PLAN.md section 6.6 is the list this file answers.
    ====================================================================== */
 /* PALETTE */
@@ -19836,7 +19837,7 @@ const ZJ_FX = {
 
 /* ====================================================================== home */
 FURN({
-  key: 'zeijani_fleece_bed', name: 'Fleeces and a hide blanket', culture: 'zeijani', tier: 'common', type: 'bed', role: 'bed', setting: 'indoor',
+  key: 'zeijani_fleece_bed', name: 'Fleeces and a hide blanket', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'bed', role: 'bed', setting: 'indoor',
   rooms: ['bedroom', 'cell', 'cottage', 'barracks', 'dormitory'], anchor: 'floor', clearance: { front: 0.6 },
   materials: ['cloth', 'hide', 'stone'],
   w: 0.95, d: 1.9, h: 0.42, variants: 2, variantNames: ['on the floor', 'on a stone kerb'], variantDims: [{ w: 0.95, d: 1.9, h: 0.3 }, { w: 0.95, d: 1.9, h: 0.42 }],
@@ -19856,7 +19857,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_olla', name: 'Water olla', culture: 'zeijani', tier: 'common', type: 'storage', role: 'store', setting: 'both',
+  key: 'zeijani_olla', name: 'Water olla', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'store', setting: 'both',
   rooms: ['kitchen', 'cell', 'cottage', 'living', 'store', 'cistern', 'hall', 'brewery', 'yard'], anchor: 'floor', clearance: { front: 0.4 },
   materials: ['ceramic', 'timber', 'stone'],
   w: 0.6, d: 0.6, h: 0.86, variants: 2, variantNames: ['one jar on a ring', 'three jars'], variantDims: [{ w: 0.6, d: 0.6, h: 0.86 }, { w: 0.62, d: 0.6, h: 0.62 }],
@@ -19870,7 +19871,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_jar_cradle', name: 'Jars in a timber cradle', culture: 'zeijani', tier: 'common', type: 'storage', role: 'store', setting: 'indoor',
+  key: 'zeijani_jar_cradle', name: 'Jars in a timber cradle', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'store', setting: 'indoor',
   rooms: ['cistern', 'kitchen', 'store', 'brewery', 'tavern'], anchor: 'wall', clearance: { front: 0.6 },
   materials: ['ceramic', 'timber'],
   w: 1.6, d: 0.55, h: 1.0, variants: 1,
@@ -19884,7 +19885,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_stone_stool', name: 'Tuff block stool', culture: 'zeijani', tier: 'common', type: 'chair', role: 'stool', setting: 'both',
+  key: 'zeijani_stone_stool', name: 'Tuff block stool', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'chair', role: 'stool', setting: 'both',
   rooms: ['hall', 'cell', 'cottage', 'living', 'kitchen', 'tavern', 'workshop', 'guardroom', 'kiva', 'yard'], anchor: 'floor', clearance: { front: 0.5 },
   materials: ['stone', 'hide'],
   w: 0.42, d: 0.42, h: 0.46, variants: 2, variantNames: ['bare', 'with a hide'],
@@ -19894,7 +19895,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_stone_bench', name: 'Tuff slab bench', culture: 'zeijani', tier: 'common', type: 'bench', role: 'bench', setting: 'both',
+  key: 'zeijani_stone_bench', name: 'Tuff slab bench', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'bench', role: 'bench', setting: 'both',
   rooms: ['hall', 'tavern', 'guardroom', 'kiva', 'yard', 'court', 'cistern', 'street', 'plaza'], anchor: 'floor', clearance: { front: 0.6 },
   materials: ['stone'],
   w: 1.6, d: 0.45, h: 0.46, variants: 1,
@@ -19969,7 +19970,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_alecap_basket', name: 'Basket of alecaps', culture: 'zeijani', tier: 'common', type: 'storage', role: 'basket', job: 'fungiculture', setting: 'both',
+  key: 'zeijani_alecap_basket', name: 'Basket of alecaps', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'storage', role: 'basket', job: 'fungiculture', setting: 'both',
   rooms: ['kitchen', 'store', 'shop', 'market', 'brewery', 'farm', 'yard', 'cottage', 'cell'], anchor: 'floor', clearance: { front: 0.4 },
   materials: ['wicker', 'food'],
   w: 0.55, d: 0.55, h: 0.48, variants: 1,
@@ -20039,7 +20040,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_glow_jar', name: 'Glow-culture jar', culture: 'zeijani', tier: 'common', type: 'lamp', role: 'glow_jar', job: 'alchemy', setting: 'indoor',
+  key: 'zeijani_glow_jar', name: 'Glow-culture jar', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'glow_jar', job: 'alchemy', setting: 'indoor',
   rooms: ['lab', 'cell', 'hall', 'shop', 'kiva', 'ossuary', 'bedroom', 'cottage', 'study'], anchor: 'surface', clearance: {},
   materials: ['glass', 'emissive', 'ceramic'],
   w: 0.24, d: 0.24, h: 0.34, variants: 1,
@@ -20054,7 +20055,7 @@ FURN({
 
 /* ====================================================================== light */
 FURN({
-  key: 'zeijani_glow_basin', name: 'Glow-fungus basin on a pillar', culture: 'zeijani', tier: 'common', type: 'lamp', role: 'lamp', setting: 'both',
+  key: 'zeijani_glow_basin', name: 'Glow-fungus basin on a pillar', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'lamp', setting: 'both',
   rooms: ['hall', 'kiva', 'shrine', 'ossuary', 'cistern', 'court', 'antechamber', 'street', 'plaza', 'tavern'], anchor: 'floor', clearance: {},
   materials: ['stone', 'emissive', 'food'],
   w: 0.5, d: 0.5, h: 1.1, variants: 1,
@@ -20067,7 +20068,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_slipper_lamp', name: 'Clay slipper lamp', culture: 'zeijani', tier: 'common', type: 'lamp', role: 'candle', setting: 'indoor',
+  key: 'zeijani_slipper_lamp', name: 'Clay slipper lamp', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'candle', setting: 'indoor',
   rooms: ['hall', 'cell', 'bedroom', 'cottage', 'living', 'kiva', 'shrine', 'ossuary', 'study', 'tavern'], anchor: 'surface', clearance: {},
   materials: ['ceramic', 'emissive'],
   w: 0.22, d: 0.12, h: 0.14, variants: 1,
@@ -20078,7 +20079,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_hanging_lamp', name: 'Hanging copper bowl lamp', culture: 'zeijani', tier: 'common', type: 'lamp', role: 'hanging', setting: 'indoor',
+  key: 'zeijani_hanging_lamp', name: 'Hanging copper bowl lamp', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'lamp', role: 'hanging', setting: 'indoor',
   rooms: ['hall', 'tavern', 'kiva', 'shop', 'brewery', 'lab', 'antechamber', 'guardroom', 'inn'], anchor: 'ceiling', clearance: {},
   materials: ['metal', 'emissive'],
   w: 0.5, d: 0.5, h: 1.0, variants: 1,
@@ -20093,7 +20094,7 @@ FURN({
 
 /* ====================================================================== crafts */
 FURN({
-  key: 'zeijani_mealing_bins', name: 'Mealing bins with grinding stones', culture: 'zeijani', tier: 'common', type: 'workstation', role: 'mealing', job: 'milling', setting: 'indoor',
+  key: 'zeijani_mealing_bins', name: 'Mealing bins with grinding stones', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'workstation', role: 'mealing', job: 'milling', setting: 'indoor',
   rooms: ['kitchen', 'cell', 'cottage', 'living', 'workshop'], anchor: 'wall', clearance: { front: 0.9 },
   materials: ['stone', 'food'],
   w: 1.4, d: 0.7, h: 0.42, variants: 1,
@@ -20273,7 +20274,7 @@ FURN({
 
 /* ====================================================================== the sacred */
 FURN({
-  key: 'zeijani_spirit_mask', name: 'Spirit mask', culture: 'zeijani', tier: 'common', type: 'art', role: 'mask', setting: 'indoor',
+  key: 'zeijani_spirit_mask', name: 'Spirit mask', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'art', role: 'mask', setting: 'indoor',
   rooms: ['kiva', 'shrine', 'hall', 'antechamber', 'cell', 'cottage', 'living', 'tavern'], anchor: 'wall', clearance: {},
   materials: ['timber', 'cloth', 'bone', 'emissive'],
   w: 0.6, d: 0.16, h: 0.95, variants: 3, variantNames: ['a Hidden One', 'the Lamp Mother', 'the Serpent'],
@@ -20293,7 +20294,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_ancestor_figures', name: 'Ancestor figurines', culture: 'zeijani', tier: 'common', type: 'statue', role: 'figurines', setting: 'indoor',
+  key: 'zeijani_ancestor_figures', name: 'Ancestor figurines', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'statue', role: 'figurines', setting: 'indoor',
   rooms: ['kiva', 'shrine', 'hall', 'bedroom', 'cell', 'cottage', 'living', 'ossuary'], anchor: 'surface', clearance: {},
   materials: ['stone', 'cloth'],
   w: 0.4, d: 0.16, h: 0.32, variants: 1,
@@ -20307,7 +20308,7 @@ FURN({
   }
 });
 FURN({
-  key: 'zeijani_prayer_sticks', name: 'Prayer sticks in a stone', culture: 'zeijani', tier: 'common', type: 'shrine', role: 'prayer_sticks', setting: 'both',
+  key: 'zeijani_prayer_sticks', name: 'Prayer sticks in a stone', culture: 'zeijani', tier: 'common', wealth: [0, 1], type: 'shrine', role: 'prayer_sticks', setting: 'both',
   rooms: ['kiva', 'shrine', 'ossuary', 'cell', 'cottage', 'yard'], anchor: 'floor', clearance: { front: 0.3 },
   materials: ['stone', 'timber', 'bone', 'cloth'],
   w: 0.4, d: 0.4, h: 0.9, variants: 1,

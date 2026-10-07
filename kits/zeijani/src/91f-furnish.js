@@ -9,8 +9,8 @@
 // Each record is on its building's REG record (rec.furniture) and in core/tags as class furniture with the building as parent.
 // A key the catalog lacks is counted, not thrown (ZJF.missing, _api.furniture().missing). ?furniture=0 places nothing drawn.
 KratorFurniture.setDetail(.6);
-const ZJF=KFURN.create(Object.assign(KFURN.flags(false),{
- catalog:KFURN.catalogOf(KratorFurniture),interiors:null,
+const ZJF=KFURN.create(Object.assign(KFURN.flags(true),{
+ catalog:KFURN.catalogOf(KratorFurniture),interiors:KratorInteriors,
  seed:(o,ctx)=>ctx.seed*100+ctx.list.length+1,
  draw:(rec,ctx)=>{const r=KFURN.drawRec(ZJF,rec,ctx.wealth);if(r.error)reportErr('furniture '+rec.key+': '+r.error);
   /* the piece's lights become halos (91n-night.js): fires big and warm, lamps small */
@@ -18,7 +18,26 @@ const ZJF=KFURN.create(Object.assign(KFURN.flags(false),{
   for(const L of (r.lights||[])){const k=Math.round(L.x/.6)+','+Math.round(L.y/.6)+','+Math.round(L.z/.6);if(HALOKEY.has(k))continue;HALOKEY.add(k);
    const c=hc(fire?0xff8a30:0xffc878);HALOS.push({x:L.x,y:L.y,z:L.z,r:c.r,g:c.g,b:c.b,big:fire});}}}));
 ZJF.WEALTH={};   // a def's 0..1 wealth for its furniture (its tags.wealth name, or .5)
-function svfNewBatch(){KFURN.useBatch(ZJF,KratorFurniture,null);ZJF.placed=[];ZJF.missing={};ZJF.cfg.tags=ZJTAGS;}
+function svfNewBatch(){KFURN.useBatch(ZJF,KratorFurniture,KratorInteriors);ZJF.placed=[];ZJF.missing={};ZJF.cfg.tags=ZJTAGS;ZJF.rooms=[];ZJF.interiorPieces=0;}
+/* ---- INTERIORS: every def whose key has an item in kits/interiors/sets/zeijani.js gets its rooms planned and furnished at
+   its placement (core/furnish's R.interior over the interiors kit). The runtime adapter draws into the batch without a
+   record, so this wrapper registers what the interiors place, before it is drawn (GODOT-PLAN.md rule 4): each room as a
+   `part` of its building (kind room, tags.room its kind), each piece as `furniture` with its room as parent. */
+function zjItem(key){const S=KratorInteriors.sets.byName.zeijani;const it=S&&S.byKey[key];return it&&!it.skip?it:null;}
+function zjTagAdapter(base,rec){const roomTid={};
+ return Object.assign({},base,{build:(p,room)=>{let parent=rec.tid;
+   if(room&&ZJTAGS){if(!roomTid[room.id]){const t=ZJTAGS.child(rec.tid,{'class':'part',kind:'room',key:room.id,name:(room.kind||'room')+' of '+rec.name,
+      at:[room.centroid[0],room.y,room.centroid[1]],ry:rec.ry,tags:{room:room.kind,culture:'zeijani',setting:'room'},note:Math.round(room.area)+' m2',frag:'kits/interiors/sets/zeijani.js'});
+     roomTid[room.id]=t.id;ZJF.rooms.push({id:room.id,kind:room.kind,building:rec.key,tid:t.id,area:room.area});}parent=roomTid[room.id];}
+   const A=KratorFurniture.FURN_BY_KEY[p.key];
+   if(ZJTAGS)ZJTAGS.child(parent,{'class':'furniture',kind:A?A.type:'piece',key:p.key,name:A?A.name:p.key,at:[p.x,p.y,p.z],ry:p.ry,
+     tags:{culture:A&&A.culture||'zeijani',setting:'room',room:room?room.kind:null,job:A&&A.job||undefined},frag:'kits/catalog'});
+   ZJF.interiorPieces++;return base.build(p,room);}});}
+function zjInteriors(){if(!ZJF.on||!ZJF.cfg.interiorsOn)return;for(const rec of REG){if(rec.parent)continue;const it=zjItem(rec.key);if(!it)continue;
+  try{const fi=ZJF.interior(it,rec.x,rec.z,rec.ry,zjTagAdapter(ZJF.adapter,rec),{baseY:rec.y,prefix:(rec.tid||rec.key)+'.'});rec.interior=fi.summary;
+   fi.result.inst.rooms.forEach(R=>{const P=fi.result.plans[R.id];(P&&P.lights||[]).forEach(l=>{const k=Math.round(l.x/.6)+','+Math.round(l.y/.6)+','+Math.round(l.z/.6);
+    if(!HALOKEY.has(k)){HALOKEY.add(k);const c=hc(0xffc878);HALOS.push({x:l.x,y:l.y,z:l.z,r:c.r,g:c.g,b:c.b,big:false});}});});}
+  catch(e){reportErr('interior '+rec.key+': '+(e&&e.stack||e));}}}
 function svfWealth(rec){const w=rec&&rec.tags&&rec.tags.wealth;return w==='rich'?.9:w==='poor'?.25:w==='middle'?.55:.55;}
 function FURNISH(key,lx,ly,lz,lry,o){o=o||{};if(!CURREC){reportErr('FURNISH '+key+' outside a builder');return null;}
  if(PLACE_DRY)return null;lry=lry||0;
@@ -47,9 +66,9 @@ function svfDetail(mt){const tf=mt.userData.texFamily,Lt=KMAT.mode==='lib'&&tf?K
  return true;}
 // ---- the batch becomes meshes once per world build, after every def is placed
 const svfBuildWorld=buildWorld;
-buildWorld=function(){zjTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();
+buildWorld=function(){zjTagsReset();svfNewBatch();const t0=performance.now();const W0=svfBuildWorld();zjInteriors();
  const g=ZJF.group=ZJF.batch.flush(WORLD);g.userData.furniture=true;
  ZJF.detailed=[];g.traverse(m=>{if(m.isMesh){const f=m.material.userData.family;m.castShadow=f!=='glow'&&f!=='glass';m.receiveShadow=true;KFURN.linearColours(m.geometry);if(!m.material.map&&svfDetail(m.material))ZJF.detailed.push(f);}});
- if(window._build)window._build.furniture={placed:ZJF.placed.length,tris:Math.round(ZJF.batch.tris),missing:Object.assign({},ZJF.missing),ms:Math.round(performance.now()-t0)};
+ if(window._build)window._build.furniture={placed:ZJF.placed.length,interiorPieces:ZJF.interiorPieces,rooms:ZJF.rooms.length,tris:Math.round(ZJF.batch.tris),missing:Object.assign({},ZJF.missing),ms:Math.round(performance.now()-t0)};
  if(typeof nightRebuild==='function')nightRebuild();
  return W0;};

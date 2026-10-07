@@ -29,7 +29,7 @@
 //   C.mass({id, owner, poly, y0, y1, taper, cap})   rock standing on the ground, meshed here (the host draws only the ground)
 //   C.opening({id, c:[x,z], r, rim (3), kind:'well'})   where a void may meet the sky through the GROUND (a light well, a
 //                      collapse pit): the host's ground gets a hole of radius r+rim (holeAt), the cavern meshes the ground inside it
-//   C.opening({id, c:[x,z], y, r, kind:'door'})   where a void meets the open air through a FACE (a doorway in a mass or a
+//   C.opening({id, c:[x,z], y, r, h, kind:'door'})   where a void meets the open air through a FACE (a doorway in a mass or a
 //                      cliff, the portal): no hole in the ground; the sky check lets the void out there
 //   C.fixture({id, owner, box:[x0,x1,z0,z1,y0,y1], tag})   carved furniture and pillars: a core/walk block
 //   C.build()          checks the plan, writes every floor and block to `walk`, sets the chunk list; returns C
@@ -167,6 +167,9 @@
     o=o||{};
     if(typeof o.ground!=='function')throw new Error('KCAVERN.create: ground(x,z) required');
     var ground=o.ground,cell=o.cell||.5,CH=o.chunk||16,seed=(o.seed||1)>>>0,walk=o.walk||null,minRock=o.minRock==null?.8:o.minRock;
+    /* the lattice sits half a cell up: a floor at a whole or half metre then lies mid-cell, where surface nets puts it
+       exactly; on a lattice plane the walls sharing its cells pull it up by a fifth of a metre (narrow doorways) */
+    var YOFF=o.yOffset==null?cell/2:o.yOffset;
     var NC=Math.round(CH/cell);if(Math.abs(NC*cell-CH)>1e-9)throw new Error('KCAVERN: chunk must be a whole number of cells');
     var prims=[],byId={},openings=[],fixtures=[],built=false,C={};
     var seedRare=KR.child(seed,'cavern.rare'),seedHue=KR.child(seed,'cavern.hue'),seedDrip=KR.child(seed,'cavern.drip');
@@ -181,11 +184,11 @@
     }
     ['tube','hall','room','shaft','stair','trench','monolith','mass'].forEach(function(k){C[k]=function(P){return add(k,P);};});
     C.opening=function(P){if(!P.id||!P.c)throw new Error('KCAVERN.opening: id and c required');
-      var Q={id:P.id,kind:P.kind||'well',c:P.c.slice(),r:num(P.r,'opening r'),rim:P.kind==='door'?0:(P.rim==null?3:P.rim),y:P.y==null?null:num(P.y,'door y')};
+      var Q={id:P.id,kind:P.kind||'well',c:P.c.slice(),r:num(P.r,'opening r'),rim:P.kind==='door'?0:(P.rim==null?3:P.rim),y:P.y==null?null:num(P.y,'door y'),h:P.h==null?Math.max(2.6,num(P.r,'opening r')*1.6):num(P.h,'door h')};
       if(Q.kind==='door'&&Q.y===null)throw new Error('KCAVERN.opening '+P.id+': a door needs y (its sill)');openings.push(Q);return Q;};
     function wells(){return openings.filter(function(Q){return Q.kind==='well';});}
     function inOpening(x,y,z){for(var i=0;i<openings.length;i++){var Q=openings[i],d=Math.hypot(x-Q.c[0],z-Q.c[1]);
-      if(Q.kind==='well'?d<Q.r+Q.rim:(d<Q.r&&y>Q.y-1&&y<Q.y+Q.r*1.6))return Q;}return null;}
+      if(Q.kind==='well'?d<Q.r+Q.rim:(d<Q.r&&y>Q.y-1&&y<Q.y+Q.h+.4))return Q;}return null;}
     C.fixture=function(P){if(!P.box||P.box.length!==6)throw new Error('KCAVERN.fixture: box [x0,x1,z0,z1,y0,y1] required');
       var Q={id:P.id||('fixture'+fixtures.length),owner:P.owner||'',box:P.box.slice(),tag:P.tag||'fixture'};fixtures.push(Q);return Q;};
 
@@ -291,13 +294,13 @@
       var empty={key:key,cell:cell,origin:[x0,y0,z0],pos:new Float32Array(0),nrm:new Float32Array(0),idx:new Uint32Array(0),occ:new Float32Array(0),w:new Float32Array(0),hue:new Float32Array(0),mat:new Uint8Array(0),ground:new Uint8Array(0),prim:new Uint16Array(0)};
       if(!list.length)return empty;
       // a quick refusal: far from every surface at the chunk's centre (the fields are bounds, give them a margin)
-      var cx=x0+CH/2,cy=y0+CH/2,cz=z0+CH/2,fc=airOf(list,cx,cy,cz);if(Math.abs(fc)>CH*1.8)return empty;
+      var cx=x0+CH/2,cy=y0+CH/2+YOFF,cz=z0+CH/2,fc=airOf(list,cx,cy,cz);if(Math.abs(fc)>CH*1.8)return empty;
       var M=N+2,F=new Float64Array(M*M*M),G=new Float64Array(M*M);
       var id=function(i,j,k){return ((k+1)*M+(j+1))*M+(i+1);};
       for(var k=-1;k<=N;k++)for(var i=-1;i<=N;i++)G[(k+1)*M+(i+1)]=ground(x0+i*cell,z0+k*cell);
       var anyIn=false,anyOut=false;
       var hasMass=list.some(function(P){return P.kind==='mass';});
-      for(k=-1;k<=N;k++)for(var j=-1;j<=N;j++)for(i=-1;i<=N;i++){var X=x0+i*cell,Y=y0+j*cell,Z=z0+k*cell,dv=voidOf(list,X,Y,Z),dg=G[(k+1)*M+(i+1)]-Y;
+      for(k=-1;k<=N;k++)for(var j=-1;j<=N;j++)for(i=-1;i<=N;i++){var X=x0+i*cell,Y=y0+j*cell+YOFF,Z=z0+k*cell,dv=voidOf(list,X,Y,Z),dg=G[(k+1)*M+(i+1)]-Y;
         if(hasMass)dg=Math.max(dg,-massOf(list,X,Y,Z));var f=smin(dv,dg,rimK(X,Z));
         F[id(i,j,k)]=f;if(f<0)anyIn=true;else anyOut=true;}
       if(!anyIn||!anyOut)return empty;
@@ -315,7 +318,7 @@
         var gy=(1-sx)*(1-sz)*(v[2]-v[0])+sx*(1-sz)*(v[3]-v[1])+(1-sx)*sz*(v[6]-v[4])+sx*sz*(v[7]-v[5]);
         var gz=(1-sx)*(1-sy)*(v[4]-v[0])+sx*(1-sy)*(v[5]-v[1])+(1-sx)*sy*(v[6]-v[2])+sx*sy*(v[7]-v[3]);
         var gl=Math.hypot(gx,gy,gz)||1;
-        var PX=x0+(i+sx)*cell,PY=y0+(j+sy)*cell,PZ=z0+(k+sz)*cell;
+        var PX=x0+(i+sx)*cell,PY=y0+(j+sy)*cell+YOFF,PZ=z0+(k+sz)*cell;
         VX[cid(i,j,k)]=pos.length/3;pos.push(PX,PY,PZ);nrm.push(-gx/gl,-gy/gl,-gz/gl);
         var dv2=voidOf(list,PX,PY,PZ),ow=OWN,sv=S.v,st=S.top,dg2=ground(PX,PZ)-PY,ms=hasMass?massOf(list,PX,PY,PZ):1e30,op=Math.max(dg2,-ms);
         /* the active term: the void, a mass's face, or the ground (only the ground's own surface is the host's to draw) */
@@ -363,7 +366,7 @@
       return {format:'krator-cavern',version:1,convention:{units:'m',up:'+y',x:'east',z:'south',handed:'right'},cell:cell,chunk:CH,seed:seed,mats:MATS.slice(),
         prims:prims.map(function(P){var o={id:P.id,owner:P.owner,kind:P.kind,rock:P.rock,finish:P.finish};
           ['pts','w','h','spring','ledge','blend','c','rx','rz','belly','throat','poly','y','ceil','rise','r','y0','y1','r0','r1','a','b','taper','cap','block','joins','floor'].forEach(function(k){if(P[k]!==undefined)o[k]=JSON.parse(JSON.stringify(P[k]));});return o;}),
-        openings:openings.map(function(Q){return {id:Q.id,kind:Q.kind,c:Q.c.slice(),r:Q.r,rim:Q.rim,y:Q.y};}),
+        openings:openings.map(function(Q){return {id:Q.id,kind:Q.kind,c:Q.c.slice(),r:Q.r,rim:Q.rim,y:Q.y,h:Q.h};}),
         fixtures:fixtures.map(function(F){return {id:F.id,owner:F.owner,box:F.box.slice(),tag:F.tag};})};
     };
     C.prims=prims;C.byId=byId;C.openings=openings;C.fixtures=fixtures;C.cell=cell;C.chunk=CH;C.MATS=MATS;C.minRock=minRock;C.chunks=[];
@@ -378,7 +381,7 @@
   function load(ex,o){if(!ex||ex.format!=='krator-cavern')throw new Error('KCAVERN.load: not a krator-cavern export');
     var C=create(Object.assign({cell:ex.cell,chunk:ex.chunk,seed:ex.seed},o||{}));
     ex.prims.forEach(function(P){var Q=JSON.parse(JSON.stringify(P));delete Q.kind;C[P.kind](Q);});
-    ex.openings.forEach(function(Q){var R={id:Q.id,kind:Q.kind,c:Q.c,r:Q.r,rim:Q.rim};if(Q.y!=null)R.y=Q.y;C.opening(R);});
+    ex.openings.forEach(function(Q){var R={id:Q.id,kind:Q.kind,c:Q.c,r:Q.r,rim:Q.rim};if(Q.y!=null)R.y=Q.y;if(Q.h!=null)R.h=Q.h;C.opening(R);});
     ex.fixtures.forEach(function(F){C.fixture(F);});return C;}
   root.KCAVERN={create:create,load:load,hash:hash,MATS:MATS,sdPoly:sdPoly,insetPoly:insetPoly,smin:smin};
 })(typeof window!=='undefined'?window:globalThis);

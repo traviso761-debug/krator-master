@@ -41,7 +41,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-scyvoi.js` | 83.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 501 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-voth.js` | 6.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-xanadu.js` | 6.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture-zeijani.js` | 48.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 251 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-zeijani.js` | 48.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 251 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture.js` | 275.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 2242 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-plants.js` | 91.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 755 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `krator-symbols.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
