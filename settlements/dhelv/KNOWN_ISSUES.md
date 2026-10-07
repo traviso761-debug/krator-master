@@ -9,6 +9,10 @@
       the Throne's pioneers (lehua, tree ferns, glassfern), as its kipuka station does. That kit reads a set of ground fields
       (owned, kedge, knear, rock, slope, humid: biomes/throne/stations/kipuka/47-host-land.js) and its flow history (46): Dhelv
       would compute those from DH.groundY and the kipuka. The ground the cavern meshes at a rim is still tuff against basalt.
+- [ ] **The ground is one heightfield of 5 m squares (465k triangles), drawn from every view.** Underground it shows only
+      up the openings; a coarser grid away from the kipuka and the openings (or chunks) would take most of it off.
+- [ ] **What is drawn is decided by distance and the site's frame, not by occlusion.** A carved interior seen through a long
+      window from more than 32 m out shows empty; the inspector's ray still meets furniture that is not drawn.
 - [ ] **Only the kipuka's floor is walked on the surface** (and the cliff paths); the flows are not. The forest's plants are
       not walk blocks (a walker passes through a trunk).
 - [x] **The cut-away is not wired** for Dhelv's carved sites. Done (P5c): the 32 carved sites nearest the camera, refreshed

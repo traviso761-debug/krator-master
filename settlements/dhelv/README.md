@@ -71,6 +71,8 @@ under the ground opens into its void as a doorway, not through the surface). The
 | the wells' floors lit at noon: the sun up, the sky straight up over each floor | a plug of rock in the light well's throat |
 | no trees on cliffs or in buildings | a tree at the cliff's foot, one in the caravanserai |
 | the cut-away: every carved site, the camera at it, has a box among the 32 that holds the hall's rock 1.5 m before its front and its own back room | every box's turn mirrored |
+| the budgets: at every view, what is drawn (visible and in the frustum, the streamed rock apart) is at most 450 draws and 1.1M triangles | everything drawn (the switch off, as `?seeall`) |
+| the page's files each under 16 MB (verify.py: the gallery's limit a file) | the same files against 1 MB |
 | the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
 ## The checks (`tests/test-layout.js`)
@@ -124,3 +126,17 @@ declares (TAU, rng, fbm...) and its random stream stay its own beside the Zeijan
 clearing with their saplings and some 2,000 understory plants; the young flows are basalt; a stream runs through the
 clearing. Checked: no tree on the cliff or in a building (its negative: one planted at the cliff's foot, one in the
 caravanserai). `?noforest` leaves it out, `?q=` scales it.
+
+## What is drawn
+
+The buildings are drawn in cells of 160 m, carved and surface apart (`DH_CELLS` in `90-dhelv-scene.js`), and the furniture's
+batch is cut by site after it is flushed (`dhSplitFurniture`: each merged mesh keeps its vertices and gets an index a site).
+Every quarter second the camera decides what is drawn (`dhSeen`): a carved cell within 420 m; a surface cell above ground, or
+within 220 m from below (out of the portal, up a well); a carved site's furniture only with the camera inside it or before its
+front (32 m out, at its floor's height), a sunk site's within 45 m, a built site's within 90 m (150 m on the surface), all of
+them in the cut-away; the forest above ground or near the kipuka. The views draw 0.6 to 0.9M triangles and at most 348 draws
+besides the rock (2.5M and up to 1832 with everything drawn). `?seeall` draws everything.
+
+The cut-away (C) at the carved sites: the 32 nearest the camera (`dhCutBoxes`) open the rock that is not their own (the
+hall's wall before a front, the ceiling over its bay) above the site's floor + 2 m, as each room's own rock opens above its
+floor; the ground over them opens on the camera's side.

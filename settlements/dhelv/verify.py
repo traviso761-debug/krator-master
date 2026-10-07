@@ -119,6 +119,12 @@ async def run(a):
         if e.strip() or errs: bad = True
         for x in errs[:8]: print('pageerror:', x)
         if a.assert_:
+            # the page's files each under the gallery's 16 MB a file (PLAN.md P8); the negative: the same files against 1 MB
+            side = [os.path.join(folder, f) for f in os.listdir(folder) if f.startswith(os.path.splitext(name)[0] + '.tex') and f.endswith('.js')]
+            sizes = [(os.path.basename(f), os.path.getsize(f)) for f in [os.path.join(folder, name)] + side]
+            det = ', '.join('%s %.1f MB' % (f, n / 1e6) for f, n in sizes)
+            big = [f for f, n in sizes if n > 16e6]; print(('PASS ' if not big else 'FAIL ') + 'page-size - ' + det); bad |= bool(big)
+            neg = [f for f, n in sizes if n > 1e6]; print(('PASS ' if neg else 'FAIL ') + 'negative page-size: a 1 MB limit - ' + ('fails as it must: ' if neg else 'PASSED, the check is blind: ') + ', '.join(neg)); bad |= not neg
             for r in await pg.evaluate(ASSERT_JS):
                 print(('PASS ' if r['ok'] else 'FAIL ') + r['name'] + ' - ' + r['detail'][:700]); bad |= not r['ok']
         if a.cut: await pg.evaluate("cutSet(true)")
