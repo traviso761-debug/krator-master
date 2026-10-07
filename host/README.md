@@ -45,6 +45,7 @@ model, say) is vendored into a build like any other shared fragment, converted t
 | `share.html` | yes | the `/share` page: reads `address.json`, draws the QR codes with `vendor/qrcode.js` |
 | `vendor/` | yes | third-party code the site serves (`qrcode.js`, MIT); see its README |
 | `address.json` | no | generated at every check and start by `sitectl.py address`: this computer's addresses on its network |
+| `app/` | yes | `KratorGallery.exe`'s source: one window that downloads the latest `main` from GitHub, runs `sitectl.py setup` on its own copy and serves it, with no Python or git needed (`app/README.md`). The exe itself (`app/dist/`) is not committed |
 | `lod.toml` | yes | each Krator world's level of detail, what each level does, and the bar's extra links; `gallery/krator-bar.js` draws the bar (Scenes, LOD, Home) and applies the level |
 | `WorldMenagerie/` | yes | the World Menagerie itself, with its history: a git subtree (see below). Its Voth is in the source but never served |
 | `menagerie.lock` | yes | the Menagerie tree last synced (its git tree hash), and whether it had uncommitted changes |
