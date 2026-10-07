@@ -115,6 +115,15 @@ fungi, glow mushrooms, glow tufts, snare flowers, sixteen plume fungi, dripping 
 withered and succulent leaves). `THRONE.LIB.cardsOf(key)` lists what the pack carries; without it (an open world,
 `?mat=proc`) the kit is procedural throughout and those plants are simply not placed.
 
+**The maps are sidecars (2026-10-07).** The pages do not carry the pack's maps. Every station loads them from shared
+files beside it in `dist/`, through plain `<script src>` tags ahead of its code (`tools/textures/matlib_pack.py`):
+- `throne.tex.throne.js` (about 14 MB);
+- `throne.tex.hyperjungle.js`, for the kipuka and the spice frontier.
+
+A page is about 0.4 MB of code, and works opened from disk. Publish and copy the sidecars with the pages
+(`gallery/build_throne.py` does). Without them a page says so on the console and runs on its procedural maps.
+`python3 build.py --inline-packs` builds one self-contained page, as before.
+
 ## What the kit exports
 
 ```js

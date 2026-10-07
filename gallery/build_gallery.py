@@ -261,6 +261,10 @@ THREE_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
 # pages' <title>s, the description from the build's README.md or INDEX.md. An ENTRIES line replaces all of that.
 KINDS = {'settlements': 'world', 'openworld': 'world', 'biomes': 'biome', 'kits': 'kit'}
 UNLISTED = set()   # build folders ('kits/furniture') never to list, though they have pages
+# Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
+# artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
+# (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
+ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py'}
 
 
 def build_dir(path):
@@ -312,15 +316,16 @@ def cap(s):
     return s[:1].upper() + s[1:]
 
 
-def discover(build=False):
-    """Entries and sections for the builds no ENTRIES line names. build: make the pages of one that has none."""
+def discover(build=False, skip=()):
+    """Entries and sections for the builds no ENTRIES line names. build: make the pages of one that has none.
+    skip: build folders to leave out (ELSEWHERE, for the artifact's site)."""
     listed = {build_dir(e[2]) for e in ENTRIES}
     used = {e[1] for e in ENTRIES}
     found, sections = [], []
     for top, kind in KINDS.items():
         for script in sorted(glob.glob(os.path.join(ROOT, top, '*', 'build.py'))):
             d = os.path.relpath(os.path.dirname(script), ROOT).replace(os.sep, '/')
-            if d in listed or d in UNLISTED:
+            if d in listed or d in UNLISTED or d in skip:
                 continue
             pages = built_pages(d)
             if not pages and build:
@@ -423,7 +428,8 @@ def main():
             print('built' if r.returncode == 0 else 'BUILD FAILED', d)
             if r.returncode:
                 sys.exit(r.stdout + r.stderr)
-    found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv)
+    skip = set(ELSEWHERE) if site == os.path.abspath(SITE) else set()   # their own artifacts; the LAN site keeps them
+    found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv, skip=skip)
     entries = sorted(ENTRIES + found, key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
     if os.path.isdir(site):
         shutil.rmtree(site)

@@ -93,10 +93,20 @@ CORE_M=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record')
 for f in CORE_MAT:
     if f not in PATH: PATH[f]=os.path.join(CORE_M,f)
 TEX_DIR=os.path.join(HERE,'tex')
+# SIDECAR PACKS (tools/textures/matlib_pack.py): the maps go in files beside the page, not in it, one per pack and shared
+# by every station: dist/throne.tex.throne.js, and dist/throne.tex.hyperjungle.js for the stations that read the
+# hyperjungle. Eleven pages that each carried the same 14 MB of maps now carry a few hundred KB of code. The files load by
+# plain <script src> tags ahead of the page's code, so a page opened from disk keeps its textures; publish them beside the
+# pages (gallery/build_throne.py does). --inline-packs puts the maps back in the page (one self-contained file).
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
+import matlib_pack as _mp
+SIDE={}
+INLINE='--inline-packs' in sys.argv
 def matlib_pack(pname='throne',tex_dir=None):
     """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
     tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same).
-    pname/tex_dir: another kit's pack (a station's 'packs'), the same way."""
+    pname/tex_dir: another kit's pack (a station's 'packs'), the same way. Unless --inline-packs, the maps go into SIDE
+    (the sidecar) and the fragment is the loader that reads them back."""
     import base64, json
     tex_dir=tex_dir or TEX_DIR
     pj=os.path.join(tex_dir,'pack.json')
@@ -109,6 +119,9 @@ def matlib_pack(pname='throne',tex_dir=None):
         for k,name in sorted(e['files'].items()):
             f[k]='data:image/webp;base64,'+base64.b64encode(open(os.path.join(tex_dir,name),'rb').read()).decode()
         out.append(' %s: %s'%(json.dumps(fam),json.dumps(f,sort_keys=True)))
+    if not INLINE:
+        SIDE[pname]='{\n'+',\n'.join(out)+'\n}'
+        return _mp.loader(pname)
     return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
             '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
             "KMAT.pack('"+pname+"', {\n" + ',\n'.join(out) + '\n});\n')
@@ -130,7 +143,11 @@ for f in frags:
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out)
+# the sidecars: throne.tex.<pack>.js, the same files for every station (prune=False: one station's build must not
+# delete a pack another station's page loads)
+html=_mp.write_sidecar(SIDE,html,DIST,'throne.tex.js',prune=False)
+open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

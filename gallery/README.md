@@ -20,13 +20,36 @@ is `index.template.html`; the script fills in the entry list.
 
 A new build is listed even before it has a line (2026-10-07): a build in `settlements/`, `openworld/`, `biomes/` or
 `kits/` with no page in `ENTRIES` gets its pages listed, tagged new. One page joins its kind's section; several make
-a section of their own after it (the Throne's ten stations, after Biomes), named from the pages' `<title>`s and
+a section of their own after it, named from the pages' `<title>`s and
 described by the first paragraph of the build's `README.md` or `INDEX.md`. An `ENTRIES` line replaces all of that
 (section, name, blurb); `UNLISTED` keeps a build out; `--no-discover` lists `ENTRIES` only. Builds that already have
 a page listed are never extended, so pages left out of a listed build (Iziz's `w-a`, the Port's `lb*`) stay out.
 
 Each section is in alphabetical order by name, a leading "The" or "A" ignored, whatever the order of `ENTRIES`.
 The Ancients kit's pages (`kits/ancients/`, but not its arcologies) are the section `ancients`, "Ancient city kits".
+
+## The Throne: its own artifact (2026-10-07)
+
+The Throne's eleven stations (`biomes/throne`) are published as their own artifact, https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX ("The Throne
+Stations"), which the Krator Worlds index links to under the scale model. Together they are too big for this one: an
+artifact version holds at most 256 MB, and Krator Worlds was about 230 MB.
+
+`build_gallery.py` lists the Throne in `ELSEWHERE`: it leaves it out of `gallery/site/` and keeps it in any other
+`--out` site (the LAN host's).
+
+To update it:
+
+```
+python3 gallery/build_throne.py --build     # rebuilds the eleven stations, writes gallery/throne-site/
+```
+
+Then publish to the URL above:
+- `gallery/throne-site/index.html` as the page;
+- every file in `gallery/throne-site/worlds/` attached: eleven pages of 0.35 to 0.52 MB, and the shared library maps
+  `throne.tex.throne.js` (13.7 MB) and `throne.tex.hyperjungle.js` (3.0 MB), about 20 MB in one call.
+
+The pages load the maps through `<script src>` tags. Without them a station runs on its procedural maps and says so on
+the console.
 
 ## Published (2026-10-02)
 
@@ -163,3 +186,7 @@ the forecourt plaza, terraces and grand stair up to the bridge house with the br
 (the Ancients interiors kit, 1.4 MB: fourteen ship's halls in two dresses, the ship's rooms and cabins, every room audited), from `main`
 at 29f93c3. The live index (version 62) was kept: the Noah's Regret card updated (blurb, size) and the Ancients interiors card added after
 the Interiors walk-through. The Master catalog card (now 1655 pieces) was not touched. One publish call.
+Version 64 (2026-10-07): the index gained a "The Throne" link under the scale model, to the Throne's own artifact
+(https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX, version 1: the eleven stations and their shared library maps, 20.3 MB,
+from `main` at 3b5eec20 with the sidecar build). The index was edited from the live version 63, so its sections and
+cards are as they were. No world page changed. One publish call.
