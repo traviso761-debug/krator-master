@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.142,
+    1.146
+   ],
+   "seam_before": [
+    1.451,
+    1.285
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.ragbark",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "bark-ragbark.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "Bark of a gnarled high-mountain tree peeling in many thin papery layers: sheets curling off horizontally and overlapping like the pages of an old book, paler where fresh layers show underneath, dark narrow gaps between the sheets, a twisted vertical grain running through it. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained. Near-colourless: pale grey only, so it can be tinted. (Row bark.ragbark of core/materials/PLAN.md, Eastern highlands; the full block is PROMPTS-ready.md section 7.) Pasted into the chat 2026-10-06 as a 1254 px WebP; converted to PNG.",
+  "reuse": "the ragbark here; paperbark, birch and Polylepis-like barks anywhere (tinted)",
+  "sha1": "06962d82dcea56c75fb5531358d529c2471450ec"
+ }
+}

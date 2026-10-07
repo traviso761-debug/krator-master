@@ -1,6 +1,7 @@
 # krator-atmos JSON (ATMOS.export(), core/atmos/89-atmos-8-export.js) to a Godot scene, per core/atmos/GODOT.md:
 # the presets go to the Atmos autoload, lamps and lights become Light3D nodes run by their hours, halos a MultiMesh
-# of billboards, props one MultiMeshInstance3D per set, smoke GPUParticles3D, fog banks FogVolume (Forward+ only).
+# of billboards, props one MultiMeshInstance3D per set, smoke GPUParticles3D, fog banks FogVolume (Forward+ only), a
+# cloud deck the field of shaders/clouddeck.gdshader (krator/clouddeck.gd).
 # Colours in this export are display-space (sRGB), unlike the biome export's linear ones.
 class_name KratorAtmos
 extends RefCounted
@@ -144,6 +145,14 @@ static func build(path: String) -> Node3D:
 					fv.material = fm
 					fxn.add_child(fv)
 				report["gaps"]["fogbank"] = "fog banks are FogVolume ellipsoids (Forward+ with volumetric fog on; invisible on Compatibility): density guessed"
+			"clouddeck":
+				# the cloud deck (89-atmos-d-clouddeck.js): the same field from the generated include, a grid that follows
+				# the camera, thinned where the scene's heightfield rises through it (krator/clouddeck.gd)
+				var cd = MeshInstance3D.new()   # untyped: setup() comes with the script set below
+				cd.set_script(load("res://krator/clouddeck.gd"))
+				cd.setup(f, presets.get("clouddeck", Atmos.clouddeck))
+				fxn.add_child(cd)
+				report["gaps"]["clouddeck"] = "the deck is unshaded with the page's own lambert, so it misses Godot's sky light and shadows; ACES tonemaps it greyer than the page; the edge mist (the page's sprites) is not exported"
 			_:
 				pass
 	for t in ["fireflies", "moths"]:

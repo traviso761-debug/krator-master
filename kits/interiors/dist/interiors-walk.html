@@ -770,9 +770,38 @@ const FAMILY_SPLITS = [
   [/^paint/, ['wood', 'plank'], 'paint'],
   [/^(ash|ashCold|earthAsh|stoneAsh|coal|coalBed|coalDeep|stoneCoal)$/, ['stone', 'plaster'], 'ash'],
   [/^paper/, ['cloth', 'wood', 'bark'], 'paper'],
-  [/^tapa/, ['cloth'], 'tapa']
+  [/^tapa/, ['cloth'], 'tapa'],
+  /* biome fruit (biomes/FRUIT.md; krator-master-furniture-generic-fruit.js): each fruit part by the surface it shows */
+  [/^fruit(Mahogany|Mast|MastHusk|Acorn|Mesquite|PinyonNut|Rattlepod|TamarindShell|FernEgg|CacaoRed|CacaoGold|CacaoOrange|LotusPod|Wingnut|SilkGreen|AvenuePod)$/, ['food'], 'fruitShell'],
+  [/^fruit(GateRind|TideHusk|StiltPod)$/, ['food'], 'fruitHusk'],
+  [/^fruit(ScaleRed|CycadRed|PinyonCone)$/, ['food'], 'fruitScale'],
+  [/^fruit(ScaleFlesh|GatePulp|FernMeal|BallmelonFlesh|StiltFlesh|FigFlesh|TunaFlesh|PitayaFlesh|CacaoPulp|TamarindPulp|PandanPaste|MesquiteCake|YuccaRoast|SilkFloss|WhorlCream)$/, ['food'], 'fruitFlesh'],
+  [/^fruit(TideJelly|RowanJelly)$/, ['food'], 'fruitJelly'],
+  [/^fruit(ArilSeed|StiltSeed|PinyonKernel|LotusSeed|UmbelSeed|MahoganySeed|RattleBean|Raisin)$/, ['food'], 'fruitSeed'],
+  [/^fruit(Apple|AppleGreen|Pear|Orange|Lemon|Grape|Plum|Berry|Banana|Aril|Rowan|Bilberry|Ballmelon|BellDate|Date|Tuna|Juniper|JuniperDry|Madrone|Fig|Pitaya|Plantain|ArbutusRed|ArbutusOrange|WhorlOlive|PandanKey|Banksia)$/, ['food'], 'fruitSkin'],
+  /* new fruit keys split by their name's last word (fruitCocoHusk, fruitCocoShell, fruitCocoFlesh, fruitCocoWater) */
+  [/^fruit\w+(Husk|Rind)$/, ['food'], 'fruitHusk'],
+  [/^fruit\w+(Shell|Nut|Capsule)$/, ['food'], 'fruitShell'],
+  [/^fruit\w+(Scale|Scales|Cone)$/, ['food'], 'fruitScale'],
+  [/^fruit\w+(Flesh|Pulp|Meal|Paste|Cake)$/, ['food'], 'fruitFlesh'],
+  [/^fruit\w+(Jelly|Water|Juice|Syrup)$/, ['food'], 'fruitJelly'],
+  [/^fruit\w+(Seed|Seeds|Kernel|Bean)$/, ['food'], 'fruitSeed'],
+  [/^fungus/, ['food'], 'fungus'],
+  [/^fruit/, ['food'], 'fruitSkin']          /* every other fruit part (tips, stalks, bracts, lantern pods): a skin */
 ];
 const _famRev = {};
+/* the fruit pieces shade their colours (F.shade) for ridges and studs; a shaded food colour with no palette key of its
+   own takes the nearest fruit or fungus key's split, when it is within a shade's reach of it (RGB distance 64) */
+function _nearFruitKeys(rev, color) {
+  let best = null, bd = 64 * 64;
+  const r = color >> 16 & 255, g = color >> 8 & 255, b = color & 255;
+  rev.forEach((ks, c) => {
+    if (!ks.every(k => /^(fruit|fungus)/.test(k))) return;
+    const dr = (c >> 16 & 255) - r, dg = (c >> 8 & 255) - g, db = (c & 255) - b, d = dr * dr + dg * dg + db * db;
+    if (d < bd) { bd = d; best = ks; }
+  });
+  return best;
+}
 function furnFamily(culture, color, family) {
   if (!family || typeof color !== 'number') return family;
   let rev = _famRev[culture];
@@ -781,7 +810,8 @@ function furnFamily(culture, color, family) {
     const p = FPAL[culture] || {};
     for (const k in p) if (typeof p[k] === 'number') { const l = rev.get(p[k]); if (l) l.push(k); else rev.set(p[k], [k]); }
   }
-  const keys = rev.get(color);
+  let keys = rev.get(color);
+  if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
   if (!keys) return family;
   for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
   return family;
@@ -10538,7 +10568,7 @@ FURN({
 FURN({
   key: 'generic_fruit_gatepod', name: 'Gatepod', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
-  biome: 'hyperjungle', source: ['baobab', 'swbay:baobab'],
+  biome: 'hyperjungle', source: ['baobab', 'swbay:baobab', 'nwbay:baobab'],
   w: 0.37, d: 0.37, h: 0.11, variants: 2, variantNames: ['cut round of pod', 'gatepod chalk'],
   variantDims: [{ w: 0.37, d: 0.37, h: 0.11 }, { w: 0.37, d: 0.22, h: 0.07 }],
   build: function (F) {
@@ -10598,7 +10628,7 @@ FURN({
 FURN({
   key: 'generic_fruit_pandan_keys', name: 'Pandan Keys', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
-  biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine'],
+  biome: 'nwlowlands', source: ['pandan', 'hyperjungle:screwpine', 'nwbay:pandan'],
   w: 0.34, d: 0.28, h: 0.26, variants: 2, variantNames: ['fruit head', 'loose keys and paste'],
   variantDims: [{ w: 0.29, d: 0.28, h: 0.26 }, { w: 0.34, d: 0.23, h: 0.09 }],
   build: function (F) {
@@ -11191,7 +11221,7 @@ FURN({
 FURN({
   key: 'generic_fruit_yucca', name: 'Roasted Yucca Stalk', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
   rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'thatch'],
-  biome: 'ebadlands', source: ['yucca'],
+  biome: 'ebadlands', source: ['yucca', 'crater-drylands:yucca', 'crater-drylands:joshua'],
   w: 0.26, d: 0.26, h: 0.1, variants: 2, variantNames: ['pit-roasted stalk rounds', 'a basket of blossoms'],
   variantDims: [{ w: 0.26, d: 0.26, h: 0.06 }, { w: 0.22, d: 0.22, h: 0.1 }],
   build: function (F) {
@@ -11274,6 +11304,123 @@ FURN({
   }
 });
 
+/* ================= Crater Drylands (2 pieces; the yucca stalk is shared with the Eastern Badlands) ================= */
+
+FURN({
+  key: 'generic_fruit_fireseed', name: 'Frill-tree Fireseed', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'crater-drylands', source: ['frill'],
+  w: 0.35, d: 0.26, h: 0.09, variants: 2, variantNames: ['a burst pod and its seed', 'roasted and ground'],
+  variantDims: [{ w: 0.35, d: 0.26, h: 0.085 }, { w: 0.31, d: 0.2, h: 0.08 }],
+  build: function (F) {
+    const husk = F.col('fruitFireseedHusk'), nut = F.col('fruitFireseedNut'), meal = F.col('fruitFireseedMeal');
+    if (F.variant === 0) {
+      /* the ruffled collar, burst open by the heat, its fireproof seed in the cup and spilled on the ash */
+      F.frustum(0, 0, 0, 0.03, 0.11, 0.07, 0, F.shade(husk, -0.3), 'food', 10);
+      for (let i = 0; i < 10; i++) { const a = i * F.TAU / 10; F.blob(Math.cos(a) * 0.1, 0.07, Math.sin(a) * 0.1, 0.03, 0.025, a, F.shade(husk, i % 2 ? -0.12 : 0.06), 'food'); }
+      for (let i = 0; i < 5; i++) { const a = i * 1.26; F.ball(Math.cos(a) * 0.035, 0.058, Math.sin(a) * 0.035, 0.018, F.shade(nut, (i % 2) * 0.08), 'food'); }
+      for (const [x, z] of [[-0.155, 0.03], [-0.15, -0.035], [0.155, -0.02], [0.15, 0.04]]) F.blob(x, 0.01, z, 0.016, 0.02, x * 20, nut, 'food');
+    } else {
+      F.shift(-0.055, 0);
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('stoneBuff'), 'stone', meal);
+      F.dome(0, 0.05, 0, 0.08, 0.03, 0, F.shade(meal, 0.06), 'food');
+      KFRUIT.leaf(F, 0.15, 0, 0.06, F.col('vegLeaf'));
+      for (const [x, z] of [[0.13, -0.015], [0.16, 0.02], [0.17, -0.02]]) F.ball(x, 0.035, z, 0.015, F.shade(nut, 0.1), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_parasol_pine', name: 'Parasol Pine Nuts', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'cloth', 'stone'],
+  biome: 'crater-drylands', source: ['parasolpine'],
+  w: 0.26, d: 0.18, h: 0.12, variants: 2, variantNames: ['a cone and cracked nuts', 'shelled nuts in a bowl'],
+  variantDims: [{ w: 0.26, d: 0.16, h: 0.12 }, { w: 0.18, d: 0.18, h: 0.075 }],
+  build: function (F) {
+    const cone = F.col('fruitParasolCone'), shell = F.col('fruitParasolShell'), kern = F.col('fruitParasolKernel');
+    if (F.variant === 0) {
+      /* the big glossy cone, rounded like a stone pine's, its scales in rings; beside it the hard nuts and their kernels */
+      F.box(0, 0, 0, 0.26, 0.01, 0.16, 0, F.col('clothLinen'), 'cloth');
+      F.blob(-0.05, 0.065, 0, 0.065, 0.11, 0, F.shade(cone, -0.2), 'food');
+      for (let j = 0; j < 4; j++) for (let i = 0; i < 8; i++) {
+        const y = 0.03 + j * 0.025, e = (y - 0.065) / 0.055, r = 0.065 * Math.sqrt(Math.max(0, 1 - e * e)) * 0.95, a = i * F.TAU / 8 + j * 0.39;
+        F.ball(-0.05 + Math.cos(a) * r, y, Math.sin(a) * r, 0.014, F.shade(cone, (i + j) % 2 ? -0.06 : 0.08), 'food');
+      }
+      for (let i = 0; i < 6; i++) F.blob(0.04 + (i % 3) * 0.035, 0.022, -0.045 + Math.floor(i / 3) * 0.05, 0.014, 0.024, i, F.shade(shell, (i % 2) * 0.08), 'food');
+      for (let i = 0; i < 3; i++) F.blob(0.06 + i * 0.03, 0.02, 0.05, 0.012, 0.02, i * 0.7, kern, 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.09, 0.045, F.col('stoneCream'), 'stone', kern);
+      KGEN.heap(F, 0, 0.03, 0, 0.075, 0.01, [kern, F.shade(kern, -0.06)], 'food',
+        (x, y, z, c) => F.blob(x, y + 0.01, z, 0.01, 0.02, x * 30, c, 'food'));
+    }
+  }
+});
+
+/* ================= North-west Bay (3 pieces; the gatepod and the pandan keys are shared) ================= */
+
+FURN({
+  key: 'generic_fruit_cliff_fig', name: 'Cliff Figs', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food'],
+  biome: 'nwbay', source: ['clifffig'],
+  w: 0.26, d: 0.2, h: 0.045, variants: 2, variantNames: ['a sprig with figs', 'halved on a leaf'],
+  variantDims: [{ w: 0.26, d: 0.14, h: 0.04 }, { w: 0.2, d: 0.2, h: 0.045 }],
+  build: function (F) {
+    const fig = F.col('fruitCliffFig'), ripe = F.col('fruitCliffFigRipe'), flesh = F.col('fruitCliffFigFlesh');
+    if (F.variant === 0) {
+      /* small strangler figs in the leaf axils, orange-red going purple as they ripen */
+      KFRUIT.leaf(F, -0.06, 0, 0.07, F.col('vegLeaf'));
+      F.rod(-0.12, 0.012, 0, 0.11, 0.012, 0, 0.006, F.col('timberWalnut'), 'food');
+      for (let i = 0; i < 7; i++) F.ball(-0.09 + i * 0.03, 0.02, i % 2 ? 0.024 : -0.024, 0.017, i % 3 ? fig : ripe, 'food');
+    } else {
+      KFRUIT.leaf(F, 0, 0, 0.1, F.col('vegLeaf'));
+      for (const [x, z, k] of [[-0.04, -0.035, 0], [0.04, -0.035, 1], [-0.04, 0.035, 1], [0.04, 0.035, 0]]) KFRUIT.half(F, x, 0.015, z, 0.03, k ? ripe : fig, flesh);
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_avenue_baobab', name: 'Avenue Baobab Fruit', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nwbay', source: ['avenuebaobab'],
+  w: 0.28, d: 0.28, h: 0.11, variants: 2, variantNames: ['whole fruit', 'cracked: pulp and seeds'],
+  variantDims: [{ w: 0.27, d: 0.11, h: 0.11 }, { w: 0.28, d: 0.28, h: 0.065 }],
+  build: function (F) {
+    const pod = F.col('fruitAvenuePod'), pulp = F.col('fruitAvenuePulp'), seed = F.col('fruitAvenueSeed');
+    if (F.variant === 0) {
+      /* the velvety ochre egg of the avenue baobab, on its stalk */
+      F.shift(-0.0265, 0);
+      KGEN.capsule(F, -0.05, 0.05, 0, 0, 0.055, pod);
+      F.rod(0.1, 0.06, 0, 0.15, 0.07, 0, 0.008, F.col('timberWalnut'), 'food');
+    } else {
+      /* the shell cracked open: dry cream pulp round dark kidney seeds (the pulp eaten, the seed pressed for oil) */
+      KGEN.plate(F, 0, 0, 0, 0.14, F.col('stoneCream'));
+      KFRUIT.half(F, -0.05, 0.02, 0, 0.06, pod, pulp);
+      for (let i = 0; i < 5; i++) F.box(0.04 + (i % 3) * 0.03, 0.02, -0.04 + Math.floor(i / 3) * 0.05, 0.028, 0.024, 0.028, i * 0.4, F.shade(pulp, -(i % 2) * 0.05), 'food');
+      for (let i = 0; i < 4; i++) F.blob(0.0 + i * 0.03, 0.03, 0.08, 0.012, 0.016, i, seed, 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_traveller_aril', name: 'Traveller\'s Fan Arils', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nwbay', source: ['travellerfan'],
+  w: 0.17, d: 0.17, h: 0.09, variants: 2, variantNames: ['an open capsule', 'arils in a dish'],
+  variantDims: [{ w: 0.17, d: 0.17, h: 0.08 }, { w: 0.16, d: 0.16, h: 0.09 }],
+  build: function (F) {
+    const cap = F.col('fruitTravellerCapsule'), aril = F.col('fruitTravellerAril');
+    if (F.variant === 0) {
+      /* the woody capsule split in three valves, the seeds in their electric-blue arils packed inside */
+      F.frustum(0, 0, 0, 0.03, 0.045, 0.05, 0, F.shade(cap, -0.15), 'food', 6);
+      for (let k = 0; k < 3; k++) { const a = k * F.TAU / 3; F.blob(Math.cos(a) * 0.055, 0.04, Math.sin(a) * 0.055, 0.03, 0.07, a, F.shade(cap, k * 0.05), 'food'); }
+      for (let i = 0; i < 6; i++) { const a = i * F.TAU / 6 + 0.5; F.ball(Math.cos(a) * 0.025, 0.06, Math.sin(a) * 0.025, 0.02, F.shade(aril, (i % 2) * 0.1), 'food'); }
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.08, 0.04, F.col('stoneCream'), 'stone', F.shade(aril, -0.2));
+      KGEN.heap(F, 0, 0.03, 0, 0.065, 0.012, [aril, F.shade(aril, 0.12)], 'food');
+    }
+  }
+});
+
 </script>
 <script>/* kits/catalog/krator-master-furniture-generic-goods.js */
 /* ======================================================================
@@ -11350,7 +11497,12 @@ FURN_CULTURE('generic', { palette: {
     fruitPitaya: 0xe0206a, fruitPitayaFlame: 0x7ab040, fruitPitayaFlesh: 0xf4f0ec,
     fruitPlantain: 0xf0d040, fruitPlantainBract: 0x6a2a8a, fruitPlantainFried: 0xd89a3a, fruitWingnut: 0x9ac060,
     fruitArbutusRed: 0xe02a20, fruitArbutusOrange: 0xf08a20, fruitWhorlOlive: 0x6a6a3a, fruitWhorlCream: 0xd8c8a0,
-    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0
+    fruitLotusPod: 0x8a9a5a, fruitLotusSeed: 0xe8e0c0,
+    fruitFireseedHusk: 0xc85a2c, fruitFireseedNut: 0x40281e, fruitFireseedMeal: 0x9a6a44,
+    fruitParasolCone: 0x8a5230, fruitParasolShell: 0x5e3c28, fruitParasolKernel: 0xeee2bc,
+    fruitCliffFig: 0xb4482c, fruitCliffFigRipe: 0x5a2a48, fruitCliffFigFlesh: 0xe07a6a,
+    fruitAvenuePod: 0xa86a30, fruitAvenuePulp: 0xf0e6c4, fruitAvenueSeed: 0x4a3022,
+    fruitTravellerCapsule: 0x6a5034, fruitTravellerAril: 0x2a6ad0
 } });
 /* END PALETTE */
 
@@ -17943,7 +18095,8 @@ FURN_CULTURE('scyvoi', { name: 'Scyvoi', pack: null, influences: 'Kazakh, Kyrgyz
     flame: 0xffb04a, ember: 0xe0521e, ropeHemp: 0xb09a6a, wicker: 0xb48a52,
     fruitFire: 0xe2461c, fruitDeep: 0xb02a14, fruitGold: 0xf0b42a, leafGreen: 0x3a5a2a,
     herbGreen: 0x5e7034, herbSage: 0x8a9670, herbDry: 0xa8985a, herbRed: 0x9a3020,
-    ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc
+    ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc,
+    hideRaw: 0xcaa88a, hideFat: 0xe0cdb0, hideTanned: 0x8e5a30, hideSmoked: 0x6a4024, liquor: 0x2e1c10, barkChip: 0x7a5434, goatBlack: 0x221e1a
   } });
 /* END PALETTE */
 
@@ -19138,6 +19291,108 @@ FURN({
       F.blob(x, 0.12, z, 0.075, 0.08, F.rnd() * 3, F.shade(c, 0.08), 'plant');
       for (let k = 0; k < 2; k++) F.box(x + F.rr(-0.05, 0.05), 0.08, z + F.rr(-0.04, 0.04), 0.012, 0.06, 0.012, F.rnd() * 3, F.shade(c, -0.1), 'plant');
     }
+  }
+});
+
+/* ====================================================================== Tanning: the hidemaker's tent (2026-10-06)
+   Goat, salamander and game hides go from the fleshing beam to the lime and bark vats, onto the stretching frames, over
+   the smudge to smoke them, and onto the drying line; tanned hides are stacked folded. job 'tanning'. A hide is a flat
+   F.pillow with a low round exponent: an oval with soft edges. */
+FURN({
+  key: 'scyvoi_hide_frame', name: 'Hide stretching frame', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8 }, materials: ['timber', 'hide', 'rope'],
+  w: 1.9, d: 0.9, h: 2.0, variants: 2, variantNames: ['a fresh goat hide', 'a salamander hide, half scraped'],
+  build: function (F) {
+    F.shift(0, 0.2);   /* the frame leans back: centre its footprint */
+    const wood = F.col('timberPoplar'), cord = F.col('ropeHemp'), v = F.variant, lean = 0.22;
+    const at = (x, y) => [x, y * Math.cos(lean), -y * Math.sin(lean)];   /* the frame's plane, tipped back */
+    const corners = [[-0.85, 0.15], [0.85, 0.15], [0.85, 1.9], [-0.85, 1.9]];
+    for (let i = 0; i < 4; i++) { const a = at(...corners[i]), b = at(...corners[(i + 1) % 4]); F.rod(a[0], a[1], a[2], b[0], b[1], b[2], 0.035, wood, 'wood'); }
+    for (const x of [-0.85, 0.85]) { const t = at(x, 1.95); F.rod(x, 0, 0.02, t[0], t[1], t[2], 0.04, wood, 'wood'); F.rod(x, 0, -0.55, t[0], t[1] * 0.75, t[2] * 0.75, 0.03, wood, 'wood'); }
+    const c = at(0, 1.02), hide = F.col(v ? 'hideSmoked' : 'hideRaw');
+    F.pillow(c[0], c[1], c[2] + 0.01, v ? 1.35 : 1.05, 0.025, 1.45, 0, hide, 'hide', { rx: -Math.PI / 2 + lean, round: 2.6, puff: 0.3, pinch: 0.12 });
+    if (v) F.pillow(c[0] + 0.25, c[1] + 0.15, c[2] + 0.025, 0.5, 0.012, 0.6, 0, F.col('hideFat'), 'hide', { rx: -Math.PI / 2 + lean, round: 2.4, puff: 0.2 });   /* the scraped patch */
+    for (let k = 0; k < 14; k++) {   /* the lacing, hide edge to frame */
+      const a = k / 14 * F.TAU, ex = Math.cos(a) * (v ? 0.62 : 0.5), ey = 1.02 + Math.sin(a) * 0.68;
+      const fx = Math.max(-0.84, Math.min(0.84, Math.cos(a) * 1.2)), fy = Math.max(0.16, Math.min(1.89, 1.02 + Math.sin(a) * 1.1));
+      const p = at(ex, ey), q = at(fx, fy); F.rod(p[0], p[1], p[2] + 0.015, q[0], q[1], q[2], 0.006, cord, 'rope');
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_fleshing_beam', name: 'Fleshing beam', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.9 }, materials: ['timber', 'hide', 'metal', 'bone'],
+  w: 0.8, d: 1.8, h: 1.05, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberWalnut');
+    F.rod(0, 0.06, -0.85, 0, 0.92, 0.65, 0.11, wood, 'wood');   /* the beam: its foot on the ground behind, its head at the hip */
+    for (const s of [-1, 1]) F.rod(s * 0.3, 0, 0.45, -s * 0.05, 0.85, 0.5, 0.04, F.col('timberWalnutDark'), 'wood');
+    const hide = F.col('hideRaw');
+    /* the hide laid along the top of the beam (the beam climbs 0.57 rad), and a flap hanging down each side of it */
+    const slope = Math.atan2(0.86, 1.5), by = z => 0.06 + (z + 0.85) * 0.86 / 1.5;
+    F.pillow(0, by(0.3) + 0.12, 0.3, 0.34, 0.025, 0.8, 0, hide, 'hide', { rx: -slope, round: 2.6, puff: 0.4, pinch: 0.08 });
+    for (const s of [-1, 1]) F.pillow(s * 0.125, by(0.3) - 0.14, 0.3, 0.7, 0.02, 0.48, s * Math.PI / 2, hide, 'hide', { rx: Math.PI / 2, round: 2.6, puff: 0.3, pinch: 0.12 });
+    /* the two-handled fleshing knife lying across the beam */
+    F.box(0, 0.98, 0.25, 0.42, 0.012, 0.05, 0, F.col('ironBlack'), 'metal');
+    for (const s of [-1, 1]) F.rod(s * 0.21, 0.99, 0.25, s * 0.33, 0.99, 0.25, 0.018, F.col('horn'), 'bone');
+  }
+});
+FURN({
+  key: 'scyvoi_tanning_vat', name: 'Tanning vat', culture: 'scyvoi', tier: 'common', type: 'storage', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.6 }, materials: ['timber', 'hide', 'metal', 'stone'],
+  w: 1.2, d: 1.2, h: 1.7, variants: 2, variantNames: ['bark liquor', 'lime'],
+  build: function (F) {
+    const wood = F.col('timberWalnut'), iron = F.col('ironBlack');
+    F.frustum(0, 0, 0, 0.5, 0.56, 0.72, 0, wood, 'wood', 16);
+    for (const y of [0.1, 0.6]) F.frustum(0, y, 0, 0.5 + 0.06 * y / 0.72 + 0.008, 0.5 + 0.06 * (y + 0.05) / 0.72 + 0.008, 0.05, 0, iron, 'metal', 16);
+    F.cyl(0, 0.6, 0, 0.53, 0.02, 0, F.col(F.variant ? 'feltWhite' : 'liquor'), 'stone');
+    F.pillow(0.3, 0.7, 0.3, 0.6, 0.03, 0.4, 0.7, F.col('hideRaw'), 'hide', { rx: 0.4, round: 2.6, puff: 0.3 });   /* a hide over the rim */
+    F.rod(-0.2, 0.55, -0.1, -0.45, 1.65, 0.3, 0.025, F.col('timberPoplar'), 'wood');   /* the stirring pole */
+    if (!F.variant) for (let i = 0; i < 6; i++) F.box(F.rr(-0.6, 0.6), 0, F.rr(0.5, 0.6), 0.08, 0.03, 0.05, F.rr(0, 3), F.col('barkChip'), 'wood');
+  }
+});
+FURN({
+  key: 'scyvoi_hide_stack', name: 'Stack of tanned hides', culture: 'scyvoi', tier: 'common', type: 'stack', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'store', 'shop', 'yard'], anchor: 'floor', clearance: { front: 0.5 }, materials: ['timber', 'hide', 'cloth'],
+  w: 1.2, d: 0.9, h: 0.65, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.1, 0.08, 0.8, 0, F.col('timberWalnutDark'), 'wood');
+    const keys = ['hideTanned', 'hideSmoked', 'goatBlack', 'hideTanned', 'leatherTan', 'hideSmoked', 'goatBlack', 'leatherDark'];
+    let y = 0.08;
+    for (let i = 0; i < 8; i++) {
+      const th = 0.055 + F.rr(0, 0.015);
+      F.pillow(F.rr(-0.04, 0.04), y + th / 2, F.rr(-0.03, 0.03), 1.0 - i * 0.02, th, 0.72, F.rr(-0.06, 0.06), F.col(keys[i]), keys[i] === 'goatBlack' ? 'cloth' : 'hide', { side: 0.5, puff: 0.3, round: 4, pinch: 0.06 });
+      y += th;
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_drying_line', name: 'Hide drying line', culture: 'scyvoi', tier: 'common', type: 'rack', setting: 'outdoor', job: 'tanning',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.6, back: 0.6 }, materials: ['timber', 'hide', 'cloth'],
+  w: 3.0, d: 0.4, h: 1.9, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberPoplar');
+    for (const s of [-1, 1]) { F.rod(s * 1.4, 0, 0, s * 1.4, 1.75, 0, 0.045, wood, 'wood'); F.rod(s * 1.4, 1.62, 0, s * 1.48, 1.84, 0, 0.025, wood, 'wood'); F.rod(s * 1.4, 1.62, 0, s * 1.32, 1.84, 0, 0.025, wood, 'wood'); }
+    F.rod(-1.5, 1.78, 0, 1.5, 1.78, 0, 0.035, wood, 'wood');
+    const keys = ['hideRaw', 'hideTanned', 'goatBlack', 'hideSmoked'];
+    for (let i = 0; i < 4; i++) {   /* each hide over the pole: half down the front, half down the back */
+      const x = -1.0 + i * 0.68, c = F.col(keys[i]), fam = keys[i] === 'goatBlack' ? 'cloth' : 'hide';
+      for (const s of [-1, 1]) F.pillow(x, 1.4, s * 0.06, 0.52, 0.018, 0.72, 0, c, fam, { rx: -Math.PI / 2 + s * 0.12, round: 2.8, puff: 0.3, pinch: 0.12 });
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_smoking_frame', name: 'Hide smoking frame', culture: 'scyvoi', tier: 'common', type: 'stove', setting: 'outdoor', job: 'tanning',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.8, back: 0.6, left: 0.6, right: 0.6 }, materials: ['timber', 'hide', 'stone', 'emissive'],
+  w: 1.5, d: 1.5, h: 2.3, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberWalnutDark');
+    for (let i = 0; i < 6; i++) { const a = i / 6 * F.TAU; F.rod(Math.cos(a) * 0.7, 0, Math.sin(a) * 0.7, Math.cos(a) * 0.08, 2.25, Math.sin(a) * 0.08, 0.025, wood, 'wood'); }
+    F.frustum(0, 0.45, 0, 0.56, 0.16, 1.5, 0, F.col('hideSmoked'), 'hide', 12);   /* the hides sewn into a cone round the smudge */
+    for (let i = 0; i < 7; i++) { const a = i / 7 * F.TAU + 0.2; F.ball(Math.cos(a) * 0.55, 0.06, Math.sin(a) * 0.55, 0.09, F.col('stoneGrey'), 'stone'); }
+    F.cyl(0, 0, 0, 0.36, 0.05, 0, F.col('ash'), 'stone');
+    for (let i = 0; i < 5; i++) F.ball(F.rr(-0.2, 0.2), 0.06, F.rr(-0.2, 0.2), 0.05, F.col('ember'), 'glow');
+    F.lamp(0, 0.2, 0, 0.5, 4);
   }
 });
 
@@ -25394,6 +25649,89 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
         'as two stores' },
     { key: 'infra_fishing_dock', name: 'Fishing dock', types: ['infrastructure'], lot: [12, 34],
       skip: 'an open jetty on piles; the net shed at its root is two reed walls under a canvas, open on two sides' }
+  ] });
+})(KratorInteriors);
+/* ---------- sets/noahs-regret.js ---------- */
+/* ======================== Interior set: Noah's Regret (settlements/noahs-regret) ========================
+   The Ancient mid-rises on the top deck of Noah's Regret, the grounded floating arcology of the Ring Sea, as Bloody
+   Ruephus's pirates use them: the apartments and offices are BARRACKS, one office is the crew's MESS HALL, and the
+   small laboratory (a reduced Reliquary) is RUEPHUS'S HEADQUARTERS. One item per def key of the build's deck buildings
+   (settlements/noahs-regret/src/56-nr-anc-apt.js, 58-nr-anc-office.js, 60-nr-anc-lab.js); the mess hall is its own item
+   (`nr-anc-office-lens-mess`, like the barracks office).
+   Local frame = the builders': origin at the plot centre on the top deck, +z the front (the door side), metres. Each body
+   is the GLAZING LINE of the building (the white ribbons, balconies and bookend towers outside it are not planned); the
+   ground floor stands on a 0.3 m plinth and every storey is h + 0.25 (the slab) apart, the floors the builders draw.
+   Furniture: the pirates live in what the Ancients left and what they took: the post-apoc salvage set (its court tier
+   for Ruephus), the scrap set for the crews; the chain ends in generic. The cabins INSIDE the hull are not here: they are
+   ring-shaped rooms the build registers itself (its 70-nr-interiors.js), with the room kinds this file adds.
+
+   ROOM KINDS this set adds (data for IX.PROGRAMS; a page that never loads this file never sees them):
+     crew      a barracks room: three bunks or more, a locker, a weapon rack; benches and a table if there is room
+     bunkroom  a crowded cabin: two bunks and a locker
+     mess      the mess hall's room: a servery, tables and benches for a crew, food stores
+   sets/README.md says how an item is written.
+   ====================================================================== */
+(function (IX) {
+  'use strict';
+  const SH = IX.sets.shape, rect = SH.rect;
+  const SEATS = IX.SEAT_TYPES, ITEM = IX.ITEM_ROLES, FOOD = IX.FOOD_ROLES, SURFACE = IX.SURFACE_GROUP;
+  if (!IX.PROGRAMS.crew) {
+    IX.PROGRAMS.crew = { require: [{ need: 'bunks', types: ['bed'], n: 3 }, { need: 'locker', types: ['storage'], roles: ITEM, n: 1 },
+                                   { need: 'rack', types: ['rack', 'weapon'], n: 1 }],
+      optional: [{ types: ['bed'], max: 5 }, { types: ['storage'], max: 3 }, { types: ['table'], max: 1 }, { types: SEATS, max: 2 },
+                 { types: ['lamp'], max: 1 }, { types: ['banner', 'art'], max: 1 }, SURFACE],
+      extra: 3.5 };
+    IX.PROGRAMS.bunkroom = { require: [{ need: 'bunks', types: ['bed'], n: 2 }, { need: 'locker', types: ['storage'], roles: ITEM, n: 1 }],
+      optional: [{ types: ['storage'], max: 1 }, { types: ['rack', 'weapon'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
+      extra: 4 };
+    IX.PROGRAMS.mess = { require: [{ need: 'servery', types: ['counter'], n: 1 }, { need: 'tables', types: ['table'], n: 2 },
+                                   { need: 'seats', types: SEATS, n: 4 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+      optional: [{ types: ['table'], max: 4 }, { types: SEATS, max: 10 }, { types: ['lamp', 'brazier'], max: 2 }, { types: ['storage', 'stack', 'rack'], max: 3 },
+                 { types: ['banner', 'art'], max: 2 }, SURFACE],
+      extra: 3 };
+    IX.KIND_ALIAS.crew = ['barracks', 'dormitory', 'bedroom'];
+    IX.KIND_ALIAS.bunkroom = ['barracks', 'dormitory', 'bedroom'];
+    IX.KIND_ALIAS.mess = ['tavern', 'hall', 'kitchen', 'barracks'];
+    IX.KIND_WEIGHT.crew = 1.6; IX.KIND_WEIGHT.bunkroom = 1.0; IX.KIND_WEIGHT.mess = 2.6;
+  }
+  const BARRACKS = ['dwelling-multi', 'military'], CIVIC = ['civic', 'military'];
+  const PL = 0.3;   /* the plinth: the ground floor's top above the deck */
+  IX.sets.add({ set: 'noahs-regret', title: "Noah's Regret: the Ancient mid-rises of the top deck, as Ruephus's pirates use them",
+    culture: 'post-apoc', wealth: 0.3, items: [
+    { key: 'nr-anc-apt-ribbon', name: 'Ribbon terrace (apartments; barracks)', culture: 'scrap', wealth: 0.25, types: BARRACKS, lot: [36, 16],
+      bodies: [{ id: 'block', poly: rect(24, 12.4), y: PL, levels: 6, h: 3.1, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 6.2], w: 1.6 }, { at: [-7, -6.2], w: 1.2 }],
+        program: [['crew', 'store', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew']] }],
+      note: 'six storeys of apartments between two solid bookend towers (the Ancients\' stairs and lifts, dead; not planned); ' +
+        'the ribbon balconies outside the glass are open. The pirates sleep a crew to a room; the ground floor holds their stores' },
+    { key: 'nr-anc-apt-drum', name: 'Drum tower (apartments; barracks)', culture: 'scrap', wealth: 0.25, types: BARRACKS, lot: [21, 21],
+      bodies: [{ id: 'drum', poly: SH.circle(8.6, 8), y: PL, levels: 8, h: 3.1, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 7.95], w: 1.4 }],
+        program: [['crew', 'store']].concat([1, 2, 3, 4, 5, 6, 7].map(function () { return ['crew', 'crew']; })) }],
+      note: 'eight storeys inside a glass drum; the plan is the octagon inscribed in it (the slivers between the octagon\'s ' +
+        'flats and the round glass are open floor); the circular ribbon balconies are outside' },
+    { key: 'nr-anc-office-lens', name: 'Lens office (offices; barracks)', culture: 'scrap', wealth: 0.25, types: BARRACKS, lot: [30, 19],
+      bodies: [{ id: 'office', poly: rect(24, 15), y: PL, levels: 5, h: 3.4, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 7.5], w: 2.0 }, { at: [6, -7.5], w: 1.2 }],
+        program: [['crew', 'store', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'crew']] }],
+      note: 'five office floors behind the bowed glass and the fins (the bows are outside the plan: open floor); a crew to a room' },
+    { key: 'nr-anc-office-lens-mess', name: 'Lens office (the mess hall)', like: 'nr-anc-office-lens', culture: 'post-apoc', wealth: 0.4, types: ['civic', 'tavern', 'military'],
+      bodies: [{ id: 'office', poly: rect(24, 15), y: PL, levels: 5, h: 3.4, wall: 0.25, roof: 'flat',
+        doors: [{ at: [0, 7.5], w: 2.0 }, { at: [6, -7.5], w: 1.2 }],
+        program: [['mess', 'kitchen'], ['mess', 'store'], ['crew', 'crew', 'crew'], ['crew', 'crew', 'crew'], ['crew', 'store']] }],
+      residence: true, units: 1,
+      note: 'the crew\'s mess: the two lower floors are the mess (the servery, the long tables, the galley and its stores); the cooks ' +
+        'and the mess hands sleep above' },
+    { key: 'nr-anc-reliquary', name: "The small Reliquary (laboratory; Ruephus's headquarters)", culture: 'post-apoc', wealth: 0.85, types: CIVIC, lot: [44, 30],
+      residence: true, units: 1,
+      bodies: [{ id: 'reliquary', poly: SH.circle(12, 12), y: 0.5, levels: 3, h: 3.4, wall: 0.3, roof: 'flat',
+        stair: { w: 1.0, riser: 0.21, tread: 0.23 },
+        doors: [{ at: [0, 11.59], w: 2.0 }],
+        program: [['hall', 'store', 'crew'], ['study', 'bedroom', 'store'], ['hall', 'bedroom', 'bedroom']] }],
+      note: 'the Ancients\' laboratory, a smaller sister of the Reliquary: three round storeys under a lattice dome and a needle ' +
+        'spire (a steep ship\'s stair between its storeys: the 12-gon\'s walls are short). Ruephus holds court in the ground-floor hall (his throne, the loot), his guard beside it, the armoury behind; his ' +
+        'chart room, his cabin and the treasure room above; his officers on the top floor. The plan is the 12-gon inside the ' +
+        'undulating shell; the dome, the spire and the colonnade are not planned' }
   ] });
 })(KratorInteriors);
 /* ---------- sets/post-apoc.js ---------- */

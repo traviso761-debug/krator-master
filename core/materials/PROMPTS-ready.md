@@ -22,3 +22,5 @@ Delivered on a branch not yet merged: `wood.lash` (library/wood.lash on branch c
 
 Delivered 2026-10-06, late (Downloads; batches `chatgpt-2026-10r-owed.json` and `-cards.json`): `earth.rammed`, `patterns/reedlake/awayo`, `band.xanadu.twig`, `patterns/xanadu/sun-emblem`, `patterns/nacre/shell-inlay`, `patterns/nacre/pearl-mosaic`, `wood.petrified`, `roof.turf`, `tile.bath.lens`, `panel.solar`, `card.pods`, `card.litter`, `card.reef`, `bark.paperbark`, `bark.whorled`, `organic.fungus.gill`, `skin.alien.banded`, `metal.rust.fine`, `metal.corrugated.rusty`. `metal.rust.fine` came out as an even pale-grey grain (the prompt's near-colourless rule), which is what the stretched Ancients beams need.
 Delivered 2026-10-06, late (pasted): `fruit.seeds`, `fruit.flesh`, `fruit.scale` (batch `chatgpt-2026-10u-fruit.json`). `fruit.jelly` followed (batch `chatgpt-2026-10v-jelly.json`).
+Delivered on main (the eastern highlands, 2026-10-06): `ground.puna`, `ground.turf.polygon`, `surface.cushion`, `surface.fleece`,
+`bark.ragbark`, `rock.basalt.vesicular`, `ground.sinter`, `card.ichu`, `card.ragleaf`, `card.rheumleaf`.

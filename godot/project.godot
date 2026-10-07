@@ -86,3 +86,7 @@ atm_wave_amp={
 "type": "float",
 "value": 0.22
 }
+atm_deck_t={
+"type": "float",
+"value": 0.0
+}

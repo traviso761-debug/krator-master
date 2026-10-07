@@ -56,3 +56,6 @@ core/materials/demo/mockups/*/dist/
 /edits/
 
 kits/scyvoi/three.min.js
+
+kits/fauna/scratch/
+kits/fauna/three.min.js

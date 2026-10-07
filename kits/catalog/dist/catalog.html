@@ -17644,7 +17644,8 @@ FURN_CULTURE('scyvoi', { name: 'Scyvoi', pack: null, influences: 'Kazakh, Kyrgyz
     flame: 0xffb04a, ember: 0xe0521e, ropeHemp: 0xb09a6a, wicker: 0xb48a52,
     fruitFire: 0xe2461c, fruitDeep: 0xb02a14, fruitGold: 0xf0b42a, leafGreen: 0x3a5a2a,
     herbGreen: 0x5e7034, herbSage: 0x8a9670, herbDry: 0xa8985a, herbRed: 0x9a3020,
-    ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc
+    ribbonBlue: 0x3a78c8, hairBlack: 0x1e1c1a, stew: 0x6a4426, smoke: 0xc8c4bc,
+    hideRaw: 0xcaa88a, hideFat: 0xe0cdb0, hideTanned: 0x8e5a30, hideSmoked: 0x6a4024, liquor: 0x2e1c10, barkChip: 0x7a5434, goatBlack: 0x221e1a
   } });
 /* END PALETTE */
 
@@ -18839,6 +18840,108 @@ FURN({
       F.blob(x, 0.12, z, 0.075, 0.08, F.rnd() * 3, F.shade(c, 0.08), 'plant');
       for (let k = 0; k < 2; k++) F.box(x + F.rr(-0.05, 0.05), 0.08, z + F.rr(-0.04, 0.04), 0.012, 0.06, 0.012, F.rnd() * 3, F.shade(c, -0.1), 'plant');
     }
+  }
+});
+
+/* ====================================================================== Tanning: the hidemaker's tent (2026-10-06)
+   Goat, salamander and game hides go from the fleshing beam to the lime and bark vats, onto the stretching frames, over
+   the smudge to smoke them, and onto the drying line; tanned hides are stacked folded. job 'tanning'. A hide is a flat
+   F.pillow with a low round exponent: an oval with soft edges. */
+FURN({
+  key: 'scyvoi_hide_frame', name: 'Hide stretching frame', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.8 }, materials: ['timber', 'hide', 'rope'],
+  w: 1.9, d: 0.9, h: 2.0, variants: 2, variantNames: ['a fresh goat hide', 'a salamander hide, half scraped'],
+  build: function (F) {
+    F.shift(0, 0.2);   /* the frame leans back: centre its footprint */
+    const wood = F.col('timberPoplar'), cord = F.col('ropeHemp'), v = F.variant, lean = 0.22;
+    const at = (x, y) => [x, y * Math.cos(lean), -y * Math.sin(lean)];   /* the frame's plane, tipped back */
+    const corners = [[-0.85, 0.15], [0.85, 0.15], [0.85, 1.9], [-0.85, 1.9]];
+    for (let i = 0; i < 4; i++) { const a = at(...corners[i]), b = at(...corners[(i + 1) % 4]); F.rod(a[0], a[1], a[2], b[0], b[1], b[2], 0.035, wood, 'wood'); }
+    for (const x of [-0.85, 0.85]) { const t = at(x, 1.95); F.rod(x, 0, 0.02, t[0], t[1], t[2], 0.04, wood, 'wood'); F.rod(x, 0, -0.55, t[0], t[1] * 0.75, t[2] * 0.75, 0.03, wood, 'wood'); }
+    const c = at(0, 1.02), hide = F.col(v ? 'hideSmoked' : 'hideRaw');
+    F.pillow(c[0], c[1], c[2] + 0.01, v ? 1.35 : 1.05, 0.025, 1.45, 0, hide, 'hide', { rx: -Math.PI / 2 + lean, round: 2.6, puff: 0.3, pinch: 0.12 });
+    if (v) F.pillow(c[0] + 0.25, c[1] + 0.15, c[2] + 0.025, 0.5, 0.012, 0.6, 0, F.col('hideFat'), 'hide', { rx: -Math.PI / 2 + lean, round: 2.4, puff: 0.2 });   /* the scraped patch */
+    for (let k = 0; k < 14; k++) {   /* the lacing, hide edge to frame */
+      const a = k / 14 * F.TAU, ex = Math.cos(a) * (v ? 0.62 : 0.5), ey = 1.02 + Math.sin(a) * 0.68;
+      const fx = Math.max(-0.84, Math.min(0.84, Math.cos(a) * 1.2)), fy = Math.max(0.16, Math.min(1.89, 1.02 + Math.sin(a) * 1.1));
+      const p = at(ex, ey), q = at(fx, fy); F.rod(p[0], p[1], p[2] + 0.015, q[0], q[1], q[2], 0.006, cord, 'rope');
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_fleshing_beam', name: 'Fleshing beam', culture: 'scyvoi', tier: 'common', type: 'workstation', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.9 }, materials: ['timber', 'hide', 'metal', 'bone'],
+  w: 0.8, d: 1.8, h: 1.05, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberWalnut');
+    F.rod(0, 0.06, -0.85, 0, 0.92, 0.65, 0.11, wood, 'wood');   /* the beam: its foot on the ground behind, its head at the hip */
+    for (const s of [-1, 1]) F.rod(s * 0.3, 0, 0.45, -s * 0.05, 0.85, 0.5, 0.04, F.col('timberWalnutDark'), 'wood');
+    const hide = F.col('hideRaw');
+    /* the hide laid along the top of the beam (the beam climbs 0.57 rad), and a flap hanging down each side of it */
+    const slope = Math.atan2(0.86, 1.5), by = z => 0.06 + (z + 0.85) * 0.86 / 1.5;
+    F.pillow(0, by(0.3) + 0.12, 0.3, 0.34, 0.025, 0.8, 0, hide, 'hide', { rx: -slope, round: 2.6, puff: 0.4, pinch: 0.08 });
+    for (const s of [-1, 1]) F.pillow(s * 0.125, by(0.3) - 0.14, 0.3, 0.7, 0.02, 0.48, s * Math.PI / 2, hide, 'hide', { rx: Math.PI / 2, round: 2.6, puff: 0.3, pinch: 0.12 });
+    /* the two-handled fleshing knife lying across the beam */
+    F.box(0, 0.98, 0.25, 0.42, 0.012, 0.05, 0, F.col('ironBlack'), 'metal');
+    for (const s of [-1, 1]) F.rod(s * 0.21, 0.99, 0.25, s * 0.33, 0.99, 0.25, 0.018, F.col('horn'), 'bone');
+  }
+});
+FURN({
+  key: 'scyvoi_tanning_vat', name: 'Tanning vat', culture: 'scyvoi', tier: 'common', type: 'storage', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'yard'], anchor: 'floor', clearance: { front: 0.6 }, materials: ['timber', 'hide', 'metal', 'stone'],
+  w: 1.2, d: 1.2, h: 1.7, variants: 2, variantNames: ['bark liquor', 'lime'],
+  build: function (F) {
+    const wood = F.col('timberWalnut'), iron = F.col('ironBlack');
+    F.frustum(0, 0, 0, 0.5, 0.56, 0.72, 0, wood, 'wood', 16);
+    for (const y of [0.1, 0.6]) F.frustum(0, y, 0, 0.5 + 0.06 * y / 0.72 + 0.008, 0.5 + 0.06 * (y + 0.05) / 0.72 + 0.008, 0.05, 0, iron, 'metal', 16);
+    F.cyl(0, 0.6, 0, 0.53, 0.02, 0, F.col(F.variant ? 'feltWhite' : 'liquor'), 'stone');
+    F.pillow(0.3, 0.7, 0.3, 0.6, 0.03, 0.4, 0.7, F.col('hideRaw'), 'hide', { rx: 0.4, round: 2.6, puff: 0.3 });   /* a hide over the rim */
+    F.rod(-0.2, 0.55, -0.1, -0.45, 1.65, 0.3, 0.025, F.col('timberPoplar'), 'wood');   /* the stirring pole */
+    if (!F.variant) for (let i = 0; i < 6; i++) F.box(F.rr(-0.6, 0.6), 0, F.rr(0.5, 0.6), 0.08, 0.03, 0.05, F.rr(0, 3), F.col('barkChip'), 'wood');
+  }
+});
+FURN({
+  key: 'scyvoi_hide_stack', name: 'Stack of tanned hides', culture: 'scyvoi', tier: 'common', type: 'stack', setting: 'both', job: 'tanning',
+  rooms: ['workshop', 'store', 'shop', 'yard'], anchor: 'floor', clearance: { front: 0.5 }, materials: ['timber', 'hide', 'cloth'],
+  w: 1.2, d: 0.9, h: 0.65, variants: 1,
+  build: function (F) {
+    F.box(0, 0, 0, 1.1, 0.08, 0.8, 0, F.col('timberWalnutDark'), 'wood');
+    const keys = ['hideTanned', 'hideSmoked', 'goatBlack', 'hideTanned', 'leatherTan', 'hideSmoked', 'goatBlack', 'leatherDark'];
+    let y = 0.08;
+    for (let i = 0; i < 8; i++) {
+      const th = 0.055 + F.rr(0, 0.015);
+      F.pillow(F.rr(-0.04, 0.04), y + th / 2, F.rr(-0.03, 0.03), 1.0 - i * 0.02, th, 0.72, F.rr(-0.06, 0.06), F.col(keys[i]), keys[i] === 'goatBlack' ? 'cloth' : 'hide', { side: 0.5, puff: 0.3, round: 4, pinch: 0.06 });
+      y += th;
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_drying_line', name: 'Hide drying line', culture: 'scyvoi', tier: 'common', type: 'rack', setting: 'outdoor', job: 'tanning',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.6, back: 0.6 }, materials: ['timber', 'hide', 'cloth'],
+  w: 3.0, d: 0.4, h: 1.9, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberPoplar');
+    for (const s of [-1, 1]) { F.rod(s * 1.4, 0, 0, s * 1.4, 1.75, 0, 0.045, wood, 'wood'); F.rod(s * 1.4, 1.62, 0, s * 1.48, 1.84, 0, 0.025, wood, 'wood'); F.rod(s * 1.4, 1.62, 0, s * 1.32, 1.84, 0, 0.025, wood, 'wood'); }
+    F.rod(-1.5, 1.78, 0, 1.5, 1.78, 0, 0.035, wood, 'wood');
+    const keys = ['hideRaw', 'hideTanned', 'goatBlack', 'hideSmoked'];
+    for (let i = 0; i < 4; i++) {   /* each hide over the pole: half down the front, half down the back */
+      const x = -1.0 + i * 0.68, c = F.col(keys[i]), fam = keys[i] === 'goatBlack' ? 'cloth' : 'hide';
+      for (const s of [-1, 1]) F.pillow(x, 1.4, s * 0.06, 0.52, 0.018, 0.72, 0, c, fam, { rx: -Math.PI / 2 + s * 0.12, round: 2.8, puff: 0.3, pinch: 0.12 });
+    }
+  }
+});
+FURN({
+  key: 'scyvoi_smoking_frame', name: 'Hide smoking frame', culture: 'scyvoi', tier: 'common', type: 'stove', setting: 'outdoor', job: 'tanning',
+  rooms: ['yard'], anchor: 'floor', clearance: { front: 0.8, back: 0.6, left: 0.6, right: 0.6 }, materials: ['timber', 'hide', 'stone', 'emissive'],
+  w: 1.5, d: 1.5, h: 2.3, variants: 1,
+  build: function (F) {
+    const wood = F.col('timberWalnutDark');
+    for (let i = 0; i < 6; i++) { const a = i / 6 * F.TAU; F.rod(Math.cos(a) * 0.7, 0, Math.sin(a) * 0.7, Math.cos(a) * 0.08, 2.25, Math.sin(a) * 0.08, 0.025, wood, 'wood'); }
+    F.frustum(0, 0.45, 0, 0.56, 0.16, 1.5, 0, F.col('hideSmoked'), 'hide', 12);   /* the hides sewn into a cone round the smudge */
+    for (let i = 0; i < 7; i++) { const a = i / 7 * F.TAU + 0.2; F.ball(Math.cos(a) * 0.55, 0.06, Math.sin(a) * 0.55, 0.09, F.col('stoneGrey'), 'stone'); }
+    F.cyl(0, 0, 0, 0.36, 0.05, 0, F.col('ash'), 'stone');
+    for (let i = 0; i < 5; i++) F.ball(F.rr(-0.2, 0.2), 0.06, F.rr(-0.2, 0.2), 0.05, F.col('ember'), 'glow');
+    F.lamp(0, 0.2, 0, 0.5, 4);
   }
 });
 /* ---------- krator-master-furniture-voth.js ---------- */

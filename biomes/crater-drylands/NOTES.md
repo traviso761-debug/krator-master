@@ -21,7 +21,12 @@ The owner's additions:
 - Many species of fire-hardened succulents and other plants that bloom and sprout in a frenzy after a wildfire. **The
   post-fire tracts are the ones most bursting with life.**
 - Trees that have evolved long trunks to keep their foliage above the flames.
-- The **frill-tree** explodes in a fire and throws its fireproof seed far and wide.
+- The **frill-tree** explodes in a fire and throws its fireproof seed far and wide. Rebuilt on 2026-10-06 (the owner: make it
+  a proper frill tree that fits its environment) as the Rift's frill tree in kiln country (`biomes/rift`, the frill tree
+  and its barrel frill): a ribbed bottle column swollen low with stored water, short stiff waxy fins in rows up every rib
+  (olive and gold, a copper sheen away from the sun), a splay of long fins round the crown pod (the old ruffled collar,
+  now the frill tree's bud). A fire burns the fins to ash-grey stubs and bursts the pod, charred; the column stands four
+  years in its ring of seedlings, then the young trees grow back, from a quarter of full height at four years to full at nine.
 - A **prism mallee**: a much smaller relative of the hyperjungle's prism gum, iridescent green, orange and red.
 - Fire is an environmental hazard. The **Scyvoi**, human riders of theropod-like lizards, do not overheat easily. They
   live on the rocky outcrops, come down to reap what blossoms after a fire, and the most daring use the flames to trap
@@ -89,14 +94,28 @@ wildfire's smoke. The light itself is the stage's: a warm key, a strong blue hem
 
 `python3 verify.py dist/crater-drylands.html --assert --views "The bloom|The mosaic from above"`.
 
-## A live fire (planned)
+## The live fire (built 2026-10-06)
 
-The owner asked whether an atmosphere effect could leave a trail of devastation behind it. The plan: a
-`core/atmos/89-atmos-c-fire.js` that runs the same spread model (`fireHistory`) from a new ignition at run time and
-publishes the arrival-time map as a texture. Every shader then asks how long ago its point burned: the flame line
-(sprites, glow, embers downwind, a leaning smoke column) where `t - burnTime` is about 0, char behind it, the bloom
-months later on a fast clock. The foliage core (`core/biome/30-core-foliage.js`) needs a hook that reads the map
-(a shared-core change: every kit rebuilt). Not started.
+The owner asked for an atmosphere effect that leaves a trail of devastation behind it. Light a fire anywhere (F, then
+click the ground; or the view "A wildfire running", which lights one four minutes in and frames its head):
+
+- **The data** (52, [G data]): `CRATERDRY.fireRun({x, z, wind})` spreads one fire now by the history's own rule through
+  the fuel the history left. Ground burnt in the last year will not carry it; bare granite, wash sand and the seep stop
+  it. Every 20 m cell gets an arrival time in seconds (`FIRE_SEC` turns the model's units into a front of about 2 m/s
+  downwind in old scrub, a crawl into the wind).
+- **The look** (89, the shader text [G shader], the rest [web]): the arrival map is a half-float texture (R the
+  arrival, G the ground's height) every patched shader reads with the fire's clock. The ground (84) shows a broken band
+  of burning fuel at the front, char spreading behind it, embers smouldering for a few minutes. Every plant material is
+  patched over its own hook: foliage below the flame height (`CRATERDRY.FLAME_H`, 12 m) glows, blackens and burns away,
+  crowns above it scorch brown and survive (the parasol pines, the ghost gums, the pillars' upper fronds), trunks and
+  stems blacken. Flame tongues (instanced quads, two or three to a burning cell) stand along the front, smoke columns
+  rise and lean downwind, a warm point light follows the head of the fire.
+- **The clock** is the fire's own, seconds since ignition times a speed (x1, x10, x60). Nothing is rebuilt: the trail
+  is the map and the clock, so any point can be asked how it stands (`FIREFX.state(x,z)`: unburnt, burning,
+  smouldering, burnt), which is what a game needs from a fire (a hazard, a way through, the Scyvoi's fire-hunting).
+- **Where it goes next:** this is the prototype of a `core/atmos` fire module (`89-atmos-c-fire.js`): the data and the
+  shader text are already split from the host code; the foliage patch would become a hook in `core/biome`'s foliage
+  material. Not done here because it changes every build that takes core/atmos or core/biome.
 
 ## Rules the owner has given that this kit follows
 

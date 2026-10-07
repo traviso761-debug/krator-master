@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.33,
+    1.18
+   ],
+   "seam_before": [
+    1.605,
+    1.886
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.25,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.88,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "_note": "the bogs' ground: full colour (green, gold, rust), with dark wet peat between the hummocks",
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.sphagnum",
+  "metal": 0,
+  "roughness": 0.88,
+  "scale": [
+   2.6,
+   2.6
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground-sphagnum.png",
+  "generator": "ChatGPT image generation, Oct 2026",
+  "licence": "generated for this project by its owner",
+  "prompt": "A mountain bog carpet of sphagnum moss seen from above, tightly packed small star-shaped moss heads in hummocks, patches of lime green, golden yellow and rusty red moss, a few dark wet hollows of peat between them, tiny sundew rosettes here and there. (Row ground.sphagnum of core/materials/PLAN.md, Southern highlands; full colour, the colour is the point.) Pasted into the chat 2026-10-06 as a 1254 px webp.",
+  "reuse": "every bog and mire: the southern highlands' bogs, the northern highlands' wet hollows, Reed Lake's floating mats, any peat moor",
+  "sha1": "96cb9a5aec5d0b4646f0f09215593e93c824c67f"
+ }
+}

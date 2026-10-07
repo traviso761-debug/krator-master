@@ -153,19 +153,31 @@ B[1]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,ph=rr(0,TAU),ba
  for(let k=0;k<3;k++){const a=rr(0,TAU);frondAt('frond',T.x,T.y0+H-.8,T.z,a,R*.7,1.35+rr(-.1,.1),shade(C(pick(S.leaf)),-.15),.7);}
  regTree(T,S,R*1.25+rb,H+R*.5);};
 
-// 2 the FRILL-TREE: a stout trunk and a few crooked limbs, dark leathery leaves, and at the limb ends its pods:
-// ruffled collars of dark red, orange and gold. A seeder: a fire kills it and the heat bursts the frills, throwing the
-// fireproof seed out over the ash. For four years the black snag stands among a ring of its own seedlings.
-B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,a=T.age,dead=a<4,la0=rr(0,TAU);
- const fh=H*rr(.4,.5),pts=bole(T,S,'bark0',T.x,T.z,fh,rb,rb*.6,rr(0,.08),la0,.08,lv===2?4:2,st,lv===2?6:4,dead?(a>2.5?.6:.1):false),top=pts[pts.length-1];
- const nL=lv===2?ri(3,6):3,spots=[];let reach=R*.6,topY=top.y;
- for(let k=0;k<nL;k++){const la=la0+k*GOLD+rr(-.3,.3),L=(H-fh)*rr(.7,1.05),lp=treeGrow(top,dirOf(la,rr(.55,.95)),L,top.r*.65,.06,3,-.05,.12);
-  if(lv===2)st.limb+=BIO.tube(dead?'wood':'bark0',lp,dead?deadCol(a>2.5?.6:.1):barkCol(S,k+1),{seg:4,cap:true});
-  else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],top.r*1.2,.06,dead?charCol(S):rodCol(S.bark[0]));
-  spots.push({p:lp[3],d:dirOf(la,.5),L});reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+1);topY=Math.max(topY,lp[3].y);}
+// 2 the FRILL-TREE: the Rift's frill tree in kiln country (biomes/rift, the frill tree and its barrel frill). A ribbed
+// bottle column, swollen low with stored water, olive-grey; in rows up every rib, short stiff waxy fins, olive and gold
+// with a copper sheen away from the sun, longest at the middle; at the summit a splay of long fins round the crown pod, a
+// ruffled collar of dark red, orange and gold, and a smaller pod or two below it. A SEEDER: a fire kills it, burns its
+// fins to black stubs and bursts the pods, throwing the fireproof seed over the ash; for four years the charred column
+// stands in a ring of its own seedlings, and then the young trees grow back (a quarter of full height at four years,
+// full at nine).
+B[2]=function(T,st,lv){const S=SP[T.sp],a=T.age,dead=a<4,young=!dead&&a<9,g=young?mix(.3,1,smooth(4,9,a)):1,H=T.H*g,rb=T.rb*mix(.5,1,g),nR=10,ph=rr(0,TAU);
+ const rAt=u=>rb*(1-.5*u)*(1+.35*Math.sin(Math.PI*Math.min(1,u*1.3)))*(1+.4*smooth(.06,0,u));   // a bottle: swollen low, tapering
+ const dcol=a>2.5?deadCol(.6):charCol(S),rings=[],du=lv===2?.05:.12,hc=H*.88;
+ for(let u=0;u<=1.0001;u+=du){const y=T.y0-.3+(hc+.3)*u;rings.push({x:T.x,y,z:T.z,r:rAt(u*.88),yy:u*hc,col:dead?dcol:barkCol(S,Math.floor(u*5))});}
+ rings.push({x:T.x,y:T.y0+hc+rAt(.88)*1.4,z:T.z,r:.04,yy:hc+1,col:dead?dcol:barkCol(S,1)});   // closed: a rounded top, never an open pipe
+ const uvs=BIO.bucket('bark5').uvScale;
+ st.trunk+=BIO.lathe('bark5',rings,lv===2?16:9,Math.max(1,Math.round(TAU*rb/uvs[0])),uvs[1],(Rg,ang)=>Rg.r*(1+.12*Math.cos(nR*ang+ph)),(Rg,ang)=>.76+.24*Math.cos(nR*ang+ph));
+ const c2s=S.irid,hcol=vary(pick(S.leaf),.03,.08,.05),fk=H/5;
+ // the fins in rows on the ribs: alive, olive and gold; the first months after a fire, burnt stubs
+ if(!dead||(lv===2&&a<1.6)){const rows=lv===2?Math.max(3,Math.round(H/.5)):Math.max(2,Math.round(H/1.4)),nf=lv===2?nR:nR/2;
+  for(let r=0;r<rows;r++){const u=mix(.06,.84,r/Math.max(1,rows-1)),yy=T.y0+hc*u,R=rAt(u)*1.06;
+   for(let k=0;k<nf;k++){const ang=(k/nf)*TAU-ph/nR+(r%2?TAU/nf/2:0)+rr(-.05,.05),L=mix(.38,.9,smooth(.05,.55,u))*mix(1.15,.7,u)*fk*rr(.88,1.1)*(dead?.45:1);
+    BIO.put('frillfin',[T.x+Math.cos(ang)*R,yy,T.z+Math.sin(ang)*R],qEuler(rr(-.08,.08),-ang,mix(.7,.95,u)+rr(-.1,.1)),[L,L*.9,L*.9],
+     dead?leafCol(PAL.ash,.75,.01,.03,.05):bright(vary(hcol,.02,.06,.05),rr(1.15,1.35)),{c2:dead?leafCol([0x5a5650,0x4a4642],.8):bright(C(pick(c2s)),1.15),n:[Math.cos(ang)*.85,.5,Math.sin(ang)*.85]});st.fins++;}}}
+ const top=T.y0+hc,rT=rAt(.88);let reach=rb+1;
  if(dead){
-  // the burst pods: blackened collars torn open wide at the limb ends
-  for(const s of spots){const q=qUp([s.d[0]*.7,.7,s.d[2]*.7]);BIO.put('frill',[s.p.x,s.p.y,s.p.z],q,[rr(.5,.75),rr(.18,.28),rr(.5,.75)],shade(C(pick(PAL.frill)),-.62));st.pods++;}
+  // the burst crown: the pod's collar blackened and torn wide open at the top of the charred column
+  const cw=rr(.9,1.3);BIO.put('frill',[T.x,top+.1,T.z],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[cw,cw*.4,cw],C(pick([0x3a2620,0x302018,0x44281e])));st.pods++;   // charred, an ember tinge from the collar's own red
   // the fireseed thrown out over the fresh ash, before the first rains bring it up (the Scyvoi's first harvest of a burn)
   if(lv===2&&a<1){const n=10+Math.floor(fruitH(T,0,1)*9);
    for(let i=0;i<n;i++){const q=fruitH(T,i,2)*TAU,d=1.5+fruitH(T,i,3)*9,x=T.x+Math.cos(q)*d,z=T.z+Math.sin(q)*d;if(BIO.mask(x,z)<=0)continue;
@@ -174,18 +186,20 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,a=T.age,dead=a<
   if(a>.3){const n=lv===2?ri(8,16):4,hs=clamp(.15+a*.32,.15,1.4);
    for(let i=0;i<n;i++){const q=rr(0,TAU),d=rr(4,18),x=T.x+Math.cos(q)*d,z=T.z+Math.sin(q)*d;if(BIO.mask(x,z)<=0)continue;
     BIO.put('round',[x,Y(x,z)+hs*.45,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[hs*.7,hs*.6,hs*.7],leafCol(PAL.seedling,1.2,.03),{n:[0,1,0]});st.seedlings++;}
-   reach=Math.max(reach,18);}
-  regTree(T,S,reach,topY-T.y0+1);return;}
- const hc=C(pick(S.leaf)),cy=T.y0+H*.75;
- for(const s of spots){for(let c=0,n=lv===2?3:1;c<n;c++){const q=rr(0,TAU),d=s.L*.3*Math.sqrt(rng());
-   clumpAt('round',s.p.x+Math.cos(q)*d,s.p.y+rr(-.2,.5),s.p.z+Math.sin(q)*d,R*.42*(lv===2?1:1.5),.7,hc,T.x,cy,T.z,R,H*.3);st.clumps++;}
-  // a pod at most limb ends, opening outward and up
-  if(rng()<.8){const q=qUp([s.d[0]*.6,.8,s.d[2]*.6]),px=s.p.x+s.d[0]*.4,py=s.p.y+.35,pz=s.p.z+s.d[2]*.4,ps=rr(.35,.55);BIO.put('frill',[px,py,pz],q,ps,bright(vary(pick(PAL.frill),.02,.06,.05),1.15));st.pods++;
-   // the fireseed sitting in the pod's cup
-   if(lv===2){const u=new T3.Vector3(0,1,0).applyQuaternion(q),k0=spots.indexOf(s)*3;
-    for(let i=0;i<3;i++){const j=k0+i,ox=(fruitH(T,j,2)-.5)*ps*.3,oz=(fruitH(T,j,3)-.5)*ps*.3;
-     BIO.put('seed',[px+u.x*ps*.3+ox,py+u.y*ps*.3,pz+u.z*ps*.3+oz],qEuler(fruitH(T,j,4)*3,fruitH(T,j,5)*TAU,0),[.07,.05,.07],seedCol(T,j));st.fruit++;}}}}
- regTree(T,S,reach,topY-T.y0+R*.4+1);};
+   reach=18;}
+  regTree(T,S,reach,top-T.y0+2);return;}
+ // the crown: a splay of long fins round the pod, the pod opening upward (a young tree flowers from five years on)
+ const n=lv===2?12:6,a0=rr(0,TAU);
+ for(let k=0;k<n;k++){const ang=a0+k/n*TAU+rr(-.15,.15),L=H*rr(.24,.32);
+  BIO.put('frillfin',[T.x+Math.cos(ang)*rT*.6,top+rr(-.2,.3),T.z+Math.sin(ang)*rT*.6],qEuler(rr(-.1,.1),-ang,rr(.45,.95)),[L,L,L*.95],bright(vary(hcol,.02,.06,.05),1.3),
+   {c2:bright(C(pick(c2s)),1.15),n:[Math.cos(ang)*.7,.7,Math.sin(ang)*.7]});st.fins++;reach=Math.max(reach,rT+L);}
+ if(g>.65){BIO.put('frill',[T.x,top+rT*.9,T.z],qUp([rr(-.1,.1),1,rr(-.1,.1)]),[rT*3.2,rT*2.2,rT*3.2],bright(vary(pick(PAL.frill),.02,.06,.05),1.15));st.pods++;
+  // the fireseed sitting in the top pod's cup (hashed, so the tree's own draws are unchanged)
+  if(lv===2)for(let i=0;i<3;i++){const ox=(fruitH(T,i,2)-.5)*rT*1.2,oz=(fruitH(T,i,3)-.5)*rT*1.2;
+   BIO.put('seed',[T.x+ox,top+rT*.9+rT*1.4,T.z+oz],qEuler(fruitH(T,i,4)*3,fruitH(T,i,5)*TAU,0),[.07,.05,.07],seedCol(T,i));st.fruit++;}
+  if(lv===2)for(let k=0,m=ri(0,2);k<m;k++){const u=rr(.62,.78),ang=rr(0,TAU),R=rAt(u),s=rT*rr(.9,1.3);
+   BIO.put('frill',[T.x+Math.cos(ang)*R*1.1,T.y0+hc*u,T.z+Math.sin(ang)*R*1.1],qUp([Math.cos(ang)*.6,.8,Math.sin(ang)*.6]),s,bright(vary(pick(PAL.frill),.02,.06,.05),1.1));st.pods++;}}
+ regTree(T,S,reach,top-T.y0+H*.22+1);};
 
 // 3 the PARASOL PINE and the long trunks: a clear straight bole with an umbrella of near-level limbs at the top, so the
 // crown stands far above any flame. A survivor: charred below the flame height, its crown green.
@@ -358,7 +372,7 @@ function buildFar(T,fi,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new 
 
 // ---------------------------------------------------------------- the pass
 SP.forEach((S,i)=>{if(typeof B[i]!=='function')BIO.err('craterdry: no builder for species '+i+' '+S.key);});
-const newStats=()=>({trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spikes:0,shoots:0,seedlings:0,fruit:0,heroes:0,fars:0,byS:SP.map(()=>0)});
+const newStats=()=>({fins:0,trunk:0,limb:0,far:0,forks:0,clumps:0,blooms:0,pods:0,spikes:0,shoots:0,seedlings:0,fruit:0,heroes:0,fars:0,byS:SP.map(()=>0)});
 CRATERDRY.buildTrees=function(R,q){
  reseed(550031);q=q==null?1:q;R=R||2500;means();
  const st=newStats();
