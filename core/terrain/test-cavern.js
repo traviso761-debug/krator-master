@@ -128,12 +128,57 @@ ok('the stair is a rising strip from the tube to the room', Math.abs(W.floorsAt(
 const m0 = Ameshes.find(m => m.idx.length > 300), nV = m0.pos.length / 3;
 ok('every vertex carries its normal, occlusion, weights, rare hue, material and ground flag', m0.nrm.length === nV * 3 && m0.occ.length === nV && m0.w.length === nV * 4 && m0.mat.length === nV && m0.ground.length === nV &&
   [...m0.occ].every(v => v >= 0.25 && v <= 1) && [...m0.w].every(v => v >= 0 && v <= 1), [...m0.occ].some(v => isNaN(v)));
+// the winding faces the open air: each triangle's face normal agrees with its vertices' normals (the field's gradient)
+function facing(meshes) { let agree = 0, all = 0; meshes.forEach(m => { for (let t = 0; t < m.idx.length; t += 3) { const I = [m.idx[t], m.idx[t + 1], m.idx[t + 2]], p = I.map(i => [m.pos[i * 3], m.pos[i * 3 + 1], m.pos[i * 3 + 2]]);
+  const u = [p[1][0] - p[0][0], p[1][1] - p[0][1], p[1][2] - p[0][2]], v = [p[2][0] - p[0][0], p[2][1] - p[0][1], p[2][2] - p[0][2]], f = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  let n = [0, 0, 0]; I.forEach(i => { n[0] += m.nrm[i * 3]; n[1] += m.nrm[i * 3 + 1]; n[2] += m.nrm[i * 3 + 2]; }); all++; if (f[0] * n[0] + f[1] * n[1] + f[2] * n[2] > 0) agree++; } }); return agree / all; }
+const flipped = Ameshes.map(m => Object.assign({}, m, { idx: m.idx.map((v, i, a) => i % 3 === 1 ? a[i + 1] : i % 3 === 2 ? a[i - 1] : v) }));
+ok('the winding faces the open air (' + (facing(Ameshes) * 100).toFixed(1) + '% of triangles agree with their normals)', facing(Ameshes) > 0.98, facing(flipped) > 0.98);
 const mats = new Set(); Ameshes.forEach(m => m.mat.forEach(v => mats.add(KCAVERN.MATS[v])));
 ok('materials: basalt for the braid and the hall, tuff for the houses (hewn, polished)', mats.has('basalt-raw') && mats.has('tuff-hewn') && mats.has('tuff-polished'), !mats.has('basalt-raw'));
-const lined = Ameshes.reduce((s, m) => { for (let i = 0; i < m.w.length; i += 4) if (m.w[i] > 0.9) s++; return s; }, 0), broken = Ameshes.reduce((s, m) => { for (let i = 0; i < m.w.length; i += 4) if (m.w[i + 1] > 0.9) s++; return s; }, 0);
-ok('the lining low on the walls, the breakdown above it', lined > 100 && broken > 100, lined === 0);
+// the lining on the walls (normal level) below the ledge; the breakdown on the overhangs (normal down); neither on the tuff
+let wallLined = 0, ceilLined = 0, ceilBroken = 0, tuffWeighted = 0;
+Ameshes.forEach(m => { for (let i = 0; i < m.mat.length; i++) { const ny = m.nrm[i * 3 + 1], L = m.w[i * 4], Bk = m.w[i * 4 + 1];
+  if (m.mat[i] >= 2) { if (L + Bk > 0) tuffWeighted++; continue; }
+  if (Math.abs(ny) < 0.2 && L > 0.9) wallLined++; if (ny < -0.7) { if (L > 0.1) ceilLined++; if (Bk > 0.9) ceilBroken++; } } });
+console.log('  weights: ' + wallLined + ' lined wall vertices, ' + ceilBroken + ' broken overhangs, ' + ceilLined + ' lined overhangs, ' + tuffWeighted + ' tuff vertices weighted');
+ok('the lining on the basalt walls below the ledge, the breakdown on its overhangs, none on the tuff', wallLined > 100 && ceilBroken > 100 && ceilLined === 0 && tuffWeighted === 0, wallLined === 0);
 const ex = C.export();
 ok('the plan exports as krator-cavern JSON', ex.format === 'krator-cavern' && ex.prims.length === 7 && ex.openings.length === 2 && JSON.parse(JSON.stringify(ex)).prims[0].pts.length === 3, ex.prims.length === 0);
+// ---- a carved front: a block of tuff standing on the ground (a MASS) with a vaulted room cut into it through a doorway
+function carvedBlock(o) {
+  o = o || {};
+  const W = KWALK.create(), D = KCAVERN.create({ ground: () => 0, cell: 0.5, chunk: 16, seed: 9, walk: W });
+  D.mass({ id: 'blk', owner: 'blk', poly: [[50, -12], [66, -12], [66, 0], [50, 0]], y0: -0.5, y1: 9, taper: 0.06 });
+  D.room({ id: 'hall', owner: 'house9', poly: [[54.2, -9], [61.8, -9], [61.8, -2.2], [54.2, -2.2]], y: 0, h: 2.8, ceil: 'vault', rise: 1.2, r: 0.5 });
+  D.stair({ id: 'door', owner: 'house9', joins: ['hall'], a: [58, 0, -2.6], b: [58, 0, 1.2], w: 1.3, h: 2.3 });
+  if (!o.undeclared) D.opening({ id: 'front', kind: 'door', c: [58, 0], y: 0, r: 1.6 });
+  D.build();
+  return { D, W };
+}
+const K = carvedBlock(), Km = K.D.meshAll();
+const kw = (() => {   // open edges are allowed only where the cavern's mesh meets the host's ground
+  const vid = new Map(), E = new Map(); let nv = 0;
+  const key = (m, i) => { const k = Math.round(m.pos[i * 3] * 1e4) + ',' + Math.round(m.pos[i * 3 + 1] * 1e4) + ',' + Math.round(m.pos[i * 3 + 2] * 1e4); let v = vid.get(k); if (v === undefined) { v = nv++; vid.set(k, [v, m.pos[i * 3 + 1]]); v = vid.get(k); } return v; };
+  Km.forEach(m => { for (let t = 0; t < m.idx.length; t += 3) { const P = [0, 1, 2].map(j => key(m, m.idx[t + j]));
+    [[P[0], P[1]], [P[1], P[2]], [P[2], P[0]]].forEach(([p, q]) => { const k = p[0] < q[0] ? p[0] + ':' + q[0] : q[0] + ':' + p[0]; const e = E.get(k) || { n: 0, y: Math.max(p[1], q[1]) }; e.n++; E.set(k, e); }); } });
+  let open = 0, stray = 0; E.forEach(e => { if (e.n === 1) { open++; if (e.y > 0.8) stray++; } });
+  return { open, stray };
+})();
+/* a floor sample outside the block stands on the host's ground (y 0), which the cavern does not mesh */
+const Kfloor = floorSamples(K.W).map(s => { const m = meshFloorBelow(Km, s.x, s.y, s.z); return m === null ? (K.D.inMass(s.x, s.y + 0.5, s.z) ? 1e9 : Math.abs(s.y)) : Math.abs(m - s.y); }).reduce((a, b) => Math.max(a, b), 0);
+console.log('carved block: ' + Km.length + ' chunks, ' + Km.reduce((s, m) => s + m.idx.length / 3, 0) + ' triangles; ' + kw.open + ' open edges (meeting the ground), hall to the open air ' + K.D.roof('hall').toFixed(2) + ' m');
+ok('a mass: its faces close on the ground and round the doorway, no other hole', kw.open > 0 && kw.stray === 0, false);
+ok('the carved room leaks to the air only through its declared door (undeclared: a leak)', K.D.skyLeaks(0.5).length === 0, carvedBlock({ undeclared: true }).D.skyLeaks(0.5).length === 0);
+ok('a mass is rock, its room is open: inMass, sdf', K.D.inMass(51, 3, -6) && K.D.sdf(51, 3, -6) < 0 && K.D.sdf(58, 1.5, -5) > 0, K.D.sdf(58, 1.5, -5) < 0);
+ok('the carved room\'s floor and doorway lie on the mesh', Kfloor <= 0.15 && K.W.floorBelow(58, 0.5, 0.2)[1].name === 'door', Kfloor > 0.15);
+ok('rock at least 0.8 m round the room (to the block\'s faces)', K.D.roof('hall') >= 0.8, K.D.roof('hall') < 0.8);
+const KmMats = new Set(); Km.forEach(m => m.mat.forEach(v => KmMats.add(KCAVERN.MATS[v])));
+ok('the block\'s faces take its tuff, the room its hewn finish', KmMats.has('tuff-raw') && KmMats.has('tuff-hewn'), !KmMats.has('tuff-hewn'));
+// the export loads back to the same cavern (Godot's import, a probe's broken copy)
+const L2 = KCAVERN.load(JSON.parse(JSON.stringify(A.C.export())), { ground }).build(), L2m = L2.meshAll();
+const exB = JSON.parse(JSON.stringify(A.C.export())); exB.prims.find(P => P.id === 'R2').y += 0.25;
+ok('the export loads back to the same meshes (a room moved: another hash)', KCAVERN.hash(L2m) === KCAVERN.hash(Ameshes), KCAVERN.hash(KCAVERN.load(exB, { ground }).build().meshAll()) === KCAVERN.hash(Ameshes));
 // the plan refuses what it cannot carve
 let threw = false; try { KCAVERN.create({ ground }).tube({ id: 'x', pts: [[0, 0, 0]], w: 4, h: 4 }); } catch (e) { threw = true; } ok('a tube of one point is refused', threw, false);
 threw = false; try { const D = KCAVERN.create({ ground }); D.room({ id: 'a', poly: [[0, 0], [1, 0], [1, 1]], y: 0, h: 2 }); D.room({ id: 'a', poly: [[0, 0], [1, 0], [1, 1]], y: 0, h: 2 }); } catch (e) { threw = true; } ok('a duplicate id is refused', threw, false);
