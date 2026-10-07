@@ -503,7 +503,24 @@
       holes: [R(-11.3, 11.3, -26.3, 2.3), R(-4.3, 4.3, 7.7, 15.3), circle(1.2, 12, -8, Z(19)), circle(1.2, 12, 8, Z(19))] });
     voids.push({ kind: 'floor', id: 'bridge-hall-top', poly: R(-1.7, 1.7, 2.1, 7.9), y: U });
     voids.push({ kind: 'floor', id: 'bridge-front-top', poly: R(-1.7, 1.7, 15.1, 26.1), y: U });
-    return { rooms: rooms, voids: voids };
+    /* the hall's windows (the owner: real windows, not painted panels): each face's, as the def spaces them, cut level through
+       the rock into the chamber at its sill (U + 0.6; 1.8 m tall, 1 m wide; no walk); one with no chamber behind it, or over a
+       flank's door, is not made. The def draws the sills and lintels where these are (COUNCIL.windows) */
+    const windows = [];
+    [[0, -10, 0, 22, 3.6], [0, -38, Math.PI, 22, 4.6], [-11, -24, -Math.PI / 2, 28, 3.6], [11, -24, Math.PI / 2, 28, 3.6]].forEach(function (f) {
+      const cx = f[0], cz = f[1], ry = f[2], L = f[3], D = f[4], c = Math.cos(ry), sn = Math.sin(ry), nx = sn, nz = c;
+      for (let x = -L / 2 + 3.25; x <= L / 2 - 3; x += 3.5) {
+        if (ry === 0 && Math.abs(x) < 1.8) continue;
+        const wx = cx + x * c, wz = cz - x * sn, ax = wx - nx * D, az = wz - nz * D;
+        const flank = Math.abs(Math.sin(ry)) > 0.5;
+        if (flank ? (az < Z(-21.3) || az > Z(-1.7)) : (ax < -7.3 || ax > 7.3)) continue;      /* the chamber behind it (along the face), clear of its corners */
+        if (flank && Math.abs(wz - Z(-12)) < 1.6) continue;   /* a flank's door */
+        const k = windows.length;
+        windows.push({ x: wx, z: wz, ry: ry, nx: nx, nz: nz, y: U + 0.6 });
+        voids.push({ kind: 'stair', id: 'window' + k, a: [ax, U + 0.6, az], b: [wx + nx * 0.4, U + 0.6, wz + nz * 0.4], w: 1.0, h: 1.8, floor: false });
+      }
+    });
+    return { rooms: rooms, voids: voids, windows: windows };
   }
   const COUNCIL = council();
   /* THE CISTERN HALL (Chand Baori; Varanasi's ghats underground): a vaulted hall carved in the rock, its floor the basin 9 m
@@ -843,7 +860,7 @@
       rooms: PORTAL.rooms, voids: PORTAL.voids,
       note: 'a giant arched tunnel 10 m wide through the rock; a rolling stone door rolled into its side channel; three levels of cells either side, their doorways on ledges reached by ladders (no walk)' },
     { key: 'zj_council', name: 'The council: a hall cut from the rock in its pit', carved: true, wealth: 0.85, types: ['civic'], residence: false, lot: [46, 92],
-      rooms: COUNCIL.rooms, voids: COUNCIL.voids,
+      rooms: COUNCIL.rooms, voids: COUNCIL.voids, windows: COUNCIL.windows,
       note: 'after Kailasa, cut down into the ground: a pit 12 m deep down a sunken lane and a tunnel through the gatehouse; the council hall left standing in it ' +
         '(the pillared chamber above, stairs in its flanks, a tiered tower on its roof), the pavilion, two bridges of rock to a gallery in the gatehouse, two lamp pillars, cloisters' },
     /* ---------------- sacred */

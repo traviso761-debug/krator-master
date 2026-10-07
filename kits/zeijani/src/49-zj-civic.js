@@ -23,8 +23,9 @@ defBuilding({key:'zj_council',name:'The council: a hall cut from the rock in its
   for(const [cx,cz,ry,L,spans] of faces)W(cx,0,cz,ry,()=>{
    for(const [a,b] of spans){box('tuffPol',(a+b)/2,Y,.1,b-a,.5,.5,c);zkBand('patFriezeB',a+.3,b-.3,0,Y+1.0,1.8,0,c);}
    for(let x=-L/2+1.5;x<=L/2-1.4;x+=3.5){box('tuffPol',x,Y+3.2,.08,.45,8.6,.26,c);}
-   for(let x=-L/2+3.25;x<=L/2-3;x+=3.5){if(ry===0&&Math.abs(x)<1.8)continue;box('basaltPol',x,U+.6,.02,1.0,1.8,.04,P('soot'));box('tuffPol',x,U+.48,.1,1.4,.12,.2,c);box('tuffPol',x,U+2.4,.1,1.4,.18,.2,c);}
    box('tuffPol',0,-1.3,.18,L+.4,.5,.5,c);});
+  /* the windows, cut through into the chamber by the plan (it.windows: the owner wanted real ones): a sill and a lintel at each */
+  for(const w of (it&&it.windows)||[]){box('tuffPol',w.x+w.nx*.1,w.y-.12,w.z+w.nz*.1,1.4,.12,.2,c,w.ry);box('tuffPol',w.x+w.nx*.1,w.y+1.8,w.z+w.nz*.1,1.4,.18,.2,c,w.ry);}
   for(const [x0,x1,z0,z1] of [[-11,11,-10.3,-9.9],[-11,11,-38.1,-37.7],[-11.1,-10.7,-38,-10],[10.7,11.1,-38,-10]])box('tuffPol',(x0+x1)/2,0,(z0+z1)/2,x1-x0,.6,z1-z0,c);
   /* the tower on the hall's roof, over its back: six receding tiers, a niche band on each, the stone disc and the finial */
   for(let i=0;i<6;i++){const w=14-2*i,d=12-1.8*i,y=i*1.5;box('tuffPol',0,y,-30,w,1.35,d,c);box('tuffPol',0,y+1.35,-30,w+.3,.15,d+.3,c);
