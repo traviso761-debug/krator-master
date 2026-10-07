@@ -44,6 +44,7 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 | `44-zj-gallery.js` | the galleries of the poor: A the spine (three levels of cells, a hearth hall, a kiva, a cistern), B the well (a spiral stair down a light shaft) |
 | `45-zj-estate.js` | the wealthy estates: A the columned hall (13 rooms off a pillared hall, a court under a light shaft), B the loggia (two storeys and a lower court, 12 rooms) |
 | `46-zj-built.js` | the constructed houses: a domed tuff hut, three domes round a yard, a two-storey house with a roof terrace; `zbBody` draws a planned body (walls with their openings, slabs round the stairwells, stairs, partitions) |
+| `47-zj-shops.js` | the shops: twelve trades, each in a carved front (a cut with a counter, shutters, the sign in a niche; a smithy's smoke shaft) and a constructed one (a planned tuff block, an awning, the sign on the parapet), made from the trades' items; signs and awnings are `core/sockets` (the zeijani pack) |
 | `81-sky.js` | the standard Krator sky, vendored (`--vendor-check`) |
 | `89-rows.js` | the sheet's rows by family |
 | `90-scene.js` | renderer, sky, ground, layout, `buildWorld()` |
@@ -51,7 +52,9 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 | `91f-furnish.js`, `91n-night.js`, `93-anim.js` | catalog furniture (`core/furnish`), lamp halos and the light pool, the clock and smoke |
 | `92-camera.js` | views, orbit, walk, inspector, polygon tool |
 
+`core/sockets` is on the page (`37-sockets.js`, `38-symbols.js`, `80-cultures.js`, read live): `place()` fills each def's sockets with the zeijani pack. The page supplies what the packs draw with (`canvasTex`, `decal`, the `cloth` and `iron` buckets, a `paint` colour; `plane4` takes the packs' four-corner form). Shop defs are generated from their items, so `build.py`'s seed rule knows a generated family: `seed: base+i` claims base..base+99.
+
 The Zeijani's vocabulary lives in the shared modules (P1): the `zeijani` culture and its seven trades in `core/tags`, the
 `zeijani` socket pack and its `spiralarch` emblem in `core/sockets`, the furniture in
-`kits/catalog/krator-master-furniture-zeijani.js`, the room kinds (`kiva brewery lab cell ossuary cistern guardroom court`) in
+`kits/catalog/krator-master-furniture-zeijani.js`, the room kinds (`kiva brewery lab cell ossuary cistern guardroom court`, and per trade `zjshop_<trade>`, `zjwork_<trade>`) in
 `kits/interiors/sets/zeijani.js`.

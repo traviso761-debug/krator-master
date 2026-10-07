@@ -88,6 +88,12 @@ const PB={
      if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
      else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
   return start?PB.route(W0,start,way):null;},
+ /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
+    a constructed one by its planner's graph */
+ shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
+   const log=/_carved$/.test(S.key)?PB.siteRoute(W,S.key,[0,3],[['the shopfront',0,.4],['over the counter',-.6,-2.0,false],['the counter’s gap',1.6,-.5],
+     ['the selling room',1.6,-2.6],['the back door',0,-4.8],['the passage',0,-6.8],['the workroom',0,-9.6],['back',0,-4.8],['the selling room again',1.6,-2.6],['out',1.6,-.5],['the street',1.6,2.5]]):PB.plannedRoute(W,S.key);
+   if(log)out.push({name:S.key,log});}return out;},
  /* the constructed houses: the domed hut, the three domes round their yard (hand-written), the planned house (its graph) */
  houseRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
   r('domed hut',PB.siteRoute(W,'zj_house_built_poor',[0,4.5],[['the door',0,2.6],['inside',0,0],['across',0,-1.6]]));
@@ -116,6 +122,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
+ const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
+  sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');
  const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
@@ -142,6 +150,9 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* the houses' routes with the planned house's stair left out of the walk map */
  {const W=PB.copyWalk(f=>/zj_house_built_rich.*stair/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const hr=PB.houseRoutes(W),h=hr.find(e=>/two-storey/.test(e.name));
   if(h)add('walk-route-houses: the stair missing',!PB.routeOk(h.log),h.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
+ /* the shops' routes with the weaponsmith's (carved) passage to its workroom left out */
+ {const R0=REG.find(r=>r.key==='zj_shop_weapons_carved');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.back');for(const b of KWALK.blocks)W.block(b.box,b.tag);
+  const e=PB.shopRoutes(W,'zj_shop_weapons_carved')[0];if(e)add('walk-route-shops: a passage missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}
  /* joins: one cell's doorway strip shortened by 1 m at its room end (it runs 0.4 m into the room's floor, whose walk edge is 0.3 m in: 0.8 lands on that edge) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
   const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-1)/L;

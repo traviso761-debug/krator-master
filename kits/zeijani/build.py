@@ -68,7 +68,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src
 ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(DIST, 'zeijani.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
 VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
 # GENERATED fragments, never written to src/
@@ -109,7 +109,8 @@ def virtual_bodies():
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
-RE_SEED = re.compile(r'defBuilding\(\{[^}]*?\bseed\s*:\s*(\d+)', re.S)
+RE_SEED = re.compile(r'defBuilding\(\{[^}]*?\bseed\s*:\s*(\d+)(?!\d|\s*\+)', re.S)
+RE_SEEDGEN = re.compile(r'defBuilding\(\{[^}]*?\bseed\s*:\s*(\d+)\s*\+\s*i\b', re.S)   # a generated family (47-zj-shops.js): base+i claims base..base+99
 RE_KEY = re.compile(r'defBuilding\(\{\s*key\s*:\s*[\'"]([^\'"]+)[\'"]')
 GENERIC = {'seed', 'base', 'dir', 'pos', 'tmp', 'i', 'j', 'k', 'n', 'p', 't', 'x', 'y', 'z', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
            'h', 'm', 'q', 'r', 's', 'u', 'v', 'w'}
@@ -151,6 +152,12 @@ def main():
             if len(keys) != nseed: errs.append('%s: %d defBuilding keys but %d seeds' % (f, len(keys), nseed))
         for s, fs in seeds.items():
             if len(fs) > 1: errs.append('seed %d claimed twice: %s' % (s, ', '.join(fs)))
+        gens = [(int(m.group(1)), f) for f in files if f not in VIRTUAL and not is_core(f) for m in RE_SEEDGEN.finditer(bodies[f])]
+        for b, f in gens:
+            for s, fs in seeds.items():
+                if b <= s < b + 100: errs.append('seed %d (%s) inside the generated range %d+i of %s' % (s, ', '.join(fs), b, f))
+            for b2, f2 in gens:
+                if (b2, f2) != (b, f) and abs(b2 - b) < 100: errs.append('generated seed ranges %d+i (%s) and %d+i (%s) overlap' % (b, f, b2, f2))
         for f in files:
             if not (re.match(r'[4-7]\d[a-z]?-', f) and f.endswith('.js')) or is_core(f) or f in VIRTUAL: continue
             m = re.match(r'// prefix: (\w+)', bodies[f])

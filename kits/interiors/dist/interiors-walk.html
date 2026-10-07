@@ -28103,6 +28103,70 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   }
   if (!IX.CULTURE_FAMILY.zeijani) IX.CULTURE_FAMILY.zeijani = ['nomad', 'generic', 'scrap'];
 
+  /* ---------------- SHOPS (PLAN.md 6.4): twelve trades, each with one interior and one sign shared by its two fronts
+     (zj_shop_<trade>_carved, _built). The front room sells: its kind `zjshop_<trade>` requires the trade's goods (the carved
+     front's counter is a fixture; a built front's counter is a piece). The back room makes: `zjwork_<trade>` requires the
+     trade's workstation by role, or a shared kind (the smiths' smithy, the alchemist's lab, a store, a kitchen). `sign` is the
+     core/sockets pictograph. */
+  const TRADES = [
+    { t: 'weapons', name: 'Weaponsmith', sign: 'WEAPONS', goods: { types: ['weapon'], roles: ['weapon_rack'], n: 1 }, back: 'smithy', smoke: true },
+    { t: 'armour', name: 'Armourer', sign: 'ARMOR', goods: { types: ['rack'], roles: ['armour_stand'], n: 1 }, back: 'smithy', smoke: true },
+    { t: 'general', name: 'General goods', sign: 'GENERAL', goods: { types: ['shelf', 'rack', 'storage', 'stack'], n: 2 }, back: 'store' },
+    { t: 'food', name: 'Provisioner', sign: 'FOOD', goods: { types: ['storage', 'stack', 'vessel'], roles: FOOD, n: 2 }, back: 'kitchen' },
+    { t: 'alchemist', name: 'Alchemist', sign: 'ALCHEMIST', goods: { types: ['shelf', 'vessel', 'lamp'], roles: ['shelf', 'mortar', 'glow_jar'], n: 2 }, back: 'lab' },
+    { t: 'lampwright', name: 'Lampwright', sign: 'LAMP', goods: { types: ['lamp'], n: 2 }, work: { types: ['workstation'], roles: ['lampwright'], n: 1 } },
+    { t: 'stonecutter', name: 'Stonecutter', sign: 'STONE', goods: { types: ['statue', 'stack', 'art'], n: 1 }, work: { types: ['workstation'], roles: ['banker'], n: 1 } },
+    { t: 'dyer', name: 'Dyer', sign: 'DYE', goods: { types: ['rack', 'loom'], roles: ['yarn_rack', 'loom'], n: 1 }, work: { types: ['storage'], roles: ['vat'], n: 1 } },
+    { t: 'potter', name: 'Potter', sign: 'POTTER', goods: { types: ['stack'], roles: ['pots', 'display'], n: 1 }, work: { types: ['workstation'], roles: ['wheel'], n: 1 } },
+    { t: 'leather', name: 'Leatherworker', sign: 'LEATHER', goods: { types: ['rack', 'stack'], roles: ['armour_stand', 'display'], n: 1 }, work: { types: ['workstation'], roles: ['leather'], n: 1 } },
+    { t: 'knapper', name: 'Knapper and mirror-maker', sign: 'KNAPPER', goods: { types: ['art'], roles: ['mirror'], n: 1 }, work: { types: ['workstation'], roles: ['knapping'], n: 1 } },
+    { t: 'rope', name: 'Rope and caving outfitter', sign: 'ROPE', goods: { types: ['rack', 'stack'], roles: ['rope_rack', 'coils'], n: 1 }, back: 'store' }
+  ];
+  if (!IX.PROGRAMS.zjshop_weapons) {
+    TRADES.forEach(function (T) {
+      IX.PROGRAMS['zjshop_' + T.t] = { require: [Object.assign({ need: 'goods' }, T.goods)],
+        optional: [{ types: ['counter'], max: 1 }, { types: ['shelf', 'rack', 'storage', 'stack', 'vessel'], max: 3 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 2 }, SURFACE],
+        extra: 5 };
+      IX.KIND_ALIAS['zjshop_' + T.t] = ['shop', 'store'];
+      IX.KIND_WEIGHT['zjshop_' + T.t] = 1.6;
+      if (T.work) {
+        IX.PROGRAMS['zjwork_' + T.t] = { require: [Object.assign({ need: 'work' }, T.work)],
+          optional: [{ types: ['workstation'], max: 1 }, { types: ['rack', 'shelf', 'storage', 'stack'], max: 3 }, { types: SEATS, max: 1 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
+          extra: 5 };
+        IX.KIND_ALIAS['zjwork_' + T.t] = ['workshop', 'store'];
+        IX.KIND_WEIGHT['zjwork_' + T.t] = 1.6;
+      }
+    });
+  }
+  const backKind = function (T) { return T.work ? 'zjwork_' + T.t : T.back; };
+  /* the carved shopfront: a cut 4.6 m wide through the face, a counter across it (a fixture) but for a gap at the east, the
+     selling room behind, a passage to the workroom; a smithy's smoke shaft to the top of the rock */
+  function shopCarved(T) {
+    const voids = [
+      { kind: 'mass', id: 'rock', poly: rrect(-6.5, 6.5, -15, 0), y0: -0.5, y1: 7, cap: 1.0, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 2.6, h: 2.9 },
+      { kind: 'stair', id: 'front-cut', joins: ['shop'], a: [0, 0, 1.0], b: [0, 0, -1.6], w: 4.6, h: 2.6 },
+      { kind: 'stair', id: 'back', joins: ['shop', 'work'], a: [0, 0, -5.8], b: [0, 0, -7.8], w: 1.0, h: 2.1 }];
+    if (T.smoke) voids.push({ kind: 'shaft', id: 'smoke', joins: ['work'], c: [2.0, -11.0], y0: 1.8, y1: 8.6, r0: 0.35, r1: 0.4 },
+      { kind: 'door', id: 'smoke-head', c: [2.0, -11.0], y: 6.4, r: 0.9, h: 2.6 });
+    return { key: 'zj_shop_' + T.t + '_carved', name: T.name + ' (carved front)', carved: true, wealth: 0.45, types: ['shop'], residence: false, lot: [13, 15], sign: T.sign,
+      rooms: [
+        { id: 'shop', kind: 'zjshop_' + T.t, carved: true, poly: rrect(-3.4, 3.4, -6.2, -1.0), round: 0.5, y: 0, h: 2.9, ceil: 'vault', rise: 0.5, finish: 'hewn',
+          doors: [{ at: [1.6, -1.0], w: 1.0, swing: 'none' }, { at: [0, -6.2], w: 1.0, swing: 'none' }],
+          fixtures: [fx('counter', 'counter', -0.6, -1.3, 3.2, 0.5, { h: 0.95 })] },
+        { id: 'work', kind: backKind(T), carved: true, poly: rrect(-3.0, 3.0, -12.0, -7.4), round: 0.5, y: 0, h: 2.6, ceil: 'vault', rise: 0.4, finish: 'hewn',
+          doors: [{ at: [0, -7.4], w: 1.0, swing: 'none' }] }],
+      voids: voids,
+      note: 'the selling room behind a counter in the shopfront, the ' + (T.work ? 'workroom' : T.back) + ' behind it' + (T.smoke ? ', its smoke shaft to the top of the rock' : '') };
+  }
+  /* the constructed front: a flat-roofed tuff block, the selling room at the street door, the workroom beside it */
+  function shopBuilt(T) {
+    return { key: 'zj_shop_' + T.t + '_built', name: T.name + ' (constructed)', wealth: 0.45, types: ['shop'], residence: false, lot: [11, 10], sign: T.sign,
+      bodies: [{ id: 'shop', poly: rect(7.6, 6.4), y: 0.2, levels: [{ h: 3.0 }], wall: 0.4, roof: 'flat',
+        doors: [{ at: [1.4, 3.2], w: 1.0 }], program: [['zjshop_' + T.t, backKind(T)]] }],
+      note: 'tuff block under a flat roof, an awning over the front; the selling room at the street door, the ' + (T.work ? 'workroom' : T.back) + ' beside it' };
+  }
+
   const HOME = ['dwelling-single'], MULTI = ['dwelling-multi'];
   /* carved fixtures: structure the placer keeps off; reach false unless it is a way in */
   const fx = function (id, kind, x, z, w, d, o) { return Object.assign({ id: id, kind: kind, x: x, z: z, ry: 0, w: w, d: d, reach: false }, o || {}); };
@@ -28320,6 +28384,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   }
   const EB = estateB();
 
+  /* the shops' items (their helpers above: rrect, fx) */
+  const SHOPS = [];
+  TRADES.forEach(function (T) { SHOPS.push(shopCarved(T)); });
+  TRADES.forEach(function (T) { SHOPS.push(shopBuilt(T)); });
+
   IX.sets.add({ set: 'zeijani', title: 'The Zeijani: carved, constructed and wooden (kits/zeijani)', culture: 'zeijani', wealth: 0.3, items: [
     /* ---------------- the wooden dwellings (the outpost, the hamlets, the villages) */
     { key: 'zj_hut_a', name: 'Round wattle hut on stilts', wealth: 0.2, types: HOME, lot: [8, 8],
@@ -28380,6 +28449,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       rooms: EB.rooms, voids: EB.voids,
       note: 'two storeys: a round domed hall; upstairs a loggia behind five arched windows between the family\'s rooms; down a flight ' +
         'a court under a light shaft, the kitchen and store, the shrine, two servants\' cells and the cistern' },
+    /* ---------------- the twelve shops, each in a carved and a constructed front */
+  ].concat(SHOPS).concat([
     /* ---------------- sacred */
     { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],
@@ -28428,7 +28499,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_cistern', name: 'Cistern hall: a landing', wealth: 0.4, types: ['infrastructure'], residence: false, lot: [12, 8],
       rooms: [{ id: 'landing', kind: 'cistern', poly: rect(10, 5, 0, 0), y: 0, h: 4.5, doors: [{ at: [0, 2.5], w: 2.0, swing: 'none' }, { at: [0, -2.5], w: 2.0, swing: 'none' }] }],
       note: 'PROVISIONAL (until the void plan, P3): one landing of the stepwell flights, where the water is drawn' }
-  ] });
+  ]) });
 })(KratorInteriors);
 /* ---------- src-walk/70-walk.js ---------- */
 /* ======================== Walk mockup: furnished rooms inside the real buildings ========================

@@ -48,13 +48,13 @@ function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,
 const CVU={uCut:ANIMU.uCut,uCam:ANIMU.uCam};
 const CV_TEXKEYS=['tuff','tuffHewn','plaster','tuffPol','basalt','basaltPol','lining','oxide'];
 const CV_HAS_LIB=KMAT.mode==='lib'&&CV_TEXKEYS.every(k=>ZJ_LIBTEX[k]&&ZJ_LIBTEX[k].map);
-const cvMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
+const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
 (function(){const lin=h=>new THREE.Color(h).convertSRGBToLinear(),v3=c=>'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
  /* the procedural fallback colours (?mat=proc) and the rare-colour palette, PLAN.md section 10 */
  const C={tuff:lin(0xd9c8a6),hewn:lin(0xcdbb98),plaster:lin(0xe6dcc6),pol:lin(0xc9a28c),basalt:lin(0x5c6672),basPol:lin(0x2b2e34),lining:lin(0x5c6672),
   oxide:lin(0x9a3a3c),mag:lin(0x74406e),vio:lin(0x4a4e8a),teal:lin(0x4a9490),mineral:lin(0xdcd8d0)};
  const K=k=>(1/TILE[k]).toFixed(5);
- matHook(cvMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;
+ matHook(cvRockMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;
   if(CV_HAS_LIB)CV_TEXKEYS.forEach(k=>{sh.uniforms['uT_'+k]={value:ZJ_LIBTEX[k].map};});
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aCut;attribute vec3 aM;varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;vCut=aCut;vM=aM;vCWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCWN=normalize(mat3(modelMatrix)*objectNormal);');
@@ -92,7 +92,7 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
    const r=ch.prim[i]<65535?CV_SITE[ch.prim[i]]:null;if(r){aCut[i*4]=r.x;aCut[i*4+1]=r.z;aCut[i*4+2]=cvFloorOf(CVC.prims[ch.prim[i]],r);aCut[i*4+3]=1;}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
   g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
-  const mesh=new THREE.Mesh(g,cvMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
+  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
  parent.add(CV_GROUP);
  /* the masses' footprints to the sheet's ground (90-scene.js): no ground under a block of rock */
  if(typeof ZJ_MASSES!=='undefined'){ZJ_MASSES.value.forEach(v=>v.set(0,0,0,0));let n=0;for(const P of CVC.prims){if(P.kind!=='mass'||n>=32)continue;const xs=P.poly.map(p=>p[0]),zs=P.poly.map(p=>p[1]);

@@ -49,7 +49,7 @@ const SITEKEY=k=>typeof k==='string'?{key:k,o:{v:0}}:{key:k.key,o:Object.assign(
 let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
  WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
- KWALK.clear();cvNew();   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
+ KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
  const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);

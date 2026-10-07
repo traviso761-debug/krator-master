@@ -38,6 +38,9 @@ function halosReset(){HALOS=[];HALOKEY=new Set();}
 let GSTAT={tris:0};
 /* emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
+/* core/sockets' needs: a canvas texture, and a decal (a plane of a canvas material, its UVs once across) */
+function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=TEXANISO;return t;}
+function decal(mk,x,y,z,w,h,ry,rx,rz){const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,null,{su:1,sv:1});}
 function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
@@ -85,7 +88,9 @@ function beam(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]
  else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));emit(mk,gbox(),m,col);}}
 function pole(mk,a,b,r,col,seg){beam(mk,a,b,r,col,true,seg||8);}
 // a sheet spanning two edges: p0->p1 one edge, p0->p2 the other; thickness th along the normal
-function plane4(mk,p0,p1,p2,th,col){
+/* a thin slab on three corners (p0, p1 along one edge, p2 across from p0); core/sockets' packs pass the fourth corner too
+   (plane4(mk,p0,p1,p2,p3,th,col): p3 the diagonal, unused) */
+function plane4(mk,p0,p1,p2,th,col){if(Array.isArray(th)){th=col;col=arguments[6];}
  const e1=new THREE.Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]),e2=new THREE.Vector3(p2[0]-p0[0],p2[1]-p0[1],p2[2]-p0[2]);
  const L1=e1.length(),L2=e2.length();if(L1<1e-6||L2<1e-6)return;const X=e1.clone().normalize();const Nn=new THREE.Vector3().crossVectors(X,e2).normalize();const Zc=new THREE.Vector3().crossVectors(X,Nn).normalize();
  const q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Nn,Zc));

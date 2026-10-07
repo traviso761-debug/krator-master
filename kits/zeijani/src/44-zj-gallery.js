@@ -9,7 +9,7 @@ defBuilding({key:'zj_gallery_a',name:'Gallery of cells: the spine',seed:4301,ori
  build(o){const it=zjItem('zj_gallery_a');cvFromItem(it,{finish:'hewn'});zfFixtures(it);const c=P('white');
   /* the portal: a round arch cut in the face, a threshold, lamp niches, the dovecote holes and painted bands over it */
   zfArch('tuffHewn',0,0,.02,1.88,3.05,.42,c,{key:true,keyMk:'tuffPol'});box('tuffHewn',0,0,.29,2.6,.12,.5,c);
-  for(const s of [-1,1]){zfNiche(s*2.0,1.45,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.0,1.24,-.06,PI,{setting:'outdoor'});}
+  for(const s of [-1,1]){zfNiche(s*2.0,1.45,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.0,1.45,.05,0,{setting:'outdoor'});}
   box('plain',0,4.05,.01,8.6,.14,.03,P('ochre'));box('plain',0,4.25,.01,8.6,.08,.03,P('cinnabar'));
   zfDovecote(0,4.8,.02,9,3,{paint:'cinnabar'});
   door(0,0,0,0,2.0);
@@ -28,7 +28,7 @@ defBuilding({key:'zj_gallery_b',name:'Gallery of cells: the well',seed:4302,orig
      a painted ring and two columns of dovecote holes */
   for(const s of [-1,1])box('tuffHewn',s*1.02,0,.06,.28,2.9,.24,c);zfStepLintel('tuffHewn',0,2.9,.08,2.3,c,{n:3,h:.26,d:.28});
   zfDome('tuffPol',0,3.85,-.05,2.2,1.3,c,{a0:0,a1:PI,seg:16,rows:6});box('tuffPol',0,3.75,.55,4.6,.14,1.2,c);
-  for(const s of [-1,1]){zfNiche(s*1.7,1.35,.02,.32,.42);FURNISH('zeijani_slipper_lamp',s*1.7,1.14,-.06,PI,{setting:'outdoor'});zfDovecote(s*4.2,2.0,.02,2,5,{paint:'ochre',dx:.6,dy:.75});}
+  for(const s of [-1,1]){zfNiche(s*1.7,1.35,.02,.32,.42);FURNISH('zeijani_slipper_lamp',s*1.7,1.35,.05,0,{setting:'outdoor'});zfDovecote(s*4.2,2.0,.02,2,5,{paint:'ochre',dx:.6,dy:.75});}
   box('plain',0,5.5,.01,6.4,.12,.03,P('turquoise'));box('plain',0,5.65,.01,6.4,.06,.03,P('cinnabar'));
   door(0,0,0,0,1.8);
   FURNISH('zeijani_olla',-3.0,0,.6,0,{v:1,setting:'outdoor'});FURNISH('zeijani_drying_trays',3.2,0,.9,0,{setting:'outdoor'});}});

@@ -51,6 +51,9 @@ MAT.obsidian=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,met
 MAT.flag=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide});TILE.flag=1;
 MAT.glass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.15,metalness:0,transparent:true,opacity:.82,depthWrite:false,emissive:0x000000});TILE.glass=1;
 {const m=new THREE.MeshBasicMaterial({vertexColors:true});m.toneMapped=false;MAT.glow=m;TILE.glow=1;}   // embers, lamp flames, glow fungus, lit lattice
+/* core/sockets draws its cloth (awnings, banners, flags) and iron (brackets) in these two buckets */
+MAT.cloth=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide});TILE.cloth=1;ZJ_CLOTH.cloth=1;ZJ_CUT.cloth=1;
+MAT.iron=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.6});TILE.iron=1;ZJ_CUT.iron=1;
 MAT.water=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.1,transparent:true,opacity:.86,depthWrite:false});TILE.water=1;
 /* ---------------------------------------------------------------- shared uniforms and the two geometry-side hooks
    ANIMU: uTime (93-anim.js, seconds; pinned by ?t=), uWind, uCut (0/1: the cut-away), uCam (the camera, for the cut).
@@ -86,7 +89,7 @@ const ZJPAL={
  /* timber, thatch and earth (the kipuka) */
  wood:[0x8a6a48,0x7e6040,0x967450],woodD:[0x4a3424,0x54392a],thatch:[0xb09a64,0xa48c58,0xbaa46e],earth:[0x8a7458,0x7e6a50],
  plaster:[0xe6dcc6,0xeae2ce],hide:[0xa87a4a,0x9a6e42],felt:[0x6e5440,0x7a5e48],ceramic:[0xb0683e,0xa86034],
- water:[0x24484c,0x2a4e50],glow:[0x8fe8c8],flame:[0xffb04a],ember:[0xff6a1a],white:[0xffffff]
+ water:[0x24484c,0x2a4e50],paint:[0x8a6a4a,0x6a5a48,0x9a8a6a],glow:[0x8fe8c8],flame:[0xffb04a],ember:[0xff6a1a],white:[0xffffff]
 };
 function P(k){return jc(pick(ZJPAL[k]),.05);}
 const WHITE=new THREE.Color(1,1,1);

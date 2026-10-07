@@ -24,7 +24,7 @@ defBuilding({key:'zj_estate_a',name:'Carved estate: the columned hall',seed:4401
   box('tuffPol',0,7.8,.35,16.6,.3,1.1,c);box('plain',0,7.78,.91,16.6,.05,.02,P('turquoise'));
   zfStepLintel('tuffPol',0,8.1,.2,9.0,c,{n:3,h:.4,d:.6});
   /* lamps between the columns; the windows of the living room and the kitchen */
-  for(const s of [-1,1]){zfNiche(s*4.4,1.5,.02,.4,.5);FURNISH('zeijani_slipper_lamp',s*4.4,1.44,-.06,PI,{setting:'outdoor'});zeWindow(s*11,1.3,.9,1.2,c);}
+  for(const s of [-1,1]){zfNiche(s*4.4,1.5,.02,.4,.5);FURNISH('zeijani_slipper_lamp',s*4.4,1.5,.05,0,{setting:'outdoor'});zeWindow(s*11,1.3,.9,1.2,c);}
   door(0,0,0,0,2.4);
   FURNISH('zeijani_glow_basin',-1.95,0,.95,0,{setting:'outdoor'});FURNISH('zeijani_glow_basin',1.95,0,.95,0,{setting:'outdoor'});
   FURNISH('zeijani_stone_bench',-8.8,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',8.6,0,.55,0,{v:1,setting:'outdoor'});}});
@@ -36,7 +36,7 @@ defBuilding({key:'zj_estate_b',name:'Carved estate: the loggia',seed:4402,origin
  build(o){const it=zjItem('zj_estate_b');cvFromItem(it,{finish:'polished'});zfFixtures(it);const c=P('white'),U=4.6;
   zfArch('tuffPol',0,0,.02,2.1,3.0,.42,c,{key:true,keyMk:'basaltPol'});box('tuffPol',0,0,.29,2.6,.12,.5,c);
   box('tuffPol',0,3.55,.1,6.0,.7,.24,c);zfBand('patGlazed',0,3.6,.23,5.8,.6,0,c);
-  for(const s of [-1,1]){zfNiche(s*2.2,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.2,1.34,-.06,PI,{setting:'outdoor'});}
+  for(const s of [-1,1]){zfNiche(s*2.2,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.2,1.4,.05,0,{setting:'outdoor'});}
   /* the loggia: a string course, five arches (the cuts 1.2 wide, 2 m high, their sills 0.6 m above its floor), pilasters between */
   box('tuffPol',0,U+.28,.3,19.4,.2,.7,c);
   for(const x of [-7,-3.5,0,3.5,7]){zfArch('tuffPol',x,U+.6,.02,1.1,2.0,.36,c);box('tuffPol',x,U+.48,.2,1.5,.18,.5,c);}

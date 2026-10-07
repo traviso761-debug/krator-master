@@ -648,6 +648,9 @@ MAT.obsidian=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,met
 MAT.flag=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide});TILE.flag=1;
 MAT.glass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.15,metalness:0,transparent:true,opacity:.82,depthWrite:false,emissive:0x000000});TILE.glass=1;
 {const m=new THREE.MeshBasicMaterial({vertexColors:true});m.toneMapped=false;MAT.glow=m;TILE.glow=1;}   // embers, lamp flames, glow fungus, lit lattice
+/* core/sockets draws its cloth (awnings, banners, flags) and iron (brackets) in these two buckets */
+MAT.cloth=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide});TILE.cloth=1;ZJ_CLOTH.cloth=1;ZJ_CUT.cloth=1;
+MAT.iron=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.6});TILE.iron=1;ZJ_CUT.iron=1;
 MAT.water=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.1,transparent:true,opacity:.86,depthWrite:false});TILE.water=1;
 /* ---------------------------------------------------------------- shared uniforms and the two geometry-side hooks
    ANIMU: uTime (93-anim.js, seconds; pinned by ?t=), uWind, uCut (0/1: the cut-away), uCam (the camera, for the cut).
@@ -683,7 +686,7 @@ const ZJPAL={
  /* timber, thatch and earth (the kipuka) */
  wood:[0x8a6a48,0x7e6040,0x967450],woodD:[0x4a3424,0x54392a],thatch:[0xb09a64,0xa48c58,0xbaa46e],earth:[0x8a7458,0x7e6a50],
  plaster:[0xe6dcc6,0xeae2ce],hide:[0xa87a4a,0x9a6e42],felt:[0x6e5440,0x7a5e48],ceramic:[0xb0683e,0xa86034],
- water:[0x24484c,0x2a4e50],glow:[0x8fe8c8],flame:[0xffb04a],ember:[0xff6a1a],white:[0xffffff]
+ water:[0x24484c,0x2a4e50],paint:[0x8a6a4a,0x6a5a48,0x9a8a6a],glow:[0x8fe8c8],flame:[0xffb04a],ember:[0xff6a1a],white:[0xffffff]
 };
 function P(k){return jc(pick(ZJPAL[k]),.05);}
 const WHITE=new THREE.Color(1,1,1);
@@ -727,6 +730,9 @@ function halosReset(){HALOS=[];HALOKEY=new Set();}
 let GSTAT={tris:0};
 /* emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
+/* core/sockets' needs: a canvas texture, and a decal (a plane of a canvas material, its UVs once across) */
+function canvasTex(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');fn(g,w,h);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=TEXANISO;return t;}
+function decal(mk,x,y,z,w,h,ry,rx,rz){const m=TF(x,y,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,null,{su:1,sv:1});}
 function emit(mk,geo,lm,col,uvm){_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
@@ -774,7 +780,9 @@ function beam(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]
  else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));emit(mk,gbox(),m,col);}}
 function pole(mk,a,b,r,col,seg){beam(mk,a,b,r,col,true,seg||8);}
 // a sheet spanning two edges: p0->p1 one edge, p0->p2 the other; thickness th along the normal
-function plane4(mk,p0,p1,p2,th,col){
+/* a thin slab on three corners (p0, p1 along one edge, p2 across from p0); core/sockets' packs pass the fourth corner too
+   (plane4(mk,p0,p1,p2,p3,th,col): p3 the diagonal, unused) */
+function plane4(mk,p0,p1,p2,th,col){if(Array.isArray(th)){th=col;col=arguments[6];}
  const e1=new THREE.Vector3(p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]),e2=new THREE.Vector3(p2[0]-p0[0],p2[1]-p0[1],p2[2]-p0[2]);
  const L1=e1.length(),L2=e2.length();if(L1<1e-6||L2<1e-6)return;const X=e1.clone().normalize();const Nn=new THREE.Vector3().crossVectors(X,e2).normalize();const Zc=new THREE.Vector3().crossVectors(X,Nn).normalize();
  const q=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Nn,Zc));
@@ -897,7 +905,7 @@ function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in bucket
 // types, its world position and size, its parent (a room names its building), before it is drawn.
 const DEFS={};
 function defBuilding(d){if(DEFS[d.key])reportErr('duplicate def '+d.key);d.cls=d.cls||'building';d.tags=Object.assign({culture:'zeijani'},d.tags||{});DEFS[d.key]=d;return d;}
-const REG=[];let CURKEY=null,CURREC=null,DOORS_CUR=null;
+const REG=[];let CURREC=null,DOORS_CUR=null;   /* CURKEY: core/sockets' 37-sockets.js (the socket's building) */
 /* door(x,y,z,yaw,w): the builder declares a doorway (local frame; yaw: the way out, 0 = +z). It draws nothing. */
 function door(x,y,z,yaw,w){if(!DOORS_CUR)return;const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);const e=CM.elements;DOORS_CUR.push({wx:p.x,wy:p.y,wz:p.z,yaw:Math.atan2(e[8],e[10])+(yaw||0),w:w||1});}
 function zjFront(d,doors,org,wry){
@@ -911,7 +919,7 @@ let ZJTAGS=null;
 function zjTagsReset(){ZJTAGS=KTAGS.page=KTAGS.create({build:'zeijani'});}
 function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
  const y=o.y!==undefined?o.y:terrainH(x,z);
- const keep={key:CURKEY,rec:CURREC,doors:DOORS_CUR,cut:CUTC};
+ const keep={key:CURKEY,rec:CURREC,doors:DOORS_CUR,cut:CUTC,socks:SOCKS};SOCKS=[];
  pushM(TF(x,y,z,ry||0));const org=new THREE.Vector3().applyMatrix4(CM);const e=CM.elements,wry=Math.atan2(e[8],e[10]);
  const rec={key,name:o.name||d.name,cls:d.cls,kind:d.kind||null,tags:Object.assign({},d.tags,o.tags||{}),x:org.x,y:org.y,z:org.z,ry:wry,
   decl:{w:d.w,d:d.d,h:d.h,budget:d.budget},v:o.v|0,parent:CURREC,children:[],furniture:[],tid:null};
@@ -925,8 +933,9 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  const bb=sbBegin();const t0=GSTAT.tris;
  reseed(d.seed+(o.v|0)*7);
  try{d.build(o);}catch(err){reportErr('build '+key+': '+(err.stack||err));}
+ fillSockets();   /* the zeijani pack (core/sockets) draws the signs, awnings and banners the builder declared */
  sbEnd();popM();const doors=DOORS_CUR;
- CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;
+ CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;SOCKS=keep.socks;
  rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=zjFront(d,doors,org,wry);rec.doorCount=doors.length;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
  /* a built def's floors and walls into core/walk, from its interiors item (37-zj-walk.js; a carved def's come from the cavern) */
  if(!PLACE_DRY&&!rec.parent){const it=zjItem(key);if(it)rec.walk=zwItem(it,rec);}
@@ -938,6 +947,30 @@ let PLACE_DRY=0;
 const ZJ_LIFE=[];
 function zjLife(rec,o){const s=Object.assign({id:rec.tid,kind:rec.kind,key:rec.key,faction:'Zeijani',subFaction:o.band||'Herders of the outpost',
  job:o.job||'mount',activity:o.activity||'REST',schedule:new Array(24).fill(o.activity||'REST'),at:[rec.x,rec.y,rec.z]},o.extra||{});ZJ_LIFE.push(s);return s;}
+// ---------------------------------------------------------------- SOCKETS: where a culture's marks go (shared: core/sockets/)
+// A building declares sockets; the ACTIVE culture pack draws into them. The building never names a culture. See core/sockets/README.md.
+// Needs from the host build: CM (running matrix) + TF(x,y,z,ry) + CMS (matrix stack), rng/pick/jc/P (colour), reportErr, and the primitives the packs draw with.
+// ---- sockets: where a culture's marks go. type: 'awning' 'banner' 'flag' 'emblem' 'sign' 'paint'.
+// Frame of a socket: origin at the anchor, +z OUT of the surface, +x along the surface, y up.
+//   awning {w,d,drop}: a canopy over a door, stall or window; the anchor is the top edge against the wall, w wide, d deep, sloping down by `drop`
+//   banner {w,h}: cloth hanging from the anchor (top edge), h long
+//   flag   {w,h}: a pennant/flag on a pole top; the anchor is the pole top
+//   emblem {w,h}: a flat plate or painted field on a wall, centred on the anchor
+//   sign   {w,h,trade}: a shop board, centred on the anchor
+//   paint  {w,h}: a large panel the culture may stripe or band
+let SOCKS=[],SOCK_ALL=[];
+function sock(type,x,y,z,ry,o){const s={type,m:CM.clone().multiply(TF(x,y,z,ry)),o:o||{},key:CURKEY};SOCKS.push(s);SOCK_ALL.push(s);return s;}
+let CURKEY=null;
+function fillSockets(){const C=CULT.cur;const list=SOCKS;SOCKS=[];const keep=CMS.slice();
+ for(const s of list){const f=C.fill[s.type]||CULT.generic.fill[s.type];if(!f)continue;CMS.length=0;CMS.push(s.m.clone());CM=CMS[0];
+  try{f(s.o,s);}catch(e){reportErr('socket '+s.type+' in '+s.key+': '+(e.stack||e));}}
+ CMS.length=0;for(const m of keep)CMS.push(m);CM=CMS[CMS.length-1];}
+
+// ---- cultures: a pack is {key,name,paint:[hex...],fill:{awning,banner,flag,emblem,sign,paint}}; 80-cultures.js registers them.
+const CULT={packs:{},cur:null,generic:null};
+function cultDef(p){CULT.packs[p.key]=p;if(p.key==='generic'){CULT.generic=p;if(!CULT.cur)CULT.cur=p;}return p;}
+// livery colour from the active culture's paint list (a share of the time), else the neutral faded palette
+function PAINT(){const c=CULT.cur;if(c&&c.paint&&rng()<(c.paintShare===undefined?.55:c.paintShare))return jc(pick(c.paint),.06);return P('paint');}
 // ================================================================= WALK: a built def's floors and walls into core/walk
 // A carved def's floors come from its void plan (the cavern writes them as it carves). A constructed or wooden def's come
 // from the same interiors item the furniture comes from (kits/interiors/sets/zeijani.js), instantiated at its placement:
@@ -6543,6 +6576,76 @@ const KF_API = (function () {
 
 return KF_API;
 })();
+// ---------------------------------------------------------------- CULTURE SYMBOLS (shared: core/sockets/38-symbols.js)
+// The emblem of every culture as a 2D canvas drawing: (g, cx, cy, R, ink, ink2) draws inside a box of half-size R. Pure canvas, no engine:
+// core/sockets/80-cultures.js draws them on banners, flags and plates; kits/catalog's furniture kit draws the same ones on tapestries,
+// banners, friezes and scrolls (vendored there as kits/catalog/krator-symbols.js, build.py --vendor-check), so a dressed building and the
+// furniture in it carry one emblem. A new culture adds one function here. SYMBOL_OF names each pack's symbol for anyone without a pack.
+const SYM_TAU = Math.PI * 2, SYM_PI = Math.PI;
+function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*SYM_TAU/3-SYM_PI/2;
+ for(let i=0;i<=24;i++){const t=i/24;const a=a0+t*2.5;const r=R*(.12+.86*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  const ae=a0+2.5;g.fillStyle=cols[k%cols.length];g.beginPath();g.arc(cx+Math.cos(ae)*R*.98,cy+Math.sin(ae)*R*.98,lw*.75,0,SYM_TAU);g.fill();}}
+// ------------------------------------------------------------------ symbols: each draws in the box (cx,cy,R) with two ink colours
+const SYMBOLS={
+ sun:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.92,0,SYM_TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.54,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.24,0,SYM_TAU);g.fill();
+  for(let k=0;k<12;k++){const a=k*SYM_TAU/12;g.fillStyle=c1;g.beginPath();g.moveTo(cx+Math.cos(a-.11)*R*.98,cy+Math.sin(a-.11)*R*.98);g.lineTo(cx+Math.cos(a)*R*1.18,cy+Math.sin(a)*R*1.18);g.lineTo(cx+Math.cos(a+.11)*R*.98,cy+Math.sin(a+.11)*R*.98);g.fill();}},
+ triskele:(g,cx,cy,R,c1,c2)=>{drawTriskele(g,cx,cy,R*.82,[c1,c2,'#c9963a'],Math.max(3,R*.27));},
+ diamond:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.11);g.lineJoin='round';g.beginPath();g.moveTo(cx,cy-R);g.lineTo(cx+R*.75,cy);g.lineTo(cx,cy+R);g.lineTo(cx-R*.75,cy);g.closePath();g.stroke();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.16,0,SYM_TAU);g.fill();},
+ // hyperboloid of one sheet: the cooling-tower profile with its ruling lines (Yuni)
+ hyperboloid:(g,cx,cy,R,c1,c2)=>{const a=R*.4,hh=R*.92,b=hh*.55;const xw=t=>a*Math.sqrt(1+(t*hh/b)*(t*hh/b));const rx=xw(1),ry=R*.13;
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.05);
+  for(let k=0;k<7;k++){const th=k*SYM_TAU/7;g.beginPath();g.moveTo(cx+Math.cos(th)*rx,cy-hh+Math.sin(th)*ry);g.lineTo(cx+Math.cos(th+1.05)*rx,cy+hh+Math.sin(th+1.05)*ry);g.stroke();}
+  g.lineWidth=Math.max(2.5,R*.1);for(const sx of [-1,1]){g.beginPath();for(let i=0;i<=28;i++){const t=-1+2*i/28;const x=cx+sx*xw(t),y=cy+t*hh;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  for(const [yy,r_x] of [[cy-hh,rx],[cy,a],[cy+hh,rx]]){g.beginPath();g.ellipse(cx,yy,r_x,ry*(r_x===a?.8:1),0,0,SYM_TAU);g.stroke();}},
+ // three parallel talon slashes (Beast Riders)
+ claw:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=-1;k<=1;k++){const x0=cx+k*R*.5;g.beginPath();g.moveTo(x0-R*.2,cy-R*.95);g.quadraticCurveTo(x0+R*.62,cy-R*.15,x0+R*.08,cy+R*1.0);g.quadraticCurveTo(x0+R*.2,cy-R*.05,x0-R*.2,cy-R*.95);g.closePath();g.fill();}},
+ // a half sun rising over three waves (Hykkousoi; the hexareme's sail in kits/ringsea): c1 the sun, c2 the waves
+ wavesun:(g,cx,cy,R,c1,c2)=>{const y0=cy-R*.1;g.fillStyle=c1;g.beginPath();g.arc(cx,y0,R*.5,Math.PI,0);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<9;i++){const a=Math.PI+i/8*Math.PI;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.62,y0+Math.sin(a)*R*.62);g.lineTo(cx+Math.cos(a)*R*.9,y0+Math.sin(a)*R*.9);g.stroke();}
+  g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.1);for(let k=0;k<3;k++){g.beginPath();for(let i=0;i<=24;i++){const x=-R+2*R*i/24,y=y0+R*.12+k*R*.24+Math.sin(x/R*SYM_TAU)*R*.07;if(i)g.lineTo(cx+x,y);else g.moveTo(cx+x,y);}g.stroke();}},
+ // the eight-spoked wheel (Xanadu; the carrack's sails): c1 rim and spokes, c2 the hub
+ wheel:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineWidth=Math.max(2,R*.12);g.beginPath();g.arc(cx,cy,R*.78,0,SYM_TAU);g.stroke();g.lineWidth=Math.max(2,R*.07);
+  for(let i=0;i<8;i++){const a=i/8*SYM_TAU;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.18,cy+Math.sin(a)*R*.18);g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
+ // the white moon of the islands (the oruwa's sail): a full disc, a thin ring round it
+ moon:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.62,0,SYM_TAU);g.fill();g.strokeStyle=c1;g.lineWidth=Math.max(1.5,R*.04);g.beginPath();g.arc(cx,cy,R*.86,0,SYM_TAU);g.stroke();},
+};
+// ---- symbols added for the furniture sets (cultures without a socket pack yet; a pack that arrives later picks its symbol from here)
+Object.assign(SYMBOLS, {
+ // a coiled serpent, head out (Lizardmen)
+ serpent:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.16);g.beginPath();for(let i=0;i<=60;i++){const t=i/60,a=t*SYM_TAU*1.75,r=R*(.15+.72*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  const ae=SYM_TAU*1.75,hx=cx+Math.cos(ae)*R*.87,hy=cy+Math.sin(ae)*R*.87;g.fillStyle=c1;g.beginPath();g.ellipse(hx,hy,R*.2,R*.13,ae,0,SYM_TAU);g.fill();g.fillStyle=c2;g.beginPath();g.arc(hx+Math.cos(ae+1.3)*R*.07,hy+Math.sin(ae+1.3)*R*.07,R*.035,0,SYM_TAU);g.fill();},
+ // an eight-pointed star of two squares, a disc at the heart (East Abyss)
+ star:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(const rot of [0,SYM_PI/4]){g.beginPath();for(let k=0;k<4;k++){const a=rot+k*SYM_PI/2;g.lineTo(cx+Math.cos(a)*R*.95,cy+Math.sin(a)*R*.95);}g.closePath();g.fill();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.3,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.12,0,SYM_TAU);g.fill();},
+ // a pair of curling ram's horns over a disc (Eastern Nomads)
+ horns:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.17);for(const s of [-1,1]){g.beginPath();for(let i=0;i<=30;i++){const t=i/30,a=-SYM_PI/2+s*t*SYM_PI*1.15,r=R*(.9-.55*t);const x=cx+s*R*.1+Math.cos(a)*r,y=cy+R*.1+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();}
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy+R*.15,R*.24,0,SYM_TAU);g.fill();},
+ // a fir tree on a mountain line (Rustic Highlanders)
+ fir:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;for(let k=0;k<3;k++){const y=cy-R*.9+k*R*.42,w=R*(.35+k*.25);g.beginPath();g.moveTo(cx,y);g.lineTo(cx+w,y+R*.55);g.lineTo(cx-w,y+R*.55);g.closePath();g.fill();}
+  g.fillRect(cx-R*.08,cy+R*.4,R*.16,R*.35);g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.08);g.beginPath();g.moveTo(cx-R,cy+R*.95);g.lineTo(cx-R*.5,cy+R*.6);g.lineTo(cx-R*.25,cy+R*.85);g.moveTo(cx+R*.25,cy+R*.85);g.lineTo(cx+R*.5,cy+R*.6);g.lineTo(cx+R,cy+R*.95);g.stroke();},
+ // a formline raven's head: the ovoid eye in a beaked outline (Painted Men)
+ raven:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.9,cy);g.quadraticCurveTo(cx-R*.9,cy-R*.85,cx,cy-R*.8);g.quadraticCurveTo(cx+R*.7,cy-R*.75,cx+R*.98,cy-R*.1);g.lineTo(cx+R*.3,cy+R*.2);g.quadraticCurveTo(cx+R*.5,cy+R*.75,cx-R*.1,cy+R*.8);g.quadraticCurveTo(cx-R*.9,cy+R*.8,cx-R*.9,cy);g.closePath();g.fill();
+  g.fillStyle=c2;g.beginPath();g.ellipse(cx-R*.25,cy-R*.1,R*.36,R*.26,0,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.ellipse(cx-R*.25,cy-R*.1,R*.14,R*.12,0,0,SYM_TAU);g.fill();g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.06);g.beginPath();g.moveTo(cx+R*.2,cy-R*.05);g.lineTo(cx+R*.85,cy-R*.1);g.stroke();},
+ // a fish in a ring of reeds (Reed Lake)
+ fish:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c2;g.lineWidth=Math.max(2,R*.06);for(let k=0;k<12;k++){const a=k*SYM_TAU/12;g.beginPath();g.moveTo(cx+Math.cos(a)*R*.78,cy+Math.sin(a)*R*.78);g.lineTo(cx+Math.cos(a)*R*.98,cy+Math.sin(a)*R*.98);g.stroke();}
+  g.fillStyle=c1;g.beginPath();g.ellipse(cx-R*.08,cy,R*.5,R*.24,0,0,SYM_TAU);g.fill();g.beginPath();g.moveTo(cx+R*.35,cy);g.lineTo(cx+R*.68,cy-R*.3);g.lineTo(cx+R*.68,cy+R*.3);g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx-R*.38,cy-R*.05,R*.06,0,SYM_TAU);g.fill();},
+ // a skull, teeth and all (Screamers)
+ skull:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.arc(cx,cy-R*.15,R*.62,0,SYM_TAU);g.fill();g.fillRect(cx-R*.4,cy+R*.2,R*.8,R*.5);g.fillStyle=c2;for(const s of [-1,1]){g.beginPath();g.ellipse(cx+s*R*.26,cy-R*.15,R*.17,R*.2,0,0,SYM_TAU);g.fill();}
+  g.beginPath();g.moveTo(cx,cy+R*.05);g.lineTo(cx-R*.1,cy+R*.28);g.lineTo(cx+R*.1,cy+R*.28);g.closePath();g.fill();for(let k=0;k<5;k++)g.fillRect(cx-R*.36+k*R*.16,cy+R*.42,R*.06,R*.26);},
+ // a spiral sinking into a stepped arch: the way in (Zeijani): c1 the stepped stone and the spiral, c2 the dark of the opening
+ spiralarch:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.95,cy+R*.95);
+  for(const [x,y] of [[-.95,-.35],[-.72,-.35],[-.72,-.6],[-.48,-.6],[-.48,-.85],[.48,-.85],[.48,-.6],[.72,-.6],[.72,-.35],[.95,-.35],[.95,.95]])g.lineTo(cx+x*R,cy+y*R);g.closePath();g.fill();
+  const ow=R*.42,oy=cy-R*.12;g.fillStyle=c2;g.beginPath();g.moveTo(cx-ow,cy+R*.95);g.lineTo(cx-ow,oy);g.arc(cx,oy,ow,SYM_PI,0);g.lineTo(cx+ow,cy+R*.95);g.closePath();g.fill();
+  g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(2,R*.08);g.beginPath();const sx=cx,sy=cy+R*.3;for(let i=0;i<=60;i++){const t=i/60,a=-SYM_PI/2+t*SYM_TAU*2.1,r=R*.34*(1-t*.92);const x=sx+Math.cos(a)*r,y=sy+Math.sin(a)*r;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.stroke();
+  g.fillStyle=c1;g.beginPath();g.arc(sx,sy,R*.05,0,SYM_TAU);g.fill();},
+ // a toothed gear (post-apoc salvage and scrap)
+ gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
+});
+// the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
+const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'wavesun', xanadu:'wheel',
+ 'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear',
+ zeijani:'spiralarch' };
 // ================================================================= CORE — cavern (an underground of voids in rock)  [G data]
 // Shared by every build with a real underground (kits/zeijani, settlements/dhelv first; kits/zeijani/PLAN.md section 7).
 // The rock is everything below the ground (a heightfield the host gives) or inside a MASS (rock standing on the ground: a
@@ -9547,6 +9650,70 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   }
   if (!IX.CULTURE_FAMILY.zeijani) IX.CULTURE_FAMILY.zeijani = ['nomad', 'generic', 'scrap'];
 
+  /* ---------------- SHOPS (PLAN.md 6.4): twelve trades, each with one interior and one sign shared by its two fronts
+     (zj_shop_<trade>_carved, _built). The front room sells: its kind `zjshop_<trade>` requires the trade's goods (the carved
+     front's counter is a fixture; a built front's counter is a piece). The back room makes: `zjwork_<trade>` requires the
+     trade's workstation by role, or a shared kind (the smiths' smithy, the alchemist's lab, a store, a kitchen). `sign` is the
+     core/sockets pictograph. */
+  const TRADES = [
+    { t: 'weapons', name: 'Weaponsmith', sign: 'WEAPONS', goods: { types: ['weapon'], roles: ['weapon_rack'], n: 1 }, back: 'smithy', smoke: true },
+    { t: 'armour', name: 'Armourer', sign: 'ARMOR', goods: { types: ['rack'], roles: ['armour_stand'], n: 1 }, back: 'smithy', smoke: true },
+    { t: 'general', name: 'General goods', sign: 'GENERAL', goods: { types: ['shelf', 'rack', 'storage', 'stack'], n: 2 }, back: 'store' },
+    { t: 'food', name: 'Provisioner', sign: 'FOOD', goods: { types: ['storage', 'stack', 'vessel'], roles: FOOD, n: 2 }, back: 'kitchen' },
+    { t: 'alchemist', name: 'Alchemist', sign: 'ALCHEMIST', goods: { types: ['shelf', 'vessel', 'lamp'], roles: ['shelf', 'mortar', 'glow_jar'], n: 2 }, back: 'lab' },
+    { t: 'lampwright', name: 'Lampwright', sign: 'LAMP', goods: { types: ['lamp'], n: 2 }, work: { types: ['workstation'], roles: ['lampwright'], n: 1 } },
+    { t: 'stonecutter', name: 'Stonecutter', sign: 'STONE', goods: { types: ['statue', 'stack', 'art'], n: 1 }, work: { types: ['workstation'], roles: ['banker'], n: 1 } },
+    { t: 'dyer', name: 'Dyer', sign: 'DYE', goods: { types: ['rack', 'loom'], roles: ['yarn_rack', 'loom'], n: 1 }, work: { types: ['storage'], roles: ['vat'], n: 1 } },
+    { t: 'potter', name: 'Potter', sign: 'POTTER', goods: { types: ['stack'], roles: ['pots', 'display'], n: 1 }, work: { types: ['workstation'], roles: ['wheel'], n: 1 } },
+    { t: 'leather', name: 'Leatherworker', sign: 'LEATHER', goods: { types: ['rack', 'stack'], roles: ['armour_stand', 'display'], n: 1 }, work: { types: ['workstation'], roles: ['leather'], n: 1 } },
+    { t: 'knapper', name: 'Knapper and mirror-maker', sign: 'KNAPPER', goods: { types: ['art'], roles: ['mirror'], n: 1 }, work: { types: ['workstation'], roles: ['knapping'], n: 1 } },
+    { t: 'rope', name: 'Rope and caving outfitter', sign: 'ROPE', goods: { types: ['rack', 'stack'], roles: ['rope_rack', 'coils'], n: 1 }, back: 'store' }
+  ];
+  if (!IX.PROGRAMS.zjshop_weapons) {
+    TRADES.forEach(function (T) {
+      IX.PROGRAMS['zjshop_' + T.t] = { require: [Object.assign({ need: 'goods' }, T.goods)],
+        optional: [{ types: ['counter'], max: 1 }, { types: ['shelf', 'rack', 'storage', 'stack', 'vessel'], max: 3 }, { types: SEATS, max: 1 }, { types: ['lamp'], max: 2 }, SURFACE],
+        extra: 5 };
+      IX.KIND_ALIAS['zjshop_' + T.t] = ['shop', 'store'];
+      IX.KIND_WEIGHT['zjshop_' + T.t] = 1.6;
+      if (T.work) {
+        IX.PROGRAMS['zjwork_' + T.t] = { require: [Object.assign({ need: 'work' }, T.work)],
+          optional: [{ types: ['workstation'], max: 1 }, { types: ['rack', 'shelf', 'storage', 'stack'], max: 3 }, { types: SEATS, max: 1 }, { types: ['table'], max: 1 }, { types: ['lamp'], max: 1 }, SURFACE],
+          extra: 5 };
+        IX.KIND_ALIAS['zjwork_' + T.t] = ['workshop', 'store'];
+        IX.KIND_WEIGHT['zjwork_' + T.t] = 1.6;
+      }
+    });
+  }
+  const backKind = function (T) { return T.work ? 'zjwork_' + T.t : T.back; };
+  /* the carved shopfront: a cut 4.6 m wide through the face, a counter across it (a fixture) but for a gap at the east, the
+     selling room behind, a passage to the workroom; a smithy's smoke shaft to the top of the rock */
+  function shopCarved(T) {
+    const voids = [
+      { kind: 'mass', id: 'rock', poly: rrect(-6.5, 6.5, -15, 0), y0: -0.5, y1: 7, cap: 1.0, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 2.6, h: 2.9 },
+      { kind: 'stair', id: 'front-cut', joins: ['shop'], a: [0, 0, 1.0], b: [0, 0, -1.6], w: 4.6, h: 2.6 },
+      { kind: 'stair', id: 'back', joins: ['shop', 'work'], a: [0, 0, -5.8], b: [0, 0, -7.8], w: 1.0, h: 2.1 }];
+    if (T.smoke) voids.push({ kind: 'shaft', id: 'smoke', joins: ['work'], c: [2.0, -11.0], y0: 1.8, y1: 8.6, r0: 0.35, r1: 0.4 },
+      { kind: 'door', id: 'smoke-head', c: [2.0, -11.0], y: 6.4, r: 0.9, h: 2.6 });
+    return { key: 'zj_shop_' + T.t + '_carved', name: T.name + ' (carved front)', carved: true, wealth: 0.45, types: ['shop'], residence: false, lot: [13, 15], sign: T.sign,
+      rooms: [
+        { id: 'shop', kind: 'zjshop_' + T.t, carved: true, poly: rrect(-3.4, 3.4, -6.2, -1.0), round: 0.5, y: 0, h: 2.9, ceil: 'vault', rise: 0.5, finish: 'hewn',
+          doors: [{ at: [1.6, -1.0], w: 1.0, swing: 'none' }, { at: [0, -6.2], w: 1.0, swing: 'none' }],
+          fixtures: [fx('counter', 'counter', -0.6, -1.3, 3.2, 0.5, { h: 0.95 })] },
+        { id: 'work', kind: backKind(T), carved: true, poly: rrect(-3.0, 3.0, -12.0, -7.4), round: 0.5, y: 0, h: 2.6, ceil: 'vault', rise: 0.4, finish: 'hewn',
+          doors: [{ at: [0, -7.4], w: 1.0, swing: 'none' }] }],
+      voids: voids,
+      note: 'the selling room behind a counter in the shopfront, the ' + (T.work ? 'workroom' : T.back) + ' behind it' + (T.smoke ? ', its smoke shaft to the top of the rock' : '') };
+  }
+  /* the constructed front: a flat-roofed tuff block, the selling room at the street door, the workroom beside it */
+  function shopBuilt(T) {
+    return { key: 'zj_shop_' + T.t + '_built', name: T.name + ' (constructed)', wealth: 0.45, types: ['shop'], residence: false, lot: [11, 10], sign: T.sign,
+      bodies: [{ id: 'shop', poly: rect(7.6, 6.4), y: 0.2, levels: [{ h: 3.0 }], wall: 0.4, roof: 'flat',
+        doors: [{ at: [1.4, 3.2], w: 1.0 }], program: [['zjshop_' + T.t, backKind(T)]] }],
+      note: 'tuff block under a flat roof, an awning over the front; the selling room at the street door, the ' + (T.work ? 'workroom' : T.back) + ' beside it' };
+  }
+
   const HOME = ['dwelling-single'], MULTI = ['dwelling-multi'];
   /* carved fixtures: structure the placer keeps off; reach false unless it is a way in */
   const fx = function (id, kind, x, z, w, d, o) { return Object.assign({ id: id, kind: kind, x: x, z: z, ry: 0, w: w, d: d, reach: false }, o || {}); };
@@ -9764,6 +9931,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
   }
   const EB = estateB();
 
+  /* the shops' items (their helpers above: rrect, fx) */
+  const SHOPS = [];
+  TRADES.forEach(function (T) { SHOPS.push(shopCarved(T)); });
+  TRADES.forEach(function (T) { SHOPS.push(shopBuilt(T)); });
+
   IX.sets.add({ set: 'zeijani', title: 'The Zeijani: carved, constructed and wooden (kits/zeijani)', culture: 'zeijani', wealth: 0.3, items: [
     /* ---------------- the wooden dwellings (the outpost, the hamlets, the villages) */
     { key: 'zj_hut_a', name: 'Round wattle hut on stilts', wealth: 0.2, types: HOME, lot: [8, 8],
@@ -9824,6 +9996,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
       rooms: EB.rooms, voids: EB.voids,
       note: 'two storeys: a round domed hall; upstairs a loggia behind five arched windows between the family\'s rooms; down a flight ' +
         'a court under a light shaft, the kitchen and store, the shrine, two servants\' cells and the cistern' },
+    /* ---------------- the twelve shops, each in a carved and a constructed front */
+  ].concat(SHOPS).concat([
     /* ---------------- sacred */
     { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
       rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],
@@ -9872,7 +10046,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_cistern', name: 'Cistern hall: a landing', wealth: 0.4, types: ['infrastructure'], residence: false, lot: [12, 8],
       rooms: [{ id: 'landing', kind: 'cistern', poly: rect(10, 5, 0, 0), y: 0, h: 4.5, doors: [{ at: [0, 2.5], w: 2.0, swing: 'none' }, { at: [0, -2.5], w: 2.0, swing: 'none' }] }],
       note: 'PROVISIONAL (until the void plan, P3): one landing of the stepwell flights, where the water is drawn' }
-  ] });
+  ]) });
 })(KratorInteriors);
 
 // prefix: cv
@@ -9925,13 +10099,13 @@ function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,
 const CVU={uCut:ANIMU.uCut,uCam:ANIMU.uCam};
 const CV_TEXKEYS=['tuff','tuffHewn','plaster','tuffPol','basalt','basaltPol','lining','oxide'];
 const CV_HAS_LIB=KMAT.mode==='lib'&&CV_TEXKEYS.every(k=>ZJ_LIBTEX[k]&&ZJ_LIBTEX[k].map);
-const cvMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
+const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,metalness:0});
 (function(){const lin=h=>new THREE.Color(h).convertSRGBToLinear(),v3=c=>'vec3('+c.r.toFixed(4)+','+c.g.toFixed(4)+','+c.b.toFixed(4)+')';
  /* the procedural fallback colours (?mat=proc) and the rare-colour palette, PLAN.md section 10 */
  const C={tuff:lin(0xd9c8a6),hewn:lin(0xcdbb98),plaster:lin(0xe6dcc6),pol:lin(0xc9a28c),basalt:lin(0x5c6672),basPol:lin(0x2b2e34),lining:lin(0x5c6672),
   oxide:lin(0x9a3a3c),mag:lin(0x74406e),vio:lin(0x4a4e8a),teal:lin(0x4a9490),mineral:lin(0xdcd8d0)};
  const K=k=>(1/TILE[k]).toFixed(5);
- matHook(cvMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;
+ matHook(cvRockMat,'cave'+(CV_HAS_LIB?'L':'P'),sh=>{sh.uniforms.uCut=CVU.uCut;sh.uniforms.uCam=CVU.uCam;
   if(CV_HAS_LIB)CV_TEXKEYS.forEach(k=>{sh.uniforms['uT_'+k]={value:ZJ_LIBTEX[k].map};});
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nattribute vec4 aW;attribute vec4 aCut;attribute vec3 aM;varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvW=aW;vCut=aCut;vM=aM;vCWP=(modelMatrix*vec4(transformed,1.0)).xyz;vCWN=normalize(mat3(modelMatrix)*objectNormal);');
@@ -9969,7 +10143,7 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
    const r=ch.prim[i]<65535?CV_SITE[ch.prim[i]]:null;if(r){aCut[i*4]=r.x;aCut[i*4+1]=r.z;aCut[i*4+2]=cvFloorOf(CVC.prims[ch.prim[i]],r);aCut[i*4+3]=1;}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
   g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
-  const mesh=new THREE.Mesh(g,cvMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
+  const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
  parent.add(CV_GROUP);
  /* the masses' footprints to the sheet's ground (90-scene.js): no ground under a block of rock */
  if(typeof ZJ_MASSES!=='undefined'){ZJ_MASSES.value.forEach(v=>v.set(0,0,0,0));let n=0;for(const P of CVC.prims){if(P.kind!=='mass'||n>=32)continue;const xs=P.poly.map(p=>p[0]),zs=P.poly.map(p=>p[1]);
@@ -10184,7 +10358,7 @@ defBuilding({key:'zj_gallery_a',name:'Gallery of cells: the spine',seed:4301,ori
  build(o){const it=zjItem('zj_gallery_a');cvFromItem(it,{finish:'hewn'});zfFixtures(it);const c=P('white');
   /* the portal: a round arch cut in the face, a threshold, lamp niches, the dovecote holes and painted bands over it */
   zfArch('tuffHewn',0,0,.02,1.88,3.05,.42,c,{key:true,keyMk:'tuffPol'});box('tuffHewn',0,0,.29,2.6,.12,.5,c);
-  for(const s of [-1,1]){zfNiche(s*2.0,1.45,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.0,1.24,-.06,PI,{setting:'outdoor'});}
+  for(const s of [-1,1]){zfNiche(s*2.0,1.45,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.0,1.45,.05,0,{setting:'outdoor'});}
   box('plain',0,4.05,.01,8.6,.14,.03,P('ochre'));box('plain',0,4.25,.01,8.6,.08,.03,P('cinnabar'));
   zfDovecote(0,4.8,.02,9,3,{paint:'cinnabar'});
   door(0,0,0,0,2.0);
@@ -10203,7 +10377,7 @@ defBuilding({key:'zj_gallery_b',name:'Gallery of cells: the well',seed:4302,orig
      a painted ring and two columns of dovecote holes */
   for(const s of [-1,1])box('tuffHewn',s*1.02,0,.06,.28,2.9,.24,c);zfStepLintel('tuffHewn',0,2.9,.08,2.3,c,{n:3,h:.26,d:.28});
   zfDome('tuffPol',0,3.85,-.05,2.2,1.3,c,{a0:0,a1:PI,seg:16,rows:6});box('tuffPol',0,3.75,.55,4.6,.14,1.2,c);
-  for(const s of [-1,1]){zfNiche(s*1.7,1.35,.02,.32,.42);FURNISH('zeijani_slipper_lamp',s*1.7,1.14,-.06,PI,{setting:'outdoor'});zfDovecote(s*4.2,2.0,.02,2,5,{paint:'ochre',dx:.6,dy:.75});}
+  for(const s of [-1,1]){zfNiche(s*1.7,1.35,.02,.32,.42);FURNISH('zeijani_slipper_lamp',s*1.7,1.35,.05,0,{setting:'outdoor'});zfDovecote(s*4.2,2.0,.02,2,5,{paint:'ochre',dx:.6,dy:.75});}
   box('plain',0,5.5,.01,6.4,.12,.03,P('turquoise'));box('plain',0,5.65,.01,6.4,.06,.03,P('cinnabar'));
   door(0,0,0,0,1.8);
   FURNISH('zeijani_olla',-3.0,0,.6,0,{v:1,setting:'outdoor'});FURNISH('zeijani_drying_trays',3.2,0,.9,0,{setting:'outdoor'});}});
@@ -10233,7 +10407,7 @@ defBuilding({key:'zj_estate_a',name:'Carved estate: the columned hall',seed:4401
   box('tuffPol',0,7.8,.35,16.6,.3,1.1,c);box('plain',0,7.78,.91,16.6,.05,.02,P('turquoise'));
   zfStepLintel('tuffPol',0,8.1,.2,9.0,c,{n:3,h:.4,d:.6});
   /* lamps between the columns; the windows of the living room and the kitchen */
-  for(const s of [-1,1]){zfNiche(s*4.4,1.5,.02,.4,.5);FURNISH('zeijani_slipper_lamp',s*4.4,1.44,-.06,PI,{setting:'outdoor'});zeWindow(s*11,1.3,.9,1.2,c);}
+  for(const s of [-1,1]){zfNiche(s*4.4,1.5,.02,.4,.5);FURNISH('zeijani_slipper_lamp',s*4.4,1.5,.05,0,{setting:'outdoor'});zeWindow(s*11,1.3,.9,1.2,c);}
   door(0,0,0,0,2.4);
   FURNISH('zeijani_glow_basin',-1.95,0,.95,0,{setting:'outdoor'});FURNISH('zeijani_glow_basin',1.95,0,.95,0,{setting:'outdoor'});
   FURNISH('zeijani_stone_bench',-8.8,0,.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',8.6,0,.55,0,{v:1,setting:'outdoor'});}});
@@ -10245,7 +10419,7 @@ defBuilding({key:'zj_estate_b',name:'Carved estate: the loggia',seed:4402,origin
  build(o){const it=zjItem('zj_estate_b');cvFromItem(it,{finish:'polished'});zfFixtures(it);const c=P('white'),U=4.6;
   zfArch('tuffPol',0,0,.02,2.1,3.0,.42,c,{key:true,keyMk:'basaltPol'});box('tuffPol',0,0,.29,2.6,.12,.5,c);
   box('tuffPol',0,3.55,.1,6.0,.7,.24,c);zfBand('patGlazed',0,3.6,.23,5.8,.6,0,c);
-  for(const s of [-1,1]){zfNiche(s*2.2,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.2,1.34,-.06,PI,{setting:'outdoor'});}
+  for(const s of [-1,1]){zfNiche(s*2.2,1.4,.02,.36,.46);FURNISH('zeijani_slipper_lamp',s*2.2,1.4,.05,0,{setting:'outdoor'});}
   /* the loggia: a string course, five arches (the cuts 1.2 wide, 2 m high, their sills 0.6 m above its floor), pilasters between */
   box('tuffPol',0,U+.28,.3,19.4,.2,.7,c);
   for(const x of [-7,-3.5,0,3.5,7]){zfArch('tuffPol',x,U+.6,.02,1.1,2.0,.36,c);box('tuffPol',x,U+.48,.2,1.5,.18,.5,c);}
@@ -10333,6 +10507,52 @@ defBuilding({key:'zj_house_built_rich',name:'Two-storey house with a roof terrac
   for(const x of [-3.6,3.6])cyl('log',x,top,2.9,.07,2.2,P('woodD'),7);plane4('felt',[-4.2,top+2.2,1.7],[4.2,top+2.2,1.7],[-4.2,top+2.0,3.3],.04,P('alecap'));
   FURNISH('zeijani_stone_bench',-2.4,top,2.6,0,{setting:'outdoor'});FURNISH('zeijani_olla',3.6,top,-2.9,0,{v:1,setting:'outdoor'});FURNISH('zeijani_drying_trays',-3.4,top,-2.4,PI/2,{setting:'outdoor'});
   door(0,.3,4,0,1.2);}});
+// prefix: zs
+// ================================================================= THE SHOPS (PLAN.md 6.4): twelve trades, a carved and a constructed front each
+// One interior and one sign per trade, shared by its two fronts: the items `zj_shop_<trade>_carved` / `_built` in
+// kits/interiors/sets/zeijani.js (the selling room's kind requires the trade's goods, the back room's its workstation),
+// the sign the item's `sign` (a core/sockets pictograph, drawn by the zeijani pack). The defs are made from the items here.
+const ZS_ITEMS=KratorInteriors.sets.byName.zeijani.items.filter(it=>/^zj_shop_/.test(it.key));
+/* what stands outside each trade's front (catalog pieces that may stand outdoors) */
+const ZS_OUT={weapons:'zeijani_trade_display',armour:'zeijani_trade_display',general:'zeijani_jar_cradle',food:'zeijani_alecap_basket',
+ alchemist:'zeijani_drying_trays',lampwright:'zeijani_glow_basin',stonecutter:'zeijani_stone_bench',dyer:'zeijani_yarn_rack',potter:'zeijani_pot_stack',
+ leather:'zeijani_trade_display',knapper:'zeijani_trade_display',rope:'zeijani_rope_coils'};
+function zsTrade(key){return key.replace(/^zj_shop_/,'').replace(/_(carved|built)$/,'');}
+
+/* the carved shopfront: the cut framed by worn jambs and a stepped lintel, its shutters folded back on the face, the sign in a
+   dark niche above, lamps in niches either side; the counter across the cut is the item's fixture */
+function zsCarved(it,i){const t=zsTrade(it.key),smoke=(it.voids||[]).find(v=>v.id==='smoke');
+ defBuilding({key:it.key,name:it.name,seed:4600+i,originFront:true,
+  tags:{types:['shop'],wealth:'middle',style:'carved',rock:'tuff',finish:'hewn'},w:13,d:15,h:8.5,note:it.note,
+  build(o){cvFromItem(it,{finish:'hewn'});zfFixtures(it);const c=P('white');
+   for(const s of [-1,1]){box('tuffHewn',s*2.42,0,.1,.28,2.5,.36,c);
+    W(s*3.24,.12,.07,0,()=>{box('plank',0,0,0,1.2,2.3,.06,P('wood'));for(const y of [.35,1.85])box('wood',0,y,.05,1.1,.1,.04,P('woodD'));});
+    zfNiche(s*4.6,1.6,.02,.32,.42);FURNISH('zeijani_slipper_lamp',s*4.6,1.6,.05,0,{setting:'outdoor'});}
+   zfStepLintel('tuffHewn',0,2.5,.1,4.2,c,{n:2,h:.28,d:.36});
+   box('basaltPol',0,3.12,.02,2.9,1.02,.04,P('soot'));box('tuffPol',0,3.04,.1,3.1,.08,.18,c);
+   sock('sign',0,3.63,.1,0,{w:2.5,h:.8,trade:it.sign});
+   if(smoke)smokeAt(smoke.c[0],7.9,smoke.c[1],{r:.14});
+   door(1.6,0,0,0,1.0);
+   FURNISH(ZS_OUT[t]||'zeijani_trade_display',-3.4,0,1.1,0,{setting:'outdoor'});}});}
+
+/* the constructed shop: the planned body (zbBody), a plinth, a flat roof behind a parapet (every other trade a dome on it),
+   a framed door, an awning over the front and the sign on the parapet */
+function zsBuilt(it,i){const t=zsTrade(it.key),dome=i%2===0;
+ defBuilding({key:it.key,name:it.name,seed:4700+i,cut:true,
+  tags:{types:['shop'],wealth:'middle',style:'constructed',rock:'tuff'},w:11,d:10,h:dome?6.4:4.8,note:it.note,
+  build(o){const c=P('tuff'),wt=P('white'),inst=zbBody(it.key,{wall:'ashlar',wallCol:c}),B=inst&&inst.buildings[0],RY=B?B.roof.y:3.2,top=RY+.22;
+   box('ashlar',0,0,0,8.0,.2,6.8,P('tuffDark'));box('paving',0,.2,0,6.7,.02,5.5,P('tuffDark'));
+   box('ashlar',0,RY,0,7.5,.22,6.3,c);
+   for(const [x,z,w,d] of [[0,3.0,7.6,.4],[0,-3.0,7.6,.4],[3.6,0,.4,5.6],[-3.6,0,.4,5.6]]){box('ashlar',x,top,z,w,.6,d,c);box('tuffPol',x,top+.6,z,w+.1,.08,d+.1,wt);}
+   if(dome){zfDrum('ashlar',-1.2,top,-.7,1.5,.45,c,{seg:22});zfDome('plaster',-1.2,top+.45,-.7,1.5,1.15,P('plaster'),{seg:22,rows:7});}
+   for(const s of [-1,1])box('tuffPol',1.4+s*.64,.2,3.26,.26,2.1,.14,wt);box('tuffPol',1.4,2.3,3.28,1.6,.24,.2,wt);zfLeaf(1.4,.2,3.0,1.0,2.1,P('wood'),.5);
+   sock('awning',0,2.75,3.2,0,{w:6.6,d:1.7,drop:.5,h:2.25});
+   sock('sign',-1.4,top+.3,3.24,0,{w:2.4,h:.52,trade:it.sign});
+   door(1.4,.2,3.2,0,1.0);
+   FURNISH('zeijani_trade_display',-1.8,0,4.2,0,{setting:'outdoor'});if(ZS_OUT[t]&&ZS_OUT[t]!=='zeijani_trade_display')FURNISH(ZS_OUT[t],-3.0,0,4.4,0,{setting:'outdoor'});}});}
+
+ZS_ITEMS.filter(it=>/_carved$/.test(it.key)).forEach(zsCarved);
+ZS_ITEMS.filter(it=>/_built$/.test(it.key)).forEach(zsBuilt);
 // ================================================================= CORE FURNISH — the placement pass ([G data])
 // One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
 // A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
@@ -10886,6 +11106,131 @@ KFURN.flags = function(interiorsByDefault){
    return out;
  };
 })();
+// ---------------------------------------------------------------- CULTURE PACKS (shared: core/sockets/)
+// A building never names a culture. It declares sockets (36-def.js); the ACTIVE pack draws into them. To add a culture, add one cultDef() here
+// (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
+// omits falls back to the generic one. Fills run in the socket frame: origin at the anchor, +z out of the surface, +x along it, y up.
+// canvas-carried materials (own colours, never tinted): emblems, striped cloth, sign boards
+function cvMat(key,w,h,fn,o){o=o||{};const t=canvasTex(w,h,fn);t.wrapS=t.wrapT=o.repeat?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
+ const m=new THREE.MeshStandardMaterial({map:t,vertexColors:true,roughness:o.rough||.95,side:THREE.DoubleSide,transparent:!!o.alpha,alphaTest:o.alpha?.5:0});MAT[key]=m;TILE[key]=o.tile||1;return m;}
+function stripeTex(key,cols,n,tile){cvMat(key,128,64,(g,w,h)=>{const sw=w/n;for(let i=0;i<n;i++){g.fillStyle=cols[i%cols.length];g.fillRect(i*sw,0,sw+1,h);}
+ reseed(9700+key.length);for(let i=0;i<140;i++){g.fillStyle=`rgba(${rng()<.5?0:255},${rng()<.5?0:255},${rng()<.5?0:255},${rr(.03,.1)})`;g.fillRect(rng()*w,rng()*h,rr(1,4),rr(1,6));}
+ for(let i=0;i<5;i++){const x=rng()*w;g.fillStyle='rgba(50,30,20,.14)';g.fillRect(x,0,rr(1,3),h);}},{repeat:true,tile:tile||1.2});}
+// banners and flags are drawn at THEIR OWN aspect ratio (canvas px map 1:1 to world metres), so an emblem stays round on a tall banner and a wide flag alike
+function banDecal(base,draw,x,y,z,w,h,ry){const k=base+':'+w.toFixed(2)+'x'+h.toFixed(2);if(!MAT[k]){const pw=128,ph=Math.max(24,Math.round(128*h/w));cvMat(k,pw,ph,(g)=>draw(g,pw,ph));}decal(k,x,y,z,w,h,ry||0);}
+function banDisc(W,H){return {R:Math.min(W*.4,H*.32),cx:W/2,cy:H>W*1.25?H*.38:H*.5};}
+// ------------------------------------------------------------------ generic: faded tarp, rag, plain iron
+function awnGeneric(o){const w=o.w||2.4,d=o.d||1.4,drop=o.drop===undefined?.5:o.drop;const c=P('cloth');const ca=pick([P('cloth'),P('tarp'),c]);
+ plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.02,ca);box('cloth',0,-drop-.16,d,w,.16,.02,jc(ca,.05));
+ for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.02,d-.05],[sx*(w/2-.05),-drop-(o.h||2.2)+.02,d-.05],.07,jc(0x5c4630,.06),true,6);}
+function bannerGeneric(o){const w=o.w||.8,h=o.h||2;beam('wood',[-w/2-.1,0,.14],[w/2+.1,0,.14],.05,jc(0x5c4630,.06),true,5);quad('cloth',0,-h/2,.16,w,h,P('cloth'));
+ for(let k=0;k<4;k++)box('cloth',-w/2+w*(k+.5)/4,-h-.08,.16,w/4-.02,.16,.01,P('cloth'));}
+function flagGeneric(o){const w=o.w||1,h=o.h||.6;beam('wood',[0,-1.6,0],[0,.3,0],.04,jc(0x4a4038,.05),true,5);quad('cloth',w/2,-h/2+.1,0,w,h,P('cloth'),0);}
+function emblemGeneric(o){const w=o.w||.9,h=o.h||.9;box('iron',0,-h/2,0,w,h,.04,P('rust'));for(const sx of [-1,1])for(const sy of [-1,1])box('iron',sx*(w/2-.07),sy*(h/2-.07),.03,.04,.04,.03,jc(0x3a3430,.04));}
+// shop signs carry a pictograph, not English: the trade text picks an icon, drawn on the board's canvas in the culture's ink colour
+const SIGN_ICONS={
+ FOOD:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.ellipse(cx-s*.05,cy,s*.42,s*.24,0,0,TAU);g.fill();g.beginPath();g.moveTo(cx+s*.34,cy);g.lineTo(cx+s*.62,cy-s*.26);g.lineTo(cx+s*.62,cy+s*.26);g.fill();g.fillStyle='rgba(0,0,0,.55)';g.beginPath();g.arc(cx-s*.28,cy-s*.05,s*.05,0,TAU);g.fill();g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.03;for(let k=0;k<3;k++){g.beginPath();g.arc(cx+s*.05+k*s*.1,cy,s*.15,-.9,.9);g.stroke();}},
+ ARMOR:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.4,cy-s*.42);g.lineTo(cx+s*.4,cy-s*.42);g.lineTo(cx+s*.4,cy+s*.02);g.quadraticCurveTo(cx+s*.36,cy+s*.34,cx,cy+s*.5);g.quadraticCurveTo(cx-s*.36,cy+s*.34,cx-s*.4,cy+s*.02);g.closePath();g.fill();g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=s*.06;g.beginPath();g.moveTo(cx,cy-s*.36);g.lineTo(cx,cy+s*.42);g.moveTo(cx-s*.34,cy-s*.08);g.lineTo(cx+s*.34,cy-s*.08);g.stroke();},
+ WEAPONS:(g,cx,cy,s,fg)=>{g.strokeStyle=fg;g.lineCap='round';for(const d of [-1,1]){g.lineWidth=s*.09;g.beginPath();g.moveTo(cx-d*s*.42,cy-s*.42);g.lineTo(cx+d*s*.36,cy+s*.36);g.stroke();g.lineWidth=s*.13;g.beginPath();g.moveTo(cx+d*s*.22,cy+s*.1);g.lineTo(cx+d*s*.44,cy+s*.32);g.stroke();}g.fillStyle=fg;g.beginPath();g.arc(cx,cy,s*.07,0,TAU);g.fill();},
+ TINKER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;const R=s*.3,r=s*.16;g.beginPath();for(let k=0;k<16;k++){const a=k*TAU/16,rr_=k%2?R*.8:R;g.lineTo(cx-s*.14+Math.cos(a)*rr_,cy+Math.sin(a)*rr_);}g.closePath();g.fill();g.globalCompositeOperation='destination-out';g.beginPath();g.arc(cx-s*.14,cy,r,0,TAU);g.fill();g.globalCompositeOperation='source-over';
+  g.strokeStyle=fg;g.lineWidth=s*.1;g.lineCap='round';g.beginPath();g.moveTo(cx+s*.05,cy+s*.42);g.lineTo(cx+s*.42,cy-s*.32);g.stroke();g.beginPath();g.arc(cx+s*.45,cy-s*.38,s*.1,.4,5.2);g.stroke();},
+ GENERAL:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.42,cy-s*.05,s*.44,s*.4);g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=s*.04;g.strokeRect(cx-s*.42,cy-s*.05,s*.44,s*.4);g.beginPath();g.moveTo(cx-s*.42,cy+s*.15);g.lineTo(cx+.02*s,cy+s*.15);g.stroke();
+  g.fillStyle=fg;g.beginPath();g.moveTo(cx+s*.3,cy-s*.4);g.quadraticCurveTo(cx+s*.62,cy,cx+s*.4,cy+s*.36);g.lineTo(cx+s*.12,cy+s*.36);g.quadraticCurveTo(cx-s*.02,cy,cx+s*.3,cy-s*.4);g.fill();g.strokeStyle='rgba(0,0,0,.5)';g.beginPath();g.moveTo(cx+s*.22,cy-s*.4);g.lineTo(cx+s*.38,cy-s*.4);g.stroke();},
+ HARBOUR:(g,cx,cy,s,fg)=>{g.strokeStyle=fg;g.lineCap='round';g.lineWidth=s*.09;g.beginPath();g.arc(cx,cy-s*.36,s*.09,0,TAU);g.stroke();g.beginPath();g.moveTo(cx,cy-s*.27);g.lineTo(cx,cy+s*.42);g.moveTo(cx-s*.24,cy-s*.12);g.lineTo(cx+s*.24,cy-s*.12);g.stroke();g.beginPath();g.arc(cx,cy+s*.08,s*.4,.15*PI,.85*PI);g.stroke();
+  g.fillStyle=fg;for(const d of [-1,1]){g.beginPath();g.moveTo(cx+d*s*.38,cy+s*.2);g.lineTo(cx+d*s*.5,cy+s*.02);g.lineTo(cx+d*s*.22,cy+s*.06);g.fill();}},
+ TICKETS:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.5,cy-s*.26);g.lineTo(cx+s*.5,cy-s*.26);g.lineTo(cx+s*.5,cy-s*.09);g.arc(cx+s*.5,cy,s*.09,-PI/2,PI/2,true);g.lineTo(cx+s*.5,cy+s*.26);g.lineTo(cx-s*.5,cy+s*.26);g.lineTo(cx-s*.5,cy+s*.09);g.arc(cx-s*.5,cy,s*.09,PI/2,-PI/2,true);g.closePath();g.fill();
+  g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=s*.035;g.setLineDash([s*.06,s*.05]);g.beginPath();g.moveTo(cx+s*.16,cy-s*.22);g.lineTo(cx+s*.16,cy+s*.22);g.stroke();g.setLineDash([]);g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.arc(cx-s*.14,cy,s*.11,0,TAU);g.fill();},
+ MESS:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.42,cy);g.lineTo(cx+s*.42,cy);g.quadraticCurveTo(cx+s*.4,cy+s*.42,cx,cy+s*.42);g.quadraticCurveTo(cx-s*.4,cy+s*.42,cx-s*.42,cy);g.fill();g.strokeStyle=fg;g.lineWidth=s*.05;g.lineCap='round';for(const d of [-1,0,1]){g.beginPath();g.moveTo(cx+d*s*.2,cy-s*.08);g.bezierCurveTo(cx+d*s*.2-s*.08,cy-s*.2,cx+d*s*.2+s*.08,cy-s*.3,cx+d*s*.2,cy-s*.42);g.stroke();}},
+ /* the Zeijani trades (kits/zeijani, 2026-10-07): pictographs any culture's shop may use */
+ ALCHEMIST:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.arc(cx-s*.1,cy+s*.12,s*.3,0,TAU);g.fill();g.fillRect(cx-s*.18,cy-s*.42,s*.16,s*.3);g.strokeStyle=fg;g.lineWidth=s*.07;g.lineCap='round';g.beginPath();g.moveTo(cx+s*.15,cy-s*.05);g.quadraticCurveTo(cx+s*.42,cy-s*.32,cx+s*.56,cy+s*.08);g.stroke();
+  g.fillStyle='rgba(0,0,0,.45)';for(const [dx,dy,r] of [[-.2,.12,.07],[-.02,.2,.05],[-.08,.02,.04]]){g.beginPath();g.arc(cx+dx*s,cy+dy*s,r*s,0,TAU);g.fill();}},
+ LAMP:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.ellipse(cx,cy+s*.22,s*.42,s*.16,0,0,TAU);g.fill();g.beginPath();g.moveTo(cx+s*.3,cy+s*.16);g.lineTo(cx+s*.58,cy+s*.04);g.lineTo(cx+s*.38,cy+s*.3);g.fill();g.fillRect(cx-s*.22,cy+s*.34,s*.44,s*.1);
+  g.beginPath();g.moveTo(cx+s*.52,cy+s*.02);g.quadraticCurveTo(cx+s*.36,cy-s*.22,cx+s*.5,cy-s*.48);g.quadraticCurveTo(cx+s*.7,cy-s*.2,cx+s*.52,cy+s*.02);g.fill();},
+ STONE:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.5,cy+s*.05,s*.62,s*.38);g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=s*.035;g.strokeRect(cx-s*.5,cy+s*.05,s*.62,s*.38);g.strokeStyle=fg;g.lineCap='round';g.lineWidth=s*.08;g.beginPath();g.moveTo(cx+s*.05,cy-s*.08);g.lineTo(cx+s*.5,cy-s*.45);g.stroke();
+  g.lineWidth=s*.1;g.beginPath();g.moveTo(cx+s*.2,cy-s*.5);g.quadraticCurveTo(cx+s*.42,cy-s*.36,cx+s*.62,cy-s*.18);g.stroke();},
+ DYE:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.42,cy-s*.05);g.lineTo(cx+s*.42,cy-s*.05);g.lineTo(cx+s*.32,cy+s*.45);g.lineTo(cx-s*.32,cy+s*.45);g.closePath();g.fill();g.strokeStyle=fg;g.lineWidth=s*.07;g.lineCap='round';
+  for(const d of [-.24,-.08,.08,.24]){g.beginPath();g.moveTo(cx+d*s,cy-s*.5);g.lineTo(cx+d*s,cy-s*.12);g.stroke();}g.beginPath();g.moveTo(cx-s*.34,cy-s*.5);g.lineTo(cx+s*.34,cy-s*.5);g.stroke();},
+ POTTER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx-s*.14,cy-s*.46);g.lineTo(cx+s*.14,cy-s*.46);g.quadraticCurveTo(cx+s*.12,cy-s*.3,cx+s*.32,cy-s*.12);g.quadraticCurveTo(cx+s*.48,cy+s*.2,cx+s*.18,cy+s*.46);g.lineTo(cx-s*.18,cy+s*.46);g.quadraticCurveTo(cx-s*.48,cy+s*.2,cx-s*.32,cy-s*.12);g.quadraticCurveTo(cx-s*.12,cy-s*.3,cx-s*.14,cy-s*.46);g.fill();
+  g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.04;for(const y of [-.02,.14]){g.beginPath();g.moveTo(cx-s*.36,cy+y*s);g.lineTo(cx+s*.36,cy+y*s);g.stroke();}},
+ LEATHER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();const P=[[-.2,-.48],[.2,-.48],[.28,-.3],[.5,-.36],[.44,-.08],[.3,.04],[.36,.3],[.5,.42],[.18,.4],[0,.5],[-.18,.4],[-.5,.42],[-.36,.3],[-.3,.04],[-.44,-.08],[-.5,-.36],[-.28,-.3]];
+  P.forEach(([x,y],i)=>i?g.lineTo(cx+x*s,cy+y*s):g.moveTo(cx+x*s,cy+y*s));g.closePath();g.fill();g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.03;g.setLineDash([s*.05,s*.04]);g.beginPath();g.ellipse(cx,cy,s*.2,s*.3,0,0,TAU);g.stroke();g.setLineDash([]);},
+ KNAPPER:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.beginPath();g.moveTo(cx,cy-s*.5);g.quadraticCurveTo(cx+s*.3,cy-s*.05,cx+s*.08,cy+s*.42);g.lineTo(cx-s*.08,cy+s*.42);g.quadraticCurveTo(cx-s*.3,cy-s*.05,cx,cy-s*.5);g.fill();g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.03;
+  for(let k=0;k<5;k++){const y=cy-s*.3+k*s*.14;g.beginPath();g.moveTo(cx,y);g.lineTo(cx+s*.16,y+s*.08);g.moveTo(cx,y+s*.04);g.lineTo(cx-s*.16,y+s*.12);g.stroke();}},
+ ROPE:(g,cx,cy,s,fg)=>{g.strokeStyle=fg;g.lineWidth=s*.08;g.lineCap='round';g.beginPath();for(let i=0;i<=90;i++){const t=i/90,a=t*TAU*3.2,r=s*(.08+.36*t);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.8;if(i)g.lineTo(x,y);else g.moveTo(x,y);}g.lineTo(cx+s*.56,cy+s*.45);g.stroke();},
+ TAVERN:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.32,cy-s*.3,s*.46,s*.74);g.strokeStyle=fg;g.lineWidth=s*.09;g.beginPath();g.arc(cx+s*.16,cy+s*.05,s*.2,-PI/2,PI/2);g.stroke();g.beginPath();g.ellipse(cx-s*.09,cy-s*.32,s*.3,s*.14,0,0,TAU);g.fill();
+  g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=s*.035;for(const x of [-.2,-.09,.02]){g.beginPath();g.moveTo(cx+x*s,cy-s*.15);g.lineTo(cx+x*s,cy+s*.36);g.stroke();}},
+ INN:(g,cx,cy,s,fg)=>{g.fillStyle=fg;g.fillRect(cx-s*.52,cy+s*.02,s*1.04,s*.22);g.fillRect(cx-s*.52,cy-s*.3,s*.1,s*.72);g.fillRect(cx+s*.42,cy-s*.04,s*.1,s*.46);g.beginPath();g.ellipse(cx-s*.24,cy-s*.06,s*.16,s*.09,0,0,TAU);g.fill();
+  g.beginPath();g.moveTo(cx-s*.04,cy-s*.12);g.quadraticCurveTo(cx+s*.2,cy-s*.22,cx+s*.42,cy-s*.12);g.lineTo(cx+s*.42,cy+s*.02);g.lineTo(cx-s*.04,cy+s*.02);g.fill();}
+};
+function signBoard(o,bg,fg,frame){const w=o.w||2,h=o.h||.7,t=(o.trade||'').toUpperCase();const key='sign:'+t+bg+fg;if(!MAT[key])cvMat(key,256,96,(g,W_,H_)=>{g.fillStyle=bg;g.fillRect(0,0,W_,H_);reseed(9800+t.length);for(let i=0;i<180;i++){g.fillStyle=`rgba(0,0,0,${rr(.03,.12)})`;g.fillRect(rng()*W_,rng()*H_,rr(1,5),rr(1,3));}
+  g.strokeStyle=fg;g.lineWidth=5;g.strokeRect(6,6,W_-12,H_-12);const ic=SIGN_ICONS[t];if(ic)ic(g,W_/2,H_/2,64,fg);else{g.fillStyle=fg;g.beginPath();g.arc(W_/2,H_/2,22,0,TAU);g.fill();}});
+ box('plank',0,-h/2-.06,-.02,w+.12,h+.12,.06,jc(frame||0x4a3a2c,.05));decal(key,0,0,.02,w,h,0);}
+cultDef({key:'generic',name:'Generic (unmarked)',paint:null,signBg:'#9a7a52',signFg:'#2a1c10',
+ fill:{awning:awnGeneric,banner:bannerGeneric,flag:flagGeneric,emblem:emblemGeneric,sign:o=>signBoard(o,'#8a6c48','#e8dcc0','#4a3a2c'),paint:o=>{}}});
+// symbols: core/sockets/38-symbols.js (SYMBOLS, drawTriskele, SYMBOL_OF), shared with the furniture kit
+// ------------------------------------------------------------------ the factory: a culture is a palette, a symbol and two cloth styles
+// mkCulture({key,name,field,edge,band,disc,ink,ink2,sym,awn:{mode:'stripes'|'cloth',cols,n},paint,pole,signBg,signFg,signFrame,flagStyle:'rect'|'pennant'})
+//   field/edge/band: banner cloth, its side edges and its end bands; disc: a round ground behind the symbol (optional); ink/ink2: symbol colours
+function mkCulture(o){const K=o.key,pole=jc(o.pole||0x7a5a38,0);
+ const drawBan=(g,W,H)=>{g.fillStyle=o.field;g.fillRect(0,0,W,H);g.fillStyle=o.edge;const e=Math.min(W,H)*.09;if(H>W){g.fillRect(0,0,e,H);g.fillRect(W-e,0,e,H);g.fillStyle=o.band;g.fillRect(0,0,W,e*.8);g.fillRect(0,H-e*.8,W,e*.8);}else{g.fillRect(0,0,W,e);g.fillRect(0,H-e,W,e);g.fillStyle=o.band;g.fillRect(0,0,e*.8,H);g.fillRect(W-e*.8,0,e*.8,H);}
+  const d=banDisc(W,H);if(o.disc){g.fillStyle=o.disc;g.beginPath();g.arc(d.cx,d.cy,d.R*1.06,0,TAU);g.fill();}SYMBOLS[o.sym](g,d.cx,d.cy,d.R*.94,o.ink,o.ink2||o.ink);
+  if(H>W*1.25){g.fillStyle=o.band;for(let k=0;k<3;k++)g.fillRect(W*.24,H*.66+k*H*.06,W*.52,H*.025);}
+  reseed(9700+K.length);for(let i=0;i<120;i++){g.fillStyle=`rgba(0,0,0,${rr(.03,.11)})`;g.fillRect(rng()*W,rng()*H,rr(1,3),rr(2,8));}};
+ const drawPlate=(g,W,H)=>{g.fillStyle=o.edge;g.fillRect(0,0,W,H);g.fillStyle=o.field;g.fillRect(W*.06,H*.06,W*.88,H*.88);const d=banDisc(W,H);if(o.disc){g.fillStyle=o.disc;g.beginPath();g.arc(W/2,H/2,W*.36,0,TAU);g.fill();}SYMBOLS[o.sym](g,W/2,H/2,W*.3,o.ink,o.ink2||o.ink);};
+ const cloth=o.awn.mode==='cloth';if(!cloth)stripeTex('awn:'+K,o.awn.cols,o.awn.n||8);
+ const awning=q=>{const w=q.w||2.4,d=q.d||1.4,drop=q.drop===undefined?.5:q.drop,ph=q.h||2.2;
+  if(cloth){const c=jc(pick(o.awn.cols),.06);plane4('cloth',[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03,c);for(let k=0;k<Math.round(w/.4);k++)box('cloth',-w/2+.2+k*.4,-drop-.24-(k%2?.08:0),d,.34,.24+(k%2?.08:0),.02,jc(c,.08));}
+  else{plane4('awn:'+K,[-w/2,0,0],[w/2,0,0],[-w/2,-drop,d],[w/2,-drop,d],.03);for(let k=0;k<Math.round(w/.3);k++){const sc=k%2;box('awn:'+K,-w/2+.15+k*.3,-drop-.2+(sc?.03:0),d,.3,.2-(sc?.03:0),.02);}}
+  for(const sx of [-1,1])beam('wood',[sx*(w/2-.05),-drop-.2,d-.05],[sx*(w/2-.05),-drop-ph,d-.05],.07,pole,true,6);};
+ // a banner hangs from a rod that stands proud of its pole (z=.14 clears a pole up to ~0.12 m radius), so the pole never pierces the cloth
+ const banner=q=>{const w=q.w||.8,h=q.h||2;beam('wood',[-w/2-.1,0,.14],[w/2+.1,0,.14],.05,pole,true,5);banDecal('ban:'+K,drawBan,0,-h/2,.16,w,h,0);};
+ const flag=q=>{const w=q.w||1,h=q.h||.65;beam('wood',[0,-1.6,0],[0,.3,0],.04,pole,true,5);
+  if(o.flagStyle==='pennant'){const c=jc(o.field,.04);poly('cloth',[[0,.35,0],[w*1.5,.1,0],[w*1.15,-.04,0],[w*1.5,-.2,0],[0,-.1,0]],c,true);}else banDecal('ban:'+K,drawBan,w/2,-h/2+.1,0,w,h,0);};
+ const emblem=q=>{const w=q.w||.9;banDecal('em:'+K,drawPlate,0,-(q.h||w)/2,.03,w,q.h||w,0);};
+ return cultDef({key:K,name:o.name,paint:o.paint,paintShare:o.paintShare||.55,fill:{awning,banner,flag,emblem,sign:q=>signBoard(q,o.signBg,o.signFg,o.signFrame),paint:q=>{}}});}
+// ------------------------------------------------------------------ the packs (add a culture = one mkCulture call)
+mkCulture({key:'iziz',name:'Iziz',field:'#e07a2a',edge:'#2f8f8a',band:'#f2a24a',disc:null,ink:'#f3e2c0',ink2:'#e07a2a',sym:'sun',pole:0xe8dcc0,
+ awn:{mode:'stripes',cols:['#e07a2a','#f3e2c0','#f2a24a','#f3e2c0','#e07a2a','#f3e2c0','#d8893c','#f3e2c0','#2f8f8a','#f3e2c0'],n:10},
+ paint:[0xe07a2a,0x2f8f8a,0xf2a24a,0xd8893c,0xe8dcc0,0xc9442a],signBg:'#e07a2a',signFg:'#f3e2c0',signFrame:0x2f8f8a});
+// Republic: the triskelion, on Voth's deep red
+mkCulture({key:'republic',name:'Republic',field:'#7a2028',edge:'#4a3220',band:'#c9963a',disc:'#f0e6cc',ink:'#7a2028',ink2:'#2a8a86',sym:'triskele',pole:0x7a5a38,
+ awn:{mode:'stripes',cols:['#7a2028','#f0e6cc','#c9963a','#f0e6cc'],n:8},
+ paint:[0x7a2028,0x8a2f2a,0xc9963a,0xf0e6cc,0x5c4028],signBg:'#7a2028',signFg:'#f0e6cc',signFrame:0x4a3220});
+// Voth: deep purple, ash-white glyph, ragged cloth
+mkCulture({key:'voth',name:'Voth',field:'#4b2a6e',edge:'#2f1a47',band:'#6a4a8f',disc:null,ink:'#d8cdb4',sym:'diamond',pole:0x3a2a1c,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x4b2a6e,0x3a2259,0x6a4a8f,0x3a2a4a]},
+ paint:[0x4b2a6e,0x3a2259,0x6a4a8f,0x3a2a4a,0xd8cdb4],signBg:'#3a2259',signFg:'#d8cdb4',signFrame:0x2f1a47});
+// Yuni: yellow, the hyperboloid
+mkCulture({key:'yuni',name:'Yuni',field:'#dcb42c',edge:'#5a4410',band:'#f4ecc8',disc:'#f6efd0',ink:'#4a3a12',sym:'hyperboloid',pole:0x5a4410,
+ awn:{mode:'stripes',cols:['#e0b52a','#f4ecc8','#c99a1e','#f4ecc8'],n:8},
+ paint:[0xd9b12a,0xe8c84a,0x8a6a1a,0xf4ecc8,0x4a3a12],signBg:'#dcb42c',signFg:'#3a2c08',signFrame:0x5a4410});
+// Beast Riders: green, the claw
+mkCulture({key:'beast-rider',name:'Beast Riders',field:'#3f7a3a',edge:'#2e5a2c',band:'#6a9a4a',disc:null,ink:'#e6dcc2',sym:'claw',pole:0x4a3a22,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x58924a,0x4a8240,0x6aa050,0x7f8a48]},
+ paint:[0x3f7a3a,0x2e5a2c,0x5a8a3e,0xe0d6c0,0x4a3a22],signBg:'#2e5a2c',signFg:'#e6dcc2',signFrame:0x4a3a22});
+// the old key, kept for worlds and URLs that still say ?culture=beastriders; not enumerable, so loops over CULT.packs see one Beast Rider pack
+Object.defineProperty(CULT.packs,'beastriders',{value:CULT.packs['beast-rider'],enumerable:false});
+// Hykkousoi: pale sea-linen, slate-blue edge, the gold wave-sun (the colours of their sails in kits/ringsea)
+mkCulture({key:'hykkousoi',name:'Hykkousoi',field:'#e4eff0',edge:'#3f6a82',band:'#2c5a74',disc:null,ink:'#d8a640',ink2:'#2c5a74',sym:'wavesun',pole:0x6a4a2c,
+ awn:{mode:'stripes',cols:['#3f6a82','#e4eff0','#aec8d0','#e4eff0'],n:8},
+ paint:[0x3f6a82,0x2c5a74,0xaec8d0,0xe4eff0,0xd8a640],signBg:'#3f6a82',signFg:'#e4eff0',signFrame:0x2c5a74});
+// Xanadu: saffron bordered in maroon, the gold-hubbed eight-spoked wheel, turquoise in the livery
+mkCulture({key:'xanadu',name:'Xanadu',field:'#e89a2a',edge:'#7a1a24',band:'#d8a838',disc:null,ink:'#7a1a24',ink2:'#d8a838',sym:'wheel',pole:0x7a1a24,
+ awn:{mode:'stripes',cols:['#e89a2a','#7a1a24','#e89a2a','#d8a838'],n:8},
+ paint:[0x7a1a24,0xe89a2a,0xd8a838,0x1f9aa8,0xe8dcc0],signBg:'#7a1a24',signFg:'#e8c060',signFrame:0xd8a838});
+// Ring Sea Islanders: bark-dyed cloth and pandanus, the white moon, feather-streamer pennants
+mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge:'#4a2a14',band:'#c49a5a',disc:null,ink:'#f0e8d4',sym:'moon',pole:0x5a3a22,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x8a5a32,0xb08850,0x7a4a2a,0xc4a468]},
+ paint:[0x8a5a32,0x4a2a14,0xc49a5a,0xf0e8d4,0x2a7a7a],signBg:'#4a2a14',signFg:'#f0e8d4',signFrame:0x7a4a2a});
+// Screamers (the Hexahedron): ochre daub on rag, black and bone-white, the skull; ragged cloth, pennants (LORE.md 6.7; PLAN.md, patterns/screamers/daub)
+mkCulture({key:'screamer',name:'Screamers',field:'#b8683e',edge:'#2a1e16',band:'#e8dcc4',disc:null,ink:'#f0e6d0',ink2:'#2a1e16',sym:'skull',pole:0x4a3424,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0xb8683e,0x8a4a2a,0xa08058,0x6a4a30]},
+ paint:[0xb8683e,0x8a3f1c,0xe8dcc4,0x2a1e16,0x6a7a3a],signBg:'#2a1e16',signFg:'#e8dcc4',signFrame:0x4a3424});
+// Zeijani (kits/zeijani): alecap purple and bone over soot, ochre bands, the spiral sinking into a stepped arch; felt and hide awnings,
+// pennants; signs painted bone on soot (the palette: kits/zeijani/PLAN.md section 10)
+mkCulture({key:'zeijani',name:'Zeijani',field:'#5e3470',edge:'#221e1c',band:'#c49a4a',disc:null,ink:'#e8e0cc',ink2:'#221e1c',sym:'spiralarch',pole:0x4a3424,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0x5e3470,0xa23a2a,0xc49a4a,0x8a6a4a]},
+ paint:[0x5e3470,0xa23a2a,0xc49a4a,0x3f8f88,0xe8e0cc],signBg:'#221e1c',signFg:'#e8e0cc',signFrame:0xa8683a});
 // ================================================================= KratorSky — the Krator skybox module (from claude/krator-sky.html, verbatim logic)
 // Canon (krator-notes): tidally-locked moon of a Neptune–Saturn-class giant, 24 h day, ~40° S, giant fixed at
 // altitude 25° azimuth 66° (NE, over Korona), obliquity ~23°, eclipse seasons round each equinox.
@@ -11848,6 +12193,8 @@ const FAMILIES=[
  {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
  {name:'Dwellings: constructed',keys:['zj_house_built_poor','zj_house_built_mid','zj_house_built_rich']},
  {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b','zj_estate_a','zj_estate_b']},
+ {name:'Shops: carved fronts',keys:ZS_ITEMS.filter(it=>/_carved$/.test(it.key)).map(it=>it.key)},
+ {name:'Shops: constructed',keys:ZS_ITEMS.filter(it=>/_built$/.test(it.key)).map(it=>it.key)},
  {name:'The cavern test block',keys:['zj_testblock']}
 ];
 // ================================================================= SCENE: renderer, the standard Krator sky, ground, layout, (re)building the world
@@ -11901,7 +12248,7 @@ const SITEKEY=k=>typeof k==='string'?{key:k,o:{v:0}}:{key:k.key,o:Object.assign(
 let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
  WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;ZJ_LIFE.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!ZJTAGS)zjTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
- KWALK.clear();cvNew();   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
+ KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;   /* the walk registry and the cavern start empty: the carved defs' plans fill them as they are placed */
  const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,WORLD,true);
@@ -12011,6 +12358,12 @@ const PB={
      if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
      else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
   return start?PB.route(W0,start,way):null;},
+ /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
+    a constructed one by its planner's graph */
+ shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
+   const log=/_carved$/.test(S.key)?PB.siteRoute(W,S.key,[0,3],[['the shopfront',0,.4],['over the counter',-.6,-2.0,false],['the counter’s gap',1.6,-.5],
+     ['the selling room',1.6,-2.6],['the back door',0,-4.8],['the passage',0,-6.8],['the workroom',0,-9.6],['back',0,-4.8],['the selling room again',1.6,-2.6],['out',1.6,-.5],['the street',1.6,2.5]]):PB.plannedRoute(W,S.key);
+   if(log)out.push({name:S.key,log});}return out;},
  /* the constructed houses: the domed hut, the three domes round their yard (hand-written), the planned house (its graph) */
  houseRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
   r('domed hut',PB.siteRoute(W,'zj_house_built_poor',[0,4.5],[['the door',0,2.6],['inside',0,0],['across',0,-1.6]]));
@@ -12039,6 +12392,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
+ const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
+  sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');
  const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
  add('walk-joins',np>0&&!jn.length,jn.length?jn.length+' passages leave a gap: '+jn.slice(0,8).join(', '):np+' carved passages each join the floors at both ends');
  return R;}
@@ -12065,6 +12420,9 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* the houses' routes with the planned house's stair left out of the walk map */
  {const W=PB.copyWalk(f=>/zj_house_built_rich.*stair/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const hr=PB.houseRoutes(W),h=hr.find(e=>/two-storey/.test(e.name));
   if(h)add('walk-route-houses: the stair missing',!PB.routeOk(h.log),h.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
+ /* the shops' routes with the weaponsmith's (carved) passage to its workroom left out */
+ {const R0=REG.find(r=>r.key==='zj_shop_weapons_carved');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.back');for(const b of KWALK.blocks)W.block(b.box,b.tag);
+  const e=PB.shopRoutes(W,'zj_shop_weapons_carved')[0];if(e)add('walk-route-shops: a passage missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}
  /* joins: one cell's doorway strip shortened by 1 m at its room end (it runs 0.4 m into the room's floor, whose walk edge is 0.3 m in: 0.8 lands on that edge) */
  {let done=false;const W=PB.copyWalk(f=>{if(!done&&/-door$/.test(f.name)&&f.kind==='strip'){done=true;return true;}return false;});
   const f=KWALK.floors.find(f=>/-door$/.test(f.name)&&f.kind==='strip');if(f){const dx=f.b[0]-f.a[0],dz=f.b[1]-f.a[1],L=Math.hypot(dx,dz),k=(L-1)/L;

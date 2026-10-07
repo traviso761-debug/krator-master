@@ -16,7 +16,7 @@
 // types, its world position and size, its parent (a room names its building), before it is drawn.
 const DEFS={};
 function defBuilding(d){if(DEFS[d.key])reportErr('duplicate def '+d.key);d.cls=d.cls||'building';d.tags=Object.assign({culture:'zeijani'},d.tags||{});DEFS[d.key]=d;return d;}
-const REG=[];let CURKEY=null,CURREC=null,DOORS_CUR=null;
+const REG=[];let CURREC=null,DOORS_CUR=null;   /* CURKEY: core/sockets' 37-sockets.js (the socket's building) */
 /* door(x,y,z,yaw,w): the builder declares a doorway (local frame; yaw: the way out, 0 = +z). It draws nothing. */
 function door(x,y,z,yaw,w){if(!DOORS_CUR)return;const p=new THREE.Vector3(x,y,z).applyMatrix4(CM);const e=CM.elements;DOORS_CUR.push({wx:p.x,wy:p.y,wz:p.z,yaw:Math.atan2(e[8],e[10])+(yaw||0),w:w||1});}
 function zjFront(d,doors,org,wry){
@@ -30,7 +30,7 @@ let ZJTAGS=null;
 function zjTagsReset(){ZJTAGS=KTAGS.page=KTAGS.create({build:'zeijani'});}
 function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);return null;}o=o||{};
  const y=o.y!==undefined?o.y:terrainH(x,z);
- const keep={key:CURKEY,rec:CURREC,doors:DOORS_CUR,cut:CUTC};
+ const keep={key:CURKEY,rec:CURREC,doors:DOORS_CUR,cut:CUTC,socks:SOCKS};SOCKS=[];
  pushM(TF(x,y,z,ry||0));const org=new THREE.Vector3().applyMatrix4(CM);const e=CM.elements,wry=Math.atan2(e[8],e[10]);
  const rec={key,name:o.name||d.name,cls:d.cls,kind:d.kind||null,tags:Object.assign({},d.tags,o.tags||{}),x:org.x,y:org.y,z:org.z,ry:wry,
   decl:{w:d.w,d:d.d,h:d.h,budget:d.budget},v:o.v|0,parent:CURREC,children:[],furniture:[],tid:null};
@@ -44,8 +44,9 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  const bb=sbBegin();const t0=GSTAT.tris;
  reseed(d.seed+(o.v|0)*7);
  try{d.build(o);}catch(err){reportErr('build '+key+': '+(err.stack||err));}
+ fillSockets();   /* the zeijani pack (core/sockets) draws the signs, awnings and banners the builder declared */
  sbEnd();popM();const doors=DOORS_CUR;
- CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;
+ CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;CUTC=keep.cut;SOCKS=keep.socks;
  rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=zjFront(d,doors,org,wry);rec.doorCount=doors.length;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
  /* a built def's floors and walls into core/walk, from its interiors item (37-zj-walk.js; a carved def's come from the cavern) */
  if(!PLACE_DRY&&!rec.parent){const it=zjItem(key);if(it)rec.walk=zwItem(it,rec);}
