@@ -126,7 +126,7 @@ const FA_FM_COW = [[-0.95, 1.2, .16, .18], [-0.82, 1.17, .31, .31], [-0.45, 1.08
 ANIMAL({
   key: 'cattle', name: 'Cattle', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['republic', 'rustic', 'painted-men'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'docile',
+    domestic: true, herdedBy: ['republic', 'rustic', 'painted-men', 'nomad', 'scyvoi'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
   size: { length: 2.6, height: 1.5 },
   source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '23-30', note: 'hnRCBeast cow and ox: the Iron Republic\'s farms: the ox at the plough (125), the cattle paddock and shelter (156), a cow at the byre door (103)' },
@@ -327,6 +327,100 @@ ANIMAL({
 });
 
 /* ======================================================================
+   STEPPE BISON: the Scyvoi's half-wild herd beast of the crater drylands (first drawn here, 2026-10-07), derived from
+   the cattle and the yak above: the same hoofed builder, the barrel deepened at the shoulders into the hump and sloping
+   down to a lean rump, the massive head carried low, a cape of shaggy hair over the hump, neck and forelegs (the
+   forelegs' chaps), the beard and the mop on the crown, short black horns, a short tufted tail.
+   ====================================================================== */
+const FA_FM_BISON = [[-1.0, 1.12, .17, .2], [-0.85, 1.1, .31, .33], [-0.45, 1.1, .37, .4], [0.05, 1.18, .43, .5], [0.42, 1.3, .44, .6], [0.74, 1.24, .36, .54], [0.95, 1.1, .2, .3]];
+/* a mix of two sRGB colours given as hex or [r, g, b] */
+function faFmBisMix(a, b, f) { const ca = Array.isArray(a) ? a : faFmShade(a, 1), cb = Array.isArray(b) ? b : faFmShade(b, 1); return [ca[0] + (cb[0] - ca[0]) * f, ca[1] + (cb[1] - ca[1]) * f, ca[2] + (cb[2] - ca[2]) * f]; }
+ANIMAL({
+  key: 'bison', name: 'Steppe bison', group: 'farm',
+  tags: { biomes: ['crater-drylands'], koppen: ['BSk', 'BSh', 'Dfb'], aridity: ['semiarid', 'arid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['scyvoi'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 2.9, height: 1.9 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-farm.js', note: 'first drawn here (2026-10-07) for the Scyvoi, who herd it with their goats and cattle on the crater drylands; derived from the cattle and yak builders' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 380, note: 'a bull dressed; a cow 230: smoked and dried for the dry season' },
+    hide: { amount: 1, hideM2: 5.5, note: 'a robe with the hair on (winter cloaks and bedding); scraped, the heavy leather of shields and boots' },
+    hair: { amount: 1.2, note: 'the cape\'s coarse guard hair, picked up where the herd moults in spring: rope, girths, tent ties' },
+    wool: { amount: 0.8, note: 'the soft underwool shed with it in clumps: felt and the warmest yarn' },
+    horn: { amount: 1.2, note: 'a pair: cups, spoons, oil flasks' } },
+  life: { maturity: 3, lifespan: 20, litter: 1, gestation: 285 },
+  variants: 3, variantNames: ['bull', 'cow', 'calf (red-coated)'],
+  w: 1.25, d: 2.78, h: 1.9,
+  variantDims: [{ w: 1.25, d: 2.78, h: 1.9 }, { w: 1.06, d: 2.36, h: 1.6 }, { w: 0.6, d: 1.54, h: 1.0 }],
+  data: { mass: [900, 500, 120], legs: 4, speed: { walk: 1.2, run: 14 }, gait: { type: 'quadruped', freq: 0.95, stride: 0.7 }, grazePitch: 0.85,
+    herd: 'a Scyvoi band drives a herd of twenty to sixty between the seeps, the bulls apart; the calves are penned at night in the kopje\'s lee', fleeDistance: 12, aggression: 0.4,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, calf = v === 2, K = [1, 0.85, 0.55][v] * A.S, hump = [1, 0.85, 0.6][v];
+    /* the dark hindquarters, the paler tawny cape over the hump and forequarters, the near-black head; a calf is red */
+    const hind = calf ? 0x8a4a26 : [0x3a281c, 0x40301f][v], cape = calf ? 0xa0582a : [0x6a4a2c, 0x5e4430][v], head = calf ? 0x6a3a1e : 0x241a14;
+    const coat = (x, y, z) => { const zz = z / K, f = Math.min(1, Math.max(0, (zz + 0.15) / 0.4)), e = f * f * (3 - 2 * f);
+      return faFmBisMix(faFmBisMix(hind, cape, e), head, zz > 0.95 ? 0.6 : 0.15 * faNoise(x * 7, y * 7, z * 7)); };
+    const body = FA_FM_BISON.map(b => b[0] > -0.2 ? [b[0], 1.1 + (b[1] - 1.1) * hump, b[2], b[3] * (0.75 + 0.25 * hump)] : b);
+    const legC = calf ? faFmShade(hind, 0.8) : 0x2a1e16;
+    faFmHoofed(A, { K: K, coat: coat, body: body, fam: 'coat', bodyNt: 16,
+      neckPivot: [0, 1.1, 0.8],
+      neck: { pts: [[0, 1.22, .8], [0, 1.1, 1.0], [0, .98, 1.14]], rad: [[.32, .42], [.27, .34], [.21, .27]] },
+      /* the head: massive, broad and short, carried low, the forehead flat */
+      head: { pts: [[0, 1.02, 1.12], [0, .92, 1.28], [0, .76, 1.4], [0, .64, 1.47], [0, .6, 1.49]], rad: [[.2, .2], [.19, .2], [.155, .15], [.12, .1], [.1, .07]],
+        col: (p, t) => t > 0.84 ? 0x161210 : head },
+      headFam: 'shag',
+      eyes: [.16, .95, 1.31, .022],
+      ears: { piv: [.18, 1.03, 1.18], at: [.24, 1.0, 1.18], r: [.065, .022, .035], rz: -0.35, col: head },
+      /* short black horns: out from the sides of the poll, then up and a little in */
+      horn: calf ? null : { pts: [[.12, 1.06, 1.2], [.24, 1.08, 1.2], [.32, 1.14, 1.22], [.33, 1.24, 1.2], [.29, 1.3, 1.17]].map(p => [p[0] * (v ? 0.95 : 1), p[1], p[2]]),
+        rad: v ? [.04, .035, .025, .016, .006] : [.052, .045, .034, .02, .007], col: 0x1e1a16, tip: 0x0c0a08 },
+      legs: { F: [[.24, 1.0, .56], [.24, .7, .5], [.235, .55, .51], [.23, .38, .53], [.23, .22, .54], [.23, .1, .56], [.23, .065, .59]],
+        FR: [[.15, .19], [.12, .135], [.095, .105], [.072, .08], [.056, .062], [.064, .068], [.056, .056]],
+        H: [[.22, 1.05, -.66], [.225, .78, -.54], [.215, .6, -.68], [.21, .45, -.77], [.21, .28, -.73], [.21, .1, -.69], [.21, .065, -.66]],
+        HR: [[.17, .21], [.13, .15], [.09, .11], [.066, .085], [.052, .058], [.06, .064], [.052, .052]],
+        hoof: 'cloven', hoofR: .065, hoofH: .07, hoofCol: 0x1a1612,
+        col: (p) => p[1] < 0.5 * K ? legC : coat(p[0], p[1], p[2]),
+        /* the forelegs' chaps: long hair hanging from the shoulder to below the knee */
+        extra: (P, ch, front, i) => { if (!front) return; const s = i === 1 ? -1 : 1, lk = [], n = calf ? 4 : 14;
+          for (let k = 0; k < n; k++) { const f = A.rnd(), a = ch[0], b = ch[3];
+            const at = P([a[0] + (b[0] - a[0]) * f + s * 0.07, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f + A.rr(-0.06, 0.06)]);
+            lk.push({ at: at, dir: [s * 0.35, -1, A.rr(-0.15, 0.15)], len: A.rr(0.18, 0.3) * K * (calf ? 0.5 : 1), w: 0.07 * K, col: faFmShade(cape, A.rr(0.55, 0.8)), curl: 0.2 }); }
+          A.locks('hair', lk); } },
+      /* the short tail with its tuft */
+      tail: { pts: [[0, 1.26, -1.0], [0, 1.22, -1.06], [0, 1.05, -1.1], [0, .86, -1.1]], rad: [.035, .03, .024, .02], col: hind,
+        tuft: { n: 10, len: 0.2, w: 0.045, col: 0x1a1410 } },
+      extraBody: (P, bc) => {
+        /* the cape: shaggy locks over the hump, the shoulders and the chest (none along the spine of the rump) */
+        const [c, r] = bc, lk = [], n = [150, 120, 40][v];
+        for (let i = 0; i < n; i++) { const t = 0.5 + 0.48 * A.rnd(), p = c(t), q = r(t), a = (A.rnd() < 0.5 ? -1 : 1) * A.rr(0.15, 1.9);
+          const at = [Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2]];
+          lk.push({ at: at, dir: [Math.sin(a) * 0.8, -1, A.rr(-0.1, 0.25)], len: A.rr(0.12, 0.22) * K * (Math.abs(a) > 1.2 ? 1.3 : 1) * (calf ? 0.6 : 1), w: A.rr(0.08, 0.11) * K,
+            col: faFmShade(cape, A.rr(0.62, 0.9)), curl: 0.45 }); }
+        A.locks('hair', lk);
+      },
+      extraHead: (P, nc) => {
+        const lk = [], cc = () => faFmShade(calf ? hind : 0x3a2a1e, A.rr(0.8, 1.15));
+        /* the mop on the crown and forehead, falling over the eyes */
+        for (let i = 0; i < (calf ? 8 : 30); i++) { const x = A.rr(-0.17, 0.17);
+          lk.push({ at: P([x, 1.12 + A.rr(-0.03, 0.03), 1.08 + A.rr(0, 0.2)]), dir: [x * 2.5, -0.5, 1], len: A.rr(0.14, 0.24) * K, w: 0.07 * K, col: cc(), curl: 0.45 }); }
+        /* the cheeks */
+        for (let i = 0; i < (calf ? 4 : 16); i++) { const s = A.rnd() < 0.5 ? -1 : 1, t = A.rnd();
+          lk.push({ at: P([s * 0.19, 1.02 - 0.18 * t, 1.12 + 0.18 * t]), dir: [s * 0.5, -1, 0.1], len: A.rr(0.12, 0.2) * K, w: 0.06 * K, col: cc(), curl: 0.2 }); }
+        /* the beard: from the chin down the throat */
+        if (!calf) for (let i = 0; i < 26; i++) { const t = A.rnd(), x = A.rr(-0.09, 0.09);
+          lk.push({ at: P([x, 0.6 + 0.3 * t, 1.38 - 0.42 * t]), dir: [x, -1, -0.15], len: A.rr(0.2, 0.36) * K * (v ? 0.8 : 1), w: 0.07 * K, col: cc(), curl: 0.12 }); }
+        /* the neck's mane, over the top and the sides */
+        for (let i = 0; i < (calf ? 6 : 34); i++) { const t = A.rnd(), p = nc[0](t), q = nc[1](t), a = (A.rnd() < 0.5 ? -1 : 1) * A.rr(0.2, 1.6);
+          lk.push({ at: [Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2]], dir: [Math.sin(a) * 0.7, -1, 0.15], len: A.rr(0.16, 0.3) * K, w: 0.09 * K, col: faFmShade(cape, A.rr(0.6, 0.85)), curl: 0.35 }); }
+        A.locks('hair', lk);
+        for (const s of [-1, 1]) A.ellip('mouth', s * .045 * K, .64 * K, 1.575 * K, .018 * K, .013 * K, .008 * K, 0x0c0a08, { seg: 6 });
+      } });
+    A.anchor('lead', [0, 0.66 * K, 1.5 * K]); A.anchor('pack', [0, 1.52 * K, -0.4 * K]);
+  }
+});
+
+/* ======================================================================
    HORSE: the Iron Republic's horse (75-rep-trade hnRAHorse: an ellipsoid barrel at 1.28 m on 1.12 m legs, a raised neck,
    a long head angled down, a dark mane and tail, dark hooves; HRA_HORSE its six coats) and the Rustic Clansmen's box
    horse (80-rus-dwell hnRUBeast 'horse').
@@ -336,7 +430,7 @@ const FA_FM_HORSE = [[-0.86, 1.33, .12, .16], [-0.78, 1.35, .25, .28], [-0.56, 1
 ANIMAL({
   key: 'horse', name: 'Horse', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['republic', 'rustic'], diet: 'herbivore', feeding: 'grazer', activity: 'cathemeral', temperament: 'wary',
+    domestic: true, herdedBy: ['republic', 'rustic', 'nomad'], diet: 'herbivore', feeding: 'grazer', activity: 'cathemeral', temperament: 'wary',
     habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
   size: { length: 2.5, height: 1.62 },
   source: [{ build: 'settlements/highlands', file: 'src/75-rep-trade.js', lines: '39-45', note: 'hnRAHorse: the Iron Republic\'s horses at the inn\'s hitching rail (142), the coaching yard (194), the stables (383, 393) and before the wagons (440)' },
@@ -392,6 +486,7 @@ ANIMAL({
         for (const s of [-1, 1]) A.cone('mouth', P([s * .045, 1.47, 1.39]), P([s * .06, 1.5, 1.3]), .005 * K, .005 * K, 0x1a1210, 4);
       } });
     A.anchor('saddle', [0, 1.66 * K, 0.05 * K]); A.anchor('bridle', [0, 1.75 * K, 1.25 * K]); A.anchor('harness', [0, 1.5 * K, 0.6 * K]);
+    A.anchor('pack', [0, 1.64 * K, -0.1 * K]); A.anchor('lead', [0, 1.55 * K, 1.32 * K]);
   }
 });
 
@@ -403,7 +498,7 @@ const FA_FM_SHEEP = [[-0.5, .66, .14, .15], [-0.42, .66, .27, .26], [-0.1, .65, 
 ANIMAL({
   key: 'sheep', name: 'Sheep', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['republic', 'rustic'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'skittish',
+    domestic: true, herdedBy: ['republic', 'rustic', 'nomad'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'skittish',
     habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
   size: { length: 1.3, height: 0.95 },
   source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '31-32', note: 'hnRCBeast sheep: the Iron Republic\'s sheepfold (157)' },

@@ -4,20 +4,22 @@ One kit for every animal of Krator, the way `kits/catalog` is one catalog of fur
 the owner's call, 2026-10). Started 2026-10-06 with the Scyvoi's animals: the **drylands goat** (four variants) and the
 **fire salamander** (two markings, three breeds), moved here from `kits/scyvoi`. The same day every other animal in the repo
 was gathered here and tagged: **48 species, 136 builds** (every variant and breed), each ported from the build that first drew
-it, at its real size in metres, with `source` naming every build that draws it.
+it, at its real size in metres, with `source` naming every build that draws it. 2026-10-07: the Ash Nomads' and the Scyvoi's
+herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's ash herd (**51 species, 150 builds**).
 
 | File (group) | Species |
 |---|---|
 | `livestock` | goat |
 | `mounts` | fire salamander |
-| `farm` | cattle (dairy cow, brown cow, ox, highland cow), water buffalo, yak, horse, sheep, pig, hen, duck, Dalab lizard |
+| `farm` | cattle (dairy cow, brown cow, ox, highland cow), water buffalo, yak, steppe bison, horse, sheep, pig, hen, duck, Dalab lizard |
 | `abyss` | flamingo, frilled lizard, marsh emu, pack lizard, riding lizard, dromedary |
 | `desert` | desert kite, wadi swift, sand strider, rock lizard, mule deer, coyote |
 | `bay` | bay soarer, canopy darter, plains grazer, savannah stalker, bay swimmer, savannah glider, cap moth, bloom glint |
 | `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth |
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
-| `crawlers` | draught millipede, giant riding spider |
-| `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle |
+| `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
+| `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
+| `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)
@@ -66,7 +68,7 @@ chitin `organic.chitin`); `feather` waits on a set, and `glow` is unlit (a glint
 **For tack**, an animal can publish a body profile and anchors (`KratorFauna.profile`: the salamander's centre line and
 half-sizes along its length; saddle, bridle, chest): the Scyvoi kit draws its saddles, barding and collars against it, so the
 animal and the culture that rides it stay in separate kits. The riding lizard, pack lizard, Dalab lizard, spider, giant flyers
-and silt strider carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
+staghorn beetle (with a profile too) and silt strider carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
 
 ## Taking animals into a world
 

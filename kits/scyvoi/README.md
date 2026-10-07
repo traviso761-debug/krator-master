@@ -5,6 +5,8 @@ riders who follow the wildfires, harvest the fruit that blooms after them, and r
 tents, richly decorated inside and out, and retreat in the fire season to the **Baelu**: round fortresses of fitted stone on
 the rocky outcrops of the western drylands. This kit is both halves of that life: the lavish tents and the austere redoubt.
 
+**The nomads were split three ways (2026-10-07, the owner's style guides).** The Scyvoi keep gers and Tibetan-style tents, decorated in polychrome and appliqué; they ride salamanders, drive carts and chariots, herd goats, bison and cattle, and their chief has the vardo. The khaimas, the hide wedge, the Saharan pavilion and the smithy, supply and hidemaker's tents went to `kits/desert-nomads` (re-skinned there); the hide lodge (the shaman's hut) to `kits/ash-nomads`. Their places here are taken by the white appliqué tent, the gur, the two Tibetan halls, the shaman's ger and new trade tents, and a cartwright's tent is new. The goat-hair tents stay in both this kit and the desert one, with each culture's own interior. Both new kits are forks of this one and vendor its engine (below).
+
 ```
 cd kits/scyvoi && python3 build.py                       # dist/scyvoi.html
 python3 verify.py dist/scyvoi.html --assert              # invariants (headless Chromium, minutes under software GL)
@@ -23,11 +25,11 @@ clock; `?mat=proc` draws without the library maps; `?furniture=0` draws no furni
 
 | Row | Defs | Class |
 |---|---|---|
-| Small tents | `tent-hunter-ger` (felt ger), `tent-bell` (saffron bell tent), `tent-black-small` (goat-hair, a hearth outside), `tent-khaima-small` (peaked khaima), `tent-hide-wedge` (a hunter's ridge tent of laced hides) | building, dwelling-single |
-| Large tents | `tent-great-ger` (on two centre posts), `tent-black-great` (majlis, divider, household, fire ring), `tent-pavilion` (square Saharan marquee, arch-printed lining), `tent-applique` (eight-sided, appliquéd panels), `tent-khaima-twin` (two masts) | building, dwelling-multi |
-| Chief, shaman and trades | `tent-chief` (the great round tent on its deck: civic + dwelling, rich), `wagon-chief` (the chief's carved vardo: red lacquer and gilt, a barrel roof, a porch and ladder, furnished inside), `hut-shaman` (a hide lodge: religious), `tent-smithy` (industry, shop), `tent-hidemaker` (the tanner's: a hide awning over the fleshing beam and the vats, stretching frames, a drying line and a smoking frame; industry, shop), `tent-supply` (market, shop) | building |
+| Small tents | `tent-hunter-ger` (felt ger), `tent-bell` (saffron bell tent), `tent-black-small` (goat-hair, a hearth outside), `tent-tibet-small` (white cotton, the blue appliqué roof, a five-colour fringe, prayer flags), `tent-gur` (a white ridge tent with appliqué medallions and a blue border) | building, dwelling-single |
+| Large tents | `tent-great-ger` (on two centre posts), `tent-black-great` (majlis, divider, household, fire ring), `tent-tibet-hall` (a long white hall: appliqué roof, cream walls banded in polychrome, prayer flags), `tent-applique` (eight-sided, appliquéd panels), `tent-tibet-great` (three hipped peaks, the war band's feasting tent) | building, dwelling-multi |
+| Chief, shaman and trades | `tent-chief` (the great round tent on its deck: civic + dwelling, rich), `wagon-chief` (the chief's carved vardo: red lacquer and gilt, a barrel roof, a porch and ladder, furnished inside), `ger-shaman` (a dark blue ger, ribbons from the crown, mirrors and a skull over the door: religious), `tent-smithy` (a felt roof on an open lattice frame), `tent-hidemaker` (a felt awning, an appliqué edge), `tent-supply` (a striped bell tent, its front laced back), `tent-cartwright` (an open lattice frame and an awning over the cart beds; the catalog's cartwright set) | building |
 | Salamanders and wheels | `salamander-riding` (two markings), `salamander-war` (barding, crest, lance), `salamander-draught` (the bodies are the fauna kit's, `kits/fauna`; the tack is drawn here); `chariot`, `chariot-team` (a yoked pair), `cart-supply`, `cart-ger` (a ger carried on a bed behind two draught salamanders) | life (kind salamander), prop |
-| Herds and tethering | `goat-fold` (wattle hurdles, a trough, a hay rack and a flock of nine), `goat` (the fauna kit's drylands goat), `tether-post`, `tether-boulder` (catalog furniture, outdoor), `tether-line` (a picket line with three salamanders) | feature, life, furniture |
+| Herds and tethering | `bison-pen` (a wide ring of high wattle hurdles, the bison and the cattle, troughs and a hay rack), `bison`, `cattle` (kits/fauna), `goat-fold` (wattle hurdles, a trough, a hay rack and a flock of nine), `goat` (the fauna kit's drylands goat), `tether-post`, `tether-boulder` (catalog furniture, outdoor), `tether-line` (a picket line with three salamanders) | feature, life, furniture |
 | The Baelu | `baelu`: the redoubt on its outcrop, with two tents pitched, two salamanders stabled | building: military, infrastructure, dwelling-multi |
 
 **The Baelu** is about the diameter of a Dalab mound (outer wall r 30 m: Dalab's outlying mounds are r 30). Fitted
@@ -38,6 +40,10 @@ galleries on corbels, stables in the north half of the ground floor, a flat ston
 burns but the doors. The court has a cistern well (the water lies below the surface), a corbelled smokehouse, a cistern house,
 and five raised stone platforms where the bands pitch their tents: two are pitched, three stand empty (it is half empty until
 the fire season).
+
+## The engine is shared
+
+`kits/desert-nomads` and `kits/ash-nomads` vendor this kit's engine fragments (`10-core`, `27-mat`, `30-geo`, `36-def`, `40-tk-tentkit`, `90-scene`, `91-probe`, `91f-furnish`, `91n-night`, `92-camera`, `93-anim`, `99-tail`) unchanged: whatever names the kit or its culture lives in `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBACK`, the palette). Fix the engine here, copy it to both, and their `build.py --vendor-check` must read OK.
 
 ## Design rules this kit follows
 

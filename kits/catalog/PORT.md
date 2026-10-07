@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 11 (1%) | 0 (0%) | 10 (1%) | 55 (4%) | 1372 (95%) |
+| KB | 11 (1%) | 0 (0%) | 10 (1%) | 55 (3%) | 1626 (96%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -19,6 +19,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-furniture-runtime.js` | 8.1 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-buildings-beast-rider.js` | 69.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 508 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-buildings-voth.js` | 74.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 573 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-ashnomad.js` | 119.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 608 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-beast-rider.js` | 71.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 322 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-eastabyss.js` | 56.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 277 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-generic-fruit.js` | 48.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 232 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
@@ -29,7 +30,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-iziz.js` | 13.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 50 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-jobs.js` | 20.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 84 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `krator-master-furniture-lizardmen.js` | 5.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture-nomad.js` | 5.5 | [draw] | 0 | 0 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-nomad.js` | 112.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 590 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-painted.js` | 50.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 268 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-post-apoc.js` | 8.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 23 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-reedlake.js` | 12.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 45 | 0 | 0 | 0 | 0 | 0 |  |
@@ -37,7 +38,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-master-furniture-rustic.js` | 36.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 188 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-scrap.js` | 97.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 492 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-screamer.js` | 5.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 |  |
-| `krator-master-furniture-scyvoi.js` | 75.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 463 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-master-furniture-scyvoi.js` | 103.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 612 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-voth.js` | 6.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-xanadu.js` | 6.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture.js` | 243.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 2027 | 0 | 0 | 0 | 0 | 0 |  |

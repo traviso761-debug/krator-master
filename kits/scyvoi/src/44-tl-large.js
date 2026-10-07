@@ -38,18 +38,6 @@ defBuilding({key:'tent-black-great',name:'Great goat-hair tent',seed:4402,cut:tr
   FURNISH('scyvoi_fire_pit',-1.5,0,5.6,0,{setting:'outdoor'});smokeAt(-1.5,.7,5.6,{r:.3});
   for(let i=0;i<7;i++){const a=PI*.15+i*PI*.7/6,x=-1.5+Math.cos(a)*2.0,z=5.6+Math.sin(a)*2.0;FURNISH('scyvoi_bolster',x,0,z,tkFace(x,z,-1.5,5.6),{setting:'outdoor'});}}});
 
-defBuilding({key:'tent-pavilion',name:'Saharan pavilion',seed:4403,cut:true,w:12.5,d:12.5,h:6.0,budget:120000,
- tags:{types:['dwelling-multi'],wealth:'middle',style:'pavilion'},
- note:'a square saffron marquee: felt-scroll walls, an arch-printed lining, red seats round low tables under pierced lanterns',
- build(o){const s=8;const H=tkPavilion({s,wallH:2.3,peakH:5.3,roofCol:P('canvasO'),wallKey:'patFelt',lining:'patArch',val:P('madder'),floor:'patBloom',doorW:2.4});
-  for(const [x,z] of [[-1.9,-1.9],[1.9,-1.9],[-1.9,1.4],[1.9,1.4]]){FURNISH('scyvoi_low_round_table',x,0,z,0);FURNISH('scyvoi_floor_lantern',x+.15,svfH('scyvoi_low_round_table',0,.36),z,0);
-   for(let k=0;k<3;k++){const a=k*TAU/3+(x<0?.4:-.4),px=x+Math.cos(a)*1.05,pz=z+Math.sin(a)*1.05;FURNISH(k===1?'scyvoi_pouf':'scyvoi_toshak',px,0,pz,tkFace(px,pz,x,z),{v:k%2});}}
-  medallion('medSun',0,.03,-.25,2.4,{round:true});
-  tkRowSeats(-3.4,-3.55,3.4,-3.55,['scyvoi_floor_cushion'],.85,undefined,0);
-  for(const x of [-2.4,0,2.4])FURNISH_HANG('scyvoi_hanging_lantern',x,H(x,0)-.15,0,0);
-  FURNISH_HANG('scyvoi_glass_chandelier',0,H(0,-1.9)-.1,-1.9,0);
-  FURNISH('scyvoi_samovar',3.4,0,-.4,-PI/2);FURNISH('scyvoi_painted_chest',-3.5,0,-.3,PI/2);}});
-
 defBuilding({key:'tent-applique',name:'Appliqué tent',seed:4404,cut:true,w:13,d:13,h:6.3,budget:120000,
  tags:{types:['dwelling-multi'],wealth:'middle',style:'applique'},
  note:"an eight-sided tent of appliquéd panels framed in white felt, a white roof edged in indigo, a green fringe: a war band's tent with its arms racked inside",
@@ -61,14 +49,36 @@ defBuilding({key:'tent-applique',name:'Appliqué tent',seed:4404,cut:true,w:13,d
   FURNISH('scyvoi_lance_stand',-1.2,0,-3.4,0);FURNISH('scyvoi_painted_chest',1.0,0,-3.6,0);
   FURNISH_HANG('scyvoi_hanging_lantern',0,4.6,-.6,0);FURNISH_HANG('scyvoi_hanging_lantern',0,4.6,1.6,0);}});
 
-defBuilding({key:'tent-khaima-twin',name:'Twin-peaked khaima',seed:4405,cut:true,w:16,d:11.5,h:5.0,budget:120000,
- tags:{types:['dwelling-multi'],wealth:'middle',style:'khaima'},
- note:'a long brown khaima on two masts, the sewn bands climbing to each peak, the middle raised over the doorway, carpets and toshaks within',
- build(o){const w=12,d=7;const H=tkPeaked({w,d,eaveH:.9,peaks:[[-3,-.2,4.7],[3,-.2,4.7]],cover:'canvas',col:P('khaima'),open:{x0:-2.4,x1:2.4,h:2.55},lining:'patArch',floor:'rug',floorCol:P('crimson')});
-  for(const x of [-3,3])FURNISH('scyvoi_felt_rug_round',x,.03,.3,0,{v:x>0?1:0});
-  FURNISH('scyvoi_common_rug',0,.03,-1.6,0);
-  tkRowSeats(-5.4,-3.05,5.4,-3.05,['scyvoi_toshak'],2.2,undefined,0);
-  for(const x of [-5.4,5.4]){FURNISH('scyvoi_toshak',x,0,-.2,x<0?PI/2:-PI/2);FURNISH('scyvoi_toshak',x,0,2.0,x<0?PI/2:-PI/2,{v:1});}
-  for(const x of [-3,3]){FURNISH('scyvoi_brazier',x,0,1.5,0);FURNISH_HANG('scyvoi_hanging_lantern',x+.9,H(x+.9,-.2)-.2,-.2,0);}
-  tkTea(0,-.4,PI);FURNISH('scyvoi_samovar',1.2,0,-1.9,0);
-  for(const x of [-1.6,1.6])FURNISH('scyvoi_painted_chest',x,0,-3.0,0,{v:x>0?1:0});}});
+/* ---- (2026-10-07) the Saharan pavilion and the twin-peaked khaima went to the Desert Nomads kit; in their place, two Tibetan halls */
+defBuilding({key:'tent-tibet-hall',name:'Appliqué hall',seed:4403,cut:true,w:16,d:12.5,h:6.6,budget:140000,
+ tags:{types:['dwelling-multi'],wealth:'middle',style:'tibetan'},
+ note:'a long white hall tent: its hipped roof sewn all over with the blue appliqué, its cream walls banded with the polychrome rosettes and the flame zellige, a fringe in five colours, prayer flags from both masts; a family of riders within',
+ build(o){const w=11,d=7;const H=tkPeaked({w,d,eaveH:2.2,peaks:[[-2.6,-.2,5.4],[2.6,-.2,5.4]],cover:'patApp',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-1.6,x1:1.6,h:2.8},lining:'patBloom',floor:'patKilim'});
+  tsWallBand(w,d,H,'patPoly',.25,.85);tsWallBand(w,d,H,'patFlame',1.35,1.7);
+  {const pts=[];for(const [x,z] of [[-w/2,d/2],[-w/2,-d/2],[w/2,-d/2],[w/2,d/2]])pts.push([x*1.01,H(x,z)+.01,z*1.01]);pts.push(pts[0]);tsFringe(pts,.32,[P('madder'),P('teal'),P('indigo'),P('saffron')]);}
+  for(const x of [-2.6,2.6]){sph('brass',x,5.55,-.2,.12,0xc8963a);tsFlags([x,5.5,-.2],[x*2.4,.2,-d/2-2.6],11,.5);}
+  tsFlags([-2.6,5.5,-.2],[2.6,5.5,-.2],8,.6);
+  medallion('medSun',0,.03,-.4,2.6,{round:true});
+  tkRowSeats(-5.0,-3.05,5.0,-3.05,['scyvoi_toshak'],2.2,undefined,0);
+  for(const x of [-5.0,5.0]){FURNISH('scyvoi_toshak',x,0,-.6,x<0?PI/2:-PI/2);FURNISH('scyvoi_bedding_stack',x,0,1.6,x<0?PI/2:-PI/2);}
+  for(const x of [-2.6,2.6]){FURNISH('scyvoi_low_round_table',x,0,-.6,0);FURNISH('scyvoi_tea_set',x,svfH('scyvoi_low_round_table',0,.36),-.6,0);FURNISH_HANG('scyvoi_hanging_lantern',x+.8,H(x+.8,-.2)-.3,-.2,0);}
+  FURNISH('scyvoi_ger_stove',0,0,.9,0);smokeAt(0,H(0,.9)+.4,.9,{r:.2,kind:'flue'});FURNISH('scyvoi_samovar',1.3,0,1.6,0);
+  FURNISH('scyvoi_common_loom',-3.6,0,1.9,PI/2);FURNISH('scyvoi_painted_chest',0,0,-2.9,0,{v:1});
+  FURNISH_HANG('scyvoi_glass_chandelier',0,H(0,-.2)-.2,-.2,0);}});
+
+defBuilding({key:'tent-tibet-great',name:'Festival tent',seed:4405,cut:true,w:17,d:13,h:7.6,budget:140000,
+ tags:{types:['dwelling-multi'],wealth:'middle',style:'tibetan'},
+ note:'a great white tent of three hipped peaks, the middle raised high over the door: the blue knotwork appliqué on the roof, cream walls banded with appliqué panels and the flame zellige, a red, green and gold fringe, prayer flags; a war band\'s feasting tent',
+ build(o){const w=12,d=8;const H=tkPeaked({w,d,eaveH:2.3,peaks:[[-3.6,-.2,4.9],[0,-.2,6.6],[3.6,-.2,4.9]],cover:'patApp',col:null,wallKey:'canvas',wallCol:P('cream'),open:{x0:-2.0,x1:2.0,h:3.0},lining:'patBloom',floor:'rug',floorCol:P('crimson')});
+  tsWallBand(w,d,H,'patApp2',.25,1.05);tsWallBand(w,d,H,'patFlame',1.45,1.8);
+  {const pts=[];for(const [x,z] of [[-w/2,d/2],[-w/2,-d/2],[w/2,-d/2],[w/2,d/2]])pts.push([x*1.01,H(x,z)+.01,z*1.01]);pts.push(pts[0]);tsFringe(pts,.36,[P('madder'),P('teal'),P('saffron')]);}
+  for(const x of [-3.6,0,3.6])sph('brass',x,(x?4.9:6.6)+.15,-.2,.13,0xc8963a);
+  tsFlags([0,6.7,-.2],[-6,.2,-d/2-3],13,.6);tsFlags([0,6.7,-.2],[6,.2,-d/2-3],13,.6);tsFlags([0,6.7,-.2],[0,.2,-d/2-3.4],9,.4);
+  medallion('medBlades',0,.03,0,3.2,{round:true});
+  FURNISH('scyvoi_court_carpet',0,.03,-1.6,0);
+  tkRowSeats(-5.5,-3.55,5.5,-3.55,['scyvoi_toshak','scyvoi_floor_cushion'],1.3,undefined,0);
+  for(const x of [-5.5,5.5])tkRowSeats(x,-2.2,x,2.6,['scyvoi_toshak'],2.2,0,0);
+  for(const x of [-2.4,2.4]){FURNISH('scyvoi_low_round_table',x,0,0,0);FURNISH('scyvoi_tea_set',x,svfH('scyvoi_low_round_table',0,.36),0,0);FURNISH('scyvoi_brazier',x,0,2.2,0);}
+  FURNISH('scyvoi_cauldron',0,0,-1.5,0,{setting:'indoor'});smokeAt(0,6.4,-1.5,{r:.25,kind:'flue'});
+  for(const s of [-1,1])FURNISH('scyvoi_trade_weapon_rack',s*4.2,0,-3.6,0);
+  FURNISH_HANG('scyvoi_glass_chandelier',0,H(0,-.2)-.4,-.2,0);for(const x of [-3.6,3.6])FURNISH_HANG('scyvoi_hanging_lantern',x,H(x,-.2)-.3,-.2,0);}});

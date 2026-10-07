@@ -83,6 +83,25 @@ defBuilding({key:'goat-fold',name:'Goat fold',seed:5606,cls:'feature',kind:'goat
   FURNISH('scyvoi_trade_trough',-1.6,0,-2.6,.4,{setting:'outdoor'});FURNISH('scyvoi_trade_hayrack',2.2,0,-3.4,-.5,{setting:'outdoor'});
   const spots=[[0,0,.2],[1.4,.8,2.4],[-1.5,1.2,-.6],[2.2,-1.4,3.6],[-2.4,-1.3,1.1],[.6,-2.2,-2.6],[-.8,2.6,2.9],[1.9,2.1,-1.2],[-2.8,.3,.6]];
   spots.forEach(([x,z,ry],i)=>place('goat',x,z,ry,{v:i===0?0:(i===3||i===6)?2:i%3===1?3:1,seed:i,mode:i%3===2?'idle':'graze'}));}});
+/* ---- the great herds (2026-10-07): the bison and the cattle (kits/fauna), and the ring of wattle that pens them */
+function saHerdDef(key,name,seed,fauna,note,job){const E=KratorFauna.entry(fauna);
+ return defBuilding({key,name,seed,cls:'life',kind:fauna,w:E.w+.3,d:E.d+.3,h:E.h+.3,budget:20000,front:{x:0,z:E.d/2,yaw:0},tags:{role:'herd'},note,frag:'kits/fauna',
+  build(p){saFauna(fauna,{variant:p.v|0,seed:seed+(p.seed|0)},p.mode||'graze');saLife(fauna,{job:job||'herd',activity:p.activity||'GRAZE',band:p.band||"the band's herd"});}});}
+saHerdDef('bison','Steppe bison',5607,'bison','a steppe bison of the band\'s herd: meat, the great hides, the spring moult for felt');
+saHerdDef('cattle','Cattle',5608,'cattle','the band\'s cattle: milk, meat, hides');
+/* a ring of wattle hurdles of radius R with a gate gap at +z (gate: its share of a hurdle), the gate swung open */
+function saWattle(R,n,gate,hgt){hgt=hgt||1.15;for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU,am=(a0+a1)/2;if(tkNearDoor(am,gate*.5))continue;
+  const p0=[Math.cos(a0)*R,Math.sin(a0)*R],p1=[Math.cos(a1)*R,Math.sin(a1)*R],L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]);
+  W((p0[0]+p1[0])/2,0,(p0[1]+p1[1])/2,Math.atan2(p1[0]-p0[0],p1[1]-p0[1])-PI/2,()=>{
+   for(const x of [-L/2+.05,0,L/2-.05])pole('wood',[x,0,0],[x,hgt,0],.04,P('woodD'),6);
+   for(let k=0;k<Math.round(hgt/.17);k++){const y=.15+k*.17;for(let q=0;q<3;q++){const xa=-L/2+q*L/3,xb=xa+L/3;beam('wood',[xa,y+(q%2?.03:-.03),(k%2?.03:-.03)],[xb,y+(q%2?-.03:.03),(k%2?-.03:.03)],.026,P('wood'),true,5);}}});}
+ const gw=gate*R*.5;for(const s of [-1,1])pole('wood',[s*gw,0,R],[s*gw,hgt+.2,R],.07,P('woodD'),7);
+ W(-gw,0,R,.9,()=>{for(const y of [.3,.75,hgt-.05])beam('wood',[0,y,0],[gw*1.9,y,0],.04,P('wood'),true,6);beam('wood',[0,.3,0],[gw*1.9,hgt-.05,0],.035,P('wood'),true,5);});}
+defBuilding({key:'bison-pen',name:'Bison and cattle pen',seed:5609,cls:'feature',kind:'cattle fold',w:17,d:17,h:1.7,budget:240000,front:{x:0,z:7.6,yaw:0},
+ tags:{role:'herding'},note:'the great herd penned for the night: a wide ring of high wattle hurdles, the bison and the cattle, troughs and a hay rack',
+ build(o){saWattle(7.4,26,.38,1.45);
+  FURNISH('scyvoi_trade_trough',-2.6,0,-5.0,.4,{setting:'outdoor'});FURNISH('scyvoi_trade_trough',2.6,0,-5.0,-.4,{setting:'outdoor'});FURNISH('scyvoi_trade_hayrack',4.6,0,-3.6,-.8,{setting:'outdoor'});
+  [[0,0,.3,'bison',0],[-3.2,1.4,2.2,'bison',1],[2.8,2.2,-1.0,'bison',2],[-1.2,-3.0,1.4,'cattle',1],[3.4,-1.6,3.0,'cattle',2],[-4.0,-1.2,-.6,'bison',1]].forEach(([x,z,ry,k,v],i)=>place(k,x,z,ry,{v,seed:i,mode:i%3===2?'idle':'graze'}));}});
 /* the meshes: each animal's group at its placement (the fauna kit's parts and materials), its tack beside it */
 function saFlush(parent){for(const e of SA_LIST){const g=e.g;g.matrixAutoUpdate=false;g.matrix.copy(e.world);parent.add(g);
  if(e.tack){const T=new THREE.Group();g.add(T);flushBuckets(e.tack,T,true);}}}

@@ -30,6 +30,12 @@
       rest). Rigid parts, no skinning: `kits/fauna/KNOWN_ISSUES.md`.
 - [ ] The kit sheet stands on flat ground; the crater drylands' flora (biomes/crater-drylands, not yet on main) is not placed.
 
+## The split (2026-10-07)
+
+- [x] `tkPavilion` drew its lining OUTSIDE the walls (the wall normal's sign was flipped), so the Saharan pavilion showed its arch lining outside and its felt scroll inside. Fixed in `40-tk-tentkit.js` (the pavilion has since gone to kits/desert-nomads, which vendors the fix).
+- [x] The engine took a `KIT` record (`26k-kit.js`) so the Desert and Ash Nomads kits vendor its fragments unchanged; the page's behaviour is the same.
+- [ ] The Tibetan tents' roofs are the blue appliqué sheet (`patApp`), which is dense; a white roof sewn with a few large blue knots (the references) would want its own sheet (`patterns/scyvoi/applique-roof`), not asked for yet.
+
 ## Shared code touched
 
 - [x] core/tags' vocabulary took the Scyvoi culture (`52-core-tags-vocab.js`, `test-tags.js`: 19 cultures, export digest

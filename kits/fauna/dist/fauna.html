@@ -315,7 +315,7 @@ function animate(now) {
 }
 animate();
 /* ---------- 50-fauna-bundle.js ---------- */
-/* kits/fauna bundle (fauna_bundle.py): fauna-core.js, krator-fauna-abyss.js, krator-fauna-bay.js, krator-fauna-crawlers.js, krator-fauna-desert.js, krator-fauna-farm.js, krator-fauna-flyers.js, krator-fauna-hyperjungle.js, krator-fauna-livestock.js, krator-fauna-mounts.js, krator-fauna-voth.js, krator-fauna-runtime.js. GENERATED; edit the kit files. */
+/* kits/fauna bundle (fauna_bundle.py): fauna-core.js, krator-fauna-abyss.js, krator-fauna-ash.js, krator-fauna-bay.js, krator-fauna-crawlers.js, krator-fauna-desert.js, krator-fauna-farm.js, krator-fauna-flyers.js, krator-fauna-hyperjungle.js, krator-fauna-livestock.js, krator-fauna-mounts.js, krator-fauna-voth.js, krator-fauna-runtime.js. GENERATED; edit the kit files. */
 var KratorFauna = (function () {
 /* ---- kits/fauna/fauna-core.js ---- */
 /* ======================================================================
@@ -817,7 +817,7 @@ const FA_AB_EMU = [
 ANIMAL({
   key: 'marsh-emu', name: 'Marsh emu', group: 'abyss',
   tags: { biomes: ['eastabyss'], koppen: ['X', 'Aw', 'BSh'], aridity: ['subhumid', 'semiarid'], climate: ['tropic'], riparian: 'non', abyssal: true,
-    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
+    domestic: false, herdedBy: ['nomad'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',   /* wild; the abyssal nomads keep a few penned for eggs and feathers */
     habitat: ['ground', 'marsh'], locomotion: ['walks', 'runs', 'swims'] },
   size: { length: 1.3, height: 1.95 },
   source: [{ build: 'settlements/locus', file: 'src/83-locus-fauna.js', lines: '17, 50-53', note: 'small mobs on the dry hummocks and ridges of the marsh, clear of the town; a static mesh (body, rear shag, neck, blue-grey head, two legs)' }],
@@ -963,7 +963,7 @@ const FA_AB_RLC = [{ skin: 0x4a4e44, belly: 0xb8a888, frill: 0xb84a2a }, { skin:
 ANIMAL({
   key: 'riding-lizard', name: 'Riding lizard', group: 'abyss',
   tags: { biomes: ['eastabyss'], koppen: ['X', 'BWh', 'Aw'], aridity: ['semiarid', 'subhumid', 'arid'], climate: ['tropic', 'hypertropic'], riparian: 'both', abyssal: true,
-    domestic: true, herdedBy: ['locus', 'verge', 'mungo'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
+    domestic: true, herdedBy: ['locus', 'verge', 'mungo', 'nomad'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'pen', 'marsh'], locomotion: ['walks', 'runs', 'swims'] },
   size: { length: 3.05, height: 0.9 },
   source: [{ build: 'settlements/verge', file: 'src/77-verge-rigs.js', lines: '311-364', note: 'ported from here (the richer): ridden by Lower Verge\'s people and the nomad squads below the descent (camels above); four looks (skin, belly, frill), a saddle (tack)' },
@@ -1013,7 +1013,7 @@ ANIMAL({
       });
     }
     A.profile(t => { const q = f(t); return { z: q[2], y: q[1], hw: q[3], hh: q[4] }; });
-    A.anchor('saddle', [0, 0.89 * S, 0.04 * S]); A.anchor('bridle', [0, 0.6 * S, 1.25 * S]); A.anchor('chest', [0, 0.6 * S, 0.6 * S]);
+    A.anchor('saddle', [0, 0.89 * S, 0.04 * S]); A.anchor('bridle', [0, 0.6 * S, 1.25 * S]); A.anchor('chest', [0, 0.6 * S, 0.6 * S]); A.anchor('pack', [0, 0.83 * S, -0.3 * S]);
     A.anchor('tailRoot', [R[4][0], R[4][1], R[4][2]]); A.anchor('headRoot', [hp[0], hp[1], hp[2]]);
   }
 });
@@ -1027,7 +1027,7 @@ const FA_AB_DROM = [0xc8a878, 0x9a7048, 0xd8c4a0];
 ANIMAL({
   key: 'dromedary', name: 'Dromedary', group: 'abyss',
   tags: { biomes: ['sedesert'], koppen: ['BWh', 'BSh', 'BWk'], aridity: ['arid', 'semiarid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['iziz', 'verge', 'yuni'], diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'docile',
+    domestic: true, herdedBy: ['iziz', 'verge', 'yuni', 'nomad'], diet: 'herbivore', feeding: 'browser', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
   size: { length: 2.9, height: 2.31 },
   source: [{ build: 'settlements/verge', file: 'src/77-verge-rigs.js', lines: '240-309', note: 'ported from here (the richer): Upper Verge\'s caravans (3 to 5 laden camels, each with its driver) and porters, who lead them down the trail to Lower Verge; ridden by the nomads above the descent; bales, crates and a riding saddle (tack)' },
@@ -1093,6 +1093,122 @@ ANIMAL({
     });
     A.anchor('saddle', [0, 2.31, -0.13]); A.anchor('pack', [0, 2.27, -0.13]); A.anchor('bridle', [0, 1.98, 1.62]);
     A.anchor('lead', [0, 1.95, 1.75]); A.anchor('chest', [0, 1.5, 0.7]);
+  }
+});
+
+/* ---- kits/fauna/krator-fauna-ash.js ---- */
+/* ======================================================================
+   Krator Fauna: ash (kits/fauna/krator-fauna-ash.js)
+   The beasts of the Ash Nomads, who wander the ash plains round the great volcano (kits/catalog's ashnomad culture). They
+   ride staghorn beetles (krator-fauna-voth.js, beside the giant beetle it derives from), herd the draught millipede's ash
+   herd (krator-fauna-crawlers.js, variant 2) and keep the ash runner drawn here. First drawn 2026-10-07; metres.
+   No ash-plain biome exists yet: the animals take the nearest keys, the southwest bay (biomes/swbay, which holds the
+   volcano) and the crater drylands (biomes/crater-drylands, a burnt and ashen steppe). Retag them when the biome exists.
+   ====================================================================== */
+/* a colour mix of two sRGB hexes -> [r, g, b] */
+function faAsMix(a, b, f) { const c = new THREE.Color(a).lerp(new THREE.Color(b), f); return [c.r, c.g, c.b]; }
+/* a Catmull-Rom curve through points, t 0..1 */
+function faAsSpline(pts) {
+  const n = pts.length - 1;
+  return function (t) {
+    const f = Math.min(n - 1e-6, Math.max(0, t * n)), i = Math.floor(f), u = f - i;
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(n, i + 2)], o = [];
+    for (let k = 0; k < 3; k++) o.push(0.5 * (2 * p1[k] + (-p0[k] + p2[k]) * u + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * u * u + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * u * u * u));
+    return o;
+  };
+}
+function faAsLerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+
+/* ---------------------------------------------------------------- the ash runner
+   A pig-sized, six-legged theropod: the body held level over the legs and balanced by a long stiff tail, a short-snouted
+   toothy head with a small crest, three pairs of legs: the hind pair strong and bird-like (thigh, shin, the long upright
+   metatarsus, three toes forward and a dewclaw), the middle and front pairs smaller, bent at the elbow, walking too.
+   1.3 m from the snout to the root of the tail, the tail another 0.8 m; 0.7 m at the hip. Grey-brown scales banded ochre
+   or rust across the back; the belly pale. The Ash Nomads keep it for its hide, its eggs and its meat. */
+const FA_AS_RUN = [{ base: 0x6a6052, band: 0xb07a30, belly: 0xb8ab92, crest: 0xc0802e },
+  { base: 0x7a7670, band: 0x9a4a28, belly: 0xbab4a6, crest: 0xa84a26 },
+  { base: 0x4c3e30, band: 0xc08a3a, belly: 0xa89878, crest: 0xc8902e },
+  { base: 0x8a7c68, band: 0x5a4a38, belly: 0xc8bea8, crest: 0xa08050 }];
+ANIMAL({
+  key: 'ash-runner', name: 'Ash runner', group: 'ash',
+  tags: { biomes: ['swbay', 'crater-drylands'], koppen: ['BSh', 'BSk', 'BWh'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['ashnomad'], diet: 'omnivore', feeding: 'mixed', activity: 'diurnal', temperament: 'wary',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
+  size: { length: 2.1, height: 0.75 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-ash.js', note: 'first drawn here (2026-10-07) for the Ash Nomads (kits/catalog krator-master-furniture-ashnomad.js: "a pig-sized six-legged runner (hides, eggs, meat)"); no ash-plain biome yet: swbay and crater-drylands stand in' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: true },
+  yields: { meat: { amount: 32, note: 'dressed: dark, lean; smoked over the dung fire' },
+    eggs: { amount: 30, note: 'two or three clutches a year in a scrape of warm ash; the leathery eggs keep for weeks' },
+    hide: { amount: 1, hideM2: 1.1, note: 'fine scaled leather: boots, belts, water bags, the banded strips sewn into the tent hangings' } },
+  life: { maturity: 1.5, lifespan: 14, litter: 10, gestation: 45, note: 'eggs buried in warm ash; gestation: incubation; the young run with the herd from the first day' },
+  variants: 4, variantNames: ['grey-brown, ochre bands', 'ash-grey, rust bands', 'dark brown, ochre bands', 'juvenile: pale, dark-banded'],
+  w: 0.48, d: 2.17, h: 0.85,
+  variantDims: [{ w: 0.48, d: 2.17, h: 0.85 }, { w: 0.48, d: 2.17, h: 0.85 }, { w: 0.48, d: 2.17, h: 0.85 }, { w: 0.26, d: 1.15, h: 0.45 }],
+  data: { mass: [60, 55, 65, 9], legs: 6, speed: { walk: 1.4, run: 9 }, gait: { type: 'hexapod', freq: 1.8, stride: 0.35 }, grazePitch: 0.7,
+    herd: 'a band drives a flock of thirty to a hundred with its beetles, dogs and boys; they sleep in a ring of thorn round the tents', fleeDistance: 6, aggression: 0.15,
+    idle: { headYaw: 0.45, headPitch: 0.08, tailYaw: 0.06 },
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, juv = v === 3, K = (juv ? 0.53 : 1) * A.S, C = FA_AS_RUN[v] || FA_AS_RUN[0];
+    const P = p => [p[0] * K, p[1] * K, p[2] * K];
+    /* the hide: bands across the back (by z), the pale belly, a mottle */
+    const hide = (z, a) => { const top = Math.cos(a);
+      if (top < -0.45) return faAsMix(C.belly, C.base, 0.15 * faNoise(z * 20, a, 1));
+      const band = Math.sin(z / K * 26) > 0.35 && top > -0.2, n = faNoise(z / K * 14, a * 3, 2);
+      return band ? faAsMix(C.band, C.base, 0.2 * n) : faAsMix(C.base, juv ? 0xffffff : 0x2a2420, 0.18 * n); };
+    const tubeAlong = (pts, rad, nt, ns, fam, colf, caps) => { const c = faAsSpline(pts.map(P)); A.tube(fam || 'scale', c, t => { const r = rad(t); return [r[0] * K, r[1] * K]; }, nt, ns, null, { caps: caps !== false, colf: (t, a) => colf(c(t), t, a) }); return c; };
+    /* the body: level, deepest at the hips and chest */
+    tubeAlong([[0, .6, -.47], [0, .58, -.25], [0, .54, .05], [0, .5, .3], [0, .52, .38]],
+      t => { const k = Math.sin(Math.PI * Math.min(1, t * 1.05)); return [0.07 + 0.12 * k, 0.07 + 0.12 * k]; }, 14, 14, 'scale', (p, t, a) => hide(p[2], a), true);
+    A.ellip('scale', 0, .58 * K, -.25 * K, .17 * K, .17 * K, .2 * K, null, { seg: 12, colf: (x, y, z) => hide(-.25 * K + z, Math.atan2(x, y)) });   /* the haunches */
+    /* the tail: long and stiff, rising a little, tapering to a point */
+    A.part('tail', P([0, .6, -.42]), () => {
+      tubeAlong([[0, .6, -.42], [0, .62, -.7], [0, .64, -1.0], [0, .65, -1.27]], t => [0.1 * (1 - t) + 0.008, 0.11 * (1 - t) + 0.008], 12, 10, 'scale', (p, t, a) => hide(p[2], a), true);
+    });
+    /* the head with the neck: a short S-curved neck, a deep short skull, the jaws lined with teeth, a small crest */
+    A.part('head', P([0, .54, .32]), () => {
+      tubeAlong([[0, .52, .3], [0, .6, .46], [0, .67, .56]], t => [0.1 - 0.025 * t, 0.11 - 0.03 * t], 6, 12, 'scale', (p, t, a) => hide(p[2] - 0.5 * K, a), true);
+      tubeAlong([[0, .7, .54], [0, .7, .64], [0, .66, .76], [0, .62, .86]], t => [0.085 - 0.04 * t, 0.09 - 0.045 * t], 9, 12, 'scale',
+        (p, t, a) => Math.cos(a) < -0.4 ? C.belly : faAsMix(C.base, 0x1e1a16, 0.1 * t), true);
+      A.ellip('scale', 0, .62 * K, .66 * K, .06 * K, .035 * K, .12 * K, C.belly, { seg: 10, rx: -0.2 });   /* the lower jaw */
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * .066 * K, .725 * K, .66 * K, .022 * K, .02 * K, .022 * K, 0x1a1208, { seg: 8 });
+        A.ellip('eye', s * .078 * K, .728 * K, .668 * K, .009 * K, .009 * K, .009 * K, 0xd8a030, { seg: 6 });
+        /* the mouth line and the teeth along it */
+        const m0 = P([s * .062, .64, .6]), m1 = P([s * .03, .615, .86]);
+        A.cone('mouth', m0, m1, .006 * K, .005 * K, 0x1a0e0a, 4);
+        for (let k = 0; k < 6; k++) { const p = faAsLerp(m0, m1, 0.1 + k * 0.16); A.cone('horn', p, [p[0] + s * 0.004 * K, p[1] - 0.022 * K, p[2] + 0.004 * K], 0.007 * K, 0.001, 0xe8e0c8, 4); }
+      }
+      /* the crest: a low ridge along the top of the skull with a row of short spines */
+      for (let k = 0; k < 5; k++) { const z = .56 + k * .045, y = .765 - k * .012, h = .03 + .025 * Math.sin(Math.PI * (k + .5) / 5);
+        A.cone('scale', P([0, y - .01, z]), P([0, y + h, z - .025]), .014 * K, .002, C.crest, 5); }
+      A.ellip('scale', 0, .74 * K, .64 * K, .02 * K, .04 * K, .11 * K, C.crest, { seg: 8 });
+    });
+    /* the legs, front pair to hind (leg0, leg1 front; leg2, leg3 middle; leg4, leg5 hind), each turning about its root */
+    const toe = (f, dir, len, r, col) => { const a = Math.atan2(dir[0], dir[2]); A.cone('scale', f, [f[0] + Math.sin(a) * len, 0.008 * K, f[2] + Math.cos(a) * len], r, r * 0.5, col, 5);
+      A.cone('horn', [f[0] + Math.sin(a) * len * 0.95, 0.008 * K, f[2] + Math.cos(a) * len * 0.95], [f[0] + Math.sin(a) * (len + 0.02 * K), 0.002, f[2] + Math.cos(a) * (len + 0.02 * K)], r * 0.5, 0.001, 0x2a2420, 4); };
+    const legCol = faAsMix(C.base, 0x1e1a16, 0.25);
+    const limb = (pts, rad) => { for (let k = 0; k < pts.length - 1; k++) { const a = pts[k], b = pts[k + 1], ra = rad[k] * K, rb = rad[k + 1] * K;
+      A.tube('scale', u => faAsLerp(a, b, u), u => { const r = ra + (rb - ra) * u; return [r, r]; }, 2, 8, legCol); if (k > 0) A.ellip('scale', a[0], a[1], a[2], ra, ra, ra, legCol, { seg: 8 }); } };
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, pair = i >> 1, X = q => P([s * q[0], q[1], q[2]]);
+      if (pair < 2) {   /* the front and middle pairs: shoulder, elbow out and down, the forearm to a small four-toed foot */
+        const z = pair ? 0.04 : 0.28, sh = X([.11, .46, z]), el = X([.2, .27, z + .03]), ft = X([.17, .035, z + .1]);
+        A.part('leg' + i, sh, () => {
+          limb([sh, el, ft], [.055, .04, .026]);
+          for (const d of [-0.5, -0.15, 0.2, 0.55]) toe(ft, [Math.sin(d + s * 0.2) * s, 0, Math.cos(d)], 0.06 * K, 0.011 * K, legCol);
+        });
+      } else {   /* the hind pair: hip, knee forward, the shin back to the ankle, the long metatarsus down to three forward toes */
+        const hp = X([.13, .55, -.25]), kn = X([.16, .36, -.1]), an = X([.15, .15, -.33]), ft = X([.15, .03, -.25]);
+        A.part('leg' + i, hp, () => {
+          A.ellip('scale', hp[0], hp[1] - 0.06 * K, hp[2] + 0.03 * K, .09 * K, .14 * K, .12 * K, null, { seg: 10, rx: 0.4, colf: (x, y, z) => hide(hp[2] + z, y > 0 ? 0 : 2.5) });   /* the drumstick */
+          limb([hp, kn, an, ft], [.075, .05, .032, .026]);
+          for (const d of [-0.4, 0, 0.4]) toe(ft, [Math.sin(d), 0, Math.cos(d)], (d ? 0.1 : 0.13) * K, 0.016 * K, legCol);
+          toe(ft, [0, 0, -1], 0.05 * K, 0.01 * K, legCol);   /* the dewclaw */
+        });
+      }
+    }
+    A.anchor('lead', P([0, .6, .45])); A.anchor('headRoot', P([0, .54, .32])); A.anchor('tailRoot', P([0, .6, -.42]));
   }
 });
 
@@ -1714,28 +1830,32 @@ function faCrLerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[
    paler tergite plate (1.42 m, the paranota), an ochre collar on its front face and one leg pair (an ochre femur angled down
    and out, a darker tibia to the ground at x 1.12); the first segment carries the antennae and mandibles, the fourth the
    harness blanket and the capstan-bar block. Mav's Refuge draws the same segment. The Screamers' ranch herd (94-life.js) is
-   a cruder chain of spheres, tapering to both ends, every third segment ochre: variant 1 keeps that taper and banding. */
+   a cruder chain of spheres, tapering to both ends, every third segment ochre: variant 1 keeps that taper and banding.
+   Variant 2 (2026-10-07): the Ash Nomads' herd, Girder's segment unharnessed, its rings ash-grey and black with ochre bands. */
 const FA_CR_MIL = { body: 0x4a2e22, accent: 0xb8683e, plate: faCrShade(0x4a2e22, 0.10), tibia: faCrShade(0xb8683e, -0.25),
   mand: faCrShade(0xb8683e, -0.15), leg2: 0x3a241c, cloth: 0x7a2028, timber: 0x4e3a28, eye: 0x120c08 };
 const FA_CR_MIL_N = 13, FA_CR_MIL_D = 0.56;
 ANIMAL({
   key: 'draught-millipede', name: 'Draught millipede', group: 'crawlers',
-  tags: { biomes: ['hyperjungle'], koppen: ['Af', 'Am'], aridity: ['humid'], climate: ['hypertropic', 'tropic'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['beast-riders', 'screamers'], diet: 'herbivore', feeding: 'detritivore', activity: 'cathemeral', temperament: 'docile',
+  tags: { biomes: ['hyperjungle', 'crater-drylands'], koppen: ['Af', 'Am', 'BSk'], aridity: ['humid', 'semiarid'], climate: ['hypertropic', 'tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['beast-riders', 'screamers', 'ashnomad'], diet: 'herbivore', feeding: 'detritivore', activity: 'cathemeral', temperament: 'docile',
     habitat: ['ground', 'trunks', 'pen'], locomotion: ['walks', 'climbs'] },
   size: { length: 7.3, height: 1.05 },
   source: [
     { build: 'settlements/girder', file: 'src/78-life.js', lines: '221-234', note: 'the segment (body, tergite, collar, leg pair; head and saddle bits): the richer model, ported here. Lines 480-498 and 553-558: one beast of 13 segments (0.56 m) per beast lift, walking the capstan round with a Millipede handler (the Beast Riders of Girder); src/55-arch.js 507-515: the millipede pen (shelter, trough, leaf-litter heaps, wallow)' },
     { build: 'settlements/mavs-refuge', file: 'src/78-life.js', lines: '188-203', note: 'the same segment (a saddle blanket on segment 4); lines 462-508: the beast lifts\' millipedes of the Refuge, each with a handler' },
-    { build: 'settlements/screamers', file: 'src/94-life.js', lines: '152-207', note: 'the Screamers\' ranch herd: eight beasts of 13 sphere segments (radius to len x 0.085, len 13-25), tapering to both ends, every third segment ochre, box legs 0x3a241c, wandering at 2.2-4.6 m/s inside the stockade (variant 1 here). src/71-village.js 437-458: the millipede ranch (a double stockade, "because they climb"; troughs, shelter) and an unused static builder' }],
+    { build: 'settlements/screamers', file: 'src/94-life.js', lines: '152-207', note: 'the Screamers\' ranch herd: eight beasts of 13 sphere segments (radius to len x 0.085, len 13-25), tapering to both ends, every third segment ochre, box legs 0x3a241c, wandering at 2.2-4.6 m/s inside the stockade (variant 1 here). src/71-village.js 437-458: the millipede ranch (a double stockade, "because they climb"; troughs, shelter) and an unused static builder' },
+    { build: 'kits/fauna', file: 'krator-fauna-crawlers.js', note: 'variant 2, the herd of the Ash Nomads (ash plains round the great volcano, 2026-10-07): first drawn here, the Girder segment in ash-grey, black and ochre; herded for chitin and grubs, never for carts' }],
   traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: true, eggs: false },
   yields: { meat: { amount: 900, note: 'the Screamers ranch them for it: the pale flesh inside the rings, smoked in strips' },
-    hide: { amount: 1, hideM2: 9, note: 'the tergite plates, taken off ring by ring: shields, shingles, bowls and scoops' } },
+    hide: { amount: 1, hideM2: 9, note: 'the tergite plates, taken off ring by ring: shields, shingles, bowls and scoops' },
+    chitin: { amount: 60, note: 'the cast rings of each moult, gathered from the pen (the Ash Nomads herd them for it, and for the grubs): their furniture, vessels and lanterns' } },
   life: { maturity: 3, lifespan: 30, litter: 60, gestation: 40, note: 'eggs in a nest of chewed litter; a young beast adds rings (and legs) at each moult' },
-  variants: 2, variantNames: ['Girder draught beast: harnessed for the capstan, ochre collars', 'Screamer ranch beast: tapering, every third ring ochre'],
+  variants: 3, variantNames: ['Girder draught beast: harnessed for the capstan, ochre collars', 'Screamer ranch beast: tapering, every third ring ochre',
+    'ash herd: ash-grey and black rings with ochre bands (herded by the Ash Nomads for chitin and grubs)'],
   w: 2.35, d: 8.3, h: 1.4,
-  variantDims: [{ w: 2.35, d: 8.3, h: 1.4 }, { w: 3.55, d: 12.4, h: 1.6 }],
-  data: { mass: [4000, 13000], legs: 26, segs: 12, speed: { walk: 1.0, run: 4.0 }, gait: { type: 'multipede', freq: 1.1, stride: 0.35 }, chain: { amp: 0.22, wave: 7 }, grazePitch: 0.25,
+  variantDims: [{ w: 2.35, d: 8.3, h: 1.4 }, { w: 3.55, d: 12.4, h: 1.6 }, { w: 2.35, d: 8.3, h: 1.4 }],
+  data: { mass: [4000, 13000, 4000], legs: 26, segs: 12, speed: { walk: 1.0, run: 4.0 }, gait: { type: 'multipede', freq: 1.1, stride: 0.35 }, chain: { amp: 0.22, wave: 7 }, grazePitch: 0.25,
     budget: 9000,
     herd: 'Girder and Mav\'s Refuge: one to a beast lift, walked round its capstan by a handler and penned at night; the Screamers ranch herds of eight behind a double stockade',
     fleeDistance: 0, aggression: 0.05,
@@ -1747,8 +1867,12 @@ ANIMAL({
       /* a point of segment k: x and y shrink with the Screamer taper, z (the ring's depth) does not */
       const P = (x, y, dz) => [x * f * K, y * f * K, (zk + dz) * K];
       const band = v === 1 && k % 3 === 0;
-      const bodyC = band ? C.accent : C.body, plateC = band ? faCrShade(C.accent, 0.08) : C.plate, collarC = band ? faCrShade(C.accent, -0.2) : C.accent;
-      const femC = v === 1 ? C.leg2 : C.accent, tibC = v === 1 ? faCrShade(C.leg2, -0.2) : C.tibia;
+      let bodyC = band ? C.accent : C.body, plateC = band ? faCrShade(C.accent, 0.08) : C.plate, collarC = band ? faCrShade(C.accent, -0.2) : C.accent;
+      let femC = v === 1 ? C.leg2 : C.accent, tibC = v === 1 ? faCrShade(C.leg2, -0.2) : C.tibia;
+      if (v === 2) {   /* the ash herd: rings alternately ash-grey and black, an ochre band every fourth */
+        const ash = k % 2 ? 0x6a6662 : 0x1c1a19, ob = k % 4 === 1;
+        bodyC = ob ? 0xa8742e : ash; plateC = ob ? 0xb07a32 : (k % 2 ? 0x76726c : 0x262422); collarC = ob ? 0x8a5a24 : 0x34322f;
+        femC = 0x232120; tibC = 0x5a5650; }
       const ring = () => {
         /* the barrel, slightly swollen at its middle; its rear tucks under the ring behind */
         A.tube('chitin', u => P(0, 0.62, -0.32 + 0.64 * u), u => { const s = 0.9 + 0.1 * Math.sin(Math.PI * u); return [0.625 * f * K * s, 0.31 * f * K * s]; }, 5, 14, bodyC,
@@ -1764,7 +1888,7 @@ ANIMAL({
         ring();
         if (k === 0) {
           /* the head capsule under the first ring, with its ocelli, and the antennae (Girder: 1.1 m, up, out and forward) */
-          A.ellip('chitin', 0, 0.54 * f * K, (zk + 0.33) * K, 0.44 * f * K, 0.26 * f * K, 0.2 * K, faCrShade(C.body, -0.15), { seg: 14 });
+          A.ellip('chitin', 0, 0.54 * f * K, (zk + 0.33) * K, 0.44 * f * K, 0.26 * f * K, 0.2 * K, v === 2 ? 0x181615 : faCrShade(C.body, -0.15), { seg: 14 });
           for (const s of [-1, 1]) {
             A.ellip('eye', s * 0.31 * f * K, 0.62 * f * K, (zk + 0.43) * K, 0.045 * f * K, 0.04 * f * K, 0.04 * K, C.eye, { seg: 6 });
             const a0 = P(s * 0.18, 0.74, 0.4), a1 = P(s * 0.3, 1.08, 0.72), a2 = P(s * 0.47, 1.34, 1.0);
@@ -1797,7 +1921,7 @@ ANIMAL({
       }
     }
     /* the ventral strip the rings ride on (the body part: what a port binds as the root) */
-    A.tube('chitin', u => [0, 0.36 * K, (-3.5 + 7.0 * u) * K], u => { const f = v === 1 ? 1 - 0.45 * Math.abs(u * 2 - 1) : 1; return [0.3 * f * K, 0.06 * f * K]; }, 12, 8, faCrShade(C.body, 0.15));
+    A.tube('chitin', u => [0, 0.36 * K, (-3.5 + 7.0 * u) * K], u => { const f = v === 1 ? 1 - 0.45 * Math.abs(u * 2 - 1) : 1; return [0.3 * f * K, 0.06 * f * K]; }, 12, 8, v === 2 ? 0x3a3836 : faCrShade(C.body, 0.15));
     A.anchor('headRoot', [0, 0.62 * K, 3.06 * K]);
   }
 });
@@ -2593,7 +2717,7 @@ const FA_FM_COW = [[-0.95, 1.2, .16, .18], [-0.82, 1.17, .31, .31], [-0.45, 1.08
 ANIMAL({
   key: 'cattle', name: 'Cattle', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['republic', 'rustic', 'painted-men'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'docile',
+    domestic: true, herdedBy: ['republic', 'rustic', 'painted-men', 'nomad', 'scyvoi'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'docile',
     habitat: ['ground', 'pen'], locomotion: ['walks', 'runs'] },
   size: { length: 2.6, height: 1.5 },
   source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '23-30', note: 'hnRCBeast cow and ox: the Iron Republic\'s farms: the ox at the plough (125), the cattle paddock and shelter (156), a cow at the byre door (103)' },
@@ -2794,6 +2918,100 @@ ANIMAL({
 });
 
 /* ======================================================================
+   STEPPE BISON: the Scyvoi's half-wild herd beast of the crater drylands (first drawn here, 2026-10-07), derived from
+   the cattle and the yak above: the same hoofed builder, the barrel deepened at the shoulders into the hump and sloping
+   down to a lean rump, the massive head carried low, a cape of shaggy hair over the hump, neck and forelegs (the
+   forelegs' chaps), the beard and the mop on the crown, short black horns, a short tufted tail.
+   ====================================================================== */
+const FA_FM_BISON = [[-1.0, 1.12, .17, .2], [-0.85, 1.1, .31, .33], [-0.45, 1.1, .37, .4], [0.05, 1.18, .43, .5], [0.42, 1.3, .44, .6], [0.74, 1.24, .36, .54], [0.95, 1.1, .2, .3]];
+/* a mix of two sRGB colours given as hex or [r, g, b] */
+function faFmBisMix(a, b, f) { const ca = Array.isArray(a) ? a : faFmShade(a, 1), cb = Array.isArray(b) ? b : faFmShade(b, 1); return [ca[0] + (cb[0] - ca[0]) * f, ca[1] + (cb[1] - ca[1]) * f, ca[2] + (cb[2] - ca[2]) * f]; }
+ANIMAL({
+  key: 'bison', name: 'Steppe bison', group: 'farm',
+  tags: { biomes: ['crater-drylands'], koppen: ['BSk', 'BSh', 'Dfb'], aridity: ['semiarid', 'arid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['scyvoi'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'swims'] },
+  size: { length: 2.9, height: 1.9 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-farm.js', note: 'first drawn here (2026-10-07) for the Scyvoi, who herd it with their goats and cattle on the crater drylands; derived from the cattle and yak builders' }],
+  traits: { edible: true, milkable: false, tameable: true, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 380, note: 'a bull dressed; a cow 230: smoked and dried for the dry season' },
+    hide: { amount: 1, hideM2: 5.5, note: 'a robe with the hair on (winter cloaks and bedding); scraped, the heavy leather of shields and boots' },
+    hair: { amount: 1.2, note: 'the cape\'s coarse guard hair, picked up where the herd moults in spring: rope, girths, tent ties' },
+    wool: { amount: 0.8, note: 'the soft underwool shed with it in clumps: felt and the warmest yarn' },
+    horn: { amount: 1.2, note: 'a pair: cups, spoons, oil flasks' } },
+  life: { maturity: 3, lifespan: 20, litter: 1, gestation: 285 },
+  variants: 3, variantNames: ['bull', 'cow', 'calf (red-coated)'],
+  w: 1.25, d: 2.78, h: 1.9,
+  variantDims: [{ w: 1.25, d: 2.78, h: 1.9 }, { w: 1.06, d: 2.36, h: 1.6 }, { w: 0.6, d: 1.54, h: 1.0 }],
+  data: { mass: [900, 500, 120], legs: 4, speed: { walk: 1.2, run: 14 }, gait: { type: 'quadruped', freq: 0.95, stride: 0.7 }, grazePitch: 0.85,
+    herd: 'a Scyvoi band drives a herd of twenty to sixty between the seeps, the bulls apart; the calves are penned at night in the kopje\'s lee', fleeDistance: 12, aggression: 0.4,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const v = A.variant, calf = v === 2, K = [1, 0.85, 0.55][v] * A.S, hump = [1, 0.85, 0.6][v];
+    /* the dark hindquarters, the paler tawny cape over the hump and forequarters, the near-black head; a calf is red */
+    const hind = calf ? 0x8a4a26 : [0x3a281c, 0x40301f][v], cape = calf ? 0xa0582a : [0x6a4a2c, 0x5e4430][v], head = calf ? 0x6a3a1e : 0x241a14;
+    const coat = (x, y, z) => { const zz = z / K, f = Math.min(1, Math.max(0, (zz + 0.15) / 0.4)), e = f * f * (3 - 2 * f);
+      return faFmBisMix(faFmBisMix(hind, cape, e), head, zz > 0.95 ? 0.6 : 0.15 * faNoise(x * 7, y * 7, z * 7)); };
+    const body = FA_FM_BISON.map(b => b[0] > -0.2 ? [b[0], 1.1 + (b[1] - 1.1) * hump, b[2], b[3] * (0.75 + 0.25 * hump)] : b);
+    const legC = calf ? faFmShade(hind, 0.8) : 0x2a1e16;
+    faFmHoofed(A, { K: K, coat: coat, body: body, fam: 'coat', bodyNt: 16,
+      neckPivot: [0, 1.1, 0.8],
+      neck: { pts: [[0, 1.22, .8], [0, 1.1, 1.0], [0, .98, 1.14]], rad: [[.32, .42], [.27, .34], [.21, .27]] },
+      /* the head: massive, broad and short, carried low, the forehead flat */
+      head: { pts: [[0, 1.02, 1.12], [0, .92, 1.28], [0, .76, 1.4], [0, .64, 1.47], [0, .6, 1.49]], rad: [[.2, .2], [.19, .2], [.155, .15], [.12, .1], [.1, .07]],
+        col: (p, t) => t > 0.84 ? 0x161210 : head },
+      headFam: 'shag',
+      eyes: [.16, .95, 1.31, .022],
+      ears: { piv: [.18, 1.03, 1.18], at: [.24, 1.0, 1.18], r: [.065, .022, .035], rz: -0.35, col: head },
+      /* short black horns: out from the sides of the poll, then up and a little in */
+      horn: calf ? null : { pts: [[.12, 1.06, 1.2], [.24, 1.08, 1.2], [.32, 1.14, 1.22], [.33, 1.24, 1.2], [.29, 1.3, 1.17]].map(p => [p[0] * (v ? 0.95 : 1), p[1], p[2]]),
+        rad: v ? [.04, .035, .025, .016, .006] : [.052, .045, .034, .02, .007], col: 0x1e1a16, tip: 0x0c0a08 },
+      legs: { F: [[.24, 1.0, .56], [.24, .7, .5], [.235, .55, .51], [.23, .38, .53], [.23, .22, .54], [.23, .1, .56], [.23, .065, .59]],
+        FR: [[.15, .19], [.12, .135], [.095, .105], [.072, .08], [.056, .062], [.064, .068], [.056, .056]],
+        H: [[.22, 1.05, -.66], [.225, .78, -.54], [.215, .6, -.68], [.21, .45, -.77], [.21, .28, -.73], [.21, .1, -.69], [.21, .065, -.66]],
+        HR: [[.17, .21], [.13, .15], [.09, .11], [.066, .085], [.052, .058], [.06, .064], [.052, .052]],
+        hoof: 'cloven', hoofR: .065, hoofH: .07, hoofCol: 0x1a1612,
+        col: (p) => p[1] < 0.5 * K ? legC : coat(p[0], p[1], p[2]),
+        /* the forelegs' chaps: long hair hanging from the shoulder to below the knee */
+        extra: (P, ch, front, i) => { if (!front) return; const s = i === 1 ? -1 : 1, lk = [], n = calf ? 4 : 14;
+          for (let k = 0; k < n; k++) { const f = A.rnd(), a = ch[0], b = ch[3];
+            const at = P([a[0] + (b[0] - a[0]) * f + s * 0.07, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f + A.rr(-0.06, 0.06)]);
+            lk.push({ at: at, dir: [s * 0.35, -1, A.rr(-0.15, 0.15)], len: A.rr(0.18, 0.3) * K * (calf ? 0.5 : 1), w: 0.07 * K, col: faFmShade(cape, A.rr(0.55, 0.8)), curl: 0.2 }); }
+          A.locks('hair', lk); } },
+      /* the short tail with its tuft */
+      tail: { pts: [[0, 1.26, -1.0], [0, 1.22, -1.06], [0, 1.05, -1.1], [0, .86, -1.1]], rad: [.035, .03, .024, .02], col: hind,
+        tuft: { n: 10, len: 0.2, w: 0.045, col: 0x1a1410 } },
+      extraBody: (P, bc) => {
+        /* the cape: shaggy locks over the hump, the shoulders and the chest (none along the spine of the rump) */
+        const [c, r] = bc, lk = [], n = [150, 120, 40][v];
+        for (let i = 0; i < n; i++) { const t = 0.5 + 0.48 * A.rnd(), p = c(t), q = r(t), a = (A.rnd() < 0.5 ? -1 : 1) * A.rr(0.15, 1.9);
+          const at = [Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2]];
+          lk.push({ at: at, dir: [Math.sin(a) * 0.8, -1, A.rr(-0.1, 0.25)], len: A.rr(0.12, 0.22) * K * (Math.abs(a) > 1.2 ? 1.3 : 1) * (calf ? 0.6 : 1), w: A.rr(0.08, 0.11) * K,
+            col: faFmShade(cape, A.rr(0.62, 0.9)), curl: 0.45 }); }
+        A.locks('hair', lk);
+      },
+      extraHead: (P, nc) => {
+        const lk = [], cc = () => faFmShade(calf ? hind : 0x3a2a1e, A.rr(0.8, 1.15));
+        /* the mop on the crown and forehead, falling over the eyes */
+        for (let i = 0; i < (calf ? 8 : 30); i++) { const x = A.rr(-0.17, 0.17);
+          lk.push({ at: P([x, 1.12 + A.rr(-0.03, 0.03), 1.08 + A.rr(0, 0.2)]), dir: [x * 2.5, -0.5, 1], len: A.rr(0.14, 0.24) * K, w: 0.07 * K, col: cc(), curl: 0.45 }); }
+        /* the cheeks */
+        for (let i = 0; i < (calf ? 4 : 16); i++) { const s = A.rnd() < 0.5 ? -1 : 1, t = A.rnd();
+          lk.push({ at: P([s * 0.19, 1.02 - 0.18 * t, 1.12 + 0.18 * t]), dir: [s * 0.5, -1, 0.1], len: A.rr(0.12, 0.2) * K, w: 0.06 * K, col: cc(), curl: 0.2 }); }
+        /* the beard: from the chin down the throat */
+        if (!calf) for (let i = 0; i < 26; i++) { const t = A.rnd(), x = A.rr(-0.09, 0.09);
+          lk.push({ at: P([x, 0.6 + 0.3 * t, 1.38 - 0.42 * t]), dir: [x, -1, -0.15], len: A.rr(0.2, 0.36) * K * (v ? 0.8 : 1), w: 0.07 * K, col: cc(), curl: 0.12 }); }
+        /* the neck's mane, over the top and the sides */
+        for (let i = 0; i < (calf ? 6 : 34); i++) { const t = A.rnd(), p = nc[0](t), q = nc[1](t), a = (A.rnd() < 0.5 ? -1 : 1) * A.rr(0.2, 1.6);
+          lk.push({ at: [Math.sin(a) * q[0], p[1] + Math.cos(a) * q[1], p[2]], dir: [Math.sin(a) * 0.7, -1, 0.15], len: A.rr(0.16, 0.3) * K, w: 0.09 * K, col: faFmShade(cape, A.rr(0.6, 0.85)), curl: 0.35 }); }
+        A.locks('hair', lk);
+        for (const s of [-1, 1]) A.ellip('mouth', s * .045 * K, .64 * K, 1.575 * K, .018 * K, .013 * K, .008 * K, 0x0c0a08, { seg: 6 });
+      } });
+    A.anchor('lead', [0, 0.66 * K, 1.5 * K]); A.anchor('pack', [0, 1.52 * K, -0.4 * K]);
+  }
+});
+
+/* ======================================================================
    HORSE: the Iron Republic's horse (75-rep-trade hnRAHorse: an ellipsoid barrel at 1.28 m on 1.12 m legs, a raised neck,
    a long head angled down, a dark mane and tail, dark hooves; HRA_HORSE its six coats) and the Rustic Clansmen's box
    horse (80-rus-dwell hnRUBeast 'horse').
@@ -2803,7 +3021,7 @@ const FA_FM_HORSE = [[-0.86, 1.33, .12, .16], [-0.78, 1.35, .25, .28], [-0.56, 1
 ANIMAL({
   key: 'horse', name: 'Horse', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['republic', 'rustic'], diet: 'herbivore', feeding: 'grazer', activity: 'cathemeral', temperament: 'wary',
+    domestic: true, herdedBy: ['republic', 'rustic', 'nomad'], diet: 'herbivore', feeding: 'grazer', activity: 'cathemeral', temperament: 'wary',
     habitat: ['ground', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
   size: { length: 2.5, height: 1.62 },
   source: [{ build: 'settlements/highlands', file: 'src/75-rep-trade.js', lines: '39-45', note: 'hnRAHorse: the Iron Republic\'s horses at the inn\'s hitching rail (142), the coaching yard (194), the stables (383, 393) and before the wagons (440)' },
@@ -2859,6 +3077,7 @@ ANIMAL({
         for (const s of [-1, 1]) A.cone('mouth', P([s * .045, 1.47, 1.39]), P([s * .06, 1.5, 1.3]), .005 * K, .005 * K, 0x1a1210, 4);
       } });
     A.anchor('saddle', [0, 1.66 * K, 0.05 * K]); A.anchor('bridle', [0, 1.75 * K, 1.25 * K]); A.anchor('harness', [0, 1.5 * K, 0.6 * K]);
+    A.anchor('pack', [0, 1.64 * K, -0.1 * K]); A.anchor('lead', [0, 1.55 * K, 1.32 * K]);
   }
 });
 
@@ -2870,7 +3089,7 @@ const FA_FM_SHEEP = [[-0.5, .66, .14, .15], [-0.42, .66, .27, .26], [-0.1, .65, 
 ANIMAL({
   key: 'sheep', name: 'Sheep', group: 'farm',
   tags: { biomes: ['nhighlands', 'nwlowlands'], koppen: ['Cfb', 'Dfb', 'Dfc'], aridity: ['semiarid', 'subhumid', 'humid'], climate: ['temperate', 'cold'], riparian: 'non', abyssal: false,
-    domestic: true, herdedBy: ['republic', 'rustic'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'skittish',
+    domestic: true, herdedBy: ['republic', 'rustic', 'nomad'], diet: 'herbivore', feeding: 'grazer', activity: 'diurnal', temperament: 'skittish',
     habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'leaps'] },
   size: { length: 1.3, height: 0.95 },
   source: [{ build: 'settlements/highlands', file: 'src/79-rep-land.js', lines: '31-32', note: 'hnRCBeast sheep: the Iron Republic\'s sheepfold (157)' },
@@ -4345,7 +4564,7 @@ ANIMAL({
    the ambient seagulls and cliff racers (src/84-fauna.js), the silt strider the strider guild rides (src/79c-strider-model.js:
    the animal only; the howdah, the handler's deck and the hollows carved in the shell are the culture's, left as anchors),
    the arena's tiger and pit lizard (src/78j-life-arena.js) and the giant beetle the ranches keep (src/65k-granary-mills-ranch.js,
-   also fought in the arena).
+   also fought in the arena). Beside it, the staghorn beetle the Ash Nomads ride (first drawn here, in metres).
    UNITS: Voth's world units are not metres. A citizen is 2.94 units = 1.75 m, so one unit is 0.595 m (FA_VO_U); every
    coordinate below is written in the original's units and scaled by it, so a number can be checked against the source.
    Biome: settlement-only animals take the nearest biome, the southwest bay (biomes/swbay: tropic, semiarid to humid).
@@ -4889,6 +5108,102 @@ ANIMAL({
       });
     }
     A.anchor('pack', P([0, LH + 1.32, abd[2]])); A.anchor('yoke', P([0, LH + 0.6, thx[2]])); A.anchor('lead', P([0, LH, hd[2] + 0.5]));
+  }
+});
+
+/* ====================================================================== the staghorn beetle (first drawn here, 2026-10-07)
+   The Ash Nomads' riding beetle (and the Zeijani of Dhelv's), derived from the giant beetle above: a stag beetle grown to a
+   mount. Metres, not Voth's units. A long glossy carapace (the elytra, 1.56 m, with their seam, under an amber, chestnut or
+   green sheen), the pronotum before it and the broad flat head, the huge forked mandibles like a stag's antlers (an inner
+   tine, a forked tip with an upturned prong), elbowed antennae with clubbed tips, and six long legs that hold the body
+   high: the underside at 0.74 m, the back at 1.5 m, 2.6 m from the elytra's tip to the head's front without the mandibles.
+   The war breed is bigger (1.2) with longer, heavier mandibles. The saddle sits on the top of the back behind the
+   pronotum; the bridle on the head between the mandibles' roots; the tack is the culture's (anchors and the profile). */
+const FA_VO_STAG = [{ shell: 0x16120e, sheen: 0xc07a22, leg: 0x0e0c0a, mand: 0x2a1a10 }, { shell: 0x4e2412, sheen: 0xc8682a, leg: 0x2a140a, mand: 0x5a2a14 },
+  { shell: 0x111611, sheen: 0x3e8a40, leg: 0x0a0d0a, mand: 0x1e2418 }];
+/* the body profile, t from the elytra's tip (0) to the head's front (1): [t, z, y of the centre line, half-width, half-height] */
+const FA_VO_STAG_P = [[0, -1.42, 1.12, .05, .05], [.1, -1.2, 1.12, .5, .28], [.3, -.7, 1.12, .72, .38], [.5, -.15, 1.12, .68, .34], [.58, .1, 1.12, .52, .24],
+  [.7, .4, 1.12, .6, .3], [.82, .75, 1.08, .42, .22], [.9, .95, 1.03, .5, .2], [1, 1.18, 1.0, .32, .12]];
+ANIMAL({
+  key: 'staghorn-beetle', name: 'Staghorn beetle', group: 'voth',
+  tags: { biomes: ['swbay', 'crater-drylands'], koppen: ['BSh', 'BSk', 'Aw'], aridity: ['semiarid', 'arid'], climate: ['tropic', 'temperate'], riparian: 'non', abyssal: false,
+    domestic: true, herdedBy: ['ashnomad'], diet: 'herbivore', feeding: 'mixed', activity: 'diurnal', temperament: 'defensive',
+    habitat: ['ground', 'rock', 'pen'], locomotion: ['walks', 'runs', 'climbs'] },
+  size: { length: 2.6, height: 1.5 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-voth.js', note: 'first drawn here (2026-10-07), derived from the giant beetle: the Ash Nomads\' mount on the ash plains round the great volcano (no ash-plain biome yet: the southwest bay, which holds the volcano, and the crater drylands stand in); the Zeijani of Dhelv ride it too (not yet a catalog culture, so not in herdedBy)' }],
+  traits: { edible: false, milkable: false, tameable: true, rideable: true, draught: true, eggs: false },
+  yields: { chitin: { amount: 45, note: 'the cast skins of the grub\'s moults and the shell of a beetle that dies: elytra for shields and bowls, the mandibles for blades and tent poles; the Ash Nomads do not eat it' } },
+  life: { maturity: 3, lifespan: 16, litter: 30, gestation: 30, note: 'eggs in rotten wood or dung; three years a grub, then a beetle broken to the saddle in its first season; gestation: incubation' },
+  variants: 3, variantNames: ['black, amber sheen', 'chestnut', 'greenish-black'],
+  breeds: { riding: { scale: 1, mass: 750, role: 'riding mount; light draught (a sledge, a travois)' }, war: { scale: 1.2, mass: 1300, role: 'war mount: bigger mandibles' } },
+  w: 2.95, d: 4.0, h: 1.75,
+  data: { mass: 750, legs: 6, speed: { walk: 1.4, run: 6 }, gait: { type: 'hexapod', freq: 1.3, stride: 0.5 }, grazePitch: 0.25,
+    herd: 'one to a rider, picketed by the tent at night; a band\'s string of ten to forty grazes the scrub under a herder', fleeDistance: 0, aggression: 0.3,
+    schedule: ['REST', 'REST', 'REST', 'REST', 'REST', 'GRAZE', 'GRAZE', 'WORK', 'WORK', 'WORK', 'WORK', 'REST', 'REST', 'REST', 'WORK', 'WORK', 'WORK', 'GRAZE', 'GRAZE', 'REST', 'REST', 'REST', 'REST', 'REST'] },
+  build: function (A) {
+    const S = A.S, C = FA_VO_STAG[A.variant] || FA_VO_STAG[0], war = A.breed === 'war', ML = war ? 1.25 : 1;
+    const P = p => [p[0] * S, p[1] * S, p[2] * S], under = faVoShade(C.shell, -0.3);
+    const prof = faVoProf(FA_VO_STAG_P.map(k => k.slice()));
+    /* the gloss: the shell darkening down the flanks, the sheen on the crown of each plate in long streaks */
+    const gloss = (x, y, z, rx, ry, k) => { const up = y / ry; if (up < -0.2) return under;
+      const s = Math.pow(Math.max(0, up), 2.5) * (0.55 + 0.45 * faNoise(x * 9, z * 2.2, k)), c = new THREE.Color(C.shell).lerp(new THREE.Color(C.sheen), 0.42 * s);
+      return [c.r, c.g, c.b]; };
+    /* the elytra: one long dome, the seam down its middle */
+    A.ellip('chitin', 0, 1.12 * S, -0.64 * S, 0.72 * S, 0.38 * S, 0.79 * S, null, { seg: 24,
+      colf: (x, y, z) => Math.abs(x) < 0.018 * S && y > 0 ? faVoShade(C.shell, -0.5) : gloss(x, y, z, 0.72 * S, 0.38 * S, 1) });
+    /* the pronotum: a broad shield, its edges a little flared */
+    A.ellip('chitin', 0, 1.12 * S, 0.43 * S, 0.62 * S, 0.3 * S, 0.36 * S, null, { seg: 20, colf: (x, y, z) => gloss(x, y, z, 0.62 * S, 0.3 * S, 2) });
+    A.ellip('chitin', 0, 0.92 * S, 0.0, 0.42 * S, 0.16 * S, 0.9 * S, under, { seg: 14 });   /* the underside between the legs */
+    /* the head (with the mandibles and antennae): it turns about the pronotum's front */
+    A.part('head', P([0, 1.06, 0.72]), () => {
+      A.ellip('chitin', 0, 1.02 * S, 0.92 * S, 0.56 * S, 0.21 * S, 0.27 * S, null, { seg: 18, colf: (x, y, z) => gloss(x, y, z, 0.56 * S, 0.21 * S, 3) });
+      for (const s of [-1, 1]) {
+        A.ellip('eye', s * 0.53 * S, 1.05 * S, 0.88 * S, 0.07 * S, 0.07 * S, 0.08 * S, 0x0a0806, { seg: 8 });
+        /* the mandible: out from the head's front corner, forward and outward, then curving in and up to a forked tip; an inner
+           tine halfway along, an upturned prong at the fork (an antler's) */
+        const m = [[0.32, 1.0, 1.06], [0.64, 1.12, 1.06 + 0.3 * ML], [0.8, 1.3, 1.06 + 0.64 * ML], [0.68, 1.44, 1.06 + 0.92 * ML], [0.38, 1.5, 1.06 + 1.04 * ML]].map(q => P([s * q[0], q[1], q[2]]));
+        const mc = faVoSpline(m), mr = (war ? 1.2 : 1) * S;
+        A.tube('chitin', mc, t => { const r = (0.13 - 0.1 * t) * mr; return [r, r * 0.75]; }, 14, 8, null, { caps: true,
+          colf: (t, a) => { const c = new THREE.Color(C.mand).lerp(new THREE.Color(C.sheen), 0.25 * Math.max(0, Math.cos(a)) * (1 - t)); if (t > 0.85) c.multiplyScalar(0.6); return [c.r, c.g, c.b]; } });
+        const p1 = mc(0.5), p2 = mc(0.8), p3 = mc(0.66);
+        A.cone('chitin', p1, [p1[0] - s * 0.28 * S, p1[1] + 0.1 * S, p1[2] + 0.12 * S], 0.06 * mr, 0.008, C.mand, 6);   /* the inner tine */
+        A.cone('chitin', p3, [p3[0] - s * 0.16 * S, p3[1] + 0.02 * S, p3[2] + 0.06 * S], 0.04 * mr, 0.005, C.mand, 5);   /* a smaller tooth */
+        A.cone('chitin', p2, [p2[0] + s * 0.08 * S, p2[1] + 0.2 * S * ML, p2[2] + 0.12 * S], 0.05 * mr, 0.006, C.mand, 6);   /* the upturned prong of the fork */
+        /* the elbowed antenna and its club */
+        const a0 = P([s * 0.38, 1.08, 1.08]), a1 = P([s * 0.58, 1.16, 1.24]), a2 = P([s * 0.66, 1.2, 1.46]);
+        A.tube('chitin', u => u < 0.5 ? [a0[0] + (a1[0] - a0[0]) * u * 2, a0[1] + (a1[1] - a0[1]) * u * 2, a0[2] + (a1[2] - a0[2]) * u * 2]
+          : [a1[0] + (a2[0] - a1[0]) * (u * 2 - 1), a1[1] + (a2[1] - a1[1]) * (u * 2 - 1), a1[2] + (a2[2] - a1[2]) * (u * 2 - 1)], () => [0.022 * S, 0.022 * S], 4, 5, C.leg, { caps: true });
+        A.ellip('chitin', a2[0], a2[1], a2[2], 0.05 * S, 0.035 * S, 0.06 * S, faVoShade(C.sheen, -0.3), { seg: 6 });
+      }
+      A.ellip('mouth', 0, 0.9 * S, 1.12 * S, 0.12 * S, 0.05 * S, 0.06 * S, 0x2a1810, { seg: 8 });   /* the mouthparts under the mandibles' roots */
+    });
+    /* six legs, the giant beetle's: the coxa under the body, the femur rising up and out to a knee, the tibia (spurred) down
+       to the ground well outside the body, the tarsus on the ground; the front pair forward, the middle out, the hind back.
+       [coxa, knee, tibia's end, tarsus tip] in metres */
+    const LEGS = [[[0.3, 0.86, 0.5], [0.82, 1.22, 0.84], [1.05, 0.09, 1.3], [1.12, 0.03, 1.66]],
+      [[0.38, 0.84, 0.0], [1.0, 1.18, 0.05], [1.25, 0.09, 0.12], [1.38, 0.03, 0.42]],
+      [[0.42, 0.84, -0.42], [0.98, 1.14, -0.78], [1.18, 0.09, -1.3], [1.24, 0.03, -1.7]]];
+    const L3 = (a, b) => t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+    for (let i = 0; i < 6; i++) {
+      const s = (i & 1) ? -1 : 1, X = v => P([s * v[0], v[1], v[2]]), [cx, kn, tb, ts] = LEGS[i >> 1].map(X), lg = C.leg, lu = faVoShade(C.leg, 0.12);
+      A.part('leg' + i, cx, () => {
+        A.ellip('chitin', cx[0], cx[1], cx[2], 0.14 * S, 0.11 * S, 0.13 * S, under, { seg: 8 });   /* the coxa */
+        A.tube('chitin', L3(cx, kn), t => [(0.1 - 0.02 * t) * S, (0.13 - 0.03 * t) * S], 4, 8, null, { colf: (t, a) => Math.cos(a) > 0.3 ? lu : lg });   /* the femur */
+        A.ellip('chitin', kn[0], kn[1], kn[2], 0.09 * S, 0.09 * S, 0.09 * S, lg, { seg: 8 });
+        A.tube('chitin', L3(kn, tb), t => { const r = (0.075 - 0.03 * t) * S; return [r, r]; }, 4, 8, lg);   /* the tibia */
+        for (const f of [0.3, 0.55, 0.8]) { const p = L3(kn, tb)(f); A.cone('chitin', p, [p[0] + s * 0.06 * S, p[1] - 0.03 * S, p[2] - 0.1 * S], 0.022 * S, 0.003, lg, 4); }
+        const tr = L3(tb, ts);
+        for (const [f, r] of [[0.12, 0.055], [0.42, 0.05], [0.72, 0.045]]) { const p = tr(f); A.ellip('chitin', p[0], Math.max(p[1], r * S * 0.75), p[2], r * S, r * S * 0.75, r * S * 1.6, lg, { seg: 6, ry: Math.atan2(ts[0] - tb[0], ts[2] - tb[2]) }); }
+        const tip = tr(0.92), dx = ts[0] - tb[0], dz = ts[2] - tb[2], dl = Math.hypot(dx, dz), ux = dx / dl, uz = dz / dl;
+        for (const k of [-1, 1]) A.cone('chitin', tip, [ts[0] + (ux * 0.1 - uz * k * 0.06) * S, 0.0, ts[2] + (uz * 0.1 + ux * k * 0.06) * S], 0.022 * S, 0.003, lg, 4);
+      });
+    }
+    /* for the tack: the body's profile (t from the elytra's tip to the head's front) and the anchors */
+    A.profile(t => { const q = prof(t); return { z: q[0] * S, y: q[1] * S, hw: q[2] * S, hh: q[3] * S }; });
+    const top = z => 1.12 + 0.38 * Math.sqrt(Math.max(0, 1 - Math.pow((z + 0.64) / 0.79, 2)));   /* the elytra's crown at z */
+    A.anchor('saddle', P([0, top(-0.3), -0.3])); A.anchor('pack', P([0, top(-0.95), -0.95]));
+    A.anchor('bridle', P([0, 1.12, 1.08])); A.anchor('lead', P([0, 0.95, 1.16]));
+    A.anchor('chest', P([0, 1.0, 0.72])); A.anchor('headRoot', P([0, 1.06, 0.72]));
   }
 });
 
