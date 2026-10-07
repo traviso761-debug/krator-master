@@ -12,8 +12,8 @@ defBuilding({key:'tent-sheikh',name:"Sheikh's tent",seed:4601,cut:true,w:36,d:22
  note:"the sheikh's great goat-hair tent, nine poles across, its majlis open to the front; an awning to the white guest pavilion; standards with the brass horns",
  build(o){const bw=DC.bw,bd=DC.bd;
   // the great black tent
-  let HB=null;W(DC.bx,0,0,0,()=>{HB=dkBayt({w:bw,d:bd,rows:[{z:-2.2,n:4,h:2.7},{z:0,n:5,h:3.3},{z:2.2,n:4,h:2.9}],frontH:2.5,backH:1.15,stripes:[2,6,10],frontPoles:9,qata:4.6,qataD:.9});
-   tkFloor('patKilim',null,0,bw-.4,bd-.4);
+  let HB=null;W(DC.bx,0,0,0,()=>{HB=dkBayt({w:bw,d:bd,rows:[{z:-2.2,n:4,h:2.7},{z:0,n:5,h:3.3},{z:2.2,n:4,h:2.9}],frontH:2.5,backH:1.15,stripes:[2,6,10],frontPoles:9,qata:4.6,qataD:.9,sadu:'patSadu2'});
+   tkFloor('patSadu',null,0,bw-.4,bd-.4);
    // the majlis (x < 4.6): divans round three sides, the great kilim, the coffee hearth, the grand hookah
    FURNISH('nomad_court_carpet',-2.2,.03,.3,0);FURNISH('nomad_court_carpet',-6.6,.03,.3,0,{v:1});
    tkMajlis(-8.6,-3.25,3.8,-3.25,undefined,0);for(const z of [-1.6,.6,2.6])FURNISH('nomad_court_divan',-8.5,0,z,PI/2);
@@ -30,7 +30,7 @@ defBuilding({key:'tent-sheikh',name:"Sheikh's tent",seed:4601,cut:true,w:36,d:22
   tkNoCut(()=>{const x0=DC.cx+DC.cs/2+.1,x1=DC.bx-bw/2-.1;psurf('hair',(u,v)=>{const x=lerp(x0,x1,u),z=-2.4+v*4.8;return [x,2.45-Math.abs(v-.5)*.5+Math.sin(PI*u)*.08,z];},6,4,P('hair'));
    for(const x of [x0+.15,x1-.15])for(const z of [-2.4,2.4])pole('wood',[x,0,z],[x,2.2,z],.06,P('woodD'),7);});
   // the guest pavilion: white caidal, lozenge bands; tray tables and cushions for the guests
-  W(DC.cx,0,0,0,()=>{const H=dkCaidal({s:DC.cs,wallH:2.4,peakH:5.7,motif:'lozenge',doorW:2.4,floor:'patKilim'});
+  W(DC.cx,0,0,0,()=>{const H=dkCaidal({s:DC.cs,wallH:2.4,peakH:5.7,motif:'lozenge',doorW:2.4,floor:'patSadu',lining:'patLining2'});
    FURNISH('nomad_court_carpet',0,.03,0,0,{v:1});
    for(const [x,z] of [[-1.6,-1.2],[1.6,-1.2],[0,1.4]]){FURNISH('nomad_tray_table',x,0,z,0);FURNISH('nomad_tea_set',x,svfH('nomad_tray_table',0,.45),z,0);
     for(let k=0;k<4;k++){const a=k*TAU/4+.4,px=x+Math.cos(a)*.95,pz=z+Math.sin(a)*.95;FURNISH(k%2?'nomad_pouf':'nomad_floor_cushion',px,0,pz,tkFace(px,pz,x,z),{v:k%3});}}

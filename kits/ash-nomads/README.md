@@ -11,7 +11,7 @@ the Scyvoi kit on 2026-10-07 to the owner's style guide (the `ashnomad` referenc
   the doors (the catalog's `ashnomad_*` pieces).
 - **The chieftain's tent** takes the massing of the "nomad chief" reference: a tall central spire, four spired lobes round it
   over arched gables. **The assembly** ("nomad assembly"): the band's communal tent and mess hall, a great round tent with a
-  pedimented porch and the sun disc raised over it between red banners, banner poles round it; long tables, cookpots and the
+  pedimented porch and the gas giant (their emblem) raised over it between red banners, banner poles round it; long tables, cookpots and the
   council's fire inside.
 - **Beasts:** staghorn beetles to ride, to fight from and to pack (the fauna kit's, also Dhelv's); millipedes herded for their
   chitin and grubs; the ash runner, a pig-sized six-legged runner kept for hides, eggs and meat. **No carts, no chariots, no
@@ -42,9 +42,10 @@ Forked from `kits/scyvoi`: the engine fragments are the Scyvoi kit's, VENDORED u
 identity and look are `src/26k-kit.js`. Its shapes are in `40a-ak-ash.js` (the concave spire, the five-spired chief, the dome,
 the ridge, the bands of figures, banners, the sun disc), the defs in `42`-`59`.
 
-**Textures and patterns.** Until the owner's sheets come (`core/materials/PROMPTS-nomads.md`: the ash cloth, the fret band,
-the Nazca panel, the ember lining, the sun medallion, an ash ground) the patterns are procedural: the frets and figures round
-the walls are thin sewn-on geometry, the roofs' bands vertex colour with the sawtooth as geometry, the ash cloth is tinted felt,
-the lining the star kilim, the sun disc the amber sun. Chitin is the library's `organic.chitin` and `chitin.millipede`.
+**Textures and patterns.** The owner's sheets (2026-10-07): the ash cloth, the fret band round every wall, the Nazca panel on
+the assembly and the chieftain's tent, the ember and crawler linings, the sun medallion on the chieftain's dais, the ash ground.
+The roofs' bands are vertex colour with the sawtooth as geometry. **The emblem is a gas giant**, drawn by `akGiant` on the
+assembly's frame and the banners until its sheet comes (`core/materials/PROMPTS-nomads.md`). Chitin is the library's
+`organic.chitin` and `chitin.millipede`.
 
 See `API.md` for the fragments and `KNOWN_ISSUES.md` for what is open.

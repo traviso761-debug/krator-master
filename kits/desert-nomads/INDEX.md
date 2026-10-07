@@ -17,7 +17,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
-| `26k-kit.js` | 4 |  |
+| `26k-kit.js` | 5 |  |
 | `27-mat.js` | 6 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |

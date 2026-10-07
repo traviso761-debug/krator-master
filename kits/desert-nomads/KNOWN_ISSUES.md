@@ -4,9 +4,9 @@
 
 ## Textures
 
-- [ ] Owed by the owner (`core/materials/PROMPTS-nomads.md`): `cloth.tent.brown` (family `hair`), `patterns/nomad/sadu-band`
-      (`patSadu`), `patterns/nomad/lining-muted` (`patLining`). Until they come the hair cloth is tinted canvas and the sadu and
-      the linings are the star kilim, which is brighter and busier than the muted interiors want.
+- [x] The sadu band and the muted lining came on 2026-10-07, each with a green alternate (the sheikh's tent and guest pavilion, the
+      hookah tent); the floors are the sadu weave now (the star kilim was too bright).
+- [ ] Owed: `cloth.tent.brown` (family `hair`, `core/materials/PROMPTS-nomads.md`); the hair cloth is canvas dyed brown meanwhile.
 - [ ] The ground is `ground.gravelly_sand`, picked unseen for the kit sheet; a world places the biome's own ground.
 
 ## Geometry

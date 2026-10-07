@@ -13,13 +13,13 @@ const KIT={id:'desert-nomads',title:'Desert Nomads Kit',pack:'desert-nomads',cul
 /* the library families: MAT key -> pack family (materials.json). A key missing from the pack, or ?mat=proc, draws flat.
    hair: the brown goat-and-camel hair cloth; patSadu, patLining: the owner's sheets (optional until processed) */
 const SV_LIB={felt:'felt',canvas:'canvas',goat:'goat',hair:'hair',hide:'hide',wood:'wood',carved:'carved',lacq:'lacq',stone:'stone',rock:'rock',
- earth:'earth',rug:'rug',rope:'rope',iron:'iron',patKilim:'patKilim',patSadu:'patSadu',patLining:'patLining',patZellige:'patZellige'};
-const SV_TILE0={felt:.8,canvas:2.4,goat:.5,hair:.6,hide:.7,wood:1.6,carved:1.2,lacq:1.5,stone:2.6,rock:5,earth:3,rug:1,rope:.3,iron:.8,patKilim:1.6,patSadu:1.2,patLining:1.6,patZellige:1.2};
-const SV_CLOTH={felt:1,canvas:1,goat:1,hair:1,hide:1,patKilim:1,patSadu:1,patLining:1,flag:1};
-const SV_CUT={felt:1,canvas:1,goat:1,hair:1,hide:1,patKilim:1,patSadu:1,patLining:1,patZellige:1,lacq:1,wood:1,carved:1,flag:1,plain:1,rope:1,brass:1,bone:1,iron:1,glass:1};
-/* until the owner's sheets come (core/materials/PROMPTS-ready.md): the brown hair cloth draws as the canvas set dyed by its
-   palette brown, the sadu band and the lining as the star kilim */
-const KIT_FALLBACK=[['hair','canvas'],['patSadu','patKilim'],['patLining','patKilim']];
+ earth:'earth',rug:'rug',rope:'rope',iron:'iron',patKilim:'patKilim',patSadu:'patSadu',patSadu2:'patSadu2',patLining:'patLining',patLining2:'patLining2',patZellige:'patZellige'};
+const SV_TILE0={felt:.8,canvas:2.4,goat:.5,hair:.6,hide:.7,wood:1.6,carved:1.2,lacq:1.5,stone:2.6,rock:5,earth:3,rug:1,rope:.3,iron:.8,patKilim:1.6,patSadu:1.2,patSadu2:1.2,patLining:1.6,patLining2:1.6,patZellige:1.2};
+const SV_CLOTH={felt:1,canvas:1,goat:1,hair:1,hide:1,patKilim:1,patSadu:1,patSadu2:1,patLining:1,patLining2:1,flag:1};
+const SV_CUT={felt:1,canvas:1,goat:1,hair:1,hide:1,patKilim:1,patSadu:1,patSadu2:1,patLining:1,patLining2:1,patZellige:1,lacq:1,wood:1,carved:1,flag:1,plain:1,rope:1,brass:1,bone:1,iron:1,glass:1};
+/* the sadu band and the lining came on 2026-10-07, each with a green alternate (patSadu2, patLining2: the sheikh's tent, the
+   hookah tent); the brown hair cloth is still owed (core/materials/PROMPTS-nomads.md) and draws as the canvas dyed brown */
+const KIT_FALLBACK=[['hair','canvas'],['patSadu','patKilim'],['patLining','patKilim'],['patSadu2','patSadu'],['patLining2','patLining']];
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */
 const SVPAL={
  hair:[0x6a4a32,0x5e402a,0x74523a],                     // brown goat-and-camel hair cloth (Bedouin, Berber)

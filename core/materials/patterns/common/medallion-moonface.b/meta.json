@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.366,
+    0.711
+   ],
+   "seam_before": [
+    0.41,
+    1.048
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.0,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.45,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "common/medallion-moonface.b",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.6,
+  "scale": [
+   1.0,
+   1.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "common_medallion-moonface.b.png",
+  "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+  "licence": "generated for this project by its owner",
+  "prompt": "the owner's extra (2026-10-07): a second moon-face medallion, moon phases round a staring face in a blue fret ring (core/materials/PROMPTS-nomads.md)",
+  "reuse": "as patterns/common/medallion-moonface",
+  "sha1": "a166d167b41505c7c2cd2eaa73807a0ac7827bb0"
+ }
+}

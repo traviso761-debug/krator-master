@@ -8,10 +8,10 @@
 defBuilding({key:'tent-chieftain',name:"Chieftain's tent",seed:4601,cut:true,w:27,d:27,h:17.5,budget:260000,
  tags:{types:['civic','dwelling-single'],wealth:'rich',style:'spire'},
  note:"the chieftain's great tent: a tall central spire, four spired lobes over arched gables, a ring of chitin columns inside, the carapace high seat",
- build(o){const R=9;const rY=akChief({R,wallH:3.0,cR:4.2,drumH:6.2,peakH:16,lobeR:2.8,lobeH:9.5,lobeD:8.0,lobes:4,doorW:3.0});
+ build(o){const R=9;const rY=akChief({R,wallH:3.0,cR:4.2,drumH:6.2,peakH:16,lobeR:2.8,lobeH:9.5,lobeD:8.0,lobes:4,doorW:3.0,lining:'patCrawl',band:'patNazca'});
   for(let i=0;i<8;i++){const p=tkAt(5.8,(i+.5)/8*TAU);pole('chitin',[p[0],0,p[1]],[p[0],rY(5.8)-.2,p[1]],.16,P('chitin'),10);cyl('brass',p[0],0,p[1],.24,.3,0xc89a3a,10);}
   // the dais and the high seat at the back, divans either side, the war standard behind
-  cyl('carved',0,0,-6.0,2.4,.4,P('woodD'),32);WX(0,.41,-6.0,0,0,0,()=>medallion('medSun',0,0,0,4.2,{round:true}));
+  cyl('carved',0,0,-6.0,2.4,.4,P('woodD'),32);WX(0,.41,-6.0,0,0,0,()=>medallion('medAshSun',0,0,0,4.2,{round:true}));
   FURNISH('ashnomad_chief_seat',0,.42,-6.6,0);for(const s of [-1,1])FURNISH('ashnomad_chief_divan',s*1.7,.42,-6.0,s<0?.6:-.6);
   FURNISH('ashnomad_war_standard',0,.42,-7.9,0);
   FURNISH('ashnomad_court_carpet',0,.03,-2.6,0);FURNISH('ashnomad_court_carpet',0,.03,1.6,0,{v:1});
@@ -28,9 +28,9 @@ defBuilding({key:'tent-chieftain',name:"Chieftain's tent",seed:4601,cut:true,w:2
 const AC={R:10,wH:2.8,pH:8.2};
 defBuilding({key:'tent-assembly',name:'Assembly and mess hall',seed:4602,cut:true,w:30,d:32,h:15.5,budget:260000,
  tags:{types:['civic','tavern'],wealth:'middle',style:'assembly'},
- note:'the band\'s communal tent and mess hall: a great round tent, a pedimented porch with the fire emblem, the sun disc raised over it between red banners; long tables, cookpots and the council fire inside',
+ note:'the band\'s communal tent and mess hall: a great round tent, a pedimented porch with the fire emblem, the gas giant (their emblem) raised over it between red banners; long tables, cookpots and the council fire inside',
  build(o){const R=AC.R;const rY=akConcave({R,wallH:AC.wH,peakH:AC.pH,k:1.15,doorW:3.4,floor:'earth',floorCol:P('earth'),teeth:72,guys:18,
-   bands:[[.0,.1,'saw'],[.25,.31,'step'],[.55,.6,'line']],figs:['fret','bird','fret','beetle','fret','spiral']});
+   bands:[[.0,.1,'saw'],[.25,.31,'step'],[.55,.6,'line']],figs:['fret','bird','fret','beetle','fret','spiral'],bandSheet:'patNazca',bandY:.35,bandH:1.9});
   for(let i=0;i<10;i++){const p=tkAt(6.2,(i+.5)/10*TAU);pole('wood',[p[0],0,p[1]],[p[0],rY(6.2)-.12,p[1]],.12,P('woodD'),8);}
   // the porch: a gabled awning on four poles over the door, its pediment carrying the flame emblem
   tkNoCut(()=>{const z0=R-.2,z1=R+3.2,px=3.0,ph=AC.wH+.6;
@@ -40,12 +40,12 @@ defBuilding({key:'tent-assembly',name:'Assembly and mess hall',seed:4602,cut:tru
    W(0,0,z1+.34,0,()=>{for(let k=0;k<5;k++){const s=1-k*.18;poly('plain',[[-1.1*s,ph+.15,k*.004],[1.1*s,ph+.15,k*.004],[0,ph+.15+1.05*s,k*.004]],akC(k%2?AK_Y:AK_R),true);}   // the flame, in nested chevrons
     akBand(2*px+.5,ph-.45,.4,{z:.01,figs:['fret','spiral']});});
    const vq=[[-px-.3,ph-.02,z1+.32],[px+.3,ph-.02,z1+.32]];tkValance(vq,.35,'flag',P('red'),{per:1.6,tassels:0xe0b02a});
-   // the emblem frame over the roof: two masts, a crossbar, the sun disc, red banners down each side
+   // the emblem frame over the roof: two masts, a crossbar, the gas giant, red banners down each side
    const fy=AC.pH+3.6;for(const s of [-1,1]){pole('wood',[s*1.9,rY(1.9)-.5,1.2],[s*1.9,fy+1.5,1.2],.1,P('woodD'),8);
     W(s*1.9,0,1.2,0,()=>akSpire(fy+1.45,1));
     withCloth(clothHang(4.2,.04),()=>psurf('flag',(u,v)=>[s*1.9+(u-.5)*.7,fy+1.1-v*4.2,1.32],3,8,P('red')));}
    beam('wood',[-2.1,fy+1.15,1.2],[2.1,fy+1.15,1.2],.08,P('woodD'),true,8);
-   akSunDisc(fy-.2,1.32,1.5);
+   akGiant(fy-.2,1.32,1.55);
    // banner poles round the tent, each a long red banner with its yellow disc
    for(const a of [PI/2+.6,PI/2-.6,PI/2+1.9,PI/2-1.9,PI/2+PI])akBanner(Math.cos(a)*(R+2.8),Math.sin(a)*(R+2.8),7.2,{len:3.0,ry:Math.atan2(Math.cos(a),Math.sin(a))});});
   // the mess hall: two rows of long tables and benches either side of the aisle, the kitchen at the back

@@ -28,7 +28,7 @@ defBuilding({key:'hut-shaman',name:"Shaman's hut",seed:4801,cut:true,w:9,d:10,h:
   for(let i=0;i<NP;i+=2){const a=i/NP*TAU+.11,t=tkAt(.45,a+PI+.25);const tip=[t[0]*.9,apex+.95,t[1]*.9];
    withCloth(clothFlag(.7,.2),()=>W(tip[0],tip[1]-.05,tip[2],a,()=>psurf('flag',(u,v)=>[u*.7,-v*.09,0],4,1,P(pick(['red','yellow','ochre','vermilion'])))));}
   for(const s of [-1,1]){pole('wood',[s*1.1,0,r+1.3],[s*1.1,1.6,r+1.3],.04,P('woodD'),6);ellip('bone',s*1.1,1.66,r+1.3,.13,.1,.17,0xe4dac4,0,8);}
-  tkFloor('patEmber',null,r-.15);
+  tkFloor('patCrawl',null,r-.15);
   FURNISH('ashnomad_fire_pit',0,0,0,0);smokeAt(0,apex,0,{r:.35});
   FURNISH('ashnomad_shaman_drum',-1.4,0,-1.3,tkFace(-1.4,-1.3));FURNISH('ashnomad_bone_rack',.9,0,-2.3,0);FURNISH('ashnomad_skull_shrine',-.6,0,-2.3,0);
   FURNISH_HANG('ashnomad_herb_bundles',-.9,2.6,.4,PI/3);FURNISH_HANG('ashnomad_herb_bundles',1.0,2.4,-.6,-PI/4);

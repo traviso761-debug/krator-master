@@ -41,9 +41,8 @@ identity and look are `src/26k-kit.js` (`KIT`, the library families, `KIT_FALLBA
 `40d-dk-desert.js`, its interiors' helpers in `41-tk-dress.js`, the defs in `42`-`59`. Every animal is the fauna kit's
 (`KratorFauna`: dromedary, horse, sheep, cattle, goat, riding and pack lizards, marsh emu); the tack is fitted to its anchors.
 
-**Textures.** The library's black goat hair, tent canvas, hides, woods and the star kilim are in use. Three sheets are owed by the
-owner (`core/materials/PROMPTS-nomads.md`): the brown hair cloth (`hair`), the sadu band (`patSadu`) and the muted lining
-(`patLining`). They are wired as optional families and draw as stand-ins until they come (`KIT_FALLBACK`): the hair cloth as
-tinted canvas, the sadu and the lining as the star kilim, which is brighter than the muted look wants.
+**Textures.** The library's black goat hair, tent canvas, hides and woods, and the owner's sadu band and muted lining (each with
+a green alternate for the sheikh and the hookah tent). The brown hair cloth (`hair`) is owed (`core/materials/PROMPTS-nomads.md`)
+and draws as canvas dyed brown meanwhile (`KIT_FALLBACK`).
 
 See `API.md` for the fragments and `KNOWN_ISSUES.md` for what is open.

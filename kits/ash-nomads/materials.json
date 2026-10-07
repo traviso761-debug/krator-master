@@ -1,6 +1,6 @@
 {
  "build": "ash-nomads",
- "note": "The Ash Nomads kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/26k-kit.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the cloth, stone and wood sets are low (the palette in 22-mat.js colours them), the pattern sheets 1 (their own colours, the vertex colour white). The med* families are single panels (medallions): the kit maps each once over a disc or square (30-geo.js medallion()), so their scale is nominal. Run python3 tools/textures/pack.py kits/ash-nomads after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space; the vertex colour keeps the piece's colour and `mean` is divided back out, so the set adds only its grain, weave or tooling. ashCloth, patFret, patNazca and patEmber are the owner's sheets (core/materials/PROMPTS-ready.md), optional until delivered (26k-kit.js KIT_FALLBACK; the patterns are drawn as geometry meanwhile). medSun stands in for the assembly's sun disc.",
+ "note": "The Ash Nomads kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/26k-kit.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the cloth, stone and wood sets are low (the palette in 22-mat.js colours them), the pattern sheets 1 (their own colours, the vertex colour white). The med* families are single panels (medallions): the kit maps each once over a disc or square (30-geo.js medallion()), so their scale is nominal. Run python3 tools/textures/pack.py kits/ash-nomads after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space; the vertex colour keeps the piece's colour and `mean` is divided back out, so the set adds only its grain, weave or tooling. ashCloth, patFret, patNazca, patEmber, patCrawl, medAshSun and ground.ash are the owner's (2026-10-07). medAshGiant (the gas giant emblem) is owed and optional: 40a-ak-ash.js draws it meanwhile.",
  "size": 512,
  "families": {
   "felt": {
@@ -435,8 +435,7 @@
     "mean": 0.6
    },
    "roughLift": 0.35,
-   "specular": 0.15,
-   "optional": true
+   "specular": 0.15
   },
   "patFret": {
    "lib": "patterns/ashnomad/fret-band",
@@ -449,8 +448,7 @@
     "mean": null
    },
    "roughLift": 0.3,
-   "specular": 0.15,
-   "optional": true
+   "specular": 0.15
   },
   "patNazca": {
    "lib": "patterns/ashnomad/nazca-panel",
@@ -463,8 +461,7 @@
     "mean": null
    },
    "roughLift": 0.3,
-   "specular": 0.15,
-   "optional": true
+   "specular": 0.15
   },
   "patEmber": {
    "lib": "patterns/ashnomad/lining-ember",
@@ -477,30 +474,56 @@
     "mean": null
    },
    "roughLift": 0.3,
-   "specular": 0.15,
-   "optional": true
+   "specular": 0.15
   },
   "ground": {
-   "lib": "ground.burn",
+   "lib": "ground.ash",
    "scale": [
     4.0,
     4.0
    ],
    "tint": {
-    "keep": 0.4,
-    "mean": 0.55,
-    "contrast": 1.1
+    "keep": 0.3,
+    "mean": 0.62,
+    "contrast": 1.05
    },
    "roughLift": 0.4,
    "specular": 0.1,
    "breakup": {
-    "mix": 0.6,
-    "macro": 0.12,
+    "mix": 0.5,
+    "macro": 0.1,
     "cell": 14
    }
   },
   "medAshSun": {
    "lib": "patterns/ashnomad/medallion-sun",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "specular": 0.3,
+   "size": 512
+  },
+  "patCrawl": {
+   "lib": "patterns/ashnomad/lining-crawlers",
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.15
+  },
+  "medAshGiant": {
+   "lib": "patterns/ashnomad/medallion-giant",
    "scale": [
     1.0,
     1.0

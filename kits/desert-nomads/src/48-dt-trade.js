@@ -50,7 +50,7 @@ defBuilding({key:'tent-supply',name:'Supply tent',seed:4803,cut:true,w:14,d:10.5
 defBuilding({key:'tent-seer',name:"Seer's tent",seed:4805,cut:true,w:8,d:8.4,h:4.8,budget:60000,
  tags:{types:['religious'],wealth:'middle',style:'caidal',role:'seer'},
  note:"the seer's tent (the desert's counterpart of a shaman): a small white tent sewn with dark stars, the sand-reading tray, the star chart, amulets and incense",
- build(o){const H=dkCaidal({s:4.6,wallH:2.0,peakH:3.9,motif:'lozenge',doorW:1.3,floor:'patKilim'});
+ build(o){const H=dkCaidal({s:4.6,wallH:2.0,peakH:3.9,motif:'lozenge',doorW:1.3,floor:'patSadu'});
   // dark eight-pointed stars on the roof (the contrasting pattern, sewn on)
   for(const [x,z] of [[0,1.25],[1.25,0],[-1.25,0],[0,-1.25]]){const y=H(x,z)+.04;for(let k=0;k<2;k++){const r=.28,a0=k*PI/4;poly('plain',[0,1,2,3].map(i=>{const a=a0+i*PI/2;return [x+Math.cos(a)*r,y,z+Math.sin(a)*r];}),P('trim'),true);}}
   FURNISH('nomad_sand_table',0,0,.1,0);FURNISH('nomad_astrolabe',-1.4,0,-1.4,tkFace(-1.4,-1.4));FURNISH('nomad_star_chart',1.3,0,-1.9,0);
@@ -65,7 +65,7 @@ defBuilding({key:'tent-hookah',name:'Hookah tent',seed:4806,cut:true,w:12,d:12,h
  build(o){const s=8,s2=s/2,wH=2.4,pH=4.6,sc=new THREE.Color();
   const H=(x,z)=>{const m=Math.max(Math.abs(x),Math.abs(z))/(s2+.4);return wH+.05+(pH-wH)*Math.pow(1-clamp(m,0,1),1.2);};
   psurf('canvas',(u,v)=>{const x=-(s2+.4)+u*(s+.8),z=-(s2+.4)+v*(s+.8);return [x,H(x,z),z];},20,20,P('canvas'),{colf:(u,v)=>{const x=u-.5,z=v-.5,d=Math.abs(Math.abs(x)-Math.abs(z));return sc.setRGB(d<.01?.72:1,d<.01?.72:1,d<.01?.72:1);}});
-  psurf('patLining',(u,v)=>{const x=-(s2-.05)+u*(s-.1),z=-(s2-.05)+v*(s-.1);return [x,H(x,z)-.07,z];},16,16,null);
+  psurf('patLining2',(u,v)=>{const x=-(s2-.05)+u*(s-.1),z=-(s2-.05)+v*(s-.1);return [x,H(x,z)-.07,z];},16,16,null);
   // the walls rolled up under the eave on every side, the dark arch band on the eave skirt
   const C=[[-s2,s2],[s2,s2],[s2,-s2],[-s2,-s2]];
   for(let i=0;i<4;i++){const a=C[i],b=C[(i+1)%4];beam('canvas',[a[0]*1.02,wH-.12,a[1]*1.02],[b[0]*1.02,wH-.12,b[1]*1.02],.14,P('canvas'),true,10);

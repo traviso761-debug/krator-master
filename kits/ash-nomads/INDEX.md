@@ -22,7 +22,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
 | `40-tk-tentkit.js` | 21 |  |
-| `40a-ak-ash.js` | 16 |  |
+| `40a-ak-ash.js` | 19 |  |
 | `41-tk-dress.js` | 4 |  |
 | `42-as-small.js` | 6 |  |
 | `44-al-large.js` | 7 |  |

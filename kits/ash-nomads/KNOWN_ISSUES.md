@@ -4,12 +4,14 @@
 
 ## Textures
 
-- [ ] Owed by the owner (`core/materials/PROMPTS-nomads.md`): `cloth.tent.ash` (`ashCloth`), `patterns/ashnomad/fret-band`
-      (`patFret`), `patterns/ashnomad/nazca-panel` (`patNazca`), `patterns/ashnomad/lining-ember` (`patEmber`),
-      `patterns/ashnomad/medallion-sun` (`medAshSun`), `ground.ash`. Meanwhile the patterns are procedural geometry and vertex
-      colour (readable but plainer than "ornate"), the lining is the star kilim, the ground `ground.burn` darkened (it reads pale).
-      When `patFret` and `patNazca` arrive, `akBandRing` and `akBand` should draw them as sheets in place of the geometry
-      (`KIT_HAS('patFret')`), and the chieftain's lobes and the assembly's drum can take `patNazca`.
+- [x] The owner's sheets came on 2026-10-07 (`tools/textures/batches/nomads-2026-10.json`): the ash cloth, the fret band, the
+      Nazca panel, the ember lining, the crawlers lining (millipedes, lizards, mushrooms), the sun medallion and the ash ground. The
+      bands round the walls are the fret sheet now (`akSheetRing`, `akSheetStrip`: its 2:1 aspect kept, one sheet top to bottom);
+      the geometry figures remain the fallback for a pack without it. The assembly's drum and the chieftain's wall carry the Nazca
+      panel, the chieftain's lining and the shaman's floor the crawlers, the chieftain's dais the sun.
+- [ ] The emblem is a gas giant (the owner, 2026-10-07), not the sun: `akGiant` draws it (a banded disc, a tilted ring, four moons)
+      on the assembly's frame and the banners until `patterns/ashnomad/medallion-giant` comes (`core/materials/PROMPTS-nomads.md`;
+      wired as the optional `medAshGiant`).
 - [ ] The parametric common tier's chitin pieces render matte (woodFam 'wood') beside the glossy bespoke chitin ('lacquer');
       the catalog file's ASHNOMAD_COMMON could take `woodFam: 'lacquer'`.
 

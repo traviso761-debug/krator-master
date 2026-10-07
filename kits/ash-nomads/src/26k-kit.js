@@ -10,19 +10,19 @@
 // outside (a cross of Nazca line figures and Morrowind Dunmer frets); inside, the yellow-red palette, chitin, hanging banners,
 // lanterns and ash screens.
 const KIT={id:'ash-nomads',title:'Ash Nomads Kit',pack:'ash-nomads',culture:'ashnomad',faction:'Ash Nomads',band:'the Cinder-Walkers',
- frag:'kits/ash-nomads',ground:0x5a5651,groundProc:0x5e5a55,fog:0xb8b0a6,furnDetail:.6};
+ frag:'kits/ash-nomads',ground:0x625e58,groundProc:0x5e5a55,fog:0xb8b0a6,furnDetail:.6};
 /* the library families. ashCloth: the black-to-grey tent cloth; patFret, patNazca, patEmber, medSun: the owner's sheets
    (optional until processed: KIT_FALLBACK) */
 const SV_LIB={felt:'felt',canvas:'canvas',goat:'goat',ashCloth:'ashCloth',hide:'hide',chitin:'chitin',plates:'plates',wood:'wood',carved:'carved',lacq:'lacq',
- stone:'stone',rock:'rock',earth:'earth',rug:'rug',rope:'rope',iron:'iron',patFret:'patFret',patNazca:'patNazca',patEmber:'patEmber',patKilim:'patKilim',medSun:'medSun',medAshSun:'medAshSun'};
+ stone:'stone',rock:'rock',earth:'earth',rug:'rug',rope:'rope',iron:'iron',patFret:'patFret',patNazca:'patNazca',patEmber:'patEmber',patKilim:'patKilim',patCrawl:'patCrawl',medSun:'medSun',medAshSun:'medAshSun',medAshGiant:'medAshGiant'};
 const SV_TILE0={felt:.8,canvas:2.4,goat:.5,ashCloth:.8,hide:.7,chitin:.8,plates:.9,wood:1.6,carved:1.2,lacq:1.5,stone:2.6,rock:5,earth:3,rug:1,rope:.3,iron:.8,
- patFret:1.2,patNazca:2.4,patEmber:1.6,patKilim:1.6,medSun:1,medAshSun:1};
-const SV_CLOTH={felt:1,canvas:1,goat:1,ashCloth:1,hide:1,patFret:1,patNazca:1,patEmber:1,patKilim:1,flag:1};
-const SV_CUT={felt:1,canvas:1,goat:1,ashCloth:1,hide:1,chitin:1,plates:1,patFret:1,patNazca:1,patEmber:1,patKilim:1,lacq:1,wood:1,carved:1,flag:1,plain:1,rope:1,brass:1,bone:1,iron:1,glass:1};
+ patFret:1.2,patNazca:2.4,patEmber:1.6,patKilim:1.6,patCrawl:2,medSun:1,medAshSun:1,medAshGiant:1};
+const SV_CLOTH={felt:1,canvas:1,goat:1,ashCloth:1,hide:1,patFret:1,patNazca:1,patEmber:1,patKilim:1,patCrawl:1,flag:1};
+const SV_CUT={felt:1,canvas:1,goat:1,ashCloth:1,hide:1,chitin:1,plates:1,patFret:1,patNazca:1,patEmber:1,patKilim:1,patCrawl:1,lacq:1,wood:1,carved:1,flag:1,plain:1,rope:1,brass:1,bone:1,iron:1,glass:1};
 /* until the owner's sheets come (core/materials/PROMPTS-ready.md): the ash cloth draws as the felt dyed by its palette, the
    fret band and the Nazca panels as the procedural bands (40a-ak-ash.js draws them as geometry when the sheet is missing),
    the ember lining as the star kilim, the sun disc as the amber sun medallion */
-const KIT_FALLBACK=[['ashCloth','felt'],['patEmber','patKilim'],['medAshSun','medSun']];
+const KIT_FALLBACK=[['ashCloth','felt'],['patEmber','patKilim'],['patCrawl','patEmber'],['medAshSun','medSun']];
 /* is an owner's sheet in the pack (the shape fragments draw the procedural pattern when it is not) */
 const KIT_HAS=k=>KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */

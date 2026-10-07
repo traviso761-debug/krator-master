@@ -7,7 +7,7 @@ defBuilding({key:'tent-bayt-small',name:'Small goat-hair tent',seed:4201,cut:tru
  tags:{types:['dwelling-single'],wealth:'middle',style:'beit-shaar'},
  note:"a black goat-hair tent (bayt sha'ar) on two centre poles, a sadu valance, the qata closing off the household; the coffee hearth by the open front",
  build(o){const w=5.6,d=3.8;const H=dkBayt({w,d,rows:[{z:-.15,n:2,h:2.2}],frontH:1.75,backH:.95,stripes:[2],qata:1.3,qataD:.85});
-  tkFloor('patKilim',null,0,w-.3,d-.3);
+  tkFloor('patSadu',null,0,w-.3,d-.3);
   tkMajlis(-2.6,-1.45,1.1,-1.45,undefined,0);FURNISH('nomad_arm_cushion',-2.5,0,-.2,PI/2);
   tkCoffee(-.6,.9,PI);FURNISH('nomad_tray_table',-1.7,0,.3,0);FURNISH('nomad_tea_set',-1.7,svfH('nomad_tray_table',0,.45),.3,0);
   FURNISH_HANG('nomad_hanging_lantern',-.8,H(-.8,-.15)-.05,-.15,0);

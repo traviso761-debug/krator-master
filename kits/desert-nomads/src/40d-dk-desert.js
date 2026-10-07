@@ -8,7 +8,7 @@
 //   dkWall(a, b, fn)                 run fn in the frame of the wall from a=[x,z] to b=[x,z] (its face turned outward, +z)
 //   dkCaidal(o)                      the Moroccan caidal tent: a square pavilion, a domed roof to a horned finial
 //   dkSquare(o)                      the square tent of brown hair cloth: a hipped roof on one or two masts, white bands
-//   dkBayt(o)                        the black goat-hair tent (tkBlack) with a sadu valance and the qata, its woven divider
+//   dkBayt(o)                        the black goat-hair tent (tkBlack) with a sadu valance and the qata, its woven divider (o.sadu: the sheet)
 //   dkTuareg(o)                      the Tuareg leather tent (ehan): ochre hides over carved arches, mat walls
 //   dkFinial(y, col)                 the brass horns on a mast (the Eastern Nomads' sign: horns)
 const DK_MOTIFS=['tri','lozenge','arch','chevron','step'];
@@ -63,9 +63,9 @@ function dkSquare(o){const H=tkPeaked(Object.assign({cover:'hair',col:P('hair'),
    o: tkBlack's options, plus qata: x of the woven divider (null: none), qataD (how deep it reaches, a share of d) */
 function dkBayt(o){const H=tkBlack(Object.assign({valance:null},o));const w2=o.w/2,d2=o.d/2;
  // the sadu valance: a woven band along the raised front edge (patSadu), its tassels
- psurf('patSadu',(u,v)=>{const x=-w2+u*o.w;return [x,H(x,d2)+.01-v*.32,d2+.03];},Math.round(o.w*2),1,null);
+ psurf(o.sadu||'patSadu',(u,v)=>{const x=-w2+u*o.w;return [x,H(x,d2)+.01-v*.32,d2+.03];},Math.round(o.w*2),1,null);
  tkTassels(Array.from({length:Math.round(o.w/.6)+1},(_,i)=>{const x=-w2+i*.6;return [x,H(x,d2)-.31,d2+.03];}),.6,0xe8dcc4,.14);
- if(o.qata!==undefined&&o.qata!==null){const qx=o.qata,qd=o.qataD||.9;psurf('patSadu',(u,v)=>{const z=-d2+u*o.d*qd;return [qx,.05+v*(H(qx,z)-.15),z];},Math.max(4,Math.round(o.d*2)),3,null);}
+ if(o.qata!==undefined&&o.qata!==null){const qx=o.qata,qd=o.qataD||.9;psurf(o.sadu||'patSadu',(u,v)=>{const z=-d2+u*o.d*qd;return [qx,.05+v*(H(qx,z)-.15),z];},Math.max(4,Math.round(o.d*2)),3,null);}
  return H;}
 /* ---------------------------------------------------------------- the Tuareg leather tent (ehan)
    o: w, d, h (the ridge), col (the dyed leather), mats (true: woven mat walls on three sides). Returns H(x,z). */

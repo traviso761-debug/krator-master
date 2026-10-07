@@ -8,7 +8,7 @@ tag is `nomad` (`KIT.culture`); the faction in the life data is `Desert Nomads`.
 
 | Fragment | Prefix | What |
 |---|---|---|
-| `26k-kit.js` | | `KIT`, `SV_LIB` (felt canvas goat hair hide wood carved lacq stone rock earth rug rope iron patKilim patSadu patLining patZellige), `KIT_FALLBACK`, `SVPAL`, `P` |
+| `26k-kit.js` | | `KIT`, `SV_LIB` (felt canvas goat hair hide wood carved lacq stone rock earth rug rope iron patKilim patSadu patSadu2 patLining patLining2 patZellige), `KIT_FALLBACK`, `SVPAL`, `P` |
 | `10-core` `27-mat` `30-geo` `36-def` `40-tk-tentkit` `81-sky` `90-scene` `91-probe` `91f-furnish` `91n-night` `92-camera` `93-anim` `99-tail` | | VENDORED from `kits/scyvoi/src` (the sky from `settlements/iziz`) |
 | `40d-dk-desert.js` | dk | `dkBand(L, y, h, motif, col, o)` (motifs `tri lozenge arch chevron step`), `dkWall(a, b, fn, out)`, `dkCaidal(o)`, `dkSquare(o)`, `dkBayt(o)`, `dkTuareg(o)`, `dkFinial(y)` |
 | `41-tk-dress.js` | tk | the Scyvoi helpers re-keyed to `nomad_*`: `tkRingSeats`, `tkRowSeats`, `tkTea`, `tkHonour`; and `tkCoffee(x, z, ry)`, `tkMajlis(x0, z0, x1, z1, tx, tz)` |

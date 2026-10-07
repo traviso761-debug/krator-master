@@ -7,7 +7,7 @@ defBuilding({key:'tent-bayt-great',name:'Great goat-hair tent',seed:4401,cut:tru
  tags:{types:['dwelling-multi'],wealth:'middle',style:'beit-shaar'},
  note:"a long black tent on three rows of poles: the men's majlis open to the front, the qata (a sadu-woven divider), the household behind it, the coffee hearth at the majlis's heart",
  build(o){const w=12,d=6;const H=dkBayt({w,d,rows:[{z:-1.6,n:3,h:2.45},{z:.1,n:3,h:2.95},{z:1.7,n:3,h:2.55}],frontH:2.1,backH:1.05,stripes:[2,7],frontPoles:6,qata:2.2,qataD:.88});
-  tkFloor('patKilim',null,0,w-.3,d-.3);
+  tkFloor('patSadu',null,0,w-.3,d-.3);
   // the majlis: mattresses in a U facing the open front, the coffee hearth at its heart, the tea tray
   tkMajlis(-5.6,-2.5,1.8,-2.5,undefined,0);
   for(const z of [-.9,1.2])FURNISH('nomad_majlis_mattress',-5.5,0,z,PI/2,{v:1});
@@ -37,7 +37,7 @@ defBuilding({key:'tent-pavilion',name:'Saharan pavilion',seed:4403,cut:true,w:12
 defBuilding({key:'tent-caidal',name:'Caidal tent',seed:4404,cut:true,w:13,d:13,h:7.4,budget:120000,
  tags:{types:['dwelling-multi'],wealth:'middle',style:'caidal'},
  note:"a large caidal tent: white outside with dark lozenge bands and a horned finial, the lining's arches inside, a family's sleeping alcoves behind a mashrabiya screen",
- build(o){const s=9;const H=dkCaidal({s,wallH:2.5,peakH:6.2,motif:'lozenge',doorW:2.4,floor:'patKilim'});
+ build(o){const s=9;const H=dkCaidal({s,wallH:2.5,peakH:6.2,motif:'lozenge',doorW:2.4,floor:'patSadu'});
   FURNISH('nomad_court_carpet',0,.03,.4,0,{v:1});
   tkMajlis(-4.0,-1.2,-4.0,3.4,0,1.1);tkMajlis(4.0,-1.2,4.0,3.4,0,1.1,{v:1});
   FURNISH('nomad_tray_table',0,0,1.4,0);FURNISH('nomad_tea_set',0,svfH('nomad_tray_table',0,.45),1.4,0);FURNISH('nomad_brazier',0,0,-.4,0);
