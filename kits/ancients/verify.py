@@ -168,7 +168,7 @@ if(A.interiors){ const I=A.interiors(), AI=KratorAncientsInteriors, IX=KratorInt
   R.push({name:'interiors-catalog-keys', ok:!Object.keys(I.missing).length, detail:Object.keys(I.missing).length?JSON.stringify(I.missing):I.records+' furniture records, every key in the catalog'});
   let fails=[],n=0;
   for(const S of AIK.sites){if(!S.furniture)continue;const seen={};
-   for(const r of S.furniture.rooms){if(seen[r.template])continue;seen[r.template]=1;n++;const a=IX.audit(r.room,r.plan,S.furniture.adapter);if(!a.ok)fails.push(S.id+' '+r.R.kind+': '+a.fails.slice(0,2).map(f=>f.check+' '+f.msg).join('; '));}}
+   for(const r of S.furniture.rooms){if(seen[r.template])continue;seen[r.template]=1;n++;const a=r.recipe?AI.audit(r.recipe,S.furniture.catalog):IX.audit(r.room,r.plan,S.furniture.adapter);if(!a.ok)fails.push(S.id+' '+r.R.kind+': '+a.fails.slice(0,2).map(f=>f.check?f.check+' '+f.msg:'recipe '+f).join('; '));}}
   R.push({name:'interiors-audit', ok:!fails.length, detail:fails.length?fails.slice(0,6).join(' | '):n+' template rooms audited (inside, overlap, doors, clearance, reach, required, determinism)'});
   let sf=[];for(const S of AIK.sites)for(const B of S.plan.buildings)for(const st of B.storeys){const f=AI.storeyAudit(st,B.inside?(x,z)=>B.inside(x,z,st.y):null);if(f.length)sf.push(S.id+' '+st.id+': '+f[0]);}
   R.push({name:'interiors-rooms-inside', ok:!sf.length, detail:sf.length?sf.slice(0,6).join(' | '):'every room of every storey has area and lies inside its building'});

@@ -85,3 +85,62 @@ js = interiors_kit_bundle.bundle(['noahs-regret']) + ai_bundle.bundle()
 ```
 
 Load it under its own module name: `kits/interiors` has a `kit_bundle.py` too.
+
+## Floor plates (`src/35-ai-plates.js`)
+
+Rooms inside a building someone else draws, as data in that builder's frame (x east, z south, y up; no rotation).
+
+```js
+AI.ringPlate({ id, level, y, h, cx, cz, rOut(th), depth, cw, roomW, sym, kinds(i, n, th), core: { r, kind, recipe }, a0, a1, skip(th), door })
+AI.barPlate({ id, level, y, h, path(u) -> [x, z], depth, side: 'both' | 'left' | 'right', cw, roomW, kinds(i, n, side), ends: [kA, kB], door })
+AI.gridPlate({ id, level, y, h, x0, x1, z0, z1, bay: [bw, bd], aisle, along: 'x' | 'z', kinds(i, n, row), skip(x, z) })
+AI.hallPlate({ id, level, y, h, poly, kind, doorEdge, doorW, recipe, furnish, door })
+// -> a STOREY { id, level, y, h, outline, rooms, walls }
+//    room { id, kind, poly, y, h, level, doors: [{ at, w, to }], windows, furnish, recipe?, open? }
+//    wall { id, pts: [[x, z]...], y, h, rooms: [a, b|null], door: { at, w } | null, broken, stub? }
+AI.ruinStorey(storey, typeSeed, { frac, collapse(x, z), place, jitter })   // partitions broken, rooms under a collapse open
+AI.storeyAudit(storey, inside(x, z)) -> [failures]                        // area, inside the shell
+AI.h01(string) -> 0..1                                                     // the stable hash every choice uses
+```
+
+A ring plate is a round or polygonal storey: a core (a hall when big enough, else a stair core), a corridor ring, and
+rooms cut radially out to the skin; `sym` (6 on a hex shell) makes the room count a multiple of the symmetry so like
+rooms repeat. A bar plate runs along a path (a straight wing, an arc, a crescent): a corridor down it, rooms on one or
+both sides, end rooms across it. A grid plate is an open floor (a factory vault, a server hall) of bays along aisles,
+no partitions: each bay is a room whose door is its opening onto the aisle. **A ruin** breaks a share of the
+partitions by wall id (`frac`), stands a stub of hashed height where one broke, and opens the rooms under the
+builder's collapse. **Each placed ruin breaks a little differently:** `place` (any number or string; the kit passes the
+site's position) moves each wall's chance by up to `jitter` (default 0.15), so two copies of one ruin share most of
+their breaks but not all; without it every copy is alike. The collapse never moves (it is the builder's geometry).
+
+## The Ancients kit's buildings (`src/37-ai-kit*.js`)
+
+```js
+AI.KIT[type]   // { name, frag, culture, wealth, types, furnish, buildings(d) -> [{ id, name, storeys, floors, hollow, inside, collapse }] }
+AI.SKIP[type]  // why a type has no plan (skyscrapers: rooms later, never furnished; megastructures; no interior)
+AI.kitPlan(type, d, { place, jitter }) -> { type, d, state, furnish, culture, wealth, types, buildings }
+AI.planRooms(plan) -> [room]
+```
+
+`type` is the Ancients kit's row key (`police`, `off`, `apt`, `house`, `house2`, `lab`, `fac`, `robo`, `dc`, `port`,
+`gov`, `lib`, `bunk`, `cult`, `hosp`, `hotel`, `campus`); `d` its decay level: 0 intact (furnished by default), 1
+ruined and 2 toppled (about half the partitions broken), 3 and 4 rehabilitated (the ruined fabric, a fifth broken), 5
+worn (whole). The ids of rooms and walls are the same at every level, so a ruin is the intact plan with breaks.
+`floors` says the builder draws no floor slabs (the host draws them); `hollow` lists the intact dark mass inside a
+shell (kit boxes the host clears before the rooms show); `inside` is a loose test of the interior bound.
+
+## The socket: furnishing a plan in a culture
+
+```js
+AI.cultureAdapter(catalog, cultures) -> an adapter whose list() holds only those cultures' pieces
+AI.furnishPlan(plan, catalog, { culture, cultures, all, wealth, seed, y })
+  -> { rooms: [{ R, template, room, plan, recipe, placements }], pieces, templates, adapter, catalog }
+```
+
+With no `culture`, an intact plan is furnished in its own (`ancient`, strictly: a slot with no Ancient piece stays
+empty) and any other state is left empty. Pass a culture to furnish any state in it: `{ culture: 'iziz', all: true }`
+furnishes a ruin's standing rooms as the Iziz would. Rooms are TEMPLATED: one kind and one shape (to 5 cm, turned so
+the door faces +z) is furnished once and its placements copied into every like room. A room with a `recipe` (a big
+hall) is laid out by that hall recipe in its inscribed rectangle, in the culture's dress when it has one
+(`AI.DRESS[culture]`), else the Ancients'. Audit a placer template with `IX.audit(r.room, r.plan, out.adapter)` and a
+recipe with `AI.audit(r.recipe, out.catalog)`.

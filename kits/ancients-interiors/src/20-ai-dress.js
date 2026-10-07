@@ -34,7 +34,14 @@
     target: 'pa_archery_target', weaponRack: 'pa_weapon_rack', mannequin: 'pa_armour_mannequin', spears: 'pa_spear_drum'
   };
   AI.DRESS = {
-    ancient: Object.assign({}, BASE),
+    /* the Ancients' own pieces where the catalog has them (kits/catalog "Ancients kit extras", 2026-10: the intact
+       buildings' interiors); the rest stays as BASE */
+    ancient: Object.assign({}, BASE, {
+      chair: 'ancients_chair', desk: 'ancients_desk', bookcase: 'ancients_archive', counter: 'ancients_counter',
+      divan: 'ancients_couch', lowTable: 'ancients_low_table', workbench: 'ancients_lab_bench', weaponRack: 'ancients_weapon_rack',
+      helm: 'ancients_chair', drums: 'ancients_cargo_pods', water: 'ancients_pantry',
+      servery: 'ancients_counter', stove: 'ancients_galley', barrel: 'ancients_pantry', toolRack: 'ancients_shelf', headTable: 'yuni_ancient_glass_console'
+    }),
     occupied: Object.assign({}, BASE, {
       table: 'pa_long_table', bench: 'pa_bench', stove: 'pa_brick_grill', ceilingLamp: 'pa_hanging_lamp', lampStem: 'pa_lamp_post',
       banner: 'post-apoc_common_banner', scarecrow: 'pa_scarecrow', stall: 'pa_lean_to_stall', marketTable: 'pa_market_table'

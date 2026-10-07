@@ -472,6 +472,46 @@ by hand where it has one. The brief calls for a `terrainH` hook (default 0) and
 an apron on every structure; that work is open, and tracked in
 `KNOWN_ISSUES.md`. Until it lands, do not add a builder that assumes terrain.
 
+## Interiors (src/8zz-interiors.js, src/92z-interior-ui.js; target `interiors`)
+
+The rooms inside the original kit's buildings. The PLAN is data in `kits/ancients-interiors` (`src/35-ai-plates.js`,
+`src/37-ai-kit*.js`): per type, every storey's rooms, corridors and partitions in the builder's own frame, at every
+decay level (`AI.kitPlan(type, d, { place })`). Skyscrapers, the megastructures and the types with no interior
+(amphitheatre, radar, dish, fuel) have none (`AI.SKIP` says why). The kit DRAWS the plan; no builder knows it exists:
+
+* `interiorBegin(k, d, gx, gz)` runs before each builder (90-scene.js) and marks the kit lists;
+  `interiorPass(m, G)` runs after it (and after `repairPass`) and:
+  * clears the intact dark mass a builder put where the rooms go (the plan's `hollow` boxes: Robotics, the Vault,
+    the Campus wings, the hospital's cores, House B) and, in a ruin, the fake rooms `civRooms` dressed it with;
+  * draws a floor per storey where the builder draws none (`B.floors`), only under standing rooms in a ruin;
+  * draws the partitions as kit instances (`aiPartW`, white panel 0.12 m; `aiPartR` in a ruin), each door a 1.0 m gap
+    with a lintel at 2.15 m; a BROKEN partition is a stub of the plan's height with rubble;
+  * registers the building and its rooms in core/tags (`KTAGS.page`: class building, then class part kind room as
+    its children; culture ancient, the state, the types);
+  * for an INTACT building, makes the furniture records (core/furnish `KFURN`, tagged): `AI.furnishPlan` in the
+    culture `ancient` alone, rooms templated by shape, big halls by the hall recipes.
+* Furniture is data first and DRAWN ON OPENING: a building's records become one catalog batch the first time it is
+  cut open, so the page pays for the rooms you look into.
+* **Ruins break a little differently in every build**: the site's position seeds `AI.ruinStorey` (`place`), which
+  moves each partition's chance by up to 0.15 around the type's own pattern.
+* **The socket.** Only intact buildings are furnished. Every room keeps its kind, so a world furnishes any state in any
+  culture it bundles: `AI.furnishPlan(plan, adapter, { culture, all: true })`, or in this page
+  `_api.interiors.socket('police/3', culture)`.
+
+The cut-away (92z): the "Interior" select opens a building; `[` and `]` step storeys, `x` closes. Everything above
+the storey's cut height inside the building's footprint is clipped (five clipping planes with `clipIntersection`, set
+on every material once). A `VIEWS` preset may carry an eighth element, `{ site: 'police/0', storey: 1 }`.
+
+`_api.interiors()` is the summary (sites, rooms, furnished buildings, pieces, partition pieces, stubs, floors, the
+core/tags audit, per site). `verify.py --assert` adds, on a page with interiors: `interiors-drawn`,
+`interiors-furnished-intact-only`, `interiors-catalog-keys`, `interiors-audit` (every furnishing template through
+kits/interiors' audit, or the recipe audit), `interiors-rooms-inside`, `interiors-ruins-broken`, `interiors-tags`
+(zero unknowns).
+
+Only a target in `INTERIOR_TARGETS` (build.py) takes the generated `8zy-interiors-bundle.js` (the catalog's Ancient
+furniture and goods, kits/interiors with the arcology's set, kits/ancients-interiors) and core/rand, core/tags and
+core/furnish. Every other page builds as before: both interior functions return at once without the bundle.
+
 ## The funicular (src/8ap-funicular.js)
 
 A structure type that is not a builder: the rusted, broken remnants of a massive Ancient funicular, made

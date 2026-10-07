@@ -107,3 +107,13 @@ function aikDraw(site){if(site.group||!site.furniture)return site.group;
  for(const r of site.recs)B.place(r.key,r.x,r.y,r.z,r.ry,{variant:r.variant,seed:r.seed,wealth:.6,building:r.building,setting:'indoor'});
  const g=site.group=B.flush(scene);g.traverse(o=>{if(o.isMesh){KFURN.linearColours(o.geometry);o.userData.probeSkip=true;}});
  aikClipAll();return g;}
+/* the SOCKET in the page: furnish any site (a ruin, a rehabilitated building) in a culture, as a world would that
+   reoccupies it. Its records replace the site's; drawn on the next opening. Not called by default: only intact
+   buildings are furnished. The page carries the Ancient pieces and the goods (INTERIOR_FURN in build.py); a world
+   socketing another culture bundles that culture's furniture. -> the number of pieces */
+function aikSocket(id,culture,o){const S=AIK.byId[id];if(!S)return 0;const AI=KratorAncientsInteriors;
+ const F=AI.furnishPlan(S.plan,AIK.adapter,Object.assign({culture,all:true,seed:1},o||{}));
+ if(S.group){S.group.parent&&S.group.parent.remove(S.group);S.group=null;}
+ S.furniture=F;S.recs=[];S.culture=culture;
+ for(const r of F.rooms)for(const p of r.placements){const rec=AIK.F.place(p.key,S.gx+p.x,p.y,S.gz+p.z,p.ry,{v:p.variant|0,setting:'indoor',room:r.R.id},[p.x,p.y,p.z,p.ry],{building:S.type+'.'+r.R.building,room:r.R.id});if(rec)S.recs.push(rec);}
+ return F.pieces;}

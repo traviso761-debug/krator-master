@@ -46,7 +46,7 @@
       /* three rooms to a face: an office, a cell, a store; one face's store is the armoury, the opposite one's the kitchen */
       const kinds0 = (i, n) => { const f = Math.floor(i * 6 / n), k = i % 3; return k === 0 ? 'study' : k === 1 ? 'brig' : f === 0 ? 'armoury' : f === 3 ? 'kitchen' : 'store'; };
       const kinds1 = cyc(['barracks', 'barracks', 'study']);
-      const s0 = AI.ringPlate({ id: 'police.g', level: 0, y: 1.1, h: 5.4, rOut: rOut(1.1), depth: 7, cw: 2.4, roomW: 6.5, sym: 6, kinds: kinds0, core: { r: 13, kind: 'hall' } });
+      const s0 = AI.ringPlate({ id: 'police.g', level: 0, y: 1.1, h: 5.4, rOut: rOut(1.1), depth: 7, cw: 2.4, roomW: 6.5, sym: 6, kinds: kinds0, core: { r: 13, kind: 'hall', recipe: 'crew-mess' } });   /* the charge hall doubles as the mess */
       const s1 = AI.ringPlate({ id: 'police.u', level: 1, y: 6.9, h: 5.5, rOut: rOut(6.9), depth: 7, cw: 2.4, roomW: 6.5, sym: 6, kinds: kinds1, core: { r: 12, kind: 'hall' } });
       const bays = d === 0 ? AI.hallPlate({ id: 'police.bays', level: 0, y: 0.8, h: 8.6, kind: 'workshop',
         poly: [[28, -34.5], [56, -34.5], [56, 14], [28, 14]], doorEdge: 1, doorW: 4 }) : AI.hallPlate({ id: 'police.bays', level: 0, y: 0.8, h: 8.6, kind: 'workshop',
@@ -56,6 +56,14 @@
               { id: 'police-bays', name: 'the vehicle bays', storeys: [bays], floors: false, hollow: [{ box: [27.2, 56.8, 0.6, 9.6, -34.6, d === 0 ? 14.6 : -1.6] }],
                 inside: (x, z) => x > 27 && x < 57 && z > -35 && z < 15 }];
     } };
+
+  /* the plans' building types onto core/tags' vocabulary (KTAGS.VOCAB.types: civic market shop tavern inn industry farm
+     dwelling-single dwelling-multi infrastructure religious funerary park military statue plaza fountain) */
+  AI.TYPE_MAP = { industrial: 'industry', laboratory: 'industry', research: 'civic', learning: 'civic', culture: 'civic', school: 'civic',
+    hospital: 'civic', office: 'civic', residential: 'dwelling-multi', apartments: 'dwelling-multi', 'multi-family dwelling': 'dwelling-multi',
+    'single-family dwelling': 'dwelling-single', house: 'dwelling-single', hotel: 'inn', transport: 'infrastructure', starport: 'infrastructure',
+    government: 'civic', library: 'civic', police: 'military', bunker: 'military', factory: 'industry', 'data centre': 'industry' };
+  AI.vocabTypes = list => { const out = []; (list || []).forEach(t => { const v = AI.TYPE_MAP[t] || t; if (out.indexOf(v) < 0) out.push(v); }); return out; };
 
   /* ---------------------------------------------------------------- the plan for one decay level */
   const STATE = { 0: 'intact', 1: 'ruined', 2: 'toppled', 3: 'rehab', 4: 'rehab', 5: 'intact' };
@@ -73,7 +81,7 @@
         st.rooms.forEach(function (R) { R.culture = T.culture; R.wealth = T.wealth; R.building = B.id; });
       });
     });
-    return { type, d, place: o.place == null ? null : o.place, state: STATE[d], name: T.name, furnish: d === 0 && T.furnish !== false, culture: T.culture, wealth: T.wealth, types: T.types, buildings: bs };
+    return { type, d, place: o.place == null ? null : o.place, state: STATE[d], name: T.name, furnish: d === 0 && T.furnish !== false, culture: T.culture, wealth: T.wealth, types: AI.vocabTypes(T.types), buildings: bs };
   };
 
   /* ---------------------------------------------------------------- the SOCKET: furnish a plan in a culture
@@ -99,7 +107,7 @@
     const culture = o.culture || (plan.furnish ? plan.culture : null), out = { rooms: [], pieces: 0, templates: 0 };
     if (!culture || !IX) return out;
     const ad = AI.cultureAdapter(cat, o.cultures === undefined ? [culture] : o.cultures), cache = {}, y0 = o.y || 0;
-    out.adapter = ad;   /* audit a template through this adapter (IX.audit(r.room, r.plan, out.adapter)) */
+    out.adapter = ad; out.catalog = cat;   /* audit a placer template through out.adapter, a recipe (AI.audit(r.recipe, out.catalog)) through the catalog */
     AI.planRooms(plan).forEach(function (R) {
       if (!R.poly || R.kind === 'corridor' || R.kind === 'core' || R.open) return;
       if (!R.furnish && !o.all) return;
@@ -111,6 +119,17 @@
       const lp = R.poly.map(toL), ld = R.doors.map(d => ({ at: toL(d.at), w: d.w, to: d.to }));
       const key = R.kind + '|' + culture + '|' + Math.round((R.h || 3) * 10) + '|' + JSON.stringify(lp) + JSON.stringify(ld.map(d => d.at));
       let T = cache[key];
+      /* a room with a RECIPE (a big hall): the recipe in the room's inscribed rectangle, in the culture's dress when it
+         has one (AI.DRESS[culture]) else the Ancients', fit-or-skip; the placer fills nothing else */
+      if (!T && R.recipe && AI.RECIPES[R.recipe]) {
+        const xs = lp.map(p => p[0]), zs = lp.map(p => p[1]), hw = Math.min(-Math.min(...xs), Math.max(...xs)), hd = Math.min(-Math.min(...zs), Math.max(...zs));
+        const w = Math.max(4, hw * 2 * 0.86), d = Math.max(4, hd * 2 * 0.86);
+        const res = AI.recipe(R.recipe, { w, d, h: R.h || 3.2, dress: AI.DRESS[culture] ? culture : 'ancient', seed: (o.seed || 1) + out.templates * 7 }, cat);   /* the dress is the culture's choice: the whole catalog */
+        const room = IX.normRoom({ id: 'tpl.' + plan.type + '.' + out.templates, kind: R.kind, culture, y: 0, h: R.h || 3, poly: lp, doors: ld });
+        const placements = res.placements.map(p => ({ key: p.key, variant: p.v, x: p.x, y: p.y, z: p.z, ry: p.ry, anchor: null, type: null, culture, recipe: R.recipe, role: p.role }));
+        T = cache[key] = { room, plan: { placements, report: { missing: [], recipe: R.recipe, skipped: res.skipped.length } }, recipe: res };
+        out.templates++;
+      }
       if (!T) {
         const room = IX.normRoom({ id: 'tpl.' + plan.type + '.' + out.templates, kind: R.kind, culture, wealth: o.wealth == null ? (R.wealth == null ? 0.5 : R.wealth) : o.wealth,
           y: 0, h: R.h || 3, poly: lp, doors: ld, seed: (o.seed || 1) + out.templates * 7 });
@@ -122,7 +141,7 @@
         const x = p.x * cs + p.z * sn + c[0], z = -p.x * sn + p.z * cs + c[1];
         return Object.assign({}, p, { x, z, y: y0 + R.y + (p.y || 0), ry: (p.ry || 0) + ang, room: R.id });
       });
-      out.rooms.push({ R, template: key, room: T.room, plan: T.plan, placements: places });
+      out.rooms.push({ R, template: key, room: T.room, plan: T.plan, recipe: T.recipe || null, placements: places });
       out.pieces += places.length;
     });
     return out;

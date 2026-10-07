@@ -38,4 +38,4 @@ if(AIK.on){aikSel.id='aiksel';const o0=document.createElement('option');o0.value
   pieces:AIK.pieces,records:AIK.F.placed.length,missing:Object.assign({},AIK.F.missing),walls:AIK.walls,stubs:AIK.stubs,floors:AIK.floors,cleared:AIK.cleared,errors:AIK.errors.slice(),
   tagUnknown:a.unknown,tagMissingCulture:a.missingCulture,tagMissingTypes:a.missingTypes,records_tags:AIK.T.query({}).length,
   bySite:AIK.sites.map(S=>({id:S.id,state:S.state,rooms:S.rooms,storeys:S.storeys.length,pieces:S.furniture?S.furniture.pieces:0,templates:S.furniture?S.furniture.templates:0}))};};
- window._api.interiors.open=aikOpen;window._api.interiors.close=aikClose;window._api.interiors.site=id=>AIK.byId[id];}
+ window._api.interiors.open=aikOpen;window._api.interiors.close=aikClose;window._api.interiors.socket=aikSocket;window._api.interiors.site=id=>AIK.byId[id];}
