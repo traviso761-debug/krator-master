@@ -76,6 +76,16 @@ TICKS.push(dt=>{LAVAU.uT.value+=dt;});
 const GLOW=new THREE.PointLight(0xff6a2a,.5,6000,1.2);GLOW.position.set(LAKE.x,LAKE.level+180,LAKE.z);scene.add(GLOW);
 TICKS.push((dt,t)=>{const e=ERUPT.k;GLOW.intensity=((LAVAU.uNight.value?3.2:.45)+e*(LAVAU.uNight.value?6:2.5))*(.9+.1*Math.sin(t*1.7)+.05*Math.sin(t*5.3)+e*.25*Math.sin(t*11.3)*Math.sin(t*3.1));});
 
+// THE HEAT over the lake (83): sheets at 3 to 45 m over its surface, inside its lobed outline, the shimmer strongest over
+// the middle and low down; an eruption doubles it
+const HEATMATS=[];
+(function(){for(const hh of [3,9,18,30,45]){const NA=72,NR=6,pos=[LAKE.x,LAKE.level+hh,LAKE.z],K=[1-hh/55],idx=[];
+ for(let r=1;r<=NR;r++){const t=r/NR;for(let k=0;k<NA;k++){const a=k/NA*TAU,R=LAKE.rAt(a)*t*1.02;pos.push(LAKE.x+Math.cos(a)*R,LAKE.level+hh,LAKE.z+Math.sin(a)*R);K.push((r===NR?0:1-t*t*.6)*(1-hh/55));}}
+ for(let k=0;k<NA;k++)idx.push(0,1+(k+1)%NA,1+k);
+ for(let r=1;r<NR;r++){const A=1+(r-1)*NA,B=1+r*NA;for(let k=0;k<NA;k++){const k1=(k+1)%NA;idx.push(A+k,A+k1,B+k,A+k1,B+k1,B+k);}}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aK',new THREE.Float32BufferAttribute(K,1));g.setIndex(idx);HEATMATS.push(HEAT.sheet(g,14,.004).material);}})();   // (it is seen from the rim, ~600 m off: it fades slowly with distance)
+TICKS.push(()=>{const k=1+ERUPT.k;HEATMATS.forEach(m=>m.uniforms.uAmp.value=14*k);});
+
 // ---------------------------------------------------------------- the plume
 // A column of billows: each rises up its own slot of the column on the clock, swelling as it goes; the column leans away on
 // the high wind (quadratic with height). Each billow is LIT: a sphere's normal from its point coordinate, shaded by the sun

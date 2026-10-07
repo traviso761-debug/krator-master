@@ -1087,7 +1087,8 @@
     "mean": null
    },
    "roughLift": 0,
-   "specular": 0.2
+   "specular": 0.2,
+   "size": 1024
   },
   "card.ferngreen": {
    "lib": "card.fern.green",

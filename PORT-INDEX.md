@@ -48,10 +48,10 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/shighlands`](biomes/shighlands/PORT.md) | 14 | 165 | 14 | 0 | 13 | 42 | 96 | 2 | biome, atmos | yes | yes |
 | [`biomes/swbay`](biomes/swbay/PORT.md) | 15 | 188 | 1 | 0 | 10 | 40 | 137 | 6 | biome | yes | yes |
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 207 | 1 | 0 | 13 | 37 | 155 | 5 | biome | yes | yes |
-| [`biomes/throne`](biomes/throne/PORT.md) | 15 | 271 | 43 | 17 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
+| [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1725 | 23062 | 3487 (15%) | 468 (2%) | 1014 (4%) | 2729 (12%) | 15364 (67%) | 244 | | | |
+| **all** | 1726 | 23068 | 3489 (15%) | 473 (2%) | 1014 (4%) | 2729 (12%) | 15364 (67%) | 244 | | | |
 
 ## Host-shell copies
 

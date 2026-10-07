@@ -1063,7 +1063,7 @@
     1,
     1
    ],
-   "size": 512,
+   "size": 1024,
    "source": {
     "albedo": "7845e9e78ef5f0585c603d11f13ed10aae609c9d"
    },
@@ -1071,8 +1071,8 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.40070329703000745,
-    "sourceMean": 0.4007
+    "mean": 0.39985292705505077,
+    "sourceMean": 0.3999
    }
   },
   "card.mushalien": {

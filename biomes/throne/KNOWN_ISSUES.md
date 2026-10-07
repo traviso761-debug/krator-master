@@ -74,6 +74,16 @@
   overhangs: `core/terrain` could carve them). No fauna. The sulphur life (the candelabras, reeds, pads, bladders) is
   the owner's textures where they came (`bark.brimstone`, `card.reed.brimstone`); the acid pads and gas bladders are still
   procedural geometry in vertex and instance colours.
+- [ ] **The heat shimmer turns off antialiasing while it runs** (2026-10-07): in reach of the heat the frame renders to
+  an offscreen target (WebGL cannot read an antialiased screen back), so edges step a little there; out of reach the page
+  renders as before. The renderer's draw-call count in the HUD then shows only the last pass.
+- [ ] **The lava tube is one swept mesh** (2026-10-06, station 11): the walls and roof are a section swept along a centre
+  line (no overhangs beyond its arch, no breakdown blocks fused into the walls); the skylights are holes in it with a pit
+  wall up to the surface (small gaps can show where the two meet). The skylights' light is three spot lights (no shadows:
+  the light pools on the floor below each hole, but the roof does not shadow the floor beside it), and the cave reads
+  through a dim lamp carried with the camera. The kit's floor items are planted on the tube's floor (a heightfield inside
+  the tube); its wall and roof life is placed by the host. The surface above is a band ~1.2 km wide; its rim trees are the
+  kit's gully zone. No fauna (the blind cave life of the notes waits for the fauna kit).
 - [ ] **The caldera's lava lake and plume are shader effects** (2026-10-06): the lake's crust and its swell are drawn
   in its shaders (the facets are shading, not geometry; the surface's swell is ~2 m); the plume is a column of point sprites (it does not cast a shadow and has
   no inside: a camera in it sees the billows from within). The eruption's fountains and bombs are glowing points (no

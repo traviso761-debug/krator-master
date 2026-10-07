@@ -338,6 +338,24 @@ fountains and bombs are ballistic in their vertex shader (`GPUParticles3D` with 
 shader (or a `FogVolume`); the triplanar cliff `StandardMaterial3D.uv1_triplanar`; the glints and the crust plain shader
 maths; the glow a flickering `OmniLight3D`.
 
+**Station 11, a lava tube** (`dist/throne-tube.html`, `python3 build.py --station tube`; `stations/tube/`): under an old
+flow on the south-east shoulder, ~1.6 km up at the plume's edge. The owner's: "a lava tube cavern", old and living with one
+hot reach. The tube runs ~1.4 km, falling gently downstream: an arched passage 13-24 m wide and 8-15 m high (a swept mesh,
+not the heightfield), a flat floor of old ropy lava, **flow ledges** along both walls, **lavacicles** in drifts on the roof.
+Three **skylights** where the roof fell in: daylight down each (a spot light, a shaft of light, motes), a breakdown pile of
+the fallen roof below it, and the life that wants light there (siphon trees climbing out of the hole, lamp caps, ferns and
+moss; root and moss curtains hanging from the hole's edges; trees leaning over its rim above). Between them, in the dark,
+**Krator's own cave life**: glow mushrooms, pale fungi, scale cones and the mat on the floor (the kit's new cave pass),
+lantern brackets on the walls, fungi dripping from the roof, glow on the ledges. A **side passage** ends in a choke.
+Downstream the **hot reach**: the tube still young and hot, a **lava stream** running in a channel in its floor (a crust
+carried downstream in its shader), the walls glazed and glowing near the floor, nothing alive; it ends in a sump. The
+visitor carries a dim lamp (in the dark between the skylights the cave would read as black). No weather under the rock.
+**Heat shimmer** (the owner's, 2026-10-07; `src/83-host-heat.js`, also over the caldera's lake): sheets over the hot
+lava re-read the rendered frame at a rising, wavering offset that fades at their edges, with height and with distance (in
+Godot a spatial shader on the same sheets reading `hint_screen_texture` and `hint_depth_texture` at `SCREEN_UV + offset`).
+It runs only with the heat in reach of the camera (the frame then goes through an offscreen target); the caldera's
+doubles in an eruption.
+
 ## Building it (the plan)
 
 - One kit, `biomes/throne`, on the shared core (`CORE_BIOME`). Its belts come from the model's `c` and `p` rasters,
@@ -347,9 +365,66 @@ maths; the glow a flickering `OmniLight3D`.
   side: kīpuka rainforest; the spice frontier at Zey'danin; geyser field; cloud forest; the shoulders; under the plume;
   vent country; glacier and ice caves; the caldera rim.
 
+## Peoples of the island (the owner, 2026-10-07)
+
+Three native cultures, besides the colonists (Voth, the Hykkousoi) on the south-west. **The Cthonians and the ash nomads
+may be cousins of the Chichani; the Islanders are ethnically different.** When an unknown past calamity came (in the
+Cataclysm, or later), the three kin peoples went three ways: **the ash nomads took to wandering, the Chichani took to the
+sea and left the island entirely, and the Cthonians hid.** (So the Chichani's ashen skin and night vision are an old
+family trait; Voth's war for the Throne is a homecoming in its own eyes, and the Cthonians are the cousins who stayed.)
+
+**1. The ash nomads and villagers** (cousins of the Cthonians and the Chichani: the ones who took to wandering) herd creatures on the surface: the savanna of the south flank (station 6), the
+shoulders and the plume's edge (1), out to the ash desert under the plume (7). Nomads move with the herds and the ash
+falls; villagers hold the kopjes, the lahar fans' gravels and the old flows' soil. Their life is the weather: they read the
+plume (ashfall, the ash storm), burn the grass for new growth (the burn and its fire flowers), and know the CO2 hollows as
+places that kill. Earth's grasses and the hardiest Earth stock live with them; the grazers are the fauna kit's.
+
+**2. The Cthonians** (the owner's spelling; cave dwellers) hid, and are still hidden. Their greatest cities are built in
+and around the lava tubes: dwellings carved into the rock, rising as **spires** and sinking as **underground galleries**.
+They know the lava tunnels better than anyone, so their scouts and raiding parties appear and disappear without warning.
+- **Their places:** one **capital**, main and elaborate (a little smaller than Yuni), *its location unknown to outsiders*;
+  **three cave and tufa villages** (each about Mungo's size); a few scattered **surface farming hamlets**.
+- **Their arts:** an extensive knowledge of the cave fungi, used in **medicinal and alchemical arts** known only to them;
+  and the **alecap**, a peculiar purple mushroom they grow which, fermented, makes a fairly passable beer.
+- **Their rock:** the Throne's ash flows, welded where they came to rest, make **ignimbrite (tuff)**: soft enough to carve
+  with an adze, hard enough to stand for centuries, eroded by the rain into **fairy chimneys** and cliffed valleys. So their
+  country is where the tube fields meet the tuff, and their old lava tubes are their roads, cisterns and refuges.
+- **How the caves suit them:** old tubes on dead flows are stable for millennia, cool and constant, with water dripping
+  through their roofs and light at the skylights (where they grow the light's life: the siphon trees, the lamp caps, the
+  cave ferns). They farm the dark (the glow mushrooms, the pale fungi, the alecap, the mat, carefully); Krator's glowing
+  cave life lights their streets.
+- **What they fear:** CO2 pooling in low passages (they keep the deep levels' air moving, and carry something that
+  sickens before a person does), breakdown (a roof's slow collapse), flash floods (a tube is a drain), and a new eruption on
+  the rift that buries a skylight or sends lava down an old tube. Tubes on an active rift are never settled.
+- **Large spaces:** lava tubes are long, not roomy (Krator's lower gravity lets roofs span a little more). Their great
+  halls are where tubes meet, where breakdown has opened a chamber, a **drained magma chamber** (Þríhnúkagígur, Iceland:
+  a bottle 120 m deep), and the halls they cut themselves in the tuff.
+- **Vibe (the owner's):** Cappadocia, Petra, Ethiopia's rock-hewn churches, dwarves, Varanasi and Babylon. The reference
+  board is `kits/cthonian/refs/` (30 images, 2026-10-07): rock-cut cliff faces and a cavern city, fairy chimneys and
+  conical granary towers, glowing pierced temple towers, domed and mushroom-capped houses, cyclopean cube shrines, a
+  fortress under an overhang.
+- **More to plumb (proposed):** *Derinkuyu and Kaymaklı* (Cappadocia's underground cities: eight levels, rolling stone
+  doors, ventilation shafts, stables and chapels below ground); *Vardzia* (Georgia: a cave monastery-city of thirteen levels
+  in a cliff) and *Uplistsikhe*; *Ellora's Kailasa* (a temple cut down from the top of a hill, and India's **stepwells**,
+  Chand Baori and Rani ki Vav: Varanasi's ghats turned underground, flights of stairs down to cisterns); *Lalibela*'s
+  trench churches and *Aksum*'s carved stelae; *the Dogon* (Mali: cliff villages, conical granaries, toguna meeting
+  shelters) and the *Tellem* before them; *Mesa Verde* (cliff palaces, kivas); *Matmata* (Tunisia: pit courtyards);
+  *Matera*'s Sassi; *Shibam* (Yemen: mud towers); *the Guanches* (the Canaries: a volcanic island's cave people, painted
+  caves in tuff; the closest real match); *Rapa Nui*'s and Hawaii's lava-tube refuges and burial caves; *Babylon*'s glazed
+  brick and ziggurats; and for the brewing and the fungi, *chicha* (a name that echoes the Chichani), Ethiopian *tella*,
+  Japanese *koji*.
+
+**3. The islanders** live on the coasts and the isles and make their living on the water (station 4): fishing, kelp and
+seaweed, the coconut and its coir, the reef. Some are related to the Ring Sea Islanders (the brief); they are not kin to the other two. The board's *islander port*
+(`kits/cthonian/refs/islander port.jpg`) is theirs: platforms and sail-roofed halls over the water. They trade between
+the mountain and the sea, and know the spice's wild groves on the isles' geyser ground; their canoes land on the beaches.
+
+*Next (the owner's):* a kit for the Cthonians first: their carved architecture in tuff and tube, then a settlement and a
+station for it (a tuff valley with a carved city, a tube opening in its cliff, a cavern deep inside).
+
 ## Open questions
 
-- **Who are the stranger tribes?** The Chichani's own traits (ashen grey skin, night vision) would suit life under the
+- **Who are the stranger tribes?** (Partly answered: "Peoples of the island" above.) The Chichani's own traits (ashen grey skin, night vision) would suit life under the
   plume. The owner's "maybe": the Chichani came from the island (not only from under the plume), were driven out of
   the crater in the Cataclysm, and have always had a prophecy of their return. Then Voth's war for the Throne is a homecoming in its own eyes, and the natives it fights
   are its cousins, the ones who stayed. Tzintzun's expansion "to the North" would be fulfilling the prophecy, which

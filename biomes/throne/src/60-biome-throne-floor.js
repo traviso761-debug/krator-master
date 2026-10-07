@@ -287,4 +287,22 @@ THRONE.buildCold=function(R,q){reseed(650047);q=q==null?1:q;R=R||2500;const st={
  [[6,L.floor[0],0,2],[13,L.floor[1],L.floor[0],1]].forEach(([cell,hi,lo,lv])=>BIO.grid(cell,0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=hi||ld<lo)return 0;return Math.max(F('cbelt',x,z),F('tundra',x,z),F('warm',x,z))*.9*q;},
   (x,y,z)=>{if(THRONE.blocked(x,z,.6))return;plant(x,y,z,lv);},{patch:.55,patchScale:.02,pad:.5,box:BIO.originBox(hi)}));
  return st;};
+
+// ---------------------------------------------------------------- the cave (the lava tube: stations/tube)
+// Only where the host hands in its 'cave' field (a tube's floor out of the light), on its own seed. Krator's own cave life
+// in the dark: the mat in glowing sheets, glow mushrooms in clusters, pale fungi and alien mushrooms, scale cones, lichen
+// and stones; thickest along the walls' feet, thin down the middle where the lava last ran
+THRONE.buildCave=function(R,q){reseed(660047);q=q==null?1:q;R=R||2500;const st={mat:0,glow:0,cards:0,scales:0,lichen:0,stones:0},L=BIO.LOD();
+ const F=(n,x,z)=>BIO.field(n,x,z);
+ const plant=(x,y,z,lv)=>{const t=rng();
+  if(t<.07){matPatch(x,y,z,lv,st);}
+  else if(t<.4&&hasLib('glowshroom')){around(x,z,lv===2?ri(1,3):1,.3,1.2,(px,pz)=>{if(cardPlant('glowshroom',px,Y(px,pz),pz,rr(.25,.7)))st.glow++;});}
+  else if(t<.6&&hasLib('specimen')){if(cardPlant('specimen',x,y,z,rr(.3,.9)))st.cards++;}
+  else if(t<.7&&hasLib('mushalien')){if(cardPlant('mushalien',x,y,z,rr(.35,.9)))st.cards++;}
+  else if(t<.78){scalecones(x,y,z,lv,st);st.scales++;}
+  else if(t<.9){lichen(x,y,z,.7);st.lichen++;}
+  else{stone(x,y,z,lv,PAL.lava,st,.6);}};
+ BIO.grid(2.2,0,R,(x,z)=>{if(BIO.lodD(x,z)>L.mid)return 0;const c=F('cave',x,z);return c*q*(.45+.55*smooth(.2,.75,F('slope',x,z)+.4*fbm(x*.05,z*.05,6601,2)));},
+  (x,y,z)=>{if(THRONE.blocked(x,z,.5))return;plant(x,y,z,BIO.lodD(x,z)<L.floor[0]?2:1);},{patch:.6,patchScale:.03,pad:.3});
+ return st;};
 })();

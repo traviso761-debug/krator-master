@@ -498,7 +498,7 @@ function cardMat(t,key,o){o=o||{};if(o.glow){const m=glowMat(key,o.glow[0],o.glo
  use('needle',libCard('leaf.needle'));}
 THRONE.LIB.cards={};
 {const C3=[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]],sheet=(lib,key,cells,N,o)=>{if(!LIBP(lib))return;const L=[];
-  cells.forEach((c,i)=>{const t=libCell(lib,CELL(c[0],c[1],N),256,256);if(!t)return;const k=key+i;M[k]=cardMat(t,k,o);L.push(k);});THRONE.LIB.cards[key]=L;};
+  cells.forEach((c,i)=>{const t=libCell(lib,CELL(c[0],c[1],N),(o&&o.px)||256,(o&&o.px)||256);if(!t)return;const k=key+i;M[k]=cardMat(t,k,o);L.push(k);});THRONE.LIB.cards[key]=L;};
  sheet('card.shelf','shelf',[[0,0],[1,1],[2,0],[0,2],[2,2]],3,{glow:[.1,1.0]});
  sheet('card.glowshroom','glowshroom',C3,3,{glow:[.15,1.2]});
  sheet('card.alienflora','aflora',C3,3,{glow:[.05,.5]});
@@ -518,7 +518,7 @@ THRONE.LIB.cards={};
  sheet('card.spiderlily','spiderlily',[[0,0],[1,1],[2,2]],3,{swayA:.02});
  // THE CLOUD FOREST's cards: moss curtains hung from limbs (each cell hangs from its top edge), green fern fronds, and the veil
  // tree's veils (the weeper's pink strands, hung, glowing faintly at night)
- sheet('card.mosshang','mosshang',[[0,0],[1,0],[0,1],[2,1],[1,2],[2,2]],3,{swayW:'(-position.y)',swayA:.05});   // the greener six (its red and orange cells read as autumn)
+ sheet('card.mosshang','mosshang',[[0,0],[1,0],[0,1],[2,1],[1,2],[2,2]],3,{swayW:'(-position.y)',swayA:.05,px:512});   // the greener six (its red and orange cells read as autumn)
  sheet('card.ferngreen','ferngreen',C3,3,{swayA:.05});
  // THE SAVANNA's cards (stations/savanna): tall seeding grass tussocks, and the flowers that come up after a fire
  sheet('card.grassdry','grassdry',C3,3,{swayW:'(position.y)',swayA:.1});
