@@ -9,9 +9,10 @@
       bands round the walls are the fret sheet now (`akSheetRing`, `akSheetStrip`: its 2:1 aspect kept, one sheet top to bottom);
       the geometry figures remain the fallback for a pack without it. The assembly's drum and the chieftain's wall carry the Nazca
       panel, the chieftain's lining and the shaman's floor the crawlers, the chieftain's dais the sun.
-- [ ] The emblem is a gas giant (the owner, 2026-10-07), not the sun: `akGiant` draws it (a banded disc, a tilted ring, four moons)
-      on the assembly's frame and the banners until `patterns/ashnomad/medallion-giant` comes (`core/materials/PROMPTS-nomads.md`;
-      wired as the optional `medAshGiant`).
+- [x] The emblem is a gas giant (the owner, 2026-10-07), not the sun: the owner's `patterns/ashnomad/medallion-giant` (`medAshGiant`)
+      on the assembly's frame and every banner (`akGiant` draws it as geometry for a pack without it). Its slate blue and cream
+      run through the camp as trim: piping round the fret bands, a line in the roofs, a cord at the eaves, the banners' borders, a
+      ring in each finial (`AK_B`).
 - [ ] The parametric common tier's chitin pieces render matte (woodFam 'wood') beside the glossy bespoke chitin ('lacquer');
       the catalog file's ASHNOMAD_COMMON could take `woodFam: 'lacquer'`.
 

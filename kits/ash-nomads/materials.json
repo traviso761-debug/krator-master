@@ -1,6 +1,6 @@
 {
  "build": "ash-nomads",
- "note": "The Ash Nomads kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/26k-kit.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the cloth, stone and wood sets are low (the palette in 22-mat.js colours them), the pattern sheets 1 (their own colours, the vertex colour white). The med* families are single panels (medallions): the kit maps each once over a disc or square (30-geo.js medallion()), so their scale is nominal. Run python3 tools/textures/pack.py kits/ash-nomads after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space; the vertex colour keeps the piece's colour and `mean` is divided back out, so the set adds only its grain, weave or tooling. ashCloth, patFret, patNazca, patEmber, patCrawl, medAshSun and ground.ash are the owner's (2026-10-07). medAshGiant (the gas giant emblem) is owed and optional: 40a-ak-ash.js draws it meanwhile.",
+ "note": "The Ash Nomads kit's adapter onto the material library (core/materials/PLAN.md). The families are the kit's material keys (src/26k-kit.js MAT): the geometry engine writes UVs in world metres divided by the family's scale (TILE), so scale is world metres per tile. tint.keep is how much of the set's own colour survives the vertex colour: the cloth, stone and wood sets are low (the palette in 22-mat.js colours them), the pattern sheets 1 (their own colours, the vertex colour white). The med* families are single panels (medallions): the kit maps each once over a disc or square (30-geo.js medallion()), so their scale is nominal. Run python3 tools/textures/pack.py kits/ash-nomads after any change, then python3 build.py; ?mat=proc shows the procedural look. The f_* families are DETAIL maps for the catalog furniture (meshes with no UVs): 91f-furnish.js projects each onto its render family triplanar in world space; the vertex colour keeps the piece's colour and `mean` is divided back out, so the set adds only its grain, weave or tooling. ashCloth, patFret, patNazca, patEmber, patCrawl, medAshSun and ground.ash are the owner's (2026-10-07). medAshGiant is the owner's gas giant emblem (2026-10-07).",
  "size": 512,
  "families": {
   "felt": {
@@ -534,8 +534,7 @@
    },
    "roughLift": 0.15,
    "specular": 0.3,
-   "size": 512,
-   "optional": true
+   "size": 512
   }
  }
 }

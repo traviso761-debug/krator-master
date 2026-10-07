@@ -446,5 +446,38 @@
    "normal_strength": 0.7,
    "mute": 0
   }
+ },
+ {
+  "src": "ashnomad_medallion-giant.png",
+  "out": "core/materials/patterns/ashnomad/medallion-giant",
+  "record": {
+   "id": "ashnomad/medallion-giant",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (supplied by the owner in chat, 2026-10-07)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/medallion-giant: the Ash Nomads emblem, a ringed gas giant in the Krator sky giant colours (slate blue and cream bands, an ivory ring), four moons, in a blue and cream key-fret ring on black felt (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the Ash Nomads emblem: the assembly, the banners; any culture that honours the giant in the sky"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": false,
+   "delight": 0.0,
+   "rough": 0.6,
+   "rough_var": 0.12,
+   "normal_strength": 0.45,
+   "mute": 0,
+   "band": 0.0
+  }
  }
 ]

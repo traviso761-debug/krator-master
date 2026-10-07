@@ -729,6 +729,36 @@
     "sourceMean": 0.1903
    }
   },
+  "medAshGiant": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "medAshGiant.albedo.webp",
+    "normalMap": "medAshGiant.normal.webp",
+    "roughnessMap": "medAshGiant.rough.webp"
+   },
+   "lib": "patterns/ashnomad/medallion-giant",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.15,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "5d8c1a649b712b4128efca9c0bb9fccb165ae500",
+    "normal": "ebfec292021438568d242aea28d1987155108f67",
+    "roughness": "aa2e7c1ee16434399ba0688376901eae5feab94b"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.40181446321076036,
+    "sourceMean": 0.4018
+   }
+  },
   "medAshSun": {
    "breakup": null,
    "card": false,

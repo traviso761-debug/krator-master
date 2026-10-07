@@ -43,7 +43,7 @@ defBuilding({key:'tent-assembly',name:'Assembly and mess hall',seed:4602,cut:tru
    // the emblem frame over the roof: two masts, a crossbar, the gas giant, red banners down each side
    const fy=AC.pH+3.6;for(const s of [-1,1]){pole('wood',[s*1.9,rY(1.9)-.5,1.2],[s*1.9,fy+1.5,1.2],.1,P('woodD'),8);
     W(s*1.9,0,1.2,0,()=>akSpire(fy+1.45,1));
-    withCloth(clothHang(4.2,.04),()=>psurf('flag',(u,v)=>[s*1.9+(u-.5)*.7,fy+1.1-v*4.2,1.32],3,8,P('red')));}
+    withCloth(clothHang(4.2,.04),()=>{psurf('flag',(u,v)=>[s*1.9+(u-.5)*.8,fy+1.12-v*4.28,1.31],3,8,akC(AK_B));psurf('flag',(u,v)=>[s*1.9+(u-.5)*.66,fy+1.1-v*4.2,1.32],3,8,P('red'));psurf('flag',(u,v)=>[s*1.9+(u-.5)*.66,fy+1.1-v*4.2,1.30],3,8,P('red'));});}
    beam('wood',[-2.1,fy+1.15,1.2],[2.1,fy+1.15,1.2],.08,P('woodD'),true,8);
    akGiant(fy-.2,1.32,1.55);
    // banner poles round the tent, each a long red banner with its yellow disc

@@ -44,8 +44,8 @@ the ridge, the bands of figures, banners, the sun disc), the defs in `42`-`59`.
 
 **Textures and patterns.** The owner's sheets (2026-10-07): the ash cloth, the fret band round every wall, the Nazca panel on
 the assembly and the chieftain's tent, the ember and crawler linings, the sun medallion on the chieftain's dais, the ash ground.
-The roofs' bands are vertex colour with the sawtooth as geometry. **The emblem is a gas giant**, drawn by `akGiant` on the
-assembly's frame and the banners until its sheet comes (`core/materials/PROMPTS-nomads.md`). Chitin is the library's
+The roofs' bands are vertex colour with the sawtooth as geometry. **The emblem is a gas giant** (the owner's medallion, in the colours
+the Krator sky gives the giant), on the assembly's frame and every banner; its slate blue trims the camp. Chitin is the library's
 `organic.chitin` and `chitin.millipede`.
 
 See `API.md` for the fragments and `KNOWN_ISSUES.md` for what is open.
