@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1766,
+    879
+   ],
+   "seam_after": [
+    0.937,
+    0.567
+   ],
+   "seam_before": [
+    2.995,
+    2.043
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.35,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "paint",
+  "id": "zeijani/kiva-mural-b",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   3,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "zeijani-kiva-mural-b.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "an extra the owner added to the delivery (\"Ancient Cosmic Ritual Fresco Mural.png\")",
+  "reuse": "an extra: a second kiva mural, the cosmos: Zeijani kivas, the temple",
+  "sha1": "ae81cd4dd4cd551a36f9e7310106d9b5d05686cf"
+ }
+}

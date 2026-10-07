@@ -1,0 +1,44 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "center",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 50,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.mushroom.alecap",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.mushroom.alecap.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Purple Mushroom Cluster Reference Sheet.png\"); a sheet on flat magenta (#ff00ff)",
+  "reuse": "the alecap, 3 x 3 clumps on compost: Zeijani beds and wild in caves (a biomes/throne species); any purple fungus",
+  "sha1": "991d4f82168372bda7cbf66c509b4c9c118ace93"
+ }
+}

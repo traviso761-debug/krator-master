@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.103,
+    1.22
+   ],
+   "seam_before": [
+    1.426,
+    1.175
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "rock.basalt.oxidised",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.basalt.oxidised.png",
+  "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Multicolored Fractured Rock Texture.png\")",
+  "reuse": "a lava tube's oxidised breakdown, red, rose, mauve, teal (Raufarholshellir): Zeijani ceilings and fallen blocks; any lava cave or mineral-stained cliff",
+  "sha1": "7e73b36126a4b77084ee438db4b392c45d21f6db"
+ }
+}

@@ -1,0 +1,626 @@
+[
+ {
+  "src": "rock.tuff.png",
+  "out": "core/materials/library/rock.tuff",
+  "record": {
+   "id": "rock.tuff",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Porous Beige Volcanic Stone Texture.png\")",
+    "reuse": "raw welded tuff (ignimbrite): Zeijani spires, cliffs and gallery fronts; any Cappadocian or volcanic-tuff country (the Throne's ash flows, a tuff valley)"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.6,
+   "lift": 0.12,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "stone.tuff.polished.png",
+  "out": "core/materials/library/stone.tuff.polished",
+  "record": {
+   "id": "stone.tuff.polished",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.38,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Warm Travertine Stone Texture.png\")",
+    "reuse": "burnished tuff (it reads as a soft travertine): Zeijani wealthy and civic carved rooms; any polished cream stone (court floors, a bath)"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 0.35,
+   "rough": 0.38,
+   "rough_var": 0.08,
+   "dark_gloss": 0.3,
+   "size": 1024
+  }
+ },
+ {
+  "src": "stone.basalt.polished.png",
+  "out": "core/materials/library/stone.basalt.polished",
+  "record": {
+   "id": "stone.basalt.polished",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.38,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Dark Charcoal Terrazzo Stone Texture.png\")",
+    "reuse": "honed near-black basalt: Zeijani hub floors and polished tube walls; any polished dark stone (altars, slate-dark floors)"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.5,
+   "lift": 0.08,
+   "normal_strength": 0.35,
+   "rough": 0.38,
+   "rough_var": 0.08,
+   "dark_gloss": 0.3,
+   "size": 1024
+  }
+ },
+ {
+  "src": "rock.basalt.flowbanded.png",
+  "out": "core/materials/library/rock.basalt.flowbanded",
+  "record": {
+   "id": "rock.basalt.flowbanded",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Layered Basalt Lava Flow Texture.png\")",
+    "reuse": "a lava tube's flow-banded lining (Raufarholshellir): the Zeijani tubes, the Throne's tube station, any lava cave"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.6,
+   "lift": 0.12,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "rock.basalt.oxidised.png",
+  "out": "core/materials/library/rock.basalt.oxidised",
+  "record": {
+   "id": "rock.basalt.oxidised",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Multicolored Fractured Rock Texture.png\")",
+    "reuse": "a lava tube's oxidised breakdown, red, rose, mauve, teal (Raufarholshellir): Zeijani ceilings and fallen blocks; any lava cave or mineral-stained cliff"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.6,
+   "lift": 0.12,
+   "normal_strength": 1.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "bone.ossuary.png",
+  "out": "core/materials/library/bone.ossuary",
+  "record": {
+   "id": "bone.ossuary",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Seamless Ossuary Wall of Skulls and Bones.png\")",
+    "reuse": "an ossuary wall of stacked bones and skulls: the Zeijani catacombs; any culture's charnel house or crypt"
+   }
+  },
+  "options": {
+   "band": 0.06,
+   "delight": 0.5,
+   "lift": 0.12,
+   "normal_strength": 1.0,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-labyrinth-relief.png",
+  "out": "core/materials/patterns/zeijani/labyrinth-relief",
+  "record": {
+   "id": "zeijani/labyrinth-relief",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Seamless Carved Stone Labyrinth Texture.png\")",
+    "reuse": "labyrinth relief in tuff: the Zeijani council chamber and civic fronts"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.25,
+   "lift": 0.0,
+   "normal_strength": 0.9,
+   "rough": 0.85,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-frieze-spirits.png",
+  "out": "core/materials/patterns/zeijani/frieze-spirits",
+  "record": {
+   "id": "zeijani/frieze-spirits",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Ancient Ritual Procession Stone Frieze.png\")",
+    "reuse": "a carved frieze of masked spirit dancers between cloud terraces: Zeijani wealthy fronts, the temple's base"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.25,
+   "lift": 0.0,
+   "normal_strength": 0.9,
+   "rough": 0.85,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-frieze-spirits-b.png",
+  "out": "core/materials/patterns/zeijani/frieze-spirits-b",
+  "record": {
+   "id": "zeijani/frieze-spirits-b",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.8,
+    0.9
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Ancient Stone Dancer Frieze.png\")",
+    "reuse": "an extra: a second spirit-dancer frieze: Zeijani fronts, kivas"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.25,
+   "lift": 0.0,
+   "normal_strength": 0.9,
+   "rough": 0.85,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-frieze-spirits-c.png",
+  "out": "core/materials/patterns/zeijani/frieze-spirits-c",
+  "record": {
+   "id": "zeijani/frieze-spirits-c",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.8,
+    0.9
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Repeating Mythic Stone Figure Frieze.png\")",
+    "reuse": "an extra: a third frieze, horned guardian figures: Zeijani civic fronts, the council"
+   },
+   "pattern": true,
+   "_note": "processed without the period crop (it cut the motif): edges cross-faded"
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.25,
+   "lift": 0.0,
+   "normal_strength": 0.9,
+   "rough": 0.85,
+   "rough_var": 0.12,
+   "size": 1024,
+   "band": 0.05
+  }
+ },
+ {
+  "src": "zeijani-frieze-skeletons.png",
+  "out": "core/materials/patterns/zeijani/frieze-skeletons",
+  "record": {
+   "id": "zeijani/frieze-skeletons",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.9,
+    0.9
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Seamless Mesoamerican Skeleton Relief Frieze.png\")",
+    "reuse": "an extra: a frieze of dancing skeletons: the Zeijani catacombs and mortuary chapel; any funerary front"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.25,
+   "lift": 0.0,
+   "normal_strength": 0.9,
+   "rough": 0.85,
+   "rough_var": 0.12,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-kiva-mural.png",
+  "out": "core/materials/patterns/zeijani/kiva-mural",
+  "record": {
+   "id": "zeijani/kiva-mural",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Weathered Mythic Ritual Fresco.png\")",
+    "reuse": "a kiva mural of masked spirits and purple mushrooms on lime plaster: Zeijani kiva and shrine walls"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.35,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-kiva-mural-b.png",
+  "out": "core/materials/patterns/zeijani/kiva-mural-b",
+  "record": {
+   "id": "zeijani/kiva-mural-b",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Ancient Cosmic Ritual Fresco Mural.png\")",
+    "reuse": "an extra: a second kiva mural, the cosmos: Zeijani kivas, the temple"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.35,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-kiva-mural-c.png",
+  "out": "core/materials/patterns/zeijani/kiva-mural-c",
+  "record": {
+   "id": "zeijani/kiva-mural-c",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    3,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Weathered Ritual Mural Frieze.png\")",
+    "reuse": "an extra: a third kiva mural: Zeijani kivas, the estates' shrines"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.35,
+   "rough": 0.85,
+   "rough_var": 0.1,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-textile.png",
+  "out": "core/materials/patterns/zeijani/textile",
+  "record": {
+   "id": "zeijani/textile",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Woven Southwestern Diamond Rug Pattern.png\")",
+    "reuse": "a woven blanket of stepped diamonds in alecap purple, cinnabar, ochre, soot and bone: Zeijani blankets, awnings, banners, cushions; the Eastern Nomads' pueblo cloth"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "normal_strength": 0.5,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-textile-b.png",
+  "out": "core/materials/patterns/zeijani/textile-b",
+  "record": {
+   "id": "zeijani/textile-b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Inverted Kilim Diamond Weave.png\")",
+    "reuse": "an extra: a second Zeijani weave: rugs, saddle cloths; any kilim"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "normal_strength": 0.5,
+   "rough": 0.9,
+   "rough_var": 0.08,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-glazed-frieze.png",
+  "out": "core/materials/patterns/zeijani/glazed-frieze",
+  "record": {
+   "id": "zeijani/glazed-frieze",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-ready.md, \"The Zeijani\" (delivered as \"Ancient Turquoise Salamander Tile Mural.png\")",
+    "reuse": "glazed relief brick, a striding salamander between rosette bands (Babylon): the capital's portal rim, the temple's processional way"
+   },
+   "pattern": true,
+   "_note": "processed without the period crop (it cut the motif): edges cross-faded"
+  },
+  "options": {
+   "pattern": false,
+   "keep_aspect": true,
+   "delight": 0.1,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "dark_gloss": 0.2,
+   "size": 1024,
+   "band": 0.05
+  }
+ },
+ {
+  "src": "zeijani-glazed-frieze-dragonfly.png",
+  "out": "core/materials/patterns/zeijani/glazed-frieze-dragonfly",
+  "record": {
+   "id": "zeijani/glazed-frieze-dragonfly",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Ancient Glazed Dragonfly Mosaic.png\")",
+    "reuse": "an extra: glazed brick, a dragonfly on ochre: Zeijani gates, baths"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.1,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "dark_gloss": 0.2,
+   "size": 1024
+  }
+ },
+ {
+  "src": "zeijani-glazed-frieze-beetle.png",
+  "out": "core/materials/patterns/zeijani/glazed-frieze-beetle",
+  "record": {
+   "id": "zeijani/glazed-frieze-beetle",
+   "family": "ceramic",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads/zeijani.zip, 2026-10-07), generated from core/materials/PROMPTS-ready.md \"The Zeijani\"",
+    "licence": "generated for this project by its owner",
+    "prompt": "an extra the owner added to the delivery (\"Ancient Stag Beetle Mosaic Frieze.png\")",
+    "reuse": "an extra: glazed brick, a staghorn beetle: the herders' and the beetle riders' gates at the outpost"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.1,
+   "lift": 0.0,
+   "normal_strength": 0.6,
+   "rough": 0.35,
+   "rough_var": 0.1,
+   "dark_gloss": 0.2,
+   "size": 1024
+  }
+ }
+]
