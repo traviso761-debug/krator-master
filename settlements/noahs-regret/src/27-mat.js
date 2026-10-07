@@ -36,7 +36,9 @@ MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.8});TILE.
 MAT.brass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.38,metalness:.75});TILE.brass=1;
 MAT.dark=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});TILE.dark=1;           // service shafts, voids, ducts
 MAT.flag=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.92,side:THREE.DoubleSide});TILE.flag=1;
-MAT.glass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.2,transparent:true,opacity:.55,depthWrite:false});TILE.glass=1;
+MAT.glass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.2,transparent:true,opacity:.42,depthWrite:false});TILE.glass=1;
+/* balustrades and screens: nearly clear (looked through from above, the window glass reads milky) */
+MAT.glassClear=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.05,metalness:.1,transparent:true,opacity:.18,depthWrite:false});TILE.glassClear=1;
 {const m=new THREE.MeshBasicMaterial({vertexColors:true});m.toneMapped=false;MAT.glow=m;TILE.glow=1;}   // lamp flames, lit lenses
 MAT.water=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.06,metalness:.1,transparent:true,opacity:.82,depthWrite:false});TILE.water=1;
 /* ---------------------------------------------------------------- shared uniforms and the geometry-side hooks
@@ -45,7 +47,7 @@ MAT.water=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.06,metaln
    back faces of solid materials draw in the section colour, so the decks read as a cut plan: walls and slabs show as
    solid sections and the furnished rooms of the deck below lie open. The furniture's materials take the same hook
    (91f-furnish.js). */
-const ANIMU={uTime:{value:0},uWind:{value:1},uCutOn:{value:0},uCutY:{value:1e4},uHullInv:{value:new THREE.Matrix4()},uSec:{value:new THREE.Color(0x2a1a16)}};
+const ANIMU={uTime:{value:0},uWind:{value:1},uCutOn:{value:0},uCutY:{value:1e4},uHullInv:{value:new THREE.Matrix4()},uSec:{value:new THREE.Color(0x6e5e56)}};
 ANIMU.uHullInv.value.fromArray(NR_HULL.m16).invert();
 const NR_SOLID=new Set();      // materials that show the section colour on their back faces while cut
 function nrCutHook(m,solid){if(solid)NR_SOLID.add(m);
@@ -62,7 +64,7 @@ function nrAnimHooks(){
  matHook(MAT.glow,'flick',sh=>{sh.uniforms.uTime=ANIMU.uTime;
   sh.vertexShader='uniform float uTime;attribute float aFlk;varying float vFlk;\n'+GLSL_FLICK+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvFlk=1.+aFlk*.3*flick(position,uTime);');
   sh.fragmentShader='varying float vFlk;\n'+sh.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=vFlk;');});
- for(const k in MAT)nrCutHook(MAT[k],!(k==='glass'||k==='water'||k==='glow'||k==='flag'||k==='sail'));}
+ for(const k in MAT)nrCutHook(MAT[k],!(k==='glass'||k==='glassClear'||k==='water'||k==='glow'||k==='flag'||k==='sail'));}
 nrAnimHooks();
 /* ---------------------------------------------------------------- the palette (sRGB hex). Arrays are picked with P(k). */
 const NRPAL={

@@ -181,7 +181,7 @@ const NR=(function(){
  // ---------------------------------------------------------------- the FORECASTLE: the bow's sheer
  // Round the bow the outer skin rises above the promenade to a bulwark, and the promenade inside it climbs as a deck from
  // D1 (|t| = FORE.t) to the D3 floor at the stem: a ship's sheer line. foreY(t): that deck's height (hull y) at t.
- N.FORE={t:64,y0:L.D[0],y1:L.D[2],bulwark:1.1};
+ N.FORE={t:64,y0:L.D[0],y1:L.D[2],bulwark:1.1,hatches:[-34,34]};
  N.foreY=function(t){const u=Math.abs(t)/N.FORE.t;return u>=1?L.D[0]:L.D[0]+(N.FORE.y1-L.D[0])*Math.pow(1-u,1.6);};
  // ---------------------------------------------------------------- the FORE: the forecourt plaza, the terraces, the bridge house
  // The forward third of the basin is decked over at quay level (D1) between the hulls' inner skins: the FORECOURT PLAZA,
@@ -202,12 +202,16 @@ const NR=(function(){
  {const BULGE=10,tiers=[[190,L.D[0],L.D[2]],[196,L.D[2],L.D[3]],[202,L.D[3],L.TOP]];
   N.TIERS=tiers.map(([X,y0,y1],k)=>{const s=-(W.MAIN+.3),tk=tAtX(X,s),pts=[];
    for(let t=-tk;t<=tk+1e-6;t+=Math.min(1.5,2*tk/120))pts.push(N.at(t,s));
-   const zk=N.at(tk,s)[1],face=[];for(let i=1;i<24;i++){const z=lerp(zk,-zk,i/24);face.push([X-BULGE*(1-(z/zk)*(z/zk)),z]);}
+   const zk=N.at(tk,s)[1],face=[];for(let i=1;i<96;i++){const z=lerp(zk,-zk,i/96);face.push([X-BULGE*(1-(z/zk)*(z/zk)),z]);}
    return {k,X,apex:X-BULGE,y0,y1,zk,tk,face:[N.at(tk,s)].concat(face,[N.at(-tk,s)]),poly:ccw(pts.concat(face))};});
-  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))};
-  /* the inboard cabins at the bow whose glass now faces the terraces' solid lose their light: windowless stores */
-  for(const C of N.cabins){if(!C.inhabited||C.side>0)continue;const p=N.at(C.tm,C.sOut+C.side*2.5),T=N.TIERS.find(T=>T.y0<=L.D[C.deck]+.1&&L.D[C.deck]<T.y1-.1);
-   if(T&&N.inPoly(T.poly,p[0],p[1])){C.kind='store';C.blind=true;}}}
+  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))}; /* the terraces are hollow: the FORWARD HALLS behind their glazed faces, one a storey (the lowest tier holds two). Doors
+    in the faces (z of each door's middle) from the plaza and from each terrace; a spiral stair joins them all, from the
+    plaza's level to the top deck, where it comes up inside the bridge house's lowest storey */
+ N.FORE_HALLS=[{id:'fwd-hall',name:'the forward hall',tier:0,y0:L.D[0],y1:L.D[1],doors:[-34,-17,17,34]},
+  {id:'fwd-store',name:'the forward store',tier:0,y0:L.D[1],y1:L.D[2],doors:[]},
+  {id:'fwd-drill',name:'the drill hall',tier:1,y0:L.D[2],y1:L.D[3],doors:[-15,15]},
+  {id:'fwd-gallery',name:'the forward gallery',tier:2,y0:L.D[3],y1:L.TOP,doors:[-15,15]}];
+ N.FORE_SPIRAL={x:214,z:0,r:3.2,hole:3.6,y0:L.D[0],y1:L.TOP};}
  /* the bridge house: storey k a scaled copy of the bow's plan (fine forward, round aft), centre xc, half-length a, half-
     width b; the bridge on top, its wings across */
  {const plan=(xc,a,b,n)=>{const P=[];for(let i=0;i<n;i++){const th=i/n*TAU,c=Math.cos(th),sn=Math.sin(th),m=c>0?MB:2.2;
@@ -215,6 +219,12 @@ const NR=(function(){
   const st=[];for(let k=0;k<4;k++){const y0=L.TOP+k*L.DH,xc=237.5+1.6*k,a=32.5-3.6*k,b=46-6.5*k;st.push({k,y0,y1:y0+L.DH,xc,a,b,poly:plan(xc,a,b,96)});}
   const yb=L.TOP+4*L.DH,br={y0:yb,y1:yb+3.9,xc:246,a:17,b:21,poly:plan(246,17,21,72),wings:{x:252,z:31,d:5.5}};
   N.BRIDGEHOUSE={storeys:st,bridge:br,mast:{x:243,y:br.y1,h:16},name:'the bridge house'};}
+ /* the officers' berths (the bridge house's storey 2) are cabins round the glass, a ring corridor inside them: each a slice
+    of the storey's outline from F_IN (its corridor wall) out to the glass; poly is its room (inset), door on the corridor */
+ {const S=N.BRIDGEHOUSE.storeys[2],n=S.poly.length,K=12,F_IN=.62,F_R=.665,F_O=.975,c=[S.xc,0],sc=(p,f)=>[c[0]+(p[0]-c[0])*f,c[1]+(p[1]-c[1])*f];
+  N.BRIDGEHOUSE.berths={F_IN,K,cabins:[]};
+  for(let k=0;k<K;k++){const i0=k*n/K,i1=(k+1)*n/K,a=S.poly[i0%n],b=S.poly[i1%n],m=S.poly[Math.round((i0+i1)/2)%n];
+   N.BRIDGEHOUSE.berths.cabins.push({id:'berth-'+k,i0,i1,poly:ccw([sc(a,F_R),sc(b,F_R),sc(b,F_O),sc(a,F_O)]),door:sc(m,F_IN),win:sc(m,F_O),mid:sc(m,(F_R+F_O)/2),y:S.y0});}}
  /* the bridge house's spiral stair: from the top deck through every storey to the bridge, about (x, 0) */
  N.BRIDGEHOUSE.stair={x:240,z:0,r:3.2,hole:3.6,y0:L.TOP,y1:N.BRIDGEHOUSE.bridge.y0};
  /* point tests (hull x, z): in a polygon; the floors of the fore under a point (hull y) */
@@ -223,7 +233,9 @@ const NR=(function(){
  N.sternFloors=function(x,z){const F=[];for(const [t,dir] of [[N.T1,1],[N.T0,-1]]){const c=N.at(t,0),T=N.tan(t),dx=x-c[0],dz=z-c[1];
    if((dx*T[0]+dz*T[1])*dir<=0)continue;const r=Math.hypot(dx,dz);if(r>W.PONT+.7)continue;F.push(L.D[0]);
    if(r<W.MAIN)F.push(L.D[1],L.D[2]);if(r<17.5)F.push(L.D[3]);if(r<15)F.push(L.TOP);}return F;};
- N.foreFloors=function(x,z){const F=[];if(N.inPoly(N.PLAZA.poly,x,z)){let top=L.D[0];for(const T of N.TIERS)if(N.inPoly(T.poly,x,z))top=T.y1;F.push(top);}
+ N.foreFloors=function(x,z){const F=[];if(N.inPoly(N.PLAZA.poly,x,z)){F.push(L.D[0]);
+   /* the forward halls: each tier's floors and roof (the lowest tier has a floor between its two storeys) */
+   for(const T of N.TIERS)if(N.inPoly(T.poly,x,z)){F.push(T.y0,T.y1);if(T.k===0)F.push(L.D[1]);}}
   /* the bridge house's storeys are hollow: each one's floor, and its roof (the next one's floor, or a terrace) */
   const B=N.BRIDGEHOUSE;for(const S of B.storeys)if(N.inPoly(S.poly,x,z))F.push(S.y0,S.y1);
   if(N.inPoly(B.bridge.poly,x,z))F.push(B.bridge.y0);return F;};

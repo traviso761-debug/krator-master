@@ -17,46 +17,36 @@
 
 ## The hull and the piers
 
-- [ ] The terraces (the inner bow built up to the top deck) are solid inside. The 74 inboard cabins on D3-D4 whose glass
-      faced them are windowless stores now; the D1-D2 cabins behind them are stripped anyway.
-- [ ] The bridge house's four decks are open-plan halls furnished piece by piece round the spiral stair (no partitions,
-      not ROOM()s); the spiral stair is the only way up from the top deck.
-- [ ] Ruephus's headquarters moved from the top deck to the head of the forecourt plaza (quay level) when the bridge house
-      took the bow; one Lens office was dropped and a Drum tower moved aft for the same reason.
-
-- [ ] The two hulls meet at the bow in a tight V: the inboard skin bends at about 10 m there, and the liner mole's root
-      follows that curve. Cabins on the inboard side of the bow are too narrow for a template and are stores.
-- [ ] The forecastle is a closed void between the bulwark and the main block's D1-D2 walls (stripped decks): those cabins'
-      windows look onto its inside.
-- [ ] The rounded sterns' D1-D2 galleries (inside the glazed shell) are empty and have no door (those decks are stripped);
-      D3 and D4 open onto theirs from both corridors. The screws and rudders are simple (a hub, four flat blades, a slab).
+- [ ] The screws and rudders are simple (a hub, four flat blades, a slab rudder).
+- [ ] The inboard cabins at the bow look through their glass into the forward halls (the terraces' insides), not out to
+      the harbour.
 
 ## Interiors
 
-- [ ] Cabins are furnished by **template** (width class, door side, kind, deck): two cabins of one template have the same
-      furniture. The template room is the class width x the cabin depth, inside the real (slightly trapezoidal) cabin, so the
-      outboard few centimetres of the wider cabins stay empty. Records exist per cabin.
-- [ ] Deck buildings of one type (four Ribbon terraces, three Drum towers, two barracks offices) are furnished alike.
-- [ ] The grand dining room, the bridge, the engine rooms, the crew messes, the greenhouse and the atrium are furnished
-      piece by piece, not by the placer (a 2,000 m2 hall is not a room the placer's programmes fit); they are registered as
-      zones, not as ROOM()s. The brig's cages are placed by hand too (the catalog's cages are yard pieces).
-- [ ] The ship's room kinds (sick bay, chart room,
-      strongroom, armoury, brig, sail loft, laundry) are programmes added by this page (70-nr-interiors.js), not by the
-      interiors kit: the sail loft gets looms and benches, the laundry quench tubs and goods rails (no laundry pieces in the
-      catalog yet).
-- [ ] The small Reliquary's stairs are steep (0.21 m risers on 0.23 m treads: a ship's stair). Its 12-gon walls are short.
-- [ ] The cabins on D1 and D2 are stripped and empty by the brief; their doors are gone. They are rooms in the data (kind
-      `stripped`, no furniture) but nothing is drawn in them but the debris.
+- [ ] Cabins are furnished by **template** (width class, door side, kind, deck, and one of two variants by the cabin's
+      hash): neighbours differ, but every fourth or so repeats. The template room is the class width x the cabin depth,
+      inside the real (slightly trapezoidal) cabin, so the outboard few centimetres of the wider cabins stay empty.
+- [ ] The halls (the grand dining room, the bridge, the engine rooms, the crew messes, the greenhouse, the atrium, the
+      forward halls, the bridge house's open decks, the plaza, the chain locker, the stern lounges) are furnished piece by
+      piece, not by the placer (a 2,000 m2 hall is not a room the placer's programmes fit). They are rooms in the data
+      (`window._interiors.halls`: outline, deck heights, pieces), not ROOM()s. The brig's cages are placed by hand too.
+- [ ] The ship's room kinds (sick bay, chart room, strongroom, armoury, brig, sail loft, laundry) are programmes added by
+      this page (70-nr-interiors.js), not by the interiors kit: the sail loft gets looms and benches, the laundry quench
+      tubs and goods rails. The master catalog has no sail-making or laundry pieces yet (a change to the shared catalog).
 
 ## Look
 
-- [ ] The cut-away's section colour (dark red-brown) fills every cut solid, including the service core's long dark
-      blocks: legible as a plan, heavy as a picture.
-- [ ] The terrain is one warped grid (2.5 m cells over the hull): where the dune banks against the starboard pontoon, a
-      cell's slope can show inside the starboard holds as drifted sand along the wall.
-- [ ] Glass is one flat transparent tint; at grazing angles the interiors behind it are hard to see from outside (the
-      deck cut is the way in).
-- [ ] The atrium's glass balustrades read milky when looked through from above (the gallery view): one flat glass tint.
+- [ ] Glass is one tint (lighter since 2026-10-07; the balustrades nearly clear); at grazing angles the interiors behind
+      it are still hard to see from outside (the deck cut is the way in).
+
+## Decisions (not issues)
+
+- Ruephus's headquarters moved from the top deck to the head of the forecourt plaza (quay level) when the bridge house took
+  the bow; one Lens office was dropped and a Drum tower moved aft for the same reason.
+- The cabins on D1 and D2 are stripped and empty by the brief (rooms in the data, kind `stripped`, no furniture). The
+  stern galleries behind them and the chain locker hold the pirates' stores.
+- Along the starboard hull the ground is scoured a little outside the skin, so no sand shows inside the holds (the
+  terrain grid's step lies outside the hull).
 
 ## Performance
 

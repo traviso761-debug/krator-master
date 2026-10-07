@@ -4,7 +4,7 @@
 // white shell, arched windows (an arcade at the ground), undulating balconies, a roof of twisted chimney sculptures round a
 // ribbed glass lattice dome, the Moebius needle spire on top, a colonnaded porch at the door. Bloody Ruephus holds court
 // in it: his flag, a blood-red jack with a skull over crossed bones, flies from the needle. It stands at the bow, its door
-// along the ring toward the beach side. The plan (kits/interiors/sets/noahs-regret.js) is the 12-gon inside the shell.
+// along the ring toward the beach side. The plan (kits/interiors/sets/noahs-regret.js) is the 10-gon inside the shell.
 const NR_REL={R:12,NS:3,PL:.5,SH:3.65,SHELL:13.1};
 /* the shell's radius at angle th (x = r sin th, z = r cos th: th 0 is the front) on storey k */
 function nrRelR(th,k){return NR_REL.SHELL+.45*Math.sin(7*th+.55*k)+.2*Math.sin(3*th-.38*k);}

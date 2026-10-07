@@ -24,6 +24,9 @@ function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===i
   {const S=NR.BRIDGEHOUSE.storeys[0],St=NR.BRIDGEHOUSE.stair;V["Inside the bridge house: the officers' hall"]=nrV(H(S.xc-26,S.y0+1.7,-14),H(S.xc+6,S.y0+1.2,6));
    V['Plan: the bridge house, the chart deck']=nrV(H(S.xc-40,S.y0+44,-30),H(S.xc,S.y0+4,0),{cut:cutAt('Bridge house: the chart')});
    V['The spiral stair to the bridge']=nrV(H(St.x-10,St.y0+1.7,-8),H(St.x,St.y0+5.5,0));}
+  {const T=NR.TIERS[0];V['Inside the forward hall']=nrV(H(T.apex+4,L.D[0]+1.7,-30),H(T.apex+30,L.D[0]+1.2,10));
+   const S=NR.BRIDGEHOUSE.storeys[2];V["Plan: the officers' berths"]=nrV(H(S.xc-36,S.y0+38,-34),H(S.xc,S.y0,0),{cut:cutAt('Bridge house: the berths')});
+   const c=NR.at(-20,NR.W.MAIN+3.4),a=NR.at(10,NR.W.MAIN+3.6);V['Inside the chain locker']=nrV(H(c[0],L.D[0]+1.7,c[1]),H(a[0],L.D[0]+1.0,a[1]));}
   {const e=NR.at(NR.T1+3,-9.75),a=NR.at(NR.T1+18,4);V['The stern lounge (D3)']=nrV(nrH2W(e[0],L.D[2]+1.7,e[1]),nrH2W(a[0],L.D[2]+1.0,a[1]));}
   V['Plan: the bridge']=nrV(H(br.xc-34,br.y0+30,-30),H(br.xc,br.y0,0),{cut:cutAt('The bridge')});
   V["Plan: Ruephus's headquarters"]=nrV(H(hq.x-32,L.D[0]+30,-28),H(hq.x,L.D[0],0),{cut:cutAt('D1')});}
@@ -59,9 +62,10 @@ function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===i
 function nrDeckOf(y){const L=NR.L;if(y<L.D[0])return y<L.MEZZ?'the holds':'the hold mezzanine';if(y>=L.TOP-.05)return 'the top deck';for(let d=3;d>=0;d--)if(y>=L.D[d]-.05)return 'D'+(d+1);return '?';}
 function nrWhere(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);
  /* the fore first: the bridge, the bridge house, the terraces, the plaza */
- {const B=NR.BRIDGEHOUSE;if(NR.inPoly(B.bridge.poly,h[0],h[2])&&h[1]>=B.bridge.y0-.3)return 'the bridge';
-  if(NR.inPoly(B.storeys[0].poly,h[0],h[2])&&h[1]>=NR.L.TOP-.05)return B.name;
-  if(NR.inPoly(NR.PLAZA.poly,h[0],h[2])&&h[1]>=NR.L.D[0]-.3&&h[1]<NR.L.TOP+1){const T=NR.TIERS.filter(T=>NR.inPoly(T.poly,h[0],h[2]));return T.length?'the terraces':NR.PLAZA.name;}}
+ {const B=NR.BRIDGEHOUSE,y=h[1]+.3;if(NR.inPoly(B.bridge.poly,h[0],h[2])&&y>=B.bridge.y0)return 'the bridge';
+  for(const S of B.storeys.slice().reverse())if(NR.inPoly(S.poly,h[0],h[2])&&y>=S.y0){if(S.k===2){const C=B.berths.cabins.find(C=>NR.inPoly(C.poly,h[0],h[2]));if(C)return B.name+' · '+C.id;}
+   return B.name+' · '+["the officers' hall",'the chart and signal deck',"the officers' berths",'the lookout lounge'][S.k];}
+  if(NR.inPoly(NR.PLAZA.poly,h[0],h[2])&&y>=NR.L.D[0]&&y<NR.L.TOP+1){for(const H of NR.FORE_HALLS.slice().reverse())if(y>=H.y0&&NR.inPoly(NR.TIERS[H.tier].poly,h[0],h[2]))return H.name;return NR.PLAZA.name;}}
  if(!q.inRing||Math.abs(q.s)>NR.W.PONT+.5){const Pr=NR.pierAt(h[0],h[2]);return Pr?Pr.name+'  (pier '+Pr.id.replace('pier-','')+')':'outside the hull';}
  const deck=nrDeckOf(h[1]+.3),a=Math.abs(q.s);let what='';
  for(const Z of NR.ZONES.concat(NR.ROOMS)){const d=NR.L.D.findIndex((y,i)=>h[1]+.3>=y&&(i===3||h[1]+.3<NR.L.D[i+1]));if(q.t>=Z.t0&&q.t<=Z.t1&&Z.decks.indexOf(d)>=0&&q.s>=Z.s0&&q.s<=Z.s1)what=Z.name;}
@@ -82,7 +86,7 @@ function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR
  if(q.inRing&&q.s>W.MAIN&&q.s<=W.PONT+1.2&&Math.abs(q.t)<NR.FORE.t)F.push(NR.foreY(q.t));
  if(q.inRing&&Math.abs(q.s)<=W.PONT){const a=Math.abs(q.s),A=NR.ATRIUM,inVoid=Math.abs(q.t-A.tc)<A.voidT&&a<A.voidS;
   if(a<W.SKIN)F.push(L.HOLD);if(a>=W.MEZZ&&a<W.SKIN)F.push(L.MEZZ);
-  if(!(q.s>W.MAIN&&Math.abs(q.t)<NR.FORE.t))F.push(L.D[0]);
+  F.push(L.D[0]);   /* (under the forecastle: the chain locker's floor) */
   /* the balconies of D3 and D4 swell out between the frames (40 nrScallop) */
   if(a>W.MAIN&&a<=W.MAIN+nrScallop(q.t))F.push(L.D[2],L.D[3]);
   if(a<=W.MAIN){for(let d=1;d<=4;d++){const y=d<4?L.D[d]:L.TOP;if(inVoid)continue;

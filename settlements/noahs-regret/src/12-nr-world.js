@@ -54,9 +54,9 @@ function terrainH(x,z){let h=nrGround0(x,z);
     ground is near the waterline */
  if(a>NR.W.PONT&&a<NR.W.PONT+60){const near=Math.exp(-Math.pow((a-NR.W.PONT-2)/(q.s>0?14:7),2));const shore=clamp((h+3)/5,0,1);
   h+=near*shore*(q.s>0?5.6:1.4);}
- /* under the pontoon: held below the keel (nothing grows into the holds), rising to the dune across the last 1.4 m
-    of the hull's width so the sand banks right against the skin (a grid cell's wedge shows inside the starboard holds
-    as drifted sand along the wall) */
- const lim=keel-.6,k=clamp((a-NR.W.PONT+1.4)/1.4,0,1);
- if(a<NR.W.PONT)h=Math.min(h,lerp(lim,h,k));
+ /* under the pontoon and a cell's width beyond it: held below the keel (nothing grows into the holds), rising to the dune
+    from 0.2 m to 3 m outside the skin, so the one grid cell (2.5 m) that carries the step lies outside the hull: the sand
+    is scoured a little along the skin instead of drifting inside the holds */
+ const lim=keel-.6,k=clamp((a-NR.W.PONT-.2)/2.8,0,1);
+ if(a<NR.W.PONT+3)h=Math.min(h,lerp(lim,h,k));
  return h;}

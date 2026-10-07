@@ -17,10 +17,10 @@ function nrStairRun(mk,tauA,tauB,s0,s1,yA,yB,col,rails){const n=Math.max(4,Math.
  if(rails)for(const s of [s0+.15,s1-.15]){const a=nrP(nrTau(tauA),s,yA+1.0),b=nrP(nrTau(tauB),s,yB+1.0);beam('brass',a,b,.05,P('brass'),true,6);
   for(let i=0;i<=n;i+=3){const t=lerp(tauA,tauB,i/n),yy=lerp(yA,yB,i/n);const p=nrP(nrTau(t),s,yy);beam('brass',p,[p[0],p[1]+1,p[2]],.025,P('brass'),true,5);}}}
 /* a balustrade along the ring at s from tau0 to tau1 at height y: glass panels, a brass rail */
-function nrBalT(s,tau0,tau1,y){nrBand('glass',nrTau(tau0),nrTau(tau1),s-.03,s+.03,y,y+1.0,hc(0x9ab4bc),'oi');nrBand('brass',nrTau(tau0),nrTau(tau1),s-.06,s+.06,y+1.0,y+1.08,P('brass'),'oit');
+function nrBalT(s,tau0,tau1,y){nrBand('glassClear',nrTau(tau0),nrTau(tau1),s-.03,s+.03,y,y+1.0,hc(0x9ab4bc),'oi');nrBand('brass',nrTau(tau0),nrTau(tau1),s-.06,s+.06,y+1.0,y+1.08,P('brass'),'oit');
  for(let t=tau0;t<=tau1+.01;t+=2)nrBox('brass',nrTau(t),s,y,.06,1.04,.06,P('brass'));}
 /* a balustrade across the ring at tau from s0 to s1 */
-function nrBalS(tau,s0,s1,y){nrRadial('glass',nrTau(tau),s0,s1,y,y+1.0,.06,hc(0x9ab4bc));nrRadial('brass',nrTau(tau),s0,s1,y+1.0,y+1.08,.12,P('brass'));
+function nrBalS(tau,s0,s1,y){nrRadial('glassClear',nrTau(tau),s0,s1,y,y+1.0,.06,hc(0x9ab4bc));nrRadial('brass',nrTau(tau),s0,s1,y+1.0,y+1.08,.12,P('brass'));
  for(let s=s0;s<=s1+.01;s+=2)nrBox('brass',nrTau(tau),s,y,.06,1.04,.06,P('brass'));}
 function nrAtrium(){const L=NR.L,W=NR.W,A=NR_ATR,vT=A.voidT,vS=A.voidS,H=A.half;reseed(4400);
  const decks=[L.D[0],L.D[1],L.D[2],L.D[3],L.TOP];

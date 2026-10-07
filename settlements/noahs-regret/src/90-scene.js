@@ -37,6 +37,9 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,HULLG,true);
+ /* the clear glass (balustrades) casts no shadow and draws after the solids, as the window glass does (30-geo.js treats
+    only the key 'glass' so; it is vendored) */
+ HULLG.traverse(o=>{if(o.isMesh&&o.userData.mk==='glassClear'){o.castShadow=false;o.renderOrder=2;}});
  window._build={ms:Math.round(performance.now()-t0),tris:Math.round(GSTAT.tris),records:REG.length,halos:HALOS.length};return WORLD;}
 /* the sky's light on the library materials and the wave clock: core/atmos */
 const ATMOS_HOOKS=[];function atmosFrame(dt){for(const f of ATMOS_HOOKS)f(dt);}

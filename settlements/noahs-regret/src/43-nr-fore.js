@@ -64,12 +64,30 @@ function nrPlaza(){const L=NR.L,Pz=NR.PLAZA,y=L.D[0];reseed(4450);
  lathe('white',F[0],F[1],[[6.2,y],[6.5,y+.25],[6.5,y+.8],[6.1,y+.85],[5.9,y+.35]],48,P('white'));
  cyl('water',F[0],y+.32,F[1],5.95,.2,hc(0x4a5a4a),48);cyl('white',F[0],y,F[1],.7,2.6,P('white'),16,.4);
  lathe('white',F[0],F[1],[[.4,y+2.6],[1.8,y+2.9],[2.6,y+3.3],[2.5,y+3.45],[.2,y+3.1]],32,P('white'));}
-function nrTerraces(){const L=NR.L,W=NR.W,S=NR.FORE_STAIR,hw=S.w/2+.35;
+/* a spiral stair about (St.x, St.z) from St.y0 to St.y1: treads round a white column, a handrail on its outer edge */
+function nrSpiral(St){const rise=.18,n=Math.round((St.y1-St.y0)/rise),da=.155;cyl('white',St.x,St.y0,St.z,.42,St.y1-St.y0+1.1,P('white'),14);
+ for(let i=0;i<n;i++){const a=i*da,yy=St.y0+(i+1)*rise-.06;box('marble',St.x+Math.cos(a)*1.8,yy,St.z+Math.sin(a)*1.8,2.75,.08,.62,hc(0xece6d8),-a);}
+ const hr=[];for(let i=0;i<=n;i++){const a=i*da;hr.push([St.x+Math.cos(a)*3.1,St.y0+i*rise+.95,St.z+Math.sin(a)*3.1]);}cord('white',hr,.05,P('white'));}
+/* a face (open polyline) glazed from y0 to y1 on both sides, doors (z of each door's middle) cut through it */
+function nrFaceWall(face,y0,y1,doors){const L=NR.L,dw=1.5,inDoor=p=>doors.some(z=>Math.abs(p[1]-z)<dw),segs=[];let cur=[];
+ for(const p of face){if(inDoor(p)){if(cur.length>1)segs.push(cur);cur=[];}else cur.push(p);}if(cur.length>1)segs.push(cur);
+ const top=y1-y0-L.SLAB;
+ for(const inside of [false,true]){for(const g of segs){nrPolyLoft('white',g,false,y0,[[0,0],[0,.3]],P('white'),{inside});nrPolyLoft('glass',g,false,y0,[[.03,.3],[.03,2.9]],hc(0x24343c),{inside});}
+  nrPolyLoft('white',face,false,y0,[[0,2.9],[0,top]],P('white'),{inside});}
+ for(const g of segs)for(let i=2;i<g.length-1;i+=4){const p=g[i];box('white',p[0]-.08,y0+.3,p[1],.24,2.6,.2,P('white'));}
+ /* the doors' lintels and jambs */
+ for(const z of doors){const near=face.filter(p=>Math.abs(p[1]-z)<dw+.6);if(near.length<2)continue;
+  for(const inside of [false,true])nrPolyLoft('white',near,false,y0,[[0,2.5],[0,2.9]],P('white'),{inside});
+  for(const zz of [z-dw,z+dw]){const p=near.reduce((a,q)=>Math.abs(q[1]-zz)<Math.abs(a[1]-zz)?q:a);box('white',p[0],y0,zz,.3,2.5,.2,P('white'));}}}
+function nrTerraces(){const L=NR.L,W=NR.W,S=NR.FORE_STAIR,hw=S.w/2+.35,SP=NR.FORE_SPIRAL;
+ /* the forward halls behind the faces: each storey's glazed face with its doors, its roof (the next one's floor, or the
+    terrace) open round the spiral stair */
+ for(const H of NR.FORE_HALLS){const T=NR.TIERS[H.tier];nrFaceWall(T.face,H.y0,H.y1,H.doors);
+  nrRingSlab(H.y1===T.y1?'deck':'conc',T.poly,SP.x,SP.z,SP.hole,H.y1,L.SLAB,H.y1===T.y1?hc(0xd6d0c2):P('conc'),['plaster',hc(0xe4ded2)]);
+  nrPolyLoft('white',T.face,false,H.y1,[[0,-L.SLAB],[0,0]],P('white'));
+  lathe('white',SP.x,SP.z,[[SP.hole+.1,H.y1],[SP.hole+.1,H.y1+1.0]],24,P('white'),{a0:.9,a1:TAU-.3});}
+ nrSpiral(SP);
  for(const T of NR.TIERS){
-  prism('white',T.poly,T.y0,T.y1-.06,P('white'));prism('deck',T.poly,T.y1-.06,T.y1,hc(0xd6d0c2));
-  /* the face: a glass band each storey, mullions */
-  for(let y=T.y0;y<T.y1-.1;y+=L.DH){nrPolyLoft('glass',T.face,false,y,[[.05,.95],[.05,2.85]],hc(0x24343c));
-   for(let i=1;i<T.face.length-1;i+=2){const p=T.face[i];box('white',p[0]-.08,y+.95,p[1],.24,1.9,.2,P('white'));}}
   /* the rounded rail on the terrace's edge, open where the stair comes up */
   const left=T.face.filter(p=>p[1]>hw),right=T.face.filter(p=>p[1]<-hw);
   for(const part of [left,right])if(part.length>1)nrPolyLoft('white',part,false,T.y1,T.k===2?NR_PARAPET_PROF:NR_RIBBON_PROF,P('white'));}
@@ -94,10 +112,14 @@ function nrBridgeHouse(){const L=NR.L,B=NR.BRIDGEHOUSE,br=B.bridge;reseed(4470);
   nrPolyLoft('white',S.poly,true,S.y1,NR_RIBBON_PROF,P('white'));
   /* a rail round the stairwell, open where the stair arrives */
   lathe('white',St.x,St.z,[[St.hole+.1,S.y1],[St.hole+.1,S.y1+1.0]],24,P('white'),{a0:.9,a1:TAU-.3});}
- /* the spiral stair: treads round a white column, a handrail on its outer edge */
- {const rise=.18,n=Math.round((St.y1-St.y0)/rise),da=.155;cyl('white',St.x,St.y0,St.z,.42,St.y1-St.y0+1.1,P('white'),14);
-  for(let i=0;i<n;i++){const a=i*da,yy=St.y0+(i+1)*rise-.06;box('marble',St.x+Math.cos(a)*1.8,yy,St.z+Math.sin(a)*1.8,2.75,.08,.62,hc(0xece6d8),-a);}
-  const hr=[];for(let i=0;i<=n;i++){const a=i*da;hr.push([St.x+Math.cos(a)*3.1,St.y0+i*rise+.95,St.z+Math.sin(a)*3.1]);}cord('white',hr,.05,P('white'));}
+ nrSpiral(St);
+ /* the officers' berths (storey 2): a corridor wall round the deck at F_IN with a door to each cabin, partitions out to the glass */
+ {const S=B.storeys[2],Bt=B.berths,n=S.poly.length,c=[S.xc,0],sc=(p,f)=>[c[0]+(p[0]-c[0])*f,c[1]+(p[1]-c[1])*f],top=L.DH-L.SLAB;
+  for(const C of Bt.cabins){const m=Math.round((C.i0+C.i1)/2),seg=[];for(let i=m+1;i<=m+n/Bt.K-1;i++)seg.push(sc(S.poly[i%n],Bt.F_IN));
+   for(const inside of [false,true])nrPolyLoft('plaster',seg,false,S.y0,[[0,0],[0,top]],P('plaster'),{inside});
+   const dseg=[-1,0,1].map(k=>sc(S.poly[(m+k+n)%n],Bt.F_IN));for(const inside of [false,true])nrPolyLoft('plaster',dseg,false,S.y0,[[0,2.3],[0,top]],P('plaster'),{inside});
+   const a=sc(S.poly[C.i0%n],Bt.F_IN),b=sc(S.poly[C.i0%n],.99),dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz);
+   box('plaster',(a[0]+b[0])/2,S.y0,(a[1]+b[1])/2,.16,top,len,P('plaster'),Math.atan2(dx,dz));}}
  /* the bridge: floor, a white sill, glass all round, a white head; a visor roof standing out over it */
  const y=br.y0,P2b=br.poly;
  for(const inside of [false,true]){nrPolyLoft('white',P2b,true,y,[[0,0],[0,1.0]],P('white'),{inside});

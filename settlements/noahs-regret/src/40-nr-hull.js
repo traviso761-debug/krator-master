@@ -108,8 +108,8 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   else for(let t=T0+6;t<T1-4;t+=14){nrCyl('paint',t,S+.7,L.D[0],.32,.75,hc(0x3a3c3e),12,.26);nrCyl('paint',t,S+.7,L.D[0]+.75,.42,.12,hc(0x3a3c3e),12);}}
  // the main block's end walls at the mouth, and the pontoon's round pier heads beyond them
  for(const [t,dir] of [[T0,-1],[T1,1]]){
-  /* the end walls: on D3 and D4 a door from each corridor onto the stern's gallery and terrace */
-  for(let d=0;d<4;d++){const y=L.D[d],door=d>=2,G=[[8.9,10.6],[-10.6,-8.9]];
+  /* the end walls: on every deck a door from each corridor onto the stern's gallery (and on D3, D4 its terrace) */
+  for(let d=0;d<4;d++){const y=L.D[d],door=true,G=[[8.9,10.6],[-10.6,-8.9]];
    const segs=(a,b)=>{if(!door)return [[a,b]];const out=[];let c=a;for(const g of G.slice().sort((p,q)=>p[0]-q[0])){if(g[0]>c)out.push([c,g[0]]);c=Math.max(c,g[1]);}if(c<b)out.push([c,b]);return out;};
    for(const [a,b] of segs(-W.MAIN,W.MAIN))nrRadial('white',t,a,b,y,y+.95,.3,P('white'));
    for(const [a,b] of segs(-W.MAIN+1,W.MAIN-1))nrRadial('glass',t+dir*.06,a,b,y+.95,y+2.75,.12,hc(0x24343c));
@@ -206,6 +206,14 @@ function nrForecastle(){const L=NR.L,WD=NR.W,F=NR.FORE,n=Math.ceil(2*F.t/1.6);
  for(const [mk,y0,y1,col] of [['paint',.6,5.6,hc(NR_ANTIFOUL)],['barn',5.6,7.0,WHITE],['white',7.0,yT,P('whiteS')]])
   psurf(mk,(u,v)=>{const y=lerp(y0,y1,v),b=NR.at(lerp(-SW,SW,u),skinS(y)+ext(y));return [b[0],y,b[1]];},1,6,col,{flip:true});
  psurf('white',(u,v)=>{const y=yT,k=lerp(-1,1,u),a=NR.at(k*half(y),skinS(y)-.3),b=NR.at(k*SW,skinS(y)+ext(y));return [lerp(a[0],b[0],v),y,lerp(a[1],b[1],v)];},2,2,P('white'),{up:true});
+ /* the CHAIN LOCKER: the space under the forecastle deck, between the bulwark and the main block, on the promenade (D1).
+    Two hatches in the deck with a ladder down to it; the chains of the anchors heaped on its floor. 70 furnishes it. */
+ for(const t of NR.FORE.hatches){const y=NR.foreY(t),s=WD.MAIN+3,c=NR.at(t,s),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);
+  W(c[0],y,c[1],ry,()=>{for(const [x,z,w,d] of [[0,1.1,2.4,.2],[0,-1.1,2.4,.2],[1.1,0,.2,2.0],[-1.1,0,.2,2.0]])box('white',x,0,z,w,.45,d,P('white'));
+   box('dark',0,.02,0,2.0,.02,2.0,hc(0x0c0e10));
+   for(const x of [-.35,.35])beam('rust',[x,.4,.95],[x,L.D[0]-y,.95],.05,hc(0x4a4a48));
+   for(let yy=L.D[0]-y+.3;yy<.3;yy+=.32)beam('rust',[-.35,yy,.95],[.35,yy,.95],.04,hc(0x4a4a48));});}
+ for(const sg of [1,-1])for(let k=0;k<5;k++){const t=sg*(12+k*.9),c=NR.at(t,WD.MAIN+3.6);ring('rust',c[0],L.D[0]+.12+k*.16,c[1],.9-k*.12,.09,hc(0x4a3424),k*.7,0,0,12);}
  /* the anchors: a dark hawse plate, the anchor drawn up in it, its chain run down to the sea floor (it was let go when she
     struck) */
  for(const sg of [1,-1]){const t=sg*15,y=NR.foreY(t)-2.4,sk=nrForeS(Math.max(y,L.D[0]))+.05,c=NR.at(t,sk),n=NR.nrm(t),ry=Math.atan2(n[0],n[1]);
