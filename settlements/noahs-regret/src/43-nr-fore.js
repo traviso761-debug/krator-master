@@ -30,8 +30,10 @@ function nrUnderFore(t,s){const p=NR.at(t,s);return NR.inPoly(NR.BRIDGEHOUSE.sto
 function nrRingSlab(mk,poly,cx,cz,rh,y,th,col,under){const P=poly.concat([poly[0]]),n=P.length-1;
  const at=(u,v,yy)=>{const q=u*n,i=Math.min(n-1,Math.floor(q)),f=q-i,px=lerp(P[i][0],P[i+1][0],f),pz=lerp(P[i][1],P[i+1][1],f),dx=px-cx,dz=pz-cz,l=Math.hypot(dx,dz)||1;
   return [lerp(cx+dx/l*rh,px,v),yy,lerp(cz+dz/l*rh,pz,v)];};
- psurf(mk,(u,v)=>at(u,v,y),n,2,col);
- psurf(under?under[0]:mk,(u,v)=>at(u,v,y-th),n,2,under?under[1]:col,{flip:true});
+ /* texture laid flat in metres (arc-length UVs would smear toward the well) */
+ const uvf=(u,v)=>{const p=at(u,v,0);return [p[0],p[2]];};
+ psurf(mk,(u,v)=>at(u,v,y),n,2,col,{uvf});
+ psurf(under?under[0]:mk,(u,v)=>at(u,v,y-th),n,2,under?under[1]:col,{flip:true,uvf});
  lathe(mk,cx,cz,[[rh,y-th],[rh,y]],32,col,{inward:true});}
 /* a raised bed: a soft oval kerb of white, earth and turf in it; c the centre, rx along x, rz along z */
 function nrBlob(cx,cz,rx,rz,wob,seg){const P=[];for(let i=0;i<seg;i++){const a=i/seg*TAU,r=1+wob*Math.sin(3*a+cx*.1)+wob*.5*Math.sin(5*a+cz*.1);P.push([cx+Math.cos(a)*rx*r,cz+Math.sin(a)*rz*r]);}

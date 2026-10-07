@@ -224,10 +224,12 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
    const ring=(N,f,key,out,o,skip)=>{for(let i=0;i<N;i++){if(skip&&skip(i))continue;const q=pt((i+.5)/N,f);putH(room,key,q[0],y,q[1],face(q,out),o);}};
    if(S.k===0){ring(16,.82,'post-apoc_court_divan',false);ring(16,.66,'post-apoc_court_low_table',false,{v:0});ring(8,.66,'post-apoc_court_carpet',false);
     ring(8,.74,'post-apoc_court_lamp',false,null,i=>i%2===1);const q=pt(.5,.5);putH(room,'post-apoc_common_counter',q[0],y,q[1],face(q,false));
-    for(const dz of [-3,3])putH(room,'generic_keg',q[0]-1.2,y,q[1]+dz,face(q,false));}
+    for(const dz of [-3,3])putH(room,'generic_keg',q[0]-1.2,y,q[1]+dz,face(q,false));
+    /* the long tables of the officers' hall within the ring of divans, benches either side */
+    ring(10,.46,'pa_long_table',false);ring(10,.38,'pa_bench',false,{v:0});ring(10,.54,'pa_bench',true,{v:0});ring(5,.3,'post-apoc_common_banner',false);}
    else if(S.k===1){ring(14,.86,'ancients_workstation',true);ring(14,.77,'post-apoc_common_chair',true);ring(7,.58,'post-apoc_common_desk',false);
-    ring(7,.58,'post-apoc_common_bookcase',true,null,i=>i%2===0);ring(7,.5,'pa_radio_sets',false,null,i=>i%2===1);}
-   else if(S.k===2){ring(12,.8,'post-apoc_common_bed',false);ring(12,.66,'generic_chest',false);ring(12,.93,'post-apoc_common_screen',false);ring(6,.6,'post-apoc_common_lamp',false);}
+    ring(7,.58,'post-apoc_common_bookcase',true,null,i=>i%2===0);ring(8,.42,'post-apoc_court_table',false,{v:1});ring(8,.34,'post-apoc_common_chair',true);ring(7,.5,'pa_radio_sets',false,null,i=>i%2===1);}
+   else if(S.k===2){ring(12,.8,'post-apoc_common_bed',false);ring(10,.52,'post-apoc_common_bed',true);ring(10,.42,'generic_chest',true);ring(12,.66,'generic_chest',false);ring(12,.93,'post-apoc_common_screen',false);ring(6,.6,'post-apoc_common_lamp',false);}
    else{ring(18,.86,'post-apoc_common_chair',true);ring(9,.74,'post-apoc_court_low_table',true,{v:0});ring(6,.58,'post-apoc_court_divan',true);}}}
  // --- the STERN LOUNGES (40-nr-hull.js nrStern): behind the doors at each hull's end, the D3 and D4 galleries under their
  //     glass and the terraces outside: divans and low tables turned aft, benches along the rails, lamps
@@ -294,7 +296,7 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
  for(const k in NR_TPL){const T=NR_TPL[k];if(!T.inst.length)continue;audited++;byKind[T.kind]=(byKind[T.kind]||0)+T.inst.length;
   for(const m of (T.plan.report.missing||[]))missingRequired.push(k+': '+m.need+' ('+m.reason+')');
   if(T.audit&&!T.audit.ok)for(const f of T.audit.fails.slice(0,3))auditFails.push(k+': '+(typeof f==='string'?f:(f.check||'')+' '+(f.detail||f.msg||JSON.stringify(f)).slice(0,120)));}
- window._interiors={rooms:cab.rooms.length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
+ window._interiors={rooms:cab.rooms.filter(r=>r.kind!=='stripped').length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
   strippedRooms:cab.rooms.filter(r=>r.kind==='stripped').length,cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
   publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['plaza',30],['bridgehouse-0',30],['bridgehouse-1',30],['bridgehouse-2',24],['bridgehouse-3',24],['stern',30],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
   shipRooms:shp.rooms.map(r=>({id:r.id,name:r.name,kind:r.kind,deck:r.deck,pieces:r.pieces})),

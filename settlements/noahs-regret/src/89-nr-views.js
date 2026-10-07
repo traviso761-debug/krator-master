@@ -23,8 +23,8 @@ function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===i
   V['Inside the bridge']=nrV(H(br.xc-11,br.y0+1.75,-7),H(br.xc+16,br.y0+1.3,5));
   {const S=NR.BRIDGEHOUSE.storeys[0],St=NR.BRIDGEHOUSE.stair;V["Inside the bridge house: the officers' hall"]=nrV(H(S.xc-26,S.y0+1.7,-14),H(S.xc+6,S.y0+1.2,6));
    V['Plan: the bridge house, the chart deck']=nrV(H(S.xc-40,S.y0+44,-30),H(S.xc,S.y0+4,0),{cut:cutAt('Bridge house: the chart')});
-   V['The spiral stair to the bridge']=nrV(H(St.x-7,St.y0+5,-6),H(St.x,St.y0+11,0));}
-  {const c=NR.at(NR.T1,0),T=NR.tan(NR.T1),e=nrH2W(c[0]-T[0]*4,L.D[2]+1.7,c[1]-T[1]*4),a=nrH2W(c[0]+T[0]*20,L.D[2]+1.2,c[1]+T[1]*20);V['The stern lounge (D3)']=nrV(e,a);}
+   V['The spiral stair to the bridge']=nrV(H(St.x-10,St.y0+1.7,-8),H(St.x,St.y0+5.5,0));}
+  {const e=NR.at(NR.T1+3,-9.75),a=NR.at(NR.T1+18,4);V['The stern lounge (D3)']=nrV(nrH2W(e[0],L.D[2]+1.7,e[1]),nrH2W(a[0],L.D[2]+1.0,a[1]));}
   V['Plan: the bridge']=nrV(H(br.xc-34,br.y0+30,-30),H(br.xc,br.y0,0),{cut:cutAt('The bridge')});
   V["Plan: Ruephus's headquarters"]=nrV(H(hq.x-32,L.D[0]+30,-28),H(hq.x,L.D[0],0),{cut:cutAt('D1')});}
  V['The top deck: the promenade']=nrV(nrHP(52,-16.5,L.TOP+1.7),nrHP(96,-6,L.TOP+5));
