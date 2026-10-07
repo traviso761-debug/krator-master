@@ -520,6 +520,17 @@ Ask them at the start; the default is in brackets. AskUserQuestion takes four at
 9. The cattle from `kits/fauna`, with a breed added there if none fits. [yes]
 10. The five extra shops (6.4) and the additions (section 13). [as proposed]
 
+**The owner's answers (2026-10-07, at P0).** 1 tuff. 2 the 200 × 140 m bottle as proposed. 3 young lava over the city.
+4 about 5,000, with 600 to 900 out. 5 the palette as proposed. 6 the spiral into a stepped arch. 7 the Hidden Ones, the
+Lamp Mother, the Serpent. 8 the alecap a Throne species. 9 **regular cattle from `kits/fauna`, and also an invented
+rideable staghorn beetle** (derived from the fauna kit's giant beetle), ridden by the herders and scouts. 10 the five
+extra shops, the additions, **and both alternatives** (the obsidian knapper and mirror-maker; the rope and caving
+outfitter): twelve shop types in all.
+
+**The texture delivery (2026-10-07, `Downloads/zeijani.zip`, 22 images).** Everything in section 10 arrived except
+`stone.tuff.hewn` (its prompt stays open). Extras: two more spirit friezes and a skeleton frieze (the catacombs), two
+more kiva murals, a second textile, and two more glazed friezes (a dragonfly and a stag beetle).
+
 ## 12. Dhelv: the layout
 
 A proposal; tune the numbers. x east, z south, y up, metres; the flank rises east, toward the summit. The layout is
@@ -649,6 +660,7 @@ Commit at the end of each phase, and update the progress log below.
 | Date | Phase | State |
 |---|---|---|
 | 2026-10-07 | plan | written (this file) |
+| 2026-10-07 | P0 | worktree `../krator-zeijani` on `claude/zeijani` (from `claude/throne`, not yet on main); `krator-zeijani-worktree` on port 8809 in the main checkout's `.claude/launch.json` (serves the worktree root); section 11 answered; 22 textures delivered, `stone.tuff.hewn` still owed |
 
 ## Appendix A: the owner's brief, verbatim
 
