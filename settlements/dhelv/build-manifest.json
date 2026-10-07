@@ -54,12 +54,13 @@
  "89-atmos-a-waves.js": "fd7d307fdd31",
  "89-atmos-b-skylight.js": "71e900ded9b3",
  "89-atmos-d-clouddeck.js": "06c94c8c841f",
- "90-dhelv-scene.js": "12c92386f7cc",
- "91-dhelv-probe.js": "db12d258a026",
+ "90-dhelv-scene.js": "165c91f2f62c",
+ "91-dhelv-probe.js": "643b925e94d6",
  "91f-furnish.js": "11d7ca6cd4d2",
  "91n-night.js": "6d6b240ce04a",
  "92-camera.js": "cb25cd419a38",
  "93-anim.js": "8ff9058a9d96",
  "93-dhelv-map.js": "0603332126e5",
+ "94-dhelv-light.js": "d5c9a5e43789",
  "99-tail.html": "bf3a2481959e"
 }

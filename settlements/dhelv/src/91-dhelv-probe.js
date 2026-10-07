@@ -30,18 +30,27 @@ const DHP={
  routes(W){const out=[];for(const D of DH.DISTRICTS){if(D.anchor==='o.c')continue;const p=DHP.path('o.gate',D.anchor,e=>e.zone!=='secret');if(!p){out.push({name:D.id,log:[{name:'no path',ok:false}]});continue;}
    out.push({name:D.id,log:DHP.walk(W,p)});}return out;},
  ok(log){return log.length>0&&log.every(s=>s.ok);},
+ /* the well floors lit at noon (PLAN.md P5): the sun is up at 12:00, and under each opening (the light well, the three wells) the
+    floor sees the sky straight up through the rock at its middle and halfway out (the sky light falls there) */
+ lit(C){const keep=SKY.hour;SKY.hour=12;skyApply();const up=LIGHTDIR.y;SKY.hour=keep;skyApply();const bad=[];
+  for(const O of DH_LIGHT.openings)for(const [dx,dz] of [[0,0],[.5,0],[-.5,0],[0,.5],[0,-.5]]){const x=O.c[0]+dx*O.r,z=O.c[1]+dz*O.r;if(C.ceilingAt(x,z,O.floor+1)!==null){bad.push(O.name);break;}}
+  return {ok:up>.3&&!bad.length,detail:(up>.3?'the sun '+(Math.asin(Math.min(1,up))*180/PI).toFixed(0)+' degrees up at noon':'the sun is down at noon')+(bad.length?'; no sky over '+bad.join(', '):'; '+DH_LIGHT.openings.length+' floors see the sky')};},
  copyWalk(skip){const W=KWALK.create();for(const f of KWALK.floors){if(skip&&skip(f))continue;if(f.kind==='rect')W.floor(f);else if(f.kind==='strip')W.strip(f);else W.poly(f);}for(const b of KWALK.blocks)W.block(b.box,b.tag);return W;}};
 function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,detail});
  const placed=REG.filter(r=>!r.parent).length,want=SITES.filter(s=>!ONLYSET||ONLYSET.has(s.key)).length;
  add('layout-placed',placed===want,placed+' of the layout\'s '+want+' sites placed');
  add('cavern-built',CVC.chunks.length>0,CVC.prims.length+' primitives, '+CVC.chunks.length+' chunks, built in '+CV_STATS.ms+' ms; '+DH_STREAM.meshes.size+' meshed near the camera');
  const t0=performance.now(),leaks=CVC.skyLeaks(2);add('cavern-sky',!leaks.length,(leaks.length?leaks.length+' void points in the open air outside every opening, first '+leaks[0].map(v=>typeof v==='number'?v.toFixed(1):v).join(' '):'no void meets the open air but at its openings')+' ('+Math.round(performance.now()-t0)+' ms at 2 m)');
+ {const w=DHP.lit(CVC);add('wells-lit-at-noon',w.ok,w.detail);}
  const rt=DHP.routes(KWALK),bad=rt.filter(r=>!DHP.ok(r.log));
  add('walk-ways',rt.length===DH.DISTRICTS.length-1&&!bad.length,bad.length?bad.map(r=>r.name+': '+r.log.filter(s=>!s.ok).map(s=>s.name+' REFUSED @'+s.feet+' '+s.at).join(', ')).join(' | '):rt.map(r=>r.name+' '+r.log.length+' legs').join(', '));
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
  /* sky: the hall's light well forgotten */
  {const e=CVC.export();e.openings=e.openings.filter(q=>q.id!=='dh.hall.well');const D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build(),L=D.skyLeaks(2);add('cavern-sky: the light well undeclared',L.length>0,L.length+' leaks');}
+ /* light: a plug of rock left in the light well's throat */
+ {const e=CVC.export(),H=DH.HALL,top=DH.groundY(H.c[0],H.c[1]);e.prims.push({kind:'monolith',id:'probe-plug',owner:'probe',poly:[[H.c[0]-25,H.c[1]-25],[H.c[0]+25,H.c[1]-25],[H.c[0]+25,H.c[1]+25],[H.c[0]-25,H.c[1]+25]],y0:top-6,y1:top+3});
+  let D=null;try{D=KCAVERN.load(e,{ground:(x,z)=>terrainH(x,z)}).build();}catch(err){}const w=D?DHP.lit(D):{ok:true,detail:'the plugged copy did not load'};add('wells-lit-at-noon: the light well plugged',!w.ok,w.detail);}
  /* ways: the stone door's passage left out of the walk map: nothing past it is reached */
  {const R0=REG.find(r=>r.key==='zj_stonedoor'),W=DHP.copyWalk(f=>R0&&f.name===R0.tid+'.pass');const r=DHP.routes(W).find(r=>r.name==='hub');add('walk-ways: the stone door\'s passage missing',r&&!DHP.ok(r.log),r?r.log.filter(s=>!s.ok).map(s=>s.name).join(', '):'no route');}
  return R;}

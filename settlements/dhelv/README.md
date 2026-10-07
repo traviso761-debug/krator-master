@@ -21,6 +21,7 @@ ramblers (P6) and the Godot case (P7) follow.
 | `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield (`terrainH = DH.groundY`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
 | `src/93-dhelv-map.js` | the minimap: the layout drawn small, the ways near the camera's height bright, the camera and the marker; a click flies there; M hides it |
+| `src/94-dhelv-light.js` | the cave's light: underground the sun and the sky's reflections go out; daylight comes down the openings (the sky's light straight down, the sun's beam with shadows, a shaft with motes, a bounce), the lamps nearest the eye light the dark, the tunnels' glow fungus; `[` `]` move the hour |
 | `build.py`, `verify.py` | the page: core, the kit's `src/` less its sheet's host, and `src/` here; the headless check |
 
 ```
@@ -100,3 +101,12 @@ alecaps at its shaded rim) with the stalls round its edge; then a deterministic 
 "the square filled") lays in the market hall, three more shops, seven houses and 22 row houses (`zj_rowhouse`, a narrow
 three-storey home), and two fountains: the homes take the outer ring first, so they line the square in a street facing in,
 5 m in from the wall (6 m clear of a carved front), clear of the lanes, the ledge's stairs and the park.
+
+## The cave's light
+
+Underground (the camera below the ground) the sun's own light and the sky's reflections go out and the eye's exposure rises.
+Daylight comes only down the light well and the three wells: the sky's light straight down each (the larger share), the sun's
+beam along the sun with shadows (its pool crosses the floor with the hour), a shaft of lit air with motes in it, and a warm
+bounce. The lamps the buildings record (lanterns, hearths, burners) and the glow fungus lining every tunnel (every 18 m) are the
+rest: the 14 nearest the eye are real lights. `[` and `]` move the hour. Checked: the well floors see the sky at noon (its
+negative: the light well's throat plugged with rock).

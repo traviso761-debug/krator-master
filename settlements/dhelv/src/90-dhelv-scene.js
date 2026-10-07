@@ -124,7 +124,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
  KWALK.clear();cvNew();CULT.cur=CULT.packs.zeijani||CULT.cur;
  CV_OPTS.skipMass=true;CV_OPTS.groundKeep=(x,z)=>CVC.openings.some(O=>O.kind==='well'&&Math.hypot(x-O.c[0],z-O.c[1])<O.r+O.rim+.2);CV_OPTS.wellDoor=q=>{const c=cvW(q.c[0],0,q.c[1]);return terrainH(c[0],c[2])-c[1]>3;};
  const t0=performance.now();
- dhCarve();
+ dhCarve();dhGlowFungus();   /* 94-dhelv-light.js: the tunnels' glow fungus (drawn and haloed with the world) */
  for(const S of SITES){if(ONLYSET&&!ONLYSET.has(S.key))continue;place(S.key,S.x,S.z,S.ry||0,S.o);}
  flushBuckets(GB,WORLD,true);
  const tc=performance.now();CVC.build();const tb=performance.now()-tc;
@@ -144,13 +144,15 @@ FRAME_HOOKS.push(()=>{const p=camera.position,u=p.y<terrainH(p.x,p.z)-2;if(u===D
 // ---------------------------------------------------------------- views
 function autoViews(){const V={},B=DH.byId,H=DH.HALL;
  const at=(id,dx,dy,dz,ty)=>{const n=B[id];return [n.x+dx,n.y+dy,n.z+dz,n.x,n.y+(ty===undefined?1.5:ty),n.z];};
+ /* a view down a tunnel: the camera on the way from a to b, `back` metres short of b and h up, looking on to b (inside the void) */
+ const along=(a,b,back,h)=>{const A=B[a],C=B[b],L=Math.hypot(C.x-A.x,C.z-A.z),t=Math.max(0,1-back/L);return [A.x+(C.x-A.x)*t,A.y+(C.y-A.y)*t+h,A.z+(C.z-A.z)*t,C.x,C.y+1.5,C.z];};
  V['The square from the ledge']=[DH.onLedge(-PI/2)[0],H.ledgeY+1.7,DH.onLedge(-PI/2)[1]+2,0,2,10];
  V['The square']=[30,3,40,0,6,-20];
  V['Under the light well']=[6,1.7,8,0,30,0];
  V['The west mouth']=at('h.w',22,4,6,2);
- V['The braid']=at('j1',-14,3,4,1.5);
- V['The stone door']=at('t.door',18,2.5,2,1.2);
- V['The outer tube']=at('t5',-30,4,0,2);
+ V['The braid']=along('a2','j1',16,2.4);
+ V['The stone door']=along('a1','b0',14,2.2);V['The stone door from the outer tube']=along('t6','t.door',16,2.4);
+ V['The outer tube']=along('t4','t5',40,3);
  V['The outpost']=[-2760,-40,40,-2560,-70,0];
  V['The portal']=[-2560,-68,10,-2505,-62,0];
  for(const P of DH.PITS){V[P.name+': from the rim']=[P.c[0]+P.r*.8,DH.groundY(P.c[0],P.c[1])+4,P.c[1]+P.r*.8,P.c[0],P.floor+3,P.c[1]];
