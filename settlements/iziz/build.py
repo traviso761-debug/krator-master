@@ -279,7 +279,7 @@ def fauna_pack():
     pj = os.path.join(TEX_DIR, 'pack.json')
     if not os.path.isfile(pj):
         return None
-    fams = json.load(open(pj)).get('families', {})
+    fams = json.load(open(pj, encoding='utf-8')).get('families', {})
     out = []
     for fam, key in sorted(FAUNA_FAMILIES.items(), key=lambda kv: kv[1]):
         e = fams.get(fam)

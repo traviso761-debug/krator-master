@@ -1,24 +1,428 @@
 {
  "build": "screamers",
- "note": "screamers's adapter onto the material library (core/materials/PLAN.md): the shared Ancients MAT (white panels, rust, verdigris, board concrete, brick, salvage corrugate/timber/tarp, talus, worn panels), bound in place by src/88y-screamers-matlib.js (KMAT.bindMat with KMAT.ANCIENT_TILES, so each procedural map's feature size is kept). Means and metalness measured from the procedural maps (2026-10-06); rust, verdigris, brick, timber and the worn panels keep their own colour. Run python3 tools/textures/pack.py settlements/screamers after any change, then python3 build.py; ?mat=proc shows the procedural look. verdigris keeps 60 % of its own colour. rust stays procedural: the Ancients meshes stretch their UVs along beams and tanks, and every library rust (plate, scan) smeared into stripes there, where the procedural noise was made for it.",
+ "note": "Hexahedron's adapter for the material library (core/materials/PLAN.md, 'How a build adopts the library'). src/72c-matlib.js puts each family on the MAT keys its 'mat' list names, sampled by WORLD-SPACE triplanar projection at 'scale' metres per tile: the Ancients-lineage UVs are not in one unit (lathe tiles at 8 m, kit boxes stretch 0..1 over each face), so a library map cannot ride on them. tint.mean is the mean luminance of the procedural canvas the family replaces (measured in the page), so the build's palette tints and lights stay tuned; a family whose material had no map ('detail': true) has that mean divided back out in the shader. Families with \"table\": \"apoc\" dress the Post-Apoc set's own materials (KratorPostApoc.MAT: the salvage homes, 71a-apoc-homes.js); their maps are grey and the kit's vertex colours tint them. ?mat=proc shows the procedural look. metal.ancient, wood.lash and ground.ruin are the owner's generated sets of 2026-10-05 (tools/textures/batches/chatgpt-2026-10f-screamers.json). Merged 2026-10-06 with the texture pass (main): its Ancients-MAT families that this table did not cover (verdigris, brick, paving, rubbleK, whiteWorn) join here, each on its own MAT key, through 72c; the texture pass binding (88y, KMAT.bindMat) is dropped so nothing binds twice.",
  "size": 512,
  "families": {
-  "white": {
-   "lib": "metal.ancient.white",
+  "concrete": {
+   "lib": "concrete.board",
+   "mat": [
+    "concrete",
+    "concreteR",
+    "hxCell",
+    "hxSoffR",
+    "rock"
+   ],
+   "scale": [
+    4.2,
+    4.2
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.703,
+    "contrast": 1.35
+   },
+   "roughLift": 0.6,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.18,
+    "cell": 14
+   }
+  },
+  "rust": {
+   "lib": "metal.rusty_metal_05",
+   "mat": [
+    "rust"
+   ],
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.402
+   },
+   "roughLift": 0.55,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.08,
+    "cell": 5
+   }
+  },
+  "corrugate": {
+   "lib": "metal.corrugated",
+   "mat": [
+    "corrugate",
+    "scrap"
+   ],
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.526
+   },
+   "roughLift": 0.55,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.08,
+    "cell": 4
+   }
+  },
+  "timber": {
+   "lib": "wood.weathered_brown_planks",
+   "mat": [
+    "timber"
+   ],
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.428
+   },
+   "roughLift": 0.5,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.1,
+    "cell": 4
+   }
+  },
+  "tarp": {
+   "lib": "cloth.tarp",
+   "mat": [
+    "tarp"
+   ],
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.524
+   },
+   "roughLift": 0.4
+  },
+  "thatch": {
+   "lib": "roof.thatch",
+   "mat": [
+    "thatch"
+   ],
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.386
+   },
+   "roughLift": 0.3,
+   "breakup": {
+    "mix": 0.55,
+    "macro": 0.12,
+    "cell": 5
+   }
+  },
+  "lash": {
+   "lib": "wood.lash",
+   "mat": [
+    "lash"
+   ],
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.442
+   },
+   "roughLift": 0.45,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.08,
+    "cell": 4
+   }
+  },
+  "ironbark": {
+   "lib": "bark.ironbark",
+   "mat": [
+    "bark"
+   ],
+   "scale": [
+    10.0,
+    10.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.158
+   },
+   "roughLift": 0.4,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.1,
+    "cell": 12
+   }
+  },
+  "ghostwood": {
+   "lib": "bark.ghostwood",
+   "mat": [
+    "barkG"
+   ],
+   "scale": [
+    10.0,
+    10.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.809
+   },
+   "roughLift": 0.4,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.1,
+    "cell": 12
+   }
+  },
+  "prismgum": {
+   "lib": "bark.prismgum",
+   "mat": [
+    "barkP"
+   ],
+   "scale": [
+    14.0,
+    14.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.451
+   },
+   "roughLift": 0.4,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 14
+   }
+  },
+  "baobab": {
+   "lib": "bark.baobab",
+   "mat": [
+    "barkB"
+   ],
+   "scale": [
+    8.0,
+    8.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.422
+   },
+   "roughLift": 0.4,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 10
+   }
+  },
+  "soil": {
+   "lib": "ground.ruin",
+   "mat": [
+    "mud"
+   ],
+   "scale": [
+    9.0,
+    9.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.3,
+    "contrast": 1.25
+   },
+   "roughLift": 0.7,
+   "breakup": {
+    "mix": 0.6,
+    "macro": 0.12,
+    "cell": 18
+   },
+   "color": "#ffffff"
+  },
+  "lawn": {
+   "lib": "ground.grass_ground",
+   "mat": [
+    "lawn"
+   ],
+   "detail": true,
    "scale": [
     4.0,
     4.0
    ],
    "tint": {
-    "keep": 0,
-    "mean": 0.875
+    "keep": 0.35,
+    "mean": 0.5
    },
-   "metal": 0.35,
-   "roughLift": 0.1,
-   "specular": 0.4,
+   "roughLift": 0.7,
    "breakup": {
-    "mix": 0.45,
+    "mix": 0.6,
+    "macro": 0.16,
+    "cell": 14
+   }
+  },
+  "apoc_plank": {
+   "lib": "wood.weathered_brown_planks",
+   "table": "apoc",
+   "mat": [
+    "plank"
+   ],
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.729
+   },
+   "roughLift": 0.5,
+   "breakup": {
+    "mix": 0.5,
+    "macro": 0.08,
+    "cell": 4
+   }
+  },
+  "apoc_corr": {
+   "lib": "metal.worn_corrugated_iron",
+   "table": "apoc",
+   "mat": [
+    "corr",
+    "cont"
+   ],
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.58,
+    "contrast": 1.2
+   },
+   "roughLift": 0.55,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.06,
+    "cell": 4
+   }
+  },
+  "apoc_sheet": {
+   "lib": "metal.scrap",
+   "table": "apoc",
+   "mat": [
+    "sheet"
+   ],
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.578
+   },
+   "roughLift": 0.55,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.06,
+    "cell": 4
+   }
+  },
+  "apoc_earth": {
+   "lib": "earth.adobe",
+   "table": "apoc",
+   "mat": [
+    "earth"
+   ],
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.792
+   },
+   "roughLift": 0.6,
+   "breakup": {
+    "mix": 0.5,
     "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "apoc_wood": {
+   "lib": "wood.medieval_wood",
+   "table": "apoc",
+   "mat": [
+    "wood"
+   ],
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.735
+   },
+   "roughLift": 0.5
+  },
+  "apoc_bottle": {
+   "lib": "glass.bottle",
+   "table": "apoc",
+   "mat": [
+    "bottle"
+   ],
+   "scale": [
+    1.28,
+    1.28
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": 0.43
+   },
+   "roughLift": 0.0
+  },
+  "ancient": {
+   "lib": "metal.ancient",
+   "mat": [
+    "white"
+   ],
+   "scale": [
+    6.0,
+    6.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.877
+   },
+   "roughLift": 0.3,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 10
+   }
+  },
+  "apoc_conc": {
+   "lib": "metal.ancient",
+   "table": "apoc",
+   "mat": [
+    "conc"
+   ],
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.847
+   },
+   "roughLift": 0.3,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.06,
     "cell": 6
    }
   },
@@ -39,64 +443,10 @@
     "mix": 0.45,
     "macro": 0.1,
     "cell": 6
-   }
-  },
-  "concrete": {
-   "lib": "concrete.ancient",
-   "scale": [
-    1.95,
-    1.8
-   ],
-   "tint": {
-    "keep": 0,
-    "mean": 0.703
    },
-   "metal": 0,
-   "roughLift": 0.3,
-   "specular": 0.3,
-   "breakup": {
-    "mix": 0.45,
-    "macro": 0.1,
-    "cell": 6
-   }
-  },
-  "concreteR": {
-   "lib": "concrete.ancient",
-   "scale": [
-    1.95,
-    1.8
-   ],
-   "tint": {
-    "keep": 0,
-    "mean": 0.703
-   },
-   "metal": 0,
-   "roughLift": 0.3,
-   "specular": 0.3,
-   "breakup": {
-    "mix": 0.45,
-    "macro": 0.1,
-    "cell": 6
-   }
-  },
-  "paving": {
-   "lib": "concrete.ancient.b",
-   "scale": [
-    3.25,
-    3.07
-   ],
-   "tint": {
-    "keep": 0,
-    "mean": 0.703
-   },
-   "metal": 0,
-   "roughLift": 0.3,
-   "specular": 0.3,
-   "breakup": {
-    "mix": 0.45,
-    "macro": 0.1,
-    "cell": 6
-   }
+   "mat": [
+    "verdigris"
+   ]
   },
   "brick": {
    "lib": "brick.red",
@@ -115,36 +465,20 @@
     "mix": 0.45,
     "macro": 0.1,
     "cell": 6
-   }
+   },
+   "mat": [
+    "brick"
+   ]
   },
-  "corrugate": {
-   "lib": "metal.corrugated_iron_02",
+  "paving": {
+   "lib": "concrete.ancient.b",
    "scale": [
-    1.2,
-    1.2
+    3.25,
+    3.07
    ],
    "tint": {
     "keep": 0,
-    "mean": 0.527
-   },
-   "metal": 0.3,
-   "roughLift": 0.2,
-   "specular": 0.3,
-   "breakup": {
-    "mix": 0.45,
-    "macro": 0.1,
-    "cell": 6
-   }
-  },
-  "timber": {
-   "lib": "wood.weathered_brown_planks",
-   "scale": [
-    2,
-    2
-   ],
-   "tint": {
-    "keep": 1.0,
-    "mean": 0.428
+    "mean": 0.703
    },
    "metal": 0,
    "roughLift": 0.3,
@@ -153,26 +487,10 @@
     "mix": 0.45,
     "macro": 0.1,
     "cell": 6
-   }
-  },
-  "tarp": {
-   "lib": "cloth.tarp",
-   "scale": [
-    2,
-    2
-   ],
-   "tint": {
-    "keep": 0,
-    "mean": 0.524
    },
-   "metal": 0,
-   "roughLift": 0.2,
-   "specular": 0.3,
-   "breakup": {
-    "mix": 0.45,
-    "macro": 0.1,
-    "cell": 6
-   }
+   "mat": [
+    "paving"
+   ]
   },
   "rubbleK": {
    "lib": "rock.rocks013",
@@ -191,7 +509,10 @@
     "mix": 0.45,
     "macro": 0.1,
     "cell": 6
-   }
+   },
+   "mat": [
+    "rubbleK"
+   ]
   },
   "whiteWorn": {
    "lib": "metal.worn",
@@ -210,7 +531,10 @@
     "mix": 0.45,
     "macro": 0.1,
     "cell": 6
-   }
+   },
+   "mat": [
+    "whiteWorn"
+   ]
   }
  }
 }

@@ -24,6 +24,10 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -250,7 +254,7 @@ def main():
     html = ''.join(bodies[f] for f in order)
     with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
-    with open(MANIFEST, 'w') as fh:
+    with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
@@ -281,7 +285,7 @@ if __name__ == '__main__':
 import os as _os
 _ki = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), 'KNOWN_ISSUES.md')
 if _os.path.exists(_ki):
-    _open = [l.rstrip() for l in open(_ki) if l.startswith('- [ ]')]
+    _open = [l.rstrip() for l in open(_ki, encoding='utf-8') if l.startswith('- [ ]')]
     if _open:
         print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md - tell the user before making changes:' % len(_open))
         for l in _open: print('  ' + l[6:])

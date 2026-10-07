@@ -65,7 +65,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `simulation/77-sim-9-debug.js` | 5.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `sockets/37-sockets.js` | 2.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | socket declarations and the pack registry |
 | `sockets/38-symbols.js` | 9.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas 2D symbol painters: bake to PNG |
-| `sockets/80-cultures.js` | 14.3 | [draw] | 2 | 1 | 0 | 0 | 0 | 16 | 0 | 0 | 0 | 0 | 0 | split: the packs are data; the drawing kit bakes |
+| `sockets/80-cultures.js` | 14.8 | [draw] | 2 | 1 | 0 | 0 | 0 | 17 | 0 | 0 | 0 | 0 | 0 | split: the packs are data; the drawing kit bakes |
 | `tags/50-core-tags.js` | 11.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the tag registry: ids, the KRAND uid (GDScript twin ktags.gd, passing in Godot 4.5), norm, query, audit, export; test-tags.js. Used by Yuni |
 | `tags/52-core-tags-vocab.js` | 6.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the one vocabulary; the catalog's lists copied, test-tags.js fails on drift |
 | `tags/53-core-tags-host.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the inspector's label text; the inspector hook goes to core/host (Phase 1) |

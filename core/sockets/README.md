@@ -12,7 +12,7 @@ any future build (a Voth catalog, a Yuni district, a Beast Rider village, a High
 |---|---|
 | `37-sockets.js` | `sock(type,x,y,z,ry,opts)`, `fillSockets()`, the `CULT` registry, `cultDef(pack)`, `PAINT()` (livery colour from the active culture) |
 | `38-symbols.js` | **the culture symbols**, pure 2D canvas: `SYMBOLS[name](g, cx, cy, R, ink, ink2)`, `drawTriskele`, and `SYMBOL_OF` (pack or culture key -> symbol). Shared with the furniture kit (vendored as `kits/catalog/krator-symbols.js`, `build.py --vendor-check` there), so a dressed building and the tapestries inside it carry one emblem |
-| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
+| `80-cultures.js` | the drawing kit (`cvMat`, `stripeTex`, `banDecal`, `SIGN_ICONS`, `signBoard`), the factory `mkCulture({...})`, and the packs: `generic iziz republic voth yuni beast-rider hykkousoi xanadu ringsea-islander screamer` (`beastriders` still resolves, as a hidden alias of `beast-rider`) |
 | `example/` | a runnable sheet: the same demo wall in every pack. `python3 example/build.py` writes `example/sockets-example.html` |
 
 ## The five-minute version
@@ -62,6 +62,7 @@ Shipped palettes: **Iziz** orange and teal, striped awnings. **Republic** Voth's
 **Yuni** yellow with the hyperboloid. **Beast Riders** green with the claw, ragged hide-and-cloth.
 **Hykkousoi** pale sea-linen and slate blue with the gold wave-sun. **Xanadu** saffron bordered in maroon with the gold-hubbed wheel. **Ring Sea Islanders** bark-dyed cloth
 and pandanus with the white moon, pennant streamers. These three take their colours from the sails in `kits/ringsea`, so a culture's ships and buildings match.
+**Screamers** ochre daub on rag with black and bone white and the skull, ragged cloth, pennants (the Hexahedron's salvage homes wear it).
 
 Pack keys are the repo's culture tags (`beast-rider`, not `beastriders`), so a building's `culture` tag can pick its pack directly.
 
