@@ -9,7 +9,8 @@ image encoder, so the build stays deterministic. With no tex/pack.json the fragm
 runs on its procedural maps. `exclude` leaves families out (Iziz's fauna sheets, which another fragment carries).
 Girder, Yuni, Mav's Refuge, Locus, Voth, Jimjam and Iziz carry their own copies of this function (written before it).
 
-SIDECAR PACKS. A page that carries several packs (Verge, Mungo) or is near the gallery's 16 MB per-file limit (Ys) keeps
+SIDECAR PACKS. A page that carries several packs (Verge, Mungo), is near the gallery's 16 MB per-file limit (Ys), or is
+one of many pages of a build that would each carry the same pack (the Ancients kit, the Port: one file for all) keeps
 the maps out of the HTML, in files beside it (one per pack), loaded by plain <script src> tags ahead of the page's code (so a page
 opened from disk still has its textures; a script tag needs no server, unlike fetch):
 

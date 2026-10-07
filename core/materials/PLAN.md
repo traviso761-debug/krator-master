@@ -1164,7 +1164,8 @@ set's `tint.mean` is the measured mean of the procedural map it replaces, so pal
    Interiors has nothing to wire: its shells are flat-colour debug views, and the worlds that host its rooms draw their own walls.
 **Sidecar packs (2026-10-06, late).** A page that carries several packs or nears the gallery's 16 MB a file keeps its maps beside it,
    one `<page>.tex.<key>.js` per pack loaded by `<script src>` (`tools/textures/matlib_pack.py`: `fragment(..., side=)`,
-   `write_sidecar`); `gallery/build_gallery.py` copies them beside the page. Verge, Mungo and Ys do this.
+   `write_sidecar`); `gallery/build_gallery.py` copies them beside the page. Verge, Mungo and Ys do this, and (2026-10-07) the
+   Ancients kit and the Port, whose many pages share one sidecar each (`--inline-packs` puts the maps back in every page).
    `tint.colour` (pack.py): a grey set takes a hue at the same brightness, for builds whose procedural maps carry their colour.
 3. The vernacular's own families. Done 2026-10-06 (late): Highlands' logs (`wood.log.carved`), scale (`roof.scale.slate`), rubbleW
    (`rock.old_stone_wall`), bamboo (`wood.bamboo_wall`), bmat (`fibre.reedmat`), in Highlands, Dalab, Reed Lake and Ys; Reed Lake's rlMat,

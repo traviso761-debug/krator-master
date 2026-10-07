@@ -53,6 +53,9 @@ ENTRIES = [
      'The Pearl of Xanadu: a gilded valley city stepping up the hillsides, on the terrain of Travis\'s map.'),
     ('world', 'girder', 'settlements/girder/girder.html', 'Girder',
      'An outlying Beast Rider village in the central-crater hyperjungle: every tower home, shop, workshop, hut and the Assembly Hall planned into rooms and furnished from the catalog, doors open; press G to walk in.', 'new'),
+    ('world', 'girder-hero', 'settlements/girder/hero/dist/girder-hero.html', 'Girder · Hero',
+     'Girder with Styv, a third-person character you order about with the mouse, and people to talk to (Phil in the '
+     'Assembly Hall). Same village, same rooms; the models slimmed to fit the gallery (MADE).', 'new'),
     ('world', 'mavs-refuge', 'settlements/mavs-refuge/mavs-refuge.html', "Mav's Refuge",
      'A refuge in the hypertropic jungle on the lee shore of the Ring Sea: every apartment, workshop, storehouse, house '
      'and hut planned into rooms and furnished from the catalog, real windows, and lamps and hearths lit at night.'),
@@ -264,7 +267,14 @@ UNLISTED = set()   # build folders ('kits/furniture') never to list, though they
 # Builds published as their own artifact, each with the script that makes its site: left out of the Krator Worlds
 # artifact (gallery/site/), whose index links to them instead (index.template.html), but kept in any other --out site
 # (the LAN host's), where size does not matter. The Throne's eleven stations are about 25 MB with their shared maps.
-ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py'}
+ELSEWHERE = {'biomes/throne': 'gallery/build_throne.py',
+             # the Ancients kit (city kits and arcologies) and the Ancient Port: about 105 MB with their shared packs
+             'kits/ancients': 'gallery/build_ancients.py', 'settlements/port': 'gallery/build_ancients.py'}
+# Pages a build's own build.py does not write: made by another command in the build's folder, before the page is
+# copied. Girder Hero is too big for the gallery as build_hero.py writes it (20.5 MB, over 16 MB a file), so the
+# gallery takes the --slim one, written outside the committed pages (hero/dist/ is not committed).
+MADE = {'settlements/girder/hero/dist/girder-hero.html':
+        ['build_hero.py', '--slim', '--out', 'hero/dist/girder-hero.html']}
 
 
 def build_dir(path):
@@ -414,8 +424,15 @@ def main():
     if '--no-build' not in sys.argv:
         missing = '--build-missing' in sys.argv
         dirs = []
+        skip_built = set(ELSEWHERE) if site == os.path.abspath(SITE) else set()
+        made = []
         for _, _, path, _, _, *_ in ENTRIES:
             if missing and os.path.exists(os.path.join(ROOT, path)):
+                continue
+            if build_dir(path) in skip_built:
+                continue
+            if path in MADE:
+                made.append(path)
                 continue
             d = os.path.dirname(path)
             while not os.path.exists(os.path.join(ROOT, d, 'build.py')):   # dist/, or a page beside its build (the Voth catalog)
@@ -428,9 +445,17 @@ def main():
             print('built' if r.returncode == 0 else 'BUILD FAILED', d)
             if r.returncode:
                 sys.exit(r.stdout + r.stderr)
+        for path in made:
+            os.makedirs(os.path.join(ROOT, os.path.dirname(path)), exist_ok=True)
+            r = subprocess.run([sys.executable] + MADE[path], cwd=os.path.join(ROOT, build_dir(path)),
+                               capture_output=True, text=True)
+            print('made' if r.returncode == 0 else 'MAKE FAILED', path)
+            if r.returncode:
+                sys.exit(r.stdout + r.stderr)
     skip = set(ELSEWHERE) if site == os.path.abspath(SITE) else set()   # their own artifacts; the LAN site keeps them
     found, sections = ([], []) if '--no-discover' in sys.argv else discover(build='--no-build' not in sys.argv, skip=skip)
-    entries = sorted(ENTRIES + found, key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
+    entries = sorted([e for e in ENTRIES if build_dir(e[2]) not in skip] + found,
+                     key=lambda e: alpha(e[3]))   # each section alphabetical, the bar's menu too
     if os.path.isdir(site):
         shutil.rmtree(site)
     os.makedirs(os.path.join(site, 'worlds'))
@@ -452,8 +477,10 @@ def main():
             page = page.replace('<head>', '<head>\n' + bar_head(lod, slug, entries, sections), 1)
         with open(os.path.join(site, 'worlds', slug + '.html'), 'w', encoding='utf-8') as fh:
             fh.write(page)
+        side = re.findall(r'<script src="([^"]+\.tex\.[\w-]+\.js)"></script>', page)   # its library-pack sidecars
+        size = os.path.getsize(src) + sum(os.path.getsize(os.path.join(site, 'worlds', f)) for f in side)
         items.append({'section': section, 'slug': slug, 'name': name, 'blurb': blurb,
-                      'mb': round(os.path.getsize(src) / 1048576, 1), 'source': path,
+                      'mb': round(size / 1048576, 1), 'source': path,
                       'tag': rest[0] if rest else None})
     tpl = open(os.path.join(HERE, 'index.template.html'), encoding='utf-8').read()
     page = (tpl.replace('/*ENTRIES*/[]', json.dumps(items, ensure_ascii=False))

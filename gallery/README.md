@@ -51,6 +51,31 @@ Then publish to the URL above:
 The pages load the maps through `<script src>` tags. Without them a station runs on its procedural maps and says so on
 the console.
 
+## The Ancients and the Port: their own artifact (2026-10-07)
+
+The Ancients kit's pages (the city kits and the arcologies, `kits/ancients`) and the Ancient Port (`settlements/port`)
+are published as their own artifact, https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1 ("The Ancients and the Port":
+61 pages, 103 MB with their two shared library packs), which the Krator Worlds index links to under the Throne. With them
+Krator Worlds hit the artifact's 256 MiB a version once Locus and Mungo took the material library.
+
+`build_gallery.py` lists both builds in `ELSEWHERE`: it leaves their `ENTRIES` lines out of `gallery/site/` (and does not
+build them for it) and keeps them in any other `--out` site (the LAN host's). Their names, blurbs and sections stay in
+`ENTRIES`. To update:
+
+```
+python3 gallery/build_ancients.py --build     # rebuilds kits/ancients and settlements/port, writes gallery/ancients-site/
+```
+
+Then publish `gallery/ancients-site/index.html` to the URL above with every file in `gallery/ancients-site/worlds/`, in
+two calls of under 64 MB (the shared packs `ancients.tex.ancients.js` and `port.tex.port.js` go in the first). The
+artifact is private until shared from its page's Share menu.
+
+## Girder Hero (MADE)
+
+`worlds/girder-hero.html` is in `ENTRIES` again (2026-10-07). Its page is not one a `build.py` writes: `MADE` in
+`build_gallery.py` names the command that makes it (`build_hero.py --slim --out hero/dist/girder-hero.html`, run in
+`settlements/girder`; `hero/dist/` is not committed). A full rebuild had dropped the card because the line was missing.
+
 ## Published (2026-10-02)
 
 Rebuilt with the Ys kit sheet, the Ys mockup and the nwbay biome added to `ENTRIES` (102 pages, 135.4 MB) and
@@ -199,3 +224,9 @@ Vehicles card changed (blurb, size). One publish call. **Not replaced, for the a
 library maps, about 35 MB more for the three) and Mungo (3.2 MB plus 19.7 MB of sidecars, about 20 MB more). The
 live copies are the version-46 builds (untextured; their buggy is the first one). Room for them needs pages
 dropped or slimmed, or Locus on sidecars (its three pages would share one set of maps).
+Version 66 (2026-10-07): the Ancients and the Port moved out to their own artifact (above): their 61 cards and pages
+removed, and a link section under the Throne added (`index.template.html` too). Girder Hero's card is back (its page,
+16.0 MB, rebuilt with `build_hero.py --slim` from `main` at ec33b8dc), and Locus, Locus buildings and Eastern Abyssal
+buildings replaced with their current builds (13.1 MB each: Locus on the material library). The index was edited from
+the live version 65. Version 67: Mungo replaced (3.0 MB and its three sidecars, `mungo.tex.*.js`, 21.8 MB in all; a card's
+size now counts the sidecars a page loads). The artifact is about 208 MB.

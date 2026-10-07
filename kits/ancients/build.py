@@ -332,7 +332,11 @@ def build_one(target, do_checks, assert_origin):
             bodies[f] = fh.read()
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
-    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'ancients')
+    # the pack's maps go in ONE file beside the pages, dist/ancients.tex.ancients.js, that every target loads by <script src>
+    # (tools/textures/matlib_pack.py, SIDECAR PACKS): a page is then its code alone, not its code plus a copy of the
+    # same maps. --inline-packs puts them back in every page (one self-contained file each, as before 2026-10-07).
+    side = None if '--inline-packs' in sys.argv else {}
+    bodies[MATLIB_PACK] = matlib_pack.fragment(HERE, 'ancients', side=side)
     order = sorted(order + [MATLIB_PACK])
     if target in INTERIOR_TARGETS:
         extra = [INTERIOR_BUNDLE]
@@ -361,6 +365,8 @@ def build_one(target, do_checks, assert_origin):
                       html, count=1)
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
+    if side:
+        html = matlib_pack.write_sidecar(side, html, DIST, 'ancients.tex.js', prune=False)   # shared by every target
     with open(out, 'w', encoding='utf-8', newline='') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest-%s.json' % target), 'w', encoding='utf-8') as fh:
