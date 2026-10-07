@@ -60,10 +60,20 @@ KIT_SKIP = {'00-head.html', '41-zj-block.js', '89-rows.js', '90-scene.js', '91-p
 TEX_DIR = os.path.join(KIT, 'tex')
 CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'walk', 'materials/record', 'tags', 'furnish', 'atmos', 'sockets')]
 CORE_FILES = [os.path.join(ROOT, 'core', 'terrain', '39-core-cavern.js')]   # one file of a core folder
+# the biome core (BIO: the kits' registry, foliage, placement, the stage) for the kipuka's forest (P5b)
+CORE_FILES += [os.path.join(ROOT, 'core', 'biome', f) for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js', '44-core-stage.js')]
+# the HYPERJUNGLE kit, read in place and WRAPPED in one closure: its 41 declares the core's helpers (TAU, rng, fbm...) at top
+# level for itself, which the Zeijani kit declares too; inside the closure they and its PRNG stream stay its own. Its fauna
+# (58, which wants core/biome 35-core-anim) is left out
+HJ = os.path.join(ROOT, 'biomes', 'hyperjungle')
+HJ_FRAGS = ['41-hyperjungle-globals.js', '50-biome-hyperjungle-species.js', '55-biome-hyperjungle-trees.js', '60-biome-hyperjungle-floor.js',
+            '65-biome-hyperjungle-dress.js', '70-biome-hyperjungle.js']
+CLOSED = {'10-core-head.js'}   # its helpers are declared inside its closure (BIO.fn), not at top level: not scanned for clashes
+SIDE = {}   # the hyperjungle's library maps, written beside the page (dist/dhelv.tex.js: tools/textures/matlib_pack.py)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js'}
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js', '46z-bio-matlib-pack.js', '47-hyperjungle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
 INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans
 
@@ -93,9 +103,13 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
-    import furniture_bundle, kit_bundle
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import furniture_bundle, kit_bundle, matlib_pack as mp
+    hj = ''.join('\n// ---- biomes/hyperjungle/src/%s\n' % f + open(os.path.join(HJ, 'src', f), encoding='utf-8').read() for f in HJ_FRAGS)
     return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES),
-            '39-interiors-bundle.js': kit_bundle.bundle(INTERIOR_SETS)}
+            '39-interiors-bundle.js': kit_bundle.bundle(INTERIOR_SETS),
+            '46z-bio-matlib-pack.js': mp.fragment(HJ, 'hyperjungle', side=SIDE),
+            '47-hyperjungle.js': '/* GENERATED: the HYPERJUNGLE kit (biomes/hyperjungle/src), wrapped */\n(function(){\n' + hj + '\nwindow.HYPERJUNGLE=HYPERJUNGLE;})();\n'}
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)
@@ -128,7 +142,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL: continue
+            if not f.endswith('.js') or f in VIRTUAL or f in CLOSED: continue
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))
@@ -159,6 +173,9 @@ def main():
         print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     html = ''.join(bodies[f] for f in files)
     os.makedirs(DIST, exist_ok=True)
+    sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+    import matlib_pack as mp
+    html = mp.write_sidecar(SIDE, html, DIST, 'dhelv.tex.js')
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
     json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]

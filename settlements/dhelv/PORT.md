@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 24 (37%) | 0 (0%) | 0 (0%) | 42 (63%) | 0 (0%) |
+| KB | 24 (34%) | 0 (0%) | 0 (0%) | 47 (66%) | 0 (0%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,8 +14,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 3.3 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/41-dhelv-layout.js` | 24.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/90-dhelv-scene.js` | 18.0 | [web] | 22 | 0 | 1 | 0 | 4 | 2 | 1 | 0 | 0 | 0 | 0 |  |
-| `src/91-dhelv-probe.js` | 7.0 | [web] | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/45-dhelv-bio.js` | 3.2 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/90-dhelv-scene.js` | 18.8 | [web] | 22 | 0 | 1 | 0 | 4 | 3 | 1 | 0 | 0 | 0 | 0 |  |
+| `src/91-dhelv-probe.js` | 7.6 | [web] | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/93-dhelv-map.js` | 5.4 | [web] | 1 | 3 | 2 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/94-dhelv-light.js` | 8.4 | [web] | 14 | 1 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 

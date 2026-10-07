@@ -18,6 +18,7 @@ ramblers (P6) and the Godot case (P7) follow.
 | `tests/plan-svg.js` | draws the layout as a plan: `layout-plan.svg` |
 | `layout-plan.svg` | the plan, for tuning by eye (hover a line or a footprint for its id, height and grade) |
 | `src/00-head.html` | the page shell (the kit's, titled) |
+| `src/45-dhelv-bio.js` | the biome host: BIO bound before the kit loads; the kipuka's mask (its floor less the clearing, the stream, the pasture and the cliff's foot), the outpost's buildings as obstacles; `dhbForest` plants it with the world |
 | `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield (`terrainH = DH.groundY`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
 | `src/93-dhelv-map.js` | the minimap: the layout drawn small, the ways near the camera's height bright, the camera and the marker; a click flies there; M hides it |
@@ -110,3 +111,13 @@ beam along the sun with shadows (its pool crosses the floor with the hour), a sh
 bounce. The lamps the buildings record (lanterns, hearths, burners) and the glow fungus lining every tunnel (every 18 m) are the
 rest: the 14 nearest the eye are real lights. `[` and `]` move the hour. Checked: the well floors see the sky at noon (its
 negative: the light well's throat plugged with rock).
+
+## The kipuka's forest
+
+The hyperjungle kit (biomes/hyperjungle/src) is read in place: `build.py` takes core/biome (head, kit, foliage, place,
+stage) and wraps the kit's fragments (41, 50, 55, 60, 65, 70; its fauna left out) in one closure, so the helpers its 41
+declares (TAU, rng, fbm...) and its random stream stay its own beside the Zeijani kit's. Its texture pack goes beside the page
+(`dist/dhelv.tex.hyperjungle.js`, about 3 MB) to keep the page under 16 MB. Three hero hypertrees ring the outpost's
+clearing with their saplings and some 2,000 understory plants; the young flows are basalt; a stream runs through the
+clearing. Checked: no tree on the cliff or in a building (its negative: one planted at the cliff's foot, one in the
+caravanserai). `?noforest` leaves it out, `?q=` scales it.

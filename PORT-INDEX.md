@@ -8,7 +8,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | [`core`](core/PORT.md) | 61 | 493 | 268 | 60 | 52 | 17 | 95 | 5 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 60 | 730 | 151 | 40 | 10 | 38 | 492 | 9 |  | yes | yes |
-| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 6 | 66 | 24 | 0 | 0 | 42 | 0 | 0 | atmos | yes | yes |
+| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 7 | 71 | 24 | 0 | 0 | 47 | 0 | 1 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 32 | 602 | 125 | 7 | 89 | 42 | 340 | 11 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 75 | 1095 | 219 | 19 | 13 | 78 | 767 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 84 | 873 | 199 | 23 | 52 | 47 | 551 | 6 | atmos | yes | yes |
@@ -53,7 +53,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1765 | 23499 | 3557 (15%) | 503 (2%) | 1023 (4%) | 2851 (12%) | 15565 (66%) | 247 | | | |
+| **all** | 1766 | 23504 | 3557 (15%) | 503 (2%) | 1023 (4%) | 2855 (12%) | 15565 (66%) | 248 | | | |
 
 ## Host-shell copies
 
