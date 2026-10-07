@@ -368,6 +368,10 @@
       its chunks combined, one draw per level in view; the three views now read 79-87 calls with LOD (82-84 without).
 - [ ] The gain is modest (3.27 M to 2.9-3.1 M triangles). A screen-size curve the biome core reports for its far cards,
       which LOD could read, would do more.
+- [ ] **Merged with the texture pass (2026-10-06):** the shared Ancients MAT keys that pass bound and Hexahedron's table did
+      not (verdigris, brick, paving, rubbleK, whiteWorn) are families in materials.json on the triplanar binding (72c); the
+      pass's generic binding (88y-screamers-matlib.js, KMAT.bindMat) is dropped so no material is bound twice. ?mat=proc
+      shows the old look.
 
 ## Materials: the library (2026-10-05)
 

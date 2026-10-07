@@ -95,6 +95,36 @@
     "sourceMean": 0.4468
    }
   },
+  "f_ash": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_ash.albedo.webp",
+    "normalMap": "f_ash.normal.webp",
+    "roughnessMap": "f_ash.rough.webp"
+   },
+   "lib": "ash.hearth",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.4,
+    0.4
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "32d295f1750e2afe2183744a3a3426bd4c61d098",
+    "normal": "badadc121ec1467acb631410ef29b39f2aad2b41",
+    "roughness": "d293807c918e25d3d812e16b9fbf4fd3d621cd1a"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.5,
+    "sourceMean": 0.4704
+   }
+  },
   "f_bone": {
    "breakup": null,
    "card": false,
@@ -193,7 +223,147 @@
     "normalMap": "f_food.normal.webp",
     "roughnessMap": "f_food.rough.webp"
    },
-   "lib": "fruit.skin.amber",
+   "lib": "food.crust",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "a5a932116e269a5ed685b252d7419c54549c5783",
+    "normal": "8210ed966a39ac5bd3658fabbe95e9010cdc3148",
+    "roughness": "4dcbbb4dfe3e8c9bdb46f3be593efcbf4069917e"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5691
+   }
+  },
+  "f_fruitFlesh": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitFlesh.albedo.webp"
+   },
+   "lib": "fruit.flesh",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "7e0585a13802a39a54a8ed12219d7cb5fd4c3a41",
+    "normal": "7ccc862b658bb4c00c48777bd13bf428388a606c",
+    "roughness": "c21fec867e224f907826c624f046732b9b42e8e9"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.6456
+   }
+  },
+  "f_fruitHusk": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitHusk.albedo.webp"
+   },
+   "lib": "fruit.husk",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "f118ed9011ecdc02ebc60104ecf134c00c5b6820",
+    "normal": "21dcb9a98c520168cdee02e1ee59a523dbffc594",
+    "roughness": "773c7fe77e2696b36fae835e26db25cac836f392"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.4497
+   }
+  },
+  "f_fruitJelly": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitJelly.albedo.webp"
+   },
+   "lib": "fruit.jelly",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "83f3e329fa2571a52fc5bf2f6eed1a33bc1afbc1",
+    "normal": "34d9e1c82caf64e86010603f9e0275b13d1aa8b0",
+    "roughness": "63eb2ad5246c8046635ed8d8cbbaa96b69bf80b6"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.6549
+   }
+  },
+  "f_fruitScale": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitScale.albedo.webp"
+   },
+   "lib": "fruit.scale",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "7ee2a1528b35644b2e22fc17989e23ac36a48463",
+    "normal": "fdf6c6d5a37dcb7bc1a3b2f51759bedd9b4abc80",
+    "roughness": "a3670b086a87bda50197049ac4b1cc391bd908ce"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5528
+   }
+  },
+  "f_fruitSeed": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitSeed.albedo.webp"
+   },
+   "lib": "fruit.seeds",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -203,16 +373,100 @@
    ],
    "size": 256,
    "source": {
-    "albedo": "67968ca30af7ad90f9e62251e1f8fdea265b7527",
-    "normal": "9dfd2a937e6b054d79614ea11cb825b1e031d02f",
-    "roughness": "64db4dbb5032122d862f7a9c0b49465b8db52a42"
+    "albedo": "7a0bd10d4d8b1c490110f6b4328ec9777025b0e9",
+    "normal": "9021ab30b9401e93e2df224bb9ffa09f5486263f",
+    "roughness": "560282a075ac80ee41f101e565bce6d26fd46eb1"
    },
    "specular": 0.3,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.6,
-    "sourceMean": 0.5775
+    "sourceMean": 0.536
+   }
+  },
+  "f_fruitShell": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitShell.albedo.webp"
+   },
+   "lib": "fruit.capsule",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "768ddc3dcd2e81bf751f2d95e6de73031e460daa",
+    "normal": "d16394f851d98a5cf0bc1e1c551b4a36f9b581eb",
+    "roughness": "271a03ed137ae71d40e9d435b428c737208e0230"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.354
+   }
+  },
+  "f_fruitSkin": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fruitSkin.albedo.webp"
+   },
+   "lib": "fruit.skin.orange",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "1cfe48f9f2406a1d4925664b7644c1deef24b5d4",
+    "normal": "0d8323409a9b4462ec4c59df3263c578780022b4",
+    "roughness": "591d4540fcf1f2ad8220a8df3d63c3b6988b85cb"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5883
+   }
+  },
+  "f_fungus": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "f_fungus.albedo.webp"
+   },
+   "lib": "organic.fungus.cap",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.3,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "e1bf66b21c11bf9d258eb16d7620bdddee6dd7b7",
+    "normal": "0ce25b8fc058518af6fc6ae6b9c04b2d3650acc1",
+    "roughness": "27cdfaabef9ed6b887ade6dde09bbde98ec36caf"
+   },
+   "specular": 0.3,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.0,
+    "mean": 0.6,
+    "sourceMean": 0.5674
    }
   },
   "f_gold": {

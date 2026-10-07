@@ -26,6 +26,9 @@
   "Ancients",
   "Ancient Port (Hook)",
   "Hykkousoi (Ys)",
+  "Xanadu",
+  "Jimjam",
+  "Shade / nomads",
   "Desert",
   "Hyperjungle",
   "N highlands",
@@ -2573,6 +2576,642 @@
    "row": "Pattern sheets",
    "col": "Beast Riders",
    "status": "committed"
+  },
+  {
+   "src": "library/wood.softwood",
+   "row": "Wood",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/wood.painted",
+   "row": "Wood",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/plastic.moulded",
+   "row": "Concrete",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/rubber.tyre",
+   "row": "Fibre & organic",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/ash.hearth",
+   "row": "Ground",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.pewter",
+   "row": "Metal",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/food.crust",
+   "row": "Fibre & organic",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/feather.plumage",
+   "row": "Fibre & organic",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "patterns/islander/tapa",
+   "row": "Pattern sheets",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/stone.obsidian",
+   "row": "Stone & rock",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/wood.endgrain",
+   "row": "Wood",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/paper.parchment",
+   "row": "Fibre & organic",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.salt",
+   "row": "Ground",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.mangrove",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/wood.siding",
+   "row": "Wood",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/container-red",
+   "row": "Pattern sheets",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/hull-paint",
+   "row": "Pattern sheets",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/jali-diamond",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/xanadu/zigzag",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/xanadu/lozenge",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/xanadu/bird",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/xanadu/deer",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/xanadu/star",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/frieze-star-maroon",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/mosaic-star-lapis",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/mosaic-arabesque-lapis",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/valance-scallop",
+   "row": "Pattern sheets",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "library/brick.red",
+   "row": "Brick, paving & tile",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "library/brick.ochre",
+   "row": "Brick, paving & tile",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "library/brick.oxblood",
+   "row": "Brick, paving & tile",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "library/brick.dark",
+   "row": "Brick, paving & tile",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "library/brick.red.band",
+   "row": "Brick, paving & tile",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "library/stone.marble.ashlar",
+   "row": "Stone & rock",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/roof.scale.terracotta",
+   "row": "Roof",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/roof.scale.slate",
+   "row": "Roof",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/roof.scale.gilt",
+   "row": "Roof",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/plaster.ochre",
+   "row": "Plaster & earth",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/medallion-sunray",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/jimjam/shaft-spiral",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/jimjam/shaft-chevron",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/jimjam/shaft-diamond",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/jimjam/shaft-ogee",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/jimjam/shaft-fleur",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "patterns/jimjam/shaft-tracery",
+   "row": "Pattern sheets",
+   "col": "Jimjam",
+   "status": "new"
+  },
+  {
+   "src": "library/rock.sandstone",
+   "row": "Stone & rock",
+   "col": "Shade / nomads",
+   "status": "new"
+  },
+  {
+   "src": "library/stone.chiselled",
+   "row": "Stone & rock",
+   "col": "Shade / nomads",
+   "status": "new"
+  },
+  {
+   "src": "library/rock.sandstone.red",
+   "row": "Stone & rock",
+   "col": "Shade / nomads",
+   "status": "new"
+  },
+  {
+   "src": "library/earth.adobe.pale",
+   "row": "Plaster & earth",
+   "col": "Shade / nomads",
+   "status": "new"
+  },
+  {
+   "src": "library/wood.timber",
+   "row": "Wood",
+   "col": "Shade / nomads",
+   "status": "new"
+  },
+  {
+   "src": "library/roof.thatch.reed",
+   "row": "Roof",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/fibre.rattan",
+   "row": "Fibre & organic",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/roof.shingle.cedar",
+   "row": "Roof",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/fibre.rope.twist",
+   "row": "Fibre & organic",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/frieze-palmette-red",
+   "row": "Pattern sheets",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.rust.plate",
+   "row": "Metal",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.birch",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.birch.b",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.smooth",
+   "row": "Bark & leaf",
+   "col": "N highlands",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.araucaria",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.lepido",
+   "row": "Bark & leaf",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.cork",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.madrone",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.kapok",
+   "row": "Bark & leaf",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.cherry",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.mosaic",
+   "row": "Bark & leaf",
+   "col": "Lowlands & savanna",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.palm",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/leaf.araucaria",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/leaf.palm.thatch",
+   "row": "Bark & leaf",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.cactus",
+   "row": "Fibre & organic",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.cinder",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.lilypond",
+   "row": "Ground",
+   "col": "Xanadu",
+   "status": "new"
+  },
+  {
+   "src": "library/feather.plumage.b",
+   "row": "Fibre & organic",
+   "col": "Furniture",
+   "status": "new"
+  },
+  {
+   "src": "library/organic.scale.olive.b",
+   "row": "Fibre & organic",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.tin.patchwork",
+   "row": "Metal",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/sail-band",
+   "row": "Pattern sheets",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "patterns/common/banner-hung",
+   "row": "Pattern sheets",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.sky-ray",
+   "row": "Fibre & organic",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/hide.fuzz.pterosaur",
+   "row": "Fibre & organic",
+   "col": "Hyperjungle",
+   "status": "new"
+  },
+  {
+   "src": "library/cloth.canvas.striped",
+   "row": "Cloth & canvas",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/concrete.ancient",
+   "row": "Concrete",
+   "col": "Ancients",
+   "status": "new"
+  },
+  {
+   "src": "library/concrete.ancient.b",
+   "row": "Concrete",
+   "col": "Ancients",
+   "status": "new"
+  },
+  {
+   "src": "library/wood.log.carved",
+   "row": "Wood",
+   "col": "Highlands",
+   "status": "new"
+  },
+  {
+   "src": "patterns/reedlake/band",
+   "row": "Pattern sheets",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.reedbed",
+   "row": "Ground",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/reed.layers",
+   "row": "Fibre & organic",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/reed.bundle",
+   "row": "Fibre & organic",
+   "col": "Reed Lake",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.worn",
+   "row": "Metal",
+   "col": "Ancients",
+   "status": "new"
+  },
+  {
+   "src": "patterns/port/hazard",
+   "row": "Pattern sheets",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "patterns/port/primer",
+   "row": "Pattern sheets",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "library/plate.hex",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
+  },
+  {
+   "src": "library/concrete.slab",
+   "row": "Concrete",
+   "col": "Generic",
+   "status": "new"
+  },
+  {
+   "src": "library/organic.fungus.stalk",
+   "row": "Fibre & organic",
+   "col": "Voth",
+   "status": "new"
+  },
+  {
+   "src": "library/stone.rendered.ruined",
+   "row": "Plaster & earth",
+   "col": "Highlands",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/banner",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/mural-god-hero",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/mosaic",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "patterns/dalab/mural-lizards",
+   "row": "Pattern sheets",
+   "col": "Dalab",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.mesquite",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.boojum",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.marine",
+   "row": "Fibre & organic",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.strangler",
+   "row": "Bark & leaf",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "patterns/nacre/banded-trim",
+   "row": "Pattern sheets",
+   "col": "Hykkousoi (Ys)",
+   "status": "new"
+  },
+  {
+   "src": "library/bark.dragon",
+   "row": "Bark & leaf",
+   "col": "Desert",
+   "status": "new"
+  },
+  {
+   "src": "library/ground.shingle",
+   "row": "Ground",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/skin.marine.b",
+   "row": "Fibre & organic",
+   "col": "Bays & coast",
+   "status": "new"
+  },
+  {
+   "src": "library/metal.container",
+   "row": "Metal",
+   "col": "Ancient Port (Hook)",
+   "status": "new"
   }
  ]
 }

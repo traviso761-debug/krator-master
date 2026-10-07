@@ -1,0 +1,33 @@
+[
+ {
+  "src": "card-petal-coral.webp",
+  "out": "core/materials/library/card.petal.coral",
+  "record": {
+   "id": "card.petal.coral",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine coral-peach lily petals (3 x 3): the great ruff's collar (in use); fallen petals, any big flower built from single petals"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

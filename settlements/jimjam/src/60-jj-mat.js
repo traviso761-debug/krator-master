@@ -97,7 +97,8 @@ function jjPatternMap(jjKey,jjBase,jjInk){return jjCanvas(256,256,(jjG,jjW,jjH)=
 // share one compiled shader). INSTANCES are re-tiled by their scale per face normal; JJGEO.cyl /
 // cyl32 carry u premultiplied by 2*PI on their sides, so u*radius = arc length. Plain meshes keep
 // their own UVs times K (ExtrudeGeometry's UVs are already in metres).
-function jjWorldUV(jjMat,jjK){jjMat.userData.uvK=jjK;const jjKs=jjK.toFixed(4);
+// jjKy (optional): a separate v factor, for a library set whose tile is not square (60-jj-mat.js, the library block)
+function jjWorldUV(jjMat,jjK,jjKy){jjMat.userData.uvK=jjK;const jjKs=jjKy===undefined?jjK.toFixed(4):'vec2('+jjK.toFixed(4)+','+jjKy.toFixed(4)+')';
  const jjCode='#ifdef USE_UV\n#ifdef USE_INSTANCING\nmat4 _im=instanceMatrix;\nvec3 _sc=vec3(length(_im[0].xyz),length(_im[1].xyz),length(_im[2].xyz));\nvec3 _an=abs(normal);\nvec2 _sw=(_an.y>0.5)?vec2(_sc.x,_sc.z):((_an.x>0.5)?vec2(_sc.z,_sc.y):vec2(_sc.x,_sc.y));\nvUv=uv*_sw*'+jjKs+';\n#else\nvUv=uv*'+jjKs+';\n#endif\n#endif';
  // built with new Function so the SOURCE TEXT carries K: three.js keys compiled programs on
  // onBeforeCompile.toString(), and kbake's material clone keeps onBeforeCompile but not a custom key
@@ -149,3 +150,36 @@ for(const jjPtn of ['spiral','chevron','diamond','ogee','fleur','tracery'])JMAT[
 // sRGB), so an unconverted hex renders far too pale (dark window panes read light grey). Convert every
 // untextured material once here; textured ones keep white (their maps are sRGB-encoded).
 for(const jjK in JMAT){const jjM=JMAT[jjK];if(!jjM.map)jjM.color.convertSRGBToLinear();if(jjM.emissive&&jjM.emissive.getHex())jjM.emissive.convertSRGBToLinear();}
+
+// ---- the material library (core/materials/record, materials.json; core/materials/PLAN.md "How a build adopts the
+// library"): where the pack has a JMAT family, its colour, normal and roughness maps replace the procedural ones, in
+// full colour (tint keep 1). ?mat=proc keeps the procedural look. The world-UV'd walls tile at the set's own size in
+// metres (u and v apart: a set's tile need not be square); the domes keep their UV-around-the-dome mapping with
+// repeats that keep about the procedural scale count; the shaft panels and the sunray map once over their UVs. ----
+const JJ_LIB_FAMILY={tile:'brickDeep',slate:'domeSlate',terracotta:'domeTerracotta'};   // the dome materials' JMAT keys differ from their families                                  // JMAT key -> pack family, where they differ
+const JJ_DOME_REPEAT={domeTerracotta:[20,12],domeSlate:[21,9],domeGold:[20,12]};
+(function(){
+ if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return;
+ for(const jjK in JMAT){const jjL=KMAT.packed('jimjam',JJ_LIB_FAMILY[jjK]||jjK);if(!jjL)continue;
+  const jjM=JMAT[jjK],jjT=KMAT.textures(jjL,{aniso:8});
+  jjM.map=jjT.map;jjM.bumpMap=null;
+  if(jjT.normalMap){jjM.normalMap=jjT.normalMap;jjM.normalScale.set(jjL.normalScale,jjL.normalScale);}
+  if(jjT.roughnessMap){jjM.roughnessMap=jjT.roughnessMap;jjM.roughness=1;}
+  if(jjM.userData.uvK!==undefined)jjWorldUV(jjM,1/jjL.scale[0],1/jjL.scale[1]);
+  else{const jjR=JJ_DOME_REPEAT[JJ_LIB_FAMILY[jjK]||jjK]||(jjK.startsWith('shaft_')?[1,jjL.scale[0]/jjL.scale[1]]:null);
+   if(jjR)for(const jjX of [jjT.map,jjT.normalMap,jjT.roughnessMap])if(jjX)jjX.repeat.set(jjR[0],jjR[1]);}
+  jjM.userData.lib=jjL;jjM.needsUpdate=true;}
+})();
+// the adapter: every JMAT material as a record, for the export (window._materials)
+(function(){
+ if(typeof KMAT==='undefined')return;
+ const jjRecs={};
+ for(const jjK in JMAT){const jjM=JMAT[jjK],jjL=jjM.userData.lib;
+  jjRecs[jjK]={id:'jimjam.'+jjK,family:jjK,tint:false,roughness:jjL?1:Math.min(1,jjM.roughness),metal:Math.min(1,jjM.metalness||0),
+   scale:jjL?jjL.scale:(jjM.userData.uvK?[1/jjM.userData.uvK,1/jjM.userData.uvK]:[1,1]),lib:jjL?jjL.lib:null,
+   tex:jjL||!jjM.map?null:'jimjam.'+jjK,bake:!jjL&&!!jjM.map,hook:jjM.userData.uvK!==undefined?'world-uv':null,
+   note:jjL?'library set, full colour':(jjM.map?'procedural canvas map':'untextured')};}
+ KMAT.adapter('jimjam',jjRecs);window._materials=KMAT.table('jimjam');
+})();
+// the shared Ancients MAT (core/materials 22, 54): the generic in-place bind, KMAT.ANCIENT_TILES keeping the procedural feature size
+if(typeof KMAT!=='undefined'&&KMAT.bindMat)KMAT.bindMat('jimjam',MAT,{tile:KMAT.ANCIENT_TILES});

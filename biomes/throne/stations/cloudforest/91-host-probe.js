@@ -1,0 +1,88 @@
+// ================================================================= HOST — probe (window._api)
+// What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
+const BUDGET={
+ showcase:{tris:24000000,calls:260},   // a ceiling, not a target (KNOWN_ISSUES)
+ cls:{pass:16000000,host:900000},
+ type:{'throne/trees':'pass','throne/floor':'pass','jungle/trees':'pass','jungle/floor':'pass','jungle/fauna':'pass','host':'host'},
+};
+function _probePoints(){
+ const pts=[],m=new THREE.Matrix4(),pos=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3(),bb=new THREE.Box3();
+ scene.traverse(o=>{if(o.userData&&o.userData.probeSkip)return;
+  if(o.isInstancedMesh){for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);m.decompose(pos,q,sc);pts.push([pos.x,pos.y,pos.z]);}return;}
+  if(!o.isMesh)return;bb.setFromObject(o);if(!isFinite(bb.min.x)||!isFinite(bb.max.x))return;
+  pts.push([(bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2]);});
+ return pts;}
+function regOccupancy(){const n=new Array(REG.length).fill(0);const P=_probePoints();
+ REG.forEach((r,i)=>{for(const p of P)if(regHas(r,p[0],p[1],p[2]))n[i]++;});
+ return REG.map((r,i)=>({name:r.name,n:n[i]}));}
+function nanSweep(){const bad=[];let badInst=0;
+ scene.traverse(o=>{if(!o.isMesh&&!o.isInstancedMesh)return;if(o.userData&&o.userData.probeSkip)return;
+  const p=o.geometry&&o.geometry.attributes&&o.geometry.attributes.position;if(p){const a=p.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){bad.push({geo:o.name||o.geometry.type,at:i});break;}}
+  if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
+ return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
+function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+const ORIGINS=['earth','krator','native'],LIVES=['shoulder','seam','plume','vent','windward'];
+const SPK=k=>THRONE.SPECIES.indexOf(THRONE.byKey[k]);
+const HCHK={
+ // the elfin woods: hundreds of elfin trees near the cameras, all on the windward side of the ridge, nearly all in the woods
+ elfin(T){const sp=SPK('elfin'),E=T.filter(t=>t.sp===sp),lee=E.filter(t=>FIELD.lee(t.x,t.z)>.4),out=E.filter(t=>FIELD.cforest(t.x,t.z)<.3);
+  return{ok:E.length>=500&&!lee.length&&out.length<=E.length*.05,detail:(lee.length?lee.length+' elfin trees on the lee; ':'')+E.length+' elfin trees, '+out.length+' off the woods'};},
+ // the veil trees are placed and their veils glow at night (brighter than by day)
+ veils(T,day,night){const n=T.filter(t=>t.sp===SPK('veil')).length;return{ok:n>=10&&night>day*2,detail:n+' veil trees; the veils\' glow '+day.toFixed(2)+' by day, '+night.toFixed(2)+' at night'};},
+ // the ravine's falls: four, each a real drop, each lip on its ravine's floor
+ falls(F){const V=RAVINES.find(r=>r.steps),bad=F.filter(f=>f.drop<12||Math.abs(f.z-ravC(V,f.x))>V.w);
+  return{ok:F.length>=4&&!bad.length,detail:bad.length?bad.length+' falls off the ravine or too low':F.map(f=>Math.round(f.drop)+' m').join(', ')};},
+ // beyond the ridge the heath: the dry side's trees there (ash pines), no elfin woods
+ heath(T){const L=T.filter(t=>FIELD.lee(t.x,t.z)>.6),dry=L.filter(t=>THRONE.SPECIES[t.sp].key==='ashpine'),wet=L.filter(t=>THRONE.SPECIES[t.sp].cloud);
+  return{ok:dry.length>=5&&!wet.length,detail:(wet.length?wet.length+' cloud-forest trees on the heath; ':'')+L.length+' trees on the heath, '+dry.length+' ash pines'};},
+ // the cairns are the natives', each beside the trail
+ cairns(C){const bad=C.filter(c=>PATHGRID.at(c.x,c.z)>4||c.culture!=='throne-natives');
+  return{ok:C.length>=10&&!bad.length&&C.some(c=>c.kind==='saddle cairn'),detail:(bad.length?bad.length+' cairns off the trail or untagged; ':'')+C.length+' cairns'};},
+ // the cloud forest's species are all placed
+ placed(C){const here=THRONE.SPECIES.filter(S=>S.cloud||['treefern','lehua','ashpine'].indexOf(S.key)>=0),zero=here.filter(S=>!(C[S.i]>0)).map(S=>S.key);
+  return{ok:!zero.length,detail:zero.length?'never placed: '+zero.join(', '):here.length+' species, the scarcest '+Math.min(...here.map(S=>C[S.i]))};},
+ paths(T){const bad=T.filter(t=>PATHGRID.at(t.x,t.z)<-.2);return{ok:!bad.length,detail:bad.length?bad.length+' trees on the trail':'no tree on the trail'};},
+ tagged(L){const reg=Object.keys(THRONE.KOPPEN),bad=[];
+  for(const S of L){const t=S.tags||{},k=t.koppen||[];
+   if(!t.climate||!t.aridity||t.abyssal==null||!t.riparian||ORIGINS.indexOf(t.origin)<0||LIVES.indexOf(t.plume)<0||!t.harvest||!k.length||k.some(c=>reg.indexOf(c)<0))bad.push(S.key||S.name);}
+  return{ok:!bad.length,detail:bad.length?'untagged: '+bad.join(', '):L.length+' species and plants tagged'};},
+ dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-1.0;});
+  return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' instances, none drowned'};},
+ camerasOut(C){const bad=C.filter(c=>c.y<Math.max(terrainH(c.x,c.z),waterH(c.x,c.z))+.5);return{ok:!bad.length,detail:bad.length?'under the ground or the water: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
+const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
+const counts=T=>T.reduce((C,t)=>{C[t.sp]++;return C;},THRONE.SPECIES.map(()=>0));
+function veilGlow(k){THRONE.setNight(k);let e=0;scene.traverse(o=>{if(/^biome:weeper/.test(o.name)&&o.material)e=Math.max(e,o.material.emissiveIntensity||0);});return e;}
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints(),prev=THRONE._night;
+ add('the elfin woods stand on the windward side',HCHK.elfin(THRONE.TREES));
+ {const d=veilGlow(0),n=veilGlow(1);THRONE.setNight(prev);add('the veil trees glow at night',HCHK.veils(THRONE.TREES,d,n));}
+ add('the ravine steps down in four falls',HCHK.falls(FALLS));
+ add('the heath beyond the ridge is the dry side\'s',HCHK.heath(THRONE.TREES));
+ add('the cairns are the natives\', beside the trail',HCHK.cairns(CLOUD.cairns));
+ add('every species of the cloud forest placed',HCHK.placed(counts(THRONE.TREES)));
+ add('nothing grows on the trail',HCHK.paths(THRONE.TREES));
+ add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
+ add('nothing rooted under the water',HCHK.dry(P));
+ add('preset cameras clear of ground and water',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});const P=instPoints();
+ {const x=RIDGE.saddle.x+300,z=RIDGE.zc(x)+250;add('an elfin tree on the heath',HCHK.elfin(THRONE.TREES.concat([{sp:SPK('elfin'),x,z}])));}
+ add('veils that do not glow',HCHK.veils(THRONE.TREES,1,1));
+ add('a fall off its ravine',HCHK.falls(FALLS.concat([Object.assign({},FALLS[0],{z:FALLS[0].z+200})])));
+ {const x=RIDGE.saddle.x+200,z=RIDGE.zc(x)+250;add('a veil tree on the heath',HCHK.heath(THRONE.TREES.concat([{sp:SPK('veil'),x,z}])));}
+ add('a cairn off the trail',HCHK.cairns(CLOUD.cairns.concat([{x:2000,z:-2000,culture:'throne-natives'}])));
+ {const C=counts(THRONE.TREES);C[SPK('veil')]=0;add('a species never placed',HCHK.placed(C));}
+ {const p=TRAILS[0].pts[Math.floor(TRAILS[0].pts.length/2)];add('a tree on the trail',HCHK.paths([{x:p[0],z:p[1]}]));}
+ add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
+ {const Pl=POOLS[0];add('a plant on a pool\'s floor',HCHK.dry([[Pl.x,Pl.level-2,Pl.z,'biome:fern']]));}
+ {const Pl=POOLS[0];add('a camera under a pool',HCHK.camerasOut([{view:'under',x:Pl.x,y:Pl.level-1,z:Pl.z}]));}
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
+ get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
+ typeStats,regOccupancy,nanSweep,setLightMode,
+ setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),go:k=>go(k),
+ biome:()=>window._biome,cloud:()=>CLOUD,falls:()=>FALLS,weather:m=>{if(m)ATMOS.W.mode=m;return ATMOS.W.mode;},
+ at:(x,z)=>{const o={h:terrainH(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));const Z=THRONE.zones(x,z);o.zones={};for(const k in Z)o.zones[k]=+Z[k].toFixed(3);return o;}};
+window._registered=REG.length;

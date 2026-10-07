@@ -2,376 +2,376 @@
  "10-core.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "ea36e1d844e8"
+  "sha1": "e02a6587eb2a"
  },
  "12-stats.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "36c73fdcde3d"
+  "sha1": "72e7bdfecc4a"
  },
  "30-kit.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "4592dfcb03bb"
+  "sha1": "0c3ee28fb4e5"
  },
  "32-surfaces.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "260f318aa045"
+  "sha1": "84484c538d16"
  },
  "34-kitdefs.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "426932435c82"
+  "sha1": "e78025f13f60"
  },
  "36-decor.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "4f0f2d66851b"
+  "sha1": "37799ca85b96"
  },
  "38-helpers2.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "9498fec642c8"
+  "sha1": "658db453f591"
  },
  "42-offices.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "72435f572b8f"
+  "sha1": "5f74d2a4eac7"
  },
  "46-bunker.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "efb26646e968"
+  "sha1": "e29f0de14e70"
  },
  "48-library.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "901324c86be5"
+  "sha1": "dbb8693927bc"
  },
  "50-registry.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "2dbe98a3a5b6"
+  "sha1": "208c519f0df1"
  },
  "52-sky-abc.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "e56847f6542b"
+  "sha1": "1dd750ef6d9e"
  },
  "54-mat-concrete.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "e5a2b3f1e212"
+  "sha1": "2fec1453d653"
  },
  "56-sky-d.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "ed5091b41781"
+  "sha1": "0532a1d580f1"
  },
  "57-sky-e.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "f7faef225a09"
+  "sha1": "3e6fd4a6a72f"
  },
  "58-sky-f.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "af69d732fd7f"
+  "sha1": "2c6c2558ef4a"
  },
  "62-robotics.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "8ce20d3edc9b"
+  "sha1": "1737504d0676"
  },
  "64-houses-def.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "21f45acb82c3"
+  "sha1": "f9c51f04bf3a"
  },
  "66-office-c.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "bf71b44243d4"
+  "sha1": "cad07e5bc0ed"
  },
  "69-mat-salvage.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "346781f9e5cd"
+  "sha1": "2777f08da11c"
  },
  "69b-vern-mat.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "4bc1d2ce639f"
+  "sha1": "d59dfee0e0a7"
  },
  "69c-vern-helpers.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "160cad10b9a2"
+  "sha1": "9b3e110044a8"
  },
  "69h-host-0-lib.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "a795d96213f1"
+  "sha1": "34de5be31dd4"
  },
  "69h-host-a-facet.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "2a89eeee0af1"
+  "sha1": "5ffbde30d4fc"
  },
  "69h-host-b-bastion.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "d4d4fe3ba652"
+  "sha1": "51f2bfe582ff"
  },
  "69h-host-c-arcades.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "51f5db7ef834"
+  "sha1": "4fda506da4b2"
  },
  "69h-host-d-stalks.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "52a90143f6cc"
+  "sha1": "b419c73c88fa"
  },
  "69h-host-e-bellhall.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "d474b6e27eda"
+  "sha1": "bb423f7abc56"
  },
  "69w-worn.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "3d93cfdb531f"
+  "sha1": "a4917d1aebfc"
  },
  "70-hl-tex.js": {
   "adapted": false,
   "from": "settlements/highlands/src",
-  "sha1": "89684ac3e3ee"
+  "sha1": "f6c3cc35e146"
  },
  "70-port-core.js": {
   "adapted": false,
   "from": "settlements/port/src",
-  "sha1": "b6e114e2932b"
+  "sha1": "4592cfef4c37"
  },
  "70-vern-dwellings.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "83a46d297ae4"
+  "sha1": "87132ca8e937"
  },
  "71-hl-mat.js": {
   "adapted": false,
   "from": "settlements/highlands/src",
-  "sha1": "2b3109400c54"
+  "sha1": "079b2b30511c"
  },
  "71-port-terrain.js": {
   "adapted": true,
   "from": "settlements/port/src",
-  "sha1": "ed208e100433"
+  "sha1": "9a1d94a86c28"
  },
  "71-sky-h.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "19e7d7fb8124"
+  "sha1": "4df4547c766d"
  },
  "71-vern-trade.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "5e176829a2b5"
+  "sha1": "bc644e92a354"
  },
  "71b-hl-motif.js": {
   "adapted": false,
   "from": "settlements/highlands/src",
-  "sha1": "bf315ee9ebc6"
+  "sha1": "9892e10173e1"
  },
  "72-datacenter.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "4c2f5395ed13"
+  "sha1": "83930f4307e1"
  },
  "72-hl-helpers.js": {
   "adapted": false,
   "from": "settlements/highlands/src",
-  "sha1": "d0d7fa9524d0"
+  "sha1": "cc587c1e66c9"
  },
  "72-port-kit.js": {
   "adapted": false,
   "from": "settlements/port/src",
-  "sha1": "6aaf10b6d2ad"
+  "sha1": "37832a5e51ce"
  },
  "73-hl-carve.js": {
   "adapted": false,
   "from": "settlements/highlands/src",
-  "sha1": "6d57fdefd8a5"
+  "sha1": "28cd21556f37"
  },
  "73-police.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "5acbf202e061"
+  "sha1": "c8c4a596e2b6"
  },
  "73-port-edges.js": {
   "adapted": false,
   "from": "settlements/port/src",
-  "sha1": "79339087e90d"
+  "sha1": "afc40ee3b4b4"
  },
  "74-hospital.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "12fbfb1281e3"
+  "sha1": "6275ed269120"
  },
  "74-port-dress.js": {
   "adapted": false,
   "from": "settlements/port/src",
-  "sha1": "2adaa490788f"
+  "sha1": "14e6ad29a126"
  },
  "74-rep-dwell.js": {
   "adapted": false,
   "from": "settlements/highlands/src",
-  "sha1": "810a299e405f"
+  "sha1": "de8235de39af"
  },
  "75-hotel.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "a6b0a5d61da6"
+  "sha1": "97cc0f748df2"
  },
  "75-port-embassy.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "545ad29ee770"
+  "sha1": "cff2feddf6ac"
  },
  "76-port-chapterhouse.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "6501ec0bf155"
+  "sha1": "e2eab31f0456"
  },
  "79-government.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "72bcf46cdb0a"
+  "sha1": "a20863e80100"
  },
  "80-aa-battery.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "5043b92bbe55"
+  "sha1": "28f9c639f466"
  },
  "81-sky.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "b13975f23277"
+  "sha1": "a7c46ee78a05"
  },
  "82-apartments.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "9c554d78a51a"
+  "sha1": "22dc5d9b43b9"
  },
  "86-bio-10-core-head.js": {
   "adapted": false,
   "from": "core/biome",
-  "sha1": "79691236dfbd"
+  "sha1": "b3b9d3f1b618"
  },
  "86-bio-20-core-kit.js": {
   "adapted": false,
   "from": "core/biome",
-  "sha1": "8702bbc17f64"
+  "sha1": "1fb8fdfa9528"
  },
  "86-bio-30-core-foliage.js": {
   "adapted": false,
   "from": "core/biome",
-  "sha1": "98b0f4e59ec2"
+  "sha1": "c4a0d9fffc29"
  },
  "86-bio-40-core-place.js": {
   "adapted": false,
   "from": "core/biome",
-  "sha1": "86d05ad00910"
+  "sha1": "97a89fc87428"
  },
  "86-bio-50-biome-nwbay-species.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "8fe91686f985"
+  "sha1": "b45f16418090"
  },
  "86-bio-55-biome-nwbay-trees.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "27c802404418"
+  "sha1": "fe7e8e203f02"
  },
  "86-bio-60-biome-nwbay-floor.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "ce3c7c1ddd5f"
+  "sha1": "07506a305d4d"
  },
  "86-bio-65-biome-nwbay-dress.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "49bde2c3b134"
+  "sha1": "46aac306d40c"
  },
  "86-bio-70-biome-nwbay.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "097ec443275c"
+  "sha1": "17c37ed26d61"
  },
  "86-bio-75-biome-nwbay-fauna.js": {
   "adapted": false,
   "from": "biomes/nwbay/src",
-  "sha1": "096932704554"
+  "sha1": "16a9e38cfbe8"
  },
  "89-lab.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "a771f81f4b41"
+  "sha1": "1bd6b79c03ce"
  },
  "89m-sky-k.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "eba9d0e600ec"
+  "sha1": "ce9143c5d860"
  },
  "8aj-alt-a-bole.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "4ab8a97e9e2b"
+  "sha1": "a6b3b20f459d"
  },
  "8aj-alt-b-stack.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "a34796b4ecd1"
+  "sha1": "f58cd52c52ba"
  },
  "8aj-alt-c-hotel.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "6bee63f28144"
+  "sha1": "c64d50ee54c2"
  },
  "8ak-alt-a-houses.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "9b7917e5ad95"
+  "sha1": "21dd3761b279"
  },
  "8al-alt-00-lib.js": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "9e0352867c0b"
+  "sha1": "6f0ea20e9a57"
  },
  "8al-alt-01-office-terrace.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "cf81ad0dbe00"
+  "sha1": "835408e80e19"
  },
  "8al-alt-06-library.js": {
   "adapted": true,
   "from": "kits/ancients/src",
-  "sha1": "0d059975e84e"
+  "sha1": "467086d6567d"
  },
  "92-camera.js": {
   "adapted": true,
   "from": "settlements/iziz/src",
-  "sha1": "76c9112c7e72"
+  "sha1": "6ef6ac9ffbdc"
  },
  "93-labels.js": {
   "adapted": false,
   "from": "settlements/iziz/src",
-  "sha1": "d78e5d807c2d"
+  "sha1": "b562038c5c30"
  },
  "99-tail.html": {
   "adapted": false,
   "from": "kits/ancients/src",
-  "sha1": "d3aaf402992e"
+  "sha1": "566543d80ae7"
  }
 }

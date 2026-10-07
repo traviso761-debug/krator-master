@@ -189,7 +189,7 @@ function hnRLPost(x,y,z,r,h,ry,o){o=o||{};const c=hC(vPick(RPAL.straw));vPst('hR
  if(o.disc)kput('hRLChakana',[x,y+h+.45+r,z],qEuler(0,ry,0),[r*3.2,r*3.2,1],null);
  if(o.pennant){const p=loc(x,z,r+.5,0,ry);beam('hRLBundleC',[x,y+h-.1,z],[p[0],y+h+.15,p[1]],.05,.05,c);kput('hRLBandP',[p[0]+.0,y+h-.55,p[1]],qEuler(0,ry,0),[.9,.5,1],null);}}
 // A woven cloth hung on a wall face (the awayo): w x h, its top at y + h
-function hnRLCloth(x,y,z,ry,w,h){const p=loc(x,z,0,.08,ry);kput('hRLCloth',[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);const q=loc(x,z,0,.11,ry);vB('hRLBundle',q[0],y+h-.03,q[1],w+.2,.07,.07,ry,hC(vPick(RPAL.strawOld)));}
+function hnRLCloth(x,y,z,ry,w,h){const p=loc(x,z,0,.08,ry);kput(hRLStyle.hanging==='stripe'?'hRLClothS':'hRLCloth',[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);const q=loc(x,z,0,.11,ry);vB('hRLBundle',q[0],y+h-.03,q[1],w+.2,.07,.07,ry,hC(vPick(RPAL.strawOld)));}
 // A woven band across a wall face (lintels, the belt of a hall)
 function hnRLBandOn(x,y,z,ry,w,h){const p=loc(x,z,0,.06,ry);kput('hRLBandP',[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
 // Sheaves of cut reed: n standing in a row along ry (tied, splayed tops), some leaning together in a stook

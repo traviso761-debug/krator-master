@@ -63,13 +63,22 @@ for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+# the material library (core/materials/record: KMAT and the loader) and the GENERATED pack of the textures materials.json
+# names (tools/textures/matlib_pack.py from tex/, written by tools/textures/pack.py). Without tex/pack.json the pack is
+# empty and the kit keeps its procedural textures (as it does in the open world, which carries no pack).
+for f in ('23-mat-record.js','25-matlib-host.js'):
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record',f))
+sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
+import matlib_pack
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'eastabyss')}
+for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
 frags=sorted(PATH)
 out=[]; bad=[]
 for f in frags:
-    s=open(PATH[f],encoding='utf8').read()
+    s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
     n=int(re.match(r'(\d+)',f).group(1))
     if 10<=n<80 and '-host-' not in f:
         for w in FORBID:

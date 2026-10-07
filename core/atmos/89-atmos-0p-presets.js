@@ -18,10 +18,23 @@ ATMOS.PRESETS={
  fogbank:{size:[30,70],alpha:.16,distFade:.0009,nearFade:[3,25],sway:14,night:[.14,.15,.2],day:[.86,.87,.9],pxMax:220,blend:'normal'},
  glow:{pxMin:2,pxMax:240,distFade:.0022,fogFade:.004,fogSwell:.7,rainSwell:.4,gain:1.7,dayFloor:.15,blend:'add'},
  rain:{drops:7000,box:240,fall:60,streak:2.4,slant:.25,windRide:6,fade:[50,120],alpha:.42,color:[.72,.77,.86]},
+ // ASH (opt-in: ATMOS.weather({ash:true}); from Voth's ash storm, 2026-10-06): flecks tumbling in a box that rides the camera,
+ // falling slowly and driven hard downwind (ashfall: a few; the storm: thick); low veils of ash racing along the ground in
+ // the storm; the storm's lightning warm (a volcano's dirty thunderstorm)
+ ash:{flecks:16000,box:120,fall:5,windRide:2.6,size:[.1,.3],fade:[25,70],alpha:.9,color:[.5,.47,.42],
+  streaks:6000,streakBox:110,streakRide:4.2,streakLen:[1.5,3.5],streakAlpha:.5,streakColor:[.4,.37,.32],
+  veils:180,veilBox:420,veilRide:3.2,veilSize:[40,110],veilY:[1,14],veilAlpha:.42,veilColor:[.68,.62,.52],bolt:0xffc8a0,
+  ashfall:.35,stormFog:.55},
+ // SNOW (opt-in: ATMOS.weather({snow:true}); the Throne's glacier, 2026-10-06): the ash's flakes, white, bigger and slower;
+ // streaks of blown snow and spindrift skimming the ground in the blizzard; a white-out (the host's fog)
+ snow:{flecks:15000,box:110,fall:1.6,windRide:2,size:[.14,.4],fade:[25,75],alpha:.95,color:[.96,.97,1],
+  streaks:5000,streakBox:100,streakRide:4.6,streakLen:[1.2,3],streakAlpha:.45,streakColor:[.92,.94,.98],
+  veils:200,veilBox:420,veilRide:3.6,veilSize:[30,90],veilY:[.5,8],veilAlpha:.5,veilColor:[.9,.92,.96],
+  snowfall:.4,stormFog:.6},
  // the wind every effect shares: a base vector that veers slowly, scaled by the weather, with gust fronts travelling
  // downwind (atmGust in the shaders, ATMOS.gust in JS)
  wind:{base:[.8,.35],gustAmp:.55,frontSpeed:12,veer:[.22,.021,.1,.057],gust:[[.5,.31,0],[.3,.73,1.3],[.2,1.9,4.1]],
-  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5}},
+  weather:{clear:1,rain:1.5,storm:2.4,autoRain:.5,ashfall:1.3,ash:2.8,snowfall:1.2,blizzard:2.7}},
  // the evening: night(h) ramps over these hours; a light's own on/off ramps take `ramp` hours
  clock:{dawn:[5.5,7.2],dusk:[17.2,18.8],ramp:.3,nightDim:.82},
  // THE WAVE FIELD (89-atmos-a-waves.js): open water as three families of travelling waves. A wave is [kx,kz,c,a]: its
@@ -46,5 +59,23 @@ ATMOS.PRESETS={
  // `every` frames. specular and diffuse scale the map's two terms on standard materials (diffuse is compiled in: set it
  // before the first frame; 0 keeps a build's tuned hemisphere and ambient fill as the only diffuse light). groundK scales
  // the ground colour the host passes for the lower half of the capture.
- skylight:{size:128,stepH:.2,every:30,specular:1,diffuse:0,groundK:1}
+ skylight:{size:128,stepH:.2,every:30,specular:1,diffuse:0,groundK:1},
+ // THE CLOUD DECK (89-atmos-d-clouddeck.js): a sea of cloud seen from above, the dense air of a basin pooled below a
+ // wall (the southern highlands' hyperjungle deck). Its relief is GRADIENT NOISE (fBm) on a lattice that repeats every
+ // `lattice` cells, hashed by integers (bit-exact in every engine), so no straight crest anywhere: billows [div, amp] are
+ // octaves of cell `cell`/div metres; their sum (over the total amp, times `gain`) is heaped by `heap` (the tops round,
+ // the troughs flatten) between `down` and `up` metres about the deck's level. warp {amp, seedA, seedB} bends the billows
+ // with a second noise of cell `cell` that drifts its own way (`evolve`), so the cloud changes shape as it goes; drift is
+ // the billows' own. drift and evolve are whole lattice periods per clock `period` ([cells of `cell`*lattice in x, in z]),
+ // so the clock's wrap is seamless. puff: the billows and the detail as BILLOW noise, 2|n| - 0.5 (rounded domes with sharp
+ // creases between them, as cumulus tops seen from above), not plain noise (smooth swells, which read as water). detail (detailAmp metres) only shades, faded out by camera distance (fade [near,far]);
+ // tilt turns slope into the shading normal. top and shade are the lit and hollow colours (display sRGB). ground: where
+ // the ground rises through the deck it thins from alpha 1 at ground[1] metres of clearance to 0 at ground[0]. mesh: a
+ // grid of `cells` a side, `radius` metres round the camera, snapped to `snap`; clear: the ground's height round the camera
+ // on `size` a side over `span` metres, resampled at each snap. fogK thins the scene's fog on the deck.
+ clouddeck:{period:51200,lattice:64,cell:640,drift:[2,-1],evolve:[-1,2],up:44,down:26,heap:2.1,tilt:3.2,gain:2.25,puff:true,
+  billows:[[1,.5],[2,.28],[4,.15],[8,.07]],warp:{amp:230,seedA:21,seedB:22},
+  detail:[[10,.5],[20,.32],[40,.18]],detailAmp:2.5,
+  fade:[600,2500],top:[.99,.985,.97],shade:[.49,.56,.66],ground:[-6,45],fogK:.55,
+  mesh:{radius:9000,cells:180,snap:300},clear:{size:160,span:5200}}
 };

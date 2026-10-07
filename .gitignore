@@ -22,6 +22,9 @@ settlements/locus/publish/
 settlements/locus/locus-plants.html
 settlements/locus/yuni-*.html
 gallery/site/
+gallery/throne-site/
+gallery/ancients-site/
+settlements/girder/hero/dist/
 
 # verify.py variant-shot folders (shots-var etc.)
 shots-*/
@@ -56,3 +59,6 @@ core/materials/demo/mockups/*/dist/
 /edits/
 
 kits/scyvoi/three.min.js
+
+kits/fauna/scratch/
+kits/fauna/three.min.js

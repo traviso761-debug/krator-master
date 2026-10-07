@@ -1,0 +1,151 @@
+[
+ {
+  "src": "Weathered Teal Lizard Frieze.png",
+  "out": "core/materials/patterns/dalab/mural-lizards",
+  "record": {
+   "id": "dalab/mural-lizards",
+   "family": "paint",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2,
+    1.88
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id patterns/dalab/mural-lizards).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Weathered Teal Lizard Frieze.png",
+    "reuse": "Dalab mural variant 3 (lizards and maize); any lizard or harvest frieze"
+   },
+   "pattern": true
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.15,
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "normal_strength": 0.5
+  }
+ },
+ {
+  "src": "Monochrome Mesquite Bark Texture.png",
+  "out": "core/materials/library/bark.mesquite",
+  "record": {
+   "id": "bark.mesquite",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.mesquite).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Monochrome Mesquite Bark Texture.png",
+    "reuse": "sedesert and ebadlands mesquite; any twisted fibrous bark (juniper, cedar)"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.9,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Peeling Grey-Barked Texture.png",
+  "out": "core/materials/library/bark.boojum",
+  "record": {
+   "id": "bark.boojum",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.boojum).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Peeling Grey-Barked Texture.png",
+    "reuse": "sedesert bottle tree and boojum; pale peeling trunks with small spines"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "Gray Marine Skin Texture.png",
+  "out": "core/materials/library/skin.marine",
+  "record": {
+   "id": "skin.marine",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id skin.marine).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Gray Marine Skin Texture.png",
+    "reuse": "nw/swbay swimmers; any whale, dolphin or seal"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.5,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "Intertwined Pale Banyan Roots.png",
+  "out": "core/materials/library/bark.strangler",
+  "record": {
+   "id": "bark.strangler",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+    "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.strangler).",
+    "licence": "generated for this project by its owner",
+    "original_title": "Intertwined Pale Banyan Roots.png",
+    "reuse": "nwbay strangler figs; banyan aerial roots anywhere"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough_var": 0.2,
+   "rough": 0.8,
+   "mute": 0.4
+  }
+ }
+]

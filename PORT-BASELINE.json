@@ -1,5 +1,9 @@
 {
  "pages": {
+  "biomes/crater-drylands/dist/crater-drylands.html": {
+   "bytes": 3428873,
+   "sha256": "ef0b5308c6ea6f90075059be61a391ccb753c2f0a81ebcaff5f531969a6eefa3"
+  },
   "biomes/eastabyss/dist/eastabyss.html": {
    "bytes": 288834,
    "sha256": "7aa23cdff0f8c75430883a499185a846a43e62c8aacf16dfeb34840dec219f5b"
@@ -32,6 +36,10 @@
    "bytes": 296711,
    "sha256": "856e3a83d37f3706827233e680226ade7e9802c6ecbea33e1a0dae60f7a65e67"
   },
+  "biomes/shighlands/dist/shighlands.html": {
+   "bytes": 1520486,
+   "sha256": "a984cb7ac2f8c885d51f1ae1c94812d8cf4b5dc9b0bdcf5b475f60f94fa38a5c"
+  },
   "biomes/swbay/dist/swbay.html": {
    "bytes": 270393,
    "sha256": "469b2085a1d291c2e23f13fd300e1fc8e62eccf8257943fb36c9e2fc28f729c0"
@@ -47,6 +55,10 @@
   "core/sockets/example/sockets-example.html": {
    "bytes": 174286,
    "sha256": "3d7b24099164ac4787d151b8358797beb50a5557e47b49a29749e9f4b2629971"
+  },
+  "kits/ancients-interiors/dist/ancients-interiors.html": {
+   "bytes": 288655,
+   "sha256": "94cd9643265648ed5a1abb211f225b58a9a86b04e125d479cfcb79b98daac45d"
   },
   "kits/ancients/dist/alt-civic.html": {
    "bytes": 2452541,
@@ -127,6 +139,10 @@
   "kits/ancients/dist/hosts.html": {
    "bytes": 2454524,
    "sha256": "aacafe0133b753c50ac8ae01892c81f84f9c30c208570bd36d8ed267d2d85396"
+  },
+  "kits/ancients/dist/interiors.html": {
+   "bytes": 5885835,
+   "sha256": "e26342a374e08b41fa1cabda5feb32b7db37e0ce792aa415eb8cc45426fa1d99"
   },
   "kits/ancients/dist/iziz-style.html": {
    "bytes": 2454723,
@@ -209,20 +225,20 @@
    "sha256": "d9c57f310bd9e4efc51480b3cd5b673d9c7d81644cac7aeaca8759a5ff41227b"
   },
   "kits/catalog/dist/catalog.html": {
-   "bytes": 1150919,
-   "sha256": "a38c33d041bf6b7f51496f29c35b6ec466626f36f2c6e795cca6e9c71500b851"
+   "bytes": 1289008,
+   "sha256": "9782ea2de1584d8f2d9a717cdfdc5fac8545532c5b5aa557b178be737a26d2df"
   },
   "kits/interiors/dist/interiors-sets.html": {
-   "bytes": 493904,
-   "sha256": "8f7fb47a466a954c9248b17b2c9c46923f501ab6c409b9a8fa3d20d49fd83f11"
+   "bytes": 501757,
+   "sha256": "4d1327bf4a95a81616c0c9adf2bb7d5ecd67554f71289cab88cc3ecfcbfafd4e"
   },
   "kits/interiors/dist/interiors-walk.html": {
-   "bytes": 8993403,
-   "sha256": "0a16236cff53ef1ae2698c84962d0b3fd07430685e74fc1937b9ff2f4be3ec1d"
+   "bytes": 9127045,
+   "sha256": "c1a924246e2018b472ef51464a5d4b0c5d859bc366c1cd058900a44646c8aa6e"
   },
   "kits/interiors/dist/interiors.html": {
-   "bytes": 242399,
-   "sha256": "e5a826dd35a5c4acbd0000d436c93be31a03bd66f5fd888c37da1997bb6804c3"
+   "bytes": 242516,
+   "sha256": "31655f7e114e54b3573716aaf7874c32bf29b47674ab63301420ee0930e96f7b"
   },
   "kits/mechs/dist/mechs.html": {
    "bytes": 1599946,
@@ -319,6 +335,10 @@
   "settlements/mungo/dist/mungo.html": {
    "bytes": 2921720,
    "sha256": "5e40823d1b348de67a9da876e0aa15cd32a399207f35ef1db6d2312d6bbe8e44"
+  },
+  "settlements/noahs-regret/dist/noahs-regret.html": {
+   "bytes": 6179152,
+   "sha256": "a7d42bc2955c91ecfab14c0643e1823ce46271d6701a1a31291a237a4a483778"
   },
   "settlements/port/dist/cgBox.html": {
    "bytes": 783155,

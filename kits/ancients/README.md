@@ -42,6 +42,11 @@ budget counter cannot see where a thing is. **Read the shots. Every round.**
 * **`KNOWN_ISSUES.md`** — what is broken and what is merely unfinished.
 * **`NOTES.md`** — what changed, round by round.
 
+**Interiors** (`--target interiors`, `dist/interiors.html`): the original kit's buildings with real rooms (plans in
+`kits/ancients-interiors`), intact ones furnished with Ancient furniture, ruins with broken partitions, every room a
+socket for any culture's furniture. Open a building with the "Interior" select; `[` `]` change the storey. API.md
+"Interiors".
+
 **Ancient hosts** (`src/8ap-host-*`, `--target hosts`): five types drawn as Hykkousoi hosts for Ys: Skyscrapers L
 (the Facet) and M (the Bastion), the Arcades, the Capsule Stalks and the Bell Hall. Each has a pure-data `HOSTSPEC_*`
 beside its builder, in the shape of Ys's `YS_HOST_TYPES`. Read the header of `src/8ap-host-0-lib.js`.
@@ -53,6 +58,13 @@ every top-level name is shared by every fragment, and fragment order is
 load-bearing. `.origin.html` is the single-file kit this repo was split out of,
 kept so `build.py --assert-origin` can prove a refactor is output-neutral.
 `three.min.js` is a pinned r128 copy that `verify.py` serves in place of the CDN.
+
+**The library maps are one shared file (2026-10-07).** Every target loads the pack's maps from
+`dist/ancients.tex.ancients.js` by a `<script src>` ahead of its code (tools/textures/matlib_pack.py, sidecar
+packs), so a page is its code alone (about 2.4 MB) instead of its code plus a copy of the same 2.5 MB of maps:
+`dist/` went from 196 to 101 MB. Keep the file beside the pages (a page opened from disk loads it too). Without it
+a page says so on the console and runs on its procedural maps. `python3 build.py --inline-packs` puts the maps back
+in every page. The gallery's Ancients pages are their own artifact (gallery/build_ancients.py).
 
 ## Level of detail (core/lod)
 

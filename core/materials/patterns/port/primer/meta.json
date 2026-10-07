@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1244,
+    1246
+   ],
+   "seam_after": [
+    0.918,
+    1.041
+   ],
+   "seam_before": [
+    1.57,
+    1.338
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "port/primer",
+  "metal": 0.3,
+  "pattern": true,
+  "roughness": 0.7,
+  "scale": [
+   2,
+   2.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "port-primer.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id port/primer).",
+  "reuse": "Port and Ys hulls in primer; patched steel in post-apoc and Ring Sea",
+  "sha1": "274a6b8b75a36dac5adff67d898a85c27a4e9bc1"
+ }
+}

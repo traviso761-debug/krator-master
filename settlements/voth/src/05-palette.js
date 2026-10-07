@@ -257,7 +257,12 @@ var FAMMAT = {
      B.fam==='cloth', not a texture hook; tex stays null until a texturing
      pass wants to give it one (the sway code composes with worldUV fine if
      it ever does). */
-  cloth  : { color:0xffffff, rough:0.95, tex:null, scale:[2.0,2.0] }
+  cloth  : { color:0xffffff, rough:0.95, tex:null, scale:[2.0,2.0] },
+  /* the Voth woven patterns (patterns/voth/kilim-star, kilim-tri; materials.json): colour-carrying, so a piece in these
+     families is drawn white when the library pack is on the page (vothPatCol, 47-texture.js) and in its banner colour
+     when it is not. They sway like cloth. */
+  tapestry: { color:0xffffff, rough:0.95, tex:null, scale:[2.6,2.6] },
+  kilim  : { color:0xffffff, rough:0.95, tex:null, scale:[2.0,2.0] }
 };
 
 /* ============================== BUDGET ==============================

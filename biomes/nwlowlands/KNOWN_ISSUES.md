@@ -34,8 +34,11 @@ Read before changing anything here. `build.py` prints the open count.
       and has no foothill pillars yet.
 - [ ] The same two-tone-bark caveat as the SW kit: the second colour is per bucket.
 - [ ] Only one Girder tower dresses. No fauna yet.
-- [ ] **Put the biome fruit in the kit** (`biomes/FRUIT.md`): pandan keys, candle nectar (banksia). Each has a catalog piece in
-      `kits/catalog/krator-master-furniture-generic-fruit.js` (`biome: 'nwlowlands'`). Both are drawn. Add harvest tags. Wattle pods, ginkgo seeds and kauri cones are not drawn and have no fruit yet.
+- [x] **Put the biome fruit in the kit** (`biomes/FRUIT.md`), 2026-10-06: every species carries a harvest tag (`NWLOW.HARVEST`,
+      `S.tags.harvest`; the inspector shows it for a tree's volume): pandan keys (pandan), candle nectar (banksia), both drawn
+      (the 'pompom' items). The probe's `fruit tagged, catalogued and drawn` check (with three negatives) holds it.
+- [ ] Wattle pods, ginkgo seeds and kauri cones: tagged as edible with `fruit: null`, named in the probe's not-drawn list.
+      Not drawn and no catalog piece yet. `settlements/highlands` carries this kit's pack and needs a rebuild for the tags.
 
 ## Done
 
@@ -54,3 +57,4 @@ Read before changing anything here. `build.py` prints the open count.
       lanterns lighter, `DENS` .45.
 - [x] Groves read as groves: culms in tight clumps with a shared leaf mass at the top.
 - [x] Lantern halos small and dim; willow veils fine strands.
+- [ ] (2026-10-06) The showcase takes the material library (materials.json, tex/, the 44 pack; BIO.libSwap after the MAT table): barks, rock, wood and the leaf, frond and ground-plant cards, brightness matched to the measured procedural maps; single-plant slots show one cell of their sheet. Slots not in materials.json stay procedural (the 2026-10-06 sweep lists them in core/materials/PLAN.md). verify --assert passes, before and after.

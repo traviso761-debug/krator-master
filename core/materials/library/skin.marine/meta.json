@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.347,
+    1.135
+   ],
+   "seam_before": [
+    1.843,
+    1.045
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.5,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "skin",
+  "id": "skin.marine",
+  "metal": 0,
+  "roughness": 0.5,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Gray Marine Skin Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Gray Marine Skin Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id skin.marine).",
+  "reuse": "nw/swbay swimmers; any whale, dolphin or seal",
+  "sha1": "c489c5dfcce6d3f681e6b9b96a72fccc4b35e85d"
+ }
+}

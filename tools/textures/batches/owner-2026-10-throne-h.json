@@ -1,0 +1,30 @@
+[
+ {
+  "src": "bark-coir.webp",
+  "out": "core/materials/library/bark.coir",
+  "record": {
+   "id": "bark.coir",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "brown coir-like fibrous bark, loose fibres over a matted crust: a palm's fibre-wrapped trunk (the coconut palm, in use), a tree fern's trunk, a coconut's husk; coir rope, mats and brushes"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

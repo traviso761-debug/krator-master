@@ -85,6 +85,19 @@ footer code{font:12px var(--mono)}
     Every world below sits somewhere on it.
     <a href="https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q" target="_blank" rel="noopener">Open the scale model &rarr;</a></p>
   </section>
+  <section class="scale" aria-labelledby="throne-h">
+    <h2 id="throne-h">The Throne</h2>
+    <p>Eleven stations on the volcano at the heart of Krator, each a 6 km piece of one biome kit: rain forest and
+    kipuka, a spice frontier, a geyser isle, cloud forest, savanna, ash desert, vent country, a glacier, the caldera
+    rim and a lava tube. They have a gallery of their own.
+    <a href="https://claude.ai/artifact/TJaH7TYHoZf4p56C1i5xcX" target="_blank" rel="noopener">Open the Throne &rarr;</a></p>
+  </section>
+  <section class="scale" aria-labelledby="ancients-h">
+    <h2 id="ancients-h">The Ancients and the Port</h2>
+    <p>The Ancients' megastructures type by type, the arcologies (whole cities in one structure) and the modular Ancient
+    Port, each intact, ruined and reclaimed: 61 pages in a gallery of their own.
+    <a href="https://claude.ai/artifact/As2ZG7F8ee3Dx4Dr87FkR1" target="_blank" rel="noopener">Open the Ancients &rarr;</a></p>
+  </section>
   <main id="registers"></main>
   <footer>Built from the <code>krator-master</code> repository. Each card names the file it was built from.</footer>
 </div>
@@ -95,10 +108,17 @@ const SECTIONS = [
   {key:'world', id:'worlds', title:'Settlements', note:'Whole worlds: terrain, buildings, flora and, in several, people moving through them.'},
   {key:'biome', id:'biomes', title:'Biomes', note:'Flora and fauna of each region, independent of any settlement.'},
   {key:'kit', id:'kits', title:'Building kits', note:'Sheets that lay out every building of a culture side by side.'},
+  {key:'ancients', id:'ancients', title:'Ancient city kits', note:'The ruined megastructures of the Ancients, type by type, at every level of decay: the full kit, its worn twins, the alternates, the engines, the spaceport and the Lighthouse.'},
   {key:'objects', id:'objects', title:'Objects', note:'Things placed into a world rather than built in it: furniture, plants and watercraft, each tagged by culture.'},
-  {key:'arcology', id:'arcologies', title:'Arcologies', note:'Whole cities in one structure, each intact beside its ruin. Earlier ones first, then this month\'s group.'},
+  {key:'arcology', id:'arcologies', title:'Arcologies', note:'Whole cities in one structure, each intact beside its ruin. This month\'s group is marked new.'},
   {key:'port', id:'port', title:'Ancient Port', note:'Modular port segments and vessels that tile along a coast, each intact, ruined and reclaimed.'},
 ];
+for (const s of /*SECTIONS*/[]) {   // a new build's own section, after its kind's (build_gallery.py, discover)
+  let i = SECTIONS.findIndex(x => x.key === s.after);
+  if (i < 0) i = SECTIONS.length - 1;
+  while (SECTIONS[i + 1] && SECTIONS[i + 1].after === s.after) i++;
+  SECTIONS.splice(i + 1, 0, s);
+}
 const main = document.getElementById('registers'), jump = document.getElementById('jump');
 for (const s of SECTIONS) {
   const items = ENTRIES.filter(e => e.section === s.key);

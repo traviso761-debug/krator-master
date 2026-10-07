@@ -81,7 +81,7 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '83-walk.js',         # the first-person walk mode
                  '48-detail.js',       # library detail maps on meshes without UVs (no rnd())
                  '64-cards.js',        # the library's extra plant and net cards (its own generator)
-                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js',   # core/materials/record (no rnd())
+                 '23-mat-record.js', '24-tex-def.js', '25-matlib-host.js', '26-matlib-bind.js',   # core/materials/record (no rnd())
                  '50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js',   # core/furnish (no rnd())
                  '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js',   # core/rand, core/tags (no rnd())
                  '90-atmos-host.js'}   # binds core/atmos

@@ -11,7 +11,8 @@
 // beds), then the islands, their reeds and anchors, then the buildings on their islands (pad:false), the
 // open-water sites on pads of their own, boats in the channels, reed clumps between the islands.
 window.onerror = host.onerror;            // the kit's 10-core replaced the page's handler: give it back
-var scene = null, camera = host.camera;   // names a few kit helpers fall back to; set before anything builds
+var scene = null, camera = host.camera;
+hRLStyle.hanging = 'stripe';             // Mungo's reed village hangs the striped awayo; Reed Lake keeps the chakana weave   // names a few kit helpers fall back to; set before anything builds
 function buildMungoReedVillage(G,o){reseed(25901);
  const L=o.layout,out=o.out;
  const I=L.islands.map(S=>({x:S.x,z:S.z,rf:hnRLOutline(S.rx,S.rz,S.seed*1.37,.08),gaps:[],seed:S.seed,S}));

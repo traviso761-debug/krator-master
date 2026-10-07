@@ -4,10 +4,6 @@
 
 ## Open
 
-- [ ] **No rubber texture.** The library has no tyre rubber, so every tyre and road wheel stays plain vertex colour
-  (slot `rubber`, `-1` until delivered). The prompt is in `core/materials/PLAN.md` ("Prompts for generated sources",
-  `rubber.tyre`). When the set exists in `core/materials/library/rubber.tyre/`: `python3 tools/textures/pack.py
-  kits/motor-vehicles` and rebuild; `materials.json` already lists it (optional), the atlas grows to 4 x 4 by itself.
 - [ ] **The detail maps are 256 px a family.** A tile is 0.8 to 2 m, so close up (under a metre) the grain softens. They
   are kept small because every world that takes the bundle carries them (`bundle(['geomancer'])` adds about 250 KB to
   Locus and Mungo). `size` in `materials.json` raises them for every vehicle.
@@ -55,3 +51,5 @@
 - **The tools list the kit's own files.** `tools/audit_port.py` takes this kit's top-level files as it does the
   catalog's (`PORT.md` is generated); `tools/make_index.py` already did.
 - **The sheet's ground** is converted to linear on this page (`src/90-sheet.js`), so it is sand, not pale.
+
+- [x] (2026-10-06) **Tyre rubber.** `rubber.tyre` was delivered (texturepalooza); the kit is repacked and the `rubber` slot is live.

@@ -64,7 +64,12 @@ function barrel(x,y,z,lv,k){around(x,z,lv===2?ri(1,3):1,.8,1.6,(px,pz)=>{const R
  BIO.put('barrel',[px,y-.05,pz],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[R,R*rr(.8,1.3),R],leafCol(PAL.barrel,1.15,.03,.08,.05));
  if(lv===2&&rng()<.3)blooms(px,y+R*.9,pz,R*.3,ri(2,4),[0xe8d040,0xf0a040],[.12,.22]);});}
 function pear(x,y,z,lv){const hc=vary(pick(PAL.pear),.03,.08,.05);
- around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4);card('paddle',px,y+h,pz,rr(1,1.8),rr(.9,1.4),bright(vary(hc,.02,.06,.05),1.3),.35);});
+ around(x,z,lv===2?ri(3,6):2,.3,1.2,(px,pz)=>{const h=rr(.4,1.4),s=rr(1,1.8),sy=rr(.9,1.4);card('paddle',px,y+h,pz,s,sy,bright(vary(hc,.02,.06,.05),1.3),.35);
+  // tunas: orange-red fruit along the pad's upper rim (generic_fruit_tuna). Hashed, not drawn from rng(), so the
+  // floor's random stream (every plant after this one) is unchanged; near and mid bands only
+  if(lv>=1){const n=Math.floor(h3(px,h,pz)*(lv===2?4:3));
+   for(let k=0;k<n;k++){const u=h3(px+k*7.1,pz,h+k),v=h3(pz,px+k*3.3,s+k),a=u*TAU,d=s*(.22+.22*v),r=.065+.03*h3(px,pz+k*5.7,sy);
+    BIO.put('fruit',[px+Math.cos(a)*d,y+h+sy*(.3+.12*v),pz+Math.sin(a)*d],qEuler(.3*(v-.5),a,0),[r,r*1.3,r],bright(PAL.tuna[(u*97|0)%PAL.tuna.length],1.05));}}});
  if(lv===2&&rng()<.4)blooms(x,y+1.6,z,.8,ri(2,5),[0xe8c030,0xd8a030,0xe07070],[.14,.24]);}
 function cholla(x,y,z,lv){const hc=leafCol(PAL.cholla,1.2,.02,.06,.05),h=rr(1.2,2.6),n=lv===2?ri(5,9):3;
  BIO.beam('rod',[x,y-.1,z],[x,y+h*.5,z],.08,.06,rodCol(0x5a4a3a));

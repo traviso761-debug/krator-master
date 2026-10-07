@@ -51,3 +51,4 @@ calls and triangles as three.js counts them; sky passes not included):
 | Street level | 163 / 6.87 M | 168 / 6.39 M |
 
 The gain is modest: most of Locus is dense instanced flora and stone close to every view.
+- [ ] (2026-10-06) Library adoption, first pass: 22 families (materials.json: Yuni's rows for the shared families; new rows for canvas, corrugate, tinmirror, rubble and the sail band, whose tint means are estimates). glass, leafy, dark and glowmat stay procedural. Mungo reads Locus's 45-kit and 47-texture but has no pack: it stays procedural until it gets one. Judged in three views: brightness and colour match the procedural page.

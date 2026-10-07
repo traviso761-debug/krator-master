@@ -47,6 +47,21 @@ defBuilding({key:'tent-smithy',name:'Smithy tent',seed:4802,cut:true,w:11,d:10,h
   FURNISH('scyvoi_common_workbench',3.4,0,-1.9,-PI/2);FURNISH('scyvoi_trade_bin',-2.2,0,-d/2+.5,0);FURNISH('scyvoi_trade_display',2.2,0,2.4,PI,{v:0});
   FURNISH('scyvoi_saddle_rack',-2.4,0,2.3,PI,{setting:'both'});}});
 
+defBuilding({key:'tent-hidemaker',name:"Hidemaker's tent",seed:4804,cut:true,w:13,d:11,h:3.6,budget:90000,
+ tags:{types:['industry','shop'],wealth:'middle',style:'awning',job:'tanning'},
+ note:"the tanner's: a hide awning over the beam and the vats, frames of stretched hides, a drying line and a smoking frame outside; goat, salamander and game hides",
+ build(o){const w=7,d=5;const H=tkPeaked({w,d,eaveH:2.2,peaks:[[0,-.4,3.4]],cover:'hide',col:P('hide'),walls:false,guys:3});
+  for(const [x,z] of [[-w/2,-d/2],[w/2,-d/2],[-w/2,d/2],[w/2,d/2],[0,d/2],[0,-d/2],[-w/2,0],[w/2,0]])pole('wood',[x,0,z],[x,H(x,z)-.03,z],.065,P('woodD'),8);
+  /* a back wall of old hides hung from the eave against the wind */
+  psurf('hide',(u,v)=>{const x=-w/2+u*w;return [x,H(x,-d/2)*(1-v)+.05*v,-d/2-.05-.1*v];},10,3,P('hideD'),{colf:(u,v)=>{const k=.7+.5*ttHash(Math.floor(u*7),Math.floor(v*2));return new THREE.Color(k,k*.9,k*.8);}});
+  tkFloor('earth',P('earth'),0,w-.2,d-.2);
+  FURNISH('scyvoi_fleshing_beam',-1.6,0,.2,PI/2);FURNISH('scyvoi_tanning_vat',.6,0,-1.4,0);FURNISH('scyvoi_tanning_vat',2.0,0,-1.3,.6,{v:1});
+  FURNISH('scyvoi_hide_frame',-2.2,0,-1.9,0);FURNISH('scyvoi_hide_frame',.0,0,-2.0,0,{v:1});FURNISH('scyvoi_hide_stack',2.6,0,.9,-PI/2);
+  FURNISH('scyvoi_common_workbench',2.9,0,-.5,-PI/2);FURNISH('scyvoi_water_skins',-3.0,0,1.6,PI/2,{setting:'both'});
+  FURNISH('scyvoi_drying_line',-1.2,0,4.0,0,{setting:'outdoor'});FURNISH('scyvoi_smoking_frame',3.6,0,3.8,0,{setting:'outdoor'});smokeAt(3.6,2.3,3.8,{r:.4});
+  FURNISH('scyvoi_hide_frame',-4.6,0,2.2,PI/2+.3,{setting:'outdoor'});}});
+/* a small hash for patchy colours (no stream) */
+function ttHash(x,y){const s=Math.sin(x*12.9898+y*78.233)*43758.5453;return s-Math.floor(s);}
 defBuilding({key:'tent-supply',name:'Supply tent',seed:4803,cut:true,w:14,d:10.5,h:4.6,budget:90000,
  tags:{types:['market','shop'],wealth:'middle',style:'khaima',job:'trading'},
  note:"the band's general store: a long khaima open along its whole front, counters, bales, sacks, fire-fruit, felts and saddlery",

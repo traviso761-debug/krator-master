@@ -1,0 +1,64 @@
+[
+ {
+  "src": "card-seaweed.webp",
+  "out": "core/materials/library/card.seaweed",
+  "record": {
+   "id": "card.seaweed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine seaweeds, 3 x 3 (ribbon kelp, red dulse, bladder wrack, green feather weed, sea lettuce, beaded red weed, cord weed, red leaf weed, olive bladder weed): the geyser isle's shallows and its wrack (in use); any rocky shore, tide pools, a harbour's piles, a fish market"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-frond-coconut.webp",
+  "out": "core/materials/library/card.frond.coconut",
+  "record": {
+   "id": "card.frond.coconut",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "PROMPTS-ready.md section 5 (card.frond.coconut); delivered as three fronds across a landscape WebP, base at the top, on flat magenta (#ff00ff)",
+    "reuse": "three coconut palm fronds (3 across, each upright in its third): the coconut palm (in use); any feather palm (date, royal), thatch and roof fronds, a palm-leaf fan"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.188,
+    1.253
+   ],
+   "seam_before": [
+    1.436,
+    1.75
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bark",
+  "id": "bark.mesquite",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "Monochrome Mesquite Bark Texture.png",
+  "generator": "ChatGPT image generation, Oct 2026 (saved to Downloads 2026-10-06)",
+  "licence": "generated for this project by its owner",
+  "original_title": "Monochrome Mesquite Bark Texture.png",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id bark.mesquite).",
+  "reuse": "sedesert and ebadlands mesquite; any twisted fibrous bark (juniper, cedar)",
+  "sha1": "ffea60435c09d254d04e91d87ba82dc75c98fb35"
+ }
+}

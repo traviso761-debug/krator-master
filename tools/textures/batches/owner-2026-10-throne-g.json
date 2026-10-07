@@ -1,0 +1,226 @@
+[
+ {
+  "src": "bark-plates-glossy.webp",
+  "out": "core/materials/library/bark.plates.glossy",
+  "record": {
+   "id": "bark.plates.glossy",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "glossy red-brown plated bark (a pine, a madrone): a wet-forest conifer; polished wood"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-scales-hooked.webp",
+  "out": "core/materials/library/bark.scales.hooked",
+  "record": {
+   "id": "bark.scales.hooked",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "tan bark of hooked, curling scales: an alien conifer or tree fern; a thorny trunk"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-amber.webp",
+  "out": "core/materials/library/bark.amber",
+  "record": {
+   "id": "bark.amber",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "bark of translucent amber and resin plates: a resin tree (the spice's kin), a fossil-amber cult object"
+   }
+  },
+  "options": {
+   "rough": 0.5,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-cratered.webp",
+  "out": "core/materials/library/bark.cratered",
+  "record": {
+   "id": "bark.cratered",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "grey bark pocked with craters: a tree in ash fall or under bombardment; pumice-like alien wood"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-wavy-slate.webp",
+  "out": "core/materials/library/bark.wavy.slate",
+  "record": {
+   "id": "bark.wavy.slate",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.2,
+    2.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "blue-grey bark in flowing waves: a wind-shaped tree; driftwood; a coastal alien"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-flesh-red.webp",
+  "out": "core/materials/library/bark.flesh.red",
+  "record": {
+   "id": "bark.flesh.red",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "red marbled meat-like bark: a carnivorous or blood-sap alien tree; flesh walls"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark-tapestry.webp",
+  "out": "core/materials/library/bark.tapestry",
+  "record": {
+   "id": "bark.tapestry",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "bark grown in carpet-like patterns: an uncanny alien tree; a sacred grove; woven wall hangings in a pinch"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground-lichen-crust.webp",
+  "out": "core/materials/library/ground.lichen.crust",
+  "record": {
+   "id": "ground.lichen.crust",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a WebP",
+    "reuse": "rock crusted with grey-green and orange lichen: old lava, kopjes, ruins, any long-weathered stone"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

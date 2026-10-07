@@ -1,0 +1,95 @@
+[
+ {
+  "src": "card-carnivore-plants.webp",
+  "out": "core/materials/library/card.carnivore.plants",
+  "record": {
+   "id": "card.carnivore.plants",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine carnivorous plants (pitchers, sundew discs, flytraps, spiked rosettes), 3 x 3: the plume's floor, bogs, any alien marsh"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-flora-coral.webp",
+  "out": "core/materials/library/card.flora.coral",
+  "record": {
+   "id": "card.flora.coral",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine alien coral-like growths (sulphur crust, red tendrils, blue tubes, glass bulbs, ruffled lichen, honeycomb caps), 3 x 3: vents, hot pools, the plume's floor"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card-mushroom-alien.webp",
+  "out": "core/materials/library/card.mushroom.alien",
+  "record": {
+   "id": "card.mushroom.alien",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP; a sheet on flat magenta (#ff00ff)",
+    "reuse": "nine alien mushrooms (spiked, dripping, holed, glowing blue, starfish, spined), 3 x 3: the plume's floor, fungal caves"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "center",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

@@ -154,6 +154,27 @@ const R=[];
 // 5. the registry and the instance bake both ran.
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
+
+// 6. INTERIORS (a target with the interior bundle: src/8zz-interiors.js, kits/ancients-interiors). Every planned
+//    building drew its rooms; intact buildings are furnished (every catalog key found, the furnishing audited per
+//    template room by kits/interiors: inside, overlap, doors, clearance, reach, required, determinism); nothing else is;
+//    core/tags reads zero unknowns; ruins broke partitions.
+if(A.interiors){ const I=A.interiors(), AI=KratorAncientsInteriors, IX=KratorInteriors;
+  R.push({name:'interiors-drawn', ok:I.sites>0&&!I.errors.length&&I.bySite.every(s=>s.rooms>0),
+          detail:I.sites+' sites, '+I.rooms+' rooms, '+I.walls+' partition pieces, '+I.stubs+' broken stubs, '+I.floors+' floor slabs, '+I.cleared+' fake or dark pieces cleared'+(I.errors.length?'; ERRORS '+I.errors.join(' | '):'')});
+  const wrong=I.bySite.filter(s=>(s.state==='intact')!==(s.pieces>0));
+  R.push({name:'interiors-furnished-intact-only', ok:!wrong.length,
+          detail:wrong.length?wrong.map(s=>s.id+' '+s.state+' '+s.pieces).join(', '):I.furnished+' intact buildings furnished with '+I.pieces+' pieces ('+I.bySite.filter(s=>s.pieces).map(s=>s.id+' '+s.pieces+'/'+s.templates+'t').join(', ')+'); every other state a socket'});
+  R.push({name:'interiors-catalog-keys', ok:!Object.keys(I.missing).length, detail:Object.keys(I.missing).length?JSON.stringify(I.missing):I.records+' furniture records, every key in the catalog'});
+  let fails=[],n=0;
+  for(const S of AIK.sites){if(!S.furniture)continue;const seen={};
+   for(const r of S.furniture.rooms){if(seen[r.template])continue;seen[r.template]=1;n++;const a=r.recipe?AI.audit(r.recipe,S.furniture.catalog):IX.audit(r.room,r.plan,S.furniture.adapter);if(!a.ok)fails.push(S.id+' '+r.R.kind+': '+a.fails.slice(0,2).map(f=>f.check?f.check+' '+f.msg:'recipe '+f).join('; '));}}
+  R.push({name:'interiors-audit', ok:!fails.length, detail:fails.length?fails.slice(0,6).join(' | '):n+' template rooms audited (inside, overlap, doors, clearance, reach, required, determinism)'});
+  let sf=[];for(const S of AIK.sites)for(const B of S.plan.buildings)for(const st of B.storeys){const f=AI.storeyAudit(st,B.inside?(x,z)=>B.inside(x,z,st.y):null);if(f.length)sf.push(S.id+' '+st.id+': '+f[0]);}
+  R.push({name:'interiors-rooms-inside', ok:!sf.length, detail:sf.length?sf.slice(0,6).join(' | '):'every room of every storey has area and lies inside its building'});
+  const ruins=AIK.sites.filter(S=>S.d>=1&&S.d<=4),unbroken=ruins.filter(S=>!S.plan.buildings.some(B=>B.storeys.some(st=>st.walls.some(w=>w.broken))));
+  R.push({name:'interiors-ruins-broken', ok:!unbroken.length, detail:unbroken.length?unbroken.map(s=>s.id).join(', '):ruins.length+' ruined or rehabilitated sites with broken partitions'});
+  R.push({name:'interiors-tags', ok:I.tagUnknown===0&&I.tagMissingCulture===0&&I.tagMissingTypes===0, detail:I.records_tags+' core/tags records, unknown '+I.tagUnknown+', no culture '+I.tagMissingCulture+', no types '+I.tagMissingTypes}); }
 return R;}"""
 
 

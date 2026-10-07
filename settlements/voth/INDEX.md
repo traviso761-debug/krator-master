@@ -17,7 +17,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 6 |  |
-| `05-palette.js` | 25 | 0. PALETTE — FROZEN (1); BUDGET (263) |
+| `05-palette.js` | 26 | 0. PALETTE — FROZEN (1); BUDGET (268) |
 | `10-core.js` | 11 | 1. CORE (1); 2. WORLD CONSTANTS (72); 3. TERRAIN FIELD (174) |
 | `15-shore.js` | 4 | 4. THE SHORELINE (1) |
 | `20-stage.js` | 25 | 4. STAGE (1); 5. SKY (48); 6. ERUPTION CYCLE (442) |
@@ -27,8 +27,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `30c-roads.js` | 43 **big** | 5b. WARREN: BLOCK CARVING (1); 5c. ROAD GRAPH (138); 5d. WARREN: TANGLE (292); 5e. NEAREST STREET (504); 5f. ROAD METRICS (556); 5g. GRAPH CONNECTIVITY (575) |
 | `30d-wall-stations.js` | 17 | NEW CURTAIN WALL (point-designated) (1); silt strider stations (Route 1) (217); silt strider stations (Route 2) (249); silt strider stations (Route 3) (276) |
 | `40-ground.js` | 11 | 7. GROUND CANVASES (1) |
-| `45-kit.js` | 30 **big** | 10. BLOCK KIT (1); NIGHT ILLUMINATION (142) |
-| `47-texture.js` | 16 | 12b. TEXTURES (1) |
+| `45-kit.js` | 31 **big** | 10. BLOCK KIT (1); NIGHT ILLUMINATION (142) |
+| `47-texture.js` | 18 | 12b. TEXTURES (1) |
 | `50a-cantons.js` | 20 | 11. CANTONS (1) |
 | `50b-palace.js` | 58 **big** | PALACE: THE GILT REDESIGN (1); PALACE: BRIDGE ARRIVALS AND FACE GARDENS (225) |
 | `50c-canton-types.js` | 37 **big** |  |

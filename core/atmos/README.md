@@ -1,12 +1,13 @@
 # core/atmos: the atmosphere and street-dressing module
 
 Evening lights, a glow layer, particles, weather, ivy and window boxes, sewer grates, street lamps and fountains,
-InstancedMesh culling, **the open-water wave field** and **the sky's light on standard materials**. The pieces are
+InstancedMesh culling, **the open-water wave field**, **the sky's light on standard materials** and **the cloud deck**. The pieces are
 portable: each fragment is a closure that adds to one global, `ATMOS`, and declares nothing else at top level. It has
 its own PRNG and never touches a host's stream. It needs only three.js r128 and the five things a host passes to `init`.
 
 **Users:** the Iziz city takes all of it (`settlements/iziz/targets/city/90c-city-atmos.js`); Voth takes the wave field
-for its bay; Girder takes the sky's light for its library-textured families. Voth's and Girder's
+for its bay; Girder takes the sky's light for its library-textured families; the southern highlands (`biomes/shighlands`) take the
+cloud deck, with only the core, the presets and the export (its `build.py`, `CORE_ATMOS`). Voth's and Girder's
 `src/90-atmos-host.js` are the worked examples of a 21-sky.js-lineage binding (below). **A new build with open water or
 standard materials takes these instead of writing its own:** one water shader and one sky-light path for every world.
 
@@ -73,13 +74,14 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `1-street` | `lamp(x,z,o)`, `lampRow(pts,o)`, `planter(x,z,ry)`, `banner(x,z,bearing,hex)`, `fountain(x,z,o)` | boulevard lamps (the evening runs down a row; each head goes in `ATMOS.lamps`), timber planters, banner poles whose cloth swings and ripples in the wind, stone fountains with moving water |
 | `2-lights` | `sweepBeam(x,y,z,o)`, `spotCone(x,y,z,dir,o)`, `beacon(x,y,z)`, `brazier(x,y,z)`, `floodLight(x,y,z,o)`, `buildGlow()` | searchlights (sweeping, or `sky:true`), fixed spot cones, a rotating beacon, braziers, scheduled PointLights (keep these to a handful), and the glow layer over every light |
 | `3-particles` | `smoke([[x,y,z,kind]])`, `fireflies(centres,o)`, `mistRing(rFn,o)`, `fogBank(points)`, `moths(o)` | chimney smoke / steam / spray (kind: a `PRESETS.smoke` name or 0/1/2), fireflies at night, mist round a closed curve (a moat), fog banks for foggy weather, moths round the lit lamp heads (`ATMOS.lamps`; their own seed stream) |
-| `4-weather` | `weather({ui, apply(W)})`, `strike()` | modes auto / clear / rain / storm / fog. Rain streaks follow the camera, lightning comes in storms. `W.rain/fog/wet/flash` ease each frame, and `apply(W)` is where the HOST changes its own scene: fog density, sun, wet ground |
+| `4-weather` | `weather({ui, apply(W), ash, snow})`, `strike()` | modes auto / clear / rain / storm / fog. Rain streaks follow the camera, lightning comes in storms. `W.rain/fog/wet/flash` ease each frame, and `apply(W)` is where the HOST changes its own scene: fog density, sun, wet ground. **Ash (opt-in, `ash:true`)**: two more modes, `ashfall` (ash sifting down) and `ash` (an ash storm, from Voth's: flecks driven by a gale, veils of ash racing along the ground, warm volcanic lightning, haze) and `W.ash` / `atm_ash`; a host that does not ask sees the old modes and `W.ash` 0. **Snow (opt-in, `snow:true`, 2026-10-06, the Throne's glacier)**: `snowfall` and `blizzard` (flakes driven by a gale, streaks of blown snow, spindrift on the ground, a white-out), `W.snow` / `atm_snow`; drawn by the same function as the ash (`flakeWeather`, its own preset); no lightning |
 | `5-dress` | `boxIndex(meshes)`, `dressBuilding(idx,b,o)`, `ivy`, `ivyClump`, `windowBox`, `cistern`, `windowBoxesOnPanes(im,o)` | an exact ray index over box instances. A building's real walls take ivy, its flat roof a cistern, and window panes get flower boxes under them |
 | `6-sewer` | `outfall(x,y,z,ry,o)`, `drain(pts,o)`, `inletGrate(x,y,z,ry)` | a culvert with an iron grate in a wall face, a trickle down to the water, a grated drain channel, an inlet grate |
 | `7-cull` | `cull(scene,o)` | splits big static InstancedMeshes into bearing sectors and bounds every set by its instances, so r128 can frustum-cull them. Raycasts still test each instance correctly |
 | `8-export` | `export()` | the whole placed atmosphere as JSON for a game engine (`GODOT.md`) |
 | `9-host` | `weatherUI(el)`, `download(name)` | [web]: the Weather selector and the JSON download |
 | `a-waves` | `waveUniforms(u)`, `waveGLSL()`, `waveHeight(x,z,t,chopW)`, `waveSlope(x,z,t,camDist)`, `waveWrap(t)`; GLSL `#include <atmos_waves>`: `atmWaveHeight(xz,chopW)`, `atmWaveSlope(xz,camDist)`, `atmWaveNormal(xz,camDist,k)` | the open-water wave field (`PRESETS.waves`, from World of ClaudeCraft, MIT): chop, mid waves and swell in sets, on the module clock wrapped at a whole number of cycles. Displace with the swell only unless the mesh is finer than ~4 m; the chop and the mid waves only shade |
+| `d-clouddeck` | `cloudDeck({y, sun, bounds, name})`, `deckUniforms(u)`, `deckGLSL()`, `deckHeight(x,z,t,y)`, `deckSlope(x,z,t,camDist)`, `deckWrap(t)`; GLSL `#include <atmos_clouddeck>`: `atmDeckHeight(xz,y)`, `atmDeckSlope(xz,camDist)`, `atmDeckNormal(slope)` | a sea of cloud seen from above (`PRESETS.clouddeck`): billow noise on a repeating lattice with an integer hash (bit-exact in every engine), heaped, warped and drifting on the module clock, a grid that follows the camera (snapped) and thins where the host's `ground` rises through it, recorded as `clouddeck` for the export. The same field in Godot (`GODOT.md`, "The cloud deck") |
 | `b-skylight` | `skylight({renderer, sky, scene, ground, key})`, `skyEnv` | the host's sky scene captured into a prefiltered cube map as `scene.environment`, recaptured as the hour moves (`PRESETS.skylight`). Standard materials only (Lambert ignores it). Specular by default: `diffuse` 0 keeps a build's tuned hemisphere and ambient fill |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
@@ -117,6 +119,9 @@ grate), 22 (lamps, fountains, banners), 37 and 47 (the evening, the glow layer),
 particles) and 49 (culling). The code is new and the behaviour follows those stages.
 
 ## Still to do for the port
+
+- The cloud deck's edge mist (the southern highlands' sprites along the deck's edge and up the ravines) is the host's own and
+  is not exported; in Godot it would be `FogVolume`s along the deck's contour, as the fog banks are.
 
 - Beams, cones, braziers and floodlights still run one JS hook each per frame. Move their hours into per-instance data
   read by the shader, as the glow layer does.

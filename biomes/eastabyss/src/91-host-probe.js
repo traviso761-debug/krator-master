@@ -22,7 +22,26 @@ function nanSweep(){const bad=[];let badInst=0;
   if(o.isInstancedMesh){const a=o.instanceMatrix.array;for(let i=0;i<a.length;i++)if(!isFinite(a[i])){badInst++;break;}}});
  return {meshes:bad.length,first:bad.slice(0,8),instances:badInst,firstInstances:[]};}
 function typeStats(){const out={};for(const k in BIO.stats){const t=BIO.stats[k],cls=BUDGET.type[k]||'pass';out[k]={tris:t.tris,inst:t.inst,meshes:t.meshes,cls,limit:BUDGET.cls[cls],over:t.tris>BUDGET.cls[cls]};}return out;}
-window._api={BUDGET,REG,
+// species that yield something edible the kit does not draw as a catalog fruit (pith, palm heart, leaves...): named, not hidden
+const FRUIT_NOT_DRAWN=['treefern','fanpalm','jade','araucaria','matreed'];
+const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
+ scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
+// The host's own checks (verify.py runs them when present), each with a broken input that must fail.
+const HCHK={
+ // fruit: every fruiting species names a catalog piece (biomes/FRUIT.md), and fruit is drawn on the stage (the scalefruit
+ // and fern-egg pods; the salt cones and tideheart heads are 'cone' items, shared with knees and whorls, so not counted)
+ fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
+  const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),n=P.filter(p=>/:pod$/.test(p[3])).length;
+  return{ok:!miss.length&&!untagged.length&&n>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' pod instances drawn; catalog keys: '+EASTABYSS.FRUIT_KEYS.join(', ')};}};
+function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
+ add('fruit tagged, catalogued and drawn',HCHK.fruit(EASTABYSS.SPECIES,P));
+ return R;}
+function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
+ add('a fruiting species with no catalog fruit',HCHK.fruit(EASTABYSS.SPECIES.map(S=>S.key==='seedfern'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
+ add('a species with no harvest tag',HCHK.fruit(EASTABYSS.SPECIES.map(S=>S.key==='skyscale'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
+ add('no fruit drawn',HCHK.fruit(EASTABYSS.SPECIES,P.filter(p=>!/:pod$/.test(p[3]))));
+ return R;}
+window._api={BUDGET,REG,hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  typeStats,regOccupancy,nanSweep,
  setView:(cx,cy,cz,tx,ty,tz)=>setView(cx,cy,cz,tx,ty,tz),views:()=>Object.keys(VIEWS),

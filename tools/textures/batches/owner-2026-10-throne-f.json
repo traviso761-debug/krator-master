@@ -1,0 +1,114 @@
+[
+ {
+  "src": "organic-cap-orange.webp",
+  "out": "core/materials/library/organic.cap.orange",
+  "record": {
+   "id": "organic.cap.orange",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "the top of an orange mushroom cap, radial, cracked (the gill-parasol, the stilt parasol); any orange fungal skin"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic-cap-glossy.webp",
+  "out": "core/materials/library/organic.cap.glossy",
+  "record": {
+   "id": "organic.cap.glossy",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "the wet top of a brown mushroom cap, radial (the pagoda cap's tiers, tinted red); slick fungal flesh"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic-cap-porous.webp",
+  "out": "core/materials/library/organic.cap.porous",
+  "record": {
+   "id": "organic.cap.porous",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "a cream porous fungal skin (the bone bell's dome); pumice-like organic crust; puffball skin"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic-flesh-cells.webp",
+  "out": "core/materials/library/organic.flesh.cells",
+  "record": {
+   "id": "organic.flesh.cells",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "image generation by the owner, Oct 2026",
+    "licence": "generated for this project by its owner",
+    "prompt": "not recorded: pasted into the chat 2026-10-06 as a 1254 px WebP",
+    "reuse": "fungal flesh in cells parted by pale veins (the drizzle trumpet's veined pitcher, as grey detail); leaf skeletons; membranes"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

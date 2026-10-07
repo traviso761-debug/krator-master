@@ -19,6 +19,7 @@ const VIEWS={
  'A sprawl oak':viewTree('sprawloak',-300,0,1.75,4,.3,.4),
  'The plain from above':viewAxis(-900,-500,140,-200,300,0),
  'Pillar fig':viewTree('pillarfig',-900,0,1.0,3,.4,.3),
+ 'Figs on the pillar fig':viewTree('pillarfig',-900,0,.32,6,.3,.3),
  'Parasol kapok':viewTree('kapok',-1500,0,1.1,4,.62,.2),
  'Mangrove shore':viewTree('mangrove',-1950,-150,2.2,4,.3,.5),
  'The bayou':viewTree('cypress',-1400,-100,2.2,3,.5,.3),
@@ -54,7 +55,10 @@ function inspectAt(cx,cy){const v=new THREE.Vector2(cx/innerWidth*2-1,-(cy/inner
  // a plant names itself (the item's label); a bole or a structure names its registered volume
  const lab=o.userData.inspectLabel||o.name||'mesh',isItem=o.isInstancedMesh&&o.userData.biome;
  let name=isItem?lab+(best?'  (under '+best.name+')':''):(best?best.name+'  ·  '+lab:lab);
- insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ // the tree's harvest tag (biomes/FRUIT.md): what it yields and the catalog piece its fruit is
+ const S=best&&SWLOW.SPECIES.find(s=>s.name===best.name),hv=S?S.tags.harvest:null;
+ const hl=hv?'\nharvest: wood '+hv.wood+' · edible '+(hv.edible.join(', ')||'none')+(hv.medicinal?' · medicinal':'')+(hv.fruit?' · catalog '+hv.fruit:''):'';
+ insp.textContent=name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hl;}
 setView(...VIEWS[Object.keys(VIEWS)[0]]);
 const cv=renderer.domElement;let drag=null;const keys={};
 cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,b:e.button};cv.setPointerCapture(e.pointerId);});

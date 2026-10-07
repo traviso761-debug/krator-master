@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 0 (0%) | 6 (3%) | 0 (0%) | 49 (21%) | 174 (76%) |
+| KB | 1 (0%) | 6 (3%) | 0 (0%) | 49 (21%) | 174 (76%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -21,6 +21,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/42-rs-hull.js` | 5.9 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/43-rs-rig.js` | 11.3 | [draw] | 16 | 0 | 0 | 0 | 0 | 6 | 0 | 2 | 0 | 0 | 0 |  |
 | `src/44-rs-parts.js` | 4.6 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/45y-rs-matlib.js` | 1.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/60-rs-hyk-trireme.js` | 6.2 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/61-rs-iziz-turtle.js` | 5.7 | [draw] | 5 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/62-rs-xanadu-swan.js` | 4.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |

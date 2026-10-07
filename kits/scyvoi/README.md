@@ -25,9 +25,9 @@ clock; `?mat=proc` draws without the library maps; `?furniture=0` draws no furni
 |---|---|---|
 | Small tents | `tent-hunter-ger` (felt ger), `tent-bell` (saffron bell tent), `tent-black-small` (goat-hair, a hearth outside), `tent-khaima-small` (peaked khaima), `tent-hide-wedge` (a hunter's ridge tent of laced hides) | building, dwelling-single |
 | Large tents | `tent-great-ger` (on two centre posts), `tent-black-great` (majlis, divider, household, fire ring), `tent-pavilion` (square Saharan marquee, arch-printed lining), `tent-applique` (eight-sided, appliquéd panels), `tent-khaima-twin` (two masts) | building, dwelling-multi |
-| Chief, shaman and trades | `tent-chief` (the great round tent on its deck: civic + dwelling, rich), `wagon-chief` (the chief's carved vardo: red lacquer and gilt, a barrel roof, a porch and ladder, furnished inside), `hut-shaman` (a hide lodge: religious), `tent-smithy` (industry, shop), `tent-supply` (market, shop) | building |
-| Salamanders and wheels | `salamander-riding` (two markings), `salamander-war` (barding, crest, lance), `salamander-draught`; `chariot`, `chariot-team` (a yoked pair), `cart-supply`, `cart-ger` (a ger carried on a bed behind two draught salamanders) | life (kind salamander), prop |
-| Tethering | `tether-post`, `tether-boulder` (catalog furniture, outdoor), `tether-line` (a picket line with three salamanders) | furniture, feature |
+| Chief, shaman and trades | `tent-chief` (the great round tent on its deck: civic + dwelling, rich), `wagon-chief` (the chief's carved vardo: red lacquer and gilt, a barrel roof, a porch and ladder, furnished inside), `hut-shaman` (a hide lodge: religious), `tent-smithy` (industry, shop), `tent-hidemaker` (the tanner's: a hide awning over the fleshing beam and the vats, stretching frames, a drying line and a smoking frame; industry, shop), `tent-supply` (market, shop) | building |
+| Salamanders and wheels | `salamander-riding` (two markings), `salamander-war` (barding, crest, lance), `salamander-draught` (the bodies are the fauna kit's, `kits/fauna`; the tack is drawn here); `chariot`, `chariot-team` (a yoked pair), `cart-supply`, `cart-ger` (a ger carried on a bed behind two draught salamanders) | life (kind salamander), prop |
+| Herds and tethering | `goat-fold` (wattle hurdles, a trough, a hay rack and a flock of nine), `goat` (the fauna kit's drylands goat), `tether-post`, `tether-boulder` (catalog furniture, outdoor), `tether-line` (a picket line with three salamanders) | feature, life, furniture |
 | The Baelu | `baelu`: the redoubt on its outcrop, with two tents pitched, two salamanders stabled | building: military, infrastructure, dwelling-multi |
 
 **The Baelu** is about the diameter of a Dalab mound (outer wall r 30 m: Dalab's outlying mounds are r 30). Fitted
@@ -51,7 +51,9 @@ the fire season).
 - **core/materials from the start.** `materials.json` adopts library sets and pattern sheets (`tex/` is the pack); the
   material records are `window._materials` (KMAT). The owner's pattern sheets are in `core/materials/patterns/scyvoi/` and
   `patterns/common/` (zellige).
-- **Life layer data.** Each salamander has an `SV_LIFE` record: faction Scyvoi, a band as sub-faction, a job (mount, war
+- **The animals are the fauna kit's** (`kits/fauna`, bundled as `KratorFauna`): the goats and the salamanders' bodies, their parts
+  and animation, and their traits, yields and life, which every `SV_LIFE` record carries.
+- **Life layer data.** Each salamander and goat has an `SV_LIFE` record: faction Scyvoi, a band as sub-faction, a job (mount, war
   mount, draught), an activity and a 24-hour dummy schedule. Nothing moves yet but the tail and the head.
 - **The biome is a placeholder.** The ground is the library's withered grass; the crater drylands' flora (the pyre pillar
   and the other pyrophytes) belongs to `biomes/crater-drylands` and is placed by a world, not by this kit. The fire-fruit in

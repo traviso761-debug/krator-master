@@ -1,4 +1,8 @@
 // ================================================================= HOST — ground, water, mist
+// the ground's detail and crack layers from the material library (materials.json groundDetail, groundCrack) when this page
+// carries the kit's pack; otherwise the procedural ones, which are painted either way (the random stream is unchanged)
+function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands',n):null;if(!L)return fb;
+ const c=hostGroundLib.c||(hostGroundLib.c={});return c[n]||(c[n]=KMAT.textures(L,{aniso:8}).map);}
 // One ground mesh painted from the climate fields and the BIOME'S OWN ZONES
 // (NHL.zones: the glades, the old wood, the burn, the boreal band agree with
 // what grows on them), a tiled detail texture for the grain, grey granite banded
@@ -68,7 +72,7 @@ function buildGround(){
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
  const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
- MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:DET};
+ MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;')
    .replace('#include <map_fragment>',['#include <map_fragment>',

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1240,
+    1220
+   ],
+   "seam_after": [
+    0.944,
+    0.675
+   ],
+   "seam_before": [
+    1.958,
+    0.86
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.12,
+   "mute": 0.9,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.canvas.striped",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.2,
+   1.18
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "cloth-canvas-striped.png",
+  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-06 as 1254 px WebP; converted to PNG)",
+  "licence": "generated for this project by its owner",
+  "original_title": "(pasted image)",
+  "prompt": "Prompt from core/materials/PROMPTS-ready.md (id cloth.canvas.striped).",
+  "reuse": "tinted awning, rug and bolster stripes: Iziz, Highlands, Dalab, Reed Lake, Xanadu, Ys, Verge",
+  "sha1": "f57be95b81a0339cb0fac04f3aaafc1b415c2b3f"
+ }
+}

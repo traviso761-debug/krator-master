@@ -147,7 +147,8 @@ function bole(fam,T,S,top,rb,flare,fh,lobes,seg,vs,lean){const nl=lobes||0,L=[],
  const r1=rAt(1);rings.push({x:T.x+lx*top,y:T.y0+top,z:T.z+lz*top,r:r1,yy:top,col:barkC(S,1)},{x:T.x+lx*top,y:T.y0+top+r1*.8,z:T.z+lz*top,r:.05,yy:top+1,col:barkC(S,1)});
  const tris=BIO.lathe(fam,rings,seg,Math.max(1,Math.round(TAU*rb/3)),vs,(R,ang)=>R.r*(1+(nl?flare*.9*Math.exp(-R.yy/fh)*lobeSum(ang):0)+.03*Math.sin(5*ang+R.yy*.2)),
   nl?(R,ang)=>mix(1,.6+.4*clamp(lobeSum(ang),0,1),Math.exp(-R.yy/fh)):null);
- return{tris,top:{x:T.x+lx*top,y:T.y0+top,z:T.z+lz*top},rAt,lx,lz};}
+ // rS: the drawn surface's radius at height yy and angle ang (the lathe's own formula), for things set ON the bole
+ return{tris,top:{x:T.x+lx*top,y:T.y0+top,z:T.z+lz*top},rAt,lx,lz,rS:(yy,ang)=>rAt(yy/top)*(1+(nl?flare*.9*Math.exp(-yy/fh)*lobeSum(ang):0)+.03*Math.sin(5*ang+yy*.2))};}
 
 // ---------------------------------------------------------------- the builders
 // Each: (T, st, lv) where T={x,z,y0,sp,H,rb,crownR,seed,wet} and lv 2 near / 1 mid
@@ -187,13 +188,14 @@ B[5]=B[14]=B[26]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb,coast
  if(lv===2&&!coast&&T.wet>.6&&rng()<.6){const a=rr(0,TAU);staghorn(T.x,T.y0+hc*.7,T.z,a,bo.rAt(.7),rr(1.2,2),st);}
  T.spread=spread(T,all);reg(T,S);};
 // 6 the PILLAR FIG: a fused, fluted bole, level limbs, and roots dropping from the
-// limbs to the ground to become new trunks -- one tree that is a grove
+// limbs to the ground to become new trunks -- one tree that is a grove. Its FIGS
+// (generic_fruit_pillar_fig) grow straight off the wood, as a cluster fig's do: see figs().
 B[6]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
  const hc=H*rr(.3,.42),bo=bole(fam,T,S,hc,rb,1.1,2.2,ri(6,9),lv===2?14:9,3.6,0);st.trunk+=bo.tris;
- const nL=lv===2?ri(7,10):ri(5,6),a0=rr(0,TAU),spots=[],all=[];
+ const nL=lv===2?ri(7,10):ri(5,6),a0=rr(0,TAU),spots=[],all=[],LF=[];
  for(let k=0;k<nL;k++){const a=a0+k*GOLD+rr(-.25,.25),el=rr(.05,.32),len=T.crownR*rr(.7,1.0),r0=rb*rr(.35,.5);
   const o={x:T.x+Math.cos(a)*rb*.5,y:T.y0+hc*rr(.75,1),z:T.z+Math.sin(a)*rb*.5},pts=limbPts(o,a,el,len,r0,.14,lv===2?9:6,-rr(.1,.3),.1,rr(.05,.2));
-  if(!okPts(pts))continue;st.limb+=BIO.tube(fam,pts,barkC(S),{seg:lv===2?7:5,cap:true});all.push(...pts);st.limbs++;
+  if(!okPts(pts))continue;st.limb+=BIO.tube(fam,pts,barkC(S),{seg:lv===2?7:5,cap:true});all.push(...pts);st.limbs++;LF.push(pts);
   for(let i=2;i<pts.length;i++){const p=pts[i],t=i/(pts.length-1);
    // the pillars: some thick, most thin, all straight down to the ground
    if(lv>=1&&t>.3&&rng()<(lv===2?.55:.3)){const gy=Y(p.x,p.z);if(p.y-gy>2&&BIO.clearOf(p.x,p.z,.5)){
@@ -208,7 +210,22 @@ B[6]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
  const cy=T.y0+H*.72,ex=T.crownR,ey=H*.3,sz0=rr(7.5,10),dens=lv===2?1.7:1;
  crownOn('glossy',spots,sz0,.6,()=>crownCol(S,.05),T,cy,ex,ey,dens,st);
  if(lv===2){for(let k=0,m=ri(1,3);k<m;k++)staghorn(T.x,T.y0+rr(3,hc*.9),T.z,rr(0,TAU),bo.rAt(.5),rr(1.2,2.2),st);}
+ if(lv===2)figs(T,bo,hc,LF,st);
  T.spread=spread(T,all);reg(T,S);};
+// the FIGS: purple, in clusters hugging the limbs (under and beside them) and on the fused bole above the
+// flutes. Near trees only. They draw on their own hash stream (h3 of the tree), never the kit's rng, so adding
+// them moved nothing else in the stand. ~45-70 figs a tree at 20 triangles each.
+function figs(T,bo,hc,LF,st){let fk=0;const fq=()=>{fk++;return h3(T.x*.0137+fk*1.31,T.z*.0171-fk*.71,T.seed*.0113+fk*.29);};
+ const one=(x,y,z,r)=>{const c=C(PAL.figFruit[Math.floor(fq()*PAL.figFruit.length)]);c.offsetHSL((fq()-.5)*.04,(fq()-.5)*.12,(fq()-.5)*.08);
+  BIO.put('fig',[x,y,z],qEuler((fq()-.5)*.6,fq()*TAU,(fq()-.5)*.6),[r,r*1.3,r],bright(c,1.05));st.figs=(st.figs||0)+1;};
+ // on the limbs: round the limb's axis, mostly under and beside it, a little along it
+ for(const pts of LF)for(let i=2;i<pts.length;i++){if(fq()>.3)continue;const p=pts[i],d=limbDir(pts,i),px=-Math.sin(d),pz=Math.cos(d),ux=Math.cos(d),uz=Math.sin(d);
+  for(let j=0,n=3+Math.floor(fq()*4);j<n;j++){const r=.05+.025*fq(),ph=-Math.PI*1.1+fq()*Math.PI*1.2,R=p.r+r*.85,s=(fq()-.5)*1.2;
+   one(p.x+ux*s+px*Math.cos(ph)*R,p.y+Math.sin(ph)*R,p.z+uz*s+pz*Math.cos(ph)*R,r);}}
+ // on the bole: at the lathe's own angles, ON its surface (bo.rS), clear of the flared foot
+ for(let k=0,m=4+Math.floor(fq()*5);k<m;k++){const a=Math.floor(fq()*14)/14*TAU,yy=Math.min(hc*.95,3.5+fq()*(hc-3.5)),r=.055+.025*fq(),R=bo.rS(yy,a)+r*.85;
+  for(let j=0,n=3+Math.floor(fq()*4);j<n;j++){const da=(fq()-.5)*.5/Math.max(1,R),dy=(fq()-.5)*.7,aa=a+da;
+   one(T.x+Math.cos(aa)*(R+.02),T.y0+yy+dy,T.z+Math.sin(aa)*(R+.02),r);}}}
 // 2 the PARASOL KAPOK: a pale plank-buttressed column, spines, and at two thirds of its
 // height a flat parasol of level boughs in two tiers, bromeliads along them
 B[2]=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
@@ -591,7 +608,7 @@ SWLOW.buildTrees=function(R,q,opt){opt=opt||{};
   st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;
   if(T.lv>0){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
- return{trees:TREES.length,avenue:st.avenue||0,grove:st.grove||0,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,moss:st.moss,pillars:st.pillars,veils:st.veils,
+ return{trees:TREES.length,avenue:st.avenue||0,grove:st.grove||0,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,moss:st.moss,pillars:st.pillars,figs:st.figs||0,veils:st.veils,
   tris:{trunk:st.trunk,limbs:st.limb,far:st.far,lite:st.lite}};};
 // ONE TREE AT A POINT. A world that plants a garden, a courtyard or a sacred grove asks for a
 // species by key at an explicit (x,y,z): no zone, no mask, no LOD (always the hero build).
