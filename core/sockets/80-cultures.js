@@ -94,3 +94,7 @@ mkCulture({key:'xanadu',name:'Xanadu',field:'#e89a2a',edge:'#7a1a24',band:'#d8a8
 mkCulture({key:'ringsea-islander',name:'Ring Sea Islanders',field:'#8a5a32',edge:'#4a2a14',band:'#c49a5a',disc:null,ink:'#f0e8d4',sym:'moon',pole:0x5a3a22,flagStyle:'pennant',
  awn:{mode:'cloth',cols:[0x8a5a32,0xb08850,0x7a4a2a,0xc4a468]},
  paint:[0x8a5a32,0x4a2a14,0xc49a5a,0xf0e8d4,0x2a7a7a],signBg:'#4a2a14',signFg:'#f0e8d4',signFrame:0x7a4a2a});
+// Screamers (the Hexahedron): ochre daub on rag, black and bone-white, the skull; ragged cloth, pennants (LORE.md 6.7; PLAN.md, patterns/screamers/daub)
+mkCulture({key:'screamer',name:'Screamers',field:'#b8683e',edge:'#2a1e16',band:'#e8dcc4',disc:null,ink:'#f0e6d0',ink2:'#2a1e16',sym:'skull',pole:0x4a3424,flagStyle:'pennant',
+ awn:{mode:'cloth',cols:[0xb8683e,0x8a4a2a,0xa08058,0x6a4a30]},
+ paint:[0xb8683e,0x8a3f1c,0xe8dcc4,0x2a1e16,0x6a7a3a],signBg:'#2a1e16',signFg:'#e8dcc4',signFrame:0x4a3424});

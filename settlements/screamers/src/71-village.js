@@ -520,6 +520,9 @@ function buildVillage(scene,gx,gz,d){reseed(9470+d);KOFF=[gx,0,gz];
    else h=0;
    car.position.y=LO+(HI-LO)*h;});}
 
+ // ---- the salvage quarter: Post-Apoc homes round the smithies (71a-apoc-homes.js) --
+ apocHomes(G,{free:free,claim:claim,plateY:plateY,smithies:SCREAM.smithies||[],gx:gx,gz:gz});
+
  // ---- farms and livestock pens fill what is left ----------------------------
  // Every plot's long axis points at the foot of the tower. That is the way the
  // trails run and the way people walk to work, and it is what stops a field

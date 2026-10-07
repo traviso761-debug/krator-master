@@ -23,6 +23,10 @@ Also enforces the rules that make subagent work safe:
 Usage:  python3 build.py [--no-checks]
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -167,7 +171,7 @@ def main():
     order = sorted(paths)
     bodies = {}
     for f in order:
-        with open(paths[f]) as fh:
+        with open(paths[f], encoding='utf-8') as fh:
             bodies[f] = fh.read()
 
     if do_checks:
@@ -179,16 +183,16 @@ def main():
             sys.exit(1)
 
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w') as fh:
+    with open(OUT, 'w', encoding='utf-8') as fh:
         fh.write(html)
-    with open(MANIFEST, 'w') as fh:
+    with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)
 
     body = html.split("function BUILD(){", 1)[1].rsplit("</script>", 1)[0]
     body = body.rsplit('}', 1)[0]
     chk = os.path.join(HERE, '.syntax.js')
-    with open(chk, 'w') as fh:
+    with open(chk, 'w', encoding='utf-8') as fh:
         fh.write("function BUILD(){'use strict';\n" + body + "\n}\n")
     try:
         r = subprocess.run([find_node() or 'node', '--check', chk], capture_output=True, text=True)

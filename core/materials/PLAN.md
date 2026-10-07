@@ -603,14 +603,14 @@ rows are cut.
 |---|---|
 | `concrete.ancient` | Board-formed concrete of an ancient megastructure: horizontal boards about 0.65 m deep, each poured a slightly different shade, a dark groove with a lit lip at every joint, a regular grid of round recessed form-tie holes with a rust weep below each, damp streaks running down from the joints, fine aggregate speckle. Warm pale grey #d2cec6; the ruined version is darker, #7c746c. |
 | `stone.rubble.ancient` (replaces `stone.megalith`) | Mottled warm grey rough stone, fine non-directional grain, no joints or courses; tint #d6ccbe. |
-| `metal.ancient` | Ancient white panel metal: warm near-white sheets, each a slightly different tone, recessed seam grooves with a lit lip, a round fastener at each sheet corner, faint vertical brushed grain. Neutral, so it can be tinted. |
+| `metal.ancient` *(delivered 2026-10-05)* | Ancient white panel metal: warm near-white sheets, each a slightly different tone, recessed seam grooves with a lit lip, a round fastener at each sheet corner, faint vertical brushed grain. Neutral, so it can be tinted. |
 | `metal.ancient.rust` | Tarnished steel: dull silver-grey (#7e766c) turning orange-brown rust (#723c26 to #a65a36) in runs that widen downward, a dark band under each ledge, panel seams ghosting through. Neutral, so it can be tinted. |
 | `metal.worn` | The white panel metal washed with orange-brown tarnish (#b07054) at the seams, fasteners and runs. |
 | `metal.verdigris` | See "Republican, Rustic and Tribal"; the Ancients use the same map (copper #96623e, patina #44988a). |
-| `ground.ruin` | Red-brown laterite soil (#96523a) with soft mottling and fine grain, turning to moss green (#466e2d) in patches. |
+| `ground.ruin` *(delivered 2026-10-05)* | Red-brown laterite soil (#96523a) with soft mottling and fine grain, turning to moss green (#466e2d) in patches. |
 | `paving.concrete` | The ancient concrete texture tinted a dull brown-grey, #8e8578. |
 | `thatch.palm` (Screamers) | Palm thatch: base #6b5a33 with many short olive-brown strokes and nine darker horizontal binding lines; tint #a8996f. |
-| `wood.lash` (Screamers) | Lashed hardwood: vertical fibre streaks on brown #6a5038, four pale cord bands (#bcaa78) across. |
+| `wood.lash` (Screamers) *(delivered 2026-10-05)* | Lashed hardwood: vertical fibre streaks on brown #6a5038, four pale cord bands (#bcaa78) across. |
 | `metal.scrap.corrugated` (Screamers) | Flattened corrugated salvage sheet with 0.8 m ribs, orange-brown rust and dents; tint #8a6a52. Plain Ancients salvage is galvanised grey with rust to #a05a44. |
 | `wood.timber` | Sawn boards 0.25 m wide, brown, grain along each board, dark gap between boards. |
 | `cloth.tarp` (Ancients) | Sun-bleached woven tarp, fine weave, tan; tint #c8b08a. |
@@ -1261,6 +1261,25 @@ What the first delivery taught:
 - **Prompts that worked** for cards: "Leaf spray cut-out on a fully transparent background, PNG with alpha, square,
   2048x2048, viewed straight from above, flat even shadowless lighting, no stem or branch beyond the cluster, the spray
   filling the middle 70% of the frame. Leaves: ..." (each card's meta.json holds its exact line).
+- **The first Ancients-lineage build: Screamers (2026-10-05).** `settlements/screamers/materials.json`: 13 families on
+  the `MAT` table (board concrete for the Hexahedron at 4.2 m, rusty metal, corrugated, weathered planks, tarp, thatch,
+  bark for the lashed posts, the four generated barks, packed earth for the ground, grass for the plaza lawn) and 6 on
+  the Post-Apoc set's own materials (`"table": "apoc"`: its salvage homes). The lineage's UVs are in no one unit (lathe
+  at 8 m a tile, kit boxes 0..1 per face), so the maps are sampled by **world-space triplanar projection**
+  (`src/72c-matlib.js`): colour, a whiteout-blended normal per plane, roughness, and the break-up, all in world metres.
+  It takes `23-mat-record.js` and `25-matlib-host.js` only: `24-tex-def.js`'s global `TEX` meets the lineage's canvas
+  table. Every Ancients-lineage build (ancients, dalab, highlands, iziz, reedlake, xanadu) can adopt the same way:
+  copy `72c-matlib.js` and `matlib_pack()`. The three gaps it named (`metal.ancient`, `wood.lash`, `ground.ruin`) were
+  generated the same day (below). Not judged in the demo kit yet; `?mat=proc` is the old look.
+
+#### Delivered 2026-10-05 (third part) and processed: the Ancients and Screamers gaps (3 images)
+
+Batch `tools/textures/batches/chatgpt-2026-10f-screamers.json` (sources: the owner's three ChatGPT images, 1254 px).
+| Set | Options | Reuse |
+|---|---|---|
+| `ground.ruin` | delight 0.3, cross-fade seams | every central-crater build on laterite (Screamers, Girder, Mav's Refuge, the Iziz hyperjungle); in Screamers in its own colours |
+| `wood.lash` | delight 0.3, `--pattern` (period crop) | lashed post walls of any tribal culture (Screamers, Beast Riders, Ring Sea Islanders, the Highlands tribal set) |
+| `metal.ancient` | delight 0.2, `--pattern`, rough 0.6 | the white panel metal of every Ancients-lineage build, and the Post-Apoc bulkhead; neutral, tinted per instance. A thin half-height panel row shows at the tile seam (the period crop), invisible at 4-6 m tiles |
 
 ## Next steps
 
