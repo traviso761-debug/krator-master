@@ -430,19 +430,31 @@
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- sacred */
-    { key: 'zj_kiva', name: 'Kiva', wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
-      rooms: [{ id: 'kiva', kind: 'kiva', poly: dee(3.4, 2.6, 14), y: -2.4, h: 2.6, doors: [],
+    /* the kiva, sunk in the ground (no rock block: the cavern carves under the sheet's ground): a round room with a flat back
+       wall (the altar's), a bench terrace carved round it at bench height (a void room off the walk map), the roof hatch over the
+       hearth with the ladder leaning out of it (its walk strip from the hatch's rim, where the ground stops, 3.6 m down in 1.4 m: as steep as a walker climbs), the
+       deflector and the ventilator (a low tunnel to a shaft up to the ground), the sipapu, and the great incense burner where
+       Ranj is burned. The roof is 0.9 m of earth over the dome */
+    { key: 'zj_kiva', name: 'Kiva', carved: true, wealth: 0.4, types: ['religious'], residence: false, lot: [10, 10],
+      rooms: [{ id: 'kiva', kind: 'kiva', carved: true, poly: dee(2.9, 2.4, 16), y: -3.6, h: 2.2, ceil: 'dome', rise: 0.5, finish: 'plaster', doors: [],
         fixtures: [
-          fx('ladder', 'ladder', 0, -0.2, 0.9, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
-          fx('hearth', 'hearth', 0, 0.6, 0.9, 0.9),
-          fx('deflector', 'deflector', 0, 1.65, 1.2, 0.25),
-          fx('ventilator', 'ventilator', 0, 3.1, 0.7, 0.45),
-          fx('burner', 'incense-burner', -2.0, 0.4, 1.1, 1.1),
-          fx('sipapu', 'sipapu', 1.0, -1.1, 0.3, 0.3)] }],
-      note: 'PROVISIONAL (until the void plan, P3). A sunken round room: the floor is inside the bench ring (r 3.4; the ring is ' +
-        'the room\'s wall). Entered down the ladder through the roof hatch (the way in). The hearth, deflector and ventilator ' +
-        'on the front axis, the sipapu beside the ladder, the great incense burner on the west side, where Ranj is burned; ' +
-        'the altar against the back of the ring' },
+          fx('ladder', 'ladder', 0, 0.3, 0.8, 0.5, { reach: true, clearance: { front: 0.8, back: 0.8 } }),
+          fx('hearth', 'hearth', 0, 1.3, 0.9, 0.9, { h: 0.3 }),
+          fx('deflector', 'deflector', 0, 2.15, 1.2, 0.25, { h: 1.1 }),
+          fx('ventilator', 'ventilator', 0, 2.6, 0.7, 0.45, { h: 1.4 }),
+          fx('burner', 'incense-burner', -1.9, 0.6, 1.1, 1.1, { h: 1.3 }),
+          fx('sipapu', 'sipapu', 1.0, -0.9, 0.3, 0.3, { h: 0.02 })] }],
+      voids: [
+        { kind: 'room', id: 'bench', poly: dee(3.4, 4.28, 18), y: -3.15, h: 1.7, ceil: 'dome', rise: 0.4, r: 0, finish: 'plaster', floor: false },
+        { kind: 'shaft', id: 'hatch', joins: ['kiva'], c: [0, 0], y0: -1.6, y1: 0.6, r0: 0.9, r1: 0.9 },
+        { kind: 'well', id: 'hatch-top', c: [0, 0], r: 0.9, rim: 0.3 },
+        { kind: 'stair', id: 'vent-tunnel', joins: ['kiva'], a: [0, -3.4, 2.6], b: [0, -3.4, 3.9], w: 0.5, h: 0.6, floor: false },
+        { kind: 'shaft', id: 'vent', joins: ['kiva'], c: [0, 3.9], y0: -3.4, y1: 0.6, r0: 0.28, r1: 0.3 },
+        { kind: 'well', id: 'vent-top', c: [0, 3.9], r: 0.3, rim: 0.2 },
+        { kind: 'walk', id: 'ladder', a: [0, 0, -0.9], b: [0, -3.6, 0.5], w: 0.8 }],
+      note: 'sunk 3.6 m in the ground under an earth roof; down the ladder through the hatch over the hearth; the bench terrace ' +
+        'round the round wall, the altar against the flat back wall under the murals; the deflector, the ventilator, the sipapu, ' +
+        'the great incense burner on the west side, where Ranj is burned' },
     /* ---------------- works and the carved interiors (provisional plans) */
     { key: 'zj_brewery', name: 'Brewery (carved)', wealth: 0.45, types: ['industry', 'tavern'], lot: [20, 22],
       rooms: [
@@ -466,14 +478,29 @@
       bodies: [{ id: 'post', poly: rect(8, 6.5), y: 0.2, levels: [{ h: 2.8 }], wall: 0.45, roof: 'flat',
         doors: [{ at: [0, 3.25], w: 1.1 }], program: ['guardroom', 'dormitory'] }],
       note: 'PROVISIONAL (until the def, P3): tuff blocks, a guardroom at the door, the watch\'s bunks behind' },
-    { key: 'zj_catacomb', name: 'Funeral catacombs: an ossuary chamber', wealth: 0.3, types: ['funerary', 'religious'], residence: false, lot: [14, 14],
+    /* the funeral catacombs (the Guanches laid their dead in lava-tube caves): a portal, a stair 4.5 m down to the mortuary
+       chapel (a round room with a flat back wall: the altar under a frieze of the dead), loculi corridors east and west lined
+       with bones, an ossuary chamber at each end (boxes, mummy bundles, stacked bones), the Keeper's cell off the west corridor */
+    { key: 'zj_catacomb', name: 'Funeral catacombs', carved: true, wealth: 0.3, types: ['funerary', 'religious'], residence: false, lot: [32, 26],
       rooms: [
-        { id: 'chapel', kind: 'shrine', poly: circle(3.2, 14, 0, 2.0), y: 0, h: 3.0,
-          doors: [{ at: [0, 5.2], w: 1.1 }, { id: 'oss', at: [0, -1.2], w: 1.0, to: '.oss', swing: 'out', leaf: false }] },
-        { id: 'oss', kind: 'ossuary', poly: oval(4.4, 3.0, 14, 0, -4.2), y: 0, h: 2.6,
-          doors: [{ id: 'oss', at: [0, -1.2], w: 1.0, to: '.chapel', swing: 'in' }] }],
-      note: 'PROVISIONAL (until the void plan, P3): the mortuary chapel at the head of the stair, one ossuary chamber behind; ' +
-        'the loculi corridors are fixtures of the plan' },
+        { id: 'chapel', kind: 'shrine', carved: true, poly: dee(3.0, 2.6, 16, 0, -12), y: -4.5, h: 2.8, ceil: 'dome', rise: 0.9, finish: 'plaster',
+          doors: [{ at: [0, -9.0], w: 1.6, swing: 'none' }, { at: [-3.0, -12], w: 1.4, swing: 'none' }, { at: [3.0, -12], w: 1.4, swing: 'none' }] },
+        { id: 'ossW', kind: 'ossuary', carved: true, poly: rrect(-14.6, -10.2, -14.6, -9.4), round: 0.5, y: -4.5, h: 2.5, ceil: 'vault', rise: 0.5, finish: 'hewn',
+          doors: [{ at: [-10.2, -12], w: 1.4, swing: 'none' }] },
+        { id: 'ossE', kind: 'ossuary', carved: true, poly: rrect(10.2, 14.6, -14.6, -9.4), round: 0.5, y: -4.5, h: 2.5, ceil: 'vault', rise: 0.5, finish: 'hewn',
+          doors: [{ at: [10.2, -12], w: 1.4, swing: 'none' }] },
+        { id: 'keeper', kind: 'cell', carved: true, poly: rrect(-8.4, -4.4, -19.0, -15.4), round: 0.4, y: -4.5, h: 2.3, ceil: 'vault', rise: 0.45, finish: 'hewn',
+          doors: [{ at: [-6.4, -15.4], w: 1.0, swing: 'none' }],
+          fixtures: [fx('bed', 'bedshelf', -7.95, -17.4, 0.8, 1.9, { bed: 1, h: 0.45 }), fx('hearth', 'hearth', -5.4, -18.7, 0.7, 0.5, { h: 0.9 })] }],
+      voids: [
+        { kind: 'mass', id: 'rock', poly: rrect(-16, 16, -24, 0), y0: -0.5, y1: 6, cap: 1.0, rock: 'tuff', finish: 'raw' },
+        { kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.4, h: 2.7 },
+        { kind: 'stair', id: 'way-in', a: [0, 0, 1.2], b: [0, 0, -2.0], w: 1.6, h: 2.6 },
+        { kind: 'stair', id: 'descent', joins: ['chapel'], a: [0, 0, -1.8], b: [0, -4.5, -9.6], w: 1.6, h: 2.5 },
+        { kind: 'stair', id: 'west', joins: ['chapel', 'ossW'], a: [-2.5, -4.5, -12], b: [-11.0, -4.5, -12], w: 1.4, h: 2.3 },
+        { kind: 'stair', id: 'east', joins: ['chapel', 'ossE'], a: [2.5, -4.5, -12], b: [11.0, -4.5, -12], w: 1.4, h: 2.3 },
+        { kind: 'stair', id: 'keeper-door', joins: ['keeper'], a: [-6.4, -4.5, -12.2], b: [-6.4, -4.5, -15.9], w: 1.0, h: 2.1 }],
+      note: 'down 4.5 m to the mortuary chapel; the loculi corridors lined with bones; an ossuary chamber at each end; the Keeper\'s cell' },
     { key: 'zj_cistern', name: 'Cistern hall: a landing', wealth: 0.4, types: ['infrastructure'], residence: false, lot: [12, 8],
       rooms: [{ id: 'landing', kind: 'cistern', poly: rect(10, 5, 0, 0), y: 0, h: 4.5, doors: [{ at: [0, 2.5], w: 2.0, swing: 'none' }, { at: [0, -2.5], w: 2.0, swing: 'none' }] }],
       note: 'PROVISIONAL (until the void plan, P3): one landing of the stepwell flights, where the water is drawn' }

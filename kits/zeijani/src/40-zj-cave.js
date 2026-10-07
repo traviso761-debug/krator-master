@@ -15,7 +15,8 @@ let CVC=null;                    // the page's KCAVERN (cvNew on every world bui
 const CV_GROUP=new THREE.Group(); // the chunk meshes
 const CV_SITE=[];                // per cavern primitive (by index): the placement record it belongs to (cut-away, inspector)
 let CV_STATS={chunks:0,tris:0,ms:0};
-function cvNew(){CVC=KCAVERN.create({ground:(x,z)=>terrainH(x,z),cell:.5,chunk:16,seed:7001,walk:KWALK,minRock:.8});CV_SITE.length=0;}
+const CV_WELLSITE=[];             /* per well opening: its centre, its reach (radius, rim and a cell) and its placement record */
+function cvNew(){CVC=KCAVERN.create({ground:(x,z)=>terrainH(x,z),cell:.5,chunk:16,seed:7001,walk:KWALK,minRock:.8});CV_SITE.length=0;CV_WELLSITE.length=0;}
 const cvTmp=new THREE.Vector3();
 function cvW(x,y,z){cvTmp.set(x,y,z).applyMatrix4(CM);return [+cvTmp.x.toFixed(4),+cvTmp.y.toFixed(4),+cvTmp.z.toFixed(4)];}
 function cvXZ(P){return P.map(p=>{const w=cvW(p[0],0,p[1]);return [w[0],w[2]];});}
@@ -34,10 +35,10 @@ function cvHall(o){const c=cvW(o.c[0],o.c[1],o.c[2]);const T=o.throat?Object.ass
 function cvStair(o){return cvAdd('stair',o,Object.assign(cvCopy(o,['id','a','b','joins']),{a:cvW(o.a[0],o.a[1],o.a[2]),b:cvW(o.b[0],o.b[1],o.b[2])}));}
 function cvShaft(o){const c=cvW(o.c[0],0,o.c[1]);return cvAdd('shaft',o,Object.assign(cvCopy(o,['id','c','y0','y1','joins']),{c:[c[0],c[2]],y0:cvY(o.y0),y1:cvY(o.y1)}));}
 function cvDoor(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'door',c:[c[0],c[2]],y:cvY(o.y||0),r:o.r||1.4,h:o.h});}
-function cvWell(o){const c=cvW(o.c[0],0,o.c[1]);return CVC.opening({id:cvId(o.id),kind:'well',c:[c[0],c[2]],r:o.r,rim:o.rim});}
-/* the floor a vertex's void stands on (the cut-away opens each void 2 m above it: a dollhouse at every level); the rock's own
+function cvWell(o){const c=cvW(o.c[0],0,o.c[1]);CV_WELLSITE.push({c:[c[0],c[2]],r:(o.r||1)+(o.rim===undefined?3:o.rim)+1.6,rec:CURREC});return CVC.opening({id:cvId(o.id),kind:'well',c:[c[0],c[2]],r:o.r,rim:o.rim});}
+/* the floor a vertex's void stands on (the cut-away opens each void 2 m above it: a dollhouse at every level; a shaft opens whole); the rock's own
    faces (a mass, a monolith) take the site's ground */
-function cvFloorOf(P,r){if(!P)return r.y;const k=P.kind;return k==='room'?P.y:k==='stair'?Math.min(P.a[1],P.b[1]):k==='hall'?P.c[1]:k==='shaft'||k==='trench'?P.y0:
+function cvFloorOf(P,r){if(!P)return r.y;const k=P.kind;return k==='room'?P.y:k==='stair'?Math.min(P.a[1],P.b[1]):k==='hall'?P.c[1]:k==='shaft'?P.y0-2:k==='trench'?P.y0:
  k==='tube'&&P.pts?Math.min(...P.pts.map(p=>p[1])):r.y;}
 function cvFixture(o){/* a carved bench, bed shelf or pillar: its local box [x0,x1,z0,z1,y0,y1] to a world box (quarter turns exact) */
  const b=o.box,P=[[b[0],b[2]],[b[1],b[2]],[b[0],b[3]],[b[1],b[3]]].map(p=>cvW(p[0],0,p[1]));
@@ -89,7 +90,9 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
   g.setAttribute('aW',new THREE.BufferAttribute(ch.w,4));
   const aM=new Float32Array(nv*3),aCut=new Float32Array(nv*4);
   for(let i=0;i<nv;i++){aM[i*3]=ch.mat[i];aM[i*3+1]=ch.hue[i];aM[i*3+2]=ch.occ[i];
-   const r=ch.prim[i]<65535?CV_SITE[ch.prim[i]]:null;if(r){aCut[i*4]=r.x;aCut[i*4+1]=r.z;aCut[i*4+2]=cvFloorOf(CVC.prims[ch.prim[i]],r);aCut[i*4+3]=1;}}
+   const r=ch.prim[i]<65535?CV_SITE[ch.prim[i]]:null;if(r){aCut[i*4]=r.x;aCut[i*4+1]=r.z;aCut[i*4+2]=cvFloorOf(CVC.prims[ch.prim[i]],r);aCut[i*4+3]=1;}
+   /* the ground the cavern meshes inside a well's rim opens with the well's site */
+   else if(ch.ground&&ch.ground[i]){const x=ch.pos[i*3],z=ch.pos[i*3+2],q=CV_WELLSITE.find(q=>Math.hypot(x-q.c[0],z-q.c[1])<q.r);if(q&&q.rec){aCut[i*4]=q.rec.x;aCut[i*4+1]=q.rec.z;aCut[i*4+2]=q.rec.y-3;aCut[i*4+3]=1;}}}
   g.setAttribute('aM',new THREE.BufferAttribute(aM,3));g.setAttribute('aCut',new THREE.BufferAttribute(aCut,4));
   g.setIndex(new THREE.BufferAttribute(ch.idx,1));g.computeBoundingSphere();
   const mesh=new THREE.Mesh(g,cvRockMat);mesh.castShadow=mesh.receiveShadow=true;mesh.userData.cavern=key;CV_GROUP.add(mesh);tris+=ch.idx.length/3;}
@@ -103,6 +106,8 @@ function cvFinish(parent){const t0=performance.now();CVC.build();
    its rooms are), as axis-aligned rects */
 function cvGroundWalk(x0,x1,z0,z1){const M=CVC.prims.filter(P=>P.kind==='mass').map(P=>{const xs=P.poly.map(p=>p[0]),zs=P.poly.map(p=>p[1]);
   return [Math.min(...xs)-.3,Math.max(...xs)+.3,Math.min(...zs)-.3,Math.max(...zs)+.3];});
+ /* and round each well (a kiva's hatch, a light well): no ground over the hole, so a walker goes down its ladder or stair */
+ for(const O of CVC.openings)if(O.kind==='well')M.push([O.c[0]-O.r,O.c[0]+O.r,O.c[1]-O.r,O.c[1]+O.r]);
  let rects=[[x0,x1,z0,z1]];
  for(const m of M){const out=[];for(const r of rects){if(m[0]>=r[1]||m[1]<=r[0]||m[2]>=r[3]||m[3]<=r[2]){out.push(r);continue;}
    if(r[0]<m[0])out.push([r[0],m[0],r[2],r[3]]);if(m[1]<r[1])out.push([m[1],r[1],r[2],r[3]]);
@@ -119,6 +124,7 @@ function cvFromItem(item,o){o=o||{};if(!item)return 0;let n=0;const fin=o.finish
    const ex=q?hd:hw,ez=q?hw:hd;cvFixture({id:r.id+'.'+(f.id||f.kind),kind:f.kind,box:[f.x-ex,f.x+ex,f.z-ez,f.z+ez,r.y||0,(r.y||0)+(f.h||.5)]});}}
  for(const v of item.voids||[]){const k=v.kind,q=Object.assign({},v);delete q.kind;if(!q.finish&&k!=='tube'&&k!=='hall')q.finish=fin;
   if(k==='stair')cvStair(q);else if(k==='tube')cvTube(q);else if(k==='hall')cvHall(q);else if(k==='shaft')cvShaft(q);else if(k==='trench')cvTrench(q);
+  else if(k==='room')cvRoom(q);   /* a void room that is no interiors room (a kiva's bench terrace: floor:false keeps it off the walk map) */
   else if(k==='monolith')cvMonolith(q);else if(k==='mass')cvMass(q);else if(k==='door')cvDoor(q);else if(k==='well')cvWell(q);
   else if(k==='walk'){/* a built stair inside a void (the well's spiral): a floor strip only; the def draws its steps */
    const a=cvW(q.a[0],q.a[1],q.a[2]),b=cvW(q.b[0],q.b[1],q.b[2]);KWALK.strip({a:[a[0],a[2],a[1]],b:[b[0],b[2],b[1]],w:q.w,name:cvId(q.id),tag:'built:stair'});}

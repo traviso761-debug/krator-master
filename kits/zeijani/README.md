@@ -23,7 +23,7 @@ python3 tools/textures/pack.py kits/zeijani                    # after editing m
 python3 tools/node_in_chromium.py core/terrain/test-cavern.js  # the cavern module's node test (no node here)
 ```
 
-On the page: **T** inspector, **C** cut-away (a carved def's rock is cut 2 m above each void's own floor, a dollhouse at every level; a built def opens on the camera's side), **N**
+On the page: **T** inspector, **C** cut-away (a carved def's rock is cut 2 m above each void's own floor, a dollhouse at every level, shafts whole; the ground over a carved or sunk def opens; a built def opens on the camera's side), **N**
 night, **P** polygon tool, **F** walk: the walker stands on the `core/walk` floors the plans wrote (the sheet's ground, the
 carved rooms, the stairs, the tubes) and is refused where no floor lies within a step or a block stands. `?only=key,key`,
 `?mat=proc` (vertex colours only), `?t=` (pin the clock).
@@ -45,6 +45,7 @@ carved rooms, the stairs, the tubes) and is refused where no floor lies within a
 | `45-zj-estate.js` | the wealthy estates: A the columned hall (13 rooms off a pillared hall, a court under a light shaft), B the loggia (two storeys and a lower court, 12 rooms) |
 | `46-zj-built.js` | the constructed houses: a domed tuff hut, three domes round a yard, a two-storey house with a roof terrace; `zbBody` draws a planned body (walls with their openings, slabs round the stairwells, stairs, partitions) |
 | `47-zj-shops.js` | the shops: twelve trades, each in a carved front (a cut with a counter, shutters, the sign in a niche; a smithy's smoke shaft) and a constructed one (a planned tuff block, an awning, the sign on the parapet), made from the trades' items; signs and awnings are `core/sockets` (the zeijani pack) |
+| `48-zj-sacred.js` | the kiva (sunk under the ground: `sunk` opens the ground over it in the cut-away; its ladder is a walk strip as steep as a walker climbs) and the funeral catacombs (a stair down to the chapel, corridors lined with bones, ossuaries, the Keeper's cell) |
 | `81-sky.js` | the standard Krator sky, vendored (`--vendor-check`) |
 | `89-rows.js` | the sheet's rows by family |
 | `90-scene.js` | renderer, sky, ground, layout, `buildWorld()` |

@@ -88,6 +88,15 @@ const PB={
      if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
      else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
   return start?PB.route(W0,start,way):null;},
+ /* the sacred: down the kiva's ladder (from the hatch's rim, where the ground stops), off it sideways (a walker on the ladder's
+    foot who turns climbs it: the strip is the higher floor), round its floor, up again; into the
+    catacombs, down to the chapel, the Keeper's cell, both ossuaries */
+ sacredRoutes(W){const out=[],r=(name,log)=>{if(log)out.push({name,log});};
+  r('kiva',PB.siteRoute(W,'zj_kiva',[0,-2.5],[['the ladder’s head',0,-1.1],['down the ladder',0,.45],['off the ladder',.7,.4],['the floor',1.4,-1.2],['by the altar',0,-2.0],
+   ['beside the ladder',.7,.4],['back to the ladder',0,.45],['up the ladder',0,-1.05],['out',0,-2.5]]));
+  r('catacombs',PB.siteRoute(W,'zj_catacomb',[0,3],[['the portal',0,.5],['the stair head',0,-2.0],['the chapel',0,-10.5],['the west corridor',-3.5,-12],
+   ['the Keeper’s door',-6.4,-12],['the Keeper’s cell',-6.4,-16.4],['back',-6.4,-12],['the west ossuary',-11.6,-12],['the corridor',-3.5,-12],['the chapel again',0,-11],
+   ['the east corridor',3.5,-12],['the east ossuary',11.6,-12],['the east corridor again',3.5,-12],['the chapel once more',0,-11],['up the stair',0,-2.0],['out',0,2]]));return out;},
  /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
     a constructed one by its planner's graph */
  shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
@@ -122,6 +131,8 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
+ const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===2&&cr.every(e=>PB.routeOk(e.log)),
+  cr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
   sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');
  const jn=PB.joins(KWALK),np=KWALK.floors.filter(f=>f.kind==='strip'&&/^(cavern|built):stair/.test(f.tag)).length;
@@ -150,6 +161,9 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
  /* the houses' routes with the planned house's stair left out of the walk map */
  {const W=PB.copyWalk(f=>/zj_house_built_rich.*stair/.test(f.name));for(const b of KWALK.blocks)W.block(b.box,b.tag);const hr=PB.houseRoutes(W),h=hr.find(e=>/two-storey/.test(e.name));
   if(h)add('walk-route-houses: the stair missing',!PB.routeOk(h.log),h.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}
+ /* the sacred routes with the kiva's ladder left out of the walk map */
+ {const R0=REG.find(r=>r.key==='zj_kiva');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.ladder');for(const b of KWALK.blocks)W.block(b.box,b.tag);
+  const e=PB.sacredRoutes(W).find(e=>e.name==='kiva');if(e)add('walk-route-sacred: the ladder missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}
  /* the shops' routes with the weaponsmith's (carved) passage to its workroom left out */
  {const R0=REG.find(r=>r.key==='zj_shop_weapons_carved');if(R0){const W=PB.copyWalk(f=>f.name===R0.tid+'.back');for(const b of KWALK.blocks)W.block(b.box,b.tag);
   const e=PB.shopRoutes(W,'zj_shop_weapons_carved')[0];if(e)add('walk-route-shops: a passage missing',!PB.routeOk(e.log),e.log.filter(s=>s.ok!==s.expect).map(s=>s.name).slice(0,3).join(', '));}}

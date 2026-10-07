@@ -28,13 +28,13 @@ const groundMat=new THREE.MeshStandardMaterial({color:0x9a8a74,roughness:1});
  else groundMat.color.setHex(0xa8916a);}
 /* the cut-away opens the sheet's ground too, over every carved def (its plan runs below the ground), on the camera's side:
    uCutSites holds each one's footprint [cx, cz, half width, half depth] (filled after the layout, below) */
-const ZJ_CUTSITES={value:[]};for(let i=0;i<16;i++)ZJ_CUTSITES.value.push(new THREE.Vector4(0,0,0,0));
+const ZJ_CUTSITES={value:[]};for(let i=0;i<32;i++)ZJ_CUTSITES.value.push(new THREE.Vector4(0,0,0,0));
 /* every mass's footprint [x0, x1, z0, z1]: the ground is never drawn under a block of rock (a carved floor at y 0 would fight it) */
 const ZJ_MASSES={value:[]};for(let i=0;i<32;i++)ZJ_MASSES.value.push(new THREE.Vector4(0,0,0,0));
 matHook(groundMat,'cutGround',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;sh.uniforms.uCutSites=ZJ_CUTSITES;sh.uniforms.uMasses=ZJ_MASSES;
  sh.vertexShader='varying vec3 vGW;\n'+sh.vertexShader.replace('#include <project_vertex>','vGW=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');
- sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[16];uniform vec4 uMasses[32];varying vec3 vGW;\n'+sh.fragmentShader.replace('void main() {',
-  'void main() {\nfor(int i=0;i<32;i++){vec4 m=uMasses[i];if(m.y<=m.x)continue;if(vGW.x>m.x&&vGW.x<m.y&&vGW.z>m.z&&vGW.z<m.w)discard;}\nif(uCut>.5){for(int i=0;i<16;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
+ sh.fragmentShader='uniform float uCut;uniform vec3 uCam;uniform vec4 uCutSites[32];uniform vec4 uMasses[32];varying vec3 vGW;\n'+sh.fragmentShader.replace('void main() {',
+  'void main() {\nfor(int i=0;i<32;i++){vec4 m=uMasses[i];if(m.y<=m.x)continue;if(vGW.x>m.x&&vGW.x<m.y&&vGW.z>m.z&&vGW.z<m.w)discard;}\nif(uCut>.5){for(int i=0;i<32;i++){vec4 q=uCutSites[i];if(q.z<=0.)continue;vec2 d=vGW.xz-q.xy;if(abs(d.x)<q.z&&abs(d.y)<q.w&&dot(d,uCam.xz-q.xy)>0.)discard;}}');});
 const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIZE,GROUND_SIZE),groundMat);groundM.rotation.x=-PI/2;groundM.receiveShadow=true;groundM.userData.isGround=true;scene.add(groundM);
 // ---------------------------------------------------------------- layout: rows by family, fronts (+z) toward the camera
 const SITES=[],ROWS=[];
@@ -44,7 +44,7 @@ const SITEKEY=k=>typeof k==='string'?{key:k,o:{v:0}}:{key:k.key,o:Object.assign(
  if(!keys.length)continue;const ws=keys.map(k=>DEFS[k.key].w+GAP),total=ws.reduce((a,c)=>a+c,0),dmax=Math.max(...keys.map(k=>DEFS[k.key].d)),hmax=Math.max(...keys.map(k=>DEFS[k.key].h));
  z-=dmax/2;let x=-total/2;keys.forEach((k,i)=>{const D=DEFS[k.key],off=D.originFront?D.d/2:0;SITES.push({key:k.key,x:x+ws[i]/2,z:z+off,ry:0,o:k.o});x+=ws[i];});   /* a carved def's origin is its front's foot */
  ROWS.push({family:F.name,z,d:dmax,w:total,h:hmax,keys:keys.map(k=>k.key)});z-=dmax/2+Math.max(16,hmax*.8)+6;}})();   // rows run north (-z) from the first
-{let n=0;for(const S of SITES){const D=DEFS[S.key];if(!D.originFront||n>=16)continue;ZJ_CUTSITES.value[n++].set(S.x,S.z-D.d/2,D.w/2,D.d/2);}}
+{let n=0;for(const S of SITES){const D=DEFS[S.key];if(!(D.originFront||D.sunk)||n>=32)continue;ZJ_CUTSITES.value[n++].set(S.x,D.sunk?S.z:S.z-D.d/2,D.w/2,D.d/2);}}
 // ---------------------------------------------------------------- (re)build the world
 let WORLD=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
