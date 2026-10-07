@@ -147,3 +147,9 @@ Version 62 (2026-10-06): `worlds/noahs-regret.html` added (Noah's Regret, 5.8 MB
 Ring Sea's south shore, Bloody Ruephus's pirate base; ring hull, flooded holds, four decks of cabins, the atrium, bridge, dining and engine
 rooms, the Ancient deck buildings, all furnished, with a deck cut-away), from `main` at the Noah's Regret merge. The live index (version 61)
 was kept: only the Noah's Regret card was added, after Ys. One publish call.
+Version 63 (2026-10-07): `worlds/noahs-regret.html` replaced (5.9 MB: the catamaran, two hulls joined at the bow with the harbour
+open astern, the liner mole and finger piers, terraced sterns, twin engine rooms, two crew messes, the greenhouse, fifteen ship's rooms;
+the forecourt plaza, terraces and grand stair up to the bridge house with the bridge on top) and `worlds/ancients-interiors.html` added
+(the Ancients interiors kit, 1.4 MB: fourteen ship's halls in two dresses, the ship's rooms and cabins, every room audited), from `main`
+at 29f93c3. The live index (version 62) was kept: the Noah's Regret card updated (blurb, size) and the Ancients interiors card added after
+the Interiors walk-through. The Master catalog card (now 1655 pieces) was not touched. One publish call.
