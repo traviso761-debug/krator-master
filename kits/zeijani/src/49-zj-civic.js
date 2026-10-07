@@ -59,3 +59,26 @@ defBuilding({key:'zj_cistern',name:'The cistern hall: a stepwell under the rock'
   for(let k=2;k<=4;k++){const yTop=-1.6*(k-1),z0=-30+2*(k-1);for(let i=0;i<7;i++)box('tuffHewn',0,yTop-1.6,z0+.12+i*.24,1.6,1.6-(i+1)*.2,.24,c);}
   for(const x of [-8,-4,4,8])box('basaltPol',x,0,-29.86,.16,4,.04,P('soot'));
   door(0,0,0,0,2.4);}});
+
+/* the portal (its plan: the portal's item): the arch's ornate rim (a voussoir ring keyed in basalt, an outer ring of dark stone,
+   engaged columns flying pennants, a relief panel of the spirits, a stepped crown, the emblem on the rock above), the rolling
+   stone door in its channel, the dwellings' ledges, ladders and doorways, lanterns before the gate */
+function zcLadder(x,y0,y1,z0,z1,wd){for(const s of [-1,1])beam('log',[x+s*.24,y0,z0],[x+s*.24,y1,z1],.05,wd,true,6);const n=Math.round((y1-y0)/.32);
+ for(let i=1;i<n;i++){const t=i/n;box('log',x,y0+t*(y1-y0),z0+t*(z1-z0),.54,.05,.06,wd);}}
+defBuilding({key:'zj_portal',name:'The portal: the great gate in the cliff',seed:4903,originFront:true,
+ tags:{types:['civic','infrastructure'],wealth:'rich',style:'carved',rock:'tuff',finish:'hewn'},w:50,d:40,h:25,
+ note:'a giant arched tunnel through the rock with an ornate rim, a rolling stone door in its side channel, terraced dwellings beside it',
+ build(o){const it=zjItem('zj_portal');cvFromItem(it,{finish:'hewn'});zfFixtures(it);const c=P('white'),wd=P('woodD');
+  zfArch('tuffPol',0,0,.05,9.8,11.8,1.0,c,{t:.8,n:17,key:true,keyMk:'basaltPol'});zfArch('basaltPol',0,0,.02,12.6,13.1,.6,P('soot'),{t:.2,n:25});
+  for(const s of [-1,1]){zfColumn('tuffPol',s*8.6,0,.6,.75,15,c);sock('flag',s*8.6,16.9,.6,0,{w:1.4,h:.8});zcLantern(s*6.6,3.4,c);}
+  box('tuffPol',0,13.6,.12,16,2.4,.3,c);zfBand('patFriezeB',0,13.7,.28,15.6,2.2,0,c);zfStepLintel('tuffPol',0,16,.12,10,c,{n:4,h:.45,d:.4});
+  sock('emblem',0,19.4,.12,0,{w:2.6,h:2.6});
+  /* the rolling stone, rolled open into its channel (its face toward the tunnel), the tunnel's back rim */
+  WX(11.2,5.6,-12.4,0,PI/2,0,()=>{cyl('tuffPol',0,0,0,5.55,1.2,c,28);cyl('basaltPol',0,1.2,0,.9,.06,P('soot'),16);});
+  W(0,0,-36,PI,()=>zfArch('tuffHewn',0,0,.05,9.8,11.8,.8,c,{t:.6,n:15}));
+  /* the dwellings: a ledge before each doorway, a frame round it, ladders up the face */
+  for(const r of it.rooms){const xs=r.poly.map(p=>p[0]),x0=Math.min(...xs),x1=Math.max(...xs),cx=(x0+x1)/2,y=r.y;
+   box('tuffHewn',cx,y-.25,.45,x1-x0+.6,.25,.9,c);for(const s of [-1,1])box('tuffHewn',cx+s*.6,y,.1,.2,2.0,.2,c);box('tuffHewn',cx,y+1.9,.1,1.4,.22,.22,c);
+   FURNISH('zeijani_olla',cx+(cx<0?-1.2:1.2),y,.5,0,{v:1,setting:'outdoor'});}
+  for(const s of [-1,1]){zcLadder(s*12.6,0,2,1.1,.75,wd);zcLadder(s*14.0,2,6,.85,.55,wd);zcLadder(s*15.6,6,10,.85,.55,wd);}
+  door(0,0,0,0,10);}});

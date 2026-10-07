@@ -28545,6 +28545,31 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const CISTERN = cisternHall();
+  /* THE PORTAL (the board's 065e907; the capital's gate, at the outpost): a giant arched tunnel 10 m wide and 12 m high through a
+     block of tuff, its ornate rim drawn by the def; inside, a rolling stone door 11 m across, rolled open into a channel cut in
+     the tunnel's east side; beside the portal, terraced dwellings: three levels of cells cut in the face either side, their
+     doorways on ledges (drawn, with ladders: the ledges are no walk). The walk: the tunnel's floor, end to end */
+  function portal() {
+    const rooms = [], voids = [];
+    voids.push({ kind: 'mass', id: 'rock', poly: rrect(-24, 24, -36, 0), y0: -0.5, y1: 22, cap: 2.0, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'front', c: [0, 0], y: 0, r: 6.2, h: 13 }, { kind: 'door', id: 'back', c: [0, -36], y: 0, r: 6.2, h: 13 });
+    voids.push({ kind: 'tube', id: 'tunnel', pts: [[0, 0, 1.5], [0, 0, -37.5]], w: 10, h: 12, spring: 0.45, rock: 'tuff', finish: 'hewn', walkW: 8.6 });
+    voids.push({ kind: 'room', id: 'door-channel', poly: rrect(4.4, 16.6, -12.6, -11.0), y: 0, h: 11.6, ceil: 'flat', r: 0.2, finish: 'hewn', floor: false });
+    /* the terraced dwellings: cells at 2, 6 and 10 m either side, staggered, each with a doorway through the face */
+    const lv = [[2, 12, 17.4], [6, 13.4, 18.8], [10, 11.6, 17.0]];
+    [-1, 1].forEach(function (s) {
+      lv.forEach(function (L, i) {
+        const y = L[0], x0 = s < 0 ? -L[2] : L[1], x1 = s < 0 ? -L[1] : L[2], cx = (x0 + x1) / 2, id = 'cell' + (s < 0 ? 'W' : 'E') + i;
+        rooms.push({ id: id, kind: 'cell', carved: true, poly: rrect(x0, x1, -5.6, -1.6), round: 0.4, y: y, h: 2.3, ceil: 'vault', rise: 0.4, finish: 'hewn',
+          doors: [{ at: [cx, -1.6], w: 1.0, swing: 'none' }],
+          fixtures: [fx('bed', 'bedshelf', cx, -5.15, 1.9, 0.8, { bed: 1, h: 0.45 }), fx('hearth', 'hearth', s < 0 ? x0 + 0.3 : x1 - 0.3, -3.6, 0.5, 0.7, { h: 0.9 })] });
+        voids.push({ kind: 'stair', id: id + '-door', joins: [id], a: [cx, y, 0.5], b: [cx, y, -2.0], w: 1.0, h: 2.0, floor: false });
+        voids.push({ kind: 'door', id: id + '-face', c: [cx, 0], y: y - 0.2, r: 0.8, h: 2.4 });
+      });
+    });
+    return { rooms: rooms, voids: voids };
+  }
+  const PORTAL = portal();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -28614,6 +28639,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- civic */
+    { key: 'zj_portal', name: 'The portal: the great gate in the cliff', carved: true, wealth: 0.5, types: ['civic', 'infrastructure'], residence: false, lot: [50, 40],
+      rooms: PORTAL.rooms, voids: PORTAL.voids,
+      note: 'a giant arched tunnel 10 m wide through the rock; a rolling stone door rolled into its side channel; three levels of cells either side, their doorways on ledges reached by ladders (no walk)' },
     { key: 'zj_council', name: 'The council: a hall cut from the rock in its pit', carved: true, wealth: 0.85, types: ['civic'], residence: false, lot: [46, 92],
       rooms: COUNCIL.rooms, voids: COUNCIL.voids,
       note: 'after Kailasa, cut down into the ground: a pit 12 m deep down a sunken lane and a tunnel through the gatehouse; the council hall left standing in it ' +
