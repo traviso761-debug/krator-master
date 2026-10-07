@@ -6847,6 +6847,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_inn_built', name: 'Inn (constructed)', wealth: 0.45, types: ['inn', 'tavern'], residence: false, lot: [16, 14], route: 'planned',
       bodies: [{ id: 'inn', poly: rect(12, 10), y: 0.3, levels: [{ h: 3.2 }, { h: 2.9 }], wall: 0.45, roof: 'flat', doors: [{ at: [0, 5], w: 1.4 }], program: 'tavern' }],
       note: 'two storeys of tuff: the taproom, the kitchen and the store; guest rooms upstairs' },
+    /* ---------------- the square's homes (the owner's review: the square wants streets of houses) */
+    { key: 'zj_rowhouse', name: 'Row house', wealth: 0.5, types: HOME, lot: [8, 10], route: 'planned',
+      bodies: [{ id: 'house', poly: rect(7, 9), y: 0.3, levels: [{ h: 3.0 }, { h: 2.8 }, { h: 2.8 }], wall: 0.35, roof: 'flat',
+        doors: [{ at: [0, 4.5], w: 1.0 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom'], ['bedroom', 'store']] }],
+      note: 'a narrow house of three storeys in a street of them: living room and kitchen at the door, bedrooms above, a store under the roof terrace' },
     /* ---------------- the additions (PLAN.md 13) with interiors */
     { key: 'zj_roost', name: 'Bat roost', carved: true, wealth: 0.1, types: ['farm'], residence: false, lot: [14, 14],
       rooms: P3C.roost.rooms, voids: P3C.roost.voids, route: P3C.roost.route,

@@ -142,13 +142,15 @@ const DH=(function(){
  const pitWall=(key,P,deg,o)=>{const th=deg*PI/180,p=onPit(P,th);return S(key,P.id,p[0],p[1],faceIn(p[0],p[1],P.c[0],P.c[1]),P.floor,'wall',o);};
  /* the hub's square: the council in its trench, the scouts' tower, the shops and the tavern along the south side (a lane left
     open to the south mouth), the guard headquarters, the muster ground, stalls in the pool of daylight, a kiva */
- S('zj_council','hub',-56,-36,PI/2);S('zj_scout_hq','hub',14,-62,0);
+ S('zj_council','hub',-60.5,-39,PI/2);S('zj_scout_hq','hub',14,-62,0);
  S('zj_tavern_built','hub',-58,60,PI);S('zj_shop_food_built','hub',-40,60,PI);S('zj_shop_general_built','hub',-26,60,PI);
  S('zj_shop_lampwright_built','hub',26,60,PI);S('zj_shop_potter_built','hub',40,60,PI);S('zj_guard_hq','hub',60,62,PI);S('zj_muster','hub',90,30,-PI/2);
- for(let i=0;i<4;i++){const a=i*PI/2+PI/4,x=Math.cos(a)*11,z=Math.sin(a)*11;S('zj_stall_b','hub',x,z,faceIn(0,0,x,z),0,'floor',{v:i%2});}
- S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-100);
+ /* the park under the light well (its paths run along the lanes, so it is not in their way), the stalls round its edge */
+ S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true});
+ for(const deg of [30,60,120,150]){const a=deg*PI/180,x=Math.cos(a)*23.5,z=Math.sin(a)*23.5;S('zj_stall_b','hub',x,z,faceIn(x,z,0,0),0,'floor',{v:deg>90?1:0});}
+ S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-80);
  /* in the hall's wall: the temple's pit, the brewery and the alchemist, the barracks, the estates, two carved shops */
- hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-115);hallWall('zj_estate_b',-138);
+ hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-105);hallWall('zj_estate_b',-125);
  hallWall('zj_brewery',115);hallWall('zj_lab',128);hallWall('zj_shop_weapons_carved',155);hallWall('zj_shop_knapper_carved',168);
  /* the rolling stone door, at the outer tube's inner end, facing the outer zone (west) */
  S('zj_stonedoor','outpost',byId['t.door'].x,byId['t.door'].z,-PI/2,byId['t.door'].y,'ground',{walls:{front:[10.4,10.2],back:[9,7.5]}});
@@ -177,7 +179,9 @@ const DH=(function(){
  for(const sz of [-1,1])for(let i=0;i<8;i++)S('zj_palisade','outpost',PAL.c[0]+6+12*i,sz*PAL.r,sz>0?0:PI,OY,'floor',{line:true});
  S('zj_hut_a','outpost',-2662,32,PI/2,OY);S('zj_hut_a','outpost',-2652,46,PI,OY);S('zj_hut_b','outpost',-2640,28,PI/2,OY);S('zj_hut_b','outpost',-2665,-30,PI/2,OY);
  S('zj_house_wood','outpost',-2648,-34,0,OY);S('zj_farmhouse_wood','outpost',-2575,-62,PI,OY);S('zj_hut_c','outpost',-2505.6,-72,-PI/2,OY,'wall');
- S('zj_farm_veg','outpost',-2560,40,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
+ S('zj_farm_veg','outpost',-2560,40,0,OY);
+ /* the outpost's kiva, sunk in the clearing, and beside it the lattice shrine (pierced stone wants the sky behind it) */
+ S('zj_kiva','outpost',-2578,-16,0,OY);S('zj_shrine','outpost',-2562,-16,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
  /* the stores and the stables in the outer tube's side caves */
  S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,faceIn(byId['t.stores'].x,byId['t.stores'].z,byId.t1.x,byId.t1.z),byId['t.stores'].y,'ground');
  const PASTURE=[[-2760,60],[-2700,60],[-2690,130],[-2770,140]];
@@ -191,8 +195,34 @@ const DH=(function(){
   zj_house_built_mid:[16,11,'centre'],zj_gallery_a:[30,56,'front'],zj_gallery_b:[30,34,'front'],zj_store_tunnel:[20,27,'front'],zj_farm_alecap:[18,30,'front'],
   zj_tavern_carved:[23,23,'front'],zj_inn_carved:[27,32,'front'],zj_smithy:[11,9,'centre'],zj_portal:[50,40,'front'],zj_caravanserai:[46,36,'centre'],
   zj_barracks_outpost:[18,10,'centre'],zj_gate:[12,5,'centre'],zj_watchtower:[7,7,'centre'],zj_palisade:[13,4,'centre'],zj_hut_a:[8,8,'centre'],
-  zj_hut_b:[9,10,'centre'],zj_stonedoor:[10,9,'front'],zj_hut_c:[10,12,'centre'],zj_house_wood:[11,11,'centre'],zj_farmhouse_wood:[14,14,'centre']};
+  zj_hut_b:[9,10,'centre'],zj_shrine:[8,8,'centre'],zj_park:[34,34,'round'],zj_rowhouse:[8,10,'centre'],zj_market_hall:[26,11,'centre'],zj_fountain:[6,6,'centre'],zj_house_built_rich:[12,10,'centre'],zj_stonedoor:[10,9,'front'],zj_hut_c:[10,12,'centre'],zj_house_wood:[11,11,'centre'],zj_farmhouse_wood:[14,14,'centre']};
  SITES.forEach(s=>{if(!FOOT[s.key]){if(/^zj_shop_.*_carved$/.test(s.key))FOOT[s.key]=[13,15,'front'];else if(/^zj_shop_.*_built$/.test(s.key))FOOT[s.key]=[11,10,'centre'];}});
+
+ /* ---- the square filled (the owner: it wants streets of houses): homes, shops, the market hall and the fountains laid in by a
+    deterministic pass. Candidates on a 2 m grid, the homes taking the outer ring first so they line the square in a street
+    facing in; each kept 5 m in from the wall (6 m clear of a carved front), clear of the lanes and the stairs to the ledge, of the
+    park, and 3.5 m from everything placed */
+ {for(const t of ['armour','leather','dyer'])FOOT['zj_shop_'+t+'_built']=[11,10,'centre'];
+  const Q=(key,x,z,ry)=>{const [w,d,o]=FOOT[key];if(o==='round')return [0,1,2,3,4,5,6,7].map(k=>[x+Math.cos(k*PI/4)*w/2/Math.cos(PI/8),z+Math.sin(k*PI/4)*w/2/Math.cos(PI/8)]);const za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(ry),sn=Math.sin(ry);
+   return [[-w/2,za],[w/2,za],[w/2,zb],[-w/2,zb]].map(([lx,lz])=>[x+lx*c+lz*sn,z-lx*sn+lz*c]);};
+  const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
+  const over=(A,B)=>{for(const P of [A,B])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],n=[b[1]-a[1],a[0]-b[0]],pa=A.map(p=>p[0]*n[0]+p[1]*n[1]),pb=B.map(p=>p[0]*n[0]+p[1]*n[1]);
+    if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return false;}return true;};
+  const gap=(A,B)=>{if(over(A,B))return 0;let g=1e9;for(const [P,R] of [[A,B],[B,A]])for(const p of P)for(let i=0;i<R.length;i++)g=Math.min(g,sd(p,R[i],R[(i+1)%R.length]));return g;};
+  const placed=SITES.filter(s=>s.district==='hub').map(s=>({q:Q(s.key,s.x,s.z,s.ry),wall:s.at==='wall'}));
+  const lanes=EDGES.filter(e=>e.kind==='square').map(e=>[[byId[e.a].x,byId[e.a].z],[byId[e.b].x,byId[e.b].z]]);
+  const inE=(p,m)=>((p[0]-HALL.c[0])/(HALL.rx-m))**2+((p[1]-HALL.c[1])/(HALL.rz-m))**2<=1;
+  const ok=(q)=>q.every(p=>inE(p,5))&&lanes.every(([a,b])=>Math.min(...q.map(p=>sd(p,a,b)))>=7&&!over(q,[a,b,[b[0]+.01,b[1]+.01],[a[0]+.01,a[1]+.01]]))
+   &&placed.every(o=>gap(q,o.q)>=(o.wall?6:3.5));
+  const cand=[];for(let x=-HALL.rx;x<=HALL.rx;x+=2)for(let z=-HALL.rz;z<=HALL.rz;z+=2){const e=Math.hypot(x/HALL.rx,z/HALL.rz);if(e<.98)cand.push([x,z,e]);}
+  const lay=(key,n,order,o)=>{const C=cand.slice().sort(order);let k=0;for(const [x,z] of C){if(k>=n)break;const ry=faceIn(x,z,HALL.c[0],HALL.c[1]),q=Q(key,x,z,ry);if(!ok(q))continue;
+    S(key,'hub',x,z,ry,HALL.y,'floor',Object.assign({fill:true},o?o(k):{}));placed.push({q,wall:false});k++;}};
+  const outer=(a,b)=>b[2]-a[2]||a[0]-b[0]||a[1]-b[1],ring=r=>(a,b)=>Math.abs(a[2]-r)-Math.abs(b[2]-r)||a[0]-b[0]||a[1]-b[1];
+  lay('zj_market_hall',1,ring(.45));
+  for(const t of ['armour','leather','dyer'])lay('zj_shop_'+t+'_built',1,ring(.55));
+  lay('zj_house_built_rich',4,ring(.6));lay('zj_house_built_mid',3,ring(.7));
+  lay('zj_rowhouse',22,outer,k=>({v:k%4}));
+  lay('zj_fountain',2,ring(.3));}
 
  /* ---- the graph's helpers */
  const adj={};NODES.forEach(n=>adj[n.id]=[]);EDGES.forEach((e,i)=>{adj[e.a].push([e.b,i]);adj[e.b].push([e.a,i]);});

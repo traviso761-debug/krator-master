@@ -137,7 +137,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
 function camGroundY(p){const g=terrainH(p.x,p.z);if(CVC&&p.y<g-.5&&CVC.voidSD(p.x,p.y,p.z)<0)return -1e9;return g;}
 /* underground the sky is not drawn and a dark fog closes the distance (the rock past the streamed chunks is not meshed);
    the cave's own light (the wells' shafts, the lamps' pool) is P5c's */
-const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.012};
+const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.0055};
 FRAME_HOOKS.push(()=>{const p=camera.position,u=p.y<terrainH(p.x,p.z)-2;if(u===DH_UNDER.on)return;DH_UNDER.on=u;skyScene.visible=!u;
  if(u){scene.fog.color.copy(DH_UNDER.fog);scene.fog.density=DH_UNDER.dens;}else{scene.fog.density=.0011;skyApply();}});
 

@@ -8,7 +8,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | [`core`](core/PORT.md) | 61 | 493 | 268 | 60 | 52 | 17 | 95 | 5 | atmos, biome |  |  |
 | [`settlements/dalab`](settlements/dalab/PORT.md) | 60 | 730 | 151 | 40 | 10 | 38 | 492 | 9 |  | yes | yes |
-| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 4 | 47 | 21 | 0 | 0 | 26 | 0 | 0 | atmos | yes | yes |
+| [`settlements/dhelv`](settlements/dhelv/PORT.md) | 5 | 56 | 24 | 0 | 0 | 32 | 0 | 0 | atmos | yes | yes |
 | [`settlements/girder`](settlements/girder/PORT.md) | 32 | 602 | 125 | 7 | 89 | 42 | 340 | 11 | atmos | yes | yes |
 | [`settlements/highlands`](settlements/highlands/PORT.md) | 75 | 1095 | 219 | 19 | 13 | 78 | 767 | 7 |  | yes | yes |
 | [`settlements/iziz`](settlements/iziz/PORT.md) | 84 | 873 | 199 | 23 | 52 | 47 | 551 | 6 | atmos | yes | yes |
@@ -36,7 +36,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`kits/post-apoc`](kits/post-apoc/PORT.md) | 27 | 390 | 2 | 8 | 0 | 47 | 334 | 1 |  | yes | yes |
 | [`kits/ringsea`](kits/ringsea/PORT.md) | 38 | 230 | 1 | 6 | 0 | 49 | 174 | 1 |  | yes | yes |
 | [`kits/scyvoi`](kits/scyvoi/PORT.md) | 25 | 182 | 1 | 11 | 10 | 33 | 128 | 2 | atmos | yes | yes |
-| [`kits/zeijani`](kits/zeijani/PORT.md) | 29 | 252 | 5 | 30 | 10 | 75 | 134 | 3 | atmos | yes | yes |
+| [`kits/zeijani`](kits/zeijani/PORT.md) | 30 | 265 | 5 | 30 | 10 | 75 | 146 | 3 | atmos | yes | yes |
 | [`biomes/crater-drylands`](biomes/crater-drylands/PORT.md) | 15 | 195 | 27 | 17 | 13 | 55 | 84 | 3 | biome | yes | yes |
 | [`biomes/eastabyss`](biomes/eastabyss/PORT.md) | 14 | 206 | 1 | 0 | 14 | 34 | 157 | 5 | biome | yes | yes |
 | [`biomes/ebadlands`](biomes/ebadlands/PORT.md) | 16 | 221 | 28 | 0 | 14 | 69 | 109 | 2 | biome | yes | yes |
@@ -53,7 +53,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/throne`](biomes/throne/PORT.md) | 16 | 278 | 45 | 22 | 15 | 47 | 150 | 2 | biome, atmos | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 220 | 1 | 0 | 12 | 36 | 170 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1762 | 23467 | 3554 (15%) | 503 (2%) | 1023 (4%) | 2834 (12%) | 15553 (66%) | 247 | | | |
+| **all** | 1764 | 23489 | 3557 (15%) | 503 (2%) | 1023 (4%) | 2841 (12%) | 15565 (66%) | 247 | | | |
 
 ## Host-shell copies
 
@@ -62,7 +62,7 @@ The fragment families `core/host/` (Phase 1) and the `core/atmos` sky preset rep
 | Family | Builds | Versions | KB total |
 |---|---|---|---|
 | `camera` | 21 | 17 | 247 |
-| `probe` | 19 | 16 | 80 |
+| `probe` | 19 | 16 | 81 |
 | `sky` | 18 | 5 | 397 |
 | `host-stage` | 16 | 16 | 322 |
 | `host-sky` | 16 | 14 | 228 |

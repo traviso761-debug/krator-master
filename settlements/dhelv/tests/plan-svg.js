@@ -16,7 +16,7 @@ function panel(title,x0,z0,x1,z1,W,ox,oy){const s=W/(x1-x0),H=(z1-z0)*s,X=x=>(ox
  for(const P of DH.PITS)out.push(`<circle cx="${X(P.c[0])}" cy="${Z(P.c[1])}" r="${(P.r*s).toFixed(1)}" fill="#e6efd8" stroke="#6a8a4a"/><text x="${X(P.c[0])}" y="${Z(P.c[1]-P.r-4)}" font-size="11" text-anchor="middle">${P.name} (floor ${P.floor}, ${P.depth} m deep)</text>`);
  out.push(`<polygon points="${DH.PASTURE.map(p=>X(p[0])+','+Z(p[1])).join(' ')}" fill="#dfe8c0" stroke="#8a9a5a"/>`);
  out.push(`<polyline points="${DH.STREAM.map(p=>X(p[0])+','+Z(p[1])).join(' ')}" fill="none" stroke="#4a86c0" stroke-width="2"/>`);
- for(const st of DH.SITES){const F=DH.FOOT[st.key];if(!F)continue;const [w,d,o]=F,za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(st.ry),sn=Math.sin(st.ry);
+ for(const st of DH.SITES){const F=DH.FOOT[st.key];if(!F)continue;if(F[2]==='round'){out.push(`<circle cx="${X(st.x)}" cy="${Z(st.z)}" r="${(F[0]/2*s).toFixed(1)}" fill="#8ab060" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>${st.key} (${st.district})</title></circle>`);continue;}const [w,d,o]=F,za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(st.ry),sn=Math.sin(st.ry);
   const q=[[-w/2,za],[w/2,za],[w/2,zb],[-w/2,zb]].map(([lx,lz])=>[st.x+lx*c+lz*sn,st.z-lx*sn+lz*c]);
   out.push(`<polygon points="${q.map(p=>X(p[0])+','+Z(p[1])).join(' ')}" fill="${SITE_COL(st.key)}" fill-opacity=".75" stroke="#333" stroke-width=".5"><title>${st.key} (${st.district})</title></polygon>`);
   const f=[st.x+Math.sin(st.ry)*1.5,st.z+Math.cos(st.ry)*1.5];out.push(`<line x1="${X(st.x)}" y1="${Z(st.z)}" x2="${X(f[0])}" y2="${Z(f[1])}" stroke="#000" stroke-width="1"/>`);}

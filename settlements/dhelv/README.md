@@ -20,6 +20,7 @@ ramblers (P6) and the Godot case (P7) follow.
 | `src/00-head.html` | the page shell (the kit's, titled) |
 | `src/90-dhelv-scene.js` | the host: the sky, the ground's heightfield (`terrainH = DH.groundY`), the ways carved (`dhCarve`), the sites placed, the rock meshed near the camera (`dhStream`), the views |
 | `src/91-dhelv-probe.js` | `window._api` and the checks (below) |
+| `src/93-dhelv-map.js` | the minimap: the layout drawn small, the ways near the camera's height bright, the camera and the marker; a click flies there; M hides it |
 | `build.py`, `verify.py` | the page: core, the kit's `src/` less its sheet's host, and `src/` here; the headless check |
 
 ```
@@ -83,3 +84,19 @@ under the ground opens into its void as a doorway, not through the surface). The
 | the foreigners' zone ends at the stone door: the outer ways reach it and nothing past it, and the door is the only way on | a side passage round the stone door |
 | the outpost's sites apart (the palisade's runs join end to end); the cliff's sites on the cliff, facing west | the barracks moved onto the timber house |
 | the layout matches its golden digest | |
+
+## Getting about
+
+- **Double-click** drops a marker (a red pin) where you click; **G** brings the camera to it; **Walk (F)** starts on it (or on
+  the nearest floor to the view's centre, never the surface over an underground view). **Run (R)** walks 2.5 times as fast
+  (Shift too, while held).
+- **The minimap** (bottom right) shows the city or the outpost, whichever you are in; the ways within 6 m of your height are
+  drawn bright. Click it to fly there; **M** hides it.
+
+## The square
+
+The park under the light well (`zj_park`: lawn, paths along the lanes, a pool and fountain, trees, shrubs, beds, giant
+alecaps at its shaded rim) with the stalls round its edge; then a deterministic pass in the layout (`41-dhelv-layout.js`,
+"the square filled") lays in the market hall, three more shops, seven houses and 22 row houses (`zj_rowhouse`, a narrow
+three-storey home), and two fountains: the homes take the outer ring first, so they line the square in a street facing in,
+5 m in from the wall (6 m clear of a carved front), clear of the lanes, the ledge's stairs and the park.

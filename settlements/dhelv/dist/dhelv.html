@@ -703,7 +703,9 @@ const ZJPAL={
  /* timber, thatch and earth (the kipuka) */
  wood:[0x8a6a48,0x7e6040,0x967450],woodD:[0x4a3424,0x54392a],thatch:[0xb09a64,0xa48c58,0xbaa46e],earth:[0x8a7458,0x7e6a50],
  plaster:[0xe6dcc6,0xeae2ce],hide:[0xa87a4a,0x9a6e42],felt:[0x6e5440,0x7a5e48],ceramic:[0xb0683e,0xa86034],
- water:[0x24484c,0x2a4e50],paint:[0x8a6a4a,0x6a5a48,0x9a8a6a],glow:[0x8fe8c8],flame:[0xffb04a],ember:[0xff6a1a],white:[0xffffff]
+ water:[0x24484c,0x2a4e50],
+ /* the park's greens (the light well's garden) */
+ leaf:[0x5f7d3a,0x6b8a40,0x587a34],leafD:[0x3f5a2a,0x46632e],grass:[0x6a8a3e,0x5e7e36],paint:[0x8a6a4a,0x6a5a48,0x9a8a6a],glow:[0x8fe8c8],flame:[0xffb04a],ember:[0xff6a1a],white:[0xffffff]
 };
 function P(k){return jc(pick(ZJPAL[k]),.05);}
 const WHITE=new THREE.Color(1,1,1);
@@ -10548,6 +10550,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     { key: 'zj_inn_built', name: 'Inn (constructed)', wealth: 0.45, types: ['inn', 'tavern'], residence: false, lot: [16, 14], route: 'planned',
       bodies: [{ id: 'inn', poly: rect(12, 10), y: 0.3, levels: [{ h: 3.2 }, { h: 2.9 }], wall: 0.45, roof: 'flat', doors: [{ at: [0, 5], w: 1.4 }], program: 'tavern' }],
       note: 'two storeys of tuff: the taproom, the kitchen and the store; guest rooms upstairs' },
+    /* ---------------- the square's homes (the owner's review: the square wants streets of houses) */
+    { key: 'zj_rowhouse', name: 'Row house', wealth: 0.5, types: HOME, lot: [8, 10], route: 'planned',
+      bodies: [{ id: 'house', poly: rect(7, 9), y: 0.3, levels: [{ h: 3.0 }, { h: 2.8 }, { h: 2.8 }], wall: 0.35, roof: 'flat',
+        doors: [{ at: [0, 4.5], w: 1.0 }], program: [['living', 'kitchen'], ['bedroom', 'bedroom'], ['bedroom', 'store']] }],
+      note: 'a narrow house of three storeys in a street of them: living room and kitchen at the door, bedrooms above, a store under the roof terrace' },
     /* ---------------- the additions (PLAN.md 13) with interiors */
     { key: 'zj_roost', name: 'Bat roost', carved: true, wealth: 0.1, types: ['farm'], residence: false, lot: [14, 14],
       rooms: P3C.roost.rooms, voids: P3C.roost.voids, route: P3C.roost.route,
@@ -10860,13 +10867,15 @@ const DH=(function(){
  const pitWall=(key,P,deg,o)=>{const th=deg*PI/180,p=onPit(P,th);return S(key,P.id,p[0],p[1],faceIn(p[0],p[1],P.c[0],P.c[1]),P.floor,'wall',o);};
  /* the hub's square: the council in its trench, the scouts' tower, the shops and the tavern along the south side (a lane left
     open to the south mouth), the guard headquarters, the muster ground, stalls in the pool of daylight, a kiva */
- S('zj_council','hub',-56,-36,PI/2);S('zj_scout_hq','hub',14,-62,0);
+ S('zj_council','hub',-60.5,-39,PI/2);S('zj_scout_hq','hub',14,-62,0);
  S('zj_tavern_built','hub',-58,60,PI);S('zj_shop_food_built','hub',-40,60,PI);S('zj_shop_general_built','hub',-26,60,PI);
  S('zj_shop_lampwright_built','hub',26,60,PI);S('zj_shop_potter_built','hub',40,60,PI);S('zj_guard_hq','hub',60,62,PI);S('zj_muster','hub',90,30,-PI/2);
- for(let i=0;i<4;i++){const a=i*PI/2+PI/4,x=Math.cos(a)*11,z=Math.sin(a)*11;S('zj_stall_b','hub',x,z,faceIn(0,0,x,z),0,'floor',{v:i%2});}
- S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-100);
+ /* the park under the light well (its paths run along the lanes, so it is not in their way), the stalls round its edge */
+ S('zj_park','hub',HALL.c[0],HALL.c[1],0,0,'floor',{park:true});
+ for(const deg of [30,60,120,150]){const a=deg*PI/180,x=Math.cos(a)*23.5,z=Math.sin(a)*23.5;S('zj_stall_b','hub',x,z,faceIn(x,z,0,0),0,'floor',{v:deg>90?1:0});}
+ S('zj_kiva','hub',-34,24,0);hallWall('zj_niche',-80);
  /* in the hall's wall: the temple's pit, the brewery and the alchemist, the barracks, the estates, two carved shops */
- hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-115);hallWall('zj_estate_b',-138);
+ hallWall('zj_temple',-22);hallWall('zj_barracks_carved',-62);hallWall('zj_estate_a',-105);hallWall('zj_estate_b',-125);
  hallWall('zj_brewery',115);hallWall('zj_lab',128);hallWall('zj_shop_weapons_carved',155);hallWall('zj_shop_knapper_carved',168);
  /* the rolling stone door, at the outer tube's inner end, facing the outer zone (west) */
  S('zj_stonedoor','outpost',byId['t.door'].x,byId['t.door'].z,-PI/2,byId['t.door'].y,'ground',{walls:{front:[10.4,10.2],back:[9,7.5]}});
@@ -10895,7 +10904,9 @@ const DH=(function(){
  for(const sz of [-1,1])for(let i=0;i<8;i++)S('zj_palisade','outpost',PAL.c[0]+6+12*i,sz*PAL.r,sz>0?0:PI,OY,'floor',{line:true});
  S('zj_hut_a','outpost',-2662,32,PI/2,OY);S('zj_hut_a','outpost',-2652,46,PI,OY);S('zj_hut_b','outpost',-2640,28,PI/2,OY);S('zj_hut_b','outpost',-2665,-30,PI/2,OY);
  S('zj_house_wood','outpost',-2648,-34,0,OY);S('zj_farmhouse_wood','outpost',-2575,-62,PI,OY);S('zj_hut_c','outpost',-2505.6,-72,-PI/2,OY,'wall');
- S('zj_farm_veg','outpost',-2560,40,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
+ S('zj_farm_veg','outpost',-2560,40,0,OY);
+ /* the outpost's kiva, sunk in the clearing, and beside it the lattice shrine (pierced stone wants the sky behind it) */
+ S('zj_kiva','outpost',-2578,-16,0,OY);S('zj_shrine','outpost',-2562,-16,0,OY);S('zj_stall_a','outpost',-2505.5,72,-PI/2,OY,'wall');
  /* the stores and the stables in the outer tube's side caves */
  S('zj_store_tunnel','outpost',byId['t.stores'].x,byId['t.stores'].z,faceIn(byId['t.stores'].x,byId['t.stores'].z,byId.t1.x,byId.t1.z),byId['t.stores'].y,'ground');
  const PASTURE=[[-2760,60],[-2700,60],[-2690,130],[-2770,140]];
@@ -10909,8 +10920,34 @@ const DH=(function(){
   zj_house_built_mid:[16,11,'centre'],zj_gallery_a:[30,56,'front'],zj_gallery_b:[30,34,'front'],zj_store_tunnel:[20,27,'front'],zj_farm_alecap:[18,30,'front'],
   zj_tavern_carved:[23,23,'front'],zj_inn_carved:[27,32,'front'],zj_smithy:[11,9,'centre'],zj_portal:[50,40,'front'],zj_caravanserai:[46,36,'centre'],
   zj_barracks_outpost:[18,10,'centre'],zj_gate:[12,5,'centre'],zj_watchtower:[7,7,'centre'],zj_palisade:[13,4,'centre'],zj_hut_a:[8,8,'centre'],
-  zj_hut_b:[9,10,'centre'],zj_stonedoor:[10,9,'front'],zj_hut_c:[10,12,'centre'],zj_house_wood:[11,11,'centre'],zj_farmhouse_wood:[14,14,'centre']};
+  zj_hut_b:[9,10,'centre'],zj_shrine:[8,8,'centre'],zj_park:[34,34,'round'],zj_rowhouse:[8,10,'centre'],zj_market_hall:[26,11,'centre'],zj_fountain:[6,6,'centre'],zj_house_built_rich:[12,10,'centre'],zj_stonedoor:[10,9,'front'],zj_hut_c:[10,12,'centre'],zj_house_wood:[11,11,'centre'],zj_farmhouse_wood:[14,14,'centre']};
  SITES.forEach(s=>{if(!FOOT[s.key]){if(/^zj_shop_.*_carved$/.test(s.key))FOOT[s.key]=[13,15,'front'];else if(/^zj_shop_.*_built$/.test(s.key))FOOT[s.key]=[11,10,'centre'];}});
+
+ /* ---- the square filled (the owner: it wants streets of houses): homes, shops, the market hall and the fountains laid in by a
+    deterministic pass. Candidates on a 2 m grid, the homes taking the outer ring first so they line the square in a street
+    facing in; each kept 5 m in from the wall (6 m clear of a carved front), clear of the lanes and the stairs to the ledge, of the
+    park, and 3.5 m from everything placed */
+ {for(const t of ['armour','leather','dyer'])FOOT['zj_shop_'+t+'_built']=[11,10,'centre'];
+  const Q=(key,x,z,ry)=>{const [w,d,o]=FOOT[key];if(o==='round')return [0,1,2,3,4,5,6,7].map(k=>[x+Math.cos(k*PI/4)*w/2/Math.cos(PI/8),z+Math.sin(k*PI/4)*w/2/Math.cos(PI/8)]);const za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(ry),sn=Math.sin(ry);
+   return [[-w/2,za],[w/2,za],[w/2,zb],[-w/2,zb]].map(([lx,lz])=>[x+lx*c+lz*sn,z-lx*sn+lz*c]);};
+  const sd=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
+  const over=(A,B)=>{for(const P of [A,B])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],n=[b[1]-a[1],a[0]-b[0]],pa=A.map(p=>p[0]*n[0]+p[1]*n[1]),pb=B.map(p=>p[0]*n[0]+p[1]*n[1]);
+    if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return false;}return true;};
+  const gap=(A,B)=>{if(over(A,B))return 0;let g=1e9;for(const [P,R] of [[A,B],[B,A]])for(const p of P)for(let i=0;i<R.length;i++)g=Math.min(g,sd(p,R[i],R[(i+1)%R.length]));return g;};
+  const placed=SITES.filter(s=>s.district==='hub').map(s=>({q:Q(s.key,s.x,s.z,s.ry),wall:s.at==='wall'}));
+  const lanes=EDGES.filter(e=>e.kind==='square').map(e=>[[byId[e.a].x,byId[e.a].z],[byId[e.b].x,byId[e.b].z]]);
+  const inE=(p,m)=>((p[0]-HALL.c[0])/(HALL.rx-m))**2+((p[1]-HALL.c[1])/(HALL.rz-m))**2<=1;
+  const ok=(q)=>q.every(p=>inE(p,5))&&lanes.every(([a,b])=>Math.min(...q.map(p=>sd(p,a,b)))>=7&&!over(q,[a,b,[b[0]+.01,b[1]+.01],[a[0]+.01,a[1]+.01]]))
+   &&placed.every(o=>gap(q,o.q)>=(o.wall?6:3.5));
+  const cand=[];for(let x=-HALL.rx;x<=HALL.rx;x+=2)for(let z=-HALL.rz;z<=HALL.rz;z+=2){const e=Math.hypot(x/HALL.rx,z/HALL.rz);if(e<.98)cand.push([x,z,e]);}
+  const lay=(key,n,order,o)=>{const C=cand.slice().sort(order);let k=0;for(const [x,z] of C){if(k>=n)break;const ry=faceIn(x,z,HALL.c[0],HALL.c[1]),q=Q(key,x,z,ry);if(!ok(q))continue;
+    S(key,'hub',x,z,ry,HALL.y,'floor',Object.assign({fill:true},o?o(k):{}));placed.push({q,wall:false});k++;}};
+  const outer=(a,b)=>b[2]-a[2]||a[0]-b[0]||a[1]-b[1],ring=r=>(a,b)=>Math.abs(a[2]-r)-Math.abs(b[2]-r)||a[0]-b[0]||a[1]-b[1];
+  lay('zj_market_hall',1,ring(.45));
+  for(const t of ['armour','leather','dyer'])lay('zj_shop_'+t+'_built',1,ring(.55));
+  lay('zj_house_built_rich',4,ring(.6));lay('zj_house_built_mid',3,ring(.7));
+  lay('zj_rowhouse',22,outer,k=>({v:k%4}));
+  lay('zj_fountain',2,ring(.3));}
 
  /* ---- the graph's helpers */
  const adj={};NODES.forEach(n=>adj[n.id]=[]);EDGES.forEach((e,i)=>{adj[e.a].push([e.b,i]);adj[e.b].push([e.a,i]);});
@@ -11310,6 +11347,21 @@ function zkKivaDress(cx,cz,y0){const wd=P('woodD'),c=P('white'),Y=y0-3.6;
   zfRingWall('ashlar',cx,cz+3.9,.32,.52,y0,y0+.45,P('tuffDark'));
   box('plaster',cx,Y+1.15,cz-2.62,2.2,1.0,.12,P('plaster'));zfBand('patMural',cx,Y+1.2,cz-2.555,2.0,.9,0,c);}
 
+/* the lattice shrine (in the open, where the pierced stone shows the sky through it: the outpost's, beside its kiva): an
+   octagonal pavilion on a stepped podium, eight slim columns, pierced screens between them but at the front, a cornice and a
+   small dome, an altar with a lamp and the spirits' staffs inside, lit at night */
+defBuilding({key:'zj_shrine',name:'Lattice shrine',seed:4804,cut:true,tags:{types:['religious'],wealth:'middle',style:'constructed',rock:'tuff'},w:8,d:8,h:7.6,
+ build(o){const c=P('white'),oct=r=>[0,1,2,3,4,5,6,7].map(k=>{const a=(22.5+45*k)*PI/180;return [r*Math.cos(a),r*Math.sin(a)];});
+  prism('ashlar',oct(3.9),0,.3,P('tuffDark'));prism('tuffPol',oct(3.5),.3,.6,c);zfSteps('tuffPol',0,.6,3.45,1.6,2,c,.15,.3);
+  const R=3.05,col=k=>{const a=(22.5+45*k)*PI/180;return [R*Math.cos(a),R*Math.sin(a)];};
+  for(let k=0;k<8;k++){const p=col(k);zfColumn('tuffPol',p[0],.6,p[1],.13,3.1,c);}
+  /* the screens: a lattice panel in each bay but the front (the bay facing +z), on a low sill, under a lintel */
+  for(let k=0;k<8;k++){const a0=col(k),a1=col((k+1)%8),mx=(a0[0]+a1[0])/2,mz=(a0[1]+a1[1])/2,L=Math.hypot(a1[0]-a0[0],a1[1]-a0[1])-.3,ry=Math.atan2(a1[0]-a0[0],a1[1]-a0[1]);
+   box('tuffPol',mx,3.45,mz,.24,.26,L+.3,c,ry);if(mz>2.5)continue;box('tuffPol',mx,.6,mz,.2,.35,L,c,ry);box('jali',mx,.95,mz,.06,2.5,L,c,ry);}
+  prism('tuffPol',oct(3.4),3.7,3.95,c);zfDome('tuffPol',0,3.95,0,2.9,2.2,c,{seg:24,rows:8});lathe('tuffPol',0,0,[[.35,6.1],[.5,6.25],[.2,6.6]],12,c);cone('copper',0,6.6,0,.12,.9,P('copper'),8);
+  box('tuffPol',0,.6,-1.2,1.2,.9,.7,c);FURNISH('zeijani_censer',0,1.5,-1.2,0,{setting:'outdoor'});sph('glow',.45,1.62,-1.2,.09,P('flame'),1,8);haloAt(0,2.2,-1.2,0xffb04a,true);
+  FURNISH('zeijani_staff_stand',-1.6,.6,-.9,.6,{setting:'outdoor'});door(0,.6,3.3,0,1.6);}});
+
 /* the catacombs: a round-headed portal under a frieze of the dead, funerary lamps either side; inside, the loculi corridors
    lined with bones (panels of the ossuary sheet on both walls) and the chapel's frieze over its altar */
 defBuilding({key:'zj_catacomb',name:'Funeral catacombs',seed:4802,originFront:true,
@@ -11328,6 +11380,30 @@ defBuilding({key:'zj_catacomb',name:'Funeral catacombs',seed:4802,originFront:tr
 /* the temple (Kailasa): the gateway's tiers on the face; in the pit the lamp pillars (columns over the rock left standing, a
    lamp on each), the podium's base moulding, friezes of the spirits and cornice round its four faces, the corner shrines'
    domes, the drum's cornice and the pierced lattice dome over the open sanctum, lit from inside */
+/* the sky dome: a hemisphere painted with the heavens over the Throne (the sun, the ringed gas giant, its moons, the stars) on both
+   faces, a little self-lit so the sanctum's lamps are not all it has. The painting is a canvas STAND-IN until the owner's texture
+   (`patSkyDome`: the prompt is in KNOWN_ISSUES.md) arrives; spherical UVs: u round the sky, v from the rim (0) to the zenith (1) */
+const ZK_SKY=(function(){const T=canvasTex(2048,1024,(g,w,h)=>{
+ const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#0b1030');sky.addColorStop(.55,'#1d2a66');sky.addColorStop(.86,'#3d4f8c');sky.addColorStop(1,'#6a5a7a');g.fillStyle=sky;g.fillRect(0,0,w,h);
+ let s=7;const R=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+ for(let i=0;i<900;i++){const x=R()*w,y=R()*h*.85,r=R()<.06?2.4:R()*1.3+.3;g.fillStyle='rgba(255,'+(230+R()*25|0)+','+(190+R()*60|0)+','+(.5+R()*.5)+')';g.beginPath();g.arc(x,y,r,0,TAU);g.fill();}
+ /* the sun: a gold disc and its rays */
+ const sx=w*.16,sy=h*.5;g.strokeStyle='#ffcc55';g.lineWidth=6;for(let i=0;i<24;i++){const a=i*TAU/24;g.beginPath();g.moveTo(sx+Math.cos(a)*70,sy+Math.sin(a)*70);g.lineTo(sx+Math.cos(a)*(i%2?110:140),sy+Math.sin(a)*(i%2?110:140));g.stroke();}
+ const sg=g.createRadialGradient(sx,sy,0,sx,sy,66);sg.addColorStop(0,'#fff6c8');sg.addColorStop(1,'#f0a830');g.fillStyle=sg;g.beginPath();g.arc(sx,sy,64,0,TAU);g.fill();
+ /* the gas giant: banded, a ring before and behind it */
+ const gx=w*.6,gy=h*.46,gr=150;const ring=(front)=>{g.save();g.translate(gx,gy);g.rotate(-.35);g.strokeStyle='rgba(230,200,150,.85)';g.lineWidth=14;g.beginPath();g.ellipse(0,0,gr*1.75,gr*.38,0,front?0:PI,front?PI:TAU);g.stroke();g.restore();};
+ ring(false);g.save();g.beginPath();g.arc(gx,gy,gr,0,TAU);g.clip();const cols=['#c98a4e','#e8c08a','#a8603a','#f0d8a8','#b87848','#d8a870','#8a4a30'];
+ for(let i=0;i<14;i++){g.fillStyle=cols[i%cols.length];g.fillRect(gx-gr,gy-gr+i*gr*2/14,gr*2,gr*2/14+1);}
+ const sh=g.createRadialGradient(gx-gr*.4,gy-gr*.4,gr*.2,gx,gy,gr*1.1);sh.addColorStop(0,'rgba(255,255,255,.12)');sh.addColorStop(1,'rgba(0,0,20,.55)');g.fillStyle=sh;g.fillRect(gx-gr,gy-gr,gr*2,gr*2);g.restore();ring(true);
+ /* the moons */
+ for(const [u,v,r,cA,cB] of [[.42,.3,26,'#e8e4dc','#8a8478'],[.82,.42,34,'#d8c8b0','#6a5a48'],[.9,.66,18,'#c8d8e8','#58687a'],[.33,.64,14,'#f0d0b8','#806050']]){
+  const mg=g.createRadialGradient(w*u-r*.3,h*v-r*.3,1,w*u,h*v,r);mg.addColorStop(0,cA);mg.addColorStop(1,cB);g.fillStyle=mg;g.beginPath();g.arc(w*u,h*v,r,0,TAU);g.fill();}
+ /* a gilt band at the rim (the bottom of the sheet) */
+ g.fillStyle='#b8862e';g.fillRect(0,h*.93,w,h*.07);g.fillStyle='#e8c060';for(let x=0;x<w;x+=64){g.beginPath();g.moveTo(x,h*.93);g.lineTo(x+32,h*.965);g.lineTo(x+64,h*.93);g.fill();}});
+ T.wrapS=THREE.RepeatWrapping;T.wrapT=THREE.ClampToEdgeWrapping;T.encoding=THREE.sRGBEncoding;T.anisotropy=8;
+ const m=new THREE.MeshStandardMaterial({map:T,emissive:0xffffff,emissiveMap:T,emissiveIntensity:.35,roughness:.55,metalness:.05,side:THREE.DoubleSide});MAT.skyDome=m;TILE.skyDome=1;
+ return {geo:new THREE.SphereGeometry(1,48,16,0,TAU,0,PI/2)};})();
+function zkSkyDome(x,y,z,r,h){const m=TF(x,y,z,0);m.scale(new THREE.Vector3(r,h,r));emit('skyDome',ZK_SKY.geo,m,WHITE,{su:1,sv:1});}
 function zkBand(mk,x0,x1,z,y,h,ry,c){/* a frieze on a face at z (local, facing ry): a backing slab straddling the face and the sheet on it */
  const w=Math.abs(x1-x0),cx=(x0+x1)/2;W(0,0,0,ry,()=>{box('tuffPol',cx,y-.05,z,w+.1,h+.1,.16,c);zfBand(mk,cx,y,z+.085,w,h,0,c);});}
 defBuilding({key:'zj_temple',name:'The temple: cut from one rock',seed:4803,originFront:true,
@@ -11347,11 +11423,10 @@ defBuilding({key:'zj_temple',name:'The temple: cut from one rock',seed:4803,orig
   for(const [cx,cz,L,ry] of [[0,-40,18,PI],[-9,-28,24,-PI/2],[9,-28,24,PI/2]]){W(cx,0,cz,ry,()=>{box('tuffPol',0,0,.05,L,.45,.5,c);box('tuffPol',0,5.5,.1,L+.3,.45,.6,c);zkBand('patFrieze',-L/2+.4,L/2-.4,0,1.2,1.5,0,c);});}
   /* the shrines' domes and finials */
   for(const [x,z] of [[-6.6,-19],[6.6,-19],[-6.6,-37],[6.6,-37]]){lathe('tuffPol',x,z,[[1.55,8.85],[1.8,8.95],[1.8,9.1],[1.6,9.15]],20,c);zfDome('tuffPol',x,9.1,z,1.7,1.3,c,{seg:20,rows:7});cone('copper',x,10.4,z,.14,.5,P('copper'),8);}
-  /* the drum's cornice, the lattice dome on it, the light inside, the finial */
+  /* the drum's cornice, the sky dome on it (the heavens painted inside and out: underground, a pierced dome showed only rock),
+     the light inside, the finial */
   lathe('tuffPol',0,-30,[[6.15,10.75],[6.55,10.9],[6.55,11.1],[6.2,11.2]],40,c);
-  zfDome('jali',0,11.2,-30,6.2,5.2,P('white'),{seg:40,rows:12});
-  /* the lamplight behind the lattice: a warm unlit shell just inside it, seen only through its holes (from inside, its back faces cull) */
-  zfDome('glow',0,11.2,-30,5.95,4.95,0xb8682e,{seg:40,rows:12});
+  zkSkyDome(0,11.2,-30,6.2,5.2);
   cyl('copper',0,16.3,-30,.3,.4,P('copper'),12);cone('copper',0,16.7,-30,.3,1.1,P('copper'),12);
   sph('glow',0,9.2,-30,.55,P('flame'),1,16);haloAt(0,9.2,-30,0xffb04a,true);for(let i=0;i<6;i++){const a=i*TAU/6;sph('glow',Math.cos(a)*3.2,8.6,-30+Math.sin(a)*3.2,.18,P('flame'),1,10);}
   zkKivaDress(13.2,-28,0);   /* the kiva in the pit's east side (its plan: the temple's item) */
@@ -12456,6 +12531,74 @@ defBuilding({key:'zj_signal',name:'Signal station',seed:5308,cls:'infrastructure
   cyl('log',1.1,Y,-1.1,.07,2.6,wd,7);for(const s of [-1,1])for(const t of [-1,1])box('iron',1.1+s*.18,Y+2.6,-1.1+t*.18,.03,.5,.03,P('soot'));box('iron',1.1,Y+3.1,-1.1,.42,.04,.42,P('soot'));
   sph('glow',1.1,Y+2.86,-1.1,.15,P('flame'),1,8);haloAt(1.1,Y+2.86,-1.1,0xffb04a,true);
   FURNISH('zeijani_stone_bench',.6,Y,1.0,0,{setting:'outdoor'});door(0,0,2.7,0,1.2);}});
+// prefix: zq
+// ================================================================= THE SQUARE (the owner's review, 2026-10-07): the park under the light well, the row
+// house, the market hall, the public fountain. Built to fill Dhelv's square: homes in streets round it, green under the well.
+// The row house's rooms are a planned body (its interiors item); the others are open (drawn, no interior).
+
+/* a tree that grows in the well's light: a leaning trunk, a few limbs, clumps of leaves (felt, tinted greens); s scales it */
+function zqTree(x,z,s,seed){const wd=P('woodD');let q=seed*9301+49297;const R=()=>{q=(q*16807)%2147483647;return q/2147483647;};
+ const lean=(R()-.5)*.5,h=(3.6+R()*1.6)*s,tx=x+Math.sin(lean)*.6*s,tz=z+Math.cos(lean)*.3*s;
+ beam('log',[x,0,z],[tx,h*.7,tz],.22*s,wd,true,8);
+ for(let i=0;i<4;i++){const a=i*TAU/4+R(),L=(1.2+R())*s,ex=tx+Math.cos(a)*L,ez=tz+Math.sin(a)*L,ey=h*(.75+R()*.25);beam('log',[tx,h*.65,tz],[ex,ey,ez],.09*s,wd,true,6);
+  ellip('felt',ex,ey+.35*s,ez,(1.3+R()*.5)*s,(.85+R()*.3)*s,(1.3+R()*.5)*s,P(R()<.5?'leaf':'leafD'),R()*TAU,12);}
+ ellip('felt',tx,h+.5*s,tz,1.7*s,1.1*s,1.7*s,P('leaf'),0,14);}
+/* a giant alecap (the cultivated purple cap, grown huge in the shade): a stem, a domed cap, paler gills */
+function zqCap(x,z,h,r){cyl('hide',x,0,z,r*.16,h,P('lilac'),10);ellip('felt',x,h,z,r,r*.42,r,P('alecap'),0,18);cyl('felt',x,h-.1,z,r*.9,.06,P('lilac'),18);}
+/* a shrub: three overlapping clumps */
+function zqShrub(x,z,s,col){for(let i=0;i<3;i++){const a=i*2.1;ellip('felt',x+Math.cos(a)*.45*s,.45*s,z+Math.sin(a)*.45*s,.7*s,.55*s,.7*s,P(col||'leafD'),a,10);}}
+
+/* the park under the light well: a round lawn in a kerb, four paths along the square's lanes and a ring path, a pool in the
+   middle under the well with a fountain, beds of flowers and crops, trees round the ring, giant alecaps in the shade at the
+   rim, shrubs, benches facing the pool */
+defBuilding({key:'zj_park',name:'The park under the light well',seed:5401,cls:'feature',tags:{types:['civic'],wealth:'rich',style:'constructed',rock:'tuff'},w:34,d:34,h:8,front:{x:0,z:17},
+ note:'a round garden under the light well: a lawn, paths along the lanes, a pool and fountain in the daylight, trees, shrubs, flower beds, giant alecaps at the shaded rim, benches',
+ build(o){const R=16.5,c=P('white'),pv=P('tuffDark');
+  cyl('earth',0,0,0,R,.12,P('grass'),48);lathe('tuffPol',0,0,[[R,0],[R+.35,0],[R+.35,.3],[R,.3]],48,c);
+  /* the paths: four along the lanes (each 3.6 m), a ring at 10 m */
+  for(const ry of [0,PI/2])box('paving',0,.12,0,3.6,.03,2*R,pv,ry);lathe('paving',0,0,[[9,.13],[11,.13]],48,pv);
+  /* the pool and fountain */
+  cyl('tuffPol',0,0,0,4.6,.55,c,32);cyl('water',0,.5,0,4.3,.02,P('water'),32);zfColumn('tuffPol',0,.5,0,.3,1.6,c);cyl('tuffPol',0,2.1,0,1.0,.18,c,16);
+  for(let i=0;i<6;i++){const a=i*TAU/6;box('water',Math.cos(a)*.95,.55,Math.sin(a)*.95,.08,1.55,.08,P('water'));}
+  /* beds, trees, caps, shrubs in the four quarters (none on a path) */
+  let n=0;for(const qx of [-1,1])for(const qz of [-1,1]){
+   for(const [r,a] of [[6.3,.78],[13.6,.5],[13.6,1.07]]){const x=qx*Math.cos(a)*r,z=qz*Math.sin(a)*r;zqTree(x,z,1,++n);}
+   for(const [r,a] of [[15.3,.25],[15.3,1.32]]){const x=qx*Math.cos(a)*r,z=qz*Math.sin(a)*r;zqCap(x,z,3.4+((n++)%3)*.6,1.6);}
+   for(const [r,a] of [[11.9,.78],[7.8,.35],[7.8,1.22]]){zqShrub(qx*Math.cos(a)*r,qz*Math.sin(a)*r,1,(n++)%2?'leafD':'leaf');}
+   /* a bed of flowers and a bed of crops between the ring and the pool */
+   const bx=qx*4.9,bz=qz*4.9;box('tuffPol',bx,.12,bz,2.6,.25,2.6,c);box('earth',bx,.12,bz,2.3,.27,2.3,P('felt'));
+   for(let i=0;i<9;i++)zfCard(i%2?'cardCrop':'cardYam',bx+((i%3)-1)*.7,.39,bz+(Math.floor(i/3)-1)*.7,.45,.4,i*.7,WHITE);
+   FURNISH('zeijani_stone_bench',qx*6.6,.12,qz*2.6,qx>0?-PI/2:PI/2,{setting:'outdoor'});}
+  /* the lawn's grass: cards over the quarters, off the paths */
+  for(let i=0;i<220;i++){const a=i*2.399,r=4.9+((i*.618)%1)*11,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<2.2||Math.abs(z)<2.2||Math.abs(Math.hypot(x,z)-10)<1.2)continue;zfCard('cardCrop',x,.12,z,.35,.3,a,P('grass'));}
+  door(0,0,R,0,3.6);}});
+
+/* the row house: a narrow house of three storeys in a street of them (the interiors planner's: living room and kitchen at the
+   door, bedrooms above, a store under the roof), plastered and painted, a stepped doorway, a band at each floor, a roof terrace
+   behind a parapet with a small awning. v picks the paint */
+defBuilding({key:'zj_rowhouse',name:'Row house',seed:5402,cut:true,tags:{types:['dwelling-single'],wealth:'middle',style:'constructed',rock:'tuff'},w:8,d:10,h:11,
+ build(o){const paint=['plaster','ochre','tuffRose','plaster'][o.v|0]||'plaster',col=P(paint),wt=P('white'),top=zvShell('zj_rowhouse',7,9,{wall:'plaster',col,y0:.3});
+  for(const y of [3.3,6.2]){box('tuffPol',0,y,4.52,7.1,.18,.12,wt);box('tuffPol',0,y,-4.52,7.1,.18,.12,wt);}
+  zvDoorway(0,.3,4.5,1.0,{n:2});sock('awning',0,top+1.9,1.5,0,{w:3.4,d:1.6,drop:.3,h:1.9});
+  FURNISH('zeijani_olla',2.6,0,5.0,0,{v:1,setting:'outdoor'});}});
+
+/* the market hall: a long roof on two rows of columns over the stalls (open on all sides), a raised floor, a frieze under the
+   eaves, the stalls' counters and goods under it */
+defBuilding({key:'zj_market_hall',name:'Market hall',seed:5403,tags:{types:['market'],wealth:'middle',style:'constructed',rock:'tuff'},w:26,d:11,h:7,
+ build(o){const c=P('tuff'),wt=P('white');box('ashlar',0,0,0,25,.35,10,P('tuffDark'));box('paving',0,.35,0,24.4,.02,9.4,P('tuffDark'));
+  for(const z of [-4.2,4.2])for(let i=0;i<9;i++)zfColumn('tuffPol',-12+i*3,.35,z,.24,4.2,wt);
+  box('tuffPol',0,4.55,0,25.2,.5,10,wt);zfBand('patFriezeB',0,4.6,5.03,24.6,.4,0,wt);zfBand('patFriezeB',0,4.6,-5.03,24.6,.4,PI,wt);
+  plane4('plank',[-12.8,5.05,0],[12.8,5.05,0],[-12.8,6.4,0],.12,P('wood'));
+  plane4('thatch',[-12.9,6.5,0],[12.9,6.5,0],[-12.9,4.95,5.4],.16,P('thatch'));plane4('thatch',[12.9,6.5,0],[-12.9,6.5,0],[12.9,4.95,-5.4],.16,P('thatch'));
+  for(let i=0;i<6;i++){const x=-10+i*4;box('plank',x,.35,1.3,3.0,.9,.8,P('wood'));FURNISH(['zeijani_pot_stack','zeijani_alecap_basket','zeijani_trade_display','zeijani_rope_coils','zeijani_jar_cradle','zeijani_glow_basin'][i],x,.35,-1.2,0,{setting:'outdoor'});}
+  door(0,.35,5,0,3.0);}});
+
+/* the public fountain: a round basin on two steps, a column with a bowl, the water falling from it, jars at its rim */
+defBuilding({key:'zj_fountain',name:'Public fountain',seed:5404,cls:'infrastructure',tags:{types:['infrastructure'],wealth:'middle',style:'constructed',rock:'tuff'},w:6,d:6,h:4,front:{x:0,z:3},
+ build(o){const c=P('white');cyl('ashlar',0,0,0,2.9,.2,P('tuffDark'),28);cyl('tuffPol',0,.2,0,2.5,.6,c,28);cyl('water',0,.75,0,2.25,.02,P('water'),28);
+  zfColumn('tuffPol',0,.8,0,.22,2.0,c);cyl('tuffPol',0,2.8,0,.8,.18,c,16);cyl('water',0,2.97,0,.65,.02,P('water'),16);
+  for(let i=0;i<8;i++){const a=i*TAU/8;box('water',Math.cos(a)*.78,.78,Math.sin(a)*.78,.06,2.2,.06,P('water'));}
+  FURNISH('zeijani_olla',2.0,0,1.9,0,{setting:'outdoor'});FURNISH('zeijani_olla',-2.1,0,1.7,0,{v:1,setting:'outdoor'});}});
 // ---------------------------------------------------------------- CULTURE PACKS (shared: core/sockets/)
 // A building never names a culture. It declares sockets (36-def.js); the ACTIVE pack draws into them. To add a culture, add one cultDef() here
 // (or in its own fragment 8x-*.js): {key,name,paint:[hex..],paintShare,signBg,signFg, fill:{awning,banner,flag,emblem,sign,paint}}. Any fill a pack
@@ -13675,7 +13818,7 @@ function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geom
 function camGroundY(p){const g=terrainH(p.x,p.z);if(CVC&&p.y<g-.5&&CVC.voidSD(p.x,p.y,p.z)<0)return -1e9;return g;}
 /* underground the sky is not drawn and a dark fog closes the distance (the rock past the streamed chunks is not meshed);
    the cave's own light (the wells' shafts, the lamps' pool) is P5c's */
-const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.012};
+const DH_UNDER={on:false,fog:new THREE.Color(0x1c1814),dens:.0055};
 FRAME_HOOKS.push(()=>{const p=camera.position,u=p.y<terrainH(p.x,p.z)-2;if(u===DH_UNDER.on)return;DH_UNDER.on=u;skyScene.visible=!u;
  if(u){scene.fog.color.copy(DH_UNDER.fog);scene.fog.density=DH_UNDER.dens;}else{scene.fog.density=.0011;skyApply();}});
 
@@ -14033,6 +14176,49 @@ animRebuild();
   hook:[ZJ_CLOTH[k]?'cloth-flutter':null,ZJ_CUT[k]?'cut-away':null,k==='glow'?'unlit flicker':null].filter(Boolean).join('+')||null,
   note:L?'library set, tint keep '+L.tint:'vertex colour only'};}
  KMAT.adapter('zeijani',recs);window._materials=KMAT.table('zeijani');})();
+// ================================================================= DHELV: THE MINIMAP. The layout (41-dhelv-layout.js) drawn small in a corner: the
+// hall's square, the wells, every way coloured by kind, the sites' footprints; the ways within 6 m of the camera's height bright,
+// the rest faded (the levels: the braid crosses under the ledge's tunnels); the camera (its view as a cone) and the marker.
+// It shows the city or the outpost, whichever the camera is in; a click on it brings the orbit there (on the floor below the
+// nearest way's height). M hides it.
+const DHMAP={on:true,W:260,H:230,mode:null,base:{},t:0,
+ views:{city:{x0:-620,x1:720,z0:-320,z1:720},outpost:{x0:-2800,x1:-2300,z0:-200,z1:200}},
+ COL:{tube:'#8a6a48',braid:'#7a4c96',ramp:'#3f9f98',stair:'#d4aa5a',ledge:'#c24a3a',square:'#b8ab90',street:'#9e8a70',door:'#ffffff',secret:'#4a8fd0'}};
+DHMAP.cv=document.createElement('canvas');DHMAP.cv.width=DHMAP.W;DHMAP.cv.height=DHMAP.H;
+Object.assign(DHMAP.cv.style,{position:'fixed',right:'10px',bottom:'64px',zIndex:6,border:'1px solid #9a5a36',borderRadius:'4px',background:'rgba(20,14,10,.82)',cursor:'crosshair'});
+document.body.appendChild(DHMAP.cv);
+/* a view's frame: metres to the canvas, keeping the aspect (north up: z grows down the canvas, as z runs south) */
+function dhMapFrame(v){const W=DHMAP.W,H=DHMAP.H,s=Math.min((W-12)/(v.x1-v.x0),(H-22)/(v.z1-v.z0)),ox=(W-(v.x1-v.x0)*s)/2,oz=16+(H-16-(v.z1-v.z0)*s)/2;
+ return {s,X:x=>ox+(x-v.x0)*s,Z:z=>oz+(z-v.z0)*s,x:px=>v.x0+(px-ox)/s,z:pz=>v.z0+(pz-oz)/s};}
+/* the still layer of a view, at a camera height (redrawn when the camera moves 3 m in height or changes view) */
+function dhMapBase(mode,cy){const key=mode+':'+Math.round(cy/3),B=DHMAP.base;if(B.key===key)return B.cv;
+ const v=DHMAP.views[mode],F=dhMapFrame(v),cv=B.cv||document.createElement('canvas');cv.width=DHMAP.W;cv.height=DHMAP.H;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);
+ const H=DH.HALL;g.fillStyle='rgba(200,180,140,.25)';g.strokeStyle='#8a7a5a';g.beginPath();g.ellipse(F.X(H.c[0]),F.Z(H.c[1]),H.rx*F.s,H.rz*F.s,0,0,TAU);g.fill();g.stroke();
+ g.fillStyle='rgba(255,240,190,.45)';g.beginPath();g.arc(F.X(H.c[0]),F.Z(H.c[1]),H.pool*F.s,0,TAU);g.fill();
+ for(const P of DH.PITS){g.fillStyle='rgba(150,190,110,.3)';g.strokeStyle='#6a8a4a';g.beginPath();g.arc(F.X(P.c[0]),F.Z(P.c[1]),P.r*F.s,0,TAU);g.fill();g.stroke();}
+ const K=DH.KIPUKA;if(mode==='outpost'){g.fillStyle='rgba(120,140,80,.25)';g.beginPath();g.ellipse(F.X(K.c[0]),F.Z(K.c[1]),K.r*F.s,K.r/1.3*F.s,0,0,TAU);g.fill();
+  g.strokeStyle='#8a7a62';g.lineWidth=2;g.beginPath();g.moveTo(F.X(DH.CONE.cliffX),F.Z(-140));g.lineTo(F.X(DH.CONE.cliffX),F.Z(140));g.stroke();g.lineWidth=1;}
+ for(const s of DH.SITES){const Fo=DH.FOOT[s.key];if(!Fo)continue;if(Fo[2]==='round'){g.fillStyle='rgba(120,170,80,.6)';g.beginPath();g.arc(F.X(s.x),F.Z(s.z),Fo[0]/2*F.s,0,TAU);g.fill();continue;}const [w,d,o]=Fo,za=o==='front'?-d:-d/2,zb=o==='front'?.5:d/2,c=Math.cos(s.ry),sn=Math.sin(s.ry);
+  g.fillStyle='rgba(214,194,90,.55)';g.beginPath();[[-w/2,za],[w/2,za],[w/2,zb],[-w/2,zb]].forEach(([lx,lz],i)=>{const x=F.X(s.x+lx*c+lz*sn),z=F.Z(s.z-lx*sn+lz*c);if(i)g.lineTo(x,z);else g.moveTo(x,z);});g.fill();}
+ /* the ways: those within 6 m of the camera's height bright and thick, the rest faded */
+ for(const pass of [0,1])for(const e of DH.EDGES){const a=DH.byId[e.a],b=DH.byId[e.b],near=Math.min(Math.abs(a.y-cy),Math.abs(b.y-cy))<6;if((pass===1)!==near)continue;
+  g.strokeStyle=DHMAP.COL[e.kind]||'#fff';g.globalAlpha=near?1:.3;g.lineWidth=near?2.4:1.2;g.setLineDash(e.zone==='secret'?[2,3]:e.zone==='outer'?[5,3]:[]);
+  g.beginPath();g.moveTo(F.X(a.x),F.Z(a.z));g.lineTo(F.X(b.x),F.Z(b.z));g.stroke();}
+ g.globalAlpha=1;g.setLineDash([]);g.fillStyle='#f0dcc4';g.font='11px system-ui';g.fillText(mode==='city'?'Dhelv: the city':'the outpost',6,12);
+ B.key=key;B.cv=cv;return cv;}
+function dhMapDraw(){if(!DHMAP.on)return;const p=camera.position,mode=p.x<-1500?'outpost':'city',v=DHMAP.views[mode],F=dhMapFrame(v),g=DHMAP.cv.getContext('2d');DHMAP.mode=mode;
+ g.clearRect(0,0,DHMAP.W,DHMAP.H);g.drawImage(dhMapBase(mode,p.y),0,0);
+ const d=new THREE.Vector3();camera.getWorldDirection(d);const a=Math.atan2(d.z,d.x),cx=F.X(p.x),cz=F.Z(p.z);
+ g.fillStyle='rgba(255,255,255,.25)';g.beginPath();g.moveTo(cx,cz);g.arc(cx,cz,26,a-.45,a+.45);g.closePath();g.fill();
+ g.fillStyle='#ffe060';g.beginPath();g.arc(cx,cz,3.5,0,TAU);g.fill();
+ if(MARK.at){g.fillStyle='#ff4060';g.beginPath();g.arc(F.X(MARK.at.x),F.Z(MARK.at.z),3.5,0,TAU);g.fill();}
+ g.fillStyle='#c8b8a0';g.font='10px ui-monospace,monospace';g.fillText('y '+p.y.toFixed(0)+(WALK.on?'  walking':''),DHMAP.W-74,12);}
+FRAME_HOOKS.push(()=>{const t=performance.now();if(t-DHMAP.t>100){DHMAP.t=t;dhMapDraw();}});
+/* a click on the map: the orbit goes there, at the height of the nearest way (or the ground) */
+DHMAP.cv.addEventListener('click',e=>{const r=DHMAP.cv.getBoundingClientRect(),F=dhMapFrame(DHMAP.views[DHMAP.mode||'city']),x=F.x(e.clientX-r.left),z=F.z(e.clientY-r.top);
+ let best=null,bd=40;for(const n of DH.NODES){const dd=Math.hypot(n.x-x,n.z-z);if(dd<bd){bd=dd;best=n;}}
+ const y=best?best.y:terrainH(x,z);if(WALK.on)toggleWalk();ctl.target.set(x,y+1.5,z);ctl.radius=Math.min(ctl.radius,60);DH_STREAM.tick=0;});
+addEventListener('keydown',e=>{if(e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;if(e.key.toLowerCase()==='m'){DHMAP.on=!DHMAP.on;DHMAP.cv.style.display=DHMAP.on?'block':'none';}});
 </script>
 
 </body></html>

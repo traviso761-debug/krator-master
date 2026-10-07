@@ -86,8 +86,15 @@ const PB={
    const nm=n=>n.tag+' '+n.id.split('.').slice(-2).join('.'),go=n=>{seen[n.id]=1;way.push([nm(n),S.x+n.x,S.z+n.z]);
     if(n.tag==='stairtop'){const q=land(n);way.push([nm(n)+' landing',...q[0]]);if(q[1])way.push([nm(n)+' clear of the well',...q[1]]);}
     for(const m of adj[n.id]||[])if(!seen[m]){go(by[m]);
+     /* back from a stair's foot to this room: beside the foot on the room's side of the flight first, so the way to the
+        room's centre never crosses the flight */
+     {const f=by[m],S2=f.tag==='stairfoot'&&B.stairs.find(s=>s.id===f.ref);if(S2){const p=[-S2.dir[1],S2.dir[0]],ox=S.x+f.x-S2.dir[0]*.8,oz=S.z+f.z-S2.dir[1]*.8,
+       sg=((S.x+n.x-ox)*p[0]+(S.z+n.z-oz)*p[1])<0?-1:1,k=S2.w/2+.6;way.push(['beside the foot of '+nm(f),ox+p[0]*sg*k,oz+p[1]*sg*k]);}}
      if(n.tag==='stairtop'){const q=land(n);if(q[1])way.push(['back clear of the well',...q[1]]);way.push(['back to '+nm(n)+' landing',...q[0]]);}
-     else way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);}};go(st);}
+     else{way.push(['back to '+nm(n),S.x+n.x,S.z+n.z]);
+      /* down at a stair's foot, a walker steps on off the flight before turning for its room (the room's centre may lie
+         alongside the flight: heading straight there climbs back onto it and drops off its side) */
+      const S2=n.tag==='stairfoot'&&B.stairs.find(s=>s.id===n.ref);if(S2)way.push(['off the foot of '+nm(n),S.x+n.x-S2.dir[0]*.8,S.z+n.z-S2.dir[1]*.8]);}}};go(st);}
   return start?PB.route(W0,start,way):null;},
  /* the sacred: down the kiva's ladder (from the hatch's rim, where the ground stops), off it sideways (a walker on the ladder's
     foot who turns climbs it: the strip is the higher floor), round its floor, up again; into the

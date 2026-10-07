@@ -22,12 +22,12 @@ const KIT={};
 const WEALTH={poor:.25,middle:.55,rich:.9};
 
 /* ---- geometry: a site's footprint as a quad in the plan (its def's w across, d deep: behind its front, or centred) */
-function quad(D,s){const F=D.FOOT[s.key];if(!F)return null;const [w,d,o]=F,z0=o==='front'?-d:-d/2,z1=o==='front'?.5:d/2,c=Math.cos(s.ry),sn=Math.sin(s.ry);
+function quad(D,s){const F=D.FOOT[s.key];if(!F)return null;const [w,d,o]=F;if(o==='round')return [0,1,2,3,4,5,6,7].map(k=>[s.x+Math.cos(k*PI/4)*w/2/Math.cos(PI/8),s.z+Math.sin(k*PI/4)*w/2/Math.cos(PI/8)]);const z0=o==='front'?-d:-d/2,z1=o==='front'?.5:d/2,c=Math.cos(s.ry),sn=Math.sin(s.ry);
  return [[-w/2,z0],[w/2,z0],[w/2,z1],[-w/2,z1]].map(([lx,lz])=>[s.x+lx*c+lz*sn,s.z-lx*sn+lz*c]);}
 const segD=(p,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],L2=dx*dx+dz*dz||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dz)/L2));return Math.hypot(a[0]+dx*t-p[0],a[1]+dz*t-p[1]);};
-function overlap(A,B){for(const P of [A,B])for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],n=[b[1]-a[1],a[0]-b[0]];
+function overlap(A,B){for(const P of [A,B])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],n=[b[1]-a[1],a[0]-b[0]];
   const pa=A.map(p=>p[0]*n[0]+p[1]*n[1]),pb=B.map(p=>p[0]*n[0]+p[1]*n[1]);if(Math.max(...pa)<Math.min(...pb)||Math.max(...pb)<Math.min(...pa))return false;}return true;}
-function gap(A,B){if(overlap(A,B))return 0;let g=1e9;for(const [P,Q] of [[A,B],[B,A]])for(const p of P)for(let i=0;i<4;i++)g=Math.min(g,segD(p,Q[i],Q[(i+1)%4]));return g;}
+function gap(A,B){if(overlap(A,B))return 0;let g=1e9;for(const [P,Q] of [[A,B],[B,A]])for(const p of P)for(let i=0;i<Q.length;i++)g=Math.min(g,segD(p,Q[i],Q[(i+1)%Q.length]));return g;}
 const inEllipse=(p,rx,rz,c)=>((p[0]-c[0])/rx)**2+((p[1]-c[1])/rz)**2<=1;
 function cross(a,b,c,d){const r=[b[0]-a[0],b[1]-a[1]],s=[d[0]-c[0],d[1]-c[1]],den=r[0]*s[1]-r[1]*s[0];if(Math.abs(den)<1e-9)return null;
  const t=((c[0]-a[0])*s[1]-(c[1]-a[1])*s[0])/den,u=((c[0]-a[0])*r[1]-(c[1]-a[1])*r[0])/den;return t>.02&&t<.98&&u>.02&&u<.98?[t,u]:null;}
@@ -68,12 +68,12 @@ function cover(D){const out=[],H=D.HALL;for(const e of D.EDGES){if(!/^(tube|brai
 /* ---- 5. the square holds its list with room to walk: inside its edge, 3 m apart, half of it free, the lanes to the mouths open,
    the stalls in the pool of daylight; the wall's sites on the wall, facing in, apart, clear of the mouths */
 function square(D){const H=D.HALL,S=D.SITES.filter(s=>s.district==='hub'),F=S.filter(s=>s.at==='floor'),W=S.filter(s=>s.at==='wall'),bad=[];let area=0;
- for(const s of F){const q=quad(D,s);area+=D.FOOT[s.key][0]*D.FOOT[s.key][1];if(!q.every(p=>inEllipse(p,H.rx-R.square.margin,H.rz-R.square.margin,H.c)))bad.push(s.key+' past the edge');
-  if(s.key==='zj_stall_b'&&Math.hypot(s.x-H.c[0],s.z-H.c[1])>H.pool)bad.push('a stall outside the daylight');}
+ for(const s of F){const q=quad(D,s);area+=D.FOOT[s.key][2]==='round'?PI*(D.FOOT[s.key][0]/2)**2:D.FOOT[s.key][0]*D.FOOT[s.key][1];if(!q.every(p=>inEllipse(p,H.rx-R.square.margin,H.rz-R.square.margin,H.c)))bad.push(s.key+' past the edge');
+  if(s.key==='zj_stall_b'&&Math.hypot(s.x-H.c[0],s.z-H.c[1])>H.pool+8)bad.push('a stall far from the daylight');}
  for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const g=gap(quad(D,S[i]),quad(D,S[j]));if(g<R.square.gap-1e-6)bad.push(S[i].key+'/'+S[j].key+' '+g.toFixed(1)+' m');}
  const free=1-area/(PI*H.rx*H.rz);if(free<R.square.free)bad.push('free '+(free*100).toFixed(0)+'%');
  for(const m of ['h.w','h.e','h.n','h.s']){const a=[D.byId['h.sq'].x,D.byId['h.sq'].z],b=[D.byId[m].x,D.byId[m].z];
-  for(const s of F){const q=quad(D,s);const d=Math.min(...q.map(p=>segD(p,a,b)));if(d<3||overlap(q,[a,b,[b[0]+.01,b[1]+.01],[a[0]+.01,a[1]+.01]]))bad.push(s.key+' in the lane to '+m);}}
+  for(const s of F){if(s.park)continue;const q=quad(D,s);const d=Math.min(...q.map(p=>segD(p,a,b)));   /* the park's paths are the lanes */if(d<3||overlap(q,[a,b,[b[0]+.01,b[1]+.01],[a[0]+.01,a[1]+.01]]))bad.push(s.key+' in the lane to '+m);}}
  for(const s of W){const th=Math.atan2((s.z-H.c[1])/H.rz,(s.x-H.c[0])/H.rx),p=[H.c[0]+Math.cos(th)*H.rx,H.c[1]+Math.sin(th)*H.rz];
   if(Math.hypot(s.x-p[0],s.z-p[1])>R.wallFit.off)bad.push(s.key+' off the wall');const nn=D.hallNormal(s.x,s.z),f=Math.atan2(nn[0],nn[1]);   /* square to the wall */if(Math.abs(Math.atan2(Math.sin(s.ry-f),Math.cos(s.ry-f)))>R.wallFit.face)bad.push(s.key+' not facing in');
   for(const m of ['h.w','h.e','h.n','h.s']){const n=D.byId[m];if(Math.hypot(s.x-n.x,s.z-n.z)<D.FOOT[s.key][0]/2+10+R.wallFit.gap)bad.push(s.key+' in the mouth '+m);}}

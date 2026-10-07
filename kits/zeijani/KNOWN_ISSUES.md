@@ -21,5 +21,17 @@
       dome and the light-well mirror a matte bronze colour (`plain`) until the page has an environment (P5's light).
 - [ ] **The fields' crops are cards** (two crossed planes of the library's cut-out sheets, `zfCard`): they read from the
       sheet's distance, flat close up. Fine for P5's terraces seen from the wells' rims.
-- [ ] **The temple's lattice glows only in the dark.** On the kit sheet night barely darkens the stone (see the underground's
+- [ ] **The temple's sky dome is a canvas stand-in** (`ZK_SKY` in `48-zj-sacred.js`: the sun, the ringed gas giant, four moons,
+      stars, a gilt band at the rim). The owner replaced the lattice there (underground it showed only rock); the lattice is
+      the outpost's shrine now (`zj_shrine`). A painted texture would replace the canvas: save it as `patSkyDome` (a pattern
+      sheet, 2:1, its bottom edge the dome's rim), add it to `materials.json`, and map `MAT.skyDome` from the pack. The prompt:
+
+      > A seamless equirectangular painted sky, 2:1 (2048x1024), for the inside of a temple dome, in the manner of a flat mural on
+      > lime plaster: a deep indigo sky shading from midnight blue (#0b1030) at the top edge to dusky violet-blue (#3d4f8c) near
+      > the bottom; scattered small gold and white stars; in the left third a stylised golden sun with alternating long and short
+      > rays; right of centre a large banded gas giant in ochre, rust, cream and brown bands, a tilted pale ring passing in front
+      > of and behind it; four small moons of different sizes and tints (pale grey, sand, pale blue, peach) across the sky; along
+      > the bottom edge a band of gilded zigzag ornament. Flat even light, no perspective, no landscape, no text; the left and
+      > right edges meet seamlessly.
+- [ ] **The temple's lattice glows only in the dark.** (Historical: the lattice is gone from the temple; see the sky dome.) On the kit sheet night barely darkens the stone (see the underground's
       light above), so the lamplit shell behind the jali shows little; Dhelv's light (P5) is where it reads.
