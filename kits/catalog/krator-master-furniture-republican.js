@@ -1144,3 +1144,7 @@ FURN({
     for (const x of [-1.6, -0.2]) F.box(x, 0, 0, 0.5, 1.9 - [0.6, 0.9][x < -1 ? 0 : 1], 1.4, 0, F.col('timberAged'), 'wood');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed republican_training_<role> */
+FK.set({ culture: 'republican', tier: 'common', roles: 'training', prefix: 'republican_training_', S: REP_COMMON, names: {
+  training_dummy: 'Bamboo practice dummy', archery_butt: 'Bamboo-frame archery target' } });

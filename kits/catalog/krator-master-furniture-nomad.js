@@ -74,3 +74,7 @@ FURN({
     F.ball(0, 2.74, 0, 0.06, F.col('copper'), 'bronze');
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed nomad_training_<role> */
+FK.set({ culture: 'nomad', tier: 'common', roles: 'training', prefix: 'nomad_training_', S: NOMAD_COMMON, names: {
+  training_dummy: 'Felt practice dummy', archery_butt: 'Horse-archery target' } });

@@ -1221,3 +1221,7 @@ FURN({
     }
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed scyvoi_training_<role> */
+FK.set({ culture: 'scyvoi', tier: 'common', roles: 'training', prefix: 'scyvoi_training_', S: SCYVOI_COMMON, names: {
+  training_dummy: 'Felt practice dummy', archery_butt: 'Felt-ring target' } });

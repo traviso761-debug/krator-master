@@ -29,7 +29,7 @@ The Beast Rider buildings place their furniture as catalog pieces with `F.furn` 
 | `krator-furniture-kit.js` | **the furniture kit `FK`**: one parametric builder per role (bed, throne, hearth, tapestry, wall art ...) driven by a culture's style sheet, motif and finial helpers, `FK.ROLES` per tier and `FK.set()`, which registers a whole tier for a culture. Read its header before writing a set |
 | `inspector.js` | click-to-select inspector: measure, isolate, cycle variants, audit declared sizes |
 | `krator-master-furniture.js` | 128 harvested `FURN({...})` pieces in the SPEC shape (Voth 35, Iziz 9, Beast-Rider 16, Yuni 64, Ancients 4) |
-| `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette only. See "Furniture by culture" |
+| `krator-master-furniture-<culture>.js` | **one file per culture** (18 files): its palette (`FURN_CULTURE`), its style sheets, `FK.set()` for its tiers and its bespoke pieces. `generic` and `scrap` are the poor-tier sets; `hykkousoi` is a palette and fourteen shell-grown bespoke pieces (lathes and tubes, ported from Ys). See "Furniture by culture" |
 | `krator-master-furniture-generic-goods.js`, `-generic-fruit.js` | `generic` **goods** (53: storage containers, food, drink, supplies) and **biome fruit** (39, one per fruiting plant the biome kits draw: `biomes/FRUIT.md`). Tier `common`, `wealth: [0, 1]`. See "Generic goods and biome fruit" |
 | `krator-master-furniture-jobs.js` | **work items by trade** (2026-10): not a culture file; each entry keeps its real `culture` and carries `job` (`FURN_JOBS`). 13 pieces: 10 harvested from Locus (oil drums lying, sheaf racks, salt heap and tubs, bales, net frames, fish tray) and 3 carpentry pieces for the abyss builders' yard (`job_pole_rack`, `job_plank_stack`, `job_saw_bench`, 2026-10). See "Rugs and Jobs" |
 | `krator-master-plants.js`, `krator-master-buildings-voth.js`, `krator-master-buildings-beast-rider.js` | kept, **not built** (above); the building files carry `ASSET({...})` entries tagged by culture, `types: [...]` and `family` for the pages that load them |
@@ -167,7 +167,15 @@ FURN({
 - **Job** (optional, 2026-10). `job: '<trade>'` from `FURN_JOBS` (`farming fishing salt oil smithing milling
   warehousing brewing weaving tanning pottery carpentry mining herding trading`) marks a work item: the piece goes on the
   sheet's Jobs page, a row per job. Every entry of `krator-master-furniture-jobs.js` carries one; `verify.py`
-  rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host.
+  rejects a job not in the list. `KratorFurniture.FURN_JOBS` exposes the list to a host. `alchemy` was added 2026-10
+  (`voth_still_cluster`); the kit's `still` role stays under `brewing`.
+- **Task** (2026-10, for the simulation layer). `task: [..]` from `FURN_TASKS` (`sleeping resting eating drinking
+  cooking socializing praying reading writing storage feeding melee-training ranged-training`) is what an NPC does AT the piece, so a building holding one is a
+  destination for that task. A job is a trade; a task is any NPC's activity. `FURN()` derives it when an entry leaves it
+  out: `FURN_ROLE_TASK[role]` first (kit pieces; `[]` means none), then `FURN_TYPE_TASK[type]`, then `storage` for a
+  vessel, supply or tool whose name is a container (`FURN_STORAGE_NAME`). `food` pieces get `eating`, `drink` pieces
+  `drinking`; a trough, manger, hay rack or feed basket (by name, `FURN_FEED_NAME`, or role) adds `feeding` for beasts. Set `task: []` for none. `verify.py` rejects a
+  task not in the list. `KratorFurniture.FURN_TASKS` exposes the list.
 - **Tier.** `tier: 'poor' | 'common' | 'court'` and `wealth: [lo, hi]`; `FURN()` fills them in from
   the culture name (`yuni-court`, `yuni-poor`) or `FURN_TIERS` when an entry leaves them out. Buildings carry `types` from `BUILDING_TYPES` (`civic market shop
   tavern inn industry farm dwelling-single dwelling-multi infrastructure religious
@@ -305,11 +313,11 @@ tapestries (`banner`) and wall art (`art`) for its rich and court rooms. The set
 | `reedlake` | common, court | the floating reed village | bundled reed, rush, driftwood, lake clay, fish silver, shell | – |
 | `post-apoc` | common, court | high-value salvaged Ancients goods | alloy, steel, glass, synthetic cloth, white ceramic; court: gilt | generic |
 | `scyvoi` | common, court | Kazakh; Kyrgyz; Mongol; Bedouin; Moroccan (the Baer-San, salamander riders of the crater drylands) | felt, wool, velvet, leather, poplar and walnut, red lacquer, brass, copper, black iron, mosaic glass, bone and horn; court: crimson velvet, gold, knotted carpets | – |
-| `hykkousoi` | (palette only) | Greek; Polynesian; organic | nacre and mother-of-pearl, olive wood, sea-linen, bronze | hykkousoi |
+| `hykkousoi` | (14 bespoke pieces) | Greek; Polynesian; organic | nacre and mother-of-pearl, olive wood, sea-linen, bronze | hykkousoi |
 
 The harvested cultures (`yuni-*`, `sahelian`, `order`, `ancient`, `ancients-salvage`) keep their
-pieces; Yuni's own tiers are its culture tags. Hykkousoi is in progress and has no pieces yet;
-its file says how to add them.
+pieces; Yuni's own tiers are its culture tags. Hykkousoi has fourteen bespoke pieces ported from the Ys settlement and no kit style sheets yet;
+its file says what is still to add.
 
 **Tiers and wealth.** Every piece carries `tier` (`poor | common | court`) and `wealth: [lo, hi]`
 (`FURN_TIERS`: poor 0–0.35, common 0.3–0.75, court 0.7–1). The sheet is 1051 pieces: 86 generic goods and biome fruit, 731 kit and bespoke

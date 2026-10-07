@@ -553,7 +553,7 @@ FURN({
 });
 
 FURN({
-  key: 'br_h_training_post', name: 'Training post', culture: 'beast-rider', tier: 'common', type: 'workstation', setting: 'both',
+  key: 'br_h_training_post', name: 'Training post', culture: 'beast-rider', tier: 'common', type: 'workstation', task: ['melee-training'], setting: 'both',
   rooms: ['yard', 'barracks', 'court'], anchor: 'floor', clearance: { front: 1.2, back: 1.2, left: 0.8, right: 0.8 },
   materials: ['timber', 'rope'],
   source: 'settlements/mavs-refuge/src/55-arch.js provingGround (training posts: padded pells and a quintain)',

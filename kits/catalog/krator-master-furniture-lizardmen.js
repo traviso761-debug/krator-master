@@ -74,3 +74,7 @@ FURN({
     F.lamp(0, 0.5, 0, 0.3, 3);
   }
 });
+
+/* training furniture (FK.ROLES.training, 2026-10): a melee and a ranged practice piece in this culture's style sheet, keyed lizardmen_training_<role> */
+FK.set({ culture: 'lizardmen', tier: 'common', roles: 'training', prefix: 'lizardmen_training_', S: LIZ_COMMON, names: {
+  training_dummy: 'Basalt practice post', archery_butt: 'Scale-hide target' } });
