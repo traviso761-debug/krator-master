@@ -76,11 +76,15 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   const c3=DHN.chkReach(B);add('nav-places-reachable',B.doors.length>0&&!c3.length,c3.length?c3.length+' unreachable from the gate: '+c3.slice(0,6).join(', '):B.doors.length+' doors reachable from the outpost\'s gate (the secret ways apart)');
   const c4=DHN.chkStacked(B);add('nav-stacked-lookups',c4.n>0&&!c4.bad.length,c4.bad.length?c4.bad.join('; '):c4.n+' crossings of ways a level apart: a point on each finds its own');}
  /* the ramblers (PLAN.md 8.3, 5 and 6: 74-dhelv-sim.js): a day stepped minute by minute, sampled every half hour */
- if(DHL.on){const t0=performance.now(),d=DHS.day(DHL.clock,1440),ms=Math.round(performance.now()-t0),nd=DH.DISTRICTS.length;
+ if(DHL.on){const t0=performance.now(),d=DHS._lastDay=DHS.day(DHL.clock,1440),ms=Math.round(performance.now()-t0),nd=DH.DISTRICTS.length;
   add('day-run',d.poses>0&&!d.bad.length&&!d.routeFail&&!d.stuck&&!d.nopath&&d.stairs>0&&d.districts.length===nd,d.poses+' poses out in the world, '+(d.bad.length?'BAD: '+d.bad.join('; '):'every one on a floor, out of every block and the rock')+'; '+d.decisions+' decisions'+
    (d.routeFail||d.nopath?', '+(d.routeFail+d.nopath)+' NO PATH '+JSON.stringify(d.rf):'')+(d.stuck?', '+d.stuck+' STUCK':'')+'; '+d.stairs+' ways up or down a stair; districts visited '+d.districts.length+' of '+nd+' ('+ms+' ms)');
   add('life-rules',d.foreign>0&&!d.fbad.length&&d.shutTasks>0&&!d.crossed.length,d.foreign+' foreigners\' ways on the outer zone'+(d.fbad.length?' BUT '+d.fbad.join('; '):'')+'; '+d.shutTasks+' ways decided while the stone door was shut, '+(d.crossed.length?d.crossed.length+' THROUGH IT: '+d.crossed.join(', '):'none through it (the guard\'s apart)'));}
  else add('day-run',false,'the life layer is off');
+ /* the groups that try the hard routes (PLAN.md 8.2): in that day each kind set out and came back; then a patrol fired now
+    makes its one stop (a secret exit, by the scouts' way) and comes back */
+ if(DHL.on){const G=DHS._lastDay&&DHS._lastDay.groups||{},k=Object.keys(G),bad=k.filter(q=>!G[q].fired||!G[q].left),P=DHS.groupRun(DHL.clock,SIM.get('event','patrol'));
+  add('groups-ran',k.length>0&&!bad.length&&P.ok,k.map(q=>q+' '+G[q].fired+' out, '+G[q].left+' back').join('; ')+(bad.length?' (NONE: '+bad.join(', ')+')':'')+'; a patrol now: '+P.detail);}
  return R;}
 function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,failed:!!failed,detail});
  /* sky: the hall's light well forgotten */
@@ -116,6 +120,9 @@ function hostNegatives(){const R=[],add=(name,failed,detail)=>R.push({name,faile
    /* a foreign trader's way planted through the gate into the city; a way planted through the shut stone door */
    const car=SIM.all('place').find(P=>P.kind==='caravanserai'),mk=SIM.all('place').find(P=>P.kind==='market'),r1=car&&mk&&SIM.nav.route('pedestrian',car.door,mk.door),r2=car&&mk&&SIM.nav.route('guard',car.door,mk.door);
    const f=r1?DHS.foreignOk({legs:[{layer:'pedestrian',route:r1}]}):'no route',x=r2?DHS.crossesDoor({legs:[{layer:'pedestrian',route:r2}]}):false;
-   add('life-rules: a foreign way through the gate, a way through the shut door',!!f&&x,(f||'kept to the outer zone')+'; '+(x?'through the door':'not through the door'));}}
+   add('life-rules: a foreign way through the gate, a way through the shut door',!!f&&x,(f||'kept to the outer zone')+'; '+(x?'through the door':'not through the door'));
+   /* groups: a patrol whose stop nothing offers */
+   const p0=DHS.problems.length,X=SIM.event(Object.assign({},SIM.get('event','patrol'),{id:'probe_lost_patrol',legs:[{activity:'SING',mins:10}]})),g=DHS.groupRun(DHL.clock,X);SIM.remove('event',X.id);
+   DHS.problems.length=p0;SIM.problems.length=Math.min(SIM.problems.length,p0);add('groups-ran: a patrol whose stop nothing offers',!g.ok,g.detail);}}
  return R;}
 window.hostChecks=hostChecks;window.hostNegatives=hostNegatives;

@@ -89,7 +89,8 @@ function dhCarve(){const H=DH.HALL,C=CVC,B=DH.byId;
     if(c>0)land=Math.max(land,Math.min(12,Math.max(4.5,(w/2+Math.max(.8,(q.w||2)-.8)/2)/Math.max(sn,.05)+.5)));}
    if(land>0&&land<L-3){const P=[hi.x-u[0]*land,hi.y,hi.z-u[1]*land];
     C.stair({id,owner:'dhelv',a:[lo.x,lo.y,lo.z],b:P,w,h:3.2,rock:'basalt',finish:'hewn'});
-    C.tube({id:id+'.landing',owner:'dhelv',pts:[[P[0]-u[0]*.3,hi.y,P[2]-u[1]*.3],[hi.x+u[0]*.3,hi.y,hi.z+u[1]*.3]],w,h:3.4,blend:.5,rock:'basalt',finish:'hewn',walkW:w});}
+    C.tube({id:id+'.landing',owner:'dhelv',pts:[[P[0]-u[0]*.3,hi.y,P[2]-u[1]*.3],[hi.x+u[0]*.3,hi.y,hi.z+u[1]*.3]],w,h:3.4,blend:.5,rock:'basalt',finish:'hewn',walkW:w});
+    DH_REAL[e.a+'-'+e.b]={pts:[P],kinds:e.a===lo.id?['stair','landing']:['landing','stair']};}   /* the nav walks the stair, then the landing */
    else C.stair({id,owner:'dhelv',a:[a.x,a.y,a.z],b:[b.x,b.y,b.z],w,h:3.2,rock:'basalt',finish:'hewn'});}
   else{const w=e.kind==='secret'?1.6:e.w,h=e.kind==='ledge'?3.4:e.kind==='secret'?2.4:Math.max(3,Math.min(10,w*.9+1.5));
    /* each way runs on past its ends into what it meets, so its floor overlaps the next one's (an exact abutment leaves a hairline

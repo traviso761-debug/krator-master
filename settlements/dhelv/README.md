@@ -81,6 +81,7 @@ under the ground opens into its void as a doorway, not through the surface). The
 | every door reachable from the outpost's gate, the secret ways apart | the south well's tunnel cut |
 | stacked lookups: where two ways cross a level apart, a point on each finds its own | the y swapped |
 | a day's run, stepped a minute at a time and sampled every half hour: every pose out in the world on a floor, out of every block and the rock; no route failed, no one stuck; stairs climbed; every district visited | a walker planted off the floor, one inside a pillar |
+| the groups: in the day each kind set out and came back; a scouts' patrol fired now makes its stop at a secret exit and comes back | a patrol whose stop nothing offers |
 | the rules: no foreign trader's way leaves the outer zone; no way decided while the stone door is shut goes through it (the guard's may) | a foreign way planted through the gate; a way planted through the shut door |
 | the ways walked: from the outpost's gate to every district's anchor along the layout's graph, through the carved walk map | the stone door's passage left out |
 
@@ -195,3 +196,10 @@ from the homes (`?pop=2` doubles them). The rolling stone door is shut from 22:0
 `?hour=8`; `[` and `]` move it with the sky), SIM stepped once a world minute, the nearest 700 out of doors drawn from an
 instanced pool (a robe in the role's colour, a head; `?walkers=N`), the minimap's dots, a click on a walker follows it and
 draws its way (Esc lets go), V (or `?nav`) the nav graph with any edge the check refused in red. `?nolife` leaves it out.
+
+**The groups that try the hard routes** are core/simulation events, each from an entry inside the city (a port with its
+height and nav node) to its stops together and back, in single file (`spread: 0`): the scouts' patrol from their
+headquarters out by the secret way to a scout exit; a funeral from each well's kiva down to the catacombs; porters from each
+well's stores to its fields; the guard changing at the stone door; children wandering the square's fountains, niche and
+market. What they found, fixed: a group's members stood at a stop straight back from their leader off the way's last bend
+(in the catacombs' rock); now where their walk stopped, along the way (core/simulation, `77-sim-5-motion.js`).
