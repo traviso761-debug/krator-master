@@ -52,6 +52,9 @@ for(const k in ZJ_LIB)zjLibMat(k,{rough:1});
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vJP;varying vec3 vJN;uniform float uJT;')
    .replace('#include <map_fragment>','{vec3 w=pow(abs(normalize(vJN))+1e-4,vec3(8.));w/=(w.x+w.y+w.z);vec3 p=vJP*uJT;vec4 t=texture2D(map,p.zy)*w.x+texture2D(map,p.xz)*w.y+texture2D(map,p.xy)*w.z;diffuseColor*=mapTexelToLinear(t);}');});
  MAT.jali=m;})();
+/* the cards (crops, alecaps: cut-outs on a quad, the sheet once across each; zfCard draws them) */
+for(const k of ['cardYam','cardAlecap','cardCrop']){const L=KMAT.mode==='lib'?KMAT.packed('zeijani',k):null;
+ MAT[k]=new THREE.MeshStandardMaterial({vertexColors:true,map:L&&L.map?KMAT.textures(L,{aniso:TEXANISO}).map:null,alphaTest:L&&L.map?.5:0,side:THREE.DoubleSide,roughness:.85,metalness:0});TILE[k]=1;}
 /* untextured keys: painted and small things (cords, tassels, copper, bone), flags and ribbons (flutter), lamp glass, glow */
 MAT.plain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});TILE.plain=1;
 /* copper (burners, finials, lamp pans): the library's hammered bronze (the furniture's f_bronze), tinted by the vertex colour */

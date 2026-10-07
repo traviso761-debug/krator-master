@@ -6,7 +6,7 @@
 /* a planned body (the item's `bodies`), drawn on the kit's buckets: exterior walls inside the footprint with their windows and
    doors (a sill and a lintel stone at each window), the partitions, the upper floors' slabs round their stairwells, solid
    stairs. o: {wall, wallCol, part, partCol, slab, stair} */
-function zbBody(key,o){o=o||{};const it=zjItem(key);if(!it||!it.bodies)return null;const inst=KratorInteriors.sets.instantiate(it,0,0,0,{register:false,prefix:'draw.'});
+function zbBody(key,o){o=o||{};const it=zjItem(key);if(!it||!it.bodies)return null;const inst=KratorInteriors.sets.instantiate(it,0,0,0,{register:false,prefix:zwPrefix(CURREC)});
  const wm=o.wall||'ashlar',wc=o.wallCol||P('tuff'),sm=o.slab||'plank',stc=P('white');
  for(const B of inst.buildings){
   for(const Wl of B.walls){if(Wl.kind!=='exterior')continue;const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz);if(L<.1)continue;

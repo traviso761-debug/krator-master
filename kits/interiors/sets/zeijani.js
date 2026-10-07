@@ -19,6 +19,9 @@
      cistern    a cistern hall's landing: a way to draw water (a dipping sweep, jars)
      guardroom  a guard post's room: a weapon rack and seats; a watch bunk if there is room
      court      an estate's court under its light shaft: seats, jars and pots, a statue or shrine; its basin is a fixture
+     alecap     the alecap beds in the dark: spawn racks along the walls; the compost beds are fixtures
+     taproom    a round taproom (a tower's foot): tables and seats; a counter only if a wall takes it
+     records    a round records room (the town hall's spire): chests and a reading table; shelves if a wall takes them
    sets/README.md says how an item is written.
    ====================================================================== */
 (function (IX) {
@@ -69,6 +72,19 @@
       optional: [{ types: ['planter', 'vessel', 'storage'], max: 4 }, { types: ['statue', 'shrine', 'art'], max: 1 }, { types: ['lamp', 'brazier'], max: 2 },
                  { types: SEATS, max: 3 }, { types: ['table'], max: 1 }, { types: ['rug'], max: 1 }],
       extra: 8 };
+    IX.PROGRAMS.alecap = { require: [{ need: 'racks', types: ['rack'], roles: ['spawn_rack'], n: 2 }],
+      optional: [{ types: ['rack'], roles: ['spawn_rack'], max: 4 }, { types: ['storage', 'vessel', 'stack'], roles: FOOD, max: 2 }, { types: ['lamp'], max: 2 }],
+      extra: 4 };
+    /* round rooms (a tower's foot, a spire's floor) have no straight wall a counter or a run of shelves stands on: their kinds
+       require what a curved wall takes */
+    IX.PROGRAMS.taproom = { require: [{ need: 'tables', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }],
+      optional: [{ types: ['counter'], max: 1 }, { types: ['storage', 'vessel', 'stack'], roles: FOOD, max: 2 }, { types: SEATS, max: 4 }, { types: ['lamp'], max: 2 }, SURFACE],
+      extra: 6 };
+    IX.PROGRAMS.records = { require: [{ need: 'chests', types: ['storage'], roles: ITEM, n: 1 }, { need: 'reading', types: ['table', 'desk'], n: 1 }],
+      optional: [{ types: ['shelf'], max: 2 }, { types: ['storage'], roles: ITEM, max: 2 }, { types: SEATS, max: 2 }, { types: ['lamp'], max: 2 }, SURFACE],
+      extra: 5 };
+    IX.KIND_ALIAS.taproom = ['tavern', 'hall'];
+    IX.KIND_ALIAS.records = ['library', 'study', 'store'];
     IX.KIND_ALIAS.court = ['yard', 'hall', 'living'];
     IX.KIND_ALIAS.kiva = ['shrine'];
     IX.KIND_ALIAS.brewery = ['workshop', 'store', 'kitchen', 'tavern'];
@@ -77,7 +93,8 @@
     IX.KIND_ALIAS.ossuary = ['shrine'];
     IX.KIND_ALIAS.cistern = ['store', 'yard'];
     IX.KIND_ALIAS.guardroom = ['barracks', 'hall'];
-    Object.assign(IX.KIND_WEIGHT, { court: 1.4, kiva: 1.6, brewery: 2.0, lab: 1.6, cell: 1.2, ossuary: 1.4, cistern: 2.0, guardroom: 1.2 });
+    IX.KIND_ALIAS.alecap = ['store'];
+    Object.assign(IX.KIND_WEIGHT, { court: 1.4, kiva: 1.6, brewery: 2.0, lab: 1.6, cell: 1.2, ossuary: 1.4, cistern: 2.0, guardroom: 1.2, alecap: 1.4, taproom: 2.0, records: 1.4 });
   }
   if (!IX.CULTURE_FAMILY.zeijani) IX.CULTURE_FAMILY.zeijani = ['nomad', 'generic', 'scrap'];
 
@@ -570,7 +587,7 @@
     const mark = function (r, a) { const p = at(r, a); return fx('stair' + Math.round(a * 100), 'stair', p[0], p[1], 1.1, 1.1, { h: 0.1 }); };
     rooms.push({ id: 'council', kind: 'hall', carved: true, poly: circle(4.4, 20, C[0], C[1]), y: 0, h: 3.6, ceil: 'dome', rise: 0.8, finish: 'polished',
       doors: [{ at: [0, C[1] + 4.4], w: 1.6, swing: 'none' }], fixtures: [mark(3.6, Math.PI)] });
-    rooms.push({ id: 'records', kind: 'library', carved: true, poly: circle(3.2, 18, C[0], C[1]), y: 6, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'plaster', doors: [],
+    rooms.push({ id: 'records', kind: 'records', carved: true, poly: circle(3.2, 18, C[0], C[1]), y: 6, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'plaster', doors: [],
       fixtures: [mark(2.4, Math.PI + 1.75), mark(2.4, 5.2)] });
     rooms.push({ id: 'lookout', kind: 'antechamber', carved: true, poly: circle(2.0, 14, C[0], C[1]), y: 11, h: 2.4, ceil: 'dome', rise: 0.6, finish: 'hewn', doors: [] });
     /* (their ends in a room 0.25 m inside its walk edge: a many-sided room's inset edge runs nearer mid-side than its radius says) */
@@ -608,7 +625,7 @@
     });
     /* the tower's taproom (round, at the arc's back middle: its front wall stands in the court) */
     const T = [0, CZ - 15.2];
-    rooms.push({ id: 'tower', kind: 'tavern', poly: circle(3.3, 16, T[0], T[1]), y: 0.25, h: 3.4, doors: [{ id: 'tower', at: [0, T[1] + 3.3], w: 1.2, to: '.court', swing: 'in' }] });
+    rooms.push({ id: 'tower', kind: 'taproom', poly: circle(3.3, 16, T[0], T[1]), y: 0.25, h: 3.4, doors: [{ id: 'tower', at: [0, T[1] + 3.3], w: 1.2, to: '.court', swing: 'in' }] });
     doors.push({ id: 'tower', at: [0, T[1] + 3.3], w: 1.2, to: '.tower', swing: 'none' });
     /* the court: the half disc inside the colonnade's line, its gate in the front wall; the pools are fixtures */
     const court = arc(R0 - 0.2, Math.PI, 2 * Math.PI, 16);
@@ -619,6 +636,132 @@
     return { rooms: rooms, T: T, CZ: CZ, R0: R0, R1: R1 };
   }
   const CARAV = caravanserai();
+
+  /* ---------------- P3c: WORKS, FARMS, THE GUARD, THE OUTPOST, STALLS, THE ADDITIONS (PLAN.md 6.4). Each carved plan carries
+     its `route` (the walker's legs in its frame, from the street: the kit's probe walks every one); a planned body's route is
+     the planner's own graph */
+  const sidePass = function (voids, id, x0, x1, z, y, w) { voids.push({ kind: 'stair', id: id, joins: [id.replace(/-door$/, '')], a: [x0, y || 0, z], b: [x1, y || 0, z], w: w || 1.2, h: 2.3 }); };
+  const P3C = {};
+  /* the capital's stores: a side tunnel walled off (the wall and its door are the building), store rooms either side */
+  (function () {
+    const rooms = [], voids = [
+      { kind: 'mass', id: 'rock', poly: rrect(-10, 10, -26, 0), y0: -0.5, y1: 7, cap: 1.0, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'mouth', c: [0, 0], y: 0, r: 2.8, h: 4.0 },
+      { kind: 'tube', id: 'tunnel', pts: [[0, 0, 1.2], [0, 0, -24]], w: 5, h: 4.4, spring: 0.45, rock: 'tuff', finish: 'hewn', walkW: 3.8 },
+      { kind: 'block', id: 'wallW', box: [-2.6, -0.75, -1.75, -1.25, 0, 4.2] }, { kind: 'block', id: 'wallE', box: [0.75, 2.6, -1.75, -1.25, 0, 4.2] }];
+    [[-1, -8], [1, -8], [-1, -16], [1, -16]].forEach(function (p, i) {
+      const id = 'store' + i, x0 = p[0] < 0 ? -8.4 : 3.6, x1 = x0 + 4.8;
+      rooms.push({ id: id, kind: 'store', carved: true, poly: rrect(x0, x1, p[1] - 2.2, p[1] + 2.2), round: 0.4, y: 0, h: 2.8, ceil: 'vault', rise: 0.4, finish: 'hewn',
+        doors: [{ at: [p[0] < 0 ? x1 : x0, p[1]], w: 1.2, swing: 'none' }] });
+      sidePass(voids, id + '-door', p[0] * 1.7, p[0] * 4.3, p[1]);
+    });
+    P3C.store = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['through the wall', 0, -3], ['the first stores', 0, -8], ['the west store', -6, -8], ['back', 0, -8],
+      ['the east store', 6, -8], ['back', 0, -8], ['the far stores', 0, -16], ['the west store', -6, -16], ['back', 0, -16], ['the east store', 6, -16], ['back', 0, -16], ['the end', 0, -22], ['out', 0, 1.5]] };
+  })();
+  /* the alecap beds: a long low hall in the dark, compost beds in stone kerbs either side of a channel (fixtures: the def draws them) */
+  (function () {
+    const fxs = [];
+    [-5.5, -11, -16.5, -22].forEach(function (z) { [-3.3, 3.3].forEach(function (x) { fxs.push(fx('bed' + fxs.length, 'compost', x, z, 2.2, 4.0, { h: 0.35 })); }); });
+    P3C.alecap = { rooms: [{ id: 'beds', kind: 'alecap', carved: true, poly: rrect(-6, 6, -26, -2), round: 0.5, y: 0, h: 2.6, ceil: 'vault', rise: 0.4, finish: 'raw', doors: [{ at: [0, -2], w: 1.8, swing: 'none' }], fixtures: fxs }],
+      voids: [{ kind: 'mass', id: 'rock', poly: rrect(-9, 9, -30, 0), y0: -0.5, y1: 6, cap: 1.0, rock: 'tuff', finish: 'raw' },
+        { kind: 'door', id: 'mouth', c: [0, 0], y: 0, r: 1.6, h: 2.8 }, { kind: 'stair', id: 'way-in', joins: ['beds'], a: [0, 0, 1.2], b: [0, 0, -2.4], w: 2.0, h: 2.6 }],
+      route: [['the door', 0, 0.5], ['the beds', 0, -6], ['the far end', 0, -23.5], ['out', 0, 1.5]] };
+  })();
+  /* the carved farmhouse: a low outcrop, the living room behind the door, a bedroom and a store either side */
+  (function () {
+    const rooms = [{ id: 'living', kind: 'living', carved: true, poly: rrect(-3, 3, -6.4, -1.6), round: 0.5, y: 0, h: 2.6, ceil: 'vault', rise: 0.4, finish: 'hewn', doors: [{ at: [0, -1.6], w: 1.2, swing: 'none' }] },
+      { id: 'bed', kind: 'bedroom', carved: true, poly: rrect(-6.9, -3.9, -6.2, -2.2), round: 0.4, y: 0, h: 2.4, ceil: 'vault', rise: 0.4, finish: 'hewn', doors: [{ at: [-3.9, -4.2], w: 1.0, swing: 'none' }] },
+      { id: 'store', kind: 'store', carved: true, poly: rrect(3.9, 6.9, -6.2, -2.2), round: 0.4, y: 0, h: 2.4, ceil: 'vault', rise: 0.4, finish: 'hewn', doors: [{ at: [3.9, -4.2], w: 1.0, swing: 'none' }] }];
+    const voids = [{ kind: 'mass', id: 'rock', poly: rrect(-8, 8, -9, 0), y0: -0.5, y1: 4.6, cap: 1.2, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.3, h: 2.6 }, { kind: 'stair', id: 'way-in', joins: ['living'], a: [0, 0, 1.2], b: [0, 0, -2.0], w: 1.4, h: 2.4 }];
+    sidePass(voids, 'bed-door', -2.6, -4.4, -4.2); sidePass(voids, 'store-door', 2.6, 4.4, -4.2);
+    P3C.farmCarved = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['the living room', 0, -4], ['the bedroom', -5.5, -4.2], ['back', 0, -4], ['the store', 5.5, -4.2], ['back', 0, -4], ['out', 0, 1.5]] };
+  })();
+  /* the brewery: the taproom at the face, the brewing hall behind it, the cooperage off it, the cool cellar down a flight */
+  (function () {
+    const rooms = [
+      { id: 'tap', kind: 'tavern', carved: true, poly: rrect(-5, 5, -7, -1.2), round: 0.5, y: 0, h: 3.2, ceil: 'vault', rise: 0.5, finish: 'plaster', doors: [{ at: [0, -1.2], w: 2.4, swing: 'none' }, { at: [0, -7], w: 1.6, swing: 'none' }] },
+      { id: 'hall', kind: 'brewery', carved: true, poly: rrect(-6, 6, -18, -8.4), round: 0.6, y: 0, h: 4.2, ceil: 'vault', rise: 0.6, finish: 'hewn', doors: [{ at: [0, -8.4], w: 1.6, swing: 'none' }, { at: [6, -13], w: 1.2, swing: 'none' }, { at: [0, -18], w: 1.4, swing: 'none' }] },
+      { id: 'coop', kind: 'workshop', carved: true, poly: rrect(7.4, 11, -16, -10.4), round: 0.4, y: 0, h: 2.8, ceil: 'vault', rise: 0.4, finish: 'hewn', doors: [{ at: [7.4, -13], w: 1.2, swing: 'none' }] },
+      { id: 'cellar', kind: 'store', carved: true, poly: rrect(-4.5, 4.5, -26, -21.4), round: 0.5, y: -2.6, h: 2.6, ceil: 'vault', rise: 0.4, finish: 'hewn', doors: [{ at: [0, -21.4], w: 1.4, swing: 'none' }] }];
+    const voids = [{ kind: 'mass', id: 'rock', poly: rrect(-12, 12, -28, 0), y0: -0.5, y1: 8, cap: 1.2, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 2.0, h: 3.1 }, { kind: 'stair', id: 'way-in', joins: ['tap'], a: [0, 0, 1.2], b: [0, 0, -1.8], w: 2.6, h: 3.0 },
+      { kind: 'stair', id: 'hall-door', joins: ['tap', 'hall'], a: [0, 0, -6.6], b: [0, 0, -9.0], w: 1.6, h: 2.8 },
+      { kind: 'stair', id: 'cellar-stair', joins: ['hall', 'cellar'], a: [0, 0, -17.5], b: [0, -2.6, -22.0], w: 1.4, h: 2.4 }];
+    sidePass(voids, 'coop-door', 5.6, 7.9, -13);
+    P3C.brewery = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['the taproom', 0, -4], ['the brewing hall', 0, -12], ['the cooperage door', 5.0, -13], ['the cooperage', 9.2, -13], ['back', 5.0, -13], ['the hall', 0, -12],
+      ['down to the cellar', 0, -23.5], ['back up', 0, -12], ['out', 0, 1.5]] };
+  })();
+  /* the fungal alchemist: the selling room, the still room behind, the dark spawn room deepest, the glow-culture room off the side */
+  (function () {
+    const rooms = [
+      { id: 'shop', kind: 'zjshop_alchemist', carved: true, poly: rrect(-4, 4, -5.6, -1.2), round: 0.5, y: 0, h: 3.0, ceil: 'vault', rise: 0.4, finish: 'plaster', doors: [{ at: [0, -1.2], w: 1.6, swing: 'none' }, { at: [0, -5.6], w: 1.2, swing: 'none' }] },
+      { id: 'lab', kind: 'lab', carved: true, poly: rrect(-5, 5, -14, -7), round: 0.6, y: 0, h: 3.4, ceil: 'dome', rise: 0.8, finish: 'plaster', doors: [{ at: [0, -7], w: 1.2, swing: 'none' }, { at: [0, -14], w: 1.0, swing: 'none' }, { at: [5, -10.5], w: 1.0, swing: 'none' }] },
+      { id: 'spawn', kind: 'store', carved: true, poly: rrect(-3, 3, -21, -15.6), round: 0.4, y: 0, h: 2.4, ceil: 'vault', rise: 0.3, finish: 'raw', doors: [{ at: [0, -15.6], w: 1.0, swing: 'none' }] },
+      { id: 'glow', kind: 'lab', carved: true, poly: rrect(6.4, 9.2, -12.6, -8.4), round: 0.4, y: 0, h: 2.6, ceil: 'vault', rise: 0.3, finish: 'raw', doors: [{ at: [6.4, -10.5], w: 1.0, swing: 'none' }] }];
+    const voids = [{ kind: 'mass', id: 'rock', poly: rrect(-10.5, 10.5, -24, 0), y0: -0.5, y1: 7, cap: 1.0, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 1.5, h: 2.9 }, { kind: 'stair', id: 'way-in', joins: ['shop'], a: [0, 0, 1.2], b: [0, 0, -1.8], w: 1.8, h: 2.7 },
+      { kind: 'stair', id: 'lab-door', joins: ['shop', 'lab'], a: [0, 0, -5.2], b: [0, 0, -7.6], w: 1.2, h: 2.4 },
+      { kind: 'stair', id: 'spawn-door', joins: ['lab', 'spawn'], a: [0, 0, -13.6], b: [0, 0, -16.2], w: 1.0, h: 2.2 }];
+    sidePass(voids, 'glow-door', 4.6, 6.9, -10.5, 0, 1.0);
+    P3C.lab = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['the selling room', 0, -3.4], ['the still room', 0, -10.5], ['the glow room', 7.8, -10.5], ['back', 0, -10.5],
+      ['the spawn room', 0, -18.4], ['back', 0, -10.5], ['out', 0, 1.5]] };
+  })();
+  /* the capital's barracks: the guardroom behind the door, the dormitory hall (pillared), the armoury and the mess off it */
+  (function () {
+    const pil = [fx('p0', 'pillar', -3.5, -11.5, 0.8, 0.8, { h: 3.0 }), fx('p1', 'pillar', 3.5, -11.5, 0.8, 0.8, { h: 3.0 }), fx('p2', 'pillar', -3.5, -16, 0.8, 0.8, { h: 3.0 }), fx('p3', 'pillar', 3.5, -16, 0.8, 0.8, { h: 3.0 })];
+    const rooms = [
+      { id: 'guard', kind: 'guardroom', carved: true, poly: rrect(-4, 4, -6, -1.4), round: 0.4, y: 0, h: 2.8, ceil: 'vault', rise: 0.3, finish: 'hewn', doors: [{ at: [0, -1.4], w: 1.6, swing: 'none' }, { at: [0, -6], w: 1.4, swing: 'none' }] },
+      { id: 'dorm', kind: 'dormitory', carved: true, poly: rrect(-7, 7, -20, -7.4), round: 0.5, y: 0, h: 3.0, ceil: 'flat', finish: 'hewn', doors: [{ at: [0, -7.4], w: 1.4, swing: 'none' }, { at: [7, -13.5], w: 1.2, swing: 'none' }, { at: [-7, -13.5], w: 1.2, swing: 'none' }], fixtures: pil },
+      { id: 'arms', kind: 'guardroom', carved: true, poly: rrect(8, 11, -16.4, -10.6), round: 0.4, y: 0, h: 2.6, ceil: 'vault', rise: 0.3, finish: 'hewn', doors: [{ at: [8, -13.5], w: 1.2, swing: 'none' }] },
+      { id: 'mess', kind: 'hall', carved: true, poly: rrect(-11, -8, -16.4, -10.6), round: 0.4, y: 0, h: 2.6, ceil: 'vault', rise: 0.3, finish: 'hewn', doors: [{ at: [-8, -13.5], w: 1.2, swing: 'none' }] }];
+    const voids = [{ kind: 'mass', id: 'rock', poly: rrect(-12.5, 12.5, -24, 0), y0: -0.5, y1: 7, cap: 1.0, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 1.8, h: 3.0 }, { kind: 'stair', id: 'way-in', joins: ['guard'], a: [0, 0, 1.2], b: [0, 0, -2.0], w: 2.2, h: 2.8 },
+      { kind: 'stair', id: 'dorm-door', joins: ['guard', 'dorm'], a: [0, 0, -5.6], b: [0, 0, -7.9], w: 1.4, h: 2.4 }];
+    sidePass(voids, 'arms-door', 6.6, 8.5, -13.5); sidePass(voids, 'mess-door', -6.6, -8.5, -13.5);
+    P3C.barracks = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['the guardroom', 0, -4], ['the dormitory', 0, -13.5], ['the armoury', 9.5, -13.5], ['back', 0, -13.5],
+      ['the mess', -9.5, -13.5], ['back', 0, -13.5], ['out', 0, -4], ['the street', 0, 1.5]] };
+  })();
+  /* the carved tavern: a pillared taproom at the face, the kitchen and the cellar behind it */
+  (function () {
+    const rooms = [
+      { id: 'tap', kind: 'tavern', carved: true, poly: rrect(-7, 7, -12, -1.2), round: 0.6, y: 0, h: 3.4, ceil: 'vault', rise: 0.6, finish: 'plaster', doors: [{ at: [0, -1.2], w: 2.4, swing: 'none' }, { at: [-3.5, -12], w: 1.2, swing: 'none' }, { at: [3.5, -12], w: 1.2, swing: 'none' }],
+        fixtures: [fx('p0', 'pillar', -3, -6.6, 0.8, 0.8, { h: 3.4 }), fx('p1', 'pillar', 3, -6.6, 0.8, 0.8, { h: 3.4 })] },
+      { id: 'kitchen', kind: 'kitchen', carved: true, poly: rrect(-6.5, -1, -19, -13.6), round: 0.4, y: 0, h: 2.8, ceil: 'vault', rise: 0.3, finish: 'hewn', doors: [{ at: [-3.5, -13.6], w: 1.2, swing: 'none' }],
+        fixtures: [fx('hearth', 'hearth', -3.75, -18.65, 1.6, 0.7, { h: 1.0 })] },
+      { id: 'cellar', kind: 'store', carved: true, poly: rrect(1, 6.5, -19, -13.6), round: 0.4, y: 0, h: 2.6, ceil: 'vault', rise: 0.3, finish: 'hewn', doors: [{ at: [3.5, -13.6], w: 1.2, swing: 'none' }] }];
+    const voids = [{ kind: 'mass', id: 'rock', poly: rrect(-11, 11, -22, 0), y0: -0.5, y1: 7, cap: 1.0, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 2.0, h: 3.2 }, { kind: 'stair', id: 'way-in', joins: ['tap'], a: [0, 0, 1.2], b: [0, 0, -1.8], w: 2.6, h: 3.0 },
+      { kind: 'stair', id: 'kitchen-door', joins: ['tap', 'kitchen'], a: [-3.5, 0, -11.6], b: [-3.5, 0, -14.1], w: 1.2, h: 2.3 },
+      { kind: 'stair', id: 'cellar-door', joins: ['tap', 'cellar'], a: [3.5, 0, -11.6], b: [3.5, 0, -14.1], w: 1.2, h: 2.3 }];
+    P3C.tavern = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['the taproom', 0, -4], ['toward the kitchen', -3.5, -10], ['the kitchen', -3.5, -16], ['back', -3.5, -10],
+      ['toward the cellar', 3.5, -10], ['the cellar', 3.5, -16], ['back', 3.5, -10], ['the taproom again', 0, -4], ['out', 0, 1.5]] };
+  })();
+  /* the carved inn: the taproom at the face, a corridor back past six guest cells, the kitchen at its end */
+  (function () {
+    const rooms = [{ id: 'tap', kind: 'tavern', carved: true, poly: rrect(-6, 6, -9, -1.2), round: 0.6, y: 0, h: 3.2, ceil: 'vault', rise: 0.5, finish: 'plaster', doors: [{ at: [0, -1.2], w: 2.2, swing: 'none' }, { at: [0, -9], w: 1.6, swing: 'none' }] },
+      { id: 'kitchen', kind: 'kitchen', carved: true, poly: rrect(-3, 3, -29, -25.4), round: 0.4, y: 0, h: 2.6, ceil: 'vault', rise: 0.3, finish: 'hewn', doors: [{ at: [0, -25.4], w: 1.4, swing: 'none' }],
+        fixtures: [fx('hearth', 'hearth', 0, -28.65, 1.6, 0.7, { h: 1.0 })] }];
+    const voids = [{ kind: 'mass', id: 'rock', poly: rrect(-13, 13, -31, 0), y0: -0.5, y1: 8, cap: 1.2, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 1.9, h: 3.0 }, { kind: 'stair', id: 'way-in', joins: ['tap'], a: [0, 0, 1.2], b: [0, 0, -1.8], w: 2.4, h: 2.8 },
+      { kind: 'stair', id: 'corridor', joins: ['tap', 'kitchen'], a: [0, 0, -8.6], b: [0, 0, -25.8], w: 2.0, h: 2.7 }];
+    [-12, -17, -22].forEach(function (cz, i) { [-1, 1].forEach(function (s) { put(rooms, voids, sroom('guest' + i + (s < 0 ? 'W' : 'E'), 'cell', 0, s, cz, 0, 4.0, 3.6)); }); });
+    P3C.inn = { rooms: rooms, voids: voids, route: [['the door', 0, 0.5], ['the taproom', 0, -4], ['the corridor', 0, -12], ['a guest cell', 3.6, -12], ['back', 0, -12],
+      ['along', 0, -17], ['another', -3.6, -17], ['back', 0, -17], ['the kitchen', 0, -27], ['back', 0, -12], ['out', 0, 1.5]] };
+  })();
+  /* the bat roost: a cave mouth, a passage down to a domed chamber where the guano is gathered */
+  P3C.roost = { rooms: [{ id: 'roost', kind: 'store', carved: true, poly: rrect(-4, 4, -11, -4.6), round: 0.8, y: -1, h: 3.6, ceil: 'dome', rise: 1.0, finish: 'raw', doors: [{ at: [0, -4.6], w: 1.4, swing: 'none' }] }],
+    voids: [{ kind: 'mass', id: 'rock', poly: rrect(-6.5, 6.5, -13.5, 0), y0: -0.5, y1: 6, cap: 1.5, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'mouth', c: [0, 0], y: 0, r: 1.4, h: 2.5 }, { kind: 'stair', id: 'way-in', joins: ['roost'], a: [0, 0, 1.2], b: [0, -1, -5.2], w: 1.6, h: 2.2 }],
+    route: [['the mouth', 0, 0.5], ['down the passage', 0, -5.6], ['the chamber', 0, -8.5], ['out', 0, 1.5]] };
+  /* the hot-spring bath: a changing room behind the door, the domed bath hall with its pool behind it */
+  P3C.bath = { rooms: [{ id: 'changing', kind: 'antechamber', carved: true, poly: rrect(-3.5, 3.5, -5, -1.2), round: 0.4, y: 0, h: 2.8, ceil: 'vault', rise: 0.3, finish: 'plaster', doors: [{ at: [0, -1.2], w: 1.4, swing: 'none' }, { at: [0, -5], w: 1.2, swing: 'none' }] },
+      { id: 'bath', kind: 'hall', carved: true, poly: circle(5, 20, 0, -11.5), y: 0, h: 3.2, ceil: 'dome', rise: 1.6, finish: 'plaster', doors: [{ at: [0, -6.5], w: 1.2, swing: 'none' }],
+        fixtures: [fx('pool', 'pool', 0, -11.5, 4.4, 4.4, { h: 0.45 })] }],
+    voids: [{ kind: 'mass', id: 'rock', poly: rrect(-8.5, 8.5, -19, 0), y0: -0.5, y1: 7, cap: 1.2, rock: 'tuff', finish: 'raw' },
+      { kind: 'door', id: 'front', c: [0, 0], y: 0, r: 1.5, h: 2.8 }, { kind: 'stair', id: 'way-in', joins: ['changing'], a: [0, 0, 1.2], b: [0, 0, -1.8], w: 1.6, h: 2.6 },
+      { kind: 'stair', id: 'bath-door', joins: ['changing', 'bath'], a: [0, 0, -4.6], b: [0, 0, -7.1], w: 1.2, h: 2.4 }],
+    route: [['the door', 0, 0.5], ['the changing room', 0, -3], ['the bath hall', 0, -7.6], ['round the pool', 3.4, -9.5], ['behind it', 3.4, -13.5], ['behind the pool', 2.4, -15.0], ['across', -2.4, -15.0], ['the far side', -3.4, -13.5], ['back round', -3.4, -9.5], ['out', 0, -7.6], ['the street', 0, 1.5]] };
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -716,29 +859,6 @@
       note: 'sunk 3.6 m in the ground under an earth roof; down the ladder through the hatch over the hearth; the bench terrace ' +
         'round the round wall, the altar against the flat back wall under the murals; the deflector, the ventilator, the sipapu, ' +
         'the great incense burner on the west side, where Ranj is burned' },
-    /* ---------------- works and the carved interiors (provisional plans) */
-    { key: 'zj_brewery', name: 'Brewery (carved)', wealth: 0.45, types: ['industry', 'tavern'], lot: [20, 22],
-      rooms: [
-        { id: 'tap', kind: 'tavern', poly: rect(9, 6, 0, 2.6), y: 0, h: 3.2,
-          doors: [{ at: [0, 5.6], w: 1.4 }, { id: 'hall', at: [0, -0.4], w: 1.2, to: '.hall', swing: 'out', leaf: false }] },
-        { id: 'hall', kind: 'brewery', poly: oval(5.5, 4.2, 16, 0, -4.6), y: 0, h: 4.0,
-          doors: [{ id: 'hall', at: [0, -0.4], w: 1.2, to: '.tap', swing: 'in' }, { id: 'cellar', at: [0, -8.8], w: 1.0, to: '.cellar', swing: 'out', leaf: false }] },
-        { id: 'cellar', kind: 'store', poly: oval(3.5, 2.6, 12, 0, -11.4), y: 0, h: 2.6,
-          doors: [{ id: 'cellar', at: [0, -8.8], w: 1.0, to: '.hall', swing: 'in' }] }],
-      note: 'PROVISIONAL (until the void plan, P3): a taproom front on the square, the brewing hall cut behind it, the cool cellar deepest' },
-    { key: 'zj_lab', name: 'Fungal alchemist (carved)', wealth: 0.55, types: ['industry', 'shop'], lot: [16, 18],
-      rooms: [
-        { id: 'shop', kind: 'shop', poly: rect(6, 4.4, 0, 2.0), y: 0, h: 3.0,
-          doors: [{ at: [0, 4.2], w: 1.1 }, { id: 'lab', at: [0, -0.2], w: 1.0, to: '.lab', swing: 'out', leaf: false }] },
-        { id: 'lab', kind: 'lab', poly: circle(3.6, 14, 0, -3.8), y: 0, h: 3.2,
-          doors: [{ id: 'lab', at: [0, -0.2], w: 1.0, to: '.shop', swing: 'in' }, { id: 'spawn', at: [0, -7.4], w: 0.9, to: '.spawn', swing: 'out', leaf: false }] },
-        { id: 'spawn', kind: 'store', poly: circle(2.6, 12, 0, -10.0), y: 0, h: 2.4,
-          doors: [{ id: 'spawn', at: [0, -7.4], w: 0.9, to: '.lab', swing: 'in' }] }],
-      note: 'PROVISIONAL (until the void plan, P3): the selling room at the front, the still room behind, the dark spawn room deepest' },
-    { key: 'zj_guardpost', name: 'Village guard post', wealth: 0.35, types: ['civic', 'military'], residence: false, lot: [10, 9],
-      bodies: [{ id: 'post', poly: rect(8, 6.5), y: 0.2, levels: [{ h: 2.8 }], wall: 0.45, roof: 'flat',
-        doors: [{ at: [0, 3.25], w: 1.1 }], program: ['guardroom', 'dormitory'] }],
-      note: 'PROVISIONAL (until the def, P3): tuff blocks, a guardroom at the door, the watch\'s bunks behind' },
     /* the funeral catacombs (the Guanches laid their dead in lava-tube caves): a portal, a stair 4.5 m down to the mortuary
        chapel (a round room with a flat back wall: the altar under a frieze of the dead), loculi corridors east and west lined
        with bones, an ossuary chamber at each end (boxes, mummy bundles, stacked bones), the Keeper's cell off the west corridor */
@@ -764,6 +884,76 @@
       note: 'down 4.5 m to the mortuary chapel; the loculi corridors lined with bones; an ossuary chamber at each end; the Keeper\'s cell' },
     { key: 'zj_cistern', name: 'The cistern hall: a stepwell under the rock', carved: true, wealth: 0.5, types: ['infrastructure'], residence: false, lot: [32, 34],
       rooms: CISTERN.rooms, voids: CISTERN.voids,
-      note: 'a vaulted hall 9 m deep: terraces of rock step down on three sides to the still water, pillars rise from the water, a causeway to a platform; the landing inside the portal is where water is drawn' }
+      note: 'a vaulted hall 9 m deep: terraces of rock step down on three sides to the still water, pillars rise from the water, a causeway to a platform; the landing inside the portal is where water is drawn' },
+    /* ---------------- P3c: works and farms. A carved item's `route` is walked by the kit's probe (walk-route-works); a
+       planned body's by its planner's graph */
+    { key: 'zj_store_tunnel', name: 'The stores: a side tunnel walled off', carved: true, wealth: 0.3, types: ['industry'], residence: false, lot: [20, 28],
+      rooms: P3C.store.rooms, voids: P3C.store.voids, route: P3C.store.route,
+      note: 'a side tunnel 5 m wide walled off at its mouth (the wall and its door are the building); four store rooms cut off it' },
+    { key: 'zj_warehouse', name: 'Warehouse', wealth: 0.35, types: ['industry'], residence: false, lot: [16, 12], route: 'planned',
+      bodies: [{ id: 'hall', poly: rect(12, 8), y: 0.3, levels: [{ h: 3.6 }], wall: 0.45, roof: 'flat', doors: [{ at: [0, 4], w: 2.0 }], program: ['store', 'store'] }],
+      note: 'tuff ashlar under a flat roof on timber beams; a wide door for the carts; two store rooms' },
+    { key: 'zj_granary', name: 'Granary', wealth: 0.25, types: ['industry'], residence: false, lot: [8, 8],
+      rooms: [{ id: 'bin', kind: 'store', poly: circle(2.2, 14), y: 0.9, h: 2.4, doors: [{ at: [0, 2.2], w: 0.8, swing: 'none' }] }],
+      note: 'a round granary raised on stones under a tall conical thatch (Dogon); its door up three steps' },
+    { key: 'zj_farm_alecap', name: 'Alecap beds in the dark', carved: true, wealth: 0.3, types: ['farm'], residence: false, lot: [20, 32],
+      rooms: P3C.alecap.rooms, voids: P3C.alecap.voids, route: P3C.alecap.route,
+      note: 'a long low hall cut in the dark: eight compost and dung beds in stone kerbs either side of a water channel, spawn racks' },
+    { key: 'zj_farmhouse_wood', name: 'Farmhouse (timber)', wealth: 0.35, types: ['dwelling-single', 'farm'], lot: [14, 14], route: 'planned',
+      bodies: [{ id: 'house', poly: circle(4.8, 18), y: 0.4, levels: [{ h: 2.8 }], wall: 0.3, roof: 'flat', doors: [{ at: [0, 4.8], w: 1.0 }], program: ['living', 'bedroom', 'store'] }],
+      note: 'a round timber house under a thatch, three rooms; a yard fence and a drying rack' },
+    { key: 'zj_farmhouse_carved', name: 'Farmhouse (carved)', carved: true, wealth: 0.35, types: ['dwelling-single', 'farm'], lot: [18, 12],
+      rooms: P3C.farmCarved.rooms, voids: P3C.farmCarved.voids, route: P3C.farmCarved.route,
+      note: 'cut in a low outcrop: the living room behind the door, a bedroom and a store either side' },
+    { key: 'zj_brewery', name: 'Brewery (carved)', carved: true, wealth: 0.45, types: ['industry', 'tavern'], residence: false, lot: [26, 30],
+      rooms: P3C.brewery.rooms, voids: P3C.brewery.voids, route: P3C.brewery.route,
+      note: 'the taproom at the face, the brewing hall behind it (mash tuns, fermenting crocks), the cooperage off it, the cool cellar 2.6 m down a flight' },
+    { key: 'zj_lab', name: 'Fungal alchemist (carved)', carved: true, wealth: 0.55, types: ['industry', 'shop'], residence: false, lot: [22, 26],
+      rooms: P3C.lab.rooms, voids: P3C.lab.voids, route: P3C.lab.route,
+      note: 'the selling room at the face, the domed still room behind it, the glow-culture room off its side, the dark spawn room deepest' },
+    { key: 'zj_smithy', name: 'Smithy', wealth: 0.45, types: ['industry'], residence: false, lot: [12, 10], route: 'planned',
+      bodies: [{ id: 'forge', poly: rect(9, 7), y: 0.2, levels: [{ h: 3.6 }], wall: 0.45, roof: 'flat', doors: [{ at: [0, 3.5], w: 1.6 }], program: 'smithy' }],
+      note: 'tuff ashlar; the forge under a smoke shaft through the roof, the anvil and quench trough; a store behind' },
+    /* ---------------- the guard and the outpost */
+    { key: 'zj_guardpost', name: 'Village guard post', wealth: 0.35, types: ['civic'], residence: false, lot: [10, 9], route: 'planned',
+      bodies: [{ id: 'post', poly: rect(8, 6.5), y: 0.2, levels: [{ h: 2.8 }], wall: 0.45, roof: 'flat',
+        doors: [{ at: [0, 3.25], w: 1.1 }], program: ['guardroom', 'dormitory'] }],
+      note: 'tuff blocks: a guardroom at the door, the watch\'s bunks behind; a lookout on the roof' },
+    { key: 'zj_barracks_carved', name: 'The capital\'s barracks (carved)', carved: true, wealth: 0.45, types: ['civic'], residence: false, lot: [26, 26],
+      rooms: P3C.barracks.rooms, voids: P3C.barracks.voids, route: P3C.barracks.route,
+      note: 'its door in the hall\'s wall: the guardroom, the pillared dormitory hall, the armoury and the mess off it' },
+    { key: 'zj_guard_hq', name: 'The guard headquarters', wealth: 0.6, types: ['civic'], residence: false, lot: [18, 14], route: 'planned',
+      bodies: [{ id: 'hq', poly: rect(14, 10), y: 0.4, levels: [{ h: 3.4 }, { h: 3.0 }], wall: 0.5, roof: 'flat', doors: [{ at: [0, 5], w: 1.6 }],
+        program: [['hall', 'guardroom', 'store'], ['dormitory', 'study']] }],
+      note: 'on the square: blocky tuff ashlar in two storeys, battered corners, a parapet; the hall, the guardroom, the store; the officers\' dormitory and the study above' },
+    { key: 'zj_barracks_outpost', name: 'The outpost\'s barracks', wealth: 0.35, types: ['civic'], residence: false, lot: [18, 10], route: 'planned',
+      bodies: [{ id: 'barracks', poly: rect(15, 7), y: 0.4, levels: [{ h: 3.0 }], wall: 0.3, roof: 'flat', doors: [{ at: [0, 3.5], w: 1.2 }], program: ['guardroom', 'dormitory', 'dormitory'] }],
+      note: 'a stone footing, timber walls of kipuka logs, a pitched thatch; the guardroom between two dormitories' },
+    { key: 'zj_watchtower', name: 'Watchtower', wealth: 0.3, types: ['civic'], residence: false, lot: [7, 7],
+      rooms: [{ id: 'base', kind: 'guardroom', poly: rect(4.4, 4.4), y: 0.2, h: 2.6, doors: [{ at: [0, 2.2], w: 0.9 }] }],
+      note: 'a square tower of tuff to a timber lookout 9 m up (a ladder inside: the lookout is drawn, not planned); the watch\'s room at its foot' },
+    { key: 'zj_scout_hq', name: 'The scouts\' headquarters', wealth: 0.6, types: ['civic'], residence: false, lot: [12, 12],
+      rooms: [{ id: 'maps', kind: 'study', poly: circle(3.4, 16), y: 0.3, h: 3.0, doors: [{ at: [0, 3.4], w: 1.0 }] }],
+      note: 'the temple tower of the board: a round room of maps at the foot of a tall pierced tower lit from inside (the tower is drawn, not planned)' },
+    /* ---------------- trade */
+    { key: 'zj_tavern_carved', name: 'Tavern (carved)', carved: true, wealth: 0.45, types: ['tavern'], residence: false, lot: [24, 24],
+      rooms: P3C.tavern.rooms, voids: P3C.tavern.voids, route: P3C.tavern.route,
+      note: 'a pillared taproom cut behind the face, the kitchen and the cellar behind it' },
+    { key: 'zj_tavern_built', name: 'Tavern (constructed)', wealth: 0.45, types: ['tavern'], residence: false, lot: [16, 13], route: 'planned',
+      bodies: [{ id: 'tavern', poly: rect(12, 9), y: 0.3, levels: [{ h: 3.4 }], wall: 0.45, roof: 'flat', doors: [{ at: [0, 4.5], w: 1.4 }], program: 'tavern' }],
+      note: 'tuff ashlar under a dome and a flat roof; the taproom, the kitchen, the store; an awning over benches' },
+    { key: 'zj_inn_carved', name: 'Inn (carved)', carved: true, wealth: 0.45, types: ['inn', 'tavern'], residence: false, lot: [28, 32],
+      rooms: P3C.inn.rooms, voids: P3C.inn.voids, route: P3C.inn.route,
+      note: 'the taproom at the face; a corridor back past six guest cells (each a bed shelf and a hearth niche) to the kitchen' },
+    { key: 'zj_inn_built', name: 'Inn (constructed)', wealth: 0.45, types: ['inn', 'tavern'], residence: false, lot: [16, 14], route: 'planned',
+      bodies: [{ id: 'inn', poly: rect(12, 10), y: 0.3, levels: [{ h: 3.2 }, { h: 2.9 }], wall: 0.45, roof: 'flat', doors: [{ at: [0, 5], w: 1.4 }], program: 'tavern' }],
+      note: 'two storeys of tuff: the taproom, the kitchen and the store; guest rooms upstairs' },
+    /* ---------------- the additions (PLAN.md 13) with interiors */
+    { key: 'zj_roost', name: 'Bat roost', carved: true, wealth: 0.1, types: ['farm'], residence: false, lot: [14, 14],
+      rooms: P3C.roost.rooms, voids: P3C.roost.voids, route: P3C.roost.route,
+      note: 'a cave mouth, a passage down a metre to a domed chamber where the guano is gathered for the alecap beds' },
+    { key: 'zj_bath', name: 'Hot-spring bath', carved: true, wealth: 0.5, types: ['civic'], residence: false, lot: [18, 20],
+      rooms: P3C.bath.rooms, voids: P3C.bath.voids, route: P3C.bath.route,
+      note: 'the changing room behind the door; the domed bath hall behind it round its steaming pool (the Throne\'s heat)' }
   ]) });
 })(KratorInteriors);

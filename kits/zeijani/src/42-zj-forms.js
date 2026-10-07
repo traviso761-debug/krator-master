@@ -26,6 +26,8 @@ function zfOval(mk,cx,cz,rx,rz,y0,y1,col,o){o=o||{};const k1=o.k1===undefined?1:
 function zfStilts(mk,cx,cz,rx,rz,y,n,col,rad){for(let i=0;i<n;i++){const a=i*TAU/n+.2;cyl(mk,cx+Math.cos(a)*rx,0,cz+Math.sin(a)*rz,rad||.11,y,col,7);}}
 /* a stepped lintel (the dwarves' deep lintels, Aksum's steps): n courses over a doorway of width w at height y, on a face at z */
 function zfStepLintel(mk,x,y,z,w,col,o){o=o||{};const n=o.n||3,th=o.h||.3,d=o.d||.3;for(let i=0;i<n;i++)box(mk,x,y+i*th,z-d/2+i*.02,w+.6*(n-i),th,d+i*.04,col);}
+/* a card (cardYam, cardAlecap, cardCrop): two crossed quads, w wide and h tall, standing on (x, y, z), the sheet once across each */
+function zfCard(mk,x,y,z,w,h,ry,col){for(const a of [0,PI/2]){const m=TF(x,y+h/2,z,(ry||0)+a);m.scale(new THREE.Vector3(w,h,1));emit(mk,gplane(),m,col===undefined?WHITE:col,{su:1,sv:1});}}
 /* a pattern band: a sheet (pat* key) mapped once across its height and repeated along its width, on a face */
 function zfBand(mk,x,y,z,w,h,ry,col){const L=KMAT.mode==='lib'?KMAT.packed('zeijani',ZJ_LIB[mk]):null,sx=L?L.scale[0]:(TILE[mk]||1),sy=L?(L.scale[1]||L.scale[0]):h;
  /* once across the height (the whole sheet shows: a mural's figures keep their heads), repeated along the width at the sheet's aspect */
@@ -75,6 +77,9 @@ function zfFixtures(item){if(!item)return;for(const r of item.rooms||[]){if(!(r.
   else if(f.kind==='pool'){/* a basin: its floor, a rim 0.15 m thick round dark water (fixtures are square to the room: ry 0 or a quarter) */
    const q=Math.abs(Math.round(ry/(PI/2)))%2===1,W2=(q?d:w)+.3,D2=(q?w:d)+.3;box(fin,x,y,z,W2,.12,D2,c);
    for(const s of [-1,1]){box(fin,x+s*(W2-.15)/2,y,z,.15,h,D2,c);box(fin,x,y,z+s*(D2-.15)/2,W2-.3,h,.15,c);}box('water',x,y+h-.1,z,W2-.3,.02,D2-.3,P('water'));}
+  else if(f.kind==='compost'){/* an alecap bed: a stone kerb round dark compost, the caps (the library's cut-out card) clustered on it */
+   for(const s of [-1,1]){box(fin,x+s*(w/2-.07),y,z,.14,h,d,c);box(fin,x,y,z+s*(d/2-.07),w-.28,h,.14,c);}box('earth',x,y,z,w-.28,h-.08,d-.28,P('felt'));
+   const n=Math.round(w*d*1.6);for(let i=0;i<n;i++)zfCard('cardAlecap',x+rr(-1,1)*(w/2-.3),y+h-.08,z+rr(-1,1)*(d/2-.3),rr(.26,.4),rr(.2,.3),rr(0,PI),WHITE);}
   else if(f.kind==='pillar'||f.kind==='column')zfColumn(fin,x,y,z,Math.min(w,d)/2,f.h||r.h||3,c,{square:f.square});
   else if(f.kind==='niche')zfNiche(x,y+(f.y0||1.2),z,w,h);
   else if(f.kind==='ladder'||f.kind==='stair'){}   /* the def draws its ladder (it leans out of a hatch); a stair's foot is a cut, kept clear */

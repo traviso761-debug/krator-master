@@ -43,7 +43,7 @@ function zjFurnishItem(it){if(ZJ_FURNITEM[it.key])return ZJ_FURNITEM[it.key];con
  return ZJ_FURNITEM[it.key]=Object.assign({},it,{rooms:it.rooms.map(r=>{if(!cv(r))return r;const P=KCAVERN.insetPoly(r.poly,.25);
   return Object.assign({},r,{poly:P,doors:(r.doors||[]).map(d=>Object.assign({},d,{at:near(P,d.at)}))});})});}
 function zjInteriors(){if(!ZJF.on||!ZJF.cfg.interiorsOn)return;for(const rec of REG){if(rec.parent)continue;const it0=zjItem(rec.key);if(!it0)continue;const it=zjFurnishItem(it0);
-  try{const fi=ZJF.interior(it,rec.x,rec.z,rec.ry,zjTagAdapter(ZJF.adapter,rec),{baseY:rec.y,prefix:(rec.tid||rec.key)+'.'});rec.interior=fi.summary;
+  try{const fi=ZJF.interior(it,rec.x,rec.z,rec.ry,zjTagAdapter(ZJF.adapter,rec),{baseY:rec.y,prefix:zwPrefix(rec)});rec.interior=fi.summary;
    fi.result.inst.rooms.forEach(R=>{const P=fi.result.plans[R.id];(P&&P.lights||[]).forEach(l=>{const k=Math.round(l.x/.6)+','+Math.round(l.y/.6)+','+Math.round(l.z/.6);
     if(!HALOKEY.has(k)){HALOKEY.add(k);const c=hc(0xffc878);HALOS.push({x:l.x,y:l.y,z:l.z,r:c.r,g:c.g,b:c.b,big:false});}});});}
   catch(e){reportErr('interior '+rec.key+': '+(e&&e.stack||e));}}}

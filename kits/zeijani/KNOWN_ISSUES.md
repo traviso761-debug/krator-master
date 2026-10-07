@@ -16,5 +16,10 @@
       interiors planner has no roof storey. Its pieces stand on the slab (`46-zj-built.js`).
 - [ ] **Windows are open holes** (no shutters, grilles or jali). The `jali` cut-out is on the page now (the temple's dome);
       windows could take it.
+- [ ] **Metal copper reads black on large surfaces.** `copper` (the library's `f_bronze`, metalness .75) has no environment
+      map to reflect, so a dome or a disc draws near black; small finials and burners read. The scouts' tower takes a stone
+      dome and the light-well mirror a matte bronze colour (`plain`) until the page has an environment (P5's light).
+- [ ] **The fields' crops are cards** (two crossed planes of the library's cut-out sheets, `zfCard`): they read from the
+      sheet's distance, flat close up. Fine for P5's terraces seen from the wells' rims.
 - [ ] **The temple's lattice glows only in the dark.** On the kit sheet night barely darkens the stone (see the underground's
       light above), so the lamplit shell behind the jali shows little; Dhelv's light (P5) is where it reads.

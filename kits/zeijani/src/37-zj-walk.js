@@ -23,7 +23,7 @@ function zwMinusHoles(poly,holes){let parts=[poly];
   parts=next.filter(P=>P.length>=3&&zwArea(P)>.05);}
  return parts;}
 function zwItem(item,rec,o){o=o||{};if(!item)return null;const out={floors:0,blocks:0,strips:0};
- const inst=KratorInteriors.sets.instantiate(item,rec.x,rec.z,rec.ry,{baseY:rec.y,register:false,prefix:(rec.tid||rec.key)+'.'});
+ const inst=KratorInteriors.sets.instantiate(item,rec.x,rec.z,rec.ry,{baseY:rec.y,register:false,prefix:zwPrefix(rec)});
  const tag='built:'+rec.key,carvedDef=!!item.carved;
  for(const R of inst.rooms){if(R.setBody&&inst.buildings.length&&!R.explicit)continue;
   const src=(item.rooms||[]).find(r=>(r.id||'')===R.setBody)||{};if(src.carved===true||(carvedDef&&src.carved!==false))continue;

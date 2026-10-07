@@ -3,8 +3,11 @@
 // The kipuka's timber, thatch and daub; raised floors in the wet. Each def's rooms are its interiors item
 // (kits/interiors/sets/zeijani.js), drawn here round the same outlines; the walk floors and walls come from the item too.
 function zwGap(r,w){return (w/2+.06)/r;}
-/* the partitions a planned body's rooms are divided by (the interiors planner's walls), drawn in the def's frame */
-function zwPartitions(key,mk,col){const it=zjItem(key);if(!it||!it.bodies)return;const inst=KratorInteriors.sets.instantiate(it,0,0,0,{register:false,prefix:'draw.'});
+/* the partitions a planned body's rooms are divided by (the interiors planner's walls), drawn in the def's frame. The planner's
+   division depends on the instance's id prefix: the drawing, the walk map (37-zj-walk.js), the furniture (91f-furnish.js) and the
+   probe's routes all take the record's (zwPrefix), so they are one plan */
+function zwPrefix(rec){return ((rec&&(rec.tid||rec.key))||'draw')+'.';}
+function zwPartitions(key,mk,col){const it=zjItem(key);if(!it||!it.bodies)return;const inst=KratorInteriors.sets.instantiate(it,0,0,0,{register:false,prefix:zwPrefix(CURREC)});
  for(const B of inst.buildings)for(const Wl of B.walls){if(Wl.kind!=='partition')continue;const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz);if(L<.1)continue;
   const ux=dx/L,uz=dz/L,ry=Math.atan2(dx,dz),t=Wl.thick||.12,h=(Wl.h||2.6)-.05,cuts=[[0,L]];
   for(const q of Wl.openings||[]){const a=q.u-q.w/2,b=q.u+q.w/2;for(let i=cuts.length-1;i>=0;i--){const c=cuts[i];if(b<=c[0]||a>=c[1])continue;cuts.splice(i,1,...[[c[0],a],[b,c[1]]].filter(s=>s[1]-s[0]>.05));}
