@@ -1,0 +1,54 @@
+[
+ {
+  "src": "ice.glacier.webp",
+  "out": "core/materials/library/ice.glacier",
+  "record": {
+   "id": "ice.glacier",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner, Oct 2026",
+    "prompt": "prompt not recorded: supplied as a pasted image (milky glacier ice with grit seams)",
+    "licence": "supplied for this project by its owner",
+    "reuse": "any cold build: ice-cave floors and crusts (Xanadu's Caves of Ice), frozen ground, glacier faces, the Highlands' snowfields, ice-shelf edges of the Ring Sea"
+   }
+  },
+  "options": {
+   "rough": 0.35,
+   "delight": 0.2
+  }
+ },
+ {
+  "src": "ice.clear.webp",
+  "out": "core/materials/library/ice.clear",
+  "record": {
+   "id": "ice.clear",
+   "family": "ice",
+   "colour": "#ffffff",
+   "roughness": 0.2,
+   "metal": 0,
+   "scale": [
+    4.0,
+    4.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner, Oct 2026",
+    "prompt": "prompt not recorded: supplied as a pasted image (deep blue cracked clear ice)",
+    "licence": "supplied for this project by its owner",
+    "reuse": "any cold build: ice-cave walls and vaults (Xanadu's Caves of Ice), frozen lakes and falls, ice blocks and crystal props"
+   }
+  },
+  "options": {
+   "rough": 0.2,
+   "delight": 0.2
+  }
+ }
+]

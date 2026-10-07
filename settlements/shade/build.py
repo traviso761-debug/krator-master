@@ -23,6 +23,10 @@ The biome fragments never reference a host global except through BIO.host
 (see biomes/sedesert/BIOME-API.md); the grep below fails the build if one does.
 """
 import hashlib, json, os, re, subprocess, sys
+try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 # tools/check_port.py checks this build before anything else; --no-checks skips it like the other checks.
@@ -120,7 +124,7 @@ def main():
         print('node is not installed: the syntax check did NOT run'); return 2
     print('built dist/%s  (%d fragments, %d KB, sha %s)  %s' % (OUT, len(frags), len(html) // 1024,
           hashlib.sha1(html.encode('utf8')).hexdigest()[:12], 'syntax OK' if r.returncode == 0 else 'SYNTAX ERROR\n' + r.stderr[:800]))
-    json.dump({f: sha(os.path.join(SRC, f)) for f in VENDORED}, open(os.path.join(HERE, 'VENDOR.json'), 'w'), indent=1)
+    json.dump({f: sha(os.path.join(SRC, f)) for f in VENDORED}, open(os.path.join(HERE, 'VENDOR.json'), 'w', encoding='utf-8'), indent=1)
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         op = [l for l in open(ki, encoding='utf8') if l.startswith('- [ ]')]

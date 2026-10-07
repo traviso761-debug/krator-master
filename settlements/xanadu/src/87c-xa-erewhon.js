@@ -107,20 +107,42 @@ function buildXaPrison(G,o){reseed(32911+(o.v|0));const V=xV(o),W=26,H=16,rock=x
  for(const s of[-1,1])xnXGSpears(s*3,3.5,0,3);vnFolk(0,4,3,2);}
 XA.def({key:'xa_prison',name:'The prison',family:'Military',tags:{type:['military','civic'],wealth:'civic',lit:true,landmark:true},w:40,d:30,h:26,fw:36,fd:14,build:buildXaPrison});
 
-// ---------------------------------------------------------------- the mouth of the Caves of Ice
-function buildXaIceCave(G,o){reseed(32921+(o.v|0));const V=xV(o),rock=xC(xPick([0x6a6258,0x5c5448,0x7a7064])),ice=xC(0xcfe6f0);
- vnReg('The Caves of Ice — the mouth',0,-4,12,14);
- kput('xBatS92',[0,0,-8],null,[30,16,16],rock);for(let k=0;k<8;k++)kput('xBoulder',[rr(-12,12),rr(0,10),rr(-14,-2)],qEuler(rng(),rng(),0),[rr(2,5),rr(1.5,3),rr(2,4)],rock.clone().multiplyScalar(rr(.8,1.1)));
- // the mouth: a tall dark arch, a pale glazed lining, icicles from its lip, ice on the sill, the stream issuing out
- kput('xArcDark',[0,0,-.1],null,[10,11,.4]);kput('xArcP',[0,0,-.4],null,[11.4,12,.6],rock.clone().multiplyScalar(.7));kput('xArcP',[0,0,-.2],null,[9.6,10.6,.5],ice.clone().multiplyScalar(.9));kput('xArcDark',[0,0,.02],null,[8.6,10,.3]);
- {const g=new THREE.Mesh(new THREE.PlaneGeometry(8,9),new THREE.MeshBasicMaterial({color:0x9fd8e8,transparent:true,opacity:.5,fog:false}));g.position.set(0,5,-1.6);g.userData.probeSkip=true;G.add(g);}
- for(let k=0;k<11;k++){const x=-4.4+k*.88;kput('xConeW',[x,9.6-Math.abs(x)*.3,.2],qEuler(Math.PI,0,0),[rr(.18,.34),rr(.8,2.2),rr(.18,.34)],ice);}
- for(let k=0;k<7;k++)kput('xConeW',[rr(-4,4),.1,rr(-.5,2)],null,[rr(.2,.5),rr(.4,1.4),rr(.2,.5)],ice);
- vB('xWaterB',0,-.15,2,3.6,.16,8,0,xC(0x8fd0e0));for(let k=0;k<12;k++)vBall('vBallW',rr(-1.5,1.5),rr(-.05,.2),rr(-1,5),rr(.08,.2),xC(0xe8f4f8));
- for(const s of[-1,1])vB('vStone',s*2.2,-.3,3,.6,.4,8,0,rock);
- if(V!==2)for(const s of[-1,1]){vPst('xColS',s*7.4,0,1.2,.5,4,xC(xPick(XPAL.stone)));kput('xBulbT',[s*7.4,4,1.2],null,[.8,1,.8],xC(xPick(XPAL.tile)));}   // two votive pillars at the mouth
- vnFolk(0,7,2,2);}
-XA.def({key:'xa_ice_cave',name:'The Caves of Ice',family:'Sacred',tags:{type:['religious','infrastructure'],wealth:'civic',lit:false,landmark:true},w:34,d:28,h:18,fw:30,fd:16,build:buildXaIceCave});
+// ---------------------------------------------------------------- the Caves of Ice (round 9c): a small ice cavern
+// A chamber dug into the hill on its level floor (local +z is the mouth): an ice shell seen from within (glassy,
+// faintly lit), a rock shell over it that meets the hillside, a tall opening at the front;
+// icicles from the roof, ice columns and crystal clusters, the spring's pool at the back and the stream running out
+// through the mouth; boulders and two votive pillars outside. The world levels the floor and lays the stream's head in it
+// a library material's maps (materials.json -> tex/ -> KMAT.pack, 88x-matlib-pack.js), repeated rx × ry times; cached
+const XA_TEXCACHE={};
+function xaTexMaps(fam,rx,ry){const P=typeof KMAT!=='undefined'&&KMAT.packed&&KMAT.packed('xanadu',fam);if(!P||!P.map)return{};const key=fam+'/'+rx+'/'+ry;if(XA_TEXCACHE[key])return XA_TEXCACHE[key];
+ const L=new THREE.TextureLoader(),t={};for(const k of['map','normalMap','roughnessMap']){if(!P[k])continue;const tx=L.load(P[k]);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(rx,ry);tx.anisotropy=4;if(k==='map')tx.encoding=THREE.sRGBEncoding;t[k]=tx;}
+ return XA_TEXCACHE[key]=t;}
+function buildXaIceCave(G,o){reseed(32921+(o.v|0));const V=xV(o),rock=xC(xPick([0x9a948a,0x8e877c,0xa39d92])),ice=xC(0xcfe6f0),water=xC(0x8fd0e0);
+ const RX=9,RY=7,RZ=11,GAP=.55;
+ // a dome shell with the mouth's wedge left out (three.js puts phi = PI/2 on +z), its radius roughened
+ const shell=(rx,ry,rz,mat,amp)=>{const g=new THREE.SphereGeometry(1,40,14,Math.PI/2+GAP,TAU-2*GAP,0,Math.PI/2);const P=g.attributes.position;
+  for(let i=0;i<P.count;i++){const y=P.getY(i),h=Math.sin(Math.round(P.getX(i)*500)*12.9898+Math.round(y*500)*78.233+Math.round(P.getZ(i)*500)*37.719)*43758.5453,k=1+(y>.02?amp*(h-Math.floor(h)-.5):0);/* roughened by position, so the seam's twin vertices stay together */P.setXYZ(i,P.getX(i)*rx*k,y*ry*k,P.getZ(i)*rz*k);}g.computeVertexNormals();const m=new THREE.Mesh(g,mat);m.userData.probeSkip=true;G.add(m);return m;};
+ // the vault: the library's clear blue ice (ice.clear) from within, faintly lit by its own map; the crust over it the
+ // glacier ice (ice.glacier), a shade greyed toward the hill's rock
+ {const W=xaTexMaps('icewall',14,3);shell(RX,RY,RZ,new THREE.MeshStandardMaterial(Object.assign({color:W.map?0xffffff:0xbfe3f0,roughness:W.roughnessMap?1:.18,metalness:.05,emissive:0x2a5a70,emissiveIntensity:.5,emissiveMap:W.map||null,side:THREE.BackSide,flatShading:true},W)),.12).userData.inspectLabel='The Caves of Ice (the cavern)';
+  const C=xaTexMaps('icefloor',12,3);shell(RX+1.6,RY+1.7,RZ+1.6,new THREE.MeshStandardMaterial(Object.assign({color:C.map?0xc8ccd0:rock.getHex(),roughness:C.roughnessMap?1:.95,flatShading:true},C)),.16);}
+ vnReg('The Caves of Ice',0,0,RX,RZ);vnReg('The Caves of Ice — the spring',0,-6,3,3);
+ // the floor
+ const zm=Math.cos(GAP)*RZ;
+ {const F=xaTexMaps('icefloor',6,7),g=new THREE.CircleGeometry(1,48);g.rotateX(-Math.PI/2);g.scale(RX-.3,1,RZ-.3);const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial(Object.assign({color:F.map?0xffffff:0xcfe6f0,roughness:F.roughnessMap?1:.3},F)));m.position.y=.04;m.userData.probeSkip=true;G.add(m);}   // the floor: glacier ice
+ kput('xDiscS',[0,.08,-6],null,[3,.06,2.4],water);vB('xWaterB',0,.1,2.5,2.2,.06,15,0,water);for(let k=0;k<10;k++)vBall('vBallW',rr(-.9,.9),.15,rr(-5,9),rr(.08,.18),xC(0xe8f4f8));
+ // icicles from the roof, columns where they meet the floor, crystal clusters round the walls
+ for(let k=0;k<46;k++){const a=rng()*TAU,r=Math.sqrt(rng())*.85,x=Math.cos(a)*r*RX,z=Math.sin(a)*r*RZ,yr=RY*Math.sqrt(Math.max(0,1-(x/RX)**2-(z/RZ)**2))-.15;
+  kput('xConeW',[x,yr,z],qEuler(Math.PI,0,0),[rr(.15,.38),rr(.6,2.6),rr(.15,.38)],ice);}
+ for(const [x,z] of[[-4.5,-3],[4.2,-5],[-3.5,4],[5,2.5]]){const yr=RY*Math.sqrt(Math.max(0,1-(x/RX)**2-(z/RZ)**2));kput('xConeW',[x,0,z],null,[.55,yr*.55,.55],ice);kput('xConeW',[x,yr,z],qEuler(Math.PI,0,0),[.5,yr*.5,.5],ice);}
+ for(let k=0;k<14;k++){const a=rng()*TAU,x=Math.cos(a)*RX*.82,z=Math.sin(a)*RZ*.82;if(z>zm-3)continue;for(let j=0;j<4;j++)kput('xConeW',[x+rr(-.6,.6),0,z+rr(-.6,.6)],qEuler(rr(-.4,.4),0,rr(-.4,.4)),[rr(.12,.3),rr(.6,1.8),rr(.12,.3)],ice.clone().multiplyScalar(rr(.95,1.05)));}
+ // outside: icicles from the lip, boulders, the votive pillars
+ // icicles hung along the opening's own edges (the wedge's two sides), not in the air before it
+ for(const sg of[-1,1])for(const th of[.2,.4,.6,.8,1,1.2]){const ph=Math.PI/2+sg*GAP;kput('xConeW',[-Math.cos(ph)*Math.sin(th)*RX,RY*Math.cos(th),Math.sin(ph)*Math.sin(th)*RZ],qEuler(Math.PI,0,0),[rr(.18,.3),rr(.5,1.4),rr(.18,.3)],ice);}
+ for(let k=0;k<10;k++){const a=rr(-1.2,1.2)+Math.PI/2,r=rr(RZ+1,RZ+5);kput('xBoulder',[Math.cos(a)*r*.9,rr(-.5,.5),Math.sin(a)*r],qEuler(rng(),rng(),0),[rr(1.5,3.5),rr(1,2.5),rr(1.5,3)],rock.clone().multiplyScalar(rr(.85,1.05)));}
+ if(V!==2)for(const s of[-1,1]){vPst('xColS',s*6.4,0,zm+3,.5,4,xC(xPick(XPAL.stone)));kput('xBulbT',[s*6.4,4,zm+3],null,[.8,1,.8],xC(xPick(XPAL.tile)));}
+ vnFolk(0,3,2,2);}
+XA.def({key:'xa_ice_cave',name:'The Caves of Ice',family:'Sacred',tags:{type:['religious','infrastructure'],wealth:'civic',lit:false,landmark:true},w:30,d:32,h:12,fw:24,fd:26,build:buildXaIceCave});
 
 // ---------------------------------------------------------------- the palace gate: a mosaic iwan between two gilt-roofed drums, the Sultan's crest over the arch
 function buildXaPalaceGate(G,o){reseed(32931+(o.v|0));const V=xV(o),W=22,D=10,H=13,wash=xC(xPick(XPAL.wash)),gold=xC(xPick(XPAL.gold)),stone=xC(xPick(XPAL.stone)),lit=xLit();
@@ -152,3 +174,15 @@ function buildXaPleasureDomeBay(G,o){reseed(32941+(o.v|0));const V=xV(o),R=22,li
  if(lit)for(let k=0;k<8;k++){const a=k/8*TAU+.2;vnLampPost(Math.cos(a)*(R+4.5),0,Math.sin(a)*(R+4.5),3.4);}
  xnXTQuay(0,R+12,24,8);xnSub('xa_barge',0,0,R+22,Math.PI/2,{v:V});vnFolk(0,R+9,4,4);}
 XA.def({key:'xa_pleasure_dome_bay',name:'Pleasure Dome of the Bay',family:'The Sultan',tags:{type:['civic'],wealth:'civic',lit:true,landmark:true},w:76,d:90,h:44,fw:56,fd:56,eye:[6,44,0,10],build:buildXaPleasureDomeBay});
+
+// ---------------------------------------------------------------- a street bridge over the stream (round 9c): the deck's top at
+// y 0 (the street's level), running along local z; one stone arch over the channel, abutments sunk into the banks,
+// parapets with gilt caps. Variants are the street widths: 0 a lane (6 m), 1 an avenue (10 m), 2 the highway (13 m)
+function buildXaBridge(G,o){reseed(32951+(o.v|0));const V=xV(o)%3,W=[6,10,13][V],L=20,stone=xC(xPick(XPAL.stone)),dark=xC(0x6a5e50),gold=xC(xPick(XPAL.gold));
+ vnReg('Bridge',0,0,W/2,L/2);
+ vB('vStone',0,-.8,0,W,.8,L,0,stone);                                                   // the deck
+ for(const s of[-1,1])vB('vStone',0,-6,s*7,W,5.2,6,0,dark);                              // the abutments, into the banks
+ for(let k=0;k<8;k++){const z=-4+(k+.5),t=Math.abs(z)/4,ys=-1.4-2.4*t*t;vB('vStone',0,ys,z,W,-.8-ys,1,0,stone);}   // the arch's spandrel, stepping down to the springers
+ for(const s of[-1,1]){const x=s*(W/2-.25);vB('vStone',x,0,0,.5,1.0,L,0,stone);vB('xGoldB',x,1.0,0,.6,.12,L,0,gold);
+  for(const z of[-L/2+.4,L/2-.4]){vB('vStone',x,0,z,.8,1.3,.8,0,stone);vBall('xGold',x,1.5,z,.22,gold);}}}
+XA.def({key:'xa_bridge',name:'Street bridge',family:'Public',tags:{type:['infrastructure'],wealth:'civic',lit:false},w:13,d:20,h:3,fw:13,fd:20,build:buildXaBridge});

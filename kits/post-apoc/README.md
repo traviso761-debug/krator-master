@@ -48,6 +48,10 @@ pieces (`kits/catalog`, the `pa_*` pieces harvested from this kit) placed as dat
 
 Reusing a building elsewhere: `place(key, x, z, ry, {v: variant})` inside any world that carries `30-geo.js`, `20-tex.js`, `22-mat.js`, `32-cores.js`, `34-adds.js`,
 `36-def.js` and the fragment that holds the def; add the culture pack fragment for the world's own marks. Everything is merged into ~16 draw calls.
+A world with its own globals (any Ancients-lineage page: its `MAT`, `TEX` and `rng` would clash) takes the set as ONE closure instead:
+`apoc_bundle.bundle(['40-dw-small.js', ...])` (`apoc_bundle.py`) defines the global `KratorPostApoc` (engine, sockets, cultures, the named
+building fragments, a scene-free `buildWorld` and the furniture glue, with its own seeded stream); load the catalog's furniture and the interiors
+kit first. `KratorPostApoc.build(sites, {culture})` returns a group. `settlements/screamers` (`src/71a-apoc-homes.js`) is the worked example.
 
 ## Flora
 

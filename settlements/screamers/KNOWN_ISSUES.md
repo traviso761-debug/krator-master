@@ -368,5 +368,52 @@
       its chunks combined, one draw per level in view; the three views now read 79-87 calls with LOD (82-84 without).
 - [ ] The gain is modest (3.27 M to 2.9-3.1 M triangles). A screen-size curve the biome core reports for its far cards,
       which LOD could read, would do more.
-- [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
-      which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
+- [ ] **Merged with the texture pass (2026-10-06):** the shared Ancients MAT keys that pass bound and Hexahedron's table did
+      not (verdigris, brick, paving, rubbleK, whiteWorn) are families in materials.json on the triplanar binding (72c); the
+      pass's generic binding (88y-screamers-matlib.js, KMAT.bindMat) is dropped so no material is bound twice. ?mat=proc
+      shows the old look.
+
+## Materials: the library (2026-10-05)
+
+- [x] The page takes `core/materials/record` (`23-mat-record.js`, `25-matlib-host.js`; not `24-tex-def.js`, whose global
+      `TEX` would meet this lineage's canvas table) and a library pack (`materials.json`, `tex/`, the generated
+      `72b-matlib-pack.js`). `72c-matlib.js` puts 13 families on the `MAT` table and 6 on the Post-Apoc set's own
+      materials, by world-space triplanar projection (README, "Materials"). Draw calls unchanged (85 at Main street).
+- [x] The board-formed concrete ran at a different scale on every surface (the UVs are in no one unit): the village
+      ground read as a timber deck. World-space tiling fixes both; the ground is packed earth now.
+- [x] The three gaps filled by the owner's generated sets (2026-10-05, batch `chatgpt-2026-10f-screamers.json`):
+      `ground.ruin` on the village ground (laterite and moss in their own colours: the family sets the material's
+      tint to white, `"color"`), `wood.lash` on the lashed posts (the cord bands are back), `metal.ancient` on
+      `MAT.white` (drawn nowhere in this scene today) and the Post-Apoc bulkhead slabs (`conc`).
+- [ ] Still procedural: `MAT.pipe`, `MAT.bough`, the leaf cards and the vendored hyperjungle's own materials.
+- [ ] Scales and tints were judged on four views, not in the demo kit; the owner has not reviewed them against
+      `?mat=proc`. The Post-Apoc `corrH` (horizontal silo ribs) stays procedural: triplanar cannot turn a set's ribs.
+- [ ] The page is 6.1 MB (the pack is ~4.7 MB of it, 512 px WebP). Normals at 256 px would save about a third.
+
+## The salvage quarter: Post-Apoc homes and their interiors (2026-10-05)
+
+- [x] Nine Post-Apoc dwellings, three round each smithy, through the `KratorPostApoc` bundle (`kits/post-apoc/
+      apoc_bundle.py`), dressed in the new Screamer culture pack and furnished by the interiors kit with Screamer
+      furniture: 9 buildings, 25 rooms, 194 interior pieces and 73 yard pieces, residence rule met (0 fails), no catalog
+      key missing. +38 draw calls and +0.23 M triangles over the whole scene (85 to 123 at the worst view).
+- [x] Siting draws nothing from the village rng; the homes claim ground before the fields, so the fields round them moved
+      (and only those). `_overlaps` stays 0.
+- [ ] The homes are at true scale (1.75 m people) beside a village drawn larger (smithies 22 m in radius, fields 25-45 m):
+      they read small. Either is the truth; the village's own scale is the older decision.
+- [ ] The kit's cloth, fires and lit windows stand still and dark: nothing drives `KratorPostApoc.ANIMU` (the page has
+      no night). Its `plant()` placeholders are the kit's muted defaults, not this biome's flora (`PLANTS.draw`).
+- [ ] The interiors are lit only by the sky light through the walls; there is no interior light, and the rooms are
+      reached by the presets only (no walk mode here).
+- [ ] The harvesters' routes do not visit the homes (the life layer reads `SCREAM.pairs`, not `SCREAM.homes`).
+
+## Core modules: where this page stands (assessed 2026-10-05)
+
+- Taken from `core/`: `materials/` (20, 22, 68: the Ancients-lineage table), `materials/record` (23, 25: the library),
+  `lod/` (09, 97), and through the bundles `sockets/` (inside `KratorPostApoc`), the catalog and the interiors kit.
+- [ ] VENDORED AND DRIFTED, with no `--vendor-check`: the biome core (`75-biome-10..40` against `core/biome`: 42-137
+      lines differ per file) and the hyperjungle kit (`76-50..65` against `biomes/hyperjungle/src`: 4-98 lines). Re-vendor
+      or switch to reading `core/biome` the way the biome kits do, then prove it by hashing the baked biome geometry.
+- [ ] Not taken: `rand/` (its own mulberry32 and `Math.sin` noise; GODOT-PLAN Phase 2), `clock/` (no world time: no
+      day and night), `simulation/` (`94-life.js` is straight lines; `core/simulation/PLAN.md` Phase 4 names this page
+      the Change testbed), `walk/`, `minimap/`, `atmos/`, `terrain/`. `54-mat-concrete.js` and `69-mat-salvage.js` stay
+      vendored and drifted on purpose (`core/README.md`, "What is not here yet").

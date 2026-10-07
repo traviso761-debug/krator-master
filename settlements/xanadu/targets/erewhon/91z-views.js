@@ -19,7 +19,10 @@ const VIEWS=(function(){const V={};const pal=_at('palace'),gd=_at('garden'),mm=_
  V['The lighthouse']=[lh.x+90,40,lh.z-90,lh.x,20,lh.z-20];
  {const p=_land('xa_prison')||pr;V['The prison']=[p.x+60,terrainH(p.x,p.z)+22,p.z-70,p.x,terrainH(p.x,p.z)+10,p.z];}
  {const c=_land('xa_ice_cave')||cv;V['The Caves of Ice']=[c.x+30,terrainH(c.x,c.z)+14,c.z-60,c.x,terrainH(c.x,c.z)+6,c.z];}
- {const n=nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
+ // the avenue stretch (inside the bounds) with the most rich frontage; the east district's centre lies outside them
+ {const inAv=[];for(const P of ER_LINES.avenue){let run=[];for(const p of P){if(ER_INCITY(p[0],p[1]))run.push(p);else{if(run.length>1)inAv.push(run);run=[];}}if(run.length>1)inAv.push(run);}
+  const B={};let best=null;for(const p of PLAN){if(p.wealth!=='rich'||!p.front)continue;const q=nearestOnLines(inAv,p.front[0],p.front[1]);if(!q||q.d>8)continue;const k=Math.round(q.x/60)+','+Math.round(q.z/60);const c=B[k]||(B[k]={n:0,q});c.n++;if(!best||c.n>best.n)best=c;}
+  const n=best?best.q:nearestOnLines(ER_LINES.avenue,wh.x,wh.z);if(n){const dx=n.b[0]-n.a[0],dz=n.b[1]-n.a[1],l=Math.hypot(dx,dz)||1;V['Wealthy homes — the avenue']=_eye(n.x-dx/l*30,n.z-dz/l*30,n.x+dx/l*70,n.z+dz/l*70,1);}else V['Wealthy homes — the avenue']=_eye(wh.x-40,wh.z-60,wh.x+60,wh.z+20);}
  const g=GATES.find(g=>g.kind==='west');if(g)V['West gate — from the highway']=_eye(g.x-70,g.z+10,g.x+20,g.z,3);
  const ge=GATES.find(g=>g.kind==='east');if(ge)V['East gate — from the highway']=_eye(ge.x+70,ge.z-10,ge.x-20,ge.z,3);
  return V;})();
