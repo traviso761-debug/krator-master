@@ -108,9 +108,14 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   else for(let t=T0+6;t<T1-4;t+=14){nrCyl('paint',t,S+.7,L.D[0],.32,.75,hc(0x3a3c3e),12,.26);nrCyl('paint',t,S+.7,L.D[0]+.75,.42,.12,hc(0x3a3c3e),12);}}
  // the main block's end walls at the mouth, and the pontoon's round pier heads beyond them
  for(const [t,dir] of [[T0,-1],[T1,1]]){
-  for(let d=0;d<4;d++){const y=L.D[d];
-   nrRadial('white',t,-W.MAIN,W.MAIN,y,y+.95,.3,P('white'));nrRadial('glass',t+dir*.06,-W.MAIN+1,W.MAIN-1,y+.95,y+2.75,.12,hc(0x24343c));
-   nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2)nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}
+  /* the end walls: on D3 and D4 a door from each corridor onto the stern's gallery and terrace */
+  for(let d=0;d<4;d++){const y=L.D[d],door=d>=2,G=[[8.9,10.6],[-10.6,-8.9]];
+   const segs=(a,b)=>{if(!door)return [[a,b]];const out=[];let c=a;for(const g of G.slice().sort((p,q)=>p[0]-q[0])){if(g[0]>c)out.push([c,g[0]]);c=Math.max(c,g[1]);}if(c<b)out.push([c,b]);return out;};
+   for(const [a,b] of segs(-W.MAIN,W.MAIN))nrRadial('white',t,a,b,y,y+.95,.3,P('white'));
+   for(const [a,b] of segs(-W.MAIN+1,W.MAIN-1))nrRadial('glass',t+dir*.06,a,b,y+.95,y+2.75,.12,hc(0x24343c));
+   if(door)for(const g of G){nrRadial('white',t,g[0],g[1],y+2.3,y+2.75,.3,P('white'));for(const s of g)nrRadial('white',t,s-.08,s+.08,y,y+2.3,.32,P('white'));}
+   nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));
+   for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2){if(door&&G.some(g=>s>g[0]-.3&&s<g[1]+.3))continue;nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}}
   /* the top deck's parapet across the end, where the stern's terraces (narrower) leave the deck's edge open */
   for(const sg of [1,-1])nrRadial('white',t,sg>0?NR_STERN.top:-W.MAIN,sg>0?W.MAIN:-NR_STERN.top,L.TOP,L.TOP+L.PARAPET,.3,P('white'));
   /* the holds' end bulkhead */

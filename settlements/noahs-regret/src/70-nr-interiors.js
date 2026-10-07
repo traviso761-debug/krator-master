@@ -63,13 +63,17 @@ function nrCabinW(C){return C.cls>=0?NR.CABIN_CLASSES[C.cls]:Math.max(2.4,C.wMin
 // ---------------------------------------------------------------- the CABINS
 const NR_CABIN_CULTURE={bedroom:'ancients-salvage',bunkroom:'scrap',store:'post-apoc'};
 function nrFurnishCabins(arc){const L=NR.L,out={furnished:0,bare:0,empty:0,rooms:[]};
- for(const C of NR.cabins){if(!C.inhabited){out.empty++;continue;}
+ for(const C of NR.cabins){if(!C.inhabited){out.empty++;
+   /* the stripped cabins of D1 and D2: rooms in the data (empty, no door leaf), for the life layer to come */
+   const pc=[NR.at(C.t0,C.sIn),NR.at(C.t1,C.sIn),NR.at(C.t1,C.sOut),NR.at(C.t0,C.sOut)],D=nrCabinDoor(C),dp=NR.at(D.tc,C.sIn);
+   out.rooms.push({id:C.id,kind:'stripped',deck:'D'+(C.deck+1),poly:pc.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:L.D[C.deck],h:L.CLEAR,
+    door:{at:[+dp[0].toFixed(3),+dp[1].toFixed(3)],w:.9,to:'corridor'},pieces:0});continue;}
   const wT=nrCabinW(C),d=C.depth-.1,kind=C.kind==='crew'?'bunkroom':C.kind,dxs=(C.doorEnd===0?-1:1)*(C.side>0?1:-1);
-  const key='cabin|'+kind+'|'+wT.toFixed(1)+'|'+dxs+'|D'+(C.deck+1);
+  const key='cabin|'+kind+'|'+wT.toFixed(1)+'|'+dxs+'|D'+(C.deck+1)+(C.blind?'|blind':'');
   const T=nrTemplate(key,{kind,culture:NR_CABIN_CULTURE[kind],wealth:C.wealth,y:0,h:L.CLEAR-.04,
    poly:[[-wT/2,-d/2],[wT/2,-d/2],[wT/2,d/2],[-wT/2,d/2]],
    doors:[{at:[dxs*(wT/2-.75),d/2],w:.9,swing:'in',hinge:dxs<0?'left':'right'}],
-   windows:[{at:[0,-d/2],w:Math.max(.8,wT-.8),sill:.55,h:2.3}]});
+   windows:C.blind?[]:[{at:[0,-d/2],w:Math.max(.8,wT-.8),sill:.55,h:2.3}]});
   /* the instance: the cabin's middle, its +z toward the corridor */
   const sm=(C.sIn+C.sOut)/2,o=NR.at(C.tm,sm),n=NR.nrm(C.tm),zx=-C.side*n[0],zz=-C.side*n[1],ry=Math.atan2(zx,zz),y=L.D[C.deck]+.02;
   const pieces=nrInstRecords(T,o[0],y,o[1],ry,{building:arc.tid,wealth:C.wealth,seed:nrHash(C.id)},C.id);
@@ -109,20 +113,22 @@ function nrShipKinds(){const IX=KratorInteriors;if(IX.PROGRAMS.sickbay)return;co
 function nrFurnishShipRooms(arc){nrShipKinds();const L=NR.L,out={rooms:[]};
  for(const R of NR.ROOMS){const y=L.D[R.deck]+.02,sm=(R.s0+R.s1)/2,sC=R.side>0?R.s0:R.s1,sG=R.side>0?R.s1:R.s0;
   /* the template room: as wide as the room's narrow end (the frames are radial), as deep as the band; +z to the corridor */
-  const kC=nrK(R.tc,sC),kG=nrK(R.tc,sG),w=(R.t1-R.t0)*Math.min(kC,kG)-NR_ROOM_TRIM,d=Math.abs(R.s1-R.s0)-.1;
-  const dx=R.side*(R.door-R.tc)*kC,dxC=clamp(dx,-w/2+.6,w/2-.6);
-  const T=nrTemplate('room|'+R.id,{kind:R.kind,culture:R.culture,wealth:R.wealth,y:0,h:L.CLEAR-.04,
-   poly:[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]],
-   doors:[{at:[dxC,d/2],w:1.1,swing:'in',hinge:'left'}],
-   windows:[{at:[0,-d/2],w:Math.max(.8,w-1.2),sill:.55,h:2.3}]});
-  const o=NR.at(R.tc,sm),n=NR.nrm(R.tc),ry=Math.atan2(-R.side*n[0],-R.side*n[1]);
+  /* the template room is the room's own trapezoid (its frames are radial), in the instance's frame: origin at its middle,
+     +z toward the corridor */
+  const o=NR.at(R.tc,sm),n=NR.nrm(R.tc),ry=Math.atan2(-R.side*n[0],-R.side*n[1]),c=Math.cos(ry),sn=Math.sin(ry);
+  const loc=p=>{const dx=p[0]-o[0],dz=p[1]-o[1];return [dx*c-dz*sn,dx*sn+dz*c];};
+  const ti=t=>.09/nrK(t,sm),corners=[[R.t0+ti(R.t0),R.s0],[R.t1-ti(R.t1),R.s0],[R.t1-ti(R.t1),R.s1],[R.t0+ti(R.t0),R.s1]].map(([t,s])=>loc(NR.at(t,s)));
+  const poly=corners.sort((a,b)=>Math.atan2(a[1],a[0])-Math.atan2(b[1],b[0]));
+  const dl=loc(NR.at(R.door,sC)),gl=loc(NR.at(R.tc,sG)),gw=(R.t1-R.t0)*nrK(R.tc,sG);
+  const T=nrTemplate('room|'+R.id,{kind:R.kind,culture:R.culture,wealth:R.wealth,y:0,h:L.CLEAR-.04,poly,
+   doors:[{at:[dl[0],dl[1]],w:1.1,swing:'in',hinge:'left'}],
+   windows:[{at:[gl[0],gl[1]],w:Math.max(.8,gw-1.4),sill:.55,h:2.3}]});
   const pieces=nrInstRecords(T,o[0],y,o[1],ry,{building:arc.tid,wealth:R.wealth,seed:nrHash(R.id)},R.id);
   T.inst.push({m:nrInstMatrix(o[0],y,o[1],ry),p:[o[0],y,o[1]],deck:R.deck,floor:L.D[R.deck],id:R.id});
   const pc=[NR.at(R.t0,R.s0),NR.at(R.t1,R.s0),NR.at(R.t1,R.s1),NR.at(R.t0,R.s1)],dp=NR.at(R.door,sC);
   out.rooms.push({id:R.id,name:R.name,kind:R.kind,deck:'D'+(R.deck+1),culture:R.culture,wealth:R.wealth,template:T.key,poly:pc.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:L.D[R.deck],h:L.CLEAR,
    door:{at:[+dp[0].toFixed(3),+dp[1].toFixed(3)],w:1.1,to:'corridor'},pieces});}
  return out;}
-const NR_ROOM_TRIM=.3;   /* the partitions' thickness taken off a ship's room's width, with a margin */
 // ---------------------------------------------------------------- the DECK BUILDINGS
 function nrFurnishBuildings(){const out={rooms:[],residences:0,residenceFails:[],items:{}};const IX=KratorInteriors,cat=nrCatalog();
  for(const Bt of NR_BUILT){const inst=nrPlanOf(Bt.item);if(!inst)continue;
@@ -159,8 +165,9 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
   for(let i=0;i<7;i++){const a=(i-3)*.32,x=br.xc+(br.a-2.4)*Math.cos(a),z=(br.b-3.2)*Math.sin(a);putH(i%2?'ancients_workstation':'yuni_ancient_glass_console',x,y,z,fwd-a*.9);}
   for(let i=0;i<5;i++){const a=(i-2)*.32,x=br.xc+(br.a-4.6)*Math.cos(a),z=(br.b-6.5)*Math.sin(a);putH('post-apoc_common_chair',x,y,z,fwd-a*.9);}
   putH('post-apoc_court_carpet',br.xc+1,y,0,fwd);putH('post-apoc_court_throne',br.xc+1,y,0,fwd,{v:0});
-  putH('post-apoc_court_table',br.xc-6,y,0,fwd,{v:1});putH('post-apoc_common_books',br.xc-6.3,y+.8,0,fwd);
-  for(const z of [-1,1])putH('post-apoc_common_chair',br.xc-6,y,z*1.2,z>0?PI:0);
+  /* the chart table abaft the helm, clear of the stair's well (N.BRIDGEHOUSE.stair) */
+  putH('post-apoc_court_table',br.xc-12,y,8,fwd,{v:1});putH('post-apoc_common_books',br.xc-12.3,y+.8,8,fwd);
+  for(const z of [-1,1])putH('post-apoc_common_chair',br.xc-12,y,8+z*1.2,z>0?PI:0);
   for(const z of [-8,0,8]){const A=KratorFurniture.FURN_BY_KEY['post-apoc_court_hanging'],h=A?KratorFurniture.entryDims(A,0).h:1;putH('post-apoc_court_hanging',br.xc-br.a+2.4,top-h,z,fwd);}
   putH('pa_drum',br.xc-br.a+3.2,y,-10,fwd);putH('pa_crate',br.xc-br.a+3.4,y,10,fwd);putH('scrap_trade_barrel',br.xc-br.a+4.4,y,-12,fwd);}
  // --- the GRAND DINING ROOM (D3-D4, the port hull): refectory runs and benches, the captain's table on the dais, the
@@ -205,6 +212,32 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
  // --- the BRIG (D3): the pirates' cages along its outboard wall, the stocks by the door
  {const R=NR.room('brig'),y=L.D[R.deck]+.02,sG=R.side>0?R.s1-1.2:R.s0+1.2;
   for(let t=R.t0+2;t<R.t1-1.5;t+=3.2)put('brig',nrMod(t|0,2)?'pa_drum_cage':'pa_prisoner_cage',t,sG,y,R.side>0?'in':'out',{v:1});}
+ // --- the BRIDGE HOUSE's decks (43-nr-fore.js), each round its spiral stair: the officers' hall (divans, low tables, rugs,
+ //     a bar), the chart and signal deck (the Ancients' workstations along the glass, desks and shelves within), the
+ //     officers' berths (beds round the glass, chests, screens), the lookout lounge (chairs turned to the glass)
+ {const B=NR.BRIDGEHOUSE;
+  const putH=(room,key,x,yy,z,ry,o)=>{const r=FURNISH_H(key,x,yy,z,ry,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+x.toFixed(1)+z.toFixed(1))}));if(r)count[room]=(count[room]||0)+1;return r;};
+  for(const S of B.storeys){const room='bridgehouse-'+S.k,y=S.y0+.02,n=S.poly.length;
+   /* a point a fraction f of the way from the storey's middle to its glass, at the outline's i/N; facing in or out */
+   const pt=(u,f)=>{const p=S.poly[Math.round(u*n)%n];return [S.xc+(p[0]-S.xc)*f,p[1]*f];};
+   const face=(q,out)=>{const dx=(out?1:-1)*(q[0]-S.xc),dz=(out?1:-1)*q[1];return Math.atan2(dx,dz);};
+   const ring=(N,f,key,out,o,skip)=>{for(let i=0;i<N;i++){if(skip&&skip(i))continue;const q=pt((i+.5)/N,f);putH(room,key,q[0],y,q[1],face(q,out),o);}};
+   if(S.k===0){ring(16,.82,'post-apoc_court_divan',false);ring(16,.66,'post-apoc_court_low_table',false,{v:0});ring(8,.66,'post-apoc_court_carpet',false);
+    ring(8,.74,'post-apoc_court_lamp',false,null,i=>i%2===1);const q=pt(.5,.5);putH(room,'post-apoc_common_counter',q[0],y,q[1],face(q,false));
+    for(const dz of [-3,3])putH(room,'generic_keg',q[0]-1.2,y,q[1]+dz,face(q,false));}
+   else if(S.k===1){ring(14,.86,'ancients_workstation',true);ring(14,.77,'post-apoc_common_chair',true);ring(7,.58,'post-apoc_common_desk',false);
+    ring(7,.58,'post-apoc_common_bookcase',true,null,i=>i%2===0);ring(7,.5,'pa_radio_sets',false,null,i=>i%2===1);}
+   else if(S.k===2){ring(12,.8,'post-apoc_common_bed',false);ring(12,.66,'generic_chest',false);ring(12,.93,'post-apoc_common_screen',false);ring(6,.6,'post-apoc_common_lamp',false);}
+   else{ring(18,.86,'post-apoc_common_chair',true);ring(9,.74,'post-apoc_court_low_table',true,{v:0});ring(6,.58,'post-apoc_court_divan',true);}}}
+ // --- the STERN LOUNGES (40-nr-hull.js nrStern): behind the doors at each hull's end, the D3 and D4 galleries under their
+ //     glass and the terraces outside: divans and low tables turned aft, benches along the rails, lamps
+ for(const [t,dir] of [[NR.T1,1],[NR.T0,-1]]){const c=NR.at(t,0),T=NR.tan(t),N=NR.nrm(t),A=[T[0]*dir,T[1]*dir],room='stern';
+  const at=(r,ph)=>[c[0]+r*(Math.cos(ph)*A[0]+Math.sin(ph)*N[0]),c[1]+r*(Math.cos(ph)*A[1]+Math.sin(ph)*N[1])];
+  const out=ph=>Math.atan2(Math.cos(ph)*A[0]+Math.sin(ph)*N[0],Math.cos(ph)*A[1]+Math.sin(ph)*N[1]);
+  const putP=(key,r,ph,yy,f,o)=>{const q=at(r,ph),ry=f==='out'?out(ph):out(ph)+PI;const k=FURNISH_H(key,q[0],yy,q[1],ry,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+q[0].toFixed(1)+q[1].toFixed(1))}));if(k)count[room]=(count[room]||0)+1;};
+  for(const ph of [-1.1,-.55,0,.55,1.1]){putP('post-apoc_court_divan',13.5,ph,L.D[2]+.02,'out');putP('post-apoc_court_low_table',11.3,ph,L.D[2]+.02,'out',{v:0});
+   putP('post-apoc_common_chair',11.8,ph,L.D[3]+.02,'out');putP('pa_bench',18.8,ph,L.D[2]+.02,'out',{v:0});putP('pa_bench',16.3,ph,L.D[3]+.02,'out',{v:0});}
+  for(const ph of [-.8,0,.8])putP('post-apoc_court_lamp',8,ph,L.D[2]+.02,'out');}
  // --- the FORECOURT PLAZA (quay level, 43-nr-fore.js): benches along the walks, lamp posts, the pirates' stalls and grog
  //     tables by the quay, and Ruephus's justice before his door (a gibbet, stocks, a cage)
  {const room='plaza',y=L.D[0]+.02,Pz=NR.PLAZA,hq=NR.LOTS.find(l=>l.use==='hq');
@@ -262,8 +295,8 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
   for(const m of (T.plan.report.missing||[]))missingRequired.push(k+': '+m.need+' ('+m.reason+')');
   if(T.audit&&!T.audit.ok)for(const f of T.audit.fails.slice(0,3))auditFails.push(k+': '+(typeof f==='string'?f:(f.check||'')+' '+(f.detail||f.msg||JSON.stringify(f)).slice(0,120)));}
  window._interiors={rooms:cab.rooms.length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
-  cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
-  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['plaza',30],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
+  strippedRooms:cab.rooms.filter(r=>r.kind==='stripped').length,cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
+  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['plaza',30],['bridgehouse-0',30],['bridgehouse-1',30],['bridgehouse-2',24],['bridgehouse-3',24],['stern',30],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
   shipRooms:shp.rooms.map(r=>({id:r.id,name:r.name,kind:r.kind,deck:r.deck,pieces:r.pieces})),
   cabins:cab.rooms,buildingRooms:bld.rooms,items:Object.keys(bld.items).map(k=>({item:k,rooms:bld.items[k].tpls.length,residence:bld.items[k].residence})),
   ms:Math.round(performance.now()-t0)};

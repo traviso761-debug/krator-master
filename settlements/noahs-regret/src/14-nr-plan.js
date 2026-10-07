@@ -190,6 +190,7 @@ const NR=(function(){
  // the bow above them stands the BRIDGE HOUSE, four storeys in the shape of the bow itself, each set in from the one below,
  // and on top the BRIDGE with its wings and mast. Polygons are hull (x, z), anticlockwise in (x, z) for prism.
  const ccw=P=>{const a=P.reduce((s,p,i)=>{const q=P[(i+1)%P.length];return s+p[0]*q[1]-q[0]*p[1];},0);return a<0?P.slice().reverse():P;};
+ N.inPoly=function(Q,x,z){let inside=false;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
  const tAtX=(X,s)=>{let lo=0,hi=N.T1;for(let k=0;k<50;k++){const m=(lo+hi)/2;if(N.at(m,s)[0]>X)lo=m;else hi=m;}return lo;};
  N.tAtX=tAtX;
  {const XP=90,tP=tAtX(XP,-W.PONT),poly=[];
@@ -203,7 +204,10 @@ const NR=(function(){
    for(let t=-tk;t<=tk+1e-6;t+=Math.min(1.5,2*tk/120))pts.push(N.at(t,s));
    const zk=N.at(tk,s)[1],face=[];for(let i=1;i<24;i++){const z=lerp(zk,-zk,i/24);face.push([X-BULGE*(1-(z/zk)*(z/zk)),z]);}
    return {k,X,apex:X-BULGE,y0,y1,zk,tk,face:[N.at(tk,s)].concat(face,[N.at(-tk,s)]),poly:ccw(pts.concat(face))};});
-  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))};}
+  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))};
+  /* the inboard cabins at the bow whose glass now faces the terraces' solid lose their light: windowless stores */
+  for(const C of N.cabins){if(!C.inhabited||C.side>0)continue;const p=N.at(C.tm,C.sOut+C.side*2.5),T=N.TIERS.find(T=>T.y0<=L.D[C.deck]+.1&&L.D[C.deck]<T.y1-.1);
+   if(T&&N.inPoly(T.poly,p[0],p[1])){C.kind='store';C.blind=true;}}}
  /* the bridge house: storey k a scaled copy of the bow's plan (fine forward, round aft), centre xc, half-length a, half-
     width b; the bridge on top, its wings across */
  {const plan=(xc,a,b,n)=>{const P=[];for(let i=0;i<n;i++){const th=i/n*TAU,c=Math.cos(th),sn=Math.sin(th),m=c>0?MB:2.2;
@@ -211,11 +215,18 @@ const NR=(function(){
   const st=[];for(let k=0;k<4;k++){const y0=L.TOP+k*L.DH,xc=237.5+1.6*k,a=32.5-3.6*k,b=46-6.5*k;st.push({k,y0,y1:y0+L.DH,xc,a,b,poly:plan(xc,a,b,96)});}
   const yb=L.TOP+4*L.DH,br={y0:yb,y1:yb+3.9,xc:246,a:17,b:21,poly:plan(246,17,21,72),wings:{x:252,z:31,d:5.5}};
   N.BRIDGEHOUSE={storeys:st,bridge:br,mast:{x:243,y:br.y1,h:16},name:'the bridge house'};}
+ /* the bridge house's spiral stair: from the top deck through every storey to the bridge, about (x, 0) */
+ N.BRIDGEHOUSE.stair={x:240,z:0,r:3.2,hole:3.6,y0:L.TOP,y1:N.BRIDGEHOUSE.bridge.y0};
  /* point tests (hull x, z): in a polygon; the floors of the fore under a point (hull y) */
- N.inPoly=function(Q,x,z){let inside=false;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
+ /* the floors of a rounded stern under hull (x, z) (40-nr-hull.js nrStern: the pontoon's deck to its rim, D2 inside the
+    shell, the D3 terrace to 20, the D4 terrace to 17.5, the top deck to 15) */
+ N.sternFloors=function(x,z){const F=[];for(const [t,dir] of [[N.T1,1],[N.T0,-1]]){const c=N.at(t,0),T=N.tan(t),dx=x-c[0],dz=z-c[1];
+   if((dx*T[0]+dz*T[1])*dir<=0)continue;const r=Math.hypot(dx,dz);if(r>W.PONT+.7)continue;F.push(L.D[0]);
+   if(r<W.MAIN)F.push(L.D[1],L.D[2]);if(r<17.5)F.push(L.D[3]);if(r<15)F.push(L.TOP);}return F;};
  N.foreFloors=function(x,z){const F=[];if(N.inPoly(N.PLAZA.poly,x,z)){let top=L.D[0];for(const T of N.TIERS)if(N.inPoly(T.poly,x,z))top=T.y1;F.push(top);}
-  const B=N.BRIDGEHOUSE;let top=null;for(const S of B.storeys)if(N.inPoly(S.poly,x,z))top=S.y1;if(top!==null)F.push(top);
-  if(N.inPoly(B.bridge.poly,x,z))F.push(B.bridge.y0,B.bridge.y1);return F;};
+  /* the bridge house's storeys are hollow: each one's floor, and its roof (the next one's floor, or a terrace) */
+  const B=N.BRIDGEHOUSE;for(const S of B.storeys)if(N.inPoly(S.poly,x,z))F.push(S.y0,S.y1);
+  if(N.inPoly(B.bridge.poly,x,z))F.push(B.bridge.y0);return F;};
  // ---------------------------------------------------------------- the PIERS the Ancients built in (drawn by 41-nr-piers.js)
  // Every pier's deck is level with the quays (D1, hull y 9). kind 'mole': the liner pier, a pontoon down the basin's long
  // axis from the bow's inner quay toward the open stern, a berth either side. 'finger': an open deck on columns off a hull's

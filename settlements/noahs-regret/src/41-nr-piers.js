@@ -43,7 +43,9 @@ function nrPierFinger(Pr){const L=NR.L,y=L.D[0],pts=nrPierPoly(Pr);
  /* the edge beam under the deck, white, and the columns down to the sea floor */
  const kp=nrPierPoly(Pr,-.05);for(let i=0;i<kp.length-1;i++){const a=kp[i],b=kp[i+1];if(Math.hypot(b[0]-a[0],b[1]-a[1])<.05)continue;
   beam('white',[a[0],y-.95,a[1]],[b[0],y-.95,b[1]],.5,P('white'));}
- for(let l=4;l<Pr.len-1;l+=7)for(const sd of [1,-1]){const p=nrPierPt(Pr,Math.min(l,Pr.len-Pr.w/2),sd*(Pr.w/2-.9),0);cyl('white',p[0],0,p[2],.42,y-.95,P('whiteS'),12);}
+ /* the columns stand on the sea floor (the ground under each, in the hull frame), or on the sand where the basin shoals */
+ for(let l=4;l<Pr.len-1;l+=7)for(const sd of [1,-1]){const p=nrPierPt(Pr,Math.min(l,Pr.len-Pr.w/2),sd*(Pr.w/2-.9),0),w=nrH2W(p[0],0,p[2]),g=terrainH(w[0],w[2]),gh=nrW2H(w[0],g,w[2])[1];
+  const yb=Math.min(y-1.2,gh-.3);cyl('white',p[0],yb,p[2],.42,y-.95-yb,P('whiteS'),12);}
  nrBollards(Pr,1,4,Pr.len-3,8);nrBollards(Pr,-1,8,Pr.len-3,8);
  /* a ladder down to the water at the head */
  {const p=nrPierPt(Pr,Pr.len-.15,0,y);for(const sd of [-.35,.35]){const a=nrPierPt(Pr,Pr.len-.12,sd,y-.45),b=nrPierPt(Pr,Pr.len-.12,sd,3.6);beam('rust',a,b,.06,hc(0x4a4a48));}

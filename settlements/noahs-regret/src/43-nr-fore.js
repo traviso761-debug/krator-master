@@ -6,7 +6,8 @@
 // placed by 49). At its head the TERRACES climb to the top deck, each a curved glazed face with a rounded rail, the grand
 // stair up their middle. On the bow the BRIDGE HOUSE: four storeys, each the bow's shape set in from the one below, glass
 // bands under rounded rails; on top the BRIDGE, glazed all round under a visor roof, its wings out to either side, the mast.
-// The bridge house's storeys are closed volumes (no interiors yet); the bridge is a room (70 furnishes it).
+// The bridge house's storeys are hollow decks round a spiral stair that climbs from the top deck to the bridge: the officers'
+// hall, the chart and signal deck, the officers' berths and the lookout lounge (70 furnishes them, and the bridge).
 /* a profile [[ds, dy], ...] lofted along a polyline in (x, z) at height y; ds along the polyline's outward normal (for a
    closed, anticlockwise outline: away from it; for an open one: to the right of its direction, turned -90 degrees). The
    facing is settled from the profile: a top segment faces up, a vertical-only profile faces out (o.inside reverses). */
@@ -24,6 +25,14 @@ function nrPolyLoft(mk,pts,closed,y,prof,col,o){o=o||{};const P=closed?pts.conca
  psurf(mk,at,n-1,m,col,{flip});}
 /* is the top deck at ring (t, s) covered by the fore (the terraces' top or the bridge house)? */
 function nrUnderFore(t,s){const p=NR.at(t,s);return NR.inPoly(NR.BRIDGEHOUSE.storeys[0].poly,p[0],p[1])||NR.TIERS.some(T=>NR.inPoly(T.poly,p[0],p[1]));}
+/* a slab over an outline with a round hole (the stairwell) at (cx, cz), top at y: the outline must be star-shaped from the
+   hole's centre (the bridge house's are) */
+function nrRingSlab(mk,poly,cx,cz,rh,y,th,col,under){const P=poly.concat([poly[0]]),n=P.length-1;
+ const at=(u,v,yy)=>{const q=u*n,i=Math.min(n-1,Math.floor(q)),f=q-i,px=lerp(P[i][0],P[i+1][0],f),pz=lerp(P[i][1],P[i+1][1],f),dx=px-cx,dz=pz-cz,l=Math.hypot(dx,dz)||1;
+  return [lerp(cx+dx/l*rh,px,v),yy,lerp(cz+dz/l*rh,pz,v)];};
+ psurf(mk,(u,v)=>at(u,v,y),n,2,col);
+ psurf(under?under[0]:mk,(u,v)=>at(u,v,y-th),n,2,under?under[1]:col,{flip:true});
+ lathe(mk,cx,cz,[[rh,y-th],[rh,y]],32,col,{inward:true});}
 /* a raised bed: a soft oval kerb of white, earth and turf in it; c the centre, rx along x, rz along z */
 function nrBlob(cx,cz,rx,rz,wob,seg){const P=[];for(let i=0;i<seg;i++){const a=i/seg*TAU,r=1+wob*Math.sin(3*a+cx*.1)+wob*.5*Math.sin(5*a+cz*.1);P.push([cx+Math.cos(a)*rx*r,cz+Math.sin(a)*rz*r]);}
  const ar=P.reduce((s,p,i)=>{const q=P[(i+1)%P.length];return s+p[0]*q[1]-q[0]*p[1];},0);return ar<0?P.reverse():P;}
@@ -71,13 +80,24 @@ function nrTerraces(){const L=NR.L,W=NR.W,S=NR.FORE_STAIR,hw=S.w/2+.35;
    for(let i=0;i<=4;i++){const x=lerp(xa,f.x1,i/4),yy=lerp(f.y0,f.y1,i/4);beam('white',[x,yy,z],[x,yy+1.0,z],.08,P('white'),true,6);}}
   xa=f.x1;}}
 function nrBridgeHouse(){const L=NR.L,B=NR.BRIDGEHOUSE,br=B.bridge;reseed(4470);
- for(const S of B.storeys){prism('white',S.poly,S.y0,S.y1-.06,P('white'));prism('deck',S.poly,S.y1-.06,S.y1,hc(0xd6d0c2));
-  nrPolyLoft('glass',S.poly,true,S.y0,[[.05,.85],[.05,2.95]],hc(0x24343c));
+ const St=B.stair;
+ for(const S of B.storeys){
+  /* the walls: a white sill, the glass, a white head, each seen from both sides */
+  for(const inside of [false,true]){nrPolyLoft('white',S.poly,true,S.y0,[[0,0],[0,.85]],P('white'),{inside});
+   nrPolyLoft('glass',S.poly,true,S.y0,[[.03,.85],[.03,2.95]],hc(0x24343c),{inside});nrPolyLoft('white',S.poly,true,S.y0,[[0,2.95],[0,L.DH-L.SLAB]],P('white'),{inside});}
   for(let i=0;i<S.poly.length;i+=4){const p=S.poly[i];box('white',p[0],S.y0+.85,p[1],.22,2.1,.22,P('white'));}
-  nrPolyLoft('white',S.poly,true,S.y1,NR_RIBBON_PROF,P('white'));}
+  /* its roof: the next storey's floor and the terrace outside it, open round the stair */
+  nrRingSlab('deck',S.poly,St.x,St.z,St.hole,S.y1,L.SLAB,hc(0xd6d0c2),['plaster',hc(0xe4ded2)]);
+  nrPolyLoft('white',S.poly,true,S.y1,[[0,-L.SLAB],[0,0]],P('white'));
+  nrPolyLoft('white',S.poly,true,S.y1,NR_RIBBON_PROF,P('white'));
+  /* a rail round the stairwell, open where the stair arrives */
+  lathe('white',St.x,St.z,[[St.hole+.1,S.y1],[St.hole+.1,S.y1+1.0]],24,P('white'),{a0:.9,a1:TAU-.3});}
+ /* the spiral stair: treads round a white column, a handrail on its outer edge */
+ {const rise=.18,n=Math.round((St.y1-St.y0)/rise),da=.155;cyl('white',St.x,St.y0,St.z,.42,St.y1-St.y0+1.1,P('white'),14);
+  for(let i=0;i<n;i++){const a=i*da,yy=St.y0+(i+1)*rise-.06;box('marble',St.x+Math.cos(a)*1.8,yy,St.z+Math.sin(a)*1.8,2.75,.08,.62,hc(0xece6d8),-a);}
+  const hr=[];for(let i=0;i<=n;i++){const a=i*da;hr.push([St.x+Math.cos(a)*3.1,St.y0+i*rise+.95,St.z+Math.sin(a)*3.1]);}cord('white',hr,.05,P('white'));}
  /* the bridge: floor, a white sill, glass all round, a white head; a visor roof standing out over it */
  const y=br.y0,P2b=br.poly;
- prism('deck',P2b,y,y+.05,hc(0xbfb8aa));
  for(const inside of [false,true]){nrPolyLoft('white',P2b,true,y,[[0,0],[0,1.0]],P('white'),{inside});
   nrPolyLoft('glass',P2b,true,y,[[.02,1.0],[.02,3.35]],hc(0x3a5260),{inside});nrPolyLoft('white',P2b,true,y,[[0,3.35],[0,3.9]],P('white'),{inside});}
  for(let i=0;i<P2b.length;i+=3){const p=P2b[i];box('white',p[0],y+1.0,p[1],.14,2.35,.14,P('white'));}

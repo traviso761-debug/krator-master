@@ -17,22 +17,19 @@
 
 ## The hull and the piers
 
-- [ ] The bridge house's four storeys and the terraces' insides are closed volumes: glass bands on white, no rooms yet; only
-      the bridge is a room. The cabins on the inboard side of the bow (D1-D4) now look into the terraces' solid.
-- [ ] The stair cores do not reach the bridge: it has no stair drawn up from the top deck (the walk floors stack it).
+- [ ] The terraces (the inner bow built up to the top deck) are solid inside. The 74 inboard cabins on D3-D4 whose glass
+      faced them are windowless stores now; the D1-D2 cabins behind them are stripped anyway.
+- [ ] The bridge house's four decks are open-plan halls furnished piece by piece round the spiral stair (no partitions,
+      not ROOM()s); the spiral stair is the only way up from the top deck.
 - [ ] Ruephus's headquarters moved from the top deck to the head of the forecourt plaza (quay level) when the bridge house
       took the bow; one Lens office was dropped and a Drum tower moved aft for the same reason.
 
 - [ ] The two hulls meet at the bow in a tight V: the inboard skin bends at about 10 m there, and the liner mole's root
       follows that curve. Cabins on the inboard side of the bow are too narrow for a template and are stores.
-- [ ] The finger piers' columns go down to the keel's depth, not to the sea floor; where the basin is shallow (the sand bar
-      off the starboard quay) they stand in sand. The mole is a pontoon like the hulls.
 - [ ] The forecastle is a closed void between the bulwark and the main block's D1-D2 walls (stripped decks): those cabins'
       windows look onto its inside.
-- [ ] The rounded sterns' insides (D1-D4 behind the end walls, the half-round galleries) are empty and closed off by the
-      end walls; the terraces have no door onto them. The screws and rudders are simple (a hub, four flat blades, a slab).
-- [ ] The scalloped balcony fronts are cosmetic: the balcony dividers stand on the frames (where the scallop is nil) and the
-      walk floors still end at the slab's edge (20 m), not at the scallop.
+- [ ] The rounded sterns' D1-D2 galleries (inside the glazed shell) are empty and have no door (those decks are stripped);
+      D3 and D4 open onto theirs from both corridors. The screws and rudders are simple (a hub, four flat blades, a slab).
 
 ## Interiors
 
@@ -43,13 +40,13 @@
 - [ ] The grand dining room, the bridge, the engine rooms, the crew messes, the greenhouse and the atrium are furnished
       piece by piece, not by the placer (a 2,000 m2 hall is not a room the placer's programmes fit); they are registered as
       zones, not as ROOM()s. The brig's cages are placed by hand too (the catalog's cages are yard pieces).
-- [ ] The ship's rooms are furnished on a rectangle the width of the room's narrow end: on the bow's curves (the chart room,
-      the wardroom, the strongroom) the wide end of the room stays bare. The ship's room kinds (sick bay, chart room,
+- [ ] The ship's room kinds (sick bay, chart room,
       strongroom, armoury, brig, sail loft, laundry) are programmes added by this page (70-nr-interiors.js), not by the
       interiors kit: the sail loft gets looms and benches, the laundry quench tubs and goods rails (no laundry pieces in the
       catalog yet).
 - [ ] The small Reliquary's stairs are steep (0.21 m risers on 0.23 m treads: a ship's stair). Its 12-gon walls are short.
-- [ ] The cabins on D1 and D2 are stripped and empty by the brief; their doors are gone. They are not rooms in the data yet.
+- [ ] The cabins on D1 and D2 are stripped and empty by the brief; their doors are gone. They are rooms in the data (kind
+      `stripped`, no furniture) but nothing is drawn in them but the debris.
 
 ## Look
 
@@ -60,7 +57,6 @@
 - [ ] Glass is one flat transparent tint; at grazing angles the interiors behind it are hard to see from outside (the
       deck cut is the way in).
 - [ ] The atrium's glass balustrades read milky when looked through from above (the gallery view): one flat glass tint.
-- [ ] The halos (lamp glows) draw by day at a quarter strength, as in the Scyvoi kit.
 
 ## Performance
 

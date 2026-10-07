@@ -5,6 +5,7 @@
 const NR_LEVELS=[['off',null],['Holds (mezzanine)',NR.L.MEZZ+3.0],['D1 - stripped',NR.L.D[0]+2.2],['D2 - stripped',NR.L.D[1]+2.2],
  ['D3 - crew cabins',NR.L.D[2]+2.2],['D4 - officers, bridge',NR.L.D[3]+2.2],['Dining room (D3-D4)',NR.L.D[2]+5.6],['Top deck: ground floors',NR.L.TOP+2.4]];
 for(let k=1;k<=5;k++)NR_LEVELS.push(['Top deck: storey '+(k+1),NR.L.TOP+.25+k*NR_STOREY+2.2]);
+for(const S of NR.BRIDGEHOUSE.storeys)NR_LEVELS.push(['Bridge house: '+['the officers\' hall','the chart deck','the berths','the lookout lounge'][S.k],S.y0+2.2]);
 NR_LEVELS.push(['The bridge (the bridge house)',NR.BRIDGEHOUSE.bridge.y0+2.2]);
 function nrHP(t,s,y){const p=NR.at(t,s);return nrH2W(p[0],y,p[1]);}
 function nrV(eye,at,opt){return eye.concat(at,[opt||{}]);}
@@ -20,6 +21,10 @@ function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===i
   V['The forecourt plaza and the headquarters']=nrV(H(30,36,-34),H(170,12,0));
   V['The terraces and the grand stair']=nrV(H(132,15,-22),H(200,21,0));
   V['Inside the bridge']=nrV(H(br.xc-11,br.y0+1.75,-7),H(br.xc+16,br.y0+1.3,5));
+  {const S=NR.BRIDGEHOUSE.storeys[0],St=NR.BRIDGEHOUSE.stair;V["Inside the bridge house: the officers' hall"]=nrV(H(S.xc-26,S.y0+1.7,-14),H(S.xc+6,S.y0+1.2,6));
+   V['Plan: the bridge house, the chart deck']=nrV(H(S.xc-40,S.y0+44,-30),H(S.xc,S.y0+4,0),{cut:cutAt('Bridge house: the chart')});
+   V['The spiral stair to the bridge']=nrV(H(St.x-7,St.y0+5,-6),H(St.x,St.y0+11,0));}
+  {const c=NR.at(NR.T1,0),T=NR.tan(NR.T1),e=nrH2W(c[0]-T[0]*4,L.D[2]+1.7,c[1]-T[1]*4),a=nrH2W(c[0]+T[0]*20,L.D[2]+1.2,c[1]+T[1]*20);V['The stern lounge (D3)']=nrV(e,a);}
   V['Plan: the bridge']=nrV(H(br.xc-34,br.y0+30,-30),H(br.xc,br.y0,0),{cut:cutAt('The bridge')});
   V["Plan: Ruephus's headquarters"]=nrV(H(hq.x-32,L.D[0]+30,-28),H(hq.x,L.D[0],0),{cut:cutAt('D1')});}
  V['The top deck: the promenade']=nrV(nrHP(52,-16.5,L.TOP+1.7),nrHP(96,-6,L.TOP+5));
@@ -69,6 +74,8 @@ function nrInsideHull(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);retur
 function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR.W,F=[];
  /* the fore (43): the plaza, the terraces' tops, the bridge house's terraces, the bridge */
  for(const y of NR.foreFloors(h[0],h[2]))F.push(y);
+ /* the rounded sterns (40): the pontoon's deck, the galleries and terraces */
+ for(const y of NR.sternFloors(h[0],h[2]))F.push(y);
  /* the piers (41): one deck, level with the quays */
  if(!(q.inRing&&Math.abs(q.s)<=W.PONT)&&NR.pierAt(h[0],h[2]))F.push(L.D[0]);
  /* the forecastle's deck climbs over the outer promenade round the bow */
@@ -76,6 +83,8 @@ function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR
  if(q.inRing&&Math.abs(q.s)<=W.PONT){const a=Math.abs(q.s),A=NR.ATRIUM,inVoid=Math.abs(q.t-A.tc)<A.voidT&&a<A.voidS;
   if(a<W.SKIN)F.push(L.HOLD);if(a>=W.MEZZ&&a<W.SKIN)F.push(L.MEZZ);
   if(!(q.s>W.MAIN&&Math.abs(q.t)<NR.FORE.t))F.push(L.D[0]);
+  /* the balconies of D3 and D4 swell out between the frames (40 nrScallop) */
+  if(a>W.MAIN&&a<=W.MAIN+nrScallop(q.t))F.push(L.D[2],L.D[3]);
   if(a<=W.MAIN){for(let d=1;d<=4;d++){const y=d<4?L.D[d]:L.TOP;if(inVoid)continue;
     if(NR.CORES.some(c=>Math.abs(q.t-c.t)<3.5&&a<6))continue;
     /* no floor where a room is double height (its decks d-1 and d), nor on the top deck over the greenhouse's glass */

@@ -383,6 +383,7 @@ const NR=(function(){
  // the bow above them stands the BRIDGE HOUSE, four storeys in the shape of the bow itself, each set in from the one below,
  // and on top the BRIDGE with its wings and mast. Polygons are hull (x, z), anticlockwise in (x, z) for prism.
  const ccw=P=>{const a=P.reduce((s,p,i)=>{const q=P[(i+1)%P.length];return s+p[0]*q[1]-q[0]*p[1];},0);return a<0?P.slice().reverse():P;};
+ N.inPoly=function(Q,x,z){let inside=false;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
  const tAtX=(X,s)=>{let lo=0,hi=N.T1;for(let k=0;k<50;k++){const m=(lo+hi)/2;if(N.at(m,s)[0]>X)lo=m;else hi=m;}return lo;};
  N.tAtX=tAtX;
  {const XP=90,tP=tAtX(XP,-W.PONT),poly=[];
@@ -396,7 +397,10 @@ const NR=(function(){
    for(let t=-tk;t<=tk+1e-6;t+=Math.min(1.5,2*tk/120))pts.push(N.at(t,s));
    const zk=N.at(tk,s)[1],face=[];for(let i=1;i<24;i++){const z=lerp(zk,-zk,i/24);face.push([X-BULGE*(1-(z/zk)*(z/zk)),z]);}
    return {k,X,apex:X-BULGE,y0,y1,zk,tk,face:[N.at(tk,s)].concat(face,[N.at(-tk,s)]),poly:ccw(pts.concat(face))};});
-  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))};}
+  N.FORE_STAIR={x0:N.PLAZA.XP+78,w:10,flights:N.TIERS.map(T=>({y0:T.y0,y1:T.y1,x1:T.apex}))};
+  /* the inboard cabins at the bow whose glass now faces the terraces' solid lose their light: windowless stores */
+  for(const C of N.cabins){if(!C.inhabited||C.side>0)continue;const p=N.at(C.tm,C.sOut+C.side*2.5),T=N.TIERS.find(T=>T.y0<=L.D[C.deck]+.1&&L.D[C.deck]<T.y1-.1);
+   if(T&&N.inPoly(T.poly,p[0],p[1])){C.kind='store';C.blind=true;}}}
  /* the bridge house: storey k a scaled copy of the bow's plan (fine forward, round aft), centre xc, half-length a, half-
     width b; the bridge on top, its wings across */
  {const plan=(xc,a,b,n)=>{const P=[];for(let i=0;i<n;i++){const th=i/n*TAU,c=Math.cos(th),sn=Math.sin(th),m=c>0?MB:2.2;
@@ -404,11 +408,18 @@ const NR=(function(){
   const st=[];for(let k=0;k<4;k++){const y0=L.TOP+k*L.DH,xc=237.5+1.6*k,a=32.5-3.6*k,b=46-6.5*k;st.push({k,y0,y1:y0+L.DH,xc,a,b,poly:plan(xc,a,b,96)});}
   const yb=L.TOP+4*L.DH,br={y0:yb,y1:yb+3.9,xc:246,a:17,b:21,poly:plan(246,17,21,72),wings:{x:252,z:31,d:5.5}};
   N.BRIDGEHOUSE={storeys:st,bridge:br,mast:{x:243,y:br.y1,h:16},name:'the bridge house'};}
+ /* the bridge house's spiral stair: from the top deck through every storey to the bridge, about (x, 0) */
+ N.BRIDGEHOUSE.stair={x:240,z:0,r:3.2,hole:3.6,y0:L.TOP,y1:N.BRIDGEHOUSE.bridge.y0};
  /* point tests (hull x, z): in a polygon; the floors of the fore under a point (hull y) */
- N.inPoly=function(Q,x,z){let inside=false;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
+ /* the floors of a rounded stern under hull (x, z) (40-nr-hull.js nrStern: the pontoon's deck to its rim, D2 inside the
+    shell, the D3 terrace to 20, the D4 terrace to 17.5, the top deck to 15) */
+ N.sternFloors=function(x,z){const F=[];for(const [t,dir] of [[N.T1,1],[N.T0,-1]]){const c=N.at(t,0),T=N.tan(t),dx=x-c[0],dz=z-c[1];
+   if((dx*T[0]+dz*T[1])*dir<=0)continue;const r=Math.hypot(dx,dz);if(r>W.PONT+.7)continue;F.push(L.D[0]);
+   if(r<W.MAIN)F.push(L.D[1],L.D[2]);if(r<17.5)F.push(L.D[3]);if(r<15)F.push(L.TOP);}return F;};
  N.foreFloors=function(x,z){const F=[];if(N.inPoly(N.PLAZA.poly,x,z)){let top=L.D[0];for(const T of N.TIERS)if(N.inPoly(T.poly,x,z))top=T.y1;F.push(top);}
-  const B=N.BRIDGEHOUSE;let top=null;for(const S of B.storeys)if(N.inPoly(S.poly,x,z))top=S.y1;if(top!==null)F.push(top);
-  if(N.inPoly(B.bridge.poly,x,z))F.push(B.bridge.y0,B.bridge.y1);return F;};
+  /* the bridge house's storeys are hollow: each one's floor, and its roof (the next one's floor, or a terrace) */
+  const B=N.BRIDGEHOUSE;for(const S of B.storeys)if(N.inPoly(S.poly,x,z))F.push(S.y0,S.y1);
+  if(N.inPoly(B.bridge.poly,x,z))F.push(B.bridge.y0);return F;};
  // ---------------------------------------------------------------- the PIERS the Ancients built in (drawn by 41-nr-piers.js)
  // Every pier's deck is level with the quays (D1, hull y 9). kind 'mole': the liner pier, a pontoon down the basin's long
  // axis from the bow's inner quay toward the open stern, a berth either side. 'finger': an open deck on columns off a hull's
@@ -14518,9 +14529,14 @@ function nrHullShell(){const L=NR.L,W=NR.W,T0=NR.T0,T1=NR.T1;
   else for(let t=T0+6;t<T1-4;t+=14){nrCyl('paint',t,S+.7,L.D[0],.32,.75,hc(0x3a3c3e),12,.26);nrCyl('paint',t,S+.7,L.D[0]+.75,.42,.12,hc(0x3a3c3e),12);}}
  // the main block's end walls at the mouth, and the pontoon's round pier heads beyond them
  for(const [t,dir] of [[T0,-1],[T1,1]]){
-  for(let d=0;d<4;d++){const y=L.D[d];
-   nrRadial('white',t,-W.MAIN,W.MAIN,y,y+.95,.3,P('white'));nrRadial('glass',t+dir*.06,-W.MAIN+1,W.MAIN-1,y+.95,y+2.75,.12,hc(0x24343c));
-   nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2)nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}
+  /* the end walls: on D3 and D4 a door from each corridor onto the stern's gallery and terrace */
+  for(let d=0;d<4;d++){const y=L.D[d],door=d>=2,G=[[8.9,10.6],[-10.6,-8.9]];
+   const segs=(a,b)=>{if(!door)return [[a,b]];const out=[];let c=a;for(const g of G.slice().sort((p,q)=>p[0]-q[0])){if(g[0]>c)out.push([c,g[0]]);c=Math.max(c,g[1]);}if(c<b)out.push([c,b]);return out;};
+   for(const [a,b] of segs(-W.MAIN,W.MAIN))nrRadial('white',t,a,b,y,y+.95,.3,P('white'));
+   for(const [a,b] of segs(-W.MAIN+1,W.MAIN-1))nrRadial('glass',t+dir*.06,a,b,y+.95,y+2.75,.12,hc(0x24343c));
+   if(door)for(const g of G){nrRadial('white',t,g[0],g[1],y+2.3,y+2.75,.3,P('white'));for(const s of g)nrRadial('white',t,s-.08,s+.08,y,y+2.3,.32,P('white'));}
+   nrRadial('white',t,-W.MAIN,W.MAIN,y+2.75,y+L.DH,.3,P('white'));
+   for(let s=-W.MAIN+1;s<=W.MAIN-1;s+=4.2){if(door&&G.some(g=>s>g[0]-.3&&s<g[1]+.3))continue;nrBox('white',t,s,y+.95,.36,1.8,.22,P('white'));}}
   /* the top deck's parapet across the end, where the stern's terraces (narrower) leave the deck's edge open */
   for(const sg of [1,-1])nrRadial('white',t,sg>0?NR_STERN.top:-W.MAIN,sg>0?W.MAIN:-NR_STERN.top,L.TOP,L.TOP+L.PARAPET,.3,P('white'));
   /* the holds' end bulkhead */
@@ -14665,7 +14681,9 @@ function nrPierFinger(Pr){const L=NR.L,y=L.D[0],pts=nrPierPoly(Pr);
  /* the edge beam under the deck, white, and the columns down to the sea floor */
  const kp=nrPierPoly(Pr,-.05);for(let i=0;i<kp.length-1;i++){const a=kp[i],b=kp[i+1];if(Math.hypot(b[0]-a[0],b[1]-a[1])<.05)continue;
   beam('white',[a[0],y-.95,a[1]],[b[0],y-.95,b[1]],.5,P('white'));}
- for(let l=4;l<Pr.len-1;l+=7)for(const sd of [1,-1]){const p=nrPierPt(Pr,Math.min(l,Pr.len-Pr.w/2),sd*(Pr.w/2-.9),0);cyl('white',p[0],0,p[2],.42,y-.95,P('whiteS'),12);}
+ /* the columns stand on the sea floor (the ground under each, in the hull frame), or on the sand where the basin shoals */
+ for(let l=4;l<Pr.len-1;l+=7)for(const sd of [1,-1]){const p=nrPierPt(Pr,Math.min(l,Pr.len-Pr.w/2),sd*(Pr.w/2-.9),0),w=nrH2W(p[0],0,p[2]),g=terrainH(w[0],w[2]),gh=nrW2H(w[0],g,w[2])[1];
+  const yb=Math.min(y-1.2,gh-.3);cyl('white',p[0],yb,p[2],.42,y-.95-yb,P('whiteS'),12);}
  nrBollards(Pr,1,4,Pr.len-3,8);nrBollards(Pr,-1,8,Pr.len-3,8);
  /* a ladder down to the water at the head */
  {const p=nrPierPt(Pr,Pr.len-.15,0,y);for(const sd of [-.35,.35]){const a=nrPierPt(Pr,Pr.len-.12,sd,y-.45),b=nrPierPt(Pr,Pr.len-.12,sd,3.6);beam('rust',a,b,.06,hc(0x4a4a48));}
@@ -14764,7 +14782,8 @@ nrPart('decks',nrDecks);
 // placed by 49). At its head the TERRACES climb to the top deck, each a curved glazed face with a rounded rail, the grand
 // stair up their middle. On the bow the BRIDGE HOUSE: four storeys, each the bow's shape set in from the one below, glass
 // bands under rounded rails; on top the BRIDGE, glazed all round under a visor roof, its wings out to either side, the mast.
-// The bridge house's storeys are closed volumes (no interiors yet); the bridge is a room (70 furnishes it).
+// The bridge house's storeys are hollow decks round a spiral stair that climbs from the top deck to the bridge: the officers'
+// hall, the chart and signal deck, the officers' berths and the lookout lounge (70 furnishes them, and the bridge).
 /* a profile [[ds, dy], ...] lofted along a polyline in (x, z) at height y; ds along the polyline's outward normal (for a
    closed, anticlockwise outline: away from it; for an open one: to the right of its direction, turned -90 degrees). The
    facing is settled from the profile: a top segment faces up, a vertical-only profile faces out (o.inside reverses). */
@@ -14782,6 +14801,14 @@ function nrPolyLoft(mk,pts,closed,y,prof,col,o){o=o||{};const P=closed?pts.conca
  psurf(mk,at,n-1,m,col,{flip});}
 /* is the top deck at ring (t, s) covered by the fore (the terraces' top or the bridge house)? */
 function nrUnderFore(t,s){const p=NR.at(t,s);return NR.inPoly(NR.BRIDGEHOUSE.storeys[0].poly,p[0],p[1])||NR.TIERS.some(T=>NR.inPoly(T.poly,p[0],p[1]));}
+/* a slab over an outline with a round hole (the stairwell) at (cx, cz), top at y: the outline must be star-shaped from the
+   hole's centre (the bridge house's are) */
+function nrRingSlab(mk,poly,cx,cz,rh,y,th,col,under){const P=poly.concat([poly[0]]),n=P.length-1;
+ const at=(u,v,yy)=>{const q=u*n,i=Math.min(n-1,Math.floor(q)),f=q-i,px=lerp(P[i][0],P[i+1][0],f),pz=lerp(P[i][1],P[i+1][1],f),dx=px-cx,dz=pz-cz,l=Math.hypot(dx,dz)||1;
+  return [lerp(cx+dx/l*rh,px,v),yy,lerp(cz+dz/l*rh,pz,v)];};
+ psurf(mk,(u,v)=>at(u,v,y),n,2,col);
+ psurf(under?under[0]:mk,(u,v)=>at(u,v,y-th),n,2,under?under[1]:col,{flip:true});
+ lathe(mk,cx,cz,[[rh,y-th],[rh,y]],32,col,{inward:true});}
 /* a raised bed: a soft oval kerb of white, earth and turf in it; c the centre, rx along x, rz along z */
 function nrBlob(cx,cz,rx,rz,wob,seg){const P=[];for(let i=0;i<seg;i++){const a=i/seg*TAU,r=1+wob*Math.sin(3*a+cx*.1)+wob*.5*Math.sin(5*a+cz*.1);P.push([cx+Math.cos(a)*rx*r,cz+Math.sin(a)*rz*r]);}
  const ar=P.reduce((s,p,i)=>{const q=P[(i+1)%P.length];return s+p[0]*q[1]-q[0]*p[1];},0);return ar<0?P.reverse():P;}
@@ -14829,13 +14856,24 @@ function nrTerraces(){const L=NR.L,W=NR.W,S=NR.FORE_STAIR,hw=S.w/2+.35;
    for(let i=0;i<=4;i++){const x=lerp(xa,f.x1,i/4),yy=lerp(f.y0,f.y1,i/4);beam('white',[x,yy,z],[x,yy+1.0,z],.08,P('white'),true,6);}}
   xa=f.x1;}}
 function nrBridgeHouse(){const L=NR.L,B=NR.BRIDGEHOUSE,br=B.bridge;reseed(4470);
- for(const S of B.storeys){prism('white',S.poly,S.y0,S.y1-.06,P('white'));prism('deck',S.poly,S.y1-.06,S.y1,hc(0xd6d0c2));
-  nrPolyLoft('glass',S.poly,true,S.y0,[[.05,.85],[.05,2.95]],hc(0x24343c));
+ const St=B.stair;
+ for(const S of B.storeys){
+  /* the walls: a white sill, the glass, a white head, each seen from both sides */
+  for(const inside of [false,true]){nrPolyLoft('white',S.poly,true,S.y0,[[0,0],[0,.85]],P('white'),{inside});
+   nrPolyLoft('glass',S.poly,true,S.y0,[[.03,.85],[.03,2.95]],hc(0x24343c),{inside});nrPolyLoft('white',S.poly,true,S.y0,[[0,2.95],[0,L.DH-L.SLAB]],P('white'),{inside});}
   for(let i=0;i<S.poly.length;i+=4){const p=S.poly[i];box('white',p[0],S.y0+.85,p[1],.22,2.1,.22,P('white'));}
-  nrPolyLoft('white',S.poly,true,S.y1,NR_RIBBON_PROF,P('white'));}
+  /* its roof: the next storey's floor and the terrace outside it, open round the stair */
+  nrRingSlab('deck',S.poly,St.x,St.z,St.hole,S.y1,L.SLAB,hc(0xd6d0c2),['plaster',hc(0xe4ded2)]);
+  nrPolyLoft('white',S.poly,true,S.y1,[[0,-L.SLAB],[0,0]],P('white'));
+  nrPolyLoft('white',S.poly,true,S.y1,NR_RIBBON_PROF,P('white'));
+  /* a rail round the stairwell, open where the stair arrives */
+  lathe('white',St.x,St.z,[[St.hole+.1,S.y1],[St.hole+.1,S.y1+1.0]],24,P('white'),{a0:.9,a1:TAU-.3});}
+ /* the spiral stair: treads round a white column, a handrail on its outer edge */
+ {const rise=.18,n=Math.round((St.y1-St.y0)/rise),da=.155;cyl('white',St.x,St.y0,St.z,.42,St.y1-St.y0+1.1,P('white'),14);
+  for(let i=0;i<n;i++){const a=i*da,yy=St.y0+(i+1)*rise-.06;box('marble',St.x+Math.cos(a)*1.8,yy,St.z+Math.sin(a)*1.8,2.75,.08,.62,hc(0xece6d8),-a);}
+  const hr=[];for(let i=0;i<=n;i++){const a=i*da;hr.push([St.x+Math.cos(a)*3.1,St.y0+i*rise+.95,St.z+Math.sin(a)*3.1]);}cord('white',hr,.05,P('white'));}
  /* the bridge: floor, a white sill, glass all round, a white head; a visor roof standing out over it */
  const y=br.y0,P2b=br.poly;
- prism('deck',P2b,y,y+.05,hc(0xbfb8aa));
  for(const inside of [false,true]){nrPolyLoft('white',P2b,true,y,[[0,0],[0,1.0]],P('white'),{inside});
   nrPolyLoft('glass',P2b,true,y,[[.02,1.0],[.02,3.35]],hc(0x3a5260),{inside});nrPolyLoft('white',P2b,true,y,[[0,3.35],[0,3.9]],P('white'),{inside});}
  for(let i=0;i<P2b.length;i+=3){const p=P2b[i];box('white',p[0],y+1.0,p[1],.14,2.35,.14,P('white'));}
@@ -16108,13 +16146,17 @@ function nrCabinW(C){return C.cls>=0?NR.CABIN_CLASSES[C.cls]:Math.max(2.4,C.wMin
 // ---------------------------------------------------------------- the CABINS
 const NR_CABIN_CULTURE={bedroom:'ancients-salvage',bunkroom:'scrap',store:'post-apoc'};
 function nrFurnishCabins(arc){const L=NR.L,out={furnished:0,bare:0,empty:0,rooms:[]};
- for(const C of NR.cabins){if(!C.inhabited){out.empty++;continue;}
+ for(const C of NR.cabins){if(!C.inhabited){out.empty++;
+   /* the stripped cabins of D1 and D2: rooms in the data (empty, no door leaf), for the life layer to come */
+   const pc=[NR.at(C.t0,C.sIn),NR.at(C.t1,C.sIn),NR.at(C.t1,C.sOut),NR.at(C.t0,C.sOut)],D=nrCabinDoor(C),dp=NR.at(D.tc,C.sIn);
+   out.rooms.push({id:C.id,kind:'stripped',deck:'D'+(C.deck+1),poly:pc.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:L.D[C.deck],h:L.CLEAR,
+    door:{at:[+dp[0].toFixed(3),+dp[1].toFixed(3)],w:.9,to:'corridor'},pieces:0});continue;}
   const wT=nrCabinW(C),d=C.depth-.1,kind=C.kind==='crew'?'bunkroom':C.kind,dxs=(C.doorEnd===0?-1:1)*(C.side>0?1:-1);
-  const key='cabin|'+kind+'|'+wT.toFixed(1)+'|'+dxs+'|D'+(C.deck+1);
+  const key='cabin|'+kind+'|'+wT.toFixed(1)+'|'+dxs+'|D'+(C.deck+1)+(C.blind?'|blind':'');
   const T=nrTemplate(key,{kind,culture:NR_CABIN_CULTURE[kind],wealth:C.wealth,y:0,h:L.CLEAR-.04,
    poly:[[-wT/2,-d/2],[wT/2,-d/2],[wT/2,d/2],[-wT/2,d/2]],
    doors:[{at:[dxs*(wT/2-.75),d/2],w:.9,swing:'in',hinge:dxs<0?'left':'right'}],
-   windows:[{at:[0,-d/2],w:Math.max(.8,wT-.8),sill:.55,h:2.3}]});
+   windows:C.blind?[]:[{at:[0,-d/2],w:Math.max(.8,wT-.8),sill:.55,h:2.3}]});
   /* the instance: the cabin's middle, its +z toward the corridor */
   const sm=(C.sIn+C.sOut)/2,o=NR.at(C.tm,sm),n=NR.nrm(C.tm),zx=-C.side*n[0],zz=-C.side*n[1],ry=Math.atan2(zx,zz),y=L.D[C.deck]+.02;
   const pieces=nrInstRecords(T,o[0],y,o[1],ry,{building:arc.tid,wealth:C.wealth,seed:nrHash(C.id)},C.id);
@@ -16154,20 +16196,22 @@ function nrShipKinds(){const IX=KratorInteriors;if(IX.PROGRAMS.sickbay)return;co
 function nrFurnishShipRooms(arc){nrShipKinds();const L=NR.L,out={rooms:[]};
  for(const R of NR.ROOMS){const y=L.D[R.deck]+.02,sm=(R.s0+R.s1)/2,sC=R.side>0?R.s0:R.s1,sG=R.side>0?R.s1:R.s0;
   /* the template room: as wide as the room's narrow end (the frames are radial), as deep as the band; +z to the corridor */
-  const kC=nrK(R.tc,sC),kG=nrK(R.tc,sG),w=(R.t1-R.t0)*Math.min(kC,kG)-NR_ROOM_TRIM,d=Math.abs(R.s1-R.s0)-.1;
-  const dx=R.side*(R.door-R.tc)*kC,dxC=clamp(dx,-w/2+.6,w/2-.6);
-  const T=nrTemplate('room|'+R.id,{kind:R.kind,culture:R.culture,wealth:R.wealth,y:0,h:L.CLEAR-.04,
-   poly:[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]],
-   doors:[{at:[dxC,d/2],w:1.1,swing:'in',hinge:'left'}],
-   windows:[{at:[0,-d/2],w:Math.max(.8,w-1.2),sill:.55,h:2.3}]});
-  const o=NR.at(R.tc,sm),n=NR.nrm(R.tc),ry=Math.atan2(-R.side*n[0],-R.side*n[1]);
+  /* the template room is the room's own trapezoid (its frames are radial), in the instance's frame: origin at its middle,
+     +z toward the corridor */
+  const o=NR.at(R.tc,sm),n=NR.nrm(R.tc),ry=Math.atan2(-R.side*n[0],-R.side*n[1]),c=Math.cos(ry),sn=Math.sin(ry);
+  const loc=p=>{const dx=p[0]-o[0],dz=p[1]-o[1];return [dx*c-dz*sn,dx*sn+dz*c];};
+  const ti=t=>.09/nrK(t,sm),corners=[[R.t0+ti(R.t0),R.s0],[R.t1-ti(R.t1),R.s0],[R.t1-ti(R.t1),R.s1],[R.t0+ti(R.t0),R.s1]].map(([t,s])=>loc(NR.at(t,s)));
+  const poly=corners.sort((a,b)=>Math.atan2(a[1],a[0])-Math.atan2(b[1],b[0]));
+  const dl=loc(NR.at(R.door,sC)),gl=loc(NR.at(R.tc,sG)),gw=(R.t1-R.t0)*nrK(R.tc,sG);
+  const T=nrTemplate('room|'+R.id,{kind:R.kind,culture:R.culture,wealth:R.wealth,y:0,h:L.CLEAR-.04,poly,
+   doors:[{at:[dl[0],dl[1]],w:1.1,swing:'in',hinge:'left'}],
+   windows:[{at:[gl[0],gl[1]],w:Math.max(.8,gw-1.4),sill:.55,h:2.3}]});
   const pieces=nrInstRecords(T,o[0],y,o[1],ry,{building:arc.tid,wealth:R.wealth,seed:nrHash(R.id)},R.id);
   T.inst.push({m:nrInstMatrix(o[0],y,o[1],ry),p:[o[0],y,o[1]],deck:R.deck,floor:L.D[R.deck],id:R.id});
   const pc=[NR.at(R.t0,R.s0),NR.at(R.t1,R.s0),NR.at(R.t1,R.s1),NR.at(R.t0,R.s1)],dp=NR.at(R.door,sC);
   out.rooms.push({id:R.id,name:R.name,kind:R.kind,deck:'D'+(R.deck+1),culture:R.culture,wealth:R.wealth,template:T.key,poly:pc.map(p=>[+p[0].toFixed(3),+p[1].toFixed(3)]),y:L.D[R.deck],h:L.CLEAR,
    door:{at:[+dp[0].toFixed(3),+dp[1].toFixed(3)],w:1.1,to:'corridor'},pieces});}
  return out;}
-const NR_ROOM_TRIM=.3;   /* the partitions' thickness taken off a ship's room's width, with a margin */
 // ---------------------------------------------------------------- the DECK BUILDINGS
 function nrFurnishBuildings(){const out={rooms:[],residences:0,residenceFails:[],items:{}};const IX=KratorInteriors,cat=nrCatalog();
  for(const Bt of NR_BUILT){const inst=nrPlanOf(Bt.item);if(!inst)continue;
@@ -16204,8 +16248,9 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
   for(let i=0;i<7;i++){const a=(i-3)*.32,x=br.xc+(br.a-2.4)*Math.cos(a),z=(br.b-3.2)*Math.sin(a);putH(i%2?'ancients_workstation':'yuni_ancient_glass_console',x,y,z,fwd-a*.9);}
   for(let i=0;i<5;i++){const a=(i-2)*.32,x=br.xc+(br.a-4.6)*Math.cos(a),z=(br.b-6.5)*Math.sin(a);putH('post-apoc_common_chair',x,y,z,fwd-a*.9);}
   putH('post-apoc_court_carpet',br.xc+1,y,0,fwd);putH('post-apoc_court_throne',br.xc+1,y,0,fwd,{v:0});
-  putH('post-apoc_court_table',br.xc-6,y,0,fwd,{v:1});putH('post-apoc_common_books',br.xc-6.3,y+.8,0,fwd);
-  for(const z of [-1,1])putH('post-apoc_common_chair',br.xc-6,y,z*1.2,z>0?PI:0);
+  /* the chart table abaft the helm, clear of the stair's well (N.BRIDGEHOUSE.stair) */
+  putH('post-apoc_court_table',br.xc-12,y,8,fwd,{v:1});putH('post-apoc_common_books',br.xc-12.3,y+.8,8,fwd);
+  for(const z of [-1,1])putH('post-apoc_common_chair',br.xc-12,y,8+z*1.2,z>0?PI:0);
   for(const z of [-8,0,8]){const A=KratorFurniture.FURN_BY_KEY['post-apoc_court_hanging'],h=A?KratorFurniture.entryDims(A,0).h:1;putH('post-apoc_court_hanging',br.xc-br.a+2.4,top-h,z,fwd);}
   putH('pa_drum',br.xc-br.a+3.2,y,-10,fwd);putH('pa_crate',br.xc-br.a+3.4,y,10,fwd);putH('scrap_trade_barrel',br.xc-br.a+4.4,y,-12,fwd);}
  // --- the GRAND DINING ROOM (D3-D4, the port hull): refectory runs and benches, the captain's table on the dais, the
@@ -16250,6 +16295,32 @@ function nrFurnishPublic(arc){const L=NR.L,W=NR.W,count={};const base={building:
  // --- the BRIG (D3): the pirates' cages along its outboard wall, the stocks by the door
  {const R=NR.room('brig'),y=L.D[R.deck]+.02,sG=R.side>0?R.s1-1.2:R.s0+1.2;
   for(let t=R.t0+2;t<R.t1-1.5;t+=3.2)put('brig',nrMod(t|0,2)?'pa_drum_cage':'pa_prisoner_cage',t,sG,y,R.side>0?'in':'out',{v:1});}
+ // --- the BRIDGE HOUSE's decks (43-nr-fore.js), each round its spiral stair: the officers' hall (divans, low tables, rugs,
+ //     a bar), the chart and signal deck (the Ancients' workstations along the glass, desks and shelves within), the
+ //     officers' berths (beds round the glass, chests, screens), the lookout lounge (chairs turned to the glass)
+ {const B=NR.BRIDGEHOUSE;
+  const putH=(room,key,x,yy,z,ry,o)=>{const r=FURNISH_H(key,x,yy,z,ry,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+x.toFixed(1)+z.toFixed(1))}));if(r)count[room]=(count[room]||0)+1;return r;};
+  for(const S of B.storeys){const room='bridgehouse-'+S.k,y=S.y0+.02,n=S.poly.length;
+   /* a point a fraction f of the way from the storey's middle to its glass, at the outline's i/N; facing in or out */
+   const pt=(u,f)=>{const p=S.poly[Math.round(u*n)%n];return [S.xc+(p[0]-S.xc)*f,p[1]*f];};
+   const face=(q,out)=>{const dx=(out?1:-1)*(q[0]-S.xc),dz=(out?1:-1)*q[1];return Math.atan2(dx,dz);};
+   const ring=(N,f,key,out,o,skip)=>{for(let i=0;i<N;i++){if(skip&&skip(i))continue;const q=pt((i+.5)/N,f);putH(room,key,q[0],y,q[1],face(q,out),o);}};
+   if(S.k===0){ring(16,.82,'post-apoc_court_divan',false);ring(16,.66,'post-apoc_court_low_table',false,{v:0});ring(8,.66,'post-apoc_court_carpet',false);
+    ring(8,.74,'post-apoc_court_lamp',false,null,i=>i%2===1);const q=pt(.5,.5);putH(room,'post-apoc_common_counter',q[0],y,q[1],face(q,false));
+    for(const dz of [-3,3])putH(room,'generic_keg',q[0]-1.2,y,q[1]+dz,face(q,false));}
+   else if(S.k===1){ring(14,.86,'ancients_workstation',true);ring(14,.77,'post-apoc_common_chair',true);ring(7,.58,'post-apoc_common_desk',false);
+    ring(7,.58,'post-apoc_common_bookcase',true,null,i=>i%2===0);ring(7,.5,'pa_radio_sets',false,null,i=>i%2===1);}
+   else if(S.k===2){ring(12,.8,'post-apoc_common_bed',false);ring(12,.66,'generic_chest',false);ring(12,.93,'post-apoc_common_screen',false);ring(6,.6,'post-apoc_common_lamp',false);}
+   else{ring(18,.86,'post-apoc_common_chair',true);ring(9,.74,'post-apoc_court_low_table',true,{v:0});ring(6,.58,'post-apoc_court_divan',true);}}}
+ // --- the STERN LOUNGES (40-nr-hull.js nrStern): behind the doors at each hull's end, the D3 and D4 galleries under their
+ //     glass and the terraces outside: divans and low tables turned aft, benches along the rails, lamps
+ for(const [t,dir] of [[NR.T1,1],[NR.T0,-1]]){const c=NR.at(t,0),T=NR.tan(t),N=NR.nrm(t),A=[T[0]*dir,T[1]*dir],room='stern';
+  const at=(r,ph)=>[c[0]+r*(Math.cos(ph)*A[0]+Math.sin(ph)*N[0]),c[1]+r*(Math.cos(ph)*A[1]+Math.sin(ph)*N[1])];
+  const out=ph=>Math.atan2(Math.cos(ph)*A[0]+Math.sin(ph)*N[0],Math.cos(ph)*A[1]+Math.sin(ph)*N[1]);
+  const putP=(key,r,ph,yy,f,o)=>{const q=at(r,ph),ry=f==='out'?out(ph):out(ph)+PI;const k=FURNISH_H(key,q[0],yy,q[1],ry,Object.assign({room},o||{}),Object.assign({},base,{room,seed:nrHash(room+key+q[0].toFixed(1)+q[1].toFixed(1))}));if(k)count[room]=(count[room]||0)+1;};
+  for(const ph of [-1.1,-.55,0,.55,1.1]){putP('post-apoc_court_divan',13.5,ph,L.D[2]+.02,'out');putP('post-apoc_court_low_table',11.3,ph,L.D[2]+.02,'out',{v:0});
+   putP('post-apoc_common_chair',11.8,ph,L.D[3]+.02,'out');putP('pa_bench',18.8,ph,L.D[2]+.02,'out',{v:0});putP('pa_bench',16.3,ph,L.D[3]+.02,'out',{v:0});}
+  for(const ph of [-.8,0,.8])putP('post-apoc_court_lamp',8,ph,L.D[2]+.02,'out');}
  // --- the FORECOURT PLAZA (quay level, 43-nr-fore.js): benches along the walks, lamp posts, the pirates' stalls and grog
  //     tables by the quay, and Ruephus's justice before his door (a gibbet, stocks, a cage)
  {const room='plaza',y=L.D[0]+.02,Pz=NR.PLAZA,hq=NR.LOTS.find(l=>l.use==='hq');
@@ -16307,8 +16378,8 @@ function nrInteriors(){const t0=performance.now(),arc=REG.find(r=>r.key==='nr-ar
   for(const m of (T.plan.report.missing||[]))missingRequired.push(k+': '+m.need+' ('+m.reason+')');
   if(T.audit&&!T.audit.ok)for(const f of T.audit.fails.slice(0,3))auditFails.push(k+': '+(typeof f==='string'?f:(f.check||'')+' '+(f.detail||f.msg||JSON.stringify(f)).slice(0,120)));}
  window._interiors={rooms:cab.rooms.length+shp.rooms.length+bld.rooms.length,byKind,missingRequired,auditFails,audited,templates:Object.keys(NR_TPL).length,
-  cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
-  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['plaza',30],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
+  strippedRooms:cab.rooms.filter(r=>r.kind==='stripped').length,cabinsFurnished:cab.furnished,cabinsBare:cab.bare,cabinsEmpty:cab.empty,residences:bld.residences,residenceFails:bld.residenceFails,
+  publicRooms:[['bridge',14],['dining',60],['engine',24],['mess-s',80],['mess-p',80],['greenhouse',12],['plaza',30],['bridgehouse-0',30],['bridgehouse-1',30],['bridgehouse-2',24],['bridgehouse-3',24],['stern',30],['atrium',30],['corridors',40],['holds',15],['quay',30],['top',60]].map(([id,min])=>({id,pieces:pub[id]||0,min})),
   shipRooms:shp.rooms.map(r=>({id:r.id,name:r.name,kind:r.kind,deck:r.deck,pieces:r.pieces})),
   cabins:cab.rooms,buildingRooms:bld.rooms,items:Object.keys(bld.items).map(k=>({item:k,rooms:bld.items[k].tpls.length,residence:bld.items[k].residence})),
   ms:Math.round(performance.now()-t0)};
@@ -17256,6 +17327,7 @@ ATMOS.PRESETS={
 const NR_LEVELS=[['off',null],['Holds (mezzanine)',NR.L.MEZZ+3.0],['D1 - stripped',NR.L.D[0]+2.2],['D2 - stripped',NR.L.D[1]+2.2],
  ['D3 - crew cabins',NR.L.D[2]+2.2],['D4 - officers, bridge',NR.L.D[3]+2.2],['Dining room (D3-D4)',NR.L.D[2]+5.6],['Top deck: ground floors',NR.L.TOP+2.4]];
 for(let k=1;k<=5;k++)NR_LEVELS.push(['Top deck: storey '+(k+1),NR.L.TOP+.25+k*NR_STOREY+2.2]);
+for(const S of NR.BRIDGEHOUSE.storeys)NR_LEVELS.push(['Bridge house: '+['the officers\' hall','the chart deck','the berths','the lookout lounge'][S.k],S.y0+2.2]);
 NR_LEVELS.push(['The bridge (the bridge house)',NR.BRIDGEHOUSE.bridge.y0+2.2]);
 function nrHP(t,s,y){const p=NR.at(t,s);return nrH2W(p[0],y,p[1]);}
 function nrV(eye,at,opt){return eye.concat(at,[opt||{}]);}
@@ -17271,6 +17343,10 @@ function nrViews(){const L=NR.L,PQ=NR.ATRIUM.tc,lot=id=>NR.LOTS.find(l=>l.id===i
   V['The forecourt plaza and the headquarters']=nrV(H(30,36,-34),H(170,12,0));
   V['The terraces and the grand stair']=nrV(H(132,15,-22),H(200,21,0));
   V['Inside the bridge']=nrV(H(br.xc-11,br.y0+1.75,-7),H(br.xc+16,br.y0+1.3,5));
+  {const S=NR.BRIDGEHOUSE.storeys[0],St=NR.BRIDGEHOUSE.stair;V["Inside the bridge house: the officers' hall"]=nrV(H(S.xc-26,S.y0+1.7,-14),H(S.xc+6,S.y0+1.2,6));
+   V['Plan: the bridge house, the chart deck']=nrV(H(S.xc-40,S.y0+44,-30),H(S.xc,S.y0+4,0),{cut:cutAt('Bridge house: the chart')});
+   V['The spiral stair to the bridge']=nrV(H(St.x-7,St.y0+5,-6),H(St.x,St.y0+11,0));}
+  {const c=NR.at(NR.T1,0),T=NR.tan(NR.T1),e=nrH2W(c[0]-T[0]*4,L.D[2]+1.7,c[1]-T[1]*4),a=nrH2W(c[0]+T[0]*20,L.D[2]+1.2,c[1]+T[1]*20);V['The stern lounge (D3)']=nrV(e,a);}
   V['Plan: the bridge']=nrV(H(br.xc-34,br.y0+30,-30),H(br.xc,br.y0,0),{cut:cutAt('The bridge')});
   V["Plan: Ruephus's headquarters"]=nrV(H(hq.x-32,L.D[0]+30,-28),H(hq.x,L.D[0],0),{cut:cutAt('D1')});}
  V['The top deck: the promenade']=nrV(nrHP(52,-16.5,L.TOP+1.7),nrHP(96,-6,L.TOP+5));
@@ -17320,6 +17396,8 @@ function nrInsideHull(p){const h=nrW2H(p.x,p.y,p.z),q=NR.ringST(h[0],h[2]);retur
 function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR.W,F=[];
  /* the fore (43): the plaza, the terraces' tops, the bridge house's terraces, the bridge */
  for(const y of NR.foreFloors(h[0],h[2]))F.push(y);
+ /* the rounded sterns (40): the pontoon's deck, the galleries and terraces */
+ for(const y of NR.sternFloors(h[0],h[2]))F.push(y);
  /* the piers (41): one deck, level with the quays */
  if(!(q.inRing&&Math.abs(q.s)<=W.PONT)&&NR.pierAt(h[0],h[2]))F.push(L.D[0]);
  /* the forecastle's deck climbs over the outer promenade round the bow */
@@ -17327,6 +17405,8 @@ function nrFloorsAt(x,z){const h=nrW2H(x,0,z),q=NR.ringST(h[0],h[2]),L=NR.L,W=NR
  if(q.inRing&&Math.abs(q.s)<=W.PONT){const a=Math.abs(q.s),A=NR.ATRIUM,inVoid=Math.abs(q.t-A.tc)<A.voidT&&a<A.voidS;
   if(a<W.SKIN)F.push(L.HOLD);if(a>=W.MEZZ&&a<W.SKIN)F.push(L.MEZZ);
   if(!(q.s>W.MAIN&&Math.abs(q.t)<NR.FORE.t))F.push(L.D[0]);
+  /* the balconies of D3 and D4 swell out between the frames (40 nrScallop) */
+  if(a>W.MAIN&&a<=W.MAIN+nrScallop(q.t))F.push(L.D[2],L.D[3]);
   if(a<=W.MAIN){for(let d=1;d<=4;d++){const y=d<4?L.D[d]:L.TOP;if(inVoid)continue;
     if(NR.CORES.some(c=>Math.abs(q.t-c.t)<3.5&&a<6))continue;
     /* no floor where a room is double height (its decks d-1 and d), nor on the top deck over the greenhouse's glass */
@@ -17473,20 +17553,20 @@ buildWorld=function(){svTagsReset();svfNewBatch();const t0=performance.now();con
  return W0;};
 // ================================================================= NIGHT: lamp and fire halos, a small pool of real lights near the eye
 // HALOS are recorded while building (haloAt() in builders, the catalog pieces' lights in 91f-furnish.js). They become one
-// additive point cloud (glow sprites, brighter at night) and, at night, the NIGHT_POOL point lights move to the halos
+// additive point cloud (glow sprites, shown at night only) and, at night, the NIGHT_POOL point lights move to the halos
 // nearest the camera, so a tent interior is lit by its own lanterns and braziers. Night: KratorSky at 21:30.
 const NIGHT={on:false,pts:null,lights:[],POOL:10};
 const haloTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const gr=g.createRadialGradient(32,32,0,32,32,32);
  gr.addColorStop(0,'rgba(255,255,255,1)');gr.addColorStop(.25,'rgba(255,255,255,.55)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);const t=new THREE.CanvasTexture(c);return t;})();
-const haloMat=new THREE.PointsMaterial({size:1.1,map:haloTex,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true,opacity:.25});haloMat.toneMapped=false;
+const haloMat=new THREE.PointsMaterial({size:1.1,map:haloTex,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,sizeAttenuation:true,opacity:0});haloMat.toneMapped=false;
 nrCutHook(haloMat,false);   /* the deck cut hides the lamps of the decks cut away */
 for(let i=0;i<NIGHT.POOL;i++){const l=new THREE.PointLight(0xffa860,0,9,1.6);l.visible=false;scene.add(l);NIGHT.lights.push(l);}
 function nightRebuild(){if(NIGHT.pts){scene.remove(NIGHT.pts);NIGHT.pts.geometry.dispose();NIGHT.pts=null;}if(!HALOS.length)return;
  const p=[],c=[];for(const h of HALOS){p.push(h.x,h.y,h.z);const k=h.big?1.4:1;c.push(h.r*k,h.g*k,h.b*k);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
- NIGHT.pts=new THREE.Points(g,haloMat);NIGHT.pts.userData.probeSkip=true;NIGHT.pts.raycast=()=>{};scene.add(NIGHT.pts);}
+ NIGHT.pts=new THREE.Points(g,haloMat);NIGHT.pts.visible=NIGHT.on;NIGHT.pts.userData.probeSkip=true;NIGHT.pts.raycast=()=>{};scene.add(NIGHT.pts);}
 function nightSet(on){NIGHT.on=!!on;SKY.night=NIGHT.on;SKY.hour=NIGHT.on?21.5:(+qs.get('hour')||10.5);skyApply();
- haloMat.opacity=NIGHT.on?.95:.25;haloMat.size=NIGHT.on?1.6:1.1;renderer.toneMappingExposure=NIGHT.on?1.35:1;
+ haloMat.opacity=NIGHT.on?.95:0;if(NIGHT.pts)NIGHT.pts.visible=NIGHT.on;haloMat.size=NIGHT.on?1.6:1.1;renderer.toneMappingExposure=NIGHT.on?1.35:1;
  if(!NIGHT.on)for(const l of NIGHT.lights){l.visible=false;l.intensity=0;}}
 const _nv=new THREE.Vector3();
 FRAME_HOOKS.push((dt,now)=>{if(!NIGHT.on||!HALOS.length)return;_nv.copy(camera.position);
