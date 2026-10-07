@@ -10128,6 +10128,52 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const PORTAL = portal();
+  /* THE TOWN HALL in a rock spire (a fairy chimney; the board's 1224e, b82b, 6cf9, 1990): a tapering mass 8.5 m in radius at the
+     ground and about 20 m tall (its cap stone drawn by the def). The council room at the ground, the records above, the lookout
+     at 11 m with windows on four sides. Spiral stairs cut in the rock OUTSIDE the rooms join them (a stair in a room's own air
+     has nothing under it), each entering its rooms by a short chord in through the room's edge: one round the council room up
+     to the records, one round the records up to the lookout. (A straight stair would pass under the room above, whose floor a
+     walker coming down keeps to: a stair must come in from the side.) The blocky carved front is the def's */
+  function townHall() {
+    const C = [0, -8.4], rooms = [], voids = [];
+    const at = function (r, a) { return [C[0] + Math.cos(a) * r, C[1] + Math.sin(a) * r]; };
+    /* a stair in from (r0, a0, yA) to the spiral's radius r, the spiral of n chords from angle a0 to a1 rising y0 to y1, and a
+       chord out to rEnd at angle a1 + da, yEnd; each chord runs a little past its neighbours' ends (a bend's outside would leave
+       a wedge) */
+    const spiral = function (id, r0, yA, r, a0, a1, y0, y1, n, rEnd, da, yEnd, w) {
+      const s0 = at(r0, a0), q0 = at(r, a0);
+      voids.push({ kind: 'stair', id: id + 'in', a: [s0[0], yA, s0[1]], b: [q0[0], y0, q0[1]], w: w, h: 2.3 });
+      for (let i = 0; i < n; i++) {
+        const e = 0.05, b0 = a0 + (a1 - a0) * i / n - e, b1 = a0 + (a1 - a0) * (i + 1) / n + (i < n - 1 ? e : 0);
+        const p0 = at(r, b0), p1 = at(r, b1), y = function (b) { return Math.max(y0, Math.min(y1, y0 + (y1 - y0) * (b - a0) / (a1 - a0))); };
+        voids.push({ kind: 'stair', id: id + i, a: [p0[0], y(b0), p0[1]], b: [p1[0], y(b1), p1[1]], w: w, h: 2.3 });
+      }
+      const p0 = at(r, a1), p1 = at(rEnd, a1 + da);
+      voids.push({ kind: 'stair', id: id + 'out', a: [p0[0], y1, p0[1]], b: [p1[0], yEnd, p1[1]], w: w, h: 2.3 });
+    };
+    voids.push({ kind: 'mass', id: 'spire', poly: circle(8.5, 24, C[0], C[1]), y0: -0.5, y1: 17, taper: 0.45, cap: 3, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.5, h: 3.0 });
+    voids.push({ kind: 'stair', id: 'way-in', joins: ['council'], a: [0, 0, 1.3], b: [0, 0, C[1] + 4.0], w: 1.6, h: 2.7 });
+    const mark = function (r, a) { const p = at(r, a); return fx('stair' + Math.round(a * 100), 'stair', p[0], p[1], 1.1, 1.1, { h: 0.1 }); };
+    rooms.push({ id: 'council', kind: 'hall', carved: true, poly: circle(4.4, 20, C[0], C[1]), y: 0, h: 3.6, ceil: 'dome', rise: 0.8, finish: 'polished',
+      doors: [{ at: [0, C[1] + 4.4], w: 1.6, swing: 'none' }], fixtures: [mark(3.6, Math.PI)] });
+    rooms.push({ id: 'records', kind: 'library', carved: true, poly: circle(3.2, 18, C[0], C[1]), y: 6, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'plaster', doors: [],
+      fixtures: [mark(2.4, Math.PI + 1.75), mark(2.4, 5.2)] });
+    rooms.push({ id: 'lookout', kind: 'antechamber', carved: true, poly: circle(2.0, 14, C[0], C[1]), y: 11, h: 2.4, ceil: 'dome', rise: 0.6, finish: 'hewn', doors: [] });
+    /* (their ends in a room 0.25 m inside its walk edge: a many-sided room's inset edge runs nearer mid-side than its radius says) */
+    spiral('stairA', 3.75, 0, 5.0, Math.PI, Math.PI + 1.5, 0.3, 6.0, 4, 2.6, 0.25, 6.0, 1.0);
+    spiral('stairB', 2.6, 6.0, 4.2, 5.2, 5.2 + 2.0, 6.3, 11.0, 6, 1.4, 0.3, 11.0, 1.1);
+    /* the lookout's four windows and the records' one, cut through to the face (no walk); their openings reach below the sill
+       and past the head, so the rock round the cut counts as the opening's */
+    [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(function (d, i) {
+      voids.push({ kind: 'stair', id: 'look' + i, a: [C[0] + d[0] * 1.4, 11.6, C[1] + d[1] * 1.4], b: [C[0] + d[0] * 6.4, 11.6, C[1] + d[1] * 6.4], w: 0.9, h: 1.4, floor: false });
+      voids.push({ kind: 'door', id: 'look' + i + '-face', c: [C[0] + d[0] * 5.85, C[1] + d[1] * 5.85], y: 11.0, r: 1.0, h: 2.4 });
+    });
+    voids.push({ kind: 'stair', id: 'records-window', a: [0, 7.0, C[1] + 1.5], b: [0, 7.0, C[1] + 7.4], w: 0.8, h: 1.1, floor: false });
+    voids.push({ kind: 'door', id: 'records-window-face', c: [0, C[1] + 6.86], y: 6.6, r: 0.9, h: 2.0 });
+    return { rooms: rooms, voids: voids };
+  }
+  const TOWNHALL = townHall();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -10197,6 +10243,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- civic */
+    { key: 'zj_townhall', name: 'The town hall in a rock spire', carved: true, wealth: 0.7, types: ['civic'], residence: false, lot: [18, 18],
+      rooms: TOWNHALL.rooms, voids: TOWNHALL.voids,
+      note: 'a fairy chimney: the council room at the ground, the records above, the lookout at the top with four windows; steep stairs cut through the rock' },
     { key: 'zj_portal', name: 'The portal: the great gate in the cliff', carved: true, wealth: 0.5, types: ['civic', 'infrastructure'], residence: false, lot: [50, 40],
       rooms: PORTAL.rooms, voids: PORTAL.voids,
       note: 'a giant arched tunnel 10 m wide through the rock; a rolling stone door rolled into its side channel; three levels of cells either side, their doorways on ledges reached by ladders (no walk)' },
@@ -10527,7 +10576,7 @@ function zfFixtures(item){if(!item)return;for(const r of item.rooms||[]){if(!(r.
    for(const s of [-1,1]){box(fin,x+s*(W2-.15)/2,y,z,.15,h,D2,c);box(fin,x,y,z+s*(D2-.15)/2,W2-.3,h,.15,c);}box('water',x,y+h-.1,z,W2-.3,.02,D2-.3,P('water'));}
   else if(f.kind==='pillar'||f.kind==='column')zfColumn(fin,x,y,z,Math.min(w,d)/2,f.h||r.h||3,c,{square:f.square});
   else if(f.kind==='niche')zfNiche(x,y+(f.y0||1.2),z,w,h);
-  else if(f.kind==='ladder'){}   /* the def draws its ladder (it leans out of a hatch) */
+  else if(f.kind==='ladder'||f.kind==='stair'){}   /* the def draws its ladder (it leans out of a hatch); a stair's foot is a cut, kept clear */
   else box(fin,x,y,z,w,h,d,c,ry);}}}
 // prefix: zw
 // ================================================================= WOODEN DWELLINGS (PLAN.md 6.4): the outpost's, the hamlets', the villages'
@@ -10954,6 +11003,21 @@ defBuilding({key:'zj_portal',name:'The portal: the great gate in the cliff',seed
    FURNISH('zeijani_olla',cx+(cx<0?-1.2:1.2),y,.5,0,{v:1,setting:'outdoor'});}
   for(const s of [-1,1]){zcLadder(s*12.6,0,2,1.1,.75,wd);zcLadder(s*14.0,2,6,.85,.55,wd);zcLadder(s*15.6,6,10,.85,.55,wd);}
   door(0,0,0,0,10);}});
+
+/* the town hall in its rock spire (its plan: the town hall's item): a blocky carved front round the door (pilasters, labyrinth
+   panels, a stepped lintel, a frieze, a painted band), the spire's dark cap stone, the windows' frames, a lamp either side */
+defBuilding({key:'zj_townhall',name:'The town hall in a rock spire',seed:4904,originFront:true,
+ tags:{types:['civic'],wealth:'rich',style:'carved',rock:'tuff',finish:'polished'},w:18,d:18,h:22,
+ note:'a fairy chimney: the council room at the ground, the records above, the lookout at the top; spiral stairs cut in the rock between them',
+ build(o){const it=zjItem('zj_townhall');cvFromItem(it,{finish:'polished'});zfFixtures(it);const c=P('white');
+  for(const s of [-1,1]){box('tuffPol',s*1.08,0,.1,.3,2.9,.36,c);box('tuffPol',s*2.25,0,-.25,1.9,5.6,1.0,c);zkBand('patLabyrinth',s*1.45,s*3.05,.25,1.1,3.0,0,c);zcLantern(s*3.9,1.4,c);}
+  zfStepLintel('tuffPol',0,2.9,.12,2.4,c,{n:3,h:.3,d:.36});box('tuffPol',0,4.0,-.25,6.4,1.6,1.0,c);zkBand('patFriezeC',-3.0,3.0,.25,4.15,1.2,0,c);
+  box('plain',0,5.62,.26,6.4,.08,.02,P('cinnabar'));box('tuffPol',0,5.6,-.2,6.8,.35,1.1,c);
+  /* the records' window and the lookout's four: a sill and a lintel stone at each */
+  box('tuffPol',0,6.88,-1.6,1.2,.12,.5,c);box('tuffPol',0,8.1,-1.6,1.2,.2,.5,c);
+  for(const [dx,dz] of [[0,1],[1,0],[0,-1],[-1,0]]){const x=dx*5.9,z=-8.4+dz*5.9,ry=Math.atan2(dx,dz);box('tuffPol',x,11.48,z,1.2,.12,.5,c,ry);box('tuffPol',x,13.05,z,1.2,.2,.5,c,ry);}
+  ellip('basalt',0,19.8,-8.4,5.4,1.7,5.0,P('basaltDark'),0,18);
+  door(0,0,0,0,1.6);}});
 // ================================================================= CORE FURNISH — the placement pass ([G data])
 // One furniture glue in place of the six copies the builds carried (GODOT-PLAN.md Phase 2 item 4; README.md here).
 // A build's FURNISH(...) keeps its name and its own frame rule; it hands the world transform to R.place(), which
@@ -12594,7 +12658,7 @@ const FAMILIES=[
  {name:'Dwellings: wooden',keys:['zj_hut_a','zj_hut_b','zj_hut_c','zj_house_wood']},
  {name:'Dwellings: constructed',keys:['zj_house_built_poor','zj_house_built_mid','zj_house_built_rich']},
  {name:'Galleries and estates',keys:['zj_gallery_a','zj_gallery_b','zj_estate_a','zj_estate_b']},
- {name:'Sacred and civic',keys:['zj_kiva','zj_catacomb','zj_temple','zj_council','zj_cistern','zj_portal']},
+ {name:'Sacred and civic',keys:['zj_kiva','zj_catacomb','zj_temple','zj_council','zj_cistern','zj_portal','zj_townhall']},
  {name:'Shops: carved fronts',keys:ZS_ITEMS.filter(it=>/_carved$/.test(it.key)).map(it=>it.key)},
  {name:'Shops: constructed',keys:ZS_ITEMS.filter(it=>/_built$/.test(it.key)).map(it=>it.key)},
  {name:'The cavern test block',keys:['zj_testblock']}
@@ -12783,7 +12847,15 @@ const PB={
    ['the bridge again',0,-7],['the chamber',0,-14],['its middle',0,-24],['the east stair’s head',7,-24],['its top',7.6,-23.6],['down',11.6,-18],['the pit’s east side',13,10],['the pit again',0,10],
    ['the tunnel’s foot',0,13.2],['up the tunnel',0,41.3],['the ground',0,44]]));
   r('cistern',PB.siteRoute(W,'zj_cistern',[0,3],[['the portal',0,.5],['the landing',0,-3.5],['the causeway',0,-10],['the platform',0,-20.6],['by the frame',2.2,-21],['the platform again',0,-20.6],['the causeway again',0,-12],['the landing again',0,-3.5],['out',0,2]]));
-  r('portal',PB.siteRoute(W,'zj_portal',[0,5],[['the gate',0,1],['under the arch',0,-6],['past the stone',-2,-11.8],['the tunnel’s far end',0,-34],['out at the back',0,-38.5],['back in',0,-30],['the gate again',0,1]]));return out;},
+  r('portal',PB.siteRoute(W,'zj_portal',[0,5],[['the gate',0,1],['under the arch',0,-6],['past the stone',-2,-11.8],['the tunnel’s far end',0,-34],['out at the back',0,-38.5],['back in',0,-30],['the gate again',0,1]]));
+  /* the town hall: up the two spirals chord by chord (read from the plan), to the lookout, and all the way down again */
+  {const it=zjItem('zj_townhall');if(it){const ord=s=>s==='in'?-1:s==='out'?99:+s;
+   const ch=k=>it.voids.filter(v=>v.kind==='stair'&&v.id.indexOf(k)===0).sort((a,b)=>ord(a.id.slice(k.length))-ord(b.id.slice(k.length)));
+   const A=ch('stairA'),B=ch('stairB'),up=[];const leg=(n,p)=>up.push([n,p[0],p[2]]);
+   leg('the council’s spiral',A[0].a);A.forEach((v,i)=>leg('council spiral '+i,v.b));if(B.length)leg('the records’ spiral',B[0].a);B.forEach((v,i)=>leg('records spiral '+i,v.b));
+   const down=up.slice(0,-1).reverse().map(w=>['down: '+w[0],w[1],w[2]]);
+   r('town hall',PB.siteRoute(W,'zj_townhall',[0,3],[['the door',0,.5],['the council room',0,-5]].concat(up,[['the lookout’s middle',0,-8.4]],[up[up.length-1]],down,[['the council room again',0,-5],['out',0,2]])));}}
+  return out;},
  /* the shops: a carved front refused at its counter, in through the counter's gap, through the selling room to the workroom;
     a constructed one by its planner's graph */
  shopRoutes(W,only){const out=[];for(const S of SITES){if(!/^zj_shop_/.test(S.key)||(only&&S.key!==only))continue;
@@ -12818,7 +12890,7 @@ function hostChecks(){const R=[],add=(name,ok,detail)=>R.push({name,ok:!!ok,deta
   er.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const hr=PB.houseRoutes(KWALK);if(hr.length)add('walk-route-houses',hr.length===3&&hr.every(e=>PB.routeOk(e.log)),
   hr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
- const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===6&&cr.every(e=>PB.routeOk(e.log)),
+ const cr=PB.sacredRoutes(KWALK);if(cr.length)add('walk-route-sacred',cr.length===7&&cr.every(e=>PB.routeOk(e.log)),
   cr.map(e=>e.name+': '+(PB.routeOk(e.log)?e.log.length+' legs':e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).join(', '))).join(' | '));
  const sr=PB.shopRoutes(KWALK),sbad=sr.filter(e=>!PB.routeOk(e.log));if(sr.length)add('walk-route-shops',sr.length===24&&!sbad.length,
   sbad.length?sbad.map(e=>e.name+': '+e.log.filter(s=>s.ok!==s.expect).map(s=>s.name+(s.ok?' PASSED':' REFUSED')+' @'+s.feet).slice(0,3).join(', ')).join(' | '):sr.length+' shops, '+sr.reduce((a,e)=>a+e.log.length,0)+' legs');

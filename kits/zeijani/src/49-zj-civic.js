@@ -82,3 +82,18 @@ defBuilding({key:'zj_portal',name:'The portal: the great gate in the cliff',seed
    FURNISH('zeijani_olla',cx+(cx<0?-1.2:1.2),y,.5,0,{v:1,setting:'outdoor'});}
   for(const s of [-1,1]){zcLadder(s*12.6,0,2,1.1,.75,wd);zcLadder(s*14.0,2,6,.85,.55,wd);zcLadder(s*15.6,6,10,.85,.55,wd);}
   door(0,0,0,0,10);}});
+
+/* the town hall in its rock spire (its plan: the town hall's item): a blocky carved front round the door (pilasters, labyrinth
+   panels, a stepped lintel, a frieze, a painted band), the spire's dark cap stone, the windows' frames, a lamp either side */
+defBuilding({key:'zj_townhall',name:'The town hall in a rock spire',seed:4904,originFront:true,
+ tags:{types:['civic'],wealth:'rich',style:'carved',rock:'tuff',finish:'polished'},w:18,d:18,h:22,
+ note:'a fairy chimney: the council room at the ground, the records above, the lookout at the top; spiral stairs cut in the rock between them',
+ build(o){const it=zjItem('zj_townhall');cvFromItem(it,{finish:'polished'});zfFixtures(it);const c=P('white');
+  for(const s of [-1,1]){box('tuffPol',s*1.08,0,.1,.3,2.9,.36,c);box('tuffPol',s*2.25,0,-.25,1.9,5.6,1.0,c);zkBand('patLabyrinth',s*1.45,s*3.05,.25,1.1,3.0,0,c);zcLantern(s*3.9,1.4,c);}
+  zfStepLintel('tuffPol',0,2.9,.12,2.4,c,{n:3,h:.3,d:.36});box('tuffPol',0,4.0,-.25,6.4,1.6,1.0,c);zkBand('patFriezeC',-3.0,3.0,.25,4.15,1.2,0,c);
+  box('plain',0,5.62,.26,6.4,.08,.02,P('cinnabar'));box('tuffPol',0,5.6,-.2,6.8,.35,1.1,c);
+  /* the records' window and the lookout's four: a sill and a lintel stone at each */
+  box('tuffPol',0,6.88,-1.6,1.2,.12,.5,c);box('tuffPol',0,8.1,-1.6,1.2,.2,.5,c);
+  for(const [dx,dz] of [[0,1],[1,0],[0,-1],[-1,0]]){const x=dx*5.9,z=-8.4+dz*5.9,ry=Math.atan2(dx,dz);box('tuffPol',x,11.48,z,1.2,.12,.5,c,ry);box('tuffPol',x,13.05,z,1.2,.2,.5,c,ry);}
+  ellip('basalt',0,19.8,-8.4,5.4,1.7,5.0,P('basaltDark'),0,18);
+  door(0,0,0,0,1.6);}});

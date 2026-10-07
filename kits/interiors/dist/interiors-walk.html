@@ -28570,6 +28570,52 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     return { rooms: rooms, voids: voids };
   }
   const PORTAL = portal();
+  /* THE TOWN HALL in a rock spire (a fairy chimney; the board's 1224e, b82b, 6cf9, 1990): a tapering mass 8.5 m in radius at the
+     ground and about 20 m tall (its cap stone drawn by the def). The council room at the ground, the records above, the lookout
+     at 11 m with windows on four sides. Spiral stairs cut in the rock OUTSIDE the rooms join them (a stair in a room's own air
+     has nothing under it), each entering its rooms by a short chord in through the room's edge: one round the council room up
+     to the records, one round the records up to the lookout. (A straight stair would pass under the room above, whose floor a
+     walker coming down keeps to: a stair must come in from the side.) The blocky carved front is the def's */
+  function townHall() {
+    const C = [0, -8.4], rooms = [], voids = [];
+    const at = function (r, a) { return [C[0] + Math.cos(a) * r, C[1] + Math.sin(a) * r]; };
+    /* a stair in from (r0, a0, yA) to the spiral's radius r, the spiral of n chords from angle a0 to a1 rising y0 to y1, and a
+       chord out to rEnd at angle a1 + da, yEnd; each chord runs a little past its neighbours' ends (a bend's outside would leave
+       a wedge) */
+    const spiral = function (id, r0, yA, r, a0, a1, y0, y1, n, rEnd, da, yEnd, w) {
+      const s0 = at(r0, a0), q0 = at(r, a0);
+      voids.push({ kind: 'stair', id: id + 'in', a: [s0[0], yA, s0[1]], b: [q0[0], y0, q0[1]], w: w, h: 2.3 });
+      for (let i = 0; i < n; i++) {
+        const e = 0.05, b0 = a0 + (a1 - a0) * i / n - e, b1 = a0 + (a1 - a0) * (i + 1) / n + (i < n - 1 ? e : 0);
+        const p0 = at(r, b0), p1 = at(r, b1), y = function (b) { return Math.max(y0, Math.min(y1, y0 + (y1 - y0) * (b - a0) / (a1 - a0))); };
+        voids.push({ kind: 'stair', id: id + i, a: [p0[0], y(b0), p0[1]], b: [p1[0], y(b1), p1[1]], w: w, h: 2.3 });
+      }
+      const p0 = at(r, a1), p1 = at(rEnd, a1 + da);
+      voids.push({ kind: 'stair', id: id + 'out', a: [p0[0], y1, p0[1]], b: [p1[0], yEnd, p1[1]], w: w, h: 2.3 });
+    };
+    voids.push({ kind: 'mass', id: 'spire', poly: circle(8.5, 24, C[0], C[1]), y0: -0.5, y1: 17, taper: 0.45, cap: 3, rock: 'tuff', finish: 'raw' });
+    voids.push({ kind: 'door', id: 'portal', c: [0, 0], y: 0, r: 1.5, h: 3.0 });
+    voids.push({ kind: 'stair', id: 'way-in', joins: ['council'], a: [0, 0, 1.3], b: [0, 0, C[1] + 4.0], w: 1.6, h: 2.7 });
+    const mark = function (r, a) { const p = at(r, a); return fx('stair' + Math.round(a * 100), 'stair', p[0], p[1], 1.1, 1.1, { h: 0.1 }); };
+    rooms.push({ id: 'council', kind: 'hall', carved: true, poly: circle(4.4, 20, C[0], C[1]), y: 0, h: 3.6, ceil: 'dome', rise: 0.8, finish: 'polished',
+      doors: [{ at: [0, C[1] + 4.4], w: 1.6, swing: 'none' }], fixtures: [mark(3.6, Math.PI)] });
+    rooms.push({ id: 'records', kind: 'library', carved: true, poly: circle(3.2, 18, C[0], C[1]), y: 6, h: 2.8, ceil: 'vault', rise: 0.5, finish: 'plaster', doors: [],
+      fixtures: [mark(2.4, Math.PI + 1.75), mark(2.4, 5.2)] });
+    rooms.push({ id: 'lookout', kind: 'antechamber', carved: true, poly: circle(2.0, 14, C[0], C[1]), y: 11, h: 2.4, ceil: 'dome', rise: 0.6, finish: 'hewn', doors: [] });
+    /* (their ends in a room 0.25 m inside its walk edge: a many-sided room's inset edge runs nearer mid-side than its radius says) */
+    spiral('stairA', 3.75, 0, 5.0, Math.PI, Math.PI + 1.5, 0.3, 6.0, 4, 2.6, 0.25, 6.0, 1.0);
+    spiral('stairB', 2.6, 6.0, 4.2, 5.2, 5.2 + 2.0, 6.3, 11.0, 6, 1.4, 0.3, 11.0, 1.1);
+    /* the lookout's four windows and the records' one, cut through to the face (no walk); their openings reach below the sill
+       and past the head, so the rock round the cut counts as the opening's */
+    [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(function (d, i) {
+      voids.push({ kind: 'stair', id: 'look' + i, a: [C[0] + d[0] * 1.4, 11.6, C[1] + d[1] * 1.4], b: [C[0] + d[0] * 6.4, 11.6, C[1] + d[1] * 6.4], w: 0.9, h: 1.4, floor: false });
+      voids.push({ kind: 'door', id: 'look' + i + '-face', c: [C[0] + d[0] * 5.85, C[1] + d[1] * 5.85], y: 11.0, r: 1.0, h: 2.4 });
+    });
+    voids.push({ kind: 'stair', id: 'records-window', a: [0, 7.0, C[1] + 1.5], b: [0, 7.0, C[1] + 7.4], w: 0.8, h: 1.1, floor: false });
+    voids.push({ kind: 'door', id: 'records-window-face', c: [0, C[1] + 6.86], y: 6.6, r: 0.9, h: 2.0 });
+    return { rooms: rooms, voids: voids };
+  }
+  const TOWNHALL = townHall();
 
   /* the shops' items (their helpers above: rrect, fx) */
   const SHOPS = [];
@@ -28639,6 +28685,9 @@ if (typeof module !== 'undefined' && module.exports) module.exports = KratorInte
     /* ---------------- the twelve shops, each in a carved and a constructed front */
   ].concat(SHOPS).concat([
     /* ---------------- civic */
+    { key: 'zj_townhall', name: 'The town hall in a rock spire', carved: true, wealth: 0.7, types: ['civic'], residence: false, lot: [18, 18],
+      rooms: TOWNHALL.rooms, voids: TOWNHALL.voids,
+      note: 'a fairy chimney: the council room at the ground, the records above, the lookout at the top with four windows; steep stairs cut through the rock' },
     { key: 'zj_portal', name: 'The portal: the great gate in the cliff', carved: true, wealth: 0.5, types: ['civic', 'infrastructure'], residence: false, lot: [50, 40],
       rooms: PORTAL.rooms, voids: PORTAL.voids,
       note: 'a giant arched tunnel 10 m wide through the rock; a rolling stone door rolled into its side channel; three levels of cells either side, their doorways on ledges reached by ladders (no walk)' },

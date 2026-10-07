@@ -77,5 +77,5 @@ function zfFixtures(item){if(!item)return;for(const r of item.rooms||[]){if(!(r.
    for(const s of [-1,1]){box(fin,x+s*(W2-.15)/2,y,z,.15,h,D2,c);box(fin,x,y,z+s*(D2-.15)/2,W2-.3,h,.15,c);}box('water',x,y+h-.1,z,W2-.3,.02,D2-.3,P('water'));}
   else if(f.kind==='pillar'||f.kind==='column')zfColumn(fin,x,y,z,Math.min(w,d)/2,f.h||r.h||3,c,{square:f.square});
   else if(f.kind==='niche')zfNiche(x,y+(f.y0||1.2),z,w,h);
-  else if(f.kind==='ladder'){}   /* the def draws its ladder (it leans out of a hatch) */
+  else if(f.kind==='ladder'||f.kind==='stair'){}   /* the def draws its ladder (it leans out of a hatch); a stair's foot is a cut, kept clear */
   else box(fin,x,y,z,w,h,d,c,ry);}}}
