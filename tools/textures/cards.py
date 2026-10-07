@@ -8,7 +8,8 @@ OUT_DIR/albedo.png (RGBA, SIZE x SIZE) and meta.json (record.kind = 'card').
 
 Steps:
   0. key      (option `key`: "#ff00ff" or "#00ff00", with `key_lo`/`key_hi` distances) cuts a flat-colour background out first;
-              `spill` ('edge', 'all', 'none') says where the key's tint is taken out (key_out).
+              `spill` ('edge', 'all', 'none') says where the key's tint is taken out (key_out); `choke` (n pixels) then
+              shrinks the alpha to drop a tinted fringe the spill pass leaves.
   1. crop     (anchor 'tight': the opaque box only, stretched square on resize, for a wing mapped by its bounding box) to the opaque pixels (alpha > 16), then pad back to a square. `anchor` says where the content sits:
               'center' (a spray seen from above), 'bottom' (a frond or a plant: its base on the bottom edge,
               centred) or 'top' (a hanging chain: its hung end on the top edge, centred). `pad` is the margin.
@@ -20,7 +21,7 @@ Requires numpy and Pillow. Deterministic for a given Pillow version.
 """
 import argparse, hashlib, json, os, sys
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 VERSION = 1
 
@@ -105,7 +106,9 @@ def run_one(src, out_dir, rec, opt):
     im = Image.open(src).convert('RGBA')
     if opt.get('key'):
         im = key_out(im, opt['key'], float(opt.get('key_lo', 45)), float(opt.get('key_hi', 120)), opt.get('spill', 'edge'))
-    sq = crop_square(im, anchor, pad).resize((size, size), Image.LANCZOS)
+    if int(opt.get('choke', 0)):          # shrink the alpha by n source pixels: drops a key-tinted fringe the spill pass leaves (a WebP's colour bleed)
+        im.putalpha(im.getchannel('A').filter(ImageFilter.MinFilter(2 * int(opt['choke']) + 1)))
+    sq =crop_square(im, anchor, pad).resize((size, size), Image.LANCZOS)
     arr = bleed(np.asarray(sq).astype(np.float64))
     os.makedirs(out_dir, exist_ok=True)
     Image.fromarray(arr, 'RGBA').save(os.path.join(out_dir, 'albedo.png'), optimize=True)
@@ -116,7 +119,7 @@ def run_one(src, out_dir, rec, opt):
     meta = {'record': rec, 'maps': {'map': 'albedo.png'},
             'source': dict({'file': os.path.basename(src), 'sha1': sha}, **src_meta),
             'processing': {'script': 'tools/textures/cards.py', 'version': VERSION,
-                           'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'spill') if k in opt}), 'source_size': list(im.size)}}
+                           'options': dict({'size': size, 'anchor': anchor, 'pad': pad}, **{k: opt[k] for k in ('key', 'key_lo', 'key_hi', 'spill', 'choke') if k in opt}), 'source_size': list(im.size)}}
     with open(os.path.join(out_dir, 'meta.json'), 'w') as fh:
         json.dump(meta, fh, indent=1, sort_keys=True)
     cover = float((arr[..., 3] > 127).mean())
