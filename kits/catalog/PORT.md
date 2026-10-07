@@ -17,6 +17,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `krator-furniture-core.js` | 61.9 | [draw] | 43 | 3 | 0 | 0 | 0 | 105 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-furniture-kit.js` | 135.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 643 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-furniture-runtime.js` | 8.4 | [draw] | 12 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
+| `krator-furniture-detail.js` | 3.9 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | optional (`bundle(tex=True)`); the detail-map shader is a three.js stand-in for StandardMaterial3D triplanar, one texture per family from `tex/pack.json` |
 | `krator-master-buildings-beast-rider.js` | 69.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 508 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-buildings-voth.js` | 74.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 573 | 0 | 0 | 0 | 0 | 0 |  |
 | `krator-master-furniture-beast-rider.js` | 71.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 322 | 0 | 0 | 0 | 0 | 0 |  |

@@ -22,6 +22,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `krator-furniture-core.js` | 62 **big** |  |
 | `krator-furniture-kit.js` | 135 **big** | Palette resolve and frame helpers (58); Legs (86); Motifs, bands, finials, cushions (149); Role builders: beds and seating (bed, bedFine, b (272); Role builders: tables, desks and storage (table, (431); Role builders: fire and light (hearth, fire, lam (619); Role builders: soft, screens, trade and work (ru (814); Role builders: surface pieces (bowl, jug, books) (986); Role builders: tapestry, wall art, statues (1040); Role builders: trades and households (forge, anv (1383) |
 | `krator-furniture-runtime.js` | 8 |  |
+| `krator-furniture-detail.js` | 4 |  |
 | `krator-master-buildings-beast-rider.js` | 69 **big** | Mav's Refuge (24); Girder (677) |
 | `krator-master-buildings-voth.js` | 75 **big** |  |
 | `krator-master-furniture-beast-rider.js` | 72 **big** | Harvested from kits/catalog/krator-master-buildi (101) |
