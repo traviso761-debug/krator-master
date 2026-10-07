@@ -68,7 +68,15 @@ const cvRockMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.92,met
   let decl='uniform float uCut;uniform vec3 uCam;uniform vec4 uBoxA[32];uniform vec4 uBoxB[32];varying vec4 vW;varying vec4 vCut;varying vec3 vM;varying vec3 vCWP,vCWN;';
   let body;
   if(CV_HAS_LIB){decl+='uniform sampler2D '+CV_TEXKEYS.map(k=>'uT_'+k).join(',')+';'+
-    'vec3 cvTri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(texture2D(t,p.zy*k).rgb*w.x+texture2D(t,p.xz*k).rgb*w.y+texture2D(t,p.xy*k).rgb*w.z,vec3(2.2));}';
+    /* stochastic tiling (the owner: no repeat on the floors and walls): each sample is two, at offsets hashed from a smooth
+       value noise's band, blended across it (after Inigo Quilez's "texture repetition", technique 3); the gradients are the
+       unshifted coordinates', so the offsets' jumps leave no mip seam. WebGL1 keeps the plain sample */
+    (renderer.capabilities.isWebGL2?'float cvH(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}'+
+    'float cvN(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(cvH(i),cvH(i+vec2(1.0,0.0)),f.x),mix(cvH(i+vec2(0.0,1.0)),cvH(i+vec2(1.0,1.0)),f.x),f.y);}'+
+    'vec3 cvS(sampler2D t,vec2 uv){float l=cvN(uv*0.37)*8.0,i=floor(l),f=fract(l);vec2 oa=sin(vec2(3.0,7.0)*i),ob=sin(vec2(3.0,7.0)*(i+1.0)),dx=dFdx(uv),dy=dFdy(uv);'+
+    'vec3 a=textureGrad(t,uv+oa,dx,dy).rgb,b=textureGrad(t,uv+ob,dx,dy).rgb;return mix(a,b,smoothstep(0.2,0.8,f-0.1*dot(a-b,vec3(1.0))));}'
+    :'vec3 cvS(sampler2D t,vec2 uv){return texture2D(t,uv).rgb;}')+
+    'vec3 cvTri(sampler2D t,vec3 p,vec3 n,float k){vec3 w=pow(abs(n),vec3(4.0));w/=w.x+w.y+w.z;return pow(cvS(t,p.zy*k)*w.x+cvS(t,p.xz*k)*w.y+cvS(t,p.xy*k)*w.z,vec3(2.2));}';
    body='vec3 n=normalize(vCWN),p=vCWP;float m=vM.x;vec3 c;'+
     'if(m<1.5){vec3 bs=m<0.5?cvTri(uT_basalt,p,n,'+K('basalt')+'):cvTri(uT_basaltPol,p,n,'+K('basaltPol')+');'+
      'c=mix(bs,cvTri(uT_lining,p,n,'+K('lining')+'),vW.x*(m<0.5?1.0:0.4));c=mix(c,cvTri(uT_oxide,p,n,'+K('oxide')+'),vW.y*(m<0.5?1.0:0.0));}'+

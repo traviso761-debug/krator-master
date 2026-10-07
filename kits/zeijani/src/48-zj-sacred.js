@@ -52,9 +52,9 @@ defBuilding({key:'zj_catacomb',name:'Funeral catacombs',seed:4802,originFront:tr
    lamp on each), the podium's base moulding, friezes of the spirits and cornice round its four faces, the corner shrines'
    domes, the drum's cornice and the pierced lattice dome over the open sanctum, lit from inside */
 /* the sky dome: a hemisphere painted with the heavens over the Throne (the sun, the ringed gas giant, its moons, the stars) on both
-   faces, a little self-lit so the sanctum's lamps are not all it has. The painting is a canvas STAND-IN until the owner's texture
-   (`patSkyDome`: the prompt is in KNOWN_ISSUES.md) arrives; spherical UVs: u round the sky, v from the rim (0) to the zenith (1) */
-const ZK_SKY=(function(){const T=canvasTex(2048,1024,(g,w,h)=>{
+   faces, a little self-lit so the sanctum's lamps are not all it has. The painting is the owner's (`patSkyDome`, the library's
+   patterns/zeijani/sky-dome: wrapping round, its gilt band the rim); the canvas below is the procedural fallback (?mat=proc); spherical UVs: u round the sky, v from the rim (0) to the zenith (1) */
+const ZK_SKY=(function(){const L=KMAT.mode==='lib'&&KMAT.packed?KMAT.packed('zeijani','patSkyDome'):null,T=L?KMAT.textures(L,{aniso:8}).map:canvasTex(2048,1024,(g,w,h)=>{
  const sky=g.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#0b1030');sky.addColorStop(.55,'#1d2a66');sky.addColorStop(.86,'#3d4f8c');sky.addColorStop(1,'#6a5a7a');g.fillStyle=sky;g.fillRect(0,0,w,h);
  let s=7;const R=()=>{s=(s*16807)%2147483647;return s/2147483647;};
  for(let i=0;i<900;i++){const x=R()*w,y=R()*h*.85,r=R()<.06?2.4:R()*1.3+.3;g.fillStyle='rgba(255,'+(230+R()*25|0)+','+(190+R()*60|0)+','+(.5+R()*.5)+')';g.beginPath();g.arc(x,y,r,0,TAU);g.fill();}

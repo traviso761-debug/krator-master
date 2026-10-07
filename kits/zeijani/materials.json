@@ -356,6 +356,7 @@
    "roughLift": 0.3,
    "specular": 0.15
   },
+  "patSkyDome": {"lib": "patterns/zeijani/sky-dome", "scale": [1, 1], "tint": {"keep": 1.0, "mean": null}, "roughLift": 0.2, "specular": 0.12},
   "patMural": {
    "lib": "patterns/zeijani/kiva-mural",
    "scale": [

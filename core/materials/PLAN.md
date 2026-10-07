@@ -1664,6 +1664,7 @@ tail; the horned figures' lower border) and were redone with cross-faded edges i
 | `patterns/zeijani/frieze-spirits`, `-b`, `-c` | Ritual Procession; Stone Dancer, Mythic Stone Figure (extras) | pattern (c: cross-faded), keep aspect, 0.9 m band | rich fronts, the temple's base, kivas, the council |
 | `patterns/zeijani/frieze-skeletons` | Mesoamerican Skeleton Relief (extra) | pattern, keep aspect, 0.9 m | the catacombs, the mortuary chapel; any funerary front |
 | `patterns/zeijani/kiva-mural`, `-b`, `-c` | Weathered Mythic Fresco; Cosmic Ritual Fresco, Weathered Ritual Mural (extras) | pattern, keep aspect, delight 0, full colour, 1.5 m band | kiva and shrine walls, the temple |
+| `patterns/zeijani/sky-dome` | the owner's painted sky (pasted, 2026-10-07: batch `zeijani-skydome-2026-10.json`) | pattern, keep aspect, `seam_axes x` (wraps across only, the height whole: the gilt band is the rim), 2048 wide | the inside of a dome or a ceiling: the temple's sanctum |
 | `patterns/zeijani/textile`, `-b` | Southwestern Diamond Rug; Inverted Kilim (extra) | pattern, keep aspect, full colour, 1 m | blankets, awnings, banners, cushions; the Eastern Nomads' pueblo cloth, any kilim |
 | `patterns/zeijani/glazed-frieze` | Turquoise Salamander Tile Mural | cross-faded, keep aspect, rough .35, full colour, 1.2 m | the capital's portal rim, the temple's way |
 | `patterns/zeijani/glazed-frieze-dragonfly`, `-beetle` | Glazed Dragonfly; Stag Beetle (extras) | pattern, keep aspect, 1.2 m | gates and baths; the beetle riders' gate |

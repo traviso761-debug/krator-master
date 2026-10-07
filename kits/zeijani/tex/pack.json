@@ -1219,6 +1219,36 @@
     "sourceMean": 0.5409
    }
   },
+  "patSkyDome": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "patSkyDome.albedo.webp",
+    "normalMap": "patSkyDome.normal.webp",
+    "roughnessMap": "patSkyDome.rough.webp"
+   },
+   "lib": "patterns/zeijani/sky-dome",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "4faede5fd38ed8a68845a736462d99431bb9be7d",
+    "normal": "b31456fc81502829c930df5f770a0955c502140d",
+    "roughness": "fa11d1031b1883f11c9881102d683e3b8974a2db"
+   },
+   "specular": 0.12,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 1.0,
+    "mean": 0.2545077092578364,
+    "sourceMean": 0.2545
+   }
+  },
   "patTextile": {
    "breakup": null,
    "card": false,
