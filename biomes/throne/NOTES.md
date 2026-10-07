@@ -367,19 +367,19 @@ doubles in an eruption.
 
 ## Peoples of the island (the owner, 2026-10-07)
 
-Three native cultures, besides the colonists (Voth, the Hykkousoi) on the south-west. **The Cthonians and the ash nomads
+Three native cultures, besides the colonists (Voth, the Hykkousoi) on the south-west. **The Zeijani and the ash nomads
 may be cousins of the Chichani; the Islanders are ethnically different.** When an unknown past calamity came (in the
 Cataclysm, or later), the three kin peoples went three ways: **the ash nomads took to wandering, the Chichani took to the
-sea and left the island entirely, and the Cthonians hid.** (So the Chichani's ashen skin and night vision are an old
-family trait; Voth's war for the Throne is a homecoming in its own eyes, and the Cthonians are the cousins who stayed.)
+sea and left the island entirely, and the Zeijani hid.** (So the Chichani's ashen skin and night vision are an old
+family trait; Voth's war for the Throne is a homecoming in its own eyes, and the Zeijani are the cousins who stayed.)
 
-**1. The ash nomads and villagers** (cousins of the Cthonians and the Chichani: the ones who took to wandering) herd creatures on the surface: the savanna of the south flank (station 6), the
+**1. The ash nomads and villagers** (cousins of the Zeijani and the Chichani: the ones who took to wandering) herd creatures on the surface: the savanna of the south flank (station 6), the
 shoulders and the plume's edge (1), out to the ash desert under the plume (7). Nomads move with the herds and the ash
 falls; villagers hold the kopjes, the lahar fans' gravels and the old flows' soil. Their life is the weather: they read the
 plume (ashfall, the ash storm), burn the grass for new growth (the burn and its fire flowers), and know the CO2 hollows as
 places that kill. Earth's grasses and the hardiest Earth stock live with them; the grazers are the fauna kit's.
 
-**2. The Cthonians** (the owner's spelling; cave dwellers) hid, and are still hidden. Their greatest cities are built in
+**2. The Zeijani** (the owner's name for them, 2026-10-07; first called the Cthonians; cave dwellers) hid, and are still hidden. Their greatest cities are built in
 and around the lava tubes: dwellings carved into the rock, rising as **spires** and sinking as **underground galleries**.
 They know the lava tunnels better than anyone, so their scouts and raiding parties appear and disappear without warning.
 - **Their places:** one **capital**, main and elaborate (a little smaller than Yuni), *its location unknown to outsiders*;
@@ -400,7 +400,7 @@ They know the lava tunnels better than anyone, so their scouts and raiding parti
   halls are where tubes meet, where breakdown has opened a chamber, a **drained magma chamber** (Þríhnúkagígur, Iceland:
   a bottle 120 m deep), and the halls they cut themselves in the tuff.
 - **Vibe (the owner's):** Cappadocia, Petra, Ethiopia's rock-hewn churches, dwarves, Varanasi and Babylon. The reference
-  board is `kits/cthonian/refs/` (30 images, 2026-10-07): rock-cut cliff faces and a cavern city, fairy chimneys and
+  board is `kits/zeijani/refs/` (30 images, 2026-10-07): rock-cut cliff faces and a cavern city, fairy chimneys and
   conical granary towers, glowing pierced temple towers, domed and mushroom-capped houses, cyclopean cube shrines, a
   fortress under an overhang.
 - **More to plumb (proposed):** *Derinkuyu and Kaymaklı* (Cappadocia's underground cities: eight levels, rolling stone
@@ -416,11 +416,16 @@ They know the lava tunnels better than anyone, so their scouts and raiding parti
 
 **3. The islanders** live on the coasts and the isles and make their living on the water (station 4): fishing, kelp and
 seaweed, the coconut and its coir, the reef. Some are related to the Ring Sea Islanders (the brief); they are not kin to the other two. The board's *islander port*
-(`kits/cthonian/refs/islander port.jpg`) is theirs: platforms and sail-roofed halls over the water. They trade between
+(`kits/zeijani/refs/islander port.jpg`) is theirs: platforms and sail-roofed halls over the water. They trade between
 the mountain and the sea, and know the spice's wild groves on the isles' geyser ground; their canoes land on the beaches.
 
-*Next (the owner's):* a kit for the Cthonians first: their carved architecture in tuff and tube, then a settlement and a
+*Next (the owner's):* a kit for the Zeijani first: their carved architecture in tuff and tube, then a settlement and a
 station for it (a tuff valley with a carved city, a tube opening in its cliff, a cavern deep inside).
+
+*The plan (2026-10-07):* `kits/zeijani/PLAN.md`. It covers the kit, a shared cavern module (`core/terrain`) and the
+capital, **Dhelv**: its outpost in a kipuka's old growth, a 2 km tube, the great hall under a light well, three
+satellite wells and the catacombs. Dhelv's rambling life layer is there to test the walk map. The caves are coloured
+after Raufarhólshellir (the owner's photographs).
 
 ## Open questions
 
