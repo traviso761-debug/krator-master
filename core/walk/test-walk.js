@@ -28,4 +28,16 @@ let threw=false;try{W.floor({rect:[0,1,0,1]});}catch(e){threw=true;}ok('a floor 
 threw=false;try{W.strip({a:[0,0,0],b:[1,1,1],w:0});}catch(e){threw=true;}ok('a strip of no width is refused',threw,false);
 ok('instances are independent',KWALK.floors.length===0&&W.floors.length===3,false);
 W.clear();ok('clear empties it',W.floorsAt(10,5).length===0&&W.bounds()===null,false);
+// the polygon floor (kits/zeijani's carved rooms): a level round room, an L, a sloped convex ramp
+const P=KWALK.create(),ring=[];for(let i=0;i<16;i++){const a=i*Math.PI/8;ring.push([100+Math.cos(a)*4,100+Math.sin(a)*4,2]);}
+P.poly({pts:ring,name:'round'});
+P.poly({pts:[[0,0,1],[6,0,1],[6,2,1],[2,2,1],[2,6,1],[0,6,1]],name:'ell'});
+P.poly({pts:[[20,0,0],[24,0,0],[24,8,4],[20,8,4]],name:'ramp'});
+ok('a level round room: inside stands on it',P.floorsAt(100,100).length===1&&P.floorsAt(103.5,100)[0][0]===2,P.floorsAt(104.5,100).length!==0);
+ok('a level L: its notch is no floor (not convex, still exact)',P.floorsAt(1,5).length===1&&P.floorsAt(4,4).length===0,P.floorsAt(4,4).length!==0);
+ok('a sloped convex floor rises with its vertices',near(P.floorsAt(22,4)[0][0],2)&&near(P.floorsAt(21,7.5)[0][0],3.75),near(P.floorsAt(22,4)[0][0],0));
+ok('the polygon floor exports as kind poly',P.export().floors.filter(f=>f.kind==='poly').length===3&&P.export().floors[2].pts[2][2]===4,P.export().floors[0].kind!=='poly');
+ok('bounds take the polygons',P.bounds()[0]===0&&P.bounds()[1]===104,P.bounds()===null);
+threw=false;try{P.poly({pts:[[0,0,0],[6,0,0],[6,2,1],[2,2,1],[2,6,1],[0,6,0]]});}catch(e){threw=true;}ok('a sloped floor that is not convex is refused',threw,false);
+threw=false;try{P.poly({pts:[[0,0,0],[1,0,0]]});}catch(e){threw=true;}ok('a polygon of two points is refused',threw,false);
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);
