@@ -17,12 +17,12 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 3 |  |
 | `10-core.js` | 3 | error panel (4); rng + noise (13) |
-| `26k-kit.js` | 4 |  |
+| `26k-kit.js` | 5 |  |
 | `27-mat.js` | 6 |  |
 | `30-geo.js` | 22 |  |
 | `36-def.js` | 5 |  |
 | `40-tk-tentkit.js` | 21 |  |
-| `40a-ak-ash.js` | 20 |  |
+| `40a-ak-ash.js` | 21 |  |
 | `41-tk-dress.js` | 4 |  |
 | `42-as-small.js` | 6 |  |
 | `44-al-large.js` | 7 |  |

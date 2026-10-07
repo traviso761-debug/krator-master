@@ -36,7 +36,7 @@ defBuilding({key:'tent-twin-peak',name:'Twin-peaked tent',seed:4403,cut:true,w:1
  build(o){const w=12,d=7;const H=tkPeaked({w,d,eaveH:1.1,peaks:[[-3,-.2,5.4],[3,-.2,5.4]],cover:'ashCloth',col:P('ash'),seam:.6,wallKey:'ashCloth',wallCol:P('ashG'),open:{x0:-2.4,x1:2.4,h:2.6},lining:'patEmber',floor:'rug',floorCol:P('redD')});
   const w2=w/2,d2=d/2;for(const [a,b] of [[[-w2,-d2],[w2,-d2]],[[w2,-d2],[w2,d2]],[[-w2,d2],[-w2,-d2]]])alWall(a,b,L=>akBand(L,.5,.5,{z:.14}));
   for(const x of [-3,3])W(x,0,-.2,0,()=>akSpire(5.45,1.2));
-  {const pts=[];for(let i=0;i<=20;i++){const x=-2.6+i*.26;pts.push([x,H(x,d2)+.02,d2+.02]);}cord('plain',pts,.06,akC(AK_R));}
+  {const pts=[];for(let i=0;i<=20;i++){const x=-2.6+i*.26;pts.push([x,H(x,d2)+.02,d2+.02]);}cord('plain',pts,.06,akC(AK_P));}
   for(const x of [-3,3])FURNISH('ashnomad_rug',x,.03,.3,0,{v:x>0?1:2});
   tkRowSeats(-5.4,-3.05,5.4,-3.05,['ashnomad_sleeping_mat'],2.2,undefined,0);
   for(const x of [-5.4,5.4])FURNISH('ashnomad_bedding_stack',x,0,0,x<0?PI/2:-PI/2);
@@ -50,7 +50,7 @@ defBuilding({key:'tent-long-black',name:'Long black tent',seed:4404,cut:true,w:1
  note:'a long black hair tent on three rows of poles, its front valance cut in red teeth edged in yellow, banners hung from the front poles; ash screens inside the open front',
  build(o){const w=12,d=6;const H=tkBlack({w,d,rows:[{z:-1.6,n:3,h:2.5},{z:.1,n:3,h:3.0},{z:1.7,n:3,h:2.6}],frontH:2.2,backH:1.05,stripes:[3],frontPoles:6});
   // the toothed valance: red teeth edged in yellow along the raised front
-  for(let i=0;i<24;i++){const x0=-w/2+i*w/24,x1=x0+w/24,xm=(x0+x1)/2,y=H(xm,d/2);poly('flag',[[x0,y,d/2+.03],[x1,y,d/2+.03],[xm,y-.38,d/2+.03]],P('red'),true);
+  for(let i=0;i<24;i++){const x0=-w/2+i*w/24,x1=x0+w/24,xm=(x0+x1)/2,y=H(xm,d/2);poly('flag',[[x0,y,d/2+.03],[x1,y,d/2+.03],[xm,y-.38,d/2+.03]],P('blue'),true);
    cord('plain',[[x0,y-.01,d/2+.04],[xm,y-.38,d/2+.04],[x1,y-.01,d/2+.04]],.015,akC(AK_Y));}
   for(const x of [-w/2+.3,w/2-.3])akBanner(x,d/2+.4,4.6,{len:2.2});
   tkFloor('patEmber',null,0,w-.3,d-.3);

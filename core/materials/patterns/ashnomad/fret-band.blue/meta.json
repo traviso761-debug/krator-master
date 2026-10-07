@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1764,
+    867
+   ],
+   "seam_after": [
+    0.833,
+    2.782
+   ],
+   "seam_before": [
+    1.433,
+    0.906
+   ],
+   "source_size": [
+    1774,
+    887
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "ashnomad/fret-band.blue",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   2.4,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ashnomad_fret-band.blue.png",
+  "generator": "INTERIM (2026-10-07): patterns/ashnomad/fret-band with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row patterns/ashnomad/fret-band: an appliqu\u00e9 felt band, stepped frets with a hummingbird, a spiral and a stag beetle in yellow and red on black (core/materials/PROMPTS-nomads.md)",
+  "reuse": "the Ash Nomads outside (blue leads, red trims)",
+  "sha1": "5dfec2547baebd1308a2b14e301e96d9aee15e7f"
+ }
+}

@@ -37,13 +37,13 @@ defBuilding({key:'tent-assembly',name:'Assembly and mess hall',seed:4602,cut:tru
    for(const [x,z] of [[-px,z1],[px,z1],[-px,z0+.4],[px,z0+.4]])pole('wood',[x,0,z],[x,ph,z],.1,P('woodD'),8);
    for(const s of [-1,1])psurf('ashCloth',(u,v)=>{const x=s*u*(px+.3),z=z0+v*(z1-z0+.3);return [x,ph+1.4*(1-u),z];},4,4,P('ash'));
    poly('plain',[[-px-.3,ph,z1+.32],[px+.3,ph,z1+.32],[0,ph+1.4,z1+.32]],akC(AK_K),true);
-   W(0,0,z1+.34,0,()=>{for(let k=0;k<5;k++){const s=1-k*.18;poly('plain',[[-1.1*s,ph+.15,k*.004],[1.1*s,ph+.15,k*.004],[0,ph+.15+1.05*s,k*.004]],akC(k%2?AK_Y:AK_R),true);}   // the flame, in nested chevrons
+   W(0,0,z1+.34,0,()=>{for(let k=0;k<5;k++){const s=1-k*.18;poly('plain',[[-1.1*s,ph+.15,k*.004],[1.1*s,ph+.15,k*.004],[0,ph+.15+1.05*s,k*.004]],akC(k%2?AK_Y:AK_P),true);}   // the flame, in nested chevrons
     akBand(2*px+.5,ph-.45,.4,{z:.01,figs:['fret','spiral']});});
-   const vq=[[-px-.3,ph-.02,z1+.32],[px+.3,ph-.02,z1+.32]];tkValance(vq,.35,'flag',P('red'),{per:1.6,tassels:0xe0b02a});
+   const vq=[[-px-.3,ph-.02,z1+.32],[px+.3,ph-.02,z1+.32]];tkValance(vq,.35,'flag',P('blue'),{per:1.6,tassels:0xe0b02a});
    // the emblem frame over the roof: two masts, a crossbar, the gas giant, red banners down each side
    const fy=AC.pH+3.6;for(const s of [-1,1]){pole('wood',[s*1.9,rY(1.9)-.5,1.2],[s*1.9,fy+1.5,1.2],.1,P('woodD'),8);
     W(s*1.9,0,1.2,0,()=>akSpire(fy+1.45,1));
-    withCloth(clothHang(4.2,.04),()=>{psurf('flag',(u,v)=>[s*1.9+(u-.5)*.8,fy+1.12-v*4.28,1.31],3,8,akC(AK_B));psurf('flag',(u,v)=>[s*1.9+(u-.5)*.66,fy+1.1-v*4.2,1.32],3,8,P('red'));psurf('flag',(u,v)=>[s*1.9+(u-.5)*.66,fy+1.1-v*4.2,1.30],3,8,P('red'));});}
+    withCloth(clothHang(4.2,.04),()=>{psurf('flag',(u,v)=>[s*1.9+(u-.5)*.8,fy+1.12-v*4.28,1.31],3,8,akC(AK_T));psurf('flag',(u,v)=>[s*1.9+(u-.5)*.66,fy+1.1-v*4.2,1.32],3,8,P('blue'));psurf('flag',(u,v)=>[s*1.9+(u-.5)*.66,fy+1.1-v*4.2,1.30],3,8,P('blue'));});}
    beam('wood',[-2.1,fy+1.15,1.2],[2.1,fy+1.15,1.2],.08,P('woodD'),true,8);
    akGiant(fy-.2,1.32,1.55);
    // banner poles round the tent, each a long red banner with its yellow disc

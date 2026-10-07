@@ -479,5 +479,69 @@
    "mute": 0,
    "band": 0.0
   }
+ },
+ {
+  "src": "ashnomad_fret-band.blue.png",
+  "out": "core/materials/patterns/ashnomad/fret-band.blue",
+  "record": {
+   "id": "ashnomad/fret-band.blue",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    1.2
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "INTERIM (2026-10-07): patterns/ashnomad/fret-band with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/fret-band: an appliqu\u00e9 felt band, stepped frets with a hummingbird, a spiral and a stag beetle in yellow and red on black (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the Ash Nomads outside (blue leads, red trims)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ashnomad_nazca-panel.blue.png",
+  "out": "core/materials/patterns/ashnomad/nazca-panel.blue",
+  "record": {
+   "id": "ashnomad/nazca-panel.blue",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "INTERIM (2026-10-07): patterns/ashnomad/nazca-panel with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+    "licence": "generated for this project by its owner",
+    "prompt": "row patterns/ashnomad/nazca-panel: Nazca figures (hummingbird, monkey with a spiral tail, spider, stag beetle) in yellow and red on black between stepped frets (core/materials/PROMPTS-nomads.md)",
+    "reuse": "the Ash Nomads outside (blue leads, red trims)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "normal_strength": 0.5,
+   "mute": 0
+  }
  }
 ]

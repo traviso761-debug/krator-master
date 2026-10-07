@@ -49,7 +49,7 @@ KB of source per tag. `[G data]` is what crosses over as it is; `[web]` is what 
 | [`biomes/swlowlands`](biomes/swlowlands/PORT.md) | 13 | 196 | 1 | 0 | 13 | 34 | 148 | 5 | biome | yes | yes |
 | [`biomes/xanadu`](biomes/xanadu/PORT.md) | 15 | 207 | 1 | 0 | 12 | 33 | 160 | 5 | biome | yes | yes |
 | [`openworld/little-demo`](openworld/little-demo/PORT.md) | 17 | 157 | 47 | 0 | 9 | 95 | 6 | 2 |  | yes | yes |
-| **all** | 1686 | 22553 | 3307 (15%) | 415 (2%) | 993 (4%) | 2566 (11%) | 15272 (68%) | 238 | | | |
+| **all** | 1686 | 22553 | 3308 (15%) | 415 (2%) | 993 (4%) | 2566 (11%) | 15272 (68%) | 238 | | | |
 
 ## Host-shell copies
 

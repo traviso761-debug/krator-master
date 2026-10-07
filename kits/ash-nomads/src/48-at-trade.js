@@ -26,7 +26,7 @@ defBuilding({key:'hut-shaman',name:"Shaman's hut",seed:4801,cut:true,w:9,d:10,h:
   // a beetle's skull over the door (the mandibles spread), ribbons on the pole tips, skulls on stakes
   ellip('bone',0,1.95,r*.97+.1,.24,.15,.22,0xd8ccb0,0,10);for(const s of [-1,1]){const pts=[];for(let i=0;i<=6;i++){const t=i/6;pts.push([s*(.12+t*.45),1.98+Math.sin(t*PI)*.18,r+.15+t*.25]);}cord('chitin',pts,.035,P('chitin'));}
   for(let i=0;i<NP;i+=2){const a=i/NP*TAU+.11,t=tkAt(.45,a+PI+.25);const tip=[t[0]*.9,apex+.95,t[1]*.9];
-   withCloth(clothFlag(.7,.2),()=>W(tip[0],tip[1]-.05,tip[2],a,()=>psurf('flag',(u,v)=>[u*.7,-v*.09,0],4,1,P(pick(['red','yellow','ochre','vermilion'])))));}
+   withCloth(clothFlag(.7,.2),()=>W(tip[0],tip[1]-.05,tip[2],a,()=>psurf('flag',(u,v)=>[u*.7,-v*.09,0],4,1,P(pick(['blue','yellow','blue','red'])))));}
   for(const s of [-1,1]){pole('wood',[s*1.1,0,r+1.3],[s*1.1,1.6,r+1.3],.04,P('woodD'),6);ellip('bone',s*1.1,1.66,r+1.3,.13,.1,.17,0xe4dac4,0,8);}
   tkFloor('patCrawl',null,r-.15);
   FURNISH('ashnomad_fire_pit',0,0,0,0);smokeAt(0,apex,0,{r:.35});
@@ -67,7 +67,7 @@ defBuilding({key:'tent-supply',name:'Supply tent',seed:4803,cut:true,w:14,d:10.5
  build(o){const w=10,d=6;const H=tkPeaked({w,d,eaveH:1.1,peaks:[[-2.6,-.4,4.6],[2.6,-.4,4.6]],cover:'ashCloth',col:P('ash'),seam:.6,wallKey:'ashCloth',wallCol:P('ashG'),open:{x0:-4.2,x1:4.2,h:2.5},floor:'earth',floorCol:P('earth')});
   for(const [a,b] of [[[-w/2,-d/2],[w/2,-d/2]],[[w/2,-d/2],[w/2,d/2]],[[-w/2,d/2],[-w/2,-d/2]]])alWall(a,b,L=>akBand(L,.45,.45,{z:.14}));
   for(const x of [-2.6,2.6])W(x,0,-.4,0,()=>akSpire(4.65,1));
-  for(let i=0;i<20;i++){const x0=-4.2+i*.42,x1=x0+.42,xm=(x0+x1)/2,y=H(xm,d/2);poly('flag',[[x0,y,d/2+.03],[x1,y,d/2+.03],[xm,y-.3,d/2+.03]],P('red'),true);}
+  for(let i=0;i<20;i++){const x0=-4.2+i*.42,x1=x0+.42,xm=(x0+x1)/2,y=H(xm,d/2);poly('flag',[[x0,y,d/2+.03],[x1,y,d/2+.03],[xm,y-.3,d/2+.03]],P('blue'),true);}
   for(const x of [-2.7,0,2.7])FURNISH('ashnomad_common_counter',x,0,1.9,0,{v:x===0?1:0});
   FURNISH('ashnomad_trade_display',-3.9,0,-.8,PI/2,{v:1});FURNISH('ashnomad_trade_display',3.9,0,-.8,-PI/2);
   FURNISH('ashnomad_supply_bales',-3.4,0,-2.2,0);FURNISH('ashnomad_supply_bales',-2.1,0,-2.3,.1);FURNISH('ashnomad_plate_stack',0,0,-2.5,0);

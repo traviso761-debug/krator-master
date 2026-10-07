@@ -6,8 +6,8 @@
 //   SV_CLOTH     thin sheets: double-sided, flutter; SV_CUT the buckets the cut-away opens
 //   KIT_FALLBACK [key, stand-in]: an owner's sheet not processed yet draws as the stand-in
 //   SVPAL, P(k)  the palette (sRGB hex; P picks one and jitters it)
-// The look (the owner's brief, 2026-10-07): peaked tents of every kind, black to grey, with ornate yellow and red patterns
-// outside (a cross of Nazca line figures and Morrowind Dunmer frets); inside, the yellow-red palette, chitin, hanging banners,
+// The look (the owner's brief, 2026-10-07): peaked tents of every kind, black to grey, with ornate patterns outside in BLUE and
+// yellow with red as the trim (the owner swapped blue and red outside the same day, after the gas giant emblem) (a cross of Nazca line figures and Morrowind Dunmer frets); inside, the yellow-red palette, chitin, hanging banners,
 // lanterns and ash screens.
 const KIT={id:'ash-nomads',title:'Ash Nomads Kit',pack:'ash-nomads',culture:'ashnomad',faction:'Ash Nomads',band:'the Cinder-Walkers',
  frag:'kits/ash-nomads',ground:0x625e58,groundProc:0x5e5a55,fog:0xb8b0a6,furnDetail:.6};
@@ -30,6 +30,7 @@ const SVPAL={
  ash:[0x2a2826,0x302d2a,0x24221f],                      // black tent cloth
  ashG:[0x4e4a45,0x56524c,0x48443f],                     // charcoal
  ashP:[0x7a756e,0x86817a,0x6e6a64],                     // ash-grey
+ blue:[0x3e5c9a,0x46649f,0x38548e],blueL:[0x6f80a6,0x7d8fb0],   // outside, blue leads (2026-10-07); red trims
  yellow:[0xe0b02a,0xd8a424,0xe8bc36],ochre:[0xc08a22,0xb07c1c],red:[0xa8281c,0x9a2418,0xb4301e],redD:[0x6a1a12,0x5e1610],vermilion:[0xc8401e,0xd04a24],
  bone:[0xe2d6bc,0xd6c8aa],boneD:[0xb8a888,0xa89878],
  chitin:[0x4a3a2a,0x3e3022,0x54402e],chitinA:[0x8a5a24,0x7a4e1e],chitinG:[0x34402c,0x2e3826],

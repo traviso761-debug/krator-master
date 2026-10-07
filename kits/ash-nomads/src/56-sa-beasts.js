@@ -25,7 +25,7 @@ function saLife(key,o){const L=KratorFauna.lifeOf(key);return svLife(CURREC,{job
 /* a cloth over the back round a point: len along the spine, drop down each flank (hw the half-width there) */
 function saDrape(mk,at,hw,len,drop,col,o){o=o||{};const a1=Math.min(1.45,drop/hw);
  psurf(mk,(u,v)=>{const a=(u-.5)*2*a1,z=at[2]+(v-.5)*len;return [Math.sin(a)*hw*1.04,at[1]-(1-Math.cos(a))*hw*(o.flat||1.05)+.02,z];},10,4,col,o.colf?{colf:o.colf}:undefined);}
-const SA_CLOTH=(u,v)=>{const t=Math.abs(u-.5)*2;return akC(t>.85?AK_Y:t>.7?AK_R:AK_K);};
+const SA_CLOTH=(u,v)=>{const t=Math.abs(u-.5)*2;return akC(t>.85?AK_Y:t>.7?AK_P:AK_K);};
 /* the beetle saddle: a saddle cloth banded red and yellow, a seat of hide on a chitin frame with a high carapace back */
 function saBeetle(an,hw,war){const s=an.saddle;saDrape('felt',s,hw,1.0,.6,WHITE,{colf:SA_CLOTH,flat:.6});
  box('hide',0,s[1]+.07,s[2],.46,.1,.62,0x4a3020);
@@ -34,10 +34,10 @@ function saBeetle(an,hw,war){const s=an.saddle;saDrape('felt',s,hw,1.0,.6,WHITE,
  for(const k of [-1,1]){cord('hide',[[k*hw*.8,s[1],s[2]],[k*(hw+.15),s[1]-.62,s[2]+.05]],.014,0x3a2010);ring('iron',k*(hw+.15),s[1]-.68,s[2]+.05,.06,.012,0x2e2a26,PI/2,0,PI/2,10);}
  if(war){for(const k of [-1,1])for(let i=0;i<3;i++)WX(k*(hw+.06),s[1]-.25-i*.05,s[2]-.5+i*.5,0,0,k*.35,()=>ellip('chitin',0,0,0,.05,.32,.28,P('chitinG'),0,8));   /* war plates on the flanks */
   beam('wood',[hw*.8,s[1]-.3,s[2]-.3],[hw,s[1]+3.0,s[2]+.6],.025,P('woodD'),true,6);cone('chitin',hw,s[1]+3.0,s[2]+.6,.05,.4,0x3a2a1a,6);
-  withCloth(clothFlag(.9,.25),()=>W(hw*.98,s[1]+2.6,s[2]+.5,PI/2,()=>psurf('flag',(u,v)=>[u*.9,-v*(.3-u*.2),0],5,2,P('red'))));}}
+  withCloth(clothFlag(.9,.25),()=>W(hw*.98,s[1]+2.6,s[2]+.5,PI/2,()=>psurf('flag',(u,v)=>[u*.9,-v*(.3-u*.2),0],5,2,P('blue'))));}}
 /* pack frames along a back: a chitin frame at each point, bundles slung each side, a rolled black tent across the top */
 function saPackFrames(pts,hw){for(const p of pts){const y=p[1];beam('chitin',[-hw-.15,y,p[2]],[hw+.15,y,p[2]],.05,P('chitin'),true,6);
-  for(const k of [-1,1]){pole('chitin',[k*(hw+.12),y,p[2]],[k*(hw+.2),y-.55,p[2]],.03,P('chitin'),5);ellip('rug',k*(hw+.32),y-.35,p[2],.2,.3,.32,k<0?P('red'):P('ochre'),0,8);}
+  for(const k of [-1,1]){pole('chitin',[k*(hw+.12),y,p[2]],[k*(hw+.2),y-.55,p[2]],.03,P('chitin'),5);ellip('rug',k*(hw+.32),y-.35,p[2],.2,.3,.32,k<0?P('blue'):P('ochre'),0,8);}
   W(0,y+.2,p[2],0,()=>{beam('ashCloth',[-hw-.25,0,0],[hw+.25,0,0],.2,P('ash'),true,12);for(const x of [-.3,.3])ring('rope',x,0,0,.21,.015,0x9a8a6a,0,0,PI/2,12);});}}
 function saBridle(an,hr){const b=an.bridle;if(!b)return;const r_=[];for(let i=0;i<=14;i++){const a=i/14*TAU;r_.push([Math.sin(a)*hr,b[1]+Math.cos(a)*hr*1.1,b[2]]);}cord('hide',r_,.016,0x3a2010);
  if(an.saddle)sagRope('hide',[0,b[1]+hr,b[2]],[0,an.saddle[1]+.25,an.saddle[2]+.32],.15,.012,0x3a2010,6);}

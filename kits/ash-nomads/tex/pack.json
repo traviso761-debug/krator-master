@@ -887,7 +887,7 @@
     "normalMap": "patFret.normal.webp",
     "roughnessMap": "patFret.rough.webp"
    },
-   "lib": "patterns/ashnomad/fret-band",
+   "lib": "patterns/ashnomad/fret-band.blue",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -897,16 +897,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "eed176bbb3ea0136f9f2c110818a6dd99bd9f1c3",
-    "normal": "1501bb112db7358fb8ad854aae6b72604d52ed26",
-    "roughness": "b48948abcd590de1cb848126ca3952cb4253416f"
+    "albedo": "2b54e2d2ed955ddd80eaffd2e32673e3ab30552c",
+    "normal": "c8c238fc6c0141911594fa7f137159eec9d723e1",
+    "roughness": "de4efb3217d3810e6f6897f8d4b74525816d98a3"
    },
    "specular": 0.15,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.29646591927921073,
-    "sourceMean": 0.2965
+    "mean": 0.3295998535425523,
+    "sourceMean": 0.3296
    }
   },
   "patKilim": {
@@ -947,7 +947,7 @@
     "normalMap": "patNazca.normal.webp",
     "roughnessMap": "patNazca.rough.webp"
    },
-   "lib": "patterns/ashnomad/nazca-panel",
+   "lib": "patterns/ashnomad/nazca-panel.blue",
    "metal": 0,
    "normalScale": 1.0,
    "roughLift": 0.3,
@@ -957,16 +957,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "5a70dca235aa1dc1031e7f77bb5eedd6a360bc6b",
-    "normal": "339df2eaba051e1fd35b76e4f1e92f2cd60335cf",
-    "roughness": "3f999f84c795adc4ceed325a889fa429a575fbe6"
+    "albedo": "fc8029d595b519633c552c93ab7591cf74150ae4",
+    "normal": "78a5767d4a0d6e6d8515d40eb51aaf2ba3b28ec8",
+    "roughness": "b11c76a85e8d8de6279f8d1b3b2c1bc5c491d8ca"
    },
    "specular": 0.15,
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.22301889168533623,
-    "sourceMean": 0.223
+    "mean": 0.24920986535764206,
+    "sourceMean": 0.2492
    }
   },
   "plates": {

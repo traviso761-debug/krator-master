@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1240,
+    1230
+   ],
+   "seam_after": [
+    0.631,
+    4.132
+   ],
+   "seam_before": [
+    1.984,
+    0.503
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.15,
+   "mute": 0,
+   "normal_strength": 0.5,
+   "pattern": true,
+   "rough": 0.92,
+   "rough_var": 0.08,
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "ashnomad/nazca-panel.blue",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.92,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ashnomad_nazca-panel.blue.png",
+  "generator": "INTERIM (2026-10-07): patterns/ashnomad/nazca-panel with its reds recoloured to slate blue by a hue shift (scratch script), until the owner generates the blue sheet (core/materials/PROMPTS-nomads.md)",
+  "licence": "generated for this project by its owner",
+  "prompt": "row patterns/ashnomad/nazca-panel: Nazca figures (hummingbird, monkey with a spiral tail, spider, stag beetle) in yellow and red on black between stepped frets (core/materials/PROMPTS-nomads.md)",
+  "reuse": "the Ash Nomads outside (blue leads, red trims)",
+  "sha1": "594813eb0662593cffedbc4b92fe3a1a5ddc06cd"
+ }
+}

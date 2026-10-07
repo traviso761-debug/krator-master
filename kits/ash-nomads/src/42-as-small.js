@@ -39,7 +39,7 @@ defBuilding({key:'tent-bell-spire',name:'Petal bell tent',seed:4204,cut:true,w:8
   // the petals: six scalloped flaps hanging over the eave, red edged with yellow
   for(let i=0;i<8;i++){const a=(i+.5)/8*TAU;if(tkNearDoor(a,.3))continue;W(Math.cos(a)*(R+.32),0,Math.sin(a)*(R+.32),Math.atan2(Math.cos(a),Math.sin(a)),()=>{
    const pts=[];for(let k=0;k<=10;k++){const t=k/10,an=PI*t;pts.push([-Math.cos(an)*.85,rY(R+.3)-.02-Math.sin(an)*.55]);}
-   poly('flag',[[-.85,rY(R+.3),0]].concat(pts.map(q=>[q[0],q[1],0])).concat([[.85,rY(R+.3),0]]),P('red'),true);
+   poly('flag',[[-.85,rY(R+.3),0]].concat(pts.map(q=>[q[0],q[1],0])).concat([[.85,rY(R+.3),0]]),P('blue'),true);
    cord('plain',pts.map(q=>[q[0],q[1],.012]),.025,akC(AK_Y));});}
   FURNISH('ashnomad_rug',0,.03,0,0,{v:1});tkRingSeats(R-.42,['ashnomad_floor_cushion','ashnomad_bolster'],{step:1.0,gap:.75});
   FURNISH('ashnomad_carapace_table',0,0,.4,0);FURNISH('ashnomad_brew_set',0,svfH('ashnomad_carapace_table',0,.4),.4,0);

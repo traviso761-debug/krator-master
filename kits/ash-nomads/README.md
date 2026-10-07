@@ -4,7 +4,8 @@ The beetle riders of the ash plains round the great volcano (catalog and core/ta
 cousins of the Chichani and of the Zeijani of Dhelv, who took to wandering after the calamity the Zeijani hid from. Split from
 the Scyvoi kit on 2026-10-07 to the owner's style guide (the `ashnomad` reference folder):
 
-- **Outside:** peaked tents of every kind, black to grey, with ORNATE yellow and red patterns: a cross of Nazca line figures
+- **Outside:** peaked tents of every kind, black to grey, with ORNATE patterns in blue and yellow, red as the trim (blue and
+  red swapped roles on 2026-10-07, after the gas giant emblem): a cross of Nazca line figures
   (the hummingbird, the spiral, the beetle) and Morrowind Dunmer key-frets. Concave spires, petal-lobed great tents, Ashlander
   hide domes, ridge tents, a petal-skirted bell tent, a lean-to against the ash wind.
 - **Inside:** the yellow-red palette; chitin furniture and vessels, hanging banners, paper and chitin lanterns, ash screens at

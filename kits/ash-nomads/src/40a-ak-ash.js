@@ -18,9 +18,11 @@
 //   akSpire(y, h)                        the bone and gold finial on a mast top
 const AK_LIN={};function akC(hex){return AK_LIN[hex]||(AK_LIN[hex]=hc(hex));}
 const AK_Y=0xe0b02a,AK_R=0xa8281c,AK_K=0x2a2826,AK_G=0x4e4a45,AK_O=0xc8401e;
-/* the blue trim (2026-10-07): the slate blue and cream of the gas giant emblem (the sky's giant), as piping round the bands,
-   a line in the roofs, the eaves, the banners' borders and a ring in every finial */
+/* the emblem's slate blue and cream (the sky's giant) */
 const AK_B=0x6f80a6,AK_BL=0x8a98b8,AK_CR=0xd8cfbb;
+/* OUTSIDE, blue leads and red trims (the owner, 2026-10-07: blue and red swapped roles): AK_P the primary accent (the deep
+   slate blue of the emblem's fret ring), AK_T the trim (red). Inside, the yellow-red palette is unchanged. */
+const AK_P=0x3e5c9a,AK_T=0xa8281c;
 /* a thick line segment in the local x-y plane at depth z */
 function akSeg(x0,y0,x1,y1,t,col,z){const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,nx=-dy/L*t/2,ny=dx/L*t/2;poly('plain',[[x0+nx,y0+ny,z],[x1+nx,y1+ny,z],[x1-nx,y1-ny,z],[x0-nx,y0-ny,z]],col,true);}
 function akLine(pts,t,col,z){for(let i=0;i<pts.length-1;i++)akSeg(pts[i][0],pts[i][1],pts[i+1][0],pts[i+1][1],t,col,z);}
@@ -41,11 +43,11 @@ function akMotif(m,cx,y0,y1,hw,col,z){const h=y1-y0,t=Math.max(.02,h*.09),X=u=>c
    the strip from x0 to x1 in the local x-y plane at depth z */
 function akSheetStrip(mk,x0,x1,y,h,z){const tl=TILE[mk]||1;
  psurf(mk,(u,v)=>[lerp(x0,x1,u),y+v*h,z],Math.max(1,Math.round((x1-x0)/.4)),1,null,{uvf:(u,v)=>[u*tl,v*tl]});
- for(const yy of [y-.012,y+h+.012])beam('plain',[x0,yy,z+.006],[x1,yy,z+.006],.022,akC(AK_B),true,5);}   /* the blue piping */
+ for(const yy of [y-.012,y+h+.012])beam('plain',[x0,yy,z+.006],[x1,yy,z+.006],.022,akC(AK_T),true,5);}   /* the red piping */
 /* the sheet round a circular wall of radius r from angle a0 to a1 (the door gap left out), whole repeats of aspect asp */
 function akSheetRing(mk,r,y,h,asp,a0,a1){const tl=TILE[mk]||1,L=r*(a1-a0),reps=Math.max(1,Math.round(L/(h*asp)));
  psurf(mk,(u,v)=>{const a=lerp(a0,a1,u);return [Math.cos(a)*r,y+v*h,Math.sin(a)*r];},Math.max(2,Math.round(L/.35)),1,null,{uvf:(u,v)=>[u*reps*tl,v*tl]});
- const n=Math.max(8,Math.round(L/.3));for(const yy of [y-.012,y+h+.012]){const pts=[];for(let i=0;i<=n;i++){const a=lerp(a0,a1,i/n);pts.push([Math.cos(a)*(r+.008),yy,Math.sin(a)*(r+.008)]);}cord('plain',pts,.022,akC(AK_B));}}   /* the blue piping */
+ const n=Math.max(8,Math.round(L/.3));for(const yy of [y-.012,y+h+.012]){const pts=[];for(let i=0;i<=n;i++){const a=lerp(a0,a1,i/n);pts.push([Math.cos(a)*(r+.008),yy,Math.sin(a)*(r+.008)]);}cord('plain',pts,.022,akC(AK_T));}}   /* the red piping */
 function akBand(L,y,h,o){o=o||{};const z=o.z===undefined?.014:o.z,figs=o.figs||['fret','bird','fret','spiral'],e=Math.max(.025,h*.08),pitch=h*1.25;
  {const mk=o.sheet||'patFret';if(KIT_HAS(mk)){const asp=mk==='patFret'?2:1,n2=Math.max(1,Math.round(L/(h*asp))),step=L/n2;   /* the owner's sheet, whole repeats */
   for(let i=0;i<n2;i++){const x0=-L/2+i*step,x1=x0+step;if(o.skip&&(o.skip(x0+.02)||o.skip(x1-.02)||o.skip((x0+x1)/2)))continue;akSheetStrip(mk,x0,x1,y,h,z);}return;}}
@@ -53,7 +55,7 @@ function akBand(L,y,h,o){o=o||{};const z=o.z===undefined?.014:o.z,figs=o.figs||[
  const n=Math.max(1,Math.floor(L/pitch)),p=L/n;
  for(let i=0;i<n;i++){const x0=-L/2+i*p,x1=x0+p,cx=(x0+x1)/2;if(!ok(cx)||!ok(x0+.02)||!ok(x1-.02))continue;
   if(o.bg!==false)strip(x0,x1,y,y+h,akC(AK_K),-.004);strip(x0,x1,y,y+e,akC(AK_Y),0);strip(x0,x1,y+h-e,y+h,akC(AK_Y),0);
-  akMotif(figs[i%figs.length],cx,y+e*1.8,y+h-e*1.8,p*.4,akC(i%2?AK_Y:AK_R),z+.002);}}
+  akMotif(figs[i%figs.length],cx,y+e*1.8,y+h-e*1.8,p*.4,akC(i%2?AK_Y:AK_P),z+.002);}}
 /* the band round a circular wall of radius r (outer face out), keeping clear of the door (+z) by `gap` radians */
 function akBandRing(r,y,h,o){o=o||{};const figs=o.figs||['fret','bird','fret','spiral','fret','beetle'],pitch=h*1.25,n=Math.max(6,Math.round(TAU*r/pitch)),p=TAU*r/n;
  {const mk=o.sheet||'patFret';if(KIT_HAS(mk)){const g=o.gap||0;akSheetRing(mk,r+.014,y,h,mk==='patFret'?2:1,PI/2+g,PI/2+TAU-g);return;}}   /* the owner's sheet */
@@ -61,18 +63,18 @@ function akBandRing(r,y,h,o){o=o||{};const figs=o.figs||['fret','bird','fret','s
   W(Math.cos(a)*(r+.012),0,Math.sin(a)*(r+.012),Math.atan2(Math.cos(a),Math.sin(a)),()=>{const L=p*1.02,e=Math.max(.025,h*.08);
    poly('plain',[[-L/2,y,-.004],[L/2,y,-.004],[L/2,y+h,-.004],[-L/2,y+h,-.004]],akC(AK_K),true);
    for(const [y0,y1] of [[y,y+e],[y+h-e,y+h]])poly('plain',[[-L/2,y0,0],[L/2,y0,0],[L/2,y1,0],[-L/2,y1,0]],akC(AK_Y),true);
-   akMotif(figs[i%figs.length],0,y+e*1.8,y+h-e*1.8,p*.4,akC(i%2?AK_Y:AK_R),.003);});}}
+   akMotif(figs[i%figs.length],0,y+e*1.8,y+h-e*1.8,p*.4,akC(i%2?AK_Y:AK_P),.003);});}}
 /* a roof's vertex colours: black cloth (cloth k), and at each band [v0, v1, kind] a pattern: 'saw' (red teeth on yellow),
    'step' (a stepped fret in yellow on red), 'line' (a yellow stripe). N teeth round the roof. */
-function akRoofColf(bands,N,base){const K=akC(base||AK_K),Yc=akC(AK_Y),Rc=akC(AK_R),O=akC(AK_O);
+function akRoofColf(bands,N,base){const K=akC(base||AK_K),Yc=akC(AK_Y),Rc=akC(AK_P),O=akC(AK_O);
  return (u,v)=>{for(const b of bands){if(v<b[0]||v>b[1])continue;const t=(v-b[0])/(b[1]-b[0]),f=((u*N)%1+1)%1;
   if(t<.12||t>.88)return Yc;
   if(b[2]==='saw')return (t-.12)/.76<1-Math.abs(2*f-1)?Rc:Yc;
   if(b[2]==='step'){const s=Math.floor(f*4),q=Math.floor((t-.12)/.76*4);return (s===q||s===3-q)?Yc:Rc;}
-  if(b[2]==='line')return t<.3||t>.7?Yc:akC(AK_B);}   /* a blue line edged in yellow */
+  if(b[2]==='line')return t<.3||t>.7?Yc:akC(AK_T);}   /* a red line edged in yellow */
   return K;};}
 /* the bone-and-gold finial on a mast */
-function akSpire(y,h){h=h||1;cone('brass',0,y,0,.07*h,.7*h,0xc89a3a,8);sph('bone',0,y+.12*h,0,.11*h,0xe2d6bc);for(let k=0;k<3;k++)ring(k===1?'plain':'brass',0,y+.28*h+k*.12*h,0,.06*h*(1-k*.2),k===1?.02:.012,k===1?akC(AK_B):0xc89a3a,0,0,0,10);}
+function akSpire(y,h){h=h||1;cone('brass',0,y,0,.07*h,.7*h,0xc89a3a,8);sph('bone',0,y+.12*h,0,.11*h,0xe2d6bc);for(let k=0;k<3;k++)ring(k===1?'plain':'brass',0,y+.28*h+k*.12*h,0,.06*h*(1-k*.2),k===1?.02:.012,k===1?akC(AK_T):0xc89a3a,0,0,0,10);}
 /* ---------------------------------------------------------------- the concave spire tent
    o: R (the wall radius), wallH, peakH, k (the curve: 2 a deep concave sweep), doorW, cover (key), lining, floor, floorCol,
    bands (akRoofColf bands), figs, guys, valance (colour or false), mast (true) */
@@ -87,11 +89,11 @@ function akConcave(o){const R=o.R,wH=o.wallH,pH=o.peakH,k=o.k||2.1,dW=o.doorW||1
  // the sawtooth bands as sewn-on red teeth (vertex colour alone smears them into a stripe): a row of triangles on the roof
  for(const b of bands){if(b[2]!=='saw')continue;const r0=RE*(1-b[0])+.04*b[0],r1=RE*(1-b[1])+.04*b[1],ra=lerp(r0,r1,.14),rb=lerp(r0,r1,.86),n=Math.max(8,Math.round(TAU*ra/.42));
   const at=(r,a)=>{const lift=.03;return [Math.cos(a)*(r+lift*.3),roofY(r)+lift,Math.sin(a)*(r+lift*.3)];};
-  for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU;poly('plain',[at(ra,a0),at(ra,a1),at(rb,(a0+a1)/2)],akC(AK_R),true);}}
+  for(let i=0;i<n;i++){const a0=i/n*TAU,a1=(i+1)/n*TAU;poly('plain',[at(ra,a0),at(ra,a1),at(rb,(a0+a1)/2)],akC(AK_P),true);}}
  if(o.lining!==false)lathe(o.lining||'patEmber',0,0,prof.map(q=>[q[0]-.1,q[1]-.1]).filter(q=>q[0]>.15),seg,null,{inward:true});
  if(o.lining!==false)lathe(o.lining||'patEmber',0,0,[[R-.06,.05],[R-.06,wH-.05]],seg,null,{a0:A0,a1:A1,inward:true});
  if(o.mast!==false){pole('wood',[0,0,0],[0,pH+.15,0],.08,P('woodD'),8);akSpire(pH+.1,o.spire||1);}
- if(o.valance!==false){const vp=[];for(let i=0;i<=72;i++){const a=i/72*TAU;vp.push([Math.cos(a)*(RE+.02),roofY(RE)-.02,Math.sin(a)*(RE+.02)]);}tkValance(vp,.3,'flag',o.valance||P('red'),{per:1.6,tassels:0xe0b02a});cord('plain',vp.map(q=>[q[0]*1.004,q[1]+.02,q[2]*1.004]),.03,akC(AK_B));}   /* the blue eave cord */
+ if(o.valance!==false){const vp=[];for(let i=0;i<=72;i++){const a=i/72*TAU;vp.push([Math.cos(a)*(RE+.02),roofY(RE)-.02,Math.sin(a)*(RE+.02)]);}tkValance(vp,.3,'flag',o.valance||P('blue'),{per:1.6,tassels:0xe0b02a});cord('plain',vp.map(q=>[q[0]*1.004,q[1]+.02,q[2]*1.004]),.03,akC(AK_T));}   /* the red eave cord */
  for(let i=0;i<(o.guys||10);i++){const a=(i+.5)/(o.guys||10)*TAU;if(tkNearDoor(a,g+.2))continue;const p=tkAt(RE,a),q=tkAt(RE+1.5,a);tkGuy([p[0],roofY(RE),p[1]],q[0],q[1]);}
  // the door: a pointed arch frame of chitin, the flaps tied back
  W(0,0,R,0,()=>{const pts=[];for(let i=0;i<=12;i++){const t=i/12,a=PI*t;pts.push([-Math.cos(a)*dW/2,Math.min(wH-.05,1.75)*(.72+.28*Math.sin(a))+(t>.5?0:0)]);}
@@ -124,7 +126,7 @@ function akChief(o){const R=o.R,wH=o.wallH,cR=o.cR||R*.55;
    pole('wood',[0,0,0],[0,lh+.1,0],.06,P('woodD'),7);akSpire(lh+.05,1.1);
    // the gable arch: a pointed arch of cloth over the lobe's face, edged
    const aw=lr*.85,ah=base+.7;const arc=[];for(let k=0;k<=14;k++){const t=k/14,an=PI*t;arc.push([-Math.cos(an)*aw,base*.25+(ah-base*.25)*Math.pow(Math.sin(an),.6),lr*.98]);}
-   cord('plain',arc,.06,akC(AK_Y));cord('plain',arc.map(q=>[q[0]*.9,q[1]-.12,q[2]+.01]),.04,akC(AK_R));
+   cord('plain',arc,.06,akC(AK_Y));cord('plain',arc.map(q=>[q[0]*.9,q[1]-.12,q[2]+.01]),.04,akC(AK_P));
    psurf('ashCloth',(u,v)=>{const q=arc[Math.min(14,Math.round(u*14))];return [q[0],lerp(q[1],base+1.1,v),lr*.98-.02];},14,2,P('ash'));});}
  const roofC=r=>r<cR?cY(r):lerp(wH,o.drumH||wH+2.2,Math.pow(clamp((R+.3-r)/(R+.3-cR),0,1),1.6));
  for(let i=0;i<16;i++){const a=(i+.5)/16*TAU;if(tkNearDoor(a,g+.25))continue;const p=tkAt(R+.3,a),q=tkAt(R+2,a);tkGuy([p[0],wH,p[1]],q[0],q[1]);}
@@ -156,9 +158,9 @@ function akRidge(o){const w2=o.w/2,d2=o.d/2;const H=(x,z)=>{const t=Math.abs(z)/
 /* ---------------------------------------------------------------- a banner pole: a long red banner with the gas giant on it */
 function akBanner(x,z,h,o){o=o||{};pole('wood',[x,0,z],[x,h,z],.07,P('woodD'),8);W(x,0,z,o.ry||0,()=>{beam('wood',[-.5,h-.25,0],[.5,h-.25,0],.04,P('woodD'),true,6);akSpire(h,.8);
  for(const s of [-1,1]){cone('bone',s*.5,h-.25,0,.05,.18,0xe2d6bc,6);}
- withCloth(clothHang(o.len||2.6,.04),()=>{psurf('flag',(u,v)=>[-.5+u*1.0,h-.28-v*((o.len||2.6)+.08)-(v>.95?Math.abs(u-.5)*.34:0),.012],3,8,akC(AK_B));   /* the blue border */
-  psurf('flag',(u,v)=>[-.42+u*.84,h-.3-v*(o.len||2.6)-(v>.95?Math.abs(u-.5)*.3:0),.022],3,8,P('red'));
-  psurf('flag',(u,v)=>[-.42+u*.84,h-.3-v*(o.len||2.6)-(v>.95?Math.abs(u-.5)*.3:0),.002],3,8,P('red'));});   /* red on the back too */
+ withCloth(clothHang(o.len||2.6,.04),()=>{psurf('flag',(u,v)=>[-.5+u*1.0,h-.28-v*((o.len||2.6)+.08)-(v>.95?Math.abs(u-.5)*.34:0),.012],3,8,akC(AK_T));   /* the red border */
+  psurf('flag',(u,v)=>[-.42+u*.84,h-.3-v*(o.len||2.6)-(v>.95?Math.abs(u-.5)*.3:0),.022],3,8,P('blue'));
+  psurf('flag',(u,v)=>[-.42+u*.84,h-.3-v*(o.len||2.6)-(v>.95?Math.abs(u-.5)*.3:0),.002],3,8,P('blue'));});   /* blue on the back too */
  akGiant(h-1.0,.1,.34);});}   /* the emblem: the ringed giant */
 /* ---------------------------------------------------------------- the gas giant (the Ash Nomads' emblem: the ringed giant in their sky)
    standing in the current frame at height y, facing +z, radius R: a black disc in a ring of frets, the banded planet, its
@@ -167,7 +169,7 @@ const AK_GIANT=[0x7d8fb0,0xc7c2b6,0x8a98b8,0xdcd4c2,0x6f80a6,0xd8cfbb,0x8896b6,0
 function akGiant(y,z,R){W(0,y,z,0,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('plain',0,-.08,0,R,.08,akC(AK_K),48));
  ring('brass',0,0,.02,R,.05*Math.min(1,R),0xc89a3a,0,PI/2,0,48);
  if(KIT_HAS('medAshGiant')){WX(0,0,.03,0,PI/2,0,()=>medallion('medAshGiant',0,0,0,R*2,{round:true}));return;}
- if(R>.6)for(let k=0;k<20;k++){const a=(k+.5)/20*TAU;W(Math.cos(a)*R*.86,Math.sin(a)*R*.86,.01,0,()=>WX(0,0,0,0,0,a-PI/2,()=>akMotif('fret',0,-R*.06,R*.06,R*.1,akC(k%2?AK_Y:AK_R),0)));}
+ if(R>.6)for(let k=0;k<20;k++){const a=(k+.5)/20*TAU;W(Math.cos(a)*R*.86,Math.sin(a)*R*.86,.01,0,()=>WX(0,0,0,0,0,a-PI/2,()=>akMotif('fret',0,-R*.06,R*.06,R*.1,akC(k%2?AK_Y:AK_P),0)));}
  const pr=R*.48,cw=yy=>Math.sqrt(Math.max(0,pr*pr-yy*yy)),nb=AK_GIANT.length;
  for(let b=0;b<nb;b++){const y0=-pr+b*2*pr/nb,y1=y0+2*pr/nb,pts=[];for(let k=0;k<=6;k++){const yy=lerp(y0,y1,k/6);pts.push([-cw(yy),yy,.04]);}
   for(let k=6;k>=0;k--){const yy=lerp(y0,y1,k/6);pts.push([cw(yy),yy,.04]);}poly('plain',pts,akC(AK_GIANT[b]),true);}
@@ -178,6 +180,6 @@ function akGiant(y,z,R){W(0,y,z,0,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('plain',0,-.08,
 /* ---------------------------------------------------------------- the great sun disc on its frame (the assembly's emblem)
    standing in the current frame at height y, facing +z, radius R: rays, rings, the medallion at its heart */
 function akSunDisc(y,z,R){W(0,y,z,0,()=>{WX(0,0,0,0,PI/2,0,()=>cyl('plain',0,-.08,0,R,.08,akC(AK_K),48));
- for(let k=0;k<24;k++){const a=k/24*TAU,r0=R*.62,r1=R*(k%2?.9:.98);poly('plain',[[Math.cos(a-.08)*r0,Math.sin(a-.08)*r0,.05],[Math.cos(a+.08)*r0,Math.sin(a+.08)*r0,.05],[Math.cos(a)*r1,Math.sin(a)*r1,.05]],akC(k%2?AK_R:AK_Y),true);}
+ for(let k=0;k<24;k++){const a=k/24*TAU,r0=R*.62,r1=R*(k%2?.9:.98);poly('plain',[[Math.cos(a-.08)*r0,Math.sin(a-.08)*r0,.05],[Math.cos(a+.08)*r0,Math.sin(a+.08)*r0,.05],[Math.cos(a)*r1,Math.sin(a)*r1,.05]],akC(k%2?AK_P:AK_Y),true);}
  ring('brass',0,0,.06,R*.6,.04,0xc89a3a,0,PI/2,0,40);ring('brass',0,0,.06,R,.05,0xc89a3a,0,PI/2,0,48);
  WX(0,0,.07,0,PI/2,0,()=>medallion('medAshSun',0,0,0,R*1.1,{round:true}));});}
